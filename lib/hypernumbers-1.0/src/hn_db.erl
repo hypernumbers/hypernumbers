@@ -59,7 +59,9 @@ create()->
     ?create(local_cell_link,   bag, Storage),
     ?create(hn_user,           set, Storage),
     ?create(dirty_cell,        set, Storage),
-    ?create(dirty_hypernumber, set, Storage),
+    ?create(dirty_incoming_hn, set, Storage),
+    ?create(dirty_outgoing_hn, set, Storage),
+    ?create(dirty_notify_back, set, Storage),
     ?create(incoming_hn,       set, Storage),
     ?create(outgoing_hn,       set, Storage),
     ?create(template,          set, Storage),
@@ -130,11 +132,10 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
     case Ref of
         {cell,_} -> List;
         {page,_} -> List;
-        _ ->
-            Fun = fun(#hn_item{addr=#ref{ref=Item}}) -> 
-                          filter_cell(Ref,Item) 
-                  end,
-            lists:filter(Fun,List)
+        _        -> Fun = fun(#hn_item{addr=#ref{ref=Item}}) -> 
+                                  filter_cell(Ref,Item) 
+                          end,
+                    lists:filter(Fun,List)
     end.
 
 %% @spec get_item_val(Ref) -> Value
@@ -469,9 +470,9 @@ do_get_hn(Url, From, To)->
             FromUrl = hn_util:index_to_url(From),
             Actions = simplexml:to_xml_string(
                         {register,[],[
-                                      {biccie,[], [Biccie]},
-                                      {proxy, [], [Proxy]},
-                                      {url,   [], [FromUrl]}
+                                      {biccie,     [], [Biccie]},
+                                      {proxy,      [], [Proxy]},
+                                      {parent_url, [], [FromUrl]}
                                      ]}),
 
             case  http:request(post,{Url,[],"text/xml",Actions},[],[]) of

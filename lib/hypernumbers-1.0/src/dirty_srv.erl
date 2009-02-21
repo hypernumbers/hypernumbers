@@ -1,6 +1,11 @@
 %%% @author Dale Harvey <dale@hypernumbers.com>
 %%% @copyright Hypernumbers Ltd.
 %%% @TODO write a proper module description
+%%% also this is totally not resilient
+%%% the restart behaviour is broken. If this module wigs then it is restarted WITHOUT
+%%% being resubscribed to mnesia for changes which is a mess...
+%%% On restart it should process the appropriate dirty table and also resubscribe
+%%% to the mnesia events...
 -module(dirty_srv).
 -behaviour(gen_server).
 
@@ -27,7 +32,7 @@ init([Type]) ->
 handle_info({mnesia_table_event,{write,_,Rec,_,_}},State) ->
     case State#state.state of
         passive -> ok;
-        active  -> trigger_recalc(Rec,State#state.type)
+        active  -> process_dirty(Rec,State#state.type)
     end,
     {noreply, State};
 
@@ -39,16 +44,17 @@ handle_info({mnesia_table_event,{delete,_,_,_,_}},State) ->
 %% @spec handle_info(Else,State) -> {noreply,State}
 %% @doc  catch / flush unhandled events
 handle_info(_Info,State) ->
-    ?INFO("UnMatched Event ~p",[_Info]),
+    ?INFO("Unmatched Event ~p",[_Info]),
     {noreply, State}.
 
 %% @spec handle_call(flush,From,State) -> {reply,ok,State}
 %% @doc  first shrink dirty_cell, then flush the dirty table, 
 %%       read all the current dirty cells and trigger recalculation
+%% @todo this function is no longer used and should probably be deleted...
 handle_call(flush, _From, State = #state{type=Type}) ->
 
     % This fun shrinks the dirty cell table
-    % (but not dirty_hypernumber)
+    % (but not dirty_incoming_hn)
     ?INFO("In dirty_src:handle_call for flush (start) "++
               "Dirty Cell Table Size is ~p~n",
               [mnesia:table_info(dirty_cell,size)]),
@@ -78,7 +84,7 @@ handle_call(flush, _From, State = #state{type=Type}) ->
     ?INFO("In dirty_src:handle_call for flush (end) "++
               "Dirty Cell Table Size is ~p~n",
               [mnesia:table_info(dirty_cell,size)]),
-    lists:foreach(fun(X) -> trigger_recalc(X,Type) end,List2),
+    lists:foreach(fun(X) -> process_dirty(X,Type) end,List2),
     
     {reply, ok, State}.
 
@@ -91,7 +97,7 @@ handle_cast({setstate,passive}, State) ->
 
 %% @spec handle_cast(subscribe, State) -> {noreply,State}
 %% @doc  subscribe to table events from mnesia
-handle_cast(subscribe, State = #state{type=Type}) -> 
+handle_cast(subscribe, State = #state{type=Type}) ->
     mnesia:subscribe({table,Type,detailed}),
     {noreply,State};
 %% @spec handle_cast(subscribe, State) -> {noreply,State}
@@ -109,13 +115,16 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->  
     {ok, State}.
 
-%% @spec trigger_recalc(Record, Type) -> ok
-%% @doc  trigger recalculation for cell Rec.index
-trigger_recalc(Rec,Type) ->
-    
-    Index = ?COND(Type == dirty_cell,
-                  Rec#dirty_cell.index,
-                  Rec#dirty_hypernumber.index),
+%% @spec process_dirty(Record, Type) -> ok
+%% @doc  processes the dirty record
+process_dirty(Rec, dirty_notify_back) ->
+    #dirty_notify_back{child = Child, parent = Parent, change = Change} = Rec,
+    ChildIdx = hn_util:refX_from_index(Child),
+    ParentIdx = hn_util:refX_from_index(Parent),
+    {ok, ok} = hn_db_api:notify_back(ParentIdx, ChildIdx, Change),
+    ok;
+process_dirty(Rec,dirty_cell) ->
+    Index = Rec#dirty_cell.index,
     % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Logging code                                                      %
     % #index{path=Path,row=Row,column=Col}=Index,                       %
@@ -123,14 +132,21 @@ trigger_recalc(Rec,Type) ->
     %     ++integer_to_list(Col),                                        %
     % bits:log(Str),                                                    %
     % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    ok = mnesia:dirty_delete({Type, Index}),
+    ok = mnesia:dirty_delete({dirty_cell, Index}),
     #index{row=Row,column=Col}=Index,
-    ok = case Type of
-             dirty_cell        -> hn_db:cell_changed(Index);
-             dirty_hypernumber -> hn_db:hn_changed(Index)
-         end,
+    ok = hn_db:cell_changed(Index);
+process_dirty(Rec,dirty_incoming_hn) ->
+    Index = Rec#dirty_incoming_hn.index,
+    ok = mnesia:dirty_delete({dirty_incoming_hn, Index}),
+    #index{row=Row,column=Col}=Index,
+    ok = hn_db:hn_changed(Index);
+process_dirty(Rec,dirty_outgoing_hn) ->
+    Index = Rec#dirty_outgoing_hn.index,
+    %ok = mnesia:dirty_delete({dirty_outgoing_hn, Index}),
+    #index{row=Row,column=Col}=Index,
+    RefX=hn_util:refX_from_index(Index),
+    {ok, ok} = hn_db_api:notify_hypernumber(RefX),
     ok.
-
 %%%
 %%% Utility Functions
 %%% 

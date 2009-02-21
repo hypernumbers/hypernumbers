@@ -1,8 +1,11 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers.com
-%%% @doc       This is a util function for hn_db containing only functions
-%%%            that MUST be called from within an mnesia transactransactionstions
+%%% @doc       This is a util function for hn_db_api containing only functions
+%%%            that MUST be called from within an mnesia transactions.
+%%%            
+%%%            The module {@link hn_db_api} is the wrapper for calls to this
+%%%            function.
 %%%            
 %%%            <h3>Functional Categories</h3>
 %%%            
@@ -64,9 +67,14 @@
          read_attrs/2,       % tested
          read_inherited/3,
          read_styles/1,
+         read_incoming_hypernumber/1,
+         read_outgoing_hypernumbers/1,
          clear_cells/1,
          clear_cells/2,
          delete_attrs/2,
+         delete_outgoing_hn/3,
+         clear_dirty_notify_back/3,
+         clear_dirty_notify/1,
          shift_cell/2,
          copy_cell/3,
          copy_attrs/3]).
@@ -98,8 +106,52 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec clear_dirty_notify(Parent::#refX{}) -> {ok, ok}
+%% @doc clears a dirty notification.
+%% The parent reference must point to a cell
+%% @todo extend the reference to include rows, columns, ranges, etc, etc
+clear_dirty_notify(Parent) when is_record(Parent, refX) ->
+    ParentIdx = hn_util:index_from_refX(Parent),
+    ok = mnesia:delete_object(dirty_outgoing_hn, ParentIdx),
+    {ok, ok}.
+
+%% @spec clear_dirty_notify_back(Parent::#refX{}, Child::#refX{}, Change) -> {ok, ok}
+%% @doc clears a dirty notify back.
+%% Both the parent and the child references must point to a cell
+%% @todo extend the references to include rows, columns, ranges, etc, etc
+clear_dirty_notify_back(Parent, Child, Change)
+  when is_record(Parent, refX), is_record(Child, refX) ->
+    ParentIdx = hn_util:index_from_refX(Parent),
+    ChildIdx = hn_util:index_from_refX(Child),
+    Head = ms_util:make_ms(dirty_notify_back, [{parent, ParentIdx},
+                                               {child, ChildIdx},
+                                               {change, Change}]),
+    [Record] = mnesia:select(dirty_notify_back, [{Head, [], ['$_']}]),
+    ok = mnesia:delete_object(Record),
+    {ok, ok}.
+
+%% @spec delete_outgoing_hn(#refX{}, Url, Biccie) -> {ok, ok}
+%% @doc deletes an outgoing hypernumber if the biccie quoted is correct.
+%% 
+%% The Url is the Url of the cell on the remote site which used to use
+%% this hypernumber (but no longer does). The biccie is the biccie which was 
+%% originally given when the hypernumber was set up.
+%% 
+%% @todo at the moment the <code>refX{}</code> can only point to a cell
+%% should be a more general reference (including eventually a query reference)
+delete_outgoing_hn(Parent, Child, Biccie) ->
+    ParentIndex = hn_util:index_from_refX(Parent),
+    ChildIndex = hn_util:index_from_refX(Child),
+    Url = hn_util:index_to_url(ChildIndex),
+    Head = ms_util:make_ms(outgoing_hn, [{index, {'_', ParentIndex}},
+                                         {url, Url}, {biccie, Biccie}]),
+    Hypernumbers = mnesia:select(outgoing_hn, [{Head, [], ['$_']}]),
+    delete_recs(Hypernumbers).
+
 %% @spec get_refs_below(#ref{}) -> [#ref{}]
-%% @doc gets all the refs below a given reference. The reference passed in can
+%% @doc gets all the refs below a given reference.
+%% 
+%% The reference passed in can
 %% be one of the following, a:
 %% <ul>
 %% <li>cell</li>
@@ -124,7 +176,9 @@ get_refs_below(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     get_refs_below2(RefX, XX1, XX2, YY).
 
 %% @spec get_refs_right(#ref{}) -> [#ref{}]
-%% @doc gets all the refs to the right of a given reference. The reference passed
+%% @doc gets all the refs to the right of a given reference. 
+%% 
+%% The reference passed
 %% in can be one of the following, a:
 %% <ul>
 %% <li>cell</li>
@@ -151,8 +205,9 @@ get_refs_right(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
 %% @spec get_last_refs(#refX{}) -> {LastColumnRef, LastRowRef}
 %% LastColumnRef = #refX{}
 %% LastColumnRef = #refX{}
-%% @doc takes a refX{} and gets the value of the last populated row
-%% The refX{} can be refer to a:
+%% @doc takes a reference and gets the value of the last populated row
+%% 
+%% The refX{} can refer to a:
 %% <ul>
 %% <li>page</li>
 %% </ul>
@@ -173,8 +228,9 @@ get_last_refs(#refX{site = S, path = P} = RefX) ->
     lists:foldl(Fun, {Zero, Zero}, Cells).
 
 %% @spec read_remote_parents(RefX :: #refX{}) -> [#refX{}]
-%% @doc this returns the remote parents of a reference. The reference can only
-%% be to a cell and not a range, column, row or page
+%% @doc this returns the remote parents of a reference.
+%% 
+%% The reference can only be to a cell and not a range, column, row or page
 %% 
 %% This fn is called read_remote_parents because it consists of all the
 %% remote links where the current RefX is the child
@@ -186,8 +242,9 @@ read_remote_parents(#refX{obj = {cell, _}} = RefX) ->
     get_remote_parents(Links).
 
 %% @spec read_remote_children(RefX :: #refX{}) -> [#refX{}]
-%% @doc this returns the remote children of a reference. The reference can only
-%% be to a cell and not a range, column, row or page
+%% @doc this returns the remote children of a reference.
+%% 
+%% The reference can only be to a cell and not a range, column, row or page
 %% 
 %% This fn is called read_remote_children because it consists of all the
 %% remote links where the current RefX is the parent
@@ -228,10 +285,16 @@ read_local_children(#refX{obj = {cell, _}} = RefX) ->
 %% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> {ok, ok}
 %% Key = atom()
 %% Value = term()
-%% @doc This function writes attributes EITHER to a cell or a range of cells OR
-%% to a column, row or page
-%% If it writes to a range it will be expanded to write to all the cells in the
-%% range
+%% @doc this function writes attributes to a cell or cells.
+%% 
+%% The refX{} can refer to a:
+%% <ul>
+%% <li>cell</li>
+%% <li>range</li>
+%% <li>column</li>
+%% <li>row</li>
+%% <li>page</li>
+%% </ul>
 %% 
 %% This function deals with style-able attributes of cells auto-magically.
 %% 
@@ -239,7 +302,7 @@ read_local_children(#refX{obj = {cell, _}} = RefX) ->
 %% attributes defined in the ref magic_styles in file 
 %% <a href="../include/spriki.hrl">spriki.hrl</a>
 %% it will be magically managed as a style
-%% ~end
+%% @end
 %% This clause deals with a formula
 write_attr(#refX{obj = {cell, _}} = RefX, {formula, _} = Attr) ->
     % first check that the formula is not part of a shared array
@@ -274,7 +337,8 @@ write_attr(RefX, {Key, Val} = Attr) when is_record(RefX, refX) ->
 %% @spec read_cells(#refX{}) -> [{#refX{}, {Key, Value}}]
 %% Key = atom()
 %% Value = term()
-%% @doc reads all the attributes of a cell or cells given a ref to them.
+%% @doc reads all the attributes of a cell or cells
+%%
 %% This is a raw read because it returns *ALL* the attributes
 %% The reference can refer to a:
 %% <ul>
@@ -291,7 +355,8 @@ read_cells(Ref) ->
 %% @spec read_cells_raw(#refX{}) -> [{#refX{}, {Key, Value}}]
 %% Key = atom()
 %% Value = term()
-%% @doc reads all the attributes of a cell or cells given a ref to them.
+%% @doc reads all the attributes of a cell or cells
+%% 
 %% This is a raw read because it returns *ALL* the attributes
 %% The reference can refer to a:
 %% <ul>
@@ -327,7 +392,8 @@ read_cells_raw(#refX{obj = {page, _}} = RefX) ->
 %% Value = term()
 %% Default = term()
 %% @doc  This function searches the tree for the first occurence of a value
-%%       stored at RefX, if not found return default
+%%       stored at a given reference, if not found it returns the supplied
+%%       default value
 %%       
 %% @todo what are the ref types it supports? improve the documentation, etc, etc
 read_inherited(RefX, Key, Default) when is_record(RefX, refX)  ->
@@ -340,7 +406,7 @@ read_inherited(RefX, Key, Default) when is_record(RefX, refX)  ->
 %% @spec read_attrs(#refX{}) -> [{#refX{}, {Key, Value}}]
 %% Key = atom()
 %% Value = term()
-%% @doc Reads all the attributes for a reference.
+%% @doc reads all the attributes for a reference.
 %% The reference can refer to a:
 %% <ul>
 %% <li>cell</li>
@@ -357,7 +423,7 @@ read_attrs(RefX) when is_record(RefX, refX) ->
 %% Key = atom()
 %% Value = term()
 %% @end
-%% @doc Reads the attributes specified in the AttrsList for a reference.
+%% @doc reads the attributes specified in the AttrsList for a reference.
 %% If the attribute list is blank returns all the attributes
 %% The reference can refer to a:
 %% <ul>
@@ -395,21 +461,23 @@ read_attrs(#refX{obj = {page, _}} = RefX, AttrList)
 
 %% @spec shift_cell(RefX :: #refX{}, Offset :: {X :: integer(), 
 %% Y :: integer()}) -> {ok, ok}
-%% @doc shift_cells takes a cell and shifts it by the offset - provided
-%% that offset is valid of course - ie the cell can't be made negative - mebbies
-%% it should be).
+%% @doc shift_cells takes a cell and shifts it by the offset
+%% 
+%% Provided that offset is valid of course - ie the cell can't be 
+%% made negative (mebbies it should be).
 shift_cell(From, To) when is_record(From, refX), is_record(To, refX) ->
     {ok, ok} = shift_cell2(From, To),
     {ok, ok} = shift_links(From, To),
     {ok, ok} = shift_dirty_cells(From, To),
     {ok, ok} = shift_hypernumbers(From, To),
-    {ok, ok} = shift_dirty_hypernumbers(From, To),
+    {ok, ok} = shift_dirty_incoming_hns(From, To),
     {ok, ok}.
 
 %% @spec read_styles(#refX{}) -> [Style]
 %% Style = #styles{}
-%% @doc returns a list of styles associated with the ref which
-%% can refer to any of a:
+%% @doc returns a list of styles associated with a reference
+%% 
+%% The refX{} can refer to any of a:
 %% <ul>
 %% <li>cell</li>
 %% <li>range</li>
@@ -443,7 +511,9 @@ clear_cells(RefX) when is_record(RefX, refX) ->
 
 %% @spec clear_cells(#refX{}, Type) -> {ok, ok} 
 %% Type = [contents | style | all]
-%% @doc clears a cell or cells - behaviour depends on the value of type
+%% @doc clears a cell or cells
+%% 
+%% The behaviour depends on the value of type
 %% <ul>
 %% <li><code>contents</code> - deletes the formula/value but not the attributes
 %% or formats (or the cell itself)</li>
@@ -491,8 +561,8 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
 
 %% @spec delete_attrs(RefX :: #refX{}, Key) -> {ok, ok}
 %% Key = atom()
-%% @doc deletes the attribute with key Key from a
-%% of a cell (but doesn't delete the cell itself)
+%% @doc deletes a named attribute from a
+%% cell or cells (but doesn't delete the cells themselve)
 delete_attrs(RefX, Key) ->
     Ref = hn_util:refX_to_ref(RefX, Key),
     case ms_util2:is_in_record(magic_style, Key) of 
@@ -505,7 +575,7 @@ delete_attrs(RefX, Key) ->
 
 %% @spec copy_cell(From :: #refX{}, To ::#refX{}, Incr) -> {ok, ok}
 %% Incr = [false | horizonal | vertical]
-%% @doc copys cells from a ref to a ref
+%% @doc copys cells from a reference to a reference
 copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
   when is_record(From, refX), is_record(To, refX) ->
     FromList = read_cells_raw(From),
@@ -550,8 +620,9 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
 
 %% @spec copy_attrs(From :: #refX{}, To :: #refX{}, AttrList) -> {ok, ok}
 %% AttrList = [atom()]
-%% @doc This function copies all the attributes listed from the From #ref{} to
-%% the To ref{}.
+%% @doc copies all the attributes of a cell to a new cell or cells.
+%% All the listed attributes are copied from the From #ref{} to
+%% the To ref{}. 
 %% The From #ref{} must be a cell reference, but the To #ref{} can be either
 %% a cell or a range
 copy_attrs(_From, _To, []) -> {ok, ok};
@@ -564,6 +635,27 @@ copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {range, _}} = To, [H | T])
     List = hn_util:range_to_list(Ref),
     [copy_attrs(From, X, T) || X <- List].
 
+%% @spec read_incoming_hypernumber(Parent::#refX{}) -> [#incoming_hn{}]
+%% @doc reads an incoming hypernumber.
+%% The <code>#refX{}</code> must refer to a cell
+%% @todo extend the hypernumbers paradigm to include registering with a range,
+%% column, row or query, etc, etc
+read_incoming_hypernumber(Parent) when is_record(Parent, refX) ->
+    ParentIdx = hn_util:refX_to_index(Parent),
+    Head = ms_util:make_ms(incoming_hn, [{remote, ParentIdx}]),
+    mnesia:select(incoming_hn, [{Head, [], ['$_']}]).
+
+%% @spec read_outgoing_hypernumbers(Parent::#refX{}) -> [#outgoing_hn{}]
+%% @doc reads the details of all outgoing hypernumbers from a particular cell.
+%% The <code>#refX{}</code> must refer to a cell
+%% @todo extend the hypernumbers paradigm to include registering with a range,
+%% column, row or query, etc, etc
+%% shouldn't this just take the 
+read_outgoing_hypernumbers(Parent) when is_record(Parent, refX) ->
+    ParentIdx = hn_util:refX_to_index(Parent),
+    Head = ms_util:make_ms(outgoing_hn, [{index, {'_',ParentIdx}}]),
+    mnesia:select(outgoing_hn, [{Head, [], ['$_']}]).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Internal funtions                                                        %%%
@@ -574,12 +666,7 @@ update_rem_parents(RefX, OldParents, NewParents) when is_record(RefX, refX) ->
     % first delete all the records on the delete list
     % and unregister them (probably should be done in a gen server!)
     Fun1 = fun(X) ->
-                   P = hn_util:index_from_refX(X),
-                   C = hn_util:index_from_refX(RefX),
-                   Rec = #remote_cell_link{parent = P, child = C,
-                                          type = incoming},
-                  {ok, ok} = delete_recs(Rec),
-                  {ok, ok} = unregister_hypernumber(RefX, X)
+                   delete_remote_parents(RefX)
           end,
     [{ok, ok} = Fun1(X) || X <- Del],
     % now write all the records on the write list
@@ -592,32 +679,34 @@ update_rem_parents(RefX, OldParents, NewParents) when is_record(RefX, refX) ->
            end,
     [ok = Fun2(X) || X <- Write],
     {ok, ok}.
- 
-unregister_hypernumber(Local, Remote)
-  when is_record(Local, refX), is_record(Remote, refX) ->
-    exit("Fix me up first, I'm shagged!"),
-    %% nick bits from hn_db:del_remote_link for incoming...
-    #refX{site = S, path = P} = Remote,
-    Server = S ++ hn_util:list_to_path(P),
-    Cell = hn_util:refX_to_index(Local),
-    % Now read the 'outgoing_hn' table
-    % {ok, [OutgoingList]} = 
-    Version = hn_util:text(Remote#outgoing_hn.version + 1),
-    error_logger:error_msg("in hn_db:notify_hypernumber *WARNING* "++
-                           "notify_hypernumber not using "++
-                           "version number ~p - ie it aint working - yet :(",
-                           [Version]),
 
-    Actions = simplexml:to_xml_string(
-                {notify,[],[
-                            {biccie,      [],[Remote#outgoing_hn.biccie]},
-                            {cell,        [],[hn_util:index_to_url(Cell)]},
-                            {type,        [],["change"]},
-                            {value,       [], "bodge"},
-                            {version,     [],["1"]}
-                           ]}),
+%% This function is called on a local cell to inform all remote cells that it
+%% used to reference as hypernumbers to no longer do so.
+%% 
+%% It looks to see if there are any other local cells also consuming that hypernumber
+%%   - if not then delete the hypernumber in table 'incoming_hn' 
+%%     and inform the remote source that we no longer need updates
+unregister_hypernumber(Loc, Rem)
+  when is_record(Loc, refX), is_record(Rem, refX) ->
+    LocIdx = hn_util:refX_to_index(Loc),
+    RemIdx = hn_util:refX_to_index(Rem),
+    Head = ms_util:make_ms(remote_cell_link, [{parent, RemIdx},
+                                               {type, incoming}]),
+    case mnesia:select(remote_cell_link, [{Head, [], ['$_']}]) of
+        [] -> Msg = "unregister",
+              mark_notify_back_dirty(Loc, Rem, Msg); 
+        _  -> {ok, ok} % somebody else still wants it so don't unregister
+    end.
 
-    hn_util:post(Server,Actions,"text/xml"),
+mark_dirty_outgoing_hn(RefX) ->
+    Idx = hn_util:index_from_refX(RefX),
+    ok = mnesia:write(#dirty_outgoing_hn{index=Idx}).
+
+mark_notify_back_dirty(Local, Remote, Msg) ->
+    LocIdx = hn_util:refX_to_index(Local),
+    RemIdx = hn_util:refX_to_index(Remote),
+    Rec = #dirty_notify_back{child = LocIdx, parent = RemIdx, change = Msg},
+     ok = mnesia:write(Rec),
     {ok, ok}.
 
 get_refXs(List) -> get_refXs(List, []).
@@ -814,59 +903,28 @@ mark_cell_dirty(Index) ->
 
     % first up local
     RefX = hn_util:refX_from_index(Index),
-    Local = read_local_children(RefX),
+    LocalChildren = read_local_children(RefX),
     % now wildcards (must be fixed!)
     NIndex = Index#index{path=lists:reverse(Index#index.path)},
     Queries = dyn_parents(NIndex,[],[]),
 
-    Local2 = lists:append(Local, Queries),
-    
-    % now read hypernumbers
-    Remote = read_remote_children(RefX),
-    
+    LocalChildren2 = lists:append(LocalChildren, Queries),
+        
     % Now write the local children to dirty_cell
     Fun = fun(X) ->
                   % only write the dirty cell if 
-                  % it doesnt already exist
-                  Match = ms_util:make_ms(dirty_cell, [{index, X}]),
-                  % Match2 = #dirty_cell{index = X, _= '_'}, ?????
+                  % it doesn't already exist
+                  XIdx = hn_util:refX_to_index(X),
+                  Match = ms_util:make_ms(dirty_cell, [{index, XIdx}]),
                   case mnesia:match_object(Match) of
-                      [] -> mnesia:write(#dirty_cell{index = X}) ;
+                      [] -> mnesia:write(#dirty_cell{index = XIdx}) ;
                       _  -> ok
                   end
           end,
-    _Return1 = lists:foreach(Fun, Local2),
-    % Now write notify the remote children that they are dirty
-    % get the new value first
-    Val = read_attrs(RefX, [rawvalue]),
-    Notify = fun(X) ->
-                     notify_hypernumber(X, Val)
-             end,        
-    _Return2 = lists:foreach(Notify, Remote),
-    ok.
+    _Return1 = lists:foreach(Fun, LocalChildren2),
 
-notify_hypernumber(Remote, [{RefX, {Key, Value}}]) ->
-    #refX{site = S, path = P} = Remote,
-    Server = S ++ hn_util:list_to_path(P),
-    Cell = hn_util:refX_to_index(RefX),
-    % Now read the 'outgoing_hn' table
-    % {ok, [OutgoingList]} = 
-    Version = hn_util:text(Remote#outgoing_hn.version + 1),
-    error_logger:error_msg("in hn_db:notify_hypernumber *WARNING* "++
-                           "notify_hypernumber not using "++
-                           "version number ~p - ie it aint working - yet :(",
-                           [Version]),
-
-    Actions = simplexml:to_xml_string(
-                {notify,[],[
-                            {biccie,      [],[Remote#outgoing_hn.biccie]},
-                            {cell,        [],[hn_util:index_to_url(Cell)]},
-                            {type,        [],["change"]},
-                            {value,       [],hn_util:to_xml(Value)},
-                            {version,     [],["1"]}
-                           ]}),
-
-    hn_util:post(Server,Actions,"text/xml"),
+    % mark this cell as a possible dirty hypernumber
+    ok = mark_dirty_outgoing_hn(hn_util:refX_from_index(Index)),
     ok.
 
 dyn_parents(_Index = #index{path=[]},Results, _Acc) ->
@@ -916,6 +974,9 @@ delete_remote_parents(RefX) when is_record(RefX, refX) ->
     % unregister the hypernumbers
     Fun = fun(X) ->
                   #remote_cell_link{parent = P, child = C, type = incoming} = X,
+                  Rec = #remote_cell_link{parent = P, child = C,
+                                          type = incoming},
+                  {ok, ok} = delete_recs([Rec]),
                   Remote = hn_util:refX_from_index(P),
                   Local = hn_util:refX_from_index(C),
                   unregister_hypernumber(Local, Remote)
@@ -992,21 +1053,14 @@ read_attrs2(MatchRef, AttrList) ->
 
 shift_cell2(From, To) ->
     % Rewrite the shifted cell
-    Attrs = read_cells_raw(From),
-    % First write the new cell
-    #refX{obj = CT} = To,
-    Fun = fun({RefX, {Key, Value}}) ->
-                  To2 = RefX#refX{obj = CT},
-                  Addr = hn_util:refX_to_ref(RefX, Key),
-                  Record = #hn_item{addr = Addr, val = Value},
-                  mnesia:write(Record),
-                  spawn(fun() -> tell_front_end(Record, change) end),
-                  ok
-          end,
-    [ok = Fun(X) || X <- Attrs],
-    % Now delete the old one...
-    {ok, ok} = clear_cells(From, all),
-    {ok, ok}.
+    case read_attrs(From, [formula]) of
+        []                          -> {ok, ok} = clear_cells(From, all);
+        [{From, {formula, Value}} ] -> #refX{obj = CT} = To,
+                                       To2 = From#refX{obj = CT},
+                                       {ok, ok} = write_attr(To2, {formula, Value}),
+                                       % Now delete the old one...
+                                       {ok, ok} = clear_cells(From, all)
+    end.
 
 shift_links(From, To) ->
     % Now rewrite the cells that link to this cell
@@ -1017,20 +1071,24 @@ shift_links(From, To) ->
     shift_links2(LinkedCells, Offset).
 
 shift_dirty_cells(From, To) ->
-    io:format("******************************~n"),
-    io:format("*                            *~n"),
-    io:format("* Write shift_dirty_cell     *~n"),
-    io:format("*                            *~n"),
-    io:format("******************************~n"),
-    {ok, ok}.
+    ToIdx = hn_util:index_from_refX(To),
+    case  mnesia:read({dirty_cell, From}) of
+        []          -> {ok, ok};
+        [DirtyCell] -> NewDirty = DirtyCell#dirty_cell{index = ToIdx},
+                       mnesia:delete({dirty_cell, DirtyCell}),
+                       mnesia:write(NewDirty),
+                       {ok, ok}
+    end.
 
-shift_dirty_hypernumbers(From, To) ->
-    io:format("**********************************~n"),
-    io:format("*                                *~n"),
-    io:format("* Write shift_dirty_hypernumbers *~n"),
-    io:format("*                                *~n"),
-    io:format("**********************************~n"),
-    {ok, ok}.
+shift_dirty_incoming_hns(From, To) ->
+    ToIdx = hn_util:index_from_refX(To),
+    case  mnesia:read({dirty_incoming_hn, From}) of
+        []          -> {ok, ok};
+        [DirtyHn] -> NewDirty = DirtyHn#dirty_cell{index = ToIdx},
+                       mnesia:delete({dirty_incoming_hn, DirtyHn}),
+                       mnesia:write(NewDirty),
+                       {ok, ok}
+    end.
 
 shift_links2([], _Offset) -> {ok, ok};
 shift_links2([#local_cell_link{child = Child, parent = Parent} | T], Offset) ->
@@ -1411,6 +1469,7 @@ extract_values(List) -> extract_values2(List, []).
 extract_values2([], Acc) -> Acc;
 extract_values2([{_R, {_K, V}}| T], Acc)  -> extract_values2(T, [V | Acc]).
 
+%% @hidden
 dump() ->
     RefX = #refX{site = "http://127.0.0.1:9000", path = ["insert", "data"],
                  obj = {cell, {1, 1}}},

@@ -3,7 +3,7 @@
 %%% @copyright (C) 2009, Hypernumbers.com
 %%% @doc       This module provides the data access api.
 %%%            Each function in this should call functions from
-%%%            hn_db_wu.erl which provides work units and it
+%%%            {@link hn_db_wu} which provides work units and it
 %%%            should wrap them in an mnesia transaction.
 %%%            
 %%%            mnesia MUST NOT be called from any function in
@@ -19,7 +19,7 @@
 %%%            <li>page</li>
 %%%            </ul>
 %%%            These flavours are distingished by the obj attributes
-%%%            which are:
+%%%            which have the following forms:
 %%%            <ul>
 %%%            <li>{cell, {X, Y}}</li>
 %%%            <li>{range, {X1, Y1, X2, Y2}}</li>
@@ -28,7 +28,7 @@
 %%%            <li>{page, "/"}</li>
 %%%            </ul>
 %%% 
-%%% %%% @TODO should we have a subpages #refX egt {subpages, "/"}
+%%% @TODO should we have a subpages #refX egt {subpages, "/"}
 %%% which would alllow you to specify operations like delete and copy
 %%% on whole subtrees?
 %%% @end
@@ -63,10 +63,13 @@
          insert/2,
          delete/1,
          delete/2,
+         unregister_hypernumber/3,
          clear/1,
-         clear/2
+         clear/2,
          % delete_permission/1,
-         % delete_style/1
+         % delete_style/1,
+         notify_back/3,
+         notify_hypernumber/1
         ]).
 
 %%% Debugging interface
@@ -87,11 +90,85 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% @spec write_attributes(RefX :: #refX{}, List) -> {ok, ok} 
+%% @spec nofity_hypernumber(Parent::#refX{}) -> {ok, ok}
+%% @doc notify's any remote sites that a hypernumber has changed.
+%% the reference must be for a cell
+%% @todo generalise the references to row, column, range and page
+notify_hypernumber(Parent) ->
+    Fun = fun() ->
+                  H = hn_db_wu:read_outgoing_hypernumbers(Parent),
+                  [{Parent, {rawvalue, V}}] = hn_db_wu:read_attrs(Parent, [rawvalue]),
+                  {H, V}
+          end,
+    {List, Value} = mnesia:activity(transaction, Fun),
+    ParentIdx = hn_util:index_from_refX(Parent),
+    ParentURL = hn_util:index_to_url(ParentIdx),
+%    error_logger:error_msg("in hn_db_wu:notify_hypernumber *WARNING* "++
+%                           "notify_hypernumber not using "++
+%                           "version number - ie it aint working - yet :("),
+    Fun2 = fun(X) ->
+                   {Server, _} = X#outgoing_hn.index,
+                   Version = tconv:to_s(X#outgoing_hn.version),
+                   Actions = simplexml:to_xml_string(
+                               {notify,[],[
+                                           {biccie,     [], [X#outgoing_hn.biccie]},
+                                           {parent, [], [ParentURL]},
+                                           {type,       [], ["change"]},
+                                           {value,      [], hn_util:to_xml(Value)},
+                                           {version,    [], [Version]}
+                                          ]}),
+                   
+                   hn_util:post(Server,Actions,"text/xml"),
+                   ok
+           end,
+    [ok = Fun2(X) || X <- List],
+    {ok, ok}.
+           
+%% @spec notify_back(ParentRefX::#refX{}, ChildRefX::#refX{}, Change) -> 
+%% {ok, ok}
+%% @doc notify's a change of a cell back to its remote hypernumber parent
+%% <code>#refX{}</code> can be a cell only
+%% @todo expand the paradigm to include ranges, columns, rows references and 
+%% queries as things that be remote parents
+notify_back(ParentRefX, ChildRefX, Change)
+  when is_record(ChildRefX, refX), is_record(ParentRefX, refX) ->
+    Fun1 = fun() ->
+                  hn_db_wu:read_incoming_hypernumber(ParentRefX)
+          end,
+    [Hypernumber] = mnesia:activity(transaction, Fun1),
+    ChildIdx = hn_util:refX_to_index(ChildRefX),
+    ParentIdx = hn_util:refX_to_index(ParentRefX),
+    #incoming_hn{biccie = Biccie} = Hypernumber,
+    #refX{site = Server} = ParentRefX,
+    ChildUrl=hn_util:index_to_url(ChildIdx),
+    ParentUrl=hn_util:index_to_url(ParentIdx),
+    Actions = simplexml:to_xml_string(
+                {notify_back,[],[
+                                 {biccie,      [],[Biccie]},
+                                 {child_url,   [],[ChildUrl]},
+                                 {parent_url,  [],[ParentUrl]},
+                                 {type,        [],[Change]}
+                                ]}),
+
+    Fun2 = fun() ->
+                  hn_db_wu:clear_dirty_notify_back(ParentRefX, ChildRefX, Change)
+          end,
+    mnesia:activity(transaction, Fun2).
+                      
+unregister_hypernumber(ParentUrl, ChildUrl, Biccie)
+  when is_record(ParentUrl, refX), is_record(ChildUrl, refX) ->
+    Fun = fun() ->
+                  hn_db_wu:delete_outgoing_hn(ParentUrl, ChildUrl, Biccie)
+          end,
+    mnesia:activity(transaction, Fun).
+
+%% @spec write_attributes(RefX :: #refX{}, List) -> {ok, ok}     
 %% List = [{Key, Value}]
 %% Key = atom()
 %% Value = term()
-%% @doc writes out all the attributes in the list to the RefX which can be
+%% @doc writes out all the attributes in the list to the reference.
+%% 
+%% The <code>refX{}</code> can be
 %% one of:
 %% <ul>
 %% <li>a cell</li>
@@ -106,14 +183,28 @@ write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
 %% @spec write_last(List) -> {ok, ok}
 %% List = [{#refX{}, Val}]
 %% Val = [list() | float() | integer()]
-%% @doc takes a list of #refX{}'s all of which must be either a:
+%% @doc takes a list of references and appends either a column or row at the end of them
+%% 
+%% All of the references must be either a:
 %% <ul>
 %% <li>column</li>
 %% <li>row</li>
 %% </ul>
-%% They must also be on the same page
+%% and they must also be on the same page.
+%% 
+%% If the List looks like:
+%%   <code>[{#refX{obj = {column, {2, 2}}, "=3"}, 
+%%   {refX{obj = {column, {4, 5}}, 0}]</code>
+%% then the value of highest written row will be got the the following cells 
+%% will be written:
+%% <ul>
+%% <li>{cell, {2, LastRow+1} with formula of "=3"</li>
+%% <li>{cell, {4, LastRow+1} with formula of 0</li>
+%% <li>{cell, {5, LastRow+1} with formula of 0</li>
+%% </ul>
 %% It will write the values to the last row/column as if they were
 %% 'formula' attributes
+%% Formulae can be inserted into row or column using <code>rc</code> notation
 write_last(List) when is_list(List) ->
     [{#refX{site = S, path = P, obj = O} = RefX, _} | T] = List,
     Fun =
@@ -145,14 +236,15 @@ write_last(List) when is_list(List) ->
                 [Fun1(X) || X <- List]
         end,
     Return = mnesia:activity(transaction, Fun),
-    io:format("mnesia returned with ~p~n", [Return]),
     {ok, ok}.
 
 %% @spec read_attributes(#refX{}, AttrList) -> {#refX{}, Val}
 %% AttrList = [atom()]
 %% Val = term()
 %% @doc Given a reference and the name of an attribute, returns the reference
-%% and the value of that attribute. The reference can point to a:
+%% and the value of that attribute.
+%% 
+%% The reference can point to a:
 %% <ul>
 %% <li>cell</li>
 %% <li>range</li>
@@ -170,7 +262,9 @@ read_attributes(RefX, AttrList) when is_record(RefX, refX),
 %% @spec read(#refX{}) -> [{#refX{}, {Key, Value}}]
 %% Key = atom()
 %% Value = term()
-%% @doc read takes a refererence which can be one of a:
+%% @doc read takes a refererence and returns the cell attributes.
+%% 
+%% The <code>refX{}</code> can be one of a:
 %% <ul>
 %% <li>cell</li>
 %% <li>range</li>
@@ -187,7 +281,9 @@ read(RefX) when is_record(RefX, refX) ->
 %% @spec read_styles(#refX{}) -> [Style]
 %% Style = #styles{}
 %% @doc read_style gets the list of styles that pertain to a particular 
-%% reference. The reference can point to a:
+%% reference.
+%% 
+%% The <code>#refX{}</code> can point to a:
 %% <ul>
 %% <li>cell</li>
 %% <li>range</li>
@@ -203,7 +299,8 @@ read_styles(RefX) when is_record(RefX, refX) ->
 
 %% @spec recalculate(#refX{}) -> {ok, ok}
 %% @doc recalculates the cells refered to (and all cells that depend on them)
-%% The reference can be to a:
+%% 
+%% The <code>refX{}</code> can be to a:
 %% <ul>
 %% <li>cell</li>
 %% <li>range</li>
@@ -219,8 +316,9 @@ recalculate(RefX) when is_record(RefX, refX) ->
     mnesia:activity(transaction, Fun).
 
 %% @spec reformat(#refX{}) -> {ok, ok}
-%% @doc reformats the cells refered to (and all cells that depend on them)
-%% The reference can be to a:
+%% @doc reformats the cells refered to
+%% 
+%% The <code>refX{}</code> can be to a:
 %% <ul>
 %% <li>cell</li>
 %% <li>range</li>
@@ -237,6 +335,7 @@ reformat(RefX) when is_record(RefX, refX) ->
 
 %% @spec insert(RefX :: #refX{}) -> ok
 %% @doc inserts a single column or a row
+%% 
 %% The <code>#refX{}</code> can be one of the following types:
 %% <ul>
 %% <li>row</li>
@@ -287,6 +386,7 @@ insert(#refX{obj = {R, _}} = RefX, Disp) when R == cell orelse R == range ->
 
 %% @spec delete(Ref :: #refX{}) -> ok
 %% @doc deletes a column or a row or a page
+%% 
 %% @todo this is all bollocks - should be row, column then cell/range as 
 %% per insert/2
 delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
@@ -307,7 +407,9 @@ delete(#refX{obj = {page, _}} = RefX) ->
 
 %% @spec delete(RefX :: #refX{}, Type) -> ok
 %% Type = [contents | all | horizontal | vertical]
-%% @doc deletes a
+%% @doc deletes a reference.
+%% 
+%% The <code>refX{}</code> can be one of a:
 %% <ul>
 %% <li>cell</li>
 %% <li>row</li>
@@ -335,22 +437,32 @@ delete(#refX{obj = {R, _}} = RefX, vertical) when R == cell orelse R == range ->
     mnesia:activity(transaction, Fun).
 
 %% @spec clear(#refX{}) -> ok
-%% @doc same as clear(RefX, all).
+%% @doc same as <code>clear(refX{}, all)</code>.
 clear(RefX) when is_record(RefX, refX) ->
     clear(RefX, all).
 
 %% @spec clear(#refX{}, Type) -> ok
 %% Type = [contents | style | all]
-%% @doc This function clears the contents of the cell or range
-%% (but doesn't delete the cell or range itself), ie
-%% If Type  = 'content' it clears:
+%% @doc clears the contents of the cell or range
+%% (but doesn't delete the cell or range itself).
+%% 
+%% If <code>Type  = 'contents'</code> it clears:
 %% <ul>
 %% <li>formula</li>
 %% <li>values</li>
 %% </ul>
-%% If Type = 'style' it clears the style.
-%% If Type = 'all' it clears both style and content.
+%% If <code>Type = 'style'</code> it clears the style.
+%% If <code>Type = 'all'</code> it clears both style and content.
 %% It doesn't clear other/user-defined attributes of the cell or range
+%%
+%% The <code>refX{}</code> can be to a:
+%% <ul>
+%% <li>cell</li>
+%% <li>range</li>
+%% <li>column</li>
+%% <li>row</li>
+%% <li>page</li>
+%% </ul>
 clear(RefX, Type) when is_record(RefX, refX) ->
     Fun =
         fun() ->
@@ -366,9 +478,11 @@ clear(RefX, Type) when is_record(RefX, refX) ->
 
 %% @spec cut_n_paste(From :: #refX{}, To :: #refX{}) -> ok
 %% @doc copies the formula and formats from a cell or range and 
-%% pastes them to the destination then deletes the original
-%% (the difference between drag'n'drop
-%% and copy/cut'n'paste is that drag'n'drop increments)
+%% pastes them to the destination then deletes the original.
+%% 
+%% (see also {@link hn_db_api:drag_n_drop/2} and {@link hn_db_api:copy_n_paste/2} - 
+%% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that 
+%% drag'n'drop increments)
 %% 
 %% Either <code>#refX{}</code> can be one of the following types:
 %% <ul>
@@ -399,9 +513,12 @@ cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 
 %% @spec copy_n_paste(From :: #refX{}, To :: #refX{}) -> ok
 %% @doc copies the formula and formats from a cell or range and 
-%% pastes them to the destination (the difference between drag'n'drop
-%% and copy/cut'n'paste is that drag'n'drop increments)
+%% pastes them to the destination.
 %% 
+%% (see also {@link hn_db_api:drag_n_drop/2} and {@link hn_db_api:cut_n_paste/2} - 
+%% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that 
+%% drag'n'drop increments)
+%%  
 %% Either <code>#refX{}</code> can be one of the following types:
 %% <ul><li>cell</li>
 %% <li>row</li>
@@ -418,6 +535,10 @@ copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% @doc takes the formula and formats from a cell and drag_n_drops 
 %% them over a destination (the difference between drag'n'drop
 %% and copy/cut'n'paste is that drag'n'drop increments)
+%% 
+%% (see also {@link hn_db_api:cut_n_paste/2} and {@link hn_db_api:copy_n_paste/2} - 
+%% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that 
+%% drag'n'drop increments)
 %% 
 %% drag'n'drop has an interesting specification
 %% (taken from Excel 2007 help)
@@ -493,7 +614,6 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
 write_page_vsn(RefX, Action) ->
     PageRefX = #refX{obj = {page, "/"}},
     NewVsn = ?counter(page_vsn_counters, PageRefX, 1),
-    io:format(" in hn_db_api:insert NewVsn is ~p~n", [NewVsn]),
     Record = #page_vsn{page_refX = PageRefX, action = Action,
                        action_refX = RefX, version = NewVsn},
     ok = mnesia:write(Record),
@@ -825,6 +945,7 @@ clear_cells_DEBUG(Path) ->
 %% Used In Debugging interfaces                                               %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @hidden
 insert_delete_DEBUG2(FunName) ->
 
     Path = [FunName],
@@ -836,12 +957,6 @@ insert_delete_DEBUG2(FunName) ->
     clear_cells_DEBUG("http://il_ballo.dev:9000", [FunName, "data"]),
 
     test_util:wait(20),
-
-    % Now set up the various bits of data that is used to mark the 
-    % insert tests
-    io:format("writing out data...~n"),
-    write_data([FunName,"data"]),
-    write_data("http://il_ballo.dev:9000",[FunName,"data"]),
 
     % now write out the data and perform the tests
     write_value(Path, FunName, {1, 1}, [bold, underline, center]),
@@ -857,17 +972,38 @@ insert_delete_DEBUG2(FunName) ->
 
     write_value(Path, FunName++" a cell here", {1, 5}, []),
     write_value(Path, "=./data/B1", {1, 6}, []),
-    write_value(Path, "=hn(\"http://il_ballo.dev:9000/insert/data/C1?hypernumber\")", {1, 7}, []),
+    write_value(Path, "=hn(\"http://il_ballo.dev:9000/insert/data/C1?hypernumber\")",
+                {1, 7}, []),
     colour(Path, {1, 4}, "orange"),
     colour(Path, {1, 5}, "orange"),
     colour(Path, {1, 6}, "orange"),
     colour(Path, {1, 7}, "orange"),
+    colour(Path, {1, 8}, "orange"),
 
     io:format("Insert a cell...~n"),
 
+    % ensure that the dirty tables are loaded to make this test work...
+    gen_server:cast(dirty_cell,         {setstate, passive}),
+    gen_server:cast(dirty_incoming_hn,  {setstate, passive}),
+    gen_server:cast(dirty_outgoing_hn,  {setstate, passive}),
+
+    % Now set up the various bits of data that is used to mark the 
+    % insert tests
+    io:format("writing out data...~n"),
+    write_data([FunName,"data"]),
+    write_data("http://il_ballo.dev:9000",[FunName,"data"]),
+        
     insert_delete(FunName, Path, {cell, {1, 5}}, vertical),
 
-    %    write_value(Path, "Cell "++FunName++" (right)", {1, 9}, [bold, underline, center]),
+    _Return1=gen_server:cast(dirty_cell,        {setstate, active}),
+    _Return2=gen_server:call(dirty_cell,        flush, infinity),
+    _Return3=gen_server:cast(dirty_incoming_hn, {setstate, active}),
+    _Return4=gen_server:call(dirty_incoming_hn, flush, infinity),
+    _Return5=gen_server:cast(dirty_outgoing_hn, {setstate, active}),
+    _Return6=gen_server:call(dirty_outgoing_hn, flush, infinity),
+    
+    %    write_value(Path, "Cell "++FunName++" (right)", {1, 9}, 
+    %    [bold, underline, center]),
     %    write_value(Path, FunName++" a cell here", {1, 10}, []),
     %    write_value(Path, "=./data/A1", {2, 10}, []),
     %    colour(Path, {1, 10}, "orange"),
@@ -875,7 +1011,8 @@ insert_delete_DEBUG2(FunName) ->
 
     make_thick(Path, 1),
 
-    %    write_value(Path, "Row "++FunName++" (right)", {1, 12}, [bold, underline, center]),
+    %    write_value(Path, "Row "++FunName++" (right)", {1, 12}, 
+    %    [bold, underline, center]),
     %    write_value(Path, FunName++" a row here", {1, 13}, []),
     %    write_value(Path, "=./data/A1", {1, 14}, []),
     %    colour(Path, {1, 13}, "orange"),
@@ -883,7 +1020,8 @@ insert_delete_DEBUG2(FunName) ->
 
     %    make_thin(Path, 2),
 
-    %    write_value(Path, FunName++" Column Here", {3, 3}, [bold, underline, center]),
+    %    write_value(Path, FunName++" Column Here", {3, 3}, 
+    %    [bold, underline, center]),
 
     %    make_thick(Path, 3),
 
@@ -891,7 +1029,8 @@ insert_delete_DEBUG2(FunName) ->
 
     %    make_thick(Path, 5),
 
-    %    write_value(Path, "Range "++FunName++" (down)", {5, 14}, [bold, underline, center]),
+    %    write_value(Path, "Range "++FunName++" (down)", {5, 14}, 
+    %    [bold, underline, center]),
     %    write_value(Path, "=./data/A1", {5, 15}, []),
     %    write_value(Path, "=./data/B1", {5, 16}, []),
     %    write_value(Path, "=./data/C1", {5, 17}, []),
@@ -930,7 +1069,8 @@ insert_delete_DEBUG2(FunName) ->
 
     %    make_thin(Path, 9),
 
-    %    write_value(Path, "Range "++FunName++" (right)", {10, 14}, [bold, underline, center]),
+    %    write_value(Path, "Range "++FunName++" (right)", {10, 14}, 
+    %    [bold, underline, center]),
     %    write_value(Path, "A", {10, 15}, []),
     %    write_value(Path, "B", {10, 16}, []),
     %    write_value(Path, "C", {10, 17}, []),
@@ -974,8 +1114,8 @@ insert_delete_DEBUG2(FunName) ->
     %    io:format("'bout to wait...~n"),
     %    test_util:wait(100),
     %    io:format("'done waitin...~n"),
-    %    write_value(Path, "after: "++FunName, {3, 1}, [bold, underline, center]),
-    %    colour(Path, {3, 1}, "red"),
+    write_value(Path, "after: "++FunName, {3, 1}, [bold, underline, center]),
+    colour(Path, {3, 1}, "red"),
 
     %    io:format("At the end...~n"),
 
@@ -988,6 +1128,7 @@ insert_delete_DEBUG2(FunName) ->
 
     ok.
 
+%% @hidden
 copy_DEBUG3(FunName) ->
 
     Path = [FunName, "for_ranges"],
@@ -1093,6 +1234,7 @@ copy_DEBUG3(FunName) ->
     cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {range, {14, 13, 15, 14}},
                                      {range, {14, 17, 16, 16}}).
 
+%% @hidden
 copy_DEBUG2(FunName) ->
 
     Path = [FunName],
@@ -1106,27 +1248,32 @@ copy_DEBUG2(FunName) ->
     % cell to cell drop down
     write_value(Path, "integer below", {1, 2}, [bold]),
     write_value(Path, "1", {1, 3}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 3}}, {cell, {1, 4}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 3}},
+                                     {cell, {1, 4}}),
     colour(Path, {1, 3}, "cyan"),
 
     write_value(Path, "float below", {1, 5}, [bold]),
     write_value(Path, "1.1", {1, 6}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 6}}, {cell, {1, 7}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 6}},
+                                     {cell, {1, 7}}),
     colour(Path, {1, 6}, "cyan"),
 
     write_value(Path, "string below", {1, 8}, [bold]),
     write_value(Path, "hey!", {1, 9}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 9}}, {cell, {1, 10}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 9}},
+                                     {cell, {1, 10}}),
     colour(Path, {1, 9}, "cyan"),
 
     write_value(Path, "date below", {1, 11}, [bold]),
     write_value(Path, "1/2/3 4:5:6", {1, 12}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 12}}, {cell, {1, 13}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 12}},
+                                     {cell, {1, 13}}),
     colour(Path, {1, 12}, "cyan"),
 
     write_value(Path, "boolean below", {1, 14}, [bold]),
     write_value(Path, "true", {1, 15}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 15}}, {cell, {1, 16}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 15}},
+                                     {cell, {1, 16}}),
     colour(Path, {1, 15}, "cyan"),
 
     make_thick(Path, 1),
@@ -1136,60 +1283,72 @@ copy_DEBUG2(FunName) ->
     % cell to cell across
     write_value(Path, "integer beside", {2, 2}, [bold]),
     write_value(Path, "1", {2, 3}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 3}}, {cell, {3, 3}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 3}},
+                                     {cell, {3, 3}}),
     colour(Path, {2, 3}, "cyan"),
 
     write_value(Path, "float beside", {2, 5}, [bold]),
     write_value(Path, "1.1", {2, 6}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 6}}, {cell, {3, 6}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 6}},
+                                     {cell, {3, 6}}),
     colour(Path, {2, 6}, "cyan"),
 
     write_value(Path, "string beside", {2, 8}, [bold]),
     write_value(Path, "hey!", {2, 9}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 9}}, {cell, {3, 9}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 9}},
+                                     {cell, {3, 9}}),
     colour(Path, {2, 9}, "cyan"),
 
     write_value(Path, "date beside", {2, 11}, [bold]),
     write_value(Path, "1/2/3 4:5:6", {2, 12}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 12}}, {cell, {3, 12}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 12}},
+                                     {cell, {3, 12}}),
     colour(Path, {2, 12}, "cyan"),
 
     write_value(Path, "boolean beside", {2, 14}, [bold]),
     write_value(Path, "true", {2, 15}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 15}}, {cell, {3, 15}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 15}},
+                                     {cell, {3, 15}}),
     colour(Path, {2, 15}, "cyan"),
 
     make_thin(Path, 4),
 
-    write_value(Path, FunName++" - cell to down 'thin' range", {5, 1}, [bold, underline]),
+    write_value(Path, FunName++" - cell to down 'thin' range", {5, 1},
+                [bold, underline]),
 
     % cell to range down
     write_value(Path, "integer below", {5, 2}, [bold]),
     write_value(Path, "1", {5, 3}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {5, 3}}, {range, {5, 4, 5, 5}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {5, 3}},
+                                     {range, {5, 4, 5, 5}}),
     colour(Path, {5, 3}, "cyan"),
 
     write_value(Path, "float below", {6, 5}, [bold]),
     write_value(Path, "1.1", {6, 6}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {6, 6}}, {range, {6, 7, 6, 8}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {6, 6}},
+                                     {range, {6, 7, 6, 8}}),
     colour(Path, {6, 6}, "cyan"),
 
     write_value(Path, "string below", {5, 8}, [bold]),
     write_value(Path, "hey!", {5, 9}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {5, 9}}, {range, {5, 10, 5, 11}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {5, 9}},
+                                     {range, {5, 10, 5, 11}}),
     colour(Path, {5, 9}, "cyan"),
 
     write_value(Path, "date below", {6, 11}, [bold]),
     write_value(Path, "1/2/3 4:5:6", {6, 12}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {6, 12}}, {range, {6, 13, 6, 14}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {6, 12}},
+                                     {range, {6, 13, 6, 14}}),
     colour(Path, {6, 12}, "cyan"),
 
     write_value(Path, "boolean below", {5, 14}, [bold]),
     write_value(Path, "true", {5, 15}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {5, 15}}, {range, {5, 16, 5, 17}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {5, 15}},
+                                     {range, {5, 16, 5, 17}}),
     colour(Path, {5, 15}, "cyan"),
 
-    write_value(Path, FunName++" - cell to across 'thin' range", {7, 1}, [bold, underline]),
+    write_value(Path, FunName++" - cell to across 'thin' range", {7, 1},
+                [bold, underline]),
 
     make_thick(Path, 5),
     make_thick(Path, 6),
@@ -1197,27 +1356,32 @@ copy_DEBUG2(FunName) ->
     % cell to range down
     write_value(Path, "integer beside", {7, 2}, [bold]),
     write_value(Path, "1", {7, 3}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 3}}, {range, {7, 4, 8, 4}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 3}},
+                                     {range, {7, 4, 8, 4}}),
     colour(Path, {7, 3}, "cyan"),
 
     write_value(Path, "float beside", {7, 5}, [bold]),
     write_value(Path, "1.1", {7, 6}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 6}}, {range, {7, 7, 8, 7}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 6}},
+                                     {range, {7, 7, 8, 7}}),
     colour(Path, {7, 6}, "cyan"),
 
     write_value(Path, "string beside", {7, 8}, [bold]),
     write_value(Path, "hey!", {7, 9}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 9}}, {range, {7, 10, 8, 10}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 9}},
+                                     {range, {7, 10, 8, 10}}),
     colour(Path, {7, 9}, "cyan"),
 
     write_value(Path, "date beside", {7, 11}, [bold]),
     write_value(Path, "1/2/3 4:5:6", {7, 12}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 12}}, {range, {7, 13, 8, 13}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 12}},
+                                     {range, {7, 13, 8, 13}}),
     colour(Path, {7, 12}, "cyan"),
 
     write_value(Path, "boolean beside", {7, 14}, [bold]),
     write_value(Path, "true", {7, 15}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 15}}, {range, {7, 16,  8, 16}}),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 15}},
+                                     {range, {7, 16,  8, 16}}),
     colour(Path, {7, 15}, "cyan"),
 
     make_thick(Path, 7),
@@ -1226,7 +1390,8 @@ copy_DEBUG2(FunName) ->
     make_thin(Path, 9),
 
     % cell to 'thick' ranges don't increment even if they are drag'n'drop
-    write_value(Path, FunName++" - cell to 'thick' range", {10,1}, [bold, underline]),
+    write_value(Path, FunName++" - cell to 'thick' range", {10,1},
+                [bold, underline]),
 
     write_value(Path, "integer", {10,2}, [bold]),
     write_value(Path, "1", {10,3}, [{colour, "yellow"}]),
@@ -1300,6 +1465,7 @@ copy_DEBUG2(FunName) ->
 
     make_thick(Path, 16).
 
+%% @hidden
 hn_DEBUG() ->
     Path = ["hypernumbers"],
     Site1 = "http://il_ballo.dev:9000",
@@ -1311,6 +1477,7 @@ hn_DEBUG() ->
     write_value(Path,"=hn(\"http://il_ballo.dev:9000/data/A1?hypernumber\")",
                 {1, 1}, []).
 
+%% @hidden
 get_tiles_DEBUG() ->
     F1 = #refX{obj = {range, {1, 1, 2, 2}}},
     F2 = #refX{obj = {range, {1, 1, 3, 3}}},
@@ -1338,6 +1505,7 @@ get_tiles_DEBUG() ->
     io:format("**********************************~n"),   
     get_tiles(F2, T7).    
 
+%% @hidden
 read_styles_DEBUG() ->
     Site = "http://blah.com",
     Path = ["some", "path"],
@@ -1359,6 +1527,7 @@ read_styles_DEBUG() ->
     List = [RefX1, RefX2, RefX3, RefX4, RefX5, RefX6, RefX7, RefX8],
     [io:format("read_styles returns ~p~n", [read_styles_DEBUG2(X)]) || X <- List].
 
+%% @hidden
 read_styles_DEBUG2(X) ->
     io:format("reading styles for ~p~n", [X]),
     Fun = fun() ->
@@ -1449,32 +1618,15 @@ write_data(Path) ->
 write_data(Site, Path) ->
     clear_cells_DEBUG(Site, Path),
     % writes out sample data for hyperlinks
-    write_value(Site, Path, "A", {1, 1}, []),
-    write_value(Site, Path, "B", {2, 1}, []),
-    write_value(Site, Path, "C", {3, 1}, []),
-    write_value(Site, Path, "D", {4, 1}, []),
-    write_value(Site, Path, "E", {5, 1}, []),
-    write_value(Site, Path, "F", {6, 1}, []).
-%    write_value(Site, Path, "G", {7, 1}, []),
-%    write_value(Site, Path, "H", {8, 1}, []),
-%    write_value(Site, Path, "I", {9, 1}, []),
-%    write_value(Site, Path, "J", {10, 1}, []),
-%    write_value(Site, Path, "K", {11, 1}, []),
-%    write_value(Site, Path, "L", {12, 1}, []),
-%    write_value(Site, Path, "M", {13, 1}, []),
-%    write_value(Site, Path, "N", {14, 1}, []),
-%    write_value(Site, Path, "O", {15, 1}, []),
-%    write_value(Site, Path, "P", {16, 1}, []),
-%    write_value(Site, Path, "Q", {17, 1}, []),
-%    write_value(Site, Path, "R", {18, 1}, []),
-%    write_value(Site, Path, "S", {19, 1}, []),
-%    write_value(Site, Path, "T", {20, 1}, []),
-%    write_value(Site, Path, "U", {21, 1}, []),
-%    write_value(Site, Path, "V", {22, 1}, []),
-%    write_value(Site, Path, "W", {23, 1}, []),
-%    write_value(Site, Path, "X", {24, 1}, []),
-%    write_value(Site, Path, "Y", {25, 1}, []),
-%    write_value(Site, Path, "Z", {26, 1}, []).
+    write_value(Site, Path, "1", {1, 1}, []),
+    write_value(Site, Path, "2", {2, 1}, []),
+    write_value(Site, Path, "3", {3, 1}, []),
+    write_value(Site, Path, "4", {4, 1}, []),
+    write_value(Site, Path, "5", {5, 1}, []),
+    write_value(Site, Path, "6", {6, 1}, []),
+    write_value(Site, Path, "7", {7, 1}, []),
+    write_value(Site, Path, "8", {8, 1}, []),
+    write_value(Site, Path, "9", {9, 1}, []).
 
 clear_cells(Site, Path, {X, Y}) ->
     Target = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},

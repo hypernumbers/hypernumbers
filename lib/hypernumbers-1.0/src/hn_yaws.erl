@@ -27,7 +27,7 @@
 -import(simplexml,[to_xml_string/1,to_json_string/1]).
 -export([ out/1, get_page_attributes/1 ]).
 
--record(upload, {fd,filename, last}).
+-record(upload, {fd, filename, last}).
 
 %% @spec out(Arg) -> YawsReturn
 %% @doc Yaws handler for all incoming HTTP requests
@@ -54,7 +54,6 @@ out(Arg) ->
 %% @spec do_request(Arg,Url) -> {ok,Responce}
 %% @doc handle incoming requests
 do_request(Arg, Url) ->
-    
     RV = fun({X,undefined}) -> X;
             (Else)          -> Else
          end,
@@ -64,7 +63,7 @@ do_request(Arg, Url) ->
     Vars = lists:map(RV,yaws_api:parse_query(Arg)),
     {ok,Type} = hn_util:get_req_type(Vars),
     {ok,PostData} = get_post_data(Arg,Type,Vars),
-    
+
     %% Verify AuthToken, authtoken can be passed via url
     %% or cookies, url takes precedence
     {ok,AuthCode} = get_var_or_cookie(auth,Vars,Arg),
@@ -73,17 +72,20 @@ do_request(Arg, Url) ->
                [] ->
                    anonymous;
                [UserId,_AuthToken] ->
-                   %% @TODO Verify Token
+                   % @TODO Verify Token
                    UserId
            end,
-    
-    {ok,Access} = case hn_users:get_permissions(User,Ref) of
-                      {ok,{protected_read, Token}} -> {ok,read};
-                      {ok,{protected_write,Token}} -> {ok,write};
-                      {ok,{_Write,_Tok}}           -> {ok,require_token};
-                      Else                         -> Else
-                  end,
-    
+
+    {ok, Access} = case hn_users:get_permissions(User, Ref) of
+                       {ok,{protected_read,  Token}} -> {ok, read};
+                       {ok,{protected_write, Token}} -> {ok, write};
+                       {ok,{_Write, _Tok}}           -> {ok, require_token};
+                       Else                          -> Else
+                   end,
+
+    %    io:format("in hn_yaws about to call req with~n-Method is ~p~n-"++
+    %              "PostData is ~p~n-Vars is ~p~n-Access is ~p~n-Ref is ~p~n",
+    %              [Method, PostData, Vars, Access, Ref]),
     Return = case req(Method,PostData,Vars,Access,Ref) of
                  {return,Data} ->
                      Data;
@@ -290,27 +292,32 @@ req('POST',{delete,[],Data},_Vars,_User,Ref) ->
      ),
     {ok,{success,[],[]}};
 
-req('POST',{unregister,[],[{biccie,[],[_Bic]},{url,[],[Url]}]},_Attr,_User,Ref) ->
-    {ok, Child} = hn_util:parse_url(Url),
-    hn_db:del_remote_link(#remote_cell_link{
-        parent = hn_util:ref_to_index(Ref),
-        child  = hn_util:ref_to_index(Child),
-        type   = outgoing }),
 
-    {ok,{success,[],[]}};
-
-req('POST',{register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}]},_Attr,_User,Ref) ->
+req('POST',{register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{parent_url,[],[Reg]}]},
+    _Attr,_User,Ref) ->
     {ok,RegRef}=hn_util:parse_url(Reg),
     hn_db:register_hn(
                   hn_util:ref_to_index(Ref),
                   hn_util:ref_to_index(RegRef),
       Bic, Proxy, Reg);
 
+%% with 'notify' the remote site is a hypernumber which is passing on
+%% nofitications like 'my value has changed' or 'my location has changed'
 req('POST',{notify,[],Data},_Attr,_User,Ref) ->
     case lists:keysearch(type,1,Data) of
         {value,{type,[],["change"]}} ->
             api_change(Data,Ref)
     end;
+
+%% with 'notify_back' the remote site is consuming a local hypernumber
+%% and is notifying back 'I don't need you anymore' I have shifted my
+%% location' etc, etc
+req('POST',{notify_back,[],Data},_Attr,_User,Ref) ->
+    case lists:keysearch(type,1,Data) of
+        {value,{type,[],["unregister"]}} ->
+            api_unregister(Data, Ref)
+    end;
+
 
 %% deprecated
 req('POST',{template,[],[{name,[],[Name]},
@@ -346,16 +353,27 @@ req('POST',Data,["import"],_User,_Page) ->
 req(Method,Data,Vars,User,Page) ->
     throw({unmatched_request,Method,Data,Vars,User,Page}).
 
-
-api_change([{biccie,[],     [Bic]},
-            {cell,[],       [Cell]},
-            {type,[],       ["change"]},
-            {value,[],      [Val]},
-            {version,[],    [Version]}], _Page)->
+api_change([{biccie,[],  [Biccie]},
+            {parent,[],  [ParentURL]},
+            {type,[],    ["change"]},
+            {value,[],   [Val]},
+            {version,[], [Version]}], _Page)->
 
     {_,_,[Val2]}=Val,
-    hn_db:update_hn(Cell,Bic,Val2,Version),
+    hn_db:update_hn(ParentURL,Biccie,Val2,Version),
 
+    {ok,{success,[],[]}}.
+
+api_unregister([{biccie,[],     [Biccie]},
+                {child_url,[],  [ChildURL]},
+                {parent_url,[], [ParentURL]},
+                {type,[],       ["unregister"]}],
+               _Page)->
+    {ok, ParentRef} = hn_util:parse_url(ParentURL),
+    {ok, ChildRef}  = hn_util:parse_url(ChildURL),
+    {ParentRefX, _} = hn_util:ref_to_refX(ParentRef, "not used"),
+    {ChildRefX, _}  = hn_util:ref_to_refX(ChildRef, "not used"),
+    hn_db_api:unregister_hypernumber(ParentRefX, ChildRefX, Biccie),
     {ok,{success,[],[]}}.
 
 %% Utility functions
