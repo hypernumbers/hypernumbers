@@ -283,6 +283,7 @@ parse_rec(?FONT,Bin,_Name,CurrentFormula,Tbl)->
     {ok,CurrentFormula};
 parse_rec(?CONTINUE,_Bin,_Name,CurrentFormula,Tbl)->
     % io:format("in parse_rec for CONTINUE~n"),
+    exit("in excel_records:parse_rec for ?CONTINUE this oughta be a fatal..."),
     excel_util:write(Tbl,lacunae,[{identifier,"CONTINUE"},
                                   {source,excel_records.erl},
                                   {msg,"not being processed"}]),
