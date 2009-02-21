@@ -542,7 +542,7 @@ copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% 
 %% drag'n'drop has an interesting specification
 %% (taken from Excel 2007 help)
-%% currently excludes customer autofil
+%% currently excludes customer autofill
 %% 
 %% <code>Initial selection       Extended series</code>
 %% 
@@ -968,6 +968,9 @@ insert_delete_DEBUG2(FunName) ->
     write_value(Path, "Cell "++FunName++" (down)", {1, 3},
                 [bold, underline, center]),
 
+    write_value(Path, "Links to Column A", {3, 3},
+                [bold, underline, center]),
+    
     write_value(Path, "=./data/A1", {1, 4}, []),
 
     write_value(Path, FunName++" a cell here", {1, 5}, []),
@@ -980,6 +983,9 @@ insert_delete_DEBUG2(FunName) ->
     colour(Path, {1, 7}, "orange"),
     colour(Path, {1, 8}, "orange"),
 
+    write_value(Path, "=A6", {3, 5}, []),
+    colour(Path, {3, 5}, "yellow"),
+    
     io:format("Insert a cell...~n"),
 
     % ensure that the dirty tables are loaded to make this test work...
@@ -1010,6 +1016,7 @@ insert_delete_DEBUG2(FunName) ->
     %    colour(Path, {2, 10}, "orange"),
 
     make_thick(Path, 1),
+    make_thick(Path, 3),
 
     %    write_value(Path, "Row "++FunName++" (right)", {1, 12}, 
     %    [bold, underline, center]),
