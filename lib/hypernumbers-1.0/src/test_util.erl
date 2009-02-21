@@ -432,7 +432,7 @@ cmp(G,E) ->
             float_cmp(G2, E2, 5);
         is_integer(G2) andalso is_float(E2) ->
             % sometimes large integers appear as (exponented) floats from excel...
-            float_cmp(G2, E2, 5);
+            float_cmp(G2 * 1.0, E2, 5);
         true -> E2 == G2
     end.
 
