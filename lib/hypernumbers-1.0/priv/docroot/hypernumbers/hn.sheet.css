@@ -488,9 +488,14 @@ ul,li {
  opacity:0.8;
 }
 
-#selection textarea { 
+#input { 
+  z-index:100000;
+  height:20px;
+  width:80px;
+  border:2px solid blue;
   position:absolute;
   display:none;
+  overflow:none;
 }
 
 #current { 
