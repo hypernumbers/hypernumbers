@@ -67,7 +67,7 @@
          log10/1,
 
          %% Random numbers
-         rand/0,
+         rand/1,
          randbetween/1,
 
          %% Rounding numbers
@@ -154,6 +154,7 @@
     Num1*Num2.
 
 '/'([V1, V2]) ->
+    % io:format("in \"/\" V1 is ~p V2 is ~p~n", [V1, V2]),
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
     ?ensure(Num2 =/= 0,   ?ERR_DIV),
     ?ensure(Num2 =/= 0.0, ?ERR_DIV),
@@ -174,14 +175,21 @@ sum1(Nums) ->
     Return.
 
 product(Vals) ->
-    Flatvals = flatten(Vals),
+    % io:format("in product Vals are ~p~n", [Vals]),
+    Flatvals = ?flatten_all(Vals),
+    % io:format("in product Flatvals are ~p~n", [Flatvals]),
     ?ensure_no_errvals(Flatvals),
-    Nums = [X || X <- Flatvals, is_number(X)],
+    % io:format("Got to here!~n"),
+    Nums = ?numbers(Flatvals, [cast_strings, cast_bools, ignore_blanks,
+                               cast_dates]),
+    % io:format("In product~n-Vals is ~p~n-Flatvals is ~p~n-Nums is ~p~n",
+    %          [Vals, Flatvals, Nums]),
     product1(Nums).
 product1(Nums) ->
     foldl(fun(X, Acc) -> X * Acc end,
           1, Nums).
 
+%% @todo not an Excel 97 function - no test suite
 quotient([V1, V2]) ->
     [Num, Divisor] = ?numbers([V1, V2], ?default_rules),
     ?MODULE:trunc('/'([Num, Divisor])).
@@ -240,6 +248,7 @@ fact1(Num) ->
 %%gcd1(A, 0) -> A;
 %%gcd1(A, B) -> gcd1(B, A rem B).
 
+%% @todo not
 gcd(V) -> [A|T] = ?numbers(V, ?default_rules),
           gcd1(A,T).
 
@@ -272,8 +281,12 @@ lcm1(A,[B|T]) -> Div=gcd2(A,B),
 %% Returns the remainder after number is divided by divisor. The result
 %% has the same sign as divisor.
 mod([V1, V2]) ->
+    % io:format("in stdfuns_math:mod V1 is ~p V2 is ~p~n", [V1, V2]),
     [Num, Divisor] = ?numbers([V1, V2], ?default_rules),
-    Num - Divisor * int('/'([Num, Divisor])).
+    ?ensure(Divisor =/= 0, ?ERR_DIV),
+    ?ensure(Divisor =/= 0.0, ?ERR_DIV),    
+    % io:format("in stdfuns_math:mod Num is ~p Divisor is ~p~n", [Num, Divisor]),
+    Num - Divisor * int([Num/Divisor]).
 
 
 %%% Arrays and matrices ~~~~~
@@ -302,6 +315,7 @@ mdeterm1(Rows, 3) ->
 mdeterm1(_Rows, _W) ->
     ?ERR_NUM.
 
+%% @todo not Excel 97 function - no test suite
 munit([V]) ->
     N = ?number(V, [cast_strings, cast_bools, ban_dates, ban_blanks]),
     Empty = area_util:make_array(N, N),
@@ -311,19 +325,19 @@ munit([V]) ->
                                   Empty).
 
 minverse([L]) ->
-    io:format("in minverse L is ~p~n", [L]),
+    % io:format("in minverse L is ~p~n", [L]),
     %?IF(not(is_list(L)), ?ERR_VAL),
-    io:format("Got to 1~n"),
+    % io:format("Got to 1~n"),
     ?ensure_numbers(flatten(L)),
-    io:format("Got to 2~n"),
+    % io:format("Got to 2~n"),
     Mx = matrix:new(L),
-    io:format("Got to 3~n"),
+    % io:format("Got to 3~n"),
     ?IF(not(matrix:is_square(Mx)), ?ERR_VAL),
-    io:format("Got to 4~n"),
+    % io:format("Got to 4~n"),
     ?IF(matrix:det(Mx) == 0, ?ERR_NUM),
-    io:format("Got to 5~n"),
+    % io:format("Got to 5~n"),
     {matrix, _, _, NewL} = matrix:invert(Mx),
-    io:format("Got to 6~n"),
+    % io:format("Got to 6~n"),
     NewL.
 
 mmult([L1, L2]) ->
@@ -341,6 +355,7 @@ mmult([L1, L2]) ->
             ?ERR_VAL
     end.
 
+%% @todo not Excel 97 - no test suite
 multinomial(L) ->
     Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
     Allok = all(fun(X) -> X >= 1 end, Nums),
@@ -376,18 +391,19 @@ log10([V1]) ->
 
 %%% Random numbers ~~~~~
 
-rand() ->
+rand([]) ->
     random:uniform().
 
 randbetween([V1, V2]) ->
     [First, Last] = ?numbers([V1, V2], ?default_rules),
-    rand() * (Last - First) + First.
+    rand([]) * (Last - First) + First.
 
 %%% Rounding numbers ~~~~~
 
 round([V1, V2]) ->
     [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
-    round1(Num, NumDigits).
+    NumDigits2 = erlang:round(NumDigits),
+    round1(Num, NumDigits2).
 round1(Num, 0) ->
     erlang:round(Num);
 round1(Num, NumDigits) when NumDigits < 0 ->
@@ -399,7 +415,8 @@ round1(Num, NumDigits) ->
 
 rounddown([V1, V2]) ->
     [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
-    rounddown1(Num, NumDigits).
+    NumDigits2 = erlang:round(NumDigits),
+    rounddown1(Num, NumDigits2).
 rounddown1(Num, 0) ->
     erlang:trunc(Num);
 rounddown1(Num, NumDigits) when NumDigits < 0 ->
@@ -411,7 +428,8 @@ rounddown1(Num, NumDigits) when NumDigits > 0 ->
 
 roundup([V1, V2]) ->
     [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
-    roundup1(Num, NumDigits).
+    NumDigits2 = erlang:round(NumDigits),
+    roundup1(Num, NumDigits2).
 roundup1(Num, 0) ->
     ?COND(erlang:trunc(Num) == Num,
           Num,
@@ -420,7 +438,7 @@ roundup1(Num, NumDigits) when NumDigits < 0 ->
     Pow = math:pow(10, erlang:abs(NumDigits)),
     Rounded = erlang:trunc(erlang:trunc(Num) / Pow) * Pow,
     ?COND(erlang:abs(Num) > erlang:abs(Rounded),
-          Rounded + (sign(Num) * Pow),
+          Rounded + (sign1(Num) * Pow),
           Rounded);
 roundup1(Num, NumDigits) ->
     Pow = math:pow(10, NumDigits),
@@ -435,6 +453,7 @@ roundup1(Num, NumDigits) ->
 
 ceiling([V1, V2]) ->
     [Num, Multiple] = ?numbers([V1, V2], ?default_rules),
+    ?ensure(sign1(Num) == sign1(Multiple), ?ERR_NUM),
     ceiling1(Num, Multiple).
 ceiling1(_Num, 0) ->
     0;
@@ -454,7 +473,6 @@ combin([V1, V2]) ->
 
 even([V1]) ->
     Num = ?number(V1, ?default_rules),
-    io:format("In stdfuns_math:even V1 is ~p Num is ~p~n", [V1, Num]),
     even1(Num).
 even1(Num) when ?is_multiple(Num, 2) ->
     Num;
@@ -480,6 +498,7 @@ int([V1]) ->
           erlang:round(Num) - 1,
           erlang:round(Num)).
 
+%% @todo not Excel 97 - no test suite
 mround([V1, V2]) ->
     [Num, Multiple] = ?numbers([V1, V2], ?default_rules),
     ?ensure(sign1(Num) == sign1(Multiple), ?ERR_NUM),
@@ -500,12 +519,13 @@ trunc([V1]) ->
     ?int(V1, ?default_rules);
 trunc([V1, V2]) ->
     [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
-    rounddown1(Num, NumDigits).
+    rounddown1(Num, erlang:round(NumDigits)).
 
 %%% Special numbers ~~~~~
 
 pi([]) -> math:pi().
 
+%% @todo not Excel 97 - no test suite
 sqrtpi([V1]) ->
     Num = ?number(V1, ?default_rules),
     ?ensure(Num >= 0, ?ERR_NUM),
@@ -513,6 +533,7 @@ sqrtpi([V1]) ->
 
 %%% Summation ~~~~~
 
+%% @todo not Excel 97 - no test suite
 seriessum([K, N, M, Coeffs]) ->
     ?ensure_numbers([K, N, M]),
     ?ensure_numbers(?ensure_no_errvals(?flatten(Coeffs))),
@@ -556,12 +577,21 @@ subtotal([_, _]) -> ?ERR_VAL.
 sumif([L, Crit]) ->
     sumif([L, Crit, L]);
 sumif([V1, Crit, V2]) ->
+    % io:format("in sumif V1 is ~p V2 is ~p Crit is ~p~n", [V1, V2, Crit]),
+    ?ensure(area_util:is_congruent([V1|V2]), ?ERR_VAL),
+    % io:format("got to 1~n"),
     %% TODO: lists of different length
     %% TODO: error in string fun
     %% TODO: if crit is a number, it becomes "=that number"
-    L1 = ?numbers(?flatten_all(V1), ?default_rules),
-    L2 = ?numbers(?flatten_all(V2), ?default_rules),
+    V1a = ?flatten_all(V1),
+    V2a = ?flatten_all(V2),
+    % io:format("-V1a is ~p V2a is ~p~n", [V1a, V2a]),
+    L1 = ?numbers(V1a, ?default_rules),
+    % io:format("got to 2~n"),
+    L2 = ?numbers(V2a, ?default_rules),
+    % io:format("got to 3~n"),
     F = string_funs:make(Crit),
+    % io:format("in sumif L1 is ~p L2 is ~p F is ~p~n", [L1, L2, F]),
     sumif1(L1, L2, F, 0).
 sumif1([], [], _F, Sum) ->
     Sum;
@@ -571,27 +601,71 @@ sumif1([H1|T1], [H2|T2], F, Sum) ->
         false -> sumif1(T1, T2, F, Sum)
     end.
 
-sumproduct(L) ->
-    Numlists = map(fun(Xs) ->
-                           [cast(X, num) ||
-                               X <- ?ensure_no_errvals(?flatten(Xs))]
-                   end,
-                   L),
-    Len = length(hd(Numlists)),
-    Allok = all(fun(X) -> length(X) == Len end,
-                tl(Numlists)),
-    ?COND(Allok, sumproduct1(Numlists), ?ERR_VAL).
-sumproduct1(Numlists) ->
-    %% WONT WORK
-    %% No such function hslists:zipn
-    foldl(fun(Xs, Acc) -> Acc + product1(tuple_to_list(Xs)) end,0,
-          hslists:zip(Numlists)).
+sumproduct(Vals) ->
+    % io:format("in sumproduct Vals is ~p~n", [Vals]),
+    ?ensure(area_util:is_congruent(Vals), ?ERR_VAL),
+    % now flatten all the elements
+    Rules = [cast_strings_zero, cast_bools, cast_blanks, cast_dates],
+    Fun1 = fun(X) ->
+                    ?numbers(?flatten_all(X), Rules)
+           end,
+    Numlists = [Fun1(X) || X <- Vals],
+    % io:format("in sumproduct Numlists is ~p~n", [Numlists]),
+    Fun2 = fun(X, Y) ->
+                   X * Y
+           end,
+    Return = zipsum(Numlists, Fun2),
+    % io:format("In sumproduct Return is ~p~n", [Return]),
+    Return.
+
+zipsum([H | []], _Fn)     -> % io:format("in zipsum (1) H is ~p~n", [H]),
+                             sum3(H, 0);
+zipsum([H1, H2 | T], Fn)  -> % io:format("in zipsum (2)~n-H1 is ~p~n-H2 is ~p~n",
+                             %          [H1, H2]),
+                             zipsum([zipsum1(H1, H2, Fn, []) | T], Fn).
+
+zipsum1([], [], _Fn, A)              -> % io:format("in zipsum2 (1) A is ~p~n", [A]),
+                                        lists:reverse(A);
+zipsum1([H1 | T1], [H2 | T2], Fn, A) -> % io:format("in zipsum2 (2)~n-H1 is ~p~n-"++
+                                        %          "H2 is ~p~n",[H1, H2]),
+                                        zipsum1(T1, T2, Fn, [Fn(H1, H2) | A]).
+
+sum3([], Acc)      -> Acc;
+sum3([H | T], Acc) -> sum3(T, H + Acc).
 
 sumsq(L) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
-    sumsq1(Nums).
+    % ranges flatten differently to non-ranges here!
+    % io:format("in sumsq L is ~p~n", [L]),
+    Nums = sumsqflatten(L, []),
+    % io:format("in sumsq Nums is ~p~n", [Nums]),
+    Return = sumsq1(Nums),
+    % io:format("returning from sumsq with ~p~n", [Return]),
+    Return.
 sumsq1(Nums) ->
     foldl(fun(X, Acc) -> Acc + X * X end, 0, Nums).
+
+sumsqflatten([], Acc) -> lists:flatten(Acc);
+sumsqflatten([{range, _} = R | T], Acc) ->
+    % io:format("in sumsqflatten (2) R is ~p~n", [R]),
+    Rules = [cast_strings_zero, cast_dates, cast_bools, cast_blanks],
+    R2 = ?flatten_all([R]),
+    % io:format("-R2 (2) is ~p~n", [R2]),
+    NewAcc = ?numbers(R2, Rules),
+    % io:format("-NewAcc (2) is ~p~n", [NewAcc]),
+    sumsqflatten(T, [NewAcc| Acc]);
+sumsqflatten([{array, _} = R | T], Acc) ->
+    % io:format("in sumsqflatten (3) R is ~p~n", [R]),
+    Rules = [cast_strings_zero, cast_dates, cast_bools, cast_blanks],
+    R2 = ?flatten_all([R]),
+    % io:format("-R2 (3) is ~p~n", [R2]),
+    NewAcc = ?numbers(R2, Rules),
+    % io:format("-NewAcc (3) is ~p~n", [NewAcc]),
+    sumsqflatten(T, [NewAcc| Acc]);
+sumsqflatten([H | T], Acc) ->
+    % io:format("in sumsqflatten (4) H is ~p~n", [H]),
+    NewAcc = ?numbers(?ensure_no_errvals(?flatten_all([H])), ?default_rules),
+    % io:format("-NewAcc (4) is ~p~n", [NewAcc]),
+    sumsqflatten(T, [NewAcc| Acc]).
 
 sumx2my2([A1, A2]) ->
     Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(A1))),

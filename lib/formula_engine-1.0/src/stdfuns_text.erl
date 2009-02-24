@@ -52,6 +52,7 @@
          right/1,
          substitute/1,
          text/1,
+         t/1,
          upper/1
         ]).
 
@@ -60,6 +61,9 @@
                             cast_blanks, cast_dates]).
 -define(default_str_rules, [cast_numbers, cast_bools,
                             cast_blanks, cast_dates]).
+
+t([V]) when is_list(V) -> V;
+t([_V])                -> "".
 
 search([FindText, WithinText])-> search([FindText, WithinText, 1]);
 search([FindText, WithinText, StartPoint])->
