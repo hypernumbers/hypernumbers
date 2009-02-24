@@ -73,6 +73,7 @@ c_days360.xls
 c_db.xls
 c_dcount.xls
 c_dcounta.xls
+c_degrees.xls
 c_dget.xls
 c_error_type.xls
 c_even.xls
@@ -91,6 +92,7 @@ c_hour.xls
 c_if.xls
 c_index.xls
 c_indirect.xls
+c_int.xls
 c_isblank.xls
 c_iserr.xls
 c_iserror.xls
@@ -125,10 +127,18 @@ c_month.xls
 c_n.xls
 c_na.xls
 c_not.xls
+c_odd.xls
 c_or.xls
+c_pi.xls
+c_power.xls
+c_product.xls
+c_radians.xls
 c_right.xls
 c_rightb.xls
 c_roman.xls
+c_round.xls
+c_roundup.xls
+c_rounddown.xls
 c_search.xls
 c_searchb.xls
 c_second.xls
