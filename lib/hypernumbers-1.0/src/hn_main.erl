@@ -189,7 +189,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
       Parents),
 
     %#index{row=Row,column=Col}=Index,
-    hn_db:mark_dirty(Index,cell),    
+    hn_db:mark_dirty(Index,Value,cell),    
     ok.
 
 set_cell_rawvalue(Addr,Value) ->
@@ -324,7 +324,7 @@ recalc_cell(Index) ->
                     % bits:log("Row,"++integer_to_list(Row)++",Col,"++  %
                     %         integer_to_list(Col)), 5                  %
                     % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    hn_db:mark_dirty(Index, cell);
+                    hn_db:mark_dirty(Index, Val, cell);
                 {error, _Reason} ->
                     ok
             end

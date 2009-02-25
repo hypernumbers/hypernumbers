@@ -78,7 +78,7 @@ clean_start() ->
            end,
     lists:map(fun(X) -> Kill(whereis(X)) end,
               [dirty_cell, dirty_incoming_hn, dirty_outgoing_hn,
-               dirty_notify_back]),
+               dirty_notify_incoming]),
 
     ok = hn_db:create(),
     set_def_perms(),
@@ -103,10 +103,10 @@ start_yaws() ->
 %% @spec start_dirty_subscribe() -> ok
 %% @doc  Make dirty_x gen_srv's subscribe to mnesia
 start_dirty_subscribe() ->
-    ok = gen_server:cast(dirty_cell,        subscribe),
-    ok = gen_server:cast(dirty_incoming_hn, subscribe),
-    ok = gen_server:cast(dirty_outgoing_hn, subscribe),
-    ok = gen_server:cast(dirty_notify_back, subscribe),
+    ok = gen_server:cast(dirty_cell,            subscribe),
+    ok = gen_server:cast(dirty_incoming_hn,     subscribe),
+    ok = gen_server:cast(dirty_outgoing_hn,     subscribe),
+    ok = gen_server:cast(dirty_notify_incoming, subscribe),
     ok.
 
 %% @spec create_sconf(Details) -> SConf

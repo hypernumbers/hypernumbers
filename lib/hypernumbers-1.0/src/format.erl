@@ -78,7 +78,6 @@ run_format(X,Src)->
 format(X = {datetime, _, _},{date,Format}) -> {_, Date, Time} = X,
                                               Y = {Date, Time},
                                               format_date(Y,Format);
-format(X,{date, Format})                   -> tconv:to_s(X); 
 format(X,{number,Format})                  -> format_num(X,Format);
 format(X,{text,Format})                    -> format(X,Format,[]).
 
@@ -86,13 +85,13 @@ format(X,{text,Format})                    -> format(X,Format,[]).
 %%% @doc run-time interface not an API - this function should *NOT*
 %%% be programmed against
 %%% @end
-conditional({datetime, _D, _T}, ">", B) -> true;
-conditional({datetime, _D, _T}, _C, B)  -> false;
-conditional(A, ">", B)                  -> (A > B);
-conditional(A, ">=", B)                 -> (A >= B);
-conditional(A, "==", B)                 -> (A == B);
-conditional(A, "=<", B)                 -> (A =< B);
-conditional(A, "<", B)                  -> (A < B).
+conditional({datetime, _D, _T}, ">", _B) -> true;
+conditional({datetime, _D, _T}, _C, _B)  -> false;
+conditional(A, ">", B)                   -> (A > B);
+conditional(A, ">=", B)                  -> (A >= B);
+conditional(A, "==", B)                  -> (A == B);
+conditional(A, "=<", B)                  -> (A =< B);
+conditional(A, "<", B)                   -> (A < B).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                           %%%

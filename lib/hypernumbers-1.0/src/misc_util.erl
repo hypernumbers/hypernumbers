@@ -41,7 +41,7 @@ demo(Site,Dir) ->
 
 cheat() ->
     Site="http://il_ballo.dev:9000",
-    RootPath=["stock","item"], 
+    % RootPath=["stock","item"], 
     cheat(Site++"/","il_ballo").
 %% N=10,
 %% load_page_defaults(Site,RootPath,"deliveries",N),

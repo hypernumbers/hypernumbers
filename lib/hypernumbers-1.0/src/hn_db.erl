@@ -33,7 +33,7 @@
          update_hn/4,
          get_hn/3,
          cell_changed/1,
-         mark_dirty/2,
+         mark_dirty/3,
          write_template/4,
          read_template/1, 
          get_templates/0,
@@ -54,21 +54,21 @@ create()->
     ok = mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
     mnesia:start(),
-    ?create(hn_item,           set, Storage),
-    ?create(remote_cell_link,  bag, Storage),
-    ?create(local_cell_link,   bag, Storage),
-    ?create(hn_user,           set, Storage),
-    ?create(dirty_cell,        set, Storage),
-    ?create(dirty_incoming_hn, set, Storage),
-    ?create(dirty_outgoing_hn, set, Storage),
-    ?create(dirty_notify_back, set, Storage),
-    ?create(incoming_hn,       set, Storage),
-    ?create(outgoing_hn,       set, Storage),
-    ?create(template,          set, Storage),
-    ?create(styles,            bag, Storage), 
-    ?create(style_counters,    set, Storage),
-    ?create(page_vsn,          bag, Storage),
-    ?create(page_vsn_counters, set, Storage),
+    ?create(hn_item,               set, Storage),
+    ?create(remote_cell_link,      bag, Storage),
+    ?create(local_cell_link,       bag, Storage),
+    ?create(hn_user,               set, Storage),
+    ?create(dirty_cell,            set, Storage),
+    ?create(dirty_incoming_hn,     set, Storage),
+    ?create(dirty_outgoing_hn,     set, Storage),
+    ?create(dirty_notify_incoming, set, Storage),
+    ?create(incoming_hn,           set, Storage),
+    ?create(outgoing_hn,           set, Storage),
+    ?create(template,              set, Storage),
+    ?create(styles,                bag, Storage), 
+    ?create(style_counters,        set, Storage),
+    ?create(page_vsn,              bag, Storage),
+    ?create(page_vsn_counters,     set, Storage),
     hn_users:create("admin","admin"),
     hn_users:create("user","user"),
     ok.
@@ -366,36 +366,31 @@ hn_changed(Cell) ->
     F = fun() ->
                 Link = #remote_cell_link{
                   parent=Cell,type=incoming,_='_'},
-
+                
                 X = fun(#remote_cell_link{child=Child}) ->
                             hn_main:recalc(Child)
                     end,
-
+                
                 lists:foreach(X,mnesia:match_object(Link)),
                 ok
         end,
     ok = ?mn_ac(transaction,F),
     ok.
 
-%% @spec mark_dirty(Type,Cell) -> ok
+%% @spec mark_dirty(Type,Value,Cell) -> ok
 %% @doc  Marks a cell dirty (triggers recalculation)
-mark_dirty(Index,cell) ->
-    % Make a list of cells hypernumbers + direct
-    % cell links, and check for any wildcard * on the path
+mark_dirty(Index,Value,cell) ->
+    % Make a list of direct cell links, and check for 
+    % any wildcard * on the path
     Fun1 = fun() ->
                    % First read dynamic links "/page/*/a1"
                    NIndex = Index#index{path=lists:reverse(Index#index.path)},
                    Queries = dyn_parents(NIndex,[],[]),
                    % Second read direct links
                    Direct = read_links(Index,parent),
-                   % Last get hypernumbers that are children
-                   Rem = #remote_cell_link{parent=Index,
-                                           type=outgoing,_='_'},
-                   Links = mnesia:match_object(Rem),
-                   RemReturn=list_hn(Links,[]),
-                   {ok,RemReturn,lists:append(Direct,Queries)}
+                   {ok,lists:append(Direct,Queries)}
            end,
-    {ok,Remote,Local} = ?mn_ac(transaction,Fun1),
+    {ok,Local} = ?mn_ac(transaction,Fun1),
     % Now write the local children to dirty_cell
     Fun2 = fun(#local_cell_link{child=To}) -> 
                    F = fun() -> 
@@ -403,35 +398,25 @@ mark_dirty(Index,cell) ->
                                % it doesnt already exist
                                Match=#dirty_cell{index=To,_='_'},
                                case mnesia:match_object(Match) of
-                                   [] -> mnesia:write(#dirty_cell{index=To}) ;
+                                   [] -> ok = mnesia:write(#dirty_cell{index=To}) ;
                                    _  -> ok
                                end
                        end,
                    ?mn_ac(transaction,F)
            end,
     _Return1=lists:foreach(Fun2,Local),
-    % Now write notify the remote children that they are dirty
-    % get the new value first
-    Val = get_item_val((to_ref(Index))#ref{name=rawvalue}),
-    Notify = fun(X) -> notify_remote_change(X,Val) end,        
-    _Return2=lists:foreach(Notify,Remote),
+    RefX = hn_util:refX_from_index(Index),
+    Fun3 = fun() ->
+                  {ok, ok} = hn_db_wu:mark_dirty_outgoing_hn_DEPRECATED(RefX, Value)
+          end,
+    {ok, ok} = mnesia:activity(transaction, Fun3),
     ok;
-mark_dirty(Index,hypernumber) ->
-
-    Fun1 = fun() ->
-                   Match = ms_util:make_ms(remote_cell_link, [{parent, Index},
-                                                            {type, incoming}]),
-                   Links = mnesia:match_object(Match),
-                   {ok,Links}
-           end,
-    {ok,Local} = ?mn_ac(transaction,Fun1),
-
-    Fun2 = fun(X) ->
-                   #remote_cell_link{child=Index2}=X,
-                   Fun3 = fun() -> mnesia:write(#dirty_cell{index=Index2}) end,
-                   ?mn_ac(transaction,Fun3)
-           end,
-    _Return1=lists:foreach(Fun2,Local),
+mark_dirty(Index, Value, hypernumber) ->
+    RefX = hn_util:refX_from_index(Index),
+    Fun3 = fun() ->
+                  {ok, ok} = hn_db_wu:mark_dirty_incoming_hn_DEPRECATED(RefX, Value)
+          end,
+    {ok, ok} = mnesia:activity(transaction, Fun3),
     ok.
 
 %% @spec update_hn(From,Bic,Val,Version) -> ok
@@ -444,7 +429,7 @@ update_hn(From,Bic,Val,_Version)->
                 Rec   = #incoming_hn{remote = Index, biccie = Bic, _='_'},
                 [Obj] = mnesia:match_object(Rec),
                 ok = mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_val(Val)}),
-                ok = mark_dirty(Index,hypernumber)
+                ok = mark_dirty(Index,Val,hypernumber)
         end,
     ok = ?mn_ac(transaction,F),
     ok.
@@ -454,10 +439,10 @@ update_hn(From,Bic,Val,_Version)->
 %%       or remote site
 %% @TODO - this needs to be robistified - retry if there is server failure etc
 %% Also need to properly set up the proxy for use in this - should come from the 
-%% config gile...
+%% config file...
 get_hn(Url, From, To)->
     F = fun() -> do_get_hn(Url, From, To) end,
-    List = ?mn_ac(transaction,F).
+    ?mn_ac(transaction,F).
 
 do_get_hn(Url, From, To)->
     case mnesia:read({incoming_hn,To}) of
@@ -570,39 +555,6 @@ filter_cell({range,Range},{cell,Cell}) ->
     hn_util:in_range({range,Range},{cell,Cell});
 filter_cell(_,_) -> false.
 
-notify_remote_change(Hn,Value) ->
-
-    {Server,Cell} = Hn#outgoing_hn.index,
-    Version = hn_util:text(Hn#outgoing_hn.version + 1),
-    error_logger:error_msg("in hn_db:notify_remote_change *WARNING* "++
-                           "notify remote change not using "++
-                           "version number ~p - ie it aint working - yet :(~n",
-                           [Version]),
-
-    Actions = simplexml:to_xml_string(
-                {notify,[],[
-                            {biccie,      [],[Hn#outgoing_hn.biccie]},
-                            {cell,        [],[hn_util:index_to_url(Cell)]},
-                            {type,        [],["change"]},
-                            {value,       [],hn_util:to_xml(Value)},
-                            {version,     [],["1"]}
-                           ]}),
-
-    hn_util:post(Server,Actions,"text/xml"),
-    ok.
-
-to_ref(#index{site=Site,path=Path,column=X,row=Y}) ->
-    #ref{site=Site,path=Path,ref={cell,{X,Y}}}.
-
-%% Given a list of remote cells, return a list of
-%% related outgoing_hn's
-list_hn([],List) -> List;
-list_hn([H|T],List) ->
-    Cell = H#remote_cell_link.parent,
-    [Hn] = mnesia:match_object(#outgoing_hn{index={'_',Cell},_='_'}),
-    Return=list_hn(T,hn_util:add_uniq(List,Hn)),
-    Return.
-
 write_template(Name,TemplatePath,Gui,Form) ->
     CompiledPath=hn_templates:make_path(TemplatePath),
     Template=#template{name=Name,temp_path=CompiledPath,
@@ -623,7 +575,6 @@ get_templates() ->
     Fun = fun() -> mnesia:match_object(Match) end,
     Templates = ?mn_ac(ets,Fun),
     {ok,Templates}.
-
 
 %% @doc Get the value of a named attribute, if it doesnt exist for address
 %% check parent (cell -> range -> row -> column -> page -> root -> default)

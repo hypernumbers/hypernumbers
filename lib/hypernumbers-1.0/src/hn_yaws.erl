@@ -82,7 +82,7 @@ do_request(Arg, Url) ->
                        {ok,{_Write, _Tok}}           -> {ok, require_token};
                        Else                          -> Else
                    end,
-
+    
     %    io:format("in hn_yaws about to call req with~n-Method is ~p~n-"++
     %              "PostData is ~p~n-Vars is ~p~n-Access is ~p~n-Ref is ~p~n",
     %              [Method, PostData, Vars, Access, Ref]),
@@ -292,7 +292,6 @@ req('POST',{delete,[],Data},_Vars,_User,Ref) ->
      ),
     {ok,{success,[],[]}};
 
-
 req('POST',{register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{parent_url,[],[Reg]}]},
     _Attr,_User,Ref) ->
     {ok,RegRef}=hn_util:parse_url(Reg),
@@ -309,15 +308,14 @@ req('POST',{notify,[],Data},_Attr,_User,Ref) ->
             api_change(Data,Ref)
     end;
 
-%% with 'notify_back' the remote site is consuming a local hypernumber
+%% with 'notify_incoming' the remote site is consuming a local hypernumber
 %% and is notifying back 'I don't need you anymore' I have shifted my
 %% location' etc, etc
-req('POST',{notify_back,[],Data},_Attr,_User,Ref) ->
+req('POST',{notify_incoming,[],Data},_Attr,_User,Ref) ->
     case lists:keysearch(type,1,Data) of
         {value,{type,[],["unregister"]}} ->
             api_unregister(Data, Ref)
     end;
-
 
 %% deprecated
 req('POST',{template,[],[{name,[],[Name]},
@@ -354,23 +352,27 @@ req(Method,Data,Vars,User,Page) ->
     throw({unmatched_request,Method,Data,Vars,User,Page}).
 
 api_change([{biccie,[],  [Biccie]},
-            {parent,[],  [ParentURL]},
+            {parent,[],  [ParentUrl]},
             {type,[],    ["change"]},
             {value,[],   [Val]},
             {version,[], [Version]}], _Page)->
 
-    {_,_,[Val2]}=Val,
-    hn_db:update_hn(ParentURL,Biccie,Val2,Version),
+    {_,_,Val2}=Val,
+    Val3 = case Val2 of
+               []  -> Val2;
+               [V] -> V
+           end,
+    hn_db:update_hn(ParentUrl, Biccie, Val3, Version),
 
     {ok,{success,[],[]}}.
 
 api_unregister([{biccie,[],     [Biccie]},
-                {child_url,[],  [ChildURL]},
-                {parent_url,[], [ParentURL]},
+                {child_url,[],  [ChildUrl]},
+                {parent_url,[], [ParentUrl]},
                 {type,[],       ["unregister"]}],
                _Page)->
-    {ok, ParentRef} = hn_util:parse_url(ParentURL),
-    {ok, ChildRef}  = hn_util:parse_url(ChildURL),
+    {ok, ParentRef} = hn_util:parse_url(ParentUrl),
+    {ok, ChildRef}  = hn_util:parse_url(ChildUrl),
     {ParentRefX, _} = hn_util:ref_to_refX(ParentRef, "not used"),
     {ChildRefX, _}  = hn_util:ref_to_refX(ChildRef, "not used"),
     hn_db_api:unregister_hypernumber(ParentRefX, ChildRefX, Biccie),

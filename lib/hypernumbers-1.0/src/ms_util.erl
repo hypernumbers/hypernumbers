@@ -37,13 +37,13 @@ make(Rec, List, Type) ->
 proc_list(Rec,List) -> proc_list(Rec,List,[]).
 
 %% bit funky - return the list sorted in reverse order
-proc_list(Rec, [], Acc  )            -> lists:reverse(lists:keysort(1, Acc));
+proc_list(_Rec, [], Acc  )           -> lists:reverse(lists:keysort(1, Acc));
 proc_list(Rec, [{Field,B} | T], Acc) ->
     proc_list(Rec, T,[{get_index(Rec, Field), B} | Acc]).
 
 build(List, NoFields, Type) -> bld(List,NoFields, Type,[]).
 
-bld([], 0, Ty, A)              -> A;
+bld([], 0, _Ty, A)              -> A;
 bld([{N, Bits} | T], N, Ty, A) -> bld(T, N-1,Ty, [Bits | A]);
 %% don't drop H in the next clause because it matchs later
 bld([H | T], N, record, A)     -> bld([H | T], N-1, record, [[] | A]);

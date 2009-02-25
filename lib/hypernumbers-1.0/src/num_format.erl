@@ -321,7 +321,7 @@ strip_condition(Clause) ->
 	Len=string:len(Clause),
     string:right(Clause,Len-(Loc+2)).% 2 for the additional chars
 
-make_clause(N,[{condition,Cond},{colour,Col}]) ->
+make_clause(_N,[{condition,Cond},{colour,Col}]) ->
     [{condition,Cond},{colour,Col}];
 make_clause(N,[{condition,"<0"},{colour,Col},{Type,Format}]) ->
     make_clause2(N,[{condition,"<0"},{colour,Col},{Type,Format}]);

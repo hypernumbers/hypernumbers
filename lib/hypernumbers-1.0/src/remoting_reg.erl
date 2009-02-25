@@ -48,13 +48,15 @@ handle_call({unregister},From,State) ->
 
 %% Change Message, find everyone listening to 
 %% that page then send them a change message
-handle_call({change,Site,Path,Msg},_From,State) ->
+%% @TODO this is a bug! - all if there is the same page on multiple
+%% sites on one server they all get the notification!
+handle_call({change, _Site, Path, Msg}, _From, State) ->
     F = fun(Z) ->
                 case Z of                    
                     %% @TODO : Ignoring site for now to work
                     %% behind reverse proxy
-                    {_Site,Path,Pid} -> 
-                        Pid ! {msg,Msg};
+                    {_Site, Path, Pid} -> 
+                        Pid ! {msg, Msg};
                     _ -> ok
                 end
         end,

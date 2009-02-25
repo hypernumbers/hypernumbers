@@ -149,10 +149,14 @@ ref_to_index(#ref{site = S, path = P, ref= {cell, {X, Y}}}) ->
 refX_to_index(#refX{site = S, path = P, obj = {cell, {X, Y}}}) ->
     #index{site = S, path = P, column = X, row = Y}.
 
+%% @todo remove these old compatibility clauses when the new GUI is in
+%% Gordon Guthrie 2009/01/21
 ref_to_str({page,Path})           -> Path;   
 ref_to_str({cell,{X,Y}})          -> tconv:to_b26(X)++text(Y);
 ref_to_str({row,{Y,Y}})           -> text(Y);
+ref_to_str({row,{Y}})             -> text(Y); % old compatibility - delete!
 ref_to_str({row,{Y1,Y2}})         -> text(Y1)++":"++text(Y2);
+ref_to_str({column,{X}})          -> tconv:to_b26(X); % old compatibility - delete!
 ref_to_str({column,{X,X}})        -> tconv:to_b26(X);
 ref_to_str({column,{X1,X2}})      -> tconv:to_b26(X1)++":"++tconv:to_b26(X2);
 ref_to_str({range,{X1,Y1,X2,Y2}}) -> tconv:to_b26(X1)++text(Y1)++":"++
@@ -169,9 +173,9 @@ xml_to_val({datetime, [], [Ref]}) -> Ref;
 xml_to_val(Else)                  -> Else.
 
 %% Turn a hn_item record into its xml <ref> display
-item_to_xml(#hn_item{addr=A,val=V}) ->
+item_to_xml(#hn_item{addr = A, val = V}) ->
 
-    Type = atom_to_list(element(1,A#ref.ref)),
+    Type = atom_to_list(element(1, A#ref.ref)),
     Str  = hn_util:ref_to_str(A#ref.ref),
     
     Value = case A#ref.name of
@@ -179,9 +183,8 @@ item_to_xml(#hn_item{addr=A,val=V}) ->
                 rawvalue -> to_xml(V);
                 style    -> to_xml(V);
                 _Else    -> to_val(V)
-    end,
-    
-    {ref, [{type,Type}, {ref,Str}], [{A#ref.name, [], Value}]}.
+    end,    
+    {ref, [{type, Type}, {ref, Str}], [{A#ref.name, [], Value}]}.
     
 in_range({range,{X1,Y1,X2,Y2}},{cell,{X,Y}}) ->
     Y >= Y1 andalso Y =< Y2 andalso X >= X1 andalso X =< X2.
@@ -199,7 +202,7 @@ to_xml(Val) when is_integer(Val) -> [{int,[],   [integer_to_list(Val)]}];
 to_xml(Val) when is_float(Val)   -> [{float,[], [float_to_list(Val)]}];
 to_xml({errval, Errval})         -> [{error,[], [atom_to_list(Errval)]}];
 to_xml({error, Errval})          -> [{error,[], [atom_to_list(Errval)]}];
-to_xml(blank)                    -> [{blank,[], []}];
+to_xml({blank, [], []})          -> [{blank,[], []}];
 to_xml(Dt) when is_record(Dt, datetime) ->
     [{string, [], [muin_date:to_rfc1123_string(Dt)]}];
 to_xml({X,Values}) when X == range; X == array ->

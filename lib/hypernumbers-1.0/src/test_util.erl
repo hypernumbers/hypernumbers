@@ -63,7 +63,8 @@ import_xls(Name) ->
                 _           -> "/" ++ File
             end,
     io:format("in test_util:import_xls File is ~p~n",[File2]),
-    {Celldata, Names, Formats, CSS} = readxls(File2),
+    io:format("- for some reason Names and Formats are not being used!~n"),
+    {Celldata, _Names, _Formats, CSS} = readxls(File2),
     F = fun(X, {Ls, Fs}) ->
                 {SheetName, Target, V} = read_reader_record(X),
                 Sheet = excel_util:esc_tab_name(SheetName),
@@ -117,10 +118,10 @@ import_xls(Name) ->
     ?INFO("End Import: ~p", [Name]),
     ok.
 
-flatpack(List) -> flatpack(List, []).
+% flatpack(List) -> flatpack(List, []).
 
-flatpack([H | []], Acc) -> lists:concat(lists:reverse([H | Acc]));
-flatpack([H | T], Acc)  -> flatpack(T, [" ", H | Acc]).
+% flatpack([H | []], Acc) -> lists:concat(lists:reverse([H | Acc]));
+% flatpack([H | T], Acc)  -> flatpack(T, [" ", H | Acc]).
 
 fix_integers(X) ->
     case make_float(X) of
