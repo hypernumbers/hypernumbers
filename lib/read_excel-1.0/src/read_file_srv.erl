@@ -57,8 +57,8 @@ init([]) ->
 %% Description: Handling call messages
 %%--------------------------------------------------------------------
 handle_call(Request, _From, State) ->
-    {{file_type,Type},{file_in,FileIn}}=Request,
-    Pid=spawn_link(filefilters,read,[Type,FileIn]),
+    {{file_type, Type}, {file_in, FileIn}} = Request,
+    _Pid = spawn_link(filefilters,read,[Type, FileIn]),
     Reply = ok,
     {reply, Reply, State}.
 

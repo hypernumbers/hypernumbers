@@ -180,8 +180,8 @@ parse_CRS_Uni16(Bin,IndexSize)->
      NFlags:8/little-unsigned-integer,
      Rest/binary>>=Bin,
     {LenStr,Encoding,BinLen1,
-     {RICH_TEXT,LenRichText,LenRichTextIdx},
-     {ASIAN,LenAsian,LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
+     {RICH_TEXT,LenRichText,_LenRichTextIdx},
+     {ASIAN,LenAsian,_LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
     % io:format("in parse_CRS_Uni16~n-LenStr is ~p~n-Encoding is ~p~n-BinLen1 is ~p~n-"++
     %          "LenRichText is ~p~n-LenRichTextIdx is ~p~n-LenAsian is ~p~n-"++
     %          "LenAsianIdx is ~p~n",
