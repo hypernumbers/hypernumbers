@@ -1,7 +1,9 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers.com
-%%% @doc       This module provides the data access api.
+%%% @doc       <h1>Overview</h1>
+%%% 
+%%%            This module provides the data access api.
 %%%            Each function in this should call functions from
 %%%            {@link hn_db_wu} which provides work units and it
 %%%            should wrap them in an mnesia transaction.
@@ -21,12 +23,18 @@
 %%%            These flavours are distingished by the obj attributes
 %%%            which have the following forms:
 %%%            <ul>
-%%%            <li>{cell, {X, Y}}</li>
-%%%            <li>{range, {X1, Y1, X2, Y2}}</li>
-%%%            <li>{column, {X1, X2}}</li>
-%%%            <li>{row, {Y1, Y2}}</li>
-%%%            <li>{page, "/"}</li>
+%%%            <li><code>{cell, {X, Y}}</code></li>
+%%%            <li><code>{range, {X1, Y1, X2, Y2}}</code></li>
+%%%            <li><code>{column, {X1, X2}}</code></li>
+%%%            <li><code>{row, {Y1, Y2}}</code></li>
+%%%            <li><code>{page, "/"}</code></li>
 %%%            </ul>
+%%%            
+%%%            <h4>Notes On Terminology</h4>
+%%% 
+%%%            Various terms that describe the relationships between
+%%%            different cells are shown below:
+%%%            <img src="./terminology.png" />
 %%% 
 %%% @TODO should we have a subpages #refX egt {subpages, "/"}
 %%% which would alllow you to specify operations like delete and copy
@@ -311,6 +319,10 @@ read_styles(RefX) when is_record(RefX, refX) ->
 %% <li>row</li>
 %% <li>page</li>
 %% </ul>
+%% 
+%% @TODO uuh, fix this, 'cos its rubbish - rewriting the formula instead
+%% of just marking stuff dirty - rewrite using mark_cells_dirty with 
+%% range/column/page stuff...
 recalculate(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
                   Cells = hn_db_wu:read_attrs(RefX, [formula]),
@@ -344,13 +356,16 @@ reformat(RefX) when is_record(RefX, refX) ->
 %% <li>row</li>
 %% <li>column</li>
 %% </ul>
+%% 
+%% @todo This needs to check if it intercepts a shared formula
+%% and if it does it should fail...
 insert(#refX{obj = {column, _}} = RefX)  ->
     Fun = fun() ->
                   {ok, ok} = write_page_vsn(RefX, {insert, column}),
                   RefXs = hn_db_wu:get_refs_right(RefX),
                   % shift doesn't commute so it is up to us to sort
                   % the cells
-                  RefXs2 = sort(RefXs, 'right-to-left'),
+                  RefXs2 = dbsort(RefXs, 'right-to-left'),
                   [hn_db_wu:shift_cell(F, offset(F, {0, 1})) || F <- RefXs2]
           end,
     mnesia:activity(transaction, Fun);
@@ -360,7 +375,7 @@ insert(#refX{obj = {row, _}} = RefX)  ->
                   RefXs = hn_db_wu:get_refs_below(RefX),
                   % shift doesn't commute so it is up to us to sort
                   % the cells
-                  RefXs2 = sort(RefXs, 'bottom-to-top'),
+                  RefXs2 = dbsort(RefXs, 'bottom-to-top'),
                   [hn_db_wu:shift_cell(F, offset(F, {1, 0})) || F <- RefXs2]
           end,
     mnesia:activity(transaction, Fun);
@@ -380,9 +395,11 @@ insert(#refX{obj = {R, _}} = RefX, Disp) when R == cell orelse R == range ->
     Fun = fun() ->
                   {ok, ok} = write_page_vsn(RefX, {insert, Disp}),
                   RefXs = hn_db_wu:get_refs_below(RefX),
-                  % shift doesn't commute so it is up to us to sort
-                  % the cells
-                  RefXs2 = sort(RefXs, 'bottom-to-top'),
+                  Sort = case Disp of
+                             vertical   -> 'bottom-to-top';
+                             horizontal -> 'right-to-left'
+                         end,
+                  RefXs2 = dbsort(RefXs, Sort),
                   [hn_db_wu:shift_cell(F, offset(F, {0,1})) || F <- RefXs2]
           end,
     mnesia:activity(transaction, Fun).
@@ -391,7 +408,9 @@ insert(#refX{obj = {R, _}} = RefX, Disp) when R == cell orelse R == range ->
 %% @doc deletes a column or a row or a page
 %% 
 %% @todo this is all bollocks - should be row, column then cell/range as 
-%% per insert/2
+%% per insert/2.
+%% This needs to check if it intercepts a shared formula
+%% and if it does it should fail...
 delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
     Disp = case R of
                row    -> vertical;
@@ -625,21 +644,21 @@ write_page_vsn(RefX, Action) ->
 offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
     RefX#refX{obj = {cell, {X + XO, Y + YO}}}.
 
-sort(List, 'bottom-to-top') ->
+dbsort(List, 'bottom-to-top') ->
     Fun = fun(#refX{obj = {cell, {_XA, YA}}},
               #refX{obj = {cell, {_XB, YB}}}) ->
                   if
-                      (YA - YB)  > 0 -> true;
-                      (YA - YB) =< 0 -> false
+                      (YA > YB)  -> true;
+                      (YA =< YB) -> false
                   end
           end,
     lists:sort(Fun, List);
-sort(List, 'right-to-left') ->
+dbsort(List, 'right-to-left') ->
     Fun = fun(#refX{obj = {cell, {XA, _YA}}},
               #refX{obj = {cell, {XB, _YB}}}) ->
                   if
-                      (XA - XB)  > 0 -> true;
-                      (XA - XB) =< 0 -> false
+                      (XA > XB)  -> true;
+                      (XA =< XB) -> false
                   end
           end,
     lists:sort(Fun, List).

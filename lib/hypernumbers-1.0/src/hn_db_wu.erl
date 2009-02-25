@@ -40,6 +40,88 @@
 %%%            {Key, Value} pairs.
 %%%            
 %%%            The others return {ok, ok}
+%%%            
+%%%            <h2>Under The Hood</h2>
+%%%            
+%%%            This section looks at how all this stuff is implemented 
+%%%            'under the hood'. The key reason for this is that 
+%%%            otherwise it is hard to understand how difficult things
+%%%            like inserting rows and columns are implemented.
+%%%            
+%%%            This will look at two things:
+%%%            <ul>
+%%%            <li>attributes</li>
+%%%            <li>tables</li>
+%%%            </ul>
+%%%            These will particularly look at how data that contains
+%%%            information about the relationship between cells is
+%%%            stored.
+%%%            
+%%%            <h3>Attributes</h3>
+%%%            
+%%%            There are a number of attributes about a cell that are of
+%%%            considerable interest:
+%%%            <img src="./attributes.png" />
+%%%            
+%%%            Information is entered into a cell by way of a 
+%%%            <code>formula</code>. That <code>formula</code> can be in
+%%%            a 'shared formula' context (which will result in it
+%%%            having <code>__area</code> and <code>__shared</code>
+%%%            attributes.
+%%%            
+%%%            By default a cell has a <code>format</code> and a 
+%%%            <code>style</code> attributes. (There will also be
+%%%            <code>permissions</code> attributes later on...)
+%%%            
+%%%            The <code>formula</code>, <code>format</code> and
+%%%            <code>style</code> attributes are all used to calculate
+%%%            the remaining attributes <code>value</code>, 
+%%%            <code>rawvalue</code>, <code>overwrite-color</code> 
+%%%            and <code>__recompile</code>.
+%%%            
+%%%            (Attributes starting with '__' are private in that they
+%%%            are never exposed to the front-end - they are server-side
+%%%            only.)
+%%%            
+%%%            They key point is that if a cell is moved, any formula
+%%%            of <i>a child</i> of that cell needs to be be rewritten,
+%%%            which means that the <code>__ast</code>, 
+%%%            <code>parents</code> and <code>dependancy-tree</code>
+%%%            attributes need to be rewritten.
+%%%            
+%%%            Then <i>in turn</i> the <code>formula</code> attributes
+%%%            of all the <i>grand-children</i> of the original cell 
+%%%            need to rewrite and so on and so forth.
+%%% 
+%%%            <h3>Tables</h3>
+%%% 
+%%%           The tables that information is stored in is shown below:
+%%%           <img src="./tables.png" />
+%%%           
+%%%           This section will now describe under certain circumstances
+%%%           <ol>
+%%%           <li>create a new value</li>
+%%%           <li>create a new formula referencing local cells</li>
+%%%           <li>create a new formula referencing a new hypernumber 
+%%%           (a remote cell not referenced by any other cell on its site></li>
+%%%           <li>create a new formula referencing an existing hypernumber 
+%%%           (a remote cell already referenced by another cell on its site></li>
+%%%           <li>change a value when the cell is referenced by another
+%%%           local cell</li>
+%%%           <li>change a value when the cell is referenced by another
+%%%           remote cell (or cells) (it is a hypernumber)</li>
+%%%           <li>delete a stand-alone value</li>
+%%%           <li>delete a value in a cell that is referenced by another
+%%%           local cell</li>
+%%%           <li>delete a value in a cell that is referenced by another
+%%%           remote cell (or cells)</li>
+%%%           <li>move a cell that only has a value</li>
+%%%           <li>move a cell that references another local cell</li>
+%%%           <li>move a cell that is referenced by another local cell</li>
+%%%           <li>move a cell that references a remote cell</li>
+%%%           <li>move a cell that is referenced by a remote cell</li>
+%%%           <li>copy a cell from one place to another</li>
+%%%           </ol>
 %%% 
 %%% @TODO we use atoms for keys in {key, value} pairs of attributes
 %%% which is then used in atom_to_list for checking if they are private.
@@ -97,6 +179,7 @@
 
 %% Debugging
 -export([dump/0]).
+-export([dump/2]).
 
 -define(to_xml_str, simplexml:to_xml_string).
 -define(to_refX, hn_util:refX_from_index).
@@ -506,14 +589,15 @@ read_attrs(#refX{obj = {page, _}} = RefX, Attrs) when is_list(Attrs) ->
 %% made negative (mebbies it should be).
 shift_cell(From, To) when is_record(From, refX), is_record(To, refX) ->
     % the order is IMPORTANT (I think) GG :(
-    io:format("in shift_cell From is ~p To is ~p~n", [From, To]),
-    {ok, ok} = shift_local_links(From, To),
+    io:format("in shift_cell~n-From is ~p~n-To is ~p~n", [From, To]),
     {ok, ok} = shift_dirty_cells(From, To),
     {ok, ok} = shift_outgoing_hns(From, To),
     {ok, ok} = shift_incoming_hns(From, To),
     {ok, ok} = shift_dirty_incoming_hns(From, To),
     % {ok, ok} = shift_dirty_outgoing_hns(From, To),
     {ok, ok} = shift_cell2(From, To),
+    {ok, ok} = shift_local_links(From, To),
+    % dump(To, "and now here..."),
     {ok, ok}.
 
 %% @spec read_styles(#refX{}) -> [Style]
@@ -590,8 +674,7 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
               List4 = [#hn_item{addr = hn_util:refX_to_ref(X, Key), val = Val}
                        || {X, {Key, Val}} <- List3],
               {ok, ok} = delete_recs(List4),
-              % now mark these cells as dirty
-              {ok, ok} = mark_cells_dirty(RefX),
+              [{ok, ok} = mark_cells_dirty(X) || X <- List2],
               {ok, ok}
     end.
 
@@ -1111,11 +1194,19 @@ read_attrs2(MatchRef, AttrList) ->
 shift_cell2(From, To) ->
     % Rewrite the shifted cell
     AttrList = read_cells_raw(From),
-    Fun = fun({_RefX, {Key, Val}}) ->
+    Fun1 = fun({_RefX, {Key, Val}}) ->
                   write_attr3(To, {Key, Val})
           end,
-    [Fun(X) || X <- AttrList],
-    {ok, ok} = clear_cells(From, all).
+    [Fun1(X) || X <- AttrList],
+    % now delete the originals
+    Fun2 = fun(X) ->
+                   io:format("in shift_cell2 deleting ~p~n", [X]),
+                   {RefX, {K, V}} = X,
+                   Ref = hn_util:refX_to_ref(RefX, {K, V}),
+                   mnesia:delete({hn_item, Ref})
+           end,
+    [Fun2(X) || X <- AttrList],
+    {ok, ok}.
 
 shift_local_links(From, To) ->
     % Now rewrite the cells that link to this cell
@@ -1131,6 +1222,7 @@ shift_local_links2([#local_cell_link{child = C} | T], Offset) ->
     ChildRefX = hn_util:refX_from_index(C),
     [{Child, {formula, Formula}}] = read_attrs(ChildRefX, [formula]),
     NewFormula = shift_formula(Formula, Offset),
+    io:format("in shift_local_links2 rewriting the formula for ~p~n", [Child]),
     {ok, ok} = write_attr(Child, {formula, NewFormula}),
     shift_local_links2(T, Offset).
 
@@ -1170,25 +1262,25 @@ shift_outgoing_hns(_From, _To) ->
 %% changes the hypernumber description and also lets the remote party know that
 %% the hypernumber has changed...
 shift_incoming_hns(From, To) ->
-    io:format("in hn_db_wu:shift_incoming_hns~n-From is ~p~n-To is ~p~n",
-              [From, To]),
+    % io:format("in hn_db_wu:shift_incoming_hns~n-From is ~p~n-To is ~p~n",
+    %          [From, To]),
     FromIdx = hn_util:index_from_refX(From),
-    io:format("in shift_incoming_hns~n-FromIdx is ~p~n", [FromIdx]),
+    % io:format("in shift_incoming_hns~n-FromIdx is ~p~n", [FromIdx]),
     case mnesia:read({incoming_hn, {'_', FromIdx}}) of
-        [] -> io:format("--nothing to do in shift_hypernumbers...~n"),
-              {ok, ok};
-        L  -> io:format("--something to do~n---L is ~p~n", [L]),
-              FromIdx = hn_util:refX_to_index(From),
-              FromURL = hn_util:index_to_url(FromIdx),
-              ToIdx = hn_util:refX_to_index(To),
-              ToURL = hn_util:index_to_url(ToIdx),
-              Msg = {"move", {"from", FromURL}, {"to", ToURL}},
-              Fun = fun(X) ->
-                            mark_notify_incoming_dirty(From, X, Msg)
-                    end,
-              io:format("in hn_db_wu:shift_incoming_hns, erk! "++
-                        "hypernumbers ain't done and gone been moved, dick'ead!~n"),
-              [ok = Fun(X) || X <- L],
+        [] -> % io:format("--nothing to do in shift_hypernumbers...~n"),
+            {ok, ok};
+        L  -> % io:format("--something to do~n---L is ~p~n", [L]),
+            FromIdx = hn_util:refX_to_index(From),
+            FromURL = hn_util:index_to_url(FromIdx),
+            ToIdx = hn_util:refX_to_index(To),
+            ToURL = hn_util:index_to_url(ToIdx),
+            Msg = {"move", {"from", FromURL}, {"to", ToURL}},
+            Fun = fun(X) ->
+                          mark_notify_incoming_dirty(From, X, Msg)
+                  end,
+            % io:format("in hn_db_wu:shift_incoming_hns, erk! "++
+            %          "hypernumbers ain't done and gone been moved, dick'ead!~n"),
+            [ok = Fun(X) || X <- L],
               {ok, ok}
     end.
 
@@ -1573,4 +1665,10 @@ dump() ->
     io:format("in dump Attrs are ~p~n", [Attrs]),
     {ok, ok}.
 
-
+dump(RefX, Msg) ->
+    Ref = hn_util:refX_to_ref(RefX, '_'),
+    Match = ms_util:make_ms(hn_item, [{addr, Ref}]),
+    List = mnesia:match_object(Match),
+    io:format("********************************* ~p~n", [Msg]),
+    [io:format("~p~n", [X]) || X <- List],
+    io:format("********************************* ends...~n").

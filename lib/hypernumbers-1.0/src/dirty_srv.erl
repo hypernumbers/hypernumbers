@@ -60,9 +60,9 @@ handle_call(flush, _From, State = #state{type = dirty_cell}) ->
 
     % This fun shrinks the dirty cell table
     % (but not dirty_incoming_hn)
-    %    ?INFO("In dirty_src:handle_call for flush (start) "++
-    %                  "~p Size is ~p~n",
-    %                  [Type, mnesia:table_info(dirty_cell, size)]),
+        ?INFO("In dirty_src:handle_call for flush (start) "++
+              "for dirty_cell Size is ~p~n",
+              [mnesia:table_info(dirty_cell, size)]),
     Fun = fun() ->
                   % see how big the dirty cell table is
                   % get all the dirty_cell indices
@@ -87,9 +87,9 @@ handle_call(flush, _From, State = #state{type = dirty_cell}) ->
                   mnesia:match_object(Match2)
           end,
     {atomic,List2} = mnesia:transaction(Fun),
-    %    ?INFO("In dirty_src:handle_call for flush (end) "++
-    %              "Dirty Cell Table Size is ~p~n",
-    %              [mnesia:table_info(dirty_cell, size)]),
+    ?INFO("In dirty_src:handle_call for flush (end) "++
+          "Dirty Cell Table Size is ~p~n",
+          [mnesia:table_info(dirty_cell, size)]),
     lists:foreach(fun(X) -> process_dirty(X, dirty_cell) end, List2),
     
     {reply, ok, State};
@@ -139,6 +139,7 @@ process_dirty(Rec, dirty_notify_incoming) ->
     {ok, ok} = hn_db_api:notify_incoming(ParentIdx, ChildIdx, Change),
     ok;
 process_dirty(Rec, dirty_cell) ->
+    io:format("in dirty_srv:process_dirty Rec is ~p~n", [Rec]),
     Index = Rec#dirty_cell.index,
     % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Logging code                                                      %

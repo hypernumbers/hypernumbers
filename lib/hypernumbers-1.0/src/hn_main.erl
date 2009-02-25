@@ -307,6 +307,11 @@ recalc_array(Index) ->
     ok.
 
 recalc_cell(Index) ->
+    RefX = hn_util:refX_from_index(Index),
+    %    Fun = fun() ->
+    %                  hn_db_wu:dump(RefX, "in hn_main:recalc_cell")
+    %          end,
+    %    mnesia:activity(transaction, Fun),
     Addr = index_to_ref(Index),
     case hn_db:get_item_val(Addr#ref{name = '__recompile'}) of
         true ->
