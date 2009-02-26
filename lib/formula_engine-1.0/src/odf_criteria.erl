@@ -1,7 +1,8 @@
-%%% @doc Implements ODF Spec's Comparator.
+%%% @doc Implements ODF user-specified criteria (used in SUMIF, AVERAGEIF,
+%%% database functions etc).
 %%% @author HV <hasan@hypernumbers.com>
 
--module(odf_comparator).
+-module(odf_criteria).
 
 -export([create/1]).
 
