@@ -580,9 +580,6 @@ sumif([V1, Crit, V2]) ->
     % io:format("in sumif V1 is ~p V2 is ~p Crit is ~p~n", [V1, V2, Crit]),
     ?ensure(area_util:is_congruent([V1|V2]), ?ERR_VAL),
     % io:format("got to 1~n"),
-    %% TODO: lists of different length
-    %% TODO: error in string fun
-    %% TODO: if crit is a number, it becomes "=that number"
     V1a = ?flatten_all(V1),
     V2a = ?flatten_all(V2),
     % io:format("-V1a is ~p V2a is ~p~n", [V1a, V2a]),
@@ -590,7 +587,7 @@ sumif([V1, Crit, V2]) ->
     % io:format("got to 2~n"),
     L2 = ?numbers(V2a, ?default_rules),
     % io:format("got to 3~n"),
-    F = string_funs:make(Crit),
+    F = odf_criteria:create(Crit),
     % io:format("in sumif L1 is ~p L2 is ~p F is ~p~n", [L1, L2, F]),
     sumif1(L1, L2, F, 0).
 sumif1([], [], _F, Sum) ->
