@@ -33,11 +33,15 @@
 %%% TODO: Error/sanity checking.
 %%% TODO: EUnit tests.
 %%% TODO: Computed criteria, nicely.
+%%% TODO: Need to think the hashing thing through -- what's the probability of
+%%%       collisions? An alternative solution is a DS that combines both
+%%%       database & criteriaset into one so that column indexes may be shared.
 
 -module(odf_db).
 
--export([db_from_range/1, criteria_from_range/1, select/2, db_field/2]).
+-export([from_range/1, criteria_from_range/1, select/2, db_field/2]).
 -include("handy_macros.hrl").
+-include("typechecks.hrl").
 
 -record(odf_db, {
           fm   = [], % field map: original -> internal
@@ -50,7 +54,7 @@
 
 %%% @doc Create a database from a range.
 
-db_from_range({range, [Fields|DataRows]}) ->
+from_range({range, [Fields|DataRows]}) ->
     FieldsHash = map(fun(X) -> ?hash(X) end, Fields),
     #odf_db{fm   = zip(Fields, FieldsHash),
             recs = create_records(FieldsHash, DataRows)}.
@@ -77,12 +81,17 @@ select([Record|T], Criteriaset, Acc) ->
 
 %%% @doc Returns data for a field from all records in a database in a list.
 
-db_field(Field, #odf_db{fm = Fm, recs = Recs}) ->
+db_field(Field, #odf_db{fm = Fm, recs = Recs}) when ?is_string(Field) ->
     case keysearch(?hash(Field), 2, Fm) of
         {value, {Field, InternalField}} ->
             map(fun(Rec) -> record_field(InternalField, Rec) end, Recs);
         false ->
             no_such_field %% TODO: hmmmm......
+    end;
+db_field(FieldIdx, #odf_db{fm = Fm, recs = Recs}) when is_integer(FieldIdx) ->
+    case FieldIdx > 0 andalso FieldIdx =< length(Fm) of
+        true  -> map(fun(Rec) -> record_field(FieldIdx, Rec) end, Recs);
+        false -> no_such_field
     end.
 
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,8 +143,11 @@ matches(Criteria, Record) ->
 
 %%% @doc Return data for some field from a record.
 
-record_field(Field, Record) ->
+record_field(Field, Record) when ?is_string(Field) ->
     case keysearch(Field, 1, Record) of
         {value, {_Tag, Value}} -> Value;
         false                   -> not_found % TODO: hmm... ?ERR_DIV?
-    end.
+    end;
+record_field(FieldIdx, Record) when is_integer(FieldIdx) ->
+    {_Tag, Value} = nth(FieldIdx, Record),
+    Value.
