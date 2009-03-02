@@ -356,7 +356,7 @@ api_change([{biccie,[],  [Biccie]},
             {type,[],    ["change"]},
             {value,[],   [Val]},
             {version,[], [Version]}], _Page)->
-
+    exit("fix me! the api should carry the parents as well as the value!"),
     {_,_,Val2}=Val,
     Val3 = case Val2 of
                []  -> Val2;

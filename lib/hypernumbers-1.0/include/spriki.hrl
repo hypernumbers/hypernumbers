@@ -126,7 +126,21 @@
           timestamp   = now()
          }).
 
-% dirty_outgoinf_hn contains a snap shot of the value and the 
+-record(dirty_incoming_create,
+        {
+          index     = #index{},
+          timestamp = now()
+         }).
+
+-record(dirty_notify_incoming,
+        {
+          child     = #index{},
+          parent    = #index{},
+          change    = [],
+          timestamp = now()
+         }).
+
+% dirty_outgoing_hn contains a snap shot of the value and the 
 % outgoing_hn record because it is asynchronous - needs to know 
 % what they were when it was marked dirty because if there has 
 % been a delete/insert the original may have been rewitten by 
@@ -141,11 +155,10 @@
           timestamp   = now()
          }).
 
--record(dirty_notify_incoming,
+-record(dirty_outgoing_update,
         {
-          child     = #index{},
-          parent    = #index{},
-          change    = [],
+          index = #index{},
+          change = [],
           timestamp = now()
          }).
 

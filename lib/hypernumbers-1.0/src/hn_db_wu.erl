@@ -3,139 +3,423 @@
 %%% @copyright (C) 2009, Hypernumbers.com
 %%% @doc       This is a util function for hn_db_api containing only functions
 %%%            that MUST be called from within an mnesia transactions.
-%%%            
-%%%            The module {@link hn_db_api} is the wrapper for calls to this
-%%%            function.
-%%%            
-%%%            <h3>Functional Categories</h3>
-%%%            
-%%%            These functions fall into 2 types:
-%%%            <ul>
-%%%            <li>structural queries that returns #refs{}</li>
-%%%            <li>cell queries that operate on cells</li>
-%%%            </ul>
-%%%            
-%%%            <h4>Structural Queries</h4>
-%%%            
-%%%            Structural queries have the following characteristics:
-%%%            <ul>
-%%%            <li>they are all 'read' queries - they do not impact the
-%%%            structure of the database</li>
-%%%            <li>they all have the word ref in their function name</li>
-%%%            </ul>
-%%%            
-%%%            The all return lists of #refX{}'s
-%%%            
-%%%            <h4>Cell Queries</h4>
-%%%            
-%%%            Cell queries come in 4 distinct flavours:
-%%%            <ul>
-%%%            <li>create/write</li>
-%%%            <li>read</li>
-%%%            <li>update</li>
-%%%            <li>delete</li>
-%%%            </ul>
-%%%            
-%%%            The reads return lists of tuples containing #refX{} and 
-%%%            {Key, Value} pairs.
-%%%            
-%%%            The others return {ok, ok}
-%%%            
-%%%            <h2>Under The Hood</h2>
-%%%            
-%%%            This section looks at how all this stuff is implemented 
-%%%            'under the hood'. The key reason for this is that 
-%%%            otherwise it is hard to understand how difficult things
-%%%            like inserting rows and columns are implemented.
-%%%            
-%%%            This will look at two things:
-%%%            <ul>
-%%%            <li>attributes</li>
-%%%            <li>tables</li>
-%%%            </ul>
-%%%            These will particularly look at how data that contains
-%%%            information about the relationship between cells is
-%%%            stored.
-%%%            
-%%%            <h3>Attributes</h3>
-%%%            
-%%%            There are a number of attributes about a cell that are of
-%%%            considerable interest:
-%%%            <img src="./attributes.png" />
-%%%            
-%%%            Information is entered into a cell by way of a 
-%%%            <code>formula</code>. That <code>formula</code> can be in
-%%%            a 'shared formula' context (which will result in it
-%%%            having <code>__area</code> and <code>__shared</code>
-%%%            attributes.
-%%%            
-%%%            By default a cell has a <code>format</code> and a 
-%%%            <code>style</code> attributes. (There will also be
-%%%            <code>permissions</code> attributes later on...)
-%%%            
-%%%            The <code>formula</code>, <code>format</code> and
-%%%            <code>style</code> attributes are all used to calculate
-%%%            the remaining attributes <code>value</code>, 
-%%%            <code>rawvalue</code>, <code>overwrite-color</code> 
-%%%            and <code>__recompile</code>.
-%%%            
-%%%            (Attributes starting with '__' are private in that they
-%%%            are never exposed to the front-end - they are server-side
-%%%            only.)
-%%%            
-%%%            They key point is that if a cell is moved, any formula
-%%%            of <i>a child</i> of that cell needs to be be rewritten,
-%%%            which means that the <code>__ast</code>, 
-%%%            <code>parents</code> and <code>dependancy-tree</code>
-%%%            attributes need to be rewritten.
-%%%            
-%%%            Then <i>in turn</i> the <code>formula</code> attributes
-%%%            of all the <i>grand-children</i> of the original cell 
-%%%            need to rewrite and so on and so forth.
 %%% 
-%%%            <h3>Tables</h3>
+%%% The module {@link hn_db_api} is the wrapper for calls to this
+%%% function.
+%%%  
+%%% <h3>Functional Categories</h3>
 %%% 
-%%%           The tables that information is stored in is shown below:
-%%%           <img src="./tables.png" />
-%%%           
-%%%           This section will now describe under certain circumstances
-%%%           <ol>
-%%%           <li>create a new value</li>
-%%%           <li>create a new formula referencing local cells</li>
-%%%           <li>create a new formula referencing a new hypernumber 
-%%%           (a remote cell not referenced by any other cell on its site></li>
-%%%           <li>create a new formula referencing an existing hypernumber 
-%%%           (a remote cell already referenced by another cell on its site></li>
-%%%           <li>change a value when the cell is referenced by another
-%%%           local cell</li>
-%%%           <li>change a value when the cell is referenced by another
-%%%           remote cell (or cells) (it is a hypernumber)</li>
-%%%           <li>delete a stand-alone value</li>
-%%%           <li>delete a value in a cell that is referenced by another
-%%%           local cell</li>
-%%%           <li>delete a value in a cell that is referenced by another
-%%%           remote cell (or cells)</li>
-%%%           <li>move a cell that only has a value</li>
-%%%           <li>move a cell that references another local cell</li>
-%%%           <li>move a cell that is referenced by another local cell</li>
-%%%           <li>move a cell that references a remote cell</li>
-%%%           <li>move a cell that is referenced by a remote cell</li>
-%%%           <li>copy a cell from one place to another</li>
-%%%           </ol>
+%%% These functions fall into 2 types:
+%%% <ul>
+%%% <li>structural queries that returns #refs{}</li>
+%%% <li>cell queries that operate on cells</li>
+%%% </ul>
+%%%  
+%%% <h4>Structural Queries</h4>
+%%% 
+%%% Structural queries have the following characteristics:
+%%% <ul>
+%%% <li>they are all 'read' queries - they do not impact the
+%%% structure of the database</li>
+%%% <li>they all have the word ref in their function name</li>
+%%% </ul>
+%%% 
+%%% The all return lists of #refX{}'s
+%%% 
+%%% <h4>Cell Queries</h4>
+%%% 
+%%% Cell queries come in 4 distinct flavours:
+%%% <ul>
+%%% <li>create/write</li>
+%%% <li>read</li>
+%%% <li>update</li>
+%%% <li>delete</li>
+%%% </ul>
+%%% 
+%%% The reads return lists of tuples containing #refX{} and 
+%%% {Key, Value} pairs.
+%%% 
+%%% The others return {ok, ok}
+%%% 
+%%% <h2>Under The Hood</h2>
+%%% 
+%%% This section looks at how all this stuff is implemented 
+%%% 'under the hood'. The key reason for this is that 
+%%% otherwise it is hard to understand how difficult things
+%%% like inserting rows and columns are implemented.
+%%% 
+%%% This will look at two things:
+%%% <ul>
+%%% <li>attributes</li>
+%%% <li>tables</li>
+%%% </ul>
+%%% These will particularly look at how data that contains
+%%% information about the relationship between cells is
+%%% stored.
+%%% 
+%%% <h3>Attributes</h3>
+%%% 
+%%% There are a number of attributes about a cell that are of
+%%% considerable interest:<p />
+%%% <img src="./attributes.png" />
+%%% 
+%%% Information is entered into a cell by way of a 
+%%% <code>formula</code>. That <code>formula</code> can be in
+%%% a 'shared formula' context (which will result in it
+%%% having <code>__area</code> and <code>__shared</code>
+%%% attributes.
+%%% 
+%%% By default a cell has a <code>format</code> and a 
+%%% <code>style</code> attributes. (There will also be
+%%% <code>permissions</code> attributes later on...)
+%%% 
+%%% The <code>formula</code>, <code>format</code> and
+%%% <code>style</code> attributes are all used to calculate
+%%% the remaining attributes <code>value</code>, 
+%%% <code>rawvalue</code>, <code>overwrite-color</code> 
+%%% and <code>__recompile</code>.
+%%% 
+%%% (Attributes starting with '__' are private in that they
+%%% are never exposed to the front-end - they are server-side
+%%% only.)
+%%% 
+%%% They key point is that if a cell is moved, any formula
+%%% of <i>a child</i> of that cell needs to be be rewritten,
+%%% which means that the <code>__ast</code>, 
+%%% <code>parents</code> and <code>dependancy-tree</code>
+%%% attributes need to be rewritten.
+%%% 
+%%% Then <i>in turn</i> the <code>formula</code> attributes
+%%% of all the <i>grand-children</i> of the original cell 
+%%% need to rewrite and so on and so forth.
+%%%
+%%% <h3>Tables</h3>
+%%%
+%%% The tables that information is stored in is shown below:<p />
+%%% <img src="./tables.png" />
+%%%
+%%% Each of the following tables will now be discussed in some detail:
+%%% <ul>
+%%% <li>hn_item</li>
+%%% <li>local_cell_link</li>
+%%% <li>remote_cell_link</li>
+%%% <li>incoming_hn</li>
+%%% <li>outgoing_hn</li>
+%%% <li>dirty_cell</li>
+%%% <li>dirty_outgoing_hn</li>
+%%% <li>dirty_incoming_hn</li>
+%%% <li>dirty_incoming_create</li>
+%%% <li>dirty_notify_incoming</li>
+%%% </ul>
+%%% 
+%%% <h4>hn_item</h4>
+%%% 
+%%% contains all the atributes of the cell plus attributes of columns, rows, pages
+%%% etc, etc - including stuff not documented here like permissions
+%%% 
+%%% <h4>local_cell_link</h4>
+%%% 
+%%% contains parent-child pig's ear links of cells stored in hn_item
+%%% 
+%%% <h4>remote_cell_link</h4>
+%%% 
+%%% contains parent-child links that connect cells stored in hn_item 
+%%% <i>for this site</i> to cells on other sites. Becaause this physical 
+%%% server can support many sites that 'remote' cell may be on this 
+%%% machine - as a consequence the links are tagged with incoming/outgoing 
+%%% types
+%%% 
+%%% <h4>incoming_hn</h4>
+%%% 
+%%% there is an entry in this table for each remote cell that is referenced
+%%% by a cell on this site. It holds the current value of that remote cell
+%%% and all the connection information required to authenticate updates
+%%% to that cell
+%%% 
+%%% <h4>outgoing_hn</h4>
+%%% 
+%%% there is an entry in this table for each cell that is referenced by a
+%%% remote site. It holds the connection information required to successfully
+%%% update the remote sites
+%%% 
+%%% <h4>dirty_cell</h4>
+%%% 
+%%% contains a reference to a cell whose parents (local or remote) are dirty
+%%% 
+%%% <h4>dirty_outgoing_hn</h4>
+%%% 
+%%% contains a reference to every <code>outgoing_hn</code> whose value has 
+%%% changed and the new value. This is necesseary because notifying the remote
+%%% cell of changes is a asychronous affair and the 'parent cell' needs to be able
+%%% be operated on (deleted, moved, updated, etc, etc) while the notification of
+%%% remote servers is ongoing
+%%% 
+%%% <h4>dirty_incoming_hn</h4>
+%%% 
+%%% contains a list of <code>incomging_hn</code>'s whose value has
+%%% been changed by a notify message. The dirty_srv uses this to identify cells 
+%%% mark as dirty
+%%% 
+%%% <h4>dirty_incoming_create</h4>
+%%% 
+%%% when a new hypernumber is to be created a entry is made to this table and the
+%%% dirty_srv sets up the hypernumber and triggers dirty_notify_incoming when it
+%%% is complete
+%%% 
+%%% <h4>dirty_notify_incoming</h4>
+%%% 
+%%% certain actions on a child hypernumber need to be notified back to the
+%%% parent, for instance:
+%%% <ul>
+%%% <li>formula using a hypernumber has been deleted</li>
+%%% <li>a new formula using an existing hypernumber has been created (ie
+%%% the remote cell has new parents)</li>
+%%% <li>a child has been moved by an insert or delete command</li>
+%%% </ul>
+%%% 
+%%% The relationship of the dirty tables to each other for hypernumbers is shown
+%%% below:<p />
+%%% <img src="./update_cycles.png" />
+%%% 
+%%% This section will now describe what happens under a complete set of
+%%% edge cases which are listed below:
+%%% <ol>
+%%% <li>delete a stand-alone value</li>
+%%% <li>delete a value in a cell that is referenced by another
+%%% local cell</li>
+%%% <li>delete a value in a cell that is referenced by another
+%%% remote cell (or cells)</li>
+%%% <li>delete a value that references another local cell</li>
+%%% <li>delete a value that references a remote cell</li>
+%%% <li>create a new value</li>
+%%% <li>create a new formula referencing local cells</li>
+%%% <li>create a new formula referencing a new hypernumber 
+%%% (a remote cell not referenced by any other cell on its site></li>
+%%% <li>create a new formula referencing an existing hypernumber 
+%%% (a remote cell already referenced by another cell on its site></li>
+%%% <li>change a value when the cell is referenced by another
+%%% local cell</li>
+%%% <li>change a value when the cell is referenced by another
+%%% remote cell (or cells) (it is a hypernumber)</li>
+%%% <li>move a cell that only has a value</li>
+%%% <li>move a cell that references another local cell</li>
+%%% <li>move a cell that is referenced by another local cell</li>
+%%% <li>move a cell that is referenced by a remote cell</li>
+%%% <li>move a cell that references a remote cell</li>
+%%% <li>copy a cell from one place to another</li>
+%%% <li>delete a shared formula</li>
+%%% <li>create a shared formula with:
+%%%   <ul>
+%%%   <li>local parents</li>
+%%%   <li>remote parents</li>
+%%%   <li>local children</li>
+%%%   <li>remote children</li>
+%%%   </ul>
+%%% </li>
+%%% </ol>
+%%%  
+%%% The actual implementation of the 'high-level' function MUST handle
+%%% all of these edge cases (as well as the composite cases (ie changing
+%%% a cell that is referenced by a local cell, a remote cell and whose formula
+%%% uses local and remote cells, etc, etc...).
+%%%  
+%%% In addition the high-level actions (insert a column, delete a column etc)
+%%% should handle structual attributes like column widths and stuff correctly
+%%%  
+%%% <h4>1 Delete A Stand-Alone Value</h4>
+%%% 
+%%% If the cell is not shared (ie has an <code>__shared</code> attribute
+%%% then the following attributes are deleted:
+%%% <code><ul>
+%%% <li>formula</li>
+%%% <li>__ast</li>
+%%% <li>value</li>
+%%% <li>rawvalue</li>
+%%% <li>__recompile</li>
+%%% </ul></code>
+%%% 
+%%% <h4>2 Delete A Value In A Cell That Is Referenced By Another
+%%% Local Cell</h4>
+%%% 
+%%% As per <i>Delete A Stand-Alone Value</i> except that a record is 
+%%% written to <code>dirty_cell</code>for each local child of the cell.
+%%% The dirty server then tells the dirty cells to recalculate themselves
+%%% 
+%%% <h4>3 Delete A Value In A Cell That Is Referenced By Another
+%%% Remote Cell (Or Cells)</h4>
+%%% 
+%%% As per <i>Delete A Stand-Alone Value</i> except that a record is 
+%%% written to <code>dirty_outgoing_hn</code> referencing the original
+%%% cell (and not the remote children). This triggers a hypernumbers
+%%% notification message to the remote server.
+%%% 
+%%% The remote server gets the notification message and updates the table
+%%% <code>incoming_hn</code>. It then writes a <code>dirty_incoming_hn</code>
+%%% record. The dirty server uses this message to write a 
+%%% <code>dirty_cell</code> message for each cell that uses the changed hypernumber
+%%% 
+%%% <h4>4 Delete A Value That References Another Local Cell</h4>
+%%% 
+%%% The cell is deleted as per <i>1 Delete A Stand-Alone Value</i> and then
+%%% the relevant record in <code>local_cell_link</code> is deleted.
+%%% 
+%%% <h4>5 Delete A Value That References A Remote Cell</h4>
+%%% 
+%%% The cell is deleted as per <i>1 Delete A Stand-Alone Value</i> and then
+%%% the relevant record in <code>remote_cell_link</code> is deleted and the
+%%% appropriate message is written to <code>dirty_notify_incoming</code>.
+%%% 
+%%% The remote server gets the notify_back message and uses this to delete
+%%% the record from its <code>remote_cell_link</code> table. If it is the last
+%%% reference to the a particular entry in <code>outgoing_hn</code> table then
+%%% that entry is also deleted.
+%%% 
+%%% <h4>6 Create A New Value</h4>
+%%% 
+%%% <ul>
+%%% <li>a record is written to hn_item</li>
+%%% <li>if the cell has local children a record is written to 
+%%% <code>dirty_cell</code> for each of them</li>
+%%% <li>if the cell has a remote child a record is written to 
+%%% <code>dirty_outoing_hn</code></li>
+%%% </ul>
+%%% 
+%%% The dirty_srv gets notified of each write and instructs the dirty
+%%% children to recalculate themselves.
+%%% 
+%%% <h4>7 Create A New Formula Referencing Local Cells</h4>
+%%% 
+%%% As per <i>Create A New Value</i> except a new <code>local_cell_link
+%%% </code> record is also written.
+%%% 
+%%% <h4>8 Create A New Formula Referencing A New Hypernumber</h4>
+%%%
+%%% <ul>
+%%% <li>a record is written to <code>hn_item</code></li>
+%%% <li>if the cell has a local child a record is written to 
+%%% <code>dirty_cell</code></li>
+%%% <li>if the cell has a remote child a record is written to 
+%%% <code>dirty_outgoing_hn</code></li>
+%%% <li>a new <code>remote_cell_link</code> of type <code>incoming</code> 
+%%% is written</li>
+%%% <li>the formula looks up the value of the hypernumber - there isn't
+%%% one so it gets the value 'blank' back and a 
+%%% <code>dirty_incoming_create</code> record is written. When the 
+%%% dirty server has got the remote hypernumber it will writes its 
+%%% value to the table <code>incoming_hn</code> and create a record
+%%% in <code>dirty_incoming_hn</code></li>
+%%% </ul>
+%%% 
+%%% The dirty_srv gets notified of each write and instructs the dirty
+%%% children to recalculate themselves.
+%%% 
+%%% <h4>9 Create A New Formula Referencing An Existing Hypernumber</h4>
+%%% 
+%%% <ul>
+%%% <li>a record is written to <code>hn_item</code></li>
+%%% <li>if the cell has a local child a record is written to 
+%%% <code>dirty_cell</code></li>
+%%% <li>if the cell has a remote child a record is written to 
+%%% <code>dirty_outgoing_hn</code></li>
+%%% <li>a new <code>remote_cell_link</code> of type <code>incoming</code> 
+%%% is written</li>
+%%% <li>the formula looks up the value of the hypernumber - gets it - writes
+%%% a <code>dirty_notify_incoming</code> record to notify the remote site that
+%%% a new cell is using a particular hypernumber</li>
+%%% </ul>
+%%% 
+%%% <h4>10 Change A Value When The Cell Is Referenced By Another
+%%% Local Cell</h4>
+%%% 
+%%% Same as <i>6 Create A New Value</i>
+%%% 
+%%% <h4>11 Change A Value When The Cell Is Referenced By Another
+%%% Remote Cell (Or Cells)</h4>
+%%%
+%%% Same as <i>6 Create A New Value</i>
+%%%  
+%%% <h4>12 Move A Cell That Only Has A Value</h4>
+%%% 
+%%% Same as <i>1 Delete A Stand-Alone Value</i> followed by
+%%% <i>6 Create A New Value</i>
+%%% 
+%%% <h4>13 Move A Cell That References Another Local Cell</h4>
+%%% 
+%%% Same as <i>2 Delete A Value In A Cell That Is Referenced By Another
+%%% Local Cell</i> followed by <i>6 Create A New Value</i>
+%%% 
+%%% <h4>14 Move A Cell That Is Referenced By Another Local Cell</h4>
+%%% 
+%%% <ul>
+%%% <li>all the attributes (normal and user-defined) as well as permissions
+%%% are copied from the old position which is then deleted...</li>
+%%% <li>all <code>local_cell_links</code> where the moving cell is the child are 
+%%% rewritten</li>
+%%% <li>any cell that references the original has the <code>formula</code> and 
+%%% is then marked as dirty (forcing it it rewrite itself). <em>This could be 
+%%% done better by some sort of 'mark dependency-tree dirty' 
+%%% algorithm...</em></li>
+%%% </ul>
+%%% 
+%%% <h4>15 Move A Cell That Is Referenced By A Remote Cell</h4>
+%%% 
+%%% <ul>
+%%% <li>all the attributes (normal and user-defined) as well as permissions
+%%% are copied from the old position which is then deleted...</li>
+%%% <li>all <code>remote_cell_links</code> where the moving cell is the child are 
+%%% rewritten</li>
+%%% <li>a message is written to <code>dirty_outgoing_hn</code> stating that
+%%% the child has moved. The remote server processes this message and writes a 
+%%% <code>dirty_incoming_hn</code> record. On processing the 
+%%% <code>dirty_incoming_hn</code> record the dirty cell rewrites the formula
+%%% on all the children of the changed cell and rewrites them triggering an 
+%%% update of the dependancy trees of all their children. (see <i>14 Move A Cell 
+%%% That Is Referenced By Another Local Cell</i> for a caveat on this algorithm!</li>
+%%% </ul>
+%%% 
+%%% <h4>16 Move A Cell That References A Remote Cell</h4>
+%%% 
+%%% <ul>
+%%% <li>all the attributes (normal and user-defined) as well as permissions
+%%% are copied from the old position which is then deleted...</li>
+%%% <li>all <code>remote_cell_links</code> where the moving cell is the child are 
+%%% rewritten</li>
+%%% <li>a message is written to <code>dirty_notify_incoming</code> table. When the
+%%% dirty server processes this it sends a message to the parent, which write a
+%%% record to the <code>dirty_outgoing_update</code> table. On processing this record 
+%%% remote server edits its <code>remote_cell_link</code> table.</li>
+%%% </ul>
+%%%
+%%% <h4>17 Copy A Cell From One Place To Another</h4>
+%%%  
+%%% The attributes of the old cell are read and possibly the formula is rewritten
+%%% (if it is a drag and drop or copy and paste and stuff) and the new formula
+%%% is written to the new cell. This is just like a normal cell write.
+%%%  
+%%% <h4>18 Delete A Shared Formula</h4>
+%%% 
+%%% A shared formula delete is like a delete of all cells in a shared formula and
+%%% is treated the same way.
+%%% 
+%%% <h4>19 Create A Shared Formula With All The Trimings</h4>
+%%% 
+%%% A shared formula create is the same a the creation of all the cells in the
+%%% share formula (<em>with some malarky about array values that I don't understand 
+%%% yet!</em>)
 %%% 
 %%% @TODO we use atoms for keys in {key, value} pairs of attributes
-%%% which is then used in atom_to_list for checking if they are private.
-%%% This is a memory leak! See also hn_yaws.erl
-%%% 
-%%% Also there is the port bodge function - need to handle port correctly
-%%%
-%%% And also when a new style is written for a page it should notify the
-%%% viewing pages to update themselves or the style stuff won't work...
-%%% 
-%%% And the registration of a new hypernumber is not robust (what if the remote
-%%% server is not available at registration time? there is no retry function, etc
-%%% etc)
-%%%
+%%%       which is then used in atom_to_list for checking if they are private.
+%%%       This is a memory leak! See also hn_yaws.erl
+%%% @TODO there is the port bodge function - need to handle port correctly
+%%% @TODO when a new style is written for a page it should notify the
+%%%       viewing pages to update themselves or the style stuff won't work...
+%%% @TODO the registration of a new hypernumber is not robust (what if the remote
+%%%       server is not available at registration time? there is no retry 
+%%%       function, etc etc)
+%%% @TODO the whole 'dirty names' stuff needs to be added to the cycles described 
+%%%       above so that when the value of a name changes the various functions 
+%%%       using it recalculcate
+%%% @TODO understand the whole shared formula stuff...
 %%% @end
 %%% Created : 24 Jan 2009 by gordon@hypernumbers.com
 %%%-------------------------------------------------------------------
@@ -195,10 +479,14 @@
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% @doc this is just a part-time function to get hn_db to work for the interim
-mark_dirty_incoming_hn_DEPRECATED(RefX, Value) -> mark_dirty_incoming_hn(RefX, Value).
+%% @hidden
+mark_dirty_incoming_hn_DEPRECATED(RefX, Value) ->
+    mark_dirty_incoming_hn(RefX, Value).
 
 %% @doc this is just a part-time function to get hn_db to work for the interim
-mark_dirty_outgoing_hn_DEPRECATED(RefX, Value) -> mark_dirty_outgoing_hn(RefX, Value).
+%% @hidden
+mark_dirty_outgoing_hn_DEPRECATED(RefX, Value) ->
+    mark_dirty_outgoing_hn(RefX, Value).
 
 %% @spec get_cells(RefX::#refX{}) -> [#refX{}]
 %% @doc takes a reference and expands it to cell references.

@@ -77,8 +77,9 @@ clean_start() ->
               (Pid)       -> exit(Pid,clean_start)
            end,
     lists:map(fun(X) -> Kill(whereis(X)) end,
-              [dirty_cell, dirty_incoming_hn, dirty_outgoing_hn,
-               dirty_notify_incoming]),
+              [dirty_cell, dirty_incoming_hn, dirty_incoming_create,
+               dirty_notify_incoming, dirty_outgoing_hn,
+               dirty_outgoing_update]),
 
     ok = hn_db:create(),
     set_def_perms(),
@@ -105,8 +106,10 @@ start_yaws() ->
 start_dirty_subscribe() ->
     ok = gen_server:cast(dirty_cell,            subscribe),
     ok = gen_server:cast(dirty_incoming_hn,     subscribe),
-    ok = gen_server:cast(dirty_outgoing_hn,     subscribe),
+    ok = gen_server:cast(dirty_incoming_create, subscribe),
     ok = gen_server:cast(dirty_notify_incoming, subscribe),
+    ok = gen_server:cast(dirty_outgoing_hn,     subscribe),
+    ok = gen_server:cast(dirty_outgoing_update, subscribe),
     ok.
 
 %% @spec create_sconf(Details) -> SConf

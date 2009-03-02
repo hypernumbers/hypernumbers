@@ -102,6 +102,7 @@ notify_hypernumber(RefX, Outgoing, Value, T)
     ParentIdx = hn_util:index_from_refX(RefX),
     ParentUrl = hn_util:index_to_url(ParentIdx),
     Value2 = hn_util:to_xml(Value),
+    exit("fix me, I'm broken! Need to push out the parent list as well...."),
     Fun2 = fun(X) -> {Server, _} = X#outgoing_hn.index,
                      Version = tconv:to_s(X#outgoing_hn.version),
                      Biccie = X#outgoing_hn.biccie,

@@ -150,7 +150,13 @@ process_dirty(Rec, dirty_cell) ->
     % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ok = mnesia:dirty_delete({dirty_cell, Index}),
     ok = hn_db:cell_changed(Index);
+process_dirty(Rec, dirty_incoming_create) ->
+    io:format("in dirty_srv:process_dirty for dirty_incoming_create - "++
+              "write me!~n"),
+    ok;
 process_dirty(Rec, dirty_incoming_hn) ->
+    exit("broken - fix me! an incoming hn has changed - all its parents need "++
+         "to be marked dirty (not it)!"),
     Index = Rec#dirty_incoming_hn.index,
     ok = mnesia:dirty_delete({dirty_incoming_hn, Index}),
     ok = hn_db:hn_changed(Index);
@@ -159,8 +165,12 @@ process_dirty(Rec, dirty_outgoing_hn) ->
                        value = V, timestamp = T} = Rec,
     RefX = hn_util:refX_from_index(Index),
     {ok, ok} = hn_db_api:notify_hypernumber(RefX, O, V, T),
+    ok;
+process_dirty(Rec, dirty_outgoing_update) ->
+    io:format("in dirty_srv:process_dirty for dirty_outgoing_update - "++
+              "write me!~n"),
     ok.
-
+    
 %%%
 %%% Utility Functions
 %%% 

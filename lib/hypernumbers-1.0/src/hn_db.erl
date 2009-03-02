@@ -60,8 +60,10 @@ create()->
     ?create(hn_user,               set, Storage),
     ?create(dirty_cell,            set, Storage),
     ?create(dirty_incoming_hn,     set, Storage),
-    ?create(dirty_outgoing_hn,     set, Storage),
+    ?create(dirty_incoming_create, set, Storage),
     ?create(dirty_notify_incoming, set, Storage),
+    ?create(dirty_outgoing_hn,     set, Storage),
+    ?create(dirty_outgoing_update, set, Storage),
     ?create(incoming_hn,           set, Storage),
     ?create(outgoing_hn,           set, Storage),
     ?create(template,              set, Storage),
@@ -449,6 +451,9 @@ do_get_hn(Url, From, To)->
         [Hn] ->
             Hn;
         []->
+            io:format("this ain't me babe! this should just mark the table "++
+                      "incoming_hn dirty and return blank to the function so "++
+                      "that the dirty_srv does the work...~n"),
             Biccie = util2:get_biccie(),
             #index{site = S, path = P} = From,
             Proxy = S ++"/"++ string:join(P,"/")++"/",
