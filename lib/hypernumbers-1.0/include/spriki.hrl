@@ -84,33 +84,6 @@
           val         = []
          }).
 
--record(dirty_cell,
-        {
-          index       = #index{},
-          timestamp   = now()
-         }).
-
--record(dirty_incoming_hn,
-        {
-          index       = #index{},
-          timestamp   = now()
-         }).
-
--record(dirty_outgoing_hn,
-        {
-          index       = #index{},
-          timestamp   = now()
-         }).
-
--record(dirty_notify_back,
-        {
-          child     = #index{},
-          parent    = #index{},
-          change    = [],
-          timestamp = now()
-         }).
-          
-
 -record(local_cell_link, % Link 2 cells on the same sheet together
         {
           parent      = #index{},
@@ -139,6 +112,41 @@
           deptree     = [],       % Cells use in this numbers calculation
           biccie      = [],       % A shared token
           version     = 0         % Version for structural updates
+         }).
+
+-record(dirty_cell,
+        {
+          index       = #index{},
+          timestamp   = now()
+         }).
+
+-record(dirty_incoming_hn,
+        {
+          index       = #index{},
+          timestamp   = now()
+         }).
+
+% dirty_outgoinf_hn contains a snap shot of the value and the 
+% outgoing_hn record because it is asynchronous - needs to know 
+% what they were when it was marked dirty because if there has 
+% been a delete/insert the original may have been rewitten by 
+% the time the dirty processing is to be done. The 
+% protocol/retry between 2 servers has to handle the
+% race conditions etc, etc...
+-record(dirty_outgoing_hn,
+        {
+          index       = #index{},
+          value       = [],
+          outgoing    = [],
+          timestamp   = now()
+         }).
+
+-record(dirty_notify_incoming,
+        {
+          child     = #index{},
+          parent    = #index{},
+          change    = [],
+          timestamp = now()
          }).
 
 -record(hn_user,
