@@ -1,6 +1,7 @@
 %%% @doc Built-in database functions.
 %%% @author HV <hasan@hypernumbers.com>
-
+%%% @private
+%%% 
 %%% NOTE: Computed criteria aren't supported yet (waiting on Muin refactoring).
 
 -module(stdfuns_db).

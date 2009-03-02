@@ -1,6 +1,5 @@
-%%% @doc Implementation of OpenFormula spec's Database datatype.
 %%% @author HV <hasan@hypernumbers.com>
-
+%%% @doc Implementation of OpenFormula spec's Database datatype.
 %%% === Conceptual Level ===
 %%%
 %%% Database is a set of Fields plus a set of Records.
@@ -17,7 +16,7 @@
 %%%
 %%% Requirements are specified by users with Conditions.
 %%% A condition may be: number or boolean, comparator, or a text value.
-
+%%%
 %%% === Implementation Level ===
 %%%
 %%% Records are represented by lists of 2-tuples, where the first element
@@ -29,13 +28,14 @@
 %%% true if all requirements are satisfied.
 %%% Each requirement is a fun which takes a record and checks that the data
 %%% for some field in the record satisfies the condition.
-
+%%%
 %%% TODO: Error/sanity checking.
 %%% TODO: EUnit tests.
 %%% TODO: Computed criteria, nicely.
 %%% TODO: Need to think the hashing thing through -- what's the probability of
 %%%       collisions? An alternative solution is a DS that combines both
-%%%       database & criteriaset into one so that column indexes may be shared.
+%%%       database and criteriaset into one so that column indexes may be
+%%%        shared.
 
 -module(odf_db).
 

@@ -1,12 +1,11 @@
-%%% @doc Utility functions common to arrays and ranges.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
-
-%%% TODO:
-%%% * may well be worth switching to a list-of-tuples representation
-%%%   (i.e. [{Y, X, Term}]) -- will allow for fast column selection,
-%%%   speed up at() and apply_each()/apply_each_with_pos().
-%%%   may want to cache width/height as well:
-%%%     {Tag, Width, Height, [ {Y, X, Term} ]}
+%%% @doc Utility functions common to arrays and ranges.
+%%%
+%%% TODO: may well be worth switching to a list-of-tuples representation
+%%%       (i.e. [{Y, X, Term}]) -- will allow for fast column selection,
+%%%       speed up at() and apply_each()/apply_each_with_pos().
+%%% TODO: may want to cache width/height as well:
+%%%      {Tag, Width, Height, [ {Y, X, Term} ]}
 
 -module(area_util).
 -export([
@@ -26,7 +25,7 @@
 
 -define(OUT_OF_RANGE, {error, out_of_range}).
 
-%% @spec is_congruent(List) -> [ok, {error, not_congruent}]
+%% @spec is_congruent(List) -> [ok | {error, atom()}]
 %% List = [term()]
 %% @doc checks if the terms in List are congruent areas - do they have the same
 %% X and Y dimensions

@@ -1,6 +1,6 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Type casting/coercion functions.
-
+%%%
 %%% Source values flow through functions that process them according
 %%% to the appropriate rule. #VALUE! is returned if the resulting list
 %%% is empty.
@@ -12,8 +12,8 @@
 %%% 2. Try to cast and return default value if not possible. "bob" -> int = 0.
 %%%
 %%% All collector functions are stable.
-
-%%% FIXME: Collectors for areas are very inefficient.
+%%%
+%%% TODO: Collectors for areas are very inefficient.
 
 -module(muin_collect).
 

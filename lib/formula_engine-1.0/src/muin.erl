@@ -1,6 +1,5 @@
-%%% @doc Interface to the formula engine and the interpreter.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
-
+%%% @doc Interface to the formula engine and the interpreter.
 %% TODO: Need a generic apply(Node, Fun), or better yet real macros.
 
 -module(muin).
@@ -67,7 +66,8 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%% @spec compile(Fla, {Col, Row}) -> something Fla = string(), Col = integer(), Row = integer()
+%% @spec compile(Fla, {Col, Row}) -> something Fla = string(), 
+%% Col = integer(), Row = integer()
 %% @doc Compiles a formula against a cell.
 compile(Fla, {Col, Row}) ->
     case parse(Fla, {Col, Row}) of
@@ -164,7 +164,8 @@ preproc([offset, Base, Rows, Cols]) ->
 preproc([offset, _Base = [ref, C, R, P], Rows, Cols, H, W]) ->
     RULES = [ban_strings, ban_bools, ban_dates, ban_blanks],
     % eval expressions, then try to cast them.
-    [Rows2, Cols2, H2, W2] = ?numbers(map(fun muin:eval/1, [Rows, Cols, H, W]), RULES),
+    [Rows2, Cols2, H2, W2] = ?numbers(map(fun muin:eval/1,
+                                          [Rows, Cols, H, W]), RULES),
 
     Dr = toidx(R)+Rows2,
     Dc = toidx(C)+Cols2,
@@ -288,6 +289,8 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
 %% Formula function call (built-in or user-defined).
 funcall(Fname, Args) ->
     R = foldl(fun(M, Acc = {F, A, not_found_yet}) ->
+                      io:format("in muin:funcall M is ~p F is ~p A is ~p~n",
+                                [M, F, A]),
                       case attempt(M, F, [A]) of
                           {error, undef} -> Acc;
                           {ok, V}        -> {F, A, V};
@@ -297,9 +300,9 @@ funcall(Fname, Args) ->
                       Acc
               end,
               {Fname, Args, not_found_yet},
-              [stdfuns_math, stdfuns_stats, stdfuns_date, stdfuns_financial, stdfuns_info,
-               stdfuns_lookup_ref, stdfuns_eng, stdfuns_gg, stdfuns_logical, stdfuns_text,
-               stdfuns_db]),
+              [stdfuns_math, stdfuns_stats, stdfuns_date, stdfuns_financial,
+               stdfuns_info, stdfuns_lookup_ref, stdfuns_eng, stdfuns_gg,
+               stdfuns_logical, stdfuns_text, stdfuns_db]),
     
     case R of
         {_, _, not_found_yet} -> userdef_call(Fname, Args);
