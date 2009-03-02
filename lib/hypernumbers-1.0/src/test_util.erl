@@ -110,7 +110,10 @@ import_xls(Name) ->
                        Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
                        {ok, RefRec} = hn_util:parse_url(Url),
                        #ref{path = Path2} = RefRec,
-                       Addr = #ref{site = "http://127.0.0.1:9000", path = Path2},
+                       Addr = #ref{site = "http://127.0.0.1:9000",
+                                   path = Path2, ref = {page, "/"}},
+                       io:format("in test_util:import_xls Fun for writing CSS~n-"++
+                                 "Addr is ~p~n", [Addr]),
                        hn_db:write_style_IMPORT(Addr, CSSItem)
                end,
     lists:foreach(WriteCSS, CSS),
