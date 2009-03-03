@@ -46,6 +46,12 @@ function build
     if [ $# -lt 1 ] 
     then
         echo "==============================="
+        echo "      Compiling Mochiweb       "
+        echo "==============================="
+        cd ./lib/mochiweb/
+        make
+        cd ../../
+        echo "==============================="
         echo "      Compiling Starling       "
         echo "==============================="
         cd ./lib/starling/

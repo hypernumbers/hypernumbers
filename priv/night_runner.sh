@@ -3,10 +3,11 @@
 DATE=`date +%Y-%m-%d.%T`
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-export HOME=/home/hypernumbers/tests.hypernumbers.com
+export HOME=/home/hypernumbers
 REPO=http://svn.hypernumbers.com/hypernumbers/code/trunk
+WEBROOT=dev.hypernumbers.com
 TESTDIR=hn_test_stage
-LASTRUN=$HOME/test_results/last_run/
+LASTRUN=$HOME/$WEBROOT/tests/last_run/
 
 cd $HOME
 
@@ -47,6 +48,6 @@ cd priv/test_visualiser
 cd ../..
 
 cp -r logs/* $LASTRUN
-cp logs/index.html $HOME/test_results/$DATE.html
+cp logs/index.html $HOME/$WEBROOT/tests/$DATE.html
 
 rm -rf $HOME/$TESTDIR

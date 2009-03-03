@@ -492,7 +492,7 @@ ul,li {
   z-index:100000;
   height:20px;
   width:80px;
-  border:2px solid blue;
+  border:none;
   position:absolute;
   display:none;
   overflow:none;
