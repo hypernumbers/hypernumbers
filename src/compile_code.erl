@@ -157,7 +157,7 @@ get_rel_file() ->
                       "{starling_app,\"0.0.1\"},",
                       "{formula_engine,\"1.0\"},",
                       "{mochi,\"1.0\"},",
-                      "{mochiweb,\"0.97\"},",
+                      "{mochiweb,\"0.01\"},",
                       "{hypernumbers,\"1.0\"}]}."]),
     
     file:write_file("hypernumbers.rel",F),
