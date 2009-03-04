@@ -59,11 +59,11 @@ create()->
     ?create(local_cell_link,       bag, Storage),
     ?create(hn_user,               set, Storage),
     ?create(dirty_cell,            set, Storage),
-    ?create(dirty_incoming_hn,     set, Storage),
+    ?create(dirty_notify_in,       set, Storage),
     ?create(dirty_incoming_create, set, Storage),
-    ?create(dirty_notify_incoming, set, Storage),
-    ?create(dirty_outgoing_hn,     set, Storage),
-    ?create(dirty_outgoing_update, set, Storage),
+    ?create(dirty_notify_back_in,  set, Storage),
+    ?create(dirty_notify_out,      set, Storage),
+    ?create(dirty_notify_back_out, set, Storage),
     ?create(incoming_hn,           set, Storage),
     ?create(outgoing_hn,           set, Storage),
     ?create(template,              set, Storage),
@@ -424,7 +424,7 @@ mark_dirty(Index, _Value, hypernumber) ->
     io:format("in hn_db:mark_dirty  for RefX of ~p AINT THIS OUTGOING!!!~n",
               [RefX]),
     Fun3 = fun() ->
-                  {ok, ok} = hn_db_wu:mark_dirty_incoming_hn_DEPRECATED(RefX)
+                  {ok, ok} = hn_db_wu:mark_dirty_notify_in_DEPRECATED(RefX)
           end,
     {ok, ok} = mnesia:activity(transaction, Fun3),
     ok.

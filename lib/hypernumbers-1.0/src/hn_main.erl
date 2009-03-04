@@ -12,15 +12,15 @@
 
 -export([recalc/1,
          set_attribute/2,
-         %set_cell/2,
+         % set_cell/2,
          get_cell_info/4,
          write_cell/5,
-         get_hypernumber/9,
+         % get_hypernumber/9,
          copy_pages_below/2,
          formula_to_range/2,
          attributes_to_range/2,
-         get_pages_under/1,
-         value_to_cell/2]).
+         get_pages_under/1]).
+         % value_to_cell/2]).
 
 %% @spec set_attribute(Ref, Val) -> ok
 %% @doc set an attribute on a reference, if the attribute name
@@ -40,49 +40,57 @@ set_attribute(Ref = #ref{name=format}, Val) ->
 set_attribute(Ref,Val) ->
     hn_db:write_item(Ref,Val).
 
-%% @spec value_to_cell(Addr, Val) -> ok
-value_to_cell(Addr, Val) ->
+%% % @spec set_cell(Addr, Val) -> ok
+%% % @doc process_formula
+%set_cell(Addr, Val) ->
+%    case hn_db:get_item_val(Addr#ref{name = '__shared'}) of
+%        true -> throw({error, cant_change_part_of_array});
+%        _    -> value_to_cell(Addr, Val)
+%    end.
 
-    case superparser:process(Val) of
-        {formula, Fla} ->
-            Rti = ref_to_rti(Addr, false),
-            case muin:run_formula(Fla, Rti) of
-                {error, _Error} ->
-                    % @TODO, notify clients
-                    ok;       
-                {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
-                    Parxml = map(fun muin_link_to_simplexml/1, Parents),
-                    Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
+%% % @spec value_to_cell(Addr, Val) -> ok
+%value_to_cell(Addr, Val) ->
 
-                    ?IF(Pcode =/= nil,     db_put(Addr, '__ast', Pcode)),
-                    ?IF(Recompile == true, db_put(Addr, '__recompile', true)),
-                    % write the default text align for the result
-                    if
-                        is_number(Res) ->
-                            hn_db:write_item(Addr#ref{name='text-align'}, "right");
-                        is_list(Res) -> 
-                            hn_db:write_item(Addr#ref{name='text-align'}, "left");
-                        true ->
-                            hn_db:write_item(Addr#ref{name='text-align'}, "center")
-                        end,
-                    write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
-            end;            
-        [{Type, Value}, {'text-align', Align}, Format] ->
-            % write out the alignment
-            hn_db:write_item(Addr#ref{name='text-align'},Align),
-            % write out the format (if any)
-            case Format of
-                {format, "null"} -> ok;
-                {format, F}      -> hn_db:write_item(Addr#ref{name=format},F)
-            end,
-            % now write out the actual cell
-            Formula = case Type of
-                          quote    -> [39 | Value];
-                          datetime -> Val;
-                          _        -> hn_util:text(Value)
-                      end,
-            write_cell(Addr, Value, Formula, [], [])
-       end.
+%    case superparser:process(Val) of
+%        {formula, Fla} ->
+%            Rti = ref_to_rti(Addr, false),
+%            case muin:run_formula(Fla, Rti) of
+%                {error, _Error} ->
+%                    % @TODO, notify clients
+%                    ok;       
+%                {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
+%                    Parxml = map(fun muin_link_to_simplexml/1, Parents),
+%                    Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
+
+%                    ?IF(Pcode =/= nil,     db_put(Addr, '__ast', Pcode)),
+%                    ?IF(Recompile == true, db_put(Addr, '__recompile', true)),
+%                    % write the default text align for the result
+%                    if
+%                        is_number(Res) ->
+%                            hn_db:write_item(Addr#ref{name='text-align'}, "right");
+%                        is_list(Res) -> 
+%                            hn_db:write_item(Addr#ref{name='text-align'}, "left");
+%                        true ->
+%                            hn_db:write_item(Addr#ref{name='text-align'}, "center")
+%                        end,
+%                    write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
+%            end;            
+%        [{Type, Value}, {'text-align', Align}, Format] ->
+%            % write out the alignment
+%            hn_db:write_item(Addr#ref{name='text-align'},Align),
+%            % write out the format (if any)
+%            case Format of
+%                {format, "null"} -> ok;
+%                {format, F}      -> hn_db:write_item(Addr#ref{name=format},F)
+%            end,
+%            % now write out the actual cell
+%            Formula = case Type of
+%                          quote    -> [39 | Value];
+%                          datetime -> Val;
+%                          _        -> hn_util:text(Value)
+%                      end,
+%            write_cell(Addr, Value, Formula, [], [])
+%       end.
 
 %% @doc Process a formula in array mode.
 formula_to_range(Formula, Ref = #ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}}) ->
@@ -250,36 +258,36 @@ get_cell_info(Site, TmpPath, X, Y) ->
 %%% Types       : 
 %%% Description : 
 %%%-----------------------------------------------------------------
-get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
+%get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
     
-    NewTPath = lists:filter(fun(X) -> not(X == $/) end, TPath),
-    NewFPath = lists:filter(fun(X) -> not(X == $/) end, FPath),
+%    NewTPath = lists:filter(fun(X) -> not(X == $/) end, TPath),
+%    NewFPath = lists:filter(fun(X) -> not(X == $/) end, FPath),
 
-    %To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
+%    %To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
 
-    %Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
-    Child  = #refX{site = TSite, path = NewTPath, obj ={cell, {TX, TY}}},
-    Parent = #refX{site = FSite, path = NewFPath, obj ={cell, {FX, FY}}},
+%    %Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
+%    Child  = #refX{site = TSite, path = NewTPath, obj ={cell, {TX, TY}}},
+%    Parent = #refX{site = FSite, path = NewFPath, obj ={cell, {FX, FY}}},
     
-    % io:format("in hn_main:get_hypernumber~n-TSite is ~p~n-TPath is ~p~n-"++
-    %          "TX is ~p TY is ~p~n-Url is ~p~n-FSite is ~p FPath is ~p "++
-    %          "FX is ~p FY is ~p~n", [TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY]),
-    % case hn_db:get_hn(URL,Fr,To) of
-    case hn_db_api:read_incoming_hn(Parent, Child) of
+%    % io:format("in hn_main:get_hypernumber~n-TSite is ~p~n-TPath is ~p~n-"++
+%    %          "TX is ~p TY is ~p~n-Url is ~p~n-FSite is ~p FPath is ~p "++
+%    %          "FX is ~p FY is ~p~n", [TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY]),
+%    % case hn_db:get_hn(URL,Fr,To) of
+%    case hn_db_api:read_incoming_hn(Parent, Child) of
 
-        {error,permission_denied} ->
-            {{errval,'#AUTH'},[],[],[]};
+%        {error,permission_denied} ->
+%            {{errval,'#AUTH'},[],[],[]};
 
-        {Val, DepTree} ->
-            F = fun({url,[{type,Type}],[Url]}) ->
+%        {Val, DepTree} ->
+%            F = fun({url,[{type,Type}],[Url]}) ->
 
-                        {ok,#ref{site=S,path=P,ref={cell,{X,Y}}}} = hn_util:parse_url(Url),
-                        {Type,{S,P,X,Y}}
-                end,
+%                        {ok,#ref{site=S,path=P,ref={cell,{X,Y}}}} = hn_util:parse_url(Url),
+%                        {Type,{S,P,X,Y}}
+%                end,
 
-            Dep = lists:map(F,DepTree) ++ [{"remote",{FSite,NewFPath,FX,FY}}],            
-            {Val,Dep,[],[{"remote",{FSite,NewFPath,FX,FY}}]}
-    end.
+%            Dep = lists:map(F,DepTree) ++ [{"remote",{FSite,NewFPath,FX,FY}}],            
+%            {Val,Dep,[],[{"remote",{FSite,NewFPath,FX,FY}}]}
+%    end.
 
 %%%-----------------------------------------------------------------
 %%% Function    : recalc/1

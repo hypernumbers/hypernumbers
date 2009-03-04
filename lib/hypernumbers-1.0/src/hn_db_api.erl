@@ -30,7 +30,22 @@
 %%%            <li><code>{page, "/"}</code></li>
 %%%            </ul>
 %%%            
-%%%            <h4>Notes On Terminology</h4>
+%%%            <h2>Gotcha's</h2>
+%%%            
+%%%            There is an event cycle artefact that relates to the use of the 
+%%%            hypernumbers() function.
+%%%            
+%%%            When a hypernumber is used is a formula muin asks for the value
+%%%            if the remote cell isn't used a hypernumber is setup
+%%%            
+%%%            If the remote cell is <i>already used</i> by another cell the value
+%%%            is used.
+%%%            
+%%%            The remote site only gets a notification that a new cell is linking
+%%%            in when the (internal) function {@link update_rem_parents} 
+%%%            runs...
+%%%            
+%%%            <h2>Notes On Terminology</h2>
 %%% 
 %%%            Various terms that describe the relationships between
 %%%            different cells are shown below:
@@ -87,6 +102,13 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec read_incoming_hn(Parent::#refX{}, Child::#refX{}) -> {ok, ok}
+%% @doc gets the value of an incoming hypernumber
+%% Parent is a reference to a remote cell only
+%% Child is a reference to a local cell only
+%% If the hypernumber requested hasn't been set up yet, this function will
+%% trigger a creation process and return 'blank' for the moment... when the
+%% hypernumber is set up the 'correct' value will come through as per normal...
 read_incoming_hn(Parent, Child) when is_record(Parent, refX),
                                      is_record(Child, refX) ->
     Fun = fun() ->
@@ -95,6 +117,7 @@ read_incoming_hn(Parent, Child) when is_record(Parent, refX),
                                         "hypernumber to the remote server...~n"),
                               #incoming_hn{value = Val,
                                            'dependency-tree' = DepTree} = Hn,
+                              % check if there is a remote cel
                               {Val, DepTree};
                       []   -> {ok, ok} = hn_db_wu:mark_dirty_inc_create(Parent,
                                                                         Child),
@@ -103,6 +126,20 @@ read_incoming_hn(Parent, Child) when is_record(Parent, refX),
           end,
     mnesia:activity(transaction, Fun). 
 
+%% @spec update_incoming_hn(Parent::#refX{}, Val, DepTree, Biccie, Version) -> {ok, ok}
+%% DepTree = list()
+%% @doc takes the following parameters:
+%% Parent is a <code>#refX{}</code> to a remote cell
+%% Val is the current value of that cell
+%% DepTree is the dependency tree of that remote cell
+%% Biccie is the biccie provided by the remote server to authenticate the update.
+%% If this value doesn't match the Biccie on record this update will be logged and
+%% will silently fail
+%% Version is the page version of the remote page. If this version is newer that the
+%% page version stored here it will trigger a structural replay of page updates
+%% @todo
+%% log the biccie failures
+%% write the page version handling stuff
 update_incoming_hn(Parent, Val, DepTree, Biccie, Version)
   when is_record(Parent, refX), is_list(DepTree) ->
     Fun = fun() ->
@@ -116,7 +153,7 @@ update_incoming_hn(Parent, Val, DepTree, Biccie, Version)
 %% @doc notifies any remote sites that a hypernumber has changed.
 %% the reference must be for a cell
 %% @todo generalise the references to row, column, range and page
-%% the structure of the dirty_outgoing_hn is leaking out here because
+%% the structure of the dirty_notify_out is leaking out here because
 %% we use timestamps as identifiers instead of unique keys...
 %% makes it hard to delete
 %% this function also calls mnesia directly which it shouldn't...
@@ -150,7 +187,7 @@ notify_outgoing_hn(RefX, Outgoing, Value, DepTree, T)
     [ok = Fun2(X) || X <- Outgoing],
     % now delete the dirty outgoing hypernumber
     Idx = hn_util:index_from_refX(RefX),
-    Rec = #dirty_outgoing_hn{index = Idx, outgoing = Outgoing,
+    Rec = #dirty_notify_out{index = Idx, outgoing = Outgoing,
                              value = Value, timestamp = T},
     Fun3 = fun() ->
                    ok = mnesia:delete_object(Rec)
@@ -185,7 +222,8 @@ notify_incoming_hn(ParentRefX, ChildRefX, Change)
     %                                      ]}),
     
     Fun2 = fun() ->
-                  hn_db_wu:clear_dirty_notify_incoming(ParentRefX, ChildRefX, Change)
+                  hn_db_wu:clear_dirty_notify_back_in(ParentRefX,
+                                                      ChildRefX, Change)
           end,
     mnesia:activity(transaction, Fun2).
                       

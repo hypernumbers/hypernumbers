@@ -120,7 +120,7 @@
           timestamp   = now()
          }).
 
--record(dirty_incoming_hn,
+-record(dirty_notify_in,
         {
           index       = #index{},
           timestamp   = now()
@@ -133,7 +133,7 @@
           timestamp = now()
          }).
 
--record(dirty_notify_incoming,
+-record(dirty_notify_back_in,
         {
           child     = #index{},
           parent    = #index{},
@@ -141,14 +141,14 @@
           timestamp = now()
          }).
 
-% dirty_outgoing_hn contains a snap shot of the value, the 
+% dirty_notify_out contains a snap shot of the value, the 
 % dependency tree and the outgoing_hn record because it is 
 % asynchronous - needs to know what they were when it was marked dirty
 % because if there has been a delete/insert the original may have been
 % rewitten by the time the dirty processing is to be done. The 
 % protocol/retry between 2 servers has to handle the
 % race conditions etc, etc...
--record(dirty_outgoing_hn,
+-record(dirty_notify_out,
         {
           index             = #index{},
           value             = [],
@@ -157,7 +157,7 @@
           timestamp         = now()
          }).
 
--record(dirty_outgoing_update,
+-record(dirty_notify_back_out,
         {
           index = #index{},
           change = [],

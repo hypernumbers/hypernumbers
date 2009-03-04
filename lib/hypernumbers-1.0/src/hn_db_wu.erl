@@ -99,29 +99,30 @@
 %%% <img src="./tables.png" />
 %%%
 %%% Each of the following tables will now be discussed in some detail:
-%%% <ul>
+%%% <ol>
 %%% <li>hn_item</li>
 %%% <li>local_cell_link</li>
 %%% <li>remote_cell_link</li>
 %%% <li>incomingn_hn</li>
 %%% <li>outgoing_hn</li>
 %%% <li>dirty_cell</li>
-%%% <li>dirty_outgoing_hn</li>
-%%% <li>dirty_incoming_hn</li>
+%%% <li>dirty_notify_out</li>
+%%% <li>dirty_notify_in</li>
 %%% <li>dirty_incoming_create</li>
-%%% <li>dirty_notify_incoming</li>
-%%% </ul>
+%%% <li>dirty_notify_back_in</li>
+%%% <li>dirty_notify_back_out</li>
+%%% </ol>
 %%% 
-%%% <h4>hn_item</h4>
+%%% <h4>1 hn_item</h4>
 %%% 
 %%% contains all the atributes of the cell plus attributes of columns, rows, pages
 %%% etc, etc - including stuff not documented here like permissions
 %%% 
-%%% <h4>local_cell_link</h4>
+%%% <h4>2 local_cell_link</h4>
 %%% 
 %%% contains parent-child pig's ear links of cells stored in hn_item
 %%% 
-%%% <h4>remote_cell_link</h4>
+%%% <h4>3 remote_cell_link</h4>
 %%% 
 %%% contains parent-child links that connect cells stored in hn_item 
 %%% <i>for this site</i> to cells on other sites. Becaause this physical 
@@ -129,24 +130,24 @@
 %%% machine - as a consequence the links are tagged with incoming/outgoing 
 %%% types
 %%% 
-%%% <h4>incoming_hn</h4>
+%%% <h4>4 incoming_hn</h4>
 %%% 
 %%% there is an entry in this table for each remote cell that is referenced
 %%% by a cell on this site. It holds the current value of that remote cell
 %%% and all the connection information required to authenticate updates
 %%% to that cell
 %%% 
-%%% <h4>outgoing_hn</h4>
+%%% <h4>5 outgoing_hn</h4>
 %%% 
 %%% there is an entry in this table for each cell that is referenced by a
 %%% remote site. It holds the connection information required to successfully
 %%% update the remote sites
 %%% 
-%%% <h4>dirty_cell</h4>
+%%% <h4>6 dirty_cell</h4>
 %%% 
 %%% contains a reference to a cell whose parents (local or remote) are dirty
 %%% 
-%%% <h4>dirty_outgoing_hn</h4>
+%%% <h4>7 dirty_notify_out</h4>
 %%% 
 %%% contains a reference to every <code>outgoing_hn</code> whose value has 
 %%% changed and the new value. This is necesseary because notifying the remote
@@ -154,19 +155,19 @@
 %%% be operated on (deleted, moved, updated, etc, etc) while the notification of
 %%% remote servers is ongoing
 %%% 
-%%% <h4>dirty_incoming_hn</h4>
+%%% <h4>8 dirty_notify_in</h4>
 %%% 
 %%% contains a list of <code>incomging_hn</code>'s whose value has
 %%% been changed by a notify message. The dirty_srv uses this to identify cells 
-%%% mark as dirty
+%%% marked as dirty
 %%% 
-%%% <h4>dirty_incoming_create</h4>
+%%% <h4>9 dirty_incoming_create</h4>
 %%% 
 %%% when a new hypernumber is to be created a entry is made to this table and the
-%%% dirty_srv sets up the hypernumber and triggers dirty_notify_incoming when it
+%%% dirty_srv sets up the hypernumber and triggers dirty_notify_back_in when it
 %%% is complete
 %%% 
-%%% <h4>dirty_notify_incoming</h4>
+%%% <h4>10 dirty_notify_back_in</h4>
 %%% 
 %%% certain actions on a child hypernumber need to be notified back to the
 %%% parent, for instance:
@@ -177,12 +178,22 @@
 %%% <li>a child has been moved by an insert or delete command</li>
 %%% </ul>
 %%% 
-%%% The relationship of the dirty tables to each other for hypernumbers is shown
-%%% below:<p />
+%%% <h4>11 dirty_notify_back_out</h4>
+%%% 
+%%% when a notification back is received from the child server the change
+%%% is written to this table to be implemented
+%%% 
+%%% <h3>Structure Of Dirty Tables</h3>
+%%% 
+%%% The dirty_cell table lives in a world of its own and is not shown below, 
+%%% but the relationship of the rest of the  dirty tables to each 
+%%% other is shown below:<p />
 %%% <img src="./update_cycles.png" />
 %%% 
+%%% <h2>Corner Cases</h2>
+%%% 
 %%% This section will now describe what happens under a complete set of
-%%% edge cases which are listed below:
+%%% corner cases which are listed below:
 %%% <ol>
 %%% <li>delete a stand-alone value</li>
 %%% <li>delete a value in a cell that is referenced by another
@@ -249,12 +260,12 @@
 %%% Remote Cell (Or Cells)</h4>
 %%% 
 %%% As per <i>Delete A Stand-Alone Value</i> except that a record is 
-%%% written to <code>dirty_outgoing_hn</code> referencing the original
+%%% written to <code>dirty_notify_out</code> referencing the original
 %%% cell (and not the remote children). This triggers a hypernumbers
 %%% notification message to the remote server.
 %%% 
 %%% The remote server gets the notification message and updates the table
-%%% <code>incoming_hn</code>. It then writes a <code>dirty_incoming_hn</code>
+%%% <code>incoming_hn</code>. It then writes a <code>dirty_notify_in</code>
 %%% record. The dirty server uses this message to write a 
 %%% <code>dirty_cell</code> message for each cell that uses the changed hypernumber
 %%% 
@@ -267,7 +278,7 @@
 %%% 
 %%% The cell is deleted as per <i>1 Delete A Stand-Alone Value</i> and then
 %%% the relevant record in <code>remote_cell_link</code> is deleted and the
-%%% appropriate message is written to <code>dirty_notify_incoming</code>.
+%%% appropriate message is written to <code>dirty_notify_back_in</code>.
 %%% 
 %%% The remote server gets the notify_back message and uses this to delete
 %%% the record from its <code>remote_cell_link</code> table. If it is the last
@@ -281,7 +292,7 @@
 %%% <li>if the cell has local children a record is written to 
 %%% <code>dirty_cell</code> for each of them</li>
 %%% <li>if the cell has a remote child a record is written to 
-%%% <code>dirty_outgoing_hn</code></li>
+%%% <code>dirty_notify_out</code></li>
 %%% </ul>
 %%% 
 %%% The dirty_srv gets notified of each write and instructs the dirty
@@ -299,7 +310,7 @@
 %%% <li>if the cell has a local child a record is written to 
 %%% <code>dirty_cell</code></li>
 %%% <li>if the cell has a remote child a record is written to 
-%%% <code>dirty_outgoing_hn</code></li>
+%%% <code>dirty_notify_out</code></li>
 %%% <li>a new <code>remote_cell_link</code> of type <code>incoming</code> 
 %%% is written</li>
 %%% <li>the formula looks up the value of the hypernumber - there isn't
@@ -307,7 +318,7 @@
 %%% <code>dirty_incoming_create</code> record is written. When the 
 %%% dirty server has got the remote hypernumber it will writes its 
 %%% value to the table <code>incoming_hn</code> and create a record
-%%% in <code>dirty_incoming_hn</code></li>
+%%% in <code>dirty_notify_in</code></li>
 %%% </ul>
 %%% 
 %%% The dirty_srv gets notified of each write and instructs the dirty
@@ -320,11 +331,11 @@
 %%% <li>if the cell has a local child a record is written to 
 %%% <code>dirty_cell</code></li>
 %%% <li>if the cell has a remote child a record is written to 
-%%% <code>dirty_outgoing_hn</code></li>
+%%% <code>dirty_notify_out</code></li>
 %%% <li>a new <code>remote_cell_link</code> of type <code>incoming</code> 
 %%% is written</li>
 %%% <li>the formula looks up the value of the hypernumber - gets it - writes
-%%% a <code>dirty_notify_incoming</code> record to notify the remote site that
+%%% a <code>dirty_notify_back_in</code> record to notify the remote site that
 %%% a new cell is using a particular hypernumber</li>
 %%% </ul>
 %%% 
@@ -368,10 +379,10 @@
 %%% are copied from the old position which is then deleted...</li>
 %%% <li>all <code>remote_cell_links</code> where the moving cell is the child are 
 %%% rewritten</li>
-%%% <li>a message is written to <code>dirty_outgoing_hn</code> stating that
+%%% <li>a message is written to <code>dirty_notify_out</code> stating that
 %%% the child has moved. The remote server processes this message and writes a 
-%%% <code>dirty_incoming_hn</code> record. On processing the 
-%%% <code>dirty_incoming_hn</code> record the dirty cell rewrites the formula
+%%% <code>dirty_notify_in</code> record. On processing the 
+%%% <code>dirty_notify_in</code> record the dirty cell rewrites the formula
 %%% on all the children of the changed cell and rewrites them triggering an 
 %%% update of the dependency trees of all their children. (see <i>14 Move A Cell 
 %%% That Is Referenced By Another Local Cell</i> for a caveat on this algorithm!</li>
@@ -384,9 +395,9 @@
 %%% are copied from the old position which is then deleted...</li>
 %%% <li>all <code>remote_cell_links</code> where the moving cell is the child are 
 %%% rewritten</li>
-%%% <li>a message is written to <code>dirty_notify_incoming</code> table. When the
+%%% <li>a message is written to <code>dirty_notify_back_in</code> table. When the
 %%% dirty server processes this it sends a message to the parent, which write a
-%%% record to the <code>dirty_outgoing_update</code> table. On processing this record 
+%%% record to the <code>dirty_notify_back_out</code> table. On processing this record 
 %%% remote server edits its <code>remote_cell_link</code> table.</li>
 %%% </ul>
 %%%
@@ -440,7 +451,7 @@
          clear_cells/2,
          delete_attrs/2,
          delete_outgoing_hn/3,
-         clear_dirty_notify_incoming/3,
+         clear_dirty_notify_back_in/3,
          clear_dirty_notify/1,
          shift_cell/2,
          copy_cell/3,
@@ -461,8 +472,8 @@
          read_remote_children/1]).
 
 %% Deprecated exposed function to make hn_db work
--export([mark_dirty_incoming_hn_DEPRECATED/1]).
--export([mark_dirty_outgoing_hn_DEPRECATED/3]).
+-export([mark_dirty_notify_in_DEPRECATED/1]).
+-export([mark_dirty_notify_out_DEPRECATED/3]).
 
 %% Debugging
 -export([dump/0]).
@@ -483,13 +494,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% @doc this is just a part-time function to get hn_db to work for the interim
 %% @hidden
-mark_dirty_incoming_hn_DEPRECATED(RefX) ->
-    mark_dirty_incoming_hn(RefX).
+mark_dirty_notify_in_DEPRECATED(RefX) ->
+    mark_dirty_notify_in(RefX).
 
 %% @doc this is just a part-time function to get hn_db to work for the interim
 %% @hidden
-mark_dirty_outgoing_hn_DEPRECATED(RefX, Value, DepTree) ->
-    mark_dirty_outgoing_hn(RefX, Value, DepTree).
+mark_dirty_notify_out_DEPRECATED(RefX, Value, DepTree) ->
+    mark_dirty_notify_out(RefX, Value, DepTree).
 
 %% @spec(update_incoming(Parent::#refX{}, Val, DepTree, Biccie, Version) -> {ok, ok}
 %% DepTree = list()
@@ -507,7 +518,7 @@ update_incoming_hn(Parent, Val, DepTree, B, V)
     Rec = #incoming_hn{remote = ParentIdx, value = Val,
                        'dependency-tree' = DepTree, biccie = B, version = V},
     ok = mnesia:write(Rec),
-    {ok, ok} = mark_dirty_incoming_hn(Parent),
+    {ok, ok} = mark_dirty_notify_in(Parent),
     {ok, ok}.
 
 %% @spec mark_dirty_inc_create(Parent::#refX{}, Child::#refX{}) -> {ok, ok}
@@ -559,21 +570,21 @@ get_cells1(MatchRef) ->
 %% @todo extend the reference to include rows, columns, ranges, etc, etc
 clear_dirty_notify(Parent) when is_record(Parent, refX) ->
     ParentIdx = hn_util:index_from_refX(Parent),
-    ok = mnesia:delete_object(dirty_outgoing_hn, ParentIdx),
+    ok = mnesia:delete_object(dirty_notify_out, ParentIdx),
     {ok, ok}.
 
-%% @spec clear_dirty_notify_incoming(Parent::#refX{}, Child::#refX{}, Change) -> {ok, ok}
+%% @spec clear_dirty_notify_back_in(Parent::#refX{}, Child::#refX{}, Change) -> {ok, ok}
 %% @doc clears a dirty notify back.
 %% Both the parent and the child references must point to a cell
 %% @todo extend the references to include rows, columns, ranges, etc, etc
-clear_dirty_notify_incoming(Parent, Child, Change)
+clear_dirty_notify_back_in(Parent, Child, Change)
   when is_record(Parent, refX), is_record(Child, refX) ->
     ParentIdx = hn_util:index_from_refX(Parent),
     ChildIdx = hn_util:index_from_refX(Child),
-    Head = ms_util:make_ms(dirty_notify_incoming, [{parent, ParentIdx},
+    Head = ms_util:make_ms(dirty_notify_back_in, [{parent, ParentIdx},
                                                    {child, ChildIdx},
                                                    {change, Change}]),
-    [Record] = mnesia:select(dirty_notify_incoming, [{Head, [], ['$_']}]),
+    [Record] = mnesia:select(dirty_notify_back_in, [{Head, [], ['$_']}]),
     ok = mnesia:delete_object(Record),
     {ok, ok}.
 
@@ -914,8 +925,8 @@ shift_cell(From, To) when is_record(From, refX), is_record(To, refX) ->
     {ok, ok} = shift_dirty_cells(From, To),
     {ok, ok} = shift_outgoing_hns(From, To),
     {ok, ok} = shift_incoming_hns(From, To),
-    {ok, ok} = shift_dirty_incoming_hns(From, To),
-    % {ok, ok} = shift_dirty_outgoing_hns(From, To),
+    {ok, ok} = shift_dirty_notify_ins(From, To),
+    % {ok, ok} = shift_dirty_notify_outs(From, To),
     {ok, ok} = shift_cell2(From, To),
     {ok, ok} = shift_local_links(From, To),
     % dump(To, "and now here..."),
@@ -1119,6 +1130,7 @@ update_rem_parents(RefX, OldParents, NewParents) when is_record(RefX, refX) ->
            end,
     [{ok, ok} = Fun1(X) || X <- Del],
     % now write all the records on the write list
+    io:format("Need to write a *notify remote site message* thing here...~n"),
     Fun2 = fun(X) ->
                    P = hn_util:index_from_refX(X),
                    C = hn_util:index_from_refX(RefX),
@@ -1146,12 +1158,12 @@ unregister_hypernumber(Loc, Rem)
         _  -> {ok, ok} % somebody else still wants it so don't unregister
     end.
 
-mark_dirty_incoming_hn(RefX) ->
+mark_dirty_notify_in(RefX) ->
     ParentIdx = hn_util:refX_to_index(RefX),
-    ok = mnesia:write(#dirty_incoming_hn{index = ParentIdx}),
+    ok = mnesia:write(#dirty_notify_in{index = ParentIdx}),
     {ok, ok}.
 
-mark_dirty_outgoing_hn(RefX, Val, DepTree) ->
+mark_dirty_notify_out(RefX, Val, DepTree) ->
     % read the outgoing hypernumber
     Fun = fun() ->
                   read_outgoing_hns(RefX)
@@ -1161,7 +1173,7 @@ mark_dirty_outgoing_hn(RefX, Val, DepTree) ->
     Idx = hn_util:index_from_refX(RefX),
     case List of
         [] -> ok;
-        _  -> ok = mnesia:write(#dirty_outgoing_hn{index = Idx, outgoing = List,
+        _  -> ok = mnesia:write(#dirty_notify_out{index = Idx, outgoing = List,
                                                    value = Val,
                                                    'dependency-tree' = DepTree})
     end,
@@ -1170,7 +1182,7 @@ mark_dirty_outgoing_hn(RefX, Val, DepTree) ->
 mark_notify_incoming_dirty(Child, Parent, Msg) ->
     CIdx = hn_util:refX_to_index(Child),
     PIdx = hn_util:refX_to_index(Parent),
-    Rec = #dirty_notify_incoming{child = CIdx, parent = PIdx, change = Msg},
+    Rec = #dirty_notify_back_in{child = CIdx, parent = PIdx, change = Msg},
     mnesia:write(Rec),
     {ok, ok}.
 
@@ -1563,12 +1575,12 @@ shift_dirty_cells(From, To) ->
                        {ok, ok}
     end.
 
-shift_dirty_incoming_hns(From, To) ->
+shift_dirty_notify_ins(From, To) ->
     FromIdx = hn_util:index_from_refX(From),
     ToIdx   = hn_util:index_from_refX(To),
-    case mnesia:read({dirty_incoming_hn, FromIdx}) of
+    case mnesia:read({dirty_notify_in, FromIdx}) of
         []        -> {ok, ok};
-        [DirtyHn] -> NewDirty = DirtyHn#dirty_incoming_hn{index = ToIdx},
+        [DirtyHn] -> NewDirty = DirtyHn#dirty_notify_in{index = ToIdx},
                      mnesia:delete(DirtyHn),
                      mnesia:write(NewDirty),
                      {ok, ok}
@@ -1726,7 +1738,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
 
     % mark this cell as a possible dirty hypernumber
     % This takes a value and the dependency tree as it is asyncronous...
-    {ok, ok} = mark_dirty_outgoing_hn(RefX, RawValue, DepTree),
+    {ok, ok} = mark_dirty_notify_out(RefX, RawValue, DepTree),
     {ok, ok}.
 
 split_parents(Old, New) -> split_parents1(lists:sort(Old),

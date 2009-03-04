@@ -59,7 +59,7 @@ handle_info(_Info, State) ->
 handle_call(flush, _From, State = #state{type = dirty_cell}) ->
 
     % This fun shrinks the dirty cell table
-    % (but not dirty_incoming_hn)
+    % (but not dirty_notify_in)
         ?INFO("In dirty_src:handle_call for flush (start) "++
               "for dirty_cell Size is ~p~n",
               [mnesia:table_info(dirty_cell, size)]),
@@ -132,8 +132,8 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% @spec process_dirty(Record, Type) -> ok
 %% @doc  processes the dirty record
-process_dirty(Rec, dirty_notify_incoming) ->
-    #dirty_notify_incoming{child = Child, parent = Parent, change = Change} = Rec,
+process_dirty(Rec, dirty_notify_back_in) ->
+    #dirty_notify_back_in{child = Child, parent = Parent, change = Change} = Rec,
     ChildIdx = hn_util:refX_from_index(Child),
     ParentIdx = hn_util:refX_from_index(Parent),
     {ok, ok} = hn_db_api:notify_incoming(ParentIdx, ChildIdx, Change),
@@ -186,19 +186,19 @@ process_dirty(Rec, dirty_incoming_create) ->
     end,
     ok = mnesia:dirty_delete_object(Rec),
     ok;
-process_dirty(Rec, dirty_incoming_hn) ->
-    Index = Rec#dirty_incoming_hn.index,
-    ok = mnesia:dirty_delete({dirty_incoming_hn, Index}),
+process_dirty(Rec, dirty_notify_in) ->
+    Index = Rec#dirty_notify_in.index,
+    ok = mnesia:dirty_delete({dirty_notify_in, Index}),
     ok = hn_db:hn_changed(Index);
-process_dirty(Rec, dirty_outgoing_hn) ->
-    #dirty_outgoing_hn{index = Index, outgoing = O,
+process_dirty(Rec, dirty_notify_out) ->
+    #dirty_notify_out{index = Index, outgoing = O,
                        value = V, 'dependency-tree' = DepTree,
                        timestamp = T} = Rec,
     RefX = hn_util:refX_from_index(Index),
     {ok, ok} = hn_db_api:notify_outgoing_hn(RefX, O, V, DepTree, T),
     ok;
-process_dirty(Rec, dirty_outgoing_update) ->
-    io:format("in dirty_srv:process_dirty for dirty_outgoing_update - "++
+process_dirty(Rec, dirty_notify_back_out) ->
+    io:format("in dirty_srv:process_dirty for dirty_notify_back_out - "++
               "write me!~n"),
     ok.
     
