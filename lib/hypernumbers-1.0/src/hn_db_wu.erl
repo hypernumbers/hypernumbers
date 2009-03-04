@@ -67,7 +67,7 @@
 %%% <code>formula</code>. That <code>formula</code> can be in
 %%% a 'shared formula' context (which will result in it
 %%% having <code>__area</code> and <code>__shared</code>
-%%% attributes.
+%%% attributes).
 %%% 
 %%% By default a cell has a <code>format</code> and a 
 %%% <code>style</code> attributes. (There will also be
@@ -86,7 +86,7 @@
 %%% They key point is that if a cell is moved, any formula
 %%% of <i>a child</i> of that cell needs to be be rewritten,
 %%% which means that the <code>__ast</code>, 
-%%% <code>parents</code> and <code>dependancy-tree</code>
+%%% <code>parents</code> and <code>dependency-tree</code>
 %%% attributes need to be rewritten.
 %%% 
 %%% Then <i>in turn</i> the <code>formula</code> attributes
@@ -103,7 +103,7 @@
 %%% <li>hn_item</li>
 %%% <li>local_cell_link</li>
 %%% <li>remote_cell_link</li>
-%%% <li>incoming_hn</li>
+%%% <li>incomingn_hn</li>
 %%% <li>outgoing_hn</li>
 %%% <li>dirty_cell</li>
 %%% <li>dirty_outgoing_hn</li>
@@ -281,7 +281,7 @@
 %%% <li>if the cell has local children a record is written to 
 %%% <code>dirty_cell</code> for each of them</li>
 %%% <li>if the cell has a remote child a record is written to 
-%%% <code>dirty_outoing_hn</code></li>
+%%% <code>dirty_outgoing_hn</code></li>
 %%% </ul>
 %%% 
 %%% The dirty_srv gets notified of each write and instructs the dirty
@@ -373,7 +373,7 @@
 %%% <code>dirty_incoming_hn</code> record. On processing the 
 %%% <code>dirty_incoming_hn</code> record the dirty cell rewrites the formula
 %%% on all the children of the changed cell and rewrites them triggering an 
-%%% update of the dependancy trees of all their children. (see <i>14 Move A Cell 
+%%% update of the dependency trees of all their children. (see <i>14 Move A Cell 
 %%% That Is Referenced By Another Local Cell</i> for a caveat on this algorithm!</li>
 %%% </ul>
 %%% 
@@ -420,6 +420,7 @@
 %%%       above so that when the value of a name changes the various functions 
 %%%       using it recalculcate
 %%% @TODO understand the whole shared formula stuff...
+%%% @TODO there is no effective page versioning which is critical...
 %%% @end
 %%% Created : 24 Jan 2009 by gordon@hypernumbers.com
 %%%-------------------------------------------------------------------
@@ -433,8 +434,8 @@
          read_attrs/2,       % tested
          read_inherited/3,
          read_styles/1,
-         read_incoming_hypernumber/1,
-         read_outgoing_hypernumbers/1,
+         read_incoming_hn/1,
+         read_outgoing_hns/1,
          clear_cells/1,
          clear_cells/2,
          delete_attrs/2,
@@ -444,7 +445,9 @@
          shift_cell/2,
          copy_cell/3,
          copy_attrs/3,
-         get_cells/1]).
+         get_cells/1,
+         mark_dirty_inc_create/2,
+         update_incoming_hn/5]).
 
 %% Structural Query Exports
 -export([get_last_refs/1,
@@ -458,8 +461,8 @@
          read_remote_children/1]).
 
 %% Deprecated exposed function to make hn_db work
--export([mark_dirty_incoming_hn_DEPRECATED/2]).
--export([mark_dirty_outgoing_hn_DEPRECATED/2]).
+-export([mark_dirty_incoming_hn_DEPRECATED/1]).
+-export([mark_dirty_outgoing_hn_DEPRECATED/3]).
 
 %% Debugging
 -export([dump/0]).
@@ -480,13 +483,43 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% @doc this is just a part-time function to get hn_db to work for the interim
 %% @hidden
-mark_dirty_incoming_hn_DEPRECATED(RefX, Value) ->
-    mark_dirty_incoming_hn(RefX, Value).
+mark_dirty_incoming_hn_DEPRECATED(RefX) ->
+    mark_dirty_incoming_hn(RefX).
 
 %% @doc this is just a part-time function to get hn_db to work for the interim
 %% @hidden
-mark_dirty_outgoing_hn_DEPRECATED(RefX, Value) ->
-    mark_dirty_outgoing_hn(RefX, Value).
+mark_dirty_outgoing_hn_DEPRECATED(RefX, Value, DepTree) ->
+    mark_dirty_outgoing_hn(RefX, Value, DepTree).
+
+%% @spec(update_incoming(Parent::#refX{}, Val, DepTree, Biccie, Version) -> {ok, ok}
+%% DepTree = list()
+%% Version = integer()
+%% @doc update_incoming_hn will try and update the incoming hypernumber with
+%% a new value
+%% If the page versions of the originating page are out of synch with what we
+%% have this will trigger a page version update and ensure that they are resynched
+%% (<em>This is critical for dealing with server downtime</em>)
+%% This function also triggers the child cells as dirty so they recalculate
+%% @todo put code in to deal with page versions! (^^ lying in the docos above)
+update_incoming_hn(Parent, Val, DepTree, B, V)
+  when is_record(Parent, refX), is_list(DepTree) ->
+    ParentIdx = hn_util:index_from_refX(Parent),
+    Rec = #incoming_hn{remote = ParentIdx, value = Val,
+                       'dependency-tree' = DepTree, biccie = B, version = V},
+    ok = mnesia:write(Rec),
+    {ok, ok} = mark_dirty_incoming_hn(Parent),
+    {ok, ok}.
+
+%% @spec mark_dirty_inc_create(Parent::#refX{}, Child:#refX{}) -> {ok, ok}
+%% @doc marks a hypernumber (a remote reference) as not yet created
+%% The reference is to a cell only
+mark_dirty_inc_create(Parent, Child) when is_record(Parent, refX),
+                                          is_record(Child, refX)->
+    ParentIdx = hn_util:index_from_refX(Parent),
+    ChildIdx = hn_util:index_from_refX(Child),
+    Rec = #dirty_incoming_create{parent = ParentIdx, child = ChildIdx},
+    ok = mnesia:write(Rec),
+    {ok, ok}.
 
 %% @spec get_cells(RefX::#refX{}) -> [#refX{}]
 %% @doc takes a reference and expands it to cell references.
@@ -558,7 +591,7 @@ delete_outgoing_hn(Parent, Child, Biccie) ->
     ChildIndex = hn_util:index_from_refX(Child),
     Url = hn_util:index_to_url(ChildIndex),
     Head = ms_util:make_ms(outgoing_hn, [{index, {'_', ParentIndex}},
-                                         {url, Url}, {biccie, Biccie}]),
+                                         {child_url, Url}, {biccie, Biccie}]),
     Hypernumbers = mnesia:select(outgoing_hn, [{Head, [], ['$_']}]),
     delete_recs(Hypernumbers).
 
@@ -1042,23 +1075,23 @@ copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {range, _}} = To, Attrs) -
     List = hn_util:range_to_list(Ref),
     [copy_attrs(From, X, Attrs) || X <- List].
 
-%% @spec read_incoming_hypernumber(Parent::#refX{}) -> [#incoming_hn{}]
+%% @spec read_incoming_hn(Parent::#refX{}) -> [#incoming_hn{}]
 %% @doc reads an incoming hypernumber.
 %% The <code>#refX{}</code> must refer to a cell
 %% @todo extend the hypernumbers paradigm to include registering with a range,
 %% column, row or query, etc, etc
-read_incoming_hypernumber(Parent) when is_record(Parent, refX) ->
+read_incoming_hn(Parent) when is_record(Parent, refX) ->
     ParentIdx = hn_util:refX_to_index(Parent),
     Head = ms_util:make_ms(incoming_hn, [{remote, ParentIdx}]),
     mnesia:select(incoming_hn, [{Head, [], ['$_']}]).
 
-%% @spec read_outgoing_hypernumbers(Parent::#refX{}) -> [#outgoing_hn{}]
+%% @spec read_outgoing_hns(Parent::#refX{}) -> [#outgoing_hn{}]
 %% @doc reads the details of all outgoing hypernumbers from a particular cell.
 %% The <code>#refX{}</code> must refer to a cell
 %% @todo extend the hypernumbers paradigm to include registering with a range,
 %% column, row or query, etc, etc
 %% shouldn't this just take the 
-read_outgoing_hypernumbers(Parent) when is_record(Parent, refX) ->
+read_outgoing_hns(Parent) when is_record(Parent, refX) ->
     ParentIdx = hn_util:refX_to_index(Parent),
     Head = ms_util:make_ms(outgoing_hn, [{index, {'_',ParentIdx}}]),
     mnesia:select(outgoing_hn, [{Head, [], ['$_']}]).
@@ -1113,16 +1146,15 @@ unregister_hypernumber(Loc, Rem)
         _  -> {ok, ok} % somebody else still wants it so don't unregister
     end.
 
-mark_dirty_incoming_hn(RefX, _Val) ->
-    io:format("in hn_db_wu:mark_dirty_incoming_hn takes Val, not sure why...~n"),
+mark_dirty_incoming_hn(RefX) ->
     ParentIdx = hn_util:refX_to_index(RefX),
     ok = mnesia:write(#dirty_incoming_hn{index = ParentIdx}),
     {ok, ok}.
 
-mark_dirty_outgoing_hn(RefX, Val) ->
+mark_dirty_outgoing_hn(RefX, Val, DepTree) ->
     % read the outgoing hypernumber
     Fun = fun() ->
-                  hn_db_wu:read_outgoing_hypernumbers(RefX)
+                  read_outgoing_hns(RefX)
           end,
     List = mnesia:activity(transaction, Fun),
     % always write the dirty outgoing hypernumber
@@ -1130,7 +1162,8 @@ mark_dirty_outgoing_hn(RefX, Val) ->
     case List of
         [] -> ok;
         _  -> ok = mnesia:write(#dirty_outgoing_hn{index = Idx, outgoing = List,
-                                                   value = Val})
+                                                   value = Val,
+                                                   'dependency-tree' = DepTree})
     end,
     {ok, ok}.
 
@@ -1138,8 +1171,6 @@ mark_notify_incoming_dirty(Child, Parent, Msg) ->
     CIdx = hn_util:refX_to_index(Child),
     PIdx = hn_util:refX_to_index(Parent),
     Rec = #dirty_notify_incoming{child = CIdx, parent = PIdx, change = Msg},
-    io:format("In hn_db_wu:mark_notify_incoming_dirty~n-Rec is ~p~n",
-              [Rec]),
     mnesia:write(Rec),
     {ok, ok}.
 
@@ -1336,7 +1367,7 @@ fl([], A, B)                                -> {A, B};
 fl([{_, {value, _}}  | T], A, B)            -> fl(T, A, B);
 fl([{_, {rawvalue, _}}| T], A, B)           -> fl(T, A, B);
 fl([{_, {parents, _}} | T], A, B)           -> fl(T, A, B);
-fl([{_, {'dependancy-tree', _}}| T], A, B)  -> fl(T, A, B);
+fl([{_, {'dependency-tree', _}}| T], A, B)  -> fl(T, A, B);
 fl([{_, {'__ast', _}} | T], A, B)           -> fl(T, A, B);
 fl([{_, {formula, V}}| T], A, B)            -> fl(T, [V | A], B);
 fl([H | T], A, B)                           -> fl(T, A, [H | B]).
@@ -1468,7 +1499,7 @@ get_content_attrs([H | T], Acc) ->
         '__recompile'      -> get_content_attrs(T, [H | Acc]);
         '__shared'         -> get_content_attrs(T, [H | Acc]);
         '__area'           -> get_content_attrs(T, [H | Acc]);
-        'dependancy-tree'  -> get_content_attrs(T, [H | Acc]);
+        'dependency-tree'  -> get_content_attrs(T, [H | Acc]);
         parents            -> get_content_attrs(T, [H | Acc]);
         _                  -> get_content_attrs(T, Acc)
     end.
@@ -1550,25 +1581,18 @@ shift_outgoing_hns(_From, _To) ->
 %% changes the hypernumber description and also lets the remote party know that
 %% the hypernumber has changed...
 shift_incoming_hns(From, To) ->
-    % io:format("in hn_db_wu:shift_incoming_hns~n-From is ~p~n-To is ~p~n",
-    %          [From, To]),
     FromIdx = hn_util:index_from_refX(From),
-    % io:format("in shift_incoming_hns~n-FromIdx is ~p~n", [FromIdx]),
     case mnesia:read({incoming_hn, {'_', FromIdx}}) of
-        [] -> % io:format("--nothing to do in shift_hypernumbers...~n"),
-            {ok, ok};
-        L  -> % io:format("--something to do~n---L is ~p~n", [L]),
-            FromIdx = hn_util:refX_to_index(From),
-            FromURL = hn_util:index_to_url(FromIdx),
-            ToIdx = hn_util:refX_to_index(To),
-            ToURL = hn_util:index_to_url(ToIdx),
-            Msg = {"move", {"from", FromURL}, {"to", ToURL}},
-            Fun = fun(X) ->
-                          mark_notify_incoming_dirty(From, X, Msg)
-                  end,
-            % io:format("in hn_db_wu:shift_incoming_hns, erk! "++
-            %          "hypernumbers ain't done and gone been moved, dick'ead!~n"),
-            [ok = Fun(X) || X <- L],
+        [] -> {ok, ok};
+        L  -> FromIdx = hn_util:refX_to_index(From),
+              FromURL = hn_util:index_to_url(FromIdx),
+              ToIdx = hn_util:refX_to_index(To),
+              ToURL = hn_util:index_to_url(ToIdx),
+              Msg = {"move", {"from", FromURL}, {"to", ToURL}},
+              Fun = fun(X) ->
+                            mark_notify_incoming_dirty(From, X, Msg)
+                    end,
+              [ok = Fun(X) || X <- L],
               {ok, ok}
     end.
 
@@ -1656,7 +1680,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
     %     & 'overwrite-color'
     % * overwrites the new values of these attributes:
     %   - parents
-    %   - 'dependancy-tree'
+    %   - 'dependency-tree'
     % * reads the old set of local links:
     %   - writes any local links that aren't already there
     %   - deletes any local links that are no longer there
@@ -1676,13 +1700,13 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
     % now write the rawvalue, etc, etc
     {ok, ok} = write_rawvalue(RefX, Value),
 
-    % overwrite the parents and 'dependancy-tree'
+    % overwrite the parents and 'dependency-tree'
     Set = fun(X, {Key, {xml,[]}}) -> delete_attrs(X, Key);
              (X, {Key, Val})      -> write_attr(X, {Key, Val})
           end,
 
     Set(RefX, {'parents',         {xml, Parents}}),
-    Set(RefX, {'dependancy-tree', {xml, DepTree}}),
+    Set(RefX, {'dependency-tree', {xml, DepTree}}),
 
     % now do the local parents
     {ok, ok} = delete_local_parents(RefX),
@@ -1701,8 +1725,8 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
     {ok, ok} = mark_cells_dirty(RefX),
 
     % mark this cell as a possible dirty hypernumber
-    % This takes a value as it is asyncronous...
-    {ok, ok} = mark_dirty_outgoing_hn(RefX, RawValue),
+    % This takes a value and the dependency tree as it is asyncronous...
+    {ok, ok} = mark_dirty_outgoing_hn(RefX, RawValue, DepTree),
     {ok, ok}.
 
 split_parents(Old, New) -> split_parents1(lists:sort(Old),

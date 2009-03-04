@@ -12,7 +12,7 @@
 
 -export([recalc/1,
          set_attribute/2,
-         set_cell/2,
+         %set_cell/2,
          get_cell_info/4,
          write_cell/5,
          get_hypernumber/9,
@@ -25,8 +25,9 @@
 %% @spec set_attribute(Ref, Val) -> ok
 %% @doc set an attribute on a reference, if the attribute name
 %%      is formula / format, then processed
-set_attribute(Ref = #ref{name=formula},Val) -> 
-    set_cell(Ref,Val);
+set_attribute(Ref = #ref{name=formula},Val) ->
+    {RefX, {Key, Value}} = hn_util:ref_to_refX(Ref, Val),
+    hn_db_api:write_attributes(RefX, [{Key, Value}]);
 set_attribute(Ref = #ref{name=format}, Val) ->
     hn_db:write_item(Ref,Val),
     F = fun(X,[]) ->
@@ -41,13 +42,11 @@ set_attribute(Ref,Val) ->
 
 %% @spec set_cell(Addr, Val) -> ok
 %% @doc process_formula
-%% @todo this is a bug isn't it - hn_db:get_item will never
-%% return 'true', innit?
-set_cell(Addr, Val) ->
-    case hn_db:get_item_val(Addr#ref{name = '__shared'}) of
-        true -> throw({error, cant_change_part_of_array});
-        _    -> value_to_cell(Addr, Val)
-    end.
+%set_cell(Addr, Val) ->
+%    case hn_db:get_item_val(Addr#ref{name = '__shared'}) of
+%        true -> throw({error, cant_change_part_of_array});
+%        _    -> value_to_cell(Addr, Val)
+%    end.
 
 value_to_cell(Addr, Val) ->
 
@@ -153,7 +152,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
           end,
 
     Set(Addr#ref{name=parents},{xml,Parents}),
-    Set(Addr#ref{name='dependancy-tree'},{xml,DepTree}),
+    Set(Addr#ref{name='dependency-tree'},{xml,DepTree}),
     % Delete the references
 
     hn_db:del_links(Index,child),
@@ -188,7 +187,6 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
       end,
       Parents),
 
-    %#index{row=Row,column=Col}=Index,
     hn_db:mark_dirty(Index,Value,cell),    
     ok.
 
@@ -226,7 +224,7 @@ apply_range(Addr,Fun,Args) ->
 %%% Types       : 
 %%% Description : Provides the information required by the
 %%%               formula parser about a cell, ie its direct
-%%%               parents/ dependancy tree, and value
+%%%               parents/ dependency tree, and value
 %%%-----------------------------------------------------------------
 get_cell_info(Site, TmpPath, X, Y) ->
 
@@ -234,7 +232,7 @@ get_cell_info(Site, TmpPath, X, Y) ->
     Ref = #ref{site=string:to_lower(Site),path=Path,ref={cell,{X,Y}}},
     Value   = hn_db:get_item_val(Ref#ref{name=rawvalue}),
 
-    DepTree = case hn_db:get_item_val(Ref#ref{name='dependancy-tree'}) of
+    DepTree = case hn_db:get_item_val(Ref#ref{name='dependency-tree'}) of
                   {xml,Tree} -> Tree;
                   []         -> []
               end,
@@ -264,30 +262,36 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
     NewTPath = lists:filter(fun(X) -> not(X == $/) end, TPath),
     NewFPath = lists:filter(fun(X) -> not(X == $/) end, FPath),
 
-    To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
+    %To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
 
-    Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
-
-    case hn_db:get_hn(URL,Fr,To) of
+    %Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
+    Child  = #refX{site = TSite, path = NewTPath, obj ={cell, {TX, TY}}},
+    Parent = #refX{site = FSite, path = NewFPath, obj ={cell, {FX, FY}}},
+    
+    % io:format("in hn_main:get_hypernumber~n-TSite is ~p~n-TPath is ~p~n-"++
+    %          "TX is ~p TY is ~p~n-Url is ~p~n-FSite is ~p FPath is ~p "++
+    %          "FX is ~p FY is ~p~n", [TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY]),
+    % case hn_db:get_hn(URL,Fr,To) of
+    case hn_db_api:read_incoming_hn(Parent, Child) of
 
         {error,permission_denied} ->
             {{errval,'#AUTH'},[],[],[]};
 
-        #incoming_hn{value=Val,deptree=T} ->
+        {Val, DepTree} ->
             F = fun({url,[{type,Type}],[Url]}) ->
 
                         {ok,#ref{site=S,path=P,ref={cell,{X,Y}}}} = hn_util:parse_url(Url),
                         {Type,{S,P,X,Y}}
                 end,
 
-            Dep = lists:map(F,T) ++ [{"remote",{FSite,NewFPath,FX,FY}}],            
+            Dep = lists:map(F,DepTree) ++ [{"remote",{FSite,NewFPath,FX,FY}}],            
             {Val,Dep,[],[{"remote",{FSite,NewFPath,FX,FY}}]}
     end.
 
 %%%-----------------------------------------------------------------
 %%% Function    : recalc/1
 %%% Types       : 
-%%% Description : called when a (parent)dependancy changes, pull 
+%%% Description : called when a (parent)dependency changes, pull 
 %%%               the abstract syntax tree of a cell and 
 %%%               recalculate its value
 %%%-----------------------------------------------------------------
@@ -295,7 +299,8 @@ recalc(Index) ->
     Addr = index_to_ref(Index),
     case hn_db:get_item_val(Addr#ref{name = '__shared'}) of
         true -> recalc_array(Index);
-        _    -> recalc_cell(Index)
+        _    -> RefX = hn_util:refX_from_index(Index),
+                hn_db_api:recalculate(RefX)
     end.
 
 recalc_array(Index) ->
@@ -306,35 +311,35 @@ recalc_array(Index) ->
     formula_to_range(Formula, Target),
     ok.
 
-recalc_cell(Index) ->
-    RefX = hn_util:refX_from_index(Index),
-    %    Fun = fun() ->
-    %                  hn_db_wu:dump(RefX, "in hn_main:recalc_cell")
-    %          end,
-    %    mnesia:activity(transaction, Fun),
-    Addr = index_to_ref(Index),
-    case hn_db:get_item_val(Addr#ref{name = '__recompile'}) of
-        true ->
-            set_cell(Addr, hn_db:get_item_val(Addr#ref{name = formula}));
-        _ ->
-            Pcode = hn_db:get_item_val(Addr#ref{name = '__ast'}),
-            Rti = ref_to_rti(Addr, false),
-            % @TODO Save Dependancy tree
-            case muin:run_code(Pcode, Rti) of
-                {ok, {_, Val, _, _, _}}  -> 
-                    set_cell_rawvalue(Addr,Val),
-                    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    % Logging code                                      %
-                    % #index{row=Row,column=Col}=Index,                 %
-                    % bits:log("Row,"++integer_to_list(Row)++",Col,"++  %
-                    %         integer_to_list(Col)), 5                  %
-                    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    hn_db:mark_dirty(Index, Val, cell);
-                {error, _Reason} ->
-                    ok
-            end
-    end,
-    ok.
+%recalc_cell(Index) ->
+%    % RefX = hn_util:refX_from_index(Index),
+%    %    Fun = fun() ->
+%    %                  hn_db_wu:dump(RefX, "in hn_main:recalc_cell")
+%    %          end,
+%    %    mnesia:activity(transaction, Fun),
+%    Addr = index_to_ref(Index),
+%    case hn_db:get_item_val(Addr#ref{name = '__recompile'}) of
+%        true ->
+%            set_cell(Addr, hn_db:get_item_val(Addr#ref{name = formula}));
+%        _ ->
+%            Pcode = hn_db:get_item_val(Addr#ref{name = '__ast'}),
+%            Rti = ref_to_rti(Addr, false),
+%            % @TODO Save Dependency tree
+%            case muin:run_code(Pcode, Rti) of
+%                {ok, {_, Val, _, _, _}}  -> 
+%                    set_cell_rawvalue(Addr,Val),
+%                    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                    % Logging code                                      %
+%                    % #index{row=Row,column=Col}=Index,                 %
+%                    % bits:log("Row,"++integer_to_list(Row)++",Col,"++  %
+%                    %         integer_to_list(Col)), 5                  %
+%                    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                    hn_db:mark_dirty(Index, Val, cell);
+%                {error, _Reason} ->
+%                    ok
+%            end
+%    end,
+%    ok.
 
 copy_pages_below(From = #ref{path=Root},To) ->
 

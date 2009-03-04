@@ -77,7 +77,9 @@
          % delete_permission/1,
          % delete_style/1,
          notify_incoming_hn/3,
-         notify_hypernumber/4
+         notify_outgoing_hn/5,
+         read_incoming_hn/2,
+         update_incoming_hn/5
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -85,8 +87,32 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% @spec notify_hypernumber(RefX::#refX{}, Outgoing, Val, T) -> {ok, ok}
-%% Val = term() Outgoing = [#outgoing_hn{}] T = date()
+read_incoming_hn(Parent, Child) when is_record(Parent, refX),
+                                     is_record(Child, refX) ->
+    Fun = fun() ->
+                  case hn_db_wu:read_incoming_hn(Parent) of
+                      [Hn] -> io:format("-need to send message adding a new "++
+                                        "hypernumber to the remote server...~n"),
+                              #incoming_hn{value = Val,
+                                           'dependency-tree' = DepTree} = Hn,
+                              {Val, DepTree};
+                      []   -> {ok, ok} = hn_db_wu:mark_dirty_inc_create(Parent,
+                                                                        Child),
+                              {blank, []}
+                  end
+          end,
+    mnesia:activity(transaction, Fun). 
+
+update_incoming_hn(Parent, Val, DepTree, Biccie, Version)
+  when is_record(Parent, refX), is_list(DepTree) ->
+    Fun = fun() ->
+                  {ok, ok} = hn_db_wu:update_incoming_hn(Parent, Val,
+                                                         DepTree, Biccie, Version)
+          end,
+    mnesia:activity(transaction, Fun).
+
+%% @spec notify_outgoing_hn(RefX::#refX{}, Outgoing, Val, DepTree, T) -> {ok, ok}
+%% Val = term() Outgoing = [#outgoing_hn{}] T = date(), DepTree = list()
 %% @doc notifies any remote sites that a hypernumber has changed.
 %% the reference must be for a cell
 %% @todo generalise the references to row, column, range and page
@@ -94,28 +120,29 @@
 %% we use timestamps as identifiers instead of unique keys...
 %% makes it hard to delete
 %% this function also calls mnesia directly which it shouldn't...
-notify_hypernumber(RefX, Outgoing, Value, T)
+%% rename to notify_outgoing_hn
+notify_outgoing_hn(RefX, Outgoing, Value, DepTree, T)
   when is_record(RefX, refX) ->
-    %    error_logger:error_msg("in hn_db_wu:notify_hypernumber *WARNING* "++
-    %                           "notify_hypernumber not using "++
+    %    error_logger:error_msg("in hn_db_wu:notify_outgoing_hn *WARNING* "++
+    %                           "notify_outgoing_hn not using "++
     %                           "version number - ie it aint working - yet :("),
     ParentIdx = hn_util:index_from_refX(RefX),
     ParentUrl = hn_util:index_to_url(ParentIdx),
     Value2 = hn_util:to_xml(Value),
-    exit("fix me, I'm broken! Need to push out the parent list as well...."),
+    % exit("fix me, I'm broken! Need to push out the parent list as well...."),
     Fun2 = fun(X) -> {Server, _} = X#outgoing_hn.index,
                      Version = tconv:to_s(X#outgoing_hn.version),
                      Biccie = X#outgoing_hn.biccie,
-                     % io:format("in hn_db_api:notify_hypernumber Fun with X of ~p~n",
-                     %          [X]),
                      Actions = simplexml:to_xml_string(
-                                 {notify,[],[
-                                             {biccie,  [], [Biccie]},
-                                             {parent,  [], [ParentUrl]},
-                                             {type,    [], ["change"]},
-                                             {value,   [], Value2},
-                                             {version, [], [Version]}
-                                            ]}),
+                                 {notify,[],
+                                  [
+                                   {biccie,            [], [Biccie]},
+                                   {parent,            [], [ParentUrl]},
+                                   {type,              [], ["change"]},
+                                   {value,             [], Value2},
+                                   {'dependency-tree', [], DepTree},
+                                   {version,           [], [Version]}
+                                  ]}),
                      
                      hn_util:post(Server,Actions,"text/xml"),
                      ok
@@ -141,7 +168,7 @@ notify_incoming_hn(ParentRefX, ChildRefX, Change)
   when is_record(ChildRefX, refX), is_record(ParentRefX, refX) ->
     % DONT UNDERSTAND!!! (GG 2009/02/25)
     %    Fun1 = fun() ->
-    %                  hn_db_wu:read_incoming_hypernumber(ParentRefX)
+    %                  hn_db_wu:read_incoming_hn(ParentRefX)
     %          end,
     %    [Hypernumber] = mnesia:activity(transaction, Fun1),
     %    ChildIdx = hn_util:refX_to_index(ChildRefX),
@@ -579,7 +606,7 @@ copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% 
 %% <code>Monday Tuesday,         Wednesday, Thursday,... </code>
 %% 
-%% <code>Jan Feb,                Marsnotify, Apr,... </code>
+%% <code>Jan Feb,                Mars, Apr,... </code>
 %% 
 %% <code>Jan, Apr                Jul, Oct, Jan,... </code>
 %% 

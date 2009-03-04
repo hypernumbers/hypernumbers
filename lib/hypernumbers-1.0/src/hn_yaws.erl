@@ -34,7 +34,6 @@
 out(Arg) ->
     Url      = yaws_api:request_url(Arg),
     FileName = Arg#arg.docroot++Url#url.path,
-
     %% Serve static files, can move to a different server later
     case filelib:is_file(FileName) and not filelib:is_dir(FileName) of
         true  ->
@@ -190,12 +189,12 @@ req('GET',[],["hypernumber"],_,Ref) ->
                   end
           end,
     
-    DepTree = case hn_db:get_item_val(Ref#ref{name='dependancy-tree'}) of
+    DepTree = case hn_db:get_item_val(Ref#ref{name='dependency-tree'}) of
                   {xml,Tree} -> Tree;
                   []         -> []
               end,
     {ok,{hypernumber,[],[{value,[], Val()},
-                         {'dependancy-tree',[], DepTree}]}};
+                         {'dependency-tree',[], DepTree}]}};
 
 req('GET',[],[],_,Ref) ->
     
@@ -274,7 +273,7 @@ req('POST',{delete,[],Recurse},_Attr,_User,Ref = #ref{ref={page,"/"}}) ->
                 hn_db:remove_item(Ref#ref{path=Path++X,ref='_'})
         end,
     Pages = case Recurse of
-                [] -> hn_main:get_pages_under(Ref#ref.path);
+                []                   -> hn_main:get_pages_under(Ref#ref.path);
                 [{nochildren,[],[]}] -> []
             end,
     lists:foreach(F,Pages++[[]]),
@@ -285,16 +284,16 @@ req('POST',{delete,[],Data},_Vars,_User,Ref) ->
     % hn_db:delete_cells()
     lists:map
       (
-      fun({Attr,[],[]}) ->
-              hn_db:remove_item(Ref#ref{name=Attr})
+      fun({Attr,[],[]}) -> hn_db:remove_item(Ref#ref{name=Attr})
       end,
       Data
      ),
     {ok,{success,[],[]}};
 
-req('POST',{register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{parent_url,[],[Reg]}]},
+req('POST',{register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{child_url,[],[Reg]}]},
     _Attr,_User,Ref) ->
     {ok,RegRef}=hn_util:parse_url(Reg),
+    % io:format("in hn_yaws:req Ref is ~p RegRef is ~p~n", [Ref, RegRef]),
     hn_db:register_hn(
                   hn_util:ref_to_index(Ref),
                   hn_util:ref_to_index(RegRef),
@@ -351,19 +350,22 @@ req('POST',Data,["import"],_User,_Page) ->
 req(Method,Data,Vars,User,Page) ->
     throw({unmatched_request,Method,Data,Vars,User,Page}).
 
-api_change([{biccie,[],  [Biccie]},
-            {parent,[],  [ParentUrl]},
-            {type,[],    ["change"]},
-            {value,[],   [Val]},
-            {version,[], [Version]}], _Page)->
-    exit("fix me! the api should carry the parents as well as the value!"),
+api_change([{biccie,            [], [Biccie]},
+            {parent,            [], [ParentUrl]},
+            {type,              [], ["change"]},
+            {value,             [], [Val]},
+            {'dependency-tree', [], DepTree},
+            {version,           [], [Version]}], _Page)->
     {_,_,Val2}=Val,
     Val3 = case Val2 of
                []  -> Val2;
                [V] -> V
            end,
-    hn_db:update_hn(ParentUrl, Biccie, Val3, Version),
-
+    {ok, Ref} = hn_util:parse_url(ParentUrl),
+    {RefX, _} = hn_util:ref_to_refX(Ref, "to be chucked away"),
+    {ok, ok} = hn_db_api:update_incoming_hn(RefX, Val3, DepTree,
+                                            Biccie,Version),
+    
     {ok,{success,[],[]}}.
 
 api_unregister([{biccie,[],     [Biccie]},

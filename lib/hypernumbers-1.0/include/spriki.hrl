@@ -101,17 +101,17 @@
         {
           index       = {[],#index{}},
           biccie      = [],            % A shared token
-          url         = [],
+          child_url   = [],
           version     = 0              % Version for structural updates
          }).
 
 -record(incoming_hn,
         {
-          remote     = #index{},  % The address of the number
+          remote            = #index{},  % The address of the number
           value,
-          deptree     = [],       % Cells use in this numbers calculation
-          biccie      = [],       % A shared token
-          version     = 0         % Version for structural updates
+          'dependency-tree' = [],       % Cells use in this numbers calculation
+          biccie            = [],       % A shared token
+          version           = 0         % Version for structural updates
          }).
 
 -record(dirty_cell,
@@ -128,7 +128,8 @@
 
 -record(dirty_incoming_create,
         {
-          index     = #index{},
+          parent    = #index{},
+          child     = #index{},
           timestamp = now()
          }).
 
@@ -140,19 +141,20 @@
           timestamp = now()
          }).
 
-% dirty_outgoing_hn contains a snap shot of the value and the 
-% outgoing_hn record because it is asynchronous - needs to know 
-% what they were when it was marked dirty because if there has 
-% been a delete/insert the original may have been rewitten by 
-% the time the dirty processing is to be done. The 
+% dirty_outgoing_hn contains a snap shot of the value, the 
+% dependency tree and the outgoing_hn record because it is 
+% asynchronous - needs to know what they were when it was marked dirty
+% because if there has been a delete/insert the original may have been
+% rewitten by the time the dirty processing is to be done. The 
 % protocol/retry between 2 servers has to handle the
 % race conditions etc, etc...
 -record(dirty_outgoing_hn,
         {
-          index       = #index{},
-          value       = [],
-          outgoing    = [],
-          timestamp   = now()
+          index             = #index{},
+          value             = [],
+          'dependency-tree' = [],
+          outgoing          = [],
+          timestamp         = now()
          }).
 
 -record(dirty_outgoing_update,

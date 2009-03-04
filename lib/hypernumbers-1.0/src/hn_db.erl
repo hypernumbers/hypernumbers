@@ -78,6 +78,11 @@ create()->
 %% @spec write_item(Addr,Val) -> ok
 %% @doc  Adds an attribute to a reference addressed by Ref
 write_item(Addr,Val) when is_record(Addr,ref) ->
+    #ref{ref = Ref} = Addr,
+    case Ref of
+        null -> exit("crashing with null Ref from write item");
+        _    -> ok
+    end,
     Item = #hn_item{addr=Addr, val=Val}, 
     #ref{name=Name} = Addr, 
     % NOTE the attribute 'overwrite-color' isn't in this case statement 
@@ -291,7 +296,7 @@ del_remote_link(Obj = #remote_cell_link{type=incoming}) ->
     Actions = simplexml:to_xml_string(
                 {unregister,[],[
                                 {biccie,[],[Hn#incoming_hn.biccie]},
-                                {url,   [],[ChildUrl]}
+                                {child_url,   [],[ChildUrl]}
                                ]}),    
     hn_util:post(Url++"?hypernumber",Actions,"text/xml"),
 
@@ -314,7 +319,8 @@ write_remote_link(Parent,Child,Type) ->
                 
                 hn_db:write_item(ParentRef,{xml,Children}),
                 Match = ms_util:make_ms(remote_cell_link,[{parent, Parent},
-                                                          {child, Child},{type, Type}]),
+                                                          {child, Child},
+                                                          {type, Type}]),
                 case mnesia:match_object(Match) of 
                     [] ->
                         Link = #remote_cell_link{parent = Parent,
@@ -334,9 +340,9 @@ write_remote_link(Parent,Child,Type) ->
             Proxy = Child#index.site ++"/"++ string:join(Child#index.path,"/")++"/",
             Actions = simplexml:to_xml_string(
                         {register,[],[
-                                      {biccie,[],[Hn#incoming_hn.biccie]},
-                                      {proxy, [],[Proxy]},
-                                      {url,   [],[Url]}
+                                      {biccie,    [],[Hn#incoming_hn.biccie]},
+                                      {proxy,     [],[Proxy]},
+                                      {child_url, [],[Url]}
                                      ]}),
 
             PUrl = hn_util:index_to_url(Parent),
@@ -381,42 +387,44 @@ hn_changed(Cell) ->
 
 %% @spec mark_dirty(Type,Value,Cell) -> ok
 %% @doc  Marks a cell dirty (triggers recalculation)
-mark_dirty(Index,Value,cell) ->
-    % Make a list of direct cell links, and check for 
-    % any wildcard * on the path
-    Fun1 = fun() ->
-                   % First read dynamic links "/page/*/a1"
-                   NIndex = Index#index{path=lists:reverse(Index#index.path)},
-                   Queries = dyn_parents(NIndex,[],[]),
-                   % Second read direct links
-                   Direct = read_links(Index,parent),
-                   {ok,lists:append(Direct,Queries)}
-           end,
-    {ok,Local} = ?mn_ac(transaction,Fun1),
-    % Now write the local children to dirty_cell
-    Fun2 = fun(#local_cell_link{child=To}) -> 
-                   F = fun() -> 
-                               % only write the dirty cell if 
-                               % it doesnt already exist
-                               Match=#dirty_cell{index=To,_='_'},
-                               case mnesia:match_object(Match) of
-                                   [] -> ok = mnesia:write(#dirty_cell{index=To}) ;
-                                   _  -> ok
-                               end
-                       end,
-                   ?mn_ac(transaction,F)
-           end,
-    _Return1=lists:foreach(Fun2,Local),
+%mark_dirty(Index,Value,cell) ->
+%    % Make a list of direct cell links, and check for 
+%    % any wildcard * on the path
+%    Fun1 = fun() ->
+%                   % First read dynamic links "/page/*/a1"
+%                   NIndex = Index#index{path=lists:reverse(Index#index.path)},
+%                   Queries = dyn_parents(NIndex,[],[]),
+%                   % Second read direct links
+%                   Direct = read_links(Index,parent),
+%                   {ok,lists:append(Direct,Queries)}
+%           end,
+%    {ok,Local} = ?mn_ac(transaction,Fun1),
+%    % Now write the local children to dirty_cell
+%    Fun2 = fun(#local_cell_link{child=To}) -> 
+%                   F = fun() -> 
+%                               % only write the dirty cell if 
+%                               % it doesnt already exist
+%                               Match=#dirty_cell{index=To,_='_'},
+%                               case mnesia:match_object(Match) of
+%                                   [] -> ok = mnesia:write(#dirty_cell{index=To}) ;
+%                                   _  -> ok
+%                               end
+%                       end,
+%                   ?mn_ac(transaction,F)
+%           end,
+%    _Return1=lists:foreach(Fun2,Local),
+%    RefX = hn_util:refX_from_index(Index),
+%    Fun3 = fun() ->
+%                  {ok, ok} = hn_db_wu:mark_dirty_outgoing_hn_DEPRECATED(RefX, Value)
+%          end,
+%    {ok, ok} = mnesia:activity(transaction, Fun3),
+%    ok;
+mark_dirty(Index, _Value, hypernumber) ->
     RefX = hn_util:refX_from_index(Index),
+    io:format("in hn_db:mark_dirty  for RefX of ~p AINT THIS OUTGOING!!!~n",
+              [RefX]),
     Fun3 = fun() ->
-                  {ok, ok} = hn_db_wu:mark_dirty_outgoing_hn_DEPRECATED(RefX, Value)
-          end,
-    {ok, ok} = mnesia:activity(transaction, Fun3),
-    ok;
-mark_dirty(Index, Value, hypernumber) ->
-    RefX = hn_util:refX_from_index(Index),
-    Fun3 = fun() ->
-                  {ok, ok} = hn_db_wu:mark_dirty_incoming_hn_DEPRECATED(RefX, Value)
+                  {ok, ok} = hn_db_wu:mark_dirty_incoming_hn_DEPRECATED(RefX)
           end,
     {ok, ok} = mnesia:activity(transaction, Fun3),
     ok.
@@ -430,7 +438,9 @@ update_hn(From,Bic,Val,_Version)->
                 Index = hn_util:ref_to_index(ParsedFrom),
                 Rec   = #incoming_hn{remote = Index, biccie = Bic, _='_'},
                 [Obj] = mnesia:match_object(Rec),
-                ok = mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_val(Val)}),
+                Rec2 = Obj#incoming_hn{value=hn_util:xml_to_val(Val)},
+                io:format("in hn_db:update_hn Rec2 is ~p~n", [Rec2]),
+                ok = mnesia:write(Rec2),
                 ok = mark_dirty(Index,Val,hypernumber)
         end,
     ok = ?mn_ac(transaction,F),
@@ -451,7 +461,8 @@ do_get_hn(Url, From, To)->
         [Hn] ->
             Hn;
         []->
-            io:format("this ain't me babe! this should just mark the table "++
+            io:format("in hn_db:do_get_hn "++
+                      "this ain't me babe! this should just mark the table "++
                       "incoming_hn dirty and return blank to the function so "++
                       "that the dirty_srv does the work...~n"),
             Biccie = util2:get_biccie(),
@@ -462,22 +473,22 @@ do_get_hn(Url, From, To)->
                         {register,[],[
                                       {biccie,     [], [Biccie]},
                                       {proxy,      [], [Proxy]},
-                                      {parent_url, [], [FromUrl]}
+                                      {child_url, [], [FromUrl]}
                                      ]}),
 
             case  http:request(post,{Url,[],"text/xml",Actions},[],[]) of
                 {ok,{{_V,200,_R},_H,Xml}} ->
                     {hypernumber,[],[
                                      {value,[],              [Val]},
-                                     {'dependancy-tree',[],  Tree}]
+                                     {'dependency-tree',[],  Tree}]
                     } = simplexml:from_xml_string(Xml),
 
                     HNumber = #incoming_hn{
-                      value   = hn_util:xml_to_val(Val),
-                      deptree = Tree,
-                      remote  = To,
-                      biccie  = Biccie},
-
+                      value             = hn_util:xml_to_val(Val),
+                      'dependency-tree' = Tree,
+                      remote            = To,
+                      biccie            = Biccie},
+                    io:format("in hn_db:do_get_hn HNumber is ~p~n", [HNumber]),
                     mnesia:write(HNumber),
                     HNumber;
 
@@ -489,18 +500,18 @@ do_get_hn(Url, From, To)->
 %% @spec register_hn(To,From,Bic,Proxy,Url) -> Val
 %% Val = list()
 %% @doc  Receive registration for a hypernumber
-register_hn(To,From,Bic,Proxy,Url) ->
-
+register_hn(To, From, Bic, Proxy, Url) ->
+    % io:format("in hn_db:register_hn~n-To is ~p~n-From is ~p~n", [To, From]),
     F = fun()->
                 Link = #remote_cell_link{
-                  parent=To,
-                  child=From,
-                  type=outgoing},
-
+                  parent = From,
+                  child  = To,
+                  type = outgoing},
+                % io:format("In hn_db:register_hn Link is ~p~n", [Link]),
                 Hn = #outgoing_hn{
-                  index  = {Proxy,To},
-                  biccie = Bic,
-                  url    = Url},
+                  index     = {Proxy,To},
+                  biccie    = Bic,
+                  child_url = Url},
 
                 ok = mnesia:write(Link),
                 ok = mnesia:write(Hn),
@@ -510,31 +521,31 @@ register_hn(To,From,Bic,Proxy,Url) ->
                           [] -> [{blank,[],[]}];
                           Tmp -> hn_util:to_xml(Tmp)
                       end,
-                DepTree = case hn_db:get_item_val(Ref#ref{name='dependancy-tree'}) of
+                DepTree = case hn_db:get_item_val(Ref#ref{name='dependency-tree'}) of
                               {xml,Tree} -> Tree;
                               []         -> []
                           end,
                 {ok,{hypernumber,[],[{value,[], Value},
-                                     {'dependancy-tree',[], DepTree}]}}
+                                     {'dependency-tree',[], DepTree}]}}
         end,
     Val = ?mn_ac(transaction,F),
 	Val.
 
-get_par(Index,Path) ->
-    El = {local_cell_link,Index#index{path=Path},'_'},
-    F = fun() -> mnesia:match_object(El) end,
-    List = ?mn_ac(ets,F),
-    List.
+%get_par(Index,Path) ->
+%    El = {local_cell_link,Index#index{path=Path},'_'},
+%    F = fun() -> mnesia:match_object(El) end,
+%    List = ?mn_ac(ets,F),
+%    List.
 
-dyn_parents(_Index = #index{path=[]},Results, _Acc) ->
-    Results;
-dyn_parents(Index = #index{path=[_H]},Results, Acc) ->
-    Path = ["*"|Acc],
-    lists:append(Results,get_par(Index,Path));
-dyn_parents(Index = #index{path=[H|T]},Results,Acc) ->
-    Path = lists:append(lists:reverse(T),["*"|Acc]),
-    NResults = lists:append(Results,get_par(Index,Path)),
-    dyn_parents(Index#index{path=T},NResults,[H|Acc]).
+%dyn_parents(_Index = #index{path=[]},Results, _Acc) ->
+%    Results;
+%dyn_parents(Index = #index{path=[_H]},Results, Acc) ->
+%    Path = ["*"|Acc],
+%    lists:append(Results,get_par(Index,Path));
+%dyn_parents(Index = #index{path=[H|T]},Results,Acc) ->
+%    Path = lists:append(lists:reverse(T),["*"|Acc]),
+%    NResults = lists:append(Results,get_par(Index,Path)),
+%    dyn_parents(Index#index{path=T},NResults,[H|Acc]).
 
 %% @spec notify_remote(Item) -> ok
 %% @doc  Adds an attribute to a reference addressed by Ref
@@ -699,7 +710,7 @@ get_style(Addr, Style, Name, Val) ->
 %% write_style will write a style if it doesn't exist and then 
 %% return an index pointing to it 
 %% If the style already exists it just returns the index 
-write_style(Addr, Style) -> 
+write_style(Addr, Style) ->
     Ref = Addr#ref{ref = {page, "/"}, name = style, auth = []}, 
     Fun1 = fun() -> 
                    Match = #styles{ref = Ref, magic_style = Style, _ = '_'}, 
