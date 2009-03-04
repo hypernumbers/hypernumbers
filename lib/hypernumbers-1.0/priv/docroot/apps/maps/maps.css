@@ -1,0 +1,27 @@
+#flashcontent
+{
+    position:absolute;
+    visibility:hidden;
+    top:-1000px;
+    height:200px;
+}
+#footer
+{
+    position:absolute;
+    bottom:0px;
+    border-top:1px solid #999;
+    height:24px;
+    background:#eee;
+    width:100%;
+}
+
+#connection
+{
+    height:24px;
+    line-height:24px;
+}
+
+#footer span,#footer img
+{    
+    vertical-align:middle;
+}
