@@ -510,7 +510,7 @@ update_incoming_hn(Parent, Val, DepTree, B, V)
     {ok, ok} = mark_dirty_incoming_hn(Parent),
     {ok, ok}.
 
-%% @spec mark_dirty_inc_create(Parent::#refX{}, Child:#refX{}) -> {ok, ok}
+%% @spec mark_dirty_inc_create(Parent::#refX{}, Child::#refX{}) -> {ok, ok}
 %% @doc marks a hypernumber (a remote reference) as not yet created
 %% The reference is to a cell only
 mark_dirty_inc_create(Parent, Child) when is_record(Parent, refX),

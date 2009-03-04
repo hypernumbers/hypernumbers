@@ -40,14 +40,7 @@ set_attribute(Ref = #ref{name=format}, Val) ->
 set_attribute(Ref,Val) ->
     hn_db:write_item(Ref,Val).
 
-%% @spec set_cell(Addr, Val) -> ok
-%% @doc process_formula
-%set_cell(Addr, Val) ->
-%    case hn_db:get_item_val(Addr#ref{name = '__shared'}) of
-%        true -> throw({error, cant_change_part_of_array});
-%        _    -> value_to_cell(Addr, Val)
-%    end.
-
+%% @spec value_to_cell(Addr, Val) -> ok
 value_to_cell(Addr, Val) ->
 
     case superparser:process(Val) of
