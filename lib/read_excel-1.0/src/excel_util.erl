@@ -189,8 +189,8 @@ parse_CRS_Uni16(Bin,IndexSize)->
     %           LenAsianIdx]),
     BinLen2=erlang:size(Bin),
     BinLen3=erlang:size(Rest3),
-    io:format("in parse_CRS_Uni16 BinLen2 is ~p BinLen3 is ~p LenStr is ~p~n",
-              [BinLen2, BinLen3, LenStr]),
+    % io:format("in parse_CRS_Uni16 BinLen2 is ~p BinLen3 is ~p LenStr is ~p~n",
+    %          [BinLen2, BinLen3, LenStr]),
     % Now we need to parse the rest of the binary
     <<String:LenStr/binary,Rest4/binary>>=Rest3,
     List1=[{Encoding,String}],
