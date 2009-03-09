@@ -77,7 +77,7 @@ clean_start() ->
               (Pid)       -> exit(Pid,clean_start)
            end,
     lists:map(fun(X) -> Kill(whereis(X)) end,
-              [dirty_cell, dirty_notify_in, dirty_incoming_create,
+              [dirty_cell, dirty_notify_in, dirty_inc_hn_create,
                dirty_notify_back_in, dirty_notify_out,
                dirty_notify_back_out]),
 
@@ -106,7 +106,7 @@ start_yaws() ->
 start_dirty_subscribe() ->
     ok = gen_server:cast(dirty_cell,            subscribe),
     ok = gen_server:cast(dirty_notify_in,       subscribe),
-    ok = gen_server:cast(dirty_incoming_create, subscribe),
+    ok = gen_server:cast(dirty_inc_hn_create,   subscribe),
     ok = gen_server:cast(dirty_notify_back_in,  subscribe),
     ok = gen_server:cast(dirty_notify_out,      subscribe),
     ok = gen_server:cast(dirty_notify_back_out, subscribe),

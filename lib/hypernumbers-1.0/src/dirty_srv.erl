@@ -132,74 +132,42 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% @spec process_dirty(Record, Type) -> ok
 %% @doc  processes the dirty record
-process_dirty(Rec, dirty_notify_back_in) ->
-    #dirty_notify_back_in{child = Child, parent = Parent, change = Change} = Rec,
-    ChildIdx = hn_util:refX_from_index(Child),
-    ParentIdx = hn_util:refX_from_index(Parent),
-    {ok, ok} = hn_db_api:notify_incoming(ParentIdx, ChildIdx, Change),
-    ok;
 process_dirty(Rec, dirty_cell) ->
-    Index = Rec#dirty_cell.index,
-    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Logging code                                                      %
-    % #index{path = Path, row = Row, column = Col} = Index,             %
-    % Str=string:join(Path,"/")++" Row "++integer_to_list(Row)++" Col " %
-    %     ++integer_to_list(Col),                                       %
-    % bits:log(Str),                                                    %
-    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    Fun = fun() ->
-                  ok = mnesia:delete_object(Rec)
-          end,
-    ok = mnesia:activity(transaction, Fun),
-    ok = hn_db:cell_changed(Index);
-process_dirty(Rec, dirty_incoming_create) ->
-    #dirty_incoming_create{parent = Parent, child = Child} = Rec,
-    Biccie = util2:get_biccie(),
-    #index{site = S, path = P} = Child,
-    Proxy = S ++"/"++ string:join(P,"/")++"/",
-    ChildUrl = hn_util:index_to_url(Child),
-    ParentUrl = hn_util:index_to_url(Parent),
-    Actions = simplexml:to_xml_string(
-                {register,[],[
-                              {biccie,    [], [Biccie]},
-                              {proxy,     [], [Proxy]},
-                              {child_url, [], [ChildUrl]}
-                             ]}),
-   
-    case  http:request(post,{ParentUrl,[],"text/xml",Actions},[],[]) of
-        {ok,{{_V,200,_R},_H,Xml}} ->
-            {hypernumber,[],[
-                             {value,[],              [Val]},
-                             {'dependency-tree',[],  DepTree}]
-            } = simplexml:from_xml_string(Xml),
-            
-            Value = hn_util:xml_to_val(Val),
-
-            RefX = hn_util:refX_from_index(Parent),
-            {ok, ok} = hn_db_api:update_incoming_hn(RefX, Value, DepTree,
-                                                    Biccie, "0");
-        
-        {ok,{{_V,503,_R},_H,_Body}} ->
-            io:format("permission has been denied - need to write an error "++
-                      "to the hypernumber here...~n"),
-            {error,permission_denied}
-    end,
-    ok = mnesia:dirty_delete_object(Rec),
+    CellIndex = Rec#dirty_cell.index,
+    Cell = hn_util:refX_from_index(CellIndex),
+    {ok, ok} = hn_db_api:handle_dirty_cell(Cell),
+    ok;
+process_dirty(Rec, dirty_inc_hn_create) ->
+    #dirty_inc_hn_create{parent = ParentIdx, child = ChildIdx} = Rec,
+    Parent = hn_util:refX_from_index(ParentIdx),
+    Child = hn_util:refX_from_index(ChildIdx),
+    {ok, ok} = hn_db_api:notify_back_create(Parent, Child),
     ok;
 process_dirty(Rec, dirty_notify_in) ->
-    Index = Rec#dirty_notify_in.index,
-    ok = mnesia:dirty_delete({dirty_notify_in, Index}),
-    ok = hn_db:hn_changed(Index);
+    #dirty_notify_in{parent = PIdx} = Rec,
+    Parent = hn_util:refX_from_index(PIdx),
+    {ok, ok} = hn_db_api:handle_dirty_notify_in(Parent),
+    ok;
 process_dirty(Rec, dirty_notify_out) ->
-    #dirty_notify_out{index = Index, outgoing = O,
+    #dirty_notify_out{parent = ParentIdx, outgoing = O,
                        value = V, 'dependency-tree' = DepTree,
                        timestamp = T} = Rec,
-    RefX = hn_util:refX_from_index(Index),
-    {ok, ok} = hn_db_api:notify_outgoing_hn(RefX, O, V, DepTree, T),
+    Parent = hn_util:refX_from_index(ParentIdx),
+    {ok, ok} = hn_db_api:handle_dirty_notify_out(Parent, O, V, DepTree, T),
+    ok;
+process_dirty(Rec, dirty_notify_back_in) ->
+    #dirty_notify_back_in{child = ChildIdx, parent = ParentIdx,
+                          change = Change} = Rec,
+    Parent = hn_util:refX_from_index(ParentIdx),
+    Child = hn_util:refX_from_index(ChildIdx),
+    {ok, ok} = hn_db_api:handle_dirty_notify_back_in(Parent, Child, Change),
     ok;
 process_dirty(Rec, dirty_notify_back_out) ->
-    io:format("in dirty_srv:process_dirty for dirty_notify_back_out - "++
-              "write me!~n"),
+    #dirty_notify_back_out{parent = ParentIdx, child = ChildIdx,
+                           biccie = Biccie, change = Type} = Rec,
+    Parent = hn_util:refX_from_index(ParentIdx),
+    Child = hn_util:refX_from_index(ChildIdx),
+    {ok, ok} = hn_db_api:handle_dirty_notify_back_out(Parent, Child, Type, Biccie),
     ok.
     
 %%%

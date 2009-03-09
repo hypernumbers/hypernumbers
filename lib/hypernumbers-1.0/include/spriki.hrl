@@ -99,10 +99,11 @@
 
 -record(outgoing_hn,
         {
-          index       = {[],#index{}},
-          biccie      = [],            % A shared token
-          child_url   = [],
-          version     = 0              % Version for structural updates
+          parent       = #index{},
+          child_site   = [],
+          child_proxy  = [],
+          biccie       = [],            % A shared token
+          version      = 0              % Version for structural updates
          }).
 
 -record(incoming_hn,
@@ -120,25 +121,17 @@
           timestamp   = now()
          }).
 
+-record(dirty_inc_hn_create,
+        {
+          parent    = #index{},
+          child     = #index{},
+          timestamp = now()
+         }).
+
 -record(dirty_notify_in,
         {
-          index       = #index{},
-          timestamp   = now()
-         }).
-
--record(dirty_incoming_create,
-        {
-          parent    = #index{},
-          child     = #index{},
-          timestamp = now()
-         }).
-
--record(dirty_notify_back_in,
-        {
-          child     = #index{},
-          parent    = #index{},
-          change    = [],
-          timestamp = now()
+          parent            = #index{},
+          timestamp         = now()
          }).
 
 % dirty_notify_out contains a snap shot of the value, the 
@@ -150,17 +143,27 @@
 % race conditions etc, etc...
 -record(dirty_notify_out,
         {
-          index             = #index{},
+          parent            = #index{},
           value             = [],
           'dependency-tree' = [],
           outgoing          = [],
           timestamp         = now()
          }).
 
+-record(dirty_notify_back_in,
+        {
+          child     = #index{},
+          parent    = #index{},
+          change    = [],
+          timestamp = now()
+         }).
+
 -record(dirty_notify_back_out,
         {
-          index = #index{},
-          change = [],
+          parent    = #index{},
+          child     = #index{},
+          biccie    = [],
+          change    = [],
           timestamp = now()
          }).
 

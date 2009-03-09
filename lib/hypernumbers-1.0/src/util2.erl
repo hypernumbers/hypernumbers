@@ -13,7 +13,7 @@
 
 -export([
          get_timestamp/0,
-         get_biccie/0,
+         bake_biccie/0,
          remove_auth/1,
          chop/1,
          rev_chop/1,
@@ -54,13 +54,17 @@ get_timestamp()->
     1000000*Mega+1000*Sec+Micro.
 
 %%--------------------------------------------------------------------
-%% Function:    get_biccie/0
+%% Function:    bake_biccie/0
 %% Description: a biccie is like a cookie but we don't store the
 %%              session the same way as a cookie
 %%--------------------------------------------------------------------
-get_biccie() ->
-%% This is the code that generates a cookie in Yaws-1.70
-%% nicked from the module yaws_session_server.erl
+%% @spec bake_biccie() -> Biccie
+%% @doc this function bakes a new biccie for when a new hypernumber is being
+%% created
+%% @todo chocolate biccies ;-)
+bake_biccie() ->
+    % This is the code that generates a cookie in Yaws-1.70
+    % nicked from the module yaws_session_server.erl
     N = gen_server:call(random_srv,{random, int, 16#ffffffffffffffff}),
     atom_to_list(node()) ++ [$-|integer_to_list(N)].
 
@@ -199,7 +203,7 @@ make_paths(List) when is_list(List) ->
     Fun=fun({S,P,X,Y})->lists:concat(["\"",S,P,"/","x",X,":","y",Y,"\","]) end,
     NewList=lists:map(Fun,List),
     NewList2=lists:flatten(NewList),
-%% Now strip the last ',' off
+    % Now strip the last ',' off
     string:strip(NewList2,right,$,).
 
 %% @TODO: Remove and fix all code that uses this function to use tconv:to_b26().
@@ -208,9 +212,9 @@ make_b26(Int) when is_integer(Int) ->
 
 %% This function computes relative error, which provides a way
 %% to compare two floats regardless of their range.
-relative_error(0, 0.00000) -> 0.00000000001;
-relative_error(0.00000, 0) -> 0.00000000001;
-relative_error(0, 0) -> 0.0000000001;
-relative_error(Result, ExpectedResult) -> erlang:abs((Result - ExpectedResult) / ExpectedResult).
+relative_error(0, 0.00000)    -> 0.00000000001;
+relative_error(0.00000, 0)    -> 0.00000000001;
+relative_error(0, 0)          -> 0.0000000001;
+relative_error(Res, Expected) -> erlang:abs((Res - Expected) / Expected).
 
 sloppy_equals(N1, N2) -> relative_error(N1, N2) =< 0.0001.

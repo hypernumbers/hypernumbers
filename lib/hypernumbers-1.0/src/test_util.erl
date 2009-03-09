@@ -88,9 +88,6 @@ import_xls(Name) ->
                      Postdata2 = fix_integers(Postdata),
                      % ok = hn_main:set_cell(RefRec, Postdata2);
                      {RefX, {Key, Val}} = hn_util:ref_to_refX(RefRec, Postdata2),
-                     io:format("In Dopost~n-RefRec is ~p~n-RefX is ~p~n-Postdata2 is ~p~n",
-                               [RefRec, RefX, Postdata2]),
-                     io:format("in Dopost Key is ~p Value is ~p~n", [Key, Val]),
                      [{ok, ok}] = hn_db_api:write_attributes(RefX, [{formula, Val}]);
                 ({Path, {Tl, Br}, Postdata}) -> % array formula
                      Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Tl ++ ":" ++ Br),

@@ -105,7 +105,7 @@ call(Func, Args) ->
     R = attempt(?MODULE, funcall, [Func, Args]),
     case R of
         {error, Errv = {errval, _}} -> Errv;
-        {error, _E}                 -> ?error_in_formula;
+        {error, E}                  -> ?error_in_formula;
         {ok, V}                     -> V
     end.
 
@@ -249,7 +249,7 @@ funcall(name, [Name, Path]) ->
 funcall(hypernumber, [Url]) ->
     {ok,#ref{site = RSite, path = RPath,
              ref = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
-    F = fun() -> hn_main:get_hypernumber(?msite, ?mpath, ?mx, ?my, Url, RSite, RPath, RX, RY) end,
+    F = fun() -> get_hypernumber(?msite, ?mpath, ?mx, ?my, Url, RSite, RPath, RX, RY) end,
     get_value_and_link(F);
 
 funcall(hn, [Url]) ->
@@ -310,6 +310,30 @@ funcall(Fname, Args) ->
     end.
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+get_hypernumber(MSite, MPath, MX, MY, Url, RSite, RPath, RX, RY) ->
+    NewMPath = lists:filter(fun(X) -> not(X == $/) end, MPath),
+    NewRPath = lists:filter(fun(X) -> not(X == $/) end, RPath),
+
+    Child  = #refX{site = MSite, path = NewMPath, obj ={cell, {MX, MY}}},
+    Parent = #refX{site = RSite, path = NewRPath, obj ={cell, {RX, RY}}},
+    case hn_db_api:read_incoming_hn(Parent, Child) of
+        
+        {error,permission_denied} ->
+            {{errval,'#AUTH'},[],[],[]};
+        
+        {Val, DepTree} ->
+            F = fun({url, [{type, Type}], [Url]}) ->
+                        
+                        {ok, Ref} = hn_util:parse_url(Url),
+                        #ref{site = S, path = P, ref = {cell, {X, Y}}} = Ref, 
+                        {Type,{S, P, X, Y}}
+                end,
+            
+            Dep = lists:map(F, DepTree) ++ [{"remote", {RSite, NewRPath,
+                                                        RX, RY}}],
+            {Val, Dep, [], [{"remote", {RSite, NewRPath, RX, RY}}]}
+    end.
 
 %% TODO: Beef up.
 %% TODO: what's the real type of ':'? (vararg works for now).

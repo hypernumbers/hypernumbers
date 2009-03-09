@@ -9,10 +9,11 @@
 %%%  
 %%% <h3>Functional Categories</h3>
 %%% 
-%%% These functions fall into 2 types:
+%%% These functions fall into 3 types:
 %%% <ul>
 %%% <li>structural queries that returns #refs{}</li>
 %%% <li>cell queries that operate on cells</li>
+%%% <li>dirty management</li>
 %%% </ul>
 %%%  
 %%% <h4>Structural Queries</h4>
@@ -40,6 +41,16 @@
 %%% {Key, Value} pairs.
 %%% 
 %%% The others return {ok, ok}
+%%% 
+%%% <h4>Dirty Management</h4>
+%%% 
+%%% A thing can be set dirty by call a function with a name like 
+%%% <code>mark somethineg dirty</code> and when a dirty thing has been
+%%% processed it is cleared with a function like 
+%%% <code>clear dirty something</code>.
+%%% 
+%%% (NB: not all functions with the word 'clear' in them pertain to dirty 
+%%% management)
 %%% 
 %%% <h2>Under The Hood</h2>
 %%% 
@@ -108,7 +119,7 @@
 %%% <li>dirty_cell</li>
 %%% <li>dirty_notify_out</li>
 %%% <li>dirty_notify_in</li>
-%%% <li>dirty_incoming_create</li>
+%%% <li>dirty_inc_hn_create</li>
 %%% <li>dirty_notify_back_in</li>
 %%% <li>dirty_notify_back_out</li>
 %%% </ol>
@@ -161,7 +172,7 @@
 %%% been changed by a notify message. The dirty_srv uses this to identify cells 
 %%% marked as dirty
 %%% 
-%%% <h4>9 dirty_incoming_create</h4>
+%%% <h4>9 dirty_inc_hn_create</h4>
 %%% 
 %%% when a new hypernumber is to be created a entry is made to this table and the
 %%% dirty_srv sets up the hypernumber and triggers dirty_notify_back_in when it
@@ -315,7 +326,7 @@
 %%% is written</li>
 %%% <li>the formula looks up the value of the hypernumber - there isn't
 %%% one so it gets the value 'blank' back and a 
-%%% <code>dirty_incoming_create</code> record is written. When the 
+%%% <code>dirty_inc_hn_create</code> record is written. When the 
 %%% dirty server has got the remote hypernumber it will writes its 
 %%% value to the table <code>incoming_hn</code> and create a record
 %%% in <code>dirty_notify_in</code></li>
@@ -418,6 +429,10 @@
 %%% share formula (<em>with some malarky about array values that I don't understand 
 %%% yet!</em>)
 %%% 
+%%% @TODO we need to add 'tell_front_end' messages for when we do stuff
+%%%       like add new children to cells /delete existing children from cells 
+%%%       so that the front-ends can update themselves...
+%%%       parents/childre
 %%% @TODO we use atoms for keys in {key, value} pairs of attributes
 %%%       which is then used in atom_to_list for checking if they are private.
 %%%       This is a memory leak! See also hn_yaws.erl
@@ -451,14 +466,26 @@
          clear_cells/2,
          delete_attrs/2,
          delete_outgoing_hn/3,
+         clear_dirty_cell/1,
+         clear_dirty_inc_hn_create/2,
+         clear_dirty_notify_in/1,
+         clear_dirty_notify_out/1,
          clear_dirty_notify_back_in/3,
-         clear_dirty_notify/1,
+         clear_dirty_notify_back_out/3,
          shift_cell/2,
          copy_cell/3,
          copy_attrs/3,
          get_cells/1,
-         mark_dirty_inc_create/2,
-         update_incoming_hn/5]).
+         mark_cells_dirty/1,
+         mark_inc_create_dirty/2,
+         mark_notify_in_dirty/1,
+         mark_notify_out_dirty/3,
+         mark_notify_back_in_dirty/3,
+         mark_notify_back_out_dirty/3,
+         update_inc_hn/5,
+         does_remote_link_exist/3,
+         write_remote_link/3,
+         verify_biccie/3]).
 
 %% Structural Query Exports
 -export([get_last_refs/1,
@@ -468,12 +495,8 @@
 %% These functions are exposed for the dirty_srv to use
 -export([read_local_parents/1,
          read_local_children/1,
-         read_remote_parents/1,
-         read_remote_children/1]).
-
-%% Deprecated exposed function to make hn_db work
--export([mark_dirty_notify_in_DEPRECATED/1]).
--export([mark_dirty_notify_out_DEPRECATED/3]).
+         read_remote_parents/2,
+         read_remote_children/2]).
 
 %% Debugging
 -export([dump/0]).
@@ -492,43 +515,119 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% @doc this is just a part-time function to get hn_db to work for the interim
-%% @hidden
-mark_dirty_notify_in_DEPRECATED(RefX) ->
-    mark_dirty_notify_in(RefX).
+does_remote_link_exist(Parent, Child, Type)
+  when is_record(Parent, refX), is_record(Child, refX) ->
+    ParentIdx = hn_util:index_from_refX(Parent),
+    ChildIdx = hn_util:index_from_refX(Child),
+    Head = ms_util:make_ms(remote_cell_link, [{parent, ParentIdx},
+                                              {child, ChildIdx},
+                                              {type, Type}]),
+    Match = [{Head, [], ['$_']}],
+    case mnesia:dirty_select(remote_cell_link, Match) of
+        []                                          -> false;
+        [Rec] when is_record(Rec, remote_cell_link) -> true
+    end.
 
-%% @doc this is just a part-time function to get hn_db to work for the interim
-%% @hidden
-mark_dirty_notify_out_DEPRECATED(RefX, Value, DepTree) ->
-    mark_dirty_notify_out(RefX, Value, DepTree).
+verify_biccie(Parent, Child, Biccie)
+  when is_record(Parent, refX), is_record(Child, refX) ->
+    #refX{site = ChildSite} = Child,
+    PIdx = hn_util:index_from_refX(Parent),
+    Match = ms_util:make_ms(outgoing_hn, [{parent, PIdx},
+                                          {child_site, ChildSite}]),
+    [Hn] = mnesia:match_object(outgoing_hn, Match, read),
+    #outgoing_hn{biccie = Biccie2} = Hn,
+    case Biccie of
+        Biccie2 -> true;
+        _       -> false
+    end.
 
-%% @spec(update_incoming(Parent::#refX{}, Val, DepTree, Biccie, Version) -> {ok, ok}
+%% @spec mark_notify_back_in_dirty(Parent::#refX{}, Child::#refX{}, Msg) -> 
+%% {ok, ok}
+%% @doc marks a child of a remote hypernumber as dirty so that the remote 
+%% (parent) site is to be notified that the link has been created.
+%% Both Child and Parent must be a cell reference.
+%% The message can be one of:
+%% <ul>
+%% <li>unregister</li>
+%% <li>new child</li>
+%% </ul>
+mark_notify_back_in_dirty(Parent, Child, Msg)
+  when is_record(Parent, refX), is_record(Child, refX) ->
+    P = hn_util:index_from_refX(Parent),
+    C = hn_util:index_from_refX(Child),
+    Rec = #dirty_notify_back_in{parent = P, child = C, change = Msg},
+    Match = ms_util:make_ms(dirty_notify_back_in, [{parent, P}, {child, C},
+                                                  {change, Msg}]),
+    case mnesia:match_object(Match) of
+        [] -> ok = mnesia:write(Rec);
+        _  -> ok
+    end,
+    {ok, ok}.
+
+%% @spec mark_notify_back_out_dirty(Parent::#refX{}, Child::#refX{}, Msg) -> 
+%% {ok, ok}
+%% @doc marks the parent of a hypernumber as dirty because a remote site
+%% has sent a message about changes to a child of that cell.
+%% Both Child and Parent must be a cell referece.
+%% The message can be one of:
+%% <ul>
+%% <li>unregister</li>
+%% <li>new_child</li>
+%% </ul>
+mark_notify_back_out_dirty(Parent, Child, Msg)
+  when is_record(Parent, refX), is_record(Child, refX) ->
+    P = hn_util:index_from_refX(Parent),
+    C = hn_util:index_from_refX(Child),
+    Rec = #dirty_notify_back_out{child = C, parent = P, change = Msg},
+    Match = ms_util:make_ms(dirty_notify_back_out, [{parent, P}, {child, C},
+                                                    {change, Msg}]),
+    case mnesia:match_object(Match) of
+        [] -> ok = mnesia:write(Rec);
+        _  -> ok
+    end,
+    {ok, ok}.
+
+%% @spec write_remote_link(Parent::#refX{}, Child::#refX{}, Type) -> {ok, ok}
+%% @doc writes a remote link between the parent and the child.
+%% Both parent and child references must be to a cell. The parent is on the
+%% remote site and the child is on the local site
+write_remote_link(Parent, Child, Type)
+  when is_record(Parent, refX), is_record(Child, refX),
+       (Type =:= incoming orelse Type =:= outgoing)->
+    P = hn_util:index_from_refX(Parent),
+    C = hn_util:index_from_refX(Child),
+    Rec = #remote_cell_link{parent = P, child = C, type = Type},
+    ok = mnesia:write(Rec),
+    {ok, ok}.
+
+%% @spec update_inc_hn(Parent::#refX{}, Val, DepTree, Biccie, Version) -> {ok, ok}
 %% DepTree = list()
 %% Version = integer()
-%% @doc update_incoming_hn will try and update the incoming hypernumber with
-%% a new value
+%% @doc update_inc_hn will try and update the incoming hypernumber with
+%% a new value.
 %% If the page versions of the originating page are out of synch with what we
 %% have this will trigger a page version update and ensure that they are resynched
 %% (<em>This is critical for dealing with server downtime</em>)
 %% This function also triggers the child cells as dirty so they recalculate
 %% @todo put code in to deal with page versions! (^^ lying in the docos above)
-update_incoming_hn(Parent, Val, DepTree, B, V)
+update_inc_hn(Parent, Val, DepTree, Biccie, Version)
   when is_record(Parent, refX), is_list(DepTree) ->
     ParentIdx = hn_util:index_from_refX(Parent),
-    Rec = #incoming_hn{remote = ParentIdx, value = Val,
-                       'dependency-tree' = DepTree, biccie = B, version = V},
+    Rec = #incoming_hn{remote = ParentIdx, value = Val, 
+                       'dependency-tree' = DepTree, biccie = Biccie,
+                       version = Version},
     ok = mnesia:write(Rec),
-    {ok, ok} = mark_dirty_notify_in(Parent),
+    {ok, ok} = mark_notify_in_dirty(Parent),
     {ok, ok}.
 
-%% @spec mark_dirty_inc_create(Parent::#refX{}, Child::#refX{}) -> {ok, ok}
-%% @doc marks a hypernumber (a remote reference) as not yet created
+%% @spec mark_inc_create_dirty(Parent::#refX{}, Child::#refX{}) -> {ok, ok}
+%% @doc marks a hypernmber (a remote reference) as not yet created.
 %% The reference is to a cell only
-mark_dirty_inc_create(Parent, Child) when is_record(Parent, refX),
+mark_inc_create_dirty(Parent, Child) when is_record(Parent, refX),
                                           is_record(Child, refX)->
     ParentIdx = hn_util:index_from_refX(Parent),
     ChildIdx = hn_util:index_from_refX(Child),
-    Rec = #dirty_incoming_create{parent = ParentIdx, child = ChildIdx},
+    Rec = #dirty_inc_hn_create{parent = ParentIdx, child = ChildIdx},
     ok = mnesia:write(Rec),
     {ok, ok}.
 
@@ -564,17 +663,46 @@ get_cells1(MatchRef) ->
     List = mnesia:select(hn_item, [MatchRef]),
     get_refXs(List).
 
-%% @spec clear_dirty_notify(Parent::#refX{}) -> {ok, ok}
+%% @spec clear_dirty_cell(RefX::#refX{}) -> {ok, ok}
+%% @doc clears a dirty cell marker.
+%% The reference must be to a cell
+clear_dirty_cell(#refX{obj = {cell, _}} = RefX) ->
+    Index = hn_util:index_from_refX(RefX),
+    mnesia:delete({dirty_cell, Index}),
+    {ok, ok}.
+
+%% @spec clear_dirty_inc_hn_create(Parent::#refX{}, Child::#refX{}) -> {ok, ok}
+%% @doc clears a marked dirty_inc_hn_create
+clear_dirty_inc_hn_create(Parent, Child)
+  when is_record(Parent, refX), is_record(Child, refX) ->
+    PIdx = hn_util:index_from_refX(Parent),
+    CIdx = hn_util:index_from_refX(Child),
+    Match = ms_util:make_ms(dirty_inc_hn_create, [{parent, PIdx},
+                                                  {child, CIdx}]),
+    Dirty = mnesia:match_object(dirty_inc_hn_create, Match, read),
+    {ok, ok} = delete_recs(Dirty).
+
+%% @spec clear_dirty_notify_in(Parent::#refX{}) -> {ok, ok}
 %% @doc clears a dirty notification.
 %% The parent reference must point to a cell
 %% @todo extend the reference to include rows, columns, ranges, etc, etc
-clear_dirty_notify(Parent) when is_record(Parent, refX) ->
+clear_dirty_notify_in(Parent) when is_record(Parent, refX) ->
     ParentIdx = hn_util:index_from_refX(Parent),
-    ok = mnesia:delete_object(dirty_notify_out, ParentIdx),
+    ok = mnesia:delete({dirty_notify_in, ParentIdx}),
     {ok, ok}.
 
-%% @spec clear_dirty_notify_back_in(Parent::#refX{}, Child::#refX{}, Change) -> {ok, ok}
-%% @doc clears a dirty notify back.
+%% @spec clear_dirty_notify_out(Parent::#refX{}) -> {ok, ok}
+%% @doc clears a dirty notification.
+%% The parent reference must point to a cell
+%% @todo extend the reference to include rows, columns, ranges, etc, etc
+clear_dirty_notify_out(Parent) when is_record(Parent, refX) ->
+    ParentIdx = hn_util:index_from_refX(Parent),
+    ok = mnesia:delete({dirty_notify_out, Parent}),
+    {ok, ok}.
+
+%% @spec clear_dirty_notify_back_in(Parent::#refX{}, Child::#refX{}, Change) -> 
+%% {ok, ok}
+%% @doc clears a dirty notify back_in.
 %% Both the parent and the child references must point to a cell
 %% @todo extend the references to include rows, columns, ranges, etc, etc
 clear_dirty_notify_back_in(Parent, Child, Change)
@@ -588,21 +716,37 @@ clear_dirty_notify_back_in(Parent, Child, Change)
     ok = mnesia:delete_object(Record),
     {ok, ok}.
 
-%% @spec delete_outgoing_hn(#refX{}, Url, Biccie) -> {ok, ok}
+%% @spec clear_dirty_notify_back_out(Parent::#refX{}, Child::#refX{}, Change) -> 
+%% {ok, ok}
+%% @doc clears a dirty notify back out.
+%% Both the parent and the child references must point to a cell
+%% @todo extend the references to include rows, columns, ranges, etc, etc
+clear_dirty_notify_back_out(Parent, Child, Change)
+  when is_record(Parent, refX), is_record(Child, refX) ->
+    ParentIdx = hn_util:index_from_refX(Parent),
+    ChildIdx = hn_util:index_from_refX(Child),
+    Head = ms_util:make_ms(dirty_notify_back_out, [{parent, ParentIdx},
+                                                   {child, ChildIdx},
+                                                   {change, Change}]),
+    [Record] = mnesia:select(dirty_notify_back_out, [{Head, [], ['$_']}]),
+    ok = mnesia:delete_object(Record),
+    {ok, ok}.
+
+%% @spec delete_outgoing_hn(Parent::#refX{}, Child::#refX{}, Biccie) -> {ok, ok}
 %% @doc deletes an outgoing hypernumber if the biccie quoted is correct.
 %% 
-%% The Url is the Url of the cell on the remote site which used to use
-%% this hypernumber (but no longer does). The biccie is the biccie which was 
-%% originally given when the hypernumber was set up.
+%% The parent and the child references both point to a cell.
+%% The biccie is the biccie which was originally given when the
+%%  hypernumber was set up.
 %% 
 %% @todo at the moment the <code>refX{}</code> can only point to a cell
 %% should be a more general reference (including eventually a query reference)
 delete_outgoing_hn(Parent, Child, Biccie) ->
     ParentIndex = hn_util:index_from_refX(Parent),
     ChildIndex = hn_util:index_from_refX(Child),
-    Url = hn_util:index_to_url(ChildIndex),
-    Head = ms_util:make_ms(outgoing_hn, [{index, {'_', ParentIndex}},
-                                         {child_url, Url}, {biccie, Biccie}]),
+    #index{site = ChildSite} = ChildIndex,
+    Head = ms_util:make_ms(outgoing_hn, [{parent, ParentIndex},
+                                         {child_site, ChildSite}, {biccie, Biccie}]),
     Hypernumbers = mnesia:select(outgoing_hn, [{Head, [], ['$_']}]),
     delete_recs(Hypernumbers).
 
@@ -685,32 +829,44 @@ get_last_refs(#refX{site = S, path = P}) ->
     Zero = #refX{site = S, path = P, obj = {cell, {0, 0}}},
     lists:foldl(Fun, {Zero, Zero}, Cells).
 
-%% @spec read_remote_parents(RefX :: #refX{}) -> [#refX{}]
+%% @spec read_remote_parents(RefX :: #refX{}, type) -> [#refX{}]
 %% @doc this returns the remote parents of a reference.
 %% 
 %% The reference can only be to a cell and not a range, column, row or page
 %% 
-%% This fn is called read_remote_parents because it consists of all the
-%% remote links where the current RefX is the child
-read_remote_parents(#refX{obj = {cell, _}} = RefX) ->
+%% This fn is called read_remote_parents:
+%% <ul>
+%% <li>if the type is <code>incoming</code> and the reference is to a remote cell it 
+%% returns all the parents of that remote cell on this site</li>
+%% <li>if the type is <code>outgoing</code> and the reference is to a remote cell it
+%% returns all the parents of the local cell on the remote server</li>
+%% </ul>
+read_remote_parents(#refX{obj = {cell, _}} = RefX, Type)
+  when Type =:= incoming; Type =:= outgoing ->
     #refX{site = S, path = P, obj = {cell, {X, Y}}} = RefX,
     Index = #index{site = S, path = P, column = X, row = Y},
-    Match = ms_util:make_ms(remote_cell_link, [{child, Index}, {type, incoming}]),
+    Match = ms_util:make_ms(remote_cell_link, [{child, Index}, {type, Type}]),
     Links = mnesia:match_object(remote_cell_link, Match, read),
     get_remote_parents(Links).
 
-%% @spec read_remote_children(RefX :: #refX{}) -> [#refX{}]
+%% @spec read_remote_children(RefX :: #refX{}, Type) -> [#refX{}]
 %% @doc this returns the remote children of a reference.
 %% 
 %% The reference can only be to a cell and not a range, column, row or page
 %% 
-%% This fn is called read_remote_children because it consists of all the
-%% remote links where the current RefX is the parent
-read_remote_children(#refX{obj = {cell, _}} = RefX) ->
+%% This fn is called read_remote_children:
+%% <ul>
+%% <li>if the type is <code>incoming</code> and the reference is to a remote cell it 
+%% returns all the children of that remote cell</li>
+%% <li>if the type is <code>outgoing</code> and the reference is to a local cell it
+%% returns all the children of the local cell on the remote server</li>
+%% </ul>
+read_remote_children(#refX{obj = {cell, _}} = RefX, Type)
+  when Type =:= incoming; Type =:= outgoing ->
     #refX{site = S, path = P, obj = {cell, {X, Y}}} = RefX,
     Index = #index{site = S, path = P, column = X, row = Y},
     Match = ms_util:make_ms(remote_cell_link, [{parent, Index},
-                                               {type, incoming}]),
+                                               {type, Type}]),
     Links = mnesia:match_object(remote_cell_link, Match, read),
     get_remote_children(Links).
 
@@ -1086,7 +1242,7 @@ copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {range, _}} = To, Attrs) -
     List = hn_util:range_to_list(Ref),
     [copy_attrs(From, X, Attrs) || X <- List].
 
-%% @spec read_incoming_hn(Parent::#refX{}) -> [#incoming_hn{}]
+%% @spec read_incoming_hn(Parent::#refX{}) -> #incoming_hn{} | []
 %% @doc reads an incoming hypernumber.
 %% The <code>#refX{}</code> must refer to a cell
 %% @todo extend the hypernumbers paradigm to include registering with a range,
@@ -1094,8 +1250,12 @@ copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {range, _}} = To, Attrs) -
 read_incoming_hn(Parent) when is_record(Parent, refX) ->
     ParentIdx = hn_util:refX_to_index(Parent),
     Head = ms_util:make_ms(incoming_hn, [{remote, ParentIdx}]),
-    mnesia:select(incoming_hn, [{Head, [], ['$_']}]).
-
+    Return = mnesia:select(incoming_hn, [{Head, [], ['$_']}]),
+    case Return of
+        []   -> [];
+        [Hn] -> Hn
+    end.
+        
 %% @spec read_outgoing_hns(Parent::#refX{}) -> [#outgoing_hn{}]
 %% @doc reads the details of all outgoing hypernumbers from a particular cell.
 %% The <code>#refX{}</code> must refer to a cell
@@ -1104,8 +1264,110 @@ read_incoming_hn(Parent) when is_record(Parent, refX) ->
 %% shouldn't this just take the 
 read_outgoing_hns(Parent) when is_record(Parent, refX) ->
     ParentIdx = hn_util:refX_to_index(Parent),
-    Head = ms_util:make_ms(outgoing_hn, [{index, {'_',ParentIdx}}]),
+    Head = ms_util:make_ms(outgoing_hn, [{parent, ParentIdx}]),
     mnesia:select(outgoing_hn, [{Head, [], ['$_']}]).
+
+%% spec mark_cells_dirty(RefX::#refX{}) -> {ok, ok}
+%% @doc marks a set of cells as dirty - leading to them being
+%% recalculated.
+%% The reference can be to one of a:
+%% <ul>
+%% <li>cell</li>
+%% <li>range</li>
+%% <li>row</li>
+%% <li>column</li>
+%% <li>page</li>
+%% </ul>
+%% @todo extend to include url/db functions as required...
+mark_cells_dirty(#refX{obj = {cell, _}} = RefX) ->
+    % Make a list of cells hypernumbers + direct
+    % cell links, and check for any wildcard * on the path
+
+    % first up local
+    LocalChildren = read_local_children(RefX),
+    % now wildcards (must be fixed!)
+    Index = hn_util:index_from_refX(RefX),
+    NIndex = Index#index{path=lists:reverse(Index#index.path)},
+    Queries = dyn_parents(NIndex,[],[]),
+
+    LocalChildren2 = lists:append(LocalChildren, Queries),
+
+    % Now write the local children to dirty_cell
+    Fun = fun(X) ->
+                  XIdx = hn_util:refX_to_index(X),
+                  Match = ms_util:make_ms(dirty_cell, [{index, XIdx}]),
+                  % only write the dirty cell if 
+                  % it doesn't already exist
+                  case mnesia:match_object(Match) of
+                      [] -> ok = mnesia:write(#dirty_cell{index = XIdx});
+                      _  -> ok
+                  end
+          end,
+    _Return1 = lists:foreach(Fun, LocalChildren2),
+    {ok, ok};
+mark_cells_dirty(RefX) when is_record(RefX, refX) ->
+    Cells = get_cells(RefX),
+    [{ok, ok} = mark_cells_dirty(X) || X <- Cells],
+    {ok, ok}.
+
+%% @spec mark_notify_in_dirty(RefX::#refX{})  -> {ok, ok}
+%% @doc marks a remote parent as dirty
+mark_notify_in_dirty(RefX) when is_record(RefX, refX)  ->
+    ParentIdx = hn_util:refX_to_index(RefX),
+    % only write the dirty_notify_in if it doesn't already exist
+    Match = ms_util:make_ms(dirty_notify_in, [{parent, ParentIdx}]),
+    case mnesia:match_object(Match) of
+        [] -> ok = mnesia:write(#dirty_notify_in{parent = ParentIdx});
+        _  -> ok
+    end,
+    {ok, ok}.
+
+%% @spec mark_notify_out_dirty(RefX::#refX{}, Value, DepTree)  -> {ok, ok}
+%% DepTree = list()
+%% @doc marks a cell as dirty so that it's remote children can be updated
+mark_notify_out_dirty(RefX, Val, DepTree) ->
+    % read the outgoing hypernumber
+    Fun = fun() ->
+                  read_outgoing_hns(RefX)
+          end,
+    List = mnesia:activity(transaction, Fun),
+    % always write the dirty outgoing hypernumber
+    PIdx = hn_util:index_from_refX(RefX),
+    case List of
+        [] -> ok;
+        _  -> ok = mnesia:write(#dirty_notify_out{parent = PIdx, outgoing = List,
+                                                  value = Val,
+                                                  'dependency-tree' = DepTree})
+    end,
+    {ok, ok}.
+
+
+%% @spec unregister_out_hn(Parent::#refX{}, Child::#refX{}, Biccie) -> {ok, ok}
+%% @doc unregisters an outgoing hypernumber.
+%% Both parent and child references must point to a cell
+%% @todo this required a full table scan for an unregister
+%% will get veeeerrry expensive if you have 100,000 children tracking a
+%% number!
+unregister_out_hn(P, C, B)
+  when is_record(P, refX), is_record(C, refX) ->
+    case verify_biccie(P, C, B) of
+        true -> PIdx = hn_util:index_from_refX(P),
+                #refX{site = CS} = C,
+                M1 = ms_util:make_ms(index, [{site, CS}]),
+                M2 = ms_util:make_ms(remote_cell_link, [{parent, PIdx},
+                                                        {child, M1}]),
+                case mnesia:select_object(M2) of
+                    [] -> M3 = ms_util:make_ms(outgoing_hn,
+                                               [{parent, PIdx},
+                                                {child_site, CS}]),
+                          [R] = mnesia:select(outgoing_hn, [{M3, [], ['S_']}]),
+                          ok = mnesia:delete_object(R),
+                          {ok, ok};
+                    _   -> {ok, ok}
+                end;
+        false  ->
+            {ok, ok}
+    end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -1121,24 +1383,20 @@ write_attr3(RefX, {Key, Value}) ->
     spawn(fun() -> tell_front_end(Record, change) end),
     {ok, ok}.
 
-update_rem_parents(RefX, OldParents, NewParents) when is_record(RefX, refX) ->
+update_rem_parents(Child, OldParents, NewParents) when is_record(Child, refX) ->
     {Del, Write} = split_parents(OldParents, NewParents),
     % first delete all the records on the delete list
     % and unregister them (probably should be done in a gen server!)
     Fun1 = fun(X) ->
-                   delete_remote_parents(X)
+                   {ok, ok} = delete_remote_parents(X)
            end,
     [{ok, ok} = Fun1(X) || X <- Del],
     % now write all the records on the write list
-    io:format("Need to write a *notify remote site message* thing here...~n"),
     Fun2 = fun(X) ->
-                   P = hn_util:index_from_refX(X),
-                   C = hn_util:index_from_refX(RefX),
-                   Rec = #remote_cell_link{parent = P, child = C,
-                                           type = incoming},
-                   ok = mnesia:write(Rec)
+                   
+                   {ok, ok} = write_remote_link(X, Child, incoming)
            end,
-    [ok = Fun2(X) || X <- Write],
+    [{ok, ok} = Fun2(X) || X <- Write],
     {ok, ok}.
 
 %% This function is called on a local cell to inform all remote cells that it
@@ -1147,44 +1405,16 @@ update_rem_parents(RefX, OldParents, NewParents) when is_record(RefX, refX) ->
 %% It looks to see if there are any other local cells also consuming that hypernumber
 %%   - if not then delete the hypernumber in table 'incoming_hn' 
 %%     and inform the remote source that we no longer need updates
-unregister_hypernumber(Loc, Rem)
-  when is_record(Loc, refX), is_record(Rem, refX) ->
-    RemIdx = hn_util:refX_to_index(Rem),
-    Head = ms_util:make_ms(remote_cell_link, [{parent, RemIdx},
+unregister_inc_hn(Parent, Child)
+  when is_record(Child, refX), is_record(Parent, refX) ->
+    ParentIdx = hn_util:refX_to_index(Parent),
+    Head = ms_util:make_ms(remote_cell_link, [{parent, ParentIdx},
                                               {type, incoming}]),
     case mnesia:select(remote_cell_link, [{Head, [], ['$_']}]) of
         [] -> Msg = "unregister",
-              {ok, ok} = mark_notify_incoming_dirty(Loc, Rem, Msg); 
+              {ok, ok} = mark_notify_back_in_dirty(Parent, Child, Msg); 
         _  -> {ok, ok} % somebody else still wants it so don't unregister
     end.
-
-mark_dirty_notify_in(RefX) ->
-    ParentIdx = hn_util:refX_to_index(RefX),
-    ok = mnesia:write(#dirty_notify_in{index = ParentIdx}),
-    {ok, ok}.
-
-mark_dirty_notify_out(RefX, Val, DepTree) ->
-    % read the outgoing hypernumber
-    Fun = fun() ->
-                  read_outgoing_hns(RefX)
-          end,
-    List = mnesia:activity(transaction, Fun),
-    % always write the dirty outgoing hypernumber
-    Idx = hn_util:index_from_refX(RefX),
-    case List of
-        [] -> ok;
-        _  -> ok = mnesia:write(#dirty_notify_out{index = Idx, outgoing = List,
-                                                   value = Val,
-                                                   'dependency-tree' = DepTree})
-    end,
-    {ok, ok}.
-
-mark_notify_incoming_dirty(Child, Parent, Msg) ->
-    CIdx = hn_util:refX_to_index(Child),
-    PIdx = hn_util:refX_to_index(Parent),
-    Rec = #dirty_notify_back_in{child = CIdx, parent = PIdx, change = Msg},
-    mnesia:write(Rec),
-    {ok, ok}.
 
 get_refXs(List) -> get_refXs(List, []).
 
@@ -1383,37 +1613,6 @@ fl([{_, {'dependency-tree', _}}| T], A, B)  -> fl(T, A, B);
 fl([{_, {'__ast', _}} | T], A, B)           -> fl(T, A, B);
 fl([{_, {formula, V}}| T], A, B)            -> fl(T, [V | A], B);
 fl([H | T], A, B)                           -> fl(T, A, [H | B]).
-
-mark_cells_dirty(#refX{obj = {cell, _}} = RefX) ->
-    % Make a list of cells hypernumbers + direct
-    % cell links, and check for any wildcard * on the path
-
-    % first up local
-    LocalChildren = read_local_children(RefX),
-    % now wildcards (must be fixed!)
-    Index = hn_util:index_from_refX(RefX),
-    NIndex = Index#index{path=lists:reverse(Index#index.path)},
-    Queries = dyn_parents(NIndex,[],[]),
-
-    LocalChildren2 = lists:append(LocalChildren, Queries),
-
-    % Now write the local children to dirty_cell
-    Fun = fun(X) ->
-                  XIdx = hn_util:refX_to_index(X),
-                  Match = ms_util:make_ms(dirty_cell, [{index, XIdx}]),
-                  % only write the dirty cell if 
-                  % it doesn't already exist
-                  case mnesia:match_object(Match) of
-                      [] -> mnesia:write(#dirty_cell{index = XIdx});
-                      _  -> ok
-                  end
-          end,
-    _Return1 = lists:foreach(Fun, LocalChildren2),
-    {ok, ok};
-mark_cells_dirty(RefX) ->
-    Cells = get_cells(RefX),
-    [{ok, ok} = mark_cells_dirty(X) || X <- Cells],
-    {ok, ok}.
     
 dyn_parents(_Index = #index{path=[]},Results, _Acc) ->
     Results;
@@ -1465,9 +1664,9 @@ delete_remote_parents(RefX) when is_record(RefX, refX) ->
                   Rec = #remote_cell_link{parent = P, child = C,
                                           type = incoming},
                   {ok, ok} = delete_recs([Rec]),
-                  Remote = hn_util:refX_from_index(P),
-                  Local = hn_util:refX_from_index(C),
-                  unregister_hypernumber(Local, Remote)
+                  Parent = hn_util:refX_from_index(P),
+                  Child = hn_util:refX_from_index(C),
+                  unregister_inc_hn(Parent, Child)
           end,
     [{ok, ok} = Fun(X) || X <- Parents],
     delete_recs(Parents).
@@ -1580,7 +1779,9 @@ shift_dirty_notify_ins(From, To) ->
     ToIdx   = hn_util:index_from_refX(To),
     case mnesia:read({dirty_notify_in, FromIdx}) of
         []        -> {ok, ok};
-        [DirtyHn] -> NewDirty = DirtyHn#dirty_notify_in{index = ToIdx},
+        [DirtyHn] -> io:format("in hn_db_wu:shift_dirty_notify_ins "++
+                               "this has got to be wrong too...~n"),
+                     NewDirty = DirtyHn#dirty_notify_in{parent = ToIdx},
                      mnesia:delete(DirtyHn),
                      mnesia:write(NewDirty),
                      {ok, ok}
@@ -1602,7 +1803,7 @@ shift_incoming_hns(From, To) ->
               ToURL = hn_util:index_to_url(ToIdx),
               Msg = {"move", {"from", FromURL}, {"to", ToURL}},
               Fun = fun(X) ->
-                            mark_notify_incoming_dirty(From, X, Msg)
+                            {ok, ok} = mark_notify_back_in_dirty(From, X, Msg)
                     end,
               [ok = Fun(X) || X <- L],
               {ok, ok}
@@ -1622,7 +1823,8 @@ write_formula1(RefX, Val, Fla) ->
     Rti = ref_to_rti(Ref, false),
     case muin:run_formula(Fla, Rti) of
         {error, Error} ->
-            io:format("in hn_db_wu:write_formula1 Error is ~p~n", [Error]),
+            io:format("in hn_db_wu:write_formula1 Fla is ~p Rti is ~p Error is ~p~n",
+                      [Fla, Rti, Error]),
             % @TODO, notify clients
             {ok, ok};       
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
@@ -1729,7 +1931,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
     % formula I don't want to first delete the old link (and trigger
     % an UNREGISTRATION of the hypernumbers) and then REWRITE the
     % same remote link and trigger a REGISTRATION so I first read the links
-    OldRemotePs = read_remote_parents(RefX),
+    OldRemotePs = read_remote_parents(RefX, incoming),
     {ok, ok} = update_rem_parents(RefX, OldRemotePs, NewRemotePs),
 
     % We need to know the calculcated value
@@ -1738,7 +1940,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
 
     % mark this cell as a possible dirty hypernumber
     % This takes a value and the dependency tree as it is asyncronous...
-    {ok, ok} = mark_dirty_notify_out(RefX, RawValue, DepTree),
+    {ok, ok} = mark_notify_out_dirty(RefX, RawValue, DepTree),
     {ok, ok}.
 
 split_parents(Old, New) -> split_parents1(lists:sort(Old),
@@ -1989,6 +2191,7 @@ dump() ->
     io:format("in dump Attrs are ~p~n", [Attrs]),
     {ok, ok}.
 
+%% @hidden
 dump(RefX, Msg) ->
     Ref = hn_util:refX_to_ref(RefX, '_'),
     Match = ms_util:make_ms(hn_item, [{addr, Ref}]),

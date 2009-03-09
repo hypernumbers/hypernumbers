@@ -54,23 +54,23 @@ create()->
     ok = mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
     mnesia:start(),
-    ?create(hn_item,               set, Storage),
-    ?create(remote_cell_link,      bag, Storage),
-    ?create(local_cell_link,       bag, Storage),
-    ?create(hn_user,               set, Storage),
-    ?create(dirty_cell,            set, Storage),
-    ?create(dirty_notify_in,       set, Storage),
-    ?create(dirty_incoming_create, set, Storage),
-    ?create(dirty_notify_back_in,  set, Storage),
-    ?create(dirty_notify_out,      set, Storage),
-    ?create(dirty_notify_back_out, set, Storage),
-    ?create(incoming_hn,           set, Storage),
-    ?create(outgoing_hn,           set, Storage),
-    ?create(template,              set, Storage),
-    ?create(styles,                bag, Storage), 
-    ?create(style_counters,        set, Storage),
-    ?create(page_vsn,              bag, Storage),
-    ?create(page_vsn_counters,     set, Storage),
+    ?create(hn_item,              set, Storage),
+    ?create(remote_cell_link,     bag, Storage),
+    ?create(local_cell_link,      bag, Storage),
+    ?create(hn_user,              set, Storage),
+    ?create(dirty_cell,           set, Storage),
+    ?create(dirty_notify_in,      set, Storage),
+    ?create(dirty_inc_hn_create,  set, Storage),
+    ?create(dirty_notify_back_in, set, Storage),
+    ?create(dirty_notify_out,     set, Storage),
+    ?create(dirty_notify_back_out,set, Storage),
+    ?create(incoming_hn,          set, Storage),
+    ?create(outgoing_hn,          set, Storage),
+    ?create(template,             set, Storage),
+    ?create(styles,               bag, Storage), 
+    ?create(style_counters,       set, Storage),
+    ?create(page_vsn,             bag, Storage),
+    ?create(page_vsn_counters,    set, Storage),
     hn_users:create("admin","admin"),
     hn_users:create("user","user"),
     ok.
@@ -242,7 +242,7 @@ del_remote_link(Obj=#remote_cell_link{type=outgoing}) ->
 
                 case mnesia:match_object(Outgoing) of
                     [] ->
-                        Out  = #outgoing_hn{index={'_',Me},_='_'},
+                        Out  = #outgoing_hn{parent = Me ,_='_'},
                         [Hn] = mnesia:match_object(Out),
                         mnesia:delete_object(Hn);
                     _  -> 
@@ -415,16 +415,16 @@ hn_changed(Cell) ->
 %    _Return1=lists:foreach(Fun2,Local),
 %    RefX = hn_util:refX_from_index(Index),
 %    Fun3 = fun() ->
-%                  {ok, ok} = hn_db_wu:mark_dirty_outgoing_hn_DEPRECATED(RefX, Value)
+%                  {ok, ok} = hn_db_wu:mark_dirty_outgoing_hn(RefX, Value)
 %          end,
 %    {ok, ok} = mnesia:activity(transaction, Fun3),
 %    ok;
 mark_dirty(Index, _Value, hypernumber) ->
     RefX = hn_util:refX_from_index(Index),
-    io:format("in hn_db:mark_dirty  for RefX of ~p AINT THIS OUTGOING!!!~n",
+    io:format("in hn_db:mark_dirty for RefX of ~p AINT THIS OUTGOING!!!~n",
               [RefX]),
     Fun3 = fun() ->
-                  {ok, ok} = hn_db_wu:mark_dirty_notify_in_DEPRECATED(RefX)
+                  {ok, ok} = hn_db_wu:mark_notify_in_dirty(RefX)
           end,
     {ok, ok} = mnesia:activity(transaction, Fun3),
     ok.
@@ -465,7 +465,7 @@ do_get_hn(Url, From, To)->
                       "this ain't me babe! this should just mark the table "++
                       "incoming_hn dirty and return blank to the function so "++
                       "that the dirty_srv does the work...~n"),
-            Biccie = util2:get_biccie(),
+            Biccie = util2:bake_biccie(),
             #index{site = S, path = P} = From,
             Proxy = S ++"/"++ string:join(P,"/")++"/",
             FromUrl = hn_util:index_to_url(From),
@@ -497,10 +497,10 @@ do_get_hn(Url, From, To)->
             end
     end.
 
-%% @spec register_hn(To,From,Bic,Proxy,Url) -> Val
+%% @spec register_hn(To,From,Bic,Proxy,ChildSite) -> Val
 %% Val = list()
 %% @doc  Receive registration for a hypernumber
-register_hn(To, From, Bic, Proxy, Url) ->
+register_hn(To, From, Bic, Proxy, ChildSite) ->
     % io:format("in hn_db:register_hn~n-To is ~p~n-From is ~p~n", [To, From]),
     F = fun()->
                 Link = #remote_cell_link{
@@ -509,9 +509,10 @@ register_hn(To, From, Bic, Proxy, Url) ->
                   type = outgoing},
                 % io:format("In hn_db:register_hn Link is ~p~n", [Link]),
                 Hn = #outgoing_hn{
-                  index     = {Proxy,To},
-                  biccie    = Bic,
-                  child_url = Url},
+                  parent       = To,
+                  biccie       = Bic,
+                  child_site   = ChildSite,
+                  child_proxy = Proxy},
 
                 ok = mnesia:write(Link),
                 ok = mnesia:write(Hn),

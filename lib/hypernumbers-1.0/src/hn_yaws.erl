@@ -293,28 +293,30 @@ req('POST',{delete,[],Data},_Vars,_User,Ref) ->
 req('POST',{register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{child_url,[],[Reg]}]},
     _Attr,_User,Ref) ->
     {ok,RegRef}=hn_util:parse_url(Reg),
-    % io:format("in hn_yaws:req Ref is ~p RegRef is ~p~n", [Ref, RegRef]),
+    #ref{site = ChildSite} = RegRef,
+    %    io:format("in hn_yaws:req~n-Ref is ~p~n-RegRef is ~p~n-Proxy is ~p~n",
+    %              [Ref, RegRef, Proxy]),
     hn_db:register_hn(
                   hn_util:ref_to_index(Ref),
                   hn_util:ref_to_index(RegRef),
-      Bic, Proxy, Reg);
+      Bic, Proxy, ChildSite);
 
 %% with 'notify' the remote site is a hypernumber which is passing on
 %% nofitications like 'my value has changed' or 'my location has changed'
-req('POST',{notify,[],Data},_Attr,_User,Ref) ->
-    case lists:keysearch(type,1,Data) of
-        {value,{type,[],["change"]}} ->
-            api_change(Data,Ref)
-    end;
+req('POST', {notify, [], Data}, _Attr, _User, Ref) ->
+    {Parent, Type, Value, DepTree, Biccie, Version} = parse_notify(Data),
+    {Child, _KV} = hn_util:ref_to_refX(Ref, "chucked away!"),
+    {ok, ok} = hn_db_api:handle_notify(Parent, Child, Type, Value,
+                                       DepTree, Biccie, Version),
+    {ok,{success,[],[]}};
 
-%% with 'notify_incoming' the remote site is consuming a local hypernumber
+%% with 'notify_back' the remote site is consuming a local hypernumber
 %% and is notifying back 'I don't need you anymore' I have shifted my
 %% location' etc, etc
-req('POST',{notify_incoming,[],Data},_Attr,_User,Ref) ->
-    case lists:keysearch(type,1,Data) of
-        {value,{type,[],["unregister"]}} ->
-            api_unregister(Data, Ref)
-    end;
+req('POST', {notify_back, [], Data}, _Attr, _User, _Ref) ->
+    {Parent, Child, Biccie, Type} = parse_notify_back(Data),
+    {ok, ok} = hn_db_api:handle_notify_back(Parent, Child, Biccie, Type),
+    {ok,{success,[],[]}};
 
 %% deprecated
 req('POST',{template,[],[{name,[],[Name]},
@@ -350,38 +352,33 @@ req('POST',Data,["import"],_User,_Page) ->
 req(Method,Data,Vars,User,Page) ->
     throw({unmatched_request,Method,Data,Vars,User,Page}).
 
-api_change([{biccie,            [], [Biccie]},
-            {parent,            [], [ParentUrl]},
-            {type,              [], ["change"]},
-            {value,             [], [Val]},
-            {'dependency-tree', [], DepTree},
-            {version,           [], [Version]}], _Page)->
+%% Utility functions
+%%--------------------------------------------------------------------
+parse_notify([{biccie,            [], [Biccie]},
+              {parent,            [], [ParentUrl]},
+              {type,              [], [Type]},
+              {value,             [], [Val]},
+              {'dependency-tree', [], DepTree},
+              {version,           [], [Version]}]) ->
     {_,_,Val2}=Val,
     Val3 = case Val2 of
                []  -> Val2;
                [V] -> V
            end,
-    {ok, Ref} = hn_util:parse_url(ParentUrl),
-    {RefX, _} = hn_util:ref_to_refX(Ref, "to be chucked away"),
-    {ok, ok} = hn_db_api:update_incoming_hn(RefX, Val3, DepTree,
-                                            Biccie,Version),
-    
-    {ok,{success,[],[]}}.
+    {ok, P} = hn_util:parse_url(ParentUrl),
+    {Parent, _} = hn_util:ref_to_refX(P, "not needed"),
+    {Parent, Type, Val3, DepTree, Biccie, Version}.
+             
+parse_notify_back([{biccie,    [], [Biccie]},
+                   {child_url, [], [ChildUrl]},
+                   {parent_url,[], [ParentUrl]},
+                   {type,      [], [Type]}]) ->
+    {ok, P} = hn_util:parse_url(ParentUrl),
+    {Parent, _} = hn_util:ref_to_refX(P, "not needed"),
+    {ok, C} = hn_util:parse_url(ChildUrl),
+    {Child, _} = hn_util:ref_to_refX(C, "not needed"),
+    {Parent, Child, Biccie, Type}.
 
-api_unregister([{biccie,[],     [Biccie]},
-                {child_url,[],  [ChildUrl]},
-                {parent_url,[], [ParentUrl]},
-                {type,[],       ["unregister"]}],
-               _Page)->
-    {ok, ParentRef} = hn_util:parse_url(ParentUrl),
-    {ok, ChildRef}  = hn_util:parse_url(ChildUrl),
-    {ParentRefX, _} = hn_util:ref_to_refX(ParentRef, "not used"),
-    {ChildRefX, _}  = hn_util:ref_to_refX(ChildRef, "not used"),
-    hn_db_api:unregister_hypernumber(ParentRefX, ChildRefX, Biccie),
-    {ok,{success,[],[]}}.
-
-%% Utility functions
-%%--------------------------------------------------------------------
 get_page_attributes(Ref) ->
     F = fun(#hn_item{addr=A}) ->
                 case atom_to_list((A)#ref.name) of
