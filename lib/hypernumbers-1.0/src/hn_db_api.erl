@@ -225,7 +225,9 @@ handle_dirty_notify_back_out(P, C, Type, B)
 handle_dirty_notify_back_out(P, C, Type, Biccie)
     when is_record(P, refX), is_record(C, refX), Type =:= "new child" ->
     Fun = fun() ->
-                  hn_db_wu:write_remote_link(P, C, outgoing),
+                  io:format("In handle_dirty_nofity_back_out~n-P is ~p~n-"++
+                            "C is ~p~n-Type is outgoing...~n", [P, C]),
+                  {ok, ok} = hn_db_wu:write_remote_link(P, C, outgoing),
                   {ok, ok} = hn_db_wu:clear_dirty_notify_back_out(P, C, Type)
           end,
     mnesia:activity(transaction, Fun).
@@ -277,6 +279,8 @@ handle_notify_back(P, C, B, Type)
 write_remote_link(Parent, Child, Type)
   when is_record(Parent, refX), is_record(Child, refX) ->
     Fun = fun() ->
+                  io:format("hn_db_api:write_remote_link~n-Parent is ~p~n-"++
+                            "Child is ~p~n-Type is ~p~n", [Type]),
                   hn_db_wu:write_remote_link(Parent, Child, Type)
           end,
     mnesia:activity(transaction, Fun).
@@ -294,6 +298,8 @@ read_incoming_hn(P, C) when is_record(P, refX),is_record(C, refX) ->
                     [] ->
                         {ok, ok} = hn_db_wu:mark_inc_create_dirty(P, C),
                         % need to write a link
+                        io:format("In hn_db_api:read_incoming_hn~n-P is ~p~n-"++
+                                  "C is ~p~n-and type is incoming~n", [P, C]),
                         {ok, ok} = hn_db_wu:write_remote_link(P, C, incoming),
                         {blank, []};
                      Hn ->
@@ -498,7 +504,7 @@ read_attributes(RefX, AttrList) when is_record(RefX, refX),
 %% </ul>
 read(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  hn_db_wu:read_attrs(RefX)
+                  hn_db_wu:read_cells(RefX)
           end,
     mnesia:activity(transaction, Fun).
 

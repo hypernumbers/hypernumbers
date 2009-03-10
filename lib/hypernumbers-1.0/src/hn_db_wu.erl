@@ -949,7 +949,6 @@ write_attr(RefX, {Key, Val}) when is_record(RefX, refX) ->
 %% Value = term()
 %% @doc reads all the attributes of a cell or cells
 %%
-%% This is a raw read because it returns *ALL* the attributes
 %% The reference can refer to a:
 %% <ul>
 %% <li>cell</li>
