@@ -130,9 +130,12 @@ c_not.xls
 c_odd.xls
 c_or.xls
 c_pi.xls
+c_pv.xls
 c_power.xls
 c_product.xls
+c_proper.xls
 c_radians.xls
+c_rate.xls
 c_right.xls
 c_rightb.xls
 c_roman.xls
