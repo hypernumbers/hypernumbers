@@ -1,0 +1,136 @@
+ Volume in drive C has no label.
+ Volume Serial Number is AC37-78B3
+
+ Directory of C:\Documents and Settings\Gordon Guthrie\My Documents\SVN\trunk\tests\excel_files\Win_Excel07_As_97
+
+13/01/2009  17:48            17,920 c_abs.xls
+13/01/2009  17:48            17,920 c_acos.xls
+13/01/2009  17:48            18,432 c_acosh.xls
+13/02/2009  22:21            19,456 c_and.xls - added floats
+13/01/2009  17:48            18,944 c_asin.xls
+13/01/2009  17:48            18,432 c_asinh.xls
+13/01/2009  17:48            18,432 c_atan.xls
+13/01/2009  17:48            18,944 c_atan2.xls
+13/01/2009  17:48            18,432 c_atanh.xls
+12/02/2009  16:00            20,480 c_avedev.xls
+13/01/2009  17:48            18,944 c_average.xls
+13/01/2009  17:48            18,944 c_averagea.xls
+13/01/2009  17:48            19,456 c_ceiling.xls
+13/01/2009  17:48            19,456 c_char.xls - added floats
+13/01/2009  17:48            19,968 c_chidist.xls
+13/01/2009  17:48            21,504 c_choose.xls - added floats
+13/01/2009  17:48            20,480 c_clean.xls
+13/01/2009  17:48            19,456 c_column.xls
+13/01/2009  17:48            19,456 c_columns.xls - added floats
+13/01/2009  17:48            19,456 c_combin.xls - added floats
+13/01/2009  17:48            19,968 c_concatenate.xls - added floats
+13/01/2009  17:48            19,456 c_cos.xls
+13/01/2009  17:48            19,456 c_cosh.xls
+13/01/2009  17:48            19,456 c_count.xls - added floats
+13/01/2009  17:48            19,968 c_counta.xls - added floats
+13/01/2009  17:48            19,456 c_countblank.xls
+13/01/2009  17:48            19,968 c_countif.xls
+13/01/2009  17:48            20,480 c_critbinom.xls - added floats
+13/01/2009  17:48            19,968 c_date.xls - added floats
+13/01/2009  17:48            19,456 c_datevalue.xls
+13/01/2009  17:48            24,576 c_daverage.xls
+13/01/2009  17:48            19,456 c_day.xls - added floats
+13/01/2009  17:48            19,456 c_days360.xls - added floats
+13/01/2009  17:48            22,016 c_db.xls- added floats
+13/01/2009  17:48            24,064 c_dcount.xls
+13/01/2009  17:48            24,064 c_dcounta.xls
+13/01/2009  17:48            23,552 c_dget.xls
+13/01/2009  17:48            22,016 c_error_type.xls - added floats
+13/01/2009  17:48            21,504 c_even.xls - added floats
+13/01/2009  17:48            22,016 c_exact.xls - added floats
+13/01/2009  17:48            21,504 c_exp.xls - added floats
+13/01/2009  17:48            22,016 c_expondist.xls - added floats
+13/01/2009  17:48            21,504 c_fact.xls - added floats
+13/02/2009  22:21                 0 c_files.txt
+13/01/2009  17:48            23,040 c_find.xls - added floats
+13/02/2009  20:30            27,648 c_findb.xls - added floats
+13/01/2009  17:48            23,552 c_fixed.xls
+13/01/2009  17:48            21,504 c_floor.xls
+13/01/2009  17:48            40,960 c_frequency.xls - added floats
+13/01/2009  17:48            23,552 c_fv.xls - added floats
+13/01/2009  17:48            21,504 c_gestep.xls - added floats
+13/01/2009  17:48            22,528 c_if.xls - added floats
+13/01/2009  17:48            40,448 c_index.xls - added floats
+13/01/2009  17:48            25,088 c_indirect.xls
+13/01/2009  17:48            28,672 c_iserr.xls - added floats
+13/01/2009  17:48            29,184 c_iserror.xls - added floats
+13/01/2009  17:48            28,160 c_islogical.xls - added floats
+13/01/2009  17:48            28,160 c_isna.xls - added floats
+13/01/2009  17:48            28,160 c_isnontext.xls - added floats
+13/01/2009  17:48            28,160 c_isnumber.xls - added floats
+13/01/2009  17:48            28,160 c_istext.xls - added floats
+13/01/2009  17:48            30,208 c_large.xls - added floats
+13/01/2009  17:48            29,696 c_left.xls - added floats
+11/02/2009  19:41            23,040 c_leftb.xls - added floats
+13/02/2009  20:29            29,184 c_len.xls - added floats
+13/02/2009  16:41            22,016 c_lenb.xls - added floats
+13/01/2009  17:48            28,160 c_ln.xls
+13/01/2009  17:48            29,184 c_log.xls
+13/01/2009  17:48            28,160 c_log10.xls - added floats
+13/01/2009  17:48            28,160 c_lower.xls - added floats
+13/01/2009  17:48            29,184 c_max.xls
+13/01/2009  17:48            29,184 c_maxa.xls
+13/01/2009  17:48            29,184 c_mdeterm.xls
+13/01/2009  17:48            29,184 c_median.xls - added floats
+13/01/2009  17:48            29,696 c_mid.xls - added floats
+13/01/2009  17:48            29,184 c_midb.xls - added floats
+13/01/2009  17:48            29,184 c_min.xls - added floats
+13/01/2009  17:48            29,184 c_mina.xls - added floats
+13/01/2009  17:48            28,672 c_minute.xls
+13/01/2009  17:48            29,184 c_minverse.xls - added floats
+13/01/2009  17:48            29,696 c_mmult.xls - added floats
+13/01/2009  17:48            28,672 c_mod.xls - added floats
+13/01/2009  17:48            29,184 c_mode.xls - added floats
+13/01/2009  17:48            28,672 c_month.xls - added floats
+13/01/2009  17:48            28,672 c_n.xls - added floats
+13/01/2009  17:48            27,648 c_na.xls
+13/01/2009  17:48            28,672 c_not.xls - added floats
+11/02/2009  19:46            22,016 c_right.xls - added floats
+11/02/2009  19:42            22,016 c_rightb.xls - added floats
+13/01/2009  17:48           152,576 c_roman.xls - added floats
+14/01/2009  00:11            24,064 c_search.xls - added floats
+11/02/2009  19:42            22,528 c_searchb.xls - added floats
+14/01/2009  00:11            19,968 c_second.xls - added floats
+14/01/2009  00:11            19,968 c_sign.xls - added floats
+14/01/2009  00:11            20,480 c_sin.xls - added floats
+14/01/2009  00:11            20,480 c_sinh.xls - added floats
+14/01/2009  00:11            21,504 c_skew.xls - added floats
+14/01/2009  00:11            21,504 c_small.xls - added floats
+14/01/2009  00:11            20,480 c_sqrt.xls - added floats
+14/01/2009  00:11            20,992 c_standardise.xls - added floats
+14/01/2009  00:11            20,480 c_stdev.xls - added floats
+14/01/2009  00:11            20,480 c_stdeva.xls - added floats
+14/01/2009  00:11            20,480 c_stdevp.xls - added floats
+14/01/2009  00:11            20,480 c_stdevpa.xls - added floats
+14/01/2009  00:11            23,040 c_steyx.xls - added floats
+14/01/2009  00:11            23,040 c_substitute.xls - added floats
+14/01/2009  00:11            26,112 c_subtotal.xls - added floats
+14/01/2009  00:11            20,992 c_sum.xls - added floats
+14/01/2009  00:11            25,088 c_sumif.xls - added floats
+14/01/2009  00:11            22,016 c_sumproduct.xls - added floats
+14/01/2009  00:11            22,016 c_sumsq.xls - added floats
+14/01/2009  00:11            22,016 c_sumx2my2.xls - added floats
+14/01/2009  00:11            22,016 c_sumx2py2.xls - added floats
+14/01/2009  00:11            21,504 c_sumxmy2.xls - added floats
+14/01/2009  00:11            20,480 c_tan.xls - added floats
+14/01/2009  00:11            20,480 c_tanh.xls - added floats
+14/01/2009  00:11            20,992 c_transpose.xls
+14/01/2009  00:11            20,480 c_trim.xls
+14/01/2009  00:11            22,016 c_trimean.xls
+14/01/2009  00:11            22,016 c_trunc.xls - added floats
+14/01/2009  00:11            20,480 c_type.xls - added floats
+14/01/2009  00:11            20,992 c_upper.xls - added floats
+14/01/2009  00:11            20,992 c_value.xls - added floats
+14/01/2009  00:11            22,016 c_var.xls - added floats
+14/01/2009  00:11            22,016 c_vara.xls - added floats
+14/01/2009  00:11            22,016 c_varp.xls - added floats
+14/01/2009  00:11            22,016 c_varpal.xls - added floats
+14/01/2009  00:11            22,016 c_weibull.xls - added floats
+14/01/2009  00:11            20,992 c_year.xls - added floats
+             129 File(s)      3,117,568 bytes
+               0 Dir(s)   6,518,558,720 bytes free
