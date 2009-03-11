@@ -308,18 +308,14 @@ linest1(_, _) ->
     0.
 
 max(V1) ->
-    io:format("in max~n-V1 is ~p~n", [V1]),
     Flatvs = ?flatten_all(V1),
-    io:format("in max~n-Flatvs is ~p~n", [Flatvs]),
     Rules = [cast_strings_or_ignore, ignore_bools, cast_blanks, cast_dates],
     Nums = ?numbers(Flatvs, Rules),
-    io:format("in max~n-Nums is ~p~n", [Nums]),
     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
 
 maxa(V1) ->
     Flatvs = ?flatten_all(V1),
-    Nums = ?numbers(Flatvs,
-                    ?default_rules -- [cast_strings] ++ [cast_strings_zero]),
+    Nums = ?numbers(Flatvs, ?default_rules),
     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
 
 median(V1) ->
