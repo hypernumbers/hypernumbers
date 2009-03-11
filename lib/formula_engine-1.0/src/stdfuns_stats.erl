@@ -279,14 +279,27 @@ kurt(V1) ->
 kurt1(Nums) ->
     (moment(Nums, 4) / math:pow(moment(Nums, 2), 2)) - 3.
 
+%% the casting for this is all over the place
+%% doens't cast left to right, blah-blah
 large([V1, V2]) ->
+    case {?is_string(V1), is_bool(V1)} of
+        {true, _}      -> ?ERR_VAL;
+        {false, true}  -> ?ERR_NUM;
+        {false, _}     -> ok
+    end,
+    Rules = [ignore_strings, ignore_bools, ignore_blanks, cast_dates],
     Nums = ?flatten_all(V1),
+    % yes evaluating errors right to left!
     K = ?number(V2, ?default_rules),
-    ?ensure(K > 0, ?ERR_NUM),
-    ?ensure(length(Nums) >= K, ?ERR_NUM),
-    large1(Nums, K).
-large1(Nums, K) ->
-    nth(K, reverse(sort(Nums))).
+    Nums2 = ?numbers(Nums, Rules),
+    K2 = erlang:round(K),
+    io:format("In stdfuns_stats:large~n-V1 is ~p~n-V2 is ~p~n-Nums is  ~p~n-"++
+              "Nums2 is ~p~n-K is  ~p~n-K2 is ~p~n", [V1, V2, Nums, Nums2, K, K2]),
+    ?ensure(K2 > 0, ?ERR_NUM),
+    ?ensure(length(Nums2) >= K2, ?ERR_NUM),
+    large1(Nums2, K2).
+large1(Nums, K2) ->
+    nth(K2, reverse(sort(Nums))).
 
 %% TODO:
 linest(_) ->
@@ -564,3 +577,7 @@ moment(Vals, M) ->
     Avg = average1(Vals),
     lists:foldl(fun(X, Acc) -> Acc + math:pow((Avg - X), M) end,
                 0, Vals) / length(Vals).
+
+is_bool(true)  -> true;
+is_bool(false) -> true;
+is_bool(_)     -> false.
