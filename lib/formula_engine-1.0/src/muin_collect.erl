@@ -54,7 +54,7 @@ flatten_areas(A) ->
     flatten_areas([A]).
 
 %% Rules:
-%% ignore_strings | cast_strings | cast_strings_zero | ban_strings
+%% ignore_strings | cast_strings | cast_strings_zero cast_strings_or_ignore | ban_strings
 %% ignore_bools | cast_bools | ban_bools
 %% ignore_dates | cast_dates | ban_dates
 %% ignore_blanks | cast_blanks | ban_blanks
@@ -120,7 +120,7 @@ generic_collect(Vs, Rules, _PartitionFun, Targtype) ->
                 Vs, Rules),
 
     muin_checks:die_on_errval(Res),
-    
+
     if(Res == []) -> ?ERR_VAL;
       true       -> Res
     end.
@@ -150,18 +150,30 @@ ignore(Fun, Xs) ->
 
 cast_strings(Xs, Targtype) ->
     cast_strings_with_opt(Xs, Targtype, fun() -> ?ERRVAL_VAL end).
+
 cast_strings_false(Xs) ->
     cast_strings_with_opt(Xs, bool, fun() -> false end).
+
 cast_strings_zero(Xs) ->
     cast_strings_with_opt(Xs, num, fun() -> 0 end).
 
+cast_strings_or_ignore(Xs) ->
+             cast_strings_with_opt(Xs, num, ignore).
+
 cast_strings_with_opt(Xs, Targtype, Action) ->
     Res = generic_cast(Xs, Targtype, fun is_string/1),
-    %% Swap all {error, _} for Action().
-    reverse(foldl(fun({error, _}, Acc) -> [Action()|Acc];
-                   (X, Acc)          -> [X|Acc]
-                  end,
-                  [], Res)).
+    % Swap all {error, _} for Action if Action is a fun()
+    % if action is the atom 'ignore' will return nothing
+    Fun = fun(X, Acc) ->
+                  case X of
+                      {error, _} -> case Action of
+                                        ignore    -> Acc;
+                                        _         -> [Action() | Acc]
+                                    end;
+                      _          -> [X | Acc]
+                  end  
+          end,
+    reverse(foldl(Fun, [], Res)).
 
 cast_numbers(Xs, Targtype) ->
     generic_cast(Xs, Targtype, fun erlang:is_number/1).
