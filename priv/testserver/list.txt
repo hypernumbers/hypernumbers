@@ -176,6 +176,7 @@ c_syd.xls
 c_t.xls
 c_tan.xls
 c_tanh.xls
+c_time.xls
 c_timevalue.xls
 c_transpose.xls
 c_trim.xls
