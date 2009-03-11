@@ -90,15 +90,17 @@ clean_start() ->
 %% @doc  Start yaws in embedded mode
 start_yaws() ->
     
-    {ok,[[Log]]}  = init:get_argument(hn_log),
-    Hosts   = gen_server:call(hn_config,{get,hosts}),
+    mochiweb_http:start([{port, 9000}, {loop, {hn_mochi, req}}]),
 
-    SConfs = lists:map(fun create_sconf/1,Hosts),    
-    GC     = yaws_config:make_default_gconf(false, "id"),
-    
-    application:set_env(yaws, embedded, true),
-    application:start(yaws),    
-    ok = yaws_api:setconf(GC#gconf{logdir=Log}, [SConfs]),
+%    {ok,[[Log]]}  = init:get_argument(hn_log),
+%    Hosts   = gen_server:call(hn_config,{get,hosts}),
+%
+%    SConfs = lists:map(fun create_sconf/1,Hosts),    
+%    GC     = yaws_config:make_default_gconf(false, "id"),
+%    
+%    application:set_env(yaws, embedded, true),
+%    application:start(yaws),    
+%    ok = yaws_api:setconf(GC#gconf{logdir=Log}, [SConfs]),
     ok.
 
 %% @spec start_dirty_subscribe() -> ok

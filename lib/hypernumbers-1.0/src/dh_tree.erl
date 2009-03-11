@@ -4,10 +4,13 @@
 -module(dh_tree).
 
 -include("hypernumbers.hrl").
--export([create/1, add/2, erase/2, flatlist/1]).
+-export([new/0, create/1, add/2, set/3, erase/2, flatlist/1]).
 
 %-spec create(List::list(list(string()))) -> any().
 %% doc take a list of keys and generate a tree
+new() ->
+    create([]). 
+
 create(List) ->
     create(List,dict:new()).
 create([],Dict) ->
@@ -28,6 +31,18 @@ add([H|T],Dict) ->
                 false -> dict:new()
             end,
     dict:store(H,add(T,NDict),Dict).
+
+%-spec add(Key::list(string()),Dict::any()) -> any().
+%% @doc Add a key in the form ["key1","key2"] 
+%%      to the tree
+set([H], Val, Dict) ->
+    dict:store(H, Val, Dict);
+set([H|T], Val, Dict) ->
+    NDict = case dict:is_key(H,Dict) of
+                true  -> dict:fetch(H,Dict);
+                false -> dict:new()
+            end,
+    dict:store(H,set(T, Val, NDict),Dict).
 
 %-spec erase(Key::list(string()),Dict::any()) -> any().
 %% @doc erase a node from the tree 

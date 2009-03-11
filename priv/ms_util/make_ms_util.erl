@@ -41,8 +41,7 @@ mk2(Name,N) -> "no_of_fields("++atom_to_list(Name)++") -> "++
 
 %% mk/1 builds an error line
 mk(Name) -> "get_index("++atom_to_list(Name)++",F) -> "++
-		"exit({error, \"Record: "++atom_to_list(Name)++
-		" has no field called \"++atom_to_list(F)});\n".
+		"exit({error, "++atom_to_list(Name)++", no_exists, F});\n".
 
 mk(Name,Field,N) -> 
     "get_index("++atom_to_list(Name)++", '"++

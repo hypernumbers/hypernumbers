@@ -156,12 +156,11 @@ ref_to_str({cell,{X,Y}})          -> tconv:to_b26(X)++text(Y);
 ref_to_str({row,{Y,Y}})           -> text(Y);
 ref_to_str({row,{Y}})             -> text(Y); % old compatibility - delete!
 ref_to_str({row,{Y1,Y2}})         -> text(Y1)++":"++text(Y2);
-ref_to_str({column,{X}})          -> tconv:to_b26(X); % old compatibility - delete!
+ref_to_str({column,X})          -> tconv:to_b26(X); % old compatibility - delete!
 ref_to_str({column,{X,X}})        -> tconv:to_b26(X);
 ref_to_str({column,{X1,X2}})      -> tconv:to_b26(X1)++":"++tconv:to_b26(X2);
 ref_to_str({range,{X1,Y1,X2,Y2}}) -> tconv:to_b26(X1)++text(Y1)++":"++
                                          tconv:to_b26(X2)++text(Y2).
-
 
 xml_to_val({bool,[],[true]})      -> true;
 xml_to_val({bool,[],[false]})     -> false;

@@ -474,9 +474,9 @@ ul,li {
  width:6px;
  position:absolute;
  background:#000;
- bottom:-4px;
- right:-4px;
- z-index:90000;
+ bottom:-5px;
+ right:-5px;
+ z-index:150000;
  cursor:pointer;
 }
 
@@ -489,13 +489,21 @@ ul,li {
 }
 
 #input { 
-  z-index:100000;
-  height:20px;
-  width:80px;
-  border:none;
+  font:11px Arial,"Helvetica Neue", sans-serif;
+  z-index:10000;
+  height:18px;
+  border:1px solid blue;
   position:absolute;
   display:none;
-  overflow:none;
+  overflow:hidden;
+}
+
+#hidden_input {  
+  font:11px Arial,"Helvetica Neue", sans-serif;
+  position:absolute;
+  top:-1000px;
+  left:0px;
+  z-index:9999999;
 }
 
 #current { 

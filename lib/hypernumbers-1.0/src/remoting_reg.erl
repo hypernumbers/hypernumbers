@@ -13,6 +13,7 @@
 
 -define(SERVER, ?MODULE).
 -include("spriki.hrl").
+-include("hypernumbers.hrl").
 
 %% gen_server callbacks
 -export([start_link/0, init/1, handle_call/3, handle_cast/2, 
@@ -25,51 +26,43 @@ start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
 init([]) ->
-    {ok, []}.
+    %gen_server:cast(remoting_reg, start_timer),
+    {ok, {[], []}}.
 
-%% Register a new Range, From will now receive updates
-%% when a number in Page -> Range changes
-handle_call({register,Page},{Pid,_},State) ->
-    #ref{site=Site,path=Path} = Page,
-    NewState = lists:append(State,[{Site,Path,Pid}]),
-    {reply, {msg,"range registered"},NewState};
-
-%% Unregisters a range, From will no longer
-%% Receive updates
-handle_call({unregister},From,State) ->
-    N = lists:filter(
-        fun(X) ->
-            case X of 
-            {_,_,_,From} -> false;
-            _ -> true
-            end 
-        end,State),
-    {reply,{msg,"range unregistered"},N};
-
-%% Change Message, find everyone listening to 
-%% that page then send them a change message
-%% @TODO this is a bug! - all if there is the same page on multiple
-%% sites on one server they all get the notification!
-handle_call({change, _Site, Path, Msg}, _From, State) ->
-    F = fun(Z) ->
-                case Z of                    
-                    %% @TODO : Ignoring site for now to work
-                    %% behind reverse proxy
-                    {_Site, Path, Pid} -> 
-                        Pid ! {msg, Msg};
-                    _ -> ok
-                end
-        end,
-    lists:foreach(F,State),
+handle_call({msg, _Site, Path, Msg}, _From, State) ->
     {reply,ok,State};
 
 %% Invalid Message
 handle_call(_Request,_From,State) ->
+    ?INFO("Invalid Call in remoting_reg ~p ~p",[_Request,_From]),
     {reply,invalid_message, State}.
 
+handle_cast({fetch, Site, Path, Time, Pid}, {Updates, Waiting}) ->
+    ?INFO("~p",[{fetch, Site, Path, Time}]), 
+    {noreply, {Updates, [{Site, Path, Time, Pid} | Waiting]}};
+
+handle_cast(start_timer, State) ->
+    ?INFO("Starting timer",[]),
+    flush(5000),
+    {noreply, State};
+
 handle_cast(_Msg, State) ->
+    ?INFO("Invalid Cast in remoting_reg ~p ",[_Msg]),
     {noreply, State}.
     
 handle_info(_Info, State) ->    {noreply, State}.
-terminate(_Reason, _State) ->    ok.
+terminate(_Reason, _State) ->   ?INFO("terminating",[]),ok.
 code_change(_Old, State, _E) -> {ok, State}.
+
+%% Timer to flush the updates queue and timeout old clients
+flush(Time) -> 
+    receive 
+        terminate  -> 
+            ok 
+    after  
+        Time -> 
+            gen_server:call(remoting_reg, flush), 
+            flush(Time) 
+    end.
+
+
