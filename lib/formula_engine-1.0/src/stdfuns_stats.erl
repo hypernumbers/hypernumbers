@@ -298,8 +298,8 @@ large([V1, V2]) ->
     ?ensure(K2 > 0, ?ERR_NUM),
     ?ensure(length(Nums2) >= K2, ?ERR_NUM),
     large1(Nums2, K2).
-large1(Nums, K2) ->
-    nth(K2, reverse(sort(Nums))).
+large1(Nums, K) ->
+    nth(K, reverse(sort(Nums))).
 
 %% TODO:
 linest(_) ->
@@ -443,11 +443,22 @@ skew(V1) ->
 skew1(Nums) ->
     moment(Nums, 3) / math:pow(moment(Nums, 2), 1.5).
 
+%% the casting for this is all over the place
+%% doens't cast left to right, blah-blah
 small([V1, V2]) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
+        case {?is_string(V1), is_bool(V1)} of
+        {true, _}      -> ?ERR_VAL;
+        {false, true}  -> ?ERR_NUM;
+        {false, _}     -> ok
+    end,
+    Rules = [ignore_strings, ignore_bools, ignore_blanks, cast_dates],
+    Nums = ?flatten_all(V1),
+    % yes evaluating errors right to left!
     K = ?number(V2, ?default_rules),
-    ?ensure(K > 0, ?ERR_NUM),
-    small1(Nums, K).
+    Nums2 = ?numbers(Nums, Rules),
+    K2 = erlang:round(K),
+   ?ensure(K2 > 0, ?ERR_NUM),
+    small1(Nums2, K2).
 small1(Nums, K) ->
     nth(K, sort(Nums)).
 
