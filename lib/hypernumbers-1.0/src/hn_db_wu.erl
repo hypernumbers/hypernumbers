@@ -1544,7 +1544,7 @@ make_page_match(RefX, AttrList) ->
     List = [{site, S}, {path , P}, {auth, A}, {ref , '_'}],
     NList = case AttrList of
                 [] -> List;
-                _  -> [{name, '$3'}] 
+                _  -> [{name, '$3'} | List] 
             end,
     Match = ms_util:make_ms(ref, NList),
     ms_util:make_ms(hn_item, [{addr, Match}]).
