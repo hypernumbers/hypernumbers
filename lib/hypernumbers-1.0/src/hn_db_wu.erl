@@ -2146,17 +2146,14 @@ write_style2(RefX, Style) ->
 %% @spec tell_front_end(Item, Type) -> ok
 %% Type = [change | delete]
 %% @doc calls the remoting server and tells is that something has changed
-tell_front_end(Item, Type) when is_record(Item, hn_item) ->
-    #hn_item{addr = #ref{site = S, path = P, ref = R, name = N}} = Item,
-    case N of
-        "__"++_ -> 
-            ok; % names like '__name' are not notified to front-end
-        _Else   ->
-            Msg = mochijson:encode({struct, [{"type", Type}, {"ref", "ref"}, 
-                                             {"name", N}, {"value", "value"}]}),
+%% names like '__name' are not notified to front-end
+tell_front_end(#hn_item{addr=Ref, val=Val}, Type) ->
 
-            ok = gen_server:call(remoting_reg, {msg, S, P, lists:flatten(Msg)},
-                                 ?TIMEOUT)
+    case Ref#ref.name of
+        "__"++_ -> ok; 
+        _Else   -> remoting_reg:notify(Ref#ref.site, Ref#ref.path, Type, 
+                                       Ref#ref.ref,  Ref#ref.name, 
+                                       Val)
     end.
 
 make_tuple(Style, Counter, Index, Val) -> 

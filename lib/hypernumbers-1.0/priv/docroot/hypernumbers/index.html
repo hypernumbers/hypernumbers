@@ -265,16 +265,6 @@
       
   <script type="text/javascript">
     new HN.SpreadSheet("hn");
-
-    var loop = function() {
-      var ts = parseInt(new Date().getTime().toString().substring(0, 10));
-      $.get("?updates="+ts, function(data) {
-        console.log(data);
-        loop();
-      });
-   };
-   loop();
-
   </script>
   
 </html>
