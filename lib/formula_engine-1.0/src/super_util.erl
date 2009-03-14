@@ -28,15 +28,15 @@ autoparse([{int,Int}, {ssnumref, Ref}]) ->
             case make_date(Int, tconv:to_i(Month)) of
                 {ok, maybe_bad_date} -> {ok, maybe_bad_date};
                 Dt                   -> [{datetime, Dt},
-                                         {'text-align', "center"}, 
-                                         {format, "dd-mmm"}]
+                                         {"text-align", "center"}, 
+                                         {"format", "dd-mmm"}]
             end;                
         [Month, Year] ->
             case make_date(Int, tconv:to_i(Month), tconv:to_i(Year)) of
                 {ok, maybe_bad_date} -> {ok, maybe_bad_date};
                 Dt                   -> [{datetime, Dt},
-                                         {'text-align', "center"}, 
-                                         {format, "dd-mmm-yyyy"}]
+                                         {"text-align", "center"}, 
+                                         {"format", "dd-mmm-yyyy"}]
             end;
         _             -> {ok, maybe_bad_date}
     end;
@@ -46,16 +46,16 @@ autoparse([{int,Int}, {ssnumref, Ref}, {int,H}, {':'}, {int, Mn}]) ->
             case make_datetime({Int, tconv:to_i(Month)}, {H, Mn}) of
                 {ok, maybe_bad_date} -> {ok, maybe_bad_date};
                 Dt                   -> [{datetime, Dt},
-                                         {'text-align', "center"}, 
-                                         {format, "dd-mmm hh:mm"}]
+                                         {"text-align", "center"}, 
+                                         {"format", "dd-mmm hh:mm"}]
             end;                
         [Month, Year] ->
             case make_datetime({Int, tconv:to_i(Month), tconv:to_i(Year)},
                                {H, Mn}) of
                 {ok, maybe_bad_date} -> {ok, maybe_bad_date};
                 Dt                   -> [{datetime, Dt},
-                                         {'text-align', "center"}, 
-                                         {format, "dd-mmm-yyyy hh:mm"}]
+                                         {"text-align", "center"}, 
+                                         {"format", "dd-mmm-yyyy hh:mm"}]
             end;                
         _             -> {ok, maybe_bad_date}
     end;
@@ -66,16 +66,16 @@ autoparse([{int,Int}, {ssnumref, Ref}, {int,H}, {':'}, {int, Mn}, {':'},
             case make_datetime({Int, tconv:to_i(Month)}, {H, Mn, S}) of
                 {ok, maybe_bad_date} -> {ok, maybe_bad_date};
                 Dt             -> [{datetime, Dt},
-                                   {'text-align', "center"}, 
-                                   {format, "dd-mmm hh:mm:ss"}]
+                                   {"text-align", "center"}, 
+                                   {"format", "dd-mmm hh:mm:ss"}]
             end;                
         [Month, Year] ->
             case make_datetime({Int, tconv:to_i(Month), tconv:to_i(Year)},
                                {H, Mn, S}) of
                 {ok, maybe_bad_date} -> {ok, maybe_bad_date};
                 Dt                   -> [{datetime, Dt},
-                                         {'text-align', "center"}, 
-                                         {format, "dd-mmm-yyyy hh:mm:ss"}]
+                                         {"text-align", "center"}, 
+                                         {"format", "dd-mmm-yyyy hh:mm:ss"}]
             end;                
         _             -> {ok, maybe_bad_date}
     end;
@@ -83,60 +83,60 @@ autoparse([{int,D}, {'-'}, {int, M}]) ->
     case make_date(D, M) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {'text-align', "center"}, 
-                                 {format, "dd-mmm"}]
+                                 {"text-align", "center"}, 
+                                 {"format", "dd-mmm"}]
     end;
 autoparse([{int,D}, {'-'}, {int, M}, {int, H}, {':'}, {int, Mn}]) ->
     case make_datetime({D, M}, {H, Mn}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {'text-align', "center"}, 
-                                 {format, "dd-mmm hh:mm"}]
+                                 {"text-align", "center"}, 
+                                 {"format", "dd-mmm hh:mm"}]
     end;
 autoparse([{int,D}, {'-'}, {int, M}, {int, H}, {':'}, {int, Mn},
            {':'}, {int, S}]) ->
     case make_datetime({D, M}, {H, Mn, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {'text-align', "center"}, 
-                                 {format, "dd-mmm hh:mm"}]
+                                 {"text-align", "center"}, 
+                                 {"format", "dd-mmm hh:mm"}]
     end;
 autoparse([{int,D}, {'-'}, {int, M}, {'-'}, {int, Y}]) ->
     case make_date(D, M ,Y) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {'text-align', "center"}, 
-                                 {format, "dd-mmm-yyyy"}]
+                                 {"text-align", "center"}, 
+                                 {"format", "dd-mmm-yyyy"}]
     end;
 autoparse([{int,D}, {'-'}, {int, M}, {'-'}, {int, Y}, {int, H},
            {':'}, {int, Mn}]) ->
     case make_datetime({D, M ,Y}, {H, Mn}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {'text-align', "center"}, 
-                                 {format, "dd-mmm-yyyy hh:mm"}]
+                                 {"text-align", "center"}, 
+                                 {"format", "dd-mmm-yyyy hh:mm"}]
     end;
 autoparse([{int,D}, {'-'}, {int, M}, {'-'}, {int, Y}, {int, H}, {':'},
            {int, Mn}, {':'}, {int , S}]) ->
     case make_datetime({D, M ,Y}, {H, Mn, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {'text-align', "center"}, 
-                                 {format, "dd-mmm-yyyy hh:mm:ss"}]
+                                 {"text-align", "center"}, 
+                                 {"format", "dd-mmm-yyyy hh:mm:ss"}]
     end;
 autoparse([{int,H}, {':'}, {int, Mn}]) ->
     case make_time(H, Mn) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {'text-align', "center"}, 
-                                 {format, "hh:mm"}]
+                                 {"text-align", "center"}, 
+                                 {"format", "hh:mm"}]
     end;
 autoparse([{int,H}, {':'}, {int, Mn}, {':'}, {int, S}]) ->
     case make_time(H, Mn, S) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {'text-align', "center"}, 
-                                 {format, "hh:mm:ss PM"}]
+                                 {"text-align", "center"}, 
+                                 {"format", "hh:mm:ss PM"}]
     end;
 autoparse(_Toks) ->
     {ok, maybe_bad_date}.
