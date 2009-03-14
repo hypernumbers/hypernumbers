@@ -48,6 +48,9 @@
 
 -define(bool(X, Rules), ?iinaa(X, Rules, fun(A_, B_) -> muin_collect:collect_bool(A_, B_) end)).
 
+-define(remove_errors(Xs),
+        muin_collect:remove_errors(Xs)).
+
 -define(bools(Xs, Rules),
         muin_collect:collect_bools(Xs, Rules)).
 
