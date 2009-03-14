@@ -62,13 +62,13 @@ send_to_server(Server, Time, Msgs) ->
 send_queued(Updates, Waiting) ->
 
     [{Site, Path, Time, Pid} | OldWaiting ] = Waiting, 
-
+    
     F = fun({msg, Site1, Path1, _Msg, Time1}) -> 
                 Site1 == Site andalso Path1 == Path andalso Time =< Time1
         end,
 
     {Match, _Else} = lists:partition(F, Updates), 
-
+    
     Wait = case Match of 
                []   -> Waiting;
                List -> 
@@ -76,7 +76,7 @@ send_queued(Updates, Waiting) ->
                    send_to_server(Pid, timestamp(), Msgs),
                    OldWaiting
            end,
-    {Updates, Wait}.
+    {expire_updates(Updates), Wait}.
 
 send_to_waiting(Updates, Waiting) ->
     
@@ -92,22 +92,19 @@ send_to_waiting(Updates, Waiting) ->
     
     {Match, Rest} = lists:partition(F, Waiting), 
     lists:map(Send, Match),    
-    {Updates, Rest}.
+    {expire_updates(Updates), Rest}.
 
 timestamp() ->
     {Mega, Sec, Milli}  = erlang:now(), 
-    Str = string:substr(lists:concat([Mega, Sec, Milli]), 1, 13),
-    list_to_integer(Str).
+    list_to_integer(lists:concat([Mega, Sec, pad(Milli)])).
 
-%% Timer to flush the updates queue and timeout old clients
-flush(Time) -> 
-    receive 
-        terminate  -> 
-            ok 
-    after  
-        Time -> 
-            gen_server:call(remoting_reg, flush), 
-            flush(Time) 
-    end.
+pad(X) ->
+    lists:flatten(io_lib:format("~-7.10.0B",[X])).
 
+expire_updates(Old) ->
+    Now = timestamp(),
+    F   = fun({msg, _Site, _Path, _Msg, Time}) -> 
+                  Time > (Now-10000000)
+          end,
+    lists:filter(F, Old).
 

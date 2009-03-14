@@ -23,7 +23,5 @@ init([]) ->
 
     {ok,{{one_for_one,60,1}, [
         {remoting_reg, {remoting_reg, start_link,[]}, 
-            permanent, 2000, worker, [remoting_reg]},
-        {remoting_srv, {remoting_srv, start_link,[]},
-            permanent, 2000, worker, [remoting_srv]}
+            permanent, 2000, worker, [remoting_reg]}
     ]}}.

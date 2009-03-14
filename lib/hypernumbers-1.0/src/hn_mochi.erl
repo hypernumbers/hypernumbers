@@ -56,7 +56,8 @@ handle_req('GET', Req, Ref, page, [{"updates", Time}]) ->
 handle_req('GET', Req, Ref, page, [{"attr", []}]) ->
     Tree = dh_tree:create([["cells"], ["cols"], ["rows"], ["page"]]),
     Dict = to_dict(hn_db_api:read(Ref), Tree),
-    JSON = {struct, dict_to_struct(Dict)},
+    Time = {"time", remoting_reg:timestamp()},
+    JSON = {struct, [Time | dict_to_struct(Dict)]},
     Req:ok({"application/json", mochijson:encode(JSON)});
 
 handle_req('GET', Req, _Ref, page, _Attr) ->
