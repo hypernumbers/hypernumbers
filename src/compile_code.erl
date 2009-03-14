@@ -160,7 +160,9 @@ get_rel_file() ->
                       "{mochiweb,\"0.01\"},",
                       "{hypernumbers,\"1.0\"}]}."]),
     
-    file:write_file("hypernumbers.rel",F),
-    systools:make_script("hypernumbers",
+    ok = file:write_file("hypernumbers.rel",F),
+    ok = systools:make_script("hypernumbers",
                          [local,{path,["../lib/*/ebin","."]}]).
+
+
 
