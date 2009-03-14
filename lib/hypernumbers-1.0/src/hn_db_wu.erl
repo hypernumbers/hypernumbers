@@ -919,6 +919,8 @@ read_local_children(#refX{obj = {cell, _}} = RefX) ->
 %% @end
 %% This clause deals with a formula
 write_attr(#refX{obj = {cell, _}} = RefX, {"formula", _} = Attr) ->
+    io:format("in hn_db_wu:write_attr~n-RefX is ~p~n-Attr is ~p~n",
+              [RefX, Attr]),
     % first check that the formula is not part of a shared array
     case read_attrs(RefX, ["__shared"]) of
         [_X] -> throw({error, cant_change_part_of_array});
@@ -1812,7 +1814,7 @@ shift_incoming_hns(From, To) ->
 get_offset(#refX{obj = {cell, {FX, FY}}}, #refX{obj = {cell, {TX, TY}}}) ->
     {TX - FX, TY - FY}.
 
-write_attr2(RefX, {formula, Val}) ->
+write_attr2(RefX, {"formula", Val}) ->
     case superparser:process(Val) of
         {formula, Fla}        -> write_formula1(RefX, Val, Fla);
         [NewVal, Align, Frmt] -> write_formula2(RefX, Val, NewVal, Align, Frmt)
@@ -1841,8 +1843,8 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
     {ok, ok} = write_attr(RefX, {"text-align", Align}),
     % write out the format (if any)
     case Format of
-        {format, "null"} -> ok;
-        {format, F}      -> write_attr(RefX, {format,F})
+        {"format", "null"} -> ok;
+        {"format", F}      -> write_attr(RefX, {format,F})
     end,
     % now write out the actual cell
     Formula = case Type of
@@ -1919,8 +1921,8 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
              (X, {Key, Val})      -> write_attr(X, {Key, Val})
           end,
 
-    Set(RefX, {'parents',         {xml, Parents}}),
-    Set(RefX, {'dependency-tree', {xml, DepTree}}),
+    Set(RefX, {"parents",         {xml, Parents}}),
+    Set(RefX, {"dependency-tree", {xml, DepTree}}),
 
     % now do the local parents
     {ok, ok} = delete_local_parents(RefX),
@@ -1935,7 +1937,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
     {ok, ok} = update_rem_parents(RefX, OldRemotePs, NewRemotePs),
 
     % We need to know the calculcated value
-    [{RefX, {rawvalue, RawValue}}] = read_attrs(RefX, ["rawvalue"]),
+    [{RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"]),
     {ok, ok} = mark_cells_dirty(RefX),
 
     % mark this cell as a possible dirty hypernumber

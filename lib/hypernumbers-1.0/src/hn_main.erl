@@ -192,12 +192,12 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
     ok.
 
 set_cell_rawvalue(Addr,Value) ->
-    hn_db:write_item(Addr#ref{name=rawvalue},Value),
-    {ok,Format} = hn_db:get_item_inherited(Addr#ref{name=format}, "General"),
+    hn_db:write_item(Addr#ref{name="rawvalue"},Value),
+    {ok,Format} = hn_db:get_item_inherited(Addr#ref{name="format"}, "General"),
     {erlang,{_Type,Output}} = format:get_src(Format),
     {ok,{Color,V}}=format:run_format(Value,Output),
-    hn_db:write_item(Addr#ref{name=value},V),
-    hn_db:write_item(Addr#ref{name='overwrite-color'},atom_to_list(Color)),
+    hn_db:write_item(Addr#ref{name="value"},V),
+    hn_db:write_item(Addr#ref{name="overwrite-color"},atom_to_list(Color)),
     ok.
 
 %%%-----------------------------------------------------------------
@@ -305,8 +305,8 @@ recalc(Index) ->
 
 recalc_array(Index) ->
     Addr = index_to_ref(Index),
-    {TlCol, TlRow, BrCol, BrRow} = hn_db:get_item_val(Addr#ref{name = '__area'}),
-    Formula = hn_db:get_item_val(Addr#ref{name = formula}),
+    {TlCol, TlRow, BrCol, BrRow} = hn_db:get_item_val(Addr#ref{name = "__area"}),
+    Formula = hn_db:get_item_val(Addr#ref{name = "formula"}),
     Target = Addr#ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}},
     formula_to_range(Formula, Target),
     ok.
@@ -353,7 +353,7 @@ copy_pages_below(From = #ref{path=Root},To) ->
     ToPages   = [To++string:join(X,"/")++"/" || X <- NPages],
 
     hn_main:set_attribute(From#ref{path=string:tokens(To,"/"),
-                                   name=instance},hn_util:list_to_path(Root)),
+                                   name="instance"},hn_util:list_to_path(Root)),
 
     copy_pages(FromPages,ToPages).
 
@@ -371,7 +371,7 @@ filter_instance(Ref,[H|T],Acc) ->
     end.
 
 is_instance(Ref = #ref{}) ->
-    case hn_db:get_item_val(Ref#ref{name=instance}) of
+    case hn_db:get_item_val(Ref#ref{name="instance"}) of
         []     -> false;
         _Else  -> true
     end.
@@ -413,7 +413,7 @@ muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
 get_pages_under(Under) ->
     UnderClause=muin:make_bits(lists:reverse(Under),'$1'),
     % The head clause matches all subpages of the UnderClause
-    Ref=ms_util:make_ms(ref,[{path,UnderClause},{name,rawvalue},
+    Ref=ms_util:make_ms(ref,[{path,UnderClause},{name,"rawvalue"},
                              {ref,{cell,{'$2','$3'}}}]),
     Head=ms_util:make_ms(hn_item,[{addr,Ref},{val,'$4'}]),
     Guard = "",

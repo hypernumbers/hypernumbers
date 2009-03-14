@@ -17,48 +17,48 @@ process(Input) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Input), {1, 1}),
     Return = case Toks of
                  [{bool, B}]                -> [{bool, B},
-                                                {'text-align', "center"},
-                                                {format, "null"}];
+                                                {"text-align", "center"},
+                                                {"format", "null"}];
                  [{float, F}]               -> [{float, F},
-                                                {'text-align', "right"},
-                                                {format, "null"}];
+                                                {"text-align", "right"},
+                                                {"format", "null"}];
                  [{int, I}]                 -> [{int, I},
-                                                {'text-align', "right"},
-                                                {format, "null"}];
+                                                {"text-align", "right"},
+                                                {"format", "null"}];
                  [{'-'}, {float, F}]        -> [{float, -F},
-                                                {'text-align', "right"},
-                                                {format, "null"}];
+                                                {"text-align", "right"},
+                                                {"format", "null"}];
                  [{'-'}, {int, I}]          -> [{int, -I},
-                                                {'text-align', "right"},
-                                                {format, "null"}];
+                                                {"text-align", "right"},
+                                                {"format", "null"}];
                  [{float, F}, {'%'}]        -> [{float,F/100},
-                                                {'text-align', "right"},
-                                                {format, "0.00%"}];
+                                                {"text-align", "right"},
+                                                {"format", "0.00%"}];
                  [{int, I}, {'%'}]          -> [{float,I/100},
-                                                {'text-align', "right"},
-                                                {format, "0%"}];
+                                                {"text-align", "right"},
+                                                {"format", "0%"}];
                  [{'-'}, {float, F}, {'%'}] -> [{float,F/100},
-                                                {'text-align', "right"},
-                                                {format, "0.00%"}];
+                                                {"text-align", "right"},
+                                                {"format", "0.00%"}];
                  [{'-'}, {int, I}, {'%'}]   -> [{float,I/100},
-                                                {'text-align', "right"},
-                                                {format, "0%"}];
+                                                {"text-align", "right"},
+                                                {"format", "0%"}];
                  % type tag gets discarded by caller which is ok for 
                  % the rest of them, but not here
                  [{errval, E}]       -> [{errval, {errval, E}}, 
-                                         {'text-align', "center"},
-                                         {format, "null"}]; 
+                                         {"text-align", "center"},
+                                         {"format", "null"}]; 
                  _Other              ->
                      case super_util:autoparse(Toks) of
                          {ok, maybe_bad_date} ->
                              Date = muin_date:from_rfc1123_string(Input),
                              case Date of
                                  bad_date -> [{string, Input},
-                                              {'text-align', "left"},
-                                              {format, "null"}];
+                                              {"text-align", "left"},
+                                              {"format", "null"}];
                                  _        -> [{string, Date},
-                                              {'text-align', "center"},
-                                              {format, "dd-mm-yyyy"}]
+                                              {"text-align", "center"},
+                                              {"format", "dd-mm-yyyy"}]
                              end;
                          Other          -> Other
                      end
