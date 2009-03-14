@@ -918,7 +918,7 @@ read_local_children(#refX{obj = {cell, _}} = RefX) ->
 %% it will be magically managed as a style
 %% @end
 %% This clause deals with a formula
-write_attr(#refX{obj = {cell, _}} = RefX, {formula, _} = Attr) ->
+write_attr(#refX{obj = {cell, _}} = RefX, {"formula", _} = Attr) ->
     % first check that the formula is not part of a shared array
     case read_attrs(RefX, ["__shared"]) of
         [_X] -> throw({error, cant_change_part_of_array});

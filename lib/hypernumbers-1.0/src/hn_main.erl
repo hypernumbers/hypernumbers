@@ -25,17 +25,15 @@
 %% @spec set_attribute(Ref, Val) -> ok
 %% @doc set an attribute on a reference, if the attribute name
 %%      is formula / format, then processed
-set_attribute(Ref = #ref{name=formula},Val) ->
+set_attribute(Ref = #ref{name="formula"},Val) ->
     {RefX, {Key, Value}} = hn_util:ref_to_refX(Ref, Val),
     hn_db_api:write_attributes(RefX, [{Key, Value}]);
-set_attribute(Ref = #ref{name=format}, Val) ->
+set_attribute(Ref = #ref{name="format"}, Val) ->
     hn_db:write_item(Ref,Val),
     F = fun(X,[]) ->
-                case hn_db:get_item_val(X#ref{name=rawvalue}) of
+                case hn_db:get_item_val(X#ref{name="rawvalue"}) of
                     []    -> ok;
-                    Value -> io:format("In hn_main:set_attribute "++
-                                       "Value is ~p~n", [Value]),
-                             set_cell_rawvalue(X,Value)
+                    Value -> set_cell_rawvalue(X,Value)
                 end
         end,
     apply_range(Ref,F,[]);
@@ -83,7 +81,7 @@ set_attribute(Ref,Val) ->
 %            % write out the format (if any)
 %            case Format of
 %                {format, "null"} -> ok;
-%                {format, F}      -> hn_db:write_item(Addr#ref{name=format},F)
+%                {format, F}      -> hn_db:write_item(Addr#ref{name="format"},F)
 %            end,
 %            % now write out the actual cell
 %            Formula = case Type of
@@ -146,8 +144,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
 
     Index = to_index(Addr),
 
-    hn_db:write_item(Addr#ref{name=formula},Formula),
-    io:format("In hn_main:write_cell Value is ~p~n", [Value]),
+    hn_db:write_item(Addr#ref{name="formula"},Formula),
     set_cell_rawvalue(Addr,Value),
 
     % Delete attribute if empty, else store
@@ -155,8 +152,8 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
              (Ref,Val)      -> hn_db:write_item(Ref,Val)
           end,
 
-    Set(Addr#ref{name=parents},{xml,Parents}),
-    Set(Addr#ref{name='dependency-tree'},{xml,DepTree}),
+    Set(Addr#ref{name="parents"},{xml,Parents}),
+    Set(Addr#ref{name="dependency-tree"},{xml,DepTree}),
     % Delete the references
 
     hn_db:del_links(Index,child),
@@ -199,7 +196,6 @@ set_cell_rawvalue(Addr,Value) ->
     {ok,Format} = hn_db:get_item_inherited(Addr#ref{name=format}, "General"),
     {erlang,{_Type,Output}} = format:get_src(Format),
     {ok,{Color,V}}=format:run_format(Value,Output),
-    io:format("in hn_main:set_cell_rawvalue V is ~p~n", [V]),
     hn_db:write_item(Addr#ref{name=value},V),
     hn_db:write_item(Addr#ref{name='overwrite-color'},atom_to_list(Color)),
     ok.

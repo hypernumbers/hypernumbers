@@ -8,7 +8,7 @@
 
 -define(mn_ac,mnesia:activity).
 
-%% record_info isnt available at runtime
+%% record_info isn't available at runtime
 -define(create(Name,Type,Storage),
         fun() ->
                 Attr = [{attributes, record_info(fields, Name)},
