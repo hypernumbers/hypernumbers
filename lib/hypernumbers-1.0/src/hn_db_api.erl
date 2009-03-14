@@ -222,12 +222,10 @@ handle_dirty_notify_back_out(P, C, Type, B)
                 end,
                 {ok, ok} = hn_db_wu:clear_dirty_notify_back_out(P, C, Type)
         end,
-    mnesia:actiity(transaction, Fun);
+    mnesia:activity(transaction, Fun);
 handle_dirty_notify_back_out(P, C, Type, Biccie)
     when is_record(P, refX), is_record(C, refX), Type =:= "new child" ->
     Fun = fun() ->
-                  io:format("In handle_dirty_nofity_back_out~n-P is ~p~n-"++
-                            "C is ~p~n-Type is outgoing...~n", [P, C]),
                   {ok, ok} = hn_db_wu:write_remote_link(P, C, outgoing),
                   {ok, ok} = hn_db_wu:clear_dirty_notify_back_out(P, C, Type)
           end,
@@ -247,6 +245,7 @@ handle_dirty_notify_back_out(P, C, Type, Biccie)
 handle_notify(Parent, Child, Type, Value, DepTree, Biccie, Version)
   when is_record(Parent, refX), is_record(Child, refX),
        (Type =:= "change" orelse Type =:= "create") ->
+    io:format("in hn_db_api:handle_notify Value is ~p~n", [Value]),
     F = fun() ->
                 case hn_db_wu:verify_biccie(Parent, Child, Biccie) of
                     true ->
@@ -280,8 +279,6 @@ handle_notify_back(P, C, B, Type)
 write_remote_link(Parent, Child, Type)
   when is_record(Parent, refX), is_record(Child, refX) ->
     Fun = fun() ->
-                  io:format("hn_db_api:write_remote_link~n-Parent is ~p~n-"++
-                            "Child is ~p~n-Type is ~p~n", [Type]),
                   hn_db_wu:write_remote_link(Parent, Child, Type)
           end,
     mnesia:activity(transaction, Fun).
@@ -293,24 +290,24 @@ write_remote_link(Parent, Child, Type)
 %% If the hypernumber requested hasn't been set up yet, this function will
 %% trigger a creation process and return 'blank' for the moment... when the
 %% hypernumber is set up the 'correct' value will come through as per normal...
-read_incoming_hn(P, C) when is_record(P, refX),is_record(C, refX) ->
+read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
     F = fun() ->
                 case hn_db_wu:read_incoming_hn(P) of
                     [] ->
                         {ok, ok} = hn_db_wu:mark_inc_create_dirty(P, C),
                         % need to write a link
-                        io:format("In hn_db_api:read_incoming_hn~n-P is ~p~n-"++
-                                  "C is ~p~n-and type is incoming~n", [P, C]),
                         {ok, ok} = hn_db_wu:write_remote_link(P, C, incoming),
                         {blank, []};
                      Hn ->
-                        #incoming_hn{value = Val, 'dependency-tree' = DepTree} = Hn,
+                        #incoming_hn{value = Val,
+                                     'dependency-tree' = DepTree} = Hn,
                         % check if there is a remote cell
                         RPs = hn_db_wu:read_remote_parents(C, incoming),
                         {ok, ok} =
                             case lists:keymember(P, 1, RPs) of
                                 false ->
-                                    hn_db_wu:mark_notify_back_in_dirty(P, C, "new child");
+                                    hn_db_wu:mark_notify_back_in_dirty(P,
+                                                                       C, "new child");
                                 true  ->
                                     {ok, ok}
                             end,
@@ -559,7 +556,7 @@ recalculate(RefX) when is_record(RefX, refX) ->
 %% </ul>
 reformat(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  Cells = hn_db_wu:read_attrs(RefX, [format]),
+                  Cells = hn_db_wu:read_attrs(RefX, ["format"]),
                   [hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
           end,
     mnesia:activity(transaction, Fun).

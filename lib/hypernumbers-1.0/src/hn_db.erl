@@ -112,7 +112,7 @@ process_styles(Addr, {Name, Val}) ->
                       []      -> get_style(Addr, Name, Val); 
                       [Style] -> get_style(Addr, Style, Name, Val) 
                   end, 
-    Item = #hn_item{addr = Addr#ref{name = style}, val = NewStyleIdx}, 
+    Item = #hn_item{addr = Addr#ref{name = "style"}, val = NewStyleIdx}, 
     
     Fun2  = 
         fun()-> 
@@ -421,10 +421,9 @@ hn_changed(Cell) ->
 %    ok;
 mark_dirty(Index, _Value, hypernumber) ->
     RefX = hn_util:refX_from_index(Index),
-    io:format("in hn_db:mark_dirty for RefX of ~p AINT THIS OUTGOING!!!~n",
-              [RefX]),
     Fun3 = fun() ->
-                  {ok, ok} = hn_db_wu:mark_notify_in_dirty(RefX)
+                   io:format("in hn_db:mark_dirty~n-RefX is ~p~n", [RefX]),
+                   {ok, ok} = hn_db_wu:mark_notify_out_dirty(RefX)
           end,
     {ok, ok} = mnesia:activity(transaction, Fun3),
     ok.
@@ -439,8 +438,8 @@ update_hn(From,Bic,Val,_Version)->
                 Rec   = #incoming_hn{remote = Index, biccie = Bic, _='_'},
                 [Obj] = mnesia:match_object(Rec),
                 Rec2 = Obj#incoming_hn{value=hn_util:xml_to_val(Val)},
-                io:format("in hn_db:update_hn Rec2 is ~p~n", [Rec2]),
                 ok = mnesia:write(Rec2),
+                io:format("In hn_db:update_hn Val is ~p~n", [Val]),
                 ok = mark_dirty(Index,Val,hypernumber)
         end,
     ok = ?mn_ac(transaction,F),
@@ -488,7 +487,7 @@ do_get_hn(Url, From, To)->
                       'dependency-tree' = Tree,
                       remote            = To,
                       biccie            = Biccie},
-                    io:format("in hn_db:do_get_hn HNumber is ~p~n", [HNumber]),
+                    io:format("In hn_db:do_get_hn Val is ~p~n", [Val]),
                     mnesia:write(HNumber),
                     HNumber;
 
@@ -500,34 +499,33 @@ do_get_hn(Url, From, To)->
 %% @spec register_hn(To,From,Bic,Proxy,ChildSite) -> Val
 %% Val = list()
 %% @doc  Receive registration for a hypernumber
-register_hn(To, From, Bic, Proxy, ChildSite) ->
-    % io:format("in hn_db:register_hn~n-To is ~p~n-From is ~p~n", [To, From]),
+register_hn(Parent, Child, Bic, Proxy, ChildSite) ->
     F = fun()->
                 Link = #remote_cell_link{
-                  parent = From,
-                  child  = To,
+                  parent = Parent,
+                  child  = Child,
                   type = outgoing},
-                % io:format("In hn_db:register_hn Link is ~p~n", [Link]),
                 Hn = #outgoing_hn{
-                  parent       = To,
+                  parent       = Parent,
                   biccie       = Bic,
                   child_site   = ChildSite,
                   child_proxy = Proxy},
 
                 ok = mnesia:write(Link),
                 ok = mnesia:write(Hn),
-                #index{site = S, path = P, column = X, row = Y} = To,
-                Ref = #ref{site = S, path = P, ref = {cell, {X, Y}}, name = formula},
+                #index{site = S, path = P, column = X, row = Y} = Child,
+                Ref = #ref{site = S, path = P, ref = {cell, {X, Y}}, name = "formula"},
                 Value = case get_item_val(Ref) of
                           [] -> [{blank,[],[]}];
                           Tmp -> hn_util:to_xml(Tmp)
                       end,
-                DepTree = case hn_db:get_item_val(Ref#ref{name='dependency-tree'}) of
+                io:format("in hn_db:register_hn Value is ~p~n", [Value]),
+                DepTree = case hn_db:get_item_val(Ref#ref{name="dependency-tree"}) of
                               {xml,Tree} -> Tree;
                               []         -> []
                           end,
                 {ok,{hypernumber,[],[{value,[], Value},
-                                     {'dependency-tree',[], DepTree}]}}
+                                     {"dependency-tree",[], DepTree}]}}
         end,
     Val = ?mn_ac(transaction,F),
 	Val.
@@ -551,7 +549,7 @@ register_hn(To, From, Bic, Proxy, ChildSite) ->
 %% @spec notify_remote(Item) -> ok
 %% @doc  Adds an attribute to a reference addressed by Ref
 notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path,name=Name}}) ->
-    case atom_to_list(Name) of
+    case Name of
         [$_, $_|_R]  -> ok; % names of form '__name' are not notified to front-end
         _Other       -> MsgXml=hn_util:item_to_xml(Item),
                         Msg = ?FORMAT("change ~s",[simplexml:to_xml_string(MsgXml)]),
@@ -712,7 +710,7 @@ get_style(Addr, Style, Name, Val) ->
 %% return an index pointing to it 
 %% If the style already exists it just returns the index 
 write_style(Addr, Style) ->
-    Ref = Addr#ref{ref = {page, "/"}, name = style, auth = []}, 
+    Ref = Addr#ref{ref = {page, "/"}, name = "style", auth = []}, 
     Fun1 = fun() -> 
                    Match = #styles{ref = Ref, magic_style = Style, _ = '_'}, 
                    mnesia:match_object(styles, Match, read) 
@@ -724,7 +722,7 @@ write_style(Addr, Style) ->
     end. 
 
 write_style2(Addr, Style) -> 
-    Ref = Addr#ref{ref = {page, "/"}, name = style, auth = []}, 
+    Ref = Addr#ref{ref = {page, "/"}, name = "style", auth = []}, 
     NewIndex = mnesia:dirty_update_counter(style_counters, Ref, 1), 
     Fun = fun() -> 
                   mnesia:write(#styles{ref = Ref, index = NewIndex,
@@ -749,7 +747,7 @@ write_style_IMPORT(Addr, Style) ->
     % first write the Style
     StyleIndex = write_style(Addr, Style),
     % now write the style index for the address
-    Ref = Addr#ref{name = style},
+    Ref = Addr#ref{name = "style"},
     Item = #hn_item{addr = Ref, val = StyleIndex},
     Fun  =
         fun()->

@@ -557,7 +557,7 @@ mark_notify_back_in_dirty(Parent, Child, Msg)
     C = hn_util:index_from_refX(Child),
     Rec = #dirty_notify_back_in{parent = P, child = C, change = Msg},
     Match = ms_util:make_ms(dirty_notify_back_in, [{parent, P}, {child, C},
-                                                  {change, Msg}]),
+                                                   {change, Msg}]),
     case mnesia:match_object(Match) of
         [] -> ok = mnesia:write(Rec);
         _  -> ok
@@ -710,8 +710,8 @@ clear_dirty_notify_back_in(Parent, Child, Change)
     ParentIdx = hn_util:index_from_refX(Parent),
     ChildIdx = hn_util:index_from_refX(Child),
     Head = ms_util:make_ms(dirty_notify_back_in, [{parent, ParentIdx},
-                                                   {child, ChildIdx},
-                                                   {change, Change}]),
+                                                  {child, ChildIdx},
+                                                  {change, Change}]),
     [Record] = mnesia:select(dirty_notify_back_in, [{Head, [], ['$_']}]),
     ok = mnesia:delete_object(Record),
     {ok, ok}.
@@ -920,7 +920,7 @@ read_local_children(#refX{obj = {cell, _}} = RefX) ->
 %% This clause deals with a formula
 write_attr(#refX{obj = {cell, _}} = RefX, {formula, _} = Attr) ->
     % first check that the formula is not part of a shared array
-    case read_attrs(RefX, ['__shared']) of
+    case read_attrs(RefX, ["__shared"]) of
         [_X] -> throw({error, cant_change_part_of_array});
         []   -> write_attr2(RefX, Attr)
     end;
@@ -1040,7 +1040,7 @@ read_attrs(RefX) when is_record(RefX, refX) ->
 %% <li>page</li>
 %% </ul>
 read_attrs(#refX{obj = {range, _}} = RefX, Attrs) when is_list(Attrs) ->
-    
+
     MatchRef = make_range_match(RefX, Attrs),
     hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
 
@@ -1100,14 +1100,14 @@ shift_cell(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% <li>page</li>
 %% </ul>
 read_styles(#refX{obj = {page, _}} = RefX) ->
-    Ref = hn_util:refX_to_ref(RefX, style),
+    Ref = hn_util:refX_to_ref(RefX, "style"),
     Match = ms_util:make_ms(styles, [{ref, Ref}]),
     mnesia:match_object(Match);
 read_styles(RefX) when is_record(RefX, refX) ->
     % first get the style records to get the indexes
-    CellList = read_attrs(RefX, [style]),
+    CellList = read_attrs(RefX, ["style"]),
     IndexList = hslists:uniq(extract_values(CellList)),
-    Ref = hn_util:refX_to_ref(RefX, style),
+    Ref = hn_util:refX_to_ref(RefX, "style"),
     % Ref is a cell/column/row/range ref - make it a page ref
     Ref2 = Ref#ref{ref = {page, "/"}},
     Match = ms_util:make_ms(styles, [{ref, Ref2}, {index, '$1'}]),
@@ -1146,7 +1146,7 @@ clear_cells(RefX, all) when is_record(RefX, refX)->
     clear_cells(RefX, style),
     clear_cells(RefX, contents);
 clear_cells(RefX, style) when is_record(RefX, refX) ->
-    List1 = read_attrs(RefX, [style]),
+    List1 = read_attrs(RefX, ["style"]),
     List2 = [#hn_item{addr = hn_util:refX_to_ref(X, Key), val = Val}
              || {X, {Key, Val}} <- List1],
     delete_recs(List2);    
@@ -1254,7 +1254,7 @@ read_incoming_hn(Parent) when is_record(Parent, refX) ->
         []   -> [];
         [Hn] -> Hn
     end.
-        
+
 %% @spec read_outgoing_hns(Parent::#refX{}) -> [#outgoing_hn{}]
 %% @doc reads the details of all outgoing hypernumbers from a particular cell.
 %% The <code>#refX{}</code> must refer to a cell
@@ -1392,7 +1392,7 @@ update_rem_parents(Child, OldParents, NewParents) when is_record(Child, refX) ->
     [{ok, ok} = Fun1(X) || X <- Del],
     % now write all the records on the write list
     Fun2 = fun(X) ->
-                   
+
                    {ok, ok} = write_remote_link(X, Child, incoming)
            end,
     [{ok, ok} = Fun2(X) || X <- Write],
@@ -1606,14 +1606,14 @@ offset([H | T], XOffset, YOffset, Acc) ->
 filter_for_drag_n_drop(List) -> fl(List, [], []).
 
 fl([], A, B)                                -> {A, B};
-fl([{_, {value, _}}  | T], A, B)            -> fl(T, A, B);
-fl([{_, {rawvalue, _}}| T], A, B)           -> fl(T, A, B);
-fl([{_, {parents, _}} | T], A, B)           -> fl(T, A, B);
-fl([{_, {'dependency-tree', _}}| T], A, B)  -> fl(T, A, B);
-fl([{_, {'__ast', _}} | T], A, B)           -> fl(T, A, B);
-fl([{_, {formula, V}}| T], A, B)            -> fl(T, [V | A], B);
+fl([{_, {"value", _}}  | T], A, B)          -> fl(T, A, B);
+fl([{_, {"rawvalue", _}}| T], A, B)         -> fl(T, A, B);
+fl([{_, {"parents", _}} | T], A, B)         -> fl(T, A, B);
+fl([{_, {"dependency-tree", _}}| T], A, B)  -> fl(T, A, B);
+fl([{_, {"__ast", _}} | T], A, B)           -> fl(T, A, B);
+fl([{_, {"formula", V}}| T], A, B)          -> fl(T, [V | A], B);
 fl([H | T], A, B)                           -> fl(T, A, [H | B]).
-    
+
 dyn_parents(_Index = #index{path=[]},Results, _Acc) ->
     Results;
 dyn_parents(Index = #index{path=[_H]},Results, Acc) ->
@@ -1702,17 +1702,17 @@ get_content_attrs([], Acc)      -> Acc;
 get_content_attrs([H | T], Acc) ->
     {_, {Key, _V}} = H,
     case Key of
-        formula            -> get_content_attrs(T, [H | Acc]);
-        rawvalue           -> get_content_attrs(T, [H | Acc]);
-        value              -> get_content_attrs(T, [H | Acc]);
-        'overwrite-color'  -> get_content_attrs(T, [H | Acc]);
-        '__ast'            -> get_content_attrs(T, [H | Acc]);
-        '__recompile'      -> get_content_attrs(T, [H | Acc]);
-        '__shared'         -> get_content_attrs(T, [H | Acc]);
-        '__area'           -> get_content_attrs(T, [H | Acc]);
-        'dependency-tree'  -> get_content_attrs(T, [H | Acc]);
-        parents            -> get_content_attrs(T, [H | Acc]);
-        _                  -> get_content_attrs(T, Acc)
+        "formula"           -> get_content_attrs(T, [H | Acc]);
+        "rawvalue"          -> get_content_attrs(T, [H | Acc]);
+        "value"             -> get_content_attrs(T, [H | Acc]);
+        "overwrite-color"   -> get_content_attrs(T, [H | Acc]);
+        "__ast"             -> get_content_attrs(T, [H | Acc]);
+        "__recompile"       -> get_content_attrs(T, [H | Acc]);
+        "__shared"          -> get_content_attrs(T, [H | Acc]);
+        "__area"            -> get_content_attrs(T, [H | Acc]);
+        "dependency-tree"   -> get_content_attrs(T, [H | Acc]);
+        "parents"           -> get_content_attrs(T, [H | Acc]);
+        _                   -> get_content_attrs(T, Acc)
     end.
 
 read_attrs2(MatchRef, AttrList) ->
@@ -1725,8 +1725,8 @@ shift_cell2(From, To) ->
     % Rewrite the shifted cell
     AttrList = read_cells_raw(From),
     Fun1 = fun({_RefX, {Key, Val}}) ->
-                  write_attr3(To, {Key, Val})
-          end,
+                   write_attr3(To, {Key, Val})
+           end,
     [Fun1(X) || X <- AttrList],
     % now delete the originals
     Fun2 = fun(X) ->
@@ -1750,7 +1750,7 @@ shift_local_links2([], _Offset) -> {ok, ok};
 shift_local_links2([#local_cell_link{child = C} | T], Offset) ->
     % now read the child
     ChildRefX = hn_util:refX_from_index(C),
-    [{Child, {formula, Formula}}] = read_attrs(ChildRefX, [formula]),
+    [{Child, {"formula", Formula}}] = read_attrs(ChildRefX, ["formula"]),
     NewFormula = shift_formula(Formula, Offset),
     io:format("in shift_local_links2 rewriting the formula for ~p~n", [Child]),
     {ok, ok} = write_attr(Child, {formula, NewFormula}),
@@ -1837,8 +1837,8 @@ write_formula1(RefX, Val, Fla) ->
             write_cell(RefX, Res, "=" ++ Fla, Parxml, Deptreexml)
     end.
 
-write_formula2(RefX, OrigVal, {Type, Value}, {'text-align', Align}, Format) ->
-    {ok, ok} = write_attr(RefX, {'text-align', Align}),
+write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
+    {ok, ok} = write_attr(RefX, {"text-align", Align}),
     % write out the format (if any)
     case Format of
         {format, "null"} -> ok;
@@ -1853,25 +1853,25 @@ write_formula2(RefX, OrigVal, {Type, Value}, {'text-align', Align}, Format) ->
     write_cell(RefX, Value, Formula, [], []).
 
 write_pcode(_RefX, nil)  -> {ok, ok};
-write_pcode(RefX, Pcode) -> Ref = hn_util:refX_to_ref(RefX, '__ast'),
+write_pcode(RefX, Pcode) -> Ref = hn_util:refX_to_ref(RefX, "__ast"),
                             Record = #hn_item{addr = Ref, val = Pcode},
                             ok = mnesia:write(Record),
                             {ok, ok}.
 
 write_recompile(RefX, true)    ->
-    Ref = hn_util:refX_to_ref(RefX, '__recompile'),
+    Ref = hn_util:refX_to_ref(RefX, "__recompile"),
     Record = #hn_item{addr = Ref, val = true},
     ok = mnesia:write(Record),
     {ok, ok};
 write_recompile(_RefX,_Recomp) -> {ok, ok}.
 
 write_default_alignment(RefX, Res) when is_number(Res) ->
-    write_attr(RefX, {'text-align' ,"right"});
+    write_attr(RefX, {"text-align" ,"right"});
 write_default_alignment(RefX, Res) when is_list(Res) ->
-    write_attr(RefX, {'text-align' ,"left"});
+    write_attr(RefX, {"text-align" ,"left"});
 %% this clause matches for booleans, dates and errors
 write_default_alignment(RefX, _Res)  ->
-    write_attr(RefX, {'text-align' ,"center"}).
+    write_attr(RefX, {"text-align" ,"center"}).
 
 write_cell(RefX, Value, Formula, Parents, DepTree) ->
     % This function writes a cell out with all the trimings
@@ -1903,7 +1903,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
     %   - deletes any remote links that are no longer there
     % * marks this cell dirty
 
-    Ref = hn_util:refX_to_ref(RefX, 'formula'),
+    Ref = hn_util:refX_to_ref(RefX, "formula"),
     {NewLocPs, NewRemotePs} = split_local_remote(Parents),
 
     % write the formula
@@ -1935,7 +1935,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
     {ok, ok} = update_rem_parents(RefX, OldRemotePs, NewRemotePs),
 
     % We need to know the calculcated value
-    [{RefX, {rawvalue, RawValue}}] = read_attrs(RefX, [rawvalue]),
+    [{RefX, {rawvalue, RawValue}}] = read_attrs(RefX, ["rawvalue"]),
     {ok, ok} = mark_cells_dirty(RefX),
 
     % mark this cell as a possible dirty hypernumber
@@ -1971,7 +1971,7 @@ split_local_remote1([{_, [{_, "remote"}], _} = P | T], {A, B}) ->
 
 write_rawvalue(RefX, Value) ->
     % first write the rawvalue
-    Ref = hn_util:refX_to_ref(RefX, rawvalue),
+    Ref = hn_util:refX_to_ref(RefX, "rawvalue"),
     Record1 = #hn_item{addr = Ref, val = Value},
     ok = mnesia:write(Record1),
     spawn(fun() -> tell_front_end(Record1, change) end),
@@ -1981,12 +1981,12 @@ write_rawvalue(RefX, Value) ->
     {ok, Format} = read_inherited(RefX, format, "General"),
     {erlang, {_Type, Output}} = format:get_src(Format),
     {ok, {Color, V}}=format:run_format(Value,Output),
-    Ref1 = hn_util:refX_to_ref(RefX, value),
+    Ref1 = hn_util:refX_to_ref(RefX, "value"),
     Record2 = #hn_item{addr = Ref1, val = V},
     ok = mnesia:write(Record2),
     spawn(fun() -> tell_front_end(Record2, change) end),
     % now write the overwrite colour that comes from the format
-    Ref2 = hn_util:refX_to_ref(RefX, 'overwrite-color'),
+    Ref2 = hn_util:refX_to_ref(RefX, "overwrite-color"),
     Record3 = #hn_item{addr = Ref2, val = atom_to_list(Color)},
     ok = mnesia:write(Record3),
     spawn(fun() -> tell_front_end(Record3, change) end),
@@ -2075,7 +2075,7 @@ make_or([], _, Acc) -> case length(Acc) of
 make_or([H | T], PH, Acc) -> make_or(T, PH, [{'==', H, PH} | Acc]).
 
 delete_style_attr(RefX, Key) ->
-    Ref = hn_util:refX_to_ref(RefX, style),
+    Ref = hn_util:refX_to_ref(RefX, "style"),
     Match = ms_util:make_ms(hn_item, [{addr, Ref}]),
     CurrentStyle = mnesia:match_object(hn_item, Match, read),
     NewStyleIdx = get_style(RefX, CurrentStyle, Key, []),
@@ -2094,7 +2094,7 @@ process_styles(RefX, {Name, Val}) ->
     write_style_idx(RefX, NewStyleIdx).
 
 write_style_idx(RefX, NewStyleIdx) when is_record(RefX, refX) ->
-    Ref2 = hn_util:refX_to_ref(RefX, style),
+    Ref2 = hn_util:refX_to_ref(RefX, "style"),
     Record = #hn_item{addr = Ref2, val = NewStyleIdx},
     mnesia:write(Record),
     spawn(fun() -> tell_front_end(Record, change) end),
@@ -2110,7 +2110,7 @@ get_style(RefX, Name, Val) ->
 % edits a style
 get_style(RefX, Style, Name, Val) -> 
     % use the index of the style to read the style
-    Ref = hn_util:refX_to_ref(RefX, style), 
+    Ref = hn_util:refX_to_ref(RefX, "style"), 
     #hn_item{addr = Ref, val = StIdx} = Style, 
     Match = #styles{ref = Ref#ref{ref = {page, "/"}}, index = StIdx, _ = '_'}, 
     Return = mnesia:match_object(styles, Match, read),
@@ -2125,7 +2125,7 @@ get_style(RefX, Style, Name, Val) ->
 %% return an index pointing to it 
 %% If the style already exists it just returns the index 
 write_style(RefX, Style) ->
-    Ref = hn_util:refX_to_ref(RefX, style),
+    Ref = hn_util:refX_to_ref(RefX, "style"),
     % Ref is a cell ref, need a page ref
     Ref2 = Ref#ref{ref = {page, "/"}},
     Match = #styles{ref = Ref2, magic_style = Style, _ = '_'}, 
@@ -2136,7 +2136,7 @@ write_style(RefX, Style) ->
     end. 
 
 write_style2(RefX, Style) ->
-    Ref = hn_util:refX_to_ref(RefX, style),
+    Ref = hn_util:refX_to_ref(RefX, "style"),
     % Ref is a cell reference - a page reference is needed
     Ref2 = Ref#ref{ref = {page, "/"}},
     NewIndex = mnesia:dirty_update_counter(style_counters, Ref2, 1), 
@@ -2154,8 +2154,7 @@ tell_front_end(#hn_item{addr=Ref, val=Val}, Type) ->
     case Ref#ref.name of
         "__"++_ -> ok; 
         _Else   -> remoting_reg:notify(Ref#ref.site, Ref#ref.path, Type, 
-                                       Ref#ref.ref,  Ref#ref.name, 
-                                       Val)
+                                       Ref#ref.ref,  Ref#ref.name, Val)
     end.
 
 make_tuple(Style, Counter, Index, Val) -> 
@@ -2170,21 +2169,21 @@ drop_private(List) -> drop_private(List, []).
 drop_private([], Acc) -> Acc;
 drop_private([H | T], Acc) ->
     {_, {Name, _}} = H,
-    case atom_to_list(Name) of
+    case Name of
         "__"++_ -> drop_private(T, Acc);
         _       -> drop_private(T, [H | Acc])
     end.
 
 extract_values(List) -> extract_values1(List, []).
 
-extract_values1([], Acc) -> Acc;
+extract_values1([], Acc)                  -> Acc;
 extract_values1([{_R, {_K, V}}| T], Acc)  -> extract_values1(T, [V | Acc]).
 
 %% @hidden
 dump() ->
     RefX = #refX{site = "http://127.0.0.1:9000", path = ["insert", "data"],
                  obj = {cell, {1, 1}}},
-    Attrs = read_attrs(RefX, [rawvalue]),
+    Attrs = read_attrs(RefX, ["rawvalue"]),
     io:format("in dump Attrs are ~p~n", [Attrs]),
     {ok, ok}.
 

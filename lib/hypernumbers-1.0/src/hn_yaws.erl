@@ -294,8 +294,6 @@ req('POST',{register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{child_url,[],[Reg
     _Attr,_User,Ref) ->
     {ok,RegRef}=hn_util:parse_url(Reg),
     #ref{site = ChildSite} = RegRef,
-    %    io:format("in hn_yaws:req~n-Ref is ~p~n-RegRef is ~p~n-Proxy is ~p~n",
-    %              [Ref, RegRef, Proxy]),
     hn_db:register_hn(
                   hn_util:ref_to_index(Ref),
                   hn_util:ref_to_index(RegRef),

@@ -33,7 +33,9 @@ set_attribute(Ref = #ref{name=format}, Val) ->
     F = fun(X,[]) ->
                 case hn_db:get_item_val(X#ref{name=rawvalue}) of
                     []    -> ok;
-                    Value -> set_cell_rawvalue(X,Value)
+                    Value -> io:format("In hn_main:set_attribute "++
+                                       "Value is ~p~n", [Value]),
+                             set_cell_rawvalue(X,Value)
                 end
         end,
     apply_range(Ref,F,[]);
@@ -145,6 +147,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
     Index = to_index(Addr),
 
     hn_db:write_item(Addr#ref{name=formula},Formula),
+    io:format("In hn_main:write_cell Value is ~p~n", [Value]),
     set_cell_rawvalue(Addr,Value),
 
     % Delete attribute if empty, else store
@@ -196,6 +199,7 @@ set_cell_rawvalue(Addr,Value) ->
     {ok,Format} = hn_db:get_item_inherited(Addr#ref{name=format}, "General"),
     {erlang,{_Type,Output}} = format:get_src(Format),
     {ok,{Color,V}}=format:run_format(Value,Output),
+    io:format("in hn_main:set_cell_rawvalue V is ~p~n", [V]),
     hn_db:write_item(Addr#ref{name=value},V),
     hn_db:write_item(Addr#ref{name='overwrite-color'},atom_to_list(Color)),
     ok.
@@ -419,4 +423,4 @@ get_pages_under(Under) ->
     Guard = "",
     Body  = ['$1'],
     Spec=[{Head,Guard,Body}],
-    _List=muin:unique(Spec)++[].
+    muin:unique(Spec)++[].
