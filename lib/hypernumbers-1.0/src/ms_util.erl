@@ -26,8 +26,8 @@ make_ms(Rec, List) when is_atom(Rec), is_list(List) ->
 
 make(Rec, List, Type) ->
     NoFields=no_of_fields(Rec),
-    NewList=proc_list(Rec,List),
-    Return=list_to_tuple([Rec|build(NewList, NoFields, Type)]),
+    NewList=proc_list(Rec, List),
+    Return=list_to_tuple([Rec | build(NewList, NoFields, Type)]),
     Return.
 
 %%%

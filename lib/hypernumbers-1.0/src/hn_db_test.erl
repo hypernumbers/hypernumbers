@@ -887,7 +887,7 @@ write_attr_DEBUG(RefX, [Attr | T]) ->
 colour(Path, {X, Y}, Colour) ->
     Site = "http://127.0.0.1:9000",
     RefX = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
-    Val = {'background-color', Colour},
+    Val = {"background-color", Colour},
     Fun = fun() ->
                   hn_db_wu:write_attr(RefX, Val)
           end,

@@ -40,11 +40,11 @@ mk2(Name,N) -> "no_of_fields("++atom_to_list(Name)++") -> "++
 		   integer_to_list(N)++";\n".
 
 %% mk/1 builds an error line
-mk(Name) -> "get_index("++atom_to_list(Name)++",F) -> "++
+mk(Name) -> "get_index2("++atom_to_list(Name)++",F) -> "++
 		"exit({error, "++atom_to_list(Name)++", no_exists, F});\n".
 
 mk(Name,Field,N) -> 
-    "get_index("++atom_to_list(Name)++", '"++
+    "get_index2("++atom_to_list(Name)++", '"++
 	atom_to_list(Field)++"')-> "++integer_to_list(N)++";\n".
 
 top_and_tail(Acc1,Acc2)->
@@ -66,10 +66,19 @@ top_and_tail(Acc1,Acc2)->
         "    case Return of\n"++
         "      false -> false;\n"++
         "      _     -> true\n"++
-        "    end.\n\n",
+        "    end.\n\n"++
+        "get_index(Record, Field) when is_atom(Field)-> \n"++
+        "   get_index2(Record, Field);\n"++
+        "get_index(Record, Field) ->\n"++
+        "   Field2 = try erlang:list_to_existing_atom(Field)\n"++
+        "      catch\n"++
+        "          _Error : _ -> exit({error, Record, no_exists, Field})\n"++
+        "      end,\n"++
+        "     get_index2(Record, Field2).\n",
+
     Tail1="no_of_fields(Other) -> exit({error, \"Invalid Record Name: \""++
 	"++Other}).\n\n\n",
-    Tail2="get_index(Record,_Field) -> exit({error, \""++
+    Tail2="get_index2(Record,_Field) -> exit({error, \""++
 	"Invalid Record Name: \"++Record}).\n",
     Top++lists:flatten(Acc1)++Tail1++lists:flatten(Acc2)++Tail2.
 
