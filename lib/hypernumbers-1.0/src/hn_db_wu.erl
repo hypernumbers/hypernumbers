@@ -919,8 +919,6 @@ read_local_children(#refX{obj = {cell, _}} = RefX) ->
 %% @end
 %% This clause deals with a formula
 write_attr(#refX{obj = {cell, _}} = RefX, {"formula", _} = Attr) ->
-    io:format("in hn_db_wu:write_attr~n-RefX is ~p~n-Attr is ~p~n",
-              [RefX, Attr]),
     % first check that the formula is not part of a shared array
     case read_attrs(RefX, ["__shared"]) of
         [_X] -> throw({error, cant_change_part_of_array});
