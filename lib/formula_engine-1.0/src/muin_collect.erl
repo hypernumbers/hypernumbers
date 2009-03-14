@@ -21,7 +21,8 @@
          collect_numbers/2, collect_number/2,
          collect_strings/2, collect_string/2,
          collect_bools/2,   collect_bool/2,
-         collect_dates/2,   collect_date/2]).
+         collect_dates/2,   collect_date/2,
+         remove_errors/1]).
 
 -export([is_string/1, is_date/1, is_blank/1]).
 
@@ -32,6 +33,18 @@
 -include("typechecks.hrl").
 
 -import(muin_util, [cast/2]).
+
+%% @doc removes any errors
+remove_errors(Xs) ->
+    Fun  = fun(X) ->
+                   case X of
+                       {error, _} -> false;
+                       _          -> true
+                   end
+           end,
+    Return = lists:filter(Fun, Xs),
+    io:format("in remove_errors~n-Xs is ~p~n-Return is ~p~n", [Xs, Return]),
+    Return.
 
 %% @doc Replaces array objects with values they contain.
 flatten_arrays([Hd|Tl]) ->
@@ -54,7 +67,8 @@ flatten_areas(A) ->
     flatten_areas([A]).
 
 %% Rules:
-%% ignore_strings | cast_strings | cast_strings_zero cast_strings_or_ignore | ban_strings
+%% ignore_strings | cast_strings | cast_strings_zero | 
+%%  cast_strings_or_ignore | ban_strings
 %% ignore_bools | cast_bools | ban_bools
 %% ignore_dates | cast_dates | ban_dates
 %% ignore_blanks | cast_blanks | ban_blanks
