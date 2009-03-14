@@ -1822,11 +1822,11 @@ write_formula1(RefX, Val, Fla) ->
     Rti = ref_to_rti(Ref, false),
     case muin:run_formula(Fla, Rti) of
         {error, Error} ->
-            io:format("in hn_db_wu:write_formula1 Fla is ~p Rti is ~p Error is ~p~n",
-                      [Fla, Rti, Error]),
-            % @TODO, notify clients
+            ?ERROR("hn_db_wu:write_formula1 Fla ~p Rti ~p Error ~p~n",
+                   [Fla, Rti, Error]),
+            %todo: notify
             {ok, ok};       
-        {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
+        {ok, {Pcode, Res, Deptree, Parents, Recompile}=TS} ->
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
             Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
             {ok, ok} = write_pcode(RefX, Pcode),

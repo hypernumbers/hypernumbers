@@ -17,6 +17,8 @@
 
 -export([
          % HyperNumbers Utils
+         jsonify_val/1,
+
          index_to_url/1,
          ref_to_str/1,
          xml_to_val/1,
@@ -64,6 +66,21 @@
 %%% and #indexrecords                                                        %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+jsonify_val({"__permissions", _}) ->
+    {"__permissions", "bleh"};
+jsonify_val({"__groups", _}) ->
+    {"__groups", "bleh"};
+jsonify_val({"dependency-tree", _}) ->
+    {"dependency-tree", "bleh"};
+jsonify_val({"parents", _}) ->
+    {"parents", "bleh"};
+jsonify_val({Name, {errval, Error}}) ->
+    {Name, atom_to_list(Error)};
+jsonify_val({Name, {datetime, Date, Time}}) ->
+    {Name, muin_date:to_rfc1123_string({datetime, Date, Time})};
+jsonify_val(Else) ->
+    Else.
+
 url_to_refX({url, [{type, _}], [Url]}) ->
     {ok, Ref} = parse_url(Url),
     {RefX, _} = ref_to_refX(Ref, "to be chucked away"),

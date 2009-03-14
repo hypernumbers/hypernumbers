@@ -227,23 +227,22 @@ apply_range(Addr,Fun,Args) ->
 %%%               formula parser about a cell, ie its direct
 %%%               parents/ dependency tree, and value
 %%%-----------------------------------------------------------------
-get_cell_info(Site, TmpPath, X, Y) ->
+get_cell_info(Site, Path, X, Y) ->
 
-    Path = lists:filter(fun(Z) -> not(Z == $/) end, TmpPath),   
-    Ref = #ref{site=string:to_lower(Site),path=Path,ref={cell,{X,Y}}},
-    Value   = hn_db:get_item_val(Ref#ref{name=rawvalue}),
+    Ref   = #ref{site=string:to_lower(Site),path=Path,ref={cell,{X,Y}}},
+    Value = hn_db:get_item_val(Ref#ref{name="rawvalue"}),
 
-    DepTree = case hn_db:get_item_val(Ref#ref{name='dependency-tree'}) of
+    DepTree = case hn_db:get_item_val(Ref#ref{name="dependency-tree"}) of
                   {xml,Tree} -> Tree;
                   []         -> []
               end,
-
+    
     Val = case Value of
               []                 -> blank;
               {datetime, _, [N]} -> muin_date:from_gregorian_seconds(N);
               Else               -> Else %% Strip other type tags.
           end,
-
+    
     F = fun({url,[{type,Type}],[Url]}) -> 
                 {ok,#ref{site=S,path=P,ref={cell,{X1,Y1}}}} = hn_util:parse_url(Url),
                 P2 = string:tokens(P,"/"),

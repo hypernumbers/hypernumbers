@@ -14,9 +14,11 @@
 -define(XHR_TIMEOUT, 10000).
 
 req(Req) ->
-    
-    Url = "http://"++Req:get_header_value("host")++Req:get(path),
-    
+
+    {ok, Port} = inet:port(Req:get(socket)),
+    [Domain | Rest] = string:tokens(Req:get_header_value("host"), ":"), 
+    Url = lists:concat(["http://",Domain,":",itol(Port),Req:get(path)]),
+
     case filename:extension(Req:get(path)) of 
         
         %% Serve Static Files
@@ -60,6 +62,16 @@ handle_req('GET', Req, Ref, page, [{"attr", []}]) ->
 handle_req('GET', Req, _Ref, page, _Attr) ->
     Req:serve_file("hypernumbers/index.html", docroot());
 
+handle_req('GET', Req, Ref, cell, _Attr) ->
+    Dict = to_dict(hn_db_api:read(Ref), dh_tree:new()),
+    JS = case dict_to_struct(Dict) of
+             [] -> {struct, []};
+             [{_Cells, {struct, [{Y, {struct, [{X, JSON}]}}]}}] ->
+                 JSON
+         end, 
+    Req:ok({"application/json", mochijson:encode(JS)});
+
+
 handle_req('POST', Req, Ref, cell, _Attr) ->
     {struct, Attr} = mochijson:decode(Req:recv_body()),
     hn_db_api:write_attributes(Ref, Attr),
@@ -72,19 +84,21 @@ handle_req(_Method, Req, _Ref, _Type,  _Attr) ->
 to_dict([], JSON) ->
     JSON;
 to_dict([ {Ref, Val} | T], JSON) ->
-    to_dict(T, add_ref(Ref, Val, JSON)).
+    to_dict(T, add_ref(Ref, hn_util:jsonify_val(Val), JSON)).
 
+add_ref(#refX{ obj = {page,"/"}}, {Name, Val}, JSON) ->
+    dh_tree:set(["page", Name], Val, JSON);
 add_ref(#refX{ obj = {cell, {X,Y}}}, {Name, Val}, JSON) ->
-    dh_tree:set(["cells", toi(Y), toi(X), Name], Val, JSON);
+    dh_tree:set(["cells", itol(Y), itol(X), Name], Val, JSON);
 add_ref(#refX{ obj = {column, X}}, {Name, Val}, JSON) ->
-    dh_tree:set(["cols", toi(X), Name], Val, JSON);
+    dh_tree:set(["cols", itol(X), Name], Val, JSON);
 add_ref(#refX{ obj = {row, Y}}, {Name, Val}, JSON) ->
-    dh_tree:set(["rows", toi(Y), Name], Val, JSON).
+    dh_tree:set(["rows", itol(Y), Name], Val, JSON).
 
 docroot() ->
     code:priv_dir(hypernumbers) ++ "/docroot".
 
-toi(X) ->
+itol(X) ->
     integer_to_list(X).
 
 is_dict(Dict) when is_tuple(Dict) ->

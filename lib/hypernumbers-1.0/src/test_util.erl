@@ -88,7 +88,7 @@ import_xls(Name) ->
                      Postdata2 = fix_integers(Postdata),
                      % ok = hn_main:set_cell(RefRec, Postdata2);
                      {RefX, {Key, Val}} = hn_util:ref_to_refX(RefRec, Postdata2),
-                     [{ok, ok}] = hn_db_api:write_attributes(RefX, [{formula, Val}]);
+                     [{ok, ok}] = hn_db_api:write_attributes(RefX, [{"formula", Val}]);
                 ({Path, {Tl, Br}, Postdata}) -> % array formula
                      Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Tl ++ ":" ++ Br),
                      {ok, RefRec} = hn_util:parse_url(Url),
@@ -394,15 +394,15 @@ wait(N) -> internal_wait(?DEFAULT * N).
 -define(HNSERVER, "http://127.0.0.1:9000").
 
 hnget(Path, Ref) ->
-    Url = Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
+    Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
     {ok, {{_V, _Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
     Body.
   
 hnpost(Path, Ref, Postdata) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
-    Postreq = "<create><formula><![CDATA[" ++ Postdata ++ "]]></formula></create>",
+    Postreq = "{\"formula\":\"" ++ Postdata ++ "\"}",
     Return = http:request(post,
-                          {Url, [], "text/xml", Postreq},
+                          {Url, [], "application/json", Postreq},
                           [{timeout, 5000}],
                           []),
     handle_return(Return, Ref).
@@ -416,7 +416,9 @@ handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
 	      [Ref, Code, Body]).
 
 cmp(A,A) -> true;
-cmp(G,E) ->
+cmp(GX,E) ->
+    {struct,Props} = mochijson:decode(GX),
+    G = proplists:get_value("rawvalue", Props),
     E2 = case E of
              true   -> true;
              false  -> false;
@@ -440,6 +442,10 @@ cmp(G,E) ->
         true -> E2 == G2
     end.
 
+conv_from_get(X) when is_float(X) -> X;
+conv_from_get(X) when is_integer(X) -> X;
+conv_from_get(true)  -> true;
+conv_from_get(false) -> false;
 conv_from_get("true")  -> true;
 conv_from_get("false") -> false;
 conv_from_get("TRUE")  -> true;

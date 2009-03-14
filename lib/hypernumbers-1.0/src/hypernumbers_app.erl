@@ -144,14 +144,13 @@ set_def_perms([{{I1,I2,I3,I4},Port,Domains}|T])->
 %% @doc  Supervisor call back
 set_perms(Domains) ->
     
-    Ref = #ref{site = Domains,
+    Ref = #refX{site = Domains,
                path = [],
-               ref  = {page,"/"}},
-    
-    hn_main:set_attribute(Ref#ref{name='__permissions'},
-                          [{user,anonymous,admin}]),
-    
-    hn_main:set_attribute(Ref#ref{name='__groups'},
-                          [{owner,[{user,"admin"}]}]),
+               obj  = {page,"/"}},
+ 
+    Perms  = {"__permissions",[{user,anonymous,admin}]},
+    Groups = {"__groups", [{owner,[{user,"admin"}]}]},
 
+    hn_db_api:write_attributes(Ref,[Perms, Groups]),
+    
     ok.

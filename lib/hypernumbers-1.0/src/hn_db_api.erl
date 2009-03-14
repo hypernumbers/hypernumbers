@@ -132,8 +132,9 @@ handle_dirty_cell(#refX{obj = {cell, _}} = RefX)  ->
     Fun =
         fun() ->
                 {ok, ok} =
-                    case hn_db_wu:read_attrs(RefX, ['__shared']) of
-                        [] -> [{C, KV}] = hn_db_wu:read_attrs(RefX, [formula]),
+                    case hn_db_wu:read_attrs(RefX, ["__shared"]) of
+                        [] -> [{C, KV}] = hn_db_wu:read_attrs(RefX, 
+                                                              ["formula"]),
                               hn_db_wu:write_attr(C, KV);
                         _  -> {ok, ok}
                     end,
@@ -153,7 +154,7 @@ handle_dirty_notify_in(Parent) when is_record(Parent, refX) ->
     Fun = fun() ->
                   Cells = hn_db_wu:read_remote_children(Parent, incoming),
                   Fun2 = fun(X) ->
-                                 [{RefX, KV}] = hn_db_wu:read_attrs(X, [formula]),
+                                 [{RefX, KV}] = hn_db_wu:read_attrs(X, ["formula"]),
                                  {ok, ok} = hn_db_wu:write_attr(RefX, KV)
                          end,
                   [{ok, ok} = Fun2(X)  || X <- Cells],
@@ -461,7 +462,7 @@ write_last(List) when is_list(List) ->
                                       column -> {cell, {Idx, Pos}}
                                   end,
                             RefX2 = #refX{site = S1, path = P1, obj = Obj},
-                            hn_db_wu:write_attr(RefX2, {formula, Val})
+                            hn_db_wu:write_attr(RefX2, {"formula", Val})
                     end,
                 [Fun1(X) || X <- List]
         end,
@@ -540,7 +541,7 @@ read_styles(RefX) when is_record(RefX, refX) ->
 %% </ul>
 recalculate(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  Cells = hn_db_wu:read_attrs(RefX, [formula]),
+                  Cells = hn_db_wu:read_attrs(RefX, ["formula"]),
                   [{ok, ok} = hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
           end,
     mnesia:activity(transaction, Fun).

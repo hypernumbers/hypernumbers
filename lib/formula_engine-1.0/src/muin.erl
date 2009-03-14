@@ -289,8 +289,8 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
 %% Formula function call (built-in or user-defined).
 funcall(Fname, Args) ->
     R = foldl(fun(M, Acc = {F, A, not_found_yet}) ->
-                      io:format("in muin:funcall M is ~p F is ~p A is ~p~n",
-                                [M, F, A]),
+                      %io:format("in muin:funcall M is ~p F is ~p A is ~p~n",
+                      %          [M, F, A]),
                       case attempt(M, F, [A]) of
                           {error, undef} -> Acc;
                           {ok, V}        -> {F, A, V};

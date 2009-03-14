@@ -49,9 +49,10 @@ terminate(_Reason, _State) ->   ?INFO("terminating",[]),ok.
 code_change(_Old, State, _E) -> {ok, State}.
 
 notify(Site, Path, Type, {RefType, _}=R, Name, Value) ->
+    {Name, Val} = hn_util:jsonify_val({Name, Value}), 
     Msg = {struct, [{"type", Type}, {"reftype", RefType},
                     {"ref", hn_util:ref_to_str(R)}, 
-                    {"name", Name}, {"value", Value}]},
+                    {"name", Name}, {"value", Val}]},
     gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
 
 send_to_server(Server, Time, Msgs) ->
