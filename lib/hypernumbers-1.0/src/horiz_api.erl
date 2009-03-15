@@ -105,26 +105,27 @@ notify_back_create(Parent, Child) ->
     ParentUrl = hn_util:index_to_url(ParentIdx),
     ChildUrl = hn_util:index_to_url(ChildIdx),
 
+    %% Ignore simplexml it makes stuff a bit nastier
     Vars = {struct, [{"action","register"}, {"biccie", Biccie},
                      {"proxy", Proxy}, {"child_url", ChildUrl}]},
     Post = mochijson:encode(Vars), 
 
     case http:request(post,{ParentUrl,[],"application/json",Post},[],[]) of
-         {ok,{{_V,200,_R},_H,Xml}} ->
-             io:format("-returned 200~n"),
-             {hypernumber,[],[
-                              {value,[],              [Val]},
-                              {'dependency-tree',[],  DepTree}]
-             } = simplexml:from_xml_string(Xml),
+        {ok,{{_V,200,_R},_H,Xml}} ->
+
+            {hypernumber,[],[
+                             {value,[],              [Val]},
+                             {'dependency-tree',[],  DepTree}]
+            } = simplexml:from_xml_string(Xml),
             
-             Value = hn_util:xml_to_val(Val),
-             io:format("in horiz_api:notify_back_create Val is ~p~n", [Val]),
+            Value = hn_util:xml_to_val(Val),
+            io:format("in horiz_api:notify_back_create Val is ~p~n", [Val]),
             
-              {Value, DepTree, Biccie};
-         {ok,{{_V,503,_R},_H,_Body}} ->
-             io:format("-returned 503~n"),
-             io:format("permission has been denied - need to write an error "++
-                       "to the hypernumber here...~n"),
+            {Value, DepTree, Biccie};
+        {ok,{{_V,503,_R},_H,_Body}} ->
+            io:format("-returned 503~n"),
+            io:format("permission has been denied - need to write an error "++
+                      "to the hypernumber here...~n"),
             {error,permission_denied};
-          Other -> io:format("Post failed with ~p~n", [Other])
+        Other -> io:format("Post failed with ~p~n", [Other])
     end.

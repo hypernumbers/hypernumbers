@@ -16,7 +16,7 @@
 req(Req) ->
 
     {ok, Port} = inet:port(Req:get(socket)),
-    [Domain | Rest] = string:tokens(Req:get_header_value("host"), ":"), 
+    [Domain | _] = string:tokens(Req:get_header_value("host"), ":"), 
     Url = lists:concat(["http://",Domain,":",itol(Port),Req:get(path)]),
 
     case filename:extension(Req:get(path)) of 
@@ -37,11 +37,20 @@ req(Req) ->
 
 stuff(Url, Req) ->
     Ref = parse_ref(Url),
+
     {Type, _Val} = Ref#refX.obj,
-    handle_req(Req:get(method), Req, Ref, Type, Req:parse_qs()), 
+
+    Post = case Req:recv_body() of
+               undefined -> undefined;
+               Json -> 
+                   {struct, Attr} = mochijson:decode(Json),
+                   Attr
+           end,
+
+    handle_req(Req:get(method), Req, Ref, Type, Req:parse_qs(), Post), 
     ok.
 
-handle_req('GET', Req, Ref, page, [{"updates", Time}]) ->
+handle_req('GET', Req, Ref, page, [{"updates", Time}], _Post) ->
     Socket = Req:get(socket),
     inet:setopts(Socket, [{active, once}]),
     Msg = {fetch, Ref#refX.site, Ref#refX.path, list_to_integer(Time), self()},
@@ -53,50 +62,35 @@ handle_req('GET', Req, Ref, page, [{"updates", Time}]) ->
             Req:ok({"application/json", mochijson:encode(Data)})
     end;
 
-handle_req('GET', Req, Ref, page, [{"attr", []}]) ->
-    %?INFO("~p",[hn_db_api:read_styles(Ref)]),
+handle_req('GET', Req, Ref, page, [{"attr", []}], _Post) ->     
     Tree = dh_tree:create([["cells"], ["cols"], ["rows"], ["page"]]),
     Dict = to_dict(hn_db_api:read(Ref), Tree),
     Time = {"time", remoting_reg:timestamp()},
     JSON = {struct, [Time | dict_to_struct(Dict)]},
     Req:ok({"application/json", mochijson:encode(JSON)});
 
-handle_req('GET', Req, _Ref, page, _Attr) ->
+handle_req('GET', Req, _Ref, page, _Attr, _Post) ->
     Req:serve_file("hypernumbers/index.html", docroot());
 
-handle_req('GET', Req, Ref, cell, _Attr) ->
+handle_req('GET', Req, Ref, cell, _Attr, _Post) ->
     Dict = to_dict(hn_db_api:read(Ref), dh_tree:new()),
     JS = case dict_to_struct(Dict) of
              [] -> {struct, []};
-             [{_Cells, {struct, [{Y, {struct, [{X, JSON}]}}]}}] ->
+             [{_Cells, {struct, [{_Y, {struct, [{_X, JSON}]}}]}}] ->
                  JSON
          end, 
     Req:ok({"application/json", mochijson:encode(JS)});
 
-handle_req('POST', Req, Ref, cell, _Attr) ->
-    Body = Req:recv_body(),
-    ?INFO("here1 ~p",[Body]),
-    {struct, POST} = mochijson:decode(Body),
-    ?INFO("here2 ~p",[POST]),
-    case POST of
-        [{"set", {struct, Attr}}] ->
-            hn_db_api:write_attributes(Ref, Attr);
-        [{"clear", "all"}] ->
-            hn_db_api:clear(Ref, all)
-    end,
+handle_req('POST', Req, Ref, cell, _Attr, [{"set", {struct, Attr}}]) ->
+    hn_db_api:write_attributes(Ref, Attr),
     Req:ok({"application/json", "success"});
 
-handle_req('POST', Req, Ref, range, _Attr) ->
-    {struct, POST} = mochijson:decode(Req:recv_body()),
-    case POST of
-        [{"clear", "all"}] ->
-            hn_db_api:clear(Ref, all)
-    end,
+handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "all"}]) ->
+    hn_db_api:clear(Ref, all),
     Req:ok({"application/json", "success"});
 
-
-handle_req(_Method, Req, _Ref, _Type,  _Attr) ->
-    ?INFO("404 ~p ~p",[_Ref, _Attr]),
+handle_req(_Method, Req, _Ref, _Type,  _Attr, _Post) ->
+    ?INFO("404 ~p ~p ~p",[_Ref, _Attr, _Post]),
     Req:ok({"text/html",<<"bleh">>}).
 
 to_dict([], JSON) ->
