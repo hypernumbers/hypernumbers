@@ -216,7 +216,7 @@ rev_comp(Index,[{name_index,{tName,[{value,Value},{type,_Type}],
                 {name, NameVal}, _Val]}] = ?read(Tbl,tmp_names,Value),
     % if the type is local look up the sheet name
     NameStr = case Type of
-                  global -> "..!"++"@"++NameVal;
+                  global -> "..!"++NameVal;
                   local  -> {{sheet,SheetName},_,_}=Index,
                             EscSheet=excel_util:esc_tab_name(SheetName),
                             "..!"++EscSheet++"!"++"@"++NameVal
