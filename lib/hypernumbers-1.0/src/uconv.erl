@@ -7,7 +7,7 @@
 %%%   * http://www.ibm.com/developerworks/java/library/j-u-encode.html
 
 -module(uconv).
-%-include_lib("eunit/include/eunit.hrl").
+-include_lib("eunit.hrl").
 
 -export([utf8_to_32/1,
          utf16_to_32/1,
@@ -46,7 +46,7 @@ utf8_to_16(List) ->
 
 %% 0zzzzzzz -- one byte, ASCII equivalence range.
 u8to32(<<2#0:1, CodePoint:7, Rest/binary>>, List) ->
-     u8to32(Rest, [CodePoint | List]);
+    u8to32(Rest, [CodePoint | List]);
 
 %% 110yyyyy 10zzzzzz -- two bytes, e.g. German or Russian.
 u8to32(<<2#110:3, Y:5, 2#10:2, Z:6, Rest/binary>>, List) ->
@@ -81,7 +81,7 @@ u16to32(<<CodePoint:16/unsigned-integer,Rest/binary>>, Utf32) ->
 
 u16to32(<<>>, Utf32) ->
     {ok, lists:reverse(Utf32)}.
-    
+
 
 %% 0-7F  0zzzzzzz -> 0zzzzzzz
 u32to8([Utf32 | T], Utf8) when Utf32 < 16#80 ->
@@ -131,43 +131,43 @@ u32to16([], Utf16) ->
 
 %%% NOTE: This file *must* be encoded in UTF-8 for tests to pass.
 
-%one_byte_test_() ->
-%    [
-%     ?_assert(utf8_to_32(<<"hello world">>) == {ok, "hello world"}),
-%     ?_assert(utf8_to_32(<<"unicode 12345 !@#$%">>) == {ok, "unicode 12345 !@#$%"}),
+one_byte_test_() ->
+    [
+     ?_assert(utf8_to_32(<<"hello world">>) == {ok, "hello world"}),
+     ?_assert(utf8_to_32(<<"unicode 12345 !@#$%">>) == {ok, "unicode 12345 !@#$%"}),
 
-%     ?_assert(utf32_to_8("hello world") == {ok, <<"hello world">>}),
-%     ?_assert(utf32_to_8("unicode 12345 !@#$%") == {ok, <<"unicode 12345 !@#$%">>})
-%    ].
+     ?_assert(utf32_to_8("hello world") == {ok, <<"hello world">>}),
+     ?_assert(utf32_to_8("unicode 12345 !@#$%") == {ok, <<"unicode 12345 !@#$%">>})
+    ].
 
-%two_bytes_test_() ->
-%    [
-%     ?_assert(utf8_to_32(<<"привет, как дела?">>) == {ok,[1087,1088,1080,1074,1077,1090,44,32,1082,1072,1082,32,1076,1077,1083,1072,63]}),
+two_bytes_test_() ->
+    [
+     ?_assert(utf8_to_32(<<"привет, как дела?">>) == {ok,[1087,1088,1080,1074,1077,1090,44,32,1082,1072,1082,32,1076,1077,1083,1072,63]}),
 
-%     ?_assert(utf32_to_8([1087,1088,1080,1074,1077,1090,44,32,1082,1072,1082,32,1076,1077,1083,1072,63]) == {ok, <<"привет, как дела?">>})
-%    ].
+     ?_assert(utf32_to_8([1087,1088,1080,1074,1077,1090,44,32,1082,1072,1082,32,1076,1077,1083,1072,63]) == {ok, <<"привет, как дела?">>})
+    ].
 
-%mixed_test_() ->
-%    [
-%     ?_assert(utf8_to_32(<<"абвгд abcde">>) == {ok, [1072, 1073, 1074, 1075, 1076, 32, 97, 98, 99, 100, 101]}),
-     
-%     ?_assert(utf32_to_8([1072, 1073, 1074, 1075, 1076, 32, 97, 98, 99, 100, 101]) == {ok, <<"абвгд abcde">>})
-%    ].
+mixed_test_() ->
+    [
+     ?_assert(utf8_to_32(<<"абвгд abcde">>) == {ok, [1072, 1073, 1074, 1075, 1076, 32, 97, 98, 99, 100, 101]}),
 
-%utf16_test_() ->
-%    [
-%     ?_assert(utf32_to_16([122]) == {ok,<<" z">>}),
+     ?_assert(utf32_to_8([1072, 1073, 1074, 1075, 1076, 32, 97, 98, 99, 100, 101]) == {ok, <<"абвгд abcde">>})
+    ].
 
-%     ?_assert([97] == roundtrip([97])),
+utf16_test_() ->
+    [
+     ?_assert(utf32_to_16([122]) == {ok,<<" z">>}),
 
-%     ?_assert([16#1D11E] == roundtrip([16#1D11E])),
+     ?_assert([97] == roundtrip([97])),
 
-%     ?_assert([16#64321] == roundtrip([16#64321]))
-%    ].
+     ?_assert([16#1D11E] == roundtrip([16#1D11E])),
 
-%roundtrip(A) ->
-%    {ok, B} = utf32_to_16(A),
-%    {ok, C} = utf16_to_32(B),
-%    C.
-    
-           
+     ?_assert([16#64321] == roundtrip([16#64321]))
+    ].
+
+roundtrip(A) ->
+    {ok, B} = utf32_to_16(A),
+    {ok, C} = utf16_to_32(B),
+    C.
+
+
