@@ -56,7 +56,6 @@ mk(Name,Field,N) ->
         atom_to_list(Field)++"')-> "++integer_to_list(N)++";\n".
 
 top_and_tail(A1,A2,A3)->
-    io:format("In top_and_tail~n-A3 is ~p~n",[A3]),
     Top="%% This module automatically generated - do not edit\n"++
         "\n"++
         "%%% This module provides utilities for use in building\n"++
