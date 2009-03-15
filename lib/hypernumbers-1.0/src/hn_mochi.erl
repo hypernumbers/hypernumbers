@@ -74,7 +74,10 @@ handle_req('GET', Req, Ref, cell, _Attr) ->
     Req:ok({"application/json", mochijson:encode(JS)});
 
 handle_req('POST', Req, Ref, cell, _Attr) ->
-    {struct, POST} = mochijson:decode(Req:recv_body()),
+    Body = Req:recv_body(),
+    ?INFO("here1 ~p",[Body]),
+    {struct, POST} = mochijson:decode(Body),
+    ?INFO("here2 ~p",[POST]),
     case POST of
         [{"set", {struct, Attr}}] ->
             hn_db_api:write_attributes(Ref, Attr);
