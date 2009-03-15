@@ -58,6 +58,8 @@
 %%%            different cells are shown below:
 %%%            <img src="./terminology.png" />
 %%% 
+%%% @TODO need to write a function to clear attributes 
+%%% <code>clear_attributes(#refX{}, [Key1, Key2...])</code>
 %%% @TODO should we have a subpages #refX egt {subpages, "/"}
 %%% which would alllow you to specify operations like delete and copy
 %%% on whole subtrees?
@@ -190,7 +192,7 @@ handle_dirty_notify_out(Parent, Outgoing, Value, DepTree, Timestamp) ->
 %% be handled in the docos
 handle_dirty_notify_back_in(P, C, Type)
   when is_record(P, refX), is_record(C, refX), Type =:= "new child" ->
-    Fun1 = fun() ->
+     Fun1 = fun() ->
                    hn_db_wu:read_incoming_hn(P)
            end,
     Hn = mnesia:activity(transaction, Fun1),
