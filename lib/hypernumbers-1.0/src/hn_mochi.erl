@@ -54,6 +54,7 @@ handle_req('GET', Req, Ref, page, [{"updates", Time}]) ->
     end;
 
 handle_req('GET', Req, Ref, page, [{"attr", []}]) ->
+    %?INFO("~p",[hn_db_api:read_styles(Ref)]),
     Tree = dh_tree:create([["cells"], ["cols"], ["rows"], ["page"]]),
     Dict = to_dict(hn_db_api:read(Ref), Tree),
     Time = {"time", remoting_reg:timestamp()},
@@ -72,11 +73,24 @@ handle_req('GET', Req, Ref, cell, _Attr) ->
          end, 
     Req:ok({"application/json", mochijson:encode(JS)});
 
-
 handle_req('POST', Req, Ref, cell, _Attr) ->
-    {struct, Attr} = mochijson:decode(Req:recv_body()),
-    hn_db_api:write_attributes(Ref, Attr),
+    {struct, POST} = mochijson:decode(Req:recv_body()),
+    case POST of
+        [{"set", {struct, Attr}}] ->
+            hn_db_api:write_attributes(Ref, Attr);
+        [{"clear", "all"}] ->
+            hn_db_api:clear(Ref, all)
+    end,
     Req:ok({"application/json", "success"});
+
+handle_req('POST', Req, Ref, range, _Attr) ->
+    {struct, POST} = mochijson:decode(Req:recv_body()),
+    case POST of
+        [{"clear", "all"}] ->
+            hn_db_api:clear(Ref, all)
+    end,
+    Req:ok({"application/json", "success"});
+
 
 handle_req(_Method, Req, _Ref, _Type,  _Attr) ->
     ?INFO("404 ~p ~p",[_Ref, _Attr]),
@@ -133,5 +147,11 @@ parse_ref("http://"++Url) ->
 parse_attr(cell, Addr) ->
     case regexp:match(Addr,?RG_cell) of
         {match,_,_} -> {cell, util2:strip_ref(Addr)};
-        _           -> throw(invalid_reference)
-    end.
+        _           -> parse_attr(range, Addr)
+    end;
+
+parse_attr(range, Addr) ->
+    [Cell1, Cell2] = string:tokens(Addr, ":"),
+    {X1, Y1} = util2:strip_ref(Cell1),
+    {X2, Y2} = util2:strip_ref(Cell2),
+    {range, {X1, Y1, X2, Y2}}.
