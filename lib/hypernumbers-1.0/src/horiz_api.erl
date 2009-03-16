@@ -95,8 +95,7 @@ notify_back(ParentRefX, ChildRefX, Change, Biccie)
 %% @doc creates a new hypernumbers.
 %% Both the parent and the child references must point to a cell
 notify_back_create(Parent, Child) ->
-    io:format("in horiz_api:notify~n-Parent is ~p~n-Child is ~p~n",
-              [Parent, Child]),
+
     Biccie = util2:bake_biccie(),
     ParentIdx = hn_util:index_from_refX(Parent),
     ChildIdx = hn_util:index_from_refX(Child),
@@ -108,18 +107,18 @@ notify_back_create(Parent, Child) ->
     %% Ignore simplexml it makes stuff a bit nastier
     Vars = {struct, [{"action","register"}, {"biccie", Biccie},
                      {"proxy", Proxy}, {"child_url", ChildUrl}]},
-    Post = mochijson:encode(Vars), 
+    Post = lists:flatten(mochijson:encode(Vars)),
 
     case http:request(post,{ParentUrl,[],"application/json",Post},[],[]) of
-        {ok,{{_V,200,_R},_H,Xml}} ->
+        {ok,{{_V,200,_R},_H,Json}} ->
+            io:format("in horiz_api:notify_back_create Json is ~p~n", [Json]),
 
             {hypernumber,[],[
                              {value,[],              [Val]},
                              {'dependency-tree',[],  DepTree}]
-            } = simplexml:from_xml_string(Xml),
+            } = simplexml:from_json(Json),
             
             Value = hn_util:xml_to_val(Val),
-            io:format("in horiz_api:notify_back_create Val is ~p~n", [Val]),
             
             {Value, DepTree, Biccie};
         {ok,{{_V,503,_R},_H,_Body}} ->
