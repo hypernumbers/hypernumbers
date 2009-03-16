@@ -36,8 +36,6 @@
 %% @todo spawn the notifies so they are concurrent not sequential...
 notify(Parent, Outgoing, Value, DepTree)
   when is_record(Parent, refX) ->
-    io:format("in horiz_api:notify Value is ~p~n", [Value]),
-    
     %    error_logger:error_msg("in hn_db_wu:notify_outgoing_hn *WARNING* "++
     %                           "notify_outgoing_hn not using "++
     %                           "version number - ie it aint working - yet :("),
@@ -54,7 +52,6 @@ notify(Parent, Outgoing, Value, DepTree)
                                       {"dependency-tree", DepTree},
                                       {"version",         Version}
                                      ]},
-                     io:format("In horiz_api:notify Vars are ~p~n", [Vars]),
                      Actions = lists:flatten(mochijson:encode(Vars)),
                      
                      "success" = hn_util:post(Server,Actions,"application/json"),
@@ -71,9 +68,6 @@ notify(Parent, Outgoing, Value, DepTree)
 %% queries as things that be remote parents.
 notify_back(ParentRefX, ChildRefX, Change, Biccie)
   when is_record(ChildRefX, refX), is_record(ParentRefX, refX) ->
-    % io:format("in horiz_api:notify~n-ParentRefX is ~p~n-ChildRefX is ~p~n-"++
-    %          "Change is ~p~n-Biccie is ~p~n",
-    %          [ParentRefX, ChildRefX, Change, Biccie]),
     ChildIdx = hn_util:refX_to_index(ChildRefX),
     ParentIdx = hn_util:refX_to_index(ParentRefX),
     #index{site = Server} = ParentIdx,
@@ -117,6 +111,5 @@ notify_back_create(Parent, Child) ->
             io:format("-returned 503~n"),
             io:format("permission has been denied - need to write an error "++
                       "to the hypernumber here...~n"),
-            {error,permission_denied};
-        Other -> io:format("Post failed with ~p~n", [Other])
+            {error,permission_denied}
     end.
