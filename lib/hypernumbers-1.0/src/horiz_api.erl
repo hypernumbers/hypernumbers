@@ -43,22 +43,21 @@ notify(Parent, Outgoing, Value, DepTree)
     %                           "version number - ie it aint working - yet :("),
     ParentIdx = hn_util:index_from_refX(Parent),
     ParentUrl = hn_util:index_to_url(ParentIdx),
-    Value2 = hn_util:to_xml(Value),
     Fun2 = fun(X) -> Server = X#outgoing_hn.child_proxy,
                      Version = tconv:to_s(X#outgoing_hn.version),
                      Biccie = X#outgoing_hn.biccie,
-                     Actions = simplexml:to_json(
-                                 {notify,[],
-                                  [
-                                   {biccie,            [], [Biccie]},
-                                   {parent,            [], [ParentUrl]},
-                                   {type,              [], ["change"]},
-                                   {value,             [], Value2},
-                                   {'dependency-tree', [], DepTree},
-                                   {version,           [], [Version]}
-                                  ]}),
+                     Vars = {struct, [{"action",         "notify"},
+                                      {"biccie",          Biccie},
+                                      {"parent_url",      ParentUrl},
+                                      {"type",            "change"},
+                                      {"value",           Value},
+                                      {"dependency-tree", DepTree},
+                                      {"version",         Version}
+                                     ]},
+                     io:format("In horiz_api:notify Vars are ~p~n", [Vars]),
+                     Actions = lists:flatten(mochijson:encode(Vars)),
                      
-                     "<success/>" = hn_util:post(Server,Actions,"application/json"),
+                     "success" = hn_util:post(Server,Actions,"application/json"),
                      ok
            end,
     [ok = Fun2(X) || X <- Outgoing],
@@ -72,23 +71,23 @@ notify(Parent, Outgoing, Value, DepTree)
 %% queries as things that be remote parents.
 notify_back(ParentRefX, ChildRefX, Change, Biccie)
   when is_record(ChildRefX, refX), is_record(ParentRefX, refX) ->
-    io:format("in horiz_api:notify~n-ParentRefX is ~p~n-ChildRefX is ~p~n-"++
-              "Change is ~p~n-Biccie is ~p~n",
-              [ParentRefX, ChildRefX, Change, Biccie]),
+    % io:format("in horiz_api:notify~n-ParentRefX is ~p~n-ChildRefX is ~p~n-"++
+    %          "Change is ~p~n-Biccie is ~p~n",
+    %          [ParentRefX, ChildRefX, Change, Biccie]),
     ChildIdx = hn_util:refX_to_index(ChildRefX),
     ParentIdx = hn_util:refX_to_index(ParentRefX),
     #index{site = Server} = ParentIdx,
     ChildUrl=hn_util:index_to_url(ChildIdx),
     ParentUrl=hn_util:index_to_url(ParentIdx),
-    Actions = simplexml:to_json(
-                   {notify_back, [], [
-                                      {biccie,      [], [Biccie]},
-                                      {child_url,   [], [ChildUrl]},
-                                      {parent_url,  [], [ParentUrl]},
-                                      {type,        [], [Change]}
-                                     ]}),
+    Vars = {struct, [{"action",     "notify_back"},
+                     {"biccie",     Biccie},
+                     {"child_url",  ChildUrl},
+                     {"parent_url", ParentUrl},
+                     {"type",       Change}]},
+    Actions = lists:flatten(mochijson:encode(Vars)),
+    
     %% not very robust!
-    "<success/>" = hn_util:post(Server,Actions,"application/json"),
+    "success" = hn_util:post(Server,Actions,"application/json"),
     {ok, ok}.
 
 %% @spec notify_back_create(Parent::#refX{}, Child::#refX{}) -> {ok, ok}
@@ -105,21 +104,14 @@ notify_back_create(Parent, Child) ->
     ChildUrl = hn_util:index_to_url(ChildIdx),
 
     %% Ignore simplexml it makes stuff a bit nastier
-    Vars = {struct, [{"action","register"}, {"biccie", Biccie},
+    Vars = {struct, [{"action", "notify_back_create"}, {"biccie", Biccie},
                      {"proxy", Proxy}, {"child_url", ChildUrl}]},
     Post = lists:flatten(mochijson:encode(Vars)),
 
     case http:request(post,{ParentUrl,[],"application/json",Post},[],[]) of
         {ok,{{_V,200,_R},_H,Json}} ->
-            io:format("in horiz_api:notify_back_create Json is ~p~n", [Json]),
-
-            {hypernumber,[],[
-                             {value,[],              [Val]},
-                             {'dependency-tree',[],  DepTree}]
-            } = simplexml:from_json(Json),
-            
-            Value = hn_util:xml_to_val(Val),
-            
+            {struct, [{"value", Value}, {"dependency-tree", DepTree}]} =
+                mochijson:decode(Json),            
             {Value, DepTree, Biccie};
         {ok,{{_V,503,_R},_H,_Body}} ->
             io:format("-returned 503~n"),

@@ -82,15 +82,65 @@ handle_req('GET', Req, Ref, cell, _Attr, _Post) ->
     Req:ok({"application/json", mochijson:encode(JS)});
 
 handle_req('POST', Req, Ref, cell, _Attr, [{"set", {struct, Attr}}]) ->
-    hn_db_api:write_attributes(Ref, Attr),
+    {ok, ok} = hn_db_api:write_attributes(Ref, Attr),
     Req:ok({"application/json", "success"});
 
 handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "all"}]) ->
-    hn_db_api:clear(Ref, all),
+    {ok, ok} = hn_db_api:clear(Ref, all),
     Req:ok({"application/json", "success"});
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                          %%%
+%%% Horizonal API = notify_back handlers                                     %%%
+%%%                                                                          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back_create"}|T]) ->
+    Biccie   = from("biccie",    T),
+    Proxy    = from("proxy",     T),
+    ChildUrl = from("child_url", T),
+    {ok, ChildRef} = hn_util:parse_url(ChildUrl),
+    {ChildX, _} = hn_util:ref_to_refX(ChildRef, "dont care"),
+    ParentX = Ref,
+    Return = hn_db_api:register_hypernumber(ParentX, ChildX, Proxy, Biccie),
+    Req:ok({"application/json", mochijson:encode({struct, Return})});
+
+handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back"}|T] = Json) ->
+    Biccie    = from("biccie",     T),
+    ChildUrl  = from("child_url",  T),
+    ParentUrl = from("parent_url", T),
+    Type      = from("type",     T),
+    % io:format("in hn_mochi:handle_req~n-Biccie is ~p~nChildUrl is ~p~n-"++
+    %          "ParentUrl is ~p~n-Type is ~p~n", [Biccie, ChildUrl, ParentUrl, Type]),
+    {ok, ChildRef} = hn_util:parse_url(ChildUrl),
+    {ChildX, _} = hn_util:ref_to_refX(ChildRef, "dont care"),
+    {ok, ParentRef} = hn_util:parse_url(ParentUrl),
+    {ParentX, _} = hn_util:ref_to_refX(ParentRef, "dont care"),
+
+    Return = hn_db_api:handle_notify_back(ParentX, ChildX, Biccie, Type),
+    Req:ok({"application/json", "success"});
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                          %%%
+%%% Horizonal API = notify handlers                                          %%%
+%%%                                                                          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = Json) ->
+    Biccie     = from("biccie",          T),
+    ParentUrl  = from("parent_url",      T),
+    Type       = from("type",            T),
+    Value      = from("value",           T),
+    DepTree    = from("dependency-tree", T),
+    Version    = from("version",         T),
+    io:format("in hn_mochi:handle_req (notify) Ref is ~p~n", [Ref]),
+    {ok, ParentRef} = hn_util:parse_url(ParentUrl),
+    {ParentX, _} = hn_util:ref_to_refX(ParentRef, "dont care"),
+    Return = hn_db_api:handle_notify(ParentX, Ref, Type, Value,
+                                     DepTree, Biccie, Version),
+    Req:ok({"application/json", "success"});
+
+
 handle_req(_Method, Req, _Ref, _Type,  _Attr, _Post) ->
-    ?INFO("404 ~p ~p ~p",[_Ref, _Attr, _Post]),
+    ?INFO("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
     Req:ok({"text/html",<<"bleh">>}).
 
 to_dict([], JSON) ->
@@ -152,3 +202,6 @@ parse_attr(range, Addr) ->
     {X1, Y1} = util2:strip_ref(Cell1),
     {X2, Y2} = util2:strip_ref(Cell2),
     {range, {X1, Y1, X2, Y2}}.
+
+from(Key, List) -> {value, {Key, Value}} = lists:keysearch(Key, 1, List),
+                   Value.

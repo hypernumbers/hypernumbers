@@ -110,7 +110,8 @@
          handle_dirty_notify_in/1,
          handle_dirty_notify_out/5,
          handle_dirty_notify_back_in/3,
-         handle_dirty_notify_back_out/4
+         handle_dirty_notify_back_out/4,
+         register_hypernumber/4
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -118,6 +119,32 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec register_hypernumber(Parent::#refX{}, Child::#refX{}, Proxy, Biccie) -> 
+%% [{"value", Value}, {"dependency-tree", DependencyTree}]
+%% @doc registers a new hypernumber.
+%% The Parent and Child references must both point to a cell.
+%% This function returns a list with two tuples, one for the current value
+%% and one for the current dependency tree
+register_hypernumber(Parent, Child, Proxy, Biccie)
+  when is_record(Parent, refX), is_record(Child, refX) ->
+    Fun = fun() ->
+                  hn_db_wu:write_remote_link(Parent, Child, outgoing),
+                  hn_db_wu:register_hypernumber(Parent, Child, Proxy, Biccie),
+                  List = hn_db_wu:read_attrs(Parent, ["value", "dependency-tree"]),
+                  List2 = extract_kvs(List),
+                  % List = hn_db_wu:read_cells(Parent),
+                  V = case lists:keysearch("value", 1, List2) of
+                          false           -> "blank";
+                          {_, {_, Value}} -> Value
+                      end,
+                  D = case lists:keysearch("dependency-tree", 1, List2) of
+                          false             -> [];
+                          {_, {_, DepTree}} -> DepTree
+                      end,                  
+                  [{value, V}, {'dependency-tree', D}]
+           end,
+    mnesia:activity(transaction, Fun).
+    
 %% @spec handle_dirty_cell(RefX::#refX{}) -> {ok, ok}
 %% @doc handles a dirty cell.
 %% Silently fails if the cell is part of a shared range
@@ -469,7 +496,7 @@ write_last(List) when is_list(List) ->
     {ok, ok}.
 
 %% @spec read_attributes(#refX{}, AttrList) -> {#refX{}, Val}
-%% AttrList = [atom()]
+%% AttrList = [list()]
 %% Val = term()
 %% @doc Given a reference and the name of an attribute, returns the reference
 %% and the value of that attribute.
@@ -848,6 +875,12 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% extracts the key value pairs
+extract_kvs(List) -> extract_kvs1(List, []).
+
+extract_kvs1([], Acc)             -> Acc;
+extract_kvs1([{_R, KV} | T], Acc) -> extract_kvs1(T, [KV | Acc]).
+
 write_page_vsn(RefX, Action) ->
     PageRefX = #refX{obj = {page, "/"}},
     NewVsn = ?counter(page_vsn_counters, PageRefX, 1),

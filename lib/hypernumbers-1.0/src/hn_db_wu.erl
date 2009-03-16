@@ -485,6 +485,8 @@
          update_inc_hn/5,
          does_remote_link_exist/3,
          write_remote_link/3,
+         register_hypernumber/4,
+         unregister_hypernumber/3,
          verify_biccie/3]).
 
 %% Structural Query Exports
@@ -515,6 +517,25 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec register_hypernumber(Parent::refX{}, Child::#refX{}, Proxy, Biccie) ->
+%% {ok, ok}
+%% @doc register_hypernumber registers a new hypernumber.
+%% This function is *ONLY* called on the parent (or out) side of the relationship
+register_hypernumber(Parent, Child, Proxy, Biccie)
+  when is_record(Parent, refX), is_record(Child, refX)->
+    ParentIdx = hn_util:index_from_refX(Parent),
+    #refX{site = ChildSite} = Child,
+    Hn = #outgoing_hn{parent      = ParentIdx,
+                      biccie      = Biccie,
+                      child_site  = ChildSite,
+                      child_proxy = Proxy},
+    ok = mnesia:write(Hn),
+    {ok, ok}.
+
+%% @spec does_remote_link_exist(Parent::#refX{}, Child::#refX{}, Type) -> 
+%% [true | false]
+%% Type [incoming | outgoing]
+%% @doc does_remote_link_exists checks if a remote link already exists
 does_remote_link_exist(Parent, Child, Type)
   when is_record(Parent, refX), is_record(Child, refX) ->
     ParentIdx = hn_util:index_from_refX(Parent),
@@ -528,6 +549,9 @@ does_remote_link_exist(Parent, Child, Type)
         [Rec] when is_record(Rec, remote_cell_link) -> true
     end.
 
+%% @spec verify_biccie(Parent::#refX{}, Child::#refX(), Biccie) -> [true | false]
+%% @doc verifies if a biccie provided for a hyperlink is valid. It strips out
+%% the child site from the Child <code>#refX{}</code>.
 verify_biccie(Parent, Child, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
     #refX{site = ChildSite} = Child,
@@ -697,7 +721,7 @@ clear_dirty_notify_in(Parent) when is_record(Parent, refX) ->
 %% @todo extend the reference to include rows, columns, ranges, etc, etc
 clear_dirty_notify_out(Parent) when is_record(Parent, refX) ->
     ParentIdx = hn_util:index_from_refX(Parent),
-    ok = mnesia:delete({dirty_notify_out, Parent}),
+    ok = mnesia:delete({dirty_notify_out, ParentIdx}),
     {ok, ok}.
 
 %% @spec clear_dirty_notify_back_in(Parent::#refX{}, Child::#refX{}, Change) -> 
@@ -1340,14 +1364,14 @@ mark_notify_out_dirty(RefX, Val, DepTree) ->
     end,
     {ok, ok}.
 
-
-%% @spec unregister_out_hn(Parent::#refX{}, Child::#refX{}, Biccie) -> {ok, ok}
-%% @doc unregisters an outgoing hypernumber.
-%% Both parent and child references must point to a cell
+%% @spec unregister_hypernumber(Parent::#refX{}, Child::#refX{}, Biccie) -> {ok, ok}
+%% @doc deletes an outgoing hypernumber.
+%% Both parent and child references must point to a cell. This function is
+%% *ONLY* to be used on the parent (or out) side of the hypernumber
 %% @todo this required a full table scan for an unregister
 %% will get veeeerrry expensive if you have 100,000 children tracking a
 %% number!
-unregister_out_hn(P, C, B)
+unregister_hypernumber(P, C, B)
   when is_record(P, refX), is_record(C, refX) ->
     case verify_biccie(P, C, B) of
         true -> PIdx = hn_util:index_from_refX(P),
@@ -1827,7 +1851,7 @@ write_formula1(RefX, Val, Fla) ->
                    [Fla, Rti, Error]),
             %todo: notify
             {ok, ok};       
-        {ok, {Pcode, Res, Deptree, Parents, Recompile}=TS} ->
+        {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
             Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
             {ok, ok} = write_pcode(RefX, Pcode),
@@ -1842,7 +1866,7 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
     % write out the format (if any)
     case Format of
         {"format", "null"} -> ok;
-        {"format", F}      -> write_attr(RefX, {format,F})
+        {"format", F}      -> write_attr(RefX, {"format",F})
     end,
     % now write out the actual cell
     Formula = case Type of
