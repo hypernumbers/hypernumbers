@@ -109,8 +109,6 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back"}|T] = Json)
     ChildUrl  = from("child_url",  T),
     ParentUrl = from("parent_url", T),
     Type      = from("type",     T),
-    % io:format("in hn_mochi:handle_req~n-Biccie is ~p~nChildUrl is ~p~n-"++
-    %          "ParentUrl is ~p~n-Type is ~p~n", [Biccie, ChildUrl, ParentUrl, Type]),
     {ok, ChildRef} = hn_util:parse_url(ChildUrl),
     {ChildX, _} = hn_util:ref_to_refX(ChildRef, "dont care"),
     {ok, ParentRef} = hn_util:parse_url(ParentUrl),
@@ -131,7 +129,6 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = Json) ->
     Value      = from("value",           T),
     DepTree    = from("dependency-tree", T),
     Version    = from("version",         T),
-    io:format("in hn_mochi:handle_req (notify) Ref is ~p~n", [Ref]),
     {ok, ParentRef} = hn_util:parse_url(ParentUrl),
     {ParentX, _} = hn_util:ref_to_refX(ParentRef, "dont care"),
     Return = hn_db_api:handle_notify(ParentX, Ref, Type, Value,
