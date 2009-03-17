@@ -104,9 +104,10 @@ eval(Value) ->
 call(Func, Args) ->
     R = attempt(?MODULE, funcall, [Func, Args]),
     case R of
-        {error, Errv = {errval, _}} -> Errv;
-        {error, E}                  -> ?error_in_formula;
-        {ok, V}                     -> V
+        {error, Errv = {errval, _}}                     -> Errv;
+        {error, {aborted, {cyclic, _, _, _, _, _}} = E} -> exit(E); % rethrow on lock
+        {error, E}                                      -> ?error_in_formula;
+        {ok, V}                                          -> V
     end.
 
 %% @doc Same as eval() but doesn't preprocess.
@@ -239,7 +240,7 @@ funcall(name, [Name, Path]) ->
     case filter(fun(#ref{path = P}) -> NeedPath == P end, Refs) of
         [Ref] ->
             #ref{site = Site, path = Path2, ref = {cell, {Col, Row}}} = Ref,
-            FetchFun = ?L(hn_main:get_cell_info(Site, Path2, Col, Row)),
+            FetchFun = ?L(get_cell_info(Site, Path2, Col, Row)),
             get_value_and_link(FetchFun);
         _ ->
             ?ERR_NAME
@@ -289,8 +290,6 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
 %% Formula function call (built-in or user-defined).
 funcall(Fname, Args) ->
     R = foldl(fun(M, Acc = {F, A, not_found_yet}) ->
-                      %io:format("in muin:funcall M is ~p F is ~p A is ~p~n",
-                      %          [M, F, A]),
                       case attempt(M, F, [A]) of
                           {error, undef} -> Acc;
                           {ok, V}        -> {F, A, V};
@@ -323,15 +322,12 @@ get_hypernumber(MSite, MPath, MX, MY, Url, RSite, RPath, RX, RY) ->
             {{errval,'#AUTH'},[],[],[]};
         
         {Val, DepTree} ->
-            F = fun({url, [{type, Type}], [Url]}) ->
-                        
-                        {ok, Ref} = hn_util:parse_url(Url),
+            F = fun({url, [{type, Type}], [Url2]}) ->
+                        {ok, Ref} = hn_util:parse_url(Url2),
                         #ref{site = S, path = P, ref = {cell, {X, Y}}} = Ref, 
                         {Type,{S, P, X, Y}}
                 end,
-            
-            Dep = lists:map(F, DepTree) ++ [{"remote", {RSite, NewRPath,
-                                                        RX, RY}}],
+            Dep = lists:map(F, DepTree) ++ [{"remote", {RSite, NewRPath, RX, RY}}],
             {Val, Dep, [], [{"remote", {RSite, NewRPath, RX, RY}}]}
     end.
 
@@ -386,7 +382,7 @@ do_cell(RelPath, Rowidx, Colidx) ->
     Path = muin_util:walk_path(?mpath, RelPath),
     IsCircRef = (Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath),
     ?IF(IsCircRef, ?ERR_CIRCREF),
-    FetchFun = ?L(hn_main:get_cell_info(?msite, Path, Colidx, Rowidx)),
+    FetchFun = ?L(get_cell_info(?msite, Path, Colidx, Rowidx)),
     get_value_and_link(FetchFun).
 
 %% @doc Calls supplied fun to get a cell's value and dependence information,
@@ -394,7 +390,6 @@ do_cell(RelPath, Rowidx, Colidx) ->
 %% the value to the caller (to continue the evaluation of the formula).
 get_value_and_link(FetchFun) ->
     {Value, RefTree, Errs, Refs} = FetchFun(),
-
     ?IF(member({?msite, ?mpath, ?mx, ?my}, RefTree),
         throw({error, circular_reference})),
 
@@ -412,3 +407,15 @@ toidx({col, Offset})       -> ?mx + Offset.
 let_transform([name, N, P], [name, N, P], Repl)          -> Repl;
 let_transform(NameNode, [Fn|Args], Repl) when ?is_fn(Fn) -> [Fn|[let_transform(NameNode, X, Repl) || X <- Args]];
 let_transform(_NameNode, Literal, _Repl)                 -> Literal.
+
+get_cell_info(Site, Path, Col, Row) ->
+    %
+    % @TODO: cut hn_main out of this function!
+    % 
+    % RefX = #refX{site = Site, path = Path, obj = {cell, {Col, Row}}},
+    % Cell = hn_db_api:read(RefX),
+    % io:format("in muin:get_cell_info Cell is ~p~n", [Cell]),    
+    {Value, RefTree, Errs, Refs} = hn_main:get_cell_info(Site, Path, Col, Row),
+    % io:format("in muin:get_cell_info~n-Value is ~p~n-RefTree is ~p~n-Errs is ~p~n-"++
+    %          "Refs is ~p~n", [Value, RefTree, Errs, Refs]),
+    {Value, RefTree, Errs, Refs}.
