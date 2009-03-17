@@ -11,6 +11,10 @@
 -module(excel_rev_comp).
 
 -export([reverse_compile/4]).
+
+%% for use in hn_warnings.erl only
+-export([macro_to_string_WARNING/1]).
+
 -import(lists,[flatten/1,duplicate/2]).
 
 %%% Include files with macros encoding Microsoft File Format constants
@@ -198,16 +202,22 @@ rev_comp(Index,[{functional_index,{Function,[{value,FuncVar},{type,_Type}],
     % (new items append to tail opposed to head
     NumArgs=macro_no_of_args(FuncVar),
     {Rest,FunArgs} = popVars(NumArgs,Stack,[]),
-    rev_comp(Index,T,TokArr,[{func,FuncVar,lists:reverse(FunArgs)}|Rest],Tbl);
+    Args = lists:reverse(FunArgs),
+    % write the warning table
+    hn_warnings:warnings(FuncVar, Args, Tbl),
+    rev_comp(Index,T,TokArr,[{func,FuncVar,Args}|Rest],Tbl);
 
 %% tFuncVar
 rev_comp(Index,[{var_func_idx,{Fun,[{value,FuncVar},
                                     {number_of_args,NumArgs},{user_prompt,_Prompt},
                                     {type,_Type}],
-                               {return,_ReturnType}}}|T],TokArr,Stack,Tbl) when
-Fun =:= tFuncVar; Fun =:= tFuncVarV; Fun =:= tFuncVarR; Fun =:= tFuncVarA ->
+                               {return,_ReturnType}}}|T],TokArr,Stack,Tbl)
+  when Fun =:= tFuncVar; Fun =:= tFuncVarV; Fun =:= tFuncVarR; Fun =:= tFuncVarA ->
     {Rest,FunArgs} = popVars(NumArgs,Stack,[]),
-    rev_comp(Index,T,TokArr,[{func,FuncVar,lists:reverse(FunArgs)}|Rest],Tbl);
+    % write the warning table
+    Args = lists:reverse(FunArgs),
+    hn_warnings:warnings(FuncVar, Args, Tbl),
+    rev_comp(Index,T,TokArr,[{func,FuncVar,Args}|Rest],Tbl);
 
 %% tName
 rev_comp(Index,[{name_index,{tName,[{value,Value},{type,_Type}],
@@ -530,7 +540,6 @@ read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
             end,
     read_token_array(N-1,Rest,[{string,Value}|Residuum]).
 
-
 %% set of functions used by reverse_compile to generate the actual
 %% Formula Strings that are in the cells
 to_str(addition)              -> "+";
@@ -681,6 +690,8 @@ make_cell({Row,Col,abs_row,rel_col}) ->
                            string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1)); %"
                                            make_cell({Row,Col,abs_row,abs_col}) ->
                                                   string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
+
+macro_to_string_WARNING(X) -> macro_to_string(X).
 
 %% this function looks up the Func ID and converts it to a name
 %%

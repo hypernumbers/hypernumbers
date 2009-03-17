@@ -25,6 +25,7 @@
          append_sheetname/2,
          esc_tab_name/1,
          get_SIDs/2,
+         check_flags/2,
          dump/1]).
 
 %%% Debugging exports
@@ -33,7 +34,7 @@
         dump_DEBUG/1]).
 
 %%% Include file for eunit testing
--include_lib("eunit/include/eunit.hrl").
+-include_lib("eunit.hrl").
 
 %%% Include files with macros encoding Microsoft File Format constants
 -include("microsoftcompoundfileformat.hrl").
@@ -50,7 +51,7 @@ dump([{Table,Tid}|T])->
         % array_formulae   -> dump2({Table,Tid});
         % formats          -> dump2({Table,Tid});
         % names            -> dump2({Table,Tid}); 
-         css              -> dump2({Table,Tid});
+         warnings              -> dump2({Table,Tid});
         % lacunaue         -> dump2({Table,Tid});
         % misc             -> dump2({Table,Tid});
         % warnings         -> dump3({Table,Tid}); % has a bodge in it!
@@ -175,13 +176,14 @@ parse_CRS_Uni16_intermediate(Bin)->
     end.
 
 parse_CRS_Uni16(Bin,IndexSize)->
+    % io:format("In parse_CRS_Uni16 IndexSize is ~p~n", [IndexSize]),
     LenSize=IndexSize*8,
     <<Len:LenSize/little-unsigned-integer,
      NFlags:8/little-unsigned-integer,
      Rest/binary>>=Bin,
     {LenStr,Encoding,BinLen1,
-     {RICH_TEXT,LenRichText,_LenRichTextIdx},
-     {ASIAN,LenAsian,_LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
+     {RICH_TEXT,LenRichText,LenRichTextIdx},
+     {ASIAN,LenAsian,LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
     % io:format("in parse_CRS_Uni16~n-LenStr is ~p~n-Encoding is ~p~n-BinLen1 is ~p~n-"++
     %          "LenRichText is ~p~n-LenRichTextIdx is ~p~n-LenAsian is ~p~n-"++
     %          "LenAsianIdx is ~p~n",
@@ -214,9 +216,13 @@ get_len_CRS_Uni16(Len,IndexSize,Bin,Flags)->
     BinLen.
 
 get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
+    % io:format("in get_bits_CRS_Uni16~n-Len is ~p IndexSize is ~p NFlags is ~p~n",
+    %         [Len, IndexSize, NFlags]),
     {ok,UNCOMP}   =check_flags(NFlags,?CRS_UNI16_UNCOMPRESSED),
     {ok,ASIAN}    =check_flags(NFlags,?CRS_UNI16_ASIAN),
     {ok,RICH_TEXT}=check_flags(NFlags,?CRS_UNI16_RICH_TEXT),
+    % io:format("in get_bits_CRS_Uni16 UNCOMP is ~p ASIAN is ~p RICH_TEXT is ~p~n",
+    %          [UNCOMP, ASIAN, RICH_TEXT]),
     case RICH_TEXT of
         match    -> <<LenRichText:16/little-unsigned-integer,Rest2/binary>>=Bin,
                     LenRichTextIdx=2;

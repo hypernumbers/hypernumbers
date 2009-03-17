@@ -139,8 +139,8 @@ type_formats(Tables) ->
                       = case Return of
                             {erlang, {Type3, _Output}} -> {Type3, Fmt};
                             {error,error_in_format} ->
-                                Warn = "Bug: Format "++Fmt++"doenst compile",
-                                ?write(Tables, warnings, Warn),
+                                Warn = "Bug: Format "++Fmt++" doenst compile",
+                                excel_util:append(Tables, warnings, Warn),
                                 {text, "general"}
                         end,
                   ets:insert(Tid, [{Idx, [{type, Type2}, Category, NewFmt]}])
