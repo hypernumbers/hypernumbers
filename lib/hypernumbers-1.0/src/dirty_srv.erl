@@ -14,8 +14,6 @@
 -include("spriki.hrl").
 -record(state, {type = [], state = active}).
 
--define(WAIT, 1000000).
-
 -export([start_link/1,
          init/1,
          handle_call/3, 
@@ -141,43 +139,37 @@ code_change(_OldVsn, State, _Extra) ->
 %% @spec process_dirty(Record, Type) -> ok
 %% @doc  processes the dirty record
 process_dirty(Rec, dirty_cell) ->
-    wait(?WAIT),
-    CellIndex = Rec#dirty_cell.index,
+     CellIndex = Rec#dirty_cell.index,
     Cell = hn_util:refX_from_index(CellIndex),
     {ok, ok} = hn_db_api:handle_dirty_cell(Cell),
     ok;
 process_dirty(Rec, dirty_inc_hn_create) ->
-    wait(?WAIT),
-    #dirty_inc_hn_create{parent = ParentIdx, child = ChildIdx} = Rec,
+     #dirty_inc_hn_create{parent = ParentIdx, child = ChildIdx} = Rec,
     Parent = hn_util:refX_from_index(ParentIdx),
     Child = hn_util:refX_from_index(ChildIdx),
     {ok, ok} = hn_db_api:notify_back_create(Parent, Child),
     ok;
 process_dirty(Rec, dirty_notify_in) ->
-    wait(?WAIT),
-    #dirty_notify_in{parent = PIdx} = Rec,
+     #dirty_notify_in{parent = PIdx} = Rec,
     Parent = hn_util:refX_from_index(PIdx),
     {ok, ok} = hn_db_api:handle_dirty_notify_in(Parent),
     ok;
 process_dirty(Rec, dirty_notify_out) ->
-    wait(?WAIT),
-    #dirty_notify_out{parent = ParentIdx, outgoing = O,
+     #dirty_notify_out{parent = ParentIdx, outgoing = O,
                       value = V, 'dependency-tree' = DepTree,
                       timestamp = T} = Rec,
     Parent = hn_util:refX_from_index(ParentIdx),
     {ok, ok} = hn_db_api:handle_dirty_notify_out(Parent, O, V, DepTree, T),
     ok;
 process_dirty(Rec, dirty_notify_back_in) ->
-    wait(?WAIT),
-    #dirty_notify_back_in{child = ChildIdx, parent = ParentIdx,
+     #dirty_notify_back_in{child = ChildIdx, parent = ParentIdx,
                           change = Change} = Rec,
     Parent = hn_util:refX_from_index(ParentIdx),
     Child = hn_util:refX_from_index(ChildIdx),
     {ok, ok} = hn_db_api:handle_dirty_notify_back_in(Parent, Child, Change),
     ok;
 process_dirty(Rec, dirty_notify_back_out) ->
-    wait(?WAIT),
-    #dirty_notify_back_out{parent = ParentIdx, child = ChildIdx,
+     #dirty_notify_back_out{parent = ParentIdx, child = ChildIdx,
                            biccie = Biccie, change = Type} = Rec,
     Parent = hn_util:refX_from_index(ParentIdx),
     Child = hn_util:refX_from_index(ChildIdx),
@@ -205,5 +197,3 @@ has_dirty_parent([H | T], Parent)  -> {dirty_cell, Index,_} = H,
                                           true  -> H;
                                           false -> has_dirty_parent(T, Parent)
                                       end.
-wait(0) -> ok;
-wait(N) -> wait(N-1).
