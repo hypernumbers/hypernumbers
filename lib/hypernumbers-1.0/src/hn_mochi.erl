@@ -62,11 +62,14 @@ handle_req('GET', Req, Ref, page, [{"updates", Time}], _Post) ->
             Req:ok({"application/json", mochijson:encode(Data)})
     end;
 
-handle_req('GET', Req, Ref, page, [{"attr", []}], _Post) ->     
-    Tree = dh_tree:create([["cells"], ["cols"], ["rows"], ["page"]]),
-    Dict = to_dict(hn_db_api:read(Ref), Tree),
-    Time = {"time", remoting_reg:timestamp()},
-    JSON = {struct, [Time | dict_to_struct(Dict)]},
+handle_req('GET', Req, Ref, page, [{"attr", []}], _Post) -> 
+    Init  = [["cells"], ["cols"], ["rows"], ["page"], ["styles"]],
+    Tree  = dh_tree:create(Init),
+    Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
+    NTree = add_styles(Styles, Tree),
+    Dict  = to_dict(hn_db_api:read(Ref), NTree),
+    Time  = {"time", remoting_reg:timestamp()},
+    JSON  = {struct, [Time | dict_to_struct(Dict)]},
     Req:ok({"application/json", mochijson:encode(JSON)});
 
 handle_req('GET', Req, _Ref, page, _Attr, _Post) ->
@@ -82,11 +85,11 @@ handle_req('GET', Req, Ref, cell, _Attr, _Post) ->
     Req:ok({"application/json", mochijson:encode(JS)});
 
 handle_req('POST', Req, Ref, cell, _Attr, [{"set", {struct, Attr}}]) ->
-    {ok, ok} = hn_db_api:write_attributes(Ref, Attr),
+    hn_db_api:write_attributes(Ref, Attr),
     Req:ok({"application/json", "success"});
 
 handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "all"}]) ->
-    {ok, ok} = hn_db_api:clear(Ref, all),
+    hn_db_api:clear(Ref, all),
     Req:ok({"application/json", "success"});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -104,7 +107,7 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back_create"}|T])
     Return = hn_db_api:register_hypernumber(ParentX, ChildX, Proxy, Biccie),
     Req:ok({"application/json", mochijson:encode({struct, Return})});
 
-handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back"}|T] = Json) ->
+handle_req('POST', Req, _Ref, _Type, _Attr, [{"action", "notify_back"}|T] = _Json) ->
     Biccie    = from("biccie",     T),
     ChildUrl  = from("child_url",  T),
     ParentUrl = from("parent_url", T),
@@ -114,7 +117,7 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back"}|T] = Json)
     {ok, ParentRef} = hn_util:parse_url(ParentUrl),
     {ParentX, _} = hn_util:ref_to_refX(ParentRef, "dont care"),
 
-    Return = hn_db_api:handle_notify_back(ParentX, ChildX, Biccie, Type),
+    _Return = hn_db_api:handle_notify_back(ParentX, ChildX, Biccie, Type),
     Req:ok({"application/json", "success"});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -122,7 +125,7 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back"}|T] = Json)
 %%% Horizonal API = notify handlers                                          %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = Json) ->
+handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = _Json) ->
     Biccie     = from("biccie",          T),
     ParentUrl  = from("parent_url",      T),
     Type       = from("type",            T),
@@ -131,7 +134,7 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = Json) ->
     Version    = from("version",         T),
     {ok, ParentRef} = hn_util:parse_url(ParentUrl),
     {ParentX, _} = hn_util:ref_to_refX(ParentRef, "dont care"),
-    Return = hn_db_api:handle_notify(ParentX, Ref, Type, Value,
+    _Return = hn_db_api:handle_notify(ParentX, Ref, Type, Value,
                                      DepTree, Biccie, Version),
     Req:ok({"application/json", "success"});
 
@@ -139,6 +142,11 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = Json) ->
 handle_req(_Method, Req, _Ref, _Type,  _Attr, _Post) ->
     ?INFO("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
     Req:ok({"text/html",<<"bleh">>}).
+
+add_styles([], Tree) ->
+    Tree;
+add_styles([ {Name, CSS} | T], Tree) ->
+    add_styles(T, dh_tree:set(["styles", Name], CSS, Tree)).
 
 to_dict([], JSON) ->
     JSON;
@@ -200,5 +208,27 @@ parse_attr(range, Addr) ->
     {X2, Y2} = util2:strip_ref(Cell2),
     {range, {X1, Y1, X2, Y2}}.
 
+styles_to_css([], Acc) ->
+    Acc;
+styles_to_css([H | T], Acc) ->
+    styles_to_css(T, [style_to_css(H) | Acc]).
+
+style_to_css({styles, _Ref, X, Rec}) ->
+    Num = ms_util2:no_of_fields(magic_style),
+    {itol(X), style_att(Num+1, Rec, [])}.
+
+style_att(1, _Rec, Acc) ->
+    lists:flatten(Acc);
+style_att(X, Rec, Acc) ->
+    case element(X,Rec) of
+        [] ->
+            style_att(X-1, Rec, Acc);
+        _Else -> 
+            Name =  ms_util2:name_by_index(magic_style, X-1),
+            A = io_lib:format("~s:~s;",[Name, element(X,Rec)]),
+            style_att(X-1, Rec, [A | Acc])
+    end.
+    
 from(Key, List) -> {value, {Key, Value}} = lists:keysearch(Key, 1, List),
                    Value.
+
