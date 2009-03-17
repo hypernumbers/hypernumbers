@@ -44,12 +44,13 @@ notify(Parent, Outgoing, Value, DepTree)
     Fun2 = fun(X) -> Server = X#outgoing_hn.child_proxy,
                      Version = tconv:to_s(X#outgoing_hn.version),
                      Biccie = X#outgoing_hn.biccie,
+                     DepTree2 = {array, flatten_deptree(DepTree)},
                      Vars = {struct, [{"action",         "notify"},
                                       {"biccie",          Biccie},
                                       {"parent_url",      ParentUrl},
                                       {"type",            "change"},
                                       {"value",           Value},
-                                      {"dependency-tree", DepTree},
+                                      {"dependency-tree", DepTree2},
                                       {"version",         Version}
                                      ]},
                      Actions = lists:flatten(mochijson:encode(Vars)),
@@ -97,7 +98,6 @@ notify_back_create(Parent, Child) ->
     ParentUrl = hn_util:index_to_url(ParentIdx),
     ChildUrl = hn_util:index_to_url(ChildIdx),
 
-    %% Ignore simplexml it makes stuff a bit nastier
     Vars = {struct, [{"action", "notify_back_create"}, {"biccie", Biccie},
                      {"proxy", Proxy}, {"child_url", ChildUrl}]},
     Post = lists:flatten(mochijson:encode(Vars)),
@@ -105,11 +105,25 @@ notify_back_create(Parent, Child) ->
     case http:request(post,{ParentUrl,[],"application/json",Post},[],[]) of
         {ok,{{_V,200,_R},_H,Json}} ->
             {struct, [{"value", Value}, {"dependency-tree", DepTree}]} =
-                mochijson:decode(Json),            
-            {Value, DepTree, Biccie};
+                mochijson:decode(Json),
+            {xml, [], DepTree2} = simplexml:from_xml_string(DepTree),
+            {Value, DepTree2, Biccie};
         {ok,{{_V,503,_R},_H,_Body}} ->
             io:format("-returned 503~n"),
             io:format("permission has been denied - need to write an error "++
                       "to the hypernumber here...~n"),
             {error,permission_denied}
     end.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                          %%%
+%%% Internal funtions                                                        %%%
+%%%                                                                          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+flatten_deptree({xml, DepTree}) -> flatten_deptree1(DepTree, []);
+flatten_deptree([])             -> [].
+
+flatten_deptree1([], Acc)      -> Acc;
+flatten_deptree1([H | T], Acc) -> {url, [{type, Type}], [Url]} = H,
+                                  flatten_deptree1(T, [Url| Acc]).
+

@@ -36,7 +36,7 @@
          post/3,
          parse_url/1,
          parse_vars/1,
-         
+
          % List Utils
          add_uniq/2,
          is_alpha/1,
@@ -58,7 +58,7 @@
          index_from_refX/1,
          index_from_ref/1,
          url_to_refX/1
-    ]).
+        ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -85,7 +85,7 @@ url_to_refX({url, [{type, _}], [Url]}) ->
     {ok, Ref} = parse_url(Url),
     {RefX, _} = ref_to_refX(Ref, "to be chucked away"),
     RefX.
-    
+
 refX_to_ref(RefX, Name) ->
     #refX{site = S, path = P, obj = R, auth = A} = RefX,
     #ref{site = S, path = P, ref = R, name = Name, auth = A}.
@@ -141,18 +141,18 @@ range_to_list(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
 range_to_list1(Ref, _Reset, X, Y, X, Y, Acc) -> [Ref#ref{ref = {cell, {X, Y}}} | Acc];
 range_to_list1(Ref, Reset, X2, Y1, X2, Y2, Acc) ->
     range_to_list1(Ref, Reset, Reset, Y1 + 1, X2, Y2,
-                  [Ref#ref{ref = {cell, {X2, Y1}}} | Acc]);
+                   [Ref#ref{ref = {cell, {X2, Y1}}} | Acc]);
 range_to_list1(Ref, Reset, X1, Y1, X2, Y2, Acc) ->
     range_to_list1(Ref, Reset, X1 + 1, Y1, X2, Y2,
-                  [Ref#ref{ref = {cell, {X1, Y1}}} | Acc]).
+                   [Ref#ref{ref = {cell, {X1, Y1}}} | Acc]).
 
 range_to_list2(RefX, _Reset, X, Y, X, Y, Acc) -> [RefX#refX{obj = {cell, {X, Y}}} | Acc];
 range_to_list2(RefX, Reset, X2, Y1, X2, Y2, Acc) ->
     range_to_list2(RefX, Reset, Reset, Y1 + 1, X2, Y2,
-                  [RefX#refX{obj = {cell, {X2, Y1}}} | Acc]);
+                   [RefX#refX{obj = {cell, {X2, Y1}}} | Acc]);
 range_to_list2(RefX, Reset, X1, Y1, X2, Y2, Acc) ->
     range_to_list2(RefX, Reset, X1 + 1, Y1, X2, Y2,
-                  [RefX#refX{obj = {cell, {X1, Y1}}} | Acc]).
+                   [RefX#refX{obj = {cell, {X1, Y1}}} | Acc]).
 
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
     lists:append([Site, list_to_path(Path),tconv:to_b26(X), text(Y)]).
@@ -193,23 +193,23 @@ item_to_xml(#hn_item{addr = A, val = V}) ->
 
     Type = atom_to_list(element(1, A#ref.ref)),
     Str  = hn_util:ref_to_str(A#ref.ref),
-    
+
     Value = case A#ref.name of
                 value    -> to_xml(V);
                 rawvalue -> to_xml(V);
                 style    -> to_xml(V);
                 _Else    -> to_val(V)
-    end,    
+            end,    
     {ref, [{type, Type}, {ref, Str}], [{A#ref.name, [], Value}]}.
-    
+
 in_range({range,{X1,Y1,X2,Y2}},{cell,{X,Y}}) ->
     Y >= Y1 andalso Y =< Y2 andalso X >= X1 andalso X =< X2.
 
 to_val({xml,Xml}) -> Xml;
 to_val(Else) ->
     case io_lib:char_list(Else) of
-    true  -> [Else];
-    false -> throw({unmatched_type,Else})
+        true  -> [Else];
+        false -> throw({unmatched_type,Else})
     end.
 
 to_xml(true)                     -> [{bool,[],  ["true"]}];
@@ -259,10 +259,10 @@ parse_url(Url) when is_list(Url) ->
 parse_url(Url) when is_record(Url,url) ->
 
     Port = case {Url#url.port,Url#url.scheme} of
-        {undefined,http}  -> "80";
-        {undefined,https} -> "443";
-        {Else,_} -> integer_to_list(Else)
-    end,
+               {undefined,http}  -> "80";
+               {undefined,https} -> "443";
+               {Else,_} -> integer_to_list(Else)
+           end,
 
     Site = lists:concat([Url#url.scheme,"://",Url#url.host,":",Port]),
 
@@ -275,7 +275,7 @@ parse_url(Url) when is_record(Url,url) ->
                          [TmpRef|T] = lists:reverse(Tokens),
                          {TmpRef,lists:reverse(T)}
                  end,
-    
+
     RefType = parse_reference(Ref),    
     RefVal  = case RefType of
                   page ->   "/";
@@ -284,7 +284,7 @@ parse_url(Url) when is_record(Url,url) ->
                   column -> element(1,util2:strip_ref(Ref++"1"));
                   row ->    element(2,util2:strip_ref("a"++Ref))
               end,
-    
+
     {ok,#ref{site=Site,
              path=Path,
              ref={RefType,RefVal}}}.
@@ -296,7 +296,7 @@ get_req_type([_N|Tail])             -> get_req_type(Tail).
 
 parse_vars([]) -> {ok,[]};
 parse_vars(Query) ->
-    
+
     Split = fun(X) -> 
                     case string:chr(X,$=) of
                         0 -> 
@@ -306,9 +306,9 @@ parse_vars(Query) ->
                             {H,T}
                     end
             end,
-    
+
     Pairs = lists:map(Split,string:tokens(Query,"&")),
-    
+
     {ok,Pairs}.
 
 
@@ -374,11 +374,11 @@ is_alpha(Str) ->
 is_numeric([]) -> false;
 is_numeric(Str) ->
     Fun = fun(XX) ->         
-        if XX < 48 -> false;  
-           XX > 57 -> false;
-           true    -> true      
-        end                  
-    end,
+                  if XX < 48 -> false;  
+                     XX > 57 -> false;
+                     true    -> true      
+                  end                  
+          end,
     case is_list(Str) of
         false -> false;
         true -> lists:all(Fun, Str)
@@ -388,15 +388,15 @@ random_string(Len) ->
     {A1,A2,A3} = now(),
     random:seed(A1, A2, A3),
     random_string("",Len).
-    
+
 random_string(Str,0) ->
     Str;
 
 random_string(Str,Len) ->
     case random:uniform(3) of
-	1 -> Asc = 96 + random:uniform(26);
-	2 -> Asc = 47 + random:uniform(9);
-	3 -> Asc = 64 + random:uniform(26)
+        1 -> Asc = 96 + random:uniform(26);
+        2 -> Asc = 47 + random:uniform(9);
+        3 -> Asc = 64 + random:uniform(26)
     end,
     random_string([Asc|Str],Len-1).
 
@@ -411,10 +411,10 @@ int(C) when $A =< C, C =< $F ->
     C - $A + 10;
 int(C) when $a =< C, C =< $f ->
     C - $a + 10.
-    
+
 to_hex(N) when N < 256 ->
     [hex(N div 16), hex(N rem 16)].
- 
+
 list_to_hexstr([]) -> 
     [];
 list_to_hexstr([H|T]) ->
@@ -430,7 +430,7 @@ hexstr_to_list([X,Y|T]) ->
     [int(X)*16 + int(Y) | hexstr_to_list(T)];
 hexstr_to_list([]) ->
     [].
-    
+
 %%--------------------------------------------------------------------
 %% Function:    text/1
 %% Description: Returns a string representation of the parameter

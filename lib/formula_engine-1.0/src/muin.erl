@@ -106,7 +106,8 @@ call(Func, Args) ->
     case R of
         {error, Errv = {errval, _}}                     -> Errv;
         {error, {aborted, {cyclic, _, _, _, _, _}} = E} -> exit(E); % rethrow on lock
-        {error, E}                                      -> ?error_in_formula;
+        {error, E}                                      -> io:format("in muin:call E is ~p~n", [E]),
+                                                           ?error_in_formula;
         {ok, V}                                          -> V
     end.
 

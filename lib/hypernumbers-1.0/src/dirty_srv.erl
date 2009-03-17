@@ -14,6 +14,8 @@
 -include("spriki.hrl").
 -record(state, {type = [], state = active}).
 
+-define(WAIT, 1000000).
+
 -export([start_link/1,
          init/1,
          handle_call/3, 
@@ -31,10 +33,16 @@ start_link(Arg) ->
 %% @doc  Start server
 init([Type]) ->
     {ok, #state{type = Type}}.
- 
+
 %% @spec handle_info(Event,State) -> {noreply, State}
 %% @doc  handle events from subscription to mnesia
-handle_info({mnesia_table_event, {write, _, Rec, _, _}}, State) ->
+handle_info({mnesia_table_event, {write, Table, Rec, OldRecs, ActId}}, State) ->
+%    case Table of
+%        dirty_notify_back_in -> io:format("In handle Info~n-Rec is ~p~n-OldRecs are ~p~n-"++
+%                                          "ActId is ~p~n",
+%                                          [Rec, OldRecs, ActId]);
+%        _                    -> ok
+%    end,
     case State#state.state of
         passive -> ok;
         active  -> process_dirty(Rec, State#state.type)
@@ -60,9 +68,9 @@ handle_call(flush, _From, State = #state{type = dirty_cell}) ->
 
     % This fun shrinks the dirty cell table
     % (but not dirty_notify_in)
-        ?INFO("In dirty_src:handle_call for flush (start) "++
-              "for dirty_cell Size is ~p~n",
-              [mnesia:table_info(dirty_cell, size)]),
+    ?INFO("In dirty_src:handle_call for flush (start) "++
+          "for dirty_cell Size is ~p~n",
+          [mnesia:table_info(dirty_cell, size)]),
     Fun = fun() ->
                   % see how big the dirty cell table is
                   % get all the dirty_cell indices
@@ -91,7 +99,7 @@ handle_call(flush, _From, State = #state{type = dirty_cell}) ->
           "Dirty Cell Table Size is ~p~n",
           [mnesia:table_info(dirty_cell, size)]),
     lists:foreach(fun(X) -> process_dirty(X, dirty_cell) end, List2),
-    
+
     {reply, ok, State};
 %% for other tables, just flush 'em...
 handle_call(flush, _From, State = #state{type = Type}) ->
@@ -120,7 +128,7 @@ handle_cast(subscribe, State = #state{type = Type}) ->
 handle_cast(unsubscribe,State = #state{type=Type}) ->
     mnesia:unsubscribe({table, Type, detailed}),
     {noreply, State}.
-    
+
 %% @spec terminate(Reason, State) -> ok
 %% @doc  exit the gen_server
 terminate(_Reason, _State) ->           
@@ -133,29 +141,34 @@ code_change(_OldVsn, State, _Extra) ->
 %% @spec process_dirty(Record, Type) -> ok
 %% @doc  processes the dirty record
 process_dirty(Rec, dirty_cell) ->
+    wait(?WAIT),
     CellIndex = Rec#dirty_cell.index,
     Cell = hn_util:refX_from_index(CellIndex),
     {ok, ok} = hn_db_api:handle_dirty_cell(Cell),
     ok;
 process_dirty(Rec, dirty_inc_hn_create) ->
+    wait(?WAIT),
     #dirty_inc_hn_create{parent = ParentIdx, child = ChildIdx} = Rec,
     Parent = hn_util:refX_from_index(ParentIdx),
     Child = hn_util:refX_from_index(ChildIdx),
     {ok, ok} = hn_db_api:notify_back_create(Parent, Child),
     ok;
 process_dirty(Rec, dirty_notify_in) ->
+    wait(?WAIT),
     #dirty_notify_in{parent = PIdx} = Rec,
     Parent = hn_util:refX_from_index(PIdx),
     {ok, ok} = hn_db_api:handle_dirty_notify_in(Parent),
     ok;
 process_dirty(Rec, dirty_notify_out) ->
+    wait(?WAIT),
     #dirty_notify_out{parent = ParentIdx, outgoing = O,
-                       value = V, 'dependency-tree' = DepTree,
-                       timestamp = T} = Rec,
+                      value = V, 'dependency-tree' = DepTree,
+                      timestamp = T} = Rec,
     Parent = hn_util:refX_from_index(ParentIdx),
     {ok, ok} = hn_db_api:handle_dirty_notify_out(Parent, O, V, DepTree, T),
     ok;
 process_dirty(Rec, dirty_notify_back_in) ->
+    wait(?WAIT),
     #dirty_notify_back_in{child = ChildIdx, parent = ParentIdx,
                           change = Change} = Rec,
     Parent = hn_util:refX_from_index(ParentIdx),
@@ -163,13 +176,14 @@ process_dirty(Rec, dirty_notify_back_in) ->
     {ok, ok} = hn_db_api:handle_dirty_notify_back_in(Parent, Child, Change),
     ok;
 process_dirty(Rec, dirty_notify_back_out) ->
+    wait(?WAIT),
     #dirty_notify_back_out{parent = ParentIdx, child = ChildIdx,
                            biccie = Biccie, change = Type} = Rec,
     Parent = hn_util:refX_from_index(ParentIdx),
     Child = hn_util:refX_from_index(ChildIdx),
     {ok, ok} = hn_db_api:handle_dirty_notify_back_out(Parent, Child, Type, Biccie),
     ok.
-    
+
 %%%
 %%% Utility Functions
 %%% 
@@ -191,3 +205,5 @@ has_dirty_parent([H | T], Parent)  -> {dirty_cell, Index,_} = H,
                                           true  -> H;
                                           false -> has_dirty_parent(T, Parent)
                                       end.
+wait(0) -> ok;
+wait(N) -> wait(N-1).

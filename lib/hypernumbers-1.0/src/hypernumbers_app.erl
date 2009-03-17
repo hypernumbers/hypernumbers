@@ -9,6 +9,7 @@
 
 -export([start/2, stop/1, clean_start/0 ]).
 -export([set_def_perms/0]).
+
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
     %% @TODO this test is buggy - the schema is always on disc 
@@ -81,7 +82,7 @@ clean_start() ->
                dirty_notify_back_in, dirty_notify_out,
                dirty_notify_back_out]),
 
-    ok = hn_db:create(),
+    ok = hn_db_api:create_db(),
     set_def_perms(),
     ok = start_dirty_subscribe(),
     ok.

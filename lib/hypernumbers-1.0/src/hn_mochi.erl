@@ -111,13 +111,12 @@ handle_req('POST', Req, _Ref, _Type, _Attr, [{"action", "notify_back"}|T] = _Jso
     Biccie    = from("biccie",     T),
     ChildUrl  = from("child_url",  T),
     ParentUrl = from("parent_url", T),
-    Type      = from("type",     T),
+    Type      = from("type",       T),
     {ok, ChildRef} = hn_util:parse_url(ChildUrl),
     {ChildX, _} = hn_util:ref_to_refX(ChildRef, "dont care"),
     {ok, ParentRef} = hn_util:parse_url(ParentUrl),
     {ParentX, _} = hn_util:ref_to_refX(ParentRef, "dont care"),
-
-    _Return = hn_db_api:handle_notify_back(ParentX, ChildX, Biccie, Type),
+    {ok, ok}  = hn_db_api:handle_notify_back(ParentX, ChildX, Biccie, Type),
     Req:ok({"application/json", "success"});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,8 +133,9 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = _Json) ->
     Version    = from("version",         T),
     {ok, ParentRef} = hn_util:parse_url(ParentUrl),
     {ParentX, _} = hn_util:ref_to_refX(ParentRef, "dont care"),
-    _Return = hn_db_api:handle_notify(ParentX, Ref, Type, Value,
-                                     DepTree, Biccie, Version),
+    {array, DepTree2} = DepTree,
+    Return = hn_db_api:handle_notify(ParentX, Ref, Type, Value,
+                                     DepTree2, Biccie, Version),
     Req:ok({"application/json", "success"});
 
 

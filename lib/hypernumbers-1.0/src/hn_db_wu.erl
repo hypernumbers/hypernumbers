@@ -485,8 +485,8 @@
          update_inc_hn/5,
          does_remote_link_exist/3,
          write_remote_link/3,
-         register_hypernumber/4,
-         unregister_hypernumber/3,
+         register_out_hn/4,
+         unregister_out_hn/3,
          verify_biccie/3]).
 
 %% Structural Query Exports
@@ -517,11 +517,11 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% @spec register_hypernumber(Parent::refX{}, Child::#refX{}, Proxy, Biccie) ->
+%% @spec register_out_hn(Parent::#refX{}, Child::#refX{}, Proxy, Biccie) ->
 %% {ok, ok}
 %% @doc register_hypernumber registers a new hypernumber.
 %% This function is *ONLY* called on the parent (or out) side of the relationship
-register_hypernumber(Parent, Child, Proxy, Biccie)
+register_out_hn(Parent, Child, Proxy, Biccie)
   when is_record(Parent, refX), is_record(Child, refX)->
     ParentIdx = hn_util:index_from_refX(Parent),
     #refX{site = ChildSite} = Child,
@@ -534,7 +534,7 @@ register_hypernumber(Parent, Child, Proxy, Biccie)
 
 %% @spec does_remote_link_exist(Parent::#refX{}, Child::#refX{}, Type) -> 
 %% [true | false]
-%% Type [incoming | outgoing]
+%% Type = [incoming | outgoing]
 %% @doc does_remote_link_exists checks if a remote link already exists
 does_remote_link_exist(Parent, Child, Type)
   when is_record(Parent, refX), is_record(Child, refX) ->
@@ -549,7 +549,7 @@ does_remote_link_exist(Parent, Child, Type)
         [Rec] when is_record(Rec, remote_cell_link) -> true
     end.
 
-%% @spec verify_biccie(Parent::#refX{}, Child::#refX(), Biccie) -> [true | false]
+%% @spec verify_biccie(Parent::#refX{}, Child::#refX{}, Biccie) -> [true | false]
 %% @doc verifies if a biccie provided for a hyperlink is valid. It strips out
 %% the child site from the Child <code>#refX{}</code>.
 verify_biccie(Parent, Child, Biccie)
@@ -603,7 +603,8 @@ mark_notify_back_out_dirty(Parent, Child, Msg)
     P = hn_util:index_from_refX(Parent),
     C = hn_util:index_from_refX(Child),
     Rec = #dirty_notify_back_out{child = C, parent = P, change = Msg},
-    Match = ms_util:make_ms(dirty_notify_back_out, [{parent, P}, {child, C},
+    Match = ms_util:make_ms(dirty_notify_back_out, [{parent, P},
+                                                    {child, C},
                                                     {change, Msg}]),
     case mnesia:match_object(Match) of
         [] -> ok = mnesia:write(Rec);
@@ -635,7 +636,7 @@ write_remote_link(Parent, Child, Type)
 %% This function also triggers the child cells as dirty so they recalculate
 %% @todo put code in to deal with page versions! (^^ lying in the docos above)
 update_inc_hn(Parent, Val, DepTree, Biccie, Version)
-  when is_record(Parent, refX), is_list(DepTree) ->
+  when is_record(Parent, refX) ->
     ParentIdx = hn_util:index_from_refX(Parent),
     Rec = #incoming_hn{remote = ParentIdx, value = Val, 
                        'dependency-tree' = DepTree, biccie = Biccie,
@@ -870,7 +871,9 @@ read_remote_parents(#refX{obj = {cell, _}} = RefX, Type)
     #refX{site = S, path = P, obj = {cell, {X, Y}}} = RefX,
     Index = #index{site = S, path = P, column = X, row = Y},
     Match = ms_util:make_ms(remote_cell_link, [{child, Index}, {type, Type}]),
+    % io:format("in hn_db_wu:read_remote_parents Match is ~p~n", [Match]),
     Links = mnesia:match_object(remote_cell_link, Match, read),
+    % io:format("in hn_db_wu:read_remote_parents Links is ~p~n", [Links]),
     get_remote_parents(Links).
 
 %% @spec read_remote_children(RefX :: #refX{}, Type) -> [#refX{}]
@@ -1176,6 +1179,7 @@ clear_cells(RefX, style) when is_record(RefX, refX) ->
     delete_recs(List2);    
 clear_cells(RefX, contents) when is_record(RefX, refX) ->
     List1 = read_attrs(RefX),
+    % first up clear the list
     case List1 of
         [] -> {ok, ok};
         _  -> List2 = get_refXs(List1),
@@ -1364,15 +1368,21 @@ mark_notify_out_dirty(RefX, Val, DepTree) ->
     end,
     {ok, ok}.
 
-%% @spec unregister_hypernumber(Parent::#refX{}, Child::#refX{}, Biccie) -> {ok, ok}
+%% @spec unregister_out_hn(Parent::#refX{}, Child::#refX{}, Biccie) -> {ok, ok}
 %% @doc deletes an outgoing hypernumber.
 %% Both parent and child references must point to a cell. This function is
 %% *ONLY* to be used on the parent (or out) side of the hypernumber
 %% @todo this required a full table scan for an unregister
 %% will get veeeerrry expensive if you have 100,000 children tracking a
 %% number!
-unregister_hypernumber(P, C, B)
+unregister_out_hn(P, C, B)
   when is_record(P, refX), is_record(C, refX) ->
+    io:format("~n~n~n"++
+              "**********************~n"++
+              "***                ***~n"++
+              "***    Fix me!     ***~n"++
+              "***                ***~n"++
+              "**********************~n"),
     case verify_biccie(P, C, B) of
         true -> PIdx = hn_util:index_from_refX(P),
                 #refX{site = CS} = C,
@@ -1424,20 +1434,17 @@ update_rem_parents(Child, OldParents, NewParents) when is_record(Child, refX) ->
 
 %% This function is called on a local cell to inform all remote cells that it
 %% used to reference as hypernumbers to no longer do so.
-%% 
-%% It looks to see if there are any other local cells also consuming that hypernumber
-%%   - if not then delete the hypernumber in table 'incoming_hn' 
-%%     and inform the remote source that we no longer need updates
 unregister_inc_hn(Parent, Child)
   when is_record(Child, refX), is_record(Parent, refX) ->
+    % io:format("In unregister_inc_hn~n-Parent is ~p~n-Child is ~p~n", [Parent, Child]),
     ParentIdx = hn_util:refX_to_index(Parent),
     Head = ms_util:make_ms(remote_cell_link, [{parent, ParentIdx},
                                               {type, incoming}]),
     case mnesia:select(remote_cell_link, [{Head, [], ['$_']}]) of
-        [] -> Msg = "unregister",
-              {ok, ok} = mark_notify_back_in_dirty(Parent, Child, Msg); 
+        [] -> mensia:delete({incoming_hn, ParentIdx});
         _  -> {ok, ok} % somebody else still wants it so don't unregister
-    end.
+    end,
+    {ok, ok} = mark_notify_back_in_dirty(Parent, Child, "unregister").
 
 get_refXs(List) -> get_refXs(List, []).
 
@@ -1964,7 +1971,11 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
 
     % mark this cell as a possible dirty hypernumber
     % This takes a value and the dependency tree as it is asyncronous...
-    {ok, ok} = mark_notify_out_dirty(RefX, RawValue, DepTree),
+    DepTree2 = case DepTree of
+                   [] -> [];
+                   _  -> {xml, DepTree}
+               end,
+    {ok, ok} = mark_notify_out_dirty(RefX, RawValue, DepTree2),
     {ok, ok}.
 
 split_parents(Old, New) -> split_parents1(lists:sort(Old),

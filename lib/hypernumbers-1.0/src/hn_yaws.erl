@@ -299,22 +299,22 @@ req('POST',{register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{child_url,[],[Reg
                   hn_util:ref_to_index(RegRef),
       Bic, Proxy, ChildSite);
 
-%% with 'notify' the remote site is a hypernumber which is passing on
-%% nofitications like 'my value has changed' or 'my location has changed'
-req('POST', {notify, [], Data}, _Attr, _User, Ref) ->
-    {Parent, Type, Value, DepTree, Biccie, Version} = parse_notify(Data),
-    {Child, _KV} = hn_util:ref_to_refX(Ref, "chucked away!"),
-    {ok, ok} = hn_db_api:handle_notify(Parent, Child, Type, Value,
-                                       DepTree, Biccie, Version),
-    {ok,{success,[],[]}};
+%%% with 'notify' the remote site is a hypernumber which is passing on
+%%% nofitications like 'my value has changed' or 'my location has changed'
+%req('POST', {notify, [], Data}, _Attr, _User, Ref) ->
+%    {Parent, Type, Value, DepTree, Biccie, Version} = parse_notify(Data),
+%    {Child, _KV} = hn_util:ref_to_refX(Ref, "chucked away!"),
+%    {ok, ok} = hn_db_api:handle_notify(Parent, Child, Type, Value,
+%                                       DepTree, Biccie, Version),
+%    {ok,{success,[],[]}};
 
-%% with 'notify_back' the remote site is consuming a local hypernumber
-%% and is notifying back 'I don't need you anymore' I have shifted my
-%% location' etc, etc
-req('POST', {notify_back, [], Data}, _Attr, _User, _Ref) ->
-    {Parent, Child, Biccie, Type} = parse_notify_back(Data),
-    {ok, ok} = hn_db_api:handle_notify_back(Parent, Child, Biccie, Type),
-    {ok,{success,[],[]}};
+%%% with 'notify_back' the remote site is consuming a local hypernumber
+%%% and is notifying back 'I don't need you anymore' I have shifted my
+%%% location' etc, etc
+%req('POST', {notify_back, [], Data}, _Attr, _User, _Ref) ->
+%    {Parent, Child, Biccie, Type} = parse_notify_back(Data),
+%    {ok, ok} = hn_db_api:handle_notify_back(Parent, Child, Biccie, Type),
+%    {ok,{success,[],[]}};
 
 %% deprecated
 req('POST',{template,[],[{name,[],[Name]},

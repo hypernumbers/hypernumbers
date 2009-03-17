@@ -70,10 +70,17 @@
 
 -include("spriki.hrl").
 
--define(mn_ac,mnesia:activity).
--define(mn_sl,mnesia:select).
+%-define(mn_ac,mnesia:activity).
+%-define(mn_sl,mnesia:select).
 -define(copy, hn_db_wu:copy_cell).
 -define(counter, mnesia:dirty_update_counter).
+
+-define(create(Name,Type,Storage),
+        fun() ->
+                Attr = [{attributes, record_info(fields, Name)},
+                        {type,Type},{Storage, [node()]}],
+                {atomic,ok} = mnesia:create_table(Name, Attr)
+        end()).
 
 -export([
          write_attributes/2,
@@ -111,7 +118,8 @@
          handle_dirty_notify_out/5,
          handle_dirty_notify_back_in/3,
          handle_dirty_notify_back_out/4,
-         register_hypernumber/4
+         register_hypernumber/4,
+         create_db/0
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -119,8 +127,39 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec create_db() -> ok
+%% @doc  Creates the database for hypernumbers
+create_db()->
+    % Seems sensible to keep this restricted
+    % to disc_copies for now
+    Storage = disc_copies,
+    application:stop(mnesia),
+    ok = mnesia:delete_schema([node()]),
+    ok = mnesia:create_schema([node()]),
+    mnesia:start(),
+    ?create(hn_item,               set, Storage),
+    ?create(remote_cell_link,      bag, Storage),
+    ?create(local_cell_link,       bag, Storage),
+    ?create(hn_user,               set, Storage),
+    ?create(dirty_cell,            set, Storage),
+    ?create(dirty_notify_in,       set, Storage),
+    ?create(dirty_inc_hn_create,   set, Storage),
+    ?create(dirty_notify_back_in,  set, Storage),
+    ?create(dirty_notify_out,      set, Storage),
+    ?create(dirty_notify_back_out, set, Storage),
+    ?create(incoming_hn,           set, Storage),
+    ?create(outgoing_hn,           set, Storage),
+    ?create(template,              set, Storage),
+    ?create(styles,                bag, Storage), 
+    ?create(style_counters,        set, Storage),
+    ?create(page_vsn,              bag, Storage),
+    ?create(page_vsn_counters,     set, Storage),
+    hn_users:create("admin","admin"),
+    hn_users:create("user","user"),
+    ok.
+
 %% @spec register_hypernumber(Parent::#refX{}, Child::#refX{}, Proxy, Biccie) -> 
-%% [{"value", Value}, {"dependency-tree", DependencyTree}]
+%% list()
 %% @doc registers a new hypernumber.
 %% The Parent and Child references must both point to a cell.
 %% This function returns a list with two tuples, one for the current value
@@ -129,19 +168,18 @@ register_hypernumber(Parent, Child, Proxy, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
     Fun = fun() ->
                   hn_db_wu:write_remote_link(Parent, Child, outgoing),
-                  hn_db_wu:register_hypernumber(Parent, Child, Proxy, Biccie),
+                  hn_db_wu:register_out_hn(Parent, Child, Proxy, Biccie),
                   List = hn_db_wu:read_attrs(Parent, ["value", "dependency-tree"]),
                   List2 = extract_kvs(List),
-                  % List = hn_db_wu:read_cells(Parent),
                   V = case lists:keysearch("value", 1, List2) of
                           false           -> "blank";
                           {_, {_, Value}} -> Value
                       end,
                   D = case lists:keysearch("dependency-tree", 1, List2) of
-                          false             -> [];
+                          false             -> {xml, []};
                           {_, {_, DepTree}} -> DepTree
                       end,                  
-                  [{value, V}, {'dependency-tree', D}]
+                  [{value, V}, {'dependency-tree', simplexml:to_xml_string(D)}]
            end,
     mnesia:activity(transaction, Fun).
     
@@ -218,7 +256,8 @@ handle_dirty_notify_out(Parent, Outgoing, Value, DepTree, Timestamp) ->
 %% @TODO list the full set of possible change messages and how they should
 %% be handled in the docos
 handle_dirty_notify_back_in(P, C, Type)
-  when is_record(P, refX), is_record(C, refX), Type =:= "new child" ->
+  when is_record(P, refX), is_record(C, refX),
+       (Type =:= "new child" orelse Type =:= "unregister")->
      Fun1 = fun() ->
                    hn_db_wu:read_incoming_hn(P)
            end,
@@ -245,7 +284,7 @@ handle_dirty_notify_back_out(P, C, Type, B)
         fun() ->
                 case hn_db_wu:verify_biccie(P, C, B) of
                     true ->
-                        {ok, ok} = hn_db_wu:unregister_outgoing_hn(P, C, B);
+                        {ok, ok} = hn_db_wu:unregister_out_hn(P, C, B);
                     _    ->
                         {ok, ok}
                 end,
@@ -274,11 +313,11 @@ handle_dirty_notify_back_out(P, C, Type, Biccie)
 handle_notify(Parent, Child, Type, Value, DepTree, Biccie, Version)
   when is_record(Parent, refX), is_record(Child, refX),
        (Type =:= "change" orelse Type =:= "create") ->
-    io:format("in hn_db_api:handle_notify Value is ~p~n", [Value]),
+    DepTree2 = convertdep(Child, DepTree),
     F = fun() ->
                 case hn_db_wu:verify_biccie(Parent, Child, Biccie) of
                     true ->
-                        {ok, ok} = hn_db_wu:update_inc_hn(Parent, Value, DepTree,
+                        {ok, ok} = hn_db_wu:update_inc_hn(Parent, Value, DepTree2,
                                                           Biccie, Version),
                         {ok, ok} = hn_db_wu:mark_notify_in_dirty(Parent);
                     false -> {ok, ok}
@@ -287,7 +326,20 @@ handle_notify(Parent, Child, Type, Value, DepTree, Biccie, Version)
         end,
     ok = mnesia:activity(transaction, F),
     {ok, ok}.
-    
+
+convertdep(Child, DepTree) when is_record(Child, refX) ->
+    #refX{site = Site} = Child,
+    convertdep1(DepTree, Site, []).
+
+convertdep1([], _Site, Acc)      -> Acc;
+convertdep1([H | T ], Site, Acc) ->
+    {ok, Ref} = hn_util:parse_url(H),
+    #ref{site = Site1} = Ref,
+    case Site of
+        Site1 -> convertdep1(T, Site, [{url, [{type, "local"}], [H]} | Acc]);
+        _     -> convertdep1(T, Site, [{url, [{type, "remote"}],[H]} | Acc])
+    end.
+
 %% @spec handle_notify_back(Parent::#refX{}, Child::#refX{}, Biccie, Type) -> 
 %% {ok, ok}
 %% @doc handles a notify_back message.
@@ -343,7 +395,7 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
                         {Val, DepTree}
                end
         end,
-    mnesia:activity(transaction, F). 
+    mnesia:activity(transaction, F).
 
 %% % @spec notify(Parent::#refX{}, Outgoing, Val, 
 %% % DepTree, Timestamp) -> {ok, ok}
@@ -430,7 +482,8 @@ write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
     Fun = fun() ->
                   [{ok, ok} = hn_db_wu:write_attr(RefX, X) || X <- List]
           end,
-    mnesia:activity(transaction, Fun).
+    mnesia:activity(transaction, Fun),
+    {ok, ok}.
 
 %% @spec write_last(List) -> {ok, ok}
 %% List = [{#refX{}, Val}]
