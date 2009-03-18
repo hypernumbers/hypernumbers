@@ -19,7 +19,7 @@
 -export([start_link/0, init/1, handle_call/3, handle_cast/2, 
     handle_info/2, terminate/2, code_change/3]).
 
--export([ notify/6, timestamp/0 ]).
+-export([ notify/6, notify/4, timestamp/0 ]).
 
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
@@ -53,6 +53,11 @@ notify(Site, Path, Type, {RefType, _} = R, Name, Value) ->
     Msg = {struct, [{"type", Type}, {"reftype", RefType},
                     {"ref", hn_util:ref_to_str(R)}, 
                     {"name", Name2}, {"value", Val2}]},
+    gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
+
+notify(Site, Path, Index, Style) ->
+    {Key, CSS} = hn_mochi:style_to_css(Index, Style),
+    Msg = {struct, [{"type", "style"}, {"index", Key}, {"css", CSS}]},
     gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
 
 send_to_server(Server, Time, Msgs) ->

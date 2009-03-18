@@ -2176,7 +2176,7 @@ write_style2(RefX, Style) ->
     Ref2 = Ref#ref{ref = {page, "/"}},
     NewIndex = mnesia:dirty_update_counter(style_counters, Ref2, 1), 
     % should spawn a notification that there is a new style
-    io:format("in hn_db_wu:write_style2- needs to be fixed!~n"),
+    tell_front_end(Ref2, NewIndex, Style),
     mnesia:write(#styles{ref = Ref2, index = NewIndex, magic_style = Style}),
     NewIndex. 
 
@@ -2185,12 +2185,14 @@ write_style2(RefX, Style) ->
 %% @doc calls the remoting server and tells is that something has changed
 %% names like '__name' are not notified to front-end
 tell_front_end(#hn_item{addr=Ref, val=Val}, Type) ->
-
-    case Ref#ref.name of
+    #ref{name=Name, site=Site, path=Path, ref=Rf} = Ref,
+    case Name of
         "__"++_ -> ok; 
-        _Else   -> remoting_reg:notify(Ref#ref.site, Ref#ref.path, Type, 
-                                       Ref#ref.ref,  Ref#ref.name, Val)
+        _Else   -> remoting_reg:notify(Site, Path, Type, Rf,  Name, Val)
     end.
+
+tell_front_end(#ref{site=Site, path=Path}, Index, Style) ->
+    remoting_reg:notify(Site, Path, Index, Style).
 
 make_tuple(Style, Counter, Index, Val) -> 
     make_tuple1(Style, Counter, Index, Val, []). 

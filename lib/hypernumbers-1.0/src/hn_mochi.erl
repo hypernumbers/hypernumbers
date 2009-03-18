@@ -9,7 +9,7 @@
 -include("handy_macros.hrl").
 -include("hypernumbers.hrl").
 
--export([ req/1 ]).
+-export([ req/1, style_to_css/2 ]).
 
 -define(XHR_TIMEOUT, 10000).
 
@@ -84,7 +84,7 @@ handle_req('GET', Req, Ref, cell, _Attr, _Post) ->
          end, 
     Req:ok({"application/json", mochijson:encode(JS)});
 
-handle_req('POST', Req, Ref, cell, _Attr, [{"set", {struct, Attr}}]) ->
+handle_req('POST', Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
     hn_db_api:write_attributes(Ref, Attr),
     Req:ok({"application/json", "success"});
 
@@ -214,6 +214,9 @@ styles_to_css([H | T], Acc) ->
     styles_to_css(T, [style_to_css(H) | Acc]).
 
 style_to_css({styles, _Ref, X, Rec}) ->
+    style_to_css(X, Rec).
+
+style_to_css(X, Rec) ->
     Num = ms_util2:no_of_fields(magic_style),
     {itol(X), style_att(Num+1, Rec, [])}.
 
