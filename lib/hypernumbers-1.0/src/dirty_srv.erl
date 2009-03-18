@@ -36,7 +36,8 @@ init([Type]) ->
 %% @doc  handle events from subscription to mnesia
 handle_info({mnesia_table_event, {write, Table, Rec, OldRecs, ActId}}, State) ->
 %    case Table of
-%        dirty_notify_back_in -> io:format("In handle Info~n-Rec is ~p~n-OldRecs are ~p~n-"++
+%        dirty_notify_back_in -> io:format("In handle Info~n-Rec is ~p~n-"++
+%                                          "OldRecs are ~p~n-"++
 %                                          "ActId is ~p~n",
 %                                          [Rec, OldRecs, ActId]);
 %        _                    -> ok
@@ -162,18 +163,19 @@ process_dirty(Rec, dirty_notify_out) ->
     {ok, ok} = hn_db_api:handle_dirty_notify_out(Parent, O, V, DepTree, T),
     ok;
 process_dirty(Rec, dirty_notify_back_in) ->
-     #dirty_notify_back_in{child = ChildIdx, parent = ParentIdx,
-                          change = Change} = Rec,
+    #dirty_notify_back_in{parent = ParentIdx, child = ChildIdx,
+                           change = Change, biccie = Biccie} = Rec,
     Parent = hn_util:refX_from_index(ParentIdx),
     Child = hn_util:refX_from_index(ChildIdx),
-    {ok, ok} = hn_db_api:handle_dirty_notify_back_in(Parent, Child, Change),
+    {ok, ok} = hn_db_api:handle_dirty_notify_back_in(Parent, Child,
+                                                     Change, Biccie),
     ok;
 process_dirty(Rec, dirty_notify_back_out) ->
      #dirty_notify_back_out{parent = ParentIdx, child = ChildIdx,
-                           biccie = Biccie, change = Type} = Rec,
+                           change = Type} = Rec,
     Parent = hn_util:refX_from_index(ParentIdx),
     Child = hn_util:refX_from_index(ChildIdx),
-    {ok, ok} = hn_db_api:handle_dirty_notify_back_out(Parent, Child, Type, Biccie),
+    {ok, ok} = hn_db_api:handle_dirty_notify_back_out(Parent, Child, Type),
     ok.
 
 %%%

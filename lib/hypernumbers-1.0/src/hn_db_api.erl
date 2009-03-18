@@ -8,8 +8,15 @@
 %%%            {@link hn_db_wu} which provides work units and it
 %%%            should wrap them in an mnesia transaction.
 %%%            
-%%%            mnesia MUST NOT be called from any function in
+%%%            mnesia <em>MUST NOT</em> be called from any function in
 %%%            this module.
+%%%            
+%%%            Security operations (like checking if the right biccie
+%%%            has been supplied for a remote update) <em>MUST</em> be
+%%%            performed in these API functions using the 
+%%%            {@link hn_db_wu:verify_biccie_in/2} and 
+%%%            {@link hn_db_wu:verify_biccie_out/3} functions - they
+%%%            <em>WILL NOT</em> be done in {@link hn_db_wu}.
 %%%            
 %%%            It makes extensive use of #refX{} records which can
 %%%            exist in the the following flavours:
@@ -70,10 +77,11 @@
 
 -include("spriki.hrl").
 
-%-define(mn_ac,mnesia:activity).
-%-define(mn_sl,mnesia:select).
 -define(copy, hn_db_wu:copy_cell).
 -define(counter, mnesia:dirty_update_counter).
+-define(mk_not_back_in_dirty, hn_db_wu:mark_notify_back_in_dirty).
+-define(mk_inc_crt_dirty, hn_db_wu:mark_inc_create_dirty).
+-define(wr_rem_link, hn_db_wu:write_remote_link).
 
 -define(create(Name,Type,Storage),
         fun() ->
@@ -111,14 +119,14 @@
          notify_back_create/2,
          read_incoming_hn/2,
          write_remote_link/3,
-         handle_notify/7,
-         handle_notify_back/4,
+         notify_from_web/7,
+         notify_back_from_web/4,
          handle_dirty_cell/1,
          handle_dirty_notify_in/1,
          handle_dirty_notify_out/5,
-         handle_dirty_notify_back_in/3,
-         handle_dirty_notify_back_out/4,
-         register_hypernumber/4,
+         handle_dirty_notify_back_in/4,
+         handle_dirty_notify_back_out/3,
+         register_hn_from_web/4,
          create_db/0
         ]).
 
@@ -158,13 +166,13 @@ create_db()->
     hn_users:create("user","user"),
     ok.
 
-%% @spec register_hypernumber(Parent::#refX{}, Child::#refX{}, Proxy, Biccie) -> 
+%% @spec register_hn_from_web(Parent::#refX{}, Child::#refX{}, Proxy, Biccie) -> 
 %% list()
-%% @doc registers a new hypernumber.
+%% @doc handles the registeration of a new hypernumber from the web server.
 %% The Parent and Child references must both point to a cell.
 %% This function returns a list with two tuples, one for the current value
 %% and one for the current dependency tree
-register_hypernumber(Parent, Child, Proxy, Biccie)
+register_hn_from_web(Parent, Child, Proxy, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
     Fun = fun() ->
                   hn_db_wu:write_remote_link(Parent, Child, outgoing),
@@ -249,27 +257,22 @@ handle_dirty_notify_out(Parent, Outgoing, Value, DepTree, Timestamp) ->
     ok = mnesia:activity(transaction, Fun3),
     {ok, ok}.
 
-%% @spec handle_dirty_notify_back_in(Parent::#refX{}, Child::#refX{}, Change)
-%% -> {ok, ok}
+%% @spec handle_dirty_notify_back_in(Parent::#refX{}, Child::#refX{}, 
+%% Change, Biccie) -> {ok, ok}
 %% @doc handles a dirty_notify_back_in message.
 %% Both the parent and the child references must be cell references
 %% @TODO list the full set of possible change messages and how they should
 %% be handled in the docos
-handle_dirty_notify_back_in(P, C, Type)
+handle_dirty_notify_back_in(P, C, Type, Biccie)
   when is_record(P, refX), is_record(C, refX),
        (Type =:= "new child" orelse Type =:= "unregister")->
-     Fun1 = fun() ->
-                   hn_db_wu:read_incoming_hn(P)
-           end,
-    Hn = mnesia:activity(transaction, Fun1),
-    #incoming_hn{biccie = Biccie} = Hn,
     {ok, ok} = horiz_api:notify_back(P, C, Type, Biccie),
     Fun = fun() ->
                   {ok, ok} = hn_db_wu:clear_dirty_notify_back_in(P, C, Type)
           end,
     mnesia:activity(transaction, Fun).
 
-%% @spec handle_dirty_notify_back_out(Parent::#refX{}, Child::#ref{}, Type, Biccie)
+%% @spec handle_dirty_notify_back_out(Parent::#refX{}, Child::#ref{}, Type)
 %% -> {ok, ok}
 %% @doc handles a dirty notify back out event.
 %% Both the partent and child references must point to a cell
@@ -278,20 +281,15 @@ handle_dirty_notify_back_in(P, C, Type)
 %% <li>"unregister"</li>
 %% <li>"new child"</li>
 %% </ul>
-handle_dirty_notify_back_out(P, C, Type, B)
+handle_dirty_notify_back_out(P, C, Type)
     when is_record(P, refX), is_record(C, refX), Type =:= "unregister" ->
     Fun =
         fun() ->
-                case hn_db_wu:verify_biccie(P, C, B) of
-                    true ->
-                        {ok, ok} = hn_db_wu:unregister_out_hn(P, C, B);
-                    _    ->
-                        {ok, ok}
-                end,
+                {ok, ok} = hn_db_wu:unregister_out_hn(P, C),
                 {ok, ok} = hn_db_wu:clear_dirty_notify_back_out(P, C, Type)
         end,
     mnesia:activity(transaction, Fun);
-handle_dirty_notify_back_out(P, C, Type, Biccie)
+handle_dirty_notify_back_out(P, C, Type)
     when is_record(P, refX), is_record(C, refX), Type =:= "new child" ->
     Fun = fun() ->
                   {ok, ok} = hn_db_wu:write_remote_link(P, C, outgoing),
@@ -299,10 +297,10 @@ handle_dirty_notify_back_out(P, C, Type, Biccie)
           end,
     mnesia:activity(transaction, Fun).
 
-%% @spec handle_notify(Parent::#refX{}, Child::#refX{}, Type, Value, 
+%% @spec notify_from_web(Parent::#refX{}, Child::#refX{}, Type, Value, 
 %% DepTree, Biccie, Version) -> {ok, ok}
 %% DepTree = list()
-%% @doc handles a notify message.
+%% @doc handles a notify message from the web server.
 %% The parent reference must be cell references.
 %% If this value doesn't match the Biccie on record this update will be logged and
 %% will silently fail
@@ -310,12 +308,12 @@ handle_dirty_notify_back_out(P, C, Type, Biccie)
 %% page version stored here it will trigger a structural replay of page updates
 %% @todo log the biccie failures
 %% @todo write the page version handling stuff
-handle_notify(Parent, Child, Type, Value, DepTree, Biccie, Version)
+notify_from_web(Parent, Child, Type, Value, DepTree, Biccie, Version)
   when is_record(Parent, refX), is_record(Child, refX),
        (Type =:= "change" orelse Type =:= "create") ->
     DepTree2 = convertdep(Child, DepTree),
     F = fun() ->
-                case hn_db_wu:verify_biccie(Parent, Child, Biccie) of
+                case hn_db_wu:verify_biccie_in(Parent, Biccie) of
                     true ->
                         {ok, ok} = hn_db_wu:update_inc_hn(Parent, Value, DepTree2,
                                                           Biccie, Version),
@@ -327,28 +325,15 @@ handle_notify(Parent, Child, Type, Value, DepTree, Biccie, Version)
     ok = mnesia:activity(transaction, F),
     {ok, ok}.
 
-convertdep(Child, DepTree) when is_record(Child, refX) ->
-    #refX{site = Site} = Child,
-    convertdep1(DepTree, Site, []).
-
-convertdep1([], _Site, Acc)      -> Acc;
-convertdep1([H | T ], Site, Acc) ->
-    {ok, Ref} = hn_util:parse_url(H),
-    #ref{site = Site1} = Ref,
-    case Site of
-        Site1 -> convertdep1(T, Site, [{url, [{type, "local"}], [H]} | Acc]);
-        _     -> convertdep1(T, Site, [{url, [{type, "remote"}],[H]} | Acc])
-    end.
-
-%% @spec handle_notify_back(Parent::#refX{}, Child::#refX{}, Biccie, Type) -> 
+%% @spec notify_back_from_web(Parent::#refX{}, Child::#refX{}, Biccie, Type) -> 
 %% {ok, ok}
-%% @doc handles a notify_back message.
+%% @doc handles a notify_back message from the web server.
 %% The parent and child references must be cell references.
-handle_notify_back(P, C, B, Type)
+notify_back_from_web(P, C, B, Type)
   when is_record(P, refX), is_record(C, refX) ->
     Fun =
         fun() ->
-                case hn_db_wu:verify_biccie(P, C, B) of
+                case hn_db_wu:verify_biccie_out(P, C, B) of
                     true -> hn_db_wu:mark_notify_back_out_dirty(P, C, Type);
                     _    -> {ok, ok}
                 end
@@ -371,24 +356,25 @@ write_remote_link(Parent, Child, Type)
 %% If the hypernumber requested hasn't been set up yet, this function will
 %% trigger a creation process and return 'blank' for the moment... when the
 %% hypernumber is set up the 'correct' value will come through as per normal...
-read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
+read_incoming_hn(Parent, Child) when is_record(Parent, refX),
+                                     is_record(Child, refX) ->
     F = fun() ->
-                case hn_db_wu:read_incoming_hn(P) of
+                case hn_db_wu:read_incoming_hn(Parent) of
                     [] ->
-                        {ok, ok} = hn_db_wu:mark_inc_create_dirty(P, C),
+                        {ok, ok} = ?mk_inc_crt_dirty(Parent, Child),
                         % need to write a link
-                        {ok, ok} = hn_db_wu:write_remote_link(P, C, incoming),
+                        {ok, ok} = ?wr_rem_link(Parent, Child, incoming),
                         {blank, []};
                      Hn ->
-                        #incoming_hn{value = Val,
+                        #incoming_hn{value = Val, biccie = Biccie,
                                      'dependency-tree' = DepTree} = Hn,
                         % check if there is a remote cell
-                        RPs = hn_db_wu:read_remote_parents(C, incoming),
+                        RPs = hn_db_wu:read_remote_parents(Child, incoming),
                         {ok, ok} =
-                            case lists:keymember(P, 1, RPs) of
+                            case lists:keymember(Parent, 1, RPs) of
                                 false ->
-                                    hn_db_wu:mark_notify_back_in_dirty(P,
-                                                                       C, "new child");
+                                    ?mk_not_back_in_dirty(Parent, Child,
+                                                          "new child", Biccie);
                                 true  ->
                                     {ok, ok}
                             end,
@@ -928,6 +914,20 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% converts the dependency tree from the 'wire format' to the 'database format'
+convertdep(Child, DepTree) when is_record(Child, refX) ->
+    #refX{site = Site} = Child,
+    convertdep1(DepTree, Site, []).
+
+convertdep1([], _Site, Acc)      -> Acc;
+convertdep1([H | T ], Site, Acc) ->
+    {ok, Ref} = hn_util:parse_url(H),
+    #ref{site = Site1} = Ref,
+    case Site of
+        Site1 -> convertdep1(T, Site, [{url, [{type, "local"}], [H]} | Acc]);
+        _     -> convertdep1(T, Site, [{url, [{type, "remote"}],[H]} | Acc])
+    end.
+
 % extracts the key value pairs
 extract_kvs(List) -> extract_kvs1(List, []).
 

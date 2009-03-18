@@ -67,10 +67,31 @@
 dirty() ->
 
     Path = ["dirty1"],
-    
+
+    % write a line of cells that link to each other
     dirty1(),
+    % now write a line of hypernumbers pointing to the first cells
     dirty2(),
-    write_value(Path, "123", {1, 1}, []).   
+    % now rewrite the first cell triggering all the cells and their
+    % hypernumbers to recalculcate
+    write_value(Path, "123", {1, 1}, []),
+    % now write new value in the middle of the first list and check
+    % that the hypernumbers dependency trees update properly
+    write_value(Path, "987", {1, 15}, []),
+    
+    % now clear some hypernumbers children and check that the parent side remote
+    % links have been cleared..
+    dirty3().
+
+%% @hidden
+dirty3()->
+    FunName = "dirty2",
+
+    Path2 = [FunName],
+    Site2 = "http://il_ballo.dev:9000",
+    
+    clear_cells(Site2, Path2, {1, 1}),
+    clear_cells(Site2, Path2, {1, 2}).
 
 %% @hidden
 dirty2() ->

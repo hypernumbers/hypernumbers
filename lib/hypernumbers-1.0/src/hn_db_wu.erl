@@ -2,10 +2,16 @@
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers.com
 %%% @doc       This is a util function for hn_db_api containing only functions
-%%%            that MUST be called from within an mnesia transactions.
-%%% 
+%%%            that MUST be called from within an mnesia transactions - these
+%%%            functions can be considered <em>work units</em> from which
+%%%            api transactions can be constructed (hence the name).
+%%%            
 %%% The module {@link hn_db_api} is the wrapper for calls to this
-%%% function.
+%%% module.
+%%% 
+%%% This module <em>PRESUMES THAT PERMISSIONS ARE ALL IN ORDER</em> - 
+%%% for instance no function in this module will check if a biccie
+%%% is valid - that <em>MUST BE DONE</em> in the api level functions.
 %%%  
 %%% <h3>Functional Categories</h3>
 %%% 
@@ -465,7 +471,7 @@
          clear_cells/1,
          clear_cells/2,
          delete_attrs/2,
-         delete_outgoing_hn/3,
+         % delete_outgoing_hn/3, <-- delete me, I think...
          clear_dirty_cell/1,
          clear_dirty_inc_hn_create/2,
          clear_dirty_notify_in/1,
@@ -480,14 +486,15 @@
          mark_inc_create_dirty/2,
          mark_notify_in_dirty/1,
          mark_notify_out_dirty/3,
-         mark_notify_back_in_dirty/3,
+         mark_notify_back_in_dirty/4,
          mark_notify_back_out_dirty/3,
          update_inc_hn/5,
          does_remote_link_exist/3,
          write_remote_link/3,
          register_out_hn/4,
-         unregister_out_hn/3,
-         verify_biccie/3]).
+         unregister_out_hn/2,
+         verify_biccie_in/2,
+         verify_biccie_out/3]).
 
 %% Structural Query Exports
 -export([get_last_refs/1,
@@ -549,10 +556,10 @@ does_remote_link_exist(Parent, Child, Type)
         [Rec] when is_record(Rec, remote_cell_link) -> true
     end.
 
-%% @spec verify_biccie(Parent::#refX{}, Child::#refX{}, Biccie) -> [true | false]
-%% @doc verifies if a biccie provided for a hyperlink is valid. It strips out
+%% @spec verify_biccie_out(Parent::#refX{}, Child::#refX{}, Biccie) -> [true | false]
+%% @doc verifies if a biccie provided for an outgoing hyperlink is valid. It strips out
 %% the child site from the Child <code>#refX{}</code>.
-verify_biccie(Parent, Child, Biccie)
+verify_biccie_out(Parent, Child, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
     #refX{site = ChildSite} = Child,
     PIdx = hn_util:index_from_refX(Parent),
@@ -562,10 +569,32 @@ verify_biccie(Parent, Child, Biccie)
     #outgoing_hn{biccie = Biccie2} = Hn,
     case Biccie of
         Biccie2 -> true;
-        _       -> false
+        _       ->     io:format("in hn_db_wu:verify_biccie_out~n-"++
+                                 "Parent is ~p~n-Child is ~p~n-"++
+                                 "Biccie is ~p~n", [Parent, Child, Biccie]),
+                       false
     end.
 
-%% @spec mark_notify_back_in_dirty(Parent::#refX{}, Child::#refX{}, Msg) -> 
+%% @spec verify_biccie_in(Parent::#refX{}, Biccie) -> [true | false]
+%% @doc verifies if a biccie provided for an incoming hyperlink is valid. It strips out
+%% the child site from the Child <code>#refX{}</code>.
+verify_biccie_in(Parent, Biccie) when is_record(Parent, refX) ->
+    PIdx = hn_util:index_from_refX(Parent),
+    Match = ms_util:make_ms(incoming_hn, [{parent, PIdx}]),
+    List = mnesia:match_object(incoming_hn, Match, read),
+    case List of
+        []   -> false;
+        [Hn] -> #incoming_hn{biccie = Biccie2} = Hn,
+                case Biccie of
+                    Biccie2 -> true;
+                    _       -> io:format("in hn_db_wu:verify_biccie_in~n-"++
+                                 "Parent is ~p~n-Biccie is ~p~n",
+                                         [Parent, Biccie]),
+                               false
+                end
+    end.
+
+%% @spec mark_notify_back_in_dirty(Parent::#refX{}, Child::#refX{}, Msg, Biccie) -> 
 %% {ok, ok}
 %% @doc marks a child of a remote hypernumber as dirty so that the remote 
 %% (parent) site is to be notified that the link has been created.
@@ -575,13 +604,13 @@ verify_biccie(Parent, Child, Biccie)
 %% <li>unregister</li>
 %% <li>new child</li>
 %% </ul>
-mark_notify_back_in_dirty(Parent, Child, Msg)
+mark_notify_back_in_dirty(Parent, Child, Msg, B)
   when is_record(Parent, refX), is_record(Child, refX) ->
     P = hn_util:index_from_refX(Parent),
     C = hn_util:index_from_refX(Child),
-    Rec = #dirty_notify_back_in{parent = P, child = C, change = Msg},
+    Rec = #dirty_notify_back_in{parent = P, child = C, change = Msg, biccie = B},
     Match = ms_util:make_ms(dirty_notify_back_in, [{parent, P}, {child, C},
-                                                   {change, Msg}]),
+                                                   {change, Msg}, {biccie, B}]),
     case mnesia:match_object(Match) of
         [] -> ok = mnesia:write(Rec);
         _  -> ok
@@ -638,7 +667,7 @@ write_remote_link(Parent, Child, Type)
 update_inc_hn(Parent, Val, DepTree, Biccie, Version)
   when is_record(Parent, refX) ->
     ParentIdx = hn_util:index_from_refX(Parent),
-    Rec = #incoming_hn{remote = ParentIdx, value = Val, 
+    Rec = #incoming_hn{parent = ParentIdx, value = Val, 
                        'dependency-tree' = DepTree, biccie = Biccie,
                        version = Version},
     ok = mnesia:write(Rec),
@@ -757,23 +786,23 @@ clear_dirty_notify_back_out(Parent, Child, Change)
     ok = mnesia:delete_object(Record),
     {ok, ok}.
 
-%% @spec delete_outgoing_hn(Parent::#refX{}, Child::#refX{}, Biccie) -> {ok, ok}
-%% @doc deletes an outgoing hypernumber if the biccie quoted is correct.
+%% % @spec delete_outgoing_hn(Parent::#refX{}, Child::#refX{}, Biccie) -> {ok, ok}
+%% % @doc deletes an outgoing hypernumber if the biccie quoted is correct.
 %% 
 %% The parent and the child references both point to a cell.
 %% The biccie is the biccie which was originally given when the
 %%  hypernumber was set up.
 %% 
-%% @todo at the moment the <code>refX{}</code> can only point to a cell
+%% % @todo at the moment the <code>refX{}</code> can only point to a cell
 %% should be a more general reference (including eventually a query reference)
-delete_outgoing_hn(Parent, Child, Biccie) ->
-    ParentIndex = hn_util:index_from_refX(Parent),
-    ChildIndex = hn_util:index_from_refX(Child),
-    #index{site = ChildSite} = ChildIndex,
-    Head = ms_util:make_ms(outgoing_hn, [{parent, ParentIndex},
-                                         {child_site, ChildSite}, {biccie, Biccie}]),
-    Hypernumbers = mnesia:select(outgoing_hn, [{Head, [], ['$_']}]),
-    delete_recs(Hypernumbers).
+%delete_outgoing_hn(Parent, Child, Biccie) ->
+%    ParentIndex = hn_util:index_from_refX(Parent),
+%    ChildIndex = hn_util:index_from_refX(Child),
+%    #index{site = ChildSite} = ChildIndex,
+%    Head = ms_util:make_ms(outgoing_hn, [{parent, ParentIndex},
+%                                         {child_site, ChildSite}, {biccie, Biccie}]),
+%    Hypernumbers = mnesia:select(outgoing_hn, [{Head, [], ['$_']}]),
+%    delete_recs(Hypernumbers).
 
 %% @spec get_refs_below(#ref{}) -> [#ref{}]
 %% @doc gets all the refs below a given reference.
@@ -871,9 +900,7 @@ read_remote_parents(#refX{obj = {cell, _}} = RefX, Type)
     #refX{site = S, path = P, obj = {cell, {X, Y}}} = RefX,
     Index = #index{site = S, path = P, column = X, row = Y},
     Match = ms_util:make_ms(remote_cell_link, [{child, Index}, {type, Type}]),
-    % io:format("in hn_db_wu:read_remote_parents Match is ~p~n", [Match]),
     Links = mnesia:match_object(remote_cell_link, Match, read),
-    % io:format("in hn_db_wu:read_remote_parents Links is ~p~n", [Links]),
     get_remote_parents(Links).
 
 %% @spec read_remote_children(RefX :: #refX{}, Type) -> [#refX{}]
@@ -1276,7 +1303,7 @@ copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {range, _}} = To, Attrs) -
 %% column, row or query, etc, etc
 read_incoming_hn(Parent) when is_record(Parent, refX) ->
     ParentIdx = hn_util:refX_to_index(Parent),
-    Head = ms_util:make_ms(incoming_hn, [{remote, ParentIdx}]),
+    Head = ms_util:make_ms(incoming_hn, [{parent, ParentIdx}]),
     Return = mnesia:select(incoming_hn, [{Head, [], ['$_']}]),
     case Return of
         []   -> [];
@@ -1368,38 +1395,38 @@ mark_notify_out_dirty(RefX, Val, DepTree) ->
     end,
     {ok, ok}.
 
-%% @spec unregister_out_hn(Parent::#refX{}, Child::#refX{}, Biccie) -> {ok, ok}
-%% @doc deletes an outgoing hypernumber.
+%% @spec unregister_out_hn(Parent::#refX{}, Child::#refX{}) -> {ok, ok}
+%% @doc unregisters an outgoing hypernumber - if it is the last reference
+%% to an outgoing hypernumber deletes the hypernumber as well
 %% Both parent and child references must point to a cell. This function is
 %% *ONLY* to be used on the parent (or out) side of the hypernumber
 %% @todo this required a full table scan for an unregister
 %% will get veeeerrry expensive if you have 100,000 children tracking a
 %% number!
-unregister_out_hn(P, C, B)
+unregister_out_hn(P, C)
   when is_record(P, refX), is_record(C, refX) ->
-    io:format("~n~n~n"++
-              "**********************~n"++
-              "***                ***~n"++
-              "***    Fix me!     ***~n"++
-              "***                ***~n"++
-              "**********************~n"),
-    case verify_biccie(P, C, B) of
-        true -> PIdx = hn_util:index_from_refX(P),
-                #refX{site = CS} = C,
-                M1 = ms_util:make_ms(index, [{site, CS}]),
-                M2 = ms_util:make_ms(remote_cell_link, [{parent, PIdx},
-                                                        {child, M1}]),
-                case mnesia:select_object(M2) of
-                    [] -> M3 = ms_util:make_ms(outgoing_hn,
-                                               [{parent, PIdx},
-                                                {child_site, CS}]),
-                          [R] = mnesia:select(outgoing_hn, [{M3, [], ['S_']}]),
-                          ok = mnesia:delete_object(R),
-                          {ok, ok};
-                    _   -> {ok, ok}
-                end;
-        false  ->
-            {ok, ok}
+    PIdx = hn_util:index_from_refX(P),
+    CIdx = hn_util:index_from_refX(C),
+    % first up delete the remote cell link
+    Match = ms_util:make_ms(remote_cell_link, [{parent, PIdx},{child, CIdx},
+                                               {type, outgoing}]),
+    [RemCellRec] = mnesia:select(remote_cell_link, [{Match, [], ['$_']}]),
+    ok = mnesia:delete_object(RemCellRec),
+    % now see if any other remote cell references match this site...
+    % - if none do, delete the hypernumber from outgoing_hn
+    % - if some do, do nothing...
+    #refX{site = CS} = C,
+    NewCIdx = ms_util:make_ms(index, [{site, CS}]),
+    Match2 = ms_util:make_ms(remote_cell_link, [{parent, PIdx},{child, NewCIdx},
+                                               {type, outgoing}]),
+    case mnesia:select(remote_cell_link, [{Match2, [], ['$_']}]) of
+        []  -> Match3 = ms_util:make_ms(outgoing_hn,
+                                   [{parent, PIdx},
+                                    {child_site, CS}]),
+               [Rec] = mnesia:select(outgoing_hn, [{Match3, [], ['$_']}]),
+               ok = mnesia:delete_object(Rec),
+               {ok, ok};
+        _   -> {ok, ok}
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1436,15 +1463,17 @@ update_rem_parents(Child, OldParents, NewParents) when is_record(Child, refX) ->
 %% used to reference as hypernumbers to no longer do so.
 unregister_inc_hn(Parent, Child)
   when is_record(Child, refX), is_record(Parent, refX) ->
-    % io:format("In unregister_inc_hn~n-Parent is ~p~n-Child is ~p~n", [Parent, Child]),
     ParentIdx = hn_util:refX_to_index(Parent),
-    Head = ms_util:make_ms(remote_cell_link, [{parent, ParentIdx},
+    Head1 = ms_util:make_ms(incoming_hn, [{parent, ParentIdx}]),
+    [Hn] = mnesia:select(incoming_hn, [{Head1, [], ['$_']}]),
+    #incoming_hn{biccie = Biccie} = Hn,
+    Head2 = ms_util:make_ms(remote_cell_link, [{parent, ParentIdx},
                                               {type, incoming}]),
-    case mnesia:select(remote_cell_link, [{Head, [], ['$_']}]) of
-        [] -> mensia:delete({incoming_hn, ParentIdx});
-        _  -> {ok, ok} % somebody else still wants it so don't unregister
+    case mnesia:select(remote_cell_link, [{Head2, [], ['$_']}]) of
+                 [] -> mnesia:delete({incoming_hn, ParentIdx});
+                 _  -> {ok, ok} % somebody else still wants it so don't unregister
     end,
-    {ok, ok} = mark_notify_back_in_dirty(Parent, Child, "unregister").
+    {ok, ok} = mark_notify_back_in_dirty(Parent, Child, "unregister", Biccie).
 
 get_refXs(List) -> get_refXs(List, []).
 
@@ -1826,6 +1855,9 @@ shift_outgoing_hns(_From, _To) ->
 %% the hypernumber has changed...
 shift_incoming_hns(From, To) ->
     FromIdx = hn_util:index_from_refX(From),
+    io:format("in hn_db_wu:shift_incoming_hns - this next line is not going "++
+              "to work as incoming_hn has no field child...~n"),
+    Rec = ms_util:make_ms(incoming_hn,[{child, FromIdx}]),
     case mnesia:read({incoming_hn, {'_', FromIdx}}) of
         [] -> {ok, ok};
         L  -> FromIdx = hn_util:refX_to_index(From),
@@ -1833,8 +1865,11 @@ shift_incoming_hns(From, To) ->
               ToIdx = hn_util:refX_to_index(To),
               ToURL = hn_util:index_to_url(ToIdx),
               Msg = {"move", {"from", FromURL}, {"to", ToURL}},
+              io:format("in hn_db_wu:shift_incoming_hn L is ~p~n", [L]),
+              io:format("in hn_db_wu:shift_incoming_hn Biccie being spoofed for compiling...~n"),
+              Biccie = "you have got to be fucking joking",
               Fun = fun(X) ->
-                            {ok, ok} = mark_notify_back_in_dirty(From, X, Msg)
+                            {ok, ok} = mark_notify_back_in_dirty(From, X, Msg, Biccie)
                     end,
               [ok = Fun(X) || X <- L],
               {ok, ok}

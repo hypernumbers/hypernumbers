@@ -108,7 +108,7 @@
 
 -record(incoming_hn,
         {
-          remote            = #index{},  % The address of the number
+          parent            = #index{},  % The address of the number
           value,
           'dependency-tree' = [],       % Cells use in this numbers calculation
           biccie            = [],       % A shared token
@@ -152,9 +152,10 @@
 
 -record(dirty_notify_back_in,
         {
-          child     = #index{},
           parent    = #index{},
+          child     = #index{},
           change    = [],
+          biccie    = [],
           timestamp = now()
          }).
 
@@ -162,7 +163,6 @@
         {
           parent    = #index{},
           child     = #index{},
-          biccie    = [],
           change    = [],
           timestamp = now()
          }).

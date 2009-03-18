@@ -104,7 +104,7 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back_create"}|T])
     {ok, ChildRef} = hn_util:parse_url(ChildUrl),
     {ChildX, _} = hn_util:ref_to_refX(ChildRef, "dont care"),
     ParentX = Ref,
-    Return = hn_db_api:register_hypernumber(ParentX, ChildX, Proxy, Biccie),
+    Return = hn_db_api:register_hn_from_web(ParentX, ChildX, Proxy, Biccie),
     Req:ok({"application/json", mochijson:encode({struct, Return})});
 
 handle_req('POST', Req, _Ref, _Type, _Attr, [{"action", "notify_back"}|T] = _Json) ->
@@ -116,7 +116,7 @@ handle_req('POST', Req, _Ref, _Type, _Attr, [{"action", "notify_back"}|T] = _Jso
     {ChildX, _} = hn_util:ref_to_refX(ChildRef, "dont care"),
     {ok, ParentRef} = hn_util:parse_url(ParentUrl),
     {ParentX, _} = hn_util:ref_to_refX(ParentRef, "dont care"),
-    {ok, ok}  = hn_db_api:handle_notify_back(ParentX, ChildX, Biccie, Type),
+    {ok, ok}  = hn_db_api:notify_back_from_web(ParentX, ChildX, Biccie, Type),
     Req:ok({"application/json", "success"});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,7 +134,7 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = _Json) ->
     {ok, ParentRef} = hn_util:parse_url(ParentUrl),
     {ParentX, _} = hn_util:ref_to_refX(ParentRef, "dont care"),
     {array, DepTree2} = DepTree,
-    Return = hn_db_api:handle_notify(ParentX, Ref, Type, Value,
+    Return = hn_db_api:notify_from_web(ParentX, Ref, Type, Value,
                                      DepTree2, Biccie, Version),
     Req:ok({"application/json", "success"});
 
