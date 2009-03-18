@@ -2120,6 +2120,9 @@ delete_style_attr(RefX, Key) ->
 process_styles(RefX, {Name, Val}) ->
     % First up read the current style 
     Ref = hn_util:refX_to_ref(RefX, Name),
+    % convert the ref to a style ref
+    Ref2 = Ref#ref{name = "style"},
+    Match = ms_util:make_ms(hn_item, [{addr, Ref2}]),
     Match = ms_util:make_ms(hn_item, [{addr, Ref}]),
     CurrentStyle = mnesia:match_object(hn_item, Match, read),
     NewStyleIdx = case CurrentStyle of 
