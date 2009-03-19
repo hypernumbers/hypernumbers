@@ -85,15 +85,15 @@ handle_req('GET', Req, Ref, cell, _Attr, _Post) ->
     Req:ok({"application/json", mochijson:encode(JS)});
 
 handle_req('POST', Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
-    {ok, ok} = hn_db_api:write_attributes(Ref, Attr),
+    ok = hn_db_api:write_attributes(Ref, Attr),
     Req:ok({"application/json", "success"});
 
 handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "all"}]) ->
-    {ok, ok} = hn_db_api:clear(Ref, all),
+    ok = hn_db_api:clear(Ref, all),
     Req:ok({"application/json", "success"});
 
 handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "contents"}]) ->
-    {ok, ok} = hn_db_api:clear(Ref, contents),
+    ok = hn_db_api:clear(Ref, contents),
     Req:ok({"application/json", "success"});
 
 
