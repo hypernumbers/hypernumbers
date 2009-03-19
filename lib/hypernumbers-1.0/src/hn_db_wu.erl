@@ -2048,7 +2048,7 @@ write_rawvalue(RefX, Value) ->
     % now get the format that is to be applied
     % run the format and then stick the value into
     % the database
-    {ok, Format} = read_inherited(RefX, format, "General"),
+    {ok, Format} = read_inherited(RefX, "format", "General"),
     {erlang, {_Type, Output}} = format:get_src(Format),
     {ok, {Color, V}}=format:run_format(Value,Output),
     Ref1 = hn_util:refX_to_ref(RefX, "value"),

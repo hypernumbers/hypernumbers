@@ -62,7 +62,7 @@ notify(Site, Path, Index, Style) ->
 
 send_to_server(Server, Time, Msgs) ->
     Server ! {msg, {struct, [{"time", Time}, 
-                             {"msgs", {array, Msgs}}]}}.
+                             {"msgs", {array, lists:reverse(Msgs)}}]}}.
 
 send_queued(Updates, Waiting) ->
 

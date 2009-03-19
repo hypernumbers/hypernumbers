@@ -92,6 +92,11 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "all"}]) ->
     hn_db_api:clear(Ref, all),
     Req:ok({"application/json", "success"});
 
+handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "contents"}]) ->
+    hn_db_api:clear(Ref, contents),
+    Req:ok({"application/json", "success"});
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Horizonal API = notify_back handlers                                     %%%

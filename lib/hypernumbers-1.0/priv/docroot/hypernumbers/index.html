@@ -43,21 +43,21 @@
         <td id="toolbar">
           <div class="expand fonts">
             <span>Font</span>
-            <div>
-              <a>Normal</a>
-              <a class="serif">Serif</a>
-              <a class="monospace">Monospace</a>
+            <div id="ffamily">
+              <a id="fstyle_sans-serif">Normal</a>
+              <a id="fstyle_serif">Serif</a>
+              <a id="fstyle_monospace">Monospace</a>
             </div>
           </div>
 
           <div class="expand fonts">
             <span>11px</span>
-            <div>
-              <a class="size-8">8px</a>
-              <a class="size-11">11px</a>
-              <a class="size-12">12px</a>
-              <a class="size-16">16px</a>
-              <a class="size-20">20px</a>
+            <div id="sizes">
+              <a id="size_8">8px</a>
+              <a id="size_11">11px</a>
+              <a id="size_12">12px</a>
+              <a id="size_16">16px</a>
+              <a id="size_20">20px</a>
             </div>
           </div>
 
@@ -66,26 +66,27 @@
           <div class="expand fonts">
             <span>Format</span>
             <div id="formats">
-              <a>Plain</a>
+              <a id="fmt_0">Plain</a>
               <hr />
-              <a>100 <span class="desc">(rounded)</span></a>
-              <a>100.00 <span class="desc">(2 decimals)</span></a>
-              <a><span class="red">100</span><span class="desc">(rounded)</span></a>
+              <a id="fmt_1">100 <span class="desc">(rounded)</span></a>
+              <a id="fmt_2">100.00 <span class="desc">(2 decimals)</span></a>
+              <a id="fmt_3">
+                <span class="red">100</span><span class="desc">(rounded)</span></a>
               <hr />
-              <a>(100) <span class="desc">(financial)</span></a>
-              <a>(100.00) <span class="desc">(financial)</span></a>
+              <a id="fmt_4">(100) <span class="desc">(financial)</span></a>
+              <a id="fmt_5">(100.00) <span class="desc">(financial)</span></a>
               <hr />
-              <a>£100 <span class="desc">(currency)</span></a>
-              <a>£100.00 <span class="desc">(currency)</span></a>
-              <a><span class="red">£100</span>
+              <a id="fmt_6">£100 <span class="desc">(currency)</span></a>
+              <a id="fmt_7">£100.00 <span class="desc">(currency)</span></a>
+              <a id="fmt_8"><span class="red">£100</span>
                 <span class="desc">(currency)</span></a>
               <hr />
-              <a>10% <span class="desc">(percentage)</span></a>
-              <a>10.12% <span class="desc">(percentage)</span></a>
+              <a id="fmt_9">10% <span class="desc">(percentage)</span></a>
+              <a id="fmt_10">10.12% <span class="desc">(percentage)</span></a>
               <hr />
-              <a>03/02/2009 <span class="desc">(date)</span></a>
-              <a>14:49:00 <span class="desc">(time)</span></a>
-              <a>03/02/2009 14:49:00 <span class="desc">(datetime)</span></a>
+              <a id="fmt_11">03/02/2009 <span class="desc">(date)</span></a>
+              <a id="fmt_12">14:49:00 <span class="desc">(time)</span></a>
+              <a id="fmt_13">03/02/2009 14:49:00 <span class="desc">(datetime)</span></a>
             </div>
           </div>
 
@@ -93,19 +94,17 @@
           
           <div class="expand">
             <span><a id="left-head" class="icon"></a></span>
-            <div>
-              <a title="Left align" id="left-text" class="toolbar-item"></a>
-              <a title="Center align" id="center" class="toolbar-item"></a>
-              <a title="Right align" id="right-text" class="toolbar-item"></a>
-              <a title="Justify" id="justify" class="toolbar-item"></a>
+            <div id="aligntext">
+              <a title="Left align" id="align_left" class="toolbar-item"></a>
+              <a title="Center align" id="align_center" class="toolbar-item"></a>
+              <a title="Right align" id="align_right" class="toolbar-item"></a>
             </div>
           </div>
           <a class="separator"></a>
           <a title="Bold" id="bold" class="toolbar-item"></a>
           <a title="Italic" id="italic" class="toolbar-item"></a>
-          <a title="Underline" id="underl" class="toolbar-item"></a>
           <a title="Strikethough" id="strike" class="toolbar-item"></a>
-          <a class="separator"></a>
+          <!--<a class="separator"></a>
           <div class="expand">
             <span><a id="border-head" class="icon"></a></span>
             <div>
@@ -118,56 +117,57 @@
               <a id="border-right" class="toolbar-item"></a>
               <a id="border-bottom" class="toolbar-item"></a>
             </div>
-          </div>
+          </div>-->
           <a class="separator"></a>          
           <div class="expand">
             <span><a id="bgcolor-head" class="icon"></a></span>
             <div id="bgcolors">
-              <a id="color-000000" class="color"></a>
-              <a id="color-FFFFFF" class="color"></a>
-              <a id="color-FF0000" class="color"></a>
-              <a id="color-00FF00" class="color"></a>
-              <a id="color-0000FF" class="color"></a><br />
-              <a id="color-FFFF00" class="color"></a>
-              <a id="color-FF00FF" class="color"></a>
-              <a id="color-00FFFF" class="color"></a>
-              <a id="color-800000" class="color"></a>
-              <a id="color-008000" class="color"></a><br />
-              <a id="color-000080" class="color"></a>
-              <a id="color-000000" class="color"></a>
-              <a id="color-808000" class="color"></a>
-              <a id="color-800080" class="color"></a>
-              <a id="color-008080" class="color"></a><br />
-              <a id="color-C0C0C0" class="color"></a>
-              <a id="color-808080" class="color"></a>
-              <a id="color-9999FF" class="color"></a>
-              <a id="color-993366" class="color"></a>
-              <a id="color-FFFFCC" class="color"></a>
+              <a id="color_000000" class="color"></a>
+              <a id="color_FFFFFF" class="color"></a>
+              <a id="color_FF0000" class="color"></a>
+              <a id="color_00FF00" class="color"></a>
+              <a id="color_0000FF" class="color"></a><br />
+              <a id="color_FFFF00" class="color"></a>
+              <a id="color_FF00FF" class="color"></a>
+              <a id="color_00FFFF" class="color"></a>
+              <a id="color_800000" class="color"></a>
+              <a id="color_008000" class="color"></a><br />
+              <a id="color_000080" class="color"></a>
+              <a id="color_000000" class="color"></a>
+              <a id="color_808000" class="color"></a>
+              <a id="color_800080" class="color"></a>
+              <a id="color_008080" class="color"></a><br />
+              <a id="color_C0C0C0" class="color"></a>
+              <a id="color_808080" class="color"></a>
+              <a id="color_9999FF" class="color"></a>
+              <a id="color_993366" class="color"></a>
+              <a id="color_FFFFCC" class="color"></a>
             </div>
           </div>
           <div class="expand">
             <span><a id="fontcolor-head" class="icon"></a></span>
             <div id="fontcolors">
-              <a id="color-000000" class="color"></a>
-              <a id="color-FFFFFF" class="color"></a>
-              <a id="color-FF0000" class="color"></a>
-              <a id="color-00FF00" class="color"></a>
-              <a id="color-0000FF" class="color"></a><br />
-              <a id="color-FFFF00" class="color"></a>
-              <a id="color-FF00FF" class="color"></a>
-              <a id="color-00FFFF" class="color"></a>
-              <a id="color-800000" class="color"></a>
-              <a id="color-008000" class="color"></a><br />
-              <a id="color-000080" class="color"></a>
-              <a id="color-000000" class="color"></a>
-              <a id="color-808000" class="color"></a>
-              <a id="color-800080" class="color"></a>
-              <a id="color-008080" class="color"></a><br />
-              <a id="color-C0C0C0" class="color"></a>
-              <a id="color-808080" class="color"></a>
-              <a id="color-9999FF" class="color"></a>
-              <a id="color-993366" class="color"></a>
-              <a id="color-FFFFCC" class="color"></a>
+
+              <a id="color_000000" class="color"></a>
+              <a id="color_FFFFFF" class="color"></a>
+              <a id="color_FF0000" class="color"></a>
+              <a id="color_00FF00" class="color"></a>
+              <a id="color_0000FF" class="color"></a><br />
+              <a id="color_FFFF00" class="color"></a>
+              <a id="color_FF00FF" class="color"></a>
+              <a id="color_00FFFF" class="color"></a>
+              <a id="color_800000" class="color"></a>
+              <a id="color_008000" class="color"></a><br />
+              <a id="color_000080" class="color"></a>
+              <a id="color_000000" class="color"></a>
+              <a id="color_808000" class="color"></a>
+              <a id="color_800080" class="color"></a>
+              <a id="color_008080" class="color"></a><br />
+              <a id="color_C0C0C0" class="color"></a>
+              <a id="color_808080" class="color"></a>
+              <a id="color_9999FF" class="color"></a>
+              <a id="color_993366" class="color"></a>
+              <a id="color_FFFFCC" class="color"></a>
             </div>
           </div>
         </td>
