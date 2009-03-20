@@ -17,7 +17,7 @@
          %write_cell/5,
          % get_hypernumber/9,
          %copy_pages_below/2,
-         %formula_to_range/2,
+         % formula_to_range/2, <-- needs to be written to used hn_db_api!
          %attributes_to_range/2,
          %get_pages_under/1]).
          % value_to_cell/2

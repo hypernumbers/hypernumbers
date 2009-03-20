@@ -25,7 +25,8 @@
 -export([read_styles_DEBUG/0,
          hn_DEBUG/0]). % Debugging
 
--import(hn_db_api, [write_attributes/2,
+-import(hn_db_api, [
+                    write_attributes/2,
                     write_last/1,
                     % write_permission/2,
                     % write_style/2,
@@ -53,36 +54,75 @@
                     notify_back_create/2,
                     read_incoming_hn/2,
                     write_remote_link/3,
-                    handle_notify/7,
-                    handle_notify_back/4,
+                    notify_from_web/7,
+                    notify_back_from_web/4,
                     handle_dirty_cell/1,
                     handle_dirty_notify_in/1,
                     handle_dirty_notify_out/5,
-                    handle_dirty_notify_back_in/3,
-                    handle_dirty_notify_back_out/4,
-                    register_hypernumber/4,
-                    create_db/0]).
+                    handle_dirty_notify_back_in/4,
+                    handle_dirty_notify_back_out/3,
+                    register_hn_from_web/4,
+                    create_db/0
+                   ]).
 
 %% @hidden
 dirty() ->
 
     Path = ["dirty1"],
 
+    io:format("in hn_db_test:dirty - going into Dirty 1~n"),
     % write a line of cells that link to each other
     dirty1(),
+
+    io:format("in hn_db_test:dirty - going into Dirty 2~n"),
     % now write a line of hypernumbers pointing to the first cells
     dirty2(),
+    
+    io:format("in hn_db_test:dirty - triggering rewrite~n"),
     % now rewrite the first cell triggering all the cells and their
     % hypernumbers to recalculcate
     write_value(Path, "123", {1, 1}, []),
+
+    io:format("in hn_db_test:dirty - testing dependency tree propagation~n"),
     % now write new value in the middle of the first list and check
     % that the hypernumbers dependency trees update properly
-    write_value(Path, "987", {1, 15}, []),
+    write_value(Path, "Starts in Row 15", {1, 15}, []),
     
+    io:format("in hn_db_test:dirty - going into Dirty 3~n"),
     % now clear some hypernumbers children and check that the parent side remote
     % links have been cleared..
-    dirty3().
+    dirty3(),
+    
+    io:format("in hn_db_test:dirty - going into Dirty 4~n"),
+    % now do some row and column inserts on the parent page
+    dirty4().
 
+%    io:format("in hn_db_test:dirty - going into Dirty 5~n"),
+%    % now do some row and column inserts on the child page
+%    dirty5().
+
+%% @hidden
+dirty5() ->
+
+    FunName2 = "insert",
+
+    % first up a cell on the parent page
+    Path2 = ["dirty2"],
+    Site2 = "http://il_ballo.dev:9000",
+
+    insert_delete(FunName2, Path2, {cell, {1, 2}}, vertical).
+
+%% @hidden
+dirty4() ->
+    
+    FunName = "insert",
+   
+    % first up a cell on the parent page
+    Path = ["dirty1"],
+    Site = "http://127.0.0.1:9000",
+
+    insert_delete(FunName, Path, {cell, {1, 2}}, vertical).
+                 
 %% @hidden
 dirty3()->
     FunName = "dirty2",
@@ -107,34 +147,34 @@ dirty2() ->
     write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A1?hypernumber\")", {1, 1}, []),
     write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A2?hypernumber\")", {1, 2}, []),
     write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A3?hypernumber\")", {1, 3}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A4?hypernumber\")", {1, 4}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A5?hypernumber\")", {1, 5}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A6?hypernumber\")", {1, 6}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A7?hypernumber\")", {1, 7}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A8?hypernumber\")", {1, 8}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A9?hypernumber\")", {1, 9}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A10?hypernumber\")", {1, 10}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A11?hypernumber\")", {1, 11}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A12?hypernumber\")", {1, 12}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A13?hypernumber\")", {1, 13}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A14?hypernumber\")", {1, 14}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A15?hypernumber\")", {1, 15}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A16?hypernumber\")", {1, 16}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A17?hypernumber\")", {1, 17}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A18?hypernumber\")", {1, 18}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A19?hypernumber\")", {1, 19}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A20?hypernumber\")", {1, 20}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A21?hypernumber\")", {1, 21}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A22?hypernumber\")", {1, 22}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A23?hypernumber\")", {1, 23}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A24?hypernumber\")", {1, 24}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A25?hypernumber\")", {1, 25}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A26?hypernumber\")", {1, 26}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A27?hypernumber\")", {1, 27}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A28?hypernumber\")", {1, 28}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A29?hypernumber\")", {1, 29}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A30?hypernumber\")", {1, 30}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A31?hypernumber\")", {1, 31}, []).
+    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A4?hypernumber\")", {1, 4}, []).
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A5?hypernumber\")", {1, 5}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A6?hypernumber\")", {1, 6}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A7?hypernumber\")", {1, 7}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A8?hypernumber\")", {1, 8}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A9?hypernumber\")", {1, 9}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A10?hypernumber\")", {1, 10}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A11?hypernumber\")", {1, 11}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A12?hypernumber\")", {1, 12}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A13?hypernumber\")", {1, 13}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A14?hypernumber\")", {1, 14}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A15?hypernumber\")", {1, 15}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A16?hypernumber\")", {1, 16}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A17?hypernumber\")", {1, 17}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A18?hypernumber\")", {1, 18}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A19?hypernumber\")", {1, 19}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A20?hypernumber\")", {1, 20}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A21?hypernumber\")", {1, 21}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A22?hypernumber\")", {1, 22}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A23?hypernumber\")", {1, 23}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A24?hypernumber\")", {1, 24}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A25?hypernumber\")", {1, 25}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A26?hypernumber\")", {1, 26}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A27?hypernumber\")", {1, 27}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A28?hypernumber\")", {1, 28}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A29?hypernumber\")", {1, 29}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A30?hypernumber\")", {1, 30}, []),
+%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A31?hypernumber\")", {1, 31}, []).
 
 %% @hidden
 dirty1() ->
@@ -152,34 +192,33 @@ dirty1() ->
     write_value(Path, "=a1+1", {1, 2}, []),
     write_value(Path, "=a2+1", {1, 3}, []),
     write_value(Path, "=a3+1", {1, 4}, []),
-    write_value(Path, "=a4+1", {1, 5}, []),
-    write_value(Path, "=a5+1", {1, 6}, []),
-    write_value(Path, "=a6+1", {1, 7}, []),
-    write_value(Path, "=a7+1", {1, 8}, []),
-    write_value(Path, "=a8+1", {1, 9}, []),
-    write_value(Path, "=a9+1", {1, 10}, []),
-    write_value(Path, "=a10+1", {1, 11}, []),
-    write_value(Path, "=a11+1", {1, 12}, []),
-    write_value(Path, "=a12+1", {1, 13}, []),
-    write_value(Path, "=a13+1", {1, 14}, []),
-    write_value(Path, "=a14+1", {1, 15}, []),
-    write_value(Path, "=a15+1", {1, 16}, []),
-    write_value(Path, "=a16+1", {1, 17}, []),
-    write_value(Path, "=a17+1", {1, 18}, []),
-    write_value(Path, "=a18+1", {1, 19}, []),
-    write_value(Path, "=a19+1", {1, 20}, []),
-    write_value(Path, "=a20+1", {1, 21}, []),
-    write_value(Path, "=a21+1", {1, 22}, []),
-    write_value(Path, "=a22+1", {1, 23}, []),
-    write_value(Path, "=a23+1", {1, 24}, []),
-    write_value(Path, "=a24+1", {1, 25}, []),
-    write_value(Path, "=a25+1", {1, 26}, []),
-    write_value(Path, "=a26+1", {1, 27}, []),
-    write_value(Path, "=a27+1", {1, 28}, []),
-    write_value(Path, "=a28+1", {1, 29}, []),
-    write_value(Path, "=a29+1", {1, 30}, []),
-    write_value(Path, "=a30+1", {1, 31}, []).
-
+    write_value(Path, "=a4+1", {1, 5}, []).
+%    write_value(Path, "=a5+1", {1, 6}, []),
+%    write_value(Path, "=a6+1", {1, 7}, []),
+%    write_value(Path, "=a7+1", {1, 8}, []),
+%    write_value(Path, "=a8+1", {1, 9}, []),
+%    write_value(Path, "=a9+1", {1, 10}, []),
+%    write_value(Path, "=a10+1", {1, 11}, []),
+%    write_value(Path, "=a11+1", {1, 12}, []),
+%    write_value(Path, "=a12+1", {1, 13}, []),
+%    write_value(Path, "=a13+1", {1, 14}, []),
+%    write_value(Path, "=a14+1", {1, 15}, []),
+%    write_value(Path, "=a15+1", {1, 16}, []),
+%    write_value(Path, "=a16+1", {1, 17}, []),
+%    write_value(Path, "=a17+1", {1, 18}, []),
+%    write_value(Path, "=a18+1", {1, 19}, []),
+%    write_value(Path, "=a19+1", {1, 20}, []),
+%    write_value(Path, "=a20+1", {1, 21}, []),
+%    write_value(Path, "=a21+1", {1, 22}, []),
+%    write_value(Path, "=a22+1", {1, 23}, []),
+%    write_value(Path, "=a23+1", {1, 24}, []),
+%    write_value(Path, "=a24+1", {1, 25}, []),
+%    write_value(Path, "=a25+1", {1, 26}, []),
+%    write_value(Path, "=a26+1", {1, 27}, []),
+%    write_value(Path, "=a27+1", {1, 28}, []),
+%    write_value(Path, "=a28+1", {1, 29}, []),
+%    write_value(Path, "=a29+1", {1, 30}, []),
+%    write_value(Path, "=a30+1", {1, 31}, []).
 
 %% @hidden
 quickie() ->

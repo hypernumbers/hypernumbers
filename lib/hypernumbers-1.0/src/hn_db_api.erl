@@ -338,7 +338,8 @@ notify_back_from_web(P, C, B, Type)
                     _    -> {ok, ok}
                 end
           end,
-    mnesia:activity(transaction, Fun).
+    ok = mnesia:activity(transaction, Fun),
+    {ok, ok}.
 
 %% @spec write_remote_link(Parent::#refX{}, Child::#refX{}, Type) -> {ok, ok}
 %% @doc writes a remote link
@@ -347,7 +348,8 @@ write_remote_link(Parent, Child, Type)
     Fun = fun() ->
                   hn_db_wu:write_remote_link(Parent, Child, Type)
           end,
-    mnesia:activity(transaction, Fun).
+    ok = mnesia:activity(transaction, Fun),
+    {ok, ok}.
 
 %% @spec read_incoming_hn(Parent::#refX{}, Child::#refX{}) -> {ok, ok}
 %% @doc gets the value of an incoming hypernumber
@@ -466,10 +468,10 @@ notify_back_create(Parent, Child)
 %% </ul>
 write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
     Fun = fun() ->
-                  [hn_db_wu:write_attr(RefX, X) || X <- List]
+                  [{ok, ok} = hn_db_wu:write_attr(RefX, X) || X <- List]
           end,
     mnesia:activity(transaction, Fun),
-    ok.
+    {ok, ok}.
 
 %% @spec write_last(List) -> {ok, ok}
 %% List = [{#refX{}, Val}]
@@ -514,8 +516,8 @@ write_last(List) when is_list(List) ->
                                   {column, _} -> X = LastCol + 1,
                                                  {column, {X, X}}
                               end,
-                % now convert the column or row references to cell references
 
+                % now convert the column or row references to cell references
                 Fun1 =
                     fun({#refX{site = S1, path = P1, obj = {Type1, Idx}}, Val})  ->
                             % FORCE ME to match (see above)
@@ -530,6 +532,7 @@ write_last(List) when is_list(List) ->
                             hn_db_wu:write_attr(RefX2, {"formula", Val})
                     end,
                 [Fun1(X) || X <- List]
+                
         end,
     ok = mnesia:activity(transaction, Fun),
     {ok, ok}.
@@ -641,8 +644,9 @@ reformat(RefX) when is_record(RefX, refX) ->
 %% @todo This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
 insert(#refX{obj = {column, _}} = RefX)  ->
+    io:format("In hn_db_api:insert (1)~n"),
     Fun = fun() ->
-                  {ok, ok} = write_page_vsn(RefX, {insert, column}),
+                  _NewVsn = get_new_page_vsn(RefX, {insert, column}),
                   RefXs = hn_db_wu:get_refs_right(RefX),
                   % shift doesn't commute so it is up to us to sort
                   % the cells
@@ -651,8 +655,9 @@ insert(#refX{obj = {column, _}} = RefX)  ->
           end,
     mnesia:activity(transaction, Fun);
 insert(#refX{obj = {row, _}} = RefX)  ->
+    io:format("In hn_db_api:insert (2)~n"),
     Fun = fun() ->
-                  {ok, ok} = write_page_vsn(RefX, {insert, row}),
+                  _NewVsn = get_new_page_vsn(RefX, {insert, row}),
                   RefXs = hn_db_wu:get_refs_below(RefX),
                   % shift doesn't commute so it is up to us to sort
                   % the cells
@@ -661,6 +666,7 @@ insert(#refX{obj = {row, _}} = RefX)  ->
           end,
     mnesia:activity(transaction, Fun);
 insert(#refX{obj = R} = RefX) when R == cell orelse R == range  ->
+    io:format("In hn_db_api:insert (3)~n"),
     insert(RefX, vertical).
 
 %% @spec insert(RefX :: #refX{}, Type) -> ok 
@@ -674,14 +680,24 @@ insert(#refX{obj = R} = RefX) when R == cell orelse R == range  ->
 %% </ul>
 insert(#refX{obj = {R, _}} = RefX, Disp) when R == cell orelse R == range ->
     Fun = fun() ->
-                  {ok, ok} = write_page_vsn(RefX, {insert, Disp}),
+                  _NewVsn = get_new_page_vsn(RefX, {insert, Disp}),
                   RefXs = hn_db_wu:get_refs_below(RefX),
                   Sort = case Disp of
                              vertical   -> 'bottom-to-top';
                              horizontal -> 'right-to-left'
                          end,
+                  % we sort the cells so that we don't over right cells...
+                  % so if I am shifting A1 down, I need to move A2 first
+                  % but if I am shifting A7 up I need to move A7 before A8...
                   RefXs2 = dbsort(RefXs, Sort),
-                  [hn_db_wu:shift_cell(F, offset(F, {0,1})) || F <- RefXs2]
+                  [hn_db_wu:shift_cell(F, offset(F, {0,1})) || F <- RefXs2],
+                  % now notify all parents and children of all cells on
+                  % this page
+                  PageRef = RefX#refX{obj = {page, "/"}},
+                  Children = hn_db_wu:read_outgoing_hns(PageRef),
+                  Parents =  hn_db_wu:read_incoming_hn(PageRef),
+                  io:format("in hn_db_api:insert~n-Parents are ~p~n-"++
+                            "Children are ~p~n", [Parents, Children])
           end,
     mnesia:activity(transaction, Fun).
 
@@ -693,12 +709,13 @@ insert(#refX{obj = {R, _}} = RefX, Disp) when R == cell orelse R == range ->
 %% This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
 delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
+    exit("hn_db_api:delete - a load of bollocks, look at 'insert' first...."),
     Disp = case R of
                row    -> vertical;
                column -> horizontal
            end,
     Fun = fun() ->
-                  {ok, ok} = write_page_vsn(RefX, {delete, Disp}),
+                  _NewVsn = get_new_page_vsn(RefX, {delete, Disp}),
                   hn_db_wu:shift_cell(RefX, Disp, delete)
           end,
     mnesia:activity(transaction, Fun);
@@ -727,14 +744,14 @@ delete(#refX{obj = {page, _}} = RefX) ->
 delete(#refX{obj = {R, _}} = RefX, horizontal) when R == cell orelse R == range ->
     Fun =
         fun() ->
-                {ok, ok} = write_page_vsn(RefX, {delete, horizontal}),
+                _NewVsn = get_new_page_vsn(RefX, {delete, horizontal}),
                 hn_db_wu:shift_cell(RefX, horizontal, delete)
         end,
     mnesia:activity(transaction, Fun);
 delete(#refX{obj = {R, _}} = RefX, vertical) when R == cell orelse R == range ->
     Fun =
         fun() ->
-                {ok, ok} = write_page_vsn(RefX, {delete, vertical}),
+                _NewVsn = get_new_page_vsn(RefX, {delete, vertical}),
                 hn_db_wu:shift_cell(RefX, vertical, delete)
         end,
     mnesia:activity(transaction, Fun).
@@ -934,13 +951,16 @@ extract_kvs(List) -> extract_kvs1(List, []).
 extract_kvs1([], Acc)             -> Acc;
 extract_kvs1([{_R, KV} | T], Acc) -> extract_kvs1(T, [KV | Acc]).
 
-write_page_vsn(RefX, Action) ->
+% create a new version number for a page
+% write it to the database and then
+% returns it...
+get_new_page_vsn(RefX, Action) ->
     PageRefX = #refX{obj = {page, "/"}},
     NewVsn = ?counter(page_vsn_counters, PageRefX, 1),
     Record = #page_vsn{page_refX = PageRefX, action = Action,
                        action_refX = RefX, version = NewVsn},
     ok = mnesia:write(Record),
-   {ok, ok}.
+   NewVsn.
 
 offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
     RefX#refX{obj = {cell, {X + XO, Y + YO}}}.
