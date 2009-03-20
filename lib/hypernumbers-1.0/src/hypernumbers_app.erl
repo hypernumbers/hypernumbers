@@ -20,7 +20,6 @@
     %%      <li>disc_only_copies</li>
     %%      </ul>
 start(_Type, _Args) ->
-    
     case mnesia:table_info(schema, storage_type) of
         ram_copies -> 
             mnesia:change_table_copy_type(schema, node(), disc_copies);
@@ -30,7 +29,7 @@ start(_Type, _Args) ->
         
     case hypernumbers_sup:start_link() of
         {ok, Pid} -> 
-    
+
             {ok,[[Path]]} = init:get_argument(hn_config),	
             {ok,Config} = file:consult(Path), 
             gen_server:call(hn_config,{set_conf,Config}),
@@ -45,6 +44,7 @@ start(_Type, _Args) ->
             {ok, Pid};
 
         Error -> 
+            io:format("Got to 3b Error is ~p~n", [Error]),
             Error
     end.
 
@@ -91,7 +91,7 @@ clean_start() ->
 %% @doc  Start yaws in embedded mode
 start_yaws() ->
     
-    mochiweb_http:start([{port, 9000}, {loop, {hn_mochi, req}}]),
+    %mochiweb_http:start([{port, 9000}, {loop, {hn_mochi, req}}]),
 
 %    {ok,[[Log]]}  = init:get_argument(hn_log),
 %    Hosts   = gen_server:call(hn_config,{get,hosts}),
