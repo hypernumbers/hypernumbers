@@ -17,10 +17,10 @@ warnings1(FuncVar, H, Tbl) ->
 
     % if FuncVar is 255 then this is not an Excel function but is a function
     % whose name is the head of the arguments list...
-    FuncName = if
-                   (FuncVar == 255) -> excel_rev_comp:macro_to_string_WARNING(FuncVar);
-                   true             -> {string, Name} = H,
-                                       Name               
+    Nm = if
+             (FuncVar == 255) -> {string, Name} = H,
+                                 Name;
+             true             -> excel_rev_comp:macro_to_string_WARNING(FuncVar)
               end,
     
     F1 = ["DAY",
@@ -96,16 +96,17 @@ warnings1(FuncVar, H, Tbl) ->
           "TRUNC",
           "UPPER"],
     
-    case lists:member(FuncName, F1) of
-        true ->  excel_util:append(Tbl, warnings, "Function "++FuncName++
-                                   " is supported but dates and times are stored "++
-                                   "differently in Hypernumbers than in other "++
-                                   "spreadsheets, so take care!");
-        false -> case lists:member(FuncName, F2) of
+    case lists:member(Nm, F1) of
+        true ->  Str = "Function "++Nm++" is supported but dates and times "++
+                     "are stored differently in Hypernumbers than in other "++
+                     "spreadsheets, so take care!",
+                     excel_util:append(Tbl, warnings, Str);
+        false -> case lists:member(Nm, F2) of
                      true  -> ok;
-                     false -> excel_util:append(Tbl, warnings, "Function "++FuncName++
-                                                " is used in your spreadsheet but "++
-                                                "not supported in Hypernumbers "++
-                                                "at the moment!")
+                     false -> Str = "Function "++Nm++
+                                  " is used in your spreadsheet but "++
+                                  "not supported in Hypernumbers "++
+                                  "at the moment!",
+                                  excel_util:append(Tbl, warnings, Str)
                  end
     end.

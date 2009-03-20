@@ -115,19 +115,59 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
         ?EOF ->
             % io:format("workstream ~p read!~n",[Name]),
             ok;
-        ?SST ->
-            {ok,BinList,Rest2}=get_single_SST(Bin),
-            {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,BinList,
-                                                           Name,CurrentFormula,
-                                                           Tables),
-            parse_bin(Rest2,SubStreamName,NewCurrentFormula,Tables);
         _Other ->
-            <<Record:RecordSize/binary,Rest3/binary>>=Rest,
-            % io:format("in excel:parse_bin Identifier is ~p~n", [Identifier]),
-            {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,Record,
+            <<Record:RecordSize/binary,Rest2/binary>>=Rest,
+            % now get the next identifier
+            % because if the next identifier is a ?CONTINUE then we want to wire
+            % the records up together
+            <<NextIdentifier:16/little-unsigned-integer,_Rest3/binary>>=Rest2,
+            case {Identifier, NextIdentifier} of
+                % SST CONTINUES have some funny stuff going on with the compression
+                % of Unicode.
+                % See Section 5.21 of excelfileformatV1-42.pdf
+                {?SST, ?CONTINUE} -> 
+                    {ok,BinList,Rest4}=get_single_SST(Bin),
+                    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,BinList,
                                                            Name,CurrentFormula,
                                                            Tables),
-            parse_bin(Rest3,SubStreamName,NewCurrentFormula,Tables)
+                    parse_bin(Rest4,SubStreamName,NewCurrentFormula,Tables);
+                {?SST, _} ->
+                    io:format("In no SST continuation...~n"),
+                    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,[Record],
+                                                           Name,CurrentFormula,
+                                                           Tables),
+                    parse_bin(Rest2,SubStreamName,NewCurrentFormula,Tables);
+                {_, ?CONTINUE} ->
+                    {ok, NewBin,Rest4}=get_single_record(Identifier, Bin),
+                    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,NewBin,
+                                                           Name,CurrentFormula,
+                                                           Tables),
+                    parse_bin(Rest4,SubStreamName,NewCurrentFormula,Tables);
+                _ ->
+                    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,Record,
+                                                                   Name,CurrentFormula,
+                                                                   Tables),
+                    parse_bin(Rest2,SubStreamName,NewCurrentFormula,Tables)
+            end
+    end.
+
+get_single_record(Identifier,Bin)->
+    get_single_record(Identifier,Bin,[]).
+
+get_single_record(Identifier,Bin,Residuum)->
+    io:format("In get_single_record Identifier is ~p~n", [Identifier]),
+    <<Identifier2:16/little-unsigned-integer,Rest/binary>>=Bin,
+    io:format("In get_single_record Identifier2 is ~p~n", [Identifier2]),
+    case Identifier2 of
+        ?CONTINUE -> <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
+                     <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
+                     get_single_record(Identifier,Rest3,[Record|Residuum]);
+        Identifier -> <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
+                      <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
+                      io:format("in get_single_record RecordSize is ~p~n-Record is ~p~n",
+                                [RecordSize, Record]),
+                      get_single_record(Identifier, Rest3, [Record|Residuum]);
+        _          -> {ok,list_to_binary(lists:reverse(Residuum)), Bin}
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -147,12 +187,13 @@ get_single_SST(Bin,Residuum)->
         ?CONTINUE -> <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
                      <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
                      get_single_SST(Rest3,[Record|Residuum]);
-        % the EXTSST record is simply an index for fast lookup
-        % on the SST record so we just chuck it...
-        ?EXTSST   -> <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
-                     <<_Record:RecordSize/binary,Rest3/binary>>=Rest2,
-                     {ok,lists:reverse(Residuum),Rest3}
+        _         -> {ok,lists:reverse(Residuum),Rest}
     end.
+%        % the EXTSST record is simply an index for fast lookup
+%        % on the SST record so we just chuck it...
+%        ?EXTSST   -> <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
+%                     <<_Record:RecordSize/binary,Rest3/binary>>=Rest2,
+%                     {ok,lists:reverse(Residuum),Rest3}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                     %%%
