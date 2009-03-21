@@ -91,7 +91,7 @@ clean_start() ->
 %% @doc  Start yaws in embedded mode
 start_yaws() ->
     
-    %mochiweb_http:start([{port, 9000}, {loop, {hn_mochi, req}}]),
+    mochiweb_http:start([{port, 9000}, {loop, {hn_mochi, req}}]),
 
 %    {ok,[[Log]]}  = init:get_argument(hn_log),
 %    Hosts   = gen_server:call(hn_config,{get,hosts}),
