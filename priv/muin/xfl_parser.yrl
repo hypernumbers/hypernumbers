@@ -1,7 +1,6 @@
 %%% @doc Parser for the formula language.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
-%%% TODO: only same-page row & col ranges are supported right now.
 %%% TODO: use list_to_existing_atom (& catch errors).
 %%% TODO: handle invalid arrays propely.
 
@@ -13,21 +12,18 @@ ArrayLiteral ArrayRow ArrayRows Array
 
 Terminals
 
-atom name
+cellref rangeref namedexpr 
+name
 '=' '<>' '>' '<' '>=' '<='
 '+' '-' '*' '/' '^'
-'&' '%' ':' '^^'
+'&' '%' '^^'
 int float bool str
-ref
 errval
 '(' ')' ',' '{' '}' ';'
-ssatomref ssnumref
 .
 
 Rootsymbol Formula.
 Endsymbol  '$end'.
-
-%%% associativity & precedence rules.
 
 Unary    50  Uplus.
 Left     100 '=' '<>' '>' '<' '>=' '<='.
@@ -37,14 +33,9 @@ Left     400 '*' '/'.
 Left     500 '^'.
 Left     600 '%'.
 Unary    700 Uminus.
-Nonassoc 800 ':'.
 Left     900 '^^'.
 
-%%% production rules
-
-Formula -> E : postproc('$1').
-
-%%% operators
+Formula -> E : '$1'.
 
 E -> E '='  E : op('$1', '$2', '$3').
 E -> E '<>' E : op('$1', '$2', '$3').
@@ -52,18 +43,12 @@ E -> E '>'  E : op('$1', '$2', '$3').
 E -> E '<'  E : op('$1', '$2', '$3').
 E -> E '>=' E : op('$1', '$2', '$3').
 E -> E '<=' E : op('$1', '$2', '$3').
-
-E -> E '&' E : op('$1', {concatenate}, '$3').
-    
+E -> E '&' E : op('$1', {concatenate}, '$3').    
 E -> E '+' E : op('$1', '$2',  '$3').
 E -> E '-' E : op('$1', '$2',  '$3').
 E -> E '*' E : op('$1', '$2',  '$3').
 E -> E '/' E : op('$1', '$2', '$3').
 E -> E '^' E : op('$1', {power}, '$3').
-E -> ref ref : special_div('$1', '$2').
-E -> E ref   : special_div('$1', '$2').
-E -> E ssnumref : special_div('$1', '$2').
-
 E -> E '%' : ['/', '$1', [int, 100]].
 
 E      -> Uminus : '$1'.
@@ -72,28 +57,6 @@ E      -> Uplus  : '$1'.
 Uplus  -> '+' E  : '$2'.
 
 E -> E '^^' E : ['^^', '$1', '$3'].
-
-%%% ranges
-
-%%% cell ranges: A1 & RC, in combos too.
-E -> ref  ':' ref    : [':', '$1', '$3'].
-
-%%% row & col ranges.
-
-%% same page
-
-E -> atom ':' atom   : [':', '$1', '$3'].
-E -> int  ':' int    : [':', '$1', '$3'].
-
-%% other pages
-
-E -> ssatomref ':' atom : [':', '$1', '$3'].
-E -> ssnumref  ':' int  : [':', '$1', '$3'].
-
-%% INDIRECT ranges.
-
-E -> Funcall ':' ref : [':', '$1', '$3'].
-E -> ref ':' Funcall : [':', '$1', '$3'].
 
 %%% parenthesized expressions.
 
@@ -105,22 +68,24 @@ E -> Funcall : '$1'.
 
 %%% constants / literals
 
-E -> int    : lit('$1').
-E -> float  : lit('$1').
-E -> bool   : lit('$1').
-E -> str    : lit('$1').
-E -> ref    : lit('$1').
-E -> name   : lit('$1').
-E -> errval : lit('$1').
-E -> Array  : '$1'.
+E -> int       : lit('$1').
+E -> float     : lit('$1').
+E -> bool      : lit('$1').
+E -> str       : lit('$1').
+E -> errval    : lit('$1').
+E -> Array     : '$1'.
+E -> cellref   : lit('$1').
+E -> name      : lit('$1').
+E -> namedexpr : lit('$1').
+E -> rangeref  : lit('$1').
 
 %%% funcall productions
 
-Funcall -> atom '(' ')'      : [func_name('$1')].
-Funcall -> atom '(' Args ')' : func('$1', '$3').
+Funcall -> name '(' ')'      : [func_name('$1')].
+Funcall -> name '(' Args ')' : func('$1', '$3').
 %% Special case for functions with names like ATAN2
-Funcall -> ref '(' ')'       : [func_name('$1')].
-Funcall -> ref '(' Args ')'  : func('$1', '$3').
+Funcall -> cellref '(' ')'       : [func_name('$1')].
+Funcall -> cellref '(' Args ')'  : func('$1', '$3').
     
 Args -> E                    : ['$1'].
 Args -> E ',' Args           : ['$1'] ++ '$3'.
@@ -143,47 +108,31 @@ ArrayLiteral -> '+' float : lit('$2').
 ArrayLiteral -> bool      : lit('$1').
 ArrayLiteral -> str       : lit('$1').    
 
-
 Erlang code.
 
 -include("handy_macros.hrl").
-%%-export([test/0]).
+-include("muin_records.hrl").
 
-%% Make a function name for the AST from lexer tokens.
-func_name({atom, NameAsStr})      -> list_to_atom(NameAsStr);
-func_name({ref, _, _, _, Refstr}) -> list_to_atom(string:to_lower(Refstr)). % For ATAN2 etc.
+%% Make a function name for the AST from lexer tokens:
+func_name({name, Name}) ->
+    list_to_atom(Name);
+func_name(#cellref{text = Text}) ->
+    list_to_atom(string:to_lower(Text)). % ATAN2 &c.
 
 %%% stuff from lexer -> stuff for AST.
 
 %% literals
-lit({name, Data, Path}) -> [name, Data, Path];
-lit({ref, R, C, P, _})  -> [ref, R, C, P];
-lit({errval, Errval})   -> {errval, Errval};
-lit({_Type, Data})      -> Data.
-lit({_Type, Data}, Fun) -> Fun(Data).
+lit(Name) when is_record(Name, namedexpr)        -> Name;
+lit(Cellref) when is_record(Cellref, cellref)    -> Cellref;
+lit(Rangeref) when is_record(Rangeref, rangeref) -> Rangeref;
+lit({name, Name})                                -> #namedexpr{path = "./", text = Name};
+lit({errval, Errval})                            -> {errval, Errval};
+lit({_Type, Data})                               -> Data.
+lit({_Type, Data}, Fun)                          -> Fun(Data).
 
 %% operator function calls
 op(Arg1, {Op}, Arg2) -> [Op, Arg1, Arg2]; % used by production rule actions.
 op(Arg1, Op, Arg2)   -> [Op, Arg1, Arg2]. % used by helpers.
-    
-%%% special cases for division / path separator ambiguity:
-%% (what a crap sandwich)
-
-special_div(Ref1 = {ref, _, _, _, _}, Ref2 = {ref, _, _, "/", _}) ->
-    Ref22 = setelement(4, Ref2, "."), % the cell is on current page, NOT root.
-    op(hslists:init(tuple_to_list(Ref1)), '/', hslists:init(tuple_to_list(Ref22)));
-special_div(E, Ref = {ref, _, _, "/", _}) ->
-    Ref2 = setelement(4, Ref, "."), 
-    op(E, '/', hslists:init(tuple_to_list(Ref2)));
-special_div(E, _Ref = {ssnumref, Str}) ->
-    %% Str is something like "/2/3/4"
-    %% it is guaranteed to be cleanly separated by "/"s (no whitespace) because
-    %% otherwise ssnumref would not match in the lexer.
-    Toks = string:tokens(Str, "/"),
-    %% convert ssnumref to a division node for the AST.
-    _DivNode = foldl(fun(N, Acc) -> op(Acc, '/', tconv:to_num(N)) end,
-                     E,
-                     Toks). % will always have at least two elements in Toks.
 
 %% token + list of args -> function call for AST.
 func(Tuple, Args) -> [func_name(Tuple)] ++ Args.
@@ -194,16 +143,12 @@ to_native_list(Ary) ->
     Rectp = all(fun({row, Vals}) -> length(Vals) == RowLen end, Ary),
     ?IF(not(Rectp), throw(invalid_array)),
 
-    %% Tail cos there'll be an extra [] in the list after the fold.
     {array, tl(foldl(fun(Row, Acc) ->
                              {row, Elts} = Row,
                              Acc ++ [Elts]
                      end,
-                     [[]], %% <== See, here it is.
+                     [[]],
                      Ary))}.
-
-postproc(Ast) ->
-    Ast.
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
