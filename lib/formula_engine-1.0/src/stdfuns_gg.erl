@@ -325,7 +325,7 @@ text([Value,Format]) ->
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--include_lib("eunit/include/eunit.hrl").
+-include_lib("eunit.hrl").
 
 datedif_test_() ->
     [

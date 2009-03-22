@@ -274,7 +274,7 @@ timevalue([V1]) ->
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--include_lib("eunit/include/eunit.hrl").
+-include_lib("eunit.hrl").
 
 datedif_test_() ->
     [
