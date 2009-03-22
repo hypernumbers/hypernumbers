@@ -1,63 +1,140 @@
 %%% @doc    Lexer for XFL.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
-%%% NB: input must be in upper case (everything apart from string literals).
+%%% TODO: Double "" as a way to include a quote character in a string.
+%%%       This works in Ruby: rx = /\"((\"\")|(.)|(\n))*\"/
+%%% TODO: Good unit test coverage.
 
 Definitions.
 
-%%% Basic types.
+%%% Constants: integers, floats (in decmial and scientific notations),
+%%% booleans, strings, error constants.
+
 INT = ([0-9]+)
 FLOATDEC = ([0-9]+\.[0-9]+)
 FLOATSCI = ([0-9]+\.[0-9]+((E|e))(\+|\-)?[0-9]+)
-BOOL = TRUE|FALSE
+
+TRUE = ((T|t)(R|r)(U|u)(E|e))
+FALSE = ((F|f)(A|a)(L|l)(S|s)(E|e))
+BOOL = ({TRUE}|{FALSE})
+
 STR = (\"[^"]*\")
-%%" % Syntax highlighting fix.
+%%" % erlang-mode fix
 
-%% Column names, function names.
-ATOM = ([a-zA-Z][a-zA-Z0-9_\.]*)
-%% Named cells / ranges.
-NAME = \@{ATOM}
+ERRVAL = \#NULL\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A
 
-ERROR = \#NULL\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A
+%%% References: cell references (A1 & RC), range references (finite, column, row;
+%%% both styles), name references.
 
-%%% A1-style references.
-A1REF = ((\$)?([a-zA-Z]+)(\$)?([0-9]+))
-%%% RC-style references.
-%% Relative offset: int in brackets with optional + or - in front.
-OFFSET_RC = (\[(\+|\-)?({INT})\])
-RCREF = ((R|r)({INT}|{OFFSET_RC})(C|c)({INT}|{OFFSET_RC}))
+%%% 1. Cell references.
 
-%% Same-site references.
-%% "/" or "./" or "../" or the same but with "!"s instead.
+%%% References may start with / or ./ or ../
+%%% Bangs are also supported in place of slashes.
+%%% Path components are allowed to contain any combination of English
+%%% letters, digits, underscores and tildes.
+
 START_OF_SSREF = ((\/|\!)|(\.\.(\/|\!))+|\.(\/|\!))
-%% ATOMs or "."s or ".." separated with "/"s or "!"s.
-MAYBE_PATH = (((({ATOM})|({INT})|({A1REF})|({INT}{ATOM})|(\.)|(\.\.))(\/|\!))*)
+PATH_COMP = ([a-zA-Z0-9_\-~]+)
+MAYBE_PATH = (((({PATH_COMP})|(\.)|(\.\.))(\/|\!))*)
 
-SSA1REF  = {START_OF_SSREF}{MAYBE_PATH}{A1REF}
-SSRCREF  = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
-SSNAMEREF = {START_OF_SSREF}{MAYBE_PATH}{NAME}
+URL_PREFIX = {START_OF_SSREF}{MAYBE_PATH}
+MAYBE_URL_PREFIX = (({URL_PREFIX})?)
 
-%% things like /a/b/c/Z and /a/b/c/24
-SSATOMREF = ({START_OF_SSREF}{MAYBE_PATH}{ATOM})
-SSNUMREF  = ({START_OF_SSREF}{MAYBE_PATH}{INT})
+WORD = ([a-zA-Z]+)
 
-%% Whitespace.
+%%% For RC-style refs, the offset is an integer in brackets with an optional
+%%% leading + or -.
+
+OFFSET_RC = (\[(\+|\-)?({INT})\])
+MAYBE_OFFSET_RC = ({OFFSET_RC}?)
+
+A1_REF_REL  = ({MAYBE_URL_PREFIX})({WORD})({INT})
+A1_REF_FIX  = ({MAYBE_URL_PREFIX})(\$)({WORD})(\$)({INT})
+A1_REF_MIX1 = ({MAYBE_URL_PREFIX})(\$)({WORD})({INT})
+A1_REF_MIX2 = ({MAYBE_URL_PREFIX})({WORD})(\$)({INT})
+
+RC_REF_REL  = ({MAYBE_URL_PREFIX})(({MAYBE_OFFSET_RC})(R|r)({MAYBE_OFFSET_RC})(C|c))
+RC_REF_FIX  = ({MAYBE_URL_PREFIX})(({INT})(R|r)({INT})(C|c))
+RC_REF_MIX1 = ({MAYBE_URL_PREFIX})(({MAYBE_OFFSET_RC})(R|r)({INT})(C|c))
+RC_REF_MIX2 = ({MAYBE_URL_PREFIX})(({INT})(R|r)({MAYBE_OFFSET_RC})(C|c))
+
+%%% Helper classes:
+
+A1_REF = ({A1_REF_REL}|{A1_REF_FIX}|{A1_REF_MIX1}|{A1_REF_MIX2})
+RC_REF = ({RC_REF_REL}|{RC_REF_FIX}|{RC_REF_MIX1}|{RC_REF_MIX2})
+
+%%% 2. Finite ranges.
+
+FINITE_RANGE_A1 = ({MAYBE_URL_PREFIX})({A1_REF})(\:)({A1_REF})
+FINITE_RANGE_RC = ({MAYBE_URL_PREFIX})({RC_REF})(\:)({RC_REF})
+
+%%% 3. Row & column ranges.
+
+%%% A1:
+
+A1_COL_REF_REL  = (({MAYBE_URL_PREFIX})({WORD})(\:)({WORD}))
+A1_COL_REF_FIX  = (({MAYBE_URL_PREFIX})(\$)({WORD})(\:)(\$)({WORD}))
+A1_COL_REF_MIX1 = (({MAYBE_URL_PREFIX})(\$)({WORD})(\:)({WORD}))
+A1_COL_REF_MIX2 = (({MAYBE_URL_PREFIX})({WORD})(\:)(\$)({WORD}))
+
+A1_ROW_REF_REL  = (({MAYBE_URL_PREFIX})({INT})(\:)({INT}))
+A1_ROW_REF_FIX  = (({MAYBE_URL_PREFIX})(\$)({INT})(\:)(\$)({INT}))
+A1_ROW_REF_MIX1 = (({MAYBE_URL_PREFIX})(\$)({INT})(\:)({INT}))
+A1_ROW_REF_MIX2 = (({MAYBE_URL_PREFIX})({INT})(\:)(\$)({INT}))
+
+%% RC:
+
+RC_COL_REF_REL  = (({MAYBE_URL_PREFIX})({MAYBE_OFFSET_RC})(C|c)(\:)({MAYBE_OFFSET_RC})(C|c))
+RC_COL_REF_FIX  = (({MAYBE_URL_PREFIX})({INT})(C|c)(\:)({INT})(C|c))
+RC_COL_REF_MIX1 = (({MAYBE_URL_PREFIX})({INT})(C|c)(\:)({MAYBE_OFFSET_RC})(C|c))
+RC_COL_REF_MIX2 = (({MAYBE_URL_PREFIX})({MAYBE_OFFSET_RC})(C|c)(\:)({INT})(C|c))
+
+RC_ROW_REF_REL  = (({MAYBE_URL_PREFIX})({MAYBE_OFFSET_RC})(R|r)(\:)({MAYBE_OFFSET_RC})(R|r))
+RC_ROW_REF_FIX  = (({MAYBE_URL_PREFIX})({INT})(R|r)(\:)({INT})(R|r))
+RC_ROW_REF_MIX1 = (({MAYBE_URL_PREFIX})({INT})(R|r)(\:)({MAYBE_OFFSET_RC})(R|r))
+RC_ROW_REF_MIX2 = (({MAYBE_URL_PREFIX})({MAYBE_OFFSET_RC})(R|r)(\:)({INT})(R|r))
+
+%% Helper classes:
+
+A1_COL_RANGE = ({A1_COL_REF_REL}|{A1_COL_REF_FIX}|{A1_COL_REF_MIX1}|{A1_COL_REF_MIX2})
+A1_ROW_RANGE = ({A1_ROW_REF_REL}|{A1_ROW_REF_FIX}|{A1_ROW_REF_MIX1}|{A1_ROW_REF_MIX2})
+
+RC_COL_RANGE = ({RC_COL_REF_REL}|{RC_COL_REF_FIX}|{RC_COL_REF_MIX1}|{RC_COL_REF_MIX2})
+RC_ROW_RANGE = ({RC_ROW_REF_REL}|{RC_ROW_REF_FIX}|{RC_ROW_REF_MIX1}|{RC_ROW_REF_MIX2})
+
+%%% Named expression:
+
+%%% Named expression or function name:
+NAME = ([a-zA-Z][a-zA-Z0-9_\.]*)
+NAME_REF = ({MAYBE_URL_PREFIX}{NAME})
+
+%%% Whitespace:
+
 WHITESPACE = ([\000-\s]*)
 
 
 Rules.
 
-%% These are converted to universal refs, see lex/1.
-{A1REF}     : {token, {a1ref,     YYtext}}.
-{SSA1REF}   : {token, {ssa1ref,   debang(YYtext)}}.
-{RCREF}     : {token, {rcref,     YYtext}}.
-{SSRCREF}   : {token, {ssrcref,   debang(YYtext)}}.
-{SSNAMEREF} : {token, {ssnameref, debang(YYtext)}}.
+%%% 1. Cell references:
 
-%% these are NOT converted to universal refs
-%% (they're not cellrefs and they need work in the parser)
-{SSATOMREF} : {token, {ssatomref, debang(YYtext)}}.
-{SSNUMREF}  : {token, {ssnumref,  debang(YYtext)}}.
+{A1_REF} : {token, to_cellref(YYtext, a1)}.
+{RC_REF} : {token, to_cellref(YYtext, rc)}.
+
+%%% 2. Finite ranges:
+
+{FINITE_RANGE_A1} : {token, finite_range(YYtext, a1)}.
+{FINITE_RANGE_RC} : {token, finite_range(YYtext, rc)}.
+
+%%% 3. Row & column ranges:
+
+{A1_COL_RANGE} : {token, a1_col_range(YYtext)}.
+{A1_ROW_RANGE} : {token, a1_row_range(YYtext)}.
+{RC_COL_RANGE} : {token, rc_col_range(YYtext)}.
+{RC_ROW_RANGE} : {token, rc_row_range(YYtext)}.
+
+%%% 4. Named expressions:
+
+{NAME_REF}     : {token, name(YYtext)}.
 
 %% Basic data types.
 {INT}      : {token, {int, tconv:to_i(YYtext)}}.
@@ -66,14 +143,13 @@ Rules.
 {BOOL}     : {token, {bool, YYtext == "TRUE"}}.
 {STR}      : {token, {str, hslists:mid(YYtext)}}.
 
-{ERROR} : {token, {errval, list_to_atom(YYtext)}}.
-{ATOM}  : {token, {atom, rmdots(string:to_lower(YYtext))}}.
-{NAME}  : {token, {name, rmdots(tl(string:to_lower(YYtext)))}}.
+{ERRVAL} : {token, {errval, list_to_atom(YYtext)}}.
 
-%% Discard whitespace.
+%% Discard whitespace:
 {WHITESPACE} : .
 
-%% Punctuation.
+%% Punctuation & operators:
+
 =  : {token, {'='}}.
 ,  : {token, {','}}.
 \( : {token, {'('}}.
@@ -110,12 +186,16 @@ Rules.
 
 Erlang code.
 
+%%% TODO: Normalize range references so that it's always left to right.
+
 -export([lex/2, debang/1]).
 -include("handy_macros.hrl").
+-include("muin_records.hrl").
 
 %% These are read-only.
 -define(mx, get(mx)).
 -define(my, get(my)).
+-define(pivot, {?mx, ?my}).
 
 %%% @type coord() = {Row :: pos_integer(), Column :: pos_integer()}
 %%% @type tokens() = [{atom(), any()}]
@@ -126,10 +206,8 @@ lex(Input, {Mx, My}) ->
     put(mx, Mx),
     put(my, My),
     case string(Input) of
-        {ok, Toks, _} ->
-            {ok, map(fun normalize/1, Toks)};
-        _ ->
-            lexer_error
+        {ok, Toks, _} -> {ok, Toks};
+        _             -> lexer_error
     end.
 
 %% @spec debang(string()) -> string()
@@ -140,88 +218,133 @@ debang(Ssref) ->
 
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%% @doc Lexing functions to be used in tests ONLY.
-tlex(Input) ->
-    ?ifmatch(string(Input),
-             {ok, [{_Type, Val}], _},
-             Val,
-             foadplzkthx).
-tlex(Input, Currcell) when is_list(Currcell) ->
-    lex(Input, getxy(Currcell)).
+name(YYtext) when hd(YYtext) == $.; hd(YYtext) == $/ ->
+    {Path, Name} = split_ssref(YYtext),
+    #namedexpr{path = Path, text = Name, original_text = YYtext};
+name(YYtext) ->
+    {name, YYtext}.
 
-%% Convert refs to universal format.
-normalize({a1ref, Refstr}) ->
-    Iscolfixed = (hd(Refstr) == $$), % Starts with dollar?
-    Isrowfixed = member($$, tl(Refstr)), % There's a dollar in the tail?
-    {X, Y} = getxy(Refstr),
-    {ref, R, C} = norma1({X, Y}, {Iscolfixed, Isrowfixed}),
-    {ref, R, C, "./", Refstr};
-normalize({ssa1ref, Refstr}) ->
-    {Path, Cellref} = split_ssref(Refstr),
-    {ref, R, C, "./", _} = normalize({a1ref, Cellref}),
-    {ref, R, C, Path, Cellref};
-%% TODO: Rewrite this, too ugly.
-normalize({rcref, Refstr}) ->
-    %% Extract ints or [ints].
-    {match, [{St, Len}, {St2, Len2}]} =
-        regexp:matches(Refstr, "(\\[(\\+|\\-)?(([0-9]+))\\])|([0-9]+)"),
-    Rowpart = string:substr(Refstr, St, Len),
-    Colpart = string:substr(Refstr, St2, Len2),
-    %% TODO: Same here as above ^^
-    {match, St3, Len3} = regexp:match(Rowpart, "(\\+|\\-)?([0-9]+)"),
-    {match, St4, Len4} = regexp:match(Colpart, "(\\+|\\-)?([0-9]+)"),
-    Rowint = tconv:to_i(string:substr(Rowpart, St3, Len3)),
-    Colint = tconv:to_i(string:substr(Colpart, St4, Len4)),
-    Isrowfixed = not(member(91, Rowpart)), %% $[ -> 91
-    Iscolfixed = not(member(91, Colpart)),
-    {ref, R, C} = normrc({Colint, Rowint}, {Iscolfixed, Isrowfixed}),
-    {ref, R, C, "./", Refstr};
-normalize({ssrcref, Refstr}) ->
-    {Path, Cellref} = split_ssref(Refstr),
-    {ref, R, C, "./", _} = normalize({rcref, Cellref}),
-    {ref, R, C, Path, Cellref};
-normalize({ssnameref, Refstr}) ->
-    {Path, Name} = split_ssref(Refstr),
-    {name, Name, Path};
-normalize({name, Name}) ->
-    {name, Name, "./"};
-normalize(Other) ->
-    Other.
+to_cellref(YYtext, Type) ->
+    {Path, Cell} = split_ssref(YYtext),
+    {ColCoord, RowCoord} = extract_coords(Cell, Type, ?pivot),
+    #cellref{col = ColCoord, row = RowCoord, path = Path, text = YYtext}.
 
-%% A1-style ref => universal ref.
-norma1({X, Y}, _Col_Fixed_Row_Fixed = {false, false}) ->
-    {ref, {col, X - ?mx}, {row, Y - ?my}};
-norma1({X, Y}, {false, true}) ->
-    {ref, {col, X - ?mx}, Y};
-norma1({X, Y}, {true, false}) ->
-    {ref, X, {row, Y - ?my}};
-norma1({X, Y}, {true, true}) ->
-    {ref, X, Y}.
+%%% @doc Return coordinates of a given **local** cell reference.
+%%% @spec extract_coords(Ref :: string(), Type :: atom()) -> {Col :: pos_integer(), Row :: pos_integer()}
 
-%% RC ref => universal ref.
-normrc({X, Y}, _Col_Fixed_Row_Fixed = {false, false}) ->
-    {ref, {col, X}, {row, Y}};
-normrc({X, Y}, {false, true}) ->
-    {ref, {col, X}, Y};
-normrc({X, Y}, {true, false}) ->
-    {ref, X, {row, Y}};
-normrc({X, Y}, {true, true}) ->
-    {ref, X, Y}.
+extract_coords(Ref, rc, {PivotCol, PivotRow}) ->
+    case string:tokens(string:to_upper(Ref), "R") of
+        ["C"] -> % no row or column offset = same cell/0 offset
+            {{offset, 0}, {offset, 0}};
+        [ColStr] -> % row offset not specified = same row
+            ColCoord = rc_col_to_coord(ColStr),
+            {ColCoord, {offset, 0}};
+        [RowStr, "C"] -> % col offset not specified
+            RowCoord = rc_row_to_coord(RowStr),
+            {{offset, 0}, RowCoord};
+        [RowStr, ColStr] -> % both row & column specified
+            ColCoord = rc_col_to_coord(ColStr),
+            RowCoord = rc_row_to_coord(RowStr),
+            {ColCoord, RowCoord}
+    end;
+extract_coords(Ref, a1, {PivotCol, PivotRow}) ->
+    {ok, Ref2, _} = regexp:gsub(Ref, "\\$", ""),
+    ColStr = takewhile(fun is_alpha/1, string:to_lower(Ref2)),
+    Col = tconv:to_i(ColStr),
+    Row = tconv:to_i(lists:nthtail(length(ColStr), Ref2)),
+    IsColFixed = (hd(Ref) == $$),
+    IsRowFixed = member($$, tl(Ref)),
+    {?COND(IsColFixed, Col, {offset, Col - PivotCol}),
+     ?COND(IsRowFixed, Row, {offset, Row - PivotRow})}.
+             
+%% @doc Construct a range object from matched token text.
+%% @spec finite_range(YYtext :: string()) -> #rangeref{}
 
-%% A1 ref => coordinates.
-getxy(Cellref0) ->
-    {ok, Cellref, _} = regexp:gsub(Cellref0, "\\$", ""), % Kill all $s.
-    Colname = takewhile(fun is_alpha/1,
-                        string:to_lower(Cellref)),
-    Rowstr = lists:nthtail(length(Colname), Cellref),
-    {tconv:to_i(Colname), tconv:to_i(Rowstr)}.
+finite_range(YYtext, Kind) ->
+    {Path, LhsArg, RhsArg} = split_range(YYtext),
+    {Tl, Br} = find_proper_bounds(LhsArg, RhsArg, Kind),
+    #rangeref{path = Path, tl = Tl, br = Br}.
 
-%% Splits same-site ref into path to page and cellref.
-split_ssref(Ssref) ->
-    Lastslash = string:rstr(Ssref, "/"),
-    Path = lists:sublist(Ssref, Lastslash),
-    Cellref = lists:nthtail(Lastslash, Ssref),
-    {Path, Cellref}.
+%% ColId is something like "A" or "$XYZ"
+a1_col_to_coord(ColId) ->
+    case string:substr(ColId, 1, 1) of
+        "$" -> tconv:to_i(string:substr(ColId, 2));
+        _   -> {offset, tconv:to_i(ColId) - ?my}
+    end.
+
+%% RowId is something like "1" or "$123"
+a1_row_to_coord(RowId) ->
+    case string:substr(RowId, 1, 1) of
+        "$" -> tconv:to_i(string:substr(RowId, 2));
+        _   -> {offset, tconv:to_i(RowId) - ?mx}
+    end.
+
+%% Return index from half of an RC ref (i.e. just an R/C part, e.g. "[10]R") and whether
+%% it's fixed or not.
+read_offset_r_or_c(Str) ->
+    Rx = "(((\\+|\\-)?[0-9]+))",
+    {match, [{St, Len}]} = regexp:matches(Str, Rx),
+    Num = tconv:to_i(string:substr(Str, St, Len)),
+    IsFixed = (string:str(Str, "[") == 0),
+    {Num, IsFixed}.
+
+rc_col_to_coord(ColId) ->
+    case read_offset_r_or_c(ColId) of
+        {Num, true}  -> Num;
+        {Num, false} -> {offset, Num}
+    end.
+
+rc_row_to_coord(RowId) ->
+    rc_col_to_coord(RowId).
+
+a1_col_range(YYtext) ->
+    {Path, LhsCol, RhsCol} = split_range(YYtext),
+    #rangeref{path = Path,
+              tl = {col, a1_col_to_coord(LhsCol)},
+              br = {col, a1_col_to_coord(RhsCol)}}.
+
+a1_row_range(YYtext) ->
+    {Path, LhsRow, RhsRow} = split_range(YYtext),
+    #rangeref{path = Path,
+              tl = {row, a1_row_to_coord(LhsRow)},
+              br = {row, a1_row_to_coord(RhsRow)}}.
+
+rc_col_range(YYtext) ->
+    {Path, LhsCol, RhsCol} = split_range(YYtext),
+    #rangeref{path = Path,
+              tl = {col, rc_col_to_coord(LhsCol)},
+              br = {col, rc_col_to_coord(RhsCol)}}.
+
+rc_row_range(YYtext) ->
+    {Path, LhsRow, RhsRow} = split_range(YYtext),
+    #rangeref{path = Path,
+              tl = {row, rc_row_to_coord(LhsRow)},
+              br = {row, rc_row_to_coord(RhsRow)}}.
+
+%% @doc Takes coords of two cells defining bounds of some range, and returns
+%% coords for top-left and bottom-right cells of that range.
+
+find_proper_bounds(LhsArg, RhsArg, Kind) ->
+    LhsCoord = extract_coords(LhsArg, Kind, ?pivot),
+    RhsCoord = extract_coords(RhsArg, Kind, ?pivot),
+    {LhsCoord, RhsCoord}.
+
+%% @doc Given a cell reference, returns a tuple of {Path, Cell}
+%% TODO: rename this.
+%% TODO: duplicated in muin_util?                      
+split_ssref(Ref) ->
+    I = string:rstr(Ref, "/"),
+    Path = lists:sublist(Ref, I),
+    Cell = lists:nthtail(I, Ref),
+    case Path of
+        [] -> {"./", Cell};
+        _  -> {Path, Cell}
+    end.
+
+split_range(Ref) ->
+    {Path, Range} = split_ssref(Ref),
+    [LhsArg, RhsArg] = string:tokens(Range, ":"),
+    {Path, LhsArg, RhsArg}.
 
 is_alpha(Char) when is_integer(Char) ->
     (member(Char, seq($A, $Z)) orelse
@@ -229,11 +352,29 @@ is_alpha(Char) when is_integer(Char) ->
 is_alpha([Char]) ->
     is_alpha(Char).
 
-rmdots(Str) ->
-    {ok, Newstr, _} = regexp:gsub(string:to_lower(Str), "\\.", ""),
-    Newstr.
+%% Return the smaller of two numbers.
 
-%%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+min(X, X) -> X;
+min(X, Y) when X > Y -> Y;
+min(X, Y) when Y > X -> X.
+
+%% Return the larger of two numbers.
+
+max(X, X) -> X;
+max(X, Y) when X > Y -> X;
+max(X, Y) when Y > X -> Y.
+
+%% Try to convert a string to an integer.
+%% Not using tconv:to_i/1 because it will implicitly try b26-string -> integer
+%% conversion too, which isn't what I want here.
+
+to_i(Str) ->
+    case muin_util:attempt(fun() -> list_to_integer(Str) end) of
+        {ok, Num}  -> Num;
+        {error, X} -> {error, X}
+    end.
+
+%%% Tests:
 
 -ifdef(debug).
 -include_lib("eunit/include/eunit.hrl").
