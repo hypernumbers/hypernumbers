@@ -65,6 +65,7 @@ c_counta.xls
 c_countblank.xls
 c_countif.xls
 c_critbinom.xls
+c_database_functions.xls
 c_date.xls
 c_datevalue.xls
 c_daverage.xls
