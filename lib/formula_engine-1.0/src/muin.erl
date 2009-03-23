@@ -1,3 +1,4 @@
+
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Interface to the formula engine/interpreter.
 
@@ -43,8 +44,8 @@ run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
     end.
 
 %% @doc Runs compiled formula.
-run_code(Pcode, #muin_rti{site=Site, path=Path, 
-                          col=Col,   row=Row, 
+run_code(Pcode, #muin_rti{site=Site, path=Path,
+                          col=Col,   row=Row,
                           array_context=AryCtx}) ->
 
     %% Populate the process dictionary.
@@ -105,9 +106,8 @@ call(Func, Args) ->
     case R of
         {error, Errv = {errval, _}}                     -> Errv;
         {error, {aborted, {cyclic, _, _, _, _, _}} = E} -> exit(E); % rethrow on lock
-        {error, E}                                      -> io:format("in muin:call E is ~p~n", [E]),
-                                                           ?error_in_formula;
-        {ok, V}                                          -> V
+        {error, E}                                      -> ?error_in_formula;
+        {ok, V}                                         -> V
     end.
 
 %% @doc Same as eval() but doesn't preprocess.
@@ -216,14 +216,14 @@ funcall(name, [Name, Path]) ->
     end;
 
 %% Hypernumber function and its shorthand.
-funcall(hypernumber, [Url]) ->
+funcall('HYPERNUMBER', [Url]) ->
     {ok,#ref{site = RSite, path = RPath,
              ref = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
     F = fun() -> get_hypernumber(?msite, ?mpath, ?mx, ?my, Url, RSite, RPath, RX, RY) end,
     get_value_and_link(F);
 
-funcall(hn, [Url]) ->
-    funcall(hypernumber, [Url]);
+funcall('HN', [Url]) ->
+    funcall('HYPERNUMBER', [Url]);
 
 funcall(loop, [A, Fn]) when ?is_area(A) ->
     R = area_util:apply_each(fun(L) when is_list(L) -> % paired up
@@ -262,7 +262,9 @@ funcall(Fname, Args0) ->
     R = foldl(fun(M, Acc = {F, A, not_found_yet}) ->
                       case attempt(M, F, [A]) of
                           {error, undef} -> Acc;
-                          {ok, V}        -> {F, A, V};
+                          {ok, V}        -> bits:log("calling "++
+                                                     atom_to_list(F)),
+                                            {F, A, V};
                           {error, Ev = {errval, _}} -> {F, A, Ev}
                       end;
                (_, Acc) ->
@@ -316,8 +318,9 @@ fetch(#rangeref{tl = Tl, br = Br, path = Path}) ->
                  [],
                  seq(RowIndex1, RowIndex2)),
     {range, Rows}. % still tagging to tell stdfuns where values came from.
-   
-get_hypernumber(MSite, MPath, MX, MY, Url, RSite, RPath, RX, RY) ->
+
+%% why are we passing in Url?
+get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
     NewMPath = lists:filter(fun(X) -> not(X == $/) end, MPath),
     NewRPath = lists:filter(fun(X) -> not(X == $/) end, RPath),
 
