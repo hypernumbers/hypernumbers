@@ -220,7 +220,7 @@ debang(Ssref) ->
 
 name(YYtext) when hd(YYtext) == $.; hd(YYtext) == $/ ->
     {Path, Name} = split_ssref(YYtext),
-    #namedexpr{path = Path, text = Name, original_text = YYtext};
+    #namedexpr{path = Path, text = Name};
 name(YYtext) ->
     {name, YYtext}.
 
