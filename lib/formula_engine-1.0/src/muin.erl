@@ -1,6 +1,5 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
-%%% @doc Interface to the formula engine and the interpreter.
-%% TODO: Need a generic apply(Node, Fun), or better yet real macros.
+%%% @doc Interface to the formula engine/interpreter.
 
 -module(muin).
 -export([run_formula/2, run_code/2]).
@@ -204,37 +203,6 @@ funcall(column, _)                     -> ?ERR_VAL;
 funcall(make_list, Args) ->
     area_util:make_array([Args]); % horizontal array
 
-%% Refs
-funcall(ref, [Col, Row, Path]) ->
-    Rowidx = toidx(Row),
-    Colidx = toidx(Col),
-    do_cell(Path, Rowidx, Colidx);
-%% Cell ranges (A1:A5, R1C2:R2C10 etc).
-%% In a range, the path of second ref **must** be ./
-funcall(':', [{ref, Col1, Row1, Path1, _}, {ref, Col2, Row2, "./", _}]) ->
-    [Rowidx1, Colidx1, Rowidx2, Colidx2] = map(fun(X) -> toidx(X) end,
-                                               [Row1, Col1, Row2, Col2]),
-    CellCoords = muin_util:expand_cellrange(Rowidx1, Rowidx2, Colidx1, Colidx2),
-    Revrows = foldl(fun(X, Acc) -> % Curr row, result rows
-                            RowCoords = filter(fun({_, R}) -> R == X end,
-                                               CellCoords),
-                            Row = map(fun({C, R}) -> do_cell(Path1, R, C) end,
-                                      RowCoords),
-                            [Row|Acc]
-                    end,
-                    [],
-                    seq(Rowidx1, Rowidx2)),
-    Resrange = {range, reverse(Revrows)},
-    Resrange;
-
-%% column & row ranges. the tokens come straight from the lexer.
-
-funcall(':', [{ssatomref, _Ssa}, {atom, _A}]) ->
-    ok; % TODO: column range
-
-funcall(':', [{ssnumref, _Snr}, {atom, _A}]) ->
-    ok; % TODO: row range
-
 funcall(name, [Name, Path]) ->
     Refs = hn_db:get_ref_from_name(Name),
     NeedPath = muin_util:walk_path(?mpath, Path),
@@ -287,9 +255,10 @@ funcall(pair_up, [A, V]) when ?is_area(A) andalso not(?is_area(V)) ->
           area_util:apply_each(fun(X) -> [X, Ev] end, A));
 funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
     funcall(pair_up, [A, V]);
-
+             
 %% Formula function call (built-in or user-defined).
-funcall(Fname, Args) ->
+funcall(Fname, Args0) ->
+    Args = prefetch_references(Args0),
     R = foldl(fun(M, Acc = {F, A, not_found_yet}) ->
                       case attempt(M, F, [A]) of
                           {error, undef} -> Acc;
@@ -310,6 +279,29 @@ funcall(Fname, Args) ->
     end.
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+prefetch_references(L) ->
+    foldr(fun(R, Acc) when is_record(R, cellref); is_record(R, rangeref) ->
+                  [fetch(R)|Acc];
+             (X, Acc) ->
+                  [X|Acc]
+          end,
+          [],
+          L).    
+
+read_offset({offset, N}) -> N.
+
+fetch(#cellref{col = Col, row = Row, path = Path}) ->
+    RowIndex = if is_number(Row) -> Row;
+                  true -> ?my + read_offset(Row)
+               end,
+    ColIndex = if is_number(Col) -> Col;
+                  true -> ?mx + read_offset(Col)
+               end,
+    do_cell(Path, RowIndex, ColIndex);                       
+fetch(#rangeref{tl = Tl, br = Br, path = Path}) ->
+    ok.
+
 
 get_hypernumber(MSite, MPath, MX, MY, Url, RSite, RPath, RX, RY) ->
     NewMPath = lists:filter(fun(X) -> not(X == $/) end, MPath),
