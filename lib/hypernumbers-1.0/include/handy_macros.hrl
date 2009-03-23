@@ -10,6 +10,7 @@
                 flatten/1,
                 flatmap/2,
                 foldl/3,
+                foldr/3,
                 foreach/2,
                 keysearch/3,
                 last/1,
