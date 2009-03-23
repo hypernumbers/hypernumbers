@@ -289,20 +289,34 @@ prefetch_references(L) ->
           [],
           L).    
 
-read_offset({offset, N}) -> N.
+row_index(N) when is_integer(N) -> N;
+row_index({offset, N}) -> ?my + N.
 
+col_index(N) when is_integer(N) -> N;
+col_index({offset, N}) -> ?mx + N.
+     
 fetch(#cellref{col = Col, row = Row, path = Path}) ->
-    RowIndex = if is_number(Row) -> Row;
-                  true -> ?my + read_offset(Row)
-               end,
-    ColIndex = if is_number(Col) -> Col;
-                  true -> ?mx + read_offset(Col)
-               end,
+    RowIndex = row_index(Row),
+    ColIndex = col_index(Col),
     do_cell(Path, RowIndex, ColIndex);                       
 fetch(#rangeref{tl = Tl, br = Br, path = Path}) ->
-    ok.
-
-
+    %% Finite ranges only!
+    {Col1, Row1} = Tl,
+    {Col2, Row2} = Br,
+    ColIndex1 = col_index(Col1),
+    RowIndex1 = row_index(Row1),
+    ColIndex2 = col_index(Col2),
+    RowIndex2 = row_index(Row2),
+    CellCoords = muin_util:expand_cellrange(RowIndex1, RowIndex2, ColIndex1, ColIndex2),
+    Rows = foldr(fun(X, Acc) -> % Curr row, result rows
+                         RowCoords = filter(fun({_, R}) -> R == X end, CellCoords),
+                         Row = map(fun({C, R}) -> do_cell(Path, R, C) end, RowCoords),
+                         [Row|Acc]
+                 end,
+                 [],
+                 seq(RowIndex1, RowIndex2)),
+    {range, Rows}. % still tagging to tell stdfuns where values came from.
+   
 get_hypernumber(MSite, MPath, MX, MY, Url, RSite, RPath, RX, RY) ->
     NewMPath = lists:filter(fun(X) -> not(X == $/) end, MPath),
     NewRPath = lists:filter(fun(X) -> not(X == $/) end, RPath),
