@@ -83,17 +83,9 @@ parse(Fla, {Col, Row}) ->
 
 %% Evaluate a form in the current rti context.
 eval(Node = [Func|Args]) when ?is_fn(Func) ->
-    case preproc(Node) of
-        false ->
-            case member(Func, ['if', choose, column]) of
-                true  -> call(Func, Args);
-                false -> call(Func, [eval(X) || X <- Args])
-            end;
-        {reeval, Newnode} ->
-            eval(Newnode);
-        [Func2|Args2] ->
-            CallArgs = [eval(X) || X <- Args2],
-            call(Func2, CallArgs)
+    case member(Func, ['if', choose, column]) of
+        true  -> call(Func, Args);
+        false -> call(Func, [eval(X) || X <- Args])
     end;
 eval(Value) ->
     Value.
@@ -106,52 +98,6 @@ call(Func, Args) ->
         {error, E}                                      -> ?error_in_formula;
         {ok, V}                                         -> V
     end.
-
-%% @doc Same as eval() but doesn't preprocess.
-plain_eval([Func | Args]) when ?is_fn(Func) ->
-    CallArgs = [plain_eval(X) || X <- Args],
-    funcall(Func, CallArgs);
-plain_eval(Value) ->
-    Value.
-
-%% @doc Used for direct manipulations on the AST (think Lisp macros).
-%% E.g. OFFSET is done here because it needs to splice results directly back
-%% into the AST.
-%% Returns false if the node didn't need to be transformed.
-
-%% OFFSET(Range, Rows, Cols) -- what if range is constructed with INDIRECT though...?
-preproc([offset, _Base = [':', {ref, R1, C1, P}, {ref, R2, C2, _}], Rows, Cols]) ->
-    H = toidx(C2)-toidx(C1)+1,
-    W = toidx(R2)-toidx(R1)+1,
-    preproc([offset, [ref, R1, C1, P], Rows, Cols, H, W]);
-%% OFFSET(Cellref, Rows, Cols)
-preproc([offset, Base, Rows, Cols]) ->
-    preproc([offset, Base, Rows, Cols, 1, 1]);
-preproc([offset, _Base = [ref, C, R, P], Rows, Cols, H, W]) ->
-    RULES = [ban_strings, ban_bools, ban_dates, ban_blanks],
-    % eval expressions, then try to cast them.
-    [Rows2, Cols2, H2, W2] = ?numbers(map(fun muin:eval/1,
-                                          [Rows, Cols, H, W]), RULES),
-
-    Dr = toidx(R)+Rows2,
-    Dc = toidx(C)+Cols2,
-
-    Res =
-        if
-            Dr < 1 -> ?ERRVAL_REF;
-            Dc < 1 -> ?ERRVAL_REF;
-            H2 < 1 -> ?ERRVAL_VAL;
-            W2 < 1 -> ?ERRVAL_VAL;
-            true ->
-                if H2 == 1 andalso W2 == 1 ->
-                        [ref, Dc, Dr, P];
-                   true ->
-                        [':', {ref, Dc, Dr, P, ""}, {ref, Dc+W2, Dr+H2, P, ""}]
-                end
-        end,
-    
-    {reeval, Res};
-preproc(_Node) -> false.
 
 funcall(choose, [A|Vs]) when ?is_area(A) ->
     Flatvs = muin_collect:flatten_arrays([A]),
