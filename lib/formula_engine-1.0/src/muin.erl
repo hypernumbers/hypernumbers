@@ -95,7 +95,7 @@ call(Func, Args) ->
     case R of
         {error, Errv = {errval, _}}                     -> Errv;
         {error, {aborted, {cyclic, _, _, _, _, _}} = E} -> exit(E); % rethrow on lock
-        {error, E}                                      -> ?error_in_formula;
+        {error, _E}                                     -> ?error_in_formula;
         {ok, V}                                         -> V
     end.
 
@@ -134,7 +134,7 @@ funcall(hypernumber, [Url]) ->
     get_value_and_link(F);
 
 funcall(hn, [Url]) ->
-    funcall('HYPERNUMBER', [Url]);
+    funcall(hypernumber, [Url]);
 
 funcall(loop, [A, Fn]) when ?is_area(A) ->
     R = area_util:apply_each(fun(L) when is_list(L) -> % paired up
