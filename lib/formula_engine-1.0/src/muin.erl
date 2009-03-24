@@ -1,4 +1,3 @@
-
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Interface to the formula engine/interpreter.
 
@@ -31,8 +30,6 @@
 
 -define(error_in_formula, {error, error_in_formula}).
 -define(syntax_error, {error, syntax_error}).
-
--define(puts, io:format).
 
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -216,13 +213,13 @@ funcall(name, [Name, Path]) ->
     end;
 
 %% Hypernumber function and its shorthand.
-funcall('HYPERNUMBER', [Url]) ->
+funcall(hypernumber, [Url]) ->
     {ok,#ref{site = RSite, path = RPath,
              ref = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
     F = fun() -> get_hypernumber(?msite, ?mpath, ?mx, ?my, Url, RSite, RPath, RX, RY) end,
     get_value_and_link(F);
 
-funcall('HN', [Url]) ->
+funcall(hn, [Url]) ->
     funcall('HYPERNUMBER', [Url]);
 
 funcall(loop, [A, Fn]) when ?is_area(A) ->
@@ -262,9 +259,7 @@ funcall(Fname, Args0) ->
     R = foldl(fun(M, Acc = {F, A, not_found_yet}) ->
                       case attempt(M, F, [A]) of
                           {error, undef} -> Acc;
-                          {ok, V}        -> bits:log("calling "++
-                                                     atom_to_list(F)),
-                                            {F, A, V};
+                          {ok, V}        -> {F, A, V};
                           {error, Ev = {errval, _}} -> {F, A, Ev}
                       end;
                (_, Acc) ->
