@@ -119,9 +119,6 @@ plain_eval(Value) ->
 %% into the AST.
 %% Returns false if the node didn't need to be transformed.
 
-preproc(['let', NameNode, ValueNode, BodyNode]) ->
-    Value = eval(ValueNode),
-    {reeval, let_transform(NameNode, BodyNode, Value)};
 %% OFFSET(Range, Rows, Cols) -- what if range is constructed with INDIRECT though...?
 preproc([offset, _Base = [':', {ref, R1, C1, P}, {ref, R2, C2, _}], Rows, Cols]) ->
     H = toidx(C2)-toidx(C1)+1,
@@ -377,12 +374,6 @@ get_value_and_link(FetchFun) ->
 toidx(N) when is_number(N) -> N;
 toidx({row, Offset})       -> ?my + Offset;
 toidx({col, Offset})       -> ?mx + Offset.
-
-%% @doc AST transformation for LET function.
-
-let_transform([name, N, P], [name, N, P], Repl)          -> Repl;
-let_transform(NameNode, [Fn|Args], Repl) when ?is_fn(Fn) -> [Fn|[let_transform(NameNode, X, Repl) || X <- Args]];
-let_transform(_NameNode, Literal, _Repl)                 -> Literal.
 
 get_cell_info(Site, Path, Col, Row) ->
     %
