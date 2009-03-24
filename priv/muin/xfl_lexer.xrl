@@ -210,7 +210,6 @@ lex(Input, {Mx, My}) ->
         _             -> lexer_error
     end.
 
-%% @spec debang(string()) -> string()
 %% @doc Replace all !s with /s in a string. (Used to normalize references.)
 debang(Ssref) ->
     {ok, Newssref, _} = regexp:gsub(Ssref, "!", "/"),
@@ -230,7 +229,6 @@ to_cellref(YYtext, Type) ->
     #cellref{col = ColCoord, row = RowCoord, path = Path, text = YYtext}.
 
 %%% @doc Return coordinates of a given **local** cell reference.
-%%% @spec extract_coords(Ref :: string(), Type :: atom()) -> {Col :: pos_integer(), Row :: pos_integer()}
 
 extract_coords(Ref, rc, {PivotCol, PivotRow}) ->
     case string:tokens(string:to_upper(Ref), "R") of
@@ -258,7 +256,6 @@ extract_coords(Ref, a1, {PivotCol, PivotRow}) ->
      ?COND(IsRowFixed, Row, {offset, Row - PivotRow})}.
              
 %% @doc Construct a range object from matched token text.
-%% @spec finite_range(YYtext :: string()) -> #rangeref{}
 
 finite_range(YYtext, Kind) ->
     {Path, LhsArg, RhsArg} = split_range(YYtext),
