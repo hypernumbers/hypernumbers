@@ -115,7 +115,7 @@ Erlang code.
 
 %% Make a function name for the AST from lexer tokens:
 func_name({name, Name}) ->
-    list_to_atom(Name);
+    list_to_atom(string:to_lower(Name));
 func_name(#cellref{text = Text}) ->
     list_to_atom(string:to_lower(Text)). % ATAN2 &c.
 
