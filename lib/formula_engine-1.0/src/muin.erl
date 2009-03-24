@@ -122,35 +122,6 @@ plain_eval(Value) ->
 preproc(['let', NameNode, ValueNode, BodyNode]) ->
     Value = eval(ValueNode),
     {reeval, let_transform(NameNode, BodyNode, Value)};
-%% Ranges constructed with INDIRECT. No need for an explicit check, because
-%% if either argument evaluates to something other than a ref, funcall clause
-%% for ':' will fail at the next step.
-preproc([':', StartExpr, EndExpr]) ->
-    Eval = fun(Node) when is_list(Node) -> % Funcall
-                   Cellref = hd(plain_eval(tl(Node))),
-                   {ok, [Ref]} = xfl_lexer:lex(Cellref, {?mx, ?my}),
-                   Ref;
-            (Node) when is_tuple(Node) -> % Literal
-                   Node
-           end,
-
-    R = [':', Eval(StartExpr), Eval(EndExpr)],
-    R;
-preproc([indirect, Arg]) ->
-    case ?is_string(Arg) of
-        true ->
-            Str = plain_eval(Arg),
-            {ok, Toks} = xfl_lexer:lex(Str, {?mx, ?my}),
-            case Toks of
-                [{ref, R, C, P, _}] ->
-                    put(recompile, true),
-                    [ref, R, C, P];
-                _ ->
-                    {reeval, ?ERRVAL_REF}
-            end;
-        false ->
-            {reeval, ?ERRVAL_VAL}
-    end;
 %% OFFSET(Range, Rows, Cols) -- what if range is constructed with INDIRECT though...?
 preproc([offset, _Base = [':', {ref, R1, C1, P}, {ref, R2, C2, _}], Rows, Cols]) ->
     H = toidx(C2)-toidx(C1)+1,
