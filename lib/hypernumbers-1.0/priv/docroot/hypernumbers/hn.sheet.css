@@ -215,8 +215,14 @@ ul,li {
  z-index:999;
 }
 
-.handle:hover { 
- background:blue !important;
+#rows .handle:hover { 
+ cursor:ns-resize;
+ background:#FF9966;
+}
+
+#columns .handle:hover { 
+ cursor:ew-resize;
+ background:#FF9966;
 }
 
 /******************************************************************************
