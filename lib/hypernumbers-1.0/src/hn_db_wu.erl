@@ -1263,7 +1263,7 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
             {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {FX, FY}),
             NewToks = offset(Toks, (TX - FX), (TY - FY)),
             NewFormula = make_formula(NewToks),
-            {ok, ok} = write_attr(To, {formula, NewFormula});
+            {ok, ok} = write_attr(To, {"formula", NewFormula});
         [{Type, V},  _A, _F] ->
             V2 = case Incr of
                      false  ->
@@ -1278,7 +1278,7 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
                              _        -> tconv:to_s(V)
                          end
                  end,
-            {ok, ok} = write_attr(To, {formula, V2});
+            {ok, ok} = write_attr(To, {"formula", V2});
         []  ->
             {ok, ok} = clear_cells(To, all)
     end,
@@ -1973,7 +1973,7 @@ shift_local_links2([#local_cell_link{child = C} | T], Offset) ->
     NewFormula = shift_formula(Formula, Offset),
     % by getting the linking cell to rewrite its formula the 
     % 'local_cell_link' table will be ripped down and rebuilt as well...
-    {ok, ok} = write_attr(Child, {formula, NewFormula}),
+    {ok, ok} = write_attr(Child, {"formula", NewFormula}),
     shift_local_links2(T, Offset).
 
 shift_formula([$=|Formula], {XO, YO}) ->

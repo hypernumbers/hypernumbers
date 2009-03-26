@@ -924,7 +924,8 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
                   case is_valid_d_n_d(From, To) of
                       {ok, single_cell, Incr}   -> ?copy(From, To, Incr);
                       {ok, 'onto self', _Incr}  -> {ok, ok};
-                      {ok, cell_to_range, Incr} -> copy2(From, To, Incr)
+                      {ok, cell_to_range, Incr} -> copy2(From, To, Incr);
+                      {ok, _Test, Incr}         -> copy3(From, To, Incr)
                   end
           end,
     mnesia:activity(transaction, Fun).
