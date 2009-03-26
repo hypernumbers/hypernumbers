@@ -76,6 +76,7 @@
 -module(hn_db_api).
 
 -include("spriki.hrl").
+-include("hypernumbers.hrl").
 
 -define(copy, hn_db_wu:copy_cell).
 -define(counter, mnesia:dirty_update_counter).
@@ -318,7 +319,8 @@ notify_from_web(Parent, Child, Type, Value, DepTree, Biccie, Version)
                         {ok, ok} = hn_db_wu:update_inc_hn(Parent, Value, DepTree2,
                                                           Biccie, Version),
                         {ok, ok} = hn_db_wu:mark_notify_in_dirty(Parent);
-                    false -> {ok, ok}
+                    false -> 
+                        ok
                 end,
                 ok
         end,
@@ -1019,26 +1021,18 @@ is_valid_d_n_d(#refX{obj = {cell, _}},
     {ok, cell_to_range, horizontal};
 is_valid_d_n_d(#refX{obj = {cell, _}}, #refX{obj = {range, _}}) ->
     {ok, cell_to_range, false};
+
 %% range to range drag'n'drop
 is_valid_d_n_d(#refX{obj = {range, Range}}, #refX{obj = {range, Range}}) ->
     {ok, 'onto self', false};
-is_valid_d_n_d(#refX{obj = {range, {FX, FY1, FX, FY2}}},
-               #refX{obj = {range, TRange}}) ->
-    {_TX1, TY1, _TX2, TY2} = TRange,
-    case ((TY2 - TY1) - (FY2 - FY1)) of
-        0    -> {ok, col_range_to_range};
-        true -> {error, "target range is not the same height as the source range"}
-    end;
-is_valid_d_n_d(#refX{obj = {range, {FX1, FY, FX2, FY}}},
-               #refX{obj = {range, TRange}}) ->
-    {TX1, _TY1, TX2, _TY2} = TRange,
-    case ((TX2 - TX1) - (FX2 - FX1)) of
-        0    -> {ok, row_range_to_range};
-        true -> {error, "target range is not the same width as the source range"}
-    end;
-is_valid_d_n_d(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
-    {error, "from range is invalid"};
-is_valid_d_n_d(_, _) -> {error, "not valid either"}.
+is_valid_d_n_d(#refX{obj = {range, {X1, _FY1, X2, _FY2}}},
+               #refX{obj = {range, {X1, _TY1, X2, _TY2}}}) ->
+    {ok, col_range_to_range, vertical};
+is_valid_d_n_d(#refX{obj = {range, {_FX1, Y1, _FX2, Y2}}},
+               #refX{obj = {range, {_TX1, Y1, _TX2, Y2}}}) ->
+    {ok, row_range_to_range, horizontal};
+is_valid_d_n_d(_, _) -> 
+    {error, invalid_range}.
 
 %% cell to range
 copy2(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
