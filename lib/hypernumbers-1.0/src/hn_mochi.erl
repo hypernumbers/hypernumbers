@@ -63,7 +63,7 @@ handle_req('GET', Req, Ref, page, [{"updates", Time}], _Post) ->
     end;
 
 handle_req('GET', Req, Ref, page, [{"attr", []}], _Post) -> 
-    Init  = [["cells"], ["cols"], ["rows"], ["page"], ["styles"]],
+    Init  = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree  = dh_tree:create(Init),
     Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
     NTree = add_styles(Styles, Tree),
@@ -85,15 +85,18 @@ handle_req('GET', Req, Ref, cell, _Attr, _Post) ->
     Req:ok({"application/json", mochijson:encode(JS)});
 
 handle_req('POST', Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
-    ok = hn_db_api:write_attributes(Ref, Attr),
+    %ok = hn_db_api:write_attributes(Ref, Attr),
+    hn_db_api:write_attributes(Ref, Attr),
     Req:ok({"application/json", "success"});
 
 handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "all"}]) ->
-    ok = hn_db_api:clear(Ref, all),
+    %ok = hn_db_api:clear(Ref, all),
+    hn_db_api:clear(Ref, all),
     Req:ok({"application/json", "success"});
 
 handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "contents"}]) ->
-    ok = hn_db_api:clear(Ref, contents),
+    %ok = hn_db_api:clear(Ref, contents),
+    hn_db_api:clear(Ref, contents),
     Req:ok({"application/json", "success"});
 
 
@@ -160,18 +163,16 @@ to_dict([ {Ref, Val} | T], JSON) ->
 
 add_ref(#refX{ obj = {page,"/"}}, {Name, Val}, JSON) ->
     dh_tree:set(["page", Name], Val, JSON);
-add_ref(#refX{ obj = {cell, {X,Y}}}, {Name, Val}, JSON) ->
-    dh_tree:set(["cells", itol(Y), itol(X), Name], Val, JSON);
-add_ref(#refX{ obj = {column, X}}, {Name, Val}, JSON) ->
-    dh_tree:set(["cols", itol(X), Name], Val, JSON);
-add_ref(#refX{ obj = {row, Y}}, {Name, Val}, JSON) ->
-    dh_tree:set(["rows", itol(Y), Name], Val, JSON).
+add_ref(#refX{ obj = {Ref, {X,Y}}}, {Name, Val}, JSON) ->
+    dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 
 docroot() ->
     code:priv_dir(hypernumbers) ++ "/docroot".
 
 itol(X) ->
     integer_to_list(X).
+ltoi(X) ->
+    list_to_integer(X).
 
 is_dict(Dict) when is_tuple(Dict) ->
     dict == element(1,Dict);
@@ -208,10 +209,33 @@ parse_attr(cell, Addr) ->
     end;
 
 parse_attr(range, Addr) ->
-    [Cell1, Cell2] = string:tokens(Addr, ":"),
-    {X1, Y1} = util2:strip_ref(Cell1),
-    {X2, Y2} = util2:strip_ref(Cell2),
-    {range, {X1, Y1, X2, Y2}}.
+    case regexp:match(Addr,?RG_range) of
+        {match,_,_} -> 
+            [Cell1, Cell2] = string:tokens(Addr, ":"),
+            {X1, Y1} = util2:strip_ref(Cell1),
+            {X2, Y2} = util2:strip_ref(Cell2),
+            {range, {X1, Y1, X2, Y2}};
+        _ -> 
+            parse_attr(column, Addr)
+    end;
+
+parse_attr(column, Addr) ->
+    case regexp:match(Addr,?RG_col_range) of
+        {match,_,_} -> 
+            [Cell1, Cell2] = string:tokens(Addr, ":"),
+            {column, {tconv:b26_to_i(Cell1), tconv:b26_to_i(Cell2)}};
+        _ -> 
+            parse_attr(row, Addr)
+    end;
+
+parse_attr(row, Addr) ->
+    case regexp:match(Addr,?RG_row_range) of
+        {match,_,_} -> 
+            [Cell1, Cell2] = string:tokens(Addr, ":"),
+            {row, {ltoi(Cell1), ltoi(Cell2)}};
+        _ -> 
+            throw(invalid_reference)
+    end.
 
 styles_to_css([], Acc) ->
     Acc;
@@ -237,6 +261,7 @@ style_att(X, Rec, Acc) ->
             style_att(X-1, Rec, [A | Acc])
     end.
     
-from(Key, List) -> {value, {Key, Value}} = lists:keysearch(Key, 1, List),
-                   Value.
+from(Key, List) -> 
+    {value, {Key, Value}} = lists:keysearch(Key, 1, List),
+    Value.
 

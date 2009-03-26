@@ -1728,16 +1728,29 @@ make_row_match_ref(RefX, AttrList) ->
     Body = ['$_'],
     {Match2, Cond, Body}.
 
+%% if I hn_db_api:read(#ref{site="site.com", path=[]}) I need all the attributes
+%% under the page, not just the cells
 make_page_match_ref(RefX, AttrList) ->
     #refX{site = S, path = P, auth = A} = RefX,
     Match = case AttrList of
                 [] -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
-                                            {ref , {cell, {'_', '_'}}}]);
+                                           {ref , '_'}]);
                 _  -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
-                                            {ref , {cell, {'_', '_'}}},
+                                            {ref , '_'},
                                             {name, '$3'}])
             end,
     ms_util:make_ms(hn_item, [{addr, Match}]).
+
+%make_page_match_ref(RefX, AttrList) ->
+%    #refX{site = S, path = P, auth = A} = RefX,
+%    Match = case AttrList of
+%                [] -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
+%                                            {ref , {cell, {'_', '_'}}}]);
+%                _  -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
+%                                            {ref , {cell, {'_', '_'}}},
+%                                            {name, '$3'}])
+%            end,
+%    ms_util:make_ms(hn_item, [{addr, Match}]).
 
 get_attr_keys(List)  -> get_attr_keys(List, []).
 

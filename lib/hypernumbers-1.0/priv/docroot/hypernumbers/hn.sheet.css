@@ -189,15 +189,34 @@ ul,li {
 #bottom-bar.active { background: url(sprite-x.png) 0px -30px; }
 #right-bar.active  { background: url(sprite-y.png) -28px 0px; }
 
-#rows
-{ 
+#rows { 
     width:26px;
 }
 
-#columns
-{
-    height:         20px;
-    z-index:-99;
+#columns {
+    height: 20px;
+    z-index:999;
+}
+
+#columns .handle { 
+ position:absolute;
+ width:8px; 
+ top:0px;
+ right:-8px;
+ height:20px;
+ z-index:9999;
+}
+
+#rows .handle { 
+ position:absolute;
+ width:25px; 
+ bottom:-8px;
+ height:8px;
+ z-index:999;
+}
+
+.handle:hover { 
+ background:blue !important;
 }
 
 /******************************************************************************
