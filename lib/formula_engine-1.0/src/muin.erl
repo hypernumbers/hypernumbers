@@ -51,14 +51,25 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
          {array_context, AryCtx},
          {retvals, {[], [], []}}, {recompile, false}]),
     Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
-    Ev = eval(Fcode),
-    {RefTree, _Errors, References} = get(retvals),
-    case Ev of
+
+    case eval(Fcode) of
         ?error_in_formula ->
             ?error_in_formula;
-        _ ->
-            Ev2 = ?COND(Ev == blank, 0, Ev),
-            {ok, {Fcode, Ev2, RefTree, References, get(recompile)}}
+        Value ->
+            Result = case Value of
+                         R when is_record(R, cellref) ->
+                             case fetch(R) of
+                                 blank -> 0;
+                                 Other -> Other
+                             end;
+                         R when is_record(R, rangeref) ->
+                             %% TODO: implicit intersection
+                             ok;
+                         Constant ->
+                             Constant
+                     end,
+            {RefTree, _Errors, References} = get(retvals),
+            {ok, {Fcode, Result, RefTree, References, get(recompile)}}
     end.
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
