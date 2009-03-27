@@ -142,18 +142,18 @@ process_dirty(Record, dirty_inc_hn_create) ->
     {ok, ok} = ?api:notify_back_create(Record),
     ok;
 process_dirty(Record, dirty_notify_in) ->
-    {ok, ok} = ?api:handle_dirty_notify_in(Record),
+    {ok, ok} = ?api:handle_dirty(Record),
     ok;
 process_dirty(Record, dirty_notify_out) ->
     #dirty_notify_out{delay = Delay} = Record,
     ok = timer:sleep(Delay),
-    {ok, ok} = ?api:handle_dirty_notify_out(Record),
+    {ok, ok} = ?api:handle_dirty(Record),
     ok;
 process_dirty(Record, dirty_notify_back_in) ->
-    {ok, ok} = ?api:handle_dirty_notify_back_in(Record),
+    {ok, ok} = ?api:handle_dirty(Record),
     ok;
 process_dirty(Record, dirty_notify_back_out) ->
-    {ok, ok} = ?api:handle_dirty_notify_back_out(Record),
+    {ok, ok} = ?api:handle_dirty(Record),
     ok.
 
 %%%

@@ -123,11 +123,7 @@
          notify_from_web/5,
          notify_back_from_web/4,
          handle_dirty_cell/1,
-         handle_dirty_notify_in/1,
-
-         handle_dirty_notify_out/1,
-         handle_dirty_notify_back_in/1,
-         handle_dirty_notify_back_out/1,
+         handle_dirty/1,
          register_hn_from_web/4,
          check_page_vsn/2,
          initialise_remote_page_vsn/2,
@@ -285,11 +281,13 @@ handle_dirty_cell(DirtyCell) when is_record(DirtyCell, dirty_cell)  ->
     ok = mnesia:activity(transaction, Fun),
     {ok, ok}.
 
-%% @spec handle_dirty_notify_in(Record::#dirty_notify_in{}) -> {ok, ok}
-%% @doc handles a dirty notify in.
+%% @spec handle_dirty(Record) -> {ok, ok}
+%% Record = #dirty_notify_in{}
+%% @doc handles a dirty .
 %% The reference must be to a cell
 %% @todo implement dirty ranges/functions/queries and stuff
-handle_dirty_notify_in(Record) when is_record(Record, dirty_notify_in) ->
+%% %@TODO list the full set of possible change messages and how they should
+handle_dirty(Record) when is_record(Record, dirty_notify_in) ->
     #dirty_notify_in{parent = Parent} = Record,
     % read the incoming remote children and mark them dirty
     Fun =
@@ -303,44 +301,34 @@ handle_dirty_notify_in(Record) when is_record(Record, dirty_notify_in) ->
                 [{ok, ok} = Fun2(X)  || X <- Cells],
                 {ok, ok} = ?wu:clear_dirty(Record)
         end,
-    {ok, ok} = mnesia:activity(transaction, Fun).
-
-%% @spec handle_dirty_notify_out(Record::#dirty_notify_out{}) -> {ok, ok}
-%% @doc handles a dirty notify out.
-%% The reference must be to a cell
-%% @todo implement dirty ranges/functions/queries and stuff
-handle_dirty_notify_out(Record) when is_record(Record, dirty_notify_out) ->
+    {ok, ok} = mnesia:activity(transaction, Fun);
+handle_dirty(Record) when is_record(Record, dirty_notify_out) ->
     {ok, ok} = horiz_api:notify(Record),
     % now delete the dirty outgoing hypernumber
     Fun = fun() ->
                   ok = mnesia:delete_object(Record)
           end,
     ok = mnesia:activity(transaction, Fun),
-    {ok, ok}.
-
-%% @spec handle_dirty_notify_back_in(Record::#dirty_notify_back_in{}) -> 
-%% {ok, ok}
-%% @doc handles a dirty_notify_back_in message.
-%% Both the parent and the child references must be cell references
-%% @TODO list the full set of possible change messages and how they should
-%% be handled in the docos
-handle_dirty_notify_back_in(Record) when is_record(Record, dirty_notify_back_in) ->
+    {ok, ok};
+handle_dirty(Record) when is_record(Record, dirty_notify_back_in) ->
     {ok, ok} = horiz_api:notify_back(Record),
     Fun = fun() ->
                   {ok, ok} = ?wu:clear_dirty(Record)
           end,
-    mnesia:activity(transaction, Fun).
-
-%% @spec handle_dirty_notify_back_out(Record::#dirty_notify_back_out{})
-%% -> {ok, ok}
-%% @doc handles a dirty notify back out event.
-%% Both the partent and child references must point to a cell
-%% The types of notification back supported are:
-%% <ul>
-%% <li>"unregister"</li>
-%% <li>"new child"</li>
-%% </ul>
-handle_dirty_notify_back_out(Record)
+    mnesia:activity(transaction, Fun);
+handle_dirty(Record) when is_record(Record, dirty_notify_back_in) ->
+    {ok, ok} = horiz_api:notify_back(Record),
+    Fun = fun() ->
+                  {ok, ok} = ?wu:clear_dirty(Record)
+          end,
+    mnesia:activity(transaction, Fun);
+handle_dirty(Record) when is_record(Record, dirty_notify_back_in) ->
+    {ok, ok} = horiz_api:notify_back(Record),
+    Fun = fun() ->
+                  {ok, ok} = ?wu:clear_dirty(Record)
+          end,
+    mnesia:activity(transaction, Fun);
+handle_dirty(Record)
   when is_record(Record, dirty_notify_back_out) ->
     #dirty_notify_back_out{parent = P, child = C, change = Type} = Record,
     Fun =
