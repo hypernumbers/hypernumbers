@@ -483,11 +483,6 @@
          delete_attrs/2,
          clear_dirty/1,
          clear_dirty_cell/1,
-         clear_dirty_inc_hn_create/1,
-         clear_dirty_notify_in/1,
-         clear_dirty_notify_out/1,
-         clear_dirty_notify_back_in/3,
-         clear_dirty_notify_back_out/1,
          shift_cell/2,
          shift_children/3,
          shift_remote_links/3,
@@ -821,9 +816,13 @@ get_cells1(MatchRef) ->
     get_refXs(lists:map(Fun, List)).
 
 %% @spec clear_dirty(Record) -> {ok, ok}
-%% Record = #dirty_notify_back_in{}
+%% Record = #dirty_notify_back_in{} | #dirty_inc_hn_create{} | #dirty_notify_in{}
 %% @doc clears a dirty record.
-clear_dirty(Rec) when is_record(Rec, dirty_notify_back_in) ->
+clear_dirty(Rec) when (is_record(Rec, dirty_notify_in)
+                       orelse is_record(Rec, dirty_notify_out)
+                       orelse is_record(Rec, dirty_inc_hn_create)
+                       orelse is_record(Rec, dirty_notify_back_in)
+                       orelse is_record(Rec, dirty_notify_back_out)) ->
     ok = mnesia:delete_object(Rec),
     {ok, ok}.
 
@@ -833,51 +832,6 @@ clear_dirty(Rec) when is_record(Rec, dirty_notify_back_in) ->
 clear_dirty_cell(#refX{obj = {cell, _}} = RefX) ->
     Index = hn_util:index_from_refX(RefX),
     mnesia:delete({dirty_cell, Index}),
-    {ok, ok}.
-
-%% @spec clear_dirty_inc_hn_create(Record::#dirty_inc_hn_create{}) -> {ok, ok}
-%% @doc clears a marked dirty_inc_hn_create
-clear_dirty_inc_hn_create(Record) when is_record(Record, dirty_inc_hn_create) ->
-    ok = mnesia:delete_object(Record),
-    {ok, ok}.
-
-%% @spec clear_dirty_notify_in(Parent::#refX{}) -> {ok, ok}
-%% @doc clears a dirty notification.
-%% The parent reference must point to a cell
-%% @todo extend the reference to include rows, columns, ranges, etc, etc
-clear_dirty_notify_in(Parent) when is_record(Parent, refX) ->
-    ok = mnesia:delete({dirty_notify_in, Parent}),
-    {ok, ok}.
-
-%% @spec clear_dirty_notify_out(Record::#dirty_notify_out{}) -> {ok, ok}
-%% @doc clears a dirty notification.
-%% The parent reference must point to a cell
-%% @todo extend the reference to include rows, columns, ranges, etc, etc
-clear_dirty_notify_out(Record) when is_record(Record, dirty_notify_out) ->
-    ok = mnesia:delete_object(Record),
-    {ok, ok}.
-
-%% @spec clear_dirty_notify_back_in(Parent::#refX{}, Child::#refX{}, Change) -> 
-%% {ok, ok}
-%% @doc clears a dirty notify back_in.
-%% Both the parent and the child references must point to a cell
-%% @todo extend the references to include rows, columns, ranges, etc, etc
-clear_dirty_notify_back_in(Parent, Child, Change)
-  when is_record(Parent, refX), is_record(Child, refX) ->
-    Head = ms_util:make_ms(dirty_notify_back_in, [{parent, Parent},
-                                                  {child, Child},
-                                                  {change, Change}]),
-    [Record] = mnesia:select(dirty_notify_back_in, [{Head, [], ['$_']}]),
-    ok = mnesia:delete_object(Record),
-    {ok, ok}.
-
-%% @spec clear_dirty_notify_back_out(Record::#dirty_notify_back_out{}) -> 
-%% {ok, ok}
-%% @doc clears a dirty notify back out.
-%% Both the parent and the child references must point to a cell
-%% @todo extend the references to include rows, columns, ranges, etc, etc
-clear_dirty_notify_back_out(Rec) when is_record(Rec, dirty_notify_back_out) ->
-    ok = mnesia:delete_object(Rec),
     {ok, ok}.
 
 %% @spec get_refs_below(#refX{}) -> [#refX{}]

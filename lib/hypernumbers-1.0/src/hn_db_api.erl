@@ -301,7 +301,7 @@ handle_dirty_notify_in(Record) when is_record(Record, dirty_notify_in) ->
                             {ok, ok} = ?wu:write_attr(RefX, KV)
                     end,
                 [{ok, ok} = Fun2(X)  || X <- Cells],
-                {ok, ok} = ?wu:clear_dirty_notify_in(Parent)
+                {ok, ok} = ?wu:clear_dirty(Record)
         end,
     {ok, ok} = mnesia:activity(transaction, Fun).
 
@@ -348,10 +348,10 @@ handle_dirty_notify_back_out(Record)
                 case Type of
                     "unregister" ->
                         {ok, ok} = ?wu:unregister_out_hn(P, C),
-                        {ok, ok} = ?wu:clear_dirty_notify_back_out(Record);
+                        {ok, ok} = ?wu:clear_dirty(Record);
                     "new child" ->
                         {ok, ok} = ?wu:write_remote_link(P, C, outgoing),
-                        {ok, ok} = ?wu:clear_dirty_notify_back_out(Record)
+                        {ok, ok} = ?wu:clear_dirty(Record)
                 end
         end,
     mnesia:activity(transaction, Fun).
@@ -573,7 +573,7 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
                         exit("need to fix permission handling in "++
                              "hn_db_api:notify_back_create")
                 end,
-                {ok, ok} = ?wu:clear_dirty_inc_hn_create(Record)
+                {ok, ok} = ?wu:clear_dirty(Record)
         end,
     mnesia:activity(transaction, Fun),
     {ok, ok}.
