@@ -555,8 +555,7 @@
 shift_remote_links(From, To, Type)
   when is_record(From, refX), is_record(To, refX),
        ((Type == incoming) orelse (Type == outgoing)) ->
-    FromIdx = hn_util:refX_to_index(From),
-    Head = ms_util:make_ms(remote_cell_link, [{parent, FromIdx}, {type, Type}]),
+    Head = ms_util:make_ms(remote_cell_link, [{parent, From}, {type, Type}]),
     LinkedCells = mnesia:select(remote_cell_link, [{Head, [], ['$_']}]),
     shift_remote_links2(LinkedCells, To).
 
@@ -570,9 +569,8 @@ shift_inc_hns(List, NewParent)
     {ok, ok};
 shift_inc_hns(#incoming_hn{site_and_parent = SP} = Inc_Hn, NewParent)
   when is_record(Inc_Hn, incoming_hn), is_record(NewParent, refX) ->
-    NewPIdx = hn_util:index_from_refX(NewParent),
-    {Site, _OldPIdx} = SP,
-    NewRec = Inc_Hn#incoming_hn{site_and_parent = {Site, NewPIdx}},
+    {Site, _OldP} = SP,
+    NewRec = Inc_Hn#incoming_hn{site_and_parent = {Site, NewParent}},
     ok = mnesia:delete_object(Inc_Hn),
     ok = mnesia:write(NewRec),
     {ok, ok}.
@@ -592,10 +590,8 @@ shift_children(List, OldParent, NewParent)
 shift_children(Child, OldParent, NewParent)
   when is_record(Child, refX), is_record(OldParent, refX),
        is_record(NewParent, refX) ->
-    OIndex = hn_util:refX_to_index(OldParent),
-    OUrl = hn_util:index_to_url(OIndex)++"?hypernumber",
-    NIndex = hn_util:refX_to_index(NewParent),
-    NUrl = hn_util:index_to_url(NIndex)++"?hypernumber",
+    OUrl = hn_util:refX_to_url(OldParent)++"?hypernumber",
+    NUrl = hn_util:refX_to_url(NewParent)++"?hypernumber",
     % io:format("In hn_db_wu:shift_children~n-Child is ~p~n-OldParent is ~p~n-"++
     %          "NewParent is ~p~nOUrl is ~p~n-NUrl is ~p~n",
     %          [Child, OldParent, NewParent, OUrl, NUrl]),
@@ -706,10 +702,8 @@ register_out_hn(Parent, Child, Proxy, Biccie)
 %% @doc does_remote_link_exists checks if a remote link already exists
 does_remote_link_exist(Parent, Child, Type)
   when is_record(Parent, refX), is_record(Child, refX) ->
-    ParentIdx = hn_util:index_from_refX(Parent),
-    ChildIdx = hn_util:index_from_refX(Child),
-    Head = ms_util:make_ms(remote_cell_link, [{parent, ParentIdx},
-                                              {child, ChildIdx},
+    Head = ms_util:make_ms(remote_cell_link, [{parent, Parent},
+                                              {child, Child},
                                               {type, Type}]),
     Match = [{Head, [], ['$_']}],
     case mnesia:dirty_select(remote_cell_link, Match) of
@@ -1818,8 +1812,8 @@ get_match_refs(MatchRef) ->
 
 make_page_match(Site, RefX, RecordName) ->
     #refX{site = S, path = P} = RefX,
-    Match  = ms_util:make_ms(index, [{site, S}, {path, P},
-                                     {column , '$1'}, {row, '$2'}]),
+    Match  = ms_util:make_ms(refX, [{site, S}, {path, P},
+                                     {ref , {cell, {'$1', '$2'}}}]),
     ms_util:make_ms(RecordName, [{site_and_parent, {Site, Match}}]).
 
 make_range_match_ref(RefX, AttrList) ->
@@ -2018,7 +2012,6 @@ fl([H | T], A, B)                           -> fl(T, A, [H | B]).
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 get_local_parents(List) -> get_l_p(List, []).
 
 get_l_p([], Acc) -> Acc;
@@ -2052,16 +2045,13 @@ delete_remote_parents(Child) when is_record(Child, refX) ->
                   Rec = #remote_cell_link{parent = P, child = C,
                                           type = incoming},
                   {ok, ok} = delete_recs([Rec]),
-                  Parent = hn_util:refX_from_index(P),
-                  Child = hn_util:refX_from_index(C),
-                  unregister_inc_hn(Parent, Child)
+                  unregister_inc_hn(P, C)
           end,
     [{ok, ok} = Fun(X) || X <- Parents],
     delete_recs(Parents).
 
-delete_local_parents(RefX)  when is_record(RefX, refX)->
-    Index = hn_util:index_from_refX(RefX),
-    Match = ms_util:make_ms(local_cell_link, [{child, Index}]),
+delete_local_parents(Child)  when is_record(Child, refX)->
+    Match = ms_util:make_ms(local_cell_link, [{child, Child}]),
     Parents = mnesia:match_object(local_cell_link, Match, read),
     delete_recs(Parents).
 
