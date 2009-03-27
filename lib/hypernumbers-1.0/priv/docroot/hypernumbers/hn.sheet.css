@@ -497,6 +497,14 @@ ul,li {
   overflow:visible;
 }
 
+#copied { 
+  display:none;
+  position:absolute;
+  border:2px solid orange;
+  z-index:1000;
+  overflow:visible;
+}
+
 #dragger { 
  height:6px;
  width:6px;
@@ -529,9 +537,18 @@ ul,li {
 #hidden_input {  
   font:11px Arial,"Helvetica Neue", sans-serif;
   position:absolute;
-  top:-1000px;
+  top:-100px;
   left:0px;
   z-index:9999999;
+}
+
+#paste { 
+ position:absolute;
+ top:0px;
+ left:0px;
+ background:transparent;
+ border:0px;
+ width:0px;
 }
 
 #current { 

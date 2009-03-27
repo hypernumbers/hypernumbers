@@ -89,9 +89,20 @@ handle_req('POST', Req, Ref, range, _Attr,
     hn_db_api:drag_n_drop(Ref, Ref#refX{obj = parse_attr(range,Range)}),
     Req:ok({"application/json", "success"});
 
+handle_req('POST', Req, Ref, range, _Attr, 
+           [{"copy", {struct, [{"range", Range}]}}]) ->
+    hn_db_api:copy_n_paste(Ref, Ref#refX{obj = parse_attr(range,Range)}),
+    Req:ok({"application/json", "success"});
+
+
 handle_req('POST', Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
-    %hn_db_api:write_attributes(Ref, Attr),
-    hn_db_api:write_attributes(Ref, Attr),
+    case Attr of 
+        [{"formula",{array,Vals}}] ->
+            post_range_values(Ref, Vals),
+            ok;
+        _Else ->
+            hn_db_api:write_attributes(Ref, Attr)
+    end,
     Req:ok({"application/json", "success"});
 
 handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "all"}]) ->
@@ -270,3 +281,17 @@ from(Key, List) ->
     {value, {Key, Value}} = lists:keysearch(Key, 1, List),
     Value.
 
+post_range_values(Ref, Values) ->
+    F = fun({array, Vals}, Acc) -> 
+                post_column_values(Ref, Vals, Acc), Acc+1 
+        end,
+    lists:foldl(F, 0, Values).
+
+post_column_values(Ref, Values, Offset) ->
+    #refX{obj={range,{X1, Y1, _X2, _Y2}}} = Ref,
+    F = fun(Val, Acc) -> 
+                NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
+                hn_db_api:write_attributes(NRef, [{"formula", Val}]),
+                Acc+1 
+        end,
+    lists:foldl(F, 0, Values).
