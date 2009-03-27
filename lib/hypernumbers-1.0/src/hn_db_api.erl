@@ -76,13 +76,14 @@
 -module(hn_db_api).
 
 -include("spriki.hrl").
--include("hypernumbers.hrl").
 
 -define(copy, hn_db_wu:copy_cell).
--define(counter, mnesia:dirty_update_counter).
 -define(mk_not_back_in_dirty, hn_db_wu:mark_notify_back_in_dirty).
 -define(mk_inc_crt_dirty, hn_db_wu:mark_inc_create_dirty).
 -define(wr_rem_link, hn_db_wu:write_remote_link).
+-define(shift_ch, hn_db_wu:shift_children).
+-define(make_rec, hn_util:dirty_not_bk_in).
+-define(init, initialise_remote_page_vns).
 
 -define(create(Name,Type,Storage),
         fun() ->
@@ -90,6 +91,7 @@
                         {type,Type},{Storage, [node()]}],
                 {atomic,ok} = mnesia:create_table(Name, Attr)
         end()).
+-define(wu, hn_db_wu).
 
 -export([
          write_attributes/2,
@@ -117,17 +119,25 @@
          % delete_style/1,
          % notify/5,
          % notify_back/3,
-         notify_back_create/2,
+         notify_back_create/1,
          read_incoming_hn/2,
          write_remote_link/3,
-         notify_from_web/7,
+         notify_from_web/5,          % <-- changed
          notify_back_from_web/4,
          handle_dirty_cell/1,
          handle_dirty_notify_in/1,
-         handle_dirty_notify_out/5,
-         handle_dirty_notify_back_in/4,
-         handle_dirty_notify_back_out/3,
+
+         handle_dirty_notify_out/1,
+         handle_dirty_notify_back_in/1,
+         handle_dirty_notify_back_out/1,
          register_hn_from_web/4,
+         check_page_vsn/2,
+         initialise_remote_page_vsn/2,
+         % check_remote_page_vsn/3,    % <-- deprecated
+         % check_page_vsns/5,          % <-- deprecated
+         % incr_remote_page_vsn/3,     % <-- deprecated
+         incr_remote_page_vsn/2,
+         resync/2,
          create_db/0
         ]).
 
@@ -136,6 +146,29 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec initialise_remote_page_vsn(Site, Page::#refX{}, Version) -> ok
+%% @doc intialises the page version for a 'newly discovered' remote page.
+%% This function is only called the first time that a remote pages makes a
+%% request and the function {@link read_page_vsn_raw/2} returns 
+%% <code>undefined</code>
+initialise_remote_page_vsn(Site, Version) when is_record(Version, version) ->
+    #version{page = Page, version = V} = Version,
+    RefX = hn_util:url_to_refX(Page),
+    Fun = fun() ->
+                  hn_db_wu:initialise_remote_page_vsn(Site, RefX, V)
+          end,
+    mnesia:activity(transaction, Fun).
+
+%% @spec resync(Site, List) -> {ok, ok}
+%% @doc triggers a resync of the current site to the remote pages.
+%% This function is called when version numbers are out of sync between local 
+%% and remote pages and forces a resynch
+%% @TODO write me, ya bas!
+resync(_Site, List) ->
+    io:format("in hn_db_api:resync - write me ya bas!~n"),
+    % exit("wigging out 'cos resync not written...").
+    {ok, ok}.
+
 %% @spec create_db() -> ok
 %% @doc  Creates the database for hypernumbers
 create_db()->
@@ -161,11 +194,96 @@ create_db()->
     ?create(template,              set, Storage),
     ?create(styles,                bag, Storage), 
     ?create(style_counters,        set, Storage),
-    ?create(page_vsn,              bag, Storage),
-    ?create(page_vsn_counters,     set, Storage),
+    ?create(page_vsn,              set, Storage),
+    ?create(page_history,          bag, Storage),
     hn_users:create("admin","admin"),
     hn_users:create("user","user"),
     ok.
+
+%% @spec incr_remote_page_vsn(Site, Version::#version{}) -> 
+%% {ok, NewVersion} | {error, pages_out_of_synch}
+%% @doc increments the local storage of a page version number for a page on
+%% a remote site if the new increment is one above the old one. If the increment
+%% is greater than 1 returns an error which should trigger a resynch.
+%% Incrementation of page versions for local pages should be done with 
+%% {@link get_new_local_page_vsn/2}
+incr_remote_page_vsn(Site, Version) when is_record(Version, version) ->
+    Fun = fun() ->
+                  hn_db_wu:incr_remote_page_vsn(Site, Version)
+          end,
+    mnesia:activity(transaction, Fun).
+
+%% @spec incr_remote_page_vsn(Site, Page, NewVersion) -> 
+%% [ok | {error, pages_out_of_synch}]
+%% @doc increments the local storage of a page version number for a page on
+%% a remote site if the new increment is one above the old one. If the increment
+%% is greater than 1 returns an error which should trigger a resynch.
+%% Incrementation of page versions for local pages should be done with 
+%% {@link get_new_local_page_vsn/2}
+%incr_remote_page_vsn(Site, Page, NewVersion) ->
+%    Fun = fun() ->
+%                  hn_db_wu:incr_remote_page_vsn(Site, Page, NewVersion)
+%          end,
+%    mnesia:activity(transaction, Fun).
+
+%% @spec check_remote_page_vsn(Site, Page::#refX{}, Version) -> [true | false]
+%% Version = integer()
+%% @doc checks the page version number and triggers a resynch if they are out...
+%check_remote_page_vsn(S, Pg, V)
+%  when is_record(Pg, refX), is_integer(V) ->
+%    Fun =
+%        fun() ->
+%                NewVsn = hn_db_wu:read_page_vsn_raw(S, Pg),
+%                case NewVsn of
+%                    undefined -> ok = ?wu:initialise_remote_page_vsn(S, Pg, V),
+%                                 true;
+%                    V         -> true;
+%                    _         -> io:format("in hn_db_api:check_remote_page_vsn"++
+%                                           "~n-We have a problem~n-"++
+%                                           "S is ~p~n-Pg is ~p~n-"++
+%                                           "V is ~p~n-NewVsn is ~p~n",
+%                                           [S, Pg, V, NewVsn]),
+%                                 false
+%                end
+%        end,
+%    mnesia:activity(transaction, Fun).
+
+%% @spec check_page_vsns(Site, Version::#version{}) -> true | false
+%% @doc checks the page verion numbers for a set of pages
+check_page_vsn(Site, Version) when is_record(Version, version) ->
+    F = fun() ->
+                #version{page = Page, version = OldV} = Version,
+                PageX = hn_util:url_to_refX(Page),
+                NewV = hn_db_wu:read_page_vsn(Site, PageX),
+                case {NewV, OldV} of
+                    {Vsn, Vsn}          -> synched;
+                    {"undefined", OldV} -> ok = ?wu:?init(Site, PageX, OldV),
+                                           synched;
+                    {NewV, "undefined"} -> not_yet_synched;
+                    {NewV, OldV}        -> unsynched
+                end
+        end,
+    mnesia:activity(transaction, F).
+                
+%% @spec check_page_vsns(Site, Parent::#refX{}, PVersion, Child::refX{}, CVersion) 
+%% -> [true | false]
+%% PVersion = integer()
+%% CVersion = integer()
+%% @doc checks the page version numbers for a page
+%check_page_vsns(S, P, PVsn, C, CVsn)
+%  when is_record(P, refX), is_record(C, refX),
+%       is_integer(PVsn), is_integer(CVsn) ->
+%    Fun = fun() ->
+%                  NewPVsn = hn_db_wu:read_page_vsn_raw(S, P),
+%                  NewCVsn = hn_db_wu:read_page_vsn_raw(S, C),
+%                  R1 = check_vsn(NewPVsn, PVsn, S, P),
+%                  R2 = check_vsn(NewCVsn, CVsn, S, P),
+%                  case {R1, R2} of
+%                      {true, true} -> true;
+%                      _            -> false
+%                  end
+%          end,
+%    mnesia:activity(transaction, Fun).
 
 %% @spec register_hn_from_web(Parent::#refX{}, Child::#refX{}, Proxy, Biccie) -> 
 %% list()
@@ -176,10 +294,12 @@ create_db()->
 register_hn_from_web(Parent, Child, Proxy, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
     Fun = fun() ->
-                  hn_db_wu:write_remote_link(Parent, Child, outgoing),
-                  hn_db_wu:register_out_hn(Parent, Child, Proxy, Biccie),
-                  List = hn_db_wu:read_attrs(Parent, ["value", "dependency-tree"]),
+                  ?wu:write_remote_link(Parent, Child, outgoing),
+                  ?wu:register_out_hn(Parent, Child, Proxy, Biccie),
+                  List = ?wu:read_attrs(Parent, ["value", "dependency-tree"]),
                   List2 = extract_kvs(List),
+                  #refX{site = Site} = Parent,
+                  Version = hn_db_wu:read_page_vsn(Site, Parent),
                   V = case lists:keysearch("value", 1, List2) of
                           false           -> "blank";
                           {_, {_, Value}} -> Value
@@ -188,16 +308,18 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
                           false             -> {xml, []};
                           {_, {_, DepTree}} -> DepTree
                       end,                  
-                  [{value, V}, {'dependency-tree', simplexml:to_xml_string(D)}]
-           end,
+                  [{value,             V},
+                   {'dependency-tree', simplexml:to_xml_string(D)},
+                   {parent_vsn,        Version}]
+          end,
     mnesia:activity(transaction, Fun).
-    
-%% @spec handle_dirty_cell(RefX::#refX{}) -> {ok, ok}
+
+%% @spec handle_dirty_cell(DirtyCell::#dirty_cell{}) -> {ok, ok}
 %% @doc handles a dirty cell.
 %% Silently fails if the cell is part of a shared range
 %% @todo extend this to a dirty shared formula
 %% @todo stop the silent fail!
-handle_dirty_cell(#refX{obj = {cell, _}} = RefX)  ->
+handle_dirty_cell(DirtyCell) when is_record(DirtyCell, dirty_cell)  ->
     % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Logging code                                                      %
     % #index{path = Path, row = Row, column = Col} = Index,             %
@@ -205,75 +327,70 @@ handle_dirty_cell(#refX{obj = {cell, _}} = RefX)  ->
     %     ++integer_to_list(Col),                                       %
     % bits:log(Str),                                                    %
     % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    CellIndex = DirtyCell#dirty_cell.index,
+    Cell = hn_util:refX_from_index(CellIndex),
     Fun =
         fun() ->
                 {ok, ok} =
-                    case hn_db_wu:read_attrs(RefX, ["__shared"]) of
-                        [] -> [{C, KV}] = hn_db_wu:read_attrs(RefX, 
-                                                              ["formula"]),
-                              hn_db_wu:write_attr(C, KV);
+                    case ?wu:read_attrs(Cell, ["__shared"]) of
+                        [] -> [{C, KV}] = ?wu:read_attrs(Cell, 
+                                                         ["formula"]),
+                              ?wu:write_attr(C, KV);
                         _  -> {ok, ok}
                     end,
-                {ok, ok} = hn_db_wu:clear_dirty_cell(RefX),
+                {ok, ok} = ?wu:clear_dirty_cell(Cell),
                 ok
         end,
     ok = mnesia:activity(transaction, Fun),
     {ok, ok}.
 
-%% @spec handle_dirty_notify_in(Parent::#refX{}) -> {ok, ok}
-%% DepTree = list()
+%% @spec handle_dirty_notify_in(Record::#dirty_notify_in{}) -> {ok, ok}
 %% @doc handles a dirty notify in.
 %% The reference must be to a cell
 %% @todo implement dirty ranges/functions/queries and stuff
-handle_dirty_notify_in(Parent) when is_record(Parent, refX) ->
+handle_dirty_notify_in(Record) when is_record(Record, dirty_notify_in) ->
+    #dirty_notify_in{parent = Parent} = Record,
     % read the incoming remote children and mark them dirty
-    Fun = fun() ->
-                  Cells = hn_db_wu:read_remote_children(Parent, incoming),
-                  Fun2 = fun(X) ->
-                                 [{RefX, KV}] = hn_db_wu:read_attrs(X, ["formula"]),
-                                 {ok, ok} = hn_db_wu:write_attr(RefX, KV)
-                         end,
-                  [{ok, ok} = Fun2(X)  || X <- Cells],
-                  {ok, ok} = hn_db_wu:clear_dirty_notify_in(Parent),
-                  {ok, ok}
-          end,
-    {ok, ok} = mnesia:activity(transaction, Fun),
-    {ok, ok}.
+    Fun =
+        fun() ->
+                Cells = ?wu:read_remote_children(Parent, incoming),
+                Fun2 =
+                    fun(X) ->
+                            [{RefX, KV}] = ?wu:read_attrs(X, ["formula"]),
+                            {ok, ok} = ?wu:write_attr(RefX, KV)
+                    end,
+                [{ok, ok} = Fun2(X)  || X <- Cells],
+                {ok, ok} = ?wu:clear_dirty_notify_in(Parent)
+        end,
+    {ok, ok} = mnesia:activity(transaction, Fun).
 
-%% @spec handle_dirty_notify_out(Parent::#refX{}, Outgoing, Value, 
-%% DepTree, Timestamp) -> {ok, ok}
-%% DepTree = list()
+%% @spec handle_dirty_notify_out(Record::#dirty_notify_out{}) -> {ok, ok}
 %% @doc handles a dirty notify out.
 %% The reference must be to a cell
 %% @todo implement dirty ranges/functions/queries and stuff
-handle_dirty_notify_out(Parent, Outgoing, Value, DepTree, Timestamp) ->
-    {ok, ok} = horiz_api:notify(Parent, Outgoing, Value, DepTree),
+handle_dirty_notify_out(Record) when is_record(Record, dirty_notify_out) ->
+    {ok, ok} = horiz_api:notify(Record),
     % now delete the dirty outgoing hypernumber
-    PIdx = hn_util:index_from_refX(Parent),
-    Rec = #dirty_notify_out{parent = PIdx, outgoing = Outgoing,
-                             value = Value, timestamp = Timestamp},
-    Fun3 = fun() ->
-                   ok = mnesia:delete_object(Rec)
-           end,
-    ok = mnesia:activity(transaction, Fun3),
+    Fun = fun() ->
+                  ok = mnesia:delete_object(Record)
+          end,
+    ok = mnesia:activity(transaction, Fun),
     {ok, ok}.
 
-%% @spec handle_dirty_notify_back_in(Parent::#refX{}, Child::#refX{}, 
-%% Change, Biccie) -> {ok, ok}
+%% @spec handle_dirty_notify_back_in(Record::#dirty_notify_back_in{}) -> 
+%% {ok, ok}
 %% @doc handles a dirty_notify_back_in message.
 %% Both the parent and the child references must be cell references
 %% @TODO list the full set of possible change messages and how they should
 %% be handled in the docos
-handle_dirty_notify_back_in(P, C, Type, Biccie)
-  when is_record(P, refX), is_record(C, refX),
-       (Type =:= "new child" orelse Type =:= "unregister")->
-    {ok, ok} = horiz_api:notify_back(P, C, Type, Biccie),
+handle_dirty_notify_back_in(Record) when is_record(Record, dirty_notify_back_in) ->
+    {ok, ok} = horiz_api:notify_back(Record),
     Fun = fun() ->
-                  {ok, ok} = hn_db_wu:clear_dirty_notify_back_in(P, C, Type)
+                  {ok, ok} = ?wu:clear_dirty(Record)
           end,
     mnesia:activity(transaction, Fun).
 
-%% @spec handle_dirty_notify_back_out(Parent::#refX{}, Child::#ref{}, Type)
+%% @spec handle_dirty_notify_back_out(Record::#dirty_notify_back_out{})
 %% -> {ok, ok}
 %% @doc handles a dirty notify back out event.
 %% Both the partent and child references must point to a cell
@@ -282,25 +399,24 @@ handle_dirty_notify_back_in(P, C, Type, Biccie)
 %% <li>"unregister"</li>
 %% <li>"new child"</li>
 %% </ul>
-handle_dirty_notify_back_out(P, C, Type)
-    when is_record(P, refX), is_record(C, refX), Type =:= "unregister" ->
+handle_dirty_notify_back_out(Record)
+  when is_record(Record, dirty_notify_back_out) ->
+    #dirty_notify_back_out{parent = P, child = C, change = Type} = Record,
     Fun =
         fun() ->
-                {ok, ok} = hn_db_wu:unregister_out_hn(P, C),
-                {ok, ok} = hn_db_wu:clear_dirty_notify_back_out(P, C, Type)
+                case Type of
+                    "unregister" ->
+                        {ok, ok} = ?wu:unregister_out_hn(P, C),
+                        {ok, ok} = ?wu:clear_dirty_notify_back_out(Record);
+                    "new child" ->
+                        {ok, ok} = ?wu:write_remote_link(P, C, outgoing),
+                        {ok, ok} = ?wu:clear_dirty_notify_back_out(Record)
+                end
         end,
-    mnesia:activity(transaction, Fun);
-handle_dirty_notify_back_out(P, C, Type)
-    when is_record(P, refX), is_record(C, refX), Type =:= "new child" ->
-    Fun = fun() ->
-                  {ok, ok} = hn_db_wu:write_remote_link(P, C, outgoing),
-                  {ok, ok} = hn_db_wu:clear_dirty_notify_back_out(P, C, Type)
-          end,
     mnesia:activity(transaction, Fun).
 
-%% @spec notify_from_web(Parent::#refX{}, Child::#refX{}, Type, Value, 
-%% DepTree, Biccie, Version) -> {ok, ok}
-%% DepTree = list()
+%% @spec notify_from_web(Parent::#refX{}, Child::#refX{}, Type, Payload, 
+%% Biccie, Version) -> {ok, ok}
 %% @doc handles a notify message from the web server.
 %% The parent reference must be cell references.
 %% If this value doesn't match the Biccie on record this update will be logged and
@@ -308,24 +424,121 @@ handle_dirty_notify_back_out(P, C, Type)
 %% Version is the page version of the remote page. If this version is newer that the
 %% page version stored here it will trigger a structural replay of page updates
 %% @todo log the biccie failures
-%% @todo write the page version handling stuff
-notify_from_web(Parent, Child, Type, Value, DepTree, Biccie, Version)
-  when is_record(Parent, refX), is_record(Child, refX),
-       (Type =:= "change" orelse Type =:= "create") ->
+%% @todo this code assumes that the child will notify all dependency tree
+%% changes consequent to the insert/deletes and that we don't need to care
+%% about it - page syncs will 'take care of it' BE SURE THAT THEY DO!
+notify_from_web(Parent, Child, "new_value", Payload, Biccie)
+  when is_record(Parent, refX), is_record(Child, refX) ->
+    #refX{site = ChildSite} = Child,
+    {_, Value, {array, DepTree}} = json_util:json_to_payload(Payload),
     DepTree2 = convertdep(Child, DepTree),
     F = fun() ->
-                case hn_db_wu:verify_biccie_in(Parent, Biccie) of
-                    true ->
-                        {ok, ok} = hn_db_wu:update_inc_hn(Parent, Value, DepTree2,
-                                                          Biccie, Version),
-                        {ok, ok} = hn_db_wu:mark_notify_in_dirty(Parent);
-                    false -> 
-                        ok
-                end,
-                ok
+                case ?wu:verify_biccie_in(ChildSite, Parent, Biccie) of
+                    true  ->
+                        {ok, ok} = ?wu:update_inc_hn(Parent, Child, Value, DepTree2,
+                                                     Biccie);
+                    false ->
+                        {ok, ok}
+                end
         end,
-    ok = mnesia:activity(transaction, F),
+    {ok, ok} = mnesia:activity(transaction, F),
+    {ok, ok};
+notify_from_web(Parent, Child, "insert", Payload, Biccie)
+  when is_record(Parent, refX), is_record(Child, refX) ->
+
+    #refX{site = ChildSite} = Child,
+
+    F = fun() ->
+                case ?wu:verify_biccie_in(ChildSite, Parent, Biccie) of
+                    true  ->
+                        {ok, ok} = notify_from_web2(Parent, Child,
+                                                    Payload, Biccie);
+                    false ->
+                        {ok, ok}
+                end
+        end,
+    {ok, ok} = mnesia:activity(transaction, F),
     {ok, ok}.
+
+notify_from_web2(Parent, Child, Payload, Biccie) ->
+    % this function is called when a insert has been made on a remote page
+    % this function does the following
+    % * read all the #incoming_hn's that are from the page that has had
+    %   the insert and then adjust them
+    % * read all the cells that use the incoming_hn's, rewrite their formulae
+    %   and resave them
+    % * read all the remote_cell_link's that use those incoming_hn's and
+    %   adjust them
+
+    % do some housekeeping
+    % first up unpack the payload
+    {insert, Ref, Displacement} = json_util:json_to_payload(Payload),
+    % now calculate the offset
+    {XOff, YOff} = get_offset(Displacement, Ref),
+    % make the Parent a page parent because multiple notifications
+    % will have been suppresed...
+    PageParent = Parent#refX{obj = {page, "/"}},
+    #refX{site = ChildSite} = Child,
+    % start by reading the incoming_hn's
+    case ?wu:read_incoming_hn(ChildSite, PageParent) of
+        []   ->
+            io:format("in hn_db_api:notify_from_web no incoming "++
+                      "hypernumbers - should log this!~n"),
+            {ok, ok};
+        Inc_Hns ->
+            % now shorten the list to the relevant ones
+            % (ie those 'below' a vertical displacement or
+            % to the 'right' of a horizontal displacement)
+            
+            Inc_Hns2 = shorten(Inc_Hns, Ref, Displacement),
+            
+            % now sort out the incoming_hn's
+            Fun3 = fun(I) ->
+                           #incoming_hn{site_and_parent = {_S, P}} = I,
+                           NewP = shift(P, XOff, YOff),
+                           {ok, ok} = ?wu:shift_inc_hns(I, NewP)
+                   end,
+            lists:foreach(Fun3, Inc_Hns2),
+            
+            % convert the short list of incoming_hn's to refXs
+            Fun4 = fun(#incoming_hn{site_and_parent = {_S, P}}) ->
+                           hn_util:refX_from_index(P)
+                   end,
+            HnsXs = lists:map(Fun4, Inc_Hns2),
+            
+            % io:format("In hn_db_api:notify_from_web~n-"++
+            %           "Inc_Hns  is ~p~n-"++
+            %          "Inc_Hns2 is ~p~n-"++
+            %          "HnsXs    is ~p~n",
+            %          [Inc_Hns, Inc_Hns2, HnsXs]),
+            
+            % Lets process this list of cells
+            % Start by rewriting them
+            
+            % now get the cells that use these incoming hypernumbers
+            % Swap this out, read all the children of an item and then
+            % move that item, then onto the next item...
+            Fun5 =
+                fun(P) ->
+                        case ?wu:read_remote_children(P, incoming) of
+                            [] ->
+                                io:format("in hn_db_api:notify_from_web "++
+                                          "no children of an incoming "++
+                                          "hypernumber - should log "++
+                                          "this!~n"),
+                                {ok, ok};
+                            Children ->
+                                NewP = shift(P, XOff, YOff),
+                                % io:format("in hn_db_api:notify_from_web~n"++
+                                %          "-Children is ~p~n", [Children]),
+                                {ok, ok} = ?shift_ch(Children, P, NewP),
+                                {ok, ok} = ?wu:shift_remote_links(P, NewP,
+                                                                  incoming)
+                        end
+                end,
+            lists:foreach(Fun5, HnsXs),
+            {ok, ok}
+    end.
 
 %% @spec notify_back_from_web(Parent::#refX{}, Child::#refX{}, Biccie, Type) -> 
 %% {ok, ok}
@@ -335,25 +548,24 @@ notify_back_from_web(P, C, B, Type)
   when is_record(P, refX), is_record(C, refX) ->
     Fun =
         fun() ->
-                case hn_db_wu:verify_biccie_out(P, C, B) of
-                    true -> hn_db_wu:mark_notify_back_out_dirty(P, C, Type);
+                case ?wu:verify_biccie_out(P, C, B) of
+                    true -> ?wu:mark_notify_back_out_dirty(P, C, Type);
                     _    -> {ok, ok}
                 end
-          end,
-    ok = mnesia:activity(transaction, Fun),
-    {ok, ok}.
+        end,
+    {ok, ok} = mnesia:activity(transaction, Fun).
 
 %% @spec write_remote_link(Parent::#refX{}, Child::#refX{}, Type) -> {ok, ok}
 %% @doc writes a remote link
 write_remote_link(Parent, Child, Type)
   when is_record(Parent, refX), is_record(Child, refX) ->
     Fun = fun() ->
-                  hn_db_wu:write_remote_link(Parent, Child, Type)
+                  ?wu:write_remote_link(Parent, Child, Type)
           end,
     ok = mnesia:activity(transaction, Fun),
     {ok, ok}.
 
-%% @spec read_incoming_hn(Parent::#refX{}, Child::#refX{}) -> {ok, ok}
+%% @spec read_incoming_hn(Parent::#refX{}, Child::#refX{}) -> {Value, DepTree}
 %% @doc gets the value of an incoming hypernumber
 %% Parent is a reference to a remote cell only
 %% Child is a reference to a local cell only
@@ -362,98 +574,57 @@ write_remote_link(Parent, Child, Type)
 %% hypernumber is set up the 'correct' value will come through as per normal...
 read_incoming_hn(Parent, Child) when is_record(Parent, refX),
                                      is_record(Child, refX) ->
+    #refX{site = ChildSite} = Child,
     F = fun() ->
-                case hn_db_wu:read_incoming_hn(Parent) of
-                    [] ->
+                case ?wu:read_incoming_hn(ChildSite, Parent) of
+                    []   ->
                         {ok, ok} = ?mk_inc_crt_dirty(Parent, Child),
                         % need to write a link
                         {ok, ok} = ?wr_rem_link(Parent, Child, incoming),
                         {blank, []};
-                     Hn ->
+                    [Hn] ->
                         #incoming_hn{value = Val, biccie = Biccie,
                                      'dependency-tree' = DepTree} = Hn,
                         % check if there is a remote cell
-                        RPs = hn_db_wu:read_remote_parents(Child, incoming),
+                        RPs = ?wu:read_remote_parents(Child, incoming),
                         {ok, ok} =
                             case lists:keymember(Parent, 1, RPs) of
                                 false ->
-                                    ?mk_not_back_in_dirty(Parent, Child,
-                                                          "new child", Biccie);
+                                    #refX{site = Site} = Child,
+                                    R = ?make_rec(Site, Parent, Child,
+                                                  "new child", Biccie),
+                                    ?mk_not_back_in_dirty(R);
                                 true  ->
                                     {ok, ok}
                             end,
                         {Val, DepTree}
-               end
+                end
         end,
     mnesia:activity(transaction, F).
 
-%% % @spec notify(Parent::#refX{}, Outgoing, Val, 
-%% % DepTree, Timestamp) -> {ok, ok}
-%% % Val = term() Outgoing = [#outgoing_hn{}] 
-%% % DepTree = list()
-%% % @doc notifies any remote sites that a hypernumber has changed.
-%% % the reference must be for a cell
-%% % @todo generalise the references to row, column, range and page
-%% % the structure of the dirty_notify_out is leaking out here because
-%% % we use timestamps as identifiers instead of unique keys...
-%% % makes it hard to delete
-%notify(Parent, Outgoing, Value, DepTree, Timestamp)
-%  when is_record(Parent, refX) ->
-%    {ok, ok} = horiz_api:notify(Parent, Outgoing, Value, DepTree),
-%    % now delete the dirty outgoing hypernumber
-%    PIdx = hn_util:index_from_refX(Parent),
-%    Rec = #dirty_notify_out{parent = PIdx, outgoing = Outgoing,
-%                             value = Value, timestamp = Timestamp},
-%    Fun3 = fun() ->
-%                   ok = mnesia:delete_object(Rec)
-%           end,
-%    ok = mnesia:activity(transaction, Fun3),
-%    {ok, ok}.
-           
-%% % @spec notify_back(Parent::#refX{}, Child::#refX{}, Change) -> 
-%% % {ok, ok}
-%% % @doc notify's a change of a cell back to its remote hypernumber parent
-%% % <code>#refX{}</code> can be a cell only
-%% % @todo expand the paradigm to include ranges, columns, rows references and 
-%% % queries as things that be remote parents.
-%notify_back(Parent, Child, Change)
-%  when is_record(Child, refX), is_record(Parent, refX) ->
-%    Fun1 = fun() ->
-%                   hn_db_wu:read_incoming_hn(Parent)
-%           end,
-%    Hypernumber = mnesia:activity(transaction, Fun1),
-%    #incoming_hn{biccie = Biccie} = Hypernumber,
-%    {ok, ok} = horiz_api:notify_back(Parent, Child, Change, Biccie),
-%    Fun2 =
-%        fun() ->
-%                {ok, ok} = hn_db_wu:clear_dirty_notify_back(Parent,
-%                                                            Child, Change)
-%        end,
-%    mnesia:activity(transaction, Fun2),
-%    {ok, ok}.
-
-%% @spec notify_back_create(Parent::#refX{}, Child::#refX{}) -> 
-%% {ok, ok}
+%% @spec notify_back_create(Record::#dirty_inc_hn_create{}) -> {ok, ok}
 %% @doc sets up a hypernumbers
 %% @todo expand the paradigm to include ranges, columns, rows references and 
 %% queries as things that be remote parents.
 %% @TODO handle verions
-notify_back_create(Parent, Child)
-  when is_record(Child, refX), is_record(Parent, refX) ->
-    Return = horiz_api:notify_back_create(Parent, Child),
-    Fun2 =
+notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
+
+    #dirty_inc_hn_create{parent = P, child = C, parent_vsn = PVsn} = Record,
+    
+    Return = horiz_api:notify_back_create(Record),
+
+    Fun =
         fun() ->
-                case Return of
-                    {Value, DepTree, Biccie} ->
-                        {ok, ok} = hn_db_wu:update_inc_hn(Parent, Value,
-                                                           DepTree, Biccie, "0");
+                case Return of % will have to add NewCVsn in line below...
+                    {Value, DepT, Biccie, NewPVsn} ->
+                        {ok, ok} = ?wu:update_inc_hn(P, C, Value, DepT, Biccie);
                     {error, permission_denied} ->
                         exit("need to fix permission handling in "++
                              "hn_db_api:notify_back_create")
                 end,
-                {ok, ok} = hn_db_wu:clear_dirty_inc_hn_create(Parent, Child)
+                {ok, ok} = ?wu:clear_dirty_inc_hn_create(Record)
         end,
-    mnesia:activity(transaction, Fun2),
+    mnesia:activity(transaction, Fun),
     {ok, ok}.
 
 %% @spec write_attributes(RefX :: #refX{}, List) -> {ok, ok}     
@@ -470,8 +641,7 @@ notify_back_create(Parent, Child)
 %% </ul>
 write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
     Fun = fun() ->
-                  %[{ok, ok} = hn_db_wu:write_attr(RefX, X) || X <- List]
-                  [hn_db_wu:write_attr(RefX, X) || X <- List]
+                  [?wu:write_attr(RefX, X) || X <- List]
           end,
     mnesia:activity(transaction, Fun),
     {ok, ok}.
@@ -508,7 +678,7 @@ write_last(List) when is_list(List) ->
     [{#refX{site = S, path = P, obj = O} = RefX, _} | _T] = List,
     Fun =
         fun() ->
-                {LastColumnRefX, LastRowRefX} = hn_db_wu:get_last_refs(RefX),
+                {LastColumnRefX, LastRowRefX} = ?wu:get_last_refs(RefX),
                 #refX{obj = {cell, {LastCol, _}}} = LastColumnRefX,
                 #refX{obj = {cell, {_, LastRow}}} = LastRowRefX,
                 % Add 1 to because we are adding data 'as the last row'
@@ -532,10 +702,10 @@ write_last(List) when is_list(List) ->
                                       column -> {cell, {Idx, Pos}}
                                   end,
                             RefX2 = #refX{site = S1, path = P1, obj = Obj},
-                            hn_db_wu:write_attr(RefX2, {"formula", Val})
+                            ?wu:write_attr(RefX2, {"formula", Val})
                     end,
                 [Fun1(X) || X <- List]
-                
+
         end,
     ok = mnesia:activity(transaction, Fun),
     {ok, ok}.
@@ -557,7 +727,7 @@ write_last(List) when is_list(List) ->
 read_attributes(RefX, AttrList) when is_record(RefX, refX),
                                      is_list(AttrList) ->
     Fun = fun() ->
-                  hn_db_wu:read_attrs(RefX, AttrList)
+                  ?wu:read_attrs(RefX, AttrList)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -576,7 +746,7 @@ read_attributes(RefX, AttrList) when is_record(RefX, refX),
 %% </ul>
 read(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  hn_db_wu:read_cells(RefX)
+                  ?wu:read_cells(RefX)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -595,7 +765,7 @@ read(RefX) when is_record(RefX, refX) ->
 %% </ul>
 read_styles(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  hn_db_wu:read_styles(RefX)
+                  ?wu:read_styles(RefX)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -612,8 +782,8 @@ read_styles(RefX) when is_record(RefX, refX) ->
 %% </ul>
 recalculate(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  Cells = hn_db_wu:read_attrs(RefX, ["formula"]),
-                  [{ok, ok} = hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
+                  Cells = ?wu:read_attrs(RefX, ["formula"]),
+                  [{ok, ok} = ?wu:write_attr(X, Y) || {X, Y} <- Cells]
           end,
     mnesia:activity(transaction, Fun).
 
@@ -630,8 +800,8 @@ recalculate(RefX) when is_record(RefX, refX) ->
 %% </ul>
 reformat(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  Cells = hn_db_wu:read_attrs(RefX, ["format"]),
-                  [hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
+                  Cells = ?wu:read_attrs(RefX, ["format"]),
+                  [?wu:write_attr(X, Y) || {X, Y} <- Cells]
           end,
     mnesia:activity(transaction, Fun).
 
@@ -647,30 +817,11 @@ reformat(RefX) when is_record(RefX, refX) ->
 %% @todo This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
 insert(#refX{obj = {column, _}} = RefX)  ->
-    io:format("In hn_db_api:insert (1)~n"),
-    Fun = fun() ->
-                  _NewVsn = get_new_page_vsn(RefX, {insert, column}),
-                  RefXs = hn_db_wu:get_refs_right(RefX),
-                  % shift doesn't commute so it is up to us to sort
-                  % the cells
-                  RefXs2 = dbsort(RefXs, 'right-to-left'),
-                  [hn_db_wu:shift_cell(F, offset(F, {0, 1})) || F <- RefXs2]
-          end,
-    mnesia:activity(transaction, Fun);
+    insert1(RefX, horizontal);
 insert(#refX{obj = {row, _}} = RefX)  ->
-    io:format("In hn_db_api:insert (2)~n"),
-    Fun = fun() ->
-                  _NewVsn = get_new_page_vsn(RefX, {insert, row}),
-                  RefXs = hn_db_wu:get_refs_below(RefX),
-                  % shift doesn't commute so it is up to us to sort
-                  % the cells
-                  RefXs2 = dbsort(RefXs, 'bottom-to-top'),
-                  [hn_db_wu:shift_cell(F, offset(F, {1, 0})) || F <- RefXs2]
-          end,
-    mnesia:activity(transaction, Fun);
+    insert1(RefX, vertical);
 insert(#refX{obj = R} = RefX) when R == cell orelse R == range  ->
-    io:format("In hn_db_api:insert (3)~n"),
-    insert(RefX, vertical).
+    insert1(RefX, vertical).
 
 %% @spec insert(RefX :: #refX{}, Type) -> ok 
 %% Type = [horizontal | vertical]
@@ -680,29 +831,11 @@ insert(#refX{obj = R} = RefX) when R == cell orelse R == range  ->
 %% <ul>
 %% <li>cell</li>
 %% <li>range</li>
-%% </ul>
-insert(#refX{obj = {R, _}} = RefX, Disp) when R == cell orelse R == range ->
-    Fun = fun() ->
-                  _NewVsn = get_new_page_vsn(RefX, {insert, Disp}),
-                  RefXs = hn_db_wu:get_refs_below(RefX),
-                  Sort = case Disp of
-                             vertical   -> 'bottom-to-top';
-                             horizontal -> 'right-to-left'
-                         end,
-                  % we sort the cells so that we don't over right cells...
-                  % so if I am shifting A1 down, I need to move A2 first
-                  % but if I am shifting A7 up I need to move A7 before A8...
-                  RefXs2 = dbsort(RefXs, Sort),
-                  [hn_db_wu:shift_cell(F, offset(F, {0,1})) || F <- RefXs2],
-                  % now notify all parents and children of all cells on
-                  % this page
-                  PageRef = RefX#refX{obj = {page, "/"}},
-                  Children = hn_db_wu:read_outgoing_hns(PageRef),
-                  Parents =  hn_db_wu:read_incoming_hn(PageRef),
-                  io:format("in hn_db_api:insert~n-Parents are ~p~n-"++
-                            "Children are ~p~n", [Parents, Children])
-          end,
-    mnesia:activity(transaction, Fun).
+%% </ul>2
+insert(#refX{obj = {R, _}} = RefX, Disp)
+  when is_record(RefX, refX), (R == cell orelse R == range),
+       (Disp == horizontal orelse Disp == vertical)->
+    insert1(RefX, Disp).
 
 %% @spec delete(Ref :: #refX{}) -> ok
 %% @doc deletes a column or a row or a page
@@ -718,13 +851,13 @@ delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
                column -> horizontal
            end,
     Fun = fun() ->
-                  _NewVsn = get_new_page_vsn(RefX, {delete, Disp}),
-                  hn_db_wu:shift_cell(RefX, Disp, delete)
+                  _NewVsn = hn_db_wu:get_new_local_page_vsn(RefX, {delete, Disp}),
+                  ?wu:shift_cell(RefX, Disp, delete)
           end,
     mnesia:activity(transaction, Fun);
 delete(#refX{obj = {page, _}} = RefX) ->
     Fun = fun() ->
-                  hn_db_wu:delete(RefX)
+                  ?wu:delete(RefX)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -747,15 +880,15 @@ delete(#refX{obj = {page, _}} = RefX) ->
 delete(#refX{obj = {R, _}} = RefX, horizontal) when R == cell orelse R == range ->
     Fun =
         fun() ->
-                _NewVsn = get_new_page_vsn(RefX, {delete, horizontal}),
-                hn_db_wu:shift_cell(RefX, horizontal, delete)
+                _NewVsn = hn_db_wu:get_new_local_page_vsn(RefX, {delete, horizontal}),
+                ?wu:shift_cell(RefX, horizontal, delete)
         end,
     mnesia:activity(transaction, Fun);
 delete(#refX{obj = {R, _}} = RefX, vertical) when R == cell orelse R == range ->
     Fun =
         fun() ->
-                _NewVsn = get_new_page_vsn(RefX, {delete, vertical}),
-                hn_db_wu:shift_cell(RefX, vertical, delete)
+                _NewVsn = hn_db_wu:get_new_local_page_vsn(RefX, {delete, vertical}),
+                ?wu:shift_cell(RefX, vertical, delete)
         end,
     mnesia:activity(transaction, Fun).
 
@@ -789,7 +922,7 @@ clear(RefX) when is_record(RefX, refX) ->
 clear(RefX, Type) when is_record(RefX, refX) ->
     Fun =
         fun() ->
-                hn_db_wu:clear_cells(RefX, Type)
+                ?wu:clear_cells(RefX, Type)
         end,
     mnesia:activity(transaction, Fun).
 
@@ -830,7 +963,7 @@ clear(RefX, Type) when is_record(RefX, refX) ->
 cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   {ok, ok} = copy_n_paste2(From, To),
-                  {ok, ok} = hn_db_wu:clear_cells(From, all)
+                  {ok, ok} = ?wu:clear_cells(From, all)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -924,8 +1057,7 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
                   case is_valid_d_n_d(From, To) of
                       {ok, single_cell, Incr}   -> ?copy(From, To, Incr);
                       {ok, 'onto self', _Incr}  -> {ok, ok};
-                      {ok, cell_to_range, Incr} -> copy2(From, To, Incr);
-                      {ok, _Test, Incr}         -> copy3(From, To, Incr)
+                      {ok, cell_to_range, Incr} -> copy2(From, To, Incr)
                   end
           end,
     mnesia:activity(transaction, Fun).
@@ -935,6 +1067,108 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_offset(Disp, {cell, _})                 -> g_o1(Disp, 1, 1);
+get_offset(Disp, {row, {Y1, Y2}})           -> g_o1(Disp, 0, Y2 - Y1 + 1); 
+get_offset(Disp, {column, {X1, X2}})        -> g_o1(Disp, X2 - X1 + 1, 0); 
+get_offset(Disp, {range, {X1, Y1, X2, Y2}}) -> g_o1(Disp, X2-X1+1, Y2-Y1+1). 
+
+g_o1(vertical, _X, Y) -> {0, Y};
+g_o1(horizontal, X, _Y) ->{X, 0}.
+
+shift(RefX, XOff, YOff) ->
+    #refX{obj = {cell, {XF, YF}}} = RefX,
+    % finally make the new RefX record
+    XT = XF + XOff,
+    YT = YF + YOff,
+    RefX#refX{obj = {cell, {XT, YT}}}.
+
+%% takes a list of incoming hypernumbers and an displacement around a reference
+%% and then only returns those hypernumbers which need to be changed
+shorten(List, {cell, {X, Y}}, Displacement) ->
+    shorten(List, {range, {X, Y, X, Y}}, Displacement);
+shorten(List, {range, {X1, Y1, X2, Y2}} = Range, "vertical") ->
+    {X1a, Y1a, X2a, Y2a} = hn_util:rectify_range(X1, Y1, X2, Y2),
+    Fun = fun(#incoming_hn{site_and_parent = {_Site, Parent}}) ->
+                  #refX{obj = {cell, {MyX, MyY}}} = Parent,
+                  ((MyX >= X1a) and (MyX =< X2a) and (MyY > Y1a))
+          end,
+    lists:filter(Fun, List);
+shorten(List, {range, {X1, Y1, X2, Y2}} = Range, "horizontal") ->
+    {X1a, Y1a, X2a, Y2a} = hn_util:rectify_range(X1, Y1, X2, Y2),
+    Fun = fun(#incoming_hn{site_and_parent = {_Site, Parent}}) ->
+                  #refX{obj = {cell, {MyX, MyY}}} = Parent,
+                  ((MyY >= Y1a) and (MyY =< Y2a) and (MyX > X1a))
+          end,
+    lists:filter(Fun, List);
+shorten(List, {column, {X1, X2}}, "horizontal") ->
+    Fun = fun(#incoming_hn{site_and_parent = {_Site, Parent}}) ->
+                  #refX{obj = {cell, {MyX, _MyY}}} = Parent,
+                  (MyX > X1)
+          end,
+    lists:filter(Fun, List);
+shorten(List, {row, {Y1, Y2}}, "vertical") ->
+    Fun = fun(#incoming_hn{site_and_parent = {_Site, Parent}}) ->
+                  #refX{obj = {cell, {_MyX, MyY}}} = Parent,
+                  (MyY >= Y1)
+          end,
+    lists:filter(Fun, List).
+
+insert1(RefX, Disp) ->
+    #refX{site = Site, obj = {R, Rest} = Ref} = RefX,
+    Fun =
+        fun() ->
+                _NewVsn = hn_db_wu:get_new_local_page_vsn(RefX, {insert, Disp}),
+                Off = get_offset(Disp, Ref),
+                {Sort, RefXs} =
+                    case Disp of
+                        vertical   -> List = ?wu:get_refs_below(RefX),
+                                      {'bottom-to-top', List};
+                        horizontal -> List = ?wu:get_refs_right(RefX),
+                                      {'right-to-left', List}
+                    end,
+                % we sort the cells so that we don't over right cells...
+                % so if I am shifting A1 down, I need to move A2 first
+                % but if I am shifting A7 up I need to move A7 before A8...
+                RefXs2 = dbsort(RefXs, Sort),
+                [{ok, ok} = ?wu:shift_cell(F, offset(F, Off)) || F <- RefXs2],
+                % now notify all parents and children of all cells on
+                % this page
+                PageRef = RefX#refX{obj = {page, "/"}},
+
+                % OK all our local stuff is sorted, now lets deal with the remote
+                % children
+                Children = ?wu:read_outgoing_hns(Site, PageRef),
+                Sites = get_sites(Children),
+                % now notify the children
+                % need to turn the site URL's into page refX's
+                Fun =
+                    fun(X) ->
+                            #outgoing_hn{site_and_parent = {Site, PIdx}} = X,
+                            RefX2 = hn_util:refX_from_index(PIdx),
+                            % now fix it up to be a page reference
+                            Ch = {insert, {R, Rest}, Disp},
+                            V = ?wu:read_page_vsn(Site, RefX2),
+                            % set the delay to zero
+                            {ok, ok} = ?wu:mark_notify_out_dirty(RefX2, Ch, V, 0)
+                    end,
+                lists:foreach(Fun, Sites),
+
+                % Jobs a good'un, now for the remote parents
+                io:format("in hn_db_api:insert1 do something with Parents...~n"),
+                Parents =  ?wu:find_incoming_hn(Site, PageRef),
+                io:format("in hn_db_api:insert1 Parents are ~p~n", [Parents]),
+                {ok, ok}
+        end,
+    mnesia:activity(transaction, Fun).
+
+% site here refers to the site of the outgoing hypernumber and not the site
+% that we are on (ie the Site *OF* the Parent and not the site IN site_and_parent
+get_sites(List) ->
+    Fun = fun(#outgoing_hn{site_and_parent = {_, #index{site = S}}} = O) ->
+                  {S, O}
+          end,
+    hslists:uniq(lists:map(Fun, List)).
+
 %% converts the dependency tree from the 'wire format' to the 'database format'
 convertdep(Child, DepTree) when is_record(Child, refX) ->
     #refX{site = Site} = Child,
@@ -954,17 +1188,6 @@ extract_kvs(List) -> extract_kvs1(List, []).
 
 extract_kvs1([], Acc)             -> Acc;
 extract_kvs1([{_R, KV} | T], Acc) -> extract_kvs1(T, [KV | Acc]).
-
-% create a new version number for a page
-% write it to the database and then
-% returns it...
-get_new_page_vsn(RefX, Action) ->
-    PageRefX = #refX{obj = {page, "/"}},
-    NewVsn = ?counter(page_vsn_counters, PageRefX, 1),
-    Record = #page_vsn{page_refX = PageRefX, action = Action,
-                       action_refX = RefX, version = NewVsn},
-    ok = mnesia:write(Record),
-   NewVsn.
 
 offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
     RefX#refX{obj = {cell, {X + XO, Y + YO}}}.
@@ -990,7 +1213,7 @@ dbsort(List, 'right-to-left') ->
 
 copy_n_paste2(From, To) ->
     case is_valid_c_n_p(From, To) of
-        {ok, single_cell}    -> hn_db_wu:copy_cell(From, To, false);
+        {ok, single_cell}    -> ?wu:copy_cell(From, To, false);
         {ok, 'onto self'}    -> {ok, ok};
         {ok, cell_to_range}  -> copy2(From, To, false);
         {ok, range_to_cell}  -> To2 = cell_to_range(To),
@@ -1022,18 +1245,26 @@ is_valid_d_n_d(#refX{obj = {cell, _}},
     {ok, cell_to_range, horizontal};
 is_valid_d_n_d(#refX{obj = {cell, _}}, #refX{obj = {range, _}}) ->
     {ok, cell_to_range, false};
-
 %% range to range drag'n'drop
 is_valid_d_n_d(#refX{obj = {range, Range}}, #refX{obj = {range, Range}}) ->
     {ok, 'onto self', false};
-is_valid_d_n_d(#refX{obj = {range, {X1, _FY1, X2, _FY2}}},
-               #refX{obj = {range, {X1, _TY1, X2, _TY2}}}) ->
-    {ok, col_range_to_range, vertical};
-is_valid_d_n_d(#refX{obj = {range, {_FX1, Y1, _FX2, Y2}}},
-               #refX{obj = {range, {_TX1, Y1, _TX2, Y2}}}) ->
-    {ok, row_range_to_range, horizontal};
-is_valid_d_n_d(_, _) -> 
-    {error, invalid_range}.
+is_valid_d_n_d(#refX{obj = {range, {FX, FY1, FX, FY2}}},
+               #refX{obj = {range, TRange}}) ->
+    {_TX1, TY1, _TX2, TY2} = TRange,
+    case ((TY2 - TY1) - (FY2 - FY1)) of
+        0    -> {ok, col_range_to_range};
+        true -> {error, "target range is not the same height as the source range"}
+    end;
+is_valid_d_n_d(#refX{obj = {range, {FX1, FY, FX2, FY}}},
+               #refX{obj = {range, TRange}}) ->
+    {TX1, _TY1, TX2, _TY2} = TRange,
+    case ((TX2 - TX1) - (FX2 - FX1)) of
+        0    -> {ok, row_range_to_range};
+        true -> {error, "target range is not the same width as the source range"}
+    end;
+is_valid_d_n_d(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
+    {error, "from range is invalid"};
+is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 
 %% cell to range
 copy2(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
@@ -1055,7 +1286,7 @@ copy3a(From, [H | T], Incr) -> FromRange = hn_util:range_to_list(From),
 
 copy3b([], [], _Incr) -> {ok, ok};
 copy3b([FH | FT], [TH | TT], Incr) ->
-    {ok, ok} = hn_db_wu:copy_cell(FH, TH, Incr),
+    {ok, ok} = ?wu:copy_cell(FH, TH, Incr),
     copy3b(FT, TT, Incr).
 
 get_tiles(#refX{obj = {range, {X1F, Y1F, X2F, Y2F}}},

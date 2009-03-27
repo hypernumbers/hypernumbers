@@ -12,6 +12,8 @@
 -export([ req/1, style_to_css/2 ]).
 
 -define(XHR_TIMEOUT, 10000).
+-define(api, hn_db_api).
+-define(exit, exit("exit from hn_mochi:handle_req impossible page versions")).
 
 req(Req) ->
 
@@ -20,12 +22,12 @@ req(Req) ->
     Url = lists:concat(["http://",Domain,":",itol(Port),Req:get(path)]),
 
     case filename:extension(Req:get(path)) of 
-        
-        %% Serve Static Files
+
+%% Serve Static Files
         X when X == ".png"; X == ".css"; X == ".js"; X == ".ico" ->
             "/"++RelPath = Req:get(path),
             Req:serve_file(RelPath, docroot());
-        
+
         [] ->
             case catch stuff(Url, Req) of 
                 ok   -> ok;
@@ -65,9 +67,9 @@ handle_req('GET', Req, Ref, page, [{"updates", Time}], _Post) ->
 handle_req('GET', Req, Ref, page, [{"attr", []}], _Post) -> 
     Init  = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree  = dh_tree:create(Init),
-    Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
+    Styles = styles_to_css(?api:read_styles(Ref), []),
     NTree = add_styles(Styles, Tree),
-    Dict  = to_dict(hn_db_api:read(Ref), NTree),
+    Dict  = to_dict(?api:read(Ref), NTree),
     Time  = {"time", remoting_reg:timestamp()},
     JSON  = {struct, [Time | dict_to_struct(Dict)]},
     Req:ok({"application/json", mochijson:encode(JSON)});
@@ -76,7 +78,7 @@ handle_req('GET', Req, _Ref, page, _Attr, _Post) ->
     Req:serve_file("hypernumbers/index.html", docroot());
 
 handle_req('GET', Req, Ref, cell, _Attr, _Post) ->
-    Dict = to_dict(hn_db_api:read(Ref), dh_tree:new()),
+    Dict = to_dict(?api:read(Ref), dh_tree:new()),
     JS = case dict_to_struct(Dict) of
              [] -> {struct, []};
              [{_Cells, {struct, [{_Y, {struct, [{_X, JSON}]}}]}}] ->
@@ -101,20 +103,17 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
             post_range_values(Ref, Vals),
             ok;
         _Else ->
-            hn_db_api:write_attributes(Ref, Attr)
+            {ok, ok} = hn_db_api:write_attributes(Ref, Attr)
     end,
     Req:ok({"application/json", "success"});
 
 handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "all"}]) ->
-    %ok = hn_db_api:clear(Ref, all),
-    hn_db_api:clear(Ref, all),
+    {ok, ok} = ?api:clear(Ref, all),
     Req:ok({"application/json", "success"});
 
 handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "contents"}]) ->
-    %ok = hn_db_api:clear(Ref, contents),
-    hn_db_api:clear(Ref, contents),
+    {ok, ok} = ?api:clear(Ref, contents),
     Req:ok({"application/json", "success"});
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -122,25 +121,68 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "contents"}]) ->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back_create"}|T]) ->
-    Biccie   = from("biccie",    T),
-    Proxy    = from("proxy",     T),
-    ChildUrl = from("child_url", T),
-    {ok, ChildRef} = hn_util:parse_url(ChildUrl),
-    {ChildX, _} = hn_util:ref_to_refX(ChildRef, "dont care"),
+    Biccie   = from("biccie",     T),
+    Proxy    = from("proxy",      T),
+    ChildUrl = from("child_url",  T),
+    PVsJson  = from("parent_vsn", T),
+    CVsJson  = from("child_vsn",  T),
+    #refX{site = Site} = Ref,
     ParentX = Ref,
-    Return = hn_db_api:register_hn_from_web(ParentX, ChildX, Proxy, Biccie),
+    ChildX = hn_util:url_to_refX(ChildUrl),
+    % there is only 1 parent and 1 child for this action
+    PVsn = json_util:unjsonify(PVsJson),
+    CVsn = json_util:unjsonify(CVsJson),
+    Sync1 = ?api:check_page_vsn(Site, PVsn),
+    Sync2 = ?api:check_page_vsn(Site, CVsn),
+    case Sync1 of
+        synched        -> ok;
+        unsynched      -> io:format("sync failed for notify_back_create~n-Site is ~p~n-"++
+                           "PVsn is ~p~n", [Site, PVsn]),
+                           ?api:resync(Site, PVsn);
+        not_yet_synched -> {ok, ok} % the child gets the version in this call...
+    end,
+    case Sync2 of
+        synched         -> ok;
+        unsynched       -> io:format("sync failed for notify_back_create~n-Site is ~p~n-"++
+                                     "CVsn is ~p~n", [Site, CVsn]),
+                           ?api:resync(Site, CVsn);
+        not_yet_synched -> io:format("exiting in notify_back_create (chidren)~n"),
+                           ?exit
+    end,
+    Return = ?api:register_hn_from_web(ParentX, ChildX, Proxy, Biccie),
     Req:ok({"application/json", mochijson:encode({struct, Return})});
 
-handle_req('POST', Req, _Ref, _Type, _Attr, [{"action", "notify_back"}|T] = _Json) ->
+handle_req('POST', Req, Ref, _Type, _Attr,
+           [{"action", "notify_back"} |T] = _Json) ->
     Biccie    = from("biccie",     T),
     ChildUrl  = from("child_url",  T),
     ParentUrl = from("parent_url", T),
     Type      = from("type",       T),
-    {ok, ChildRef} = hn_util:parse_url(ChildUrl),
-    {ChildX, _} = hn_util:ref_to_refX(ChildRef, "dont care"),
-    {ok, ParentRef} = hn_util:parse_url(ParentUrl),
-    {ParentX, _} = hn_util:ref_to_refX(ParentRef, "dont care"),
-    {ok, ok}  = hn_db_api:notify_back_from_web(ParentX, ChildX, Biccie, Type),
+    PVsJson   = from("parent_vsn", T),
+    CVsJson   = from("child_vsn",  T),
+    % there is only 1 parent and 1 child here
+    PVsn = json_util:unjsonify(PVsJson),
+    CVsn = json_util:unjsonify(CVsJson),
+    ChildX = hn_util:url_to_refX(ChildUrl),
+    ParentX = hn_util:url_to_refX(ParentUrl),
+    #refX{site = Site} = Ref,
+    Sync1 = ?api:check_page_vsn(Site, CVsn),
+    Sync2 = ?api:check_page_vsn(Site, PVsn),
+    case Sync1 of
+        synched         -> {ok, ok} = ?api:notify_back_from_web(ParentX, ChildX,
+                                                      Biccie, Type);
+        unsynched       -> io:format("sync failed for notify_back~n-Site is ~p~n-"++
+                                      "PVsn is ~p~n", [Site, PVsn]),
+                           ?api:resync(Site, PVsn);
+        not_yet_synched -> ?api:initialise_remote_page_vsn(Site, PVsn)
+    end,
+    case Sync2 of
+        synched         -> {ok, ok};
+        unsynched       -> io:format("sync failed for notify_back_create~n-Site is ~p~n-"++
+                                     "CVsn is ~p~n", [Site, CVsn]),
+                           ?api:resync(Site, CVsn);
+        not_yet_synched -> ?api:initialise_remote_page_vsn(Site, CVsn)
+    end,
     Req:ok({"application/json", "success"});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -149,19 +191,48 @@ handle_req('POST', Req, _Ref, _Type, _Attr, [{"action", "notify_back"}|T] = _Jso
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = _Json) ->
-    Biccie     = from("biccie",          T),
-    ParentUrl  = from("parent_url",      T),
-    Type       = from("type",            T),
-    Value      = from("value",           T),
-    DepTree    = from("dependency-tree", T),
-    Version    = from("version",         T),
-    {ok, ParentRef} = hn_util:parse_url(ParentUrl),
-    {ParentX, _} = hn_util:ref_to_refX(ParentRef, "dont care"),
-    {array, DepTree2} = DepTree,
-    Return = hn_db_api:notify_from_web(ParentX, Ref, Type, Value,
-                                     DepTree2, Biccie, Version),
+    Biccie    = from("biccie",     T),
+    ParentUrl = from("parent_url", T),
+    Type      = from("type",       T),
+    Payload   = from("payload",    T),
+    PVsJson   = from("parent_vsn", T),
+    CVsJson   = from("child_vsn",  T),
+    ParentX = hn_util:url_to_refX(ParentUrl),
+    #refX{site = Site} = ParentX,
+    PVsn = json_util:unjsonify(PVsJson),
+    CVsn = json_util:unjsonify(CVsJson),
+    Sync1 = case Type of
+               "insert"    -> ?api:incr_remote_page_vsn(Site, PVsn);
+               "delete"    -> ?api:incr_remote_page_vsn(Site, PVsn);
+               "new_value" -> ?api:check_page_vsn(Site, PVsn)
+           end,
+    % there is one parent and it if is out of synch, then don't process it, ask for a
+    % resynch
+    case Sync1 of
+        synched         -> {ok, ok} = ?api:notify_from_web(ParentX, Ref, Type,
+                                                           Payload, Biccie);
+        unsynched       -> io:format("sync failed for notify~n-Site is ~p~n-"++
+                                     "PVsn is ~p~n", [Site, PVsn]),
+                           ?api:resync(Site, PVsn);
+        not_yet_synched -> io:format("exiting in notify (parents)~n"),
+                           ?exit
+    end,
+    % there are 1 to many children and if they are out of synch as for 
+    % a resynch for each of them
+    Fun =
+        fun(X) ->
+                Sync2 = ?api:check_page_vsn(Site, X),
+                case Sync2 of
+                    synched         -> {ok, ok};
+                    unsynched       -> io:format("sync failed for notify~n-Site is ~p~n-"++
+                                                 "CVsn is ~p~n", [Site, X]),
+                                       ?api:resync(Site, X);
+                    not_yet_synched -> io:format("exiting in notify(children)~n"),
+                                       ?exit
+                end
+        end,
+    [Fun(X) || X <- CVsn],
     Req:ok({"application/json", "success"});
-
 
 handle_req(_Method, Req, _Ref, _Type,  _Attr, _Post) ->
     ?INFO("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
@@ -276,7 +347,7 @@ style_att(X, Rec, Acc) ->
             A = io_lib:format("~s:~s;",[Name, element(X,Rec)]),
             style_att(X-1, Rec, [A | Acc])
     end.
-    
+
 from(Key, List) -> 
     {value, {Key, Value}} = lists:keysearch(Key, 1, List),
     Value.
@@ -291,7 +362,8 @@ post_column_values(Ref, Values, Offset) ->
     #refX{obj={range,{X1, Y1, _X2, _Y2}}} = Ref,
     F = fun(Val, Acc) -> 
                 NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
-                hn_db_api:write_attributes(NRef, [{"formula", Val}]),
+                {ok, ok} = hn_db_api:write_attributes(NRef,
+                                                      [{"formula", Val}]),
                 Acc+1 
         end,
     lists:foldl(F, 0, Values).

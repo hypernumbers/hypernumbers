@@ -120,22 +120,24 @@ get_ref_from_name(Name) ->
 %% return an index pointing to it 
 %% If the style already exists it just returns the index 
 write_style(Addr, Style) ->
-    Ref = Addr#ref{ref = {page, "/"}, name = "style", auth = []}, 
+    Ref = Addr#ref{ref = {page, "/"}, name = "style", auth = []},
+    {RefX, _} = hn_util:ref_to_refX(ref, "dont care"),
     Fun1 = fun() -> 
-                   Match = #styles{ref = Ref, magic_style = Style, _ = '_'}, 
+                   Match = #styles{refX = RefX, magic_style = Style, _ = '_'}, 
                    mnesia:match_object(styles, Match, read) 
            end, 
     case mnesia:activity(async_dirty, Fun1) of 
-        []              -> write_style2(Addr, Style); 
+        []              -> write_style2(RefX, Style); 
         [ExistingStyle] -> #styles{index = NewIndex} = ExistingStyle, 
                            NewIndex 
     end. 
 
 write_style2(Addr, Style) -> 
     Ref = Addr#ref{ref = {page, "/"}, name = "style", auth = []}, 
-    NewIndex = mnesia:dirty_update_counter(style_counters, Ref, 1), 
+    {RefX, _} = hn_util:ref_to_refX(ref, "dont care"),
+    NewIndex = mnesia:dirty_update_counter(style_counters, RefX, 1), 
     Fun = fun() -> 
-                  mnesia:write(#styles{ref = Ref, index = NewIndex,
+                  mnesia:write(#styles{refX = RefX, index = NewIndex,
                                        magic_style = Style}) 
           end, 
     ok = mnesia:activity(transaction, Fun), 

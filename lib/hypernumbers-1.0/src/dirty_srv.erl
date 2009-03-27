@@ -22,6 +22,8 @@
          terminate/2,
          code_change/3]).
 
+-define(api, hn_db_api).
+
 %% @spec start_link(Arg) -> StartLink
 %% @doc  start a link between this and supervisor
 start_link(Arg) -> 
@@ -34,14 +36,8 @@ init([Type]) ->
 
 %% @spec handle_info(Event,State) -> {noreply, State}
 %% @doc  handle events from subscription to mnesia
-handle_info({mnesia_table_event, {write, Table, Rec, OldRecs, ActId}}, State) ->
-%    case Table of
-%        dirty_notify_back_in -> io:format("In handle Info~n-Rec is ~p~n-"++
-%                                          "OldRecs are ~p~n-"++
-%                                          "ActId is ~p~n",
-%                                          [Rec, OldRecs, ActId]);
-%        _                    -> ok
-%    end,
+handle_info({mnesia_table_event, {write, _Table, Rec, _OldRecs, _ActId}},
+            State) ->
     case State#state.state of
         passive -> ok;
         active  -> process_dirty(Rec, State#state.type)
@@ -139,43 +135,25 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% @spec process_dirty(Record, Type) -> ok
 %% @doc  processes the dirty record
-process_dirty(Rec, dirty_cell) ->
-     CellIndex = Rec#dirty_cell.index,
-    Cell = hn_util:refX_from_index(CellIndex),
-    {ok, ok} = hn_db_api:handle_dirty_cell(Cell),
+process_dirty(Record, dirty_cell) ->
+    {ok, ok} = ?api:handle_dirty_cell(Record),
     ok;
-process_dirty(Rec, dirty_inc_hn_create) ->
-     #dirty_inc_hn_create{parent = ParentIdx, child = ChildIdx} = Rec,
-    Parent = hn_util:refX_from_index(ParentIdx),
-    Child = hn_util:refX_from_index(ChildIdx),
-    {ok, ok} = hn_db_api:notify_back_create(Parent, Child),
+process_dirty(Record, dirty_inc_hn_create) ->
+    {ok, ok} = ?api:notify_back_create(Record),
     ok;
-process_dirty(Rec, dirty_notify_in) ->
-     #dirty_notify_in{parent = PIdx} = Rec,
-    Parent = hn_util:refX_from_index(PIdx),
-    {ok, ok} = hn_db_api:handle_dirty_notify_in(Parent),
+process_dirty(Record, dirty_notify_in) ->
+    {ok, ok} = ?api:handle_dirty_notify_in(Record),
     ok;
-process_dirty(Rec, dirty_notify_out) ->
-     #dirty_notify_out{parent = ParentIdx, outgoing = O,
-                      value = V, 'dependency-tree' = DepTree,
-                      timestamp = T} = Rec,
-    Parent = hn_util:refX_from_index(ParentIdx),
-    {ok, ok} = hn_db_api:handle_dirty_notify_out(Parent, O, V, DepTree, T),
+process_dirty(Record, dirty_notify_out) ->
+    #dirty_notify_out{delay = Delay} = Record,
+    ok = timer:sleep(Delay),
+    {ok, ok} = ?api:handle_dirty_notify_out(Record),
     ok;
-process_dirty(Rec, dirty_notify_back_in) ->
-    #dirty_notify_back_in{parent = ParentIdx, child = ChildIdx,
-                           change = Change, biccie = Biccie} = Rec,
-    Parent = hn_util:refX_from_index(ParentIdx),
-    Child = hn_util:refX_from_index(ChildIdx),
-    {ok, ok} = hn_db_api:handle_dirty_notify_back_in(Parent, Child,
-                                                     Change, Biccie),
+process_dirty(Record, dirty_notify_back_in) ->
+    {ok, ok} = ?api:handle_dirty_notify_back_in(Record),
     ok;
-process_dirty(Rec, dirty_notify_back_out) ->
-     #dirty_notify_back_out{parent = ParentIdx, child = ChildIdx,
-                           change = Type} = Rec,
-    Parent = hn_util:refX_from_index(ParentIdx),
-    Child = hn_util:refX_from_index(ChildIdx),
-    {ok, ok} = hn_db_api:handle_dirty_notify_back_out(Parent, Child, Type),
+process_dirty(Record, dirty_notify_back_out) ->
+    {ok, ok} = ?api:handle_dirty_notify_back_out(Record),
     ok.
 
 %%%

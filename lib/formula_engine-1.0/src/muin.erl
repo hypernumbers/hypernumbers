@@ -101,6 +101,9 @@ eval(Node = [Func|Args]) when ?is_fn(Func) ->
 eval(Value) ->
     Value.
 
+% this function captures thrown errors - including those thrown
+% when Mnesia is unrolling a transaction. When the '{aborted, {cyclic...'
+% exception is caught it must be rethrown...
 call(Func, Args) ->
     R = attempt(?MODULE, funcall, [Func, Args]),
     case R of
@@ -139,7 +142,7 @@ funcall(name, [Name, Path]) ->
 
 %% Hypernumber function and its shorthand.
 funcall(hypernumber, [Url]) ->
-    {ok,#ref{site = RSite, path = RPath,
+    {ok, #ref{site = RSite, path = RPath,
              ref = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
     F = fun() -> get_hypernumber(?msite, ?mpath, ?mx, ?my, Url, RSite, RPath, RX, RY) end,
     get_value_and_link(F);
@@ -246,6 +249,7 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
 
     Child  = #refX{site = MSite, path = NewMPath, obj ={cell, {MX, MY}}},
     Parent = #refX{site = RSite, path = NewRPath, obj ={cell, {RX, RY}}},
+
     case hn_db_api:read_incoming_hn(Parent, Child) of
         
         {error,permission_denied} ->

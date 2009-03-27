@@ -18,7 +18,9 @@
 -export([
          % HyperNumbers Utils
          jsonify_val/1,
+         dirty_not_bk_in/5,
 
+         refX_to_url/1,
          index_to_url/1,
          ref_to_str/1,
          xml_to_val/1,
@@ -60,6 +62,17 @@
          url_to_refX/1
         ]).
 
+dirty_not_bk_in(Site, Parent, Child, Msg, B) ->
+    CVsn = hn_db_wu:read_page_vsn(Site, Child),
+    PVsn = hn_db_wu:read_page_vsn(Site, Parent),
+    ParentUrl = hn_util:refX_to_url(Parent),
+    PVsn2 = #version{page = ParentUrl, version = PVsn},
+    ChildUrl = hn_util:refX_to_url(Child),
+    CVsn2 = #version{page = ChildUrl, version = CVsn},
+    #dirty_notify_back_in{parent = Parent, child = Child, change = Msg,
+                          biccie = B, parent_vsn = PVsn2, child_vsn = CVsn2}.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% These functions convert to and from #refX, #ref, #hn_item                %%%
@@ -73,7 +86,7 @@ jsonify_val({"__groups", _}) ->
 jsonify_val({"dependency-tree", _}) ->
     {"dependency-tree", "bleh"};
 jsonify_val({"parents", _}) ->
-    {"parents", "bleh"};
+    {"parents", "bleh"};    
 jsonify_val({Name, {errval, Error}}) ->
     {Name, atom_to_list(Error)};
 jsonify_val({Name, {datetime, Date, Time}}) ->
@@ -81,7 +94,7 @@ jsonify_val({Name, {datetime, Date, Time}}) ->
 jsonify_val(Else) ->
     Else.
 
-url_to_refX({url, [{type, _}], [Url]}) ->
+url_to_refX(Url) ->
     {ok, Ref} = parse_url(Url),
     {RefX, _} = ref_to_refX(Ref, "to be chucked away"),
     RefX.
@@ -154,6 +167,19 @@ range_to_list2(RefX, Reset, X1, Y1, X2, Y2, Acc) ->
     range_to_list2(RefX, Reset, X1 + 1, Y1, X2, Y2,
                    [RefX#refX{obj = {cell, {X1, Y1}}} | Acc]).
 
+refX_to_url(#refX{site = Site, path = Path, obj = {cell, {X, Y}}}) ->
+    lists:append([Site, list_to_path(Path), tconv:to_b26(X), text(Y)]);
+refX_to_url(#refX{site = Site, path = Path, obj = {column, {X1, X2}}}) ->
+    lists:append([Site, list_to_path(Path), tconv:to_b26(X1), ":",
+                  tconv:to_b26(X2)]);
+refX_to_url(#refX{site = Site, path = Path, obj = {row, {Y1, Y2}}}) ->
+    lists:append([Site, list_to_path(Path), text(Y1), text(Y2)]);
+refX_to_url(#refX{site = Site, path = Path, obj ={range, {X1, Y1, X2, Y2}}}) ->
+    lists:append([Site, list_to_path(Path), tconv:to_b26(X1), text(Y1), ":",
+                  tconv:to_b26(X2), text(Y2)]);
+refX_to_url(#refX{site = Site, path = Path, obj = {page, "/"}}) ->
+    lists:append([Site, list_to_path(Path)]).
+            
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
     lists:append([Site, list_to_path(Path),tconv:to_b26(X), text(Y)]).
 
