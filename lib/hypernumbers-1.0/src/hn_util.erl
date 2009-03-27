@@ -18,7 +18,6 @@
 -export([
          % HyperNumbers Utils
          jsonify_val/1,
-         dirty_not_bk_in/5,
 
          refX_to_url/1,
          index_to_url/1,
@@ -61,17 +60,6 @@
          index_from_ref/1,
          url_to_refX/1
         ]).
-
-dirty_not_bk_in(Site, Parent, Child, Msg, B) ->
-    CVsn = hn_db_wu:read_page_vsn(Site, Child),
-    PVsn = hn_db_wu:read_page_vsn(Site, Parent),
-    ParentUrl = hn_util:refX_to_url(Parent),
-    PVsn2 = #version{page = ParentUrl, version = PVsn},
-    ChildUrl = hn_util:refX_to_url(Child),
-    CVsn2 = #version{page = ChildUrl, version = CVsn},
-    #dirty_notify_back_in{parent = Parent, child = Child, change = Msg,
-                          biccie = B, parent_vsn = PVsn2, child_vsn = CVsn2}.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

@@ -604,7 +604,7 @@ copy_DEBUG() ->
 
 %% @hidden
 delete_cell_contents_DEBUG(Site, Path) ->
-    Target = #ref{site = Site, path = Path, ref = {range, {1, 1, 30, 30}}},
+    Target = #refX{site = Site, path = Path, obj = {range, {1, 1, 30, 30}}},
     clear(Target, contents).
 
 %% @hidden

@@ -495,12 +495,9 @@
          copy_attrs/3,
          get_cells/1,
          mark_cells_dirty/1,
-         mark_inc_create_dirty/2,
-         mark_notify_in_dirty/2,
+         mark_dirty/1,
          mark_notify_out_dirty/2,            
          mark_notify_out_dirty/3,      
-         mark_notify_back_in_dirty/1,
-         mark_notify_back_out_dirty/3,
          update_inc_hn/5,
          shift_inc_hns/2,
          does_remote_link_exist/3,
@@ -617,7 +614,7 @@ initialise_remote_page_vsn(Site, RefX, Version)
     Record = #page_vsn{site_and_pg = {Site, Page}, version = Version},
     mnesia:write(Record).
 
-%% @spec incr_remote_page_vsn(Site, Page::#refX{}, NewVersion) -> 
+%% @spec incr_remote_page_vsn(Site, Version::#version{}) -> 
 %% [ok | {error, pages_out_of_synch}]
 %% NewVersion = integer()
 %% @doc increments the local storage of a page version number for a page on
@@ -749,42 +746,15 @@ verify_biccie_in(Site, Parent, Biccie) when is_record(Parent, refX) ->
                 end
     end.
 
-%% @spec mark_notify_back_in_dirty(Parent::#refX{}, Child::#refX{}, 
-%% Msg, Biccie, Version) -> 
-%% {ok, ok}
-%% Version = integer()
-%% @doc marks a child of a remote hypernumber as dirty so that the remote 
-%% (parent) site is to be notified that the link has been created or changed.
-%% Both Child and Parent must be a cell reference.
-%% The message can be one of:
-%% <ul>
-%% <li>unregister</li>
-%% <li>new child</li>
-%% </ul>
-mark_notify_back_in_dirty(Rec) when is_record(Rec, dirty_notify_back_in) ->
-    mnesia:write(Rec),
-    {ok, ok}.
-
-%% @spec mark_notify_back_out_dirty(Parent::#refX{}, Child::#refX{}, Msg) -> 
-%% {ok, ok}
-%% @doc marks the parent of a hypernumber as dirty because a remote site
-%% has sent a message about changes to a child of that cell.
-%% Both Child and Parent must be a cell referece.
-%% The message can be one of:
-%% <ul>
-%% <li>unregister</li>
-%% <li>new_child</li>
-%% </ul>
-mark_notify_back_out_dirty(Parent, Child, Msg)
-  when is_record(Parent, refX), is_record(Child, refX) ->
-    Rec = #dirty_notify_back_out{child = Child, parent = Parent, change = Msg},
-    Match = ms_util:make_ms(dirty_notify_back_out, [{parent, Parent},
-                                                    {child, Child},
-                                                    {change, Msg}]),
-    case mnesia:match_object(Match) of
-        [] -> ok = mnesia:write(Rec);
-        _  -> ok
-    end,
+%% @spec mark_dirty(Record) -> {ok, ok}
+%% Record = #dirty_notify_back_in{} | #dirty_notify_in{}
+%% @doc writes a record to the appropriate dirty table
+mark_dirty(Record)
+  when (is_record(Record, dirty_notify_back_in)
+        orelse is_record(Record, dirty_notify_in)
+        orelse is_record(Record, dirty_notify_back_out)
+        orelse is_record(Record, dirty_inc_hn_create)) ->
+    mnesia:write(Record),
     {ok, ok}.
 
 %% @spec write_remote_link(Parent::#refX{}, Child::#refX{}, Type) -> {ok, ok}
@@ -799,9 +769,8 @@ write_remote_link(P, C, Type)
     {ok, ok}.
 
 %% @spec update_inc_hn(Parent::#refX{}, Child::#refX{}, Val, 
-%% DepTree, Biccie, Version) -> {ok, ok}
+%% DepTree, Biccie) -> {ok, ok}
 %% DepTree = list()
-%% Version = integer()
 %% @doc update_inc_hn will try and update the incoming hypernumber with
 %% a new value.
 %% Both Parent and Child must be cell references
@@ -809,25 +778,11 @@ write_remote_link(P, C, Type)
 update_inc_hn(Parent, Child, Val, DepTree, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
     #refX{site = ChildSite} = Child,
-    Rec = #incoming_hn{site_and_parent = {ChildSite, Parent}, value = Val,
+    Rec1 = #incoming_hn{site_and_parent = {ChildSite, Parent}, value = Val,
                        'dependency-tree' = DepTree, biccie = Biccie},
-    ok = mnesia:write(Rec),
-    {ok, ok} = mark_notify_in_dirty(Parent, Child),
-    {ok, ok}.
-
-%% @spec mark_inc_create_dirty(Parent::#refX{}, Child::#refX{}) -> {ok, ok}
-%% @doc marks a hypernmber (a remote reference) as not yet created.
-%% The reference is to a cell only
-mark_inc_create_dirty(Parent, Child) when is_record(Parent, refX),
-                                          is_record(Child, refX)->
-    #refX{site = Site} = Child,
-    ChildUrl = hn_util:refX_to_url(Child),
-    ParentUrl = hn_util:refX_to_url(Parent),
-    PVsn = #version{page = ParentUrl, version = read_page_vsn(Site, Parent)},
-    CVsn = #version{page = ChildUrl, version = read_page_vsn(Site, Child)},
-    Rec = #dirty_inc_hn_create{parent = Parent, child = Child,
-                               parent_vsn = PVsn, child_vsn = CVsn},
-    ok = mnesia:write(Rec),
+    ok = mnesia:write(Rec1),
+    Rec2 = #dirty_notify_in{parent = Parent},
+    {ok, ok} = mark_dirty(Rec2),
     {ok, ok}.
 
 %% @spec get_cells(RefX::#refX{}) -> [#refX{}]
@@ -916,7 +871,7 @@ clear_dirty_notify_back_in(Parent, Child, Change)
     ok = mnesia:delete_object(Record),
     {ok, ok}.
 
-%% @spec clear_dirty_notify_back_out(Parent::#refX{}, Child::#refX{}, Change) -> 
+%% @spec clear_dirty_notify_back_out(Record::#dirty_notify_back_out{}) -> 
 %% {ok, ok}
 %% @doc clears a dirty notify back out.
 %% Both the parent and the child references must point to a cell
@@ -1250,9 +1205,8 @@ read_attrs(#refX{obj = {page, _}} = RefX, Attrs) when is_list(Attrs) ->
 %% 
 %% <em>NOTE</em> this function doesn't pass any messages on to parents or
 %% children on other websites - that is done in the API layer by calling
-%% {@link hn_db_wu:mark_notify_out_dirty/2} and 
-%% {@link hn_db_wu:mark_notify_back_in_dirty/4} with the appropriate change
-%% message
+%% {@link hn_db_wu:mark_dirty/1} with <code>dirty_notify_out</code> and 
+%% <code>dirty_notify_back_in</code> records as appropriate
 shift_cell(From, To) when is_record(From, refX), is_record(To, refX) ->
     % the order is IMPORTANT (I think) GG :(
     {ok, ok} = shift_dirty_cells(From, To),
@@ -1536,14 +1490,6 @@ mark_cells_dirty(RefX) when is_record(RefX, refX) ->
     [{ok, ok} = mark_cells_dirty(X) || X <- Cells],
     {ok, ok}.
 
-%% @spec mark_notify_in_dirty(Parent::#refX{}, Child::#refX{})
-%%  -> {ok, ok}
-%% @doc marks a remote parent as dirty
-mark_notify_in_dirty(Parent, Child)
-  when is_record(Parent, refX), is_record(Child, refX)  ->
-    mnesia:write(#dirty_notify_in{parent = Parent}),
-    {ok, ok}.
-
 %% @spec mark_notify_out_dirty(Parent::#refX{}, Change)  -> {ok, ok}
 %% Change = {new_value, Value, DepTree} | {insert, Obj, Disp} | {delete, Obj, Disp}
 %% DepTree = list()
@@ -1692,10 +1638,13 @@ unregister_inc_hn(Parent, Child)
              [] -> mnesia:delete({incoming_hn, Parent});
              _  -> ok % somebody else still wants it so don't unregister
          end,
-    % tell the remote site the page version of THIS page and not THAT one...
-    Version = hn_db_wu:read_page_vsn(ChildSite, Child),
-    Rec = hn_util:dirty_not_bk_in(ChildSite, Parent, Child, "unregister", Biccie),
-    {ok, ok} = mark_notify_back_in_dirty(Rec).
+    CVsn = hn_db_wu:read_page_vsn(ChildSite, Child),
+    PVsn = hn_db_wu:read_page_vsn(ChildSite, Parent),
+    Rec = #dirty_notify_back_in{parent = Parent, child = Child,
+                                change = "new child",
+                                biccie = Biccie, parent_vsn = PVsn,
+                                child_vsn = CVsn},
+    {ok, ok} = mark_dirty(Rec).
 
 get_refXs(List) -> get_refXs(List, []).
 
@@ -1813,7 +1762,7 @@ get_match_refs(MatchRef) ->
 make_page_match(Site, RefX, RecordName) ->
     #refX{site = S, path = P} = RefX,
     Match  = ms_util:make_ms(refX, [{site, S}, {path, P},
-                                     {ref , {cell, {'$1', '$2'}}}]),
+                                     {obj, {cell, {'$1', '$2'}}}]),
     ms_util:make_ms(RecordName, [{site_and_parent, {Site, Match}}]).
 
 make_range_match_ref(RefX, AttrList) ->

@@ -78,8 +78,6 @@
 -include("spriki.hrl").
 
 -define(copy, hn_db_wu:copy_cell).
--define(mk_not_back_in_dirty, hn_db_wu:mark_notify_back_in_dirty).
--define(mk_inc_crt_dirty, hn_db_wu:mark_inc_create_dirty).
 -define(wr_rem_link, hn_db_wu:write_remote_link).
 -define(shift_ch, hn_db_wu:shift_children).
 -define(make_rec, hn_util:dirty_not_bk_in).
@@ -143,7 +141,7 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% @spec initialise_remote_page_vsn(Site, Page::#refX{}, Version) -> ok
+%% @spec initialise_remote_page_vsn(Site, Version) -> ok
 %% @doc intialises the page version for a 'newly discovered' remote page.
 %% This function is only called the first time that a remote pages makes a
 %% request and the function {@link read_page_vsn_raw/2} returns 
@@ -210,7 +208,7 @@ incr_remote_page_vsn(Site, Version) when is_record(Version, version) ->
           end,
     mnesia:activity(transaction, Fun).
 
-%% @spec check_page_vsns(Site, Version::#version{}) -> true | false
+%% @spec check_page_vsn(Site, Version::#version{}) -> true | false
 %% @doc checks the page verion numbers for a set of pages
 check_page_vsn(Site, Version) when is_record(Version, version) ->
     F = fun() ->
@@ -359,7 +357,7 @@ handle_dirty_notify_back_out(Record)
     mnesia:activity(transaction, Fun).
 
 %% @spec notify_from_web(Parent::#refX{}, Child::#refX{}, Type, Payload, 
-%% Biccie, Version) -> {ok, ok}
+%% Biccie) -> {ok, ok}
 %% @doc handles a notify message from the web server.
 %% The parent reference must be cell references.
 %% If this value doesn't match the Biccie on record this update will be logged and
@@ -492,7 +490,10 @@ notify_back_from_web(P, C, B, Type)
     Fun =
         fun() ->
                 case ?wu:verify_biccie_out(P, C, B) of
-                    true -> ?wu:mark_notify_back_out_dirty(P, C, Type);
+                    true -> Rec = #dirty_notify_back_out{child = C, parent = P,
+                                                         change = Type},
+
+                            ?wu:mark_dirty(Rec);
                     _    -> {ok, ok}
                 end
         end,
@@ -515,28 +516,35 @@ write_remote_link(Parent, Child, Type)
 %% If the hypernumber requested hasn't been set up yet, this function will
 %% trigger a creation process and return 'blank' for the moment... when the
 %% hypernumber is set up the 'correct' value will come through as per normal...
-read_incoming_hn(Parent, Child) when is_record(Parent, refX),
-                                     is_record(Child, refX) ->
-    #refX{site = ChildSite} = Child,
+read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
+    #refX{site = CSite} = C,
+    CUrl = hn_util:refX_to_url(C),
+    PUrl = hn_util:refX_to_url(P),
+    PVsn = #version{page = PUrl, version = ?wu:read_page_vsn(CSite, P)},
+    CVsn = #version{page = CUrl, version = ?wu:read_page_vsn(CSite, C)},
     F = fun() ->
-                case ?wu:read_incoming_hn(ChildSite, Parent) of
+                case ?wu:read_incoming_hn(CSite, P) of
                     []   ->
-                        {ok, ok} = ?mk_inc_crt_dirty(Parent, Child),
+                        Rec = #dirty_inc_hn_create{parent = P, child = C,
+                                                   parent_vsn = PVsn, child_vsn = CVsn},
+                        {ok, ok} = ?wu:mark_dirty(Rec),
                         % need to write a link
-                        {ok, ok} = ?wr_rem_link(Parent, Child, incoming),
+                        {ok, ok} = ?wr_rem_link(P, C, incoming),
                         {blank, []};
                     [Hn] ->
-                        #incoming_hn{value = Val, biccie = Biccie,
+                        #incoming_hn{value = Val, biccie = B,
                                      'dependency-tree' = DepTree} = Hn,
                         % check if there is a remote cell
-                        RPs = ?wu:read_remote_parents(Child, incoming),
+                        RPs = ?wu:read_remote_parents(C, incoming),
                         {ok, ok} =
-                            case lists:keymember(Parent, 1, RPs) of
+                            case lists:keymember(P, 1, RPs) of
                                 false ->
-                                    #refX{site = Site} = Child,
-                                    R = ?make_rec(Site, Parent, Child,
-                                                  "new child", Biccie),
-                                    ?mk_not_back_in_dirty(R);
+                                    R = #dirty_notify_back_in{parent = P, child = C,
+                                                              change = "new child",
+                                                              biccie = B,
+                                                              parent_vsn = PVsn,
+                                                              child_vsn = CVsn},
+                                    ?wu:mark_dirty(R);
                                 true  ->
                                     {ok, ok}
                             end,

@@ -22,7 +22,7 @@
          notify_back/1,
          notify_back_create/1]).
          
-%% @spec notify(Record::#dirty_notify_out) -> {ok, ok}
+%% @spec notify(Record::#dirty_notify_out{}) -> {ok, ok}
 %% @doc notifies any remote sites that a hypernumber has changed.
 %% the reference must be for a cell
 %% @todo generalise the references to row, column, range and page
@@ -86,8 +86,7 @@ notify_back(Record) when is_record(Record, dirty_notify_back_in) ->
     "success" = hn_util:post(Server,Actions,"application/json"),
     {ok, ok}.
 
-%% @spec notify_back_create(Parent::#refX{}, Child::#refX{}, Version) -> {ok, ok}
-%% Version = integer()
+%% @spec notify_back_create(Record::#dirty_inc_hn_create{}) -> {ok, ok}
 %% @doc creates a new hypernumbers.
 %% Both the parent and the child references must point to a cell
 notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
