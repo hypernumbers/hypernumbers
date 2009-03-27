@@ -122,7 +122,7 @@
          notify_back_create/1,
          read_incoming_hn/2,
          write_remote_link/3,
-         notify_from_web/5,          % <-- changed
+         notify_from_web/5,
          notify_back_from_web/4,
          handle_dirty_cell/1,
          handle_dirty_notify_in/1,
@@ -133,9 +133,6 @@
          register_hn_from_web/4,
          check_page_vsn/2,
          initialise_remote_page_vsn/2,
-         % check_remote_page_vsn/3,    % <-- deprecated
-         % check_page_vsns/5,          % <-- deprecated
-         % incr_remote_page_vsn/3,     % <-- deprecated
          incr_remote_page_vsn/2,
          resync/2,
          create_db/0
@@ -213,41 +210,6 @@ incr_remote_page_vsn(Site, Version) when is_record(Version, version) ->
           end,
     mnesia:activity(transaction, Fun).
 
-%% @spec incr_remote_page_vsn(Site, Page, NewVersion) -> 
-%% [ok | {error, pages_out_of_synch}]
-%% @doc increments the local storage of a page version number for a page on
-%% a remote site if the new increment is one above the old one. If the increment
-%% is greater than 1 returns an error which should trigger a resynch.
-%% Incrementation of page versions for local pages should be done with 
-%% {@link get_new_local_page_vsn/2}
-%incr_remote_page_vsn(Site, Page, NewVersion) ->
-%    Fun = fun() ->
-%                  hn_db_wu:incr_remote_page_vsn(Site, Page, NewVersion)
-%          end,
-%    mnesia:activity(transaction, Fun).
-
-%% @spec check_remote_page_vsn(Site, Page::#refX{}, Version) -> [true | false]
-%% Version = integer()
-%% @doc checks the page version number and triggers a resynch if they are out...
-%check_remote_page_vsn(S, Pg, V)
-%  when is_record(Pg, refX), is_integer(V) ->
-%    Fun =
-%        fun() ->
-%                NewVsn = hn_db_wu:read_page_vsn_raw(S, Pg),
-%                case NewVsn of
-%                    undefined -> ok = ?wu:initialise_remote_page_vsn(S, Pg, V),
-%                                 true;
-%                    V         -> true;
-%                    _         -> io:format("in hn_db_api:check_remote_page_vsn"++
-%                                           "~n-We have a problem~n-"++
-%                                           "S is ~p~n-Pg is ~p~n-"++
-%                                           "V is ~p~n-NewVsn is ~p~n",
-%                                           [S, Pg, V, NewVsn]),
-%                                 false
-%                end
-%        end,
-%    mnesia:activity(transaction, Fun).
-
 %% @spec check_page_vsns(Site, Version::#version{}) -> true | false
 %% @doc checks the page verion numbers for a set of pages
 check_page_vsn(Site, Version) when is_record(Version, version) ->
@@ -265,25 +227,6 @@ check_page_vsn(Site, Version) when is_record(Version, version) ->
         end,
     mnesia:activity(transaction, F).
                 
-%% @spec check_page_vsns(Site, Parent::#refX{}, PVersion, Child::refX{}, CVersion) 
-%% -> [true | false]
-%% PVersion = integer()
-%% CVersion = integer()
-%% @doc checks the page version numbers for a page
-%check_page_vsns(S, P, PVsn, C, CVsn)
-%  when is_record(P, refX), is_record(C, refX),
-%       is_integer(PVsn), is_integer(CVsn) ->
-%    Fun = fun() ->
-%                  NewPVsn = hn_db_wu:read_page_vsn_raw(S, P),
-%                  NewCVsn = hn_db_wu:read_page_vsn_raw(S, C),
-%                  R1 = check_vsn(NewPVsn, PVsn, S, P),
-%                  R2 = check_vsn(NewCVsn, CVsn, S, P),
-%                  case {R1, R2} of
-%                      {true, true} -> true;
-%                      _            -> false
-%                  end
-%          end,
-%    mnesia:activity(transaction, Fun).
 
 %% @spec register_hn_from_web(Parent::#refX{}, Child::#refX{}, Proxy, Biccie) -> 
 %% list()

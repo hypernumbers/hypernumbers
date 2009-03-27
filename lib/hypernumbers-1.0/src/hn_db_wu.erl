@@ -475,20 +475,19 @@
          read_attrs/2,       % tested
          read_inherited/3,
          read_styles/1,
-         read_incoming_hn/2,            % <-- changed
-         find_incoming_hn/2,            % <-- changed
-         read_outgoing_hns/2,           % <-- changed
+         read_incoming_hn/2,
+         find_incoming_hn/2,
+         read_outgoing_hns/2,
          clear_cells/1,
          clear_cells/2,
          delete_attrs/2,
-         % delete_outgoing_hn/3, <-- delete me, I think...
          clear_dirty/1,
          clear_dirty_cell/1,
-         clear_dirty_inc_hn_create/1,    % <-- changed
+         clear_dirty_inc_hn_create/1,
          clear_dirty_notify_in/1,
          clear_dirty_notify_out/1,
          clear_dirty_notify_back_in/3,
-         clear_dirty_notify_back_out/1,   % <-- changed
+         clear_dirty_notify_back_out/1,
          shift_cell/2,
          shift_children/3,
          shift_remote_links/3,
@@ -497,20 +496,19 @@
          get_cells/1,
          mark_cells_dirty/1,
          mark_inc_create_dirty/2,
-         mark_notify_in_dirty/2,       % <-- changed
+         mark_notify_in_dirty/2,
          mark_notify_out_dirty/2,            
          mark_notify_out_dirty/3,      
          mark_notify_back_in_dirty/1,
-         mark_notify_back_out_dirty/3, % <-- changed
-         update_inc_hn/5,              % <-- changed
+         mark_notify_back_out_dirty/3,
+         update_inc_hn/5,
          shift_inc_hns/2,
          does_remote_link_exist/3,
          write_remote_link/3,
          register_out_hn/4,
          unregister_out_hn/2,
-         verify_biccie_in/3,           %     <-- changed
+         verify_biccie_in/3,
          verify_biccie_out/3,
-         %incr_remote_page_vsn/3,      % <-- deprecated
          incr_remote_page_vsn/2,
          get_new_local_page_vsn/2,
          read_page_vsn/2,
@@ -644,25 +642,6 @@ incr_remote_page_vsn(Site, Version) when is_record(Version, version) ->
                   true;
         _      -> {error, pages_out_of_synch}
     end.
-
-%% @spec incr_remote_page_vsn(Site, Page::#refX{}, NewVersion) -> 
-%% [ok | {error, pages_out_of_synch}]
-%% NewVersion = integer()
-%% @doc increments the local storage of a page version number for a page on
-%% a remote site if the new increment is one above the old one. If the increment
-%% is greater than 1 returns an error which should trigger a resynch.
-%% Incrementation of page versions for local pages should be done with 
-%% {@link get_new_local_page_vsn/2}
-%incr_remote_page_vsn(Site, RefX, NewVersion)
-%  when is_record(RefX, refX), is_integer(NewVersion) ->
-%    Page = RefX#refX{obj = {page, "/"}},
-%    OldVersion = read_page_vsn(Site, Page),
-%    case OldVersion + 1 of
-%        NewVersion -> Record = #page_vsn{site_and_pg = {Site, Page}, version = NewVersion},
-%                      mnesia:write(Record),
-%                      true;
-%            _      -> {error, pages_out_of_synch}
-%    end.
     
 %% @spec(get_new_local_page_vsn(RefX :: #refX{}, Action) -> NewVsn
 %% NewVsn = integer()
