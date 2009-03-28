@@ -81,30 +81,30 @@ dirty() ->
     % now write a line of hypernumbers pointing to the first cells
     dirty2(),
 
-    test_util:wait(75),
+    test_util:wait(25),
 
     io:format("in hn_db_test:dirty - triggering rewrite~n"),
     % now rewrite the first cell triggering all the cells and their
     % hypernumbers to recalculcate
     write_value(Path, "123", {1, 1}, []),
 
-    test_util:wait(75),
+    test_util:wait(25),
 
     io:format("in hn_db_test:dirty - testing dependency tree propagation~n"),
     % now write new value in the middle of the first list and check
     % that the hypernumbers dependency trees update properly
     write_value(Path, "Starts in Row 15", {1, 15}, []),
 
-    test_util:wait(75),
+    test_util:wait(25),
 
-%    io:format("in hn_db_test:dirty - going into Dirty 3~n"),
-%    % now clear some hypernumbers children and check that the parent side remote
-%    % links have been cleared..
-%    dirty3(),
+    io:format("in hn_db_test:dirty - going into Dirty 3~n"),
+    % now clear some hypernumbers children and check that the parent side remote
+    % links have been cleared..
+    dirty3().
     
-    io:format("in hn_db_test:dirty - going into Dirty 4~n"),
-    % now do some row and column inserts on the parent page
-    dirty4().
+%    io:format("in hn_db_test:dirty - going into Dirty 4~n"),
+%    % now do some row and column inserts on the parent page
+%    dirty4().
     
 %    io:format("in hn_db_test:dirty - going into Dirty 5~n"),
 %    % now do some row and column inserts on the child page
@@ -535,7 +535,7 @@ insert_DEBUG2(FunName) ->
     % Now do the inserts and deletes
 
     %    io:format("'bout to wait...~n"),
-    %    test_util:wait(75),
+    %    test_util:wait(25),
     %    io:format("'done waitin...~n"),
     %    write_value(Path, "after: "++FunName, {3, 1}, [bold, underline, center]),
     %    colour(Path, {3, 1}, "red"),
@@ -571,7 +571,7 @@ clear_TEST() ->
 
     make_thick(Path, 1),
 
-    test_util:wait(75),
+    test_util:wait(25),
 
     % rewrite the same formula
     write_value(Path, "=hn(\"http://il_ballo.dev:9000/data/E1?hypernumber\")",
@@ -630,7 +630,7 @@ copy_DEBUG3(FunName) ->
 
     clear_cells_DEBUG(Path),
 
-    test_util:wait(75),
+    test_util:wait(25),
 
     write_value(Path, FunName++" - ranges", {1, 1}, [bold, underline]),
 
@@ -736,7 +736,7 @@ copy_DEBUG2(FunName) ->
 
     clear_cells_DEBUG(Path),
 
-    test_util:wait(75),
+    test_util:wait(25),
 
     write_value(Path, FunName++" - cell to cell", {1, 1}, [bold, underline]),
 

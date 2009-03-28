@@ -485,7 +485,8 @@
          clear_dirty_cell/1,
          shift_cell/2,
          shift_children/3,
-         shift_remote_links/3,
+         shift_remote_links/4,
+         shift_inc_hns/2,
          copy_cell/3,
          copy_attrs/3,
          get_cells/1,
@@ -494,7 +495,6 @@
          mark_notify_out_dirty/2,            
          mark_notify_out_dirty/3,      
          update_inc_hn/5,
-         shift_inc_hns/2,
          does_remote_link_exist/3,
          write_remote_link/3,
          register_out_hn/4,
@@ -539,15 +539,17 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% @spec shift_remote_links(OldParent::#refX{}, NewParent::#refX{}, Type)
+%% @spec shift_remote_links(Type1, OldRef::#refX{}, NewRef::#refX{}, Type1)
 %% -> {ok, ok}
-%% Type = [incoming | outgoing]
-%% @doc shifts remote links from the Old Parent to the New Parent. Both Parents
-%% must be a cell reference.
-shift_remote_links(From, To, Type)
+%% Type1 = [parent | child]
+%% Type2 = [incoming | outgoing]
+%% @doc shifts remote links from the Old Reference to the New Reference. 
+%% Both References must be a cell reference.
+shift_remote_links(Type1, From, To, Type2)
   when is_record(From, refX), is_record(To, refX),
-       ((Type == incoming) orelse (Type == outgoing)) ->
-    Head = ms_util:make_ms(remote_cell_link, [{parent, From}, {type, Type}]),
+       ((Type1 == parent) orelse (Type1 == child)),
+       ((Type2 == incoming) orelse (Type2 == outgoing)) ->
+    Head = ms_util:make_ms(remote_cell_link, [{Type1, From}, {type, Type2}]),
     LinkedCells = mnesia:select(remote_cell_link, [{Head, [], ['$_']}]),
     shift_remote_links2(LinkedCells, To).
 
@@ -594,7 +596,7 @@ shift_children(Child, OldParent, NewParent)
     % just spoofing the lexing which is why we pass in the cell {1, 1}
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     % stick the equals sign back on (I know!)
-    NewFormula = shift_formula(Toks, OUrl, NUrl),
+    NewFormula = rewrite_hn_formula(Toks, OUrl, NUrl),
     % io:format("in hn_db_wu:shift_children NewFormula is ~p~n", [NewFormula]),
     {ok, ok} = write_attr(Child, {"formula", NewFormula}).
 
@@ -610,25 +612,26 @@ initialise_remote_page_vsn(Site, RefX, Version)
     mnesia:write(Record).
 
 %% @spec incr_remote_page_vsn(Site, Version::#version{}) -> 
-%% [ok | {error, pages_out_of_synch}]
+%% [ok | {error, unsynched}]
 %% NewVersion = integer()
 %% @doc increments the local storage of a page version number for a page on
 %% a remote site if the new increment is one above the old one. If the increment
 %% is greater than 1 returns an error which should trigger a resynch.
 %% Incrementation of page versions for local pages should be done with 
 %% {@link get_new_local_page_vsn/2}
+incr_remote_page_vsn(Site, #version{version = "undefined"}) -> not_yet_synched;
 incr_remote_page_vsn(Site, Version) when is_record(Version, version) ->
     #version{page = Page, version = NewVsn} = Version,
-    NewPage = Page#refX{obj = {page, "/"}},
-    OldVsn = read_page_vsn(Site, NewPage),
-    io:format("in incr_remote_page_vsn~n-Site is ~p~n-Page is ~p~n-"++
-              "NewVsn is ~p~n-OldVsn is ~p~n",
-              [Site, Page, NewVsn, OldVsn]),
+    PageX = hn_util:url_to_refX(Page),
+    OldVsn = read_page_vsn(Site, PageX),
+    % io:format("in incr_remote_page_vsn~n-Site is ~p~n-PageX is ~p~n-"++
+    %          "NewVsn is ~p~n-OldVsn is ~p~n",
+    %          [Site, PageX, NewVsn, OldVsn]),
     case OldVsn + 1 of
-        NewVsn -> Record = #page_vsn{site_and_pg = {Site, NewPage}, version = NewVsn},
+        NewVsn -> Record = #page_vsn{site_and_pg = {Site, PageX}, version = NewVsn},
                   mnesia:write(Record),
-                  true;
-        _      -> {error, pages_out_of_synch}
+                  synched;
+        _      -> unsynched
     end.
     
 %% @spec(get_new_local_page_vsn(RefX :: #refX{}, Action) -> NewVsn
@@ -1162,13 +1165,18 @@ read_attrs(#refX{obj = {page, _}} = RefX, Attrs) when is_list(Attrs) ->
 %% {@link hn_db_wu:mark_dirty/1} with <code>dirty_notify_out</code> and 
 %% <code>dirty_notify_back_in</code> records as appropriate
 shift_cell(From, To) when is_record(From, refX), is_record(To, refX) ->
+    #refX{site = Site} = From,
     % the order is IMPORTANT (I think) GG :(
     {ok, ok} = shift_dirty_cells(From, To),
     {ok, ok} = shift_dirty_notify_ins(From, To),
     {ok, ok} = shift_cell2(From, To),
     {ok, ok} = shift_local_links(From, To),
-    {ok, ok} = shift_remote_links(From, To, outgoing),
-    exit("shift incoming and outgoing hypernumbers as well..."),
+    {ok, ok} = shift_remote_links(parent, From, To, outgoing),
+    {ok, ok} = shift_remote_links(child, From, To, incoming),
+    {ok, ok} = shift_outgoing_hn(Site, From, To),
+    % why isn't there a shift_incoming_hn? - well the incoming_hn
+    % hasn't moved - the remote link from it to this cell has though...
+    % (and we've already done that!)
     {ok, ok}.
 
 %% @spec read_styles(#refX{}) -> [Style]
@@ -1450,7 +1458,7 @@ mark_cells_dirty(RefX) when is_record(RefX, refX) ->
 %% Delay = integer()
 %% @doc marks a cell as dirty so that its remote children can be updated.
 %% Updates called with this function and not 
-%% <code>mark_notify_out_dirty/4</code> are marked with the default delay
+%% <code>mark_notify_out_dirty/3</code> are marked with the default delay
 %% (defined in spriki.hrl)
 mark_notify_out_dirty(Parent, Change) when is_record(Parent, refX) ->
     mark_notify_out_dirty(Parent, Change, ?DELAY).
@@ -1546,12 +1554,12 @@ get_pages_and_vsns(Site, List) ->
 
 %% just takes a tokenised formula and swaps the Old Url for the New Url anywhere
 %% that it is used in a hypernumber, ie looks for 'HN(OldUrl'
-shift_formula(Toks, OUrl, NUrl) -> sf1(Toks, OUrl, NUrl, []).
+rewrite_hn_formula(Toks, OUrl, NUrl) -> rwf1(Toks, OUrl, NUrl, []).
 
 %% just swap out the old URL for the new one...
-sf1([], _O, _N, Acc)               -> make_formula(lists:reverse(Acc));
-sf1([?hn,?bra,{str,O}|T], O, N, A) -> sf1(T, O, N, [{str,N},?bra,?hn|A]);
-sf1([H | T], O, N, A)              -> sf1(T, O, N, [H | A]).      
+rwf1([], _O, _N, Acc)               -> make_formula(lists:reverse(Acc));
+rwf1([?hn,?bra,{str,O}|T], O, N, A) -> rwf1(T, O, N, [{str,N},?bra,?hn|A]);
+rwf1([H | T], O, N, A)              -> rwf1(T, O, N, [H | A]).      
 
 %% will write out any raw attribute
 write_attr3(RefX, {Key, Value}) ->
@@ -1592,10 +1600,14 @@ unregister_inc_hn(Parent, Child)
              [] -> mnesia:delete({incoming_hn, Parent});
              _  -> ok % somebody else still wants it so don't unregister
          end,
-    CVsn = hn_db_wu:read_page_vsn(ChildSite, Child),
-    PVsn = hn_db_wu:read_page_vsn(ChildSite, Parent),
+    PUrl = hn_util:refX_to_url(Parent),
+    CUrl = hn_util:refX_to_url(Child),
+    PV = hn_db_wu:read_page_vsn(ChildSite, Parent),
+    CV = hn_db_wu:read_page_vsn(ChildSite, Child),
+    PVsn = #version{page = PUrl, version = PV},
+    CVsn = #version{page = CUrl, version = CV},
     Rec = #dirty_notify_back_in{parent = Parent, child = Child,
-                                change = "new child",
+                                change = "unregister",
                                 biccie = Biccie, parent_vsn = PVsn,
                                 child_vsn = CVsn},
     {ok, ok} = mark_dirty(Rec).
@@ -2000,6 +2012,15 @@ read_attrs2(MatchRef, AttrList) ->
     Body = ['$_'],
     hn_util:from_hn_item(mnesia:select(hn_item, [{Match, Cond, Body}])).
 
+shift_outgoing_hn(Site, From, To) ->
+    case  mnesia:read({outgoing_hn, {Site, From}}) of
+        []   -> {ok, ok};
+        [Hn] -> NewHn = Hn#outgoing_hn{site_and_parent = {Site, To}},
+                ok = mnesia:delete_object(Hn),
+                ok = mnesia:write(NewHn),
+                {ok, ok}
+    end.
+
 shift_cell2(From, To) ->
     % Rewrite the shifted cell
     AttrList = read_cells_raw(From),
@@ -2033,13 +2054,13 @@ shift_local_links2([], _Offset) -> {ok, ok};
 shift_local_links2([#local_cell_link{child = C} | T], Offset) ->
     % now read the child
     [{C, {"formula", Formula}}] = read_attrs(C, ["formula"]),
-    NewFormula = shift_formula(Formula, Offset),
+    NewFormula = offset_formula(Formula, Offset),
     % by getting the linking cell to rewrite its formula the 
     % 'local_cell_link' table will be ripped down and rebuilt as well...
     {ok, ok} = write_attr(C, {"formula", NewFormula}),
     shift_local_links2(T, Offset).
 
-shift_formula([$=|Formula], {XO, YO}) ->
+offset_formula([$=|Formula], {XO, YO}) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
@@ -2206,7 +2227,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
                end,
     #refX{site = Site} = RefX,
     V = read_page_vsn(Site, RefX),
-    {ok, ok} = mark_notify_out_dirty(RefX, {new_value, RawValue, DepTree2}, V),
+    {ok, ok} = mark_notify_out_dirty(RefX, {new_value, RawValue, DepTree2}),
     {ok, ok}.
 
 split_parents(Old, New) -> split_parents1(lists:sort(Old),

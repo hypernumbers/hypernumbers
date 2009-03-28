@@ -21,7 +21,10 @@
 -export([notify/1,
          notify_back/1,
          notify_back_create/1]).
-         
+
+-define(init, initialise_remote_page_vns).
+-define(api, hn_db_api).
+
 %% @spec notify(Record::#dirty_notify_out{}) -> {ok, ok}
 %% @doc notifies any remote sites that a hypernumber has changed.
 %% the reference must be for a cell
@@ -96,34 +99,44 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
 
     PVsn2 = json_util:jsonify(PVsn),
     CVsn2 = json_util:jsonify(CVsn),
-    ParentUrl = hn_util:refX_to_url(Parent),
-    ChildUrl = hn_util:refX_to_url(Child),
+    PUrl = hn_util:refX_to_url(Parent),
+    CUrl = hn_util:refX_to_url(Child),
 
     Biccie = util2:bake_biccie(),
-    #refX{site = S, path = P} = Child,
-    Proxy = S ++"/"++ string:join(P,"/")++"/",
 
+    #refX{site = CSite, path = CPath} = Child,
+    Proxy = CSite ++"/"++ string:join(CPath,"/")++"/",
+
+    PPage = Parent#refX{obj = {page, "/"}},
+    
     Vars = {struct, [{"action",     "notify_back_create"},
                      {"biccie",     Biccie},
                      {"proxy",      Proxy},
-                     {"child_url",  ChildUrl},
+                     {"child_url",  CUrl},
                      {"parent_vsn", PVsn2},
                      {"child_vsn",  CVsn2}]},
     Post = lists:flatten(mochijson:encode(Vars)),
 
-    case http:request(post,{ParentUrl,[],"application/json",Post},[],[]) of
-        {ok,{{_V,200,_R},_H,Json}} ->
+    case http:request(post, {PUrl, [], "application/json", Post}, [], []) of
+        {ok, {{_V, 200, _R}, _H, Json}} ->
             {struct, [{"value",           Value},
                       {"dependency-tree", DepTree},
-                      {"parent_vsn",      PVersion}]}
+                      {"parent_vsn",      NewPVsnJson}]}
                 = mochijson:decode(Json),
+            NewPVsn = json_util:unjsonify(NewPVsnJson),
+            % check that the pages are in sync
             {xml, [], DepTree2} = simplexml:from_xml_string(DepTree),
-            {Value, DepTree2, Biccie, PVersion};
-        {ok,{{_V,503,_R},_H,_Body}} ->
+            case ?api:check_page_vsn(CSite, NewPVsn) of
+                synched         -> {Value, DepTree2, Biccie, NewPVsn};
+                not_yet_synched -> {ok,ok} = ?api:?init(CSite, PPage, PVsn),
+                                   {Value, DepTree2, Biccie, PVsn};
+                unsynched       -> {error, unsynched, PVsn}
+            end;
+        {ok, {{_V, 503, _R}, _H, _Body}} ->
             io:format("-returned 503~n"),
             io:format("permission has been denied - need to write an error "++
                       "to the hypernumber here...~n"),
-            {error,permission_denied}
+            {error, permission_denied}
     end.
 
 

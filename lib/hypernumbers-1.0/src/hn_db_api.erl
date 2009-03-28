@@ -77,19 +77,20 @@
 
 -include("spriki.hrl").
 
--define(copy, hn_db_wu:copy_cell).
--define(wr_rem_link, hn_db_wu:write_remote_link).
--define(shift_ch, hn_db_wu:shift_children).
+-define(wu, hn_db_wu).
+-define(copy, copy_cell).
+-define(wr_rem_link, write_remote_link).
+-define(shift_ch, shift_children).
 -define(make_rec, hn_util:dirty_not_bk_in).
--define(init, initialise_remote_page_vns).
-
+-define(init, initialise_remote_page_vsn).
+-define(u_inc_hn, update_inc_hn).
+-define(to_xml, simplexml:to_xml_string).
 -define(create(Name,Type,Storage),
         fun() ->
                 Attr = [{attributes, record_info(fields, Name)},
                         {type,Type},{Storage, [node()]}],
                 {atomic,ok} = mnesia:create_table(Name, Attr)
         end()).
--define(wu, hn_db_wu).
 
 -export([
          write_attributes/2,
@@ -204,7 +205,8 @@ incr_remote_page_vsn(Site, Version) when is_record(Version, version) ->
           end,
     mnesia:activity(transaction, Fun).
 
-%% @spec check_page_vsn(Site, Version::#version{}) -> true | false
+%% @spec check_page_vsn(Site, Version::#version{}) 
+%% -> synched | unsynched | not_yet_synched
 %% @doc checks the page verion numbers for a set of pages
 check_page_vsn(Site, Version) when is_record(Version, version) ->
     F = fun() ->
@@ -237,17 +239,30 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
                   List2 = extract_kvs(List),
                   #refX{site = Site} = Parent,
                   Version = hn_db_wu:read_page_vsn(Site, Parent),
+
+                  % get the value (if there is one)
                   V = case lists:keysearch("value", 1, List2) of
                           false           -> "blank";
                           {_, {_, Value}} -> Value
                       end,
+
+                  % get the dependency-tree (if there is one)
                   D = case lists:keysearch("dependency-tree", 1, List2) of
                           false             -> {xml, []};
                           {_, {_, DepTree}} -> DepTree
-                      end,                  
-                  [{value,             V},
-                   {'dependency-tree', simplexml:to_xml_string(D)},
-                   {parent_vsn,        Version}]
+                      end,
+
+                  % now package it up for the site that is registering
+                  % the hypernumber
+                  PPage = Parent#refX{obj = {page, "/"}},
+                  PUrl = hn_util:refX_to_url(PPage),
+                  Vsn = #version{page = PUrl, version = Version},
+                  VsnJson = json_util:jsonify(Vsn),
+                  
+                  % now return a JSON ready structure...
+                  {struct, [{"value",           V},
+                            {"dependency-tree", ?to_xml(D)},
+                            {"parent_vsn",      VsnJson}]}
           end,
     mnesia:activity(transaction, Fun).
 
@@ -460,8 +475,8 @@ notify_from_web2(Parent, Child, Payload, Biccie) ->
                                 NewP = shift(P, XOff, YOff),
                                 % io:format("in hn_db_api:notify_from_web~n"++
                                 %          "-Children is ~p~n", [Children]),
-                                {ok, ok} = ?shift_ch(Children, P, NewP),
-                                {ok, ok} = ?wu:shift_remote_links(P, NewP,
+                                {ok, ok} = ?wu:?shift_ch(Children, P, NewP),
+                                {ok, ok} = ?wu:shift_remote_links(parent, P, NewP,
                                                                   incoming)
                         end
                 end,
@@ -517,7 +532,7 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
                                                    parent_vsn = PVsn, child_vsn = CVsn},
                         {ok, ok} = ?wu:mark_dirty(Rec),
                         % need to write a link
-                        {ok, ok} = ?wr_rem_link(P, C, incoming),
+                        {ok, ok} = ?wu:?wr_rem_link(P, C, incoming),
                         {blank, []};
                     [Hn] ->
                         #incoming_hn{value = Val, biccie = B,
@@ -549,6 +564,8 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
 notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
 
     #dirty_inc_hn_create{parent = P, child = C, parent_vsn = PVsn} = Record,
+    ParentPage = P#refX{obj = {page, "/"}},
+    #refX{site = CSite} = C,
     
     Return = horiz_api:notify_back_create(Record),
 
@@ -556,7 +573,9 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
         fun() ->
                 case Return of % will have to add NewCVsn in line below...
                     {Value, DepT, Biccie, NewPVsn} ->
-                        {ok, ok} = ?wu:update_inc_hn(P, C, Value, DepT, Biccie);
+                        {ok, ok} = ?wu:?u_inc_hn(P, C, Value, DepT, Biccie);
+                    {error, unsynced, PVsn} ->
+                        resync(CSite, PVsn);
                     {error, permission_denied} ->
                         exit("need to fix permission handling in "++
                              "hn_db_api:notify_back_create")
@@ -994,7 +1013,7 @@ copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   case is_valid_d_n_d(From, To) of
-                      {ok, single_cell, Incr}   -> ?copy(From, To, Incr);
+                      {ok, single_cell, Incr}   -> ?wu:?copy(From, To, Incr);
                       {ok, 'onto self', _Incr}  -> {ok, ok};
                       {ok, cell_to_range, Incr} -> copy2(From, To, Incr)
                   end
@@ -1076,21 +1095,9 @@ insert1(RefX, Disp) ->
 
                 % OK all our local stuff is sorted, now lets deal with the remote
                 % children
-                Children = ?wu:read_outgoing_hns(Site, PageRef),
-                Sites = get_sites(Children),
-                % now notify the children
-                % need to turn the site URL's into page refX's
-                Fun =
-                    fun(X) ->
-                            #outgoing_hn{site_and_parent = {Site, PIdx}} = X,
-                            RefX2 = hn_util:refX_from_index(PIdx),
-                            % now fix it up to be a page reference
-                            Ch = {insert, {R, Rest}, Disp},
-                            V = ?wu:read_page_vsn(Site, RefX2),
-                            % set the delay to zero
-                            {ok, ok} = ?wu:mark_notify_out_dirty(RefX2, Ch, V, 0)
-                    end,
-                lists:foreach(Fun, Sites),
+                Change = {insert, {R, Rest}, Disp},
+                % set the delay to zero
+                {ok, ok} = ?wu:mark_notify_out_dirty(PageRef, Change, 0),
 
                 % Jobs a good'un, now for the remote parents
                 io:format("in hn_db_api:insert1 do something with Parents...~n"),
@@ -1099,14 +1106,6 @@ insert1(RefX, Disp) ->
                 {ok, ok}
         end,
     mnesia:activity(transaction, Fun).
-
-% site here refers to the site of the outgoing hypernumber and not the site
-% that we are on (ie the Site *OF* the Parent and not the site IN site_and_parent
-get_sites(List) ->
-    Fun = fun(#outgoing_hn{site_and_parent = {_, #index{site = S}}} = O) ->
-                  {S, O}
-          end,
-    hslists:uniq(lists:map(Fun, List)).
 
 %% converts the dependency tree from the 'wire format' to the 'database format'
 convertdep(Child, DepTree) when is_record(Child, refX) ->
@@ -1208,7 +1207,7 @@ is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 %% cell to range
 copy2(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
     List = hn_util:range_to_list(To),
-    lists:map(fun(X) -> ?copy(From, X, Incr) end, List),
+    lists:map(fun(X) -> ?wu:?copy(From, X, Incr) end, List),
     {ok, ok}.
 
 %% range to range

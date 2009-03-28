@@ -150,7 +150,7 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back_create"}|T])
                            ?exit
     end,
     Return = ?api:register_hn_from_web(ParentX, ChildX, Proxy, Biccie),
-    Req:ok({"application/json", mochijson:encode({struct, Return})});
+    Req:ok({"application/json", mochijson:encode(Return)});
 
 handle_req('POST', Req, Ref, _Type, _Attr,
            [{"action", "notify_back"} |T] = _Json) ->
@@ -201,6 +201,8 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = _Json) ->
     #refX{site = Site} = ParentX,
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
+    % io:format("In hn_mochi:handle_req (notify)~n-Type is ~p~nPVsn is ~p~n",
+    %          [Type, PVsn]),
     Sync1 = case Type of
                "insert"    -> ?api:incr_remote_page_vsn(Site, PVsn);
                "delete"    -> ?api:incr_remote_page_vsn(Site, PVsn);
@@ -211,8 +213,9 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = _Json) ->
     case Sync1 of
         synched         -> {ok, ok} = ?api:notify_from_web(ParentX, Ref, Type,
                                                            Payload, Biccie);
-        unsynched       -> io:format("sync failed for notify~n-Site is ~p~n-"++
-                                     "PVsn is ~p~n", [Site, PVsn]),
+        unsynched       -> io:format("sync failed for notify~n-Type is ~p~n"++
+                                     "Site is ~p~n-PVsn is ~p~n",
+                                     [Type, Site, PVsn]),
                            ?api:resync(Site, PVsn);
         not_yet_synched -> io:format("exiting in notify (parents)~n"),
                            ?exit

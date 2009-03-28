@@ -13,9 +13,11 @@
          jsonify/1,
          unjsonify/1]).
 
+-include("spriki.hrl").
+
 jsonify(List) when is_list(List) ->
     {array, [jsonify(X) || X <- List]};
-jsonify({version, Page, Vsn}) ->
+jsonify(#version{page = Page, version= Vsn}) ->
     {struct, [{"subtype", "version"},
               {"page",    Page},
               {"vsn",     Vsn}]}.
