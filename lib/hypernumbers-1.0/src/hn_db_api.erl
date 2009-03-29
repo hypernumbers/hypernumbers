@@ -820,7 +820,7 @@ delete(#refX{obj = {page, _}} = RefX) ->
     mnesia:activity(transaction, Fun).
 
 %% @spec delete(RefX :: #refX{}, Type) -> ok
-%% Type = [contents | all | horizontal | vertical]
+%% Type = [horizontal | vertical]
 %% @doc deletes a reference.
 %% 
 %% The <code>refX{}</code> can be one of a:
