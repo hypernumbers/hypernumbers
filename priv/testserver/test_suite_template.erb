@@ -10,16 +10,18 @@
                 {test, ok};
             false ->
                 io:format("EXPECTED:~n    ~p~nGOT:~n    ~p~nCONV:~n    ~p~n~n",
-                          [E, G, test_util:conv_from_get(G)]),
+                          [E, G2, test_util:conv_from_get(G2)]),
                 exit("FAIL: Mismatch in " ++ atom_to_list(Testcase) ++
 	             " <%= @basename %>_SUITE"	)
         end).
 
 -define(test(Func, Path, Ref, Expected),
         Func(_Config) ->
-               E = Expected,
-               G = test_util:hnget("/" ++ "<%= @basename %>" ++ Path, Ref),
-               Res = test_util:cmp(G, E),
+                E = Expected,
+                G = test_util:hnget("/" ++ "<%= @basename %>" ++ Path, Ref),
+               {struct,Props} = mochijson:decode(G),
+               G2 = proplists:get_value("rawvalue", Props),
+               Res = test_util:cmp(G2, E),
                ?print_error_or_return(Res, Func)).
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

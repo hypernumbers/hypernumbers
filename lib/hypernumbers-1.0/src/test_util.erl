@@ -417,9 +417,7 @@ handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
 	      [Ref, Code, Body]).
 
 cmp(A,A) -> true;
-cmp(GX,E) ->
-    {struct,Props} = mochijson:decode(GX),
-    G = proplists:get_value("rawvalue", Props),
+cmp(G,E) ->
     E2 = case E of
              true   -> true;
              false  -> false;
