@@ -789,7 +789,9 @@ insert(#refX{obj = R} = RefX) when R == cell orelse R == range  ->
 %% <ul>
 %% <li>cell</li>
 %% <li>range</li>
-%% </ul>2
+%% </ul>
+%% 
+%% The Type variable determines how the insert displaces the existing cases...
 insert(#refX{obj = {R, _}} = RefX, Disp)
   when is_record(RefX, refX), (R == cell orelse R == range),
        (Disp == horizontal orelse Disp == vertical)->
