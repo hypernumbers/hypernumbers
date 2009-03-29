@@ -61,7 +61,7 @@ get_ref_from_name(Name) ->
 %% If the style already exists it just returns the index 
 write_style(Addr, Style) ->
     Ref = Addr#ref{ref = {page, "/"}, name = "style", auth = []},
-    {RefX, _} = hn_util:ref_to_refX(ref, "dont care"),
+    {RefX, _} = hn_util:ref_to_refX(Ref, "dont care"),
     Fun1 = fun() -> 
                    Match = #styles{refX = RefX, magic_style = Style, _ = '_'}, 
                    mnesia:match_object(styles, Match, read) 
@@ -72,9 +72,7 @@ write_style(Addr, Style) ->
                            NewIndex 
     end. 
 
-write_style2(Addr, Style) -> 
-    Ref = Addr#ref{ref = {page, "/"}, name = "style", auth = []}, 
-    {RefX, _} = hn_util:ref_to_refX(ref, "dont care"),
+write_style2(RefX, Style) -> 
     NewIndex = mnesia:dirty_update_counter(style_counters, RefX, 1), 
     Fun = fun() -> 
                   mnesia:write(#styles{refX = RefX, index = NewIndex,
