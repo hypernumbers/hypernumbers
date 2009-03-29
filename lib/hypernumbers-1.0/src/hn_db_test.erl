@@ -1064,8 +1064,8 @@ write_attr_DEBUG(RefX, [Attr | T]) ->
                 underline         -> {"text-decoration", "underline"};
                 center            -> {"font-align", "center"};
                 {colour, Colour}  -> {"background-color", Colour};
-                thin              -> {"width", "30"}; 
-                thick             -> {"width", "200"}
+                thin              -> {"width", 30}; 
+                thick             -> {"width", 200}
             end,
     write_attributes(RefX, [Attr2]),
     write_attr_DEBUG(RefX, T).
@@ -1082,7 +1082,7 @@ colour(Path, {X, Y}, Colour) ->
 make_high(Path, X) ->
     Site = "http://127.0.0.1:9000",
     RefX = #refX{site = Site, path = Path, obj = {row, {X, X}}},
-    Val = {height, "30"},
+    Val = {height, 30},
     Fun = fun() ->
                   hn_db_wu:write_attr(RefX, Val)
           end,
@@ -1091,7 +1091,7 @@ make_high(Path, X) ->
 make_thin(Path, X) ->
     Site = "http://127.0.0.1:9000",
     RefX = #refX{site = Site, path = Path, obj = {column, {X, X}}},
-    Val = {"width", "30"},
+    Val = {"width", 30},
     Fun = fun() ->
                   hn_db_wu:write_attr(RefX, Val)
           end,
@@ -1100,7 +1100,7 @@ make_thin(Path, X) ->
 make_thick(Path, X) ->
     Site = "http://127.0.0.1:9000",
     RefX = #refX{site = Site, path = Path, obj = {column, {X, X}}},
-    Val = {"width", "200"},
+    Val = {"width", 200},
     Fun = fun() ->
                   hn_db_wu:write_attr(RefX, Val)
           end,

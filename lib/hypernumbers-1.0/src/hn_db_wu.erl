@@ -1192,8 +1192,7 @@ shift_cell(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% <li>page</li>
 %% </ul>
 read_styles(#refX{obj = {page, _}} = RefX) ->
-    Ref = hn_util:refX_to_ref(RefX, "style"),
-    Match = ms_util:make_ms(styles, [{refX, Ref}]),
+    Match = ms_util:make_ms(styles, [{refX, RefX}]),
     mnesia:match_object(Match);
 read_styles(RefX) when is_record(RefX, refX) ->
     % first get the style records to get the indexes

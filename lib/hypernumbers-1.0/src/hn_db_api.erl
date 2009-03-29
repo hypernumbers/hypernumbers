@@ -723,7 +723,7 @@ read(RefX) when is_record(RefX, refX) ->
 %% </ul>
 read_styles(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  ?wu:read_styles(RefX)
+                  hn_db_wu:read_styles(RefX)
           end,
     mnesia:activity(transaction, Fun).
 

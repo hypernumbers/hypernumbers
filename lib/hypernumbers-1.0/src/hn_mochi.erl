@@ -91,6 +91,15 @@ handle_req('POST', Req, Ref, range, _Attr,
     hn_db_api:drag_n_drop(Ref, Ref#refX{obj = parse_attr(range,Range)}),
     Req:ok({"application/json", "success"});
 
+handle_req('POST', Req, Ref, _Type, _Attr, [{"insert",W}]) ->
+    Where = case W of "before" -> before; "after" -> 'after' end,
+    hn_db_api:insert(Ref,Where),
+    Req:ok({"application/json", "success"});
+
+handle_req('POST', Req, Ref, _Type, _Attr, [{"delete","all"}]) ->
+    hn_db_api:delete(Ref),
+    Req:ok({"application/json", "success"});
+
 handle_req('POST', Req, Ref, range, _Attr, 
            [{"copy", {struct, [{"range", Range}]}}]) ->
     hn_db_api:copy_n_paste(Ref, Ref#refX{obj = parse_attr(range,Range)}),
@@ -139,7 +148,7 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back_create"}|T])
         unsynched      -> io:format("sync failed for notify_back_create~n-Site is ~p~n-"++
                            "PVsn is ~p~n", [Site, PVsn]),
                            ?api:resync(Site, PVsn);
-        not_yet_synched -> {ok, ok} % the child gets the version in this call...
+        not_yet_synched -> ok % the child gets the version in this call...
     end,
     case Sync2 of
         synched         -> ok;
@@ -177,7 +186,7 @@ handle_req('POST', Req, Ref, _Type, _Attr,
         not_yet_synched -> ?api:initialise_remote_page_vsn(Site, PVsn)
     end,
     case Sync2 of
-        synched         -> {ok, ok};
+        synched         -> ok;
         unsynched       -> io:format("sync failed for notify_back_create~n-Site is ~p~n-"++
                                      "CVsn is ~p~n", [Site, CVsn]),
                            ?api:resync(Site, CVsn);

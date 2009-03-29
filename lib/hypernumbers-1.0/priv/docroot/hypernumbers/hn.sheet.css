@@ -190,10 +190,12 @@ ul,li {
 #right-bar.active  { background: url(sprite-y.png) -28px 0px; }
 
 #rows { 
+    cursor:default;
     width:26px;
 }
 
 #columns {
+    cursor:default;
     height: 20px;
     z-index:999;
 }
@@ -557,3 +559,32 @@ ul,li {
   z-index:900;
 }
 
+#axiscontextmenucol,#axiscontextmenurow { 
+  position:absolute;
+  display:none;
+  width:140px;
+  padding:3px 2px;
+  border:1px outset #666;
+  background:#FFF;
+  z-index:99999;
+}
+
+#axiscontextmenucol ul, #axiscontextmenurow ul {
+  list-style-type:none;
+} 
+
+#axiscontextmenucol a, #axiscontextmenurow a {
+  display:block;
+  padding:3px;
+  cursor:pointer;
+} 
+
+#axiscontextmenucol a:hover, #axiscontextmenurow a:hover {
+  background:   #ffc47e; 
+} 
+
+#axiscontextmenucol li.seperator, #axiscontextmenurow li.seperator { 
+  height:       0px; 
+  border-top:   1px solid #CCC; 
+  margin:       3px 0px;      
+}
