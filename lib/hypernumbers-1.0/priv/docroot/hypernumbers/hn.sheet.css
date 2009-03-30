@@ -603,3 +603,7 @@ ul,li {
 #rowselection { 
   width:26px;
 }
+
+#rsel, #csel {  
+  position:absolute;
+}
