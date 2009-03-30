@@ -113,18 +113,6 @@ call(Func, Args) ->
         {ok, V}                                         -> V
     end.
 
-funcall(choose, [A|Vs]) when ?is_area(A) ->
-    Flatvs = muin_collect:flatten_arrays([A]),
-    map(fun(X) -> funcall(choose, [X|Vs]) end, Flatvs);
-funcall(choose, [V|Vs]) ->
-    Idx = ?number(V, [cast_strings, cast_bools, ban_dates, ban_blanks]),
-    ?ensure(Idx > 0 andalso Idx =< length(Vs), ?ERR_VAL),
-    eval(nth(Idx, Vs));
-
-funcall(column, [])                     -> ?mx;
-funcall(column, [[ref, Col, _Row, _]]) -> toidx(Col);
-funcall(column, _)                     -> ?ERR_VAL;
-
 funcall(make_list, Args) ->
     area_util:make_array([Args]); % horizontal array
 
