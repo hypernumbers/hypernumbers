@@ -4,7 +4,12 @@
 -module(muin).
 -export([run_formula/2, run_code/2]).
 -export([eval/1]).
-
+-export([context_setting/1,
+         col_index/1,
+         row_index/1,
+         col/1,
+         row/1,
+         path/1]).
 -compile(export_all).
 
 -include("spriki.hrl").
@@ -92,7 +97,7 @@ parse(Fla, {Col, Row}) ->
     end.
 
 %% Evaluate a form in the current rti context.
-eval(Node = [Func|Args]) when ?is_fn(Func) ->
+eval(_Node = [Func|Args]) when ?is_fn(Func) ->
     case member(Func, ['if', choose, column]) of
         true  -> call(Func, Args);
         false -> call(Func, [eval(X) || X <- Args])
@@ -192,6 +197,17 @@ funcall(Fname, Args0) ->
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+context_setting(col)           -> ?mx;
+context_setting(row)           -> ?my;
+context_setting(path)          -> ?mpath;
+context_setting(site)          -> ?msite;
+context_setting(array_context) -> ?array_context.
+
+
+col(#cellref{col = Col}) -> Col.
+row(#cellref{row = Row}) -> Row.
+path(#cellref{path = Path}) -> Path.
+    
 prefetch_references(L) ->
     foldr(fun(R, Acc) when is_record(R, cellref); is_record(R, rangeref) ->
                   [fetch(R)|Acc];
