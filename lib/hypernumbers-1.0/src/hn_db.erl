@@ -53,7 +53,7 @@ get_ref_from_name(Name) ->
                   Match = #hn_item{addr=#ref{name=name, _ = '_'}, val = Name},
                   mnesia:match_object(hn_item,Match,read)
           end,
-    Items = mnesia:activity(ets, Fun),
+    Items = mnesia:activity(transaction, Fun),
     [X#hn_item.addr || X <- Items].
 
 %% write_style will write a style if it doesn't exist and then 
@@ -66,7 +66,7 @@ write_style(Addr, Style) ->
                    Match = #styles{refX = RefX, magic_style = Style, _ = '_'}, 
                    mnesia:match_object(styles, Match, read) 
            end, 
-    case mnesia:activity(async_dirty, Fun1) of 
+    case mnesia:activity(transaction, Fun1) of 
         []              -> write_style2(RefX, Style); 
         [ExistingStyle] -> #styles{index = NewIndex} = ExistingStyle, 
                            NewIndex 
@@ -96,7 +96,7 @@ write_style_IMPORT(Addr, Style) ->
         fun()->
                 mnesia:write(Item)
         end,
-    ok = mnesia:activity(async_dirty, Fun).
+    ok = mnesia:activity(transaction, Fun).
 
 %% @spec filter_cell(Range,Ref) -> true | false
 %% @doc  Returns true for Refs that are inside Range

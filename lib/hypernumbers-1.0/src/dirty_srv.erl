@@ -135,8 +135,10 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% @spec process_dirty(Record, Type) -> ok
 %% @doc  processes the dirty record
-process_dirty(Record, dirty_cell) ->
-    {ok, ok} = ?api:handle_dirty_cell(Record),
+process_dirty(#dirty_cell{timestamp = T} = Record, dirty_cell) ->
+    % dirty_cell records are rewritten in insert/delete operations so we
+    % need to re-read it here
+    {ok, ok} = ?api:handle_dirty_cell(T),
     ok;
 process_dirty(Record, dirty_inc_hn_create) ->
     {ok, ok} = ?api:notify_back_create(Record),

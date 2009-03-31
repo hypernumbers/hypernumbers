@@ -22,7 +22,7 @@
          notify_back/1,
          notify_back_create/1]).
 
--define(init, initialise_remote_page_vns).
+-define(init, initialise_remote_page_vsn).
 -define(api, hn_db_api).
 
 %% @spec notify(Record::#dirty_notify_out{}) -> {ok, ok}
@@ -40,7 +40,7 @@ notify(Record) when is_record(Record, dirty_notify_out) ->
                       outgoing = Outgoing,
                       parent_vsn = PVsn} = Record,
     PVJson = json_util:jsonify(PVsn),
-    ParentUrl = hn_util:refX_to_url(Parent),
+    PUrl = hn_util:refX_to_url(Parent),
     Fun2 = fun({X, ChildVsn}) ->
                    CVJson = json_util:jsonify(ChildVsn),
                    Server = X#outgoing_hn.child_proxy,
@@ -49,14 +49,20 @@ notify(Record) when is_record(Record, dirty_notify_out) ->
                    {Type, P} = json_util:payload_to_json(Change),
                    Vars = {struct, [{"action",     "notify"},
                                     {"biccie",     Biccie},
-                                    {"parent_url", ParentUrl},
+                                    {"parent_url", PUrl},
                                     {"type",       Type},
                                     {"payload",    P},
                                     {"child_vsn",  CVJson},
                                     {"parent_vsn", PVJson}
                                    ]},
                    Actions = lists:flatten(mochijson:encode(Vars)),
-                   "success" = hn_util:post(Server,Actions,"application/json"),
+
+                   % Logging code 
+                   Str = "POSTING £" ++ pid_to_list(self()) ++ "£" ++ PUrl ++
+                       "£ To £" ++ Server ++ json_util:to_str([Vars]),
+                   bits:log(Str),
+                   
+                   "success" = hn_util:post(Server, Actions, "application/json"),
                    ok
            end,
     [ok = Fun2(X) || X <- Outgoing],
@@ -71,22 +77,26 @@ notify_back(Record) when is_record(Record, dirty_notify_back_in) ->
     #dirty_notify_back_in{parent = Parent, child = Child,
                           change = Change, biccie = Biccie,
                           parent_vsn = PVsn, child_vsn = CVsn} = Record,
-    #refX{site = Server} = Parent,
-    ChildUrl=hn_util:refX_to_url(Child),
-    ParentUrl=hn_util:refX_to_url(Parent),
+    CUrl=hn_util:refX_to_url(Child),
+    PUrl=hn_util:refX_to_url(Parent),
     CVsJson = json_util:jsonify(CVsn),
     PVsJson = json_util:jsonify(PVsn),
     Vars = {struct, [{"action",     "notify_back"},
                      {"biccie",     Biccie},
-                     {"child_url",  ChildUrl},
-                     {"parent_url", ParentUrl},
+                     {"child_url",  CUrl},
+                     {"parent_url", PUrl},
                      {"type",       Change},
                      {"parent_vsn", PVsJson},
                      {"child_vsn",  CVsJson}]},
     Actions = lists:flatten(mochijson:encode(Vars)),
-    
+
+    % Logging code 
+    Str = "POSTING £" ++ pid_to_list(self()) ++ "£" ++ CUrl ++ "£ To £"
+        ++ PUrl ++ json_util:to_str([Vars]),
+    bits:log(Str),
+
     %% not very robust!
-    "success" = hn_util:post(Server,Actions,"application/json"),
+    "success" = hn_util:post(PUrl, Actions, "application/json"),
     {ok, ok}.
 
 %% @spec notify_back_create(Record::#dirty_inc_hn_create{}) -> {ok, ok}
@@ -105,7 +115,7 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
     Biccie = util2:bake_biccie(),
 
     #refX{site = CSite, path = CPath} = Child,
-    Proxy = CSite ++"/"++ string:join(CPath,"/")++"/",
+    Proxy = CSite ++ "/" ++ string:join(CPath, "/") ++ "/",
 
     PPage = Parent#refX{obj = {page, "/"}},
     
@@ -115,9 +125,14 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
                      {"child_url",  CUrl},
                      {"parent_vsn", PVsn2},
                      {"child_vsn",  CVsn2}]},
-    Post = lists:flatten(mochijson:encode(Vars)),
+    Actions = lists:flatten(mochijson:encode(Vars)),
 
-    case http:request(post, {PUrl, [], "application/json", Post}, [], []) of
+    % Logging code 
+    Str = "POSTING £" ++ pid_to_list(self()) ++ "£" ++ CUrl ++ "£ To £"
+        ++ PUrl ++ json_util:to_str([Vars]),
+    bits:log(Str),
+
+    case http:request(post, {PUrl, [], "application/json", Actions}, [], []) of
         {ok, {{_V, 200, _R}, _H, Json}} ->
             {struct, [{"value",           Value},
                       {"dependency-tree", DepTree},
@@ -128,7 +143,7 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
             {xml, [], DepTree2} = simplexml:from_xml_string(DepTree),
             case ?api:check_page_vsn(CSite, NewPVsn) of
                 synched         -> {Value, DepTree2, Biccie, NewPVsn};
-                not_yet_synched -> {ok,ok} = ?api:?init(CSite, PPage, PVsn),
+                not_yet_synched -> {ok,ok} = ?api:?init(CSite, NewPVsn),
                                    {Value, DepTree2, Biccie, PVsn};
                 unsynched       -> {error, unsynched, PVsn}
             end;

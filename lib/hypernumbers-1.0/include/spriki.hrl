@@ -243,7 +243,7 @@
 %% this record holds the page history for a page
 -record(page_history,
         {
-          page,
+          site_and_pg,
           action,
           action_refX = #refX{},
           version

@@ -12,7 +12,9 @@
 -include("spriki.hrl").
 
 %%% Debugging interface
--export([dirty/0,
+-export([delete/0,
+         a/0,
+         dirty/0,
          copy_DEBUG/0,
          delete_cell_contents_DEBUG/1,
          clear_cells_DEBUG/1,
@@ -66,10 +68,51 @@
                    ]).
 
 %% @hidden
+delete() ->
+    Site1 = "http://127.0.0.1:9000",
+    Path = ["delete"],
+    write_value(Path, "1", {1, 1}, []),
+    write_value(Path, "=a1+1", {1, 2}, []),    
+    write_value(Path, "=a2+1", {1, 3}, []),    
+    write_value(Path, "=a3+1", {1, 4}, []),    
+    write_value(Path, "=a4+1", {1, 5}, []),    
+    write_value(Path, "=a5+1", {1, 6}, []),    
+    write_value(Path, "=a6+1", {1, 7}, []),    
+    write_value(Path, "=a7+1", {1, 8}, []),    
+    write_value(Path, "=a8+1", {1, 9}, []),    
+    write_value(Path, "=a9+1", {1, 10}, []),
+
+    %write_value(Path, "=sum(a1:a10)", {3, 1}, []),
+        
+    insert_delete("delete", Path, {cell, {1, 5}}, vertical),
+
+    wait(100),
+    
+    insert_delete("insert", Path, {cell, {1, 2}}, vertical),
+    
+    ok.
+
+%% @hidden
+a() ->
+    Site1 = "http://127.0.0.1:9000",
+    Site2 = "http://il_ballo.dev:9000",
+    Site3 = "http://expenses.vixo.dev:9000",
+    Path = ["a"],
+
+    Hn1 = "=hn(\"" ++ Site1 ++ hn_util:list_to_path(Path),
+    Hn2 = "=hn(\"" ++ Site1 ++ hn_util:list_to_path(Path),
+
+    write_value(Site1, Path, "1234", {1, 2}, []),
+    write_value(Site2, Path, Hn1 ++ "a2?hypernumber\")", {1, 2}, []),
+    write_value(Site3, Path, Hn2 ++ "a2?hypernumber\")", {1, 2}, []),
+
+    ok.
+
+%% @hidden
 dirty() ->
 
     Path = ["dirty1"],
-
+    
     insert_delete("insert", Path, {cell, {5, 5}}, vertical),
     insert_delete("insert", Path, {cell, {7, 7}}, vertical),
 
@@ -81,34 +124,37 @@ dirty() ->
     % now write a line of hypernumbers pointing to the first cells
     dirty2(),
 
-    test_util:wait(25),
+    test_util:wait(75),
 
     io:format("in hn_db_test:dirty - triggering rewrite~n"),
     % now rewrite the first cell triggering all the cells and their
     % hypernumbers to recalculcate
     write_value(Path, "123", {1, 1}, []),
 
-    test_util:wait(25),
+    test_util:wait(75),
 
     io:format("in hn_db_test:dirty - testing dependency tree propagation~n"),
     % now write new value in the middle of the first list and check
     % that the hypernumbers dependency trees update properly
     write_value(Path, "Starts in Row 15", {1, 15}, []),
 
-    test_util:wait(25),
+    test_util:wait(75),
 
     io:format("in hn_db_test:dirty - going into Dirty 3~n"),
     % now clear some hypernumbers children and check that the parent side remote
     % links have been cleared..
-    dirty3().
+    dirty3(),
     
-%    io:format("in hn_db_test:dirty - going into Dirty 4~n"),
-%    % now do some row and column inserts on the parent page
-%    dirty4().
     
-%    io:format("in hn_db_test:dirty - going into Dirty 5~n"),
-%    % now do some row and column inserts on the child page
-%    dirty5().
+    io:format("in hn_db_test:dirty - going into Dirty 4~n"),
+    % now do some row and column inserts on the parent page
+    dirty4(),
+       
+    %    io:format("in hn_db_test:dirty - going into Dirty 5~n"),
+    %    % now do some row and column inserts on the child page
+    %    dirty5().
+
+    io:format("remember to add rewriting of rc formula's~n").
 
 %% @hidden
 dirty5() ->
@@ -156,13 +202,13 @@ dirty2() ->
     write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A1?hypernumber\")", {1, 1}, []),
     write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A2?hypernumber\")", {1, 2}, []),
     write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A3?hypernumber\")", {1, 3}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A4?hypernumber\")", {1, 4}, []).
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A5?hypernumber\")", {1, 5}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A6?hypernumber\")", {1, 6}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A7?hypernumber\")", {1, 7}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A8?hypernumber\")", {1, 8}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A9?hypernumber\")", {1, 9}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A10?hypernumber\")", {1, 10}, []),
+    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A4?hypernumber\")", {1, 4}, []),
+    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A5?hypernumber\")", {1, 5}, []),
+    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A6?hypernumber\")", {1, 6}, []),
+    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A7?hypernumber\")", {1, 7}, []),
+    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A8?hypernumber\")", {1, 8}, []),
+    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A9?hypernumber\")", {1, 9}, []),
+    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A10?hypernumber\")", {1, 10}, []).
 %    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A11?hypernumber\")", {1, 11}, []),
 %    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A12?hypernumber\")", {1, 12}, []),
 %    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A13?hypernumber\")", {1, 13}, []),
@@ -201,12 +247,12 @@ dirty1() ->
     write_value(Path, "=a1+1", {1, 2}, []),
     write_value(Path, "=a2+1", {1, 3}, []),
     write_value(Path, "=a3+1", {1, 4}, []),
-    write_value(Path, "=a4+1", {1, 5}, []).
-%    write_value(Path, "=a5+1", {1, 6}, []),
-%    write_value(Path, "=a6+1", {1, 7}, []),
-%    write_value(Path, "=a7+1", {1, 8}, []),
-%    write_value(Path, "=a8+1", {1, 9}, []),
-%    write_value(Path, "=a9+1", {1, 10}, []),
+    write_value(Path, "=a4+1", {1, 5}, []),
+    write_value(Path, "=a5+1", {1, 6}, []),
+    write_value(Path, "=a6+1", {1, 7}, []),
+    write_value(Path, "=a7+1", {1, 8}, []),
+    write_value(Path, "=a8+1", {1, 9}, []),
+    write_value(Path, "=a9+1", {1, 10}, []).
 %    write_value(Path, "=a10+1", {1, 11}, []),
 %    write_value(Path, "=a11+1", {1, 12}, []),
 %    write_value(Path, "=a12+1", {1, 13}, []),
@@ -535,7 +581,7 @@ insert_DEBUG2(FunName) ->
     % Now do the inserts and deletes
 
     %    io:format("'bout to wait...~n"),
-    %    test_util:wait(25),
+    %    test_util:wait(75),
     %    io:format("'done waitin...~n"),
     %    write_value(Path, "after: "++FunName, {3, 1}, [bold, underline, center]),
     %    colour(Path, {3, 1}, "red"),
@@ -571,7 +617,7 @@ clear_TEST() ->
 
     make_thick(Path, 1),
 
-    test_util:wait(25),
+    test_util:wait(75),
 
     % rewrite the same formula
     write_value(Path, "=hn(\"http://il_ballo.dev:9000/data/E1?hypernumber\")",
@@ -630,7 +676,7 @@ copy_DEBUG3(FunName) ->
 
     clear_cells_DEBUG(Path),
 
-    test_util:wait(25),
+    test_util:wait(75),
 
     write_value(Path, FunName++" - ranges", {1, 1}, [bold, underline]),
 
@@ -736,7 +782,7 @@ copy_DEBUG2(FunName) ->
 
     clear_cells_DEBUG(Path),
 
-    test_util:wait(25),
+    test_util:wait(75),
 
     write_value(Path, FunName++" - cell to cell", {1, 1}, [bold, underline]),
 

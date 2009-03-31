@@ -60,7 +60,7 @@ handle_req('GET', Req, Ref, page, [{"updates", Time}], _Post) ->
     receive 
         {tcp_closed, Socket} -> ok;
         {error, timeout}     -> Req:ok({"text/html",<<"timeout">>});
-        {msg, Data}          -> 
+        {msg, Data}          ->
             Req:ok({"application/json", mochijson:encode(Data)})
     end;
 
@@ -126,52 +126,71 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "contents"}]) ->
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
-%%% Horizonal API = notify_back handlers                                     %%%
+%%% Horizonal API = notify_back_create handler                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify_back_create"}|T]) ->
+handle_req('POST', Req, Ref, _Type, _Attr,
+           [{"action", "notify_back_create"}|T] = Json) ->
     Biccie   = from("biccie",     T),
     Proxy    = from("proxy",      T),
     ChildUrl = from("child_url",  T),
     PVsJson  = from("parent_vsn", T),
     CVsJson  = from("child_vsn",  T),
+
     #refX{site = Site} = Ref,
     ParentX = Ref,
+    ParentUrl = hn_util:refX_to_url(ParentX),    
     ChildX = hn_util:url_to_refX(ChildUrl),
+
+    bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
+             "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
+    
     % there is only 1 parent and 1 child for this action
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
+    #version{page = PP, version = PV} = PVsn,
+    #version{page = CP, version = CV} = CVsn,
     Sync1 = ?api:check_page_vsn(Site, PVsn),
     Sync2 = ?api:check_page_vsn(Site, CVsn),
     case Sync1 of
         synched        -> ok;
-        unsynched      -> io:format("sync failed for notify_back_create~n-Site is ~p~n-"++
-                           "PVsn is ~p~n", [Site, PVsn]),
-                           ?api:resync(Site, PVsn);
+        unsynched      -> log_unsynched("notify_back_create", Site, PP, PV),
+                          ?api:resync(Site, PVsn);
         not_yet_synched -> ok % the child gets the version in this call...
     end,
     case Sync2 of
         synched         -> ok;
-        unsynched       -> io:format("sync failed for notify_back_create~n-Site is ~p~n-"++
-                                     "CVsn is ~p~n", [Site, CVsn]),
+        unsynched       -> log_unsynched("notify_back_create", Site, CP, CV),
                            ?api:resync(Site, CVsn);
-        not_yet_synched -> io:format("exiting in notify_back_create (chidren)~n"),
+        not_yet_synched -> log_not_yet_synched("FATAL", "notify_back_create",
+                                               Site, CP, CV),
                            ?exit
     end,
     Return = ?api:register_hn_from_web(ParentX, ChildX, Proxy, Biccie),
     Req:ok({"application/json", mochijson:encode(Return)});
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                          %%%
+%%% Horizonal API = notify_back handler                                      %%%
+%%%                                                                          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 handle_req('POST', Req, Ref, _Type, _Attr,
-           [{"action", "notify_back"} |T] = _Json) ->
+           [{"action", "notify_back"} |T] = Json) ->
     Biccie    = from("biccie",     T),
     ChildUrl  = from("child_url",  T),
     ParentUrl = from("parent_url", T),
     Type      = from("type",       T),
     PVsJson   = from("parent_vsn", T),
     CVsJson   = from("child_vsn",  T),
+
+    bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
+             "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
+
     % there is only 1 parent and 1 child here
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
+    #version{page = PP, version = PV} = PVsn,
+    #version{page = CP, version = CV} = CVsn,
     ChildX = hn_util:url_to_refX(ChildUrl),
     ParentX = hn_util:url_to_refX(ParentUrl),
     #refX{site = Site} = Ref,
@@ -180,66 +199,74 @@ handle_req('POST', Req, Ref, _Type, _Attr,
     case Sync1 of
         synched         -> {ok, ok} = ?api:notify_back_from_web(ParentX, ChildX,
                                                       Biccie, Type);
-        unsynched       -> io:format("sync failed for notify_back~n-Site is ~p~n-"++
-                                      "PVsn is ~p~n", [Site, PVsn]),
+        unsynched       -> log_unsynched("notify_back", Site, PP, PV),
                            ?api:resync(Site, PVsn);
-        not_yet_synched -> ?api:initialise_remote_page_vsn(Site, PVsn)
+        not_yet_synched -> log_not_yet_synched("NOT FATAL", "notify_back",
+                                               Site, CP, CV),
+                           ?api:initialise_remote_page_vsn(Site, PVsn)
     end,
     case Sync2 of
         synched         -> ok;
-        unsynched       -> io:format("sync failed for notify_back_create~n-Site is ~p~n-"++
-                                     "CVsn is ~p~n", [Site, CVsn]),
+        unsynched       -> log_unsynched("notify_back", Site, PP, PV),
                            ?api:resync(Site, CVsn);
-        not_yet_synched -> ?api:initialise_remote_page_vsn(Site, CVsn)
+        not_yet_synched -> log_not_yet_synched("NOT FATAL", "notify_back",
+                                               Site, CP, CV),
+                           ?api:initialise_remote_page_vsn(Site, CVsn)
     end,
     Req:ok({"application/json", "success"});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
-%%% Horizonal API = notify handlers                                          %%%
+%%% Horizonal API = notify handler                                           %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"}|T] = _Json) ->
+handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = Json) ->
     Biccie    = from("biccie",     T),
     ParentUrl = from("parent_url", T),
     Type      = from("type",       T),
     Payload   = from("payload",    T),
     PVsJson   = from("parent_vsn", T),
     CVsJson   = from("child_vsn",  T),
+    
     ParentX = hn_util:url_to_refX(ParentUrl),
-    #refX{site = Site} = ParentX,
+    ChildX = Ref,
+    ChildUrl = hn_util:refX_to_url(ChildX),
+
+    bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ChildUrl ++
+             "£ from £" ++ ParentUrl ++ json_util:to_str(Json)),
+    
+    #refX{site = Site} = ChildX,
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
-    % io:format("In hn_mochi:handle_req (notify)~n-Type is ~p~nPVsn is ~p~n",
-    %          [Type, PVsn]),
+    #version{page = PP, version = PV} = PVsn,
+    
     Sync1 = case Type of
-               "insert"    -> ?api:incr_remote_page_vsn(Site, PVsn);
-               "delete"    -> ?api:incr_remote_page_vsn(Site, PVsn);
-               "new_value" -> ?api:check_page_vsn(Site, PVsn)
-           end,
+                "insert"    -> ?api:incr_remote_page_vsn(Site, PVsn, Payload);
+                "delete"    -> ?api:incr_remote_page_vsn(Site, PVsn, Payload);
+                "new_value" -> ?api:check_page_vsn(Site, PVsn)
+            end,
     % there is one parent and it if is out of synch, then don't process it, ask for a
     % resynch
     case Sync1 of
         synched         -> {ok, ok} = ?api:notify_from_web(ParentX, Ref, Type,
                                                            Payload, Biccie);
-        unsynched       -> io:format("sync failed for notify~n-Type is ~p~n"++
-                                     "Site is ~p~n-PVsn is ~p~n",
-                                     [Type, Site, PVsn]),
+        unsynched       -> log_unsynched("notify", Site, PP, PV),
                            ?api:resync(Site, PVsn);
-        not_yet_synched -> io:format("exiting in notify (parents)~n"),
+        not_yet_synched -> log_not_yet_synched("FATAL", "notify", Site, PP, PV),
                            ?exit
     end,
-    % there are 1 to many children and if they are out of synch as for 
+    % there are 1 to many children and if they are out of synch ask for 
     % a resynch for each of them
     Fun =
         fun(X) ->
                 Sync2 = ?api:check_page_vsn(Site, X),
+                #version{page = CP, version = CV} = X,
                 case Sync2 of
                     synched         -> {ok, ok};
-                    unsynched       -> io:format("sync failed for notify~n-Site is ~p~n-"++
-                                                 "CVsn is ~p~n", [Site, X]),
+                    unsynched       -> log_unsynched("notify", Site, CP, CV),
                                        ?api:resync(Site, X);
-                    not_yet_synched -> io:format("exiting in notify(children)~n"),
+                    not_yet_synched -> log_not_yet_synched("FATAL", "notify",
+                                                           Site, CP, CV),
                                        ?exit
                 end
         end,
@@ -379,3 +406,18 @@ post_column_values(Ref, Values, Offset) ->
                 Acc+1 
         end,
     lists:foldl(F, 0, Values).
+
+
+log_unsynched(Location, Site, Page, Vsn) ->
+    bits:log("UNSYNCHED for "++ Location ++"£" ++ pid_to_list(self()) ++
+             "£" ++ Site ++ "£ Page £" ++ Page ++ "£ Version £" ++
+             tconv:to_s(Vsn)).
+
+log_not_yet_synched(Severity, Location, Site, Page, Vsn) ->
+    Msg = Severity ++ " NOT_YET_SYNCHED for " ++ Location ++ "£",
+    bits:log(Msg ++ pid_to_list(self()) ++ "£" ++ Site ++
+             "£ Page £" ++ Page ++"£ Version £" ++
+             tconv:to_s(Vsn)).
+
+    
+                 

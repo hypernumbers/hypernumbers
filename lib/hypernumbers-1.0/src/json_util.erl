@@ -11,7 +11,8 @@
 -export([payload_to_json/1,
          json_to_payload/1,
          jsonify/1,
-         unjsonify/1]).
+         unjsonify/1,
+         to_str/1]).
 
 -include("spriki.hrl").
 
@@ -104,6 +105,9 @@ json_to_payload({struct, [{"type",            "new_value"},
                           {"dependency-tree", DepTree}]}) ->
     {new_value, Value, DepTree}.
 
+to_str(Json) -> s1(Json, []).
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Internal funtions                                                        %%%
@@ -115,3 +119,18 @@ flatten_deptree([])             -> [].
 flatten_deptree1([], Acc)      -> Acc;
 flatten_deptree1([H | T], Acc) -> {url, [{type, _Type}], [Url]} = H,
                                   flatten_deptree1(T, [Url| Acc]).
+
+s1([], Acc)                      -> lists:flatten(lists:reverse(Acc));
+s1([{struct , V} | T], Acc)      -> NewAcc = s1(V, []),
+                                    s1(T, [NewAcc | Acc]);
+s1([{K, {struct , V}} | T], Acc) -> V2 = s1(V ,[]),
+                                    s1([{K, V2} | T], Acc);
+s1([{K, V} | T], Acc)            -> S = to_s(V),
+                                    s1(T, [" £ " ++ K ++ " £ " ++ S | Acc]).
+
+to_s({array, List}) -> case List of
+                           []                    -> [];
+                           [{struct, List2} | T] -> [s1(List2, []) | s1(T, [])];
+                           Other                 -> lists:flatten(List)
+                       end;
+to_s(X)             -> tconv:to_s(X).
