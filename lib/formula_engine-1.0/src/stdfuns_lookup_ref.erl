@@ -3,7 +3,7 @@
 %%% @private
 
 -module(stdfuns_lookup_ref).
--export([address/1, index/1]).
+-export([address/1, choose/1, index/1]).
 -compile(export_all).
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
@@ -13,6 +13,14 @@
 -define(ABS_ROW,2).
 -define(ABS_COL,3).
 -define(REL,4).
+
+choose([A|Vs]) when ?is_area(A) ->
+    Flatvs = muin_collect:flatten_arrays([A]),
+    map(fun(X) -> choose([X|Vs]) end, Flatvs);
+choose([V|Vs]) ->
+    Idx = ?number(V, [cast_strings, cast_bools, ban_dates, ban_blanks]),
+    ?ensure(Idx > 0 andalso Idx =< length(Vs), ?ERR_VAL),
+    muin:eval(nth(Idx, Vs)).
 
 %% leave space for casting etc...
 address([R,C])              -> address([R,C,?ABS,true,""]);
