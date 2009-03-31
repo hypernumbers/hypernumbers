@@ -102,7 +102,7 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"delete","all"}]) ->
 
 handle_req('POST', Req, Ref, range, _Attr, 
            [{"copy", {struct, [{"range", Range}]}}]) ->
-    hn_db_api:copy_n_paste(Ref, Ref#refX{obj = parse_attr(range,Range)}),
+    hn_db_api:copy_n_paste(Ref#refX{obj = parse_attr(range,Range)}, Ref),
     Req:ok({"application/json", "success"});
 
 
