@@ -260,7 +260,7 @@ extract_coords(Ref, a1, {PivotCol, PivotRow}) ->
 finite_range(YYtext, Kind) ->
     {Path, LhsArg, RhsArg} = split_range(YYtext),
     {Tl, Br} = find_proper_bounds(LhsArg, RhsArg, Kind),
-    #rangeref{path = Path, tl = Tl, br = Br}.
+    #rangeref{path = Path, tl = Tl, br = Br, text = YYtext}.
 
 %% ColId is something like "A" or "$XYZ"
 a1_col_to_coord(ColId) ->
@@ -298,25 +298,29 @@ a1_col_range(YYtext) ->
     {Path, LhsCol, RhsCol} = split_range(YYtext),
     #rangeref{path = Path,
               tl = {col, a1_col_to_coord(LhsCol)},
-              br = {col, a1_col_to_coord(RhsCol)}}.
+              br = {col, a1_col_to_coord(RhsCol)},
+              text = YYtext}.
 
 a1_row_range(YYtext) ->
     {Path, LhsRow, RhsRow} = split_range(YYtext),
     #rangeref{path = Path,
               tl = {row, a1_row_to_coord(LhsRow)},
-              br = {row, a1_row_to_coord(RhsRow)}}.
+              br = {row, a1_row_to_coord(RhsRow)},
+              text = YYtext}.
 
 rc_col_range(YYtext) ->
     {Path, LhsCol, RhsCol} = split_range(YYtext),
     #rangeref{path = Path,
               tl = {col, rc_col_to_coord(LhsCol)},
-              br = {col, rc_col_to_coord(RhsCol)}}.
+              br = {col, rc_col_to_coord(RhsCol)},
+              text = YYtext}.
 
 rc_row_range(YYtext) ->
     {Path, LhsRow, RhsRow} = split_range(YYtext),
     #rangeref{path = Path,
               tl = {row, rc_row_to_coord(LhsRow)},
-              br = {row, rc_row_to_coord(RhsRow)}}.
+              br = {row, rc_row_to_coord(RhsRow)},
+              text = YYtext}.
 
 %% @doc Takes coords of two cells defining bounds of some range, and returns
 %% coords for top-left and bottom-right cells of that range.

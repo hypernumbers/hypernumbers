@@ -23,7 +23,8 @@
 
 -record(rangeref, {
           path,         % like in #cellref{}
-          tl, br        % coords like in #cellref | {col|row, pos_integer()|{offset, pos_integer()}}
+          tl, br,       % coords like in #cellref | {col|row, pos_integer()|{offset, pos_integer()}}
+          text = ""     % token text
          }).
 
 -record(namedexpr, {
