@@ -82,11 +82,11 @@ delete() ->
     write_value(Path, "=a8+1", {1, 9}, []),    
     write_value(Path, "=a9+1", {1, 10}, []),
 
-    %write_value(Path, "=sum(a1:a10)", {3, 1}, []),
+    write_value(Path, "=sum(a1:a10)", {3, 1}, []),
         
     insert_delete("delete", Path, {cell, {1, 5}}, vertical),
 
-    wait(100),
+    test_util:wait(100),
     
     insert_delete("insert", Path, {cell, {1, 2}}, vertical),
     
