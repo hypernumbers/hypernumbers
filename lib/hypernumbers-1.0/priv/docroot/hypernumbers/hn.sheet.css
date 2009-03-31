@@ -616,3 +616,14 @@ ul,li {
  font: 9px Arial, sans-serif;
  height:12px;
 }
+
+#overlay { 
+  background:transparent;
+  position:fixed;
+  top:0px;
+  left:0px;
+  height:100%;
+  width:100%;
+  z-index:99999;
+  display:none;
+}
