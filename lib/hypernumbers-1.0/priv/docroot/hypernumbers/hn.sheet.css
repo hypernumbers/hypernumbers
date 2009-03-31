@@ -548,8 +548,8 @@ ul,li {
  top:0px;
  left:0px;
  background:transparent;
- border:0px;
  width:0px;
+ border:0px;
 }
 
 #current { 
@@ -606,4 +606,13 @@ ul,li {
 
 #rsel, #csel {  
   position:absolute;
+}
+
+#hnpaste { display:none; }
+
+#pathpaste, #hnpaste { 
+ background:#EEE;
+ border:1px solid #AAA;
+ font: 9px Arial, sans-serif;
+ height:12px;
 }
