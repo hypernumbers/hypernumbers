@@ -23,6 +23,10 @@
 -define(is_string(X),
         ((is_list(X)) orelse (is_tuple(X) andalso element(1, X) == ustring))).
 
+-define(is_cellref(X),
+        element(1, X) == cellref).
+
+
 %%% Collectors
 
 %% implicit iteration when not in array context :(
