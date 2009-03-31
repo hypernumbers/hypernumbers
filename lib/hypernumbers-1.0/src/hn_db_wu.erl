@@ -1885,10 +1885,10 @@ parse_cell(Ref) ->
 offset(Toks, XOffset, YOffset) -> offset(Toks, XOffset, YOffset, []).
 
 offset([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
-offset([{ref, Col, Row, Path, Cell} | T], XOffset, YOffset, Acc) ->
+offset([{cellref, Col, Row, Path, Cell} | T], XOffset, YOffset, Acc) ->
     {XDollar, X, YDollar, Y} = parse_cell(Cell),
     NewCell = make_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
-    NewRef = {ref, Col, Row, Path, NewCell},
+    NewRef = {cellref, Col, Row, Path, NewCell},
     offset(T, XOffset, YOffset, [NewRef | Acc]);
 offset([H | T], XOffset, YOffset, Acc) ->
     offset(T, XOffset, YOffset, [H | Acc]).
