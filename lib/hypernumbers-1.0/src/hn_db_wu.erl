@@ -2108,9 +2108,6 @@ write_formula1(RefX, Val, Fla) ->
             %todo: notify
             {ok, ok};       
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
-            io:format("in write_formula~n-Pcode is ~p~n-Res is ~p~n-"++
-                      "Deptree is ~p~n-Parents are ~p~nRecompile is ~p~n",
-                      [Pcode, Res, Deptree, Parents, Recompile]),
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
             Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
             {ok, ok} = write_pcode(RefX, Pcode),
@@ -2157,9 +2154,6 @@ write_default_alignment(RefX, _Res)  ->
     write_attr(RefX, {"text-align" ,"center"}).
 
 write_cell(RefX, Value, Formula, Parents, DepTree) ->
-    io:format("in hn_db_wu:write_cell~n-RefX is ~p~n-Value is ~p~n-"++
-              "Formula is ~p~n-Parents are ~p~n-DepTree is ~p~n",
-              [RefX, Value, Formula, Parents, DepTree]),
 
     % This function writes a cell out with all the trimings
     % 
