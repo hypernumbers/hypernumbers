@@ -2,6 +2,7 @@
 %%% @author <hasan@hypernumbers.com>
 %%% @private
 
+
 -module(stdfuns_lookup_ref).
 -export([address/1, choose/1, index/1]).
 -compile(export_all).
@@ -21,6 +22,10 @@ choose([V|Vs]) ->
     Idx = ?number(V, [cast_strings, cast_bools, ban_dates, ban_blanks]),
     ?ensure(Idx > 0 andalso Idx =< length(Vs), ?ERR_VAL),
     muin:eval(nth(Idx, Vs)).
+
+column([])                      -> muin:context_setting(col);
+column([C]) when ?is_cellref(C) -> muin:col_index(muin:col(C));
+column(_)                       -> ?ERR_VAL.
 
 %% leave space for casting etc...
 address([R,C])              -> address([R,C,?ABS,true,""]);
