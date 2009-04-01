@@ -627,3 +627,15 @@ ul,li {
   z-index:99999;
   display:none;
 }
+
+#error {  
+  width:78px;
+  background:#990000;
+  padding:3px;
+  height:12px;
+  color:#FFF;
+  font:bold 8px Arial, sans-serif;
+  position:absolute;
+  z-index:999;
+  display:none;
+}

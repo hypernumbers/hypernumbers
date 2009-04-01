@@ -1931,7 +1931,7 @@ offset([{cellref, Col, Row, Path, Cell} | T], XOffset, YOffset, Acc) ->
     NewCell = make_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
     NewRef = {cellref, Col, Row, Path, NewCell},
     offset(T, XOffset, YOffset, [NewRef | Acc]);
-offset([{rangeref, TL, BR, _} = H | T], XOffset, YOffset, Acc) ->
+offset([{rangeref, _TL, _BR, _} = H | T], XOffset, YOffset, Acc) ->
     %    #reangeref{tl = {{offset, X1}, {offset, Y1}},
     %               br = {{offset, X2}, {offset, Y2}}} = H,               
     io:format("in hn_db_wu:offset ~p is not being handled correctly~n~n", [H]),
@@ -2165,10 +2165,9 @@ write_formula1(RefX, Val, Fla) ->
     Rti = ref_to_rti(Ref, false),
     case muin:run_formula(Fla, Rti) of
         {error, Error} ->
-            ?ERROR("hn_db_wu:write_formula1~n-Fla ~p~n-Rti ~p~n-Error ~p~n",
-                   [Fla, Rti, Error]),
-            %todo: notify
-            {ok, ok};       
+            #refX{site=Site, path=Path, obj=R} = RefX,
+            remoting_reg:notify_error(Site, Path, R,  Error, "="++Fla),
+            {ok, ok};
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
             Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
@@ -2504,11 +2503,11 @@ tell_front_end(#hn_item{addr=Ref, val=Val}, Type) ->
     #ref{name=Name, site=Site, path=Path, ref=Rf} = Ref,
     case Name of
         "__"++_ -> ok; 
-        _Else   -> remoting_reg:notify(Site, Path, Type, Rf,  Name, Val)
+        _Else   -> remoting_reg:notify_change(Site, Path, Type, Rf,  Name, Val)
     end.
 
 tell_front_end(#ref{site=Site, path=Path}, Index, Style) ->
-    remoting_reg:notify(Site, Path, Index, Style).
+    remoting_reg:notify_style(Site, Path, Index, Style).
 
 make_tuple(Style, Counter, Index, Val) -> 
     make_tuple1(Style, Counter, Index, Val, []). 

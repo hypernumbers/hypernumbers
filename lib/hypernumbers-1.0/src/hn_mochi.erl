@@ -23,11 +23,11 @@ req(Req) ->
 
     case filename:extension(Req:get(path)) of 
 
-%% Serve Static Files
+        %% Serve Static Files
         X when X == ".png"; X == ".css"; X == ".js"; X == ".ico" ->
             "/"++RelPath = Req:get(path),
             Req:serve_file(RelPath, docroot());
-
+        
         [] ->
             case catch stuff(Url, Req) of 
                 ok   -> ok;
