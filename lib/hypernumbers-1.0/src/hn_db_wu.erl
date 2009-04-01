@@ -1997,7 +1997,10 @@ offset_with_ranges1([#rangeref{path = Path, text = Text} = H | T],
 offset_with_ranges1([#cellref{path = Path, text = Text} = H | T],
                     CPath, FromPath, {FX, FY}, {TX, TY}, Acc) ->
     Cell = muin_util:just_ref(Text),
-    Prefix = muin_util:just_path(Text),
+    Prefix = case muin_util:just_path(Text) of
+                 "/"   -> "";
+                 Other -> Other
+             end,
     {XDollar, X, YDollar, Y} = parse_cell(Cell),
     PathCompare = muin_util:walk_path(CPath, Path),
     NewCell =
@@ -2012,7 +2015,7 @@ offset_with_ranges1([#cellref{path = Path, text = Text} = H | T],
 offset_with_ranges1([H | T], CPath, FromPath, {FX, FY}, {TX, TY}, Acc) ->
     offset_with_ranges1(T, CPath, FromPath, {FX, FY}, {TX, TY}, [H | Acc]).
 
-% used in copy'n'paste, drag'n'drop etc...
+% used in copy'n'paste, drag'sn'drop etc...
 offset(Toks, XOffset, YOffset) ->
     offset1(Toks, XOffset, YOffset, []).
 
@@ -2170,13 +2173,63 @@ shift_cell2(From, To) ->
     Fun1 = fun({_RefX, {Key, Val}}) ->
                    write_attr3(To, {Key, Val})
            end,
-    [Fun1(X) || X <- AttrList],
+    [{ok, ok} = Fun1(X) || X <- AttrList],
     % now delete the originals
     Fun2 = fun({RefX, {Key, _Val}}) ->
                    delete_attrs(RefX, Key)
            end,
-    [Fun2(X) || X <- AttrList],
+    [{ok, ok} = Fun2(X) || X <- AttrList],
+    % now check if the cell has a circular reference
+    [{C, {"formula", Formula}}] = read_attrs(To, ["formula"]),
+    case check_circ_ref(To, Formula) of
+        true  -> io:format("in shift_cell2 - circular reference!~n"),
+                 {ok, ok} = mark_cells_dirty(To);
+        false -> {ok, ok}
+    end,
     {ok, ok}.
+
+check_circ_ref(#refX{path = TPath, obj = {cell, {TX, TY}}} = To, Formula) ->
+    {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
+    check_circ_ref1(Toks, TPath, TX, TY).
+
+check_circ_ref1([], _TPath, _TX, _TY) -> false;
+check_circ_ref1([#rangeref{path = Path, text = Text} = H | T],
+                TPath, TX, TY) ->
+    Range = muin_util:just_ref(Text),
+    Prefix = case muin_util:just_path(Text) of
+                 "/"     -> "";
+                 Other   -> Other
+             end,
+    [Cell1|[Cell2]] = string:tokens(Range, ":"),
+    {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
+    {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
+    case Path of
+        Prefix ->
+            if
+                (X1 =< TX) andalso (TX =< X2)
+                andalso (Y1 =< TY) andalso (TY =< Y2) -> true;
+                true -> check_circ_ref1(T, TPath, TX, TY)
+            end;
+        _Other  -> check_circ_ref1(T, TPath, TX, TY)
+    end;
+check_circ_ref1([#cellref{path = Path, text = Text} = H | T],
+                TPath, TX, TY) ->
+    Cell = muin_util:just_ref(Text),
+    Prefix = case muin_util:just_path(Text) of
+                 "/"   -> "./";
+                 Other -> Other
+             end,
+    {X1D, X1, Y1D, Y1} = parse_cell(Cell),
+    case Path of
+        Prefix ->
+            case {X1, Y1} of
+                {TX, TY} -> true;
+                _        -> check_circ_ref1(T, TPath, TX, TY)
+            end;
+        _Other  -> check_circ_ref1(T, TPath, TX, TY)
+    end;
+check_circ_ref1([H | T], TPath, TX, TY) ->
+    check_circ_ref1(T, TPath, TX, TY).
 
 shift_remote_links2([], _To) -> {ok, ok};
 shift_remote_links2([H | T], To) ->

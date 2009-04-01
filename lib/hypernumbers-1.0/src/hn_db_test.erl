@@ -84,15 +84,26 @@ delete() ->
     write_value(Path, "=a8+1", {1, 9}, []),    
     write_value(Path, "=a9+1", {1, 10}, []),
 
+    write_value(Path, "abcdefg", {2, 9}, []),
+    write_value(Path, "12345", {2, 10}, []),
+    
     write_value(Path, "=sum(a1:a10)", {3, 1}, []),
     write_value(Path2, "=sum(/delete/a1:a10)", {3, 1}, []),
 
     test_delete(Path, {cell, {1, 5}}, vertical),
 
-    test_util:wait(50),
+    test_util:wait(200),
     
-    %test_insert(Path, {cell, {1, 2}}, vertical),
-    
+    test_insert(Path, {cell, {1, 2}}, vertical),
+
+    test_util:wait(200),
+
+    test_delete(Path, {cell, {1, 10}}, horizontal),
+
+    test_util:wait(200),
+
+    test_insert(Path, {cell, {1, 9}}, horizontal),
+
     ok.
 
 %% @hidden
@@ -466,7 +477,7 @@ insert_DEBUG2(FunName) ->
     insert_delete(FunName, Path, {cell, {1, 5}}, vertical),
 
     io:format("~n********Restarting subscriptions to mnesia**********~n"),
-    _Return1=gen_server:cast(dirty_cell,            {setstate, active}),
+    _Return1=gen_server:cast(dirty_cell,            {setsstate, active}),
     _Return2=gen_server:call(dirty_cell,            flush, infinity),
     _Return3=gen_server:cast(dirty_notify_in,       {setstate, active}),
     _Return4=gen_server:call(dirty_notify_in,       flush, infinity),
