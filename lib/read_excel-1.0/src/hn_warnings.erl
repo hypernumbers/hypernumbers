@@ -8,6 +8,8 @@
 %%%-------------------------------------------------------------------
 -module(hn_warnings).
 
+-include("working_fns.hrl").
+
 -export([warnings/3]).
 
 warnings(FuncVar, [H | _T] , Tbl) -> warnings1(FuncVar, H, Tbl);
@@ -23,90 +25,16 @@ warnings1(FuncVar, H, Tbl) ->
              true             -> excel_rev_comp:macro_to_string_WARNING(FuncVar)
               end,
     
-    F1 = ["DAY",
-          "HOUR",
-          "MONTH",
-          "SECOND",
-          "YEAR"],
-
-    F2 = ["NPER",
-          "NPV",
-          "PMT",
-          "PROPER",
-          "PV",
-          "RATE",
-          "REPLACE",
-          "REPT",
-          "ROWS",
-          "SLN",
-          "SYD",
-          "T",
-          "TIME",
-          "ABS",
-          "ACOS",
-          "AND",
-          "ASIN",
-          "ATAN",
-          "ATAN2",
-          "AVERAGE",
-          "COLUMNS",
-          "COS",
-          "COUNTBLANK",
-          "DATE",
-          "DAVERAGE",
-          "DEGREES",
-          "EVEN",
-          "EXP",
-          "FACT",
-          "FALSE",
-          "IF",
-          "INT",
-          "ISBLANK",
-          "ISERR",
-          "ISERROR",
-          "ISLOGICAL",
-          "ISNA",
-          "ISNONTEXT",
-          "ISNUMBER",
-          "ISTEXT",
-          "LEFT",
-          "LEN",
-          "LN",
-          "LOG",
-          "LOG10",
-          "LOWER",
-          "MAX",
-          "MOD",
-          "N",
-          "NA",
-          "NOT",
-          "NOW",
-          "ODD",
-          "OR",
-          "PI",
-          "POWER",
-          "RADIANS",
-          "ROUND",
-          "SIN",
-          "SQRT",
-          "STDEV",
-          "SUM",
-          "TAN",
-          "TRUE",
-          "TRUNC",
-          "UPPER"],
-    
-    case lists:member(Nm, F1) of
-        true ->  Str = "Function "++Nm++" is supported but dates and times "++
-                     "are stored differently in Hypernumbers than in other "++
-                     "spreadsheets, so take care!",
-                     excel_util:append(Tbl, warnings, Str);
-        false -> case lists:member(Nm, F2) of
-                     true  -> ok;
-                     false -> Str = "Function "++Nm++
+    Index = ms_util2:get_index(help, name),
+    case lists:keymember(Nm, Index, ?WORKING_FNS) of
+        false ->  Str = "Function "++Nm++
                                   " is used in your spreadsheet but "++
                                   "not supported in Hypernumbers "++
                                   "at the moment!",
-                                  excel_util:append(Tbl, warnings, Str)
-                 end
+                              excel_util:append(Tbl, warnings, Str);
+        Help -> #help{warning = Warning} = Help,
+                case Warning of
+                    ""    -> ok;
+                    Other -> excel_util:append(Tbl, warnings, Other)
+                end
     end.

@@ -227,6 +227,15 @@
           integer
          }).
 
+-record(help,
+        {
+          name,
+          warning,
+          arity,
+          category,
+          text
+         }).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                  %
 % These are the new version of records             %
