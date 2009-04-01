@@ -1090,18 +1090,18 @@ move(RefX, Type, Disp)
   when (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
     #refX{site = Site, obj = {R, Rest} = Ref} = RefX,
-    io:format("In hn_dp_api:move~n-RefX is ~p~n-Type is ~p~n-Disp is ~p~n",
-              [RefX, Type, Disp]),
+    % io:format("In hn_dp_api:move~n-RefX is ~p~n-Type is ~p~n-Disp is ~p~n",
+    %          [RefX, Type, Disp]),
     Fun =
         fun() ->
                 % if the Type is delete we first delete the original cells
                 Disp2 = atom_to_list(Disp),
                 NewVsn = ?wu:get_new_local_page_vsn(RefX, {insert, Disp2}),
-                io:format("in hn_db_api:move~n-Site is ~p~n-RefX is ~p~n-"++
-                          "NewVsn is ~p~n",
-                          [Site, RefX, NewVsn]),
+                % io:format("in hn_db_api:move~n-Site is ~p~n-RefX is ~p~n-"++
+                %          "NewVsn is ~p~n",
+                %          [Site, RefX, NewVsn]),
                 Off = get_offset(Type, Disp, Ref),
-                io:format("in hn_db_api:move~n-Off is ~p~n", [Off]),
+                % io:format("in hn_db_api:move~n-Off is ~p~n", [Off]),
                 % when the move type is DELETE the cells that are moved
                 % DO NOT include the cells described by the reference
                 % but when the move type is INSERT the cells that are
@@ -1110,11 +1110,11 @@ move(RefX, Type, Disp)
                 % before getting the cells to shift for INSERT
                 {Sort, RefXs} =
                     case {Type, Disp} of
-                        {insert, vertical}   -> RefX2 = insert_shift(RefX),
+                        {insert, vertical}   -> RefX2 = insert_shift(RefX, Disp),
                                                 List = ?wu:get_refs_below(RefX2),
                                                 {'bottom-to-top', List};
-                        {insert, horizontal} -> RefX2 = insert_shift(RefX),
-                                                List = ?wu:get_refs_right(RefX),
+                        {insert, horizontal} -> RefX2 = insert_shift(RefX, Disp),
+                                                List = ?wu:get_refs_right(RefX2),
                                                 {'right-to-left', List};
                         {delete, vertical}   -> List = ?wu:get_refs_below(RefX),
                                                 {'top-to-bottom', List};
@@ -1125,8 +1125,8 @@ move(RefX, Type, Disp)
                 % * if we are INSERTING we DONT overwrite cells...
                 % * if we are DELETING we DO overwrite cells...
                 RefXs2 = dbsort(RefXs, Sort),
-                io:format("in hn_db_api:move~n-Sort is ~p~n-RefXs2 is ~p~n",
-                          [Sort, RefXs2]),
+                % io:format("in hn_db_api:move~n-Sort is ~p~n-RefXs2 is ~p~n",
+                %          [Sort, RefXs2]),
                 [{ok, ok} = ?wu:shift_cell(F, offset(F, Off)) || F <- RefXs2],
                 % now notify all parents and children of all cells on
                 % this page
@@ -1146,15 +1146,20 @@ move(RefX, Type, Disp)
         end,
     mnesia:activity(transaction, Fun).
 
-insert_shift(#refX{obj = {cell, {X, Y}}} = RefX) ->
-    RefX#refX(obj = {cell, {X - 1, Y - 1}};
-insert_shift(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
-    RefX#refX(obj = {range, {X1 - 1, Y1 - 1, X2 - 1, Y2 -1}}};
-insert_shift(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
-    RefX#refX(obj = {row, {Y1 - 1, Y2 -1}}};
+insert_shift(#refX{obj = {cell, {X, Y}}} = RefX, vertical) ->
+    RefX#refX{obj = {cell, {X, Y - 1}}};
+insert_shift(#refX{obj = {cell, {X, Y}}} = RefX, horizontal) ->
+    RefX#refX{obj = {cell, {X - 1, Y}}};
+insert_shift(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, vertical) ->
+    RefX#refX{obj = {range, {X1, Y1 - 1, X2, Y2 - 1}}};
+insert_shift(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, horizontal) ->
+    RefX#refX{obj = {range, {X1 - 1, Y1, X2 - 1, Y2}}};
+insert_shift(#refX{obj = {row, {Y1, Y2}}} = RefX, vertical) ->
+    RefX#refX{obj = {row, {Y1 - 1, Y2 -1}}};
+insert_shift(#refX{obj = {column, {X1, X2}}} = RefX, horizontal) ->
+    RefX#refX{obj = {row, {X1 - 1, X2 -1}}};
+insert_shift(RefX, _Disp) -> RefX.
 
-    
-                     
 
 %% converts the dependency tree from the 'wire format' to the 'database format'
 convertdep(Child, DepTree) when is_record(Child, refX) ->

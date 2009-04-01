@@ -2283,7 +2283,9 @@ offset_formula_with_ranges([$=|Formula], CPath, ToPath,
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     NewToks = offset_with_ranges(Toks, CPath, ToPath, FromCell, ToCell),
-    make_formula(NewToks).
+    make_formula(NewToks);
+offset_formula_with_ranges(Value, _CPath, _ToPath, _FromCell, _ToCell) -> Value.
+
                                   
 offset_formula([$=|Formula], {XO, YO}) ->
     % the xfl_lexer:lex takes a cell address to lex against
