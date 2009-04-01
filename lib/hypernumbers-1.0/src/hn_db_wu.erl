@@ -697,7 +697,7 @@ get_new_local_page_vsn(#refX{site = Site} = RefX, Action) ->
 %% (the page_vns tables hold the page version for both local and remote sites)
 read_page_vsn(Site, RefX) when is_record(RefX, refX) ->
     PageRefX = RefX#refX{obj = {page, "/"}},
-    case mnesia:read(page_vsn, {Site, PageRefX}) of
+    case mnesia:read({page_vsn, {Site, PageRefX}}) of
         []    -> "undefined";
         [Rec] -> #page_vsn{version = V} = Rec,
                  V
