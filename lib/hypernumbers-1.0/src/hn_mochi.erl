@@ -86,7 +86,7 @@ handle_req('GET', Req, Ref, cell, _Attr, _Post) ->
          end, 
     Req:ok({"application/json", mochijson:encode(JS)});
 
-handle_req('POST', Req, Ref, range, _Attr, 
+handle_req('POST', Req, Ref, _Type, _Attr, 
            [{"drag", {struct, [{"range", Range}]}}]) ->
     hn_db_api:drag_n_drop(Ref, Ref#refX{obj = parse_attr(range,Range)}),
     Req:ok({"application/json", "success"});
