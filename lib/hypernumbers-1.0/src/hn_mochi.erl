@@ -47,8 +47,7 @@ stuff(Url, Req) ->
                Json -> 
                    {struct, Attr} = mochijson:decode(Json),
                    Attr
-           end,
-
+           end,    
     handle_req(Req:get(method), Req, Ref, Type, Req:parse_qs(), Post), 
     ok.
 
@@ -77,7 +76,7 @@ handle_req('GET', Req, Ref, page, [{"attr", []}], _Post) ->
 handle_req('GET', Req, _Ref, page, _Attr, _Post) ->
     Req:serve_file("hypernumbers/index.html", docroot());
 
-handle_req('GET', Req, Ref, cell, _Attr, _Post) ->
+handle_req('GET', Req, Ref, cell, [{"attr", []}], _Post) ->
     Dict = to_dict(?api:read(Ref), dh_tree:new()),
     JS = case dict_to_struct(Dict) of
              [] -> {struct, []};
@@ -85,6 +84,13 @@ handle_req('GET', Req, Ref, cell, _Attr, _Post) ->
                  JSON
          end, 
     Req:ok({"application/json", mochijson:encode(JS)});
+
+handle_req('GET', Req, Ref, cell, [], _Post) ->
+    V = case hn_db_api:read_attributes(Ref,["value"]) of
+            [{_Ref, {"value", Val}}] -> Val;
+            _Else -> ""
+        end,
+    Req:ok({"text/html",V});
 
 handle_req('POST', Req, Ref, _Type, _Attr, 
            [{"drag", {struct, [{"range", Range}]}}]) ->
