@@ -1101,7 +1101,7 @@ move(RefX, Type, Disp)
                 %          "NewVsn is ~p~n",
                 %          [Site, RefX, NewVsn]),
                 Off = get_offset(Type, Disp, Ref),
-                % io:format("in hn_db_api:move~n-Off is ~p~n", [Off]),
+                %io:format("in hn_db_api:move~n-Off is ~p~n", [Off]),
                 {Sort, RefXs} =
                     case {Type, Disp} of
                         {insert, vertical}   -> List = ?wu:get_refs_below(RefX),

@@ -71,6 +71,8 @@
 delete() ->
     Site1 = "http://127.0.0.1:9000",
     Path = ["delete"],
+    Path2 = ["another", "path"],
+    
     write_value(Path, "1", {1, 1}, []),
     write_value(Path, "=a1+1", {1, 2}, []),    
     write_value(Path, "=a2+1", {1, 3}, []),    
@@ -83,12 +85,13 @@ delete() ->
     write_value(Path, "=a9+1", {1, 10}, []),
 
     write_value(Path, "=sum(a1:a10)", {3, 1}, []),
-        
-    insert_delete("delete", Path, {cell, {1, 5}}, vertical),
+    write_value(Path2, "=sum(/delete/a1:a10)", {3, 1}, []),
 
-    test_util:wait(100),
+    test_delete(Path, {cell, {1, 5}}, vertical),
+
+    test_util:wait(50),
     
-    insert_delete("insert", Path, {cell, {1, 2}}, vertical),
+    %test_insert(Path, {cell, {1, 2}}, vertical),
     
     ok.
 
@@ -113,8 +116,8 @@ dirty() ->
 
     Path = ["dirty1"],
     
-    insert_delete("insert", Path, {cell, {5, 5}}, vertical),
-    insert_delete("insert", Path, {cell, {7, 7}}, vertical),
+    test_insert(Path, {cell, {5, 5}}, vertical),
+    test_insert(Path, {cell, {7, 7}}, vertical),
 
     io:format("in hn_db_test:dirty - going into Dirty 1~n"),
     % write a line of cells that link to each other
@@ -1076,10 +1079,25 @@ read_styles_DEBUG2(X) ->
           end,
     mnesia:activity(transaction, Fun).
 
-insert_delete(Fun, Path, Target) ->
+test_delete(Path, Target) ->
     Site = "http://127.0.0.1:9000",
     Ref = #refX{site = Site, path = Path, obj = Target},
-    erlang:apply(hn_db_api, list_to_atom(Fun), [Ref]).
+    hn_db_api:delete(Ref).
+
+test_delete(Path, Target, Type) ->
+    Site = "http://127.0.0.1:9000",
+    Ref = #refX{site = Site, path = Path, obj= Target},
+    hn_db_api:delete(Ref, Type).
+
+test_insert(Path, Target) ->
+    Site = "http://127.0.0.1:9000",
+    Ref = #refX{site = Site, path = Path, obj = Target},
+    hn_db_api:insert(Ref).
+
+test_insert(Path, Target, Type) ->
+    Site = "http://127.0.0.1:9000",
+    Ref = #refX{site = Site, path = Path, obj= Target},
+    hn_db_api:insert(Ref, Type).
 
 insert_delete(Fun, Path, Target, Type) ->
     Site = "http://127.0.0.1:9000",

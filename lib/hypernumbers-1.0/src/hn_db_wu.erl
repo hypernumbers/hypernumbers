@@ -462,6 +462,8 @@
 %%%       that site with a child page reference. So only the page version
 %%%       number of ONE of the child pages is checked before the update is
 %%%       made - may need to rewrite versioning...
+%%% @TODO the formula rewriting for insert/delete is icredibly inefficient
+%%%       would be fixed by moving to using ranges in the local_link table 
 %%% @end
 %%% Created : 24 Jan 2009 by gordon@hypernumbers.com
 %%%-------------------------------------------------------------------
@@ -865,7 +867,8 @@ clear_dirty_cell(#refX{obj = {cell, _}} = RefX) ->
     {ok, ok}.
 
 %% @spec get_refs_below(#refX{}) -> [#refX{}]
-%% @doc gets all the refs below a given reference.
+%% @doc gets all the refs below a given reference as well as
+%% all cells that are children of cells below the refence
 %% 
 %% The reference passed in can
 %% be one of the following, a:
@@ -881,10 +884,17 @@ get_refs_below(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
     YY = ?COND(Y1 > Y2, Y1, Y2),
     #refX{site = S, path = P} = RefX,
     Obj = {cell, {'_', '$1'}},
-    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    % first get the cells
+    Head1 = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
     Cond = [{'>', '$1', YY}],
     Body = ['$_'],
-    get_match_refs([{MatchRef, Cond, Body}]);
+    RefXs1 = get_match_refs({Head1, Cond, Body}),
+    % now get the local pages that are children of
+    %  cells below the refX
+    Head1 = ms_util:make_ms(refX, [{site, S}, {path, P}, {obj, Obj}]),
+    RefXs2 = get_local_links_refs({Head1, Cond, Body}),
+    RefXs = lists:append([RefXs1, RefXs2]),
+    hslists:uniq(RefXs);    
 get_refs_below(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     % rectify the ranges in case they are reversed...
     YY = ?COND(Y1 > Y2, Y1, Y2),
@@ -908,10 +918,16 @@ get_refs_right(#refX{obj = {column, {X1, X2}}} = RefX) ->
     XX = ?COND(X1 > X2, X1, X2),
     #refX{site = S, path = P} = RefX,
     Obj = {cell, {'$1', '_'}},
-    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    Head1 = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
     Cond = [{'>', '$1', XX}],
     Body = ['$_'],
-    get_match_refs([{MatchRef, Cond, Body}]);
+    RefXs1 = get_match_refs([{Head1, Cond, Body}]),
+     % now get the local pages that are children of
+    %  cells below the refX
+    Head1 = ms_util:make_ms(refX, [{site, S}, {path, P}, {obj, Obj}]),
+    RefXs2 = get_local_links_refs({Head1, Cond, Body}),
+    RefXs = lists:append([RefXs1, RefXs2]),
+    hslists:uniq(RefXs);       
 get_refs_right(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     % rectify the ranges in case they are reversed...
     XX = ?COND(X1 > X2, X1, X2),
@@ -1186,20 +1202,22 @@ read_attrs(#refX{obj = {page, _}} = RefX, Attrs) when is_list(Attrs) ->
 
 %% @spec shift_cell(From :: #refX{}, To :: #refX{}) -> {ok, ok}
 %% @doc shift_cell takes a cell and shifts it by the offset.
+%% Both cells must be on the same page
 %% 
 %% <em>NOTE</em> this function doesn't pass any messages on to parents or
 %% children on other websites - that is done in the API layer by calling
 %% {@link hn_db_wu:mark_dirty/1} with <code>dirty_notify_out</code> and 
 %% <code>dirty_notify_back_in</code> records as appropriate
-shift_cell(From, To) when is_record(From, refX), is_record(To, refX) ->
-    #refX{site = Site} = From,
+shift_cell(#refX{site = S, path = P} = From, #refX{site = S, path = P} = To)
+  when is_record(From, refX), is_record(To, refX) ->
+    % io:format("in hn_db_wu:shift_cell~n-From is ~p~n-To is ~p~n", [From, To]),
     % the order is IMPORTANT (I think) GG :(
     {ok, ok} = shift_dirty_cells(From, To),
     {ok, ok} = shift_dirty_notify_ins(From, To),
     {ok, ok} = shift_local_links(From, To),
     {ok, ok} = shift_remote_links(parent, From, To, outgoing),
     {ok, ok} = shift_remote_links(child, From, To, incoming),
-    {ok, ok} = shift_outgoing_hn(Site, From, To),
+    {ok, ok} = shift_outgoing_hn(S, From, To),
     {ok, ok} = shift_cell2(From, To),
     % why isn't there a shift_incoming_hn? - well the incoming_hn
     % hasn't moved - the remote link from it to this cell has though...
@@ -1664,28 +1682,45 @@ delete_links(RefX) ->
 get_refs_below2(RefX, MinX, MaxX, Y) ->
     #refX{site = S, path = P} = RefX,
     Obj = {cell, {'$1', '$2'}},
-    Match = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
-    MatchRef = ms_util:make_ms(hn_item, [{addr, Match}, {val, '_'}]),
+    Match1 = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    MatchRef1 = ms_util:make_ms(hn_item, [{addr, Match1}, {val, '_'}]),
     Cond = case MinX of
                MaxX -> [{'and', {'>', '$2', Y}, {'==', '$1', MinX}}];
                _    -> [{'and', {'>', '$2', Y}, {'>=', '$1', MinX},
                          {'=<', '$1', MaxX}}]
            end,
     Body = ['$_'],
-    get_match_refs({MatchRef, Cond, Body}).
+    RefXs1 = get_match_refs({MatchRef1, Cond, Body}),
+    Match2 = ms_util:make_ms(refX, [{site, S}, {path, P}, {obj, Obj}]),
+    MatchRef2 = ms_util:make_ms(local_cell_link, [{parent, Match2}]),
+    RefXs2 = get_local_links_refs({MatchRef2, Cond, Body}),
+    RefXs = lists:merge([RefXs1, RefXs2]),
+    hslists:uniq(RefXs).    
 
 get_refs_right2(RefX, X, MinY, MaxY) ->
     #refX{site = S, path = P} = RefX,
     Obj = {cell, {'$1', '$2'}},
-    Match = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
-    MatchRef = ms_util:make_ms(hn_item, [{addr, Match}, {val, '_'}]),
+    Match1 = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    MatchRef1 = ms_util:make_ms(hn_item, [{addr, Match1}]),
     Cond = case MinY of
                MaxY -> [{'and', {'>', '$1', X}, {'==', '$2', MinY}}];
                _    -> [{'and', {'>', '$1', X}, {'>=', '$2', MinY},
                          {'=<', '$2', MaxY}}]
            end,
     Body = ['$_'],
-    get_match_refs({MatchRef, Cond, Body}).
+    RefXs1 = get_match_refs({MatchRef1, Cond, Body}),
+    Match2 = ms_util:make_ms(refX, [{site, S}, {path, P}, {obj, Obj}]),
+    MatchRef2 = ms_util:make_ms(local_cell_link, [{parent, Match2}]),
+    RefXs2 = get_local_links_refs({MatchRef2, Cond, Body}),
+    RefXs = lists:merge([RefXs1, RefXs2]),
+    hslists:uniq(RefXs).    
+
+get_local_links_refs(MatchRef) ->
+    Return = mnesia:select(local_cell_link, [MatchRef]),
+    % now tidy them up, get the relevant refX's and dedup them all...
+    Fun = fun(#local_cell_link{parent = P}, Acc) -> [P | Acc] end,
+    Return1 = lists:foldl(Fun, [], Return),
+    hslists:uniq(Return1).
 
 get_match_refs(MatchRef) ->
     Return = hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef])),
@@ -1881,13 +1916,13 @@ get_attr_keys([], Acc)                       -> Acc;
 get_attr_keys([{_RefX, {Key, _V}} | T], Acc) -> get_attr_keys(T, [Key | Acc]).
 
 make_cell(false, X, XOffset, false, Y, YOffset) ->
-    tconv:to_b26(X + XOffset)++tconv:to_s(Y + YOffset);
+    tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset);
 make_cell(true, X, _XOffset, false, Y, YOffset) ->
-    [$$]++tconv:to_b26(X)++tconv:to_s(Y + YOffset);
+    [$$] ++ tconv:to_b26(X) ++ tconv:to_s(Y + YOffset);
 make_cell(false, X, XOffset, true, Y, _YOffset) ->
-    tconv:to_b26(X + XOffset)++[$$]++tconv:to_s(Y);
+    tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y);
 make_cell(true, X, _XOffset, true, Y, _YOffset)  -> 
-    [$$]++tconv:to_b26(X)++[$$]++tconv:to_s(Y).
+    [$$] ++ tconv:to_b26(X) ++ [$$] ++ tconv:to_s(Y).
 
 diff( FX, _FY,  TX, _TY, horizontal) -> TX - FX;
 diff(_FX,  FY, _TX,  TY, vertical) -> TY - FY.
@@ -1896,18 +1931,19 @@ make_formula(Toks) ->
     mk_f(Toks, []).
 
 %% this function needs to be extended...
-mk_f([], Acc)                               -> "="++lists:flatten(lists:reverse(Acc));
-mk_f([{cellref, _, _, _, Ref} | T], Acc) -> mk_f(T, [Ref | Acc]);
-mk_f([{atom, H} | T], Acc)                  -> mk_f(T, [atom_to_list(H) | Acc]);
-mk_f([{int, I} | T], Acc)                   -> mk_f(T, [integer_to_list(I) | Acc]);
-mk_f([{str, S} | T], Acc)                   -> mk_f(T, [$", S, $" | Acc]);
-mk_f([{name, S} | T], Acc)                  -> mk_f(T, [S | Acc]);
-mk_f([{H} | T], Acc)                        -> mk_f(T, [atom_to_list(H) | Acc]).
+mk_f([], Acc)                             -> "="++lists:flatten(lists:reverse(Acc));
+mk_f([{cellref, _, _, _, Ref} | T], Acc)  -> mk_f(T, [Ref | Acc]);
+mk_f([{rangeref, _, _, _, Ref} | T], Acc) -> mk_f(T, [Ref | Acc]);
+mk_f([{atom, H} | T], Acc)                -> mk_f(T, [atom_to_list(H) | Acc]);
+mk_f([{int, I} | T], Acc)                 -> mk_f(T, [integer_to_list(I) | Acc]);
+mk_f([{str, S} | T], Acc)                 -> mk_f(T, [$", S, $" | Acc]);
+mk_f([{name, S} | T], Acc)                -> mk_f(T, [S | Acc]);
+mk_f([{H} | T], Acc)                      -> mk_f(T, [atom_to_list(H) | Acc]).
 
-parse_cell(Ref) ->
-    {XDollar, Rest} = case Ref of
+parse_cell(Cell) ->
+    {XDollar, Rest} = case Cell of
                           [$$ | T1] -> {true, T1};
-                          _         -> {false, Ref}
+                          _         -> {false, Cell}
                       end,
     Fun = fun(XX) ->
                   if XX < 97  -> false;
@@ -1922,22 +1958,84 @@ parse_cell(Ref) ->
                    end,
     {XDollar, tconv:to_i(XBits), YDollar, list_to_integer(Y)}.
 
-offset(Toks, XOffset, YOffset) ->
-    offset(Toks, XOffset, YOffset, []).
+offset_with_ranges(Toks, CPath, FromPath, FromCell, ToCell) ->
+    offset_with_ranges1(Toks, CPath, FromPath, FromCell, ToCell, []).
 
-offset([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
-offset([{cellref, Col, Row, Path, Cell} | T], XOffset, YOffset, Acc) ->
+offset_with_ranges1([], _CPath, _FromPath, _FromC, _ToC, Acc) ->
+    lists:reverse(Acc);
+offset_with_ranges1([#rangeref{path = Path, text = Text} = H | T],
+                    CPath, FromPath, {FX, FY}, {TX, TY}, Acc) ->
+    % io:format("in offset_with_ranges Text is ~p~n", [Text]),
+    Range = muin_util:just_ref(Text),
+    Prefix = case muin_util:just_path(Text) of
+                 "/"     -> "";
+                 Other   -> Other
+             end,
+    % io:format("in offset_with_ranges1~n-Range is ~p~n-Prefix is ~p~n~n",
+    %          [Range, Prefix]),
+    [Cell1|[Cell2]] = string:tokens(Range, ":"),
+    {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
+    {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
+    PathCompare = muin_util:walk_path(CPath, Path),
+    % if either end of the formula matches the original from then shift it
+    % It should match both path and cell!
+    NCl1 =
+        case {PathCompare, {X1, Y1}} of
+            {FromPath, {FX, FY}} -> make_cell(X1D, TX, 0, Y1D, TY, 0);
+            _                    -> Cell1
+        end,
+    NCl2 =
+        case {PathCompare, {X2, Y2}} of
+            {FromPath, {FX, FY}} -> make_cell(X2D, TX, 0, Y2D, TY, 0);
+            _                    -> Cell2
+        end,
+    NewAcc = H#rangeref{text = Prefix ++ NCl1 ++ ":" ++ NCl2},
+    % io:format("in offset_with_ranges1~n-NCl1 is ~p~nNCl2 is ~p~n-NewAcc is ~p~n~n",
+    %          [NCl1, NCl2, NewAcc]),
+    offset_with_ranges1(T, CPath, FromPath, {FX, FY}, {TX, TY},
+                        [NewAcc | Acc]);
+offset_with_ranges1([#cellref{path = Path, text = Text} = H | T],
+                    CPath, FromPath, {FX, FY}, {TX, TY}, Acc) ->
+    Cell = muin_util:just_ref(Text),
+    Prefix = muin_util:just_path(Text),
+    {XDollar, X, YDollar, Y} = parse_cell(Cell),
+    PathCompare = muin_util:walk_path(CPath, Path),
+    NewCell =
+        case {PathCompare, {X, Y}} of
+            {FromPath, {FX, FY}} -> make_cell(XDollar, TX, 0, YDollar, TY, 0);
+            _                    -> Cell
+        
+        end,
+    NewAcc = H#cellref{text = Prefix ++ NewCell},    
+    offset_with_ranges1(T, CPath, FromPath, {FX, FY}, {TX, TY},
+                       [NewAcc | Acc]);                           
+offset_with_ranges1([H | T], CPath, FromPath, {FX, FY}, {TX, TY}, Acc) ->
+    offset_with_ranges1(T, CPath, FromPath, {FX, FY}, {TX, TY}, [H | Acc]).
+
+% used in copy'n'paste, drag'n'drop etc...
+offset(Toks, XOffset, YOffset) ->
+    offset1(Toks, XOffset, YOffset, []).
+
+offset1([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
+offset1([#cellref{text = Text} = H | T], XOffset, YOffset, Acc) ->
+    Cell = muin_util:just_ref(Text),
+    Prefix = muin_util:just_path(Text),
     {XDollar, X, YDollar, Y} = parse_cell(Cell),
     NewCell = make_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
-    NewRef = {cellref, Col, Row, Path, NewCell},
-    offset(T, XOffset, YOffset, [NewRef | Acc]);
-offset([{rangeref, _TL, _BR, _} = H | T], XOffset, YOffset, Acc) ->
-    %    #reangeref{tl = {{offset, X1}, {offset, Y1}},
-    %               br = {{offset, X2}, {offset, Y2}}} = H,               
-    io:format("in hn_db_wu:offset ~p is not being handled correctly~n~n", [H]),
-    offset(T, XOffset, YOffset, [H | Acc]);
-offset([H | T], XOffset, YOffset, Acc) ->
-    offset(T, XOffset, YOffset, [H | Acc]).
+    NewRef = H#cellref{text = Prefix ++ NewCell},
+    offset1(T, XOffset, YOffset, [NewRef | Acc]);
+offset1([#rangeref{text = Text} = H | T], XOffset, YOffset, Acc) ->
+    Range = muin_util:just_ref(Text),
+    Prefix = muin_util:just_path(Text),
+    [Cell1|Cell2] = string:tokens(Range, ":"),
+    {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
+    {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
+    NewCell1 = make_cell(X1D, X1, XOffset, Y1D, Y1, YOffset),
+    NewCell2 = make_cell(X2D, X2, XOffset, Y2D, Y2, YOffset),
+    NewRange = Range#rangeref{text = Prefix ++ NewCell1 ++ ":" ++ NewCell2},
+    offset1(T, XOffset, YOffset, [NewRange | Acc]);
+offset1([H | T], XOffset, YOffset, Acc) ->
+    offset1(T, XOffset, YOffset, [H | Acc]).
 
 filter_for_drag_n_drop(List) -> fl(List, [], []).
 
@@ -2090,12 +2188,10 @@ shift_remote_links2([H | T], To) ->
 
 shift_local_links(From, To) ->
     % Now rewrite the cells that link to this cell
-    Offset = get_offset(From, To),
-
     % first shift the local links where this cell is the parent
     Head = ms_util:make_ms(local_cell_link, [{parent, From}]),
     LinkedCells = mnesia:select(local_cell_link, [{Head, [], ['$_']}]),
-    {ok, ok} = shift_local_children(LinkedCells, Offset),
+    {ok, ok} = shift_local_children(LinkedCells, From, To),
     % now shift the local links where this cell is the child
     Head2 = ms_util:make_ms(local_cell_link, [{child, From}]),
     LinkedCells2 = mnesia:select(local_cell_link, [{Head2, [], ['$_']}]),
@@ -2107,16 +2203,35 @@ shift_local_parents([H | T], To) -> NewLink = H#local_cell_link{child = To},
                                     ok = mnesia:write(NewLink),
                                     shift_local_parents(T, To).
     
-shift_local_children([], _Offset) -> {ok, ok};
-shift_local_children([#local_cell_link{child = C} | T], Offset) ->
+shift_local_children([], From, To) -> {ok, ok};
+shift_local_children([#local_cell_link{child = C} | T], From, To) ->
+    % both From and To are on the same page so there is no difference
+    % between using the one or the other - but force them to be the same
+    #refX{path = CPath, obj = CRef} = C,
+    #refX{path = FromPath, obj = {cell, FromCell}} = From,
+    % force the 'To' path to match the 'From' path in the next line
+    #refX{path = FromPath, obj = {cell, ToCell}} = To,  
     % now read the child
     [{C, {"formula", Formula}}] = read_attrs(C, ["formula"]),
-    NewFormula = offset_formula(Formula, Offset),
+    NewFormula = offset_formula_with_ranges(Formula, CPath, FromPath,
+                                            FromCell, ToCell),
+    % io:format("in shift_local_children~n-Formula is ~p~n-NewFormula is ~p~n",
+    %          [Formula, NewFormula]),
     % by getting the linking cell to rewrite its formula the 
     % 'local_cell_link' table will be ripped down and rebuilt as well...
     {ok, ok} = write_attr(C, {"formula", NewFormula}),
-    shift_local_children(T, Offset).
+    shift_local_children(T, From, To).
 
+% different to offset_formula because it truncates ranges
+offset_formula_with_ranges([$=|Formula], CPath, ToPath,
+                            FromCell, ToCell) ->
+    % the xfl_lexer:lex takes a cell address to lex against
+    % in this case {1, 1} is used because the results of this
+    % are not actually going to be used here (ie {1, 1} is a dummy!)
+    {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
+    NewToks = offset_with_ranges(Toks, CPath, ToPath, FromCell, ToCell),
+    make_formula(NewToks).
+                                  
 offset_formula([$=|Formula], {XO, YO}) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
