@@ -2022,14 +2022,20 @@ offset(Toks, XOffset, YOffset) ->
 offset1([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
 offset1([#cellref{text = Text} = H | T], XOffset, YOffset, Acc) ->
     Cell = muin_util:just_ref(Text),
-    Prefix = muin_util:just_path(Text),
+    Prefix = case muin_util:just_path(Text) of
+                 "/"   -> "";
+                 Other -> Other
+             end,
     {XDollar, X, YDollar, Y} = parse_cell(Cell),
     NewCell = make_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
     NewRef = H#cellref{text = Prefix ++ NewCell},
     offset1(T, XOffset, YOffset, [NewRef | Acc]);
 offset1([#rangeref{text = Text} = H | T], XOffset, YOffset, Acc) ->
     Range = muin_util:just_ref(Text),
-    Prefix = muin_util:just_path(Text),
+    Prefix = case muin_util:just_path(Text) of
+                 "/"   -> "";
+                 Other -> Other
+             end,
     [Cell1|Cell2] = string:tokens(Range, ":"),
     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
@@ -2285,9 +2291,8 @@ offset_formula_with_ranges([$=|Formula], CPath, ToPath,
     NewToks = offset_with_ranges(Toks, CPath, ToPath, FromCell, ToCell),
     make_formula(NewToks);
 offset_formula_with_ranges(Value, _CPath, _ToPath, _FromCell, _ToCell) -> Value.
-
-                                  
-offset_formula([$=|Formula], {XO, YO}) ->
+                   
+offset_formula(Formula, {XO, YO}) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
