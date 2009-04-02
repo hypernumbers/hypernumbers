@@ -21,8 +21,14 @@ jsonify(List) when is_list(List) ->
 jsonify(#version{page = Page, version= Vsn}) ->
     {struct, [{"subtype", "version"},
               {"page",    Page},
-              {"vsn",     Vsn}]}.
-
+              {"vsn",     Vsn}]};
+jsonify(#help{name = N, warning = W, arity = A, category = C, text = T}) ->
+    {struct, [{"name",     N},
+              {"warning",  W},
+              {"arity",    A},
+              {"category", C},
+              {"text",     T}]}.
+    
 unjsonify({array, List}) when is_list(List) ->
     [unjsonify(X) || X <- List];
 unjsonify({struct, [{"subtype", "version"},
@@ -131,6 +137,6 @@ s1([{K, V} | T], Acc)            -> S = to_s(V),
 to_s({array, List}) -> case List of
                            []                    -> [];
                            [{struct, List2} | T] -> [s1(List2, []) | s1(T, [])];
-                           Other                 -> lists:flatten(List)
+                           _Other                -> lists:flatten(List)
                        end;
 to_s(X)             -> tconv:to_s(X).

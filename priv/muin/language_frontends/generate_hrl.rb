@@ -40,22 +40,9 @@ map.each do |k, v|
   bytes = []
   v.each_byte { |b| bytes << b }
   octal_seq =
-    "\\" + bytes.inject([]) { |acc, b| acc << b.to_s(8); acc }.join("\\")
+    bytes.inject([]) { |acc, b| acc << b.to_s(8); acc }.join(",")
 
-  @terms << "{'#{@lang}', \"#{k}\", \"#{octal_seq}\"},\n"
-
-  rule = <<EOS
-{token,
- begin
-     {ok, Nowhsp, _} = regexp:gsub(YYtext, "\s+", ""),
-     Hd = hd(Nowhsp),
-     case lists:member(Hd, [$+, $-, $*, $/, $=]) of
-         true  -> {func, [Hd|"#{k.upcase}("]};
-         false -> {func, "#{k.upcase}("}
-     end
- end
-}.
-EOS
+  @terms << "{'#{@lang}', \"#{k}\", [#{octal_seq}]},\n"
   
 end
 
