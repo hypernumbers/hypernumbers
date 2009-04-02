@@ -13,6 +13,8 @@
          attempt/3,
          attempt/1]).
 
+-compile(export_all).
+
 -define(SECS_IN_DAY, 86400).
 
 -import(string, [rchr/2, tokens/2]).
@@ -131,6 +133,28 @@ expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
     %% Flatten Cells; can't use flatten/1 because there are strings in there.
     foldl(fun(X, Acc) -> append([Acc, X]) end,
           [], Cells).
+
+expand_cellrange(R) when ?is_rangeref(R) ->
+    {{ColIndex1, RowIndex1}, {ColIndex2, RowIndex2}} = bounds_indexes(R),
+    expand_cellrange(RowIndex1, RowIndex2, ColIndex1, ColIndex2).
+
+%% Return static column & row indexes for a range reference.
+bounds_indexes(R) when ?is_rangeref(R) ->
+    {Col1, Row1} = R#rangeref.tl,
+    {Col2, Row2} = R#rangeref.br,
+    ColIndex1 = muin:col_index(Col1),
+    RowIndex1 = muin:row_index(Row1),
+    ColIndex2 = muin:col_index(Col2),
+    RowIndex2 = muin:row_index(Row2),
+    {{ColIndex1, RowIndex1}, {ColIndex2, RowIndex2}}.
+
+tl_row(R) ->
+    {{_, RowIndex}, {_, _}} = bounds_indexes(R),
+    RowIndex.
+
+br_row(R) ->
+    {{_, _}, {_, RowIndex}} = bounds_indexes(R),
+    RowIndex.
 
 %% Catch errors from error-throwing functions.
 attempt(Mod, F, Args) ->
