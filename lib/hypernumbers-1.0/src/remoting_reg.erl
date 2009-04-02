@@ -12,7 +12,8 @@
 -export([start_link/0, init/1, handle_call/3, handle_cast/2, 
     handle_info/2, terminate/2, code_change/3]).
 
--export([ notify_change/6, notify_style/4, notify_error/5, timestamp/0 ]).
+-export([ notify_change/6, notify_style/4, notify_error/5, 
+          request_update/4, timestamp/0 ]).
 
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
@@ -33,6 +34,9 @@ handle_cast({fetch, Site, Path, Time, Pid}, {Updates, Waiting}) ->
 handle_cast(_Msg, State) ->
     ?ERROR("Invalid Cast in remoting_reg ~p ",[_Msg]),
     {noreply, State}.
+
+request_update(Site, Path, Time, Pid) ->
+    gen_server:cast(remoting_reg, {fetch, Site, Path, Time, Pid}).
 
 %% @doc  Notify server of change to a cell
 notify_change(Site, Path, Type, {RefType, _} = R, Name, Value) ->

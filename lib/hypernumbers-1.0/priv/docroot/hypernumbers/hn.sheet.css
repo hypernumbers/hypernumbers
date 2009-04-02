@@ -44,20 +44,24 @@ ul,li {
 
 #navigation {  
   list-style-type:none;
-  float:right;
-  position:relative;
-  top:37px;
+  float:      right;
+  position:   relative;
+  top:        0px;
   margin:     0px 20px 0px 5px;
 }
 
 #navigation li { 
+  font:       14px Arial,"Helvetica Neue", sans-serif;
   text-align: center;
+  text-decoration:underline;
   cursor:     pointer;
   display:    block;
-  width:      50px;
+  width:      30px;
+  float:      left;
+  margin:     0px 5px;
   padding:    3px 13px 3px 13px;
-  background: #666;
-  color:      white;
+  color:      orange;
+  display:none;
 }
 
 #header h1 { 

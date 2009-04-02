@@ -2,12 +2,14 @@
 %%% @copyright Hypernumbers Ltd
 -module(hn_users).
 
--export([create/2,delete/1,login/2,exists/1,gen_authtoken/2,
-        get_permissions/2]).
+-export([create/2,delete/1,login/3,exists/1,gen_authtoken/2,
+        get_permissions/2, verify_token/1 ]).
 
 -include("hypernumbers.hrl").
 -include("yaws_api.hrl").
 -include("spriki.hrl").
+
+-define(COOKIE, "somerandomcookie").
 
 create(Name,Pass) ->
     create_user_exec(#hn_user{name = Name, password = p(Pass)}).
@@ -31,30 +33,50 @@ exists(Name) ->
         _           -> true
     end.
 
-login(Name,Pass) ->
+login(Name, Pass, Remember) ->
+
     User = #hn_user{name=Name, password=p(Pass), _='_'},
     F = fun() -> mnesia:match_object(hn_user, User, read) end,
-    
+ 
     case mnesia:transaction(F) of
-        {atomic,[]}     -> {error,invalid_user};
-        {atomic,[NUser]} -> {ok,NUser}
+        {atomic, []}      -> {error,invalid_user};
+        {atomic, [NUser]} -> 
+            Token = gen_authtoken(NUser, Remember),
+            {ok, Token}
     end.
 
-gen_authtoken(User,IP) ->
-    
-    Token  = hn_util:random_string(8),
-    Salted = salt_token(Token,IP),
-    
-    F = fun() -> 
-                mnesia:write(User#hn_user{authtoken = Token}) 
-        end,
-    {atomic,ok} = mnesia:transaction(F),
-    
-    Salted.
+verify_token(undefined) ->
+    invalid;
+verify_token(Token) ->
+    [Expires, User, Hash] = string:tokens(Token, ":"),
+    case {is_expired(Expires), gen_hash(User, Expires), Hash} of
+        {true,_,_}  -> invalid;
+        {false,X,X} -> {ok, User};
+        _Else       -> invalid
+    end.
 
-salt_token(Token,{IP1,IP2,_IP3,_IP4}) -> 
-    I = fun(X) -> integer_to_list(X) end,    
-    crypto:md5(lists:flatten([Token,I(IP1),I(IP2),?SALT])).
+is_expired("session") ->
+    false;
+is_expired(Time) ->
+    ltoi(Time) < unix_timestamp().
+    
+itol(I) ->
+    integer_to_list(I).
+ltoi(I) ->
+    list_to_integer(I).
+
+gen_hash(Name, Expires) ->
+    Tmp = ?FORMAT("~s~s~s",[Expires, Name, ?COOKIE]),
+    hn_util:bin_to_hexstr(crypto:md5(Tmp)).
+
+expires("true")  -> 
+    itol(unix_timestamp() + 2678400);
+expires("false") -> 
+    "session".
+    
+gen_authtoken(#hn_user{name=Name}, Remember) ->
+    Expires = expires(Remember),
+    ?FORMAT("~s:~s:~s",[Expires, Name, gen_hash(Name, Expires)]).
 
 create_user_exec(Record) ->
     Fun = fun() -> mnesia:write(hn_user,Record,write) end,
@@ -65,12 +87,21 @@ create_user_exec(Record) ->
 
 p(Pass) ->
     binary_to_list(crypto:md5(Pass)).
-    
+
+unix_timestamp() ->
+    unix_timestamp(erlang:now()).
+unix_timestamp(Now) ->
+    calendar:datetime_to_gregorian_seconds( 
+      calendar:now_to_universal_time(Now)) -
+        calendar:datetime_to_gregorian_seconds({{1970,1,1},{0,0,0}}).
+
 %% Given a user find the most elevated permission
 %% granted to that user
 get_permissions(User,Ref=#ref{site=Site}) ->
+
     Groups = hn_db:get_item_val(#ref{site=Site,ref={page,"/"},
                                      name='__groups'}),
+
     {ok,Perms}   = hn_db:get_item_list(Ref#ref{name='__permissions'}),
     {ok,UGroups} = find_groups(Groups,User),
     {ok,Access}  = find_perms(User,UGroups,[no_access],Perms),

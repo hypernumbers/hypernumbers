@@ -11,132 +11,155 @@
 
 -export([ req/1, style_to_css/2 ]).
 
--define(XHR_TIMEOUT, 10000).
--define(api, hn_db_api).
--define(exit, exit("exit from hn_mochi:handle_req impossible page versions")).
+-define(json(Req, Data), 
+        Req:ok({"application/json", mochijson:encode(Data)})).
+
+-define(exit, 
+        exit("exit from hn_mochi:handle_req impossible page versions")).
 
 req(Req) ->
 
+    %% Get the domain:port
     {ok, Port} = inet:port(Req:get(socket)),
     [Domain | _] = string:tokens(Req:get_header_value("host"), ":"), 
     Url = lists:concat(["http://",Domain,":",itol(Port),Req:get(path)]),
-
+    
     case filename:extension(Req:get(path)) of 
-
+        
         %% Serve Static Files
         X when X == ".png"; X == ".css"; X == ".js"; X == ".ico" ->
             "/"++RelPath = Req:get(path),
             Req:serve_file(RelPath, docroot());
         
         [] ->
-            case catch stuff(Url, Req) of 
-                ok   -> ok;
-                Else ->                                
-                    ?ERROR("~p~n~p",[Else, erlang:get_stacktrace()]),
-                    Req:ok({"text/html",<<"screwed">>})
+            case catch do_req(Req, parse_ref(Url)) of 
+                ok -> ok;
+                Else ->   
+                    ?ERROR("~p~n",[Else]),
+                    Req:respond({500,[],[]})
             end
     end.
 
-stuff(Url, Req) ->
-
-    Ref = parse_ref(Url),
-    {Type, _Val} = Ref#refX.obj,
-
-    Post = case Req:recv_body() of
-               undefined -> undefined;
-               Json -> 
-                   {struct, Attr} = mochijson:decode(Json),
-                   Attr
-           end,    
-    handle_req(Req:get(method), Req, Ref, Type, Req:parse_qs(), Post), 
+do_req(Req, Ref) ->
+    Vars   = Req:parse_qs(),
+    Method = Req:get(method),
+    
+    {ok, Auth} = get_var_or_cookie("auth", Vars, Req),
+    User = case hn_users:verify_token(Auth) of
+               {ok, X} -> X;
+               invalid -> anonymous
+           end,
+    
+    Access = case User of 
+                 anonymous -> no_access; 
+                 _ ->         write 
+             end,
+    
+    case check_auth(Access, Ref#refX.path, Method)  of 
+        login -> Req:serve_file("hypernumbers/login.html", docroot());
+        ok    -> handle_req(Method, Req, Ref, Vars)
+    end,
     ok.
 
-handle_req('GET', Req, Ref, page, [{"updates", Time}], _Post) ->
-    Socket = Req:get(socket),
-    inet:setopts(Socket, [{active, once}]),
-    Msg = {fetch, Ref#refX.site, Ref#refX.path, list_to_integer(Time), self()},
-    gen_server:cast(remoting_reg, Msg),
-    receive 
-        {tcp_closed, Socket} -> ok;
-        {error, timeout}     -> Req:ok({"text/html",<<"timeout">>});
-        {msg, Data}          ->
-            Req:ok({"application/json", mochijson:encode(Data)})
-    end;
+check_auth(no_access, ["_auth"|_], _) -> ok;
+check_auth(no_access, _, _)           -> login;
+check_auth(read,      _, 'GET')       -> ok;
+check_auth(write,     _, _)           -> ok.
 
-handle_req('GET', Req, Ref, page, [{"attr", []}], _Post) -> 
-    Init  = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
-    Tree  = dh_tree:create(Init),
-    Styles = styles_to_css(?api:read_styles(Ref), []),
-    NTree = add_styles(Styles, Tree),
-    Dict  = to_dict(?api:read(Ref), NTree),
-    Time  = {"time", remoting_reg:timestamp()},
-    JSON  = {struct, [Time | dict_to_struct(Dict)]},
-    Req:ok({"application/json", mochijson:encode(JSON)});
+handle_req(Method, Req, Ref, Vars) ->
+    Type = element(1, Ref#refX.obj),
+    case Method of
+        'GET'  -> iget(Req, Ref, Type, Vars);
+        'POST' -> 
+            {ok, Post} = get_json_post(Req:recv_body()),
+            case ipost(Req, Ref, Type, Vars, Post) of
+                ok  -> ?json(Req, "success");
+                ret -> ok
+            end
+    end.    
 
-handle_req('GET', Req, _Ref, page, _Attr, _Post) ->
+iget(Req, _Ref, page, []) ->
     Req:serve_file("hypernumbers/index.html", docroot());
 
-handle_req('GET', Req, Ref, cell, [{"attr", []}], _Post) ->
-    Dict = to_dict(?api:read(Ref), dh_tree:new()),
+iget(Req, Ref, page, [{"updates", Time}]) ->
+    remoting_request(Req, Ref, Time);
+
+iget(Req, Ref, page, [{"attr", []}]) -> 
+    ?json(Req, page_attributes(Ref));
+
+iget(Req, Ref, cell, [{"attr", []}]) ->
+    Dict = to_dict(hn_db_api:read(Ref), dh_tree:new()),
     JS = case dict_to_struct(Dict) of
              [] -> {struct, []};
              [{_Cells, {struct, [{_Y, {struct, [{_X, JSON}]}}]}}] ->
                  JSON
          end, 
-    Req:ok({"application/json", mochijson:encode(JS)});
+    ?json(Req, JS);
 
-handle_req('GET', Req, Ref, cell, [], _Post) ->
+iget(Req, Ref, cell, []) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", Val}}] -> Val;
             _Else -> ""
         end,
     Req:ok({"text/html",V});
 
-handle_req('POST', Req, Ref, _Type, _Attr, 
-           [{"drag", {struct, [{"range", Range}]}}]) ->
+iget(Req, Ref, _Type,  Attr) ->
+    ?ERROR("404~n-~p~n-~p",[Ref, Attr]),
+    Req:not_found().
+
+ipost(_Req, Ref, _Type, _Attr, [{"drag", {_, [{"range", Range}]}}]) ->
     hn_db_api:drag_n_drop(Ref, Ref#refX{obj = parse_attr(range,Range)}),
-    Req:ok({"application/json", "success"});
+    ok;
 
-handle_req('POST', Req, Ref, _Type, _Attr, [{"insert",W}]) ->
-    Where = case W of "before" -> before; "after" -> 'after' end,
-    hn_db_api:insert(Ref,Where),
-    Req:ok({"application/json", "success"});
+ipost(Req, #refX{path=["_auth","login"]}, _Type, _Attr, Data) ->
+    [{"email", Email},{"pass", Pass},{"remember", Rem}] = Data,
+    Resp = case hn_users:login(Email, Pass, Rem) of
+               {error, invalid_user} -> 
+                   [{"response","error"}];
+               {ok, Token} ->
+                   [{"response","success"},{"token",Token}]
+           end,
+    ?json(Req, {struct, Resp}),
+    ret;
 
-handle_req('POST', Req, Ref, _Type, _Attr, [{"delete","all"}]) ->
+ipost(_Req, Ref, _Type, _Attr, [{"insert", Where}]) when 
+  Where == "before", Where == "after" ->
+    hn_db_api:insert(Ref,list_to_existing_atom(Where)),
+    ok;
+
+ipost(_Req, Ref, _Type, _Attr, [{"delete","all"}]) ->
     hn_db_api:delete(Ref),
-    Req:ok({"application/json", "success"});
+    ok;
 
-handle_req('POST', Req, Ref, range, _Attr, 
-           [{"copy", {struct, [{"range", Range}]}}]) ->
+ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}]) ->
     hn_db_api:copy_n_paste(Ref#refX{obj = parse_attr(range,Range)}, Ref),
-    Req:ok({"application/json", "success"});
+    ok;
 
-
-handle_req('POST', Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
+ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
     case Attr of 
         [{"formula",{array,Vals}}] ->
+            %% TODO : Get Rid of this
             post_range_values(Ref, Vals),
             ok;
         _Else ->
             {ok, ok} = hn_db_api:write_attributes(Ref, Attr)
     end,
-    Req:ok({"application/json", "success"});
+    ok;
 
-handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "all"}]) ->
-    {ok, ok} = ?api:clear(Ref, all),
-    Req:ok({"application/json", "success"});
-
-handle_req('POST', Req, Ref, _Type, _Attr, [{"clear", "contents"}]) ->
-    {ok, ok} = ?api:clear(Ref, contents),
-    Req:ok({"application/json", "success"});
+ipost(_Req, Ref, _Type, _Attr, [{"clear", "all"}]) ->
+    hn_db_api:clear(Ref, all),
+    ok;
+ipost(_Req, Ref, _Type, _Attr, [{"clear", "contents"}]) ->
+    hn_db_api:clear(Ref, contents),
+    ok;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Horizonal API = notify_back_create handler                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-handle_req('POST', Req, Ref, _Type, _Attr,
-           [{"action", "notify_back_create"}|T] = Json) ->
+ipost(Req, Ref, _Type, _Attr,
+      [{"action", "notify_back_create"}|T] = Json) ->
     Biccie   = from("biccie",     T),
     Proxy    = from("proxy",      T),
     ChildUrl = from("child_url",  T),
@@ -156,32 +179,33 @@ handle_req('POST', Req, Ref, _Type, _Attr,
     CVsn = json_util:unjsonify(CVsJson),
     #version{page = PP, version = PV} = PVsn,
     #version{page = CP, version = CV} = CVsn,
-    Sync1 = ?api:check_page_vsn(Site, PVsn),
-    Sync2 = ?api:check_page_vsn(Site, CVsn),
+    Sync1 = hn_db_api:check_page_vsn(Site, PVsn),
+    Sync2 = hn_db_api:check_page_vsn(Site, CVsn),
     case Sync1 of
         synched        -> ok;
         unsynched      -> log_unsynched("notify_back_create", Site, PP, PV),
-                          ?api:resync(Site, PVsn);
+                          hn_db_api:resync(Site, PVsn);
         not_yet_synched -> ok % the child gets the version in this call...
     end,
     case Sync2 of
         synched         -> ok;
         unsynched       -> log_unsynched("notify_back_create", Site, CP, CV),
-                           ?api:resync(Site, CVsn);
+                           hn_db_api:resync(Site, CVsn);
         not_yet_synched -> log_not_yet_synched("FATAL", "notify_back_create",
                                                Site, CP, CV),
                            ?exit
     end,
-    Return = ?api:register_hn_from_web(ParentX, ChildX, Proxy, Biccie),
-    Req:ok({"application/json", mochijson:encode(Return)});
+    Return = hn_db_api:register_hn_from_web(ParentX, ChildX, Proxy, Biccie),
+    Req:ok({"application/json", mochijson:encode(Return)}),
+    ret;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Horizonal API = notify_back handler                                      %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-handle_req('POST', Req, Ref, _Type, _Attr,
-           [{"action", "notify_back"} |T] = Json) ->
+ipost(Req, Ref, _Type, _Attr,
+      [{"action", "notify_back"} |T] = Json) ->
     Biccie    = from("biccie",     T),
     ChildUrl  = from("child_url",  T),
     ParentUrl = from("parent_url", T),
@@ -200,33 +224,39 @@ handle_req('POST', Req, Ref, _Type, _Attr,
     ChildX = hn_util:url_to_refX(ChildUrl),
     ParentX = hn_util:url_to_refX(ParentUrl),
     #refX{site = Site} = Ref,
-    Sync1 = ?api:check_page_vsn(Site, CVsn),
-    Sync2 = ?api:check_page_vsn(Site, PVsn),
+    Sync1 = hn_db_api:check_page_vsn(Site, CVsn),
+    Sync2 = hn_db_api:check_page_vsn(Site, PVsn),
     case Sync1 of
-        synched         -> {ok, ok} = ?api:notify_back_from_web(ParentX, ChildX,
+        synched -> 
+            {ok, ok} = hn_db_api:notify_back_from_web(ParentX, ChildX,
                                                       Biccie, Type);
-        unsynched       -> log_unsynched("notify_back", Site, PP, PV),
-                           ?api:resync(Site, PVsn);
-        not_yet_synched -> log_not_yet_synched("NOT FATAL", "notify_back",
-                                               Site, CP, CV),
-                           ?api:initialise_remote_page_vsn(Site, PVsn)
+        unsynched -> 
+            log_unsynched("notify_back", Site, PP, PV),
+                           hn_db_api:resync(Site, PVsn);
+        not_yet_synched -> 
+            log_not_yet_synched("NOT FATAL", "notify_back",
+                                Site, CP, CV),
+            hn_db_api:initialise_remote_page_vsn(Site, PVsn)
     end,
     case Sync2 of
-        synched         -> ok;
-        unsynched       -> log_unsynched("notify_back", Site, PP, PV),
-                           ?api:resync(Site, CVsn);
-        not_yet_synched -> log_not_yet_synched("NOT FATAL", "notify_back",
-                                               Site, CP, CV),
-                           ?api:initialise_remote_page_vsn(Site, CVsn)
+        synched -> ok;
+        unsynched -> 
+            log_unsynched("notify_back", Site, PP, PV),
+            hn_db_api:resync(Site, CVsn);
+        not_yet_synched -> 
+            log_not_yet_synched("NOT FATAL", "notify_back",
+                                Site, CP, CV),
+            hn_db_api:initialise_remote_page_vsn(Site, CVsn)
     end,
-    Req:ok({"application/json", "success"});
+    Req:ok({"application/json", "success"}),
+    ok;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Horizonal API = notify handler                                           %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = Json) ->
+ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = Json) ->
     Biccie    = from("biccie",     T),
     ParentUrl = from("parent_url", T),
     Type      = from("type",       T),
@@ -247,30 +277,33 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = Json) ->
     #version{page = PP, version = PV} = PVsn,
     
     Sync1 = case Type of
-                "insert"    -> ?api:incr_remote_page_vsn(Site, PVsn, Payload);
-                "delete"    -> ?api:incr_remote_page_vsn(Site, PVsn, Payload);
-                "new_value" -> ?api:check_page_vsn(Site, PVsn)
+                "insert"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
+                "delete"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
+                "new_value" -> hn_db_api:check_page_vsn(Site, PVsn)
             end,
     % there is one parent and it if is out of synch, then don't process it, ask for a
     % resynch
     case Sync1 of
-        synched         -> {ok, ok} = ?api:notify_from_web(ParentX, Ref, Type,
-                                                           Payload, Biccie);
-        unsynched       -> log_unsynched("notify", Site, PP, PV),
-                           ?api:resync(Site, PVsn);
-        not_yet_synched -> log_not_yet_synched("FATAL", "notify", Site, PP, PV),
-                           ?exit
+        synched -> 
+            {ok, ok} = hn_db_api:notify_from_web(ParentX, Ref, Type,
+                                                 Payload, Biccie);
+        unsynched -> 
+            log_unsynched("notify", Site, PP, PV),
+            hn_db_api:resync(Site, PVsn);
+        not_yet_synched -> 
+            log_not_yet_synched("FATAL", "notify", Site, PP, PV),
+            ?exit
     end,
     % there are 1 to many children and if they are out of synch ask for 
     % a resynch for each of them
     Fun =
         fun(X) ->
-                Sync2 = ?api:check_page_vsn(Site, X),
+                Sync2 = hn_db_api:check_page_vsn(Site, X),
                 #version{page = CP, version = CV} = X,
                 case Sync2 of
                     synched         -> {ok, ok};
                     unsynched       -> log_unsynched("notify", Site, CP, CV),
-                                       ?api:resync(Site, X);
+                                       hn_db_api:resync(Site, X);
                     not_yet_synched -> log_not_yet_synched("FATAL", "notify",
                                                            Site, CP, CV),
                                        ?exit
@@ -279,9 +312,16 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = Json) ->
     [Fun(X) || X <- CVsn],
     Req:ok({"application/json", "success"});
 
-handle_req(_Method, Req, _Ref, _Type,  _Attr, _Post) ->
-    ?INFO("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
-    Req:not_found().
+ipost(Req, _Ref, _Type, _Attr, _Post) ->
+    ?ERROR("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
+    Req:not_found(),
+    ok.
+
+get_json_post(undefined) ->
+    {ok, undefined};
+get_json_post(Json) ->
+    {struct, Attr} = mochijson:decode(Json),
+    {ok, Attr}.
 
 add_styles([], Tree) ->
     Tree;
@@ -424,6 +464,33 @@ log_not_yet_synched(Severity, Location, Site, Page, Vsn) ->
     bits:log(Msg ++ pid_to_list(self()) ++ "£" ++ Site ++
              "£ Page £" ++ Page ++"£ Version £" ++
              tconv:to_s(Vsn)).
-
     
+remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
+    Socket = Req:get(socket),
+    inet:setopts(Socket, [{active, once}]),
+    remoting_reg:request_update(Site, Path, ltoi(Time), self()),
+    receive 
+        {tcp_closed, Socket} -> 
+            ok;
+        {error, timeout} -> 
+            Req:ok({"text/html",<<"timeout">>});
+        {msg, Data} ->
+            Req:ok({"application/json", mochijson:encode(Data)})
+    end.
                  
+get_var_or_cookie(Key, Vars, Req) ->
+    case lists:keysearch(Key, 1, Vars) of
+        false ->
+            {ok, Req:get_cookie_value(Key)};
+        {value, {"auth", Auth}} ->
+            {ok, Auth}
+    end.
+
+page_attributes(Ref) ->
+    Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
+    Tree   = dh_tree:create(Init),
+    Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
+    NTree  = add_styles(Styles, Tree),
+    Dict   = to_dict(hn_db_api:read(Ref), NTree),
+    Time   = {"time", remoting_reg:timestamp()},
+    {struct, [Time | dict_to_struct(Dict)]}.

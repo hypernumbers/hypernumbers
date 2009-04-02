@@ -67,6 +67,7 @@ do_request(Arg, Url) ->
     %% or cookies, url takes precedence
     {ok,AuthCode} = get_var_or_cookie(auth,Vars,Arg),
     {ok,Token}    = get_var_or_cookie(token,Vars,Arg),
+
     User = case string:tokens(AuthCode,":") of
                [] ->
                    anonymous;
