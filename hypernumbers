@@ -24,9 +24,6 @@ else
 fi
 
 cd $ROOT
-MODE=""
-#MODE="-detached"
-RELOAD="-run reloader start"
 
 LOG_DIR=$ROOT/logs
 CONFIG=$ROOT/priv/hypernumbers.conf
@@ -86,6 +83,16 @@ function build
 
 function start
 {
+    MODE="-detached"
+    RELOAD=""
+
+    if [ $# -lt 1 ] 
+    then
+        echo "wtf"
+        MODE=""
+        RELOAD="-run reloader start"
+    fi
+
     erl $MODE \
         $RELOAD \
         -setcookie $COOKIE \
@@ -177,6 +184,11 @@ function test
         -dir $TESTS
 }
 
+function debug
+{
+    erl -sname debug@$HOST -setcookie $COOKIE -remsh $NODE@$HOST
+}
+
 function stop
 {
     erl -detached \
@@ -187,7 +199,8 @@ function stop
 }
 
 case $1 in 
-    start)     start;;
+    start)     start $2;;
+    debug)     debug;;
     stop)      stop;;
     docs)      docs;;
     build)     build $2;;
