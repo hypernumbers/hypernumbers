@@ -26,6 +26,8 @@
 -define(is_cellref(X),
         element(1, X) == cellref).
 
+-define(is_rangeref(X),
+        element(1, X) == rangeref).
 
 %%% Collectors
 
