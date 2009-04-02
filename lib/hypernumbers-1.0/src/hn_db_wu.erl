@@ -2036,12 +2036,12 @@ offset1([#rangeref{text = Text} = H | T], XOffset, YOffset, Acc) ->
                  "/"   -> "";
                  Other -> Other
              end,
-    [Cell1|Cell2] = string:tokens(Range, ":"),
+    [Cell1 | [Cell2]] = string:tokens(Range, ":"),
     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
     NewCell1 = make_cell(X1D, X1, XOffset, Y1D, Y1, YOffset),
     NewCell2 = make_cell(X2D, X2, XOffset, Y2D, Y2, YOffset),
-    NewRange = Range#rangeref{text = Prefix ++ NewCell1 ++ ":" ++ NewCell2},
+    NewRange = H#rangeref{text = Prefix ++ NewCell1 ++ ":" ++ NewCell2},
     offset1(T, XOffset, YOffset, [NewRange | Acc]);
 offset1([H | T], XOffset, YOffset, Acc) ->
     offset1(T, XOffset, YOffset, [H | Acc]).
@@ -2206,7 +2206,7 @@ check_circ_ref1([#rangeref{path = Path, text = Text} = H | T],
                  "/"     -> "";
                  Other   -> Other
              end,
-    [Cell1|[Cell2]] = string:tokens(Range, ":"),
+    [Cell1 | [Cell2]] = string:tokens(Range, ":"),
     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
     case Path of
