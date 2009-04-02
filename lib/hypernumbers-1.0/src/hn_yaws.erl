@@ -56,13 +56,13 @@ do_request(Arg, Url) ->
     RV = fun({X,undefined}) -> X;
             (Else)          -> Else
          end,
-
+    
     Method = (Arg#arg.req)#http_request.method,
     {ok,Ref} = hn_util:parse_url(Url),
     Vars = lists:map(RV,yaws_api:parse_query(Arg)),
     {ok,Type} = hn_util:get_req_type(Vars),
     {ok,PostData} = get_post_data(Arg,Type,Vars),
-
+    
     %% Verify AuthToken, authtoken can be passed via url
     %% or cookies, url takes precedence
     {ok,AuthCode} = get_var_or_cookie(auth,Vars,Arg),
@@ -71,10 +71,10 @@ do_request(Arg, Url) ->
                [] ->
                    anonymous;
                [UserId,_AuthToken] ->
-                   % @TODO Verify Token
+                                                % @TODO Verify Token
                    UserId
            end,
-
+    
     {ok, Access} = case hn_users:get_permissions(User, Ref) of
                        {ok,{protected_read,  Token}} -> {ok, read};
                        {ok,{protected_write, Token}} -> {ok, write};

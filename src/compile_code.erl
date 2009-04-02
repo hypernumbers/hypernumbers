@@ -16,8 +16,7 @@
 -define(DIRS,
         ["/lib/hypernumbers-1.0/",
          "/lib/formula_engine-1.0/",
-         "/lib/read_excel-1.0/",
-         "/lib/mochi-1.0/"]).
+         "/lib/read_excel-1.0/"]).
 
 -define(EXTRA_ERL_FILES, ["src/generate_tests.erl"]).
 
@@ -152,11 +151,9 @@ get_rel_file() ->
                       "{crypto,\"",get_vsn(crypto),"\"},",
                       "{sasl,\"",get_vsn(sasl),"\"},",
                       "{mnesia,\"",get_vsn(mnesia),"\"},",
-                      "{yaws, \"1.76\", load},",
                       "{read_excel,\"1.0\"},",
                       "{starling_app,\"0.0.1\"},",
                       "{formula_engine,\"1.0\"},",
-                      "{mochi,\"1.0\"},",
                       "{mochiweb,\"0.01\"},",
                       "{hypernumbers,\"1.0\"}]}."]),
     

@@ -38,8 +38,8 @@ req(Req) ->
     end.
 
 stuff(Url, Req) ->
-    Ref = parse_ref(Url),
 
+    Ref = parse_ref(Url),
     {Type, _Val} = Ref#refX.obj,
 
     Post = case Req:recv_body() of
@@ -281,7 +281,7 @@ handle_req('POST', Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = Json) ->
 
 handle_req(_Method, Req, _Ref, _Type,  _Attr, _Post) ->
     ?INFO("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
-    Req:ok({"text/html",<<"bleh">>}).
+    Req:not_found().
 
 add_styles([], Tree) ->
     Tree;
