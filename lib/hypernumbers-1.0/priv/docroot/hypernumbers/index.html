@@ -12,7 +12,7 @@
 
   </head>
   <body>
-    
+
     <table cellspacing="0" cellpadding="0" id="hn">
       <tr>
         <td id="header">
@@ -27,17 +27,17 @@
         <td height="22px">
           <div>
             <ul id="menu">
-              <li><a>File</a>
+              <li><a id="file">File</a>
                 <ul>
         	      <li id="browse"><a>Browse</a>
                     <ul><li><a>stuff</a></li></ul>
                   </li>
-        	      <li><a href="?save">Save</a></li>
-        	      <li><a id="m_import" class="disabled">
+        	      <li><a href="?save" id="save">Save</a></li>
+        	      <li><a id="m_import" class="import spreadsheet">
                       Import Spreadsheet</a></li>
                 </ul>
               </li>
-              <li><a>Edit</a>
+              <li><a id="edit">Edit</a>
                 <ul>
         	      <li><a id="pasteformats">Paste Formats</a></li>
         	      <li><a id="pastevalue">Paste Values</a></li>
@@ -47,7 +47,6 @@
                   <li><a id="clearboth">Clear All</a></li> 
                 </ul>
               </li>
-
             </ul>
           </div>
         </td>
@@ -55,7 +54,7 @@
       <tr>
         <td id="toolbar">
           <div class="expand fonts">
-            <span>Font</span>
+            <span id="font">Font</span>
             <div id="ffamily">
               <a id="fstyle_sans-serif">Normal</a>
               <a id="fstyle_serif">Serif</a>
@@ -77,7 +76,7 @@
           <a class="separator"></a>
 
           <div class="expand fonts">
-            <span>Format</span>
+            <span id="format">Format</span>
             <div id="formats">
               <a id="fmt_0">Plain</a>
               <hr />
@@ -264,10 +263,11 @@
         </td>
       </tr>
       <tr>
-        <td height="18">
+        <td height="24">
           <div style="position:relative;">
             <span id="hnpaste" style="width:250px; position:absolute;top:-7px;right:15px;"></span>
             <span id="pathpaste" style="width:130px; position:absolute;top:-7px;right:15px;"></span>
+            <span id="formbuilder_lang" style="width:130px; position:absolute;top:-7px;right:250px;"></span>
           </div>
         </td>
       </tr>
@@ -309,9 +309,16 @@
   <script src="/hypernumbers/json2.js"></script>
   <script src="/hypernumbers/hn.sheet.js"></script>
   <script src="/hypernumbers/hn.layout.js"></script>
+  <script src="/hypernumbers/fb_lang.js"></script>
+  <script type="text/javascript">
+    var oLangFocus = new Focus();
+    var formBuilderLang = "";
+    var oLangStrFrmBuilder = new LangStr();
+  </script>
       
   <script type="text/javascript">   
     new HN.SpreadSheet("hn");
+    setup_langs();
   </script>
   
 </html>
