@@ -260,8 +260,25 @@ extract_coords(Ref, a1, {PivotCol, PivotRow}) ->
 finite_range(YYtext, Kind) ->
     {Path, LhsArg, RhsArg} = split_range(YYtext),
     {Tl, Br} = find_proper_bounds(LhsArg, RhsArg, Kind),
-    #rangeref{type = finite, path = Path, tl = Tl, br = Br, text = YYtext}.
+    {W, H} = finite_range_dimensions(Tl, Br),
+    #rangeref{type = finite, path = Path, tl = Tl, br = Br, width = W, height = H, text = YYtext}.
 
+%% args are normalized/offset.
+
+finite_range_dimensions({TlCol, TlRow}, {BrCol, BrRow}) ->
+    TlColIndex = col_index(TlCol),
+    TlRowIndex = row_index(TlRow),
+    BrColIndex = col_index(BrCol),
+    BrRowIndex = row_index(BrRow),
+    {BrColIndex - TlColIndex + 1, BrRowIndex - TlRowIndex + 1}.
+
+row_index(N) when is_integer(N) -> N;
+row_index({offset, N}) -> ?my + N.
+
+col_index(N) when is_integer(N) -> N;
+col_index({offset, N}) -> ?mx + N.
+
+    
 %% ColId is something like "A" or "$XYZ"
 a1_col_to_coord(ColId) ->
     case string:substr(ColId, 1, 1) of
@@ -296,26 +313,41 @@ rc_row_to_coord(RowId) ->
 
 a1_col_range(YYtext) ->
     {Path, LhsCol, RhsCol} = split_range(YYtext),
+    TlCoord = a1_col_to_coord(LhsCol),
+    BrCoord = a1_col_to_coord(RhsCol),
+    W = col_index(BrCoord) - col_index(TlCoord) + 1,
     #rangeref{type = col,
               path = Path,
-              tl = {col, a1_col_to_coord(LhsCol)},
-              br = {col, a1_col_to_coord(RhsCol)},
+              tl = {col, TlCoord},
+              br = {col, BrCoord},
+              width = W,
+              height = na,
               text = YYtext}.
 
 a1_row_range(YYtext) ->
     {Path, LhsRow, RhsRow} = split_range(YYtext),
+    TlCoord = a1_row_to_coord(LhsRow),
+    BrCoord = a1_row_to_coord(RhsRow),
+    H = row_index(BrCoord) - row_index(TlCoord) + 1,
     #rangeref{type = row,
               path = Path,
-              tl = {row, a1_row_to_coord(LhsRow)},
-              br = {row, a1_row_to_coord(RhsRow)},
+              tl = {row, TlCoord},
+              br = {row, BrCoord},
+              width = na,
+              height = H,
               text = YYtext}.
 
 rc_col_range(YYtext) ->
     {Path, LhsCol, RhsCol} = split_range(YYtext),
+    TlCoord = rc_col_to_coord(LhsCol),
+    BrCoord = rc_col_to_coord(RhsCol),
+    W = col_index(BrCoord) - col_index(TlCoord) + 1,
     #rangeref{type = col,
               path = Path,
               tl = {col, rc_col_to_coord(LhsCol)},
               br = {col, rc_col_to_coord(RhsCol)},
+              width = W,
+              height = na,
               text = YYtext}.
 
 rc_row_range(YYtext) ->
