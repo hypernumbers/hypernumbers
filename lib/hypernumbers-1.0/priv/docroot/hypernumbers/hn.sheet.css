@@ -450,7 +450,7 @@ ul,li {
 
 #menu li ul li a { 
   background:   #f8f7f6;       
-  padding:      3px 18px 3px 3px; 
+  padding:      3px 18px 3px 20px; 
   z-index:      200;
 }
 

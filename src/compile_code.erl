@@ -151,6 +151,7 @@ get_rel_file() ->
                       "{crypto,\"",get_vsn(crypto),"\"},",
                       "{sasl,\"",get_vsn(sasl),"\"},",
                       "{mnesia,\"",get_vsn(mnesia),"\"},",
+                      "{yaws, \"1.76\", load},", 
                       "{read_excel,\"1.0\"},",
                       "{starling_app,\"0.0.1\"},",
                       "{formula_engine,\"1.0\"},",
