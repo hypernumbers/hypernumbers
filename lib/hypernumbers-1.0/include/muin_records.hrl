@@ -22,10 +22,11 @@
          }).
 
 -record(rangeref, {
-          type,         % finite|col|row
-          path,         % like in #cellref{}
-          tl, br,       % coords like in #cellref | {col|row, pos_integer()|{offset, pos_integer()}}
-          text = ""     % token text
+          type,          % finite|col|row
+          path,          % like in #cellref{}
+          tl, br,        % {Col, Row} | {col|row, pos_integer()|{offset, pos_integer()}}
+          width, height, % pos_integer()|na
+          text = ""      % token text
          }).
 
 -record(namedexpr, {
