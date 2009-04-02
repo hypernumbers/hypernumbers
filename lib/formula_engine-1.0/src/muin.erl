@@ -67,8 +67,10 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
                                  Other -> Other
                              end;
                          R when is_record(R, rangeref) ->
-                             %% TODO: implicit intersection
-                             ok;
+                             case implicit_intersection(R) of
+                                 blank -> 0;
+                                 Other -> Other
+                             end;
                          Constant ->
                              Constant
                      end,
@@ -197,12 +199,44 @@ funcall(Fname, Args0) ->
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+%% Intersect current cell with a range.
+implicit_intersection(R) ->
+    case R#rangeref.type of
+        col ->
+            case R#rangeref.width of
+                1 -> do_cell(R#rangeref.path, ?my, muin_util:tl_col(R));
+                _ -> ?ERRVAL_VAL
+            end;
+        row ->
+            case R#rangeref.height of
+                1 -> do_cell(R#rangeref.path, muin_util:tl_row(R), ?mx);
+                _ -> ?ERRVAL_VAL
+            end;
+        finite ->
+            Dim = {R#rangeref.width, R#rangeref.height},
+            case Dim of
+                {1, _H} -> % vertical vector
+                    CellCoords = muin_util:expand_cellrange(R),
+                    case filter(fun({_X, Y}) -> Y == ?my end, CellCoords) of
+                        [{X, Y}] -> do_cell(R#rangeref.path, Y, X);
+                        []       -> ?ERRVAL_VAL
+                    end;
+                {_W, 1} -> % horizontal vector
+                    CellCoords = muin_util:expand_cellrange(R),
+                    case filter(fun(X, _Y) -> X == ?mx end, CellCoords) of
+                        [{X, Y}] -> do_cell(R#rangeref.path, Y, X);
+                        []       -> ?ERRVAL_VAL
+                    end;
+                {_, _} ->
+                    ?ERRVAL_VAL
+            end
+    end.
+
 context_setting(col)           -> ?mx;
 context_setting(row)           -> ?my;
 context_setting(path)          -> ?mpath;
 context_setting(site)          -> ?msite;
 context_setting(array_context) -> ?array_context.
-
 
 col(#cellref{col = Col}) -> Col.
 row(#cellref{row = Row}) -> Row.
@@ -227,22 +261,15 @@ fetch(#cellref{col = Col, row = Row, path = Path}) ->
     RowIndex = row_index(Row),
     ColIndex = col_index(Col),
     do_cell(Path, RowIndex, ColIndex);                       
-fetch(#rangeref{tl = Tl, br = Br, path = Path}) ->
-    %% Finite ranges only!
-    {Col1, Row1} = Tl,
-    {Col2, Row2} = Br,
-    ColIndex1 = col_index(Col1),
-    RowIndex1 = row_index(Row1),
-    ColIndex2 = col_index(Col2),
-    RowIndex2 = row_index(Row2),
-    CellCoords = muin_util:expand_cellrange(RowIndex1, RowIndex2, ColIndex1, ColIndex2),
-    Rows = foldr(fun(X, Acc) -> % Curr row, result rows
-                         RowCoords = filter(fun({_, R}) -> R == X end, CellCoords),
-                         Row = map(fun({C, R}) -> do_cell(Path, R, C) end, RowCoords),
+fetch(R) ->
+    CellCoords = muin_util:expand_cellrange(R),
+    Rows = foldr(fun(CurrRow, Acc) -> % Curr row, result rows
+                         RowCoords = filter(fun({_, Y}) -> Y == CurrRow end, CellCoords),
+                         Row = map(fun({X, Y}) -> do_cell(R#rangeref.path, Y, X) end, RowCoords),
                          [Row|Acc]
                  end,
                  [],
-                 seq(RowIndex1, RowIndex2)),
+                 seq(muin_util:tl_row(R), muin_util:br_row(R))),
     {range, Rows}. % still tagging to tell stdfuns where values came from.
 
 %% why are we passing in Url?
