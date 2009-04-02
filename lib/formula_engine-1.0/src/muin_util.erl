@@ -156,6 +156,14 @@ br_row(R) ->
     {{_, _}, {_, RowIndex}} = bounds_indexes(R),
     RowIndex.
 
+tl_col(R) ->
+    {{ColIndex, _}, {_, _}} = bounds_indexes(R),
+    ColIndex.
+
+br_col(R) ->
+    {{_, _}, {ColIndex, _}} = bounds_indexes(R),
+    ColIndex.
+    
 %% Catch errors from error-throwing functions.
 attempt(Mod, F, Args) ->
     try apply(Mod, F, Args) of
