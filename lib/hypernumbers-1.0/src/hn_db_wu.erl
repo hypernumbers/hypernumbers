@@ -1056,6 +1056,10 @@ write_attr(#refX{obj = {cell, _}} = RefX, {"formula", _} = Attr) ->
         [_X] -> throw({error, cant_change_part_of_array});
         []   -> write_attr2(RefX, Attr)
     end;
+write_attr(#refX{obj = {cell, _}} = RefX, {"format", Format} = Attr) ->
+    [{RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"]),
+    {ok, ok} = process_format(RefX, Format, RawValue),
+    write_attr3(RefX, Attr);
 write_attr(#refX{obj = {cell, _}} = RefX, {Key, Val} = Attr) ->
     % NOTE the attribute 'overwrite-color' isn't in a magic style and shouldn't be
     case ms_util2:is_in_record(magic_style, Key) of 
@@ -2504,8 +2508,11 @@ write_rawvalue(RefX, Value) ->
     % run the format and then stick the value into
     % the database
     {ok, Format} = read_inherited(RefX, "format", "General"),
+    process_format(RefX, Format, Value).
+
+process_format(RefX, Format, Value) ->
     {erlang, {_Type, Output}} = format:get_src(Format),
-    {ok, {Color, V}}=format:run_format(Value,Output),
+    {ok, {Color, V}}=format:run_format(Value, Output),
     Ref1 = hn_util:refX_to_ref(RefX, "value"),
     Record2 = #hn_item{addr = Ref1, val = V},
     ok = mnesia:write(Record2),
