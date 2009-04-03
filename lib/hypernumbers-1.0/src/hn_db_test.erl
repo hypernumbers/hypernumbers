@@ -84,26 +84,55 @@ delete() ->
     write_value(Path, "=a8+1", {1, 9}, []),    
     write_value(Path, "=a9+1", {1, 10}, []),
 
-    write_value(Path, "abcdefg", {2, 9}, []),
-    write_value(Path, "12345", {2, 10}, []),
+    % write_value(Path, "abcdefg", {2, 9}, []),
+    % write_value(Path, "12345", {2, 10}, []),
     
-    write_value(Path, "=sum(a1:a10)", {3, 1}, []),
-    write_value(Path2, "=sum(/delete/a1:a10)", {3, 1}, []),
+    % write_value(Path, "=sum(a1:a10)", {3, 1}, []),
+    % write_value(Path2, "=sum(/delete/a1:a10)", {3, 1}, []),
 
-    test_delete(Path, {cell, {1, 5}}, vertical),
+    % test_delete(Path, {cell, {1, 5}}, vertical),
 
-    test_util:wait(200),
+    % test_util:wait(75),
     
-    test_insert(Path, {cell, {1, 2}}, vertical),
+    % test_insert(Path, {cell, {1, 2}}, vertical),
+
+    % test_util:wait(75),
+
+    % test_delete(Path, {cell, {1, 10}}, horizontal),
+
+    write_value(Path, "1", {5, 1}, []),
+    write_value(Path, "=a1*3", {5, 2}, []),    
+    write_value(Path, "=a2*3", {5, 3}, []),    
+    write_value(Path, "=a3*3", {5, 4}, []),    
+    write_value(Path, "=a4*3", {5, 5}, []),    
+    write_value(Path, "=a5*3", {5, 6}, []),    
+    write_value(Path, "=a6*3", {5, 7}, []),    
+    write_value(Path, "=a7*3", {5, 8}, []),    
+    write_value(Path, "=a8*3", {5, 9}, []),    
+    write_value(Path, "=a9*3", {5, 10}, []),
+    write_value(Path, "=55", {6, 1}, []),
+    write_value(Path, "=56", {6, 2}, []),    
+    write_value(Path, "=57", {6, 3}, []),    
+    write_value(Path, "=58", {6, 4}, []),    
+    write_value(Path, "=59", {6, 5}, []),    
+    write_value(Path, "=60", {6, 6}, []),    
+    write_value(Path, "=61", {6, 7}, []),    
+    write_value(Path, "=62", {6, 8}, []),    
+    write_value(Path, "=63", {6, 9}, []),    
+    write_value(Path, "=64", {6, 10}, []),
+
+    test_util:wait(100),
+
+    io:format("about to delete a vertical range~n~n"),
+    
+    test_delete(Path, {range, {5, 2, 6, 3}}, vertical),
 
     test_util:wait(200),
 
-    test_delete(Path, {cell, {1, 10}}, horizontal),
+    %io:format("about to insert a vertical range~n~n"),
 
-    test_util:wait(200),
-
-    test_insert(Path, {cell, {1, 9}}, horizontal),
-
+    %test_insert(Path, {range, {5, 3, 6, 4}}, vertical),
+    
     ok.
 
 %% @hidden
