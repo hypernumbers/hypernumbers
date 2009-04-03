@@ -45,13 +45,13 @@ address1(Row, Col, 3, true) ->
 address1(Row, Col, 4, true) ->
     tconv:to_b26(Col) ++ tconv:to_s(Row);
 address1(Row, Col, 1, false) ->
-    "R" ++ tconv:to_s(Row) ++ "C" ++ tconv:to_s(Col);
+    tconv:to_s(Row) ++ "R" ++ tconv:to_s(Col) ++ "C";
 address1(Row, Col, 2, false) ->
-    "R" ++ tconv:to_s(Row) ++ "C[" ++ tconv:to_s(Col) ++ "]";
+    tconv:to_s(Row) ++ "R" ++ "[" ++ tconv:to_s(Col) ++ "]C";
 address1(Row, Col, 3, false) ->
-    "R[" ++ tconv:to_s(Row) ++ "]C" ++ tconv:to_s(Col); 
+    "[" ++ tconv:to_s(Row) ++ "]R" ++ tconv:to_s(Col) ++ "C";
 address1(Row, Col, 4, false) ->
-    "R[" ++ tconv:to_s(Row) ++ "]C[" ++ tconv:to_s(Col) ++ "]".
+    "[" ++ tconv:to_s(Row) ++ "]R[" ++ tconv:to_s(Col) ++ "]C".
 
 %% This is the array form of INDEX. The reference form is in preproc.
 
