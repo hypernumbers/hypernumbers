@@ -223,7 +223,7 @@ implicit_intersection(R) ->
                     end;
                 {_W, 1} -> % horizontal vector
                     CellCoords = muin_util:expand_cellrange(R),
-                    case filter(fun(X, _Y) -> X == ?mx end, CellCoords) of
+                    case filter(fun({X, _Y}) -> X == ?mx end, CellCoords) of
                         [{X, Y}] -> do_cell(R#rangeref.path, Y, X);
                         []       -> ?ERRVAL_VAL
                     end;
