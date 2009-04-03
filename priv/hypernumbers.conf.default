@@ -8,4 +8,7 @@
         ]}
 	]}.
 
-{remoting_port,1935}.
+%% These will only affect the initial load and not by 
+%% restarts
+{permissions, [{user, anonymous, no_access}]}.
+{groups,      [{owner,[{user,"dale@hypernumbers.com"}]}]}.

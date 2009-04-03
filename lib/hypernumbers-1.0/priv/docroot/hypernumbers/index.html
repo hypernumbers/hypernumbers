@@ -32,19 +32,18 @@
         	      <li id="browse"><a>Browse</a>
                     <ul><li><a>stuff</a></li></ul>
                   </li>
-        	      <li><a href="?save" id="save">Save</a></li>
-        	      <li><a id="m_import" class="import spreadsheet">
-                      Import Spreadsheet</a></li>
+        	      <li><a class="disabled">Save</a></li>
+        	      <li><a class="disabled import spreadsheet">Import Spreadsheet</a></li>
                 </ul>
               </li>
               <li><a id="edit">Edit</a>
                 <ul>
-        	      <li><a id="pasteformats">Paste Formats</a></li>
-        	      <li><a id="pastevalue">Paste Values</a></li>
-        	      <li class="seperator"></li>
-        	      <li><a id="clearformat">Clear Formats</a></li>
-        	      <li><a id="clearvalue">Clear Values</a></li>
-                  <li><a id="clearboth">Clear All</a></li> 
+        	      <li><a id="clearformat">Clear 
+                      <strong>Styles</strong></a></li>
+        	      <li><a id="clearvalue">Clear 
+                      <strong>Contents</strong></a></li>
+                  <li><a id="clearboth">Clear 
+                      <strong>All</strong></a></li> 
                 </ul>
               </li>
             </ul>
@@ -309,16 +308,16 @@
   <script src="/hypernumbers/json2.js"></script>
   <script src="/hypernumbers/hn.sheet.js"></script>
   <script src="/hypernumbers/hn.layout.js"></script>
-  <script src="/hypernumbers/fb_lang.js"></script>
+  <!--<script src="/hypernumbers/fb_lang.js"></script>
   <script type="text/javascript">
     var oLangFocus = new Focus();
     var formBuilderLang = "";
     var oLangStrFrmBuilder = new LangStr();
-  </script>
+  </script>-->
       
   <script type="text/javascript">   
     new HN.SpreadSheet("hn");
-    setup_langs();
+    //setup_langs();
   </script>
   
 </html>

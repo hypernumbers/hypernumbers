@@ -8,9 +8,10 @@
 -behaviour(gen_server).
 -record(state, {conf}).
 
--export([start_link/0]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-	 terminate/2, code_change/3]).
+	 terminate/2, code_change/3, start_link/0]).
+
+-export([ get/1, read_conf/1 ]).
 
 -spec(start_link/0 :: () -> {ok,pid()} | ignore | {error,any()}).
              
@@ -18,12 +19,12 @@
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
--spec(init/1 :: (Args::any()) -> {ok,any()} | {ok,any(),any()} | ignore | {stop,any()}).
+%-spec(init/1 :: (Args::any()) -> {ok,any()} | {ok,any(),any()} | ignore | {stop,any()}).
 %% @doc Initiates the server
 init([]) ->
     {ok, #state{}}.
 
--spec(handle_call/3 :: (Request::any(), From::any(), State::any()) -> {reply, any(), any()} | {noreply, any()}).
+% -spec(handle_call/3 :: (Request::any(), From::any(), State::any()) -> {reply, any(), any()} | {noreply, any()}).
 %% @doc Handling call messages
 %% Set the configuration on startup
 handle_call({set_conf,Conf}, _From, State) ->
@@ -35,11 +36,14 @@ handle_call({get,Key}, _From, State) ->
 handle_call(_Request, _From, State) ->
     {noreply, State}.
 
-handle_cast(_Msg, State) ->
-    {noreply, State}.
-handle_info(_Info, State) ->
-    {noreply, State}.
-terminate(_Reason, _State) ->
-    ok.
-code_change(_OldVsn, State, _Extra) ->
-    {ok, State}.
+get(Key) ->
+    gen_server:call(?MODULE, {get, Key}).
+
+read_conf(Path) ->
+    {ok,Config} = file:consult(Path), 
+    gen_server:call(?MODULE,{set_conf,Config}).
+
+handle_cast(_Msg, State)      -> {noreply, State}.
+handle_info(_Info, State)     -> {noreply, State}.
+terminate(_Reason, _State)    -> ok.
+code_change(_Old, State, _Ex) -> {ok, State}.

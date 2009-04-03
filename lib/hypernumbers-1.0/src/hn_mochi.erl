@@ -146,11 +146,9 @@ ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
     end,
     ok;
 
-ipost(_Req, Ref, _Type, _Attr, [{"clear", "all"}]) ->
-    hn_db_api:clear(Ref, all),
-    ok;
-ipost(_Req, Ref, _Type, _Attr, [{"clear", "contents"}]) ->
-    hn_db_api:clear(Ref, contents),
+ipost(_Req, Ref, _Type, _Attr, [{"clear", What}]) 
+  when What == "contents"; What == "style"; What == "all" ->
+    hn_db_api:clear(Ref, list_to_atom(What)),
     ok;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

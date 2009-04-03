@@ -3,7 +3,6 @@
 -module(hypernumbers_app).
 -behaviour(application).
 
--include("yaws.hrl").
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
 
@@ -20,6 +19,7 @@
     %%      <li>disc_only_copies</li>
     %%      </ul>
 start(_Type, _Args) ->
+
     case mnesia:table_info(schema, storage_type) of
         ram_copies -> 
             mnesia:change_table_copy_type(schema, node(), disc_copies);
@@ -27,26 +27,18 @@ start(_Type, _Args) ->
             ok
     end,
         
-    case hypernumbers_sup:start_link() of
-        {ok, Pid} -> 
-
-            {ok,[[Path]]} = init:get_argument(hn_config),	
-            {ok,Config} = file:consult(Path), 
-            gen_server:call(hn_config,{set_conf,Config}),
-
-            case is_fresh_startup() of
-                true  -> clean_start();
-                false -> ok
-            end,
-                        
-            ok = start_yaws(),
-            ok = start_dirty_subscribe(),
-            {ok, Pid};
-
-        Error -> 
-            io:format("Got to 3b Error is ~p~n", [Error]),
-            Error
-    end.
+    {ok, Pid} = hypernumbers_sup:start_link(),
+    {ok,[[Path]]} = init:get_argument(hn_config),	
+    hn_config:read_conf(Path),
+    
+    case is_fresh_startup() of
+        true  -> clean_start();
+        false -> ok
+    end,
+    
+    ok = start_mochiweb(),
+    ok = start_dirty_subscribe(),
+    {ok, Pid}.
 
 %% @spec stop(State) -> ok
 %% @doc  Application Callback
@@ -87,21 +79,12 @@ clean_start() ->
     ok = start_dirty_subscribe(),
     ok.
 
-%% @spec start_yaws() -> ok
-%% @doc  Start yaws in embedded mode
-start_yaws() ->
-    
-    mochiweb_http:start([{port, 9000}, {loop, {hn_mochi, req}}]),
-
-%    {ok,[[Log]]}  = init:get_argument(hn_log),
-%    Hosts   = gen_server:call(hn_config,{get,hosts}),
-%
-%    SConfs = lists:map(fun create_sconf/1,Hosts),    
-%    GC     = yaws_config:make_default_gconf(false, "id"),
-%    
-%    application:set_env(yaws, embedded, true),
-%    application:start(yaws),    
-%    ok = yaws_api:setconf(GC#gconf{logdir=Log}, [SConfs]),
+%% @spec start_mochiweb() -> ok
+%% @doc  Start mochiweb http server
+start_mochiweb() ->
+    [{IP, Port, _Hosts}] = hn_config:get(hosts),
+    Opts = [{port, Port}, {ip, inet_parse:ntoa(IP)}, {loop, {hn_mochi, req}}],
+    mochiweb_http:start(Opts),
     ok.
 
 %% @spec start_dirty_subscribe() -> ok
@@ -115,43 +98,31 @@ start_dirty_subscribe() ->
     ok = gen_server:cast(dirty_notify_back_out, subscribe),
     ok.
 
-%% @spec create_sconf(Details) -> SConf
-%% @doc  Create SConf record for yaws setup
-create_sconf({IP,Port,_Domains}) ->
-    #sconf{port = Port,
-           appmods=[{"/",hn_yaws}],
-           listen = IP,
-           docroot = code:lib_dir(hypernumbers)++"/priv/docroot"}.
-
 %% @spec set_def_perms() -> ok
 %% @doc  Set the default permissions on each domain
 set_def_perms() ->
-    Hosts = gen_server:call(hn_config,{get,hosts}),
-    set_def_perms(Hosts).
-
-set_def_perms([]) -> ok;
-set_def_perms([{{I1,I2,I3,I4},Port,Domains}|T])->
     
-    Url = lists:concat(["http://",I1,".",I2,".",I3,".",I4,":",Port]),
+    [{IP, Port, Domains}] = hn_config:get(hosts),
+    PStr = integer_to_list(Port),
+    Url  = "http://"++inet_parse:ntoa(IP)++":"++PStr,
     
-    F = fun(X) ->
-                lists:concat(["http://"++X++":"++integer_to_list(Port)])
-	end,
+    Permissions = {"__permissions", hn_config:get(permissions)},
+    Groups      = {"__groups",      hn_config:get(groups)},
 
-    lists:map(fun set_perms/1, [Url|lists:map(F,Domains)]),
-    set_def_perms(T).
+    F = fun(X) -> lists:concat(["http://",X, ":", PStr]) end,
+    
+    lists:foreach(fun(X) -> set_perms(X, Groups, Permissions) end, 
+                  [Url | lists:map(F, Domains)]), 
+    ok.
 
 %% @spec set_perms(Domains) -> Return
 %% @doc  Supervisor call back
-set_perms(Domains) ->
+set_perms(Domain, Groups, Permissions) ->
     
-    Ref = #refX{site = Domains,
+    Ref = #refX{site = Domain,
                path = [],
                obj  = {page,"/"}},
  
-    Perms  = {"__permissions",[{user,anonymous,admin}]},
-    Groups = {"__groups", [{owner,[{user,"admin"}]}]},
-
-    hn_db_api:write_attributes(Ref,[Perms, Groups]),
+    hn_db_api:write_attributes(Ref, [Groups, Permissions]),
     
     ok.

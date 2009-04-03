@@ -97,8 +97,8 @@ ul,li {
   display:block;
   height:18px;
   width:28px;
-  border-style:outset;
   border-width:0px 1px;
+  border-color:#FFF #FFF #FFF #FFF;
   background: #DDDDDD;
 }
 
@@ -209,7 +209,7 @@ ul,li {
  top:0px;
  right:-8px;
  height:20px;
- z-index:99999;
+ z-index:9999;
 }
 
 #rows .handle { 
@@ -245,7 +245,7 @@ ul,li {
 #toolbar .expand { 
   background: url(down.png) no-repeat right 2px;
   cursor:pointer;
-  padding:2px 16px 2px 3px;
+  padding:3px 16px 1px 3px;
   margin: 2px;
   height: 16px;
   border: 1px solid transparent;
@@ -268,7 +268,7 @@ ul,li {
   position:absolute;
   top:auto;
   display:none;
-  padding:4px 0px;
+  padding:0px 0px;
   z-index:100000;
 }
 
@@ -423,7 +423,7 @@ ul,li {
   position:     absolute;  
   border:       1px solid; 
   border-color: #DDD #AAA #AAA #DDD;  
-  padding:      3px 0px; 
+  padding:      1px 0px; 
   background:   #FFFFFF; 
   z-index:99999;
 }
@@ -456,6 +456,14 @@ ul,li {
 
 #menu .hover { 
   background:   #ffc47e; 
+}  
+
+#menu .disabled.hover { 
+  background:   #FFF; 
+}  
+
+#menu .disabled { 
+  color:   #AAA; 
 }  
 
 #menu li.seperator { 
