@@ -4,7 +4,7 @@
 
 
 -module(stdfuns_lookup_ref).
--export([address/1, choose/1, column/1, index/1]).
+-export([address/1, choose/1, column/1, index/1, row/1]).
 -compile(export_all).
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
@@ -20,6 +20,10 @@ choose([V|Vs]) ->
 column([])                      -> muin:context_setting(col);
 column([C]) when ?is_cellref(C) -> muin:col_index(muin:col(C));
 column(_)                       -> ?ERR_VAL.
+
+row([])                      -> muin:context_setting(row);
+row([C]) when ?is_cellref(C) -> muin:row_index(muin:row(C));
+row(X)                       -> io:format("X=~p~n", [X]), ?ERR_VAL.
 
 address([Row, Col]) ->
     address([Row, Col, 1, true, ""]);
