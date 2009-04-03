@@ -122,13 +122,65 @@ ipost(Req, #refX{path=["_auth","login"]}, _Type, _Attr, Data) ->
     ?json(Req, {struct, Resp}),
     ret;
 
-ipost(_Req, Ref, _Type, _Attr, [{"insert", Where}]) when 
-  Where == "before", Where == "after" ->
-    {ok, ok} = hn_db_api:insert(Ref,list_to_existing_atom(Where)),
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}])
+  when O == row orelse O == column ->
+    io:format("in hn_mochi:ipost (insert/before row/col before)~n"),
+    RefX2 = make_before(Ref),
+    {ok, ok} = hn_db_api:insert(RefX2),
     ok;
 
-ipost(_Req, Ref, _Type, _Attr, [{"delete","all"}]) ->
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
+  when O == row orelse O == column ->
+    io:format("in hn_mochi:ipost (insert/after row/col after)~n"),
+    {ok, ok} = hn_db_api:insert(Ref),
+    ok;
+
+% by default cells and ranges displace vertically
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}])
+  when O == cell orelse O == range ->
+    io:format("in hn_mochi:ipost (insert/before cell/range)~n"),
+    RefX2 = make_before(Ref),
+    {ok, ok} = hn_db_api:insert(RefX2, vertical),
+    ok;
+
+% by default cells and ranges displace vertically
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
+  when O == cell orelse O == range ->
+    io:format("in hn_mochi:ipost (insert/after cell/range)~n"),
+    {ok, ok} = hn_db_api:insert(Ref),
+    ok;
+
+% but you can specify the displacement explicitly
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"},
+                                                      {"displacement", D}])
+  when O == cell orelse O == range,
+       D == "horizontal" orelse D == "vertical" ->
+    io:format("in hn_mochi:ipost (insert/before cell/range/2)~n"),
+    RefX2 = make_before(Ref),
+    {ok, ok} = hn_db_api:insert(RefX2, list_to_existing_atom(D)),
+    ok;
+
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"},
+                                                      {"displacement", D}])
+  when O == cell orelse O == range,
+       D == "horizontal" orelse D == "vertical" ->
+    io:format("in hn_mochi:ipost (insert/after cell/range/2)~n"),
+    {ok, ok} = hn_db_api:insert(Ref, list_to_existing_atom(D)),
+    ok;
+
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete"}])
+  when O == row orelse O == column ->
+    io:format("in hn_mochi:ipost (delete row/col)~n-~p~n-~p~n",
+              [Ref, _Attr]),
     {ok, ok} = hn_db_api:delete(Ref),
+    ok;
+
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}])
+  when O == cell orelse O == range,
+       Direction == "horizontal" orelse Direction == "vertical" ->
+    io:format("in hn_mochi:ipost (delete row/col)~n-~p~n-~p~n",
+              [Ref, _Attr]),
+    {ok, ok} = hn_db_api:delete(Ref, Direction),
     ok;
 
 ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}]) ->
@@ -493,3 +545,16 @@ page_attributes(Ref) ->
     Dict   = to_dict(hn_db_api:read(Ref), NTree),
     Time   = {"time", remoting_reg:timestamp()},
     {struct, [Time | dict_to_struct(Dict)]}.
+
+make_before(#refX{obj = {cell, {X, Y}}} = RefX) ->
+    RefX#refX{obj = {cell, {X - 1, Y - 1}}};
+make_before(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
+    DiffX = X2 - X1 + 1,
+    DiffY = Y2 - Y1 + 1,
+    RefX#refX{obj = {range, {X1 - DiffX, Y1 - DiffY, X2 - DiffX, Y2 - DiffY}}};
+make_before(#refX{obj = {column, {X1, X2}}} = RefX) ->
+    DiffX = X2 - X1,
+    RefX#refX{obj = {column, {X1 - DiffX, X2 - DiffX}}};
+make_before(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
+    DiffY = Y2 - Y1,
+    RefX#refX{obj = {row, {Y1 - DiffY, Y2 - DiffY}}}.
