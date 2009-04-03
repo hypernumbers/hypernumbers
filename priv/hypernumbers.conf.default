@@ -5,8 +5,14 @@
 
 %% Reloading permissions will overwrite any permissions set
 %% externally
-{permissions, "http://127.0.0.1:9000/", 
-              [{user, anonymous, no_access}, {group, "dev", admin}]}.
+{permissions, [
+  {"http://127.0.0.1:9000/", [
+    {user, anonymous, no_access}, {group, "dev", admin}
+  ]}
+]}.
 
-{groups,      "http://127.0.0.1:9000/", 
-              [{"dev", ["dale", "gordon", "hasan"]}]}.
+{groups, [
+ {"http://127.0.0.1:9000/", [
+  {"dev", ["dale", "gordon", "hasan"]}
+ ]}
+]}.

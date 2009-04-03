@@ -31,7 +31,6 @@ handle_call({set_conf, Path, Conf}, _From, State) ->
     {reply, ok, State#state{conf=Conf, path=Path}};
 handle_call(hup, _From, State) ->
     {ok,Config} = file:consult(State#state.path), 
-    io:format("~p",[Config]),
     {reply, ok, State#state{conf=Config}};
 %% Get config by key
 handle_call({get, Key}, _From, State) ->
