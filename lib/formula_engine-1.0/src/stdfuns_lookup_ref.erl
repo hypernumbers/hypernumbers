@@ -4,7 +4,7 @@
 
 
 -module(stdfuns_lookup_ref).
--export([address/1, choose/1, index/1]).
+-export([address/1, choose/1, column/1, index/1]).
 -compile(export_all).
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
