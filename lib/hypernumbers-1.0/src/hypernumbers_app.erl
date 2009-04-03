@@ -115,7 +115,7 @@ set_def_perms() ->
                   [Url | lists:map(F, Domains)]), 
     ok.
 
-%% @spec set_perms(Domains) -> Return
+%% @spec set_perms(Domains, Groups, Permissions) -> Return
 %% @doc  Supervisor call back
 set_perms(Domain, Groups, Permissions) ->
     
