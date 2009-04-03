@@ -867,7 +867,7 @@ clear_dirty_cell(#refX{obj = {cell, _}} = RefX) ->
     {ok, ok}.
 
 %% @spec get_refs_below(#refX{}) -> [#refX{}]
-%% @doc gets all the refs below a given reference as well as
+%% @doc gets all the refs equal to or below a given reference as well as
 %% all cells that are children of cells below the refence
 %% 
 %% The reference passed in can
@@ -885,14 +885,16 @@ get_refs_below(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
     #refX{site = S, path = P} = RefX,
     Obj = {cell, {'_', '$1'}},
     % first get the cells
-    Head1 = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    Head1a = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    Head1b = ms_util:make_ms(hn_item, [{addr, Head1a}]),
     Cond = [{'>', '$1', YY}],
     Body = ['$_'],
-    RefXs1 = get_match_refs({Head1, Cond, Body}),
+    RefXs1 = get_match_refs({Head1b, Cond, Body}),
     % now get the local pages that are children of
     %  cells below the refX
-    Head1 = ms_util:make_ms(refX, [{site, S}, {path, P}, {obj, Obj}]),
-    RefXs2 = get_local_links_refs({Head1, Cond, Body}),
+    Head2a = ms_util:make_ms(refX, [{site, S}, {path, P}, {obj, Obj}]),
+    Head2b = ms_util:make_ms(local_cell_link, [{parent, Head2a}]),
+    RefXs2 = get_local_links_refs({Head2b, Cond, Body}),
     RefXs = lists:append([RefXs1, RefXs2]),
     hslists:uniq(RefXs);    
 get_refs_below(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
@@ -900,9 +902,9 @@ get_refs_below(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     YY = ?COND(Y1 > Y2, Y1, Y2),
     {XX1, XX2} = ?COND(X1 > X2, {X2, X1}, {X1, X2}),
     get_refs_below2(RefX, XX1, XX2, YY).
-
+   
 %% @spec get_refs_right(#refX{}) -> [#refX{}]
-%% @doc gets all the refs to the right of a given reference. 
+%% @doc gets all the refs to the equal to or to the right of a given reference.
 %% 
 %% The reference passed
 %% in can be one of the following, a:
@@ -918,14 +920,16 @@ get_refs_right(#refX{obj = {column, {X1, X2}}} = RefX) ->
     XX = ?COND(X1 > X2, X1, X2),
     #refX{site = S, path = P} = RefX,
     Obj = {cell, {'$1', '_'}},
-    Head1 = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    Head1a = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    Head1b = ms_util:make_ms(hn_item, [{addr, Head1a}]),
     Cond = [{'>', '$1', XX}],
     Body = ['$_'],
-    RefXs1 = get_match_refs([{Head1, Cond, Body}]),
+    RefXs1 = get_match_refs({Head1b, Cond, Body}),
      % now get the local pages that are children of
     %  cells below the refX
-    Head1 = ms_util:make_ms(refX, [{site, S}, {path, P}, {obj, Obj}]),
-    RefXs2 = get_local_links_refs({Head1, Cond, Body}),
+    Head2a = ms_util:make_ms(refX, [{site, S}, {path, P}, {obj, Obj}]),
+    Head2b = ms_util:make_ms(local_cell_link, [{parent, Head2a}]),
+    RefXs2 = get_local_links_refs({Head2b, Cond, Body}),
     RefXs = lists:append([RefXs1, RefXs2]),
     hslists:uniq(RefXs);       
 get_refs_right(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
@@ -1112,8 +1116,8 @@ read_cells(Ref) ->
 %% <li>page</li>
 %% </ul>
 read_cells_raw(#refX{obj = {cell, _}} = RefX) ->
-    #refX{site = S, path = P, obj= R} = RefX,
-    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, R}]),
+    #refX{site = S, path = P, obj= Ref} = RefX,
+    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Ref}]),
     Match = ms_util:make_ms(hn_item, [{addr, MatchRef}]),
     hn_util:from_hn_item(mnesia:match_object(hn_item, Match, read));
 read_cells_raw(#refX{obj = {range, _}} = RefX) ->
@@ -1256,7 +1260,16 @@ read_styles(RefX) when is_record(RefX, refX) ->
 
 %% @spec clear_cells(#refX{}) -> {ok, ok}
 %% @doc deletes the contents (formula/value) and the formats and attributes
-%% of a cell (but doesn't delete the cell itself)
+%% of a cell (but doesn't delete the cell itself).
+%% 
+%% The reference can refer to a:
+%% <ul>
+%% <li>cell</li>
+%% <li>range</li>
+%% <li>column</li>
+%% <li>row</li>
+%% <li>page</li>
+%% </ul>
 %%  
 %% The same as clear_cells(RefX, contents).
 clear_cells(RefX) when is_record(RefX, refX) ->
@@ -2178,8 +2191,10 @@ shift_outgoing_hn(Site, From, To) ->
     end.
 
 shift_cell2(From, To) ->
+    % io:format("in shift_cell2~n-From is ~p~n-To is ~p~n", [From, To]),
     % Rewrite the shifted cell
     AttrList = read_cells_raw(From),
+    % io:format("in shift_cell2~n-AttrList is ~p~n", [AttrList]),
     Fun1 = fun({_RefX, {Key, Val}}) ->
                    write_attr3(To, {Key, Val})
            end,
@@ -2190,13 +2205,13 @@ shift_cell2(From, To) ->
            end,
     [{ok, ok} = Fun2(X) || X <- AttrList],
     % now check if the cell has a circular reference
-    [{C, {"formula", Formula}}] = read_attrs(To, ["formula"]),
-    case check_circ_ref(To, Formula) of
-        true  -> io:format("in shift_cell2 - circular reference!~n"),
-                 {ok, ok} = mark_cells_dirty(To);
-        false -> {ok, ok}
-    end,
-    {ok, ok}.
+    case read_attrs(To, ["formula"]) of
+        [] -> {ok, ok};
+        [{C, {"formula", F}}] -> case check_circ_ref(To, F) of
+                                     true  -> mark_cells_dirty(To);
+                                     false -> {ok, ok}
+                                 end
+    end.
 
 check_circ_ref(#refX{path = TPath, obj = {cell, {TX, TY}}} = To, Formula) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
@@ -2364,7 +2379,7 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
     % write out the format (if any)
     case Format of
         {"format", "null"} -> ok;
-        {"format", F}      -> write_attr(RefX, {"format",F})
+        {"format", F}      -> write_attr(RefX, {"format", F})
     end,
     % now write out the actual cell
     Formula = case Type of

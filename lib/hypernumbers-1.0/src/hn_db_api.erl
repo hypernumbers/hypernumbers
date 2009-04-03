@@ -1040,8 +1040,8 @@ get_offset(insert, D, {column, {X1, X2}})         -> g_o1(D, X2 - X1 + 1, 0);
 get_offset(insert, D, {range,  {X1, Y1, X2, Y2}}) -> g_o1(D, X2 - X1 + 1,
                                                           Y2 - Y1 + 1);
 get_offset(delete, D, {cell,    _})               -> g_o1(D, -1, -1);
-get_offset(delete, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, -(Y2 - Y1) + 1); 
-get_offset(delete, D, {column, {X1, X2}})         -> g_o1(D, -(X2 - X1) + 1, 0); 
+get_offset(delete, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, -(Y2 - Y1 + 1)); 
+get_offset(delete, D, {column, {X1, X2}})         -> g_o1(D, -(X2 - X1 + 1), 0); 
 get_offset(delete, D, {range,  {X1, Y1, X2, Y2}}) -> g_o1(D, -(X2 - X1 + 1),
                                                           -(Y2 - Y1 + 1)). 
 
@@ -1089,7 +1089,7 @@ shorten(List, {row, {Y1, Y2}}, "vertical") ->
 move(RefX, Type, Disp)
   when (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
-    #refX{site = Site, obj = {R, Rest} = Ref} = RefX,
+    #refX{site = Site, obj = Obj} = RefX,
     % io:format("In hn_dp_api:move~n-RefX is ~p~n-Type is ~p~n-Disp is ~p~n",
     %          [RefX, Type, Disp]),
     Fun =
@@ -1100,7 +1100,7 @@ move(RefX, Type, Disp)
                 % io:format("in hn_db_api:move~n-Site is ~p~n-RefX is ~p~n-"++
                 %          "NewVsn is ~p~n",
                 %          [Site, RefX, NewVsn]),
-                Off = get_offset(Type, Disp, Ref),
+                Off = get_offset(Type, Disp, Obj),
                 % io:format("in hn_db_api:move~n-Off is ~p~n", [Off]),
                 % when the move type is DELETE the cells that are moved
                 % DO NOT include the cells described by the reference
@@ -1121,6 +1121,11 @@ move(RefX, Type, Disp)
                         {delete, horizontal} -> List = ?wu:get_refs_right(RefX),
                                                 {'left-to-right', List}
                     end,
+                % if this is a delete - we need to actually delete the cells
+                case Type of
+                    delete -> {ok, ok} = ?wu:clear_cells(RefX);
+                    insert -> ok
+                end,
                 % we sort the cells so that 
                 % * if we are INSERTING we DONT overwrite cells...
                 % * if we are DELETING we DO overwrite cells...
@@ -1134,6 +1139,7 @@ move(RefX, Type, Disp)
 
                 % OK all our local stuff is sorted, now lets deal with the remote
                 % children
+                {R, Rest} = Obj,
                 Change = {insert, {R, Rest}, Disp},
                 % set the delay to zero
                 {ok, ok} = ?wu:mark_notify_out_dirty(PageRef, Change, 0),
