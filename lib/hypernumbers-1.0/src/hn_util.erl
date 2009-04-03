@@ -30,6 +30,7 @@
          refX_to_index/1,
          range_to_list/1,
          rectify_range/4,
+         rectify_row_or_col/2,
 
          % HTTP Utils
          req/1,
@@ -120,15 +121,15 @@ index_from_ref(#ref{site = S, path = P, ref = {cell, {X, Y}}}) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 rectify_range(X1, Y1, X2, Y2) ->
     % in case the range is passed in arsey-backwards
-    {X1a, X2a} = if
-                     X1 < X2 -> {X1, X2};
-                     true    -> {X2, X1}
-                 end,
-    {Y1a, Y2a} = if
-                     Y1 < Y2 -> {Y1, Y2};
-                     true    -> {Y2, Y1}
-                 end,
+    {X1a, X2a} = rectify_row_or_col(X1, X2),
+    {Y1a, Y2a} = rectify_row_or_col(Y1, Y2),
     {X1a, Y1a, X2a, Y2a}.
+
+rectify_row_or_col(Z1, Z2) ->
+    if
+        (Z1 >  Z2) -> {Z2, Z1};
+        (Z1 =< Z2) -> {Z1, Z2}
+    end.    
 
 %% This is a bit of a mess - range_to_list1 works for #refs{},
 %% and range_to_list2 works for #refX{}'s

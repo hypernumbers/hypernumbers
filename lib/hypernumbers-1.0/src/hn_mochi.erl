@@ -52,7 +52,7 @@ do_req(Req, Ref) ->
     
     Access = case User of 
                  anonymous -> no_access; 
-                 _ ->         write 
+                 _         -> write 
              end,
     
     case check_auth(Access, Ref#refX.path, Method)  of 
@@ -108,7 +108,7 @@ iget(Req, Ref, _Type,  Attr) ->
     Req:not_found().
 
 ipost(_Req, Ref, _Type, _Attr, [{"drag", {_, [{"range", Range}]}}]) ->
-    hn_db_api:drag_n_drop(Ref, Ref#refX{obj = parse_attr(range,Range)}),
+    {ok, ok} = hn_db_api:drag_n_drop(Ref, Ref#refX{obj = parse_attr(range,Range)}),
     ok;
 
 ipost(Req, #refX{path=["_auth","login"]}, _Type, _Attr, Data) ->
@@ -124,15 +124,15 @@ ipost(Req, #refX{path=["_auth","login"]}, _Type, _Attr, Data) ->
 
 ipost(_Req, Ref, _Type, _Attr, [{"insert", Where}]) when 
   Where == "before", Where == "after" ->
-    hn_db_api:insert(Ref,list_to_existing_atom(Where)),
+    {ok, ok} = hn_db_api:insert(Ref,list_to_existing_atom(Where)),
     ok;
 
 ipost(_Req, Ref, _Type, _Attr, [{"delete","all"}]) ->
-    hn_db_api:delete(Ref),
+    {ok, ok} = hn_db_api:delete(Ref),
     ok;
 
 ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}]) ->
-    hn_db_api:copy_n_paste(Ref#refX{obj = parse_attr(range,Range)}, Ref),
+    {ok, ok} = hn_db_api:copy_n_paste(Ref#refX{obj = parse_attr(range, Range)}, Ref),
     ok;
 
 ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
@@ -148,7 +148,7 @@ ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
 
 ipost(_Req, Ref, _Type, _Attr, [{"clear", What}]) 
   when What == "contents"; What == "style"; What == "all" ->
-    hn_db_api:clear(Ref, list_to_atom(What)),
+    {ok, ok} = hn_db_api:clear(Ref, list_to_atom(What)),
     ok;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -384,7 +384,8 @@ parse_attr(range, Addr) ->
             [Cell1, Cell2] = string:tokens(Addr, ":"),
             {X1, Y1} = util2:strip_ref(Cell1),
             {X2, Y2} = util2:strip_ref(Cell2),
-            {range, {X1, Y1, X2, Y2}};
+            {XX1, YY1, XX2, YY2} = hn_util:rectify_range(X1, Y1, X2, Y2),
+            {range, {XX1, YY1, XX2, YY2}};
         _ -> 
             parse_attr(column, Addr)
     end;
