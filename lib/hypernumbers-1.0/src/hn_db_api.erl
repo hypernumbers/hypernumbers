@@ -601,7 +601,8 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
 %% </ul>
 write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
     Fun = fun() ->
-                  [ok = ?wu:write_attr(RefX, X) || X <- List]
+                  F = fun(X) -> ?wu:write_attr(RefX, X) end,
+                  lists:foreach(F, List)
           end,
     mnesia:activity(transaction, Fun).
 

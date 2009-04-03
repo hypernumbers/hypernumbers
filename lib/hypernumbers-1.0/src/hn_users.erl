@@ -102,20 +102,23 @@ unix_timestamp(Now) ->
 
 %% Given a user find the most elevated permission
 %% granted to that user
-get_access_level(User,Ref=#refX{site=Site}) ->
+get_access_level(User,Ref=#refX{site=Site, path=Path}) ->
+
+    Default = case Path of [User|_] -> write; _ -> no_access end,
+
     SiteRef = #refX{site=Site, path=[]},
     {ok, Groups} = hn_db_api:read_inherited_value(SiteRef, "__groups", []),
-    {ok, Perms}  = hn_db_api:read_inherited_list(Ref, "__permissions"),
+    {ok, [Perms]}  = hn_db_api:read_inherited_list(Ref, "__permissions"),
     {ok, UserGroups} = get_usergroups(User, Groups, []),    
-    {ok, Levels}     = get_perms(User, UserGroups, Perms, [no_access]),
-    
+    {ok, Levels}     = get_perms(User, UserGroups, Perms, [Default]),
+
     F = fun(X,Y) -> pindex(X) > pindex(Y) end,
     [ H | _Rest] = lists:sort(F, Levels),
     {ok, H}.
 
 %% Get the list of groups a user is in
 get_usergroups(_User, [], Acc) ->
-    Acc;
+    {ok, Acc};
 get_usergroups(User, [{Name, Members} | Rest], Acc) ->
     case lists:member(User, Members) of 
         true  -> get_usergroups(User, Rest, [Name | Acc]);
@@ -124,14 +127,17 @@ get_usergroups(User, [{Name, Members} | Rest], Acc) ->
 
 %% get all permissions relating to a user or a group the user is in
 get_perms(_Name, _Groups, [], Acc) ->
-    Acc;
+    {ok, Acc};
 get_perms(Name, Groups, [{user, Name, Access} | Rest], Acc) ->
     get_perms(Name, Groups, Rest, [Access | Acc]);
 get_perms(User, Groups, [{group, Name, Access} | Rest], Acc) ->
     case lists:member(Name, Groups) of 
         true  -> get_perms(User, Groups, Rest, [Access | Acc]);
         false -> get_perms(User, Groups, Rest, Acc)
-    end.
+    end;
+get_perms(Name, Groups, [_H | Rest], Acc) ->
+    get_perms(Name, Groups, Rest, Acc).
+
 
 %% Rank permission atoms in order of precedence
 pindex(no_access)           -> 0;

@@ -7,7 +7,6 @@
 -include("spriki.hrl").
 
 -export([start/2, stop/1, clean_start/0, hup/0 ]).
--export([set_def_perms/0]).
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
@@ -41,7 +40,8 @@ start(_Type, _Args) ->
     {ok, Pid}.
 
 hup() ->
-    hn_config:hup().
+    hn_config:hup(),
+    write_permissions().
 
 %% @spec stop(State) -> ok
 %% @doc  Application Callback
@@ -78,7 +78,7 @@ clean_start() ->
                dirty_notify_back_out]),
 
     ok = hn_db_api:create_db(),
-    set_def_perms(),
+    ok = write_permissions(),
     ok = start_dirty_subscribe(),
     ok.
 
@@ -103,29 +103,13 @@ start_dirty_subscribe() ->
 
 %% @spec set_def_perms() -> ok
 %% @doc  Set the default permissions on each domain
-set_def_perms() ->
-    
-    [{IP, Port, Domains}] = hn_config:get(hosts),
-    PStr = integer_to_list(Port),
-    Url  = "http://"++inet_parse:ntoa(IP)++":"++PStr,
-    
-    Permissions = {"__permissions", hn_config:get(permissions)},
-    Groups      = {"__groups",      hn_config:get(groups)},
+write_permissions() ->
+    write_permissions("__permissions", hn_config:get(permissions)),
+    write_permissions("__groups",      hn_config:get(groups)).
 
-    F = fun(X) -> lists:concat(["http://",X, ":", PStr]) end,
-    
-    lists:foreach(fun(X) -> set_perms(X, Groups, Permissions) end, 
-                  [Url | lists:map(F, Domains)]), 
-    ok.
-
-%% @spec set_perms(Domains, Groups, Permissions) -> Return
-%% @doc  Supervisor call back
-set_perms(Domain, Groups, Permissions) ->
-    
-    Ref = #refX{site = Domain,
-               path = [],
-               obj  = {page,"/"}},
- 
-    hn_db_api:write_attributes(Ref, [Groups, Permissions]),
-    
-    ok.
+write_permissions(Name, []) -> 
+    ok;
+write_permissions(Name, [{Domain, Value} | T]) ->
+    Ref = hn_mochi:parse_ref(Domain),
+    hn_db_api:write_attributes(Ref, [{Name, Value}]),
+    write_permissions(Name, T).

@@ -11,7 +11,7 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
 	 terminate/2, code_change/3, start_link/0]).
 
--export([ get/1, read_conf/1 ]).
+-export([ get/1, read_conf/1, hup/0 ]).
 
 -spec(start_link/0 :: () -> {ok,pid()} | ignore | {error,any()}).
              
@@ -31,6 +31,7 @@ handle_call({set_conf, Path, Conf}, _From, State) ->
     {reply, ok, State#state{conf=Conf, path=Path}};
 handle_call(hup, _From, State) ->
     {ok,Config} = file:consult(State#state.path), 
+    io:format("~p",[Config]),
     {reply, ok, State#state{conf=Config}};
 %% Get config by key
 handle_call({get, Key}, _From, State) ->

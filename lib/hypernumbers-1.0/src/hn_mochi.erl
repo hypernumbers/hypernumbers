@@ -9,7 +9,7 @@
 -include("handy_macros.hrl").
 -include("hypernumbers.hrl").
 
--export([ req/1, style_to_css/2 ]).
+-export([ req/1, style_to_css/2, parse_ref/1 ]).
 
 -define(json(Req, Data), 
         Req:ok({"application/json", mochijson:encode(Data)})).
@@ -61,7 +61,8 @@ do_req(Req, Ref) ->
 check_auth(no_access, ["_auth"|_], _) -> ok;
 check_auth(no_access, _, _)           -> login;
 check_auth(read,      _, 'GET')       -> ok;
-check_auth(write,     _, _)           -> ok.
+check_auth(write,     _, _)           -> ok;
+check_auth(admin,     _, _)           -> ok.
 
 handle_req(Method, Req, Ref, Vars) ->
     Type = element(1, Ref#refX.obj),
@@ -121,26 +122,22 @@ ipost(Req, #refX{path=["_auth","login"]}, _Type, _Attr, Data) ->
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}])
   when O == row orelse O == column ->
-    io:format("in hn_mochi:ipost (insert/before row/col before)~n"),
     RefX2 = make_before(Ref),
     hn_db_api:insert(RefX2);
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
   when O == row orelse O == column ->
-    io:format("in hn_mochi:ipost (insert/after row/col after)~n"),
     hn_db_api:insert(Ref);
 
 % by default cells and ranges displace vertically
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}])
   when O == cell orelse O == range ->
-    io:format("in hn_mochi:ipost (insert/before cell/range)~n"),
     RefX2 = make_before(Ref),
     hn_db_api:insert(RefX2, vertical);
 
 % by default cells and ranges displace vertically
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
   when O == cell orelse O == range ->
-    io:format("in hn_mochi:ipost (insert/after cell/range)~n"),
     hn_db_api:insert(Ref);
 
 % but you can specify the displacement explicitly
@@ -148,7 +145,6 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"},
                                                       {"displacement", D}])
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
-    io:format("in hn_mochi:ipost (insert/before cell/range/2)~n"),
     RefX2 = make_before(Ref),
     hn_db_api:insert(RefX2, list_to_existing_atom(D));
 
@@ -156,20 +152,15 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"},
                                                       {"displacement", D}])
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
-    io:format("in hn_mochi:ipost (insert/after cell/range/2)~n"),
     hn_db_api:insert(Ref, list_to_existing_atom(D));
 
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete"}])
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", "all"}])
   when O == row orelse O == column ->
-    io:format("in hn_mochi:ipost (delete row/col)~n-~p~n-~p~n",
-              [Ref, _Attr]),
     hn_db_api:delete(Ref);
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}])
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
-    io:format("in hn_mochi:ipost (delete row/col)~n-~p~n-~p~n",
-              [Ref, _Attr]),
     hn_db_api:delete(Ref, Direction);
 
 ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}]) ->
