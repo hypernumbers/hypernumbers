@@ -99,25 +99,19 @@ parse(Fla, {Col, Row}) ->
     end.
 
 %% Evaluate a form in the current rti context.
+%% this function captures thrown errors - including those thrown
+%% when Mnesia is unrolling a transaction. When the '{aborted, {cyclic...'
+%% exception is caught it must be rethrown...
 eval(_Node = [Func|Args]) when ?is_fn(Func) ->
-    case member(Func, ['if', choose, column]) of
-        true  -> call(Func, Args);
-        false -> call(Func, [eval(X) || X <- Args])
-    end;
-eval(Value) ->
-    Value.
-
-% this function captures thrown errors - including those thrown
-% when Mnesia is unrolling a transaction. When the '{aborted, {cyclic...'
-% exception is caught it must be rethrown...
-call(Func, Args) ->
     R = attempt(?MODULE, funcall, [Func, Args]),
     case R of
         {error, Errv = {errval, _}}                     -> Errv;
         {error, {aborted, {cyclic, _, _, _, _, _}} = E} -> exit(E); % rethrow on lock
         {error, _E}                                     -> ?error_in_formula;
         {ok, V}                                         -> V
-    end.
+    end;
+eval(Value)                                 ->
+    Value.
 
 funcall(make_list, Args) ->
     area_util:make_array([Args]); % horizontal array
@@ -177,7 +171,11 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
              
 %% Formula function call (built-in or user-defined).
 funcall(Fname, Args0) ->
-    Args = prefetch_references(Args0),
+    Args = case member(Fname, ['if', choose, column, row]) of
+               true  -> Args0;
+               false -> [eval(X) || X <- prefetch_references(Args0)]
+           end,
+
     R = foldl(fun(M, Acc = {F, A, not_found_yet}) ->
                       case attempt(M, F, [A]) of
                           {error, undef} -> Acc;
