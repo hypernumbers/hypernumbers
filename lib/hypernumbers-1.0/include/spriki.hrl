@@ -3,8 +3,6 @@
 -define(TIMEOUT,   1000).
 -define(HTML_ROOT, "/html/").
 
--define(PORTNO,    1935).
-
 -define(HTTP,      $h,$t,$t,$p).
 -define(HTTPS,     $h,$t,$t,$p,$s).
 -define(SLASH,     47).

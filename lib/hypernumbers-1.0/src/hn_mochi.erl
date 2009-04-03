@@ -50,11 +50,8 @@ do_req(Req, Ref) ->
                invalid -> anonymous
            end,
     
-    Access = case User of 
-                 anonymous -> no_access; 
-                 _         -> write 
-             end,
-    
+    {ok, Access} = hn_users:get_access_level(User, Ref),
+
     case check_auth(Access, Ref#refX.path, Method)  of 
         login -> Req:serve_file("hypernumbers/login.html", docroot());
         ok    -> handle_req(Method, Req, Ref, Vars)
@@ -107,8 +104,8 @@ iget(Req, Ref, _Type,  Attr) ->
     ?ERROR("404~n-~p~n-~p",[Ref, Attr]),
     Req:not_found().
 
-ipost(_Req, Ref, _Type, _Attr, [{"drag", {_, [{"range", Range}]}}]) ->
-    {ok, ok} = hn_db_api:drag_n_drop(Ref, Ref#refX{obj = parse_attr(range,Range)}),
+ipost(_Req, Ref, _Type, _Attr, [{"drag", {_, [{"range", Rng}]}}]) ->
+    hn_db_api:drag_n_drop(Ref, Ref#refX{obj = parse_attr(range,Rng)}),
     ok;
 
 ipost(Req, #refX{path=["_auth","login"]}, _Type, _Attr, Data) ->

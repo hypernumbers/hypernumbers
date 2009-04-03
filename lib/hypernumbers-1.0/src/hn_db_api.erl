@@ -99,6 +99,8 @@
          % write_style/2,
          read_attributes/2,
          read/1,
+         read_inherited_list/2,
+         read_inherited_value/3,
          read_styles/1,
          % read_permissions/1,
          % update_style/2,
@@ -685,6 +687,23 @@ write_last(List) when is_list(List) ->
     ok = mnesia:activity(transaction, Fun),
     {ok, ok}.
 
+%% @spec read_inherited(#refX{}, Attribute) -> {#refX{}, Val}
+%% Attribute = string()
+%% @doc Scans the tree and returns a list of value stored against
+%%      Key 
+read_inherited_list(RefX, Key) when is_record(RefX, refX) ->
+    F = fun hn_db_wu:read_inherited_list/2,
+    mnesia:activity(transaction, F, [RefX, Key]).
+
+%% @spec read_inherited(#refX{}, Attibute, Default) -> {#refX{}, Val}
+%% @doc  This function searches the tree for the first occurence of a value
+%%       stored at a given reference, if not found it returns the supplied
+%%       default value
+%%       
+read_inherited_value(RefX, Key, Default) when is_record(RefX, refX) ->
+    F = fun hn_db_wu:read_inherited/3,
+    mnesia:activity(transaction, F, [RefX, Key, Default]).
+
 %% @spec read_attributes(#refX{}, AttrList) -> {#refX{}, Val}
 %% AttrList = [list()]
 %% Val = term()
@@ -699,12 +718,9 @@ write_last(List) when is_list(List) ->
 %% <li>row</li>
 %% <li>page</li>
 %% </ul>
-read_attributes(RefX, AttrList) when is_record(RefX, refX),
-                                     is_list(AttrList) ->
-    Fun = fun() ->
-                  ?wu:read_attrs(RefX, AttrList)
-          end,
-    mnesia:activity(transaction, Fun).
+read_attributes(RefX, AttrList) when is_record(RefX, refX), is_list(AttrList) ->
+    Fun = fun hn_db_wu:read_attrs/2,
+    mnesia:activity(transaction, Fun, [RefX, AttrList]).
 
 %% @spec read(#refX{}) -> [{#refX{}, {Key, Value}}]
 %% Key = atom()

@@ -6,18 +6,18 @@
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
 
--export([start/2, stop/1, clean_start/0 ]).
+-export([start/2, stop/1, clean_start/0, hup/0 ]).
 -export([set_def_perms/0]).
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
-    %% @TODO this test is buggy - the schema is always on disc 
-    %%      but invididual tables can be:
-    %%      <ul>
-    %%      <li>ram_copies</li>
-    %%      <li>disc_copies</li>
-    %%      <li>disc_only_copies</li>
-    %%      </ul>
+%% @TODO this test is buggy - the schema is always on disc 
+%%      but invididual tables can be:
+%%      <ul>
+%%      <li>ram_copies</li>
+%%      <li>disc_copies</li>
+%%      <li>disc_only_copies</li>
+%%      </ul>
 start(_Type, _Args) ->
 
     case mnesia:table_info(schema, storage_type) of
@@ -39,6 +39,9 @@ start(_Type, _Args) ->
     ok = start_mochiweb(),
     ok = start_dirty_subscribe(),
     {ok, Pid}.
+
+hup() ->
+    hn_config:hup().
 
 %% @spec stop(State) -> ok
 %% @doc  Application Callback

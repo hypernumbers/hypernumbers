@@ -476,6 +476,7 @@
          read_attrs/1,       % tested
          read_attrs/2,       % tested
          read_inherited/3,
+         read_inherited_list/2,
          read_styles/1,
          read_incoming_hn/2,
          read_dirty_cell/1,
@@ -1142,9 +1143,25 @@ read_cells_raw(#refX{obj = {page, _}} = RefX) ->
 %%       default value
 %%       
 %% @todo what are the ref types it supports? improve the documentation, etc, etc
-read_inherited(RefX, Key, Default) when is_record(RefX, refX)  ->
+read_inherited_list(RefX, Key) when is_record(RefX, refX)  ->
+    Type = case RefX#refX.obj of
+               null -> page;
+               {T, _R} -> T
+           end,
     Ref = hn_util:refX_to_ref(RefX, Key),
-    case return_first(cell, Ref) of
+    get_item_list(Type, Ref, []).
+
+%% @spec read_inherited_list(#refX{}, Key) -> {ok, Value}
+%% Key = atom()
+%% Value = term()
+%% @doc  This function searches the tree for the occurences of a key
+%%       and returns a list of them
+read_inherited(RefX, Key, Default) when is_record(RefX, refX)  ->
+    Type = case RefX#refX.obj of
+               null -> page;
+               {T, _R} -> T
+           end,
+    case return_first(Type, hn_util:refX_to_ref(RefX, Key)) of
         {ok, Value} -> {ok, Value};
         nomatch     -> {ok, Default}
     end.
@@ -1180,30 +1197,26 @@ read_attrs(RefX) when is_record(RefX, refX) ->
 %% <li>page</li>
 %% </ul>
 read_attrs(#refX{obj = {range, _}} = RefX, Attrs) when is_list(Attrs) ->
-
     MatchRef = make_range_match_ref(RefX, Attrs),
     hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
 
 read_attrs(#refX{obj = {column, _}} = RefX, Attrs) when is_list(Attrs) ->
-
     MatchRef = make_col_match_ref(RefX, Attrs),
     hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
 
 read_attrs(#refX{obj = {row, _}} = RefX, Attrs) when is_list(Attrs) ->
-
     MatchRef = make_row_match_ref(RefX, Attrs),
     hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
 
 read_attrs(#refX{obj = {cell, _}} = RefX, Attrs) when is_list(Attrs) ->
-
     #refX{site = S, path = P, obj= R} = RefX,
     MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P},
                                      {ref, R}, {name, '$1'}]),
     read_attrs2(MatchRef, Attrs);
 
 read_attrs(#refX{obj = {page, _}} = RefX, Attrs) when is_list(Attrs) ->
-    #refX{site = S, path = P} = RefX,
-    R = {cell, {'_', '_'}},
+    #refX{site = S, path = P, obj= R} = RefX,
+    %R = {cell, {'_', '_'}}, Bug ?
     MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P},
                                      {ref, R}, {name, '$1'}]),
     read_attrs2(MatchRef, Attrs).
@@ -2538,6 +2551,18 @@ process_format(RefX, Format, Value) ->
     ok = mnesia:write(Record3),
     spawn(fun() -> tell_front_end(Record3, change) end),
     {ok, ok}.
+
+get_item_list(RefType, Addr, Acc) ->
+    case traverse(RefType, Addr) of
+        {last,[]}                  -> {ok,Acc};
+        {last,[#hn_item{val=Val}]} -> {ok,[Val | Acc]};
+        {Ref,NewAddr,[]}           -> get_item_list(Ref,NewAddr,Acc);
+        {Ref,[]}                   -> get_item_list(Ref,Addr,Acc);
+        {Ref,NewAddr,[#hn_item{val=Val}]} ->
+            get_item_list(Ref,NewAddr,[Val | Acc]);
+        {Ref,[#hn_item{val=Val}]} -> 
+            get_item_list(Ref,Addr,[Val | Acc])
+    end.
 
 return_first(RefType, Addr) ->
     case traverse(RefType, Addr) of

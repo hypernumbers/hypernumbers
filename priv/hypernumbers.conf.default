@@ -1,14 +1,9 @@
 {hosts, [	
 	{{127,0,0,1},9000,
-        ["localhost",
-         "expenses.vixo.dev",
-         "accounts.hypernumbers.dev",
-         "il_ballo.dev",
-         "todo.vixo.dev"
-        ]}
+        ["localhost"]}
 	]}.
 
-%% These will only affect the initial load and not by 
-%% restarts
-{permissions, [{user, anonymous, no_access}]}.
-{groups,      [{owner,[{user,"dale@hypernumbers.com"}]}]}.
+%% Reloading permissions will overwrite any permissions set
+%% externally
+{permissions, [{user, anonymous, no_access}, {group, "dev", admin}]}.
+{groups,      [{"dev", ["dale", "gordon", "hasan"]}]}.
