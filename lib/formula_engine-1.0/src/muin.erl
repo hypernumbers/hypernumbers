@@ -215,6 +215,9 @@ implicit_intersection(R) ->
         finite ->
             Dim = {R#rangeref.width, R#rangeref.height},
             case Dim of
+                {1, 1} ->
+                    [{X, Y}] = muin_util:expand_cellrange(R),
+                    do_cell(R#rangeref.path, Y, X);
                 {1, _H} -> % vertical vector
                     CellCoords = muin_util:expand_cellrange(R),
                     case filter(fun({_X, Y}) -> Y == ?my end, CellCoords) of
