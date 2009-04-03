@@ -40,7 +40,7 @@ handle_info({mnesia_table_event, {write, _Table, Rec, _OldRecs, _ActId}},
             State) ->
     case State#state.state of
         passive -> ok;
-        active  -> process_dirty(Rec, State#state.type)
+        active  -> proc_dirty(Rec, State#state.type)
     end,
     {noreply, State};
 
@@ -93,7 +93,7 @@ handle_call(flush, _From, State = #state{type = dirty_cell}) ->
     ?INFO("In dirty_src:handle_call for flush (end) "++
           "Dirty Cell Table Size is ~p~n",
           [mnesia:table_info(dirty_cell, size)]),
-    lists:foreach(fun(X) -> process_dirty(X, dirty_cell) end, List2),
+    lists:foreach(fun(X) -> proc_dirty(X, dirty_cell) end, List2),
 
     {reply, ok, State};
 %% for other tables, just flush 'em...
@@ -103,7 +103,7 @@ handle_call(flush, _From, State = #state{type = Type}) ->
                   mnesia:match_object(Match)
           end,
     List = mnesia:activity(transaction, Fun),
-    lists:foreach(fun(X) -> process_dirty(X, Type) end, List),
+    lists:foreach(fun(X) -> proc_dirty(X, Type) end, List),
     {reply, ok, State}.
 
 %% @spec handle_cast({setstate,NState}, State) -> {noreply, State}
@@ -133,30 +133,20 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->  
     {ok, State}.
 
-%% @spec process_dirty(Record, Type) -> ok
+%% @spec proc_dirty(Rec, Type) -> ok
 %% @doc  processes the dirty record
-process_dirty(#dirty_cell{timestamp = T} = Record, dirty_cell) ->
-    % dirty_cell records are rewritten in insert/delete operations so we
-    % need to re-read it here
-    {ok, ok} = ?api:handle_dirty_cell(T),
-    ok;
-process_dirty(Record, dirty_inc_hn_create) ->
-    {ok, ok} = ?api:notify_back_create(Record),
-    ok;
-process_dirty(Record, dirty_notify_in) ->
-    {ok, ok} = ?api:handle_dirty(Record),
-    ok;
-process_dirty(Record, dirty_notify_out) ->
-    #dirty_notify_out{delay = Delay} = Record,
-    ok = timer:sleep(Delay),
-    {ok, ok} = ?api:handle_dirty(Record),
-    ok;
-process_dirty(Record, dirty_notify_back_in) ->
-    {ok, ok} = ?api:handle_dirty(Record),
-    ok;
-process_dirty(Record, dirty_notify_back_out) ->
-    {ok, ok} = ?api:handle_dirty(Record),
-    ok.
+proc_dirty(Rec, dirty_cell)            -> #dirty_cell{timestamp = T} = Rec,
+                                          % dirty_cell records are rewritten in 
+                                          % insert/delete operations so we need 
+                                          % to re-read it here
+                                          ?api:handle_dirty_cell(T);
+proc_dirty(Rec, dirty_inc_hn_create)   -> ?api:notify_back_create(Rec);
+proc_dirty(Rec, dirty_notify_in)       -> ?api:handle_dirty(Rec);
+proc_dirty(Rec, dirty_notify_out)      -> #dirty_notify_out{delay = D} = Rec,
+                                          ok = timer:sleep(D),
+                                          ?api:handle_dirty(Rec);
+proc_dirty(Rec, dirty_notify_back_in)  -> ?api:handle_dirty(Rec);
+proc_dirty(Rec, dirty_notify_back_out) -> ?api:handle_dirty(Rec).
 
 %%%
 %%% Utility Functions

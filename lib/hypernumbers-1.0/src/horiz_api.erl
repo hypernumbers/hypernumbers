@@ -25,7 +25,7 @@
 -define(init, initialise_remote_page_vsn).
 -define(api, hn_db_api).
 
-%% @spec notify(Record::#dirty_notify_out{}) -> {ok, ok}
+%% @spec notify(Record::#dirty_notify_out{}) -> ok
 %% @doc notifies any remote sites that a hypernumber has changed.
 %% the reference must be for a cell
 %% @todo generalise the references to row, column, range and page
@@ -66,9 +66,9 @@ notify(Record) when is_record(Record, dirty_notify_out) ->
                    ok
            end,
     [ok = Fun2(X) || X <- Outgoing],
-    {ok, ok}.
+    ok.
 
-%% @spec notify_back(Record::#dirty_notify_back_in{}) -> {ok, ok}
+%% @spec notify_back(Record::#dirty_notify_back_in{}) -> ok
 %% @doc notify's a change of a cell back to its remote hypernumber parent
 %% <code>#refX{}</code> can be a cell only
 %% @todo expand the paradigm to include ranges, columns, rows references and 
@@ -97,9 +97,9 @@ notify_back(Record) when is_record(Record, dirty_notify_back_in) ->
 
     %% not very robust!
     "success" = hn_util:post(PUrl, Actions, "application/json"),
-    {ok, ok}.
+    ok.
 
-%% @spec notify_back_create(Record::#dirty_inc_hn_create{}) -> {ok, ok}
+%% @spec notify_back_create(Record::#dirty_inc_hn_create{}) -> ok
 %% @doc creates a new hypernumbers.
 %% Both the parent and the child references must point to a cell
 notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->

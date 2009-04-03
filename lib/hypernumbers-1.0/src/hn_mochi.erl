@@ -123,29 +123,25 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}])
   when O == row orelse O == column ->
     io:format("in hn_mochi:ipost (insert/before row/col before)~n"),
     RefX2 = make_before(Ref),
-    {ok, ok} = hn_db_api:insert(RefX2),
-    ok;
+    hn_db_api:insert(RefX2);
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
   when O == row orelse O == column ->
     io:format("in hn_mochi:ipost (insert/after row/col after)~n"),
-    {ok, ok} = hn_db_api:insert(Ref),
-    ok;
+    hn_db_api:insert(Ref);
 
 % by default cells and ranges displace vertically
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}])
   when O == cell orelse O == range ->
     io:format("in hn_mochi:ipost (insert/before cell/range)~n"),
     RefX2 = make_before(Ref),
-    {ok, ok} = hn_db_api:insert(RefX2, vertical),
-    ok;
+    hn_db_api:insert(RefX2, vertical);
 
 % by default cells and ranges displace vertically
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
   when O == cell orelse O == range ->
     io:format("in hn_mochi:ipost (insert/after cell/range)~n"),
-    {ok, ok} = hn_db_api:insert(Ref),
-    ok;
+    hn_db_api:insert(Ref);
 
 % but you can specify the displacement explicitly
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"},
@@ -154,35 +150,30 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"},
        D == "horizontal" orelse D == "vertical" ->
     io:format("in hn_mochi:ipost (insert/before cell/range/2)~n"),
     RefX2 = make_before(Ref),
-    {ok, ok} = hn_db_api:insert(RefX2, list_to_existing_atom(D)),
-    ok;
+    hn_db_api:insert(RefX2, list_to_existing_atom(D));
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"},
                                                       {"displacement", D}])
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
     io:format("in hn_mochi:ipost (insert/after cell/range/2)~n"),
-    {ok, ok} = hn_db_api:insert(Ref, list_to_existing_atom(D)),
-    ok;
+    hn_db_api:insert(Ref, list_to_existing_atom(D));
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete"}])
   when O == row orelse O == column ->
     io:format("in hn_mochi:ipost (delete row/col)~n-~p~n-~p~n",
               [Ref, _Attr]),
-    {ok, ok} = hn_db_api:delete(Ref),
-    ok;
+    hn_db_api:delete(Ref);
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}])
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
     io:format("in hn_mochi:ipost (delete row/col)~n-~p~n-~p~n",
               [Ref, _Attr]),
-    {ok, ok} = hn_db_api:delete(Ref, Direction),
-    ok;
+    hn_db_api:delete(Ref, Direction);
 
 ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}]) ->
-    {ok, ok} = hn_db_api:copy_n_paste(Ref#refX{obj = parse_attr(range, Range)}, Ref),
-    ok;
+    hn_db_api:copy_n_paste(Ref#refX{obj = parse_attr(range, Range)}, Ref);
 
 ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
     case Attr of 
@@ -191,14 +182,12 @@ ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
             post_range_values(Ref, Vals),
             ok;
         _Else ->
-            {ok, ok} = hn_db_api:write_attributes(Ref, Attr)
-    end,
-    ok;
+            hn_db_api:write_attributes(Ref, Attr)
+    end;
 
 ipost(_Req, Ref, _Type, _Attr, [{"clear", What}]) 
   when What == "contents"; What == "style"; What == "all" ->
-    {ok, ok} = hn_db_api:clear(Ref, list_to_atom(What)),
-    ok;
+    hn_db_api:clear(Ref, list_to_atom(What));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -275,7 +264,7 @@ ipost(Req, Ref, _Type, _Attr,
     Sync2 = hn_db_api:check_page_vsn(Site, PVsn),
     case Sync1 of
         synched -> 
-            {ok, ok} = hn_db_api:notify_back_from_web(ParentX, ChildX,
+            ok = hn_db_api:notify_back_from_web(ParentX, ChildX,
                                                       Biccie, Type);
         unsynched -> 
             log_unsynched("notify_back", Site, PP, PV),
@@ -283,17 +272,17 @@ ipost(Req, Ref, _Type, _Attr,
         not_yet_synched -> 
             log_not_yet_synched("NOT FATAL", "notify_back",
                                 Site, CP, CV),
-            hn_db_api:initialise_remote_page_vsn(Site, PVsn)
+            ok = hn_db_api:initialise_remote_page_vsn(Site, PVsn)
     end,
     case Sync2 of
         synched -> ok;
         unsynched -> 
             log_unsynched("notify_back", Site, PP, PV),
-            hn_db_api:resync(Site, CVsn);
+            ok = hn_db_api:resync(Site, CVsn);
         not_yet_synched -> 
             log_not_yet_synched("NOT FATAL", "notify_back",
                                 Site, CP, CV),
-            hn_db_api:initialise_remote_page_vsn(Site, CVsn)
+            ok = hn_db_api:initialise_remote_page_vsn(Site, CVsn)
     end,
     Req:ok({"application/json", "success"}),
     ok;
@@ -332,11 +321,11 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = Json) ->
     % resynch
     case Sync1 of
         synched -> 
-            {ok, ok} = hn_db_api:notify_from_web(ParentX, Ref, Type,
+            ok = hn_db_api:notify_from_web(ParentX, Ref, Type,
                                                  Payload, Biccie);
         unsynched -> 
             log_unsynched("notify", Site, PP, PV),
-            hn_db_api:resync(Site, PVsn);
+            ok = hn_db_api:resync(Site, PVsn);
         not_yet_synched -> 
             log_not_yet_synched("FATAL", "notify", Site, PP, PV),
             ?exit
@@ -348,9 +337,9 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = Json) ->
                 Sync2 = hn_db_api:check_page_vsn(Site, X),
                 #version{page = CP, version = CV} = X,
                 case Sync2 of
-                    synched         -> {ok, ok};
+                    synched         -> ok;
                     unsynched       -> log_unsynched("notify", Site, CP, CV),
-                                       hn_db_api:resync(Site, X);
+                                       ok = hn_db_api:resync(Site, X);
                     not_yet_synched -> log_not_yet_synched("FATAL", "notify",
                                                            Site, CP, CV),
                                        ?exit
@@ -495,7 +484,7 @@ post_column_values(Ref, Values, Offset) ->
     #refX{obj={range,{X1, Y1, _X2, _Y2}}} = Ref,
     F = fun(Val, Acc) -> 
                 NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
-                {ok, ok} = hn_db_api:write_attributes(NRef,
+                ok = hn_db_api:write_attributes(NRef,
                                                       [{"formula", Val}]),
                 Acc+1 
         end,
