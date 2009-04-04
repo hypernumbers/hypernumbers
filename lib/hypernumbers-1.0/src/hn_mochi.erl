@@ -11,7 +11,10 @@
 
 -export([ req/1, style_to_css/2, parse_ref/1 ]).
 
--define(hdr,[{"Cache-Control","no-cache"}, {"Status",200}]).
+-define(hdr,[{"Cache-Control","no-store, no-cache, must-revalidate"},
+             {"Expires", "Thu, 01 Jan 1970 00:00:00 GMT"},
+             {"Pragma", "no-cache"},
+             {"Status",200}]).
 
 -define(json(Req, Data), 
         Req:ok({"application/json", ?hdr, mochijson:encode(Data)})).
@@ -349,7 +352,10 @@ ipost(Req, _Ref, _Type, _Attr, _Post) ->
 get_json_post(undefined) ->
     {ok, undefined};
 get_json_post(Json) ->
-    {struct, Attr} = mochijson:decode(Json),
+    Str = xmerl_ucs:from_utf8(binary_to_list(Json)),
+    ?INFO("~p",[Json]),
+    {struct, Attr} = mochijson:decode(Str),
+    ?INFO("~p",[Attr]),
     {ok, Attr}.
 
 add_styles([], Tree) ->
