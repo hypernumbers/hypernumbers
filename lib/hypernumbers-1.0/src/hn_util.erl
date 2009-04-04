@@ -61,7 +61,7 @@
          index_from_ref/1,
          url_to_refX/1,
 
-         change_node_name/5
+         reload/0
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -487,37 +487,15 @@ parse_reference(Cell) ->
             range
     end.
 
-change_node_name(Mod, From, To, Source, Target) ->
-    Switch =
-        fun(Node) when Node == From -> To;
-           (Node) when Node == To -> throw({error, already_exists});
-           (Node) -> Node
-        end,
-    Convert =
-        fun({schema, db_nodes, Nodes}, Acc) ->
-                {[{schema, db_nodes, lists:map(Switch,Nodes)}], Acc};
-           ({schema, version, Version}, Acc) ->
-                {[{schema, version, Version}], Acc};
-           ({schema, cookie, Cookie}, Acc) ->
-                {[{schema, cookie, Cookie}], Acc};
-           ({schema, Tab, CreateList}, Acc) ->
-                Keys = [ram_copies, disc_copies, disc_only_copies],
-                OptSwitch =
-                    fun({Key, Val}) ->
-                            case lists:member(Key, Keys) of
-                                true -> {Key, lists:map(Switch, Val)};
-                                false-> {Key, Val}
-                            end
-                    end,
-                {[{schema, Tab, lists:map(OptSwitch, CreateList)}], Acc};
-           (Other, Acc) ->
-                {[Other], Acc}
-        end,
-    mnesia:traverse_backup(Source, Mod, Target, Mod, Convert, switched).
-
-view(Source, Mod) ->
-    View = fun(Item, Acc) ->
-                   io:format("~p.~n",[Item]),
-                   {[Item], Acc + 1}
-           end,
-    mnesia:traverse_backup(Source, Mod, dummy, read_only, View, 0).
+reload() ->
+    Reload = fun(M) ->
+                     code:purge(M),
+                     code:soft_purge(M),
+                     {module, M} = code:load_file(M),
+                     {ok, M}
+             end,
+    
+    Modules = [M || {M, P} <- code:all_loaded(), 
+                    is_list(P) andalso 
+                        string:str(P, "hypernumbers") > 0],
+    [Reload(M) || M <- Modules].
