@@ -11,8 +11,10 @@
 
 -export([ req/1, style_to_css/2, parse_ref/1 ]).
 
+-define(hdr,[{"Cache-Control","no-cache"}, {"Status",200}]).
+
 -define(json(Req, Data), 
-        Req:ok({"application/json", mochijson:encode(Data)})).
+        Req:ok({"application/json", ?hdr, mochijson:encode(Data)})).
 
 -define(exit, 
         exit("exit from hn_mochi:handle_req impossible page versions")).
@@ -53,7 +55,7 @@ do_req(Req, Ref) ->
     {ok, Access} = hn_users:get_access_level(User, Ref),
 
     case check_auth(Access, Ref#refX.path, Method)  of 
-        login -> Req:serve_file("hypernumbers/login.html", docroot());
+        login -> Req:serve_file("hypernumbers/login.html", docroot(), ?hdr);
         ok    -> handle_req(Method, Req, Ref, Vars)
     end,
     ok.
@@ -77,7 +79,7 @@ handle_req(Method, Req, Ref, Vars) ->
     end.    
 
 iget(Req, _Ref, page, []) ->
-    Req:serve_file("hypernumbers/index.html", docroot());
+    Req:serve_file("hypernumbers/index.html", docroot(),?hdr);
 
 iget(Req, Ref, page, [{"updates", Time}]) ->
     remoting_request(Req, Ref, Time);
