@@ -16,7 +16,8 @@
              {"Pragma", "no-cache"},
              {"Status",200}]).
 
--define(json(Req, Data), 
+-define(json(Req, Data),    
+        %Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
         Req:ok({"application/json", ?hdr, mochijson:encode(Data)})).
 
 -define(exit, 
@@ -228,7 +229,7 @@ ipost(Req, Ref, _Type, _Attr,
                            ?exit
     end,
     Return = hn_db_api:register_hn_from_web(ParentX, ChildX, Proxy, Biccie),
-    Req:ok({"application/json", mochijson:encode(Return)}),
+    ?json(Req, Return),
     ret;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -352,7 +353,6 @@ ipost(Req, _Ref, _Type, _Attr, _Post) ->
 get_json_post(undefined) ->
     {ok, undefined};
 get_json_post(Json) ->
-    Str = xmerl_ucs:from_utf8(binary_to_list(Json)),
     {struct, Attr} = mochijson:decode(Json),
     {ok, Attr}.
 
@@ -504,12 +504,9 @@ remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
     inet:setopts(Socket, [{active, once}]),
     remoting_reg:request_update(Site, Path, ltoi(Time), self()),
     receive 
-        {tcp_closed, Socket} -> 
-            ok;
-        {error, timeout} -> 
-            Req:ok({"text/html",?hdr, <<"timeout">>});
-        {msg, Data} ->
-            Req:ok({"application/json", ?hdr, mochijson:encode(Data)})
+        {tcp_closed, Socket} -> ok;
+        {error, timeout}     -> Req:ok({"text/html",?hdr, <<"timeout">>});
+        {msg, Data}          -> ?json(Req, Data)
     end.
                  
 get_var_or_cookie(Key, Vars, Req) ->

@@ -7,7 +7,7 @@
 %% externally
 {permissions, [
   {"http://127.0.0.1:9000/", [
-    {user, anonymous, no_access}, {group, "dev", admin}
+    {user, anonymous, admin}
   ]}
 ]}.
 
