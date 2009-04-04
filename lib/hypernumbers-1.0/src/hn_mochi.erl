@@ -353,9 +353,7 @@ get_json_post(undefined) ->
     {ok, undefined};
 get_json_post(Json) ->
     Str = xmerl_ucs:from_utf8(binary_to_list(Json)),
-    ?INFO("~p",[Json]),
-    {struct, Attr} = mochijson:decode(Str),
-    ?INFO("~p",[Attr]),
+    {struct, Attr} = mochijson:decode(Json),
     {ok, Attr}.
 
 add_styles([], Tree) ->
@@ -509,9 +507,9 @@ remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
         {tcp_closed, Socket} -> 
             ok;
         {error, timeout} -> 
-            Req:ok({"text/html",<<"timeout">>});
+            Req:ok({"text/html",?hdr, <<"timeout">>});
         {msg, Data} ->
-            Req:ok({"application/json", mochijson:encode(Data)})
+            Req:ok({"application/json", ?hdr, mochijson:encode(Data)})
     end.
                  
 get_var_or_cookie(Key, Vars, Req) ->

@@ -1141,9 +1141,9 @@ move(RefX, Type, Disp)
                 ok = ?wu:mark_notify_out_dirty(PageRef, Change, 0),
 
                 % Jobs a good'un, now for the remote parents
-                io:format("in hn_db_api:move do something with Parents...~n"),
+                %io:format("in hn_db_api:move do something with Parents...~n"),
                 Parents =  ?wu:find_incoming_hn(Site, PageRef),
-                io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
+                %io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
                 ok
         end,
     mnesia:activity(transaction, Fun).

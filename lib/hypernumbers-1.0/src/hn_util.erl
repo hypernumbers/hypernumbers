@@ -489,6 +489,7 @@ parse_reference(Cell) ->
 
 reload() ->
     Reload = fun(M) ->
+                     ?INFO("~p",[M]),
                      code:purge(M),
                      code:soft_purge(M),
                      {module, M} = code:load_file(M),
