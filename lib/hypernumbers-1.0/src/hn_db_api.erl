@@ -407,8 +407,6 @@ notify_from_web(P, C, "insert", Payload, Bic)
     mnesia:activity(transaction, F).
 
 notify_from_web2(Parent, Child, Payload, Biccie) ->
-    io:format("yeah, hn_db_api:notify_from_web2 just kinda does inserts "++
-              "at the mo...~n"),
     % this function is called when a insert/delete has been made on a remote page
     % this function does the following
     % * read all the #incoming_hn's that are from the page that has had
@@ -1108,16 +1106,16 @@ move(RefX, Type, Disp)
                 % before getting the cells to shift for INSERT
                 {Sort, RefXs} =
                     case {Type, Disp} of
+                        {insert, horizontal} -> RefX2 = insert_shift(RefX, Disp),
+                                                List = ?wu:get_refs_right(RefX2),
+                                                {'left-to-right', List};
                         {insert, vertical}   -> RefX2 = insert_shift(RefX, Disp),
                                                 List = ?wu:get_refs_below(RefX2),
                                                 {'bottom-to-top', List};
-                        {insert, horizontal} -> RefX2 = insert_shift(RefX, Disp),
-                                                List = ?wu:get_refs_right(RefX2),
-                                                {'right-to-left', List};
-                        {delete, vertical}   -> List = ?wu:get_refs_below(RefX),
-                                                {'top-to-bottom', List};
                         {delete, horizontal} -> List = ?wu:get_refs_right(RefX),
-                                                {'left-to-right', List}
+                                                {'left-to-right', List};
+                        {delete, vertical}   -> List = ?wu:get_refs_below(RefX),
+                                                {'bottom-to-top', List}
                     end,
                 % if this is a delete - we need to actually delete the cells
                 ok = case Type of
@@ -1129,7 +1127,7 @@ move(RefX, Type, Disp)
                 % * if we are DELETING we DO overwrite cells...
                 RefXs2 = dbsort(RefXs, Sort),
                 % io:format("in hn_db_api:move~n-Sort is ~p~n-RefXs2 is ~p~n",
-                %          [Sort, RefXs2]),
+                %           [Sort, RefXs2]),
                 [ok = ?wu:shift_cell(F, offset(F, Off)) || F <- RefXs2],
                 % now notify all parents and children of all cells on
                 % this page
@@ -1161,7 +1159,7 @@ insert_shift(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, horizontal) ->
 insert_shift(#refX{obj = {row, {Y1, Y2}}} = RefX, vertical) ->
     RefX#refX{obj = {row, {Y1 - 1, Y2 -1}}};
 insert_shift(#refX{obj = {column, {X1, X2}}} = RefX, horizontal) ->
-    RefX#refX{obj = {row, {X1 - 1, X2 -1}}};
+    RefX#refX{obj = {column, {X1 - 1, X2 -1}}};
 insert_shift(RefX, _Disp) -> RefX.
 
 
