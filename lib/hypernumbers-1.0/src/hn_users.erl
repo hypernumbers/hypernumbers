@@ -108,7 +108,7 @@ get_access_level(User,Ref=#refX{site=Site, path=Path}) ->
 
     SiteRef = #refX{site=Site, path=[]},
     {ok, Groups} = hn_db_api:read_inherited_value(SiteRef, "__groups", []),
-    {ok, [Perms]}  = hn_db_api:read_inherited_list(Ref, "__permissions"),
+    {ok, Perms}  = hn_db_api:read_inherited_list(Ref, "__permissions"),
     {ok, UserGroups} = get_usergroups(User, Groups, []),    
     {ok, Levels}     = get_perms(User, UserGroups, Perms, [Default]),
 

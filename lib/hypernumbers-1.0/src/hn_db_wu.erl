@@ -2532,13 +2532,13 @@ process_format(RefX, Format, Value) ->
 get_item_list(RefType, Addr, Acc) ->
     case traverse(RefType, Addr) of
         {last,[]}                  -> {ok,Acc};
-        {last,[#hn_item{val=Val}]} -> {ok,[Val | Acc]};
+        {last,[#hn_item{val=Val}]} -> {ok,lists:append(Val, Acc)};
         {Ref,NewAddr,[]}           -> get_item_list(Ref,NewAddr,Acc);
         {Ref,[]}                   -> get_item_list(Ref,Addr,Acc);
         {Ref,NewAddr,[#hn_item{val=Val}]} ->
-            get_item_list(Ref,NewAddr,[Val | Acc]);
+            get_item_list(Ref,NewAddr, lists:append(Val, Acc));
         {Ref,[#hn_item{val=Val}]} -> 
-            get_item_list(Ref,Addr,[Val | Acc])
+            get_item_list(Ref,Addr,lists:append(Val, Acc))
     end.
 
 return_first(RefType, Addr) ->
