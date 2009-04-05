@@ -130,6 +130,8 @@ get_perms(_Name, _Groups, [], Acc) ->
     {ok, Acc};
 get_perms(Name, Groups, [{user, Name, Access} | Rest], Acc) ->
     get_perms(Name, Groups, Rest, [Access | Acc]);
+get_perms(Name, Groups, [{user, anonymous, Access} | Rest], Acc) ->
+    get_perms(Name, Groups, Rest, [Access | Acc]);
 get_perms(User, Groups, [{group, Name, Access} | Rest], Acc) ->
     case lists:member(Name, Groups) of 
         true  -> get_perms(User, Groups, Rest, [Access | Acc]);
@@ -137,7 +139,6 @@ get_perms(User, Groups, [{group, Name, Access} | Rest], Acc) ->
     end;
 get_perms(Name, Groups, [_H | Rest], Acc) ->
     get_perms(Name, Groups, Rest, Acc).
-
 
 %% Rank permission atoms in order of precedence
 pindex(no_access)           -> 0;

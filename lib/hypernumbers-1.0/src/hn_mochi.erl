@@ -88,6 +88,9 @@ iget(Req, _Ref, page, []) ->
 iget(Req, Ref, page, [{"updates", Time}]) ->
     remoting_request(Req, Ref, Time);
 
+iget(Req, Ref, page, [{"pages", []}]) -> 
+    ?json(Req, pages(Ref));
+
 iget(Req, Ref, page, [{"attr", []}]) -> 
     ?json(Req, page_attributes(Ref));
 
@@ -543,3 +546,10 @@ make_before(#refX{obj = {column, {X1, X2}}} = RefX) ->
 make_before(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
     DiffY = Y2 - Y1,
     RefX#refX{obj = {row, {Y1 - DiffY, Y2 - DiffY}}}.
+
+pages(#refX{path=[], site=Site}) ->
+    {struct, dict_to_struct(hn_db_api:read_pages(Site, []))};
+pages(#refX{path=[H|T], site=Site}) ->
+    {struct, dict_to_struct(hn_db_api:read_pages(Site, [H]))}.
+
+    

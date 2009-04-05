@@ -508,7 +508,8 @@
          incr_remote_page_vsn/3,
          get_new_local_page_vsn/2,
          read_page_vsn/2,
-         initialise_remote_page_vsn/3]).
+         initialise_remote_page_vsn/3, 
+         read_pages/2]).
 
 %% Structural Query Exports
 -export([get_last_refs/1,
@@ -1599,6 +1600,20 @@ unregister_out_hn(P, C)
                mnesia:delete_object(Rec);
         _   -> ok
     end.
+
+%% @spec read_pages(Site::string(), Path::list()) -> dh_tree()
+%% @doc read the populated pages under the specified path
+read_pages(Site, Path) ->
+    Addr = #ref{site=Site, path=lists:append(Path,'_'), _='_'},
+    Item = #hn_item{addr=Addr, val='_'},
+    Items = mnesia:match_object(hn_item, Item, read),
+    filter_pages(Items, dh_tree:new()).
+
+filter_pages([], Tree) ->
+    Tree;
+filter_pages([#hn_item{addr=Addr} | T], Tree) ->
+    filter_pages(T, dh_tree:add(Addr#ref.path, Tree)).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

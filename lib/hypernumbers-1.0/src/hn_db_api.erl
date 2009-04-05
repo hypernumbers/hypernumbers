@@ -76,6 +76,7 @@
 -module(hn_db_api).
 
 -include("spriki.hrl").
+-include("hypernumbers.hrl").
 
 -define(wu, hn_db_wu).
 -define(copy, copy_cell).
@@ -103,6 +104,8 @@
          read_inherited_value/3,
          read_styles/1,
          % read_permissions/1,
+         read_pages/1,
+         read_pages/2,
          % update_style/2,
          recalculate/1,
          reformat/1,
@@ -134,6 +137,11 @@
          resync/2,
          create_db/0
         ]).
+
+read_pages(Site) ->
+    read_pages(Site, []).
+read_pages(Site, Path) ->
+    mnesia:activity(transaction, fun hn_db_wu:read_pages/2, [Site, Path]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
