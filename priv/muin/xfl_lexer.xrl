@@ -11,8 +11,8 @@ Definitions.
 %%% booleans, strings, error constants.
 
 INT = ([0-9]+)
-FLOATDEC = ([0-9]+\.[0-9]+)
-FLOATSCI = ([0-9]+\.[0-9]+((E|e))(\+|\-)?[0-9]+)
+FLOATDEC = (([0-9]+)?\.[0-9]+)
+FLOATSCI = (([0-9]+)?\.[0-9]+((E|e))(\+|\-)?[0-9]+)
 
 TRUE = ((T|t)(R|r)(U|u)(E|e))
 FALSE = ((F|f)(A|a)(L|l)(S|s)(E|e))
@@ -138,8 +138,8 @@ Rules.
 
 %% Basic data types.
 {INT}      : {token, {int, tconv:to_i(YYtext)}}.
-{FLOATDEC} : {token, {float, tconv:to_f(YYtext)}}.
-{FLOATSCI} : {token, {float, tconv:to_f(YYtext)}}.
+{FLOATDEC} : {token, {float, make_float(YYtext)}}.
+{FLOATSCI} : {token, {float, make_float(YYtext)}}.
 {BOOL}     : {token, {bool, YYtext == "TRUE"}}.
 {STR}      : {token, {str, hslists:mid(YYtext)}}.
 
@@ -388,6 +388,14 @@ is_alpha(Char) when is_integer(Char) ->
      member(Char, seq($a, $z)));
 is_alpha([Char]) ->
     is_alpha(Char).
+
+%% Turn .1/0.1/.1e+10/0.1e+10 into a float.
+
+make_float(YYtext) ->
+    case string:substr(YYtext, 1, 1) of
+        "." -> tconv:to_f("0" ++ YYtext);
+        _   -> tconv:to_f(YYtext)
+    end.
 
 %% Return the smaller of two numbers.
 
