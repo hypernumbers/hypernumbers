@@ -196,41 +196,46 @@ funcall(Fname, Args0) ->
     end.
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 %% Intersect current cell with a range.
 implicit_intersection(R) ->
     case R#rangeref.type of
-        col ->
+        col    -> implicit_intersection_col(R);
+        row    -> implicit_intersection_row(R);
+        finite -> implicit_intersection_finite(R)
+    end.
+
+implicit_intersection_col(R) ->
             case R#rangeref.width of
                 1 -> do_cell(R#rangeref.path, ?my, muin_util:tl_col(R));
                 _ -> ?ERRVAL_VAL
-            end;
-        row ->
+            end.
+
+implicit_intersection_row(R) ->
             case R#rangeref.height of
                 1 -> do_cell(R#rangeref.path, muin_util:tl_row(R), ?mx);
                 _ -> ?ERRVAL_VAL
+            end.
+
+implicit_intersection_finite(R) ->
+    Dim = {R#rangeref.width, R#rangeref.height},
+    case Dim of
+        {1, 1} ->
+            [{X, Y}] = muin_util:expand_cellrange(R),
+            do_cell(R#rangeref.path, Y, X);
+        {1, _H} -> % vertical vector
+            CellCoords = muin_util:expand_cellrange(R),
+            case filter(fun({_X, Y}) -> Y == ?my end, CellCoords) of
+                [{X, Y}] -> do_cell(R#rangeref.path, Y, X);
+                []       -> ?ERRVAL_VAL
             end;
-        finite ->
-            Dim = {R#rangeref.width, R#rangeref.height},
-            case Dim of
-                {1, 1} ->
-                    [{X, Y}] = muin_util:expand_cellrange(R),
-                    do_cell(R#rangeref.path, Y, X);
-                {1, _H} -> % vertical vector
-                    CellCoords = muin_util:expand_cellrange(R),
-                    case filter(fun({_X, Y}) -> Y == ?my end, CellCoords) of
-                        [{X, Y}] -> do_cell(R#rangeref.path, Y, X);
-                        []       -> ?ERRVAL_VAL
-                    end;
-                {_W, 1} -> % horizontal vector
-                    CellCoords = muin_util:expand_cellrange(R),
-                    case filter(fun({X, _Y}) -> X == ?mx end, CellCoords) of
-                        [{X, Y}] -> do_cell(R#rangeref.path, Y, X);
-                        []       -> ?ERRVAL_VAL
-                    end;
-                {_, _} ->
-                    ?ERRVAL_VAL
-            end
+        {_W, 1} -> % horizontal vector
+            CellCoords = muin_util:expand_cellrange(R),
+            case filter(fun({X, _Y}) -> X == ?mx end, CellCoords) of
+                [{X, Y}] -> do_cell(R#rangeref.path, Y, X);
+                []       -> ?ERRVAL_VAL
+            end;
+        {_, _} ->
+            ?ERRVAL_VAL
     end.
 
 context_setting(col)           -> ?mx;
