@@ -17,8 +17,8 @@
              {"Status",200}]).
 
 -define(json(Req, Data),    
-        %Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
-        Req:ok({"application/json", ?hdr, mochijson:encode(Data)})).
+        Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
+        Req:ok({"application/json", ?hdr, Json})).
 
 -define(exit, 
         exit("exit from hn_mochi:handle_req impossible page versions")).
@@ -354,7 +354,18 @@ get_json_post(undefined) ->
     {ok, undefined};
 get_json_post(Json) ->
     {struct, Attr} = mochijson:decode(Json),
-    {ok, Attr}.
+    {ok, lists:map(fun to_utf8/1, Attr)}.
+
+to_utf8({struct, Val}) ->
+    {struct, lists:map(fun to_utf8/1, Val)};
+to_utf8({array, Val}) ->
+    {array, lists:map(fun to_utf8/1, Val)};
+to_utf8({Key, Val}) ->
+    {xmerl_ucs:to_utf8(Key), to_utf8(Val)};
+to_utf8(X) when is_integer(X); is_float(X) ->
+    X;
+to_utf8(X) ->
+    xmerl_ucs:to_utf8(X).
 
 add_styles([], Tree) ->
     Tree;
@@ -374,15 +385,11 @@ add_ref(#refX{ obj = {Ref, {X,Y}}}, {Name, Val}, JSON) ->
 docroot() ->
     code:priv_dir(hypernumbers) ++ "/docroot".
 
-itol(X) ->
-    integer_to_list(X).
-ltoi(X) ->
-    list_to_integer(X).
+itol(X) -> integer_to_list(X).
+ltoi(X) -> list_to_integer(X).
 
-is_dict(Dict) when is_tuple(Dict) ->
-    dict == element(1,Dict);
-is_dict(_Else) -> 
-    false.
+is_dict(Dict) when is_tuple(Dict) -> dict == element(1,Dict);
+is_dict(_Else)                    -> false.
 
 dict_to_struct(Dict) ->
     F = fun(X) -> dict_to_struct(X, dict:fetch(X, Dict)) end,
@@ -481,12 +488,10 @@ post_column_values(Ref, Values, Offset) ->
     #refX{obj={range,{X1, Y1, _X2, _Y2}}} = Ref,
     F = fun(Val, Acc) -> 
                 NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
-                ok = hn_db_api:write_attributes(NRef,
-                                                      [{"formula", Val}]),
+                ok = hn_db_api:write_attributes(NRec, [{"formula", Val}]),
                 Acc+1 
         end,
     lists:foldl(F, 0, Values).
-
 
 log_unsynched(Location, Site, Page, Vsn) ->
     bits:log("UNSYNCHED for "++ Location ++"£" ++ pid_to_list(self()) ++

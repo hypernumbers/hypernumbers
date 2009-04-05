@@ -2343,12 +2343,9 @@ get_offset(#refX{obj = {cell, {FX, FY}}}, #refX{obj = {cell, {TX, TY}}}) ->
     {TX - FX, TY - FY}.
 
 write_attr2(RefX, {"formula", Val}) ->
-    %Utf8 = xmerl_ucs:to_utf8(Val),
     case superparser:process(Val) of
-        {formula, Fla} -> 
-            write_formula1(RefX, Val, Fla);
-        [NewVal, Align, Frmt] -> 
-            write_formula2(RefX, Val, NewVal, Align, Frmt)
+        {formula, Fla}      -> write_formula1(RefX, Val, Fla);
+        [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
     end.
 
 write_formula1(RefX, Val, Fla) ->
