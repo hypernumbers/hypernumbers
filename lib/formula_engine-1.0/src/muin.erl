@@ -205,16 +205,24 @@ implicit_intersection(R) ->
     end.
 
 implicit_intersection_col(R) ->
-            case R#rangeref.width of
-                1 -> do_cell(R#rangeref.path, ?my, muin_util:tl_col(R));
-                _ -> ?ERRVAL_VAL
-            end.
+    case R#rangeref.width of
+        1 ->
+            {col, Col} = R#rangeref.tl,
+            ColIdx = col_index(Col),
+            do_cell(R#rangeref.path, ?my, ColIdx);
+        _ ->
+            ?ERRVAL_VAL
+    end.
 
 implicit_intersection_row(R) ->
-            case R#rangeref.height of
-                1 -> do_cell(R#rangeref.path, muin_util:tl_row(R), ?mx);
-                _ -> ?ERRVAL_VAL
-            end.
+    case R#rangeref.height of
+        1 ->
+            {row, Row} = R#rangeref.tl,
+            RowIdx = row_index(Row),
+            do_cell(R#rangeref.path, RowIdx, ?mx);
+        _ ->
+            ?ERRVAL_VAL
+    end.
 
 implicit_intersection_finite(R) ->
     Dim = {R#rangeref.width, R#rangeref.height},
