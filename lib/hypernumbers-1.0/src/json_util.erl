@@ -22,12 +22,13 @@ jsonify(#version{page = Page, version= Vsn}) ->
     {struct, [{"subtype", "version"},
               {"page",    Page},
               {"vsn",     Vsn}]};
-jsonify(#help{name = N, warning = W, arity = A, category = C, text = T}) ->
+jsonify(#help{name = N, warning = W, arity = A, category = C, text = T, notes = N2}) ->
     {struct, [{"name",     N},
               {"warning",  W},
               {"arity",    A},
               {"category", C},
-              {"text",     T}]}.
+              {"text",     T},
+              {"notes",    N2}]}.
     
 unjsonify({array, List}) when is_list(List) ->
     [unjsonify(X) || X <- List];

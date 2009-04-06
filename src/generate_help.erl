@@ -18,6 +18,19 @@
 -include("russian_fns.hrl").
 -include("spanish_fns.hrl").
 
+-define(notes, [{"fr", "No translation available. To help, " ++
+                 "go <a href=\"http://example.com\">here</a>"},
+                {"de", "No translation available. To help, " ++
+                 "go <a href=\"http://example.com\">here</a>"},
+                {"it", "No translation available. To help, " ++
+                 "go <a href=\"http://example.com\">here</a>"},
+                {"pt", "No translation available. To help, " ++
+                 "go <a href=\"http://example.com\">here</a>"},
+                {"ru", "No translation available. To help, " ++
+                 "go <a href=\"http://example.com\">here</a>"},
+                {"es", "No translation available. To help, " ++
+                 "go <a href=\"http://example.com\">here</a>"}]).
+
 run() ->
     % first do the English Fns
     Json = [json_util:jsonify(X) || X <- ?WORKING_FNS],
@@ -28,16 +41,24 @@ run() ->
     do_jf("de", "german",     ?german_fns),
     do_jf("it", "italian",    ?italian_fns),
     do_jf("pt", "portuguese", ?portuguese_fns),
-    % do_jf("ru", "russian",    ?russian_fns),
+    do_jf("ru", "russian",    ?russian_fns),
     do_jf("es", "spanish",    ?spanish_fns).
 
 do_jf(Code, Lang, Fns) ->
     io:format("In do_jf for ~p~n", [Lang]),
-    Fun = fun(#help{name = N} = Help) ->
-                  {value, {_, _, NewN}} = lists:keysearch(N, 2, Fns),
-                  NewHelp = Help#help{name = NewN, warning = "", text = ""},
-                  json_util:jsonify(NewHelp)
-          end,
+    {value, {Code, Notes}} = lists:keysearch(Code, 1, ?notes),
+    io:format("In do_jf Notes are ~p~n", [Notes]),
+    io:format("In do_jf ?notes are ~p~n", [?notes]),
+    Fun =
+        fun(#help{name = N} = Help) ->
+                NewH = case lists:keysearch(N, 2, Fns) of
+                           {value, {_, _, NewN}} -> Help#help{name = NewN,
+                                                              warning = "",
+                                                              text = ""};
+                           false                 -> Help#help{notes = Notes}
+                       end,
+                json_util:jsonify(NewH)
+        end,
     Json = [Fun(X) || X <- ?WORKING_FNS],
     Json2 = mochijson:encode({array, Json}),
     write(Json2, Code).

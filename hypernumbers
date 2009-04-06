@@ -31,6 +31,9 @@ MNESIA_DIR=$ROOT/database/$NODE
 REL_DIR=$ROOT/ebin/$RELNAME
 SASL_DIR=$ROOT/priv/$SASL_CONF_FILE
 
+HN_DIR="lib/hypernumbers-1.0"
+MOCHI_DIR="lib/mochiweb"
+
 ## Create mnesia and log directories
 ## and config file if they dont exist
 [ -d $LOG_DIR ]        || mkdir -p $LOG_DIR
@@ -70,7 +73,6 @@ function build
     echo "==============================="
     echo "      Generating ms_util       "
     echo "==============================="
-    HN_DIR="lib/hypernumbers-1.0"
     erlc -o $HN_DIR/ebin -I $HN_DIR/include priv/ms_util/make_ms_util.erl
     erl -pa $HN_DIR/ebin -noshell -s make_ms_util make -s init stop
     mv ms_util2.erl $HN_DIR/src
@@ -100,8 +102,7 @@ function start
         -config $SASL_DIR \
         -hn_config $CONFIG \
         -hn_log $LOG_DIR \
-        -mnesia dir "\"$MNESIA_DIR\""
-       
+        -mnesia dir "\"$MNESIA_DIR\""       
 }
 
 function gen_tests
@@ -124,17 +125,18 @@ function docs
     echo "==============================="
     echo "     Building Documentation    "
     echo "==============================="
+    HN_DIR="lib/hypernumbers-1.0"
     erlc -o ebin src/make_edoc.erl
-    cd ./ebin
-    erl -noshell -s make_edoc build -s init stop
+    erl -pa ebin -noshell -s make_edoc build -s init stop
 }
 
-function analysis
+function gen_help
 {
-    erlc -o ebin src/analysis.erl
-    cd ./ebin
-    # erl -s analysis run $ROOT/lib
-    erl -s analysis debug
+    echo "==============================="
+    echo "     Building Help Files       "
+    echo "==============================="
+    erlc -o ebin -I $HN_DIR/include src/generate_help.erl
+    erl -pa ebin -pa $HN_DIR/ebin -pa $MOCHI_DIR/ebin -s generate_help run -s init stop
 }
 
 function visualise
@@ -203,9 +205,9 @@ case $1 in
     stop)      stop;;
     docs)      docs;;
     build)     build $2;;
-    analysis)  analysis;;
     statsvn)   statsvn;;
     visualise) visualise;;
     gen_tests) gen_tests;;
+    gen_help) gen_help;;
     test)      test $2;;
 esac
