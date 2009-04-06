@@ -47,22 +47,24 @@ ul,li {
   float:      right;
   position:   relative;
   top:        0px;
-  margin:     0px 20px 0px 5px;
+  margin:     0px 00px 0px 5px;
 }
 
 #navigation li { 
-  font:       14px Arial,"Helvetica Neue", sans-serif;
-  text-align: center;
-  text-decoration:underline;
-  cursor:     pointer;
-  display:    block;
-  width:      30px;
+  font:       11px Arial,"Helvetica Neue", sans-serif;
   float:      left;
   margin:     0px 5px;
   padding:    3px 13px 3px 13px;
-  color:      orange;
+  color:      #999;
   display:none;
 }
+
+#navigation li a { 
+  color:orange;
+  text-decoration:underline;
+  cursor:pointer;
+}
+
 
 #header h1 { 
   display:block;

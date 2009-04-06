@@ -82,6 +82,9 @@ handle_req(Method, Req, Ref, Vars) ->
             end
     end.    
 
+iget(Req, #refX{path=["_auth", "login"]}, page, []) ->
+    Req:serve_file("hypernumbers/login.html", docroot(),?hdr);
+
 iget(Req, _Ref, page, []) ->
     Req:serve_file("hypernumbers/index.html", docroot(),?hdr);
 
