@@ -9,7 +9,7 @@
 process([$= | Tl]) when Tl =/= [] ->
     {formula, super_util:upcase(Tl)};
 process([39 | Tl]) -> % singly quoted string
-    [{quote, Tl},{'text-align', "left"},{format, "null"}];
+    [{quote, Tl},{"text-align", "left"},{"format", "null"}];
 process(Input) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
