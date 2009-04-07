@@ -1374,7 +1374,9 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
     % and if the source cell has been reformatted after the data was entered
     % you want to carry that forward.
     AttrList = get_attr_keys(FilteredList),
-    copy_attrs(From, To, AttrList).
+    ok = copy_attrs(From, To, AttrList),
+    % now mark the new cell dirty
+    ok = mark_cells_dirty(To).
 
 %% @spec copy_attrs(From :: #refX{}, To :: #refX{}, AttrList) -> ok
 %% AttrList = [atom()]
