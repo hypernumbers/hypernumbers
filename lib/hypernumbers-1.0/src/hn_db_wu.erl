@@ -907,9 +907,11 @@ get_refs_below(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
 %% <li>column</li>
 %% </ul>
 get_refs_right(#refX{obj = {cell, {X, Y}}} = RefX) ->
+    % io:format("in get_refs_right (1)~n"),
     get_refs_right2(RefX, X, Y, Y);
 get_refs_right(#refX{obj = {column, {X1, X2}}} = RefX) ->
     % rectify the row range in case they are reversed...
+    % io:format("in get_refs_right (2)~n"),
     XX = ?COND(X1 > X2, X1, X2),
     #refX{site = S, path = P} = RefX,
     Obj = {cell, {'$1', '_'}},
@@ -926,6 +928,7 @@ get_refs_right(#refX{obj = {column, {X1, X2}}} = RefX) ->
     RefXs = lists:append([RefXs1, RefXs2]),
     hslists:uniq(RefXs);       
 get_refs_right(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
+    % io:format("in get_refs_right (3)~n"),
     % rectify the ranges in case they are reversed...
     XX = ?COND(X1 > X2, X1, X2),
     {YY1, YY2} = ?COND(Y1 > Y2, {Y2, Y1}, {Y1, Y2}),
@@ -1375,7 +1378,8 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
     % you want to carry that forward.
     AttrList = get_attr_keys(FilteredList),
     ok = copy_attrs(From, To, AttrList),
-    % now mark the new cell dirty
+    % now mark the To cell dirty...
+    % io:format("in copy_cell ~p marking ~p dirty~n", [self(), To]),
     ok = mark_cells_dirty(To).
 
 %% @spec copy_attrs(From :: #refX{}, To :: #refX{}, AttrList) -> ok
@@ -1393,6 +1397,7 @@ copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, [H | T]) 
 copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {range, _}} = To, Attrs) ->
     Ref = hn_util:refX_to_ref(To, "not needed"),
     List = hn_util:range_to_list(Ref),
+    io:format("in copy_attrs~n-List is ~p~n", [List]),
     [ok = copy_attrs(From, X, Attrs) || X <- List].
 
 %% @spec read_incoming_hn(Site, Parent) -> #incoming_hn{} | []
@@ -1717,7 +1722,7 @@ get_refs_below2(RefX, MinX, MaxX, Y) ->
     MatchRef1 = ms_util:make_ms(hn_item, [{addr, Match1}, {val, '_'}]),
     Cond = case MinX of
                MaxX -> [{'and', {'>', '$2', Y}, {'==', '$1', MinX}}];
-               _    -> [{'and', {'>', '$2', Y}, {'>=', '$1', MinX},
+               _    -> [{'and', {'>', '$2', Y}, {'>', '$1', MinX},
                          {'=<', '$1', MaxX}}]
            end,
     Body = ['$_'],
@@ -1735,7 +1740,8 @@ get_refs_right2(RefX, X, MinY, MaxY) ->
     MatchRef1 = ms_util:make_ms(hn_item, [{addr, Match1}]),
     Cond = case MinY of
                MaxY -> [{'and', {'>', '$1', X}, {'==', '$2', MinY}}];
-               _    -> [{'and', {'>', '$1', X}, {'>=', '$2', MinY},
+               _    -> [{'and', {'>', '$1', X}, {'>
+', '$2', MinY},
                          {'=<', '$2', MaxY}}]
            end,
     Body = ['$_'],
@@ -2707,7 +2713,7 @@ write_style2(RefX, Style) ->
     Ref = hn_util:refX_to_ref(RefX, "dont care"),
     NewIndex = mnesia:dirty_update_counter(style_counters, Ref2, 1), 
     % should spawn a notification that there is a new style
-    tell_front_end(Ref, NewIndex, Style),
+    spawn(fun() -> tell_front_end(Ref, NewIndex, Style) end),
     ok = mnesia:write(#styles{refX = Ref2, index = NewIndex, magic_style = Style}),
     NewIndex. 
 
@@ -2719,7 +2725,9 @@ tell_front_end(#hn_item{addr=Ref, val=Val}, Type) ->
     #ref{name=Name, site=Site, path=Path, ref=Rf} = Ref,
     case Name of
         "__"++_ -> ok; 
-        _Else   -> remoting_reg:notify_change(Site, Path, Type, Rf,  Name, Val)
+        _Else   -> % io:format("in tell_front_end~n-Ref is ~p~n-Val is ~p~n",
+                   %          [Ref, Val]),
+                   remoting_reg:notify_change(Site, Path, Type, Rf,  Name, Val)
     end.
 
 tell_front_end(#ref{site=Site, path=Path}, Index, Style) ->
