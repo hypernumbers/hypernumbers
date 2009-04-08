@@ -115,6 +115,15 @@ WHITESPACE = ([\000-\s]*)
 
 Rules.
 
+%% Basic data types.
+{INT}      : {token, {int, tconv:to_i(YYtext)}}.
+{FLOATDEC} : {token, {float, make_float(YYtext)}}.
+{FLOATSCI} : {token, {float, make_float(YYtext)}}.
+{BOOL}     : {token, {bool, string:to_upper(YYtext) == "TRUE"}}.
+{STR}      : {token, {str, hslists:mid(YYtext)}}.
+
+{ERRVAL} : {token, {errval, list_to_atom(YYtext)}}.
+
 %%% 1. Cell references:
 
 {A1_REF} : {token, to_cellref(YYtext, a1)}.
@@ -135,15 +144,6 @@ Rules.
 %%% 4. Named expressions:
 
 {NAME_REF}     : {token, name(YYtext)}.
-
-%% Basic data types.
-{INT}      : {token, {int, tconv:to_i(YYtext)}}.
-{FLOATDEC} : {token, {float, make_float(YYtext)}}.
-{FLOATSCI} : {token, {float, make_float(YYtext)}}.
-{BOOL}     : {token, {bool, YYtext == "TRUE"}}.
-{STR}      : {token, {str, hslists:mid(YYtext)}}.
-
-{ERRVAL} : {token, {errval, list_to_atom(YYtext)}}.
 
 %% Discard whitespace:
 {WHITESPACE} : .
