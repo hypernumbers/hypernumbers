@@ -1229,6 +1229,7 @@ shift_cell(#refX{site = S, path = P} = From, #refX{site = S, path = P} = To)
     % why isn't there a shift_incoming_hn? - well the incoming_hn
     % hasn't moved - the remote link from it to this cell has though...
     % (and we've already done that!)
+    % io:format("in shift_cell~n-From is ~p~n-To is ~p~n", [From, To]),
     ok = shift_dirty_cells(From, To),
     ok = shift_dirty_notify_ins(From, To),
     ok = shift_local_links(From, To),
@@ -1379,7 +1380,6 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
     AttrList = get_attr_keys(FilteredList),
     ok = copy_attrs(From, To, AttrList),
     % now mark the To cell dirty...
-    % io:format("in copy_cell ~p marking ~p dirty~n", [self(), To]),
     ok = mark_cells_dirty(To).
 
 %% @spec copy_attrs(From :: #refX{}, To :: #refX{}, AttrList) -> ok
@@ -2224,7 +2224,7 @@ shift_cell2(From, To) ->
     [ok = Fun2(X) || X <- AttrList],
     % now check if the cell has a circular reference
     case read_attrs(To, ["formula"]) of
-        [] -> ok;
+        []                    -> ok;
         [{C, {"formula", F}}] -> case check_circ_ref(To, F) of
                                      true  -> mark_cells_dirty(To);
                                      false -> ok
@@ -2287,10 +2287,14 @@ shift_local_links(From, To) ->
     % first shift the local links where this cell is the parent
     Head = ms_util:make_ms(local_cell_link, [{parent, From}]),
     LinkedCells = mnesia:select(local_cell_link, [{Head, [], ['$_']}]),
+    % io:format("in shift_local_links~n-LinkedCells is ~p~n-From is ~p~n-To is ~p~n",
+    %          [LinkedCells, From, To]),
     ok = shift_local_children(LinkedCells, From, To),
     % now shift the local links where this cell is the child
     Head2 = ms_util:make_ms(local_cell_link, [{child, From}]),
     LinkedCells2 = mnesia:select(local_cell_link, [{Head2, [], ['$_']}]),
+    % io:format("in shift_local_links~n-LinkedCells2 is ~p~n-From is ~p~n-To is ~p~n",
+    %          [LinkedCells2, From, To]),
     shift_local_parents(LinkedCells2, To).
 
 shift_local_parents([], _To)     -> ok;
@@ -2300,22 +2304,29 @@ shift_local_parents([H | T], To) -> NewLink = H#local_cell_link{child = To},
                                     shift_local_parents(T, To).
     
 shift_local_children([], From, To) -> ok;
-shift_local_children([#local_cell_link{child = C} | T], From, To) ->
+shift_local_children([#local_cell_link{child = C} = Link | T], From, To) ->
     % both From and To are on the same page so there is no difference
     % between using the one or the other - but force them to be the same
+    % io:format("in shift_local_children~n-C is ~p~n-From is ~p~n-To is ~p~n",
+    %          [C, From, To]),
     #refX{path = CPath, obj = CRef} = C,
     #refX{path = FromPath, obj = {cell, FromCell}} = From,
     % force the 'To' path to match the 'From' path in the next line
-    #refX{path = FromPath, obj = {cell, ToCell}} = To,  
+    #refX{path = FromPath, obj = {cell, ToCell}} = To,
+
+    % first rewrite the local_cell_link
+    NewLink = Link#local_cell_link{parent = To},
+    ok = mnesia:delete_object(Link),
+    ok = mnesia:write(NewLink),
     % now read the child
     [{C, {"formula", Formula}}] = read_attrs(C, ["formula"]),
     NewFormula = offset_formula_with_ranges(Formula, CPath, FromPath,
                                             FromCell, ToCell),
     % io:format("in shift_local_children~n-Formula is ~p~n-NewFormula is ~p~n",
     %          [Formula, NewFormula]),
-    % by getting the linking cell to rewrite its formula the 
-    % 'local_cell_link' table will be ripped down and rebuilt as well...
-    ok = write_attr(C, {"formula", NewFormula}),
+    % the local cell link table has already been manually rewritten so the new
+    % formula is written using write_attr3 not write_attr
+    ok = write_attr3(C, {"formula", NewFormula}),
     shift_local_children(T, From, To).
 
 % different to offset_formula because it truncates ranges
@@ -2488,8 +2499,8 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
 
     % We need to know the calculcated value
     [{RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"]),
-    % io:format("about to mark cells dirty in write_cell ~p~nRefX is ~p~n",
-    %          [self(), RefX]),
+    io:format("about to mark cells dirty in write_cell ~p~nRefX is ~p~n",
+              [self(), RefX]),
     ok = mark_cells_dirty(RefX),
 
     % mark this cell as a possible dirty hypernumber

@@ -1116,7 +1116,7 @@ move(RefX, Type, Disp)
                     case {Type, Disp} of
                         {insert, horizontal} -> RefX2 = insert_shift(RefX, Disp),
                                                 List = ?wu:get_refs_right(RefX2),
-                                                {'left-to-right', List};
+                                                {'right-to-left', List};
                         {insert, vertical}   -> RefX2 = insert_shift(RefX, Disp),
                                                 List = ?wu:get_refs_below(RefX2),
                                                 {'bottom-to-top', List};
