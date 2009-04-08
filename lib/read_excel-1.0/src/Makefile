@@ -1,4 +1,4 @@
-# formula_engine-1.0 make file
+# read_excel-1.0 make file
 # (C) Hypernumbers Ltd 2009
 # 
 # Written by Gordon Guthrie gordon@hypernumbers.com
@@ -7,7 +7,7 @@
 # guff set up
 include ../../../support/include.mk
 
-APPLICATION='formula_engine-1.0'
+APPLICATION='read_excel-1.0'
 DOC_OPTS={dir,\"../doc\"}
 
 all: $(EBIN_FILES)
