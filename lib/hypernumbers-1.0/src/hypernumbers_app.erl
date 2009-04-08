@@ -78,8 +78,8 @@ clean_start() ->
                dirty_notify_back_out]),
 
     ok = hn_db_api:create_db(),
-    ok = write_permissions(),
     ok = start_dirty_subscribe(),
+    ok = write_permissions(),
     ok.
 
 %% @spec start_mochiweb() -> ok
@@ -101,7 +101,7 @@ start_dirty_subscribe() ->
     ok = gen_server:cast(dirty_notify_back_out, subscribe),
     ok.
 
-%% @spec set_def_perms() -> ok
+%% @spec write_permissions() -> ok
 %% @doc  Set the default permissions on each domain
 write_permissions() ->
     write_permissions("__permissions", hn_config:get(permissions)),

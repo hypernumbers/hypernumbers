@@ -1128,10 +1128,9 @@ read_cells_raw(#refX{obj = {page, _}} = RefX) ->
     MatchRef = make_page_match_ref(RefX, []),    
     hn_util:from_hn_item(mnesia:match_object(hn_item, MatchRef, read)).
 
-%% @spec read_inherited(#refX{}, Key, Default) -> {ok, Value}
+%% @spec read_inherited_list(#refX{}, Key) -> {ok, Value}
 %% Key = atom()
 %% Value = term()
-%% Default = term()
 %% @doc  This function searches the tree for the first occurence of a value
 %%       stored at a given reference, if not found it returns the supplied
 %%       default value
@@ -1145,9 +1144,10 @@ read_inherited_list(RefX, Key) when is_record(RefX, refX)  ->
     Ref = hn_util:refX_to_ref(RefX, Key),
     get_item_list(Type, Ref, []).
 
-%% @spec read_inherited_list(#refX{}, Key) -> {ok, Value}
+%% @spec read_inherited(#refX{}, Key, Default) -> {ok, Value}
 %% Key = atom()
 %% Value = term()
+%% Default = term()
 %% @doc  This function searches the tree for the occurences of a key
 %%       and returns a list of them
 read_inherited(RefX, Key, Default) when is_record(RefX, refX)  ->
@@ -1971,6 +1971,7 @@ make_formula(Toks) ->
 mk_f([], Acc)                             -> "="++lists:flatten(lists:reverse(Acc));
 mk_f([{cellref, _, _, _, Ref} | T], Acc)  -> mk_f(T, [Ref | Acc]);
 mk_f([{rangeref, _, _, _, Ref} | T], Acc) -> mk_f(T, [Ref | Acc]);
+mk_f([{namedexpr, Path, Name} | T], Acc)  -> mk_f(T, [Path ++ Name | Acc]);
 mk_f([{atom, H} | T], Acc)                -> mk_f(T, [atom_to_list(H) | Acc]);
 mk_f([{int, I} | T], Acc)                 -> mk_f(T, [integer_to_list(I) | Acc]);
 mk_f([{str, S} | T], Acc)                 -> mk_f(T, [$", S, $" | Acc]);
@@ -2402,19 +2403,19 @@ write_formula1(RefX, Val, Fla) ->
     end.
 
 write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
-    ok = write_attr(RefX, {"text-align", Align}),
-    % write out the format (if any)
-    case Format of
-        {"format", "null"} -> ok;
-        {"format", F}      -> write_attr(RefX, {"format", F})
-    end,
     % now write out the actual cell
     Formula = case Type of
                   quote    -> [39 | Value];
                   datetime -> OrigVal;
                   _        -> hn_util:text(Value)
               end,
-    write_cell(RefX, Value, Formula, [], []).
+    ok = write_cell(RefX, Value, Formula, [], []),
+    ok = write_attr(RefX, {"text-align", Align}),
+    % write out the format (if any)
+    case Format of
+        {"format", "null"} -> ok;
+        {"format", F}      -> write_attr(RefX, {"format", F})
+    end.
 
 write_pcode(_RefX, nil)  -> ok;
 write_pcode(RefX, Pcode) -> Ref = hn_util:refX_to_ref(RefX, "__ast"),
@@ -2499,8 +2500,6 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
 
     % We need to know the calculcated value
     [{RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"]),
-    io:format("about to mark cells dirty in write_cell ~p~nRefX is ~p~n",
-              [self(), RefX]),
     ok = mark_cells_dirty(RefX),
 
     % mark this cell as a possible dirty hypernumber

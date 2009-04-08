@@ -675,7 +675,7 @@ write_last(List) when is_list(List) ->
         end,
     mnesia:activity(transaction, Fun).
 
-%% @spec read_inherited(#refX{}, Attribute) -> {#refX{}, Val}
+%% @spec read_inherited_list(#refX{}, Attribute) -> {#refX{}, Val}
 %% Attribute = string()
 %% @doc Scans the tree and returns a list of value stored against
 %%      Key 
@@ -683,7 +683,7 @@ read_inherited_list(RefX, Key) when is_record(RefX, refX) ->
     F = fun hn_db_wu:read_inherited_list/2,
     mnesia:activity(transaction, F, [RefX, Key]).
 
-%% @spec read_inherited(#refX{}, Attibute, Default) -> {#refX{}, Val}
+%% @spec read_inherited_value(#refX{}, Attibute, Default) -> {#refX{}, Val}
 %% @doc  This function searches the tree for the first occurence of a value
 %%       stored at a given reference, if not found it returns the supplied
 %%       default value
