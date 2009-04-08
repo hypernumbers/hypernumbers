@@ -15,52 +15,56 @@ process(Input) ->
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Input), {1, 1}),
-    Return = case Toks of
-                 [{bool, B}]                -> [{bool, B},
-                                                {"text-align", "center"},
-                                                {"format", "null"}];
-                 [{float, F}]               -> [{float, F},
-                                                {"text-align", "right"},
-                                                {"format", "null"}];
-                 [{int, I}]                 -> [{int, I},
-                                                {"text-align", "right"},
-                                                {"format", "null"}];
-                 [{'-'}, {float, F}]        -> [{float, -F},
-                                                {"text-align", "right"},
-                                                {"format", "null"}];
-                 [{'-'}, {int, I}]          -> [{int, -I},
-                                                {"text-align", "right"},
-                                                {"format", "null"}];
-                 [{float, F}, {'%'}]        -> [{float,F/100},
-                                                {"text-align", "right"},
-                                                {"format", "0.00%"}];
-                 [{int, I}, {'%'}]          -> [{float,I/100},
-                                                {"text-align", "right"},
-                                                {"format", "0%"}];
-                 [{'-'}, {float, F}, {'%'}] -> [{float,F/100},
-                                                {"text-align", "right"},
-                                                {"format", "0.00%"}];
-                 [{'-'}, {int, I}, {'%'}]   -> [{float,I/100},
-                                                {"text-align", "right"},
-                                                {"format", "0%"}];
-                 % type tag gets discarded by caller which is ok for 
-                 % the rest of them, but not here
-                 [{errval, E}]       -> [{errval, {errval, E}}, 
-                                         {"text-align", "center"},
-                                         {"format", "null"}]; 
-                 _Other              ->
-                     case super_util:autoparse(Toks) of
-                         {ok, maybe_bad_date} ->
-                             Date = muin_date:from_rfc1123_string(Input),
-                             case Date of
-                                 bad_date -> [{string, Input},
-                                              {"text-align", "left"},
-                                              {"format", "null"}];
-                                 _        -> [{string, Date},
-                                              {"text-align", "center"},
-                                              {"format", "dd-mm-yyyy"}]
-                             end;
-                         Other          -> Other
-                     end
-             end,
-    Return.
+    case Toks of
+        [{bool, B}]                -> [{bool, B},
+                                       {"text-align", "center"},
+                                       {"format", "null"}];
+        [{float, F}]               -> [{float, F},
+                                       {"text-align", "right"},
+                                       {"format", "null"}];
+        [{int, I}]                 -> [{int, I},
+                                       {"text-align", "right"},
+                                       {"format", "null"}];
+        [{'-'}, {float, F}]        -> [{float, -F},
+                                       {"text-align", "right"},
+                                       {"format", "null"}];
+        [{'-'}, {int, I}]          -> [{int, -I},
+                                       {"text-align", "right"},
+                                       {"format", "null"}];
+        [{float, F}, {'%'}]        -> [{float,F/100},
+                                       {"text-align", "right"},
+                                       {"format", "0.00%"}];
+        [{int, I}, {'%'}]          -> [{float,I/100},
+                                       {"text-align", "right"},
+                                       {"format", "0%"}];
+        [{'-'}, {float, F}, {'%'}] -> [{float,F/100},
+                                       {"text-align", "right"},
+                                       {"format", "0.00%"}];
+        [{'-'}, {int, I}, {'%'}]   -> [{float,I/100},
+                                       {"text-align", "right"},
+                                       {"format", "0%"}];
+        % type tag gets discarded by caller which is ok for 
+        % the rest of them, but not here
+        [{errval, E}]       -> [{errval, {errval, E}}, 
+                                {"text-align", "center"},
+                                {"format", "null"}]; 
+        _Other              ->
+            io:format("going into super_util:autoparse~n-"++
+                      "Toks are ~p~n", [Toks]),
+            case super_util:autoparse(Toks) of
+                {ok, maybe_bad_date} ->
+                    io:format("mebbies bad date?"),
+                    Date = muin_date:from_rfc1123_string(Input),
+                    case Date of
+                        bad_date -> [{string, Input},
+                                     {"text-align", "left"},
+                                     {"format", "null"}];
+                        _        -> [{string, Date},
+                                     {"text-align", "center"},
+                                     {"format", "dd-mm-yyyy"}]
+                    end;
+                Other          -> io:format("in other, other is ~p~n",
+                                            [Other]),
+                                  Other
+            end
+    end.
