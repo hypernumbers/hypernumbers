@@ -65,6 +65,7 @@ import_xls(Name) ->
     io:format("in test_util:import_xls File is ~p~n",[File2]),
     io:format("- for some reason Names and Formats are not being used!~n"),
     {Celldata, _Names, _Formats, CSS} = readxls(File2),
+    % io:format("In test_util CSS is ~p~n", [CSS]),
     F = fun(X, {Ls, Fs}) ->
                 {SheetName, Target, V} = read_reader_record(X),
                 Sheet = excel_util:esc_tab_name(SheetName),
@@ -83,6 +84,8 @@ import_xls(Name) ->
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
     
     Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
+                     io:format("in test_util:import_xls Dopost~n-Postdata is ~p~n",
+                               [Postdata]),
                      Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
                      {ok, RefRec} = hn_util:parse_url(Url),
                      Postdata2 = fix_integers(Postdata),
@@ -105,7 +108,8 @@ import_xls(Name) ->
 
     % Now fire in the CSS and formats
     WriteCSS = fun(X) ->
-                       {{{sheet, SheetName}, {row_index, Row}, {col_index, Col}}, CSSItem} = X,
+                       {{{sheet, SheetName}, {row_index, Row}, {col_index, Col}},
+                        [CSSItem]} = X,
                        Sheet = excel_util:esc_tab_name(SheetName),
                        Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
                        Ref = rc_to_a1(Row,Col),
