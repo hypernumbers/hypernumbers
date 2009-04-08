@@ -108,8 +108,9 @@ iget(Req, Ref, cell, [{"attr", []}]) ->
 
 iget(Req, Ref, cell, []) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
-            [{_Ref, {"value", Val}}] -> Val;
-            _Else -> ""
+            [{_Ref, {"value", {errval, Val}}}] -> atom_to_list(Val);
+            [{_Ref, {"value", Val}}]           -> Val;
+            _Else                              -> ""
         end,
     Req:ok({"text/html",V});
 
@@ -468,18 +469,18 @@ style_to_css({styles, _Ref, X, Rec}) ->
 
 style_to_css(X, Rec) ->
     Num = ms_util2:no_of_fields(magic_style),
-    {itol(X), style_att(Num+1, Rec, [])}.
+    {itol(X), style_att(Num + 1, Rec, [])}.
 
 style_att(1, _Rec, Acc) ->
     lists:flatten(Acc);
 style_att(X, Rec, Acc) ->
-    case element(X,Rec) of
+    case element(X, Rec) of
         [] ->
-            style_att(X-1, Rec, Acc);
+            style_att(X - 1, Rec, Acc);
         _Else -> 
             Name =  ms_util2:name_by_index(magic_style, X-1),
             A = io_lib:format("~s:~s;",[Name, element(X,Rec)]),
-            style_att(X-1, Rec, [A | Acc])
+            style_att(X - 1, Rec, [A | Acc])
     end.
 
 from(Key, List) -> 
