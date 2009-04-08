@@ -134,11 +134,13 @@ ipost(Req, #refX{path=["_auth","login"]}, _Type, _Attr, Data) ->
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}])
   when O == row orelse O == column ->
+    % io:format("in ipost (before) Ref is ~p~n", [Ref]),
     RefX2 = make_before(Ref),
     hn_db_api:insert(RefX2);
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
   when O == row orelse O == column ->
+    % io:format("in ipost (after)~n"),
     hn_db_api:insert(Ref);
 
 % by default cells and ranges displace vertically
@@ -515,9 +517,18 @@ remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
     inet:setopts(Socket, [{active, once}]),
     remoting_reg:request_update(Site, Path, ltoi(Time), self()),
     receive 
-        {tcp_closed, Socket} -> ok;
-        {error, timeout}     -> Req:ok({"text/html",?hdr, <<"timeout">>});
-        {msg, Data}          -> ?json(Req, Data)
+        {tcp_closed, Socket} -> % io:format("in hn_mochi:remoting_request~n-"++
+                                %          "SOCKET CLOSED~n"),
+                                ok;
+        {error, timeout}     -> % io:format("in hn_mochi:remoting_request~n-"++
+                                %          "TIMEOUT~n"),
+                                Req:ok({"text/html",?hdr, <<"timeout">>});
+        {msg, Data}          -> % {struct, [{"time", T2}, _T]} = Data,
+                                % io:format("in hn_mochi:remoting_request~n-"++
+                                %          "T2 is ~p~n", [T2]),
+                                % io:format("in hn_mochi:remoting_request~n-"++
+                                %          "Data is ~p~n", [Data]),
+                                ?json(Req, Data)
     end.
                  
 get_var_or_cookie(Key, Vars, Req) ->
