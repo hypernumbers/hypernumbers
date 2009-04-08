@@ -552,7 +552,7 @@ make_before(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
 
 pages(#refX{path=[], site=Site}) ->
     {struct, dict_to_struct(hn_db_api:read_pages(Site, []))};
-pages(#refX{path=[H|T], site=Site}) ->
+pages(#refX{path=[H|_T], site=Site}) ->
     {struct, dict_to_struct(hn_db_api:read_pages(Site, [H]))}.
 
     
