@@ -15,7 +15,7 @@
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 
--define(rfc1123, muin_date:to_refc1123_string).
+-define(rfc1123, muin_date:to_rfc1123_string).
 
 -export([
          % HyperNumbers Utils
