@@ -390,7 +390,8 @@ to_dict([ {Ref, Val} | T], JSON) ->
 
 add_ref(#refX{ obj = {page,"/"}}, {Name, Val}, JSON) ->
     dh_tree:set(["page", Name], Val, JSON);
-add_ref(#refX{ obj = {Ref, {X,Y}}}, {Name, Val}, JSON) ->
+add_ref(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
+    {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 
 docroot() ->
