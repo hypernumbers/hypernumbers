@@ -116,18 +116,6 @@ eval(Value)                                 ->
 funcall(make_list, Args) ->
     area_util:make_array([Args]); % horizontal array
 
-funcall(name, [Name, Path]) ->
-    Refs = hn_db:get_ref_from_name(Name),
-    NeedPath = muin_util:walk_path(?mpath, Path),
-    case filter(fun(#ref{path = P}) -> NeedPath == P end, Refs) of
-        [Ref] ->
-            #ref{site = Site, path = Path2, ref = {cell, {Col, Row}}} = Ref,
-            FetchFun = ?L(get_cell_info(Site, Path2, Col, Row)),
-            get_value_and_link(FetchFun);
-        _ ->
-            ?ERR_NAME
-    end;
-
 %% Hypernumber function and its shorthand.
 funcall(hypernumber, [Url]) ->
     {ok, #ref{site = RSite, path = RPath,
