@@ -109,8 +109,10 @@ iget(Req, Ref, cell, [{"attr", []}]) ->
 iget(Req, Ref, cell, []) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", {errval, Val}}}] -> atom_to_list(Val);
+            [{_Ref, {"value", true}}]          -> "true";
+            [{_Ref, {"value", false}}]         -> "false";
             [{_Ref, {"value", Val}}]           -> Val;
-            _Else                              -> ""
+            Else                               -> ""
         end,
     Req:ok({"text/html",V});
 
