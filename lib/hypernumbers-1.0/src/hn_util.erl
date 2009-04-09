@@ -15,6 +15,8 @@
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 
+-define(rfc1123, muin_date:to_refc1123_string).
+
 -export([
          % HyperNumbers Utils
          jsonify_val/1,
@@ -70,20 +72,15 @@
 %%% and #indexrecords                                                        %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-jsonify_val({"__permissions", _}) ->
-    {"__permissions", "bleh"};
-jsonify_val({"__groups", _}) ->
-    {"__groups", "bleh"};
-jsonify_val({"dependency-tree", _}) ->
-    {"dependency-tree", "bleh"};
-jsonify_val({"parents", _}) ->
-    {"parents", "bleh"};    
-jsonify_val({Name, {errval, Error}}) ->
-    {Name, atom_to_list(Error)};
-jsonify_val({Name, {datetime, Date, Time}}) ->
-    {Name, muin_date:to_rfc1123_string({datetime, Date, Time})};
-jsonify_val(Else) ->
-    Else.
+jsonify_val({"__permissions", _})           -> {"__permissions", "bleh"};
+jsonify_val({"__groups", _})                -> {"__groups", "bleh"};
+jsonify_val({"dependency-tree", _})         -> {"dependency-tree", "bleh"};
+jsonify_val({"parents", _})                 -> {"parents", "bleh"};    
+jsonify_val({Name, {errval, Error}})        -> {Name, atom_to_list(Error)};
+jsonify_val({Name, {datetime, Date, Time}}) -> {Name, ?rfc1123({datetime, Date, Time})};
+jsonify_val({"value", true})                -> {"value", "true"};
+jsonify_val({"value", false})               -> {"value", "false"};
+jsonify_val(Else)                           -> Else.
 
 url_to_refX(Url) ->
     {ok, Ref} = parse_url(Url),
