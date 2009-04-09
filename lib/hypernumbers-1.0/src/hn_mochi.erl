@@ -75,6 +75,10 @@ handle_req(Method, Req, Ref, Vars) ->
     case Method of
         'GET'  -> iget(Req, Ref, Type, Vars);
         'POST' -> 
+            disk_log:open([{name, "http"}, {type, wrap}]),
+            disk_log:log("http", Req),
+            disk_log:close("http"),
+
             {ok, Post} = get_json_post(Req:recv_body()),
             case ipost(Req, Ref, Type, Vars, Post) of
                 ok  -> ?json(Req, "success");
