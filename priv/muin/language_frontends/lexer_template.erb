@@ -17,7 +17,7 @@ Rules.
 %% Preserve strings as-is.
 {STRING} : {token, {string, YYtext}}.
 %% Kill whitespace.
-{WHITESPACE} : .
+{WHITESPACE} : {token, {whitespace, YYtext}}.
 
 <%= @function_rules %>
 
