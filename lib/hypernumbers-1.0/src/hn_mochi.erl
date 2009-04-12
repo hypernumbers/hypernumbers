@@ -12,9 +12,9 @@
 -export([ req/1, style_to_css/2, parse_ref/1 ]).
 
 -define(hdr,[{"Cache-Control","no-store, no-cache, must-revalidate"},
-             {"Expires", "Thu, 01 Jan 1970 00:00:00 GMT"},
-             {"Pragma", "no-cache"},
-             {"Status",200}]).
+             {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
+             {"Pragma",       "no-cache"},
+             {"Status",       200}]).
 
 -define(json(Req, Data),    
         Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
@@ -24,11 +24,6 @@
         exit("exit from hn_mochi:handle_req impossible page versions")).
 
 req(Req) ->
-
-    %% Get the domain:port
-    {ok, Port} = inet:port(Req:get(socket)),
-    [Domain | _] = string:tokens(Req:get_header_value("host"), ":"), 
-    Url = lists:concat(["http://",Domain,":",itol(Port),Req:get(path)]),
     
     case filename:extension(Req:get(path)) of 
         
@@ -38,7 +33,7 @@ req(Req) ->
             Req:serve_file(RelPath, docroot());
         
         [] ->
-            case catch do_req(Req, parse_ref(Url)) of 
+            case catch do_req(Req) of 
                 ok -> ok;
                 Else ->   
                     ?ERROR("~p~n",[Else]),
@@ -46,7 +41,9 @@ req(Req) ->
             end
     end.
 
-do_req(Req, Ref) ->
+do_req(Req) ->
+
+    Ref    = parse_ref(get_host(Req)),
     Vars   = Req:parse_qs(),
     Method = Req:get(method),
     
@@ -60,7 +57,7 @@ do_req(Req, Ref) ->
 
     case check_auth(Access, Ref#refX.path, Method)  of 
         login -> Req:serve_file("hypernumbers/login.html", docroot(), ?hdr);
-        ok    -> handle_req(Method, Req, Ref, Vars)
+        ok    -> handle_req(Method, Req, Ref, Vars, User)
     end,
     ok.
 
@@ -70,16 +67,19 @@ check_auth(read,      _, 'GET')       -> ok;
 check_auth(write,     _, _)           -> ok;
 check_auth(admin,     _, _)           -> ok.
 
-handle_req(Method, Req, Ref, Vars) ->
+handle_req(Method, Req, Ref, Vars, User) ->
     Type = element(1, Ref#refX.obj),
+    
     case Method of
-        'GET'  -> iget(Req, Ref, Type, Vars);
-        'POST' -> 
-            disk_log:open([{name, "http"}, {type, wrap}]),
-            disk_log:log("http", Req),
-            disk_log:close("http"),
+        'GET'  -> 
+            mochilog:log(Req, Ref, User, undefined),
+            iget(Req, Ref, Type, Vars);
 
-            {ok, Post} = get_json_post(Req:recv_body()),
+        'POST' -> 
+            Body = Req:recv_body(),
+            {ok, Post} = get_json_post(Body),
+
+            mochilog:log(Req, Ref, User, Body),
             case ipost(Req, Ref, Type, Vars, Post) of
                 ok  -> ?json(Req, "success");
                 ret -> ok
@@ -88,19 +88,14 @@ handle_req(Method, Req, Ref, Vars) ->
 
 iget(Req, #refX{path=["_auth", "login"]}, page, []) ->
     Req:serve_file("hypernumbers/login.html", docroot(),?hdr);
-
 iget(Req, _Ref, page, []) ->
     Req:serve_file("hypernumbers/index.html", docroot(),?hdr);
-
 iget(Req, Ref, page, [{"updates", Time}]) ->
     remoting_request(Req, Ref, Time);
-
 iget(Req, Ref, page, [{"pages", []}]) -> 
     ?json(Req, pages(Ref));
-
 iget(Req, Ref, page, [{"attr", []}]) -> 
     ?json(Req, page_attributes(Ref));
-
 iget(Req, Ref, cell, [{"attr", []}]) ->
     Dict = to_dict(hn_db_api:read(Ref), dh_tree:new()),
     JS = case dict_to_struct(Dict) of
@@ -109,17 +104,12 @@ iget(Req, Ref, cell, [{"attr", []}]) ->
                  JSON
          end, 
     ?json(Req, JS);
-
 iget(Req, Ref, cell, []) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
-            [{_Ref, {"value", {errval, Val}}}] -> atom_to_list(Val);
-            [{_Ref, {"value", true}}]          -> "true";
-            [{_Ref, {"value", false}}]         -> "false";
-            [{_Ref, {"value", Val}}]           -> Val;
-            Else                               -> ""
+            [{_, {"value", Val}}] -> Val;
+            []                    -> ""
         end,
     Req:ok({"text/html",V});
-
 iget(Req, Ref, _Type,  Attr) ->
     ?ERROR("404~n-~p~n-~p",[Ref, Attr]),
     Req:not_found().
@@ -365,22 +355,23 @@ ipost(Req, _Ref, _Type, _Attr, _Post) ->
     Req:not_found(),
     ok.
 
+%% Some clients dont send ip in the host header
+get_host(Req) ->
+    {ok, Port} = inet:port(Req:get(socket)),
+    [Domain | _] = string:tokens(Req:get_header_value("host"), ":"), 
+    lists:concat(["http://", Domain, ":", itol(Port), Req:get(path)]).
+
 get_json_post(undefined) ->
     {ok, undefined};
 get_json_post(Json) ->
     {struct, Attr} = mochijson:decode(Json),
     {ok, lists:map(fun to_utf8/1, Attr)}.
 
-to_utf8({struct, Val}) ->
-    {struct, lists:map(fun to_utf8/1, Val)};
-to_utf8({array, Val}) ->
-    {array, lists:map(fun to_utf8/1, Val)};
-to_utf8({Key, Val}) ->
-    {xmerl_ucs:to_utf8(Key), to_utf8(Val)};
-to_utf8(X) when is_integer(X); is_float(X) ->
-    X;
-to_utf8(X) ->
-    xmerl_ucs:to_utf8(X).
+to_utf8({struct, Val}) -> {struct, lists:map(fun to_utf8/1, Val)};
+to_utf8({array, Val})  -> {array,  lists:map(fun to_utf8/1, Val)};
+to_utf8({Key, Val})    -> {xmerl_ucs:to_utf8(Key), to_utf8(Val)};
+to_utf8(X) when is_integer(X); is_float(X) -> X;
+to_utf8(X)             -> xmerl_ucs:to_utf8(X).
 
 add_styles([], Tree) ->
     Tree;

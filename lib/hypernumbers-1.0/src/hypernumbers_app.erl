@@ -46,6 +46,7 @@ hup() ->
 %% @spec stop(State) -> ok
 %% @doc  Application Callback
 stop(_State) -> 
+    mochilog:stop(),
     ok.
 
 %% @spec is_fresh_startup() -> true | false
@@ -85,9 +86,16 @@ clean_start() ->
 %% @spec start_mochiweb() -> ok
 %% @doc  Start mochiweb http server
 start_mochiweb() ->
+
     [{IP, Port, _Hosts}] = hn_config:get(hosts),
-    Opts = [{port, Port}, {ip, inet_parse:ntoa(IP)}, {loop, {hn_mochi, req}}],
+    
+    Opts = [{port, Port}, 
+            {ip,   inet_parse:ntoa(IP)}, 
+            {loop, {hn_mochi, req}}],
+
+    mochilog:start(),
     mochiweb_http:start(Opts),
+
     ok.
 
 %% @spec start_dirty_subscribe() -> ok
@@ -107,7 +115,7 @@ write_permissions() ->
     write_permissions("__permissions", hn_config:get(permissions)),
     write_permissions("__groups",      hn_config:get(groups)).
 
-write_permissions(Name, []) -> 
+write_permissions(_Name, []) -> 
     ok;
 write_permissions(Name, [{Domain, Value} | T]) ->
     Ref = hn_mochi:parse_ref(Domain),

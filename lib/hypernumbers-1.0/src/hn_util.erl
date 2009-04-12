@@ -61,9 +61,7 @@
          refX_from_index/1,
          index_from_refX/1,
          index_from_ref/1,
-         url_to_refX/1,
-
-         reload/0
+         url_to_refX/1
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -483,17 +481,3 @@ parse_reference(Cell) ->
         _ ->
             range
     end.
-
-reload() ->
-    Reload = fun(M) ->
-                     ?INFO("~p",[M]),
-                     code:purge(M),
-                     code:soft_purge(M),
-                     {module, M} = code:load_file(M),
-                     {ok, M}
-             end,
-    
-    Modules = [M || {M, P} <- code:all_loaded(), 
-                    is_list(P) andalso 
-                        string:str(P, "hypernumbers") > 0],
-    [Reload(M) || M <- Modules].
