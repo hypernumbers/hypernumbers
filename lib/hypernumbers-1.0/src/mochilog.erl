@@ -15,8 +15,7 @@
 %% @spec start() -> ok
 %% @doc This starts the log
 start() ->
-    Ret = disk_log:open([{name, ?NAME}, {file, logfile()}]),
-    ?INFO("Opening Log File",[Ret]),
+    {ok, _Ret} = disk_log:open([{name, ?NAME}, {file, logfile()}]),
     ok.
 
 %% @spec log(term(), term(), term(), term()) -> ok
@@ -126,4 +125,4 @@ walk(Name, F, Cont) ->
 logfile() ->
     logfile(?NAME).
 logfile(Name) ->
-    lists:concat([code:lib_dir(hypernumbers,log),"/",Name,".LOG"]).
+    lists:concat([code:lib_dir(hypernumbers),"/log/",Name,".LOG"]).
