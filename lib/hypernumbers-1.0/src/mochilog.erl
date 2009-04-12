@@ -46,10 +46,10 @@ clear() ->
     stop(),
     file:delete(logfile()).
 
-%% @spec replay(Name, LogSite, NewSite) -> ok
+%% @spec replay(Name, LogPath, NewSite) -> ok
 %% @doc alias for replay(Name, LogSite, NewSite, deep)
-replay(Name, LogSite, NewSite) ->
-    replay(Name, LogSite, NewSite, deep).
+replay(Name, LogPath, NewSite) ->
+    replay(Name, LogPath, NewSite, deep).
 
 %% @spec replay(Name, Old, New, Deep) -> ok
 %% @doc Name is the name of the log file to read from (must be 
@@ -58,8 +58,8 @@ replay(Name, LogSite, NewSite) ->
 %% decides whether to copy subpages or not
 replay(Name, Old, New, Deep) ->
     NRef = hn_mochi:parse_ref(New), 
-    ORef = hn_mochi:parse_ref(Old), 
-    F    = fun([Post]) -> repost(Post, ORef, NRef, Deep) end,    
+    OPath = string:tokens(Old,"/"),
+    F    = fun([Post]) -> repost(Post, OPath, NRef, Deep) end,    
     run_log(Name, F).
 
 %% @spec dump(Name) -> ok
@@ -83,13 +83,10 @@ repost(Post, Old, New, Deep) when Post#post.method == 'POST'->
 repost(_, _, _, _) ->
     ok.
 
-is_in_path(shallow, LogItem, Old) ->
-    LogItem#refX.site == Old#refX.site andalso
-        LogItem#refX.path == Old#refX.path;
-
-is_in_path(deep, LogItem, Old) ->
-    LogItem#refX.site == Old#refX.site andalso
-        startswith(LogItem#refX.path, Old#refX.path).
+is_in_path(shallow, LogItem, Path) ->
+    LogItem#refX.path == Path;
+is_in_path(deep, LogItem, Path) ->
+    startswith(LogItem#refX.path, Path).
     
 startswith(_List1, []) ->    
     true;

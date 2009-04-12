@@ -185,6 +185,15 @@ function test
         -dir $TESTS
 }
 
+function copylog
+{
+    HOST=alpha.hypernumbers.com
+    NAME=hypernumbers
+    PATH=alpha.hypernumbers.com
+    /usr/bin/scp $NAME@$HOST:$PATH/lib/hypernumbers-1.0/log/post_log.LOG \
+        lib/hypernumbers-1.0/log/test.LOG
+}
+
 function debug
 {
     erl -sname debug@$HOST -setcookie $COOKIE -remsh $NODE@$HOST
@@ -204,6 +213,7 @@ case $1 in
     debug)     debug;;
     stop)      stop;;
     docs)      docs;;
+    copy_log)  copylog;;
     build)     build $2;;
     statsvn)   statsvn;;
     visualise) visualise;;
