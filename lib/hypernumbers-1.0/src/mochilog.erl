@@ -8,7 +8,7 @@
 -include("spriki.hrl").
 
 -define(NAME, "post_log").
--record(post, {site, path, method, body, peer, user, referer, browser}).
+-record(post, {time, site, path, method, body, peer, user, referer, browser}).
 
 -export([log/4, start/0, stop/0, replay/3, replay/4, clear/0, dump/1 ]).
 
@@ -23,6 +23,7 @@ start() ->
 log(Req, Ref, User, Body) ->
 
     Log = #post { 
+      time = erlang:now(),
       site = Ref#refX.site, 
       path = Req:get(raw_path),
       method = Req:get(method),

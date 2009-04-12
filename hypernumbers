@@ -213,7 +213,7 @@ case $1 in
     debug)     debug;;
     stop)      stop;;
     docs)      docs;;
-    copy_log)  copylog;;
+    copylog)   copylog;;
     build)     build $2;;
     statsvn)   statsvn;;
     visualise) visualise;;
