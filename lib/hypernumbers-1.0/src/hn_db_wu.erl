@@ -1986,6 +1986,7 @@ mk_f([{rangeref, _, _, _, Ref} | T], Acc) -> mk_f(T, [Ref | Acc]);
 mk_f([{namedexpr, Path, Name} | T], Acc)  -> mk_f(T, [Path ++ Name | Acc]);
 mk_f([{atom, H} | T], Acc)                -> mk_f(T, [atom_to_list(H) | Acc]);
 mk_f([{int, I} | T], Acc)                 -> mk_f(T, [integer_to_list(I) | Acc]);
+mk_f([{float, F} | T], Acc)               -> mk_f(T, [float_to_list(F) | Acc]);
 mk_f([{str, S} | T], Acc)                 -> mk_f(T, [$", S, $" | Acc]);
 mk_f([{name, S} | T], Acc)                -> mk_f(T, [S | Acc]);
 mk_f([{H} | T], Acc)                      -> mk_f(T, [atom_to_list(H) | Acc]).
