@@ -69,7 +69,8 @@ check_auth(admin,     _, _)           -> ok.
 
 handle_req(Method, Req, Ref, Vars, User) ->
     Type = element(1, Ref#refX.obj),
-    
+     % io:format("in hn_mochi:handle_req ~p Method is ~p~n", [self(), Method]),
+
     case Method of
         'GET'  -> 
             mochilog:log(Req, Ref, User, undefined),
@@ -131,39 +132,41 @@ ipost(Req, #refX{path=["_auth","login"]}, _Type, _Attr, Data) ->
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}])
   when O == row orelse O == column ->
-    % io:format("in ipost (before) Ref is ~p~n", [Ref]),
-    RefX2 = make_before(Ref),
-    hn_db_api:insert(RefX2);
+    % io:format("in ipost (before)~n-Ref is ~p~n", [Ref]),
+    hn_db_api:insert(Ref);
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
   when O == row orelse O == column ->
-    % io:format("in ipost (after)~n"),
-    hn_db_api:insert(Ref);
+    RefX2 = make_after(Ref),
+    % io:format("in ipost (after)~n-Ref is ~p~n-RefX2 is ~p~n", [Ref, RefX2]),
+    hn_db_api:insert(RefX2);
 
 % by default cells and ranges displace vertically
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}])
   when O == cell orelse O == range ->
-    RefX2 = make_before(Ref),
-    hn_db_api:insert(RefX2, vertical);
+    % io:format("in ipost (before)~n-Ref is ~p~n", [Ref]),
+    hn_db_api:insert(Ref, vertical);
 
 % by default cells and ranges displace vertically
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
   when O == cell orelse O == range ->
-    hn_db_api:insert(Ref);
+    RefX2 = make_after(Ref),
+    % io:format("in ipost (after)~n-Ref is ~p~n-RefX2 is ~p~n", [Ref, RefX2]),
+    hn_db_api:insert(RefX2);
 
 % but you can specify the displacement explicitly
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"},
                                                       {"displacement", D}])
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
-    RefX2 = make_before(Ref),
-    hn_db_api:insert(RefX2, list_to_existing_atom(D));
+    hn_db_api:insert(Ref, list_to_existing_atom(D));
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"},
                                                       {"displacement", D}])
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
-    hn_db_api:insert(Ref, list_to_existing_atom(D));
+    RefX2 = make_after(Ref),
+    hn_db_api:insert(RefX2, list_to_existing_atom(D));
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", "all"}])
   when O == row orelse O == column ->
@@ -209,8 +212,8 @@ ipost(Req, Ref, _Type, _Attr,
     ParentUrl = hn_util:refX_to_url(ParentX),    
     ChildX = hn_util:url_to_refX(ChildUrl),
 
-    bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
-             "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
+    % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
+    %         "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
     
     % there is only 1 parent and 1 child for this action
     PVsn = json_util:unjsonify(PVsJson),
@@ -251,8 +254,8 @@ ipost(Req, Ref, _Type, _Attr,
     PVsJson   = from("parent_vsn", T),
     CVsJson   = from("child_vsn",  T),
 
-    bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
-             "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
+    % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
+    %         "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
 
     % there is only 1 parent and 1 child here
     PVsn = json_util:unjsonify(PVsJson),
@@ -306,8 +309,8 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = Json) ->
     ChildX = Ref,
     ChildUrl = hn_util:refX_to_url(ChildX),
 
-    bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ChildUrl ++
-             "£ from £" ++ ParentUrl ++ json_util:to_str(Json)),
+    % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ChildUrl ++
+    %         "£ from £" ++ ParentUrl ++ json_util:to_str(Json)),
     
     #refX{site = Site} = ChildX,
     PVsn = json_util:unjsonify(PVsJson),
@@ -501,15 +504,17 @@ post_column_values(Ref, Values, Offset) ->
     lists:foldl(F, 0, Values).
 
 log_unsynched(Location, Site, Page, Vsn) ->
-    bits:log("UNSYNCHED for "++ Location ++"£" ++ pid_to_list(self()) ++
-             "£" ++ Site ++ "£ Page £" ++ Page ++ "£ Version £" ++
-             tconv:to_s(Vsn)).
+    % bits:log("UNSYNCHED for "++ Location ++"£" ++ pid_to_list(self()) ++
+    %         "£" ++ Site ++ "£ Page £" ++ Page ++ "£ Version £" ++
+    %         tconv:to_s(Vsn)),
+    ok.
 
 log_not_yet_synched(Severity, Location, Site, Page, Vsn) ->
-    Msg = Severity ++ " NOT_YET_SYNCHED for " ++ Location ++ "£",
-    bits:log(Msg ++ pid_to_list(self()) ++ "£" ++ Site ++
-             "£ Page £" ++ Page ++"£ Version £" ++
-             tconv:to_s(Vsn)).
+    % Msg = Severity ++ " NOT_YET_SYNCHED for " ++ Location ++ "£",
+    % bits:log(Msg ++ pid_to_list(self()) ++ "£" ++ Site ++
+    %         "£ Page £" ++ Page ++"£ Version £" ++
+    %         tconv:to_s(Vsn)).
+    ok.
     
 remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
     Socket = Req:get(socket),
@@ -547,17 +552,17 @@ page_attributes(Ref) ->
     Time   = {"time", remoting_reg:timestamp()},
     {struct, [Time | dict_to_struct(Dict)]}.
 
-make_before(#refX{obj = {cell, {X, Y}}} = RefX) ->
+make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};
-make_before(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
-    DiffX = X2 - X1 + 1,
-    DiffY = Y2 - Y1 + 1,
+make_after(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
+    DiffX = X2 - X1 - 1,
+    DiffY = Y2 - Y1 - 1,
     RefX#refX{obj = {range, {X1 - DiffX, Y1 - DiffY, X2 - DiffX, Y2 - DiffY}}};
-make_before(#refX{obj = {column, {X1, X2}}} = RefX) ->
-    DiffX = X2 - X1,
+make_after(#refX{obj = {column, {X1, X2}}} = RefX) ->
+    DiffX = X2 - X1 - 1,
     RefX#refX{obj = {column, {X1 - DiffX, X2 - DiffX}}};
-make_before(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
-    DiffY = Y2 - Y1,
+make_after(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
+    DiffY = Y2 - Y1 - 1,
     RefX#refX{obj = {row, {Y1 - DiffY, Y2 - DiffY}}}.
 
 pages(#refX{path=[], site=Site}) ->
