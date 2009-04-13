@@ -69,7 +69,6 @@ check_auth(admin,     _, _)           -> ok.
 
 handle_req(Method, Req, Ref, Vars, User) ->
     Type = element(1, Ref#refX.obj),
-     % io:format("in hn_mochi:handle_req ~p Method is ~p~n", [self(), Method]),
 
     case Method of
         'GET'  -> 
@@ -209,7 +208,7 @@ ipost(Req, Ref, _Type, _Attr,
 
     #refX{site = Site} = Ref,
     ParentX = Ref,
-    ParentUrl = hn_util:refX_to_url(ParentX),    
+    _ParentUrl = hn_util:refX_to_url(ParentX),    
     ChildX = hn_util:url_to_refX(ChildUrl),
 
     % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
@@ -246,7 +245,7 @@ ipost(Req, Ref, _Type, _Attr,
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ipost(Req, Ref, _Type, _Attr,
-      [{"action", "notify_back"} |T] = Json) ->
+      [{"action", "notify_back"} |T] = _Json) ->
     Biccie    = from("biccie",     T),
     ChildUrl  = from("child_url",  T),
     ParentUrl = from("parent_url", T),
@@ -297,7 +296,7 @@ ipost(Req, Ref, _Type, _Attr,
 %%% Horizonal API = notify handler                                           %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = Json) ->
+ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json) ->
     Biccie    = from("biccie",     T),
     ParentUrl = from("parent_url", T),
     Type      = from("type",       T),
@@ -307,7 +306,7 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = Json) ->
     
     ParentX = hn_util:url_to_refX(ParentUrl),
     ChildX = Ref,
-    ChildUrl = hn_util:refX_to_url(ChildX),
+    _ChildUrl = hn_util:refX_to_url(ChildX),
 
     % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ChildUrl ++
     %         "£ from £" ++ ParentUrl ++ json_util:to_str(Json)),
@@ -503,13 +502,13 @@ post_column_values(Ref, Values, Offset) ->
         end,
     lists:foldl(F, 0, Values).
 
-log_unsynched(Location, Site, Page, Vsn) ->
+log_unsynched(_Location, _Site, _Page, _Vsn) ->
     % bits:log("UNSYNCHED for "++ Location ++"£" ++ pid_to_list(self()) ++
     %         "£" ++ Site ++ "£ Page £" ++ Page ++ "£ Version £" ++
     %         tconv:to_s(Vsn)),
     ok.
 
-log_not_yet_synched(Severity, Location, Site, Page, Vsn) ->
+log_not_yet_synched(_Severity, _Location, _Site, _Page, _Vsn) ->
     % Msg = Severity ++ " NOT_YET_SYNCHED for " ++ Location ++ "£",
     % bits:log(Msg ++ pid_to_list(self()) ++ "£" ++ Site ++
     %         "£ Page £" ++ Page ++"£ Version £" ++

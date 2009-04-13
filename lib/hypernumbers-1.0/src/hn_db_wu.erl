@@ -608,8 +608,8 @@ shift_children(List, OldParent, NewParent)
 shift_children(Child, OldParent, NewParent)
   when is_record(Child, refX), is_record(OldParent, refX),
        is_record(NewParent, refX) ->
-    OUrl = hn_util:refX_to_url(OldParent)++"?hypernumber",
-    NUrl = hn_util:refX_to_url(NewParent)++"?hypernumber",
+    OUrl = hn_util:refX_to_url(OldParent) ++ "?hypernumber",
+    NUrl = hn_util:refX_to_url(NewParent) ++ "?hypernumber",
     % io:format("In hn_db_wu:shift_children~n-Child is ~p~n-OldParent is ~p~n-"++
     %          "NewParent is ~p~nOUrl is ~p~n-NUrl is ~p~n",
     %          [Child, OldParent, NewParent, OUrl, NUrl]),
@@ -2238,18 +2238,18 @@ shift_cell2(From, To) ->
     % now check if the cell has a circular reference
     case read_attrs(To, ["formula"]) of
         []                    -> ok;
-        [{C, {"formula", F}}] -> case check_circ_ref(To, F) of
+        [{_C, {"formula", F}}] -> case check_circ_ref(To, F) of
                                      true  -> mark_cells_dirty(To);
                                      false -> ok
                                  end
     end.
 
-check_circ_ref(#refX{path = TPath, obj = {cell, {TX, TY}}} = To, Formula) ->
+check_circ_ref(#refX{path = TPath, obj = {cell, {TX, TY}}} = _To, Formula) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     check_circ_ref1(Toks, TPath, TX, TY).
 
 check_circ_ref1([], _TPath, _TX, _TY) -> false;
-check_circ_ref1([#rangeref{path = Path, text = Text} = H | T],
+check_circ_ref1([#rangeref{path = Path, text = Text} = _H | T],
                 TPath, TX, TY) ->
     Range = muin_util:just_ref(Text),
     Prefix = case muin_util:just_path(Text) of
@@ -2257,8 +2257,8 @@ check_circ_ref1([#rangeref{path = Path, text = Text} = H | T],
                  Other   -> Other
              end,
     [Cell1 | [Cell2]] = string:tokens(Range, ":"),
-    {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
-    {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
+    {_X1D, X1, _Y1D, Y1} = parse_cell(Cell1),
+    {_X2D, X2, _Y2D, Y2} = parse_cell(Cell2),
     case Path of
         Prefix ->
             if
@@ -2268,14 +2268,14 @@ check_circ_ref1([#rangeref{path = Path, text = Text} = H | T],
             end;
         _Other  -> check_circ_ref1(T, TPath, TX, TY)
     end;
-check_circ_ref1([#cellref{path = Path, text = Text} = H | T],
+check_circ_ref1([#cellref{path = Path, text = Text} = _H | T],
                 TPath, TX, TY) ->
     Cell = muin_util:just_ref(Text),
     Prefix = case muin_util:just_path(Text) of
                  "/"   -> "./";
                  Other -> Other
              end,
-    {X1D, X1, Y1D, Y1} = parse_cell(Cell),
+    {_X1D, X1, _Y1D, Y1} = parse_cell(Cell),
     case Path of
         Prefix ->
             case {X1, Y1} of
@@ -2284,7 +2284,7 @@ check_circ_ref1([#cellref{path = Path, text = Text} = H | T],
             end;
         _Other  -> check_circ_ref1(T, TPath, TX, TY)
     end;
-check_circ_ref1([H | T], TPath, TX, TY) ->
+check_circ_ref1([_H | T], TPath, TX, TY) ->
     check_circ_ref1(T, TPath, TX, TY).
 
 shift_remote_links2([], _To) -> ok;
@@ -2316,13 +2316,13 @@ shift_local_parents([H | T], To) -> NewLink = H#local_cell_link{child = To},
                                     ok = mnesia:write(NewLink),
                                     shift_local_parents(T, To).
 
-shift_local_children([], From, To) -> ok;
+shift_local_children([], _From, _To) -> ok;
 shift_local_children([#local_cell_link{child = C} = Link | T], From, To) ->
     % both From and To are on the same page so there is no difference
     % between using the one or the other - but force them to be the same
     % io:format("in shift_local_children~n-C is ~p~n-From is ~p~n-To is ~p~n",
     %          [C, From, To]),
-    #refX{path = CPath, obj = CRef} = C,
+    #refX{path = CPath, obj = _CRef} = C,
     #refX{path = FromPath, obj = {cell, FromCell}} = From,
     % force the 'To' path to match the 'From' path in the next line
     #refX{path = FromPath, obj = {cell, ToCell}} = To,
@@ -2386,8 +2386,8 @@ shift_dirty_notify_ins(From, To) ->
             ok = mnesia:write(NewDirty)
     end.
 
-get_offset(#refX{obj = {cell, {FX, FY}}}, #refX{obj = {cell, {TX, TY}}}) ->
-    {TX - FX, TY - FY}.
+%get_offset(#refX{obj = {cell, {FX, FY}}}, #refX{obj = {cell, {TX, TY}}}) ->
+%    {TX - FX, TY - FY}.
 
 write_attr2(RefX, {"formula", Val}) ->
     case superparser:process(Val) of

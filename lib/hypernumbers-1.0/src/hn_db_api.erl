@@ -226,8 +226,6 @@ create_db()->
 
     % now add appropriate indices
     {atomic, ok} = mnesia:add_table_index(dirty_cell, timestamp),
-    hn_users:create("admin","admin"),
-    hn_users:create("user","user"),
     ok.
 
 %% @spec incr_remote_page_vsn(Site, Version::#version{}, Payload) -> 
@@ -448,7 +446,7 @@ notify_from_web(P, C, "insert", Payload, Bic)
     ok = mnesia:activity(transaction, F),
     ok = tell_front_end("notify from web").
 
-notify_from_web2(Parent, Child, Payload, Biccie) ->
+notify_from_web2(Parent, Child, Payload, _Biccie) ->
     % this function is called when a insert/delete has been made on a remote page
     % this function does the following
     % * read all the #incoming_hn's that are from the page that has had
@@ -607,7 +605,7 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
 notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
 
     #dirty_inc_hn_create{parent = P, child = C, parent_vsn = PVsn} = Record,
-    ParentPage = P#refX{obj = {page, "/"}},
+    _ParentPage = P#refX{obj = {page, "/"}},
     #refX{site = CSite} = C,
 
     Return = horiz_api:notify_back_create(Record),
@@ -616,7 +614,7 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
         fun() ->
                 ok = init_front_end_notify(),
                 case Return of % will have to add NewCVsn in line below...
-                    {Value, DepT, Biccie, NewPVsn} ->
+                    {Value, DepT, Biccie, _NewPVsn} ->
                         ok = ?wu:?u_inc_hn(P, C, Value, DepT, Biccie);
                     {error, unsynced, PVsn} ->
                         resync(CSite, PVsn);
@@ -919,7 +917,7 @@ move(RefX, Type, Disp)
                 ok = init_front_end_notify(),
                 % if the Type is delete we first delete the original cells
                 Disp2 = atom_to_list(Disp),
-                NewVsn = ?wu:get_new_local_page_vsn(RefX, {insert, Disp2}),
+                _NewVsn = ?wu:get_new_local_page_vsn(RefX, {insert, Disp2}),
                 % io:format("in hn_db_api:move~n-Site is ~p~n-RefX is ~p~n-"++
                 %          "NewVsn is ~p~n",
                 %          [Site, RefX, NewVsn]),
@@ -969,7 +967,7 @@ move(RefX, Type, Disp)
 
                 % Jobs a good'un, now for the remote parents
                 %io:format("in hn_db_api:move do something with Parents...~n"),
-                Parents =  ?wu:find_incoming_hn(Site, PageRef),
+                _Parents =  ?wu:find_incoming_hn(Site, PageRef),
                 %io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
                 ok
         end,
@@ -1164,7 +1162,7 @@ init_front_end_notify() ->
     _Return = put('front_end_notify', []),
     ok.
 
-tell_front_end(X) ->
+tell_front_end(_X) ->
     List = get('front_end_notify'),
     % io:format("in tell_front_end~n-for ~p~n-List is ~p~n", [X, List]),
     Fun = fun({Key, A, B}) ->
@@ -1218,27 +1216,27 @@ shift(RefX, XOff, YOff) ->
 %% and then only returns those hypernumbers which need to be changed
 shorten(List, {cell, {X, Y}}, Displacement) ->
     shorten(List, {range, {X, Y, X, Y}}, Displacement);
-shorten(List, {range, {X1, Y1, X2, Y2}} = Range, "vertical") ->
-    {X1a, Y1a, X2a, Y2a} = hn_util:rectify_range(X1, Y1, X2, Y2),
+shorten(List, {range, {X1, Y1, X2, Y2}} = _Range, "vertical") ->
+    {X1a, Y1a, X2a, _Y2a} = hn_util:rectify_range(X1, Y1, X2, Y2),
     Fun = fun(#incoming_hn{site_and_parent = {_Site, Parent}}) ->
                   #refX{obj = {cell, {MyX, MyY}}} = Parent,
                   ((MyX >= X1a) and (MyX =< X2a) and (MyY > Y1a))
           end,
     lists:filter(Fun, List);
-shorten(List, {range, {X1, Y1, X2, Y2}} = Range, "horizontal") ->
-    {X1a, Y1a, X2a, Y2a} = hn_util:rectify_range(X1, Y1, X2, Y2),
+shorten(List, {range, {X1, Y1, X2, Y2}} = _Range, "horizontal") ->
+    {X1a, Y1a, _X2a, Y2a} = hn_util:rectify_range(X1, Y1, X2, Y2),
     Fun = fun(#incoming_hn{site_and_parent = {_Site, Parent}}) ->
                   #refX{obj = {cell, {MyX, MyY}}} = Parent,
                   ((MyY >= Y1a) and (MyY =< Y2a) and (MyX > X1a))
           end,
     lists:filter(Fun, List);
-shorten(List, {column, {X1, X2}}, "horizontal") ->
+shorten(List, {column, {X1, _X2}}, "horizontal") ->
     Fun = fun(#incoming_hn{site_and_parent = {_Site, Parent}}) ->
                   #refX{obj = {cell, {MyX, _MyY}}} = Parent,
                   (MyX > X1)
           end,
     lists:filter(Fun, List);
-shorten(List, {row, {Y1, Y2}}, "vertical") ->
+shorten(List, {row, {Y1, _Y2}}, "vertical") ->
     Fun = fun(#incoming_hn{site_and_parent = {_Site, Parent}}) ->
                   #refX{obj = {cell, {_MyX, MyY}}} = Parent,
                   (MyY >= Y1)
