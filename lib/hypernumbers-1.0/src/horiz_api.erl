@@ -58,9 +58,9 @@ notify(Record) when is_record(Record, dirty_notify_out) ->
                    Actions = lists:flatten(mochijson:encode(Vars)),
 
                    % Logging code 
-                   Str = "POSTING £" ++ pid_to_list(self()) ++ "£" ++ PUrl ++
-                       "£ To £" ++ Server ++ json_util:to_str([Vars]),
-                   bits:log(Str),
+                   % Str = "POSTING £" ++ pid_to_list(self()) ++ "£" ++ PUrl ++
+                   %    "£ To £" ++ Server ++ json_util:to_str([Vars]),
+                   % bits:log(Str),
                    
                    "success" = hn_util:post(Server, Actions, "application/json"),
                    ok
@@ -91,9 +91,9 @@ notify_back(Record) when is_record(Record, dirty_notify_back_in) ->
     Actions = lists:flatten(mochijson:encode(Vars)),
 
     % Logging code 
-    Str = "POSTING £" ++ pid_to_list(self()) ++ "£" ++ CUrl ++ "£ To £"
-        ++ PUrl ++ json_util:to_str([Vars]),
-    bits:log(Str),
+    % Str = "POSTING £" ++ pid_to_list(self()) ++ "£" ++ CUrl ++ "£ To £"
+    %    ++ PUrl ++ json_util:to_str([Vars]),
+    % bits:log(Str),
 
     %% not very robust!
     "success" = hn_util:post(PUrl, Actions, "application/json"),
@@ -128,9 +128,9 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
     Actions = lists:flatten(mochijson:encode(Vars)),
 
     % Logging code 
-    Str = "POSTING £" ++ pid_to_list(self()) ++ "£" ++ CUrl ++ "£ To £"
-        ++ PUrl ++ json_util:to_str([Vars]),
-    bits:log(Str),
+    % Str = "POSTING £" ++ pid_to_list(self()) ++ "£" ++ CUrl ++ "£ To £"
+    %    ++ PUrl ++ json_util:to_str([Vars]),
+    % bits:log(Str),
 
     case http:request(post, {PUrl, [], "application/json", Actions}, [], []) of
         {ok, {{_V, 200, _R}, _H, Json}} ->
