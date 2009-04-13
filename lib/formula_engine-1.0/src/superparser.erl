@@ -49,11 +49,8 @@ process(Input) ->
                                 {"text-align", "center"},
                                 {"format", "null"}]; 
         _Other              ->
-            io:format("going into super_util:autoparse~n-"++
-                      "Toks are ~p~n", [Toks]),
             case super_util:autoparse(Toks) of
                 {ok, maybe_bad_date} ->
-                    io:format("mebbies bad date?"),
                     Date = muin_date:from_rfc1123_string(Input),
                     case Date of
                         bad_date -> [{string, Input},
@@ -63,8 +60,6 @@ process(Input) ->
                                      {"text-align", "center"},
                                      {"format", "dd-mm-yyyy"}]
                     end;
-                Other          -> io:format("in other, other is ~p~n",
-                                            [Other]),
-                                  Other
+                Other          -> Other
             end
     end.

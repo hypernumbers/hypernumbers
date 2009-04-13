@@ -141,7 +141,6 @@ autoparse([{rangeref, _, _, {row, {offset, H}},
                                  {"format", "hh:mm:ss PM"}]
     end;
 autoparse(Toks) ->
-    io:format("wiggin out of autoparse~n-Toks is ~p~n", [Toks]),
     {ok, maybe_bad_date}.
 
 %% Converts formula to upper-case, leaving only string literals as-is.
