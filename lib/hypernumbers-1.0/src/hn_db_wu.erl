@@ -12,7 +12,21 @@
 %%% This module <em>PRESUMES THAT PERMISSIONS ARE ALL IN ORDER</em> - 
 %%% for instance no function in this module will check if a biccie
 %%% is valid - that <em>MUST BE DONE</em> in the api level functions.
-%%%  
+%%% 
+%%% This module generates two sorts of side-effects:
+%%% * changes to the database
+%%% * notifications to the front-end
+%%% 
+%%% The changes to the database are done under mnesia transactions management
+%%% (as you would expect). It is necessary for the notifications to the 
+%%% front=end also to be under transaction management. This is achieved by 
+%%% using the process dictionary in a specific way.
+%%% 
+%%% To notify the front-end under transaction management, a function in 
+%%% this module will call the function 'tell_front_end' with the appropriate
+%%% change - the transaction management is applied in the module 
+%%% {@link hn_db_api} and is documented there.
+%%% 
 %%% <h3>Functional Categories</h3>
 %%% 
 %%% These functions fall into 3 types:
@@ -579,7 +593,7 @@ shift_inc_hns(#incoming_hn{site_and_parent = SP} = Inc_Hn, NewParent)
     ok = mnesia:delete_object(Inc_Hn),
     ok = mnesia:write(NewRec),
     ok.
-    
+
 %% @spec shift_children(Children, OldParent::#refX{}, NewParent::#refX{}) -> ok
 %% Children = [ [#refX{}] | #refX{} ]
 %% @doc shift_children is called when a message comes in from a remote parent
@@ -655,12 +669,12 @@ incr_remote_page_vsn(Site, Version, Payload) when is_record(Version, version) ->
                   ActionRefX = PageX#refX{obj = Ref},
                   Record2 = #page_history{site_and_pg = {Site, PageX},
                                           action = {Type, Displacement},
-                            action_refX = ActionRefX, version = NewVsn},
+                                          action_refX = ActionRefX, version = NewVsn},
                   ok = mnesia:write(Record2),
                   synched;
         _      -> unsynched
     end.
-    
+
 %% @spec(get_new_local_page_vsn(RefX :: #refX{}, Action) -> NewVsn
 %% NewVsn = integer()
 %% @doc writes an action to the page version table and gets the new
@@ -673,7 +687,7 @@ get_new_local_page_vsn(#refX{site = Site} = RefX, Action) ->
     PageRefX = RefX#refX{obj = {page, "/"}},
     % first read the current page version number, increment it and overwrite it
     Head = ms_util:make_ms(page_vsn, [{site_and_pg, {Site, PageRefX}},
-                                     {version, '$1'}]),
+                                      {version, '$1'}]),
     Match = [{Head, [], ['$1']}],
     NewVsn = case mnesia:select(page_vsn, Match) of
                  []  -> 1;
@@ -683,10 +697,10 @@ get_new_local_page_vsn(#refX{site = Site} = RefX, Action) ->
     ok = mnesia:write(Record1),
     % now write the history table
     Record2 = #page_history{site_and_pg = {Site, PageRefX}, action = Action,
-                           action_refX = RefX, version = NewVsn},
+                            action_refX = RefX, version = NewVsn},
     ok = mnesia:write(Record2),
     NewVsn.
-             
+
 %% @spec read_page_vsn(Site, RefX::#refX{}) -> Vsn
 %% Vsn = integer()
 %% @doc gets the current page number of a page. 
@@ -765,9 +779,9 @@ verify_biccie_in(Site, Parent, Biccie) when is_record(Parent, refX) ->
                 case Biccie of
                     Biccie2 -> true;
                     _       -> % io:format("in hn_db_wu:verify_biccie_in~n-"++
-                               %  "Parent is ~p~n-Biccie is ~p~n-Biccie2 is ~p~n",
-                               %          [Parent, Biccie, Biccie2]),
-                               false
+                        %  "Parent is ~p~n-Biccie is ~p~n-Biccie2 is ~p~n",
+                        %          [Parent, Biccie, Biccie2]),
+                        false
                 end
     end.
 
@@ -802,7 +816,7 @@ update_inc_hn(Parent, Child, Val, DepTree, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
     #refX{site = ChildSite} = Child,
     Rec1 = #incoming_hn{site_and_parent = {ChildSite, Parent}, value = Val,
-                       'dependency-tree' = DepTree, biccie = Biccie},
+                        'dependency-tree' = DepTree, biccie = Biccie},
     ok = mnesia:write(Rec1),
     Rec2 = #dirty_notify_in{parent = Parent},
     ok = mark_dirty(Rec2).
@@ -895,7 +909,7 @@ get_refs_below(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     YY = ?COND(Y1 > Y2, Y1, Y2),
     {XX1, XX2} = ?COND(X1 > X2, {X2, X1}, {X1, X2}),
     get_refs_below2(RefX, XX1, XX2, YY).
-   
+
 %% @spec get_refs_right(#refX{}) -> [#refX{}]
 %% @doc gets all the refs to the equal to or to the right of a given reference.
 %% 
@@ -920,7 +934,7 @@ get_refs_right(#refX{obj = {column, {X1, X2}}} = RefX) ->
     Cond = [{'>', '$1', XX}],
     Body = ['$_'],
     RefXs1 = get_match_refs({Head1b, Cond, Body}),
-     % now get the local pages that are children of
+    % now get the local pages that are children of
     %  cells below the refX
     Head2a = ms_util:make_ms(refX, [{site, S}, {path, P}, {obj, Obj}]),
     Head2b = ms_util:make_ms(local_cell_link, [{parent, Head2a}]),
@@ -1076,8 +1090,7 @@ write_attr(RefX, {Key, Val}) when is_record(RefX, refX) ->
     Ref = hn_util:refX_to_ref(RefX, Key),
     Record = #hn_item{addr = Ref, val = Val},
     ok = mnesia:write(Record),
-    spawn(fun() -> tell_front_end(Record, change) end),
-    ok.
+    ok = tell_front_end(Record, change).
 
 %% @spec read_cells(#refX{}) -> [{#refX{}, {Key, Value}}]
 %% Key = atom()
@@ -1334,8 +1347,7 @@ delete_attrs(RefX, Key) ->
         true  -> delete_style_attr(RefX, Key);
         false -> ok  = mnesia:delete({hn_item, Ref}),
                  Record = #hn_item{addr = Ref, val = "not important"},
-                 spawn(fun() -> tell_front_end(Record, delete) end),
-                 ok
+                 tell_front_end(Record, delete)
     end.
 
 %% @spec copy_cell(From :: #refX{}, To ::#refX{}, Incr) -> ok
@@ -1451,7 +1463,7 @@ find_incoming_hn(Site, RefX) when is_record(RefX, refX) ->
     % now get all the remote cell links with a reference as a child...
     Parents = read_remote_parents(List, incoming),
     read_incoming_hn(Site, Parents).
-    
+
 %% @spec read_outgoing_hns(Site, Parent) -> [#outgoing_hn{}]
 %% Parent = #refX{} | [#refX{}]
 %% @doc reads the details of all outgoing hypernumbers from a particular cell.
@@ -1490,7 +1502,7 @@ mark_cells_dirty(#refX{obj = {cell, _}} = RefX) ->
 
     % first up local
     LocalChildren = read_local_children(RefX),
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
     % bollocks to dynamic queries for the now!                 
     % now wildcards (must be fixed!)
@@ -1499,7 +1511,7 @@ mark_cells_dirty(#refX{obj = {cell, _}} = RefX) ->
     % Queries = dyn_parents(NIndex,[],[]),
     % LocalChildren2 = lists:append(LocalChildren, Queries),
     %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     LocalChildren2 = LocalChildren,
     % io:format("in mark_cells_dirty ~p~n-LocalChildren are ~p~n",
     %          [self(), LocalChildren]),
@@ -1563,7 +1575,7 @@ mark_notify_out_dirty(Parent, {Type, _, _} = Change, Delay)
                 {X, ReturnList}
         end,
     ChildrenList = lists:map(Fun2, List),
-    
+
     % always write the dirty outgoing hypernumber
     PVsn = read_page_vsn(Site, Parent),
     ParentPage = Parent#refX{obj = {page, "/"}},
@@ -1575,7 +1587,7 @@ mark_notify_out_dirty(Parent, {Type, _, _} = Change, Delay)
                                          parent_vsn = {version, ParentUrl, PVsn},
                                          delay = Delay})
     end.
-    
+
 %% @spec unregister_out_hn(Parent::#refX{}, Child::#refX{}) -> ok
 %% @doc unregisters an outgoing hypernumber - if it is the last reference
 %% to an outgoing hypernumber deletes the hypernumber as well
@@ -1598,11 +1610,11 @@ unregister_out_hn(P, C)
     % - if some do, do nothing...
     Match2 = ms_util:make_ms(refX, [{site, ChildSite}]),
     Match3 = ms_util:make_ms(remote_cell_link, [{parent, P},{child, Match2},
-                                               {type, outgoing}]),
+                                                {type, outgoing}]),
     case mnesia:select(remote_cell_link, [{Match3, [], ['$_']}]) of
         []  -> Match4 = ms_util:make_ms(outgoing_hn,
-                                   [{site_and_parent, {ParentSite, P}},
-                                    {child_site, ChildSite}]),
+                                        [{site_and_parent, {ParentSite, P}},
+                                         {child_site, ChildSite}]),
                [Rec] = mnesia:select(outgoing_hn, [{Match4, [], ['$_']}]),
                mnesia:delete_object(Rec);
         _   -> ok
@@ -1610,6 +1622,7 @@ unregister_out_hn(P, C)
 
 %% @spec read_pages(Site::string(), Path::list()) -> dh_tree()
 %% @doc read the populated pages under the specified path
+%% @todo fix up api
 read_pages(Site, Path) ->
     Addr = #ref{site=Site, path=lists:append(Path,'_'), _='_'},
     Item = #hn_item{addr=Addr, val='_'},
@@ -1636,11 +1649,11 @@ get_head(Site, Parent, Type) when (Type == new_value) ->
     ms_util:make_ms(remote_cell_link, [{parent, Parent}, {child, H1}]).
 
 get_pages_and_vsns(Site, List) ->
-        Fun = fun(#remote_cell_link{child = C}) ->
-                      Page = C#refX{obj = {page, "/"}},
-                      Vsn = read_page_vsn(Site, Page), 
-                      Page2 = hn_util:refX_to_url(Page),
-                      #version{page = Page2, version = Vsn}
+    Fun = fun(#remote_cell_link{child = C}) ->
+                  Page = C#refX{obj = {page, "/"}},
+                  Vsn = read_page_vsn(Site, Page), 
+                  Page2 = hn_util:refX_to_url(Page),
+                  #version{page = Page2, version = Vsn}
           end,
     hslists:uniq(lists:map(Fun, List)).
 
@@ -1659,8 +1672,7 @@ write_attr3(RefX, {Key, Value}) ->
     % notify any registered front ends
     Record = #hn_item{addr = Ref, val = Value},
     ok = mnesia:write(Record),
-    spawn(fun() -> tell_front_end(Record, change) end),
-    ok.
+    tell_front_end(Record, change).
 
 update_rem_parents(Child, OldParents, NewParents) when is_record(Child, refX) ->
     {Del, Write} = split_parents(OldParents, NewParents),
@@ -1687,7 +1699,7 @@ unregister_inc_hn(Parent, Child)
     [Hn] = mnesia:select(incoming_hn, [{Head1, [], ['$_']}]),
     #incoming_hn{biccie = Biccie} = Hn,
     Head2 = ms_util:make_ms(remote_cell_link, [{parent, Parent},
-                                              {type, incoming}]),
+                                               {type, incoming}]),
     ok = case mnesia:select(remote_cell_link, [{Head2, [], ['$_']}]) of
              [] -> mnesia:delete({incoming_hn, Parent});
              _  -> ok % somebody else still wants it so don't unregister
@@ -1743,14 +1755,14 @@ get_refs_right2(RefX, X, MinY, MaxY) ->
                _    -> [{'and', {'>', '$1', X}, {'>
 ', '$2', MinY},
                          {'=<', '$2', MaxY}}]
-           end,
-    Body = ['$_'],
-    RefXs1 = get_match_refs({MatchRef1, Cond, Body}),
-    Match2 = ms_util:make_ms(refX, [{site, S}, {path, P}, {obj, Obj}]),
-    MatchRef2 = ms_util:make_ms(local_cell_link, [{parent, Match2}]),
-    RefXs2 = get_local_links_refs({MatchRef2, Cond, Body}),
-    RefXs = lists:merge([RefXs1, RefXs2]),
-    hslists:uniq(RefXs).    
+                        end,
+                        Body = ['$_'],
+                        RefXs1 = get_match_refs({MatchRef1, Cond, Body}),
+                        Match2 = ms_util:make_ms(refX, [{site, S}, {path, P}, {obj, Obj}]),
+                        MatchRef2 = ms_util:make_ms(local_cell_link, [{parent, Match2}]),
+                        RefXs2 = get_local_links_refs({MatchRef2, Cond, Body}),
+                        RefXs = lists:merge([RefXs1, RefXs2]),
+                        hslists:uniq(RefXs).    
 
 get_local_links_refs(MatchRef) ->
     Return = mnesia:select(local_cell_link, [MatchRef]),
@@ -1792,7 +1804,7 @@ get_match_refs(MatchRef) ->
 %           end,
 %    Body = ['$_'],
 %    {Match2, Cond, Body}.
-    
+
 
 % should work - not tested!
 %make_col_match(RefX, RecordName) ->
@@ -1839,7 +1851,7 @@ get_match_refs(MatchRef) ->
 make_page_match(Site, RefX, RecordName) ->
     #refX{site = S, path = P} = RefX,
     Match  = ms_util:make_ms(refX, [{site, S}, {path, P},
-                                     {obj, {cell, {'$1', '$2'}}}]),
+                                    {obj, {cell, {'$1', '$2'}}}]),
     ms_util:make_ms(RecordName, [{site_and_parent, {Site, Match}}]).
 
 make_range_match_ref(RefX, AttrList) ->
@@ -1929,7 +1941,7 @@ make_page_match_ref(RefX, AttrList) ->
     #refX{site = S, path = P, auth = A} = RefX,
     Match = case AttrList of
                 [] -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
-                                           {ref , '_'}]);
+                                            {ref , '_'}]);
                 _  -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
                                             {ref , '_'},
                                             {name, '$3'}])
@@ -2045,11 +2057,11 @@ offset_with_ranges1([#cellref{path = Path, text = Text} = H | T],
         case {PathCompare, {X, Y}} of
             {FromPath, {FX, FY}} -> make_cell(XDollar, TX, 0, YDollar, TY, 0);
             _                    -> Cell
-        
+
         end,
     NewAcc = H#cellref{text = Prefix ++ NewCell},    
     offset_with_ranges1(T, CPath, FromPath, {FX, FY}, {TX, TY},
-                       [NewAcc | Acc]);                           
+                        [NewAcc | Acc]);                           
 offset_with_ranges1([H | T], CPath, FromPath, {FX, FY}, {TX, TY}, Acc) ->
     offset_with_ranges1(T, CPath, FromPath, {FX, FY}, {TX, TY}, [H | Acc]).
 
@@ -2170,7 +2182,7 @@ write_local_parents(Child, List) ->
 delete_recs([]) -> ok;
 delete_recs([H | T]) when is_record(H, hn_item) ->
     ok = mnesia:delete_object(H),
-    spawn(fun() -> tell_front_end(H, delete) end),
+    ok = tell_front_end(H, delete),
     delete_recs(T);
 delete_recs([H | T]) ->
     ok = mnesia:delete_object(H),
@@ -2303,7 +2315,7 @@ shift_local_parents([H | T], To) -> NewLink = H#local_cell_link{child = To},
                                     ok = mnesia:delete_object(H),
                                     ok = mnesia:write(NewLink),
                                     shift_local_parents(T, To).
-    
+
 shift_local_children([], From, To) -> ok;
 shift_local_children([#local_cell_link{child = C} = Link | T], From, To) ->
     % both From and To are on the same page so there is no difference
@@ -2332,7 +2344,7 @@ shift_local_children([#local_cell_link{child = C} = Link | T], From, To) ->
 
 % different to offset_formula because it truncates ranges
 offset_formula_with_ranges([$=|Formula], CPath, ToPath,
-                            FromCell, ToCell) ->
+                           FromCell, ToCell) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
@@ -2340,7 +2352,7 @@ offset_formula_with_ranges([$=|Formula], CPath, ToPath,
     NewToks = offset_with_ranges(Toks, CPath, ToPath, FromCell, ToCell),
     make_formula(NewToks);
 offset_formula_with_ranges(Value, _CPath, _ToPath, _FromCell, _ToCell) -> Value.
-                   
+
 offset_formula(Formula, {XO, YO}) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
@@ -2367,11 +2379,11 @@ shift_dirty_notify_ins(From, To) ->
     case mnesia:read({dirty_notify_in, From}) of
         []        -> ok;
         [DirtyHn] -> % io:format("in hn_db_wu:shift_dirty_notify_ins "++
-                     %           "this has got to be wrong too...~n-DirtyHn is ~p~n",
-                     %           [DirtyHn]),
-                     NewDirty = DirtyHn#dirty_notify_in{parent = To},
-                     ok = mnesia:delete_object(DirtyHn),
-                     ok = mnesia:write(NewDirty)
+            %           "this has got to be wrong too...~n-DirtyHn is ~p~n",
+            %           [DirtyHn]),
+            NewDirty = DirtyHn#dirty_notify_in{parent = To},
+            ok = mnesia:delete_object(DirtyHn),
+            ok = mnesia:write(NewDirty)
     end.
 
 get_offset(#refX{obj = {cell, {FX, FY}}}, #refX{obj = {cell, {TX, TY}}}) ->
@@ -2473,7 +2485,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
     % write the formula
     Record = #hn_item{addr = Ref, val = Formula},
     ok = mnesia:write(Record),
-    spawn(fun() -> tell_front_end(Record, change) end),
+    ok = tell_front_end(Record, change),
 
     % now write the rawvalue, etc, etc
     ok = write_rawvalue(RefX, Value),
@@ -2541,7 +2553,7 @@ write_rawvalue(RefX, Value) ->
     Ref = hn_util:refX_to_ref(RefX, "rawvalue"),
     Record1 = #hn_item{addr = Ref, val = Value},
     ok = mnesia:write(Record1),
-    spawn(fun() -> tell_front_end(Record1, change) end),
+    ok = tell_front_end(Record1, change),
     % now get the format that is to be applied
     % run the format and then stick the value into
     % the database
@@ -2554,13 +2566,12 @@ process_format(RefX, Format, Value) ->
     Ref1 = hn_util:refX_to_ref(RefX, "value"),
     Record2 = #hn_item{addr = Ref1, val = V},
     ok = mnesia:write(Record2),
-    spawn(fun() -> tell_front_end(Record2, change) end),
+    ok = tell_front_end(Record2, change),
     % now write the overwrite colour that comes from the format
     Ref2 = hn_util:refX_to_ref(RefX, "overwrite-color"),
     Record3 = #hn_item{addr = Ref2, val = atom_to_list(Color)},
     ok = mnesia:write(Record3),
-    spawn(fun() -> tell_front_end(Record3, change) end),
-    ok.
+    ok = tell_front_end(Record3, change).
 
 get_item_list(RefType, Addr, Acc) ->
     case traverse(RefType, Addr) of
@@ -2681,8 +2692,7 @@ write_style_idx(RefX, NewStyleIdx) when is_record(RefX, refX) ->
     Ref2 = hn_util:refX_to_ref(RefX, "style"),
     Record = #hn_item{addr = Ref2, val = NewStyleIdx},
     ok = mnesia:write(Record),
-    spawn(fun() -> tell_front_end(Record, change) end),
-    ok.
+    ok = tell_front_end(Record, change).
 
 get_style(RefX, Name, Val) ->
     NoOfFields = ms_util2:no_of_fields(magic_style), 
@@ -2722,8 +2732,7 @@ write_style2(RefX, Style) ->
     Ref2 = RefX#refX{obj = {page, "/"}},
     Ref = hn_util:refX_to_ref(RefX, "dont care"),
     NewIndex = mnesia:dirty_update_counter(style_counters, Ref2, 1), 
-    % should spawn a notification that there is a new style
-    spawn(fun() -> tell_front_end(Ref, NewIndex, Style) end),
+    ok = tell_front_end(Ref, NewIndex, Style),
     ok = mnesia:write(#styles{refX = Ref2, index = NewIndex, magic_style = Style}),
     NewIndex. 
 
@@ -2732,16 +2741,22 @@ write_style2(RefX, Style) ->
 %% @doc calls the remoting server and tells is that something has changed
 %% names like '__name' are not notified to front-end
 tell_front_end(#hn_item{addr=Ref, val=Val}, Type) ->
-    #ref{name=Name, site=Site, path=Path, ref=Rf} = Ref,
-    case Name of
-        "__"++_ -> ok; 
-        _Else   -> % io:format("in tell_front_end~n-Ref is ~p~n-Val is ~p~n",
-                   %          [Ref, Val]),
-                   remoting_reg:notify_change(Site, Path, Type, Rf,  Name, Val)
-    end.
+    Key = Ref,
+    Tuple = {Ref, Val, Type},
+    tell_front_end1(Key, Tuple).
 
 tell_front_end(#ref{site=Site, path=Path}, Index, Style) ->
-    remoting_reg:notify_style(Site, Path, Index, Style).
+    Key = {Site, Path},
+    Tuple = {Key, Index, Style},
+    tell_front_end1(Key, Tuple).
+
+tell_front_end1(Key, Tuple) ->
+    List = get('front_end_notify'),
+    case lists:keymember(Key, 1, List) of
+        true  -> put('front_end_nofity', lists:keyreplace(Key, 1, List, Tuple));
+        false -> put('front_end_notify', [Tuple | List])
+    end,
+    ok.
 
 make_tuple(Style, Counter, Index, Val) -> 
     make_tuple1(Style, Counter, Index, Val, []). 
