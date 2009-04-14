@@ -3,7 +3,7 @@
 -module(hn_users).
 
 -export([create/2,delete/1,login/3,exists/1,gen_authtoken/2,
-        get_access_level/2, verify_token/1, update/3, get/2 ]).
+        get_access_level/2, verify_token/1, update/3, get/2, read/1 ]).
 
 -include("hypernumbers.hrl").
 -include("yaws_api.hrl").
@@ -33,19 +33,20 @@ exists(Name) ->
         _           -> true
     end.
 
-get(Name, Key) ->
-    F = fun() ->
-                Rec  = #hn_user{name=Name, _='_'},
-                [User] = mnesia:match_object(hn_user, Rec, read),
-                case dict:is_key(Key, User#hn_user.data) of
-                    true  -> {ok, dict:fetch(Key, User#hn_user.data)};
-                    false -> undefined
-                end
-        end,
-	
-    {atomic, Val} = mnesia:transaction(F),
-    Val.
-    
+read(Name) ->
+    mnesia:activity(transaction, fun read_tr/1, [Name]).
+
+read_tr(Name) ->
+    case mnesia:match_object(hn_user, #hn_user{name=Name, _='_'}, read) of
+        []     -> {error, no_user};
+        [User] -> {ok, User}
+    end.
+
+get(User, Key) ->
+    case dict:is_key(Key, User#hn_user.data) of
+        true  -> {ok, dict:fetch(Key, User#hn_user.data)};
+        false -> undefined
+    end.
 
 update(Name, Key, Val) ->
 	
@@ -72,13 +73,17 @@ login(Name, Pass, Remember) ->
     end.
 
 verify_token(undefined) ->
-    invalid;
+    {error, invalid_token};
 verify_token(Token) ->
     [Expires, User, Hash] = string:tokens(Token, ":"),
     case {is_expired(Expires), gen_hash(User, Expires), Hash} of
-        {true,_,_}  -> invalid;
-        {false,X,X} -> {ok, User};
-        _Else       -> invalid
+        {true,_,_}  -> {error, invalid_token};
+        {false,X,X} -> 
+            case read(User) of
+                {ok, Usr}        -> {ok, Usr};
+                {error, no_user} -> {error, invalid_user}
+            end;
+        _Else       ->  {error, invalid_token}
     end.
 
 is_expired("session") ->

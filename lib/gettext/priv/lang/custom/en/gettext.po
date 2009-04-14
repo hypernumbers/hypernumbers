@@ -1,98 +1,17 @@
-msgid "Russian"
-msgstr "Russian"
-
-msgid "Plain"
-msgstr "Plain"
+msgid "English"
+msgstr "English"
 
 msgid "Normal"
 msgstr "Normal"
 
-msgid "Serif"
-msgstr "Serif"
-
 msgid "Insert 1 below"
 msgstr "Insert 1 below"
 
-msgid "Insert 1 right"
-msgstr "Insert 1 right"
-
-msgid "Contents"
-msgstr "Contents"
-
-msgid "datetime"
-msgstr "datetime"
-
-msgid "Edit"
-msgstr "Edit"
-
-msgid "File"
-msgstr "File"
-
-msgid "currency"
-msgstr "currency"
-
-msgid "My Spreadsheets"
-msgstr "My Spreadsheets"
-
-msgid "German"
-msgstr "German"
-
-msgid "rounded"
-msgstr "rounded"
-
-msgid "Monospace"
-msgstr "Monospace"
-
-msgid "en"
-msgstr "en"
-
-msgid "Login"
-msgstr "Login"
-
-msgid "All"
-msgstr "All"
-
-msgid "Delete Row(s)"
-msgstr "Delete Row(s)"
-
-msgid "Delete Column(s)"
-msgstr "Delete Column(s)"
-
-msgid "Clear"
-msgstr "Clear"
-
-msgid "Save"
-msgstr "Save"
-
-msgid "percentage"
-msgstr "percentage"
-
-msgid "Logged in as"
-msgstr "Logged in as"
-
-msgid "decimals"
-msgstr "decimals"
-
-msgid "English"
-msgstr "English"
-
-msgid "Create New"
-msgstr "Create New"
-
-msgid "empty"
-msgstr "empty"
-
-msgid "Format"
-msgstr "Format"
-
-msgid "Font"
-msgstr "Font"
-
-msgid "Insert 1 above"
-msgstr "Insert 1 above"
-
 msgid "Insert 1 left"
 msgstr "Insert 1 left"
+
+msgid "Clear "
+msgstr "Clear "
 
 msgid "Styles"
 msgstr "Styles"
@@ -100,15 +19,108 @@ msgstr "Styles"
 msgid "Import Spreadsheets"
 msgstr "Import Spreadsheets"
 
+msgid "time"
+msgstr "time"
+
+msgid "currency"
+msgstr "currency"
+
+msgid "My Spreadsheets"
+msgstr "My Spreadsheets"
+
+msgid "Portuguese"
+msgstr "Portuguese"
+
+msgid "Italian"
+msgstr "Italian"
+
+msgid "Plain"
+msgstr "Plain"
+
+msgid "Serif"
+msgstr "Serif"
+
+msgid "en"
+msgstr "en"
+
+msgid "Russian"
+msgstr "Russian"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "Insert 1 right"
+msgstr "Insert 1 right"
+
+msgid "Contents"
+msgstr "Contents"
+
+msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
+msgstr "open Microsoft Excel 97/2000/2003 (*.xls)"
+
+msgid "datetime"
+msgstr "datetime"
+
+msgid "File"
+msgstr "File"
+
+msgid "percentage"
+msgstr "percentage"
+
+msgid "rounded"
+msgstr "rounded"
+
+msgid "Spanish"
+msgstr "Spanish"
+
+msgid "German"
+msgstr "German"
+
+msgid "empty"
+msgstr "empty"
+
+msgid "Monospace"
+msgstr "Monospace"
+
+msgid "Insert 1 above"
+msgstr "Insert 1 above"
+
+msgid "Delete Row(s)"
+msgstr "Delete Row(s)"
+
+msgid "Font"
+msgstr "Font"
+
+msgid "Logged in as"
+msgstr "Logged in as"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Delete Column(s)"
+msgstr "Delete Column(s)"
+
+msgid "Save"
+msgstr "Save"
+
 msgid "date"
 msgstr "date"
 
-msgid "time"
-msgstr "time"
+msgid "decimals"
+msgstr "decimals"
 
 msgid "financial"
 msgstr "financial"
 
 msgid "Log out"
 msgstr "Log out"
+
+msgid "Create New"
+msgstr "Create New"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "French"
+msgstr "French"
 

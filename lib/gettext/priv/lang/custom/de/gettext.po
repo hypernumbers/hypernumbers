@@ -1,32 +1,26 @@
-msgid "Russian"
-msgstr "Russisch"
-
-msgid "Plain"
-msgstr "Plain"
+msgid "English"
+msgstr "English"
 
 msgid "Normal"
 msgstr "Normal"
 
-msgid "Serif"
-msgstr "Serif"
-
 msgid "Insert 1 below"
 msgstr "Legen Sie 1 unten"
 
-msgid "Insert 1 right"
-msgstr "Legen Sie 1 rechts"
+msgid "Insert 1 left"
+msgstr "Legen Sie 1 Stück"
 
-msgid "Contents"
-msgstr "Inhalt"
+msgid "Clear "
+msgstr "Klar"
 
-msgid "datetime"
-msgstr "datetime"
+msgid "Styles"
+msgstr "Arten"
 
-msgid "Edit"
-msgstr "Bearbeiten"
+msgid "Import Spreadsheets"
+msgstr "Tabellen-Import"
 
-msgid "File"
-msgstr "Datei"
+msgid "time"
+msgstr "Zeit"
 
 msgid "currency"
 msgstr "Währung"
@@ -34,78 +28,99 @@ msgstr "Währung"
 msgid "My Spreadsheets"
 msgstr "Meine Tabellen"
 
-msgid "German"
-msgstr "Deutsch"
+msgid "Portuguese"
+msgstr "Português"
 
-msgid "rounded"
-msgstr "gerundet"
+msgid "Italian"
+msgstr "Italiano"
 
-msgid "Monospace"
-msgstr "Monospace"
+msgid "Plain"
+msgstr "Ebene "
+
+msgid "Serif"
+msgstr "Serif"
 
 msgid "en"
 msgstr "de"
 
+msgid "Russian"
+msgstr "Русский"
+
 msgid "Login"
-msgstr "Anmeldung"
+msgstr "Logon"
 
-msgid "All"
-msgstr "Alle"
+msgid "Insert 1 right"
+msgstr "Legen Sie 1 rechts"
 
-msgid "Delete Row(s)"
-msgstr ""Zeile löschen" (s)"
+msgid "Contents"
+msgstr "Inhalt"
 
-msgid "Delete Column(s)"
-msgstr "Löschen Sie Spalte (n)"
+msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
+msgstr "Öffnen Microsoft Excel 97/2000/2003 (*.xls)"
 
-msgid "Clear"
-msgstr "Klar"
+msgid "datetime"
+msgstr "Datum und Zeit"
 
-msgid "Save"
-msgstr "Sichern"
+msgid "File"
+msgstr "Datei"
 
 msgid "percentage"
 msgstr "Prozentsatz"
 
-msgid "Logged in as"
-msgstr "Eingeloggt als"
+msgid "rounded"
+msgstr "gerundet "
 
-msgid "decimals"
-msgstr "Dezimalstellen"
+msgid "Spanish"
+msgstr "Español"
 
-msgid "English"
-msgstr "Englisch"
+msgid "German"
+msgstr "Deutsch"
 
 msgid "empty"
 msgstr "leer"
 
-msgid "Format"
-msgstr "Format"
-
-msgid "Font"
-msgstr "Font"
+msgid "Monospace"
+msgstr "Monospace"
 
 msgid "Insert 1 above"
 msgstr "Legen Sie 1 oben"
 
-msgid "Insert 1 left"
-msgstr "Legen Sie 1 Stück"
+msgid "Delete Row(s)"
+msgstr "Zeile löschen (s)"
 
-msgid "Styles"
-msgstr "Styles"
+msgid "Font"
+msgstr "Schriftname"
 
-msgid "Import Spreadsheets"
-msgstr "Tabellen-Import"
+msgid "Logged in as"
+msgstr "wie angemeldet"
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "Delete Column(s)"
+msgstr "Löschen Sie Spalte (n)"
+
+msgid "Save"
+msgstr "Speichern"
 
 msgid "date"
 msgstr "Datum"
 
-msgid "time"
-msgstr "Zeit"
+msgid "decimals"
+msgstr "Dezimalstriche "
 
 msgid "financial"
-msgstr "Finanz -"
+msgstr "finanziell"
 
 msgid "Log out"
-msgstr "Melden Sie sich"
+msgstr "Logout"
+
+msgid "Create New"
+msgstr "Neue"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "French"
+msgstr "Français"
 

@@ -52,12 +52,12 @@ do_req(Req) ->
     Method = Req:get(method),
     
     {ok, Auth} = get_var_or_cookie("auth", Vars, Req),
-    User = case hn_users:verify_token(Auth) of
-               {ok, X} -> X;
-               invalid -> anonymous
+    {User, Name} = case hn_users:verify_token(Auth) of
+                       {ok, Usr}        -> {Usr, Usr#hn_user.name};
+                       {error, _Reason} -> {anonymous, anonymous}
            end,
-    
-    {ok, Access} = hn_users:get_access_level(User, Ref),
+   
+    {ok, Access} = hn_users:get_access_level(Name, Ref),
 
     case check_auth(Access, Ref#refX.path, Method)  of 
         login -> Req:serve_file("hypernumbers/login.html", docroot(), ?hdr);
