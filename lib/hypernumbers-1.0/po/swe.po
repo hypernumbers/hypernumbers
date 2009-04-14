@@ -1,2 +1,0 @@
-msgid "File"
-msgstr "Hej Värld"
