@@ -15,11 +15,18 @@
         <td id="header">
           <h1><a href="">Hypernumbers</a></h1>
           <ul id="navigation">
-            <li id="anonymous">
-              <a href="/_auth/login/">Login</a></li>
+            <li id="anonymous"><a href="/_auth/login/">$txt:{Login}$</a></li>
             <li id="loggedin">
-              Logged in as <a id="home"></a> &nbsp;&nbsp;&nbsp;&nbsp;
-              <a id="logout">Log Out</a>
+              <div class="expand" id="languages">
+                <a style="height:14px;"><span class="flag $txt:{en}$">&nbsp;</span></a>
+                <div id="lang">
+                  <a name="en"><span class="flag en">&nbsp;</span>$txt:{English}$</a>
+                  <a name="ru"><span class="flag ru">&nbsp;</span>$txt:{Russian}$</a>
+                  <a name="de"><span class="flag de">&nbsp;</span>$txt:{German}$</a>
+                </div>
+              </div>
+              $txt:{Logged in as}$ &nbsp;<a id="home"></a> &nbsp;&nbsp;&nbsp;
+              <a id="logout">$txt:{Log out}$</a>
             </li>
           </ul>
         </td>
@@ -28,21 +35,28 @@
         <td height="22px">
           <div>
             <ul id="menu">
-              <li id="browse"><a>My Spreadsheets</a></li>
-              <li><a id="file">File</a>
+              <li id="browse">
+                <a>$txt:{My Spreadsheets}$</a>
                 <ul>
-        	      <li><a class="disabled">Save</a></li>
-        	      <li><a class="disabled import spreadsheet">Import Spreadsheet</a></li>
+                  <li><a class="disabled">$txt:{Create New}$</a></li>
+                  <li class="seperator"></li>
+                  <li id="empty"><a class="disabled"><em>$txt:{empty}$</em></a></li>
                 </ul>
               </li>
-              <li><a id="edit">Edit</a>
+              <li><a id="file">$txt:{File}$</a>
                 <ul>
-        	      <li><a id="clearformat">Clear 
-                      <strong>Styles</strong></a></li>
-        	      <li><a id="clearvalue">Clear 
-                      <strong>Contents</strong></a></li>
-                  <li><a id="clearboth">Clear 
-                      <strong>All</strong></a></li> 
+        	      <li><a class="disabled">$txt:{Save}$</a></li>
+        	      <li><a class="disabled import spreadsheet">$txt:{Import Spreadsheets}$</a></li>
+                </ul>
+              </li>
+              <li><a id="edit">$txt:{Edit}$</a>
+                <ul>
+        	      <li><a id="clearformat">$txt:{Clear}$
+                      <strong>$txt:{Styles}$</strong></a></li>
+        	      <li><a id="clearvalue">$txt:{Clear}$ 
+                      <strong>$txt:{Contents}$</strong></a></li>
+                  <li><a id="clearboth">$txt:{Clear}$
+                      <strong>$txt:{All}$</strong></a></li> 
                 </ul>
               </li>
             </ul>
@@ -52,11 +66,11 @@
       <tr>
         <td id="toolbar">
           <div class="expand fonts">
-            <span id="font">Font</span>
+            <span id="font">$txt:{Font}$</span>
             <div id="ffamily">
-              <a id="fstyle_sans-serif">Normal</a>
-              <a id="fstyle_serif">Serif</a>
-              <a id="fstyle_monospace">Monospace</a>
+              <a id="fstyle_sans-serif">$txt:{Normal}$</a>
+              <a id="fstyle_serif">$txt:{Serif}$</a>
+              <a id="fstyle_monospace">$txt:{Monospace}$</a>
             </div>
           </div>
 
@@ -74,29 +88,29 @@
           <a class="separator"></a>
 
           <div class="expand fonts">
-            <span id="format">Format</span>
+            <span id="format">$txt:{Format}$</span>
             <div id="formats">
-              <a id="fmt_0">Plain</a>
+              <a id="fmt_0">$txt:{Plain}$</a>
               <hr />
-              <a id="fmt_1">100 <span class="desc">(rounded)</span></a>
-              <a id="fmt_2">100.00 <span class="desc">(2 decimals)</span></a>
+              <a id="fmt_1">100 <span class="desc">($txt:{rounded}$)</span></a>
+              <a id="fmt_2">100.00 <span class="desc">(2 $txt:{decimals}$)</span></a>
               <a id="fmt_3">
-                <span class="red">100</span><span class="desc">(rounded)</span></a>
+                <span class="red">100</span><span class="desc">($txt:{rounded}$)</span></a>
               <hr />
-              <a id="fmt_4">(100) <span class="desc">(financial)</span></a>
-              <a id="fmt_5">(100.00) <span class="desc">(financial)</span></a>
+              <a id="fmt_4">(100) <span class="desc">($txt:{financial}$)</span></a>
+              <a id="fmt_5">(100.00) <span class="desc">($txt:{financial}$)</span></a>
               <hr />
-              <a id="fmt_6">£100 <span class="desc">(currency)</span></a>
-              <a id="fmt_7">£100.00 <span class="desc">(currency)</span></a>
+              <a id="fmt_6">£100 <span class="desc">($txt:{currency}$)</span></a>
+              <a id="fmt_7">£100.00 <span class="desc">($txt:{currency}$)</span></a>
               <a id="fmt_8"><span class="red">£100</span>
-                <span class="desc">(currency)</span></a>
+                <span class="desc">($txt:{currency}$)</span></a>
               <hr />
-              <a id="fmt_9">10% <span class="desc">(percentage)</span></a>
-              <a id="fmt_10">10.12% <span class="desc">(percentage)</span></a>
+              <a id="fmt_9">10% <span class="desc">($txt:{percentage}$)</span></a>
+              <a id="fmt_10">10.12% <span class="desc">($txt:{percentage}$)</span></a>
               <hr />
-              <a id="fmt_11">03/02/2009 <span class="desc">(date)</span></a>
-              <a id="fmt_12">14:49:00 <span class="desc">(time)</span></a>
-              <a id="fmt_13">03/02/2009 14:49:00 <span class="desc">(datetime)</span></a>
+              <a id="fmt_11">03/02/2009 <span class="desc">($txt:{date}$)</span></a>
+              <a id="fmt_12">14:49:00 <span class="desc">($txt:{time}$)</span></a>
+              <a id="fmt_13">03/02/2009 14:49:00 <span class="desc">($txt:{datetime}$)</span></a>
             </div>
           </div>
 
@@ -279,26 +293,24 @@
     <textarea id="paste"></textarea>
 
     <div id="gridcontextmenu">
-      <ul>
-        <li><a>do stuff</a></li>
-      </ul>
+      <ul></ul>
     </div>
 
     <div id="axiscontextmenucol">
       <ul>
-        <li><a name="delete">Delete Column(s)</a></li>
-        <li class="seperator"
-        <li><a name="insertbefore">Insert 1 left</a></li>
-        <li><a name="insertafter">Insert 1 right</a></li>
+        <li><a name="delete">$txt:{Delete Column(s)}$</a></li>
+        <li class="seperator"></li>
+        <li><a name="insertbefore">$txt:{Insert 1 left}$</a></li>
+        <li><a name="insertafter">$txt:{Insert 1 right}$</a></li>
       </ul>
     </div>
 
     <div id="axiscontextmenurow">
       <ul>
-        <li><a name="delete">Delete Row(s)</a></li>
-        <li class="seperator"
-        <li><a name="insertbefore">Insert 1 above</a></li>
-        <li><a name="insertafter">Insert 1 below</a></li>
+        <li><a name="delete">$txt:{Delete Row(s)}$</a></li>
+        <li class="seperator"></li>
+        <li><a name="insertbefore">$txt:{Insert 1 above}$</a></li>
+        <li><a name="insertafter">$txt:{Insert 1 below}$</a></li>
       </ul>
     </div>
 
@@ -312,16 +324,11 @@
   <script src="/hypernumbers/hn.sheet.js"></script>
   <script src="/hypernumbers/hn.layout.js"></script>
   <script src="/hypernumbers/hn.selection.js"></script>
-  <!--<script src="/hypernumbers/fb_lang.js"></script>
-  <script type="text/javascript">
-    var oLangFocus = new Focus();
-    var formBuilderLang = "";
-    var oLangStrFrmBuilder = new LangStr();
-  </script>-->
       
   <script type="text/javascript">   
+    var STR = {};
+    STR["sub"] = "$txt:{sub pages}$";
     new HN.SpreadSheet("hn");
-    //setup_langs();
   </script>
   
 </html>

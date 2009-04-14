@@ -9,12 +9,16 @@
 -include("handy_macros.hrl").
 -include("hypernumbers.hrl").
 
+-include_lib("gettext/include/gettext.hrl").
+
 -export([ req/1, style_to_css/2, parse_ref/1 ]).
 
 -define(hdr,[{"Cache-Control","no-store, no-cache, must-revalidate"},
              {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
              {"Pragma",       "no-cache"},
              {"Status",       200}]).
+
+-define(html, [{"Content-Type", "text/html"} | ?hdr]).
 
 -define(json(Req, Data),    
         Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
@@ -61,7 +65,7 @@ do_req(Req) ->
     end,
     ok.
 
-check_auth(no_access, ["_auth"|_], _) -> ok;
+check_auth(no_access, ["_user"|_], _) -> ok;
 check_auth(no_access, _, _)           -> login;
 check_auth(read,      _, 'GET')       -> ok;
 check_auth(write,     _, _)           -> ok;
@@ -73,30 +77,58 @@ handle_req(Method, Req, Ref, Vars, User) ->
     case Method of
         'GET'  -> 
             mochilog:log(Req, Ref, User, undefined),
-            iget(Req, Ref, Type, Vars);
+            iget(Req, Ref, Type, Vars, User);
 
         'POST' -> 
             Body = Req:recv_body(),
             {ok, Post} = get_json_post(Body),
 
             mochilog:log(Req, Ref, User, Body),
-            case ipost(Req, Ref, Type, Vars, Post) of
+            case ipost(Req, Ref, Type, Vars, Post, User) of
                 ok  -> ?json(Req, "success");
                 ret -> ok
             end
     end.    
 
-iget(Req, #refX{path=["_auth", "login"]}, page, []) ->
-    Req:serve_file("hypernumbers/login.html", docroot(),?hdr);
-iget(Req, _Ref, page, []) ->
-    Req:serve_file("hypernumbers/index.html", docroot(),?hdr);
-iget(Req, Ref, page, [{"updates", Time}]) ->
+serve_html(Req, File, anonymous) ->
+    serve_file(Req, ensure(File, "en"));
+
+serve_html(Req, File, User) ->
+    Ext = case hn_users:get(User, "language") of
+              {ok, Lang} -> Lang;
+              undefined  -> "en"
+          end,
+    serve_file(Req, ensure(File, Ext)).
+
+serve_file(Req, File) ->
+    case file:open(docroot() ++ "/" ++ File, [raw, binary]) of
+        {ok, IoDevice} ->
+            Req:ok({"text/html",?hdr,{file, IoDevice}}),
+            file:close(IoDevice);
+        _ ->
+            Req:not_found()
+    end.
+
+
+ensure(File, Lang) ->
+    Path = docroot() ++ "/" ++ File,
+    case filelib:is_file(Path++"."++Lang) of 
+        true  -> ok;
+        false -> hn_util:compile_html(Path, Lang)
+    end,
+    File++"."++Lang.
+
+iget(Req, #refX{path=["_user", "login"]}, page, [], User) ->
+    serve_html(Req, "hypernumbers/login.html", User);
+iget(Req, _Ref, page, [], User) ->
+    serve_html(Req, "hypernumbers/index.html", User);
+iget(Req, Ref, page, [{"updates", Time}], _User) ->
     remoting_request(Req, Ref, Time);
-iget(Req, Ref, page, [{"pages", []}]) -> 
+iget(Req, Ref, page, [{"pages", []}], _User) -> 
     ?json(Req, pages(Ref));
-iget(Req, Ref, page, [{"attr", []}]) -> 
+iget(Req, Ref, page, [{"attr", []}], _User) -> 
     ?json(Req, page_attributes(Ref));
-iget(Req, Ref, cell, [{"attr", []}]) ->
+iget(Req, Ref, cell, [{"attr", []}], _User) ->
     Dict = to_dict(hn_db_api:read(Ref), dh_tree:new()),
     JS = case dict_to_struct(Dict) of
              [] -> {struct, []};
@@ -104,7 +136,7 @@ iget(Req, Ref, cell, [{"attr", []}]) ->
                  JSON
          end, 
     ?json(Req, JS);
-iget(Req, Ref, cell, []) ->
+iget(Req, Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", {errval, Val}}}] -> atom_to_list(Val); 
             [{_Ref, {"value", true}}]          -> "true"; 
@@ -113,15 +145,15 @@ iget(Req, Ref, cell, []) ->
             _Else                              -> "" 
         end,
     Req:ok({"text/html",V});
-iget(Req, Ref, _Type,  Attr) ->
+iget(Req, Ref, _Type,  Attr, _User) ->
     ?ERROR("404~n-~p~n-~p",[Ref, Attr]),
     Req:not_found().
 
-ipost(_Req, Ref, _Type, _Attr, [{"drag", {_, [{"range", Rng}]}}]) ->
+ipost(_Req, Ref, _Type, _Attr, [{"drag", {_, [{"range", Rng}]}}], _User) ->
     hn_db_api:drag_n_drop(Ref, Ref#refX{obj = parse_attr(range,Rng)}),
     ok;
 
-ipost(Req, #refX{path=["_auth","login"]}, _Type, _Attr, Data) ->
+ipost(Req, #refX{path=["_user","login"]}, _Type, _Attr, Data, _User) ->
     [{"email", Email},{"pass", Pass},{"remember", Rem}] = Data,
     Resp = case hn_users:login(Email, Pass, Rem) of
                {error, invalid_user} -> 
@@ -132,25 +164,25 @@ ipost(Req, #refX{path=["_auth","login"]}, _Type, _Attr, Data) ->
     ?json(Req, {struct, Resp}),
     ret;
 
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}])
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)
   when O == row orelse O == column ->
     % io:format("in ipost (before)~n-Ref is ~p~n", [Ref]),
     hn_db_api:insert(Ref);
 
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}], _User)
   when O == row orelse O == column ->
     RefX2 = make_after(Ref),
     % io:format("in ipost (after)~n-Ref is ~p~n-RefX2 is ~p~n", [Ref, RefX2]),
     hn_db_api:insert(RefX2);
 
 % by default cells and ranges displace vertically
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}])
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)
   when O == cell orelse O == range ->
     % io:format("in ipost (before)~n-Ref is ~p~n", [Ref]),
     hn_db_api:insert(Ref, vertical);
 
 % by default cells and ranges displace vertically
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}], _User)
   when O == cell orelse O == range ->
     RefX2 = make_after(Ref),
     % io:format("in ipost (after)~n-Ref is ~p~n-RefX2 is ~p~n", [Ref, RefX2]),
@@ -158,31 +190,35 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}])
 
 % but you can specify the displacement explicitly
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"},
-                                                      {"displacement", D}])
+                                                      {"displacement", D}], _User)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
     hn_db_api:insert(Ref, list_to_existing_atom(D));
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"},
-                                                      {"displacement", D}])
+                                                      {"displacement", D}], _User)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
     RefX2 = make_after(Ref),
     hn_db_api:insert(RefX2, list_to_existing_atom(D));
 
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", "all"}])
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", "all"}], _User)
   when O == row orelse O == column ->
     hn_db_api:delete(Ref);
 
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}])
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}], _User)
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
     hn_db_api:delete(Ref, Direction);
 
-ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}]) ->
+ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}], _User) ->
     hn_db_api:copy_n_paste(Ref#refX{obj = parse_attr(range, Range)}, Ref);
 
-ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
+ipost(_Req, #refX{path=["_user"]}, _Type, _Attr, 
+      [{"set", {struct, [{"language", Lang}]}}], User) ->
+    hn_users:update(User, "language", Lang);
+
+ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}], _User) ->
     case Attr of 
         [{"formula",{array,Vals}}] ->
             %% TODO : Get Rid of this
@@ -192,7 +228,7 @@ ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}]) ->
             hn_db_api:write_attributes(Ref, Attr)
     end;
 
-ipost(_Req, Ref, _Type, _Attr, [{"clear", What}]) 
+ipost(_Req, Ref, _Type, _Attr, [{"clear", What}], _User) 
   when What == "contents"; What == "style"; What == "all" ->
     hn_db_api:clear(Ref, list_to_atom(What));
 
@@ -202,7 +238,7 @@ ipost(_Req, Ref, _Type, _Attr, [{"clear", What}])
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ipost(Req, Ref, _Type, _Attr,
-      [{"action", "notify_back_create"}|T] = Json) ->
+      [{"action", "notify_back_create"}|T] = Json, _User) ->
     Biccie   = from("biccie",     T),
     Proxy    = from("proxy",      T),
     ChildUrl = from("child_url",  T),
@@ -248,7 +284,7 @@ ipost(Req, Ref, _Type, _Attr,
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ipost(Req, Ref, _Type, _Attr,
-      [{"action", "notify_back"} |T] = _Json) ->
+      [{"action", "notify_back"} |T] = _Json, _User) ->
     Biccie    = from("biccie",     T),
     ChildUrl  = from("child_url",  T),
     ParentUrl = from("parent_url", T),
@@ -299,7 +335,7 @@ ipost(Req, Ref, _Type, _Attr,
 %%% Horizonal API = notify handler                                           %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json) ->
+ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
     Biccie    = from("biccie",     T),
     ParentUrl = from("parent_url", T),
     Type      = from("type",       T),
@@ -355,7 +391,7 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json) ->
     [Fun(X) || X <- CVsn],
     Req:ok({"application/json", "success"});
 
-ipost(Req, _Ref, _Type, _Attr, _Post) ->
+ipost(Req, _Ref, _Type, _Attr, _Post, _User) ->
     ?ERROR("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
     Req:not_found(),
     ok.
@@ -571,5 +607,6 @@ pages(#refX{path=[], site=Site}) ->
     {struct, dict_to_struct(hn_db_api:read_pages(Site, []))};
 pages(#refX{path=[H|_T], site=Site}) ->
     {struct, dict_to_struct(hn_db_api:read_pages(Site, [H]))}.
+
 
     

@@ -1,0 +1,12 @@
+{application,gettext,
+ [{description,"gettext handling"},
+  {vsn,"1.3.0"},
+  {modules,[gettext, gettext_compile, gettext_server, gettext_sup, gettext_app, iso639]},
+  {registered,[]},
+  {env, []},
+  {mod, {gettext_app, []}},
+  {applications,[kernel,stdlib,sasl]},
+  {dependencies,
+   [{kernel, "2.9.6"},
+    {stdlib, "1.12.7"},
+    {sasl, "1.10.1"}]}]}.

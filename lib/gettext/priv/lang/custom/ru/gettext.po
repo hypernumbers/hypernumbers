@@ -1,0 +1,114 @@
+msgid "Russian"
+msgstr "Русский"
+
+msgid "Plain"
+msgstr "Обычная"
+
+msgid "Normal"
+msgstr "Нормальный"
+
+msgid "Serif"
+msgstr "Serif"
+
+msgid "Insert 1 below"
+msgstr "Вставка 1 ниже"
+
+msgid "Insert 1 right"
+msgstr "Вставка 1 праве"
+
+msgid "Contents"
+msgstr "Содержание"
+
+msgid "datetime"
+msgstr "Datetime"
+
+msgid "Edit"
+msgstr "Изменить"
+
+msgid "File"
+msgstr "Файл"
+
+msgid "currency"
+msgstr "валюта"
+
+msgid "My Spreadsheets"
+msgstr "Мои таблицы"
+
+msgid "German"
+msgstr "Немецкий"
+
+msgid "rounded"
+msgstr "округляться"
+
+msgid "Monospace"
+msgstr "Monospace"
+
+msgid "en"
+msgstr "ru"
+
+msgid "Login"
+msgstr "Войти"
+
+msgid "All"
+msgstr "Все"
+
+msgid "Delete Row(s)"
+msgstr "Удалить строки (ов)"
+
+msgid "Delete Column(s)"
+msgstr "Удалить столбец (ы)"
+
+msgid "Clear"
+msgstr "Ясный"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "percentage"
+msgstr "Процент"
+
+msgid "Logged in as"
+msgstr "Зарегистрированный в качестве"
+
+msgid "decimals"
+msgstr "десятичные"
+
+msgid "English"
+msgstr "Английский"
+
+msgid "Create New"
+msgstr "Создать новый"
+
+msgid "empty"
+msgstr "пустой"
+
+msgid "Format"
+msgstr "Формат"
+
+msgid "Font"
+msgstr "Шрифт"
+
+msgid "Insert 1 above"
+msgstr "Вставка 1 выше"
+
+msgid "Insert 1 left"
+msgstr "Вставьте левый 1"
+
+msgid "Styles"
+msgstr "Стили"
+
+msgid "Import Spreadsheets"
+msgstr "Импорт таблиц"
+
+msgid "date"
+msgstr "свидание"
+
+msgid "time"
+msgstr "время"
+
+msgid "financial"
+msgstr "финансовые"
+
+msgid "Log out"
+msgstr "Выйдите"
+

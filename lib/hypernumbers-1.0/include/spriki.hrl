@@ -163,7 +163,8 @@
           name        = [],
           password    = [],
           authtoken   = null,
-          created     = calendar:local_time()
+          created     = calendar:local_time(),
+          data        = dict:new()
          }).
 
 -record(template,

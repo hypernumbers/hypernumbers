@@ -3,7 +3,7 @@
 -module(hn_users).
 
 -export([create/2,delete/1,login/3,exists/1,gen_authtoken/2,
-        get_access_level/2, verify_token/1 ]).
+        get_access_level/2, verify_token/1, update/3, get/2 ]).
 
 -include("hypernumbers.hrl").
 -include("yaws_api.hrl").
@@ -32,6 +32,32 @@ exists(Name) ->
         {atomic,[]} -> false;
         _           -> true
     end.
+
+get(Name, Key) ->
+    F = fun() ->
+                Rec  = #hn_user{name=Name, _='_'},
+                [User] = mnesia:match_object(hn_user, Rec, read),
+                case dict:is_key(Key, User#hn_user.data) of
+                    true  -> {ok, dict:fetch(Key, User#hn_user.data)};
+                    false -> undefined
+                end
+        end,
+	
+    {atomic, Val} = mnesia:transaction(F),
+    Val.
+    
+
+update(Name, Key, Val) ->
+	
+    F = fun() ->
+                Rec  = #hn_user{name=Name, _='_'},
+                [User] = mnesia:match_object(hn_user, Rec, read),
+                NUser = User#hn_user{data=dict:store(Key, Val, User#hn_user.data)},
+                mnesia:write(NUser)
+        end,
+	
+    {atomic, ok} = mnesia:transaction(F),
+    ok.
 
 login(Name, Pass, Remember) ->
 

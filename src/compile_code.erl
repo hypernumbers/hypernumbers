@@ -20,33 +20,31 @@
 
 -define(EXTRA_ERL_FILES, ["src/generate_tests.erl"]).
 
-
 start() ->
     
     Dir = get_root(),
     
     io:fwrite("~nStarting the compilation~n~n", []),
     code:add_pathz(Dir ++ "/lib/eunit/ebin"),
+    code:add_pathz(Dir ++ "/lib/gettext/ebin"),
 
     % First set up the include file
-    Inc_list = [{i, Dir ++ "/include"},
-                {i, Dir ++ "/lib/eunit/include"},
-                {i, Dir ++ "/lib/read_excel-1.0/include"},
-                {i, Dir ++ "/lib/hypernumbers-1.0/include"},
-                {i, Dir ++ "/lib/yaws-1.76/include"},
+    Inc_list = [{i, Dir ++ "include"},
+                {i, Dir ++ "lib/eunit/include"},
+                {i, Dir ++ "lib/gettext/include"},
+                {i, Dir ++ "lib/read_excel-1.0/include"},
+                {i, Dir ++ "lib/hypernumbers-1.0/include"},
+                {i, Dir ++ "lib/yaws-1.76/include"},
                 {i, code:lib_dir(xmerl)++"/include"}],
 
     % List of {ErlangFile, OutputDirectory} tuples.
     Fun = fun(X) ->
-                  Fun2 = fun(Y) -> {Y, Dir ++ X ++ "ebin"}
-                         end,
+                  Fun2 = fun(Y) -> {Y, Dir ++ X ++ "ebin"} end,
                   lists:map(Fun2,filelib:wildcard(Dir ++ X ++ "src/*.erl"))
           end,
     Dirs = lists:flatten(lists:map(Fun, ?DIRS)),
 
-    Fun3 = fun(X) ->
-                   {Dir++X,Dir++"ebin"}
-           end,
+    Fun3 = fun(X) -> {Dir++X,Dir++"ebin"} end,
     
     Extra = lists:map(Fun3, ?EXTRA_ERL_FILES),
 
@@ -152,6 +150,8 @@ get_rel_file() ->
                       "{sasl,\"",get_vsn(sasl),"\"},",
                       "{mnesia,\"",get_vsn(mnesia),"\"},",
                       "{yaws, \"1.76\", load},", 
+                      "{gettext,\"1.3.0\"},",
+                      "{sgte,\"0.7.1\"},",
                       "{read_excel,\"1.0\"},",
                       "{starling_app,\"0.0.1\"},",
                       "{formula_engine,\"1.0\"},",

@@ -33,6 +33,8 @@ SASL_DIR=$ROOT/priv/$SASL_CONF_FILE
 
 HN_DIR="lib/hypernumbers-1.0"
 MOCHI_DIR="lib/mochiweb"
+GETTEXT_DIR="lib/gettext"
+SGTE_DIR="lib/sgte"
 
 ## Create mnesia and log directories
 ## and config file if they dont exist
@@ -46,9 +48,15 @@ function build
     if [ $# -lt 1 ] 
     then
         echo "==============================="
-        echo "      Compiling Mochiweb       "
+        echo "      Compiling DEPTS          "
         echo "==============================="
         cd ./lib/mochiweb/
+        make
+        cd ../../
+        cd ./lib/gettext/
+        make
+        cd ../../
+        cd ./lib/sgte/
         make
         cd ../../
         echo "==============================="

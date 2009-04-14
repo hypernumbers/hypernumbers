@@ -39,7 +39,6 @@ ul,li {
 #header { 
   background:#000;
   height:60px;
-  overflow:hidden;
 }
 
 #navigation {  
@@ -47,7 +46,7 @@ ul,li {
   float:      right;
   position:   relative;
   top:        0px;
-  margin:     0px 00px 0px 5px;
+  margin:     0px 0px 0px 5px;
 }
 
 #navigation li { 
@@ -661,3 +660,47 @@ background:transparent;
 border:1px solid blue;
   z-index:8001;
  }
+
+#languages { 
+  background: url(down.png) no-repeat right 1px;
+  cursor:pointer;
+  padding:2px 16px 2px 2px;
+  margin-top:-3px;
+  border: 1px solid transparent;
+  float:left;
+  margin-right:12px;                    
+}
+
+#languages div { 
+  z-index:9999;
+  background:#000;
+  border: 1px solid #666;
+  position:absolute;
+  top:auto;
+  display:none;
+  z-index:1000;
+}
+
+#languages div a {  
+  padding:3px 5px;
+}
+
+#languages div a:hover {  
+  background-color:#444;
+}
+
+#languages a { display:block; text-decoration:none !important; color:#BBB !important;}
+#languages:hover { border:1px solid #666; }
+
+#languages .flag {  
+  margin: 2px 3px 0px 0px;
+  display:block;
+  float:left;
+  width:16px;
+  height:11px;
+  background-image: url(sprite.png);
+}
+
+#languages .flag.en { background-position:  -2px -179px; }
+#languages .flag.ru { background-position:  -42px -179px; }
+#languages .flag.de { background-position:  -62px -179px; }

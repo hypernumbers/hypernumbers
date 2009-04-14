@@ -1,0 +1,114 @@
+msgid "Russian"
+msgstr "Russisch"
+
+msgid "Plain"
+msgstr "Plain"
+
+msgid "Normal"
+msgstr "Normal"
+
+msgid "Serif"
+msgstr "Serif"
+
+msgid "Insert 1 below"
+msgstr "Legen Sie 1 unten"
+
+msgid "Insert 1 right"
+msgstr "Legen Sie 1 rechts"
+
+msgid "Contents"
+msgstr "Inhalt"
+
+msgid "datetime"
+msgstr "datetime"
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "File"
+msgstr "Datei"
+
+msgid "currency"
+msgstr "Währung"
+
+msgid "My Spreadsheets"
+msgstr "Meine Tabellen"
+
+msgid "German"
+msgstr "Deutsch"
+
+msgid "rounded"
+msgstr "gerundet"
+
+msgid "Monospace"
+msgstr "Monospace"
+
+msgid "en"
+msgstr "de"
+
+msgid "Login"
+msgstr "Anmeldung"
+
+msgid "All"
+msgstr "Alle"
+
+msgid "Delete Row(s)"
+msgstr ""Zeile löschen" (s)"
+
+msgid "Delete Column(s)"
+msgstr "Löschen Sie Spalte (n)"
+
+msgid "Clear"
+msgstr "Klar"
+
+msgid "Save"
+msgstr "Sichern"
+
+msgid "percentage"
+msgstr "Prozentsatz"
+
+msgid "Logged in as"
+msgstr "Eingeloggt als"
+
+msgid "decimals"
+msgstr "Dezimalstellen"
+
+msgid "English"
+msgstr "Englisch"
+
+msgid "Create New"
+msgstr "Neue"
+
+msgid "empty"
+msgstr "leer"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Font"
+msgstr "Font"
+
+msgid "Insert 1 above"
+msgstr "Legen Sie 1 oben"
+
+msgid "Insert 1 left"
+msgstr "Legen Sie 1 Stück"
+
+msgid "Styles"
+msgstr "Styles"
+
+msgid "Import Spreadsheets"
+msgstr "Tabellen-Import"
+
+msgid "date"
+msgstr "Datum"
+
+msgid "time"
+msgstr "Zeit"
+
+msgid "financial"
+msgstr "Finanz -"
+
+msgid "Log out"
+msgstr "Melden Sie sich"
+

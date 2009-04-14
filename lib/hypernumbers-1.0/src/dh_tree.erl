@@ -24,7 +24,10 @@ create([H|T],Dict) ->
 add([],Dict) -> 
     Dict;
 add([H],Dict) ->
-    dict:store(H,dict:new(),Dict);
+    case dict:is_key(H,Dict) of
+        true  -> Dict;
+        false -> dict:store(H,dict:new(),Dict)
+    end;
 add([H|T],Dict) ->
     NDict = case dict:is_key(H,Dict) of
                 true  -> dict:fetch(H,Dict);

@@ -17,8 +17,12 @@
 
 -define(rfc1123, muin_date:to_rfc1123_string).
 
+-define(pget(Key, List), proplists:get_value(Key, List, undefined)).
+
 -export([
          % HyperNumbers Utils
+         compile_html/2,
+         generate_po/1,
          jsonify_val/1,
 
          refX_to_url/1,
@@ -70,6 +74,46 @@
 %%% and #indexrecords                                                        %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+compile_html(Html, Lang) ->
+    {ok, Bin} = file:read_file(code:lib_dir(hypernumbers)++"/po/"++Lang++".po"),
+    gettext:store_pofile(Lang, Bin),
+    {ok, C} = sgte:compile_file(Html),
+    NHtml = sgte:render(C, [{options, [{gettext_lc, Lang}]}]),
+    file:write_file(Html++"."++Lang, NHtml),   
+    ok.
+
+generate_po(Url) ->
+    
+    Cache = code:lib_dir(hypernumbers)++"/priv/docroot/hypernumbers/",
+    [file:delete(X) || X <- filelib:wildcard(Cache++"*.html.*")],
+
+    {ok,{{_V,_Status,_R},_H,Body}} = http:request(get,{Url++"?attr",[]},[],[]),
+    {struct, Json} = mochijson2:decode(Body),
+    {struct, Cells} = ?pget(<<"cell">>, Json),
+    {struct, Pos} = ?pget(<<"2">>, Cells),
+    Files = lists:map(fun po_files/1, Pos),
+    lists:map(fun(X) -> po_row(Files, X) end, Cells),
+    lists:map(fun({I, F}) -> file:close(F) end, Files),
+    ok.
+
+po_files({Index, {struct, List}}) ->
+    Lang = binary_to_list(?pget(<<"value">>, List)),
+    Path = code:lib_dir(hypernumbers)++"/po/"++Lang++".po",
+    {ok, File} = file:open(Path, [write]),
+    {Index, File}.
+
+po_row(File, {<<"1">>, _Children}) -> ok;
+po_row(File, {<<"2">>, _Children}) -> ok;
+po_row(File, {_Row, {struct, Children}}) ->
+    {struct, Attr} = ?pget(<<"1">>, Children),
+    Id = ?pget(<<"value">>, Attr),
+    lists:map(fun(X) -> po_val(File, Id, X) end, Children),
+    ok.
+   
+po_val(Files, Id, {Col, {struct, Cell}}) ->
+    Str = "msgid \"~s\"\nmsgstr \"~s\"\n\n",
+    io:format(?pget(Col, Files), Str, [Id, ?pget(<<"value">>, Cell)]).
+
 jsonify_val({"__permissions", _})           -> {"__permissions", "bleh"};
 jsonify_val({"__groups", _})                -> {"__groups", "bleh"};
 jsonify_val({"dependency-tree", _})         -> {"dependency-tree", "bleh"};
