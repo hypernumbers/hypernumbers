@@ -55,8 +55,17 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
          {array_context, AryCtx},
          {retvals, {[], [], []}}, {recompile, false}]),
     Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
+    Result = eval_formula(Fcode),
+    {RefTree, _Errors, References} = get(retvals),
+    {ok, {Fcode, Result, RefTree, References, get(recompile)}}.
 
-    case eval(Fcode) of
+
+%% evaluates a formula rather than a piece of AST, i.e. will do implicit
+%% intersection, resolve a final cellref &c.
+
+eval_formula(Fcode) ->
+    R = eval(Fcode),
+    case R of
         ?error_in_formula ->
             ?error_in_formula;
         Value ->
@@ -73,9 +82,7 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
                              end;
                          Constant ->
                              Constant
-                     end,
-            {RefTree, _Errors, References} = get(retvals),
-            {ok, {Fcode, Result, RefTree, References, get(recompile)}}
+                     end
     end.
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
