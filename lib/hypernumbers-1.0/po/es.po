@@ -5,28 +5,28 @@ msgid "Normal"
 msgstr "Normal"
 
 msgid "Insert 1 below"
-msgstr "Legen Sie 1 unten"
+msgstr "parte 1 movible abajo"
 
 msgid "Insert 1 left"
-msgstr "Legen Sie 1 Stück"
+msgstr "inserte 1 a la izquierda"
 
 msgid "Clear "
-msgstr "Klar"
+msgstr " Claros "
 
 msgid "Styles"
-msgstr "Arten"
+msgstr "Estilos"
 
 msgid "Import Spreadsheets"
-msgstr "Tabellen-Import"
+msgstr "Importación De Las Hojas De Balance"
 
 msgid "time"
-msgstr "Zeit"
+msgstr "tiempo"
 
 msgid "currency"
-msgstr "Währung"
+msgstr "Moneda"
 
 msgid "My Spreadsheets"
-msgstr "Meine Tabellen"
+msgstr "Mis Hojas De Balance"
 
 msgid "Portuguese"
 msgstr "Português"
@@ -35,40 +35,40 @@ msgid "Italian"
 msgstr "Italiano"
 
 msgid "Plain"
-msgstr "Ebene "
+msgstr "Llano"
 
 msgid "Serif"
 msgstr "Serif"
 
 msgid "en"
-msgstr "de"
+msgstr "es"
 
 msgid "Russian"
 msgstr "Русский"
 
 msgid "Login"
-msgstr "Logon"
+msgstr "Connexion"
 
 msgid "Insert 1 right"
-msgstr "Legen Sie 1 rechts"
+msgstr "inserte 1 a la derecha"
 
 msgid "Contents"
-msgstr "Inhalt"
+msgstr "Contenido"
 
 msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
-msgstr "Öffnen Microsoft Excel 97/2000/2003 (*.xls)"
+msgstr "abrir Microsoft Excel 97/2000/2003 (*.xls)"
 
 msgid "datetime"
-msgstr "Datum und Zeit"
+msgstr "fecha y tiempo"
 
 msgid "File"
-msgstr "Datei"
+msgstr "Archivo"
 
 msgid "percentage"
-msgstr "Prozentsatz"
+msgstr "Porcentaje"
 
 msgid "rounded"
-msgstr "gerundet "
+msgstr "Redondeado"
 
 msgid "Spanish"
 msgstr "Español"
@@ -77,49 +77,49 @@ msgid "German"
 msgstr "Deutsch"
 
 msgid "empty"
-msgstr "leer"
+msgstr "vacío"
 
 msgid "Monospace"
 msgstr "Monospace"
 
 msgid "Insert 1 above"
-msgstr "Legen Sie 1 oben"
+msgstr "parte 1 movible arriba"
 
 msgid "Delete Row(s)"
-msgstr "Zeile löschen (s)"
+msgstr "supresión de filas"
 
 msgid "Font"
-msgstr "Schriftname"
+msgstr "Fuente"
 
 msgid "Logged in as"
-msgstr "wie angemeldet"
+msgstr "Abierto Una Sesión Como"
 
 msgid "Edit"
-msgstr "Bearbeiten"
+msgstr "Editar"
 
 msgid "Delete Column(s)"
-msgstr "Löschen Sie Spalte (n)"
+msgstr "Columnas de la cancelación"
 
 msgid "Save"
-msgstr "Speichern"
+msgstr "Guardar"
 
 msgid "date"
-msgstr "Datum"
+msgstr "fecha"
 
 msgid "decimals"
-msgstr "Dezimalstriche "
+msgstr "decimales"
 
 msgid "financial"
-msgstr "finanziell"
+msgstr "Financier"
 
 msgid "Log out"
-msgstr "Logout"
+msgstr "Registro De Estado De La Máquina"
 
 msgid "Create New"
-msgstr "Neue"
+msgstr "cree nuevo"
 
 msgid "Format"
-msgstr "Format"
+msgstr "Formato"
 
 msgid "French"
 msgstr "Français"

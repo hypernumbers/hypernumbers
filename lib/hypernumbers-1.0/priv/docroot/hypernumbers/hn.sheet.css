@@ -702,5 +702,11 @@ border:1px solid blue;
 }
 
 #languages .flag.en { background-position:  -2px -179px; }
+#languages .flag.fr { background-position:  -22px -179px; }
 #languages .flag.ru { background-position:  -42px -179px; }
 #languages .flag.de { background-position:  -62px -179px; }
+#languages .flag.es { background-position:  -82px -179px; }
+#languages .flag.pt { background-position:  -102px -179px; }
+#languages .flag.it { background-position:  -122px -179px; }
+#languages .flag.br { background-position:  -142px -179px; }
+#languages .flag.us { background-position:  -162px -179px; }
