@@ -100,13 +100,11 @@
     any(fun(X) -> X == true end, Bools).
 
 'if'([Test, TrueExpr]) ->
-    V = muin:eval(Test),
-    B = ?bool(V, [cast_strings, cast_numbers, cast_blanks, ban_dates]),
-    ?COND(B, muin:eval(TrueExpr), false);    
+    'if'([Test, TrueExpr, false]);
 'if'([Test, TrueExpr, FalseExpr]) ->
-    V = muin:eval(Test),
+    V = muin:eval_formula(Test),
     B = ?bool(V, [cast_strings, cast_numbers, cast_blanks, ban_dates]),
-    ?COND(B, muin:eval(TrueExpr), muin:eval(FalseExpr)).
+    muin:eval_formula(?COND(B, TrueExpr, FalseExpr)).
 
 %% @TODO write a test suite for iferror which is not an Excel 97 function
 iferror([Test, TrueExpr, FalseExpr]) ->
