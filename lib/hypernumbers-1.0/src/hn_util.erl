@@ -22,6 +22,7 @@
 -export([
          % HyperNumbers Utils
          compile_html/2,
+         delete_gen_html/0,
          generate_po/1,
          jsonify_val/1,
 
@@ -84,8 +85,7 @@ compile_html(Html, Lang) ->
 
 generate_po(Url) ->
     
-    Cache = code:lib_dir(hypernumbers)++"/priv/docroot/hypernumbers/",
-    [file:delete(X) || X <- filelib:wildcard(Cache++"*.html.*")],
+    delete_gen_html(),
 
     {ok,{{_V,_Status,_R},_H,Body}} = http:request(get,{Url++"?attr",[]},[],[]),
     {struct, Json} = mochijson2:decode(Body),
@@ -113,6 +113,11 @@ po_row(File, {_Row, {struct, Children}}) ->
 po_val(Files, Id, {Col, {struct, Cell}}) ->
     Str = "msgid \"~s\"\nmsgstr \"~s\"\n\n",
     io:format(?pget(Col, Files), Str, [Id, ?pget(<<"value">>, Cell)]).
+
+delete_gen_html() ->
+    Dir = code:lib_dir(hypernumbers)++"/priv/docroot/hypernumbers/",
+    [file:delete(X) || X <- filelib:wildcard(Dir++"*.html.*")].
+
 
 jsonify_val({"__permissions", _})           -> {"__permissions", "bleh"};
 jsonify_val({"__groups", _})                -> {"__groups", "bleh"};

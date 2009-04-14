@@ -48,7 +48,13 @@ start() ->
     
     Extra = lists:map(Fun3, ?EXTRA_ERL_FILES),
 
-    compile_funcs(Dirs++Extra, Inc_list).
+    compile_funcs(Dirs++Extra, Inc_list),
+
+    delete_gen_html().
+
+delete_gen_html() ->
+    Dir = get_root()++"lib/hypernumbers-1.0/priv/docroot/hypernumbers/",
+    [file:delete(X) || X <- filelib:wildcard(Dir++"*.html.*")].
 
 get_root() ->
     
