@@ -171,7 +171,7 @@ chidist1(X, Degfree) ->
 
 counta(Vs) ->
     Fvs = ?flatten_all(Vs),
-    length(Fvs).
+    length(filter(fun(X) -> X =/= blank end, Fvs)). % Discard blanks.
 
 count(Vs) ->
     Flatvs = ?flatten_all(Vs),
