@@ -2754,7 +2754,7 @@ tell_front_end(#ref{site=Site, path=Path}, Index, Style) ->
 tell_front_end1(Key, Tuple) ->
     List = get('front_end_notify'),
     case lists:keymember(Key, 1, List) of
-        true  -> put('front_end_nofity', lists:keyreplace(Key, 1, List, Tuple));
+        true  -> put('front_end_notify', lists:keyreplace(Key, 1, List, Tuple));
         false -> put('front_end_notify', [Tuple | List])
     end,
     ok.
