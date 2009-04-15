@@ -62,6 +62,8 @@ E -> E '^^' E : ['^^', '$1', '$3'].
 
 E -> '(' E ')' : '$2'.    
 
+E -> E namedexpr Args : special_div1('$1', '$2', '$3').
+
 %%% funcalls
 
 E -> Funcall : '$1'.
@@ -149,6 +151,15 @@ to_native_list(Ary) ->
                      end,
                      [[]],
                      Ary))}.
+
+%% special case #1 for division:
+%%
+%% #namedexpr where path = "/" is a function call in divisor if:
+%%   1. preceded by an expression
+%%   2. followed by function args
+%%
+special_div1(Expr, N, Args) when N#namedexpr.path == "/" ->
+    ['/', Expr, [list_to_atom(N#namedexpr.text)] ++ Args].
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
