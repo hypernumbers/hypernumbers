@@ -29,6 +29,9 @@
 -define(is_rangeref(X),
         element(1, X) == rangeref).
 
+-define(is_namedexpr(X),
+        element(1, X) == namedexpr).
+
 %%% Collectors
 
 %% implicit iteration when not in array context :(
