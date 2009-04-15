@@ -52,12 +52,12 @@ do_req(Req) ->
     Method = Req:get(method),
     
     {ok, Auth} = get_var_or_cookie("auth", Vars, Req),
-    {User, Name} = case hn_users:verify_token(Auth) of
-                       {ok, Usr}        -> {Usr, Usr#hn_user.name};
-                       {error, _Reason} -> {anonymous, anonymous}
+    User = case hn_users:verify_token(Auth) of
+               {ok, Usr}        -> Usr;
+               {error, _Reason} -> anonymous
            end,
    
-    {ok, Access} = hn_users:get_access_level(Name, Ref),
+    {ok, Access} = hn_users:get_access_level(user_name(User), Ref),
 
     case check_auth(Access, Ref#refX.path, Method)  of 
         login -> Req:serve_file("hypernumbers/login.html", docroot(), ?hdr);
@@ -126,8 +126,8 @@ iget(Req, Ref, page, [{"updates", Time}], _User) ->
     remoting_request(Req, Ref, Time);
 iget(Req, Ref, page, [{"pages", []}], _User) -> 
     ?json(Req, pages(Ref));
-iget(Req, Ref, page, [{"attr", []}], _User) -> 
-    ?json(Req, page_attributes(Ref));
+iget(Req, Ref, page, [{"attr", []}], User) -> 
+    ?json(Req, page_attributes(Ref, User));
 iget(Req, Ref, cell, [{"attr", []}], _User) ->
     Dict = to_dict(hn_db_api:read(Ref), dh_tree:new()),
     JS = case dict_to_struct(Dict) of
@@ -581,11 +581,15 @@ get_var_or_cookie(Key, Vars, Req) ->
             {ok, Auth}
     end.
 
-page_attributes(Ref) ->
+user_name(anonymous) -> anonymous;
+user_name(User)      -> User#hn_user.name.
+
+page_attributes(Ref, User) ->
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
+    Tree2   = dh_tree:set(["user"], user_name(User), Tree),
     Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
-    NTree  = add_styles(Styles, Tree),
+    NTree  = add_styles(Styles, Tree2),
     Dict   = to_dict(hn_db_api:read(Ref), NTree),
     Time   = {"time", remoting_reg:timestamp()},
     {struct, [Time | dict_to_struct(Dict)]}.

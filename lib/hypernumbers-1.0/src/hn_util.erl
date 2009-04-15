@@ -127,6 +127,8 @@ jsonify_val({Name, {errval, Error}})        -> {Name, atom_to_list(Error)};
 jsonify_val({Name, {datetime, Date, Time}}) -> {Name, ?rfc1123({datetime, Date, Time})};
 jsonify_val({"value", true})                -> {"value", "true"};
 jsonify_val({"value", false})               -> {"value", "false"};
+%% TODO: fix names
+jsonify_val({Name, {namedexpr,Path,Nm}})    -> {Name, Nm};
 jsonify_val(Else)                           -> Else.
 
 url_to_refX(Url) ->

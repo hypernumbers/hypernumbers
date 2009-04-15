@@ -14,11 +14,12 @@
 create(Name,Pass) ->
     create_user_exec(#hn_user{name = Name, password = p(Pass)}).
 
+delete_tr(Name) ->
+    {ok, User} = read(Name),
+    mnesia:delete_object(User).
+
 delete(Name) ->
-    F = fun() ->
-                mnesia:delete_object(#hn_user{name=Name, _='_'}) 
-        end,
-    mnesia:transaction(F).
+    mnesia:activity(transaction, fun delete_tr/1, [Name]).
 
 
 exists(Name) ->
