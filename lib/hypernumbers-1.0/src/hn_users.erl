@@ -49,17 +49,12 @@ get(User, Key) ->
         false -> undefined
     end.
 
-update(Name, Key, Val) ->
-	
-    F = fun() ->
-                Rec  = #hn_user{name=Name, _='_'},
-                [User] = mnesia:match_object(hn_user, Rec, read),
-                NUser = User#hn_user{data=dict:store(Key, Val, User#hn_user.data)},
-                mnesia:write(NUser)
-        end,
-	
-    {atomic, ok} = mnesia:transaction(F),
-    ok.
+update_tr(User, Key, Val) ->
+    NUser = User#hn_user{data=dict:store(Key, Val, User#hn_user.data)},
+    mnesia:write(NUser).
+    
+update(User, Key, Val) ->
+    mnesia:activity(transaction, fun update_tr/3, [User, Key, Val]).
 
 login(Name, Pass, Remember) ->
 
