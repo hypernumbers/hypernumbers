@@ -494,6 +494,7 @@
          read_styles/1,
          read_incoming_hn/2,
          read_dirty_cell/1,
+         read_whole_page/1,
          find_incoming_hn/2,
          read_outgoing_hns/2,
          clear_cells/1,
@@ -1091,6 +1092,19 @@ write_attr(RefX, {Key, Val}) when is_record(RefX, refX) ->
     Record = #hn_item{addr = Ref, val = Val},
     ok = mnesia:write(Record),
     ok = tell_front_end(Record, change).
+
+%% @spec read_whole_page(#refX{}) -> [{#refX{}, {Key, Value}}]
+%% Key = atom()
+%% Value = term()
+%% @doc reads all the attributes of a cell or cells
+%%
+%% The reference can refer to a page only
+read_whole_page(#refX{site = S, path = P, obj = {page, "/"}, auth = A}) ->
+    Match = ms_util:make_ms(ref, [{site, S}, {path, P}, {auth, A}, {ref, '_'}]),
+    Head = ms_util:make_ms(hn_item, [{addr, Match}]),
+    Return = mnesia:select(hn_item, [{Head, [], ['$_']}]),
+    List = hn_util:from_hn_item(Return),
+    drop_private(List).
 
 %% @spec read_cells(#refX{}) -> [{#refX{}, {Key, Value}}]
 %% Key = atom()

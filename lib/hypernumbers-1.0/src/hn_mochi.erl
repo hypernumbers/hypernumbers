@@ -129,7 +129,7 @@ iget(Req, Ref, page, [{"pages", []}], _User) ->
 iget(Req, Ref, page, [{"attr", []}], User) -> 
     ?json(Req, page_attributes(Ref, User));
 iget(Req, Ref, cell, [{"attr", []}], _User) ->
-    Dict = to_dict(hn_db_api:read(Ref), dh_tree:new()),
+    Dict = to_dict(hn_db_api:read_whole_page(Ref), dh_tree:new()),
     JS = case dict_to_struct(Dict) of
              [] -> {struct, []};
              [{_Cells, {struct, [{_Y, {struct, [{_X, JSON}]}}]}}] ->
@@ -590,7 +590,7 @@ page_attributes(Ref, User) ->
     Tree2   = dh_tree:set(["user"], user_name(User), Tree),
     Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
     NTree  = add_styles(Styles, Tree2),
-    Dict   = to_dict(hn_db_api:read(Ref), NTree),
+    Dict   = to_dict(hn_db_api:read_whole_page(Ref), NTree),
     Time   = {"time", remoting_reg:timestamp()},
     {struct, [Time | dict_to_struct(Dict)]}.
 
