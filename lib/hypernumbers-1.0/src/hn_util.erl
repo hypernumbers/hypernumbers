@@ -188,7 +188,7 @@ range_to_list(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     {X1a, Y1a, X2a, Y2a} = rectify_range(X1, Y1, X2, Y2),
     range_to_list2(RefX, X1a, X1a, Y1a, X2a, Y2a, []).
 
-range_to_list1(Ref, _Reset, X, Y, X, Y, Acc) -> [Ref#ref{ref = {cell, {X, Y}}} | Acc];
+range_to_list1(Ref, _Reset, X, Y, X, Y, Acc) -> lists:reverse([Ref#ref{ref = {cell, {X, Y}}} | Acc]);
 range_to_list1(Ref, Reset, X2, Y1, X2, Y2, Acc) ->
     range_to_list1(Ref, Reset, Reset, Y1 + 1, X2, Y2,
                    [Ref#ref{ref = {cell, {X2, Y1}}} | Acc]);
