@@ -76,14 +76,14 @@ handle_req(Method, Req, Ref, Vars, User) ->
 
     case Method of
         'GET'  -> 
-            mochilog:log(Req, Ref, User, undefined),
+            mochilog:log(Req, Ref, user_name(User), undefined),
             iget(Req, Ref, Type, Vars, User);
 
         'POST' -> 
             Body = Req:recv_body(),
             {ok, Post} = get_json_post(Body),
 
-            mochilog:log(Req, Ref, User, Body),
+            mochilog:log(Req, Ref, user_name(User), Body),
             case ipost(Req, Ref, Type, Vars, Post, User) of
                 ok  -> ?json(Req, "success");
                 ret -> ok
