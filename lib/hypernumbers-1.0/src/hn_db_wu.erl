@@ -523,7 +523,7 @@
          get_new_local_page_vsn/2,
          read_page_vsn/2,
          initialise_remote_page_vsn/3, 
-         read_pages/2]).
+         read_page_structure/1]).
 
 %% Structural Query Exports
 -export([get_last_refs/1,
@@ -1620,10 +1620,10 @@ unregister_out_hn(P, C)
         _   -> ok
     end.
 
-%% @spec read_pages(Site::string(), Path::list()) -> dh_tree()
+%% @spec read_page_structure(Site::string(), Path::list()) -> dh_tree()
 %% @doc read the populated pages under the specified path
 %% @todo fix up api
-read_pages(Site, Path) ->
+read_page_structure(#refX{site = Site, path = Path, obj = {page, "/"}}) ->
     Addr = #ref{site=Site, path=lists:append(Path,'_'), _='_'},
     Item = #hn_item{addr=Addr, val='_'},
     Items = mnesia:match_object(hn_item, Item, read),

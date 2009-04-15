@@ -121,9 +121,7 @@
          read_inherited_list/2,
          read_inherited_value/3,
          read_styles/1,
-         % read_permissions/1,
-         read_pages/1,
-         read_pages/2,
+         read_page_structure/1,
          % update_style/2,
          recalculate/1,
          reformat/1,
@@ -169,14 +167,9 @@ upgrade_1519() ->
 
 %% @doc reads pages
 %% @todo fix up api
-read_pages(Site) ->
-    read_pages(Site, []).
-
-%% @doc reads pages
-%% @todo fix up api
-read_pages(Site, Path) ->
+read_page_structure(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  hn_db_wu:read_pages(Site, Path)
+                  hn_db_wu:read_page_structure(RefX)
           end,
     mnesia:activity(transaction, Fun).
 

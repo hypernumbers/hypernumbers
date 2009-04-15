@@ -607,10 +607,11 @@ make_after(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
     DiffY = Y2 - Y1 - 1,
     RefX#refX{obj = {row, {Y1 - DiffY, Y2 - DiffY}}}.
 
-pages(#refX{path=[], site=Site}) ->
-    {struct, dict_to_struct(hn_db_api:read_pages(Site, []))};
-pages(#refX{path=[H|_T], site=Site}) ->
-    {struct, dict_to_struct(hn_db_api:read_pages(Site, [H]))}.
+pages(#refX{path = [], obj = {page, "/"}} = RefX) ->
+    {struct, dict_to_struct(hn_db_api:read_page_structure(RefX))};
+pages(#refX{path = [H | _T], obj = {page, "/"}} = RefX) ->
+    NewRefX = RefX#refX{path = [H]},
+    {struct, dict_to_struct(hn_db_api:read_page_structure(NewRefX))}.
 
 
     
