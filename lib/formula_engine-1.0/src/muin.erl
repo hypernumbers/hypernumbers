@@ -80,6 +80,8 @@ eval_formula(Fcode) ->
                                  blank -> 0;
                                  Other -> Other
                              end;
+                         R when ?is_namedexpr(R) ->
+                             ?ERRVAL_NAME;
                          Constant ->
                              Constant
                      end
@@ -252,7 +254,7 @@ row(#cellref{row = Row}) -> Row.
 path(#cellref{path = Path}) -> Path.
     
 prefetch_references(L) ->
-    foldr(fun(R, Acc) when is_record(R, cellref); is_record(R, rangeref) ->
+    foldr(fun(R, Acc) when ?is_cellref(R); ?is_rangeref(R); ?is_namedexpr(R) ->
                   [fetch(R)|Acc];
              (X, Acc) ->
                   [X|Acc]
@@ -265,7 +267,9 @@ row_index({offset, N}) -> ?my + N.
 
 col_index(N) when is_integer(N) -> N;
 col_index({offset, N}) -> ?mx + N.
-     
+
+fetch(N) when ?is_namedexpr(N) ->
+    ?ERRVAL_NAME;
 fetch(#cellref{col = Col, row = Row, path = Path}) ->
     RowIndex = row_index(Row),
     ColIndex = col_index(Col),
