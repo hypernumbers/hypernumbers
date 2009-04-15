@@ -29,7 +29,7 @@ log(Req, Ref, User, Body) ->
       method = Req:get(method),
       body = Body,
       user = User,
-      peer = Req:get(peer),
+      peer = Req:get_header_value("x-forwarded-for"),
       referer = Req:get_header_value("Referer"),
       browser = Req:get_header_value("User-Agent")
      },
