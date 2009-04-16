@@ -93,7 +93,7 @@ ul,li {
   text-indent: 4px;
 }
 
-#functions { 
+#functionsbtn { 
   color:#333333;
   display:block;
   height:18px;
@@ -710,3 +710,26 @@ border:1px solid blue;
 #languages .flag.it { background-position:  -122px -179px; }
 #languages .flag.br { background-position:  -142px -179px; }
 #languages .flag.us { background-position:  -162px -179px; }
+
+.dialog { 
+    display:none;
+    position:   absolute;
+    top:50px; 
+    left:50px;
+    background: white;
+    min-width:  200px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    border:     1px solid #666;
+    z-index:    999999;
+}
+
+.dialog h2
+{
+    display:    block;
+    margin:0px;
+    font:       bold 10px sans-serif;
+    padding:    4px;
+    border-bottom:1px solid #66AA00;
+    -moz-border-radius: 3px 3px 0px 0px;
+    background: orange;
+}

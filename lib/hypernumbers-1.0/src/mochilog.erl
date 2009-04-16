@@ -10,7 +10,8 @@
 -define(NAME, "post_log").
 -record(post, {time, site, path, method, body, peer, user, referer, browser}).
 
--export([log/4, start/0, stop/0, replay/3, replay/4, clear/0, dump/1 ]).
+-export([log/4, start/0, stop/0, replay/3, replay/4, clear/0, dump/1,
+        generate_mi/2 ]).
 
 %% @spec start() -> ok
 %% @doc This starts the log
@@ -63,6 +64,32 @@ replay(Name, Old, New, Deep) ->
     F    = fun([Post]) -> repost(Post, OPath, NRef, Deep) end,    
     run_log(Name, F).
 
+%% @spec generate_mi(Name, Path) -> ok
+%% @doc Name is the name of the log file to read from (must be 
+%% stored in /lib/hypernumbers-1.0/log/), Path is the path of 
+%% the file to write mi to
+generate_mi(Name, Path) ->
+    {ok, File} = file:open(Path, [write]),
+    io:format(File, "Date,Site,Path,Body,Method,IP,User,Referer,User-Agent~n",[]),
+    run_log(Name, fun([Post]) -> do_mi(File, Post) end),
+    file:close(File).
+
+do_mi(File, Post) ->
+    Date = dh_date:format("r", Post#post.time),
+    #post{ site=Site, path=Path, body=Body, method=Mthd, peer=Peer, user=Usr,
+           referer=Rfr, browser=UA} = Post,
+    Str  = "~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
+    io:format(File, Str, [Date, Site, Path, btol(Body), atol(Mthd), Peer, Usr, Rfr, UA]).
+
+atol(X) ->
+    atom_to_list(X).
+
+btol(X) when is_atom(X) ->
+    X;
+btol(X) ->
+    binary_to_list(X).
+
+
 %% @spec dump(Name) -> ok
 %% @doc Dumps the logfile with Name to the shell
 dump(Name) ->
@@ -99,9 +126,7 @@ startswith(_List1, _List2) ->
     false.
 
 run_log(Name, Fun) ->
-    
     Log = logfile(Name),
-    
     case filelib:is_file(Log) of 
         false -> {error, no_file};
         true  ->
