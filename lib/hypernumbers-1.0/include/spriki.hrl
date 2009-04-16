@@ -265,3 +265,8 @@
           integer
          }).
 
+%% holds upload state for callback function in the hn_file_upload module.
+-record(file_upload_state, {
+          filename,
+          file
+         }).
