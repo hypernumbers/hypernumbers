@@ -79,14 +79,23 @@ handle_req(Method, Req, Ref, Vars, User) ->
             mochilog:log(Req, Ref, user_name(User), undefined),
             iget(Req, Ref, Type, Vars, User);
 
-        'POST' -> 
-            Body = Req:recv_body(),
-            {ok, Post} = get_json_post(Body),
+        'POST' ->
+            {value, {'Content-Type', Ct}} =
+                mochiweb_headers:lookup('Content-Type', Req:get(headers)),
 
-            mochilog:log(Req, Ref, user_name(User), Body),
-            case ipost(Req, Ref, Type, Vars, Post, User) of
-                ok  -> ?json(Req, "success");
-                ret -> ok
+            %% TODO: Log file uploads.
+            case string:substr(Ct, 1, 19) of
+                "multipart/form-data" ->
+                    ?json(Req, hn_file_upload:handle_upload(Req, User));
+                _Else ->
+                    Body = Req:recv_body(),
+                    {ok, Post} = get_json_post(Body),
+
+                    mochilog:log(Req, Ref, user_name(User), Body),
+                    case ipost(Req, Ref, Type, Vars, Post, User) of
+                        ok  -> ?json(Req, "success");
+                        ret -> ok
+                    end
             end
     end.    
 
