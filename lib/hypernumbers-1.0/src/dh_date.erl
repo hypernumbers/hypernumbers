@@ -15,7 +15,7 @@
 -author("Dale Harvey <dale@arandomurl.com>").
 
 -define(NOTEST, 1).
--include_lib("eunit/include/eunit.hrl").
+-include("eunit.hrl").
 
 -export([format/1, format/2]).
 
