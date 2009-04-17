@@ -14,8 +14,8 @@
 -module(dh_date).
 -author("Dale Harvey <dale@arandomurl.com>").
 
--define(NOTEST, 1).
--include("eunit.hrl").
+%-define(NOTEST, 1).
+%-include("eunit.hrl").
 
 -export([format/1, format/2]).
 
@@ -293,43 +293,43 @@ pad2(X) ->
 %%
 %% c(dh_date,[{d,'TEST'}]).
 
--define(DATE, {{2001,3,10},{17,16,17}}).
--define(ISO,  "o \\WW").
+%-define(DATE, {{2001,3,10},{17,16,17}}).
+%-define(ISO,  "o \\WW").
 
-basic_test() -> [
-  ?assertEqual(format("F j, Y, g:i a",?DATE),
-               "March 10, 2001, 5:16 pm"),
-  ?assertEqual(format("m.d.y",?DATE),
-               "03.10.01"),
-  ?assertEqual(format("j, n, Y",?DATE),
-               "10, 3, 2001"),
-  ?assertEqual(format("Ymd",?DATE),
-               "20010310"),
-  ?assertEqual(format("h-i-s, j-m-y, it is w Day",?DATE),
-               "05-16-17, 10-03-01, 1631 1617 6 Satpm01"),
-  ?assertEqual(format("\\i\\t \\i\\s \\t\\h\\e\\ jS \\d\\a\\y.",?DATE),
-               "it is the 10th day."),
-  ?assertEqual(format("D M j G:i:s Y",?DATE),
-               "Sat Mar 10 17:16:17 2001"),
-  ?assertEqual(format("H:m:s \\m \\i\\s \\m\\o\\n\\t\\h",?DATE),
-               "17:03:17 m is month"),
-  ?assertEqual(format("H:i:s",?DATE),
-               "17:16:17"),
-  ?assertEqual(format("z",?DATE),
-               "68")
-].
+%basic_test() -> [
+%  ?assertEqual(format("F j, Y, g:i a",?DATE),
+%               "March 10, 2001, 5:16 pm"),
+%  ?assertEqual(format("m.d.y",?DATE),
+%               "03.10.01"),
+%  ?assertEqual(format("j, n, Y",?DATE),
+%               "10, 3, 2001"),
+%  ?assertEqual(format("Ymd",?DATE),
+%               "20010310"),
+%  ?assertEqual(format("h-i-s, j-m-y, it is w Day",?DATE),
+%               "05-16-17, 10-03-01, 1631 1617 6 Satpm01"),
+%  ?assertEqual(format("\\i\\t \\i\\s \\t\\h\\e\\ jS \\d\\a\\y.",?DATE),
+%               "it is the 10th day."),
+%  ?assertEqual(format("D M j G:i:s Y",?DATE),
+%               "Sat Mar 10 17:16:17 2001"),
+%  ?assertEqual(format("H:m:s \\m \\i\\s \\m\\o\\n\\t\\h",?DATE),
+%               "17:03:17 m is month"),
+%  ?assertEqual(format("H:i:s",?DATE),
+%               "17:16:17"),
+%  ?assertEqual(format("z",?DATE),
+%               "68")
+%].
 
-iso_test() -> [
-  ?assertEqual("2004 W53",format(?ISO,{{2005,1,1},  {1,1,1}})),
-  ?assertEqual("2004 W53",format(?ISO,{{2005,1,2},  {1,1,1}})),
-  ?assertEqual("2005 W52",format(?ISO,{{2005,12,31},{1,1,1}})), 
-  ?assertEqual("2007 W01",format(?ISO,{{2007,1,1},  {1,1,1}})),
-  ?assertEqual("2007 W52",format(?ISO,{{2007,12,30},{1,1,1}})),
-  ?assertEqual("2008 W01",format(?ISO,{{2007,12,31},{1,1,1}})),
-  ?assertEqual("2008 W01",format(?ISO,{{2008,1,1},  {1,1,1}})),
-  ?assertEqual("2009 W01",format(?ISO,{{2008,12,29},{1,1,1}})),
-  ?assertEqual("2009 W01",format(?ISO,{{2008,12,31},{1,1,1}})),
-  ?assertEqual("2009 W01",format(?ISO,{{2009,1,1},  {1,1,1}})),
-  ?assertEqual("2009 W53",format(?ISO,{{2009,12,31},{1,1,1}})),
-  ?assertEqual("2009 W53",format(?ISO,{{2010,1,3},  {1,1,1}}))
-].
+%iso_test() -> [
+%  ?assertEqual("2004 W53",format(?ISO,{{2005,1,1},  {1,1,1}})),
+%  ?assertEqual("2004 W53",format(?ISO,{{2005,1,2},  {1,1,1}})),
+%  ?assertEqual("2005 W52",format(?ISO,{{2005,12,31},{1,1,1}})), 
+%  ?assertEqual("2007 W01",format(?ISO,{{2007,1,1},  {1,1,1}})),
+%  ?assertEqual("2007 W52",format(?ISO,{{2007,12,30},{1,1,1}})),
+%  ?assertEqual("2008 W01",format(?ISO,{{2007,12,31},{1,1,1}})),
+%  ?assertEqual("2008 W01",format(?ISO,{{2008,1,1},  {1,1,1}})),
+%  ?assertEqual("2009 W01",format(?ISO,{{2008,12,29},{1,1,1}})),
+%  ?assertEqual("2009 W01",format(?ISO,{{2008,12,31},{1,1,1}})),
+%  ?assertEqual("2009 W01",format(?ISO,{{2009,1,1},  {1,1,1}})),
+%  ?assertEqual("2009 W53",format(?ISO,{{2009,12,31},{1,1,1}})),
+%  ?assertEqual("2009 W53",format(?ISO,{{2010,1,3},  {1,1,1}}))
+%].
