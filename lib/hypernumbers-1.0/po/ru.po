@@ -1,8 +1,8 @@
-msgid "English"
-msgstr "English"
-
 msgid "Normal"
 msgstr "Нормальный"
+
+msgid "English"
+msgstr "English"
 
 msgid "Insert 1 below"
 msgstr "Вставка 1 ниже"
@@ -16,17 +16,17 @@ msgstr "Ясный"
 msgid "Styles"
 msgstr "Стили"
 
-msgid "Import Spreadsheets"
-msgstr "Импорт таблиц"
-
 msgid "time"
 msgstr "время"
 
-msgid "currency"
-msgstr "валюта"
+msgid "Import Spreadsheets"
+msgstr "Импорт таблиц"
 
 msgid "My Spreadsheets"
 msgstr "Мои таблицы"
+
+msgid "currency"
+msgstr "валюта"
 
 msgid "Portuguese"
 msgstr "Português"
@@ -40,7 +40,7 @@ msgstr "Обычная"
 msgid "Serif"
 msgstr "Serif"
 
-msgid "en"
+msgid "en_gb"
 msgstr "ru"
 
 msgid "Russian"
@@ -52,41 +52,47 @@ msgstr "Вставка 1 праве"
 msgid "Contents"
 msgstr "Содержание"
 
+msgid "Login"
+msgstr ""
+
 msgid "datetime"
 msgstr "datetime"
 
-msgid "File"
-msgstr "Файл"
+msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
+msgstr ""
 
 msgid "percentage"
 msgstr "Процент"
 
-msgid "rounded"
-msgstr "округляться"
+msgid "File"
+msgstr "Файл"
 
 msgid "Spanish"
 msgstr "Español"
 
+msgid "rounded"
+msgstr "округляться"
+
 msgid "German"
 msgstr "Deutsch"
-
-msgid "empty"
-msgstr "пустой"
 
 msgid "Monospace"
 msgstr "Monospace"
 
-msgid "Insert 1 above"
-msgstr "Вставка 1 выше"
-
-msgid "Delete Row(s)"
-msgstr "Удалить строки (ов)"
+msgid "empty"
+msgstr "пустой"
 
 msgid "Font"
 msgstr "Шрифт"
 
 msgid "Logged in as"
 msgstr "Английский"
+
+msgid "Delete Row(s)"
+msgstr "Удалить строки (ов)"
+
+msgid "Insert 1 above"
+msgstr "Вставка 1 выше"
 
 msgid "Edit"
 msgstr "Изменить"
@@ -109,12 +115,12 @@ msgstr "финансовые"
 msgid "Log out"
 msgstr "Выйдите"
 
-msgid "Create New"
-msgstr "Создать новый"
-
 msgid "Format"
 msgstr "Формат"
 
 msgid "French"
 msgstr "Français"
+
+msgid "Create New"
+msgstr "Создать новый"
 

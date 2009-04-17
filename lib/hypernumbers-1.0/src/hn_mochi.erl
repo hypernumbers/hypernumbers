@@ -32,7 +32,8 @@ req(Req) ->
     case filename:extension(Req:get(path)) of 
         
         %% Serve Static Files
-        X when X == ".png"; X == ".css"; X == ".js"; X == ".ico" ->
+        X when X == ".png"; X == ".css"; X == ".js"; 
+               X == ".ico"; X == ".json" ->
             "/"++RelPath = Req:get(path),
             Req:serve_file(RelPath, docroot());
         
@@ -85,8 +86,10 @@ handle_req(Method, Req, Ref, Vars, User) ->
 
             %% TODO: Log file uploads.
             case string:substr(Ct, 1, 19) of
+
                 "multipart/form-data" ->
                     ?json(Req, hn_file_upload:handle_upload(Req, User));
+
                 _Else ->
                     Body = Req:recv_body(),
                     {ok, Post} = get_json_post(Body),
@@ -100,12 +103,12 @@ handle_req(Method, Req, Ref, Vars, User) ->
     end.    
 
 serve_html(Req, File, anonymous) ->
-    serve_file(Req, ensure(File, "en"));
+    serve_file(Req, ensure(File, "en_gb"));
 
 serve_html(Req, File, User) ->
     Ext = case hn_users:get(User, "language") of
               {ok, Lang} -> Lang;
-              undefined  -> "en"
+              undefined  -> "en_gb"
           end,
     serve_file(Req, ensure(File, Ext)).
 

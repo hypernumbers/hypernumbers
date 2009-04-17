@@ -1,8 +1,8 @@
-msgid "English"
-msgstr "English"
-
 msgid "Normal"
 msgstr "Normal"
+
+msgid "English"
+msgstr "English"
 
 msgid "Insert 1 below"
 msgstr "insertion 1 ci-dessous"
@@ -16,17 +16,17 @@ msgstr "Gommer"
 msgid "Styles"
 msgstr "Modèles"
 
-msgid "Import Spreadsheets"
-msgstr "Importation des bilans"
-
 msgid "time"
 msgstr "temps"
 
-msgid "currency"
-msgstr "monnaie"
+msgid "Import Spreadsheets"
+msgstr "Importation des bilans"
 
 msgid "My Spreadsheets"
 msgstr "Mes bilans"
+
+msgid "currency"
+msgstr "monnaie"
 
 msgid "Portuguese"
 msgstr "Português"
@@ -40,14 +40,11 @@ msgstr "plaine"
 msgid "Serif"
 msgstr "Serif"
 
-msgid "en"
+msgid "en_gb"
 msgstr "fr"
 
 msgid "Russian"
 msgstr "Русский"
-
-msgid "Login"
-msgstr "Ouvrir Une Session"
 
 msgid "Insert 1 right"
 msgstr "insérez 1 à droite"
@@ -55,44 +52,47 @@ msgstr "insérez 1 à droite"
 msgid "Contents"
 msgstr "Contenu"
 
-msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
-msgstr "ouvrir Microsoft Excel 97/2000/2003 (*.xls)"
+msgid "Login"
+msgstr "Ouvrir Une Session"
 
 msgid "datetime"
 msgstr "date et temps"
 
-msgid "File"
-msgstr "Fichier"
+msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
+msgstr "ouvrir Microsoft Excel 97/2000/2003 (*.xls)"
 
 msgid "percentage"
 msgstr "pourcentage"
 
-msgid "rounded"
-msgstr "arrondir"
+msgid "File"
+msgstr "Fichier"
 
 msgid "Spanish"
 msgstr "Español"
 
+msgid "rounded"
+msgstr "arrondir"
+
 msgid "German"
 msgstr "Deutsch"
-
-msgid "empty"
-msgstr "vide"
 
 msgid "Monospace"
 msgstr "Monospace"
 
-msgid "Insert 1 above"
-msgstr "insertion 1 ci-dessus"
-
-msgid "Delete Row(s)"
-msgstr "ion des rangées"
+msgid "empty"
+msgstr "vide"
 
 msgid "Font"
 msgstr "Police"
 
 msgid "Logged in as"
 msgstr "Ouvert Une Session Comme"
+
+msgid "Delete Row(s)"
+msgstr "ion des rangées"
+
+msgid "Insert 1 above"
+msgstr "insertion 1 ci-dessus"
 
 msgid "Edit"
 msgstr "Édition"
@@ -115,12 +115,12 @@ msgstr "financier"
 msgid "Log out"
 msgstr "Fermer Une Session"
 
-msgid "Create New"
-msgstr "créez nouveau"
-
 msgid "Format"
 msgstr "Format"
 
 msgid "French"
 msgstr "Français"
+
+msgid "Create New"
+msgstr "créez nouveau"
 

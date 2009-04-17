@@ -5,122 +5,122 @@ msgid "English"
 msgstr "English"
 
 msgid "Insert 1 below"
-msgstr "inserto 1 qui sotto"
+msgstr "Insert 1 below"
 
 msgid "Insert 1 left"
-msgstr "inserisca 1 a sinistra"
+msgstr "Insert 1 left"
 
 msgid "Clear "
-msgstr "Libere "
+msgstr "Clear "
 
 msgid "Styles"
-msgstr "Stili"
+msgstr "Styles"
 
 msgid "time"
-msgstr "tempo "
+msgstr "time"
 
 msgid "Import Spreadsheets"
-msgstr "Importazione Dei Fogli Elettronici"
+msgstr "Import Spreadsheets"
 
 msgid "My Spreadsheets"
-msgstr "I Miei Fogli Elettronici"
+msgstr "My Spreadsheets"
 
 msgid "currency"
-msgstr "valuta "
+msgstr "currency"
 
 msgid "Portuguese"
-msgstr "Português"
+msgstr "Portuguese"
 
 msgid "Italian"
-msgstr "Italiano"
+msgstr "Italian"
 
 msgid "Plain"
-msgstr "pianura "
+msgstr "Plain"
 
 msgid "Serif"
 msgstr "Serif"
 
 msgid "en_gb"
-msgstr "it"
+msgstr "en_gb"
 
 msgid "Russian"
-msgstr "Русский"
+msgstr "Russian"
 
 msgid "Insert 1 right"
-msgstr "inserisca 1 a destra"
+msgstr "Insert 1 right"
 
 msgid "Contents"
-msgstr "Soddisfare"
+msgstr "Contents"
 
 msgid "Login"
-msgstr "Inizio Attività"
+msgstr "Login"
 
 msgid "datetime"
-msgstr "data ed tempo"
+msgstr "datetime"
 
 msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
-msgstr "Apri Microsoft Excel 97/2000/2003 (*.xls)"
+msgstr "open Microsoft Excel 97/2000/2003 (*.xls)"
 
 msgid "percentage"
-msgstr "percentuale "
+msgstr "percentage"
 
 msgid "File"
 msgstr "File"
 
 msgid "Spanish"
-msgstr "Español"
+msgstr "Spanish"
 
 msgid "rounded"
-msgstr "arrotondato "
+msgstr "rounded"
 
 msgid "German"
-msgstr "Deutsch"
+msgstr "German"
 
 msgid "Monospace"
 msgstr "Monospace"
 
 msgid "empty"
-msgstr "vuoto"
+msgstr "empty"
 
 msgid "Font"
-msgstr "Nomme del carattere"
+msgstr "Font"
 
 msgid "Logged in as"
-msgstr "Entrato"
+msgstr "Logged in as"
 
 msgid "Delete Row(s)"
-msgstr "cancellazione delle file"
+msgstr "Delete Row(s)"
 
 msgid "Insert 1 above"
-msgstr "inserto 1 qui sopra"
+msgstr "Insert 1 above"
 
 msgid "Edit"
-msgstr "Modifica"
+msgstr "Edit"
 
 msgid "Delete Column(s)"
-msgstr "Colonne di cancellazione"
+msgstr "Delete Column(s)"
 
 msgid "Save"
-msgstr "Salva"
+msgstr "Save"
 
 msgid "date"
-msgstr "data "
+msgstr "date"
 
 msgid "decimals"
-msgstr "decimali "
+msgstr "decimals"
 
 msgid "financial"
-msgstr "finanziario "
+msgstr "financial"
 
 msgid "Log out"
-msgstr "Termine Attività"
+msgstr "Log out"
 
 msgid "Format"
-msgstr "Formato"
+msgstr "Format"
 
 msgid "French"
-msgstr "Français"
+msgstr "French"
 
 msgid "Create New"
-msgstr "generi nuovo"
+msgstr "Create New"
 

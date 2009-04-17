@@ -1,8 +1,8 @@
-msgid "English"
-msgstr "English"
-
 msgid "Normal"
 msgstr "Normal"
+
+msgid "English"
+msgstr "English"
 
 msgid "Insert 1 below"
 msgstr "Insert 1 below"
@@ -16,17 +16,17 @@ msgstr "Clear "
 msgid "Styles"
 msgstr "Styles"
 
-msgid "Import Spreadsheets"
-msgstr "Import Spreadsheets"
-
 msgid "time"
 msgstr "time"
 
-msgid "currency"
-msgstr "currency"
+msgid "Import Spreadsheets"
+msgstr "Import Spreadsheets"
 
 msgid "My Spreadsheets"
 msgstr "My Spreadsheets"
+
+msgid "currency"
+msgstr "currency"
 
 msgid "Portuguese"
 msgstr "Portuguese"
@@ -40,14 +40,11 @@ msgstr "Plain"
 msgid "Serif"
 msgstr "Serif"
 
-msgid "en"
-msgstr "en"
+msgid "en_gb"
+msgstr "en_us"
 
 msgid "Russian"
 msgstr "Russian"
-
-msgid "Login"
-msgstr "Login"
 
 msgid "Insert 1 right"
 msgstr "Insert 1 right"
@@ -55,44 +52,47 @@ msgstr "Insert 1 right"
 msgid "Contents"
 msgstr "Contents"
 
-msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
-msgstr "open Microsoft Excel 97/2000/2003 (*.xls)"
+msgid "Login"
+msgstr "Login"
 
 msgid "datetime"
 msgstr "datetime"
 
-msgid "File"
-msgstr "File"
+msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
+msgstr "open Microsoft Excel 97/2000/2003 (*.xls)"
 
 msgid "percentage"
 msgstr "percentage"
 
-msgid "rounded"
-msgstr "rounded"
+msgid "File"
+msgstr "File"
 
 msgid "Spanish"
 msgstr "Spanish"
 
+msgid "rounded"
+msgstr "rounded"
+
 msgid "German"
 msgstr "German"
-
-msgid "empty"
-msgstr "empty"
 
 msgid "Monospace"
 msgstr "Monospace"
 
-msgid "Insert 1 above"
-msgstr "Insert 1 above"
-
-msgid "Delete Row(s)"
-msgstr "Delete Row(s)"
+msgid "empty"
+msgstr "empty"
 
 msgid "Font"
 msgstr "Font"
 
 msgid "Logged in as"
 msgstr "Logged in as"
+
+msgid "Delete Row(s)"
+msgstr "Delete Row(s)"
+
+msgid "Insert 1 above"
+msgstr "Insert 1 above"
 
 msgid "Edit"
 msgstr "Edit"
@@ -115,12 +115,12 @@ msgstr "financial"
 msgid "Log out"
 msgstr "Log out"
 
-msgid "Create New"
-msgstr "Create New"
-
 msgid "Format"
 msgstr "Format"
 
 msgid "French"
 msgstr "French"
+
+msgid "Create New"
+msgstr "Create New"
 

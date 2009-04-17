@@ -111,7 +111,6 @@
 -define(not_ch, remoting_reg:notify_change).
 
 -export([
-         upgrade_1519/0,
          write_attributes/2,
          write_last/1,
          % write_permission/2,
@@ -155,6 +154,8 @@
          create_db/0
         ]).
 
+%% Upgrade functions that were applied at upgrade_REV
+-export([upgrade_1519/0, upgrade_1556/0]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
 %% API Interfaces                                                             %%
@@ -165,6 +166,13 @@ upgrade_1519() ->
                 {hn_user, Name, Pass, Auth, Created, dict:new()}
         end,
     mnesia:transform_table(hn_user, F, record_info(fields, hn_user)).
+
+upgrade_1556() ->
+    F = fun({hn_user, Name, Pass, Auth, Created, _Dict}) ->
+                {hn_user, Name, Pass, Auth, Created, dict:new()}
+        end,
+    mnesia:transform_table(hn_user, F, record_info(fields, hn_user)).
+
 
 %% @doc reads pages
 %% @todo fix up api
