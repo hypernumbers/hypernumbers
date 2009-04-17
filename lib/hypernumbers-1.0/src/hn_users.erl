@@ -159,6 +159,9 @@ get_perms(Name, Groups, [{user, Name, Access} | Rest], Acc) ->
     get_perms(Name, Groups, Rest, [Access | Acc]);
 get_perms(Name, Groups, [{user, anonymous, Access} | Rest], Acc) ->
     get_perms(Name, Groups, Rest, [Access | Acc]);
+get_perms(Name, Groups, [{user, logged_in, Access} | Rest], Acc) 
+  when Name /= anonymous ->
+    get_perms(Name, Groups, Rest, [Access | Acc]);
 get_perms(User, Groups, [{group, Name, Access} | Rest], Acc) ->
     case lists:member(Name, Groups) of 
         true  -> get_perms(User, Groups, Rest, [Access | Acc]);
