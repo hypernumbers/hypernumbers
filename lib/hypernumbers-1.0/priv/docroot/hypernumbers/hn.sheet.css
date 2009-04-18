@@ -27,10 +27,6 @@ table {
   height:100%;
 }
 
-input { 
-  background:#FFF; 
-}
-
 ul,li { 
  margin:0px;
  padding:0px;
@@ -91,6 +87,7 @@ ul,li {
   height: 100%;
   width: 100%;
   text-indent: 4px;
+  background:#FFF;
 }
 
 #functionsbtn { 
@@ -100,7 +97,7 @@ ul,li {
   width:28px;
   border-width:0px 1px;
   border-color:#FFF #FFF #FFF #FFF;
-  background: #DDDDDD;
+  background: #EEE;
 }
 
 #corner {
@@ -725,7 +722,6 @@ border:1px solid blue;
 
 .dialog h2
 {
-    cursor:move;
     display:    block;
     margin:0px;
     font:       bold 10px sans-serif;
@@ -733,6 +729,10 @@ border:1px solid blue;
     border-bottom:1px solid #66AA00;
     -moz-border-radius: 3px 3px 0px 0px;
     background: orange;
+}
+
+.dialog li {
+    list-style-type:none;
 }
 
 .dialog .close {
@@ -745,3 +745,44 @@ border:1px solid blue;
     background-image: url(sprite.png);
     background-position:  -49px -3px;
 }
+
+#functions {  
+ width:340px;
+ }
+
+#funwrapper { 
+  margin:10px;
+  width:140px; 
+  float:left;
+}
+#catlist { 
+  width:140px; 
+}
+
+#funlist { 
+ background:#EEE; 
+  border:1px solid #666;
+ }
+#funlist a { 
+ display:block;
+padding:2px;
+margin:1px;
+cursor:pointer;
+}
+
+#funlist a:hover { 
+  background:#FFF;
+}
+
+#funlist { 
+  height:220px;
+  overflow:auto;
+}
+
+#selectedfun { 
+  float:right;
+  width:180px;
+}
+
+#selectedfun p { margin:0px 0px 10px 0px; }
+#selectedfun h4 { margin:0px; }

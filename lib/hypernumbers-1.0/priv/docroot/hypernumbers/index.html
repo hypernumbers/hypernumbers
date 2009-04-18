@@ -324,9 +324,22 @@
 
     <div id="functions" class="dialog">
       <h2>$txt:{Functions}$</h2>
-      <div>
-        hello
+      <div id="funwrapper">
+        <select id="catlist">
+        </select>
+        <div id="funlist">
+        </div>
       </div>
+      <div id="selectedfun">
+        <h3 id="funname"></h3>
+        <h4>Description</h4>
+        <p id="fundesc"></p>
+        <h4>Usage</h4>
+        <p id="funusage"></p>
+        <h4>Examples</h4>
+        <p id="funexamples"></p>
+        <input type="submit" value="Enter Formula" id="enterformula" />
+      </div>  
     </div>
     
   </body>
