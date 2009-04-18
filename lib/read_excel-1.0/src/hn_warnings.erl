@@ -19,22 +19,28 @@ warnings1(FuncVar, H, Tbl) ->
 
     % if FuncVar is 255 then this is not an Excel function but is a function
     % whose name is the head of the arguments list...
-    Nm = if
-             (FuncVar == 255) -> {string, Name} = H,
-                                 Name;
-             true             -> excel_rev_comp:macro_to_string_WARNING(FuncVar)
-              end,
-    
+    Nm    = get_name(H, FuncVar),
     Index = ms_util2:get_index(help, name),
+    
     case lists:keymember(Nm, Index, ?WORKING_FNS) of
-        false ->  Str = "Function "++Nm++
-                                  " is used in your spreadsheet but "++
-                                  "not supported in Hypernumbers "++
-                                  "at the moment!",
-                              excel_util:append(Tbl, warnings, Str);
-        Help -> #help{warning = Warning} = Help,
-                case Warning of
-                    ""    -> ok;
-                    Other -> excel_util:append(Tbl, warnings, Other)
-                end
+        false ->  
+            Str = "Function "++Nm++
+                " is used in your spreadsheet but "++
+                "not supported in Hypernumbers "++
+                "at the moment!",
+            excel_util:append(Tbl, warnings, Str);
+        
+        #help{warning = ""} -> 
+            ok;
+        
+        #help{warning = Warning} ->
+            excel_util:append(Tbl, warnings, Warning)
     end.
+
+get_name(H, 255) ->
+    {string, Name} = H,
+    Name;
+get_name(_H, FuncVar) ->
+    excel_rev_comp:macro_to_string_WARNING(FuncVar). 
+
+    

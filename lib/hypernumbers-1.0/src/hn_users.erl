@@ -3,7 +3,7 @@
 -module(hn_users).
 
 -export([create/2,delete/1,login/3,exists/1,gen_authtoken/2,
-        get_access_level/2, verify_token/1, update/3, get/2, read/1 ]).
+        get_access_level/2, verify_token/1, update/3, get/2, read/1, name/1 ]).
 
 -include("hypernumbers.hrl").
 -include("yaws_api.hrl").
@@ -21,6 +21,10 @@ delete_tr(Name) ->
 delete(Name) ->
     mnesia:activity(transaction, fun delete_tr/1, [Name]).
 
+name(anonmous) ->
+    "anonymous";
+name(User) ->
+    User#hn_user.name.
 
 exists(Name) ->
 	

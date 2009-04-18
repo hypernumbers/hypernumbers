@@ -10,29 +10,30 @@
 %% returns response data to be sent back to the client.
 
 handle_upload(Req, User) ->
-    Username = case User of
-                   anonymous -> "anonymous";
-                   U         -> U#hn_user.name
-               end,
-    %% TODO: Use dh_date here.
-    {{Y, M, D}, {H, Min, S}} = calendar:now_to_universal_time(erlang:now()),
-    Timestamp = lists:flatten(io_lib:format("~p_~p_~p-~p_~p_~p", [Y, M, D, H, Min, S])),
-    Filestamp = Username ++ "__" ++ Timestamp,
+    Username  = hn_users:name(User),
+    Filestamp = Username ++ "__" ++ dh_date:format("r"),
+    
     Callback = fun(N) ->
                        %% Passing filestamp (time & username) for file name in state record here.
                        file_upload_callback(N, #file_upload_state{filename = Filestamp})
                end,
+    
     {_, _, State} = mochiweb_multipart:parse_multipart_request(Req, Callback),
     RawPath = Req:get(raw_path),
     Basename = filename:basename(State#file_upload_state.original_filename, ".xls"),
     {ok, Safename, _N} = regexp:gsub(Basename, "\\s+", "_"),
     ParentPage = RawPath ++ Safename ++ "/",
     {value, {'Host', Host}} = mochiweb_headers:lookup('Host', Req:get(headers)),
-    import(State#file_upload_state.filename,
-           Host,
-           ParentPage),
-    {struct, [{"location", ParentPage}]}.
 
+    try 
+        import(State#file_upload_state.filename, Host, ParentPage),
+        {struct, [{"location", ParentPage}]}
+    catch
+        _Error:_Reason ->
+            ?ERROR("Error Importing ~p~n",[_Error]),
+            {struct, [{"error", "error reading sheet"}]}
+    end.
+           
 file_upload_callback({headers, Headers}, S) ->
     ContentDisposition = hd(Headers),
     NewState = case ContentDisposition of

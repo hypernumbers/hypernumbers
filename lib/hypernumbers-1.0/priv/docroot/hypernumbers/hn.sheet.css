@@ -722,6 +722,7 @@ border:1px solid blue;
 
 .dialog h2
 {
+  cursor:move;
     display:    block;
     margin:0px;
     font:       bold 10px sans-serif;

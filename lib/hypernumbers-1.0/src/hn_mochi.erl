@@ -58,7 +58,7 @@ do_req(Req) ->
                {error, _Reason} -> anonymous
            end,
    
-    {ok, Access} = hn_users:get_access_level(user_name(User), Ref),
+    {ok, Access} = hn_users:get_access_level(hn_users:name(User), Ref),
 
     case check_auth(Access, Ref#refX.path, Method)  of 
         login -> Req:serve_file("hypernumbers/login.html", docroot(), ?hdr);
@@ -77,7 +77,7 @@ handle_req(Method, Req, Ref, Vars, User) ->
 
     case Method of
         'GET'  -> 
-            mochilog:log(Req, Ref, user_name(User), undefined),
+            mochilog:log(Req, Ref, hn_users:name(User), undefined),
             iget(Req, Ref, Type, Vars, User);
 
         'POST' ->
@@ -88,13 +88,15 @@ handle_req(Method, Req, Ref, Vars, User) ->
             case string:substr(Ct, 1, 19) of
 
                 "multipart/form-data" ->
-                    ?json(Req, hn_file_upload:handle_upload(Req, User));
+                    Data = hn_file_upload:handle_upload(Req, User),
+                    Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
+                    Req:ok({"text/html", ?hdr, Json});
 
                 _Else ->
                     Body = Req:recv_body(),
                     {ok, Post} = get_json_post(Body),
 
-                    mochilog:log(Req, Ref, user_name(User), Body),
+                    mochilog:log(Req, Ref, hn_users:name(User), Body),
                     case ipost(Req, Ref, Type, Vars, Post, User) of
                         ok  -> ?json(Req, "success");
                         ret -> ok
@@ -593,13 +595,10 @@ get_var_or_cookie(Key, Vars, Req) ->
             {ok, Auth}
     end.
 
-user_name(anonymous) -> anonymous;
-user_name(User)      -> User#hn_user.name.
-
 page_attributes(Ref, User) ->
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
-    Tree2   = dh_tree:set(["user"], user_name(User), Tree),
+    Tree2   = dh_tree:set(["user"], hn_users:name(User), Tree),
     Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
     NTree  = add_styles(Styles, Tree2),
     Dict   = to_dict(hn_db_api:read_whole_page(Ref), NTree),
