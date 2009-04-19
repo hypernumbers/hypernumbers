@@ -21,10 +21,8 @@ delete_tr(Name) ->
 delete(Name) ->
     mnesia:activity(transaction, fun delete_tr/1, [Name]).
 
-name(anonmous) ->
-    "anonymous";
-name(User) ->
-    User#hn_user.name.
+name(anonymous) -> "anonymous";
+name(User)      -> User#hn_user.name.
 
 exists(Name) ->
 	
