@@ -1634,7 +1634,7 @@ unregister_out_hn(P, C)
         _   -> ok
     end.
 
-%% @spec read_page_structure(Site::string(), Path::list()) -> dh_tree()
+%% @spec read_page_structure(Ref) -> dh_tree()
 %% @doc read the populated pages under the specified path
 %% @todo fix up api
 read_page_structure(#refX{site = Site, path = Path, obj = {page, "/"}}) ->

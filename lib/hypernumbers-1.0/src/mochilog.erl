@@ -37,7 +37,7 @@ log(Req, Ref, User, Body) ->
     
     disk_log:alog(?NAME, Log).
 
-%% @spec close() -> ok
+%% @spec stop() -> ok
 %% @doc Closes log
 stop() ->
     disk_log:close(?NAME).

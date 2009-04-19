@@ -757,7 +757,7 @@ read_attributes(RefX, AttrList) when is_record(RefX, refX), is_list(AttrList) ->
     Fun = fun hn_db_wu:read_attrs/2,
     mnesia:activity(transaction, Fun, [RefX, AttrList]).
 
-%% @spec read(#refX{}) -> [{#refX{}, {Key, Value}}]
+%% @spec read_whole_page(#refX{}) -> [{#refX{}, {Key, Value}}]
 %% Key = atom()
 %% Value = term()
 %% @doc read takes a page refererence and returns all the attributes under that
