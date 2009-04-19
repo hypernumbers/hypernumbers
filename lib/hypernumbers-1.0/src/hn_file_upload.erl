@@ -88,7 +88,8 @@ file_upload_callback(_, State) ->
 %% individual sheets will be created.
 
 import(Filename, Host, ParentPage) ->
-    {Celldata, _Names, _Formats, CSS} = readxls(Filename),
+    {Celldata, _Names, _Formats, CSS, Warnings} = readxls(Filename),
+    Site = "http://" ++ Host,
     F = fun(X, {Ls, Fs}) ->
                 {SheetName, Target, V} = read_reader_record(X),
                 Sheet = excel_util:esc_tab_name(SheetName),
@@ -106,13 +107,13 @@ import(Filename, Host, ParentPage) ->
         end,
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
         Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
-                         Url = string:to_lower("http://" ++ Host ++ Path ++ Ref),
+                         Url = string:to_lower(Site ++ Path ++ Ref),
                          {ok, RefRec} = hn_util:parse_url(Url),
                          Postdata2 = fix_integers(Postdata),
                          {RefX, {_Key, Val}} = hn_util:ref_to_refX(RefRec, Postdata2),
                          ok = hn_db_api:write_attributes(RefX, [{"formula", Val}]);
                     ({Path, {Tl, Br}, Postdata}) -> % array formula
-                         Url = string:to_lower("http://" ++ Host ++ Path ++ Tl ++ ":" ++ Br),
+                         Url = string:to_lower(Site ++ Path ++ Tl ++ ":" ++ Br),
                          {ok, RefRec} = hn_util:parse_url(Url),
                          hn_main:formula_to_range(Postdata, RefRec)
                  end,
@@ -127,55 +128,67 @@ import(Filename, Host, ParentPage) ->
                        Sheet = excel_util:esc_tab_name(SheetName),
                        Path = ParentPage++Sheet++"/",
                        Ref = rc_to_a1(Row,Col),
-                       Url = string:to_lower("http://" ++ Host ++ Path ++ Ref),
+                       Url = string:to_lower(Site ++ Path ++ Ref),
                        {ok, RefRec} = hn_util:parse_url(Url),
                        #ref{path = Path2} = RefRec,
-                       Addr = #ref{site = "http://" ++ Host,
+                       Addr = #ref{site = Site,
                                    path = Path2, ref = {page, "/"}},
                        hn_db:write_style_IMPORT(Addr, CSSItem)
                end,
     lists:foreach(WriteCSS, CSS),
+
+    %% write parent page information
+    PathComps = string:tokens(ParentPage, "/"),
+    ok = write_warnings(Warnings, Site, PathComps),
+    write_to_cell("Your data has been imported and is under sheet1/, sheet2/ etc.", 1, 1, Site, PathComps),
+    write_to_cell("The list of warnings is in column F.", 1, 2, Site, PathComps),
+    
     loop(),
     ok.
 
+write_to_cell(Str, Col, Row, Site, Path) ->
+    ok = hn_db_api:write_attributes(#refX{site = Site,
+                                          path = Path,
+                                          obj = {cell, {Col, Row}}},
+                                    [{"formula", Str}]).
+                                          
+
+write_warnings(Warnings, Site, Path) ->
+    write_warnings(Warnings, 1, Site, Path).
+write_warnings([], _, _, _) ->
+    ok;
+write_warnings([W|Ws], Idx, Site, Path) -> % Idx is the index of W in the original list
+    WarningString = case W of
+                        {{index, _N}, S} -> S;
+                        {S, []}          -> S
+                    end,
+    write_to_cell(WarningString, 7, Idx, Site, Path),
+    write_warnings(Ws, Idx+1, Site, Path).
+
+
 readxls(Fn) ->
     filefilters:read(excel, Fn, fun decipher_ets_tables/1).
+
+
+read_table(Name, TableDescriptors) ->
+    {value, {Name, Id}} = lists:keysearch(Name, 1, TableDescriptors),
+    Records = ets:foldl(fun(X, Acc) -> [X|Acc] end, [], Id),
+    Records.
+                             
 
 %% Input: list of {key, id} pairs where key is an ETS table holding info
 %% about some part of the XLS file.
 %% @TODO: formats, names, styles.
 decipher_ets_tables(Tids) ->
-    %
-    % First get the formulae/string data
-    % 
-    % Grab information about single cell values.
-    {value, {cell, Tid1}} = lists:keysearch(cell, 1, Tids),
-    CellRecs = ets:foldl(fun(X, Acc) -> [X|Acc] end, [], Tid1),
+    CellRecs = read_table(cell, Tids),
     CellInfo = lists:map(fun({Index, [_, Body]}) -> {Index, Body} end, CellRecs),
-    % Grab information about array formulas.
-    {value, {array_formulae, Tid2}} = lists:keysearch(array_formulae, 1, Tids),
-    AFRecs = ets:foldl(fun(X, Acc) -> [X|Acc] end, [], Tid2),
+    AFRecs = read_table(array_formulae, Tids),
     Celldata = CellInfo ++ AFRecs,
-
-    %
-    % Now get the Names information
-    % 
-    {value, {names, Tid3}} = lists:keysearch(names, 1, Tids),
-    Names = ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Tid3),
-
-    %
-    % Now get the Format information
-    % 
-    {value, {formats, Tid4}} = lists:keysearch(formats, 1, Tids),
-    Formats = ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Tid4),
-    
-    %
-    % Now get the CSS information
-    % 
-    {value, {css, Tid5}} = lists:keysearch(css, 1, Tids),
-    CSS = ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Tid5),
-
-    {Celldata, Names, Formats, CSS}.
+    Names = read_table(names, Tids),
+    Formats = read_table(formats, Tids),
+    CSS = read_table(css,Tids),
+    Warnings = read_table(warnings, Tids),
+    {Celldata, Names, Formats, CSS, Warnings}.
 
 loop()->
     case mnesia:table_info(dirty_cell,size) of
