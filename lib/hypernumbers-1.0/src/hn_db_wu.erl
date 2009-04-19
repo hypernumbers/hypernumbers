@@ -1994,16 +1994,17 @@ make_formula(Toks) ->
     mk_f(Toks, []).
 
 %% this function needs to be extended...
-mk_f([], Acc)                             -> "="++lists:flatten(lists:reverse(Acc));
-mk_f([{cellref, _, _, _, Ref} | T], Acc)  -> mk_f(T, [Ref | Acc]);
-mk_f([{rangeref, _, _, _, Ref} | T], Acc) -> mk_f(T, [Ref | Acc]);
-mk_f([{namedexpr, Path, Name} | T], Acc)  -> mk_f(T, [Path ++ Name | Acc]);
-mk_f([{atom, H} | T], Acc)                -> mk_f(T, [atom_to_list(H) | Acc]);
-mk_f([{int, I} | T], Acc)                 -> mk_f(T, [integer_to_list(I) | Acc]);
-mk_f([{float, F} | T], Acc)               -> mk_f(T, [float_to_list(F) | Acc]);
-mk_f([{str, S} | T], Acc)                 -> mk_f(T, [$", S, $" | Acc]);
-mk_f([{name, S} | T], Acc)                -> mk_f(T, [S | Acc]);
-mk_f([{H} | T], Acc)                      -> mk_f(T, [atom_to_list(H) | Acc]).
+mk_f([], A) -> "="++lists:flatten(lists:reverse(A));
+mk_f([{cellref, _, _, _, R} | T], A)            -> mk_f(T, [R | A]);
+% mk_f([{rangeref, _, _, _, R} | T], A)           -> mk_f(T, [R | A]);
+mk_f([{rangeref, _, _, _, __, _, _, R} | T], A) -> mk_f(T, [R | A]);
+mk_f([{namedexpr, P, N} | T], A)                -> mk_f(T, [P ++ N | A]);
+mk_f([{atom, H} | T], A)                        -> mk_f(T, [atom_to_list(H) | A]);
+mk_f([{int, I} | T], A)                         -> mk_f(T, [integer_to_list(I) | A]);
+mk_f([{float, F} | T], A)                       -> mk_f(T, [float_to_list(F) | A]);
+mk_f([{str, S} | T], A)                         -> mk_f(T, [$", S, $" | A]);
+mk_f([{name, S} | T], A)                        -> mk_f(T, [S | A]);
+mk_f([{H} | T], A)                              -> mk_f(T, [atom_to_list(H) | A]).
 
 parse_cell(Cell) ->
     {XDollar, Rest} = case Cell of
