@@ -69,22 +69,22 @@ eval_formula(Fcode) ->
         ?error_in_formula ->
             ?error_in_formula;
         Value ->
-            Result = case Value of
-                         R when ?is_cellref(R) ->
-                             case fetch(R) of
-                                 blank -> 0;
-                                 Other -> Other
-                             end;
-                         R when ?is_rangeref(R) ->
-                             case implicit_intersection(R) of
-                                 blank -> 0;
-                                 Other -> Other
-                             end;
-                         R when ?is_namedexpr(R) ->
-                             ?ERRVAL_NAME;
-                         Constant ->
-                             Constant
-                     end
+            case Value of
+                R when ?is_cellref(R) ->
+                    case fetch(R) of
+                        blank -> 0;
+                        Other -> Other
+                    end;
+                R when ?is_rangeref(R) ->
+                    case implicit_intersection(R) of
+                        blank -> 0;
+                        Other -> Other
+                    end;
+                R when ?is_namedexpr(R) ->
+                    ?ERRVAL_NAME;
+                Constant ->
+                    Constant
+            end
     end.
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
