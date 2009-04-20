@@ -85,3 +85,66 @@ index([A, V1, V2]) when ?is_area(A) ->
 index([X, V1, V2]) ->
     index([area_util:make_array([[X]]), V1, V2]).
 
+
+vlookup([V, A, I]) ->
+    vlookup([V, A, I, true]);
+vlookup([V, A, I, B]) ->
+    {Tag, L} = A,
+    NewA = {Tag, transpose(L)},
+    hlookup([V, NewA, I, B]).
+    
+
+hlookup([V, A, I]) ->
+    hlookup([V, A, I, true]);
+hlookup([V, A, I0, B]) ->
+    I = ?int(I0, [cast_strings, cast_bools, ban_blanks, ban_dates]),
+             
+    ?ensure(I >= 1, ?ERR_VAL),
+    ?ensure(I =< area_util:width(A), ?ERR_REF),
+
+    Row = area_util:row(1, A),
+    case find(V, Row, B) of
+        0 ->
+            ?ERR_NA;
+        VIndex ->
+            {ok, Ret} = area_util:at(VIndex, I, A),
+            Ret
+    end.
+
+%%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%% Area is either 1-row or 1-column.
+%% If IsExact is false, then the position of the largest value that is less than
+%% Value is returned.
+find(Value, Area, true) ->
+    L = area_util:to_list(Area),
+    pos(Value, L);
+find(Value, Area, false) ->
+    L = area_util:to_list(Area),
+    case pos(Value, L) of
+        0 -> non_exact_find(Value, L);
+        I -> I
+    end.
+
+%% TODO: implement.
+non_exact_find(_Value, _L) ->
+    ?ERR_NA.
+    
+%% @doc Find the position of element E in list L.
+%% TODO: Remove. Replace calls above with nglists.
+
+pos(E, L)                    -> pos(E, L, 1).
+pos(_, [], _)                -> 0;
+pos(E, [H|_], I) when E == H -> I;
+pos(E, [_|T], I)             -> pos(E, T, I+1).
+
+%% TODO: as in pos.
+
+transpose(L) ->
+    Len = length(hd(L)),
+    transpose1(L, lists:duplicate(Len, [])).
+transpose1([R|T], Acc) ->
+    NewAcc = lists:zipwith(fun(X, Y) -> Y ++ [X] end, R, Acc),
+    transpose1(T, NewAcc);
+transpose1([], Acc) ->
+    Acc.
