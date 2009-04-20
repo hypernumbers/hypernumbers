@@ -125,7 +125,7 @@ make_array(W, H) ->
 row(N, A = {Tag, Rows}) when ?is_area(A) andalso is_integer(N) ->
     H = height(A),
     if H < N -> ?OUT_OF_RANGE;
-       true  -> {Tag, nth(N, Rows)}
+       true  -> {Tag, [nth(N, Rows)]}
     end.
 
 %% @spec col(N :: pos_integer(), A :: area()) -> area()
@@ -134,6 +134,6 @@ col(N, A = {Tag, Rows}) when ?is_area(A) andalso is_integer(N) ->
     W = width(A),
     if W < N -> ?OUT_OF_RANGE;
        true  ->
-            R = foldl(fun(X, Acc) -> [[nth(N, X)]|Acc] end, [], Rows),
+            R = foldr(fun(X, Acc) -> [[nth(N, X)]|Acc] end, [], Rows),
             {Tag, R}
     end.
