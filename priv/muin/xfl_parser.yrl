@@ -3,6 +3,7 @@
 
 %%% TODO: use list_to_existing_atom (& catch errors).
 %%% TODO: handle invalid arrays propely.
+%%% TODO: clean error reporting
 
 Nonterminals
 
@@ -63,7 +64,8 @@ E -> E '^^' E : ['^^', '$1', '$3'].
 E -> '(' E ')' : '$2'.    
 
 E -> E namedexpr Args : special_div1('$1', '$2', '$3').
-
+E -> cellref cellref  : special_div2('$1', '$2').
+    
 %%% funcalls
 
 E -> Funcall : '$1'.
@@ -114,6 +116,7 @@ Erlang code.
 
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
+-include("typechecks.hrl").
 
 %% Make a function name for the AST from lexer tokens:
 func_name({name, Name}) ->
@@ -160,6 +163,24 @@ to_native_list(Ary) ->
 %%
 special_div1(Expr, N, Args) when N#namedexpr.path == "/" ->
     ['/', Expr, [list_to_atom(N#namedexpr.text)] ++ Args].
+
+%% special case #2 for division:
+%%
+%% #cellref followed by another #cellref is a cell divided by another cell if:
+%%   1. path of second #cellref is "/"
+%%
+special_div2(CR1, CR2) when ?is_cellref(CR1), ?is_cellref(CR2) ->
+    case CR2#cellref.path == "/" of
+        true  ->
+            Divisor = #cellref{col  = CR2#cellref.col,
+                               row  = CR2#cellref.row,
+                               path = "./",
+                               text = string:substr(CR2#cellref.text, 2)},
+            ['/', CR1, Divisor];
+        false ->
+            throw(invalid_formula)
+    end.
+    
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
