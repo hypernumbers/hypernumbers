@@ -64,8 +64,8 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
 %% intersection, resolve a final cellref &c.
 
 eval_formula(Fcode) ->
-    R = eval(Fcode),
-    case R of
+    E = eval(Fcode),
+    case E of
         ?error_in_formula ->
             ?error_in_formula;
         Value ->
@@ -75,7 +75,7 @@ eval_formula(Fcode) ->
                         blank -> 0;
                         Other -> Other
                     end;
-                R when ?is_rangeref(R) ->
+                R when ?is_rangeref(R); ?is_array(R) ->
                     case implicit_intersection(R) of
                         blank -> 0;
                         Other -> Other
@@ -194,12 +194,15 @@ funcall(Fname, Args0) ->
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% Intersect current cell with a range.
-implicit_intersection(R) ->
+implicit_intersection(R) when ?is_rangeref(R) ->
     case R#rangeref.type of
         col    -> implicit_intersection_col(R);
         row    -> implicit_intersection_row(R);
         finite -> implicit_intersection_finite(R)
-    end.
+    end;
+implicit_intersection(A) when ?is_array(A) ->
+    {ok, V} = area_util:at(1, 1, A),
+    V.
 
 implicit_intersection_col(R) ->
     case R#rangeref.width of
