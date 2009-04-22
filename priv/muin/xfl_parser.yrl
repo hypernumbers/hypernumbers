@@ -162,7 +162,7 @@ to_native_list(Ary) ->
 %%   2. followed by function args
 %%
 special_div1(Expr, N, Args) when N#namedexpr.path == "/" ->
-    ['/', Expr, [list_to_atom(N#namedexpr.text)] ++ Args].
+    ['/', Expr, [list_to_atom(string:to_lower(N#namedexpr.text))] ++ Args].
 
 %% special case #2 for division:
 %%
