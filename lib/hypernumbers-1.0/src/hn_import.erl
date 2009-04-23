@@ -5,32 +5,42 @@
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
 
--export([hn_xml/1]).
+-define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 
-% -spec(hn_xml/1 :: (string()) -> ok).
-%% @doc Yaws handler for all incoming HTTP requests
-hn_xml(FileName) -> 
+-export([ json_file/2 ]).
 
-    ?INFO("Importing ~p",[FileName]),
+json_file(Url, FileName) -> 
 
-    {ok,Xml} = file:read_file(FileName),
-    {root,[{domain,Domain}],Pages} 
-        = simplexml:from_xml_string(binary_to_list(Xml)),
+    Ref = hn_mochi:parse_ref(Url),
+    {ok, JsonTxt}   = file:read_file(FileName),
+    {struct, Json}  = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
+    {struct, Cells} = ?pget("cell", Json),
+    [ rows(Ref, X) || X <- Cells],
+    ok.
 
-    [$/|Rest] = lists:reverse(Domain),
-    NDomain   = lists:reverse(Rest),
- 
-    %%{ok,Ref} = hn_util:parse_url(Domain),
-    %%NPages = hn_main:get_pages_under(Ref#ref.path),
-    %%Del = fun(X) ->
-    %%              hn_db:remove_item(Ref#ref{ref='_',path=X})
-    %%      end,
-    %%lists:map(Del,NPages),
+rows(Ref, {Row, {struct, Cells}}) ->
+    [ cells(Ref, Row, X) || X <- Cells],
+    ok.
+
+cells(Ref, Row, {Col, {struct, Attr}}) ->
+    NRef = Ref#refX{ obj={cell, {ltoi(Col), ltoi(Row)}}},
+    [ write(NRef, X) || X <- Attr],
+    ok.
+
+write(_Ref, {"parents", _}) -> ok;
+write(_Ref, {"dependency-tree", _})    -> ok;
+write(_Ref, {"overwrite-color", _}) -> ok;
+write(_Ref, {"style", _})    -> ok;
+write(_Ref, {"rawvalue", _}) -> ok;
+write(_Ref, {"value", _})    -> ok;
+write(Ref, {Key, Val}) -> 
+    hn_db_api:write_attributes(Ref, [{Key, tos(Val)}]),
+    ok.
+
+ltoi(X) ->        
+    list_to_integer(X).
     
-    F = fun({page,[{path,Path}],[Attr]}) ->
-                misc_util:do_import(NDomain++Path,Attr)
-        end,
-
-    lists:map(F,Pages),
-
-    {ok,NDomain}.
+tos(X) when is_atom(X)    -> atom_to_list(X);
+tos(X) when is_integer(X) -> integer_to_list(X);
+tos(X) when is_float(X)   -> float_to_list(X);
+tos(X) -> X.

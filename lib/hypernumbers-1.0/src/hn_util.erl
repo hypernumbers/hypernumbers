@@ -66,7 +66,9 @@
          refX_from_index/1,
          index_from_refX/1,
          index_from_ref/1,
-         url_to_refX/1
+         url_to_refX/1,
+
+         js_to_utf8/1
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -505,6 +507,12 @@ text({errval, Errval})     -> atom_to_list(Errval);
 text(X) when is_boolean(X) -> atom_to_list(X);
 text(Dt) when is_record(Dt, datetime) -> muin_date:to_rfc1123_string(Dt);
 text(_X) -> "". %% quick fix for the "plain" api
+
+js_to_utf8({struct, Val}) -> {struct, lists:map(fun js_to_utf8/1, Val)};
+js_to_utf8({array, Val})  -> {array,  lists:map(fun js_to_utf8/1, Val)};
+js_to_utf8({Key, Val})    -> {xmerl_ucs:to_utf8(Key), js_to_utf8(Val)};
+js_to_utf8(X) when is_integer(X); is_float(X); is_atom(X) -> X;
+js_to_utf8(X)             -> xmerl_ucs:to_utf8(X).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

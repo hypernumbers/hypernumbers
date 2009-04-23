@@ -152,9 +152,6 @@ iget(Req, Ref, cell, [{"attr", []}], _User) ->
     ?json(Req, JS);
 iget(Req, Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
-            [{_Ref, {"value", {errval, Val}}}] -> atom_to_list(Val); 
-            [{_Ref, {"value", true}}]          -> "true"; 
-            [{_Ref, {"value", false}}]         -> "false"; 
             [{_Ref, {"value", Val}}]           -> Val; 
             _Else                              -> "" 
         end,
@@ -219,6 +216,11 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"},
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", "all"}], _User)
   when O == row orelse O == column ->
     hn_db_api:delete(Ref);
+
+ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", "all"}], _User)
+  when O == page ->
+    hn_db_api:clear(Ref, all);
+
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}], _User)
   when O == cell orelse O == range,
@@ -420,13 +422,7 @@ get_json_post(undefined) ->
     {ok, undefined};
 get_json_post(Json) ->
     {struct, Attr} = mochijson:decode(Json),
-    {ok, lists:map(fun to_utf8/1, Attr)}.
-
-to_utf8({struct, Val}) -> {struct, lists:map(fun to_utf8/1, Val)};
-to_utf8({array, Val})  -> {array,  lists:map(fun to_utf8/1, Val)};
-to_utf8({Key, Val})    -> {xmerl_ucs:to_utf8(Key), to_utf8(Val)};
-to_utf8(X) when is_integer(X); is_float(X) -> X;
-to_utf8(X)             -> xmerl_ucs:to_utf8(X).
+    {ok, lists:map(fun hn_util:js_to_utf8/1, Attr)}.
 
 add_styles([], Tree) ->
     Tree;
