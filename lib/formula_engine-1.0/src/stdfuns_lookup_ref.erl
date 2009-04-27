@@ -114,22 +114,41 @@ hlookup([V, A, I0, B]) ->
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %% Area is either 1-row or 1-column.
-%% If IsExact is false, then the position of the largest value that is less than
+%% If NonExact is true, then the position of the largest value that is less than
 %% Value is returned.
 find(Value, Area, true) ->
-    L = area_util:to_list(Area),
-    pos(Value, L);
-find(Value, Area, false) ->
     L = area_util:to_list(Area),
     case pos(Value, L) of
         0 -> non_exact_find(Value, L);
         I -> I
+    end;
+find(Value, Area, false) ->
+    L = area_util:to_list(Area),
+    pos(Value, L).
+
+
+non_exact_find(Value, L) ->
+    Sorted = qsort(L),
+    case find_first(fun(X) -> stdfuns_logical:'<'([X, Value]) end, reverse(Sorted)) of
+        {ok, PrevLargest} -> pos(PrevLargest, L);
+        false             -> 0
     end.
 
-%% TODO: implement.
-non_exact_find(_Value, _L) ->
-    ?ERR_NA.
-    
+
+%% Straightforward Quicksort with our own comparators (result is in ascending
+%% order).
+%% Should this be a common utility function?
+%% TODO: Unit tests for this.
+%% TODO: Rewrite to tail-recursive.
+
+qsort([]) ->
+    [];
+qsort([H|T]) ->
+    L1 = [ X || X <- T, stdfuns_logical:'<'([X, H]) ],
+    L2 = [ X || X <- T, stdfuns_logical:'>='([X, H]) ],
+    qsort(L1) ++ [H] ++ qsort(L2).
+
+
 %% @doc Find the position of element E in list L.
 %% TODO: Remove. Replace calls above with nglists.
 
@@ -137,6 +156,7 @@ pos(E, L)                    -> pos(E, L, 1).
 pos(_, [], _)                -> 0;
 pos(E, [H|_], I) when E == H -> I;
 pos(E, [_|T], I)             -> pos(E, T, I+1).
+
 
 %% TODO: as in pos.
 
@@ -148,3 +168,17 @@ transpose1([R|T], Acc) ->
     transpose1(T, NewAcc);
 transpose1([], Acc) ->
     Acc.
+
+
+%%% @doc Return first element that satisfies a predicate.
+%%% TODO: Move to nglists and use that version here.
+
+find_first(Pred, L) ->
+    find_first(Pred, fun() -> false end, L).
+find_first(Pred, IfNone, [Hd|Tl]) ->
+    case Pred(Hd) of
+        true -> {ok, Hd};
+        _    -> find_first(Pred, IfNone, Tl)
+    end;
+find_first(_Pred, IfNone, []) ->
+    IfNone().
