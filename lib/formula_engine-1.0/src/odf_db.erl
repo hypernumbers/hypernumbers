@@ -130,7 +130,7 @@ compile_to_requirements(FsHash, Csd) ->
 compile_to_requirement({_Field, blank}) ->
     fun(_Record) -> true end;
 compile_to_requirement({Field, ReqDesc}) ->
-    Selector = odf_comparator:create(ReqDesc),
+    Selector = odf_criteria:create(ReqDesc),
     fun(Record) -> Selector(record_field(Field, Record)) end.
 
 any_criteria_matches(Criteriaset, Record) ->
