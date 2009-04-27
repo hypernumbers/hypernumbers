@@ -71,9 +71,10 @@ eval_formula(Fcode) ->
         Value ->
             case Value of
                 R when ?is_cellref(R) ->
-                    case fetch(R) of
-                        blank -> 0;
-                        Other -> Other
+                    case attempt(?MODULE, fetch, [R]) of
+                        {ok, blank} -> 0;
+                        {ok, Other} -> Other;
+                        {error, ErrVal} -> ErrVal
                     end;
                 R when ?is_rangeref(R); ?is_array(R) ->
                     case implicit_intersection(R) of
@@ -114,10 +115,10 @@ parse(Fla, {Col, Row}) ->
 eval(_Node = [Func|Args]) when ?is_fn(Func) ->
     R = attempt(?MODULE, funcall, [Func, Args]),
     case R of
-        {error, Errv = {errval, _}}                     -> Errv;
-        {error, {aborted, {cyclic, _, _, _, _, _}} = E} -> exit(E); % rethrow on lock
-        {error, _E}                                     -> ?error_in_formula;
-        {ok, V}                                         -> V
+        {error, Errv = {errval, _}}                      -> Errv;
+        {error, {aborted, {cyclic, _, _, _, _, _}} = E}  -> exit(E); % rethrow on lock
+        {error, _E}                                      -> ?error_in_formula;
+        {ok, V}                                          -> V
     end;
 eval(Value)                                 ->
     Value.
@@ -358,6 +359,7 @@ userdef_call(Fname, Args) ->
 
 %% Returns value in the cell + get_value_and_link() is called behind the
 %% scenes.
+
 do_cell(RelPath, Rowidx, Colidx) ->
     Path = muin_util:walk_path(?mpath, RelPath),
     IsCircRef = (Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath),
@@ -370,12 +372,15 @@ do_cell(RelPath, Rowidx, Colidx) ->
 %% the value to the caller (to continue the evaluation of the formula).
 get_value_and_link(FetchFun) ->
     {Value, RefTree, Errs, Refs} = FetchFun(),
-    ?IF(member({?msite, ?mpath, ?mx, ?my}, RefTree),
-        throw({error, circular_reference})),
 
-    {RefTree0, Errs0, Refs0} = get(retvals),
-    put(retvals, {RefTree0 ++ RefTree, Errs0 ++ Errs, Refs0 ++ Refs}),
-    Value.
+    case member({"local", {?msite, ?mpath, ?mx, ?my}}, RefTree) of
+        true ->
+            ?ERR_CIRCREF;
+        false ->        
+            {RefTree0, Errs0, Refs0} = get(retvals),
+            put(retvals, {RefTree0 ++ RefTree, Errs0 ++ Errs, Refs0 ++ Refs}),
+            Value
+    end.
 
 %% Row or Col information --> index.
 toidx(N) when is_number(N) -> N;
