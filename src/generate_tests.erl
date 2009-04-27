@@ -9,17 +9,25 @@
 -include("spriki.hrl").
 
 run() ->    
-    Root = string:tokens(code:lib_dir(hypernumbers),"/"),
-    [_Lib,_Dot,_Ext,_Ebin|Rest] = lists:reverse(Root),
-    Tests = "/"++string:join(lists:reverse(Rest),"/")
-        ++"/tests/",
-
+    Root = get_root(),
+    Tests = Root ++ "/tests/",
     Files       = filelib:wildcard(Tests++"hn_files/*.json"),
-    {ok,TmpTpl} = file:read_file(Tests++"system_test/test_SUITE.tpl"),
+    {ok, TmpTpl} = file:read_file(Tests++"system_test/test_SUITE.tpl"),
     Tpl         = binary_to_list(TmpTpl),
-
     lists:map(fun(X) -> gen_test(Tests,Tpl,X) end,Files),
     ok.
+
+get_root() ->
+    
+    [_File, _Ebin | Rest] =
+        lists:reverse(string:tokens(code:which(generate_tests), "/")),
+
+    Pre = case os:type() of
+              {win32,_} -> "";
+              _         -> "/"
+          end,
+
+    Pre++string:join(lists:reverse(Rest),"/")++"/".
 
 gen_test(Path,Tpl,Src) ->
     
