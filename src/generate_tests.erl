@@ -64,8 +64,8 @@ gen_test(Path,Tpl,Src) ->
     file:write_file(SysDir++Suite++".erl",Test).
 
 gen_test_cases(Name, Path, N) ->
-    Str = "~s(_Conf) -> ~n \"Success\" = get_val(#refX{path=[~p]"
-        ++",obj = {cell,{1,~p}}}).~n",    
+    Str = "~s(_Conf) -> ~n case get_val(#refX{path=[~p],obj = {cell,{1,~p}}})"
+       "of [] -> ok; \"Success\" -> ok; Else -> throw({failed, Else}) end.~n",
   
     [ ?FORMAT(Str,[Name++"_A"++itol(X), Path, X]) 
       || X <- lists:seq(2, N) ].

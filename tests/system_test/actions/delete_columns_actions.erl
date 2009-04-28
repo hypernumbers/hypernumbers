@@ -5,9 +5,10 @@
 -include_lib("hypernumbers/include/spriki.hrl").
 
 run() ->
-    Url  = "http://127.0.0.1:9000/delete_columns/E:E?attr",
+    Url  = "http://127.0.0.1:9000/delete_columns/",
     Type = "application/json",
     Data = "{\"delete\":\"all\"}",
-    http:request(post,{Url, [], Type, Data}, [], []),
+    http:request(post,{Url++"E:E?attr", [], Type, Data}, [], []),
+    http:request(post,{Url++"F:H?attr", [], Type, Data}, [], []),
     ok.
 
