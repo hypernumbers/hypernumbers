@@ -6,6 +6,8 @@
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
 
+-define(cast, gen_server:cast).
+
 -export([start/2, stop/1, clean_start/0, hup/0 ]).
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
@@ -34,9 +36,12 @@ start(_Type, _Args) ->
         true  -> clean_start();
         false -> ok
     end,
+
+    HostsInfo = hn_config:get(hosts),
+    Sites = hn_util:get_hosts(HostsInfo),
     
     ok = start_mochiweb(),
-    ok = start_dirty_subscribe(),
+    [ok = start_dirty_subscribe(X) || X <- Sites],
     {ok, Pid}.
 
 hup() ->
@@ -45,7 +50,7 @@ hup() ->
 
 %% @spec stop(State) -> ok
 %% @doc  Application Callback
-stop(_State) -> 
+stop(_State) ->
     mochilog:stop(),
     ok.
 
@@ -78,35 +83,68 @@ clean_start() ->
                dirty_notify_back_in, dirty_notify_out,
                dirty_notify_back_out]),
 
-    ok = hn_db_api:create_db(),
-    ok = start_dirty_subscribe(),
+    ok = application:stop(mnesia),
+    ok = mnesia:delete_schema([node()]),
+    ok = mnesia:create_schema([node()]),
+    ok = mnesia:start(),
+
+    HostsInfo = hn_config:get(hosts),
+    Sites = hn_util:get_hosts(HostsInfo),
+
+    [ok = hn_db_api:create_db(X) || X <- Sites],
+    [ok = start_dirty_subscribe(X) || X <- Sites],
     ok = write_permissions(),
     ok.
 
 %% @spec start_mochiweb() -> ok
-%% @doc  Start mochiweb http server
+%% @doc  Start mochiweb http servers
+%% @todo this server will accept a connection to any
+%% domain name on the ip address, wtf?
 start_mochiweb() ->
 
-    [{IP, Port, _Hosts}] = hn_config:get(hosts),
-    
-    Opts = [{port, Port}, 
-            {ip,   inet_parse:ntoa(IP)}, 
-            {loop, {hn_mochi, req}}],
-
-    mochilog:start(),
-    mochiweb_http:start(Opts),
-
+    List = hn_config:get(hosts),
+    % need to compress the list in case it contains duplicate ip address/port
+    % combos
+    List2 = compress(List),
+    Fun = fun(X) ->
+                  {IP, Port} = X,
+          
+                      Opts = [{port, Port}, 
+                              {ip,   inet_parse:ntoa(IP)}, 
+                              {loop, {hn_mochi, req}}],
+                  
+                  mochilog:start(),
+                  mochiweb_http:start(Opts)
+          end,
+    [Fun(X) || X <- List2],
     ok.
+
+compress(List) -> cmp1(List, []).
+
+cmp1([], Acc)                       -> Acc;
+cmp1([{IP, Port, _Hosts} | T], Acc) -> case lists:member({IP, Port}, Acc) of
+                                           true  -> cmp1(T, Acc);
+                                           false -> cmp1(T, [{IP, Port} | Acc])
+                                       end.
 
 %% @spec start_dirty_subscribe() -> ok
 %% @doc  Make dirty_x gen_srv's subscribe to mnesia
-start_dirty_subscribe() ->
-    ok = gen_server:cast(dirty_cell,            subscribe),
-    ok = gen_server:cast(dirty_notify_in,       subscribe),
-    ok = gen_server:cast(dirty_inc_hn_create,   subscribe),
-    ok = gen_server:cast(dirty_notify_back_in,  subscribe),
-    ok = gen_server:cast(dirty_notify_out,      subscribe),
-    ok = gen_server:cast(dirty_notify_back_out, subscribe),
+start_dirty_subscribe(Site) ->
+    Table = hn_db_wu:trans(Site, dirty_cell),
+
+    DirtyCell          = hn_db_wu:trans(Site, dirty_cell),
+    DirtyNotifyIn      = hn_db_wu:trans(Site, dirty_notify_in),
+    DirtyIncHn         = hn_db_wu:trans(Site, dirty_inc_hn_create),
+    DirtyNotifyBackIn  = hn_db_wu:trans(Site, dirty_notify_back_in),
+    DirtyNotifyOut     = hn_db_wu:trans(Site, dirty_notify_out),
+    DirtyNotifyBackOut = hn_db_wu:trans(Site, dirty_notify_back_out),
+
+    ok = ?cast(dirty_cell,            {subscribe, DirtyCell}),
+    ok = ?cast(dirty_notify_in,       {subscribe, DirtyNotifyIn}),
+    ok = ?cast(dirty_inc_hn_create,   {subscribe, DirtyIncHn}),
+    ok = ?cast(dirty_notify_back_in,  {subscribe, DirtyNotifyBackIn}),
+    ok = ?cast(dirty_notify_out,      {subscribe, DirtyNotifyOut}),
+    ok = ?cast(dirty_notify_back_out, {subscribe, DirtyNotifyBackOut}),
     ok.
 
 %% @spec write_permissions() -> ok
@@ -119,5 +157,11 @@ write_permissions(_Name, []) ->
     ok;
 write_permissions(Name, [{Domain, Value} | T]) ->
     Ref = hn_mochi:parse_ref(Domain),
+    #refX{site = Site} = Ref,
+    Site2 = trim(Site),
+    % now do some process dictionary magic
+    _OldPD = put(sitename, Site2),
     hn_db_api:write_attributes(Ref, [{Name, Value}]),
     write_permissions(Name, T).
+
+trim("http://"++Site) -> Site.

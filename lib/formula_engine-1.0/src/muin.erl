@@ -128,8 +128,8 @@ funcall(make_list, Args) ->
 
 %% Hypernumber function and its shorthand.
 funcall(hypernumber, [Url]) ->
-    {ok, #ref{site = RSite, path = RPath,
-             ref = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
+    {ok, #refX{site = RSite, path = RPath,
+             obj = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
     F = fun() -> get_hypernumber(?msite, ?mpath, ?mx, ?my, Url, RSite, RPath, RX, RY) end,
     get_value_and_link(F);
 
@@ -305,7 +305,7 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
         {Val, DepTree} ->
             F = fun({url, [{type, Type}], [Url2]}) ->
                         {ok, Ref} = hn_util:parse_url(Url2),
-                        #ref{site = S, path = P, ref = {cell, {X, Y}}} = Ref, 
+                        #refX{site = S, path = P, obj = {cell, {X, Y}}} = Ref, 
                         {Type,{S, P, X, Y}}
                 end,
             Dep = lists:map(F, DepTree) ++ [{"remote", {RSite, NewRPath, RX, RY}}],
@@ -387,14 +387,6 @@ toidx(N) when is_number(N) -> N;
 toidx({row, Offset})       -> ?my + Offset;
 toidx({col, Offset})       -> ?mx + Offset.
 
-get_cell_info(Site, Path, Col, Row) ->
-    %
-    % @TODO: cut hn_main out of this function!
-    % 
-    % RefX = #refX{site = Site, path = Path, obj = {cell, {Col, Row}}},
-    % Cell = hn_db_api:read(RefX),
-    % io:format("in muin:get_cell_info Cell is ~p~n", [Cell]),    
-    {Value, RefTree, Errs, Refs} = hn_main:get_cell_info(Site, Path, Col, Row),
-    % io:format("in muin:get_cell_info~n-Value is ~p~n-RefTree is ~p~n-Errs is ~p~n-"++
-    %          "Refs is ~p~n", [Value, RefTree, Errs, Refs]),
-    {Value, RefTree, Errs, Refs}.
+get_cell_info(S, P, Col, Row) ->
+    RefX = #refX{site = string:to_lower(S), path = P, obj = {cell, {Col, Row}}},
+    hn_db_api:get_cell_for_muin(RefX).

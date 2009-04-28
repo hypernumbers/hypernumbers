@@ -23,15 +23,6 @@
           row
          }).
 
--record(ref,
-        {
-          site        = [],
-          path        = [],
-          ref         = null,
-          name        = undef,
-          auth        = []
-         }).
-
 -record(refX,
         {
           site        = [],
@@ -54,16 +45,32 @@
           version
         }).
 
--record(hn_item,
+-record(local_objs,
         {
-          addr        = #ref{},
-          val         = []
+          path,
+          obj,
+          idx
+         }).
+
+-record(remote_objs,
+        {
+          site,
+          path,
+          obj,
+          idx
+         }).
+
+-record(item,
+        {
+          idx,
+          key,
+          val
          }).
 
 -record(local_cell_link, % link 2 cells on the same sheet together
         {
-          parent      = #refX{},
-          child       = #refX{}
+          parentidx,
+          childidx
          }).
 
 -record(remote_cell_link,         % link a hypernumber with a cell,
@@ -91,7 +98,7 @@
 
 -record(dirty_cell,
         {
-          index       = #index{},
+          idx,
           timestamp   = now()
          }).
 
@@ -183,10 +190,6 @@
 % magic_style commented out to make css styles work in the gui again!
 % to switch back to using styles simply comment out and uncomment the 
 % one after
-%-record(magic_style,
-%        {
-%          'ha-ha-ha' = []
-%         }).
 
 -record(magic_style,
         {

@@ -28,12 +28,12 @@
 
          refX_to_url/1,
          index_to_url/1,
-         ref_to_str/1,
+         obj_to_str/1,
          xml_to_val/1,
-         item_to_xml/1,
+         % item_to_xml/1,
          in_range/2,
          to_xml/1,
-         ref_to_index/1,
+         % ref_to_index/1,
          refX_to_index/1,
          range_to_list/1,
          rectify_range/4,
@@ -45,7 +45,8 @@
          post/3,
          parse_url/1,
          parse_vars/1,
-
+         parse_ref/1,
+         
          % List Utils
          add_uniq/2,
          is_alpha/1,
@@ -60,23 +61,46 @@
          list_to_path/1,
 
          % Just some record conversion utilities
-         refX_to_ref/2,
-         ref_to_refX/2,
-         from_hn_item/1,
+         % refX_to_ref/2,
+         % ref_to_refX/2,
+         % from_hn_item/1,
          refX_from_index/1,
          index_from_refX/1,
-         index_from_ref/1,
+         % index_from_ref/1,
          url_to_refX/1,
 
+         % general utilities
+         get_hosts/1,
+         get_offset/3,
          js_to_utf8/1
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
-%%% These functions convert to and from #refX, #ref, #hn_item                %%%
-%%% and #indexrecords                                                        %%%
+%%% API functions                                                            %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_offset(insert, D, {cell,     _})              -> g_o1(D, 1, 1);
+get_offset(insert, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, Y2 - Y1 + 1); 
+get_offset(insert, D, {column, {X1, X2}})         -> g_o1(D, X2 - X1 + 1, 0); 
+get_offset(insert, D, {range,  {X1, Y1, X2, Y2}}) -> g_o1(D, X2 - X1 + 1,
+                                                          Y2 - Y1 + 1);
+get_offset(delete, D, {cell,    _})               -> g_o1(D, -1, -1);
+get_offset(delete, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, -(Y2 - Y1 + 1)); 
+get_offset(delete, D, {column, {X1, X2}})         -> g_o1(D, -(X2 - X1 + 1), 0); 
+get_offset(delete, D, {range,  {X1, Y1, X2, Y2}}) -> g_o1(D, -(X2 - X1 + 1),
+                                                          -(Y2 - Y1 + 1)). 
+g_o1(vertical, _X, Y)   -> {0, Y};
+g_o1(horizontal, X, _Y) -> {X, 0}.
+
+
+get_hosts(List) when is_list(List) -> get_hosts1(List, []).
+
+get_hosts1([], Acc) -> Acc;
+get_hosts1([{_IP, Port, [Host]} | T], Acc) ->
+    NewAcc = "http://" ++ Host ++ ":" ++ integer_to_list(Port),
+    get_hosts1(T, [NewAcc | Acc]).
+
 compile_html(Html, Lang) ->
     {ok, Bin} = file:read_file(code:lib_dir(hypernumbers)++"/po/"++Lang++".po"),
     gettext:store_pofile(Lang, Bin),
@@ -86,16 +110,14 @@ compile_html(Html, Lang) ->
     ok.
 
 generate_po(Url) ->
-    
     delete_gen_html(),
-
     {ok,{{_V,_Status,_R},_H,Body}} = http:request(get,{Url++"?attr",[]},[],[]),
     {struct, Json} = mochijson2:decode(Body),
     {struct, Cells} = ?pget(<<"cell">>, Json),
     {struct, Pos} = ?pget(<<"2">>, Cells),
     Files = lists:map(fun po_files/1, Pos),
     lists:map(fun(X) -> po_row(Files, X) end, Cells),
-    lists:map(fun({I, F}) -> file:close(F) end, Files),
+    lists:map(fun({_I, F}) -> file:close(F) end, Files),
     ok.
 
 po_files({Index, {struct, List}}) ->
@@ -104,8 +126,8 @@ po_files({Index, {struct, List}}) ->
     {ok, File} = file:open(Path, [write]),
     {Index, File}.
 
-po_row(File, {<<"1">>, _Children}) -> ok;
-po_row(File, {<<"2">>, _Children}) -> ok;
+po_row(_File, {<<"1">>, _Children}) -> ok;
+po_row(_File, {<<"2">>, _Children}) -> ok;
 po_row(File, {_Row, {struct, Children}}) ->
     {struct, Attr} = ?pget(<<"1">>, Children),
     Id = ?pget(<<"value">>, Attr),
@@ -120,7 +142,6 @@ delete_gen_html() ->
     Dir = code:lib_dir(hypernumbers)++"/priv/docroot/hypernumbers/",
     [file:delete(X) || X <- filelib:wildcard(Dir++"*.html.*")].
 
-
 jsonify_val({"__permissions", _})           -> {"__permissions", "bleh"};
 jsonify_val({"__groups", _})                -> {"__groups", "bleh"};
 jsonify_val({"dependency-tree", _})         -> {"dependency-tree", "bleh"};
@@ -130,29 +151,34 @@ jsonify_val({Name, {datetime, Date, Time}}) -> {Name, ?rfc1123({datetime, Date, 
 jsonify_val({"value", true})                -> {"value", "true"};
 jsonify_val({"value", false})               -> {"value", "false"};
 %% TODO: fix names
-jsonify_val({Name, {namedexpr,Path,Nm}})    -> {Name, Nm};
+jsonify_val({Name, {namedexpr, _Path, Nm}}) -> {Name, Nm};
 jsonify_val(Else)                           -> Else.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                          %%%
+%%% These functions convert to and from #refX, #ref, #hn_item                %%%
+%%% and #index records                                                       %%%
+%%%                                                                          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 url_to_refX(Url) ->
-    {ok, Ref} = parse_url(Url),
-    {RefX, _} = ref_to_refX(Ref, "to be chucked away"),
+    {ok, RefX} = parse_url(Url),
     RefX.
 
-refX_to_ref(RefX, Name) ->
-    #refX{site = S, path = P, obj = R, auth = A} = RefX,
-    #ref{site = S, path = P, ref = R, name = Name, auth = A}.
+%refX_to_ref(RefX, Name) ->
+%    #refX{site = S, path = P, obj = R, auth = A} = RefX,
+%    #ref{site = S, path = P, ref = R, name = Name, auth = A}.
 
-ref_to_refX(Ref, Val) ->
-    #ref{site = S, path = P, ref = R, name = Key, auth = A} = Ref,
-    RefX = #refX{site = S, path = P, obj = R, auth = A},
-    {RefX, {Key, Val}}.
+%ref_to_refX(Ref, Val) ->
+%    #ref{site = S, path = P, ref = R, name = Key, auth = A} = Ref,
+%    RefX = #refX{site = S, path = P, obj = R, auth = A},
+%    {RefX, {Key, Val}}.
 
-from_hn_item(List) -> from_hn_item(List, []).
+%from_hn_item(List) -> from_hn_item(List, []).
 
-from_hn_item([], Acc)      -> Acc;
-from_hn_item([H | T], Acc) -> #hn_item{addr = Ref, val = V} = H, 
-                              NewAcc = ref_to_refX(Ref, V),
-                              from_hn_item(T, [NewAcc | Acc]).
+%from_hn_item([], Acc)      -> Acc;
+%from_hn_item([H | T], Acc) -> #hn_item{addr = Ref, val = V} = H, 
+%                              NewAcc = ref_to_refX(Ref, V),
+%                              from_hn_item(T, [NewAcc | Acc]).
 
 refX_from_index(#index{site = S, path = P, column = X, row = Y}) ->
     #refX{site = S, path = P, obj = {cell, {X, Y}}}.
@@ -160,8 +186,8 @@ refX_from_index(#index{site = S, path = P, column = X, row = Y}) ->
 index_from_refX(#refX{site = S, path = P, obj = {cell, {X, Y}}}) ->
     #index{site = S, path = P, column = X, row = Y}.
 
-index_from_ref(#ref{site = S, path = P, ref = {cell, {X, Y}}}) ->
-    #index{site = S, path = P, column = X, row = Y}.
+%index_from_ref(#ref{site = S, path = P, ref = {cell, {X, Y}}}) ->
+%    #index{site = S, path = P, column = X, row = Y}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -181,29 +207,17 @@ rectify_row_or_col(Z1, Z2) ->
         (Z1 =< Z2) -> {Z1, Z2}
     end.    
 
-%% This is a bit of a mess - range_to_list1 works for #refs{},
-%% and range_to_list2 works for #refX{}'s
-range_to_list(#ref{ref = {range, {X1, Y1, X2, Y2}}} = Ref) ->
-    {X1a, Y1a, X2a, Y2a} = rectify_range(X1, Y1, X2, Y2),
-    range_to_list1(Ref, X1a, X1a, Y1a, X2a, Y2a, []);
 range_to_list(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     {X1a, Y1a, X2a, Y2a} = rectify_range(X1, Y1, X2, Y2),
-    range_to_list2(RefX, X1a, X1a, Y1a, X2a, Y2a, []).
+    range_to_list1(RefX, X1a, X1a, Y1a, X2a, Y2a, []).
 
-range_to_list1(Ref, _Reset, X, Y, X, Y, Acc) -> lists:reverse([Ref#ref{ref = {cell, {X, Y}}} | Acc]);
-range_to_list1(Ref, Reset, X2, Y1, X2, Y2, Acc) ->
-    range_to_list1(Ref, Reset, Reset, Y1 + 1, X2, Y2,
-                   [Ref#ref{ref = {cell, {X2, Y1}}} | Acc]);
-range_to_list1(Ref, Reset, X1, Y1, X2, Y2, Acc) ->
-    range_to_list1(Ref, Reset, X1 + 1, Y1, X2, Y2,
-                   [Ref#ref{ref = {cell, {X1, Y1}}} | Acc]).
-
-range_to_list2(RefX, _Reset, X, Y, X, Y, Acc) -> [RefX#refX{obj = {cell, {X, Y}}} | Acc];
-range_to_list2(RefX, Reset, X2, Y1, X2, Y2, Acc) ->
-    range_to_list2(RefX, Reset, Reset, Y1 + 1, X2, Y2,
+range_to_list1(RefX, _Reset, X, Y, X, Y, Acc) ->
+    [RefX#refX{obj = {cell, {X, Y}}} | Acc];
+range_to_list1(RefX, Reset, X2, Y1, X2, Y2, Acc) ->
+    range_to_list1(RefX, Reset, Reset, Y1 + 1, X2, Y2,
                    [RefX#refX{obj = {cell, {X2, Y1}}} | Acc]);
-range_to_list2(RefX, Reset, X1, Y1, X2, Y2, Acc) ->
-    range_to_list2(RefX, Reset, X1 + 1, Y1, X2, Y2,
+range_to_list1(RefX, Reset, X1, Y1, X2, Y2, Acc) ->
+    range_to_list1(RefX, Reset, X1 + 1, Y1, X2, Y2,
                    [RefX#refX{obj = {cell, {X1, Y1}}} | Acc]).
 
 refX_to_url(#refX{site = Site, path = Path, obj = {cell, {X, Y}}}) ->
@@ -225,23 +239,21 @@ index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
 list_to_path([])   -> "/";
 list_to_path(Path) -> "/" ++ string:join(Path, "/") ++ "/".
 
-ref_to_index(#ref{site = S, path = P, ref= {cell, {X, Y}}}) ->
-    #index{site = S, path = P, column = X, row = Y}.
+%ref_to_index(#ref{site = S, path = P, ref= {cell, {X, Y}}}) ->
+%    #index{site = S, path = P, column = X, row = Y}.
 
 refX_to_index(#refX{site = S, path = P, obj = {cell, {X, Y}}}) ->
     #index{site = S, path = P, column = X, row = Y}.
 
-%% @todo remove these old compatibility clauses when the new GUI is in
-%% Gordon Guthrie 2009/01/21
-ref_to_str({page,Path})           -> Path;   
-ref_to_str({cell,{X,Y}})          -> tconv:to_b26(X)++text(Y);
-ref_to_str({row,{Y,Y}})           -> text(Y);
-% ref_to_str({row,{Y}})             -> text(Y); % old compatibility - delete!
-ref_to_str({row,{Y1,Y2}})         -> text(Y1)++":"++text(Y2);
-% ref_to_str({column,X})            -> tconv:to_b26(X); % old compatibility - delete!
-ref_to_str({column,{X,X}})        -> tconv:to_b26(X);
-ref_to_str({column,{X1,X2}})      -> tconv:to_b26(X1)++":"++tconv:to_b26(X2);
-ref_to_str({range,{X1,Y1,X2,Y2}}) -> tconv:to_b26(X1)++text(Y1)++":"++
+obj_to_str({page,Path})           -> Path;   
+obj_to_str({cell,{X,Y}})          -> tconv:to_b26(X)++text(Y);
+obj_to_str({row,{Y,Y}})           -> text(Y);
+% obj_to_str({row,{Y}})             -> text(Y); % old compatibility - delete!
+obj_to_str({row,{Y1,Y2}})         -> text(Y1)++":"++text(Y2);
+% obj_to_str({column,X})            -> tconv:to_b26(X); % old compatibility - delete!
+obj_to_str({column,{X,X}})        -> tconv:to_b26(X);
+obj_to_str({column,{X1,X2}})      -> tconv:to_b26(X1)++":"++tconv:to_b26(X2);
+obj_to_str({range,{X1,Y1,X2,Y2}}) -> tconv:to_b26(X1)++text(Y1)++":"++
                                          tconv:to_b26(X2)++text(Y2).
 
 xml_to_val({bool,[],[true]})      -> true;
@@ -253,29 +265,29 @@ xml_to_val({string,[],[Ref]})     -> Ref;
 xml_to_val({datetime, [], [Ref]}) -> Ref;
 xml_to_val(Else)                  -> Else.
 
-%% Turn a hn_item record into its xml <ref> display
-item_to_xml(#hn_item{addr = A, val = V}) ->
+%%% Turn a hn_item record into its xml <ref> display
+%item_to_xml(#hn_item{addr = A, val = V}) ->
 
-    Type = atom_to_list(element(1, A#ref.ref)),
-    Str  = hn_util:ref_to_str(A#ref.ref),
+%    Type = atom_to_list(element(1, A#ref.ref)),
+%    Str  = hn_util:obj_to_str(A#ref.ref),
 
-    Value = case A#ref.name of
-                value    -> to_xml(V);
-                rawvalue -> to_xml(V);
-                style    -> to_xml(V);
-                _Else    -> to_val(V)
-            end,    
-    {ref, [{type, Type}, {ref, Str}], [{A#ref.name, [], Value}]}.
+%    Value = case A#ref.name of
+%                value    -> to_xml(V);
+%                rawvalue -> to_xml(V);
+%                style    -> to_xml(V);
+%                _Else    -> to_val(V)
+%            end,    
+%    {ref, [{type, Type}, {ref, Str}], [{A#ref.name, [], Value}]}.
 
-in_range({range,{X1,Y1,X2,Y2}},{cell,{X,Y}}) ->
+in_range({range,{X1,Y1,X2,Y2}}, {cell,{X,Y}}) ->
     Y >= Y1 andalso Y =< Y2 andalso X >= X1 andalso X =< X2.
 
-to_val({xml,Xml}) -> Xml;
-to_val(Else) ->
-    case io_lib:char_list(Else) of
-        true  -> [Else];
-        false -> throw({unmatched_type,Else})
-    end.
+%to_val({xml,Xml}) -> Xml;
+%to_val(Else) ->
+%    case io_lib:char_list(Else) of
+%        true  -> [Else];
+%        false -> throw({unmatched_type,Else})
+%    end.
 
 to_xml(true)                     -> [{bool,[],  ["true"]}];
 to_xml(false)                    -> [{bool,[],  ["false"]}];    
@@ -321,7 +333,7 @@ post(Url,Data,Format) ->
 parse_url(Url) when is_list(Url) ->
     parse_url(yaws_api:parse_url(Url));
 
-parse_url(Url) when is_record(Url,url) ->
+parse_url(Url) when is_record(Url, url) ->
 
     Port = case {Url#url.port,Url#url.scheme} of
                {undefined,http}  -> "80";
@@ -341,7 +353,11 @@ parse_url(Url) when is_record(Url,url) ->
                          {TmpRef,lists:reverse(T)}
                  end,
 
-    RefType = parse_reference(Ref),    
+    Obj = parse_ref(Ref),
+    {ok,#refX{site = Site, path = Path, obj = Obj}}.
+
+parse_ref(Ref) ->
+    RefType = type_reference(Ref),    
     RefVal  = case RefType of
                   page ->   "/";
                   cell ->   util2:strip_ref(Ref);
@@ -349,10 +365,7 @@ parse_url(Url) when is_record(Url,url) ->
                   column -> element(1,util2:strip_ref(Ref++"1"));
                   row ->    element(2,util2:strip_ref("a"++Ref))
               end,
-
-    {ok,#ref{site=Site,
-             path=Path,
-             ref={RefType,RefVal}}}.
+    {RefType, RefVal}.
 
 get_req_type([{"format","json"}|_]) -> {ok,json};
 get_req_type([{"format","xml"}|_])  -> {ok,xml};
@@ -520,8 +533,8 @@ js_to_utf8(X)             -> xmerl_ucs:to_utf8(X).
 %%% Internal Functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parse_reference("/") -> page;
-parse_reference(Cell) ->
+type_reference("/") -> page;
+type_reference(Cell) ->
     case string:chr(Cell,$:) of
         0 ->
             case hn_util:is_numeric(Cell) of

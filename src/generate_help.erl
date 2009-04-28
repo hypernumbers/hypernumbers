@@ -45,16 +45,14 @@ run() ->
     do_jf("es", "spanish",    ?spanish_fns).
 
 do_jf(Code, Lang, Fns) ->
-    io:format("In do_jf for ~p~n", [Lang]),
+    % io:format("In do_jf for ~p~n", [Lang]),
     {value, {Code, Notes}} = lists:keysearch(Code, 1, ?notes),
-    io:format("In do_jf Notes are ~p~n", [Notes]),
-    io:format("In do_jf ?notes are ~p~n", [?notes]),
+    % io:format("In do_jf Notes are ~p~n", [Notes]),
+    % io:format("In do_jf ?notes are ~p~n", [?notes]),
     Fun =
         fun(#help{name = N} = Help) ->
                 NewH = case lists:keysearch(N, 2, Fns) of
-                           {value, {_, _, NewN}} -> Help#help{name = NewN,
-                                                              warning = "",
-                                                              text = ""};
+                           {value, {_, _, NewN}} -> Help#help{name = NewN};
                            false                 -> Help#help{notes = Notes}
                        end,
                 json_util:jsonify(NewH)

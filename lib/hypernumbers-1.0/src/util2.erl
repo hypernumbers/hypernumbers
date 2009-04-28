@@ -26,7 +26,6 @@
          make_text/1,
          repath/1,
          pad_list/1,
-         unpack_text/1,
          mk_str_frm_list/1,
          strip_brackets/1,
          print_as_hex/2,
@@ -127,7 +126,6 @@ get_page_path(Path) ->
         [_ValRef,"?flextoolbar"|Rest] -> repath(Rest)
     end.
 
-
 make_text(Item) ->
     case Item of
         Item when is_integer(Item)-> integer_to_list(Item);
@@ -164,17 +162,6 @@ pad_list([H|T],Residuum) ->
     Fun=fun(X)->lists:append(make_text(X)," ") end,
     List=lists:map(Fun,tuple_to_list(H)),
     pad_list(T,[lists:concat(List)|Residuum]).
-
-unpack_text(Text)->
-    {ok,Tok,_}   = erl_scan:string("Return="++lists:flatten(Text)++"."),
-    {ok,Abs}     = erl_parse:parse_exprs(Tok),
-    {_, List, _} = erl_eval:exprs(Abs,[]),
-
-    lists:map(
-      fun(XX)->
-              {ok,#ref{site=S,path=P,ref={cell,{X,Y}}}} = hn_util:parse_url(XX),
-              {S,P,X,Y}
-      end,List).
 
 mk_str_frm_list(List) when is_list(List) ->
     mk_str_frm_list(List,[]).

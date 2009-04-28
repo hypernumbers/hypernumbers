@@ -28,7 +28,7 @@
         exit("exit from hn_mochi:handle_req impossible page versions")).
 
 req(Req) ->
-    
+
     case filename:extension(Req:get(path)) of 
         
         %% Serve Static Files
@@ -49,11 +49,12 @@ req(Req) ->
 do_req(Req) ->
 
     Ref    = parse_ref(get_host(Req)),
+    #refX{site = Site} = Ref,
     Vars   = Req:parse_qs(),
     Method = Req:get(method),
     
     {ok, Auth} = get_var_or_cookie("auth", Vars, Req),
-    User = case hn_users:verify_token(Auth) of
+    User = case hn_users:verify_token(Site, Auth) of
                {ok, Usr}        -> Usr;
                {error, _Reason} -> anonymous
            end,
@@ -108,9 +109,9 @@ serve_html(Req, File, anonymous) ->
     serve_file(Req, ensure(File, "en_gb"));
 
 serve_html(Req, File, User) ->
-    Ext = case hn_users:get(User, "language") of
-              {ok, Lang} -> Lang;
-              undefined  -> "en_gb"
+    Ext  = case hn_users:get(User, "language") of
+               {ok, Lang} -> Lang;
+               undefined  -> "en_gb"
           end,
     serve_file(Req, ensure(File, Ext)).
 
@@ -164,9 +165,9 @@ ipost(_Req, Ref, _Type, _Attr, [{"drag", {_, [{"range", Rng}]}}], _User) ->
     hn_db_api:drag_n_drop(Ref, Ref#refX{obj = parse_attr(range,Rng)}),
     ok;
 
-ipost(Req, #refX{path=["_user","login"]}, _Type, _Attr, Data, _User) ->
+ipost(Req, #refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
     [{"email", Email},{"pass", Pass},{"remember", Rem}] = Data,
-    Resp = case hn_users:login(Email, Pass, Rem) of
+    Resp = case hn_users:login(Site, Email, Pass, Rem) of
                {error, invalid_user} -> 
                    [{"response","error"}];
                {ok, Token} ->
@@ -230,9 +231,9 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}], _U
 ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}], _User) ->
     hn_db_api:copy_n_paste(Ref#refX{obj = parse_attr(range, Range)}, Ref);
 
-ipost(_Req, #refX{path=["_user"]}, _Type, _Attr, 
+ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr, 
       [{"set", {struct, [{"language", Lang}]}}], User) ->
-    hn_users:update(User, "language", Lang);
+    hn_users:update(Site, User, "language", Lang);
 
 ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}], _User) ->
     case Attr of 

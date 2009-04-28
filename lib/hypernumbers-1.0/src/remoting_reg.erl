@@ -42,7 +42,7 @@ request_update(Site, Path, Time, Pid) ->
 notify_change(Site, Path, Type, {RefType, _} = R, Name, Value) ->
     {Name2, Val2} = hn_util:jsonify_val({Name, Value}), 
     Msg = {struct, [{"type", Type}, {"reftype", RefType},
-                    {"ref", hn_util:ref_to_str(R)}, 
+                    {"ref", hn_util:obj_to_str(R)}, 
                     {"name", Name2}, {"value", Val2}]},
     gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
 
@@ -55,7 +55,7 @@ notify_style(Site, Path, Index, Style) ->
 %% @doc  Notify server of an error to a cell
 notify_error(Site, Path, Ref, error_in_formula, Value) ->
     Msg = {struct, [{"type", "error"}, {"reftype", "cell"},
-                    {"ref", hn_util:ref_to_str(Ref)}, 
+                    {"ref", hn_util:obj_to_str(Ref)}, 
                     {"original", Value}]},
     gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
 

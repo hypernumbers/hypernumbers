@@ -5,6 +5,8 @@
 %%% @copyright  Hypernumbers Ltd
 %%% Created     30 Aug 2008 by Gordon Guthrie
 %%% @TODO       proper documentation and specifications
+%%%             This function has to be totally rewritten for the new
+%%%             database
 %%%-------------------------------------------------------------------
 -module(hn_templates).
 
@@ -102,66 +104,68 @@ parse(String) ->
         _Other -> String
     end.
 
-new_path(Ref,TemplatePath,UserName) -> new_p2(Ref,TemplatePath,UserName,[]).
+new_path(A, B, C) -> ok. % make me compile!
 
-new_p2(_Ref,[],_UNm,Acc)                -> Acc++"/";
-new_p2(Ref,[{"auto","incr"}|T],UNm,Acc) -> new_p2(Ref,T,UNm,Acc++
-                                                  "/"++get_incr(Ref,Acc));
-new_p2(Ref,[{"year"}|T],UNm,Acc)        -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++year("yyyy"));
-new_p2(Ref,[{"year",F}|T],UNm,Acc)      -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++year(F));
-new_p2(Ref,[{"month"}|T],UNm,Acc)       -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++month("short"));
-new_p2(Ref,[{"month",F}|T],UNm,Acc)     -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++month(F));
-new_p2(Ref,[{"day"}|T],UNm,Acc)         -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++day("dd"));
-new_p2(Ref,[{"day",F}|T],UNm,Acc)       -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++day(F));
-new_p2(Ref,[{"hour"}|T],UNm,Acc)        -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++hour("hh"));
-new_p2(Ref,[{"hour",F}|T],UNm,Acc)      -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++hour(F));
-new_p2(Ref,[{"minute"}|T],UNm,Acc)      -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++minute("mm"));
-new_p2(Ref,[{"minute",F}|T],UNm,Acc)    -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++minute(F));
-new_p2(Ref,[{"second"}|T],UNm,Acc)      -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++second("ss"));
-new_p2(Ref,[{"second",F}|T],UNm,Acc)    -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++second(F));
-new_p2(Ref,[{"weekday"}|T],UNm,Acc)     -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++weekday("short"));
-new_p2(Ref,[{"weekday",F}|T],UNm,Acc)   -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++weekday(F));
-new_p2(Ref,[{"username"}|T],UNm,Acc)    -> new_p2(Ref,T,UNm,
-                                                  Acc++"/"++UNm);
-new_p2(Ref,[H|T],UNm,Acc)               -> new_p2(Ref,T,UNm,Acc++"/"++H).
+%new_path(Ref,TemplatePath,UserName) -> new_p2(Ref,TemplatePath,UserName,[]).
 
-get_incr(_Ref,Path) ->
-    Path2=string:tokens(Path,"/"),
-    Ref2=ms_util:make_ms(ref,[{path,lists:append(Path2,'_')},
-                              {ref,{page,"/"}}]),
-    Items = hn_db:get_item(Ref2),
-    F = fun(#hn_item{addr=R}) ->
-                %% Items seemed to include root pages that 
-                %% dont have enough path elements to pull Offset out of
-                Offset = length(Path2)+1,
-                case Offset > length(R#ref.path) of
-                    true  -> 0;
-                    false ->
-                        Last = lists:nth(Offset,R#ref.path),
-                        ?COND(hn_util:is_numeric(Last),
-                              list_to_integer(Last),0)
-                end
-        end,
+%new_p2(_Ref,[],_UNm,Acc)                -> Acc++"/";
+%new_p2(Ref,[{"auto","incr"}|T],UNm,Acc) -> new_p2(Ref,T,UNm,Acc++
+%                                                  "/"++get_incr(Ref,Acc));
+%new_p2(Ref,[{"year"}|T],UNm,Acc)        -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++year("yyyy"));
+%new_p2(Ref,[{"year",F}|T],UNm,Acc)      -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++year(F));
+%new_p2(Ref,[{"month"}|T],UNm,Acc)       -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++month("short"));
+%new_p2(Ref,[{"month",F}|T],UNm,Acc)     -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++month(F));
+%new_p2(Ref,[{"day"}|T],UNm,Acc)         -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++day("dd"));
+%new_p2(Ref,[{"day",F}|T],UNm,Acc)       -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++day(F));
+%new_p2(Ref,[{"hour"}|T],UNm,Acc)        -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++hour("hh"));
+%new_p2(Ref,[{"hour",F}|T],UNm,Acc)      -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++hour(F));
+%new_p2(Ref,[{"minute"}|T],UNm,Acc)      -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++minute("mm"));
+%new_p2(Ref,[{"minute",F}|T],UNm,Acc)    -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++minute(F));
+%new_p2(Ref,[{"second"}|T],UNm,Acc)      -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++second("ss"));
+%new_p2(Ref,[{"second",F}|T],UNm,Acc)    -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++second(F));
+%new_p2(Ref,[{"weekday"}|T],UNm,Acc)     -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++weekday("short"));
+%new_p2(Ref,[{"weekday",F}|T],UNm,Acc)   -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++weekday(F));
+%new_p2(Ref,[{"username"}|T],UNm,Acc)    -> new_p2(Ref,T,UNm,
+%                                                  Acc++"/"++UNm);
+%new_p2(Ref,[H|T],UNm,Acc)               -> new_p2(Ref,T,UNm,Acc++"/"++H).
 
-    Ind = case Items of
-              [] -> 1;
-              _Else -> lists:max(lists:map(F,Items))+1
-          end,
-    integer_to_list(Ind).
+%get_incr(_Ref,Path) ->
+%    Path2=string:tokens(Path,"/"),
+%    Ref2=ms_util:make_ms(ref,[{path,lists:append(Path2,'_')},
+%                              {ref,{page,"/"}}]),
+%    Items = hn_db:get_item(Ref2),
+%    F = fun(#hn_item{addr=R}) ->
+%                %% Items seemed to include root pages that 
+%                %% dont have enough path elements to pull Offset out of
+%                Offset = length(Path2)+1,
+%                case Offset > length(R#ref.path) of
+%                    true  -> 0;
+%                    false ->
+%                        Last = lists:nth(Offset,R#ref.path),
+%                        ?COND(hn_util:is_numeric(Last),
+%                              list_to_integer(Last),0)
+%                end
+%        end,
+
+%    Ind = case Items of
+%              [] -> 1;
+%              _Else -> lists:max(lists:map(F,Items))+1
+%          end,
+%    integer_to_list(Ind).
 
 year(F) -> {{Year,_,_},_}=erlang:localtime(),
            case F of

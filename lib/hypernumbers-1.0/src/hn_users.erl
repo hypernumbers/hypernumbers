@@ -2,33 +2,46 @@
 %%% @copyright Hypernumbers Ltd
 -module(hn_users).
 
--export([create/2,delete/1,login/3,exists/1,gen_authtoken/2,
-        get_access_level/2, verify_token/1, update/3, get/2, read/1, name/1 ]).
+-export([
+         create/3,
+         delete/2,
+         login/4,
+         exists/2,
+         gen_authtoken/2,
+         get_access_level/2,
+         verify_token/2,
+         update/4,
+         get/2,
+         read/2,
+         name/1
+        ]).
 
 -include("hypernumbers.hrl").
 -include("yaws_api.hrl").
 -include("spriki.hrl").
 
 -define(COOKIE, "somerandomcookie").
+-define(trans, hn_db_wu:trans).
+-define(trans_back, hn_db_wu:trans_back).
 
-create(Name,Pass) ->
-    create_user_exec(#hn_user{name = Name, password = p(Pass)}).
+create(Site, Name, Pass) ->
+    create_user_exec(Site, #hn_user{name = Name, password = p(Pass)}).
 
-delete_tr(Name) ->
-    {ok, User} = read(Name),
-    mnesia:delete_object(User).
+delete_tr(Site, Name) ->
+    {ok, User} = read(Site, Name),
+    mnesia:delete_object(?trans(Site, User)).
 
-delete(Name) ->
-    mnesia:activity(transaction, fun delete_tr/1, [Name]).
+delete(Site, Name) ->
+    mnesia:activity(transaction, fun delete_tr/2, [Site, Name]).
 
 name(anonymous) -> "anonymous";
-name(User)      -> User#hn_user.name.
+name(User)     -> User#hn_user.name.
 
-exists(Name) ->
+exists(Site, Name) ->
 	
     F = fun() ->
                 User = #hn_user{name=Name, _='_'},
-                mnesia:match_object(hn_user, User, read)
+                mnesia:match_object(?trans(Site, hn_user), ?trans(Site, User), read)
         end,
 	
     case mnesia:transaction(F) of
@@ -36,13 +49,14 @@ exists(Name) ->
         _           -> true
     end.
 
-read(Name) ->
-    mnesia:activity(transaction, fun read_tr/1, [Name]).
+read(Site, Name) ->
+    mnesia:activity(transaction, fun read_tr/2, [Site, Name]).
 
-read_tr(Name) ->
-    case mnesia:match_object(hn_user, #hn_user{name=Name, _='_'}, read) of
+read_tr(Site, Name) ->
+    Rec = #hn_user{name=Name, _='_'},
+    case mnesia:match_object(?trans(Site, hn_user), ?trans(Site, Rec), read) of
         []     -> {error, no_user};
-        [User] -> {ok, User}
+        [User] -> {ok, ?trans_back(User)}
     end.
 
 get(User, Key) ->
@@ -51,33 +65,35 @@ get(User, Key) ->
         false -> undefined
     end.
 
-update_tr(User, Key, Val) ->
+update_tr(Site, User, Key, Val) ->
     NUser = User#hn_user{data=dict:store(Key, Val, User#hn_user.data)},
-    mnesia:write(NUser).
+    mnesia:write(?trans(Site, NUser)).
     
-update(User, Key, Val) ->
-    mnesia:activity(transaction, fun update_tr/3, [User, Key, Val]).
+update(Site, User, Key, Val) ->
+    mnesia:activity(transaction, fun update_tr/4, [Site, User, Key, Val]).
 
-login(Name, Pass, Remember) ->
+login(Site, Name, Pass, Remember) ->
 
     User = #hn_user{name=Name, password=p(Pass), _='_'},
-    F = fun() -> mnesia:match_object(hn_user, User, read) end,
+    F = fun() ->
+                mnesia:match_object(?trans(Site, hn_user), ?trans(Site, User), read)
+        end,
  
     case mnesia:transaction(F) of
         {atomic, []}      -> {error,invalid_user};
-        {atomic, [NUser]} -> 
-            Token = gen_authtoken(NUser, Remember),
-            {ok, Token}
+        {atomic, [NUser]} -> NUser2 = ?trans_back(NUser),
+                             Token = gen_authtoken(NUser2, Remember),
+                             {ok, Token}
     end.
 
-verify_token(undefined) ->
+verify_token(_Site, undefined) ->
     {error, invalid_token};
-verify_token(Token) ->
+verify_token(Site, Token) ->
     [Expires, User, Hash] = string:tokens(Token, ":"),
     case {is_expired(Expires), gen_hash(User, Expires), Hash} of
         {true,_,_}  -> {error, invalid_token};
         {false,X,X} -> 
-            case read(User) of
+            case read(Site, User) of
                 {ok, Usr}        -> {ok, Usr};
                 {error, no_user} -> {error, invalid_user}
             end;
@@ -107,8 +123,10 @@ gen_authtoken(#hn_user{name=Name}, Remember) ->
     Expires = expires(Remember),
     ?FORMAT("~s:~s:~s",[Expires, Name, gen_hash(Name, Expires)]).
 
-create_user_exec(Record) ->
-    Fun = fun() -> mnesia:write(hn_user,Record,write) end,
+create_user_exec(Site, Rec) ->
+    Fun = fun() ->
+                  mnesia:write(?trans(Site, hn_user), ?trans(Site, Rec), write)
+          end,
     case mnesia:transaction(Fun) of
         {aborted, Reason} -> {error, Reason};
         {atomic, ok}      -> ok
@@ -131,13 +149,13 @@ unix_timestamp(Now) ->
 
 %% Given a user find the most elevated permission
 %% granted to that user
-get_access_level(User,Ref=#refX{site=Site, path=Path}) ->
+get_access_level(User, Ref=#refX{site = Site, path = Path}) ->
 
     Default = case Path of [User|_] -> write; _ -> no_access end,
 
     SiteRef = #refX{site=Site, path=[]},
-    {ok, Groups} = hn_db_api:read_inherited_value(SiteRef, "__groups", []),
-    {ok, Perms}  = hn_db_api:read_inherited_list(Ref, "__permissions"),
+    {ok, Groups}     = hn_db_api:read_inherited_value(SiteRef, "__groups", []),
+    {ok, Perms}      = hn_db_api:read_inherited_list(Ref, "__permissions"),
     {ok, UserGroups} = get_usergroups(User, Groups, []),    
     {ok, Levels}     = get_perms(User, UserGroups, Perms, [Default]),
 

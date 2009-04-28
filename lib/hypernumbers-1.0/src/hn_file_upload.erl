@@ -108,14 +108,12 @@ import(Filename, Host, ParentPage) ->
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
         Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
                          Url = string:to_lower(Site ++ Path ++ Ref),
-                         {ok, RefRec} = hn_util:parse_url(Url),
-                         Postdata2 = fix_integers(Postdata),
-                         {RefX, {_Key, Val}} = hn_util:ref_to_refX(RefRec, Postdata2),
-                         ok = hn_db_api:write_attributes(RefX, [{"formula", Val}]);
+                         {ok, RefX} = hn_util:parse_url(Url),
+                         ok = hn_db_api:write_attributes(RefX, [{"formula", Postdata}]);
                     ({Path, {Tl, Br}, Postdata}) -> % array formula
                          Url = string:to_lower(Site ++ Path ++ Tl ++ ":" ++ Br),
-                         {ok, RefRec} = hn_util:parse_url(Url),
-                         hn_main:formula_to_range(Postdata, RefRec)
+                         {ok, RefX} = hn_util:parse_url(Url),
+                         hn_main:formula_to_range(RefX, Postdata)
                  end,
 
     lists:foreach(Dopost, Lits),
@@ -129,11 +127,10 @@ import(Filename, Host, ParentPage) ->
                        Path = ParentPage++Sheet++"/",
                        Ref = rc_to_a1(Row,Col),
                        Url = string:to_lower(Site ++ Path ++ Ref),
-                       {ok, RefRec} = hn_util:parse_url(Url),
-                       #ref{path = Path2} = RefRec,
-                       Addr = #ref{site = Site,
-                                   path = Path2, ref = {page, "/"}},
-                       hn_db:write_style_IMPORT(Addr, CSSItem)
+                       {ok, RefX} = hn_util:parse_url(Url),
+                       #refX{path = P2} = RefX,
+                       RefX2 = #refX{site = Site, path = P2, obj = {page, "/"}},
+                       hn_db_api:write_style_IMPORT(RefX2, CSSItem)
                end,
     lists:foreach(WriteCSS, CSS),
 

@@ -12,7 +12,7 @@
 %% See tests at bottom for examples
 
 -module(dh_date).
--author("Dale Harvey <dale@arandomurl.com>").
+-author("Dale Harvey <dale@hypernumbers.com>").
 
 %-define(NOTEST, 1).
 %-include("eunit.hrl").

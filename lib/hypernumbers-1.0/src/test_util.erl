@@ -21,8 +21,6 @@
          float_cmp/3,
          stripfileref/1,
          transform_reader_output/1,
-         import_xls/1,
-         load_perf_tests/0,
          rc_to_a1/2]).
 
 -include("excel_errors.hrl").
@@ -33,118 +31,10 @@
 -define(EXCEL_IMPORT_FLOAT_PRECISION, 9).
 -define(DEFAULT,1000000).
 
-load_perf_tests()->
-    import_xls("w_recalc_perf_tests_1"),
-    import_xls("w_recalc_perf_tests_2"),
-    import_xls("w_recalc_perf_tests_3").    
-
-%% what a crap sandwich this whole thing is
-
-read_reader_record({{{sheet, SheetName}, {row_index, Row}, {col_index, Col}}, Val}) ->
-    {SheetName, {Row, Col}, Val};
-read_reader_record({{{sheet, SheetName}, {firstrow, Fr}, {firstcol, Fc}, {lastrow, Lr}, {lastcol, Lc}}, Fla}) ->
-    {SheetName, {{Fr, Fc}, {Lr, Lc}}, Fla}.
-
 %% @doc Convert row and column pair to A1-style ref
 %% @spec rc_to_a1(Row :: integer(), Col :: integer()) -> string()
 rc_to_a1(Row, Col) ->
     tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1).
-
-import_xls(Name) ->
-    hypernumbers_app:clean_start(),
-
-    P = code:lib_dir(hypernumbers),
-    [_Hn, _Lib, _DD, _Ebin | Rest] = lists:reverse(string:tokens(P, "/")),
-    File = string:join(lists:reverse(Rest), "/") ++
-           "/tests/excel_files/Win_Excel07_As_97/" ++
-           Name ++ ".xls",
-    File2 = case os:type() of
-                {win32, nt} -> File;
-                _           -> "/" ++ File
-            end,
-    io:format("in test_util:import_xls File is ~p~n",[File2]),
-    io:format("- for some reason Names and Formats are not being used!~n"),
-    {Celldata, _Names, _Formats, CSS} = readxls(File2),
-    % io:format("In test_util CSS is ~p~n", [CSS]),
-    F = fun(X, {Ls, Fs}) ->
-                {SheetName, Target, V} = read_reader_record(X),
-                Sheet = excel_util:esc_tab_name(SheetName),
-                Postdata = conv_for_post(V),
-                Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
-                Ref = case Target of
-                          {{Fr, Fc}, {Lr, Lc}} -> {rc_to_a1(Fr, Fc), rc_to_a1(Lr, Lc)};
-                          {Row, Col}           -> rc_to_a1(Row, Col)
-                      end,
-                Datatpl = {Path, Ref, Postdata},
-                case Postdata of
-                    [$=|_] -> {Ls, [Datatpl|Fs]};
-                    _      -> {[Datatpl|Ls], Fs}
-                end                
-        end,
-    {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
-    
-    Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
-                     io:format("in test_util:import_xls Dopost~n-Postdata is ~p~n",
-                               [Postdata]),
-                     Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
-                     {ok, RefRec} = hn_util:parse_url(Url),
-                     Postdata2 = fix_integers(Postdata),
-                     % ok = hn_main:set_cell(RefRec, Postdata2);
-                     {RefX, {Key, Val}} = hn_util:ref_to_refX(RefRec, Postdata2),
-                     ok = hn_db_api:write_attributes(RefX, [{"formula", Val}]);
-                ({Path, {Tl, Br}, Postdata}) -> % array formula
-                     Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Tl ++ ":" ++ Br),
-                     {ok, RefRec} = hn_util:parse_url(Url),
-                     hn_main:formula_to_range(Postdata, RefRec)
-             end,
-    
-    ?INFO("Start Posting: ~p", [Name]),
-    % gen_server:cast(dirty_cell,  {setstate, passive}),
-    lists:foreach(Dopost, Lits),
-    lists:foreach(Dopost, Flas),
-    ?INFO("Start Recalculating: ~p", [Name]),
-    % _Return1=gen_server:cast(dirty_cell, {setstate, active}),
-    % _Return2=gen_server:call(dirty_cell, flush, infinity),
-
-    % Now fire in the CSS and formats
-    WriteCSS = fun(X) ->
-                       {{{sheet, SheetName}, {row_index, Row}, {col_index, Col}},
-                        [CSSItem]} = X,
-                       Sheet = excel_util:esc_tab_name(SheetName),
-                       Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
-                       Ref = rc_to_a1(Row,Col),
-                       Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
-                       {ok, RefRec} = hn_util:parse_url(Url),
-                       #ref{path = Path2} = RefRec,
-                       Addr = #ref{site = "http://127.0.0.1:9000",
-                                   path = Path2, ref = {page, "/"}},
-                       hn_db:write_style_IMPORT(Addr, CSSItem)
-               end,
-    lists:foreach(WriteCSS, CSS),
-    loop(),
-    ?INFO("End Import: ~p", [Name]),
-    ok.
-
-% flatpack(List) -> flatpack(List, []).
-
-% flatpack([H | []], Acc) -> lists:concat(lists:reverse([H | Acc]));
-% flatpack([H | T], Acc)  -> flatpack(T, [" ", H | Acc]).
-
-fix_integers(X) ->
-    case make_float(X) of
-        "not float" -> X;
-        X2          -> if
-                           (X2-round(X2)) == 0.0 -> integer_to_list(round(X2));
-                           true                  -> X
-                       end
-    end.
-
-loop()->
-    case mnesia:table_info(dirty_cell,size) of
-        0 -> ok;
-        _ -> timer:sleep(250),
-              loop()
-    end.
 
 %% Nasty function to convert 
 %% stuff'C:\\cygwin\\stuff\\[e_gnumeric_bitwise.xls]Name'!stuff
@@ -165,7 +55,6 @@ stripfileref(Str) ->
         
         Pre ++ S2 ++ Rest
     end.
-        
 
 test_state(State)->
   receive

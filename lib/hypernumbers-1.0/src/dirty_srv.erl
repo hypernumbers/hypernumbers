@@ -115,13 +115,13 @@ handle_cast({setstate,passive}, State) ->
 
 %% @spec handle_cast(subscribe, State) -> {noreply, State}
 %% @doc  subscribe to table events from mnesia
-handle_cast(subscribe, State = #state{type = Type}) ->
-    mnesia:subscribe({table, Type, detailed}),
+handle_cast({subscribe, Table}, State) ->
+    mnesia:subscribe({table, Table, detailed}),
     {noreply, State};
 %% @spec handle_cast(subscribe, State) -> {noreply,State}
 %% @doc  unsubscribe from table events from mnesia
-handle_cast(unsubscribe,State = #state{type=Type}) ->
-    mnesia:unsubscribe({table, Type, detailed}),
+handle_cast({unsubscribe, Table}, State) ->
+    mnesia:unsubscribe({table, Table, detailed}),
     {noreply, State}.
 
 %% @spec terminate(Reason, State) -> ok
@@ -135,18 +135,22 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% @spec proc_dirty(Rec, Type) -> ok
 %% @doc  processes the dirty record
-proc_dirty(Rec, dirty_cell)            -> #dirty_cell{timestamp = T} = Rec,
+proc_dirty(Rec, Table) ->
+    {Site, NewRecType, Rec2} = hn_db_wu:split_trans(Rec),
+    case NewRecType of
+        dirty_cell            -> #dirty_cell{timestamp = T} = Rec2,
                                           % dirty_cell records are rewritten in 
                                           % insert/delete operations so we need 
                                           % to re-read it here
-                                          ?api:handle_dirty_cell(T);
-proc_dirty(Rec, dirty_inc_hn_create)   -> ?api:notify_back_create(Rec);
-proc_dirty(Rec, dirty_notify_in)       -> ?api:handle_dirty(Rec);
-proc_dirty(Rec, dirty_notify_out)      -> #dirty_notify_out{delay = D} = Rec,
-                                          ok = timer:sleep(D),
-                                          ?api:handle_dirty(Rec);
-proc_dirty(Rec, dirty_notify_back_in)  -> ?api:handle_dirty(Rec);
-proc_dirty(Rec, dirty_notify_back_out) -> ?api:handle_dirty(Rec).
+                                          ?api:handle_dirty_cell(Site, T);
+        dirty_inc_hn_create   -> ?api:notify_back_create(Site, Rec2);
+        dirty_notify_in       -> ?api:handle_dirty(Site, Rec2);
+        dirty_notify_out      -> #dirty_notify_out{delay = D} = Rec2,
+                                 ok = timer:sleep(D),
+                                 ?api:handle_dirty(Site, Rec2);
+        dirty_notify_back_in  -> ?api:handle_dirty(Site, Rec2);
+        dirty_notify_back_out -> ?api:handle_dirty(Site, Rec2)
+    end.
 
 %%%
 %%% Utility Functions
