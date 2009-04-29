@@ -13,7 +13,7 @@
     handle_info/2, terminate/2, code_change/3]).
 
 -export([ notify_change/6, notify_style/4, notify_error/5, 
-          request_update/4, timestamp/0 ]).
+          request_update/4, notify_refresh/2, timestamp/0 ]).
 
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
@@ -37,6 +37,11 @@ handle_cast(_Msg, State) ->
 
 request_update(Site, Path, Time, Pid) ->
     gen_server:cast(remoting_reg, {fetch, Site, Path, Time, Pid}).
+
+%% @doc  Notify server of full page refresh
+notify_refresh(Site, Path) ->
+    Msg = {struct, [{"type", "refresh"}]},
+    gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of change to a cell
 notify_change(Site, Path, Type, {RefType, _} = R, Name, Value) ->

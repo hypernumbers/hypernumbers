@@ -11,6 +11,7 @@ init_per_suite(Config) ->
     hn_import:json_file("~s", 
                         "~s"),
     ~s
+    timer:sleep(1000),
     Config.
 
 end_per_suite(_Config) ->

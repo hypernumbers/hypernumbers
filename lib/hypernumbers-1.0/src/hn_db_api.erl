@@ -1077,7 +1077,7 @@ move(RefX, Type, Disp)
                 ok
         end,
     ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("move").
+    ok = tell_front_end("move", RefX).
 
 %% @spec clear(#refX{}) -> ok
 %% @doc same as <code>clear(refX{}, all)</code>.
@@ -1267,19 +1267,19 @@ init_front_end_notify() ->
     _Return = put('front_end_notify', []),
     ok.
 
+tell_front_end("move", RefX) ->
+    remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path).
+
 tell_front_end(_FnName) ->
     List = get('front_end_notify'),
-    % io:format("in tell_front_end~n-for ~p~n-List is ~p~n", [FnName, List]),
-    Fun = fun({Key, A, B}) ->
-                  case Key of
-                      {Key2, V} when is_record(Key2, refX) ->
-                          #refX{site = S1, path = P1, obj = Rf} = Key2,
-                                    case V of
-                                        "__"++_ -> ok; 
-                                        _Else   -> ?not_ch(S1, P1, B, Rf, V, A)
-                                    end;
-                      {S, P} -> remoting_reg:notify_style(S, P, A, B)
-                  end
+    Fun = fun({{Key, V}, A, B}) when is_record(Key, refX) ->
+                  #refX{site = S1, path = P1, obj = Rf} = Key,
+                  case V of
+                      "__"++_ -> ok; 
+                      _Else   -> ?not_ch(S1, P1, B, Rf, V, A)
+                  end;
+             ({{S, P}, A, B}) ->
+                  remoting_reg:notify_style(S, P, A, B)
           end,
     [ok = Fun(X) || X <- List],
     ok.
