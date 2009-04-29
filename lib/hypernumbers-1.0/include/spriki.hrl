@@ -9,7 +9,7 @@
 
 -define(SALT,      "salt").
 
--define(DELAY,     250). % time delay (millisecs) for some dirty updates 
+-define(DELAY,     0). % time delay (millisecs) for some dirty updates 
 
 %% Test Macros
 -define(HN_URL1,   "http://127.0.0.1:9000").
