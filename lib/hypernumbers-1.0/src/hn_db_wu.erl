@@ -1612,7 +1612,7 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
               ok
     end.
 
-%% @spec delete_cells(RefX, Displacement) -> ok
+%% @spec delete_cells(RefX, Displacement) -> [ok | Status]
 %% @doc takes a reference to a
 %% <ul>
 %% <li>page</li>
@@ -1638,11 +1638,19 @@ delete_cells(#refX{site = S} = DelX,  Disp)
             % by rewriting the formulae of all the children cells replacing the 
             % reference to this cell with #ref!
             Children = [{X, read_local_children(X)} || X <- Cells],
-            io:format("in delete_cells~n-Children are ~p~n", [Children]),
-            lists:foreach(fun(X) -> ok = deref_and_delink_child(X, DelX) end, Children),
+            % io:format("in delete_cells~n-Children are ~p~n", [Children]),
+            Fun1 = fun(X, Acc) ->
+                           Status = deref_and_delink_child(X, DelX),
+                           case Status of
+                               clean   -> Acc;
+                               [Dirty] -> [Dirty | Acc]
+                               end
+                   end,
+            Status = lists:foldl(Fun1, [], Children),
 
+            io:format("In delete_cells Status is ~p~n", [Status]),
             % now remove all the links where these cells were the children
-            Fun1 = fun(X) ->
+            Fun2 = fun(X) ->
                            CIdx = read_local_item_index(X),
                            H = trans(S, #local_cell_link{childidx = CIdx, _ = '_'}),
                            M = [{H, [], ['$_']}],
@@ -1650,7 +1658,7 @@ delete_cells(#refX{site = S} = DelX,  Disp)
                            Recs = mnesia:select(Table, M),
                            ok = delete_recs(Recs)
                    end,
-            [ok = Fun1(X) || X <- Cells],
+            [ok = Fun2(X) || X <- Cells],
             
             % get the index of all items to be deleted
             #refX{site = S} = DelX,
@@ -1660,14 +1668,14 @@ delete_cells(#refX{site = S} = DelX,  Disp)
             Table1 = trans(S, local_objs),
             % io:format("in delete_cells~n-H1a is ~p~n-C1 is ~p~n", [H1a, C1]),
             Recs = mnesia:select(Table1, [{H1a, C1, ['$_']}]),
-            Fun2 = fun(X) ->
+            Fun3 = fun(X) ->
                            #local_objs{idx = Idx} = trans_back(X),
                            Idx
                    end,
-            IdxList = [Fun2(X) || X <- Recs],
+            IdxList = [Fun3(X) || X <- Recs],
             % delete all items with that index
             Table2 = trans(S, item),
-            Fun3 = fun(X) ->
+            Fun4 = fun(X) ->
                            % io:format("In Fun2 X is ~p~n", [X]),
                            List = trans_back(mnesia:read({Table2, X})),
                            % io:format("In Fun2 List is ~p~n", [List]),
@@ -1679,10 +1687,17 @@ delete_cells(#refX{site = S} = DelX,  Disp)
                            [ok = mnesia:delete_object(trans(S, XX)) || XX <- List],
                            ok
                    end,
-            [ok = Fun3(X) || X <- IdxList],
+            [ok = Fun4(X) || X <- IdxList],
             % finally delete the index records themselves
             [ok = mnesia:delete_object(X) || X <- Recs],
-            ok
+            % if the status is 'dirty', read the formula and rewrite it
+            % because 'dirty' indicates that the formula uses an 'INDIRECT'
+            % or 'INDIRECT-a-like' function that needs the new set of cell
+            % references to run properly - also need to mark it dirty
+            case Status of
+                []            -> ok;
+                DirtyFormulae -> DirtyFormulae
+            end
     end.
 
 make_del_cond([])   -> exit("make_del_cond can't take an empty list");
@@ -2162,7 +2177,7 @@ get_pages_and_vsns(Site, List) ->
 rewrite_hn_formula(Toks, OUrl, NUrl) -> rwf1(Toks, OUrl, NUrl, []).
 
 %% just swap out the old URL for the new one...
-rwf1([], _O, _N, Acc)               -> make_formula(lists:reverse(Acc));
+rwf1([], _O, _N, {_St, Acc})        -> make_formula(lists:reverse(Acc));
 rwf1([?hn,?bra,{str,O}|T], O, N, A) -> rwf1(T, O, N, [{str,N},?bra,?hn|A]);
 rwf1([H | T], O, N, A)              -> rwf1(T, O, N, [H | A]).      
 
@@ -2383,24 +2398,30 @@ make_row(true,  Y) -> [$$] ++ tconv:to_s(Y).
 diff( FX, _FY,  TX, _TY, horizontal) -> TX - FX;
 diff(_FX,  FY, _TX,  TY, vertical) -> TY - FY.
 
+% make formula creates a new formula, but also returns a status.
+% Status can be [clean | dirty]
+% Formulae that return dirty should be marked dirty at recalc
+% time as they will not recalc to the real value
+% The function 'INDIRECT' is an example of such a function
 make_formula(Toks) ->
-    mk_f(Toks, []).
+    mk_f(Toks, {clean, []}).
 
 %% this function needs to be extended...
-mk_f([], A) -> "="++lists:flatten(lists:reverse(A));
-mk_f([{errval, '#REF!'} | T], A)                -> mk_f(T, ["#REF!" | A]);
-mk_f([{deref, "#REF!"} | T], A)                 -> mk_f(T, ["#REF!" | A]);
-mk_f([{cellref, _, _, _, R} | T], A)            -> mk_f(T, [R | A]);
-% mk_f([{rangeref, _, _, _, R} | T], A)         -> mk_f(T, [R | A]);
-mk_f([{rangeref, _, _, _, __, _, _, R} | T], A) -> mk_f(T, [R | A]);
-mk_f([{namedexpr, P, N} | T], A)                -> mk_f(T, [P ++ N | A]);
-mk_f([{atom, H} | T], A)                        -> mk_f(T, [atom_to_list(H) | A]);
-mk_f([{int, I} | T], A)                         -> mk_f(T, [integer_to_list(I) | A]);
-mk_f([{float, F} | T], A)                       -> mk_f(T, [float_to_list(F) | A]);
-mk_f([{str, S} | T], A)                         -> mk_f(T, [$", S, $" | A]);
-mk_f([{drop_in_str, S} | T], A)                 -> mk_f(T, [S | A]);
-mk_f([{name, S} | T], A)                        -> mk_f(T, [S | A]);
-mk_f([{H} | T], A)                              -> mk_f(T, [atom_to_list(H) | A]).
+mk_f([], {St, A}) -> {St, "="++lists:flatten(lists:reverse(A))};
+mk_f([{errval, '#REF!'} | T], {St, A})                -> mk_f(T, {St, ["#REF!" | A]});
+mk_f([{deref, "#REF!"} | T], {St, A})                 -> mk_f(T, {St, ["#REF!" | A]});
+mk_f([{cellref, _, _, _, R} | T], {St, A})            -> mk_f(T, {St, [R | A]});
+% mk_f([{rangeref, _, _, _, R} | T], {St, A})         -> mk_f(T, {St, [R | A]});
+mk_f([{rangeref, _, _, _, __, _, _, R} | T], {St, A}) -> mk_f(T, {St, [R | A]});
+mk_f([{namedexpr, P, N} | T], {St, A})                -> mk_f(T, {St, [P ++ N | A]});
+mk_f([{atom, H} | T], {St, A})                        -> mk_f(T, {St, [atom_to_list(H) | A]});
+mk_f([{int, I} | T], {St, A})                         -> mk_f(T, {St, [integer_to_list(I) | A]});
+mk_f([{float, F} | T], {St, A})                       -> mk_f(T, {St, [float_to_list(F) | A]});
+mk_f([{str, S} | T], {St, A})                         -> mk_f(T, {St, [$", S, $" | A]});
+mk_f([{drop_in_str, S} | T], {St, A})                 -> mk_f(T, {St, [S | A]});
+mk_f([{name, "INDIRECT"} | T], {_St, A})              -> mk_f(T, {dirty, ["INDIRECT" | A]});
+mk_f([{name, S} | T], {St, A})                        -> mk_f(T, {St, [S | A]});
+mk_f([{H} | T], {St, A})                              -> mk_f(T, {St, [atom_to_list(H) | A]}).
 
 parse_cell(Cell) ->
     {XDollar, Rest} = is_fixed(Cell),
@@ -2809,13 +2830,18 @@ deref_and_delink_child({#refX{site = S} = Parent, Children}, DeRefX) ->
     % io:format("in deref_and_delink_child~n-Parent is ~p~n-Children is ~p~n-DeRefX is ~p~n",
     %          [Parent, Children, DeRefX]),
     % first deref the kids
-    Fun1 = fun(X) ->
+    Fun1 = fun(X, Acc) ->
                   [{X, {"formula", Formula}}] = read_attrs(X, ["formula"]),
-                  NewFormula = deref(Formula, DeRefX),
-                  % we just rewrite this and let it recalculate as per...
-                  ok = write_attr(X, {"formula", NewFormula})
+                  {Status, NewFormula} = deref(Formula, DeRefX),
+                   io:format("in deref_and_delink_child Status is ~p~n", [Status]),
+                   % we just rewrite this and let it recalculate as per...
+                   ok = write_attr(X, {"formula", NewFormula}),
+                   case Status of
+                       dirty -> [{dirty, X} | Acc];
+                       clean -> Acc
+                   end
           end,
-    lists:foreach(Fun1, Children),
+    Status = lists:foldl(Fun1, [],  Children),
     % now delete the links
     PIdx = read_local_item_index(Parent),
     Fun2 = fun(X) ->
@@ -2826,13 +2852,14 @@ deref_and_delink_child({#refX{site = S} = Parent, Children}, DeRefX) ->
                    ok = delete_recs(S, [Rec])
            end,
     lists:foreach(Fun2, Children),
-    ok.
+    Status.
 
 % dereferences a formula
 deref([$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     NewToks = deref1(Toks, DeRefX, []),
-    io:format("in deref~n-NewToks is ~p~n", [NewToks]),
+    io:format("in deref~n-Toks is ~p~n-NewToks is ~p~n",
+              [Toks, NewToks]),
     make_formula(NewToks).
 
 deref1([], _DeRefX, Acc) -> lists:reverse(Acc);
@@ -3085,7 +3112,8 @@ offset_formula_with_ranges([$=|Formula], CPath, ToPath, FromCell, ToCell) ->
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     NewToks = offset_with_ranges(Toks, CPath, ToPath, FromCell, ToCell),
-    make_formula(NewToks);
+    {_Status, NewFormula} = make_formula(NewToks),
+    NewFormula;
 offset_formula_with_ranges(Value, _CPath, _ToPath, _FromCell, _ToCell) -> Value.
 
 offset_formula(Formula, {XO, YO}) ->
@@ -3094,7 +3122,8 @@ offset_formula(Formula, {XO, YO}) ->
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     NewToks = offset(Toks, XO, YO),
-    make_formula(NewToks).
+    {_Status, NewFormula} = make_formula(NewToks),
+    NewFormula.
 
 %shift_dirty_cells(#refX{site = Site} = From, To) ->
 %    FromIdx = hn_util:index_from_refX(From),
@@ -3127,12 +3156,14 @@ write_attr2(RefX, {"formula", Val}) ->
     end.
 
 write_formula1(RefX, Fla) ->
+    % io:format("in write_formula1~n-RefX is ~p~n-Fla is ~p~n", [RefX, Fla]),
     Rti = refX_to_rti(RefX, false),
     case muin:run_formula(Fla, Rti) of
         {error, Error} ->
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R,  Error, "=" ++ Fla);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
+            % io:format("in write_formula1 Res is ~p~n", [Res]),
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
             Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
             ok = write_attr3(RefX, {"__ast", Pcode}),

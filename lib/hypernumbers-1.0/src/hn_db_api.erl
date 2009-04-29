@@ -231,7 +231,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
                             []            -> [];
                             [{_, {_, V}}] -> V
                         end,
-                
+
                 DTree = case hn_db_wu:read_attrs(RefX, [?dtree]) of
                             [{_, {_, {xml,Tree}}}] -> Tree;
                             []                     -> []
@@ -1049,7 +1049,7 @@ move(RefX, Type, Disp)
                 % To make this work we shift the RefX up 1, left 1 
                 % before getting the cells to shift for INSERT
                 % if this is a delete - we need to actually delete the cells
-                ok = case Type of
+                Status = case Type of
                          delete -> ?wu:delete_cells(RefX, Disp);
                          insert -> ok
                      end,
@@ -1070,6 +1070,16 @@ move(RefX, Type, Disp)
                 % set the delay to zero
                 ok = ?wu:mark_notify_out_dirty(PageRef, Change, 0),
 
+                % finally deal with any cells returned from delete_cells that
+                % are dirty - these need to be rewritten now that the link/local_objs
+                % tables have been transformed
+                Fun2 = fun({dirty, X}) ->
+                               [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"]),
+                               ok = ?wu:write_attr(X, {"formula", F}),
+                               io:format("in Fun5~n-X is ~p~n-F is ~p~n", [X, F]),
+                               ok = ?wu:mark_cells_dirty(X)
+                       end,
+                [ok = Fun2(X) || X <- Status],
                 % Jobs a good'un, now for the remote parents
                 io:format("in hn_db_api:move do something with Parents...~n"),
                 _Parents =  ?wu:find_incoming_hn(Site, PageRef),
