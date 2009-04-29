@@ -1068,6 +1068,7 @@ move(RefX, Type, Disp)
                 {R, Rest} = Obj,
                 Change = {insert, {R, Rest}, Disp},
                 % set the delay to zero
+                % io:format("Status is ~p~n", [Status]),
                 ok = ?wu:mark_notify_out_dirty(PageRef, Change, 0),
 
                 % finally deal with any cells returned from delete_cells that
@@ -1076,12 +1077,13 @@ move(RefX, Type, Disp)
                 Fun2 = fun({dirty, X}) ->
                                [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"]),
                                ok = ?wu:write_attr(X, {"formula", F}),
-                               io:format("in Fun5~n-X is ~p~n-F is ~p~n", [X, F]),
+                               % io:format("in Fun5~n-X is ~p~n-F is ~p~n", [X, F]),
                                ok = ?wu:mark_cells_dirty(X)
                        end,
+                io:format("got to 4~n"),
                 [ok = Fun2(X) || X <- Status],
                 % Jobs a good'un, now for the remote parents
-                io:format("in hn_db_api:move do something with Parents...~n"),
+                % io:format("in hn_db_api:move do something with Parents...~n"),
                 _Parents =  ?wu:find_incoming_hn(Site, PageRef),
                 % io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
                 ok

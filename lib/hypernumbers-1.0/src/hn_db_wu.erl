@@ -1632,7 +1632,7 @@ delete_cells(#refX{site = S} = DelX,  Disp)
 
     Cells = get_cells(DelX),
     case Cells of
-        [] -> ok;
+        [] -> [];
         _ ->
             % first update the children that point to the cell that is being deleted
             % by rewriting the formulae of all the children cells replacing the 
@@ -1642,13 +1642,13 @@ delete_cells(#refX{site = S} = DelX,  Disp)
             Fun1 = fun(X, Acc) ->
                            Status = deref_and_delink_child(X, DelX),
                            case Status of
-                               clean   -> Acc;
+                               []   -> Acc;
                                [Dirty] -> [Dirty | Acc]
                                end
                    end,
             Status = lists:foldl(Fun1, [], Children),
 
-            io:format("In delete_cells Status is ~p~n", [Status]),
+            % io:format("In delete_cells Status is ~p~n", [Status]),
             % now remove all the links where these cells were the children
             Fun2 = fun(X) ->
                            CIdx = read_local_item_index(X),
@@ -1695,7 +1695,7 @@ delete_cells(#refX{site = S} = DelX,  Disp)
             % or 'INDIRECT-a-like' function that needs the new set of cell
             % references to run properly - also need to mark it dirty
             case Status of
-                []            -> ok;
+                []            -> [];
                 DirtyFormulae -> DirtyFormulae
             end
     end.
@@ -2494,7 +2494,7 @@ offset_with_ranges1([#rangeref{path = Path, text = Text} = H | T],
                         [NewAcc | Acc]);
 offset_with_ranges1([#cellref{path = Path, text = Text} = H | T],
                     CPath, FromPath, {FX, FY}, {TX, TY}, Acc) ->
-    io:format("in offset_with_ranges1~n-H is ~p~n", [H]),
+    % io:format("in offset_with_ranges1~n-H is ~p~n", [H]),
     % io:format("in offset_with_ranges1~n-FX is ~p FY is ~p TX is ~p TY is ~p~n",
     %          [FX, FY, TX, TY]),
     Cell = muin_util:just_ref(Text),
