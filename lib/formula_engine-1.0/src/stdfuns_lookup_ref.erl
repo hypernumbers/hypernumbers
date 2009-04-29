@@ -21,6 +21,14 @@ column([])                      -> muin:context_setting(col);
 column([C]) when ?is_cellref(C) -> muin:col_index(muin:col(C));
 column(_)                       -> ?ERR_VAL.
 
+%% TODO: Needs to be recompiled every time -- how to handle that cleanly?
+%% (without writing to proc dict)
+indirect([S]) ->
+    ?ensure(?is_string(S), ?ERR_REF),
+    {ok, Ast} = muin:parse(
+                  S, {muin:context_setting(col), muin:context_setting(row)}),
+    muin:eval_formula(Ast).
+
 row([])                      -> muin:context_setting(row);
 row([C]) when ?is_cellref(C) -> muin:row_index(muin:row(C));
 row(X)                       -> io:format("X=~p~n", [X]), ?ERR_VAL.
