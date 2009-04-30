@@ -14,7 +14,8 @@
 
 %% Directories containg source files
 -define(DIRS,
-        ["/lib/hypernumbers-1.0/",
+        ["/lib/sgte/",
+         "/lib/hypernumbers-1.0/",
          "/lib/formula_engine-1.0/",
          "/lib/read_excel-1.0/"]).
 
@@ -49,7 +50,7 @@ start() ->
     Extra = lists:map(Fun3, ?EXTRA_ERL_FILES),
 
     compile_funcs(Dirs++Extra, Inc_list),
-
+    get_rel_file(),                
     delete_gen_html().
 
 delete_gen_html() ->
@@ -57,8 +58,6 @@ delete_gen_html() ->
     [file:delete(X) || X <- filelib:wildcard(Dir++"*.html.*")].
 
 get_root() ->
-    
-    get_rel_file(),
 
     [_File, _Ebin | Rest] =
         lists:reverse(string:tokens(code:which(compile_code), "/")),

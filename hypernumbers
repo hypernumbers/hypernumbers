@@ -56,9 +56,6 @@ function build
         cd ./lib/gettext/
         make
         cd ../../
-        cd ./lib/sgte/
-        % make
-        cd ../../
         echo "==============================="
         echo "      Compiling Starling       "
         echo "==============================="
