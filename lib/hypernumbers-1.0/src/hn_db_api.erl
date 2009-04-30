@@ -1051,9 +1051,10 @@ move(RefX, Type, Disp)
                 % if this is a delete - we need to actually delete the cells
                 Status = case Type of
                          delete -> ?wu:delete_cells(RefX, Disp);
-                         insert -> ok
+                         insert -> []
                      end,
                 ok = ?wu:shift_cells(RefX, Type, Disp),
+                % io:format("Status is ~p~n", [Status]),
                 case Obj of
                     {row,    _} -> ok = ?wu:shift_rows(RefX, Type);
                     {column, _} -> ok = ?wu:shift_cols(RefX, Type);
@@ -1068,7 +1069,6 @@ move(RefX, Type, Disp)
                 {R, Rest} = Obj,
                 Change = {insert, {R, Rest}, Disp},
                 % set the delay to zero
-                % io:format("Status is ~p~n", [Status]),
                 ok = ?wu:mark_notify_out_dirty(PageRef, Change, 0),
 
                 % finally deal with any cells returned from delete_cells that
@@ -1080,7 +1080,6 @@ move(RefX, Type, Disp)
                                % io:format("in Fun5~n-X is ~p~n-F is ~p~n", [X, F]),
                                ok = ?wu:mark_cells_dirty(X)
                        end,
-                io:format("got to 4~n"),
                 [ok = Fun2(X) || X <- Status],
                 % Jobs a good'un, now for the remote parents
                 % io:format("in hn_db_api:move do something with Parents...~n"),
