@@ -20,21 +20,25 @@ warnings1(FuncVar, H, Tbl) ->
     % if FuncVar is 255 then this is not an Excel function but is a function
     % whose name is the head of the arguments list...
     Nm    = get_name(H, FuncVar),
-    Index = ms_util2:get_index(help, name),
+    Index = ms_util2:get_index(help, name) + 1, % we are working with the raw tuple here
     
-    case lists:keymember(Nm, Index, ?WORKING_FNS) of
+    case lists:keysearch(Nm, Index, ?WORKING_FNS) of
         false ->  
-            Str = "Function "++Nm++
-                " is used in your spreadsheet but "++
+            Str = "Function " ++ Nm ++ " "
+                "is used in your spreadsheet but "++
                 "not supported in Hypernumbers "++
                 "at the moment!",
-            excel_util:append(Tbl, warnings, Str);
+            excel_util:write(Tbl, warnings, [Nm | Str]);
         
-        #help{warning = ""} -> 
+        {value, #help{warning = ""}} -> 
             ok;
         
-        #help{warning = Warning} ->
-            excel_util:append(Tbl, warnings, Warning)
+        {value, #help{warning = Warning}} ->
+            io:format("Warning is ~p~n", [Warning]),
+            excel_util:write(Tbl, warnings, [Nm | Warning]);
+
+        Other  -> io:format("Other is ~p~n", [Other])
+
     end.
 
 get_name(H, 255) ->

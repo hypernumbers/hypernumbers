@@ -214,8 +214,9 @@ write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
 %% of styles in the magic style record is designed to be hidden from the API
 %% (that's for why it is a 'magic' style n'est pas?)
 write_style_IMPORT(RefX, Style) when is_record(RefX, refX), is_record(Style, magic_style) ->
+    % io:format("in write_style_import~n-RefX is ~p~n-Style is ~p~n", [RefX, Style]),
     Fun = fun() ->
-                  hn_db_wu:write_style(RefX, Style)
+                  ok= hn_db_wu:write_style_IMPORT(RefX, Style)
           end,
     mnesia:activity(transaction, Fun).
 

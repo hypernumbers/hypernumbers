@@ -277,6 +277,7 @@ create_ets()->
             {css,              ets:new(css,              [bag,private])},
             {lacunae,          ets:new(lacunae,          [ordered_set,private])},
             {misc,             ets:new(misc,             [ordered_set,private])},
+            {sheetnames,       ets:new(sheetnames,       [ordered_set,private])},
             {warnings,         ets:new(warnings,         [ordered_set,private])},
             {tmp_cell,         ets:new(tmp_cell,         [ordered_set,private])},
             {tmp_blanks,       ets:new(tmp_blanks,       [ordered_set,private])},

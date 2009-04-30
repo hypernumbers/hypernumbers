@@ -21,13 +21,14 @@ handle_upload(Req, User) ->
     
     {_, _, State} = mochiweb_multipart:parse_multipart_request(Req, Callback),
     RawPath = Req:get(raw_path),
-    Basename = filename:basename(State#file_upload_state.original_filename, ".xls"),
+    Orig = State#file_upload_state.original_filename,
+    Basename = filename:basename(Orig, ".xls"),
     {ok, Safename, _N} = regexp:gsub(Basename, "\\s+", "_"),
     ParentPage = RawPath ++ Safename ++ "/",
     {value, {'Host', Host}} = mochiweb_headers:lookup('Host', Req:get(headers)),
 
     try 
-        import(State#file_upload_state.filename, Host, ParentPage),
+        import(State#file_upload_state.filename, Host, ParentPage, Username, Orig),
         {struct, [{"location", ParentPage}]}
     catch
         Error:_Reason ->
@@ -88,8 +89,8 @@ file_upload_callback(_, State) ->
 %% Filename is a full name, parent page is path to page under which pages for
 %% individual sheets will be created.
 
-import(Filename, Host, ParentPage) ->
-    {Celldata, _Names, _Formats, CSS, Warnings} = readxls(Filename),
+import(Filename, Host, ParentPage, Username, OrigFilename) ->
+    {Celldata, _Names, _Formats, CSS, Warnings, Sheetnames} = readxls(Filename),
     Site = "http://" ++ Host,
     F = fun(X, {Ls, Fs}) ->
                 {SheetName, Target, V} = read_reader_record(X),
@@ -106,6 +107,7 @@ import(Filename, Host, ParentPage) ->
                     _      -> {[Datatpl|Ls], Fs}
                 end               
         end,
+
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
         Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
                          Url = string:to_lower(Site ++ Path ++ Ref),
@@ -120,59 +122,80 @@ import(Filename, Host, ParentPage) ->
     lists:foreach(Dopost, Lits),
     lists:foreach(Dopost, Flas),
 
-    io:format("going into writing css with CSS of ~p~n", [CSS]),
     %% Now fire in the CSS and formats
     WriteCSS = fun(X) ->
-                       io:format("Got to 1~n"),
                        {{{sheet, SheetName}, {row_index, Row}, {col_index, Col}},
                         [CSSItem]} = X,
-                       io:format("Got to 2~n"),
                        Sheet = excel_util:esc_tab_name(SheetName),
-                       io:format("Got to 3~n"),
                        Path = ParentPage++Sheet++"/",
-                       io:format("Got to 4~n"),
                        Ref = rc_to_a1(Row,Col),
-                       io:format("Got to 5~n"),
                        Url = string:to_lower(Site ++ Path ++ Ref),
-                       io:format("Got to 6~n"),
                        {ok, RefX} = hn_util:parse_url(Url),
-                       io:format("Got to 7~n"),
                        #refX{path = P2} = RefX,
-                       io:format("Got to 8~n"),
                        RefX2 = #refX{site = Site, path = P2, obj = {page, "/"}},
-                       io:format("Got to 9~n"),
-                       Return = hn_db_api:write_style_IMPORT(RefX2, CSSItem),
-                       io:format("Return is ~p~n", [Return]),
+                       ok = hn_db_api:write_style_IMPORT(RefX2, CSSItem)
                end,
     lists:foreach(WriteCSS, CSS),
 
     %% write parent page information
     PathComps = string:tokens(ParentPage, "/"),
-    ok = write_warnings(Warnings, Site, PathComps),
-    write_to_cell("Your data has been imported and is under sheet1/, sheet2/ etc.", 1, 1, Site, PathComps),
-    write_to_cell("The list of warnings is in column F.", 1, 2, Site, PathComps),
-    
+    GetSheets = fun(X, Acc) ->
+                        {_, [NewSheet]} = X,
+                        [ParentPage ++ NewSheet ++"/" | Acc]
+                end,
+    Sheetnames2 = lists:foldl(GetSheets, [], Sheetnames),
+    HeaderStyle = [{"font-weight", "bold"},
+                   {"font-size", "16px"},
+                   {"color", "#E36C0A"}],
+    WarningStyle = [{"font-weight", "bold"},
+                   {"font-size", "12px"},
+                   {"color", "#FF0000"}],
+    write_to_cell("File Import Details",
+                  2, 2, Site, PathComps, HeaderStyle),
+    write_to_cell("File " ++ OrigFilename ++ " imported by " ++ Username ++ " on " ++
+                  dh_date:format("r"),
+                  2, 3, Site, PathComps, []),
+    write_to_cell("Each sheet in your Excel file has been written as a page. "++
+                  "The sheetname may have been rewritten to make them valid URL's. ",
+                  2, 5, Site, PathComps,[]),
+    write_to_cell("(Don't worry all your formulae that refer to cells on a renamed "++
+                  "sheet have been rewritten to take this into account.)", 
+                  2, 6, Site, PathComps, []),
+    write_to_cell("Imported Pages",
+                  2, 8, Site, PathComps, HeaderStyle),
+    WriteSheets = fun(X, Int) ->
+                          write_to_cell(X, 2, Int, Site, PathComps, []),
+                          Int + 1
+                  end,
+    Index = lists:foldl(WriteSheets, 9, Sheetnames2),
+
+    write_to_cell("Warnings",
+                  2, Index + 1, Site, PathComps, HeaderStyle),
+    write_to_cell("(remember this is an early BETA product!)",
+                  2, Index + 2, Site, PathComps, WarningStyle),
+    write_to_cell("Not all Excel functions are fully supported at the moment.",
+                  2, Index + 3, Site, PathComps, []),
+
+    ok = write_warnings(Warnings, Index + 5, Site, PathComps),
     loop(),
     ok.
 
-write_to_cell(Str, Col, Row, Site, Path) ->
+write_to_cell(Str, Col, Row, Site, Path, Attrs) ->
+    Attrs2 = [{"formula", Str} | Attrs],
     ok = hn_db_api:write_attributes(#refX{site = Site,
                                           path = Path,
                                           obj = {cell, {Col, Row}}},
-                                    [{"formula", Str}]).
+                                    Attrs2).
                                           
-
-write_warnings(Warnings, Site, Path) ->
-    write_warnings(Warnings, 1, Site, Path).
 write_warnings([], _, _, _) ->
     ok;
 write_warnings([W|Ws], Idx, Site, Path) -> % Idx is the index of W in the original list
     WarningString = case W of
-                        {{index, _N}, S} -> S;
-                        {S, []}          -> S
+                        {S, []}          -> S;
+                        {_, S}           -> S
                     end,
-    write_to_cell(WarningString, 7, Idx, Site, Path),
-    write_warnings(Ws, Idx+1, Site, Path).
+    write_to_cell(WarningString, 2, Idx, Site, Path, []),
+    write_warnings(Ws, Idx + 1, Site, Path).
 
 
 readxls(Fn) ->
@@ -181,7 +204,7 @@ readxls(Fn) ->
 
 read_table(Name, TableDescriptors) ->
     {value, {Name, Id}} = lists:keysearch(Name, 1, TableDescriptors),
-    Records = ets:foldl(fun(X, Acc) -> [X|Acc] end, [], Id),
+    Records = ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Id),
     Records.
                              
 
@@ -195,9 +218,10 @@ decipher_ets_tables(Tids) ->
     Celldata = CellInfo ++ AFRecs,
     Names = read_table(names, Tids),
     Formats = read_table(formats, Tids),
-    CSS = read_table(css,Tids),
+    CSS = read_table(css, Tids),
     Warnings = read_table(warnings, Tids),
-    {Celldata, Names, Formats, CSS, Warnings}.
+    Sheetnames = read_table(sheetnames, Tids),
+    {Celldata, Names, Formats, CSS, Warnings, Sheetnames}.
 
 loop()->
     case mnesia:table_info(dirty_cell,size) of

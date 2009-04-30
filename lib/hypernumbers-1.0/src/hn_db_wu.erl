@@ -554,6 +554,10 @@
         ]).
 
 -export([
+         write_style_IMPORT/2
+        ]).
+
+-export([
          deref_overlap_TEST/0
         ]).
 
@@ -576,6 +580,14 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec write_style_IMPORT(RefX#refX{}, Style#magic_style{}) -> ok
+%% @doc write_style_IMPORT is a wrapper for the internal function write_style
+%% which should never be used except in file import
+write_style_IMPORT(RefX, Style)
+  when is_record(RefX, refX), is_record(Style, magic_style) ->
+    _Index = write_style(RefX, Style),
+    ok.
+
 %% @spec unpack_dependencies(Site, DTree) -> DTree2
 %% @doc unpacks the dependency tree replacing the indices with the Url's
 %% they refer to
@@ -3352,7 +3364,6 @@ get_style(#refX{site = Site} = RefX, StIdx, Name, Val) ->
 %% return an index pointing to it 
 %% If the style already exists it just returns the index 
 write_style(#refX{site = Site} = RefX, Style) ->
-    % io:format("In write_style~n-RefX is ~p~n-Style is ~p~n", [RefX, Style]),
     % Ref is a cell ref, need a page ref
     Ref2 = RefX#refX{obj = {page, "/"}},
     Match = #styles{refX = Ref2, magic_style = Style, _ = '_'},
@@ -3362,7 +3373,7 @@ write_style(#refX{site = Site} = RefX, Style) ->
         []              -> write_style2(RefX, Style); 
         [ExistingStyle] -> ExistingStyle2 = trans_back(ExistingStyle),
                            #styles{index = NewIndex} = ExistingStyle2, 
-                           NewIndex 
+                           NewIndex
     end. 
 
 write_style2(#refX{site = Site} = RefX, Style) ->

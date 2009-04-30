@@ -39,6 +39,7 @@ post_process_tables(Tables) ->
     convert_dates(Tables),
     fix_up_formats(Tables),
     create_array_formulae(Tables),
+    fix_up_sheetnames(Tables),
     % excel_util:dump(Tables),
     ok.
 
@@ -167,7 +168,7 @@ fix_up_cells(Tables)->
         end,
     ets:foldl(Fun, [], Tmp_CellId).
 
-%% This function merges the contents of the ets table 'tmp_sheetnames' into
+%% This function merges the contents of the ets table 'sheetnames' into
 %% 'tmp_externalbook'
 fix_up_externalrefs(Tables)->
     {value, {tmp_externalbook, ExternalRefs}}=?k(tmp_externalbook, 1, Tables),
@@ -184,6 +185,16 @@ fix_up_externalrefs(Tables)->
              ?write(Tables, tmp_externalbook, [Index, {this_file,expanded},
                                           SheetNames])
     end.
+
+%% This function merges the escaped contents of the ets table 'tmp_sheetnames' into
+%% 'sheetnames'
+fix_up_sheetnames(Tables) ->
+    Sheetnames = lists:reverse(get_sheetnames(Tables)),
+    Fun = fun(X, Idx) ->
+                  ?write(Tables, sheetnames, [Idx, excel_util:esc_tab_name(X)]),
+                  Idx + 1
+          end,
+    lists:foldl(Fun, 1, Sheetnames).
 
 convert_dates(Tables)->
     {value,{cell, Tid1}}       = ?k(cell,        1, Tables),
