@@ -12,7 +12,6 @@
 handle_upload(Req, User) ->
     Username  = hn_users:name(User),
     Filestamp = Username ++ "__" ++ dh_date:safe_now(),
-    io:format("In handle_upload Filestamp is ~p~n", [Filestamp]),
     
     Callback = fun(N) ->
                        %% Passing filestamp (time & username) for file name in state record here.
@@ -32,7 +31,7 @@ handle_upload(Req, User) ->
         {struct, [{"location", ParentPage}]}
     catch
         Error:_Reason ->
-            ?ERROR("Error Importing ~p~n",[Error]),
+            ?ERROR("Error Importing ~p by ~p with error ~p~n",[ParentPage, User, Error]),
             {struct, [{"error", "error reading sheet"}]}
     end.
            
@@ -121,7 +120,6 @@ import(Filename, Host, ParentPage, Username, OrigFilename) ->
 
     lists:foreach(Dopost, Lits),
     lists:foreach(Dopost, Flas),
-
     %% Now fire in the CSS and formats
     WriteCSS = fun(X) ->
                        {{{sheet, SheetName}, {row_index, Row}, {col_index, Col}},
