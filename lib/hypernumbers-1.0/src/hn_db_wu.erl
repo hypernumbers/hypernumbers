@@ -3050,6 +3050,11 @@ write_formula1(RefX, Fla) ->
     % io:format("in write_formula1~n-RefX is ~p~n-Fla is ~p~n", [RefX, Fla]),
     Rti = refX_to_rti(RefX, false),
     case muin:run_formula(Fla, Rti) of
+        %% TODO : Get rid of this, muin should return {error, Reason}?
+        {ok, {_P, {error, error_in_formula}, _, _, _}} ->
+            #refX{site = Site, path = Path, obj = R} = RefX,
+            ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
+                                           "=" ++ Fla);
         {error, Error} ->
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R,  Error, "=" ++ Fla);
