@@ -149,8 +149,13 @@ unix_timestamp(Now) ->
 
 %% Given a user find the most elevated permission
 %% granted to that user
-get_access_level(User, Ref=#refX{site = Site, path = Path}) ->
+get_access_level(Usr, Ref=#refX{site = Site, path = Path}) ->
 
+    User = case Usr of
+               anonymous -> anonymous;
+               _Else -> Usr#hn_user.name
+           end,
+    
     Default = case Path of [User|_] -> write; _ -> no_access end,
 
     SiteRef = #refX{site=Site, path=[]},

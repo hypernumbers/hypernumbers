@@ -59,7 +59,7 @@ do_req(Req) ->
                {error, _Reason} -> anonymous
            end,
    
-    {ok, Access} = hn_users:get_access_level(hn_users:name(User), Ref),
+    {ok, Access} = hn_users:get_access_level(User, Ref),
 
     case check_auth(Access, Ref#refX.path, Method)  of 
         login -> Req:serve_file("hypernumbers/login.html", docroot(), ?hdr);
