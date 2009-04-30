@@ -1641,10 +1641,12 @@ delete_cells(#refX{site = S} = DelX,  Disp)
             % io:format("in delete_cells~n-Children are ~p~n", [Children]),
             Fun1 = fun(X, Acc) ->
                            Status = deref_and_delink_child(X, DelX),
+                           io:format("In Fun1~n-X is ~p~n-Status is ~p~n-Acc is ~p~n",
+                                     [X, Status, Acc]),
                            case Status of
-                               []   -> Acc;
+                               []      -> Acc;
                                [Dirty] -> [Dirty | Acc]
-                               end
+                           end
                    end,
             Status = lists:foldl(Fun1, [], Children),
 
@@ -1696,7 +1698,9 @@ delete_cells(#refX{site = S} = DelX,  Disp)
             % references to run properly - also need to mark it dirty
             case Status of
                 []            -> [];
-                DirtyFormulae -> DirtyFormulae
+                DirtyFormulae -> % io:format("in delete_cells DirtyFormulae is ~p~n",
+                                 %          [DirtyFormulae]),
+                                 DirtyFormulae
             end
     end.
 
@@ -2507,9 +2511,9 @@ offset_with_ranges1([#cellref{path = Path, text = Text} = H | T],
     YO = TY - FY,
     % io:format("in offset_with_ranges1~n-CPath is ~p~n-Path is ~p~n", [CPath, Path]), 
     PathCompare = muin_util:walk_path(CPath, Path),
-    io:format("in offset_with_ranges1~n-PathCompare is ~p X is ~p Y is ~p~n" ++
-              "XO is ~p YO is ~p~n",
-              [PathCompare, X, Y, XO, YO]),
+    % io:format("in offset_with_ranges1~n-PathCompare is ~p X is ~p Y is ~p~n" ++
+    %          "XO is ~p YO is ~p~n",
+    %          [PathCompare, X, Y, XO, YO]),
     % io:format("in offset_with_ranges1~n-FromPath is ~p FX is ~p FY is ~p~n",
     %          [FromPath, FX, FY]),
     NewCell =
@@ -2520,8 +2524,8 @@ offset_with_ranges1([#cellref{path = Path, text = Text} = H | T],
     NewAcc = H#cellref{text = Prefix ++ NewCell},    
     % io:format("in offset_with_ranges1 (cellref)~n-Cell is ~p~n-Prefix is ~p~n-"++
     %          "NewCell is ~p~n-NewAcc is ~p~n", [Cell, Prefix, NewCell, NewAcc]),
-    io:format("in offset_with_ranges1 (cellref)~n-NewCell is ~p~n-NewAcc is ~p~n",
-              [NewCell, NewAcc]),
+    % io:format("in offset_with_ranges1 (cellref)~n-NewCell is ~p~n-NewAcc is ~p~n",
+    %          [NewCell, NewAcc]),
     offset_with_ranges1(T, CPath, FromPath, {FX, FY}, {TX, TY},
                         [NewAcc | Acc]);                           
 offset_with_ranges1([H | T], CPath, FromPath, {FX, FY}, {TX, TY}, Acc) ->
@@ -2693,80 +2697,6 @@ get_content_attrs([H | T], Acc) ->
         _                   -> get_content_attrs(T, Acc)
     end.
 
-%shift_outgoing_hn(Site, From, To) ->
-%    case  mnesia:read(trans(Site, outgoing_hn), {Site, From}) of
-%        []   -> ok;
-%        [Hn] -> NewHn = Hn#outgoing_hn{site_and_parent = {Site, To}},
-%                ok = mnesia:delete_object(trans(Site, Hn)),
-%                ok = mnesia:write(trans(Site, NewHn))
-%    end.
-
-%shift_cell2(From, To) ->
-%    % io:format("in shift_cell2~n-From is ~p~n-To is ~p~n", [From, To]),
-%    % Rewrite the shifted cell
-%    AttrList = read_cells_raw(From),
-%    % io:format("in shift_cell2~n-AttrList is ~p~n", [AttrList]),
-%    Fun1 = fun({_RefX, {Key, Val}}) ->
-%                   write_attr3(To, {Key, Val})
-%           end,
-%    [ok = Fun1(X) || X <- AttrList],
-%    % now delete the originals
-%    Fun2 = fun({RefX, {Key, _Val}}) ->
-%                   delete_attrs(RefX, Key)
-%           end,
-%    [ok = Fun2(X) || X <- AttrList],
-%    % now check if the cell has a circular reference
-%    case read_attrs(To, ["formula"]) of
-%        []                    -> ok;
-%        [{_C, {"formula", F}}] -> case check_circ_ref(To, F) of
-%                                      true  -> mark_cells_dirty(To);
-%                                      false -> ok
-%                                  end
-%    end.
-
-%check_circ_ref(#refX{path = TPath, obj = {cell, {TX, TY}}} = _To, Formula) ->
-%    {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
-%    check_circ_ref1(Toks, TPath, TX, TY).
-
-%check_circ_ref1([], _TPath, _TX, _TY) -> false;
-%check_circ_ref1([#rangeref{path = Path, text = Text} = _H | T],
-%                TPath, TX, TY) ->
-%    Range = muin_util:just_ref(Text),
-%    Prefix = case muin_util:just_path(Text) of
-%                 "/"     -> "";
-%                 Other   -> Other
-%             end,
-%    [Cell1 | [Cell2]] = string:tokens(Range, ":"),
-%    {_X1D, X1, _Y1D, Y1} = parse_cell(Cell1),
-%    {_X2D, X2, _Y2D, Y2} = parse_cell(Cell2),
-%    case Path of
-%        Prefix ->
-%            if
-%                (X1 =< TX) andalso (TX =< X2)
-%                andalso (Y1 =< TY) andalso (TY =< Y2) -> true;
-%                true -> check_circ_ref1(T, TPath, TX, TY)
-%            end;
-%        _Other  -> check_circ_ref1(T, TPath, TX, TY)
-%    end;
-%check_circ_ref1([#cellref{path = Path, text = Text} = _H | T],
-%                TPath, TX, TY) ->
-%    Cell = muin_util:just_ref(Text),
-%    Prefix = case muin_util:just_path(Text) of
-%                 "/"   -> "./";
-%                 Other -> Other
-%             end,
-%    {_X1D, X1, _Y1D, Y1} = parse_cell(Cell),
-%    case Path of
-%        Prefix ->
-%            case {X1, Y1} of
-%                {TX, TY} -> true;
-%                _        -> check_circ_ref1(T, TPath, TX, TY)
-%            end;
-%        _Other  -> check_circ_ref1(T, TPath, TX, TY)
-%    end;
-%check_circ_ref1([_H | T], TPath, TX, TY) ->
-%    check_circ_ref1(T, TPath, TX, TY).
-
 shift_remote_links2(_Site, [], _To) -> ok;
 shift_remote_links2(Site, [H | T], To) ->
     % now read delete the old remote link
@@ -2775,57 +2705,6 @@ shift_remote_links2(Site, [H | T], To) ->
     ok = mnesia:write(trans(Site, NewLink)),
     shift_remote_links2(Site, T, To).
 
-%shift_local_links(#refX{site = Site} = From, To) ->
-%    % Now rewrite the cells that link to this cell
-%    % first shift the local links where this cell is the parent
-%    Head = ms_util:make_ms(local_cell_link, [{parent, From}]),
-%    H2 = trans(Site, Head),
-%    Table = trans(Site, local_cell_link),
-%    LinkedCells = trans_back(mnesia:select(Table, [{H2, [], ['$_']}])),
-%    % io:format("in shift_local_links~n-LinkedCells is ~p~n-From is ~p~n-To is ~p~n",
-%    %          [LinkedCells, From, To]),
-%    ok = shift_local_children(LinkedCells, From, To),
-%    % now shift the local links where this cell is the child
-%    Head3 = ms_util:make_ms(local_cell_link, [{child, From}]),
-%    H4 = trans(Site, Head3),
-%    LinkedCells2 = trans_back(mnesia:select(Table, [{H4, [], ['$_']}])),
-%    % io:format("in shift_local_links~n-LinkedCells2 is ~p~n-From is ~p~n-To is ~p~n",
-%    %          [LinkedCells2, From, To]),
-%    shift_local_parents(LinkedCells2, To).
-
-%shift_local_parents([], _To)     -> ok;
-%shift_local_parents([H | T], To) -> NewLink = H#local_cell_link{child = To},
-%                                    #refX{site = Site} = To,
-%                                    ok = mnesia:delete_object(trans(Site, H)),
-%                                    ok = mnesia:write(trans(Site, NewLink)),
-%                                    shift_local_parents(T, To).
-
-%shift_local_children([], _From, _To) -> ok;
-%shift_local_children([#local_cell_link{child = C} = Link | T], From, To) ->
-%    % both From and To are on the same page so there is no difference
-%    % between using the one or the other - but force them to be the same
-%    % io:format("in shift_local_children~n-C is ~p~n-From is ~p~n-To is ~p~n",
-%    %          [C, From, To]),
-%    #refX{site = Site, path = CPath, obj = _CRef} = C,
-%    #refX{site = Site, path = FromPath, obj = {cell, FromCell}} = From,
-%    % force the 'To' path to match the 'From' path in the next line
-%    #refX{path = FromPath, obj = {cell, ToCell}} = To,
-
-%    % first rewrite the local_cell_link
-%    NewLink = Link#local_cell_link{parent = To},
-%    ok = mnesia:delete_object(trans(Site, Link)),
-%    ok = mnesia:write(trans(Site, NewLink)),
-%    % now read the child
-%    [{C, {"formula", Formula}}] = read_attrs(C, ["formula"]),
-%    NewFormula = offset_formula_with_ranges(Formula, CPath, FromPath,
-%                                            FromCell, ToCell),
-%    % io:format("in shift_local_children~n-Formula is ~p~n-NewFormula is ~p~n",
-%    %          [Formula, NewFormula]),
-%    % the local cell link table has already been manually rewritten so the new
-%    % formula is written using write_attr3 not write_attr
-%    ok = write_attr3(C, {"formula", NewFormula}),
-%    shift_local_children(T, From, To).
-
 deref_and_delink_child({#refX{site = S} = Parent, Children}, DeRefX) ->
     % io:format("in deref_and_delink_child~n-Parent is ~p~n-Children is ~p~n-DeRefX is ~p~n",
     %          [Parent, Children, DeRefX]),
@@ -2833,7 +2712,7 @@ deref_and_delink_child({#refX{site = S} = Parent, Children}, DeRefX) ->
     Fun1 = fun(X, Acc) ->
                   [{X, {"formula", Formula}}] = read_attrs(X, ["formula"]),
                   {Status, NewFormula} = deref(Formula, DeRefX),
-                   io:format("in deref_and_delink_child Status is ~p~n", [Status]),
+                   % io:format("in deref_and_delink_child Status is ~p~n", [Status]),
                    % we just rewrite this and let it recalculate as per...
                    ok = write_attr(X, {"formula", NewFormula}),
                    case Status of
@@ -2858,24 +2737,24 @@ deref_and_delink_child({#refX{site = S} = Parent, Children}, DeRefX) ->
 deref([$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     NewToks = deref1(Toks, DeRefX, []),
-    io:format("in deref~n-Toks is ~p~n-NewToks is ~p~n",
-              [Toks, NewToks]),
+    % io:format("in deref~n-Toks is ~p~n-NewToks is ~p~n",
+    %          [Toks, NewToks]),
     make_formula(NewToks).
 
 deref1([], _DeRefX, Acc) -> lists:reverse(Acc);
 deref1([#rangeref{path = Path, text = Text} = H | T], DeRefX, Acc) ->
     % only deref the range if it is completely obliterated by the deletion
-    io:format("In deref1 (rangeref)~n-H is ~p~n-DeRefX is ~p~n", [H, DeRefX]),
+    % io:format("In deref1 (rangeref)~n-H is ~p~n-DeRefX is ~p~n", [H, DeRefX]),
     NewTok = deref2(H, Text, Path, DeRefX),
-    io:format("In deref1 (rangeref)~n-NewTok is ~p~n", [NewTok]),
+    % io:format("In deref1 (rangeref)~n-NewTok is ~p~n", [NewTok]),
     deref1(T, DeRefX, [NewTok | Acc]);
 deref1([#cellref{path = Path, text = Text} = H | T], DeRefX, Acc) ->
-    io:format("In deref1 (cellref)~n-H is ~p~n-DeRefX is ~p~n", [H, DeRefX]),
+    % io:format("In deref1 (cellref)~n-H is ~p~n-DeRefX is ~p~n", [H, DeRefX]),
     NewTok = deref2(H, Text, Path, DeRefX),
-    io:format("In deref1 (cellref)~nNewTok is ~p~n", [NewTok]),
+    % io:format("In deref1 (cellref)~nNewTok is ~p~n", [NewTok]),
     deref1(T, DeRefX, [NewTok | Acc]);
 deref1([H | T], DeRefX, Acc) ->
-    io:format("In deref1 (the rest)~n-H is ~p~n-DeRefX is ~p~n", [H, DeRefX]),
+    % io:format("In deref1 (the rest)~n-H is ~p~n-DeRefX is ~p~n", [H, DeRefX]),
     deref1(T, DeRefX, [H | Acc]).
 
 deref2(H, Text, Path, DeRefX) ->
