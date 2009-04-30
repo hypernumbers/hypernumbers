@@ -1050,11 +1050,11 @@ move(RefX, Type, Disp)
                 % To make this work we shift the RefX up 1, left 1 
                 % before getting the cells to shift for INSERT
                 % if this is a delete - we need to actually delete the cells
-                Status = case Type of
+                Status1 = case Type of
                          delete -> ?wu:delete_cells(RefX, Disp);
                          insert -> []
                      end,
-                ok = ?wu:shift_cells(RefX, Type, Disp),
+                Status2 = ?wu:shift_cells(RefX, Type, Disp),
                 % io:format("Status is ~p~n", [Status]),
                 case Obj of
                     {row,    _} -> ok = ?wu:shift_rows(RefX, Type);
@@ -1072,6 +1072,7 @@ move(RefX, Type, Disp)
                 % set the delay to zero
                 ok = ?wu:mark_notify_out_dirty(PageRef, Change, 0),
 
+                Status = lists:merge([Status1, Status2]),
                 % finally deal with any cells returned from delete_cells that
                 % are dirty - these need to be rewritten now that the link/local_objs
                 % tables have been transformed

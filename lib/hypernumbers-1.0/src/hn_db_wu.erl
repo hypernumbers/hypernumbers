@@ -1385,7 +1385,8 @@ make_refXs(Site, LocalObjsList, AttrList) ->
            end,
     lists:map(Fun2, List2).
 
-%% @spec shift_cells(RefX#refX{}, Type, Disp) -> ok
+%% @spec shift_cells(RefX#refX{}, Type, Disp) -> Status
+%% Status = list()
 %% @doc shift_cells takes a range, row or column and shifts it by the offset.
 %% 
 %% <em>NOTE</em> this function doesn't pass any messages on to parents or
@@ -1412,7 +1413,7 @@ shift_cells(From, Type, Disp)
         [] ->
             ok;
         _  ->
-            %io:format("In shift_cells RefXList is ~p~n", [RefXList]),
+            % io:format("In shift_cells RefXList is ~p~n", [RefXList]),
             % first up deal with dirty_notify_in and remote links, etc, etc,
             [ok = shift_cells1(X, offset(X, {XO, YO})) || X <- RefXList],
             
@@ -1435,17 +1436,22 @@ shift_cells(From, Type, Disp)
                            Ret
                    end,
             FormulaList = [Fun1(X) || X <- ChildCells],
-            Fun2 = fun({#refX{obj = {cell, {X, Y}}} = RefX, {"formula", F1}}) ->
+            Fun2 = fun({#refX{obj = {cell, {X, Y}}} = RefX, {"formula", F1}}, Acc) ->
                            F = {X, Y},
                            % io:format("in Fun2 X is ~p Y is ~p XO is ~p YO is ~p~n",
                            %          [X, Y, XO, YO]),
                            T = {X + XO, Y + YO},
-                           % io:format("in Fun2 F is ~p T is ~p~n", [F, T]),
-                           F2 = offset_formula_with_ranges(F1, Path, Path, F, T),
-                           % io:format("in Fun2 F1 is ~p F2 is ~p~n", [F1, F2]),
-                           ok = write_attr3(RefX, {"formula", F2})
+                           %io:format("in Fun2 F is ~p T is ~p~n", [F, T]),
+                           {Status, F2} = offset_formula_with_ranges(F1, Path, Path, F, T),
+                           %io:format("in Fun2 F1 is ~p F2 is ~p~n Status is ~p",
+                           %          [F1, F2, Status]),
+                           ok = write_attr3(RefX, {"formula", F2}),
+                           case Status of
+                               clean  -> Acc;
+                               dirty -> [{dirty, RefX} | Acc]
+                           end
                    end,
-            lists:foreach(Fun2, FormulaList),
+            Status = lists:foldl(Fun2, [], FormulaList),
             
             % now shift the actual cells
             % - first up adjust the local_objs table 
@@ -1468,7 +1474,8 @@ shift_cells(From, Type, Disp)
             ok = delete_recs(Site, Cells),
             % io:format("in shift_cells~nNewCells are ~p~n", [NewCells]),
             [ok = mnesia:write(trans(Site, X)) || X <- NewCells],
-            ok
+            % return the Status of dirty cells
+            Status
     end.
 
 shift_cells1(From, To) when is_record(From, refX), is_record(To, refX) ->
@@ -1624,7 +1631,8 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
               ok
     end.
 
-%% @spec delete_cells(RefX, Displacement) -> [ok | Status]
+%% @spec delete_cells(RefX, Displacement) -> Status
+%% Status = list()
 %% @doc takes a reference to a
 %% <ul>
 %% <li>page</li>
@@ -1704,16 +1712,8 @@ delete_cells(#refX{site = S} = DelX,  Disp)
             [ok = Fun4(X) || X <- IdxList],
             % finally delete the index records themselves
             [ok = mnesia:delete_object(X) || X <- Recs],
-            % if the status is 'dirty', read the formula and rewrite it
-            % because 'dirty' indicates that the formula uses an 'INDIRECT'
-            % or 'INDIRECT-a-like' function that needs the new set of cell
-            % references to run properly - also need to mark it dirty
-            case Status of
-                []            -> [];
-                DirtyFormulae -> % io:format("in delete_cells DirtyFormulae is ~p~n",
-                                 %          [DirtyFormulae]),
-                                 DirtyFormulae
-            end
+            % need to return any cells that need to recalculate after the move
+            Status
     end.
 
 make_del_cond([])   -> exit("make_del_cond can't take an empty list");
@@ -3003,8 +3003,8 @@ offset_formula_with_ranges([$=|Formula], CPath, ToPath, FromCell, ToCell) ->
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     NewToks = offset_with_ranges(Toks, CPath, ToPath, FromCell, ToCell),
-    {_Status, NewFormula} = make_formula(NewToks),
-    NewFormula;
+    {Status, NewFormula} = make_formula(NewToks),
+    {Status, NewFormula};
 offset_formula_with_ranges(Value, _CPath, _ToPath, _FromCell, _ToCell) -> Value.
 
 offset_formula(Formula, {XO, YO}) ->
