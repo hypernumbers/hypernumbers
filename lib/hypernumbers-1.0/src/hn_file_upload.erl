@@ -11,7 +11,8 @@
 
 handle_upload(Req, User) ->
     Username  = hn_users:name(User),
-    Filestamp = Username ++ "__" ++ dh_date:format("r"),
+    Filestamp = Username ++ "__" ++ dh_date:safe_now(),
+    io:format("In handle_upload Filestamp is ~p~n", [Filestamp]),
     
     Callback = fun(N) ->
                        %% Passing filestamp (time & username) for file name in state record here.
@@ -29,8 +30,8 @@ handle_upload(Req, User) ->
         import(State#file_upload_state.filename, Host, ParentPage),
         {struct, [{"location", ParentPage}]}
     catch
-        _Error:_Reason ->
-            ?ERROR("Error Importing ~p~n",[_Error]),
+        Error:_Reason ->
+            ?ERROR("Error Importing ~p~n",[Error]),
             {struct, [{"error", "error reading sheet"}]}
     end.
            
@@ -119,18 +120,29 @@ import(Filename, Host, ParentPage) ->
     lists:foreach(Dopost, Lits),
     lists:foreach(Dopost, Flas),
 
+    io:format("going into writing css with CSS of ~p~n", [CSS]),
     %% Now fire in the CSS and formats
     WriteCSS = fun(X) ->
+                       io:format("Got to 1~n"),
                        {{{sheet, SheetName}, {row_index, Row}, {col_index, Col}},
                         [CSSItem]} = X,
+                       io:format("Got to 2~n"),
                        Sheet = excel_util:esc_tab_name(SheetName),
+                       io:format("Got to 3~n"),
                        Path = ParentPage++Sheet++"/",
+                       io:format("Got to 4~n"),
                        Ref = rc_to_a1(Row,Col),
+                       io:format("Got to 5~n"),
                        Url = string:to_lower(Site ++ Path ++ Ref),
+                       io:format("Got to 6~n"),
                        {ok, RefX} = hn_util:parse_url(Url),
+                       io:format("Got to 7~n"),
                        #refX{path = P2} = RefX,
+                       io:format("Got to 8~n"),
                        RefX2 = #refX{site = Site, path = P2, obj = {page, "/"}},
-                       hn_db_api:write_style_IMPORT(RefX2, CSSItem)
+                       io:format("Got to 9~n"),
+                       Return = hn_db_api:write_style_IMPORT(RefX2, CSSItem),
+                       io:format("Return is ~p~n", [Return]),
                end,
     lists:foreach(WriteCSS, CSS),
 
