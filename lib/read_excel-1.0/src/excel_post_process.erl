@@ -139,7 +139,8 @@ type_formats(Tables) ->
                       = case Return of
                             {erlang, {Type3, _Output}} -> {Type3, Fmt};
                             {error,error_in_format} ->
-                                Warn = "Bug: Format "++Fmt++" doenst compile",
+                                Warn = "Warning: The Excel Built-In format "++ Fmt ++
+                                    " doesn't compile",
                                 excel_util:append(Tables, warnings, Warn),
                                 {text, "general"}
                         end,
