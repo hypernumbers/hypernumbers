@@ -2849,6 +2849,9 @@ intersect(A1, Y1, X1, A2, X2, A3)
 intersect(X1, A1, A2, Y1, A3, Y2)
   when (is_atom(A1) andalso is_atom(A2) andalso is_atom(A3))
        andalso (is_integer(X1) andalso is_integer(Y1) andalso is_integer(Y2)) -> out;
+% page deletes always dereference
+intersect(_XX1, _YY1, zero, zero, inf, inf) ->
+    out;
 % this is a row-row comparison
 intersect(Type, YY1, zero, Y1, inf, Y2)
   when ((Type == zero) orelse (Type == inf)) ->
@@ -2947,6 +2950,8 @@ rewrite(YO, {row, _}, Text, middle) ->
     S = make_row(YD1, Y1) ++ ":" ++ make_row(YD2, (Y2 - YO)),
     {drop_in_str, S}.
 
+% page deletes always derefence
+recheck_overlay(_Text, {page, "/"}, _Target) -> {deref, "#REF!"};
 % cell targets that have matched so far ain't gonna
 recheck_overlay(Text, _DelX, {cell, _}) -> {drop_in_str, Text};
 % cell deletes that haven't matched a row or column so far ain't gonna
@@ -2999,7 +3004,8 @@ recheck_overlay(Text, {row, {Y1, Y2}}, {range, {_XX1, YY1, _XX2, YY2}} = Tgt) ->
 expand({cell, {X, Y}})            -> {X, Y, X, Y};
 expand({range, {X1, Y1, X2, Y2}}) -> {X1, Y1, X2, Y2};
 expand({column, {X1, X2}})        -> {X1, zero, X2, inf}; % short for infinity
-expand({row, {Y1, Y2}})           -> {zero, Y1, inf, Y2}. % short for infinity
+expand({row, {Y1, Y2}})           -> {zero, Y1, inf, Y2}; % short for infinity
+expand({page, "/"})              -> {zero, inf, zero, inf}.
 
 % different to offset_formula because it truncates ranges
 offset_formula_with_ranges([$=|Formula], CPath, ToPath, FromCell, ToCell) ->
@@ -3037,7 +3043,7 @@ offset_formula(Formula, {XO, YO}) ->
 %    end.
 
 shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
-    case mnesia:read(trans(Site, dirty_notify_in), From) of
+    case mnesia:read({trans(Site, dirty_notify_in), From}) of
         []        -> ok;
         [DirtyHn] -> DirtyHn2 = trans_back(DirtyHn),
                      NewDirty = DirtyHn2#dirty_notify_in{parent = To},
