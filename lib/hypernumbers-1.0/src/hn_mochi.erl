@@ -215,13 +215,8 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"},
     hn_db_api:insert(RefX2, list_to_existing_atom(D));
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", "all"}], _User)
-  when O == row orelse O == column ->
+  when O == row orelse O == column orelse O == page->
     hn_db_api:delete(Ref);
-
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", "all"}], _User)
-  when O == page ->
-    hn_db_api:clear(Ref, all);
-
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}], _User)
   when O == cell orelse O == range,

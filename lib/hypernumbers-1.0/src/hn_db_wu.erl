@@ -501,7 +501,7 @@
          read_outgoing_hns/2,
          clear_cells/1,
          clear_cells/2,
-         delete_cells/2,
+         delete_cells/1,
          delete_attrs/2,
          clear_dirty/2,
          clear_dirty_cell/1,
@@ -1631,7 +1631,7 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
               ok
     end.
 
-%% @spec delete_cells(RefX, Displacement) -> Status
+%% @spec delete_cells(RefX) -> Status
 %% Status = list()
 %% @doc takes a reference to a
 %% <ul>
@@ -1647,10 +1647,10 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
 %% @todo this is ineffiecient because it reads and then deletes each
 %% record individually - if remoting_reg supported a {delete refX all}
 %% type message it could be speeded up
-delete_cells(#refX{site = S} = DelX,  Disp)
-  when (Disp == vertical orelse Disp == horizontal)  ->
-
+delete_cells(#refX{site = S} = DelX) ->
+    % io:format("in delete_cells ~p~n", [DelX]),
     Cells = get_cells(DelX),
+    % io:format("in delete_cells ~p~n", [Cells]),
     case Cells of
         [] -> [];
         _ ->
@@ -1661,8 +1661,8 @@ delete_cells(#refX{site = S} = DelX,  Disp)
             % io:format("in delete_cells~n-Children are ~p~n", [Children]),
             Fun1 = fun(X, Acc) ->
                            Status = deref_and_delink_child(X, DelX),
-                           io:format("In Fun1~n-X is ~p~n-Status is ~p~n-Acc is ~p~n",
-                                     [X, Status, Acc]),
+                           % io:format("In Fun1~n-X is ~p~n-Status is ~p~n-Acc is ~p~n",
+                           %          [X, Status, Acc]),
                            case Status of
                                []      -> Acc;
                                [Dirty] -> [Dirty | Acc]
@@ -1710,6 +1710,7 @@ delete_cells(#refX{site = S} = DelX,  Disp)
                            ok
                    end,
             [ok = Fun4(X) || X <- IdxList],
+            % io:format("in delete_cells Recs is ~p~n", [Recs]),
             % finally delete the index records themselves
             [ok = mnesia:delete_object(X) || X <- Recs],
             % need to return any cells that need to recalculate after the move
@@ -2040,16 +2041,20 @@ unregister_out_hn(P, C)
 %% @doc read the populated pages under the specified path
 %% @todo fix up api
 read_page_structure(#refX{site = Site, obj = {page, "/"}}) ->
+    % io:format("In read_page_structure for ~p~n", [RefX]),
     H = trans(Site, #local_objs{path = '$1', _ = '_'}),
     C = [],
     B = ['$1'],
     Table = trans(Site, local_objs),
+    % io:format("In read_page_structure~n-H is ~p C is ~p B is ~p~n", [H, C, B]),
     Items = mnesia:select(Table, [{H, C, B}]),
+    % io:format("in read_page_structure Items are ~p~n", [Items]),
     filter_pages(Items, dh_tree:new()).
 
 filter_pages([], Tree) ->
     Tree;
 filter_pages([Path | T], Tree) ->
+    % io:format("in filter_pages Path is ~p Tree is ~p~n", [Path, Tree]),
     filter_pages(T, dh_tree:add(Path, Tree)).
 
 % converts a tablename into the site-specific tablename

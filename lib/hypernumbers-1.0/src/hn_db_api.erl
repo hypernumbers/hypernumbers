@@ -1000,7 +1000,7 @@ delete(#refX{obj = {page, _}} = RefX) ->
     % io:format("in hn_db_api:delete (page)~n-RefX is ~p~n", [RefX]),
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  ?wu:delete(RefX)
+                  ?wu:delete_cells(RefX)
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("delete").
@@ -1051,7 +1051,7 @@ move(RefX, Type, Disp)
                 % before getting the cells to shift for INSERT
                 % if this is a delete - we need to actually delete the cells
                 Status1 = case Type of
-                         delete -> ?wu:delete_cells(RefX, Disp);
+                         delete -> ?wu:delete_cells(RefX);
                          insert -> []
                      end,
                 Status2 = ?wu:shift_cells(RefX, Type, Disp),
