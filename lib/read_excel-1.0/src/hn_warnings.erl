@@ -34,7 +34,6 @@ warnings1(FuncVar, H, Tbl) ->
             ok;
         
         {value, #help{warning = Warning}} ->
-            io:format("Warning is ~p~n", [Warning]),
             excel_util:write(Tbl, warnings, [Nm | Warning])
 
     end.
