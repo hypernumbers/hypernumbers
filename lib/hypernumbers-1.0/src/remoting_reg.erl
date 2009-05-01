@@ -23,7 +23,10 @@ init([]) ->
 
 %% @doc  Handle incoming update mesage
 handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
-    NUpdates = [{msg, Site, Path, Msg, timestamp()} | Updates], 
+    Packet = {msg, Site, Path, Msg, timestamp()},
+    %?INFO("Packet ~p",[Packet]),
+    %timer:sleep(50),
+    NUpdates = [Packet | Updates], 
     {noreply, send_to_waiting(NUpdates, Waiting)};
 
 %% @doc  Handle incoming request for updates
@@ -45,7 +48,6 @@ notify_refresh(Site, Path) ->
 
 %% @doc  Notify server of change to a cell
 notify_change(Site, Path, Type, {RefType, _} = R, Name, Value) ->
-    %?INFO("Ref ~p, Value ~p",[R, Value]),
     {Name2, Val2} = hn_util:jsonify_val({Name, Value}), 
     Msg = {struct, [{"type", Type}, {"reftype", RefType},
                     {"ref", hn_util:obj_to_str(R)}, 
@@ -114,7 +116,7 @@ pad(X) ->
 expire_updates(Old) ->
     Now = timestamp(),
     F   = fun({msg, _Site, _Path, _Msg, Time}) -> 
-                  Time > (Now-10000000)
+                  Time > (Now-10000000000)
           end,
     lists:filter(F, Old).
 

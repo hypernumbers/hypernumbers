@@ -16,8 +16,8 @@
 %% @spec start() -> ok
 %% @doc This starts the log
 start() ->
-    {ok, _Ret} = disk_log:open([{name, ?NAME}, {file, logfile()}]),
-    ok.
+    %% Dont check return, may be repaired
+    disk_log:open([{name, ?NAME}, {file, logfile()}]).
 
 %% @spec log(term(), term(), term(), term()) -> ok
 %% @doc Logs individual requests
