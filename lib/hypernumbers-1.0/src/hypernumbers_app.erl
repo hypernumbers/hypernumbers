@@ -83,7 +83,6 @@ clean_start() ->
                dirty_notify_back_in, dirty_notify_out,
                dirty_notify_back_out]),
 
-    ok = application:stop(hypernumbers),
     ok = application:stop(mnesia),
     ok = mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
@@ -93,7 +92,7 @@ clean_start() ->
     Sites = hn_util:get_hosts(HostsInfo),
 
     [ok = hn_db_api:create_db(X) || X <- Sites],
-    ok = application:start(hypernumbers),
+    ok = dirty_subscribe(subscribe),
     ok = write_permissions(),
     ok.
 
