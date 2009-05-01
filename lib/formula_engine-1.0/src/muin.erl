@@ -118,6 +118,7 @@ eval(_Node = [Func|Args]) when ?is_fn(Func) ->
         {error, Errv = {errval, _}}                      -> Errv;
         {error, {aborted, {cyclic, _, _, _, _, _}} = E}  -> exit(E); % rethrow on lock
         {error, _E}                                      -> ?error_in_formula;
+        {ok, {error, _E}}                                -> ?error_in_formula; % in stdfuns
         {ok, V}                                          -> V
     end;
 eval(Value)                                 ->
@@ -178,7 +179,8 @@ funcall(Fname, Args0) ->
                       case attempt(M, F, [A]) of
                           {error, undef} -> Acc;
                           {ok, V}        -> {F, A, V};
-                          {error, Ev = {errval, _}} -> {F, A, Ev}
+                          {error, Ev = {errval, _}} -> {F, A, Ev};
+                          {error, Other} -> {F, A, {error, Other}}
                       end;
                (_, Acc) ->
                       Acc
@@ -189,8 +191,9 @@ funcall(Fname, Args0) ->
                stdfuns_logical, stdfuns_text, stdfuns_db]),
     
     case R of
-        {_, _, not_found_yet} -> userdef_call(Fname, Args);
-        {_, _, V}             -> V
+        {_, _, {error, Error}} -> {error, Error};
+        {_, _, not_found_yet}  -> userdef_call(Fname, Args);
+        {_, _, V}              -> V
     end.
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
