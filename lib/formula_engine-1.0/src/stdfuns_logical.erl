@@ -12,11 +12,13 @@
 -define(default_rules_bools, [cast_numbers, cast_strings,
                               cast_blanks, cast_dates]).
 
-'='([A, B]) -> muin_checks:die_on_errval([A]),
-               muin_checks:die_on_errval([B]),
-               '=1'(A, B).
+'='([A, B]) ->
+    muin_checks:die_on_errval([A]),
+    muin_checks:die_on_errval([B]),
+    '=1'(A, B).
+
 %% numbers & numbers
-'=1'(N1, N2) when is_number(N1) andalso is_number(N2) -> N1 == N2;
+'=1'(N1, N2) when is_number(N1), is_number(N2) -> test_util:float_cmp(float(N1), float(N2), 10); %% FIXME: Precision.
 %% numbers & blanks
 '=1'(blank, N) when N == 0                      -> true;
 '=1'(N, blank) when N == 0                      -> true;
