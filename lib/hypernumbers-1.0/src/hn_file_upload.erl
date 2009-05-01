@@ -139,7 +139,7 @@ import(Filename, Host, ParentPage, Username, OrigFilename) ->
     PathComps = string:tokens(ParentPage, "/"),
     GetSheets = fun(X, Acc) ->
                         {_, [NewSheet]} = X,
-                        [ParentPage ++ NewSheet ++"/" | Acc]
+                        [Site ++ ParentPage ++ NewSheet ++"/" | Acc]
                 end,
     Sheetnames2 = lists:foldl(GetSheets, [], Sheetnames),
     HeaderStyle = [{"font-weight", "bold"},
