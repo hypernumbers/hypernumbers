@@ -23,5 +23,5 @@ init([]) ->
     Config = {hn_config,{hn_config,start_link,[]},
               permanent,2000,worker,[hn_config]},
 
-    {ok,{{one_for_one,60,1}, [Random, Remote, Dirty, Config]}}.
+    {ok,{{one_for_one,60,1}, [Config, Random, Remote, Dirty]}}.
 

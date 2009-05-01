@@ -22,13 +22,15 @@ start_link() ->
 %-spec( init/1).
 %% @doc Initiates the server
 init([]) ->
-    {ok, #state{}}.
+{ok,[[Path]]} = init:get_argument(hn_config),
+    {ok, Conf} = file:consult(Path), 
+    {ok, #state{conf = Conf, path = Path}}.
 
 % -spec handle_call/3 -> {reply, any(), any()} | {noreply, any()}).
 %% @doc Handling call messages
 %% Set the configuration on startup
 handle_call({set_conf, Path, Conf}, _From, State) ->
-    {reply, ok, State#state{conf=Conf, path=Path}};
+    {reply, ok, State#state{conf = Conf, path = Path}};
 handle_call(hup, _From, State) ->
     {ok,Config} = file:consult(State#state.path), 
     {reply, ok, State#state{conf=Config}};

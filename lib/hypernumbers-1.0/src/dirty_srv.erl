@@ -26,12 +26,16 @@
 
 %% @spec start_link(Arg) -> StartLink
 %% @doc  start a link between this and supervisor
-start_link(Arg) -> 
+start_link(Arg) ->
     gen_server:start_link({local, Arg}, ?MODULE, [Arg], []).
 
 %% @spec init(Arg) -> {ok,State}
 %% @doc  Start server
 init([Type]) ->
+    % we need a little time for the config file to start itself properly
+    % io:format("about to wait in dirty_srv init...~n"),
+    % test_util:wait(75),
+    ok = gen_server:cast(Type, {subscribe, Type}),
     {ok, #state{type = Type}}.
 
 %% @spec handle_info(Event,State) -> {noreply, State}
@@ -116,12 +120,16 @@ handle_cast({setstate,passive}, State) ->
 %% @spec handle_cast(subscribe, State) -> {noreply, State}
 %% @doc  subscribe to table events from mnesia
 handle_cast({subscribe, Table}, State) ->
-    mnesia:subscribe({table, Table, detailed}),
+    HostsInfo = hn_config:get(hosts),
+    Sites = hn_util:get_hosts(HostsInfo),
+    [ok = sub_unsubscribe(Table, X, subscribe) || X <- Sites],
     {noreply, State};
 %% @spec handle_cast(subscribe, State) -> {noreply,State}
 %% @doc  unsubscribe from table events from mnesia
 handle_cast({unsubscribe, Table}, State) ->
-    mnesia:unsubscribe({table, Table, detailed}),
+    HostsInfo = hn_config:get(hosts),
+    Sites = hn_util:get_hosts(HostsInfo),
+    [ok = sub_unsubscribe(Table, X, unsubscribe) || X <- Sites],
     {noreply, State}.
 
 %% @spec terminate(Reason, State) -> ok
@@ -135,7 +143,7 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% @spec proc_dirty(Rec, Type) -> ok
 %% @doc  processes the dirty record
-proc_dirty(Rec, Table) ->
+proc_dirty(Rec, _Table) ->
     {Site, NewRecType, Rec2} = hn_db_wu:split_trans(Rec),
     case NewRecType of
         dirty_cell            -> #dirty_cell{timestamp = T} = Rec2,
@@ -173,3 +181,12 @@ has_dirty_parent([H | T], Parent)  -> {dirty_cell, Index,_} = H,
                                           true  -> H;
                                           false -> has_dirty_parent(T, Parent)
                                       end.
+
+%% subscribe/unsubscribe to the mnesia tables
+sub_unsubscribe(Table, Site, Action) ->
+    NewTable = hn_db_wu:trans(Site, Table),
+    {ok, _} = case Action of
+                  subscribe   -> mnesia:subscribe({table, NewTable, detailed});
+                  unsubscribe -> mnesia:unsubscribe({table, NewTable, detailed})
+              end,
+    ok.

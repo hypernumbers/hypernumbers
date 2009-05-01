@@ -29,19 +29,19 @@ start(_Type, _Args) ->
     end,
         
     {ok, Pid} = hypernumbers_sup:start_link(),
-    {ok,[[Path]]} = init:get_argument(hn_config),	
-    hn_config:read_conf(Path),
-    
+%    {ok,[[Path]]} = init:get_argument(hn_config),	
+%    hn_config:read_conf(Path), 
+   
     case is_fresh_startup() of
         true  -> clean_start();
         false -> ok
     end,
 
-    HostsInfo = hn_config:get(hosts),
-    Sites = hn_util:get_hosts(HostsInfo),
+    % HostsInfo = hn_config:get(hosts),
+    % Sites = hn_util:get_hosts(HostsInfo),
     
     ok = start_mochiweb(),
-    [ok = start_dirty_subscribe(X) || X <- Sites],
+    % ok = start_dirty_subscribe(),
     {ok, Pid}.
 
 hup() ->
@@ -83,6 +83,7 @@ clean_start() ->
                dirty_notify_back_in, dirty_notify_out,
                dirty_notify_back_out]),
 
+    ok = application:stop(hypernumbers),
     ok = application:stop(mnesia),
     ok = mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
@@ -92,7 +93,7 @@ clean_start() ->
     Sites = hn_util:get_hosts(HostsInfo),
 
     [ok = hn_db_api:create_db(X) || X <- Sites],
-    [ok = start_dirty_subscribe(X) || X <- Sites],
+    ok = application:start(hypernumbers),
     ok = write_permissions(),
     ok.
 
@@ -127,25 +128,20 @@ cmp1([{IP, Port, _Hosts} | T], Acc) -> case lists:member({IP, Port}, Acc) of
                                            false -> cmp1(T, [{IP, Port} | Acc])
                                        end.
 
-%% @spec start_dirty_subscribe() -> ok
-%% @doc  Make dirty_x gen_srv's subscribe to mnesia
-start_dirty_subscribe(Site) ->
-    Table = hn_db_wu:trans(Site, dirty_cell),
-
-    DirtyCell          = hn_db_wu:trans(Site, dirty_cell),
-    DirtyNotifyIn      = hn_db_wu:trans(Site, dirty_notify_in),
-    DirtyIncHn         = hn_db_wu:trans(Site, dirty_inc_hn_create),
-    DirtyNotifyBackIn  = hn_db_wu:trans(Site, dirty_notify_back_in),
-    DirtyNotifyOut     = hn_db_wu:trans(Site, dirty_notify_out),
-    DirtyNotifyBackOut = hn_db_wu:trans(Site, dirty_notify_back_out),
-
-    ok = ?cast(dirty_cell,            {subscribe, DirtyCell}),
-    ok = ?cast(dirty_notify_in,       {subscribe, DirtyNotifyIn}),
-    ok = ?cast(dirty_inc_hn_create,   {subscribe, DirtyIncHn}),
-    ok = ?cast(dirty_notify_back_in,  {subscribe, DirtyNotifyBackIn}),
-    ok = ?cast(dirty_notify_out,      {subscribe, DirtyNotifyOut}),
-    ok = ?cast(dirty_notify_back_out, {subscribe, DirtyNotifyBackOut}),
-    ok.
+%% @spec dirty_subscribe() -> ok
+%% @doc  Make dirty_x gen_srv's (un)subscribe to mnesia
+dirty_subscribe(Type) ->
+    Type2 = case Type of
+                start -> subscribe;
+                stop  -> unsubscribe
+            end,
+    
+    ok = ?cast(dirty_cell,            {Type2, dirty_cell}),
+    ok = ?cast(dirty_notify_in,       {Type2, dirty_notify_in}),
+    ok = ?cast(dirty_inc_hn_create,   {Type2, dirty_inc_hn_create}),
+    ok = ?cast(dirty_notify_back_in,  {Type2, dirty_notify_back_in}),
+    ok = ?cast(dirty_notify_out,      {Type2, dirty_notify_out}),
+    ok = ?cast(dirty_notify_back_out, {Type2, dirty_notify_back_out}).
 
 %% @spec write_permissions() -> ok
 %% @doc  Set the default permissions on each domain
