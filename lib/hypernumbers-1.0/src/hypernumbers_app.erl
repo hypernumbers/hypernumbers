@@ -130,17 +130,13 @@ cmp1([{IP, Port, _Hosts} | T], Acc) -> case lists:member({IP, Port}, Acc) of
 %% @spec dirty_subscribe() -> ok
 %% @doc  Make dirty_x gen_srv's (un)subscribe to mnesia
 dirty_subscribe(Type) ->
-    Type2 = case Type of
-                start -> subscribe;
-                stop  -> unsubscribe
-            end,
     
-    ok = ?cast(dirty_cell,            {Type2, dirty_cell}),
-    ok = ?cast(dirty_notify_in,       {Type2, dirty_notify_in}),
-    ok = ?cast(dirty_inc_hn_create,   {Type2, dirty_inc_hn_create}),
-    ok = ?cast(dirty_notify_back_in,  {Type2, dirty_notify_back_in}),
-    ok = ?cast(dirty_notify_out,      {Type2, dirty_notify_out}),
-    ok = ?cast(dirty_notify_back_out, {Type2, dirty_notify_back_out}).
+    ok = ?cast(dirty_cell,            {Type, dirty_cell}),
+    ok = ?cast(dirty_notify_in,       {Type, dirty_notify_in}),
+    ok = ?cast(dirty_inc_hn_create,   {Type, dirty_inc_hn_create}),
+    ok = ?cast(dirty_notify_back_in,  {Type, dirty_notify_back_in}),
+    ok = ?cast(dirty_notify_out,      {Type, dirty_notify_out}),
+    ok = ?cast(dirty_notify_back_out, {Type, dirty_notify_back_out}).
 
 %% @spec write_permissions() -> ok
 %% @doc  Set the default permissions on each domain
