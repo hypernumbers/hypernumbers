@@ -9,12 +9,12 @@
 -record(state, {conf, path}).
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-	 terminate/2, code_change/3, start_link/0]).
+         terminate/2, code_change/3, start_link/0]).
 
 -export([ get/1, read_conf/1, hup/0 ]).
 
 -spec(start_link/0 :: () -> {ok,pid()} | ignore | {error,any()}).
-             
+
 %% @doc Start the server
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
@@ -22,9 +22,7 @@ start_link() ->
 %-spec( init/1).
 %% @doc Initiates the server
 init([]) ->
-{ok,[[Path]]} = init:get_argument(hn_config),
-    {ok, Conf} = file:consult(Path), 
-    {ok, #state{conf = Conf, path = Path}}.
+    {ok, #state{}}.
 
 % -spec handle_call/3 -> {reply, any(), any()} | {noreply, any()}).
 %% @doc Handling call messages

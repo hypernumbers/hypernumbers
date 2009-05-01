@@ -14,14 +14,16 @@ start_link() ->
 %% @spec init([]) -> {ok,Children}
 %% @doc  Supervisor call back
 init([]) ->
-    Random = {random_srv,{random_srv,start_link,[]},
-              permanent,2000,worker,[random_srv]},
-    Remote = {remoting_sup,{remoting_sup,start_link,[]},
-              permanent,2000,supervisor,[start]},
-    Dirty  = {dirty_sup,{dirty_sup,start_link,[]},
-              permanent,2000,supervisor,[start]},
-    Config = {hn_config,{hn_config,start_link,[]},
-              permanent,2000,worker,[hn_config]},
+    Random    = {random_srv,{random_srv,start_link,[]},
+                 permanent,2000,worker,[random_srv]},
+    Remote    = {remoting_sup,{remoting_sup,start_link,[]},
+                 permanent,2000,supervisor,[start]},
+    Dirty_Sup = {dirty_sup,{dirty_sup,start_link,[]},
+                 permanent,2000,supervisor,[start]},
+    Config    = {hn_config,{hn_config,start_link,[]},
+                 permanent,2000,worker,[hn_config]},
+    Dirty_Sub = {dirty_subscriber,{dirty_subscriber,start_link,[]},
+                 permanent,2000,worker,[hn_config]},
 
-    {ok,{{one_for_one,60,1}, [Config, Random, Remote, Dirty]}}.
+    {ok,{{one_for_one,60,1}, [Config, Random, Remote, Dirty_Sup, Dirty_Sub]}}.
 

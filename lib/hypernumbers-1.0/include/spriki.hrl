@@ -7,6 +7,13 @@
 -define(HTTPS,     $h,$t,$t,$p,$s).
 -define(SLASH,     47).
 
+-define(dirties, [dirty_cell,
+                  dirty_notify_in,
+                  dirty_notify_back_in,
+                  dirty_inc_hn_create,
+                  dirty_notify_out,
+                  dirty_notify_back_out]).
+
 -define(SALT,      "salt").
 
 -define(DELAY,     0). % time delay (millisecs) for some dirty updates 

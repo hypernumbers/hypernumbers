@@ -35,7 +35,7 @@ init([Type]) ->
     % we need a little time for the config file to start itself properly
     % io:format("about to wait in dirty_srv init...~n"),
     % test_util:wait(75),
-    ok = gen_server:cast(Type, {subscribe, Type}),
+    % ok = gen_server:cast(Type, {subscribe, Type}),
     {ok, #state{type = Type}}.
 
 %% @spec handle_info(Event,State) -> {noreply, State}
@@ -44,7 +44,7 @@ handle_info({mnesia_table_event, {write, _Table, Rec, _OldRecs, _ActId}},
             State) ->
     case State#state.state of
         passive -> ok;
-        active  -> proc_dirty(Rec, State#state.type)
+        active  -> _PID = spawn(fun() -> proc_dirty(Rec, State#state.type) end)
     end,
     {noreply, State};
 
@@ -122,6 +122,7 @@ handle_cast({setstate,passive}, State) ->
 handle_cast({subscribe, Table}, State) ->
     HostsInfo = hn_config:get(hosts),
     Sites = hn_util:get_hosts(HostsInfo),
+    % io:format("in handle_cast HostsInfo is ~p Sites is ~p~n", [HostsInfo, Sites]),
     [ok = sub_unsubscribe(Table, X, subscribe) || X <- Sites],
     {noreply, State};
 %% @spec handle_cast(subscribe, State) -> {noreply,State}
@@ -144,21 +145,24 @@ code_change(_OldVsn, State, _Extra) ->
 %% @spec proc_dirty(Rec, Type) -> ok
 %% @doc  processes the dirty record
 proc_dirty(Rec, _Table) ->
+    % fprof:trace(start),
     {Site, NewRecType, Rec2} = hn_db_wu:split_trans(Rec),
-    case NewRecType of
-        dirty_cell            -> #dirty_cell{timestamp = T} = Rec2,
-                                          % dirty_cell records are rewritten in 
-                                          % insert/delete operations so we need 
-                                          % to re-read it here
-                                          ?api:handle_dirty_cell(Site, T);
-        dirty_inc_hn_create   -> ?api:notify_back_create(Site, Rec2);
-        dirty_notify_in       -> ?api:handle_dirty(Site, Rec2);
-        dirty_notify_out      -> #dirty_notify_out{delay = D} = Rec2,
-                                 ok = timer:sleep(D),
-                                 ?api:handle_dirty(Site, Rec2);
-        dirty_notify_back_in  -> ?api:handle_dirty(Site, Rec2);
-        dirty_notify_back_out -> ?api:handle_dirty(Site, Rec2)
-    end.
+    Ret = case NewRecType of
+              dirty_cell            -> #dirty_cell{timestamp = T} = Rec2,
+                                       % dirty_cell records are rewritten in 
+                                       % insert/delete operations so we need 
+                                       % to re-read it here
+                                       ?api:handle_dirty_cell(Site, T);
+              dirty_inc_hn_create   -> ?api:notify_back_create(Site, Rec2);
+              dirty_notify_in       -> ?api:handle_dirty(Site, Rec2);
+              dirty_notify_out      -> #dirty_notify_out{delay = D} = Rec2,
+                                       ok = timer:sleep(D),
+                                       ?api:handle_dirty(Site, Rec2);
+              dirty_notify_back_in  -> ?api:handle_dirty(Site, Rec2);
+              dirty_notify_back_out -> ?api:handle_dirty(Site, Rec2)
+          end,
+    % fprof:trace(stop),
+    Ret.
 
 %%%
 %%% Utility Functions
