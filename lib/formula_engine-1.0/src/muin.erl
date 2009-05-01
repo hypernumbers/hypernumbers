@@ -297,7 +297,7 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
     Child  = #refX{site = MSite, path = NewMPath, obj ={cell, {MX, MY}}},
     Parent = #refX{site = RSite, path = NewRPath, obj ={cell, {RX, RY}}},
 
-    case hn_wu_api:read_incoming_hn(Parent, Child) of
+    case hn_db_wu:read_incoming_hn(Parent, Child) of
         
         {error,permission_denied} ->
             {{errval,'#AUTH'},[],[],[]};
@@ -389,4 +389,4 @@ toidx({col, Offset})       -> ?mx + Offset.
 
 get_cell_info(S, P, Col, Row) ->
     RefX = #refX{site = string:to_lower(S), path = P, obj = {cell, {Col, Row}}},
-    hn_wu_api:get_cell_for_muin(RefX).
+    hn_db_wu:get_cell_for_muin(RefX).
