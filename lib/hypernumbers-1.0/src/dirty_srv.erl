@@ -186,7 +186,10 @@ has_dirty_parent([H | T], Parent)  -> {dirty_cell, Index,_} = H,
 sub_unsubscribe(Table, Site, Action) ->
     NewTable = hn_db_wu:trans(Site, Table),
     {ok, _} = case Action of
-                  subscribe   -> mnesia:subscribe({table, NewTable, detailed});
-                  unsubscribe -> mnesia:unsubscribe({table, NewTable, detailed})
+                  subscribe   ->
+                      mnesia:wait_for_tables([NewTable], 1000),
+                      mnesia:subscribe({table, NewTable, detailed});
+                  unsubscribe ->
+                      mnesia:unsubscribe({table, NewTable, detailed})
               end,
     ok.
