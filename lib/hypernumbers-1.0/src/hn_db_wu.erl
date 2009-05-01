@@ -3280,43 +3280,63 @@ return_first(Type, RefX, Key) ->
     end.
 
 traverse(cell, #refX{obj = {cell, _}} = RefX, Key) ->
-    % io:format("In traverse (1)~n"),
-    {range, match_ref(RefX, Key)};
-traverse(range, #refX{obj = {range, _}} = RefX, Key) ->
-    % io:format("In traverse (2)~n"),
     {page, match_ref(RefX, Key)};
-traverse(range, #refX{obj = {cell, _}} = RefX, Key) ->
-    V = case get_ranges(RefX#refX{obj = {page, "/"}}, Key) of
-            []   -> [];
-            List -> case filter_range(List, RefX) of
-                        nomatch -> [];
-                        Val     -> [Val]
-                    end
-        end,
-    % io:format("In traverse (3)~n"),
-    {row_col, V};
-traverse(row_col, #refX{obj = {cell, {_X, Y}}} = RefX, Key) ->
-    % io:format("In traverse (4)~n"),
-    {column, match_ref(RefX#refX{obj = {row, {Y, Y}}}, Key)};
-traverse(row, #refX{obj = {row, _}} = RefX, Key) ->
-    % io:format("In traverse (5)~n"),
-    {page, match_ref(RefX, Key)};
-traverse(row, #refX{obj = {cell, {_X, Y}}} = RefX, Key) ->
-    % io:format("In traverse (6)~n"),
-    {page, match_ref(RefX#refX{obj = {row, {Y, Y}}}, Key)};
-traverse(column, #refX{obj = {column, _}} = RefX, Key) ->
-    % io:format("In traverse (7)~n"),
-    {page, match_ref(RefX, Key)};
-traverse(column, #refX{obj = {cell, {X, _Y}}} = RefX, Key) ->
-    % io:format("In traverse (8)~n"),
-    {page, match_ref(RefX#refX{obj= {column, {X, X}}}, Key)};
 traverse(page, #refX{path=[]} = RefX, Key) ->
-    % io:format("In traverse (9)~n"),
     {last, match_ref(RefX#refX{obj = {page,"/"}}, Key)};
 traverse(page, RefX, Key) ->
-    % io:format("In traverse (10)~n"),
     NewPath = hslists:init(RefX#refX.path),
     {page, RefX#refX{path = NewPath}, match_ref(RefX#refX{obj = {page, "/"}}, Key)}.
+
+
+% Old version commented out for performance
+%traverse(cell, #refX{obj = {cell, _}} = RefX, Key) ->
+%    {range, match_ref(RefX, Key)};
+%traverse(range, #refX{obj = {range, _}} = RefX, Key) ->
+%    {page, match_ref(RefX, Key)};
+%traverse(range, #refX{obj = {cell, _}} = RefX, Key) ->
+%    V = case get_ranges(RefX#refX{obj = {page, "/"}}, Key) of
+%            []   -> [];
+%            List -> case filter_range(List, RefX) of
+%                        nomatch -> [];
+%                        Val     -> [Val]
+%                    end
+%        end,
+%    {row_col, V};
+%traverse(row_col, #refX{obj = {cell, {_X, Y}}} = RefX, Key) ->
+%    {column, match_ref(RefX#refX{obj = {row, {Y, Y}}}, Key)};
+%traverse(row, #refX{obj = {row, _}} = RefX, Key) ->
+%    {page, match_ref(RefX, Key)};
+%traverse(row, #refX{obj = {cell, {_X, Y}}} = RefX, Key) ->
+%    {page, match_ref(RefX#refX{obj = {row, {Y, Y}}}, Key)};
+%traverse(column, #refX{obj = {column, _}} = RefX, Key) ->
+%    {page, match_ref(RefX, Key)};
+%traverse(column, #refX{obj = {cell, {X, _Y}}} = RefX, Key) ->
+%    {page, match_ref(RefX#refX{obj= {column, {X, X}}}, Key)};
+%traverse(page, #refX{path=[]} = RefX, Key) ->
+%    {last, match_ref(RefX#refX{obj = {page,"/"}}, Key)};
+%traverse(page, RefX, Key) ->
+%    NewPath = hslists:init(RefX#refX.path),
+%    {page, RefX#refX{path = NewPath}, match_ref(RefX#refX{obj = {page, "/"}}, Key)}.
+
+%get_ranges(#refX{site = S, path = P, obj = {page, "/"}}, Key) ->
+%    Head = trans(S, #local_objs{path = P, obj = {range, '_'}, idx = '$1'}),
+%    List1 = mnesia:select(trans(S, local_objs), [{Head, [], ['$_']}]),
+%    List2 = [read_attrs(X, Key) || X <- List1],
+%    % now sort the results
+%    % now convert the list of local_objs into refX's
+%    Fun1 = fun({#local_objs{path = Path, obj = Obj, idx = Idx}, _KV}) ->
+%                   {#refX{site = S, path = Path, obj = Obj}, Idx}
+%           end,
+%    List3 = lists:keysort(2, lists:map(Fun1, List2)),
+%    Fun2 = fun(X, _Y) -> X end,
+%    [Fun2(X, Y) || {X, Y} <- List3].
+
+%filter_range([], _Cell)     -> nomatch;
+%filter_range([H | T], Cell) ->
+%    case hn_util:in_range(H#refX.obj, Cell#refX.obj) of
+%        true -> H;
+%        _    -> filter_range(T, Cell)
+%    end.
 
 %% @doc Convert Parents and DependencyTree tuples as returned by 
 %% Muin into SimpleXML.
@@ -3329,9 +3349,8 @@ muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
 match_ref(#refX{site = S} = RefX, Key) ->
     case read_local_item_index(RefX) of
         false -> [];
-        Idx -> Rec = trans(S, #item{idx = Idx, _ = '_'}),
-               Table = trans(S, item),
-               case trans_back(mnesia:match_object(Table, Rec, read)) of
+        Idx -> Table = trans(S, item),
+               case trans_back(mnesia:read(Table, Idx)) of
                    []   -> [];
                    Recs -> IdxNo = ms_util2:get_index(item, key) + 1,
                            case lists:keysearch(Key, IdxNo, Recs) of
@@ -3339,26 +3358,6 @@ match_ref(#refX{site = S} = RefX, Key) ->
                                {value, Return} -> [Return]
                            end
                end
-    end.
-
-get_ranges(#refX{site = S, path = P, obj = {page, "/"}}, Key) ->
-    Head = trans(S, #local_objs{path = P, obj = {range, '_'}, idx = '$1'}),
-    List1 = mnesia:select(trans(S, local_objs), [{Head, [], ['$_']}]),
-    List2 = [read_attrs(X, Key) || X <- List1],
-    % now sort the results
-    % now convert the list of local_objs into refX's
-    Fun1 = fun({#local_objs{path = Path, obj = Obj, idx = Idx}, _KV}) ->
-                   {#refX{site = S, path = Path, obj = Obj}, Idx}
-           end,
-    List3 = lists:keysort(2, lists:map(Fun1, List2)),
-    Fun2 = fun(X, _Y) -> X end,
-    [Fun2(X, Y) || {X, Y} <- List3].
-
-filter_range([], _Cell)     -> nomatch;
-filter_range([H | T], Cell) ->
-    case hn_util:in_range(H#refX.obj, Cell#refX.obj) of
-        true -> H;
-        _    -> filter_range(T, Cell)
     end.
 
 make_or(Attrs, PlcHoldr) -> make_or(Attrs, PlcHoldr, []).

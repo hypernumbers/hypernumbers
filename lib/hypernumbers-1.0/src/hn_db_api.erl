@@ -279,7 +279,9 @@ create_db(Site)->
              ],
 
     Indices = [
+               {item, key},
                {local_objs, obj},
+               {local_cell, childidx},
                {dirty_cell, timestamp}
               ],
 
@@ -406,7 +408,8 @@ handle_dirty_cell(Site, TimeStamp)  ->
                 ok = ?wu:clear_dirty_cell(Cell)
         end,
     ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("handle dirty").
+    ok = tell_front_end("handle dirty"),
+    ok.
 
 %% @spec handle_dirty(Record) -> ok
 %% Record = #dirty_notify_in{}
@@ -710,13 +713,16 @@ notify_back_create(Site, Record)
 %% <li>a range</li>
 %% </ul>
 write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
+    % ok = fprof:trace(start),
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   F = fun(X) -> ?wu:write_attr(RefX, X) end,
                   lists:foreach(F, List)
           end,
     mnesia:activity(transaction, Fun),
-    ok = tell_front_end("write attributes").
+    ok = tell_front_end("write attributes"),
+    % ok = fprof:trace(stop),
+    ok.
 
 %% @spec write_last(List) -> ok
 %% List = [{#refX{}, Val}]
@@ -781,7 +787,8 @@ write_last(List) when is_list(List) ->
 
         end,
     mnesia:activity(transaction, Fun),
-    ok = tell_front_end("write last").
+    ok = tell_front_end("write last"),
+    ok.
 
 %% @spec read_inherited_list(#refX{}, Attribute) -> {#refX{}, Val}
 %% Attribute = string()
