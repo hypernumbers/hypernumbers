@@ -530,7 +530,8 @@
          read_page_vsn/2,
          initialise_remote_page_vsn/3, 
          read_page_structure/1,
-         unpack_dependencies/2
+         unpack_dependencies/2,
+         get_cell_for_muin/1
         ]).
 
 %% Database transformation functions
@@ -580,6 +581,37 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec get_cell_for_muin(#refX{}) -> {Value, RefTree, Errors, Refs]
+%% @doc this function is called by muin during recalculation and should
+%%      not be used for any other purpose
+get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
+    #refX{site = Site, path = Path} = RefX,
+    Value = case hn_db_wu:read_attrs(RefX, ["rawvalue"]) of
+                []            -> [];
+                [{_, {_, V}}] -> V
+            end,
+    
+    DTree = case hn_db_wu:read_attrs(RefX, ["dependency-tree"]) of
+                [{_, {_, {xml,Tree}}}] -> Tree;
+                []                     -> []
+            end,
+    DTree2 = hn_db_wu:unpack_dependencies(Site, DTree),
+
+    Val = case Value of
+              []                 -> blank;
+              {datetime, _, [N]} -> muin_date:from_gregorian_seconds(N);
+              Else               -> Else %% Strip other type tags.
+          end,
+    
+    F = fun({url, [{type, Type}], [Url]}) -> 
+                {ok, Ref} = hn_util:parse_url(Url),
+                #refX{site = S, path = P, obj = {cell,{X, Y}}} = Ref,
+                {Type,{S, P, X, Y}}
+        end,
+    
+    Dep = lists:map(F, DTree2) ++ [{"local", {Site, Path, XX, YY}}],
+    {Val, Dep, [], [{"local", {Site, Path, XX, YY}}]}.
+
 %% @spec write_style_IMPORT(RefX#refX{}, Style#magic_style{}) -> ok
 %% @doc write_style_IMPORT is a wrapper for the internal function write_style
 %% which should never be used except in file import
@@ -1627,6 +1659,7 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
               % now delete all the attributes
               List3 = get_content_attrs(List1),
               [delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
+              % io:format("about to mark cells dirty in clear_cells~n"),
               [ok = mark_cells_dirty(X) || X <- List2],
               ok
     end.
@@ -1804,6 +1837,7 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
     AttrList = get_attr_keys(FilteredList),
     ok = copy_attrs(From, To, AttrList),
     % now mark the To cell dirty...
+    % io:format("about to mark cells dirty in copy_cell~n"),
     ok = mark_cells_dirty(To).
 
 %% @spec copy_attrs(From :: #refX{}, To :: #refX{}, AttrList) -> ok
@@ -3169,6 +3203,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
 
     % We need to know the calculcated value
     [{RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"]),
+    % io:format("about to mark cells dirty in write_cell~n"),
     ok = mark_cells_dirty(RefX),
 
     % mark this cell as a possible dirty hypernumber

@@ -109,8 +109,6 @@
                 {atomic,ok} = mnesia:create_table(Name, Attr)
         end()).
 -define(not_ch, remoting_reg:notify_change).
--define(to_date, muin_date:from_gregorian_seconds).
--define(dtree, "dependency-tree").
 
 -export([
          write_attributes/2,
@@ -152,7 +150,6 @@
          incr_remote_page_vsn/3,
          resync/2,
          create_db/1,
-         get_cell_for_muin/1,
          write_formula_to_range/2
         ]).
 
@@ -220,41 +217,6 @@ write_style_IMPORT(RefX, Style) when is_record(RefX, refX), is_record(Style, mag
           end,
     mnesia:activity(transaction, Fun).
 
-%% @spec get_cell_for_muin(#refX{}) -> {Value, RefTree, Errors, Refs]
-%% @doc this function is called by muin during recalculation and should
-%%      not be used for any other purpose
-get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
-    #refX{site = Site, path = Path} = RefX,
-    Fun =
-        fun() ->
-
-                Value = case hn_db_wu:read_attrs(RefX, ["rawvalue"]) of
-                            []            -> [];
-                            [{_, {_, V}}] -> V
-                        end,
-
-                DTree = case hn_db_wu:read_attrs(RefX, [?dtree]) of
-                            [{_, {_, {xml,Tree}}}] -> Tree;
-                            []                     -> []
-                        end,
-                DTree2 = hn_db_wu:unpack_dependencies(Site, DTree),
-
-                Val = case Value of
-                          []                 -> blank;
-                          {datetime, _, [N]} -> ?to_date(N);
-                          Else               -> Else %% Strip other type tags.
-                      end,
-
-                F = fun({url, [{type, Type}], [Url]}) -> 
-                            {ok, Ref} = hn_util:parse_url(Url),
-                            #refX{site = S, path = P, obj = {cell,{X, Y}}} = Ref,
-                            {Type,{S, P, X, Y}}
-                    end,
-
-                Dep = lists:map(F, DTree2) ++ [{"local", {Site, Path, XX, YY}}],
-                {Val, Dep, [], [{"local", {Site, Path, XX, YY}}]}
-        end,
-    mnesia:activity(transaction, Fun).
 
 %% @doc reads pages
 %% @todo fix up api
