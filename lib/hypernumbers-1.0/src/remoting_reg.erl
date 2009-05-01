@@ -45,6 +45,7 @@ notify_refresh(Site, Path) ->
 
 %% @doc  Notify server of change to a cell
 notify_change(Site, Path, Type, {RefType, _} = R, Name, Value) ->
+    %?INFO("Ref ~p, Value ~p",[R, Value]),
     {Name2, Val2} = hn_util:jsonify_val({Name, Value}), 
     Msg = {struct, [{"type", Type}, {"reftype", RefType},
                     {"ref", hn_util:obj_to_str(R)}, 

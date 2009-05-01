@@ -1,22 +1,16 @@
 {hosts, [	
     	    {{127,0,0,1},9000, ["127.0.0.1"]},
-    	    {{127,0,0,1},9000, ["localhost"]},
-    	    {{127,0,0,1},9000, ["il_ballo.dev"]},
-    	    {{127,0,0,1},9000, ["expenses.vixo.dev"]}
+    	    {{127,0,0,1},9000, ["localhost"]}
 	    ]}.
 
 %% Reloading permissions will overwrite any permissions set
 %% externally
 {permissions, [
                 {"http://127.0.0.1:9000/", [{user, anonymous, admin}]},
-                {"http://localhost:9000/", [{user, anonymous, admin}]},
-                {"http://il_ballo.dev:9000/", [{user, anonymous, admin}]},
-                {"http://expenses.vixo.dev:9000/", [{user, anonymous, admin}]}
+                {"http://localhost:9000/", [{user, anonymous, admin}]}
               ]}.
 
 {groups, [
             {"http://127.0.0.1:9000/", [{"dev", ["dale", "gordon", "hasan"]}]},
-            {"http://localhost:9000/", [{"dev", ["dale", "gordon", "hasan"]}]},
-            {"http://il_ballo.dev:9000/", [{"dev", ["dale", "gordon", "hasan"]}]},
-            {"http://expenses.vixo.dev:9000/", [{"dev", ["dale", "gordon", "hasan"]}]}
+            {"http://localhost:9000/", [{"dev", ["dale", "gordon", "hasan"]}]}
          ]}.
