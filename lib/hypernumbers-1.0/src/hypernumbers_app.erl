@@ -33,12 +33,9 @@ start(_Type, _Args) ->
     hn_config:read_conf(Path), 
    
     case is_fresh_startup() of
-        true  -> clean_start();
+        true  -> clean_start2();
         false -> ok
     end,
-
-    % HostsInfo = hn_config:get(hosts),
-    % Sites = hn_util:get_hosts(HostsInfo),
     
     ok = start_mochiweb(),
     [ok = dirty_subscriber:monitor(X) || X <- ?dirties],
@@ -72,16 +69,21 @@ is_fresh_startup() ->
 %% @doc  delete/create existing database and set up
 %%       initial permissions
 clean_start() ->
+    ok = dirty_subscriber:unmonitor(),
+    ok = clean_start2(),
+    [ok = dirty_subscriber:monitor(X) || X <- ?dirties].
+
+clean_start2() ->
     % Probably not a nice way to do this, 
     % Before everything is restarted the msg queues
     % for these needs to be emptied
-    Kill = fun(undefined) -> ok;
-              (Pid)       -> exit(Pid, clean_start)
-           end,
-    lists:map(fun(X) -> Kill(whereis(X)) end,
-              [dirty_cell, dirty_notify_in, dirty_inc_hn_create,
-               dirty_notify_back_in, dirty_notify_out,
-               dirty_notify_back_out]),
+    % Kill = fun(undefined) -> ok;
+    %          (Pid)       -> exit(Pid, clean_start)
+    %       end,
+    %lists:map(fun(X) -> Kill(whereis(X)) end,
+    %          [dirty_cell, dirty_notify_in, dirty_inc_hn_create,
+    %           dirty_notify_back_in, dirty_notify_out,
+    %           dirty_notify_back_out]),
 
     ok = application:stop(mnesia),
     ok = mnesia:delete_schema([node()]),
@@ -92,7 +94,6 @@ clean_start() ->
     Sites = hn_util:get_hosts(HostsInfo),
 
     [ok = hn_db_api:create_db(X) || X <- Sites],
-    [ok = dirty_subscriber:monitor(X) || X <- ?dirties],
     ok = write_permissions(),
     ok.
 

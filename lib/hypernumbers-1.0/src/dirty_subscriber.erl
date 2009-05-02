@@ -12,7 +12,8 @@
 
 %% API
 -export([start_link/0,
-         monitor/1]).
+         monitor/1,
+         unmonitor/0]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -69,10 +70,14 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+handle_call(unmonitor, _From, State) ->
+    % clear the state
+    [true = unlink(P) || #state{pid = P} <- State],
+    Reply = ok,
+    {reply, Reply, []};
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
-
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
@@ -136,6 +141,9 @@ code_change(_OldVsn, State, _Extra) ->
 
 monitor(Name) ->
     gen_server:cast(?MODULE, {monitor, Name}).
+
+unmonitor() ->
+    gen_server:call(?MODULE, unmonitor).
 
 %%%===================================================================
 %%% Internal functions
