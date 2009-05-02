@@ -20,6 +20,7 @@
          terminate/2, code_change/3]).
 
 -define(SERVER, ?MODULE). 
+-include("hypernumbers.hrl").
 
 -record(state, {pid, name}).
 
@@ -107,6 +108,7 @@ handle_cast(_Msg, State) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_info({'EXIT', Pid, _Why}, State) ->
+    ?ERROR("~p", [_Why]),
     {value, #state{name = Name}} = lists:keysearch(Pid, 2, State),
     NewState = lists:keydelete(Pid, 2, State),
     ok = monitor(Name),

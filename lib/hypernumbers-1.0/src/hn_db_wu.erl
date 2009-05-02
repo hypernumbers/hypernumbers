@@ -3340,7 +3340,7 @@ match_ref(#refX{site = S} = RefX, Key) ->
     case read_local_item_index(RefX) of
         false -> [];
         Idx -> Table = trans(S, item),
-               case trans_back(mnesia:read(Table, Idx)) of
+               case trans_back(mnesia:read(Table, Idx, read)) of
                    []   -> [];
                    Recs -> IdxNo = ms_util2:get_index(item, key) + 1,
                            case lists:keysearch(Key, IdxNo, Recs) of
