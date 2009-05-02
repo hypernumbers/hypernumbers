@@ -23,9 +23,7 @@ init([]) ->
 
 %% @doc  Handle incoming update mesage
 handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
-    Packet = {msg, Site, Path, Msg, timestamp()},
-    %?INFO("Packet ~p",[Packet]),
-    %timer:sleep(50),
+    Packet   = {msg, Site, Path, Msg, timestamp()},
     NUpdates = [Packet | Updates], 
     {noreply, send_to_waiting(NUpdates, Waiting)};
 
@@ -106,17 +104,18 @@ send_to_waiting(Updates, Waiting) ->
 is_site(Site, Path, {Site, Path, _Time, _Pid}) -> true;
 is_site(_Site, _Path, _Server)                 -> false.
 
+
 timestamp() ->
-    {Mega, Sec, Milli}  = erlang:now(), 
-    list_to_integer(lists:concat([Mega, Sec, pad(Milli)])).
+    microsecs(erlang:now()).
 
-pad(X) ->
-    lists:flatten(io_lib:format("~-7.10.0B",[X])).
+microsecs({MegaSecs,Secs,MicroSecs}) ->
+        (MegaSecs*1000000 + Secs)*1000000 + MicroSecs. 
 
+%% Expires any messages older than one minute
 expire_updates(Old) ->
     Now = timestamp(),
     F   = fun({msg, _Site, _Path, _Msg, Time}) -> 
-                  Time > (Now-10000000000)
+                  Time > (Now-60000000)
           end,
     lists:filter(F, Old).
 
