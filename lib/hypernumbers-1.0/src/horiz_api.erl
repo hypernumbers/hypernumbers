@@ -134,9 +134,9 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
 
     case http:request(post, {PUrl, [], "application/json", Actions}, [], []) of
         {ok, {{_V, 200, _R}, _H, Json}} ->
-            {struct, [{"value",           Value},
-                      {"dependency-tree", DepTree},
-                      {"parent_vsn",      NewPVsnJson}]}
+            {struct, [{"value",            Value},
+                      {"__dependecy-tree", DepTree},
+                      {"parent_vsn",       NewPVsnJson}]}
                 = mochijson:decode(Json),
             NewPVsn = json_util:unjsonify(NewPVsnJson),
             % check that the pages are in sync

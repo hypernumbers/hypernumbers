@@ -99,8 +99,8 @@
         {
           site_and_parent,
           value,
-          'dependency-tree' = [],       % cells use in this numbers calculation
-          biccie            = []        % a shared token
+          'dependency-tree' = [], % cells use in this numbers calculation
+          biccie            = []    % a shared token
          }).
 
 -record(dirty_cell,

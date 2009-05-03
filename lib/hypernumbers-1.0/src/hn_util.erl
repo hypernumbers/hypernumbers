@@ -144,7 +144,7 @@ delete_gen_html() ->
 
 jsonify_val({"__permissions", _})           -> {"__permissions", "bleh"};
 jsonify_val({"__groups", _})                -> {"__groups", "bleh"};
-jsonify_val({"dependency-tree", _})         -> {"dependency-tree", "bleh"};
+jsonify_val({"__dependency-tree", _})       -> {"__dependency-tree", "bleh"};
 jsonify_val({"parents", _})                 -> {"parents", "bleh"};    
 jsonify_val({Name, {errval, Error}})        -> {Name, atom_to_list(Error)};
 jsonify_val({Name, {datetime, Date, Time}}) -> {Name, ?rfc1123({datetime, Date, Time})};

@@ -74,9 +74,9 @@ payload_to_json({new_value, Value, DepTree}) ->
                  {errval, Error} -> Error;
                  _               -> Value
              end,
-    {new_value, {struct, [{"type",            "new_value"},
-                          {"value",           Value2},
-                          {"dependency-tree", DepTree2}]
+    {new_value, {struct, [{"type",              "new_value"},
+                          {"value",             Value2},
+                          {"__dependency-tree", DepTree2}]
                 }}.
 
 json_to_payload({struct, [{"type", Type},
@@ -107,9 +107,9 @@ json_to_payload({struct, [{"type",        Type},
                           {"displacement", Displacement}]})
   when (Type == "insert") orelse (Type == "delete") ->
     {list_to_existing_atom(Type), {cell, {X, Y}}, Displacement};    
-json_to_payload({struct, [{"type",            "new_value"},
-                          {"value",           Value},
-                          {"dependency-tree", DepTree}]}) ->
+json_to_payload({struct, [{"type",              "new_value"},
+                          {"value",             Value},
+                          {"__dependency-tree", DepTree}]}) ->
     {new_value, Value, DepTree}.
 
 to_str(Json) -> s1(Json, []).

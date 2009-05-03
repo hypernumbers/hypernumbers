@@ -117,7 +117,7 @@
 %%% They key point is that if a cell is moved, any formula
 %%% of <i>a child</i> of that cell needs to be be rewritten,
 %%% which means that the <code>__ast</code>, 
-%%% <code>parents</code> and <code>dependency-tree</code>
+%%% <code>parents</code> and <code>__dependency-tree</code>
 %%% attributes need to be rewritten.
 %%% 
 %%% Then <i>in turn</i> the <code>formula</code> attributes
@@ -399,7 +399,7 @@
 %%% rewritten</li>
 %%% <li>any cell that references the original has the <code>formula</code> and 
 %%% is then marked as dirty (forcing it it rewrite itself). <em>This could be 
-%%% done better by some sort of 'mark dependency-tree dirty' 
+%%% done better by some sort of 'mark __dependency-tree dirty' 
 %%% algorithm...</em></li>
 %%% </ul>
 %%% 
@@ -596,7 +596,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
                 [{_, {_, V}}] -> V
             end,
     
-    DTree = case hn_db_wu:read_attrs(RefX, ["dependency-tree"]) of
+    DTree = case hn_db_wu:read_attrs(RefX, ["__dependency-tree"]) of
                 [{_, {_, {xml,Tree}}}] -> Tree;
                 []                     -> []
             end,
@@ -1218,11 +1218,11 @@ write_attr(#refX{obj = {cell, _}} = RefX, {"format", Format} = Attr) ->
     [{RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"]),
     ok = process_format(RefX, Format, RawValue),
     write_attr3(RefX, Attr);
-write_attr(#refX{obj = {cell, _}} = RefX, {"dependency-tree", DTree}) ->
+write_attr(#refX{obj = {cell, _}} = RefX, {"__dependency-tree", DTree}) ->
     % io:format("in write_attr (cell - 3)~n-RefX is ~p~n-DTree is ~p~n",
     %          [RefX, DTree]),
     DTree2 = pack_dependencies(DTree),
-    write_attr3(RefX, {"dependency-tree", DTree2});
+    write_attr3(RefX, {"__dependency-tree", DTree2});
 write_attr(#refX{obj = {cell, _}} = RefX, {Key, Val} = Attr) ->
     % io:format("in write_attr (cell - 4)~n-RefX is ~p~n-Attr is ~p~n",
     %          [RefX, Attr]),
@@ -2622,14 +2622,14 @@ offset1([H | T], XOffset, YOffset, Acc) ->
 
 filter_for_drag_n_drop(List) -> fl(List, [], []).
 
-fl([], A, B)                                -> {A, B};
-fl([{_, {"value", _}}  | T], A, B)          -> fl(T, A, B);
-fl([{_, {"rawvalue", _}}| T], A, B)         -> fl(T, A, B);
-fl([{_, {"parents", _}} | T], A, B)         -> fl(T, A, B);
-fl([{_, {"dependency-tree", _}}| T], A, B)  -> fl(T, A, B);
-fl([{_, {"__ast", _}} | T], A, B)           -> fl(T, A, B);
-fl([{_, {"formula", V}}| T], A, B)          -> fl(T, [V | A], B);
-fl([H | T], A, B)                           -> fl(T, A, [H | B]).
+fl([], A, B)                                  -> {A, B};
+fl([{_, {"value", _}}  | T], A, B)            -> fl(T, A, B);
+fl([{_, {"rawvalue", _}}| T], A, B)           -> fl(T, A, B);
+fl([{_, {"parents", _}} | T], A, B)           -> fl(T, A, B);
+fl([{_, {"__dependency-tree", _}}| T], A, B)  -> fl(T, A, B);
+fl([{_, {"__ast", _}} | T], A, B)             -> fl(T, A, B);
+fl([{_, {"formula", V}}| T], A, B)            -> fl(T, [V | A], B);
+fl([H | T], A, B)                             -> fl(T, A, [H | B]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
@@ -2749,7 +2749,7 @@ get_content_attrs([H | T], Acc) ->
         "__recompile"       -> get_content_attrs(T, [H | Acc]);
         "__shared"          -> get_content_attrs(T, [H | Acc]);
         "__area"            -> get_content_attrs(T, [H | Acc]);
-        "dependency-tree"   -> get_content_attrs(T, [H | Acc]);
+        "__dependency-tree"   -> get_content_attrs(T, [H | Acc]);
         "parents"           -> get_content_attrs(T, [H | Acc]);
         _                   -> get_content_attrs(T, Acc)
     end.
@@ -3173,7 +3173,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     %     & 'overwrite-color'
     % * overwrites the new values of these attributes:
     %   - parents
-    %   - 'dependency-tree'
+    %   - '__dependency-tree'
     % * reads the old set of local links:
     %   - writes any local links that aren't already there
     %   - deletes any local links that are no longer there
@@ -3190,13 +3190,13 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     % now write the rawvalue, etc, etc
     ok = write_rawvalue(RefX, Value),
 
-    % overwrite the parents and 'dependency-tree'
+    % overwrite the parents and '__dependency-tree'
     Set = fun(X, {Key, {xml,[]}}) -> delete_if_attrs(X, Key);
              (X, {Key, Val})      -> write_attr(X, {Key, Val})
           end,
 
-    Set(RefX, {"parents",         {xml, Parents}}),
-    Set(RefX, {"dependency-tree", {xml, DepTree}}),
+    Set(RefX, {"parents",           {xml, Parents}}),
+    Set(RefX, {"__dependency-tree", {xml, DepTree}}),
 
     % now do the local parents
     ok = delete_local_parents(RefX),
