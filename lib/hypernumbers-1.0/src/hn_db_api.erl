@@ -154,7 +154,7 @@
         ]).
 
 %% Upgrade functions that were applied at upgrade_REV
--export([upgrade_1519/0, upgrade_1556/0]).
+-export([upgrade_1519/0, upgrade_1556/0, upgrade_1630/0]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
@@ -172,6 +172,32 @@ upgrade_1556() ->
                 {hn_user, Name, Pass, Auth, Created, dict:new()}
         end,
     mnesia:transform_table(hn_user, F, record_info(fields, hn_user)).
+
+upgrade_1630() ->
+    % multi-site upgrade
+    HostsInfo = hn_config:get(hosts),
+    Sites = hn_util:get_hosts(HostsInfo),
+    F3 = fun(X) ->
+                 ok = mnesia:delete_object(X),
+                 {Table, Idx, "dependency-tree", {xml, Value}} = X,
+                 NewValue = upgrade_1630_1(Value, []),
+                 NewRec = {Table, Idx, "__dependency-tree", NewValue},
+                 mnesia:write(NewRec)
+         end,                 
+    F1 = fun(X) ->
+                 F2 = fun() ->
+                              H = hn_db_wu:trans(X, #item{key = "dependency-tree", _ = '_'}),
+                              Match = [{H, [], ['$_']}],
+                              Recs = mnesia:select(hn_db_wu:trans(X, item), Match),
+                              lists:foreach(F3, Recs)
+                      end,
+                 mnesia:activity(transaction, F2)
+         end,
+    lists:foreach(F1, Sites).
+
+upgrade_1630_1([], Acc)      -> Acc;
+upgrade_1630_1([H | T], Acc) -> {url, [{type, Type}], [Idx]} = H,
+                                upgrade_1630_1(T, [{Type, Idx} | Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
