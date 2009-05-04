@@ -2634,6 +2634,12 @@ deref1([#cellref{path = Path, text = Text} = H | T], DeRefX, Acc) ->
 deref1([H | T], DeRefX, Acc) ->
     deref1(T, DeRefX, [H | Acc]).
 
+% sometimes Text has a prepended slash
+deref2(H, [$/|Text], Path, DeRefX) ->
+    case deref2(H, Text, Path, DeRefX) of
+        H                        -> H;
+        {Type, O1, O2, P, Text2} -> {Type, O1, O2, P, "/" ++ Text2}
+    end;
 deref2(H, Text, Path, DeRefX) ->
     #refX{path = DPath, obj = Obj1} = DeRefX,
     PathCompare = muin_util:walk_path(DPath, Path),
