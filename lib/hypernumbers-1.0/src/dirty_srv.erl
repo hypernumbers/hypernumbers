@@ -44,8 +44,8 @@ handle_info({mnesia_table_event, {write, _Table, Rec, _OldRecs, _ActId}},
             State) ->
     case State#state.state of
         passive -> ok;
-        active  -> _PID = spawn(fun() -> proc_dirty(Rec, State#state.type) end)
-        % active  -> proc_dirty(Rec, State#state.type)
+        % active  -> _PID = spawn(fun() -> proc_dirty(Rec, State#state.type) end)
+        active  -> proc_dirty(Rec, State#state.type)
     end,
     {noreply, State};
 
