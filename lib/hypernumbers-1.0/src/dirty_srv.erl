@@ -29,13 +29,9 @@
 start_link(Arg) ->
     gen_server:start_link({local, Arg}, ?MODULE, [Arg], []).
 
-%% @spec init(Arg) -> {ok,State}
+%% @spec init(Arg) -> {ok, State}
 %% @doc  Start server
 init([Type]) ->
-    % we need a little time for the config file to start itself properly
-    % io:format("about to wait in dirty_srv init...~n"),
-    % test_util:wait(75),
-    % ok = gen_server:cast(Type, {subscribe, Type}),
     {ok, #state{type = Type}}.
 
 %% @spec handle_info(Event,State) -> {noreply, State}
@@ -44,8 +40,8 @@ handle_info({mnesia_table_event, {write, _Table, Rec, _OldRecs, _ActId}},
             State) ->
     case State#state.state of
         passive -> ok;
-        % active  -> _PID = spawn(fun() -> proc_dirty(Rec, State#state.type) end)
-        active  -> proc_dirty(Rec, State#state.type)
+        % active  -> _PID = spawn(fun() -> proc_dirty(Rec) end)
+        active  -> proc_dirty(Rec)
     end,
     {noreply, State};
 
@@ -60,56 +56,24 @@ handle_info(_Info, State) ->
     ?INFO("Unmatched Event ~p", [_Info]),
     {noreply, State}.
 
-%% @spec handle_call(flush, From, State) -> {reply, ok, State}
-%% @doc  first shrink dirty_cell, then flush the dirty table, 
-%%       read all the current dirty cells and trigger recalculation
-%% @todo this function is no longer used and should probably be deleted...
-handle_call(flush, _From, State = #state{type = dirty_cell}) ->
+%% @spec handle_call(subscribe, State) -> {reply, Reply State}
+%% @doc  subscribe to table events from mnesia
+handle_call({subscribe, Table}, _From, State) ->
+    HostsInfo = hn_config:get(hosts),
+    Sites = hn_util:get_hosts(HostsInfo),
+    [ok = sub_unsubscribe(Table, X, subscribe) || X <- Sites],
+    Reply = ok,
+    {reply, Reply, State};
+handle_call(_Msg, _From, _State) ->
+    {reply, ok, []}.
 
-    % This fun shrinks the dirty cell table
-    % (but not dirty_notify_in)
-    ?INFO("In dirty_src:handle_call for flush (start) "++
-          "for dirty_cell Size is ~p~n",
-          [mnesia:table_info(dirty_cell, size)]),
-    Fun = fun() ->
-                  % see how big the dirty cell table is
-                  % get all the dirty_cell indices
-                  Match1 = ms_util:make_ms(dirty_cell, [{index, '$1'}]),
-                  List = mnesia:match_object(Match1),
-                  Fn2 = fun(X, Acc) ->
-                                {_, Index, _} = X,
-                                Links = hn_db:read_links(Index, parent),
-                                case Links of
-                                    [] -> Acc;
-                                    L  -> [{X, L} | Acc]
-                                end
-                        end,
-                  LinksList = lists:foldl(Fn2, [], List),
-                  % now iterate over this list and look for parents that are
-                  % on the dirty list
-                  % If a dirty_cell has a dirty parent then we will shrink it out
-                  DeleteList = shrink(LinksList, List),
-                  Fn3 = fun({_, X, _}) -> mnesia:dirty_delete({dirty_cell, X}) end,
-                  lists:foreach(Fn3, DeleteList),
-                  Match2 = ms_util:make_ms(dirty_cell, []),
-                  mnesia:match_object(Match2)
-          end,
-    {atomic,List2} = mnesia:transaction(Fun),
-    ?INFO("In dirty_src:handle_call for flush (end) "++
-          "Dirty Cell Table Size is ~p~n",
-          [mnesia:table_info(dirty_cell, size)]),
-    lists:foreach(fun(X) -> proc_dirty(X, dirty_cell) end, List2),
-
-    {reply, ok, State};
-%% for other tables, just flush 'em...
-handle_call(flush, _From, State = #state{type = Type}) ->
-    Fun = fun() ->
-                  Match = ms_util:make_ms(Type, []),
-                  mnesia:match_object(Match)
-          end,
-    List = mnesia:activity(transaction, Fun),
-    lists:foreach(fun(X) -> proc_dirty(X, Type) end, List),
-    {reply, ok, State}.
+%% @spec handle_cast(flush, From, State) -> {reply, ok, State}
+%% @doc  flush the table of dirty records
+handle_cast({flush, Table}, State) ->
+    HostsInfo = hn_config:get(hosts),
+    Sites = hn_util:get_hosts(HostsInfo),
+    [ok = flush(X, Table) || X <- Sites],
+    {noreply, State};
 
 %% @spec handle_cast({setstate,NState}, State) -> {noreply, State}
 %% @doc  active server will recalc on write, passive will ignore
@@ -118,14 +82,6 @@ handle_cast({setstate,active}, State) ->
 handle_cast({setstate,passive}, State) -> 
     {noreply, State#state{state = passive}};
 
-%% @spec handle_cast(subscribe, State) -> {noreply, State}
-%% @doc  subscribe to table events from mnesia
-handle_cast({subscribe, Table}, State) ->
-    HostsInfo = hn_config:get(hosts),
-    Sites = hn_util:get_hosts(HostsInfo),
-    % io:format("in handle_cast HostsInfo is ~p Sites is ~p~n", [HostsInfo, Sites]),
-    [ok = sub_unsubscribe(Table, X, subscribe) || X <- Sites],
-    {noreply, State};
 %% @spec handle_cast(subscribe, State) -> {noreply,State}
 %% @doc  unsubscribe from table events from mnesia
 handle_cast({unsubscribe, Table}, State) ->
@@ -145,7 +101,7 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% @spec proc_dirty(Rec, Type) -> ok
 %% @doc  processes the dirty record
-proc_dirty(Rec, _Table) ->
+proc_dirty(Rec) ->
     % fprof:trace(start),
     {Site, NewRecType, Rec2} = hn_db_wu:split_trans(Rec),
     Ret = case NewRecType of
@@ -197,4 +153,23 @@ sub_unsubscribe(Table, Site, Action) ->
                   unsubscribe ->
                       mnesia:unsubscribe({table, NewTable, detailed})
               end,
+    ok.
+
+flush(Site, Table) ->
+    Fun1 = fun() ->
+                  Match = ms_util:make_ms(Table, []),
+                  Match2 = hn_db_wu:trans(Site, Match),
+                  mnesia:match_object(Match2)
+          end,
+    List = mnesia:activity(transaction, Fun1),
+    Len = length(List),
+    case Len of
+        0  -> ok;
+        _N -> io:format("in flush of ~p for ~p there are ~p records to flush~n", 
+                        [Table, Site, Len])
+    end,
+    Fun2 = fun(X) ->
+                   _Pid = spawn(fun() -> proc_dirty(X) end)
+           end,
+    lists:foreach(Fun2, List),
     ok.
