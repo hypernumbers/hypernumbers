@@ -598,7 +598,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
             end,
 
     DTree = case hn_db_wu:read_attrs(RefX, ["__dependency-tree"]) of
-                [{_, {_, {xml,Tree}}}] -> Tree;
+                [{_, {_, Tree}}] -> Tree;
                 []                     -> []
             end,
     % DTree2 = hn_db_wu:unpack_dependencies(Site, DTree),
@@ -2084,14 +2084,7 @@ unregister_out_hn(P, C)
 %% @doc read the populated pages under the specified path
 %% @todo fix up api
 read_page_structure(#refX{site = Site, obj = {page, "/"}}) ->
-    % io:format("In read_page_structure for ~p~n", [RefX]),
-    H = trans(Site, #local_objs{path = '$1', _ = '_'}),
-    C = [],
-    B = ['$1'],
-    Table = trans(Site, local_objs),
-    % io:format("In read_page_structure~n-H is ~p C is ~p B is ~p~n", [H, C, B]),
-    Items = mnesia:select(Table, [{H, C, B}]),
-    % io:format("in read_page_structure Items are ~p~n", [Items]),
+    Items = mnesia:all_keys(trans(Site, local_objs)),
     filter_pages(Items, dh_tree:new()).
 
 filter_pages([], Tree) ->
@@ -3198,12 +3191,12 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     ok = write_rawvalue(RefX, Value),
 
     % overwrite the parents and '__dependency-tree'
-    Set = fun(X, {Key, {xml,[]}}) -> delete_if_attrs(X, Key);
-             (X, {Key, Val})      -> write_attr(X, {Key, Val})
+    Set = fun(X, {Key, []})  -> delete_if_attrs(X, Key);
+             (X, {Key, Val}) -> write_attr(X, {Key, Val})
           end,
 
     Set(RefX, {"parents",           {xml, Parents}}),
-    Set(RefX, {"__dependency-tree", {xml, DepTree}}),
+    Set(RefX, {"__dependency-tree", DepTree}),
 
     % now do the local parents
     ok = delete_local_parents(RefX),
@@ -3224,11 +3217,11 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
 
     % mark this cell as a possible dirty hypernumber
     % This takes a value and the dependency tree as it is asyncronous...
-    DepTree2 = case DepTree of
-                   [] -> [];
-                   _  -> {xml, DepTree}
-               end,
-    mark_notify_out_dirty(RefX, {new_value, RawValue, DepTree2}).
+    %    DepTree2 = case DepTree of
+    %                   [] -> [];
+    %                   _  -> DepTree
+    %               end,
+    mark_notify_out_dirty(RefX, {new_value, RawValue, DepTree}).
 
 split_parents(Old, New) -> split_parents1(lists:sort(Old),
                                           lists:sort(New), {[],[]}).
