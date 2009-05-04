@@ -27,7 +27,7 @@ cd $ROOT
 
 LOG_DIR=$ROOT/logs
 CONFIG=$ROOT/priv/hypernumbers.conf
-MNESIA_DIR=$ROOT/database/$NODE
+MNESIA_DIR=$ROOT/db/$NODE
 REL_DIR=$ROOT/ebin/$RELNAME
 SASL_DIR=$ROOT/priv/$SASL_CONF_FILE
 

@@ -622,11 +622,14 @@ ul,li {
 #hnpaste { display:none; }
 
 #pathpaste, #hnpaste { 
+ position:absolute;
  background:#EEE;
  border:1px solid #AAA;
  font: 9px Arial, sans-serif;
  height:12px;
 }
+
+#pathpaste {  width:160px; overflow:hidden; }
 
 #overlay { 
   background:transparent;

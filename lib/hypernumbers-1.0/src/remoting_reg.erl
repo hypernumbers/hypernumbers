@@ -24,6 +24,7 @@ init([]) ->
 %% @doc  Handle incoming update mesage
 handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
     Packet   = {msg, Site, Path, Msg, timestamp()},
+    %?INFO("~p",[Packet]),
     NUpdates = [Packet | Updates], 
     {noreply, send_to_waiting(NUpdates, Waiting)};
 
