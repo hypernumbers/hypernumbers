@@ -34,16 +34,19 @@ conv_to_float(X)                  -> tconv:to_f(X).
 make_src(A) when is_list(A) -> make_src2(lists:flatten(A));
 make_src(A)                 -> make_src2([A]).
 
+%get_general()->
+%    Src="fun(X) -> "++
+%        "  if "++
+%        "    not(is_number(X)) -> {auto,X};"++
+%        "    is_integer(X)     -> {auto,format:format(X,"++
+%        "                         {number,[{format,\"0\"}]})};"++
+%        "    is_float(X)       -> {auto,format:format(X,"++
+%        "                         {number,[{format,\"0.00\"}]})}"++
+%        "  end "++
+%        "end.",
+%    {number,Src}.
 get_general()->
-    Src="fun(X) -> "++
-        "  if "++
-        "    not(is_number(X)) -> {auto,X};"++
-        "    is_integer(X)     -> {auto,format:format(X,"++
-        "                         {number,[{format,\"0\"}]})};"++
-        "    is_float(X)       -> {auto,format:format(X,"++
-        "                         {number,[{format,\"0.00\"}]})}"++
-        "  end "++
-        "end.",
+    Src="fun(X) -> {auto,lists:flatten(io_lib:format(\"~p\", [X]))} end.",
     {number,Src}.
 
 concat(A,B) -> [A,B].

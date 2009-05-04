@@ -58,7 +58,7 @@ get_src(Format)->
 %%% value formatted by the source code
 %%% @end
 %%% @spec run_format(Value::string(),Src::string()) -> {ok, Output::string()}
-run_format(X,Src)->
+run_format(X, Src)->
     {ok,ErlTokens,_} = erl_scan:string(Src),
     {ok,ErlAbsForm}  = erl_parse:parse_exprs(ErlTokens),
     {value,Fun,_}    = erl_eval:exprs(ErlAbsForm,[]),
