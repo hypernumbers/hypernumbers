@@ -72,8 +72,8 @@ eval_formula(Fcode) ->
             case Value of
                 R when ?is_cellref(R) ->
                     case attempt(?MODULE, fetch, [R]) of
-                        {ok, blank} -> 0;
-                        {ok, Other} -> Other;
+                        {ok,    blank}  -> 0;
+                        {ok,    Other}  -> Other;
                         {error, ErrVal} -> ErrVal
                     end;
                 R when ?is_rangeref(R); ?is_array(R) ->
@@ -374,12 +374,13 @@ do_cell(RelPath, Rowidx, Colidx) ->
 %% saves the dependencies (linking it to current cell), and returns
 %% the value to the caller (to continue the evaluation of the formula).
 get_value_and_link(FetchFun) ->
-    {Value, RefTree, Errs, Refs} = FetchFun(),
-
-    case member({"local", {?msite, ?mpath, ?mx, ?my}}, RefTree) of
+    {Value, RefTree, Errs, Refs}  = FetchFun(),
+    RefX = #refX{site = ?msite, path = ?mpath, obj = {cell, {?mx, ?my}}},
+    Idx = hn_db_wu:get_local_item_index(RefX),
+    case member({"local", Idx}, RefTree) of
         true ->
             ?ERR_CIRCREF;
-        false ->        
+        false ->
             {RefTree0, Errs0, Refs0} = get(retvals),
             put(retvals, {RefTree0 ++ RefTree, Errs0 ++ Errs, Refs0 ++ Refs}),
             Value

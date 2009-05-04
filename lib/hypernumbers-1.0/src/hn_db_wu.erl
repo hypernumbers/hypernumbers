@@ -530,8 +530,9 @@
          read_page_vsn/2,
          initialise_remote_page_vsn/3, 
          read_page_structure/1,
-         unpack_dependencies/2,
-         get_cell_for_muin/1
+         % unpack_dependencies/2,
+         get_cell_for_muin/1,
+         get_local_item_index/1
         ]).
 
 %% Database transformation functions
@@ -595,12 +596,12 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
                 []            -> [];
                 [{_, {_, V}}] -> V
             end,
-    
+
     DTree = case hn_db_wu:read_attrs(RefX, ["__dependency-tree"]) of
                 [{_, {_, {xml,Tree}}}] -> Tree;
                 []                     -> []
             end,
-    DTree2 = hn_db_wu:unpack_dependencies(Site, DTree),
+    % DTree2 = hn_db_wu:unpack_dependencies(Site, DTree),
 
     Val = case Value of
               []                 -> blank;
@@ -608,13 +609,16 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
               Else               -> Else %% Strip other type tags.
           end,
     
-    F = fun({url, [{type, Type}], [Url]}) -> 
-                {ok, Ref} = hn_util:parse_url(Url),
-                #refX{site = S, path = P, obj = {cell,{X, Y}}} = Ref,
-                {Type,{S, P, X, Y}}
-        end,
-    
-    Dep = lists:map(F, DTree2) ++ [{"local", {Site, Path, XX, YY}}],
+%    F = fun({url, [{type, Type}], [Idx]}) -> 
+%                io:format("got to A Url is ~p~n", [Url]),
+%                {ok, Ref} = hn_util:parse_url(Url),
+%                io:format("got to B~n"),
+%                #refX{site = S, path = P, obj = {cell,{X, Y}}} = Ref,
+%                io:format("got to C~n"),
+%                {Type,{S, P, X, Y}}
+%        end,
+%    Dep = lists:map(F, DTree) ++ [{"local", {Site, Path, XX, YY}}],
+    Dep = DTree ++ [{"local", get_local_item_index(RefX)}],
     {Val, Dep, [], [{"local", {Site, Path, XX, YY}}]}.
 
 %% @spec write_style_IMPORT(RefX#refX{}, Style#magic_style{}) -> ok
@@ -629,34 +633,34 @@ write_style_IMPORT(RefX, Style)
 %% @doc unpacks the dependency tree replacing the indices with the Url's
 %% they refer to
 %% @TODO rewrite muin to check dependencies on the indices not the Urls
-unpack_dependencies(_Site, []) -> [];
-unpack_dependencies(Site, DTree) ->
-    Fun = fun(X) ->
-                  case X of
-                      {url, [{type, "local"}], [Idx]} ->
-                          RefX = local_idx_to_refX(Site, Idx),
-                          Url = hn_util:refX_to_url(RefX),
-                          {url, [{type, "local"}], [Url]};
-                      _                             ->
-                          X
-                  end
-          end,
-    lists:map(Fun, DTree).
+%unpack_dependencies(_Site, []) -> [];
+%unpack_dependencies(Site, DTree) ->
+%    Fun = fun(X) ->
+%                  case X of
+%                      {url, [{type, "local"}], [Idx]} ->
+%                          RefX = local_idx_to_refX(Site, Idx),
+%                          Url = hn_util:refX_to_url(RefX),
+%                          {url, [{type, "local"}], [Url]};
+%                      _                             ->
+%                          X
+%                  end
+%          end,
+%    lists:map(Fun, DTree).
 
-pack_dependencies([]) -> [];
-pack_dependencies({xml, DTree}) ->
-    Fun = fun(X) ->
-                  case X of
-                      {url, [{type, "local"}], [Url]} ->
-                          {ok, RefX} = hn_util:parse_url(Url),
-                          Idx = get_local_item_index(RefX),
-                          {url, [{type, "local"}], [Idx]};
-                      _                             ->
-                          X
-                  end
-          end,
-    DTree2 = lists:map(Fun, DTree),
-    {xml, DTree2}.
+%pack_dependencies([]) -> [];
+%pack_dependencies({xml, DTree}) ->
+%    Fun = fun(X) ->
+%                  case X of
+%                      {url, [{type, "local"}], [Url]} ->
+%                          {ok, RefX} = hn_util:parse_url(Url),
+%                          Idx = get_local_item_index(RefX),
+%                          {url, [{type, "local"}], [Idx]};
+%                      _                             ->
+%                          X
+%                  end
+%          end,
+%    DTree2 = lists:map(Fun, DTree),
+%    {xml, DTree2}.
 
 %% @spec read_dirty_cell(Timestamp) -> #dirty_cell{}
 %% @doc reads a dirty_cell based on its timestamp
@@ -1221,8 +1225,8 @@ write_attr(#refX{obj = {cell, _}} = RefX, {"format", Format} = Attr) ->
 write_attr(#refX{obj = {cell, _}} = RefX, {"__dependency-tree", DTree}) ->
     % io:format("in write_attr (cell - 3)~n-RefX is ~p~n-DTree is ~p~n",
     %          [RefX, DTree]),
-    DTree2 = pack_dependencies(DTree),
-    write_attr3(RefX, {"__dependency-tree", DTree2});
+    % DTree2 = pack_dependencies(DTree),
+    write_attr3(RefX, {"__dependency-tree", DTree});
 write_attr(#refX{obj = {cell, _}} = RefX, {Key, Val} = Attr) ->
     % io:format("in write_attr (cell - 4)~n-RefX is ~p~n-Attr is ~p~n",
     %          [RefX, Attr]),
@@ -2202,8 +2206,9 @@ read_local_item_index(#refX{site = S, path = P, obj = Obj}) ->
         []                       -> false;
         [#local_objs{idx = Idx}] -> Idx
     end.
-%% get_item_index gets the index of an object AND CREATES IT IF IT 
-%% DOESN'T EXIST
+%% @spec get_local_item_index(refX{}) -> Index
+%% @doc get_local_item_index get_item_index gets the index of an object 
+%% AND CREATES IT IF IT DOESN'T EXIST
 get_local_item_index(#refX{site = S, path = P, obj = O} = RefX) ->
     case read_local_item_index(RefX) of
         false -> Idx = "Loc" ++ integer_to_list(util2:get_timestamp()),
@@ -3113,16 +3118,18 @@ write_formula1(RefX, Fla) ->
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R,  Error, "=" ++ Fla);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
-            % io:format("in write_formula1 Res is ~p~n", [Res]),
+            % io:format("in write_formula1~n-Pcode is ~p Res is ~p~n-"++
+            %          "Deptree is ~p~n-Parents is ~p~n-Recompile is ~p~n",
+            %          [Pcode, Res, Deptree, Parents, Recompile]),
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
-            Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
+            % Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
             ok = write_attr3(RefX, {"__ast", Pcode}),
             ok = write_attr3(RefX, {"__recompile", Recompile}),
             % write the default text align for the result
             ok = write_default_alignment(RefX, Res),
             % io:format("about to go into write_cell ~p~n-RefX is ~p~n",
             %          [self(),RefX]),
-            write_cell(RefX, Res, "=" ++ Fla, Parxml, Deptreexml)
+            write_cell(RefX, Res, "=" ++ Fla, Parxml, Deptree)
     end.
 
 write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
