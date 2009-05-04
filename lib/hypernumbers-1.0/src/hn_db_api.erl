@@ -236,8 +236,8 @@ write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
 %% It is intended to be used in the FILE IMPORT process only - normally the respresentation
 %% of styles in the magic style record is designed to be hidden from the API
 %% (that's for why it is a 'magic' style n'est pas?)
-write_style_IMPORT(RefX, Style) when is_record(RefX, refX), is_record(Style, magic_style) ->
-    % io:format("in write_style_import~n-RefX is ~p~n-Style is ~p~n", [RefX, Style]),
+write_style_IMPORT(RefX, Style) when is_record(RefX, refX),
+                                     is_record(Style, magic_style) ->
     Fun = fun() ->
                   ok= hn_db_wu:write_style_IMPORT(RefX, Style)
           end,
@@ -414,21 +414,13 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 %% @todo extend this to a dirty shared formula
 %% @todo stop the silent fail!
 handle_dirty_cell(Site, TimeStamp)  ->
-    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Logging code                                                      %
-    % #index{path = Path, row = Row, column = Col} = Index,             %
-    % Str=string:join(Path,"/")++" Row "++integer_to_list(Row)++" Col " %
-    %     ++integer_to_list(Col),                                       %
-    % bits:log(Str),                                                    %
-    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     Fun =
         fun() ->
                 ok = init_front_end_notify(),
                 Cell = ?wu:read_dirty_cell(Site, TimeStamp),
-                % io:format("in handle_dirty_cell Cell is ~p~n", [Cell]),
                 ok = case ?wu:read_attrs(Cell, ["__shared"]) of
                          [] -> [{C, KV}] = ?wu:read_attrs(Cell, ["formula"]),
-                               ?wu:write_attr(C, KV);
+                               ok = ?wu:write_attr(C, KV);
                          _  -> ok
                      end,
                 ok = ?wu:clear_dirty_cell(Cell)
@@ -588,12 +580,6 @@ notify_from_web2(Parent, Child, Payload, _Biccie) ->
                    end,
             HnsXs = lists:map(Fun4, Inc_Hns2),
 
-            % io:format("In hn_db_api:notify_from_web~n-"++
-            %           "Inc_Hns  is ~p~n-"++
-            %          "Inc_Hns2 is ~p~n-"++
-            %          "HnsXs    is ~p~n",
-            %          [Inc_Hns, Inc_Hns2, HnsXs]),
-
             % Lets process this list of cells
             % Start by rewriting them
 
@@ -611,8 +597,6 @@ notify_from_web2(Parent, Child, Payload, _Biccie) ->
                                 ok;
                             Children ->
                                 NewP = shift(P, XOff, YOff),
-                                % io:format("in hn_db_api:notify_from_web~n"++
-                                %          "-Children is ~p~n", [Children]),
                                 ok = ?wu:?shift_ch(Children, P, NewP),
                                 ok = ?wu:shift_remote_links(parent, P, NewP,
                                                             incoming)
@@ -984,15 +968,12 @@ insert(#refX{obj = {R, _}} = RefX, Disp)
 %% This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
 delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
-    % io:format("in hn_db_api:delete (row/col) ~n-RefX is ~p~n-R is ~p",
-    %          [RefX, R]),
     Disp = case R of
                row    -> vertical;
                column -> horizontal
            end,
     move(RefX, delete, Disp);
 delete(#refX{obj = {page, _}} = RefX) ->
-    % io:format("in hn_db_api:delete (page)~n-RefX is ~p~n", [RefX]),
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   ?wu:delete_cells(RefX)
@@ -1018,26 +999,18 @@ delete(#refX{obj = {page, _}} = RefX) ->
 %% cells bottom-to-top to close the gap
 delete(#refX{obj = {R, _}} = RefX, Disp)
   when R == cell orelse R == range orelse R == row orelse R == column ->
-    % io:format("in hn_db_api:delete/2~n-RefX is ~p~n-R is ~p",
-    %          [RefX, R]),
     move(RefX, delete, Disp).
 
 move(RefX, Type, Disp)
   when (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
     #refX{site = Site, obj = Obj} = RefX,
-    % io:format("In hn_dp_api:move~n-RefX is ~p~n-Type is ~p~n-Disp is ~p~n",
-    %          [RefX, Type, Disp]),
     Fun =
         fun() ->
                 ok = init_front_end_notify(),
                 % if the Type is delete we first delete the original cells
                 Disp2 = atom_to_list(Disp),
                 _NewVsn = ?wu:get_new_local_page_vsn(RefX, {insert, Disp2}),
-                % io:format("in hn_db_api:move~n-Site is ~p~n-RefX is ~p~n-"++
-                %          "NewVsn is ~p~n",
-                %          [Site, RefX, NewVsn]),
-                % io:format("in hn_db_api:move~n-Off is ~p~n", [Off]),
                 % when the move type is DELETE the cells that are moved
                 % DO NOT include the cells described by the reference
                 % but when the move type is INSERT the cells that are
@@ -1050,7 +1023,6 @@ move(RefX, Type, Disp)
                          insert -> []
                      end,
                 Status2 = ?wu:shift_cells(RefX, Type, Disp),
-                % io:format("Status is ~p~n", [Status]),
                 case Obj of
                     {row,    _} -> ok = ?wu:shift_rows(RefX, Type);
                     {column, _} -> ok = ?wu:shift_cols(RefX, Type);
@@ -1074,14 +1046,13 @@ move(RefX, Type, Disp)
                 Fun2 = fun({dirty, X}) ->
                                [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"]),
                                ok = ?wu:write_attr(X, {"formula", F}),
-                               % io:format("in Fun5~n-X is ~p~n-F is ~p~n", [X, F]),
                                ok = ?wu:mark_cells_dirty(X)
                        end,
                 [ok = Fun2(X) || X <- Status],
                 % Jobs a good'un, now for the remote parents
-                % io:format("in hn_db_api:move do something with Parents...~n"),
-                _Parents =  ?wu:find_incoming_hn(Site, PageRef),
-                % io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
+                io:format("in hn_db_api:move do something with Parents...~n"),
+                Parents =  ?wu:find_incoming_hn(Site, PageRef),
+                io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
                 ok
         end,
     ok = mnesia:activity(transaction, Fun),
@@ -1254,7 +1225,6 @@ copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% <li>the <b>from</b> must be the same height as the
 %% <b>to</b> range</li></ul> 
 drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
-    % io:format("in drag_n_drop~nFrom is ~p~nTo is ~p~n", [From, To]),
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   case is_valid_d_n_d(From, To) of
@@ -1349,44 +1319,6 @@ extract_kvs(List) -> extract_kvs1(List, []).
 
 extract_kvs1([], Acc)             -> Acc;
 extract_kvs1([{_R, KV} | T], Acc) -> extract_kvs1(T, [KV | Acc]).
-
-%dbsort(List, 'bottom-to-top') ->
-%    Fun = fun(#refX{obj = {cell, {_XA, YA}}},
-%              #refX{obj = {cell, {_XB, YB}}}) ->
-%                  if
-%                      (YA > YB)  -> true;
-%                      (YA =< YB) -> false
-%                  end
-%          end,
-%    lists:sort(Fun, List);
-%dbsort(List, 'top-to-bottom') ->
-%    Fun = fun(#refX{obj = {cell, {_XA, YA}}},
-%              #refX{obj = {cell, {_XB, YB}}}) ->
-%                  if
-%                      (YA < YB)  -> true;
-%                      (YA >= YB) -> false
-%                  end
-%          end,
-%    lists:sort(Fun, List);
-%dbsort(List, 'right-to-left') ->
-%    Fun = fun(#refX{obj = {cell, {XA, _YA}}},
-%              #refX{obj = {cell, {XB, _YB}}}) ->
-%                  if
-
-%                      (XA > XB)  -> true;
-%                      (XA =< XB) -> false
-%                  end
-%          end,
-%    lists:sort(Fun, List);
-%dbsort(List, 'left-to-right') ->
-%    Fun = fun(#refX{obj = {cell, {XA, _YA}}},
-%              #refX{obj = {cell, {XB, _YB}}}) ->
-%                  if
-%                      (XA < XB)  -> true;
-%                      (XA >= XB) -> false
-%                  end
-%          end,
-%    lists:sort(Fun, List).
 
 copy_n_paste2(From, To) ->
     case is_valid_c_n_p(From, To) of
