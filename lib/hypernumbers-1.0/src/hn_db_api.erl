@@ -154,7 +154,12 @@
         ]).
 
 %% Upgrade functions that were applied at upgrade_REV
--export([upgrade_1519/0, upgrade_1556/0, upgrade_1630/0]).
+-export([
+         upgrade_1519/0,
+         upgrade_1556/0,
+         upgrade_1630/0,
+         upgrade_1641/0
+        ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
@@ -198,6 +203,15 @@ upgrade_1630() ->
 upgrade_1630_1([], Acc)      -> Acc;
 upgrade_1630_1([H | T], Acc) -> {url, [{type, Type}], [Idx]} = H,
                                 upgrade_1630_1(T, [{Type, Idx} | Acc]).
+
+upgrade_1641() ->
+    HostsInfo = hn_config:get(hosts),
+    Sites = hn_util:get_hosts(HostsInfo),
+    Fun = fun(X) ->
+                  NewName = hn_db_wu:trans(X, local_objs),
+                  mnesia:add_table_index(NewName, idx)
+          end,
+    [Fun(X) || X <- Sites].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
@@ -307,6 +321,7 @@ create_db(Site)->
     Indices = [
                {item, key},
                {local_objs, obj},
+               {local_objs, idx},
                {local_cell, childidx},
                {dirty_cell, timestamp}
               ],
