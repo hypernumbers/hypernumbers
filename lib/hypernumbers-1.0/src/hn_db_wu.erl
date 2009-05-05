@@ -770,7 +770,7 @@ get_new_local_page_vsn(#refX{site = Site} = RefX, Action) ->
 %% (the page_vns tables hold the page version for both local and remote sites)
 read_page_vsn(Site, RefX) when is_record(RefX, refX) ->
     PageRefX = RefX#refX{obj = {page, "/"}},
-    case mnesia:read({trans(Site, page_vsn), {Site, PageRefX}}) of
+    case mnesia:wread({trans(Site, page_vsn), {Site, PageRefX}}) of
         []    -> "undefined";
         [Rec] -> #page_vsn{version = V} = trans_back(Rec),
                  V
@@ -1640,7 +1640,7 @@ delete_cells(#refX{site = S} = DelX) ->
             IdxList = [Fun3(X) || X <- Recs],
             % delete all items with that index
             Table2 = trans(S, item),
-            Fun4 = fun(X) -> List = trans_back(mnesia:read({Table2, X})),
+            Fun4 = fun(X) -> List = trans_back(mnesia:wread({Table2, X})),
                            % you need to notify the front end before you delete the object...
                              RefX = local_idx_to_refX(S, X),
                              [ok = tell_front_end(RefX, {K, V}, delete) ||
@@ -2897,7 +2897,7 @@ offset_formula(Formula, {XO, YO}) ->
     NewFormula.
 
 shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
-    case mnesia:read({trans(Site, dirty_notify_in), From}) of
+    case mnesia:wread({trans(Site, dirty_notify_in), From}) of
         []        -> ok;
         [DirtyHn] -> DirtyHn2 = trans_back(DirtyHn),
                      NewDirty = DirtyHn2#dirty_notify_in{parent = To},
@@ -3157,7 +3157,7 @@ match_ref(#refX{site = S} = RefX, Key) ->
     case read_local_item_index(RefX) of
         false -> [];
         Idx -> Table = trans(S, item),
-               case trans_back(mnesia:read(Table, Idx, read)) of
+               case trans_back(mnesia:wread({Table, Idx})) of
                    []   -> [];
                    Recs -> IdxNo = ms_util2:get_index(item, key) + 1,
                            case lists:keysearch(Key, IdxNo, Recs) of
