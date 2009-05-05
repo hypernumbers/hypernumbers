@@ -73,6 +73,7 @@ eval_formula(Fcode) ->
                 R when ?is_cellref(R) ->
                     case attempt(?MODULE, fetch, [R]) of
                         {ok,    blank}  -> 0;
+                        {error, {aborted, {cyclic, _, _, _, _, _}} = E}  -> exit(E); % rethrow on lock
                         {ok,    Other}  -> Other;
                         {error, ErrVal} -> ErrVal
                     end;
@@ -178,6 +179,7 @@ funcall(Fname, Args0) ->
     R = foldl(fun(M, Acc = {F, A, not_found_yet}) ->
                       case attempt(M, F, [A]) of
                           {error, undef} -> Acc;
+                          {error, {aborted, {cyclic, _, _, _, _, _}} = E}  -> exit(E); % rethrow on lock
                           {ok, V}        -> {F, A, V};
                           {error, Ev = {errval, _}} -> {F, A, Ev};
                           {error, Other} -> {F, A, {error, Other}}
