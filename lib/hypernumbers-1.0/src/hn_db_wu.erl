@@ -2642,6 +2642,7 @@ deref1([H | T], DeRefX, Acc) ->
 
 % sometimes Text has a prepended slash
 deref2(H, [$/|Text], Path, DeRefX) ->
+    %% deref2 is returning {deref,"#REF!"} here and bad matching
     case deref2(H, Text, Path, DeRefX) of
         H                        -> H;
         {Type, O1, O2, P, Text2} -> {Type, O1, O2, P, "/" ++ Text2}
@@ -2652,7 +2653,7 @@ deref2(H, Text, Path, DeRefX) ->
     Obj2 = hn_util:parse_ref(Text),
     case PathCompare of
         DPath -> deref_overlap(Text, Obj1, Obj2);
-        _     -> H
+        _Else -> H
     end.
 
 % if Obj1 completely subsumes Obj2 then the reference to Obj2 should 
@@ -2680,7 +2681,7 @@ deref_overlap(Text, Obj1, Obj2) ->
     IntBL = intersect(XX1, YY2, X1, Y1, X2, Y2),
     IntTR = intersect(XX2, YY1, X1, Y1, X2, Y2),
     IntBR = intersect(XX2, YY2, X1, Y1, X2, Y2),
-    case{IntTL, IntBL, IntTR, IntBR} of
+    case {IntTL, IntBL, IntTR, IntBR} of
         % all included - deref!
         {in,  in,  in,  in}  -> {deref, "#REF!"};
         % none included you need to recheck incase the delete area
