@@ -1037,7 +1037,6 @@ move(RefX, Type, Disp)
                          delete -> ?wu:delete_cells(RefX);
                          insert -> []
                      end,
-
                 Status2 = hn_db_wu:shift_cells(RefX, Type, Disp),
                 case Obj of
                     {row,    _} -> ok = ?wu:shift_rows(RefX, Type);

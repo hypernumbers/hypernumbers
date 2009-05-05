@@ -27,77 +27,36 @@
 
 -record(state, {pid, name}).
 
-%%%===================================================================
-%%% API
-%%%===================================================================
-
-%%--------------------------------------------------------------------
 %% @doc
 %% Starts the server
-%%
-%% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
-%% @end
-%%--------------------------------------------------------------------
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
-%%%===================================================================
-%%% gen_server callbacks
-%%%===================================================================
-
-%%--------------------------------------------------------------------
 %% @private
 %% @doc
 %% Initiates the server
-%%
-%% @spec init(Args) -> {ok, State} |
-%%                     {ok, State, Timeout} |
-%%                     ignore |
-%%                     {stop, Reason}
-%% @end
-%%--------------------------------------------------------------------
 init([]) ->
     process_flag(trap_exit, true),
     {ok, []}.
 
-%%--------------------------------------------------------------------
 %% @private
 %% @doc
 %% Handling call messages
-%%
-%% @spec handle_call(Request, From, State) ->
-%%                                   {reply, Reply, State} |
-%%                                   {reply, Reply, State, Timeout} |
-%%                                   {noreply, State} |
-%%                                   {noreply, State, Timeout} |
-%%                                   {stop, Reason, Reply, State} |
-%%                                   {stop, Reason, State}
-%% @end
-%%--------------------------------------------------------------------
 handle_call({monitor, Name}, _From, State) ->
-    Pid = whereis(Name),
-    true = link(Pid),
-    ok = gen_server:call(Name, {subscribe, Name}),
-    Reply = ok,
-    {reply, Reply, [ #state{pid = Pid, name = Name} | State]};
+    {ok, Pid} = setup_link(Name),
+    {reply, ok, [ #state{pid = Pid, name = Name} | State]};
+
 handle_call(unmonitor, _From, State) ->
     % clear the state
     [true = unlink(P) || #state{pid = P} <- State],
-    Reply = ok,
-    {reply, Reply, []};
+    {reply, ok, []};
+
 handle_call(_Request, _From, State) ->
-    Reply = ok,
-    {reply, Reply, State}.
-%%--------------------------------------------------------------------
+    {reply, ok, State}.
+
 %% @private
 %% @doc
 %% Handling cast messages
-%%
-%% @spec handle_cast(Msg, State) -> {noreply, State} |
-%%                                  {noreply, State, Timeout} |
-%%                                  {stop, Reason, State}
-%% @end
-%%--------------------------------------------------------------------
 handle_cast({flush, Name}, State) ->
     Pid = whereis(Name),
     true = link(Pid),
@@ -106,50 +65,33 @@ handle_cast({flush, Name}, State) ->
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
-%%--------------------------------------------------------------------
 %% @private
 %% @doc
 %% Handling all non call/cast messages
-%%
-%% @spec handle_info(Info, State) -> {noreply, State} |
-%%                                   {noreply, State, Timeout} |
-%%                                   {stop, Reason, State}
-%% @end
-%%--------------------------------------------------------------------
+
+%% Dont try to resubscribe when shutting down
+handle_info({'EXIT', _Pid, shutdown}, State) ->
+    {noreply, State};
 handle_info({'EXIT', Pid, _Why}, State) ->
-    ?ERROR("~p", [_Why]),
     {value, #state{name = Name}} = lists:keysearch(Pid, 2, State),
     NewState = lists:keydelete(Pid, 2, State),
-    ok = monitor(Name),
-    ok = flush(Name),
+    %% This is still broke, there is no guarantee Name has been restarted
+    %% yet, but its needed to spawn here, handle_into is synchronous, as is
+    %% handle_call which monitor(Name) runs
+    F = fun() ->
+                ok = monitor(Name),
+                ok = flush(Name)
+        end,
+    spawn(F),
     {noreply, NewState};
 handle_info(_Info, State) ->
     {noreply, State}.
 
-%%--------------------------------------------------------------------
-%% @private
-%% @doc
-%% This function is called by a gen_server when it is about to
-%% terminate. It should be the opposite of Module:init/1 and do any
-%% necessary cleaning up. When it returns, the gen_server terminates
-%% with Reason. The return value is ignored.
-%%
-%% @spec terminate(Reason, State) -> void()
-%% @end
-%%--------------------------------------------------------------------
 terminate(_Reason, _State) ->
     ok.
-
-%%--------------------------------------------------------------------
-%% @private
-%% @doc
-%% Convert process state when code is changed
-%%
-%% @spec code_change(OldVsn, State, Extra) -> {ok, NewState}
-%% @end
-%%--------------------------------------------------------------------
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
+
 
 monitor(Name) ->
     gen_server:call(?MODULE, {monitor, Name}).
@@ -163,3 +105,8 @@ flush(Name) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+setup_link(Name) ->
+    Pid = whereis(Name),
+    true = link(Pid),
+    ok = gen_server:call(Name, {subscribe, Name}),
+    {ok, Pid}.
