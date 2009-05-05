@@ -1373,8 +1373,7 @@ shift_cells(From, Type, Disp)
                    {delete, vertical}   -> get_refs_below(From)
                end,
     case RefXList of
-        [] ->
-            ok;
+        [] -> [];
         _  -> [ok = shift_cells1(X, offset(X, {XO, YO})) || X <- RefXList],
             
               % now get the indexes of all the objs referred to
@@ -2351,12 +2350,13 @@ make_formula(Toks) ->
 %% this function needs to be extended...
 mk_f([], {St, A}) -> {St, "="++lists:flatten(lists:reverse(A))};
 mk_f([{errval, '#REF!'} | T], {St, A})   -> mk_f(T, {St, ["#REF!" | A]});
-mk_f([{deref, "#REF!"} | T], {St, A})    -> mk_f(T, {St, ["#REF!" | A]});
+mk_f([{deref, Text} | T], {St, A})    -> mk_f(T, {St, [Text | A]});
 % special infering of division
 mk_f([?cellref, ?cellref2| T], {St, A})  -> mk_f(T, {St, [R2, "/", R | A]});
 mk_f([?cellref | T], {St, A})            -> mk_f(T, {St, [R | A]});
 mk_f([?rangeref | T], {St, A})           -> mk_f(T, {St, [R | A]});
 mk_f([?namedexpr | T], {St, A})          -> mk_f(T, {St, [P ++ N | A]});
+mk_f([{bool, H} | T], {St, A})           -> mk_f(T, {St, [atom_to_list(H) | A]});
 mk_f([{atom, H} | T], {St, A})           -> mk_f(T, {St, [atom_to_list(H) | A]});
 mk_f([{int, I} | T], {St, A})            -> mk_f(T, {St, [integer_to_list(I) | A]});
 mk_f([{float, F} | T], {St, A})          -> mk_f(T, {St, [float_to_list(F) | A]});
@@ -2642,17 +2642,29 @@ deref1([H | T], DeRefX, Acc) ->
 
 % sometimes Text has a prepended slash
 deref2(H, [$/|Text], Path, DeRefX) ->
-    %% deref2 is returning {deref,"#REF!"} here and bad matching
     case deref2(H, Text, Path, DeRefX) of
         H                        -> H;
+        {deref, "#REF!"}         -> {deref, "/#REF!"};
         {Type, O1, O2, P, Text2} -> {Type, O1, O2, P, "/" ++ Text2}
     end;
+% special case for ambiguous parsing of division
+% this matches on cases like =a1/b3
+deref2(H, Text, "/", DeRefX) ->
+    #refX{path = DPath, obj = Obj1} = DeRefX,
+    Obj2 = hn_util:parse_ref(Text ),
+    deref_overlap(Text, Obj1, Obj2);
 deref2(H, Text, Path, DeRefX) ->
     #refX{path = DPath, obj = Obj1} = DeRefX,
     PathCompare = muin_util:walk_path(DPath, Path),
-    Obj2 = hn_util:parse_ref(Text),
     case PathCompare of
-        DPath -> deref_overlap(Text, Obj1, Obj2);
+        DPath -> Text2 = case Path of
+                             "./" -> Text;
+                             P    -> Len1 = length(P),
+                                     Len2 = length(Text),
+                                     string:substr(Text, Len1, (Len2 - Len1) + 1)
+                         end,
+                 Obj2 = hn_util:parse_ref(Text2),
+                 deref_overlap(Text, Obj1, Obj2);
         _Else -> H
     end.
 
@@ -2917,15 +2929,15 @@ write_formula1(RefX, Fla) ->
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-            % bits:log("formula " ++ Fla ++ " fails to run with 'error in formula"),
-            io:format("for ~p~n-with ~p fails with error_in_formula~n",
-                      [RefX, Fla]),
+            bits:log("formula " ++ Fla ++ " fails to run with error in formula"),
+            % io:format("for ~p~n-with ~p fails with error_in_formula~n",
+            %          [RefX, Fla]),
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
                                            "=" ++ Fla);
         {error, Error} ->
-            % bits:log("formula " ++ Fla ++ "fails to run with " ++ Error),
-            io:format("for ~p~n-with ~p fails with ~p~n", [RefX, Fla, Error]),
+            bits:log("formula " ++ Fla ++ "fails to run with " ++ atom_to_list(Error)),
+            % io:format("for ~p~n-with ~p fails with ~p~n", [RefX, Fla, Error]),
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R,  Error, "=" ++ Fla);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
