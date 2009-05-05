@@ -360,12 +360,15 @@ parse_ref(Ref) ->
     RefType = type_reference(Ref),    
     RefVal  = case RefType of
                   page ->   "/";
-                  cell ->   util2:strip_ref(Ref);
-                  range ->  util2:parse_range(Ref);
-                  column -> element(1,util2:strip_ref(Ref++"1"));
-                  row ->    element(2,util2:strip_ref("a"++Ref))
+                  cell ->   util2:strip_ref(undollar(Ref));
+                  range ->  util2:parse_range(undollar(Ref));
+                  column -> element(1,util2:strip_ref(undollar(Ref)++"1"));
+                  row ->    element(2,util2:strip_ref("a"++undollar(Ref)))
               end,
     {RefType, RefVal}.
+
+undollar(A) -> {ok, NewA, _} = regexp:gsub(A, "\\$", ""), %")
+                   NewA.
 
 get_req_type([{"format","json"}|_]) -> {ok,json};
 get_req_type([{"format","xml"}|_])  -> {ok,xml};
@@ -535,7 +538,7 @@ js_to_utf8(X)             -> xmerl_ucs:to_utf8(X).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 type_reference("/") -> page;
 type_reference(Cell) ->
-    case string:chr(Cell,$:) of
+    case string:chr(Cell, $:) of
         0 ->
             case hn_util:is_numeric(Cell) of
                 true  -> row;
@@ -543,10 +546,10 @@ type_reference(Cell) ->
                     case hn_util:is_alpha(Cell) of
                         true  -> column;
                         false -> 
-                            case regexp:match(Cell,?RG_cell) of
-                                {match,_,_} -> cell;
+                            case regexp:match(Cell, ?RG_cell) of
+                                {match, _, _} -> cell;
                                 _  ->
-                                    throw({invalid_reference,Cell})
+                                    throw({invalid_reference, Cell})
                             end
                     end
             end;
