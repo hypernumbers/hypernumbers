@@ -1363,10 +1363,12 @@ shift_cells(From, Type, Disp)
     #refX{site = Site, path = Path, obj = Obj} = From,
     {XO, YO} = hn_util:get_offset(Type, Disp, Obj),
     RefXList = case {Type, Disp} of
-                   {insert, horizontal} -> RefX2 = insert_shift(From, Disp),
-                                           get_refs_right(RefX2);
-                   {insert, vertical}   -> RefX2 = insert_shift(From, Disp),
-                                           get_refs_below(RefX2);
+                   {insert, horizontal} ->
+                       RefX2 = insert_shift(From, Disp),
+                       get_refs_right(RefX2);
+                   {insert, vertical}   ->
+                       RefX2 = insert_shift(From, Disp),
+                       get_refs_below(RefX2);
                    {delete, horizontal} -> get_refs_right(From);
                    {delete, vertical}   -> get_refs_below(From)
                end,
@@ -2044,10 +2046,10 @@ insert_shift(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, vertical) ->
     RefX#refX{obj = {range, {X1, Y1 - 1, X2, Y2 - 1}}};
 insert_shift(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1 - 1, Y1, X2 - 1, Y2}}};
-insert_shift(#refX{obj = {row, {Y1, Y2}}} = RefX, vertical) ->
-    RefX#refX{obj = {row, {Y1 - 1, Y2 -1}}};
-insert_shift(#refX{obj = {column, {X1, X2}}} = RefX, horizontal) ->
-    RefX#refX{obj = {column, {X1 - 1, X2 -1}}};
+insert_shift(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
+    RefX#refX{obj = {row, {Y1-1, Y1-1}}};
+insert_shift(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
+    RefX#refX{obj = {column, {X1-1, X1-1}}};
 insert_shift(RefX, _Disp) -> RefX.
 
 offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
