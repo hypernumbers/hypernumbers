@@ -2906,6 +2906,7 @@ shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
     end.
 
 write_attr2(RefX, {"formula", Val}) ->
+    %?INFO("Formula ~p",[[Val,superparser:process(Val)]]),
     case superparser:process(Val) of
         {formula, Fla}      -> write_formula1(RefX, Fla);
         [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
@@ -2946,6 +2947,7 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
               end,
     ok = write_cell(RefX, Value, Formula, [], []),
     ok = write_attr(RefX, {"text-align", Align}),
+    %?INFO("~p",[read_attrs(RefX, ["text-align"])]),
     % write out the format (if any)
     case Format of
         {"format", "null"} -> ok;
