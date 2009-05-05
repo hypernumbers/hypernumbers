@@ -2085,13 +2085,17 @@ local_objs_to_refXs(Site, LocalObj) when is_record(LocalObj, local_objs) ->
 %% read_item_index reads the index of an object AND RETURNS 'false'
 %% IF IT DOESN'T EXIST
 read_local_item_index(#refX{site = S, path = P, obj = Obj}) ->
-    Head = #local_objs{path = P, obj = Obj, _ = '_'},
-    H2 = trans(S, Head),
     Table = trans(S, local_objs),
-    case trans_back(mnesia:select(Table, [{H2, [], ['$_']}])) of
-        []                       -> false;
-        [#local_objs{idx = Idx}] -> Idx
+    case mnesia:wread({Table, P}) of
+        []   -> false;
+        Recs -> I1 = ms_util2:get_index(local_objs, obj) + 1,
+                case lists:keysearch(Obj, I1, Recs) of
+                    false      -> false;
+                    {value, R} -> I2 = ms_util2:get_index(local_objs, idx) + 1,
+                                  element(I2, R)
+                end
     end.
+
 
 get_head(Site, Parent, Type) when ((Type == insert) orelse (Type == delete)) ->
     H1 = ms_util:make_ms(refX, [{site, Site}, {obj, {cell, {'_', '_'}}}]),
