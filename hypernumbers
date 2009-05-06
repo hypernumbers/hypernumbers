@@ -5,6 +5,7 @@ HOST=localhost
 RELNAME=hypernumbers
 SASL_CONF_FILE=sasl_dev_conf.config
 COOKIE=abc
+
 # If anything is broken, probably here
 # this is the full path to the hypernumbers root dir, 
 # readlink might need installed 
