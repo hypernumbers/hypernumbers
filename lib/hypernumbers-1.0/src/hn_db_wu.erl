@@ -2644,7 +2644,7 @@ deref1([H | T], DeRefX, Acc) ->
 deref2(H, [$/|Text], Path, DeRefX) ->
     case deref2(H, Text, Path, DeRefX) of
         H                        -> H;
-        {deref, "#REF!"}         -> {deref, "/#REF!"};
+        {deref, Str}             -> {deref, "/" ++ Str};
         {Type, O1, O2, P, Text2} -> {Type, O1, O2, P, "/" ++ Text2}
     end;
 % special case for ambiguous parsing of division
@@ -2657,14 +2657,18 @@ deref2(H, Text, Path, DeRefX) ->
     #refX{path = DPath, obj = Obj1} = DeRefX,
     PathCompare = muin_util:walk_path(DPath, Path),
     case PathCompare of
-        DPath -> Text2 = case Path of
-                             "./" -> Text;
-                             P    -> Len1 = length(P),
-                                     Len2 = length(Text),
-                                     string:substr(Text, Len1, (Len2 - Len1) + 1)
-                         end,
-                 Obj2 = hn_util:parse_ref(Text2),
-                 deref_overlap(Text, Obj1, Obj2);
+        DPath -> case Path of
+                     "./" -> hn_util:parse_ref(Text);
+                     P    -> L1 = length(P),
+                             L2 = length(Text),
+                             S1 = string:substr(Text, 1, L1 - 1),
+                             S2 = string:substr(Text, L1, (L2 - L1) + 1),
+                             Obj2 = hn_util:parse_ref(S2),
+                             case deref_overlap(Text, Obj1, Obj2) of
+                                 {deref, "#REF!"} -> {deref, S1 ++ "#REF!"};
+                                 O                -> S1 ++ O
+                             end
+                 end;
         _Else -> H
     end.
 
