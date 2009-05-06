@@ -56,7 +56,7 @@ do_req(Req) ->
     {ok, Auth} = get_var_or_cookie("auth", Vars, Req),
     User = case hn_users:verify_token(Site, Auth) of
                {ok, Usr}        -> Usr;
-               {error, _Reason} -> #hn_user{name = anonymous}
+               {error, _Reason} -> anonymous
            end,
    
     {ok, Access} = hn_users:get_access_level(User, Ref),
