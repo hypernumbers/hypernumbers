@@ -2658,7 +2658,7 @@ deref2(H, Text, Path, DeRefX) ->
     PathCompare = muin_util:walk_path(DPath, Path),
     case PathCompare of
         DPath -> case Path of
-                     "./" -> hn_util:parse_ref(Text);
+                     "./" -> {str, Text};
                      P    -> L1 = length(P),
                              L2 = length(Text),
                              S1 = string:substr(Text, 1, L1 - 1),
