@@ -8,6 +8,7 @@
 %%%             This function has to be totally rewritten for the new
 %%%             database
 %%%-------------------------------------------------------------------
+
 -module(hn_templates).
 
 -export([write_def/4,
@@ -104,7 +105,7 @@ parse(String) ->
         _Other -> String
     end.
 
-new_path(A, B, C) -> ok. % make me compile!
+new_path(_A, _B, _C) -> ok. % make me compile!
 
 %new_path(Ref,TemplatePath,UserName) -> new_p2(Ref,TemplatePath,UserName,[]).
 
@@ -167,56 +168,56 @@ new_path(A, B, C) -> ok. % make me compile!
 %          end,
 %    integer_to_list(Ind).
 
-year(F) -> {{Year,_,_},_}=erlang:localtime(),
-           case F of
-               "long"  -> integer_to_list(Year);
-               "short" -> get_last_two(integer_to_list(Year));
-               "yyyy"  -> integer_to_list(Year);
-               "yy"    -> get_last_two(integer_to_list(Year))
-           end.
+%% year(F) -> {{Year,_,_},_}=erlang:localtime(),
+%%            case F of
+%%                "long"  -> integer_to_list(Year);
+%%                "short" -> get_last_two(integer_to_list(Year));
+%%                "yyyy"  -> integer_to_list(Year);
+%%                "yy"    -> get_last_two(integer_to_list(Year))
+%%            end.
 
-month(F) -> {{_,Month,_},_}=erlang:localtime(),
-            case F of
-                "long"  -> get_month(Month);
-                "short" -> get_short_month(Month);
-                "mm"    -> pad_calendar(integer_to_list(Month));
-                "m"     -> integer_to_list(Month)
-            end.
+%% month(F) -> {{_,Month,_},_}=erlang:localtime(),
+%%             case F of
+%%                 "long"  -> get_month(Month);
+%%                 "short" -> get_short_month(Month);
+%%                 "mm"    -> pad_calendar(integer_to_list(Month));
+%%                 "m"     -> integer_to_list(Month)
+%%             end.
 
-day(F) -> {{_,_,Day},_}=erlang:localtime(),
-          case F of
-              "long"  -> pad_calendar(integer_to_list(Day));
-              "short" -> integer_to_list(Day);
-              "dd"    -> pad_calendar(integer_to_list(Day));
-              "d"     -> integer_to_list(Day)
-          end.
+%% day(F) -> {{_,_,Day},_}=erlang:localtime(),
+%%           case F of
+%%               "long"  -> pad_calendar(integer_to_list(Day));
+%%               "short" -> integer_to_list(Day);
+%%               "dd"    -> pad_calendar(integer_to_list(Day));
+%%               "d"     -> integer_to_list(Day)
+%%           end.
 
-hour(F) -> {_,{Hour,_,_}}=erlang:localtime(),
-           case F of
-               "long"  -> pad_calendar(integer_to_list(Hour));
-               "short" -> integer_to_list(Hour);
-               "hh"    -> pad_calendar(integer_to_list(Hour));
-               "h"     -> integer_to_list(Hour)
-           end.
+%% hour(F) -> {_,{Hour,_,_}}=erlang:localtime(),
+%%            case F of
+%%                "long"  -> pad_calendar(integer_to_list(Hour));
+%%                "short" -> integer_to_list(Hour);
+%%                "hh"    -> pad_calendar(integer_to_list(Hour));
+%%                "h"     -> integer_to_list(Hour)
+%%            end.
 
-minute(F) -> {_,{_,Minute,_}}=erlang:localtime(),
-             case F of
-                 "long"  -> pad_calendar(integer_to_list(Minute));
-                 "short" -> integer_to_list(Minute);
-                 "mm"    -> pad_calendar(integer_to_list(Minute));
-                 "m"     -> integer_to_list(Minute)
-             end.
+%% minute(F) -> {_,{_,Minute,_}}=erlang:localtime(),
+%%              case F of
+%%                  "long"  -> pad_calendar(integer_to_list(Minute));
+%%                  "short" -> integer_to_list(Minute);
+%%                  "mm"    -> pad_calendar(integer_to_list(Minute));
+%%                  "m"     -> integer_to_list(Minute)
+%%              end.
 
-second(F) -> {_,{_,_,Second}}=erlang:localtime(),
-             case F of
-                 "long"  -> pad_calendar(integer_to_list(Second));
-                 "short" -> integer_to_list(Second);
-                 "ss"    -> pad_calendar(integer_to_list(Second));
-                 "s"     -> integer_to_list(Second)
-             end.
+%% second(F) -> {_,{_,_,Second}}=erlang:localtime(),
+%%              case F of
+%%                  "long"  -> pad_calendar(integer_to_list(Second));
+%%                  "short" -> integer_to_list(Second);
+%%                  "ss"    -> pad_calendar(integer_to_list(Second));
+%%                  "s"     -> integer_to_list(Second)
+%%              end.
 
-weekday(F) -> {Date,_}=erlang:localtime(),
-              case F of
-                  "long"  -> get_dayname(calendar:day_of_the_week(Date));
-                  "short" -> get_short_dayname(calendar:day_of_the_week(Date))
-              end.
+%% weekday(F) -> {Date,_}=erlang:localtime(),
+%%               case F of
+%%                   "long"  -> get_dayname(calendar:day_of_the_week(Date));
+%%                   "short" -> get_short_dayname(calendar:day_of_the_week(Date))
+%%               end.

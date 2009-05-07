@@ -140,7 +140,7 @@ autoparse([{rangeref, _, _, {row, {offset, H}},
                                  {"text-align", "center"}, 
                                  {"format", "hh:mm:ss PM"}]
     end;
-autoparse(Toks) ->
+autoparse(_Toks) ->
     {ok, maybe_bad_date}.
 
 %% Converts formula to upper-case, leaving only string literals as-is.

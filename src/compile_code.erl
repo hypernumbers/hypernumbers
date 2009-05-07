@@ -153,7 +153,6 @@ get_rel_file() ->
                       "{crypto,\"",get_vsn(crypto),"\"},",
                       "{sasl,\"",get_vsn(sasl),"\"},",
                       "{mnesia,\"",get_vsn(mnesia),"\"},",
-                      "{yaws, \"1.76\", load},", 
                       "{gettext,\"1.3.0\"},",
                       "{sgte,\"0.7.1\"},",
                       "{read_excel,\"1.0\"},",

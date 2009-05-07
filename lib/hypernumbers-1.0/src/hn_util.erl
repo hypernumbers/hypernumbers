@@ -44,6 +44,7 @@
          req/1,
          post/2,
          post/3,
+         url_encode/1,
          parse_url/1,
          parse_ref/1,
          parse_attr/2,

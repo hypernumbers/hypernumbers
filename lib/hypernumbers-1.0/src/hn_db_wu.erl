@@ -1325,7 +1325,7 @@ make_refXs(Site, LocalObjsList, AttrList) ->
          end,
     IdxList = lists:map(F1, LocalObjsList),
 
-    F2 =fun(#local_objs{path = P, obj = O, idx = X} = LObj) ->
+    F2 =fun(#local_objs{path = P, obj = O, idx = X} = _LObj) ->
                 {H1, C1} = case length(AttrList) of
                                0 -> {#item{idx = X, _ = '_'}, []};
                                1 -> [A] = AttrList,
@@ -2658,8 +2658,8 @@ deref2(H, [$/|Text], Path, DeRefX) ->
     end;
 % special case for ambiguous parsing of division
 % this matches on cases like =a1/b3
-deref2(H, Text, "/", DeRefX) ->
-    #refX{path = DPath, obj = Obj1} = DeRefX,
+deref2(_H, Text, "/", DeRefX) ->
+    #refX{path = _DPath, obj = Obj1} = DeRefX,
     Obj2 = hn_util:parse_ref(Text),
     deref_overlap(Text, Obj1, Obj2);
 deref2(H, Text, Path, DeRefX) ->

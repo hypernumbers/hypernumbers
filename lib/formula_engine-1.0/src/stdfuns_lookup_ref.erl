@@ -33,7 +33,7 @@ indirect([S]) ->
 
 row([])                      -> muin:context_setting(row);
 row([C]) when ?is_cellref(C) -> muin:row_index(muin:row(C));
-row(X)                       -> ?ERR_VAL.
+row(_X)                       -> ?ERR_VAL.
 
 address([Row, Col]) ->
     address([Row, Col, 1, true, ""]);

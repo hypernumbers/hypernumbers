@@ -69,9 +69,9 @@
 
 %% @hidden
 delete() ->
-    Site1 = "http://127.0.0.1:9000",
+    _Site1 = "http://127.0.0.1:9000",
     Path = ["delete"],
-    Path2 = ["another", "path"],
+    _Path2 = ["another", "path"],
     
     write_value(Path, "1", {1, 1}, []),
     write_value(Path, "=a1+1", {1, 2}, []),    
@@ -200,15 +200,15 @@ dirty() ->
     io:format("remember to add rewriting of rc formula's~n").
 
 %% @hidden
-dirty5() ->
+%dirty5() ->
 
-    FunName2 = "insert",
+%    FunName2 = "insert",
 
     % first up a cell on the parent page
-    Path2 = ["dirty2"],
-    Site2 = "http://il_ballo.dev:9000",
+%    Path2 = ["dirty2"],
+%    Site2 = "http://il_ballo.dev:9000",
 
-    insert_delete(FunName2, Path2, {cell, {1, 2}}, vertical).
+%    insert_delete(FunName2, Path2, {cell, {1, 2}}, vertical).
 
 %% @hidden
 dirty4() ->
@@ -217,7 +217,7 @@ dirty4() ->
    
     % first up a cell on the parent page
     Path = ["dirty1"],
-    Site = "http://127.0.0.1:9000",
+    %Site = "http://127.0.0.1:9000",
 
     insert_delete(FunName, Path, {cell, {1, 2}}, vertical).
                  
@@ -236,8 +236,8 @@ dirty2() ->
     FunName = "dirty2",
 
     Path = [FunName],
-    Path2 = [FunName, "data"],
-    Site = "http://127.0.0.1:9000",
+    %Path2 = [FunName, "data"],
+    %Site = "http://127.0.0.1:9000",
     Site2 = "http://il_ballo.dev:9000",
     
     io:format("Clearing the cells...~n"),
@@ -280,9 +280,9 @@ dirty1() ->
     FunName = "dirty1",
 
     Path = [FunName],
-    Path2 = [FunName, "data"],
-    Site = "http://127.0.0.1:9000",
-    Site2 = "http://il_ballo.dev:9000",
+    %Path2 = [FunName, "data"],
+    %Site = "http://127.0.0.1:9000",
+    %Site2 = "http://il_ballo.dev:9000",
     
     io:format("Clearing the cells...~n"),
 
@@ -397,248 +397,248 @@ clear_DEBUG2() ->
     make_thick(Path, 2),
     make_thick(Path, 3).
 
-delete_DEBUG2() ->
+%% delete_DEBUG2() ->
 
-    FunName = "delete",
+%%     FunName = "delete",
 
-    Path = [FunName],
+%%     Path = [FunName],
 
-    io:format("Clearing the cells...~n"),
+%%     io:format("Clearing the cells...~n"),
 
-    clear_cells_DEBUG(Path),
-    clear_cells_DEBUG([FunName | "data"]),
-    clear_cells_DEBUG("http://il_ballo.dev:9000", [FunName, "data"]),
+%%     clear_cells_DEBUG(Path),
+%%     clear_cells_DEBUG([FunName | "data"]),
+%%     clear_cells_DEBUG("http://il_ballo.dev:9000", [FunName, "data"]),
 
-    test_util:wait(20),
+%%     test_util:wait(20),
 
-    % now write out the data and perform the tests
-    write_value(Path, FunName, {2, 1}, [bold, underline, center]),
+%%     % now write out the data and perform the tests
+%%     write_value(Path, FunName, {2, 1}, [bold, underline, center]),
 
-    write_value(Path, "before: "++FunName, {3, 1}, [bold, underline, center]),
-    colour(Path, {3, 1}, "grey"),
+%%     write_value(Path, "before: "++FunName, {3, 1}, [bold, underline, center]),
+%%     colour(Path, {3, 1}, "grey"),
 
-    % cell stuff first
-    write_value(Path, "Cell "++FunName++" (down)", {2, 3},
-                [bold, underline, center]),
+%%     % cell stuff first
+%%     write_value(Path, "Cell "++FunName++" (down)", {2, 3},
+%%                 [bold, underline, center]),
 
-    write_value(Path, "Links to Column A", {3, 3},
-                [bold, underline, center]),
+%%     write_value(Path, "Links to Column A", {3, 3},
+%%                 [bold, underline, center]),
 
-    write_value(Path, "=./data/A1", {1, 4}, []),
+%%     write_value(Path, "=./data/A1", {1, 4}, []),
 
-    write_value(Path, FunName++" a cell here", {1, 5}, []),
-    write_value(Path, "987", {1, 6}, []),
-    write_value(Path, "=./data/B1", {1, 7}, []),
-    write_value(Path, "=hn(\"http://il_ballo.dev:9000/insert/data/C1?hypernumber\")",
-                {1, 8}, []),
-    colour(Path, {1, 4}, "orange"),
-    colour(Path, {1, 5}, "orange"),
-    colour(Path, {1, 6}, "orange"),
-    colour(Path, {1, 7}, "orange"),
-    write_value(Path, "=A6", {3, 5}, []),
-    colour(Path, {3, 5}, "yellow").
+%%     write_value(Path, FunName++" a cell here", {1, 5}, []),
+%%     write_value(Path, "987", {1, 6}, []),
+%%     write_value(Path, "=./data/B1", {1, 7}, []),
+%%     write_value(Path, "=hn(\"http://il_ballo.dev:9000/insert/data/C1?hypernumber\")",
+%%                 {1, 8}, []),
+%%     colour(Path, {1, 4}, "orange"),
+%%     colour(Path, {1, 5}, "orange"),
+%%     colour(Path, {1, 6}, "orange"),
+%%     colour(Path, {1, 7}, "orange"),
+%%     write_value(Path, "=A6", {3, 5}, []),
+%%     colour(Path, {3, 5}, "yellow").
 
 %% @hidden
-insert_DEBUG2(FunName) ->
+%% insert_DEBUG2(FunName) ->
 
-    Path = [FunName],
+%%     Path = [FunName],
 
-    io:format("Clearing the cells...~n"),
+%%     io:format("Clearing the cells...~n"),
 
-    clear_cells_DEBUG(Path),
-    clear_cells_DEBUG([FunName | "data"]),
-    clear_cells_DEBUG("http://il_ballo.dev:9000", [FunName, "data"]),
+%%     clear_cells_DEBUG(Path),
+%%     clear_cells_DEBUG([FunName | "data"]),
+%%     clear_cells_DEBUG("http://il_ballo.dev:9000", [FunName, "data"]),
 
-    test_util:wait(20),
+%%     test_util:wait(20),
 
-    % now write out the data and perform the tests
-    write_value(Path, FunName, {1, 1}, [bold, underline, center]),
+%%     % now write out the data and perform the tests
+%%     write_value(Path, FunName, {1, 1}, [bold, underline, center]),
 
-    write_value(Path, "before: "++FunName, {3, 1}, [bold, underline, center]),
-    colour(Path, {3, 1}, "grey"),
+%%     write_value(Path, "before: "++FunName, {3, 1}, [bold, underline, center]),
+%%     colour(Path, {3, 1}, "grey"),
 
-    % cell stuff first
-    write_value(Path, "Cell "++FunName++" (down)", {1, 3},
-                [bold, underline, center]),
+%%     % cell stuff first
+%%     write_value(Path, "Cell "++FunName++" (down)", {1, 3},
+%%                 [bold, underline, center]),
 
-    write_value(Path, "Links to Column A", {3, 3},
-                [bold, underline, center]),
+%%     write_value(Path, "Links to Column A", {3, 3},
+%%                 [bold, underline, center]),
 
-    write_value(Path, "=./data/A1", {1, 4}, []),
+%%     write_value(Path, "=./data/A1", {1, 4}, []),
 
-    %    write_value(Path, FunName++" a cell here", {1, 5}, []),
-    write_value(Path, "987", {1, 6}, []),
-    write_value(Path, "=./data/B1", {1, 7}, []),
-    %    write_value(Path, "=hn(\"http://il_ballo.dev:9000/insert/data/C1?hypernumber\")",
-    %                {1, 8}, []),
-    %    colour(Path, {1, 4}, "orange"),
-    %    colour(Path, {1, 5}, "orange"),
-    colour(Path, {1, 6}, "orange"),
-    colour(Path, {1, 7}, "orange"),
-    %    colour(Path, {1, 8}, "orange"),
-    %    write_value(Path, "<- was =./data/B1 now blank", {2, 7}, []),
-    %    write_value(Path, "<- was hypernumber now =./data/B1", {2, 8}, []),
-    %    write_value(Path, "<- also check http://il_ballo.dev:9000/a/path/A1 which pointed here", {3, 7}, []),
-    %    write_value(Path, "<- was blank now hypernumber", {2, 9}, []),
+%%     %    write_value(Path, FunName++" a cell here", {1, 5}, []),
+%%     write_value(Path, "987", {1, 6}, []),
+%%     write_value(Path, "=./data/B1", {1, 7}, []),
+%%     %    write_value(Path, "=hn(\"http://il_ballo.dev:9000/insert/data/C1?hypernumber\")",
+%%     %                {1, 8}, []),
+%%     %    colour(Path, {1, 4}, "orange"),
+%%     %    colour(Path, {1, 5}, "orange"),
+%%     colour(Path, {1, 6}, "orange"),
+%%     colour(Path, {1, 7}, "orange"),
+%%     %    colour(Path, {1, 8}, "orange"),
+%%     %    write_value(Path, "<- was =./data/B1 now blank", {2, 7}, []),
+%%     %    write_value(Path, "<- was hypernumber now =./data/B1", {2, 8}, []),
+%%     %    write_value(Path, "<- also check http://il_ballo.dev:9000/a/path/A1 which pointed here", {3, 7}, []),
+%%     %    write_value(Path, "<- was blank now hypernumber", {2, 9}, []),
 
-    write_value(Path, "=A6", {3, 5}, []),
-    colour(Path, {3, 5}, "yellow"),
+%%     write_value(Path, "=A6", {3, 5}, []),
+%%     colour(Path, {3, 5}, "yellow"),
 
-    %    write_value("http://il_ballo.dev:9000",["a","path"],
-    %                "=hn(\"http://127.0.0.1:9000/"++FunName++"/A6?hypernumber\")",
-    %                {1, 1}, []),
+%%     %    write_value("http://il_ballo.dev:9000",["a","path"],
+%%     %                "=hn(\"http://127.0.0.1:9000/"++FunName++"/A6?hypernumber\")",
+%%     %                {1, 1}, []),
 
-    %    io:format("Insert a cell...~n"),
+%%     %    io:format("Insert a cell...~n"),
 
-    % ensure that the dirty tables are loaded to make this test work...
-    gen_server:cast(dirty_cell,             {setstate, passive}),
-    gen_server:cast(dirty_notify_in,      {setstate, passive}),
-    gen_server:cast(dirty_notify_out,      {setstate, passive}),
-    gen_server:cast(dirty_notify_back_in,  {setstate, passive}),
-    io:format("~n********Stopping subscriptions to mnesia************~n"),
+%%     % ensure that the dirty tables are loaded to make this test work...
+%%     gen_server:cast(dirty_cell,             {setstate, passive}),
+%%     gen_server:cast(dirty_notify_in,      {setstate, passive}),
+%%     gen_server:cast(dirty_notify_out,      {setstate, passive}),
+%%     gen_server:cast(dirty_notify_back_in,  {setstate, passive}),
+%%     io:format("~n********Stopping subscriptions to mnesia************~n"),
 
-    % Now set up the various bits of data that is used to mark the 
-    % insert tests
-    io:format("writing out data...~n"),
-    write_data([FunName,"data"]),
-    %    write_data("http://il_ballo.dev:9000",[FunName,"data"]),
+%%     % Now set up the various bits of data that is used to mark the 
+%%     % insert tests
+%%     io:format("writing out data...~n"),
+%%     write_data([FunName,"data"]),
+%%     %    write_data("http://il_ballo.dev:9000",[FunName,"data"]),
 
-    insert_delete(FunName, Path, {cell, {1, 5}}, vertical),
+%%     insert_delete(FunName, Path, {cell, {1, 5}}, vertical),
 
-    io:format("~n********Restarting subscriptions to mnesia**********~n"),
-    _Return1=gen_server:cast(dirty_cell,            {setsstate, active}),
-    _Return2=gen_server:call(dirty_cell,            flush, infinity),
-    _Return3=gen_server:cast(dirty_notify_in,       {setstate, active}),
-    _Return4=gen_server:call(dirty_notify_in,       flush, infinity),
-    _Return5=gen_server:cast(dirty_notify_out,      {setstate, active}),
-    _Return6=gen_server:call(dirty_notify_out,      flush, infinity),
-    _Return7=gen_server:cast(dirty_notify_back_in,  {setstate, active}),
-    _Return8=gen_server:call(dirty_notify_incoming, flush, infinity),
+%%     io:format("~n********Restarting subscriptions to mnesia**********~n"),
+%%     _Return1=gen_server:cast(dirty_cell,            {setsstate, active}),
+%%     _Return2=gen_server:call(dirty_cell,            flush, infinity),
+%%     _Return3=gen_server:cast(dirty_notify_in,       {setstate, active}),
+%%     _Return4=gen_server:call(dirty_notify_in,       flush, infinity),
+%%     _Return5=gen_server:cast(dirty_notify_out,      {setstate, active}),
+%%     _Return6=gen_server:call(dirty_notify_out,      flush, infinity),
+%%     _Return7=gen_server:cast(dirty_notify_back_in,  {setstate, active}),
+%%     _Return8=gen_server:call(dirty_notify_incoming, flush, infinity),
 
-    make_thick(Path, 1),
-    make_thick(Path, 2),
-    make_thick(Path, 3),
+%%     make_thick(Path, 1),
+%%     make_thick(Path, 2),
+%%     make_thick(Path, 3),
 
-    make_high(Path, 6),
-    make_high(Path, 7),
-    make_high(Path, 8),
+%%     make_high(Path, 6),
+%%     make_high(Path, 7),
+%%     make_high(Path, 8),
 
-    %    write_value(Path, "Row "++FunName++" (right)", {1, 12}, 
-    %    [bold, underline, center]),
-    %    write_value(Path, FunName++" a row here", {1, 13}, []),
-    %    write_value(Path, "=./data/A1", {1, 14}, []),
-    %    colour(Path, {1, 13}, "orange"),
-    %    colour(Path, {1, 14}, "orange"),
+%%     %    write_value(Path, "Row "++FunName++" (right)", {1, 12}, 
+%%     %    [bold, underline, center]),
+%%     %    write_value(Path, FunName++" a row here", {1, 13}, []),
+%%     %    write_value(Path, "=./data/A1", {1, 14}, []),
+%%     %    colour(Path, {1, 13}, "orange"),
+%%     %    colour(Path, {1, 14}, "orange"),
 
-    %    make_thin(Path, 2),
+%%     %    make_thin(Path, 2),
 
-    %    write_value(Path, FunName++" Column Here", {3, 3}, 
-    %    [bold, underline, center]),
+%%     %    write_value(Path, FunName++" Column Here", {3, 3}, 
+%%     %    [bold, underline, center]),
 
-    %    make_thick(Path, 3),
+%%     %    make_thick(Path, 3),
 
-    %    make_thin(Path, 4),
+%%     %    make_thin(Path, 4),
 
-    %    make_thick(Path, 5),
+%%     %    make_thick(Path, 5),
 
-    %    write_value(Path, "Range "++FunName++" (down)", {5, 14}, 
-    %    [bold, underline, center]),
-    %    write_value(Path, "=./data/A1", {5, 15}, []),
-    %    write_value(Path, "=./data/B1", {5, 16}, []),
-    %    write_value(Path, "=./data/C1", {5, 17}, []),
-    %    write_value(Path, "=./data/D1", {5, 18}, []),
-    %    colour(Path, {5, 15}, "orange"),
-    %    colour(Path, {5, 16}, "orange"),
-    %    colour(Path, {5, 17}, "orange"),
-    %    colour(Path, {5, 18}, "orange"),
+%%     %    write_value(Path, "Range "++FunName++" (down)", {5, 14}, 
+%%     %    [bold, underline, center]),
+%%     %    write_value(Path, "=./data/A1", {5, 15}, []),
+%%     %    write_value(Path, "=./data/B1", {5, 16}, []),
+%%     %    write_value(Path, "=./data/C1", {5, 17}, []),
+%%     %    write_value(Path, "=./data/D1", {5, 18}, []),
+%%     %    colour(Path, {5, 15}, "orange"),
+%%     %    colour(Path, {5, 16}, "orange"),
+%%     %    colour(Path, {5, 17}, "orange"),
+%%     %    colour(Path, {5, 18}, "orange"),
 
-    %    write_value(Path, "=./data/E1", {6, 15}, []),
-    %    write_value(Path, "=./data/F1", {6, 16}, []),
-    %    write_value(Path, "=./data/G1", {6, 17}, []),
-    %    write_value(Path, "=./data/H1", {6, 18}, []),
-    %    colour(Path, {6, 15}, "orange"),
-    %    colour(Path, {6, 16}, "yellow"),
-    %    colour(Path, {6, 17}, "yellow"),
-    %    colour(Path, {6, 18}, "orange"),
+%%     %    write_value(Path, "=./data/E1", {6, 15}, []),
+%%     %    write_value(Path, "=./data/F1", {6, 16}, []),
+%%     %    write_value(Path, "=./data/G1", {6, 17}, []),
+%%     %    write_value(Path, "=./data/H1", {6, 18}, []),
+%%     %    colour(Path, {6, 15}, "orange"),
+%%     %    colour(Path, {6, 16}, "yellow"),
+%%     %    colour(Path, {6, 17}, "yellow"),
+%%     %    colour(Path, {6, 18}, "orange"),
 
-    %    write_value(Path, "=./data/I1", {7, 15}, []),
-    %    write_value(Path, "=./data/J1", {7, 16}, []),
-    %    write_value(Path, "=./data/K1", {7, 17}, []),
-    %    write_value(Path, "=./data/L1", {7, 18}, []),
-    %    colour(Path, {7, 15}, "orange"),
-    %    colour(Path, {7, 16}, "yellow"),
-    %    colour(Path, {7, 17}, "yellow"),
-    %    colour(Path, {7, 18}, "orange"),
+%%     %    write_value(Path, "=./data/I1", {7, 15}, []),
+%%     %    write_value(Path, "=./data/J1", {7, 16}, []),
+%%     %    write_value(Path, "=./data/K1", {7, 17}, []),
+%%     %    write_value(Path, "=./data/L1", {7, 18}, []),
+%%     %    colour(Path, {7, 15}, "orange"),
+%%     %    colour(Path, {7, 16}, "yellow"),
+%%     %    colour(Path, {7, 17}, "yellow"),
+%%     %    colour(Path, {7, 18}, "orange"),
 
-    %    write_value(Path, "=./data/M1", {8, 15}, []),
-    %    write_value(Path, "=./data/N1", {8, 16}, []),
-    %    write_value(Path, "=./data/O1", {8, 17}, []),
-    %    write_value(Path, "=./data/P1", {8, 18}, []),
-    %    colour(Path, {8, 15}, "orange"),
-    %    colour(Path, {8, 16}, "orange"),
-    %    colour(Path, {8, 17}, "orange"),
-    %    colour(Path, {8, 18}, "orange"),
+%%     %    write_value(Path, "=./data/M1", {8, 15}, []),
+%%     %    write_value(Path, "=./data/N1", {8, 16}, []),
+%%     %    write_value(Path, "=./data/O1", {8, 17}, []),
+%%     %    write_value(Path, "=./data/P1", {8, 18}, []),
+%%     %    colour(Path, {8, 15}, "orange"),
+%%     %    colour(Path, {8, 16}, "orange"),
+%%     %    colour(Path, {8, 17}, "orange"),
+%%     %    colour(Path, {8, 18}, "orange"),
 
-    %    make_thin(Path, 9),
+%%     %    make_thin(Path, 9),
 
-    %    write_value(Path, "Range "++FunName++" (right)", {10, 14}, 
-    %    [bold, underline, center]),
-    %    write_value(Path, "A", {10, 15}, []),
-    %    write_value(Path, "B", {10, 16}, []),
-    %    write_value(Path, "C", {10, 17}, []),
-    %    write_value(Path, "D", {10, 18}, []),
-    %    colour(Path, {10, 15}, "orange"),
-    %    colour(Path, {10, 16}, "orange"),
-    %    colour(Path, {10, 17}, "orange"),
-    %    colour(Path, {10, 18}, "orange"),
+%%     %    write_value(Path, "Range "++FunName++" (right)", {10, 14}, 
+%%     %    [bold, underline, center]),
+%%     %    write_value(Path, "A", {10, 15}, []),
+%%     %    write_value(Path, "B", {10, 16}, []),
+%%     %    write_value(Path, "C", {10, 17}, []),
+%%     %    write_value(Path, "D", {10, 18}, []),
+%%     %    colour(Path, {10, 15}, "orange"),
+%%     %    colour(Path, {10, 16}, "orange"),
+%%     %    colour(Path, {10, 17}, "orange"),
+%%     %    colour(Path, {10, 18}, "orange"),
 
-    %    write_value(Path, "E", {11, 15}, []),
-    %    write_value(Path, "F", {11, 16}, []),
-    %    write_value(Path, "G", {11, 17}, []),
-    %    write_value(Path, "H", {11, 18}, []),
-    %    colour(Path, {11, 15}, "orange"),
-    %    colour(Path, {11, 16}, "yellow"),
-    %    colour(Path, {11, 17}, "yellow"),
-    %    colour(Path, {11, 18}, "orange"),
+%%     %    write_value(Path, "E", {11, 15}, []),
+%%     %    write_value(Path, "F", {11, 16}, []),
+%%     %    write_value(Path, "G", {11, 17}, []),
+%%     %    write_value(Path, "H", {11, 18}, []),
+%%     %    colour(Path, {11, 15}, "orange"),
+%%     %    colour(Path, {11, 16}, "yellow"),
+%%     %    colour(Path, {11, 17}, "yellow"),
+%%     %    colour(Path, {11, 18}, "orange"),
 
-    %    write_value(Path, "I", {12, 15}, []),
-    %    write_value(Path, "J", {12, 16}, []),
-    %    write_value(Path, "K", {12, 17}, []),
-    %    write_value(Path, "L", {12, 18}, []),
-    %    colour(Path, {12, 15}, "orange"),
-    %    colour(Path, {12, 16}, "yellow"),
-    %    colour(Path, {12, 17}, "yellow"),
-    %    colour(Path, {12, 18}, "orange"),
+%%     %    write_value(Path, "I", {12, 15}, []),
+%%     %    write_value(Path, "J", {12, 16}, []),
+%%     %    write_value(Path, "K", {12, 17}, []),
+%%     %    write_value(Path, "L", {12, 18}, []),
+%%     %    colour(Path, {12, 15}, "orange"),
+%%     %    colour(Path, {12, 16}, "yellow"),
+%%     %    colour(Path, {12, 17}, "yellow"),
+%%     %    colour(Path, {12, 18}, "orange"),
 
-    %    write_value(Path, "M", {13, 15}, []),
-    %    write_value(Path, "N", {13, 16}, []),
-    %    write_value(Path, "O", {13, 17}, []),
-    %    write_value(Path, "P", {13, 18}, []),
-    %    colour(Path, {13, 15}, "orange"),
-    %    colour(Path, {13, 16}, "orange"),
-    %    colour(Path, {13, 17}, "orange"),
-    %    colour(Path, {13, 18}, "orange"),
+%%     %    write_value(Path, "M", {13, 15}, []),
+%%     %    write_value(Path, "N", {13, 16}, []),
+%%     %    write_value(Path, "O", {13, 17}, []),
+%%     %    write_value(Path, "P", {13, 18}, []),
+%%     %    colour(Path, {13, 15}, "orange"),
+%%     %    colour(Path, {13, 16}, "orange"),
+%%     %    colour(Path, {13, 17}, "orange"),
+%%     %    colour(Path, {13, 18}, "orange"),
 
-    %    make_thick(Path, 10),
+%%     %    make_thick(Path, 10),
 
-    % Now do the inserts and deletes
+%%     % Now do the inserts and deletes
 
-    %    io:format("'bout to wait...~n"),
-    %    test_util:wait(75),
-    %    io:format("'done waitin...~n"),
-    %    write_value(Path, "after: "++FunName, {3, 1}, [bold, underline, center]),
-    %    colour(Path, {3, 1}, "red"),
+%%     %    io:format("'bout to wait...~n"),
+%%     %    test_util:wait(75),
+%%     %    io:format("'done waitin...~n"),
+%%     %    write_value(Path, "after: "++FunName, {3, 1}, [bold, underline, center]),
+%%     %    colour(Path, {3, 1}, "red"),
 
-    %    io:format("At the end...~n"),
+%%     %    io:format("At the end...~n"),
 
-    %    insert_delete(FunName, Path, {cell, {1, 5}}, vertical),
-    % insert_delete(FunName, Path, {cell, {1, 5}}, horizontal),
-    % insert_delete(FunName, Path, {row, {12, 12}}),
-    % insert_delete(FunName, Path, {column, {3, 3}}),
-    % insert_delete(FunName, Path, {range, {6, 16, 7, 18}}, vertical),
-    % insert_delete(FunName, Path, {range, {11, 16, 13, 18}}, vertical),
+%%     %    insert_delete(FunName, Path, {cell, {1, 5}}, vertical),
+%%     % insert_delete(FunName, Path, {cell, {1, 5}}, horizontal),
+%%     % insert_delete(FunName, Path, {row, {12, 12}}),
+%%     % insert_delete(FunName, Path, {column, {3, 3}}),
+%%     % insert_delete(FunName, Path, {range, {6, 16, 7, 18}}, vertical),
+%%     % insert_delete(FunName, Path, {range, {11, 16, 13, 18}}, vertical),
 
-    ok.
+%%     ok.
 
 %% @hidden
 clear_TEST() ->
@@ -1119,20 +1119,20 @@ read_styles_DEBUG2(X) ->
           end,
     mnesia:activity(transaction, Fun).
 
-test_delete(Path, Target) ->
-    Site = "http://127.0.0.1:9000",
-    Ref = #refX{site = Site, path = Path, obj = Target},
-    hn_db_api:delete(Ref).
+%% test_delete(Path, Target) ->
+%%     Site = "http://127.0.0.1:9000",
+%%     Ref = #refX{site = Site, path = Path, obj = Target},
+%%     hn_db_api:delete(Ref).
 
 test_delete(Path, Target, Type) ->
     Site = "http://127.0.0.1:9000",
     Ref = #refX{site = Site, path = Path, obj= Target},
     hn_db_api:delete(Ref, Type).
 
-test_insert(Path, Target) ->
-    Site = "http://127.0.0.1:9000",
-    Ref = #refX{site = Site, path = Path, obj = Target},
-    hn_db_api:insert(Ref).
+%% test_insert(Path, Target) ->
+%%     Site = "http://127.0.0.1:9000",
+%%     Ref = #refX{site = Site, path = Path, obj = Target},
+%%     hn_db_api:insert(Ref).
 
 test_insert(Path, Target, Type) ->
     Site = "http://127.0.0.1:9000",

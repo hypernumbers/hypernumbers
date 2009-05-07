@@ -147,7 +147,7 @@ cartesian_product(L1, L2) ->
 
 %% @doc map over a deep list maintaining its structure.
 %% Nicked from Yaws by Claes Wikström klacke at hyber.org
-deepmap(Fun, [H|T]) when list(H) ->
+deepmap(Fun, [H|T]) when is_list(H) ->
     [deepmap(Fun, H) | deepmap(Fun, T)];
 deepmap(Fun, [H|T]) ->
     [Fun(H) | deepmap(Fun,T)];

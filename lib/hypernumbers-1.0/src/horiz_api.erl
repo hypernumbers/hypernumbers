@@ -117,7 +117,7 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
     #refX{site = CSite, path = CPath} = Child,
     Proxy = CSite ++ "/" ++ string:join(CPath, "/") ++ "/",
 
-    PPage = Parent#refX{obj = {page, "/"}},
+    %PPage = Parent#refX{obj = {page, "/"}},
     
     Vars = {struct, [{"action",     "notify_back_create"},
                      {"biccie",     Biccie},
