@@ -10,8 +10,6 @@
 -include("spriki.hrl").
 -include("regexp.hrl").
 -include("hypernumbers.hrl").
--include("yaws.hrl").
--include("yaws_api.hrl").
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 
@@ -47,8 +45,9 @@
          post/2,
          post/3,
          parse_url/1,
-         parse_vars/1,
          parse_ref/1,
+         parse_attr/2,
+         parse_vars/1,
          
          % List Utils
          add_uniq/2,
@@ -164,8 +163,7 @@ jsonify_val(Else)                           -> Else.
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 url_to_refX(Url) ->
-    {ok, RefX} = parse_url(Url),
-    RefX.
+    parse_url(Url).
 
 %refX_to_ref(RefX, Name) ->
 %    #refX{site = S, path = P, obj = R, auth = A} = RefX,
@@ -333,34 +331,57 @@ post(Url,Data,Format) ->
         http:request(post,{Url,[],Format,Data},[],[]),
     Body.
 
-parse_url(Url) when is_list(Url) ->
-    parse_url(yaws_api:parse_url(Url));
+parse_url("http://"++Url) ->
+    [Host | Path] = string:tokens(Url, "/"), 
+    case lists:last(Url) of
+        $/ -> #refX{site="http://"++Host, path=Path, obj={page, "/"}};
+        _  -> 
+            [Addr | P] = lists:reverse(Path),
+            Obj = parse_attr(cell, Addr),
+            #refX{site="http://"++Host, path=lists:reverse(P), obj = Obj}
+    end.
 
-parse_url(Url) when is_record(Url, url) ->
+parse_attr(cell, Addr) ->
+    case regexp:match(Addr,?RG_cell) of
+        {match,_,_} -> {cell, util2:strip_ref(Addr)};
+        _           -> parse_attr(range, Addr)
+    end;
 
-    Port = case {Url#url.port,Url#url.scheme} of
-               {undefined,http}  -> "80";
-               {undefined,https} -> "443";
-               {Else,_} -> integer_to_list(Else)
-           end,
+parse_attr(range, Addr) ->
+    case regexp:match(Addr,?RG_range) of
+        {match,_,_} -> 
+            [Cell1, Cell2] = string:tokens(Addr, ":"),
+            {X1, Y1} = util2:strip_ref(Cell1),
+            {X2, Y2} = util2:strip_ref(Cell2),
+            {XX1, YY1, XX2, YY2} = hn_util:rectify_range(X1, Y1, X2, Y2),
+            {range, {XX1, YY1, XX2, YY2}};
+        _ -> 
+            parse_attr(column, Addr)
+    end;
 
-    Site = lists:concat([Url#url.scheme,"://",Url#url.host,":",Port]),
+parse_attr(column, Addr) ->
+    case regexp:match(Addr,?RG_col_range) of
+        {match,_,_} -> 
+            [Cell1, Cell2] = string:tokens(Addr, ":"),
+            {column, {tconv:b26_to_i(Cell1), tconv:b26_to_i(Cell2)}};
+        _ -> 
+            parse_attr(row, Addr)
+    end;
 
-    {Ref,Path} = case lists:last(Url#url.path) of
-                     $/ -> 
-                         {"/",string:tokens(Url#url.path,"/")};
-                     _  ->
-                         TP = lists:flatten(Url#url.path),
-                         Tokens = string:tokens(TP,"/"),
-                         [TmpRef|T] = lists:reverse(Tokens),
-                         {TmpRef,lists:reverse(T)}
-                 end,
+parse_attr(row, Addr) ->
+    case regexp:match(Addr,?RG_row_range) of
+        {match,_,_} -> 
+            [Cell1, Cell2] = string:tokens(Addr, ":"),
+            {row, {ltoi(Cell1), ltoi(Cell2)}};
+        _ -> 
+            throw(invalid_reference)
+    end.
 
-    Obj = parse_ref(Ref),
-    {ok,#refX{site = Site, path = Path, obj = Obj}}.
+ltoi(X) ->
+    list_to_integer(X).
 
 parse_ref(Ref) ->
-    RefType = type_reference(Ref),    
+    RefType = type_reference(Ref),
     RefVal  = case RefType of
                   page ->   "/";
                   cell ->   util2:strip_ref(undollar(Ref));
@@ -394,6 +415,29 @@ parse_vars(Query) ->
     Pairs = lists:map(Split,string:tokens(Query,"&")),
 
     {ok,Pairs}.
+
+
+url_encode([H|T]) ->
+    if
+        H >= $a, $z >= H ->
+            [H|url_encode(T)];
+        H >= $A, $Z >= H ->
+            [H|url_encode(T)];
+        H >= $0, $9 >= H ->
+            [H|url_encode(T)];
+        H == $_; H == $.; H == $-; H == $/; H == $: -> % FIXME: more..
+            [H|url_encode(T)];
+        true ->
+            case erlang:integer_to_list(H, 16) of
+                [X, Y] ->
+                    [$%, X, Y | url_encode(T)];
+                [X] ->
+                    [$%, $0, X | url_encode(T)]
+            end
+     end;
+
+url_encode([]) ->
+    [].
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

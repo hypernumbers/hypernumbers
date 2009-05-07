@@ -2660,7 +2660,7 @@ deref2(H, [$/|Text], Path, DeRefX) ->
 % this matches on cases like =a1/b3
 deref2(H, Text, "/", DeRefX) ->
     #refX{path = DPath, obj = Obj1} = DeRefX,
-    Obj2 = hn_util:parse_ref(Text ),
+    Obj2 = hn_util:parse_ref(Text),
     deref_overlap(Text, Obj1, Obj2);
 deref2(H, Text, Path, DeRefX) ->
     #refX{path = DPath, obj = Obj1} = DeRefX,

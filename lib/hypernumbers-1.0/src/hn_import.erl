@@ -11,7 +11,7 @@
 
 json_file(Url, FileName) -> 
 
-    Ref = hn_mochi:parse_ref(Url),
+    Ref = hn_util:parse_url(Url),
     {ok, JsonTxt}   = file:read_file(FileName),
     {struct, Json}  = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
     {struct, Cells} = ?pget("cell", Json),

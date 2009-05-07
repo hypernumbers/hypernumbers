@@ -149,7 +149,7 @@ write_permissions() ->
 write_permissions(_Name, []) -> 
     ok;
 write_permissions(Name, [{Domain, Value} | T]) ->
-    Ref = hn_mochi:parse_ref(Domain),
+    Ref = hn_util:parse_url(Domain),
     #refX{site = Site} = Ref,
     Site2 = trim(Site),
     % now do some process dictionary magic

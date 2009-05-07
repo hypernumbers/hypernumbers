@@ -200,8 +200,8 @@ make_err_val(X)            -> X.
 
 expected(Expected, Got) ->
     io:format(" in test_util:expected Expected is ~p and Got is ~p~n",[Expected,Got]),
-    Expected2 = yaws_api:url_encode(Expected),
-    Got2 = yaws_api:url_encode(Got),
+    Expected2 = hn_util:url_encode(Expected),
+    Got2 = hn_util:url_encode(Got),
     case Got2 of
         Expected2 ->
             io:format("SUCCESS~nExpected : ~p~nGot      : ~p~n",

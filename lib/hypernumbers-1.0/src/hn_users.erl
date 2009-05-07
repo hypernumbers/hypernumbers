@@ -17,7 +17,6 @@
         ]).
 
 -include("hypernumbers.hrl").
--include("yaws_api.hrl").
 -include("spriki.hrl").
 
 -define(COOKIE, "somerandomcookie").

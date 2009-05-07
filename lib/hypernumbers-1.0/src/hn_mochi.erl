@@ -11,7 +11,7 @@
 
 -include_lib("gettext/include/gettext.hrl").
 
--export([ req/1, style_to_css/2, parse_ref/1 ]).
+-export([ req/1, style_to_css/2 ]).
 
 -define(hdr,[{"Cache-Control","no-store, no-cache, must-revalidate"},
              {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
@@ -48,7 +48,7 @@ req(Req) ->
 
 do_req(Req) ->
 
-    Ref    = parse_ref(get_host(Req)),
+    Ref    = hn_util:parse_url(get_host(Req)),
     #refX{site = Site} = Ref,
     Vars   = Req:parse_qs(),
     Method = Req:get(method),
@@ -162,7 +162,7 @@ iget(Req, Ref, _Type,  Attr, _User) ->
     Req:not_found().
 
 ipost(_Req, Ref, _Type, _Attr, [{"drag", {_, [{"range", Rng}]}}], _User) ->
-    hn_db_api:drag_n_drop(Ref, Ref#refX{obj = parse_attr(range,Rng)}),
+    hn_db_api:drag_n_drop(Ref, Ref#refX{obj = hn_util:parse_attr(range,Rng)}),
     ok;
 
 ipost(Req, #refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
@@ -224,7 +224,7 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}], _U
     hn_db_api:delete(Ref, Direction);
 
 ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}], _User) ->
-    hn_db_api:copy_n_paste(Ref#refX{obj = parse_attr(range, Range)}, Ref);
+    hn_db_api:copy_n_paste(Ref#refX{obj = hn_util:parse_attr(range, Range)}, Ref);
 
 ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr, 
       [{"set", {struct, [{"language", Lang}]}}], User) ->
@@ -456,52 +456,6 @@ dict_to_struct(X, Dict) ->
     case is_dict(Dict) of
         true  -> {X, {struct, dict_to_struct(Dict)}};
         false -> {X, Dict}
-    end.
-
-parse_ref("http://"++Url) ->
-    [Host | Path] = string:tokens(Url, "/"), 
-    case lists:last(Url) of
-        $/ -> #refX{site="http://"++Host, path=Path, obj={page, "/"}};
-        _  -> 
-            [Addr | P] = lists:reverse(Path),
-            Obj = parse_attr(cell, Addr),
-            #refX{site="http://"++Host, path=lists:reverse(P), obj = Obj}
-    end.
-
-parse_attr(cell, Addr) ->
-    case regexp:match(Addr,?RG_cell) of
-        {match,_,_} -> {cell, util2:strip_ref(Addr)};
-        _           -> parse_attr(range, Addr)
-    end;
-
-parse_attr(range, Addr) ->
-    case regexp:match(Addr,?RG_range) of
-        {match,_,_} -> 
-            [Cell1, Cell2] = string:tokens(Addr, ":"),
-            {X1, Y1} = util2:strip_ref(Cell1),
-            {X2, Y2} = util2:strip_ref(Cell2),
-            {XX1, YY1, XX2, YY2} = hn_util:rectify_range(X1, Y1, X2, Y2),
-            {range, {XX1, YY1, XX2, YY2}};
-        _ -> 
-            parse_attr(column, Addr)
-    end;
-
-parse_attr(column, Addr) ->
-    case regexp:match(Addr,?RG_col_range) of
-        {match,_,_} -> 
-            [Cell1, Cell2] = string:tokens(Addr, ":"),
-            {column, {tconv:b26_to_i(Cell1), tconv:b26_to_i(Cell2)}};
-        _ -> 
-            parse_attr(row, Addr)
-    end;
-
-parse_attr(row, Addr) ->
-    case regexp:match(Addr,?RG_row_range) of
-        {match,_,_} -> 
-            [Cell1, Cell2] = string:tokens(Addr, ":"),
-            {row, {ltoi(Cell1), ltoi(Cell2)}};
-        _ -> 
-            throw(invalid_reference)
     end.
 
 styles_to_css([], Acc) ->

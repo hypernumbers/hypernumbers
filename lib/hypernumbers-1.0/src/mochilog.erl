@@ -66,7 +66,7 @@ replay(Name, LogPath, NewSite) ->
 %% all posts from, New is the new location to post them too. Deep
 %% decides whether to copy subpages or not
 replay(Name, Old, New, Deep) ->
-    NRef = hn_mochi:parse_ref(New), 
+    NRef = hn_util:parse_url(New), 
     OPath = string:tokens(Old,"/"),
     F    = fun([Post]) -> repost(Post, OPath, NRef, Deep) end,    
     run_log(Name, F).
