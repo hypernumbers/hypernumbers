@@ -11,7 +11,7 @@
 
 handle_upload(Req, User) ->
     Username  = hn_users:name(User),
-    Filestamp = Username ++ "__" ++ dh_date:safe_now(),
+    Filestamp = Username ++ "__" ++ dh_date:format("Y_m_d_h_i_s"),
     
     Callback = fun(N) ->
                        %% Passing filestamp (time & username) for file name in state record here.
@@ -26,7 +26,7 @@ handle_upload(Req, User) ->
     ParentPage = RawPath ++ Safename ++ "/",
     {value, {'Host', Host}} = mochiweb_headers:lookup('Host', Req:get(headers)),
 
-    try 
+    try
         import(State#file_upload_state.filename, Host, ParentPage, Username, Orig),
         {struct, [{"location", ParentPage}]}
     catch
@@ -34,7 +34,7 @@ handle_upload(Req, User) ->
             ?ERROR("Error Importing ~p by ~p with error ~p~n",[ParentPage, User, Error]),
             {struct, [{"error", "error reading sheet"}]}
     end.
-           
+
 file_upload_callback({headers, Headers}, S) ->
     ContentDisposition = hd(Headers),
     NewState = case ContentDisposition of

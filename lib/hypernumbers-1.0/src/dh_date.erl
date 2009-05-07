@@ -17,7 +17,7 @@
 %-define(NOTEST, 1).
 %-include("eunit.hrl").
 
--export([format/1, format/2, safe_now/0]).
+-export([format/1, format/2]).
 
 -import(calendar,[last_day_of_the_month/2]).
 -import(calendar,[day_of_the_week/1]).
@@ -52,11 +52,6 @@ format(Format, {_,_,_}=Now) ->
     format(Format, calendar:now_to_datetime(Now), []);
 format(Format, Date) ->
     format(Format, Date, []).
-
-safe_now() ->
-    Now = calendar:universal_time(),
-    format("Y", Now) ++ "_" ++ format("m", Now) ++ "_" ++ format("d", Now) ++
-        "_" ++ format("h", Now) ++ "_" ++ format("i", Now) ++ "_" ++ format("s", Now).
 
 %%
 %% LOCAL FUNCTIONS
