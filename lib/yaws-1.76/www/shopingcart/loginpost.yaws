@@ -1,7 +1,0 @@
-
-<erl>
-
-out(A) ->
-    shopcart:loginpost(A).
-
-</erl>

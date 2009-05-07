@@ -1,8 +1,0 @@
-<erl>
-
-out(Arg) ->
-    F = getThumb,
-    wiki_yaws:call_with_query(wiki, F, Arg).
-
-</erl>
-

@@ -1,8 +1,0 @@
-{application,yaws,
- [{description,"yaws WWW server"},
-  {vsn,"%VSN%"},
-  {modules,[%MODULES%]},
-  {registered, []},
-  {mod,{yaws_app,[]}},
-  {env, []},
-  {applications,[kernel,stdlib]}]}.

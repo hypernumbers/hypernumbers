@@ -1,8 +1,0 @@
-<erl>
-
-out(Arg) ->
-    F = getMidSize,
-    wiki_yaws:call_with_query(wiki, F, Arg).
-
-</erl>
-
