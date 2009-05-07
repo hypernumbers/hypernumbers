@@ -5,7 +5,8 @@
 %%% @private
 
 -module(stdfuns_info).
--export([errortype/1,
+-export([cell/1,
+         errortype/1,
          iserr/1,
          iserror/1,
          iseven/1,
@@ -27,6 +28,35 @@
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
+-include("spriki.hrl").
+-include("muin_records.hrl").
+
+
+%% TODO: Range references (literal and from INDIRECT)
+%% TODO: Other info types.
+cell([V1, V2]) ->
+    InfoType = muin:eval_formula(V1),
+    ?ensure(?is_string(InfoType), ?ERR_VAL),
+    R = case V2 of
+            [indirect, _]                          -> muin:eval(V2);
+            X when ?is_cellref(X)                  -> X;
+            %% TODO: X when ?is_rangeref(X)                 -> todo;
+            _                                      -> ?ERR_REF
+        end,
+    muin:do_cell(R#cellref.path, muin:row_index(R#cellref.row), muin:col_index(R#cellref.col)),
+    Path = muin_util:walk_path(muin:context_setting(path), R#cellref.path),               
+    RefX = #refX{site = muin:context_setting(site),
+                 path = Path,
+                 obj  = {cell, {muin:col_index(R#cellref.col), muin:row_index(R#cellref.row)}}},
+    cell1(InfoType, RefX).
+
+cell1("formula", RefX) ->
+    Attr = hn_db_api:read_attributes(RefX, ["formula"]),
+    [{_, {"formula", F}}] = Attr,
+    string:substr(F, 2); % drop the equals sign "="
+cell1(_, _) ->
+    ?ERR_VAL.
+    
 
 errortype([?ERRVAL_NULL]) -> 1;
 errortype([?ERRVAL_DIV])  -> 2;
