@@ -2627,6 +2627,7 @@ deref_and_delink_child({#refX{site = S} = Parent, Children}, DeRefX) ->
 deref([$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     NewToks = deref1(Toks, DeRefX, []),
+    % io:format("Toks is ~p~n-NewToks is ~p~n", [Toks, NewToks]),
     make_formula(NewToks).
 
 deref1([], _DeRefX, Acc) -> lists:reverse(Acc);
@@ -2658,7 +2659,7 @@ deref2(H, Text, Path, DeRefX) ->
     PathCompare = muin_util:walk_path(DPath, Path),
     case PathCompare of
         DPath -> case Path of
-                     "./" -> {str, Text};
+                     "./" -> {deref, "#REF!"};
                      P    -> L1 = length(P),
                              L2 = length(Text),
                              S1 = string:substr(Text, 1, L1 - 1),
