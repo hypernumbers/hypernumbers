@@ -30,8 +30,9 @@ handle_upload(Req, User) ->
         import(State#file_upload_state.filename, Host, ParentPage, Username, Orig),
         {struct, [{"location", ParentPage}]}
     catch
-        Error:_Reason ->
-            ?ERROR("Error Importing ~p by ~p with error ~p~n",[ParentPage, User, Error]),
+        _Error:_Reason ->
+            ?ERROR("Error Importing ~p ~n User:~p~n Reason:~p~n Stack:~p~n",
+                   [ParentPage, hn_users:name(User), _Reason, erlang:get_stacktrace()]),
             {struct, [{"error", "error reading sheet"}]}
     end.
 
@@ -56,6 +57,7 @@ file_upload_callback({body, Data}, S) ->
                     file:write(S#file_upload_state.file, Data),
                     NewState = S;
                true ->
+                    ?INFO("~p",[S#file_upload_state.filename]),
                     case file:open(S#file_upload_state.filename, [raw, write]) of
                         {ok, File} ->
                             file:write(File, Data),
@@ -110,16 +112,17 @@ import(Filename, Host, ParentPage, Username, OrigFilename) ->
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
         Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
                          Url = string:to_lower(Site ++ Path ++ Ref),
-                         {ok, RefX} = hn_util:parse_url(Url),
+                         RefX = hn_util:parse_url(Url),
                          ok = hn_db_api:write_attributes(RefX, [{"formula", Postdata}]);
                     ({Path, {Tl, Br}, Postdata}) -> % array formula
                          Url = string:to_lower(Site ++ Path ++ Tl ++ ":" ++ Br),
-                         {ok, RefX} = hn_util:parse_url(Url),
+                         RefX = hn_util:parse_url(Url),
                          hn_main:formula_to_range(RefX, Postdata)
                  end,
 
     lists:foreach(Dopost, Lits),
     lists:foreach(Dopost, Flas),
+
     %% Now fire in the CSS and formats
     WriteCSS = fun(X) ->
                        {{{sheet, SheetName}, {row_index, Row}, {col_index, Col}},
@@ -128,7 +131,7 @@ import(Filename, Host, ParentPage, Username, OrigFilename) ->
                        Path = ParentPage++Sheet++"/",
                        Ref = rc_to_a1(Row,Col),
                        Url = string:to_lower(Site ++ Path ++ Ref),
-                       {ok, RefX} = hn_util:parse_url(Url),
+                       RefX = hn_util:parse_url(Url),
                        #refX{path = P2} = RefX,
                        RefX2 = #refX{site = Site, path = P2, obj = {page, "/"}},
                        ok = hn_db_api:write_style_IMPORT(RefX2, CSSItem)

@@ -137,11 +137,11 @@ print(long, Post, _Id) ->
 
 filter([], _Post) ->
     true;
-filter([{method, post} | T], Post) when Post#post.method == 'GET' ->
+filter([{method, post} | _T], Post) when Post#post.method == 'GET' ->
     false;
 filter([{method, _} | T], Post) ->
     filter(T, Post);
-filter([H | T], Post) ->
+filter([_H | T], Post) ->
     filter(T, Post).
     
 repost(Post, Old, New, Deep) when Post#post.method == 'POST'->

@@ -1320,7 +1320,7 @@ convertdep(Child, DepTree) when is_record(Child, refX) ->
 
 convertdep1([], _Site, Acc)      -> Acc;
 convertdep1([H | T ], Site, Acc) ->
-    {ok, RefX} = hn_util:parse_url(H),
+    RefX = hn_util:parse_url(H),
     #refX{site = Site1} = RefX,
     case Site of
         Site1 -> convertdep1(T, Site, [{url, [{type, "local"}], [H]} | Acc]);
