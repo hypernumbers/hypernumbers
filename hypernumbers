@@ -5,6 +5,7 @@ HOST=localhost
 RELNAME=hypernumbers
 SASL_CONF_FILE=sasl_dev_conf.config
 COOKIE=abc
+
 # If anything is broken, probably here
 # this is the full path to the hypernumbers root dir, 
 # readlink might need installed 
@@ -204,6 +205,14 @@ function debug
     erl -sname debug@$HOST -setcookie $COOKIE -remsh $NODE@$HOST
 }
 
+function run
+{
+    erl -sname $NODE-ctrl@$HOST \
+        -setcookie $COOKIE \
+        -eval "rpc:call($NODE@$HOST,$1,$2,$3)." \
+        -s init stop
+}
+
 function stop
 {
     erl -detached \
@@ -215,6 +224,7 @@ function stop
 
 case $1 in 
     start)     start $2;;
+    run)       run $2 $3 $4;;
     debug)     debug;;
     stop)      stop;;
     docs)      docs;;

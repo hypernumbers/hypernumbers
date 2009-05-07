@@ -31,7 +31,7 @@ start(_Type, _Args) ->
     {ok, Pid} = hypernumbers_sup:start_link(),
     {ok,[[Path]]} = init:get_argument(hn_config),	
     hn_config:read_conf(Path), 
-   
+    
     case is_fresh_startup() of
         true  -> clean_start2();
         false -> ok

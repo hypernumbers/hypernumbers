@@ -6,6 +6,7 @@
 -include("ct.hrl").
 
 init_per_suite(Config) ->
+    hypernumbers_app:clean_start(),                      
     code:add_path(~p),
     hn_import:json_file("~s", 
                         "~s"),

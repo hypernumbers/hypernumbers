@@ -1,0 +1,38 @@
+#!/bin/bash
+
+REV=${REV:-norevision}
+
+DATE=`date +%Y-%m-%d.%T`
+export PATH=/home/dale/erlang-r13/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export HOME=/home/dale/scripts
+REPO=http://svn.hypernumbers.com/hypernumbers/code/trunk
+TESTDIR=$HOME/data/$DATE
+LASTRUN=$HOME/$WEBROOT/tests/last_run/
+cd $HOME
+
+svn co $REPO $TESTDIR
+
+cd $TESTDIR
+
+BUILD=$(./hypernumbers build)
+
+if [ ${BUILD:(-2)} == "ok" ]; then
+    echo "Generating Tests"
+    ./hypernumbers gen_tests
+    echo "Running tests"
+    ./hypernumbers test system_test
+    echo "Starting hypernumbers"
+    ./hypernumbers start p
+    sleep 4
+    echo "Sending Email"
+    ./hypernumbers run hn_util email_test_results [$REV]
+    echo "Stopping hypernumbers"
+    ./hypernumbers stop
+else 
+    ./hypernumbers start p
+    sleep 4
+    ./hypernumbers run hn_util email_build_fail [$REV]
+    ./hypernumbers stop
+fi
+
+#rm -rf $TESTDIR

@@ -14,3 +14,10 @@
             {"http://127.0.0.1:9000/", [{"dev", ["dale", "gordon", "hasan"]}]},
             {"http://localhost:9000/", [{"dev", ["dale", "gordon", "hasan"]}]}
          ]}.
+
+{mail, [
+            {server,  "mail.arandomurl.com"},
+            {user,    "build@hypernumbers.com"},
+            {pass,    "the!bot"},
+            {address, "dale@arandomurl.com"}
+       ]}.

@@ -16,8 +16,15 @@
 %% @spec start() -> ok
 %% @doc This starts the log
 start() ->
-    %% Dont check return, may be repaired
-    disk_log:open([{name, ?NAME}, {file, logfile()}]).
+
+    Opts = [{name,?NAME}, {file,logfile()},
+            {type,wrap},  {size, {2097152, 99}}],
+
+    case disk_log:open(Opts) of
+        {ok, _Log}          -> ok;
+        {repaired, _, _, _} -> ok;
+        _Else               -> throw({failed_open_log})
+    end.
 
 %% @spec log(term(), term(), term(), term()) -> ok
 %% @doc Logs individual requests
@@ -89,7 +96,6 @@ btol(X) when is_atom(X) ->
 btol(X) ->
     binary_to_list(X).
 
-
 %% @spec dump(Name) -> ok
 %% @doc Dumps the logfile with Name to the shell
 dump(Name) ->
@@ -127,7 +133,7 @@ startswith(_List1, _List2) ->
 
 run_log(Name, Fun) ->
     Log = logfile(Name),
-    case filelib:is_file(Log) of 
+    case filelib:is_file(Log++".siz") of 
         false -> {error, no_file};
         true  ->
             disk_log:open([{name, Name}, {file, Log}]),

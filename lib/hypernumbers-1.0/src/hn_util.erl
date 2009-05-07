@@ -20,6 +20,9 @@
 -define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 
 -export([
+         email/1,
+         email_test_results/1,
+         email_build_fail/1,
          % HyperNumbers Utils
          compile_html/2,
          delete_gen_html/0,
@@ -556,3 +559,44 @@ type_reference(Cell) ->
         _ ->
             range
     end.
+
+
+
+email_build_fail(Rev) ->
+    email(?FORMAT(build_failed_tpl(), [Rev])).
+
+email_test_results(Rev) ->
+    TestRoot = code:lib_dir(hypernumbers)++"/../../logs/",
+    Runs     = filelib:wildcard(TestRoot++"ct_run.*"),
+    LastRun  = lists:last(lists:sort(Runs)),
+    
+    {ok, Bin} = file:read_file(LastRun++"/last_name"),
+    Summary = string:strip(binary_to_list(Bin), right, $\n)++"/suite.summary",
+    
+    {ok, [{summary, {Pass, Fail, Skip}}]} = file:consult(Summary),
+
+    case {Fail > 0, Skip > 0} of
+        {false, false} -> ok;
+        _Else ->
+            email(?FORMAT(tests_failed_tpl(), [Rev, Pass, Fail, Skip]))
+    end.
+
+email(Msg) ->    
+    Conf = hn_config:get(mail),
+    User = ?pget(user, Conf),
+    
+    {ok, IP}  = inet:getaddr(?pget(server, Conf), inet),
+    {ok, Pid} = smtp_fsm:start(inet_parse:ntoa(IP)),
+    
+    {ok, _}   = smtp_fsm:ehlo(Pid),
+    {ok, _}   = smtp_fsm:plain_login(Pid, User, ?pget(pass, Conf)),
+
+    ok = smtp_fsm:sendemail(Pid, User, ?pget(address, Conf), Msg),
+    smtp_fsm:close(Pid).
+    
+tests_failed_tpl() ->
+    "Systems tests failed on Revision ~p\nPassed :\t~p\n"
+        "Failed :  \t~p\nSkipped :\t~p\n".
+
+build_failed_tpl() ->
+    "Hypernumbers failed to build after Revision ~p".
