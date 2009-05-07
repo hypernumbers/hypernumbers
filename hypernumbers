@@ -13,6 +13,7 @@ COOKIE=abc
 # (/home/dale/hypernumbers) temporarily
 # check if we are running under cywgin
 OS_PLATFORM=`uname -a | cut -f 1 -d " "`
+
 if [ $OS_PLATFORM = "CYGWIN_NT-6.0" ]
 then
     TMP=`pwd`
@@ -196,8 +197,8 @@ function copylog
     HOST=alpha.hypernumbers.com
     NAME=hypernumbers
     PATH=alpha.hypernumbers.com
-    /usr/bin/scp $NAME@$HOST:$PATH/lib/hypernumbers-1.0/log/post_log.LOG \
-        lib/hypernumbers-1.0/log/test.LOG
+    /usr/bin/scp $NAME@$HOST:$PATH/lib/hypernumbers-1.0/log/post_log.LOG.* \
+        lib/hypernumbers-1.0/log/live/
 }
 
 function debug

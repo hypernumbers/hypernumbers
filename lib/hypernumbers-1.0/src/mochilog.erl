@@ -11,7 +11,7 @@
 -record(post, {time, site, path, method, body, peer, user, referer, browser}).
 
 -export([log/4, start/0, stop/0, replay/3, replay/4, clear/0, dump/1,
-        generate_mi/2 ]).
+        generate_mi/2, browse/1, info/2 ]).
 
 %% @spec start() -> ok
 %% @doc This starts the log
@@ -68,7 +68,7 @@ replay(Name, LogPath, NewSite) ->
 replay(Name, Old, New, Deep) ->
     NRef = hn_util:parse_url(New), 
     OPath = string:tokens(Old,"/"),
-    F    = fun([Post]) -> repost(Post, OPath, NRef, Deep) end,    
+    F    = fun(Post, _Id) -> repost(Post, OPath, NRef, Deep) end,    
     run_log(Name, F).
 
 %% @spec generate_mi(Name, Path) -> ok
@@ -99,11 +99,54 @@ btol(X) ->
 %% @spec dump(Name) -> ok
 %% @doc Dumps the logfile with Name to the shell
 dump(Name) ->
-    run_log(Name, fun([Post]) -> ?INFO("~p",[Post]) end). 
+    run_log(Name, fun(Post) -> ?INFO("~p",[Post]) end). 
 
+%% @spec dump(Name) -> ok
+%% @doc Dumps the logfile with Name to the shell
+info(Name, Id) ->
+    F = fun(Post, NId) ->
+                case Id == NId of
+                    true  -> print(long, Post, Id);
+                    false -> ok
+                end
+        end,
+    run_log(Name, F).
+
+%% @spec dump(Name) -> ok
+%% @doc Dumps the logfile with Name to the shell
+browse(Name) ->
+    browse(Name, [{method, post}, {date, all}, {range, all}, {id, all}]).
+
+browse(Name, Filter) ->
+    F = fun(Post, Id) ->
+                case filter(Filter, Post) of
+                    true  -> print(short, Post, Id);
+                    false -> ok
+                end
+        end,
+    run_log(Name, F).
+
+print(short, Post, Id) ->
+    #post{time=Time, path=FullPath, body=Body, user=User} = Post,
+    Date = dh_date:format("m.d.y, g:ia", Time),
+    [Path | _] = string:tokens(FullPath, "?"),
+    io:format("~6B  ~-17s  ~-10s  ~-20s  ~-35s~n",[Id, Date, User, Path, binary_to_list(Body)]);
+
+print(long, Post, _Id) ->
+    io:format("~p",[Post]).
+
+filter([], _Post) ->
+    true;
+filter([{method, post} | T], Post) when Post#post.method == 'GET' ->
+    false;
+filter([{method, _} | T], Post) ->
+    filter(T, Post);
+filter([H | T], Post) ->
+    filter(T, Post).
+    
 repost(Post, Old, New, Deep) when Post#post.method == 'POST'->
     [Raw | _ ] = string:tokens(Post#post.path, "?"),
-    P = hn_mochi:parse_ref(Post#post.site ++ Raw),
+    P = hn_util:parse_url(Post#post.site ++ Raw),
     case is_in_path(Deep, P, Old) of
         false -> ok;
         true  ->
@@ -134,21 +177,22 @@ startswith(_List1, _List2) ->
 run_log(Name, Fun) ->
     Log = logfile(Name),
     case filelib:is_file(Log++".siz") of 
-        false -> {error, no_file};
-        true  ->
-            disk_log:open([{name, Name}, {file, Log}]),
-            walk(Name, Fun, start),
-            disk_log:close(Name)
+        false ->
+            {error, no_file};
+        true ->
+            {ok, Cont} = wrap_log_reader:open(Log),
+            {ok, End}  = walk(Fun, Cont, 0),
+            wrap_log_reader:close(End)
     end.
     
 
-walk(Name, F, Cont) ->
-    case disk_log:chunk(Name, Cont, 1) of
-        eof           -> ok;
-        {NCont, []}   -> walk(Name, F, NCont);
-        {NCont, Data} -> 
-            F(Data), 
-            walk(Name, F, NCont)
+walk(F, Cont, N) ->
+    case wrap_log_reader:chunk(Cont, 1) of
+        {NCont, eof} ->
+            {ok, NCont};
+        {NCont, [Term]} ->
+            F(Term, N),
+            walk(F, NCont, N+1)
     end.
 
 logfile() ->
