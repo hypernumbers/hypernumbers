@@ -1980,7 +1980,6 @@ filter_pages([Path | T], Tree) ->
 get_local_item_index(#refX{site = S, path = P, obj = O} = RefX) ->
     case read_local_item_index(RefX) of
         false -> Idx = "Loc" ++ integer_to_list(util2:get_timestamp()),
-                 % io:format("new index ~p being created for ~p", [Idx, O]),
                  Rec = #local_objs{path = P, obj = O, idx = Idx},
                  Rec2 = trans(S, Rec),
                  ok = mnesia:write(Rec2),
@@ -2056,9 +2055,7 @@ offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
 
 local_idx_to_refX(S, Idx) ->
     H = trans(S, #local_objs{idx = Idx, _ = '_'}),
-    % io:format("in local_idx_to_refX S is ~p~n-H is ~p~n", [S, H]),
     [Rec] = mnesia:select(trans(S, local_objs), [{H, [], ['$_']}]),
-    % io:format("in local_idx_to_refX Rec is ~p~n", [Rec]),
     #local_objs{path = P, obj = O} = trans_back(Rec),
     #refX{site = S, path = P, obj = O}.
 
@@ -2320,13 +2317,25 @@ get_attr_keys(List)  -> get_attr_keys(List, []).
 get_attr_keys([], Acc)                       -> Acc;
 get_attr_keys([{_RefX, {Key, _V}} | T], Acc) -> get_attr_keys(T, [Key | Acc]).
 
+% make_cell makes a cell with dollars and stuff based on the offset
 make_cell(false, X, XOffset, false, Y, YOffset) ->
     tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset);
-make_cell(true, X, _XOffset, false, Y, YOffset) ->
+make_cell(true, X, XOffset, false, Y, YOffset) ->
+    [$$] ++ tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset);
+make_cell(false, X, XOffset, true, Y, YOffset) ->
+    tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y + YOffset);
+make_cell(true, X, XOffset, true, Y, YOffset)  -> 
+    [$$] ++ tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y + YOffset).
+
+% drag'n'drop_cell drags and drops a cell ignoring offsets
+% if the row/column part is fixed with a dollar
+drag_n_drop_cell(false, X, XOffset, false, Y, YOffset) ->
+    tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset);
+drag_n_drop_cell(true, X, _XOffset, false, Y, YOffset) ->
     [$$] ++ tconv:to_b26(X) ++ tconv:to_s(Y + YOffset);
-make_cell(false, X, XOffset, true, Y, _YOffset) ->
+drag_n_drop_cell(false, X, XOffset, true, Y, _YOffset) ->
     tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y);
-make_cell(true, X, _XOffset, true, Y, _YOffset)  -> 
+drag_n_drop_cell(true, X, _XOffset, true, Y, _YOffset)  -> 
     [$$] ++ tconv:to_b26(X) ++ [$$] ++ tconv:to_s(Y).
 
 make_col(false, X) -> tconv:to_b26(X);
@@ -2464,7 +2473,7 @@ offset1([#cellref{text = Text} = H | T], XOffset, YOffset, Acc) ->
                  Other -> Other
              end,
     {XDollar, X, YDollar, Y} = parse_cell(Cell),
-    NewCell = make_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
+    NewCell = drag_n_drop_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
     NewRef = H#cellref{text = Prefix ++ NewCell},
     offset1(T, XOffset, YOffset, [NewRef | Acc]);
 offset1([#rangeref{text = Text} = H | T], XOffset, YOffset, Acc) ->
@@ -2476,8 +2485,8 @@ offset1([#rangeref{text = Text} = H | T], XOffset, YOffset, Acc) ->
     [Cell1 | [Cell2]] = string:tokens(Range, ":"),
     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
-    NewCell1 = make_cell(X1D, X1, XOffset, Y1D, Y1, YOffset),
-    NewCell2 = make_cell(X2D, X2, XOffset, Y2D, Y2, YOffset),
+    NewCell1 = drag_n_drop_cell(X1D, X1, XOffset, Y1D, Y1, YOffset),
+    NewCell2 = drag_n_drop_cell(X2D, X2, XOffset, Y2D, Y2, YOffset),
     NewRange = H#rangeref{text = Prefix ++ NewCell1 ++ ":" ++ NewCell2},
     offset1(T, XOffset, YOffset, [NewRange | Acc]);
 offset1([H | T], XOffset, YOffset, Acc) ->
@@ -2627,7 +2636,6 @@ deref_and_delink_child({#refX{site = S} = Parent, Children}, DeRefX) ->
 deref([$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     NewToks = deref1(Toks, DeRefX, []),
-    % io:format("Toks is ~p~n-NewToks is ~p~n", [Toks, NewToks]),
     make_formula(NewToks).
 
 deref1([], _DeRefX, Acc) -> lists:reverse(Acc);
@@ -2741,7 +2749,6 @@ intersect(_XX1, _YY1, zero, zero, inf, inf) ->
 % this is a row-row comparison
 intersect(Type, YY1, zero, Y1, inf, Y2)
   when ((Type == zero) orelse (Type == inf)) ->
-    % io:format("in row intercept YY1 is ~p Y1 is ~p Y2 is ~p~n", [YY1, Y1, Y2]),
     if
         (YY1 >= Y1), (YY1 =< Y2) -> transect;
         true                     -> out
@@ -2749,13 +2756,11 @@ intersect(Type, YY1, zero, Y1, inf, Y2)
 % this is a col-col comparison
 intersect(XX1, Type, X1, zero, X2, inf)
   when ((Type == zero) orelse (Type == inf)) ->
-    % io:format("in column intercept XX1 is ~p X1 is ~p X2 is ~p~n", [XX1, X1, X2]),
     if
         (XX1 >= X1), (XX1 =< X2) -> transect;
         true                     -> out
     end;
 intersect(XX1, YY1, X1, Y1, X2, Y2) ->    
-    % io:format("In intersect ~p ~p ~p ~p ~p ~p~n", [XX1, YY1, X1, Y1, X2, Y2]),
     if
         % check for cell/range intersections
         (XX1 >= X1),   (XX1 =< X2), (YY1 >= Y1),  (YY1 =< Y2) -> in;
@@ -2934,15 +2939,15 @@ write_formula1(RefX, Fla) ->
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-            bits:log("formula " ++ Fla ++ " fails to run with error in formula"),
-            % io:format("for ~p~n-with ~p fails with error_in_formula~n",
-            %          [RefX, Fla]),
+            % bits:log("formula " ++ Fla ++ " fails to run with error in formula"),
+            io:format("for ~p~n-with ~p fails with error_in_formula~n",
+                      [RefX, Fla]),
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
                                            "=" ++ Fla);
         {error, Error} ->
-            bits:log("formula " ++ Fla ++ "fails to run with " ++ atom_to_list(Error)),
-            % io:format("for ~p~n-with ~p fails with ~p~n", [RefX, Fla, Error]),
+            % bits:log("formula " ++ Fla ++ "fails to run with " ++ atom_to_list(Error)),
+            io:format("for ~p~n-with ~p fails with ~p~n", [RefX, Fla, Error]),
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R,  Error, "=" ++ Fla);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
@@ -2981,9 +2986,6 @@ write_default_alignment(RefX, _Res)  ->
 
 write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     
-    % io:format("in write_cell~n-RefX is ~p~n-Value is ~p~n-Formula is ~p~n-"++
-    %          "Parents are ~p~n-DepTree is ~p~n",
-    %          [RefX, Value, Formula, Parents, DepTree]),
     % This function writes a cell out with all the trimings
     % 
     % The term 'old' refers to the values of these attributes for this
@@ -3197,7 +3199,6 @@ delete_style_attr(#refX{site = S} = RefX, Key)  ->
     % this function works by overwriting the set style attribute in the
     % current style record with []
     [{RefX, {"style", Idx}}] = read_attrs(RefX, ["style"]),
-    io:format("in delete_style_attr Style is ~p~n", [Idx]),
     PageRefX = RefX#refX{obj = {page, "/"}},
     Match = trans(S, #styles{refX = PageRefX, index = Idx, _ = '_'}),
     Table = trans(S, styles),
