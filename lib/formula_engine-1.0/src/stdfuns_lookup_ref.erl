@@ -107,10 +107,11 @@ vlookup([V, A, I, B]) ->
 hlookup([V, A, I]) ->
     hlookup([V, A, I, true]);
 hlookup([V, A, I0, B]) ->
-    I = ?int(I0, [cast_strings, cast_bools, ban_blanks, ban_dates]),
-             
-    ?ensure(I >= 1, ?ERR_VAL),
+    ?ensure(?is_area(A), ?ERR_REF),
     ?ensure(I =< area_util:width(A), ?ERR_REF),
+    
+    I = ?int(I0, [cast_strings, cast_bools, ban_blanks, ban_dates]),
+    ?ensure(I >= 1, ?ERR_VAL),
 
     Row = area_util:row(1, A),
     case find(V, Row, B) of
@@ -136,7 +137,7 @@ find(Value, Area, false) ->
     L = area_util:to_list(Area),
     pos(Value, L).
 
-
+%% TODO: Searching for floats.
 non_exact_find(Value, L) ->
     Sorted = qsort(L),
     case find_first(fun(X) -> stdfuns_logical:'<'([X, Value]) end, reverse(Sorted)) of
