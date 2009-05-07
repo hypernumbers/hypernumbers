@@ -1065,9 +1065,7 @@ move(RefX, Type, Disp)
                        end,
                 [ok = Fun2(X) || X <- Status],
                 % Jobs a good'un, now for the remote parents
-                io:format("in hn_db_api:move do something with Parents...~n"),
-                Parents =  ?wu:find_incoming_hn(Site, PageRef),
-                io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
+                _Parents =  ?wu:find_incoming_hn(Site, PageRef),
                 ok
         end,
     ok = mnesia:activity(transaction, Fun),
