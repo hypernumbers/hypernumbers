@@ -68,8 +68,15 @@ replay(Name, LogPath, NewSite) ->
 replay(Name, Old, New, Deep) ->
     NRef = hn_util:parse_url(New), 
     OPath = string:tokens(Old,"/"),
-    F    = fun(Post, _Id) -> repost(Post, OPath, NRef, Deep) end,    
-    run_log(Name, F).
+    F    = fun(Post, Id) -> 
+    	   	Filter = [{method, post}, {date, all}, {range, all}, {id, all}],
+		case filter(Filter, Post) of
+		     true  -> print(short, Post, Id);
+                     false -> ok
+		end,
+		repost(Post, OPath, NRef, Deep) end,    
+    run_log(Name, F),
+    io:format("~nReplay finshed...~n").
 
 %% @spec generate_mi(Name, Path) -> ok
 %% @doc Name is the name of the log file to read from (must be 
@@ -190,7 +197,7 @@ walk(F, Cont, N) ->
     case wrap_log_reader:chunk(Cont, 1) of
         {NCont, eof} ->
             {ok, NCont};
-        {NCont, [Term]} ->
+        {NCont, [Term]} ->	
             F(Term, N),
             walk(F, NCont, N+1)
     end.
