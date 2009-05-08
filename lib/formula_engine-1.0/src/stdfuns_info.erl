@@ -52,8 +52,31 @@ cell([V1, V2]) ->
 
 cell1("formula", RefX) ->
     Attr = hn_db_api:read_attributes(RefX, ["formula"]),
-    [{_, {"formula", F}}] = Attr,
-    string:substr(F, 2); % drop the equals sign "="
+    case Attr of
+        [{_, {"formula", F}}] ->
+            case string:substr(F, 1, 1) of
+                "=" -> string:substr(F, 2); % drop the equals sign "="
+                _   -> F
+            end;
+        [] ->
+            ""
+    end;
+cell1("address", RefX) ->
+    {cell, {Col, Row}} = RefX#refX.obj,
+    stdfuns_lookup_ref:address([Row, Col]);
+cell1("col", RefX) ->
+    {cell, {Col, _Row}} = RefX#refX.obj,
+    Col;
+cell1("row", RefX) ->
+    {cell, {_Col, Row}} = RefX#refX.obj,
+    Row;
+cell1("contents", RefX) ->
+    Attr = hn_db_api:read_attributes(RefX, ["value"]),
+    [{_, {"value", V}}] = Attr,
+    case V of
+        blank -> 0;
+        Else  -> Else
+    end;
 cell1(_, _) ->
     ?ERR_VAL.
     
