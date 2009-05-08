@@ -61,7 +61,7 @@ handle_info(_Info, State) ->
 handle_call({subscribe, Table}, _From, State) ->
     HostsInfo = hn_config:get(hosts),
     Sites = hn_util:get_hosts(HostsInfo),
-    [ok = sub_unsubscribe(Table, X, subscribe) || X <- Sites],
+    [{ok,_} = sub_unsubscribe(Table, X, subscribe) || X <- Sites],
     Reply = ok,
     {reply, Reply, State};
 handle_call(_Msg, _From, _State) ->
@@ -87,7 +87,7 @@ handle_cast({setstate,passive}, State) ->
 handle_cast({unsubscribe, Table}, State) ->
     HostsInfo = hn_config:get(hosts),
     Sites = hn_util:get_hosts(HostsInfo),
-    [ok = sub_unsubscribe(Table, X, unsubscribe) || X <- Sites],
+    [{ok,_} = sub_unsubscribe(Table, X, unsubscribe) || X <- Sites],
     {noreply, State}.
 
 %% @spec terminate(Reason, State) -> ok
@@ -109,17 +109,17 @@ proc_dirty(Rec) ->
                   #dirty_cell{timestamp = T} = Rec2,
                   hn_db_api:handle_dirty_cell(Site, T, Rec2);
               dirty_inc_hn_create ->
-                  ?api:notify_back_create(Site, Rec2);
+                  hn_db_api:notify_back_create(Site, Rec2);
               dirty_notify_in ->
-                  ?api:handle_dirty(Site, Rec2);
+                  hn_db_api:handle_dirty(Site, Rec2);
               dirty_notify_out ->
                   #dirty_notify_out{delay = D} = Rec2,
                   ok = timer:sleep(D),
-                  ?api:handle_dirty(Site, Rec2);
+                  hn_db_api:handle_dirty(Site, Rec2);
               dirty_notify_back_in  ->
-                  ?api:handle_dirty(Site, Rec2);
+                  hn_db_api:handle_dirty(Site, Rec2);
               dirty_notify_back_out ->
-                  ?api:handle_dirty(Site, Rec2)
+                  hn_db_api:handle_dirty(Site, Rec2)
           end,
     % fprof:trace(stop),
     Ret.
@@ -149,29 +149,26 @@ proc_dirty(Rec) ->
 %% subscribe/unsubscribe to the mnesia tables
 sub_unsubscribe(Table, Site, Action) ->
     NewTable = hn_db_wu:trans(Site, Table),
-    {ok, _} = case Action of
-                  subscribe   ->
-                      mnesia:wait_for_tables([NewTable], 1000),
-                      mnesia:subscribe({table, NewTable, detailed});
-                  unsubscribe ->
-                      mnesia:unsubscribe({table, NewTable, detailed})
-              end,
-    ok.
+    case Action of
+        subscribe   ->
+            mnesia:wait_for_tables([NewTable], 1000),
+            mnesia:subscribe({table, NewTable, detailed});
+        unsubscribe ->
+            mnesia:unsubscribe({table, NewTable, detailed})
+    end.
 
 flush(Site, Table) ->
-    Fun1 = fun() ->
-                  Match = ms_util:make_ms(Table, []),
-                  Match2 = hn_db_wu:trans(Site, Match),
-                  mnesia:match_object(Match2)
-          end,
-    List = mnesia:activity(transaction, Fun1),
-    Len = length(List),
-    case Len of
-        0  -> ok;
-        _N ->
-            io:format("in flush of ~p for ~p there are ~p records to flush~n", 
-                      [Table, Site, Len])
     
-    end,
-    lists:foreach(fun proc_dirty/1, List),
-    ok.
+    F = fun() ->
+                Match = ms_util:make_ms(Table, []),
+                Match2 = hn_db_wu:trans(Site, Match),
+                mnesia:match_object(Match2)
+        end,
+    
+    case mnesia:activity(transaction, F) of
+        [] ->
+            ok;
+        List ->
+            ?INFO("Flushing ~p records from  ~p - ~p ", [length(List), Table, Site]),
+            lists:foreach(fun proc_dirty/1, List)
+    end.
