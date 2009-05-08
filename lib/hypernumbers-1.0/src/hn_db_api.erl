@@ -142,7 +142,7 @@
          write_remote_link/3,
          notify_from_web/5,
          notify_back_from_web/4,
-         handle_dirty_cell/2,
+         handle_dirty_cell/3,
          handle_dirty/1,
          register_hn_from_web/4,
          check_page_vsn/2,
@@ -428,17 +428,31 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 %% Silently fails if the cell is part of a shared range
 %% @todo extend this to a dirty shared formula
 %% @todo stop the silent fail!
-handle_dirty_cell(Site, TimeStamp)  ->
+handle_dirty_cell(Site, TimeStamp, Rec)  ->
     Fun =
         fun() ->
-                ok = init_front_end_notify(),
-                Cell = ?wu:read_dirty_cell(Site, TimeStamp),
-                ok = case ?wu:read_attrs(Cell, ["__shared"]) of
-                         [] -> [{C, KV}] = ?wu:read_attrs(Cell, ["formula"]),
-                               ok = ?wu:write_attr(C, KV);
-                         _  -> ok
-                     end,
-                ok = ?wu:clear_dirty_cell(Cell)
+                try 
+                    ok = init_front_end_notify(),
+                    Cell = hn_db_wu:read_dirty_cell(Site, TimeStamp),
+                    case hn_db_wu:read_attrs(Cell, ["__shared"]) of
+                        
+                        [] ->
+                            case hn_db_wu:read_attrs(Cell, ["formula"]) of
+                                [{C, KV}] -> hn_db_wu:write_attr(C, KV);
+                                []        -> throw(invalid_dirty_cell)
+                            end;
+                        
+                        _  ->
+                            ?INFO("TODO: handle_dirty_cell shared formula", [])
+                    end,
+                    hn_db_wu:clear_dirty_cell(Cell)
+                catch
+                    throw:X when X == id_not_found; X == invalid_dirty_cell ->
+                        Err = "Invalid cell in dirty_cell ~n Site:~p~n Time:~p~n",
+                        ?ERROR(Err, [Site, TimeStamp]),
+                        hn_db_wu:clear_dirty_cell(Site, Rec),
+                        ok
+                end
         end,
     ok = mnesia:activity(transaction, Fun),
     ok = tell_front_end("handle dirty"),

@@ -105,18 +105,21 @@ proc_dirty(Rec) ->
     % fprof:trace(start),
     {Site, NewRecType, Rec2} = hn_db_wu:split_trans(Rec),
     Ret = case NewRecType of
-              dirty_cell            -> #dirty_cell{timestamp = T} = Rec2,
-                                       % dirty_cell records are rewritten in 
-                                       % insert/delete operations so we need 
-                                       % to re-read it here
-                                       ?api:handle_dirty_cell(Site, T);
-              dirty_inc_hn_create   -> ?api:notify_back_create(Site, Rec2);
-              dirty_notify_in       -> ?api:handle_dirty(Site, Rec2);
-              dirty_notify_out      -> #dirty_notify_out{delay = D} = Rec2,
-                                       ok = timer:sleep(D),
-                                       ?api:handle_dirty(Site, Rec2);
-              dirty_notify_back_in  -> ?api:handle_dirty(Site, Rec2);
-              dirty_notify_back_out -> ?api:handle_dirty(Site, Rec2)
+              dirty_cell ->
+                  #dirty_cell{timestamp = T} = Rec2,
+                  hn_db_api:handle_dirty_cell(Site, T, Rec2);
+              dirty_inc_hn_create ->
+                  ?api:notify_back_create(Site, Rec2);
+              dirty_notify_in ->
+                  ?api:handle_dirty(Site, Rec2);
+              dirty_notify_out ->
+                  #dirty_notify_out{delay = D} = Rec2,
+                  ok = timer:sleep(D),
+                  ?api:handle_dirty(Site, Rec2);
+              dirty_notify_back_in  ->
+                  ?api:handle_dirty(Site, Rec2);
+              dirty_notify_back_out ->
+                  ?api:handle_dirty(Site, Rec2)
           end,
     % fprof:trace(stop),
     Ret.
@@ -165,11 +168,10 @@ flush(Site, Table) ->
     Len = length(List),
     case Len of
         0  -> ok;
-        _N -> io:format("in flush of ~p for ~p there are ~p records to flush~n", 
-                        [Table, Site, Len])
+        _N ->
+            io:format("in flush of ~p for ~p there are ~p records to flush~n", 
+                      [Table, Site, Len])
+    
     end,
-    Fun2 = fun(X) ->
-                   _Pid = spawn(fun() -> proc_dirty(X) end)
-           end,
-    lists:foreach(Fun2, List),
+    lists:foreach(fun proc_dirty/1, List),
     ok.

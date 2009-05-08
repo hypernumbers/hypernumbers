@@ -505,6 +505,7 @@
          delete_attrs/2,
          clear_dirty/2,
          clear_dirty_cell/1,
+         clear_dirty_cell/2,
          shift_cells/3,
          shift_rows/2,
          shift_cols/2,
@@ -943,6 +944,10 @@ clear_dirty_cell(#refX{site = Site, obj = {cell, _}} = RefX) ->
     Index = read_local_item_index(RefX),
     Table = trans(Site, dirty_cell),
     mnesia:delete({Table, Index}).
+
+clear_dirty_cell(Site, Record) when is_record(Record, dirty_cell) ->
+    Table = trans(Site, dirty_cell),
+    mnesia:delete({Table, Record#dirty_cell.idx}).
 
 %% @spec get_refs_below(#refX{}) -> [#refX{}]
 %% @doc gets all the refs equal to or below a given reference as well as
@@ -2055,9 +2060,13 @@ offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
 
 local_idx_to_refX(S, Idx) ->
     H = trans(S, #local_objs{idx = Idx, _ = '_'}),
-    [Rec] = mnesia:select(trans(S, local_objs), [{H, [], ['$_']}]),
-    #local_objs{path = P, obj = O} = trans_back(Rec),
-    #refX{site = S, path = P, obj = O}.
+    case mnesia:select(trans(S, local_objs), [{H, [], ['$_']}]) of
+        [Rec] ->
+            #local_objs{path = P, obj = O} = trans_back(Rec),
+            #refX{site = S, path = P, obj = O};
+        [] ->
+            throw(id_not_found)
+    end.
 
 %% @doc Make a #muin_rti record out of a ref record and a flag that specifies 
 %% whether to run formula in an array context.
