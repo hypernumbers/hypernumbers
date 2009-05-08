@@ -118,7 +118,9 @@ fv(Args = [_, _, _, _, _]) ->
     X0 = xn(Pmt, Rate, Nper, Pv, Fv0, Partype),
     X1 = xn(Pmt, Rate, Nper, Pv, Fv1, Partype),
     secant(Fv1, Fv0, X1, X0, fun(N) -> xn(Pmt, Rate, Nper, Pv, N, Partype) end).
-                                     
+           
+pmt([A, B, C, D]) -> pmt([A, B, C, D, 0]);
+pmt([A, B, C])    -> pmt([A, B, C, 0, 0]);
 pmt(Args = [_, _, _, _, _]) ->
     [Rate, Nper, Pv, Fv, Partype] = ?numbers(Args, ?default_rules),
     Pmt0 = -Pv*Rate*(Nper/12)/Nper,
