@@ -142,7 +142,9 @@ import(Filename, Host, ParentPage, Username, OrigFilename) ->
     PathComps = string:tokens(ParentPage, "/"),
     GetSheets = fun(X, Acc) ->
                         {_, [NewSheet]} = X,
-                        [Site ++ ParentPage ++ NewSheet ++"/" | Acc]
+                        % Put the site back in when running under proper domain
+                        %[Site ++ ParentPage ++ NewSheet ++"/" | Acc]
+                        [ParentPage ++ NewSheet ++"/" | Acc]
                 end,
     Sheetnames2 = lists:foldl(GetSheets, [], Sheetnames),
     HeaderStyle = [{"font-weight", "bold"},
