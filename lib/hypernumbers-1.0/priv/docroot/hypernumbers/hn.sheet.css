@@ -10,17 +10,21 @@
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
-html,body 
-{ 
+html,body { 
   overflow:     hidden;
   height:	    100%;
 }
 
-body 
-{  
+body {  
   margin:  0px;
   font:    11px Arial,"Helvetica Neue", sans-serif;
 }
+
+.warning { 
+  color:      red;
+  font-size:  8px;
+}
+
 
 table {  
   width:100%;
@@ -107,6 +111,7 @@ ul,li {
   border-right:   1px solid #aaa;
   background:     #ddd;
 }
+
 
 /******************************************************************************
 	    CELLS
