@@ -436,8 +436,8 @@ handle_dirty_cell(Site, TimeStamp, Rec)  ->
     #dirty_cell{idx = Idx} = Rec,
     Fun1 =
         fun() -> ok = init_front_end_notify(),
-                 Cell = hn_db_wu:read_dirty_cell(Site, TimeStamp),
-                 try 
+                 try
+                     Cell = hn_db_wu:read_dirty_cell(Site, TimeStamp),
                      case Idx of
                          'deleted' -> ok;
                          _         -> case ?wuread_attrs(Cell, ["__shared"]) of
