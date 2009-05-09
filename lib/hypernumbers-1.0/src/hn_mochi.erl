@@ -226,6 +226,11 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}], _U
 ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}], _User) ->
     hn_db_api:copy_n_paste(Ref#refX{obj = hn_util:parse_attr(range, Range)}, Ref);
 
+ipost(Req, _Ref, _Type, _Attr,
+      [{"set", {struct, [{"language", _Lang}]}}], anonymous) ->
+    ?json(Req, {struct, [{"error", "cant set language for anonymous users"}]}),
+    ret;
+
 ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr, 
       [{"set", {struct, [{"language", Lang}]}}], User) ->
     hn_users:update(Site, User, "language", Lang);

@@ -943,7 +943,7 @@ clear_dirty(Site, Rec) when (is_record(Rec, dirty_notify_in)
 clear_dirty_cell(#refX{site = Site, obj = {cell, _}} = RefX) ->
     Index = read_local_item_index(RefX),
     Table = trans(Site, dirty_cell),
-    [Rec] = mnesia:read({trans(Site, dirty_cell), Index}),
+    [_Rec] = mnesia:read({trans(Site, dirty_cell), Index}),
     mnesia:delete({Table, Index}).
 
 clear_dirty_cell(Site, Record) when is_record(Record, dirty_cell) ->
@@ -2964,15 +2964,13 @@ write_formula1(RefX, Fla) ->
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-            % bits:log("formula " ++ Fla ++ " fails to run with error in formula"),
-            io:format("for ~p~n-with ~p fails with error_in_formula~n",
-                      [RefX, Fla]),
+            ?ERROR("invalid return from muin:run_formula ~p",[Fla]),
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
                                            "=" ++ Fla);
         {error, Error} ->
             % bits:log("formula " ++ Fla ++ "fails to run with " ++ atom_to_list(Error)),
-            io:format("for ~p~n-with ~p fails with ~p~n", [RefX, Fla, Error]),
+            %io:format("for ~p~n-with ~p fails with ~p~n", [RefX, Fla, Error]),
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R,  Error, "=" ++ Fla);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
