@@ -4,9 +4,7 @@
 -module(hn_import).
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
-
 -define(pget(Key, List), proplists:get_value(Key, List, undefined)).
-
 -export([ json_file/2 ]).
 
 json_file(Url, FileName) -> 

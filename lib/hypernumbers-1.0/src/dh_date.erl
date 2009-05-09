@@ -44,7 +44,7 @@
 -spec format(string()) -> string().
 %% @doc format current local time as Format
 format(Format) ->
-    format(Format,calendar:universal_time(),[]).
+    format(Format, calendar:universal_time(),[]).
 
 -spec format(string(),datetime() | now()) -> string().
 %% @doc format Date as Format
@@ -101,7 +101,6 @@ format([$S|T], {{_,_,D},_}=Dt, Acc) ->
 format([$d|T], {{_,_,D},_}=Dt, Acc) ->
     format(T, Dt, [itol(D)|Acc]);
 format([$D|T], {Date,_}=Dt, Acc) ->
-    io:format("~p",[Date]),
     format(T, Dt, [sdayd(Date)|Acc]);
 format([$l|T], {Date,_}=Dt, Acc) ->
     format(T, Dt, [day(day_of_the_week(Date))|Acc]);

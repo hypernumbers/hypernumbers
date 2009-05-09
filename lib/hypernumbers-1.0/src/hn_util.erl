@@ -14,7 +14,6 @@
 -include("muin_records.hrl").
 
 -define(rfc1123, muin_date:to_rfc1123_string).
-
 -define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 
 -export([
