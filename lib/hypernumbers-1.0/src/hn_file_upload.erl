@@ -44,8 +44,8 @@ file_upload_callback({headers, Headers}, S) ->
                        FullFilename = filename:join([code:lib_dir(hypernumbers),
                                                      "..", "..",
                                                      "priv", "uploads",
-                                                     Filestamp ++ "__" ++ string:to_lower(Filename)]),
-                       #file_upload_state{original_filename = string:to_lower(Filename),
+                                                     Filestamp ++ "__" ++ Filename]),
+                       #file_upload_state{original_filename = Filename,
                                           filename = FullFilename};
                    _ ->
                        S
@@ -111,11 +111,11 @@ import(Filename, Host, ParentPage, Username, OrigFilename) ->
 
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
         Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
-                         Url = string:to_lower(Site ++ Path ++ Ref),
+                         Url = Site ++ Path ++ Ref,
                          RefX = hn_util:parse_url(Url),
                          ok = hn_db_api:write_attributes(RefX, [{"formula", Postdata}]);
                     ({Path, {Tl, Br}, Postdata}) -> % array formula
-                         Url = string:to_lower(Site ++ Path ++ Tl ++ ":" ++ Br),
+                         Url = Site ++ Path ++ Tl ++ ":" ++ Br,
                          RefX = hn_util:parse_url(Url),
                          hn_main:formula_to_range(RefX, Postdata)
                  end,
@@ -130,7 +130,7 @@ import(Filename, Host, ParentPage, Username, OrigFilename) ->
                        Sheet = excel_util:esc_tab_name(SheetName),
                        Path = ParentPage++Sheet++"/",
                        Ref = rc_to_a1(Row,Col),
-                       Url = string:to_lower(Site ++ Path ++ Ref),
+                       Url = Site ++ Path ++ Ref,
                        RefX = hn_util:parse_url(Url),
                        #refX{path = P2} = RefX,
                        RefX2 = #refX{site = Site, path = P2, obj = {page, "/"}},
