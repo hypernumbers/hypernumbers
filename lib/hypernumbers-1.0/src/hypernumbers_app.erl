@@ -75,16 +75,6 @@ clean_start() ->
     [ok = dirty_subscriber:monitor(X) || X <- ?dirties].
 
 clean_start2() ->
-    % Probably not a nice way to do this, 
-    % Before everything is restarted the msg queues
-    % for these needs to be emptied
-    % Kill = fun(undefined) -> ok;
-    %          (Pid)       -> exit(Pid, clean_start)
-    %       end,
-    %lists:map(fun(X) -> Kill(whereis(X)) end,
-    %          [dirty_cell, dirty_notify_in, dirty_inc_hn_create,
-    %           dirty_notify_back_in, dirty_notify_out,
-    %           dirty_notify_back_out]),
 
     ok = application:stop(mnesia),
     ok = mnesia:delete_schema([node()]),
@@ -129,17 +119,6 @@ cmp1([{IP, Port, _Hosts} | T], Acc) -> case lists:member({IP, Port}, Acc) of
                                            false -> cmp1(T, [{IP, Port} | Acc])
                                        end.
 
-%% @spec dirty_subscribe() -> ok
-%% @doc  Make dirty_x gen_srv's (un)subscribe to mnesia
-%dirty_subscribe(Type) ->
-    
-%    ok = ?cast(dirty_cell,            {Type, dirty_cell}),
-%    ok = ?cast(dirty_notify_in,       {Type, dirty_notify_in}),
-%    ok = ?cast(dirty_inc_hn_create,   {Type, dirty_inc_hn_create}),
-%    ok = ?cast(dirty_notify_back_in,  {Type, dirty_notify_back_in}),
-%    ok = ?cast(dirty_notify_out,      {Type, dirty_notify_out}),
-%    ok = ?cast(dirty_notify_back_out, {Type, dirty_notify_back_out}).
-
 %% @spec write_permissions() -> ok
 %% @doc  Set the default permissions on each domain
 write_permissions() ->
@@ -150,10 +129,6 @@ write_permissions(_Name, []) ->
     ok;
 write_permissions(Name, [{Domain, Value} | T]) ->
     Ref = hn_util:parse_url(Domain),
-    #refX{site = Site} = Ref,
-    Site2 = trim(Site),
-    % now do some process dictionary magic
-    _OldPD = put(sitename, Site2),
     hn_db_api:write_attributes(Ref, [{Name, Value}]),
     write_permissions(Name, T).
 
