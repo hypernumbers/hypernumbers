@@ -95,6 +95,7 @@
 -include("hypernumbers.hrl").
 
 -define(wu, hn_db_wu).
+-define(wuread_attrs, hn_db_wu:read_attrs).
 -define(copy, copy_cell).
 -define(wr_rem_link, write_remote_link).
 -define(shift_ch, shift_children).
@@ -424,39 +425,45 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 %% @spec handle_dirty_cell(Site, Timestamp) -> ok
 %% @doc handles a dirty cell.
 %% Timestamp is the timestamp of the dirty cell - the actual
-%% record itself may have been rewritten before it is processed
+%% record itself may have been rewritten before it is processed.
+%% If the target of the dirty cell has been deleted the dirty cell record
+%% will have been written to have an index of 'deleted' and this function
+%% will skip it
 %% Silently fails if the cell is part of a shared range
 %% @todo extend this to a dirty shared formula
 %% @todo stop the silent fail!
 handle_dirty_cell(Site, TimeStamp, Rec)  ->
-    Fun =
-        fun() ->
-                try 
-                    ok = init_front_end_notify(),
-                    Cell = hn_db_wu:read_dirty_cell(Site, TimeStamp),
-                    case hn_db_wu:read_attrs(Cell, ["__shared"]) of
-                        
-                        [] ->
-                            case hn_db_wu:read_attrs(Cell, ["formula"]) of
-                                [{C, KV}] -> hn_db_wu:write_attr(C, KV);
-                                []        -> throw(invalid_dirty_cell)
-                            end;
-                        
-                        _  ->
-                            ?INFO("TODO: handle_dirty_cell shared formula", [])
-                    end,
-                    hn_db_wu:clear_dirty_cell(Cell)
-                catch
-                    throw:X when X == id_not_found; X == invalid_dirty_cell ->
-                        Err = "Invalid cell in dirty_cell ~n Site:~p~n Time:~p~n",
-                        ?ERROR(Err, [Site, TimeStamp]),
-                        hn_db_wu:clear_dirty_cell(Site, Rec),
-                        ok
-                end
+    #dirty_cell{idx = Idx} = Rec,
+    Fun1 =
+        fun() -> ok = init_front_end_notify(),
+                 Cell = hn_db_wu:read_dirty_cell(Site, TimeStamp),
+                 try 
+                     case Idx of
+                         'deleted' -> ok;
+                         _         -> case ?wuread_attrs(Cell, ["__shared"]) of
+                                          [] -> handle_dirty_cell1(Cell);
+                                          _  -> ?INFO("TODO: handle_dirty_cell "++
+                                                      "shared formula", [])
+                                      end,
+                                      hn_db_wu:clear_dirty_cell(Cell)
+                     end
+                 catch
+                     throw:X when X == id_not_found; X == invalid_dirty_cell ->
+                         Err = "Invalid cell in hn_db_api:handle_dirty_cell ~n " ++
+                             "Site:~p~n Time:~p~n",
+                         ?ERROR(Err, [Site, TimeStamp]),
+                         hn_db_wu:clear_dirty_cell(Site, Rec)
+                 end
         end,
-    ok = mnesia:activity(transaction, Fun),
+    ok = mnesia:activity(transaction, Fun1),
     ok = tell_front_end("handle dirty"),
     ok.
+
+handle_dirty_cell1(Cell) ->
+    case hn_db_wu:read_attrs(Cell, ["formula"]) of
+        [{C, KV}] -> hn_db_wu:write_attr(C, KV);
+        []        -> throw(invalid_dirty_cell)
+    end.
 
 %% @spec handle_dirty(Record) -> ok
 %% Record = #dirty_notify_in{}
@@ -1079,7 +1086,9 @@ move(RefX, Type, Disp)
                        end,
                 [ok = Fun2(X) || X <- Status],
                 % Jobs a good'un, now for the remote parents
+                % io:format("in hn_db_api:move do something with Parents...~n"),
                 _Parents =  ?wu:find_incoming_hn(Site, PageRef),
+                % io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
                 ok
         end,
     ok = mnesia:activity(transaction, Fun),

@@ -943,6 +943,7 @@ clear_dirty(Site, Rec) when (is_record(Rec, dirty_notify_in)
 clear_dirty_cell(#refX{site = Site, obj = {cell, _}} = RefX) ->
     Index = read_local_item_index(RefX),
     Table = trans(Site, dirty_cell),
+    [Rec] = mnesia:read({trans(Site, dirty_cell), Index}),
     mnesia:delete({Table, Index}).
 
 clear_dirty_cell(Site, Record) when is_record(Record, dirty_cell) ->
@@ -1577,8 +1578,11 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
     case List1 of
         [] -> ok;
         _  -> List2 = get_refXs(List1),
+              % first set all the dirty cells that match to deleted
+              [ok = mark_dirty_cells_deleted(X) || X <- List2],
+              % now delete the links to the cells
               [ok = delete_links(X) || X <- List2],
-              % now delete all the attributes
+              % finally delete all the attributes
               List3 = get_content_attrs(List1),
               [delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
               [ok = mark_cells_dirty(X) || X <- List2],
@@ -1606,7 +1610,9 @@ delete_cells(#refX{site = S} = DelX) ->
     case Cells of
         [] -> [];
         _ ->
-            % first update the children that point to the cell that is being deleted
+            % first delete any dirty cell references that point to these cells
+            [ok = mark_dirty_cells_deleted(X) || X <- Cells],           
+            % update the children that point to the cell that is being deleted
             % by rewriting the formulae of all the children cells replacing the 
             % reference to this cell with #ref!
             Children = [{X, read_local_children(X)} || X <- Cells],
@@ -2041,6 +2047,16 @@ get_prefix(Site) ->
 %%% Internal funtions                                                        %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+mark_dirty_cells_deleted(#refX{site = S, obj = {cell, _}} = RefX) ->
+    Idx = read_local_item_index(RefX),
+    case trans_back(mnesia:wread({trans(S, dirty_cell), Idx})) of
+        []                               -> ok;
+        [#dirty_cell{timestamp = T} = R] -> ok = mnesia:delete_object(trans(S, R)),
+                                            D = #dirty_cell{idx = 'deleted',
+                                                            timestamp = T},
+                                            ok = mnesia:write(trans(S, D))
+                                            end.
+
 insert_shift(#refX{obj = {cell, {X, Y}}} = RefX, vertical) ->
     RefX#refX{obj = {cell, {X, Y - 1}}};
 insert_shift(#refX{obj = {cell, {X, Y}}} = RefX, horizontal) ->
