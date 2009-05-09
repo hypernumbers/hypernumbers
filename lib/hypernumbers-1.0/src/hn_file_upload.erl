@@ -245,7 +245,7 @@ conv_for_post(Val) ->
     case Val of
         {_, boolean, true}        -> "true";
         {_, boolean, false}       -> "false";
-        {_, date, {datetime,D,T}} -> make_date_string({D,T});
+        {_, date, {datetime,D,T}} -> dh_date:format("d/m/y h:m:s",{D,T});
         {_, number, N}            -> tconv:to_s(N);
         {_, error, E}             -> E;
         {string, X}               -> X;
@@ -254,46 +254,21 @@ conv_for_post(Val) ->
 
 fix_integers(X) ->
     case make_float(X) of
-        "not float" -> X;
-        X2          -> if
-                           (X2-round(X2)) == 0.0 -> integer_to_list(round(X2));
-                           true                  -> X
-                       end
-    end.
-
-make_date_string({Days,Time}) ->
-     make_day_string(Days)++" "++make_time_string(Time).
-
-make_day_string({Year,Month,Day}) ->
-    integer_to_list(Day)++"/"++pad(integer_to_list(Month))++"/"++pad(integer_to_list(Year)).
-
-make_time_string({Hour,Minute,Second})->
-    pad(integer_to_list(Hour))++":"++pad(integer_to_list(Minute))++":"++pad(integer_to_list(Second)).
-
-pad(X) when is_list(X) ->
-    case length(X) of
-	1 -> "0"++X;
-	_ -> X
+        {error, not_float} -> X;
+        X2 -> if
+                  (X2-round(X2)) == 0.0 -> integer_to_list(round(X2));
+                  true                  -> X
+              end
     end.
 
 make_float(List) ->
-    Return = try
-                list_to_float(List)
-              catch
-                exit:_Reason   -> "not float";
-                error:_Message -> "not float";
-                throw:_Term     -> "not float"
-            end,
-    case Return of
-      "not float" -> make_float2(List);
-      _           -> Return
+    case catch list_to_float(List) of
+        {'EXIT', _Reason} -> make_float2(List);
+        Float             -> Float
     end.
 
-make_float2(List)->
-    try
-      list_to_integer(List)*1.0
-    catch
-      exit:_Reason   -> "not float";
-      error:_Message -> "not float";
-      throw:_Term    -> "not float"
+make_float2(List) ->
+    case catch (list_to_integer(List)*1.0) of
+        {'EXIT', _Reason} -> {error, not_float};
+        Float             -> Float
     end.

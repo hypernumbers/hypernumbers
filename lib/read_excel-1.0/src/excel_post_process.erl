@@ -366,7 +366,6 @@ set_formats(CellRef,XFIndex,Tables) ->
         end,
     % now look up the font
     FontCSS = get_fonts(FontIdx, Tables),
-    io:format("hello ",[]),
     % Attribute 3 TEXT
     % get the following CSS elements
     % * 'vertical-align'
