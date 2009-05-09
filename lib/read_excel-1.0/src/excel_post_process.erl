@@ -289,6 +289,7 @@ get_css(CSSList, [H|T], Acc) ->
     end.
 
 set_formats(CellRef,XFIndex,Tables) ->
+
     {value, {tmp_xf, XFId}}           = ?k(tmp_xf,      1, Tables),
     {value, {tmp_formats, FormatsId}} = ?k(tmp_formats, 1, Tables),
     {value, {tmp_colours, ColoursId}} = ?k(tmp_colours, 1, Tables),
@@ -301,6 +302,7 @@ set_formats(CellRef,XFIndex,Tables) ->
     {value, {type, Type}} = ?k(type, 1, XFList),
     % It appears that sometimes a cell format can reference a style record directly!
     % By definition in this case the cell format has no parent
+
     PXFList = case Type of
                   cell  ->
                       % Look up the parent XF record
@@ -335,7 +337,8 @@ set_formats(CellRef,XFIndex,Tables) ->
     % Attribute 1 NUMBER
     % get the appropriate FORMAT_INDEX
     {value, {number, NumAttr}}  = ?k(number, 1, AttrList), 
-    {value, {number, PNumAttr}} = ?k(number, 1, PAttrList), 
+    {value, {number, PNumAttr}} = ?k(number, 1, PAttrList),
+    
     {value, {format_index, FormatIdx}} =
         case {NumAttr, PNumAttr} of
             {use_this, _}        -> ?k(format_index, 1, XFList);
@@ -345,22 +348,25 @@ set_formats(CellRef,XFIndex,Tables) ->
         end,
     Return = ets:lookup(FormatsId, {format_index, FormatIdx}),
     [{_Idx, [_Type, _Category, Format]}] = Return,
-
+    
     % Attribute 2 FONT
     % get the appropriate FONT index
     {value, {font, FontAttr}}  = ?k(font, 1, AttrList), 
-    {value, {font, PFontAttr}} = ?k(font, 1, PAttrList), 
+    {value, {font, PFontAttr}} = ?k(font, 1, PAttrList),
+
+    io:format("FONT ~p", [{FontAttr, PFontAttr}]),
     {value, {font_index, FontIdx}} =
         case {FontAttr, PFontAttr} of
             {use_this, _}        -> ?k(font_index, 1, XFList);
             {use_parent, valid}  -> ?k(font_index, 1, PXFList);
-            {valid, valid}       -> ?k(font_index, 1, PXFList); % parent is child
-            {use_parent, ignore} -> ?k(font_index, 1, XFList)
+            % parent is child
+            {valid, valid}       -> ?k(font_index, 1, PXFList);
+            {use_parent, ignore} -> ?k(font_index, 1, XFList);
+            {ignore, ignore}     -> ?k(font_index, 1, XFList)
         end,
-
     % now look up the font
     FontCSS = get_fonts(FontIdx, Tables),
-
+    io:format("hello ",[]),
     % Attribute 3 TEXT
     % get the following CSS elements
     % * 'vertical-align'
@@ -378,7 +384,6 @@ set_formats(CellRef,XFIndex,Tables) ->
             {use_parent, ignore} -> get_css(CSSList, ['vertical-align',
                                                       'text-align'])
         end,
-
     % Attribute 4 BORDER
     % get the following CSS elements
     % * 'border-left      '
