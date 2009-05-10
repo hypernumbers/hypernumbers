@@ -453,7 +453,7 @@ ul,li {
 
 #menu li ul li a { 
   background:   #f8f7f6;       
-  padding:      3px 18px 3px 20px; 
+  padding:      3px 20px 3px 20px; 
   z-index:      200;
 }
 
@@ -477,7 +477,7 @@ ul,li {
 
 #menu div.input {
   position:     relative;
-  padding:      2px;
+  padding:      0px;
   width:        16px;
   height:       16px;
   float:        left;
@@ -502,6 +502,7 @@ ul,li {
   top:3px;
   right:0px;
 }
+
 
 #selection { 
   display:none;
