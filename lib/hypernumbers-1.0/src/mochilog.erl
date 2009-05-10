@@ -149,7 +149,7 @@ print(short, Post, Id) ->
 print(post, Post, Id) ->
     #post{path=FullPath, body=Body} = Post,
     [Path | _] = string:tokens(FullPath, "?"),
-    io:format("Posting: ~6B  ~-20s  ~-35s~n", [Id, Path, bodystr(Body)]);
+    io:format("P: ~6B  ~-26s  ~-35s~n", [Id, Path, bodystr(Body)]);
 
 print(long, Post, Id) ->
     
