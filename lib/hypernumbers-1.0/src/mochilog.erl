@@ -73,7 +73,9 @@ replay(Name, Url, Options) ->
                   print(post, Post, Id),
                   repost(Post, Ref)
           end,    
-    run_log(Name, F, make_filter(Options)).
+    run_log(Name, F, make_filter(Options)),
+    io:format("~nReplay finished....~n"),
+    ok.
 
 %% @spec generate_mi(Name, Path) -> ok
 %% @doc Name is the name of the log file to read from (must be 
