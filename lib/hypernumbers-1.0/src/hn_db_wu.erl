@@ -506,7 +506,7 @@
          clear_dirty/2,
          clear_dirty_cell/1,
          clear_dirty_cell/2,
-         shift_cells/3,
+         shift_cells/4,
          shift_rows/2,
          shift_cols/2,
          shift_children/3,
@@ -943,7 +943,6 @@ clear_dirty(Site, Rec) when (is_record(Rec, dirty_notify_in)
 clear_dirty_cell(#refX{site = Site, obj = {cell, _}} = RefX) ->
     Index = read_local_item_index(RefX),
     Table = trans(Site, dirty_cell),
-    [_Rec] = mnesia:read({trans(Site, dirty_cell), Index}),
     mnesia:delete({Table, Index}).
 
 clear_dirty_cell(Site, Record) when is_record(Record, dirty_cell) ->
@@ -1113,11 +1112,23 @@ read_local_parents(#refX{site = Site} = Child)  ->
 
 %% @spec read_local_children(RefX :: #refX{}) -> [#refX{}]
 %% @doc this returns the local children of a reference. The reference can only
-%% be to a cell and not a range, column, row or page
+%% be to a 
+%% <ul>
+%% <li>cell</li>
+%% <li>range</li>
+%% <li>column</li>
+%% <li>row</li>
+%% <li>page</li>
+%% </ul>
 %% 
 %% This fn is called read_local_children because it consists of all the
 %% local links where the current RefX is the parent
-read_local_children(#refX{site = Site} = Parent) ->
+read_local_children(#refX{obj = {Type, _}} = Parent)
+  when (Type == row) orelse (Type == column)
+       orelse (Type == range) orelse (Type == page) ->
+    Cells = get_cells(Parent),
+    lists:flatten([read_local_children(X) || X <- Cells]);
+read_local_children(#refX{site = Site, obj = {cell, _}} = Parent) ->
     case read_local_item_index(Parent) of
         false -> [];
         PIdx  -> Match = #local_cell_link{parentidx = PIdx, _ = '_'},
@@ -1354,19 +1365,20 @@ make_refXs(Site, LocalObjsList, AttrList) ->
         end,
     lists:flatten(lists:map(F2, LocalObjsList)).
 
-%% @spec shift_cells(RefX#refX{}, Type, Disp) -> Status
+%% @spec shift_cells(RefX#refX{}, Type, Disp, Rewritten) -> Status
 %% Status = list()
 %% @doc shift_cells takes a range, row or column and shifts it by the offset.
-%% 
+%% The list of cells that are passed in as Rewritten are not to be rewritten
+%% here
 %% <em>NOTE</em> this function doesn't pass any messages on to parents or
 %% children on other websites - that is done in the API layer by calling
 %% {@link hn_db_wu:mark_dirty/1} with <code>dirty_notify_out</code> and 
 %% <code>dirty_notify_back_in</code> records as appropriate
-shift_cells(From, Type, Disp)
+shift_cells(From, Type, Disp, Rewritten)
   when is_record(From, refX)
        andalso (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
-    #refX{site = Site, path = Path, obj = Obj} = From,
+    #refX{site = Site, obj = Obj} = From,
     {XO, YO} = hn_util:get_offset(Type, Disp, Obj),
     RefXList = case {Type, Disp} of
                    {insert, horizontal} ->
@@ -1390,22 +1402,22 @@ shift_cells(From, Type, Disp)
               %  - rewrite the formulae and save the cells
               H1a = #local_cell_link{childidx = '$1', parentidx = '$2', _ = '_'},
               H1b = trans(Site, H1a),
-              C1 = make_or(IdxList, '$2'),
+              C1 = make_clause(IdxList, '$2', 'orelse'),
               B1 = ['$1'],
               Table1 = trans(Site, local_cell_link),
               CIdxList = mnesia:select(Table1, [{H1b, C1, B1}]),
               ChildCells = [local_idx_to_refX(Site, X) || X <- CIdxList],
+              ChildCells2 = hslists:uniq(ChildCells),
+              DedupedChildren = lists:subtract(ChildCells2, Rewritten),
               Fun1 = fun(X) ->
                              [Ret] = read_attrs(X, ["formula"]),
                              Ret
                      end,
-              FormulaList = [Fun1(X) || X <- ChildCells],
-              Fun2 = fun({#refX{obj = {cell, {X, Y}}} = RefX, {"formula", F1}}, Acc) ->
-                             F = {X, Y},
-                             T = {X + XO, Y + YO},
-                             {Status, F2} = offset_formula_with_ranges(F1, Path, Path, F, T),
+              FormulaList = hslists:uniq([Fun1(X) || X <- DedupedChildren]),
+              Fun2 = fun({RefX, {"formula", F1}}, Acc) ->
+                             {St, F2} = offset_fm_w_rng(RefX, F1, From, {XO, YO}),
                              ok = write_attr3(RefX, {"formula", F2}),
-                             case Status of
+                             case St of
                                  clean  -> Acc;
                                  dirty -> [{dirty, RefX} | Acc]
                              end
@@ -1615,18 +1627,28 @@ delete_cells(#refX{site = S} = DelX) ->
             % update the children that point to the cell that is being deleted
             % by rewriting the formulae of all the children cells replacing the 
             % reference to this cell with #ref!
-            Children = [{X, read_local_children(X)} || X <- Cells],
+            LocalChildren = [read_local_children(X) || X <- Cells],
+            LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
+            % now split this list into two
+            % * a list of child/parents to delink
+            % * a list of children to deref
+            % first up deref the children
             Fun1 = fun(X, Acc) ->
-                           Status = deref_and_delink_child(X, DelX),
+                           Status = deref_child(X, DelX),
                            case Status of
-                               []      -> Acc;
-                               [Dirty] -> [Dirty | Acc]
+                               []   -> Acc;
+                               Recs -> [Recs | Acc]
                            end
                    end,
-            Status = lists:foldl(Fun1, [], Children),
-
-            % now remove all the links where these cells were the children
+            Status = lists:flatten(lists:foldl(Fun1, [], LocalChildren2)),
+            % now delink all the cells that are being deleted
             Fun2 = fun(X) ->
+                           Idx = get_local_item_index(X),
+                           ok = mnesia:delete({trans(S, local_cell_link), Idx})
+                   end,
+            [ok = Fun2(X) || X <- Cells],
+            % now remove all the links where these cells were the children
+            Fun3 = fun(X) ->
                            CIdx = read_local_item_index(X),
                            H = trans(S, #local_cell_link{childidx = CIdx, _ = '_'}),
                            M = [{H, [], ['$_']}],
@@ -1634,7 +1656,7 @@ delete_cells(#refX{site = S} = DelX) ->
                            Recs = mnesia:select(Table, M),
                            ok = delete_recs(Recs)
                    end,
-            [ok = Fun2(X) || X <- Cells],
+            [ok = Fun3(X) || X <- Cells],
             
             % get the index of all items to be deleted
             #refX{site = S} = DelX,
@@ -1643,14 +1665,14 @@ delete_cells(#refX{site = S} = DelX) ->
             C1 = make_del_cond(Cells),
             Table1 = trans(S, local_objs),
             Recs = mnesia:select(Table1, [{H1a, C1, ['$_']}]),
-            Fun3 = fun(X) ->
+            Fun4 = fun(X) ->
                            #local_objs{idx = Idx} = trans_back(X),
                            Idx
                    end,
-            IdxList = [Fun3(X) || X <- Recs],
+            IdxList = [Fun4(X) || X <- Recs],
             % delete all items with that index
             Table2 = trans(S, item),
-            Fun4 = fun(X) -> List = trans_back(mnesia:wread({Table2, X})),
+            Fun5 = fun(X) -> List = trans_back(mnesia:wread({Table2, X})),
                            % you need to notify the front end before you delete the object...
                              RefX = local_idx_to_refX(S, X),
                              [ok = tell_front_end(RefX, {K, V}, delete) ||
@@ -1658,7 +1680,7 @@ delete_cells(#refX{site = S} = DelX) ->
                              [ok = mnesia:delete_object(trans(S, XX)) || XX <- List],
                              ok
                    end,
-            [ok = Fun4(X) || X <- IdxList],
+            [ok = Fun5(X) || X <- IdxList],
             % finally delete the index records themselves
             [ok = mnesia:delete_object(X) || X <- Recs],
             % need to return any cells that need to recalculate after the move
@@ -2384,21 +2406,22 @@ make_formula(Toks) ->
 %% this function needs to be extended...
 mk_f([], {St, A}) -> {St, "="++lists:flatten(lists:reverse(A))};
 mk_f([{errval, '#REF!'} | T], {St, A})   -> mk_f(T, {St, ["#REF!" | A]});
-mk_f([{deref, Text} | T], {St, A})    -> mk_f(T, {St, [Text | A]});
+mk_f([{deref, Text}     | T], {St, A})   -> mk_f(T, {St, [Text | A]});
 % special infering of division
 mk_f([?cellref, ?cellref2| T], {St, A})  -> mk_f(T, {St, [R2, "/", R | A]});
-mk_f([?cellref | T], {St, A})            -> mk_f(T, {St, [R | A]});
-mk_f([?rangeref | T], {St, A})           -> mk_f(T, {St, [R | A]});
-mk_f([?namedexpr | T], {St, A})          -> mk_f(T, {St, [P ++ N | A]});
-mk_f([{bool, H} | T], {St, A})           -> mk_f(T, {St, [atom_to_list(H) | A]});
-mk_f([{atom, H} | T], {St, A})           -> mk_f(T, {St, [atom_to_list(H) | A]});
-mk_f([{int, I} | T], {St, A})            -> mk_f(T, {St, [integer_to_list(I) | A]});
-mk_f([{float, F} | T], {St, A})          -> mk_f(T, {St, [float_to_list(F) | A]});
-mk_f([{str, S} | T], {St, A})            -> mk_f(T, {St, [$", S, $" | A]});
-mk_f([{drop_in_str, S} | T], {St, A})    -> mk_f(T, {St, [S | A]});
+mk_f([?cellref           | T], {St, A})  -> mk_f(T, {St, [R | A]});
+mk_f([?rangeref          | T], {St, A})  -> mk_f(T, {St, [R | A]});
+mk_f([?namedexpr         | T], {St, A})  -> mk_f(T, {St, [P ++ N | A]});
+mk_f([{bool, H}          | T], {St, A})  -> mk_f(T, {St, [atom_to_list(H) | A]});
+mk_f([{atom, H}          | T], {St, A})  -> mk_f(T, {St, [atom_to_list(H) | A]});
+mk_f([{int, I}           | T], {St, A})  -> mk_f(T, {St, [integer_to_list(I) | A]});
+mk_f([{float, F}         | T], {St, A})  -> mk_f(T, {St, [float_to_list(F) | A]});
+mk_f([{formula, S}       | T], {St, A})  -> mk_f(T, {St, [S | A]});
+mk_f([{str, S}           | T], {St, A})  -> mk_f(T, {St, [$", S, $" | A]});
+mk_f([{recalc, S}        | T], {_St, A}) -> mk_f(T, {dirty, [S | A]});
 mk_f([{name, "INDIRECT"} | T], {_St, A}) -> mk_f(T, {dirty, ["INDIRECT" | A]});
-mk_f([{name, S} | T], {St, A})           -> mk_f(T, {St, [S | A]});
-mk_f([{H} | T], {St, A})                 -> mk_f(T, {St, [atom_to_list(H) | A]}).
+mk_f([{name, S}          | T], {St, A})  -> mk_f(T, {St, [S | A]});
+mk_f([{H}                | T], {St, A})  -> mk_f(T, {St, [atom_to_list(H) | A]}).
 
 parse_cell(Cell) ->
     {XDollar, Rest} = is_fixed(Cell),
@@ -2433,13 +2456,15 @@ parse_rows(Rows) ->
 is_fixed([$$|Rest]) -> {true, Rest};
 is_fixed(List)      -> {false, List}.
 
-offset_with_ranges(Toks, CPath, FromPath, FromCell, ToCell) ->
-    offset_with_ranges1(Toks, CPath, FromPath, FromCell, ToCell, []).
+offset_with_ranges(Toks, Cell, From, Offset) ->
+    offset_with_ranges1(Toks, Cell, From, Offset, []).
 
-offset_with_ranges1([], _CPath, _FromPath, _FromC, _ToC, Acc) ->
+offset_with_ranges1([], _Cell, _From, _Offset, Acc) ->
     lists:reverse(Acc);
 offset_with_ranges1([#rangeref{path = Path, text = Text} = H | T],
-                    CPath, FromPath, {FX, FY}, {TX, TY}, Acc) ->
+                    Cell, #refX{path = FromPath} = From, Offset, Acc) ->
+    #refX{path = CPath} = Cell,
+    PathCompare = muin_util:walk_path(CPath, Path),
     Range = muin_util:just_ref(Text),
     Prefix = case muin_util:just_path(Text) of
                  "/"     -> "";
@@ -2448,32 +2473,23 @@ offset_with_ranges1([#rangeref{path = Path, text = Text} = H | T],
     [Cell1|[Cell2]] = string:tokens(Range, ":"),
     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
-    PathCompare = muin_util:walk_path(CPath, Path),
-    % if either end of the formula matches the original from then shift it
-    % It should match both path and cell!
-    NCl1 =
-        case {PathCompare, {X1, Y1}} of
-            {FromPath, {FX, FY}} -> make_cell(X1D, TX, 0, Y1D, TY, 0);
-            _                    -> Cell1
-        end,
-    NCl2 =
-        case {PathCompare, {X2, Y2}} of
-            {FromPath, {FX, FY}} -> make_cell(X2D, TX, 0, Y2D, TY, 0);
-            _                    -> Cell2
-        end,
-    NewAcc = H#rangeref{text = Prefix ++ NCl1 ++ ":" ++ NCl2},
-    offset_with_ranges1(T, CPath, FromPath, {FX, FY}, {TX, TY},
-                        [NewAcc | Acc]);
+    NewText = case PathCompare of
+                  FromPath -> make_new_range(Prefix, Cell1, Cell2,
+                                             {X1D, X1, Y1D, Y1},
+                                             {X2D, X2, Y2D, Y2},
+                                             From, Offset);
+                  _        -> Text
+              end,
+    NewAcc = H#rangeref{text = NewText},
+    offset_with_ranges1(T, Cell, From, Offset, [NewAcc | Acc]);
 offset_with_ranges1([#cellref{path = Path, text = Text} = H | T],
-                    CPath, FromPath, {FX, FY}, {TX, TY}, Acc) ->
-    Cell = muin_util:just_ref(Text),
+                    Cell, #refX{path = FromPath} = From, {XO, YO}, Acc) ->
+    #refX{path = CPath} = Cell,
     Prefix = case muin_util:just_path(Text) of
                  "/"   -> "";
                  Other -> Other
              end,
-    {XDollar, X, YDollar, Y} = parse_cell(Cell),
-    XO = TX - FX,
-    YO = TY - FY,
+    {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     PathCompare = muin_util:walk_path(CPath, Path),
     NewCell =
         case PathCompare of
@@ -2481,17 +2497,166 @@ offset_with_ranges1([#cellref{path = Path, text = Text} = H | T],
             _        -> Cell
         end,
     NewAcc = H#cellref{text = Prefix ++ NewCell},    
-    offset_with_ranges1(T, CPath, FromPath, {FX, FY}, {TX, TY},
-                        [NewAcc | Acc]);                           
-offset_with_ranges1([H | T], CPath, FromPath, {FX, FY}, {TX, TY}, Acc) ->
-    offset_with_ranges1(T, CPath, FromPath, {FX, FY}, {TX, TY}, [H | Acc]).
+    offset_with_ranges1(T, Cell, From, {XO, YO}, [NewAcc | Acc]);
+offset_with_ranges1([H | T], Cell, From, Offset, Acc) ->
+    offset_with_ranges1(T, Cell, From, Offset, [H | Acc]).
+
+make_new_range(Prefix, Cell1, Cell2, {X1D, X1, Y1D, Y1},
+               {X2D, X2, Y2D, Y2},
+               #refX{obj = {cell, {X, Y}}} = _From, {XO, YO}) ->
+    NC1 =
+        case {X1, Y1} of
+            {X, Y} -> make_cell(X1D, X1, XO, Y1D, Y1, YO);
+            _      -> Cell1
+        end,
+    NC2 =
+        case {X2, Y2} of
+            {X, Y} -> make_cell(X2D, X2, XO, Y2D, Y2, YO);
+            _      -> Cell2
+        end,
+    Prefix ++ NC1 ++ ":" ++ NC2;
+% this clause is for a column delete
+make_new_range(Prefix, Cell1, Cell2, {X1D, X1, Y1D, Y1},
+               {X2D, X2, Y2D, Y2},
+               #refX{obj = {column, {XA, XB}}} = _From, {XO, 0 = _YO})
+  when (XO < 0)->
+    {NC1, NC2} = if
+                     % if both columns are to the left of the range then
+                     % offset both
+                     (XA < X1) andalso (XB < X1) ->
+                         C1 = make_cell(X1D, X1, XO, Y1D, Y1, 0),
+                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
+                         {C1, C2};
+                     % if both are to the right, then offset neither
+                     (XA > X2) andalso (XB > X2) -> {Cell1, Cell2};
+                     % if the delete clips the left hand side then set the left-hand
+                     % of the range to the left most value of the clip
+                     (XA =< X1) andalso (XB >= X1) andalso (XB =< X2) ->
+                         C1 = make_cell(X1D, XA, 0,  Y1D, Y1, 0),
+                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
+                         {C1, C2};
+                     % if the delete clips the right hand site then set the right-hand
+                     % of the range to the LEFT most value of the clip
+                     (XA >= X1) andalso (XA =< X2) andalso (XB >= X2) ->
+                         C2 = make_cell(X2D, XA, 0, Y2D, Y2, 0),
+                         {Cell1, C2};
+                     % if the delete intersects the range then offset the right
+                     % hand only
+                     (XA >= X1) andalso (XB =< X2) ->
+                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
+                         {Cell1, C2}
+                 end,
+    Prefix ++ NC1 ++ ":" ++ NC2;
+% this clause is for a column insert
+make_new_range(Prefix, Cell1, Cell2, {X1D, X1, Y1D, Y1},
+               {X2D, X2, Y2D, Y2},
+               #refX{obj = {column, {XA, XB}}} = _From, {XO, 0 = _YO})
+  when (XO > 0)->
+    {NC1, NC2} = if
+                     % if both columns are to the left of the range
+                     % then offset them both
+                     (XA < X1) andalso (XB < X1) ->
+                         C1 = make_cell(X1D, X1, XO, Y1D, Y1, 0),
+                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
+                         {C1, C2};
+                     % if both columns are to the right of the range
+                     % then offset neither
+                     (XA > X2) andalso (XB > X2) -> {Cell1, Cell2};
+                     % if the insert clips the left hand side then offset
+                     % both sides
+                     (XA =< X1) andalso (XB >= X1) andalso (XB =< X2) ->
+                         C1 = make_cell(X1D, X1, XO, Y1D, Y1, 0),
+                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
+                         {C1, C2};
+                     % if the insert clips the right hand site then set the right-hand
+                     % of the range to the offset of the right hand of the clip
+                     (XA >= X1) andalso (XA =< X2) andalso (XB >= X2) ->
+                         C2 = make_cell(X2D, XB, XO, Y2D, Y2, 0),
+                         {Cell1, C2};
+                     % if the delete intersects the range then offset the right
+                     % hand only
+                     (XA >= X1) andalso (XB =< X2) ->
+                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
+                         {Cell1, C2}
+                 end,
+    Prefix ++ NC1 ++ ":" ++ NC2;
+% this clause is for a row delete
+make_new_range(Prefix, Cell1, Cell2, {X1D, X1, Y1D, Y1},
+               {X2D, X2, Y2D, Y2},
+               #refX{obj = {row, {YA, YB}}} = _From, {0 = _XO, YO})
+  when (YO < 0) ->
+    {NC1, NC2} = if
+                     % if both rows are above the range then offset them both
+                     (YA < Y1) andalso (YB < Y1) ->
+                         C1 = make_cell(X1D, X1, 0, Y1D, Y1, YO),
+                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
+                         {C1, C2};
+                     % if both rows are below the range then offset neither
+                     (YA > Y2) andalso (YB > Y2) -> {Cell1, Cell2};
+                     % if the delete clips the top then set the top of the range
+                     % to the top of the clip
+                     (YA =< Y1) andalso (YB >= Y1) andalso (YB =< Y2) ->
+                         C1 = make_cell(X1D, X1, 0, Y1D, YA, 0),
+                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
+                         {C1, C2};
+                     % if the delete clips the bottom then set the bottom of the 
+                     % range to the top of the clip
+                     (YA >= Y1) andalso (YA =< Y2) andalso (YB >= Y2) ->
+                         C2 = make_cell(X2D, X2, 0, Y2D, YA, 0),
+                         {Cell1, C2};
+                     % if the delete intersects the range then offset the bottom
+                     % of the range only
+                     (YA >= Y1) andalso (YB =< Y2) ->
+                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
+                         {Cell1, C2}
+                 end,
+    Prefix ++ NC1 ++ ":" ++ NC2;
+% this clause is for a row insert
+make_new_range(Prefix, Cell1, Cell2, {X1D, X1, Y1D, Y1},
+               {X2D, X2, Y2D, Y2},
+               #refX{obj = {row, {YA, YB}}} = _From, {0 = _XO, YO})
+  when (YO > 0)->
+    {NC1, NC2} = if
+                     % if both rows are above the range offset them both
+                     (YA < Y1) andalso (YB < Y1) ->
+                         C1 = make_cell(X1D, X1, 0, Y1D, Y1, YO),
+                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
+                         {C1, C2};
+                     % if both rows are below the range offset neither
+                     (YA > Y2) andalso (YB > Y2) -> {Cell1, Cell2};
+                     % if the insert clips the top then offset the whole range
+                     (YA =< Y1) andalso (YB >= Y1) andalso (YB =< Y2) ->
+                         C1 = make_cell(X1D, X1, 0, Y1D, Y1, 0),
+                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
+                         {C1, C2};
+                     % if the insert clips the bottom then set the new bottom
+                     % to the bottom of the clip
+                     (YA >= Y1) andalso (YA =< Y2) andalso (YB >= Y2) ->
+                         C2 = make_cell(X2D, X2, 0, Y2D, YB, 0),
+                         {Cell1, C2};
+                     % if the delete intersects the range then offset the bottom
+                     % only
+                     (YA >= Y1) andalso (YB =< Y2) ->
+                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
+                         {Cell1, C2}
+                 end,
+    Prefix ++ NC1 ++ ":" ++ NC2;
+make_new_range(_Prefix, _Cell1, _Cell2, {_X1D, _X1, _Y1D, _Y1},
+               {_X2D, _X2, _Y2D, _Y2},
+               #refX{obj = {range, _}} = _From, {_XO, _YO}) ->
+    exit("make_new_range for range not written yet!");
+make_new_range(_Prefix, _Cell1, _Cell2, {_X1D, _X1, _Y1D, _Y1},
+               {_X2D, _X2, _Y2D, _Y2},
+               #refX{obj = {cell, _}} = _From, {_XO, _YO}) ->
+    exit("make_new_range for not written yet!").        
 
 % used in copy'n'paste, drag'n'drops etc...
 offset(Toks, XOffset, YOffset) ->
     offset1(Toks, XOffset, YOffset, []).
 
 offset1([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
-offset1([#cellref{text = Text} = H | T], XOffset, YOffset, Acc) ->
+offset1([#cellref{text = Text}
+         = H | T], XOffset, YOffset, Acc) ->
     Cell = muin_util:just_ref(Text),
     Prefix = case muin_util:just_path(Text) of
                  "/"   -> "";
@@ -2634,28 +2799,15 @@ shift_remote_links2(Site, [H | T], To) ->
     ok = mnesia:write(trans(Site, NewLink)),
     shift_remote_links2(Site, T, To).
 
-deref_and_delink_child({#refX{site = S} = Parent, Children}, DeRefX) ->
-    % first deref the kids
-    Fun1 = fun(X, Acc) ->
-                  [{X, {"formula", Formula}}] = read_attrs(X, ["formula"]),
-                  {Status, NewFormula} = deref(Formula, DeRefX),
-                   % we just rewrite this and let it recalculate as per...
-                   ok = write_attr(X, {"formula", NewFormula}),
-                   case Status of
-                       dirty -> [{dirty, X} | Acc];
-                       clean -> Acc
-                   end
-          end,
-    Status = lists:foldl(Fun1, [],  Children),
-    % now delete the links
-    PIdx = read_local_item_index(Parent),
-    Fun2 = fun(X) ->
-                   CIdx = read_local_item_index(X),
-                   Rec = #local_cell_link{parentidx = PIdx, childidx = CIdx},
-                   ok = delete_recs(S, [Rec])
-           end,
-    lists:foreach(Fun2, Children),
-    Status.
+deref_child(#refX{site = S} = Child, DeRefX) ->
+    [{Child, {"formula", Formula}}] = read_attrs(Child, ["formula"]),
+    {Status, NewFormula} = deref(Formula, DeRefX),
+    % we just rewrite this and let it recalculate as per...
+    ok = write_attr(Child, {"formula", NewFormula}),
+    case Status of
+        dirty -> {dirty, Child};
+        clean -> []
+    end.
 
 % dereferences a formula
 deref([$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
@@ -2664,9 +2816,22 @@ deref([$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
     make_formula(NewToks).
 
 deref1([], _DeRefX, Acc) -> lists:reverse(Acc);
-deref1([#rangeref{path = Path, text = Text} = H | T], DeRefX, Acc) ->
+deref1([#rangeref{text = Text} | T], DeRefX, Acc) ->
     % only deref the range if it is completely obliterated by the deletion
-    NewTok = deref2(H, Text, Path, DeRefX),
+    #refX{obj = Obj1} = DeRefX,
+    Range = muin_util:just_ref(Text),
+    Prefix = case muin_util:just_path(Text) of
+                 "/" -> [];
+                 Pre -> Pre
+             end,
+    Obj2 = hn_util:parse_ref(Range),
+    NewTok = case deref_overlap(Text, Obj1, Obj2) of
+                 {deref, "#REF!"} -> {deref, Prefix ++ "#REF!"};
+                 {recalc, Str}    -> {recalc, Prefix ++ Str};
+                 {formula, Str}   -> {formula, Prefix ++ Str}
+                 % O              -> io:format("O is ~p~n", [O]),
+                 %                   Prefix ++ O
+             end,
     deref1(T, DeRefX, [NewTok | Acc]);
 deref1([#cellref{path = Path, text = Text} = H | T], DeRefX, Acc) ->
     NewTok = deref2(H, Text, Path, DeRefX),
@@ -2708,9 +2873,9 @@ deref2(H, Text, Path, DeRefX) ->
 
 % if Obj1 completely subsumes Obj2 then the reference to Obj2 should 
 % be dereferenced (return 'deref')
-% if Obj1 partially subsumes Obj2 then the reference to Obj2 should
+% % if Obj1 partially subsumes Obj2 then the reference to Obj2 should
 % be rewitten (return 'rewrite')
-% if there is no overlap then return 'unchanged'
+% if there is partial or no overlap then return 'unchanged'
 deref_overlap(Text, Obj1, Obj2) ->
     % the first thing we do is check each corner of Objs2 to see if it is inside
     % Obj1. Depending on the pattern of corners we rewrite the formula
@@ -2734,7 +2899,7 @@ deref_overlap(Text, Obj1, Obj2) ->
     case {IntTL, IntBL, IntTR, IntBR} of
         % all included - deref!
         {in,  in,  in,  in}  -> {deref, "#REF!"};
-        % none included you need to recheck incase the delete area
+        % none included you need to recheck in case the delete area
         % is contained in, or transects the target area
         {out, out, out, out} -> recheck_overlay(Text, Obj1, Obj2);
         % one corner included - deref!
@@ -2743,13 +2908,14 @@ deref_overlap(Text, Obj1, Obj2) ->
         {out, out, in,  out} -> {deref, "#REF!"};
         {out, out, out, in}  -> {deref, "#REF!"};
         % two corners included rewrite
-        {in,  in,  out, out} -> rewrite(X2, Obj2, Text, left);
+        {in,  in,  out, out} -> rewrite(X1, X2, Obj2, Text, left); % left del
         {out, out, in,  in}  -> rewrite(X1, Obj2, Text, right);
-        {in,  out, in,  out} -> rewrite(Y2, Obj2, Text, top);
+        {in,  out, in,  out} -> rewrite(Y1, Y2, Obj2, Text, top);  % top del
         {out, in,  out, in}  -> rewrite(Y1, Obj2, Text, bottom);
-        {transect, transect, out, out} -> rewrite(X2, Obj2, Text, left);
+        % transects are column/row intersects
+        {transect, transect, out, out} -> rewrite(X1, X2, Obj2, Text, left); % left del
         {out, out, transect, transect} -> rewrite(X1, Obj2, Text, right);
-        {transect, out, transect, out} -> rewrite(Y2, Obj2, Text, top);
+        {transect, out, transect, out} -> rewrite(Y1, Y2, Obj2, Text, top);  % top del
         {out, transect, out, transect} -> rewrite(Y1, Obj2, Text, bottom);
         {transect, transect, transect, transect} -> {deref, "#REF!"}
     end.
@@ -2800,92 +2966,94 @@ intersect(XX1, YY1, X1, Y1, X2, Y2) ->
         true                                                  -> out
     end.         
 
-rewrite(XO, {range, _}, Text, left)   ->
+% rewrite/5
+rewrite(X1O, X2O, {range, _}, Text, left)   ->
     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
-    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
-        make_cell(XD2, (X2 - (XO - X1 + 1)), 0, YD2, Y2, 0),
-    {drop_in_str, S};
+    S = make_cell(XD1, X1O, 0, YD1, Y1, 0) ++ ":" ++
+        make_cell(XD2, (X2 - (X2O - X1O + 1)), 0, YD2, Y2, 0),
+    {recalc, S};
 
-rewrite(XO, {column, _}, Text, left)   ->
+rewrite(X1O, X2O, {column, _}, Text, left)   ->
     {XD1, X1, XD2, X2} = parse_cols(Text),
-    S = make_col(XD1, X1) ++ ":" ++ make_col(XD2, (X2 - (XO - X1 + 1))),
-    {drop_in_str, S};
+    S = make_col(XD1, X1O) ++ ":" ++ make_col(XD2, (X2 - (X2O - X1O + 1))),
+    {recalc, S};
 
+rewrite(Y1O, Y2O, {range, _}, Text, top)   ->
+    {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
+    S = make_cell(XD1, X1, 0, YD1, Y1O, 0) ++ ":" ++
+        make_cell(XD2, X2, 0, YD2, (Y2 - (Y2O - Y1O + 1)), 0),
+    {recalc, S};
+
+rewrite(Y1O, Y2O, {row, _}, Text, top)   ->
+    {YD1, Y1, YD2, Y2} = parse_rows(Text),
+    S = make_row(YD1, Y1O) ++ ":" ++ make_row(YD2, (Y2 - (Y2O - Y1O + 1))),
+    {recalc, S}.
+
+% rewrite/4
 rewrite(XO, {range, _}, Text, right)  ->
     {XD1, X1, YD1, Y1, XD2, _X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, (XO - 1), 0, YD2, Y2, 0),
-    {drop_in_str, S};
+    {recalc, S};
 
 rewrite(XO, {column, _}, Text, right)  ->
     {XD1, X1, XD2, _X2} = parse_cols(Text),
     S = make_col(XD1, X1) ++ ":" ++ make_col(XD2, (XO - 1)),
-    {drop_in_str, S};
+    {recalc, S};
 
 rewrite(XO, {range, _}, Text, middle_column)  ->
     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, (X2 - XO), 0, YD2, Y2, 0),
-    {drop_in_str, S};
+    {recalc, S};
 
 rewrite(XO, {column, _}, Text, middle)  ->
     {XD1, X1, XD2, X2} = parse_cols(Text),
     S = make_col(XD1, X1) ++ ":" ++ make_col(XD2, (X2 - XO)),
-    {drop_in_str, S};
-
-rewrite(YO, {range, _}, Text, top)   ->
-    {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
-    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
-        make_cell(XD2, X2, 0, YD2, (Y2 - (YO - Y1 + 1)), 0),
-    {drop_in_str, S};
-
-rewrite(YO, {row, _}, Text, top)   ->
-    {YD1, Y1, YD2, Y2} = parse_rows(Text),
-    S = make_row(YD1, Y1) ++ ":" ++ make_row(YD2, (Y2 - (YO - Y1 + 1))),
-    {drop_in_str, S};
+    {recalc, S};
 
 rewrite(YO, {range, _}, Text, bottom) ->
     {XD1, X1, YD1, Y1, XD2, X2, YD2, _Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, X2, 0, YD2, (YO - 1), 0),
-    {drop_in_str, S};
+    {recalc, S};
 
 rewrite(YO, {row, _}, Text, bottom) ->
     {YD1, Y1, YD2, _Y2} = parse_rows(Text),
     S = make_row(YD1, Y1) ++ ":" ++ make_row(YD2, (YO - 1)),
-    {drop_in_str, S};
+    {recalc, S};
 
 rewrite(YO, {range, _}, Text, middle_row) ->
     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, X2, 0, YD2, (Y2 - YO), 0),
-    {drop_in_str, S};
+    {recalc, S};
 
 rewrite(YO, {row, _}, Text, middle) ->
     {YD1, Y1, YD2, Y2} = parse_rows(Text),
     S = make_row(YD1, Y1) ++ ":" ++ make_row(YD2, (Y2 - YO)),
-    {drop_in_str, S}.
+    {recalc, S}.
 
 % page deletes always derefence
 recheck_overlay(_Text, {page, "/"}, _Target) -> {deref, "#REF!"};
 % cell targets that have matched so far ain't gonna
-recheck_overlay(Text, _DelX, {cell, _}) -> {drop_in_str, Text};
+recheck_overlay(Text, _DelX, {cell, _}) -> {formula, Text};
 % cell deletes that haven't matched a row or column so far ain't gonna
 recheck_overlay(Text, {cell, _}, {Type, _})
-  when ((Type == row) orelse (Type == column)) -> {drop_in_str, Text};
+  when ((Type == row) orelse (Type == column)) -> {formula, Text};
 % cols/rows cols/range comparisons always fail
 recheck_overlay(Text, {Type, _}, {column, _})
-  when ((Type == row) orelse (Type == range)) -> {drop_in_str, Text};
+  when ((Type == row) orelse (Type == range)) -> {formula, Text};
 % rows/cols comparisons always fail
 recheck_overlay(Text, {Type, _}, {row, _})
-      when ((Type == column) orelse (Type == range)) -> {drop_in_str, Text};
+      when ((Type == column) orelse (Type == range)) -> {formula, Text};
 % check a row/row
 recheck_overlay(Text, {row, {X1, X2}}, {row, {XX1, XX2}} = Tgt) ->
     if
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2) ->
             rewrite((X2 - X1 + 1), Tgt, Text, middle);
         true ->
-            {drop_in_str, Text}
+            {formula, Text}
     end;
 % check a col/col
 recheck_overlay(Text, {column, {Y1, Y2}}, {column, {YY1, YY2}} = Tgt) ->
@@ -2893,28 +3061,28 @@ recheck_overlay(Text, {column, {Y1, Y2}}, {column, {YY1, YY2}} = Tgt) ->
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
             rewrite((Y2 - Y1 + 1), Tgt, Text, middle);
         true ->
-            {drop_in_str, Text}
+            {formula, Text}
     end;
 % check range/range
 recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}}) ->
     if
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2),
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) -> {deref, "#REF!"};
-        true                                               -> {drop_in_str, Text}
+        true                                               -> {formula, Text}
     end;
 % check range/column
 recheck_overlay(Text, {column, {X1, X2}}, {range, {XX1, _YY1, XX2, _YY2}} = Tgt) ->
     if
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2) ->
             rewrite((X2 - X1 + 1), Tgt, Text, middle_column);
-        true -> {drop_in_str, Text}
+        true -> {formula, Text}
     end;
 % check range/row
 recheck_overlay(Text, {row, {Y1, Y2}}, {range, {_XX1, YY1, _XX2, YY2}} = Tgt) ->
     if
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
             rewrite((Y2 - Y1 + 1), Tgt, Text, middle_row);
-        true -> {drop_in_str, Text}
+        true -> {formula, Text}
     end.
 
 expand({cell, {X, Y}})            -> {X, Y, X, Y};
@@ -2924,15 +3092,15 @@ expand({row, {Y1, Y2}})           -> {zero, Y1, inf, Y2}; % short for infinity
 expand({page, "/"})              -> {zero, inf, zero, inf}.
 
 % different to offset_formula because it truncates ranges
-offset_formula_with_ranges([$=|Formula], CPath, ToPath, FromCell, ToCell) ->
+offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
-    NewToks = offset_with_ranges(Toks, CPath, ToPath, FromCell, ToCell),
+    NewToks = offset_with_ranges(Toks, Cell, From, Offset),
     {Status, NewFormula} = make_formula(NewToks),
     {Status, NewFormula};
-offset_formula_with_ranges(Value, _CPath, _ToPath, _FromCell, _ToCell) -> Value.
+offset_fm_w_rng(_Cell, Value, _From, _Offset) -> Value.
 
 offset_formula(Formula, {XO, YO}) ->
     % the xfl_lexer:lex takes a cell address to lex against
@@ -2970,7 +3138,7 @@ write_formula1(RefX, Fla) ->
                                            "=" ++ Fla);
         {error, Error} ->
             % bits:log("formula " ++ Fla ++ "fails to run with " ++ atom_to_list(Error)),
-            %io:format("for ~p~n-with ~p fails with ~p~n", [RefX, Fla, Error]),
+            io:format("for ~p~n-with ~p fails with ~p~n", [RefX, Fla, Error]),
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R,  Error, "=" ++ Fla);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
@@ -3209,14 +3377,17 @@ match_ref(#refX{site = S} = RefX, Key) ->
                end
     end.
 
-make_or(Attrs, PlcHoldr) -> make_or(Attrs, PlcHoldr, []).
+make_or(Attrs, PlcHoldr)  -> make_clause(Attrs, PlcHoldr, 'or').
+make_and(Attrs, PlcHoldr) -> make_clause(Attrs, PlcHoldr, 'and').
 
-make_or([], _, Acc)      -> case length(Acc) of
-                                0 -> [];   % no attributes get everything
-                                1 ->  Acc; % 1 attribute - no 'or' statement
-                                _ -> [list_to_tuple(lists:flatten(['or', Acc]))]
+make_clause(Attrs, PlcHoldr, Op) -> make_clause(Attrs, PlcHoldr, Op, []).
+
+make_clause([], _, Op, Acc)      -> case length(Acc) of
+                                        0 -> [];   % no attributes get everything
+                                        1 ->  Acc; % 1 attribute - no Op statement
+                                        _ -> [list_to_tuple(lists:flatten([Op, Acc]))]
                             end;
-make_or([H | T], PH, A)  -> make_or(T, PH, [{'==', PH, H} | A]).
+make_clause([H | T], PH, Op, A)  -> make_clause(T, PH, Op, [{'==', PH, H} | A]).
 
 delete_style_attr(#refX{site = S} = RefX, Key)  ->
     % this function works by overwriting the set style attribute in the
@@ -3337,16 +3508,16 @@ deref_overlap_TEST() ->
             % cells match
             {"A1",    {cell, {1, 1}},        {cell, {1, 1}},        {deref, "#REF!"}},
             % cells don't match
-            {"A1",    {cell, {2, 1}},        {cell, {1, 1}},        {drop_in_str, "A1"}},
+            {"A1",    {cell, {2, 1}},        {cell, {1, 1}},        {formula, "A1"}},
             % cell in a range
             {"A1",    {cell, {1, 1}},        {range, {1, 1, 2, 3}}, {deref, "#REF!"}},
             % cell not in a range
-            {"A1",    {cell, {4, 4}},        {range, {1, 1, 2, 3}}, {drop_in_str, "A1"}},
+            {"A1",    {cell, {4, 4}},        {range, {1, 1, 2, 3}}, {formula, "A1"}},
 
             % ranges match
             {"A1:B2", {range, {1, 1, 2, 2}}, {range, {1, 1, 2, 2}}, {deref, "#REF!"}},
             % ranges don't overlap
-            {"A1:B2", {range, {1, 1, 2, 2}}, {range, {3, 3, 4, 4}}, {drop_in_str, "A1:B2"}},
+            {"A1:B2", {range, {1, 1, 2, 2}}, {range, {3, 3, 4, 4}}, {formula, "A1:B2"}},
             % target range inside delete range
             {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 5, 5}}, {deref, "#REF!"}},
             % delete range inside target range
@@ -3360,98 +3531,98 @@ deref_overlap_TEST() ->
             % delete range clips bottom-left
             {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 4, 2, 5}}, {deref, "#REF!"}},
             % delete range slices left
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 2, 9}}, {drop_in_str, "B2:C4"}},
+            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 2, 9}}, {recalc, "A2:B4"}},
             % delete range slices top
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 7, 2}}, {drop_in_str, "B2:D3"}},
+            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 7, 2}}, {recalc, "B1:D2"}},
             % delete range slices bottom
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 4, 5, 9}}, {drop_in_str, "B2:D3"}},
+            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 4, 5, 9}}, {recalc, "B2:D3"}},
             % delete range slices right
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {4, 1, 5, 9}}, {drop_in_str, "B2:C4"}},
+            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {4, 1, 5, 9}}, {recalc, "B2:C4"}},
 
             % cell in a column
             {"C5",    {cell, {3, 5}},        {column, {3, 4}},      {deref, "#REF!"}},
             % cell not in a column
-            {"C5",    {cell, {3, 5}},        {column, {6, 7}},      {drop_in_str, "C5"}},
+            {"C5",    {cell, {3, 5}},        {column, {6, 7}},      {formula, "C5"}},
             % range in a column (1)
             {"C5:E8", {range, {3, 5, 5, 8}}, {column, {3, 5}},      {deref, "#REF!"}},
             % range in a column (2)
             {"C5:E8", {range, {3, 5, 5, 8}}, {column, {2, 6}},      {deref, "#REF!"}},
             % delete columns slices left (1)
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {3, 3}},      {drop_in_str, "C5:D8"}},
+            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {3, 3}},      {recalc, "C5:D8"}},
             % delete columns slices left (2)
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {2, 3}},      {drop_in_str, "C5:D8"}},
+            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {2, 3}},      {recalc, "B5:C8"}},
             % delete columns slices right (1)
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {5, 5}},      {drop_in_str, "C5:D8"}},
+            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {5, 5}},      {recalc, "C5:D8"}},
             % delete columns slices right (2)
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {5, 6}},      {drop_in_str, "C5:D8"}},
+            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {5, 6}},      {recalc, "C5:D8"}},
             % delete column slices middle
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {4, 4}},      {drop_in_str, "C5:D8"}},
+            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {4, 4}},      {recalc, "C5:D8"}},
             
             
             % cell in a row
             {"C5",    {cell, {3, 5}},        {row, {4, 6}},         {deref, "#REF!"}},
             % cell not in a row
-            {"C5",    {cell, {3, 5}},        {row, {6, 7}},         {drop_in_str, "C5"}},
+            {"C5",    {cell, {3, 5}},        {row, {6, 7}},         {formula, "C5"}},
             % range in a row (1)
             {"C5:D8", {range, {3, 5, 4, 8}}, {row, {5, 8}},         {deref, "#REF!"}},
             % range in a row (2)
             {"C5:D8", {range, {3, 5, 4, 8}}, {row, {4, 9}},         {deref, "#REF!"}},
             % delete row slices top (1)
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {5, 5}},         {drop_in_str, "C5:D7"}},
+            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {5, 5}},         {recalc, "C5:D7"}},
             % delete row slices top (2)
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {4, 5}},         {drop_in_str, "C5:D7"}},
+            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {4, 5}},         {recalc, "C4:D6"}},
             % delete row slices bottom (1)
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {8, 8}},         {drop_in_str, "C5:D7"}},
+            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {8, 8}},         {recalc, "C5:D7"}},
             % delete row slices bottom (2)
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {8, 9}},         {drop_in_str, "C5:D7"}},
+            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {8, 9}},         {recalc, "C5:D7"}},
             % delete row slices middle
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {6, 7}},         {drop_in_str, "C5:D6"}},
+            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {6, 7}},         {recalc, "C5:D6"}},
             
             % columns can't be derefed by cell deletes
-            {"C:F",   {column, {3, 6}},      {cell, {2, 3}},        {drop_in_str, "C:F"}},
+            {"C:F",   {column, {3, 6}},      {cell, {2, 3}},        {formula, "C:F"}},
             % columns can't be derefed by range deletes
-            {"C:F",   {column, {3, 6}},      {range, {2, 3, 4, 5}}, {drop_in_str, "C:F"}},
+            {"C:F",   {column, {3, 6}},      {range, {2, 3, 4, 5}}, {formula, "C:F"}},
             % columns can't be derefed by row deletes
-            {"C:F",   {column, {3, 6}},      {row, {2, 3}},         {drop_in_str, "C:F"}},
+            {"C:F",   {column, {3, 6}},      {row, {2, 3}},         {formula, "C:F"}},
             % column inside a column delete (1)
             {"C:F",   {column, {3, 6}},      {column, {2, 7}},      {deref, "#REF!"}},
             % column inside a column delete (2)
             {"C:F",   {column, {3, 6}},      {column, {3, 6}},      {deref, "#REF!"}},
             % column not inside a column delete
-            {"C:F",   {column, {3, 6}},      {column, {8, 9}},      {drop_in_str, "C:F"}},
+            {"C:F",   {column, {3, 6}},      {column, {8, 9}},      {formula, "C:F"}},
             % column delete slices left (1)
-            {"C:F",   {column, {3, 6}},      {column, {3, 3}},      {drop_in_str, "C:E"}},
+            {"C:F",   {column, {3, 6}},      {column, {3, 3}},      {recalc, "C:E"}},
             % column delete slices left (2)
-            {"C:F",   {column, {3, 6}},      {column, {2, 4}},      {drop_in_str, "C:D"}},
+            {"C:F",   {column, {3, 6}},      {column, {2, 4}},      {recalc, "B:C"}},
             % column delete slices right (1)
-            {"C:F",   {column, {3, 6}},      {column, {6, 6}},      {drop_in_str, "C:E"}},
+            {"C:F",   {column, {3, 6}},      {column, {6, 6}},      {recalc, "C:E"}},
             % column delete slices right (2)
-            {"C:F",   {column, {3, 6}},      {column, {5, 7}},      {drop_in_str, "C:D"}},
+            {"C:F",   {column, {3, 6}},      {column, {5, 7}},      {recalc, "C:D"}},
             % column delete slices middles
-            {"C:F",   {column, {3, 6}},      {column, {5, 5}},      {drop_in_str, "C:E"}},
+            {"C:F",   {column, {3, 6}},      {column, {5, 5}},      {recalc, "C:E"}},
             
             % rows can't be derefed by cell deletes
-            {"3:6",   {row, {3, 6}},         {cell, {2, 3}},        {drop_in_str, "3:6"}},
+            {"3:6",   {row, {3, 6}},         {cell, {2, 3}},        {formula, "3:6"}},
             % rows can't be derefed by range deletes
-            {"3:6",   {row, {3, 6}},         {range, {2, 3, 4, 5}}, {drop_in_str, "3:6"}},
+            {"3:6",   {row, {3, 6}},         {range, {2, 3, 4, 5}}, {formula, "3:6"}},
             % rows can't be derefed by column deletes
-            {"3:6",   {row, {3, 6}},         {column, {2, 3}},      {drop_in_str, "3:6"}},
+            {"3:6",   {row, {3, 6}},         {column, {2, 3}},      {formula, "3:6"}},
             % row inside a row delete (1)
             {"3:6",   {row, {3, 6}},         {row, {3, 6}},         {deref, "#REF!"}},
             % row inside a row delete (2)
             {"3:6",   {row, {3, 6}},         {row, {2, 7}},         {deref, "#REF!"}},
             % row not inside a row delete
-            {"3:6",   {row, {3, 6}},         {row, {8, 9}},         {drop_in_str, "3:6"}},
+            {"3:6",   {row, {3, 6}},         {row, {8, 9}},         {formula, "3:6"}},
             % row slices top (1)
-            {"3:6",   {row, {3, 6}},         {row, {3, 3}},         {drop_in_str, "3:5"}},
+            {"3:6",   {row, {3, 6}},         {row, {3, 3}},         {recalc, "3:5"}},
             % row slices top (2)
-            {"3:6",   {row, {3, 6}},         {row, {2, 3}},         {drop_in_str, "3:5"}},
+            {"3:6",   {row, {3, 6}},         {row, {2, 3}},         {recalc, "2:4"}},
             % row slices bottom (1)
-            {"3:6",   {row, {3, 6}},         {row, {6, 6}},         {drop_in_str, "3:5"}},
+            {"3:6",   {row, {3, 6}},         {row, {6, 6}},         {recalc, "3:5"}},
             % row slices bottom (2)
-            {"3:6",   {row, {3, 6}},         {row, {6, 7}},         {drop_in_str, "3:5"}},
+            {"3:6",   {row, {3, 6}},         {row, {6, 7}},         {recalc, "3:5"}},
             % row slices middle
-            {"3:6",   {row, {3, 6}},         {row, {4, 4}},         {drop_in_str, "3:5"}}
+            {"3:6",   {row, {3, 6}},         {row, {4, 4}},         {recalc, "3:5"}}
            ],
     [test_ov(X) || X <- Tests].
             
@@ -3459,7 +3630,8 @@ test_ov({Text, Cell, DelX, Return}) ->
     Return1 = deref_overlap(Text, DelX, Cell),
     case Return of
         Return1 -> ok; % io:format("P ~p~n", [Text]);
-        _       -> io:format("F ~p : ~p : ~p : ~p - ~p~n", [Text, Cell, DelX, Return, Return1])
+        _       -> io:format("Fail: ~p : ~p : ~p : ~p - ~p~n",
+                             [Text, Cell, DelX, Return, Return1])
     end.
                    
              

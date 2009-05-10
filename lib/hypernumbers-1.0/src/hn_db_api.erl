@@ -1054,11 +1054,13 @@ move(RefX, Type, Disp)
                 % To make this work we shift the RefX up 1, left 1 
                 % before getting the cells to shift for INSERT
                 % if this is a delete - we need to actually delete the cells
-                Status1 = case Type of
-                         delete -> ?wu:delete_cells(RefX);
-                         insert -> []
-                     end,
-                Status2 = hn_db_wu:shift_cells(RefX, Type, Disp),
+                {Status1, ReWr} = case Type of
+                                      delete -> R = ?wu:read_local_children(RefX),
+                                                S = ?wu:delete_cells(RefX),
+                                                {S, R};
+                                      insert -> {[], []}
+                          end,
+                Status2 = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
                 case Obj of
                     {row,    _} -> ok = ?wu:shift_rows(RefX, Type);
                     {column, _} -> ok = ?wu:shift_cols(RefX, Type);
@@ -1070,14 +1072,13 @@ move(RefX, Type, Disp)
 
                 % OK all our local stuff is sorted, now lets deal with the remote
                 % children
-                {R, Rest} = Obj,
-                Change = {insert, {R, Rest}, Disp},
+                Change = {insert, Obj, Disp},
                 % set the delay to zero
                 ok = ?wu:mark_notify_out_dirty(PageRef, Change, 0),
 
-                Status = lists:merge([Status1, Status2]),
+                Status = lists:flatten([Status1, Status2]),
                 % finally deal with any cells returned from delete_cells that
-                % are dirty - these need to be rewritten now that the link/local_objs
+                % are dirty - these need to be recalculated now that the link/local_objs
                 % tables have been transformed
                 Fun2 = fun({dirty, X}) ->
                                [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"]),
