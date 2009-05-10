@@ -20,6 +20,7 @@
          email/1,
          email_test_results/1,
          email_build_fail/1,
+         
          % HyperNumbers Utils
          compile_html/2,
          delete_gen_html/0,
@@ -30,10 +31,8 @@
          index_to_url/1,
          obj_to_str/1,
          xml_to_val/1,
-         % item_to_xml/1,
          in_range/2,
          to_xml/1,
-         % ref_to_index/1,
          refX_to_index/1,
          range_to_list/1,
          rectify_range/4,
@@ -64,12 +63,8 @@
          list_to_path/1,
 
          % Just some record conversion utilities
-         % refX_to_ref/2,
-         % ref_to_refX/2,
-         % from_hn_item/1,
          refX_from_index/1,
          index_from_refX/1,
-         % index_from_ref/1,
          url_to_refX/1,
 
          % general utilities
@@ -95,7 +90,6 @@ get_offset(delete, D, {range,  {X1, Y1, X2, Y2}}) -> g_o1(D, -(X2 - X1 + 1),
                                                           -(Y2 - Y1 + 1)). 
 g_o1(vertical, _X, Y)   -> {0, Y};
 g_o1(horizontal, X, _Y) -> {X, 0}.
-
 
 get_hosts(List) when is_list(List) -> get_hosts1(List, []).
 
@@ -159,38 +153,17 @@ jsonify_val(Else)                           -> Else.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
-%%% These functions convert to and from #refX, #ref, #hn_item                %%%
-%%% and #index records                                                       %%%
+%%% These functions convert to and from #refX and  #index records and Urls   %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 url_to_refX(Url) ->
     parse_url(Url).
-
-%refX_to_ref(RefX, Name) ->
-%    #refX{site = S, path = P, obj = R, auth = A} = RefX,
-%    #ref{site = S, path = P, ref = R, name = Name, auth = A}.
-
-%ref_to_refX(Ref, Val) ->
-%    #ref{site = S, path = P, ref = R, name = Key, auth = A} = Ref,
-%    RefX = #refX{site = S, path = P, obj = R, auth = A},
-%    {RefX, {Key, Val}}.
-
-%from_hn_item(List) -> from_hn_item(List, []).
-
-%from_hn_item([], Acc)      -> Acc;
-%from_hn_item([H | T], Acc) -> #hn_item{addr = Ref, val = V} = H, 
-%                              NewAcc = ref_to_refX(Ref, V),
-%                              from_hn_item(T, [NewAcc | Acc]).
 
 refX_from_index(#index{site = S, path = P, column = X, row = Y}) ->
     #refX{site = S, path = P, obj = {cell, {X, Y}}}.
 
 index_from_refX(#refX{site = S, path = P, obj = {cell, {X, Y}}}) ->
     #index{site = S, path = P, column = X, row = Y}.
-
-%index_from_ref(#ref{site = S, path = P, ref = {cell, {X, Y}}}) ->
-%    #index{site = S, path = P, column = X, row = Y}.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -241,18 +214,13 @@ index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
 list_to_path([])   -> "/";
 list_to_path(Path) -> "/" ++ string:join(Path, "/") ++ "/".
 
-%ref_to_index(#ref{site = S, path = P, ref= {cell, {X, Y}}}) ->
-%    #index{site = S, path = P, column = X, row = Y}.
-
 refX_to_index(#refX{site = S, path = P, obj = {cell, {X, Y}}}) ->
     #index{site = S, path = P, column = X, row = Y}.
 
 obj_to_str({page,Path})           -> Path;   
 obj_to_str({cell,{X,Y}})          -> tconv:to_b26(X)++text(Y);
 obj_to_str({row,{Y,Y}})           -> text(Y);
-% obj_to_str({row,{Y}})             -> text(Y); % old compatibility - delete!
 obj_to_str({row,{Y1,Y2}})         -> text(Y1)++":"++text(Y2);
-% obj_to_str({column,X})            -> tconv:to_b26(X); % old compatibility - delete!
 obj_to_str({column,{X,X}})        -> tconv:to_b26(X);
 obj_to_str({column,{X1,X2}})      -> tconv:to_b26(X1)++":"++tconv:to_b26(X2);
 obj_to_str({range,{X1,Y1,X2,Y2}}) -> tconv:to_b26(X1)++text(Y1)++":"++
@@ -267,29 +235,8 @@ xml_to_val({string,[],[Ref]})     -> Ref;
 xml_to_val({datetime, [], [Ref]}) -> Ref;
 xml_to_val(Else)                  -> Else.
 
-%%% Turn a hn_item record into its xml <ref> display
-%item_to_xml(#hn_item{addr = A, val = V}) ->
-
-%    Type = atom_to_list(element(1, A#ref.ref)),
-%    Str  = hn_util:obj_to_str(A#ref.ref),
-
-%    Value = case A#ref.name of
-%                value    -> to_xml(V);
-%                rawvalue -> to_xml(V);
-%                style    -> to_xml(V);
-%                _Else    -> to_val(V)
-%            end,    
-%    {ref, [{type, Type}, {ref, Str}], [{A#ref.name, [], Value}]}.
-
 in_range({range,{X1,Y1,X2,Y2}}, {cell,{X,Y}}) ->
     Y >= Y1 andalso Y =< Y2 andalso X >= X1 andalso X =< X2.
-
-%to_val({xml,Xml}) -> Xml;
-%to_val(Else) ->
-%    case io_lib:char_list(Else) of
-%        true  -> [Else];
-%        false -> throw({unmatched_type,Else})
-%    end.
 
 to_xml(true)                     -> [{bool,[],  ["true"]}];
 to_xml(false)                    -> [{bool,[],  ["false"]}];    
@@ -311,7 +258,6 @@ to_xml(Else) ->
         true  -> [{string,[],[Else]}];
         false -> throw({unmatched_type,Else})
     end.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -417,9 +363,7 @@ parse_vars(Query) ->
             end,
 
     Pairs = lists:map(Split,string:tokens(Query,"&")),
-
     {ok,Pairs}.
-
 
 url_encode([H|T]) ->
     if
@@ -442,7 +386,6 @@ url_encode([H|T]) ->
 
 url_encode([]) ->
     [].
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -607,8 +550,6 @@ type_reference(Cell) ->
         _ ->
             range
     end.
-
-
 
 email_build_fail(Rev) ->
     email(?FORMAT(build_failed_tpl(), [Rev])).
