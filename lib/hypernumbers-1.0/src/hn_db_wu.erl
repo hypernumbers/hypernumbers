@@ -2093,9 +2093,6 @@ insert_shift(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
     RefX#refX{obj = {column, {X1-1, X1-1}}};
 insert_shift(RefX, _Disp) -> RefX.
 
-offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
-    RefX#refX{obj = {cell, {X + XO, Y + YO}}}.
-
 local_idx_to_refX(S, Idx) ->
     H = trans(S, #local_objs{idx = Idx, _ = '_'}),
     case mnesia:select(trans(S, local_objs), [{H, [], ['$_']}]) of
@@ -2377,13 +2374,29 @@ make_cell(true, X, XOffset, true, Y, YOffset)  ->
 % drag'n'drop_cell drags and drops a cell ignoring offsets
 % if the row/column part is fixed with a dollar
 drag_n_drop_cell(false, X, XOffset, false, Y, YOffset) ->
-    tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset);
+    if
+        (X + XOffset) <  1 orelse (Y + YOffset) <  1 -> "#REF!";
+        (X + XOffset) >= 1 andalso (Y + YOffset) >= 1 ->
+            tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset)
+    end;
 drag_n_drop_cell(true, X, _XOffset, false, Y, YOffset) ->
-    [$$] ++ tconv:to_b26(X) ++ tconv:to_s(Y + YOffset);
+    if
+        X <  1 orelse (Y + YOffset) <  1 -> "#REF!";
+        X >= 1 andalso (Y + YOffset) >= 1 ->
+            [$$] ++ tconv:to_b26(X) ++ tconv:to_s(Y + YOffset)
+    end;
 drag_n_drop_cell(false, X, XOffset, true, Y, _YOffset) ->
-    tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y);
+    if
+        (X + XOffset) <  1 orelse Y <  1 -> "#REF!";
+        (X + XOffset) >= 1 andalso Y >= 1 ->
+            tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y)
+    end;
 drag_n_drop_cell(true, X, _XOffset, true, Y, _YOffset)  -> 
-    [$$] ++ tconv:to_b26(X) ++ [$$] ++ tconv:to_s(Y).
+    if
+        X <  1 orelse Y <  1 -> "#REF!";
+        X >= 1 andalso Y >= 1 ->
+            [$$] ++ tconv:to_b26(X) ++ [$$] ++ tconv:to_s(Y)
+    end.
 
 make_col(false, X) -> tconv:to_b26(X);
 make_col(true,  X) -> [$$] ++ X.
@@ -2650,12 +2663,15 @@ make_new_range(_Prefix, _Cell1, _Cell2, {_X1D, _X1, _Y1D, _Y1},
                #refX{obj = {cell, _}} = _From, {_XO, _YO}) ->
     exit("make_new_range for not written yet!").        
 
-% used in copy'n'paste, drag'n'drops etc...
-offset(Toks, XOffset, YOffset) ->
-    offset1(Toks, XOffset, YOffset, []).
+offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
+    RefX#refX{obj = {cell, {X + XO, Y + YO}}}.
 
-offset1([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
-offset1([#cellref{text = Text}
+% used in copy'n'paste, drag'n'drops etc...
+d_n_d_c_n_p_offset(Toks, XOffset, YOffset) ->
+    d_n_d_c_n_p_offset1(Toks, XOffset, YOffset, []).
+
+d_n_d_c_n_p_offset1([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
+d_n_d_c_n_p_offset1([#cellref{text = Text}
          = H | T], XOffset, YOffset, Acc) ->
     Cell = muin_util:just_ref(Text),
     Prefix = case muin_util:just_path(Text) of
@@ -2665,8 +2681,8 @@ offset1([#cellref{text = Text}
     {XDollar, X, YDollar, Y} = parse_cell(Cell),
     NewCell = drag_n_drop_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
     NewRef = H#cellref{text = Prefix ++ NewCell},
-    offset1(T, XOffset, YOffset, [NewRef | Acc]);
-offset1([#rangeref{text = Text} = H | T], XOffset, YOffset, Acc) ->
+    d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewRef | Acc]);
+d_n_d_c_n_p_offset1([#rangeref{text = Text} = H | T], XOffset, YOffset, Acc) ->
     Range = muin_util:just_ref(Text),
     Prefix = case muin_util:just_path(Text) of
                  "/"   -> "";
@@ -2678,9 +2694,9 @@ offset1([#rangeref{text = Text} = H | T], XOffset, YOffset, Acc) ->
     NewCell1 = drag_n_drop_cell(X1D, X1, XOffset, Y1D, Y1, YOffset),
     NewCell2 = drag_n_drop_cell(X2D, X2, XOffset, Y2D, Y2, YOffset),
     NewRange = H#rangeref{text = Prefix ++ NewCell1 ++ ":" ++ NewCell2},
-    offset1(T, XOffset, YOffset, [NewRange | Acc]);
-offset1([H | T], XOffset, YOffset, Acc) ->
-    offset1(T, XOffset, YOffset, [H | Acc]).
+    d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewRange | Acc]);
+d_n_d_c_n_p_offset1([H | T], XOffset, YOffset, Acc) ->
+    d_n_d_c_n_p_offset1(T, XOffset, YOffset, [H | Acc]).
 
 filter_for_drag_n_drop(List) -> fl(List, [], []).
 
@@ -3107,7 +3123,7 @@ offset_formula(Formula, {XO, YO}) ->
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
-    NewToks = offset(Toks, XO, YO),
+    NewToks = d_n_d_c_n_p_offset(Toks, XO, YO),
     {_Status, NewFormula} = make_formula(NewToks),
     NewFormula.
 
