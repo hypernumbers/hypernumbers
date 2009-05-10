@@ -127,24 +127,6 @@ proc_dirty(Rec) ->
 %%%
 %%% Utility Functions
 %%% 
-%% shrink(ParentsList, List) -> shrink(ParentsList, List, []).
-
-%% shrink([], _List, Acc)         -> Acc;
-%% shrink([Dirty | T], List, Acc) -> DirtyParents = has_dirty_parent(List, Dirty),
-%%                                   NewAcc = case DirtyParents of
-%%                                                false  -> Acc;
-%%                                                Dirty2 -> [Dirty2 | Acc]
-%%                                            end,
-%%                                   shrink(T, List, NewAcc).
-
-%% %% One true is good enough!
-%% has_dirty_parent([], _Dirty)       -> false;
-%% has_dirty_parent([H | T], Parent)  -> {dirty_cell, Index,_} = H,
-%%                                       {_Cell, Links} = Parent,
-%%                                       case lists:keymember(Index, 3, Links) of
-%%                                           true  -> H;
-%%                                           false -> has_dirty_parent(T, Parent)
-%%                                       end.
 
 %% subscribe/unsubscribe to the mnesia tables
 sub_unsubscribe(Table, Site, Action) ->
