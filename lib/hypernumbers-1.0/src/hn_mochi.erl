@@ -74,8 +74,8 @@ check_auth(write,     _, _)           -> ok;
 check_auth(admin,     _, _)           -> ok.
 
 handle_req(Method, Req, Ref, Vars, User) ->
+    
     Type = element(1, Ref#refX.obj),
-
     case Method of
         'GET'  -> 
             mochilog:log(Req, Ref, hn_users:name(User), undefined),
@@ -89,7 +89,7 @@ handle_req(Method, Req, Ref, Vars, User) ->
             case string:substr(Ct, 1, 19) of
 
                 "multipart/form-data" ->
-                    Data = hn_file_upload:handle_upload(Req, User),
+                    Data = hn_file_upload:handle_upload(Req, Ref, User),
                     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
                     Req:ok({"text/html", ?hdr, Json});
 

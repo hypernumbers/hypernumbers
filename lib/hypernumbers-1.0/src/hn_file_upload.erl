@@ -1,87 +1,29 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Functions to handle file uploads.
-
 -module(hn_file_upload).
--compile(export_all).
+
+-export([ handle_upload/3, test_import/2 ]).
+
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 
 %% @doc Handles a file upload request from a user. Imports the file etc and
 %% returns response data to be sent back to the client.
+handle_upload(Req, Ref, User) ->
 
-handle_upload(Req, User) ->
-    Username  = hn_users:name(User),
-    Filestamp = Username ++ "__" ++ dh_date:format("Y_m_d_h_i_s"),
+    {ok, File, Name} = stream_to_file(Req, User),
+    NRef = Ref#refX{path = Ref#refX.path ++ [make_name(Name)]},
     
-    Callback = fun(N) ->
-                       %% Passing filestamp (time & username) for file name in state record here.
-                       file_upload_callback(N, #file_upload_state{filename = Filestamp})
-               end,
-    
-    {_, _, State} = mochiweb_multipart:parse_multipart_request(Req, Callback),
-    RawPath = Req:get(raw_path),
-    Orig = State#file_upload_state.original_filename,
-    Basename = filename:basename(Orig, ".xls"),
-    {ok, Safename, _N} = regexp:gsub(Basename, "\\s+", "_"),
-    ParentPage = RawPath ++ Safename ++ "/",
-    {value, {'Host', Host}} = mochiweb_headers:lookup('Host', Req:get(headers)),
-
     try
-        import(State#file_upload_state.filename, Host, ParentPage, Username, Orig),
-        {struct, [{"location", ParentPage}]}
+        import(File, hn_users:name(User), NRef, Name),
+        {struct, [{"location", hn_util:list_to_path(NRef#refX.path)}]}
     catch
-        _Error:_Reason ->
+        _Type:Reason ->
             ?ERROR("Error Importing ~p ~n User:~p~n Reason:~p~n Stack:~p~n",
-                   [ParentPage, hn_users:name(User), _Reason, erlang:get_stacktrace()]),
+                   [File, hn_users:name(User), Reason,
+                    erlang:get_stacktrace()]),
             {struct, [{"error", "error reading sheet"}]}
     end.
-
-file_upload_callback({headers, Headers}, S) ->
-    ContentDisposition = hd(Headers),
-    NewState = case ContentDisposition of
-                   {"content-disposition", {"form-data", [{"name", _}, {"filename", Filename}]}} ->
-                       Filestamp = S#file_upload_state.filename,
-                       FullFilename = filename:join([code:lib_dir(hypernumbers),
-                                                     "..", "..",
-                                                     "priv", "uploads",
-                                                     Filestamp ++ "__" ++ Filename]),
-                       #file_upload_state{original_filename = Filename,
-                                          filename = FullFilename};
-                   _ ->
-                       S
-               end,
-    fun(N) -> file_upload_callback(N, NewState) end;
-file_upload_callback({body, Data}, S) ->
-    if  S#file_upload_state.filename =/= undefined ->
-            if S#file_upload_state.file =/= undefined ->
-                    file:write(S#file_upload_state.file, Data),
-                    NewState = S;
-               true ->
-                    ?INFO("~p",[S#file_upload_state.filename]),
-                    case file:open(S#file_upload_state.filename, [raw, write]) of
-                        {ok, File} ->
-                            file:write(File, Data),
-                            NewState = S#file_upload_state{file = File};
-                        {error, Error} ->
-                            ?ERROR("Could not open ~p for writing, error: ~p",
-                                   [S#file_upload_state.filename, Error]),
-                            NewState = S,
-                            exit({error, Error})
-                    end
-            end;
-        true ->
-            NewState = S
-    end,
-
-    fun(N) -> file_upload_callback(N, NewState) end;
-file_upload_callback(body_end, S) ->
-    if S#file_upload_state.file =/= undefined -> file:close(S#file_upload_state.file);
-       true -> ok
-    end,
-    
-    fun(N) -> file_upload_callback(N, S) end;
-file_upload_callback(_, State) ->
-    State.
 
 %%% interfacing with the reader
 %%% TODO: some of this needs to be part of the reader
@@ -89,127 +31,120 @@ file_upload_callback(_, State) ->
 %% @doc Writes contents of an XLS file into Hypernumbers pages.
 %% Filename is a full name, parent page is path to page under which pages for
 %% individual sheets will be created.
+convert_addr({{Fr, Fc}, {Lr, Lc}}) ->
+    {rc_to_a1(Fr, Fc), rc_to_a1(Lr, Lc)};
+convert_addr({Row, Col}) ->
+    rc_to_a1(Row, Col).
 
-import(Filename, Host, ParentPage, Username, OrigFilename) ->
-    {Celldata, _Names, _Formats, CSS, Warnings, Sheetnames} = readxls(Filename),
-    Site = "http://" ++ Host,
-    F = fun(X, {Ls, Fs}) ->
-                {SheetName, Target, V} = read_reader_record(X),
-                Sheet = excel_util:esc_tab_name(SheetName),
-                Postdata = conv_for_post(V),
-                Path = ParentPage++Sheet++"/",
-                Ref = case Target of
-                          {{Fr, Fc}, {Lr, Lc}} -> {rc_to_a1(Fr, Fc), rc_to_a1(Lr, Lc)};
-                          {Row, Col}           -> rc_to_a1(Row, Col)
-                      end,
-                Datatpl = {Path, Ref, Postdata},
-                case Postdata of
-                    [$=|_] -> {Ls, [Datatpl|Fs]};
-                    _      -> {[Datatpl|Ls], Fs}
-                end               
-        end,
+split_sheets(X, {Ls, Fs}) ->
+    {SheetName, Target, V} = read_reader_record(X),
+    Sheet = excel_util:esc_tab_name(SheetName),
+    %Ref = convert_addr(Target),
+    
+    Postdata = conv_for_post(V),
+    Datatpl = {Sheet, convert_addr(Target), Postdata},
+    
+    case Postdata of
+        [$=|_] -> {Ls, [Datatpl|Fs]};
+        _      -> {[Datatpl|Ls], Fs}
+    end.
 
-    {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
-        Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
-                         Url = Site ++ Path ++ Ref,
-                         RefX = hn_util:parse_url(Url),
-                         ok = hn_db_api:write_attributes(RefX, [{"formula", Postdata}]);
-                    ({Path, {Tl, Br}, Postdata}) -> % array formula
-                         Url = Site ++ Path ++ Tl ++ ":" ++ Br,
-                         RefX = hn_util:parse_url(Url),
-                         hn_main:formula_to_range(RefX, Postdata)
-                 end,
+write_data(Ref, {Sheet, Target, Data}) when is_list(Target) ->
+    NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
+                    obj  = hn_util:parse_attr(Target)},
+    hn_db_api:write_attributes(NRef, [{"formula", Data}]);
 
-    lists:foreach(Dopost, Lits),
-    lists:foreach(Dopost, Flas),
+write_data(Ref, {Sheet, {Tl, Br}, Data}) ->
+    NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
+                    obj = hn_util:parse_attr(Tl ++ ":" ++ Br)},
+    hn_main:formula_to_range(NRef, Data).
 
-    %% Now fire in the CSS and formats
-    WriteCSS = fun(X) ->
-                       {{{sheet, SheetName}, {row_index, Row}, {col_index, Col}},
-                        [CSSItem]} = X,
-                       Sheet = excel_util:esc_tab_name(SheetName),
-                       Path = ParentPage++Sheet++"/",
-                       Ref = rc_to_a1(Row,Col),
-                       Url = Site ++ Path ++ Ref,
-                       RefX = hn_util:parse_url(Url),
-                       #refX{path = P2} = RefX,
-                       RefX2 = #refX{site = Site, path = P2, obj = {page, "/"}},
-                       ok = hn_db_api:write_style_IMPORT(RefX2, CSSItem)
-               end,
-    lists:foreach(WriteCSS, CSS),
+write_css(Ref, {{{sheet, Sheet}, {row_index, R}, {col_index, C}}, [CSS]}) ->
+    Name = excel_util:esc_tab_name(Sheet),
+    NRef = Ref#refX{path = Ref#refX.path ++ [Name, rc_to_a1(R,C)]},
+    hn_db_api:write_style_IMPORT(NRef, CSS).
 
-    %% write parent page information
-    PathComps = string:tokens(ParentPage, "/"),
-    GetSheets = fun(X, Acc) ->
-                        {_, [NewSheet]} = X,
-                        % Put the site back in when running under proper domain
-                        %[Site ++ ParentPage ++ NewSheet ++"/" | Acc]
-                        [ParentPage ++ NewSheet ++"/" | Acc]
-                end,
-    Sheetnames2 = lists:foldl(GetSheets, [], Sheetnames),
-    HeaderStyle = [{"font-weight", "bold"},
-                   {"font-size", "16px"},
-                   {"color", "#E36C0A"}],
-    WarningStyle = [{"font-weight", "bold"},
-                   {"font-size", "12px"},
-                   {"color", "#FF0000"}],
-    write_to_cell("File Import Details",
-                  2, 2, Site, PathComps, HeaderStyle),
-    write_to_cell("File " ++ OrigFilename ++ " imported by " ++ Username ++ " on " ++
-                  dh_date:format("r"),
-                  2, 3, Site, PathComps, []),
-    write_to_cell("Each sheet in your Excel file has been written as a page. "++
-                  "The sheetname may have been rewritten to make them valid URL's. ",
-                  2, 5, Site, PathComps,[]),
-    write_to_cell("(Don't worry all your formulae that refer to cells on a renamed "++
-                  "sheet have been rewritten to take this into account.)", 
-                  2, 6, Site, PathComps, []),
-    write_to_cell("Imported Pages",
-                  2, 8, Site, PathComps, HeaderStyle),
-    WriteSheets = fun(X, Int) ->
-                          write_to_cell(X, 2, Int, Site, PathComps, []),
-                          Int + 1
-                  end,
-    Index = lists:foldl(WriteSheets, 9, Sheetnames2),
+test_import(File, Ref) ->
+    Path = code:lib_dir(hypernumbers)++"/../../tests/excel_files/"
+        ++ "Win_Excel07_As_97/"++File++".xls",
+    import(Path, "anonymous", Ref#refX{path=[File]}, File).
 
-    write_to_cell("Warnings",
-                  2, Index + 1, Site, PathComps, HeaderStyle),
-    write_to_cell("(remember this is an early BETA product!)",
-                  2, Index + 2, Site, PathComps, WarningStyle),
-    write_to_cell("Not all Excel functions are fully supported at the moment.",
-                  2, Index + 3, Site, PathComps, []),
+import(File, User, Ref, Name) ->
+    
+    {Cells, _Names, _Formats, CSS, Warnings, Sheets} = readxls(File), 
+    {Literals, Formulas} = lists:foldl(fun split_sheets/2, {[], []}, Cells),
+    
+    lists:foreach(fun(X) -> write_data(Ref, X) end, Literals),
+    lists:foreach(fun(X) -> write_data(Ref, X) end, Formulas),
+    lists:foreach(fun(X) -> write_css(Ref, X)  end, CSS),
+    
+    ok = write_warnings_page(Ref, Sheets, User, Name, Warnings),
 
-    ok = write_warnings(Warnings, Index + 5, Site, PathComps),
-    loop(),
     ok.
 
-write_to_cell(Str, Col, Row, Site, Path, Attrs) ->
+
+write_warnings_page(Ref, Sheets, User, Name, Warnings) ->
+    
+    % write parent page information
+    SNames = lists:map(fun({_X, [Sheet]}) -> Sheet end, Sheets),
+    
+    HeaderSt = [{"font-weight", "bold"},
+                {"font-size", "16px"}, {"color", "#E36C0A"}],
+    WarningSt = [{"font-weight", "bold"},
+                 {"font-size", "12px"}, {"color", "#FF0000"}],
+
+    Msg = ?FORMAT("File ~s imported by ~s on ~s",
+                  [Name, User, dh_date:format("r")]),
+
+    write_to_cell(Ref, "File Import Details", 2, 2, HeaderSt),
+    write_to_cell(Ref, Msg, 2, 3, []),
+
+    write_to_cell(Ref, "Each sheet in your Excel file has been written as "
+                  "a page. The sheetname may have been rewritten to "
+                  "make them valid URL's. ", 2, 5, []),
+    write_to_cell(Ref, "(Don't worry all your formulae that refer to cells on "
+                  "a renamed sheet have been rewritten to take this into "
+                  "account.)", 2, 6, []),
+    write_to_cell(Ref, "Imported Pages", 2, 8, HeaderSt),
+    
+    Root = hn_util:list_to_path(Ref#refX.path),
+    F = fun(X, Int) ->
+                write_to_cell(Ref, Root++X, 2, Int, []),
+                Int + 1
+        end,
+    Index = lists:foldl(F, 9, SNames),
+    
+    write_to_cell(Ref, "Warnings", 2, Index + 1, HeaderSt),
+    write_to_cell(Ref, "(remember this is an early BETA product!)",
+                  2, Index + 2, WarningSt),
+    write_to_cell(Ref, "Not all Excel functions are fully supported "
+                  "at the moment.", 2, Index + 3, []),
+    
+    ok = write_warnings(Ref, Warnings, Index + 5),
+    
+    ok.
+
+write_to_cell(Ref, Str, Col, Row, Attrs) ->
     Attrs2 = [{"formula", Str} | Attrs],
-    ok = hn_db_api:write_attributes(#refX{site = Site,
-                                          path = Path,
-                                          obj = {cell, {Col, Row}}},
-                                    Attrs2).
-                                          
-write_warnings([], _, _, _) ->
+    hn_db_api:write_attributes(Ref#refX{obj = {cell, {Col, Row}}}, Attrs2).
+
+write_warnings(_Ref, [], _) ->
     ok;
-write_warnings([W|Ws], Idx, Site, Path) -> % Idx is the index of W in the original list
+% Idx is the index of W in the original list
+write_warnings(Ref, [W|Ws], Idx) -> 
     WarningString = case W of
                         {S, []}          -> S;
                         {_, S}           -> S
                     end,
-    write_to_cell(WarningString, 2, Idx, Site, Path, []),
-    write_warnings(Ws, Idx + 1, Site, Path).
-
+    write_to_cell(Ref, WarningString, 2, Idx, []),
+    write_warnings(Ref, Ws, Idx + 1).
 
 readxls(Fn) ->
     filefilters:read(excel, Fn, fun decipher_ets_tables/1).
 
-
 read_table(Name, TableDescriptors) ->
     {value, {Name, Id}} = lists:keysearch(Name, 1, TableDescriptors),
-    Records = ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Id),
-    Records.
-                             
+    ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Id).
 
 %% Input: list of {key, id} pairs where key is an ETS table holding info
 %% about some part of the XLS file.
@@ -226,15 +161,12 @@ decipher_ets_tables(Tids) ->
     Sheetnames = read_table(sheetnames, Tids),
     {Celldata, Names, Formats, CSS, Warnings, Sheetnames}.
 
-loop()->
-    case mnesia:table_info(dirty_cell,size) of
-        0 -> ok;
-        _ -> timer:sleep(250),
-              loop()
-    end.
-read_reader_record({{{sheet, SheetName}, {row_index, Row}, {col_index, Col}}, Val}) ->
+read_reader_record({{{sheet, SheetName}, {row_index, Row},
+                     {col_index, Col}}, Val}) ->
     {SheetName, {Row, Col}, Val};
-read_reader_record({{{sheet, SheetName}, {firstrow, Fr}, {firstcol, Fc}, {lastrow, Lr}, {lastcol, Lc}}, Fla}) ->
+
+read_reader_record({{{sheet, SheetName}, {firstrow, Fr}, {firstcol, Fc},
+                     {lastrow, Lr}, {lastcol, Lc}}, Fla}) ->
     {SheetName, {{Fr, Fc}, {Lr, Lc}}, Fla}.
 
 %% @doc Convert row and column pair to A1-style ref
@@ -254,23 +186,43 @@ conv_for_post(Val) ->
         {formula, F}              -> F
     end.
 
-fix_integers(X) ->
-    case make_float(X) of
-        {error, not_float} -> X;
-        X2 -> if
-                  (X2-round(X2)) == 0.0 -> integer_to_list(round(X2));
-                  true                  -> X
-              end
-    end.
+setup_state(S, {"content-disposition",
+                {"form-data", [_Nm, {"filename", FileName}]}}) ->
+    
+    Root  = code:lib_dir(hypernumbers),
+    Stamp = S#file_upload_state.filename ++ "__" ++ FileName,
+    Name  = filename:join([Root, "..", "..", "priv", "uploads", Stamp]),
+    {ok, File} = file:open(Name, [raw, write]),
+    
+    #file_upload_state{original_filename = FileName,
+                       filename = Name,
+                       file = File}.
 
-make_float(List) ->
-    case catch list_to_float(List) of
-        {'EXIT', _Reason} -> make_float2(List);
-        Float             -> Float
-    end.
+make_name(Name) ->
+    Basename = filename:basename(Name, ".xls"),
+    {ok, Safename, _N} = regexp:gsub(Basename, "\\s+", "_"),
+    Safename.
 
-make_float2(List) ->
-    case catch (list_to_integer(List)*1.0) of
-        {'EXIT', _Reason} -> {error, not_float};
-        Float             -> Float
-    end.
+stream_to_file(Req, User) ->
+    Stamp    = hn_users:name(User) ++ dh_date:format("__Y_m_d_h_i_s"),
+    Rec      = #file_upload_state{filename = Stamp},
+    CallBack = fun(N) -> file_upload_callback(N, Rec) end,
+    {_, _, State} = mochiweb_multipart:parse_multipart_request(Req, CallBack),
+    
+    {ok, State#file_upload_state.filename,
+     State#file_upload_state.original_filename}.
+
+file_upload_callback({headers, Headers}, S) ->
+    NewState = setup_state(S, hd(Headers)),
+    fun(N) -> file_upload_callback(N, NewState) end;
+
+file_upload_callback({body, Data}, S) ->
+    file:write(S#file_upload_state.file, Data),
+    fun(N) -> file_upload_callback(N, S) end;
+
+file_upload_callback(body_end, S) ->
+    file:close(S#file_upload_state.file),
+    fun(N) -> file_upload_callback(N, S) end;
+
+file_upload_callback(eof, State) ->
+    State.

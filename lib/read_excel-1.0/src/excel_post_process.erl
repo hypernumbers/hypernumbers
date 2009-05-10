@@ -354,7 +354,6 @@ set_formats(CellRef,XFIndex,Tables) ->
     {value, {font, FontAttr}}  = ?k(font, 1, AttrList), 
     {value, {font, PFontAttr}} = ?k(font, 1, PAttrList),
 
-    io:format("FONT ~p", [{FontAttr, PFontAttr}]),
     {value, {font_index, FontIdx}} =
         case {FontAttr, PFontAttr} of
             {use_this, _}        -> ?k(font_index, 1, XFList);

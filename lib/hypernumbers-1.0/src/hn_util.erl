@@ -46,6 +46,7 @@
          url_encode/1,
          parse_url/1,
          parse_ref/1,
+         parse_attr/1,
          parse_attr/2,
          parse_vars/1,
          
@@ -340,6 +341,9 @@ parse_url("http://"++Url) ->
             Obj = parse_attr(cell, Addr),
             #refX{site="http://"++Host, path=lists:reverse(P), obj = Obj}
     end.
+
+parse_attr(Addr) ->
+    parse_attr(cell, Addr).
 
 parse_attr(cell, Addr) ->
     case regexp:match(Addr,?RG_cell) of
