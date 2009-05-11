@@ -501,6 +501,7 @@
          read_outgoing_hns/2,
          clear_cells/1,
          clear_cells/2,
+         delete_page/1,
          delete_cells/1,
          delete_attrs/2,
          clear_dirty/2,
@@ -567,6 +568,12 @@
 -define(to_refX, hn_util:refX_from_index).
 
 %% bit of tidying up for later on
+
+%% Handy since they are used heavily, transforms a tablename
+%% to its site specific name, and back
+-define(_(Site, TableName),trans(Site, TableName)).
+-define(__(Record),trans_back(Record)).
+
 -define(hn, {name, "HN"}).
 -define(bra, {'('}).
 -define(AND, andalso).
@@ -1604,6 +1611,29 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
               [ok = mark_cells_dirty(X) || X <- List2],
               ok
     end.
+
+%% @spec delete_page(RefX) -> ok
+%% @doc takes a reference to a page, does delete_cells,
+%% Then reads any existing local_objs and deletes any
+%% row / column ones, along with any attributes set on them
+delete_page(#refX{site=Site, path=Path} = RefX) ->
+    
+    delete_cells(RefX),
+    
+    F = fun(#local_objs{obj={X, _Y}, idx=Id}=Obj)
+           when X == column; X == row ->
+                ok = mnesia:delete(?_(Site, item), Id, write),
+                mnesia:delete_object(?_(Site, Obj));
+           (_Else) ->
+                ok
+        end,
+
+    Match = ?_(Site, #local_objs{path = Path, _ = '_'}),
+    Objs  = mnesia:match_object(?_(Site, local_objs), Match, read),
+    
+    [ ok = F(?__(X)) || X <- Objs ],
+    
+    ok.
 
 %% @spec delete_cells(RefX) -> Status
 %% Status = list()

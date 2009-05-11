@@ -1024,7 +1024,7 @@ delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
 delete(#refX{obj = {page, _}} = RefX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  ?wu:delete_cells(RefX)
+                  hn_db_wu:delete_page(RefX)
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("delete").

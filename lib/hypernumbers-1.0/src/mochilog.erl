@@ -167,7 +167,7 @@ print(long, Post, Id) ->
     
     Msg = "~nId: ~p ~s Request on ~s~n"
         "User:       ~s(~s)~nUrl:        ~s~n"
-        "User-Agent: ~60s~nReferrer:   ~s~n"
+        "User-Agent: ~s~nReferrer:   ~s~n"
         "Body:       ~s~n~n",
     
     io:format(Msg,[Id, Method, dh_date:format("m.d.y, g:ia", Time), User,
