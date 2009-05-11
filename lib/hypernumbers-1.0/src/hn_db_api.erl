@@ -433,27 +433,36 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 %% @todo extend this to a dirty shared formula
 %% @todo stop the silent fail!
 handle_dirty_cell(Site, TimeStamp, Rec)  ->
-    #dirty_cell{idx = Idx} = Rec,
+    #dirty_cell{idx = RecIdx} = Rec,
+    case RecIdx of
+        deleted -> ok;
+        _       -> handle_dirty_cell1(Site, TimeStamp, Rec)
+    end.
+
+handle_dirty_cell1(Site, TimeStamp, Rec) ->
     Fun1 =
-        fun() -> ok = init_front_end_notify(),
-                 try
-                     Cell = hn_db_wu:read_dirty_cell(Site, TimeStamp),
-                     case Idx of
-                         'deleted' -> ok;
-                         _         -> case ?wuread_attrs(Cell, ["__shared"]) of
-                                          [] -> handle_dirty_cell1(Cell);
-                                          _  -> ?INFO("TODO: handle_dirty_cell "++
-                                                      "shared formula", [])
-                                      end,
-                                      hn_db_wu:clear_dirty_cell(Cell)
-                     end
-                 catch
-                     throw:X when X == id_not_found; X == invalid_dirty_cell ->
-                         Err = "Invalid cell in hn_db_api:handle_dirty_cell ~n " ++
-                             "Site:~p~n Time:~p~n",
-                         ?ERROR(Err, [Site, TimeStamp]),
-                         hn_db_wu:clear_dirty_cell(Site, Rec)
-                 end
+        fun() ->
+                ok = init_front_end_notify(),
+                % io:format("about to wait~n"),
+                % test_util:wait(5),
+                try
+                    Cell = hn_db_wu:read_dirty_cell(Site, TimeStamp),
+                    case Cell of
+                        deleted -> ok;
+                        _       -> case ?wuread_attrs(Cell, ["__shared"]) of
+                                       [] -> handle_dirty_cell1(Cell);
+                                       _  -> ?INFO("TODO: handle_dirty_cell "++
+                                                   "shared formula", [])
+                                   end,
+                                   hn_db_wu:clear_dirty_cell(Cell)
+                    end
+                catch
+                    throw:X when X == id_not_found; X == invalid_dirty_cell ->
+                        Err = "Invalid cell in hn_db_api:handle_dirty_cell ~n " ++
+                            "Site:~p~n Time:~p~n Record:~p~n Reason:~p~n",
+                        ?ERROR(Err, [Site, TimeStamp, Rec, X]),
+                        hn_db_wu:clear_dirty_cell(Site, Rec)
+                end
         end,
     ok = mnesia:activity(transaction, Fun1),
     ok = tell_front_end("handle dirty"),

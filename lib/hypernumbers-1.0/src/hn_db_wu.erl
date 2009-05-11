@@ -628,7 +628,10 @@ read_dirty_cell(Site, TimeStamp) ->
     T1 = trans(Site, dirty_cell),
     Recs = mnesia:select(T1, [{H1, [], ['$_']}]),
     [#dirty_cell{idx = Idx}] = trans_back(Recs),
-    local_idx_to_refX(Site, Idx).
+    case Idx of
+        deleted -> deleted;
+        _       -> local_idx_to_refX(Site, Idx)
+    end.
     
 %% @spec shift_remote_links(Type1, OldRef::#refX{}, 
 %% NewRef::#refX{}, Type1)  -> ok
@@ -1589,11 +1592,12 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
     % first up clear the list
     case List1 of
         [] -> ok;
-        _  -> List2 = get_refXs(List1),
+        _  -> List2 = get_cells(RefX),
+              % io:format("in clear_cells~nList2 is~n~p~n", [List2]),
               % first set all the dirty cells that match to deleted
               [ok = mark_dirty_cells_deleted(X) || X <- List2],
               % now delete the links to the cells
-              [ok = delete_links(X) || X <- List2],
+              [ok = delete_parent_links(X) || X <- List2],
               % finally delete all the attributes
               List3 = get_content_attrs(List1),
               [delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
@@ -1880,7 +1884,6 @@ mark_cells_dirty(#refX{site = Site, obj = {cell, _}} = RefX) ->
     case read_local_children(RefX) of
         []            -> ok;
         LocalChildren ->
-            
             % Now write the local children to dirty_cell
             Fun = fun(X) ->
                           % we use get because if the local child cell is currently 
@@ -2240,7 +2243,7 @@ get_refXs(List) -> get_refXs(List, []).
 get_refXs([], Acc)              -> hslists:uniq(Acc);
 get_refXs([{RefX, _} | T], Acc) -> get_refXs(T, [RefX | Acc]).
 
-delete_links(RefX) ->
+delete_parent_links(RefX) ->
     ok = delete_local_parents(RefX),
     ok = delete_remote_parents(RefX).
 
@@ -2375,25 +2378,25 @@ make_cell(true, X, XOffset, true, Y, YOffset)  ->
 % if the row/column part is fixed with a dollar
 drag_n_drop_cell(false, X, XOffset, false, Y, YOffset) ->
     if
-        (X + XOffset) <  1 orelse (Y + YOffset) <  1 -> "#REF!";
+        (X + XOffset) <  1 orelse  (Y + YOffset) <  1 -> "#REF!";
         (X + XOffset) >= 1 andalso (Y + YOffset) >= 1 ->
             tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset)
     end;
 drag_n_drop_cell(true, X, _XOffset, false, Y, YOffset) ->
     if
-        X <  1 orelse (Y + YOffset) <  1 -> "#REF!";
+        X <  1 orelse ( Y + YOffset) <  1 -> "#REF!";
         X >= 1 andalso (Y + YOffset) >= 1 ->
             [$$] ++ tconv:to_b26(X) ++ tconv:to_s(Y + YOffset)
     end;
 drag_n_drop_cell(false, X, XOffset, true, Y, _YOffset) ->
     if
-        (X + XOffset) <  1 orelse Y <  1 -> "#REF!";
+        (X + XOffset) <  1 orelse  Y <  1 -> "#REF!";
         (X + XOffset) >= 1 andalso Y >= 1 ->
             tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y)
     end;
 drag_n_drop_cell(true, X, _XOffset, true, Y, _YOffset)  -> 
     if
-        X <  1 orelse Y <  1 -> "#REF!";
+        X <  1 orelse  Y <  1 -> "#REF!";
         X >= 1 andalso Y >= 1 ->
             [$$] ++ tconv:to_b26(X) ++ [$$] ++ tconv:to_s(Y)
     end.
@@ -2684,17 +2687,23 @@ d_n_d_c_n_p_offset1([#cellref{text = Text}
     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewRef | Acc]);
 d_n_d_c_n_p_offset1([#rangeref{text = Text} = H | T], XOffset, YOffset, Acc) ->
     Range = muin_util:just_ref(Text),
-    Prefix = case muin_util:just_path(Text) of
-                 "/"   -> "";
-                 Other -> Other
-             end,
+    Pf = case muin_util:just_path(Text) of
+             "/"   -> "";
+             Other -> Other
+         end,
     [Cell1 | [Cell2]] = string:tokens(Range, ":"),
     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
-    NewCell1 = drag_n_drop_cell(X1D, X1, XOffset, Y1D, Y1, YOffset),
-    NewCell2 = drag_n_drop_cell(X2D, X2, XOffset, Y2D, Y2, YOffset),
-    NewRange = H#rangeref{text = Prefix ++ NewCell1 ++ ":" ++ NewCell2},
-    d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewRange | Acc]);
+    NC1 = drag_n_drop_cell(X1D, X1, XOffset, Y1D, Y1, YOffset),
+    NC2 = drag_n_drop_cell(X2D, X2, XOffset, Y2D, Y2, YOffset),
+    NewText = if
+                  NC1 ==  "#REF!" orelse  NC2 ==  "#REF!" ->
+                      "#REF!";
+                  NC1 =/= "#REF!" andalso NC2 =/= "#REF!" ->
+                      Pf ++ NC1 ++ ":" ++ NC2
+              end,
+    NewR = H#rangeref{text = NewText},
+    d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewR | Acc]);
 d_n_d_c_n_p_offset1([H | T], XOffset, YOffset, Acc) ->
     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [H | Acc]).
 
@@ -2794,17 +2803,17 @@ get_content_attrs([], Acc)      -> Acc;
 get_content_attrs([H | T], Acc) ->
     {_, {Key, _V}} = H,
     case Key of
-        "formula"           -> get_content_attrs(T, [H | Acc]);
-        "rawvalue"          -> get_content_attrs(T, [H | Acc]);
-        "value"             -> get_content_attrs(T, [H | Acc]);
-        "overwrite-color"   -> get_content_attrs(T, [H | Acc]);
-        "__ast"             -> get_content_attrs(T, [H | Acc]);
-        "__recompile"       -> get_content_attrs(T, [H | Acc]);
-        "__shared"          -> get_content_attrs(T, [H | Acc]);
-        "__area"            -> get_content_attrs(T, [H | Acc]);
+        "formula"             -> get_content_attrs(T, [H | Acc]);
+        "rawvalue"            -> get_content_attrs(T, [H | Acc]);
+        "value"               -> get_content_attrs(T, [H | Acc]);
+        "overwrite-color"     -> get_content_attrs(T, [H | Acc]);
+        "__ast"               -> get_content_attrs(T, [H | Acc]);
+        "__recompile"         -> get_content_attrs(T, [H | Acc]);
+        "__shared"            -> get_content_attrs(T, [H | Acc]);
+        "__area"              -> get_content_attrs(T, [H | Acc]);
         "__dependency-tree"   -> get_content_attrs(T, [H | Acc]);
-        "parents"           -> get_content_attrs(T, [H | Acc]);
-        _                   -> get_content_attrs(T, Acc)
+        "parents"             -> get_content_attrs(T, [H | Acc]);
+        _                     -> get_content_attrs(T, Acc)
     end.
 
 shift_remote_links2(_Site, [], _To) -> ok;
@@ -2817,7 +2826,7 @@ shift_remote_links2(Site, [H | T], To) ->
 
 deref_child(#refX{site = S} = Child, DeRefX) ->
     [{Child, {"formula", Formula}}] = read_attrs(Child, ["formula"]),
-    {Status, NewFormula} = deref(Formula, DeRefX),
+    {Status, NewFormula} = deref(Child, Formula, DeRefX),
     % we just rewrite this and let it recalculate as per...
     ok = write_attr(Child, {"formula", NewFormula}),
     case Status of
@@ -2826,13 +2835,13 @@ deref_child(#refX{site = S} = Child, DeRefX) ->
     end.
 
 % dereferences a formula
-deref([$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
+deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
-    NewToks = deref1(Toks, DeRefX, []),
+    NewToks = deref1(Child, Toks, DeRefX, []),
     make_formula(NewToks).
 
-deref1([], _DeRefX, Acc) -> lists:reverse(Acc);
-deref1([#rangeref{text = Text} | T], DeRefX, Acc) ->
+deref1(Child, [], _DeRefX, Acc) -> lists:reverse(Acc);
+deref1(Child, [#rangeref{text = Text} | T], DeRefX, Acc) ->
     % only deref the range if it is completely obliterated by the deletion
     #refX{obj = Obj1} = DeRefX,
     Range = muin_util:just_ref(Text),
@@ -2848,36 +2857,35 @@ deref1([#rangeref{text = Text} | T], DeRefX, Acc) ->
                  % O              -> io:format("O is ~p~n", [O]),
                  %                   Prefix ++ O
              end,
-    deref1(T, DeRefX, [NewTok | Acc]);
-deref1([#cellref{path = Path, text = Text} = H | T], DeRefX, Acc) ->
-    NewTok = deref2(H, Text, Path, DeRefX),
-    deref1(T, DeRefX, [NewTok | Acc]);
-deref1([H | T], DeRefX, Acc) ->
-    deref1(T, DeRefX, [H | Acc]).
+    deref1(Child, T, DeRefX, [NewTok | Acc]);
+deref1(Child, [#cellref{path = Path, text = Text} = H | T], DeRefX, Acc) ->
+    NewTok = deref2(Child, H, Text, Path, DeRefX),
+    deref1(Child, T, DeRefX, [NewTok | Acc]);
+deref1(Child, [H | T], DeRefX, Acc) ->
+    deref1(Child, T, DeRefX, [H | Acc]).
 
 % sometimes Text has a prepended slash
-deref2(H, [$/|Text], Path, DeRefX) ->
-    case deref2(H, Text, Path, DeRefX) of
+deref2(Child, H, [$/|Text], Path, DeRefX) ->
+    case deref2(Child, H, Text, Path, DeRefX) of
         H                        -> H;
         {deref, Str}             -> {deref, "/" ++ Str};
         {Type, O1, O2, P, Text2} -> {Type, O1, O2, P, "/" ++ Text2}
     end;
 % special case for ambiguous parsing of division
 % this matches on cases like =a1/b3
-deref2(_H, Text, "/", DeRefX) ->
-    #refX{path = _DPath, obj = Obj1} = DeRefX,
+deref2(_Child, _H, Text, "/", DeRefX) ->
+    #refX{obj = Obj1} = DeRefX,
     Obj2 = hn_util:parse_ref(Text),
     deref_overlap(Text, Obj1, Obj2);
-deref2(H, Text, Path, DeRefX) ->
+deref2(Child, H, Text, Path, DeRefX) ->
+    #refX{path = CPath} = Child,
     #refX{path = DPath, obj = Obj1} = DeRefX,
-    PathCompare = muin_util:walk_path(DPath, Path),
+    PathCompare = muin_util:walk_path(CPath, Path),
     case PathCompare of
         DPath -> case Path of
                      "./" -> {deref, "#REF!"};
-                     P    -> L1 = length(P),
-                             L2 = length(Text),
-                             S1 = string:substr(Text, 1, L1 - 1),
-                             S2 = string:substr(Text, L1, (L2 - L1) + 1),
+                     P    -> S1 = muin_util:just_path(Text),
+                             S2 = muin_util:just_ref(Text),
                              Obj2 = hn_util:parse_ref(S2),
                              case deref_overlap(Text, Obj1, Obj2) of
                                  {deref, "#REF!"} -> {deref, S1 ++ "#REF!"};
@@ -3139,24 +3147,24 @@ shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
 write_attr2(RefX, {"formula", Val}) ->
     %?INFO("Formula ~p",[[Val,superparser:process(Val)]]),
     case superparser:process(Val) of
-        {formula, Fla}      -> write_formula1(RefX, Fla);
+        {formula, Fla}      -> write_formula1(RefX, Fla, Val);
         [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
     end.
 
-write_formula1(RefX, Fla) ->
+write_formula1(RefX, Fla, Val) ->
     Rti = refX_to_rti(RefX, false),
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-            ?ERROR("invalid return from muin:run_formula ~p",[Fla]),
+            ?ERROR("invalid return from muin:run_formula ~p",[Val]),
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
-                                           "=" ++ Fla);
+                                           Val);
         {error, Error} ->
             % bits:log("formula " ++ Fla ++ "fails to run with " ++ atom_to_list(Error)),
-            io:format("for ~p~n-with ~p fails with ~p~n", [RefX, Fla, Error]),
+            io:format("for ~p~n-with ~p fails with ~p~n", [RefX, Val, Error]),
             #refX{site = Site, path = Path, obj = R} = RefX,
-            ok = remoting_reg:notify_error(Site, Path, R,  Error, "=" ++ Fla);
+            ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
             % Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
@@ -3164,7 +3172,7 @@ write_formula1(RefX, Fla) ->
             ok = write_attr3(RefX, {"__recompile", Recompile}),
             % write the default text align for the result
             ok = write_default_alignment(RefX, Res),
-            write_cell(RefX, Res, "=" ++ Fla, Parxml, Deptree)
+            write_cell(RefX, Res, Val, Parxml, Deptree)
     end.
 
 write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
