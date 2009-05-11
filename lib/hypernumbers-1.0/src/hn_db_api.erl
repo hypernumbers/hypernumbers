@@ -435,7 +435,10 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 handle_dirty_cell(Site, TimeStamp, Rec)  ->
     #dirty_cell{idx = RecIdx} = Rec,
     case RecIdx of
-        deleted -> ok;
+        deleted -> Fun = fun() ->
+                                 hn_db_wu:clear_dirty_cell(Site, Rec)
+                         end,
+                   mnesia:transaction(trasnaction, Fun);
         _       -> handle_dirty_cell1(Site, TimeStamp, Rec)
     end.
 
