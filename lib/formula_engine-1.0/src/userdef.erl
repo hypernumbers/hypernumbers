@@ -4,10 +4,13 @@
 -include("spriki.hrl").
 
 %% exports for the AXA demo
--export([get_address/2,
-	 get_sex/1,
-	 split/2,
-	 sum3d/1]).
+-export([
+         get_address/2,
+         get_sex/1,
+         split/2,
+         sum3d/1,
+         slow/1
+        ]).
 
 -export([make_url/2,
          get_list/1,
@@ -20,6 +23,11 @@
 -export([sendsms/2]).
 
 -export([get_username/0]).
+
+slow([_X]) -> wait(100000).
+
+wait(0) -> 1;
+wait(N) -> wait(N - 1).
 
 davie(A, B) ->
      A* B +100.
