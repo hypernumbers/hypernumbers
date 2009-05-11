@@ -62,7 +62,7 @@ clear() ->
 replay(Name, NewSite) ->
     replay(Name, NewSite, default_filter()).
 
-%% @spec replay(Name, Old, New, Deep) -> ok
+%% @spec replay(Name, Url, Options) -> ok
 %% @doc Name is the name of the log file to read from (must be 
 %% stored in /lib/hypernumbers-1.0/log/), Old is the site to copy
 %% all posts from, New is the new location to post them too. Deep
