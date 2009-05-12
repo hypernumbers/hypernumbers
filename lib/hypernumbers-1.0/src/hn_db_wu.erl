@@ -1450,14 +1450,14 @@ shift_cells(From, Type, Disp, Rewritten)
               Fun1 = fun(X) ->
                              Ret = read_attrs(X, ["formula"]),
                              case Ret of
-                                 [SingleRecord] -> ok;
+                                 [_SingleRecord] -> ok;
                                  _   -> S = io_lib:format("Making FormulaList for ~p ~p "++
                                                           "~p~n~p~n-X is ~p~n-Ret is ~p~n",
                                                           [From, Type, Disp,
                                                            Rewritten, X, Ret]),
                                         bits:log(S)
                              end,
-                             [Ret2] = Ret
+                             [_Ret2] = Ret
                      end,
               FormulaList = hslists:uniq(lists:flatten([Fun1(X) || X <- DedupedChildren])),
               % bits:log(io_lib:format("Uniqued FormulaList is ~p~n",
@@ -1545,7 +1545,7 @@ shift_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}} = Change, Typ
 shift_col_objs1(Shift, Change, Type) ->
     Shift2 = trans_back(Shift),
     #local_objs{obj = {column, {Y1, Y2}}} = Shift2,
-    #refX{site = S, path = P, obj = {column, {YY1, YY2}}} = Change,
+    #refX{site = S, path = _P, obj = {column, {YY1, YY2}}} = Change,
     Offset = case Type of
                  insert -> YY2 - YY1 + 1;
                  delete -> -(YY2 - YY1 + 1)             end,
@@ -2002,7 +2002,7 @@ mark_cells_dirty(#refX{site = Site, obj = {cell, _}} = RefX) ->
                                   % io:format("~n~npreviously deleted dirty cell reset~n~n"),
                                   Rec = ?_(Site, #dirty_cell{idx = Idx}),
                                   ok =  mnesia:write(Rec);
-                              O ->
+                              _O ->
                                   %io:format("~n~nExisting dirty cell is ~p~n~n", [O]),
                                   ok
                           end
@@ -2356,10 +2356,10 @@ unregister_inc_hn(Parent, Child)
                                 child_vsn = CVsn},
     mark_dirty(ChildSite, Rec).
 
-get_refXs(List) -> get_refXs(List, []).
+%get_refXs(List) -> get_refXs(List, []).
 
-get_refXs([], Acc)              -> hslists:uniq(Acc);
-get_refXs([{RefX, _} | T], Acc) -> get_refXs(T, [RefX | Acc]).
+%get_refXs([], Acc)              -> hslists:uniq(Acc);
+%get_refXs([{RefX, _} | T], Acc) -> get_refXs(T, [RefX | Acc]).
 
 delete_parent_links(RefX) ->
     ok = delete_local_parents(RefX),
@@ -2942,7 +2942,7 @@ shift_remote_links2(Site, [H | T], To) ->
     ok = mnesia:write(trans(Site, NewLink)),
     shift_remote_links2(Site, T, To).
 
-deref_child(#refX{site = S} = Child, DeRefX) ->
+deref_child(#refX{site = _S} = Child, DeRefX) ->
     [{Child, {"formula", Formula}}] = read_attrs(Child, ["formula"]),
     {Status, NewFormula} = deref(Child, Formula, DeRefX),
     % bits:log(io_lib:format("(1) Formula is ~p NewFormula is ~p~n",
@@ -2967,7 +2967,7 @@ deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
                          {[], "="++Formula}
     end.
 
-deref1(Child, [], _DeRefX, Acc) -> lists:reverse(Acc);
+deref1(_Child, [], _DeRefX, Acc) -> lists:reverse(Acc);
 deref1(Child, [#rangeref{text = Text} | T], DeRefX, Acc) ->
     % only deref the range if it is completely obliterated by the deletion
     #refX{obj = Obj1} = DeRefX,
@@ -3014,7 +3014,7 @@ deref2(Child, H, Text, Path, DeRefX) ->
     case PathCompare of
         DPath -> case Path of
                      "./" -> {deref, "#REF!"};
-                     P    -> S1 = muin_util:just_path(Text),
+                     _P   -> S1 = muin_util:just_path(Text),
                              S2 = muin_util:just_ref(Text),
                              Obj2 = hn_util:parse_ref(S2),
                              case deref_overlap(S2, Obj1, Obj2) of
@@ -3123,25 +3123,25 @@ intersect(XX1, YY1, X1, Y1, X2, Y2) ->
 % rewrite/5
 rewrite(X1O, X2O, {range, _}, Text, left)   ->
     % io:format("in rewrite (1) Text is ~p~n", [Text]),
-    {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
+    {XD1, _X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1O, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, (X2 - (X2O - X1O + 1)), 0, YD2, Y2, 0),
     {recalc, S};
 
 rewrite(X1O, X2O, {column, _}, Text, left)   ->
-    {XD1, X1, XD2, X2} = parse_cols(Text),
+    {XD1, _X1, XD2, X2} = parse_cols(Text),
     S = make_col(XD1, X1O) ++ ":" ++ make_col(XD2, (X2 - (X2O - X1O + 1))),
     {recalc, S};
 
 rewrite(Y1O, Y2O, {range, _}, Text, top)   ->
     % io:format("in rewrite (3) Text is ~p~n", [Text]),
-    {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
+    {XD1, X1, YD1, _Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1O, 0) ++ ":" ++
         make_cell(XD2, X2, 0, YD2, (Y2 - (Y2O - Y1O + 1)), 0),
     {recalc, S};
 
 rewrite(Y1O, Y2O, {row, _}, Text, top)   ->
-    {YD1, Y1, YD2, Y2} = parse_rows(Text),
+    {YD1, _Y1, YD2, Y2} = parse_rows(Text),
     S = make_row(YD1, Y1O) ++ ":" ++ make_row(YD2, (Y2 - (Y2O - Y1O + 1))),
     {recalc, S}.
 
@@ -3310,8 +3310,6 @@ write_formula1(RefX, Fla, Val) ->
             ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
                                            Val);
         {error, Error} ->
-            % bits:log("formula " ++ Fla ++ "fails to run with " ++ atom_to_list(Error)),
-            io:format("for ~p~n-with ~p fails with ~p~n", [RefX, Val, Error]),
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
@@ -3553,7 +3551,7 @@ match_ref(#refX{site = S} = RefX, Key) ->
     end.
 
 make_or(Attrs, PlcHoldr)  -> make_clause(Attrs, PlcHoldr, 'or').
-make_and(Attrs, PlcHoldr) -> make_clause(Attrs, PlcHoldr, 'and').
+%make_and(Attrs, PlcHoldr) -> make_clause(Attrs, PlcHoldr, 'and').
 
 make_clause(Attrs, PlcHoldr, Op) -> make_clause(Attrs, PlcHoldr, Op, []).
 
