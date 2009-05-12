@@ -169,7 +169,7 @@ negate([V]) ->
 
 sum(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers(Flatvs, ?default_rules),
+    Nums = ?numbers(Flatvs, [ignore_strings, ignore_bools, ignore_dates, ignore_blanks]),
     sum1(Nums).
 
 sum1(Nums) ->
