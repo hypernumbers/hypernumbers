@@ -10,8 +10,9 @@ init_per_suite(Config) ->
     code:add_path(~p),
     hn_import:json_file("~s", 
                         "~s"),
+    timer:sleep(1000),      
     ~s
-    timer:sleep(2000),
+    timer:sleep(1000),
     Config.
 
 end_per_suite(_Config) ->

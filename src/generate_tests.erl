@@ -48,24 +48,38 @@ gen_test(Path,Tpl,Src) ->
     {ok, JsonTxt}   = file:read_file(Src),
     {struct, Json}  = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
     {struct, Cells} = ?pget("cell", Json),
-    Count = length(Cells),
-
+    {struct, HeadRow} = ?pget("1", Cells),
+    {struct, A1} = ?pget("1", HeadRow),
+    
+    Count = case ?pget("value", A1) of
+                "NOTESTS" -> 0;
+                Range ->
+                    {range, {_,_,_,X}} = hn_util:parse_attr(Range),
+                     X
+            end,
+    
     Ref   = #refX{site="http://127.0.0.1:9000", path=[Name]},
     Root  = Ref#refX.site ++ hn_util:list_to_path(Ref#refX.path),
     
     Cases = gen_test_cases(Name, Name, Count),
-
-    Names   = [ Name++"_A"++itol(X) || X <- lists:seq(2, Count) ],
-    NameStr = string:join(Names, ","),
+    Names   = gen_names(Name, Count),
 
     Test  = ?FORMAT(Tpl,[Suite, ActDir, Root, Src,A,Ref#refX.site,
-                        NameStr, Cases]),
+                        Names, Cases]),
 
     file:write_file(SysDir++Suite++".erl",Test).
 
+gen_names(_Name, 0) ->
+    [];
+gen_names(Name, Count) ->
+    Str = [ Name++"_A"++itol(X) || X <- lists:seq(2, Count) ],
+    string:join(Str, ",").
+
+gen_test_cases(_Name, _Path, 0) ->
+    [];
 gen_test_cases(Name, Path, N) ->
-    Str = "~s(_Conf) -> ~n case get_val(#refX{path=[~p],obj = {cell,{1,~p}}})"
-       "of [] -> ok; \"Success\" -> ok; Else -> throw({failed, Else}) end.~n",
+    Str = "~s(_Conf) -> ~n \"Success\" = get_val(#refX{path=[~p],obj ="
+            "{cell,{1,~p}}}).~n",
   
     [ ?FORMAT(Str,[Name++"_A"++itol(X), Path, X]) 
       || X <- lists:seq(2, N) ].
