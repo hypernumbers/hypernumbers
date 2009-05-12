@@ -159,7 +159,8 @@
          upgrade_1519/0,
          upgrade_1556/0,
          upgrade_1630/0,
-         upgrade_1641/0
+         upgrade_1641/0,
+         upgrade_1743_A/0
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -213,6 +214,16 @@ upgrade_1641() ->
                   mnesia:add_table_index(NewName, idx)
           end,
     [Fun(X) || X <- Sites].
+
+upgrade_1743_A() ->
+    % multi-site upgrade
+    HostsInfo = hn_config:get(hosts),
+    Sites = hn_util:get_hosts(HostsInfo),
+    F1 = fun(X) ->
+                 NewName = hn_db_wu:trans(X, dirty_cell),
+                 {atomic, ok} = mnesia:del_table_copy(NewName, node())
+         end,                 
+    [F1(X) || X <- Sites].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
