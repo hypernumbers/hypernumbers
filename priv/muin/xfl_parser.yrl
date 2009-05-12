@@ -63,9 +63,12 @@ E -> E '^^' E : ['^^', '$1', '$3'].
 
 E -> '(' E ')' : '$2'.    
 
+%%% special cases for slash ambiguity
+
 E -> E namedexpr Args : special_div1('$1', '$2', '$3').
 E -> cellref cellref  : special_div2('$1', '$2').
-    
+E -> errval cellref   : special_div3('$1', '$2').
+
 %%% funcalls
 
 E -> Funcall : '$1'.
@@ -180,8 +183,25 @@ special_div2(CR1, CR2) when ?is_cellref(CR1), ?is_cellref(CR2) ->
         false ->
             throw(invalid_formula)
     end.
-    
 
+%% special case #3 for division:
+%%
+%% 1. C1 := A1/B1
+%% 2. Delete column A
+%% 3. C1 is now #REF!/B1
+%%
+special_div3(Ev = {errval, _}, CR) when ?is_cellref(CR) ->
+    case CR#cellref.path == "/" of
+        true ->
+            Divisor = #cellref{col = CR#cellref.col,
+                               row = CR#cellref.row,
+                               path = "./",
+                               text = string:substr(CR#cellref.text, 2)},
+            ['/', Ev, Divisor];
+        false ->
+            throw(invalid_formula)
+    end.
+    
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -ifdef(debug).
