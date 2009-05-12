@@ -134,7 +134,7 @@
      calendar:seconds_to_time(OldSecs + Secs)};
 '+'([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
-    Num1+Num2.
+    Num1 + Num2.
 
 %% note that there is an operation =date - number
 %% but no = number - date
@@ -151,10 +151,12 @@
 
 '*'([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
-    Num1*Num2.
+    case (catch(Num1 * Num2)) of
+        N when is_number(N) -> N;
+        {'EXIT', _}         -> ?ERR_NUM
+    end.
 
 '/'([V1, V2]) ->
-    % io:format("in \"/\" V1 is ~p V2 is ~p~n", [V1, V2]),
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
     ?ensure(Num2 =/= 0,   ?ERR_DIV),
     ?ensure(Num2 =/= 0.0, ?ERR_DIV),
