@@ -31,6 +31,8 @@
 
 -import(muin_util, [cast/2]).
 
+-define(GOOGOL, 1.0E100).
+
 -export([
          %% Basics
          '+'/1,
@@ -134,7 +136,10 @@
      calendar:seconds_to_time(OldSecs + Secs)};
 '+'([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
-    Num1 + Num2.
+    case Num1 + Num2 of
+        X when X > ?GOOGOL -> ?ERR_NUM;
+        Result             -> Result
+    end.
 
 %% note that there is an operation =date - number
 %% but no = number - date
@@ -151,9 +156,9 @@
 
 '*'([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
-    case (catch(Num1 * Num2)) of
-        N when is_number(N) -> N;
-        {'EXIT', _}         -> ?ERR_NUM
+    case Num1 * Num2 of
+        X when X > ?GOOGOL -> ?ERR_NUM;
+        Result             -> Result
     end.
 
 '/'([V1, V2]) ->
