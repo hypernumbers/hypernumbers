@@ -1657,7 +1657,7 @@ delete_cells(#refX{site = S} = DelX) ->
         [] -> [];
         _ ->
             % first delete any dirty cell references that point to these cells
-            [ok = mark_dirty_cells_deleted(X) || X <- Cells],           
+            [ok = mark_dirty_cells_deleted(X) || X <- Cells],
             % update the children that point to the cell that is being deleted
             % by rewriting the formulae of all the children cells replacing the 
             % reference to this cell with #ref!
@@ -1691,7 +1691,6 @@ delete_cells(#refX{site = S} = DelX) ->
                            ok = delete_recs(Recs)
                    end,
             [ok = Fun3(X) || X <- Cells],
-            
             % get the index of all items to be deleted
             #refX{site = S} = DelX,
             H1 = #local_objs{path = '$1', obj = '$2', _ = '_'},

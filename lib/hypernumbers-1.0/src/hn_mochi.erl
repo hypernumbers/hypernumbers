@@ -524,18 +524,9 @@ remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
     inet:setopts(Socket, [{active, once}]),
     remoting_reg:request_update(Site, Path, ltoi(Time), self()),
     receive 
-        {tcp_closed, Socket} -> % io:format("in hn_mochi:remoting_request~n-"++
-                                %          "SOCKET CLOSED~n"),
-                                ok;
-        {error, timeout}     -> % io:format("in hn_mochi:remoting_request~n-"++
-                                %          "TIMEOUT~n"),
-                                Req:ok({"text/html",?hdr, <<"timeout">>});
-        {msg, Data}          -> % {struct, [{"time", T2}, _T]} = Data,
-                                % io:format("in hn_mochi:remoting_request~n-"++
-                                %          "T2 is ~p~n", [T2]),
-                                % io:format("in hn_mochi:remoting_request~n-"++
-                                %          "Data is ~p~n", [Data]),
-                                ?json(Req, Data)
+        {tcp_closed, Socket} -> ok;
+        {error, timeout}     -> Req:ok({"text/html",?hdr, <<"timeout">>});
+        {msg, Data}          -> ?json(Req, Data)
     end.
                  
 get_var_or_cookie(Key, Vars, Req) ->
