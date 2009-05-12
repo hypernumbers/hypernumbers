@@ -25,12 +25,10 @@ log(String) ->
 	      _          -> "../../logs/recalc/recalc_logs.txt"
 	  end,
     _Return=filelib:ensure_dir(File),
-    {Mega, S, Micro} = now(),
     
-    TimeStamp = tconv:to_s(Mega * 1000 + S + Micro/1000) ++ "£",
     case file:open(File, [append]) of
 	{ok, Id} ->
-	    io:fwrite(Id, "~s~n", [[TimeStamp | String]]),
+	    io:fwrite(Id, "~s~n", [String]),
 	    file:close(Id);
 	_ ->
 	    error
