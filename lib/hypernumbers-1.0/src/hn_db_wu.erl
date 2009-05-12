@@ -507,7 +507,6 @@
          delete_cells/1,
          delete_attrs/2,
          clear_dirty/2,
-         clear_dirty_cell/1,
          clear_dirty_cell/2,
          shift_cells/4,
          shift_row_objs/2,
@@ -635,11 +634,12 @@ write_style_IMPORT(RefX, Style)
 %% @spec read_dirty_cell(Timestamp) -> #dirty_cell{}
 %% @doc reads a dirty_cell based on its timestamp
 read_dirty_cell(Site, TimeStamp) ->
-    H1 = trans(Site, #dirty_cell{timestamp = TimeStamp, _ = '_'}),
-    T1 = trans(Site, dirty_cell),
-    Recs = mnesia:select(T1, [{H1, [], ['$_']}]),
+    Table = trans(Site, dirty_cell),
+    Recs = mnesia:wread({Table, TimeStamp}),
     case Recs of
-        [] -> throw(dirty_cell_no_longer_exists);
+        [] -> io:format("throwing dirty_cell_no_longer_exists for timestamp of ~p~n",
+                        [TimeStamp]),
+              throw(dirty_cell_no_longer_exists);
         _  -> ok
     end,
     [#dirty_cell{idx = Idx}] = trans_back(Recs),
@@ -717,8 +717,8 @@ shift_children(Child, OldParent, NewParent)
                                       % bits:log(S1 ++ " " ++ S2),
                                       Formula
                  end,
-    bits:log(io_lib:format("(2) Formula is ~p NewFormula is ~p~n",
-                           [Formula, NewFormula])),
+    % bits:log(io_lib:format("(2) Formula is ~p NewFormula is ~p~n",
+    %                       [Formula, NewFormula])),
     write_attr(Child, {"formula", NewFormula}).
 
 %% @spec initialise_remote_page_vsn(Site, Page::#refX{}, Version) -> ok
@@ -974,14 +974,9 @@ clear_dirty(Site, Rec) when (is_record(Rec, dirty_notify_in)
 %% @spec clear_dirty_cell(RefX::#refX{}) -> ok
 %% @doc clears a dirty cell marker.
 %% The reference must be to a cell
-clear_dirty_cell(#refX{site = Site, obj = {cell, _}} = RefX) ->
-    Index = read_local_item_index(RefX),
-    Table = trans(Site, dirty_cell),
-    mnesia:delete({Table, Index}).
-
 clear_dirty_cell(Site, Record) when is_record(Record, dirty_cell) ->
-    Table = trans(Site, dirty_cell),
-    mnesia:delete({Table, Record#dirty_cell.idx}).
+    NewRec = trans(Site, Record),
+    mnesia:delete_object(NewRec).
 
 %% @spec get_refs_below(#refX{}) -> [#refX{}]
 %% @doc gets all the refs equal to or below a given reference as well as
@@ -1448,24 +1443,17 @@ shift_cells(From, Type, Disp, Rewritten)
               %                       "Rewritten is ~p~n-DedupedChildren is ~p~n",
               %                       [ChildCells2, Rewritten, DedupedChildren])),
               Fun1 = fun(X) ->
-                             Ret = read_attrs(X, ["formula"]),
-                             case Ret of
-                                 [_SingleRecord] -> ok;
-                                 _   -> S = io_lib:format("Making FormulaList for ~p ~p "++
-                                                          "~p~n~p~n-X is ~p~n-Ret is ~p~n",
-                                                          [From, Type, Disp,
-                                                           Rewritten, X, Ret]),
-                                        bits:log(S)
-                             end,
-                             [_Ret2] = Ret
+                             read_attrs(X, ["formula"])
                      end,
               FormulaList = hslists:uniq(lists:flatten([Fun1(X) || X <- DedupedChildren])),
               % bits:log(io_lib:format("Uniqued FormulaList is ~p~n",
               %                       [FormulaList])),
               Fun2 = fun({RefX, {"formula", F1}}, Acc) ->
                              {St, F2} = offset_fm_w_rng(RefX, F1, From, {XO, YO}),
-                             bits:log(io_lib:format("(3) F1 is ~p F2 is ~p~n",
-                           [F1, F2])),
+                             % bits:log(io_lib:format("(3) F1 is ~p F2 is ~p~n",
+                             % [F1, F2])),
+                             % io:format("(3) F1 is ~p F2 is ~p~n",
+                             %          [F1, F2]),
                              ok = write_attr3(RefX, {"formula", F2}),
                              case St of
                                  clean  -> Acc;
@@ -1662,7 +1650,6 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
     case List1 of
         [] -> ok;
         _  -> List2 = get_cells(RefX),
-              % bits:log("Cells are " ++ io_lib:format("~p", [List2])),
               % first set all the dirty cells that match to deleted
               [ok = mark_dirty_cells_deleted(X) || X <- List2],
               % now delete the links to the cells
@@ -2182,21 +2169,12 @@ get_prefix(Site) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 mark_dirty_cells_deleted(#refX{site = S, obj = {cell, _}} = RefX) ->
     Idx = read_local_item_index(RefX),
-    case trans_back(mnesia:wread({trans(S, dirty_cell), Idx})) of
-        []                               ->
-            % bits:log("No dirty cell for "
-            %         ++ io_lib:format("~p", [RefX]) ++
-            %         " with idx of " ++ Idx),
-            ok;
+    H = trans(S, #dirty_cell{idx = Idx, _ = '_'}),
+    M = [{H, [], ['$_']}],
+    case trans_back(mnesia:select(trans(S, dirty_cell), M)) of
+        [] -> ok;
         [#dirty_cell{timestamp = T} = R] ->
-            % bits:log("Dirty cell of" ++
-            %         io_lib:format("~p", [R]) ++
-            %         " deleted for "
-            %         ++ io_lib:format("~p", [RefX]) ++
-            %         " with idx of " ++ Idx),
-            ok = mnesia:delete_object(trans(S, R)),
-            D = #dirty_cell{idx = 'deleted', timestamp = T},
-            % io:format("~p being deleted~n~p being written~n", [R, D]),
+            D = #dirty_cell{idx = deleted, timestamp = T},
             ok = mnesia:write(trans(S, D))
     end.
 
@@ -2628,7 +2606,7 @@ offset_with_ranges1([#cellref{path = Path, text = Text} = H | T],
     NewCell =
         case PathCompare of
             FromPath -> make_cell(XDollar, X, XO, YDollar, Y, YO);
-            _        -> Cell
+            _        -> Text
         end,
     NewAcc = H#cellref{text = Prefix ++ NewCell},    
     offset_with_ranges1(T, Cell, From, {XO, YO}, [NewAcc | Acc]);
@@ -2947,6 +2925,8 @@ deref_child(#refX{site = _S} = Child, DeRefX) ->
     {Status, NewFormula} = deref(Child, Formula, DeRefX),
     % bits:log(io_lib:format("(1) Formula is ~p NewFormula is ~p~n",
     %                       [Formula, NewFormula])),
+    % io:format("(1) Formula is ~p NewFormula is ~p~n",
+    %              [Formula, NewFormula]),
     % we just rewrite this and let it recalculate as per...
     ok = write_attr(Child, {"formula", NewFormula}),
     case Status of
@@ -2994,7 +2974,6 @@ deref1(Child, [H | T], DeRefX, Acc) ->
 % sometimes Text has a prepended slash
 deref2(Child, H, [$/|Text], Path, DeRefX) ->
     Deref2 = deref2(Child, H, Text, Path, DeRefX),
-    io:format("Deref2 is ~p~n", [Deref2]),
     case Deref2 of
         H              -> H;
         {deref,   Str} -> {deref,   "/" ++ Str};
@@ -3340,12 +3319,20 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
         {"format", F}      -> write_attr(RefX, {"format", F})
     end.
 
-write_default_alignment(RefX, Res) when is_number(Res) ->
+% if there is a style set for the cell don't write the default
+% aignment
+write_default_alignment(RefX, Res) ->
+    case read_attrs(RefX, ["style"]) of
+        [] -> write_default_alignment1(RefX, Res);
+        _  -> ok
+    end.
+    
+write_default_alignment1(RefX, Res) when is_number(Res) ->
     write_attr(RefX, {"text-align" ,"right"});
-write_default_alignment(RefX, Res) when is_list(Res) ->
+write_default_alignment1(RefX, Res) when is_list(Res) ->
     write_attr(RefX, {"text-align" ,"left"});
 %% this clause matches for booleans, dates and errors
-write_default_alignment(RefX, _Res)  ->
+write_default_alignment1(RefX, _Res)  ->
     write_attr(RefX, {"text-align" ,"center"}).
 
 write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->

@@ -160,7 +160,8 @@
          upgrade_1556/0,
          upgrade_1630/0,
          upgrade_1641/0,
-         upgrade_1743_A/0
+         upgrade_1743_A/0,
+         upgrade_1743_B/0
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -222,6 +223,19 @@ upgrade_1743_A() ->
     F1 = fun(X) ->
                  NewName = hn_db_wu:trans(X, dirty_cell),
                  {atomic, ok} = mnesia:del_table_copy(NewName, node())
+         end,                 
+    [F1(X) || X <- Sites].
+
+upgrade_1743_B() ->
+    % multi-site upgrade
+    HostsInfo = hn_config:get(hosts),
+    Sites = hn_util:get_hosts(HostsInfo),
+    F1 = fun(X) ->
+                 NewName = hn_db_wu:trans(X, dirty_cell),
+                 Attr = [{attributes, ms_util2:get_record_info(dirty_cell)},
+                         {type, set}, {disc_copies, [node()]}],
+                 {atomic, ok} = mnesia:create_table(NewName, Attr),
+                 {atomic, ok} = mnesia:add_table_index(NewName, idx)
          end,                 
     [F1(X) || X <- Sites].
 
@@ -331,17 +345,17 @@ create_db(Site)->
              ],
 
     Indices = [
+               {dirty_cell, timestamp},
                {item, key},
                {local_objs, obj},
                {local_objs, idx},
-               {local_cell, childidx},
-               {dirty_cell, timestamp}
+               {local_cell, childidx}
               ],
 
     % now recursively create all the tables and all the indices
     Fun1 = fun({Name, Type}) ->
                    Attr = [{attributes, ms_util2:get_record_info(Name)},
-                           {type, Type},{Storage, [node()]}],
+                           {type, Type}, {Storage, [node()]}],
                    NewName = hn_db_wu:trans(Site, Name),
                    {atomic, ok} = mnesia:create_table(NewName, Attr)
            end,
@@ -470,7 +484,7 @@ handle_dirty_cell1(Site, TimeStamp, Rec) ->
                                        _  -> ?INFO("TODO: handle_dirty_cell "++
                                                    "shared formula", [])
                                    end,
-                                   ok = hn_db_wu:clear_dirty_cell(Cell)
+                                   ok = hn_db_wu:clear_dirty_cell(Site, Rec)
                     end
                 catch
                     throw:X when X == id_not_found;
