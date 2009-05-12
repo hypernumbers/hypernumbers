@@ -479,6 +479,8 @@
 %%% @TODO the formula rewriting for insert/delete is icredibly inefficient
 %%%       would be fixed by moving to using ranges in the local_link table
 %%% @TODO REWRITE THE DOCUMENTATION TO TAKE INTO ACCOUNT ALL THE CHANGES!
+%%% @TODO Remove the catch()'s around the superlexer for transformed formulae
+%%%       only in there to provide a logging framework for diagnosis...
 %%% @end
 %%% Created : 24 Jan 2009 by gordon@hypernumbers.com
 %%%-------------------------------------------------------------------
@@ -508,8 +510,10 @@
          clear_dirty_cell/1,
          clear_dirty_cell/2,
          shift_cells/4,
-         shift_rows/2,
-         shift_cols/2,
+         shift_row_objs/2,
+         shift_col_objs/2,
+         delete_row_objs/1,
+         delete_col_objs/1,
          shift_children/3,
          shift_remote_links/4,
          shift_inc_hns/2,
@@ -634,10 +638,21 @@ read_dirty_cell(Site, TimeStamp) ->
     H1 = trans(Site, #dirty_cell{timestamp = TimeStamp, _ = '_'}),
     T1 = trans(Site, dirty_cell),
     Recs = mnesia:select(T1, [{H1, [], ['$_']}]),
+    case Recs of
+        [] -> throw(dirty_cell_no_longer_exists);
+        _  -> ok
+    end,
     [#dirty_cell{idx = Idx}] = trans_back(Recs),
     case Idx of
-        deleted -> deleted;
-        _       -> local_idx_to_refX(Site, Idx)
+        deleted -> % bits:log("Deleted dirty cell being read for " ++
+                   %         io_lib:format("~p", [TimeStamp]) ++ " of " ++
+                   %         io_lib:format("~p", [Recs])),
+                            deleted;
+        _       -> RefX = local_idx_to_refX(Site, Idx),
+                   % bits:log("Dirty cell read for " ++
+                   %         io_lib:format("~p", [RefX]) ++ " for " ++
+                   %         io_lib:format("~p", [Idx])),
+                   RefX
     end.
     
 %% @spec shift_remote_links(Type1, OldRef::#refX{}, 
@@ -692,9 +707,18 @@ shift_children(Child, OldParent, NewParent)
     % but strip off the leading '=' sign
     [{Child, {"formula", [$= | Formula]}}] = read_attrs(Child, ["formula"]),
     % just spoofing the lexing which is why we pass in the cell {1, 1}
-    {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
-    % stick the equals sign back on (I know!)
-    NewFormula = rewrite_hn_formula(Toks, OUrl, NUrl),
+    NewFormula = case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
+                     {ok, Toks}    -> rewrite_hn_formula(Toks, OUrl, NUrl);
+                     _Syntax_Error -> io:format("Not sure how you get an "++
+                                                         "invalid formula is "++
+                                                         "shift_children but "++
+                                                         "you do~n-~p~n", [Formula]),
+                                      % S2 = io_lib:format("~p", [Child]),
+                                      % bits:log(S1 ++ " " ++ S2),
+                                      Formula
+                 end,
+    bits:log(io_lib:format("(2) Formula is ~p NewFormula is ~p~n",
+                           [Formula, NewFormula])),
     write_attr(Child, {"formula", NewFormula}).
 
 %% @spec initialise_remote_page_vsn(Site, Page::#refX{}, Version) -> ok
@@ -1171,6 +1195,7 @@ read_local_children(#refX{site = Site, obj = {cell, _}} = Parent) ->
 %% @end
 %% This clause deals with a formula
 write_attr(#refX{obj = {cell, _}} = RefX, {"formula", _} = Attr) ->
+    % io:format("in write_attr RefX is ~p Attr is ~p~n", [RefX, Attr]),
     % first check that the formula is not part of a shared array
     case read_attrs(RefX, ["__shared"]) of
         [_X] -> throw({error, cant_change_part_of_array});
@@ -1419,13 +1444,28 @@ shift_cells(From, Type, Disp, Rewritten)
               ChildCells = [local_idx_to_refX(Site, X) || X <- CIdxList],
               ChildCells2 = hslists:uniq(ChildCells),
               DedupedChildren = lists:subtract(ChildCells2, Rewritten),
+              % bits:log(io_lib:format("in shift_cells ChildCells2 is ~p~n-"++
+              %                       "Rewritten is ~p~n-DedupedChildren is ~p~n",
+              %                       [ChildCells2, Rewritten, DedupedChildren])),
               Fun1 = fun(X) ->
-                             [Ret] = read_attrs(X, ["formula"]),
-                             Ret
+                             Ret = read_attrs(X, ["formula"]),
+                             case Ret of
+                                 [SingleRecord] -> ok;
+                                 _   -> S = io_lib:format("Making FormulaList for ~p ~p "++
+                                                          "~p~n~p~n-X is ~p~n-Ret is ~p~n",
+                                                          [From, Type, Disp,
+                                                           Rewritten, X, Ret]),
+                                        bits:log(S)
+                             end,
+                             [Ret2] = Ret
                      end,
-              FormulaList = hslists:uniq([Fun1(X) || X <- DedupedChildren]),
+              FormulaList = hslists:uniq(lists:flatten([Fun1(X) || X <- DedupedChildren])),
+              % bits:log(io_lib:format("Uniqued FormulaList is ~p~n",
+              %                       [FormulaList])),
               Fun2 = fun({RefX, {"formula", F1}}, Acc) ->
                              {St, F2} = offset_fm_w_rng(RefX, F1, From, {XO, YO}),
+                             bits:log(io_lib:format("(3) F1 is ~p F2 is ~p~n",
+                           [F1, F2])),
                              ok = write_attr3(RefX, {"formula", F2}),
                              case St of
                                  clean  -> Acc;
@@ -1462,28 +1502,50 @@ shift_cells1(From, To) when is_record(From, refX), is_record(To, refX) ->
     ok = shift_remote_links(child, From, To, incoming),
     ok.
 
+%% @spec delete_col_objs(RefX{}) -> ok
+%% @doc deletes any col objects completely covered by the #refX{}
+delete_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}) ->
+    H = trans(S, #local_objs{path = P, obj = {column, {'$1', '$2'}}, _ = '_'}),
+    C = [{'or', {'>=', '$1', X1}, {'>=', '$2', X2}}],
+    B = ['$_'],
+    M = [{H, C, B}],
+    Table = trans(S, local_objs),
+    Recs = mnesia:select(Table, M),
+    ok = delete_recs(Recs).
+
+%% @spec delete_row_objs(RefX{}) -> ok
+%% @doc deletes any row objects completely covered by the #refX{}
+delete_row_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}) ->
+    H = trans(S, #local_objs{path = P, obj = {row, {'$1', '$2'}}, _ = '_'}),
+    C = [{'or', {'>=', '$1', Y1}, {'>=', '$2', Y2}}],
+    B = ['$_'],
+    M = [{H, C, B}],
+    Table = trans(S, local_objs),
+    Recs = mnesia:select(Table, M),
+    ok = delete_recs(Recs).
+
 %% @spec shift_cols(RefX#refX{}, Type) -> ok
 %% Type = [insert | delete]
 %% @doc shift_cols shifts cols left or right
-shift_cols(#refX{site = S, obj = {column, {X1, X2}}} = Change, Type)
+shift_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}} = Change, Type)
   when ((Type == insert) orelse (Type == delete)) ->
     XX = case Type of
              insert -> X2;
              delete -> X1
          end,
-    H = trans(S, #local_objs{obj = {column, {'$1', '$2'}}, _ = '_'}),
+    H = trans(S, #local_objs{path = P, obj = {column, {'$1', '$2'}}, _ = '_'}),
     C = [{'or', {'>=', '$1', XX}, {'>=', '$2', XX}}],
     B = ['$_'],
     M = [{H, C, B}],
     Table = trans(S, local_objs),
     Recs = mnesia:select(Table, M),
-    [ok = shift_cols1(X, Change, Type) || X <- Recs],
+    [ok = shift_col_objs1(X, Change, Type) || X <- Recs],
     ok.
 
-shift_cols1(Shift, Change, Type) ->
+shift_col_objs1(Shift, Change, Type) ->
     Shift2 = trans_back(Shift),
     #local_objs{obj = {column, {Y1, Y2}}} = Shift2,
-    #refX{site = S, obj = {column, {YY1, YY2}}} = Change,
+    #refX{site = S, path = P, obj = {column, {YY1, YY2}}} = Change,
     Offset = case Type of
                  insert -> YY2 - YY1 + 1;
                  delete -> -(YY2 - YY1 + 1)             end,
@@ -1494,22 +1556,22 @@ shift_cols1(Shift, Change, Type) ->
 %% @spec shift_rows(RefX#refX{}, Type) -> ok
 %% Type = [insert | delete]
 %% @doc shift_rows shifts rows up or down
-shift_rows(#refX{site = S, obj = {row, {Y1, Y2}}} = Change, Type)
+shift_row_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}} = Change, Type)
   when ((Type == insert) orelse (Type == delete)) ->
     YY = case Type of
              insert -> Y2;
              delete -> Y1
          end,
-    H = trans(S, #local_objs{obj = {row, {'$1', '$2'}}, _ = '_'}),
+    H = trans(S, #local_objs{path = P, obj = {row, {'$1', '$2'}}, _ = '_'}),
     C = [{'or', {'>=', '$1', YY}, {'>=', '$2', YY}}],
     B = ['$_'],
     M = [{H, C, B}],
     Table = trans(S, local_objs),
     Recs = mnesia:select(Table, M),
-    [ok = shift_rows1(X, Change, Type) || X <- Recs],
+    [ok = shift_row_objs1(X, Change, Type) || X <- Recs],
     ok.
 
-shift_rows1(Shift, Change, Type) ->
+shift_row_objs1(Shift, Change, Type) ->
     Shift2 = trans_back(Shift),
     #local_objs{obj = {row, {X1, X2}}} = Shift2,
     #refX{site = S, obj = {row, {XX1, XX2}}} = Change,
@@ -1600,7 +1662,7 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
     case List1 of
         [] -> ok;
         _  -> List2 = get_cells(RefX),
-              % io:format("in clear_cells~nList2 is~n~p~n", [List2]),
+              % bits:log("Cells are " ++ io_lib:format("~p", [List2])),
               % first set all the dirty cells that match to deleted
               [ok = mark_dirty_cells_deleted(X) || X <- List2],
               % now delete the links to the cells
@@ -1612,15 +1674,16 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
               ok
     end.
 
-%% @spec delete_page(RefX) -> ok
+%% @spec delete_page(RefX) -> Status
 %% @doc takes a reference to a page, does delete_cells,
 %% Then reads any existing local_objs and deletes any
 %% row / column ones, along with any attributes set on them
-delete_page(#refX{site=Site, path=Path} = RefX) ->
+%% Returns a list of dereferenced cells that need to be set dirty to recalculate
+delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
     
-    delete_cells(RefX),
+    Status = delete_cells(RefX),
     
-    F = fun(#local_objs{obj={X, _Y}, idx=Id}=Obj)
+    F = fun(#local_objs{obj = {X, _Y}, idx = Id} = Obj)
            when X == column; X == row ->
                 ok = mnesia:delete(?_(Site, item), Id, write),
                 mnesia:delete_object(?_(Site, Obj));
@@ -1633,7 +1696,7 @@ delete_page(#refX{site=Site, path=Path} = RefX) ->
     
     [ ok = F(?__(X)) || X <- Objs ],
     
-    ok.
+    Status.
 
 %% @spec delete_cells(RefX) -> Status
 %% Status = list()
@@ -1663,6 +1726,9 @@ delete_cells(#refX{site = S} = DelX) ->
             % reference to this cell with #ref!
             LocalChildren = [read_local_children(X) || X <- Cells],
             LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
+            % sometimes a cell will have local children that are also in the delete zone
+            % these need to be removed before we do anything else...
+            LocalChildren3 = lists:subtract(LocalChildren2, Cells),
             % now split this list into two
             % * a list of child/parents to delink
             % * a list of children to deref
@@ -1674,10 +1740,14 @@ delete_cells(#refX{site = S} = DelX) ->
                                Recs -> [Recs | Acc]
                            end
                    end,
-            Status = lists:flatten(lists:foldl(Fun1, [], LocalChildren2)),
+            Status = lists:flatten(lists:foldl(Fun1, [], LocalChildren3)),
             % now delink all the cells that are being deleted
             Fun2 = fun(X) ->
                            Idx = get_local_item_index(X),
+                           case mnesia:wread({trans(S, local_cell_link), Idx}) of
+                               [] -> ok;
+                               _  -> ok % io:format("~nCell IS a local parent~n")
+                               end,
                            ok = mnesia:delete({trans(S, local_cell_link), Idx})
                    end,
             [ok = Fun2(X) || X <- Cells],
@@ -1781,6 +1851,8 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
     case Output of
         {formula, Formula} ->
             NewFormula = offset_formula(Formula, {(TX - FX), (TY - FY)}),
+            % bits:log(io_lib:format("(3) Formula is ~p NewFormula is ~p~n",
+            %               [Formula, NewFormula])),
             ok = write_attr(To, {"formula", NewFormula});
         [{Type, V},  _A, _F] ->
             V2 = case Incr of
@@ -1921,11 +1993,18 @@ mark_cells_dirty(#refX{site = Site, obj = {cell, _}} = RefX) ->
                           Match = ms_util:make_ms(dirty_cell, [{idx, Idx}]),
                           Match2 = trans(Site, Match),
                           % only write the dirty cell if 
-                          % it doesn't already exist
-                          case mnesia:match_object(Match2) of
-                              [] -> Rec = trans(Site, #dirty_cell{idx = Idx}),
-                                    ok =  mnesia:write(Rec);
-                              _  -> ok
+                          % it doesn't already exist or if it has been deleted
+                          case ?__(mnesia:match_object(Match2)) of
+                              [] ->
+                                  Rec = ?_(Site, #dirty_cell{idx = Idx}),
+                                  ok =  mnesia:write(Rec);
+                              [#dirty_cell{idx = deleted}]  ->
+                                  % io:format("~n~npreviously deleted dirty cell reset~n~n"),
+                                  Rec = ?_(Site, #dirty_cell{idx = Idx}),
+                                  ok =  mnesia:write(Rec);
+                              O ->
+                                  %io:format("~n~nExisting dirty cell is ~p~n~n", [O]),
+                                  ok
                           end
                   end,
             _Return1 = lists:foreach(Fun, LocalChildren),
@@ -2104,12 +2183,22 @@ get_prefix(Site) ->
 mark_dirty_cells_deleted(#refX{site = S, obj = {cell, _}} = RefX) ->
     Idx = read_local_item_index(RefX),
     case trans_back(mnesia:wread({trans(S, dirty_cell), Idx})) of
-        []                               -> ok;
-        [#dirty_cell{timestamp = T} = R] -> ok = mnesia:delete_object(trans(S, R)),
-                                            D = #dirty_cell{idx = 'deleted',
-                                                            timestamp = T},
-                                            ok = mnesia:write(trans(S, D))
-                                            end.
+        []                               ->
+            % bits:log("No dirty cell for "
+            %         ++ io_lib:format("~p", [RefX]) ++
+            %         " with idx of " ++ Idx),
+            ok;
+        [#dirty_cell{timestamp = T} = R] ->
+            % bits:log("Dirty cell of" ++
+            %         io_lib:format("~p", [R]) ++
+            %         " deleted for "
+            %         ++ io_lib:format("~p", [RefX]) ++
+            %         " with idx of " ++ Idx),
+            ok = mnesia:delete_object(trans(S, R)),
+            D = #dirty_cell{idx = 'deleted', timestamp = T},
+            % io:format("~p being deleted~n~p being written~n", [R, D]),
+            ok = mnesia:write(trans(S, D))
+    end.
 
 insert_shift(#refX{obj = {cell, {X, Y}}} = RefX, vertical) ->
     RefX#refX{obj = {cell, {X, Y - 1}}};
@@ -2856,6 +2945,8 @@ shift_remote_links2(Site, [H | T], To) ->
 deref_child(#refX{site = S} = Child, DeRefX) ->
     [{Child, {"formula", Formula}}] = read_attrs(Child, ["formula"]),
     {Status, NewFormula} = deref(Child, Formula, DeRefX),
+    % bits:log(io_lib:format("(1) Formula is ~p NewFormula is ~p~n",
+    %                       [Formula, NewFormula])),
     % we just rewrite this and let it recalculate as per...
     ok = write_attr(Child, {"formula", NewFormula}),
     case Status of
@@ -2865,9 +2956,16 @@ deref_child(#refX{site = S} = Child, DeRefX) ->
 
 % dereferences a formula
 deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
-    {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
-    NewToks = deref1(Child, Toks, DeRefX, []),
-    make_formula(NewToks).
+    case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
+        {ok, Toks}    -> NewToks = deref1(Child, Toks, DeRefX, []),
+                         make_formula(NewToks);
+        _Syntax_Error -> io:format("Not sure how you get an invalid "++
+                                   "formula is deref but "++
+                                   "you do~n-~p~n", [Formula]),
+                         % S2 = io_lib:format("~p", [Child]),
+                         % bits:log(S1 ++ " " ++ S2),
+                         {[], "="++Formula}
+    end.
 
 deref1(Child, [], _DeRefX, Acc) -> lists:reverse(Acc);
 deref1(Child, [#rangeref{text = Text} | T], DeRefX, Acc) ->
@@ -2879,7 +2977,7 @@ deref1(Child, [#rangeref{text = Text} | T], DeRefX, Acc) ->
                  Pre -> Pre
              end,
     Obj2 = hn_util:parse_ref(Range),
-    NewTok = case deref_overlap(Text, Obj1, Obj2) of
+    NewTok = case deref_overlap(Range, Obj1, Obj2) of
                  {deref, "#REF!"} -> {deref, Prefix ++ "#REF!"};
                  {recalc, Str}    -> {recalc, Prefix ++ Str};
                  {formula, Str}   -> {formula, Prefix ++ Str}
@@ -2895,10 +2993,13 @@ deref1(Child, [H | T], DeRefX, Acc) ->
 
 % sometimes Text has a prepended slash
 deref2(Child, H, [$/|Text], Path, DeRefX) ->
-    case deref2(Child, H, Text, Path, DeRefX) of
-        H                        -> H;
-        {deref, Str}             -> {deref, "/" ++ Str};
-        {Type, O1, O2, P, Text2} -> {Type, O1, O2, P, "/" ++ Text2}
+    Deref2 = deref2(Child, H, Text, Path, DeRefX),
+    io:format("Deref2 is ~p~n", [Deref2]),
+    case Deref2 of
+        H              -> H;
+        {deref,   Str} -> {deref,   "/" ++ Str};
+        {recalc,  Str} -> {recalc,  "/" ++ Str};
+        {formula, Str} -> {formula, "/" ++ Str}
     end;
 % special case for ambiguous parsing of division
 % this matches on cases like =a1/b3
@@ -2916,7 +3017,7 @@ deref2(Child, H, Text, Path, DeRefX) ->
                      P    -> S1 = muin_util:just_path(Text),
                              S2 = muin_util:just_ref(Text),
                              Obj2 = hn_util:parse_ref(S2),
-                             case deref_overlap(Text, Obj1, Obj2) of
+                             case deref_overlap(S2, Obj1, Obj2) of
                                  {deref, "#REF!"} -> {deref, S1 ++ "#REF!"};
                                  O                -> S1 ++ O
                              end
@@ -3021,6 +3122,7 @@ intersect(XX1, YY1, X1, Y1, X2, Y2) ->
 
 % rewrite/5
 rewrite(X1O, X2O, {range, _}, Text, left)   ->
+    % io:format("in rewrite (1) Text is ~p~n", [Text]),
     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1O, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, (X2 - (X2O - X1O + 1)), 0, YD2, Y2, 0),
@@ -3032,6 +3134,7 @@ rewrite(X1O, X2O, {column, _}, Text, left)   ->
     {recalc, S};
 
 rewrite(Y1O, Y2O, {range, _}, Text, top)   ->
+    % io:format("in rewrite (3) Text is ~p~n", [Text]),
     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1O, 0) ++ ":" ++
         make_cell(XD2, X2, 0, YD2, (Y2 - (Y2O - Y1O + 1)), 0),
@@ -3055,6 +3158,7 @@ rewrite(XO, {column, _}, Text, right)  ->
     {recalc, S};
 
 rewrite(XO, {range, _}, Text, middle_column)  ->
+    % io:format("in rewrite (7) Text is ~p~n", [Text]),
     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, (X2 - XO), 0, YD2, Y2, 0),
@@ -3066,6 +3170,7 @@ rewrite(XO, {column, _}, Text, middle)  ->
     {recalc, S};
 
 rewrite(YO, {range, _}, Text, bottom) ->
+    % io:format("in rewrite (9) Text is ~p~n", [Text]),
     {XD1, X1, YD1, Y1, XD2, X2, YD2, _Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, X2, 0, YD2, (YO - 1), 0),
@@ -3077,6 +3182,7 @@ rewrite(YO, {row, _}, Text, bottom) ->
     {recalc, S};
 
 rewrite(YO, {range, _}, Text, middle_row) ->
+    % io:format("in rewrite (11) Text is ~p~n", [Text]),
     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, X2, 0, YD2, (Y2 - YO), 0),
@@ -3149,20 +3255,32 @@ offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
-    {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
-    NewToks = offset_with_ranges(Toks, Cell, From, Offset),
-    {Status, NewFormula} = make_formula(NewToks),
-    {Status, NewFormula};
+    case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
+        {ok, Toks}    -> NewToks = offset_with_ranges(Toks, Cell, From, Offset),
+                         make_formula(NewToks);
+        _Syntax_Error -> io:format("Not sure how you get an invalid "++
+                                   "formula is offset_fm_w_rng but "++
+                                   "you do~n-~p~n", [Formula]),
+                         % S2 = io_lib:format("~p", [Cell]),
+                         % bits:log(S1 ++ " " ++ S2), 
+                         {[], "=" ++ Formula}
+    end;
 offset_fm_w_rng(_Cell, Value, _From, _Offset) -> Value.
 
 offset_formula(Formula, {XO, YO}) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
-    {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
-    NewToks = d_n_d_c_n_p_offset(Toks, XO, YO),
-    {_Status, NewFormula} = make_formula(NewToks),
-    NewFormula.
+    case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
+        {ok, Toks}    -> NewToks = d_n_d_c_n_p_offset(Toks, XO, YO),
+                         {_St, NewFormula} = make_formula(NewToks),
+                         NewFormula;
+        _Syntax_Error -> io:format("Not sure how you get an invalid "++
+                                   "formula is offset_formula but "++
+                                   "you do~n-~p~n", [Formula]),
+                         % bits:log(S1),
+                         "=" ++ Formula
+    end.
 
 shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
     case mnesia:wread({trans(Site, dirty_notify_in), From}) of
@@ -3174,6 +3292,7 @@ shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
     end.
 
 write_attr2(RefX, {"formula", Val}) ->
+    % io:format("in write_attr2 RefX is ~p Val is ~p~n", [RefX, Val]),
     %?INFO("Formula ~p",[[Val,superparser:process(Val)]]),
     case superparser:process(Val) of
         {formula, Fla}      -> write_formula1(RefX, Fla, Val);
@@ -3181,8 +3300,9 @@ write_attr2(RefX, {"formula", Val}) ->
     end.
 
 write_formula1(RefX, Fla, Val) ->
+    % io:format("in write_formula1~n-RefX is ~p~n-Val is ~p~n", [RefX, Val]),
     Rti = refX_to_rti(RefX, false),
-    case muin:run_formula(Fla, Rti) of
+    Ret = case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
             ?ERROR("invalid return from muin:run_formula ~p",[Val]),
@@ -3202,7 +3322,9 @@ write_formula1(RefX, Fla, Val) ->
             % write the default text align for the result
             ok = write_default_alignment(RefX, Res),
             write_cell(RefX, Res, Val, Parxml, Deptree)
-    end.
+    end,
+    % io:format("leaving write_formula1~n"),
+    Ret.
 
 write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
     % now write out the actual cell

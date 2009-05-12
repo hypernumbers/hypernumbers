@@ -435,10 +435,11 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 handle_dirty_cell(Site, TimeStamp, Rec)  ->
     #dirty_cell{idx = RecIdx} = Rec,
     case RecIdx of
-        deleted -> Fun = fun() ->
-                                 hn_db_wu:clear_dirty_cell(Site, Rec)
+        deleted -> Fun = fun() -> % S = io_lib:format("handling dirty_cell ~p~n", [Rec]),
+                                  % bits:log(S),
+                                  ok = hn_db_wu:clear_dirty_cell(Site, Rec)
                          end,
-                   mnesia:transaction(trasnaction, Fun);
+                   mnesia:activity(transaction, Fun);
         _       -> handle_dirty_cell1(Site, TimeStamp, Rec)
     end.
 
@@ -446,32 +447,36 @@ handle_dirty_cell1(Site, TimeStamp, Rec) ->
     Fun1 =
         fun() ->
                 ok = init_front_end_notify(),
-                % io:format("about to wait~n"),
-                % test_util:wait(5),
                 try
                     Cell = hn_db_wu:read_dirty_cell(Site, TimeStamp),
                     case Cell of
-                        deleted -> ok;
+                        deleted -> % S = io_lib:format("dirty_cell ~p has been deleted~n",
+                                   %                  [Rec]),
+                                   % bits:log(S),
+                                   ok;
                         _       -> case ?wuread_attrs(Cell, ["__shared"]) of
-                                       [] -> handle_dirty_cell1(Cell);
+                                       [] -> handle_dirty_cell2(Cell);
                                        _  -> ?INFO("TODO: handle_dirty_cell "++
                                                    "shared formula", [])
                                    end,
-                                   hn_db_wu:clear_dirty_cell(Cell)
+                                   ok = hn_db_wu:clear_dirty_cell(Cell)
                     end
                 catch
-                    throw:X when X == id_not_found; X == invalid_dirty_cell ->
+                    throw:X when X == id_not_found;
+                                 X == invalid_dirty_cell;
+                                 X == dirty_cell_no_longer_exists ->
                         Err = "Invalid cell in hn_db_api:handle_dirty_cell ~n " ++
                             "Site:~p~n Time:~p~n Record:~p~n Reason:~p~n",
+                        % bits:log(io_lib:format(Err, [Site, TimeStamp, Rec, X])),
                         ?ERROR(Err, [Site, TimeStamp, Rec, X]),
-                        hn_db_wu:clear_dirty_cell(Site, Rec)
+                        ok = hn_db_wu:clear_dirty_cell(Site, Rec)
                 end
         end,
     ok = mnesia:activity(transaction, Fun1),
     ok = tell_front_end("handle dirty"),
     ok.
 
-handle_dirty_cell1(Cell) ->
+handle_dirty_cell2(Cell) ->
     case hn_db_wu:read_attrs(Cell, ["formula"]) of
         [{C, KV}] -> hn_db_wu:write_attr(C, KV);
         []        -> throw(invalid_dirty_cell)
@@ -1022,11 +1027,17 @@ delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
            end,
     move(RefX, delete, Disp);
 delete(#refX{obj = {page, _}} = RefX) ->
-    Fun = fun() ->
-                  ok = init_front_end_notify(),
-                  hn_db_wu:delete_page(RefX)
+    Fun1 = fun() ->
+                   ok = init_front_end_notify(),
+                   Status = hn_db_wu:delete_page(RefX),
+                   % now force all deferenced cells to recalculate
+                   Fun2 = fun({dirty, X}) ->
+                                  [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"]),
+                                  ok = ?wu:write_attr(X, {"formula", F})
+                         end,
+                  [ok = Fun2(X) || X <- Status]
           end,
-    mnesia:activity(transaction, Fun),
+    mnesia:activity(transaction, Fun1),
     ok = tell_front_end("delete").
 
 %% @spec delete(RefX :: #refX{}, Type) -> ok
@@ -1074,8 +1085,10 @@ move(RefX, Type, Disp)
                           end,
                 Status2 = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
                 case Obj of
-                    {row,    _} -> ok = ?wu:shift_rows(RefX, Type);
-                    {column, _} -> ok = ?wu:shift_cols(RefX, Type);
+                    {row,    _} -> ok = hn_db_wu:delete_row_objs(RefX),
+                                   ok = hn_db_wu:shift_row_objs(RefX, Type);
+                    {column, _} -> ok = hn_db_wu:delete_col_objs(RefX),
+                                   ok = hn_db_wu:shift_col_objs(RefX, Type);
                     _           -> ok
                 end,
                 % now notify all parents and children of all cells on
@@ -1094,8 +1107,7 @@ move(RefX, Type, Disp)
                 % tables have been transformed
                 Fun2 = fun({dirty, X}) ->
                                [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"]),
-                               ok = ?wu:write_attr(X, {"formula", F}),
-                               ok = ?wu:mark_cells_dirty(X)
+                               ok = ?wu:write_attr(X, {"formula", F})
                        end,
                 [ok = Fun2(X) || X <- Status],
                 % Jobs a good'un, now for the remote parents
