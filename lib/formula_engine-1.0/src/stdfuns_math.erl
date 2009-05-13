@@ -174,7 +174,7 @@ negate([V]) ->
 
 sum(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers(Flatvs, [ignore_strings, ignore_bools, ignore_dates, ignore_blanks]),
+    Nums = ?numbers([0|Flatvs], [ignore_strings, ignore_bools, ignore_dates, cast_blanks]),
     sum1(Nums).
 
 sum1(Nums) ->
@@ -182,15 +182,10 @@ sum1(Nums) ->
     Return.
 
 product(Vals) ->
-    % io:format("in product Vals are ~p~n", [Vals]),
     Flatvals = ?flatten_all(Vals),
-    % io:format("in product Flatvals are ~p~n", [Flatvals]),
     ?ensure_no_errvals(Flatvals),
-    % io:format("Got to here!~n"),
     Nums = ?numbers(Flatvals, [cast_strings, cast_bools, ignore_blanks,
                                cast_dates]),
-    % io:format("In product~n-Vals is ~p~n-Flatvals is ~p~n-Nums is ~p~n",
-    %          [Vals, Flatvals, Nums]),
     product1(Nums).
 product1(Nums) ->
     foldl(fun(X, Acc) -> X * Acc end,
