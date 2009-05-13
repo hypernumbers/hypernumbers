@@ -345,7 +345,7 @@ create_db(Site)->
              ],
 
     Indices = [
-               {dirty_cell, timestamp},
+               {dirty_cell, idx},
                {item, key},
                {local_objs, obj},
                {local_objs, idx},
