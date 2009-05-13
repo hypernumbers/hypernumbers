@@ -362,6 +362,7 @@ userdef_call(Fname, Args) ->
     % to work after hot code load (Gordon Guthrie 2008_09_08)
     case (catch apply(userdef,Fname,Args)) of
         {'EXIT', {undef, _}} -> ?ERR_NAME;
+        {'EXIT', _}          -> ?ERR_NAME; %% FIXME: should return a descriptive error message.
         Val                  -> Val
     end.
 
