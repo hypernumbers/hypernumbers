@@ -133,7 +133,7 @@ sub_unsubscribe(Table, Site, Action) ->
     NewTable = hn_db_wu:trans(Site, Table),
     case Action of
         subscribe   ->
-            mnesia:wait_for_tables([NewTable], 1000),
+            mnesia:wait_for_tables([NewTable], 10000),
             mnesia:subscribe({table, NewTable, detailed});
         unsubscribe ->
             mnesia:unsubscribe({table, NewTable, detailed})

@@ -36,10 +36,12 @@ start(_Type, _Args) ->
         true  -> clean_start2();
         false -> ok
     end,
-    
-    ok = start_mochiweb(),
+   
     [ok = dirty_subscriber:monitor(X) || X <- ?dirties],
     [ok = dirty_subscriber:flush(X) || X <- ?dirties],
+
+    ok = start_mochiweb(),
+    
     {ok, Pid}.
 
 hup() ->
