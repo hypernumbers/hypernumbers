@@ -1,5 +1,7 @@
 #! /bin/bash
 
+export HEART_COMMAND="./hypernumbers start"
+
 NODE=arrian
 HOST=localhost
 RELNAME=hypernumbers
@@ -94,15 +96,18 @@ function start
 {
     MODE="-detached"
     RELOAD=""
+    HEART="-heart"
 
     if [ $# -lt 1 ] 
     then
         MODE=""
         RELOAD="-run reloader start"
+        HEART=""
     fi
 
     erl $MODE \
         $RELOAD \
+	$HEART \
         -setcookie $COOKIE \
         -sname $NODE@$HOST \
         -boot $REL_DIR \
