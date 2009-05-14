@@ -1,6 +1,6 @@
 #! /bin/bash
 
-export HEART_COMMAND="./hypernumbers start"
+export HEART_COMMAND="./hypernumbers start detached"
 
 NODE=arrian
 HOST=localhost
