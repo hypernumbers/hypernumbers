@@ -3308,6 +3308,8 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
     Formula = case Type of
                   quote    -> [39 | Value];
                   datetime -> OrigVal;
+                  float    -> OrigVal;
+                  int      -> OrigVal;
                   _        -> hn_util:text(Value)
               end,
     ok = write_cell(RefX, Value, Formula, [], []),
