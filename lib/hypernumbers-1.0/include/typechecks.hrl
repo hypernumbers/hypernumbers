@@ -9,6 +9,8 @@
 
 -include("errvals.hrl").
 
+-define(STRING_SIZE_LIMIT, 8192).
+
 %%% Guards
 
 -define(is_array(A),
@@ -107,6 +109,15 @@
 %% Ensure Xs are all strings.
 -define(estrings(Xs),
         foreach(fun(X) -> ?estring(X) end, Xs)).
+
+-define(ensure_string_under_limit(Str),
+        (fun() ->
+                 Len = string:len(Str),
+                 case Len < ?STRING_SIZE_LIMIT of
+                     true -> Str;
+                     false -> ?ERR_VAL
+                 end
+         end)()).
 
 %%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %%% OLD STUFF BELOW.
