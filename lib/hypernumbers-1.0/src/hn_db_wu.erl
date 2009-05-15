@@ -2516,24 +2516,24 @@ make_formula(Toks) ->
     mk_f(Toks, {clean, []}).
 
 %% this function needs to be extended...
-mk_f([], {St, A}) -> {St, "="++lists:flatten(lists:reverse(A))};
-mk_f([{errval, '#REF!'} | T], {St, A})   -> mk_f(T, {St, ["#REF!" | A]});
-mk_f([{deref, Text}     | T], {St, A})   -> mk_f(T, {St, [Text | A]});
+mk_f([], {St, A})                         -> {St, "="++lists:flatten(lists:reverse(A))};
+mk_f([{errval, '#REF!'} | T], {St, A})    -> mk_f(T, {St, ["#REF!" | A]});
+mk_f([{deref, Text}     | T], {St, A})    -> mk_f(T, {St, [Text | A]});
 % special infering of division
-mk_f([?cellref, ?cellref2| T], {St, A})  -> mk_f(T, {St, [R2, "/", R | A]});
-mk_f([?cellref           | T], {St, A})  -> mk_f(T, {St, [R | A]});
-mk_f([?rangeref          | T], {St, A})  -> mk_f(T, {St, [R | A]});
-mk_f([?namedexpr         | T], {St, A})  -> mk_f(T, {St, [P ++ N | A]});
-mk_f([{bool, H}          | T], {St, A})  -> mk_f(T, {St, [atom_to_list(H) | A]});
-mk_f([{atom, H}          | T], {St, A})  -> mk_f(T, {St, [atom_to_list(H) | A]});
-mk_f([{int, I}           | T], {St, A})  -> mk_f(T, {St, [integer_to_list(I) | A]});
-mk_f([{float, F}         | T], {St, A})  -> mk_f(T, {St, [float_to_list(F) | A]});
-mk_f([{formula, S}       | T], {St, A})  -> mk_f(T, {St, [S | A]});
-mk_f([{str, S}           | T], {St, A})  -> mk_f(T, {St, [$", S, $" | A]});
-mk_f([{recalc, S}        | T], {_St, A}) -> mk_f(T, {dirty, [S | A]});
-mk_f([{name, "INDIRECT"} | T], {_St, A}) -> mk_f(T, {dirty, ["INDIRECT" | A]});
-mk_f([{name, S}          | T], {St, A})  -> mk_f(T, {St, [S | A]});
-mk_f([{H}                | T], {St, A})  -> mk_f(T, {St, [atom_to_list(H) | A]}).
+mk_f([?cellref, ?cellref2| T], {St, A})   -> mk_f(T, {St, [R2, "/", R | A]});
+mk_f([?cellref           | T], {St, A})   -> mk_f(T, {St, [R | A]});
+mk_f([?rangeref          | T], {St, A})   -> mk_f(T, {St, [R | A]});
+mk_f([?namedexpr         | T], {St, A})   -> mk_f(T, {St, [P ++ N | A]});
+mk_f([{bool, H}          | T], {St, A})   -> mk_f(T, {St, [atom_to_list(H) | A]});
+mk_f([{atom, H}          | T], {St, A})   -> mk_f(T, {St, [atom_to_list(H) | A]});
+mk_f([{int, I}           | T], {St, A})   -> mk_f(T, {St, [integer_to_list(I) | A]});
+mk_f([{float, {F, _OrigStr}} | T], {St, A}) -> mk_f(T, {St, [float_to_list(F) | A]});
+mk_f([{formula, S}       | T], {St, A})   -> mk_f(T, {St, [S | A]});
+mk_f([{str, S}           | T], {St, A})   -> mk_f(T, {St, [$", S, $" | A]});
+mk_f([{recalc, S}        | T], {_St, A})  -> mk_f(T, {dirty, [S | A]});
+mk_f([{name, "INDIRECT"} | T], {_St, A})  -> mk_f(T, {dirty, ["INDIRECT" | A]});
+mk_f([{name, S}          | T], {St, A})   -> mk_f(T, {St, [S | A]});
+mk_f([{H}                | T], {St, A})   -> mk_f(T, {St, [atom_to_list(H) | A]}).
 
 parse_cell(Cell) ->
     {XDollar, Rest} = is_fixed(Cell),

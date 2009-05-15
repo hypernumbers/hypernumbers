@@ -60,8 +60,10 @@ create(_) ->
 
 lex_constant(S) ->
     case xfl_lexer:lex(S, {1, 1}) of
-        {ok, [{T, V}]} when T == int; T == float; T == bool; T == str ->
+        {ok, [{T, V}]} when T == int; T == bool; T == str ->
             V;
+        {ok, [{float, {F, _OrigStr}}]} ->
+            F;
         Else ->
             io:format("Else = ~p~n", [Else]),
             ?INVALID_SPEC

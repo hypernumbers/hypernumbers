@@ -19,27 +19,27 @@ process(Input) ->
         [{bool, B}]                -> [{bool, B},
                                        {"text-align", "center"},
                                        {"format", "null"}];
-        [{float, F}]               -> [{float, F},
+        [{float, {F, _OrigStr}}]     -> [{float, F},
                                        {"text-align", "right"},
                                        {"format", "null"}];
         [{int, I}]                 -> [{int, I},
                                        {"text-align", "right"},
                                        {"format", "null"}];
-        [{'-'}, {float, F}]        -> [{float, -F},
-                                       {"text-align", "right"},
-                                       {"format", "null"}];
+        [{'-'}, {float, {F, _OrigStr}}] -> [{float, -F},
+                                          {"text-align", "right"},
+                                          {"format", "null"}];
         [{'-'}, {int, I}]          -> [{int, -I},
                                        {"text-align", "right"},
                                        {"format", "null"}];
-        [{float, F}, {'%'}]        -> [{float,F/100},
-                                       {"text-align", "right"},
-                                       {"format", "0.00%"}];
+        [{float, {F, _OrigStr}}, {'%'}] -> [{float,F/100},
+                                          {"text-align", "right"},
+                                          {"format", "0.00%"}];
         [{int, I}, {'%'}]          -> [{float,I/100},
                                        {"text-align", "right"},
                                        {"format", "0%"}];
-        [{'-'}, {float, F}, {'%'}] -> [{float,F/100},
-                                       {"text-align", "right"},
-                                       {"format", "0.00%"}];
+        [{'-'}, {float, {F, _OrigStr}}, {'%'}] -> [{float,F/100},
+                                                 {"text-align", "right"},
+                                                 {"format", "0.00%"}];
         [{'-'}, {int, I}, {'%'}]   -> [{float,I/100},
                                        {"text-align", "right"},
                                        {"format", "0%"}];
