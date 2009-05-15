@@ -11,8 +11,7 @@
 
 -include("ascii.hrl").
 
--export([conv_to_float/1,
-         make_src/1,
+-export([make_src/1,
          get_general/0,
          concat/2,
          concat/3,
@@ -22,14 +21,6 @@
          strip/1         
         ]).
 
-%% @TODO migrate this to t_conv?
-%% tconv:to_f don't work if X is already a float...
-conv_to_float(X) when is_float(X) -> X;
-conv_to_float(X)                  -> tconv:to_f(X).
-
-%%
-%% 'Proper' functions
-%%
 
 make_src(A) when is_list(A) -> make_src2(lists:flatten(A));
 make_src(A)                 -> make_src2([A]).

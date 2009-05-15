@@ -23,10 +23,9 @@ to_i(Str) when is_list(Str) ->
 %% Number -> integer.
 to_i(Num) when is_number(Num) -> trunc(Num).
 
-%% String -> float.
-to_f(Str) when is_list(Str) ->
-    {ok, [Val], []} = io_lib:fread("~f", Str),
-    Val.
+%% @doc Convert value to float.
+to_f(Str) when is_list(Str) -> {ok, [Val], []} = io_lib:fread("~f", Str), Val;
+to_f(F) when is_float(F)    -> F.
 
 %% String -> number.
 to_num(Str) when is_list(Str)   -> try conv_to_int(Str)
