@@ -36,6 +36,11 @@
         X == ?ERRVAL_NULL; X == ?ERRVAL_DIV; X == ?ERRVAL_VAL; X == ?ERRVAL_REF;
         X == ?ERRVAL_NAME; X == ?ERRVAL_NUM; X == ?ERRVAL_NA;  X == ?ERRVAL_CIRCREF).
 
+-define(is_operator(X),
+        X == '+'; X == '*'; X == '/'; X == '-'; X == '^';
+        X == '>'; X == '>='; X == '<'; X == '<='; X == '<>';
+        X == '&'; X == '^^').
+
 %%% Collectors
 
 %% implicit iteration when not in array context :(
