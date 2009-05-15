@@ -240,8 +240,9 @@ right([Str, Len]) ->
 '&'(Strs) ->
     concatenate(Strs).
 
-concatenate(Str) -> concatenate1(Str,[]).
-
+concatenate(Str) ->
+    ?ensure_string_under_limit(concatenate1(Str, [])).
+    
 concatenate1([],Acc) ->
     Acc;
 concatenate1([H|T],Acc) when is_float(H) ->
