@@ -190,6 +190,7 @@ Erlang code.
 -export([lex/2, debang/1]).
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
+-include("typechecks.hrl").
 
 %% These are read-only.
 -define(mx, get(mx)).
@@ -223,7 +224,6 @@ debang(Ssref) ->
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %%% @doc Check there are no string constants that are too large.
--define(STRING_SIZE_LIMIT, 8192).
 no_strings_above_limit(Toks) ->
     all(fun({str, Str}) ->
                 case string:len(Str) of
