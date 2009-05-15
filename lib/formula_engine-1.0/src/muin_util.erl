@@ -182,3 +182,52 @@ attempt(Fun) when is_function(Fun) ->
         exit:X  -> {error, X};
         error:X -> {error, X}
     end.        
+
+
+%%% @doc Re-assemble a prettified and tidied up formula string from AST.
+%%% Normalizations performed:
+%%% * extraneous whitespace is removed
+%%% * no whitespace between function name and list of arguments
+%%% * one space after comma in argument lists
+%%% * no whitespace around operators other than division "/"
+%%% * logical values are upper-case
+%%% * all references are upper-cased
+%%% * floats in scientific format use lower-case "e"
+%%% * one space after commas "," and semicolons ";" in array constants
+
+%%% TODO: Handling translations? (Function names, logical values...)
+%%% TODO: Excel preserves whitespace around operators.  We can't do that
+%%%       without making the parser ridiculously more complex or throwing
+%%%       Yecc away and using an ABNF/PEG parser.
+%%% TODO: Write unit tests for this.
+
+normalize([Op|Args]) when ?is_operator(Op) ->
+    string:join([normalize(X) || X <- Args],
+                case Op of
+                    '/' -> " / ";           % insert spaces around division
+                    _   -> atom_to_list(Op) % but not other ops
+                end);
+normalize([Func|Args]) when is_atom(Func) ->
+    FuncStr = string:to_upper(atom_to_list(Func)),
+    ArgsStr = string:join([normalize(X) || X <- Args], ", "),
+    FuncStr ++ "(" ++ ArgsStr ++ ")";
+normalize(X) when is_integer(X)    -> integer_to_list(X);
+normalize(true)                    -> "TRUE";
+normalize(false)                   -> "FALSE";
+normalize(C) when ?is_cellref(C)   -> string:to_upper(C#cellref.text);
+normalize(R) when ?is_rangeref(R)  -> string:to_upper(R#rangeref.text);
+normalize(N) when ?is_namedexpr(N) -> string:to_upper(N#namedexpr.text);
+normalize({F, OrigStr}) when is_float(F), ?is_string(OrigStr) -> string:to_lower(OrigStr);
+normalize(A) when ?is_array(A)     ->
+    {array, Rows} = A,
+    RowsStr = foldr(fun(Row, Acc) ->
+                            Normalized = map(fun normalize/1, Row),
+                            Joined = string:join(Normalized, ", "),
+                            [Joined|Acc]
+                    end,
+                    [],
+                    Rows),
+    "{" ++ string:join(RowsStr, "; ") ++ "}";
+normalize(S) when ?is_string(S)    -> string:concat("\"", string:concat(S, "\""));
+normalize(E) when ?is_errval(E)    -> atom_to_list(element(2, E));
+normalize([])                      -> "()".
