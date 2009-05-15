@@ -32,6 +32,10 @@
 -define(is_namedexpr(X),
         element(1, X) == namedexpr).
 
+-define(is_errval(X),
+        X == ?ERRVAL_NULL; X == ?ERRVAL_DIV; X == ?ERRVAL_VAL; X == ?ERRVAL_REF;
+        X == ?ERRVAL_NAME; X == ?ERRVAL_NUM; X == ?ERRVAL_NA;  X == ?ERRVAL_CIRCREF).
+
 %%% Collectors
 
 %% implicit iteration when not in array context :(
