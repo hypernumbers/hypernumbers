@@ -121,7 +121,6 @@ Rules.
 {FLOATSCI} : {token, {float, make_float(YYtext)}}.
 {BOOL}     : {token, {bool, string:to_upper(YYtext) == "TRUE"}}.
 {STR}      : {token, {str, hslists:mid(YYtext)}}.
-
 {ERRVAL} : {token, {errval, list_to_atom(YYtext)}}.
 
 %%% 1. Cell references:
@@ -206,9 +205,15 @@ lex(Input, {Mx, My}) ->
     put(mx, Mx),
     put(my, My),
     case string(Input) of
-        {ok, Toks, _} -> {ok, Toks};
-        _             -> lexer_error
+        {ok, Toks, _} ->
+            case no_strings_above_limit(Toks) of
+                true -> {ok, Toks};
+                false -> lexer_error
+            end;
+        _             ->
+            lexer_error
     end.
+
 
 %% @doc Replace all !s with /s in a string. (Used to normalize references.)
 debang(Ssref) ->
@@ -216,6 +221,19 @@ debang(Ssref) ->
     Newssref.
 
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%%% @doc Check there are no string constants that are too large.
+-define(STRING_SIZE_LIMIT, 8192).
+no_strings_above_limit(Toks) ->
+    all(fun({str, Str}) ->
+                case string:len(Str) of
+                    Ok when Ok < ?STRING_SIZE_LIMIT -> true;
+                    _Else                           -> false
+                end;
+           (_) -> true
+        end,
+        Toks).
+
 
 name(YYtext) when hd(YYtext) == $.; hd(YYtext) == $/ ->
     {Path, Name} = split_ssref(YYtext),
