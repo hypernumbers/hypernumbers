@@ -389,13 +389,19 @@ is_alpha(Char) when is_integer(Char) ->
 is_alpha([Char]) ->
     is_alpha(Char).
 
+
 %% Turn .1/0.1/.1e+10/0.1e+10 into a float.
+%% We include the original string for reverse assembling the formula in
+%% normalization step.  That then gets thrown away and only the float
+%% makes it into the final AST.
 
 make_float(YYtext) ->
-    case string:substr(YYtext, 1, 1) of
-        "." -> tconv:to_f("0" ++ YYtext);
-        _   -> tconv:to_f(YYtext)
-    end.
+    FloatAsStr = case string:substr(YYtext, 1, 1) of
+                     "." -> string:concat("0", YYtext);
+                     _   -> YYtext
+                 end,
+    {tconv:to_f(FloatAsStr), FloatAsStr}.
+
 
 %% Return the smaller of two numbers.
 

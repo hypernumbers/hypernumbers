@@ -36,7 +36,7 @@ Left     600 '%'.
 Unary    700 Uminus.
 Left     900 '^^'.
 
-Formula -> E : '$1'.
+Formula -> E : postproc('$1').
 
 E -> E '='  E : op('$1', '$2', '$3').
 E -> E '<>' E : op('$1', '$2', '$3').
@@ -128,12 +128,16 @@ func_name(#cellref{text = Text}) ->
 
 %%% stuff from lexer -> stuff for AST.
 
-%% literals
+%%% Literals:
+
 lit(Name) when is_record(Name, namedexpr)        -> Name;
 lit(Cellref) when is_record(Cellref, cellref)    -> Cellref;
 lit(Rangeref) when is_record(Rangeref, rangeref) -> Rangeref;
 lit({name, Name})                                -> #namedexpr{path = "./", text = Name};
 lit({errval, Errval})                            -> {errval, Errval};
+%% OrigStr is used in normalization and then thrown away -- only float values make it
+%% to the final AST.
+lit({float, F, OrigStr})                         -> {float, F, OrigStr};
 lit({_Type, Data})                               -> Data.
 lit({_Type, Data}, Fun)                          -> Fun(Data).
 
@@ -182,7 +186,23 @@ special_div2(E, CR2) when ?is_cellref(CR2) ->
         false ->
             throw(invalid_formula)
     end.
+
+
+postproc(Ast) ->
+    NormalizedFormula = muin_util:normalize(Ast), % prettified & tidied-up formula
+    io:format("NormalizedFormula = ~s~n", [NormalizedFormula]),
+    _FinalAst = replace_float_tuples(Ast).
+
+
+%% Replace {Float, OriginalString} tuples with Floats in the AST.
+
+replace_float_tuples(Ast) ->    
+    hslists:deepmap(fun({F, Str}) when is_float(F), ?is_string(Str) -> F;
+                       (Else) -> Else
+                    end,
+                    Ast).
     
+
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -ifdef(debug).
