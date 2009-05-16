@@ -191,16 +191,18 @@ special_div2(E, CR2) when ?is_cellref(CR2) ->
 postproc(Ast) ->
     NormalizedFormula = muin_util:normalize(Ast), % prettified & tidied-up formula
     io:format("NormalizedFormula = ~s~n", [NormalizedFormula]),
-    _FinalAst = replace_float_tuples(Ast).
+    FinalAst = replace_float_tuples(Ast),
+    FinalAst.
 
 
 %% Replace {Float, OriginalString} tuples with Floats in the AST.
 
-replace_float_tuples(Ast) ->    
+replace_float_tuples(Ast) when is_list(Ast) ->
     hslists:deepmap(fun({F, Str}) when is_float(F), ?is_string(Str) -> F;
                        (Else) -> Else
                     end,
-                    Ast).
+                    Ast);
+replace_float_tuples(Ast) -> Ast. % may be a single #cellref etc.
     
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
