@@ -118,7 +118,8 @@ write_warnings_page(Ref, Sheets, User, Name, Warnings) ->
     write_to_cell(Ref, "(remember this is an early BETA product!)",
                   2, Index + 2, WarningSt),
     write_to_cell(Ref, "Not all Excel functions are fully supported "
-                  "at the moment.", 2, Index + 3, []),
+                  "at the moment. Any functions that you use which " ++
+                  "are not supported will be listed here.", 2, Index + 3, []),
     
     ok = write_warnings(Ref, Warnings, Index + 5),
     
