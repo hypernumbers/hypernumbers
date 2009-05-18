@@ -388,7 +388,9 @@ get_value_and_link(FetchFun) ->
             ?ERR_CIRCREF;
         false ->
             {RefTree0, Errs0, Refs0} = get(retvals),
-            put(retvals, {RefTree0 ++ RefTree, Errs0 ++ Errs, Refs0 ++ Refs}),
+	    NewRefTree = lists:merge([lists:sort(RefTree0), RefTree]),
+            put(retvals, {NewRefTree, Errs0 ++ Errs, Refs0 ++ Refs}),
+
             Value
     end.
 

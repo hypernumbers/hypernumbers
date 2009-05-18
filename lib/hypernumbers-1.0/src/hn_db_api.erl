@@ -161,7 +161,8 @@
          upgrade_1630/0,
          upgrade_1641/0,
          upgrade_1743_A/0,
-         upgrade_1743_B/0
+         upgrade_1743_B/0,
+	 upgrade_1776/0
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -238,6 +239,31 @@ upgrade_1743_B() ->
                  {atomic, ok} = mnesia:add_table_index(NewName, idx)
          end,                 
     [F1(X) || X <- Sites].
+
+upgrade_1776() ->
+    % multi-site upgrade
+    HostsInfo = hn_config:get(hosts),
+    Sites = hn_util:get_hosts(HostsInfo),
+    F1 = 
+	fun(X) ->
+		F2 = 
+		    fun(Y) ->
+			    Y2 = hn_db_wu:trans_back(Y),
+			    Rec = case Y2 of
+				      {item, Idx, "__dependency-tree", Val} -> 
+					  io:format("updating ~p~n", [Idx]),
+					  Val2 = lists:sort(hslists:uniq(Val)),
+					  {item, Idx, "__depencency-tree", Val2};
+				      _  ->
+					  Y2
+				  end,
+			    hn_db_wu:trans(X, Rec)
+		    end,
+		Table = hn_db_wu:trans(X, item),
+		mnesia:transform_table(Table, F2, record_info(fields, item))
+	end,                 
+    [F1(X) || X <- Sites].
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
