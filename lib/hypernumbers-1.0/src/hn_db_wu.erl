@@ -2097,7 +2097,7 @@ unregister_out_hn(P, C)
 %% @doc read the populated pages under the specified path
 %% @todo fix up api
 read_page_structure(#refX{site = Site, obj = {page, "/"}}) ->
-    Items = mnesia:all_keys(trans(Site, local_objs)),
+    Items = mnesia:dirty_all_keys(trans(Site, local_objs)),
     filter_pages(Items, dh_tree:new()).
 
 filter_pages([], Tree) ->
