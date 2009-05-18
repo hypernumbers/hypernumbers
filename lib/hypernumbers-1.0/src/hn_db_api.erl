@@ -253,7 +253,7 @@ upgrade_1776() ->
 				      {item, Idx, "__dependency-tree", Val} -> 
 					  io:format("updating ~p~n", [Idx]),
 					  Val2 = lists:sort(hslists:uniq(Val)),
-					  {item, Idx, "__depencency-tree", Val2};
+					  {item, Idx, "__dependency-tree", Val2};
 				      _  ->
 					  Y2
 				  end,
