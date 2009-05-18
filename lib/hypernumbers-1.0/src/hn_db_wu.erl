@@ -1364,14 +1364,56 @@ read_attrs1(Site, {Head1, C, B}, AttrList) ->
     List = trans_back(mnesia:select(Table1, [{Head1A, C, B}])),
     make_refXs(Site, List, AttrList).
 
-make_refXs(_Site, [], _AttrList) -> [];
-make_refXs(Site, LocalObjsList, AttrList) ->
+
+%% A/B performance testing for a page read
+make_refXs(Site, LocalObjs, Attrs) -> make_refXs1A(Site, LocalObjs, Attrs, []).
+% make_refXs(Site, LocalObjs, Attrs) -> make_refXs1B(Site, LocalObjs, Attrs).
+
+make_refXs1A(Site, [], _AttrList, Acc) ->
+    case Acc of
+        []    -> [];
+        Other -> make_refXs2A(Site, lists:flatten(Acc), [])
+    end;
+% if the attributes list is blank get them all
+make_refXs1A(Site, [H | T], [], Acc) ->
+    #local_objs{idx = Idx} = H,
+    Table = trans(Site, item),
+    % we are not going to write these to get a read-lock only
+    Recs = trans_back(mnesia:read({Table, Idx})),
+    make_refXs1A(Site, T, [], [{H, Recs} | Acc]);
+make_refXs1A(Site, [H | T], AttrList, Acc) ->
+    #local_objs{idx = Idx} = H,
+    Table = trans(Site, item),
+    % we are not going to write these to get a read-lock only
+    Recs = trans_back(mnesia:read({Table, Idx})),
+    Attrs = lists:filter(fun(#item{key = K} = X) ->
+                                 lists:member(K, AttrList) end, Recs),
+    NewAcc = case Attrs of
+                 [] -> Acc;
+                 _  -> [{H, Attrs} | Acc]
+             end,
+    make_refXs1A(Site, T, AttrList, NewAcc).
+
+make_refXs2A(Site, [], Acc) -> lists:flatten(Acc);
+make_refXs2A(Site, [{LocalObj, Attrs} | T], Acc) ->
+    NewAcc = make_refXs3A(Site, LocalObj, Attrs, []),
+    make_refXs2A(Site, T, [NewAcc | Acc]).
+
+make_refXs3A(_Site, _LocalObj, [], Acc) -> Acc;
+make_refXs3A(Site, #local_objs{path = P, obj = O} = LocalObj, [H | T], Acc) ->
+    #item{key = K, val = V} = H,
+    NewAcc = {#refX{site = Site, path = P, obj = O}, {K,V}},
+    make_refXs3A(Site, LocalObj, T, [NewAcc | Acc]).
+
+make_refXs1B(Site, LocalObjsList, AttrList) ->
+    io:format("in make_refXs1B LocalObjsList is ~p AttrList is ~p~n",
+              [LocalObjsList, AttrList]),
     F1 = fun(X) ->
                  #local_objs{idx = Idx} = X,
                  Idx
          end,
     IdxList = lists:map(F1, LocalObjsList),
-
+    
     F2 =fun(#local_objs{path = P, obj = O, idx = X} = _LObj) ->
                 {H1, C1} = case length(AttrList) of
                                0 -> {#item{idx = X, _ = '_'}, []};
