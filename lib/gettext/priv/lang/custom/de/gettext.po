@@ -1,8 +1,8 @@
-msgid "English"
-msgstr "English"
-
 msgid "Normal"
 msgstr "Normal"
+
+msgid "English"
+msgstr "English"
 
 msgid "Insert 1 below"
 msgstr "Legen Sie 1 unten"
@@ -16,17 +16,17 @@ msgstr "Klar"
 msgid "Styles"
 msgstr "Arten"
 
-msgid "Import Spreadsheets"
-msgstr "Tabellen-Import"
-
 msgid "time"
 msgstr "Zeit"
 
-msgid "currency"
-msgstr "Währung"
+msgid "Import Spreadsheets"
+msgstr "Tabellen-Import"
 
 msgid "My Spreadsheets"
 msgstr "Meine Tabellen"
+
+msgid "currency"
+msgstr "Währung"
 
 msgid "Portuguese"
 msgstr "Português"
@@ -40,14 +40,11 @@ msgstr "Ebene "
 msgid "Serif"
 msgstr "Serif"
 
-msgid "en"
+msgid "en_gb"
 msgstr "de"
 
 msgid "Russian"
 msgstr "Русский"
-
-msgid "Login"
-msgstr "Logon"
 
 msgid "Insert 1 right"
 msgstr "Legen Sie 1 rechts"
@@ -55,44 +52,47 @@ msgstr "Legen Sie 1 rechts"
 msgid "Contents"
 msgstr "Inhalt"
 
-msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
-msgstr "Öffnen Microsoft Excel 97/2000/2003 (*.xls)"
+msgid "Login"
+msgstr "Logon"
 
 msgid "datetime"
 msgstr "Datum und Zeit"
 
-msgid "File"
-msgstr "Datei"
+msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
+msgstr "Öffnen Microsoft Excel 97/2000/2003 (*.xls)"
 
 msgid "percentage"
 msgstr "Prozentsatz"
 
-msgid "rounded"
-msgstr "gerundet "
+msgid "File"
+msgstr "Datei"
 
 msgid "Spanish"
 msgstr "Español"
 
+msgid "rounded"
+msgstr "gerundet "
+
 msgid "German"
 msgstr "Deutsch"
-
-msgid "empty"
-msgstr "leer"
 
 msgid "Monospace"
 msgstr "Monospace"
 
-msgid "Insert 1 above"
-msgstr "Legen Sie 1 oben"
-
-msgid "Delete Row(s)"
-msgstr "Zeile löschen (s)"
+msgid "empty"
+msgstr "leer"
 
 msgid "Font"
 msgstr "Schriftname"
 
 msgid "Logged in as"
 msgstr "wie angemeldet"
+
+msgid "Delete Row(s)"
+msgstr "Zeile löschen (s)"
+
+msgid "Insert 1 above"
+msgstr "Legen Sie 1 oben"
 
 msgid "Edit"
 msgstr "Bearbeiten"
@@ -115,12 +115,12 @@ msgstr "finanziell"
 msgid "Log out"
 msgstr "Logout"
 
-msgid "Create New"
-msgstr "Neue"
-
 msgid "Format"
 msgstr "Format"
 
 msgid "French"
 msgstr "Français"
+
+msgid "Create New"
+msgstr "Neue"
 
