@@ -95,7 +95,6 @@
 -include("hypernumbers.hrl").
 
 -define(wu, hn_db_wu).
--define(wuread_attrs, hn_db_wu:read_attrs).
 -define(copy, copy_cell).
 -define(wr_rem_link, write_remote_link).
 -define(shift_ch, shift_children).
@@ -367,28 +366,31 @@ create_db(Site)->
     % to disc_copies for now
     Storage = disc_copies,
 
-    Tables = [
-              {item,                  bag},
-              {local_objs,            bag},
-              {remote_objs,           set},
-              {remote_cell_link,      bag},
-              {local_cell_link,       bag},
-              {hn_user,               set},
-              {dirty_cell,            set},
-              {dirty_notify_in,       set},
-              {dirty_inc_hn_create,   set},
-              {dirty_notify_back_in,  set},
-              {dirty_notify_out,      set},
-              {dirty_notify_back_out, set},
-              {incoming_hn,           set},
-              {outgoing_hn,           set},
-              {template,              set},
-              {styles,                bag},
-              {style_counters,        set},
-              {page_vsn,              set},
-              {page_history,          bag}
-             ],
-
+    Tables1 = [
+               {dirty_cell,            set},
+               {dirty_notify_in,       set},
+               {dirty_inc_hn_create,   set},
+               {dirty_notify_back_in,  set},
+               {dirty_notify_out,      set},
+               {dirty_notify_back_out, set}
+              ],
+    
+    Tables2 = [
+               {item,                  bag},
+               {local_objs,            bag},
+               {local_cell_link,       bag},
+               {hn_user,               set},
+               {remote_objs,           set},
+               {remote_cell_link,      bag},
+               {incoming_hn,           set},
+               {outgoing_hn,           set},
+               % {template,              set},
+               {styles,                bag},
+               {style_counters,        set},
+               {page_vsn,              set},
+               {page_history,          bag}
+              ],
+    
     Indices = [
                {dirty_cell, idx},
                {item, key},
@@ -398,6 +400,7 @@ create_db(Site)->
                {local_cell, childidx}
               ],
 
+    % the old way
     % now recursively create all the tables and all the indices
     Fun1 = fun({Name, Type}) ->
                    Attr = [{attributes, ms_util2:get_record_info(Name)},
@@ -405,7 +408,17 @@ create_db(Site)->
                    NewName = hn_db_wu:trans(Site, Name),
                    {atomic, ok} = mnesia:create_table(NewName, Attr)
            end,
-    [Fun1(X) || X <- Tables],
+    [Fun1(X) || X <- Tables1],
+    % the old way
+    % now recursively create all the tables and all the indices
+    Fun1a = fun({Name, Type}) ->
+                   Attr = [{record_name, Name},
+                           {attributes, ms_util2:get_record_info(Name)},
+                           {type, Type}, {Storage, [node()]}],
+                   NewName = hn_db_wu:trans(Site, Name),
+                   {atomic, ok} = mnesia:create_table(NewName, Attr)
+           end,
+    [Fun1a(X) || X <- Tables2],
     Fun2 = fun({Name, Index}) ->
                    NewName = hn_db_wu:trans(Site, Name),
                    mnesia:add_table_index(NewName, Index)
@@ -461,7 +474,7 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
                   ok = init_front_end_notify(),
                   ?wu:write_remote_link(Parent, Child, outgoing),
                   ?wu:register_out_hn(Parent, Child, Proxy, Biccie),
-                  List = ?wu:read_attrs(Parent, ["value", "dependency-tree"]),
+                  List = ?wu:read_attrs(Parent, ["value", "dependency-tree"], read),
                   List2 = extract_kvs(List),
                   #refX{site = Site} = Parent,
                   Version = ?wu:read_page_vsn(Site, Parent),
@@ -522,10 +535,10 @@ handle_dirty_cell1(Site, TimeStamp, Rec) ->
                     Cell = hn_db_wu:read_dirty_cell(Site, TimeStamp),
                     case Cell of
                         deleted -> % S = io_lib:format("dirty_cell ~p has been deleted~n",
-                                   %                  [Rec]),
-                                   % bits:log(S),
-                                   ok;
-                        _       -> case ?wuread_attrs(Cell, ["__shared"]) of
+                                                %                  [Rec]),
+                                                % bits:log(S),
+                            ok;
+                        _       -> case ?wu:read_attrs(Cell, ["__shared"], read) of
                                        [] -> handle_dirty_cell2(Cell);
                                        _  -> ?INFO("TODO: handle_dirty_cell "++
                                                    "shared formula", [])
@@ -548,7 +561,7 @@ handle_dirty_cell1(Site, TimeStamp, Rec) ->
     ok.
 
 handle_dirty_cell2(Cell) ->
-    case hn_db_wu:read_attrs(Cell, ["formula"]) of
+    case hn_db_wu:read_attrs(Cell, ["formula"], read) of
         [{C, KV}] -> hn_db_wu:write_attr(C, KV);
         []        -> throw(invalid_dirty_cell)
     end.
@@ -568,7 +581,7 @@ handle_dirty(Record) when is_record(Record, dirty_notify_in) ->
                 Cells = ?wu:read_remote_children(Parent, incoming),
                 Fun2 =
                     fun(X) ->
-                            [{RefX, KV}] = ?wu:read_attrs(X, ["formula"]),
+                            [{RefX, KV}] = ?wu:read_attrs(X, ["formula"], write),
                             ?wu:write_attr(RefX, KV)
                     end,
                 [ok = Fun2(X)  || X <- Cells],
@@ -956,8 +969,8 @@ read_inherited_value(RefX, Key, Default) when is_record(RefX, refX) ->
 %% <li>page</li>
 %% </ul>
 read_attributes(RefX, AttrList) when is_record(RefX, refX), is_list(AttrList) ->
-    Fun = fun hn_db_wu:read_attrs/2,
-    mnesia:activity(transaction, Fun, [RefX, AttrList]).
+    Fun = fun hn_db_wu:read_attrs/3,
+    mnesia:activity(transaction, Fun, [RefX, AttrList, read]).
 
 %% @spec read_whole_page(#refX{}) -> [{#refX{}, {Key, Value}}]
 %% Key = atom()
@@ -987,7 +1000,7 @@ read_whole_page(#refX{obj = {page, "/"}} = RefX) ->
 %% </ul>
 read(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  ?wu:read_cells(RefX)
+                  ?wu:read_cells(RefX, read)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -1024,7 +1037,7 @@ read_styles(RefX) when is_record(RefX, refX) ->
 recalculate(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  Cells = ?wu:read_attrs(RefX, ["formula"]),
+                  Cells = ?wu:read_attrs(RefX, ["formula"], write),
                   [ok = ?wu:write_attr(X, Y) || {X, Y} <- Cells]
           end,
     mnesia:activity(transaction, Fun),
@@ -1044,7 +1057,7 @@ recalculate(RefX) when is_record(RefX, refX) ->
 reformat(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  Cells = ?wu:read_attrs(RefX, ["format"]),
+                  Cells = ?wu:read_attrs(RefX, ["format"], read),
                   [ok = ?wu:write_attr(X, Y) || {X, Y} <- Cells]
           end,
     mnesia:activity(transaction, Fun),
@@ -1103,7 +1116,7 @@ delete(#refX{obj = {page, _}} = RefX) ->
                    Status = hn_db_wu:delete_page(RefX),
                    % now force all deferenced cells to recalculate
                    Fun2 = fun({dirty, X}) ->
-                                  [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"]),
+                                  [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"], write),
                                   ok = ?wu:write_attr(X, {"formula", F})
                          end,
                   [ok = Fun2(X) || X <- Status]
@@ -1176,10 +1189,12 @@ move(RefX, Type, Disp)
                 % finally deal with any cells returned from delete_cells that
                 % are dirty - these need to be recalculated now that the link/local_objs
                 % tables have been transformed
-                Fun2 = fun({dirty, X}) ->
-                               [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"]),
-                               ok = ?wu:write_attr(X, {"formula", F})
-                       end,
+                Fun2 = 
+                    fun({dirty, X}) ->
+                            [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"], 
+                                                                   write),
+                            ok = ?wu:write_attr(X, {"formula", F})
+                    end,
                 [ok = Fun2(X) || X <- Status],
                 % Jobs a good'un, now for the remote parents
                 % io:format("in hn_db_api:move do something with Parents...~n"),

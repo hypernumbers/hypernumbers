@@ -40,7 +40,7 @@ exists(Site, Name) ->
 	
     F = fun() ->
                 User = #hn_user{name=Name, _='_'},
-                mnesia:match_object(?trans(Site, hn_user), ?trans(Site, User), read)
+                mnesia:match_object(?trans(Site, hn_user), User, read)
         end,
 	
     case mnesia:transaction(F) of
@@ -53,9 +53,9 @@ read(Site, Name) ->
 
 read_tr(Site, Name) ->
     Rec = #hn_user{name=Name, _='_'},
-    case mnesia:match_object(?trans(Site, hn_user), ?trans(Site, Rec), read) of
+    case mnesia:match_object(?trans(Site, hn_user), Rec, read) of
         []     -> {error, no_user};
-        [User] -> {ok, ?trans_back(User)}
+        [User] -> User
     end.
 
 get(User, Key) ->
@@ -66,7 +66,7 @@ get(User, Key) ->
 
 update_tr(Site, User, Key, Val) ->
     NUser = User#hn_user{data=dict:store(Key, Val, User#hn_user.data)},
-    mnesia:write(?trans(Site, NUser)).
+    mnesia:write(?trans(Site, hn_user), NUser, write).
     
 update(Site, User, Key, Val) ->
     mnesia:activity(transaction, fun update_tr/4, [Site, User, Key, Val]).
@@ -75,13 +75,12 @@ login(Site, Name, Pass, Remember) ->
 
     User = #hn_user{name=Name, password=p(Pass), _='_'},
     F = fun() ->
-                mnesia:match_object(?trans(Site, hn_user), ?trans(Site, User), read)
+                mnesia:match_object(?trans(Site, hn_user), User, read)
         end,
  
     case mnesia:transaction(F) of
         {atomic, []}      -> {error,invalid_user};
-        {atomic, [NUser]} -> NUser2 = ?trans_back(NUser),
-                             Token = gen_authtoken(NUser2, Remember),
+        {atomic, [NUser]} -> Token = gen_authtoken(NUser, Remember),
                              {ok, Token}
     end.
 
@@ -124,7 +123,7 @@ gen_authtoken(#hn_user{name=Name}, Remember) ->
 
 create_user_exec(Site, Rec) ->
     Fun = fun() ->
-                  mnesia:write(?trans(Site, hn_user), ?trans(Site, Rec), write)
+                  mnesia:write(?trans(Site, hn_user), Rec, write)
           end,
     case mnesia:transaction(Fun) of
         {aborted, Reason} -> {error, Reason};
