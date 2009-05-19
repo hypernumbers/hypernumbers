@@ -144,6 +144,7 @@
          notify_from_web/5,
          notify_back_from_web/4,
          handle_dirty_cell/3,
+         shrink_dirty_cell/1,
          handle_dirty/1,
          register_hn_from_web/4,
          check_page_vsn/2,
@@ -270,6 +271,25 @@ upgrade_1776() ->
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+shrink_dirty_cell(Site) ->
+    %% read all the dirty cells
+    Fun1 = 
+        fun() ->
+                List = hn_db_wu:read_all_dirty_cells(Site),
+                Fun2 = fun(#dirty_cell{idx = Idx} = D, Acc) ->
+                               L =  hn_db_wu:read_local_parents_idx(Site, Idx),
+                               case L of
+                                   [] -> Acc;
+                                   _  -> [{D, L} | Acc]
+                               end
+                       end,
+                ParentsList = lists:foldl(Fun2, [], List),
+                %% now dedup the dirty list
+                DeleteList = shrink(ParentsList, List),
+                ok = hn_db_wu:delete_dirty_cells(Site, DeleteList)
+           end,
+    mnesia:activity(transaction, Fun1).
+
 write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
     exit("write write_formula_to_range in hn_db_api!").
 % write_formula_to_range(Formula, RefX = #refX{obj = 
@@ -373,6 +393,7 @@ create_db(Site)->
     Indices = [
                {dirty_cell, idx},
                {item, key},
+               {local_cell_link, childidx}, % add to update fn
                {local_objs, obj},
                {local_objs, idx},
                {local_cell, childidx}
@@ -1353,6 +1374,41 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+shrink(ParentsList, List) -> shrink(ParentsList, List, []).
+
+shrink([], _List, Acc)         -> Acc;
+shrink([Dirty | T], List, Acc) -> DirtyParents = has_dirty_parent(List, Dirty),
+                                  NewAcc = case DirtyParents of
+                                               false  -> Acc;
+                                               Dirty2 -> [Dirty2 | Acc]
+                                           end,
+                                  shrink(T, List, NewAcc).
+
+has_dirty_parent(List, {Cell , PIdxList}) ->
+    case has_dirty_parent2(List, PIdxList, false) of
+        false -> false;
+        true  -> Cell
+    end.
+        
+%% One true is good enough!
+has_dirty_parent2(_List, _P, true) -> true;
+has_dirty_parent2(_List, [], false) -> false;
+has_dirty_parent2(List, [#local_cell_link{parentidx = Idx} | T], false) -> 
+    case lists:keymember(Idx, 3, List) of
+        true  -> true;
+        false -> has_dirty_parent2(List, T, false)
+    end.
+
+%% has_dirty_parent([], _Dirty)       -> false;
+%% has_dirty_parent([H | T], Parent)  -> %io:format("H is ~p~n", [H]),
+%%                                       {dirty_cell, Index, _} = H,
+%%                                       {_Cell, Links} = Parent,
+%%                                       %io:format("Links is ~p~n", [Links]),
+%%                                       case lists:keymember(Index, 3, Links) of
+%%                                           true  -> H;
+%%                                           false -> has_dirty_parent(T, Parent)
+%%                                       end.
+
 init_front_end_notify() ->
     _Return = put('front_end_notify', []),
     ok.
@@ -1479,8 +1535,10 @@ is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 
 %% cell to range
 copy2(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
+    #refX{site = Site} = To,
     List = hn_util:range_to_list(To),
     lists:map(fun(X) -> ?wu:?copy(From, X, Incr) end, List),
+    ok = shrink_dirty_cell(Site),
     ok.
 
 %% range to range

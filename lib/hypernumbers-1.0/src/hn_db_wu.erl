@@ -498,6 +498,7 @@
          read_styles/1,
          read_incoming_hn/2,
          read_dirty_cell/2,
+         read_all_dirty_cells/1,
          read_whole_page/1,
          find_incoming_hn/2,
          read_outgoing_hns/2,
@@ -508,6 +509,7 @@
          delete_attrs/2,
          clear_dirty/2,
          clear_dirty_cell/2,
+         delete_dirty_cells/2,
          shift_cells/4,
          shift_row_objs/2,
          shift_col_objs/2,
@@ -554,6 +556,7 @@
 %% These functions are exposed for the dirty_srv to use
 -export([
          read_local_parents/1,
+         read_local_parents_idx/2,
          read_local_children/1,
          read_remote_parents/2,
          read_remote_children/2
@@ -599,6 +602,17 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec delete_dirty_cells(Site, List) -> ok
+%% @doc this function takes a list  of dirty cells and 
+%% rewrites all of them to be deleted
+delete_dirty_cells(Site, List) when is_list(List) ->
+    [ok = delete_dirty_cell(Site, X) || X <- List],
+    ok.
+
+delete_dirty_cell(Site, Cell) ->
+    NewCell = Cell#dirty_cell{idx = deleted},
+    mnesia:write(trans(Site, NewCell)).
+
 %% @spec get_cell_for_muin(#refX{}) -> {Value, RefTree, Errors, Refs]
 %% @doc this function is called by muin during recalculation and should
 %%      not be used for any other purpose
@@ -631,6 +645,13 @@ write_style_IMPORT(RefX, Style)
     _Index = write_style(RefX, Style),
     ok.
 
+%% @spec read_all_dirty_cells(Site) -> List
+%% @doc reads the complete list of dirty cells
+read_all_dirty_cells(Site) ->
+    Table = trans(Site, dirty_cell),
+    M = trans(Site, #dirty_cell{_ = '_'}),
+    trans_back(mnesia:select(Table, [{M, [], ['$_']}])).
+    
 %% @spec read_dirty_cell(Timestamp) -> #dirty_cell{}
 %% @doc reads a dirty_cell based on its timestamp
 read_dirty_cell(Site, TimeStamp) ->
@@ -1122,6 +1143,14 @@ read_remote_children(#refX{site = Site, obj = {cell, _}} = Parent, Type)
     Table = trans(Site, remote_cell_link),
     Links = trans_back(mnesia:match_object(Table, Match2, read)),
     get_remote_children(Links).
+
+%% @spec read_local_parents_idx(Site, Idx) -> IdxList
+%% @doc this returns the local parents of a reference. Both the parameters
+%% in and list out are Idx's
+%% 
+read_local_parents_idx(Site, CIdx)  ->
+    Table = trans(Site, local_cell_link),
+    trans_back(mnesia:index_read(Table, CIdx, childidx)).
 
 %% @spec read_local_parents(RefX :: #refX{}) -> [#refX{}]
 %% @doc this returns the local parents of a reference. The reference can only
@@ -1880,8 +1909,6 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
     case Output of
         {formula, Formula} ->
             NewFormula = offset_formula(Formula, {(TX - FX), (TY - FY)}),
-            % bits:log(io_lib:format("(3) Formula is ~p NewFormula is ~p~n",
-            %               [Formula, NewFormula])),
             ok = write_attr(To, {"formula", NewFormula});
         [{Type, V},  _A, _F] ->
             V2 = case Incr of
