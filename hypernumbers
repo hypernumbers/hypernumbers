@@ -96,7 +96,7 @@ function start
 {
     MODE="-detached"
     RELOAD=""
-    HEART="-heart"
+    HEART=""
 
     if [ $# -lt 1 ] 
     then
@@ -107,7 +107,7 @@ function start
 
     erl $MODE \
         $RELOAD \
-	$HEART \
+	    $HEART \
         -setcookie $COOKIE \
         -sname $NODE@$HOST \
         -boot $REL_DIR \
