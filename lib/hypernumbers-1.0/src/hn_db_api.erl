@@ -245,24 +245,23 @@ upgrade_1776() ->
     % multi-site upgrade
     HostsInfo = hn_config:get(hosts),
     Sites = hn_util:get_hosts(HostsInfo),
-    F1 = 
-	fun(X) ->
-		F2 = 
-		    fun(Y) ->
-			    Y2 = hn_db_wu:trans_back(Y),
-			    Rec = case Y2 of
-				      {item, Idx, "__dependency-tree", Val} -> 
-					  io:format("updating ~p~n", [Idx]),
-					  Val2 = lists:sort(hslists:uniq(Val)),
-					  {item, Idx, "__dependency-tree", Val2};
-				      _  ->
-					  Y2
-				  end,
-			    hn_db_wu:trans(X, Rec)
-		    end,
-		Table = hn_db_wu:trans(X, item),
-		mnesia:transform_table(Table, F2, record_info(fields, item))
-	end,                 
+    F1 = fun(X) ->
+                 F2 = fun(Y) ->
+                              Y2 = hn_db_wu:trans_back(Y),
+                              Rec = case Y2 of
+                                        {item, Idx, "__dependency-tree", Val} -> 
+                                            io:format("updating ~p~n", [Idx]),
+                                            Val2 = lists:sort(hslists:uniq(Val)),
+                                            {item, Idx, "__dependency-tree", Val2};
+                                        _  ->
+                                           Y2
+                                    end,
+                              hn_db_wu:trans(X, Rec)
+                      end,
+                 Table = hn_db_wu:trans(X, item),
+                 mnesia:add_table_index(hn_db_wu:trans(X, local_cell_link), childidx),
+                 mnesia:transform_table(Table, F2, record_info(fields, item))
+         end,                 
     [F1(X) || X <- Sites].
 
 
@@ -393,7 +392,7 @@ create_db(Site)->
     Indices = [
                {dirty_cell, idx},
                {item, key},
-               {local_cell_link, childidx}, % add to update fn
+               {local_cell_link, childidx},
                {local_objs, obj},
                {local_objs, idx},
                {local_cell, childidx}
