@@ -40,7 +40,9 @@ start() ->
     % List of {ErlangFile, OutputDirectory} tuples.
     Fun = fun(X) ->
                   Fun2 = fun(Y) -> {Y, Dir ++ X ++ "ebin"} end,
-                  lists:map(Fun2,filelib:wildcard(Dir ++ X ++ "src/*.erl"))
+                  Src = filelib:wildcard(Dir ++ X ++ "src/*.erl"),
+                  Dot = filelib:wildcard(Dir ++ X ++ "src/.*.erl"),
+                  lists:map(Fun2, Src -- Dot)
           end,
     Dirs = lists:flatten(lists:map(Fun, ?DIRS)),
 

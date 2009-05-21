@@ -616,7 +616,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
     Value = case hn_db_wu:read_attrs(RefX, ["rawvalue"], read) of
                 []            -> [];
                 [{_, {_, V}}] -> V
-            end,
+            end, 
 
     DTree = case hn_db_wu:read_attrs(RefX, ["__dependency-tree"], read) of
                 [{_, {_, Tree}}] -> Tree;
@@ -798,6 +798,7 @@ incr_remote_page_vsn(Site, Version, Payload) when is_record(Version, version) ->
 %% RefX can be a cell, range, column, row or page reference. 
 %% (the page_vns tables hold the page version for both local and remote sites)
 get_new_local_page_vsn(#refX{site = Site} = RefX, Action) ->
+    
     PageRefX = RefX#refX{obj = {page, "/"}},
     % first read the current page version number, increment it and overwrite it
     NewVsn = case mnesia:read(trans(Site, page_vsn), {Site, PageRefX}) of
@@ -807,7 +808,8 @@ get_new_local_page_vsn(#refX{site = Site} = RefX, Action) ->
     Record1 = #page_vsn{site_and_pg = {Site, PageRefX}, version = NewVsn},
     ok = mnesia:write(trans(Site, page_vsn), Record1, write),
     % now write the history table
-    Record2 = #page_history{site_and_pg = {Site, PageRefX}, action = Action,
+    Record2 = #page_history{site_and_pg = {Site, PageRefX},
+                            action = Action,
                             action_refX = RefX, version = NewVsn},
     ok = mnesia:write(trans(Site, page_history), Record2, write),
     NewVsn.

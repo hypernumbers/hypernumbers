@@ -190,7 +190,7 @@ special_div2(E, CR2) when ?is_cellref(CR2) ->
 
 postproc(Ast) ->
     NormalizedFormula = muin_util:normalize(Ast), % prettified & tidied-up formula
-    io:format("NormalizedFormula = ~s~n", [NormalizedFormula]),
+    %io:format("NormalizedFormula = ~s~n", [NormalizedFormula]),
     FinalAst = replace_float_tuples(Ast),
     FinalAst.
 

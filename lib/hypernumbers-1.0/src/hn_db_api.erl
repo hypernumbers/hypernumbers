@@ -1147,64 +1147,73 @@ delete(#refX{obj = {R, _}} = RefX, Disp)
 move(RefX, Type, Disp)
   when (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
-    #refX{site = Site, obj = Obj} = RefX,
-    Fun =
-        fun() ->
-                ok = init_front_end_notify(),
-                % if the Type is delete we first delete the original cells
-                Disp2 = atom_to_list(Disp),
-                _NewVsn = ?wu:get_new_local_page_vsn(RefX, {insert, Disp2}),
-                % when the move type is DELETE the cells that are moved
-                % DO NOT include the cells described by the reference
-                % but when the move type is INSERT the cells that are
-                % move DO include the cells described by the reference
-                % To make this work we shift the RefX up 1, left 1 
-                % before getting the cells to shift for INSERT
-                % if this is a delete - we need to actually delete the cells
-                {Status1, ReWr} = case Type of
-                                      delete -> R = ?wu:read_local_children(RefX),
-                                                S = ?wu:delete_cells(RefX),
-                                                {S, R};
-                                      insert -> {[], []}
-                          end,
-                Status2 = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
-                case Obj of
-                    {row,    _} -> ok = hn_db_wu:delete_row_objs(RefX),
-                                   ok = hn_db_wu:shift_row_objs(RefX, Type);
-                    {column, _} -> ok = hn_db_wu:delete_col_objs(RefX),
-                                   ok = hn_db_wu:shift_col_objs(RefX, Type);
-                    _           -> ok
-                end,
-                % now notify all parents and children of all cells on
-                % this page
-                PageRef = RefX#refX{obj = {page, "/"}},
-
-                % OK all our local stuff is sorted, now lets deal with the remote
-                % children
-                Change = {insert, Obj, Disp},
-                % set the delay to zero
-                ok = ?wu:mark_notify_out_dirty(PageRef, Change, 0),
-
-                Status = lists:flatten([Status1, Status2]),
-                % finally deal with any cells returned from delete_cells that
-                % are dirty - these need to be recalculated now that the link/local_objs
-                % tables have been transformed
-                Fun2 = 
-                    fun({dirty, X}) ->
-                            [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"], 
-                                                                   write),
-                            ok = ?wu:write_attr(X, {"formula", F})
-                    end,
-                [ok = Fun2(X) || X <- Status],
-                % Jobs a good'un, now for the remote parents
-                % io:format("in hn_db_api:move do something with Parents...~n"),
-                _Parents =  ?wu:find_incoming_hn(Site, PageRef),
-                % io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
-                ok
-        end,
-    ok = mnesia:activity(transaction, Fun),
+    ok = mnesia:activity(transaction, fun move_tr/3, [RefX, Type, Disp]),
     ok = tell_front_end("move", RefX).
 
+do_delete(insert, _RefX) ->
+    {[], []};
+do_delete(delete, RefX) ->
+    {hn_db_wu:delete_cells(RefX),
+     hn_db_wu:read_local_children(RefX)}.
+
+move_tr(#refX{site = Site, obj = Obj} = RefX, Type, Disp) ->
+    
+    ok = init_front_end_notify(),
+    % if the Type is delete we first delete the original cells
+    R = {insert, atom_to_list(Disp)},
+    _NewVsn = hn_db_wu:get_new_local_page_vsn(RefX, R),
+    % when the move type is DELETE the cells that are moved
+    % DO NOT include the cells described by the reference
+    % but when the move type is INSERT the cells that are
+    % move DO include the cells described by the reference
+    % To make this work we shift the RefX up 1, left 1 
+    % before getting the cells to shift for INSERT
+    % if this is a delete - we need to actually delete the cells
+        
+    {Status1, ReWr} = do_delete(Type, RefX),
+
+    ?INFO("ReWr ~p",[ReWr]),
+    
+    Status2 = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
+    
+    case Obj of
+        {row,    _} ->
+            ok = hn_db_wu:delete_row_objs(RefX),
+            ok = hn_db_wu:shift_row_objs(RefX, Type);
+        {column, _} ->
+            ok = hn_db_wu:delete_col_objs(RefX),
+            ok = hn_db_wu:shift_col_objs(RefX, Type);
+        _ ->
+            ok
+    end,
+    
+    % now notify all parents and children of all cells on
+    % this page
+    PageRef = RefX#refX{obj = {page, "/"}},
+    
+    % OK all our local stuff is sorted, now lets deal with the remote
+    % children
+    Change = {insert, Obj, Disp},
+    % set the delay to zero
+    ok = ?wu:mark_notify_out_dirty(PageRef, Change, 0),
+    
+    Status = lists:flatten([Status1, Status2]),
+    % finally deal with any cells returned from delete_cells that
+    % are dirty - these need to be recalculated now that the link/local_objs
+    % tables have been transformed
+    Fun2 = 
+        fun({dirty, X}) ->
+                [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"], 
+                                                       write),
+                ok = ?wu:write_attr(X, {"formula", F})
+        end,
+    [ok = Fun2(X) || X <- Status],
+    % Jobs a good'un, now for the remote parents
+    % io:format("in hn_db_api:move do something with Parents...~n"),
+    _Parents =  ?wu:find_incoming_hn(Site, PageRef),
+    % io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
+    ok.
+   
 %% @spec clear(#refX{}) -> ok
 %% @doc same as <code>clear(refX{}, all)</code>.
 clear(RefX) when is_record(RefX, refX) ->

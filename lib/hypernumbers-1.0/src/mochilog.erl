@@ -13,7 +13,7 @@
 -record(post, {time, site, path, method, body, peer, user, referer, browser}).
 
 -export([log/4, start/0, stop/0, replay/2, replay/3, clear/0,
-         browse/1, browse/2, info/2 ]).
+         browse/1, browse/2, info/2, generate_mi/2 ]).
 
 %% @spec start() -> ok
 %% @doc This starts the log
@@ -81,18 +81,28 @@ replay(Name, Url, Options) ->
 %% @doc Name is the name of the log file to read from (must be 
 %% stored in /lib/hypernumbers-1.0/log/), Path is the path of 
 %% the file to write mi to
-%% generate_mi(Name, Path) ->
-%%     {ok, File} = file:open(Path, [write]),
-%%     io:format(File, "Date,Site,Path,Body,Method,IP,User,Referer,User-Agent~n",[]),
-%%     run_log(Name, fun([Post]) -> do_mi(File, Post) end, default_filter()),
-%%     file:close(File).
+generate_mi(Name, Path) ->
+    {ok, File} = file:open(Path, [write]),
+    io:format(File, "Date,Site,Path,Body,Method,IP,User,"
+              ++"Referer,User-Agent~n",[]),
+    Filter = make_filter([{method, all}]),
+    run_log(Name, fun(Post, _Id) -> do_mi(File, Post) end, Filter),
+    file:close(File).
 
-%% do_mi(File, Post) ->
-%%     Date = dh_date:format("r", Post#post.time),
-%%     #post{ site=Site, path=Path, body=Body, method=Mthd, peer=Peer, user=Usr,
-%%            referer=Rfr, browser=UA} = Post,
-%%     Str  = "~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
-%%     io:format(File, Str, [Date, Site, Path, btol(Body), atol(Mthd), Peer, Usr, Rfr, UA]).
+do_mi(File, Post) ->
+    Date = dh_date:format("r", Post#post.time),
+    #post{ site=Site, path=Path, body=Body, method=Mthd, peer=Peer,
+           user=Usr, referer=Rfr, browser=UA} = Post,
+    
+    S = case io_lib:printable_list(btol(Body)) of
+            true  -> btol(Body);
+            false -> ""
+        end,
+    
+    Str  = "~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
+    io:format(File, Str, [Date, Site, Path, S, atol(Mthd),
+                          Peer, Usr, Rfr, UA]).
+
 transform_date([], Acc) ->
     Acc;
 transform_date([{date, all} | T], Acc) ->
@@ -250,7 +260,7 @@ in_path([], _Path, true) ->
 in_path(Path1, Path2, true) ->
     startswith(Path2, Path1).
 
-repost(Post, New) ->
+repost(Post, New) when Post#post.method == 'POST' ->
     Url  = New#refX.site ++ Post#post.path,
     http:request(post,{Url, [], "application/json", Post#post.body}, [], []),
     ok.
@@ -269,11 +279,11 @@ logfile() ->
 logfile(Name) ->
     lists:concat([code:lib_dir(hypernumbers),"/log/",Name,".LOG"]).
 
-%% atol(X) ->
-%%     atom_to_list(X).
+ atol(X) ->
+     atom_to_list(X).
 
-%% btol(X) when is_atom(X) ->
-%%     X;
-%% btol(X) ->
-%%     binary_to_list(X).
+ btol(X) when is_atom(X) ->
+     X;
+ btol(X) ->
+     binary_to_list(X).
 

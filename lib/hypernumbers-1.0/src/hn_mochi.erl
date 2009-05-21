@@ -82,9 +82,10 @@ handle_req(Method, Req, Ref, Vars, User) ->
             iget(Req, Ref, Type, Vars, User);
 
         'POST' ->
+            
             {value, {'Content-Type', Ct}} =
                 mochiweb_headers:lookup('Content-Type', Req:get(headers)),
-
+            
             %% TODO: Log file uploads.
             case string:substr(Ct, 1, 19) of
 
@@ -183,7 +184,7 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _Us
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}], _User)
   when O == row orelse O == column ->
-    RefX2 = make_after(Ref),
+    RefX2 = make_after(Ref), 
     % io:format("in ipost (after)~n-Ref is ~p~n-RefX2 is ~p~n", [Ref, RefX2]),
     hn_db_api:insert(RefX2);
 
@@ -558,7 +559,7 @@ make_after(#refX{obj = {column, {X1, X2}}} = RefX) ->
     RefX#refX{obj = {column, {X1 - DiffX, X2 - DiffX}}};
 make_after(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
     DiffY = Y2 - Y1 - 1,
-    RefX#refX{obj = {row, {Y1 - DiffY, Y2 - DiffY}}}.
+    RefX#refX{obj = {row, {Y1 - DiffY, Y2 - DiffY}}}. %
 
 pages(#refX{path = [], obj = {page, "/"}} = RefX) ->
     {struct, dict_to_struct(hn_db_api:read_page_structure(RefX))};
