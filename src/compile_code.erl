@@ -17,6 +17,8 @@
         ["/lib/sgte/",
          "/lib/hypernumbers-1.0/",
          "/lib/formula_engine-1.0/",
+         "/lib/introspection-1.0/",
+         "/lib/mnesia_logger-1.0/",
          "/lib/read_excel-1.0/"]).
 
 -define(EXTRA_ERL_FILES, ["src/generate_tests.erl"]).
