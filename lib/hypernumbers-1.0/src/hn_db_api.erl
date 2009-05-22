@@ -752,8 +752,7 @@ write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
     % ok = fprof:trace(start),
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  F = fun(X) -> hn_db_wu:write_attr(RefX, X) end,
-                  lists:foreach(F, List)
+                  [ hn_db_wu:write_attr(RefX, X) || X <- List]
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("write attributes"),
@@ -1060,11 +1059,7 @@ move_tr(#refX{site = Site, obj = Obj} = RefX, Type, Disp) ->
     % if this is a delete - we need to actually delete the cells
         
     {Status1, ReWr} = do_delete(Type, RefX),
-
-    ?INFO("ReWr ~p",[ReWr]),
-    
     Status2 = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
-    
     case Obj of
         {row,    _} ->
             ok = hn_db_wu:delete_row_objs(RefX),
@@ -1092,8 +1087,7 @@ move_tr(#refX{site = Site, obj = Obj} = RefX, Type, Disp) ->
     % tables have been transformed
     Fun2 = 
         fun({dirty, X}) ->
-                [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"], 
-                                                       write),
+                [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"], write),
                 ok = ?wu:write_attr(X, {"formula", F})
         end,
     [ok = Fun2(X) || X <- Status],
@@ -1102,7 +1096,7 @@ move_tr(#refX{site = Site, obj = Obj} = RefX, Type, Disp) ->
     _Parents =  ?wu:find_incoming_hn(Site, PageRef),
     % io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
     ok.
-   
+
 %% @spec clear(#refX{}) -> ok
 %% @doc same as <code>clear(refX{}, all)</code>.
 clear(RefX) when is_record(RefX, refX) ->

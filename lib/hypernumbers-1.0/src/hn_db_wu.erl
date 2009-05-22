@@ -1482,73 +1482,72 @@ shift_cells(From, Type, Disp, Rewritten)
                    {insert, vertical}   ->
                        RefX2 = insert_shift(From, Disp),
                        get_refs_below(RefX2);
-                                {delete, horizontal} -> get_refs_right(From);
-                   {delete, vertical}   -> get_refs_below(From)
+                   {delete, horizontal} ->
+                       get_refs_right(From);
+                   {delete, vertical}   ->
+                       get_refs_below(From)
                end,
     case RefXList of
         [] -> [];
-        _  -> [ok = shift_cells1(X, offset(X, {XO, YO})) || X <- RefXList],
+        _  ->
+            [ok = shift_cells1(X, offset(X, {XO, YO})) || X <- RefXList],
             
-              %% now get the indexes of all the objs referred to
-              IdxList = [read_local_item_index(X) || X <- RefXList],
-                            
-              %% now rewrite the formula of all the child cells
-              %%  - get the formulae
-              %%  - rewrite the formulae and save the cells
-              H1 = #local_cell_link{childidx = '$1', parentidx = '$2', _ = '_'},
-              C1 = make_clause(IdxList, '$2', 'orelse'),
-              B1 = ['$1'],
-              Table1 = trans(Site, local_cell_link),
-              CIdxList = mnesia:select(Table1, [{H1, C1, B1}], write),
-              ChildCells = [local_idx_to_refX(Site, X) || X <- CIdxList],
-              ChildCells2 = hslists:uniq(ChildCells),
-              DedupedChildren = lists:subtract(ChildCells2, Rewritten),
+            % now get the indexes of all the objs referred to
+            IdxList = [read_local_item_index(X) || X <- RefXList],
+            
+            % now rewrite the formula of all the child cells
+            %  - get the formulae
+            %  - rewrite the formulae and save the cells
+            H1 = #local_cell_link{childidx = '$1', parentidx = '$2', _ = '_'},
+            C1 = make_clause(IdxList, '$2', 'orelse'),
+            B1 = ['$1'],
+            Table1 = trans(Site, local_cell_link),
+            CIdxList = mnesia:select(Table1, [{H1, C1, B1}], write),
+            ChildCells = [local_idx_to_refX(Site, X) || X <- CIdxList],
+            ChildCells2 = hslists:uniq(ChildCells),
+            DedupedChildren = lists:subtract(ChildCells2, Rewritten),
+            
+            Fun1 = fun(X) ->
+                           read_attrs(X, ["formula"], write)
+                   end,
+            FormulaList1 = [Fun1(X) || X <- DedupedChildren],
+            FormulaList2 = hslists:uniq(lists:flatten(FormulaList1)),
 
-              %% bits:log(io_lib:format("in shift_cells ChildCells2 is ~p~n-"++
-              %%                       "Rewritten is ~p~n-DedupedChildren is ~p~n",
-              %%                       [ChildCells2, Rewritten, DedupedChildren])),
-              Fun1 = fun(X) ->
-                             read_attrs(X, ["formula"], write)
-                     end,
-              FormulaList1 = [Fun1(X) || X <- DedupedChildren],
-              FormulaList2 = hslists:uniq(lists:flatten(FormulaList1)),
-              %% bits:log(io_lib:format("Uniqued FormulaList2 is ~p~n",
-              %%                       [FormulaList2])),
-              Fun2 = fun({RefX, {"formula", F1}}, Acc) ->
-                             {St, F2} = offset_fm_w_rng(RefX, F1, From, {XO, YO}),
-                             %% bits:log(io_lib:format("(3) F1 is ~p F2 is ~p~n",
-                             %% [F1, F2])),
-                             %% io:format("(3) F1 is ~p F2 is ~p~n",
-                             %%          [F1, F2]),
-                             ok = write_attr3(RefX, {"formula", F2}),
-                             case St of
-                                 clean  -> Acc;
-                                 dirty -> [{dirty, RefX} | Acc]
-                             end
-                     end,
-              Status = lists:foldl(Fun2, [], FormulaList2),              
-              % now shift the actual cells
-              % - first up adjust the local_objs table 
-              %   - read all the cell indices
-              %   - adjust them all
-              %   - delete the old ones
-              %   - write the new ones
-              H2 = #local_objs{idx = '$1', _ = '_'},
-              C2 = make_or(IdxList, '$1'),
-              B2 = ['$_'],
-              Table2 = trans(Site, local_objs),
-              Cells = mnesia:select(Table2, [{H2, C2, B2}], read),
-              Fun3 = fun(#local_objs{obj = {cell, {X, Y}}} = Cell, Acc) ->
-                             O2 = {cell, {X + XO, Y + YO}},
-                             [Cell#local_objs{obj = O2} | Acc]
-                     end,
-              NewCells = lists:foldl(Fun3, [], Cells),
-              io:format("Cells is ~p~n-NewCells is ~p~n", [Cells, NewCells]),
-              ok = delete_recs_new(Site, Cells),
-              [ok = mnesia:write(trans(Site, local_objs), X, write) 
-                  || X <- NewCells],
-              %% return the Status of dirty cells
-              Status
+            Fun2 = fun({RefX, {"formula", F1}}, Acc) ->
+                           {St, F2} = offset_fm_w_rng(RefX, F1, From, {XO, YO}),
+                           % bits:log(io_lib:format("(3) F1 is ~p F2 is ~p~n",
+                           % [F1, F2])),
+                           % io:format("(3) F1 is ~p F2 is ~p~n",
+                           %          [F1, F2]),
+                           ok = write_attr3(RefX, {"formula", F2}),
+                           case St of
+                               clean  -> Acc;
+                               dirty -> [{dirty, RefX} | Acc]
+                           end
+                   end,
+            Status = lists:foldl(Fun2, [], FormulaList2),              
+            % now shift the actual cells
+            % - first up adjust the local_objs table 
+            %   - read all the cell indices
+            %   - adjust them all
+            %   - delete the old ones
+            %   - write the new ones
+            H2 = #local_objs{idx = '$1', _ = '_'},
+            C2 = make_or(IdxList, '$1'),
+            B2 = ['$_'],
+            Table2 = trans(Site, local_objs),
+            Cells = mnesia:select(Table2, [{H2, C2, B2}], read),
+            Fun3 = fun(#local_objs{obj = {cell, {X, Y}}} = Cell, Acc) ->
+                           O2 = {cell, {X + XO, Y + YO}},
+                           [Cell#local_objs{obj = O2} | Acc]
+                   end,
+            NewCells = lists:foldl(Fun3, [], Cells),
+            io:format("Cells is ~p~n-NewCells is ~p~n", [Cells, NewCells]),
+            ok = delete_recs_new(Site, Cells),
+            [ok = mnesia:write(trans(Site, local_objs), X, write) 
+             || X <- NewCells],
+            % return the Status of dirty cells
+            Status
     end.
 
 shift_cells1(From, To) when is_record(From, refX), is_record(To, refX) ->
@@ -1824,7 +1823,7 @@ delete_cells(#refX{site = S} = DelX) ->
                     end,
              IdxList = [Fun4(X) || X <- Recs],
              
-             %% delete all items with that index
+             % delete all items with that index
              Tb2 = trans(S, item),
              Fun5 = 
                  fun(X) -> 
@@ -1837,23 +1836,27 @@ delete_cells(#refX{site = S} = DelX) ->
                          [ok = mnesia:delete_object(Tb2, XX, write) || XX <- L],
                          ok
                  end,
-             io:format("IdxList is ~p~n", [IdxList]),
+             
              [ok = Fun5(X) || X <- IdxList],
-             %% finally delete the index records themselves
-             [ok = mnesia:delete_object(trans(S, X)) || X <- Recs],
-             %% need to return any cells that need to recalculate after the move
+             % finally delete the index records themselves
+             [ ok = mnesia:delete_object(trans(S, local_objs), X, write)
+               || X <- Recs],
+             % need to return any cells that need to recalculate after the move
              Status
     end.
 
-make_del_cond([])   -> exit("make_del_cond can't take an empty list");
-make_del_cond(List) -> make_del_cond1(List, []).
+make_del_cond([]) ->
+    exit("make_del_cond can't take an empty list");
+make_del_cond(List) ->
+    make_del_cond1(List, []).
 
-make_del_cond1([], Acc) -> case length(Acc) of
-                           1 -> Acc;
-                           _ -> [list_to_tuple(lists:flatten(['or', Acc]))]
-                       end;
+make_del_cond1([], Acc) when length(Acc) == 1 ->
+    Acc;
+make_del_cond1([], Acc) ->
+    [list_to_tuple(lists:flatten(['or', Acc]))];
 make_del_cond1([#refX{path = P, obj = O} | T], Acc) ->
-    make_del_cond1(T, [{'and', {'=:=', '$1', {const, P}}, {'=:=', '$2', {const, O}}} | Acc]).
+    make_del_cond1(T, [{'and', {'=:=', '$1', {const, P}},
+                        {'=:=', '$2', {const, O}}} | Acc]).
 
 %% @spec delete_attrs(RefX :: #refX{}, Key) -> ok
 %% Key = atom()
@@ -2106,9 +2109,9 @@ mark_notify_out_dirty(#refX{site = Site} = P, {Type, _, _} = Change, Delay) ->
     case List of
         [] -> ok;
         _  -> Rec = #dirty_notify_out{parent = P, change = Change,
-                                         outgoing = ChildrenList,
-                                         parent_vsn = {version, ParentUrl, PVsn},
-                                         delay = Delay},
+                                      outgoing = ChildrenList,
+                                      parent_vsn = {version, ParentUrl, PVsn},
+                                      delay = Delay},
               Rec2 = trans(Site, Rec),
               mnesia:write(Rec2)
     end.
@@ -2369,16 +2372,9 @@ update_rem_parents(Child, OldParents, NewParents) when is_record(Child, refX) ->
     {Del, Write} = split_parents(OldParents, NewParents),
     % first delete all the records on the delete list
     % and unregister them (probably should be done in a gen server!)
-    Fun1 = fun(X) ->
-                   delete_remote_parents(X)
-           end,
-    [ok = Fun1(X) || X <- Del],
+    [ok = delete_remote_parents(X) || X <- Del],
     % now write all the records on the write list
-    Fun2 = fun(X) ->
-
-                   write_remote_link(X, Child, incoming)
-           end,
-    [ok = Fun2(X) || X <- Write],
+    [ok = write_remote_link(X, Child, incoming) || X <- Write],
     ok.
 
 %% This function is called on a local cell to inform all remote cells that it
