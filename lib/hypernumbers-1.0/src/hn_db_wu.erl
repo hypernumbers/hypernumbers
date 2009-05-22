@@ -1429,36 +1429,36 @@ make_refXs3A(Site, #local_objs{path = P, obj = O} = LocalObj, [H | T], Acc) ->
     NewAcc = {#refX{site = Site, path = P, obj = O}, {K,V}},
     make_refXs3A(Site, LocalObj, T, [NewAcc | Acc]).
 
-make_refXs1B(Site, LocalObjsList, _Lock, AttrList) ->
-    io:format("in make_refXs1B LocalObjsList is ~p AttrList is ~p~n",
-              [LocalObjsList, AttrList]),
-    F1 = fun(X) ->
-                 #local_objs{idx = Idx} = X,
-                 Idx
-         end,
-    IdxList = lists:map(F1, LocalObjsList),
+%% make_refXs1B(Site, LocalObjsList, _Lock, AttrList) ->
+%%     io:format("in make_refXs1B LocalObjsList is ~p AttrList is ~p~n",
+%%               [LocalObjsList, AttrList]),
+%%     F1 = fun(X) ->
+%%                  #local_objs{idx = Idx} = X,
+%%                  Idx
+%%          end,
+%%     IdxList = lists:map(F1, LocalObjsList),
     
-    F2 =fun(#local_objs{path = P, obj = O, idx = X} = _LObj) ->
-                {H1, C1} = case length(AttrList) of
-                               0 -> {#item{idx = X, _ = '_'}, []};
-                               1 -> [A] = AttrList,
-                                    {#item{idx = X, key = A, _ = '_'}, []};
-                               _ -> H = #item{idx = X, key = '$1', _ = '_'},
-                                    C = [?lt(?lf(['and',
-                                                  make_or(IdxList, '$1'),
-                                                  make_or(AttrList, '$2')]))],
-                                    {H, C}
-                           end,
-                Table = trans(Site, item),
-                MatchRef = [{H1, C1, ['$_']}],
-                List2 = mnesia:select(Table, MatchRef),
-                F3 = fun(#item{key = Key, val = Val}) ->
-                             RefX = #refX{site = Site, path = P, obj = O},
-                             {RefX, {Key, Val}}
-                     end,
-                lists:map(F3, List2)
-        end,
-    lists:flatten(lists:map(F2, LocalObjsList)).
+%%     F2 =fun(#local_objs{path = P, obj = O, idx = X} = _LObj) ->
+%%                 {H1, C1} = case length(AttrList) of
+%%                                0 -> {#item{idx = X, _ = '_'}, []};
+%%                                1 -> [A] = AttrList,
+%%                                     {#item{idx = X, key = A, _ = '_'}, []};
+%%                                _ -> H = #item{idx = X, key = '$1', _ = '_'},
+%%                                     C = [?lt(?lf(['and',
+%%                                                   make_or(IdxList, '$1'),
+%%                                                   make_or(AttrList, '$2')]))],
+%%                                     {H, C}
+%%                            end,
+%%                 Table = trans(Site, item),
+%%                 MatchRef = [{H1, C1, ['$_']}],
+%%                 List2 = mnesia:select(Table, MatchRef),
+%%                 F3 = fun(#item{key = Key, val = Val}) ->
+%%                              RefX = #refX{site = Site, path = P, obj = O},
+%%                              {RefX, {Key, Val}}
+%%                      end,
+%%                 lists:map(F3, List2)
+%%         end,
+%%     lists:flatten(lists:map(F2, LocalObjsList)).
 
 %% @spec shift_cells(RefX#refX{}, Type, Disp, Rewritten) -> Status
 %% Status = list()
@@ -2334,27 +2334,35 @@ rwf1([], _O, _N, {_St, Acc})        -> make_formula(lists:reverse(Acc));
 rwf1([?hn,?bra,{str,O}|T], O, N, A) -> rwf1(T, O, N, [{str,N},?bra,?hn|A]);
 rwf1([H | T], O, N, A)              -> rwf1(T, O, N, [H | A]).      
 
+% REMEMBER this is a BAG table and not a set table so writes
+% do not delete!
+% Therefore check if a record with this key and this object index 
+% already exists:
+% * if it does delete it and then write the record
+% * if it don't then just write it.
 %% will write out any raw attribute
+id(RefX) ->
+    get_local_item_index(RefX).
+
 write_attr3(#refX{site = Site} = RefX, {Key, Val}) ->
-    Idx = get_local_item_index(RefX),
-    % make the record we are going to write
-    Rec = #item{idx = Idx, key = Key, val = Val},
-    % REMEMBER this is a BAG table and not a set table so writes
-    % do not delete!
-    % Therefore check if a record with this key and this object index 
-    % already exists:
-    % * if it does delete it and then write the record
-    % * if it don't then just write it..
-    Head = #item{idx = Idx, key = Key, _ = '_'},
+   
+    Match = #item{idx = id(RefX), key = Key, _ = '_'},
+    Rec   = Match#item{val = Val},
     Table = trans(Site, item),
-    case mnesia:select(Table, [{Head, [], ['$_']}]) of
-        []       -> ok = mnesia:write(Table, Rec, write);
-        [OldRec] -> ok = mnesia:delete_object(Table, OldRec, write),
-                    ok = mnesia:write(Table, Rec, write)
+    
+    case mnesia:match_object(Table, Match, write) of
+        [] ->
+            ok = mnesia:write(Table, Rec, write);
+        [OldRec] ->
+            ok = mnesia:delete_object(Table, OldRec, write),
+            ok = mnesia:write(Table, Rec, write)
     end,
+    
     case Key of
-        "__" ++ _ -> ok;
-        Key       -> ok = tell_front_end(RefX, {Key, Val}, change)
+        "__" ++ _ ->
+            ok;
+        Key ->
+            ok = tell_front_end(RefX, {Key, Val}, change)
     end.
 
 update_rem_parents(Child, OldParents, NewParents) when is_record(Child, refX) ->
@@ -3322,24 +3330,24 @@ write_attr2(RefX, {"formula", Val}) ->
 write_formula1(RefX, Fla, Val) ->
     Rti = refX_to_rti(RefX, false),
     Ret = case muin:run_formula(Fla, Rti) of
-        %% TODO : Get rid of this, muin should return {error, Reason}?
-        {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-            ?ERROR("invalid return from muin:run_formula ~p",[Val]),
-            #refX{site = Site, path = Path, obj = R} = RefX,
-            ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
-                                           Val);
-        {error, Error} ->
-            #refX{site = Site, path = Path, obj = R} = RefX,
-            ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);
-        {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
-            Parxml = map(fun muin_link_to_simplexml/1, Parents),
-            % Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
-            ok = write_attr3(RefX, {"__ast", Pcode}),
-            ok = write_attr3(RefX, {"__recompile", Recompile}),
-            % write the default text align for the result
-            ok = write_default_alignment(RefX, Res),
-            write_cell(RefX, Res, Val, Parxml, Deptree)
-    end,
+              % TODO : Get rid of this, muin should return {error, Reason}?
+              {ok, {_P, {error, error_in_formula}, _, _, _}} ->
+                  ?ERROR("invalid return from muin:run_formula ~p",[Val]),
+                  #refX{site = Site, path = Path, obj = R} = RefX,
+                  ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
+                                                 Val);
+              {error, Error} ->
+                  #refX{site = Site, path = Path, obj = R} = RefX,
+                  ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);
+              {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
+                  Parxml = map(fun muin_link_to_simplexml/1, Parents),
+                  % Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
+                  ok = write_attr3(RefX, {"__ast", Pcode}),
+                  ok = write_attr3(RefX, {"__recompile", Recompile}),
+                  % write the default text align for the result
+                  ok = write_default_alignment(RefX, Res),
+                  write_cell(RefX, Res, Val, Parxml, Deptree)
+          end,
     % io:format("leaving write_formula1~n"),
     Ret.
 
