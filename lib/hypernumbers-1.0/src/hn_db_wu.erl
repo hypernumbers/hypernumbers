@@ -605,8 +605,7 @@ delete_dirty_cells(Site, List) when is_list(List) ->
     ok.
 
 delete_dirty_cell(Site, Cell) ->
-    NewCell = Cell#dirty_cell{idx = deleted},
-    mnesia:write(trans(Site, NewCell)).
+    mnesia:delete_object(trans(Site, dirty_cell), Cell, write).
 
 %% @spec get_cell_for_muin(#refX{}) -> {Value, RefTree, Errors, Refs]
 %% @doc this function is called by muin during recalculation and should
@@ -644,32 +643,12 @@ write_style_IMPORT(RefX, Style)
 %% @doc reads the complete list of dirty cells
 read_all_dirty_cells(Site) ->
     Table = trans(Site, dirty_cell),
-    M = trans(Site, #dirty_cell{_ = '_'}),
-    trans_back(mnesia:select(Table, [{M, [], ['$_']}])).
+    mnesia:match_object(Table, #dirty_cell{_ = '_'}, write).
     
 %% @spec read_dirty_cell(Timestamp) -> #dirty_cell{}
 %% @doc reads a dirty_cell based on its timestamp
-read_dirty_cell(Site, TimeStamp) ->
-    Table = trans(Site, dirty_cell),
-    Recs = mnesia:wread({Table, TimeStamp}),
-    case Recs of
-        [] -> io:format("throwing dirty_cell_no_longer_exists for timestamp of ~p~n",
-                        [TimeStamp]),
-              throw(dirty_cell_no_longer_exists);
-        _  -> ok
-    end,
-    [#dirty_cell{idx = Idx}] = trans_back(Recs),
-    case Idx of
-        deleted -> % bits:log("Deleted dirty cell being read for " ++
-                   %         io_lib:format("~p", [TimeStamp]) ++ " of " ++
-                   %         io_lib:format("~p", [Recs])),
-                            deleted;
-        _       -> RefX = local_idx_to_refX(Site, Idx),
-                   % bits:log("Dirty cell read for " ++
-                   %         io_lib:format("~p", [RefX]) ++ " for " ++
-                   %         io_lib:format("~p", [Idx])),
-                   RefX
-    end.
+read_dirty_cell(Site, #dirty_cell{idx=IdX}) ->
+    local_idx_to_refX(Site, IdX).
     
 %% @spec shift_remote_links(Type1, OldRef::#refX{}, 
 %% NewRef::#refX{}, Type1)  -> ok
@@ -989,8 +968,7 @@ clear_dirty(Site, Rec) when (is_record(Rec, dirty_notify_in)
 %% @doc clears a dirty cell marker.
 %% The reference must be to a cell
 clear_dirty_cell(Site, Record) when is_record(Record, dirty_cell) ->
-    NewRec = trans(Site, Record),
-    mnesia:delete_object(NewRec).
+    mnesia:delete_object(trans(Site, dirty_cell), Record, write).
 
 %% @spec get_refs_below(#refX{}) -> [#refX{}]
 %% @doc gets all the refs equal to or below a given reference as well as
@@ -1542,7 +1520,6 @@ shift_cells(From, Type, Disp, Rewritten)
                            [Cell#local_objs{obj = O2} | Acc]
                    end,
             NewCells = lists:foldl(Fun3, [], Cells),
-            io:format("Cells is ~p~n-NewCells is ~p~n", [Cells, NewCells]),
             ok = delete_recs_new(Site, Cells),
             [ok = mnesia:write(trans(Site, local_objs), X, write) 
              || X <- NewCells],
@@ -1712,7 +1689,7 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
         [] -> ok;
         _  -> List2 = get_cells(RefX),
               % first set all the dirty cells that match to deleted
-              [ok = mark_dirty_cells_deleted(X) || X <- List2],
+              %[ok = mark_dirty_cells_deleted(X) || X <- List2],
               % now delete the links to the cells
               [ok = delete_parent_links(X) || X <- List2],
               % finally delete all the attributes
@@ -1763,12 +1740,11 @@ delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
 %% record individually - if remoting_reg supported a {delete refX all}
 %% type message it could be speeded up
 delete_cells(#refX{site = S} = DelX) ->
-    io:format("in delete_cells for ~p~n", [DelX]),
     Cells = get_cells(DelX),
      case Cells of
         [] -> [];
         _ -> %% first delete any dirty cell references that point to these cells
-             [ok = mark_dirty_cells_deleted(X) || X <- Cells],
+             %[ok = mark_dirty_cells_deleted(X) || X <- Cells],
              %% update the children that point to the cell that is being deleted
              %% by rewriting the formulae of all the children cells replacing the 
              %% reference to this cell with #ref!
@@ -2030,32 +2006,14 @@ read_outgoing_hns(Site, #refX{obj = {cell, _}} = Parent)
 mark_cells_dirty(#refX{site = Site, obj = {cell, _}} = RefX) ->
     % Make a list of cells hypernumbers + direct
     % cell links, and check for any wildcard * on the path
-  
     % first up local
     case read_local_children(RefX) of
         []            -> ok;
         LocalChildren ->
             % Now write the local children to dirty_cell
             Fun = fun(X) ->
-                          % we use get because if the local child cell is currently 
-                          % unpopulated it needs to have an index pushed on it
-                          Idx = get_local_item_index(X),
-                          Match = ms_util:make_ms(dirty_cell, [{idx, Idx}]),
-                          Match2 = trans(Site, Match),
-                          % only write the dirty cell if 
-                          % it doesn't already exist or if it has been deleted
-                          case trans_back(mnesia:match_object(Match2)) of
-                              [] ->
-                                  Rec = trans(Site, #dirty_cell{idx = Idx}),
-                                  ok =  mnesia:write(Rec);
-                              [#dirty_cell{idx = deleted}]  ->
-                                  % io:format("~n~npreviously deleted dirty cell reset~n~n"),
-                                  Rec = trans(Site, #dirty_cell{idx = Idx}),
-                                  ok =  mnesia:write(Rec);
-                              _O ->
-                                  %io:format("~n~nExisting dirty cell is ~p~n~n", [O]),
-                                  ok
-                          end
+                          Dirty = #dirty_cell{idx = get_local_item_index(X)},
+                          ok =  mnesia:write(trans(Site, dirty_cell), Dirty, write)
                   end,
             _Return1 = lists:foreach(Fun, LocalChildren),
             ok
@@ -2192,8 +2150,7 @@ split_trans(Record) when is_tuple(Record) ->
     OldName2 = atom_to_list(OldName),
     [Site, Port, NewName] = string:tokens(OldName2, "&"),
     NewName2 = list_to_atom(NewName),
-    NewRec = setelement(1, Record, NewName2),
-    {"http://" ++ Site ++ ":" ++ Port, NewName2, NewRec}.
+    {"http://" ++ Site ++ ":" ++ Port, NewName2, Record}.
 
 trans_back([]) -> [];
 trans_back(List) when is_list(List) ->
@@ -2238,19 +2195,18 @@ delete_recs_new(Site, List) when is_list(List) ->
 
 delete_recs_new1(Site, Rec) ->
     Table = trans(Site, element(1, Rec)),
-    io:format("in delete_recs_new1 Table is ~p~n-Rec is ~p~n", [Table, Rec]),
     ok = mnesia:delete_object(Table, Rec, write).
 
-mark_dirty_cells_deleted(#refX{site = S, obj = {cell, _}} = RefX) ->
-    Idx = read_local_item_index(RefX),
-    H = trans(S, #dirty_cell{idx = Idx, _ = '_'}),
-    M = [{H, [], ['$_']}],
-    case trans_back(mnesia:select(trans(S, dirty_cell), M)) of
-        [] -> ok;
-        [#dirty_cell{timestamp = T}] ->
-            D = #dirty_cell{idx = deleted, timestamp = T},
-            ok = mnesia:write(trans(S, D))
-    end.
+%% mark_dirty_cells_deleted(#refX{site = S, obj = {cell, _}} = RefX) ->
+%%     Idx = read_local_item_index(RefX),
+%%     H = trans(S, #dirty_cell{idx = Idx, _ = '_'}),
+%%     M = [{H, [], ['$_']}],
+%%     case trans_back(mnesia:select(trans(S, dirty_cell), M)) of
+%%         [] -> ok;
+%%         [#dirty_cell{timestamp = T}] ->
+%%             D = #dirty_cell{idx = deleted, timestamp = T},
+%%             ok = mnesia:write(trans(S, D))
+%%     end.
 
 insert_shift(#refX{obj = {cell, {X, Y}}} = RefX, vertical) ->
     RefX#refX{obj = {cell, {X, Y - 1}}};
@@ -2272,7 +2228,6 @@ local_idx_to_refX(S, Idx) ->
             #local_objs{path = P, obj = O} = Rec,
             #refX{site = S, path = P, obj = O};
         [] ->
-            io:format("id_not_found for ~p on site ~p~n", [Idx, S]),
             throw(id_not_found)
     end.
 
@@ -2428,7 +2383,6 @@ get_refs_below2(RefX, MinX, MaxX, Y) ->
     Body = ['$_'],
     Idxs = get_local_idxs(S, {Head, Cond, Body}),
     RefXs1 = local_objs_to_refXs(S, Idxs),
-    io:format("in get_refs_below2 RefXs1 is ~p~n", [RefXs1]),
     RefXs2 = get_local_links_refs(S, RefXs1),
     RefXs = lists:merge([RefXs1, RefXs2]),
     hslists:uniq(RefXs).    
@@ -2445,7 +2399,6 @@ get_refs_right2(RefX, X, MinY, MaxY) ->
     Body = ['$_'],
     Idxs = get_local_idxs(S, {Head, Cond, Body}),
     RefXs1 = local_objs_to_refXs(S, Idxs),
-    io:format("in get_refs_right2 RefXs1 is ~p~n", [RefXs1]),
     RefXs2 = get_local_links_refs(S, RefXs1),
     RefXs = lists:merge([RefXs1, RefXs2]),
     hslists:uniq(RefXs).
@@ -3326,12 +3279,6 @@ write_attr2(RefX, {"formula", Val}) ->
 write_formula1(RefX, Fla, Val) ->
     Rti = refX_to_rti(RefX, false),
     Ret = case muin:run_formula(Fla, Rti) of
-              % TODO : Get rid of this, muin should return {error, Reason}?
-              {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-                  ?ERROR("invalid return from muin:run_formula ~p",[Val]),
-                  #refX{site = Site, path = Path, obj = R} = RefX,
-                  ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
-                                                 Val);
               {error, Error} ->
                   #refX{site = Site, path = Path, obj = R} = RefX,
                   ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);

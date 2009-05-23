@@ -18,15 +18,12 @@ run() ->
     ok.
 
 get_root() ->
-    
     [_File, _Ebin | Rest] =
         lists:reverse(string:tokens(code:which(generate_tests), "/")),
-
     Pre = case os:type() of
               {win32,_} -> "";
               _         -> "/"
           end,
-
     Pre++string:join(lists:reverse(Rest),"/")++"/".
 
 gen_test(Path,Tpl,Src) ->
@@ -54,6 +51,7 @@ gen_test(Path,Tpl,Src) ->
     Count = case ?pget("value", A1) of
                 "NOTESTS" -> 0;
                 Range ->
+                    
                     {range, {_,_,_,X}} = hn_util:parse_attr(Range),
                      X
             end,

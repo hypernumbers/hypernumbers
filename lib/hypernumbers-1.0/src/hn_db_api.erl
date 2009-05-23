@@ -175,7 +175,7 @@ shrink_dirty_cell(Site) ->
                 %% now dedup the dirty list
                 DeleteList = shrink(ParentsList, List),
                 ok = hn_db_wu:delete_dirty_cells(Site, DeleteList)
-           end,
+        end,
     mnesia:activity(transaction, Fun1).
 
 write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
@@ -257,15 +257,15 @@ create_db(Site)->
     Storage = disc_copies,
 
     Tables1 = [
+              ],
+    
+    Tables2 = [
                {dirty_cell,            set},
                {dirty_notify_in,       set},
                {dirty_inc_hn_create,   set},
                {dirty_notify_back_in,  set},
                {dirty_notify_out,      set},
-               {dirty_notify_back_out, set}
-              ],
-    
-    Tables2 = [
+               {dirty_notify_back_out, set},
                {item,                  bag},
                {local_objs,            bag},
                {local_cell_link,       bag},
@@ -405,43 +405,26 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 %% Silently fails if the cell is part of a shared range
 %% @todo extend this to a dirty shared formula
 %% @todo stop the silent fail!
-handle_dirty_cell(Site, TimeStamp, Rec)  ->
-    #dirty_cell{idx = RecIdx} = Rec,
-    case RecIdx of
-        deleted -> Fun = fun() -> % S = io_lib:format("handling dirty_cell ~p~n", [Rec]),
-                                  % bits:log(S),
-                                  ok = hn_db_wu:clear_dirty_cell(Site, Rec)
-                         end,
-                   mnesia:activity(transaction, Fun);
-        _       -> handle_dirty_cell1(Site, TimeStamp, Rec)
-    end.
-
-handle_dirty_cell1(Site, TimeStamp, Rec) ->
+handle_dirty_cell(Site, _TimeStamp, Rec) ->
     Fun1 =
         fun() ->
                 ok = init_front_end_notify(),
                 try
-                    Cell = hn_db_wu:read_dirty_cell(Site, TimeStamp),
-                    case Cell of
-                        deleted -> % S = io_lib:format("dirty_cell ~p has been deleted~n",
-                                                %                  [Rec]),
-                                                % bits:log(S),
-                            ok;
-                        _       -> case ?wu:read_attrs(Cell, ["__shared"], read) of
-                                       [] -> handle_dirty_cell2(Cell);
-                                       _  -> ?INFO("TODO: handle_dirty_cell "++
-                                                   "shared formula", [])
-                                   end,
-                                   ok = hn_db_wu:clear_dirty_cell(Site, Rec)
-                    end
+                    
+                    Cell = hn_db_wu:read_dirty_cell(Site, Rec),
+                    case ?wu:read_attrs(Cell, ["__shared"], read) of
+                        [] -> handle_dirty_cell2(Cell);
+                        _  -> ?INFO("TODO: handle_dirty_cell shared formula", [])
+                    end,
+                    ok = hn_db_wu:clear_dirty_cell(Site, Rec)
                 catch
                     throw:X when X == id_not_found;
                                  X == invalid_dirty_cell;
                                  X == dirty_cell_no_longer_exists ->
-                        Err = "Invalid cell in hn_db_api:handle_dirty_cell ~n " ++
-                            "Site:~p~n Time:~p~n Record:~p~n Reason:~p~n",
-                        % bits:log(io_lib:format(Err, [Site, TimeStamp, Rec, X])),
-                        ?ERROR(Err, [Site, TimeStamp, Rec, X]),
+                        % this isnt really an error, its a valid case
+                        %Err = "Invalid cell in hn_db_api:handle_dirty_cell ~n " ++
+                        %    "Site:~p~n Time:~p~n Record:~p~n Reason:~p~n",
+                        %?ERROR(Err, [Site, TimeStamp, Rec, X]),
                         ok = hn_db_wu:clear_dirty_cell(Site, Rec)
                 end
         end,
@@ -1280,27 +1263,30 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-shrink(ParentsList, List) -> shrink(ParentsList, List, []).
+shrink(ParentsList, List) ->
+    shrink(ParentsList, List, []).
 
-shrink([], _List, Acc)         -> Acc;
-shrink([Dirty | T], List, Acc) -> DirtyParents = has_dirty_parent(List, Dirty),
-                                  NewAcc = case DirtyParents of
-                                               false  -> Acc;
-                                               Dirty2 -> [Dirty2 | Acc]
-                                           end,
-                                  shrink(T, List, NewAcc).
+shrink([], _List, Acc) ->
+    Acc;
+shrink([Dirty | T], List, Acc) ->
+    DirtyParents = has_dirty_parent(List, Dirty),
+    NewAcc = case DirtyParents of
+                 false  -> Acc;
+                 Dirty2 -> [Dirty2 | Acc]
+             end,
+    shrink(T, List, NewAcc).
 
 has_dirty_parent(List, {Cell , PIdxList}) ->
     case has_dirty_parent2(List, PIdxList, false) of
         false -> false;
         true  -> Cell
     end.
-        
+
 %% One true is good enough!
 has_dirty_parent2(_List, _P, true) -> true;
 has_dirty_parent2(_List, [], false) -> false;
 has_dirty_parent2(List, [#local_cell_link{parentidx = Idx} | T], false) -> 
-    case lists:keymember(Idx, 3, List) of
+    case lists:keymember(Idx, 2, List) of
         true  -> true;
         false -> has_dirty_parent2(List, T, false)
     end.

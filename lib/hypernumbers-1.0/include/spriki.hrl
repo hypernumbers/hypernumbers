@@ -105,8 +105,8 @@
 
 -record(dirty_cell,
         {
-          timestamp   = now(),
-          idx
+          idx,
+          timestamp   = now()
          }).
 
 -record(dirty_inc_hn_create,

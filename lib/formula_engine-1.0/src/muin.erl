@@ -64,18 +64,18 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
 %% intersection, resolve a final cellref &c.
 
 eval_formula(Fcode) ->
-    E = eval(Fcode),
-    case E of
+    case eval(Fcode) of
         ?error_in_formula ->
             ?error_in_formula;
         Value ->
             case Value of
                 R when ?is_cellref(R) ->
+                    
                     case attempt(?MODULE, fetch, [R]) of
-                        {ok,    blank}  -> 0;
-                        {error, {aborted, {cyclic, _, _, _, _, _}} = E}  -> exit(E); % rethrow on lock
-                        {ok,    Other}  -> Other;
-                        {error, ErrVal} -> ErrVal
+                        {ok,    blank}              -> 0;
+                        {error, {aborted, _} = Err} -> exit(Err); % rethrow on lock
+                        {ok,    Other}              -> Other;
+                        {error, ErrVal}             -> ErrVal
                     end;
                 R when ?is_rangeref(R); ?is_array(R) ->
                     case implicit_intersection(R) of
@@ -117,15 +117,14 @@ parse(Fla, {Col, Row}) ->
 %% when Mnesia is unrolling a transaction. When the '{aborted, {cyclic...'
 %% exception is caught it must be rethrown...
 eval(_Node = [Func|Args]) when ?is_fn(Func) ->
-    R = attempt(?MODULE, funcall, [Func, Args]),
-    case R of
-        {error, Errv = {errval, _}}                      -> Errv;
-        {error, {aborted, {cyclic, _, _, _, _, _}} = E}  -> exit(E); % rethrow on lock
-        {error, _E}                                      -> ?error_in_formula;
-        {ok, {error, _E}}                                -> ?error_in_formula; % in stdfuns
-        {ok, V}                                          -> V
+    case attempt(?MODULE, funcall, [Func, Args]) of
+        {error, {errval, _}  = Err} -> Err;
+        {error, {aborted, _} = Err} -> exit(Err); % rethrow
+        {error, _E}                 -> ?error_in_formula;
+        {ok, {error, _E}}           -> ?error_in_formula; % in stdfuns
+        {ok, V}                     -> V
     end;
-eval(Value)                                 ->
+eval(Value) ->
     Value.
 
 funcall(make_list, Args) ->
@@ -182,7 +181,7 @@ funcall(Fname, Args0) ->
     R = foldl(fun(M, Acc = {F, A, not_found_yet}) ->
                       case attempt(M, F, [A]) of
                           {error, undef} -> Acc;
-                          {error, {aborted, {cyclic, _, _, _, _, _}} = E}  -> exit(E); % rethrow on lock
+                          {error, {aborted, _} = E}  -> exit(E); % rethrow on lock
                           {ok, V}        -> {F, A, V};
                           {error, Ev = {errval, _}} -> {F, A, Ev};
                           {error, Other} -> {F, A, {error, Other}}

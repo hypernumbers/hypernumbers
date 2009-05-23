@@ -36,12 +36,12 @@ init([Type]) ->
 
 %% @spec handle_info(Event,State) -> {noreply, State}
 %% @doc  handle events from subscription to mnesia
-handle_info({mnesia_table_event, {write, _Table, Rec, _OldRecs, _ActId}},
+handle_info({mnesia_table_event, {write, Table, Rec, _OldRecs, _ActId}},
             State) ->
     case State#state.state of
         passive -> ok;
-        % active  -> _PID = spawn(fun() -> proc_dirty(Rec) end)
-        active  -> proc_dirty(Rec)
+
+        active  -> proc_dirty(Table, Rec)
     end,
     {noreply, State};
 
@@ -101,25 +101,36 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% @spec proc_dirty(Rec, Type) -> ok
 %% @doc  processes the dirty record
-proc_dirty(Rec) ->
+proc_dirty(Table, Rec) ->
+    
+    [Host, Port, _Table] = string:tokens(atom_to_list(Table), "&"),
+    Site = "http://"++Host++":"++Port,
+    
+    {reductions, X} = erlang:process_info(self(), reductions),
+    case X rem 50 of
+        0 ->
+            ?INFO("Shrinking dirty",[]),
+            hn_db_api:shrink_dirty_cell(Site);
+        _ -> ok
+    end,
+    
     % fprof:trace(start),
-    {Site, NewRecType, Rec2} = hn_db_wu:split_trans(Rec),
-    Ret = case NewRecType of
+    Ret = case element(1, Rec) of
               dirty_cell ->
-                  #dirty_cell{timestamp = T} = Rec2,
-                  hn_db_api:handle_dirty_cell(Site, T, Rec2);
+                  #dirty_cell{timestamp = T} = Rec,
+                  hn_db_api:handle_dirty_cell(Site, T, Rec);
               dirty_inc_hn_create ->
-                  hn_db_api:notify_back_create(Site, Rec2);
+                  hn_db_api:notify_back_create(Site, Rec);
               dirty_notify_in ->
-                  hn_db_api:handle_dirty(Site, Rec2);
+                  hn_db_api:handle_dirty(Site, Rec);
               dirty_notify_out ->
-                  #dirty_notify_out{delay = D} = Rec2,
+                  #dirty_notify_out{delay = D} = Rec,
                   ok = timer:sleep(D),
-                  hn_db_api:handle_dirty(Site, Rec2);
+                  hn_db_api:handle_dirty(Site, Rec);
               dirty_notify_back_in  ->
-                  hn_db_api:handle_dirty(Site, Rec2);
+                  hn_db_api:handle_dirty(Site, Rec);
               dirty_notify_back_out ->
-                  hn_db_api:handle_dirty(Site, Rec2)
+                  hn_db_api:handle_dirty(Site, Rec)
           end,
     % fprof:trace(stop),
     Ret.
@@ -133,18 +144,18 @@ sub_unsubscribe(Table, Site, Action) ->
     NewTable = hn_db_wu:trans(Site, Table),
     case Action of
         subscribe   ->
-            mnesia:wait_for_tables([NewTable], 10000),
             mnesia:subscribe({table, NewTable, detailed});
         unsubscribe ->
             mnesia:unsubscribe({table, NewTable, detailed})
     end.
 
-flush(Site, Table) ->
+flush(Site, Tbl) ->
+
+    Table = hn_db_wu:trans(Site, Tbl),
     
     F = fun() ->
-                Match = ms_util:make_ms(Table, []),
-                Match2 = hn_db_wu:trans(Site, Match),
-                mnesia:match_object(Match2)
+                Match = mnesia:table_info(Table, wild_pattern),
+                mnesia:match_object(Table, Match, read)
         end,
     
     case mnesia:activity(transaction, F) of
@@ -152,5 +163,5 @@ flush(Site, Table) ->
             ok;
         List ->
             ?INFO("Flushing ~p records from  ~p - ~p ", [length(List), Table, Site]),
-            lists:foreach(fun proc_dirty/1, List)
+            lists:foreach(fun(X) -> proc_dirty(Table, X) end, List)
     end.

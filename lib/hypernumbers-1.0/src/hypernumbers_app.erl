@@ -33,8 +33,8 @@ start(_Type, _Args) ->
     hn_config:read_conf(Path), 
     
     case is_fresh_startup() of
-        true  -> clean_start2();
-        false -> ok
+        true             -> clean_start2();
+        {exists, Tables} -> ok = mnesia:wait_for_tables(Tables, 1000000)
     end,
    
     [ok = dirty_subscriber:monitor(X) || X <- ?dirties],
@@ -59,12 +59,15 @@ stop(_State) ->
 %%       is readable on disk
 is_fresh_startup() ->
     case mnesia:system_info(tables) of
-        [schema] -> true;
-        _ ->
+        [schema] ->
+            true;
+        Tbls ->
             Me = node(),
             case mnesia:table_info(schema, cookie) of
-                {_,Me} -> false;
-                _      -> true
+                {_,Me} ->
+                    {exists, Tbls};
+                _ ->
+                    true
             end
     end.
 
@@ -133,5 +136,3 @@ write_permissions(Name, [{Domain, Value} | T]) ->
     Ref = hn_util:parse_url(Domain),
     hn_db_api:write_attributes(Ref, [{Name, Value}]),
     write_permissions(Name, T).
-
-trim("http://"++Site) -> Site.

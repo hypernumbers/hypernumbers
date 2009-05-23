@@ -117,6 +117,18 @@ function start
         -mnesia dir "\"$MNESIA_DIR\""       
 }
 
+function load
+{
+    erl $MODE \
+        -setcookie $COOKIE \
+        -sname $NODE@$HOST \
+        -config $SASL_DIR \
+        -hn_config $CONFIG \
+        -hn_log $LOG_DIR \
+        -mnesia dir "\"$MNESIA_DIR\""       
+}
+
+
 function gen_tests
 {
     erl -noshell \
@@ -230,6 +242,7 @@ function stop
 
 case $1 in 
     start)     start $2;;
+    load)      load;;
     run)       run $2 $3 $4;;
     debug)     debug;;
     stop)      stop;;
