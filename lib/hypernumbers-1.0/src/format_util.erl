@@ -8,32 +8,32 @@
 
 %% Standard Interfaces
 -export([clock_12/1,
-	 pad_year/1,
-	 pad_calendar/1,
-	 get_short_day/1,
-	 get_day/1,
-	 get_short_month/1,
-	 get_month/1,
-	 get_last_two/1,
-	 get_dayname/1,
-	 get_short_dayname/1
-	]).
+         pad_year/1,
+         pad_calendar/1,
+         get_short_day/1,
+         get_day/1,
+         get_short_month/1,
+         get_month/1,
+         get_last_two/1,
+         get_dayname/1,
+         get_short_dayname/1
+        ]).
 
 clock_12(Hour) when is_integer(Hour), (Hour > 12), (Hour =< 24) -> Hour-12;
 clock_12(Hour) when is_integer(Hour), (Hour > 0), (Hour =< 12)  -> Hour.
 
 pad_year(A) ->
     case length(A) of
-	1 -> "000"++A;
-	2 -> "00"++A;
-	3 -> "0"++A;
-	4 -> A
+        1 -> "000"++A;
+        2 -> "00"++A;
+        3 -> "0"++A;
+        4 -> A
     end.
 
 pad_calendar(A) ->
     case length(A) of 
-	1 -> "0"++A;
-	2 -> A
+        1 -> "0"++A;
+        2 -> A
     end.
 
 get_short_day(1) -> "Mon";
