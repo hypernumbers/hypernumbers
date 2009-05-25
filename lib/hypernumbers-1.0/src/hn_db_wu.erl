@@ -723,7 +723,7 @@ shift_children(Child, OldParent, NewParent)
 %% <code>undefined</code>
 initialise_remote_page_vsn(Site, RefX, Version)
   when is_record(RefX, refX) ->
-    io:format("in initialise_remote_page_vsn~n"),
+    % io:format("in initialise_remote_page_vsn~n"),
     Page = RefX#refX{obj = {page, "/"}},
     Record = #page_vsn{site_and_pg = {Site, Page}, version = Version},
     mnesia:write(trans(Site, page_vsn), Record, write).
@@ -737,7 +737,7 @@ initialise_remote_page_vsn(Site, RefX, Version)
 %% Incrementation of page versions for local pages should be done with 
 %% {@link get_new_local_page_vsn/2}
 incr_remote_page_vsn(Site, #version{version = "undefined"} = V, Payload) ->
-    io:format("in incr_remote_page_vsn~n"),
+    % io:format("in incr_remote_page_vsn~n"),
     #version{page = Page} = V,
     PageX = hn_util:url_to_refX(Page),
     Record = #page_vsn{site_and_pg = {Site, PageX}, version = 1},
@@ -1189,9 +1189,13 @@ write_attr(#refX{obj = {cell, _}} = RefX, {"formula", _} = Attr) ->
         []   -> write_attr2(RefX, Attr)
     end;
 write_attr(#refX{obj = {cell, _}} = RefX, {"format", Format} = Attr) ->
-    [{RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"], read),
-    ok = process_format(RefX, Format, RawValue),
-    write_attr3(RefX, Attr);
+    ok = write_attr3(RefX, Attr),
+    % now reformat values (if they exist)
+    case read_attrs(RefX, ["rawvalue"], read) of
+        []                               -> ok;
+        [{RefX, {"rawvalue", RawValue}}] -> 
+            ok = process_format(RefX, Format, RawValue)
+    end;
 write_attr(#refX{obj = {cell, _}} = RefX, {"__dependency-tree", DTree}) ->
     write_attr3(RefX, {"__dependency-tree", DTree});
 write_attr(#refX{obj = {cell, _}} = RefX, {Key, Val} = Attr) ->
@@ -1812,7 +1816,7 @@ delete_cells(#refX{site = S} = DelX) ->
                          [ok = mnesia:delete_object(Tb2, XX, write) || XX <- L],
                          ok
                  end,
-             
+
              [ok = Fun5(X) || X <- IdxList],
              % finally delete the index records themselves
              [ ok = mnesia:delete_object(trans(S, local_objs), X, write)
@@ -3431,7 +3435,7 @@ write_rawvalue(RefX, Value) when is_record(RefX, refX) ->
 
 process_format(RefX, Format, Value) when is_record(RefX, refX) ->
     {erlang, {_Type, Output}} = format:get_src(Format),
-    {ok, {Color, V}}=format:run_format(Value, Output),
+    {ok, {Color, V}} = format:run_format(Value, Output),
     % first write the formatted value
     ok = write_attr3(RefX, {"value", V}),
     % now write the overwrite colour that comes from the format
