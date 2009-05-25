@@ -216,8 +216,12 @@ count_dec([_H|T],N)            -> count_dec(T,N).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 make_src2(A) ->
     Type=get_type(A),
-    Clauses=organise_clauses(A),
-    {Type,gen_src(Clauses,[">0","<0","=0"])}.
+    case Type of
+        number -> Clauses=organise_clauses(A),
+                  {Type, gen_src_num(Clauses,[">0","<0","=0"])};
+        date   -> {Type, gen_src_date(A)};
+        text   -> {Type, "fun(X) -> {auto, X} end."}
+    end.
 
 get_type(A)                                           -> get_type(A,[]).
 get_type([],Acc)                                      -> verify_type(lists:reverse(Acc));
@@ -247,27 +251,40 @@ verify_listX(A) ->
     % @TODO I think some of the clauses in verify_list are hooky!
 	verify_list(A).
 
-verify_list([[A]]    )            -> A;
-verify_list([[A],[text]])         -> A; % Hooky!
-verify_list([[A],[A]])            -> A;
-verify_list([[A],[A],[text]])     -> A; % Hooky!
-verify_list([[A],[A],[A]])        -> A;
-verify_list([[A],[A],[A],[text]]) -> A. % This one is OK
+verify_list([[A]])                               -> A;
+verify_list([[number],[text]])                   -> number; % Hooky!
+verify_list([[number],[number]])                 -> number;
+verify_list([[number],[number],[text]])          -> number; % Hooky!
+verify_list([[number],[number],[number]])        -> number;
+verify_list([[number],[number],[number],[text]]) -> number. % This one is OK
 
-gen_src(Clauses,Defaults) -> gen_src(Clauses,Defaults,[]).
+gen_src_date([Format]) ->
+    "fun(X) ->"++
+    "    IsDate = case X of"++
+    "      {datetime, _, _} -> true;"++
+    "      _                -> false"++
+    "    end,"++
+    "    if"++
+    "       not(IsDate)  -> {auto, X};"++
+    "       IsDate       -> {auto, format:format(X, "++
+    make_format(Format)++")}"++
+    "   end"++
+    " end.".
+                
+gen_src_num(Clauses,Defaults) -> gen_src_num(Clauses,Defaults,[]).
 
 %% generate the source from the list of clauses and the list of default clauses
 %% if there aren't enough conditions repeat the first one
-gen_src([],[],Acc)           -> gen_src2(lists:reverse(Acc));
+gen_src_num([],[],Acc)           -> gen_src_num2(lists:reverse(Acc));
 %% this is nasty to fix the ghastly 'feature' of sign swapping for explicity
 %% specified '<0' clauses - this one isn't and we won't do it!
-gen_src([],["<0"|T2],Acc)    -> gen_src([],T2,[swap_cond("dont swap sign",
+gen_src_num([],["<0"|T2],Acc)    -> gen_src_num([],T2,[swap_cond("dont swap sign",
                                                          lists:last(Acc))|Acc]); 
-gen_src([],[H2|T2],Acc)      -> gen_src([],T2,[swap_cond(H2,lists:last(Acc))|Acc]); 
-gen_src([H1|T1],[],Acc)      -> gen_src(T1,[],[make_default(H1)|Acc]);
-gen_src([H1|T1],[H2|T2],Acc) -> gen_src(T1,T2,[make_default(H1,H2)|Acc]).
+gen_src_num([],[H2|T2],Acc)      -> gen_src_num([],T2,[swap_cond(H2,lists:last(Acc))|Acc]); 
+gen_src_num([H1|T1],[],Acc)      -> gen_src_num(T1,[],[make_default(H1)|Acc]);
+gen_src_num([H1|T1],[H2|T2],Acc) -> gen_src_num(T1,T2,[make_default(H1,H2)|Acc]).
 
-gen_src2(Clauses)->
+gen_src_num2(Clauses)->
     {Cond1,Clause1}=make_clause(1,lists:nth(1,Clauses)),
     {Cond2,Clause2}=make_clause(2,lists:nth(2,Clauses)),
     {Cond3,Clause3}=make_clause(3,lists:nth(3,Clauses)),
@@ -279,12 +296,8 @@ gen_src2(Clauses)->
                        strip_condition(MadeClause)
               end,
     Src="fun(X) -> "++Cond1++Cond2++Cond3++
-        "    IsDate = case X of "++
-        "       {datetime, _, _} -> true;"++
-        "       _            -> false"++
-        "    end,"++
         "    if "++
-        "       not(is_number(X) or IsDate) -> "++ Clause4++";"++
+        "      not(is_number(X)) -> "++ Clause4++";"++
         "      true ->"++
         "           if "++NewClauses++
         "           end"++
@@ -327,9 +340,7 @@ make_clause(N,[{condition,Cond},{colour,Col},{Type,Format}]) ->
 %% if the conditional clause is less than (or in our case less than or equals) to zero
 %% then the Excel format automatically changes the sign of the number to positive!
 make_clause2(N,[{condition,Cond},{colour,Col},{Type,Format}]) ->
-    FormatClause={Type,Format},
-    Bits=io_lib:fwrite("~p",[FormatClause]),
-    Bits2=lists:flatten(Bits),
+    Bits2=make_format({Type, Format}),
     Y = "Cond"++integer_to_list(N),
     Cond2=tart_up(Y,"X",Cond),
     Clause = Y++" -> {"++atom_to_list(Col)++",format:format(-X,"++Bits2++")}",
@@ -338,9 +349,7 @@ make_clause2(N,[{condition,Cond},{colour,Col},{Type,Format}]) ->
 %% this is the normal clause - but it also is picked up for automatically generated
 %% <0 clauses
 make_clause3(N,[{condition,Cond},{colour,Col},{Type,Format}]) ->
-    FormatClause={Type,Format},
-    Bits=io_lib:fwrite("~p",[FormatClause]),
-    Bits2=lists:flatten(Bits),
+    Bits2=make_format({Type, Format}),
     Y = "Cond"++integer_to_list(N),
     Cond2=tart_up(Y,"X",Cond),
     Clause = Y++" -> {"++atom_to_list(Col)++",format:format(X,"++Bits2++")}",
@@ -402,5 +411,7 @@ promote_subclauses([[{Type,[{colour,Col}|Rest]}]|T],Acc) ->
 promote_subclauses([H|T],Acc) ->
     promote_subclauses(T,[H|Acc]).
 
-
-
+make_format({Type, Format}) ->
+    FormatClause={Type,Format},
+    Bits=io_lib:fwrite("~p",[FormatClause]),
+    lists:flatten(Bits).
