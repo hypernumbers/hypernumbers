@@ -387,9 +387,8 @@ get_value_and_link(FetchFun) ->
             ?ERR_CIRCREF;
         false ->
             {RefTree0, Errs0, Refs0} = get(retvals),
-	    NewRefTree = lists:merge([lists:sort(RefTree0), RefTree]),
+            NewRefTree = hslists:uniq(lists:append([RefTree0, RefTree])),
             put(retvals, {NewRefTree, Errs0 ++ Errs, Refs0 ++ Refs}),
-
             Value
     end.
 
