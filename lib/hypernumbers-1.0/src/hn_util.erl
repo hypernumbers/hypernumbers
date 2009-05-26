@@ -91,7 +91,8 @@ get_offset(delete, D, {range,  {X1, Y1, X2, Y2}}) -> g_o1(D, -(X2 - X1 + 1),
 g_o1(vertical, _X, Y)   -> {0, Y};
 g_o1(horizontal, X, _Y) -> {X, 0}.
 
-get_hosts(List) when is_list(List) -> get_hosts1(List, []).
+get_hosts(List) when is_list(List) ->
+    get_hosts1(List, []).
 
 get_hosts1([], Acc) -> Acc;
 get_hosts1([{_IP, Port, [Host]} | T], Acc) ->

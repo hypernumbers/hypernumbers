@@ -142,7 +142,7 @@
          write_remote_link/3,
          notify_from_web/5,
          notify_back_from_web/4,
-         handle_dirty_cell/3,
+         handle_dirty_cell/2,
          shrink_dirty_cell/1,
          handle_dirty/1,
          register_hn_from_web/4,
@@ -159,24 +159,22 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+do_shrink_dirty_cell(Site) ->
+    List = hn_db_wu:read_all_dirty_cells(Site),
+    Fun2 = fun(#dirty_cell{idx = Idx} = D, Acc) ->
+                   L =  hn_db_wu:read_local_parents_idx(Site, Idx),
+                   case L of
+                       [] -> Acc;
+                       _  -> [{D, L} | Acc]
+                   end
+           end,
+    ParentsList = lists:foldl(Fun2, [], List),
+    % now dedup the dirty list
+    DeleteList = shrink(ParentsList, List),
+    ok = hn_db_wu:delete_dirty_cells(Site, DeleteList).
+     
 shrink_dirty_cell(Site) ->
-    %% read all the dirty cells
-    Fun1 = 
-        fun() ->
-                List = hn_db_wu:read_all_dirty_cells(Site),
-                Fun2 = fun(#dirty_cell{idx = Idx} = D, Acc) ->
-                               L =  hn_db_wu:read_local_parents_idx(Site, Idx),
-                               case L of
-                                   [] -> Acc;
-                                   _  -> [{D, L} | Acc]
-                               end
-                       end,
-                ParentsList = lists:foldl(Fun2, [], List),
-                %% now dedup the dirty list
-                DeleteList = shrink(ParentsList, List),
-                ok = hn_db_wu:delete_dirty_cells(Site, DeleteList)
-        end,
-    mnesia:activity(transaction, Fun1).
+    mnesia:activity(sync_dirty, fun do_shrink_dirty_cell/1, [Site]).
 
 write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
     exit("write write_formula_to_range in hn_db_api!").
@@ -367,7 +365,7 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
                   List2 = extract_kvs(List),
                   #refX{site = Site} = Parent,
                   Version = ?wu:read_page_vsn(Site, Parent),
-
+                  
                   % get the value (if there is one)
                   V = case lists:keysearch("value", 1, List2) of
                           false           -> "blank";
@@ -405,30 +403,27 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 %% Silently fails if the cell is part of a shared range
 %% @todo extend this to a dirty shared formula
 %% @todo stop the silent fail!
-handle_dirty_cell(Site, _TimeStamp, Rec) ->
-    Fun1 =
-        fun() ->
-                ok = init_front_end_notify(),
-                try
-                    
-                    Cell = hn_db_wu:read_dirty_cell(Site, Rec),
-                    case ?wu:read_attrs(Cell, ["__shared"], read) of
-                        [] -> handle_dirty_cell2(Cell);
-                        _  -> ?INFO("TODO: handle_dirty_cell shared formula", [])
-                    end,
-                    ok = hn_db_wu:clear_dirty_cell(Site, Rec)
-                catch
-                    throw:X when X == id_not_found;
-                                 X == invalid_dirty_cell;
-                                 X == dirty_cell_no_longer_exists ->
-                        % this isnt really an error, its a valid case
-                        %Err = "Invalid cell in hn_db_api:handle_dirty_cell ~n " ++
-                        %    "Site:~p~n Time:~p~n Record:~p~n Reason:~p~n",
-                        %?ERROR(Err, [Site, TimeStamp, Rec, X]),
-                        ok = hn_db_wu:clear_dirty_cell(Site, Rec)
-                end
-        end,
-    ok = mnesia:activity(transaction, Fun1),
+
+handle_dirty_cell_tr(Site, Rec) ->
+    try
+        ok = init_front_end_notify(),    
+        Cell = hn_db_wu:read_dirty_cell(Site, Rec),
+        %?INFO("Cell ~p",[Cell]),
+        case ?wu:read_attrs(Cell, ["__shared"], read) of
+            [] -> handle_dirty_cell2(Cell);
+            _  -> ?INFO("TODO: handle_dirty_cell shared formula", [])
+        end
+    catch
+        throw:_X ->
+            % this isnt really an error, its a valid case
+            Err = "Invalid cell in hn_db_api:handle_dirty_cell ~n " ++
+                "Site:~p~n Record:~p~n Reason:~p~n",
+            ?ERROR(Err, [Site, Rec, _X]),
+            ok
+    end.
+
+handle_dirty_cell(Site, Rec) ->
+    ok = mnesia:activity(transaction, fun handle_dirty_cell_tr/2, [Site, Rec]),
     ok = tell_front_end("handle dirty"),
     ok.
 
@@ -628,7 +623,7 @@ notify_back_from_web(P, C, B, Type)
                     true -> Rec = #dirty_notify_back_out{child = C, parent = P,
                                                          change = Type},
 
-                            ?wu:mark_dirty(PSite, Rec);
+                            hn_db_wu:mark_dirty(PSite, Rec);
                     _    -> ok
                 end
         end,
@@ -923,7 +918,7 @@ recalculate(RefX) when is_record(RefX, refX) ->
 %% <li>range</li>
 %% <li>column</li>
 %% <li>row</li>
-%% <li>page</li>
+% <li>page</li>
 %% </ul>
 reformat(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->

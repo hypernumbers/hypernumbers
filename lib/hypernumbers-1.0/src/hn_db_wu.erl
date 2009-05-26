@@ -15,7 +15,7 @@
 %%% 
 %%% This module generates two sorts of side-effects:
 %%% * changes to the database
-%%% * notifications to the front-end
+%%% * notifications to the fron./t-end
 %%% 
 %%% The changes to the database are done under mnesia transactions management
 %%% (as you would expect). It is necessary for the notifications to the 
@@ -1557,7 +1557,7 @@ delete_row_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}) ->
     M = [{H, C, B}],
     Table = trans(S, local_objs),
     Recs = mnesia:select(Table, M, write),
-    ok = delete_recs(Recs).
+    ok = delete_recs(S, Recs).
 
 %% @spec shift_cols(RefX#refX{}, Type) -> ok
 %% Type = [insert | delete]
@@ -1693,6 +1693,7 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
         [] -> ok;
         _  -> List2 = get_cells(RefX),
               % first set all the dirty cells that match to deleted
+              ok = delete_dirty_cells(RefX#refX.site, List2),
               %[ok = mark_dirty_cells_deleted(X) || X <- List2],
               % now delete the links to the cells
               [ok = delete_parent_links(X) || X <- List2],
@@ -1707,7 +1708,7 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
 %% @doc takes a reference to a page, does delete_cells,
 %% Then reads any existing local_objs and deletes any
 %% row / column ones, along with any attributes set on them
-%% Returns a list of dereferenced cells that need to be set dirty to recalculate
+%% Returns a list of dereferenced cells thatneed to be set dirty to recalculate
 delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
     
     Status = delete_cells(RefX),
@@ -1715,7 +1716,7 @@ delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
     F = fun(#local_objs{obj = {X, _Y}, idx = Id} = Obj)
            when X == column; X == row ->
                 ok = mnesia:delete(trans(Site, item), Id, write),
-                mnesia:delete_object(trans(Site, local_0bjs), Obj, write);
+                mnesia:delete_object(trans(Site, local_objs), Obj, write);
            (_Else) ->
                 ok
         end,
@@ -1748,6 +1749,7 @@ delete_cells(#refX{site = S} = DelX) ->
      case Cells of
         [] -> [];
         _ -> %% first delete any dirty cell references that point to these cells
+             delete_dirty_cells(S, Cells),
              %[ok = mark_dirty_cells_deleted(X) || X <- Cells],
              %% update the children that point to the cell that is being deleted
              %% by rewriting the formulae of all the children cells replacing the 
@@ -1778,17 +1780,18 @@ delete_cells(#refX{site = S} = DelX) ->
                                 [] -> ok;
                                 _  -> ok % io:format("~nCell IS a local parent~n")
                             end,
-                            ok = mnesia:delete({trans(S, local_cell_link), Idx})
+                            ok = mnesia:delete(trans(S, local_cell_link), Idx, write)
                     end,
              [ok = Fun2(X) || X <- Cells],
+             
              %% now remove all the links where these cells were the children
-           
              Fun3 = fun(X) ->
                             CIdx = read_local_item_index(X),
                             Table = trans(S, local_cell_link),
                             Recs = mnesia:index_read(Table, CIdx, childidx),
                             ok = delete_recs(S, Recs)
                     end,
+
              [ok = Fun3(X) || X <- Cells],
              
              %% get the index of all items to be deleted
@@ -2016,6 +2019,7 @@ mark_cells_dirty(#refX{site = Site, obj = {cell, _}} = RefX) ->
         LocalChildren ->
             % Now write the local children to dirty_cell
             Fun = fun(X) ->
+                          %?INFO("Dirty ~p", [X]),
                           Dirty = #dirty_cell{idx = get_local_item_index(X)},
                           ok =  mnesia:write(trans(Site, dirty_cell), Dirty, write)
                   end,
@@ -2181,17 +2185,13 @@ get_prefix(Site) ->
 %%% Internal funtions                                                        %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-delete_recs(List) when is_list(List) ->
-    [ok = mnesia:delete_object(X) || X <- List],
-    ok.
-
 delete_recs(Site, List) when is_list(List) ->
     [ok = delete_recs1(Site, X) || X <- List],
     ok.
 
 delete_recs1(Site, Rec) ->
-    NewRec = trans(Site, Rec),
-    mnesia:delete_object(NewRec).
+    Table = trans(Site, element(1, Rec)),
+    mnesia:delete_object(Table, Rec, write).
 
 delete_recs_new(Site, List) when is_list(List) ->
     [ok = delete_recs_new1(Site, X) || X <- List],
@@ -2232,7 +2232,7 @@ local_idx_to_refX(S, Idx) ->
             #local_objs{path = P, obj = O} = Rec,
             #refX{site = S, path = P, obj = O};
         [] ->
-            throw(id_not_found)
+            throw({id_not_found, Idx})
     end.
 
 %% @doc Make a #muin_rti record out of a ref record and a flag that specifies 
@@ -2275,7 +2275,7 @@ get_head(Site, Parent, Type) when ((Type == insert) orelse (Type == delete)) ->
     H2 = Parent#refX{obj = {cell, {'_', '_'}}},
     #remote_cell_link{parent = H2, child = H1, _ = '_'};
 get_head(Site, Parent, Type) when (Type == new_value) ->
-    H1 = ms_util:make_ms(refX, [{site, Site}]),
+    H1 = ms_util:make_ms(refX, [{site, Site}]), 
     #remote_cell_link{parent = Parent, child = H1, _ = '_'}.
 
 get_pages_and_vsns(Site, List) ->

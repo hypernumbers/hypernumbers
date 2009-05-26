@@ -128,7 +128,7 @@ reduce([{Key, Val} | T], User, Acc) ->
 
 default_filter() ->
     [{method, post}, {date, all}, {id, all}, {deep, true}, {path, "/"},
-     {user, all}].
+     {user, all}, {pause, 0}].
 
 %% @spec dump(Name) -> ok
 %% @doc Dumps the logfile with Name to the shell
@@ -242,14 +242,18 @@ handle_term(Opts, Post, N, F) ->
     
     Path = string:tokens(?pget(path, Opts), "/"),
     Deep = ?pget(deep, Opts),
-
+    
     [Raw | _ ] = string:tokens(Post#post.path, "?"),
     Path2 = string:tokens(Raw, "/"),
 
     case in_path(Path, Path2, Deep) andalso filter(Opts, Post, N) of
-        true  -> F(Post, N);
-        false -> ok
-    end.
+        true  ->
+            F(Post, N),
+            timer:sleep(?pget(pause, Opts));
+        false ->
+            ok
+    end,
+    ok.
 
 in_path(Path, Path, false) ->
     true;

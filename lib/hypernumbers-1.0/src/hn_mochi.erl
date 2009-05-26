@@ -40,8 +40,10 @@ req(Req) ->
         [] ->
             case catch do_req(Req) of 
                 ok -> ok;
-                Else ->   
-                    ?ERROR("~p~n",[Else]),
+                invalid_reference ->
+                    Req:respond({500,[],[]});
+                Else ->
+                    ?ERROR("~p~n~p",[Else, erlang:get_stacktrace()]),
                     Req:respond({500,[],[]})
             end
     end.

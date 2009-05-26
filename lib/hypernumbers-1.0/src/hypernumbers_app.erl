@@ -28,7 +28,7 @@ start(_Type, _Args) ->
             ok
     end,
         
-    {ok, Pid} = hypernumbers_sup:start_link(),
+    {ok, Pid}     = hypernumbers_sup:start_link(),
     {ok,[[Path]]} = init:get_argument(hn_config),	
     hn_config:read_conf(Path), 
     
@@ -37,9 +37,8 @@ start(_Type, _Args) ->
         {exists, Tables} -> ok = mnesia:wait_for_tables(Tables, 1000000)
     end,
    
-    [ok = dirty_subscriber:monitor(X) || X <- ?dirties],
-    [ok = dirty_subscriber:flush(X) || X <- ?dirties],
-
+    [ok = dirty_srv:start(X) || X <- ?dirties],
+    
     ok = start_mochiweb(),
     
     {ok, Pid}.
@@ -75,9 +74,9 @@ is_fresh_startup() ->
 %% @doc  delete/create existing database and set up
 %%       initial permissions
 clean_start() ->
-    ok = dirty_subscriber:unmonitor(),
+    [ok = dirty_srv:stop(X) || X <- ?dirties],
     ok = clean_start2(),
-    [ok = dirty_subscriber:monitor(X) || X <- ?dirties].
+    [ok = dirty_srv:start(X) || X <- ?dirties].
 
 clean_start2() ->
 
@@ -118,11 +117,13 @@ start_mochiweb() ->
 
 compress(List) -> cmp1(List, []).
 
-cmp1([], Acc)                       -> Acc;
-cmp1([{IP, Port, _Hosts} | T], Acc) -> case lists:member({IP, Port}, Acc) of
-                                           true  -> cmp1(T, Acc);
-                                           false -> cmp1(T, [{IP, Port} | Acc])
-                                       end.
+cmp1([], Acc) ->
+    Acc;
+cmp1([{IP, Port, _Hosts} | T], Acc) ->
+    case lists:member({IP, Port}, Acc) of
+        true  -> cmp1(T, Acc);
+        false -> cmp1(T, [{IP, Port} | Acc])
+    end.
 
 %% @spec write_permissions() -> ok
 %% @doc  Set the default permissions on each domain

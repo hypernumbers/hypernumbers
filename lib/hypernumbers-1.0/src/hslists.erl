@@ -11,7 +11,7 @@
 -export([detect/2, detect/3, find/2, init/1, mid/1, random/1, intersperse/2,
          join/2, intercalate/2, transpose/1, product/1, average/1, loop/2,
          shuffle/1, uniq/1, enumerate/1, drop/2, cartesian_product/2,
-         map_with_pos/2, deepmap/2]).
+         map_with_pos/2, deepmap/2, remove/2]).
 
 %% @doc Returns the first element for which the fun returns true. Returns 
 %% not_detected if there isn't such an element.
@@ -125,6 +125,17 @@ uniq([Hd | Tl]) ->
     [ Hd | uniq([Y || Y <- Tl, Y =/= Hd])];
 uniq([]) ->
     [].
+
+%% @doc Return list with Item removed
+remove(Item, List) ->
+    remove(List, Item, []).
+
+remove([], _Item, Acc) ->
+    Acc;
+remove([Item | Tl], Item, Acc) ->
+    remove(Tl, Item, Acc);
+remove([Hd | Tl], Item, Acc) ->
+    remove(Tl, Item, [ Hd | Acc ]).
 
 %% @doc Return list with sequence numbers attached to elements.
 enumerate(L) ->
