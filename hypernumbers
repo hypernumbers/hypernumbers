@@ -117,6 +117,13 @@ function start
         -mnesia dir "\"$MNESIA_DIR\""       
 }
 
+function inspect_mnesia
+{
+    erl -setcookie $COOKIE \
+        -sname $NODE@$HOST \
+        -mnesia dir "\"$MNESIA_DIR\""
+}
+
 function load
 {
     erl $MODE \
@@ -241,17 +248,18 @@ function stop
 }
 
 case $1 in 
-    start)     start $2;;
-    load)      load;;
-    run)       run $2 $3 $4;;
-    debug)     debug;;
-    stop)      stop;;
-    docs)      docs;;
-    copylog)   copylog;;
-    build)     build $2;;
-    statsvn)   statsvn;;
-    visualise) visualise;;
-    gen_tests) gen_tests;;
-    gen_help) gen_help;;
-    test)      test $2;;
+    start)          start $2;;
+    load)           load;;
+    run)            run $2 $3 $4;;
+    debug)          debug;;
+    stop)           stop;;
+    docs)           docs;;
+    copylog)        copylog;;
+    build)          build $2;;
+    statsvn)        statsvn;;
+    visualise)      visualise;;
+    gen_tests)      gen_tests;;
+    gen_help)       gen_help;;
+    inspect_mnesia) inspect_mnesia;;
+    test)           test $2;;
 esac
