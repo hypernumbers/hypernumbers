@@ -15,8 +15,30 @@
          upgrade_1641/0,
          upgrade_1743_A/0,
          upgrade_1743_B/0,
-         upgrade_1776/0
+         upgrade_1776/0,
+         upgrade_1817/0
         ]).
+
+
+%% Changes the recordname of every record in mnesia from
+%% Site&Port&RecordName to RecordName
+upgrade_1817() ->
+    Up = fun(Rec) ->
+                 [Name | Rest] = tuple_to_list(Rec),
+                 Tbl = strip_site(Name),
+                 list_to_tuple([Tbl | Rest])
+         end,
+    F = fun(schema) -> ok;
+           (Tbl) ->    
+                Name = strip_site(Tbl),
+                Fields = ms_util2:get_record_info(Name),                
+                mnesia:transform_table(Tbl, Up, Fields, Name)
+        end,
+    [F(X) || X <- mnesia:system_info(tables)].
+
+strip_site(Name) ->
+    [_Site, _Port, Tbl] = string:tokens(atom_to_list(Name), "&"),
+    list_to_atom(Tbl).
 
 upgrade_1519() ->
     F = fun({hn_user, Name, Pass, Auth, Created}) ->
