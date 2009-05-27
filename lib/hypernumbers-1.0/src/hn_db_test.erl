@@ -128,7 +128,7 @@ delete() ->
     test_delete(Path, {range, {5, 2, 6, 3}}, vertical),
 
     test_util:wait(200),
-
+    
     %io:format("about to insert a vertical range~n~n"),
 
     %test_insert(Path, {range, {5, 3, 6, 4}}, vertical),

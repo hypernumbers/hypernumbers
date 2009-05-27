@@ -601,11 +601,15 @@
 %% @doc this function takes a list  of dirty cells and 
 %% rewrites all of them to be deleted
 delete_dirty_cells(Site, List) when is_list(List) ->
-    [ok = delete_dirty_cell(Site, X) || X <- List],
+    [ok = delete_dirty_cell(trans(Site, dirty_cell), X) || X <- List],
     ok.
 
-delete_dirty_cell(Site, Cell) ->
-    mnesia:delete_object(trans(Site, dirty_cell), Cell, write).
+delete_dirty_cell(Table, Cell) when is_record(Cell, dirty_cell) ->
+    mnesia:delete_object(Table, Cell, write);
+delete_dirty_cell(Table, Cell) when is_record(Cell, refX) ->
+    mnesia:delete(Table, get_local_item_index(Cell), write);
+delete_dirty_cell(Table, Id) when is_list(Id) ->
+    mnesia:delete(Table, Id, write).
 
 %% @spec get_cell_for_muin(#refX{}) -> {Value, RefTree, Errors, Refs]
 %% @doc this function is called by muin during recalculation and should
@@ -1688,21 +1692,22 @@ clear_cells(RefX, style) when is_record(RefX, refX) ->
     [delete_attrs(X, Key) || {X, {Key, _Val}} <- List],
     ok;
 clear_cells(RefX, contents) when is_record(RefX, refX) ->
-    List1 = read_attrs(RefX, write),
+    
     % first up clear the list
-    case List1 of
+    case read_attrs(RefX, write) of
         [] -> ok;
-        _  -> List2 = get_cells(RefX),
-              % first set all the dirty cells that match to deleted
-              ok = delete_dirty_cells(RefX#refX.site, List2),
-              %[ok = mark_dirty_cells_deleted(X) || X <- List2],
-              % now delete the links to the cells
-              [ok = delete_parent_links(X) || X <- List2],
-              % finally delete all the attributes
-              List3 = get_content_attrs(List1),
-              [delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
-              [ok = mark_cells_dirty(X) || X <- List2],
-              ok
+        List1 ->
+            List2 = get_cells(RefX),
+            % first set all the dirty cells that match to deleted
+            ok = delete_dirty_cells(RefX#refX.site, List2),
+            %[ok = mark_dirty_cells_deleted(X) || X <- List2],
+            % now delete the links to the cells
+            [ok = delete_parent_links(X) || X <- List2],
+            % finally delete all the attributes
+            List3 = get_content_attrs(List1),
+            [delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
+            [ok = mark_cells_dirty(X) || X <- List2],
+            ok
     end.
 
 %% @spec delete_page(RefX) -> Status
@@ -2233,7 +2238,7 @@ local_idx_to_refX(S, Idx) ->
             #local_objs{path = P, obj = O} = Rec,
             #refX{site = S, path = P, obj = O};
         [] ->
-            throw({id_not_found, Idx})
+            {error, id_not_found, Idx}
     end.
 
 %% @doc Make a #muin_rti record out of a ref record and a flag that specifies 

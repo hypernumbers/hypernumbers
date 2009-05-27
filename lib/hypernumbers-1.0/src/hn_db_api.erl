@@ -401,30 +401,19 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 %% will skip it
 %% Silently fails if the cell is part of a shared range
 %% @todo extend this to a dirty shared formula
-%% @todo stop the silent fail!
-
-handle_dirty_cell_tr(Site, Rec) ->
-    try
-        ok = init_front_end_notify(),    
-        Cell = hn_db_wu:read_dirty_cell(Site, Rec),
-        %?INFO("Cell ~p",[Cell]),
-        case ?wu:read_attrs(Cell, ["__shared"], read) of
-            [] -> handle_dirty_cell2(Cell);
-            _  -> ?INFO("TODO: handle_dirty_cell shared formula", [])
-        end
-    catch
-        throw:_X ->
-            % this isnt really an error, its a valid case
-            Err = "Invalid cell in hn_db_api:handle_dirty_cell ~n " ++
-                "Site:~p~n Record:~p~n Reason:~p~n",
-            ?ERROR(Err, [Site, Rec, _X]),
-            ok
-    end.
-
+%% @todo needs to be ran inside transaction from
+%% other module, kinda ugly, fix
 handle_dirty_cell(Site, Rec) ->
-    ok = mnesia:activity(transaction, fun handle_dirty_cell_tr/2, [Site, Rec]),
-    ok = tell_front_end("handle dirty"),
-    ok.
+    
+    ok = init_front_end_notify(),
+    case hn_db_wu:read_dirty_cell(Site, Rec) of
+        Cell when is_record(Cell, refX) ->
+            case ?wu:read_attrs(Cell, ["__shared"], read) of
+                [] -> handle_dirty_cell2(Cell);
+                _  -> ?INFO("TODO: handle_dirty_cell shared formula", [])
+            end
+    end,
+    ok = tell_front_end("handle dirty").
 
 handle_dirty_cell2(Cell) ->
     case hn_db_wu:read_attrs(Cell, ["formula"], read) of
@@ -983,8 +972,8 @@ delete(#refX{obj = {page, _}} = RefX) ->
                    Fun2 = fun({dirty, X}) ->
                                   [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"], write),
                                   ok = ?wu:write_attr(X, {"formula", F})
-                         end,
-                  [ok = Fun2(X) || X <- Status]
+                          end,
+                   [ok = Fun2(X) || X <- Status]
           end,
     mnesia:activity(transaction, Fun1),
     ok = tell_front_end("delete").

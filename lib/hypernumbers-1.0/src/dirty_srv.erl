@@ -82,7 +82,8 @@ handle_call(start,  _From, State) ->
     {reply, ok, NState};
 
 handle_call(stop,  _From, State) ->
-    [ exit(Pid, stopping) || {Pid, _Table} <- State#state.children],    
+    [ exit(Pid, stopping) ||
+        {Pid, _Table} <- State#state.children],    
     {reply, ok, State#state{children=[]}};
 
 handle_call(_Msg, _From, _State) ->
@@ -105,15 +106,18 @@ stop(Type) ->
     ok = gen_server:call(Type, stop).
 
 listen(Table) ->
-    case mnesia:dirty_first(Table) of
+    mnesia:activity(transaction, fun read_table/1, [Table]),
+    ?MODULE:listen(Table).
+
+read_table(Table) ->
+    case mnesia:first(Table) of
         '$end_of_table' ->
             timer:sleep(100);
         Id ->
-            [Rec] = mnesia:dirty_read(Table, Id),
-            ok = mnesia:dirty_delete(Table, Id),
+            [Rec] = mnesia:read(Table, Id),
+            ok = mnesia:delete(Table, Id, write),
             proc_dirty(Table, Rec)
-    end,
-    ?MODULE:listen(Table).
+    end.
 
 %% @spec proc_dirty(Rec, Type) -> ok
 %% @doc  processes the dirty record
