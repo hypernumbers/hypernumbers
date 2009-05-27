@@ -319,6 +319,17 @@ ul,li {
   float: left;
 }
 
+#markbtn { 
+  background-image: url(sprite.png);
+  background-position: -140px -57px;
+  width:               63px;
+  color:#eee;
+  display:block;
+  height:25px;
+  border-width:0px 0px;
+  border-color:#FFF #FFF #FFF #FFF;
+}
+
 #toolbar .icon { 
   background-image: url(sprite.png);
   cursor:     pointer;

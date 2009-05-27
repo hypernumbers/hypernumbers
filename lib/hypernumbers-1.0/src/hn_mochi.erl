@@ -147,13 +147,16 @@ iget(Req, Ref, page, [{"pages", []}], _User) ->
 iget(Req, Ref, page, [{"attr", []}], User) -> 
     ?json(Req, page_attributes(Ref, User));
 iget(Req, Ref, cell, [{"attr", []}], _User) ->
+    % ok = fprof:trace(start),
     Dict = to_dict(hn_db_api:read_whole_page(Ref), dh_tree:new()),
     JS = case dict_to_struct(Dict) of
              [] -> {struct, []};
              [{_Cells, {struct, [{_Y, {struct, [{_X, JSON}]}}]}}] ->
                  JSON
          end, 
-    ?json(Req, JS);
+    Ret = ?json(Req, JS),
+    % ok = fprof:trace(stop),
+    Ret;
 iget(Req, Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", Val}}]           -> Val; 
@@ -179,28 +182,29 @@ ipost(Req, #refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
     ?json(Req, {struct, Resp}),
     ret;
 
+%% the purpose of this message is to mark the mochilog so we don't need to do nothing
+%% with anything...
+ipost(_Req, _Ref, _Type, [{"mark", []}], [{"set",{struct, [{"mark", _Msg}]}}], _User) ->
+    ok;
+
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)
   when O == row orelse O == column ->
-    % io:format("in ipost (before)~n-Ref is ~p~n", [Ref]),
     hn_db_api:insert(Ref);
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}], _User)
   when O == row orelse O == column ->
     RefX2 = make_after(Ref), 
-    % io:format("in ipost (after)~n-Ref is ~p~n-RefX2 is ~p~n", [Ref, RefX2]),
     hn_db_api:insert(RefX2);
 
 % by default cells and ranges displace vertically
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)
   when O == cell orelse O == range ->
-    % io:format("in ipost (before)~n-Ref is ~p~n", [Ref]),
     hn_db_api:insert(Ref, vertical);
 
 % by default cells and ranges displace vertically
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}], _User)
   when O == cell orelse O == range ->
     RefX2 = make_after(Ref),
-    % io:format("in ipost (after)~n-Ref is ~p~n-RefX2 is ~p~n", [Ref, RefX2]),
     hn_db_api:insert(RefX2);
 
 % but you can specify the displacement explicitly
@@ -240,7 +244,7 @@ ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr,
 
 ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}], _User) ->
     case Attr of 
-        [{"formula",{array,Vals}}] ->
+        [{"formula",{array, Vals}}] ->
             %% TODO : Get Rid of this
             post_range_values(Ref, Vals),
             ok;
