@@ -55,13 +55,15 @@ write_data(Ref, {Sheet, Target, Data}) when is_list(Target) ->
     hn_db_api:write_attributes(NRef, [{"formula", Data}]);
 
 write_data(Ref, {Sheet, {Tl, Br}, Data}) ->
-    NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
+    Name = excel_util:esc_tab_name(Sheet),
+    NRef = Ref#refX{path = Ref#refX.path ++ [Name],
                     obj = hn_util:parse_attr(Tl ++ ":" ++ Br)},
     hn_main:formula_to_range(NRef, Data).
 
 write_css(Ref, {{{sheet, Sheet}, {row_index, R}, {col_index, C}}, [CSS]}) ->
     Name = excel_util:esc_tab_name(Sheet),
-    NRef = Ref#refX{path = Ref#refX.path ++ [Name, rc_to_a1(R,C)]},
+    Obj = {cell, {C + 1, R + 1}},
+    NRef = Ref#refX{path = Ref#refX.path ++ [Name], obj = Obj},
     hn_db_api:write_style_IMPORT(NRef, CSS).
 
 test_import(File, Ref) ->

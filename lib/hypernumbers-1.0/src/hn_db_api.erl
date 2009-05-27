@@ -203,18 +203,17 @@ write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
 %    foreach(SetCell, Coords). 
 
 %% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
-%% @doc write_style will write a style record and return the value of the index
-%% that points to it
-%% It is intended to be used in the FILE IMPORT process only - normally the respresentation
-%% of styles in the magic style record is designed to be hidden from the API
+%% @doc write_style will write a style record
+%% It is intended to be used in the FILE IMPORT process only 
+%% - normally the respresentationof styles in the magic style record
+%% is designed to be hidden from the API
 %% (that's for why it is a 'magic' style n'est pas?)
 write_style_IMPORT(RefX, Style) when is_record(RefX, refX),
                                      is_record(Style, magic_style) ->
     Fun = fun() ->
-                  ok= hn_db_wu:write_style_IMPORT(RefX, Style)
+                  ok = hn_db_wu:write_style_IMPORT(RefX, Style)
           end,
     mnesia:activity(transaction, Fun).
-
 
 %% @doc reads pages
 %% @todo fix up api

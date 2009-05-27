@@ -636,7 +636,8 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
 %% which should never be used except in file import
 write_style_IMPORT(RefX, Style)
   when is_record(RefX, refX), is_record(Style, magic_style) ->
-    _Index = write_style(RefX, Style),
+    NewIndex = write_style(RefX, Style),
+    write_attr3(RefX, {"style", NewIndex}),
     ok.
 
 %% @spec read_all_dirty_cells(Site) -> List
