@@ -645,8 +645,8 @@ parse_rec(?XF2,Bin,_Name,CurrentFormula,Tbl)->
 
     % now get the last of the indices
     <<_Skip2:2,
-     PatternBackgroundColourIndex:7/little-unsigned-integer,
-     _PatternColourIndex:7/little-unsigned-integer>> = <<XFCellBorders3:16>>,
+     _PatternBackgroundColourIndex:7/little-unsigned-integer,
+     PatternColourIndex:7/little-unsigned-integer>> = <<XFCellBorders3:16>>,
 
     CSS = lists:merge([VAlignCSS, TextAlignCSS, LeftLineStyleCSS,
                        RightLineStyleCSS, TopLineStyleCSS, BottomLineStyleCSS]),
@@ -657,7 +657,7 @@ parse_rec(?XF2,Bin,_Name,CurrentFormula,Tbl)->
     Colours1 = [{left,LeftColourIndex},{right,RightColourIndex},
                 {top,TopColourIndex},{bottom,BottomColourIndex}],
 
-    Colours2 = [{background,PatternBackgroundColourIndex}],
+    Colours2 = [{background,PatternColourIndex}],
 
     excel_util:append(Tbl,tmp_xf,[{format_index,FormatIndex},
                                   {type,XFType},

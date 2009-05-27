@@ -288,7 +288,7 @@ get_css(CSSList, [H|T], Acc) ->
         {value, Attr} -> get_css(CSSList, T, [Attr | Acc])
     end.
 
-set_formats(CellRef,XFIndex,Tables) ->
+set_formats(CellRef, XFIndex, Tables) ->
 
     {value, {tmp_xf, XFId}}           = ?k(tmp_xf,      1, Tables),
     {value, {tmp_formats, FormatsId}} = ?k(tmp_formats, 1, Tables),

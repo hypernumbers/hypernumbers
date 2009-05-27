@@ -432,7 +432,7 @@ create_default_palette(Tables) ->
          [{colour_index, 16#3E}, {colour, "rgb(051,051,153)"}],
          [{colour_index, 16#3F}, {colour, "rgb(051,051,051)"}],
          %Sometimes Excel uses system colours like these ones..
-         [{colour_index, 16#40}, {colour, "rgb(255,000,000)"}], % broken
+         [{colour_index, 16#40}, {colour, "rgb(255,255,255)"}], % broken??
          [{colour_index, 16#41}, {colour, "rgb(255,255,255)"}], % fixed
          [{colour_index, 16#43}, {colour, "rgb(000,000,255)"}], % broken
          [{colour_index, 16#4D}, {colour, "rgb(255,255,000)"}], % broken
@@ -444,6 +444,6 @@ create_default_palette(Tables) ->
 
     Fun = fun(Record,[]) -> excel_util:write(Tables,tmp_colours,Record), [] end,
     []=lists:foldl(Fun,[],L),
-    io:format("in excel:create_default_palette - palette created!~n"),
+    io:format("in filefilters:create_default_palette - palette created!~n"),
     {ok,ok}.
 
