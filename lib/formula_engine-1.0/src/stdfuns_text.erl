@@ -95,16 +95,13 @@ replace([Str,Start,Replace,InsertStr]) ->
             lists:concat([StartStr,NewInsertStr,EndStr])
     end.
 
-exact([Str1, Str1]) ->
-    true;
-exact([Str1, Str2]) -> 
-    Rules=[ban_bools,ban_dates,ban_blanks,cast_strings],
-    NewStr1 = ?number(Str1,Rules),
-    NewStr2 = ?number(Str2,Rules),
-    case NewStr1 of
-        NewStr2 -> true;
-        _       -> false
-    end.
+
+exact([V1, V2]) ->
+    Rules = [cast_numbers, cast_bools, ban_dates, cast_blanks],
+    Str1 = ?string(V1, Rules),
+    Str2 = ?string(V2, Rules),
+    string:equal(Str1, Str2).
+
 
 len([Str]) when is_float(Str) ->
     case mochinum:digits(Str) of
