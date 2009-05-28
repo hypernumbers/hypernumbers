@@ -68,6 +68,11 @@ E -> '(' E ')' : '$2'.
 E -> E namedexpr Args : special_div1('$1', '$2', '$3').
 E -> E cellref        : special_div2('$1', '$2').
 
+%%% TRUE() and FALSE() functions:
+
+E -> bool '(' ')' : lit('$1').
+    
+
 %%% funcalls
 
 E -> Funcall : '$1'.
