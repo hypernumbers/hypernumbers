@@ -111,7 +111,7 @@ hlookup([V, A, I0, B]) ->
     I = ?int(I0, [cast_strings, cast_bools, ban_blanks, ban_dates]),
     
     ?ensure(?is_area(A), ?ERR_REF),
-    ?ensure(I =< area_util:width(A), ?ERR_REF),
+    ?ensure(I =< area_util:height(A), ?ERR_REF),
     ?ensure(I >= 1, ?ERR_VAL),
 
     Row = area_util:row(1, A),
