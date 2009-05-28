@@ -31,7 +31,7 @@
          count/1,
          counta/1,
          countblank/1,
-         %%countif/1,
+         countif/1,
          %%countifs/1,
          %%covar/1,
          critbinom/1,
@@ -171,7 +171,7 @@ chidist1(X, Degfree) ->
 
 counta(Vs) ->
     Fvs = ?flatten_all(Vs),
-    length(filter(fun(X) -> X =/= blank end, Fvs)). % Discard blanks.
+    length(filter(fun(X) -> not(muin_collect:is_blank(X)) end, Fvs)). % Discard blanks.
 
 count(Vs) ->
     Flatvs = ?flatten_all(Vs),
@@ -181,6 +181,14 @@ count(Vs) ->
 countblank(Vs) ->
     Flatvs = ?flatten_all(Vs),
     length([X || X <- Flatvs, muin_collect:is_blank(X)]).
+
+
+countif([A, CritSpec]) when ?is_area(A) ->
+    ?ensure(?is_string(CritSpec), ?ERR_VAL),
+    Crit = odf_criteria:create(CritSpec),
+    L = area_util:to_list(A),
+    count(filter(Crit, L)).
+    
 
 critbinom([V1, V2, V3]) ->
     Trials = ?int(V1, ?default_rules),
