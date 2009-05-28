@@ -180,36 +180,27 @@ char([V1]) ->
 code([Str]) ->
     xmerl_ucs:from_utf8(string:substr(Str, 1)).
 
-find([SubStr, Str]) ->
-    io:format("in here....~n"),
-    find([SubStr, Str, 1]);
-find([SubStr, Str, Start]) ->
-    io:format("in find SubStr is ~p Str is ~p Start is ~p~n",
-              [SubStr, Str, Start]),
-    NewSubStr=?string(SubStr,?default_str_rules),
-    io:format("Got to 1~n"),
-    NewStr=?string(Str,?default_str_rules),
-    io:format("Got to 2~n"),
-    % this is the problem "3" don't cast to 3 - cos muin_collect for numbers
-    % users erlang:is_number (mebbies...)
-    NewStart2=?number(Start,?default_num_rules),
-    io:format("Got to here NewStart2 is ~p~n", [NewStart2]),
-    NewStart=erlang:trunc(?number(Start,?default_num_rules)),
-    io:format("in find NewSubStr is ~p NewStr is ~p NewStart is ~p~n",
-              [NewSubStr, NewStr, NewStart]),
-    case NewSubStr of
-        [] -> 1; %an empty string always matches the first character
-        _  -> ?ensure(NewStart >= 1, ?ERR_VAL),
-              ?ensure(NewStart =< length(Str), ?ERR_VAL),
-              SearchStr = string:substr(NewStr, NewStart,
-                                        string:len(NewStr) - NewStart + 1),
-              Idx = string:str(SearchStr, NewSubStr),
-              case Idx + (string:len(NewStr) - (string:len(NewStr) -
-                                                NewStart + 1)) of
-                  0     -> ?ERR_VAL;
-                  Other -> Other
-              end
+
+find([Str, InStr]) ->
+    find([Str, InStr, 1]);
+find([V1, V2, V3]) ->
+    Str = ?string(V1, ?default_str_rules),
+    InStr = ?string(V2, ?default_str_rules),
+    Start = ?int(V3, ?default_num_rules),
+    case string:equal(Str, "") of
+        true ->
+            1; % Empty string matches the first character.
+        false ->
+            ?ensure(Start >= 1, ?ERR_VAL),
+            ?ensure(Start =< string:len(InStr), ?ERR_VAL),
+            InStr2 = string:substr(InStr, Start),
+            Idx = string:str(InStr2, Str),
+            case (Idx + string:len(InStr) - (string:len(InStr) - Start+1)) of
+                0 -> ?ERR_VAL;
+                N -> N
+            end
     end.
+
 
 left([Str])->
     NewStr=?string(Str,?default_str_rules),
