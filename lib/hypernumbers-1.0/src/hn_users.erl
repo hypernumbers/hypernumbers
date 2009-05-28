@@ -55,7 +55,7 @@ read_tr(Site, Name) ->
     Rec = #hn_user{name=Name, _='_'},
     case mnesia:match_object(?trans(Site, hn_user), Rec, read) of
         []     -> {error, no_user};
-        [User] -> User
+        [User] -> {ok, User}
     end.
 
 get(User, Key) ->
@@ -88,9 +88,10 @@ verify_token(_Site, undefined) ->
     {error, invalid_token};
 verify_token(Site, Token) ->
     [Expires, User, Hash] = string:tokens(Token, ":"),
+    
     case {is_expired(Expires), gen_hash(User, Expires), Hash} of
         {true,_,_}  -> {error, invalid_token};
-        {false,X,X} -> 
+        {false,X,X} ->
             case read(Site, User) of
                 {ok, Usr}        -> {ok, Usr};
                 {error, no_user} -> {error, invalid_user}
