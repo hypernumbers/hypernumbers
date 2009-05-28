@@ -16,9 +16,28 @@
          upgrade_1743_A/0,
          upgrade_1743_B/0,
          upgrade_1776/0,
-         upgrade_1817/0
+         upgrade_1817/0,
+         upgrade_1825/0
         ]).
 
+
+%% Takes out duplicate entries in dependancy tree
+upgrade_1825() ->
+    
+    Up = fun({item,Id,"__dependency-tree",List}) ->
+                 {item,Id,"__dependency-tree",hslists:uniq(List)};
+            (Else) ->
+                 Else
+         end,
+    
+    F = fun("http://"++Site) ->
+                [Host, Port] = string:tokens(Site, ":"),
+                Tbl = list_to_atom(lists:flatten([Host,"&",Port,"&item"])),
+                Fields = ms_util2:get_record_info(item), 
+                mnesia:transform_table(Tbl, Up, Fields)
+        end,
+
+    [F(X) || X <- hn_util:get_hosts(hn_config:get(hosts))].
 
 %% Changes the recordname of every record in mnesia from
 %% Site&Port&RecordName to RecordName

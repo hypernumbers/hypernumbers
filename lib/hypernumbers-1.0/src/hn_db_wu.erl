@@ -2136,7 +2136,7 @@ filter_pages([Path | T], Tree) ->
 %% AND CREATES IT IF IT DOESN'T EXIST
 get_local_item_index(#refX{site = S, path = P, obj = O} = RefX) ->
     case read_local_item_index(RefX) of
-        false -> Idx = "Loc" ++ integer_to_list(util2:get_timestamp()),
+        false -> Idx = util2:get_timestamp(),
                  Rec = #local_objs{path = P, obj = O, idx = Idx},
                  ok = mnesia:write(trans(S, local_objs), Rec, write),
                  Idx;
