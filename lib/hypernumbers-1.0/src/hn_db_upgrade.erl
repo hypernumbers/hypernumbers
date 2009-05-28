@@ -24,20 +24,44 @@
 %% Takes out duplicate entries in dependancy tree
 upgrade_1825() ->
     
-    Up = fun({item,Id,"__dependency-tree",List}) ->
-                 {item,Id,"__dependency-tree",hslists:uniq(List)};
-            (Else) ->
-                 Else
+    Item = fun({item, Id, "__dependency-tree", List}) ->
+                 {item, idstr_to_int(Id),
+                  "__dependency-tree", hslists:uniq(List)};
+            ({item, Id, Name, List}) ->
+                 {item, idstr_to_int(Id), Name, List}
          end,
+    
+    Obj = fun({local_objs, Path, Ref, Id}) ->
+                  {local_objs, Path, Ref, idstr_to_int(Id)}
+          end,
+
+    Link = fun({local_cell_link, Id1, Id2}) ->
+                  {local_cell_link, idstr_to_int(Id1), idstr_to_int(Id2)}
+          end,    
+
+    Tbl = fun(Host, Port, Table) ->
+                  list_to_atom(lists:concat([Host,"&",Port,"&",Table]))
+          end,
     
     F = fun("http://"++Site) ->
                 [Host, Port] = string:tokens(Site, ":"),
-                Tbl = list_to_atom(lists:flatten([Host,"&",Port,"&item"])),
+                Name = Tbl(Host, Port, item),
                 Fields = ms_util2:get_record_info(item), 
-                mnesia:transform_table(Tbl, Up, Fields)
+                mnesia:transform_table(Name, Item, Fields),
+                
+                Name2 = Tbl(Host, Port, local_objs),
+                Fields2 = ms_util2:get_record_info(local_objs), 
+                mnesia:transform_table(Name2, Obj, Fields2),
+                
+                Name3 = Tbl(Host, Port, local_cell_link),
+                Fields3 = ms_util2:get_record_info(local_cell_link), 
+                mnesia:transform_table(Name3, Link, Fields3)
         end,
 
     [F(X) || X <- hn_util:get_hosts(hn_config:get(hosts))].
+
+idstr_to_int("Loc"++Int) ->
+    list_to_integer(Int).
 
 %% Changes the recordname of every record in mnesia from
 %% Site&Port&RecordName to RecordName
