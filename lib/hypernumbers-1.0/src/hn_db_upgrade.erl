@@ -59,11 +59,14 @@ upgrade_1838() ->
 %% Takes out duplicate entries in dependancy tree
 upgrade_1825() ->
     
-    Item = fun({item, Id, "__dependency-tree", List}) ->
+    Item = fun({item, Id, "__dependency-tree", List}) when is_list(Id) ->
+                   ?INFO("Id ~p",[Id]),
                    {item, idstr_to_int(Id),
                     "__dependency-tree", hslists:uniq(List)};
-              ({item, Id6, Name6, List6}) ->
-                   {item, idstr_to_int(Id6), Name6, List6}
+              ({item, Id, Name, List}) when is_list(Id) ->
+                   ?INFO("Id ~p",[Id]),
+                   {item, idstr_to_int(Id), Name, List};
+              (Else) -> Else
            end,
     
     Obj = fun({local_objs, Path, Ref, Id}) ->
@@ -103,8 +106,8 @@ transform_keys(Table, Fun) ->
                 mnesia:delete_object(Table, Record, write),
                 [Fun(Record) | Acc]
         end,
-    N = mnesia:activity(transaction, fun mnesia:foldl/3, [F, ok, Table]),
-    [ mnesia:write(Table, X, write) || X <- N],
+    N = mnesia:activity(transaction, fun mnesia:foldl/3, [F, [], Table]),
+    [ mnesia:dirty_write(Table, X) || X <- N],
     ok.
                 
 
