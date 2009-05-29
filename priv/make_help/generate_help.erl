@@ -49,12 +49,9 @@ do_jf(Code, Lang, Fns) ->
     Fun =
         fun(#help{name = N} = Help) ->
                 NewH = case lists:keysearch(N, 2, Fns) of
-                           {value, {_, _, NewN}} -> io:format("NewN is ~p~n",
-                                                              [NewN]),
-                                                    Help#help{name = NewN};
+                           {value, {_, _, NewN}} -> Help#help{name = NewN};
                            false                 -> Help#help{notes = Notes}
                        end,
-                io:format("Help is ~p~nN is ~p NewH is ~p~n", [Help, N, NewH]), 
                 json_util:jsonify(NewH)
         end,
     Json = [Fun(X) || X <- ?WORKING_FNS],
@@ -66,15 +63,15 @@ write(Str, Lang) ->
                {win32,nt} -> "c:\\opt\\code\\trunk\\lib\\hypernumbers-1.0"++
                                  "\\priv\\docroot\\hypernumbers\\fns_" ++
                                  Lang ++ ".json";
-               _          -> "../lib/hypernumbers-1.0/priv/docroot/hypernumbers/"++
+               _          -> "./lib/hypernumbers-1.0/priv/docroot/hypernumbers/"++
                                  "fns_" ++ Lang ++ ".json"
            end,
     
-    _Return=filelib:ensure_dir(File),
+    ok = filelib:ensure_dir(File),
     case file:open(File, [write]) of
-	{ok, Id}  -> io:fwrite(Id, "~s~n", [Str]),
-                 file:close(Id);
-        Error -> io:format("In generate_help: can't open file ~p with ~p~n",
-                           [File, Error]),
-                 error
+        {ok, Id}  -> ok = io:fwrite(Id, "~s~n", [Str]),
+                     file:close(Id);
+        Error     -> ok = io:format("In generate_help: can't open file ~p " ++
+                                    "with ~p~n", [File, Error]),
+                     error
     end.
