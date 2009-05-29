@@ -41,7 +41,7 @@ map.each do |k, v|
   bytes = []
   v.each_byte { |b| bytes << b }
   octal_seq =
-    bytes.inject([]) { |acc, b| acc << b.to_s(8); acc }.join(",")
+    bytes.inject([]) { |acc, b| acc << b.to_s; acc }.join(",")
 
   @terms << "{'#{@lang}', \"#{k}\", [#{octal_seq}]},\n"
   
@@ -49,4 +49,5 @@ end
 
 template = ERB.new(IO.readlines("hrl_template.erb").flatten.join, 0, "%<>")
 lexer = template.result
+# TODO: Move the file to SVNROOT/lib/hypernumbers-1.0/include/
 File.open("#{@lang.downcase}_fns.hrl", "w") { |f| f << lexer }

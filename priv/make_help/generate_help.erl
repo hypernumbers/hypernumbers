@@ -32,46 +32,65 @@
                  "go <a href=\"http://example.com\">here</a>"}]).
 
 run() ->
-    % first do the English Fns
+    %% first do the English Fns
     Json = [json_util:jsonify(X) || X <- ?WORKING_FNS],
     Json2 = mochijson:encode({array, Json}),
     write(Json2, "en_gb"),
-    % now do Johnny Foreigner
+    %% now do Johnny Foreigner
     do_jf("fr", "french",     ?french_fns),
     do_jf("de", "german",     ?german_fns),
     do_jf("it", "italian",    ?italian_fns),
     do_jf("pt", "portuguese", ?portuguese_fns),
-    do_jf("ru", "russian",    ?russian_fns),
-    do_jf("es", "spanish",    ?spanish_fns).
+    do_jf("es", "spanish",    ?spanish_fns),
+    do_jf("ru", "russian",    ?russian_fns).
+
 
 do_jf(Code, Lang, Fns) ->
+    %% Find entry in ?notes for this language.
     {value, {Code, Notes}} = lists:keysearch(Code, 1, ?notes),
+    
     Fun =
         fun(#help{name = N} = Help) ->
                 NewH = case lists:keysearch(N, 2, Fns) of
-                           {value, {_, _, NewN}} -> Help#help{name = NewN};
-                           false                 -> Help#help{notes = Notes}
+                           {value, {_, _, NewN}} -> 
+                               Help#help{name = NewN};
+                           false ->
+                               Help#help{notes = Notes}
                        end,
                 json_util:jsonify(NewH)
         end,
-    Json = [Fun(X) || X <- ?WORKING_FNS],
-    Json2 = mochijson:encode({array, Json}),
-    write(Json2, Code).
+    JsonStructs = [Fun(X) || X <- ?WORKING_FNS],
+    JsonStrings =
+        lists:foldr(fun(JsonStruct, Acc) ->
+                            JsonStr = lists:flatten((mochijson:encoder([{input_encoding, utf8}]))(JsonStruct)),
+                            [JsonStr|Acc]
+                    end,
+                    [],
+                    JsonStructs),
+    write(
+      string:concat(
+        string:concat("[", string:join(JsonStrings, ",")),
+        "]"),
+      Code).
+
 
 write(Str, Lang) ->
-        File = case os:type() of
-               {win32,nt} -> "c:\\opt\\code\\trunk\\lib\\hypernumbers-1.0"++
-                                 "\\priv\\docroot\\hypernumbers\\fns_" ++
-                                 Lang ++ ".json";
-               _          -> "./lib/hypernumbers-1.0/priv/docroot/hypernumbers/"++
+    File = case os:type() of
+               {win32, nt} -> "c:\\opt\\code\\trunk\\lib\\hypernumbers-1.0"++
+                                  "\\priv\\docroot\\hypernumbers\\fns_" ++
+                                  Lang ++ ".json";
+               _          -> "lib/hypernumbers-1.0/priv/docroot/hypernumbers/"++
                                  "fns_" ++ Lang ++ ".json"
            end,
     
     ok = filelib:ensure_dir(File),
+
     case file:open(File, [write]) of
-        {ok, Id}  -> ok = io:fwrite(Id, "~s~n", [Str]),
-                     file:close(Id);
-        Error     -> ok = io:format("In generate_help: can't open file ~p " ++
-                                    "with ~p~n", [File, Error]),
-                     error
+        {ok, Id}  ->
+            io:fwrite(Id, "~s~n", [Str]),
+            file:close(Id);
+        Error ->
+            io:format("In generate_help: can't open file ~p with ~p~n",
+                      [File, Error]),
+            error
     end.
