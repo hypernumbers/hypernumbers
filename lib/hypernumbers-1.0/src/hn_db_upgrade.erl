@@ -17,10 +17,45 @@
          upgrade_1743_B/0,
          upgrade_1776/0,
          upgrade_1817/0,
-         upgrade_1825/0
+         upgrade_1825/0,
+         upgrade_1838/0
         ]).
 
 
+%% rejigs the magic style record in table styles
+upgrade_1838() ->
+    
+    Fun1 = fun(X) -> {styles, RefX, Idx, M} = X,
+                     
+                     %% index of 'border-color' in the old version of the record
+                     %% (index in a list sense ie including 'magic_style')
+                     Index = 5, 
+                     L = tuple_to_list(M),
+                     {Start, [C | End]} = lists:split(Index, L),
+                     [TC, RC, BC, LC] = 
+                         case C of
+                             []  -> [[], [], [], []];
+                             [S] -> string:tokens(S, " ")
+                         end,
+                     %% Note the change of order to reflect the new layout
+                     %% of magic_style - different to how CSS needed them
+                     L2 = lists:append([Start, [RC, LC, TC, BC], End]),
+                     {styles, RefX, Idx, list_to_tuple(L2)}
+           end,
+    
+    Tbl = fun(Host, Port, Table) ->
+                  list_to_atom(lists:concat([Host,"&",Port,"&",Table]))
+          end,
+    
+    Fun2 = fun("http://"++Site) ->
+                   [Host, Port] = string:tokens(Site, ":"),
+                   Name = Tbl(Host, Port, styles),
+                   Fields = ms_util2:get_record_info(styles), 
+                   mnesia:transform_table(Name, Fun1, Fields)
+           end,
+    
+    [Fun2(X) || X <- hn_util:get_hosts(hn_config:get(hosts))].
+    
 %% Takes out duplicate entries in dependancy tree
 upgrade_1825() ->
     
