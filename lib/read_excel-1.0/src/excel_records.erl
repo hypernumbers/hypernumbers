@@ -518,8 +518,7 @@ parse_rec(?XF2,Bin,_Name,CurrentFormula,Tbl)->
      XFCellBorders1:32/little-unsigned-integer,
      XFCellBorders2:32/little-unsigned-integer,
      XFCellBorders3:16/little-unsigned-integer>> = Bin,
-    % io:format("in parse_rec for XF2~n"),
-
+    
     XFType =  case (XFTypeAndParent band ?rc_XF_XF_TYPE_MASK) of
                   4 -> style; % yup, its a mask match so it is a power of 2
                   0 -> cell
@@ -1010,23 +1009,37 @@ parse_rec(Other,_Bin,_Name,CurrentFormula,Tbl)->
 %%% Section 2.5.11 of the excelfileformatV1.42.pdf                           %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-get_style(Loc,LineStyle) ->
+get_style(Loc, LineStyle) ->
     Border = list_to_atom("border-"++Loc),
+    Style = list_to_atom("border-"++Loc++"-style"),
     case LineStyle of
         ?rc_XF_BORDER_NO_LINE              -> [];
-        ?rc_XF_BORDER_THIN                 -> [{Border,["solid",  "thin"]}];
-        ?rc_XF_BORDER_MEDIUM               -> [{Border,["solid",  "medium"]}];
-        ?rc_XF_BORDER_DASHED               -> [{Border,["dashed", "medium"]}];
-        ?rc_XF_BORDER_DOTTED               -> [{Border,["dotted", "medium"]}];
-        ?rc_XF_BORDER_THICK                -> [{Border,["solid",  "thick"]}];
-        ?rc_XF_BORDER_DOUBLE               -> [{Border,["double", "medium"]}];
-        ?rc_XF_BORDER_HAIR                 -> [{Border,["solid",  "thin"]}];
-        ?rc_XF_BORDER_MED_DASHED           -> [{Border,["dashed", "medium"]}];
-        ?rc_XF_BORDER_THIN_DASH_DOT        -> [{Border,["dotted", "thin"]}];
-        ?rc_XF_BORDER_MED_DASH_DOT         -> [{Border,["dotted", "medium"]}];
-        ?rc_XF_BORDER_THIN_DASH_DOT_DOT    -> [{Border,["dotted", "thin"]}];
-        ?rc_XF_BORDER_MED_DASH_DOT_DOT     -> [{Border,["dotted", "medium"]}];
-        ?rc_XF_BORDER_SLANTED_MED_DASH_DOT -> [{Border,["dotted", "medium"]}]
+        ?rc_XF_BORDER_THIN                 -> [{Border, ["solid" ]},
+                                               {Style,  ["thin"  ]}];
+        ?rc_XF_BORDER_MEDIUM               -> [{Border, ["solid" ]},
+                                               {Style,  ["medium"]}];
+        ?rc_XF_BORDER_DASHED               -> [{Border, ["dashed"]},
+                                               {Style,  ["medium"]}];
+        ?rc_XF_BORDER_DOTTED               -> [{Border, ["dotted"]},
+                                               {Style,  ["medium"]}];
+        ?rc_XF_BORDER_THICK                -> [{Border, ["solid" ]},
+                                               {Style,  ["thick" ]}];
+        ?rc_XF_BORDER_DOUBLE               -> [{Border, ["double"]},
+                                               {Style,  ["medium"]}];
+        ?rc_XF_BORDER_HAIR                 -> [{Border, ["solid" ]},
+                                               {Style,  ["thin"  ]}];
+        ?rc_XF_BORDER_MED_DASHED           -> [{Border, ["dashed"]},
+                                               {Style,  ["medium"]}];
+        ?rc_XF_BORDER_THIN_DASH_DOT        -> [{Border, ["dotted"]},
+                                               {Style,  ["thin"  ]}];
+        ?rc_XF_BORDER_MED_DASH_DOT         -> [{Border, ["dotted"]},
+                                               {Style,  ["medium"]}];
+        ?rc_XF_BORDER_THIN_DASH_DOT_DOT    -> [{Border, ["dotted"]},
+                                               {Style,  ["thin"  ]}];
+        ?rc_XF_BORDER_MED_DASH_DOT_DOT     -> [{Border, ["dotted"]},
+                                               {Style,  ["medium"]}];
+        ?rc_XF_BORDER_SLANTED_MED_DASH_DOT -> [{Border, ["dotted"]},
+                                               {Style,  ["medium"]}]
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

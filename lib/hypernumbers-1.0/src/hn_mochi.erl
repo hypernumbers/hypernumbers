@@ -139,6 +139,7 @@ ensure(File, Lang) ->
 iget(Req, #refX{path=["_user", "login"]}, page, [], User) ->
     serve_html(Req, "hypernumbers/login.html", User);
 iget(Req, _Ref, page, [], User) ->
+    % status_srv:update_status(User, Site, Path, "viewing page"),
     serve_html(Req, "hypernumbers/index.html", User);
 iget(Req, Ref, page, [{"updates", Time}], _User) ->
     remoting_request(Req, Ref, Time);
@@ -185,13 +186,11 @@ ipost(Req, #refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
 %% the purpose of this message is to mark the mochilog so we don't need to do nothing
 %% with anything...
 ipost(_Req, _Ref, _Type, [{"mark", []}], [{"set",{struct, [{"mark", Msg}]}}], _User) ->
-    io:format("marking ~p~n", [Msg]),
     ok;
 
 %% the purpose of this message is to write a GUI trail in the mochilog so we 
 %% don't need to do nothingwith anything...
 ipost(_Req, _Ref, _Type, [{"trail", []}], [{"set",{struct, [{"trail", Msg}]}}], _User) ->
-    io:format("trailing ~p~n", [Msg]),
     ok;
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)
@@ -239,6 +238,15 @@ ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}], _U
 
 ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}], _User) ->
     hn_db_api:copy_n_paste(Ref#refX{obj = hn_util:parse_attr(range, Range)}, Ref);
+
+ipost(_Req, #refX{obj = {range, _}} = Ref, _Type, _Attr, 
+      [{"borders", {struct, Attrs}}], _User) ->
+    Where = from("where", Attrs),
+    Border = from("border", Attrs),
+    Border_Style = from("border_style", Attrs),
+    Border_Color = from("border_color", Attrs),
+    ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
+    ok;
 
 ipost(Req, _Ref, _Type, _Attr,
       [{"set", {struct, [{"language", _Lang}]}}], anonymous) ->

@@ -926,7 +926,7 @@ update_inc_hn(Parent, Child, Val, DepTree, Biccie)
     ok = mark_dirty(ChildSite, Rec2).
 
 %% @spec get_cells(RefX::#refX{}) -> [#refX{}]
-%% @doc takes a reference and expands it to cell references.
+%% @doc takes a reference and expands it to *populated* cell references.
 %% The reference can be any of:
 %% <ul>
 %% <li>cell</li>
@@ -1211,7 +1211,10 @@ write_attr(#refX{obj = {cell, _}} = RefX, {Key, Val} = Attr) ->
     end;
 write_attr(#refX{obj = {range, _}} = RefX, Attr) ->
     List = hn_util:range_to_list(RefX),
-    lists:flatten([write_attr(X, Attr) || X <- List]);
+    io:format("in write_attr~n-RefX is ~p~n-List is ~p~n-Attr is ~p~n", 
+              [RefX, List, Attr]),
+    [ok = write_attr(X, Attr) || X <- List],
+    ok;
 %% for the rest just write 'em out
 write_attr(RefX, {Key, Val}) when is_record(RefX, refX) ->
     write_attr3(RefX, {Key, Val}).
@@ -3236,7 +3239,7 @@ expand({cell, {X, Y}})            -> {X, Y, X, Y};
 expand({range, {X1, Y1, X2, Y2}}) -> {X1, Y1, X2, Y2};
 expand({column, {X1, X2}})        -> {X1, zero, X2, inf}; % short for infinity
 expand({row, {Y1, Y2}})           -> {zero, Y1, inf, Y2}; % short for infinity
-expand({page, "/"})              -> {zero, inf, zero, inf}.
+expand({page, "/"})               -> {zero, inf, zero, inf}.
 
 % different to offset_formula because it truncates ranges
 offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
@@ -3548,12 +3551,14 @@ make_or(Attrs, PlcHoldr)  -> make_clause(Attrs, PlcHoldr, 'or').
 
 make_clause(Attrs, PlcHoldr, Op) -> make_clause(Attrs, PlcHoldr, Op, []).
 
-make_clause([], _, Op, Acc)      -> case length(Acc) of
-                                        0 -> [];   % no attributes get everything
-                                        1 ->  Acc; % 1 attribute - no Op statement
-                                        _ -> [list_to_tuple(lists:flatten([Op, Acc]))]
-                            end;
-make_clause([H | T], PH, Op, A)  -> make_clause(T, PH, Op, [{'==', PH, H} | A]).
+make_clause([], _, Op, Acc)      -> 
+    case length(Acc) of
+        0 -> [];   % no attributes get everything
+        1 ->  Acc; % 1 attribute - no Op statement
+        _ -> [list_to_tuple(lists:flatten([Op, Acc]))]
+    end;
+make_clause([H | T], PH, Op, A)  -> 
+    make_clause(T, PH, Op, [{'==', PH, H} | A]).
 
 delete_style_attr(#refX{site = S} = RefX, Key)  ->
     % this function works by overwriting the set style attribute in the
@@ -3568,11 +3573,11 @@ delete_style_attr(#refX{site = S} = RefX, Key)  ->
 
 %% this function is called when a new attribute is set for a style
 process_styles(RefX, {Name, Val}) when is_record(RefX, refX) ->
-    NewStyleIdx = case read_attrs(RefX, ["style"], read) of 
-                      []                       -> get_style(RefX, Name, Val);
-                      [{RefX, {"style", Idx}}] -> get_style(RefX, Idx, Name, Val) 
+    NewSIdx = case read_attrs(RefX, ["style"], read) of 
+                  []                       -> get_style(RefX, Name, Val);
+                  [{RefX, {"style", Idx}}] -> get_style(RefX, Idx, Name, Val) 
                   end,
-    write_attr3(RefX, {"style", NewStyleIdx}).    
+    write_attr3(RefX, {"style", NewSIdx}).    
 
 get_style(RefX, Name, Val) ->
     NoOfFields = ms_util2:no_of_fields(magic_style), 
@@ -3583,7 +3588,8 @@ get_style(RefX, Name, Val) ->
 
 %% edits a style
 get_style(#refX{site = Site} = RefX, StIdx, Name, Val) ->
-    Match = #styles{refX = RefX#refX{obj = {page, "/"}}, index = StIdx, _ = '_'},
+    PageRefX = RefX#refX{obj = {page, "/"}},
+    Match = #styles{refX = PageRefX, index = StIdx, _ = '_'},
     Table = trans(Site, styles),
     Return = mnesia:match_object(Table, Match, read),
     [#styles{magic_style = CurrentStyle}] = Return, 

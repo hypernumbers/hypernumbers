@@ -64,7 +64,46 @@ write_css(Ref, {{{sheet, Sheet}, {row_index, R}, {col_index, C}}, [CSS]}) ->
     Name = excel_util:esc_tab_name(Sheet),
     Obj = {cell, {C + 1, R + 1}},
     NRef = Ref#refX{path = Ref#refX.path ++ [Name], obj = Obj},
-    hn_db_api:write_style_IMPORT(NRef, CSS).
+    hn_db_api:write_style_IMPORT(NRef, defaultize(CSS)).
+
+%% Excel's default borders are
+%% * no type of border
+%% * no style of border
+%% * black
+%% Our default borders aer:
+%% * no type of border
+%% * no style of border
+%% * no colour
+%% This function 'makes it so' <-- super-ugelee n'est pas?
+defaultize(M) ->
+    M1 = case M of
+             #magic_style{'border-right' = [], 
+                          'border-right-color' = "rgb(000,000,000)", 
+                          'border-right-style' = []} -> 
+                 M#magic_style{'border-right-color' = []};
+             _O1 -> M
+         end,
+    M2 = case M1 of
+             #magic_style{'border-left' = [], 
+                          'border-left-color' = "rgb(000,000,000)", 
+                          'border-left-style' = []} -> 
+                 M1#magic_style{'border-left-color' = []};
+             _O2 -> M1
+         end,
+    M3 = case M2 of
+             #magic_style{'border-top' = [], 
+                          'border-top-color' = "rgb(000,000,000)", 
+                          'border-top-style' = []} -> 
+                 M2#magic_style{'border-top-color' = []};
+             _O3 -> M2
+         end,
+    M4 = case M3 of
+             #magic_style{'border-bottom' = [], 
+                          'border-bottom-color' = "rgb(000,000,000)", 
+                          'border-bottom-style' = []} -> 
+                 M3#magic_style{'border-bottom-color' = []};
+             _O4 -> M3
+         end.    
 
 test_import(File, Ref) ->
     Path = code:lib_dir(hypernumbers)++"/../../tests/excel_files/"

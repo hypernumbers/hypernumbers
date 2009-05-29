@@ -395,14 +395,14 @@ ul,li {
 #strike     { background-position:  -0px -105px; }
 #format     { background-position:  -44px -105px; }
 
-#border-surround  { background-position:  -66px -83px; }
-#border-inside    { background-position:  -88px -61px; }
-#border-none      { background-position:  -66px -105px; }
-#border-all       { background-position:  -88px -83px; }
-#border-left      { background-position:  -110px -83px; }
-#border-top       { background-position:  -88px -105px; }
-#border-right     { background-position:  -110px -105px; }
-#border-bottom    { background-position:  -110px -61px; }
+#border_surround  { background-position:  -66px -83px; }
+#border_inside    { background-position:  -88px -61px; }
+#border_none      { background-position:  -66px -105px; }
+#border_all       { background-position:  -88px -83px; }
+#border_left      { background-position:  -110px -83px; }
+#border_top       { background-position:  -88px -105px; }
+#border_right     { background-position:  -110px -105px; }
+#border_bottom    { background-position:  -110px -61px; }
 
 #markbtn { background-position: -138px -59px; }
 

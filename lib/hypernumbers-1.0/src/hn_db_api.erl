@@ -145,6 +145,7 @@
          handle_dirty_cell/2,
          shrink_dirty_cell/1,
          handle_dirty/1,
+         set_borders/5,
          register_hn_from_web/4,
          check_page_vsn/2,
          initialise_remote_page_vsn/2,
@@ -159,6 +160,115 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec set_borders(RefX#refX{}, Borders, Border_Style, Border_Color) -> ok
+%% @doc  takes a range reference and sets the borders for the range according
+%% to the borders parameter passed in
+%% The borders attribute can be one of:
+%% <ul>
+%% <li>surround</li>
+%% <li>inside</li>
+%% <li>none</li>
+%% <li>call</li>
+%% <li>left</li>
+%% <li>top</li>
+%% <li>right</li>
+%% <li>bottom</li>
+%% </ul>
+%% all borders except 'none' set the border in a postive fashion - they
+%% don't toggle. So if a particular cell has a left border set then setting
+%% its border 'left' means it will *still* have its left border set
+%% by contrast 'none' tears all borders down.
+%% Border_Color is a colour expressed as a hex string of format "#FF0000"
+%% Border_Style can be one of
+set_borders(#refX{obj = {range, _}} = RefX, "none", Border, 
+            Border_Style, Border_Color) ->
+    ok = set_borders2(RefX, "left",   [], [], []),
+    ok = set_borders2(RefX, "right",  [], [], []),
+    ok = set_borders2(RefX, "top",    [], [], []),
+    ok = set_borders2(RefX, "bottom", [], [], []),
+    ok;
+
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, Where, 
+            Border, B_Style, B_Color) 
+  when Where == "left" 
+       orelse Where == "right" 
+       orelse Where == "top" 
+       orelse Where == "bottom" ->
+    NewObj = case Where of
+                 "left"   -> {range, {X1, Y1, X1, Y2}};
+                 "right"  -> {range, {X2, Y1, X2, Y2}};
+                 "top"    -> {range, {X1, Y1, X2, Y1}};
+                 "bottom" -> {range, {X1, Y2, X1, Y2}}
+             end,
+    NewRefX = RefX#refX{obj = NewObj},
+    ok = set_borders2(NewRefX, Where, Border, B_Style, B_Color);
+ 
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
+            Where, Border, B_Style, B_Color) 
+  when Where == "surround" ->
+    Top    = RefX#refX{obj = {range, {X1, Y1, X2, Y1}}},
+    Bottom = RefX#refX{obj = {range, {X1, Y2, X2, Y2}}},
+    Left   = RefX#refX{obj = {range, {X1, Y1, X1, Y2}}},
+    Right  = RefX#refX{obj = {range, {X2, Y1, X2, Y2}}},
+    ok = set_borders2(Top,    "top",    Border, B_Style, B_Color),
+    ok = set_borders2(Bottom, "bottom", Border, B_Style, B_Color),
+    ok = set_borders2(Left,   "left",   Border, B_Style, B_Color),
+    ok = set_borders2(Right,  "right",  Border, B_Style, B_Color),
+    ok;
+
+set_borders(#refX{obj = {range, _}} = RefX, Where, Border, B_Style, B_Color)
+  when Where == "all" ->
+    ok = set_borders2(RefX, "top",    Border, B_Style, B_Color),
+    ok = set_borders2(RefX, "bottom", Border, B_Style, B_Color),
+    ok = set_borders2(RefX, "left",   Border, B_Style, B_Color),
+    ok = set_borders2(RefX, "right",  Border, B_Style, B_Color),
+    io:format("In set_borders for ~p with ~p~n", [RefX, Where]),
+    ok;
+
+%% there are a number of different function heads for 'inside'
+%% 'inside' on a cell does nothing
+set_borders(#refX{obj = {range, {X1, Y1, X1, Y1}}} = RefX, 
+            Where, Border, B_Style, B_Color) 
+  when Where == "inside" ->
+    ok;
+%% 'inside' a single column
+set_borders(#refX{obj = {range, {X1, Y1, X1, Y2}}} = RefX, 
+            Where, Border, B_Style, B_Color) 
+  when Where == "inside" ->
+    NewRefX = RefX#refX{obj = {range, {X1, Y1 + 1, X1, Y2}}},
+    ok = set_borders2(NewRefX, "top", Border, B_Style, B_Color);
+%% 'inside' a single row
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y1}}} = RefX, 
+            Where, Border, B_Style, B_Color) 
+  when Where == "inside" ->
+    NewRefX = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y1}}},
+    ok = set_borders2(NewRefX, "left", Border, B_Style, B_Color);
+%% proper 'inside'
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
+            Where, Border, B_Style, B_Color) 
+  when Where == "inside" ->
+    NewRefX1 = RefX#refX{obj = {range, {X1, Y1 + 1, X2, Y2}}},
+    ok = set_borders2(NewRefX1, "top", Border, B_Style, B_Color),
+    NewRefX2 = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y2}}},
+    ok = set_borders2(NewRefX2, "left", Border, B_Style, B_Color).
+
+set_borders2(RefX, Where, Border, B_Style, B_Color) ->
+    Fun = fun() ->
+                  ok = init_front_end_notify(),
+                  B   = "border-" ++ Where,
+                  B_S = "border-" ++ Where ++ "-style",
+                  B_C = "border-" ++ Where ++ "-color",
+                  ok = hn_db_wu:write_attr(RefX, {B,   Border}),
+                  ok = hn_db_wu:write_attr(RefX, {B_S, B_Style}),
+                  ok = hn_db_wu:write_attr(RefX, {B_C, B_Color})
+          end,
+    ok = mnesia:activity(transaction, Fun),
+    ok = tell_front_end("set_borders2").
+
+%% @todo write documentation for shrink_dirty_cell
+shrink_dirty_cell(Site) ->
+    mnesia:activity(sync_dirty, fun do_shrink_dirty_cell/1, [Site]).
+
 do_shrink_dirty_cell(Site) ->
     List = hn_db_wu:read_all_dirty_cells(Site),
     Fun2 = fun(#dirty_cell{idx = Idx} = D, Acc) ->
@@ -172,10 +282,8 @@ do_shrink_dirty_cell(Site) ->
     % now dedup the dirty list
     DeleteList = shrink(ParentsList, List),
     ok = hn_db_wu:delete_dirty_cells(Site, DeleteList).
-     
-shrink_dirty_cell(Site) ->
-    mnesia:activity(sync_dirty, fun do_shrink_dirty_cell/1, [Site]).
 
+%% @todo write documentation for write_formula_to_range
 write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
     exit("write write_formula_to_range in hn_db_api!").
 % write_formula_to_range(Formula, RefX = #refX{obj = 
@@ -211,9 +319,12 @@ write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
 write_style_IMPORT(RefX, Style) when is_record(RefX, refX),
                                      is_record(Style, magic_style) ->
     Fun = fun() ->
+                  ok = init_front_end_notify(),
                   ok = hn_db_wu:write_style_IMPORT(RefX, Style)
           end,
-    mnesia:activity(transaction, Fun).
+    ok = mnesia:activity(transaction, Fun),
+    ok = tell_front_end("write_style_IMPORT").
+
 
 %% @doc reads pages
 %% @todo fix up api
@@ -252,30 +363,27 @@ create_db(Site)->
     % Seems sensible to keep this restricted
     % to disc_copies for now
     Storage = disc_copies,
-
-    Tables1 = [
-              ],
     
-    Tables2 = [
-               {dirty_cell,            set},
-               {dirty_notify_in,       set},
-               {dirty_inc_hn_create,   set},
-               {dirty_notify_back_in,  set},
-               {dirty_notify_out,      set},
-               {dirty_notify_back_out, set},
-               {item,                  bag},
-               {local_objs,            bag},
-               {local_cell_link,       bag},
-               {hn_user,               set},
-               {remote_objs,           set},
-               {remote_cell_link,      bag},
-               {incoming_hn,           set},
-               {outgoing_hn,           set},
-               {styles,                bag},
-               {style_counters,        set},
-               {page_vsn,              set},
-               {page_history,          bag}
-              ],
+    Tables = [
+              {dirty_cell,            set},
+              {dirty_notify_in,       set},
+              {dirty_inc_hn_create,   set},
+              {dirty_notify_back_in,  set},
+              {dirty_notify_out,      set},
+              {dirty_notify_back_out, set},
+              {item,                  bag},
+              {local_objs,            bag},
+              {local_cell_link,       bag},
+              {hn_user,               set},
+              {remote_objs,           set},
+              {remote_cell_link,      bag},
+              {incoming_hn,           set},
+              {outgoing_hn,           set},
+              {styles,                bag},
+              {style_counters,        set},
+              {page_vsn,              set},
+              {page_history,          bag}
+             ],
     
     Indices = [
                {dirty_cell, idx},
@@ -285,26 +393,17 @@ create_db(Site)->
                {local_objs, idx},
                {local_cell, childidx}
               ],
-
-    % the old way
-    % now recursively create all the tables and all the indices
+    
+    %% now recursively create all the tables and all the indices
     Fun1 = fun({Name, Type}) ->
-                   Attr = [{attributes, ms_util2:get_record_info(Name)},
-                           {type, Type}, {Storage, [node()]}],
-                   NewName = hn_db_wu:trans(Site, Name),
-                   {atomic, ok} = mnesia:create_table(NewName, Attr)
-           end,
-    [Fun1(X) || X <- Tables1],
-    % the old way
-    % now recursively create all the tables and all the indices
-    Fun1a = fun({Name, Type}) ->
                    Attr = [{record_name, Name},
                            {attributes, ms_util2:get_record_info(Name)},
                            {type, Type}, {Storage, [node()]}],
                    NewName = hn_db_wu:trans(Site, Name),
                    {atomic, ok} = mnesia:create_table(NewName, Attr)
            end,
-    [Fun1a(X) || X <- Tables2],
+    [Fun1(X) || X <- Tables],
+
     Fun2 = fun({Name, Index}) ->
                    NewName = hn_db_wu:trans(Site, Name),
                    mnesia:add_table_index(NewName, Index)
