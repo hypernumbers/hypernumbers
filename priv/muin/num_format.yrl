@@ -149,11 +149,13 @@ Erlang code.
 
 %% ----- Helper functions.
 -import(num_format,
-    [make_src/1,
-     get_general/0,
-     concat/2,
-     concat/3,
-     verify/1,
-     esc/1,
-     make_cond/1,
-     strip/1]).
+                   [
+                    make_src/1,
+                    get_general/0,
+                    concat/2,
+                    concat/3,
+                    verify/1,
+                    esc/1,
+                    make_cond/1,
+                    strip/1
+                   ]).
