@@ -166,7 +166,7 @@ function gen_help
     echo "==============================="
     echo "     Building Help Files       "
     echo "==============================="
-    erlc -o ebin -I $HN_DIR/include src/generate_help.erl
+    erlc -o ebin -I $HN_DIR/include priv/make_help/generate_help.erl
     erl -pa ebin -pa $HN_DIR/ebin -pa $MOCHI_DIR/ebin -s generate_help run -s init stop
 }
 
@@ -262,4 +262,5 @@ case $1 in
     gen_help)       gen_help;;
     inspect_mnesia) inspect_mnesia;;
     test)           test $2;;
+    *)              echo "invalid paramaters passed into hypernumbers script";;
 esac
