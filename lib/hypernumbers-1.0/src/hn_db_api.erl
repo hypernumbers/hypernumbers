@@ -1073,7 +1073,7 @@ delete(#refX{obj = {page, _}} = RefX) ->
                                       [{X, {"formula", F}}] ->
                                           ok = ?wu:write_attr(X, {"formula", F});
                                       [] ->
-                                          ?ERROR("invalid_cell_link in hn_db_api:delete",[])
+                                          ?ERROR("invalid_cell_link in hn_db_api:delete ~p",[X])
                                   end
                           end,
                    [ok = Fun2(X) || X <- Status]
