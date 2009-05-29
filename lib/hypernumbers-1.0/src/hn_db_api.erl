@@ -517,7 +517,7 @@ handle_dirty_cell(Site, Rec) ->
 handle_dirty_cell2(Cell) ->
     case hn_db_wu:read_attrs(Cell, ["formula"], read) of
         [{C, KV}] -> hn_db_wu:write_attr(C, KV);
-        []        -> throw(invalid_dirty_cell)
+        Else      -> throw({invalid_dirty_cell, Cell, Else})
     end.
 
 %% @spec handle_dirty(Record) -> ok

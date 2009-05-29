@@ -67,8 +67,9 @@ upgrade_1825() ->
               (Else) -> Else
            end,
     
-    Obj = fun({local_objs, Path, Ref, Id}) ->
-                  {local_objs, Path, Ref, idstr_to_int(Id)}
+    Obj = fun({local_objs, Path, Ref, Id}) when is_list(Id) ->
+                  {local_objs, Path, Ref, idstr_to_int(Id)};
+             (Else) -> Else
           end,
     
     Link = fun({local_cell_link, Id1, Id2}) ->
@@ -91,8 +92,7 @@ upgrade_1825() ->
                 transform_keys(LinkTbl, Link),
 
                 ObjTbl = Tbl(Host, Port, local_objs),
-                Fields = ms_util2:get_record_info(local_objs), 
-                mnesia:transform_table(ObjTbl, Obj, Fields),
+                transform_keys(ObjTbl, Obj),
                 
                 ok
         end,
