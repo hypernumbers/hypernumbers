@@ -25,40 +25,52 @@
 upgrade_1825() ->
     
     Item = fun({item, Id, "__dependency-tree", List}) ->
-                 {item, idstr_to_int(Id),
-                  "__dependency-tree", hslists:uniq(List)};
-            ({item, Id, Name, List}) ->
-                 {item, idstr_to_int(Id), Name, List}
-         end,
+                   {item, idstr_to_int(Id),
+                    "__dependency-tree", hslists:uniq(List)};
+              ({item, Id6, Name6, List6}) ->
+                   {item, idstr_to_int(Id6), Name6, List6}
+           end,
     
     Obj = fun({local_objs, Path, Ref, Id}) ->
                   {local_objs, Path, Ref, idstr_to_int(Id)}
           end,
-
+    
     Link = fun({local_cell_link, Id1, Id2}) ->
-                  {local_cell_link, idstr_to_int(Id1), idstr_to_int(Id2)}
-          end,    
+                   {local_cell_link, idstr_to_int(Id1),  idstr_to_int(Id2) };
+              (Else) -> Else
+           end,    
 
     Tbl = fun(Host, Port, Table) ->
                   list_to_atom(lists:concat([Host,"&",Port,"&",Table]))
           end,
     
     F = fun("http://"++Site) ->
+                
                 [Host, Port] = string:tokens(Site, ":"),
-                Name = Tbl(Host, Port, item),
-                Fields = ms_util2:get_record_info(item), 
-                mnesia:transform_table(Name, Item, Fields),
                 
-                Name2 = Tbl(Host, Port, local_objs),
-                Fields2 = ms_util2:get_record_info(local_objs), 
-                mnesia:transform_table(Name2, Obj, Fields2),
+                ItemTbl = Tbl(Host, Port, item),
+                transform_keys(ItemTbl, Item),
+
+                LinkTbl = Tbl(Host, Port, local_cell_link),                
+                transform_keys(LinkTbl, Link),
+
+                ObjTbl = Tbl(Host, Port, local_objs),
+                Fields = ms_util2:get_record_info(local_objs), 
+                mnesia:transform_table(ObjTbl, Obj, Fields),
                 
-                Name3 = Tbl(Host, Port, local_cell_link),
-                Fields3 = ms_util2:get_record_info(local_cell_link), 
-                mnesia:transform_table(Name3, Link, Fields3)
+                ok
         end,
 
     [F(X) || X <- hn_util:get_hosts(hn_config:get(hosts))].
+
+transform_keys(Table, Fun) ->
+    F = fun(Record, _Acc) ->
+                New = Fun(Record),
+                mnesia:delete(Table, Record, write),
+                mnesia:write(Table, New, write)
+        end,
+    mnesia:activity(transaction, fun mnesia:foldl/3, [F, ok, Table]).
+                
 
 idstr_to_int("Loc"++Int) ->
     list_to_integer(Int).
