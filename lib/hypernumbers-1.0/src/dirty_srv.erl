@@ -115,7 +115,7 @@ read_table(Table) ->
             timer:sleep(100);
         Id ->
             [Rec] = mnesia:read(Table, Id, write),
-            ok = mnesia:delete(Table, Id, write),
+            ok = mnesia:dirty_delete(Table, Id),
             proc_dirty(Table, Rec)
     end.
 

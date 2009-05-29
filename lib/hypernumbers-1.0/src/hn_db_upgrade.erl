@@ -60,11 +60,9 @@ upgrade_1838() ->
 upgrade_1825() ->
     
     Item = fun({item, Id, "__dependency-tree", List}) when is_list(Id) ->
-                   ?INFO("Id ~p",[Id]),
                    {item, idstr_to_int(Id),
                     "__dependency-tree", hslists:uniq(List)};
               ({item, Id, Name, List}) when is_list(Id) ->
-                   ?INFO("Id ~p",[Id]),
                    {item, idstr_to_int(Id), Name, List};
               (Else) -> Else
            end,
