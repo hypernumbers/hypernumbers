@@ -70,7 +70,8 @@
          % general utilities
          get_hosts/1,
          get_offset/3,
-         js_to_utf8/1
+         js_to_utf8/1,
+         diff/2
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,6 +79,13 @@
 %%% API functions                                                            %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+diff(Time2, Time1) ->
+    {Mega2, Sec2, Micro2} = Time2,
+    {Mega1, Sec1, Micro1} = Time1,
+    (1000000000000 * Mega2 + 1000000 * Sec2 + Micro2) - 
+        (1000000000000 * Mega1 + 1000000 * Sec1 + Micro1).
+   
+
 get_offset(insert, D, {cell,     _})              -> g_o1(D, 1, 1);
 get_offset(insert, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, Y2 - Y1 + 1); 
 get_offset(insert, D, {column, {X1, X2}})         -> g_o1(D, X2 - X1 + 1, 0); 
