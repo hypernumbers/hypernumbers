@@ -99,12 +99,13 @@ upgrade_1825() ->
     [F(X) || X <- hn_util:get_hosts(hn_config:get(hosts))].
 
 transform_keys(Table, Fun) ->
-    F = fun(Record, _Acc) ->
-                New = Fun(Record),
+    F = fun(Record, Acc) ->
                 mnesia:delete_object(Table, Record, write),
-                mnesia:write(Table, New, write)
+                [Fun(Record) | Acc]
         end,
-    mnesia:activity(transaction, fun mnesia:foldl/3, [F, ok, Table]).
+    N = mnesia:activity(transaction, fun mnesia:foldl/3, [F, ok, Table]),
+    [ mnesia:write(Table, X, write) || X <- N],
+    ok.
                 
 
 idstr_to_int("Loc"++Int) ->
