@@ -168,7 +168,6 @@ handle_call({toggle_mode, ModeList}, _From, S) ->
                    mnesia = Mn#mnesia{mode = NewMnesiaMode}},
     if 
         (NewMemMode == active) orelse (NewMnesiaMode == active) ->
-            io:format("in toggle_mode spawning tick...~n"),
             spawn_link(?SERVER, tick, [NewS]);
         (NewMemMode == passive) andalso (NewMnesiaMode == passive) ->
             io:format("in toggle_mode NOT spawning tick...~n"),
@@ -181,7 +180,7 @@ handle_call({toggle_mode, ModeList}, _From, S) ->
 %% @hidden
 handle_cast({ad_hoc, {Id, Msg}}, State) ->
     Date = get_now(),    
-    Line1 = {Date, "ad_hoc" ++ Id, Msg, Id},
+    Line1 = {Date, "ad_hoc: " ++ Id, Msg, Id},
     append_to_log([Line1], State#state.file_id),
     {noreply, State};
 handle_cast(_Msg, State) ->
