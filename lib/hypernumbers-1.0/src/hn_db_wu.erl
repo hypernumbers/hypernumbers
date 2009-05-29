@@ -2933,18 +2933,18 @@ shift_remote_links2(Site, [H | T], To) ->
     shift_remote_links2(Site, T, To).
 
 deref_child(#refX{site = _S} = Child, DeRefX) ->
-    [{Child, {"formula", Formula}}] = read_attrs(Child, ["formula"], write),
-    {Status, NewFormula} = deref(Child, Formula, DeRefX),
-    % bits:log(io_lib:format("(1) Formula is ~p NewFormula is ~p~n",
-    %                       [Formula, NewFormula])),
-    % io:format("(1) Formula is ~p NewFormula is ~p~n",
-    %              [Formula, NewFormula]),
-    % we just rewrite this and let it recalculate as per...
-    ok = write_attr(Child, {"formula", NewFormula}),
-    case Status of
-        dirty -> {dirty, Child};
-        clean -> []
+    case read_attrs(Child, ["formula"], write) of
+        [{Child, {"formula", Formula}}] ->
+            {Status, NewFormula} = deref(Child, Formula, DeRefX),
+            ok = write_attr(Child, {"formula", NewFormula}),
+            case Status of
+                dirty -> {dirty, Child};
+                clean -> []
+            end;
+        [] ->
+            ?ERROR("invalid_cell_link in hn_db_api:delete ~p ~p",[Child, DeRefX])
     end.
+                
 
 % dereferences a formula
 deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->

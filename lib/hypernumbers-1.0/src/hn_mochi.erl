@@ -185,12 +185,12 @@ ipost(Req, #refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
 
 %% the purpose of this message is to mark the mochilog so we don't need to do nothing
 %% with anything...
-ipost(_Req, _Ref, _Type, [{"mark", []}], [{"set",{struct, [{"mark", Msg}]}}], _User) ->
+ipost(_Req, _Ref, _Type, [{"mark", []}], [{"set",{struct, [{"mark", _Msg}]}}], _User) ->
     ok;
 
 %% the purpose of this message is to write a GUI trail in the mochilog so we 
 %% don't need to do nothingwith anything...
-ipost(_Req, _Ref, _Type, [{"trail", []}], [{"set",{struct, [{"trail", Msg}]}}], _User) ->
+ipost(_Req, _Ref, _Type, [{"trail", []}], [{"set",{struct, [{"trail", _Msg}]}}], _User) ->
     ok;
 
 ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)

@@ -1069,12 +1069,8 @@ delete(#refX{obj = {page, _}} = RefX) ->
                    Status = hn_db_wu:delete_page(RefX),
                    % now force all deferenced cells to recalculate
                    Fun2 = fun({dirty, X}) ->
-                                  case ?wu:read_attrs(X, ["formula"], write) of
-                                      [{X, {"formula", F}}] ->
-                                          ok = ?wu:write_attr(X, {"formula", F});
-                                      [] ->
-                                          ?ERROR("invalid_cell_link in hn_db_api:delete ~p",[X])
-                                  end
+                                  [{X, {"formula", F}}] = hn_db_wu:read_attrs(X, ["formula"], write),
+                                  ok = hn_db_wu:write_attr(X, {"formula", F})
                           end,
                    [ok = Fun2(X) || X <- Status]
           end,
