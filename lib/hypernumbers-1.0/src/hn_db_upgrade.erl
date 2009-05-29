@@ -101,7 +101,7 @@ upgrade_1825() ->
 transform_keys(Table, Fun) ->
     F = fun(Record, _Acc) ->
                 New = Fun(Record),
-                mnesia:delete(Table, Record, write),
+                mnesia:delete_object(Table, Record, write),
                 mnesia:write(Table, New, write)
         end,
     mnesia:activity(transaction, fun mnesia:foldl/3, [F, ok, Table]).
