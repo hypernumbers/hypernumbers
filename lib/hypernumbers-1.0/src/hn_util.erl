@@ -71,7 +71,8 @@
          get_hosts/1,
          get_offset/3,
          js_to_utf8/1,
-         diff/2
+         diff/2,
+         lists_diff/2
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -533,6 +534,23 @@ js_to_utf8({Key, Val})    -> {xmerl_ucs:to_utf8(Key), js_to_utf8(Val)};
 js_to_utf8(X) when is_integer(X); is_float(X); is_atom(X) -> X;
 js_to_utf8(X)             -> xmerl_ucs:to_utf8(X).
 
+lists_diff(List1, List2) ->
+    lists_diff(lists:sort(List1), lists:sort(List2), []).
+
+lists_diff([], [], Acc) ->
+    Acc;
+lists_diff([], L2, Acc) ->
+    [{extra, L2} | Acc];
+lists_diff(L1, [], Acc) ->
+    [{missing, L1} | Acc];
+lists_diff([{K, V} | Tl1], [{K, V} | Tl2], Acc) ->
+    lists_diff(Tl1, Tl2, Acc);
+lists_diff([{K1, V1} | Tl1], [{K2, _V2} | _Tl2] = L2, Acc) when K1 < K2 ->
+    lists_diff(Tl1, L2, [{missing, {K1, V1}} | Acc]);
+lists_diff([{K1, _V1} | _Tl1] = L1, [{K2, V2} | Tl2], Acc) when K2 < K1 ->
+    lists_diff(L1, Tl2, [{extra, {K2, V2}} | Acc]);
+lists_diff([{K, V1} | Tl1], [{K, V2} | Tl2], Acc) ->
+    lists_diff(Tl1, Tl2, [{K, V1, V2} | Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

@@ -50,10 +50,9 @@ gen_test(Path,Tpl,Src) ->
     
     Count = case ?pget("value", A1) of
                 "NOTESTS" -> 0;
-                Range ->
-                    
-                    {range, {_,_,_,X}} = hn_util:parse_attr(Range),
-                     X
+                Range ->                    
+                    {range, {_,X1,_,X2}} = hn_util:parse_attr(Range),
+                     X2-X1
             end,
     
     Ref   = #refX{site="http://127.0.0.1:9000", path=[Name]},

@@ -106,17 +106,34 @@ stop(Type) ->
     ok = gen_server:call(Type, stop).
 
 listen(Table) ->
-    mnesia:activity(transaction, fun read_table/1, [Table]),
+    case mnesia:activity(transaction, fun read_table/1, [Table]) of
+        ok -> ok;
+        no_dirty_cells ->
+            mnesia:subscribe({table, Table, simple}),
+            receive
+                _X ->
+                    mnesia:unsubscribe({table, Table, simple})
+            end
+    end,
+    
+    mnesia_recover:allow_garb(),
+    mnesia_recover:start_garb(),
     ?MODULE:listen(Table).
 
+        
 read_table(Table) ->
     case mnesia:first(Table) of
-        '$end_of_table' ->
-            timer:sleep(100);
+        '$end_of_table' -> no_dirty_cells;
         Id ->
-            [Rec] = mnesia:read(Table, Id, write),
-            ok = mnesia:dirty_delete(Table, Id),
-            proc_dirty(Table, Rec)
+            case mnesia:read(Table, Id, write) of
+                [] ->
+                    ok = mnesia:dirty_delete(Table, Id),
+                    ?ERROR("Invalid Id in ~p", [Id, Table]);
+                [Rec] ->
+                    ok = mnesia:dirty_delete(Table, Id),
+                    proc_dirty(Table, Rec)
+            end,
+            ok
     end.
 
 %% @spec proc_dirty(Rec, Type) -> ok
