@@ -1211,8 +1211,6 @@ write_attr(#refX{obj = {cell, _}} = RefX, {Key, Val} = Attr) ->
     end;
 write_attr(#refX{obj = {range, _}} = RefX, Attr) ->
     List = hn_util:range_to_list(RefX),
-    io:format("in write_attr~n-RefX is ~p~n-List is ~p~n-Attr is ~p~n", 
-              [RefX, List, Attr]),
     [ok = write_attr(X, Attr) || X <- List],
     ok;
 %% for the rest just write 'em out
