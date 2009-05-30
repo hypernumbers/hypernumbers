@@ -16,13 +16,15 @@ handle_upload(Req, Ref, User) ->
     
     try
         import(File, hn_users:name(User), NRef, Name),
-        {struct, [{"location", hn_util:list_to_path(NRef#refX.path)}]}
+        { {struct, [{"location", hn_util:list_to_path(NRef#refX.path)}]},
+          File}
     catch
         _Type:Reason ->
             ?ERROR("Error Importing ~p ~n User:~p~n Reason:~p~n Stack:~p~n",
                    [File, hn_users:name(User), Reason,
                     erlang:get_stacktrace()]),
-            {struct, [{"error", "error reading sheet"}]}
+            { {struct, [{"error", "error reading sheet"}]},
+              undefined}
     end.
 
 %%% interfacing with the reader
@@ -97,13 +99,13 @@ defaultize(M) ->
                  M2#magic_style{'border-top-color' = []};
              _O3 -> M2
          end,
-    M4 = case M3 of
-             #magic_style{'border-bottom' = [], 
-                          'border-bottom-color' = "rgb(000,000,000)", 
-                          'border-bottom-style' = []} -> 
+    _M4 = case M3 of
+              #magic_style{'border-bottom' = [], 
+                           'border-bottom-color' = "rgb(000,000,000)", 
+                           'border-bottom-style' = []} -> 
                  M3#magic_style{'border-bottom-color' = []};
-             _O4 -> M3
-         end.    
+              _O4 -> M3
+          end.    
 
 test_import(File, Ref) ->
     Path = code:lib_dir(hypernumbers)++"/../../tests/excel_files/"
@@ -242,8 +244,7 @@ setup_state(S, {"content-disposition",
 
 make_name(Name) ->
     Basename = filename:basename(Name, ".xls"),
-    {ok, Safename, _N} = regexp:gsub(Basename, "\\s+", "_"),
-    Safename.
+    re:replace(Basename,"\s","_",[{return,list}, global]).
 
 stream_to_file(Req, User) ->
     Stamp    = hn_users:name(User) ++ dh_date:format("__Y_m_d_h_i_s"),

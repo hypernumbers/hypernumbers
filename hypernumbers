@@ -221,6 +221,15 @@ function copylog
     HOST=alpha.hypernumbers.com
     NAME=hypernumbers
     PATH=alpha.hypernumbers.com
+    /usr/bin/scp $NAME@$HOST:$PATH/priv/uploads/* \
+        lib/hypernumbers-1.0/log/uploads/
+}
+
+function copylog
+{
+    HOST=alpha.hypernumbers.com
+    NAME=hypernumbers
+    PATH=alpha.hypernumbers.com
     /usr/bin/scp $NAME@$HOST:$PATH/lib/hypernumbers-1.0/log/post_log.LOG.* \
         lib/hypernumbers-1.0/log/live/
 }
@@ -255,6 +264,7 @@ case $1 in
     stop)           stop;;
     docs)           docs;;
     copylog)        copylog;;
+    copyfiles)      copyfiles;;
     build)          build $2;;
     statsvn)        statsvn;;
     visualise)      visualise;;

@@ -49,7 +49,7 @@ req(Req) ->
     end.
 
 do_req(Req) ->
-
+    
     Ref    = hn_util:parse_url(get_host(Req)),
     #refX{site = Site} = Ref,
     Vars   = Req:parse_qs(),
@@ -90,9 +90,13 @@ handle_req(Method, Req, Ref, Vars, User) ->
             
             %% TODO: Log file uploads.
             case string:substr(Ct, 1, 19) of
-
+                
                 "multipart/form-data" ->
-                    Data = hn_file_upload:handle_upload(Req, Ref, User),
+
+                    {Data, File} = hn_file_upload:handle_upload(Req, Ref, User),
+                    Name = filename:basename(File),
+     
+                    mochilog:log(Req, Ref, hn_users:name(User), {upload, Name}),
                     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
                     Req:ok({"text/html", ?hdr, Json});
 

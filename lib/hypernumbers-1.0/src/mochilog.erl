@@ -146,6 +146,8 @@ browse(Name, Filter) ->
 
 bodystr(undefined) ->
     "undefined";
+bodystr({upload, File}) ->
+    "UPLOAD "++File;
 bodystr(Body) ->
     binary_to_list(Body).
 
@@ -263,6 +265,33 @@ in_path([], _Path, true) ->
     true;
 in_path(Path1, Path2, true) ->
     startswith(Path2, Path1).
+
+upload_file(Url, Path, Field) ->
+    
+    Boundary          = "frontier",
+    [_Usr, _Dt, Name] = re:split(filename:basename(Path),"__",[{return,list}]),
+    {ok, File}        = file:read_file(Path),
+    
+    Data = ["--"++Boundary,
+        "Content-disposition: form-data;name="++Field++"; filename="++Name,
+        "Content-type: application/octet-stream"
+        "Content-transfer-encoding: base64",
+        "",
+        binary_to_list(File),
+        "--"++Boundary++"--"],
+
+    Post = string:join(Data, "\r\n") ++ "\r\n",
+    Type = "multipart/form-data; boundary="++Boundary,
+    
+    http:request(post,{Url, [], Type, Post}, [], []).
+    
+
+repost(#post{method='POST', body={upload, Name}} = Post, New) ->
+    Url  = New#refX.site ++ Post#post.path,
+    Root = code:lib_dir(hypernumbers),
+    Path = filename:join([Root, "log", "uploads", Name]),
+    upload_file(Url, Path, "Filedata"),
+    ok;
 
 repost(Post, New) when Post#post.method == 'POST' ->
     Url  = New#refX.site ++ Post#post.path,
