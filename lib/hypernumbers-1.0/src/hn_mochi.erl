@@ -138,11 +138,13 @@ ensure(File, Lang) ->
 
 iget(Req, #refX{path=["_user", "login"]}, page, [], User) ->
     serve_html(Req, "hypernumbers/login.html", User);
-iget(Req, _Ref, page, [], User) ->
-    % status_srv:update_status(User, Site, Path, "viewing page"),
+iget(Req, #refX{site = S, path = P}, page, [], User) ->
+    ok = status_srv:update_status(User, S, P, "viewed page"),
     serve_html(Req, "hypernumbers/index.html", User);
 iget(Req, Ref, page, [{"updates", Time}], _User) ->
     remoting_request(Req, Ref, Time);
+iget(Req, #refX{site = S}, page, [{"status", []}], _User) -> 
+    ?json(Req, status_srv:get_status(S));
 iget(Req, Ref, page, [{"pages", []}], _User) -> 
     ?json(Req, pages(Ref));
 iget(Req, Ref, page, [{"attr", []}], User) -> 
@@ -168,7 +170,9 @@ iget(Req, Ref, _Type,  Attr, _User) ->
     ?ERROR("404~n-~p~n-~p",[Ref, Attr]),
     Req:not_found().
 
-ipost(_Req, Ref, _Type, _Attr, [{"drag", {_, [{"range", Rng}]}}], _User) ->
+ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+      [{"drag", {_, [{"range", Rng}]}}], User) ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:drag_n_drop(Ref, Ref#refX{obj = hn_util:parse_attr(range,Rng)}),
     ok;
 
@@ -193,58 +197,81 @@ ipost(_Req, _Ref, _Type, [{"mark", []}], [{"set",{struct, [{"mark", _Msg}]}}], _
 ipost(_Req, _Ref, _Type, [{"trail", []}], [{"set",{struct, [{"trail", _Msg}]}}], _User) ->
     ok;
 
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "before"}], User)
   when O == row orelse O == column ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:insert(Ref);
 
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}], _User)
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "after"}], User)
   when O == row orelse O == column ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     RefX2 = make_after(Ref), 
     hn_db_api:insert(RefX2);
 
 % by default cells and ranges displace vertically
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "before"}], User)
   when O == cell orelse O == range ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:insert(Ref, vertical);
 
 % by default cells and ranges displace vertically
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}], _User)
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "after"}], User)
   when O == cell orelse O == range ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     RefX2 = make_after(Ref),
     hn_db_api:insert(RefX2);
 
 % but you can specify the displacement explicitly
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"},
-                                                      {"displacement", D}], _User)
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "before"}, {"displacement", D}], User)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:insert(Ref, list_to_existing_atom(D));
 
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"},
-                                                      {"displacement", D}], _User)
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "after"}, {"displacement", D}], User)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     RefX2 = make_after(Ref),
     hn_db_api:insert(RefX2, list_to_existing_atom(D));
 
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", "all"}], _User)
-  when O == row orelse O == column orelse O == page->
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"delete", "all"}], User)
+  when O == page ->
+    ok = status_srv:update_status(User, S, P, "deleted page"),
     hn_db_api:delete(Ref);
 
-ipost(_Req, #refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}], _User)
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"delete", "all"}], User)
+  when O == row orelse O == column ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    hn_db_api:delete(Ref);
+
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"delete", Direction}], User)
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:delete(Ref, Direction);
 
-ipost(_Req, Ref, range, _Attr, [{"copy", {struct, [{"range", Range}]}}], _User) ->
+ipost(_Req, #refX{site = S, path = P} = Ref, range, _Attr, 
+      [{"copy", {struct, [{"range", Range}]}}], User) ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:copy_n_paste(Ref#refX{obj = hn_util:parse_attr(range, Range)}, Ref);
 
-ipost(_Req, #refX{obj = {range, _}} = Ref, _Type, _Attr, 
-      [{"borders", {struct, Attrs}}], _User) ->
+ipost(_Req, #refX{site = S, path = P, obj = {range, _}} = Ref, _Type, _Attr, 
+      [{"borders", {struct, Attrs}}], User) ->
     Where = from("where", Attrs),
     Border = from("border", Attrs),
     Border_Style = from("border_style", Attrs),
     Border_Color = from("border_color", Attrs),
+    ok = status_srv:update_status(User, S, P, "edited page"),
     ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
     ok;
 
@@ -257,7 +284,9 @@ ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr,
       [{"set", {struct, [{"language", Lang}]}}], User) ->
     hn_users:update(Site, User, "language", Lang);
 
-ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}], _User) ->
+ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+      [{"set", {struct, Attr}}], User) ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     case Attr of 
         [{"formula",{array, Vals}}] ->
             %% TODO : Get Rid of this
@@ -267,8 +296,9 @@ ipost(_Req, Ref, _Type, _Attr, [{"set", {struct, Attr}}], _User) ->
             hn_db_api:write_attributes(Ref, Attr)
     end;
 
-ipost(_Req, Ref, _Type, _Attr, [{"clear", What}], _User) 
+ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, [{"clear", What}], User) 
   when What == "contents"; What == "style"; What == "all" ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:clear(Ref, list_to_atom(What));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
