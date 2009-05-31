@@ -33,21 +33,6 @@ init([Type]) ->
     process_flag(trap_exit, true),
     {ok, #state{table = Type}}.
 
-%% @spec handle_info(Else,State) -> {noreply, State}
-%% @doc  catch / flush unhandled events
-restart(List, Pid) ->
-    restart(List, Pid, []).
-
-restart([], _Pid, Acc) ->
-    Acc;
-restart([{Pid, Table} | Tl], Pid, Acc) ->
-    restart(Tl, Pid, [{start_listen(Table), Table} | Acc]);
-restart([Hd | Tl], Pid, Acc) ->
-    restart(Tl, Pid, [Hd | Acc]).
-
-start_listen(Table) ->
-    spawn_link(fun() -> listen(Table) end).
-
 handle_info({'EXIT', Pid, stopping}, State) ->
     F = fun({NPid, _Tbl}) -> NPid =/= Pid end, 
     NChild = lists:filter(F, State#state.children),
@@ -55,20 +40,17 @@ handle_info({'EXIT', Pid, stopping}, State) ->
 
 handle_info({'EXIT', Pid, Reason}, State) ->
 
-    Table = ?pget(Pid, State#state.children),
-    {ok, Id} = mnesia:activity(transaction, fun delete_first/1, [Table]),
-    
-    ?ERROR(" Process ~p died in ~p ~p ~n Error: ~p~n Stacktrace: ~p",
-           [Pid, Table, Id, Reason, erlang:get_stacktrace()]),
+    case Reason of
+        killed -> ok;
+        _Else  -> report_error(Pid, Reason, State)
+    end,
     
     NChild = restart(State#state.children, Pid),
     {noreply, State#state{children = NChild}};
 
 handle_info(_Info, State) ->
-    ?INFO("Unmatched _info ~p", [_Info]),
     {noreply, State}.
 handle_cast(_Info, State) ->
-    ?INFO("Unmatched _cast ~p", [_Info]),
     {noreply, State}.
 
 %% @spec handle_call(subscribe, State) -> {reply, Reply State}
@@ -89,7 +71,6 @@ handle_call(stop,  _From, State) ->
     {reply, ok, State#state{children=[]}};
 
 handle_call(_Msg, _From, _State) ->
-    ?INFO("Unmatched Event ~p", [_Msg]),
     {reply, ok, []}.
 
 terminate(_Reason, State) ->
@@ -117,11 +98,6 @@ listen(Table) ->
             end
     end,
     ?MODULE:listen(Table).
-
-delete_first(Table) ->
-    Id = mnesia:first(Table),
-    ok = mnesia:delete(Table, Id, write),
-    {ok, Id}.    
         
 read_table(Table) ->
     case mnesia:first(Table) of
@@ -134,10 +110,38 @@ read_table(Table) ->
             proc_dirty(Table, Rec)
     end.
 
+%% @spec handle_info(Else,State) -> {noreply, State}
+%% @doc  catch / flush unhandled events
+restart(List, Pid) ->
+    restart(List, Pid, []).
+
+restart([], _Pid, Acc) ->
+    Acc;
+restart([{Pid, Table} | Tl], Pid, Acc) ->
+    restart(Tl, Pid, [{start_listen(Table), Table} | Acc]);
+restart([Hd | Tl], Pid, Acc) ->
+    restart(Tl, Pid, [Hd | Acc]).
+
+start_listen(Table) ->
+    spawn_link(fun() -> listen(Table) end).
+
+report_error(Pid, Reason, State) ->
+    Table = ?pget(Pid, State#state.children),
+    {ok, Id} = mnesia:activity(transaction, fun delete_first/1, [Table]),
+    
+    ?ERROR(" Process ~p died in ~p ~p ~n Error: ~p~n Stacktrace: ~p",
+           [Pid, Table, Id, Reason, erlang:get_stacktrace()]),
+    ok.
+    
+delete_first(Table) ->
+    Id = mnesia:first(Table),
+    ok = mnesia:delete(Table, Id, write),
+    {ok, Id}.    
+
 %% @spec proc_dirty(Rec, Type) -> ok
 %% @doc  processes the dirty record
 proc_dirty(Table, Rec) ->
-    
+
     [Host, Port, _Table] = string:tokens(atom_to_list(Table), "&"),
     Site = "http://"++Host++":"++Port,
     
