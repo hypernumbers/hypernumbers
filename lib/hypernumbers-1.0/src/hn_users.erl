@@ -155,7 +155,7 @@ get_access_level(Usr, Ref=#refX{site = Site, path = Path}) ->
                _Else -> Usr#hn_user.name
            end,
     
-    Default = case Path of [User|_] -> write; _ -> no_access end,
+    Default = case Path of ["u",User|_] -> write; _ -> no_access end,
 
     SiteRef = #refX{site=Site, path=[]},
     {ok, Groups}     = hn_db_api:read_inherited_value(SiteRef, "__groups", []),
