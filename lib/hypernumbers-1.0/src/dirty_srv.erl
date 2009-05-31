@@ -1,18 +1,15 @@
 %%% @author Dale Harvey <dale@hypernumbers.com>
 %%% @copyright Hypernumbers Ltd.
 %%% @TODO write a proper module description
-%%% also this is totally not resilient
-%%% the restart behaviour is broken. If this module wigs then it is restarted WITHOUT
-%%% being resubscribed to mnesia for changes which is a mess...
-%%% On restart it should process the appropriate dirty table and also resubscribe
-%%% to the mnesia events...
 -module(dirty_srv).
 -behaviour(gen_server).
 
 -include("handy_macros.hrl").
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
+
 -record(state, {table=undefined, children=[]}).
+-define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 
 -export([start_link/1,
          init/1,
@@ -57,8 +54,13 @@ handle_info({'EXIT', Pid, stopping}, State) ->
     {noreply, State#state{children = NChild}};
 
 handle_info({'EXIT', Pid, Reason}, State) ->
-    ?ERROR("Process ~p died with ~p~n~p",
-           [Pid, Reason, erlang:get_stacktrace()]),
+
+    Table = ?pget(Pid, State#state.children),
+    {ok, Id} = mnesia:activity(transaction, fun delete_first/1, [Table]),
+    
+    ?ERROR(" Process ~p died in ~p ~p ~n Error: ~p~n Stacktrace: ~p",
+           [Pid, Table, Id, Reason, erlang:get_stacktrace()]),
+    
     NChild = restart(State#state.children, Pid),
     {noreply, State#state{children = NChild}};
 
@@ -114,11 +116,12 @@ listen(Table) ->
                     mnesia:unsubscribe({table, Table, simple})
             end
     end,
-    
-    mnesia_recover:allow_garb(),
-    mnesia_recover:start_garb(),
     ?MODULE:listen(Table).
 
+delete_first(Table) ->
+    Id = mnesia:first(Table),
+    ok = mnesia:delete(Table, Id, write),
+    {ok, Id}.    
         
 read_table(Table) ->
     case mnesia:first(Table) of
@@ -126,15 +129,9 @@ read_table(Table) ->
             mnesia:subscribe({table, Table, simple}),
             no_dirty_cells;
         Id ->
-            case mnesia:read(Table, Id, write) of
-                [] ->
-                    ok = mnesia:dirty_delete(Table, Id),
-                    ?ERROR("Invalid Id in ~p", [Id, Table]);
-                [Rec] ->
-                    ok = mnesia:delete(Table, Id, write),
-                    proc_dirty(Table, Rec)
-            end,
-            ok
+            [Rec] = mnesia:read(Table, Id, write),
+            ok = mnesia:delete(Table, Id, write),
+            proc_dirty(Table, Rec)
     end.
 
 %% @spec proc_dirty(Rec, Type) -> ok
