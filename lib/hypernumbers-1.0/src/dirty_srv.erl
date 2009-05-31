@@ -92,7 +92,8 @@ handle_call(_Msg, _From, _State) ->
 
 terminate(_Reason, State) ->
     [ exit(Pid, stopping) || {Pid, _Table} <- State#state.children],
-    ok.    
+    ok.
+
 code_change(_OldVsn, State, _Extra) -> {ok, State}.
 
 %%%
@@ -109,9 +110,7 @@ listen(Table) ->
     case mnesia:activity(transaction, fun read_table/1, [Table]) of
         ok -> ok;
         no_dirty_cells ->
-            mnesia:subscribe({table, Table, simple}),
-            receive
-                _X ->
+            receive _X ->
                     mnesia:unsubscribe({table, Table, simple})
             end
     end,
@@ -123,14 +122,16 @@ listen(Table) ->
         
 read_table(Table) ->
     case mnesia:first(Table) of
-        '$end_of_table' -> no_dirty_cells;
+        '$end_of_table' ->
+            mnesia:subscribe({table, Table, simple}),
+            no_dirty_cells;
         Id ->
             case mnesia:read(Table, Id, write) of
                 [] ->
                     ok = mnesia:dirty_delete(Table, Id),
                     ?ERROR("Invalid Id in ~p", [Id, Table]);
                 [Rec] ->
-                    ok = mnesia:dirty_delete(Table, Id),
+                    ok = mnesia:delete(Table, Id, write),
                     proc_dirty(Table, Rec)
             end,
             ok
@@ -142,14 +143,6 @@ proc_dirty(Table, Rec) ->
     
     [Host, Port, _Table] = string:tokens(atom_to_list(Table), "&"),
     Site = "http://"++Host++":"++Port,
-    
-    %% {reductions, X} = erlang:process_info(self(), reductions),
-    %% case X rem 50 of
-    %%     0 -> 
-    %%         ?INFO("Shrinking dirty",[]), 
-    %%         hn_db_api:shrink_dirty_cell(Site);
-    %%     _ -> ok
-    %% end,
     
     Ret = case element(1, Rec) of
               dirty_cell ->
@@ -168,27 +161,3 @@ proc_dirty(Table, Rec) ->
                   hn_db_api:handle_dirty(Site, Rec)
           end,
     Ret.
-
-%% subscribe/unsubscribe to the mnesia tables
-%% sub_unsubscribe(Table, Site, Action) ->
-%%     NewTable = hn_db_wu:trans(Site, Table),
-%%     case Action of
-%%         subscribe   ->
-%%             mnesia:subscribe({table, NewTable, detailed});
-%%         unsubscribe ->
-%%             mnesia:unsubscribe({table, NewTable, detailed})
-%%     end.
-
-%% flush(Site, Tbl) ->
-%%     Table = hn_db_wu:trans(Site, Tbl),
-%%     F = fun() ->
-%%                 Match = mnesia:table_info(Table, wild_pattern),
-%%                 mnesia:match_object(Table, Match, read)
-%%         end,
-%%     case mnesia:activity(transaction, F) of
-%%         []   -> ok;
-%%         List ->
-%%             ?INFO("Flushing ~p records from  ~p - ~p ",
-%%                   [length(List), Table, Site]),
-%%             lists:foreach(fun(X) -> proc_dirty(Table, X) end, List)
-%%     end.

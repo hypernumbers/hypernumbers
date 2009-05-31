@@ -2931,31 +2931,21 @@ shift_remote_links2(Site, [H | T], To) ->
     shift_remote_links2(Site, T, To).
 
 deref_child(#refX{site = _S} = Child, DeRefX) ->
-    case read_attrs(Child, ["formula"], write) of
-        [{Child, {"formula", Formula}}] ->
-            {Status, NewFormula} = deref(Child, Formula, DeRefX),
-            ok = write_attr(Child, {"formula", NewFormula}),
-            case Status of
-                dirty -> {dirty, Child};
-                clean -> []
-            end;
-        [] ->
-            ?ERROR("invalid_cell_link in hn_db_api:delete ~p ~p",[Child, DeRefX])
+    [{Child, {"formula", Formula}}] = read_attrs(Child, ["formula"], write),
+    {Status, NewFormula} = deref(Child, Formula, DeRefX),
+    ok = write_attr(Child, {"formula", NewFormula}),
+    
+    case Status of
+        dirty -> {dirty, Child};
+        clean -> []
     end.
                 
 
 % dereferences a formula
 deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
-    case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
-        {ok, Toks}    -> NewToks = deref1(Child, Toks, DeRefX, []),
-                         make_formula(NewToks);
-        _Syntax_Error -> io:format("Not sure how you get an invalid "++
-                                   "formula is deref but "++
-                                   "you do~n-~p~n", [Formula]),
-                         % S2 = io_lib:format("~p", [Child]),
-                         % bits:log(S1 ++ " " ++ S2),
-                         {[], "="++Formula}
-    end.
+    {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
+    NewToks = deref1(Child, Toks, DeRefX, []),
+    make_formula(NewToks).
 
 deref1(_Child, [], _DeRefX, Acc) -> lists:reverse(Acc);
 deref1(Child, [#rangeref{text = Text} | T], DeRefX, Acc) ->
@@ -3281,7 +3271,6 @@ shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
     end.
 
 write_attr2(RefX, {"formula", Val}) ->
-    %?INFO("Formula ~p",[[Val,superparser:process(Val)]]),
     case superparser:process(Val) of
         {formula, Fla}      -> write_formula1(RefX, Fla, Val);
         [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
@@ -3377,7 +3366,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
 
     % now write the rawvalue, etc, etc
     ok = write_rawvalue(RefX, Value),
- 
+
     % overwrite the parents and '__dependency-tree'
     Set = fun(X, {Key, []})  -> delete_if_attrs(X, Key);
              (X, {Key, Val}) -> write_attr(X, {Key, Val})

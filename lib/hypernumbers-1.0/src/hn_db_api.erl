@@ -180,8 +180,8 @@
 %% by contrast 'none' tears all borders down.
 %% Border_Color is a colour expressed as a hex string of format "#FF0000"
 %% Border_Style can be one of
-set_borders(#refX{obj = {range, _}} = RefX, "none", Border, 
-            Border_Style, Border_Color) ->
+set_borders(#refX{obj = {range, _}} = RefX, "none",_Border, 
+            _Border_Style, _Border_Color) ->
     ok = set_borders2(RefX, "left",   [], [], []),
     ok = set_borders2(RefX, "right",  [], [], []),
     ok = set_borders2(RefX, "top",    [], [], []),
@@ -227,8 +227,8 @@ set_borders(#refX{obj = {range, _}} = RefX, Where, Border, B_Style, B_Color)
 
 %% there are a number of different function heads for 'inside'
 %% 'inside' on a cell does nothing
-set_borders(#refX{obj = {range, {X1, Y1, X1, Y1}}} = RefX, 
-            Where, Border, B_Style, B_Color) 
+set_borders(#refX{obj = {range, {X1, Y1, X1, Y1}}} = _RefX, 
+            Where, _Border, _B_Style, _B_Color) 
   when Where == "inside" ->
     ok;
 %% 'inside' a single column
@@ -504,21 +504,19 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 %% other module, kinda ugly, fix
 handle_dirty_cell(Site, Rec) ->
     
-    ok = init_front_end_notify(),
-    case hn_db_wu:read_dirty_cell(Site, Rec) of
-        Cell when is_record(Cell, refX) ->
-            case ?wu:read_attrs(Cell, ["__shared"], read) of
-                [] -> handle_dirty_cell2(Cell);
-                _  -> ?INFO("TODO: handle_dirty_cell shared formula", [])
-            end
+    ok   = init_front_end_notify(),  
+    Cell = hn_db_wu:read_dirty_cell(Site, Rec),
+    
+    case hn_db_wu:read_attrs(Cell, ["__shared"], read) of
+        [] ->
+            [{C, KV}] = hn_db_wu:read_attrs(Cell, ["formula"], read),
+            hn_db_wu:write_attr(C, KV);
+        _  ->
+            ?INFO("TODO: handle_dirty_cell shared formula", [])
     end,
+    
     ok = tell_front_end("handle dirty").
 
-handle_dirty_cell2(Cell) ->
-    case hn_db_wu:read_attrs(Cell, ["formula"], read) of
-        [{C, KV}] -> hn_db_wu:write_attr(C, KV);
-        Else      -> throw({invalid_dirty_cell, Cell, Else})
-    end.
 
 %% @spec handle_dirty(Record) -> ok
 %% Record = #dirty_notify_in{}
