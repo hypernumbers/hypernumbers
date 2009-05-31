@@ -22,7 +22,7 @@ body {
 
 .warning { 
   color:      red;
-  font-size:  8px;
+  font-size:  10px;
 }
 
 
@@ -406,7 +406,8 @@ ul,li {
 
 #markbtn { background-position: -138px -59px; }
 
-#feedback {  width: 360px;  }
+#feedback {  width: 430px; height:200px;   font: 10px sans-serif; background:#EEE; 
+  border:1px solid #AAA; }
 
 #menu { 
   font:         11px sans-serif; 

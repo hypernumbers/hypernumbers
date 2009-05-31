@@ -216,7 +216,7 @@ function test
         -dir $TESTS
 }
 
-function copylog
+function copyfiles
 {
     HOST=alpha.hypernumbers.com
     NAME=hypernumbers

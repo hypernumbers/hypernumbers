@@ -3279,6 +3279,12 @@ write_attr2(RefX, {"formula", Val}) ->
 write_formula1(RefX, Fla, Val) ->
     Rti = refX_to_rti(RefX, false),
     Ret = case muin:run_formula(Fla, Rti) of
+              % TODO : Get rid of this, muin should return {error, Reason}?
+              {ok, {_P, {error, error_in_formula}, _, _, _}} ->
+                  ?ERROR("invalid return from muin:run_formula ~p",[Val]),
+                  #refX{site = Site, path = Path, obj = R} = RefX,
+                  ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
+                                                 Val);
               {error, Error} ->
                   #refX{site = Site, path = Path, obj = R} = RefX,
                   ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);
