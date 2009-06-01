@@ -10,7 +10,7 @@
 %% DateTime: fields are in the format expected by functions in the
 %% calendar module in stdlib.
 -record(datetime, {
-          date = {0, 0, 0},   % year, month, day
+          date = {1, 1, 1},   % year, month, day
           time = {0, 0, 0}    % hour, minute, second
         }).
 
