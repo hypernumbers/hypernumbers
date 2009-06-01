@@ -183,16 +183,14 @@ rows([A]) when ?is_area(A) -> area_util:height(A);
 rows([_])                  -> 1;
 rows(_)                    -> ?ERR_VAL.
 
-columns([A]) when ?is_area(A) ->
+
+columns([R]) when ?is_rangeref(R) ->
+    R#rangeref.width;
+columns([A]) when ?is_array(A) ->
     area_util:width(A);
-columns([V])                  ->
+columns([Expr]) ->
+    V = muin:eval_formula(Expr),
+    %% Argument must be castable to number, but 1 is returned regardless of
+    %% what its value is.
     _N = ?number(V, [ban_strings, ban_dates, ban_bools, cast_blanks]),
-    1;
-columns([A, V]) when ?is_area(A) ->
-    B = ?bool(V, [cast_numbers, ban_strings, ban_dates, cast_blanks]), % strict?
-    ?COND(B, area_util:width(A), columns([A]));
-columns([V1, V2]) ->
-    _N = ?number(V1, [ban_strings, ban_dates, ban_bools, cast_blanks]),
-    B = ?bool(V2, [cast_numbers, ban_strings, ban_dates, cast_blanks]),
-    ?COND(B, ?ERR_VAL, 1);
-columns(_)                    -> ?ERR_VAL.
+    1.

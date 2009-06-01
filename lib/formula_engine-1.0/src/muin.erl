@@ -173,7 +173,7 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
              
 %% Formula function call (built-in or user-defined).
 funcall(Fname, Args0) ->
-    Args = case member(Fname, ['if', choose, column, row, cell]) of
+    Args = case member(Fname, ['if', choose, column, row, cell, columns]) of
                true  -> Args0;
                false -> [eval(X) || X <- prefetch_references(Args0)]
            end,
