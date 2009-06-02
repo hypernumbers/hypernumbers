@@ -27,34 +27,9 @@
 -import(tconv, [to_i/1, to_l/1, to_s/1]).
 
 %% Excel 2004 API.
--export([
-         %%dollar/2, TODO: Need formats.
-         %%pound/2,  TODO: Need formats.
-         replace/1,
-         search/1,
-         %%t/1, TODO: Needs types.
-         %%trim/1, TODO:
-         %%value/1, TODO: Need formats.
-         %%yen/2, TODO: Need formats.
-         '&'/1,
-         char/1,
-         clean/1,
-         concatenate/1,
-         exact/1,
-         find/1,
-         fixed/1,
-         left/1,
-         len/1,
-         lower/1,
-         mid/1,
-         proper/1,
-         rept/1,
-         right/1,
-         substitute/1,
-         text/1,
-         t/1,
-         upper/1
-        ]).
+-export([value/1, t/1, replace/1, search/1, '&'/1, char/1, clean/1, concatenate/1,
+         exact/1, find/1, fixed/1, left/1, len/1, lower/1, mid/1, proper/1,
+         rept/1, right/1, substitute/1, text/1, upper/1]).
 
 %% Default set of rules for text
 -define(default_num_rules, [cast_strings, cast_bools,
@@ -62,8 +37,21 @@
 -define(default_str_rules, [cast_numbers, cast_bools,
                             cast_blanks, cast_dates]).
 
-t([V]) when is_list(V) -> V;
-t([_V])                -> "".
+
+t([V]) when ?is_string(V) -> V;
+t([_])                    -> "".
+
+
+value([S]) when ?is_string(S) ->
+    case tconv:to_num(S) of
+        {error, nan} -> ?ERR_VAL;
+        Num          -> Num
+    end;
+value([B]) when ?is_blank(B) ->
+    0;
+value([_]) ->
+    ?ERR_VAL.
+
 
 search([FindText, WithinText])-> search([FindText, WithinText, 1]);
 search([FindText, WithinText, StartPoint])->
