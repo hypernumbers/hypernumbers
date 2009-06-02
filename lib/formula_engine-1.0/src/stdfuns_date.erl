@@ -139,18 +139,21 @@ datevalue([V1]) ->
     io:format("in stdfuns_date:datevalue V1 is ~p~n", [V1]),
     ?date(V1, ?cast_all).
 
-day([Dt]) ->
-    ?edate(Dt),
-    muin_date:day(Dt).
 
-month([Dt]) ->
-    ?edate(Dt),
-    muin_date:month(Dt).
+day([D]) ->
+    ?ensure(?is_date(D), ?ERR_VAL),
+    muin_date:day(D).
 
-year([Dt]) ->
-    io:format("In year Dt is ~p~n", [Dt]),
-    ?edate(Dt),
-    muin_date:year(Dt).
+
+month([D]) ->
+    ?ensure(?is_date(D), ?ERR_VAL),
+    muin_date:month(D).
+
+
+year([D]) ->
+    ?ensure(?is_date(D), ?ERR_VAL),
+    muin_date:year(D).
+
 
 %% @todo there is not test suite for this function because it is not an 
 %% Excel 97 one
@@ -254,17 +257,20 @@ weeknum1(Dt, Rettype) ->
                    #datetime{date = {muin_date:year(Dt), 1, 1}},
                    #datetime{date = {muin_date:year(Dt), 12, 31}}).
 
-hour([V1]) ->
-    Dt = ?date(V1, ?cast_all),
-    muin_date:hour(Dt).
 
-minute([V1]) ->
-    Dt = ?date(V1, ?cast_all),
-    muin_date:minute(Dt).
+hour([D]) ->
+    ?ensure(?is_date(D), ?ERR_VAL),    
+    muin_date:hour(D).
 
-second([V1]) ->
-    Dt = ?date(V1, ?cast_all),
-    muin_date:second(Dt).
+minute([D]) ->
+    ?ensure(?is_date(D), ?ERR_VAL),
+    muin_date:minute(D).
+
+
+second([D]) ->
+    ?ensure(?is_date(D), ?ERR_VAL),
+    muin_date:second(D).
+
 
 now([]) ->
     {Date, Time} = calendar:now_to_universal_time(erlang:now()),
