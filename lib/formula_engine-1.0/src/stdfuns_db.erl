@@ -85,7 +85,10 @@ generic_select_values(DbR, Fld, CR) ->
     Criteriaset = odf_db:criteria_from_range(CR),
     Matched = odf_db:select(Db, Criteriaset),
     Vs = odf_db:db_field(Fld, Matched),
-    Vs.
+    case Vs of
+        no_such_field -> ?ERR_VAL;
+        _             -> Vs
+    end.
     
 
 %% tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
