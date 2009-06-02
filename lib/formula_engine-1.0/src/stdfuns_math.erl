@@ -93,8 +93,6 @@
          seriessum/1,
          subtotal/1,
          sumif/1,
-         sumproduct/1,
-         sumsq/1,
          sumx2my2/1,
          sumx2py2/1,
          sumxmy2/1,
@@ -579,92 +577,25 @@ subtotal([_, _]) -> ?ERR_VAL.
 sumif([L, Crit]) ->
     sumif([L, Crit, L]);
 sumif([V1, Crit, V2]) ->
-    % io:format("in sumif V1 is ~p V2 is ~p Crit is ~p~n", [V1, V2, Crit]),
-    ?ensure(area_util:is_congruent([V1|V2]), ?ERR_VAL),
-    % io:format("got to 1~n"),
-    V1a = ?flatten_all(V1),
-    V2a = ?flatten_all(V2),
-    % io:format("-V1a is ~p V2a is ~p~n", [V1a, V2a]),
-    L1 = ?numbers(V1a, ?default_rules),
-    % io:format("got to 2~n"),
-    L2 = ?numbers(V2a, ?default_rules),
-    % io:format("got to 3~n"),
-    F = odf_criteria:create(Crit),
-    % io:format("in sumif L1 is ~p L2 is ~p F is ~p~n", [L1, L2, F]),
-    sumif1(L1, L2, F, 0).
+    %% V1 and V2 must be areas of same dimensions
+    ?ensure(?is_area(V1), ?ERR_VAL),
+    ?ensure(?is_area(V2), ?ERR_VAL),
+    ?ensure(area_util:are_congruent(V1, V2), ?ERR_VAL),
+    case odf_criteria:create(Crit) of
+        {error, _Reason} -> 0;
+        Fun              -> sumif1(area_util:to_list(V1), area_util:to_list(V2),
+                                   Fun)
+    end.
+sumif1(L1, L2, Fun) ->
+    sumif1(L1, L2, Fun, 0).
 sumif1([], [], _F, Sum) ->
     Sum;
-sumif1([H1|T1], [H2|T2], F, Sum) ->
-    case F(H1) of
-        true  -> sumif1(T1, T2, F, Sum + H2);
-        false -> sumif1(T1, T2, F, Sum)
+sumif1([H1|T1], [H2|T2], Fun, Acc) ->
+    case Fun(H1) of
+        true  -> sumif1(T1, T2, Fun, stdfuns_math:'+'([Acc, H2]));
+        false -> sumif1(T1, T2, Fun, Acc)
     end.
 
-sumproduct(Vals) ->
-    % io:format("in sumproduct Vals is ~p~n", [Vals]),
-    ?ensure(area_util:is_congruent(Vals), ?ERR_VAL),
-    % now flatten all the elements
-    Rules = [cast_strings_zero, cast_bools, cast_blanks, cast_dates],
-    Fun1 = fun(X) ->
-                    ?numbers(?flatten_all(X), Rules)
-           end,
-    Numlists = [Fun1(X) || X <- Vals],
-    % io:format("in sumproduct Numlists is ~p~n", [Numlists]),
-    Fun2 = fun(X, Y) ->
-                   X * Y
-           end,
-    Return = zipsum(Numlists, Fun2),
-    % io:format("In sumproduct Return is ~p~n", [Return]),
-    Return.
-
-zipsum([H | []], _Fn)     -> % io:format("in zipsum (1) H is ~p~n", [H]),
-                             sum3(H, 0);
-zipsum([H1, H2 | T], Fn)  -> % io:format("in zipsum (2)~n-H1 is ~p~n-H2 is ~p~n",
-                             %          [H1, H2]),
-                             zipsum([zipsum1(H1, H2, Fn, []) | T], Fn).
-
-zipsum1([], [], _Fn, A)              -> % io:format("in zipsum2 (1) A is ~p~n", [A]),
-                                        lists:reverse(A);
-zipsum1([H1 | T1], [H2 | T2], Fn, A) -> % io:format("in zipsum2 (2)~n-H1 is ~p~n-"++
-                                        %          "H2 is ~p~n",[H1, H2]),
-                                        zipsum1(T1, T2, Fn, [Fn(H1, H2) | A]).
-
-sum3([], Acc)      -> Acc;
-sum3([H | T], Acc) -> sum3(T, H + Acc).
-
-sumsq(L) ->
-    % ranges flatten differently to non-ranges here!
-    % io:format("in sumsq L is ~p~n", [L]),
-    Nums = sumsqflatten(L, []),
-    % io:format("in sumsq Nums is ~p~n", [Nums]),
-    Return = sumsq1(Nums),
-    % io:format("returning from sumsq with ~p~n", [Return]),
-    Return.
-sumsq1(Nums) ->
-    foldl(fun(X, Acc) -> Acc + X * X end, 0, Nums).
-
-sumsqflatten([], Acc) -> lists:flatten(Acc);
-sumsqflatten([{range, _} = R | T], Acc) ->
-    % io:format("in sumsqflatten (2) R is ~p~n", [R]),
-    Rules = [cast_strings_zero, cast_dates, cast_bools, cast_blanks],
-    R2 = ?flatten_all([R]),
-    % io:format("-R2 (2) is ~p~n", [R2]),
-    NewAcc = ?numbers(R2, Rules),
-    % io:format("-NewAcc (2) is ~p~n", [NewAcc]),
-    sumsqflatten(T, [NewAcc| Acc]);
-sumsqflatten([{array, _} = R | T], Acc) ->
-    % io:format("in sumsqflatten (3) R is ~p~n", [R]),
-    Rules = [cast_strings_zero, cast_dates, cast_bools, cast_blanks],
-    R2 = ?flatten_all([R]),
-    % io:format("-R2 (3) is ~p~n", [R2]),
-    NewAcc = ?numbers(R2, Rules),
-    % io:format("-NewAcc (3) is ~p~n", [NewAcc]),
-    sumsqflatten(T, [NewAcc| Acc]);
-sumsqflatten([H | T], Acc) ->
-    % io:format("in sumsqflatten (4) H is ~p~n", [H]),
-    NewAcc = ?numbers(?ensure_no_errvals(?flatten_all([H])), ?default_rules),
-    % io:format("-NewAcc (4) is ~p~n", [NewAcc]),
-    sumsqflatten(T, [NewAcc| Acc]).
 
 sumx2my2([A1, A2]) ->
     Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(A1))),
