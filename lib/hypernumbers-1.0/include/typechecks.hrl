@@ -43,6 +43,8 @@
         X == '>'; X == '>='; X == '<'; X == '<='; X == '<>';
         X == '&'; X == '^^').
 
+-define(is_blank(X), X == blank).
+
 %%% Collectors
 
 %% implicit iteration when not in array context :(
