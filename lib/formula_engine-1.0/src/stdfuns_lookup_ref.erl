@@ -4,7 +4,7 @@
 
 
 -module(stdfuns_lookup_ref).
--export([address/1, choose/1, column/1, index/1, row/1]).
+-export([address/1, choose/1, column/1, index/1, match/1, row/1]).
 -compile(export_all).
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
@@ -94,6 +94,42 @@ index([A, V1, V2]) when ?is_area(A) ->
     end;
 index([X, V1, V2]) ->
     index([area_util:make_array([[X]]), V1, V2]).
+
+
+match([V1, V2]) ->
+    match([V1, V2, 1]);
+match([V1, V2, V3]) ->
+    ?ensure(?is_area(V2), ?ERR_VAL),
+    MatchType = ?int(V3, [cast_strings, ban_bools, ban_dates, cast_blanks]),
+    ?ensure(MatchType =< 1 andalso MatchType >= -1, ?ERR_NA),
+    ?ensure(area_util:height(V2) == 1, ?ERR_NA), % area must be horizontal
+    match1(V1, area_util:to_list(V2), MatchType).            
+match1(LookupVal, List, -1) ->
+    %% List must be in descending order.
+    IsDesc = all(fun({X1, X2}) -> stdfuns_logical:'>'([X1, X2]) end,
+                 zip(hslists:init(List), tl(List))),
+    ?ensure(IsDesc, ?ERR_NA),
+    %% Find the smallest value that's >= to LookupVal.
+    case find_first(fun(X) -> stdfuns_logical:'>='([X, LookupVal]) end, List) of
+        {ok, V} -> pos(V, List);
+        false   -> ?ERR_NA
+    end;
+match1(LookupVal, List, 0) ->
+    %% List can be in any order, value must match exactly.
+    case find_first(fun(X) -> stdfuns_logical:'='([X, LookupVal]) end, List) of
+        {ok, V} -> pos(V, List);
+        false   -> ?ERR_NA
+    end;
+match1(LookupVal, List, 1) ->
+    %% List must be in ascending order.
+    IsAsc = all(fun({X1, X2}) -> stdfuns_logical:'<'([X1, X2]) end,
+                zip(hslists:init(List), tl(List))),
+    ?ensure(IsAsc, ?ERR_NA),
+    %% Find the largest value that's <= to LookupVal.
+    case find_first(fun(X) -> stdfuns_logical:'<='([X, LookupVal]) end, reverse(List)) of
+        {ok, V} -> pos(V, List);
+        false   -> ?ERR_NA
+    end.
 
 
 vlookup([V, A, I]) ->
