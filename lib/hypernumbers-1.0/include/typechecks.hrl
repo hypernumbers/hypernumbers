@@ -45,6 +45,9 @@
 
 -define(is_blank(X), X == blank).
 
+-define(is_date(X), is_record(X, datetime)).
+
+
 %%% Collectors
 
 %% implicit iteration when not in array context :(
