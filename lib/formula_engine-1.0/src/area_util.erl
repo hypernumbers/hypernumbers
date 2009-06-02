@@ -8,53 +8,23 @@
 %%%      {Tag, Width, Height, [ {Y, X, Term} ]}
 
 -module(area_util).
--export([
-         apply_each/2,
-         width/1,
-         height/1,
-         at/3,
-         make_array/2,
-         to_list/1,
-         col/2,
-         row/2,
-         is_congruent/1
-        ]).
+-export([apply_each/2, width/1, height/1, at/3, make_array/2, to_list/1,
+         col/2, row/2, are_congruent/2]).
 -compile(export_all).
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
 
 -define(OUT_OF_RANGE, {error, out_of_range}).
 
-%% @spec is_congruent(List) -> [ok | {error, atom()}]
-%% List = [term()]
-%% @doc checks if the terms in List are congruent areas - do they have the same
-%% X and Y dimensions
-is_congruent([H|T]) -> is_congruent1(T, areasize(H)).
 
-%% if any two pairs aren't congruent everything is not congruent 
-is_congruent1([], _Size)     -> true;
-is_congruent1([H | T], Size) -> Return = case areasize(H) of
-                                              Size -> is_congruent1(T, Size);
-                                              _    -> false
-                                          end,
-                                % io:format("in is_congruent1 Return is ~p~n",
-                                %           [Return]),                                
-                                Return.
+%%% @doc Check if all areas in the list have the same dimensions as A.
+are_congruent(A, As) when ?is_area(A), is_list(As) ->
+    {W, H} = {width(A), height(A)},
+    all(fun(X) -> {W, H} == {width(X), height(X)} end, As);
+%%% @doc Check if two areas have the same dimensions.
+are_congruent(A1, A2) when ?is_area(A1), ?is_area(A2) ->
+    are_congruent(A1, [A2]).
 
-areasize(Obj) -> Return = areasize2(Obj),
-                 % io:format("in areasize Obj is ~p Return is ~p~n",
-                 %          [Obj, Return]),
-                 Return.
-
-areasize2({range, [List]})          -> {length(List), areasize2(List)};
-areasize2({array, List})            -> {length(List), areasize2(List)};
-areasize2(List) when is_list(List)  -> length(List);
-areasize2(_Obj)                     -> 0.
-
-%areasize3([], Acc)      -> lists:reverse(Acc);
-%areasize3([H | T], Acc) -> io:format("in areasize3~n-H is ~p~n-T is ~p~n-Acc is ~p~n",
-%                                     [H, T, Acc]),
-%                           areasize3(T, [length(H) | Acc]).
                       
 %% @spec apply_each(Fun, A) -> area()  Fun = function(), A = area()
 %% @doc Apply a function to each value in array/range.
