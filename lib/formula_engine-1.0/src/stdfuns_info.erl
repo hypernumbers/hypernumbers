@@ -173,9 +173,12 @@ type([blank])                -> 1;
 type(_)                      -> 0.
 
 
-isblank([blank]) -> true;
-isblank(Vs)      -> Flatvs = ?flatten_all(Vs),
-                    all(fun muin_collect:is_blank/1, Flatvs).
+%% Excel's ISBLANK takes one argument.  Ours will work with a list too.
+isblank([B]) when ?is_blank(B) ->
+    true;
+isblank(Vs)      ->
+    Flatvs = ?flatten_all(Vs),
+    all(fun muin_collect:is_blank/1, Flatvs).
 
 
 %% @todo needs a test case written because it is not an Excel 97 function
