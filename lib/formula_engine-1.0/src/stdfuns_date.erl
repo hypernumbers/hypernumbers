@@ -20,7 +20,8 @@
          minute/1,
          second/1,
          now/1,
-         timevalue/1]).
+         timevalue/1,
+         time/1]).
 
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
@@ -272,6 +273,12 @@ now([]) ->
 timevalue([V1]) ->
     ?date(V1, ?cast_all).
 
+
+%% TODO: Case when hour > 23 or minute/second > 60.
+time(Args = [_, _, _]) ->
+    [H, M, S] = ?numbers(Args, [cast_numbers, cast_strings, ban_bools, ban_dates]),
+    #datetime{time = {H, M, S}}.
+      
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -include_lib("eunit.hrl").
