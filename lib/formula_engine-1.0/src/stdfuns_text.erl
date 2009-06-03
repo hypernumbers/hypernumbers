@@ -29,7 +29,7 @@
 %% Excel 2004 API.
 -export([value/1, t/1, replace/1, search/1, '&'/1, char/1, clean/1, concatenate/1,
          exact/1, find/1, fixed/1, left/1, len/1, lower/1, mid/1, proper/1,
-         rept/1, right/1, substitute/1, text/1, upper/1]).
+         rept/1, right/1, substitute/1, text/1, trim/1, upper/1]).
 
 %% Default set of rules for text
 -define(default_num_rules, [cast_strings, cast_bools,
@@ -268,10 +268,17 @@ substitute([Text,OldText,NewText,N]) ->
             string:join(StartList,OldText2)++NewText2++string:join(EndList,OldText2)
     end.
 
+
 text([Value, Format]) ->
     {erlang, {_Type, Output}} = format:get_src(Format),
     {ok, {_Color, Fmtdstr}} = format:run_format(Value, Output),
     Fmtdstr.
+
+
+trim([S]) when ?is_string(S) ->
+    {ok, NewS, _} = regexp:gsub(S, "\\s+", " "),
+    string:strip(NewS).
+    
 
 %%% ----------------- %%%
 %%% Private functions %%%
