@@ -70,10 +70,9 @@ eval_formula(Fcode) ->
         Value ->
             case Value of
                 R when ?is_cellref(R) ->
-                    
                     case attempt(?MODULE, fetch, [R]) of
                         {ok,    blank}              -> 0;
-                        {error, {aborted, _} = Err} -> exit(Err); % rethrow on lock
+                        {error, {aborted, _} = Err} -> exit(Err); % re-exit on lock
                         {ok,    Other}              -> Other;
                         {error, ErrVal}             -> ErrVal
                     end;
@@ -102,9 +101,9 @@ compile(Fla, {Col, Row}) ->
 
 %% Formula -> sexp, relative to coord.
 parse(Fla, {Col, Row}) ->
-    %%Trans = translator:do(Fla),
+    Trans = translator:do(Fla),
 
-    case catch (xfl_lexer:lex(Fla, {Col, Row})) of
+    case catch (xfl_lexer:lex(Trans, {Col, Row})) of
         {ok, Toks} -> case catch(xfl_parser:parse(Toks)) of
                           {ok, Ast} -> {ok, Ast};
                           _         -> ?syntax_error
@@ -115,11 +114,11 @@ parse(Fla, {Col, Row}) ->
 %% Evaluate a form in the current rti context.
 %% this function captures thrown errors - including those thrown
 %% when Mnesia is unrolling a transaction. When the '{aborted, {cyclic...'
-%% exception is caught it must be rethrown...
+%% exit is caught it must be exited again...
 eval(_Node = [Func|Args]) when ?is_fn(Func) ->
     case attempt(?MODULE, funcall, [Func, Args]) of
         {error, {errval, _}  = Err} -> Err;
-        {error, {aborted, _} = Err} -> exit(Err); % rethrow
+        {error, {aborted, _} = Err} -> exit(Err); % re-exit
         {error, _E}                 -> ?error_in_formula;
         {ok, {error, _E}}           -> ?error_in_formula; % in stdfuns
         {ok, V}                     -> V
