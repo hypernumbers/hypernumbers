@@ -583,8 +583,13 @@ remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
         {tcp_closed, Socket} -> ok;
         {error, timeout}     -> Req:ok({"text/html",?hdr, <<"timeout">>});
         {msg, Data}          -> ?json(Req, Data)
+    after
+        % TODO : Fix, should be controlled by remoting_reg
+        600000 ->
+            ?json(Req, {struct, [{"time", remoting_reg:timestamp()},
+                                 {"timeout", "true"}]})
     end.
-                 
+
 get_var_or_cookie(Key, Vars, Req) ->
     case lists:keysearch(Key, 1, Vars) of
         false ->
