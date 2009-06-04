@@ -20,12 +20,6 @@ body {
   font:    11px Arial,"Helvetica Neue", sans-serif;
 }
 
-.warning { 
-  color:      red;
-  font-size:  10px;
-}
-
-
 table {  
   width:100%;
   height:100%;
@@ -34,6 +28,28 @@ table {
 ul,li { 
  margin:0px;
  padding:0px;
+}
+
+.warning { 
+  color:      red;
+  font-size:  10px;
+}
+
+.note { 
+  color:      grey;
+  font-size:  10px;
+}
+
+#cover { 
+  position: fixed;
+  top:0px;
+  left:0px;
+  width:100%;
+  height:100%;
+  background:black;
+  opacity: 0.5;
+  z-index:999999;
+  display:none;
 }
 
 #header { 
@@ -560,7 +576,7 @@ ul,li {
 #hidden_input {  
   font:11px Arial,"Helvetica Neue", sans-serif;
   position:absolute;
-  top:-100px;
+  top:-1000000px;
   left:0px;
   z-index:9999999;
 }
@@ -721,6 +737,31 @@ border:1px solid blue;
 #languages .flag.it { background-position:  -122px -179px; }
 #languages .flag.br { background-position:  -142px -179px; }
 #languages .flag.en_us { background-position:  -162px -179px; }
+
+.mdialog { 
+    position:   absolute;
+    top:        50%;
+    left:       50%;
+    display:    none;
+    background: white;
+    border:     5px solid #666;
+    z-index:    9999999;
+    padding:    8px;
+}
+
+.mdialog h2 { 
+  margin:0px;
+}
+
+.mclose {  
+  float:left;
+  color:red;
+}
+
+.action {  
+  float:right;
+  color:green;
+}
 
 .dialog { 
     display:none;
