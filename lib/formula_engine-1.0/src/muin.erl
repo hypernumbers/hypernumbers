@@ -102,9 +102,9 @@ compile(Fla, {Col, Row}) ->
 
 %% Formula -> sexp, relative to coord.
 parse(Fla, {Col, Row}) ->
-    Trans = translator:do(Fla),
+    %%Trans = translator:do(Fla),
 
-    case catch (xfl_lexer:lex(Trans, {Col, Row})) of
+    case catch (xfl_lexer:lex(Fla, {Col, Row})) of
         {ok, Toks} -> case catch(xfl_parser:parse(Toks)) of
                           {ok, Ast} -> {ok, Ast};
                           _         -> ?syntax_error
@@ -172,6 +172,8 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
     funcall(pair_up, [A, V]);
              
 %% Formula function call (built-in or user-defined).
+%% TODO: If a function exists in one of the modules, but calling it returns
+%%       no_clause, return #VALUE? (E.g. for when giving a list to ABS)
 funcall(Fname, Args0) ->
     Args = case member(Fname, ['if', choose, column, row, cell, columns]) of
                true  -> Args0;
@@ -190,7 +192,7 @@ funcall(Fname, Args0) ->
                       Acc
               end,
               {Fname, Args, not_found_yet},
-              [stdfuns_math, stdfuns_stats, stdfuns_date, stdfuns_financial,
+              [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date, stdfuns_financial,
                stdfuns_info, stdfuns_lookup_ref, stdfuns_eng, stdfuns_gg,
                stdfuns_logical, stdfuns_text, stdfuns_db]),
     
