@@ -13,7 +13,7 @@
 -record(post, {time, site, path, method, body, peer, user, referer, browser}).
 
 -export([log/4, start/0, stop/0, replay/2, replay/3, clear/0,
-         browse/1, browse/2, info/2, generate_mi/2 ]).
+         browse/1, browse/2, browse_marks/1, info/2, generate_mi/2 ]).
 
 %% @spec start() -> ok
 %% @doc This starts the log
@@ -128,7 +128,7 @@ reduce([{Key, Val} | T], User, Acc) ->
 
 default_filter() ->
     [{method, post}, {date, all}, {id, all}, {deep, true}, {path, "/"},
-     {user, all}, {pause, 0}].
+     {user, all}, {pause, 0}, {body, all}].
 
 %% @spec dump(Name) -> ok
 %% @doc Dumps the logfile with Name to the shell
@@ -136,6 +136,11 @@ info(Name, Id) ->
     F = fun(Post, NId) -> print(long, Post, NId) end,
     run_log(Name, F, make_filter([{id, Id}, {method, all}])).
 
+%% @doc Dumps the marks in logfile to the shell
+browse_marks(Name) ->
+    F = fun(Post, Id) -> print(long, Post, Id) end,
+    run_log(Name, F, make_filter([{body, mark}])).
+    
 %% @doc Dumps the logfile with Name to the shell
 browse(Name) ->
     browse(Name, default_filter()).
@@ -216,6 +221,14 @@ filter([{user, User} | T], #post{user=User} = Post, Id) ->
     filter(T, Post, Id);
 filter([{user, _User} | _T], #post{user=_NUser}, _NId) ->
     false;
+
+filter([{body, all} | T], Post, Id) ->
+    filter(T, Post, Id);
+filter([{body, mark} | T], #post{body = Body} = Post, Id) ->
+    case Body of
+        <<"{\"set\":{\"mark\":",_Rest/binary>> -> filter(T, Post, Id);
+        _Other                                 -> false
+    end;
 
 filter([_H | T], Post, Id) ->
     filter(T, Post, Id).
