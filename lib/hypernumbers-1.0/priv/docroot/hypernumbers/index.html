@@ -11,29 +11,48 @@
   <body>
     
     <table cellspacing="0" cellpadding="0" id="hn">
-      <tr>
+      <tr height="60px;">
         <td id="header">
           <h1><a href="">Hypernumbers</a></h1>
           <ul id="navigation">
+            
+            <!-- Shown to non logged in users -->
             <li id="anonymous"><a href="/_user/login/">$txt:{Login}$</a></li>
+            
+            <!-- Shown to logged in users -->
             <li id="loggedin">
+
+              <!-- Languages drop down -->
               <div class="expand" id="languages">
-                <a style="height:14px;"><span class="flag $txt:{en_gb}$">&nbsp;</span></a>
+                <a id="currentLanguage">
+                  <span class="flag $txt:{en_gb}$">&nbsp;</span>
+                </a>
                 <div id="lang">
-                  <a name="en_gb"><span class="flag en_gb">&nbsp;</span>$txt:{English}$</a>
-                  <a name="fr"><span class="flag fr">&nbsp;</span>$txt:{French}$</a>
-                  <a name="ru"><span class="flag ru">&nbsp;</span>$txt:{Russian}$</a>
-                  <a name="de"><span class="flag de">&nbsp;</span>$txt:{German}$</a>
-                  <a name="es"><span class="flag es">&nbsp;</span>$txt:{Spanish}$</a>
-                  <a name="br"><span class="flag br">&nbsp;</span>$txt:{Portuguese}$</a>
-                  <a name="it"><span class="flag it">&nbsp;</span>$txt:{Italian}$</a>
-                  <a name="pt"><span class="flag br">&nbsp;</span>$txt:{Brazilian}$</a>
-                  <a name="en_us"><span class="flag en_us">&nbsp;</span>$txt:{United States}$</a>
+                  <a name="en_gb"><span class="flag en_gb">&nbsp;</span>
+                    $txt:{English}$</a>
+                  <a name="fr"><span class="flag fr">&nbsp;</span>
+                    $txt:{French}$</a>
+                  <a name="ru"><span class="flag ru">&nbsp;</span>
+                    $txt:{Russian}$</a>
+                  <a name="de"><span class="flag de">&nbsp;</span>
+                    $txt:{German}$</a>
+                  <a name="es"><span class="flag es">&nbsp;</span>
+                    $txt:{Spanish}$</a>
+                  <a name="br"><span class="flag br">&nbsp;</span>
+                    $txt:{Portuguese}$</a>
+                  <a name="it"><span class="flag it">&nbsp;</span>
+                    $txt:{Italian}$</a>
+                  <a name="pt"><span class="flag br">&nbsp;</span>
+                    $txt:{Brazilian}$</a>
+                  <a name="en_us"><span class="flag en_us">&nbsp;</span>
+                    $txt:{United States}$</a>
                 </div>
               </div>
-              $txt:{Logged in as}$ &nbsp;<a id="home"></a> &nbsp;&nbsp;&nbsp;
+              $txt:{Logged in as}$ &nbsp;<a id="home"></a> 
+              &nbsp;&nbsp;&nbsp;
               <a id="logout">$txt:{Log out}$</a>
             </li>
+
           </ul>
         </td>
       </tr>
@@ -44,10 +63,10 @@
               <li id="browse">
                 <a>$txt:{My Spreadsheets}$</a>
                 <ul>
-                  <li id="empty"><a class="disabled"><em>$txt:{empty}$</em></a></li>       
+                  <li id="empty"><a class="disabled"><em>$txt:{empty}$</em></a></li>
                   <li class="seperator"></li>
                   <li><a id="newpagebtn">$txt:{New}$</a></li>
-                  <li><a id="importbtn">$txt:{Import}$</a></li>
+                  <li id="importmenu"><a id="importbtn">$txt:{Import}$</a></li>
                   <li class="seperator"></li>
                   <li><a id="deletebtn">$txt:{Delete}$</a></li>
                 </ul>
@@ -62,7 +81,7 @@
                       <strong>$txt:{All}$</strong></a></li> 
                 </ul>
               </li>
-
+              
               <li><a id="edit">$txt:{Preferences}$</a>
                 <ul>
         	      <li>
@@ -143,7 +162,8 @@
           <a title="Italic" id="italic" class="toolbar-item"></a>
           <a title="Strikethough" id="strike" class="toolbar-item"></a>
           <a class="separator"></a>
-          <div class="expand">
+          
+          <div class="expand" id="borders">
             <span><a id="border-head" class="icon"></a></span>
             <div id="borders">
               <a id="border_surround" class="toolbar-item"></a>
@@ -156,7 +176,7 @@
               <a id="border_bottom" class="toolbar-item"></a>
             </div>
           </div>
-          <a class="separator"></a>          
+          <a class="separator" id="bordersep"></a>          
           <div class="expand">
             <span><a id="bgcolor-head" class="icon"></a></span>
             <div id="bgcolors">
@@ -182,7 +202,8 @@
               <a id="color_FFFFCC" class="color"></a>
             </div>
           </div>
-          <div class="expand">
+
+          <div class="expand" id="font_colour">
             <span><a id="fontcolor-head" class="icon"></a></span>
             <div id="fontcolors">
 

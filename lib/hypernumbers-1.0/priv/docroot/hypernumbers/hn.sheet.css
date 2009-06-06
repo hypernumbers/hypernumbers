@@ -1,197 +1,401 @@
-/**
- * jQuery.SpreadSheet
- * Copyright (c) 2008 HyperNumbers.com
- * All rights reserved.
- * @projectDescription A Spreadsheet GUI 
- * @author Dale Harvey
- * @version 0.1
- */
+/******************************************************************************
+	TAG STYLES
+******************************************************************************/
+html,body { 
+ overflow: hidden;
+ height:   100%;
+}
+
+body {  
+ margin: 0px;
+ font:   11px Arial,"Helvetica Neue", sans-serif;
+}
+
+table {  
+ width:  100%;
+ height: 100%;
+}
+
+ul,li { 
+ list-style-type: none;
+ margin:  0px;
+ padding: 0px;
+}
 
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
-html,body { 
-  overflow:     hidden;
-  height:	    100%;
-}
-
-body {  
-  margin:  0px;
-  font:    11px Arial,"Helvetica Neue", sans-serif;
-}
-
-table {  
-  width:100%;
-  height:100%;
-}
-
-ul,li { 
- margin:0px;
- padding:0px;
-}
-
 .warning { 
-  color:      red;
-  font-size:  10px;
+ color:      red;
+ font-size:  10px;
 }
 
 .note { 
-  color:      grey;
-  font-size:  10px;
+ color:      grey;
+ font-size:  10px;
 }
 
+/* Covers entire page, background for modal dialogs */
 #cover { 
-  position: fixed;
-  top:0px;
-  left:0px;
-  width:100%;
-  height:100%;
-  background:black;
-  opacity: 0.5;
-  z-index:999999;
-  display:none;
+ position:   fixed;
+ top:        0px;
+ left:       0px;
+ width:      100%;
+ height:     100%;
+ background: black;
+ opacity:    0.5;
+ z-index:    999999;
+ display:    none;
 }
 
-#header { 
-  background:#000;
-  height:60px;
+/******************************************************************************
+	DIALOG STYLES
+******************************************************************************/
+/* mdialog is a modal dialog */
+.mdialog { 
+ position:   absolute;
+ top:        50%;
+ left:       50%;
+ display:    none;
+ background: white;
+ border:     5px solid #666;
+ z-index:    9999999;
+ padding:    8px;
 }
 
+.mdialog h2 { 
+ margin:0px;
+}
+
+/* close button bottom left of modal dialogs */
+.mclose {  
+ float:left;
+ color:red;
+}
+
+/* "confirm action" button bottom right of modal dialogs */
+.action {  
+ float:right;
+ color:green;
+}
+
+.dialog { 
+ display:    none;
+ position:   absolute;
+ top:        50px; 
+ left:       50px;
+ background: white;
+ min-width:  200px;
+ border:     1px solid #666;
+ z-index:    999999;
+ -moz-border-radius: 3px 3px 3px 3px;
+}
+
+.dialog h2 {
+ display:       block;
+ margin:        0px;
+ font:          bold 10px sans-serif;
+ padding:       4px;
+ border-bottom: 1px solid #66AA00;
+ background:    orange;
+ -moz-border-radius: 3px 3px 0px 0px;
+}
+
+.dialog .close {
+ cursor:     pointer;
+ position:   absolute;
+ top:        5px;
+ right:      5px;
+ height:     11px;
+ width:      11px;
+ background-image:    url(sprite.png);
+ background-position: -49px -3px;
+}
+
+/******************************************************************************
+	TOP NAVIGATION STYLES
+******************************************************************************/
 #navigation {  
-  list-style-type:none;
-  float:      right;
-  position:   relative;
-  top:        0px;
-  margin:     0px 0px 0px 5px;
+ float:    right;
+ position: relative;
+ top:      0px;
+ margin:   0px 0px 0px 5px;
 }
 
 #navigation li { 
-  font:       11px Arial,"Helvetica Neue", sans-serif;
-  float:      left;
-  margin:     0px 5px;
-  padding:    3px 13px 3px 13px;
-  color:      #999;
-  display:none;
+ font:    11px Arial,"Helvetica Neue", sans-serif;
+ float:   left;
+ margin:  0px 5px;
+ padding: 3px 13px 3px 13px;
+ color:   #999;
+ display: none;
 }
 
-#navigation li a { 
-  color:orange;
-  text-decoration:underline;
-  cursor:pointer;
+#navigation a { 
+ color:           orange;
+ text-decoration: underline;
+ cursor:          pointer;
 }
 
+#languages { 
+ background:  url(down.png) no-repeat right 1px;
+ cursor:      pointer;
+ padding:     2px 16px 2px 2px;
+ margin:      -3px 12px 0px 0px;
+ border:      1px solid transparent;
+ float:       left;
+}
+
+#languages:hover {
+ border: 1px solid #666; 
+}
+
+#languages div { 
+ z-index:    9999;
+ background: #000;
+ border:     1px solid #666;
+ position:   absolute;
+ top:        auto;
+ display:    none;
+ z-index:    1000;
+}
+
+#lang a {  
+ padding: 3px 5px;
+ display: none; 
+ color:   #BBB;
+ text-decoration: none; 
+}
+
+#lang a:hover {  
+ background-color: #444;
+}
+
+#languages .flag {  
+ margin:  2px 3px 0px 0px;
+ display: block;
+ float:   left;
+ width:   16px;
+ height:  11px;
+ background-image: url(sprite.png);
+}
+
+#languages .flag.en_gb { background-position: -2px -179px; }
+#languages .flag.fr    { background-position: -22px -179px; }
+#languages .flag.ru    { background-position: -42px -179px; }
+#languages .flag.de    { background-position: -62px -179px; }
+#languages .flag.es    { background-position: -82px -179px; }
+#languages .flag.it    { background-position: -122px -179px; }
+#languages .flag.br    { background-position: -142px -179px; }
+#languages .flag.en_us { background-position: -162px -179px; }
+
+/******************************************************************************
+	FILE MENU STYLES
+******************************************************************************/
+#menu { 
+ height:     22px;
+ background: #FFFFFF;
+}
+
+#menu li { 
+ float:      left; 
+}    
+
+#menu li li {
+ float:    none; 
+ display:  block; 
+ position: relative;
+}
+
+#menu ul { 
+ display:      none; 
+ position:     absolute;  
+ border:       1px solid; 
+ border-color: #DDD #AAA #AAA #DDD;  
+ padding:      1px 0px; 
+ background:   #FFFFFF; 
+ z-index:      99999;
+}
+
+#menu ul ul { 
+ left: 100%; 
+ top:  0; 
+} 
+
+#menu a {
+ position:   relative;
+ display:    block; 
+ background: #FFFFFF;
+ cursor:     pointer; 
+ padding:    4px 10px; 
+ z-index:    100;
+ color:      #000;
+ text-decoration: none;
+}
+
+#menu ul a { 
+ background: #f8f7f6;       
+ padding:    3px 20px 3px 20px; 
+ z-index:    200;
+}
+
+#menu .hover { 
+ background: #ffc47e; 
+}  
+
+#menu .disabled.hover { 
+ background: #f8f7f6;       
+}  
+
+#menu .disabled { 
+ color: #AAA; 
+}  
+
+#menu li.seperator { 
+ height:     0px; 
+ border-top: 1px solid #CCC; 
+ margin:     3px 0px;      
+}
+
+#menu div.input {
+ position: relative;
+ padding:  0px;
+ width:    16px;
+ height:   16px;
+ float:    left;
+ z-index:  500;
+}
+
+#menu .icon {
+ background-repeat: no-repeat;
+ background-position:3px 3px; 
+}
+
+#menu .arrow {
+ display:      none;
+}
+
+#menu ul li .arrow { 
+ display:    block;
+ position:   absolute;
+ height:     16px;
+ width:      16px;
+ background: url(../img/arrow.png);
+ top:        3px;
+ right:      0px;
+}
+
+/******************************************************************************
+	LAYOUT STYLES
+******************************************************************************/
+#header { 
+ background: #000;
+ height:     60px;
+}
 
 #header h1 { 
-  display:block;
-  background: url(sprite.png) 0px -127px;  
-  height:50px;
-  width:256px;
-  text-indent:-999px;
-  margin: 0px 0px 0px 10px;
-  float:left;
+ display:     block;
+ background:  url(sprite.png) 0px -127px;  
+ height:      50px;
+ width:       256px;
+ text-indent: -999px;
+ margin:      0px 0px 0px 10px;
+ float:       left;
 }
 
 #formulabar {
-  height: 18px;
+ height: 18px;
 }
 
 #name {
-  border: 0px;
-  width: 100%;
-  height: 100%;
-  text-align: center;
+ border:     0px;
+ width:      100%;
+ height:     100%;
+ text-align: center;
 }
 
 #formula {
-  border: 0px;
-  height: 100%;
-  width: 100%;
-  text-indent: 4px;
-  background:#FFF;
+ border:      0px;
+ height:      100%;
+ width:       100%;
+ text-indent: 4px;
+ background:  #FFF;
 }
 
 #functionsbtn { 
-  color:#333333;
-  display:block;
-  height:18px;
-  width:28px;
-  border-width:0px 1px;
-  border-color:#FFF #FFF #FFF #FFF;
-  background: #EEE;
+ color:        #333333;
+ display:      block;
+ height:       18px;
+ width:        28px;
+ border-width: 0px 1px;
+ border-color: #FFF #FFF #FFF #FFF;
+ background:   #EEE;
 }
 
 #corner {
-  height:19px;
-  width:25px;
-  border-bottom:  1px solid #aaa;
-  border-right:   1px solid #aaa;
-  background:     #ddd;
+ height:        19px;
+ width:         25px;
+ border-bottom: 1px solid #aaa;
+ border-right:  1px solid #aaa;
+ background:    #ddd;
 }
 
 
 /******************************************************************************
 	    CELLS
 ******************************************************************************/
-#scroller
-{
-  height:100%;
-  position:relative;
-  top: 0px;
-  cursor:cell;
+#scroller {
+ height:   100%;
+ position: relative;
+ top:      0px;
+ cursor:   cell;
 }
 
-#up,#down
-{ 
-  width:      15px;
-  height:     15px;
-  cursor:     default;
-  border: 1px solid #81756a;
+#up, #down { 
+ width:  15px;
+ height: 15px;
+ cursor: default;
+ border: 1px solid #81756a;
 }
 
-#right,#left
-{ 
-  width:      13px;
-  height:     13px;
-  cursor:     default;
-  border: 1px solid #81756a;
+#right, #left { 
+ width:  13px;
+ height: 13px;
+ cursor: default;
+ border: 1px solid #81756a;
 }
 
-#right-bar 
-{
-  background: url(sprite-y.png) 0px 0px;
-  height:20px;
-  width:13px;
-  border-top:1px solid #81756a;
-  border-bottom:1px solid #81756a;
-  position:absolute;
-  top:0px;
+#right-bar {
+ background:    url(sprite-y.png) 0px 0px;
+ height:        20px;
+ width:         13px;
+ border-top:    1px solid #81756a;
+ border-bottom: 1px solid #81756a;
+ position:      absolute;
+ top:           0px;
 }
 
-#bottom-bar 
-{
-  background: url(sprite-x.png) 0px -28px;
-  height:13px;
-  width:20px;
-  border-left:1px solid #81756a;
-  border-right:1px solid #81756a;
-  position:absolute;
-  left:0px;
+#bottom-bar {
+ background:   url(sprite-x.png) 0px -28px;
+ height:       13px;
+ width:        20px;
+ border-left:  1px solid #81756a;
+ border-right: 1px solid #81756a;
+ position:     absolute;
+ left:         0px;
 }
 
-#scrollbar-bottom
-{
-  border-top:1px solid #81756a;
-  border-bottom:1px solid #81756a;
-  background:#cbc1b7;
+#scrollbar-bottom {
+ border-top:    1px solid #81756a;
+ border-bottom: 1px solid #81756a;
+ background:    #cbc1b7;
 }
 
-#scrollbar-right
-{
-  border-left:1px solid #81756a;
-  border-right:1px solid #81756a;
-  background:#cbc1b7;
+#scrollbar-right {
+ border-left:  1px solid #81756a;
+ border-right: 1px solid #81756a;
+ background:   #cbc1b7;
 }
-
 
 #right { background: url(sprite.png) -1px -32px; }
 #up    { background: url(sprite.png) -1px -1px; }
@@ -213,71 +417,70 @@ ul,li {
 #right-bar.active  { background: url(sprite-y.png) -28px 0px; }
 
 #rows { 
-    cursor:default;
-    width:26px;
+ cursor: default;
+ width:  26px;
 }
 
 #columns {
-    cursor:default;
-    height: 20px;
+ cursor: default;
+ height: 20px;
 }
 
 #columns .handle { 
- position:absolute;
- width:8px; 
- top:0px;
- right:-8px;
- height:20px;
- z-index:9999;
+ position: absolute;
+ width:    8px; 
+ top:      0px;
+ right:    -8px;
+ height:   20px;
+ z-index:  9999;
 }
 
 #rows .handle { 
- position:absolute;
- width:25px; 
- bottom:-8px;
- height:8px;
- z-index:9999;
+ position: absolute;
+ width:    25px; 
+ bottom:   -8px;
+ height:   8px;
+ z-index:  9999;
 }
 
 #rows .handle:hover { 
- cursor:ns-resize;
- background:#FF9966;
+ cursor:     ns-resize;
+ background: #FF9966;
 }
 
 #columns .handle:hover { 
- cursor:ew-resize;
- background:#FF9966;
+ cursor:     ew-resize;
+ background: #FF9966;
 }
 
 /******************************************************************************
 		TOOLBAR
 ******************************************************************************/
-#toolbar 
-{
-    background:     #eee;
-    height:         26px;
-    overflow:       hidden;
-    border-bottom:  1px solid #999;
-    border-top:     1px solid #ddd;
+#toolbar {
+ background:    #eee;
+ height:        26px;
+ overflow:      hidden;
+ border-bottom: 1px solid #999;
+ border-top:    1px solid #ddd;
 }
 
 #toolbar .expand { 
-  background: url(down.png) no-repeat right 2px;
-  cursor:pointer;
-  padding:3px 16px 1px 3px;
-  margin: 2px;
-  height: 16px;
-  border: 1px solid transparent;
-  float:  left;
+ background: url(down.png) no-repeat right 2px;
+ cursor:     pointer;
+ padding:    3px 16px 1px 3px;
+ margin:     2px;
+ height:     16px;
+ border:     1px solid transparent;
+ float:      left;
 }
 
-#toolbar .fonts a { 
-  display:block;
-  padding:2px 5px;
+.fonts a { 
+ display: block;
+ padding: 2px 5px;
 }
 
-#toolbar .fonts a:hover { 
-  background:#DDD;
+.fonts a:hover { 
+ background: #DDD;
 }
 
 #toolbar .expand > div { 
@@ -292,30 +495,27 @@ ul,li {
 }
 
 #toolbar #formats { 
-  font:    10px Arial,"Helvetica Neue", sans-serif;
+  font: 10px Arial,"Helvetica Neue", sans-serif;
  }
 
 #toolbar .expand:hover, #toolbar .expand.active {
-  border: 1px solid #BBB;
-  background-color:#fff;
+  border:           1px solid #BBB;
+  background-color: #fff;
 }
 
-#toolbar a.separator
-{
-    cursor:         default;
-    margin:         3px;
-    padding:        0px;
-    height:         18px;
-  float:left;
-    width:          0px !important;
-    border-left:    1px solid #999;
-    border-right:   1px solid #FFF;
+#toolbar a.separator {
+ cursor:       default;
+ margin:       3px;
+ padding:      0px;
+ height:       18px;
+ float:        left;
+ width:        0px !important;
+ border-left:  1px solid #999;
+ border-right: 1px solid #FFF;
 }
 
 #toolbar hr { background-color:#999; height:1px; border:0px; }
-
 #formats {  width:180px;  }
-
 #fstyle_serif { font:11px serif; }
 #fstyle_monospace { font:11px monospace; }
 
@@ -327,54 +527,43 @@ ul,li {
 
 .desc { font-size: 8px; position:absolute; right:4px; }
 
-.red { color:red; }
-
-#toolbar select
-{ 
-  margin:2px;
-  float: left;
-}
-
 #toolbar .icon { 
-  background-image: url(sprite.png);
-  cursor:     pointer;
-  display:    block;
-  height:     16px;
-  width:      16px;
+ background-image: url(sprite.png);
+ cursor:     pointer;
+ display:    block;
+ height:     16px;
+ width:      16px;
 }
 
-#toolbar a.toolbar-item
-{
-  background-image: url(sprite.png);
-  float:      left;
-  cursor:     pointer;
-  border:     1px solid transparent;
-  padding:    2px;
-  margin:     2px;
-  display:    block;
-  height:     16px;
-  width:      16px;
+#toolbar a.toolbar-item {
+ background-image: url(sprite.png);
+ float:   left;
+ cursor:  pointer;
+ border:  1px solid transparent;
+ padding: 2px;
+ margin:  2px;
+ display: block;
+ height:  16px;
+ width:   16px;
 }
 
-#toolbar a.toolbar-item:hover
-{
-    border: 1px solid #BBB;
-    background-color:#fff;
+#toolbar a.toolbar-item:hover {
+ border:           1px solid #BBB;
+ background-color: #fff;
 }
 
-#toolbar a.color
-{
-  float:      left;
-  cursor:     pointer;
-  border:     1px solid #AAAAAA;
-  margin:     2px;
-  display:    block;
-  height:     10px;
-  width:      10px;
+#toolbar a.color {
+ float:   left;
+ cursor:  pointer;
+ border:  1px solid #AAAAAA;
+ margin:  2px;
+ display: block;
+ height:  10px;
+ width:   10px;
 }
 
 #toolbar a.color:hover {
-  border:     1px solid #666;
+  border: 1px solid #666;
 }
 
 #color_000000 { background:#000000; }
@@ -397,447 +586,248 @@ ul,li {
 #color_993366 { background:#993366; }
 #color_FFFFCC { background:#FFFFCC; }
 
-#left-head { background-position: -2px -63px; }
-#border-head { background-position: -68px -85px; }
-#bgcolor-head { background-position: -68px -63px; }
+#left-head      { background-position: -2px -63px; }
+#border-head    { background-position: -68px -85px; }
+#bgcolor-head   { background-position: -68px -63px; }
 #fontcolor-head { background-position: -46px -107px; }
 
-#align_left  { background-position:  -0px -61px; }
-#align_center     { background-position:  -44px -61px; }
-#align_right { background-position:  -0px -83px; }
-#bold       { background-position:  -22px -83px; }
-#italic     { background-position:  -44px -83px; }
-#underline  { background-position:  -22px -105px; }
-#strike     { background-position:  -0px -105px; }
-#format     { background-position:  -44px -105px; }
+#align_left   { background-position: -0px -61px; }
+#align_center { background-position: -44px -61px; }
+#align_right  { background-position: -0px -83px; }
+#bold       { background-position: -22px -83px; }
+#italic     { background-position: -44px -83px; }
+#strike     { background-position: -0px -105px; }
+#format     { background-position: -44px -105px; }
 
-#border_surround  { background-position:  -66px -83px; }
-#border_inside    { background-position:  -88px -61px; }
-#border_none      { background-position:  -66px -105px; }
-#border_all       { background-position:  -88px -83px; }
-#border_left      { background-position:  -110px -83px; }
-#border_top       { background-position:  -88px -105px; }
-#border_right     { background-position:  -110px -105px; }
-#border_bottom    { background-position:  -110px -61px; }
+#border_surround { background-position: -66px -83px; }
+#border_inside   { background-position: -88px -61px; }
+#border_none     { background-position: -66px -105px; }
+#border_all      { background-position: -88px -83px; }
+#border_left     { background-position: -110px -83px; }
+#border_top      { background-position: -88px -105px; }
+#border_right    { background-position: -110px -105px; }
+#border_bottom   { background-position: -110px -61px; }
 
 #markbtn { background-position: -138px -59px; }
 
-#feedback {  width: 430px; height:200px;   font: 10px sans-serif; background:#EEE; 
-  border:1px solid #AAA; }
-
-#menu { 
-  font:         11px sans-serif; 
-  height:       22px;
-  background:   #FFFFFF;
+#feedback {  
+ width:  430px; 
+ height: 200px;   
+ font:   10px sans-serif; background:#EEE; 
+ border: 1px solid #AAA; 
 }
-
-#menu li { 
-  list-style:   none; 
-  float:        left; 
-}    
-
-#menu li li {
-  float:        none; 
-  display:      block; 
-  position:     relative;
-}
-
-#menu ul { 
-  display:      none; 
-  position:     absolute;  
-  border:       1px solid; 
-  border-color: #DDD #AAA #AAA #DDD;  
-  padding:      1px 0px; 
-  background:   #FFFFFF; 
-  z-index:99999;
-}
-
-#menu ul ul { 
-  left:         100%; 
-  top:          0; 
-} 
-
-#menu a {
-  position:     relative;
-  display:      block; 
-  background:   #FFFFFF;
-  cursor:       pointer; 
-  padding:      4px 10px; 
-  z-index:      100;
-  text-decoration:none;
-  color:        #000;
-}
-
-#menu li ul li .padded {
-  padding-left:  24px;
-}
-
-#menu li ul li a { 
-  background:   #f8f7f6;       
-  padding:      3px 20px 3px 20px; 
-  z-index:      200;
-}
-
-#menu .hover { 
-  background:   #ffc47e; 
-}  
-
-#menu .disabled.hover { 
-  background:   #f8f7f6;       
-}  
-
-#menu .disabled { 
-  color:   #AAA; 
-}  
-
-#menu li.seperator { 
-  height:       0px; 
-  border-top:   1px solid #CCC; 
-  margin:       3px 0px;      
-}
-
-#menu div.input {
-  position:     relative;
-  padding:      0px;
-  width:        16px;
-  height:       16px;
-  float:        left;
-  z-index:      500;
-}
-
-#menu .icon {
-  background-repeat: no-repeat;
-  background-position:3px 3px; 
-}
-
-#menu .arrow {
-  display:      none;
-}
-
-#menu ul li .arrow { 
-  display:block;
-  position:absolute;
-  height:16px;
-  width:16px;
-  background:url(../img/arrow.png);
-  top:3px;
-  right:0px;
-}
-
 
 #selection { 
-  display:none;
-  position:absolute;
-  background:#CCCCFF;
-  border:2px solid black;
-  opacity:0.7;
-  z-index:8000;
-  overflow:visible;
+ display:    none;
+ position:   absolute;
+ background: #CCCCFF;
+ border:     2px solid black;
+ opacity:    0.7;
+ z-index:    8000;
+ overflow:   visible;
 }
 
 #copied { 
-  display:none;
-  position:absolute;
-  border:2px solid orange;
-  z-index:1000;
-  overflow:visible;
+ display:  none;
+ position: absolute;
+ border:   2px solid orange;
+ z-index:  1000;
+ overflow: visible;
 }
 
 #dragger { 
- height:6px;
- width:6px;
- position:absolute;
- background:#000;
- bottom:-5px;
- right:-5px;
- z-index:150000;
- cursor:pointer;
+ height:     6px;
+ width:      6px;
+ position:   absolute;
+ background: #000;
+ bottom:     -5px;
+ right:      -5px;
+ z-index:    150000;
+ cursor:     pointer;
 }
 
 #dragged { 
- position:absolute;
- border:2px dashed black;
- z-index:9000;
- display:none;
- opacity:0.8;
+ position: absolute;
+ border:   2px dashed black;
+ z-index:  9000;
+ display:  none;
+ opacity:  0.8;
 }
 
 #input { 
-  font:11px Arial,"Helvetica Neue", sans-serif;
-  z-index:10000;
-  height:18px;
-  width:78px;
-  border:1px solid blue;
-  position:absolute;
-  overflow:hidden;
-  display:none;
+ font:     11px Arial,"Helvetica Neue", sans-serif;
+ z-index:  10000;
+ height:   18px;
+ width:    78px;
+ border:   1px solid blue;
+ position: absolute;
+ overflow: hidden;
+ display: none;
 }
 
 #hidden_input {  
-  font:11px Arial,"Helvetica Neue", sans-serif;
-  position:absolute;
-  top:-1000000px;
-  left:0px;
-  z-index:9999999;
+ font:     11px Arial,"Helvetica Neue", sans-serif;
+ position: absolute;
+ top:      -1000000px;
+ left:     0px;
 }
 
 #paste { 
- position:absolute;
- top:0px;
- left:0px;
- background:transparent;
- width:0px;
- border:0px;
+ position:   absolute;
+ top:        0px;
+ left:       0px;
+ background: transparent;
+ width:      0px;
+ border:     0px;
 }
 
 #current { 
-  position:absolute;
-  background:#FFF;
-  z-index:900;
+ position:   absolute;
+ background: #FFF;
+ z-index:    900;
 }
 
-#axiscontextmenucol,#axiscontextmenurow { 
-  position:absolute;
-  display:none;
-  width:140px;
-  padding:3px 2px;
-  border:1px outset #666;
-  background:#FFF;
-  z-index:99999;
+#axiscontextmenucol, #axiscontextmenurow { 
+ position:   absolute;
+ display:    none;
+ width:      140px;
+ padding:    3px 2px;
+ border:     1px outset #666;
+ background: #FFF;
+ z-index:    99999;
 }
-
-#axiscontextmenucol ul, #axiscontextmenurow ul {
-  list-style-type:none;
-} 
 
 #axiscontextmenucol a, #axiscontextmenurow a {
-  display:block;
-  padding:3px;
-  cursor:pointer;
+ display: block;
+ padding: 3px;
+ cursor:  pointer;
 } 
 
 #axiscontextmenucol a:hover, #axiscontextmenurow a:hover {
-  background:   #ffc47e; 
+ background: #ffc47e; 
 } 
 
 #axiscontextmenucol li.seperator, #axiscontextmenurow li.seperator { 
-  height:       0px; 
-  border-top:   1px solid #CCC; 
-  margin:       3px 0px;      
+ height:     0px; 
+ border-top: 1px solid #CCC; 
+ margin:     3px 0px;      
 }
 
 #colselection,#rowselection { 
-  position:absolute;
-  cursor:default;
-  background:black;
-  opacity:0.2;
-  z-index:9990;
+ position:   absolute;
+ cursor:     default;
+ background: black;
+ opacity:    0.2;
+ z-index:    9990;
 }
 
 #colselection {
-  height:20px;
+ height: 20px;
 }
 
 #rowselection { 
-  width:26px;
+ width: 26px;
 }
 
 #rsel, #csel {  
-  position:absolute;
+ position:absolute;
 }
 
-#hnpaste { display:none; }
+#hnpaste { 
+ display:none; 
+}
 
 #pathpaste, #hnpaste { 
- position:absolute;
- background:#EEE;
- border:1px solid #AAA;
- font: 9px Arial, sans-serif;
- height:12px;
+ position:   absolute;
+ background: #EEE;
+ border:     1px solid #AAA;
+ font:       9px Arial, sans-serif;
+ height:     12px;
 }
 
-#pathpaste {  width:160px; overflow:hidden; }
+#pathpaste {  
+ width:    160px; 
+ overflow: hidden; 
+}
 
 #overlay { 
-  background:transparent;
-  position:fixed;
-  top:0px;
-  left:0px;
-  height:100%;
-  width:100%;
-  z-index:99999;
-  display:none;
+ background: transparent;
+ position:   fixed;
+ top:        0px;
+ left:       0px;
+ height:     100%;
+ width:      100%;
+ z-index:    99999;
+ display:    none;
 }
 
 #error {  
-  width:78px;
-  background:#990000;
-  padding:3px;
-  height:12px;
-  color:#FFF;
-  font:bold 8px Arial, sans-serif;
-  position:absolute;
-  z-index:999;
-  display:none;
+  width:      78px;
+  background: #990000;
+  padding:    3px;
+  height:     12px;
+  color:      #FFF;
+  font:       bold 8px Arial, sans-serif;
+  position:   absolute;
+  z-index:    999;
+  display:    none;
 }
 
 #current { 
-position:absolute;
-background:transparent;
-border:1px solid blue;
-  z-index:8001;
- }
-
-#languages { 
-  background: url(down.png) no-repeat right 1px;
-  cursor:pointer;
-  padding:2px 16px 2px 2px;
-  margin-top:-3px;
-  border: 1px solid transparent;
-  float:left;
-  margin-right:12px;                    
-}
-
-#languages div { 
-  z-index:9999;
-  background:#000;
-  border: 1px solid #666;
-  position:absolute;
-  top:auto;
-  display:none;
-  z-index:1000;
-}
-
-#languages div a {  
-  padding:3px 5px;
-}
-
-#languages div a:hover {  
-  background-color:#444;
-}
-
-#languages a { display:block; text-decoration:none !important; color:#BBB !important;}
-#languages:hover { border:1px solid #666; }
-
-#languages .flag {  
-  margin: 2px 3px 0px 0px;
-  display:block;
-  float:left;
-  width:16px;
-  height:11px;
-  background-image: url(sprite.png);
-}
-
-#languages .flag.en_gb { background-position:  -2px -179px; }
-#languages .flag.fr { background-position:  -22px -179px; }
-#languages .flag.ru { background-position:  -42px -179px; }
-#languages .flag.de { background-position:  -62px -179px; }
-#languages .flag.es { background-position:  -82px -179px; }
-#languages .flag.pt { background-position:  -102px -179px; }
-#languages .flag.it { background-position:  -122px -179px; }
-#languages .flag.br { background-position:  -142px -179px; }
-#languages .flag.en_us { background-position:  -162px -179px; }
-
-.mdialog { 
-    position:   absolute;
-    top:        50%;
-    left:       50%;
-    display:    none;
-    background: white;
-    border:     5px solid #666;
-    z-index:    9999999;
-    padding:    8px;
-}
-
-.mdialog h2 { 
-  margin:0px;
-}
-
-.mclose {  
-  float:left;
-  color:red;
-}
-
-.action {  
-  float:right;
-  color:green;
-}
-
-.dialog { 
-    display:none;
-    position:   absolute;
-    top:50px; 
-    left:50px;
-    background: white;
-    min-width:  200px;
-    -moz-border-radius: 3px 3px 3px 3px;
-    border:     1px solid #666;
-    z-index:    999999;
-}
-
-.dialog h2
-{
-    display:    block;
-    margin:0px;
-    font:       bold 10px sans-serif;
-    padding:    4px;
-    border-bottom:1px solid #66AA00;
-    -moz-border-radius: 3px 3px 0px 0px;
-    background: orange;
-}
-
-.dialog li {
-    list-style-type:none;
-}
-
-.dialog .close {
-    cursor:pointer;
-    position:   absolute;
-    top:        5px;
-    right:      5px;
-    height:     11px;
-    width:      11px;
-    background-image: url(sprite.png);
-    background-position:  -49px -3px;
+ position:   absolute;
+ background: transparent;
+ border:     1px solid blue;
+ z-index:    8001;
 }
 
 #functions {  
- width:340px;
- }
+ width: 340px;
+}
 
 #funwrapper { 
-  margin:10px;
-  width:140px; 
-  float:left;
+ margin: 10px;
+ width:  140px; 
+ float:  left;
 }
+
 #catlist { 
-  width:140px; 
+ width: 140px; 
 }
 
 #funlist { 
- background:#EEE; 
-  border:1px solid #666;
- }
+ background: #EEE; 
+ border:     1px solid #666;
+}
+
 #funlist a { 
- display:block;
-padding:2px;
-margin:1px;
-cursor:pointer;
+ display: block;
+ padding: 2px;
+ margin:  1px;
+ cursor:  pointer;
 }
 
 #funlist a:hover { 
-  background:#FFF;
+ background: #FFF;
 }
 
 #funlist { 
-  height:220px;
-  overflow:auto;
+ height:   220px;
+ overflow: auto;
 }
 
 #selectedfun { 
-  float:right;
-  width:180px;
+ float: right;
+ width: 180px;
 }
 
-#selectedfun p { margin:0px 0px 10px 0px; }
-#selectedfun h4 { margin:0px; }
+#selectedfun p { 
+ margin: 0px 0px 10px 0px; 
+}
+
+#selectedfun h4 { 
+ margin: 0px; 
+}
+
+#borders, #bordersep, #menu #importmenu, #font_colour {  
+ display: none;
+}
