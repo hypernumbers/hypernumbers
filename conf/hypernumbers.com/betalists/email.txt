@@ -1,0 +1,182 @@
+test, test, test
+
+Prashant , prashant.ganti@gmail.com, I had look at your site, What you are trying to do seems to be very promising. Could you please send me an invite for your alpha release.
+
+Regards
+Prashant
+
+Greg Plumbly, greg.plumbly@gmail.com, Hi,
+
+I get an interesting error when running the SDK.
+
+yeah, the problem is that you haven't written a proper gen_server for this ya wank, seek the TrapExit article at:
+http://trapexit.org/Building_a_Non-blocking_TCP_server_using_OTP_principles 
+
+Greg
+
+Karen Wright, Karen.x.wright, Hi Gordy - what exactley does this do ? 
+
+Greg Plumbly, greg.plumbly@gmail.com, hi Gordon, Dale
+
+hope things are going well.
+
+i just noticed that
+http://hypernumbers.com/
+
+doesnt work with www
+http://www.hypernumbers.com/
+
+wang jia, wj2me@hotmail.com, Hej,
+Do you have any summer job opportunities? I heard your company on the jobs-in-fp meeting which is held in Chalmers several weeks ago and I'm good at functional programming such as Haskell.
+Thank you.
+
+Craig Cockburn, craig@siliconglen.com, Hi
+
+I was interested in finding out a bit more about hypernumbers - not just because I have a strong interest in maths and I am also based in Linlithgow  but was wondering if you wanted a mention on siliconglen.com or are likely to be hiring at all ?
+
+thanks
+Craig
+
+Kirill, qrilka@gmail.com, Internal error, yaws code crashed
+on http://hypernumbers.com/news/Hypernumbers%20White%20Paper.pdf
+it looks like "news" should not be in URL
+
+Dr. Jochen L. Leidner, jochen.leidner@ed.ac.uk, Hi guys,
+
+Good to meet you at BarCamp - just to make
+sure you know these guys:
+http://www.softwaregarden.com/products/wikicalc/index.html
+
+Best,
+Jochen
+
+
+eugene, eugene@intruders.tv, www.hypernumbers.com doesn't resolve?!
+
+Mike Butcher, mike@mbites.com, Just getting back in contact to cover you on TechCrunch...
+
+hello, heh@gmail.com, erlang is good!
+
+Justin McManus, mcmanusj@gmail.com, With regard to the fabulous white paper about vixo.com and Erlang, what ever came of the source?  Is open-sourcing still a possibility, are you still entertaining offers, or has a deal already been reached elsewhere?
+
+Any information is much appreciated.
+
+Thanks!!!!
+Justin McManus
+
+James Arthur, j_a_arthur@yahoo.com, Hello
+
+A few months ago I read your excellent article on the Scenius blog about using Erlang and recently I was reminded about your company again.
+
+I'm curious about what your company does, or what it aims to achieve. This is partly because the Edinburgh area has relatively few tech startups and I like to keep track of local developments in this field (and I'm very fond of Linlithgow); and partly due to your use of Erlang, which is a language I'm very interested in but haven't had a practical reason to use.
+
+I know you're in stealth mode, but your company is intriguing. If you've got any information about Hypernumbers that you release to the public, I'd be interested to hear about it.
+
+Thanks!
+
+James
+
+
+rida, boy_fresh@live.fr, I miss you 
+
+lwagehcgw, kegsrb@cextqp.com, DQkRcO  <a href="http://wmxuveidhukk.com/">wmxuveidhukk</a>, [url=http://fwoihobhnhzd.com/]fwoihobhnhzd[/url], [link=http://rqkudsfohgcp.com/]rqkudsfohgcp[/link], http://eiquchwxqwcg.com/
+
+Calvin Froedge, calvin@creativelogicmedia.com, I would be interested in purchasing the vixo.com domain name.  My offering price is $500.  
+
+Arun Kumar, arun@prodigyinformatics.com, Hi
+
+I am a web designer cum developer writing from Taipei. I am really impressed  knowing about hypernumbers.. I would like the try beta and get more idea about it..
+
+Regards,
+
+Arun Kumar
+http://prodigyinformatics.com
+
+ravi, jklondon@gmail.com, work in the capital markets industry a senior business manager keen to understand what hypernumbers could do for me if I could see it?
+
+Rav
+
+Steven Livingstone, weblivz@hotmail.com, You may or may not know this, but just found (from a link) that :
+
+http://hypernumbers.com/
+
+is fine, but
+
+http://www.hypernumbers.com/
+
+does not resolve.
+
+regards,
+Steven
+http://livz.org
+
+Anthony, anthony@entrip.com, Hey, 
+ 
+I would like to thank you again for having us as mentees today/listening in on our mentor session at SeedCamp - I think we had a pretty constructive session with you guys. I thought that you actually listened to our idea/what we had to say, and also got the idea.
+ 
+For our 'final' presentations on thursday, I know that we will nevertheless have problems to convey everything we might want to convey in like 3 mins before investors start 'shutting off' - so I think there's no point trying to go into the nitty gritty bits of what we think EnTrip is, and can deliver. I think what I will do is to explain the concept - and either they get it, or they don't.
+ 
+Expecting that most of them won't, I am trying to find a different way to legitimize what we are doing, and asking for, and think it might be an interesting idea to have a slide of 'endorsements' of EnTrip, real quotes of real people who have taken the time to understand what we are doing. If an investor doesn't have the time, nerve, interest, mood or capacity to quickly 'get it' and see the implications, then I would like to help him/her by showing them what others have said. And who better than our mentors who got it?
+ 
+I was wondering if you think you would be able to send me some quotable line about what you think about EnTrip. Be it strictly positive, strictly negative, or something in between - some quotable opinion of you would be much appreciated. 
+ 
+I am thinking along the lines of quotes you often read about movies or books, something like 'Great team, great product, great vision' (strictly positive), 'Waste of time - not adding any tangible value' (strictly negative), or 'I think they are definitly onto something'/'they have to improve their usability, but have the potential to disrupt the online travel industry' - or something like that (whatever you think is appropriate).
+ 
+Would you be happy to do that? I think it would greatly help our pitch!
+ 
+Thanks a lot, 
+ 
+and I'll be back in touch, with updates (if we don't meet before that)!
+
+-- 
+Anthony Hsiao
+Director, EnTrip Ltd.
+www.entrip.com
+
+Leo McLeman, mcleman@gmail.com, Interested in Beta testing
+
+sciermidelm, appalneld@mail.ru, http://casino44.freehostia.com/new-jersey-casino-nights.html
+http://casino44.freehostia.com/classics-buffet-motor-city-casino.html
+http://casino44.freehostia.com/las-vage-casino.html
+http://casino44.freehostia.com/mystic-lake-casino-mn.html
+http://casino44.freehostia.com/mgm-casino-detroit.html
+http://casino44.freehostia.com/mikosuki-casino-miami.html
+http://casino44.freehostia.com/wwwhardrockhotel-casinoscom.html
+http://casino44.freehostia.com/goldclub-casino.html
+http://casino44.freehostia.com/real-vegas-online-casino.html
+http://casino44.freehostia.com/buffalo-bills-hotel-and-casino-in-las-vegas.html
+
+
+arourfapy, seepsweange4@mail.ru, <a href=http://www.viddler.com/explore/nancoqyy>adult youtube</a>
+<a href=http://www.viddler.com/explore/zvkoymtd>adult version youtube</a>
+<a href=http://www.viddler.com/explore/mqtzpauc>youtube videos</a>
+<a href=http://www.viddler.com/explore/egxjmowv>better than youtube</a>
+<a href=http://www.viddler.com/explore/gmyppmjy>youtube for adults</a>
+<a href=http://www.viddler.com/explore/nancoqyy>adult youtube</a>
+<a href=http://www.viddler.com/explore/zvkoymtd>adult version youtube</a>
+<a href=http://www.viddler.com/explore/mqtzpauc>youtube videos</a>
+<a href=http://www.viddler.com/explore/egxjmowv>better than youtube</a>
+<a href=http://www.viddler.com/explore/gmyppmjy>youtube for adults</a>
+
+Noitlebrort, peknumernehon@mail.ru, http://intelgeneration.ru/porno-enime.html
+http://intelgeneration.ru/porno-film-besplatno-bez-skachivaniya.html
+http://intelgeneration.ru/porno-erotika-rasskazy-istorii.html
+http://intelgeneration.ru/porno-foto-izvraschenok.html
+http://intelgeneration.ru/porno-film-shapochka.html
+http://intelgeneration.ru/porno-shkolnicy-topic.html
+http://intelgeneration.ru/porno-fotki-kazashek.html
+http://intelgeneration.ru/porno-filmy-istorii.html
+http://intelgeneration.ru/porno-foto-znaminitostey.html
+http://intelgeneration.ru/porno-chulki-modules-php.html
+http://intelgeneration.ru/porno-foto-trahautsya-topic.html
+http://intelgeneration.ru/porno-film-banzay.html
+http://intelgeneration.ru/posmatret-porno-roliki.html
+http://intelgeneration.ru/porno-schupalca.html
+http://intelgeneration.ru/porno-filmy-besplatno-newbb.html
+http://intelgeneration.ru/porno-foto-neylon.html
+http://intelgeneration.ru/porno-foto-10-letnie.html
+http://intelgeneration.ru/porno-foto-krasivyh-sisek.html
+http://intelgeneration.ru/porno-fut-fetish-foto.html
+http://intelgeneration.ru/porno-foto-dzhessiki-alba.html
+
+
