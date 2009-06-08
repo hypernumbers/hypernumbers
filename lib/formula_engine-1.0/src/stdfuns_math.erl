@@ -69,7 +69,7 @@
          log10/1,
 
          %% Random numbers
-         rand/1,
+         rand/0,
          randbetween/1,
 
          %% Rounding numbers
@@ -391,12 +391,20 @@ log10([V1]) ->
 
 %%% Random numbers ~~~~~
 
-rand([]) ->
-    random:uniform().
+rand() ->
+    Bytes = crypto:rand_bytes(15),
+    rand1(Bytes, 0, -1).
+rand1(<<>>, F, _) ->
+    F;
+rand1(<<Byte:8, Rest/binary>>, F, Exp) ->
+    D = Byte rem 10,
+    F2 = F + D*math:pow(10, Exp),
+    rand1(Rest, F2, Exp-1).
+
 
 randbetween([V1, V2]) ->
     [First, Last] = ?numbers([V1, V2], ?default_rules),
-    rand([]) * (Last - First) + First.
+    rand() * (Last - First) + First.
 
 %%% Rounding numbers ~~~~~
 
