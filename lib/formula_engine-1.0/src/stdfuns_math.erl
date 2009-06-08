@@ -69,7 +69,7 @@
          log10/1,
 
          %% Random numbers
-         rand/0,
+         rand/1,
          randbetween/1,
 
          %% Rounding numbers
@@ -391,20 +391,24 @@ log10([V1]) ->
 
 %%% Random numbers ~~~~~
 
-rand() ->
+rand([]) ->
     Bytes = crypto:rand_bytes(15),
+    io:format("in rand with ~p~n", [Bytes]),
     rand1(Bytes, 0, -1).
 rand1(<<>>, F, _) ->
+    io:format("In rand1 (1) with ~p~n", [F]),
     F;
 rand1(<<Byte:8, Rest/binary>>, F, Exp) ->
     D = Byte rem 10,
     F2 = F + D*math:pow(10, Exp),
+    io:format("In rand1 (2) with D of ~p F2 of ~p Exp of ~p and F of~p~n", 
+              [D, F2, Exp, F]),
     rand1(Rest, F2, Exp-1).
 
 
 randbetween([V1, V2]) ->
     [First, Last] = ?numbers([V1, V2], ?default_rules),
-    rand() * (Last - First) + First.
+    rand([]) * (Last - First) + First.
 
 %%% Rounding numbers ~~~~~
 
