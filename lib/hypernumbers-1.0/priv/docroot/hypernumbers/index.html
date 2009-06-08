@@ -11,7 +11,9 @@
   <body>
     
     <table cellspacing="0" cellpadding="0" id="hn">
+
       <tr height="60px;">
+
         <td id="header">
           <h1><a href="">Hypernumbers</a></h1>
           <ul id="navigation">
@@ -48,9 +50,11 @@
                     $txt:{United States}$</a>
                 </div>
               </div>
-              $txt:{Logged in as}$ &nbsp;<a id="home"></a> 
-              &nbsp;&nbsp;&nbsp;
-              <a id="logout">$txt:{Log out}$</a>
+              
+                $txt:{Logged in as}$ &nbsp;<a id="home"></a> 
+                &nbsp;&nbsp;&nbsp;
+                <a id="logout">$txt:{Log out}$</a>
+
             </li>
 
           </ul>
@@ -59,7 +63,8 @@
       <tr>
         <td height="22px">
           <div>
-            <ul id="menu">
+
+            <ul id="menu">              
               <li id="browse">
                 <a>$txt:{My Spreadsheets}$</a>
                 <ul>
@@ -92,6 +97,13 @@
                   </li>
                 </ul>
               </li>
+
+              <li><a id="edit">$txt:{Help}$</a>
+                <ul>
+        	      <li><a id="introductionbtn">$txt:{View Tour}$</a></li>
+                </ul>
+              </li>
+
             </ul>
           </div>
         </td>
@@ -351,28 +363,80 @@
       </ul>
     </div>
 
-    <div id="overlay"></div>
-
+    <!----- DIALOG BOXES --------->
+    
     <div id="functions" class="dialog">
       <h2>$txt:{Functions}$</h2>
       <div id="funwrapper">
-        <select id="catlist">
-        </select>
-        <div id="funlist">
-        </div>
+        <select id="catlist"></select>
+        <div id="funlist"></div>
       </div>
       <div id="selectedfun">
         <h3 id="funname"></h3>
-        <h4>Description</h4>
-        <p id="fundesc"></p>
-        <h4>Usage</h4>
-        <p id="funusage"></p>
-        <h4>Examples</h4>
-        <p>Please use the <a href="http://office.microsoft.com/en-us/excel/CH062528191033.aspx" target="_blank">Microsoft Help</a> until we implement help properly.</p>
-        <p id="funexamples"></p>
-
+        <h4>Description</h4> <p id="fundesc"></p>
+        <h4>Usage</h4>       <p id="funusage"></p>
+        <h4>Examples</h4>    <p id="funexamples"></p>
+        <p>Please use the <a href="http://office.microsoft.com/en-us/excel/CH062528191033.aspx" 
+                             target="_blank">Microsoft Help</a> until we implement help properly.</p>
         <input type="submit" value="Enter Formula" id="enterformula" />
       </div>  
+    </div>
+
+    <div class="mdialog" id="introduction">
+      
+      <div id="introwrapper">
+
+        <div class="intropage">
+          <h2>Welcome to the hypernumbers beta!</h2>
+          <p>Thank you for volunteering to test hypernumbers with us, this guide
+            will give you a brief guide to how to use/test hypernumbers.</p>
+          <p style="color:red"><strong>Warning: </strong>
+            During the beta phase you are advised to backup any
+            data you need locally.</p>
+          <h3>Report Bugs / Feedback</h3>
+          <p>During this beta phase there are still lots of known bugs to be 
+            fixed and features to be implemented. If you hit any bugs, or if there
+            is anything you would like to see in hypernumbers, please click 
+            the red toolbar button as shown below.</p>
+          <img src="/hypernumbers/report.png" />
+          <p>We are upgrading hypernumbers very regularly, In future we will 
+            contact you directly to update you with bug fixes and new features, 
+            but for now you can follow us on twitter to get updates @ 
+            <a href="http://twitter.com/hypernumbers/" target="_blank">
+              twitter.com/hypernumbers</a></p>
+          
+        </div>
+        <div class="intropage">
+          <h2>Spreadsheets as Urls</h2>
+          <p>Hypernumbers allows you to organise your spreadsheets in a flexible
+            way similiar to a file system, under the "My Spreadsheets" menu you
+            can create new spreadsheets and view existing ones, including 
+            publically shared spreadsheets.</p>
+
+          <div class="img"><img src="/hypernumbers/myspreadsheet1.png" /></div>
+
+          <p>Using data from other spreadsheets is easy, at the bottom right
+            you will see your currently selected cell in a format you can enter, 
+            just copy and paste it into a cell and you are done</p>
+
+          <div class="img"><img src="/hypernumbers/copy.png" /></div>
+        </div>
+
+        <div class="intropage">
+          <h2>Getting Started</h2>
+          <p>We have set up a introduction / usability script to help you 
+           get started. you can find this at ....</p>
+          <p>If you are a spreadsheet user and just want to get some work done, 
+            then go for it. </p>
+        </div>
+
+      </div>
+      
+      <input class="mclose" type="submit" value="Close Tour" />
+      <input type="submit" class="action" value="Next" id="intronext" />
+      <div class="action" id="intropager">Page 1 of 4</div>
+      <input type="submit" class="action" value="Back" id="introback" />
+
     </div>
     
     <div class="mdialog" id="mark">
@@ -415,20 +479,20 @@
     
 	<div class="mdialog" id="newpage">
 	  <h2>Create New Page</h2>
-	  <p><strong>Tip:</strong> you can use &quot;/&quot; seperators to organise<br />
-        pages hierarchally</p>
+	  <p><strong>Tip:</strong> you can use &quot;/&quot; 
+        seperators to organise<br /> pages hierarchally</p>
       <p class="note" style="text-indent:10px;">for example: accounts/june</p>
       <p class="warning" id="newpageerror"></p>
       <form id="newpageform" action="#">
-	    <input type="text" id="newpagename" style="width:100%;"/>
-        <br />
-
+	    <input type="text" id="newpagename" style="width:100%;"/><br />
         <input type="submit" id="makepage" value="Create Page" class="action" />
       </form>
       <input class="mclose" type="button" value="Cancel" />
     </div>
-
+    
+    <div id="overlay"></div>
     <div id="cover"></div>
+    
   </body>
 
   <script src="/hypernumbers/jquery-1.3.1.min.js"></script>

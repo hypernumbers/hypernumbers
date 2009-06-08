@@ -831,3 +831,29 @@ ul,li {
 #borders, #bordersep, #menu #importmenu, #font_colour {  
  display: none;
 }
+
+#introduction {  
+ height:400px;
+ width: 600px
+}
+
+.intropage {  
+ position:absolute;
+ display:none;
+ padding:0px 10px;
+}
+
+.intropage .img {  
+  text-align: center;
+}
+
+#introwrapper {  
+ height: 380px;
+}
+
+#intropager {  
+ width:       150px;
+ text-align:  center;
+ padding-top: 4px;
+ color:       black;
+}
