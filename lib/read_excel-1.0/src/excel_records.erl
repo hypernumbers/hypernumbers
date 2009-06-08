@@ -1056,7 +1056,7 @@ parse_font_options(Bin) ->
                        0 -> []
                    end,
     TextDecorationCSS = case StruckOut of
-                            1 -> [{'text-decoration',["linethrough"]}];
+                            1 -> [{'text-decoration',["line-through"]}];
                             0 -> []
                         end,
     TextShadowCSS = case Shadow of

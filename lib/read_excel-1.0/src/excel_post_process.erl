@@ -273,20 +273,6 @@ get_colours1([{Where, ColourIndex} | T], Tables, Acc) ->
     CSS2 = list_to_atom(CSS),
     get_colours1(T, Tables, [{CSS2, Col} | Acc]).
 
-%% %% CSS expects the colours to be listed in the follow order
-%% %% top, right, bottom, left
-%% %% make it so at the end 
-%% get_colours([], _Tables, Acc) ->
-%%     {value, {top, Top}}       = ?k(top,    1, Acc),
-%%     {value, {right, Right}}   = ?k(right,  1, Acc),
-%%     {value, {bottom, Bottom}} = ?k(bottom, 1, Acc),
-%%     {value, {left, Left}}     = ?k(left,   1, Acc),
-%%     [{'border-color', [Top++" "++Right++" "++Bottom++" "++Left]}];
-%% get_colours([{Side, ColourIndex} | T], Tables, Acc) ->
-%%     {value,{tmp_colours, ColoursId}} = ?k(tmp_colours, 1, Tables),
-%%     [{_, [{colour,Col}]}] = ets:lookup(ColoursId, {colour_index, ColourIndex}),
-%%     get_colours(T, Tables, [{Side, Col} | Acc]).
-
 get_css(CSSList, TypesList) -> get_css(CSSList, TypesList, []).
 
 get_css(_CSSList, [], Acc)    -> Acc;
