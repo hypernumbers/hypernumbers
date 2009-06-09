@@ -558,7 +558,7 @@ roman([V1, V2]) ->
     Type = ?int(V2, [cast_strings, cast_bools, ban_dates, cast_blanks]),
     %% we need to build the roman numbers right to left so we have to
     %% reverse the string representation of the number
-    List = map(fun(X) -> [X] end, integer_to_list(X)),
+    List = map(fun(C) -> [C] end, integer_to_list(X)),
     get_roman(List, Type).
     
 %% first deal with the single digit number
