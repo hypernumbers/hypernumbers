@@ -152,10 +152,16 @@ nper(Args = [_, _, _, _, _]) ->
 secant(Pa, Ppa, Px, Ppx, Fun) -> secant(Pa, Ppa, Px, Ppx, Fun, 1).
 secant(_, _, _, _, _, I) when I == ?ITERATION_LIMIT -> ?ERR_NUM;
 secant(Pa, Ppa, Px, Ppx, Fun, I) ->
-    Ca = Pa-((Pa-Ppa)/(Px-Ppx))*Px,
-    Xn = Fun(Ca),
-    if Xn == 0 -> Ca;
-       ?else   -> secant(Ca, Pa, Xn, Px, Fun, I+1)
+    Divisor = (Px-Ppx)*Px,
+    case Divisor of
+        X when X == 0 -> ?ERR_DIV;
+        _             ->
+            Ca = Pa-(Pa-Ppa)/Divisor,
+            Xn = Fun(Ca),
+            case Xn of
+                X when X == 0 -> Ca;
+                _             -> secant(Ca, Pa, Xn, Px, Fun, I+1)
+            end
     end.
             
 %% Calculate ?(X) given Pmt for current iteration of one of the arguments.
