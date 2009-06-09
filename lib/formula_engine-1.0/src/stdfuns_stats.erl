@@ -187,8 +187,13 @@ countif([A, CritSpec]) ->
     ?ensure(?is_area(A), ?ERR_VAL),
     ?ensure(?is_string(CritSpec), ?ERR_VAL),
     case odf_criteria:create(CritSpec) of
-        {error, _Reason} -> 0;
-        Fun              -> count(filter(Fun, area_util:to_list(A)))
+        {error, _Reason} ->
+            0;
+        Fun              ->
+            case filter(Fun, area_util:to_list(A)) of
+                [] -> 0;
+                L  -> count(L)
+            end
     end.    
 
 critbinom([V1, V2, V3]) ->
