@@ -183,14 +183,13 @@ countblank(Vs) ->
     length([X || X <- Flatvs, muin_collect:is_blank(X)]).
 
 
-countif([A, CritSpec]) when ?is_area(A) ->
+countif([A, CritSpec]) ->
+    ?ensure(?is_area(A), ?ERR_VAL),
     ?ensure(?is_string(CritSpec), ?ERR_VAL),
-    Crit = odf_criteria:create(CritSpec),
-    L = area_util:to_list(A),
-    count(filter(Crit, L));
-countif(_) ->
-    ?ERR_VAL.
-    
+    case odf_criteria:create(CritSpec) of
+        {error, _Reason} -> 0;
+        Fun              -> count(filter(Fun, area_util:to_list(A)))
+    end.    
 
 critbinom([V1, V2, V3]) ->
     Trials = ?int(V1, ?default_rules),
@@ -251,10 +250,10 @@ frequency(_) ->
 
 harmean(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers(Flatvs, ?default_rules), % TODO: Ignore strs, bools, blanks.
-    Any0s = any(fun(0) -> true; (_) -> false end,
-                Nums),
-    ?ensure(not(Any0s), ?ERR_NUM),
+    Nums = ?numbers(Flatvs, [ignore_strings, ignore_bools, ignore_dates, ignore_blanks]),
+    AnyZeros = any(fun(X) -> X == 0 end,
+                   Nums),
+    ?ensure(not(AnyZeros), ?ERR_NUM),
     harmean1(Nums, 0, 0).
 harmean1([], Num, Acc) ->
     Num / Acc;
