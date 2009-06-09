@@ -1255,7 +1255,9 @@ cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% <li>row</li>
 %% <li>colum</li>
 %% <li>range</li></ul>
-%% @todo copy'n'paste a page
+%%
+%% Also whole pages can be copy_n_pasted by making both From and To 
+%% page refX's
 copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
