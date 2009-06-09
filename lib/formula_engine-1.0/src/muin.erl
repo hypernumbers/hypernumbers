@@ -192,8 +192,8 @@ funcall(Fname, Args0) ->
               end,
               {Fname, Args, not_found_yet},
               [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date, stdfuns_financial,
-               stdfuns_info, stdfuns_lookup_ref, stdfuns_eng, stdfuns_gg,
-               stdfuns_logical, stdfuns_text, stdfuns_db]),
+               stdfuns_info, stdfuns_lookup_ref, stdfuns_eng, stdfuns_logical, stdfuns_text,
+               stdfuns_db]),
     
     case R of
         {_, _, {error, Error}} -> {error, Error};
