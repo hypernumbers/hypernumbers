@@ -547,20 +547,20 @@ sqrtpi([V1]) ->
 -define(CONCISE3,3).
 -define(SIMPLIFIED,4).
 
-roman([X])        -> roman([X, 0]);
-roman([X, true])  -> roman([X, ?CLASSIC]);
-roman([X, false]) -> roman([X, ?CONCISE3]);
-roman([X, Type])  when is_integer(X) ->
+roman([X])        ->
+    roman([X, 0]);
+roman([X, true])  ->
+    roman([X, ?CLASSIC]);
+roman([X, false]) ->
+    roman([X, ?CONCISE3]);
+roman([V1, V2]) ->
+    X = ?int(V1, [cast_strings, cast_bools, ban_dates, cast_blanks]),
+    Type = ?int(V2, [cast_strings, cast_bools, ban_dates, cast_blanks]),
     %% we need to build the roman numbers right to left so we have to
     %% reverse the string representation of the number
-    List=make_list(integer_to_list(X)),
-    get_roman(List, Type);
-roman([X, Type])  when is_float(X) ->
-    %% we need to build the roman numbers right to left so we have to
-    %% reverse the string representation of the number
-    List=make_list(integer_to_list(erlang:round(X))),
+    List = map(fun(X) -> [X] end, integer_to_list(X)),
     get_roman(List, Type).
-
+    
 %% first deal with the single digit number
 get_roman(["0"],_) -> "";
 get_roman(["1"],_) -> "I";
@@ -743,21 +743,6 @@ get_roman3(["9"]) -> "CM".
 get_roman4(["1"]) -> "M";
 get_roman4(["2"]) -> "MM";
 get_roman4(["3"]) -> "MMM".
-
-make_list(List) when is_list(List) -> 
-    make_list(List,[]).
-
-make_list([],Acc) -> lists:reverse(Acc);
-make_list([48|T],Acc) -> make_list(T,["0"|Acc]);
-make_list([49|T],Acc) -> make_list(T,["1"|Acc]);
-make_list([50|T],Acc) -> make_list(T,["2"|Acc]);
-make_list([51|T],Acc) -> make_list(T,["3"|Acc]);
-make_list([52|T],Acc) -> make_list(T,["4"|Acc]);
-make_list([53|T],Acc) -> make_list(T,["5"|Acc]);
-make_list([54|T],Acc) -> make_list(T,["6"|Acc]);
-make_list([55|T],Acc) -> make_list(T,["7"|Acc]);
-make_list([56|T],Acc) -> make_list(T,["8"|Acc]);
-make_list([57|T],Acc) -> make_list(T,["9"|Acc]).
 
 
 %%% Summation ~~~~~
