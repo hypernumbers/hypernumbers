@@ -363,7 +363,7 @@
       </ul>
     </div>
 
-    <!----- DIALOG BOXES --------->
+    <!-- DIALOG BOXES -->
     
     <div id="functions" class="dialog">
       <h2>$txt:{Functions}$</h2>
@@ -373,11 +373,11 @@
       </div>
       <div id="selectedfun">
         <h3 id="funname"></h3>
-        <h4>Description</h4> <p id="fundesc"></p>
-        <h4>Usage</h4>       <p id="funusage"></p>
-        <h4>Examples</h4>    <p id="funexamples"></p>
-        <p>Please use the <a href="http://office.microsoft.com/en-us/excel/CH062528191033.aspx" 
-                             target="_blank">Microsoft Help</a> until we implement help properly.</p>
+        <h4>$txt:{Description}</h4> <p id="fundesc"></p>
+        <h4>$txt:{Usage}</h4>       <p id="funusage"></p>
+        <h4>$txt:{Examples}</h4>    <p id="funexamples"></p>
+        <p>$txt:{Please use the} <a href="http://office.microsoft.com/en-us/excel/CH062528191033.aspx" 
+                             target="_blank">$txt:{Microsoft Help}</a> $txt:{until we implement help properly}.</p>
         <input type="submit" value="Enter Formula" id="enterformula" />
       </div>  
     </div>
@@ -481,12 +481,12 @@
     </div>
     
     <div class="mdialog" id="mark">
-      <h2>Feedback / Report Bug</h2>
-      <p>Oops, did something break?</p>
+      <h2>txt:{Feedback / Report Bug}</h2>
+      <p>txt:{Oops, did something break?}</p>
       <p>You can report bugs, ask for features, or give us your opinion<br />
         and feedback here. If you would like a reply, please leave an<br />
         email address.</p>
-      <p>You can also get us at <strong>team@hypernumbers.com</strong></p>
+      <p>$txt:{You can also get us at} <strong>team@hypernumbers.com</strong></p>
       <textarea id="feedback"></textarea>
       <br /><br />
       <input class="mclose" type="submit" value="Cancel" />
@@ -494,24 +494,23 @@
     </div>
     
 	<div class="mdialog" id="import">
-	  <h2>Import Spreadsheet</h2>
-	  <p>Import a spreadsheet(.xls)</p>
+	  <h2>$txt:{Import Spreadsheet}</h2>
+	  <p>$txt:{Import a spreadsheet} (.xls)</p>
 
-	  <p>Your spreadsheet will be stored as <br />
+	  <p>$txt:{Your spreadsheet will be stored as} <br />
         <span id="currentpath"></span>
         <span class="note">/filename/sheetname/</span></p>
       
-      <p class="warning"><strong>Warning:</strong>
+      <p class="warning"><strong>$txt:{Warning}:</strong>
         Importing Spreadsheets can be quite slow, <br />
         please try to avoid closing your browser window.</p>
       
 	  <div id="filewrapper"><input type="file" name="Filedata" 
                                    id="Filedata" 
                                    value="Upload Spreadsheet" /></div>
-        <div id="importloading" style="display:none;"><p>Loading ...</p></div>
+        <div id="importloading" style="display:none;"><p>$txt{Loading} ...</p></div>
         <div id="importerror" style="display:none;">
-          <p>Sorry, there was an error reading your spreadsheet. The file
-            has been added to our test suite.</p></div>
+          <p>$txt:{Sorry, there was an error reading your spreadsheet. The file has been added to our test suite}.</p></div>
 
         <br />
         <input class="mclose" type="submit" value="Cancel" />
@@ -519,9 +518,9 @@
 	</div>
     
 	<div class="mdialog" id="newpage">
-	  <h2>Create New Page</h2>
+	  <h2>$txt:{Create New Page}</h2>
 	  <p><strong>Tip:</strong> you can use &quot;/&quot; 
-        seperators to organise<br /> pages hierarchally</p>
+        separators to organise<br /> pages hierarchally</p>
       <p class="note" style="text-indent:10px;">for example: accounts/june</p>
       <p class="warning" id="newpageerror"></p>
       <form id="newpageform" action="#">
