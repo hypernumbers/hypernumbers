@@ -1157,7 +1157,7 @@ read_local_children(#refX{obj = {Type, _}} = Parent)
        orelse (Type == range) orelse (Type == page) ->
     Cells = get_cells(Parent),
     lists:flatten([read_local_children(X) || X <- Cells]);
-read_local_children(#refX{site = Site, obj = {cell, _}} = Parent) ->
+read_local_children(#refX{site = Site, obj = {cell, _} = Obj} = Parent) ->
     case read_local_item_index(Parent) of
         false -> [];
         PIdx  -> Table = trans(Site, local_cell_link),
@@ -2017,9 +2017,9 @@ read_outgoing_hns(Site, #refX{obj = {cell, _}} = Parent)
 %% <li>page</li>
 %% </ul>
 %% @todo extend to include url/db functions as required...
-mark_cells_dirty(#refX{site = Site, obj = {cell, _}} = RefX) ->
-    % Make a list of cells hypernumbers + direct
-    % cell links, and check for any wildcard * on the path
+mark_cells_dirty(#refX{site = Site, obj = {cell, _} = Obj} = RefX) ->
+    % Make a list of cells hypernumbers and direct
+    % cell links
     % first up local
     case read_local_children(RefX) of
         []            -> ok;
@@ -2028,7 +2028,7 @@ mark_cells_dirty(#refX{site = Site, obj = {cell, _}} = RefX) ->
             Fun = fun(X) ->
                           %?INFO("Dirty ~p", [X]),
                           Dirty = #dirty_cell{idx = get_local_item_index(X)},
-                          ok =  mnesia:write(trans(Site, dirty_cell), Dirty, write)
+                          ok = mnesia:write(trans(Site, dirty_cell), Dirty, write)
                   end,
             _Return1 = lists:foreach(Fun, LocalChildren),
             ok
@@ -2235,11 +2235,9 @@ insert_shift(RefX, _Disp) -> RefX.
 
 local_idx_to_refX(S, Idx) ->
     case mnesia:index_read(trans(S, local_objs), Idx, idx) of
-        [Rec] ->
-            #local_objs{path = P, obj = O} = Rec,
-            #refX{site = S, path = P, obj = O};
-        [] ->
-            {error, id_not_found, Idx}
+        [Rec] -> #local_objs{path = P, obj = O} = Rec,
+                 #refX{site = S, path = P, obj = O};
+        []    -> {error, id_not_found, Idx}
     end.
 
 %% @doc Make a #muin_rti record out of a ref record and a flag that specifies 
@@ -2303,19 +2301,17 @@ rwf1([], _O, _N, {_St, Acc})        -> make_formula(lists:reverse(Acc));
 rwf1([?hn,?bra,{str,O}|T], O, N, A) -> rwf1(T, O, N, [{str,N},?bra,?hn|A]);
 rwf1([H | T], O, N, A)              -> rwf1(T, O, N, [H | A]).      
 
-% REMEMBER this is a BAG table and not a set table so writes
-% do not delete!
-% Therefore check if a record with this key and this object index 
-% already exists:
-% * if it does delete it and then write the record
-% * if it don't then just write it.
+%% REMEMBER this is a BAG table and not a set table so writes
+%% do not delete!
+%% Therefore check if a record with this key and this object index 
+%% already exists:
+%% * if it does delete it and then write the record
+%% * if it don't then just write it.
 %% will write out any raw attribute
-id(RefX) ->
-    get_local_item_index(RefX).
-
-write_attr3(#refX{site = Site} = RefX, {Key, Val}) ->
+write_attr3(#refX{site = Site, obj = Obj} = RefX, {Key, Val}) ->
    
-    Match = #item{idx = id(RefX), key = Key, _ = '_'},
+    Idx = get_local_item_index(RefX),
+    Match = #item{idx = Idx, key = Key, _ = '_'},
     Rec   = Match#item{val = Val},
     Table = trans(Site, item),
     
@@ -2856,8 +2852,9 @@ get_l_p(Site, [#local_cell_link{parentidx = P} | T], Acc) ->
 get_local_children(Site, List) -> get_l_c(Site, List, []).
 
 get_l_c(_Site, [], Acc) -> Acc;
-get_l_c(Site, [#local_cell_link{childidx = C} | T], Acc) ->
-    get_l_c(Site, T, [local_idx_to_refX(Site, C) | Acc]).
+get_l_c(Site, [#local_cell_link{parentidx = P, childidx = C} | T], Acc) ->
+    RefX = local_idx_to_refX(Site, C),
+    get_l_c(Site, T, [RefX | Acc]).
 
 get_remote_parents(List) -> get_r_p(List, []).
 
@@ -3276,9 +3273,9 @@ write_attr2(RefX, {"formula", Val}) ->
         [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
     end.
 
-write_formula1(RefX, Fla, Val) ->
+write_formula1(#refX{obj = Obj} = RefX, Fla, Val) ->
     Rti = refX_to_rti(RefX, false),
-    Ret = case muin:run_formula(Fla, Rti) of
+    case muin:run_formula(Fla, Rti) of
               % TODO : Get rid of this, muin should return {error, Reason}?
               {ok, {_P, {error, error_in_formula}, _, _, _}} ->
                   ?ERROR("invalid return from muin:run_formula ~p",[Val]),
@@ -3296,11 +3293,9 @@ write_formula1(RefX, Fla, Val) ->
                   % write the default text align for the result
                   ok = write_default_alignment(RefX, Res),
                   write_cell(RefX, Res, Val, Parxml, Deptree)
-          end,
-    % io:format("leaving write_formula1~n"),
-    Ret.
+          end.
 
-write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
+write_formula2(#refX{obj = Obj} = RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
     % now write out the actual cell
     Formula = case Type of
                   quote    -> [39 | Value];
@@ -3353,7 +3348,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     %     & rawvalue
     %     & value
     %     & format
-    %     & 'overwrite-color'
+    %     & 'overwrite-color's
     % * overwrites the new values of these attributes:
     %   - parents
     %   - '__dependency-tree'
@@ -3364,7 +3359,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     %   - writes any remote links that aren't already there
     %   - deletes any remote links that are no longer there
     % * marks this cell dirty
-    
+    #refX{obj = Obj} = RefX,
     {NewLocPs, NewRemotePs} = split_local_remote(Parents),
 
     % write the formula
@@ -3377,14 +3372,14 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     Set = fun(X, {Key, []})  -> delete_if_attrs(X, Key);
              (X, {Key, Val}) -> write_attr(X, {Key, Val})
           end,
- 
+
     Set(RefX, {"parents",           {xml, Parents}}),
     Set(RefX, {"__dependency-tree", DepTree}),
- 
+
     % now do the local parents
     ok = delete_local_parents(RefX),
     ok = write_local_parents(RefX, NewLocPs),
-    
+
     % now do the remote parents
     % this is a bit messier - if a cell is being updated to change a
     % formula I don't want to first delete the old link (and trigger

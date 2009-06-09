@@ -128,7 +128,6 @@
          drag_n_drop/2,
          copy_n_paste/2,
          cut_n_paste/2,
-         % copy_page/2,
          insert/1,
          insert/2,
          delete/1,
@@ -502,8 +501,7 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 %% @todo extend this to a dirty shared formula
 %% @todo needs to be ran inside transaction from
 %% other module, kinda ugly, fix
-handle_dirty_cell(Site, Rec) ->
-    
+handle_dirty_cell(Site, Rec) ->    
     ok   = init_front_end_notify(),  
     Cell = hn_db_wu:read_dirty_cell(Site, Rec),
     
@@ -707,7 +705,6 @@ notify_back_from_web(P, C, B, Type)
                 case ?wu:verify_biccie_out(P, C, B) of
                     true -> Rec = #dirty_notify_back_out{child = C, parent = P,
                                                          change = Type},
-
                             hn_db_wu:mark_dirty(PSite, Rec);
                     _    -> ok
                 end
@@ -731,6 +728,7 @@ write_remote_link(Parent, Child, Type)
 %% trigger a creation process and return 'blank' for the moment... when the
 %% hypernumber is set up the 'correct' value will come through as per normal...
 read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
+    io:format("got to A~n"),
     #refX{site = CSite} = C,
     P2 = P#refX{obj = {page, "/"}},
     C2 = C#refX{obj = {page, "/"}},
@@ -738,9 +736,11 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
     PUrl = hn_util:refX_to_url(P2),
     PVsn = #version{page = PUrl, version = ?wu:read_page_vsn(CSite, P)},
     CVsn = #version{page = CUrl, version = ?wu:read_page_vsn(CSite, C)},
+    io:format("got to B~n"),
     F = fun() ->
                 case ?wu:read_incoming_hn(CSite, P) of
                     []   ->
+                        io:format("got to C~n"),
                         Rec = #dirty_inc_hn_create{parent = P, child = C,
                                                    parent_vsn = PVsn, child_vsn = CVsn},
                         ok = ?wu:mark_dirty(CSite, Rec),
@@ -748,6 +748,7 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
                         ok = ?wu:?wr_rem_link(P, C, incoming),
                         {blank, []};
                     [Hn] ->
+                        io:format("got to D~n"),
                         #incoming_hn{value = Val, biccie = B,
                                      'dependency-tree' = DepTree} = Hn,
                         % check if there is a remote cell
@@ -766,6 +767,7 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
                         {Val, DepTree}
                 end
         end,
+    io:format("got to E~n"),
     mnesia:activity(transaction, F).
 
 %% @spec notify_back_create(Site, Record::#dirty_inc_hn_create{}) -> ok
@@ -1065,13 +1067,14 @@ delete(#refX{obj = {page, _}} = RefX) ->
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
                    Status = hn_db_wu:delete_page(RefX),
-                   % now force all deferenced cells to recalculate
+                   %% now force all deferenced cells to recalculate
                    Fun2 = fun({dirty, X}) ->
-                                  [{X, {"formula", F}}] = hn_db_wu:read_attrs(X, ["formula"], write),
+                                  [{X, {"formula", F}}] = 
+                                      hn_db_wu:read_attrs(X,["formula"], write),
                                   ok = hn_db_wu:write_attr(X, {"formula", F})
                           end,
                    [ok = Fun2(X) || X <- Status]
-          end,
+           end,
     mnesia:activity(transaction, Fun1),
     ok = tell_front_end("delete").
 
@@ -1454,12 +1457,22 @@ convertdep1([H | T ], Site, Acc) ->
         _     -> convertdep1(T, Site, [{url, [{type, "remote"}],[H]} | Acc])
     end.
 
-% extracts the key value pairs
+%% extracts the key value pairs
 extract_kvs(List) -> extract_kvs1(List, []).
 
 extract_kvs1([], Acc)             -> Acc;
 extract_kvs1([{_R, KV} | T], Acc) -> extract_kvs1(T, [KV | Acc]).
 
+%% this clause copies whole pages
+copy_n_paste2(#refX{site = Site, obj = {page, "/"}} = From, 
+              #refX{site = Site, path = NewPath, obj = {page, "/"}}) ->
+    Cells = hn_db_wu:get_cells(From),
+    Fun = fun(X) ->
+                  ok = hn_db_wu:copy_cell(X, X#refX{path = NewPath}, false)
+          end,
+    [Fun(X) || X <- Cells],
+    ok;
+%% this clause copies bits of pages
 copy_n_paste2(From, To) ->
     case is_valid_c_n_p(From, To) of
         {ok, single_cell}    -> ?wu:copy_cell(From, To, false);
