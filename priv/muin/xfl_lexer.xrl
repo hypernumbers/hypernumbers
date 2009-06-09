@@ -178,8 +178,8 @@ Rules.
 \: : {token, {':'}}.
 \^\^ : {token, {'^^'}}.
 
-%% Newline signifies end of input.
-\n : {end_token, {'$end'}}.
+\n : .
+
 %% Anything not covered by rules above is invalid.
 .  : {token, {invalid_token, YYtext}}.
 

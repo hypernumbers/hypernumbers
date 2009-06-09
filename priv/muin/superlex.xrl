@@ -21,7 +21,7 @@ SSNAMEREF = {START_OF_SSREF}{MAYBE_PATH}{NAME}
 STRING = (\"[^"\n]*\")
 %"%
 SPACE = ([\s]+)
-WHITESPACE = ([\t]+)
+WHITESPACE = ([\t]+|[\n]+)
 
 Rules.
 
@@ -32,5 +32,5 @@ Rules.
 {STRING}     : {token, {string, YYtext}}.
 {SPACE}      : {token, {string, YYtext}}.
 {WHITESPACE} : skip_token.
-\n           : {end_token, {'$end'}}.
+\n           : .
 .            : {token, {stuff, YYtext}}.
