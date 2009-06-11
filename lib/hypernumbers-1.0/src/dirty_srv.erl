@@ -149,7 +149,7 @@ proc_dirty(Table, Rec) ->
               dirty_cell ->
                   hn_db_api:handle_dirty_cell(Site, Rec);
               dirty_inc_hn_create ->
-                  hn_db_api:notify_back_create(Site, Rec);
+                  hn_db_api:notify_back_create(Rec);
               dirty_notify_in ->
                   hn_db_api:handle_dirty(Site, Rec);
               dirty_notify_out ->
