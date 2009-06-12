@@ -218,20 +218,21 @@ function test
 
 function copyfiles
 {
-    HOST=alpha.hypernumbers.com
     NAME=hypernumbers
-    PATH=alpha.hypernumbers.com
-    /usr/bin/scp $NAME@$HOST:$PATH/priv/uploads/* \
-        lib/hypernumbers-1.0/log/uploads/
+    SRC=$NAME@$1:www/$1/priv/uploads/*
+    DEST=lib/hypernumbers-1.0/log/$1/uploads/
+    [ -d $DEST ] || /bin/mkdir -p $DEST
+    /usr/bin/scp $SRC $DEST
+        
 }
 
 function copylog
 {
-    HOST=alpha.hypernumbers.com
     NAME=hypernumbers
-    PATH=alpha.hypernumbers.com
-    /usr/bin/scp $NAME@$HOST:$PATH/lib/hypernumbers-1.0/log/post_log.LOG.* \
-        lib/hypernumbers-1.0/log/live/
+    DEST=lib/hypernumbers-1.0/log/$1/
+    SRC=$NAME@$1:www/$1/lib/hypernumbers-1.0/log/post_log.LOG.*
+    [ -d $DEST ] || /bin/mkdir -p $DEST
+    /usr/bin/scp $SRC $DEST
 }
 
 function debug
@@ -263,8 +264,8 @@ case $1 in
     debug)          debug;;
     stop)           stop;;
     docs)           docs;;
-    copylog)        copylog;;
-    copyfiles)      copyfiles;;
+    copylog)        copylog $2;;
+    copyfiles)      copyfiles $2;;
     build)          build $2;;
     statsvn)        statsvn;;
     visualise)      visualise;;

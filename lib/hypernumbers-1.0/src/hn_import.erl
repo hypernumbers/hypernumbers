@@ -10,11 +10,44 @@
 json_file(Url, FileName) -> 
 
     Ref = hn_util:parse_url(Url),
-    {ok, JsonTxt}   = file:read_file(FileName),
-    {struct, Json}  = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
+    {ok, JsonTxt}    = file:read_file(FileName),
+    {struct, Json}   = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
+    %{struct, Style} = ?pget("styles", Json),
     {struct, Cells} = ?pget("cell", Json),
     [ rows(Ref, X) || X <- Cells],
+    %[ style(Ref, X) || X <- Style],
+
+    %mnesia:dirty_write(hn_db_wu:trans(Ref#refX.site, style_counters),
+    %                   {style_counters,Ref,length(Style)}),
+
     ok.
+
+style(Ref, {Index, Styles}) ->
+    L = string:tokens(Styles, ";"),
+    F = fun(X, Acc) ->
+                [Key, Val] = string:tokens(X, ":"),
+                [{ms_util2:get_index(magic_style, Key), Val} | Acc]      
+        end,
+    
+    Rec = lists:foldl(F, [], L),
+
+    F2 = fun(X, R) ->
+                 case ?pget(X, R) of
+                     undefined -> [];
+                     Else      -> Else
+                 end
+         end,
+    
+    Rec2 = [ F2(X, Rec) || X <- lists:seq(1, 23)],
+
+    MG = list_to_tuple([magic_style| Rec2]),
+
+    Tbl = hn_db_wu:trans(Ref#refX.site, styles),
+    mnesia:dirty_write(Tbl, #styles{index=list_to_integer(Index),
+                                    refX = Ref,
+                                    magic_style = MG}),    
+    ok.
+
 
 rows(Ref, {Row, {struct, Cells}}) ->
     [ cells(Ref, Row, X) || X <- Cells],

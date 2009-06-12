@@ -71,7 +71,7 @@ replay(Name, Url, Options) ->
     Ref = hn_util:parse_url(Url), 
     F   = fun(Post, Id) ->
                   print(post, Post, Id),
-                  repost(Post, Ref)
+                  repost(Name, Post, Ref)
           end,    
     run_log(Name, F, make_filter(Options)),
     io:format("~nReplay finished....~n"),
@@ -90,13 +90,17 @@ generate_mi(Name, Path) ->
     file:close(File).
 
 do_mi(File, Post) ->
+    
     Date = dh_date:format("r", Post#post.time),
     #post{ site=Site, path=Path, body=Body, method=Mthd, peer=Peer,
            user=Usr, referer=Rfr, browser=UA} = Post,
     
-    S = case io_lib:printable_list(btol(Body)) of
-            true  -> btol(Body);
-            false -> ""
+    S = case Body of
+            {upload, F} -> F;
+            _-> case io_lib:printable_list(btol(Body)) of
+                    true  -> btol(Body);
+                    false -> ""
+                end
         end,
     
     Str  = "~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
@@ -279,8 +283,6 @@ in_path([], _Path, true) ->
 in_path(Path1, Path2, true) ->
     startswith(Path2, Path1).
 
-
-
 upload_file(Url, Path, Field) ->
     
     Boundary          = "frontier",
@@ -301,10 +303,11 @@ upload_file(Url, Path, Field) ->
     http:request(post,{Url, [], Type, Post}, [], []).
 
 
-repost(#post{method='POST', body={upload, Name}} = Post, New) ->
+repost(LogName, #post{method='POST', body={upload, Name}} = Post, New) ->
+    [Dir, _Nm] = string:tokens(LogName, "/"),
     Url  = New#refX.site ++ Post#post.path,
     Root = code:lib_dir(hypernumbers),
-    Path = filename:join([Root, "log", "uploads", Name]),
+    Path = filename:join([Root, "log", Dir, "uploads", Name]),
     case filelib:is_file(Path) of
         false ->
             io:format("WARNING! file does not exist locally:~n ~p", [Path]);
@@ -313,7 +316,7 @@ repost(#post{method='POST', body={upload, Name}} = Post, New) ->
     end,
     ok;
 
-repost(Post, New) when Post#post.method == 'POST' ->
+repost(_Name, Post, New) when Post#post.method == 'POST' ->
     Url  = New#refX.site ++ Post#post.path,
     http:request(post,{Url, [], "application/json", Post#post.body}, [], []),
     ok.
