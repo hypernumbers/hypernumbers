@@ -603,12 +603,13 @@ get_var_or_cookie(Key, Vars, Req) ->
 page_attributes(Ref, User) ->
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
-    Tree2   = dh_tree:set(["user"], hn_users:name(User), Tree),
     Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
-    NTree  = add_styles(Styles, Tree2),
+    NTree  = add_styles(Styles, Tree),
     Dict   = to_dict(hn_db_api:read_whole_page(Ref), NTree),
     Time   = {"time", remoting_reg:timestamp()},
-    {struct, [Time | dict_to_struct(Dict)]}.
+    Usr    = {"user", hn_users:name(User)},
+    Host   = {"host", Ref#refX.site},
+    {struct, [Time, Usr, Host | dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};

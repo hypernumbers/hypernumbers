@@ -690,8 +690,8 @@ ul,li {
  position:   absolute;
  top:        0px;
  left:       0px;
- background: transparent;
- width:      0px;
+ background: white;
+ width:      1000px;
  border:     0px;
 }
 
