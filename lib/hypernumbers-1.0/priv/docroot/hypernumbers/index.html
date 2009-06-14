@@ -95,19 +95,16 @@
                   <li class="seperator"></li>
                   <li><a>$txt:{Clear}$</a>
                     <ul style="width:140px;">
-        	          <li><a id="clearformat">$txt:{Clear}$
-                          <strong>$txt:{Styles}$</strong></a></li>
-        	          <li><a id="clearvalue">$txt:{Clear}$ 
-                          <strong>$txt:{Contents}$</strong></a></li>
-                      <li><a id="clearboth">$txt:{Clear}$
+                      <li><a name="clearboth">$txt:{Clear}$
                           <strong>$txt:{All}$</strong></a></li> 
+        	          <li><a name="clearformat">$txt:{Clear}$
+                          <strong>$txt:{Styles}$</strong></a></li>
+        	          <li><a name="clearvalue">$txt:{Clear}$ 
+                          <strong>$txt:{Contents}$</strong></a></li>
                     </ul>
-                </ul>
-              </li>
-              
-              <li><a id="edit">$txt:{Preferences}$</a>
-                <ul>
-        	      <li>
+                  </li>
+                  <li class="seperator"></li>
+                  <li>
                     <div class="input">
                       <input type="checkbox" id="copyformula" />
                     </div>
@@ -115,11 +112,19 @@
                   </li>
                 </ul>
               </li>
-
-              <li><a id="edit">$txt:{Help}$</a>
+              
+              <li><a>$txt:{Insert}$</a>
                 <ul>
-        	      <li><a name="functions">$txt:{Functions Help}$</a></li>
+        	      <li><a>$txt:{Rows}$</a></li>
+        	      <li><a>$txt:{Columns}$</a></li>
                   <li class="seperator"></li>
+                  <li><a name="functions">$txt:{Function...}$</a></li>
+                </ul>
+              </li>
+
+              <li><a>$txt:{Help}$</a>
+                <ul>
+        	      <li><a name="feedback">$txt:{Feedback / Report Bug}$</a></li>
         	      <li><a name="tour">$txt:{View Tour}$</a></li>
                 </ul>
               </li>
@@ -261,6 +266,7 @@
             </div>
           </div>
           <a class="separator"></a>          
+
           <a title="Feedback / Report Bug" class="toolbar-item" id="markbtn"></a>
         </td>
       </tr>
@@ -298,7 +304,6 @@
                 </div>
               </td>
               <td height="100%">
-                <div id="error"></div>
                 <div style="position:relative;height:100%;overflow:hidden;">
                   <div id="scroller">
                     <div id="dragged"></div>
@@ -362,14 +367,21 @@
 
     <div id="gridcontextmenu">
       <ul>
-        <li><a name="copy">Copy<span class="desc">Ctrl+C</span></a></li>
-        <li class="disabled paste"><a name="paste">Paste
-            <span class="desc">Ctrl+V</span></a></li>
-        <li class="disabled paste"><a name="pastelink">Paste 
-            <strong>Link</strong></a></li>
+        <li><a name="clearboth">
+            $txt:{Clear}$ <strong>$txt:{All}$</strong></a></li> 
+        <li><a name="clearvalue">
+            $txt:{Clear}$ <strong>$txt:{Contents}$</strong></a></li>
+        <li><a name="copy">
+            Copy<span class="desc">Ctrl+C</span></a></li>
+        <li class="disabled paste"><a name="paste">
+            Paste <span class="desc">Ctrl+V</span></a></li>
+        <li class="disabled paste"><a name="pastelink">
+            Paste <strong>Link</strong></a></li>
         <li class="seperator"></li>
-        <li><a name="deletecols">Delete Column(s)</a></li>
-        <li><a name="deleterows">Delete Row(s)</a></li>
+        <li><a name="deletecols">
+            Delete Column(s)</a></li>
+        <li><a name="deleterows">
+            Delete Row(s)</a></li>
       </ul>
     </div>
 
@@ -392,6 +404,14 @@
     </div>
 
     <!-- DIALOG BOXES -->
+
+    <div id="error" class="mdialog">
+      <h2>$txt:{Oops}$</h2>
+      <p>There was an error in your formula</p>
+      <form id="errorform" action="#"> 
+        <input type="submit" class="action" value="Ok"  />
+      </form>
+    </div>
     
     <div id="functions" class="dialog">
       <h2>$txt:{Functions}$</h2>

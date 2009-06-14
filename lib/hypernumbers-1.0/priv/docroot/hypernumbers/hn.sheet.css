@@ -431,12 +431,12 @@ ul,li {
 #right-bar.active  { background: url(sprite-y.png) -28px 0px; }
 
 #rows { 
- cursor: default;
+ cursor: e-resize;
  width:  26px;
 }
 
 #columns {
- cursor: default;
+ cursor: s-resize;
  height: 20px;
 }
 
@@ -714,7 +714,7 @@ ul,li {
 #axiscontextmenucol a, #axiscontextmenurow a, #gridcontextmenu a {
  display: block;
  position:relative;
- padding: 3px;
+ padding: 3px 3px 3px 18px;
  cursor:  pointer;
 } 
 
@@ -736,19 +736,20 @@ ul,li {
  top:4px;
 }
 
-#colselection,#rowselection { 
+#colselection, #rowselection { 
  position:   absolute;
- cursor:     default;
  background: black;
  opacity:    0.2;
  z-index:    9990;
 }
 
 #colselection {
+ cursor: s-resize;
  height: 20px;
 }
 
 #rowselection { 
+ cursor: e-resize;
  width: 26px;
 }
 
@@ -782,18 +783,6 @@ ul,li {
  width:      100%;
  z-index:    99999;
  display:    none;
-}
-
-#error {  
-  width:      78px;
-  background: #990000;
-  padding:    3px;
-  height:     12px;
-  color:      #FFF;
-  font:       bold 8px Arial, sans-serif;
-  position:   absolute;
-  z-index:    99999;
-  display:    none;
 }
 
 #current { 
