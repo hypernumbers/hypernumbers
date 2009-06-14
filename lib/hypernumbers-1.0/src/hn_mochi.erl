@@ -267,9 +267,9 @@
      hn_db_api:delete(Ref, Direction);
 
  ipost(_Req, #refX{site = S, path = P} = Ref, range, _Attr, 
-       [{"copy", {struct, [{"range", Range}]}}], User) ->
+       [{"copy", {struct, [{"src", Src}]}}], User) ->
      ok = status_srv:update_status(User, S, P, "edited page"),
-     hn_db_api:copy_n_paste(Ref#refX{obj = hn_util:parse_attr(range, Range)}, Ref);
+    hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref);
 
  ipost(_Req, #refX{site = S, path = P, obj = {range, _}} = Ref, _Type, _Attr, 
        [{"borders", {struct, Attrs}}], User) ->

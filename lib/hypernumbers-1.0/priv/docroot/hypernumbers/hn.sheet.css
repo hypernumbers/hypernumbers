@@ -197,6 +197,14 @@ ul,li {
  background: #FFFFFF;
 }
 
+#menu .desc { 
+ font-size: 10px; 
+ position:absolute; 
+ color:grey;
+ right:4px; 
+ top:4px;
+}
+
 #menu li { 
  float:      left; 
 }    
@@ -243,11 +251,11 @@ ul,li {
  background: #ffc47e; 
 }  
 
-#menu .disabled.hover { 
+#menu .disabled a.hover { 
  background: #f8f7f6;       
 }  
 
-#menu .disabled { 
+#menu .disabled a { 
  color: #AAA; 
 }  
 
@@ -531,7 +539,7 @@ ul,li {
 #size_16 { font-size:16px; }
 #size_20 { font-size:20px; }
 
-.desc { font-size: 8px; position:absolute; right:4px; }
+.desc { font-size: 9px; position:absolute; right:4px; }
 
 #toolbar .icon { 
  background-image: url(sprite.png);
@@ -693,7 +701,7 @@ ul,li {
  z-index:    900;
 }
 
-#axiscontextmenucol, #axiscontextmenurow { 
+#axiscontextmenucol, #axiscontextmenurow, #gridcontextmenu { 
  position:   absolute;
  display:    none;
  width:      140px;
@@ -703,20 +711,29 @@ ul,li {
  z-index:    99999;
 }
 
-#axiscontextmenucol a, #axiscontextmenurow a {
+#axiscontextmenucol a, #axiscontextmenurow a, #gridcontextmenu a {
  display: block;
+ position:relative;
  padding: 3px;
  cursor:  pointer;
 } 
 
-#axiscontextmenucol a:hover, #axiscontextmenurow a:hover {
+#axiscontextmenucol a:hover, #axiscontextmenurow a:hover, #gridcontextmenu a:hover {
  background: #ffc47e; 
 } 
 
-#axiscontextmenucol li.seperator, #axiscontextmenurow li.seperator { 
+#axiscontextmenucol li.seperator, #axiscontextmenurow li.seperator, #gridcontextmenu li.seperator { 
  height:     0px; 
  border-top: 1px solid #CCC; 
  margin:     3px 0px;      
+}
+
+#axiscontextmenucol .desc, #axiscontextmenurow .desc, #gridcontextmenu .desc { 
+ font-size: 10px; 
+ position:absolute; 
+ color:grey;
+ right:4px; 
+ top:4px;
 }
 
 #colselection,#rowselection { 
@@ -775,7 +792,7 @@ ul,li {
   color:      #FFF;
   font:       bold 8px Arial, sans-serif;
   position:   absolute;
-  z-index:    999;
+  z-index:    99999;
   display:    none;
 }
 
