@@ -353,10 +353,10 @@
       </tr>
       <tr>
         <td height="24px" id="footer">
-          <div style="position:relative;display:none;">
-            <span id="hnpaste" style="width:250px; position:absolute;top:-7px;right:15px;"></span>
-            <span id="pathpaste" style="top:-7px;right:15px;"></span>
-            <span id="formbuilder_lang" style="width:130px; position:absolute;top:-7px;right:250px;"></span>
+          <div style="position:relative;">
+            &nbsp;&nbsp;Currently Editing : <span id="path"></span>
+            <span id="hnpaste" style="display:none;width:250px; position:absolute;top:-7px;right:15px;"></span>
+            <span id="pathpaste" style="top:-7px;right:15px;display:none;"></span>
           </div>
         </td>
       </tr>
@@ -570,6 +570,10 @@
     
     <div id="overlay"></div>
     <div id="cover"></div>
+
+    <div id="loading">
+      loading data...
+    </div>
     
   </body>
 
@@ -587,7 +591,7 @@
   <script src="/hypernumbers/hn.toolbar.js"></script>
   <script src="/hypernumbers/hn.callbacks.js"></script>
   <script src="/hypernumbers/hn.selection.js"></script>
-      
+  
   <script type="text/javascript">   
     var lang = "$txt:{en_gb}$";
     new HN.SpreadSheet("hn");
