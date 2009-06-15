@@ -28,7 +28,7 @@ create(Site, Name, Pass) ->
 
 delete_tr(Site, Name) ->
     {ok, User} = read(Site, Name),
-    mnesia:delete_object(?trans(Site, hn_user), User).
+    mnesia:delete_object(?trans(Site, hn_user), User, write).
 
 delete(Site, Name) ->
     mnesia:activity(transaction, fun delete_tr/2, [Site, Name]).
