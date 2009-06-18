@@ -26,7 +26,7 @@ upgrade_1961() ->
     
     Fun1 = fun(X) -> 
                    {styles, RefX, Idx, M} = X,
-                   NewM = erlang:append_element(M, "normal"),
+                   NewM = erlang:append_element(M, []),
                    {styles, RefX, Idx, NewM}
            end,
     
