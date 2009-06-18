@@ -1940,11 +1940,26 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
 %% The From #refX{} must be a cell reference, but the To #refX{} can be either
 %% a cell or a range
 copy_attrs(_From, _To, []) -> ok;
-copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, [H | T]) ->
+%% this clause deals with a copy attrs on the same page
+copy_attrs(#refX{path = P, obj = {cell, _}} = From, 
+           #refX{path = P, obj = {cell, _}} = To, [H | T]) ->
+    [{From, {Key, Value}}] = read_attrs(From, ["style"], read),
+    ok = write_attr(To, {"style", Value}),
+    copy_attrs(From, To, T);
+%% this clause deals with copying attributes between different pages
+copy_attrs(#refX{obj = {cell, _}} = From, 
+           #refX{obj = {cell, _}} = To, ["style" | T]) ->
+    [{styles, _, _Idx, MagicStyle}] = read_styles(From),
+    Idx = write_style(To, MagicStyle),
+    ok = write_attr(To, {"style", Idx}),
+    copy_attrs(From, To, T);
+copy_attrs(#refX{obj = {cell, _}} = From, 
+           #refX{obj = {cell, _}} = To, [H | T]) ->
     [{From, {Key, Value}}] = read_attrs(From, [H], read),
     ok = write_attr(To, {Key, Value}),
     copy_attrs(From, To, T);
-copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {range, _}} = To, Attrs) ->
+copy_attrs(#refX{obj = {cell, _}} = From, 
+           #refX{obj = {range, _}} = To, Attrs) ->
     List = hn_util:range_to_list(To),
     [ok = copy_attrs(From, X, Attrs) || X <- List].
 
@@ -1972,19 +1987,13 @@ copy_style(#refX{site = S, path = P, obj = {cell, _}} = From,
 copy_style(#refX{obj = {cell, _}} = From, 
            #refX{obj = {Type, _}} = To)
   when Type == cell orelse Type == range ->
-    % [{styles, From, _Idx, MagicStyle}] 
-    Return = read_styles(From),
-    io:format("Return is ~p~n", [Return]),
-    [{styles, _, _Idx, MagicStyle}] = Return,
-    io:format("MagicStyle is ~p~n", [MagicStyle]),
+    [{styles, _, _Idx, MagicStyle}] = read_styles(From),
     List = case Type of
                cell  -> [To];
                range -> hn_util:range_to_list(To)
            end,
     Fun = fun(X) ->
-                  io:format("X is ~p~n", [X]),
                   Idx = write_style(X, MagicStyle),
-                  io:format("Idx is ~p~n", [Idx]),
                   write_attr(X, {"style", Idx})
           end,
     [ok = Fun(X) || X <- List],
