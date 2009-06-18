@@ -1942,8 +1942,8 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
 copy_attrs(_From, _To, []) -> ok;
 %% this clause deals with a copy attrs on the same page
 copy_attrs(#refX{path = P, obj = {cell, _}} = From, 
-           #refX{path = P, obj = {cell, _}} = To, [H | T]) ->
-    [{From, {Key, Value}}] = read_attrs(From, ["style"], read),
+           #refX{path = P, obj = {cell, _}} = To, ["style" | T]) ->
+    [{From, {"style", Value}}] = read_attrs(From, ["style"], read),
     ok = write_attr(To, {"style", Value}),
     copy_attrs(From, To, T);
 %% this clause deals with copying attributes between different pages
@@ -3361,7 +3361,11 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
                   _        -> hn_util:text(Value)
               end,
     ok = write_cell(RefX, Value, Formula, [], []),
-    ok = write_attr(RefX, {"text-align", Align}),
+    %% only write the default alignment if there is no style on this cell
+    case read_attrs(RefX, ["style"], read) of
+        [] -> ok = write_attr(RefX, {"text-align", Align});
+        _  -> ok
+    end,
     %?INFO("~p",[read_attrs(RefX, ["text-align"], read)]),
     % write out the format (if any)
     case Format of
