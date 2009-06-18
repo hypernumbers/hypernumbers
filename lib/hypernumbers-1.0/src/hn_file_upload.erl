@@ -79,30 +79,30 @@ write_css(Ref, {{{sheet, Sheet}, {row_index, R}, {col_index, C}}, [CSS]}) ->
 %% This function 'makes it so' <-- super-ugelee n'est pas?
 defaultize(M) ->
     M1 = case M of
-             #magic_style{'border-right' = [], 
+             #magic_style{'border-right-style' = [], 
                           'border-right-color' = "rgb(000,000,000)", 
-                          'border-right-style' = []} -> 
+                          'border-right-width' = []} -> 
                  M#magic_style{'border-right-color' = []};
              _O1 -> M
          end,
     M2 = case M1 of
-             #magic_style{'border-left' = [], 
+             #magic_style{'border-left-style' = [], 
                           'border-left-color' = "rgb(000,000,000)", 
-                          'border-left-style' = []} -> 
+                          'border-left-width' = []} -> 
                  M1#magic_style{'border-left-color' = []};
              _O2 -> M1
          end,
     M3 = case M2 of
-             #magic_style{'border-top' = [], 
+             #magic_style{'border-top-style' = [], 
                           'border-top-color' = "rgb(000,000,000)", 
-                          'border-top-style' = []} -> 
+                          'border-top-width' = []} -> 
                  M2#magic_style{'border-top-color' = []};
              _O3 -> M2
          end,
     _M4 = case M3 of
-              #magic_style{'border-bottom' = [], 
+              #magic_style{'border-bottom-style' = [], 
                            'border-bottom-color' = "rgb(000,000,000)", 
-                           'border-bottom-style' = []} -> 
+                           'border-bottom-width' = []} -> 
                  M3#magic_style{'border-bottom-color' = []};
               _O4 -> M3
           end.    
