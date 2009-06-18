@@ -18,8 +18,30 @@
          upgrade_1776/0,
          upgrade_1817/0,
          upgrade_1825/0,
-         upgrade_1838/0
+         upgrade_1838/0,
+         upgrade_1961/0
         ]).
+
+upgrade_1961() ->
+    
+    Fun1 = fun(X) -> 
+                   {styles, RefX, Idx, M} = X,
+                   NewM = erlang:append_element(M, "normal"),
+                   {styles, RefX, Idx, NewM}
+           end,
+    
+    Tbl = fun(Host, Port, Table) ->
+                  list_to_atom(lists:concat([Host,"&",Port,"&",Table]))
+          end,
+    
+    Fun2 = fun("http://"++Site) ->
+                   [Host, Port] = string:tokens(Site, ":"),
+                   Name = Tbl(Host, Port, styles),
+                   Fields = ms_util2:get_record_info(styles), 
+                   mnesia:transform_table(Name, Fun1, Fields)
+           end,
+    
+    [Fun2(X) || X <- hn_util:get_hosts(hn_config:get(hosts))].
 
 
 %% rejigs the magic style record in table styles

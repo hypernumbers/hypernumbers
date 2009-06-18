@@ -222,7 +222,8 @@
           'font-stretch'        = [],
           'text-decoration'     = [],
           'text-shadow'         = [],
-          'text-align'          = []
+          'text-align'          = [],
+          'white-space'         = []
          }).        
 
 -record(styles,
