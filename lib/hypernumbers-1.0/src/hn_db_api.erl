@@ -222,7 +222,6 @@ set_borders(#refX{obj = {range, _}} = RefX, Where, Border, B_Style, B_Color)
     ok = set_borders2(RefX, "bottom", Border, B_Style, B_Color),
     ok = set_borders2(RefX, "left",   Border, B_Style, B_Color),
     ok = set_borders2(RefX, "right",  Border, B_Style, B_Color),
-    io:format("In set_borders for ~p with ~p~n", [RefX, Where]),
     ok;
 
 %% there are a number of different function heads for 'inside'
