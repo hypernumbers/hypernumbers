@@ -128,6 +128,7 @@
          drag_n_drop/2,
          copy_n_paste/2,
          cut_n_paste/2,
+         copy_style/2,
          insert/1,
          insert/2,
          delete/1,
@@ -1340,7 +1341,22 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
                       {ok, cell_to_range, Incr} -> copy2(From, To, Incr)
                   end
           end,
-    mnesia:activity(transaction, Fun),
+    ok = mnesia:activity(transaction, Fun),
+    ok = tell_front_end("drag n drop").
+
+%% @spec(From::refX{}, To::refX{}) -> ok
+%% @doc Copies the style applied to From and attaches it to To.
+%%      From can only be a cell ref but To can be either a cell or range
+%%      ref
+%% @end
+copy_style(#refX{obj = {cell, _}} = From, 
+           #refX{obj = {Type, _}} = To)
+  when Type == cell orelse Type == range ->
+    Fun = fun() ->
+                  ok = init_front_end_notify(),
+                  hn_db_wu:copy_style(From, To)
+          end,
+    ok = mnesia:activity(transaction, Fun),
     ok = tell_front_end("drag n drop").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -520,6 +520,7 @@
          shift_inc_hns/2,
          copy_cell/3,
          copy_attrs/3,
+         copy_style/2,
          get_cells/1,
          mark_cells_dirty/1,
          mark_dirty/2,
@@ -936,6 +937,10 @@ update_inc_hn(Parent, Child, Val, DepTree, Biccie)
 %% <li>page</li>
 %% </ul>
 %% and the return is a list of cell references
+%%
+%% If you want to expand a range to a list of cell references 
+%% irrespective of wether or not they are populated then use
+%% hn_util:range_to_list(refX{})
 get_cells(#refX{obj = {cell, _}} = RefX) -> [RefX];
 get_cells(#refX{site = S, obj = {range, _}} = RefX) ->
     MatchRef = make_range_match_ref(RefX),
@@ -1157,7 +1162,7 @@ read_local_children(#refX{obj = {Type, _}} = Parent)
        orelse (Type == range) orelse (Type == page) ->
     Cells = get_cells(Parent),
     lists:flatten([read_local_children(X) || X <- Cells]);
-read_local_children(#refX{site = Site, obj = {cell, _} = Obj} = Parent) ->
+read_local_children(#refX{site = Site, obj = {cell, _}} = Parent) ->
     case read_local_item_index(Parent) of
         false -> [];
         PIdx  -> Table = trans(Site, local_cell_link),
@@ -1943,6 +1948,48 @@ copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {range, _}} = To, Attrs) -
     List = hn_util:range_to_list(To),
     [ok = copy_attrs(From, X, Attrs) || X <- List].
 
+%% @spec(From::refX{}, To::refX{}) -> ok
+%% @doc Copies the style applied to From and attaches it to To.
+%%      From can only be a cell ref but To can be either a cell or range
+%%      ref
+%% @end
+%% this clause is for 'on page' copies where both From and To are on
+%% the same page - just the index is copied
+copy_style(#refX{site = S, path = P, obj = {cell, _}} = From, 
+           #refX{site = S, path = P, obj = {Type, _}} = To)
+  when Type == cell orelse Type == range ->
+    [{_, {"style", Idx}}] = read_attrs(From, ["style"], read),
+    List = case Type of
+               cell  -> [To];
+               range -> hn_util:range_to_list(To)
+           end,
+    Fun = fun(X) ->
+                  write_attr(X, {"style", Idx})
+          end,
+    [ok = Fun(X) || X <- List],
+    ok;
+%% this clause is for copying styles across different pages
+copy_style(#refX{obj = {cell, _}} = From, 
+           #refX{obj = {Type, _}} = To)
+  when Type == cell orelse Type == range ->
+    % [{styles, From, _Idx, MagicStyle}] 
+    Return = read_styles(From),
+    io:format("Return is ~p~n", [Return]),
+    [{styles, _, _Idx, MagicStyle}] = Return,
+    io:format("MagicStyle is ~p~n", [MagicStyle]),
+    List = case Type of
+               cell  -> [To];
+               range -> hn_util:range_to_list(To)
+           end,
+    Fun = fun(X) ->
+                  io:format("X is ~p~n", [X]),
+                  Idx = write_style(X, MagicStyle),
+                  io:format("Idx is ~p~n", [Idx]),
+                  write_attr(X, {"style", Idx})
+          end,
+    [ok = Fun(X) || X <- List],
+    ok.    
+
 %% @spec read_incoming_hn(Site, Parent) -> #incoming_hn{} | []
 %% Parent = [#refX{}]
 %% @doc reads an incoming hypernumber from the reference to the parent cell
@@ -2017,7 +2064,7 @@ read_outgoing_hns(Site, #refX{obj = {cell, _}} = Parent)
 %% <li>page</li>
 %% </ul>
 %% @todo extend to include url/db functions as required...
-mark_cells_dirty(#refX{site = Site, obj = {cell, _} = Obj} = RefX) ->
+mark_cells_dirty(#refX{site = Site, obj = {cell, _}} = RefX) ->
     % Make a list of cells hypernumbers and direct
     % cell links
     % first up local
@@ -2308,7 +2355,7 @@ rwf1([H | T], O, N, A)              -> rwf1(T, O, N, [H | A]).
 %% * if it does delete it and then write the record
 %% * if it don't then just write it.
 %% will write out any raw attribute
-write_attr3(#refX{site = Site, obj = Obj} = RefX, {Key, Val}) ->
+write_attr3(#refX{site = Site} = RefX, {Key, Val}) ->
    
     Idx = get_local_item_index(RefX),
     Match = #item{idx = Idx, key = Key, _ = '_'},
@@ -2852,7 +2899,7 @@ get_l_p(Site, [#local_cell_link{parentidx = P} | T], Acc) ->
 get_local_children(Site, List) -> get_l_c(Site, List, []).
 
 get_l_c(_Site, [], Acc) -> Acc;
-get_l_c(Site, [#local_cell_link{parentidx = P, childidx = C} | T], Acc) ->
+get_l_c(Site, [#local_cell_link{childidx = C} | T], Acc) ->
     RefX = local_idx_to_refX(Site, C),
     get_l_c(Site, T, [RefX | Acc]).
 
@@ -3273,7 +3320,7 @@ write_attr2(RefX, {"formula", Val}) ->
         [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
     end.
 
-write_formula1(#refX{obj = Obj} = RefX, Fla, Val) ->
+write_formula1(RefX, Fla, Val) ->
     Rti = refX_to_rti(RefX, false),
     case muin:run_formula(Fla, Rti) of
               % TODO : Get rid of this, muin should return {error, Reason}?
@@ -3295,7 +3342,7 @@ write_formula1(#refX{obj = Obj} = RefX, Fla, Val) ->
                   write_cell(RefX, Res, Val, Parxml, Deptree)
           end.
 
-write_formula2(#refX{obj = Obj} = RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
+write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
     % now write out the actual cell
     Formula = case Type of
                   quote    -> [39 | Value];
@@ -3359,7 +3406,6 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     %   - writes any remote links that aren't already there
     %   - deletes any remote links that are no longer there
     % * marks this cell dirty
-    #refX{obj = Obj} = RefX,
     {NewLocPs, NewRemotePs} = split_local_remote(Parents),
 
     % write the formula
