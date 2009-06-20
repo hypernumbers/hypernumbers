@@ -77,7 +77,9 @@ eval_formula(Fcode) ->
                         {error, ErrVal}             -> ErrVal
                     end;
                 R when ?is_rangeref(R); ?is_array(R) ->
-                    case implicit_intersection(R) of
+                    % TODO need to get rid of these
+                    case catch implicit_intersection(R) of
+                        {error, {aborted, _} = Err} -> exit(Err); 
                         blank -> 0;
                         Other -> Other
                     end;
@@ -123,6 +125,7 @@ eval(_Node = [Func|Args]) when ?is_fn(Func) ->
         {ok, {error, _E}}           -> ?error_in_formula; % in stdfuns
         {ok, V}                     -> V
     end;
+
 eval(Value) ->
     Value.
 

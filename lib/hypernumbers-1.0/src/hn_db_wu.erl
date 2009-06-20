@@ -3331,25 +3331,31 @@ write_attr2(RefX, {"formula", Val}) ->
 
 write_formula1(RefX, Fla, Val) ->
     Rti = refX_to_rti(RefX, false),
-    case muin:run_formula(Fla, Rti) of
-              % TODO : Get rid of this, muin should return {error, Reason}?
-              {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-                  ?ERROR("invalid return from muin:run_formula ~p",[Val]),
-                  #refX{site = Site, path = Path, obj = R} = RefX,
-                  ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
-                                                 Val);
-              {error, Error} ->
-                  #refX{site = Site, path = Path, obj = R} = RefX,
-                  ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);
-              {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
-                  Parxml = map(fun muin_link_to_simplexml/1, Parents),
-                  % Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
-                  ok = write_attr3(RefX, {"__ast", Pcode}),
-                  ok = write_attr3(RefX, {"__recompile", Recompile}),
-                  % write the default text align for the result
-                  ok = write_default_alignment(RefX, Res),
-                  write_cell(RefX, Res, Val, Parxml, Deptree)
-          end.
+    ?INFO("test",[]),
+    Tmp = muin:run_formula(Fla, Rti),
+    ?INFO("test1 ~p",[Tmp]),
+    case Tmp of
+        % TODO : Get rid of this, muin should return {error, Reason}?
+        {ok, {_P, {error, error_in_formula}, _, _, _}} ->
+            ?INFO("test2 ",[]),
+            ?ERROR("invalid return from muin:run_formula ~p",[Val]),
+            #refX{site = Site, path = Path, obj = R} = RefX,
+            ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
+                                           Val);
+        {error, Error} ->
+            ?INFO("test2 ",[]),
+            #refX{site = Site, path = Path, obj = R} = RefX,
+            ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);
+        {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
+            ?INFO("test3 ",[]),
+            Parxml = map(fun muin_link_to_simplexml/1, Parents),
+            % Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
+            ok = write_attr3(RefX, {"__ast", Pcode}),
+            ok = write_attr3(RefX, {"__recompile", Recompile}),
+            % write the default text align for the result
+            ok = write_default_alignment(RefX, Res),
+            write_cell(RefX, Res, Val, Parxml, Deptree)
+    end.
 
 write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
     % now write out the actual cell
