@@ -664,6 +664,15 @@ ul,li {
  overflow: visible;
 }
 
+#dragfill { 
+ display:  none;
+ position: absolute;
+ border:   1px dashed #000;
+ z-index:  1000;
+ overflow: visible;
+}
+
+
 #dragger { 
  height:     6px;
  width:      6px;
