@@ -77,12 +77,11 @@ eval_formula(Fcode) ->
                         {error, ErrVal}             -> ErrVal
                     end;
                 R when ?is_rangeref(R); ?is_array(R) ->
-                    % TODO need to get rid of these
-                    case catch implicit_intersection(R) of
-                        {error, {aborted, _} = Err} -> exit(Err); 
-                        blank -> 0;
-                        Other -> Other
-                    end;
+                    try case implicit_intersection(R) of
+                            blank -> 0;
+                            Other -> Other
+                        end
+                    catch throw:Err -> Err end;
                 R when ?is_namedexpr(R) ->
                     ?ERRVAL_NAME;
                 Constant ->
