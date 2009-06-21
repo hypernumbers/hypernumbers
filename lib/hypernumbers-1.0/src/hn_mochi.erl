@@ -609,7 +609,22 @@ page_attributes(Ref, User) ->
     Time   = {"time", remoting_reg:timestamp()},
     Usr    = {"user", hn_users:name(User)},
     Host   = {"host", Ref#refX.site},
-    {struct, [Time, Usr, Host | dict_to_struct(Dict)]}.
+    Tour   = viewed_tour(Ref#refX.site, User),
+    {struct, [Time, Usr, Host, Tour | dict_to_struct(Dict)]}.
+
+viewed_tour(_Site, anonymous) ->
+    {"viewed-tour", "true"};
+viewed_tour(Site, User) ->
+    View = case hn_users:get(User, "viewed-tour") of
+               undefined ->
+                   hn_users:update(Site, User, "viewed-tour", "true"),
+                   "false";
+               {ok, "false"} ->
+                   hn_users:update(Site, User, "viewed-tour", "true"),
+                   "false";
+               {ok, "true"} -> "true"
+           end,    
+    {"viewed-tour", View}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};

@@ -67,8 +67,12 @@ get(User, Key) ->
 update_tr(Site, User, Key, Val) ->
     NUser = User#hn_user{data=dict:store(Key, Val, User#hn_user.data)},
     mnesia:write(?trans(Site, hn_user), NUser, write).
-    
-update(Site, User, Key, Val) ->
+
+update(Site, UserName, Key, Val) when is_list(UserName) ->
+    {ok, User} = read(Site, UserName),
+    update(Site, User, Key, Val);
+
+update(Site, User, Key, Val) when is_record(User, hn_user) ->
     mnesia:activity(transaction, fun update_tr/4, [Site, User, Key, Val]).
 
 login(Site, Name, Pass, Remember) ->
