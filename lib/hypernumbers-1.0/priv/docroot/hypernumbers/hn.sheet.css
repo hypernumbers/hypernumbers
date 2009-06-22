@@ -714,8 +714,7 @@ ul,li {
  position:   absolute;
  top:        0px;
  left:       0px;
- background: transparent;
- width:      0px;
+ width:      1px;
  border:     0px;
 }
 
