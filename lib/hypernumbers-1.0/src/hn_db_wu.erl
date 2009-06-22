@@ -580,6 +580,7 @@
 -define(bra, {'('}).
 -define(AND, andalso).
 -define(OR, orelse).
+-define(rootcellref, {cellref, _, _, "/", R}).
 -define(cellref, {cellref, _, _, _, R}).
 -define(cellref2, {cellref, _, _, _, R2}).
 -define(rangeref, {rangeref, _, _, _, __, _, _, R}).
@@ -2606,6 +2607,11 @@ mk_f([{errval, '#REF!'} | T], {St, A})    -> mk_f(T, {St, ["#REF!" | A]});
 mk_f([{deref, Text}     | T], {St, A})    -> mk_f(T, {St, [Text | A]});
 % special infering of division
 mk_f([?cellref, ?cellref2| T], {St, A})   -> mk_f(T, {St, [R2, "/", R | A]});
+mk_f([{int, I}, ?cellref| T], {St, A})      -> mk_f(T, {St, [R, "/", integer_to_list(I) | A]});
+mk_f([{float, F, _}, ?cellref| T], {St, A}) -> mk_f(T, {St, [R, "/", float_to_list(F) | A]});
+mk_f([{')'}, ?cellref| T], {St, A})         -> mk_f(T, {St, [R, "/", ")" | A]});
+%% order matters - now detecting 'root' cells
+mk_f([?rootcellref       | T], {St, A})     -> mk_f(T, {St, ["/" ++ R | A]});
 mk_f([?cellref           | T], {St, A})   -> mk_f(T, {St, [R | A]});
 mk_f([?rangeref          | T], {St, A})   -> mk_f(T, {St, [R | A]});
 mk_f([?namedexpr         | T], {St, A})   -> mk_f(T, {St, [P ++ N | A]});
