@@ -3624,12 +3624,26 @@ delete_style_attr(#refX{site = S} = RefX, Key)  ->
     NewStyleIdx = get_style(RefX, CurrentStyle, Key, []),
     write_attr3(RefX, {"style", NewStyleIdx}).    
 
+set_wrap_row(#refX{obj = {cell, {X, Y}}} = RefX, "normal") ->
+    write_attr(RefX#refX{obj={row,{Y, Y}}}, {"autoheight-"++itol(X), "auto"});
+set_wrap_row(#refX{obj = {cell, {X, Y}}} = RefX, "nowrap") ->
+    delete_attrs(RefX#refX{obj={row,{Y, Y}}}, "autoheight-"++itol(X)).
+
+itol(X) ->
+    integer_to_list(X).
+
 %% this function is called when a new attribute is set for a style
 process_styles(RefX, {Name, Val}) when is_record(RefX, refX) ->
+
+    case Name of
+        "white-space" -> set_wrap_row(RefX, Val);
+        _ -> ok
+    end,
+    
     NewSIdx = case read_attrs(RefX, ["style"], read) of 
                   []                       -> get_style(RefX, Name, Val);
                   [{RefX, {"style", Idx}}] -> get_style(RefX, Idx, Name, Val) 
-                  end,
+              end,
     write_attr3(RefX, {"style", NewSIdx}).    
 
 get_style(RefX, Name, Val) ->
