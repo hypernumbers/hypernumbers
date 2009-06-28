@@ -91,7 +91,10 @@ stop(Type) ->
 
 listen(Table) ->
     case mnesia:activity(transaction, fun read_table/1, [Table]) of
-        ok -> ok;
+        ok ->
+            mnesia_recover:allow_garb(),
+            mnesia_recover:start_garb(),
+            ok;
         no_dirty_cells ->
             receive _X ->
                     mnesia:unsubscribe({table, Table, simple})
