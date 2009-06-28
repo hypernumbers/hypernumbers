@@ -114,15 +114,8 @@
              end
      end.    
 
- serve_html(Req, File, anonymous) ->
-     serve_file(Req, ensure(File, "en_gb"));
-
  serve_html(Req, File, User) ->
-     Ext  = case hn_users:get(User, "language") of
-                {ok, Lang} -> Lang;
-                undefined  -> "en_gb"
-           end,
-     serve_file(Req, ensure(File, Ext)).
+     serve_file(Req, ensure(File, get_lang(User))).
 
  serve_file(Req, File) ->
      case file:open(docroot() ++ "/" ++ File, [raw, binary]) of
@@ -610,8 +603,9 @@ page_attributes(Ref, User) ->
     Time   = {"time", remoting_reg:timestamp()},
     Usr    = {"user", hn_users:name(User)},
     Host   = {"host", Ref#refX.site},
+    Lang   = {"lang", get_lang(User)},
     Tour   = viewed_tour(Ref#refX.site, User),
-    {struct, [Time, Usr, Host, Tour | dict_to_struct(Dict)]}.
+    {struct, [Time, Usr, Host, Tour, Lang | dict_to_struct(Dict)]}.
 
 viewed_tour(_Site, anonymous) ->
     {"viewed-tour", "true"};
@@ -646,5 +640,10 @@ pages(#refX{path = [H | _T], obj = {page, "/"}} = RefX) ->
     NewRefX = RefX#refX{path = [H]},
     {struct, dict_to_struct(hn_db_api:read_page_structure(NewRefX))}.
 
-
-    
+get_lang(anonymous) ->
+    "en_gb";
+get_lang(User) ->
+    case hn_users:get(User, "language") of
+        {ok, Lang} -> Lang;
+        undefined  -> "en_gb"
+    end.
