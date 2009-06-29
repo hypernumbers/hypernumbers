@@ -240,6 +240,11 @@ function debug
     erl -sname debug@$HOST -setcookie $COOKIE -remsh $NODE@$HOST
 }
 
+function clear_po
+{
+    rm $ROOT/lib/hypernumbers-1.0/priv/docroot/hypernumbers/index.html.*
+}
+
 function run
 {
     erl -sname $NODE-ctrl@$HOST \
@@ -272,6 +277,7 @@ case $1 in
     gen_tests)      gen_tests;;
     gen_help)       gen_help;;
     inspect_mnesia) inspect_mnesia;;
+    clear_po)       clear_po;;
     test)           test $2;;
     *)              echo "invalid paramaters passed into hypernumbers script";;
 esac
