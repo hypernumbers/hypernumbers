@@ -26,287 +26,287 @@
                 Req:ok({"application/json", ?hdr, Json})
         end()).
 
- -define(exit, 
-         exit("exit from hn_mochi:handle_req impossible page versions")).
+-define(exit, 
+        exit("exit from hn_mochi:handle_req impossible page versions")).
 
- req(Req) ->
+req(Req) ->
 
-     case filename:extension(Req:get(path)) of 
+    case filename:extension(Req:get(path)) of 
 
-         %% Serve Static Files
-         X when X == ".png"; X == ".css"; X == ".js"; 
-                X == ".ico"; X == ".json" ->
-             "/"++RelPath = Req:get(path),
-             Req:serve_file(RelPath, docroot());
+        %% Serve Static Files
+        X when X == ".png"; X == ".css"; X == ".js"; 
+        X == ".ico"; X == ".json" ->
+            "/"++RelPath = Req:get(path),
+            Req:serve_file(RelPath, docroot());
 
-         [] ->
-             case catch do_req(Req) of 
-                 ok -> ok;
-                 invalid_reference ->
-                     Req:respond({500,[],[]});
-                 Else ->
-                     ?ERROR("~p~n~p",[Else, erlang:get_stacktrace()]),
-                     Req:respond({500,[],[]})
-             end
-     end.
+        [] ->
+            case catch do_req(Req) of 
+                ok -> ok;
+                invalid_reference ->
+                    Req:respond({500,[],[]});
+                Else ->
+                    ?ERROR("~p~n~p",[Else, erlang:get_stacktrace()]),
+                    Req:respond({500,[],[]})
+            end
+    end.
 
- do_req(Req) ->
+do_req(Req) ->
 
-     Ref    = hn_util:parse_url(get_host(Req)),
-     #refX{site = Site} = Ref,
-     Vars   = Req:parse_qs(),
-     Method = Req:get(method),
+    Ref    = hn_util:parse_url(get_host(Req)),
+    #refX{site = Site} = Ref,
+    Vars   = Req:parse_qs(),
+    Method = Req:get(method),
 
-     {ok, Auth} = get_var_or_cookie("auth", Vars, Req),
-     User = case hn_users:verify_token(Site, Auth) of
-                {ok, Usr}        -> Usr;
-                {error, _Reason} -> anonymous
-            end,
+    {ok, Auth} = get_var_or_cookie("auth", Vars, Req),
+    User = case hn_users:verify_token(Site, Auth) of
+               {ok, Usr}        -> Usr;
+               {error, _Reason} -> anonymous
+           end,
 
-     {ok, Access} = hn_users:get_access_level(User, Ref),
+    {ok, Access} = hn_users:get_access_level(User, Ref),
 
-     case check_auth(Access, Ref#refX.path, Method)  of 
-         login -> Req:serve_file("hypernumbers/login.html", docroot(), ?hdr);
-         ok    -> handle_req(Method, Req, Ref, Vars, User)
-     end,
-     ok.
+    case check_auth(Access, Ref#refX.path, Method)  of 
+        login -> Req:serve_file("hypernumbers/login.html", docroot(), ?hdr);
+        ok    -> handle_req(Method, Req, Ref, Vars, User)
+    end,
+    ok.
 
- check_auth(no_access, ["_user"|_], _) -> ok;
- check_auth(no_access, _, _)           -> login;
- check_auth(read,      _, 'GET')       -> ok;
- check_auth(write,     _, _)           -> ok;
- check_auth(admin,     _, _)           -> ok.
+check_auth(no_access, ["_user"|_], _) -> ok;
+check_auth(no_access, _, _)           -> login;
+check_auth(read,      _, 'GET')       -> ok;
+check_auth(write,     _, _)           -> ok;
+check_auth(admin,     _, _)           -> ok.
 
- handle_req(Method, Req, Ref, Vars, User) ->
+handle_req(Method, Req, Ref, Vars, User) ->
 
-     Type = element(1, Ref#refX.obj),
-     case Method of
-         'GET'  -> 
-             mochilog:log(Req, Ref, hn_users:name(User), undefined),
-             iget(Req, Ref, Type, Vars, User);
+    Type = element(1, Ref#refX.obj),
+    case Method of
+        'GET'  -> 
+            mochilog:log(Req, Ref, hn_users:name(User), undefined),
+            iget(Req, Ref, Type, Vars, User);
 
-         'POST' ->
+        'POST' ->
 
-             {value, {'Content-Type', Ct}} =
-                 mochiweb_headers:lookup('Content-Type', Req:get(headers)),
+            {value, {'Content-Type', Ct}} =
+                mochiweb_headers:lookup('Content-Type', Req:get(headers)),
 
-             %% TODO: Log file uploads.
-             case string:substr(Ct, 1, 19) of
+            %% TODO: Log file uploads.
+            case string:substr(Ct, 1, 19) of
 
-                 "multipart/form-data" ->
+                "multipart/form-data" ->
 
-                     {Data, File} = hn_file_upload:handle_upload(Req, Ref, User),
-                     Name = filename:basename(File),
+                    {Data, File} = hn_file_upload:handle_upload(Req, Ref, User),
+                    Name = filename:basename(File),
 
-                     mochilog:log(Req, Ref, hn_users:name(User), {upload, Name}),
-                     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
-                     Req:ok({"text/html", ?hdr, Json});
+                    mochilog:log(Req, Ref, hn_users:name(User), {upload, Name}),
+                    Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
+                    Req:ok({"text/html", ?hdr, Json});
 
-                 _Else ->
-                     Body = Req:recv_body(),
-                     {ok, Post} = get_json_post(Body),
+                _Else ->
+                    Body = Req:recv_body(),
+                    {ok, Post} = get_json_post(Body),
 
-                     mochilog:log(Req, Ref, hn_users:name(User), Body),
-                     case ipost(Req, Ref, Type, Vars, Post, User) of
-                         ok  -> ?json(Req, "success");
-                         ret -> ok
-                     end
-             end
-     end.    
+                    mochilog:log(Req, Ref, hn_users:name(User), Body),
+                    case ipost(Req, Ref, Type, Vars, Post, User) of
+                        ok  -> ?json(Req, "success");
+                        ret -> ok
+                    end
+            end
+    end.    
 
- serve_html(Req, File, User) ->
-     serve_file(Req, ensure(File, get_lang(User))).
+serve_html(Req, File, User) ->
+    serve_file(Req, ensure(File, get_lang(User))).
 
- serve_file(Req, File) ->
-     case file:open(docroot() ++ "/" ++ File, [raw, binary]) of
-         {ok, IoDevice} ->
-             Req:ok({"text/html",?hdr,{file, IoDevice}}),
-             file:close(IoDevice);
-         _ ->
-             Req:not_found()
-     end.
+serve_file(Req, File) ->
+    case file:open(docroot() ++ "/" ++ File, [raw, binary]) of
+        {ok, IoDevice} ->
+            Req:ok({"text/html",?hdr,{file, IoDevice}}),
+            file:close(IoDevice);
+        _ ->
+            Req:not_found()
+    end.
 
 
- ensure(File, Lang) ->
-     Path = docroot() ++ "/" ++ File,
-     case filelib:is_file(Path++"."++Lang) of 
-         true  -> ok;
-         false -> hn_util:compile_html(Path, Lang)
-     end,
-     File++"."++Lang.
+ensure(File, Lang) ->
+    Path = docroot() ++ "/" ++ File,
+    case filelib:is_file(Path++"."++Lang) of 
+        true  -> ok;
+        false -> hn_util:compile_html(Path, Lang)
+    end,
+    File++"."++Lang.
 
- iget(Req, #refX{path=["_user", "login"]}, page, [], User) ->
-     serve_html(Req, "hypernumbers/login.html", User);
- iget(Req, #refX{site = S, path = P}, page, [], User) ->
-     ok = status_srv:update_status(User, S, P, "viewed page"),
-     serve_html(Req, "hypernumbers/index.html", User);
- iget(Req, Ref, page, [{"updates", Time}], _User) ->
-     remoting_request(Req, Ref, Time);
- iget(Req, #refX{site = S}, page, [{"status", []}], _User) -> 
-     ?json(Req, status_srv:get_status(S));
- iget(Req, Ref, page, [{"pages", []}], _User) -> 
-     ?json(Req, pages(Ref));
- iget(Req, Ref, page, [{"attr", []}], User) -> 
-     ?json(Req, page_attributes(Ref, User));
- iget(Req, Ref, cell, [{"attr", []}], _User) ->
-     % ok = fprof:trace(start),
-     Dict = to_dict(hn_db_api:read_whole_page(Ref), dh_tree:new()),
-     JS = case dict_to_struct(Dict) of
-              [] -> {struct, []};
-              [{_Cells, {struct, [{_Y, {struct, [{_X, JSON}]}}]}}] ->
-                  JSON
-          end, 
-     Ret = ?json(Req, JS),
-     % ok = fprof:trace(stop),
-     Ret;
- iget(Req, Ref, cell, [], _User) ->
-     V = case hn_db_api:read_attributes(Ref,["value"]) of
-             [{_Ref, {"value", Val}}]           -> Val; 
-             _Else                              -> "" 
-         end,
-     Req:ok({"text/html",V});
- iget(Req, Ref, _Type,  Attr, _User) ->
-     ?ERROR("404~n-~p~n-~p",[Ref, Attr]),
-     Req:not_found().
+iget(Req, #refX{path=["_user", "login"]}, page, [], User) ->
+    serve_html(Req, "hypernumbers/login.html", User);
+iget(Req, #refX{site = S, path = P}, page, [], User) ->
+    ok = status_srv:update_status(User, S, P, "viewed page"),
+    serve_html(Req, "hypernumbers/index.html", User);
+iget(Req, Ref, page, [{"updates", Time}], _User) ->
+    remoting_request(Req, Ref, Time);
+iget(Req, #refX{site = S}, page, [{"status", []}], _User) -> 
+    ?json(Req, status_srv:get_status(S));
+iget(Req, Ref, page, [{"pages", []}], _User) -> 
+    ?json(Req, pages(Ref));
+iget(Req, Ref, page, [{"attr", []}], User) -> 
+    ?json(Req, page_attributes(Ref, User));
+iget(Req, Ref, cell, [{"attr", []}], _User) ->
+                                                % ok = fprof:trace(start),
+    Dict = to_dict(hn_db_api:read_whole_page(Ref), dh_tree:new()),
+    JS = case dict_to_struct(Dict) of
+             [] -> {struct, []};
+             [{_Cells, {struct, [{_Y, {struct, [{_X, JSON}]}}]}}] ->
+                 JSON
+         end, 
+    Ret = ?json(Req, JS),
+                                                % ok = fprof:trace(stop),
+    Ret;
+iget(Req, Ref, cell, [], _User) ->
+    V = case hn_db_api:read_attributes(Ref,["value"]) of
+            [{_Ref, {"value", Val}}]           -> Val; 
+            _Else                              -> "" 
+        end,
+    Req:ok({"text/html",V});
+iget(Req, Ref, _Type,  Attr, _User) ->
+    ?ERROR("404~n-~p~n-~p",[Ref, Attr]),
+    Req:not_found().
 
- ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
-       [{"drag", {_, [{"range", Rng}]}}], User) ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     hn_db_api:drag_n_drop(Ref, Ref#refX{obj = hn_util:parse_attr(range,Rng)}),
-     ok;
+ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+      [{"drag", {_, [{"range", Rng}]}}], User) ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    hn_db_api:drag_n_drop(Ref, Ref#refX{obj = hn_util:parse_attr(range,Rng)}),
+    ok;
 
- ipost(Req, #refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
-     [{"email", Email},{"pass", Pass},{"remember", Rem}] = Data,
-     Resp = case hn_users:login(Site, Email, Pass, Rem) of
-                {error, invalid_user} -> 
-                    [{"response","error"}];
-                {ok, Token} ->
-                    [{"response","success"},{"token",Token}]
-            end,
-     ?json(Req, {struct, Resp}),
-     ret;
+ipost(Req, #refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
+    [{"email", Email},{"pass", Pass},{"remember", Rem}] = Data,
+    Resp = case hn_users:login(Site, Email, Pass, Rem) of
+               {error, invalid_user} -> 
+                   [{"response","error"}];
+               {ok, Token} ->
+                   [{"response","success"},{"token",Token}]
+           end,
+    ?json(Req, {struct, Resp}),
+    ret;
 
- %% the purpose of this message is to mark the mochilog so we don't need to do nothing
- %% with anything...
- ipost(_Req, _Ref, _Type, [{"mark", []}], [{"set",{struct, [{"mark", _Msg}]}}], _User) ->
-     ok;
+%% the purpose of this message is to mark the mochilog so we don't need to do nothing
+%% with anything...
+ipost(_Req, _Ref, _Type, [{"mark", []}], [{"set",{struct, [{"mark", _Msg}]}}], _User) ->
+    ok;
 
- %% the purpose of this message is to write a GUI trail in the mochilog so we 
- %% don't need to do nothingwith anything...
- ipost(_Req, _Ref, _Type, [{"trail", []}], [{"set",{struct, [{"trail", _Msg}]}}], _User) ->
-     ok;
+%% the purpose of this message is to write a GUI trail in the mochilog so we 
+%% don't need to do nothingwith anything...
+ipost(_Req, _Ref, _Type, [{"trail", []}], [{"set",{struct, [{"trail", _Msg}]}}], _User) ->
+    ok;
 
- ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-       [{"insert", "before"}], User)
-   when O == row orelse O == column ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     hn_db_api:insert(Ref);
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "before"}], User)
+  when O == row orelse O == column ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    hn_db_api:insert(Ref);
 
- ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-       [{"insert", "after"}], User)
-   when O == row orelse O == column ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     RefX2 = make_after(Ref), 
-     hn_db_api:insert(RefX2);
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "after"}], User)
+  when O == row orelse O == column ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    RefX2 = make_after(Ref), 
+    hn_db_api:insert(RefX2);
 
- % by default cells and ranges displace vertically
- ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-       [{"insert", "before"}], User)
-   when O == cell orelse O == range ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     hn_db_api:insert(Ref, vertical);
+                                                % by default cells and ranges displace vertically
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "before"}], User)
+  when O == cell orelse O == range ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    hn_db_api:insert(Ref, vertical);
 
- % by default cells and ranges displace vertically
- ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-       [{"insert", "after"}], User)
-   when O == cell orelse O == range ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     RefX2 = make_after(Ref),
-     hn_db_api:insert(RefX2);
+                                                % by default cells and ranges displace vertically
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "after"}], User)
+  when O == cell orelse O == range ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    RefX2 = make_after(Ref),
+    hn_db_api:insert(RefX2);
 
- % but you can specify the displacement explicitly
- ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-       [{"insert", "before"}, {"displacement", D}], User)
-   when O == cell orelse O == range,
-        D == "horizontal" orelse D == "vertical" ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     hn_db_api:insert(Ref, list_to_existing_atom(D));
+                                                % but you can specify the displacement explicitly
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "before"}, {"displacement", D}], User)
+  when O == cell orelse O == range,
+       D == "horizontal" orelse D == "vertical" ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    hn_db_api:insert(Ref, list_to_existing_atom(D));
 
- ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-       [{"insert", "after"}, {"displacement", D}], User)
-   when O == cell orelse O == range,
-        D == "horizontal" orelse D == "vertical" ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     RefX2 = make_after(Ref),
-     hn_db_api:insert(RefX2, list_to_existing_atom(D));
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "after"}, {"displacement", D}], User)
+  when O == cell orelse O == range,
+       D == "horizontal" orelse D == "vertical" ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    RefX2 = make_after(Ref),
+    hn_db_api:insert(RefX2, list_to_existing_atom(D));
 
- ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-       [{"delete", "all"}], User)
-   when O == page ->
-     ok = status_srv:update_status(User, S, P, "deleted page"),
-     hn_db_api:delete(Ref);
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"delete", "all"}], User)
+  when O == page ->
+    ok = status_srv:update_status(User, S, P, "deleted page"),
+    hn_db_api:delete(Ref);
 
- ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-       [{"delete", "all"}], User)
-   when O == row orelse O == column ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     hn_db_api:delete(Ref);
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"delete", "all"}], User)
+  when O == row orelse O == column ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    hn_db_api:delete(Ref);
 
- ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-       [{"delete", Direction}], User)
-   when O == cell orelse O == range,
-        Direction == "horizontal" orelse Direction == "vertical" ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     hn_db_api:delete(Ref, Direction);
+ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"delete", Direction}], User)
+  when O == cell orelse O == range,
+       Direction == "horizontal" orelse Direction == "vertical" ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    hn_db_api:delete(Ref, Direction);
 
- ipost(_Req, #refX{site = S, path = P} = Ref, range, _Attr, 
-       [{"copy", {struct, [{"src", Src}]}}], User) ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
+ipost(_Req, #refX{site = S, path = P} = Ref, range, _Attr, 
+      [{"copy", {struct, [{"src", Src}]}}], User) ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref);
 
- ipost(_Req, #refX{site = S, path = P, obj = {range, _}} = Ref, _Type, _Attr, 
-       [{"borders", {struct, Attrs}}], User) ->
-     Where = from("where", Attrs),
-     Border = from("border", Attrs),
-     Border_Style = from("border_style", Attrs),
-     Border_Color = from("border_color", Attrs),
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
-     ok;
+ipost(_Req, #refX{site = S, path = P, obj = {range, _}} = Ref, _Type, _Attr, 
+      [{"borders", {struct, Attrs}}], User) ->
+    Where = from("where", Attrs),
+    Border = from("border", Attrs),
+    Border_Style = from("border_style", Attrs),
+    Border_Color = from("border_color", Attrs),
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
+    ok;
 
- ipost(Req, _Ref, _Type, _Attr,
-       [{"set", {struct, [{"language", _Lang}]}}], anonymous) ->
-     ?json(Req, {struct, [{"error", "cant set language for anonymous users"}]}),
-     ret;
+ipost(Req, _Ref, _Type, _Attr,
+      [{"set", {struct, [{"language", _Lang}]}}], anonymous) ->
+    ?json(Req, {struct, [{"error", "cant set language for anonymous users"}]}),
+    ret;
 
- ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr, 
-       [{"set", {struct, [{"language", Lang}]}}], User) ->
-     hn_users:update(Site, User, "language", Lang);
+ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr, 
+      [{"set", {struct, [{"language", Lang}]}}], User) ->
+    hn_users:update(Site, User, "language", Lang);
 
- ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
-       [{"set", {struct, Attr}}], User) ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     case Attr of 
-         [{"formula",{array, Vals}}] ->
-             %% TODO : Get Rid of this
-             post_range_values(Ref, Vals),
-             ok;
-         _Else ->
-             hn_db_api:write_attributes(Ref, Attr)
-     end;
+ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+      [{"set", {struct, Attr}}], User) ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    case Attr of 
+        [{"formula",{array, Vals}}] ->
+            %% TODO : Get Rid of this
+            post_range_values(Ref, Vals),
+            ok;
+        _Else ->
+            hn_db_api:write_attributes(Ref, Attr)
+    end;
 
- ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, [{"clear", What}], User) 
-   when What == "contents"; What == "style"; What == "all" ->
-     ok = status_srv:update_status(User, S, P, "edited page"),
-     hn_db_api:clear(Ref, list_to_atom(What));
+ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, [{"clear", What}], User) 
+  when What == "contents"; What == "style"; What == "all" ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    hn_db_api:clear(Ref, list_to_atom(What));
 
- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- %%%                                                                          %%%
- %%% Horizonal API = notify_back_create handler                               %%%
- %%%                                                                          %%%
- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- ipost(Req, Ref, _Type, _Attr,
-       [{"action", "notify_back_create"}|T] = Json, _User) ->
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                          %%%
+%%% Horizonal API = notify_back_create handler                               %%%
+%%%                                                                          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ipost(Req, Ref, _Type, _Attr,
+      [{"action", "notify_back_create"}|T] = Json, _User) ->
     Biccie   = from("biccie",     T),
     Proxy    = from("proxy",      T),
     ChildUrl = from("child_url",  T),
@@ -318,10 +318,10 @@
     _ParentUrl = hn_util:refX_to_url(ParentX),    
     ChildX = hn_util:url_to_refX(ChildUrl),
 
-    % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
-    %         "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
-    
-    % there is only 1 parent and 1 child for this action
+                                                % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
+                                                %         "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
+
+                                                % there is only 1 parent and 1 child for this action
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
     #version{page = PP, version = PV} = PVsn,
@@ -360,10 +360,10 @@ ipost(Req, Ref, _Type, _Attr,
     PVsJson   = from("parent_vsn", T),
     CVsJson   = from("child_vsn",  T),
 
-    % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
-    %         "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
+                                                % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
+                                                %         "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
 
-    % there is only 1 parent and 1 child here
+                                                % there is only 1 parent and 1 child here
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
     #version{page = PP, version = PV} = PVsn,
@@ -376,10 +376,10 @@ ipost(Req, Ref, _Type, _Attr,
     case Sync1 of
         synched -> 
             ok = hn_db_api:notify_back_from_web(ParentX, ChildX,
-                                                      Biccie, Type);
+                                                Biccie, Type);
         unsynched -> 
             log_unsynched("notify_back", Site, PP, PV),
-                           hn_db_api:resync(Site, PVsn);
+            hn_db_api:resync(Site, PVsn);
         not_yet_synched -> 
             log_not_yet_synched("NOT FATAL", "notify_back",
                                 Site, CP, CV),
@@ -410,30 +410,30 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
     Payload   = from("payload",    T),
     PVsJson   = from("parent_vsn", T),
     CVsJson   = from("child_vsn",  T),
-    
+
     ParentX = hn_util:url_to_refX(ParentUrl),
     ChildX = Ref,
     _ChildUrl = hn_util:refX_to_url(ChildX),
 
-    % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ChildUrl ++
-    %         "£ from £" ++ ParentUrl ++ json_util:to_str(Json)),
-    
+                                                % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ChildUrl ++
+                                                %         "£ from £" ++ ParentUrl ++ json_util:to_str(Json)),
+
     #refX{site = Site} = ChildX,
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
     #version{page = PP, version = PV} = PVsn,
-    
+
     Sync1 = case Type of
                 "insert"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
                 "delete"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
                 "new_value" -> hn_db_api:check_page_vsn(Site, PVsn)
             end,
-    % there is one parent and it if is out of synch, then don't process it, ask for a
-    % resynch
+                                                % there is one parent and it if is out of synch, then don't process it, ask for a
+                                                % resynch
     case Sync1 of
         synched -> 
             ok = hn_db_api:notify_from_web(ParentX, Ref, Type,
-                                                 Payload, Biccie);
+                                           Payload, Biccie);
         unsynched -> 
             log_unsynched("notify", Site, PP, PV),
             ok = hn_db_api:resync(Site, PVsn);
@@ -441,8 +441,8 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
             log_not_yet_synched("FATAL", "notify", Site, PP, PV),
             ?exit
     end,
-    % there are 1 to many children and if they are out of synch ask for 
-    % a resynch for each of them
+                                                % there are 1 to many children and if they are out of synch ask for 
+                                                % a resynch for each of them
     Fun =
         fun(X) ->
                 Sync2 = hn_db_api:check_page_vsn(Site, X),
@@ -552,25 +552,25 @@ post_column_values(Ref, Values, Offset) ->
     #refX{obj={range,{X1, Y1, _X2, _Y2}}} = Ref,
     F =  fun("", Acc)  -> Acc+1;
             (Val, Acc) -> 
-                NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
-                ok = hn_db_api:write_attributes(NRef, [{"formula", Val}]),
-                Acc+1 
-        end,
+                 NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
+                 ok = hn_db_api:write_attributes(NRef, [{"formula", Val}]),
+                 Acc+1 
+         end,
     lists:foldl(F, 0, Values).
 
 log_unsynched(_Location, _Site, _Page, _Vsn) ->
-    % bits:log("UNSYNCHED for "++ Location ++"£" ++ pid_to_list(self()) ++
-    %         "£" ++ Site ++ "£ Page £" ++ Page ++ "£ Version £" ++
-    %         tconv:to_s(Vsn)),
+                                                % bits:log("UNSYNCHED for "++ Location ++"£" ++ pid_to_list(self()) ++
+                                                %         "£" ++ Site ++ "£ Page £" ++ Page ++ "£ Version £" ++
+                                                %         tconv:to_s(Vsn)),
     ok.
 
 log_not_yet_synched(_Severity, _Location, _Site, _Page, _Vsn) ->
-    % Msg = Severity ++ " NOT_YET_SYNCHED for " ++ Location ++ "£",
-    % bits:log(Msg ++ pid_to_list(self()) ++ "£" ++ Site ++
-    %         "£ Page £" ++ Page ++"£ Version £" ++
-    %         tconv:to_s(Vsn)).
+                                                % Msg = Severity ++ " NOT_YET_SYNCHED for " ++ Location ++ "£",
+                                                % bits:log(Msg ++ pid_to_list(self()) ++ "£" ++ Site ++
+                                                %         "£ Page £" ++ Page ++"£ Version £" ++
+                                                %         tconv:to_s(Vsn)).
     ok.
-    
+
 remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
     Socket = Req:get(socket),
     inet:setopts(Socket, [{active, once}]),
@@ -580,7 +580,7 @@ remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
         {error, timeout}     -> Req:ok({"text/html",?hdr, <<"timeout">>});
         {msg, Data}          -> ?json(Req, Data)
     after
-        % TODO : Fix, should be controlled by remoting_reg
+                                                % TODO : Fix, should be controlled by remoting_reg
         600000 ->
             ?json(Req, {struct, [{"time", remoting_reg:timestamp()},
                                  {"timeout", "true"}]})
