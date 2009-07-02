@@ -545,6 +545,6 @@ add_built_in_formats(Tables) ->
           [{format_index,49}, {type,string}, {category,text},       {format,"@"}]],
          Fun = fun(Record,[]) -> ?write(Tables,tmp_formats,Record), [] end,
          []=lists:foldl(Fun,[],L),
-         io:format("in excel:add_built_in_formats All built in formats added!~n"),
+         %io:format("in excel:add_built_in_formats All built in formats added!~n"),
          {ok,ok}.
 

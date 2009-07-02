@@ -48,10 +48,8 @@
 get_src(Format)->
     try get_src2(Format)
     catch
-        error:Err -> io:format("get_src fails with error ~p~n",[Err]),
-                     {error,error_in_format};
-        exit:Exit  -> io:format("get_src fails with exit ~p~n",[Exit]),
-                     {error,error_in_format}
+        error:_Err -> {error,error_in_format};
+        exit:_Exit -> {error,error_in_format}
     end.
 
 %%% @doc takes a value and the src code for a format and returns the

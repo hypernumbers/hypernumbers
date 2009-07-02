@@ -132,7 +132,7 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
                                                            Tables),
                     parse_bin(Rest4,SubStreamName,NewCurrentFormula,Tables);
                 {?SST, _} ->
-                    io:format("In no SST continuation...~n"),
+                    %io:format("In no SST continuation...~n"),
                     {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,[Record],
                                                            Name,CurrentFormula,
                                                            Tables),

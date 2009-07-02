@@ -2366,7 +2366,6 @@ rwf1([H | T], O, N, A)              -> rwf1(T, O, N, [H | A]).
 %% * if it don't then just write it.
 %% will write out any raw attribute
 write_attr3(#refX{site = Site} = RefX, {Key, Val}) ->
-   
     Idx = get_local_item_index(RefX),
     Match = #item{idx = Idx, key = Key, _ = '_'},
     Rec   = Match#item{val = Val},

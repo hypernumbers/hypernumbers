@@ -444,6 +444,6 @@ create_default_palette(Tables) ->
 
     Fun = fun(Record,[]) -> excel_util:write(Tables,tmp_colours,Record), [] end,
     []=lists:foldl(Fun,[],L),
-    io:format("in filefilters:create_default_palette - palette created!~n"),
+    % io:format("in filefilters:create_default_palette - palette created!~n"),
     {ok,ok}.
 

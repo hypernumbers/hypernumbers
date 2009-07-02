@@ -689,7 +689,7 @@ parse_rec(?SST,[H|T],_Name,CurrentFormula,Tbl)->
     <<_NoStringsUsed:32/little-unsigned-integer,
      NoActualStrings:32/little-unsigned-integer,
      Rest/binary>>=H,
-    io:format("in parse_rec for SST~n"),
+    % io:format("in parse_rec for SST~n"),
     parse_SST(0,NoActualStrings,Tbl,[Rest|T]),
     {ok,CurrentFormula};
 parse_rec(?LABELSST,Bin,Name,CurrentFormula,Tbl)->
@@ -698,7 +698,7 @@ parse_rec(?LABELSST,Bin,Name,CurrentFormula,Tbl)->
      XFIndex:16/little-unsigned-integer,
      SSTIndex:32/little-unsigned-integer,
      _Rest/binary>>=Bin,
-    io:format("in parse_rec for LABELSST~n"),
+    % io:format("in parse_rec for LABELSST~n"),
     % Now look up the string in the string table
     String=excel_util:lookup_string(Tbl,SSTIndex),
     excel_util:write(Tbl,cell,[{{sheet,Name},{row_index,RowIndex},
@@ -706,7 +706,7 @@ parse_rec(?LABELSST,Bin,Name,CurrentFormula,Tbl)->
                                {xf_index,XFIndex},{string,String}]),
     {ok,CurrentFormula};
 parse_rec(?EXTSST,_Bin,_Name,CurrentFormula,Tbl)->
-    io:format("in parse_rec for EXTSST~n"),
+    % io:format("in parse_rec for EXTSST~n"),
     excel_util:write(Tbl,lacunae,[{identifier,"EXTSST"},
                                   {source,excel_records.erl},
                                   {msg,"not being processed"}]),
@@ -1160,8 +1160,8 @@ parse_SST(NoOfStrings,NoOfStrings,_Tbl,_)->
     ok;
 
 parse_SST(StringNo,NoOfStrings,Tbl,[BinHead|BinTail])->
-    io:format("In parse_SST StringNo is ~p NoOfStrings is ~p~n",
-              [StringNo, NoOfStrings]),
+    % io:format("In parse_SST StringNo is ~p NoOfStrings is ~p~n",
+    %          [StringNo, NoOfStrings]),
     BinLen1=length(binary_to_list(BinHead)),
     <<BinLen2:16/little-unsigned-integer,_Rest/binary>>=BinHead,
     % This clause handles the case where a record falls over a continuation
@@ -1174,32 +1174,32 @@ parse_SST(StringNo,NoOfStrings,Tbl,[BinHead|BinTail])->
             NewBinTail = BinTail,
             ParseBin=BinHead;
         (BinLen1 == BinLen2+3)->
-            io:format("In if (2)~n"),
+            %io:format("In if (2)~n"),
             case BinTail of
                 [] -> 
-                    io:format("In if (2a)~n"),
+                    %io:format("In if (2a)~n"),
                     H1 = [],
                     T1 = [];
                 _Other -> 
-                    io:format("In if (2b)~n"),
+                    %io:format("In if (2b)~n"),
                     [H1|T1] = BinTail
             end,
             NewBinTail=T1,
             ParseBin=BinHead,
             NewBinHead=list_to_binary([ParseBin,H1]);
         (BinLen1 < BinLen2 + 3) ->
-            io:format("BinLen1 is ~p~nBinLen2 is ~p~n", [BinLen1, BinLen2]),
+            %io:format("BinLen1 is ~p~nBinLen2 is ~p~n", [BinLen1, BinLen2]),
             ExtLen=BinLen2+3-BinLen1,
-            io:format("ExtLen is ~p~n", [ExtLen]),
+            %io:format("ExtLen is ~p~n", [ExtLen]),
             [H2|T2] = BinTail,
             % remember to discard the 8 byte unicode flag
             % This is a BIG PROBLEM see Section 5.21 of excelfileformatV1-43.pdf
             % Don't know how to trigger it thought...
-            <<Bits:1/binary,Ext:ExtLen/binary,NewBinHeadPart/binary>>=H2,
-            io:format("Bits is ~p~n", [Bits]),
-            io:format("ExtLen is ~p and NewBinHeadPart is ~p long~n",
-                      [ExtLen, erlang:size(NewBinHeadPart)]),
-            io:format("BinHead is ~w~nExt is ~w~n", [BinHead, Ext]),
+            <<_Bits:1/binary,Ext:ExtLen/binary,NewBinHeadPart/binary>>=H2,
+            %io:format("Bits is ~p~n", [Bits]),
+            %io:format("ExtLen is ~p and NewBinHeadPart is ~p long~n",
+            %          [ExtLen, erlang:size(NewBinHeadPart)]),
+            %io:format("BinHead is ~w~nExt is ~w~n", [BinHead, Ext]),
             NewBinTail=T2,
             % kept over from the old world...
             ParseBin=list_to_binary([BinHead,Ext]),
@@ -1342,11 +1342,11 @@ parse_externname(Bin,Tbl)->
                                          {msg,"not being processed"}])
     end.
 
-write_externname(Name,_Tbl)->
+write_externname(_Name,_Tbl)->
     % ExtBookIndex = excel_util:get_length(Tbl, tmp_externalbook),
     % io:format("ExtBookIndex is ~p~n",[ExtBookIndex]),
-    io:format("in excel_records Name is ~p~n",[Name]),
-    io:format("in excel_records JUST KINDA WIGGIN OUT...~n"),
+    %io:format("in excel_records Name is ~p~n",[Name]),
+    %io:format("in excel_records JUST KINDA WIGGIN OUT...~n"),
     ok.
 
 write_blanks(_Name,_RowIndex,_FirstColIndex,_LastColIndex,<<>>,_Tbl) -> {ok, ok};
