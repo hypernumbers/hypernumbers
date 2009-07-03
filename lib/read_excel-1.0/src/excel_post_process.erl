@@ -398,29 +398,29 @@ set_formats(CellRef, XFIndex, Tables) ->
     BorderCSS =
         case {BorderAttr, PBorderAttr} of
             {use_this, _}        ->
-                S = get_css(CSSList, ['border-left', 'border-right',
-                                      'border-top',  'border-bottom',
+                S = get_css(CSSList, ['border-left-width', 'border-right-width',
+                                      'border-top-width',  'border-bottom-width',
                                       'border-left-style', 'border-right-style',
                                       'border-top-style',  'border-bottom-style']),
                 C = get_colours(ColoursList,Tables),
                 lists:merge([S, C]);
             {use_parent, valid}  ->
-                S = get_css(PCSSList, ['border-left', 'border-right',
-                                       'border-top',  'border-bottom',
+                S = get_css(PCSSList, ['border-left-width', 'border-right-width',
+                                       'border-top-width',  'border-bottom-width',
                                        'border-left-style', 'border-right-style',
                                        'border-top-style',  'border-bottom-style']),
                 C = get_colours(PColoursList,Tables),
                 lists:merge([S, C]);
             {valid, valid}       -> % parent is child
-                S = get_css(PCSSList, ['border-left', 'border-right',
-                                       'border-top',  'border-bottom',
+                S = get_css(PCSSList, ['border-left-width', 'border-right-width',
+                                       'border-top-width',  'border-bottom-width',
                                        'border-left-style', 'border-right-style',
                                        'border-top-style',  'border-bottom-style']),
                 C = get_colours(PColoursList,Tables),
                 lists:merge([S, C]);
             {use_parent, ignore} ->
-                S = get_css(CSSList, ['border-left', 'border-right',
-                                      'border-top',  'border-bottom',
+                S = get_css(CSSList, ['border-left-width', 'border-right-width',
+                                      'border-top-width',  'border-bottom-width',
                                       'border-left-style', 'border-right-style',
                                       'border-top-style',  'border-bottom-style']),
                 C = get_colours(ColoursList,Tables),
