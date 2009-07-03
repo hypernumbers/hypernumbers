@@ -237,7 +237,7 @@ rfc1123_month(12) -> "Dec".
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--include_lib("eunit.hrl").
+-include_lib("eunit/include/eunit.hrl").
 -define(dm(N, Y, M, D),
         ?_assert(excel_mac_to_gregorian(N) ==
                  #datetime{date = {Y, M, D}})).

@@ -32,7 +32,7 @@ compile(Body) ->
     
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--include_lib("eunit.hrl").
+-include_lib("eunit/include/eunit.hrl").
 -define(t(FunStr, Arg),
         ?_assert((make(FunStr))(Arg) == true)).
 -define(f(FunStr, Arg),

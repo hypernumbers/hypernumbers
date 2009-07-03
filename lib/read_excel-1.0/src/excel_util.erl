@@ -34,7 +34,7 @@
         dump_DEBUG/1]).
 
 %%% Include file for eunit testing
--include_lib("eunit.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 %%% Include files with macros encoding Microsoft File Format constants
 -include("microsoftcompoundfileformat.hrl").
@@ -72,18 +72,18 @@ dump2({Table,Tid}) ->
     Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Table,X]) end,
     ets:foldl(Fun,[],Tid).
 
-dump3({Table,Tid}) ->
-    io:format("~nDumping table: ~p~n",[Table]),
-    Fun = fun({I,X},_Y) -> io:format("~p: ~p ~p~n",[Table, I, bodge(X)]) end,
-    ets:foldl(Fun,[],Tid).
+%dump3({Table,Tid}) ->
+%    io:format("~nDumping table: ~p~n",[Table]),
+%    Fun = fun({I,X},_Y) -> io:format("~p: ~p ~p~n",[Table, I, bodge(X)]) end,
+%    ets:foldl(Fun,[],Tid).
 
 %% Make Microsoft URL's printable
 %% TODO: fix me (duh!)
-bodge(List) -> bodge(List, []).
+%bodge(List) -> bodge(List, []).
 
-bodge([], Acc)                  -> lists:reverse(Acc);
-bodge([H | T], Acc) when H < 32 -> bodge(T, Acc);
-bodge([H | T], Acc)             -> bodge(T, [H | Acc]).
+%bodge([], Acc)                  -> lists:reverse(Acc);
+%bodge([H | T], Acc) when H < 32 -> bodge(T, Acc);
+%bodge([H | T], Acc)             -> bodge(T, [H | Acc]).
 
 get_SIDs(ParsedSAT,SID)->
     get_SIDs(ParsedSAT,SID,[]).
@@ -183,15 +183,15 @@ parse_CRS_Uni16(Bin,IndexSize)->
      NFlags:8/little-unsigned-integer,
      Rest/binary>>=Bin,
     {LenStr,Encoding,BinLen1,
-     {RICH_TEXT,LenRichText,LenRichTextIdx},
-     {ASIAN,LenAsian,LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
+     {RICH_TEXT, LenRichText, _LenRichTextIdx},
+     {ASIAN,LenAsian, _LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
     % io:format("in parse_CRS_Uni16~n-LenStr is ~p~n-Encoding is ~p~n-BinLen1 is ~p~n-"++
     %          "LenRichText is ~p~n-LenRichTextIdx is ~p~n-LenAsian is ~p~n-"++
     %          "LenAsianIdx is ~p~n",
     %          [LenStr,Encoding,BinLen1,LenRichText,LenRichTextIdx,LenAsian,
     %           LenAsianIdx]),
     BinLen2=erlang:size(Bin),
-    BinLen3=erlang:size(Rest3),
+    _BinLen3=erlang:size(Rest3),
     % io:format("in parse_CRS_Uni16 BinLen2 is ~p BinLen3 is ~p LenStr is ~p~n",
     %          [BinLen2, BinLen3, LenStr]),
     % Now we need to parse the rest of the binary

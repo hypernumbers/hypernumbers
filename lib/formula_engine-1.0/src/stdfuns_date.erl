@@ -287,7 +287,7 @@ time(Args = [_, _, _]) ->
       
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--include_lib("eunit.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 datedif_test_() ->
     [

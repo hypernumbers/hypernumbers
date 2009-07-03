@@ -7,7 +7,7 @@
 %%%   * http://www.ibm.com/developerworks/java/library/j-u-encode.html
 
 -module(uconv).
--include_lib("eunit.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 -export([utf8_to_32/1,
          utf16_to_32/1,

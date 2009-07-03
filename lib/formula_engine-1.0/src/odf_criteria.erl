@@ -72,7 +72,7 @@ lex_constant(S) ->
 
 %%% tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--include_lib("eunit.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 -define(match_p(Spec, V),
         (create(Spec))(V)).
