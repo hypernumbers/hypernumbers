@@ -9,7 +9,7 @@
 -include("handy_macros.hrl").
 -include("hypernumbers.hrl").
 
--include_lib("gettext/include/gettext.hrl").
+-include("gettext.hrl").
 
 -export([ req/1, style_to_css/2 ]).
 
