@@ -42,48 +42,41 @@ rc_to_a1(Row, Col) ->
 %% ../e_gnumeric_bitwise/Name!stuff"
 stripfileref(Str) ->
     case string:str(Str,"'C:\\") of
-    0 -> Str;
-    X -> 
-        Pre = string:sub_string(Str,1,X-1),
-        Post = string:sub_string(Str,X+1),
-        File = "../"++string:sub_string(Post,string:chr(Post,$[)+1),
-        Pos = string:chr(File,$'),%'       
-        Content = string:sub_string(File,1,Pos-1),
-        Rest    = string:sub_string(File,Pos+1),
-        {ok,S1,_Count} = regexp:gsub(Content,"\\]","/"),
-        {ok,S2,_Count} = regexp:gsub(S1,".xls",""),
-        
-        Pre ++ S2 ++ Rest
+        0 -> Str;
+        X -> 
+            Pre = string:sub_string(Str, 1, X-1),
+            Post = string:sub_string(Str, X+1),
+            File = "../" ++ string:sub_string(Post, string:chr(Post, 91)+1), 
+            Pos = string:chr(File,$'),%'       
+            Content = string:sub_string(File,1,Pos-1),
+            Rest    = string:sub_string(File,Pos+1),
+            S1 = re:replace(Content,"\\]","/", [{return, list}, global]),
+            S2 = re:replace(S1,".xls","", [{return, list}, global]),
+            
+            Pre ++ S2 ++ Rest
     end.
 
 test_state(State)->
-  receive
-    {msg,Pid,_Suite,{Sheet,Row,Col}} -> Pid ! read_from_excel_data(State,{Sheet,Row,Col});
-    {die}                            -> exit(die);
-    Other                            -> io:format("message means nothing in test_util:state ~p~n",
-                                           [Other])
-  end,
-  test_state(State).
-  
-read_from_excel_data(State,{Sheet,Row,Col})->
-    Key={{sheet,Sheet},{row_index,Row},{col_index,Col}},
-    Return=lists:keysearch(Key, 1, State),
-    case Return of
-        {value, Result2} ->
-            El=element(2, Result2),
-            case El of
-                {value,number,Number}       -> {number,Number};
-                {string,String}             -> {string,String};
-                {formula,Formula}           -> {formula,Formula};
-                {value,boolean,Boolean}     -> {boolean,Boolean};
-                {value,error,Error}         -> {error, Error};
-                {value,date,{datetime,D,T}} -> {date,{D,T}};
-                Other                       -> 
-                    io:format("(in test_util:read_from_excel_date "++
-                              " fix generatetest.rb - Other is ~p~n",
-                              [Other])
-            end;
-        _Other2 -> {fail, data_not_read}
+    receive
+        {msg, Pid, _Suite, Ref} ->
+            Pid ! read_from_excel_data(State, Ref),
+            test_state(State);
+        die ->
+            ok
+    end.
+
+read_from_excel_data(State, {Sheet, Row, Col})->
+    
+    Key = { {sheet,Sheet}, {row_index,Row}, {col_index,Col} },
+    {value, Result} = lists:keysearch(Key, 1, State),
+
+    case element(2, Result) of
+        {value, number,Number}          -> {number, Number};
+        {string, String}                -> {string, String};
+        {formula, Formula}              -> {formula, Formula};
+        {value, boolean, Boolean}       -> {boolean, Boolean};
+        {value, error, Error}           -> {error, Error};
+        {value, date, {datetime, D, T}} -> {date, {D, T}}
     end.
 
 equal_to_digit(F1,F2,DigitIdx) ->
@@ -110,27 +103,31 @@ excel_equal("-2146826273","#VALUE!") -> true;
 
 %% Checks that two Excel values are equal.
 excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
-    % fix-up the fact that we have changed the name of the function Error.Type to ErrorType
-    Return=regexp:gsub(String2,"ERROR.TYPE","ERRORTYPE"),
-    {ok,String2a,_}=Return,
+    % fix-up the fact that we have changed the name of the
+    % function Error.Type to ErrorType
+    String2a = re:replace(String2, "ERROR.TYPE", "ERRORTYPE",
+                        [{return, list}, global]),
+
     R2 = stripfileref(String2a),
     Result = case String1 of
-            R2 -> true;
-            _        -> false
-      end,
+                 R2 -> true;
+                 _  -> false
+             end,
+    
     % if the strings aren't the same try and make numbers of them and compare then
     case Result of
-      true  -> true;
-      false ->
-        String1f=make_float(String1),
-        String2f=make_float(String2),
-        case {String1f,String2f} of
-          {"not float","not float"} -> false;
-          {"not float",_}           -> false;
-          {_          ,"not float"} -> false;
-          _                          -> equal_to_digit(String1f,String2f,
-                                            ?EXCEL_IMPORT_FLOAT_PRECISION)
-        end
+        true  -> true;
+        false ->
+            String1f=make_float(String1),
+            String2f=make_float(String2),
+            case {String1f,String2f} of
+                {"not float","not float"} -> false;
+                {"not float",_}           -> false;
+                {_          ,"not float"} -> false;
+                _                          ->
+                    equal_to_digit(String1f,String2f,
+                                   ?EXCEL_IMPORT_FLOAT_PRECISION)
+            end
     end.
 
 eq(X,Y) ->
@@ -150,16 +147,17 @@ excel_equal2({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
 excel_equal2({formula, PreFla1}, {formula, Fla2}) ->
     % if row address, strip the column bounds (=$A169:$IV169) becomes (=169:169)
-    Fla1 = case regexp:match(PreFla1,"\\$A[0-9]+:\\$IV[0-9]+") of
-    {match,_,_} ->
-        {ok,Str,_Count} = regexp:gsub(PreFla1,"\\$A|\\$IV",""),
-        Str;
-    _ -> PreFla1
+    
+    Fla1 = case re:run(PreFla1,"\\$A[0-9]+:\\$IV[0-9]+") of
+               {match, _} ->
+                   re:replace(PreFla1, "\\$A|\\$IV", "", [{return, list}, global]);
+               _ ->
+                   PreFla1
     end,
     % fix-up the fact that we have changed the name of the function Error.Type 
     % to ErrorType
-    % Ugly bodge    
-    {ok,Fla2a,_} = regexp:gsub(Fla2,"ERROR.TYPE","ERRORTYPE"),
+    % Ugly bodge
+    Fla2a = re:replace(Fla2, "ERROR.TYPE", "ERRORTYPE", [{return, list}, global]),
     R2 = stripfileref(Fla2a),
     eq(Fla1,R2);
 excel_equal2({boolean,Boolean1},{boolean,Boolean2}) ->

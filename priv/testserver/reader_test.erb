@@ -7,14 +7,13 @@
 -define(test(Name, Key, Expval),
         Name(Config) ->
                {value, {_, Pid}} = lists:keysearch(?MODULE, 1, Config),
-                Pid ! {msg, self(), ?MODULE, Key},
-                receive
-                    Msg ->
-                        test_util:expected2(Msg, Expval)
-                after 500 ->
-                        Str = io_lib:format("timeout in ~s~n", [Name]),
-                        exit(Str)
-                end).
+               Pid ! {msg, self(), ?MODULE, Key},
+               receive
+                   Msg -> 
+                    test_util:expected2(Msg, Expval)
+               after 500 -> 
+                    exit(io_lib:format("timeout in ~s~n", [Name]))
+               end).
 
 init_per_suite(Config) ->
     Xlsfile = "../../tests/excel_files/Win_Excel07_As_97/<%= @basename + ".xls"%>",
