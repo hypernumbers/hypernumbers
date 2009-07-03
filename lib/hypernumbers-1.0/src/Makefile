@@ -5,7 +5,7 @@
 
 # include a copy of the mochiweb include.mk file with all the Erlang
 # guff set up
-include ../../../support/include.mk
+include ../support/include.mk
 
 APPLICATION='hypernumbers-1.0'
 DOC_OPTS={dir,\"../doc\"}
