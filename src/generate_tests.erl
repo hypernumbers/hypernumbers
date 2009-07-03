@@ -14,7 +14,7 @@ run() ->
     Files       = filelib:wildcard(Tests++"hn_files/*.json"),
     {ok, TmpTpl} = file:read_file(Tests++"system_test/test_SUITE.tpl"),
     Tpl         = binary_to_list(TmpTpl),
-    lists:map(fun(X) -> gen_test(Tests,Tpl,X) end,Files),
+    [ gen_test(Tests,Tpl,X) || X <- Files ],
     ok.
 
 get_root() ->

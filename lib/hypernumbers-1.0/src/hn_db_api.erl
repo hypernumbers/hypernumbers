@@ -152,7 +152,8 @@
          incr_remote_page_vsn/3,
          resync/2,
          create_db/1,
-         write_formula_to_range/2
+         write_formula_to_range/2,
+         wait_for_dirty/1
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -263,6 +264,16 @@ set_borders2(RefX, Where, Border, B_Style, B_Color) ->
           end,
     ok = mnesia:activity(transaction, Fun),
     ok = tell_front_end("set_borders2").
+
+wait_for_dirty(Site) ->
+    case mnesia:dirty_first(hn_db_wu:trans(Site, dirty_cell)) of
+        '$end_of_table' ->
+            ok;
+        _Index ->
+            timer:sleep(100),
+            wait_for_dirty(Site) 
+    end.
+
 
 %% @todo write documentation for shrink_dirty_cell
 shrink_dirty_cell(Site) ->

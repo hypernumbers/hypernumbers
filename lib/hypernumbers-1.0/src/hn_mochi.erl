@@ -146,23 +146,13 @@ iget(Req, #refX{site = S}, page, [{"status", []}], _User) ->
     ?json(Req, status_srv:get_status(S));
 iget(Req, Ref, page, [{"pages", []}], _User) -> 
     ?json(Req, pages(Ref));
-iget(Req, Ref, page, [{"attr", []}], User) -> 
+iget(Req, Ref, page, [{"attr", []}], User) ->
     ?json(Req, page_attributes(Ref, User));
-iget(Req, Ref, cell, [{"attr", []}], _User) ->
-                                                % ok = fprof:trace(start),
-    Dict = to_dict(hn_db_api:read_whole_page(Ref), dh_tree:new()),
-    JS = case dict_to_struct(Dict) of
-             [] -> {struct, []};
-             [{_Cells, {struct, [{_Y, {struct, [{_X, JSON}]}}]}}] ->
-                 JSON
-         end, 
-    Ret = ?json(Req, JS),
-                                                % ok = fprof:trace(stop),
-    Ret;
 iget(Req, Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
-            [{_Ref, {"value", Val}}]           -> Val; 
-            _Else                              -> "" 
+            [{_Ref, {"value", Val}}] when is_atom(Val) -> atom_to_list(Val);
+            [{_Ref, {"value", Val}}] -> Val;
+            _Else                    -> "" 
         end,
     Req:ok({"text/html",V});
 iget(Req, Ref, _Type,  Attr, _User) ->
@@ -441,8 +431,8 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
             log_not_yet_synched("FATAL", "notify", Site, PP, PV),
             ?exit
     end,
-                                                % there are 1 to many children and if they are out of synch ask for 
-                                                % a resynch for each of them
+    % there are 1 to many children and if they are out of synch ask for 
+    % a resynch for each of them
     Fun =
         fun(X) ->
                 Sync2 = hn_db_api:check_page_vsn(Site, X),

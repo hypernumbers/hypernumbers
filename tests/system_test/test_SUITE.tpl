@@ -10,9 +10,9 @@ init_per_suite(Config) ->
     code:add_path(~p),
     hn_import:json_file("~s", 
                         "~s"),
-    timer:sleep(1000),      
+    hn_db_api:wait_for_dirty("http://127.0.0.1:9000"),
     ~s
-    timer:sleep(1000),
+    hn_db_api:wait_for_dirty("http://127.0.0.1:9000"),
     Config.
 
 end_per_suite(_Config) ->
