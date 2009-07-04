@@ -203,7 +203,7 @@ conv_for_post(Val) ->
     case Val of
         {_, boolean, true}        -> "true";
         {_, boolean, false}       -> "false";
-        {_, date, {datetime,D,T}} -> dh_date:format("d/m/y h:m:s",{D,T});
+        {_, date, {datetime,D,T}} -> dh_date:format("d/m/Y h:i:s",{D,T});
         {_, number, N}            -> tconv:to_s(N);
         {_, error, E}             -> E;
         {string, X}               -> X;

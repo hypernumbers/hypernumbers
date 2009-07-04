@@ -40,7 +40,7 @@ process(Input) ->
         [{'-'}, {float, {F, _OrigStr}}, {'%'}] -> [{float,F/100},
                                                  {"text-align", "right"},
                                                  {"format", "0.00%"}];
-        [{'-'}, {int, I}, {'%'}]   -> [{float,I/100},
+         [{'-'}, {int, I}, {'%'}]   -> [{float,I/100},
                                        {"text-align", "right"},
                                        {"format", "0%"}];
         % type tag gets discarded by caller which is ok for 
@@ -49,17 +49,18 @@ process(Input) ->
                                 {"text-align", "center"},
                                 {"format", "null"}]; 
         _Other              ->
-            case super_util:autoparse(Toks) of
-                {ok, maybe_bad_date} ->
-                    Date = muin_date:from_rfc1123_string(Input),
-                    case Date of
-                        bad_date -> [{string, Input},
-                                     {"text-align", "left"},
-                                     {"format", "null"}];
-                        _        -> [{string, Date},
-                                     {"text-align", "center"},
-                                     {"format", "dd-mm-yyyy"}]
-                    end;
-                Other          -> Other
+                 case super_util:autoparse(Toks) of
+                     {ok, maybe_bad_date} ->
+                         Date = muin_date:from_rfc1123_string(Input),
+                         case Date of
+                             bad_date -> [{string, Input},
+                                          {"text-align", "left"},
+                                          {"format", "null"}];
+                             _        -> [{string, Date},
+                                          {"text-align", "center"},
+                                          {"format", "dd-mm-yyyy"}]
+                         end;
+                     Other ->
+                         Other
             end
     end.

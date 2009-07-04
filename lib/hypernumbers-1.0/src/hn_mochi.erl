@@ -151,7 +151,9 @@ iget(Req, Ref, page, [{"attr", []}], User) ->
 iget(Req, Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", Val}}] when is_atom(Val) -> atom_to_list(Val);
-            [{_Ref, {"value", {errval, Val}}}]         -> atom_to_list(Val);
+            [{_Ref, {"value", {datetime, D, T}}}] ->
+                dh_date:format("Y/m/d h:i:s",{D,T});
+            [{_Ref, {"value", {errval, Val}}}]    -> atom_to_list(Val);
             [{_Ref, {"value", Val}}] -> Val;
             _Else ->
                 ?INFO("NO MATCH ~p",[_Else]),

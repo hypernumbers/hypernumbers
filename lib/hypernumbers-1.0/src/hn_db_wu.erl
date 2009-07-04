@@ -243,7 +243,7 @@
 %%% local cell</li>
 %%% <li>change a value when the cell is referenced by another
 %%% remote cell (or cells) (it is a hypernumber)</li>
-%%% <li>move a cell that only has a value</li>
+%%% <li>move a cell that onlyhas a value</li>
 %%% <li>move a cell that references another local cell</li>
 %%% <li>move a cell that is referenced by another local cell</li>
 %%% <li>move a cell that is referenced by a remote cell</li>

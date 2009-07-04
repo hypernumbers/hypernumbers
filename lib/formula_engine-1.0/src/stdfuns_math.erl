@@ -126,13 +126,10 @@
 
 %%% Operators ~~~~~
 '+'([{datetime, D, T}, V2]) when is_number(V2) -> '+'([V2, {datetime, D, T}]);
-'+'([V1, {datetime, D, T}]) when is_number(V1) ->
-    Days = erlang:trunc(V1),
-    Secs = V1 - Days,
-    OldDays = calendar:date_to_gregorian_days(D),
-    OldSecs = calendar:time_to_seconds(T),
-    {datetime, calendar:gregorian_days_to_date(OldDays + Days),
-     calendar:seconds_to_time(OldSecs + Secs)};
+'+'([V1, {datetime, Date, Time}]) when is_number(V1) ->
+    NewTime = calendar:datetime_to_gregorian_seconds({Date, Time}) + (V1 * 86400),
+    {NDate, NTime} = calendar:gregorian_seconds_to_datetime(NewTime),
+    {datetime, NDate, NTime};
 '+'([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
     case Num1 + Num2 of

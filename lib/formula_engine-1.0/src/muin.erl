@@ -59,10 +59,8 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
     {RefTree, _Errors, References} = get(retvals),
     {ok, {Fcode, Result, RefTree, References, get(recompile)}}.
 
-
 %% evaluates a formula rather than a piece of AST, i.e. will do implicit
 %% intersection, resolve a final cellref &c.
-
 eval_formula(Fcode) ->
     case eval(Fcode) of
         ?error_in_formula ->
@@ -117,6 +115,7 @@ parse(Fla, {Col, Row}) ->
 %% when Mnesia is unrolling a transaction. When the '{aborted, {cyclic...'
 %% exit is caught it must be exited again...
 eval(_Node = [Func|Args]) when ?is_fn(Func) ->
+    
     case attempt(?MODULE, funcall, [Func, Args]) of
         {error, {errval, _}  = Err} -> Err;
         {error, {aborted, _} = Err} -> exit(Err); % re-exit
@@ -189,7 +188,7 @@ funcall(Fname, Args0) ->
                           {error, Ev = {errval, _}} -> {F, A, Ev};
                           {error, Other} -> {F, A, {error, Other}}
                       end;
-               (_, Acc) ->
+                 (_, Acc) ->
                       Acc
               end,
               {Fname, Args, not_found_yet},
@@ -203,7 +202,7 @@ funcall(Fname, Args0) ->
         {_, _, V}              -> V
     end.
 
-%%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%%% Utility functios ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% Intersect current cell with a range.
 implicit_intersection(R) when ?is_rangeref(R) ->
     case R#rangeref.type of

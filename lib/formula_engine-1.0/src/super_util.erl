@@ -39,7 +39,8 @@ autoparse([{int, D}, {'/'}, {int, Month}, {'/'}, {int, Y}]) ->
 autoparse([{int, D}, {'/'}, {int, Month},
            {rangeref, _, _, {row, {offset, H}},
             {row, {offset, Mn}}, _, _, _}]) ->
-    case make_datetime({D, tconv:to_i(Month)}, {H, Mn}) of
+    % Rows got -1'd during lexing
+    case make_datetime({D, tconv:to_i(Month)}, {H+1, Mn+1}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
@@ -48,8 +49,9 @@ autoparse([{int, D}, {'/'}, {int, Month},
 autoparse([{int, D}, {'/'}, {int, Month}, {'/'}, {int, Y},
            {rangeref, _, _, {row, {offset, H}},
             {row, {offset, Mn}}, _, _, _}]) ->
+    % Rows got -1'd during lexing
     case make_datetime({D, tconv:to_i(Month), tconv:to_i(Y)},
-                       {H, Mn}) of
+                       {H+1, Mn+1}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
@@ -58,7 +60,8 @@ autoparse([{int, D}, {'/'}, {int, Month}, {'/'}, {int, Y},
 autoparse([{int, D}, {'/'}, {int, Month},
            {rangeref, _, _, {row, {offset, H}},
             {row, {offset, Mn}}, _, _, _}, {':'},{int, S}]) ->
-    case make_datetime({D, tconv:to_i(Month)}, {H, Mn, S}) of
+    % Rows got -1'd during lexing
+    case make_datetime({D, tconv:to_i(Month)}, {H+1, Mn+1, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt             -> [{datetime, Dt},
                            {"text-align", "center"}, 
@@ -68,7 +71,7 @@ autoparse([{int, D}, {'/'}, {int, Month}, {'/'}, {int, Y},
            {rangeref, _, _, {row, {offset, H}},
             {row, {offset, Mn}}, _, _, _}, {':'},{int, S}]) ->
     case make_datetime({D, tconv:to_i(Month), tconv:to_i(Y)},
-                       {H, Mn, S}) of
+                       {H+1, Mn+1, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
