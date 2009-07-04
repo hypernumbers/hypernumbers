@@ -10,7 +10,8 @@ ERLC := $(ERL)c
 
 INCLUDE_DIRS := ../include $(wildcard ../../*/include)
 EBIN_DIRS := $(wildcard)
-ERLC_FLAGS := -W $(INCLUDE_DIRS:../%=-I ../%) $(EBIN_DIRS:%=-pa %)
+## TODO Find out how your supposed to add the gettext ebin
+ERLC_FLAGS := -pa ../../gettext/ebin -W $(INCLUDE_DIRS:../%=-I ../%) $(EBIN_DIRS:%=-pa %)
 
 ifndef no_debug_info
   ERLC_FLAGS += +debug_info
