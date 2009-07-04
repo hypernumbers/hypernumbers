@@ -124,12 +124,8 @@ make_err_val(X)            -> X.
 
 expected(Expected, Got) ->
     case excel_equal(Expected, Got) of
-        true ->
-            io:format("<b style=\"color:green\">SUCCESS</b>~nExpected: ~p~nGot: ~p~n", [Expected, Got]),
-            {test, ok};
-        false ->
-            io:format("<b style=\"color:red\">FAIL</b>~nExpected: ~w~nGot: ~w~n", [Expected, Got]),
-            exit({fail, expected, Expected, got, Got})
+        true  -> {test, ok};
+        false -> exit({fail, expected, Expected, got, Got})
     end.
 
 make_float(List) ->

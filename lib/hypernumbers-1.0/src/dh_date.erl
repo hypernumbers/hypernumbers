@@ -95,11 +95,11 @@ format([$W|T], {Date,_}=Dt, Acc) ->
 
 %% Day Formats
 format([$j|T], {{_,_,D},_}=Dt, Acc) ->
-    format(T, Dt, [pad2(D)|Acc]);
+    format(T, Dt, [itol(D)|Acc]);
 format([$S|T], {{_,_,D},_}=Dt, Acc) ->
     format(T, Dt,[suffix(D)| Acc]);
 format([$d|T], {{_,_,D},_}=Dt, Acc) ->
-    format(T, Dt, [itol(D)|Acc]);
+    format(T, Dt, [pad2(D)|Acc]);
 format([$D|T], {Date,_}=Dt, Acc) ->
     format(T, Dt, [sdayd(Date)|Acc]);
 format([$l|T], {Date,_}=Dt, Acc) ->

@@ -616,7 +616,7 @@ to_str({integer,Val}) -> integer_to_list(Val);
 to_str({float,Val}) ->
     case (Val-round(Val)) of
         0.0 -> integer_to_list(round(Val));
-        _   -> String=mochinum:digits(Val),
+        _   -> String=mochinum:digits(Val),               
                {_,String2,_}=regexp:gsub(String,[e],$e),
                String2
     end;
