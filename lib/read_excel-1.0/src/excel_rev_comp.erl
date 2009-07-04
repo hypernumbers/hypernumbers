@@ -76,9 +76,9 @@ rev_comp(I,[{Op,_Token}|T],TokArr,Stack,Tbl) when Op =:= addition ;
                                                   Op =:= divide;
                                                   Op =:= multiply;
                                                   Op =:= concatenate ->
-    {Spaces1,[First|Rest]}  = popSpaces(Stack),
-    {Spaces2,[Second|Last]} = popSpaces(Rest),
-    rev_comp(I,T,TokArr,[{Second,Spaces1,Op,Spaces2,First}|Last],Tbl);
+    {_Spaces1,[First|Rest]}  = popSpaces(Stack),
+    {_Spaces2,[Second|Last]} = popSpaces(Rest),
+    rev_comp(I,T,TokArr,[{Second, Op, First}|Last],Tbl);
 
 %% tIsect
 %% Pop two off the stack and the build an operator set backwards
@@ -545,7 +545,7 @@ read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
 to_str(addition)              -> "+";
 to_str(subtraction)           -> "-";
 to_str(multiply)              -> "*";
-to_str(divide)                -> " / ";
+to_str(divide)                -> "/";
 to_str(power)                 -> "^";
 to_str(concatenate)           -> "&";
 to_str(less_than)             -> "<";

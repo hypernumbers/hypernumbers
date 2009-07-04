@@ -2,15 +2,7 @@
 -module(test_util).
 
 -export([expected/2,
-         expected2/2,
-         expected3/2,
-         expected4/2,
-         readxls/1,
-         read_excel_file/1,
          equal_to_digit/3,
-         excel_equal/2,
-         wait/0,
-         wait/1,
          test_state/1,
          make_float/1,
          conv_for_post/1,
@@ -20,7 +12,6 @@
          hnget/2,
          float_cmp/3,
          stripfileref/1,
-         transform_reader_output/1,
          rc_to_a1/2]).
 
 -include("excel_errors.hrl").
@@ -35,26 +26,6 @@
 %% @spec rc_to_a1(Row :: integer(), Col :: integer()) -> string()
 rc_to_a1(Row, Col) ->
     tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1).
-
-%% Nasty function to convert 
-%% stuff'C:\\cygwin\\stuff\\[e_gnumeric_bitwise.xls]Name'!stuff
-%% to 
-%% ../e_gnumeric_bitwise/Name!stuff"
-stripfileref(Str) ->
-    case string:str(Str,"'C:\\") of
-        0 -> Str;
-        X -> 
-            Pre = string:sub_string(Str, 1, X-1),
-            Post = string:sub_string(Str, X+1),
-            File = "../" ++ string:sub_string(Post, string:chr(Post, 91)+1), 
-            Pos = string:chr(File,$'),%'       
-            Content = string:sub_string(File,1,Pos-1),
-            Rest    = string:sub_string(File,Pos+1),
-            S1 = re:replace(Content,"\\]","/", [{return, list}, global]),
-            S2 = re:replace(S1,".xls","", [{return, list}, global]),
-            
-            Pre ++ S2 ++ Rest
-    end.
 
 test_state(State)->
     receive
@@ -79,7 +50,7 @@ read_from_excel_data(State, {Sheet, Row, Col})->
         {value, date, {datetime, D, T}} -> {date, {D, T}}
     end.
 
-equal_to_digit(F1,F2,DigitIdx) ->
+equal_to_digit(F1, F2, DigitIdx) ->
     % force any rogue integers to floats  
     F1a=float(F1),
     F2a=float(F2),
@@ -93,98 +64,53 @@ float_cmp(0.0,0.0,_)          -> true;
 float_cmp(0.0,Expres,Digit)   -> (Expres < math:pow(0.1, Digit));
 float_cmp(Res, Expres, Digit) -> (abs(Res - Expres)/Res) < math:pow(0.1, Digit).
 
-excel_equal("-2146826281","#DIV/0!") -> true;
-excel_equal("-2146826246","#N/A")    -> true;
-excel_equal("-2146826259","#NAME?")  -> true;
-excel_equal("-2146826288","#NULL!")  -> true;
-excel_equal("-2146826252","#NUM!")   -> true;
-excel_equal("-2146826265","#REF!")   -> true;
-excel_equal("-2146826273","#VALUE!") -> true;
-
-%% Checks that two Excel values are equal.
-excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
-    % fix-up the fact that we have changed the name of the
-    % function Error.Type to ErrorType
-    String2a = re:replace(String2, "ERROR.TYPE", "ERRORTYPE",
-                        [{return, list}, global]),
-
-    R2 = stripfileref(String2a),
-    Result = case String1 of
-                 R2 -> true;
-                 _  -> false
-             end,
-    
-    % if the strings aren't the same try and make numbers of them and compare then
-    case Result of
-        true  -> true;
-        false ->
-            String1f=make_float(String1),
-            String2f=make_float(String2),
-            case {String1f,String2f} of
-                {"not float","not float"} -> false;
-                {"not float",_}           -> false;
-                {_          ,"not float"} -> false;
-                _                          ->
-                    equal_to_digit(String1f,String2f,
-                                   ?EXCEL_IMPORT_FLOAT_PRECISION)
-            end
-    end.
-
-eq(X,Y) ->
-    if
-        X == Y -> true;
-        true   -> false
-    end.
-
-excel_equal2({date,F1},{number,Number})->
-    {datetime,D,T}=muin_date:excel_win_to_gregorian(Number),
-    F2={D,T},
-    eq(F1,F2);
-excel_equal2({date, F1}, {string, F2}) ->
-    F1String=make_date_string(F1),
-    eq(F1String,F2);
-excel_equal2({number, F1}, {number, F2}) ->
+excel_equal(X, X) ->
+    true;
+excel_equal({date,F1}, {number,Number})->
+    {datetime, D, T} = muin_date:excel_win_to_gregorian(Number),
+    F1 == {D, T};
+excel_equal({date, F1}, {string, F2}) ->
+    dh_date:format("Y/M/D H:m:S", F1) == F2;
+excel_equal({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
-excel_equal2({formula, PreFla1}, {formula, Fla2}) ->
+excel_equal({formula, Formula1}, {formula, Formula2}) ->
+    Formula2 == transform_formula(Formula1);
+excel_equal({error,Error1},{number,ErrorVal}) ->
+    Error1 == make_err_val(ErrorVal);
+excel_equal({number,Num},{string,Str})->
+    Num == tconv:to_num(Str);
+excel_equal(_X, _Y) ->
+    false.
+
+transform_formula(Formula) ->
     % if row address, strip the column bounds (=$A169:$IV169) becomes (=169:169)
-    
-    Fla1 = case re:run(PreFla1,"\\$A[0-9]+:\\$IV[0-9]+") of
-               {match, _} ->
-                   re:replace(PreFla1, "\\$A|\\$IV", "", [{return, list}, global]);
-               _ ->
-                   PreFla1
-    end,
+    Tmp = case re:run(Formula, "\\$A[0-9]+:\\$IV[0-9]+") of
+              {match, _} -> re:replace(Formula, "\\$A|\\$IV", "", [{return, list}, global]);
+              _          -> Formula
+          end,
     % fix-up the fact that we have changed the name of the function Error.Type 
     % to ErrorType
     % Ugly bodge
-    Fla2a = re:replace(Fla2, "ERROR.TYPE", "ERRORTYPE", [{return, list}, global]),
-    R2 = stripfileref(Fla2a),
-    eq(Fla1,R2);
-excel_equal2({boolean,Boolean1},{boolean,Boolean2}) ->
-    eq(Boolean1,Boolean2);
-excel_equal2({error,Error1},{number,ErrorVal}) ->
-    Error2=make_err_val(ErrorVal),
-    eq(Error1,Error2);
-excel_equal2({error,Error1},{error,Error2}) ->
-    eq(Error1,Error2);
-excel_equal2({string,String1},{string,String2}) ->
-    eq(String1,String2);
-excel_equal2({number,Num},{string,Str})->
-    eq(Num,tconv:to_num(Str)).
+    Tmp2 = re:replace(Tmp, "ERROR.TYPE", "ERRORTYPE", [{return, list}, global]),
+    stripfileref(Tmp2).
 
-make_date_string({Days,Time}) ->
-     make_day_string(Days)++" "++make_time_string(Time).
-
-make_day_string({Year,Month,Day}) ->
-    integer_to_list(Day)++"/"++pad(integer_to_list(Month))++"/"++pad(integer_to_list(Year)).
-
-make_time_string({Hour,Minute,Second})->
-    pad(integer_to_list(Hour))++":"++pad(integer_to_list(Minute))++":"++pad(integer_to_list(Second)).
-
-pad(X) when is_list(X) ->
-    case length(X) of
-	1 -> "0"++X;
-	_ -> X
+%% Nasty function to convert 
+%% stuff'C:\\cygwin\\stuff\\[e_gnumeric_bitwise.xls]Name'!stuff
+%% to 
+%% ../e_gnumeric_bitwise/Name!stuff"
+stripfileref(Str) ->
+    case string:str(Str,"'C:\\") of
+        0 -> Str;
+        X -> 
+            Pre = string:sub_string(Str, 1, X-1),
+            Post = string:sub_string(Str, X+1),
+            File = "../" ++ string:sub_string(Post, string:chr(Post, 91)+1), 
+            Pos = string:chr(File,$'),%'       
+            Content = string:sub_string(File,1,Pos-1),
+            Rest    = string:sub_string(File,Pos+1),
+            S1 = re:replace(Content,"\\]","/", [{return, list}, global]),
+            S2 = re:replace(S1,".xls","", [{return, list}, global]),    
+            Pre ++ S2 ++ Rest
     end.
 
 make_err_val(?ErrDiv0Int)  -> "#DIV/0!";
@@ -197,62 +123,14 @@ make_err_val(?ErrValueInt) -> "#VALUE!";
 make_err_val(X)            -> X.
 
 expected(Expected, Got) ->
-    io:format(" in test_util:expected Expected is ~p and Got is ~p~n",[Expected,Got]),
-    Expected2 = hn_util:url_encode(Expected),
-    Got2 = hn_util:url_encode(Got),
-    case Got2 of
-        Expected2 ->
-            io:format("SUCCESS~nExpected : ~p~nGot      : ~p~n",
-                      [Expected2,Got2]),
-            {test, ok};
-        _Else ->
-            exit({"E:", Expected2, "G:", Got2})
-    end.
-
-expected2(Expected, Got) ->
-    io:format(" in test_util:expected2 Expected is ~p and Got is ~p~n",[Expected,Got]),
-    Result = excel_equal2(Expected, Got),
-    case Result of
+    case excel_equal(Expected, Got) of
         true ->
-            io:format("<b style=\"color:green\">SUCCESS</b>~nExpected: ~p~nGot: ~p~n",
-                      [Expected, Got]),
+            io:format("<b style=\"color:green\">SUCCESS</b>~nExpected: ~p~nGot: ~p~n", [Expected, Got]),
             {test, ok};
         false ->
-            io:format("<b style=\"color:red\">FAIL</b>~nExpected: ~w~nGot: ~w~n",
-                      [Expected, Got]),
+            io:format("<b style=\"color:red\">FAIL</b>~nExpected: ~w~nGot: ~w~n", [Expected, Got]),
             exit({fail, expected, Expected, got, Got})
     end.
-
-expected3(Expected, Got) ->
-    case Got of
-        Expected ->
-            io:format("SUCCESS~nExpected : ~p~nGot     : ~p~n",
-                      [Expected,Got]),
-            {test, ok};
-        _Else ->
-            exit({"E:", Expected, "G:", Got})
-    end.
-
-expected4(Expected, Got) ->
-    case Got of
-        Expected ->
-            io:format("SUCCESS~nExpected : ~p~nGot      : ~p~n",
-                      [Expected,Got]),
-            {test, ok};
-        _Else ->
-            exit({"E:", Expected, "G:", Got})
-    end.
-
-%% @doc Read XLS file.
-%% @TODO: this should be part of the reader - clients should not need to
-%% decipher the collection of ETS tables dumped on them.
-readxls(Fn) ->
-    filefilters:read(excel, Fn, fun decipher_ets_tables/1).
-
-read_excel_file(Filename) ->
-    c:pwd(),
-    io:format("in test_util:read_excel_file Filename is ~p~n",[Filename]),
-    readxls(Filename).
 
 make_float(List) ->
     Return = try
@@ -275,12 +153,6 @@ make_float2(List)->
       error:_Message -> "not float";
       throw:_Term    -> "not float"
     end.
-
-
-%% Default operation wait time, used for the test suites.
-wait()  -> internal_wait(?DEFAULT).
-
-wait(N) -> internal_wait(?DEFAULT * N).
 
 -define(HNSERVER, "http://127.0.0.1:9000").
 
@@ -343,7 +215,7 @@ conv_from_get("FALSE") -> false;
 conv_from_get(X)       ->
     % need to try and convert to a date
     case muin_date:from_rfc1123_string(X) of
-        {datetime, D, T} -> make_string(D, T);
+        {datetime, D, T} -> dh_date:format("Y/M/D H:m:S", {D, T});
         _                  -> conv_from_get2(X)
     end.
 
@@ -359,95 +231,15 @@ conv_from_get2(X) ->
             end
     end.
 
-make_string({Y, M, D}, {H, Mn, S}) -> integer_to_list(Y)++"/"++
-                                           pad(integer_to_list(M))++"/"++
-                                           pad(integer_to_list(D))++" "++
-                                           pad(integer_to_list(H))++":"++
-                                           pad(integer_to_list(Mn))++":"++
-                                           pad(integer_to_list(S)).
-
 %% @TODO: Some of these conversion need to be done inside the reader itself.
 conv_for_post(Val) ->
     case Val of
         {_, boolean, true}        -> "true";
         {_, boolean, false}       -> "false";
-        {_, date, {datetime,D,T}} -> make_date_string({D,T});
+        {_, date, {datetime,D,T}} -> dh_date:format("Y/M/D H:m:S", {D,T});
         {_, number, N}            -> tconv:to_s(N);
         {_, error, E}             -> E;
         {string, X}               -> X;
         {formula, F}              -> F
     end.
 
-%%------------------------------------------------------------------------------
-%% Internal functions
-%%------------------------------------------------------------------------------
-
-%% @doc Transforms reader's output to a nice regular structure:
-%% * Row and column indexes are 1-based.
-%% * Each entry is {{sheet, Sheet}, {row, Row}, {col, Col}, {Type, Value}}.
-%% * Some type tags are changed: boolean -> bool, error -> errval.
-transform_reader_output(O) ->
-    Mktypeval = fun(error, Value) ->
-                        {errval, list_to_atom(Value)};
-                   (boolean, Value) ->
-                        {bool, Value};
-                   (Type, Value) ->
-                        {Type, Value}
-                end,
-    
-    Mkrec = fun(Sheet, Row, Col, Type, Value) ->
-                    {{sheet, Sheet}, {row, Row + 1}, {col, Col + 1},
-                     Mktypeval(Type, Value)}
-            end,
-    
-    lists:foldl(fun({{{sheet, Sheet}, {row_index, Row}, {col_index, Col}},
-                     {Type, Value}}, Acc) ->
-                        R = Mkrec(Sheet, Row, Col, Type, Value),
-                        [R | Acc];
-                   ({{{sheet, Sheet}, {row_index, Row}, {col_index, Col}},
-                     {value, Type, Value}}, Acc) ->
-                        R = Mkrec(Sheet, Row, Col, Type, Value),
-                        [R | Acc]
-                end,
-                [], O).
-
-%% Input: list of {key, id} pairs where key is an ETS table holding info
-%% about some part of the XLS file.
-%% @TODO: formats, names, styles.
-decipher_ets_tables(Tids) ->
-    %
-    % First get the formulae/string data
-    % 
-    % Grab information about single cell values.
-    {value, {cell, Tid1}} = lists:keysearch(cell, 1, Tids),
-    CellRecs = ets:foldl(fun(X, Acc) -> [X|Acc] end, [], Tid1),
-    CellInfo = lists:map(fun({Index, [_, Body]}) -> {Index, Body} end, CellRecs),
-    % Grab information about array formulas.
-    {value, {array_formulae, Tid2}} = lists:keysearch(array_formulae, 1, Tids),
-    AFRecs = ets:foldl(fun(X, Acc) -> [X|Acc] end, [], Tid2),
-    Celldata = CellInfo ++ AFRecs,
-
-    %
-    % Now get the Names information
-    % 
-    {value, {names, Tid3}} = lists:keysearch(names, 1, Tids),
-    Names = ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Tid3),
-
-    %
-    % Now get the Format information
-    % 
-    {value, {formats, Tid4}} = lists:keysearch(formats, 1, Tids),
-    Formats = ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Tid4),
-    
-    %
-    % Now get the CSS information
-    % 
-    {value, {css, Tid5}} = lists:keysearch(css, 1, Tids),
-    CSS = ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Tid5),
-
-    {Celldata, Names, Formats, CSS}.
-
-internal_wait(0) ->
-    ok;
-internal_wait(N) ->
-    internal_wait(N-1).

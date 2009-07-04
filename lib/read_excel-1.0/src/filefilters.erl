@@ -36,29 +36,45 @@
 %% @doc The filename is read and converted to a set of ets tables. The Fun is then
 %% applied to those ets tables
 read(excel,FileIn,Fun)->
-    read_excel(excel,FileIn,Fun).
+    read_excel(excel, FileIn, Fun).
 
 %% @spec read(excel, FileName) -> term()
 %% @doc as per read/3 except the default Fun is applied 
 %% which is just {@link excel_util:dump/1}
 read(excel,FileIn)->
-    Fun= fun(X) -> io:format("About to dump tables~n"),
-                   excel_util:dump(X)
-         end,
-    read_excel(excel,FileIn,Fun).
+    read_excel(excel, FileIn, fun decipher_ets_tables/1).
+
+read_table(Name, TableDescriptors) ->
+    {value, {Name, Id}} = lists:keysearch(Name, 1, TableDescriptors),
+    ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Id).
+
+decipher_ets_tables(Tids) ->
+    CellRecs = read_table(cell, Tids),
+    CellInfo = [ {Index, Body} || {Index, [_, Body]} <- CellRecs],
+    AFRecs = read_table(array_formulae, Tids),
+    Celldata = CellInfo ++ AFRecs,
+    Names = read_table(names, Tids),
+    Formats = read_table(formats, Tids),
+    CSS = read_table(css, Tids),
+    Warnings = read_table(warnings, Tids),
+    Sheetnames = read_table(sheetnames, Tids),
+    {Celldata, Names, Formats, CSS, Warnings, Sheetnames}.
 
 read_excel(excel,FileIn,Fun)->
-    Tables=create_ets(),
-    {ok,Response}=filter_file(FileIn),
-    {ParsedDirectory,ParsedSAT,ParsedSSAT,_SSAT_StartSID,
-     SectorSize,ShortSectorSize,MinStreamSize}=Response,
-    SubStreams=excel:get_file_structure(ParsedDirectory,ParsedSAT,ParsedSSAT,
-                                        SectorSize,ShortSectorSize,
-                                        MinStreamSize,Tables,FileIn),
-    % print_structure(FileIn,ParsedDirectory,SubStreams),
-    excel:read_excel(ParsedDirectory,ParsedSAT,ParsedSSAT,
-                     SectorSize,ShortSectorSize,
-                     MinStreamSize,SubStreams,FileIn,Tables),
+    
+    Tables = create_ets(),
+    {ok, Response} = filter_file(FileIn),
+    
+    { ParsedDirectory, ParsedSAT, ParsedSSAT, _SSAT_StartSID,
+      SectorSize, ShortSectorSize, MinStreamSize} = Response,
+    
+    SubStreams = excel:get_file_structure(ParsedDirectory, ParsedSAT, ParsedSSAT,
+                                          SectorSize, ShortSectorSize,
+                                          MinStreamSize, Tables, FileIn),
+
+    excel:read_excel(ParsedDirectory, ParsedSAT, ParsedSSAT,
+                     SectorSize, ShortSectorSize,
+                     MinStreamSize, SubStreams, FileIn, Tables),
     Fun(Tables);
 
 read_excel(_Other,_,_) ->

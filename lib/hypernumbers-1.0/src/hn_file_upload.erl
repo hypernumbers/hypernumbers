@@ -114,16 +114,14 @@ test_import(File, Ref) ->
 
 import(File, User, Ref, Name) ->
     
-    {Cells, _Names, _Formats, CSS, Warnings, Sheets} = readxls(File), 
+    {Cells, _Names, _Formats, CSS, Warnings, Sheets} = filefilters:read(excel, File),    
     {Literals, Formulas} = lists:foldl(fun split_sheets/2, {[], []}, Cells),
-    
-    lists:foreach(fun(X) -> write_data(Ref, X) end, Literals),
-    lists:foreach(fun(X) -> write_data(Ref, X) end, Formulas),
-    lists:foreach(fun(X) -> write_css(Ref, X)  end, CSS),
-    
-    ok = write_warnings_page(Ref, Sheets, User, Name, Warnings),
 
-    ok.
+    [ write_data(Ref, X) || X <- Literals ],
+    [ write_data(Ref, X) || X <- Formulas ],
+    [ write_css(Ref, X) || X <- CSS ],
+
+    ok = write_warnings_page(Ref, Sheets, User, Name, Warnings).
 
 
 write_warnings_page(Ref, Sheets, User, Name, Warnings) ->
@@ -183,28 +181,10 @@ write_warnings(Ref, [W|Ws], Idx) ->
     write_to_cell(Ref, WarningString, 2, Idx, []),
     write_warnings(Ref, Ws, Idx + 1).
 
-readxls(Fn) ->
-    filefilters:read(excel, Fn, fun decipher_ets_tables/1).
-
-read_table(Name, TableDescriptors) ->
-    {value, {Name, Id}} = lists:keysearch(Name, 1, TableDescriptors),
-    ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Id).
 
 %% Input: list of {key, id} pairs where key is an ETS table holding info
 %% about some part of the XLS file.
 %% @TODO: formats, names, styles.
-decipher_ets_tables(Tids) ->
-    CellRecs = read_table(cell, Tids),
-    CellInfo = lists:map(fun({Index, [_, Body]}) -> {Index, Body} end, CellRecs),
-    AFRecs = read_table(array_formulae, Tids),
-    Celldata = CellInfo ++ AFRecs,
-    Names = read_table(names, Tids),
-    Formats = read_table(formats, Tids),
-    CSS = read_table(css, Tids),
-    Warnings = read_table(warnings, Tids),
-    Sheetnames = read_table(sheetnames, Tids),
-    {Celldata, Names, Formats, CSS, Warnings, Sheetnames}.
-
 read_reader_record({{{sheet, SheetName}, {row_index, Row},
                      {col_index, Col}}, Val}) ->
     {SheetName, {Row, Col}, Val};

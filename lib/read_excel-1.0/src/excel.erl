@@ -45,18 +45,16 @@
 %%%                                                                     %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% @doc this is the interface for reading and Excel 97-2003 file
-read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
-           _MinStreamSize,{{SubLoc,SubSID},SubStreams},FileIn,Tables)->
+read_excel(Directory, SAT, SSAT, SectorSize, ShortSectorSize,
+           _MinStreamSize,{ {SubLoc, SubSID}, SubStreams}, FileIn, Tables)->
     % Bear in mind that if the location is short stream the 'SID' returned
     % is actually an SSID!
-    % io:format("~n~nNow going to parse the Excel Workbook only!~n"),
-    {Location,SID}=get_workbook_SID(Directory),
-    Bin=case Location of
-            normal_stream -> get_normal_stream(SID,Directory,SAT,SectorSize,
-                                               FileIn);
-            short_stream  -> get_short_stream(SID,Directory,SAT,SSAT,SectorSize,
-                                              ShortSectorSize,FileIn)
-        end,
+    {Location, SID} = get_workbook_SID(Directory),
+    Bin = case Location of
+            normal_stream -> get_normal_stream(SID, Directory, SAT, SectorSize, FileIn);
+            short_stream  -> get_short_stream(SID, Directory, SAT, SSAT, SectorSize,
+                                              ShortSectorSize, FileIn)
+          end,
     % Now parsing the Excel components of the file
     %
     % To understand what is going on here you need to read Section 4.1.2 of
@@ -77,78 +75,65 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
     %
 
     % First parse the 'Workbook Globals SubStream'
-    CurrentFormula="There is no current Formula yet!",
-    parse_bin(Bin,{'utf-8',list_to_binary("Workbook Globals SubStream")},
-              CurrentFormula,Tables),
+    CurrentFormula = "There is no current Formula yet!",
+    parse_bin(Bin, {'utf-8',<<"Workbook Globals SubStream">>}, CurrentFormula, Tables),
+    
     % Now parse all the 'Sheet Substeams'
-    [parse_substream(SubSID,SubLoc,X,Directory,SAT,SSAT,SectorSize,
-                     ShortSectorSize,FileIn,Tables) || X <- SubStreams],
+    [ parse_substream(SubSID, SubLoc, X, Directory, SAT, SSAT, SectorSize,
+                      ShortSectorSize, FileIn, Tables) || X <- SubStreams],
+    
     % Now that the complete file is read reverse_compile the token stream
     %
     excel_post_process:post_process_tables(Tables).
 
-parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
-                ShortSectorSize,FileIn,Tables)->
-    {{[{Type,NameBin}],_,_},Offset}=SubStream,
-    % Name=binary_to_list(NameBin),
-    % io:format("Now parsing stream ~p~n",[Name]),
-    Bin=case Location of
-            normal_stream -> get_normal_stream(SubSID,Directory,SAT,SectorSize,
-                                               FileIn);
-            short_stream  -> get_short_stream(SubSID,Directory,SAT,SSAT,
-                                              SectorSize,ShortSectorSize,FileIn)
+parse_substream(SubSID, Location, SubStream, Directory, SAT, SSAT, SectorSize,
+                ShortSectorSize, FileIn, Tables) ->
+    
+    {{[{Type, NameBin}], _, _}, Offset} = SubStream,
+
+    Bin = case Location of
+              normal_stream -> get_normal_stream(SubSID, Directory, SAT, SectorSize, FileIn);
+              short_stream  -> get_short_stream(SubSID,Directory,SAT,SSAT,
+                                                SectorSize,ShortSectorSize,FileIn)
         end,
     % Because we are reading a substream we want to chop off the
     % binary up to the offset
-    <<_Discard:Offset/binary,Rest/binary>>=Bin,
+    <<_Discard:Offset/binary, Rest/binary>> = Bin,
     % pass in the actual name of the substream
-    CurrentFormula="There is no current Formula yet!",
-    parse_bin(Rest,{Type,NameBin},CurrentFormula,Tables).
+    CurrentFormula = "There is no current Formula yet!",
+    parse_bin(Rest, {Type, NameBin}, CurrentFormula, Tables).
 
 parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
     <<Identifier:16/little-unsigned-integer,
      RecordSize:16/little-unsigned-integer,
-     Rest/binary>>=Bin,
-    {_,NameBin}=SubStreamName,
-    Name=binary_to_list(NameBin),
+     Rest/binary>> = Bin,
+    
+    {_, NameBin} = SubStreamName,
+    Name = binary_to_list(NameBin),
+    
     case Identifier of
-        ?EOF ->
-            % io:format("workstream ~p read!~n",[Name]),
-            ok;
+        ?EOF   -> ok;
         _Other ->
-            <<Record:RecordSize/binary,Rest2/binary>>=Rest,
+            
+            <<Record:RecordSize/binary, Rest2/binary>> = Rest,
             % now get the next identifier
             % because if the next identifier is a ?CONTINUE then we want to wire
             % the records up together
-            <<NextIdentifier:16/little-unsigned-integer,_Rest3/binary>>=Rest2,
-            case {Identifier, NextIdentifier} of
-                % SST CONTINUES have some funny stuff going on with the compression
-                % of Unicode.
-                % See Section 5.21 of excelfileformatV1-42.pdf
-                {?SST, ?CONTINUE} -> 
-                    {ok,BinList,Rest4}=get_single_SST(Bin),
-                    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,BinList,
-                                                           Name,CurrentFormula,
-                                                           Tables),
-                    parse_bin(Rest4,SubStreamName,NewCurrentFormula,Tables);
-                {?SST, _} ->
-                    %io:format("In no SST continuation...~n"),
-                    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,[Record],
-                                                           Name,CurrentFormula,
-                                                           Tables),
-                    parse_bin(Rest2,SubStreamName,NewCurrentFormula,Tables);
-                {_, ?CONTINUE} ->
-                    {ok, NewBin,Rest4}=get_single_record(Identifier, Bin),
-                    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,NewBin,
-                                                           Name,CurrentFormula,
-                                                           Tables),
-                    parse_bin(Rest4,SubStreamName,NewCurrentFormula,Tables);
-                _ ->
-                    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,Record,
-                                                                   Name,CurrentFormula,
-                                                                   Tables),
-                    parse_bin(Rest2,SubStreamName,NewCurrentFormula,Tables)
-            end
+            <<NextIdentifier:16/little-unsigned-integer, _Rest3/binary>> = Rest2,
+
+            {SomeRecord, TheRest} = 
+                case {Identifier, NextIdentifier} of
+                    % SST CONTINUES have some funny stuff going on with the compression
+                    % of Unicode.
+                    % See Section 5.21 of excelfileformatV1-42.pdf
+                    {?SST, ?CONTINUE} -> {ok, BinList, Rest4} = get_single_SST(Bin), {BinList, Rest4};
+                    {?SST, _}         -> {[Record], Rest2};
+                    {_, ?CONTINUE}    -> {ok, NBin, R} = get_single_record(Identifier, Bin), {NBin, R};
+                    _                 -> {Record, Rest2}
+                end,
+            {ok, NewCurrentFormula} =
+                excel_records:parse_rec(Identifier, SomeRecord, Name, CurrentFormula, Tables),
+            parse_bin(TheRest, SubStreamName, NewCurrentFormula, Tables)
     end.
 
 get_single_record(Identifier,Bin)->
