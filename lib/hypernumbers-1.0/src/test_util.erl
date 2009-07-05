@@ -122,8 +122,8 @@ make_err_val(?ErrRefInt)   -> "#REF!";
 make_err_val(?ErrValueInt) -> "#VALUE!";
 make_err_val(X)            -> X.
 
-expected(Expected, Got) ->
-    case excel_equal(Expected, Got) of
+expected(Got, Expected) ->
+    case excel_equal(Got, Expected) of
         true  -> {test, ok};
         false -> exit({fail, expected, Expected, got, Got})
     end.
