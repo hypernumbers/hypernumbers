@@ -156,16 +156,19 @@ type_formats(Tables) ->
 fix_up_cells(Tables)->
     {value, {tmp_cell, Tmp_CellId}} = ?k(tmp_cell, 1, Tables),
     {value, {cell,     CellId}}     = ?k(cell,     1, Tables),
-    Fun=fun(X, _Acc)->
-                {Index, [XF, {tokens, Tokens}, {tokenarrays, TokenArray}]} = X,
-                case excel_rev_comp:reverse_compile(Index, Tokens, TokenArray,
-                                                    Tables) of
-                    {ok,dont_process} ->
-                        {ok, ok};
-                    Formula           ->
-                        ets:insert(CellId, [{Index, [XF, {formula, Formula}]}])
-                end
-        end,
+
+    Fun = fun(X, _Acc)->
+                {Index, [XF, {tokens, Tokens},
+                         {tokenarrays, TokenArray}]} = X,
+                  
+                  case excel_rev_comp:reverse_compile(Index, Tokens, TokenArray,
+                                                      Tables) of
+                      {ok,dont_process} ->
+                          {ok, ok};
+                      Formula           ->
+                          ets:insert(CellId, [{Index, [XF, {formula, Formula}]}])
+                  end
+          end,
     ets:foldl(Fun, [], Tmp_CellId).
 
 %% This function merges the contents of the ets table 'sheetnames' into
