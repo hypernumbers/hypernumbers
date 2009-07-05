@@ -68,9 +68,9 @@ excel_equal(X, X) ->
     true;
 excel_equal({date,F1}, {number,Number})->
     {datetime, D, T} = muin_date:excel_win_to_gregorian(Number),
-    F1 == {D, T};
+    F1 == {D, T}; 
 excel_equal({date, F1}, {string, F2}) ->
-    dh_date:format("Y/M/D H:m:S", F1) == F2;
+    dh_date:format("Y/m/d h:i:s", F1) == F2;
 excel_equal({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
 excel_equal({formula, Formula1}, {formula, Formula2}) ->
