@@ -53,7 +53,7 @@ handle_info(_Info, State) ->
 handle_cast(_Info, State) ->
     {noreply, State}.
 
-%% @spec handle_call(subscribe, State) -> {reply, Reply State}
+-spec handle_call(any(), any(), any()) -> any().
 %% @doc  subscribe to table events from mnesia
 handle_call(start,  _From, State) ->
     Sites = hn_util:get_hosts(hn_config:get(hosts)),
@@ -113,7 +113,7 @@ read_table(Table) ->
             proc_dirty(Table, Rec)
     end.
 
-%% @spec handle_info(Else,State) -> {noreply, State}
+-spec restart(list(), pid()) -> {noreply, any()}.
 %% @doc  catch / flush unhandled events
 restart(List, Pid) ->
     restart(List, Pid, []).

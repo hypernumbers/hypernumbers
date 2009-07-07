@@ -151,16 +151,6 @@ function gen_tests
         -s init stop
 }
 
-function docs
-{
-    echo "==============================="
-    echo "     Building Documentation    "
-    echo "==============================="
-    HN_DIR="lib/hypernumbers-1.0"
-    erlc -o ebin src/make_edoc.erl
-    erl -pa ebin -noshell -s make_edoc build -s init stop
-}
-
 function gen_help
 {
     echo "==============================="
@@ -268,7 +258,6 @@ case $1 in
     run)            run $2 $3 $4;;
     debug)          debug;;
     stop)           stop;;
-    docs)           docs;;
     copylog)        copylog $2;;
     copyfiles)      copyfiles $2;;
     build)          build $2;;

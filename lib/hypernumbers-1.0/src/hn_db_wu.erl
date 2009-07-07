@@ -613,7 +613,7 @@ delete_dirty_cell(Table, Cell) when is_record(Cell, refX) ->
 delete_dirty_cell(Table, Id) when is_list(Id) ->
     mnesia:delete(Table, Id, write).
 
-%% @spec get_cell_for_muin(#refX{}) -> {Value, RefTree, Errors, Refs]
+-spec get_cell_for_muin(#refX{}) -> {any(), any(), any(), any()}.
 %% @doc this function is called by muin during recalculation and should
 %%      not be used for any other purpose
 get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
@@ -637,7 +637,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
     Dep = DTree ++ [{"local", get_local_item_index(RefX)}],
     {Val, Dep, [], [{"local", {Site, Path, XX, YY}}]}.
 
-%% @spec write_style_IMPORT(RefX#refX{}, Style#magic_style{}) -> ok
+%% @hidden
 %% @doc write_style_IMPORT is a wrapper for the internal function write_style
 %% which should never be used except in file import
 write_style_IMPORT(RefX, Style)
@@ -652,7 +652,7 @@ read_all_dirty_cells(Site) ->
     Table = trans(Site, dirty_cell),
     mnesia:match_object(Table, #dirty_cell{_ = '_'}, write).
     
-%% @spec read_dirty_cell(Timestamp) -> #dirty_cell{}
+-spec read_dirty_cell(any(), any()) -> #refX{}.
 %% @doc reads a dirty_cell based on its timestamp
 read_dirty_cell(Site, #dirty_cell{idx=IdX}) ->
     local_idx_to_refX(Site, IdX).
@@ -975,7 +975,7 @@ clear_dirty(Site, Rec) when (is_record(Rec, dirty_notify_in)
     Rec2 = trans(Site, Rec),
     mnesia:delete_object(Rec2).
 
-%% @spec clear_dirty_cell(RefX::#refX{}) -> ok
+-spec clear_dirty_cell(string(), #dirty_cell{}) -> ok.
 %% @doc clears a dirty cell marker.
 %% The reference must be to a cell
 clear_dirty_cell(Site, Record) when is_record(Record, dirty_cell) ->
@@ -1234,7 +1234,7 @@ read_whole_page(#refX{site = S, path = P, obj = {page, "/"}}) ->
     Return = make_refXs(S, List, [], read),
     drop_private(Return).
     
-%% @spec read_cells(#refX{}) -> [{#refX{}, {Key, Value}}]
+-spec read_cells(#refX{}, write | read) -> [{#refX{}, {any(), any()}}].
 %% Key = atom()
 %% Value = term()
 %% @doc reads all the attributes of a cell or cells
@@ -1251,7 +1251,7 @@ read_cells(Ref, Lock) when (Lock == write orelse Lock == read) ->
     List = read_cells_raw(Ref, Lock),
     drop_private(List).
 
-%% @spec read_cells_raw(#refX{}) -> [{#refX{}, {Key, Value}}]
+-spec read_cells_raw(#refX{}, write | read) -> [{#refX{}, {any(), any()}}].
 %% Key = atom()
 %% Value = term()
 %% @doc reads all the attributes of a cell or cells
@@ -1423,38 +1423,7 @@ make_refXs3A(Site, #local_objs{path = P, obj = O} = LocalObj, [H | T], Acc) ->
     NewAcc = {#refX{site = Site, path = P, obj = O}, {K,V}},
     make_refXs3A(Site, LocalObj, T, [NewAcc | Acc]).
 
-%% make_refXs1B(Site, LocalObjsList, _Lock, AttrList) ->
-%%     io:format("in make_refXs1B LocalObjsList is ~p AttrList is ~p~n",
-%%               [LocalObjsList, AttrList]),
-%%     F1 = fun(X) ->
-%%                  #local_objs{idx = Idx} = X,
-%%                  Idx
-%%          end,
-%%     IdxList = lists:map(F1, LocalObjsList),
-    
-%%     F2 =fun(#local_objs{path = P, obj = O, idx = X} = _LObj) ->
-%%                 {H1, C1} = case length(AttrList) of
-%%                                0 -> {#item{idx = X, _ = '_'}, []};
-%%                                1 -> [A] = AttrList,
-%%                                     {#item{idx = X, key = A, _ = '_'}, []};
-%%                                _ -> H = #item{idx = X, key = '$1', _ = '_'},
-%%                                     C = [?lt(?lf(['and',
-%%                                                   make_or(IdxList, '$1'),
-%%                                                   make_or(AttrList, '$2')]))],
-%%                                     {H, C}
-%%                            end,
-%%                 Table = trans(Site, item),
-%%                 MatchRef = [{H1, C1, ['$_']}],
-%%                 List2 = mnesia:select(Table, MatchRef),
-%%                 F3 = fun(#item{key = Key, val = Val}) ->
-%%                              RefX = #refX{site = Site, path = P, obj = O},
-%%                              {RefX, {Key, Val}}
-%%                      end,
-%%                 lists:map(F3, List2)
-%%         end,
-%%     lists:flatten(lists:map(F2, LocalObjsList)).
-
-%% @spec shift_cells(RefX#refX{}, Type, Disp, Rewritten) -> Status
+-spec shift_cells(#refX{}, any(), any(), any()) -> any().
 %% Status = list()
 %% @doc shift_cells takes a range, row or column and shifts it by the offset.
 %% The list of cells that are passed in as Rewritten are not to be rewritten
@@ -1549,7 +1518,7 @@ shift_cells1(From, To) when is_record(From, refX), is_record(To, refX) ->
     ok = shift_remote_links(child, From, To, incoming),
     ok.
 
-%% @spec delete_col_objs(RefX{}) -> ok
+-spec delete_col_objs(#refX{}) -> ok.
 %% @doc deletes any col objects completely covered by the #refX{}
 delete_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}) ->
     H = #local_objs{path = P, obj = {column, {'$1', '$2'}}, _ = '_'},
@@ -1560,7 +1529,7 @@ delete_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}) ->
     Recs = mnesia:select(Table, M, write),
     ok = delete_recs_new(S, Recs).
 
-%% @spec delete_row_objs(RefX{}) -> ok
+-spec delete_row_objs(#refX{}) -> ok.
 %% @doc deletes any row objects completely covered by the #refX{}
 delete_row_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}) ->
     H = trans(S, #local_objs{path = P, obj = {row, {'$1', '$2'}}, _ = '_'}),
@@ -1571,10 +1540,10 @@ delete_row_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}) ->
     Recs = mnesia:select(Table, M, write),
     ok = delete_recs(S, Recs).
 
-%% @spec shift_cols(RefX#refX{}, Type) -> ok
-%% Type = [insert | delete]
+-spec shift_col_objs(#refX{}, insert | delete) -> ok.
 %% @doc shift_cols shifts cols left or right
-shift_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}} = Change, Type)
+shift_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}} = Change,
+               Type)
   when ((Type == insert) orelse (Type == delete)) ->
     XX = case Type of
              insert -> X2;
@@ -1599,8 +1568,7 @@ shift_col_objs1(Shift, Change, Type) ->
     ok = delete_recs_new(S, [Shift]),
     ok = mnesia:write(trans(S, local_objs), New, write).
 
-%% @spec shift_rows(RefX#refX{}, Type) -> ok
-%% Type = [insert | delete]
+-spec shift_row_objs(#refX{}, insert | delete) -> ok.
 %% @doc shift_rows shifts rows up or down
 shift_row_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}} = Change, Type)
   when ((Type == insert) orelse (Type == delete)) ->
@@ -2189,7 +2157,7 @@ filter_pages([], Tree) ->
 filter_pages([Path | T], Tree) ->
     filter_pages(T, dh_tree:add(Path, Tree)).
 
-%% @spec get_local_item_index(refX{}) -> Index
+-spec get_local_item_index(#refX{}) -> any().
 %% @doc get_local_item_index get_item_index gets the index of an object 
 %% AND CREATES IT IF IT DOESN'T EXIST
 get_local_item_index(#refX{site = S, path = P, obj = O} = RefX) ->
@@ -3674,7 +3642,7 @@ write_style2(#refX{site = Site} = RefX, Style) ->
     ok = mnesia:write(trans(Site, styles), Rec, write),
     NewIndex. 
 
-%% @spec tell_front_end(Item, Type) -> ok
+-spec tell_front_end(#refX{}, {any(), any()}, insert | delete) -> ok.
 %% Type = [change | delete]
 %% @doc calls the remoting server and tells is that something has changed
 %% names like '__name' are not notified to front-end

@@ -57,7 +57,7 @@ clear() ->
     stop(),
     file:delete(logfile()).
 
-%% @spec replay(Name, LogPath, NewSite) -> ok
+-spec replay(string(), string()) -> ok.
 %% @doc alias for replay(Name, LogSite, NewSite, deep)
 replay(Name, NewSite) ->
     replay(Name, NewSite, default_filter()).
@@ -134,7 +134,7 @@ default_filter() ->
     [{method, post}, {date, all}, {id, all}, {deep, true}, {path, "/"},
      {user, all}, {pause, 0}, {body, all}].
 
-%% @spec dump(Name) -> ok
+-spec info(string(), any()) -> ok.
 %% @doc Dumps the logfile with Name to the shell
 info(Name, Id) ->
     F = fun(Post, NId) -> print(long, Post, NId) end,
@@ -335,11 +335,11 @@ logfile() ->
 logfile(Name) ->
     lists:concat([code:lib_dir(hypernumbers),"/log/",Name,".LOG"]).
 
- atol(X) ->
-     atom_to_list(X).
+atol(X) ->
+    atom_to_list(X).
 
- btol(X) when is_atom(X) ->
-     X;
- btol(X) ->
-     binary_to_list(X).
+btol(X) when is_atom(X) ->
+    X;
+btol(X) ->
+    binary_to_list(X).
 

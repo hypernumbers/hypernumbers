@@ -161,7 +161,7 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% @spec set_borders(RefX#refX{}, Borders, Border_Style, Border_Color) -> ok
+-spec set_borders(#refX{}, any(), any(), any(), any()) -> ok.
 %% @doc  takes a range reference and sets the borders for the range according
 %% to the borders parameter passed in
 %% The borders attribute can be one of:

@@ -27,5 +27,4 @@ edoc:
 	(cd lib/read_excel-1.0;$(MAKE)     edoc)
 	(cd lib/formula_engine-1.0;$(MAKE) edoc)
 	(cd lib/mochiweb;$(MAKE)           edoc)
-	(cd lib/gettext;$(MAKE)            edoc)
 	(cd lib/hypernumbers-1.0;$(MAKE)   edoc)
