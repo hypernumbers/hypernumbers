@@ -22,32 +22,31 @@ json_file(Url, FileName) ->
 
     ok.
 
-style(Ref, {Index, Styles}) ->
-    L = string:tokens(Styles, ";"),
-    F = fun(X, Acc) ->
-                [Key, Val] = string:tokens(X, ":"),
-                [{ms_util2:get_index(magic_style, Key), Val} | Acc]      
-        end,
+%style(Ref, {Index, Styles}) ->
+%    L = string:tokens(Styles, ";"),
+%    F = fun(X, Acc) ->
+%                [Key, Val] = string:tokens(X, ":"),
+%                [{ms_util2:get_index(magic_style, Key), Val} | Acc]      
+%        end,
     
-    Rec = lists:foldl(F, [], L),
+%    Rec = lists:foldl(F, [], L),
 
-    F2 = fun(X, R) ->
-                 case ?pget(X, R) of
-                     undefined -> [];
-                     Else      -> Else
-                 end
-         end,
+%    F2 = fun(X, R) ->
+%                 case ?pget(X, R) of
+%                     undefined -> [];
+%                     Else      -> Else
+%                 end
+%         end,
     
-    Rec2 = [ F2(X, Rec) || X <- lists:seq(1, 23)],
+%    Rec2 = [ F2(X, Rec) || X <- lists:seq(1, 23)],
 
-    MG = list_to_tuple([magic_style| Rec2]),
+%    MG = list_to_tuple([magic_style| Rec2]),
 
-    Tbl = hn_db_wu:trans(Ref#refX.site, styles),
-    mnesia:dirty_write(Tbl, #styles{index=list_to_integer(Index),
-                                    refX = Ref,
-                                    magic_style = MG}),    
-    ok.
-
+%    Tbl = hn_db_wu:trans(Ref#refX.site, styles),
+%    mnesia:dirty_write(Tbl, #styles{index=list_to_integer(Index),
+%                                    refX = Ref,
+%                                    magic_style = MG}),    
+%    ok.
 
 rows(Ref, {Row, {struct, Cells}}) ->
     [ cells(Ref, Row, X) || X <- Cells],

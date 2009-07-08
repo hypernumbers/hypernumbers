@@ -177,7 +177,7 @@ make_first_record(U, S, P, Ch) ->
     User = #user{name = U, details = [D]},
     #site{site = S, list = [User]}.
 
-add_to_site(SiteRec, U, S, P, Ch, St) ->
+add_to_site(SiteRec, U, S, P, Ch, _St) ->
     #site{list = List} = SiteRec,
     D = #details{path = P, change = Ch},
     List2 = case lists:keysearch(U, 2, List) of
@@ -195,8 +195,7 @@ add_to_user(R, P, D) ->
                              R#user{details = NewD}
          end.
 
-purge(#user{name = N, details = D} = U) ->
-    Now = now(),
+purge(#user{name = N, details = D}) ->
     NewD = purge_details(D),
     NewU = #user{name = N, details = NewD},
     case NewD of
@@ -225,7 +224,7 @@ purge_d1([H | T], Acc) -> #details{timestamp = Ts} = H,
 extract(List) -> extract1(List, []).
 
 extract1([], Acc) -> lists:reverse(Acc);
-extract1([#details{path = P, change = Ch, timestamp = Ts} = H | T], Acc) ->
+extract1([#details{path = P, change = Ch, timestamp = Ts} | T], Acc) ->
     P2 = hn_util:list_to_path(P),
     Msg = get_msg(Ts),
     Acc2 = {P2, {struct, [{Ch, Msg}]}},
