@@ -29,7 +29,6 @@ end
 # Read the map file, create English => Other Language map.
 map = IO.readlines(mapfile).inject({}) { |acc, line|
   en, tr = line.split("=").map { |s| s.strip }
-  puts "en is #{en} and tr is #{tr}"
   acc[en] = tr 
   acc
 }

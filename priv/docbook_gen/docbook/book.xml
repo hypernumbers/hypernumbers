@@ -1,0 +1,516 @@
+<book xmlns="http://docbook.org/ns/docbook"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+  <info>
+    <title>Building Web Pages For The Hypernumbers Server</title>
+    <author>
+      <firstname>Gordon</firstname><surname>Guthrie</surname>
+      <email>gordon [AT] hypernumbers [DOT] com</email>
+    </author>
+    <copyright><year>2009</year><holder>Hypernumbers Ltd</holder></copyright>
+  </info>
+  <preface>
+    <title>Foreword</title>
+    
+    <sect1>
+      <title>Introduction</title>
+      <para><emphasis>Building Web Pages For The Hypernumbers Server</emphasis> is aimed at the average software developer who wishes to build tools for normal people to use to build hypernumbers applications.</para>
+    </sect1>
+    <sect1>
+      <title>Purpose</title>
+      <para>The purpose of this document is to:
+      <itemizedlist>
+        <listitem>explain how hypernumbers works</listitem>
+        <listitem>show some worked examples of custom GUI's</listitem>
+      <listitem>enable developers to write and deploy custom GUI's for their users</listitem>
+    </itemizedlist>
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Scope</title>
+    <para>This document will cover the following things:
+    <itemizedlist>
+      <listitem>how existing hypernumbers GUI's work</listitem>
+      <listitem>building GUI's in Javascript using the existing open source hypernumbers Javascript libraries</listitem>
+      <listitem>the main hypernumbers JSON GUI api</listitem>
+    </itemizedlist>
+    </para>
+    <para>This document will <emphasis>NOT</emphasis> cover the following things:
+    <itemizedlist>
+      <listitem>writing server-side functions</listitem>
+      <listitem>deploying GUI's on the server</listitem>
+      <listitem>storing information under your own attributes on a hypernumber</listitem>
+      <listitem>modifying or extending the hypernumbers open source Javascript libraries</listitem>
+      <listitem>building your own GUI framework using the raw hypernumbers server JSON API</listitem>
+      <listitem>the JQuery library which hypernumbers uses 'under the covers'</listitem>
+    </itemizedlist>
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Who Is This Document <emphasis>Not</emphasis> For</title>
+    <para>This is <emphasis>not</emphasis> a document for non-technical people - you need to be a programmer. If you are a basic Excel user who wants to build things with hypernumbers <emphasis>this is not for you</emphasis>. It is a technical document.</para>
+  </sect1>
+
+  <sect1>
+    <title>Who Is This Document For</title>
+    <para>This is a document for <emphasis>software developers</emphasis> who wish to build tools for users to use with a hypernumbers server. These tools should be aimed at non-technical people - <emphasis>enabling them to build applications in the normal hypernumbers way</emphasis>. It is aimed at the generalist and not the Javascript Guru.</para>
+  </sect1>
+
+  <sect1>
+    <title>Contents Of This Document</title>
+    <table cellpadding="5" label="Chapter Descriptions">
+      <thead>
+        <tr valign="top" align="center"><td>Chapter</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr valign="top"><td>Your Development Environment</td><td>explains how to set up your machine in order to develop with, and debug hypernumbers GUI's</td></tr>
+        <tr valign="top"><td>How hypernumbers GUI's Work</td><td>steps through the event cycle of the hypernumbers GUI explaining in general terms how the system is architected</td></tr>
+        <tr valign="top"><td>The Internals GUI</td><td>shows how to build a basic internals GUI that displays the internals of the update cycle. This GUI is ideal to use to learn how hypernumbers apps work by following the event cycle and seeing how updates are pushed out to the client. It also forms the basic framework for building your own GUI's</td></tr>
+        <tr valign="top"><td>The Dashboard GUI</td><td>builds the most primitive sort of GUI in a step-by-step manner - a GUI that does no updates to the server side data but just presents the information on a spreadsheet in a more appropriate manner</td></tr>
+      </tbody>
+    </table>
+  </sect1>
+  <sect1>
+    <title>Licensing</title>
+    <para>This document is release under the Creative Commons License</para>
+    <para>All source code examples are available for download and are released under the Modified BSD license</para>
+  </sect1>
+
+</preface>
+<chapter id="ch1">
+  <title>Your Development Environment</title>
+
+  <sect1>
+    <title>Overview</title>
+    <para>This chapter will explain how to set your machine up to develop GUI's for hypernumbers. It will:
+    <itemizedlist>
+      <listitem>focus on the Firefox broswer (suitable for Windows, Mac, Linux and other Unix development platforms)</listitem>
+      <listitem>show which plug-ins are most useful for hypernumbers GUI developers</listitem>
+      <listitem>provide a brief overview of Javascript debugging tools and techniques</listitem>
+    </itemizedlist>
+    </para>
+    <note>If you are a Javascript Guru and happy with, for instance, the Safari development environment feel free to ignore this section and do yer own thang...</note>
+    <note>This is not a javascript tutorial or a detailed exposition of debugging Javascript programmes.</note>
+  </sect1>
+
+  <sect1>
+    <title>Configuring Firefox</title>
+    <para>hypernumbers needs Firefox 3 or above which can be obtained from <link xlink:href="http://www.mozilla.com/en-US/firefox/upgrade.html">http://www.mozilla.com/en-US/firefox/upgrade.html</link> .</para>
+    <para>You should install the following plug-ins:
+    <itemizedlist>
+      <listitem>Firebug</listitem>
+      <listitem>JSONView</listitem>
+    </itemizedlist>
+    </para>
+
+    <sect2>
+      <title>Firebug</title>
+      <para>which can be installed from <link xlink:href="https://addons.mozilla.org/en-US/firefox/">https://addons.mozilla.org/en-US/firefox/</link></para>
+      <para>Firebug enables you to trace hypernumbers AJAX calls and inspect the DOM to follow what is going on.</para>
+      <para>This screenshot shows us inspecting the background Ajax calls of the main hypernumbers spreadsheet GUI:</para>
+      <imageobject>
+        <imagedata fileref="./images/firebug1.png" format="PNG"/>
+      </imageobject>
+      <para>This screenshot shows us inspecting the DOM of the main hypernumbers spreadsheet GUI:</para>
+      <imageobject>
+        <imagedata fileref="./images/firebug2.png" format="PNG"/>
+      </imageobject>
+      <para>As we go on we will see these options being used to debug our application as we build it.</para>
+    </sect2>
+    
+    <sect2>
+      <title>JSONView</title>
+      <para>JSONView just allows you to inspect JSON in the browser without having to save it as a file. The hypernumbers server speaks JSON exclusively so it is handy to be able to just peek at it as and when. This screenshot shows some JSON in the browser using JSONView:</para>
+      <imageobject>
+        <imagedata fileref="./images/jsonview.png" format="PNG"/>
+      </imageobject>
+    </sect2>
+  </sect1>
+  
+</chapter>
+
+<chapter>
+  <title>How hypernumbers GUI's Work</title>
+  
+  <sect1>
+    <title>Introduction</title>
+    <para>This section will:
+    <itemizedlist>
+      <listitem>give an overview of how hypernumbers works</listitem>
+      <listitem>show you how to inspect the inner workings using Firebug</listitem>
+      <listitem>list the various pieces of data that the hypernumbers API provides</listitem>
+    </itemizedlist>
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Overview</title>
+    <para>There are a number of key concepts to grasp that underpin the hypernumbers application. Hypernumbers makes a strict separation between <emphasis>pages</emphasis> and <emphasis>hypernumbers</emphasis> (or <emphasis>cells</emphasis> as they appear to the end user).</para>
+    <para>It is easiest to just show this. Look at the following screenshot - notice that the URL ends in a slash - in hypernumbers this indicates a <emphasis>page</emphasis>:</para>
+    <programlisting>
+      <![CDATA[
+               http://127.0.0.1:9000/some/page/
+      ]]>
+    </programlisting>
+      <imageobject>
+        <imagedata fileref="./images/page.png" format="PNG"/>
+      </imageobject>
+  <para>Now lets look at cell e6 on the page. Notice that the URL for a hypernumber (or cell) ends in the cell reference:</para>
+    <programlisting>
+      <![CDATA[
+               http://127.0.0.1:9000/some/page/e6
+      ]]>
+    </programlisting>
+      <imageobject>
+        <imagedata fileref="./images/cell1.png" format="PNG"/>
+      </imageobject>
+      <para>What appears to be a page of a spreadsheet is in fact an 'empty' page populated by lots of cells each of which has its own URL.</para>
+      <para>This is the basic operation of a hypernumbers server. The user requests a page - the hypernumbers server returns an html page with which uses Ajax calls to construct itself from a number of hypernumbers/cells. There are a number of conventions which determine which cells appear on which pages.</para>
+      <itemizedlist>
+        <listitem>the cells 'on' that page</listitem>
+        <listitem>the cells 'on' a page and a specific subpage</listitem>
+        <listitem>the cells 'on' the parent page</listitem>
+      </itemizedlist>
+      <para>We will see some of the design patterns later in this document</para>
+      <warning>Be sure to write examples of these design patterns prior to release of this doco, ya bas!</warning>
+
+      <para>The basic cell URL is not so useful - it is worth expanding it with a decorator that will give us more information about the cell:</para>
+      <programlisting>
+        <![CDATA[
+                 http://127.0.0.1:9000/some/page/e6?attr
+        ]]>
+      </programlisting>
+      <imageobject>
+        <imagedata fileref="./images/cell2.png" format="PNG"/>
+      </imageobject>
+      <para>We can use this approach to look at the attributes of cells, ranges, columns, rows and pages by using the appropriate notation for them:</para>
+      <programlisting>
+        <![CDATA[
+                 http://127.0.0.1:9000/some/page/e1:f6?attr
+                 http://127.0.0.1:9000/some/page/e:f?attr
+                 http://127.0.0.1:9000/some/page/1:6?attr
+                 http://127.0.0.1:9000/some/page/?attr
+        ]]>
+      </programlisting>
+      <para>In addition individual objects can be referred to by names instead of absolute ranges - this has a similar syntax:</para>
+    <programlisting>
+      <![CDATA[
+               http://127.0.0.1:9000/some/page/@name?attr
+      ]]>
+    </programlisting>
+    <para>Getting all the attributes of a page by using a page URL plays an important part in the hypernumbers GUI building lifecycle as we will see later.</para>
+  </sect1>
+
+  <sect1>
+    <title>Hypernumbers' Inner Workings</title>
+    <para>Lets use Firebug to see how the main hypernumbers GUI works. Simply (re)load a hypernumbers page and look at the Ajax traffic:</para>
+      <imageobject>
+        <imagedata fileref="./images/firebug1.png" format="PNG"/>
+      </imageobject>
+      <para>Firebug tells the story. Hypernumbers servers up the index page which looks like an Excel/OpenOffice spreadsheet interface. That page then makes 4 ajax requests.</para>
+    <programlisting>
+      <![CDATA[
+               http://127.0.0.1:9000/some/page/?attr
+               http://127.0.0.1:9000/some/page/?pages
+               http://127.0.0.1:9000/some/page/?fns_en_db.json
+               http://127.0.0.1:9000/some/page/?updates=1234567890
+      ]]>
+    </programlisting>
+    <para>The first of these returns all the attributes of the current page - that is to say the attributes of all cells, rows and columns on the page, as well as any particular attributes of the page itself. This data is used to build the page - putting sdasf in cell e2 and a purple centred 3434343 in cell e6, etc, etc</para>
+    <para>The second of these returns a json structure that is a tree of pages which the current logged in user has permissions to see - this is used to build the <emphasis>My Spreadsheets</emphasis> menu.</para>
+    <para>The third of these returns the data for the functions dialog box. Notice that it is marked by language. The current language that the spreadsheet is using is stored in a cookie and the appropriate version of the GUI is sent along with the function set in the selected language.</para>
+    <para>The fourth Ajax call is mysteriously not completed. The update call is acutally a long-lived Comet connection which the server uses to update the GUI.</para>
+    <para>This fourth connection is the key to the GUI event cycle in hypernumbers. The critical point is the user action on the GUI <emphasis>cannot</emphasis> determine what the GUI should display. It is worth understanding why that is. Consider the following set of actions:</para>
+    <programlisting>
+      <![CDATA[
+               INSERT INTO CELL   => b2   VALUE  => 5
+               SET FORMAT OF CELL => b3   FORMAT => "0"
+               INSERT INTO CELL   => b3   VALUE  => =b2/4
+      ]]>
+    </programlisting>
+    <para>So what value should cell b3 display? The answer is that the formula calculates to 1.25 and the format which indicates how the value should be displayed says it must be rounded to the nearest integer - so the result is shown as 1.</para>
+    <para>Lets see how this plays out in hypernumbers? If we peform the actions we can see the Ajax trail shown below:</para>
+    <imageobject>
+      <imagedata fileref="./images/updatecycle1.png" format="PNG"/>
+    </imageobject>
+    <para>It is worth breaking out the different things that have happened:</para>
+    <imageobject>
+      <imagedata fileref="./images/updatecycle2.png" format="PNG"/>
+    </imageobject>
+    <para>We see the user operations appear as a series of http POST's where very simple JSON objects are posted to the cell URL's and the response of these actions is streamed over the long-lived update COMET GET's. The updates have a time parameter on them which is used for sequencing responses but has not other menaing.</para>
+<note>The various trail posts are a special API that enables the GUI builder to have the GUI write back a little trail of user actions to the logs</note>
+    <imageobject>
+      <imagedata fileref="./images/trail.png" format="PNG"/>
+    </imageobject>
+  </sect1>
+  
+  <sect1>
+    <title>Hypernumbers API</title>
+    <para>Lets look in detail at some of the information passed around in these various calls. Here are all the attributes of a page:</para>
+    <programlisting>
+      <![CDATA[
+{
+
+    * time: 1247251662458203
+    * user: "anonymous"
+    * host: http://127.0.0.1:9000
+    * viewed-tour: "true"
+    * lang: "en_gb"
+    *
+      -
+      page: {
+      }
+    *
+      -
+      styles: {
+          o 5: "color:#FF00FF;font-weight:bold;text-align:center;"
+          o 2: "text-align:right;"
+          o 9: "font-weight:bold;text-decoration:line-through;"
+          o 10: "font-weight:bold;text-decoration:line-through;text-align:right;"
+          o 6: "font-weight:bold;"
+          o 3: "font-weight:bold;text-align:right;"
+          o 7: "font-weight:bold;text-align:left;"
+          o 4: "font-weight:bold;text-align:center;"
+          o 1: "text-align:left;"
+          o 8: "font-weight:bold;text-decoration:line-through;text-align:left;"
+      }
+    *
+      -
+      row: {
+      }
+    *
+      -
+      column: {
+      }
+    *
+      -
+      cell: {
+          o
+            -
+            2: {
+                +
+                  -
+                  5: {
+                      # rawvalue: "sdfasf"
+                      # formula: "sdfasf"
+                      # parents: "bleh"
+                      # value: "sdfasf"
+                      # style: 8
+                      # overwrite-color: "auto"
+                  }
+                +
+                  -
+                  2: {
+                      # rawvalue: 5
+                      # formula: "5"
+                      # parents: "bleh"
+                      # value: "5"
+                      # style: 10
+                      # overwrite-color: "auto"
+                  }
+                +
+                  -
+                  3: {
+                      # style: 9
+                  }
+                +
+                  -
+                  4: {
+                      # style: 9
+                  }
+            }
+          o
+            -
+            9: {
+                +
+                  -
+                  5: {
+                      # rawvalue: 3434348
+                      # formula: "=sum(E6:E8)"
+                      # parents: "bleh"
+                      # value: "3434348"
+                      # style: 2
+                      # overwrite-color: "auto"
+                  }
+            }
+          o
+            -
+            6: {
+                +
+                  -
+                  5: {
+                      # rawvalue: 3434343
+                      # formula: "3434343"
+                      # parents: "bleh"
+                      # value: "3434343"
+                      # style: 5
+                      # overwrite-color: "auto"
+                  }
+            }
+          o
+            -
+            3: {
+                +
+                  -
+                  5: {
+                      # rawvalue: "Now is the winter of our discontent"
+                      # formula: "Now is the winter of our discontent"
+                      # parents: "bleh"
+                      # value: "Now is the winter of our discontent"
+                      # style: 8
+                      # overwrite-color: "auto"
+                  }
+                +
+                  -
+                  2: {
+                      # rawvalue: 1.25
+                      # formula: "=B2/4"
+                      # parents: "bleh"
+                      # value: "1"
+                      # style: 10
+                      # format: "0"
+                      # overwrite-color: "auto"
+                  }
+                +
+                  -
+                  3: {
+                      # style: 9
+                  }
+                +
+                  -
+                  4: {
+                      # style: 9
+                  }
+            }
+          o
+            -
+            7: {
+                +
+                  -
+                  5: {
+                      # rawvalue: 2
+                      # formula: "2"
+                      # parents: "bleh"
+                      # value: "2"
+                      # style: 2
+                      # overwrite-color: "auto"
+                  }
+            }
+          o
+            -
+            4: {
+                +
+                  -
+                  5: {
+                      # style: 6
+                  }
+                +
+                  -
+                  2: {
+                      # style: 6
+                  }
+                +
+                  -
+                  3: {
+                      # style: 6
+                  }
+                +
+                  -
+                  4: {
+                      # style: 6
+                  }
+            }
+          o
+            -
+            8: {
+                +
+                  -
+                  5: {
+                      # rawvalue: 3
+                      # formula: "3"
+                      # parents: "bleh"
+                      # value: "3"
+                      # style: 2
+                      # overwrite-color: "auto"
+                  }
+            }
+      }
+      
+}
+      ]]>
+    </programlisting>
+    <para>Reading this JSON structure top to bottom we see 6 distinct things being conveyed:</para>
+    <itemizedlist>
+      <listitem>general information</listitem>
+      <listitem>page attributes (here there are none)</listitem>
+      <listitem>styles</listitem>
+      <listitem>row attributes (here there are none)</listitem>
+      <listitem>column attributes (here there are none)</listitem>
+      <listitem>cell attributes</listitem>
+    </itemizedlist>
+    <para>We will discuss these 6 categories of information separately</para>
+    <sect2>
+      <title>General Information</title>
+      <para>This just stores a range of general information, who the user is, wha the host is, have they seen the tour or should it be displayed and what language the user expects</para>
+      <note>GUI developers <emphasis>cannot</emphasis> define and persist their own general information to the server</note>
+    </sect2>
+    <sect2>
+      <title>Page Attributes</title>
+      <para>hypernumbers reserves no page attributes.</para>
+      <note>GUI developers can define and persist their own page attributes and retrieve them to use in GUI's for any purpose they wish</note>
+    </sect2>
+    <sect2>
+      <title>Styles</title>
+      <para>Hypernumbers operates a magic-style system. Various CSS attributes are recognised and may be set by the GUI. When this happens they are trapped in a magic style. Each cell has a style attribute which contains an index. That index is used to look up the style table.</para>
+      <para>The following CSS elements are in the magic style</para>
+      <itemizedlist>
+        <listitem>border-right-style</listitem>
+        <listitem>border-left-style</listitem>
+        <listitem>border-top-style</listitem>
+        <listitem>border-bottom-style</listitem>
+        <listitem>border-right-color</listitem>
+        <listitem>border-left-color</listitem>
+        <listitem>border-top-color</listitem>
+        <listitem>border-bottom-color</listitem>
+        <listitem>border-right-width</listitem>
+        <listitem>border-left-width</listitem>
+        <listitem>border-top-width</listitem>
+        <listitem>border-bottom-width</listitem>
+        <listitem>color</listitem>
+        <listitem>vertical-align</listitem>
+        <listitem>background-color</listitem>
+        <listitem>font-weight</listitem>
+        <listitem>font-size</listitem>
+        <listitem>font-family</listitem>
+        <listitem>font-style</listitem>
+        <listitem>font-stretch</listitem>
+        <listitem>text-decoration</listitem>
+        <listitem>text-shadow</listitem>
+        <listitem>text-align</listitem>
+        <listitem>whitespace</listitem>
+      </itemizedlist>
+              <para>Styles have page scope (which is why copy'n'paste is operated as a server-side function)</para>
+      <note>GUI developers <emphasis>cannot</emphasis> define and persist their own style elements</note>      
+    </sect2>
+    <sect2>
+      <title>Row Attributes</title>
+      <para>The only row attribute currently set is height.</para>
+      <note>GUI developers are free to set their own row attributes (eg 'hidden')</note>
+    </sect2>
+    <sect2>
+      <title>Column Attributes</title>
+      <para>The only column attribute currently set is width.</para>
+      <note>GUI developers are free to set their own column attributes (eg 'hidden')</note>
+    </sect2>
+    <sect2>
+      <title>Cell Attributes</title>
+      <para>There are a variety of cell attributes (not all of which are exposed to the GUI which have a complex relationship.</para>
+    <imageobject>
+      <imagedata fileref="./images/attributes.png" format="PNG"/>
+    </imageobject>
+    </sect2>
+  </sect1>
+
+</chapter>
+</book>

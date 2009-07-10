@@ -149,7 +149,8 @@ rows=table.search("tr")
 rows.each do |r|
  ahref=r.search('a') #.first[:href]
  if ahref.any?
- 	make_png(ahref.first[:href])
+    # puts "making #{ahref.first.attributes['HREF']}"
+ 	make_png(ahref.first.attributes['HREF'])
  end
 end
 
