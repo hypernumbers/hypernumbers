@@ -4,7 +4,7 @@
     <title>Building Web Pages For The Hypernumbers Server</title>
     <author>
       <firstname>Gordon</firstname><surname>Guthrie</surname>
-      <email>gordon [AT] hypernumbers [DOT] com</email>
+      <para>gordon [AT] hypernumbers [DOT] com</para>
     </author>
     <copyright><year>2009</year><holder>Hypernumbers Ltd</holder></copyright>
   </info>
@@ -110,11 +110,11 @@
       <para>Firebug enables you to trace hypernumbers AJAX calls and inspect the DOM to follow what is going on.</para>
       <para>This screenshot shows us inspecting the background Ajax calls of the main hypernumbers spreadsheet GUI:</para>
       <imageobject>
-        <imagedata fileref="./images/firebug1.png" format="PNG"/>
+        <imagedata fileref="../images/firebug1.png" format="PNG"/>
       </imageobject>
       <para>This screenshot shows us inspecting the DOM of the main hypernumbers spreadsheet GUI:</para>
       <imageobject>
-        <imagedata fileref="./images/firebug2.png" format="PNG"/>
+        <imagedata fileref="../images/firebug2.png" format="PNG"/>
       </imageobject>
       <para>As we go on we will see these options being used to debug our application as we build it.</para>
     </sect2>
@@ -123,7 +123,7 @@
       <title>JSONView</title>
       <para>JSONView just allows you to inspect JSON in the browser without having to save it as a file. The hypernumbers server speaks JSON exclusively so it is handy to be able to just peek at it as and when. This screenshot shows some JSON in the browser using JSONView:</para>
       <imageobject>
-        <imagedata fileref="./images/jsonview.png" format="PNG"/>
+        <imagedata fileref="../images/jsonview.png" format="PNG"/>
       </imageobject>
     </sect2>
   </sect1>
@@ -154,7 +154,7 @@
       ]]>
     </programlisting>
       <imageobject>
-        <imagedata fileref="./images/page.png" format="PNG"/>
+        <imagedata fileref="../images/page.png" format="PNG"/>
       </imageobject>
   <para>Now lets look at cell e6 on the page. Notice that the URL for a hypernumber (or cell) ends in the cell reference:</para>
     <programlisting>
@@ -163,7 +163,7 @@
       ]]>
     </programlisting>
       <imageobject>
-        <imagedata fileref="./images/cell1.png" format="PNG"/>
+        <imagedata fileref="../images/cell1.png" format="PNG"/>
       </imageobject>
       <para>What appears to be a page of a spreadsheet is in fact an 'empty' page populated by lots of cells each of which has its own URL.</para>
       <para>This is the basic operation of a hypernumbers server. The user requests a page - the hypernumbers server returns an html page with which uses Ajax calls to construct itself from a number of hypernumbers/cells. There are a number of conventions which determine which cells appear on which pages.</para>
@@ -182,7 +182,7 @@
         ]]>
       </programlisting>
       <imageobject>
-        <imagedata fileref="./images/cell2.png" format="PNG"/>
+        <imagedata fileref="../images/cell2.png" format="PNG"/>
       </imageobject>
       <para>We can use this approach to look at the attributes of cells, ranges, columns, rows and pages by using the appropriate notation for them:</para>
       <programlisting>
@@ -206,7 +206,7 @@
     <title>Hypernumbers' Inner Workings</title>
     <para>Lets use Firebug to see how the main hypernumbers GUI works. Simply (re)load a hypernumbers page and look at the Ajax traffic:</para>
       <imageobject>
-        <imagedata fileref="./images/firebug1.png" format="PNG"/>
+        <imagedata fileref="../images/firebug1.png" format="PNG"/>
       </imageobject>
       <para>Firebug tells the story. Hypernumbers servers up the index page which looks like an Excel/OpenOffice spreadsheet interface. That page then makes 4 ajax requests.</para>
     <programlisting>
@@ -232,16 +232,16 @@
     <para>So what value should cell b3 display? The answer is that the formula calculates to 1.25 and the format which indicates how the value should be displayed says it must be rounded to the nearest integer - so the result is shown as 1.</para>
     <para>Lets see how this plays out in hypernumbers? If we peform the actions we can see the Ajax trail shown below:</para>
     <imageobject>
-      <imagedata fileref="./images/updatecycle1.png" format="PNG"/>
+      <imagedata fileref="../images/updatecycle1.png" format="PNG"/>
     </imageobject>
     <para>It is worth breaking out the different things that have happened:</para>
     <imageobject>
-      <imagedata fileref="./images/updatecycle2.png" format="PNG"/>
+      <imagedata fileref="../images/updatecycle2.png" format="PNG"/>
     </imageobject>
     <para>We see the user operations appear as a series of http POST's where very simple JSON objects are posted to the cell URL's and the response of these actions is streamed over the long-lived update COMET GET's. The updates have a time parameter on them which is used for sequencing responses but has not other menaing.</para>
 <note>The various trail posts are a special API that enables the GUI builder to have the GUI write back a little trail of user actions to the logs</note>
     <imageobject>
-      <imagedata fileref="./images/trail.png" format="PNG"/>
+      <imagedata fileref="../images/trail.png" format="PNG"/>
     </imageobject>
   </sect1>
   
@@ -507,7 +507,7 @@
       <title>Cell Attributes</title>
       <para>There are a variety of cell attributes (not all of which are exposed to the GUI which have a complex relationship.</para>
     <imageobject>
-      <imagedata fileref="./images/attributes.png" format="PNG"/>
+      <imagedata fileref="../images/attributes.png" format="PNG"/>
     </imageobject>
     </sect2>
   </sect1>
