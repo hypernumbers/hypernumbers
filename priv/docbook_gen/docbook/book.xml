@@ -759,6 +759,7 @@
 </html>
       ]]>
     </programlisting>
+    <warning>This sample has been tested in the hypernumbers docroot and not the howto one - all the javascript sources need to get a different path in the production version of this document</warning>
     <para>...and here is the Javascript:</para>
     <programlisting>
       <![CDATA[
@@ -816,7 +817,6 @@ var options = {
 // and pass in 2 parameters - one describes the page to load
 // and one contains the options
 var data = new HN.Data(document.location.pathname, options);
-
       ]]>
     </programlisting>
     <para>We can now use this blank GUI to look at the hypernumbers internals. Create a simple page:</para>
@@ -837,6 +837,124 @@ var data = new HN.Data(document.location.pathname, options);
       </itemizedlist>
       <para>If you manipulate the page using the normal gui you will see that the data object in memory on the blank GUI will update automatigically (Firebug doesn't quite keep up, you will need to close and then re-open tree elements to see the changes - but the changes do come through <emphasis>without reloading the page</emphasis>). This is what we mean by a blank GUI showing hypernumbers internals.</para>
       <para>The various change functions that we have seen (eg update) will be used in the next section to make the GUI no longer blank, but actually one that displays the effect of changes.</para>
+      <tip>The Blank GUI we have described in this step can be downloaded from the hypernumbers developers site.</tip>
+  </sect1>
+
+  <sect1>
+    <title>Step 2 - Building A Basic Internals GUI</title>
+
+    <sect2>
+      <title>Overview</title>
+      <para>This step will build on the blank_gui described in the previous section</para>
+    </sect2>
+
+    <sect2>
+      <title>Exploring The Event Cycle</title>
+      <para>To explore the event cycle for updates simply put a console log statement into the update function in the options:</para>
+      <programlisting>
+        <![CDATA[
+  update: function() {
+    console.log(this)
+  },
+        ]]>
+      </programlisting>
+      <para>Now open two browser windows pointing the same page - one using the normal hypernumbers GUI and one using this new version of the blank GUI. When we update the normal spreadsheet we see that the callback function update is called in the blank GUI. We can repeat this process for all the other functions defined in the options and check when they are called. You will notice that update is called without <emphasis>any</emphasis> arguments. If you look at the hypernumbers update message stream you will see that the updates come in big splurges of 5, 10, 15 or more messages. In this context it make sense to simply redaw the complete GUI everytime you get a change notification - and that's what we will do.</para>
+      <para>These functions on 'this' will give us all the information about the update that we need to control our GUI. Not all of them are needed for our simple GUI's. Lets find out which ones are...</para>
+    </sect2>
+
+    <sect2>
+      <title>Building The Simple Internals GUI</title>
+      <para>First things, first, lets design the new GUI. We will add a simple 5 by 5 table into the body of HTML and use the HTML id option to mark each cell.</para>
+      <programlisting>
+        <![CDATA[
+  <body>
+    <p>This is a basic GUI to display the internal of hypernumbers.</p>
+    <table border="1px">
+        <tr>
+          <td id="A1">a1</td>
+          <td id="B1">b1</td>
+          <td id="C1">c1</td>
+          <td id="D1">d1</td>
+          <td id="E1">e1</td>
+        </tr>
+        <tr>
+          <td id="A2">a2</td>
+          <td id="B2">b2</td>
+          <td id="C2">c2</td>
+          <td id="D2">d2</td>
+          <td id="E2">e2</td></tr>
+        <tr>
+          <td id="A3">a3</td>
+          <td id="B3">b3</td>
+          <td id="C3">c3</td>
+          <td id="D3">d3</td>
+          <td id="E3">e3</td>
+        </tr>
+        <tr>
+          <td id="A4">a4</td>
+          <td id="B4">b4</td>
+          <td id="C4">c4</td>
+          <td id="D4">d4</td>
+          <td id="E4">e4</td>
+        </tr>
+        <tr>
+          <td id="A5">a5</td>
+          <td id="B5">b5</td>
+          <td id="C5">c5</td>
+          <td id="D5">d5</td>
+          <td id="E5">e5</td>
+        </tr>
+    </table>
+  </body>
+        ]]>
+      </programlisting>
+    
+      <para>What we will now do is put a function call into the options and change the upload function as shown below:</para>
+      <programlisting>
+        <![CDATA[
+  update: function() {
+    draw_gui();
+  },
+        ]]>
+      </programlisting>
+      <para>Finally we will draw the new GUI by creating the function draw_gui. Remember this function must be declared before it is used in update.</para>
+      <programlisting>
+        <![CDATA[
+// this function will draw the GUI
+var draw_gui = function() {
+  console.log("in draw_gui");
+  var i;
+  var j;
+  var id;
+  var element;
+  var string;
+  for (i = 1; i < 6; i++) {
+      if (data.data.cell[i] !== undefined){
+        for (j = 1; j < 6; j++) {
+          if (data.data.cell[i][j] !== undefined){
+            id = HN.Util.to_b26(j)+i;
+            element = HN.Util.id(id);
+            string = "<p>formula: " + data.data.cell[i][j].formula + "</p>";
+            string = string + "<p>rawvalue: " + data.data.cell[i][j].rawvalue + "</p>";
+            string = string + "<p>value: " + data.data.cell[i][j].value + "</p>";
+            string = string + "<p>style: " + data.data.cell[i][j].style + "</p>";
+            element.innerHTML=string;
+          };
+        }
+      }
+    }
+};
+        ]]>
+      </programlisting>
+      <para>This function is fairly straightforward to understand. We iterate over the top 5 by 5 set of cells, read the information out of the data variable and write them to the table cells which we address by the ID. Using the A1, B1, C1 id schema of the spreadsheet makes this very straightforward.</para>
+    <para>The next screenshot shows what this primitive Internals GUI looks like.</para>
+      <imageobject>
+        <imagedata fileref="../images/internals.png" format="PNG"/>
+      </imageobject>
+
+    </sect2>
+      <tip>The Internal GUI we have described in this step can be downloaded from the hypernumbers developers site.</tip>
+    
   </sect1>
 
 </chapter>
