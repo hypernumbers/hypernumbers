@@ -70,6 +70,7 @@
         <tr valign="top"><td>The Dashboard GUI</td><td>builds the most primitive sort of GUI in a step-by-step manner - a GUI that does no updates to the server side data but just presents the information on a spreadsheet in a more appropriate manner</td></tr>
       </tbody>
     </table>
+    <note>More sections to follow!</note>
   </sect1>
   <sect1>
     <title>Licensing</title>
@@ -78,7 +79,7 @@
   </sect1>
 
 </preface>
-<chapter id="ch1">
+<chapter>
   <title>Your Development Environment</title>
 
   <sect1>
@@ -714,5 +715,129 @@
     
   </sect1>
   
+</chapter>
+
+<chapter>
+  <title>The Internals GUI</title>
+
+  <sect1>
+    <title>Introduction</title>
+    <para>This chapter will look at building the most basic hypernumbers GUI. Initially it will be one that simply displays a blank page but which connects to a hypernumbers server and receives all the page setup and update messages. The idea is that you can run this 'blank' GUI in one instance of Firefox pointing to a particular hypernumbers page and you can use another Firefox window and the normal spreadsheet GUI to make change to that page. Those changes (and the updates they push out can then be examined in Firebug <emphasis>on the blank GUI</emphasis>.></para>
+    <para>The blank GUI will then be embellished to make a basic GUI that shows the update messages in a simple web page.</para>
+    <para>This technique of starting from a blank GUI to build a 'proper' hypernumbers GUI is the basis for all the other examples in this document</para>
+  </sect1>
+
+  <sect1>
+    <title>Step 1 - The Blank GUI</title>
+    <para>Here is the HTML for the blank GUI:</para>
+    <programlisting>
+      <![CDATA[
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+    <title>hypernumbers Blank GUI</title>
+  </head>
+  
+  <body>
+    This page left intentionally blank.
+  </body>
+
+  <!-- Some jquery libraries to handle AJAX calls -->
+  <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
+  
+  <!-- The basic hypernumbers javascript libaries -->
+  <script src="/hypernumbers/hn.js"></script>
+  <script src="/hypernumbers/hn.util.js"></script>
+  <script src="/hypernumbers/hn.data.js"></script>
+  <script src="/hypernumbers/hn.callbacks.js"></script>
+  
+  <!-- The custom javascript libary for this GUI -->
+  <script src="/hypernumbers/blank_gui.js"></script>
+  
+</html>
+      ]]>
+    </programlisting>
+    <para>...and here is the Javascript:</para>
+    <programlisting>
+      <![CDATA[
+// a global variable into which we will load a hypernumbers page
+var loaded = {};
+
+// A function to check if loading is complete
+// this function also puts a fade-out over the page to make the page
+// user-accessible only when the loading is completed
+var checkloaded = function() {
+  if( loaded.data ) {
+
+    $("#path").text(document.location.pathname);
+    document.title = document.location.pathname + " - hypernumbers Blank GUI";
+
+    $("#loading, #cover").fadeOut("slow");
+  }
+};
+
+// A set of options that we are going to pass into the hypernumbers page
+// Notice that these are all functions which will be called on certain events
+//
+// Some of these events (eg dataLoaded, pagesLoaded and functionsLoaded)
+// relate to setting up the page on the first time it is viewed.
+//
+// The others (eg dataReloaded, update, formulaError) are for when
+// there are updates caused by the server-side page being updated
+var options = {
+
+  dataLoaded: function() {
+    loaded.data = true;
+    checkloaded();
+  },
+
+  pagesLoaded: function() {
+    loaded.pages = true;
+    checkloaded();
+  },
+
+  functionsLoaded: function() {
+  },
+
+
+  dataReloaded: function() {
+  },
+
+  update: function() {
+  },
+
+  formulaError: function(index, formula) {
+  }
+};
+
+// This is where all the work happens. We declare a new HN.Data object
+// and pass in 2 parameters - one describes the page to load
+// and one contains the options
+var data = new HN.Data(document.location.pathname, options);
+
+      ]]>
+    </programlisting>
+    <para>We can now use this blank GUI to look at the hypernumbers internals. Create a simple page:</para>
+      <imageobject>
+        <imagedata fileref="../images/blank_gui1.png" format="PNG"/>
+      </imageobject>
+      <para>...and now look at the same page with the blank gui, but this time inspecting the DOM with Firebug:</para>
+      <imageobject>
+        <imagedata fileref="../images/blank_gui2.png" format="PNG"/>
+      </imageobject>
+      <para>We can see that there is a global data structure that contains the following attributes:</para>
+      <itemizedlist>
+        <listitem>cells/hypernumbers</listitem>
+        <listitem>pages</listitem>
+        <listitem>rows</listitem>
+        <listitem>columns</listitem>
+        <listitem>styles</listitem>
+      </itemizedlist>
+      <para>If you manipulate the page using the normal gui you will see that the data object in memory on the blank GUI will update automatigically (Firebug doesn't quite keep up, you will need to close and then re-open tree elements to see the changes - but the changes do come through <emphasis>without reloading the page</emphasis>). This is what we mean by a blank GUI showing hypernumbers internals.</para>
+      <para>The various change functions that we have seen (eg update) will be used in the next section to make the GUI no longer blank, but actually one that displays the effect of changes.</para>
+  </sect1>
+
 </chapter>
 </book>
