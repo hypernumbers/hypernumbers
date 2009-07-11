@@ -126,6 +126,7 @@
         <imagedata fileref="../images/jsonview.png" format="PNG"/>
       </imageobject>
     </sect2>
+
   </sect1>
   
 </chapter>
@@ -139,7 +140,9 @@
     <itemizedlist>
       <listitem>give an overview of how hypernumbers works</listitem>
       <listitem>show you how to inspect the inner workings using Firebug</listitem>
-      <listitem>list the various pieces of data that the hypernumbers API provides</listitem>
+      <listitem>list the various pieces of data that the hypernumbers display API provides</listitem>
+      <listitem>a quick look at the hypernumbers POST API that allows a GUI to change the server state</listitem>
+      <listitem>multilingualisation</listitem>
     </itemizedlist>
     </para>
   </sect1>
@@ -246,12 +249,27 @@
   </sect1>
   
   <sect1>
-    <title>Hypernumbers API</title>
-    <para>Lets look in detail at some of the information passed around in these various calls. Here are all the attributes of a page:</para>
-    <programlisting>
-      <![CDATA[
-{
+    <title>Hypernumbers Display API</title>
 
+    <sect2>
+      <title>Introduction</title>
+      <para>This section will look at how hypernumbers GUI's dispaly information:</para>
+      <itemizedlist>
+        <listitem>attributes information</listitem>
+        <listitem>update information</listitem>
+      </itemizedlist>
+    </sect2>
+    
+    <sect2>
+      <title>Attributes Information</title>
+      
+      <sect3>
+        <title>Overview</title>
+        <para>Lets look in detail at some of the information passed around in these various calls. Because Firebug doens't show off the JSON to best advantage we will just call the attributes URL in directly in the browser and examine it in JSONView. Here are all the attributes of a page copied from JSONView:</para>
+        <programlisting>
+          <![CDATA[
+                   {
+                   
     * time: 1247251662458203
     * user: "anonymous"
     * host: http://127.0.0.1:9000
@@ -439,78 +457,262 @@
       
 }
       ]]>
-    </programlisting>
-    <para>Reading this JSON structure top to bottom we see 6 distinct things being conveyed:</para>
-    <itemizedlist>
-      <listitem>general information</listitem>
-      <listitem>page attributes (here there are none)</listitem>
-      <listitem>styles</listitem>
-      <listitem>row attributes (here there are none)</listitem>
-      <listitem>column attributes (here there are none)</listitem>
-      <listitem>cell attributes</listitem>
-    </itemizedlist>
-    <para>We will discuss these 6 categories of information separately</para>
-    <sect2>
-      <title>General Information</title>
-      <para>This just stores a range of general information, who the user is, wha the host is, have they seen the tour or should it be displayed and what language the user expects</para>
-      <note>GUI developers <emphasis>cannot</emphasis> define and persist their own general information to the server</note>
-    </sect2>
-    <sect2>
-      <title>Page Attributes</title>
-      <para>hypernumbers reserves no page attributes.</para>
-      <note>GUI developers can define and persist their own page attributes and retrieve them to use in GUI's for any purpose they wish</note>
-    </sect2>
-    <sect2>
-      <title>Styles</title>
-      <para>Hypernumbers operates a magic-style system. Various CSS attributes are recognised and may be set by the GUI. When this happens they are trapped in a magic style. Each cell has a style attribute which contains an index. That index is used to look up the style table.</para>
-      <para>The following CSS elements are in the magic style</para>
-      <itemizedlist>
-        <listitem>border-right-style</listitem>
-        <listitem>border-left-style</listitem>
-        <listitem>border-top-style</listitem>
-        <listitem>border-bottom-style</listitem>
-        <listitem>border-right-color</listitem>
-        <listitem>border-left-color</listitem>
-        <listitem>border-top-color</listitem>
-        <listitem>border-bottom-color</listitem>
-        <listitem>border-right-width</listitem>
-        <listitem>border-left-width</listitem>
-        <listitem>border-top-width</listitem>
-        <listitem>border-bottom-width</listitem>
-        <listitem>color</listitem>
-        <listitem>vertical-align</listitem>
-        <listitem>background-color</listitem>
-        <listitem>font-weight</listitem>
-        <listitem>font-size</listitem>
-        <listitem>font-family</listitem>
-        <listitem>font-style</listitem>
-        <listitem>font-stretch</listitem>
-        <listitem>text-decoration</listitem>
-        <listitem>text-shadow</listitem>
-        <listitem>text-align</listitem>
-        <listitem>whitespace</listitem>
+        </programlisting>
+        <para>Reading this JSON structure top to bottom we see 6 distinct things being conveyed:</para>
+        <itemizedlist>
+          <listitem>general information</listitem>
+          <listitem>page attributes (here there are none)</listitem>
+          <listitem>styles</listitem>
+          <listitem>row attributes (here there are none)</listitem>
+          <listitem>column attributes (here there are none)</listitem>
+          <listitem>cell attributes</listitem>
+        </itemizedlist>
+        <para>We will discuss these 6 categories of information separately</para>
+      </sect3>
+        
+        <sect3>
+          <title>General Information</title>
+          <para>This just stores a range of general information, who the user is, wha the host is, have they seen the tour or should it be displayed and what language the user expects</para>
+          <note>GUI developers <emphasis>cannot</emphasis> define and persist their own general information to the server</note>
+        </sect3>
+        
+        <sect3>
+          <title>Page Attributes</title>
+          <para>hypernumbers reserves no page attributes.</para>
+          <note>GUI developers can define and persist their own page attributes and retrieve them to use in GUI's for any purpose they wish</note>
+        </sect3>
+        
+        <sect3>
+          <title>Styles</title>
+          <para>Hypernumbers operates a magic-style system. Various CSS attributes are recognised and may be set by the GUI. When this happens they are trapped in a magic style. Each cell has a style attribute which contains an index. That index is used to look up the style table.</para>
+          <para>The following CSS elements are in the magic style</para>
+          <itemizedlist>
+            <listitem>border-right-style</listitem>
+            <listitem>border-left-style</listitem>
+            <listitem>border-top-style</listitem>
+            <listitem>border-bottom-style</listitem>
+            <listitem>border-right-color</listitem>
+            <listitem>border-left-color</listitem>
+            <listitem>border-top-color</listitem>
+            <listitem>border-bottom-color</listitem>
+            <listitem>border-right-width</listitem>
+            <listitem>border-left-width</listitem>
+            <listitem>border-top-width</listitem>
+            <listitem>border-bottom-width</listitem>
+            <listitem>color</listitem>
+            <listitem>vertical-align</listitem>
+            <listitem>background-color</listitem>
+            <listitem>font-weight</listitem>
+            <listitem>font-size</listitem>
+            <listitem>font-family</listitem>
+            <listitem>font-style</listitem>
+            <listitem>font-stretch</listitem>
+            <listitem>text-decoration</listitem>
+            <listitem>text-shadow</listitem>
+            <listitem>text-align</listitem>
+            <listitem>whitespace</listitem>
       </itemizedlist>
-              <para>Styles have page scope (which is why copy'n'paste is operated as a server-side function)</para>
+      <para>Styles have page scope (which is why copy'n'paste is operated as a server-side function)</para>
       <note>GUI developers <emphasis>cannot</emphasis> define and persist their own style elements</note>      
-    </sect2>
-    <sect2>
-      <title>Row Attributes</title>
-      <para>The only row attribute currently set is height.</para>
-      <note>GUI developers are free to set their own row attributes (eg 'hidden')</note>
-    </sect2>
-    <sect2>
-      <title>Column Attributes</title>
-      <para>The only column attribute currently set is width.</para>
-      <note>GUI developers are free to set their own column attributes (eg 'hidden')</note>
-    </sect2>
-    <sect2>
-      <title>Cell Attributes</title>
-      <para>There are a variety of cell attributes (not all of which are exposed to the GUI which have a complex relationship.</para>
-    <imageobject>
-      <imagedata fileref="../images/attributes.png" format="PNG"/>
-    </imageobject>
-    </sect2>
+        </sect3>
+        
+        <sect3>
+          <title>Row Attributes</title>
+          <para>The only row attribute currently set is height.</para>
+          <note>GUI developers are free to set their own row attributes (eg 'hidden')</note>
+        </sect3>
+        
+        <sect3>
+          <title>Column Attributes</title>
+          <para>The only column attribute currently set is width.</para>
+          <note>GUI developers are free to set their own column attributes (eg 'hidden')</note>
+        </sect3>
+        
+        <sect3>
+          <title>Cell Attributes</title>
+          <para>The key attribute of a hypernumber/cell is the formula. This is essentially what the user types directly into the cell and it can be a range of things:</para>
+          <itemizedlist>
+            <listitem>a number</listitem>
+            <listitem>a string</listitem>
+            <listitem>a date</listitem>
+            <listitem>a boolean</listitem>
+            <listitem>a formula</listitem>
+          </itemizedlist>
+          <para>Numbers can be:</para>
+          <itemizedlist>
+            <listitem>positive</listitem>
+            <listitem>negative</listitem>
+            <listitem>integer</listitem>
+            <listitem>float</listitem>
+            <listitem>exponent</listitem>
+          </itemizedlist>
+          <para>Booleans can be:</para>
+          <itemizedlist>
+        <listitem>true</listitem>
+        <listitem>false</listitem>
+          </itemizedlist>
+          <para>In addition you can force a string by quoting it. Thevariants of these 6 types of entry are shown below:</para>
+          <programlisting>
+            <![CDATA[
+               1
+               -2
+               3.45e-1
+               -1.23E+1
+               bob's your uncle
+               and betty's "your aunt"
+               true
+               false
+               1/2/33             => a date: displayed as 1st February 2003
+               =1+2               => displays as 3
+               =1+2*b3/sum(c4:c9) => displays as the result of the calculation
+               '=1+2              => displays as =1+2
+               '1/2/33            => displays as 1/2/33
+      ]]>
+          </programlisting>
+          <para>From this basic relationship there flows a variety of cell attributes (not all of which are exposed to the GUI) which have a complex relationship.</para>
+          <imageobject>
+            <imagedata fileref="../images/cellattributes.png" format="PNG"/>
+          </imageobject>
+          <para>The 'formula' attribute is evaluated resulting in the 'rawvalue'.</para>
+          <programlisting>
+            <![CDATA[
+               FORMULA => 1             RAWVALUE => 1
+               FORMULA => true          RAWVALUE => true
+               FORMULA => hello sailor  RAWVALUE => "hello sailor"
+               FORMULA => 1/2/33        RAWVALUE => 1st February 1903 00:00:00
+               FORMULA => =4/5          RAWVALUE => 1.25
+            ]]>
+          </programlisting>
+          <para>The 'format' is then applied to the 'rawvalue' resulting in the 'value' and the 'overwrite-color'. The formats are compatible with Microsoft Excel 97 formats. An Excel format allows text colours to be specified depending on the value (typically red text for negative numbers, but there are other options). The 'overwrite-color' is generated from the format (if appropriate).</para>
+          <para>The various 'magic' attributes are used to construct the style. If there is no style elements associated with a cell a default style is constructed for a cell. This is typically just an alignment:</para>
+          <itemizedlist>
+            <listitem>numbers are aligned right</listitem>
+            <listitem>booleans are aligned centre</listitem>
+            <listitem>dates are aligned centre</listitem>
+            <listitem>strings and quoted items are aligned right</listitem>
+          </itemizedlist>
+        </sect3>
+        
+      </sect2>
+      
+      <sect2>
+        <title>Updates Information</title>        
+        <para>Lets look at some typical update messages:</para>
+        <programlisting>
+          <![CDATA[
+{
+
+    * time: 1247310974071121
+    *
+      -
+      msgs: [
+          o
+            -
+            {
+                + type: "change"
+                + reftype: "cell"
+                + ref: "H2"
+                + name: "style"
+                + value: 2
+            }
+      ]
+
+}
+
+{
+    * time: 1247311089661061
+    *
+      _
+      msgs: [
+
+          o
+            -
+            {
+                + type: "delete"
+                + reftype: cell"
+                + ref: "E2"
+                + name: "rawvalue"
+                + value: "sdfasf"
+            }
+      ]
+
+
+{
+    * time: 1247311470390915,
+    *
+      _
+      msgs: [
+
+          o
+            -
+            {
+                + type: "style"
+                + index: "11"
+                + css: "background-color:#000080
+                + text-align: "right;"
+            }
+            ]
+}
+            ]]>
+          </programlisting>
+          <para>We see that they split into 2 - cell and style messages - and that the cell messages have 2 types - change and delete. This is all fairly straightforward.</para>
+      </sect2>
+      
+    </sect1>
+
+    <sect1>
+      <title>Hypernumbers POST API</title>
+      
+      <sect2>
+        <title>Introduction</title>
+        <para>The best way to understand the hypernumbers POST API is simply to perform some actions in a normal spreadsheet and look at the AJAX calls in Firebug:</para>
+        
+        <programlisting>
+          <![CDATA[
+                   {"set":{"font-family":"serif"}}	
+                   {"set":{"mark":"Message for the logs"}}
+                   {"clear":"contents"}	
+                   {"copy":{"src":"http://127.0.0.1:9000/some/page/E8:E8"}}
+          ]]>
+        </programlisting>
+        <para>To understand how the POST API works it is important to look at the URL which is being posted to. Some actions are performed by POST'ing against a cell, some a range, some a column or row and some a page. On occassions the same API can be used against a combination of URL types (consult the API documentation for details).</para>
+        <warning>Write the API documentation</warning>
+      </sect2>
+
+      <sect2>
+        <title>Exercise For The Reader</title>
+        <para>The reader is invited to explore the existing hypernumbers API and understand the various post mesages. The API is largely self-explanatory.</para>
+        <note>There are 2 post API calls which have a somewhat odd behaviour. These are 'trail' and 'mark'. 'trail' is used by a GUI designer to get the GUI to report back user behaviour (eg looking at menu items, or exploring aspects of the GUI) which the GUI designer would like to be able to monitor remotely. 'mark' is an API that simply collections a text string from the user and sends it. What both these API calls have in common is that neither touches the main hypernumbers server. They both simply write a message to the server-side logs. 'trail' messages leave a trail of the user behaviour in the logs. 'mark' messages mean that the developer can replay the server logs on a test or development machine and and then watch the users behaviour up to the point in which they feel the need to report a bug or make a comment</note>
+      </sect2>
+
   </sect1>
 
+  <sect1>
+    <title>Multi-lingualisation</title>
+    <para>Hypernumbers GUI's are multilingual and the translation of them is done via hypernumbers pages:</para>
+      <imageobject>
+        <imagedata fileref="../images/multilingual.png" format="PNG"/>
+      </imageobject>
+      <para>It is good practice to build your GUI's to be multi-lingual from the start and we will see how to do that later on in this document</para>
+    </sect1>
+    
+  <sect1>
+    <title>Summary</title>
+    <sect2>
+      <title>Introduction</title>
+      <para>Having now explained how the hypernumbers API's work and shown how to examine them, the next section of this document will step through building a custom GUI. Before doing that it is worth understanding hypernumbers strategy for supporting custom GUI development.</para>
+    </sect2>
+    
+    <sect2>
+      <title>Developer Support</title>
+      <para>The general architecture of the hypernumbers stack is shown below:</para>
+      <imageobject>
+        <imagedata fileref="../images/architecture.png" format="PNG"/>
+      </imageobject>
+      <para>The system has been architected with a modular design. There are large and well tested modular components (shown in white) which support the custom aspects of a particular hypernumbers deployment (the components shown in yellow). Although the hypernumbers GUI API's are pretty straightforward and a developer could build their own complete GUI on top of the raw AJAX calls it is much easier to build custom GUI's around a tested set of Javascript libraries that abstract out browser specific problems. It is this that we shall look at in the next section.</para>
+    </sect2>
+    
+  </sect1>
+  
 </chapter>
 </book>
