@@ -96,7 +96,7 @@ transform_formula(Formula) ->
     Tmp2 = re:replace(Tmp, "ERROR.TYPE", "ERRORTYPE", [{return, list}, global]),
 
     % change ../bob to bob
-    Tmp3 = re:replace(Tmp2, "\.\./([a-z]+(?:,|\\)))","\\1", [{return, list}]),
+    Tmp3 = re:replace(Tmp2, "\.\./([a-z]+(?:,|\\)))","\\1", [{return, list}, global]),
     
     stripfileref(Tmp3).
 

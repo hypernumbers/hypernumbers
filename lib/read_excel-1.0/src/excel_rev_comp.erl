@@ -579,14 +579,20 @@ to_str({func,Var,Args})       ->
         end,
     % If the Value of Var is 255 then this is a non-excel function
     % and the 'first arg' is the name that the user actually typed in
+    % with a ../ we added
     case Var of
         255 ->
-            [{string,FuncName}|Args2]=Args,
+            [{string, FuncName}|Args2] = Args,
+            FunNm = case FuncName of
+                        "../"++New -> New;
+                        Else -> Else
+                    end,
+            
             case Args2 of
-                [] -> FuncName++"()";
+                [] -> FunNm++"()";
                 _  ->
                     TmpArgs = lists:flatten(lists:map(R,Args2)),
-                    FuncName++"("++string:strip(TmpArgs,right, $,)++")"
+                    FunNm++"("++string:strip(TmpArgs,right, $,)++")"
             end;
         _Other ->
             case Args of
@@ -1195,4 +1201,3 @@ macro_no_of_args(358) ->
               "this is a cludge!~n"),
     2;
 macro_no_of_args(360) -> 1.
-
