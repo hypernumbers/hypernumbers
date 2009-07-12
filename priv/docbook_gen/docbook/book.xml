@@ -958,4 +958,245 @@ var draw_gui = function() {
   </sect1>
 
 </chapter>
+
+<chapter>
+
+  <title>Dashboard GUI</title>
+    
+    <sect1>
+      <title>Introduction</title>
+      <para>This section will describe building a simple GUI which provides a traffic light GUI Dashboard for iPhones.</para>
+      <para>It will have the following sections:</para>
+      <itemizedlist>
+        <listitem>the business requirements for the application</listitem>
+        <listitem>setting up the spreadsheet view</listitem>
+        <listitem>building the custom gui</listitem>
+      </itemizedlist>
+      
+    </sect1>
+
+    <sect1>
+      <title>Business Requirements</title>
+      <para>The business requirements for this application are:</para>
+      <itemizedlist>
+        <listitem>there are a series of spreadsheets to be maintained on the hypernumbers system</listitem>
+        <listitem>these spreadsheets are maintained by many different people</listitem>
+        <listitem>the results of them aggregate up to a single page which presents a dashboard for the business on an iPhone or other smart phone.</listitem>
+      </itemizedlist>
+    </sect1>
+
+    <sect1>
+      <title>The Spreadsheet View</title>
+      <para>This is a very simple GUI. We will drive its data from a simple prescribed layout which is shown below:</para>
+      <imageobject>
+        <imagedata fileref="../images/dashboard1.png" format="PNG"/>
+      </imageobject>
+      <para>We will now write a GUI which will build a dashboard from this simple page. There are two data elements - the title which comes from cell E2 and the dashboard elements which are pairs of lables and indicators in columns D and E from row 5 down.</para>
+    </sect1>
+
+    <sect1>
+      <title>The HTML View</title>
+      <para>The HTML is very simply - there are only 2 elements that we are going to build. The first one is the title, and the second is the actual dashboard itself. These can be added to the basic HTML from the blank GUI></para>
+    <programlisting>
+      <![CDATA[
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="/hypernumbers/dashboard.css" />
+  </head>
+  
+  <body>
+    <h1 id="title"></h1>
+    <div id="dashboard"></div>
+  </body>
+
+  <!-- Some jquery libraries to handle AJAX calls -->
+  <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
+  
+  <!-- The basic hypernumbers javascript libaries -->
+  <script src="/hypernumbers/hn.js"></script>
+  <script src="/hypernumbers/hn.util.js"></script>
+  <script src="/hypernumbers/hn.data.js"></script>
+  <script src="/hypernumbers/hn.callbacks.js"></script>
+  
+  <!-- The custom javascript libary for this GUI -->
+  <script src="/hypernumbers/dashboard.js"></script>
+  
+</html>
+      ]]>
+    </programlisting>
+    <para>Note that we have added a link to a css file called 'dashboard.css' and a javascript library called 'dashboard.js' which we will create in the next step.</para>
+    </sect1>
+
+    <sect1>
+      <title>The Javascript Library</title>
+      <para>The Javascript is fairly simple. The blank GUI that we built early only redraw itself in response to change messages. This GUI needs to dispaly on first load. To make this happen we add a call to the draw_gui function from the dataloaded callback as shown below:</para>
+    <programlisting>
+      <![CDATA[
+  dataLoaded: function() {
+    loaded.data = true;
+    draw_gui();
+    checkloaded();
+  },
+      ]]>
+    </programlisting>
+    <para>In order to build the dashboard we need to understand the extent of the spreadsheet - how many rows there are. Lets create a function to iterate over he data object and work that out:</para>
+    <programlisting>
+      <![CDATA[
+var get_max = function() {
+  var max;
+  max = 5;
+  for( var i in data.data.cell ) {
+      if( parseInt(i) > max ) {
+        max = parseInt(i);
+      }
+  }
+  return max;
+};
+      ]]>
+    </programlisting>
+    <para>Now we now how big the spreadsheet it we can write the draw_gui function:</para>
+    <programlisting>
+      <![CDATA[
+// this function will draw the GUI
+var draw_gui = function() {
+  write_title();
+  write_dashboard();
+};
+      ]]>
+    </programlisting>
+    <para>The function to write the title is pretty straightforward. We Know the title is in D2:</para>
+    <programlisting>
+      <![CDATA[
+// this function will write the title
+var write_title = function() {
+  if (data.data.cell[2] && data.data.cell[2][5] &&
+      (data.data.cell[2][5].value !== undefined)) {
+    var element;
+    element = HN.Util.id("title");
+    element.innerHTML=data.data.cell[2][5].value;
+  }
+};
+      ]]>
+    </programlisting>
+    <para>The function to build the dashboard is pretty straightforward as well. We will represent the dashboard as a simple table. We step over the appropriate range to build it:</para>
+    <programlisting>
+      <![CDATA[
+var write_dashboard = function() {
+  var i;
+  var id;
+  var element;
+  var string;
+  var max;
+  // now start building the string
+  string ="<table>";
+  max = get_max();
+  for (i = 5; i < max + 1; i++) {
+    if (data.data.cell[i] && data.data.cell[i][4] &&
+        (data.data.cell[i][4].value !== undefined)) {
+      string = string + "<tr><td class=\"lable\">"+data.data.cell[i][4].value + "</td>";
+      if (data.data.cell[i][5]) {
+          if (data.data.cell[i][5].value === undefined) {
+            string = string + get_td("error");
+          } else {
+            string = string + get_td(data.data.cell[i][5].value) + "</tr>";
+         }
+        } else {
+           string = string + get_td("undefined");
+         }
+      }
+  }
+  string = string + "</table>";
+  element = HN.Util.id("dashboard");
+  element.innerHTML=string;
+};
+      ]]>
+    </programlisting>
+    <para>The lable goes in the first column of the table and we build the second column with a graphical indicator in a separate function:</para>
+    <programlisting>
+      <![CDATA[
+var get_td = function(indicator) {
+  switch (indicator) {
+    case "red":       return "<td><div class=\""+indicator+"\"></td>";
+    case "amber":     return "<td><div class=\""+indicator+"\"></td>";
+    case "green":     return "<td><div class=\""+indicator+"\"></td>";
+    case "undefined": return "<td><div class=\""+indicator+"\"></td>";
+    case "error":     return "<td><div class=\""+indicator+"\"></td>";
+    default:          return "<td><div class=\"error\"></td>";
+  }
+};
+      ]]>
+    </programlisting>   
+    </sect1>
+
+    <sect1>
+      <title>CSS And The Images</title>
+      <para>The Javascript has built a table with elements with classes. The CSS file will associate the various classes to the image sprite. The image sprite is a simple strip of traffic lights and error/failure icons as shown below:</para>
+      <imageobject>
+        <imagedata fileref="../images/sprite.png" format="PNG"/>
+      </imageobject>
+      <para>The javascript is then pretty straightforward:</para>
+    <programlisting>
+      <![CDATA[
+div.red { 
+  background: url(sprite-dashboard.png) 0px 0px;
+  height: 30px;
+  width:  30px;
+  float: left;
+}
+
+div.amber { 
+  background: url(sprite-dashboard.png) -30px 0px;
+  height: 30px;
+  width:  30px;
+  float: left;
+}
+
+div.green { 
+  background: url(sprite-dashboard.png) -60px 0px;
+  height: 30px;
+  width:  30px;
+  float: left;
+}
+
+div.error { 
+  background: url(sprite-dashboard.png) -90px 0px;
+  height: 30px;
+  width:  30px;
+  float: left;
+}
+
+div.undefined { 
+  background: url(sprite-dashboard.png) -121px 0px;
+  height: 30px;
+  width:  29px;
+  float: left;
+}
+
+td.lable { 
+ width: 300px;
+ font:  14px Arial, "Helvetica Neue", sans-serif;
+}
+
+h1 { 
+ font:  bold 18px Arial, "Helvetica Neue", sans-serif;
+}
+      ]]>
+    </programlisting>
+    </sect1>
+
+    <sect1>
+      <title>The Dashboard In Action</title>
+      <para>The dashboard is pretty straightforward, looks alright and updates automatically:</para>
+      <imageobject>
+        <imagedata fileref="../images/dashboard2.png" format="PNG"/>
+      </imageobject>
+    </sect1>
+      <tip>The Dashboard we have described in this step can be downloaded from the hypernumbers developers site.</tip>
+
+</chapter>
+
 </book>

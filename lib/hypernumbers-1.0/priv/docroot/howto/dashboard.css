@@ -1,0 +1,43 @@
+div.red { 
+  background: url(sprite-dashboard.png) 0px 0px;
+  height: 30px;
+  width:  30px;
+  float: left;
+}
+
+div.amber { 
+  background: url(sprite-dashboard.png) -30px 0px;
+  height: 30px;
+  width:  30px;
+  float: left;
+}
+
+div.green { 
+  background: url(sprite-dashboard.png) -60px 0px;
+  height: 30px;
+  width:  30px;
+  float: left;
+}
+
+div.error { 
+  background: url(sprite-dashboard.png) -90px 0px;
+  height: 30px;
+  width:  30px;
+  float: left;
+}
+
+div.undefined { 
+  background: url(sprite-dashboard.png) -121px 0px;
+  height: 30px;
+  width:  29px;
+  float: left;
+}
+
+td.lable { 
+ width: 300px;
+ font:  14px Arial, "Helvetica Neue", sans-serif;
+}
+
+h1 { 
+ font:  bold 18px Arial, "Helvetica Neue", sans-serif;
+}
