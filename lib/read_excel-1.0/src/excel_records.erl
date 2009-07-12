@@ -17,7 +17,7 @@
 -include("excel_supbook.hrl").
 -include("excel_externname.hrl").
 
--export([parse_rec/5]).
+-export([parse_rec/5, prepend_quote/1]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -1208,12 +1208,23 @@ parse_SST(StringNo,NoOfStrings,Tbl,[BinHead|BinTail])->
     end,
     Return=excel_util:parse_CRS_Uni16(ParseBin,2),
     String=excel_util:get_utf8(Return),
+    String2=prepend_quote(String),
     % io:format("in parse_SST String is ~p~n", [String]),
     {_,StringLen,_RestLen}=Return, 
     BinLen=8*StringLen,
     <<_String2:BinLen/little-unsigned-integer,Rest/binary>>=NewBinHead,
-    excel_util:write(Tbl,tmp_strings,[{index,StringNo},{string,String}]),
+    excel_util:write(Tbl,tmp_strings,[{index,StringNo},{string,String2}]),
     parse_SST(StringNo+1,NoOfStrings,Tbl,[Rest|NewBinTail]).
+
+%% This is nasty, sure excel stores this data somewhere?
+prepend_quote(String) ->
+    try _ = list_to_integer(String),
+        "'"++String
+    catch _:_ ->
+            try _ = list_to_float(String),
+                "'"++String
+            catch _:_ -> String end
+    end.
 
 write_row([],_RowIndex,_FirstColIndex,_Name,_Tbl)->
     {ok,ok};
