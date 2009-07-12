@@ -226,10 +226,10 @@ rev_comp(Index,[{name_index,{tName,[{value,Value},{type,_Type}],
                 {name, NameVal}, _Val]}] = ?read(Tbl,tmp_names,Value),
     % if the type is local look up the sheet name
     NameStr = case Type of
-                  global -> "..!"++NameVal;
+                  global -> "../"++NameVal;
                   local  -> {{sheet,SheetName},_,_}=Index,
                             EscSheet=excel_util:esc_tab_name(SheetName),
-                            "..!"++EscSheet++"!"++"@"++NameVal
+                            "../"++EscSheet++"/"++NameVal
               end,
     rev_comp(Index,T,TokArr,[{string,NameStr}|Stack],Tbl);
 
@@ -337,7 +337,7 @@ rev_comp(Index,[{name_xref,{tNameX,
                                 {name, LocalName}, _V]}] = ?read(Tbl,tmp_names,NameIdx),
                         {{sheet,SheetName},_,_}=Index,
                         EscSheet=excel_util:esc_tab_name(SheetName),
-                        "..!"++EscSheet++"!"++"@"++LocalName;
+                        "../"++EscSheet++"/"++LocalName;
                     {skipped, add_ins} ->
                         % First get all the externames with the EXBindex of EXBIdx
                         % now get the sheet name
@@ -381,7 +381,7 @@ rev_comp(I,[{three_dee_ref,{tRef3d,[{reference_index,RefIdx},
                                     Ref,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
     Sheet = get_sheet_ref(RefIdx,Tbl),
     Sheet2=excel_util:esc_tab_name(Sheet),
-    rev_comp(I,T,TokArr,[{string,"..!"++Sheet2++"!"++make_cell(Ref)}|Stack],
+    rev_comp(I,T,TokArr,[{string,"../"++Sheet2++"/"++make_cell(Ref)}|Stack],
              Tbl);
 
 %% tArea3d
@@ -392,7 +392,7 @@ rev_comp(I,[{three_dee_area,{tArea3d,[{reference_index,RefIdx},
     Sheet2=excel_util:esc_tab_name(Sheet),
     [{start_cell,Ref1}|{end_cell,Ref2}] = Reference,
     Range=make_range(Ref1,Ref2),
-    rev_comp(I,T,TokArr,[{string,"..!"++Sheet2++"!"++Range}|Stack],Tbl);
+    rev_comp(I,T,TokArr,[{string,"../"++Sheet2++"/"++Range}|Stack],Tbl);
 
 %% tRefErr3d
 rev_comp(I,[{three_dee_error_ref,{tRefErr3d,[{reference_index,_RefIndex},

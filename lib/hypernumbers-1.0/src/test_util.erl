@@ -69,6 +69,8 @@ excel_equal(X, X) ->
 excel_equal({date,F1}, {number,Number})->
     {datetime, D, T} = muin_date:excel_win_to_gregorian(Number),
     F1 == {D, T}; 
+excel_equal({string, "'"++F1}, {string, F1}) ->
+    true;
 excel_equal({date, F1}, {string, F2}) ->
     dh_date:format("Y/m/d h:i:s", F1) == F2;
 excel_equal({number, F1}, {number, F2}) ->
@@ -92,7 +94,11 @@ transform_formula(Formula) ->
     % to ErrorType
     % Ugly bodge
     Tmp2 = re:replace(Tmp, "ERROR.TYPE", "ERRORTYPE", [{return, list}, global]),
-    stripfileref(Tmp2).
+
+    % change ../bob to bob
+    Tmp3 = re:replace(Tmp2, "\.\./([a-z]+(?:,|\\)))","\\1", [{return, list}]),
+    
+    stripfileref(Tmp3).
 
 %% Nasty function to convert 
 %% stuff'C:\\cygwin\\stuff\\[e_gnumeric_bitwise.xls]Name'!stuff
