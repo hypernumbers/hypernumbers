@@ -37,17 +37,22 @@ test_state(State)->
     end.
 
 read_from_excel_data(State, {Sheet, Row, Col})->
-    
-    Key = { {sheet,Sheet}, {row_index,Row}, {col_index,Col} },
-    {value, Result} = lists:keysearch(Key, 1, State),
 
-    case element(2, Result) of
+    Key = { {sheet,Sheet}, {row_index,Row}, {col_index,Col} },
+    
+    Res = case lists:keysearch(Key, 1, State) of
+              false -> not_found;
+              {value, Tmp} -> element(2, Tmp)
+          end,
+    
+    case Res of 
         {value, number,Number}          -> {number, Number};
         {string, String}                -> {string, String};
         {formula, Formula}              -> {formula, Formula};
         {value, boolean, Boolean}       -> {boolean, Boolean};
         {value, error, Error}           -> {error, Error};
-        {value, date, {datetime, D, T}} -> {date, {D, T}}
+        {value, date, {datetime, D, T}} -> {date, {D, T}};
+        _ -> not_found
     end.
 
 equal_to_digit(F1, F2, DigitIdx) ->
