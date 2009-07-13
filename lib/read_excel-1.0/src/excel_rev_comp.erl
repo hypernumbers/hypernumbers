@@ -84,7 +84,7 @@ rev_comp(I,[{Op,_Token}|T],TokArr,Stack,Tbl) when Op =:= addition ;
 %% Pop two off the stack and the build an operator set backwards
 %% ie second first and first second...
 rev_comp(I,[{intersect,_Token}|T],TokArr,[First,Second|Rest],Tbl) ->
-    rev_comp(I,T,TokArr,[{string,to_str(Second)++"^^"++to_str(First)}|Rest],Tbl);
+    rev_comp(I,T,TokArr,[{string,to_str(Second)++" "++to_str(First)}|Rest],Tbl);
 
 %% tList
 rev_comp(I,[{list,{tList,[{op_type,binary}],{return,reference}}}|T],TokArr,
