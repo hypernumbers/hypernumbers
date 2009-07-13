@@ -621,10 +621,12 @@ to_str({string,String}) -> String;
 to_str({integer,Val}) -> integer_to_list(Val);
 to_str({float,Val}) ->
     case (Val-round(Val)) of
-        0.0 -> integer_to_list(round(Val));
-        _   -> String=mochinum:digits(Val),               
-               {_,String2,_}=regexp:gsub(String,[e],$e),
-               String2
+        0.0 ->
+            do_round(Val);
+        _   ->
+            String=mochinum:digits(Val),               
+            {_,String2,_}=regexp:gsub(String,[e],$e),
+            String2
     end;
 
 to_str({abs_ref,Y,X,rel_row,rel_col}) ->
@@ -637,6 +639,13 @@ to_str({abs_ref,Y,X,abs_row,abs_col}) ->
     "$"++util2:make_b26(X)++"$"++integer_to_list(Y); 
 to_str({L,S1,O,S2,R}) ->
     to_str(L)++to_str(S1)++to_str(O)++to_str(S2)++to_str(R).
+
+%% floats only have 15 sb precision in excel?                             
+do_round(Float) when Float > 999999999999999 ->
+    Tmp = round(Float / 1000000),
+    lists:flatten(io_lib:format("~-21.10.0B",[Tmp]));
+do_round(Float) ->
+    integer_to_list(round(Float)).
 
 %% builds up 2D arrays - 1st dimension is given by "," and second by ";"
 array_to_str(Array,NoCols,_NoRows) ->

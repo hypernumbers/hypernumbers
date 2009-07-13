@@ -66,6 +66,8 @@ float_cmp(Res, Expres, Digit) -> (abs(Res - Expres)/Res) < math:pow(0.1, Digit).
 
 excel_equal(X, X) ->
     true;
+excel_equal({string, X}, {formula, X}) ->
+    true;
 excel_equal({date,F1}, {number,Number})->
     {datetime, D, T} = muin_date:excel_win_to_gregorian(Number),
     F1 == {D, T}; 
@@ -76,7 +78,7 @@ excel_equal({date, F1}, {string, F2}) ->
 excel_equal({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
 excel_equal({formula, Formula1}, {formula, Formula2}) ->
-    Formula2 == transform_formula(Formula1);
+    transform_expected(Formula2) == transform_got(Formula1);
 excel_equal({error,Error1},{number,ErrorVal}) ->
     Error1 == make_err_val(ErrorVal);
 excel_equal({number,Num},{string,Str})->
@@ -84,7 +86,17 @@ excel_equal({number,Num},{string,Str})->
 excel_equal(_X, _Y) ->
     false.
 
-transform_formula(Formula) ->
+transform_expected(Formula) ->
+    Tmp2 = re:replace(Formula, "ERRORTYPE", "ERROR.TYPE", [{return, list}, global]),
+    Tmp3 = re:replace(Tmp2, "FINDB\\(", "FIND\\(", [{return, list}, global]),
+    Tmp4 = re:replace(Tmp3, "LEFTB\\(", "LEFT\\(", [{return, list}, global]),
+    Tmp5 = re:replace(Tmp4, "LENB\\(", "LEN\\(", [{return, list}, global]),
+    Tmp6 = re:replace(Tmp5, "MIDB\\(", "MID\\(", [{return, list}, global]),
+    Tmp7 = re:replace(Tmp6, "RIGHTB\\(", "RIGHT\\(", [{return, list}, global]),
+    Tmp8 = re:replace(Tmp7, "SEARCHB\\(", "SEARCH\\(", [{return, list}, global]),
+    Tmp8.
+
+transform_got(Formula) ->
     % if row address, strip the column bounds (=$A169:$IV169) becomes (=169:169)
     Tmp = case re:run(Formula, "\\$A[0-9]+:\\$IV[0-9]+") of
               {match, _} -> re:replace(Formula, "\\$A|\\$IV", "", [{return, list}, global]);
@@ -93,12 +105,9 @@ transform_formula(Formula) ->
     % fix-up the fact that we have changed the name of the function Error.Type 
     % to ErrorType
     % Ugly bodge
-    Tmp2 = re:replace(Tmp, "ERROR.TYPE", "ERRORTYPE", [{return, list}, global]),
-
     % change ../bob to bob
-    Tmp3 = re:replace(Tmp2, "\.\./([a-z]+(?:,|\\)))","\\1", [{return, list}, global]),
-    
-    stripfileref(Tmp3).
+    Tmp1 = re:replace(Tmp, "\.\./([a-z]+(?:,|\\)))","\\1", [{return, list}, global]),
+    stripfileref(Tmp1).
 
 %% Nasty function to convert 
 %% stuff'C:\\cygwin\\stuff\\[e_gnumeric_bitwise.xls]Name'!stuff

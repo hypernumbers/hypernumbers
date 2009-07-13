@@ -12,7 +12,7 @@
                    Msg -> 
                     test_util:expected(Msg, Expval)
                after 500 -> 
-                    exit(io_lib:format("timeout in ~s~n", [Name]))
+                    exit(lists:flatten(io_lib:format("timeout in ~s~n", [Name])))
                end).
 
 init_per_suite(Config) ->
