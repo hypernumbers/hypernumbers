@@ -56,11 +56,12 @@ write_data(Ref, {Sheet, Target, Data}) when is_list(Target) ->
                     obj  = hn_util:parse_attr(Target)},
     hn_db_api:write_attributes(NRef, [{"formula", Data}]);
 
-write_data(Ref, {Sheet, {Tl, Br}, Data}) ->
-    Name = excel_util:esc_tab_name(Sheet),
-    NRef = Ref#refX{path = Ref#refX.path ++ [Name],
-                    obj = hn_util:parse_attr(Tl ++ ":" ++ Br)},
-    hn_main:formula_to_range(NRef, Data).
+write_data(_Ref, {_Sheet, {_Tl, _Br}, _Data}) ->
+    %Name = excel_util:esc_tab_name(Sheet),
+    %NRef = Ref#refX{path = Ref#refX.path ++ [Name],
+    %                obj = hn_util:parse_attr(Tl ++ ":" ++ Br)},
+    ok.
+%    hn_main:formula_to_range(NRef, Data).
 
 write_css(Ref, {{{sheet, Sheet}, {row_index, R}, {col_index, C}}, [CSS]}) ->
     Name = excel_util:esc_tab_name(Sheet),
@@ -116,7 +117,7 @@ import(File, User, Ref, Name) ->
     
     {Cells, _Names, _Formats, CSS, Warnings, Sheets} = filefilters:read(excel, File),    
     {Literals, Formulas} = lists:foldl(fun split_sheets/2, {[], []}, Cells),
-
+    
     [ write_data(Ref, X) || X <- Literals ],
     [ write_data(Ref, X) || X <- Formulas ],
     [ write_css(Ref, X) || X <- CSS ],

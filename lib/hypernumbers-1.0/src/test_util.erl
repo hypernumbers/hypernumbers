@@ -28,21 +28,38 @@ rc_to_a1(Row, Col) ->
     tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1).
 
 test_state(State)->
+
+    {Cells, Ranges} = lists:partition(
+                        fun({{_Sheet,_Row,_Col},_Val}) -> true;
+                           ({{_Sheet,_R1,_C1,_R2,_C2},_Val}) -> false
+                        end, State),
+
+    test_state(Cells, Ranges).
+
+test_state(Cells, Ranges) ->
+
     receive
         {msg, Pid, _Suite, Ref} ->
-            Pid ! read_from_excel_data(State, Ref),
-            test_state(State);
+            Pid ! read_from_excel_data(Cells, Ranges, Ref),
+            test_state(Cells, Ranges);
         die ->
             ok
     end.
 
-read_from_excel_data(State, {Sheet, Row, Col})->
+read_from_excel_data(Cells, Ranges, {Sheet, Row, Col})->
 
     Key = { {sheet,Sheet}, {row_index,Row}, {col_index,Col} },
     
-    Res = case lists:keysearch(Key, 1, State) of
-              false -> not_found;
-              {value, Tmp} -> element(2, Tmp)
+    Res = case lists:keysearch(Key, 1, Cells) of
+              false ->
+                  Tmp = [Val || {{_Sheet,{_,R1},{_,C1},{_,R2},{_,C2}}, Val} <- Ranges,
+                                R1 =< Row, R2 >= Row, C1 =< Col, C2 >= Col ],
+                  case Tmp of
+                      [X] -> X;
+                      _   -> not_found
+                  end;
+              {value, Tmp} ->
+                  element(2, Tmp)
           end,
     
     case Res of 

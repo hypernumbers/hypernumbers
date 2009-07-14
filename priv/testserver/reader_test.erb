@@ -17,9 +17,10 @@
 
 init_per_suite(Config) ->
     File = "../../tests/excel_files/Win_Excel07_As_97/<%= @basename + ".xls"%>",
-    {Cells, _Names, _Formats, _CSS, _Warnings, _Sheets} = filefilters:read(excel, File),
+    {Vals, _Names, _Formats, _CSS, _Warnings, _Sheets} = filefilters:read(excel, File),
+    
     hn_db_api:wait_for_dirty("http://127.0.0.1:9000"),
-    Pid = spawn(test_util, test_state, [Cells]),
+    Pid = spawn(test_util, test_state, [Vals]),
     [{?MODULE, Pid} | Config].
 
 end_per_suite(_Config) ->
