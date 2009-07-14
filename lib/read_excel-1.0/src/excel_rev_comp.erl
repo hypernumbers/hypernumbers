@@ -37,6 +37,7 @@
 %% The formulae are stored in reverse Polish Notation within excel
 %% The reverse compiler recreates the original formula by running the RPN
 reverse_compile(Index,Tokens,TokArr,Tbl)->
+    io:format("~p~n",[Tokens]),
     rev_comp(Index,Tokens,TokArr,[],Tbl).
 
 %% When the tokens are exhausted the Stack is just flattened to a string

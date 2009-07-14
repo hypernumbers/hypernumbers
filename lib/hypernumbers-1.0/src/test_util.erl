@@ -2,7 +2,6 @@
 -module(test_util).
 
 -export([expected/2,
-         equal_to_digit/3,
          test_state/1,
          make_float/1,
          conv_for_post/1,
@@ -72,16 +71,6 @@ read_from_excel_data(Cells, Ranges, {Sheet, Row, Col})->
         _ -> not_found
     end.
 
-equal_to_digit(F1, F2, DigitIdx) ->
-    % force any rogue integers to floats  
-    F1a=float(F1),
-    F2a=float(F2),
-    [As0,Bs0]=io_lib:fwrite("~.*f~.*f",[DigitIdx+1,F1a-erlang:trunc(F1a), 
-                                        DigitIdx+1,F2a-erlang:trunc(F2a)]),
-    As=string:substr(As0,1,DigitIdx+2), 
-    Bs=string:substr(Bs0,1,DigitIdx+2),
-    As==Bs.
-
 float_cmp(0.0,0.0,_)          -> true;
 float_cmp(0.0,Expres,Digit)   -> (Expres < math:pow(0.1, Digit));
 float_cmp(Res, Expres, Digit) -> (abs(Res - Expres)/Res) < math:pow(0.1, Digit).
@@ -95,10 +84,22 @@ excel_equal({date,F1}, {number,Number})->
     F1 == {D, T}; 
 excel_equal({string, "'"++F1}, {string, F1}) ->
     true;
+%% Cant check because goes pre gregorian, fuzzy check
+excel_equal({date, {{1900, 1, 1}, _T}}, {string, "1899/12/31"++_}) ->
+    true;
+%% Date was set on leap year that didnt exist, autofix
+excel_equal({date, {{1900, 3, 1}, _T}}, {string, "1900/02/28"++_}) ->
+    true;
+%% January / February in 1900 are offset by 1 day in excel
+excel_equal({date, {{1900, M, _D}, _T}=F1}, {string, F2})
+  when M =:= 1 orelse M =:= 2 ->
+    NewTime = calendar:datetime_to_gregorian_seconds(F1) - 86400,
+    NDate   = calendar:gregorian_seconds_to_datetime(NewTime),
+    dh_date:format("Y/m/d H:i:s", NDate) == F2;
 excel_equal({date, F1}, {string, F2}) ->
-    dh_date:format("Y/m/d h:i:s", F1) == F2;
+    dh_date:format("Y/m/d H:i:s", F1) == F2;
 excel_equal({number, F1}, {number, F2}) ->
-    equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
+    erlang:abs(1 - F1 / F2) < 0.0000001;
 excel_equal({formula, Formula1}, {formula, Formula2}) ->
     transform_expected(Formula2) == transform_got(Formula1);
 excel_equal({error,Error1},{number,ErrorVal}) ->
@@ -121,7 +122,8 @@ transform_expected(Formula) ->
 transform_got(Formula) ->
     % if row address, strip the column bounds (=$A169:$IV169) becomes (=169:169)
     Tmp = case re:run(Formula, "\\$A[0-9]+:\\$IV[0-9]+") of
-              {match, _} -> re:replace(Formula, "\\$A|\\$IV", "", [{return, list}, global]);
+              {match, _} -> re:replace(Formula, "\\$A|\\$IV", "",
+                                       [{return, list}, global]);
               _          -> Formula
           end,
     % fix-up the fact that we have changed the name of the function Error.Type 

@@ -424,9 +424,11 @@ lookup_string(Tables,SSTIndex)->
 get_integer(Bin) ->
     <<Type:1,_Rest:31>>=Bin,
     case Type of
-        1 -> % Rest is a 30 bit binary in ones complement
-            -1*ones_complement(shift_left2(Bin))+1;
-        0 -> shift_left2(Bin)
+        1 ->
+            % Rest is a 30 bit binary in ones complement
+            -1*ones_complement(shift_left2(Bin))-1;
+        0 ->
+            shift_left2(Bin)
     end.
 
 ones_complement(Bin) ->

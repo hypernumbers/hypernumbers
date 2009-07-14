@@ -117,7 +117,7 @@ import(File, User, Ref, Name) ->
     
     {Cells, _Names, _Formats, CSS, Warnings, Sheets} = filefilters:read(excel, File),    
     {Literals, Formulas} = lists:foldl(fun split_sheets/2, {[], []}, Cells),
-    
+
     [ write_data(Ref, X) || X <- Literals ],
     [ write_data(Ref, X) || X <- Formulas ],
     [ write_css(Ref, X) || X <- CSS ],
@@ -204,7 +204,7 @@ conv_for_post(Val) ->
     case Val of
         {_, boolean, true}        -> "true";
         {_, boolean, false}       -> "false";
-        {_, date, {datetime,D,T}} -> dh_date:format("d/m/Y h:i:s",{D,T});
+        {_, date, {datetime,D,T}} -> dh_date:format("d/m/Y H:i:s",{D,T});
         {_, number, N}            -> tconv:to_s(N);
         {_, error, E}             -> E;
         {string, X}               -> X;
