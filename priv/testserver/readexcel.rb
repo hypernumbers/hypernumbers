@@ -32,7 +32,7 @@ def do_file(xlsfile)
       (firstcol..sheet.UsedRange.Columns.Count+1).each do |colidx|
         cell = sheet.Cells(rowidx, colidx)
         if cell.Value != nil && cell.Formula != ""
-	    #puts "value is #{cell.Value} for row #{rowidx} and col #{colidx}"
+	        puts "value is #{cell.Value} for row #{rowidx} and col #{colidx}"
           celldata = [colidx, {}]
           celldata[1][:text] = cell.Text # value as it is displayed
           celldata[1][:value] = cell.Value # real value underneath
