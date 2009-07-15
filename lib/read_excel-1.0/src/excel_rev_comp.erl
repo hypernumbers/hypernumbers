@@ -37,7 +37,6 @@
 %% The formulae are stored in reverse Polish Notation within excel
 %% The reverse compiler recreates the original formula by running the RPN
 reverse_compile(Index,Tokens,TokArr,Tbl)->
-    io:format("~p~n",[Tokens]),
     rev_comp(Index,Tokens,TokArr,[],Tbl).
 
 %% When the tokens are exhausted the Stack is just flattened to a string
@@ -621,13 +620,12 @@ to_str({L,O,R}) -> to_str(L) ++ to_str(O) ++ to_str(R);
 to_str({string,String}) -> String;
 to_str({integer,Val}) -> integer_to_list(Val);
 to_str({float,Val}) ->
-    case (Val-round(Val)) of
-        0.0 ->
-            do_round(Val);
-        _   ->
-            String=mochinum:digits(Val),               
-            {_,String2,_}=regexp:gsub(String,[e],$e),
-            String2
+    Str = re:replace(mochinum:digits(Val), "e", "E", [{return, list}]),
+    IsPretty  = match == re:run(Str, "E", [{capture, none}]),
+    IsPretty6 = match == re:run(Str, "E(\\+|\\-)(6|7|8)", [{capture, none}]),
+    case (Val-round(Val)) == 0.0 andalso (not IsPretty orelse IsPretty6) of
+        true  -> integer_to_list(round(Val));
+        false -> Str
     end;
 
 to_str({abs_ref,Y,X,rel_row,rel_col}) ->
@@ -640,13 +638,6 @@ to_str({abs_ref,Y,X,abs_row,abs_col}) ->
     "$"++util2:make_b26(X)++"$"++integer_to_list(Y); 
 to_str({L,S1,O,S2,R}) ->
     to_str(L)++to_str(S1)++to_str(O)++to_str(S2)++to_str(R).
-
-%% floats only have 15 sb precision in excel?                             
-do_round(Float) when Float > 999999999999999 ->
-    Tmp = round(Float / 1000000),
-    lists:flatten(io_lib:format("~-21.10.0B",[Tmp]));
-do_round(Float) ->
-    integer_to_list(round(Float)).
 
 %% builds up 2D arrays - 1st dimension is given by "," and second by ";"
 array_to_str(Array,NoCols,_NoRows) ->
