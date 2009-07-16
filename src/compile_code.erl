@@ -7,9 +7,9 @@
 -define(NO_WARNINGS,
         ["xfl_lexer.erl", "russian_lexer.erl",
          "french_lexer.erl", "german_lexer.erl",
-         "italian_lexer.erl", "spanish_lexer.erl",
-         "portuguese_lexer.erl", "superlex.erl", 
-         "num_format_lexer.erl","cond_lexer.erl",
+          "italian_lexer.erl", "spanish_lexer.erl",
+          "portuguese_lexer.erl", "superlex.erl", 
+          "num_format_lexer.erl","cond_lexer.erl",
          "url_query_lexer.erl"]).
 
 %% Directories containg source files

@@ -51,6 +51,8 @@ read_from_excel_data(Cells, Ranges, {Sheet, Row, Col})->
     
     Res = case lists:keysearch(Key, 1, Cells) of
               false ->
+                  % If the cell is not found, search if the cell is
+                  % contained within any array formula and return that
                   Tmp = [Val || {{_Sheet,{_,R1},{_,C1},{_,R2},{_,C2}}, Val} <- Ranges,
                                 R1 =< Row, R2 >= Row, C1 =< Col, C2 >= Col ],
                   case Tmp of
@@ -110,14 +112,20 @@ excel_equal(_X, _Y) ->
     false.
 
 transform_expected(Formula) ->
-    Tmp2 = re:replace(Formula, "ERRORTYPE", "ERROR.TYPE", [{return, list}, global]),
-    Tmp3 = re:replace(Tmp2, "FINDB\\(", "FIND\\(", [{return, list}, global]),
-    Tmp4 = re:replace(Tmp3, "LEFTB\\(", "LEFT\\(", [{return, list}, global]),
-    Tmp5 = re:replace(Tmp4, "LENB\\(", "LEN\\(", [{return, list}, global]),
-    Tmp6 = re:replace(Tmp5, "MIDB\\(", "MID\\(", [{return, list}, global]),
-    Tmp7 = re:replace(Tmp6, "RIGHTB\\(", "RIGHT\\(", [{return, list}, global]),
-    Tmp8 = re:replace(Tmp7, "SEARCHB\\(", "SEARCH\\(", [{return, list}, global]),
-    Tmp8.
+    Opt = [{return, list}, global],
+    
+    Tmp2 = re:replace(Formula, "ERRORTYPE", "ERROR.TYPE", Opt),
+    Tmp3 = re:replace(Tmp2, "FINDB\\(", "FIND\\(", Opt),
+    Tmp4 = re:replace(Tmp3, "LEFTB\\(", "LEFT\\(", Opt),
+    Tmp5 = re:replace(Tmp4, "LENB\\(", "LEN\\(", Opt),
+    Tmp6 = re:replace(Tmp5, "MIDB\\(", "MID\\(", Opt),
+    Tmp7 = re:replace(Tmp6, "RIGHTB\\(", "RIGHT\\(", Opt),
+    Tmp8 = re:replace(Tmp7, "SEARCHB\\(", "SEARCH\\(", Opt),
+    Tmp8 = re:replace(Tmp7, "SEARCHB\\(", "SEARCH\\(", Opt),
+
+    % Change sheet!A1 to ../sheet/a1
+    Tmp9 = re:replace(Tmp8, "(([a-z0-9]+)!([A-Z0-9]+))","../\\2/\\3", Opt),
+    Tmp9.
 
 transform_got(Formula) ->
     % if row address, strip the column bounds (=$A169:$IV169) becomes (=169:169)
