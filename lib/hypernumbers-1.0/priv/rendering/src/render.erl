@@ -26,35 +26,39 @@ make2({Tag, Attrs, List}, Bds, Pg, Type) ->
     Start ++ [make2(X, Bds, Pg, Type) || X <- List] ++ End.
 
 make_element(Tag, Attrs, Bds, Pg, Type) when Type == static ->
-    {Bits, Val} = case lists:keyfind(id, 1, Attrs) of
-                      false  -> B = get_bit(Attrs, class),
-                                V = "",
-                                {B, V};
-                      {_, I} -> B = " id=\"" ++ I ++ "\"" 
-                                    ++ get_bit(Attrs, class),
-                                V = case lists:keyfind(I, 1, Bds) of
-                                        false      -> "";
-                                        {_, S, _R} -> get_lookup(Pg, S)
-                                    end,
-                                {B,V}
-                  end,
+    {Bits, Val} 
+        = case lists:keyfind(id, 1, Attrs) of
+              false  -> B = get_bit(Attrs, class),
+                        V = "",
+                        {B, V};
+              {_, I} -> B = " id=\"" ++ I ++ "\"" 
+                            ++ get_bit(Attrs, class),
+                        V = case lists:keyfind(I, 1, Bds) of
+                                false             -> "";
+                                {_, S, "dynamic"} -> get_warning(Pg, S);
+                                {_, S, _R}        -> get_lookup(Pg, S)
+                            end,
+                        {B,V}
+          end,
     Tag2 = atom_to_list(Tag),
     Bra = "<" ++ Tag2 ++ Bits ++ ">",
     Ket = "</" ++ Tag2 ++ ">\n",
     {Bra ++ Val, Ket};
 make_element(Tag, Attrs, Bds, Pg, Type) when Type == dynamic ->
-    {Bits, Val} = case lists:keyfind(id, 1, Attrs) of
-                      false  -> B = get_bit(Attrs, class),
-                                V = "",
-                                {B, V};
-                      {_, I} -> B = " id=\"" ++ I ++ "\"" 
-                                    ++ get_bit(Attrs, class),
-                                V = case lists:keyfind(I, 1, Bds) of
-                                        false      -> "";
-                                        {_, S, R} -> get_value(R, Pg, S)
-                                    end,
-                                {B,V}
-                  end,
+    {Bits, Val} 
+        = case lists:keyfind(id, 1, Attrs) of
+              false  -> B = get_bit(Attrs, class),
+                        V = "",
+                        {B, V};
+              {_, I} -> B = " id=\"" ++ I ++ "\"" 
+                            ++ get_bit(Attrs, class),
+                        V = case lists:keyfind(I, 1, Bds) of
+                                false            -> "";
+                                {_, S, "static"} -> get_lookup(Pg, S);
+                                {_, S, R}        -> get_value(R, Pg, S)
+                            end,
+                        {B,V}
+          end,
     Tag2 = atom_to_list(Tag),
     Bra = "<" ++ Tag2 ++ Bits ++ ">",
     Ket = "</" ++ Tag2 ++ ">\n",
@@ -65,6 +69,9 @@ get_bit(Attrs, Key) ->
         false  -> "";
         {_, I} -> " " ++ atom_to_list(Key) ++"=\"" ++ I ++ "\""
     end.
+
+get_warning(Pg, Src) -> "the dynamic source " ++ Pg ++ Src 
+                            ++ " is not being bound...".
 
 get_value("static", Pg, Src)             -> get_lookup(Pg, Src);
 get_value(R, _Pg, _Src) 

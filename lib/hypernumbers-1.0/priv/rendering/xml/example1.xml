@@ -2,7 +2,7 @@
 <!DOCTYPE renderer SYSTEM "hypernumbers.dtd">
 <renderer>
   <bindings>
-    <binding identity="someid1" source="a1"    rendertype="both"/>
+    <binding identity="someid1" source="a1"    rendertype="static"/>
     <binding identity="someid2" source="b1"    rendertype="dynamic"/>
     <binding identity="someid3" source="a2"    rendertype="both"/>
     <binding identity="someid4" source="d3:d6" rendertype="both"/>
