@@ -125,6 +125,8 @@ convert2([], Acc) -> "<!-- A Javascript Object for the libraries to use to bind 
                          ++ "<script>\nvar Bindings = {\n" 
                          ++ lists:flatten(lists:reverse(Acc)) 
                          ++ "};\n</script>";
+convert2([{_K, _V, "static"} | T], Acc) -> 
+    convert2(T, Acc);
 convert2([{K, V, _} | T], Acc) -> 
     convert2(T, ["\"" ++ K ++ ": " ++ V ++ "\",\n" | Acc]).
 
