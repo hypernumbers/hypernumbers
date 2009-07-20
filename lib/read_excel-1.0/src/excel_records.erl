@@ -27,7 +27,8 @@ parse_rec(?FORMULA, Bin, Name, _Tbl) ->
      Rest/binary>> = Bin,
     
     {Tok, TokArr} = parse_FRM_Results(Rest, Name),
-    Data = [mref(Name, Row, Col), {xf_index,XF}, {tokens, Tok}, {tokenarrays, TokArr}],
+    Data = [mref(Name, Row, Col), {xf_index,XF}, {tokens, Tok},
+            {tokenarrays, TokArr}],
     {write, tmp_cell, Data, mref(Name, Row, Col)};
 
 parse_rec(?EOF, _Bin, _Name, _Tbl) ->
@@ -66,21 +67,25 @@ parse_rec(?NAME, Bin, Name, Tbl) ->
     
     {write, tmp_names, Data};
 
-parse_rec(?DATEMODE, <<?rc_DATEMODE_WINDOWS:16/little-unsigned-integer>>, _, _) ->
+parse_rec(?DATEMODE, <<?rc_DATEMODE_WINDOWS:16/little-unsigned-integer>>,
+          _, _) ->
     {write, misc, [{index, datemode}, {value, "Windows"}]};
-parse_rec(?DATEMODE, <<?rc_DATEMODE_MACINTOSH:16/little-unsigned-integer>>, _, _) ->
+parse_rec(?DATEMODE, <<?rc_DATEMODE_MACINTOSH:16/little-unsigned-integer>>,
+          _, _) ->
     {write, misc, [{index, datemode}, {value, "Macintosh"}]};
 
 parse_rec(?EXTERNNAME2, Bin, _Name, Tbl) ->
     % Best described by Section 5.39 of excelfileformatV1-41.pdf
-    parse_externname(Bin, Tbl),
-    ok;
+    parse_externname(Bin, Tbl);
 
 parse_rec(?FONT, Bin, _Name, _Tbl) ->
     <<Height:16/little-unsigned-integer, Options:2/binary,
-     ColourIdx:16/little-unsigned-integer, FontWeight:16/little-unsigned-integer,
-     Escapement:16/little-unsigned-integer, UnderlineType:8/little-unsigned-integer,
-     FontFamily:8/little-unsigned-integer, _CharSet:8, _:8, FontName/binary>> = Bin,
+     ColourIdx:16/little-unsigned-integer,
+     FontWeight:16/little-unsigned-integer,
+     Escapement:16/little-unsigned-integer,
+     UnderlineType:8/little-unsigned-integer,
+     FontFamily:8/little-unsigned-integer, _CharSet:8, _:8,
+     FontName/binary>> = Bin,
     % First up parse the options
     OptionsCSS = parse_font_options(Options),
     % Now turn all this lot into CSS formats
@@ -141,7 +146,8 @@ parse_rec(?FONT, Bin, _Name, _Tbl) ->
     {append, tmp_fonts, [{colour_index, ColourIdx}, {css, CSS}]};
 
 parse_rec(?BOUNDSHEET, Bin, _Name, Tbl) ->
-    {_ShBOF, _Vis, _ShType, _Name2, ShName} = excel_util:get_bound_sheet(Bin, Tbl),
+    {_ShBOF, _Vis, _ShType, _Name2, ShName}
+        = excel_util:get_bound_sheet(Bin, Tbl),
     excel_util:append_sheetname(Tbl, excel_util:get_utf8(ShName)),
     ok;
 
@@ -161,10 +167,13 @@ parse_rec(?MULBLANK, Bin, Name, Tbl) ->
     write_blanks(Name, Row, FCol, LCol, XF, Tbl);
 
 parse_rec(?XF2, Bin, _Name, _Tbl) ->
-    <<FontIndex:16/little-unsigned-integer, FormatIndex:16/little-unsigned-integer,
-     XFTypeAndParent:16/little-unsigned-integer, XFAlignment:8/little-unsigned-integer,
+    <<FontIndex:16/little-unsigned-integer,
+     FormatIndex:16/little-unsigned-integer,
+     XFTypeAndParent:16/little-unsigned-integer,
+     XFAlignment:8/little-unsigned-integer,
      _XFRotation:8, _XFIndentation:8, XFFlags:8/little-unsigned-integer,
-     XFCellBorders1:32/little-unsigned-integer, XFCellBorders2:32/little-unsigned-integer,
+     XFCellBorders1:32/little-unsigned-integer,
+     XFCellBorders2:32/little-unsigned-integer,
      XFCellBorders3:16/little-unsigned-integer>> = Bin,
     
     XFType =  case (XFTypeAndParent band ?rc_XF_XF_TYPE_MASK) of
@@ -192,17 +201,17 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
             ?rc_XF_H_ALIGN_LEFT           -> ["left"];
             ?rc_XF_H_ALIGN_CENTERED       -> ["center"];
             ?rc_XF_H_ALIGN_RIGHT          -> ["right"];
-            ?rc_XF_H_ALIGN_FILLED         -> [];          % cant do fill with numbers
+            % cant do fill with numbers
+            ?rc_XF_H_ALIGN_FILLED         -> [];          
             ?rc_XF_H_ALIGN_JUSTIFIED      -> ["justify"];
-            ?rc_XF_H_ALIGN_CEN_ACROSS_SEL -> ["center"];  % not the same as Excel!
+            % not the same as Excel!
+            ?rc_XF_H_ALIGN_CEN_ACROSS_SEL -> ["center"];  
             ?rc_XF_H_ALIGN_DISTRIBUTED    -> ["justify"]
         end,
 
     % Ignore wrapping as set by the flag rc_XF_TEXT_WRAPPED
-
     % Mask off the Vertical Alignment and then divide it by 8
     % to lop of the 4 bits of binary down the line
-
     VAlignCSSbits =
         case trunc((XFAlignment band ?rc_XF_V_ALIGN_MASK)/8) of
             ?rc_XF_V_ALIGN_TOP         -> ["text-top"];
@@ -220,7 +229,9 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
             _                        -> []
         end,
 
-    TextAlignCSSbitsmerged = lists:merge([TextAlignCSSbits1, TextAlignCSSbits2]),
+    TextAlignCSSbitsmerged = lists:merge([TextAlignCSSbits1,
+                                          TextAlignCSSbits2]),
+    
     TextAlignCSS = case TextAlignCSSbitsmerged of
                        [] -> [];
                        Other -> [{'text-align',Other}]
@@ -424,7 +435,8 @@ parse_rec(?ROW2, Bin, _Name, _Tbl) ->
 parse_rec(?ARRAY2, Bin, Name, _Tbl) ->
     <<Range:6/binary, _Options:2/binary, _NotUsed:4/binary,
      RawTokens/binary>> = Bin,
-    {[{FR, LR, FC, LC}],_} = excel_util:read_cell_range_addies(1, '8bit', Range),
+    {[{FR, LR, FC, LC}],_}
+        = excel_util:read_cell_range_addies(1, '8bit', Range),
     {Tokens, Arr} = parse_FRM_Results(RawTokens, Name),
     Data = [ mref(Name, FR, FC, LR, LC), {type, array},
              {tokens,Tokens}, {tokenarrays, Arr}],
@@ -458,18 +470,20 @@ parse_rec(Other, _Bin, _Name, _Tbl) ->
                     false -> {{"undocumented record type",Other},
                               "not being processed"}
                 end,
-    {write, lacunae, [{identifier, Id}, {source, excel_records.erl}, {msg, Msg}]}.
+    {write, lacunae, [{identifier, Id}, {source, excel_records.erl},
+                      {msg, Msg}]}.
 
 not_processed() ->
     [?CALCOUNT, ?PRECISION, ?REFMODE, ?DELTA, ?ITERATION, ?PROTECT, ?PASSWORD,
-     ?HEADER, ?FOOTER, ?WINDOWPROTECT, ?VERTICALPAGEBREAKS, ?HORIZONTALPAGEBREAKS,
-     ?NOTE, ?SELECTION, ?LEFTMARGIN, ?RIGHTMARGIN, ?TOPMARGIN, ?BOTTOMMARGIN,
-     ?PRINTHEADERS, ?PRINTGRIDLINES, ?FILEPASS, ?CONTINUE, ?WINDOW1, ?BACKUP,
-     ?PANE, ?CODEPAGE, ?DCONREF, ?DEFCOLWIDTH, ?XCT, ?CRN, ?FILESHARING, ?WRITEACCESS,
-     ?UNCALCED, ?SAVERECALC, ?OBJECTPROTECT, ?COLINFO, ?GUTS, ?WSBOOL, ?GRIDSET,
-     ?HCENTRE, ?VCENTRE, ?WRITEPROT, ?COUNTRY, ?HIDEOBJ, ?SORT, ?STANDARDWIDTH,
-     ?SCL, ?SETUP, ?RSTRING, ?DBCELL, ?BOOKBOOL, ?SCENPROTECT, ?MERGEDCELLS,
-     ?BITMAP, ?PHONETIC, ?EXTSST, ?LABELRANGES, ?USESELFS, ?DSF, ?CONDFMT, ?DVAL,
+     ?HEADER, ?FOOTER, ?WINDOWPROTECT, ?VERTICALPAGEBREAKS,
+     ?HORIZONTALPAGEBREAKS, ?NOTE, ?SELECTION, ?LEFTMARGIN, ?RIGHTMARGIN,
+     ?TOPMARGIN, ?BOTTOMMARGIN, ?PRINTHEADERS, ?PRINTGRIDLINES, ?FILEPASS,
+     ?CONTINUE, ?WINDOW1, ?BACKUP, ?PANE, ?CODEPAGE, ?DCONREF, ?DEFCOLWIDTH,
+     ?XCT, ?CRN, ?FILESHARING, ?WRITEACCESS, ?UNCALCED, ?SAVERECALC,
+     ?OBJECTPROTECT, ?COLINFO, ?GUTS, ?WSBOOL, ?GRIDSET, ?HCENTRE, ?VCENTRE,
+     ?WRITEPROT, ?COUNTRY, ?HIDEOBJ, ?SORT, ?STANDARDWIDTH, ?SCL, ?SETUP,
+     ?RSTRING, ?DBCELL, ?BOOKBOOL, ?SCENPROTECT, ?MERGEDCELLS, ?BITMAP,
+     ?PHONETIC, ?EXTSST, ?LABELRANGES, ?USESELFS, ?DSF, ?CONDFMT, ?DVAL,
      ?HLINK, ?DV, ?DIMENSIONS2, ?LABEL2, ?STRING2, ?INDEX2, ?DEFAULTROWHEIGHT2,
      ?TABLEOP_2, ?WINDOW2_2, ?STYLE, ?QUICKTIP, ?SHEETLAYOUT, ?SHEETPROTECTION,
      ?RANGEPROTECTION].
@@ -574,26 +588,21 @@ parse_font_options(Bin) ->
 %% read yet
 parse_FRM_Results(<<>>, _Name) ->
     ok;
-parse_FRM_Results(Bin, Name) ->
-    <<Size:16/little-unsigned-integer,Rest/binary>>=Bin,
-    {Tks,TkArray2}=case Size of
-                       0        -> {[],[]};
-                       RPN_Size -> <<RPN:RPN_Size/binary,TkArray/binary>>=Rest,
-                                   excel_tokens:parse_tokens(RPN,Name,TkArray,[])
-                   end,
-    {Tks,TkArray2}.
+parse_FRM_Results(<<0:16/little-unsigned-integer, _Rest/binary>>, _Name) ->
+    {[], []};
+parse_FRM_Results(<<Size:16/little-unsigned-integer, Rest/binary>>, Name) ->
+    <<RPN:Size/binary, TkArray/binary>>=Rest,
+    excel_tokens:parse_tokens(RPN, Name, TkArray, []).
 
 parse_XF_RK(Bin)->
     parse_XF_RK(Bin,[]).
 
-parse_XF_RK(<<_LastColIndex:16/little-unsigned-integer>>,Residuum)->
-    lists:reverse(Residuum);
-parse_XF_RK(<<XFIndex:16/little-unsigned-integer,
-             RKValue:32/little-unsigned-integer,
-             Rest/binary>>,Residuum)->
-    Num=excel_util:parse_CRS_RK(<<RKValue:32/little-unsigned-integer>>),
-    NewResiduum=[{{xf_index,XFIndex},{value,number,Num}}|Residuum],
-    parse_XF_RK(Rest,NewResiduum).
+parse_XF_RK(<<_Col:16/little-unsigned-integer>>, Acc) ->
+    lists:reverse(Acc);
+parse_XF_RK(<<XF:16/little-unsigned-integer, RK:32/little-unsigned-integer,
+             Rest/binary>>, Acc)->
+    Num = excel_util:parse_CRS_RK(<<RK:32/little-unsigned-integer>>),
+    parse_XF_RK(Rest, [{{xf_index, XF}, {value, number, Num}} | Acc]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% These functions process composites of the main record types of           %%%
@@ -661,11 +670,10 @@ prepend_quote(String) ->
 
 write_row([],_RowIndex,_FirstColIndex,_Name,_Tbl)->
     ok;
-write_row([{{xf_index, XFIndex}, {value,number,Number}}|T], Row, FirstCol, Name, Tbl) ->
-    excel_util:write(Tbl,cell,[mref(Name, Row, FirstCol), 
-                               {xf_index,XFIndex},
-                               {value,number,Number}]),
-    write_row(T, Row, FirstCol+1, Name, Tbl).
+write_row([{{xf_index, XF}, {value,number,Num}}|T], Row, Col, Name, Tbl) ->
+    excel_util:write(Tbl,cell,[mref(Name, Row, Col), {xf_index,XF},
+                               {value,number,Num}]),
+    write_row(T, Row, Col+1, Name, Tbl).
 
 parse_externsheet(<<>>,_N,_Tbl)->
     ok;
@@ -682,25 +690,24 @@ parse_externsheet(Bin,N,Tbl)->
 %% parses external references as defined in Section 5.99.1 of 
 %% excelvileformatV1.40.pdf only covers the sheet reference used and
 %% not the URL or file part of it
-parse_externalrefs(<<_NoOfSh:16/little-unsigned-integer,Rest/binary>>,Tbl)->
-    [RawFileName|BinaryList]=get_ext_ref_names(Rest,[]),
-    Names=[binary_to_list(X) || X <- BinaryList],
-    ParsedFileName=parse_filename(RawFileName),
-    write_externalref({name,ParsedFileName},Names,Tbl).
+parse_externalrefs(<<_NoOfSh:16/little-unsigned-integer,Rest/binary>>, Tbl) ->
+    [RawFileName | BinaryList] = get_ext_ref_names(Rest, []),
+    Names = [binary_to_list(X) || X <- BinaryList],
+    ParsedFileName = parse_filename(RawFileName),
+    write_externalref({name, ParsedFileName}, Names, Tbl).
 
-write_externalref(Entry,List,Tbl)->
-    Index=excel_util:get_length(Tbl,tmp_externalbook),
-    excel_util:write(Tbl,tmp_externalbook,[{index,Index},Entry,List]).
+write_externalref(Entry,List,Tbl) ->
+    Index = excel_util:get_length(Tbl, tmp_externalbook),
+    excel_util:write(Tbl, tmp_externalbook, [{index, Index}, Entry, List]).
 
-get_ext_ref_names(<<>>,Residuum)->
-    lists:reverse(Residuum);
-get_ext_ref_names(Bin,Residuum)->
-    Return=excel_util:parse_CRS_Uni16(Bin,2),
-    {[{_Type,_String}],StringLen,_RestLen}=Return,
-    Utf8String=excel_util:get_utf8(Return),
-    StringLen2=StringLen*8,
-    <<_String2:StringLen2/little-unsigned-integer,Rest/binary>>=Bin,
-    get_ext_ref_names(Rest,[list_to_binary(Utf8String)|Residuum]).
+get_ext_ref_names(<<>>, Acc) ->
+    lists:reverse(Acc);
+get_ext_ref_names(Bin, Acc)->
+    {[{_Type,_Str}],StrLen,_Rest} = Return = excel_util:parse_CRS_Uni16(Bin, 2),
+    Utf8Str = excel_util:get_utf8(Return),
+    StrLen2=StrLen*8,
+    <<_Str2:StrLen2/little-unsigned-integer, Rest/binary>> = Bin,
+    get_ext_ref_names(Rest, [list_to_binary(Utf8Str) | Acc]).
 
 parse_filename(<<?chEncode:8/little-unsigned-integer,
                 chVolume:8/little-unsigned-integer,
@@ -725,13 +732,13 @@ parse_filename(<<?chEncode:8/little-unsigned-integer,
                 Rest/binary>>) -> "../"++snip_xls(Rest)++"/";
 parse_filename(<<?chEncode:8/little-unsigned-integer,
                 Rest/binary>>) -> "../"++snip_xls(Rest)++"/";
-parse_filename(Bin) -> "../"++binary_to_list(Bin)++"/".
+parse_filename(Bin) ->
+    "../"++binary_to_list(Bin)++"/".
 
 snip_xls(Bin)->
-    FileName=binary_to_list(Bin),
-    re:replace(FileName, ".xls$", "", [{return, list}, global]). %"
+    re:replace(binary_to_list(Bin), ".xls$", "", [{return, list}, global]).%".
 
-parse_externname(Bin,Tbl)->
+parse_externname(Bin, Tbl) ->
     % we dont care mostly but for the first 4 bits (the minioptions) and
     % we chuck the remaining 12 bits away (the discard) mostly - except
     % when we don't :(
@@ -751,7 +758,8 @@ parse_externname(Bin,Tbl)->
                     % SUPBOOK/EXTERNAME
                     EXBIdx = excel_util:get_length(Tbl, tmp_externalbook) - 1,
                     % now get all externames that match that SBidx
-                    {value, {_TableName, Tid}} = lists:keysearch(tmp_externnames, 1, Tbl),
+                    {value, {_TableName, Tid}}
+                        = lists:keysearch(tmp_externnames, 1, Tbl),
                     ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}),
                     {write, tmp_externnames,[{extbook_index, EXBIdx},
                                              {ext_index, length(ExtNameList)},
@@ -788,7 +796,7 @@ write_externname(_Name,_Tbl)->
 
 write_blanks(_Name, _Row,_FirstCol, _LastCol, <<>>, _Tbl) ->
     ok;
-write_blanks(Name, Row, FirstCol, LastCol, XF, Tbl) ->
-    <<XFId:16/little-unsigned-integer, Rest/binary>> = XF,
-    excel_util:write(Tbl,tmp_blanks,[mref(Name, Row, FirstCol), {xf_index, XFId}]),
-    write_blanks(Name, Row, FirstCol+1, LastCol, Rest, Tbl).
+write_blanks(Name, Row, FCol, LCol, XF, Tbl) ->
+    <<Id:16/little-unsigned-integer, Rest/binary>> = XF,
+    excel_util:write(Tbl, tmp_blanks, [mref(Name, Row, FCol), {xf_index, Id}]),
+    write_blanks(Name, Row, FCol+1, LCol, Rest, Tbl).

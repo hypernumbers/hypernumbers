@@ -321,61 +321,73 @@ rev_comp(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
 %% tFuncCE
 
 %% tNameX
-rev_comp(Index,[{name_xref,{tNameX,
-                            [{reference_index,Ref},{name_index,NameIdx},_Type],
+rev_comp(Index,[{name_xref,{tNameX, [{reference_index,Ref},
+                                     {name_index, NameIdx}, _Type],
                             _Ret}}|T],TokArr,Stack,Tbl) ->
-    Return = ?read(Tbl,tmp_extsheets, Ref),
-    [{_Idx, [{extbook_index, EXBIdx}, {firstsheet,FirstIdx}, _]}] = Return,
+    
+    [{_Idx, [{extbook_index, EXBIdx}, {firstsheet,FirstIdx}, _]}]
+        = ?read(Tbl,tmp_extsheets, Ref),
+
     % now work out if this EXBIdx points to the root page of the workbook
     [{_I, [Worksheet, _]}] = ?read(Tbl, tmp_externalbook, EXBIdx),
     NameVal =
         case FirstIdx of
             ?EXTERNALBOOK ->
                 case Worksheet of
-                    {this_file, expanded} ->
+                    {this_file, expanded} ->                        
                         [{_I2, [{extbook, _E},{sheetindex, _S}, {type, _},
-                                {name, LocalName}, _V]}] = ?read(Tbl,tmp_names,NameIdx),
+                                {name, LocalName}, _V]}]
+                            = ?read(Tbl,tmp_names,NameIdx),              
                         {{sheet,SheetName},_,_}=Index,
                         EscSheet=excel_util:esc_tab_name(SheetName),
                         "../"++EscSheet++"/"++LocalName;
+                    
                     {skipped, add_ins} ->
-                        % First get all the externames with the EXBindex of EXBIdx
-                        % now get the sheet name
-                        {value,{_TableName,Tid}}=lists:keysearch(tmp_externnames,1,Tbl),
+                        % First get all the externames with the 
+                        % EXBindex of EXBIdx now get the sheet name
+                        {value, {_Name, Tid}}
+                            = lists:keysearch(tmp_externnames, 1, Tbl),
                         ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}), 
-                        ExtName = get_extname(ExtNameList, NameIdx),
-                        ExtName;
+                        get_extname(ExtNameList, NameIdx);
+                    
                     _ ->
-                        % First get all the externames with the EXBindex of EXBIdx
-                        % get the cell name
+                        % First get all the externames with the 
+                        % EXBindex of EXBIdx get the cell name
                         {{sheet,S}, {row_index, R}, {col_index, C}} = Index,
                         % now get the sheet name
-                        {value,{_TableName,Tid}}=lists:keysearch(tmp_externnames,1,Tbl),
+                        {value, {_TableName, Tid}}
+                            = lists:keysearch(tmp_externnames, 1, Tbl),
                         ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}), 
                         ExtName = get_extname(ExtNameList, NameIdx),
                         % now get the file name
-                        {value,{_TableName2,Tid2}}=lists:keysearch(tmp_externalbook,1,Tbl),
+                        {value, {_TableName2, Tid2}}
+                            = lists:keysearch(tmp_externalbook, 1, Tbl),
                         Lookup = ets:lookup(Tid2, {index, EXBIdx}),
+                        
                         case Lookup of
                             [{_I, [{name, FileName}, _]}] ->
-                                Str = io_lib:format("Cell ~s on page ~s has a "++
-                                                    "reference to the name ~s"++
+                                Str = io_lib:format("Cell ~s on page ~s has a "
+                                                    "reference to the name ~s"
                                                     "on file ~s",
                                                     [test_util:rc_to_a1(R,C), S,
                                                      ExtName, FileName]),
-                                excel_util:append(Tbl, warnings, lists:flatten(Str)),
+                                excel_util:append(Tbl, warnings,
+                                                  lists:flatten(Str)),
                                 "#REF!";
                             [{_I, [{skipped, _Reason}, _]}] ->
-                                Str = io_lib:format("Cell ~s on page ~s has a "++
-                                                    "reference to the function "++
-                                                    "~s which is not implemented",
-                                                    [test_util:rc_to_a1(R,C), S, ExtName]),
-                                excel_util:append(Tbl, warnings, lists:flatten(Str)),
+                                Str = io_lib:format("Cell ~s on page ~s has a "
+                                                    "reference to the function "
+                                                    "~s which isnt implemented",
+                                                    [test_util:rc_to_a1(R,C),
+                                                     S, ExtName]),
+                                excel_util:append(Tbl, warnings,
+                                                  lists:flatten(Str)),
                                 "#REF!"
                         end
                 end
         end,
-    rev_comp(Index,T,TokArr,[{string,NameVal}|Stack],Tbl);
+    rev_comp(Index, T, TokArr, [{string, NameVal} | Stack], Tbl);
+
 %% tRef3d
 rev_comp(I,[{three_dee_ref,{tRef3d,[{reference_index,RefIdx},
                                     Ref,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->

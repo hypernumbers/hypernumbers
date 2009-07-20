@@ -115,17 +115,16 @@ parse_bin(Bin, {_, NameBin}=SubStreamName, Formula, Tables)->
     case Id of
         ?EOF   -> ok;
         _Other ->
-            
             <<Record:Size/binary, Rest2/binary>> = Rest,
             % now get the next identifier
-            % because if the next identifier is a ?CONTINUE then we want to wire
-            % the records up together
+            % because if the next identifier is a ?CONTINUE 
+            % then we want to wire the records up together
             <<NextId:16/little-unsigned-integer, _Rest3/binary>> = Rest2,
             
             {Rec, TheRest} = 
                 case {Id, NextId} of
-                    % SST CONTINUES have some funny stuff going on with the compression
-                    % of Unicode.
+                    % SST CONTINUES have some funny stuff 
+                    % going on with the compression of Unicode.
                     % See Section 5.21 of excelfileformatV1-42.pdf
                     {?SST, ?CONTINUE} ->
                         {ok, BinList, Rest4} = get_single_SST(Bin),
@@ -140,7 +139,6 @@ parse_bin(Bin, {_, NameBin}=SubStreamName, Formula, Tables)->
                 end,
 
             Name = binary_to_list(NameBin),
-            io:format("Id ~p",[Id]),
             Fla = case excel_records:parse_rec(Id, Rec, Name, Tables) of
                       {write, Table, Data, NewFormula} ->
                           excel_util:write(Tables, Table, Data),

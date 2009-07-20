@@ -160,14 +160,14 @@ fix_up_cells(Tables) ->
     
     Fun = fun(X, _Acc)->
                   
-                  {Index, [XF, {tokens, Tokens},
-                           {tokenarrays, TokenArray}]} = X,
+                  {Id, [XF, {tokens, Tok},
+                           {tokenarrays, TokArr}]} = X,
                   
-                  case excel_rev_comp:reverse_compile(Index, Tokens, TokenArray,
+                  case excel_rev_comp:reverse_compile(Id, Tok, TokArr,
                                                       Tables) of
                       {ok, dont_process} -> ok;
                       Formula ->
-                          ets:insert(CellId, [{Index, [XF, {formula, Formula}]}])
+                          ets:insert(CellId, [{Id, [XF, {formula, Formula}]}])
                   end
           end,
     ets:foldl(Fun, [], Tmp_CellId).
