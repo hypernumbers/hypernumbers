@@ -17,7 +17,7 @@
 -include("excel_supbook.hrl").
 -include("excel_externname.hrl").
 
--export([parse_rec/5, prepend_quote/1]).
+-export([parse_rec/4, prepend_quote/1]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -40,32 +40,31 @@ not_processed() ->
      ?TABLEOP_2, ?WINDOW2_2, ?STYLE, ?QUICKTIP, ?SHEETLAYOUT, ?SHEETPROTECTION,
      ?RANGEPROTECTION].
      
-
-parse_rec(?FORMULA,Bin,Name,_CurrentFormula,Tbl)->
-    % io:format("in parse_rec for FORMULA~n"),
-    <<RowIndex:16/little-unsigned-integer,
-     ColIndex:16/little-unsigned-integer,
+parse_rec(?FORMULA, Bin, Name, _Tbl) ->
+    <<Row:16/little-unsigned-integer,
+     Col:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
      _Result:64/little-unsigned-integer,
      _CalcFlag:16/little-unsigned-integer,
      _NotUsed:32/little-unsigned-integer,
-     Rest/binary>>=Bin,
-    {Tokens,TokenArrays}=parse_FRM_Results(Rest,Name),
-    excel_util:write(Tbl,tmp_cell,[{{sheet,Name},{row_index,RowIndex},
-                                    {col_index,ColIndex}},{xf_index,XFIndex},
-                                   {tokens,Tokens},{tokenarrays,TokenArrays}]),
-    NewCurrentFormula={{sheet,Name},{row_index,RowIndex},{col_index,ColIndex}},
-    {ok,NewCurrentFormula};
+     Rest/binary>> = Bin,
+    
+    {Tokens, TokenArrays} = parse_FRM_Results(Rest, Name),
+    Ref  = {{sheet, Name}, {row_index, Row}, {col_index, Col}},
+    Data = [Ref, {xf_index,XFIndex}, {tokens, Tokens}, {tokenarrays, TokenArrays}],
 
-parse_rec(?EOF, _Bin, _Name,CurrentFormula, _Tbl) ->
-    {ok, CurrentFormula};
+    {write, tmp_cell, Data, Ref};
 
-parse_rec(?EXTERNSHEET, Bin, _Name, CurrentFormula, Tbl) ->
+parse_rec(?EOF, _Bin, _Name, _Tbl) ->
+    ok;
+
+parse_rec(?EXTERNSHEET, Bin, _Name, Tbl) ->
     <<_NumRefs:16/little-unsigned-integer, R2/binary>> = Bin,
     parse_externsheet(R2, 0, Tbl),    
-    {ok, CurrentFormula};
+    ok;
 
-parse_rec(?NAME, Bin, Name, CurrentFormula, Tbl)-> % renamed DEFINEDNAME in v1.42
+% renamed DEFINEDNAME in v1.42
+parse_rec(?NAME, Bin, Name, Tbl) -> 
     <<OptionFlag:2/binary,
      KybdShortCut:8/little-unsigned-integer,
      NameLength:8/little-unsigned-integer,
@@ -79,23 +78,22 @@ parse_rec(?NAME, Bin, Name, CurrentFormula, Tbl)-> % renamed DEFINEDNAME in v1.4
      Rest/binary>> = Bin,
     parse_name(OptionFlag, KybdShortCut, NameLength, Size, SheetIndex,
                MenuTxtLen, DescTxtLen, HelpTxtLen, StatusTxtLen, Name, Rest, Tbl),
-    {ok, CurrentFormula};
+    ok;
 
-parse_rec(?DATEMODE, Bin, _Name, CurrentFormula, Tbl) ->
-    <<DateMode:16/little-unsigned-integer>> = Bin,
-    DateMode2 = case DateMode of
-                    ?rc_DATEMODE_WINDOWS   -> "Windows";
-                    ?rc_DATEMODE_MACINTOSH -> "Macintosh"
-                end,
-    excel_util:write(Tbl, misc, [{index, datemode}, {value, DateMode2}]),
-    {ok, CurrentFormula};
+parse_rec(?DATEMODE, <<Mode:16/little-unsigned-integer>>, _Name, _Tbl) ->
+    Tmp = case Mode of
+              ?rc_DATEMODE_WINDOWS -> "Windows";
+              ?rc_DATEMODE_MACINTOSH -> "Macintosh"
+          end,
+    {write, misc, [{index, datemode}, {value, Tmp}]};
 
-parse_rec(?EXTERNNAME2, Bin, _Name, CurrentFormula, Tbl) ->
+
+parse_rec(?EXTERNNAME2, Bin, _Name, Tbl) ->
     % Best described by Section 5.39 of excelfileformatV1-41.pdf
     parse_externname(Bin,Tbl),
-    {ok, CurrentFormula};
+    ok;
 
-parse_rec(?FONT,Bin,_Name,CurrentFormula,Tbl)->
+parse_rec(?FONT, Bin, _Name, _Tbl) ->
     <<Height:16/little-unsigned-integer,
      Options:2/binary,
      ColourIdx:16/little-unsigned-integer,
@@ -106,7 +104,6 @@ parse_rec(?FONT,Bin,_Name,CurrentFormula,Tbl)->
      _CharacterSet:8/little-unsigned-integer,
      _NotUsed:8/little-unsigned-integer,
      FontName/binary>>=Bin,
-    % io:format("in parse_rec for FONT~n"),
     % First up parse the options
     OptionsCSS=parse_font_options(Options),
     % Now turn all this lot into CSS formats
@@ -163,41 +160,36 @@ parse_rec(?FONT,Bin,_Name,CurrentFormula,Tbl)->
     FontFamilyCSS=[{'font-family',[FontNameCSSBits|FontFamCSSBits]}],
     CSS = lists:merge([OptionsCSS, FontWeightCSS, FontSizeCSS, VAlignCSS,
                        BorderBotStyleCSS, FontFamilyCSS]),
-    excel_util:append(Tbl,tmp_fonts,[{colour_index,ColourIdx},{css,CSS}]),
-    {ok,CurrentFormula};
+    {append, tmp_fonts, [{colour_index,ColourIdx},{css,CSS}]};
 
-parse_rec(?BOUNDSHEET,Bin,_Name,CurrentFormula,Tbl)->
-    {_ShBOF,_Vis,_ShType,_Name2,ShName}=excel_util:get_bound_sheet(Bin,Tbl),
-    excel_util:append_sheetname(Tbl,excel_util:get_utf8(ShName)),
-    {ok,CurrentFormula};
+parse_rec(?BOUNDSHEET, Bin, _Name, Tbl) ->
+    {_ShBOF, _Vis, _ShType, _Name2, ShName} = excel_util:get_bound_sheet(Bin, Tbl),
+    excel_util:append_sheetname(Tbl, excel_util:get_utf8(ShName)),
+    ok;
 
-parse_rec(?PALETTE,_Bin,_Name,CurrentFormula,Tbl)->
-    % io:format("in parse_rec for PALETTE~n"),
-    excel_util:write(Tbl,warnings,["Custom Palettes not being imported - "++
-                                   "the standard palette will be used!"]),
-    {ok,CurrentFormula};
+parse_rec(?PALETTE, _Bin, _Name, _Tbl)->
+    {write, warnings, ["Custom Palettes not being imported - "++
+                       "the standard palette will be used!"]};
 
-parse_rec(?MULRK,Bin,Name,CurrentFormula,Tbl)->
+parse_rec(?MULRK, Bin, Name, Tbl) ->
     <<RowIndex:16/little-unsigned-integer,
      FirstColIndex:16/little-unsigned-integer,
-     Rest/binary>>=Bin,
-    Tokens=parse_XF_RK(Rest),
-    write_row(Tokens,RowIndex,FirstColIndex,Name,Tbl),
-    {ok,CurrentFormula};
+     Rest/binary>> = Bin,
+    Tokens = parse_XF_RK(Rest),
+    write_row(Tokens, RowIndex, FirstColIndex, Name, Tbl),
+    ok;
 
-parse_rec(?MULBLANK,Bin,Name,CurrentFormula,Tbl)->
-    Size = size(Bin),
-    XFSize = Size-6,
-    <<RowIndex:16/little-unsigned-integer,
-     FirstColIndex:16/little-unsigned-integer,
+parse_rec(?MULBLANK, Bin, Name, Tbl) ->
+    XFSize = size(Bin)-6,
+    <<Row:16/little-unsigned-integer,
+     FirstCol:16/little-unsigned-integer,
      XFRecords:XFSize/binary,
-     LastColIndex:16/little-unsigned-integer>> = Bin,
+     LastCol:16/little-unsigned-integer>> = Bin,
     % calculate the number of XF records
-    % io:format("in parse_rec for MULBLANK~n"),
-    write_blanks(Name,RowIndex,FirstColIndex,LastColIndex,XFRecords,Tbl),
-    {ok,CurrentFormula};
+    write_blanks(Name, Row, FirstCol, LastCol, XFRecords, Tbl),
+    ok;
 
-parse_rec(?XF2,Bin,_Name,CurrentFormula,Tbl)->
+parse_rec(?XF2, Bin, _Name, _Tbl) ->
     <<FontIndex:16/little-unsigned-integer,
      FormatIndex:16/little-unsigned-integer,
      XFTypeAndParent:16/little-unsigned-integer,
@@ -348,36 +340,33 @@ parse_rec(?XF2,Bin,_Name,CurrentFormula,Tbl)->
 
     Colours2 = [{background,PatternColourIndex}],
 
-    excel_util:append(Tbl,tmp_xf,[{format_index,FormatIndex},
-                                  {type,XFType},
-                                  {parent_index,XFParentIndex},
-                                  {font_index,FontIndex},
-                                  {css,CSS},
-                                  {attributes,Attributes},
-                                  {border_colour,Colours1},
-                                  {bg_colour,Colours2}]),
-    {ok,CurrentFormula};
+    Data = [{format_index,FormatIndex},
+            {type,XFType},
+            {parent_index,XFParentIndex},
+            {font_index,FontIndex},
+            {css,CSS},
+            {attributes,Attributes},
+            {border_colour,Colours1},
+            {bg_colour,Colours2}],
+    {append, tmp_xf, Data};
 
-parse_rec(?SST, [H | T], _Name, CurrentFormula, Tbl)->
+parse_rec(?SST, [H | T], _Name, Tbl) ->
     <<_NoStringsUsed:32/little-unsigned-integer,
      NoActualStrings:32/little-unsigned-integer,
-     Rest/binary>>=H,
+     Rest/binary>> = H,
     parse_SST(0, NoActualStrings, Tbl, [Rest | T]),    
-    {ok,CurrentFormula};
+    ok;
 
-parse_rec(?LABELSST,Bin,Name,CurrentFormula,Tbl)->
-    <<RowIndex:16/little-unsigned-integer,
-     ColIndex:16/little-unsigned-integer,
+parse_rec(?LABELSST, Bin, Name, Tbl) ->
+    <<Row:16/little-unsigned-integer,
+     Col:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
      SSTIndex:32/little-unsigned-integer,
      _Rest/binary>>=Bin,
     % Now look up the string in the string table
-    String=excel_util:lookup_string(Tbl,SSTIndex),
-    excel_util:write(Tbl,cell,[{{sheet,Name},{row_index,RowIndex},
-                                {col_index,ColIndex}},
-                               {xf_index,XFIndex},{string,String}]),
-    {ok,CurrentFormula};
-
+    String = excel_util:lookup_string(Tbl, SSTIndex),
+    Ref = {{sheet, Name}, {row_index, Row}, {col_index, Col}},
+    {write, cell, [Ref, {xf_index, XFIndex}, {string, String}]};
 
 % SUPBOOK is called EXTERNALBOOK in excelfileformatv1-42.pdf
 % 
@@ -399,8 +388,7 @@ parse_rec(?LABELSST,Bin,Name,CurrentFormula,Tbl)->
 % record
 % 
 % In addition entries into the table 
-parse_rec(?SUPBOOK,Bin,_Name,CurrentFormula,Tbl)->
-    % io:format("in parse_rec for SUPBOOK~n"),
+parse_rec(?SUPBOOK, Bin, _Name, Tbl) ->
     case Bin of
         <<NoSheets:16/little-unsigned-integer,
          ?InternalReferences:16/little-unsigned-integer>> ->
@@ -420,28 +408,24 @@ parse_rec(?SUPBOOK,Bin,_Name,CurrentFormula,Tbl)->
         _ -> 
             parse_externalrefs(Bin,Tbl)
     end,
-    {ok,CurrentFormula};
+    ok;
 
-parse_rec(?BLANK2,Bin,Name,CurrentFormula,Tbl)->
-    <<RowIndex:16/little-unsigned-integer,
-     ColIndex:16/little-unsigned-integer,
-     XFIndex:16/little-unsigned-integer>> = Bin,
-    % io:format("in parse_rec for BLANK~n"),
-    excel_util:write(Tbl,tmp_blanks,[{{sheet,Name},{row_index,RowIndex},
-                                      {col_index,ColIndex}},{xf_index,XFIndex}]),
-    {ok,CurrentFormula};
+parse_rec(?BLANK2, Bin, Name, _Tbl) ->
+    <<Row:16/little-unsigned-integer,
+     Col:16/little-unsigned-integer,
+     XF:16/little-unsigned-integer>> = Bin,
+    {write, tmp_blanks, [{{sheet, Name}, {row_index, Row}, {col_index, Col}},
+                         {xf_index, XF}]};
 
-parse_rec(?NUMBER2,Bin,Name,CurrentFormula,Tbl)->
+parse_rec(?NUMBER2, Bin, Name, _Tbl) ->
     <<RowIndex:16/little-unsigned-integer,
      ColIndex:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
      Float:64/little-unsigned-float>>=Bin,
-    excel_util:write(Tbl,cell,[{{sheet,Name},{row_index,RowIndex},
-                                {col_index,ColIndex}},
-                               {xf_index,XFIndex},{value,number,Float}]),
-    {ok,CurrentFormula};
+    {write, cell, [{{sheet, Name}, {row_index,RowIndex}, {col_index, ColIndex}},
+                   {xf_index, XFIndex}, {value, number, Float}]};
 
-parse_rec(?BOOLERR2,Bin,Name,CurrentFormula,Tbl)->
+parse_rec(?BOOLERR2, Bin, Name, _Tbl) ->
     % One might think that a record called BoolErr would contain a boolean error
     % and error pertaining or obtaining in some straightforward way to Booleans
     % wouldn't one? But on no - it contains a Boolean *OR* an Error
@@ -452,7 +436,6 @@ parse_rec(?BOOLERR2,Bin,Name,CurrentFormula,Tbl)->
      BoolErr:8/little-unsigned-integer,
      Type:8/little-unsigned-integer>>=Bin,
 
-    % io:format("in parse_rec for BOOLERR2~n"),
     {ValType,Value} = case Type of
                           0 -> 
                               case BoolErr of
@@ -470,82 +453,67 @@ parse_rec(?BOOLERR2,Bin,Name,CurrentFormula,Tbl)->
                                   ?NAError      -> {error,"#N/A"}
                               end
                       end,
-    excel_util:write(Tbl,cell,[{{sheet,Name},{row_index,RowIndex},
-                                {col_index,ColIndex}},{xf_index,XFIndex},
-                               {value,ValType,Value}]),
-    {ok,CurrentFormula};
+    {write, cell, [{{sheet,Name},{row_index,RowIndex}, {col_index,ColIndex}},
+                   {xf_index,XFIndex}, {value,ValType,Value}]};
 
-parse_rec(?ROW2,Bin,_Name,CurrentFormula,Tbl)->
-    <<RowIndex:16/little-unsigned-integer,
-     FirstColIndex:16/little-unsigned-integer,
-     LastColIndex:16/little-unsigned-integer,
+parse_rec(?ROW2, Bin, _Name, _Tbl) ->
+    <<Row:16/little-unsigned-integer,
+     FirstCol:16/little-unsigned-integer,
+     LastCol:16/little-unsigned-integer,
      _Height:16/little-unsigned-integer,
      _NotUsed:16/little-unsigned-integer,
      _NotUsed2:16/little-unsigned-integer,
      _Options:16/little-unsigned-integer,
      XFRef:12/little-unsigned-integer,
-     _Discard1:4/little-unsigned-integer>>=Bin,
-    % io:format("in parse_rec for ROW2~n"),
-    excel_util:write(Tbl,tmp_rows,[{row_index,RowIndex},
-                                   {first_col,FirstColIndex},
-                                   {last_col,LastColIndex},
-                                   {format_index,XFRef}]),
-    {ok,CurrentFormula};
+     _Discard1:4/little-unsigned-integer>> = Bin,
+    {write, tmp_rows, [{row_index, Row}, {first_col, FirstCol},
+                       {last_col, LastCol}, {format_index, XFRef}]};
 
-parse_rec(?ARRAY2,Bin,Name,CurrentFormula,Tbl)->
+parse_rec(?ARRAY2, Bin, Name, _Tbl) ->
     <<Range:6/binary, % 6
      _Options:2/binary,
      _NotUsed:4/binary,
      RawTokens/binary>>=Bin,
-    % io:format("in parse_rec for ARRAY2~n"),
-    Return1=excel_util:read_cell_range_addies(1,'8bit',Range),
-    {[{FirstRow,LastRow,FirstCol,LastCol}],_}=Return1,
-    {Tokens,TokenArrays}=parse_FRM_Results(RawTokens,Name),
-    excel_util:write(Tbl,tmp_sh_arr_fml,[{{sheet,Name},{firstrow,FirstRow},
-                                          {firstcol,FirstCol},
-                                          {lastrow,LastRow},{lastcol,LastCol}},
-                                         {type,array},
-                                         {tokens,Tokens},
-                                         {tokenarrays,TokenArrays}]),
-    {ok,CurrentFormula};
+    {[{FirstRow,LastRow,FirstCol,LastCol}],_}
+        = excel_util:read_cell_range_addies(1, '8bit', Range),
+    {Tokens, Arr} = parse_FRM_Results(RawTokens, Name),
+    
+    Ref = {{sheet,Name},{firstrow,FirstRow},{firstcol,FirstCol},
+           {lastrow,LastRow},{lastcol,LastCol}},
+    {write, tmp_sh_arr_fml,[Ref, {type,array}, {tokens,Tokens}, {tokenarrays, Arr}]};
 
-parse_rec(?RK,Bin,Name,CurrentFormula,Tbl)->
+parse_rec(?RK, Bin, Name, _Tbl) ->
     <<RowIndex:16/little-unsigned-integer,
      ColIndex:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
      RKValue:32/little-unsigned-integer>>=Bin,
     RKValue2=excel_util:parse_CRS_RK(<<RKValue:32/little-unsigned-integer>>),
-    excel_util:write(Tbl,cell,[{{sheet,Name},{row_index,RowIndex},
-                                {col_index,ColIndex}},
-                               {xf_index,XFIndex},{value,number,RKValue2}]),
-    {ok,CurrentFormula};
+    {write, cell,[{{sheet,Name},{row_index,RowIndex},{col_index,ColIndex}},
+                  {xf_index,XFIndex},{value,number,RKValue2}]};
 
-parse_rec(?FORMAT2,Bin,_Name,CurrentFormula,Tbl)->
+parse_rec(?FORMAT2, Bin, _Name, _Tbl) ->
     <<FormatIndex:16/little-unsigned-integer,
      FormatBin/binary>>=Bin,
     Return=excel_util:parse_CRS_Uni16(FormatBin),
     FormatString=excel_util:get_utf8(Return),
-    excel_util:write(Tbl,tmp_formats,[{format_index,FormatIndex},
-                                      {type,unknown_as_yet},
-                                      {category,userdefined},
-                                      {format,FormatString}]),
-    {ok,CurrentFormula};
+    {write, tmp_formats, [{format_index,FormatIndex},
+                          {type,unknown_as_yet},
+                          {category,userdefined},
+                          {format,FormatString}]};
 
-parse_rec(?SHRFMLA,Bin,Name,CurrentFormula,Tbl)->
+parse_rec(?SHRFMLA, Bin, Name, _Tbl) ->
     <<Range:6/binary,
      _NotUsed:8/little-unsigned-integer,
      _NoRecords:8/little-unsigned-integer,
      Rest/binary>>=Bin,
-    % io:format("in parse_rec for SHRFLMA~n"),
     {[{FR,LR,FC,LC}],_}=excel_util:read_cell_range_addies(1,'8bit',Range),
     {Tokens,TokenArrays}=parse_FRM_Results(Rest,Name),
-    excel_util:write(Tbl,tmp_sh_arr_fml,[{{sheet,Name},{firstrow,FR},
-                                          {firstcol,FC},{lastrow,LR},
-                                          {lastcol,LC}},{type,shared},
-                                         {tokens,Tokens},{tokenarrays,TokenArrays}]),
-    {ok,CurrentFormula};
+    {write, tmp_sh_arr_fml,[{{sheet,Name},{firstrow,FR},
+                             {firstcol,FC},{lastrow,LR},
+                             {lastcol,LC}},{type,shared},
+                            {tokens,Tokens},{tokenarrays,TokenArrays}]};
 
-parse_rec(?BOF4,Bin,_Name,CurrentFormula,_Tbl)->
+parse_rec(?BOF4, Bin, _Name, _Tbl) ->
     % BOF BIFF8 Section 5.8.1 excelfileformat.pdf V1.40
     <<_BiffVsn:16/little-unsigned-integer,
      _Type:16/little-unsigned-integer,
@@ -553,12 +521,12 @@ parse_rec(?BOF4,Bin,_Name,CurrentFormula,_Tbl)->
      _BuildYr:16/little-unsigned-integer,
      _FileHist:32/little-unsigned-integer,
      _LowestVsn:32/little-unsigned-integer>>=Bin,
-    {ok,CurrentFormula};
+    ok;
 
-parse_rec(Other, _Bin, _Name, CurrentFormula, Tbl) ->
+parse_rec(Other, _Bin, _Name, Tbl) ->
     
     {Id, Msg} = case lists:member(Other, not_processed()) of
-                    true  -> {Other, "not being processed"};
+                    true  -> {"Hmm", "not being processed"};
                     false -> {{"undocumented record type",Other},
                               "not being processed"}
                 end,
@@ -566,7 +534,7 @@ parse_rec(Other, _Bin, _Name, CurrentFormula, Tbl) ->
     excel_util:write(Tbl, lacunae, [{identifier, Id},
                                     {source, excel_records.erl},
                                     {msg, Msg}]),
-    {ok, CurrentFormula}.
+    ok.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

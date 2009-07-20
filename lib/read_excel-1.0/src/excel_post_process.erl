@@ -30,8 +30,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 post_process_tables(Tables) ->
     % Excel has a number of built in formats
-    {ok,ok}=add_built_in_formats(Tables),
     % excel_util:dump(Tables),
+    ok = add_built_in_formats(Tables),
+
     type_formats(Tables),
     fix_up_externalrefs(Tables),
     fix_up_names(Tables),
@@ -40,7 +41,6 @@ post_process_tables(Tables) ->
     fix_up_formats(Tables),
     create_array_formulae(Tables),
     fix_up_sheetnames(Tables),
-    % excel_util:dump(Tables),
     ok.
 
 %% This function takes the raw format data and turns into the apppriate format
@@ -135,7 +135,7 @@ type_formats(Tables) ->
     {value,{tmp_formats, Tid}}=?k(tmp_formats, 1, Tables),
     Fun = fun(X, _Residuum) ->
                   {Idx, [{type, _Type1}, Category, {format, Fmt}]} = X,
-                  Return=format:get_src(Fmt),
+                  Return = format:get_src(Fmt),
                   {Type2, NewFmt}
                       = case Return of
                             {erlang, {Type3, _Output}} -> {Type3, Fmt};
@@ -153,19 +153,20 @@ type_formats(Tables) ->
 %% this fun reverse compiles all the tokens in the table 'tmp_cell' and
 %% then injects them into the table 'cells' which is prepopulated with
 %% all the non-formulae cell values
-fix_up_cells(Tables)->
+fix_up_cells(Tables) ->
+    
     {value, {tmp_cell, Tmp_CellId}} = ?k(tmp_cell, 1, Tables),
     {value, {cell,     CellId}}     = ?k(cell,     1, Tables),
-
+    
     Fun = fun(X, _Acc)->
-                {Index, [XF, {tokens, Tokens},
-                         {tokenarrays, TokenArray}]} = X,
+                  
+                  {Index, [XF, {tokens, Tokens},
+                           {tokenarrays, TokenArray}]} = X,
                   
                   case excel_rev_comp:reverse_compile(Index, Tokens, TokenArray,
                                                       Tables) of
-                      {ok,dont_process} ->
-                          {ok, ok};
-                      Formula           ->
+                      {ok, dont_process} -> ok;
+                      Formula ->
                           ets:insert(CellId, [{Index, [XF, {formula, Formula}]}])
                   end
           end,
@@ -174,13 +175,13 @@ fix_up_cells(Tables)->
 %% This function merges the contents of the ets table 'sheetnames' into
 %% 'tmp_externalbook'
 fix_up_externalrefs(Tables)->
+    
     {value, {tmp_externalbook, ExternalRefs}}=?k(tmp_externalbook, 1, Tables),
-    Fun=fun(X, Y) ->
-                case X of
-                    {Index, [{this_file, placeholder},[]]} -> [Index | Y];
-                    _                                     -> Y
-                end
-        end,
+    
+    Fun = fun({Id, [{this_file, placeholder},[]]}, Y) -> [Id | Y];
+             (_, Y) -> Y
+          end,
+    
     case ets:info(ExternalRefs, size) of
         0 -> ok;
         _ -> [Index] = ets:foldl(Fun, [], ExternalRefs),
@@ -199,6 +200,7 @@ fix_up_sheetnames(Tables) ->
           end,
     lists:foldl(Fun, 1, Sheetnames).
 
+
 convert_dates(Tables)->
     {value,{cell, Tid1}}       = ?k(cell,        1, Tables),
     {value,{tmp_xf, Tid2}}     = ?k(tmp_xf,      1, Tables),
@@ -208,7 +210,7 @@ convert_dates(Tables)->
     % of the number from 'number' to 'date'
     Fun=fun(X, _Acc) ->
                 {Index, [{xf_index, XF}, Body]} = X,
-                XFVal = ets:lookup(Tid2,{index ,XF}),
+                XFVal = ets:lookup(Tid2, {index ,XF}),
                 [{_, [{format_index, Idx}, _, _, _, _, _, _, _]}] = XFVal,
                 Format = ets:lookup(Tid3, {format_index, Idx}),
                 [{_, [{type, Type}, _, _]}] = Format,
@@ -548,6 +550,5 @@ add_built_in_formats(Tables) ->
           [{format_index,49}, {type,string}, {category,text},       {format,"@"}]],
          Fun = fun(Record,[]) -> ?write(Tables,tmp_formats,Record), [] end,
          []=lists:foldl(Fun,[],L),
-         %io:format("in excel:add_built_in_formats All built in formats added!~n"),
-         {ok,ok}.
+         ok.
 

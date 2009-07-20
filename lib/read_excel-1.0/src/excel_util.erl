@@ -47,22 +47,23 @@ dump_DEBUG(Tables)        -> dump(Tables).
 dump([])-> io:format("All tables dumped~n");
 dump([{Table,Tid}|T])->
     case Table of
-        % cell             -> dump2({Table,Tid});
-        % array_formulae   -> dump2({Table,Tid});
-        % formats          -> dump2({Table,Tid});
-        % names            -> dump2({Table,Tid}); 
+        cell             -> dump2({Table,Tid});
+        array_formulae   -> dump2({Table,Tid});
+        formats          -> dump2({Table,Tid});
+        names            -> dump2({Table,Tid}); 
         warnings           -> dump2({Table,Tid});
-        % lacunaue         -> dump2({Table,Tid});
-        % misc             -> dump2({Table,Tid});
-        % sheetnames       -> dump2({Table,Tid});
-        % tmp_cell         -> dump2({Table,Tid});
-        % tmp_xf           -> dump2({Table,Tid});
-        % tmp_colours      -> dump2({Table,Tid});
-        % tmp_names        -> dump2({Table,Tid});
-        % tmp_sheetnames   -> dump2({Table,Tid});
-        % tmp_extsheets    -> dump2({Table,Tid});
-        % tmp_externalbook -> dump2({Table,Tid});
-        % tmp_externnames  -> dump2({Table,Tid});
+        lacunaue         -> dump2({Table,Tid});
+        misc             -> dump2({Table,Tid});
+        sheetnames       -> dump2({Table,Tid});
+        tmp_cell         -> dump2({Table,Tid});
+        tmp_xf           -> dump2({Table,Tid});
+        tmp_colours      -> dump2({Table,Tid});
+        tmp_names        -> dump2({Table,Tid});
+        tmp_formats      -> dump2({Table,Tid});
+        tmp_sheetnames   -> dump2({Table,Tid});
+        tmp_extsheets    -> dump2({Table,Tid});
+        tmp_externalbook -> dump2({Table,Tid});
+        tmp_externnames  -> dump2({Table,Tid});
         _       -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
     end,
     dump(T).
