@@ -140,6 +140,7 @@ parse_bin(Bin, {_, NameBin}=SubStreamName, Formula, Tables)->
                 end,
 
             Name = binary_to_list(NameBin),
+            io:format("Id ~p",[Id]),
             Fla = case excel_records:parse_rec(Id, Rec, Name, Tables) of
                       {write, Table, Data, NewFormula} ->
                           excel_util:write(Tables, Table, Data),
