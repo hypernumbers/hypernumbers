@@ -78,7 +78,8 @@ read_excel(Directory, SAT, SSAT, SectorSize, ShortSectorSize,
     %
     
     % First parse the 'Workbook Globals SubStream'
-    parse_bin(Bin, {'utf-8',<<"Workbook Globals SubStream">>}, no_formula, Tables),
+    WorkBook = {'utf-8',<<"Workbook Globals SubStream">>},
+    parse_bin(Bin, WorkBook, no_formula, Tables),
     
     % Now parse all the 'Sheet Substeams'
     [ parse_substream(SubSID, SubLoc, X, Directory, SAT, SSAT, SectorSize,
@@ -139,6 +140,7 @@ parse_bin(Bin, {_, NameBin}=SubStreamName, Formula, Tables)->
                 end,
 
             Name = binary_to_list(NameBin),
+
             Fla = case excel_records:parse_rec(Id, Rec, Name, Tables) of
                       {write, Table, Data, NewFormula} ->
                           excel_util:write(Tables, Table, Data),
@@ -175,8 +177,8 @@ get_single_record(_Id, Bin, Acc) ->
 get_single_SST(Bin)->
     get_single_SST(Bin,[]).
 
-get_single_SST(<<Id:16/little-unsigned-integer, Rest/binary>>, Acc)
-  when Id =:= ?SST orelse Id =:= ?CONTINUE ->        
+get_single_SST(<<Rec:16/little-unsigned-integer, Rest/binary>>, Acc)
+  when Rec =:= ?SST orelse Rec =:= ?CONTINUE ->
     <<Size:16/little-unsigned-integer, Rest2/binary>> = Rest,
     <<Record:Size/binary, Rest3/binary>> = Rest2,
     get_single_SST(Rest3, [Record | Acc]);

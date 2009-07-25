@@ -73,19 +73,6 @@ dump2({Table,Tid}) ->
     Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Table,X]) end,
     ets:foldl(Fun,[],Tid).
 
-%dump3({Table,Tid}) ->
-%    io:format("~nDumping table: ~p~n",[Table]),
-%    Fun = fun({I,X},_Y) -> io:format("~p: ~p ~p~n",[Table, I, bodge(X)]) end,
-%    ets:foldl(Fun,[],Tid).
-
-%% Make Microsoft URL's printable
-%% TODO: fix me (duh!)
-%bodge(List) -> bodge(List, []).
-
-%bodge([], Acc)                  -> lists:reverse(Acc);
-%bodge([H | T], Acc) when H < 32 -> bodge(T, Acc);
-%bodge([H | T], Acc)             -> bodge(T, [H | Acc]).
-
 get_SIDs(ParsedSAT,SID)->
     get_SIDs(ParsedSAT,SID,[]).
 
@@ -181,43 +168,44 @@ parse_CRS_Uni16(Bin, IndexSize)->
 
     LenSize = IndexSize * 8,
 
-    <<Len:LenSize/little-unsigned-integer,
-     NFlags:8/little-unsigned-integer,
+    <<Len:LenSize/little-unsigned-integer, NFlags:8/little-unsigned-integer,
      Rest/binary>> = Bin,
     
     {LenStr, Encoding, BinLen1,
      {RICH_TEXT, LenRichText, _LenRichTextIdx},
      {ASIAN, LenAsian, _LenAsianIdx}, Rest3}
         = get_bits_CRS_Uni16(Len, IndexSize, Rest, NFlags),
-    
-    BinLen2 = erlang:size(Bin),
 
+    io:format("LenStr ~p Len ~p Rest3 ~p~n",
+              [LenStr, Len, erlang:size(Rest3)]),
     % Now we need to parse the rest of the binary
     <<String:LenStr/binary, Rest4/binary>> = Rest3,
-    
-    List1 = [{Encoding, String}],
-    case RICH_TEXT of
-        match when erlang:size(Rest4) > LenRichText ->
-            <<RichText:LenRichText/binary, Rest5/binary>> = Rest4,
-            List2 = [{richtext, RichText} | List1];
-        _ ->
-            Rest5 = Rest4,
-            List2 = List1
-    end,
-    
-    case ASIAN of
-        match ->
-            <<Asian:LenAsian/binary>> = Rest5,
-            List3 = [{asian, Asian} | List2];
-        no_match ->
-            List3 = List2
-    end,
-    {List3, BinLen1, BinLen2}.
 
-get_len_CRS_Uni16(Len,IndexSize,Bin,Flags)->
+    List = get_list({RICH_TEXT, LenRichText}, {ASIAN, LenAsian},
+                    Rest4, [{Encoding, String}]),
+
+    BinLen2 = erlang:size(Bin),
+    {List, BinLen1, BinLen2}.
+
+get_list(_, _, <<>>, Acc) ->
+    Acc;
+get_list({match, Len}, {no_match, _}, Bin, Acc) ->
+    <<RT:Len/binary, _/binary>> = Bin,
+    [{richtext, RT} | Acc];
+get_list({no_match, _}, {match, Len}, Bin, Acc) ->
+    <<AS:Len/binary, _/binary>> = Bin,
+    [{asian, AS} | Acc];
+get_list({match, Len1}, {match, Len2}, Bin, Acc) ->
+    <<RT:Len1/binary, AS:Len2/binary, _/binary>> = Bin,
+    [{richtext, RT}, {asian, AS} | Acc];
+get_list(_, _, _Bin, Acc) ->
+    Acc.
+
+get_len_CRS_Uni16(Len, IndexSize, Bin, Flags) ->
     {_LenStr,_Encoding,BinLen,
      {_RICH_TEXT,_LenRichText,_LenRichTextIdx},
-     {_ASIAN,_LenAs,_LenAIdx},_Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Bin,Flags),
+     {_ASIAN,_LenAs,_LenAIdx},_Rest3}
+        = get_bits_CRS_Uni16(Len,IndexSize,Bin,Flags),
     BinLen.
 
 get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->

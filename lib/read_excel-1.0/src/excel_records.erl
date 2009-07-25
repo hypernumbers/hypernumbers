@@ -11,8 +11,10 @@
 -include("excel_errors.hrl").
 -include("excel_supbook.hrl").
 -include("excel_externname.hrl").
+-include("excel_com_rec_subs.hrl").
 
 -export([ parse_rec/4 ]).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -20,16 +22,17 @@
 %%% BIFF8/BIFF8X formats as described in Section 5.1 of the                  %%%
 %%% excelfileformat.pdf (V1.40)                                              %%%
 %%%                                                                          %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_rec(?FORMULA, Bin, Name, _Tbl) ->
     <<Row:16/little-unsigned-integer, Col:16/little-unsigned-integer,
      XF:16/little-unsigned-integer,   _Result:64, _CalcFlag:16, _NotUsed:32,
      Rest/binary>> = Bin,
     
     {Tok, TokArr} = parse_FRM_Results(Rest, Name),
-    Data = [mref(Name, Row, Col), {xf_index,XF}, {tokens, Tok},
-            {tokenarrays, TokArr}],
-    {write, tmp_cell, Data, mref(Name, Row, Col)};
+    {write, tmp_cell, [mref(Name, Row, Col),
+                       {xf_index,XF},
+                       {tokens, Tok},
+                       {tokenarrays, TokArr}], mref(Name, Row, Col)};
 
 parse_rec(?EOF, _Bin, _Name, _Tbl) ->
     ok;
@@ -56,16 +59,20 @@ parse_rec(?NAME, Bin, Name, Tbl) ->
      _MenuTxt:8, _DescTxt:8, _HelpTxt:8, _StatusTxt:8, Rest/binary>> = Bin,
 
     <<_Options:1/binary, NameName:Len/binary, Rest2/binary>>=Rest,
-    Tokens = binary_to_list(Rest2),
-    NLen = length(Tokens),
-    {RPNTokens, _Arr} = parse_FRM_Results(<<NLen:16/little,Rest2/binary>>, Name),
+
+    NLen = length(binary_to_list(Rest2)),   
+    {Tok, _Arr} = parse_FRM_Results(<<NLen:16/little,Rest2/binary>>, Name),
     Scope = case SheetId of 0 -> global; _ -> local end,
-    Id = excel_util:get_length(Tbl,tmp_names),
+
+    Id = excel_util:get_length(Tbl, tmp_names),
     ExtBookId = excel_util:get_length(Tbl, tmp_externalbook) - 1,
-    Data = [{index,Id}, {extbook,ExtBookId}, {sheetindex,SheetId},
-            {type,Scope}, {name,binary_to_list(NameName)}, {rpn,RPNTokens}],
     
-    {write, tmp_names, Data};
+    {write, tmp_names, [{index, Id},
+                        {extbook, ExtBookId},
+                        {sheetindex, SheetId},
+                        {type, Scope},
+                        {name, binary_to_list(NameName)},
+                        {rpn, Tok}]};
 
 parse_rec(?DATEMODE, <<?rc_DATEMODE_WINDOWS:16/little-unsigned-integer>>,
           _, _) ->
@@ -233,7 +240,7 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
                                           TextAlignCSSbits2]),
     
     TextAlignCSS = case TextAlignCSSbitsmerged of
-                       [] -> [];
+                       []    -> [];
                        Other -> [{'text-align',Other}]
                    end,
 
@@ -292,22 +299,18 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
     BottomLineStyleCSS = get_style("bottom", trunc(BottomLineStyleBits)),
 
     % now punch out the colour indices
-    <<_Diagonal:2,
-     RightColourIndex:7/little-unsigned-integer,
+    <<_Diagonal:2, RightColourIndex:7/little-unsigned-integer,
      LeftColourIndex:7/little-unsigned-integer,
      _Bits:16>> = <<XFCellBorders1:32>>,
 
     % now get more indices
-    <<_FillPattern:6/little-unsigned-integer,
-     _Skip:1,
-     _DiagonalLineStyle:4,
-     _DiagonalColourIndex:7/little-unsigned-integer,
+    <<_FillPattern:6/little-unsigned-integer, _Skip:1,
+     _DiagonalLineStyle:4, _DiagonalColourIndex:7/little-unsigned-integer,
      BottomColourIndex:7/little-unsigned-integer,
      TopColourIndex:7/little-unsigned-integer>> = <<XFCellBorders2:32>>,
 
     % now get the last of the indices
-    <<_Skip2:2,
-     _PatternBackgroundColourIndex:7/little-unsigned-integer,
+    <<_Skip2:2, _PatternBackgroundColourIndex:7/little-unsigned-integer,
      PatternColourIndex:7/little-unsigned-integer>> = <<XFCellBorders3:16>>,
 
     CSS = lists:merge([VAlignCSS, TextAlignCSS, LeftLineStyleCSS,
@@ -321,19 +324,18 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
 
     Colours2 = [{background,PatternColourIndex}],
 
-    Data = [{format_index,FormatIndex},
-            {type,XFType},
-            {parent_index,XFParentIndex},
-            {font_index,FontIndex},
-            {css,CSS},
-            {attributes,Attributes},
-            {border_colour,Colours1},
-            {bg_colour,Colours2}],
-    
-    {append, tmp_xf, Data};
+    {append, tmp_xf, [{format_index, FormatIndex},
+                      {type, XFType},
+                      {parent_index, XFParentIndex},
+                      {font_index, FontIndex},
+                      {css, CSS},
+                      {attributes, Attributes},
+                      {border_colour, Colours1},
+                      {bg_colour, Colours2}]};
 
 parse_rec(?SST, [H | T], _Name, Tbl) ->
-    <<_Used:32, StringCount:32/little-unsigned-integer, Rest/binary>> = H,
+    <<_Used:32/little-unsigned-integer,
+     StringCount:32/little-unsigned-integer, Rest/binary>> = H,
     parse_SST(0, StringCount, Tbl, [Rest | T]);
 
 parse_rec(?LABELSST, Bin, Name, Tbl) ->
@@ -404,33 +406,36 @@ parse_rec(?BOOLERR2, Bin, Name, _Tbl) ->
      XF:16/little-unsigned-integer,   BoolErr:8/little-unsigned-integer,
      Type:8/little-unsigned-integer>>=Bin,
 
-    {ValType,Value} = case Type of
-                          0 -> 
-                              case BoolErr of
-                                  0 -> {boolean,false};
-                                  1 -> {boolean,true}
-                              end;
-                          1 ->
-                              case BoolErr of
-                                  ?NullError    -> {error,"#NULL!"};
-                                  ?DivZeroError -> {error,"#DIV/0!"};
-                                  ?ValueError   -> {error,"#VALUE!"};
-                                  ?RefError     -> {error,"#REF!"};
-                                  ?NameError    -> {error,"#NAME?"};
-                                  ?NumError     -> {error,"#NUM!"};
-                                  ?NAError      -> {error,"#N/A"}
-                              end
-                      end,
-    {write, cell, [mref(Name, Row, Col), {xf_index, XF}, {value,ValType,Value}]};
+    {ValType, Val} = case Type of
+                         0 -> 
+                             case BoolErr of
+                                 0 -> {boolean,false};
+                                 1 -> {boolean,true}
+                             end;
+                         1 ->
+                             case BoolErr of
+                                 ?NullError    -> {error,"#NULL!"};
+                                 ?DivZeroError -> {error,"#DIV/0!"};
+                                 ?ValueError   -> {error,"#VALUE!"};
+                                 ?RefError     -> {error,"#REF!"};
+                                 ?NameError    -> {error,"#NAME?"};
+                                 ?NumError     -> {error,"#NUM!"};
+                                 ?NAError      -> {error,"#N/A"}
+                             end
+                     end,
+    {write, cell, [mref(Name, Row, Col),
+                   {xf_index, XF},
+                   {value, ValType, Val}]};
 
 parse_rec(?ROW2, Bin, _Name, _Tbl) ->
     <<Row:16/little-unsigned-integer, FCol:16/little-unsigned-integer,
      LCol:16/little-unsigned-integer, _Height:16, _NotUsed:16,
      _NotUsed2:16, _Options:16, XFRef:12/little-unsigned-integer,
      _Discard1:4/little-unsigned-integer>> = Bin,
-    Data = [{row_index, Row}, {first_col, FCol},
-            {last_col, LCol}, {format_index, XFRef}],
-    {write, tmp_rows, Data};
+    {write, tmp_rows, [{row_index, Row},
+                       {first_col, FCol},
+                       {last_col, LCol},
+                       {format_index, XFRef}]};
 
 parse_rec(?ARRAY2, Bin, Name, _Tbl) ->
     <<Range:6/binary, _Options:2/binary, _NotUsed:4/binary,
@@ -438,39 +443,45 @@ parse_rec(?ARRAY2, Bin, Name, _Tbl) ->
     {[{FR, LR, FC, LC}],_}
         = excel_util:read_cell_range_addies(1, '8bit', Range),
     {Tokens, Arr} = parse_FRM_Results(RawTokens, Name),
-    Data = [ mref(Name, FR, FC, LR, LC), {type, array},
-             {tokens,Tokens}, {tokenarrays, Arr}],
-    {write, tmp_sh_arr_fml, Data};
+    {write, tmp_sh_arr_fml, [mref(Name, FR, FC, LR, LC),
+                             {type, array},
+                             {tokens,Tokens},
+                             {tokenarrays, Arr}]};
 
 parse_rec(?RK, Bin, Name, _Tbl) ->
     <<Row:16/little-unsigned-integer, Col:16/little-unsigned-integer,
      XF:16/little-unsigned-integer, RK:32/little-unsigned-integer>>=Bin,
     RK2 = excel_util:parse_CRS_RK(<<RK:32/little-unsigned-integer>>),
-    {write, cell, [mref(Name, Row, Col), {xf_index,XF}, {value, number, RK2}]};
+    {write, cell, [mref(Name, Row, Col),
+                   {xf_index,XF},
+                   {value, number, RK2}]};
 
 parse_rec(?FORMAT2, Bin, _Name, _Tbl) ->
     <<FormatId:16/little-unsigned-integer, FormatBin/binary>> = Bin,
     FormatStr = excel_util:get_utf8(excel_util:parse_CRS_Uni16(FormatBin)),
-    Data = [{format_index, FormatId}, {type, unknown_as_yet},
-            {category, userdefined},  {format, FormatStr}],
-    {write, tmp_formats, Data};
+    {write, tmp_formats, [{format_index, FormatId},
+                          {type, unknown_as_yet},
+                          {category, userdefined},
+                          {format, FormatStr}]};
 
 parse_rec(?SHRFMLA, Bin, Name, _Tbl) ->
     <<Range:6/binary, _NotUsed:8, _NoRecords:8, Rest/binary>>=Bin,
     {[{FR,LR,FC,LC}],_}=excel_util:read_cell_range_addies(1, '8bit', Range),
     {Tok, TokArr} = parse_FRM_Results(Rest,Name),
-    Data = [mref(Name, FR, FC, LR, LC), {type, shared},
-            {tokens, Tok}, {tokenarrays, TokArr}],
-    {write, tmp_sh_arr_fml, Data};
+    {write, tmp_sh_arr_fml, [mref(Name, FR, FC, LR, LC),
+                             {type, shared},
+                             {tokens, Tok},
+                             {tokenarrays, TokArr}]};
 
 parse_rec(Other, _Bin, _Name, _Tbl) ->
     
     {Id, Msg} = case lists:member(Other, not_processed()) of
-                    true  -> {"Hmm", "not being processed"};
+                    true  -> {Other, "not being processed"};
                     false -> {{"undocumented record type",Other},
                               "not being processed"}
                 end,
-    {write, lacunae, [{identifier, Id}, {source, excel_records.erl},
+    {write, lacunae, [{identifier, Id},
+                      {source, excel_records.erl},
                       {msg, Msg}]}.
 
 not_processed() ->
@@ -588,11 +599,15 @@ parse_font_options(Bin) ->
 %% read yet
 parse_FRM_Results(<<>>, _Name) ->
     ok;
-parse_FRM_Results(<<0:16/little-unsigned-integer, _Rest/binary>>, _Name) ->
-    {[], []};
+%parse_FRM_Results(<<0:16/little-unsigned-integer, _Rest/binary>>, _Name) ->
+%    {[], []};
 parse_FRM_Results(<<Size:16/little-unsigned-integer, Rest/binary>>, Name) ->
-    <<RPN:Size/binary, TkArray/binary>>=Rest,
-    excel_tokens:parse_tokens(RPN, Name, TkArray, []).
+    case Size of
+        0 -> {[], []};
+        _ -> 
+            <<RPN:Size/binary, TkArray/binary>>=Rest,
+            excel_tokens:parse_tokens(RPN, Name, TkArray, [])
+    end.
 
 parse_XF_RK(Bin)->
     parse_XF_RK(Bin,[]).
@@ -610,53 +625,124 @@ parse_XF_RK(<<XF:16/little-unsigned-integer, RK:32/little-unsigned-integer,
 %%% substructures of Section 2.5                                             %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parse_SST(NoOfStrings, NoOfStrings, _Tbl, _)->
+parse_SST(NoOfStrings, NoOfStrings, _Tbl, _) ->
     ok;
 
-parse_SST(StringNo, NoOfStrings, Tbl, [BinHead | BinTail])->
+parse_SST(StringNo, NoOfStrings, Tbl, [<<>> | T]) ->
+    parse_SST(StringNo, NoOfStrings, Tbl, T);
+                                                          
+parse_SST(StringNo, NoOfStrings, Tbl, [H | T]) ->
+
+    % Estimate the size of the string record
+    {Pre, {C,M}, Post} = Size = binary_size(H),
+    BinSize = Pre + (C * M) + Post,
+
+    {NewHead, NewTail, StringRec} = extract_sst(BinSize, Size, H, T),
+    {_PreFlags, String, _PostFlags} = StringRec,
+
+    Str = prepend_quote(build_string(String)),    
+    excel_util:write(Tbl, tmp_strings, [{index,  StringNo}, {string, Str}]),
     
-    BinLen1 = length(binary_to_list(BinHead)),
-    <<BinLen2:16/little-unsigned-integer, _Rest/binary>> = BinHead,
-    % This clause handles the case where a record falls over a continuation
-    % if it does it rejigs parse_SST to move down the Binary List
-    % 
-    % This is described in Section 5.21 of excelfileformatV1-42.pdf
-    if
-        ( BinLen1 > BinLen2 ) ->
-            NewBinHead = BinHead,
-            NewBinTail = BinTail,
-            ParseBin = BinHead;
-        
-        ( BinLen1 == BinLen2 ) ->
-            case BinTail of
-                [] -> 
-                    H1 = [],
-                    T1 = [];
-                _Other -> 
-                    [H1|T1] = BinTail
-            end,
-            NewBinTail = T1,
-            ParseBin = BinHead,
-            NewBinHead = list_to_binary([ParseBin, H1]);
-        (BinLen1 < BinLen2) ->
-            ExtLen = (BinLen2 - BinLen1),
-            [H2 | T2] = BinTail,
-            % remember to discard the 8 byte unicode flag
-            % This is a BIG PROBLEM see Section 5.21 of excelfileformatV1-43.pdf
-            % Don't know how to trigger it thought...
-            <<_Bits:1/binary, Ext:ExtLen/binary, NewBinHeadPart/binary>> = H2,
-            NewBinTail = T2,
-            ParseBin   = list_to_binary([BinHead, Ext]),            
-            NewBinHead = list_to_binary([ParseBin, NewBinHeadPart])
-    end,
+    %BinLen = 8 * StrLen2,
+    %<<_:BinLen/little-unsigned-integer, Rest/binary>> = Strings,
+    parse_SST(StringNo+1, NoOfStrings, Tbl, [NewHead | NewTail]).
+
+build_string({'uni16-8', Str}) ->
+    xmerl_ucs:to_utf8(binary_to_list(Str));
+build_string({'uni16-16', Str}) ->
+    xmerl_ucs:to_utf8(xmerl_ucs:from_utf16le(binary_to_list(Str)));
+
+build_string(List) when is_list(List) ->
+    lists:flatten(build_string(List, [])).
+
+build_string([], Acc) ->
+    Acc;
+build_string([H|T], Acc) ->
+    build_string(T, [build_string(H) | Acc]).
+
+%% estimates full size(bytes) of binary SST record, including flags and options
+%% this will change if overflows SST, but is safe to use to check
+%% if it will overflow
+binary_size(Bin) ->
     
-    {_, StringLen, _RestLen} = Return = excel_util:parse_CRS_Uni16(ParseBin, 2),
-    String = excel_util:get_utf8(Return),
-    BinLen = 8 * StringLen,
-    <<_String2:BinLen/little-unsigned-integer, Rest/binary>> = NewBinHead,
-    excel_util:write(Tbl, tmp_strings, [{index,  StringNo},
-                                        {string, prepend_quote(String)}]),
-    parse_SST(StringNo+1, NoOfStrings, Tbl, [ Rest | NewBinTail]).
+    <<Chars:16/little-unsigned-integer,
+     Flags:8/little-unsigned-integer,
+     Rest/binary>> = Bin,
+    
+    {RTFlagSize, RTRecSize, Rest2}
+        = flag(rich_text, check_flags(Flags, ?CRS_UNI16_RICH_TEXT), Rest),
+    {ASNFlagSize, ASNRecSize, _Rest3}
+        = flag(asian, check_flags(Flags, ?CRS_UNI16_ASIAN), Rest2),
+    
+    % PreHeader Size
+    {(2 + 1 + RTFlagSize + ASNFlagSize),
+     % String Size
+     {Chars, char_size(Flags)},
+     % PostRecords Size
+     RTRecSize + ASNRecSize}.
+
+flag(rich_text, true, <<Len:16/little-unsigned-integer, Rest/binary>>) ->
+    {2, Len*4, Rest};
+flag(asian, true, <<Len:32/little-unsigned-integer, Rest/binary>>) ->
+    {4, Len, Rest};
+flag(_Type, _, Bin) ->
+    {0, 0, Bin}.
+
+encoding(1) ->
+    'uni16-8';
+encoding(2) ->
+    'uni16-16'.
+
+% string is contained within first sst record
+extract_sst(BinSize, {Pre, {Chars, Mult}, Post}, H, T)
+  when erlang:size(H) >= BinSize ->
+    Size = Chars * Mult,
+    <<Flags:Pre/binary, StringRecord:Size/binary,
+     OptsRecords:Post/binary, Rest/binary>> = H,
+    {Rest, T, {Flags, {encoding(Mult), StringRecord}, OptsRecords}};
+
+% string overflows to next sst
+extract_sst(_BinSize, {Pre, {Chars, Mult}, Post}, H, [First | T]) ->
+   
+    % Read the last bytes off the first record
+    <<PreFlags:Pre/binary, Rest/binary>> = H,
+    CharsRead = erlang:size(Rest) / Mult,
+
+    % Read whats left to read (could be over multiple records)
+    {StrChars, Left, Tail} =
+        read_chars(erlang:trunc(Chars - CharsRead),
+                   [{encoding(Mult), Rest}], [First | T]),
+
+    % Read any extra data appended
+    <<PostRecords:Post/binary, Left2/binary>> = Left,
+
+    Str = {PreFlags, StrChars, PostRecords},
+    {Left2, Tail, Str}.
+
+char_size(Flags) ->
+    case check_flags(Flags, ?CRS_UNI16_UNCOMPRESSED) of
+        true  -> 2;
+        false -> 1
+    end.
+
+read_chars(ToRead, Acc, [H | T]) ->
+    <<Flags:8/little-unsigned-integer, Rest/binary>> = H,
+    CharSize = char_size(Flags),
+    case ToRead > erlang:size(Rest) of
+        true ->
+            read_chars(erlang:trunc(ToRead - (erlang:size(Rest) / CharSize)),
+                       [{encoding(CharSize), Rest} | Acc], T);
+        false ->
+            Reading = erlang:trunc(CharSize * ToRead),
+            <<Str:Reading/binary, Left/binary>> = Rest,
+            {[{encoding(CharSize), Str} | Acc], Left, T}
+    end.
+
+check_flags(NFlags,Flag)->
+    case NFlags band Flag of
+        Flag -> true;
+        _    -> false
+    end.
 
 %% This is nasty, sure excel stores this data somewhere?
 prepend_quote(String) ->

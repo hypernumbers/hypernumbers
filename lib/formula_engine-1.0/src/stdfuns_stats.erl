@@ -559,6 +559,7 @@ varp(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     varp1(Nums).
 varp1(Nums) ->
+    io:format("~p~n",[stdevp1(Nums)]),
     math:pow(stdevp1(Nums), 2).
 
 varpa(V1) ->
