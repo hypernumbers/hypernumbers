@@ -176,8 +176,6 @@ parse_CRS_Uni16(Bin, IndexSize)->
      {ASIAN, LenAsian, _LenAsianIdx}, Rest3}
         = get_bits_CRS_Uni16(Len, IndexSize, Rest, NFlags),
 
-    io:format("LenStr ~p Len ~p Rest3 ~p~n",
-              [LenStr, Len, erlang:size(Rest3)]),
     % Now we need to parse the rest of the binary
     <<String:LenStr/binary, Rest4/binary>> = Rest3,
 
