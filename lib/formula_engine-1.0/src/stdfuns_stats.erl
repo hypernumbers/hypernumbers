@@ -516,7 +516,7 @@ stdevp(V1) ->
     end,
     stdevp1(Nums).
 stdevp1(Nums) ->
-    math:sqrt(devsq1(Nums) / (length(Nums) - 1)).
+    math:sqrt(devsq1(Nums) / length(Nums)).
 
 stdevpa(V1) ->
 	Rules=[ignore_strings,cast_bools,ignore_blanks,ignore_dates],
