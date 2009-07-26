@@ -97,6 +97,8 @@
          sumx2my2/1,
          sumx2py2/1,
          sumxmy2/1,
+         sumproduct/1,
+         sumsq/1,
 
          %% Trigonometry
          sin/1,
@@ -743,6 +745,16 @@ get_roman4(["3"]) -> "MMM".
 
 
 %%% Summation ~~~~~
+
+sumsq(Vs) ->
+    Flatvs = ?flatten_all(Vs),
+    Nums = ?numbers([0|Flatvs], [ignore_strings, ignore_bools,
+                                 ignore_dates, cast_blanks]),
+    sum([X * X || X <- Nums]).
+
+sumproduct(Vs) ->
+    product1(Vs).
+
 
 %% @todo not Excel 97 - no test suite
 seriessum([K, N, M, Coeffs]) ->
