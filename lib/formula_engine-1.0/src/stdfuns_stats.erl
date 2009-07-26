@@ -47,7 +47,7 @@
          gammadist/1,
          %%gammainv/1,
          %%gammaln/1,
-         %%geomean/1,
+         geomean/1,
          %%growth/1,
          harmean/1,
          %%hypgeomdist/1,
@@ -252,6 +252,14 @@ frequency([A, B]) when ?is_area(A) andalso ?is_area(B) ->
     stdfuns_math:transpose([{array, [R]}]);
 frequency(_) ->
     ?ERR_VAL.
+
+geomean(Vs) ->
+    Flatvs = ?flatten_all(Vs),
+    Nums = ?numbers(Flatvs, [ignore_strings, ignore_bools,
+                             ignore_dates, ignore_blanks]),
+    AnyZeros = any(fun(X) -> X == 0 end, Nums),
+    ?ensure(not(AnyZeros), ?ERR_NUM),
+    math:pow(stdfuns_math:product(Nums), 1/erlang:length(Nums)).
 
 harmean(Vs) ->
     Flatvs = ?flatten_all(Vs),
