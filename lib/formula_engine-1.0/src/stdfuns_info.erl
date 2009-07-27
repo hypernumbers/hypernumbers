@@ -4,7 +4,7 @@
 
 -module(stdfuns_info).
 -export([cell/1,
-         errortype/1,
+         'error.type'/1,
          iserr/1,
          iserror/1,
          iseven/1,
@@ -79,14 +79,14 @@ cell1(_, _) ->
     ?ERR_VAL.
     
 
-errortype([?ERRVAL_NULL]) -> 1;
-errortype([?ERRVAL_DIV])  -> 2;
-errortype([?ERRVAL_VAL])  -> 3;
-errortype([?ERRVAL_REF])  -> 4;
-errortype([?ERRVAL_NAME]) -> 5;
-errortype([?ERRVAL_NUM])  -> 6;
-errortype([?ERRVAL_NA])   -> 7;
-errortype(_)              -> ?ERR_NA.
+'error.type'([?ERRVAL_NULL]) -> 1;
+'error.type'([?ERRVAL_DIV])  -> 2;
+'error.type'([?ERRVAL_VAL])  -> 3;
+'error.type'([?ERRVAL_REF])  -> 4;
+'error.type'([?ERRVAL_NAME]) -> 5;
+'error.type'([?ERRVAL_NUM])  -> 6;
+'error.type'([?ERRVAL_NA])   -> 7;
+'error.type'(_)              -> ?ERR_NA.
 
 
 %% Returns the logical value TRUE if value refers to any error value except

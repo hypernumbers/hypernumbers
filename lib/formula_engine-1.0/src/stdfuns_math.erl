@@ -203,7 +203,14 @@ sqrt([V1]) ->
     ?ensure(Num >= 0, ?ERR_NUM),
     math:sqrt(Num).
 
-power([V1, V2]) ->
+power([TV1, TV2]) ->
+
+    V1 = ?COND(TV1 == 0.0, 0, TV1),
+    V2 = ?COND(TV2 == 0.0, 0, TV2),
+    
+    [Num] = ?numbers([V1], ?default_rules),
+    [Pow] = ?numbers([V2], ?default_rules),
+    
     ?ensure({V1, V2} =/= {blank, blank}, ?ERR_NUM),
     ?ensure({V1, V2} =/= {false, false}, ?ERR_NUM),
     ?ensure({V1, V2} =/= {false, blank}, ?ERR_NUM),
@@ -212,9 +219,7 @@ power([V1, V2]) ->
     ?ensure({V1, V2} =/= {blank, 0}, ?ERR_NUM),
     ?ensure({V1, V2} =/= {0, false}, ?ERR_NUM),
     ?ensure({V1, V2} =/= {0, blank}, ?ERR_NUM),
-    ?ensure({V1, V2} =/= {0, 0}, ?ERR_NUM),
-    [Num] = ?numbers([V1], ?default_rules),
-    [Pow] = ?numbers([V2], ?default_rules),
+
     math:pow(Num, Pow).
 
 sign([V1]) ->
