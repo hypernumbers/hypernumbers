@@ -22,7 +22,7 @@ then
     ROOT="c:/"`echo $TMP | cut -d "/" -f 4-`
 elif [ $OS_PLATFORM = "Darwin" ]
 then
-    ROOT=`dirname $0`
+    ROOT=`pwd`
 else
     ROOT=$(dirname `readlink -f "$0"`)
 fi
