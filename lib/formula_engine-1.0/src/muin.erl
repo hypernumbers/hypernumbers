@@ -2,14 +2,18 @@
 %%% @doc Interface to the formula engine/interpreter.
 
 -module(muin).
--export([run_formula/2, run_code/2]).
+
+-export([test_formula/2, run_formula/2, run_code/2]).
+
 -export([eval/1]).
+
 -export([context_setting/1,
          col_index/1,
          row_index/1,
          col/1,
          row/1,
          path/1]).
+
 -compile(export_all).
 
 -include("spriki.hrl").
@@ -36,6 +40,10 @@
 -define(syntax_error, {error, syntax_error}).
 
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%% @doc Test harness for running a formula inside transaction
+test_formula(Fla, Rti) ->
+    mnesia:activity(transaction, fun run_formula/2, [Fla, Rti]).
 
 %% @doc Runs formula given as a string.
 run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->

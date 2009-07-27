@@ -102,7 +102,7 @@ collect_bools(Vs, Rules) ->
     generic_collect(Vs, Rules, fun erlang:is_boolean/1, bool).
 
 %% @doc Same as <code>collect_bools/2</code> but for one value.
-collect_bool(V, Rules) ->
+collect_bool(V, Rules) -> 
     hd(collect_bools([V], Rules)).
 
 %% @doc
@@ -124,6 +124,9 @@ collect_date(V, Rules) ->
 %%% Clients of the interface aren't affected by these changes so the quick fix is ok for now.
 %%% FIXME: PartitionFun is not used.
 generic_collect(Vs, Rules, _PartitionFun, Targtype) ->
+
+    %io:format("~p ~p ~p ~n", [Vs, Rules, Targtype]),
+    
     Res = foldl(fun(cast_numbers, Acc) -> cast_numbers(Acc, Targtype);
                    (cast_strings, Acc) -> cast_strings(Acc, Targtype);
                    (cast_bools, Acc)   -> cast_bools(Acc, Targtype);
@@ -131,12 +134,15 @@ generic_collect(Vs, Rules, _PartitionFun, Targtype) ->
                    (cast_blanks, Acc)  -> cast_blanks(Acc, Targtype);
                    (Func, Acc)         -> ?MODULE:Func(Acc)
                 end,
-                Vs, Rules),
+                Vs,
+                Rules),
 
+    %io:format("~p",[Res]),
+    
     muin_checks:die_on_errval(Res),
 
     if(Res == []) -> ?ERR_VAL;
-      true       -> Res
+      true        -> Res
     end.
 
 %%% Ignores ~~~~~

@@ -162,14 +162,23 @@ from_rfc1123_string(S) when is_list(S) ->
 %% Nicked from httpd_util:rfc1123_date (but doesn't convert from summertime)
 to_rfc1123_string(#datetime{date = {0,0,0}, time = {0,0,0}}) ->
     to_rfc1123_string(#datetime{date = {1,1,1},time = {0,0,0}});
-to_rfc1123_string(#datetime{date = D, time = T}) ->
-    {YYYY,MM,DD}=D,
-    {Hour,Min,Sec}=T,
-    DayNumber = calendar:day_of_the_week({YYYY,MM,DD}),
-    lists:flatten(
-      io_lib:format("~s, ~2.2.0w ~3.s ~4.4.0w ~2.2.0w:~2.2.0w:~2.2.0w GMT",
-                    [rfc1123_day(DayNumber),DD,rfc1123_month(MM),YYYY,
-                     Hour,Min,Sec])).
+to_rfc1123_string(#datetime{date = D, time = T} = Date) ->
+    % TODO, remove this check, crash on invalid dates
+    case calendar:valid_date(D) of
+        true ->
+            {YYYY,MM,DD}=D,
+            {Hour,Min,Sec}=T,
+            DayNumber = calendar:day_of_the_week({YYYY,MM,DD}),
+            lists:flatten(
+              io_lib:format("~s, ~2.2.0w ~3.s ~4.4.0w ~2.2.0w:~2.2.0w:"
+                            "~2.2.0w GMT",
+                            [rfc1123_day(DayNumber),DD,
+                             rfc1123_month(MM),YYYY,
+                             Hour,Min,Sec]));
+        false ->
+            io:format("invalid date ~p~n",[Date]),
+            ""
+    end.
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -162,7 +162,7 @@ upper([Str]) ->
     string:to_upper(NewStr).
 
 char([V1]) ->
-    Code = ?number(V1, [cast_strings, cast_bools, ban_dates, ban_blanks]),
+    Code = ?int(V1, [cast_strings, cast_bools, ban_dates, ban_blanks]),
     xmerl_ucs:to_utf8([Code]).
 
 code([Str]) ->

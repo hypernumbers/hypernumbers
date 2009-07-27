@@ -71,7 +71,8 @@
         lists:map(fun(X) -> erlang:trunc(X) end,
                   ?numbers(Xs, Rules))).
 
--define(bool(X, Rules), ?iinaa(X, Rules, fun(A_, B_) -> muin_collect:collect_bool(A_, B_) end)).
+-define(bool(X, Rules),
+        ?iinaa(X, Rules, fun(A_, B_) -> muin_collect:collect_bool(A_, B_) end)).
 
 -define(remove_errors(Xs),
         muin_collect:remove_errors(Xs)).
