@@ -204,13 +204,10 @@ sqrt([V1]) ->
     math:sqrt(Num).
 
 power([TV1, TV2]) ->
-
     V1 = ?COND(TV1 == 0.0, 0, TV1),
     V2 = ?COND(TV2 == 0.0, 0, TV2),
-    
     [Num] = ?numbers([V1], ?default_rules),
     [Pow] = ?numbers([V2], ?default_rules),
-    
     ?ensure({V1, V2} =/= {blank, blank}, ?ERR_NUM),
     ?ensure({V1, V2} =/= {false, false}, ?ERR_NUM),
     ?ensure({V1, V2} =/= {false, blank}, ?ERR_NUM),
@@ -219,8 +216,11 @@ power([TV1, TV2]) ->
     ?ensure({V1, V2} =/= {blank, 0}, ?ERR_NUM),
     ?ensure({V1, V2} =/= {0, false}, ?ERR_NUM),
     ?ensure({V1, V2} =/= {0, blank}, ?ERR_NUM),
+    ?ensure({V1, V2} =/= {0, 0}, ?ERR_NUM),
 
-    math:pow(Num, Pow).
+    % Dont throw formula errors when numbers are too large
+    try   math:pow(Num, Pow)
+    catch error:_Err -> ?ERR_NUM end.
 
 sign([V1]) ->
     Num = ?number(V1, ?default_rules),

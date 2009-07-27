@@ -41,10 +41,11 @@
 
 '<>'([V1, V2]) -> not('='([V1, V2])).
 
-'>'([A, B]) -> muin_checks:die_on_errval([A]),
-               muin_checks:die_on_errval([B]),
-               [A1, B1] = ?numbers([A, B], [cast_dates]),
-               '>1'(A1, B1).
+'>'([A, B]) ->
+    muin_checks:die_on_errval([A]),
+    muin_checks:die_on_errval([B]),
+    [A1, B1] = ?numbers([A, B], [cast_dates]),
+    '>1'(A1, B1).
 
 '>1'(N, N) -> false;
 '>1'(N1, N2) when is_number(N1) andalso is_number(N2)   -> N1 > N2;
@@ -86,12 +87,9 @@
 
 'and'(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    io:format("WTF?~n"),
     ?ensure(Flatvs =/= [blank], ?ERR_VAL),
-    io:format("WTF? ~p ~n", [Flatvs]),
     Bools = ?bools(Flatvs, [cast_strings, cast_numbers,
                             ignore_blanks, cast_dates]),
-    io:format("~p",[Bools]),
     all(fun(X) -> X =/= false end, Bools).
 
 'not'([V]) ->
