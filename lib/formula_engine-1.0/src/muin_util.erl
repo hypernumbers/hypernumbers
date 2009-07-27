@@ -59,10 +59,11 @@ cast(X, num, num)      -> X;
 cast(true, bool, num)  -> 1;
 cast(false, bool, num) -> 0;
 cast(X, str, num)      -> to_num(X);
-cast(X, date, num)     -> #datetime{date = D, time = T} = X,
-                          Days = calendar:date_to_gregorian_days(D),
-                          Secs = calendar:time_to_seconds(T),
-                          Days + Secs/?SECS_IN_DAY;
+cast(X, date, num)     ->
+    #datetime{date = D, time = T} = X,
+    Days = calendar:date_to_gregorian_days(D),
+    Secs = calendar:time_to_seconds(T),
+    Days + Secs/?SECS_IN_DAY;
 cast(_, blank, num)    -> 0;
 cast(_, _, num)        -> {error, nan};
 
@@ -80,13 +81,16 @@ cast(X, num, date) ->  D = erlang:trunc(X),
                        S = X - D,
                        #datetime{date= calendar:gregorian_days_to_date(D),
                                  time = calendar:seconds_to_time(S)};
-cast(X, str, date) -> {D1, T1} =
-                          case muin_date:from_rfc1123_string(X) of
-                              {ok, {D, T}} -> {D, T};
-                              _            -> {{0, 0, 1}, {0, 0, 0}}
-                          end,
-                      #datetime{date = D1, time = T1};
-cast(_X, _, str)   -> #datetime{date = {0, 0, 1}, time = {0, 0, 0}}.
+cast(X, str, date) ->
+    {D1, T1} =
+        case muin_date:from_rfc1123_string(X) of
+            {ok, {D, T}} -> {D, T};
+            _            -> ?ERR_VAL
+        end,
+    #datetime{date = D1, time = T1};
+
+cast(_X, _, date)   ->
+    ?ERR_VAL.
     
 %% Splits ssref to [Path, Ref]
 split_ssref(Ssref) ->

@@ -162,8 +162,7 @@ from_rfc1123_string(S) when is_list(S) ->
 %% Nicked from httpd_util:rfc1123_date (but doesn't convert from summertime)
 to_rfc1123_string(#datetime{date = {0,0,0}, time = {0,0,0}}) ->
     to_rfc1123_string(#datetime{date = {1,1,1},time = {0,0,0}});
-to_rfc1123_string(#datetime{date = D, time = T} = Date) ->
-    % TODO, remove this check, crash on invalid dates
+to_rfc1123_string(#datetime{date = D, time = T}) ->
     case calendar:valid_date(D) of
         true ->
             {YYYY,MM,DD}=D,
@@ -176,8 +175,7 @@ to_rfc1123_string(#datetime{date = D, time = T} = Date) ->
                              rfc1123_month(MM),YYYY,
                              Hour,Min,Sec]));
         false ->
-            io:format("invalid date ~p~n",[Date]),
-            ""
+            throw(bad_date)
     end.
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

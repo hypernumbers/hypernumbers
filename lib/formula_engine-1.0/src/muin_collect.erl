@@ -125,7 +125,7 @@ collect_date(V, Rules) ->
 %%% FIXME: PartitionFun is not used.
 generic_collect(Vs, Rules, _PartitionFun, Targtype) ->
 
-    %io:format("~p ~p ~p ~n", [Vs, Rules, Targtype]),
+    io:format("hello ~p ~p ~p ~n", [Vs, Rules, Targtype]),
     
     Res = foldl(fun(cast_numbers, Acc) -> cast_numbers(Acc, Targtype);
                    (cast_strings, Acc) -> cast_strings(Acc, Targtype);
@@ -137,7 +137,7 @@ generic_collect(Vs, Rules, _PartitionFun, Targtype) ->
                 Vs,
                 Rules),
 
-    %io:format("~p",[Res]),
+    io:format("bye ~p~n",[Res]),
     
     muin_checks:die_on_errval(Res),
 

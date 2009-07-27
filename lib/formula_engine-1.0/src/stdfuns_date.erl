@@ -137,7 +137,7 @@ datedif1(Start, End, "YD") ->
 
 datevalue([V1]) ->
     io:format("in stdfuns_date:datevalue V1 is ~p~n", [V1]),
-    ?date(V1, ?cast_all).
+    ?date(V1, [cast_strings, ban_bools, ban_blanks, ban_numbers]).
 
 
 day([D]) ->
