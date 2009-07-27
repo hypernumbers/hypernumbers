@@ -237,8 +237,7 @@ fact([V1]) ->
 fact1(0) ->
     1;
 fact1(Num) ->
-    foldl(fun(X, Acc) -> X * Acc end,
-          1, seq(1, Num)).
+    foldl(fun(X, Acc) -> X * Acc end, 1, seq(1, Num)).
 
 %% Keep the rource of the old one until we are sure
 %% the new one works :)
@@ -460,7 +459,12 @@ roundup1(Num, NumDigits) ->
 
 ceiling([V1, V2]) ->
     [Num, Multiple] = ?numbers([V1, V2], ?default_rules),
-    ?ensure(sign1(Num) == sign1(Multiple), ?ERR_NUM),
+
+    Signs = (sign1(Num) == sign1(Multiple)
+             orelse Num =:= 0
+             orelse Multiple =:= 0),
+    
+    ?ensure(Signs, ?ERR_NUM),
     ceiling1(Num, Multiple).
 ceiling1(_Num, 0) ->
     0;
