@@ -71,8 +71,8 @@ cast(_, _, num)        -> {error, nan};
 %% X -> string
 cast(X, num, str)      -> to_s(X);
 cast(X, str, str)      -> X;
-cast(true, bool, str)  -> "true";  % STR!
-cast(false, bool, str) -> "false"; % STR!
+cast(true, bool, str)  -> "TRUE";  % STR!
+cast(false, bool, str) -> "FALSE"; % STR!
 cast(X, date, str)     -> muin_date:to_rfc1123_string(X);
 cast(_, blank, str)    -> "";      % STR!
 cast(_, _, str)        -> {error, nas};

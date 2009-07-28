@@ -32,10 +32,10 @@
          rept/1, right/1, substitute/1, text/1, trim/1, upper/1]).
 
 %% Default set of rules for text
--define(default_num_rules, [cast_strings, cast_bools,
+-define(default_num_rules, [first_array, cast_strings, cast_bools,
                             cast_blanks, cast_dates]).
--define(default_str_rules, [cast_numbers, cast_bools,
-                            cast_blanks, cast_dates]).
+-define(default_str_rules, [first_array, cast_numbers, cast_bools,
+                            cast_blanks, cast_dates ]).
 
 
 t([V]) when ?is_string(V) -> V;
@@ -208,9 +208,11 @@ right([Str, Len]) ->
     NewLen=erlang:trunc(?int(Len,?default_num_rules)),
     ?ensure(NewLen >= 0,?ERR_VAL),
     TotalLen=length(NewStr),
-    if
-        (NewLen > TotalLen) -> NewStr;
-        true                -> string:substr(Str,TotalLen-NewLen+1,NewLen)
+    case (NewLen > TotalLen) of
+        true ->
+            NewStr;
+        false ->
+            string:substr(NewStr, TotalLen-NewLen+1, NewLen)
     end.
 
 '&'(Strs) ->

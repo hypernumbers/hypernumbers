@@ -27,7 +27,7 @@
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 
--define(cast_all, [cast_strings, cast_bools, cast_blanks, cast_numbers]). %% FIXME: This is NOT the right thing to do.
+-define(cast_all, [first_array, cast_strings, cast_bools, cast_blanks, cast_numbers]). %% FIXME: This is NOT the right thing to do.
 
 -define(last_day, calendar:last_day_of_the_month).
 
@@ -136,22 +136,23 @@ datedif1(Start, End, "YD") ->
           seq(muin_date:month(Start), muin_date:month(End))).
 
 datevalue([V1]) ->
-    ?date(V1, [cast_strings, ban_bools, ban_blanks, ban_numbers]).
+    ?date(V1, [first_array, cast_strings, ban_bools, ban_blanks, ban_numbers]).
 
-day([D]) ->
-    [Val | _ ] = ?flatten_all([D]),
-    Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
+day([Val]) ->
+    Date = ?date(Val, [first_array, cast_strings, cast_bools,
+                       cast_blanks, cast_numbers]),
     muin_date:day(Date).
 
+month([Val]) ->
+    Date = ?date(Val, [first_array, cast_strings, cast_bools,
+                       cast_blanks, cast_numbers]),
+    muin_date:month(Date).
 
-month([D]) ->
-    ?ensure(?is_date(D), ?ERR_VAL),
-    muin_date:month(D).
 
-
-year([D]) ->
-    ?ensure(?is_date(D), ?ERR_VAL),
-    muin_date:year(D).
+year([Val]) ->
+    Date = ?date(Val, [first_array, cast_strings, cast_bools,
+                       cast_blanks, cast_numbers]),
+    muin_date:year(Date).
 
 
 %% @todo there is not test suite for this function because it is not an 

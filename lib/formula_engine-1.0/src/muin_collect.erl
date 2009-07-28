@@ -145,6 +145,15 @@ generic_collect(Vs, Rules, _PartitionFun, Targtype) ->
       true        -> Res
     end.
 
+
+pick_first({array, [[Val|_]|_]}) ->
+    Val;
+pick_first(Val) ->
+    Val.
+
+first_array(Vals) ->
+    [ pick_first(X) || X <- Vals ].
+
 %%% Ignores ~~~~~
 
 ignore_numbers(Xs) ->
