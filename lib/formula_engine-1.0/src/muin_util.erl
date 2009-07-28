@@ -78,17 +78,42 @@ cast(_, blank, str)    -> "";      % STR!
 cast(_, _, str)        -> {error, nas};
 
 %% X -> date   
-cast(X, num, date) ->  D = erlang:trunc(X),
-                       S = X - D,
-                       #datetime{date= calendar:gregorian_days_to_date(D),
-                                 time = calendar:seconds_to_time(S)};
+cast(X, num, date) ->
+
+    % Hope to go the seconds doesnt get represented in
+    % eng format
+    Days = erlang:trunc(X),
+    Secs = erlang:trunc((X - Days) * ?SECS_IN_DAY), 
+
+    %io:format("~p ~p ~n",[Secs]),
+    % Offset days by excel epoch
+    EDays = Days + (calendar:date_to_gregorian_days({1900,1,1}) - 2),
+    Time  = calendar:seconds_to_time(Secs),
+        
+    #datetime{date= calendar:gregorian_days_to_date(EDays),
+              time = Time};
+
 cast(X, str, date) ->
-    {D1, T1} =
-        case muin_date:from_rfc1123_string(X) of
-            {ok, {D, T}} -> {D, T};
-            _            -> ?ERR_VAL
-        end,
-    #datetime{date = D1, time = T1};
+    case tconv:to_num(X) of
+        {error, nan} ->
+            % httpd date parser does nothing, need to replace
+            {D1, T1} =
+                case muin_date:from_rfc1123_string(X) of
+                    {ok, {D, T}} -> {D, T};
+                    _            -> ?ERR_VAL
+                end,
+            #datetime{date = D1, time = T1};
+        Num ->
+            cast(Num, num, date)
+    end;
+
+%% X -> date   
+cast(false, bool, date) ->
+    #datetime{date= {1900, 1, 1}, time = {0,0,0}};
+
+%% X -> date   
+cast(true, bool, date) ->
+    #datetime{date= {1900, 1, 2}, time = {0,0,0}};
 
 cast(_X, _, date)   ->
     ?ERR_VAL.

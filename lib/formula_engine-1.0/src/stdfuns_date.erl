@@ -136,13 +136,12 @@ datedif1(Start, End, "YD") ->
           seq(muin_date:month(Start), muin_date:month(End))).
 
 datevalue([V1]) ->
-    io:format("in stdfuns_date:datevalue V1 is ~p~n", [V1]),
     ?date(V1, [cast_strings, ban_bools, ban_blanks, ban_numbers]).
 
-
 day([D]) ->
-    ?ensure(?is_date(D), ?ERR_VAL),
-    muin_date:day(D).
+    [Val | _ ] = ?flatten_all([D]),
+    Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
+    muin_date:day(Date).
 
 
 month([D]) ->
@@ -259,17 +258,20 @@ weeknum1(Dt, Rettype) ->
 
 
 hour([D]) ->
-    ?ensure(?is_date(D), ?ERR_VAL),    
-    muin_date:hour(D).
+    [Val | _ ] = ?flatten_all([D]),
+    Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
+    muin_date:hour(Date).
 
 minute([D]) ->
-    ?ensure(?is_date(D), ?ERR_VAL),
-    muin_date:minute(D).
+    [Val | _ ] = ?flatten_all([D]),
+    Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
+    muin_date:minute(Date).
 
 
 second([D]) ->
-    ?ensure(?is_date(D), ?ERR_VAL),
-    muin_date:second(D).
+    [Val | _ ] = ?flatten_all([D]),
+    Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
+    muin_date:second(Date).
 
 
 now([]) ->
