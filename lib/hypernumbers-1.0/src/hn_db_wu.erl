@@ -3302,6 +3302,8 @@ write_attr2(RefX, {"formula", Val}) ->
         [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
     end.
 
+%{muin_rti,"http://127.0.0.1:9000", ["e_operator_add","add"],22,22,false}
+
 write_formula1(RefX, Fla, Val) ->
     Rti = refX_to_rti(RefX, false),
     case muin:run_formula(Fla, Rti) of

@@ -902,7 +902,9 @@ atan2([V1, V2]) ->
 
 sinh([V]) ->
     Num = ?number(V, ?default_rules),
-    math:sinh(Num).
+    % Dont throw formula errors when numbers are too large
+    try   math:sinh(Num)
+    catch error:_Err -> ?ERR_NUM end.
 
 cosh([V]) ->
     Num = ?number(V, ?default_rules),

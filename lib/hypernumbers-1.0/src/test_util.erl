@@ -73,9 +73,17 @@ read_from_excel_data(Cells, Ranges, {Sheet, Row, Col})->
         _ -> not_found
     end.
 
-float_cmp(0.0,0.0,_)          -> true;
-float_cmp(0.0,Expres,Digit)   -> (Expres < math:pow(0.1, Digit));
-float_cmp(Res, Expres, Digit) -> (abs(Res - Expres)/Res) < math:pow(0.1, Digit).
+float_cmp(0.0, 0.0, _Digit) ->
+    true;
+float_cmp(F1, 0.0, _Digit) ->
+    (F1 < math:pow(0.1, 2));
+float_cmp(F1, F2, _Digit) ->
+    erlang:abs(1 - F1 / F2) < math:pow(0.1, 2).
+
+%% float_cmp(0.0,0.0,_)          ->
+%%     true;
+%% float_cmp(0.0,Expres,Digit)   -> (Expres < math:pow(0.1, Digit));
+%% float_cmp(Res, Expres, Digit) -> (abs(Res - Expres)/Res) < math:pow(0.1, Digit).
 
 excel_equal(X, X) ->
     true;

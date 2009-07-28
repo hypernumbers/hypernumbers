@@ -61,7 +61,8 @@ cast(false, bool, num) -> 0;
 cast(X, str, num)      -> to_num(X);
 cast(X, date, num)     ->
     #datetime{date = D, time = T} = X,
-    Days = calendar:date_to_gregorian_days(D),
+    Days = calendar:date_to_gregorian_days(D) -
+        (calendar:date_to_gregorian_days({1900,1,1}) - 2),
     Secs = calendar:time_to_seconds(T),
     Days + Secs/?SECS_IN_DAY;
 cast(_, blank, num)    -> 0;
