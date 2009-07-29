@@ -13,12 +13,16 @@
                               cast_blanks, cast_dates]).
 
 '='([A, B]) ->
-    muin_checks:die_on_errval([A]),
-    muin_checks:die_on_errval([B]),
-    '=1'(A, B).
+    [A1, B1] = [ muin_collect:pick_first(X) || X <- [A, B] ],
+    muin_checks:die_on_errval([A1]),
+    muin_checks:die_on_errval([B1]),
+    '=1'(A1, B1).
 
 %% numbers & numbers
-'=1'(N1, N2) when is_number(N1), is_number(N2) -> test_util:float_cmp(float(N1), float(N2), 10); %% FIXME: Precision.
+'=1'(N1, N2) when is_integer(N1), is_integer(N2) ->
+    N1 == N2; 
+'=1'(N1, N2) when is_number(N1), is_number(N2) ->
+    test_util:float_cmp(float(N1), float(N2), 10); %% FIXME: Precision.
 %% numbers & blanks
 '=1'(blank, N) when N == 0                      -> true;
 '=1'(N, blank) when N == 0                      -> true;
@@ -44,7 +48,7 @@
 '>'([A, B]) ->
     muin_checks:die_on_errval([A]),
     muin_checks:die_on_errval([B]),
-    [A1, B1] = ?numbers([A, B], [cast_dates]),
+    [A1, B1] = ?numbers([A, B], [first_array, cast_dates]),
     '>1'(A1, B1).
 
 '>1'(N, N) -> false;
@@ -78,12 +82,14 @@
 
 '<'([A, B]) -> muin_checks:die_on_errval([A]),
                muin_checks:die_on_errval([B]),
-               [A1, B1] = ?numbers([A, B], [cast_dates]),
+               [A1, B1] = ?numbers([A, B], [first_array, cast_dates]),
                '>1'(B1, A1).
 
-'<='(Args = [_, _]) -> '='(Args) orelse '<'(Args).
+'<='(Args = [_, _]) ->
+    '='(Args) orelse '<'(Args).
 
-'>='(Args = [_, _]) -> '='(Args) orelse '>'(Args).
+'>='(Args = [_, _]) ->
+    '='(Args) orelse '>'(Args).
 
 'and'(Vs) ->
     Flatvs = ?flatten_all(Vs),
@@ -105,8 +111,9 @@
 'if'([Test, TrueExpr]) ->
     'if'([Test, TrueExpr, false]);
 'if'([Test, TrueExpr, FalseExpr]) ->
+    
     V = muin:eval_formula(Test),
-    B = ?bool(V, [cast_strings, cast_numbers, cast_blanks, ban_dates]),
+    B = ?bool(V, [first_array, cast_strings, cast_numbers, cast_blanks, ban_dates]),
     muin:eval_formula(?COND(B, TrueExpr, FalseExpr)).
 
 %% @TODO write a test suite for iferror which is not an Excel 97 function
