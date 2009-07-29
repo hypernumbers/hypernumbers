@@ -63,6 +63,7 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
          {array_context, AryCtx},
          {retvals, {[], [], []}}, {recompile, false}]),
     Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
+    io:format("~p~n",[Fcode]),
     Result = eval_formula(Fcode),
     {RefTree, _Errors, References} = get(retvals),
     {ok, {Fcode, Result, RefTree, References, get(recompile)}}.

@@ -618,8 +618,9 @@ delete_dirty_cell(Table, Id) when is_list(Id) ->
 %%      not be used for any other purpose
 get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
     #refX{site = Site, path = Path} = RefX,
+
     Value = case hn_db_wu:read_attrs(RefX, ["rawvalue"], read) of
-                []            -> [];
+                []            -> blank;
                 [{_, {_, V}}] -> V
             end, 
 
@@ -629,7 +630,6 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
             end,
 
     Val = case Value of
-              []                 -> blank;
               {datetime, _, [N]} -> muin_date:from_gregorian_seconds(N);
               Else               -> Else %% Strip other type tags.
           end,

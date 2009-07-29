@@ -72,6 +72,8 @@
 '>1'(_, false)                             -> false;
 '>1'("",0)                                 -> true;
 '>1'(0,"")                                 -> false;
+'>1'("",blank)                             -> false;
+'>1'(blank,"")                             -> false;
 '>1'(A, N) when ?is_area(A) andalso N > 0  -> true;
 '>1'(A, N) when ?is_area(A) andalso N =< 0 -> false;
 '>1'(blank, N) when is_number(N)           -> '>1'(0, N);
