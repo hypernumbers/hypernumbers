@@ -175,6 +175,7 @@ make_datetime({D, M, Y}, {H, Mn}) ->
              true     -> Y
          end,
     get_datetime({Y2, M, D}, {H, Mn, 0});
+
 make_datetime({D, M, Y}, {H, Mn, S}) ->
     Y2 = if
              (Y < 99) -> 2000 + Y; %Y3k Bug!
@@ -207,8 +208,7 @@ get_datetime2({Y, M, D}, {H, Mn, S}) ->
     DateTime = #datetime{date = {Y, M, D}, time = {H, Mn, S}},
     Return = try muin_date:to_rfc1123_string(DateTime)
              catch
-                 error:_ -> {ok, maybe_bad_date};
-                 exit:_  -> {ok, maybe_bad_date}
+                 _Err:_  -> {ok, maybe_bad_date}
              end,
     case Return of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
