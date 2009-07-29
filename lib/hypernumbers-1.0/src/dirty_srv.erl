@@ -92,8 +92,8 @@ stop(Type) ->
 listen(Table) ->
     case mnesia:activity(transaction, fun read_table/1, [Table]) of
         ok ->
-            mnesia_recover:allow_garb(),
-            mnesia_recover:start_garb(),
+            %mnesia_recover:allow_garb(),
+            %mnesia_recover:start_garb(),
             ok;
         no_dirty_cells ->
             receive _X ->
