@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+    <title>hypernumbers Page</title>
+    <!-- A Javascript Object for the libraries to use to bind -->
+  </head>
+  <body>
+    <div id="someid1" class="hn classname1">
+      <div>
+        <span id="someid2" class="hn classname2 dynamic"></span>
+        <span class="hn classname3 dynamic a1"></span>
+        <div id="someid4" class="hn classname4 static a4:f3"></div>
+        <div id="someid5"></div>
+        <table id = "someid6" class="hn classname6">
+            <tr>
+              <td class="hn classname7 both a3 b3:b8"></td>
+              <td id="someid8" class="hn classname8 both a3 b3:b8"></td>
+              <td id="someid9" class="hn classname9 both a3 b3:b8 blah"></td>
+              <td id="someid10" class="hn widget error a3 b3:b8 blah"></td>
+              <td id="someid11" class="hn widget both a3 b:b"></td>
+              <td id="someid12" class="hn widget both a3 3:8"></td>
+              <td id="someid13" class="hn widget both ../path/a3 b3:b8"></td>
+              <td id="someid14" class="hn widget2 both /path/a3 b3:b8"></td>
+              <td id="someid15" class="hn widget2 static ../path/some/../another/a3 b3:b8"></td>
+            </tr>
+        </table>
+      </div>
+    </div>
+  </body>
+  <!-- Some jquery libraries to handle AJAX calls -->
+  <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
+  
+  <!-- The basic hypernumbers javascript libaries -->
+  <script src="/hypernumbers/hn.js"></script>
+  <script src="/hypernumbers/hn.util.js"></script>
+  <script src="/hypernumbers/hn.data.js"></script>
+  <script src="/hypernumbers/hn.callbacks.js"></script>
+
+  <!-- the GUI libraries -->
+  <script src="/gui_builder/hn.gui.js"></script>
+  <script src="/gui_builder/hn.gui.register.js"></script>
+  <script src="/gui_builder/hn.gui.layout.js"></script>
+  <script src="/gui_builder/hn.gui.dataoptions.js"></script>
+  <script src="/gui_builder/build.js"></script>
+</html>
