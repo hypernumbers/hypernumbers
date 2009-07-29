@@ -745,6 +745,8 @@ check_flags(NFlags,Flag)->
     end.
 
 %% This is nasty, sure excel stores this data somewhere?
+prepend_quote("="++String) ->
+    "'="++String;
 prepend_quote(String) ->
     try _ = list_to_integer(String),
         "'"++String
