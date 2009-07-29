@@ -124,7 +124,7 @@
         (erlang:trunc(Num / Mult) * Mult) == (Num * 1.0)).
 
 %% A lot of math functions simply cast everything.
--define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
+-define(default_rules, [first_array, cast_strings, cast_bools, cast_blanks, cast_dates]).
 
 %%% Operators ~~~~~
 '+'([{datetime, D, T}, V2]) when is_number(V2) -> '+'([V2, {datetime, D, T}]);
