@@ -147,7 +147,7 @@ parse_rec(?FONT, Bin, _Name, _Tbl) ->
                      end,
     
     FontNameCSSBits = excel_util:get_utf8(excel_util:parse_CRS_Uni16(FontName)),
-    FontFamilyCSS=[{'font-family',[FontNameCSSBits|FontFamCSSBits]}],
+    FontFamilyCSS=[{'font-family', string:join([FontNameCSSBits|FontFamCSSBits], ",")}],
     CSS = lists:merge([OptionsCSS, FontWeightCSS, FontSizeCSS, VAlignCSS,
                        BorderBotStyleCSS, FontFamilyCSS]),
     {append, tmp_fonts, [{colour_index, ColourIdx}, {css, CSS}]};
