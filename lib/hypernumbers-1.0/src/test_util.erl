@@ -89,6 +89,8 @@ excel_equal(X, X) ->
     true;
 excel_equal({string, X}, {formula, X}) ->
     true;
+excel_equal({string, "'"++X}, {formula, X}) ->
+    true;
 excel_equal({date,F1}, {number,Number})->
     {datetime, D, T} = muin_date:excel_win_to_gregorian(Number),
     F1 == {D, T}; 

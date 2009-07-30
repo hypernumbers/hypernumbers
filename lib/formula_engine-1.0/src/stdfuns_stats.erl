@@ -106,9 +106,9 @@
 
 avedev(Vs) ->
     Flatvs = ?flatten_all(Vs),
+    Rules = [cast_strings, cast_bools, ignore_blanks, ban_dates],
     % Special case - all empty parameters throws a #NUM! error not a #VALUE!
-    case muin_util:attempt(?DEFER(?numbers(Flatvs,[ignore_arrays, cast_strings, cast_bools,
-                                                   ignore_blanks, ban_dates]))) of
+    case muin_util:attempt(?DEFER(?numbers(Flatvs, Rules))) of
         {ok, Nums} -> avedev1(Nums);
         {error, _} -> ?ERR_NUM
     end.
