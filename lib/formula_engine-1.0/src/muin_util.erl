@@ -27,32 +27,35 @@
 array_at({array, Rows}, R, C) ->
     nth(C, nth(R, Rows)).
 
-cast(X, Targtype) ->
-    Xtype = get_type(X),
-    cast(X, Xtype, Targtype).
-
 get_type(X) when is_number(X)           -> num;
 get_type(X) when is_boolean(X)          -> bool;
 get_type(X) when is_record(X, datetime) -> date;
 get_type(blank)                         -> blank;
 get_type(X) ->
     case muin_collect:is_string(X) of
-        true -> str;
+        true  -> str;
         false -> unknown_type
     end.
 
+
+cast(Val, Type) ->
+    case get_type(Val) of
+        Type -> Val;
+        Else -> cast(Val, Else, Type)
+    end.
+
 %% X -> boolean
-cast(X, num, bool) when X == 0 -> false;
-cast(_X, num, bool)            -> true;
-cast(X, str, bool)             -> case string:to_upper(X) of
-                                      "TRUE"  -> true;
-                                      "FALSE" -> false;
-                                      _       -> {error,  nab}
-                                  end;    
-cast(X, bool, bool)            -> X;
-cast(_, date, bool)            -> true;
-cast(_, blank, bool)           -> false;
-cast(_, _, bool          )     -> {error, nab};
+cast(0, num, bool)   -> false;
+cast(_, num, bool)   -> true;
+cast(_, date, bool)  -> true;
+cast(_, blank, bool) -> false;
+cast(X, str, bool) ->
+    case string:to_upper(X) of
+        "TRUE"  -> true;
+        "FALSE" -> false;
+        _       -> {error,  nab}
+    end;
+cast(_, _, bool) -> {error, nab};
 
 %% X -> number
 cast(X, num, num)      -> X;
@@ -78,14 +81,13 @@ cast(_, blank, str)    -> "";      % STR!
 cast(_, _, str)        -> {error, nas};
 
 %% X -> date   
-cast(X, num, date) ->
-
+cast(X, num, date) when X >= 0 ->
+    
     % Hope to go the seconds doesnt get represented in
     % eng format
     Days = erlang:trunc(X),
     Secs = erlang:trunc((X - Days) * ?SECS_IN_DAY), 
 
-    %io:format("~p ~p ~n",[Secs]),
     % Offset days by excel epoch
     EDays = Days + (calendar:date_to_gregorian_days({1900,1,1}) - 2),
     Time  = calendar:seconds_to_time(Secs),
@@ -107,17 +109,13 @@ cast(X, str, date) ->
             cast(Num, num, date)
     end;
 
-%% X -> date   
 cast(false, bool, date) ->
     #datetime{date= {1900, 1, 1}, time = {0,0,0}};
-
-%% X -> date   
 cast(true, bool, date) ->
     #datetime{date= {1900, 1, 2}, time = {0,0,0}};
-
 cast(_X, _, date)   ->
     ?ERR_VAL.
-    
+
 %% Splits ssref to [Path, Ref]
 split_ssref(Ssref) ->
     {just_path(Ssref), just_ref(Ssref)}.

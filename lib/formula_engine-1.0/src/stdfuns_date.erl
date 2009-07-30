@@ -8,6 +8,7 @@
          datedif/1,
          datevalue/1,
          day/1,
+         days360/1,
          month/1,
          year/1,
          edate/1,
@@ -23,6 +24,8 @@
          timevalue/1,
          time/1]).
 
+-import(muin_collect, [ collect/4 ]).
+
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
@@ -33,7 +36,6 @@
 
 date(Arg = [_, _, _]) ->
     [Year, Month, Day] = ?ints(Arg, ?cast_all),
-    io:format("Arg is ~p~nY/M/D is ~p ~p ~p~n",[Arg, Year, Month, Day]),
     if
         Year <  1900  -> dateh([Year+1900,Month,Day]);
         Year >= 1900  -> dateh([Year,Month,Day])
@@ -44,23 +46,17 @@ dateh([Y, M, D]) when (M =< 0) ->
     Offset = (abs(M) - Diff)/12,
     NewYear = erlang:trunc(Y - Offset - 1),
     NewMonth = 12 - Diff,
-    io:format("in dateh (1) In  Y/M/D is ~p ~p ~p~n", [Y, M, D]),
-    io:format("in dateh (1) Out Y/M/D is ~p ~p ~p~n", [NewYear, NewMonth, D]),
     dateh([NewYear, NewMonth, D]);
 dateh([Y, M, D]) when (M > 12) ->
     Diff = M rem 12,
     Offset = erlang:trunc((M - Diff)/12),
     NewYear = Y + Offset,
     NewMonth = Diff,
-    io:format("in dateh (2) In  Y/M/D is ~p ~p ~p~n", [Y, M, D]),
-    io:format("in dateh (2) Out Y/M/D is ~p ~p ~p~n", [NewYear, NewMonth, D]),
     dateh([NewYear, NewMonth, D]);
 dateh([Y, M, D]) when (D =< 0) ->
     NewMonth = M - 1, 
     LastDay2 =  ?last_day(Y, NewMonth),
     NewDay = LastDay2 + D,
-    io:format("in dateh (3) In  Y/M/D is ~p ~p ~p~n", [Y, M, D]),
-    io:format("in dateh (3) Out Y/M/D is ~p ~p ~p~n", [Y, NewMonth, NewDay]),
     dateh([Y, NewMonth, NewDay]);
 dateh([Y, M, D]) ->
     % this is a key one - we don't know if D is too big (yet):
@@ -68,16 +64,12 @@ dateh([Y, M, D]) ->
     % * 30 is small enough if it is January
     LastDay = ?last_day(Y, M),
     if
-        (D > LastDay)  -> NewMonth = M + 1,
-                          NewDay = D - LastDay,
-                          io:format("in dateh (4a) In  Y/M/D is ~p ~p ~p~n",
-                                   [Y, M, D]),
-                          io:format("in dateh (4a) Out Y/M/D is ~p ~p ~p~n",
-                                   [Y, NewMonth, NewDay]),
-                          dateh([Y, NewMonth, NewDay]);
-        (D =< LastDay) -> io:format("in dateh (4b) Exiting with  Y/M/D is ~p ~p ~p~n",
-                                    [Y, M, D]),
-                          #datetime{date = {Y, M, D}}
+        (D > LastDay)  ->
+            NewMonth = M + 1,
+            NewDay = D - LastDay,
+            dateh([Y, NewMonth, NewDay]);
+        (D =< LastDay) ->             
+            #datetime{date = {Y, M, D}}
     end.
 
 %% @TODO what is this function for? Not an Excel function - ask Hasan...
@@ -138,7 +130,31 @@ datedif1(Start, End, "YD") ->
 datevalue([V1]) ->
     ?date(V1, [first_array, cast_strings, ban_bools, ban_blanks, ban_numbers]).
 
+
+days360([Date1, Date2]) ->
+    days360([Date1, Date2, true]);
+
+days360([PreDate1, PreDate2, PreMethod]) ->
+    [Date1, Date2] = collect([PreDate1, PreDate2], date, all_die, none),
+    [Method]       = collect([PreMethod], bool, all_die, none),
+    days360(Date1, Date2, Method).
+
+days360(Date1, Date2, Method) when Date1 > Date2 ->
+    -days360(Date2, Date1, Method);
+
+%% Same Year
+days360(#datetime{date={Y,M1,D1}},#datetime{date={Y,M2,D2}}, _Method) ->
+    (calendar:last_day_of_the_month(Y, M1) - D1) + ((M2 - M1) * 30) + D2;
+
+days360(#datetime{date={Y1,M1,D1}}, #datetime{date={Y2,M2,D2}}, _Method) ->
+    Left = calendar:last_day_of_the_month(Y1, M1) - D1 + (30 * (12 - M1)),
+    FromStart = D2 + (30 * (M2-1)),
+    
+    Left + ((Y2 - Y1 - 1) * 360) + FromStart.
+
+
 day([Val]) ->
+    ?ensure(Val >= 0, ?ERR_NUM),
     Date = ?date(Val, [first_array, cast_strings, cast_bools,
                        cast_blanks, cast_numbers]),
     muin_date:day(Date).
@@ -290,75 +306,75 @@ time(Args = [_, _, _]) ->
       
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--include_lib("eunit/include/eunit.hrl").
+%% -include_lib("eunit/include/eunit.hrl").
 
-datedif_test_() ->
-    [
-     %% Years
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 17}},
-                       "Y") == 1),
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 16}},
-                       "Y") == 0),
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 18}},
-                       "Y") == 1),
+%% datedif_test_() ->
+%%     [
+%%      %% Years
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 17}},
+%%                        "Y") == 1),
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 16}},
+%%                        "Y") == 0),
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 18}},
+%%                        "Y") == 1),
 
-     %% Months
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 17}},
-                       "M") == 12),
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 16}},
-                       "M") == 11),
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 18}},
-                       "M") == 12),
+%%      %% Months
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 17}},
+%%                        "M") == 12),
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 16}},
+%%                        "M") == 11),
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 18}},
+%%                        "M") == 12),
 
-     %% Days
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 17}},
-                       "D") == 365),
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 16}},
-                       "D") == 364),
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 18}},
-                       "D") == 366),
+%%      %% Days
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 17}},
+%%                        "D") == 365),
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 16}},
+%%                        "D") == 364),
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 18}},
+%%                        "D") == 366),
 
-     %% Days only
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 17}},
-                       "MD") == 0),
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 16}},
-                       "MD") == 30),
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 18}},
-                       "MD") == 1),
+%%      %% Days only
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 17}},
+%%                        "MD") == 0),
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 16}},
+%%                        "MD") == 30),
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 18}},
+%%                        "MD") == 1),
 
-     %% Months only
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 17}},
-                       "YM") == 0),
-     %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-     %%                        #datetime{date = {1987, 8, 16}},
-     %%                        "YM") == 11),
-     ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-                       #datetime{date = {1987, 8, 18}},
-                       "YM") == 0),
+%%      %% Months only
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 17}},
+%%                        "YM") == 0),
+%%      %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%      %%                        #datetime{date = {1987, 8, 16}},
+%%      %%                        "YM") == 11),
+%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%                        #datetime{date = {1987, 8, 18}},
+%%                        "YM") == 0),
 
-     %% Days -- years ignorned
-     %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-     %%                        #datetime{date = {1987, 8, 17}},
-     %%                        "YD") == 0),
-     %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-     %%                        #datetime{date = {1987, 8, 16}},
-     %%                        "YD") == 364),
-     %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-     %%                        #datetime{date = {1987, 8, 18}},
-     %%                        "YD") == 1),
+%%      %% Days -- years ignorned
+%%      %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%      %%                        #datetime{date = {1987, 8, 17}},
+%%      %%                        "YD") == 0),
+%%      %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%      %%                        #datetime{date = {1987, 8, 16}},
+%%      %%                        "YD") == 364),
+%%      %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+%%      %%                        #datetime{date = {1987, 8, 18}},
+%%      %%                        "YD") == 1),
 
-     ?_assert(true)
-    ].
+%%      ?_assert(true)
+%%     ].

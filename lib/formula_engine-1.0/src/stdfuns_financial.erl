@@ -128,14 +128,15 @@ pmt(Args = [_, _, _, _, _]) ->
     X0 = xn(Pmt0, Rate, Nper, Pv, Fv, Partype),
     X1 = xn(Pmt1, Rate, Nper, Pv, Fv, Partype),
     secant(Pmt1, Pmt0, X1, X0, fun(N) -> xn(N, Rate, Nper, Pv, Fv, Partype) end).
-    
+
 rate(Args = [_, _, _, _, _]) ->
     [Nper, Pmt, Pv, Fv, Partype] = ?numbers(Args, ?default_rules),
     Rate0 = 0.01,
     Rate1 = 0.09,
     X0 = xn(Pmt, Rate0, Nper, Pv, Fv, Partype),
     X1 = xn(Pmt, Rate1, Nper, Pv, Fv, Partype),
-    secant(Rate1, Rate0, X1, X0, fun(N) -> xn(Pmt, N, Nper, Pv, Fv, Partype) end).
+    secant(Rate1, Rate0, X1, X0,
+           fun(N) -> xn(Pmt, N, Nper, Pv, Fv, Partype) end).
 
 nper(Args = [_, _, _, _, _]) ->
     [Rate, Pmt, Pv, Fv, Partype] = ?numbers(Args, ?default_rules),
@@ -143,14 +144,17 @@ nper(Args = [_, _, _, _, _]) ->
     Nper1 = 16,
     X0 = xn(Pmt, Rate, Nper0, Pv, Fv, Partype),
     X1 = xn(Pmt, Rate, Nper1, Pv, Fv, Partype),
-    secant(Nper1, Nper0, X1, X0, fun(N) -> xn(Pmt, Rate, N, Pv, Fv, Partype) end).
+    secant(Nper1, Nper0, X1, X0,
+           fun(N) -> xn(Pmt, Rate, N, Pv, Fv, Partype) end).
 
 %%% helpers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -define(ITERATION_LIMIT, 20).
 %% Calculate next approximation of value based on two previous approximations.
-secant(Pa, Ppa, Px, Ppx, Fun) -> secant(Pa, Ppa, Px, Ppx, Fun, 1).
-secant(_, _, _, _, _, I) when I == ?ITERATION_LIMIT -> ?ERR_NUM;
+secant(Pa, Ppa, Px, Ppx, Fun) ->
+    secant(Pa, Ppa, Px, Ppx, Fun, 1).
+secant(_, _, _, _, _, ?ITERATION_LIMIT) ->
+    ?ERR_NUM;
 secant(Pa, Ppa, Px, Ppx, Fun, I) ->
     Divisor = (Px-Ppx)*Px,
     case Divisor of
@@ -159,11 +163,14 @@ secant(Pa, Ppa, Px, Ppx, Fun, I) ->
             Ca = Pa-(Pa-Ppa)/Divisor,
             Xn = Fun(Ca),
             case Xn of
-                X when X == 0 -> Ca;
-                _             -> secant(Ca, Pa, Xn, Px, Fun, I+1)
+                0 -> Ca;
+                _ ->
+                    io:format("Xn ~p~n",[Xn]),
+                    secant(Ca, Pa, Xn, Px, Fun, I+1)
             end
     end.
-            
+
 %% Calculate ?(X) given Pmt for current iteration of one of the arguments.
 xn(Pmt, Rate, Nper, Pv, Fv, Partype) ->
-    Pv*math:pow(1+Rate, Nper) + Pmt*(1+Rate*Partype)*(math:pow(1+Rate, Nper)-1)/Rate+Fv.
+    Tmp = math:pow(1+Rate, Nper),
+    Pv * Tmp + Pmt * (1+Rate*Partype) * (Tmp-1) / Rate + Fv.

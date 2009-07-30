@@ -34,6 +34,21 @@
 
 -import(muin_util, [cast/2]).
 
+collect(Args, Type, Cast, Ignore) ->
+    [ casts(X, Type, Cast) || X <- Args, ignores(X, Ignore) ].
+
+ignores(_Val, none) ->
+    true.
+
+casts({errval,_}=ERR, _Type, all_die) ->
+    throw(ERR);
+    
+casts(Val, Type, all_die) ->
+    case muin_util:cast(Val, Type) of
+        {error, _Err} -> ?ERR_VAL;
+        Else          -> Else
+    end.
+          
 %% @doc removes any errors
 remove_errors(Xs) ->
     Fun  = fun(X) ->
@@ -144,6 +159,7 @@ generic_collect(Vs, Rules, _PartitionFun, Targtype) ->
     if(Res == []) -> ?ERR_VAL;
       true        -> Res
     end.
+
 
 
 pick_first({array, [[Val|_]|_]}) ->
