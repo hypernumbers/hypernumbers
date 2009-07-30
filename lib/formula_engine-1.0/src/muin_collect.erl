@@ -34,21 +34,54 @@
 
 -import(muin_util, [cast/2]).
 
-collect(Args, Type, Cast, Ignore) ->
-    [ casts(X, Type, Cast) || X <- Args, ignores(X, Ignore) ].
+%% for each arguments, check wether is should be ignored
+%% and if not, go through a list of collection rules, the ordering
+%% of the rules can be important (pick_first_array needs to be called
+%% before cast_or_die, etc)
+collect(Args, Type, Rules) ->
+    [ casts(X, Type, Rules) || X <- Args, ignores(X, Type, Rules) ].
 
-ignores(_Val, none) ->
+%% List of clauses to ignore values
+ignores(_Val, _Type, _Rules) ->
     true.
 
-casts({errval,_}=ERR, _Type, all_die) ->
-    throw(ERR);
-    
-casts(Val, Type, all_die) ->
+casts(Val, _Type, []) ->
+    Val;
+
+% die_on_err
+% causes the expression to throw an error when one of the params fails
+casts({errval,_}=Err, _Type, [die_on_err | _Rules]) ->
+    throw(Err);
+casts(Val, Type, [die_on_err | Rules]) ->
+    casts(Val, Type, Rules);
+
+% fetch_refs
+casts({namedexpr, _, _}, Type, [fetch_refs | Rules]) ->
+    casts(?ERRVAL_NAME, Type, Rules);
+casts(Ref, Type, [fetch_refs | Rules]) when ?is_cellref(Ref) ->
+    casts(muin:fetch(Ref), Type, Rules);
+casts(Val, Type, [fetch_refs | Rules]) ->
+    casts(Val, Type, Rules);
+
+% fetch_refs_as_str
+casts({namedexpr, _, _}, Type, [fetch_refs_as_str | Rules]) ->
+    casts(?ERRVAL_NAME, Type, Rules);
+casts({cellref, _X, _T, _Path, _Name}, Type, [fetch_refs_as_str | Rules]) ->
+    casts("RefStr", Type, Rules);
+casts(Val, Type, [fetch_refs_as_str | Rules]) ->
+    casts(Val, Type, Rules);
+
+casts({array,[[Val|_]|_]}, Type, [pick_first_array | Rules]) ->
+    casts(Val, Type, Rules);
+casts(Val, Type, [pick_first_array | Rules]) ->
+    casts(Val, Type, Rules);
+
+casts(Val, Type, [cast_all_or_die | Rules]) ->
     case muin_util:cast(Val, Type) of
         {error, _Err} -> ?ERR_VAL;
-        Else          -> Else
+        Else          -> casts(Else, Type, Rules)
     end.
-          
+
 %% @doc removes any errors
 remove_errors(Xs) ->
     Fun  = fun(X) ->

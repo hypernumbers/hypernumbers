@@ -57,6 +57,13 @@ cast(X, str, bool) ->
     end;
 cast(_, _, bool) -> {error, nab};
 
+cast(X, Type, int) ->
+    case cast(X, Type, num) of
+        {error, nan} -> {error, nan};
+        F when is_float(F) -> erlang:trunc(F);
+        I -> I
+    end;
+
 %% X -> number
 cast(X, num, num)      -> X;
 cast(true, bool, num)  -> 1;
@@ -198,17 +205,29 @@ attempt(Mod, F, Args) ->
         Val -> {ok, Val}
     catch
         throw:X -> {error, X};
-        exit:X  -> {error, X};
-        error:X -> {error, X}
+        exit:X  ->
+            error_logger:error_msg({X, erlang:get_stacktrace()}),
+            {error, X};
+        % TODO: THIS NEEDS TO BE TAKEN OUT (and shot)
+        error:undef ->
+            {error, undef};        
+        error:X ->            
+            error_logger:error_msg({X, erlang:get_stacktrace()}),
+            {error, X}
     end.
 
 attempt(Fun) when is_function(Fun) ->
     try Fun() of
         Val -> {ok, Val}
     catch
-        throw:X -> {error, X};
-        exit:X  -> {error, X};
-        error:X -> {error, X}
+        throw:X ->
+            {error, X};
+        exit:X  ->
+            error_logger:error_msg({X, erlang:get_stacktrace()}),
+            {error, X};
+        error:X ->
+            error_logger:error_msg({X, erlang:get_stacktrace()}),
+            {error, X}
     end.        
 
 

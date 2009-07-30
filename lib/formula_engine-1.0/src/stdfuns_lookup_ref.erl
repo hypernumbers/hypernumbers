@@ -1,21 +1,29 @@
 %%% @doc Lookup and reference functions.
 %%% @author <hasan@hypernumbers.com>
 %%% @private
-
-
 -module(stdfuns_lookup_ref).
+
+-import(muin_collect, [ collect/3 ]).
 -export([address/1, choose/1, column/1, index/1, match/1, row/1]).
+
 -compile(export_all).
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
 
-choose([A|Vs]) when ?is_area(A) ->
-    Flatvs = muin_collect:flatten_arrays([A]),
-    map(fun(X) -> choose([X|Vs]) end, Flatvs);
 choose([V|Vs]) ->
-    Idx = ?number(V, [cast_strings, cast_bools, ban_dates, ban_blanks]),
+    [Idx]  = collect([V], int, [fetch_refs, pick_first_array,
+                                die_on_err, cast_all_or_die]),
+    List = collect(Vs, any, [pick_first_array]),
     ?ensure(Idx > 0 andalso Idx =< length(Vs), ?ERR_VAL),
-    muin:eval(nth(Idx, Vs)).
+    choose(Idx, List).
+
+choose(Idx, List) ->
+    case muin:eval(nth(Idx, List)) of
+        % TODO: eugh
+        {array,[Arr]} -> "{"++string:join([tconv:to_s(X)||X<-Arr], ",")++"}";
+        {namedexpr, _, _} -> ?ERR_NAME;
+        Else              -> Else
+    end.
 
 column([])                      -> muin:context_setting(col);
 column([C]) when ?is_cellref(C) -> muin:col_index(muin:col(C));

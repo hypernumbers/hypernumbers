@@ -149,12 +149,10 @@ days360(#datetime{date={Y,M1,D1}},#datetime{date={Y,M2,D2}}, _Method) ->
 days360(#datetime{date={Y1,M1,D1}}, #datetime{date={Y2,M2,D2}}, _Method) ->
     Left = calendar:last_day_of_the_month(Y1, M1) - D1 + (30 * (12 - M1)),
     FromStart = D2 + (30 * (M2-1)),
-    
     Left + ((Y2 - Y1 - 1) * 360) + FromStart.
 
 
 day([Val]) ->
-    ?ensure(Val >= 0, ?ERR_NUM),
     Date = ?date(Val, [first_array, cast_strings, cast_bools,
                        cast_blanks, cast_numbers]),
     muin_date:day(Date).
