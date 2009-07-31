@@ -34,33 +34,156 @@
 
 -import(muin_util, [cast/2]).
 
+col(Args, Rules, Passes) ->
+    pass(col(Args, Rules), Passes).
+
+col(Args, Rules) ->
+    
+    F1 = fun(X, List) ->
+                 case lists:foldl(fun rl/2, X, Rules) of
+                     ignore -> List;
+                     Else   ->
+                         [Else | List]
+                 end
+         end,
+    
+    lists:foldr(F1, [], Args).
+
+%% This is the list of rules as rl(Rule, Value), each rule
+%% is called against each value in left to right order, unrecognised
+%% rules are ignored, the function should return the new value following
+%% the rule
+
+% If anything has been marked ignore, ignore
+rl(_, ignore) ->
+    ignore;
+
+% Ignore Blanks
+rl(ignore_blanks, blank) ->
+    ignore;
+
+% Evaluate functions
+rl(eval_funs, Fun) when ?is_funcall(Fun) ->
+    muin:eval(Fun);
+
+rl(first_array_as_bool, {array,[[X|_]|_]}) when X == false; X == 0 ->
+    false;
+rl(first_array_as_bool, {array,[[_Val|_]|_]}) ->
+    true;
+
+rl(num_as_bool, X) when is_number(X) andalso X==0; X==0.0 ->
+    false;
+rl(num_as_bool, X) when is_number(X) ->
+    true;
+
+rl(str_as_bool, Str) when ?is_string(Str) ->
+    case string:to_upper(Str) of
+        "TRUE"  -> true;
+        "FALSE" -> false;
+        _Else   -> ?ERRVAL_VAL
+    end;
+
+rl(ref_as_bool, Ref) when ?is_cellref(Ref) ->
+    case muin:fetch(Ref) of
+        blank                     -> blank;
+        X when X == 0; X == false -> false;
+        _Else                     -> true
+    end;
+
+rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
+    ?ERRVAL_NAME;
+
+% No Rules for this element
+rl(_Rule, Value) ->
+    Value.
+
+%% Passes are a list of rules to perform on arguments once casting
+%% and such has happened
+pass(Args, []) ->
+    Args;
+
+% if there are any errors in the parameters, return these
+pass(Args, [ return_errors | Rules ]) ->
+    case lists:keyfind(errval, 1, Args) of
+        false -> pass(Args, Rules);
+        Err   -> Err
+    end;
+
+% Typically a type check, checks that all elements return true
+% for F(X)
+pass(Args, [ {all, F} | Rules ]) ->
+    case lists:all(F, Args) of
+        true  -> pass(Args, Rules);
+        false -> ?ERRVAL_VAL
+    end.
+
 %% for each arguments, check wether is should be ignored
 %% and if not, go through a list of collection rules, the ordering
 %% of the rules can be important (pick_first_array needs to be called
 %% before cast_or_die, etc)
+collect(Args, Type, Rules, Filters) ->
+    io:format("~p",[collect(Args, Type, Rules)]),
+    [ X || X <- collect(Args, Type, Rules), ignor(X, Filters) ].
+                                   
 collect(Args, Type, Rules) ->
-    [ casts(X, Type, Rules) || X <- Args, ignores(X, Type, Rules) ].
+    [ casts(X, Type, Rules) || X <- Args ].
+
+ignor(_X, []) ->
+    true;
+ignor(blank, [ignore_blanks | _Filters]) ->
+    false;
+ignor(X, [ignore_blanks | Filters]) ->
+    ignor(X, Filters).
+
+
+
+%% Rules
+% pick_first_array, ignore_blank_refs, cast_to_X_or_err, die_on_err,
+% [1,1] = [true,true]
+% [=,A,B] = [true]
+% ["X"] = [false]
+% ["TRUE"] = [true]
+% [1/0, 2] = [{err}]
+
+
 
 %% List of clauses to ignore values
-ignores(_Val, _Type, _Rules) ->
-    true.
-
 casts(Val, _Type, []) ->
     Val;
 
 % die_on_err
 % causes the expression to throw an error when one of the params fails
-casts({errval,_}=Err, _Type, [die_on_err | _Rules]) ->
+casts(Err, _Type, [die_on_err | _Rules]) when ?is_errval(Err)->
     throw(Err);
 casts(Val, Type, [die_on_err | Rules]) ->
     casts(Val, Type, Rules);
 
 % fetch_refs
-casts({namedexpr, _, _}, Type, [fetch_refs | Rules]) ->
+casts(Val, Type, [fetch_refs | Rules]) when ?is_namedexpr(Val) ->
     casts(?ERRVAL_NAME, Type, Rules);
 casts(Ref, Type, [fetch_refs | Rules]) when ?is_cellref(Ref) ->
+    io:format("~p ~n", [muin:fetch(Ref)]), 
     casts(muin:fetch(Ref), Type, Rules);
-casts(Val, Type, [fetch_refs | Rules]) ->
+casts([Fun | Args], Type, [fetch_refs | Rules]) when ?is_fn(Fun) ->
+    io:format("evalling ~p ~p~n", [Fun, Args]),
+    io:format("~p ~n", [muin:eval([Fun | Args])]), 
+    casts(muin:eval([Fun | Args]), Type, Rules);
+casts(Val, Type, [fetch_refs | Rules])  ->
+    casts(Val, Type, Rules);
+
+% fetch_refs_as_bool
+casts(Val, Type, [fetch_refs_as_bool | Rules]) when ?is_namedexpr(Val) ->
+    casts(?ERRVAL_NAME, Type, Rules);
+casts(Ref, Type, [fetch_refs_as_bool | Rules]) when ?is_cellref(Ref) ->
+    Val = case muin:fetch(Ref) of
+              X when X == "0", X == false, X == "FALSE" -> false;
+              blank -> blank;
+              _Else -> true
+          end,
+    casts(Val, Type, Rules);
+casts([Fun | Args], Type, [fetch_refs_as_bool | Rules]) when ?is_fn(Fun) ->
+    casts(muin:eval([Fun | Args]), Type, Rules);
+casts(Val, Type, [fetch_refs_as_bool | Rules])  ->
     casts(Val, Type, Rules);
 
 % fetch_refs_as_str
@@ -71,12 +194,15 @@ casts({cellref, _X, _T, _Path, _Name}, Type, [fetch_refs_as_str | Rules]) ->
 casts(Val, Type, [fetch_refs_as_str | Rules]) ->
     casts(Val, Type, Rules);
 
+% pick first array
 casts({array,[[Val|_]|_]}, Type, [pick_first_array | Rules]) ->
     casts(Val, Type, Rules);
 casts(Val, Type, [pick_first_array | Rules]) ->
     casts(Val, Type, Rules);
 
-casts(Val, Type, [cast_all_or_die | Rules]) ->
+casts(Val, _Type, [cast_or_err | _Rules]) when ?is_errval(Val) ->
+    throw(Val);
+casts(Val, Type, [cast_or_err | Rules]) ->
     case muin_util:cast(Val, Type) of
         {error, _Err} -> ?ERR_VAL;
         Else          -> casts(Else, Type, Rules)
@@ -299,6 +425,9 @@ generic_ban(Xs, Detectorf) ->
     end.
 
 %%% Type checks ~~~~~
+is_bool(true)  -> true;
+is_bool(false) -> true;
+is_bool(_)     -> false.
 
 is_string({ustr, Bin}) when is_binary(Bin) ->
     true;
@@ -331,35 +460,50 @@ flatten_areas(Hd, [NHd|Tl], Acc, Test) ->
     end.
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-include_lib("eunit/include/eunit.hrl").
 
-%% -include_lib("eunit/include/eunit.hrl").
-%% -define(L1, [1, 2, 3, true, false, "11.22", blank, 99.9]).
-%% -define(L2, [0, 0.0, 1, 999, "true", "TrUe", "FALse", blank, true, false]).
+basic_test_() ->
+    [
+     % Basic tests
+     ?_assertEqual( col([1,2,3], [num_as_bool]), [true, true, true]),
+     ?_assertEqual( col([0,2,3], [num_as_bool]), [false, true, true]),
 
-%% collect_numbers_test_() ->
-%%     [
-%%      ?_assert(collect_numbers(?L1, [ignore_strings, ignore_bools, ignore_blanks]) ==
-%%               [1, 2, 3, 99.9]),
-%%      ?_assert(collect_numbers(?L1, [cast_strings, ignore_bools, ignore_blanks]) ==
-%%               [1, 2, 3, 11.22, 99.9]),
-%%      ?_assert(collect_numbers(?L1, [cast_strings, cast_bools, ignore_blanks]) ==
-%%               [1, 2, 3, 1, 0, 11.22, 99.9]),
-%%      ?_assert(collect_numbers(?L1, [cast_strings, cast_bools, zero_blanks]) ==
-%%               [1, 2, 3, 1, 0, 11.22, 0, 99.9]),
-%%      ?_assert(collect_numbers(?L1, [cast_strings_zero, ignore_bools, zero_blanks]) ==
-%%               [1, 2, 3, 11.22, 0, 99.9])
-%%     ].
+     % Test casting string to bools
+     ?_assertEqual( [?ERRVAL_VAL, true, true],
+                    col(["1",2,3],
+                        [num_as_bool, str_as_bool])),
+     ?_assertEqual( [false, true, true],
+                    col(["FaLsE",2,3],
+                        [num_as_bool, str_as_bool])),
 
-%% collect_bools_test_() ->
-%%     [
-%%      ?_assert(collect_bools(?L1, [ignore_strings, cast_numbers, ignore_blanks]) ==
-%%               [true, true, true, true, false, true]),
-%%      ?_assert(collect_bools(?L1, [ignore_strings, cast_numbers, false_blanks]) ==
-%%               [true, true, true, true, false, false, true]),
-%%      ?_assert(collect_bools(?L1, [ignore_strings, ignore_numbers, false_blanks]) ==
-%%               [true, false, false]),
-%%      ?_assert(collect_bools(?L2, [ignore_numbers, ignore_strings, ignore_blanks]) ==
-%%               [true, false]),
-%%      ?_assert(collect_bools(?L2, [cast_numbers, cast_strings, false_blanks]) ==
-%%               [false, false, true, true, true, true, false, false, true, false])
-%%     ].
+     % Check Evalling functions
+     ?_assertEqual( [false],
+                    col([['-',1,1]], [eval_funs, num_as_bool])),     
+     ?_assertEqual( [?ERRVAL_DIV],
+                    col([['/',1,0]], [eval_funs, num_as_bool])),
+
+     % Check reading arrays
+     ?_assertEqual( [true, false, true, false],
+                    col([{array,[["FALSE",2,3]]},{array,[[0,5,4]]},
+                         {array,[[1,5,4]]}, {array,[[false,2,3]]}],
+                        [eval_funs, first_array_as_bool])),
+
+     % Check ignore blanks
+     ?_assertEqual( [true, false],
+                    col([true, blank, false], [ignore_blanks])),
+
+     % Check pass filters
+     ?_assertEqual( ?ERRVAL_VAL,
+                    pass([true, false, "1"], [{all, fun is_bool/1}])),
+     
+     ?_assertEqual( ?ERRVAL_DIV,
+                    pass([true, false, ?ERRVAL_DIV], [return_errors])),
+     
+     
+%% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
+%% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
+%% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
+%% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
+%% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true])
+     ?_assert(1==1)
+    ].

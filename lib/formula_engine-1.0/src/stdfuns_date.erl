@@ -24,7 +24,7 @@
          timevalue/1,
          time/1]).
 
--import(muin_collect, [ collect/4 ]).
+-import(muin_collect, [ collect/3 ]).
 
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
@@ -135,8 +135,12 @@ days360([Date1, Date2]) ->
     days360([Date1, Date2, true]);
 
 days360([PreDate1, PreDate2, PreMethod]) ->
-    [Date1, Date2] = collect([PreDate1, PreDate2], date, all_die, none),
-    [Method]       = collect([PreMethod], bool, all_die, none),
+    
+    [Date1, Date2] = collect([PreDate1, PreDate2], date,
+                             [cast_or_err, die_on_err]),
+    [Method]       = collect([PreMethod], bool,
+                             [cast_or_err, die_on_err]),
+    
     days360(Date1, Date2, Method).
 
 days360(Date1, Date2, Method) when Date1 > Date2 ->

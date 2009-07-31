@@ -37,7 +37,6 @@ get_type(X) ->
         false -> unknown_type
     end.
 
-
 cast(Val, Type) ->
     case get_type(Val) of
         Type -> Val;

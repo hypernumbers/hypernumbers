@@ -9,6 +9,8 @@
 -export(['='/1, '<>'/1, '<'/1, '>'/1, '<='/1, '>='/1]).
 -export(['and'/1, 'if'/1, iferror/1, 'not'/1, 'or'/1]).
 
+-import( muin_collect, [ col/2, col/3 ]).
+
 -define(default_rules_bools, [cast_numbers, cast_strings,
                               cast_blanks, cast_dates]).
 
@@ -16,6 +18,7 @@
     [A1, B1] = [ muin_collect:pick_first(X) || X <- [A, B] ],
     muin_checks:die_on_errval([A1]),
     muin_checks:die_on_errval([B1]),
+    io:format("~p ~p~n",[A1, B1]),
     '=1'(A1, B1).
 
 %% numbers & numbers
@@ -73,6 +76,8 @@
 '>1'("",0)                                 -> true;
 '>1'(0,"")                                 -> false;
 '>1'("",blank)                             -> false;
+'>1'("",0.0)                                 -> true;
+'>1'(0.0,"")                                 -> false;
 '>1'(blank,"")                             -> false;
 '>1'(A, N) when ?is_area(A) andalso N > 0  -> true;
 '>1'(A, N) when ?is_area(A) andalso N =< 0 -> false;
@@ -82,10 +87,11 @@
 '>1'(S, blank) when ?is_string(S)          -> true;
 '>1'(blank, blank)                         -> false.
 
-'<'([A, B]) -> muin_checks:die_on_errval([A]),
-               muin_checks:die_on_errval([B]),
-               [A1, B1] = ?numbers([A, B], [first_array, cast_dates]),
-               '>1'(B1, A1).
+'<'([A, B]) ->
+    muin_checks:die_on_errval([A]),
+    muin_checks:die_on_errval([B]),
+    [A1, B1] = ?numbers([A, B], [first_array, cast_dates]),
+    '>1'(B1, A1).
 
 '<='(Args = [_, _]) ->
     '='(Args) orelse '<'(Args).
@@ -94,11 +100,15 @@
     '='(Args) orelse '>'(Args).
 
 'and'(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    ?ensure(Flatvs =/= [blank], ?ERR_VAL),
-    Bools = ?bools(Flatvs, [cast_strings, cast_numbers,
-                            ignore_blanks, cast_dates]),
-    all(fun(X) -> X =/= false end, Bools).
+    
+    Rules = [eval_funs, first_array_as_bool, ref_as_bool,
+             num_as_bool, str_as_bool, name_as_bool, ignore_blanks],
+    
+    case col(Vs, Rules, [return_errors, {all, fun muin_collect:is_bool/1}]) of
+        Err when ?is_errval(Err) -> Err;
+        []                       -> ?ERRVAL_VAL;
+        Vals                     -> all(fun(X) -> X =/= false end, Vals)
+    end.
 
 'not'([V]) ->
     not(?bool(V, [cast_strings, cast_numbers, cast_blanks, cast_dates])).

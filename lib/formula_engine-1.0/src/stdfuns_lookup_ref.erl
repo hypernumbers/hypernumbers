@@ -12,7 +12,7 @@
 
 choose([V|Vs]) ->
     [Idx]  = collect([V], int, [fetch_refs, pick_first_array,
-                                die_on_err, cast_all_or_die]),
+                                die_on_err, cast_or_err]),
     List = collect(Vs, any, [pick_first_array]),
     ?ensure(Idx > 0 andalso Idx =< length(Vs), ?ERR_VAL),
     choose(Idx, List).

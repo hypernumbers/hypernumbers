@@ -31,11 +31,6 @@
 -define(msite, get(site)).
 -define(array_context, get(array_context)).
 
--define(is_fn(X),      % Is atom a function name?
-        is_atom(X) andalso X =/= true andalso X =/= false).
--define(is_funcall(X), % Is list a function call?
-        ?is_list(X) andalso ?is_fn(hd(X))).
-
 -define(error_in_formula, {error, error_in_formula}).
 -define(syntax_error, {error, syntax_error}).
 
@@ -183,7 +178,8 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
 %% TODO: If a function exists in one of the modules, but calling it returns
 %%       no_clause, return #VALUE? (E.g. for when giving a list to ABS)
 funcall(Fname, Args0) ->
-    Args = case member(Fname, ['if', choose, column, row, cell, columns]) of
+    Funs = ['if', choose, column, row, cell, columns, 'and'],
+    Args = case member(Fname, Funs) of
                true  -> Args0;
                false -> [eval(X) || X <- prefetch_references(Args0)]
            end,

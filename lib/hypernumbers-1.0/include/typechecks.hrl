@@ -13,6 +13,12 @@
 
 %%% Guards
 
+-define(is_fn(X),      % Is atom a function name?
+        (is_atom(X) andalso X =/= true andalso X =/= false)).
+
+-define(is_funcall(X), % Is list a function call?
+        (is_list(X) andalso X =/= [] andalso ?is_fn(hd(X)))).
+
 -define(is_array(A),
         (is_tuple(A) andalso (element(1, A) == array))).
 
@@ -23,7 +29,10 @@
         (?is_array(A) orelse ?is_range(A))).
 
 -define(is_string(X),
-        ((is_list(X)) orelse (is_tuple(X) andalso element(1, X) == ustring))).
+        (( is_list(X) andalso (not(?is_funcall(X))) )
+        orelse
+        ( is_tuple(X) andalso element(1, X) == ustring))
+       ).
 
 -define(is_cellref(X),
         element(1, X) == cellref).
@@ -46,7 +55,6 @@
 -define(is_blank(X), X == blank).
 
 -define(is_date(X), is_record(X, datetime)).
-
 
 %%% Collectors
 
