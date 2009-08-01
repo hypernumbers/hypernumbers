@@ -24,21 +24,28 @@ to_i(Str) when is_list(Str) ->
 to_i(Num) when is_number(Num) -> trunc(Num).
 
 %% @doc Convert value to float.
-to_f(Str) when is_list(Str) -> {ok, [Val], []} = io_lib:fread("~f", Str), Val;
-to_f(F) when is_float(F)    -> F.
+to_f(Str) when is_list(Str) ->
+    %
+    NStr = re:replace(Str, "^((?:-|\\+)?[0-9]+)(E(?:-|\\+)?[0-9]+)$", %"
+                      "\\1.0\\2", [{return, list}]),
+    {ok, [Val], []} = io_lib:fread("~f", NStr),
+    Val;
+to_f(F) when is_float(F) -> F.
 
 %% String -> number.
-to_num(Str) when is_list(Str)   -> try conv_to_int(Str)
-                                   catch
-                                       exit : _ ->
-                                           try to_f(Str)
-                                           catch
-                                               error:
-                                                 _ -> {error, nan};
-                                                 exit:
-                                                 _ -> {error, nan}
-                                           end
-                                   end;
+to_num(Str) when is_list(Str)   ->
+    try conv_to_int(Str)
+    catch
+        exit : _ ->
+            try to_f(Str)
+            catch
+                error:
+                _ -> {error, nan};
+                exit:
+                _ -> {error, nan}
+            end
+    end;
+
 to_num(Num) when is_number(Num) ->   Num.
 
 to_s(DateTime = {datetime, _D, _T}) -> muin_date:to_rfc1123_string(DateTime);

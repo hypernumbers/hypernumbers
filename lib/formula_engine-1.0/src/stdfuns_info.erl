@@ -202,9 +202,13 @@ columns([R]) when ?is_rangeref(R) ->
     R#rangeref.width;
 columns([A]) when ?is_array(A) ->
     area_util:width(A);
+columns([Expr]) when ?is_cellref(Expr) ->
+    columns([muin:fetch(Expr)]);
+
 columns([Expr]) ->
     V = muin:eval_formula(Expr),
-    %% Argument must be castable to number, but 1 is returned regardless of
-    %% what its value is.
-    _N = ?number(V, [ban_strings, ban_dates, ban_bools, cast_blanks]),
+    % Argument must be castable to number, but 1 is returned regardless of
+    % what its value is.
+    _N = ?number(V, [first_array, ban_strings, ban_dates,
+                     ban_bools, cast_blanks]),
     1.

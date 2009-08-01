@@ -58,9 +58,9 @@ cast(_, _, bool) -> {error, nab};
 
 cast(X, Type, int) ->
     case cast(X, Type, num) of
-        {error, nan} -> {error, nan};
+        {error, nan}       -> {error, nan};
         F when is_float(F) -> erlang:trunc(F);
-        I -> I
+        I                  -> I
     end;
 
 %% X -> number
