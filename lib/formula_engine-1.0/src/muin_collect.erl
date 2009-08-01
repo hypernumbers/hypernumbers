@@ -66,6 +66,8 @@ rl(ignore_blanks, blank) ->
 rl(eval_funs, Fun) when ?is_funcall(Fun) ->
     muin:eval(Fun);
 
+rl(first_array, {array,[[X|_]|_]}) -> X;
+
 rl(first_array_as_bool, {array,[[X|_]|_]}) when X == false; X == 0 ->
     false;
 rl(first_array_as_bool, {array,[[_Val|_]|_]}) ->
@@ -90,6 +92,12 @@ rl(ref_as_bool, Ref) when ?is_cellref(Ref) ->
         _Else                     -> true
     end;
 
+rl(cast_num, X) ->
+    case muin_util:cast(X, num) of
+        {error, _} -> X;
+        Num  -> Num
+    end;
+    
 rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 

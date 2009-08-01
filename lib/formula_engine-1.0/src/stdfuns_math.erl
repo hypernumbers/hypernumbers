@@ -30,6 +30,7 @@
 -include("muin_records.hrl").
 
 -import(muin_util, [cast/2]).
+-import(muin_collect, [ col/2, col/3 ]).
 
 -define(GOOGOL, 1.0E100).
 
@@ -877,9 +878,17 @@ tan([V]) ->
     math:tan(Num).
 
 asin([V]) ->
-    Num = ?number(V, ?default_rules),
-    ?ensure(Num >= -1 andalso Num =< 1, ?ERR_NUM),
-    math:asin(Num).
+    case col([V], [first_array, cast_num],
+             [return_errors, {all, fun is_number/1}]) of
+        Err when ?is_errval(Err)     -> Err;
+        [X] when X > 1 orelse X < -1 -> ?ERRVAL_NUM;
+        [X] -> math:asin(X)
+    end.
+
+%% Num = ?number(V, ?default_rules),
+%% io:format("~p ~p~n",[V, Num]),
+%% ?ensure(Num >= -1 andalso Num =< 1, ?ERR_NUM),
+%% math:asin(Num).
 
 acos([V]) ->
     Num = ?number(V, ?default_rules),
