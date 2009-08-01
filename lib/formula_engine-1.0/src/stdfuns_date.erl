@@ -175,6 +175,8 @@ days360(#datetime{date={Y1,M1,D1}}, #datetime{date={Y2,M2,D2}}, _Method) ->
     Left + ((Y2 - Y1 - 1) * 360) + FromStart.
 
 
+day([Val]) when is_number(Val) andalso Val < 0 ->
+    ?ERRVAL_NUM;
 day([Val]) ->
     Date = ?date(Val, [first_array, cast_strings, cast_bools,
                        cast_blanks, cast_numbers]),
