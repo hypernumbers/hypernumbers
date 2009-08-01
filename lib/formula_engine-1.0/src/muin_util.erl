@@ -207,9 +207,6 @@ attempt(Mod, F, Args) ->
         exit:X  ->
             error_logger:error_msg({X, erlang:get_stacktrace()}),
             {error, X};
-        % TODO: THIS NEEDS TO BE TAKEN OUT (and shot)
-        error:undef ->
-            {error, undef};        
         error:X ->            
             error_logger:error_msg({X, erlang:get_stacktrace()}),
             {error, X}

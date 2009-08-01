@@ -939,8 +939,12 @@ atanh([V]) ->
     math:atanh(Num).
 
 degrees([V]) ->
-    Angle = ?number(V, ?default_rules),
-    Angle / math:pi() * 180.
+    io:format("~p ~p~n",[V, ?flatten_all(V)]),
+    case col([V], [area_first, cast_num],
+             [return_errors, {all, fun is_number/1}]) of
+        Err when ?is_errval(Err) -> Err;
+        [Angle]                  -> Angle / math:pi() * 180
+    end.
 
 radians([V]) ->
     Angle = ?number(V, ?default_rules),

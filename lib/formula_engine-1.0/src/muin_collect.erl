@@ -70,6 +70,9 @@ rl(ignore_errors, Err) when ?is_errval(Err) ->
 rl(eval_funs, Fun) when ?is_funcall(Fun) ->
     muin:eval(Fun);
 
+rl(area_first, {array,[[X|_]|_]}) -> X;
+rl(area_first, {range,[[X|_]|_]}) -> X;
+
 rl(first_array, {array,[[X|_]|_]}) -> X;
 
 rl(first_array_as_bool, {array,[[X|_]|_]}) when X == false; X == 0 ->

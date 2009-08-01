@@ -2,7 +2,7 @@
 %%% @doc Functions to handle file uploads.
 -module(hn_file_upload).
 
--export([ handle_upload/3, test_import/2 ]).
+-export([ handle_upload/3, test_import/2, test_import/1 ]).
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
@@ -107,6 +107,10 @@ defaultize(M) ->
                  M3#magic_style{'border-bottom-color' = []};
               _O4 -> M3
           end.    
+
+
+test_import(File) ->
+    test_import(File, hn_util:parse_url("http://127.0.0.1:9000/")).
 
 test_import(File, Ref) ->
     Path = code:lib_dir(hypernumbers)++"/../../tests/excel_files/"
