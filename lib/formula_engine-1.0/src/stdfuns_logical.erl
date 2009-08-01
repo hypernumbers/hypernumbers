@@ -18,7 +18,6 @@
     [A1, B1] = [ muin_collect:pick_first(X) || X <- [A, B] ],
     muin_checks:die_on_errval([A1]),
     muin_checks:die_on_errval([B1]),
-    io:format("~p ~p~n",[A1, B1]),
     '=1'(A1, B1).
 
 %% numbers & numbers

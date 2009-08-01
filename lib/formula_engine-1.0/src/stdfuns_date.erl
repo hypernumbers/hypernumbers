@@ -24,7 +24,7 @@
          timevalue/1,
          time/1]).
 
--import(muin_collect, [ collect/3 ]).
+-import(muin_collect, [ collect/3, col/3 ]).
 
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
@@ -34,12 +34,31 @@
 
 -define(last_day, calendar:last_day_of_the_month).
 
-date(Arg = [_, _, _]) ->
-    [Year, Month, Day] = ?ints(Arg, ?cast_all),
-    if
-        Year <  1900  -> dateh([Year+1900,Month,Day]);
-        Year >= 1900  -> dateh([Year,Month,Day])
+date(Args = [_, _, _]) ->
+
+    % bit insane, excel rounds negative floats and truncs positive ones
+    Rnd = fun(X) when X >= 0 -> erlang:trunc(X);
+             (X) when X < 0  -> erlang:round(X)
+          end,
+    
+    F = fun(Y, M, D) ->
+                dateh([erlang:trunc(Y), Rnd(M), Rnd(D)])
+        end,
+
+    case col(Args, [flatten_as_str, {cast, num}],
+             [return_errors, {all, fun is_number/1}]) of
+        Err when ?is_errval(Err) -> Err;
+        [Y, M, D] when Y < 1900  -> F(Y+1900, M, D);
+        [Y, M, D]                -> F(Y, M, D)
     end.
+
+%%     [Year, Month, Day] = col(Args, [cast_num], [return_errors])
+%%         ?ints(Arg, ?cast_all),
+%% %    [Year, Month, Day] = ?ints(Arg, ?cast_all),
+%%     if
+%%         Year <  1900  -> dateh([Year+1900,Month,Day]);
+%%         Year >= 1900  -> dateh([Year,Month,Day])
+%%     end.
 
 dateh([Y, M, D]) when (M =< 0) ->
     Diff = abs(M) rem 12,

@@ -101,6 +101,12 @@ rl(ref_as_bool, Ref) when ?is_cellref(Ref) ->
         _Else                     -> true
     end;
 
+rl({cast, Type}, X) ->
+    case muin_util:cast(X, Type) of
+        {error, _} -> X;
+        Num        -> Num
+    end;
+
 rl(cast_num, X) ->
     case muin_util:cast(X, num) of
         {error, _} -> X;

@@ -118,7 +118,7 @@ clean([true])  -> "TRUE";
 clean([false]) -> "FALSE";
 clean([Str])   ->
     NewStr=?string(Str,?default_str_rules),
-    Clean = fun(X) -> io_lib:printable_list([X]) end,
+    Clean = fun(X) -> io_lib:printable_list([X]) andalso X =/= 10 end,
     filter(Clean, NewStr).
 
 %% Fixed is a bit of a mess
