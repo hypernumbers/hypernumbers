@@ -101,6 +101,8 @@
          %%ztest/1
         ]).
 
+-import(muin_collect, [col/2, col/3]).
+
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 -define(default_rules_bools, [cast_numbers, cast_strings, cast_blanks, cast_dates]).
 
@@ -174,9 +176,9 @@ counta(Vs) ->
     length(filter(fun(X) -> not(muin_collect:is_blank(X)) end, Fvs)). % Discard blanks.
 
 count(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers(Flatvs, [ignore_strings, ignore_bools, ignore_dates, ignore_blanks]),
-    length(Nums).
+    Vals = col(Vs, [flatten_as_str, ignore_blanks, cast_num,
+                    ignore_errors, ignore_strings]),
+    length(Vals).
 
 countblank(Vs) ->
     Flatvs = ?flatten_all(Vs),

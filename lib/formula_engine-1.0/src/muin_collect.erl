@@ -41,9 +41,9 @@ col(Args, Rules) ->
     
     F1 = fun(X, List) ->
                  case lists:foldl(fun rl/2, X, Rules) of
-                     ignore -> List;
-                     Else   ->
-                         [Else | List]
+                     ignore       -> List;
+                     {list, Vals} -> Vals ++ List;
+                     Else         -> [Else | List]
                  end
          end,
     
@@ -61,6 +61,10 @@ rl(_, ignore) ->
 % Ignore Blanks
 rl(ignore_blanks, blank) ->
     ignore;
+rl(ignore_strings, String) when ?is_string(String) ->
+    ignore;
+rl(ignore_errors, Err) when ?is_errval(Err) ->
+    ignore;
 
 % Evaluate functions
 rl(eval_funs, Fun) when ?is_funcall(Fun) ->
@@ -72,6 +76,11 @@ rl(first_array_as_bool, {array,[[X|_]|_]}) when X == false; X == 0 ->
     false;
 rl(first_array_as_bool, {array,[[_Val|_]|_]}) ->
     true;
+
+rl(flatten_as_str, {range,[X]}) ->
+    {list, col(X, [ignore_blanks, cast_str, cast_num, ignore_strings])};
+rl(flatten_as_str, {array,[X]}) ->
+    {list, col(X, [ignore_blanks, cast_str, cast_num, ignore_strings])};
 
 rl(num_as_bool, X) when is_number(X) andalso X==0; X==0.0 ->
     false;
@@ -97,7 +106,14 @@ rl(cast_num, X) ->
         {error, _} -> X;
         Num  -> Num
     end;
-    
+
+rl(cast_str, X) ->
+    case muin_util:cast(X, str) of
+        {error, _} -> X;
+        Num  -> Num
+    end;
+
+
 rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 
