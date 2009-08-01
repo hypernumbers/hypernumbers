@@ -116,9 +116,10 @@ mid1(Str, Start, Len) ->
 
 clean([true])  -> "TRUE";
 clean([false]) -> "FALSE";
-clean([Str])   -> NewStr=?string(Str,?default_str_rules),
-                  Clean = fun(X) -> (X > 31 andalso X < 123) end,
-                  filter(Clean, NewStr).
+clean([Str])   ->
+    NewStr=?string(Str,?default_str_rules),
+    Clean = fun(X) -> io_lib:printable_list([X]) end,
+    filter(Clean, NewStr).
 
 %% Fixed is a bit of a mess
 fixed([Num]) ->
