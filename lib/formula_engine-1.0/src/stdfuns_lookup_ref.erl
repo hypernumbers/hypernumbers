@@ -21,14 +21,16 @@ choose(Idx, List) ->
     case muin:eval(nth(Idx, List)) of
         % TODO: eugh
         {array,[Arr]} -> "{"++string:join([tconv:to_s(X)||X<-Arr], ",")++"}";
-        {namedexpr, _, _} -> ?ERR_NAME;
+        {namedexpr, _, _} -> ?ERRVAL_NAME;
         Else              -> Else
     end.
 
-column([])                      -> muin:context_setting(col);
-column([C]) when ?is_cellref(C) -> muin:col_index(muin:col(C));
-column(_)                       -> ?ERR_VAL.
-
+column([])                          -> muin:context_setting(col);
+column([C]) when ?is_namedexpr(C)   -> ?ERRVAL_NAME;
+column([C]) when ?is_cellref(C)     -> muin:col_index(muin:col(C));
+column([Err]) when ?is_errval(Err)  -> Err;
+column(_Else)                       -> io:format("~p~n",[_Else]),?ERR_VAL.
+ 
 
 %% TODO: Needs to be recompiled every time -- how to handle that cleanly?
 %% (without writing to proc dict)
