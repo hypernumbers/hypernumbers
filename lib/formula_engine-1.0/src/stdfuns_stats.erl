@@ -180,6 +180,7 @@ count(Vs) ->
                     ignore_errors, ignore_strings]),
     length(Vals).
 
+countblank([Err]) when ?is_errval(Err) -> Err;
 countblank(Vs) ->
     Flatvs = ?flatten_all(Vs),
     length([X || X <- Flatvs, muin_collect:is_blank(X)]).
