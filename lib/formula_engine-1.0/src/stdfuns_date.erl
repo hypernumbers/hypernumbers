@@ -182,6 +182,8 @@ day([Val]) ->
                        cast_blanks, cast_numbers]),
     muin_date:day(Date).
 
+month([Val]) when is_number(Val) andalso Val < 0 ->
+    ?ERRVAL_NUM;
 month([Val]) ->
     Date = ?date(Val, [first_array, cast_strings, cast_bools,
                        cast_blanks, cast_numbers]),

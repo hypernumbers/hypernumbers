@@ -57,6 +57,7 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
         [{site, Site}, {path, Path}, {x, Col}, {y, Row}, 
          {array_context, AryCtx},
          {retvals, {[], [], []}}, {recompile, false}]),
+    
     Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
     Result = eval_formula(Fcode),
     {RefTree, _Errors, References} = get(retvals),
@@ -73,7 +74,7 @@ eval_formula(Fcode) ->
                 R when ?is_cellref(R) ->
                     case attempt(?MODULE, fetch, [R]) of
                         {ok,    blank}              -> 0;
-                        {error, {aborted, _} = Err} -> exit(Err); % re-exit on lock
+                        {error, {aborted, _} = Err} -> exit(Err);
                         {ok,    Other}              -> Other;
                         {error, ErrVal}             -> ErrVal
                     end;
@@ -103,6 +104,7 @@ compile(Fla, {Col, Row}) ->
 
 %% Formula -> sexp, relative to coord.
 parse(Fla, {Col, Row}) ->
+    
     Trans = translator:do(Fla),
 
     case catch (xfl_lexer:lex(Trans, {Col, Row})) of
@@ -136,36 +138,38 @@ funcall(make_list, Args) ->
 %% Hypernumber function and its shorthand.
 funcall(hypernumber, [Url]) ->
     {ok, #refX{site = RSite, path = RPath,
-             obj = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
-    F = fun() -> get_hypernumber(?msite, ?mpath, ?mx, ?my, Url, RSite, RPath, RX, RY) end,
+               obj = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
+    F = fun() -> get_hypernumber(?msite, ?mpath, ?mx, ?my,
+                                 Url, RSite, RPath, RX, RY) end,
     get_value_and_link(F);
 
 funcall(hn, [Url]) ->
     funcall(hypernumber, [Url]);
 
 funcall(loop, [A, Fn]) when ?is_area(A) ->
-    R = area_util:apply_each(fun(L) when is_list(L) -> % paired up
-                                 funcall(Fn, L);
-                            (X) -> % single value from array
-                                 case Fn of
-                                     {Lst} when is_list(Lst) -> % fn spec is reversed
-                                         [Func|Revargs] = Lst,
-                                         funcall(Func, [X|reverse(Revargs)]);
-                                     _ -> % spec is atom (should probably be done on length)
-                                         funcall(Fn, [X])
-                                 end
-                         end,
-                         A),
-    R;
+    area_util:apply_each(
+      fun(L) when is_list(L) -> % paired up
+              funcall(Fn, L);
+         (X) -> % single value from array
+              case Fn of
+                  {Lst} when is_list(Lst) -> % fn spec is reversed
+                      [Func|Revargs] = Lst,
+                      funcall(Func, [X|reverse(Revargs)]);
+                  _ -> % spec is atom (should probably be done on length)
+                      funcall(Fn, [X])
+              end
+      end,
+      A);
 
 funcall(pair_up, [A, B]) when ?is_area(A) andalso ?is_area(B) ->
-    area_util:apply_each_with_pos(fun({X, {C, R}}) ->
-                                          case area_util:at(C, R, B) of
-                                              {ok, V}    -> [X, V];
-                                              {error, _} -> ?ERRVAL_NA
-                                          end
-                                  end,
-                                  A);
+    area_util:apply_each_with_pos(
+      fun({X, {C, R}}) ->
+              case area_util:at(C, R, B) of
+                  {ok, V}    -> [X, V];
+                  {error, _} -> ?ERRVAL_NA
+              end
+      end,
+      A);
 funcall(pair_up, [A, V]) when ?is_area(A) andalso not(?is_area(V)) ->
     Ev = eval(V),
     ?COND(?is_area(Ev),
@@ -173,7 +177,7 @@ funcall(pair_up, [A, V]) when ?is_area(A) andalso not(?is_area(V)) ->
           area_util:apply_each(fun(X) -> [X, Ev] end, A));
 funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
     funcall(pair_up, [A, V]);
-             
+
 %% Formula function call (built-in or user-defined).
 %% TODO: If a function exists in one of the modules, but calling it returns
 %%       no_clause, return #VALUE? (E.g. for when giving a list to ABS)
@@ -303,11 +307,13 @@ fetch(R) ->
 
 %% why are we passing in Url?
 get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
+
+    % TODO get rid of
     NewMPath = lists:filter(fun(X) -> not(X == $/) end, MPath),
     NewRPath = lists:filter(fun(X) -> not(X == $/) end, RPath),
 
-    Child  = #refX{site = MSite, path = NewMPath, obj ={cell, {MX, MY}}},
-    Parent = #refX{site = RSite, path = NewRPath, obj ={cell, {RX, RY}}},
+    Child  = #refX{site=MSite, path=NewMPath, obj={cell, {MX, MY}}},
+    Parent = #refX{site=RSite, path=NewRPath, obj={cell, {RX, RY}}},
 
     case hn_db_wu:read_incoming_hn(Parent, Child) of
         
@@ -320,7 +326,8 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
                         #refX{site = S, path = P, obj = {cell, {X, Y}}} = Ref, 
                         {Type,{S, P, X, Y}}
                 end,
-            Dep = lists:map(F, DepTree) ++ [{"remote", {RSite, NewRPath, RX, RY}}],
+            Dep = lists:map(F, DepTree) ++
+                [{"remote", {RSite, NewRPath, RX, RY}}],
             {Val, Dep, [], [{"remote", {RSite, NewRPath, RX, RY}}]}
     end.
 
@@ -328,8 +335,8 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
 %% TODO: what's the real type of ':'? (vararg works for now).
 fntype(Fn) ->
     ?COND(member(Fn, [transpose, mmult, munit, frequency]), matrix,
-          ?COND(member(Fn, [sum, count, ':']),              vararg,
-                                                            other)).
+          ?COND(member(Fn, [sum, count, ':']), vararg,
+                other)).
 
 is_binop(X) ->
     member(X, ['>', '<', '=', '>=', '<=', '<>', '+', '*', '-', '/', '^']).
@@ -355,8 +362,9 @@ loop_transform([Fn|Args]) when ?is_fn(Fn) ->
                     [loop] ++ ArgsProcd ++ [Fn];
                 _ -> % IF, CONCATENATE &c (NOT binops)
                     [Area|Rst] = ArgsProcd,
-                    [loop] ++ [Area] ++ [{[Fn|reverse(Rst)]}] % to wrap Area or not may depend on if it's node or literal?
-                                                              % wrap in {} to prevent from being eval'd -- need a proper '
+                    [loop] ++ [Area] ++ [{[Fn|reverse(Rst)]}]
+                    % to wrap Area or not may depend on if it's node or literal?
+                    % wrap in {} to prevent from being eval'd -- need a proper '
             end
     end.
 
@@ -366,13 +374,13 @@ userdef_call(Fname, Args) ->
     % to work after hot code load (Gordon Guthrie 2008_09_08)
     case (catch apply(userdef,Fname,Args)) of
         {'EXIT', {undef, _}} -> ?ERR_NAME;
-        {'EXIT', _}          -> ?ERR_NAME; %% FIXME: should return a descriptive error message.
+        {'EXIT', _}          -> ?ERR_NAME;
+        % FIXME: should return a descriptive error message.
         Val                  -> Val
     end.
 
 %% Returns value in the cell + get_value_and_link() is called behind the
 %% scenes.
-
 do_cell(RelPath, Rowidx, Colidx) ->
     Path = muin_util:walk_path(?mpath, RelPath),
     IsCircRef = (Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath),
@@ -403,5 +411,5 @@ toidx({row, Offset})       -> ?my + Offset;
 toidx({col, Offset})       -> ?mx + Offset.
 
 get_cell_info(S, P, Col, Row) ->
-    RefX = #refX{site = string:to_lower(S), path = P, obj = {cell, {Col, Row}}},
+    RefX = #refX{site=string:to_lower(S), path=P, obj={cell, {Col,Row}}},
     hn_db_wu:get_cell_for_muin(RefX).
