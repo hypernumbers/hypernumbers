@@ -1,33 +1,31 @@
-p
+.canvas
 { 
-  font:  12px Arial,"Helvetica Neue", sans-serif;
+  top:              50%;
+  left:             50%;
+  border:           2px solid #bcbcbc;
+  height:           1200px;
+  width:            1200px;
+  padding:          3px;
+  background-color: #dcdcdc;
+  font-size:        32pt;
+  font-weight:      bold;
+  color:            #ffffff;
+  text-align:       center;
+  vertical-align:   middle;
+  
 }
 
-*.lable > p
-{  
-  font:  12px Arial,"Helvetica Neue", sans-serif;
-}
-
-*.smalllable > p
-{ 
-  font:  9px Arial,"Helvetica Neue", sans-serif;
-  color: #bcbcbc;
-}
-
-*.largelable > p
-{ 
-  font: 14px Arial,"Helvetica Neue", sans-serif;
-  font-weight: bold;
-}
-
-*.largestlable > p
-{ 
-  font: 20px Arial,"Helvetica Neue", sans-serif;
-  font-weight: bold;
-}
-
-.hntable
+body, html
 {
-  border-width: 1px;
-  border-style: solid;
+  padding: 0px;
+  margin:  0px;
 }
+
+body
+{
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size:   13px;
+  background:  #FFF;
+  padding:     15px;
+}
+

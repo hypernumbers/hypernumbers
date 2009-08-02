@@ -1,0 +1,33 @@
+p
+{ 
+  font:  12px Arial,"Helvetica Neue", sans-serif;
+}
+
+*.lable > p
+{  
+  font:  12px Arial,"Helvetica Neue", sans-serif;
+}
+
+*.smalllable > p
+{ 
+  font:  9px Arial,"Helvetica Neue", sans-serif;
+  color: #bcbcbc;
+}
+
+*.largelable > p
+{ 
+  font: 14px Arial,"Helvetica Neue", sans-serif;
+  font-weight: bold;
+}
+
+*.largestlable > p
+{ 
+  font: 20px Arial,"Helvetica Neue", sans-serif;
+  font-weight: bold;
+}
+
+.hntable
+{
+  border-width: 1px;
+  border-style: solid;
+}
