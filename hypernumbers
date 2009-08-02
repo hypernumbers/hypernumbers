@@ -268,5 +268,5 @@ case $1 in
     inspect_mnesia) inspect_mnesia;;
     clear_po)       clear_po;;
     test)           test $2;;
-    *)              echo "invalid paramaters passed into hypernumbers script";;
+    *)              echo "invalid parameters passed into hypernumbers script";;
 esac
