@@ -153,11 +153,7 @@ from_gregorian_seconds(N) when is_integer(N) ->
     #datetime{date = Date, time = Time}.
 
 from_rfc1123_string(S) when is_list(S) ->
-    case muin_util:attempt(httpd_util, convert_request_date, [S]) of
-        {error, _}     -> bad_date;
-        {ok, bad_date} -> bad_date;
-        {ok, {D, T}}   -> #datetime{date = D, time = T}
-    end.
+    bad_date.
 
 %% Nicked from httpd_util:rfc1123_date (but doesn't convert from summertime)
 to_rfc1123_string(#datetime{date = {0,0,0}, time = {0,0,0}}) ->

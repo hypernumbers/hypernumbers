@@ -203,7 +203,9 @@ attempt(Mod, F, Args) ->
     try apply(Mod, F, Args) of
         Val -> {ok, Val}
     catch
-        throw:X -> {error, X};
+        throw:X ->
+            error_logger:error_msg({X, erlang:get_stacktrace()}),
+            {error, X};
         exit:X  ->
             error_logger:error_msg({X, erlang:get_stacktrace()}),
             {error, X};
@@ -217,6 +219,7 @@ attempt(Fun) when is_function(Fun) ->
         Val -> {ok, Val}
     catch
         throw:X ->
+            error_logger:error_msg({X, erlang:get_stacktrace()}),
             {error, X};
         exit:X  ->
             error_logger:error_msg({X, erlang:get_stacktrace()}),

@@ -179,31 +179,30 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
 %%       no_clause, return #VALUE? (E.g. for when giving a list to ABS)
 funcall(Fname, Args0) ->
     Funs = ['if', choose, column, row, cell, columns, 'and'],
+    
     Args = case member(Fname, Funs) of
                true  -> Args0;
                false -> [eval(X) || X <- prefetch_references(Args0)]
            end,
-
-    R = foldl(fun(M, Acc = {F, A, not_found_yet}) ->
-                      case attempt(M, F, [A]) of
-                          {error, undef} -> Acc;
-                          {error, {aborted, _} = E}  -> exit(E); % rethrow on lock
-                          {ok, V}        -> {F, A, V};
-                          {error, Ev = {errval, _}} -> {F, A, Ev};
-                          {error, Other} -> {F, A, {error, Other}}
-                      end;
-                 (_, Acc) ->
-                      Acc
-              end,
-              {Fname, Args, not_found_yet},
-              [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date, stdfuns_financial,
-               stdfuns_info, stdfuns_lookup_ref, stdfuns_eng, stdfuns_logical, stdfuns_text,
-               stdfuns_db]),
     
-    case R of
-        {_, _, {error, Error}} -> {error, Error};
-        {_, _, not_found_yet}  -> userdef_call(Fname, Args);
-        {_, _, V}              -> V
+    Modules = [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date,
+               stdfuns_financial, stdfuns_info, stdfuns_lookup_ref,
+               stdfuns_eng, stdfuns_logical, stdfuns_text, stdfuns_db],
+    
+    case call_fun(Fname, Args, Modules) of
+        {error, not_found} -> userdef_call(Fname, Args);
+        {error, Other}     -> {error, Other};
+        {ok, Value}        -> Value
+    end.
+
+call_fun(_Fun, _Args, []) ->
+    {error, not_found};
+
+call_fun(Fun, Args, [Module | Rest]) ->
+    {module, Module} = code:ensure_loaded(Module),
+    case erlang:function_exported(Module, Fun, 1) of
+        true  -> {ok, erlang:apply(Module, Fun, [Args])};
+        false -> call_fun(Fun, Args, Rest)
     end.
 
 %%% Utility functios ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
