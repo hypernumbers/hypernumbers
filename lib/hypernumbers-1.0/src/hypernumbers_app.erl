@@ -8,7 +8,7 @@
 
 -define(cast, gen_server:cast).
 
--export([start/2, stop/1, clean_start/0, hup/0 ]).
+-export([start/2, stop/1, hup/0, clean_start/0 ]).
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
@@ -36,12 +36,18 @@ start(_Type, _Args) ->
         true             -> clean_start2();
         {exists, Tables} -> ok = mnesia:wait_for_tables(Tables, 1000000)
     end,
-   
+
+    ok =  load_muin_modules(),
     [ok = dirty_srv:start(X) || X <- ?dirties],
-    
     ok = start_mochiweb(),
     
     {ok, Pid}.
+
+% these need to be loaded for exported_function() to work
+load_muin_modules() ->
+    [ {module, Module} = code:ensure_loaded(Module)
+      || Module <- muin:get_modules() ],
+    ok.
 
 hup() ->
     hn_config:hup(),
@@ -104,10 +110,10 @@ start_mochiweb() ->
     List2 = compress(List),
     Fun = fun(X) ->
                   {IP, Port} = X,
-          
-                      Opts = [{port, Port}, 
-                              {ip,   inet_parse:ntoa(IP)}, 
-                              {loop, {hn_mochi, req}}],
+                  
+                  Opts = [{port, Port}, 
+                          {ip,   inet_parse:ntoa(IP)}, 
+                          {loop, {hn_mochi, req}}],
                   
                   mochilog:start(),
                   mochiweb_http:start(Opts)

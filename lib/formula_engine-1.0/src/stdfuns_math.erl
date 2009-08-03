@@ -172,6 +172,7 @@ negate([V]) ->
 %%% Arithmetic ~~~~~
 
 sum(Vs) ->
+    io:format("~p~n",[Vs]),
     Flatvs = ?flatten_all(Vs),
     Nums = ?numbers([0|Flatvs], [ignore_strings, ignore_bools, ignore_dates, cast_blanks]),
     sum1(Nums).

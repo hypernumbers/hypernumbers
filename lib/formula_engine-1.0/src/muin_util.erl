@@ -203,30 +203,18 @@ attempt(Mod, F, Args) ->
     try apply(Mod, F, Args) of
         Val -> {ok, Val}
     catch
-        throw:X ->
-            error_logger:error_msg({X, erlang:get_stacktrace()}),
-            {error, X};
-        exit:X  ->
-            error_logger:error_msg({X, erlang:get_stacktrace()}),
-            {error, X};
-        error:X ->            
-            error_logger:error_msg({X, erlang:get_stacktrace()}),
-            {error, X}
+        Error:Reason when Error =:= error orelse Error =:= throw ->
+            error_logger:error_msg({Error, Reason, erlang:get_stacktrace()}),
+            {error, Reason}
     end.
 
 attempt(Fun) when is_function(Fun) ->
     try Fun() of
         Val -> {ok, Val}
     catch
-        throw:X ->
-            error_logger:error_msg({X, erlang:get_stacktrace()}),
-            {error, X};
-        exit:X  ->
-            error_logger:error_msg({X, erlang:get_stacktrace()}),
-            {error, X};
-        error:X ->
-            error_logger:error_msg({X, erlang:get_stacktrace()}),
-            {error, X}
+        Error:Reason when Error =:= error orelse Error =:= throw ->
+            error_logger:error_msg({Error, Reason, erlang:get_stacktrace()}),
+            {error, Reason}
     end.        
 
 

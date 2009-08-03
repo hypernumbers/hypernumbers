@@ -12,7 +12,8 @@
          row_index/1,
          col/1,
          row/1,
-         path/1]).
+         path/1,
+         get_modules/0 ]).
 
 -compile(export_all).
 
@@ -189,9 +190,7 @@ funcall(Fname, Args0) ->
                false -> [eval(X) || X <- prefetch_references(Args0)]
            end,
     
-    Modules = [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date,
-               stdfuns_financial, stdfuns_info, stdfuns_lookup_ref,
-               stdfuns_eng, stdfuns_logical, stdfuns_text, stdfuns_db],
+    Modules = get_modules(),
     
     case call_fun(Fname, Args, Modules) of
         {error, not_found} -> userdef_call(Fname, Args);
@@ -203,11 +202,15 @@ call_fun(_Fun, _Args, []) ->
     {error, not_found};
 
 call_fun(Fun, Args, [Module | Rest]) ->
-    {module, Module} = code:ensure_loaded(Module),
     case erlang:function_exported(Module, Fun, 1) of
         true  -> {ok, erlang:apply(Module, Fun, [Args])};
         false -> call_fun(Fun, Args, Rest)
     end.
+
+get_modules() ->
+    [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date,
+     stdfuns_financial, stdfuns_info, stdfuns_lookup_ref,
+     stdfuns_eng, stdfuns_logical, stdfuns_text, stdfuns_db].
 
 %%% Utility functios ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% Intersect current cell with a range.
