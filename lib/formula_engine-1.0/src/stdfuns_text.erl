@@ -85,7 +85,7 @@ replace([Str,Start,Replace,InsertStr]) ->
 
 
 exact([V1, V2]) ->
-    Rules = [cast_numbers, cast_bools, ban_dates, cast_blanks],
+    Rules = [first_array, cast_numbers, cast_bools, ban_dates, cast_blanks],
     Str1 = ?string(V1, Rules),
     Str2 = ?string(V2, Rules),
     string:equal(Str1, Str2).
