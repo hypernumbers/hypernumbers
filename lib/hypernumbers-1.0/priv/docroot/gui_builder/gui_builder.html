@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
-    <title>Gui Builder Prototype Page</title>
+    <title>Hypernumbers Gui Builder</title>
     <link rel="stylesheet" type="text/css" href="/gui_builder/gui_builder.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/theme1.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/jquery.contextMenu.css" />
@@ -12,76 +12,160 @@
 
       <div id="cover" style="display: none";}></div>
       
+      <div id="header">
+        <h1><a href="">Hypernumbers</a></h1>
+      </div>
+
       </div>
       
-      <ul id="BuilderMenu" class="contextMenu">
+      <ul id="builderMenu" class="contextMenu">
         <li class="help">
-          <a class="menubold" href="#help" >Click For Help</a>
+          <a class="menubold" href="#help" >Click Here For Help</a>
         </li>
         <li class="resizecanvas">
-          <a href="#resizecanvas">Resize Web Page</a>
+          <a href="#resizecanvas">1 Pick Web Page Size</a>
         </li>
         <li class="insertlayout">
-          <a href="#insertlayout">Insert Layout</a>
+          <a href="#insertlayout">2 Choose Layout</a>
         </li>
         <li class="insertitem">
-          <a href="#insertitem">Insert Item</a>
+          <a href="#insertitem">3 Put Things On Page</a>
         </li>
-
-
-        <!--
-        <li class="lable separator">
-          <a href="#lable">$txt:{Lable}$</a>
-        <li>
-        <li class="smalllable">
-          <a href="#smalllable">$txt:{Small Lable}$</a>
-        <li>
-        <li class="larglable">
-          <a href="#largelable">$txt:{Large Lable}$</a>
-        <li>
-        <li class="largestlable">
-          <a href="#largestlable">$txt:{Largest Lable}$</a>
-        <li>
-        <li class="image">
-          <a href="#image">$txt:{Image}$</a>
-        <li>
-        <li class="textinput">
-          <a href="#textinpu">$txt:{Text Input}$</a>
-        <li>
-        <li class="radiobutton">
-          <a href="#radiobutton">$txt:{Radio Button}$</a>
-        <li>
-        <li class="dropdownmenus">
-          <a href="dropdownmenu">$txt:{Drop Down Menu}$</a>
-        <li> -->
-        
-      </ul>
+        <li class="publish">
+          <a href="#publish">Then Publish!</a>
+        </li>
+        </ul>
 
       <!-- Dialog Boxes -->
       <div id="helpdialog" class="mdialog">
         <h2>$txt:{Help}$</h2>
-        <p>Help Text</p>
-        <form id="helpform" action=""> 
-          <input type="submit" class="action" value="Ok"  />
+        <p>This GUI Builder is a doddle to use - simply follow the menu...</p>
+        <p>Read this help carefully (blah-blah watch the video...)</p>
+        <p>1 Pick the size of web page you want to create. There are a number of preset sizes ideal for:</p>
+        <ul>
+          <li>iPhones and iPod Touches</li>
+          <li>normal computers and laptops</li>
+          <li>little netbook computers<li>
+        </ul>
+        <p>2 Choose the layout you want for your web page</p>
+        <p>3 Put things on the page, all the usual things we expect from a web site:</p>
+        <ul>
+          <li>headlines</li>
+          <li>text<li>
+          <li>input fields<li>
+          <li>drop down menus</li>
+          <li>radio boxes<li>
+        </ul>
+        <p>...and lots more.</p>
+        <p>Then just publish your web page!</p>
+        <form id="helpform" onClick="return close_help_dialog();"> 
+          <input type="button" class="action" value="OK"  />
         </form>
       </div>
-      
-      <div id="layoutdialog" class="mdialog">
-        <h2>$txt:{Layouts}$</h2>
-        <p>Layouts</p>
-        <form id="layoutform" action="#"> 
-          <input type="submit" class="action" value="Ok"  />
+
+      <div id="pagesizedialog" class="mdialog">
+        <h2>$txt:{Pick Your Page Size}$</h2>
+        <p>Pick your page size from one of the preset sizes, or set your own custom size.</p>
+        <table>
+          <tr>
+              <td>Width:</td><td><input id="canvaswidth" type="text"/></td>
+            </tr>
+            <tr>
+              <td>Height:</td><td><input id="canvasheight" type="text"/></td>
+            </tr>
+            <tr>
+              <td>Presets:</td>
+              <td>
+                <select id="canvaspresets">
+                  <option value="normal">normal</option>
+                  <option value="iphone">iPhone</option>
+                  <option value="netbook">netbook</option>
+                  <option value="custom">custom</option>
+                </select>
+              </td>
+            </tr>
+        </table>
+        <form id="pagesizeform" onClick="return close_page_size_dialog();"> 
+          <input type="button" class="action" value="OK"  />
         </form>
       </div>
-      <div class="hn canvas">
-        Click On Me To Start
+
+      <div id="publishdialog" class="mdialog">
+        <h2>$txt:{Publish}$</h2>
+        <p>Publish your form</p>
+        <form id="publishform" action="#"> 
+          <input type="button" class="action" value="OK"  />
+        </form>
       </div>
+
+      <!-- End of Dialog Boxes -->
+
+      <!-- Main layout -->
+      <table>
+        <tr>
+            <td width="15%">
+              <div id="templates">
+                <p class="toolstitle">Layouts</p>
+                <hr />
+                <ul id="templatelist" class="toolbox">
+                  <li>
+                    <div class="templatesitem templateleft">$txt:{Left}$</div>
+                  </li>
+                  <li>
+                    <div class="templatesitem templatecenter">$txt:{Centre}$</div>
+                  </li>
+                  <li>
+                    <div class="templatesitem templateright">$txt:{Right}$</div>
+                  </li>
+              </div>
+            </td>
+            <td>
+              <!-- The Canvass Area on which the GUI is built... -->
+              <div id = "canvas2" class="hn canvas">
+                Click On Me To Start
+              </div>
+            </td>
+            <td width="15%">
+              <div id="tools">
+                <p class="toolstitle">Toolbox</p>
+                <hr />
+                <ul id="toolboxlist" class="toolbox">
+                  <li>
+                    <div class="toolsitem lable">$txt:{Lable}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem smalllable">$txt:{Small Lable}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem largelable">$txt:{Large Lable}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem largestlable">$txt:{Largest Lable}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem image">$txt:{Image}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem textinput">$txt:{Text Input}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem radiobutton">$txt:{Radio Button}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem dropdownmenu">$txt:{Drop Down Menu}$</div>
+                  </li>                
+                </ul>
+              </div>
+            </td>
+      </table>
     </div>
     </body>
     <!-- Some jquery libraries to handle AJAX calls -->
     <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
     <script src="/gui_builder/jquery.contextMenu.js"></script>
-    
+
+    <!-- Special minified jquery.ui set done this way for dev only-->
+    <script src="/jqueryui/js/jquery-ui-1.7.2.custom.min.js"></script>
     <!-- Standard JSON library -->
     <script src="/hypernumbers/json2.js"></script>
     
@@ -98,5 +182,10 @@
     <script src="/gui_builder/hn.gui.layout.js"></script>
     <script src="/gui_builder/hn.gui.dataoptions.js"></script>
     <script src="/gui_builder/hn.gui.html.js"></script>
+
+    <!-- The Tools libraries that the GUI Builder users -->
+    <script src="/gui_builder/hn.tools.js"></script>
+    <script src="/gui_builder/hn.tools.templates.js"></script>
+    <script src="/gui_builder/hn.tools.toolbox.js"></script>
     <script src="/gui_builder/build.js"></script>
 </html>

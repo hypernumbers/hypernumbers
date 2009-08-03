@@ -1,9 +1,10 @@
+
 .contextMenu a.menubold
-{ 
+{
   font-weight: bold    !important;
-  color:       #ffdd00 !important;
+  color:       #f47d08 !important;
   background:  #000000 !important;
-}
+} 
 
 /* Generic context menu styles */
 .contextMenu {
@@ -34,6 +35,7 @@
 	outline: none;
 	padding: 1px 5px;
 	padding-left: 28px;
+    text-align: left;
 }
 
 
@@ -75,5 +77,10 @@
 .contextMenu LI.insertitem A 
 { 
   background-image: url(insertitem.png);
+}
+
+.contextMenu LI.publish A 
+{ 
+  background-image: url(publish.png);
 }
 
