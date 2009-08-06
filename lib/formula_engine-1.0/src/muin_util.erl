@@ -104,13 +104,10 @@ cast(X, num, date) when X >= 0 ->
 cast(X, str, date) ->
     case tconv:to_num(X) of
         {error, nan} ->
-            % httpd date parser does nothing, need to replace
-            {D1, T1} =
-                case muin_date:from_rfc1123_string(X) of
-                    {ok, {D, T}} -> {D, T};
-                    _            -> ?ERR_VAL
-                end,
-            #datetime{date = D1, time = T1};
+            case dh_date:parse(X) of
+                {error, bad_date} -> ?ERR_VAL; %TODO Dont throw
+                {Date, Time}      -> #datetime{date=Date, time=Time}
+            end;
         Num ->
             cast(Num, num, date)
     end;

@@ -153,7 +153,10 @@ from_gregorian_seconds(N) when is_integer(N) ->
     #datetime{date = Date, time = Time}.
 
 from_rfc1123_string(S) when is_list(S) ->
-    bad_date.
+    case dh_date:parse(S) of
+        {error, bad_date} -> bad_date;
+        {Date, Time}      -> #datetime{date=Date, time=Time}
+    end.
 
 %% Nicked from httpd_util:rfc1123_date (but doesn't convert from summertime)
 to_rfc1123_string(#datetime{date = {0,0,0}, time = {0,0,0}}) ->
