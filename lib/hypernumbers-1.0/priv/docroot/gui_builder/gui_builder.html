@@ -10,7 +10,7 @@
   </head>
     <body>
 
-      <div id="cover" style="display: none";}></div>
+      <div id="cover"}></div>
       
       <div id="header">
         <h1><a href="">Hypernumbers</a></h1>
@@ -20,16 +20,13 @@
       
       <ul id="builderMenu" class="contextMenu">
         <li class="help">
-          <a class="menubold" href="#help" >Click Here For Help</a>
-        </li>
-        <li class="resizecanvas">
-          <a href="#resizecanvas">1 Pick Web Page Size</a>
+          <a class="menubold" href="#help">Click Here For Help</a>
         </li>
         <li class="insertlayout">
-          <a href="#insertlayout">2 Choose Layout</a>
+          <a href="#insertlayout">1 Choose Layout</a>
         </li>
         <li class="insertitem">
-          <a href="#insertitem">3 Put Things On Page</a>
+          <a href="#insertitem">2 Put Things On Page</a>
         </li>
         <li class="publish">
           <a href="#publish">Then Publish!</a>
@@ -41,14 +38,14 @@
         <h2>$txt:{Help}$</h2>
         <p>This GUI Builder is a doddle to use - simply follow the menu...</p>
         <p>Read this help carefully (blah-blah watch the video...)</p>
-        <p>1 Pick the size of web page you want to create. There are a number of preset sizes ideal for:</p>
+        <p>1 Choose the layout you want for your web page</p>
+        <p>You can also pick the size of web page you want to create. There are a number of preset sizes ideal for:</p>
         <ul>
           <li>iPhones and iPod Touches</li>
           <li>normal computers and laptops</li>
           <li>little netbook computers<li>
         </ul>
-        <p>2 Choose the layout you want for your web page</p>
-        <p>3 Put things on the page, all the usual things we expect from a web site:</p>
+        <p>2 Put things on the page, all the usual things we expect from a web site:</p>
         <ul>
           <li>headlines</li>
           <li>text<li>
@@ -58,34 +55,7 @@
         </ul>
         <p>...and lots more.</p>
         <p>Then just publish your web page!</p>
-        <form id="helpform" onClick="return close_help_dialog();"> 
-          <input type="button" class="action" value="OK"  />
-        </form>
-      </div>
-
-      <div id="pagesizedialog" class="mdialog">
-        <h2>$txt:{Pick Your Page Size}$</h2>
-        <p>Pick your page size from one of the preset sizes, or set your own custom size.</p>
-        <table>
-          <tr>
-              <td>Width:</td><td><input id="canvaswidth" type="text"/></td>
-            </tr>
-            <tr>
-              <td>Height:</td><td><input id="canvasheight" type="text"/></td>
-            </tr>
-            <tr>
-              <td>Presets:</td>
-              <td>
-                <select id="canvaspresets">
-                  <option value="normal">normal</option>
-                  <option value="iphone">iPhone</option>
-                  <option value="netbook">netbook</option>
-                  <option value="custom">custom</option>
-                </select>
-              </td>
-            </tr>
-        </table>
-        <form id="pagesizeform" onClick="return close_page_size_dialog();"> 
+        <form id="helpform" onClick="return HN.Tools.Util.close_help_dialog();"> 
           <input type="button" class="action" value="OK"  />
         </form>
       </div>
@@ -97,6 +67,93 @@
           <input type="button" class="action" value="OK"  />
         </form>
       </div>
+
+      <!-- End of Dialog Boxes -->
+
+      <!-- Main layout -->
+      <table>
+        <tr>
+            <td width="12%">
+              <div id="templates">
+                <p class="toolstitle">Layouts</p>
+                <hr />
+                <p>Drag layouts onto the page. (You can put one inside another one)</p>
+                <ul id="templatelist" class="toolbox">
+                  <li>
+                    <div class="templatesitem template2x1">$txt:{2 by 1}$</div>
+                  </li>
+                  <li>
+                    <div class="templatesitem template3x1">$txt:{3 by 1}$</div>
+                  </li>
+                  <li>
+                    <div class="templatesitem template1x2">$txt:{1 by 2}$</div>
+                  </li>
+                  <li>
+                    <div class="templatesitem template1x3">$txt:{1 by 3}$</div>
+                  </li>
+                </ul>
+                <p class="toolstitle">$txt:{Page Size}$<p>
+                  <hr />
+                <p>Pick your page size from one of the preset sizes, or set your own custom size.</p>
+                <table>
+                    <tr>
+                      <td>Width:</td><td><input id="canvaswidth" type="text"/></td>
+                    </tr>
+                    <tr>
+                      <td>Height:</td><td><input id="canvasheight" type="text"/></td>
+                    </tr>
+                    <tr>
+                      <td>Presets:</td>
+                      <td>
+                        <select id="canvaspresets">
+                          <option value="normal">normal</option>
+                          <option value="iphone">iPhone</option>
+                          <option value="netbook">netbook</option>
+                          <option value="custom">custom</option>
+                        </select>
+                      </td>
+                    </tr>
+                  </table>
+              </div>
+            </td>
+            <td>
+              <!-- The Canvass Area on which the GUI is built... -->
+              <div id="canvas2" class="hn canvas"><div id="startmessage"> Click The Panel To Start</div></div>
+            </td>
+            <td width="12%">
+              <div id="tools">
+                <p class="toolstitle">Toolbox</p>
+                <hr />
+                <p>Drag elements onto the page</p>
+                <ul id="toolboxlist" class="toolbox">
+                  <li>
+                    <div class="toolsitem lable">$txt:{Lable}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem smalllable">$txt:{Small Lable}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem largelable">$txt:{Large Lable}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem largestlable">$txt:{Largest}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem image">$txt:{Image}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem textinput">$txt:{Text Input}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem radiobutton">$txt:{Radio Button}$</div>
+                  </li>
+                  <li>
+                    <div class="toolsitem dropdownmenu">$txt:{Drop Down Menu}$</div>
+                  </li>                
+                </ul>
+              </div>
+            </td>
+      </table>
 
       <!-- End of Dialog Boxes -->
 
@@ -185,6 +242,7 @@
 
     <!-- The Tools libraries that the GUI Builder users -->
     <script src="/gui_builder/hn.tools.js"></script>
+    <script src="/gui_builder/hn.tools.util.js"></script>
     <script src="/gui_builder/hn.tools.templates.js"></script>
     <script src="/gui_builder/hn.tools.toolbox.js"></script>
     <script src="/gui_builder/build.js"></script>

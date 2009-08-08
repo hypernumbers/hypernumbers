@@ -1,38 +1,11 @@
-.canvas
-{ 
-  top:              50%;
-  left:             50%;
-  border:           2px solid #bcbcbc;
-  height:           600px;
-  width:            1000px;
-  background-color: #dcdcdc;
-  font-size:        32pt;
-  font-weight:      bold;
-  color:            #ffffff;
-  text-align:       left;
-  vertical-align:   middle;
-  margin:           6px auto;
-  
-}
-
-.toolbox
-{
-  text-align: left;
-}
-
-td
-{ 
-  vertical-align: top;
-}
-
 body
 {
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size:   13px;
-  background:  #FFF;
+  background:  #f47d08;
   padding:     15px;
-  text-align:center;
-  min-width: 600px;
+  text-align:  center;
+  min-width:   600px;
 }
 
 body, html
@@ -41,26 +14,204 @@ body, html
   margin:  0px;
 }
 
+.canvas
+{ 
+  top:              50%;
+  left:             50%;
+  border:           6px solid #bcbcbc;
+  min-height:       600px;
+  width:            1000px;
+  background-color: #ffffff;
+  font-size:        32pt;
+  font-weight:      bold;
+  text-align:       left;
+  vertical-align:   middle;
+  margin:           6px auto;  
+}
+
+td
+{
+  vertical-align: top;
+}
+
+#startmessage
+{
+  color:      #bcbcbc;
+  text-align: center;
+  margin:     48px 48px;
+}
+
+
+#startmessage:hover
+{ 
+  cursor: pointer;
+}
+
+#canvas2:hover
+{ 
+  cursor: pointer;
+}
+
+.toolbox
+{
+  text-align: left;
+}
+
+/* Covers entire page, background for modal dialogs */
+#cover { 
+ position:   fixed;
+ top:        0px;
+ left:       0px;
+ width:      100%;
+ height:     100%;
+ background: black;
+ opacity:    0.5;
+ z-index:    999999;
+}
+
 .mdialog
 { 
   text-align: left;
 }
 
-#tools
-{ 
-  display: none;
-  border:  2px solid #dcdcdc;
-  margin:  6px 6px;
-}
-
 #templates
 { 
-  display: none;
-  border:  2px solid #dcdcdc;
-  margin:  6px 6px;
+  display:          none;
+  border:           2px solid #dcdcdc;
+  font-weight:      bold;
+  text-align:       left;
+  color:            #666666;
+  padding:          6px;
+  margin:           6px 6px;  
+  width:            150px;
+  background-color: #ffffff;
+}
+
+#tools
+{ 
+  display:          none;
+  border:           2px solid #dcdcdc;
+  color:            #666666;
+  padding:          6px;
+  margin:           6px 6px;  
+  width:            150px;
+  background-color: #ffffff;
 }
 
 .templatesitem:hover
 { 
   cursor: move;
+}
+
+.toolsitem:hover
+{ 
+  cursor: move;
+}
+
+.toolstitle
+{ 
+  text-align:    center;
+  font-size:     24px;
+  font-weight:   bold;
+  color:         #f47d08;
+  margin:        6px 6px;
+}
+
+.toolbox li div.templatesitem
+{ 
+  background-position: right !important;
+  background-repeat:   no-repeat;
+  border:              1px solid #d8d8d8;
+  width:               120px;
+  background-color:    #fdfaf8;
+  padding:             2px;
+  margin:              3px 13px;
+}
+
+.toolbox li div.toolsitem
+{ 
+  text-align:          center;
+  border:              1px solid #d8d8d8;
+  width:               120px;
+  background-color:    #fdfaf8;
+  padding:             2px;
+  margin:              3px 13px;
+}
+
+.toolbox li div.textinput
+{  
+  border:              1px solid #bcbcbc !important;
+
+}
+
+.toolbox li div.radiobutton
+{  
+  background-position: right !important;
+  background-repeat:   no-repeat;
+  text-align:          left;
+  border:              1px solid #bcbcbc    !important;
+  background-image:    url(radiobutton.png) !important;
+}
+
+.toolbox li div.dropdownmenu
+{  
+  background-position: right !important;
+  background-repeat:   no-repeat;
+  text-align:          left;
+  border:              1px solid #bcbcbc !important;
+  background-image:    url(dropdown.png) !important;
+}
+
+.toolbox li div.template1x2
+{ 
+  background-image: url(table_1x2.png) !important;
+}
+
+.toolbox li div.template1x3
+{ 
+  background-image: url(table_1x3.png) !important;
+}
+
+.toolbox li div.template2x1
+{ 
+  background-image: url(table_2x1.png) !important;
+}
+
+.toolbox li div.template3x1
+{ 
+  background-image: url(table_3x1.png) !important;
+}
+
+#canvaswidth
+{
+  width: 85%
+}
+
+#canvasheight
+{
+  width: 85%
+}
+
+.container
+{ 
+  width:      98%;
+  height:     80px;
+  border:     2px dashed #f47d08;
+  padding:    6px;
+  margin:     6px;
+}
+
+.container td
+{ 
+  height:         30px;
+  border:         2px dotted #f47d08;
+  margin:         6px;
+}
+
+.unconfigured
+{ 
+  margin:           6px;
+  padding:          6px;
+  background-color: #ff0000;
+  color:            #ffffff;
 }

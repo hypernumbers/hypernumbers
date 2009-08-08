@@ -1,3 +1,8 @@
+.hn
+{ 
+  color: #b9b9b9;
+}
+
 p
 { 
   font:  12px Arial,"Helvetica Neue", sans-serif;
@@ -26,7 +31,7 @@ p
   font-weight: bold;
 }
 
-*.textinput
+*.textinput, .inputtext
 { 
   font:  12px Arial,"Helvetica Neue", sans-serif;
 }
@@ -36,69 +41,13 @@ p
   font:  12px Arial,"Helvetica Neue", sans-serif;
 }
 
-*.radiobutton
+*.radiobutton, .inputradio
 { 
   font:  12px Arial,"Helvetica Neue", sans-serif;
 }
 
-*.dropdownmenu
+*.dropdownmenu, .select
 { 
   font:  12px Arial,"Helvetica Neue", sans-serif;
 }
 
-.toolstitle
-{ 
-  text-align:    center;
-  font-size:     24px;
-  font-weight:   bold;
-  color:         #f47d08;
-  margin:        6px 6px;
-}
-
-.toolbox li div.templatesitem
-{ 
-  font-weight:         bold;
-  text-align:          left;
-  color:               #666666;
-  margin:              6px 6px;
-  background-position: right !important;
-  background-repeat:   no-repeat;
-  border:              1px solid #d8d8d8;
-  width:               200px;
-  background-color:    #fdfaf8;
-  padding:             2px;
-}
-
-.toolbox li div.textinput
-{  
-  border:           1px solid #bcbcbc !important;
-
-}
-
-.toolbox li div.radiobutton
-{  
-  border:           1px solid #bcbcbc    !important;
-  background-image: url(radiobutton.png) !important;
-}
-
-
-.toolbox li div.dropdownmenu
-{  
-  border:           1px solid #bcbcbc !important;
-  background-image: url(dropdown.png) !important;
-}
-
-.toolbox li div.templateleft
-{ 
-  background-image: url(template_left.png) !important;
-}
-
-.toolbox li div.templatecenter
-{ 
-  background-image: url(template_centre.png) !important;
-}
-
-.toolbox li div.templateright
-{ 
-  background-image: url(template_right.png) !important;
-}
