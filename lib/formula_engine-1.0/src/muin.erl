@@ -183,7 +183,7 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
 %% TODO: If a function exists in one of the modules, but calling it returns
 %%       no_clause, return #VALUE? (E.g. for when giving a list to ABS)
 funcall(Fname, Args0) ->
-    Funs = ['if', choose, column, row, cell, columns, 'and'],
+    Funs = ['if', choose, column, row, cell, columns, 'and',timevalue],
     
     Args = case member(Fname, Funs) of
                true  -> Args0;

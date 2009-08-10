@@ -162,9 +162,10 @@
 
 '/'([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
-    ?ensure(Num2 =/= 0,   ?ERR_DIV),
-    ?ensure(Num2 =/= 0.0, ?ERR_DIV),
-    Num1/Num2.
+    case Num2 of
+        X when X==0, X==0.0 -> ?ERRVAL_DIV;
+        _Else               -> Num1/Num2
+    end.
 
 negate([V]) ->
     -(?number(V, ?default_rules)).

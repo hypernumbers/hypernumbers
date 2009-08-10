@@ -52,14 +52,6 @@ date(Args = [_, _, _]) ->
         [Y, M, D]                -> F(Y, M, D)
     end.
 
-%%     [Year, Month, Day] = col(Args, [cast_num], [return_errors])
-%%         ?ints(Arg, ?cast_all),
-%% %    [Year, Month, Day] = ?ints(Arg, ?cast_all),
-%%     if
-%%         Year <  1900  -> dateh([Year+1900,Month,Day]);
-%%         Year >= 1900  -> dateh([Year,Month,Day])
-%%     end.
-
 dateh([Y, M, D]) when (M =< 0) ->
     Diff = abs(M) rem 12,
     Offset = (abs(M) - Diff)/12,
@@ -311,7 +303,6 @@ minute([D]) ->
     Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
     muin_date:minute(Date).
 
-
 second([D]) ->
     [Val | _ ] = ?flatten_all([D]),
     Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
@@ -322,9 +313,16 @@ now([]) ->
     {Date, Time} = calendar:now_to_universal_time(erlang:now()),
     #datetime{date = Date, time = Time}.
 
-timevalue([V1]) ->
-    ?date(V1, ?cast_all).
-
+timevalue([V]) ->
+    case col([V], [fetch_name, eval_funs, first_array, {cast, str, date}],
+             [return_errors, {all, fun muin_collect:is_date/1}]) of
+        Err when ?is_errval(Err) ->
+            Err;
+        [#datetime{date=Date, time={H,M,S}}] ->
+            Secs = (H * 3600) + (M * 60) + S,
+            Perc = Secs / 86400,
+            Perc
+    end.   
 
 %% TODO: Case when hour > 23 or minute/second > 60.
 time(Args = [_, _, _]) ->

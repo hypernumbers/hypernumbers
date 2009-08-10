@@ -110,6 +110,13 @@ rl({cast, Type}, X) ->
         Num        -> Num
     end;
 
+rl({cast, From, To}, X) ->    
+    case muin_util:get_type(X) of
+        From  -> rl({cast, To}, X);
+        _Else -> X
+    end;
+
+
 rl(cast_num, X) ->
     case muin_util:cast(X, num) of
         {error, _} -> X;
@@ -122,6 +129,8 @@ rl(cast_str, X) ->
         Num  -> Num
     end;
 
+rl(fetch_name, Name) when ?is_namedexpr(Name) ->
+    ?ERRVAL_NAME;
 
 rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
