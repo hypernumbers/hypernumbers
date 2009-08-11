@@ -317,17 +317,20 @@ weeknum1(Dt, Rettype) ->
                    #datetime{date = {muin_date:year(Dt), 1, 1}},
                    #datetime{date = {muin_date:year(Dt), 12, 31}}).
 
+hour(Args) ->
+    col(Args,
+        [fetch_name, eval_funs, first_array,
+         {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
+        [return_errors, {all, fun muin_collect:is_date/1}],
+        fun hour_/1).
 
-hour([D]) ->
-    [Val | _ ] = ?flatten_all([D]),
-    Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
+hour_([Date]) ->
     muin_date:hour(Date).
 
 minute(Args) ->
     col(Args,
         [fetch_name, eval_funs, first_array,
-         {cast, num, date, ?ERRVAL_NUM},
-         {cast, date}],
+         {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
         fun minute_/1).
 
@@ -337,8 +340,7 @@ minute_([Date]) ->
 second(Args) ->
     col(Args,
         [fetch_name, eval_funs, first_array,
-         {cast, num, date, ?ERRVAL_NUM},
-         {cast, date}],
+         {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
         fun second_/1).
 
