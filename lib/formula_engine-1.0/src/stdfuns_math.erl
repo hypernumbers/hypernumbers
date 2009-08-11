@@ -503,6 +503,7 @@ floor([V1, V2]) ->
     [Num, Multiple] = ?numbers([V1, V2], ?default_rules),
     ?ensure(sign1(Num) == sign1(Multiple), ?ERR_NUM),
     floor1(Num, Multiple).
+
 floor1(_Num, 0) ->
     0;
 floor1(Num, Multiple) when ?is_multiple(Num, Multiple) ->

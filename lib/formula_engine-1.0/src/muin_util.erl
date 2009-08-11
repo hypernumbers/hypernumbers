@@ -53,6 +53,7 @@ cast(Val, Type) ->
 
 %% X -> boolean
 cast(0, num, bool)   -> false;
+cast(0.0, num, bool)   -> false;
 cast(_, num, bool)   -> true;
 cast(_, date, bool)  -> true;
 cast(_, blank, bool) -> false;

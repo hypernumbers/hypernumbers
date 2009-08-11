@@ -121,11 +121,17 @@
 
 'if'([Test, TrueExpr]) ->
     'if'([Test, TrueExpr, false]);
-'if'([Test, TrueExpr, FalseExpr]) ->
-    
-    V = muin:eval_formula(Test),
-    B = ?bool(V, [first_array, cast_strings, cast_numbers, cast_blanks, ban_dates]),
-    muin:eval_formula(?COND(B, TrueExpr, FalseExpr)).
+'if'([Test, TrueExpr, FalseExpr]) ->    
+    case col([Test], [first_array, fetch_name, fetch_ref, eval_funs,
+                      {cast,bool}],
+             [return_errors, {all, fun is_atom/1}]) of
+        Err when ?is_errval(Err) ->
+            Err;
+        [Cond] ->
+            muin:eval_formula(?COND(Cond, TrueExpr, FalseExpr))
+    end.
+
+
 
 %% @TODO write a test suite for iferror which is not an Excel 97 function
 iferror([Test, TrueExpr, FalseExpr]) ->

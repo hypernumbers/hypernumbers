@@ -109,6 +109,8 @@ rl(ref_as_bool, Ref) when ?is_cellref(Ref) ->
         X when X == 0; X == false -> false;
         _Else                     -> true
     end;
+rl(fetch_ref, Ref) when ?is_cellref(Ref) ->
+    muin:fetch(Ref);
 
 rl({cast_def, Type, Def}, X) ->
     case muin_util:cast(X, Type) of
