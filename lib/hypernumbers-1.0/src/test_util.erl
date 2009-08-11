@@ -27,16 +27,15 @@ rc_to_a1(Row, Col) ->
     tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1).
 
 test_state(State)->
-
+    
     {Cells, Ranges} = lists:partition(
-                        fun({{_Sheet,_Row,_Col},_Val}) -> true;
+                        fun({{_Sheet,_Row,_Col},_Val})       -> true;
                            ({{_Sheet,_R1,_C1,_R2,_C2},_Val}) -> false
                         end, State),
-
+    
     test_state(Cells, Ranges).
 
 test_state(Cells, Ranges) ->
-
     receive
         {msg, Pid, _Suite, Ref} ->
             Pid ! read_from_excel_data(Cells, Ranges, Ref),
@@ -53,7 +52,8 @@ read_from_excel_data(Cells, Ranges, {Sheet, Row, Col})->
               false ->
                   % If the cell is not found, search if the cell is
                   % contained within any array formula and return that
-                  Tmp = [Val || {{_Sheet,{_,R1},{_,C1},{_,R2},{_,C2}}, Val} <- Ranges,
+                  Tmp = [Val || {{_Sheet,{_,R1},{_,C1},{_,R2},{_,C2}}, Val}
+                                    <- Ranges,
                                 R1 =< Row, R2 >= Row, C1 =< Col, C2 >= Col ],
                   case Tmp of
                       [X] -> X;
@@ -79,11 +79,6 @@ float_cmp(F1, 0.0, _Digit) ->
     (F1 < math:pow(0.1, 2));
 float_cmp(F1, F2, _Digit) ->
     erlang:abs(1 - F1 / F2) < math:pow(0.1, 2).
-
-%% float_cmp(0.0,0.0,_)          ->
-%%     true;
-%% float_cmp(0.0,Expres,Digit)   -> (Expres < math:pow(0.1, Digit));
-%% float_cmp(Res, Expres, Digit) -> (abs(Res - Expres)/Res) < math:pow(0.1, Digit).
 
 excel_equal(X, X) ->
     true;
@@ -232,30 +227,56 @@ handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
     io:format("in test_util:handle_return HTTP POST error (~s)~n-code:~p~n-body:~p~n",
 	      [Ref, Code, Body]).
 
-cmp(A,A) -> true;
-cmp(G,E) ->
-    E2 = case E of
-             true   -> true;
-             false  -> false;
-             _Other -> case lists:member(E, ['#NULL!', '#DIV/0!', '#VALUE!',
-                                             '#REF!', '#NAME?', '#NUM!',
-                                             '#N/A']) of
-                           true    -> E;
-                           _Other2 -> case tconv:to_num(E) of
-                                          N when is_number(N) -> N;
-                                          {error, nan}        -> E
-                                      end
-                       end
-         end,
+cmp(A,A) ->
+    true;
+cmp(G, E) ->
+
     G2 = conv_from_get(G),
-    if
-        is_float(G2) andalso is_float(E2) ->
-            float_cmp(G2, E2, 5);
-        is_integer(G2) andalso is_float(E2) ->
-            % sometimes large integers appear as (exponented) floats from excel...
-            float_cmp(G2 * 1.0, E2, 5);
-        true -> E2 == G2
+    E2 = conv_for_no_reason(E),
+    
+    E2 == G2
+        orelse cmp_nums(G2, E2)
+        orelse cmp_date(G2, E2).
+
+cmp_nums(N1, N2) when is_number(N1), is_number(N2) ->
+    float_cmp(N1, N2, 5);
+cmp_nums(_, _) ->
+    false.
+
+cmp_date({{1,1,1}, {H,M,S}}, N2) ->
+    Secs = ((H * 3600) + (M * 60) + S) / 86400,
+    float_cmp(Secs, N2, 5);
+cmp_date({Date, Time}, N2) ->
+    dh_date:format("Y/M/D H:m:S", {Date, Time}) == N2;
+cmp_date(_, _) ->
+    false.
+
+conv_for_no_reason(E) ->
+    case E of
+        true   -> true;
+        false  -> false;
+        _Other ->
+            case lists:member(E, ['#NULL!', '#DIV/0!', '#VALUE!',
+                                  '#REF!', '#NAME?', '#NUM!',
+                                  '#N/A']) of
+                true    -> E;
+                _Other2 ->
+                    case tconv:to_num(E) of
+                        N when is_number(N) -> N;
+                        {error, nan}        -> E
+                    end
+            end
     end.
+
+    %% if
+    %%     is_float(G2) andalso is_float(E2) ->
+    %%         float_cmp(G2, E2, 5);
+    %%     is_integer(G2) andalso is_float(E2) ->
+    %%         % sometimes large integers appear as (exponented) floats from exce
+    %%         float_cmp(G2 * 1.0, E2, 5);
+    %%     true ->
+    %%         E2 == G2
+    %% end.
 
 conv_from_get(X) when is_float(X) -> X;
 conv_from_get(X) when is_integer(X) -> X;
@@ -268,8 +289,8 @@ conv_from_get("FALSE") -> false;
 conv_from_get(X)       ->
     % need to try and convert to a date
     case muin_date:from_rfc1123_string(X) of
-        {datetime, D, T} -> dh_date:format("Y/M/D H:m:S", {D, T});
-        _                  -> conv_from_get2(X)
+        {datetime, D, T} -> {D, T};
+        _                -> conv_from_get2(X)
     end.
 
 conv_from_get2(X) ->

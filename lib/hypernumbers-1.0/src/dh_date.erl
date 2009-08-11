@@ -17,9 +17,9 @@
 -export([format/1, format/2]).
 -export([parse/1,  parse/2]).
 
--define( is_num(X),      (X >= $0 andalso X =< $9)).
--define( is_meridian(X), X==[]; X==[am]; X==[pm] ).
--define( is_sep(X),      X==$-; X==$/ ).
+-define( is_num(X),      (X >= $0 andalso X =< $9) ).
+-define( is_meridian(X), (X==[] orelse X==[am] orelse X==[pm]) ).
+-define( is_sep(X),      (X==$- orelse X==$/) ).
 
 -import(calendar,[last_day_of_the_month/2, day_of_the_week/1,
                   datetime_to_gregorian_seconds/1, date_to_gregorian_days/1,
@@ -97,10 +97,10 @@ parse([Day,X,Month,X,Year], {_Date, Time}, _Opts) when ?is_sep(X) ->
 
 %% Date/Times 22 Aug 2008 6:35 PM
 parse([Day,X,Month,X,Year,Hour,$:,Min | PAM], _Date, _Opts)
-  when ?is_meridian(PAM), ?is_sep(X) ->
+  when ?is_meridian(PAM) andalso ?is_sep(X) ->
     {{Year, Month, Day}, {hour(Hour, PAM), Min, 0}};
 parse([Day,X,Month,X,Year,Hour,$:,Min,$:,Sec | PAM], _Now, _Opts)
-  when ?is_meridian(PAM), ?is_sep(X) ->
+  when ?is_meridian(PAM) andalso ?is_sep(X) ->
     {{Year, Month, Day}, {hour(Hour, PAM), Min, Sec}};
 
 parse([Day,Month,Year,Hour,$:,Min | PAM], _Now, _Opts)
@@ -109,7 +109,6 @@ parse([Day,Month,Year,Hour,$:,Min | PAM], _Now, _Opts)
 parse([Day,Month,Year,Hour,$:,Min,$:,Sec | PAM], _Now, _Opts)
   when ?is_meridian(PAM) ->
     {{Year, Month, Day}, {hour(Hour, PAM), Min, Sec}};
-
 
 parse(_Tokens, _Now, _Opts) ->
     {error, bad_date}.
@@ -233,6 +232,8 @@ format([$A|T], {_,{H,_,_}}=Dt, Acc) when H > 12 ->
     format(T, Dt, ["PM"|Acc]);
 format([$A|T], Dt, Acc) ->
     format(T, Dt, ["AM"|Acc]);
+format([$g|T], {_,{H,_,_}}=Dt, Acc) when H == 12; H == 0 ->
+    format(T, Dt, ["12"|Acc]);
 format([$g|T], {_,{H,_,_}}=Dt, Acc) when H > 12 ->
     format(T, Dt, [itol(H-12)|Acc]);
 format([$g|T], {_,{H,_,_}}=Dt, Acc) ->

@@ -24,13 +24,15 @@
          timevalue/1,
          time/1]).
 
--import(muin_collect, [ collect/3, col/3 ]).
+-import(muin_collect, [ collect/3, col/3, col/4 ]).
 
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 
--define(cast_all, [first_array, cast_strings, cast_bools, cast_blanks, cast_numbers]). %% FIXME: This is NOT the right thing to do.
+%% FIXME: This is NOT the right thing to do.
+-define(cast_all, [first_array, cast_strings, cast_bools, cast_blanks,
+                   cast_numbers]).
 
 -define(last_day, calendar:last_day_of_the_month).
 
@@ -313,21 +315,28 @@ now([]) ->
     {Date, Time} = calendar:now_to_universal_time(erlang:now()),
     #datetime{date = Date, time = Time}.
 
-timevalue([V]) ->
-    case col([V], [fetch_name, eval_funs, first_array, {cast, str, date}],
-             [return_errors, {all, fun muin_collect:is_date/1}]) of
-        Err when ?is_errval(Err) ->
-            Err;
-        [#datetime{date=Date, time={H,M,S}}] ->
-            Secs = (H * 3600) + (M * 60) + S,
-            Perc = Secs / 86400,
-            Perc
-    end.   
+timevalue(Args) ->
+    col(Args,
+        [fetch_name, eval_funs, first_array, {cast, str, date}],
+        [return_errors, {all, fun muin_collect:is_date/1}],
+        fun timevalue_/1).
 
-%% TODO: Case when hour > 23 or minute/second > 60.
-time(Args = [_, _, _]) ->
-    [H, M, S] = ?numbers(Args, [cast_numbers, cast_strings, ban_bools, ban_dates]),
-    #datetime{time = {H, M, S}}.
+timevalue_([#datetime{time={H,M,S}}]) ->
+    Secs = (H * 3600) + (M * 60) + S,
+    Secs / 86400.
+
+time(Args) ->
+    col(Args,
+        [fetch_name, eval_funs, first_array, {cast, int}],
+        [return_errors, {all, fun is_number/1}],
+        fun time_/1).
+
+time_([H,M,S]) ->
+    X = ((H rem 24) * 3600) + ((M rem 60) * 60) + (S rem 60),
+    Hours = erlang:trunc(X / 3600),
+    Mins  = erlang:trunc((X - (Hours * 3600)) / 60),
+    Secs  = erlang:trunc((X - (Hours * 3600) - (Mins * 60))),
+    #datetime{time = {Hours, Mins, Secs}}.
       
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

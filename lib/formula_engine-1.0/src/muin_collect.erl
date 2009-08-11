@@ -34,6 +34,12 @@
 
 -import(muin_util, [cast/2]).
 
+col(Args, Rules, Passes, Fun) ->
+    case col(Args, Rules, Passes) of
+        Error when ?is_errval(Error) -> Error;
+        Else -> Fun(Else)
+    end.
+
 col(Args, Rules, Passes) ->
     pass(col(Args, Rules), Passes).
 

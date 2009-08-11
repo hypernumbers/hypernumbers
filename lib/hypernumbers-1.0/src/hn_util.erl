@@ -154,7 +154,10 @@ jsonify_val({"__groups", _})                -> {"__groups", "bleh"};
 jsonify_val({"__dependency-tree", _})       -> {"__dependency-tree", "bleh"};
 jsonify_val({"parents", _})                 -> {"parents", "bleh"};    
 jsonify_val({Name, {errval, Error}})        -> {Name, atom_to_list(Error)};
-jsonify_val({Name, {datetime, Date, Time}}) -> {Name, ?rfc1123({datetime, Date, Time})};
+jsonify_val({Name, {datetime, {1,1,1}=Date, Time}}) ->
+    {Name, dh_date:format("g:i A", {Date, Time})};
+jsonify_val({Name, {datetime, Date, Time}}) ->
+    {Name, muin_date:to_rfc1123_string({datetime, Date, Time})};
 jsonify_val({"value", true})                -> {"value", "true"};
 jsonify_val({"value", false})               -> {"value", "false"};
 %% TODO: fix names
