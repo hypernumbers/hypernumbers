@@ -258,11 +258,33 @@ today([]) ->
 weekday([V1]) ->
     weekday([V1, 1]);
 weekday([V1, V2]) ->
-    Dt = ?date(V1, ?cast_all),
-    Rettype = ?int(V2, ?cast_all),
-    ?ensure(Rettype == 1 orelse Rettype == 2 orelse Rettype == 3,
-            ?ERR_NUM),
-    weekday1(Dt, Rettype).
+    
+    Dat = col([V1],
+              [fetch_name, eval_funs, first_array,
+               {cast, num, date, ?ERRVAL_NUM},
+               {cast, date}],
+              [return_errors, {all, fun muin_collect:is_date/1}]),
+    
+    Ret = col([V2],
+              [fetch_name, eval_funs, first_array, {cast, int}],
+              [return_errors, {all, fun is_number/1}]),
+    
+    io:format("~p - ~p~n",[Dat, Ret]),
+    
+    case {Dat, Ret} of
+        {[Date], [Return]} ->
+            %?ensure(Return==1 orelse Return==2 orelse Return==3, ?ERRVAL_NUM),
+            weekday1(Date, Return);
+        {[_Date], Err} -> Err;
+        {Err, _Else}   -> Err
+    end.
+        
+%    io:format("hello?~n"),
+%    Dt = ?date(V1, ?cast_all),
+%    Rettype = ?int(V2, ?cast_all),    
+%% io:format("Dt ~p", [Dt]),
+%% weekday1(Dt, Rettype).
+
 weekday1(Dt, 1) ->
     case (calendar:day_of_the_week(Dt#datetime.date) + 1) rem 7 of
         0 -> 7;
@@ -271,7 +293,11 @@ weekday1(Dt, 1) ->
 weekday1(Dt, 2) ->
     calendar:day_of_the_week(Dt#datetime.date);
 weekday1(Dt, 3) ->
-    calendar:day_of_the_week(Dt#datetime.date) - 1.
+    calendar:day_of_the_week(Dt#datetime.date) - 1;
+
+weekday1(_Dt, _X) -> ?ERRVAL_NUM.
+
+
 
 %% @todo there is not test suite for this function because it is not an 
 %% Excel 97 one

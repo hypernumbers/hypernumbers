@@ -105,7 +105,7 @@ cast(X, str, date) ->
     case tconv:to_num(X) of
         {error, nan} ->
             case dh_date:parse(X) of
-                {error, bad_date} -> ?ERR_VAL; %TODO Dont throw
+                {error, bad_date} -> {error, nad}; %TODO Dont throw
                 {Date, Time}      -> #datetime{date=Date, time=Time}
             end;
         Num ->
@@ -117,7 +117,7 @@ cast(false, bool, date) ->
 cast(true, bool, date) ->
     #datetime{date= {1900, 1, 2}, time = {0,0,0}};
 cast(_X, _, date)   ->
-    ?ERR_VAL.
+    {error, nad}.
 
 %% Splits ssref to [Path, Ref]
 split_ssref(Ssref) ->

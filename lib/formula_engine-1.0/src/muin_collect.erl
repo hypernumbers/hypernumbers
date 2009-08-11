@@ -110,12 +110,21 @@ rl(ref_as_bool, Ref) when ?is_cellref(Ref) ->
         _Else                     -> true
     end;
 
+rl({cast_def, Type, Def}, X) ->
+    case muin_util:cast(X, Type) of
+        {error, _} -> Def;
+        Num        -> Num
+    end;
 rl({cast, Type}, X) ->
     case muin_util:cast(X, Type) of
         {error, _} -> X;
         Num        -> Num
     end;
-
+rl({cast, From, To, Default}, X) ->
+    case muin_util:get_type(X) of
+        From  -> rl({cast_def, To, Default}, X);
+        _Else -> X
+    end;
 rl({cast, From, To}, X) ->    
     case muin_util:get_type(X) of
         From  -> rl({cast, To}, X);
@@ -137,7 +146,6 @@ rl(cast_str, X) ->
 
 rl(fetch_name, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
-
 rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 
