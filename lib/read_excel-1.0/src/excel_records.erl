@@ -452,9 +452,13 @@ parse_rec(?RK, Bin, Name, _Tbl) ->
     <<Row:16/little-unsigned-integer, Col:16/little-unsigned-integer,
      XF:16/little-unsigned-integer, RK:32/little-unsigned-integer>>=Bin,
     RK2 = excel_util:parse_CRS_RK(<<RK:32/little-unsigned-integer>>),
+    Val2 = case erlang:trunc(RK2) == RK2 of
+               true -> erlang:trunc(RK2);
+               false -> RK2
+           end,
     {write, cell, [mref(Name, Row, Col),
                    {xf_index,XF},
-                   {value, number, RK2}]};
+                   {value, number, Val2}]};
 
 parse_rec(?FORMAT2, Bin, _Name, _Tbl) ->
     <<FormatId:16/little-unsigned-integer, FormatBin/binary>> = Bin,

@@ -38,6 +38,8 @@
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %% @doc Test harness for running a formula inside transaction
+test_formula(Fla) ->
+    test_formula(Fla, {muin_rti,"http://127.0.0.1:9000",[],1,1,false}).
 test_formula(Fla, Rti) ->
     mnesia:activity(transaction, fun run_formula/2, [Fla, Rti]).
 
