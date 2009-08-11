@@ -29,7 +29,7 @@ body, html
   margin:           6px auto;  
 }
 
-td
+.main td
 {
   vertical-align: top;
 }
@@ -74,10 +74,22 @@ td
   text-align: left;
 }
 
-#templates
+#header span
+{
+  float:       right;
+  color:       #f47d08;
+  position:    relative;
+  text-indent: 0px;
+  top:         5px;
+  padding:     6px 12px;
+  font-size:   28px;
+  font-weight: bold;
+}
+
+.box
 { 
-  display:          none;
-  border:           2px solid #dcdcdc;
+  display: none;
+  border:           6px solid #bcbcbc;
   font-weight:      bold;
   text-align:       left;
   color:            #666666;
@@ -87,23 +99,32 @@ td
   background-color: #ffffff;
 }
 
-#tools
+.box td
 { 
-  display:          none;
-  border:           2px solid #dcdcdc;
-  color:            #666666;
-  padding:          6px;
-  margin:           6px 6px;  
-  width:            150px;
-  background-color: #ffffff;
+  vertical-align: middle !important;
 }
 
-.templatesitem:hover
+.selected
+{ 
+  border: 3px solid #0000ff !important;
+}
+
+.layout:hover
+{ 
+  border: 2px solid #00ff00;
+}
+
+.layoutsitem:hover
 { 
   cursor: move;
 }
 
-.toolsitem:hover
+.element:hover
+{ 
+  border: 2px solid #00ff00;
+}
+
+.elementsitem:hover
 { 
   cursor: move;
 }
@@ -117,7 +138,7 @@ td
   margin:        6px 6px;
 }
 
-.toolbox li div.templatesitem
+.toolbox li div.layoutsitem
 { 
   background-position: right !important;
   background-repeat:   no-repeat;
@@ -128,7 +149,7 @@ td
   margin:              3px 13px;
 }
 
-.toolbox li div.toolsitem
+.toolbox li div.elementsitem
 { 
   text-align:          center;
   border:              1px solid #d8d8d8;
@@ -162,37 +183,63 @@ td
   background-image:    url(dropdown.png) !important;
 }
 
-.toolbox li div.template1x2
+#binging_table
 { 
-  background-image: url(table_1x2.png) !important;
+  position:   absolute;
+  left:       50%;
+  top:        65%;
+  width:      40%;
+  height:     30%;
+  background: white;
+  border:     solid 6px #666;
 }
 
-.toolbox li div.template1x3
+#binding_table table
 { 
-  background-image: url(table_1x3.png) !important;
+  border-color: #bcbcbc;
+  border-width: 0 0 1px 1px;
+  border-style: solid;
 }
 
-.toolbox li div.template2x1
+#binding_table tr
 { 
-  background-image: url(table_2x1.png) !important;
+  height: 12px;
 }
 
-.toolbox li div.template3x1
+#binding_table td
 { 
-  background-image: url(table_3x1.png) !important;
+  width:  30px;
+  border-color: #bcbcbc;
+  border-width: 1px 1px 0 0;
+  border-style: solid;
 }
 
-#canvaswidth
+.input
 {
   width: 85%
 }
 
-#canvasheight
-{
-  width: 85%
+.standarddialog
+{  
+  width: 270px;
 }
 
-.container
+.standarddialog .input
+{ 
+  width: 105px;
+}
+
+.standarddialog select
+{ 
+  width: 110px;
+}
+
+.standarddialog h2
+{ 
+  text-align: center;
+ }
+
+.layout
 { 
   width:      98%;
   height:     80px;
@@ -201,7 +248,15 @@ td
   margin:     6px;
 }
 
-.container td
+.element
+{ 
+  width:   80%
+  border:  2px dashed #bcbcbc;
+  padding: 6px 6px 6px 6px;
+  margin:  6px 6px 6px 6px;
+}
+
+.layout td
 { 
   height:         30px;
   border:         2px dotted #f47d08;
@@ -212,6 +267,10 @@ td
 { 
   margin:           6px;
   padding:          6px;
-  background-color: #ff0000;
-  color:            #ffffff;
+}
+
+.unconfigured em
+{ 
+  color:       #ff0000;
+  font-weight: bold'
 }
