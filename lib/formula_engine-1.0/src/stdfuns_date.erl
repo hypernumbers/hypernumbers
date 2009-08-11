@@ -323,9 +323,15 @@ hour([D]) ->
     Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
     muin_date:hour(Date).
 
-minute([D]) ->
-    [Val | _ ] = ?flatten_all([D]),
-    Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
+minute(Args) ->
+    col(Args,
+        [fetch_name, eval_funs, first_array,
+         {cast, num, date, ?ERRVAL_NUM},
+         {cast, date}],
+        [return_errors, {all, fun muin_collect:is_date/1}],
+        fun minute_/1).
+
+minute_([Date]) ->
     muin_date:minute(Date).
 
 second(Args) ->
