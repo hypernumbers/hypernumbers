@@ -127,26 +127,32 @@ clean([Str])   ->
 fixed([Num]) ->
     fixed([Num, 2, false]);
 fixed([Num, Decimals]) ->
-    fixed1([Num, Decimals, false]);
-fixed([Num, Decimals, true]) ->
-    fixed1([Num,Decimals,true]);
-fixed([Num, Decimals, false]) ->
-    fixed1([Num,Decimals,false]).
-% all the casting etc is done in the helper
-fixed1([Num,Decimals,NoCommas]) ->
-    NewNum=?number(Num,?default_num_rules),
-    NewDecs=?number(Decimals,?default_num_rules),
-    ?ensure(NewDecs =< 127, ?ERR_VAL),
-    RoundedNum = stdfuns_math:round([NewNum, NewDecs]) * 1.0,
-    Str = ?COND(NewDecs > 0,
-                hd(io_lib:format("~." ++ to_l(NewDecs) ++ "f", [RoundedNum])),
+    fixed([Num, Decimals, false]);
+fixed([N1, N2, N3]) ->
+    Num = col([N1], [first_array, fetch_name,{cast,num}],
+              [return_errors, {all, fun is_number/1}]),
+    Dec = col([N2], [first_array, fetch_name,{cast,num}],
+              [return_errors, {all, fun is_number/1}]),
+    Com = col([N3], [first_array, fetch_name,{cast,bool}],
+              [return_errors, {all, fun is_atom/1}]),
+    muin_util:run_or_err([Num, Dec, Com], fun fixed_/1).
+
+fixed_([Num, Dec, Com]) ->
+    
+    RoundedNum = stdfuns_math:round([Num, Dec]) * 1.0,
+    Str = ?COND(Dec > 0,
+                hd(io_lib:format("~." ++ to_l(Dec) ++ "f", [RoundedNum])),
                 to_l(erlang:trunc(RoundedNum))),
-    case NoCommas of
+
+    case Com of
         true ->
             Str;
         false ->
-            [Int,Dec]=string:tokens(Str,"."),
-            commify(Int) ++ "."++Dec
+            [Int | Decs]=string:tokens(Str,"."),
+            case Decs of
+                [] -> commify(Int);
+                _  -> commify(Int) ++ "."++hd(Decs)
+            end
     end.
 
 lower([Str]) ->
