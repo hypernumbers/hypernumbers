@@ -26,6 +26,8 @@
 
 -import(tconv, [to_i/1, to_l/1, to_s/1]).
 
+-import(muin_collect, [col/3, col/2]).
+
 %% Excel 2004 API.
 -export([value/1, t/1, replace/1, search/1, '&'/1, char/1, clean/1, concatenate/1,
          exact/1, find/1, fixed/1, left/1, len/1, lower/1, mid/1, proper/1,
@@ -169,27 +171,30 @@ char([V1]) ->
 code([Str]) ->
     xmerl_ucs:from_utf8(string:substr(Str, 1)).
 
-
 find([Str, InStr]) ->
     find([Str, InStr, 1]);
-find([V1, V2, V3]) ->
-    Str = ?string(V1, ?default_str_rules),
-    InStr = ?string(V2, ?default_str_rules),
-    Start = ?int(V3, ?default_num_rules),
-    case string:equal(Str, "") of
-        true ->
-            1; % Empty string matches the first character.
-        false ->
-            ?ensure(Start >= 1, ?ERR_VAL),
-            ?ensure(Start =< string:len(InStr), ?ERR_VAL),
-            InStr2 = string:substr(InStr, Start),
-            Idx = string:str(InStr2, Str),
-            case (Idx + string:len(InStr) - (string:len(InStr) - Start+1)) of
-                0 -> ?ERR_VAL;
-                N -> N
-            end
-    end.
 
+find([V1, V2, V3]) ->
+
+    Needle   = col([V1], [first_array, fetch_name,{cast,num,int},{cast,str}],
+                   [return_errors, {all, fun muin_collect:is_string/1}]),
+    HayStack = col([V2], [first_array, fetch_name, {cast, str}],
+                   [return_errors, {all, fun muin_collect:is_string/1}]),
+    Start    = col([V3], [first_array, fetch_name, {cast, int}],
+                   [return_errors, {all, fun is_integer/1}]),
+    
+    muin_util:run_or_err([Needle, HayStack, Start], fun find_/1).
+
+find_(["", InStr, Start]) ->
+    1;
+find_([Str, InStr, Start]) when Start < 1 ->
+    ?ERRVAL_VAL;
+find_([Str, InStr, Start]) ->
+    InStr2 = string:substr(InStr, Start),
+    case string:str(InStr2, Str) of
+        0   -> ?ERRVAL_VAL;
+        Idx -> (Idx + string:len(InStr) - (string:len(InStr) - Start+1))
+    end.
 
 left([Str])->
     NewStr=?string(Str,?default_str_rules),
