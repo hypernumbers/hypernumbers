@@ -115,6 +115,8 @@ rl({cast_def, Type, Def}, X) ->
         {error, _} -> Def;
         Num        -> Num
     end;
+rl(cast_blank, blank) ->
+    1;
 rl({cast, Type}, X) ->
     case muin_util:cast(X, Type) of
         {error, _} -> X;

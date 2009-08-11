@@ -148,6 +148,7 @@ tokenise("OCT"++Rest, Acc)       -> tokenise(Rest, [10 | Acc]);
 tokenise("NOVEMBER"++Rest, Acc)  -> tokenise(Rest, [11 | Acc]);
 tokenise("NOV"++Rest, Acc)       -> tokenise(Rest, [11 | Acc]);
 tokenise("DECEMBER"++Rest, Acc)  -> tokenise(Rest, [12 | Acc]);
+tokenise("DECEM"++Rest, Acc)     -> tokenise(Rest, [12 | Acc]);
 tokenise("DEC"++Rest, Acc)       -> tokenise(Rest, [12 | Acc]);
 
 tokenise([$: | Rest], Acc) -> tokenise(Rest, [ $: | Acc]);

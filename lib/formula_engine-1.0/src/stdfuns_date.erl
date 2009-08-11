@@ -177,11 +177,14 @@ day([Val]) ->
                        cast_blanks, cast_numbers]),
     muin_date:day(Date).
 
-month([Val]) when is_number(Val) andalso Val < 0 ->
-    ?ERRVAL_NUM;
-month([Val]) ->
-    Date = ?date(Val, [first_array, cast_strings, cast_bools,
-                       cast_blanks, cast_numbers]),
+month(Args) ->
+    col(Args,
+        [fetch_name, eval_funs, first_array, cast_blank,
+         {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
+        [return_errors, {all, fun muin_collect:is_date/1}],
+        fun month_/1).
+
+month_([Date]) ->
     muin_date:month(Date).
 
 year([Val]) when is_number(Val) andalso Val < 0 ->
@@ -269,14 +272,10 @@ weekday([V1, V2]) ->
               [fetch_name, eval_funs, first_array, {cast, int}],
               [return_errors, {all, fun is_number/1}]),
     
-    io:format("~p - ~p~n",[Dat, Ret]),
-    
     case {Dat, Ret} of
-        {[Date], [Return]} ->
-            %?ensure(Return==1 orelse Return==2 orelse Return==3, ?ERRVAL_NUM),
-            weekday1(Date, Return);
-        {[_Date], Err} -> Err;
-        {Err, _Else}   -> Err
+        {[Date], [Return]} -> weekday1(Date, Return);
+        {[_Date], Err}     -> Err;
+        {Err, _Else}       -> Err
     end.
         
 %    io:format("hello?~n"),
@@ -294,10 +293,8 @@ weekday1(Dt, 2) ->
     calendar:day_of_the_week(Dt#datetime.date);
 weekday1(Dt, 3) ->
     calendar:day_of_the_week(Dt#datetime.date) - 1;
-
-weekday1(_Dt, _X) -> ?ERRVAL_NUM.
-
-
+weekday1(_Dt, _X) ->
+    ?ERRVAL_NUM.
 
 %% @todo there is not test suite for this function because it is not an 
 %% Excel 97 one
@@ -331,11 +328,16 @@ minute([D]) ->
     Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
     muin_date:minute(Date).
 
-second([D]) ->
-    [Val | _ ] = ?flatten_all([D]),
-    Date = ?date(Val, [cast_strings, cast_bools, cast_blanks, cast_numbers]),
-    muin_date:second(Date).
+second(Args) ->
+    col(Args,
+        [fetch_name, eval_funs, first_array,
+         {cast, num, date, ?ERRVAL_NUM},
+         {cast, date}],
+        [return_errors, {all, fun muin_collect:is_date/1}],
+        fun second_/1).
 
+second_([Date]) ->
+    muin_date:second(Date).
 
 now([]) ->
     {Date, Time} = calendar:now_to_universal_time(erlang:now()),
