@@ -236,10 +236,9 @@ exp([V1]) ->
     Num = ?number(V1, ?default_rules),
     math:exp(Num).
 
-%% NOTE: Artificially limited to 256 (Excel's limit is 170).
 fact([V1]) ->
     Num = ?int(V1, ?default_rules),
-    ?ensure(Num =< 256, ?ERR_NUM),
+    ?ensure(Num =< 170, ?ERR_NUM),
     ?ensure(Num >= 0, ?ERR_NUM),
     fact1(Num).
 fact1(0) ->
