@@ -183,7 +183,7 @@ body, html
   background-image:    url(dropdown.png) !important;
 }
 
-#binging_table
+#bingings
 { 
   position:   absolute;
   left:       50%;
@@ -194,24 +194,32 @@ body, html
   border:     solid 6px #666;
 }
 
-#binding_table table
+#bindings_table
 { 
   border-color: #bcbcbc;
   border-width: 0 0 1px 1px;
   border-style: solid;
 }
 
-#binding_table tr
+#bindings_table td
 { 
-  height: 12px;
-}
-
-#binding_table td
-{ 
-  width:  30px;
   border-color: #bcbcbc;
   border-width: 1px 1px 0 0;
   border-style: solid;
+}
+
+#bindings_table input
+{ 
+  width:        50pt;
+  height:       12px
+  border-width: 0px;
+  font-size:    9pt;
+ }
+
+.bindings_header
+{ 
+  text-align:       center;
+  background-color: #cbcbcb;
 }
 
 .input

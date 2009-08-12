@@ -1,19 +1,19 @@
 .toolbox li div.template1x2
 { 
-  background-image: url(/gui_builder2/layouts/table_1x2.png) !important;
+  background-image: url(/gui_builder/layouts/table_1x2.png) !important;
 }
 
 .toolbox li div.template1x3
 { 
-  background-image: url(/gui_builder2/layouts/table_1x3.png) !important;
+  background-image: url(/gui_builder/layouts/table_1x3.png) !important;
 }
 
 .toolbox li div.template2x1
 { 
-  background-image: url(/gui_builder2/layouts/table_2x1.png) !important;
+  background-image: url(/gui_builder/layouts/table_2x1.png) !important;
 }
 
 .toolbox li div.template3x1
 { 
-  background-image: url(/gui_builder2/layouts/table_3x1.png) !important;
+  background-image: url(/gui_builder/layouts/table_3x1.png) !important;
 }
