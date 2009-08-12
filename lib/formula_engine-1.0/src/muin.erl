@@ -107,7 +107,6 @@ compile(Fla, {Col, Row}) ->
 
 %% Formula -> sexp, relative to coord.
 parse(Fla, {Col, Row}) ->
-    
     Trans = translator:do(Fla),
 
     case catch (xfl_lexer:lex(Trans, {Col, Row})) of

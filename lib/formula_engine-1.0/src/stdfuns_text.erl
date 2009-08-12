@@ -26,7 +26,7 @@
 
 -import(tconv, [to_i/1, to_l/1, to_s/1]).
 
--import(muin_collect, [col/3, col/2]).
+-import(muin_collect, [col/3, col/2, col/4]).
 
 %% Excel 2004 API.
 -export([value/1, t/1, replace/1, search/1, '&'/1, char/1, clean/1, concatenate/1,
@@ -191,9 +191,9 @@ find([V1, V2, V3]) ->
     
     muin_util:run_or_err([Needle, HayStack, Start], fun find_/1).
 
-find_(["", InStr, Start]) ->
+find_(["", _InStr, _Start]) ->
     1;
-find_([Str, InStr, Start]) when Start < 1 ->
+find_([_Str, _InStr, Start]) when Start < 1 ->
     ?ERRVAL_VAL;
 find_([Str, InStr, Start]) ->
     InStr2 = string:substr(InStr, Start),
@@ -289,10 +289,14 @@ text([Value, Format]) ->
     Fmtdstr.
 
 
-trim([S]) when ?is_string(S) ->
-    {ok, NewS, _} = regexp:gsub(S, "\\s+", " "),
+trim(Args) ->
+    col(Args, [first_array, fetch_name, {cast, str}],
+        [return_errors, {all, fun muin_collect:is_string/1}],
+        fun trim_/1).
+
+trim_([S]) ->
+    NewS = re:replace(S, "\\s+", " ", [global, {return, list}]),
     string:strip(NewS).
-    
 
 %%% ----------------- %%%
 %%% Private functions %%%
