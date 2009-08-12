@@ -105,6 +105,8 @@ excel_equal({date, {{1900, M, _D}, _T}=F1}, {string, F2})
     dh_date:format("Y/m/d H:i:s", NDate) == F2;
 excel_equal({date, F1}, {string, F2}) ->
     dh_date:format("Y/m/d H:i:s", F1) == F2;
+excel_equal({number, 0}, {number, 0.0}) ->
+    true;
 excel_equal({number, F1}, {number, F2}) ->
     erlang:abs(1 - F1 / F2) < 0.0000001;
 excel_equal({formula, Formula1}, {formula, Formula2}) ->
