@@ -125,28 +125,32 @@ isodd([Num]) -> not(iseven([Num])).
 
 %% Returns true only for booleans or arrays where element (1,1) is a boolean.
 %% (Returns false for ranges regardless of what's in them.)
-
 islogical([B]) when is_boolean(B) -> true;
-islogical(A) when ?is_array(A)    -> is_boolean(area_util:at(1, 1, A));
-islogical(_)                      -> false.
-
+islogical([A]) when ?is_array(A)    ->
+    {ok, Val} = area_util:at(1, 1, A),
+    is_boolean(Val);
+islogical(_Else) ->
+    false.
 
 isna([{errval, '#N/A'}]) -> true;
-isna(X)                  -> io:format("in stdfuns_info:isna X is ~p~n", [X]),
-                            false.
-
-
-isnontext([X]) -> case istext([X]) of
-                      true  -> false;
-                      false -> true
-                  end.
-
+isna([X]) when ?is_array(X) ->
+    {ok, N} = area_util:at(1, 1, X),
+    N == {errval, '#N/A'};
+isna(_X) ->
+    false.
 
 isnumber([X]) when is_number(X) -> true;
+isnumber([X]) when ?is_array(X)    ->
+    {ok, N} = area_util:at(1, 1, X),
+    is_number(N);
 isnumber([_])                  -> false.
 
+isnontext([X]) -> not istext([X]).
 
 istext([X]) when ?is_string(X) -> true;  %% complement(fun isnontext/1)
+istext([X]) when ?is_array(X)    ->
+    {ok, N} = area_util:at(1, 1, X),
+    ?is_string(N);
 istext([_])                    -> false.
 
 
