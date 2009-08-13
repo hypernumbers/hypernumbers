@@ -192,23 +192,23 @@ special_div2(E, CR2) when ?is_cellref(CR2) ->
             throw(invalid_formula)
     end.
 
-
 postproc(Ast) ->
-    NormalizedFormula = muin_util:normalize(Ast), % prettified & tidied-up formula
-    %io:format("NormalizedFormula = ~s~n", [NormalizedFormula]),
-    FinalAst = replace_float_tuples(Ast),
-    FinalAst.
-
+    replace_float_tuples(Ast).
 
 %% Replace {Float, OriginalString} tuples with Floats in the AST.
+replace_float({F, Str}) when is_float(F), ?is_string(Str) -> F;
+replace_float({array, Values}) ->
+    Vals = [ [ replace_float(Y) || Y <- X ] || X <- Values ],
+    {array, Vals};
+replace_float(Else) ->
+    Else.
 
 replace_float_tuples(Ast) when is_list(Ast) ->
-    hslists:deepmap(fun({F, Str}) when is_float(F), ?is_string(Str) -> F;
-                       (Else) -> Else
-                    end,
-                    Ast);
-replace_float_tuples(Ast) -> Ast. % may be a single #cellref etc.
-    
+    hslists:deepmap(fun replace_float/1, Ast);
+replace_float_tuples(Arr) when ?is_array(Arr) ->
+    replace_float(Arr);
+replace_float_tuples(Ast) ->
+    Ast. % may be a single #cellref etc.
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

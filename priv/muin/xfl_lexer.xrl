@@ -264,7 +264,7 @@ extract_coords(Ref, rc, {PivotCol, PivotRow}) ->
             {ColCoord, RowCoord}
     end;
 extract_coords(Ref, a1, {PivotCol, PivotRow}) ->
-    {ok, Ref2, _} = regexp:gsub(Ref, "\\$", ""),
+    {ok, Ref2, _} = regexp:gsub(Ref, "\\$", ""), %"
     ColStr = takewhile(fun is_alpha/1, string:to_lower(Ref2)),
     Col = tconv:to_i(ColStr),
     Row = tconv:to_i(lists:nthtail(length(ColStr), Ref2)),
