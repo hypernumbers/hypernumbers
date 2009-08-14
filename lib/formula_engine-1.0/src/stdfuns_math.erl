@@ -228,6 +228,7 @@ power([TV1, TV2]) ->
 sign([V1]) ->
     Num = ?number(V1, ?default_rules),
     sign1(Num).
+
 sign1(0)            -> 0;
 sign1(X) when X > 0 -> 1;
 sign1(X) when X < 0 -> -1.
@@ -501,7 +502,8 @@ even1(Num) when Num < 0 ->
 
 floor([V1, V2]) ->
     [Num, Multiple] = ?numbers([V1, V2], ?default_rules),
-    ?ensure(sign1(Num) == sign1(Multiple), ?ERR_NUM),
+    ?ensure(sign1(Num) == sign1(Multiple)
+            orelse Num == 0 orelse Multiple == 0, ?ERR_NUM),
     floor1(Num, Multiple).
 
 floor1(_Num, 0) ->
