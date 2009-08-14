@@ -13,19 +13,25 @@ p
   font:  12px Arial,"Helvetica Neue", sans-serif;
 }
 
-*.smalllable
+*.smallest
 { 
   font:  9px Arial,"Helvetica Neue", sans-serif;
   color: #bcbcbc;
 }
 
-*.largelable
+*.small
+{ 
+  font:  9px Arial,"Helvetica Neue", sans-serif;
+  color: #bcbcbc;
+}
+
+*.large
 { 
   font: 14px Arial,"Helvetica Neue", sans-serif;
   font-weight: bold;
 }
 
-*.largestlable
+*.largest
 { 
   font: 20px Arial,"Helvetica Neue", sans-serif;
   font-weight: bold;

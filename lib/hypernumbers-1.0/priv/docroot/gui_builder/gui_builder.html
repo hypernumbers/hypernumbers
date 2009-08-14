@@ -3,6 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
     <title>Hypernumbers Drag'n'Drop Gui Builder</title>
+    <link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/gui_builder.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/themes/theme1.css" />
     <link rel="stylesheet" type="text/css" href="/hypernumbers/hn.sheet.css" />
@@ -21,7 +22,7 @@
       <!-- Dialog Boxes -->
       <div id="dialog_boxes">
         <div id="helpdialog" class="mdialog">
-          <h2>$txt:{Help}$</h2>
+          <p class="toolstitle">$txt:{Help}$</p><hr />
           <p>This GUI Builder is a doddle to use - simply follow the menu...</p>
           <p>Read this help carefully (blah-blah watch the video...)</p>
           <p>1 Choose the layout you want for your web page</p>
@@ -45,14 +46,27 @@
             <input type="button" class="action" value="OK"  />
           </form>
         </div>
+        <div id="newpagedialog" class="mdialog">
+          <p class="toolstitle">$txt:{New Page}$</p><hr />
+          <div>Type in the page you want to add to this form. You can use a full path (/some/page/or/another/) or a relative path (../../another/path)</div>
+          <input id="newpage" type="text" /><span>Full Path</span>
+          <input id="newpage_full_path" name="new_page" type="checkbox" />
+          <form id="newpageform" onClick="return HN.Tools.Util.new_page();"> 
+            <input type="button" class="action" value="OK"  />
+          </form>
+        </div>
       </div>
 
       <!-- End of Dialog Boxes -->
 
       <!-- Binding Table -->
-      <div id="bindings" class="mdialog">
-        <h2>Select a binding</h2>
-        <div id="page_selector"></div>
+      <div id="bindings">
+        <span class="headline">Spreadsheet Preview</span>
+        <span id="page_selector"></span>
+        <span>Full Path</span>
+        <input id="bindings_full_path" name="full_path" type="checkbox" />
+        <span>Current range on view:</span>
+        <input id="bindings_range" type="text" />
         <div id="insert_bindings"></div>
       </div>
       <!--End of Binding Table -->
@@ -60,58 +74,71 @@
       <!-- Main layout -->
       <table class="main">
         <tr>
-            <td width="12%">
-              <div id="layouts" class="box">
-                <p class="toolstitle">Layouts</p>
-                <hr />
-                <p>Drag layouts onto the page. (You can put one inside another one).</p>
-                <ul id="layoutslist" class="toolbox">
+            <td id="tab_bar">
+              <div id="tabs" class="ui-tabs">
+                <ul>
+                  <li><a href="#page"><span>Layout</span></a></li>
+                  <li><a href="#things"><span>Fields</span></a></li>
+                  <li><a href="#configure"><span>Configuration</span></a></li>
                 </ul>
-              </div>
-              <div id="sizes" class="box">
-                <p class="toolstitle">$txt:{Page Size}$<p>
-                <hr />
-                <p>Pick your page size from one of the preset sizes, or set your own custom size.</p>
-                <table>
-                    <tr>
-                      <td>Width:</td><td><input id="canvaswidth" class="input" type="text"/></td>
-                    </tr>
-                    <tr>
-                      <td>Height:</td><td><input id="canvasheight" class="input" type="text"/></td>
-                    </tr>
-                    <tr>
-                      <td>Presets:</td>
-                      <td>
-                        <select id="canvaspresets">
-                          <option value="normal">normal</option>
-                          <option value="iphone">iPhone</option>
-                          <option value="netbook">netbook</option>
-                          <option value="custom">custom</option>
-                        </select>
-                      </td>
-                    </tr>
-                </table>
+                <div id="page" class="ui-tabs-hide">
+                  <div id="layouts" class="box">
+                    <p class="toolstitle">Layouts</p>
+                    <hr />
+                    <p>Drag layouts onto the page. (You can put one inside another one).</p>
+                    <ul id="layoutslist" class="toolbox">
+                    </ul>
+                  </div>
+                </div>
+                <div id="things" class="ui-tabs-hide">
+                  <div id="tools" class="box">
+                    <p class="toolstitle">Elements</p>
+                    <hr />
+                    <p>Drag elements onto the page.</p>
+                    <ul id="elementslist" class="toolbox">
+                    </ul>
+                  </div>
+                  <div id="widgets" class="box">
+                    <p class="toolstitle">Widgets</p>
+                    <hr />
+                    <p>Drag widgets onto the page.</p>
+                    <ul id="widgetslist" class="toolbox">
+                    </ul>
+                  </div>
+                </div>
+                <div id="configure" class="ui-tabs-hide">
+                  <div id="config_boxes">
+                  <div id="page_sizes" class="standardconfig">
+                    <p class="toolstitle">$txt:{Page Size}$<p>
+                    <hr />
+                    <p>Pick your page size from one of the preset sizes, or set your own custom size.</p>
+                    <table>
+                        <tr>
+                          <td>Width:</td><td><input id="canvaswidth" class="input" type="text"/></td>
+                        </tr>
+                        <tr>
+                          <td>Height:</td><td><input id="canvasheight" class="input" type="text"/></td>
+                        </tr>
+                        <tr>
+                          <td>Presets:</td>
+                          <td>
+                            <select id="canvaspresets">
+                              <option value="normal">normal</option>
+                              <option value="iphone">iPhone</option>
+                              <option value="netbook">netbook</option>
+                              <option value="custom">custom</option>
+                            </select>
+                          </td>
+                        </tr>
+                    </table>
+                  </div>
+                  </div>
+                </div>
               </div>
             </td>
             <td>
               <!-- The Canvass Area on which the GUI is built... -->
-              <div id="canvas2" class="canvas">
-              </div>
-            </td>
-            <td width="12%">
-              <div id="tools" class="box">
-                <p class="toolstitle">Elements</p>
-                <hr />
-                <p>Drag elements onto the page.</p>
-                <ul id="elementslist" class="toolbox">
-                </ul>
-              </div>
-              <div id="widgets" class="box">
-                <p class="toolstitle">Widgets</p>
-                <hr />
-                <p>Drag widgets onto the page.</p>
-                <ul id="widgetslist" class="toolbox">
-                </ul>
+              <div id="canvas" class="canvas">
               </div>
             </td>
       </table>
@@ -122,7 +149,8 @@
     </body>
     <!-- Some jquery libraries to handle AJAX calls -->
     <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
-
+    (!--<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>-->
+    <!--<script src="/jquerytextbox/jquery.textbox.js"></script> -->
     <!-- Special minified jquery.ui set done this way for dev only-->
     <script src="/jqueryui/js/jquery-ui-1.7.2.custom.min.js"></script>
 

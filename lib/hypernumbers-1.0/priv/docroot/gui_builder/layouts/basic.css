@@ -17,3 +17,31 @@
 { 
   background-image: url(/gui_builder/layouts/table_3x1.png) !important;
 }
+
+.toolbox li div.fragment
+{ 
+  background-image: url(/gui_builder/layouts/fragment.png) !important;
+}
+
+.toolbox li div.blank
+{ 
+  background-image: url(/gui_builder/layouts/blank.png) !important;
+}
+
+.fragmenttext
+{ 
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size:   13px;
+  background:  #f47d08;
+  padding:     15px;
+  margin:      6px;
+  text-align:  center;
+  border:      1px dashed #bcbcbc;
+}
+
+.blankpanel
+{ 
+  margin:      6px;
+  border: 1px dashed #bcbcbc;
+  height: 30px;
+}
