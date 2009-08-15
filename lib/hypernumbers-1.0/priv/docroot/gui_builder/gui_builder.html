@@ -47,7 +47,7 @@
           </form>
         </div>
         <div id="newpagedialog" class="mdialog">
-          <p class="toolstitle">$txt:{New Page}$</p><hr />
+          <p class="toolstitle">$txt:{Bind A New Spreadsheet Page To This Web Page}$</p><hr />
           <div>Type in the page you want to add to this form. You can use a full path (/some/page/or/another/) or a relative path (../../another/path)</div>
           <input id="newpage" type="text" /><span>Full Path</span>
           <input id="newpage_full_path" name="new_page" type="checkbox" />
@@ -77,8 +77,7 @@
             <td id="tab_bar">
               <div id="tabs" class="ui-tabs">
                 <ul>
-                  <li><a href="#page"><span>Layout</span></a></li>
-                  <li><a href="#things"><span>Fields</span></a></li>
+                  <li><a href="#page"><span>Form Bits</span></a></li>
                   <li><a href="#configure"><span>Configuration</span></a></li>
                 </ul>
                 <div id="page" class="ui-tabs-hide">
@@ -89,8 +88,6 @@
                     <ul id="layoutslist" class="toolbox">
                     </ul>
                   </div>
-                </div>
-                <div id="things" class="ui-tabs-hide">
                   <div id="tools" class="box">
                     <p class="toolstitle">Elements</p>
                     <hr />
@@ -108,8 +105,8 @@
                 </div>
                 <div id="configure" class="ui-tabs-hide">
                   <div id="config_boxes">
-                  <div id="page_sizes" class="standardconfig">
-                    <p class="toolstitle">$txt:{Page Size}$<p>
+                    <div id="page_sizes" class="standardconfig">
+                      <p class="toolstitle">$txt:{Page Size}$<p>
                     <hr />
                     <p>Pick your page size from one of the preset sizes, or set your own custom size.</p>
                     <table>

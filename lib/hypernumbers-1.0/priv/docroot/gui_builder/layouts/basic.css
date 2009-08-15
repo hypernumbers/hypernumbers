@@ -32,11 +32,12 @@
 { 
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size:   13px;
+  color:       #ffffff;
   background:  #f47d08;
   padding:     15px;
   margin:      6px;
   text-align:  center;
-  border:      1px dashed #bcbcbc;
+  border:      6px solid #bcbcbc;
 }
 
 .blankpanel

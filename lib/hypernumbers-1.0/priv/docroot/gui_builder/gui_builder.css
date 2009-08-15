@@ -18,15 +18,16 @@ body, html
 { 
   top:              50%;
   left:             50%;
-  border:           6px solid #bcbcbc;
-  min-height:       600px;
-  width:            1000px;
+  border:           3px solid #bcbcbc;
+  min-height:       583px;
+  width:            983px;
   background-color: #ffffff;
   font-size:        32pt;
   font-weight:      bold;
   text-align:       left;
+  padding:          0.2em;
   vertical-align:   middle;
-  margin:           6px auto;  
+  margin:           0px auto;
 }
 
 .headline
@@ -149,7 +150,7 @@ body, html
   color: #666666;
 }
 
-.toolbox li div.layoutsitem
+.layoutsitem, .widgetsitem
 { 
   background-position: right !important;
   background-repeat:   no-repeat;
@@ -162,7 +163,6 @@ body, html
 
 .toolbox li div.elementsitem
 { 
-  text-align:          center;
   border:              1px solid #d8d8d8;
   width:               120px;
   background-color:    #fdfaf8;
@@ -277,7 +277,7 @@ body, html
   text-align: center;
  }
 
-.layout
+.layout, .widget
 { 
   width:      98%;
   height:     80px;
@@ -288,13 +288,13 @@ body, html
 
 .element
 { 
-  width:   80%
-  border:  2px dashed #bcbcbc;
-  padding: 6px 6px 6px 6px;
-  margin:  6px 6px 6px 6px;
+  width:      20%
+  border:     2px dashed #bcbcbc;
+  padding:    6px 6px 6px 6px;
+  margin:     6px 6px 6px 6px;
 }
 
-.layout td
+.layout td, .element td, .widget td
 { 
   height:         30px;
   border:         2px dotted #f47d08;
@@ -303,14 +303,13 @@ body, html
 
 .unconfigured
 { 
-  margin:           6px;
-  padding:          6px;
-}
-
-.unconfigured em
-{ 
-  color:       #ff0000;
-  font-weight: bold'
+  text-align:  center;
+  width:       200px;
+  margin:      6px;
+  padding:     6px;
+  color:       #888888;
+  font-weight: bold;
+  border:      3px solid #ff0000;
 }
 
 .textboxlist 
