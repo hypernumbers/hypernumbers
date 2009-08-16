@@ -221,21 +221,21 @@ body, html
   width: 60px;
 }
 
-#bindings_table
+.bindings_table
 { 
   border-color: #bcbcbc;
   border-width: 0 0 1px 1px;
   border-style: solid;
 }
 
-#bindings_table td
+.bindings_table td
 { 
   border-color: #bcbcbc;
   border-width: 1px 1px 0 0;
   border-style: solid;
 }
 
-#bindings_table input
+.bindings_table input
 { 
   width:        50pt;
   height:       12px
