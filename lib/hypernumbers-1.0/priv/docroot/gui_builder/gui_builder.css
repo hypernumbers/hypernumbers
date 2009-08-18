@@ -110,6 +110,11 @@ body, html
   vertical-align: middle !important;
 }
 
+.bindings_selected
+{ 
+  background-color: #b2d7fc;
+}
+
 .selected
 { 
   border: 3px solid #0000ff !important;
@@ -206,7 +211,12 @@ body, html
   border:     solid 6px #666;
 }
 
-#bindings:hover 
+#bindings p
+{ 
+  -moz-user-select: none;
+}
+
+#bindings_header:hover 
 { 
   cursor: move;
 }
@@ -219,6 +229,27 @@ body, html
 #bindings_range
 { 
   width: 60px;
+}
+
+.bindings_minimize
+{ 
+  height:           16px;
+  width:            16px;
+  background-image: url(../gui_builder/minimize.png) !important;
+}
+
+.bindings_maximize
+{ 
+  height:           16px;
+  width:            16px;
+  background-image: url(/gui_builder/maximize.png) !important;
+}
+
+.bindings_close
+{ 
+  height:           16px;
+  width:            16px;
+  background-image: url(/gui_builder/close.png) !important;
 }
 
 .bindings_table
