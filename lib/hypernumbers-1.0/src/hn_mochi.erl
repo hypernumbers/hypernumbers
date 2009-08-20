@@ -20,12 +20,6 @@
 
 -define(html, [{"Content-Type", "text/html"} | ?hdr]).
 
--define(json(Req, Data),
-        fun() -> 
-                Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
-                Req:ok({"application/json", ?hdr, Json})
-        end()).
-
 -define(exit, 
         exit("exit from hn_mochi:handle_req impossible page versions")).
 
@@ -106,9 +100,13 @@ handle_req(Method, Req, Ref, Vars, User) ->
                     Body = Req:recv_body(),
                     {ok, Post} = get_json_post(Body),
 
+                    % io:format("Req is ~p~n-Ref is ~p~n-Type is ~p~n-Vars is ~p~n-"++
+                    %            "Post is ~p~n-~p ~p~n",
+                    %           [Req, Ref, Type, Vars, Post, self(), now()]),
+
                     mochilog:log(Req, Ref, hn_users:name(User), Body),
                     case ipost(Req, Ref, Type, Vars, Post, User) of
-                        ok  -> ?json(Req, "success");
+                        ok  -> json(Req, "success");
                         ret -> ok
                     end
             end
@@ -137,17 +135,20 @@ ensure(File, Lang) ->
 
 iget(Req, #refX{path=["_user", "login"]}, page, [], User) ->
     serve_html(Req, "hypernumbers/login.html", User);
+iget(Req, #refX{site = S, path = P}, page, [{"gui", FileName}], User) ->
+    ok = status_srv:update_status(User, S, P, "viewed page as " ++ FileName),
+    serve_html(Req, "hypernumbers/" ++ FileName ++ ".html", User);
 iget(Req, #refX{site = S, path = P}, page, [], User) ->
     ok = status_srv:update_status(User, S, P, "viewed page"),
     serve_html(Req, "hypernumbers/index.html", User);
 iget(Req, Ref, page, [{"updates", Time}], _User) ->
     remoting_request(Req, Ref, Time);
 iget(Req, #refX{site = S}, page, [{"status", []}], _User) -> 
-    ?json(Req, status_srv:get_status(S));
+    json(Req, status_srv:get_status(S));
 iget(Req, Ref, page, [{"pages", []}], _User) -> 
-    ?json(Req, pages(Ref));
+    json(Req, pages(Ref));
 iget(Req, Ref, page, [{"attr", []}], User) ->
-    ?json(Req, page_attributes(Ref, User));
+    json(Req, page_attributes(Ref, User));
 iget(Req, Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", Val}}] when is_atom(Val) -> atom_to_list(Val);
@@ -179,17 +180,19 @@ ipost(Req, #refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
                {ok, Token} ->
                    [{"response","success"},{"token",Token}]
            end,
-    ?json(Req, {struct, Resp}),
+    json(Req, {struct, Resp}),
     ret;
 
-%% the purpose of this message is to mark the mochilog so we don't need to do nothing
-%% with anything...
-ipost(_Req, _Ref, _Type, [{"mark", []}], [{"set",{struct, [{"mark", _Msg}]}}], _User) ->
+%% the purpose of this message is to mark the mochilog so we don't 
+%% need to do nothing with anything...
+ipost(_Req, _Ref, _Type, [{"mark", []}], 
+      [{"set",{struct, [{"mark", _Msg}]}}], _User) ->
     ok;
 
 %% the purpose of this message is to write a GUI trail in the mochilog so we 
-%% don't need to do nothingwith anything...
-ipost(_Req, _Ref, _Type, [{"trail", []}], [{"set",{struct, [{"trail", _Msg}]}}], _User) ->
+%% don't need to do nothing with anything...
+ipost(_Req, _Ref, _Type, [{"trail", []}], 
+      [{"set",{struct, [{"trail", _Msg}]}}], _User) ->
     ok;
 
 ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
@@ -205,14 +208,14 @@ ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr,
     RefX2 = make_after(Ref), 
     hn_db_api:insert(RefX2);
 
-                                                % by default cells and ranges displace vertically
+%% by default cells and ranges displace vertically
 ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"insert", "before"}], User)
   when O == cell orelse O == range ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:insert(Ref, vertical);
 
-                                                % by default cells and ranges displace vertically
+%% by default cells and ranges displace vertically
 ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"insert", "after"}], User)
   when O == cell orelse O == range ->
@@ -220,7 +223,7 @@ ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr,
     RefX2 = make_after(Ref),
     hn_db_api:insert(RefX2);
 
-                                                % but you can specify the displacement explicitly
+%% but you can specify the displacement explicitly
 ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"insert", "before"}, {"displacement", D}], User)
   when O == cell orelse O == range,
@@ -272,7 +275,7 @@ ipost(_Req, #refX{site = S, path = P, obj = {range, _}} = Ref, _Type, _Attr,
 
 ipost(Req, _Ref, _Type, _Attr,
       [{"set", {struct, [{"language", _Lang}]}}], anonymous) ->
-    ?json(Req, {struct, [{"error", "cant set language for anonymous users"}]}),
+    json(Req, {struct, [{"error", "cant set language for anonymous users"}]}),
     ret;
 
 ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr, 
@@ -291,10 +294,30 @@ ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr,
             hn_db_api:write_attributes(Ref, Attr)
     end;
 
-ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, [{"clear", What}], User) 
+ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+      [{"clear", What}], User) 
   when What == "contents"; What == "style"; What == "all" ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:clear(Ref, list_to_atom(What));
+
+ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+      [{"saveform", {struct, [{"name", Name}, {"form", Form}]}}], User) ->
+    User2 = if 
+                is_atom(User) -> atom_to_list(User);
+                is_list(User) -> User
+            end,
+    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/" ++ User2 ++ "/",
+    File = Path ++ filename:basename(Name) ++ ".html",
+
+    _Return=filelib:ensure_dir(File),
+    
+    case file:open(File, [write]) of
+	{ok, Id} ->
+	    io:fwrite(Id, "~s~n", [Form]),
+	    file:close(Id);
+	_ ->
+	    error
+    end;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -302,22 +325,29 @@ ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, [{"clear", What}], Us
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ipost(Req, Ref, _Type, _Attr,
-      [{"action", "notify_back_create"}|T] = Json, _User) ->
+      [{"action", "notify_back_create"}|T], _User) ->
     Biccie   = from("biccie",     T),
     Proxy    = from("proxy",      T),
     ChildUrl = from("child_url",  T),
     PVsJson  = from("parent_vsn", T),
     CVsJson  = from("child_vsn",  T),
+    Stamp    = from("stamp",      T),
+
+    Str = "hn_mochi:ipost\tnotify_back_create\thandling post with\t" ++ 
+        Stamp ++ "\t" ++ pid_to_list(self()),
+    bits:log(Str),
+
+    %% io:format("In ipost (notify_back_create) Stamp is ~p~n", [Stamp]),
 
     #refX{site = Site} = Ref,
     ParentX = Ref,
     _ParentUrl = hn_util:refX_to_url(ParentX),    
     ChildX = hn_util:url_to_refX(ChildUrl),
 
-                                                % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
-                                                %         "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
+    %% bits:log("RECEIVED\t" ++ pid_to_list(self()) ++ "\t" ++ ParentUrl ++
+    %%         "\t from \t" ++ ChildUrl ++ json_util:to_str(Json)),
 
-                                                % there is only 1 parent and 1 child for this action
+    %% there is only 1 parent and 1 child for this action
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
     #version{page = PP, version = PV} = PVsn,
@@ -338,8 +368,16 @@ ipost(Req, Ref, _Type, _Attr,
                                                Site, CP, CV),
                            ?exit
     end,
-    Return = hn_db_api:register_hn_from_web(ParentX, ChildX, Proxy, Biccie),
-    ?json(Req, Return),
+    {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX, 
+                                                      Proxy, Biccie),
+    Return2 = lists:append([Return, [{"stamp", Stamp}]]),
+    json(Req, {struct, Return2}),
+    io:format("In hn_mochi (notify_back_create) Return2 is ~p~n-"++
+              "process dictionary ~p~n", [Return2, get()]),
+    Str2 = "hn_mochi:ipost\tnotify_back_create\thandling post with\t" ++ 
+        Stamp ++ "\t" ++ pid_to_list(self()) ++ "\t" ++ 
+                                     binary_to_list(get(mochiweb_request_body)),
+    bits:log(Str2),
     ret;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -355,11 +393,18 @@ ipost(Req, Ref, _Type, _Attr,
     Type      = from("type",       T),
     PVsJson   = from("parent_vsn", T),
     CVsJson   = from("child_vsn",  T),
+    Stamp     = from("stamp",      T),
 
-                                                % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ParentUrl ++
-                                                %         "£ from £" ++ ChildUrl ++ json_util:to_str(Json)),
+    Str = "hn_mochi:ipost\tnotify_back\thandling post with\t" ++ Stamp ++ "\t" ++ 
+        pid_to_list(self()),
+    bits:log(Str),
 
-                                                % there is only 1 parent and 1 child here
+    %% io:format("In ipost (notify_back) Stamp is ~p~n", [Stamp]),
+
+    %% bits:log("RECEIVED\t" ++ pid_to_list(self()) ++ "\t" ++ ParentUrl ++
+    %%         "\t from \t" ++ ChildUrl ++ json_util:to_str(Json)),
+
+    %% there is only 1 parent and 1 child here
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
     #version{page = PP, version = PV} = PVsn,
@@ -391,8 +436,15 @@ ipost(Req, Ref, _Type, _Attr,
                                 Site, CP, CV),
             ok = hn_db_api:initialise_remote_page_vsn(Site, CVsn)
     end,
-    Req:ok({"application/json", "success"}),
-    ok;
+    Json = {struct, [{"result", "success"}, {"stamp", Stamp}]},
+    json(Req, Json),
+    io:format("In hn_mochi (notify_back) Json is ~p~n-process dictionary ~p~n",
+              [Json, get(mochiweb_request_body)]),
+    Str2 = "hn_mochi:ipost\tnotify_back\thandling post with\t" ++ 
+        Stamp ++ "\t" ++ pid_to_list(self()) ++ "\t" ++ 
+                                     binary_to_list(get(mochiweb_request_body)),
+    bits:log(Str2),
+    ret;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -406,13 +458,20 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
     Payload   = from("payload",    T),
     PVsJson   = from("parent_vsn", T),
     CVsJson   = from("child_vsn",  T),
+    Stamp     = from("stamp",      T),
+
+    Str = "hn_mochi:ipost\tnotify\thandling post with\t" ++ Stamp ++ "\t" ++ 
+        pid_to_list(self()),
+    bits:log(Str),
+
+    %% io:format("In ipost (notify) Stamp is ~p~n", [Stamp]),
 
     ParentX = hn_util:url_to_refX(ParentUrl),
     ChildX = Ref,
     _ChildUrl = hn_util:refX_to_url(ChildX),
 
-                                                % bits:log("RECEIVED£" ++ pid_to_list(self()) ++ "£" ++ ChildUrl ++
-                                                %         "£ from £" ++ ParentUrl ++ json_util:to_str(Json)),
+    %% bits:log("RECEIVED\t" ++ pid_to_list(self()) ++ "\t" ++ ChildUrl ++
+    %%         "\t from \t" ++ ParentUrl ++ json_util:to_str(Json)),
 
     #refX{site = Site} = ChildX,
     PVsn = json_util:unjsonify(PVsJson),
@@ -424,8 +483,8 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
                 "delete"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
                 "new_value" -> hn_db_api:check_page_vsn(Site, PVsn)
             end,
-                                                % there is one parent and it if is out of synch, then don't process it, ask for a
-                                                % resynch
+    %% there is one parent and it if is out of synch, then don't process it, ask for a
+    %% resynch
     case Sync1 of
         synched -> 
             ok = hn_db_api:notify_from_web(ParentX, Ref, Type,
@@ -437,8 +496,8 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
             log_not_yet_synched("FATAL", "notify", Site, PP, PV),
             ?exit
     end,
-    % there are 1 to many children and if they are out of synch ask for 
-    % a resynch for each of them
+    %% there are 1 to many children and if they are out of synch ask for 
+    %% a resynch for each of them
     Fun =
         fun(X) ->
                 Sync2 = hn_db_api:check_page_vsn(Site, X),
@@ -453,7 +512,15 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
                 end
         end,
     [Fun(X) || X <- CVsn],
-    Req:ok({"application/json", "success"});
+    Json = {struct, [{"result", "success"}, {"stamp", Stamp}]},
+    json(Req, Json),
+    io:format("In hn_mochi (notify) Json is ~p~n-process dictionary ~p~n",
+              [Json, get(mochiweb_request_body)]),
+    Str2 = "hn_mochi:ipost\tnotify\thandling post with\t" ++ 
+        Stamp ++ "\t" ++ pid_to_list(self()) ++ "\t" ++ 
+                                     binary_to_list(get(mochiweb_request_body)),
+    bits:log(Str2),
+    ret;
 
 ipost(Req, _Ref, _Type, _Attr, _Post, _User) ->
     ?ERROR("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
@@ -555,16 +622,16 @@ post_column_values(Ref, Values, Offset) ->
     lists:foldl(F, 0, Values).
 
 log_unsynched(_Location, _Site, _Page, _Vsn) ->
-                                                % bits:log("UNSYNCHED for "++ Location ++"£" ++ pid_to_list(self()) ++
-                                                %         "£" ++ Site ++ "£ Page £" ++ Page ++ "£ Version £" ++
-                                                %         tconv:to_s(Vsn)),
+    %% bits:log("UNSYNCHED for "++ Location ++"\t" ++ pid_to_list(self()) ++
+    %%         "\t" ++ Site ++ "\t Page \t" ++ Page ++ "\t Version \t" ++
+    %%         tconv:to_s(Vsn)),
     ok.
 
 log_not_yet_synched(_Severity, _Location, _Site, _Page, _Vsn) ->
-                                                % Msg = Severity ++ " NOT_YET_SYNCHED for " ++ Location ++ "£",
-                                                % bits:log(Msg ++ pid_to_list(self()) ++ "£" ++ Site ++
-                                                %         "£ Page £" ++ Page ++"£ Version £" ++
-                                                %         tconv:to_s(Vsn)).
+    %% Msg = Severity ++ " NOT_YET_SYNCHED for " ++ Location ++ "\t",
+    %% bits:log(Msg ++ pid_to_list(self()) ++ "\t" ++ Site ++
+    %%         "\t Page \t" ++ Page ++"\t Version \t" ++
+    %%         tconv:to_s(Vsn)).
     ok.
 
 remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
@@ -574,11 +641,11 @@ remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
     receive 
         {tcp_closed, Socket} -> ok;
         {error, timeout}     -> Req:ok({"text/html",?hdr, <<"timeout">>});
-        {msg, Data}          -> ?json(Req, Data)
+        {msg, Data}          -> json(Req, Data)
     after
-                                                % TODO : Fix, should be controlled by remoting_reg
+        %% TODO : Fix, should be controlled by remoting_reg
         600000 ->
-            ?json(Req, {struct, [{"time", remoting_reg:timestamp()},
+            json(Req, {struct, [{"time", remoting_reg:timestamp()},
                                  {"timeout", "true"}]})
     end.
 
@@ -643,3 +710,7 @@ get_lang(User) ->
         {ok, Lang} -> Lang;
         undefined  -> "en_gb"
     end.
+
+json(Req, Data) ->
+    Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
+    Req:ok({"application/json", ?hdr, Json}).
