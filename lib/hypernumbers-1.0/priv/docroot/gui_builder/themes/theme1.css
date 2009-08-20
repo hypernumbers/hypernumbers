@@ -3,38 +3,38 @@
   color: #666666;
 }
 
-p
+.hn_smallest *
 { 
-  font:  12px Arial,"Helvetica Neue", sans-serif;
+  font:       9px Arial,"Helvetica Neue", sans-serif;
+  color:      #bcbcbc;
+  text-align: left;
 }
 
-*.lable
+.hn_small *
+{ 
+  font:       9px Arial,"Helvetica Neue", sans-serif;
+  color:      #bcbcbc;
+  text-align: left;
+}
+
+.hn_medium *
 {  
-  font:  12px Arial,"Helvetica Neue", sans-serif;
+  font:       12px Arial,"Helvetica Neue", sans-serif;
+  text-align: left;
 }
 
-*.smallest
+.hn_large *
 { 
-  font:  9px Arial,"Helvetica Neue", sans-serif;
-  color: #bcbcbc;
-}
-
-*.small
-{ 
-  font:  9px Arial,"Helvetica Neue", sans-serif;
-  color: #bcbcbc;
-}
-
-*.large
-{ 
-  font: 14px Arial,"Helvetica Neue", sans-serif;
+  font:        14px Arial,"Helvetica Neue", sans-serif;
   font-weight: bold;
+  text-align:  left;
 }
 
-*.largest
+.hn_largest *
 { 
-  font: 20px Arial,"Helvetica Neue", sans-serif;
+  font:        20px Arial,"Helvetica Neue", sans-serif;
   font-weight: bold;
+  text-align:  left;
 }
 
 *.textinput, .inputtext

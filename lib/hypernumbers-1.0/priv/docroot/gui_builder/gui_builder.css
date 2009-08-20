@@ -101,7 +101,7 @@ body, html
   color:            #666666;
   padding:          6px;
   margin:           6px 6px;  
-  width:            150px;
+  width:            240px;
   background-color: #ffffff;
 }
 
@@ -163,16 +163,16 @@ body, html
   width:               120px;
   background-color:    #fdfaf8;
   padding:             2px;
-  margin:              3px 13px;
+  margin:              3px 45px;
 }
 
 .toolbox li div.elementsitem
 { 
-  border:              1px solid #d8d8d8;
-  width:               120px;
-  background-color:    #fdfaf8;
-  padding:             2px;
-  margin:              3px 13px;
+  border:           1px solid #d8d8d8;
+  width:            120px;
+  background-color: #fdfaf8;
+  padding:          2px;
+  margin:           3px 45px;
 }
 
 .toolbox li div.textinput
@@ -209,6 +209,8 @@ body, html
   top:        65%;
   background: white;
   border:     solid 6px #666;
+  z-index:    999999;
+
 }
 
 #bindings p
@@ -339,6 +341,7 @@ body, html
   margin:      6px;
   padding:     6px;
   color:       #888888;
+  font:        12px Arial,"Helvetica Neue", sans-serif;
   font-weight: bold;
   border:      3px solid #ff0000;
 }

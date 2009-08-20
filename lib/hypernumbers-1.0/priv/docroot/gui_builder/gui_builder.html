@@ -2,15 +2,15 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
-    <title>Hypernumbers Drag'n'Drop Gui Builder</title>
     <link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/gui_builder.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/themes/theme1.css" />
     <link rel="stylesheet" type="text/css" href="/hypernumbers/hn.sheet.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/layouts/basic.css" />
+    <link rel="stylesheet" type="text/css" href="/gui_builder/elements/core.css" />
   </head>
     <body>
-
+      
       <!-- Overall page elements -->
       <div id="cover"></div>
       
@@ -19,7 +19,22 @@
         <span>Drag'n'Drop Gui Builder</span>
       </div>
       
+      <ul id="menu">              
+        <li id="browse">
+          <a>$txt:{File}$</a>
+          <ul>
+            <li id="empty"><a name="open">$txt:{Open}$</a></li>
+            <!-- <li class="seperator"></li> -->
+            <li><a name="save">$txt:{Save}$</a></li>
+          </ul>
+        </li>
+        <li>
+          <a name="help">$txt:{Help}$</a>
+        </li>
+      </ul>
+      
       <!-- Dialog Boxes -->
+      
       <div id="dialog_boxes">
         <div id="helpdialog" class="mdialog">
           <p class="toolstitle">$txt:{Help}$</p><hr />
@@ -41,23 +56,25 @@
             <li>radio boxes<li>
           </ul>
           <p>...and lots more.</p>
-          <p>Then just publish your web page!</p>
-          <form id="helpform" onClick="return HN.Tools.Util.close_help_dialog();"> 
+          <p>Then just save your web page!</p>
+          <form id="helpform" onClick="return HN.Tools.Util.close_help_dialog();">
             <input type="button" class="action" value="OK"  />
           </form>
         </div>
-        <div id="newpagedialog" class="mdialog">
-          <p class="toolstitle">$txt:{Bind A New Spreadsheet Page To This Web Page}$</p><hr />
-          <div>Type in the page you want to add to this form. You can use a full path (/some/page/or/another/) or a relative path (../../another/path)</div>
-          <input id="newpage" type="text" /><span>Full Path</span>
-          <input id="newpage_full_path" name="new_page" type="checkbox" />
-          <form id="newpageform" onClick="return HN.Tools.Util.new_bindings_page();"> 
-            <input type="button" class="action" value="OK"  />
-          </form>
+        <div id="dialog_boxes">
+          <div id="newpagedialog" class="mdialog">
+            <p class="toolstitle">$txt:{Bind A New Spreadsheet Page To This Web Page}$</p><hr />
+            <div>Type in the page you want to add to this form. You can use a full path (/some/page/or/another/) or a relative path (../../another/path)</div>
+            <input id="newpage" type="text" /><span>Full Path</span>
+            <input id="newpage_full_path" name="new_page" type="checkbox" />
+            <form id="newpageform" onClick="return HN.Tools.Util.new_bindings_page();"> 
+              <input type="button" class="action" value="OK"  />
+            </form>
+          </div>
         </div>
       </div>
       <!-- End of Dialog Boxes -->
-
+      
       <!-- Binding Table -->
       <div id="bindings">
         <div id="bindings_header">
@@ -74,10 +91,10 @@
         <div id="insert_bindings"></div>
       </div>
       <!--End of Binding Table -->
-
+      
       <!-- Main layout -->
       <table class="main">
-        <tr>
+          <tr>
             <td id="tab_bar">
               <div id="tabs" class="ui-tabs">
                 <ul>
@@ -95,9 +112,10 @@
                   <div id="tools" class="box">
                     <p class="toolstitle">Elements</p>
                     <hr />
-                    <p>Drag elements onto the page.</p>
+                    <p>Drag elements onto the page and then click on them to configure them.</p>
                     <ul id="elementslist" class="toolbox">
                     </ul>
+                    <p>An element can be configured as a lable, a text box, a set of radio buttons or a dropdown menu, and so on...</p>
                   </div>
                   <div id="widgets" class="box">
                     <p class="toolstitle">Widgets</p>
@@ -111,28 +129,28 @@
                   <div id="config_boxes">
                     <div id="page_sizes" class="standardconfig">
                       <p class="toolstitle">$txt:{Page Size}$<p>
-                    <hr />
-                    <p>Pick your page size from one of the preset sizes, or set your own custom size.</p>
-                    <table>
-                        <tr>
-                          <td>Width:</td><td><input id="canvaswidth" class="input" type="text"/></td>
-                        </tr>
-                        <tr>
-                          <td>Height:</td><td><input id="canvasheight" class="input" type="text"/></td>
-                        </tr>
-                        <tr>
-                          <td>Presets:</td>
-                          <td>
-                            <select id="canvaspresets">
-                              <option value="normal">normal</option>
-                              <option value="iphone">iPhone</option>
-                              <option value="netbook">netbook</option>
-                              <option value="custom">custom</option>
-                            </select>
-                          </td>
-                        </tr>
-                    </table>
-                  </div>
+                      <hr />
+                      <p>Pick your page size from one of the preset sizes, or set your own custom size.</p>
+                      <table>
+                          <tr>
+                            <td>Width:</td><td><input id="canvaswidth" class="input" type="text"/></td>
+                          </tr>
+                          <tr>
+                            <td>Height:</td><td><input id="canvasheight" class="input" type="text"/></td>
+                          </tr>
+                          <tr>
+                            <td>Presets:</td>
+                            <td>
+                              <select id="canvaspresets">
+                                <option value="normal">normal</option>
+                                <option value="iphone">iPhone</option>
+                                <option value="netbook">netbook</option>
+                                <option value="custom">custom</option>
+                              </select>
+                            </td>
+                          </tr>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -143,48 +161,50 @@
               </div>
             </td>
       </table>
-
-
-      </table>
+    </table>
     </div>
+      <div id="scripts">
+        <!-- Some jquery libraries to handle AJAX calls -->
+        <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
+        <!--<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>-->
+        <!--<script src="/jquerytextbox/jquery.textbox.js"></script> -->
+        <!-- Special minified jquery.ui set done this way for dev only-->
+        <script src="/jqueryui/js/jquery-ui-1.7.2.custom.min.js"></script>
+        <script src="/hypernumbers/jquery.filemenu.js"></script>
+        
+        <!-- Standard JSON library -->
+        <script src="/hypernumbers/json2.js"></script>
+        
+        <!-- The basic hypernumbers javascript libaries -->
+        <script src="/hypernumbers/hn.js"></script>
+        <script src="/hypernumbers/hn.util.js"></script>
+        <script src="/hypernumbers/hn.data.js"></script>
+        <script src="/hypernumbers/hn.callbacks.js"></script>
+        
+        <!-- the GUI libraries -->
+        <script src="/gui_builder/hn.gui.js"></script>
+        <script src="/gui_builder/hn.gui.util.js"></script>
+        <script src="/gui_builder/hn.gui.register.js"></script>
+        <script src="/gui_builder/hn.gui.builder.js"></script>
+        <script src="/gui_builder/hn.gui.dataoptions.js"></script>
+        <script src="/gui_builder/hn.gui.html.js"></script>
+        
+        <!-- the Tools libraries -->
+        <script src="/gui_builder/hn.tools.js"></script>
+        <script src="/gui_builder/hn.tools.util.js"></script>
+        <script src="/gui_builder/hn.tools.register.js"></script>
+        <script src="/gui_builder/hn.tools.layouts.js"></script>
+        <script src="/gui_builder/hn.tools.toolbar.js"></script>
+        
+        <!-- The Tools libraries that the GUI Builder users -->
+        <script src="/gui_builder/buildmain.js"></script>
+        
+        <!-- Load the layouts, elements and widgets last -->
+        <!-- They have to register themselves -->
+        <script src="/gui_builder/layouts/basic.js"></script>
+        <script src="/gui_builder/elements/core.js"></script>
+        <script src="/gui_builder/builddraw.js"></script>
+      </div>
     </body>
-    <!-- Some jquery libraries to handle AJAX calls -->
-    <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
-    (!--<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>-->
-    <!--<script src="/jquerytextbox/jquery.textbox.js"></script> -->
-    <!-- Special minified jquery.ui set done this way for dev only-->
-    <script src="/jqueryui/js/jquery-ui-1.7.2.custom.min.js"></script>
-
-    <!-- Standard JSON library -->
-    <script src="/hypernumbers/json2.js"></script>
-    
-    <!-- The basic hypernumbers javascript libaries -->
-    <script src="/hypernumbers/hn.js"></script>
-    <script src="/hypernumbers/hn.util.js"></script>
-    <script src="/hypernumbers/hn.data.js"></script>
-    <script src="/hypernumbers/hn.callbacks.js"></script>
-    
-    <!-- the GUI libraries -->
-    <script src="/gui_builder/hn.gui.js"></script>
-    <script src="/gui_builder/hn.gui.util.js"></script>
-    <script src="/gui_builder/hn.gui.register.js"></script>
-    <script src="/gui_builder/hn.gui.builder.js"></script>
-    <script src="/gui_builder/hn.gui.dataoptions.js"></script>
-    <script src="/gui_builder/hn.gui.html.js"></script>
-
-    <!-- the Tools libraries -->
-    <script src="/gui_builder/hn.tools.js"></script>
-    <script src="/gui_builder/hn.tools.util.js"></script>
-    <script src="/gui_builder/hn.tools.register.js"></script>
-    <script src="/gui_builder/hn.tools.layouts.js"></script>
-
-    <!-- The Tools libraries that the GUI Builder users -->
-    <script src="/gui_builder/buildmain.js"></script>
-
-    <!-- Load the layouts, elements and widgets last -->
-    <!-- They have to register themselves -->
-    <script src="/gui_builder/layouts/basic.js"></script>
-    <script src="/gui_builder/elements/core.js"></script>
-    <script src="/gui_builder/builddraw.js"></script>
 
 </html>
