@@ -29,7 +29,7 @@ column([])                          -> muin:context_setting(col);
 column([C]) when ?is_namedexpr(C)   -> ?ERRVAL_NAME;
 column([C]) when ?is_cellref(C)     -> muin:col_index(muin:col(C));
 column([Err]) when ?is_errval(Err)  -> Err;
-column(_Else)                       -> io:format("~p~n",[_Else]),?ERR_VAL.
+column(_Else)                       -> ?ERRVAL_VAL.
  
 
 %% TODO: Needs to be recompiled every time -- how to handle that cleanly?

@@ -316,12 +316,14 @@ large([V1, V2]) ->
     Nums = ?flatten_all(V1),
     % yes evaluating errors right to left!
     K = ?number(V2, ?default_rules),
-    Nums2 = ?numbers(Nums, Rules),
     K2 = erlang:round(K),
+    ?ensure(K2 > 0, ?ERR_NUM),
+    ?ensure(length(Nums) >= K2, ?ERR_NUM),
+
+    io:format("wtf~n"),
+    Nums2 = ?numbers(Nums, Rules),
     io:format("In stdfuns_stats:large~n-V1 is ~p~n-V2 is ~p~n-Nums is  ~p~n-"++
               "Nums2 is ~p~n-K is  ~p~n-K2 is ~p~n", [V1, V2, Nums, Nums2, K, K2]),
-    ?ensure(K2 > 0, ?ERR_NUM),
-    ?ensure(length(Nums2) >= K2, ?ERR_NUM),
     large1(Nums2, K2).
 large1(Nums, K) ->
     nth(K, reverse(sort(Nums))).

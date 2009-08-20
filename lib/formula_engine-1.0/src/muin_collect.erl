@@ -71,6 +71,11 @@ rl(ignore_strings, String) when ?is_string(String) ->
     ignore;
 rl(ignore_errors, Err) when ?is_errval(Err) ->
     ignore;
+rl({ignore, Type}, Val) ->
+    case muin_util:get_type(Val) of
+        Type  -> ignore;
+        _Else -> Val
+    end;
 
 % Evaluate functions
 rl(eval_funs, Fun) when ?is_funcall(Fun) ->
@@ -90,6 +95,12 @@ rl(flatten_as_str, {range,[X]}) ->
     {list, col(X, [ignore_blanks, cast_str, cast_num, ignore_strings])};
 rl(flatten_as_str, {array,[X]}) ->
     {list, col(X, [ignore_blanks, cast_str, cast_num, ignore_strings])};
+
+rl(flatten_as_num, {range,[X]}) ->
+    {list, col(X, [ignore_blanks, {cast,num}])};
+rl(flatten_as_num, {array,[X]}) ->
+    {list, col(X, [ignore_blanks, {cast,str}])};
+
 
 rl(num_as_bool, X) when is_number(X) andalso X==0; X==0.0 ->
     false;
@@ -134,14 +145,11 @@ rl({cast, From, To}, X) ->
         From  -> rl({cast, To}, X);
         _Else -> X
     end;
-
-
 rl(cast_num, X) ->
     case muin_util:cast(X, num) of
         {error, _} -> X;
         Num  -> Num
     end;
-
 rl(cast_str, X) ->
     case muin_util:cast(X, str) of
         {error, _} -> X;

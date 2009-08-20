@@ -13,6 +13,7 @@
 -compile(export_all).
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 
+-import(muin_collect, [ col/2, col/3, col/4 ]).
 
 %% db([V1, V2, V3, V4]) ->
 %%     "the function db has an infinite loop!";
@@ -80,10 +81,28 @@ nominal(Args = [_, _]) ->
 nominal1(Effrate, Npery) ->
     Npery * (math:pow(Effrate + 1, -Npery) - 1).
 
-npv([V1, V2 | Tl]) ->
-    Rate = ?number(V1, ?default_rules),
-    Vals = ?numbers([V2|Tl], ?default_rules), % TODO: cast_string_zero
+npv([Rate | Args]) ->
+
+    NRate = col([Rate],
+                [eval_funs, first_array, fetch_name, fetch_ref, cast_num],
+                [return_errors, {all, fun is_number/1}]),
+    
+    NArgs = col(Args,
+                [eval_funs, flatten_as_str, {cast, str, num, ?ERRVAL_VAL},
+                 fetch_name, fetch_ref, {ignore, blank},
+                 {ignore, str}, cast_num],
+                [return_errors, {all, fun is_number/1}]),
+
+    case {NRate, NArgs} of
+        {Err, _} when ?is_errval(Err) -> Err;
+        {_, Err} when ?is_errval(Err) -> Err;
+        {[NRate2], NArgs2} ->
+            npv_([NRate2 | NArgs2])
+    end.
+
+npv_([Rate | Vals]) ->
     npv1(Rate, Vals).
+
 npv1(Rate, Vals) ->
     npv1(Rate, Vals, 1, 0).
 npv1(_Rate, [], _Num, Acc) ->
@@ -127,16 +146,29 @@ pmt(Args = [_, _, _, _, _]) ->
     Pmt1 = Pmt0 - 50,
     X0 = xn(Pmt0, Rate, Nper, Pv, Fv, Partype),
     X1 = xn(Pmt1, Rate, Nper, Pv, Fv, Partype),
-    secant(Pmt1, Pmt0, X1, X0, fun(N) -> xn(N, Rate, Nper, Pv, Fv, Partype) end).
+    secant(Pmt1, Pmt0, X1, X0,
+           fun(N) -> xn(N, Rate, Nper, Pv, Fv, Partype) end).
 
-rate(Args = [_, _, _, _, _]) ->
-    [Nper, Pmt, Pv, Fv, Partype] = ?numbers(Args, ?default_rules),
+rate([NPer, Pmt, PV]) ->
+    rate([NPer, Pmt, PV, 0]);
+rate([NPer, Pmt, PV, Fv]) ->
+    rate([NPer, Pmt, PV, Fv, 0]);
+rate([NPer, Pmt, PV, Fv, Type]) ->
+    rate([NPer, Pmt, PV, Fv, Type, 0.1]);
+
+rate(Args = [_, _, _, _, _, _]) ->
+    col(Args,
+        [first_array, cast_num],
+        [return_errors, {all, fun is_number/1}],
+        fun rate_/1).
+
+rate_([Nper, Pmt, Pv, Fv, Type, _Est]) ->
     Rate0 = 0.01,
     Rate1 = 0.09,
-    X0 = xn(Pmt, Rate0, Nper, Pv, Fv, Partype),
-    X1 = xn(Pmt, Rate1, Nper, Pv, Fv, Partype),
+    X0 = xn(Pmt, Rate0, Nper, Pv, Fv, Type),
+    X1 = xn(Pmt, Rate1, Nper, Pv, Fv, Type),
     secant(Rate1, Rate0, X1, X0,
-           fun(N) -> xn(Pmt, N, Nper, Pv, Fv, Partype) end).
+           fun(N) -> xn(Pmt, N, Nper, Pv, Fv, Type) end).
 
 nper(Args = [_, _, _, _, _]) ->
     [Rate, Pmt, Pv, Fv, Partype] = ?numbers(Args, ?default_rules),
@@ -154,11 +186,11 @@ nper(Args = [_, _, _, _, _]) ->
 secant(Pa, Ppa, Px, Ppx, Fun) ->
     secant(Pa, Ppa, Px, Ppx, Fun, 1).
 secant(_, _, _, _, _, ?ITERATION_LIMIT) ->
-    ?ERR_NUM;
+    ?ERRVAL_NUM;
 secant(Pa, Ppa, Px, Ppx, Fun, I) ->
     Divisor = (Px-Ppx)*Px,
     case Divisor of
-        X when X == 0 -> ?ERR_DIV;
+        X when X == 0 -> ?ERRVAL_DIV;
         _             ->
             Ca = Pa-(Pa-Ppa)/Divisor,
             Xn = Fun(Ca),
@@ -174,3 +206,4 @@ secant(Pa, Ppa, Px, Ppx, Fun, I) ->
 xn(Pmt, Rate, Nper, Pv, Fv, Partype) ->
     Tmp = math:pow(1+Rate, Nper),
     Pv * Tmp + Pmt * (1+Rate*Partype) * (Tmp-1) / Rate + Fv.
+
