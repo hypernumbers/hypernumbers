@@ -72,6 +72,16 @@
             </form>
           </div>
         </div>
+          <div id="savedialog" class="mdialog">
+            <p class="toolstitle">$txt:{Save This Webpage}$</p><hr />
+            <div>Type in the name of the form (shouldn't contain spaces or punctuation but can have underscores, it should be <em>a_single_word</em><br /></div>
+          <span>Name</span>            
+          <input id="save_name" type="name" />
+          <form id="newpageform" onClick="return HN.Tools.Util.save_page();"> 
+              <input type="button" class="action" value="OK"  />
+            </form>
+          </div>
+        </div>
       </div>
       <!-- End of Dialog Boxes -->
       
@@ -163,7 +173,9 @@
       </table>
     </table>
     </div>
-      <div id="scripts">
+      <!-- not all the javascript is to be included in the finshed page -->
+      <!-- only that contained in the div 'scripts' -->
+      <div id="scripts"> 
         <!-- Some jquery libraries to handle AJAX calls -->
         <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
         <!--<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>-->
@@ -187,24 +199,24 @@
         <script src="/gui_builder/hn.gui.register.js"></script>
         <script src="/gui_builder/hn.gui.builder.js"></script>
         <script src="/gui_builder/hn.gui.dataoptions.js"></script>
-        <script src="/gui_builder/hn.gui.html.js"></script>
-        
-        <!-- the Tools libraries -->
-        <script src="/gui_builder/hn.tools.js"></script>
-        <script src="/gui_builder/hn.tools.util.js"></script>
-        <script src="/gui_builder/hn.tools.register.js"></script>
-        <script src="/gui_builder/hn.tools.layouts.js"></script>
-        <script src="/gui_builder/hn.tools.toolbar.js"></script>
-        
-        <!-- The Tools libraries that the GUI Builder users -->
-        <script src="/gui_builder/buildmain.js"></script>
-        
-        <!-- Load the layouts, elements and widgets last -->
-        <!-- They have to register themselves -->
-        <script src="/gui_builder/layouts/basic.js"></script>
-        <script src="/gui_builder/elements/core.js"></script>
-        <script src="/gui_builder/builddraw.js"></script>
+        <script src="/gui_builder/hn.gui.html.js"></script>        
       </div>
+
+      <!-- the Tools libraries -->
+      <script src="/gui_builder/hn.tools.js"></script>
+      <script src="/gui_builder/hn.tools.util.js"></script>
+      <script src="/gui_builder/hn.tools.register.js"></script>
+      <script src="/gui_builder/hn.tools.layouts.js"></script>
+      <script src="/gui_builder/hn.tools.toolbar.js"></script>
+      
+      <!-- The Tools libraries that the GUI Builder users -->
+      <script src="/gui_builder/buildmain.js"></script>
+        
+      <!-- Load the layouts, elements and widgets last -->
+      <!-- They have to register themselves -->
+      <script src="/gui_builder/layouts/basic.js"></script>
+      <script src="/gui_builder/elements/core.js"></script>
+      <script src="/gui_builder/builddraw.js"></script>
     </body>
 
 </html>
