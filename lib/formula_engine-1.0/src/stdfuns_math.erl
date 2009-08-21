@@ -173,7 +173,6 @@ negate([V]) ->
 %%% Arithmetic ~~~~~
 
 sum(Vs) ->
-    io:format("~p~n",[Vs]),
     Flatvs = ?flatten_all(Vs),
     Nums = ?numbers([0|Flatvs], [ignore_strings, ignore_bools, ignore_dates, cast_blanks]),
     sum1(Nums).
@@ -947,7 +946,6 @@ atanh([V]) ->
     math:atanh(Num).
 
 degrees([V]) ->
-
     case col([V], [area_first, cast_num],
              [return_errors, {all, fun is_number/1}]) of
         Err when ?is_errval(Err) -> Err;

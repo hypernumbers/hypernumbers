@@ -133,13 +133,11 @@ pv(Args = [_, _, _, _, _]) ->
         [return_errors, {all, fun is_number/1}],
         fun pv_/1).
 
-pv_([Rate, Nper, Pmt, Fv, Partype]) ->
-    Pv0 = 0,
-    Pv1 = 1000,
-    X0 = xn(Pmt, Rate, Nper, Fv, Pv0, Partype),
-    X1 = xn(Pmt, Rate, Nper, Fv, Pv1, Partype),
-    secant(Pv1, Pv0, X1, X0,
-           fun(N) -> xn(Pmt, Rate, Nper, Fv, N, Partype) end).
+pv_([Rate, Nper, Pmt, Fv, _Partype]) when Rate == 0 ->
+    - Fv - (Pmt * Nper);
+pv_([Rate, Nper, Pmt, Fv, Type]) ->
+    Tmp = math:pow((1+Rate),Nper),
+    (0 - Fv - Pmt * (1+Rate*Type)* (Tmp - 1)/Rate) / (Tmp).
 
 fv(Args = [_, _, _, _, _]) ->
     [Rate, Nper, Pmt, Pv, Partype] = ?numbers(Args, ?default_rules),
@@ -147,7 +145,8 @@ fv(Args = [_, _, _, _, _]) ->
     Fv1 = 1000,
     X0 = xn(Pmt, Rate, Nper, Pv, Fv0, Partype),
     X1 = xn(Pmt, Rate, Nper, Pv, Fv1, Partype),
-    secant(Fv1, Fv0, X1, X0, fun(N) -> xn(Pmt, Rate, Nper, Pv, N, Partype) end).
+    secant(Fv1, Fv0, X1, X0,
+           fun(N) -> xn(Pmt, Rate, Nper, Pv, N, Partype) end).
            
 pmt([A, B, C, D]) -> pmt([A, B, C, D, 0]);
 pmt([A, B, C])    -> pmt([A, B, C, 0, 0]);
