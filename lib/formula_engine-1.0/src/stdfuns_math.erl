@@ -571,8 +571,12 @@ roman([V1, V2]) ->
     Type = ?int(V2, [cast_strings, cast_bools, ban_dates, cast_blanks]),
     %% we need to build the roman numbers right to left so we have to
     %% reverse the string representation of the number
-    List = map(fun(C) -> [C] end, integer_to_list(X)),
-    get_roman(List, Type).
+    case X of
+        X when X < 0 orelse X > 3999 -> ?ERRVAL_VAL;
+        _Else ->
+            List = map(fun(C) -> [C] end, integer_to_list(X)),
+            get_roman(List, Type)
+    end.
     
 %% first deal with the single digit number
 get_roman(["0"],_) -> "";
