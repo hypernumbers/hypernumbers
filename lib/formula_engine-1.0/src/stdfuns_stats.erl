@@ -101,7 +101,7 @@
          %%ztest/1
         ]).
 
--import(muin_collect, [col/2, col/3]).
+-import(muin_collect, [col/2, col/3, col/4]).
 
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 -define(default_rules_bools, [cast_numbers, cast_strings, cast_blanks, cast_dates]).
@@ -334,31 +334,62 @@ linest(_) ->
 linest1(_, _) ->
     0.
 
-max(V1) ->
-    Flatvs = ?flatten_all(V1),
-    Rules = [cast_strings_or_ignore, ignore_bools, cast_blanks, cast_dates],
-    Nums = ?numbers(Flatvs, Rules),
+max(Args) ->
+    col(Args,
+        [eval_funs, flatten, {cast, str, num, ?ERRVAL_VAL},
+         {cast, bool, num}, fetch_name, fetch_ref,
+         flatten, {ignore, blank}, {ignore, str}, {ignore, bool}],
+        [return_errors, {all, fun is_number/1}],
+        fun max_/1).
+
+max_(Nums) ->
     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
 
-maxa(V1) ->
-    Flatvs = ?flatten_all(V1),
-    Nums = ?numbers(Flatvs, ?default_rules),
+min(Args) ->
+    col(Args,
+        [eval_funs, flatten, {cast, str, num, ?ERRVAL_VAL},
+         {cast, bool, num}, fetch_name, fetch_ref,
+         flatten, {ignore, blank}, {ignore, str}, {ignore, bool}],
+        [return_errors, {all, fun is_number/1}],
+        fun min_/1).
+
+min_(Nums) ->
+    ?COND(length(Nums) == 0, 0, lists:min(Nums)).
+
+mina(Args) ->
+    col(Args,
+        [eval_funs, flatten, {cast, str, num, ?ERRVAL_VAL},
+         {cast, bool, num}, fetch_name, fetch_ref,
+         flatten, {ignore, blank}, {ignore, str}, {ignore, bool}],
+        [return_errors, {all, fun is_number/1}],
+        fun mina_/1).
+
+mina_(Nums) ->
+    ?COND(length(Nums) == 0, 0, lists:min(Nums)).
+
+maxa(Args) ->
+    col(Args,
+        [eval_funs, flatten, {cast, str, num, ?ERRVAL_VAL},
+         {cast, bool, num}, fetch_name, fetch_ref,
+         flatten, {ignore, blank}, {ignore, str}, {cast, bool, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun maxa_/1).
+
+maxa_(Nums) ->
     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
+
+%% maxa(V1) ->
+%%     Flatvs = ?flatten_all(V1),
+%%     Nums = ?numbers(Flatvs, ?default_rules),
+%%     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
+
+
 
 median(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     Sum=stdfuns_math:sum(Nums),
     Count=count(Nums),
     Sum/Count.
-
-min(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    ?COND(length(Nums) == 0, 0, lists:min(Nums)).
-
-mina(V1) ->
-    Nums = ?numbers(?flatten_all(V1),
-                    ?default_rules -- [cast_strings] ++ [cast_strings_zero]),
-    ?COND(length(Nums) == 0, 0, lists:min(Nums)).
 
 mode(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),

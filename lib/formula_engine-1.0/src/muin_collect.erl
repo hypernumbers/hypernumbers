@@ -60,6 +60,17 @@ col(Args, Rules) ->
 %% rules are ignored, the function should return the new value following
 %% the rule
 
+rl(Rule, {list, Vals}) ->
+    
+    F = fun(X, Acc) ->
+                case rl(Rule, X) of
+                    ignore       -> Acc;
+                    Else         -> [Else | Acc]
+                end
+        end,
+                
+    {list, lists:foldl(F, [], Vals)};
+                          
 % If anything has been marked ignore, ignore
 rl(_, ignore) ->
     ignore;
@@ -96,10 +107,10 @@ rl(flatten_as_str, {range,[X]}) ->
 rl(flatten_as_str, {array,[X]}) ->
     {list, col(X, [ignore_blanks, cast_str, cast_num, ignore_strings])};
 
-rl(flatten_as_num, {range,[X]}) ->
-    {list, col(X, [ignore_blanks, {cast,num}])};
-rl(flatten_as_num, {array,[X]}) ->
-    {list, col(X, [ignore_blanks, {cast,str}])};
+rl(flatten, {range,[X]}) ->
+    {list, X};
+rl(flatten, {array,[X]}) ->
+    {list, X};
 
 
 rl(num_as_bool, X) when is_number(X) andalso X==0; X==0.0 ->
@@ -120,9 +131,11 @@ rl(ref_as_bool, Ref) when ?is_cellref(Ref) ->
         X when X == 0; X == false -> false;
         _Else                     -> true
     end;
-rl(fetch_ref, Ref) when ?is_cellref(Ref) ->
+rl(fetch_ref, Ref) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
     muin:fetch(Ref);
 
+rl({cast_def, _Type, _Def}, X) when ?is_errval(X) ->
+    X;
 rl({cast_def, Type, Def}, X) ->
     case muin_util:cast(X, Type) of
         {error, _} -> Def;
@@ -176,7 +189,6 @@ pass(Args, [ return_errors | Rules ]) ->
         false -> pass(Args, Rules);
         Err   -> Err
     end;
-
 % Typically a type check, checks that all elements return true
 % for F(X)
 pass(Args, [ {all, F} | Rules ]) ->

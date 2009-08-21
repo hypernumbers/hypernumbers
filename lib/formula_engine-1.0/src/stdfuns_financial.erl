@@ -122,13 +122,24 @@ syd(Args = [_, _, _, _]) ->
 syd1(Cost, Salv, Life, Per) ->
     (Cost-Salv)*(Life-Per+1)*2/(Life*(Life+1)).
 
+pv([Rate, NPer, Pmt]) ->
+    pv([Rate, NPer, Pmt, 0]);
+pv([Rate, NPer, Pmt, Fv]) ->
+    pv([Rate, NPer, Pmt, Fv, 0]);
+
 pv(Args = [_, _, _, _, _]) ->
-    [Rate, Nper, Pmt, Fv, Partype] = ?numbers(Args, ?default_rules),
+    col(Args,
+        [first_array, cast_num],
+        [return_errors, {all, fun is_number/1}],
+        fun pv_/1).
+
+pv_([Rate, Nper, Pmt, Fv, Partype]) ->
     Pv0 = 0,
     Pv1 = 1000,
     X0 = xn(Pmt, Rate, Nper, Fv, Pv0, Partype),
     X1 = xn(Pmt, Rate, Nper, Fv, Pv1, Partype),
-    secant(Pv1, Pv0, X1, X0, fun(N) -> xn(Pmt, Rate, Nper, Fv, N, Partype) end).
+    secant(Pv1, Pv0, X1, X0,
+           fun(N) -> xn(Pmt, Rate, Nper, Fv, N, Partype) end).
 
 fv(Args = [_, _, _, _, _]) ->
     [Rate, Nper, Pmt, Pv, Partype] = ?numbers(Args, ?default_rules),
@@ -171,7 +182,12 @@ rate_([Nper, Pmt, Pv, Fv, Type, _Est]) ->
            fun(N) -> xn(Pmt, N, Nper, Pv, Fv, Type) end).
 
 nper(Args = [_, _, _, _, _]) ->
-    [Rate, Pmt, Pv, Fv, Partype] = ?numbers(Args, ?default_rules),
+    col(Args,
+        [first_array, cast_num],
+        [return_errors, {all, fun is_number/1}],
+        fun nper_/1).
+
+nper_([Rate, Pmt, Pv, Fv, Partype]) ->
     Nper0 = 10,
     Nper1 = 16,
     X0 = xn(Pmt, Rate, Nper0, Pv, Fv, Partype),
@@ -190,15 +206,13 @@ secant(_, _, _, _, _, ?ITERATION_LIMIT) ->
 secant(Pa, Ppa, Px, Ppx, Fun, I) ->
     Divisor = (Px-Ppx)*Px,
     case Divisor of
-        X when X == 0 -> ?ERRVAL_DIV;
+        X when X == 0 orelse X == 0.0 -> ?ERRVAL_DIV;
         _             ->
             Ca = Pa-(Pa-Ppa)/Divisor,
             Xn = Fun(Ca),
             case Xn of
                 0 -> Ca;
-                _ ->
-                    io:format("Xn ~p~n",[Xn]),
-                    secant(Ca, Pa, Xn, Px, Fun, I+1)
+                _ -> secant(Ca, Pa, Xn, Px, Fun, I+1)
             end
     end.
 
