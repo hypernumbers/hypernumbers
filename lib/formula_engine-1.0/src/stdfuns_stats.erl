@@ -576,17 +576,26 @@ steyx([V1, V2]) ->
     Ys = ?numbers(?flatten_all(V1), ?default_rules),
     Xs = ?numbers(?flatten_all(V2), ?default_rules),
     steyx1(Ys, Xs).
-steyx1(Ys, Xs) ->
+steyx1(Ys, Xs) -> 
     math:pow(pearson1(Ys, Xs), 2).
 
 trimmean([V1, V2]) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    Percent = ?number(V2, ?default_rules),
-    ?ensure(Percent >= 0, ?ERR_NUM),
-    ?ensure(Percent =< 1, ?ERR_NUM),
-    trimmean1(Nums, Percent).
+    Nums = col([V1],
+               [eval_funs, {cast, num}, fetch, flatten,
+                {ignore, str}, {ignore, bool}, {ignore, blank}],
+               [return_errors, {all, fun is_number/1}]),    
+    Perc = col([V2],
+                [eval_funs, fetch, flatten, {cast, num}],
+               [return_errors, {all, fun is_number/1}]),
+    muin_util:apply([Nums, Perc], fun trimmean_/2).
+
+trimmean_(Nums, [Perc]) when Perc >= 0, Perc < 1, length(Nums) > 0 ->
+    trimmean1(lists:reverse(Nums), Perc);
+trimmean_(_Nums, [_Perc]) ->
+    ?ERRVAL_NUM.
+
 trimmean1(Nums, Percent) ->
-    N = round((Percent / 100) * length(Nums)) div 2,
+    N = erlang:trunc(((Percent * length(Nums)) / 2)),
     average1(sublist(sort(Nums), N + 1, length(Nums) - 2 * N)).
 
 var(V1) ->

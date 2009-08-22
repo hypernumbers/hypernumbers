@@ -107,10 +107,10 @@ rl(flatten_as_str, {range,[X]}) ->
 rl(flatten_as_str, {array,[X]}) ->
     {list, col(X, [ignore_blanks, cast_str, cast_num, ignore_strings])};
 
-rl(flatten, {range,[X]}) ->
-    {list, X};
-rl(flatten, {array,[X]}) ->
-    {list, X};
+rl(flatten, {range,X}) ->
+    {list, flat(X, [])};
+rl(flatten, {array,X}) ->
+    {list, flat(X,[])};
 
 
 rl(num_as_bool, X) when is_number(X) andalso X==0; X==0.0 ->
@@ -177,6 +177,12 @@ rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
 % No Rules for this element
 rl(_Rule, Value) ->
     Value.
+
+flat([], Acc) ->
+    Acc;
+flat([Head|Tail], Acc) ->
+    flat(Tail, Acc ++ Head).
+    
 
 %% Passes are a list of rules to perform on arguments once casting
 %% and such has happened
