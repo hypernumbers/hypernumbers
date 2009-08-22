@@ -40,20 +40,20 @@
                             cast_blanks, cast_dates ]).
 
 
-t([V]) when ?is_string(V) -> V;
-t([_])                    -> "".
+t([V]) ->
+    case col([V], [eval_funs, area_first], [return_errors]) of
+        Err   when ?is_errval(Err) -> Err;
+        [Str] when ?is_string(Str) -> Str;
+        _Else -> ""
+    end.
 
 
-value([S]) when ?is_string(S) ->
-    case tconv:to_num(S) of
-        {error, nan} -> ?ERR_VAL;
-        Num          -> Num
-    end;
-value([B]) when ?is_blank(B) ->
-    0;
-value([_]) ->
-    ?ERR_VAL.
+value([V]) ->
+    col([V], [eval_funs, area_first, {cast, str, num}],
+        [return_errors, {all, fun is_number/1}], fun value_/1).
 
+value_([S]) ->
+    S.
 
 search([FindText, WithinText])-> search([FindText, WithinText, 1]);
 search([FindText, WithinText, StartPoint])->
