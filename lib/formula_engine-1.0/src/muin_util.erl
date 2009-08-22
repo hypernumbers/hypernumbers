@@ -24,6 +24,13 @@
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 
+apply(Args, Fun) ->
+    case lists:keyfind(errval, 1, Args) of
+        {errval, Val} -> {errval, Val};
+        false         -> erlang:apply(Fun,Args)
+    end.
+
+
 run_or_err(Args, Fun) ->
     case lists:keyfind(errval, 1, Args) of
         {errval, Val} ->

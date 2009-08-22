@@ -611,16 +611,27 @@ varpa(V1) ->
     varp1(Nums).
 
 weibull([V1, V2, V3, V4]) ->
-    [X, Alpha, Beta] = ?numbers([V1, V2, V3], ?default_rules),
-    Cumul = ?bool(V4, ?default_rules_bools),
-    ?ensure(X >= 0, ?ERR_NUM),
-    ?ensure(Alpha >= 0, ?ERR_NUM),
-    ?ensure(Beta >= 0, ?ERR_NUM),
-    weibull1(X, Alpha, Beta, Cumul).
-weibull1(X, Alpha, Beta, true) ->
-    1 - math:exp(-1 * math:pow(X, Alpha) / Beta);
-weibull1(X, Alpha, Beta, false) ->
-    (Alpha / Beta) * math:pow(X, Alpha - 1) * math:exp(-1 * math:pow(X, Alpha) / Beta).
+    XArgs = col([V1, V2, V3],
+                [eval_funs, area_first, fetch, {cast, bool, num}],
+                [return_errors, {all, fun is_number/1}]),    
+    XBool = col([V4],
+                [eval_funs, area_first, fetch, {cast, bool}],
+                [return_errors, {all, fun is_boolean/1}]),
+    muin_util:apply([XArgs, XBool], fun weibull_/2).
+
+weibull_([X, Alpha, Beta], [Cumul])
+  when X >= 0, Alpha > 0, Beta > 0 ->
+    weibull1(X, Alpha, Beta, Cumul);
+weibull_(_X1, _X2) ->
+    ?ERRVAL_NUM.
+
+% Args reversed, dunno why
+weibull1(X, Beta, Alpha, true) ->
+    1 - math:exp(-math:pow(X/Alpha, Beta));
+weibull1(X, Beta, Alpha, false) ->
+    (Beta / Alpha)
+        * math:pow(X/Alpha, Beta-1)
+        * math:exp(-math:pow(X/Alpha, Beta)).
 
 
 %%% Private functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
