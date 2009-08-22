@@ -5,21 +5,17 @@
     <link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/gui_builder.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/themes/theme1.css" />
-    <link rel="stylesheet" type="text/css" href="/hypernumbers/hn.sheet.css" />
+    <link rel="stylesheet" type="text/css" href="/gui_builder/hn.sheet.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/layouts/basic.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/elements/core.css" />
+    <link type="text/css" rel="stylesheet" href="http://jqueryui.com/themes/base/ui.all.css" />
   </head>
     <body>
       
       <!-- Overall page elements -->
       <div id="cover"></div>
-      
-      <div id="header">
-        <h1><a href="">Hypernumbers</a></h1>
-        <span>Drag'n'Drop Gui Builder</span>
-      </div>
-      
-      <ul id="menu">              
+            
+      <ul id="menu" class="ui-widget">              
         <li id="browse">
           <a>$txt:{File}$</a>
           <ul>
@@ -32,11 +28,12 @@
           <a name="help">$txt:{Help}$</a>
         </li>
       </ul>
+      <hr />
       
       <!-- Dialog Boxes -->
       
       <div id="dialog_boxes">
-        <div id="helpdialog" class="mdialog">
+        <div id="helpdialog" class="mdialog ui-widget-content">
           <p class="toolstitle">$txt:{Help}$</p><hr />
           <p>This GUI Builder is a doddle to use - simply follow the menu...</p>
           <p>Read this help carefully (blah-blah watch the video...)</p>
@@ -58,27 +55,27 @@
           <p>...and lots more.</p>
           <p>Then just save your web page!</p>
           <form id="helpform" onClick="return HN.Tools.Util.close_help_dialog();">
-            <input type="button" class="action" value="OK"  />
+            <input type="button" class="action  ui-state-default" value="OK"  />
           </form>
         </div>
         <div id="dialog_boxes">
-          <div id="newpagedialog" class="mdialog">
+          <div id="newpagedialog" class="mdialog ui-widget-content">
             <p class="toolstitle">$txt:{Bind A New Spreadsheet Page To This Web Page}$</p><hr />
             <div>Type in the page you want to add to this form. You can use a full path (/some/page/or/another/) or a relative path (../../another/path)</div>
-            <input id="newpage" type="text" /><span>Full Path</span>
-            <input id="newpage_full_path" name="new_page" type="checkbox" />
+            <input id="newpage" type="text" class="ui-state-default"/><span>Full Path</span>
+            <input id="newpage_full_path" name="new_page" type="checkbox" class="ui-state-default"/>
             <form id="newpageform" onClick="return HN.Tools.Util.new_bindings_page();"> 
-              <input type="button" class="action" value="OK"  />
+              <input type="button" class="action  ui-state-default" value="OK"  />
             </form>
           </div>
         </div>
-          <div id="savedialog" class="mdialog">
+          <div id="savedialog" class="mdialog ui-widget-content">
             <p class="toolstitle">$txt:{Save This Webpage}$</p><hr />
             <div>Type in the name of the form (shouldn't contain spaces or punctuation but can have underscores, it should be <em>a_single_word</em><br /></div>
           <span>Name</span>            
-          <input id="save_name" type="name" />
+          <input id="save_name" type="name" class="ui-state-default"/>
           <form id="newpageform" onClick="return HN.Tools.Util.save_page();"> 
-              <input type="button" class="action" value="OK"  />
+              <input type="button" class="action  ui-state-default" value="OK"  />
             </form>
           </div>
         </div>
@@ -86,17 +83,21 @@
       <!-- End of Dialog Boxes -->
       
       <!-- Binding Table -->
-      <div id="bindings">
+      <div id="bindings" class="ui-widget-content">
         <div id="bindings_header">
-          <span class="headline">Spreadsheet Preview</span>
-          <span>Current Page:</span>
-          <span id="page_selector"></span>
-          <span>Full Path</span>
-          <input id="bindings_full_path" name="full_path" type="checkbox" />
-          <span>Current range on view:</span>
-          <input id="bindings_range" type="text" />
-          <span class="bindings_minimize">&nbsp;&nbsp;&nbsp;&nbsp;</span>
-          <span class="bindings_close">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          <table>
+            <tr>
+                <td><span class="headline">Spreadsheet Preview</span></td>
+                <td>Current Page:</td>
+                <td><span id="page_selector"></span></td>
+                <td><span>Full Path</span>
+                  <input id="bindings_full_path" name="full_path" type="checkbox" class="ui-state-default"/></td>
+                <td><span>Current range on view:</span>
+                  <input id="bindings_range" type="text" class="ui-state-default"/></td>
+                <td><span class="bindings_minimize ui-icon ui-icon-carat-2-n-s">&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
+                <td><span class="bindings_close ui-icon ui-icon-circle-close">&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
+              </tr>
+          </table>
         </div>
         <div id="insert_bindings"></div>
       </div>
@@ -143,21 +144,25 @@
                       <p>Pick your page size from one of the preset sizes, or set your own custom size.</p>
                       <table>
                           <tr>
-                            <td>Width:</td><td><input id="canvaswidth" class="input" type="text"/></td>
+                            <td>Width:</td><td><input id="canvaswidth" class="input ui-state-default" type="text"/></td>
                           </tr>
                           <tr>
-                            <td>Height:</td><td><input id="canvasheight" class="input" type="text"/></td>
+                            <td>Height:</td><td><input id="canvasheight" class="input ui-state-default" type="text"/></td>
                           </tr>
                           <tr>
                             <td>Presets:</td>
                             <td>
-                              <select id="canvaspresets">
+                              <select id="canvaspresets" class="ui-state-default">
                                 <option value="normal">normal</option>
                                 <option value="iphone">iPhone</option>
                                 <option value="netbook">netbook</option>
                                 <option value="custom">custom</option>
                               </select>
                             </td>
+                          </tr>
+                          <tr>
+                            <td></td>
+                            <td><div id="switcher"></div></td>
                           </tr>
                       </table>
                     </div>
@@ -167,7 +172,7 @@
             </td>
             <td>
               <!-- The Canvass Area on which the GUI is built... -->
-              <div id="canvas" class="canvas">
+              <div id="canvas" class="canvas ui-widget-content">
               </div>
             </td>
       </table>
@@ -182,6 +187,8 @@
         <!--<script src="/jquerytextbox/jquery.textbox.js"></script> -->
         <!-- Special minified jquery.ui set done this way for dev only-->
         <script src="/jqueryui/js/jquery-ui-1.7.2.custom.min.js"></script>
+        <script type="text/javascript" src="http://jqueryui.com/themeroller/themeswitchertool/"></script>
+
         <script src="/hypernumbers/jquery.filemenu.js"></script>
         
         <!-- Standard JSON library -->

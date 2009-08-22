@@ -1,29 +1,22 @@
 body
 {
-  font-family: Verdana, Arial, Helvetica, sans-serif;
+  /* font-family: Verdana, Arial, Helvetica, sans-serif; */
   font-size:   13px;
-  background:  #f47d08;
+  /* background:  #f47d08; */
   padding:     15px;
   text-align:  center;
   min-width:   600px;
-}
-
-body, html
-{
-  padding: 0px;
-  margin:  0px;
 }
 
 .canvas
 { 
   top:              50%;
   left:             50%;
-  border:           3px solid #bcbcbc;
+  /* border:           3px solid #bcbcbc; */
+  border:           3px solid;
   min-height:       583px;
   width:            983px;
-  background-color: #ffffff;
-  font-size:        32pt;
-  font-weight:      bold;
+  /* background-color: #ffffff; */
   text-align:       left;
   padding:          0.2em;
   vertical-align:   middle;
@@ -80,7 +73,7 @@ body, html
 #header span
 {
   float:       right;
-  color:       #f47d08;
+  /* color:       #f47d08; */
   position:    relative;
   text-indent: 0px;
   top:         5px;
@@ -94,11 +87,11 @@ body, html
   display: none;
   font-weight:      bold;
   text-align:       left;
-  color:            #666666;
+  /* color:            #666666; */
   padding:          6px;
   margin:           6px 6px;  
   width:            240px;
-  background-color: #ffffff;
+  /* background-color: #ffffff; */
 }
 
 .box td
@@ -108,12 +101,7 @@ body, html
 
 .bindings_selected
 { 
-  background-color: #b2d7fc;
-}
-
-.selected
-{ 
-  border: 3px solid #0000ff !important;
+  background-color: #b2d7fc; 
 }
 
 .layout:hover
@@ -141,39 +129,42 @@ body, html
   text-align:    center !important;
   font-size:     18px;
   font-weight:   bold;
-  color:         #f47d08;
+  /* color:         #f47d08; */
   margin:        6px 6px;
 }
 
 .toolstitle div
 { 
   font:  12px Arial,"Helvetica Neue", sans-serif;
-  color: #666666;
+  /* color: #666666; */
 }
 
 .layoutsitem, .widgetsitem
 { 
   background-position: right !important;
   background-repeat:   no-repeat;
-  border:              1px solid #d8d8d8;
+  /* border:              1px solid #d8d8d8; */
+  border:              1px solid;
   width:               120px;
-  background-color:    #fdfaf8;
+  /* background-color:    #fdfaf8; */
   padding:             2px;
   margin:              3px 45px;
 }
 
 .toolbox li div.elementsitem
 { 
-  border:           1px solid #d8d8d8;
+  /* border:           1px solid #d8d8d8; */
+  border:              1px solid;
   width:            120px;
-  background-color: #fdfaf8;
+  /* background-color: #fdfaf8; */
   padding:          2px;
   margin:           3px 45px;
 }
 
 .toolbox li div.textinput
 {  
-  border:     1px solid #bcbcbc !important;
+  /* border:     1px solid #bcbcbc !important; */
+  border:     1px solid !important;
 
 }
 
@@ -182,7 +173,8 @@ body, html
   background-position: right !important;
   background-repeat:   no-repeat;
   text-align:          left;
-  border:              1px solid #bcbcbc    !important;
+  /* border:     1px solid #bcbcbc !important; */
+  border:     1px solid !important;
   background-image:    url(radiobutton.png) !important;
 }
 
@@ -191,7 +183,8 @@ body, html
   background-position: right !important;
   background-repeat:   no-repeat;
   text-align:          left;
-  border:              1px solid #bcbcbc !important;
+  /* border:              1px solid #bcbcbc    !important; */
+  border:              1px solid !important;
   background-image:    url(dropdown.png) !important;
 }
 
@@ -199,12 +192,13 @@ body, html
 { 
   display:    none;
   text-align: left;
-  padding:    6px 6px 6px 6px;
+  /* padding:    6px 6px 6px 6px; */
   position:   absolute;
   left:       10%;
   top:        65%;
-  background: white;
-  border:     solid 6px #666;
+  /* background: white; */
+  /* border:     solid 6px #666; */
+  /* border:     solid 6px; */
   z-index:    999999;
 
 }
@@ -229,7 +223,7 @@ body, html
   width: 60px;
 }
 
-.bindings_minimize
+/*.bindings_minimize
 { 
   height:           16px;
   width:            16px;
@@ -241,41 +235,56 @@ body, html
   height:           16px;
   width:            16px;
   background-image: url(/gui_builder/maximize.png) !important;
-}
+} */
 
-.bindings_close
+/*.bindings_close
 { 
   height:           16px;
   width:            16px;
   background-image: url(/gui_builder/close.png) !important;
+} */
+
+.bindings_minimize:hover
+{ 
+  cursor: pointer; 
+}
+
+.bindings_maximize:hover
+{ 
+  cursor: pointer; 
+}
+
+.bindings_close:hover
+{ 
+  cursor: pointer; 
 }
 
 .bindings_table
 { 
-  border-color: #bcbcbc;
+  /* border-color: #bcbcbc; */
   border-width: 0 0 1px 1px;
   border-style: solid;
 }
 
 .bindings_table td
 { 
-  border-color: #bcbcbc;
+  /* border-color: #bcbcbc; */
   border-width: 1px 1px 0 0;
   border-style: solid;
 }
 
-.bindings_table input
+/* .bindings_table input
 { 
   width:        50pt;
   height:       12px
   border-width: 0px;
   font-size:    9pt;
- }
+ } */
 
 .bindings_header
 { 
   text-align:       center;
-  background-color: #cbcbcb;
+  /* background-color: #cbcbcb; */
 }
 
 .input
@@ -288,7 +297,7 @@ body, html
 {  
   display: none;
   width:   205px;
-  color:   #666666;
+  /* color:   #666666; */
 }
 
 .standardconfig .input
@@ -310,7 +319,8 @@ body, html
 { 
   width:      98%;
   height:     80px;
-  border:     2px dashed #f47d08;
+  /* border:     2px dashed #f47d08; */
+  border:     2px dashed;
   padding:    6px;
   margin:     6px;
 }
@@ -318,7 +328,8 @@ body, html
 .element
 { 
   width:      20%
-  border:     2px dashed #bcbcbc;
+  /* border:     2px dashed #bcbcbc; */
+  border:     2px dashed;
   padding:    6px 6px 6px 6px;
   margin:     6px 6px 6px 6px;
 }
@@ -326,7 +337,8 @@ body, html
 .layout td, .element td, .widget td
 { 
   height:         30px;
-  border:         2px dotted #f47d08;
+  /* border:         2px dotted #f47d08; */
+  border:         2px dotted;
   margin:         6px;
 }
 
@@ -336,7 +348,7 @@ body, html
   width:       200px;
   margin:      6px;
   padding:     6px;
-  color:       #888888;
+  /* color:       #888888; */
   font:        12px Arial,"Helvetica Neue", sans-serif;
   font-weight: bold;
   border:      3px solid #ff0000;
