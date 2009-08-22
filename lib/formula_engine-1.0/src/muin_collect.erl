@@ -174,6 +174,12 @@ rl(fetch_name, Name) when ?is_namedexpr(Name) ->
 rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 
+rl(fetch, Name) when ?is_namedexpr(Name) ->
+    ?ERRVAL_NAME;
+rl(fetch, Ref) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
+    muin:fetch(Ref);
+
+
 % No Rules for this element
 rl(_Rule, Value) ->
     Value.

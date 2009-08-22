@@ -30,7 +30,7 @@
 -include("muin_records.hrl").
 
 -import(muin_util, [cast/2]).
--import(muin_collect, [ col/2, col/3 ]).
+-import(muin_collect, [ col/2, col/3, col/4 ]).
 
 -define(GOOGOL, 1.0E100).
 
@@ -168,7 +168,10 @@
     end.
 
 negate([V]) ->
-    -(?number(V, ?default_rules)).
+    col([V],
+        [first_array, cast_num],
+        [return_errors, {all, fun is_number/1}],
+        fun([X]) -> -X end).
 
 %%% Arithmetic ~~~~~
 

@@ -116,11 +116,23 @@ sln(Args = [_, _, _]) ->
 sln1(Cost, Salv, Life) ->
     (Cost-Salv)/Life.
 
-syd(Args = [_, _, _, _]) ->
-    [Cost, Salv, Life, Per] = ?numbers(Args, ?default_rules),
-    syd1(Cost, Salv, Life, Per).
-syd1(Cost, Salv, Life, Per) ->
-    (Cost-Salv)*(Life-Per+1)*2/(Life*(Life+1)).
+syd([Cost, Salv, Life, Per]) ->
+    
+    Life1 = col([Life], [eval_funs, fetch, area_first, {ignore, blank},
+                         {cast, int}],
+                [return_errors, {all, fun is_integer/1}]),
+    
+    Othr = col([Cost, Salv, Per],
+               [eval_funs, fetch, area_first, cast_num],
+               [return_errors, {all, fun is_number/1}]),
+
+    muin_util:apply([Life1, Othr], fun syd_/2).
+
+syd_([Life], [Cost, Salv, Per])
+  when Life > 0, Per > 0, Salv >= 0, Life >= Per ->
+    (Cost-Salv)*(Life-Per+1)*2/(Life*(Life+1));
+syd_(_,_) ->
+    ?ERRVAL_NUM.
 
 pv([Rate, NPer, Pmt]) ->
     pv([Rate, NPer, Pmt, 0]);

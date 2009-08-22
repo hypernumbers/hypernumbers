@@ -166,9 +166,9 @@ n(X)                         -> io:format("in n X is ~p~n", [X]),
 na([]) -> {errval, '#N/A'}.
 
 
-%% TYPE(A1:B10) in Excel = 16, in Hypernumbers it's 64.
 %% TYPE(INDIRECT("A1")) in Excel = 0 regardless of contents of A1. In Hypernumbers it's same as TYPE(A1)
-type([A]) when ?is_area(A)   -> 64;
+type([A]) when ?is_range(A)  -> 16;
+type([A]) when ?is_array(A)  -> 64;
 type([N]) when is_number(N)  -> 1;
 type([S]) when is_list(S)    -> 2;
 type([B]) when is_boolean(B) -> 4;
