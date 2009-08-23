@@ -300,11 +300,12 @@ ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr,
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:clear(Ref, list_to_atom(What));
 
-ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+ipost(_Req, _Ref, _Type, _Attr, 
       [{"saveform", {struct, [{"name", Name}, {"form", Form}]}}], User) ->
     User2 = if 
                 is_atom(User) -> atom_to_list(User);
-                is_list(User) -> User
+                true          -> {hn_user, U, _, _, _, _} = User,
+                                 U
             end,
     Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/" ++ User2 ++ "/",
     File = Path ++ filename:basename(Name) ++ ".html",
