@@ -45,6 +45,7 @@ array_at({array, Rows}, R, C) ->
 get_type(X) when is_number(X)           -> num;
 get_type(X) when is_boolean(X)          -> bool;
 get_type(X) when is_record(X, datetime) -> date;
+get_type(X) when ?is_array(X)           -> array;
 get_type(blank)                         -> blank;
 get_type(X) ->
     case muin_collect:is_string(X) of

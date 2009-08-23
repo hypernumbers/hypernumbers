@@ -532,32 +532,22 @@ standardize1(Num, Mean, Stdev) ->
 
 stdev(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    % Minimum of 2 parameters
-    case V1 of
-        [_] -> ?ERR_DIV;
-        _   -> ok
-    end,
     stdev1(Nums).
+
+stdev1([]) ->
+    ?ERRVAL_VAL;
+stdev1(Nums) when length(Nums) == 1 ->
+    ?ERRVAL_DIV;
 stdev1(Nums) ->
     math:sqrt(devsq1(Nums) / (length(Nums) - 1)).
 
 stdeva(V1) ->
 	Rules=[ignore_strings,cast_bools,ignore_blanks,ignore_dates],
     Nums = ?numbers(?flatten_all(V1), Rules),	
-    % Minimum of 2 parameters
-    case V1 of
-        [_] -> ?ERR_DIV;
-        _   -> ok
-    end,
     stdev1(Nums).
 
 stdevp(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    % Minimum of 2 parameters
-    case V1 of
-        [_] -> ?ERR_DIV;
-        _   -> ok
-    end,
     stdevp1(Nums).
 stdevp1(Nums) ->
     math:sqrt(devsq1(Nums) / length(Nums)).
@@ -599,25 +589,41 @@ trimmean1(Nums, Percent) ->
     average1(sublist(sort(Nums), N + 1, length(Nums) - 2 * N)).
 
 var(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    var1(Nums).
-var1(Nums) ->
-    math:pow(stdev1(Nums), 2).
+    col(V1, [eval_funs, {cast, str, num}, {cast, bool, num}, fetch, flatten,
+             {ignore, bool}, {ignore, blank}, {ignore, str}],
+        [return_errors, {all, fun is_number/1}],
+        fun var1/1).
 
 vara(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    var1(Nums).
+    col(V1, [eval_funs, {cast, str, num}, fetch, flatten, {cast, bool, num},
+             {ignore, blank}, {conv, str, 0}],
+        [return_errors, {all, fun is_number/1}],
+        fun var1/1).
 
 varp(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    varp1(Nums).
+    col(V1, [eval_funs, {cast, str, num}, {cast, bool, num}, fetch, flatten,
+             {ignore, bool}, {ignore, blank}, {ignore, str}],
+        [return_errors, {all, fun is_number/1}],
+        fun varp1/1).
+
+varpa(V1) ->
+    col(V1, [eval_funs, {cast, str, num}, fetch, flatten, {cast, bool, num},
+             {ignore, blank}, {conv, str, 0}],
+        [return_errors, {all, fun is_number/1}],
+        fun varp1/1).
+
+varp1([]) ->
+    ?ERRVAL_VAL;
 varp1(Nums) ->
     (lists:sum([ X * X || X <- Nums]) / erlang:length(Nums))
       - math:pow(lists:sum(Nums) / erlang:length(Nums), 2).
 
-varpa(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    varp1(Nums).
+var1(Nums) ->
+    case stdev1(Nums) of
+        Err when ?is_errval(Err) -> Err;
+        Else                     -> math:pow(Else, 2)
+    end.
+
 
 weibull([V1, V2, V3, V4]) ->
     XArgs = col([V1, V2, V3],

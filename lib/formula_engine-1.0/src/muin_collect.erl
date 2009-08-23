@@ -43,8 +43,7 @@ col(Args, Rules, Passes, Fun) ->
 col(Args, Rules, Passes) ->
     pass(col(Args, Rules), Passes).
 
-col(Args, Rules) ->
-    
+col(Args, Rules) ->    
     F1 = fun(X, List) ->
                  case lists:foldl(fun rl/2, X, Rules) of
                      ignore       -> List;
@@ -52,7 +51,6 @@ col(Args, Rules) ->
                      Else         -> [Else | List]
                  end
          end,
-    
     lists:foldr(F1, [], Args).
 
 %% This is the list of rules as rl(Rule, Value), each rule
@@ -111,6 +109,9 @@ rl(flatten, {range,X}) ->
     {list, flat(X, [])};
 rl(flatten, {array,X}) ->
     {list, flat(X,[])};
+
+rl({flatten, range}, {range,X}) ->
+    {list, flat(X, [])};
 
 
 rl(num_as_bool, X) when is_number(X) andalso X==0; X==0.0 ->
@@ -178,6 +179,12 @@ rl(fetch, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 rl(fetch, Ref) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
     muin:fetch(Ref);
+
+rl({conv, Type, Value}, X) ->
+    case muin_util:get_type(X) of
+        Type  -> Value;
+        _Else -> X
+    end;
 
 
 % No Rules for this element
