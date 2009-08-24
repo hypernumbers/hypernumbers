@@ -841,17 +841,15 @@ sumif1([H1|T1], [H2|T2], Fun, Acc) ->
 
 
 sumx2my2([A1, A2]) ->
-    Nums1 = col([A1], [eval_funs, {ignore, str}, fetch, flatten,
-                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+    Nums1 = col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
                 [return_errors, {all, fun is_number/1}]),
-    Nums2 = col([A2], [eval_funs, {ignore, str}, fetch, flatten,
-                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+    Nums2 = col([A2], [eval_funs, fetch, flatten, {ignore, blank}],
                 [return_errors, {all, fun is_number/1}]),
     muin_util:apply([Nums1, Nums2], fun sumx2my2_/2).
 sumx2my2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
-    0;
-sumx2my2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_VAL;
+sumx2my2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
+    ?ERRVAL_NA;
 sumx2my2_(Nums1, Nums2) ->
     sum(map(fun({X, Y}) ->
                     (X * X) - (Y * Y)
@@ -859,18 +857,16 @@ sumx2my2_(Nums1, Nums2) ->
             zip(Nums1, Nums2))).
 
 sumx2py2([A1, A2]) ->
-    Nums1 = col([A1], [eval_funs, {ignore, str}, fetch, flatten,
-                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+    Nums1 = col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
                 [return_errors, {all, fun is_number/1}]),
-    Nums2 = col([A2], [eval_funs, {ignore, str}, fetch, flatten,
-                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+    Nums2 = col([A2], [eval_funs, fetch, flatten, {ignore, blank}],
                 [return_errors, {all, fun is_number/1}]),
     muin_util:apply([Nums1, Nums2], fun sumx2py2_/2).
 
 sumx2py2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
-    0;
-sumx2py2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_VAL;
+sumx2py2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
+    ?ERRVAL_NA;
 sumx2py2_(Nums1, Nums2) ->
     sum(map(fun({X, Y}) ->
                     (X * X) + (Y * Y)
@@ -878,19 +874,16 @@ sumx2py2_(Nums1, Nums2) ->
             zip(Nums1, Nums2))).
 
 sumxmy2([A1, A2]) ->
-    Nums1 = col([A1], [eval_funs, {ignore, str}, fetch, flatten,
-                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+    Nums1 = col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
                 [return_errors, {all, fun is_number/1}]),
-    Nums2 = col([A2], [eval_funs, {ignore, str}, fetch, flatten,
-                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+    Nums2 = col([A2], [eval_funs, fetch, flatten, {ignore, blank}],
                 [return_errors, {all, fun is_number/1}]),
-
     muin_util:apply([Nums1, Nums2], fun sumxmy2_/2).
 
 sumxmy2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
-    0;
-sumxmy2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_VAL;
+sumxmy2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
+    ?ERRVAL_NA;
 sumxmy2_(Nums1, Nums2) ->
     sum(map(fun({X, Y}) ->
                     math:pow(X - Y, 2)
@@ -918,11 +911,6 @@ asin([V]) ->
         [X] when X > 1 orelse X < -1 -> ?ERRVAL_NUM;
         [X] -> math:asin(X)
     end.
-
-%% Num = ?number(V, ?default_rules),
-%% io:format("~p ~p~n",[V, Num]),
-%% ?ensure(Num >= -1 andalso Num =< 1, ?ERR_NUM),
-%% math:asin(Num).
 
 acos([V]) ->
     Num = ?number(V, ?default_rules),
