@@ -767,9 +767,14 @@ get_roman4(["3"]) -> "MMM".
 %%% Summation ~~~~~
 
 sumsq(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers([0|Flatvs], [ignore_strings, ignore_bools,
-                                 ignore_dates, cast_blanks]),
+    col(Vs,
+        [eval_funs, {cast, str, num, ?ERRVAL_VAL},
+         {cast, bool, num}, fetch, flatten,
+         {ignore, blank}, {ignore, str}, {ignore, bool}],
+        [return_errors, {all, fun is_number/1}],
+        fun sumsq_/1).
+
+sumsq_(Nums) ->
     sum([X * X || X <- Nums]).
 
 sumproduct(Vs) ->
@@ -838,7 +843,6 @@ sumif1([H1|T1], [H2|T2], Fun, Acc) ->
         true  -> sumif1(T1, T2, Fun, stdfuns_math:'+'([Acc, H2]));
         false -> sumif1(T1, T2, Fun, Acc)
     end.
-
 
 sumx2my2([A1, A2]) ->
     Nums1 = col([A1], [eval_funs, fetch, flatten, {ignore, blank}],

@@ -188,7 +188,7 @@ funcall(Fname, Args0) ->
     % TODO, this should be taken out, no reason to strictly
     % evaluate arguments
     Funs = ['if', choose, column, row, cell, columns, 'and',
-            timevalue, npv, max, maxa, min, mina, syd],
+            timevalue, npv, max, maxa, min, mina, syd, sumsq],
     
     Args = case member(Fname, Funs) of
                true  -> Args0;

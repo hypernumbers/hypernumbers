@@ -178,7 +178,9 @@ rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
 rl(fetch, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 rl(fetch, Ref) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
-    muin:fetch(Ref);
+    Tmp = muin:fetch(Ref),
+%    io:format("Tmp ~p",[Tmp]),
+    Tmp;
 
 rl({conv, Type, Value}, X) ->
     case muin_util:get_type(X) of
