@@ -841,33 +841,57 @@ sumif1([H1|T1], [H2|T2], Fun, Acc) ->
 
 
 sumx2my2([A1, A2]) ->
-    Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(A1))),
-    Nums2 = ?filter_numbers(?ensure_no_errvals(?flatten(A2))),
-    ?ensure(length(Nums1) == length(Nums2), ?ERR_VAL),
-    sumx2my2_1(Nums1, Nums2).
-sumx2my2_1(Nums1, Nums2) ->
+    Nums1 = col([A1], [eval_funs, {ignore, str}, fetch, flatten,
+                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+                [return_errors, {all, fun is_number/1}]),
+    Nums2 = col([A2], [eval_funs, {ignore, str}, fetch, flatten,
+                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+                [return_errors, {all, fun is_number/1}]),
+    muin_util:apply([Nums1, Nums2], fun sumx2my2_/2).
+sumx2my2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
+    0;
+sumx2my2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
+    ?ERRVAL_VAL;
+sumx2my2_(Nums1, Nums2) ->
     sum(map(fun({X, Y}) ->
                     (X * X) - (Y * Y)
             end,
             zip(Nums1, Nums2))).
 
 sumx2py2([A1, A2]) ->
-    Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(A1))),
-    Nums2 = ?filter_numbers(?ensure_no_errvals(?flatten(A2))),
-    ?ensure(length(Nums1) == length(Nums2), ?ERR_VAL),
-    sumx2py2_1(Nums1, Nums2).
-sumx2py2_1(Nums1, Nums2) ->
+    Nums1 = col([A1], [eval_funs, {ignore, str}, fetch, flatten,
+                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+                [return_errors, {all, fun is_number/1}]),
+    Nums2 = col([A2], [eval_funs, {ignore, str}, fetch, flatten,
+                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+                [return_errors, {all, fun is_number/1}]),
+    muin_util:apply([Nums1, Nums2], fun sumx2py2_/2).
+
+sumx2py2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
+    0;
+sumx2py2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
+    ?ERRVAL_VAL;
+sumx2py2_(Nums1, Nums2) ->
     sum(map(fun({X, Y}) ->
                     (X * X) + (Y * Y)
             end,
             zip(Nums1, Nums2))).
 
 sumxmy2([A1, A2]) ->
-    Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(A1))),
-    Nums2 = ?filter_numbers(?ensure_no_errvals(?flatten(A2))),
-    ?ensure(length(Nums1) == length(Nums2), ?ERR_VAL),
-    sumxmy2_1(Nums1, Nums2).
-sumxmy2_1(Nums1, Nums2) ->
+    Nums1 = col([A1], [eval_funs, {ignore, str}, fetch, flatten,
+                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+                [return_errors, {all, fun is_number/1}]),
+    Nums2 = col([A2], [eval_funs, {ignore, str}, fetch, flatten,
+                       {cast, bool, num}, {ignore, blank}, {cast, str, num}],
+                [return_errors, {all, fun is_number/1}]),
+
+    muin_util:apply([Nums1, Nums2], fun sumxmy2_/2).
+
+sumxmy2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
+    0;
+sumxmy2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
+    ?ERRVAL_VAL;
+sumxmy2_(Nums1, Nums2) ->
     sum(map(fun({X, Y}) ->
                     math:pow(X - Y, 2)
             end,
