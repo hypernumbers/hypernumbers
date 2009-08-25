@@ -30,6 +30,12 @@ apply(Args, Fun) ->
         false         -> erlang:apply(Fun,Args)
     end.
 
+run(Args, Fun) ->
+    case lists:keyfind(errval, 1, Args) of
+        {errval, Val} -> {errval, Val};
+        false         -> Fun(Args)
+    end.
+
 
 run_or_err(Args, Fun) ->
     case lists:keyfind(errval, 1, Args) of
