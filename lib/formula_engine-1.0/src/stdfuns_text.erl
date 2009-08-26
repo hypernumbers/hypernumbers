@@ -278,10 +278,9 @@ substitute([Text,OldText,NewText,N]) ->
         (N > length(List)) ->
             Text;
         true ->
-            {StartList,EndList}=list:split(N,List),
+            {StartList,EndList}=lists:split(N,List),
             string:join(StartList,OldText2)++NewText2++string:join(EndList,OldText2)
     end.
-
 
 text([Value, Format]) ->
     {erlang, {_Type, Output}} = format:get_src(Format),

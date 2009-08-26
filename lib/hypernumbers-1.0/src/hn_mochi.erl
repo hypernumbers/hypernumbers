@@ -25,7 +25,7 @@
 
 req(Req) ->
 
-    case filename:extension(Req:get(path)) of 
+    case filename:extension(Req:get(path)) of
 
         %% Serve Static Files
         X when X == ".png"; X == ".css"; X == ".js"; 

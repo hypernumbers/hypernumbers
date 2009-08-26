@@ -176,13 +176,14 @@ negate([V]) ->
 %%% Arithmetic ~~~~~
 
 sum(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers([0|Flatvs], [ignore_strings, ignore_bools, ignore_dates, cast_blanks]),
-    sum1(Nums).
-
+    col(Vs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
+             {cast, bool, num}, fetch, flatten,
+             {ignore, blank}, {ignore, str}, {ignore, bool}],
+        [return_errors, {all, fun is_number/1}],
+        fun sum1/1).
+    
 sum1(Nums) ->
-    Return=lists:sum(Nums),
-    Return.
+    lists:sum(Nums).
 
 product(Vals) ->
     Flatvals = ?flatten_all(Vals),
@@ -812,31 +813,38 @@ seriessum1(K, N, M, As) ->
                      As),
     Res.
 
-subtotal([1, L])  -> stdfuns_stats:average([L]);
-subtotal([2, L])  -> stdfuns_stats:count([L]);
-subtotal([3, L])  -> stdfuns_stats:counta([L]);
-subtotal([4, L])  -> stdfuns_stats:max([L]);
-subtotal([5, L])  -> stdfuns_stats:min([L]);
-subtotal([6, L])  -> product([L]);
-subtotal([7, L])  -> stdfuns_stats:stdev([L]);
-subtotal([8, L])  -> stdfuns_stats:stdevp([L]);
-subtotal([9, L])  -> sum([L]);
-subtotal([10, L]) -> stdfuns_stats:var([L]);
-subtotal([11, L]) -> stdfuns_stats:varp([L]);
+%% TODO, needs do not strictly evaluate args, need
+%% to change all the callees to support refs first
+subtotal([Index, Arr]) ->
+    Ind = col([Index], [eval_funs, fetch, {cast, int}],
+              [return_errors, {all, fun is_integer/1}]),
+    muin_util:apply([Ind, Arr], fun subtotal_/2).    
 
-subtotal([100, L])  -> stdfuns_stats:average([L]);
-subtotal([102, L])  -> stdfuns_stats:count([L]);
-subtotal([103, L])  -> stdfuns_stats:counta([L]);
-subtotal([104, L])  -> stdfuns_stats:max([L]);
-subtotal([105, L])  -> stdfuns_stats:min([L]);
-subtotal([106, L])  -> product([L]);
-subtotal([107, L])  -> stdfuns_stats:stdev([L]);
-subtotal([108, L])  -> stdfuns_stats:stdevp([L]);
-subtotal([109, L])  -> sum([L]);
-subtotal([110, L])  -> stdfuns_stats:var([L]);
-subtotal([111, L])  -> stdfuns_stats:varp([L]);
+subtotal_([1], L)  -> stdfuns_stats:average([L]);
+subtotal_([2], L)  -> stdfuns_stats:count([L]);
+subtotal_([3], L)  -> stdfuns_stats:counta([L]);
+subtotal_([4], L)  -> stdfuns_stats:max([L]);
+subtotal_([5], L)  -> stdfuns_stats:min([L]);
+subtotal_([6], L)  -> product([L]);
+subtotal_([7], L)  -> stdfuns_stats:stdev([L]);
+subtotal_([8], L)  -> stdfuns_stats:stdevp([L]);
+subtotal_([9], L)  -> sum([L]);
+subtotal_([10], L) -> stdfuns_stats:var([L]);
+subtotal_([11], L) -> stdfuns_stats:varp([L]);
 
-subtotal([_, _]) -> ?ERR_VAL.
+subtotal_([101], L)  -> stdfuns_stats:average([L]);
+subtotal_([102], L)  -> stdfuns_stats:count([L]);
+subtotal_([103], L)  -> stdfuns_stats:counta([L]);
+subtotal_([104], L)  -> stdfuns_stats:max([L]);
+subtotal_([105], L)  -> stdfuns_stats:min([L]);
+subtotal_([106], L)  -> product([L]);
+subtotal_([107], L)  -> stdfuns_stats:stdev([L]);
+subtotal_([108], L)  -> stdfuns_stats:stdevp([L]);
+subtotal_([109], L)  -> sum([L]);
+subtotal_([110], L)  -> stdfuns_stats:var([L]);
+subtotal_([111], L)  -> stdfuns_stats:varp([L]);
+
+subtotal_(_, _) -> ?ERRVAL_VAL.
 
 sumif([L, Crit]) ->
     sumif([L, Crit, L]);
@@ -847,8 +855,8 @@ sumif([V1, Crit, V2]) ->
     ?ensure(area_util:are_congruent(V1, V2), ?ERR_VAL),
     case odf_criteria:create(Crit) of
         {error, _Reason} -> 0;
-        Fun              -> sumif1(area_util:to_list(V1), area_util:to_list(V2),
-                                   Fun)
+        Fun              ->
+            sumif1(area_util:to_list(V1), area_util:to_list(V2), Fun)
     end.
 sumif1(L1, L2, Fun) ->
     sumif1(L1, L2, Fun, 0).

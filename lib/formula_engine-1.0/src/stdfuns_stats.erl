@@ -127,7 +127,7 @@ average(Vs) ->
     %% a range of empty cells). Our default is to return #VALUE! in such case.
     case muin_util:attempt(?DEFER(?numbers(Flatvs, [ignore_strings, cast_bools, ignore_blanks, ban_dates]))) of
         {ok, Nums} -> average1(Nums);
-        {error, _} -> ?ERR_DIV
+        {error, _} -> ?ERRVAL_DIV
     end.
 average1(Nums) ->
     lists:sum(Nums)/length(Nums).

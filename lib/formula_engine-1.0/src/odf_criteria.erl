@@ -23,7 +23,7 @@ create(V) when is_number(V); is_boolean(V) ->
     fun(X) -> stdfuns_logical:'='([X, V]) end;
 %%% For a string, first see if it begins with a logical operator in which case
 %%% the argument must compare appropriately with the value following the
-%%% operator. Otherwise, match the argument against the text.
+%%% operator. Otherwise, match the argument against the text.,
 create(S) when ?is_string(S) ->
     Fun = case string:substr(S, 1, 2) of
               "<=" ->
@@ -55,9 +55,7 @@ create(_) ->
     ?INVALID_SPEC.
 
 %%% FIXME: lexer expects booleans to be in uppercase (fix in the lexer).
-
 %%% also: a potential source of confusion/errors is embedded string constants.
-
 lex_constant(S) ->
     case xfl_lexer:lex(S, {1, 1}) of
         {ok, [{T, V}]} when T == int; T == bool; T == str ->

@@ -27,7 +27,8 @@
 apply(Args, Fun) ->
     case lists:keyfind(errval, 1, Args) of
         {errval, Val} -> {errval, Val};
-        false         -> erlang:apply(Fun,Args)
+        false         ->
+            erlang:apply(Fun,Args)
     end.
 
 run(Args, Fun) ->
