@@ -531,24 +531,35 @@ standardize1(Num, Mean, Stdev) ->
     (Num - Mean) / math:sqrt(Stdev).
 
 stdev(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    stdev1(Nums).
+    col(V1,
+        [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
+         {ignore, str}, {ignore, bool}, {ignore, blank}],
+        [return_errors, {all, fun is_number/1}],
+        fun stdev1/1).
 
-stdev1([]) ->
-    ?ERRVAL_VAL;
-stdev1(Nums) when length(Nums) == 1 ->
+stdev1(Nums) when length(Nums) < 2 ->
     ?ERRVAL_DIV;
 stdev1(Nums) ->
     math:sqrt(devsq1(Nums) / (length(Nums) - 1)).
 
 stdeva(V1) ->
-	Rules=[ignore_strings,cast_bools,ignore_blanks,ignore_dates],
-    Nums = ?numbers(?flatten_all(V1), Rules),	
-    stdev1(Nums).
+    col(V1,
+        [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
+         {conv, str, 0}, {cast, bool, num}, {ignore, blank}],
+        [return_errors, {all, fun is_number/1}],
+        fun stdev/1).    
 
 stdevp(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    stdevp1(Nums).
+    col(V1,
+        [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
+         {ignore, str}, {ignore, bool}, {ignore, blank}],
+        [return_errors, {all, fun is_number/1}],
+        fun stdevp1/1).
+
+stdevp1(Nums) when length(Nums) == 1 ->
+    0;
+stdevp1(Nums) when length(Nums) < 2 ->
+    ?ERRVAL_DIV;
 stdevp1(Nums) ->
     math:sqrt(devsq1(Nums) / length(Nums)).
 
@@ -557,16 +568,7 @@ stdevpa(V1) ->
         [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
          {conv, str, 0}, {cast, bool, num}, {ignore, blank}],
         [return_errors, {all, fun is_number/1}],
-        fun stdevpa_/1).    
-
-stdevpa_(V1) when length(V1) == 1 ->
-    0;
-stdevpa_(V1) ->
-    stdevp1(V1).
-	%% Rules=[ignore_strings,cast_bools,ignore_blanks,ignore_dates],
-    %% Nums = ?numbers(?flatten_all(V1), Rules),
-    %% % Minimum of 2 parameters
-    %% stdevp1(Nums).
+        fun stdevp/1).    
 
 steyx([V1, V2]) ->
     Ys = ?numbers(?flatten_all(V1), ?default_rules),
