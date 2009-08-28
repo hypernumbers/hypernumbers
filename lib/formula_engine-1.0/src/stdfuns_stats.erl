@@ -524,11 +524,15 @@ small1(Nums, K) ->
 standardise(L) -> standardize(L).
 
 standardize(Arg = [_, _, _]) ->
-    [Num, Mean, Stdev] = ?numbers(Arg, ?default_rules),
-    ?ensure(Stdev > 0, ?ERR_NUM),
-    standardize1(Num, Mean, Stdev).
-standardize1(Num, Mean, Stdev) ->
-    (Num - Mean) / math:sqrt(Stdev).
+    col(Arg,
+        [eval_funs, fetch, area_first, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun standardize1/1).
+
+standardize1([_Num, _Mean, Stdev]) when Stdev =< 0 ->
+    ?ERRVAL_NUM;
+standardize1([Num, Mean, Stdev]) ->
+    (Num - Mean) / Stdev.
 
 stdev(V1) ->
     col(V1,
