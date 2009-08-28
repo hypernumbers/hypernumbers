@@ -145,9 +145,23 @@ iget(Req, Ref, page, [{"updates", Time}], _User) ->
     remoting_request(Req, Ref, Time);
 iget(Req, #refX{site = S}, page, [{"status", []}], _User) -> 
     json(Req, status_srv:get_status(S));
+iget(Req, #refX{site = _S}, page, [{"guis", []}], User) ->
+    User2 = get_user(User),
+    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/" ++ User2 ++ "/",
+    {ok, Files} = file:list_dir(Path),
+    Files2 = hn_util:get_html_files(User2, Files),
+    json(Req, {array, Files2});
+iget(Req, #refX{site = _S, path = _P}, page, [{"get_gui", FileName}], User) ->
+    io:format("In hn_mochi for get_gui ~p~n", [FileName]),
+    User2 = get_user(User),
+    File = code:lib_dir(hypernumbers, priv) ++ "/docroot/"
+        ++ User2 ++ "/" ++ FileName ++ ".html",
+    Canvas = gui_builder:get_file(File),
+    json(Req, {struct, [{"html", Canvas}]});
 iget(Req, Ref, page, [{"pages", []}], _User) -> 
     json(Req, pages(Ref));
 iget(Req, Ref, page, [{"attr", []}], User) ->
+    
     json(Req, page_attributes(Ref, User));
 iget(Req, Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
@@ -301,12 +315,8 @@ ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr,
     hn_db_api:clear(Ref, list_to_atom(What));
 
 ipost(_Req, _Ref, _Type, _Attr, 
-      [{"saveform", {struct, [{"name", Name}, {"form", Form}]}}], User) ->
-    User2 = if 
-                is_atom(User) -> atom_to_list(User);
-                true          -> {hn_user, U, _, _, _, _} = User,
-                                 U
-            end,
+      [{"save_gui", {struct, [{"name", Name}, {"form", Form}]}}], User) ->
+    User2 = get_user(User),
     Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/" ++ User2 ++ "/",
     File = Path ++ filename:basename(Name) ++ ".html",
 
@@ -318,7 +328,12 @@ ipost(_Req, _Ref, _Type, _Attr,
 	    file:close(Id);
 	_ ->
 	    error
-    end;
+    end,
+    %% now delete all the get_text variants of the form
+    FileList = filelib:wildcard(File ++ ".*"),
+    io:format("FileList is ~p~n", [FileList]),
+    [file:delete(X) || X <- FileList],
+    ok;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -715,3 +730,10 @@ get_lang(User) ->
 json(Req, Data) ->
     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
     Req:ok({"application/json", ?hdr, Json}).
+
+get_user(User) ->
+    if 
+        is_atom(User) -> atom_to_list(User);
+        true          -> {hn_user, U, _, _, _, _} = User,
+                         U
+    end.

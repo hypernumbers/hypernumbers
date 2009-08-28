@@ -20,7 +20,8 @@
          email/1,
          email_test_results/1,
          email_build_fail/1,
-         
+
+         get_html_files/2,
          % HyperNumbers Utils
          compile_html/2,
          delete_gen_html/0,
@@ -80,6 +81,20 @@
 %%% API functions                                                            %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_html_files(User, List) -> get_html_files1(User, List, []).
+
+get_html_files1(User, [], Acc)      -> Acc; 
+get_html_files1(User, [H | T], Acc) ->
+    RegExp = "(\\.[h|H][t|T][m|M][l|L])$", %" highlighting fix
+    NewAcc = case re:run(H, RegExp) of
+                 {match, _} -> R = re:replace(H, RegExp, "", [{return, list}]),
+                               S = {struct, [{path, "../" ++ User ++ "/"},
+                                             {file, R}]},
+                               [S | Acc];
+                 nomatch    -> Acc
+             end,
+    get_html_files1(User, T, NewAcc).
+
 diff(Time2, Time1) ->
     {Mega2, Sec2, Micro2} = Time2,
     {Mega1, Sec1, Micro1} = Time1,

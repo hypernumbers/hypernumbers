@@ -223,27 +223,6 @@ body
   width: 60px;
 }
 
-/*.bindings_minimize
-{ 
-  height:           16px;
-  width:            16px;
-  background-image: url(../gui_builder/minimize.png) !important;
-}
-
-.bindings_maximize
-{ 
-  height:           16px;
-  width:            16px;
-  background-image: url(/gui_builder/maximize.png) !important;
-} */
-
-/*.bindings_close
-{ 
-  height:           16px;
-  width:            16px;
-  background-image: url(/gui_builder/close.png) !important;
-} */
-
 .bindings_minimize:hover
 { 
   cursor: pointer; 
@@ -272,14 +251,6 @@ body
   border-width: 1px 1px 0 0;
   border-style: solid;
 }
-
-/* .bindings_table input
-{ 
-  width:        50pt;
-  height:       12px
-  border-width: 0px;
-  font-size:    9pt;
- } */
 
 .bindings_header
 { 
@@ -357,4 +328,10 @@ body
 .textboxlist 
 { 
   width: 200px !important;
+}
+
+.disabled
+{ 
+  font-style: italic;
+  color:      #bcbcbc;
 }
