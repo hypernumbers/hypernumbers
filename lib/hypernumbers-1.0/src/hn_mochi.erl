@@ -152,7 +152,6 @@ iget(Req, #refX{site = _S}, page, [{"guis", []}], User) ->
     Files2 = hn_util:get_html_files(User2, Files),
     json(Req, {array, Files2});
 iget(Req, #refX{site = _S, path = _P}, page, [{"get_gui", FileName}], User) ->
-    io:format("In hn_mochi for get_gui ~p~n", [FileName]),
     User2 = get_user(User),
     File = code:lib_dir(hypernumbers, priv) ++ "/docroot/"
         ++ User2 ++ "/" ++ FileName ++ ".html",
@@ -331,7 +330,6 @@ ipost(_Req, _Ref, _Type, _Attr,
     end,
     %% now delete all the get_text variants of the form
     FileList = filelib:wildcard(File ++ ".*"),
-    io:format("FileList is ~p~n", [FileList]),
     [file:delete(X) || X <- FileList],
     ok;
 
