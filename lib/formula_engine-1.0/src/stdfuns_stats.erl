@@ -307,26 +307,21 @@ kurt1(Nums) ->
 %% the casting for this is all over the place
 %% doens't cast left to right, blah-blah
 large([V1, V2]) ->
-    case {?is_string(V1), is_bool(V1)} of
-        {true, _}      -> ?ERR_VAL;
-        {false, true}  -> ?ERR_NUM;
-        {false, _}     -> ok
-    end,
-    Rules = [ignore_strings, ignore_bools, ignore_blanks, cast_dates],
-    Nums = ?flatten_all(V1),
-    % yes evaluating errors right to left!
-    K = ?number(V2, ?default_rules),
-    K2 = erlang:round(K),
-    ?ensure(K2 > 0, ?ERR_NUM),
-    ?ensure(length(Nums) >= K2, ?ERR_NUM),
+    Arr = col([V1],
+              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL},
+               fetch, flatten, 
+               {ignore, str}, {ignore, bool}, {ignore, blank}],
+              [return_errors, {all, fun is_number/1}]),
+    
+    N = col([V2],[eval_funs, fetch, area_first, {cast, num}],
+            [return_errors, {all, fun is_number/1}]),
+    
+    muin_util:apply([Arr, N], fun large_/2).    
 
-    io:format("wtf~n"),
-    Nums2 = ?numbers(Nums, Rules),
-    io:format("In stdfuns_stats:large~n-V1 is ~p~n-V2 is ~p~n-Nums is  ~p~n-"++
-              "Nums2 is ~p~n-K is  ~p~n-K2 is ~p~n", [V1, V2, Nums, Nums2, K, K2]),
-    large1(Nums2, K2).
-large1(Nums, K) ->
-    nth(K, reverse(sort(Nums))).
+large_(Arr, [N]) when N < 1; N > length(Arr) ->
+    ?ERRVAL_NUM;
+large_(Nums, [N]) ->
+    nth(erlang:round(N), reverse(sort(Nums))).
 
 %% TODO:
 linest(_) ->
@@ -377,13 +372,6 @@ maxa(Args) ->
 
 maxa_(Nums) ->
     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
-
-%% maxa(V1) ->
-%%     Flatvs = ?flatten_all(V1),
-%%     Nums = ?numbers(Flatvs, ?default_rules),
-%%     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
-
-
 
 median(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
@@ -504,21 +492,22 @@ skew1(Nums) ->
 %% the casting for this is all over the place
 %% doens't cast left to right, blah-blah
 small([V1, V2]) ->
-        case {?is_string(V1), is_bool(V1)} of
-        {true, _}      -> ?ERR_VAL;
-        {false, true}  -> ?ERR_NUM;
-        {false, _}     -> ok
-    end,
-    Rules = [ignore_strings, ignore_bools, ignore_blanks, cast_dates],
-    Nums = ?flatten_all(V1),
-    % yes evaluating errors right to left!
-    K = ?number(V2, ?default_rules),
-    Nums2 = ?numbers(Nums, Rules),
-    K2 = erlang:round(K),
-   ?ensure(K2 > 0, ?ERR_NUM),
-    small1(Nums2, K2).
-small1(Nums, K) ->
-    nth(K, sort(Nums)).
+    Arr = col([V1],
+              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL},
+               fetch, flatten, 
+               {ignore, str}, {ignore, bool}, {ignore, blank}],
+              [return_errors, {all, fun is_number/1}]),
+    
+    N = col([V2],[eval_funs, fetch, area_first, {cast, num}],
+            [return_errors, {all, fun is_number/1}]),
+    
+    muin_util:apply([Arr, N], fun small_/2).    
+
+
+small_(Arr, [N]) when N < 1; N > length(Arr) ->
+    ?ERRVAL_NUM;
+small_(Nums, [N]) ->
+    nth(erlang:round(N), sort(Nums)).
 
 % Yup, Excel silently recognises both spelling variants
 standardise(L) -> standardize(L).
@@ -685,7 +674,3 @@ moment(Vals, M) ->
     Avg = average1(Vals),
     lists:foldl(fun(X, Acc) -> Acc + math:pow((Avg - X), M) end,
                 0, Vals) / length(Vals).
-
-is_bool(true)  -> true;
-is_bool(false) -> true;
-is_bool(_)     -> false.
