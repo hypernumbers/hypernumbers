@@ -260,27 +260,42 @@ rept([Str, Reps]) ->
     Fun = fun(_) -> (NewStr) end,
     lists:flatten(concatenate([map(Fun, lists:seq(1, NewReps))])).
 
-substitute([Text,OldText,NewText]) ->
-    Text2=?string(Text,?default_str_rules),
-    OldText2=?string(OldText,?default_str_rules),
-    NewText2=?string(NewText,?default_str_rules),
-    OldText3=esc_rgx(OldText2),
-    case regexp:gsub(Text2, OldText3, NewText2) of
-        {ok, Res, _Repcnt} -> Res;
-        nomatch            -> Text2
-    end;
-substitute([Text,OldText,NewText,N]) ->
-    Text2=?string(Text,?default_str_rules),
-    OldText2=?string(OldText,?default_str_rules),
-    NewText2=?string(NewText,?default_str_rules),
-    List=string:tokens(Text2,OldText2),
-    if
-        (N > length(List)) ->
+substitute([Text,OldText,NewText]=Args) ->
+    col(Args, [first_array, fetch_name,{cast,str}],
+        [return_errors, {all, fun muin_collect:is_string/1}],
+        fun substitute_/1);
+
+substitute([Text,OldText,NewText, N]=Args) ->
+    NArgs = col([Text,OldText,NewText],
+                [first_array, fetch_name,{cast,str}],
+                [return_errors, {all, fun muin_collect:is_string/1}]),
+    
+    Num = col([N], [first_array, fetch_name, {cast, num, int},
+                    {cast, str, int}],
+              [return_errors, {all, fun is_integer/1}]),
+
+    muin_util:apply([NArgs, Num], fun substitute_/2).
+
+substitute_([Text,OldText,NewText]) ->
+    OldText2 = esc_rgx(OldText),
+    re:replace(Text, OldText2, NewText, [global, {return, list}]).
+
+substitute_([Text,OldText,NewText], [N]) when N > 0 ->
+    OldText2 = lists:flatten(esc_rgx(OldText)),
+    case re:run(Text, OldText2, [global]) of
+        nomatch ->
             Text;
-        true ->
-            {StartList,EndList}=lists:split(N,List),
-            string:join(StartList,OldText2)++NewText2++string:join(EndList,OldText2)
-    end.
+        {match, M} when length(M) < N ->
+            Text;
+        {match, Matches} ->
+            [{Start, Len}] = lists:nth(N, Matches),
+            {S1, E1}  = lists:split(Start, Text),
+            {_S2, E2} = lists:split(Len, E1),
+            S1 ++ NewText ++ E2
+    end;
+
+substitute_(_Args, _N) ->
+    ?ERRVAL_VAL.
 
 text([Value, Format]) ->
     {erlang, {_Type, Output}} = format:get_src(Format),
@@ -342,6 +357,8 @@ esc_rgx([$^|T],Acc)    -> esc_rgx(T,[$^,"\\"|Acc]);   % escape Erlang RegExp
 esc_rgx([$$|T],Acc)    -> esc_rgx(T,[$$,"\\"|Acc]);   % escape Erlang RegExp
 esc_rgx([$[|T],Acc)    -> esc_rgx(T,[$[,"\\"|Acc]);   % escape Erlang RegExp
 esc_rgx([$]|T],Acc)    -> esc_rgx(T,[$],"\\"|Acc]);   % escape Erlang RegExp
+esc_rgx([${|T],Acc)    -> esc_rgx(T,[${,"\\"|Acc]);   % escape Erlang RegExp
+esc_rgx([$}|T],Acc)    -> esc_rgx(T,[$},"\\"|Acc]);   % escape Erlang RegExp
 esc_rgx([$(|T],Acc)    -> esc_rgx(T,[$(,"\\"|Acc]);   % escape Erlang RegExp
 esc_rgx([$)|T],Acc)    -> esc_rgx(T,[$0,"\\"|Acc]);   % escape Erlang RegExp
 esc_rgx([$||T],Acc)    -> esc_rgx(T,[$|,"\\"|Acc]);   % escape Erlang RegExp
