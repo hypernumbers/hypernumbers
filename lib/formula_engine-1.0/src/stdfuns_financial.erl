@@ -111,9 +111,12 @@ npv1(Rate, [Hd|Tl], Num, Acc) ->
     npv1(Rate, Tl, Num+1, Acc+Hd/(math:pow((1+Rate),Num))).
 
 sln(Args = [_, _, _]) ->
-    [Cost, Salv, Life] = ?numbers(Args, ?default_rules),
-    sln1(Cost, Salv, Life).
-sln1(Cost, Salv, Life) ->
+    Othr = col(Args, [eval_funs, fetch, area_first, cast_num],
+               [return_errors, {all, fun is_number/1}],
+               fun sln1/1).
+sln1([_Cost, _Salv, 0]) ->
+    ?ERRVAL_DIV;
+sln1([Cost, Salv, Life]) ->
     (Cost-Salv)/Life.
 
 syd([Cost, Salv, Life, Per]) ->
