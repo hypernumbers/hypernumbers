@@ -111,7 +111,7 @@ npv1(Rate, [Hd|Tl], Num, Acc) ->
     npv1(Rate, Tl, Num+1, Acc+Hd/(math:pow((1+Rate),Num))).
 
 sln(Args = [_, _, _]) ->
-    Othr = col(Args, [eval_funs, fetch, area_first, cast_num],
+    _Other = col(Args, [eval_funs, fetch, area_first, cast_num],
                [return_errors, {all, fun is_number/1}],
                fun sln1/1).
 sln1([_Cost, _Salv, 0]) ->
@@ -195,6 +195,9 @@ rate_([Nper, Pmt, Pv, Fv, Type, _Est]) ->
     secant(Rate1, Rate0, X1, X0,
            fun(N) -> xn(Pmt, N, Nper, Pv, Fv, Type) end).
 
+% if the Type is omitted it is zero
+nper([Rate, Pmt, Pv, Fv]) ->
+    nper([Rate, Pmt, Pv, Fv, 0]);
 nper(Args = [_, _, _, _, _]) ->
     col(Args,
         [first_array, cast_num],
@@ -211,23 +214,20 @@ nper_([Rate, Pmt, Pv, Fv, Partype]) ->
 
 %%% helpers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--define(ITERATION_LIMIT, 20).
+-define(ITERATION_LIMIT, 200).
 %% Calculate next approximation of value based on two previous approximations.
-secant(Pa, Ppa, Px, Ppx, Fun) ->
-    secant(Pa, Ppa, Px, Ppx, Fun, 1).
-secant(_, _, _, _, _, ?ITERATION_LIMIT) ->
-    ?ERRVAL_NUM;
+secant(Pa, Ppa, Px, Ppx, Fun)           -> secant(Pa, Ppa, Px, Ppx, Fun, 1).
+secant(_, _, _, _, _, ?ITERATION_LIMIT) -> ?ERRVAL_NUM;
 secant(Pa, Ppa, Px, Ppx, Fun, I) ->
-    Divisor = (Px-Ppx)*Px,
+    Divisor = (Px - Ppx),
     case Divisor of
-        X when X == 0 orelse X == 0.0 -> ?ERRVAL_DIV;
-        _             ->
-            Ca = Pa-(Pa-Ppa)/Divisor,
-            Xn = Fun(Ca),
-            case Xn of
-                0 -> Ca;
-                _ -> secant(Ca, Pa, Xn, Px, Fun, I+1)
-            end
+        X when X == 0 -> ?ERRVAL_DIV; % floats cast to integer...
+         _ -> Ca = Pa - (Px * (Pa - Ppa))/Divisor,
+             Xn = Fun(Ca),
+             case Xn of
+                 V when V == 0 -> Ca;
+                 _             -> secant(Ca, Pa, Xn, Px, Fun, I + 1)
+             end
     end.
 
 %% Calculate ?(X) given Pmt for current iteration of one of the arguments.
