@@ -482,10 +482,17 @@ rank1(N, Nums, true) ->
 rank1(N, Nums, false) ->
     (length(Nums) + 1) - rank1(N, Nums, true).
 
-skew(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    ?ensure(length(Nums) >= 3, ?ERR_DIV),
-    skew1(Nums).
+skew(Arg) ->
+    col(Arg,
+        [eval_funs, fetch, area_first, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun skew1/1).
+
+    %% Nums = ?numbers(?flatten_all(V1), ?default_rules),
+    %% ?ensure(length(Nums) >= 3, ?ERR_DIV),
+    %% skew1(Nums).
+skew1(Nums) when length(Nums) =< 3 ->
+    ?ERRVAL_DIV;
 skew1(Nums) ->
     moment(Nums, 3) / math:pow(moment(Nums, 2), 1.5).
 
@@ -590,7 +597,8 @@ trimmean1(Nums, Percent) ->
     average1(sublist(sort(Nums), N + 1, length(Nums) - 2 * N)).
 
 var(V1) ->
-    col(V1, [eval_funs, {cast, str, num}, {cast, bool, num}, fetch, flatten,
+    col(V1, [eval_funs, {cast, str, num}, {cast, bool, num},
+             {conv, str, ?ERRVAL_VAL}, fetch, flatten,
              {ignore, bool}, {ignore, blank}, {ignore, str}],
         [return_errors, {all, fun is_number/1}],
         fun var1/1).
