@@ -40,9 +40,7 @@
   border:      6px solid #bcbcbc;
 }
 
-.blankpanel
-{ 
-  margin:      6px;
-  border: 1px dashed #bcbcbc;
-  height: 30px;
-}
+ .blankpanel 
+{
+  color: #ff0000;
+} 

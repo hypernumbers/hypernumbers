@@ -55,7 +55,7 @@
           <p>...and lots more.</p>
           <p>Then just save your web page!</p>
           <form id="helpform" onClick="return HN.Tools.Util.close_help_dialog();">
-            <input type="button" class="action  ui-state-default" value="OK"  />
+            <input type="button" class="action  ui-state-default" value="OK" />
           </form>
         </div>
         <div id="dialog_boxes">
@@ -139,7 +139,7 @@
                 <div id="configure" class="ui-tabs-hide">
                   <div id="config_boxes">
                     <div id="page_sizes" class="standardconfig">
-                      <p class="toolstitle">$txt:{Page Size}$<p>
+                      <p class="toolstitle">$txt:{Page Size}$</p>
                       <hr />
                       <p>Pick your page size from one of the preset sizes, or set your own custom size.</p>
                       <table>
@@ -160,17 +160,22 @@
                               </select>
                             </td>
                           </tr>
-                          <tr>
-                            <td></td>
-                            <td><div id="switcher"></div></td>
-                          </tr>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </td>
-            <td>
+                        </table>
+                        <br />
+                        <p class="toolstitle">$txt:{Choose Theme}$</p>
+                        <hr />
+                      <div id="switcher"></div>
+                      <br />
+                      <p class="toolstitle">$txt:{Layout Help}$</p>
+                      <hr />
+                      <span>Show gridlines</span>
+                      <input id="grid_lines" type="checkbox" class="ui-state-default" checked />
+                      </div>
+                      </div>
+                      </div>
+                      </div>
+                      </td>
+                      <td>
               <!-- The Canvass Area on which the GUI is built... -->
               <div id="canvas" class="canvas ui-widget-content">
               </div>
@@ -207,11 +212,13 @@
         <script src="/gui_builder/hn.gui.builder.js"></script>
         <script src="/gui_builder/hn.gui.dataoptions.js"></script>
         <script src="/gui_builder/hn.gui.html.js"></script>        
+        <!-- the Tools libraries (NEED TO BE CLEANED UP -->
+        <script src="/gui_builder/hn.tools.js"></script>
+        <script src="/gui_builder/hn.tools.util.js"></script>
+ 
       </div>
-
+      
       <!-- the Tools libraries -->
-      <script src="/gui_builder/hn.tools.js"></script>
-      <script src="/gui_builder/hn.tools.util.js"></script>
       <script src="/gui_builder/hn.tools.register.js"></script>
       <script src="/gui_builder/hn.tools.layouts.js"></script>
       <script src="/gui_builder/hn.tools.toolbar.js"></script>
