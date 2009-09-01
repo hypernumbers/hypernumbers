@@ -80,6 +80,13 @@
           </div>
         </div>
       </div>
+      <div id="floatinghelpbox" class="ui-widget-content">
+        <table><tr>
+        <td><p class="toolstitle">$txt:{Help}$</p></td><td width="5%">
+          <span class="floating_close ui-icon ui-icon-circle-close">&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
+          </tr></table><hr />
+        <div id="floating_help_contents"></div>
+      </div>
       <!-- End of Dialog Boxes -->
       
       <!-- Binding Table -->
@@ -109,7 +116,8 @@
             <td id="tab_bar">
               <div id="tabs" class="ui-tabs">
                 <ul>
-                  <li><a href="#page"><span>Form Bits</span></a></li>
+                  <li><a href="#page"><span>Layouts</span></a></li>
+                  <li><a href="#components"><span>Components</span></a></li>
                   <li><a href="#configure"><span>Configuration</span></a></li>
                 </ul>
                 <div id="page" class="ui-tabs-hide">
@@ -120,7 +128,9 @@
                     <ul id="layoutslist" class="toolbox">
                     </ul>
                   </div>
-                  <div id="tools" class="box">
+                </div>
+                <div id="components" class="ui-tabs-hide">
+                <div id="tools" class="box">
                     <p class="toolstitle">Elements</p>
                     <hr />
                     <p>Drag elements onto the page and then click on them to configure them.</p>

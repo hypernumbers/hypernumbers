@@ -28,6 +28,11 @@
   background-image: url(/gui_builder/layouts/blank.png) !important;
 }
 
+.toolbox li div.line
+{ 
+  background-image: url(/gui_builder/layouts/line.png) !important;
+}
+
 .fragmenttext
 { 
   font-family: Verdana, Arial, Helvetica, sans-serif;

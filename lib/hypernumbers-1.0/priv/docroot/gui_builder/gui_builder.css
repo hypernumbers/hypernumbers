@@ -27,7 +27,7 @@ body
 
 #tab_bar
 { 
-  width:   245px;
+  width:   330px;
   margin:  6px auto;
   display: none;
 }
@@ -58,6 +58,40 @@ body
  background: black;
  opacity:    0.5;
  z-index:    999999;
+}
+
+#floatinghelpbox
+{ 
+  display:    none;
+  text-align: left;
+  width:      300px;
+  position:   absolute;
+  left:       300px;
+  top:        300px;
+  z-index:    999999;
+  margin:     6px;
+  padding:    3px;
+  border:     solid 3px;
+}
+
+#floatinghelpbox:hover
+{ 
+  cursor: move;
+}
+
+.floating_close:hover
+{ 
+  cursor: pointer;
+}
+
+.help
+{ 
+  text-decoration: underline;
+}
+
+.help:hover
+{ 
+  cursor: pointer;
 }
 
 .mdialog
@@ -136,16 +170,16 @@ body
   background-repeat:   no-repeat;
   border:              1px solid;
   width:               120px;
-  padding:             2px;
+  padding:             4px;
   margin:              3px 45px;
 }
 
 .toolbox li div.elementsitem
 { 
-  border:           1px solid;
-  width:            120px;
-  padding:          2px;
-  margin:           3px 45px;
+  border:  1px solid;
+  width:   120px;
+  padding: 4px;
+  margin:  3px 45px;
 }
 
 .toolbox li div.textinput
@@ -244,7 +278,7 @@ body
 .standardconfig
 {  
   display: none;
-  width:   205px;
+  width:   270px;
 }
 
 .standardconfig .input
@@ -260,7 +294,15 @@ body
 .standardconfig h2
 { 
   text-align: center;
- }
+}
+
+.line.gridlines.layout
+{ 
+  border:  2px solid #ffff00;
+  height:  5px;
+  padding: 0;
+  margin:  0;
+}
 
 .gridlines.layout, .gridlines.widget
 { 
