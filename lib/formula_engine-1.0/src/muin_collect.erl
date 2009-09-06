@@ -42,6 +42,16 @@ col(Args, Rules, Passes, Fun) ->
 
 col(Args, Rules, Passes) ->
     pass(col(Args, Rules), Passes).
+%    case lists:member(return_errors, Passes) of
+%        false -> pass(col(Args, Rules), Passes);
+%        true  ->
+%            case lists:keyfind(errval, 1, Args) of
+%                false -> pass(col(Args, Rules), Passes);
+%                Err   ->
+%                    io:format("1 ~p ~n",[Err]),
+%                    Err
+%            end
+%    end.
 
 col(Args, Rules) ->    
     F1 = fun(X, List) ->
@@ -221,7 +231,6 @@ pass(Args, [ {all, F} | Rules ]) ->
 %% of the rules can be important (pick_first_array needs to be called
 %% before cast_or_die, etc)
 collect(Args, Type, Rules, Filters) ->
-    io:format("~p",[collect(Args, Type, Rules)]),
     [ X || X <- collect(Args, Type, Rules), ignor(X, Filters) ].
                                    
 collect(Args, Type, Rules) ->
@@ -527,6 +536,11 @@ generic_ban(Xs, Detectorf) ->
 is_bool(true)  -> true;
 is_bool(false) -> true;
 is_bool(_)     -> false.
+
+is_area(Area) when ?is_area(Area) ->
+    true;
+is_area(_Area) ->
+    false.
 
 is_string({ustr, Bin}) when is_binary(Bin) ->
     true;

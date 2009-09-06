@@ -491,10 +491,10 @@ skew(Arg) ->
     %% Nums = ?numbers(?flatten_all(V1), ?default_rules),
     %% ?ensure(length(Nums) >= 3, ?ERR_DIV),
     %% skew1(Nums).
-skew1(Nums) when length(Nums) =< 3 ->
+skew1(Nums) when length(Nums) < 3 ->
     ?ERRVAL_DIV;
 skew1(Nums) ->
-    moment(Nums, 3) / math:pow(moment(Nums, 2), 1.5).
+    moment(Nums, 3) / math:pow(moment(Nums, 2), 3).
 
 %% the casting for this is all over the place
 %% doens't cast left to right, blah-blah

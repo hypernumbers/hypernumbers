@@ -127,16 +127,29 @@
 %% A lot of math functions simply cast everything.
 -define(default_rules, [first_array, cast_strings, cast_bools, cast_blanks, cast_dates]).
 
+is_num_or_date(X) ->
+    is_number(X) orelse ?is_date(X).
+
 %%% Operators ~~~~~
-'+'([{datetime, D, T}, V2]) when is_number(V2) -> '+'([V2, {datetime, D, T}]);
-'+'([V1, {datetime, Date, Time}]) when is_number(V1) ->
-    NewTime = calendar:datetime_to_gregorian_seconds({Date, Time}) + (V1 * 86400),
+'+'([V1, V2]) ->
+    col([V1, V2],
+        [eval_funs, fetch, first_array, {cast, str, num, ?ERRVAL_VAL},
+         {cast, bool, num}, {cast, blank, num}],
+        [return_errors, {all, fun is_num_or_date/1}, return_errors],
+        fun '+_'/1).
+
+'+_'([{datetime, D, T}, V2]) when is_number(V2) ->
+    '+_'([V2, {datetime, D, T}]);
+
+'+_'([V1, {datetime, Date, Time}]) when is_number(V1) ->
+    NewTime = calendar:datetime_to_gregorian_seconds({Date, Time})
+        + (V1 * 86400),
     {NDate, NTime} = calendar:gregorian_seconds_to_datetime(NewTime),
     {datetime, NDate, NTime};
-'+'([V1, V2]) ->
-    [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
+
+'+_'([Num1, Num2]) ->
     case Num1 + Num2 of
-        X when X > ?GOOGOL -> ?ERR_NUM;
+        X when X > ?GOOGOL -> ?ERRVAL_NUM;
         Result             -> Result
     end.
 
@@ -156,7 +169,7 @@
 '*'([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
     case Num1 * Num2 of
-        X when X > ?GOOGOL -> ?ERR_NUM;
+        X when X > ?GOOGOL -> ?ERRVAL_NUM;
         Result             -> Result
     end.
 
@@ -849,17 +862,34 @@ subtotal_(_, _) -> ?ERRVAL_VAL.
 sumif([L, Crit]) ->
     sumif([L, Crit, L]);
 sumif([V1, Crit, V2]) ->
-    %% V1 and V2 must be areas of same dimensions
-    ?ensure(?is_area(V1), ?ERR_VAL),
-    ?ensure(?is_area(V2), ?ERR_VAL),
-    ?ensure(area_util:are_congruent(V1, V2), ?ERR_VAL),
-    case odf_criteria:create(Crit) of
-        {error, _Reason} -> 0;
-        Fun              ->
-            sumif1(area_util:to_list(V1), area_util:to_list(V2), Fun)
+    
+    Areas = col([V1, V2], [],
+                [return_errors, {all, fun muin_collect:is_area/1}]),
+    
+    muin_util:apply([Areas, Crit], fun sumif1/2).
+
+%% V1 and V2 must be areas of same dimensions
+%% ?ensure(?is_area(V1), ?ERR_VAL),
+%% ?ensure(?is_area(V2), ?ERR_VAL),
+%% ?ensure(area_util:are_congruent(V1, V2), ?ERR_VAL),
+%% case odf_criteria:create(Crit) of
+%%     {error, _Reason} -> 0;
+%%     Fun              ->
+    %%         sumif1(area_util:to_list(V1), area_util:to_list(V2), Fun)
+%% end.
+
+sumif1([V1, V2], Crit) ->
+    case area_util:are_congruent(V1, V2) of
+        false -> ?ERRVAL_VAL;
+        true ->
+            case odf_criteria:create(Crit) of
+                {error, _Reason} -> 0;
+                Fun ->
+                    sumif1(area_util:to_list(V1), area_util:to_list(V2),
+                           Fun, 0)
+            end
     end.
-sumif1(L1, L2, Fun) ->
-    sumif1(L1, L2, Fun, 0).
+
 sumif1([], [], _F, Sum) ->
     Sum;
 sumif1([H1|T1], [H2|T2], Fun, Acc) ->
