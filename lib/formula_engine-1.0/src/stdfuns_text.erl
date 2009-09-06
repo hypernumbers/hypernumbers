@@ -159,12 +159,18 @@ lower([Str]) ->
     NewStr=?string(Str,?default_str_rules),
     string:to_lower(NewStr).
 
-proper([Str]) ->
-    NewStr=?string(Str,?default_str_rules),
-    {ok, Words} = regexp:split(NewStr, "\\s+"),
-    Capwords = map(fun([H|T]) -> string:to_upper([H]) ++ T end,
-                   Words),
-    string:join(Capwords, " ").
+proper(Args) ->
+    col(Args, [first_array, fetch_name, {cast, str}],
+        [return_errors, {all, fun muin_collect:is_string/1}],
+        fun proper_/1).
+
+capitalise([$",H|T]) ->
+    "\""++string:to_upper([H]) ++ string:to_lower(T);
+capitalise([H|T]) ->
+    string:to_upper([H]) ++ string:to_lower(T).
+
+proper_([Str]) ->
+    string:join([ capitalise(X) || X <- string:tokens(Str, " ") ], " ").
 
 upper([Str]) ->
     NewStr=?string(Str,?default_str_rules),
