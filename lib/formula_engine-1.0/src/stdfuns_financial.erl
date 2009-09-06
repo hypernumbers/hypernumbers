@@ -144,7 +144,6 @@ pv([Rate, NPer, Pmt, Fv]) ->
 pv([Rate, NPer, Pmt, undef, Type]) ->
     pv([Rate, NPer, Pmt, 0, Type]);
 
-
 pv(Args = [_, _, _, _, _]) ->
     col(Args,
         [first_array, cast_num],
@@ -156,6 +155,14 @@ pv_([Rate, Nper, Pmt, Fv, _Partype]) when Rate == 0 ->
 pv_([Rate, Nper, Pmt, Fv, Type]) ->
     Tmp = math:pow((1+Rate),Nper),
     (0 - Fv - Pmt * (1+Rate*Type)* (Tmp - 1)/Rate) / (Tmp).
+
+
+fv([Rate, NPer, Pmt]) ->
+    fv([Rate, NPer, Pmt, 0]);
+fv([Rate, NPer, Pmt, Pv]) ->
+    fv([Rate, NPer, Pmt, Pv, 0]);
+fv([Rate, NPer, Pmt, undef, Type]) ->
+    fv([Rate, NPer, Pmt, 0, Type]);
 
 fv(Args = [_, _, _, _, _]) ->
     [Rate, Nper, Pmt, Pv, Partype] = ?numbers(Args, ?default_rules),
