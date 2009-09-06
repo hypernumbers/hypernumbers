@@ -189,7 +189,8 @@ funcall(Fname, Args0) ->
     % evaluate arguments
     Funs = ['if', choose, column, row, cell, columns, 'and',
             timevalue, npv, max, maxa, min, mina, syd, sumsq, sum,
-            stdevpa, stdevp, stdeva, stdev, '+', product, mdeterm],
+            stdevpa, stdevp, stdeva, stdev, '+', product, mdeterm,
+            median],
     
     Args = case member(Fname, Funs) of
                true  -> Args0;

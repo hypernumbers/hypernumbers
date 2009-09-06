@@ -328,14 +328,9 @@ mdeterm([A]) when is_number(A) ->
     A;
 
 mdeterm([A]) ->
-%% W = area_util:width(A),
-%% H = area_util:height(A),
-%% ?ensure(W == H, ?ERR_VAL),
-%% {_, Rows} = ?numbers(A, [ban_strings, ban_blanks, cast_bools, ban_dates]),
     col([A], [eval_funs, fetch, {ignore, bool}, {ignore, str}, {ignore, blank}],
         [return_errors],
         fun mdeterm_/1).
-%    mdeterm1(Rows, W);
 
 mdeterm_([]) ->
     ?ERRVAL_VAL;

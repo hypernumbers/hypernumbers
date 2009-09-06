@@ -379,11 +379,24 @@ maxa(Args) ->
 maxa_(Nums) ->
     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
 
-median(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    Sum=stdfuns_math:sum(Nums),
-    Count=count(Nums),
-    Sum/Count.
+median(Args) ->
+    col(Args,
+        [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL},
+         fetch, flatten, {ignore, str}, {ignore, bool}, {ignore, blank}],
+        [return_errors, {all, fun is_number/1}],
+        fun median_/1).
+
+median_([]) ->
+    ?ERRVAL_NUM;
+median_(Args) ->
+    Nums = lists:sort(Args),
+    case count(Args) of
+        1 -> hd(Args);
+        X when (X rem 2) == 1 -> lists:nth(erlang:trunc(X / 2), Nums);
+        X when (X rem 2) == 0 ->
+            C = erlang:trunc(X / 2),
+            (lists:nth(C, Nums) + lists:nth(C+1, Nums)) / 2
+    end.
 
 mode(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
