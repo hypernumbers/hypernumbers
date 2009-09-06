@@ -220,15 +220,21 @@ devsq1(Vals) ->
     moment(Vals, 2) * length(Vals).
 
 expondist([V1, V2, V3]) ->
-    [X, Lambda] = ?numbers([V1, V2], ?default_rules),
-    Cumul = ?bool(V3, ?default_rules_bools),
-    ?ensure(X >= 0, ?ERR_NUM),
-    ?ensure(Lambda >= 0, ?ERR_NUM),
-    expondist1(X, Lambda, Cumul).
-expondist1(X, Lambda, true) ->
-    1 - math:exp(-1 * X / Lambda);
-expondist1(X, Lambda, false) ->
-    math:exp(-1 * X / Lambda) / Lambda.
+    A = col([V1, V2],
+            [eval_funs, fetch, area_first, {cast, num}],
+            [return_errors, {all, fun is_number/1}]),
+    B = col([V3],
+            [eval_funs, fetch, area_first, {cast, bool}],
+            [return_errors, {all, fun is_boolean/1}]),
+    
+    muin_util:apply([A, B], fun expondist1/2).
+
+expondist1([X, Lambda], _) when X < 0; Lambda =< 0 ->
+    ?ERRVAL_NUM;
+expondist1([X, Lambda], [true]) ->
+    1 - math:exp(-Lambda * X);
+expondist1([X, Lambda], [false]) ->
+    Lambda * math:exp( -Lambda * X).
 
 %% TODO:
 forecast([_, _, _]) ->
