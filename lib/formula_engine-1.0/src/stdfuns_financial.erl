@@ -141,6 +141,9 @@ pv([Rate, NPer, Pmt]) ->
     pv([Rate, NPer, Pmt, 0]);
 pv([Rate, NPer, Pmt, Fv]) ->
     pv([Rate, NPer, Pmt, Fv, 0]);
+pv([Rate, NPer, Pmt, undef, Type]) ->
+    pv([Rate, NPer, Pmt, 0, Type]);
+
 
 pv(Args = [_, _, _, _, _]) ->
     col(Args,
@@ -213,7 +216,6 @@ nper_([Rate, Pmt, Pv, Fv, Partype]) ->
            fun(N) -> xn(Pmt, Rate, N, Pv, Fv, Partype) end).
 
 %%% helpers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 -define(ITERATION_LIMIT, 200).
 %% Calculate next approximation of value based on two previous approximations.
 secant(Pa, Ppa, Px, Ppx, Fun)           -> secant(Pa, Ppa, Px, Ppx, Fun, 1).
@@ -235,3 +237,43 @@ xn(Pmt, Rate, Nper, Pv, Fv, Partype) ->
     Tmp = math:pow(1+Rate, Nper),
     Pv * Tmp + Pmt * (1+Rate*Partype) * (Tmp-1) / Rate + Fv.
 
+%%% tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-include_lib("eunit/include/eunit.hrl").
+
+cmp(F1, F2) ->
+    erlang:abs(1 - F1 / F2) < 0.01.
+
+pmt_test_() ->
+    [
+     ?_assert(cmp(pmt([1, 2, 3, 4, 5]), -2.67)),
+     ?_assert(cmp(pmt([11.1, 2, 3, 4, 5]),-2.80)),
+     ?_assert(cmp(pmt([-1.2, 2, 3, 4, 5]), 25.75))
+    ].
+
+rate_test_() ->
+    [
+     ?_assert(cmp(rate([24, -250, 5000]), 0.02)),
+     ?_assert(cmp(rate([208, -700, 8000, undef, 1]), 0.01)),
+     ?_assert(cmp(rate([10, -1000, 6500]), 0.09))
+    ].
+
+nper_test_() ->
+    [
+     ?_assert(cmp(nper([11, 234, 567, 1]), -1.35535)),
+     ?_assert(cmp(nper([0, 234, 567, 1]), -2.42)),
+     ?_assert(cmp(nper([0.00625, -150, 5000]), 37.4951))
+    ].
+
+fv_test_() ->
+    [
+     ?_assert(cmp(fv([0.075/12, 2*12, -250, -5000, 1]), 12298.46)),
+     ?_assert(cmp(fv([0.06/52, 4*52, -50, -8000, 0]), 21915.09))
+    ].
+
+pv_test_() ->
+    [
+     ?_assert(cmp(pv([0.12, 48, 1000, 1234, 1]), -9298.18)),
+     ?_assert(cmp(pv([0.00625, 24, 250, undef, 0]), -5555.61)),
+     ?_assert(cmp(pv([0.06/52, 4*52, 50, undef, 1]), -9252.07))
+    ].
