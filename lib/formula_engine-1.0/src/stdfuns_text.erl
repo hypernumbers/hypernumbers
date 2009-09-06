@@ -102,18 +102,18 @@ len([Str]) ->
     NewStr=?string(Str,?default_str_rules),
     length(NewStr).
 
-mid([Str, Start, Len]) ->
-    NewStr=?string(Str,?default_str_rules),
-    NewStart=erlang:trunc(?int(Start,?default_num_rules)),
-    ?ensure(NewStart >0, ?ERR_VAL),
-    NewLen=?int(Len,?default_num_rules),
-    ?ensure(NewLen >0, ?ERR_VAL),
-    if
-        (NewLen >= length(NewStr)) -> NewStr;
-        true                       -> mid1(NewStr,NewStart,NewLen)
-    end.
+mid([V1, V2, V3]) ->
+    Str = col([V1], [eval_funs, fetch, area_first, {cast, str}],
+              [return_errors, {all, fun muin_collect:is_string/1}]),
+    Num = col([V2, V3], [eval_funs, fetch, area_first, {cast, num}, {cast, int}],
+              [return_errors, {all, fun is_number/1}]),    
+    muin_util:apply([Str, Num], fun mid_/2).
 
-mid1(Str, Start, Len) ->
+mid_([Str], [Start, Len]) when Len < 0; Start =< 0 ->
+    ?ERRVAL_VAL;
+mid_([Str], [Start, Len]) when Start > length(Str) ->
+    [];
+mid_([Str], [Start, Len]) ->
     string:substr(Str, Start, Len).
 
 clean([true])  -> "TRUE";
