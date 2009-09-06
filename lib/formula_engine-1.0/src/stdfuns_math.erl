@@ -199,11 +199,20 @@ sum1(Nums) ->
     lists:sum(Nums).
 
 product(Vals) ->
-    Flatvals = ?flatten_all(Vals),
-    ?ensure_no_errvals(Flatvals),
-    Nums = ?numbers(Flatvals, [cast_strings, cast_bools, ignore_blanks,
-                               cast_dates]),
-    product1(Nums).
+
+    
+    col(Vals,
+        [eval_funs, {cast, str, num, ?ERRVAL_VAL}, {cast, bool, num},
+         fetch, flatten, area_first, {ignore, blank}, {ignore, str},
+         {ignore, bool}],
+        [return_errors, {all, fun is_number/1}],
+        fun product1/1).
+    
+    %% Flatvals = ?flatten_all(Vals),
+    %% ?ensure_no_errvals(Flatvals),
+    %% Nums = ?numbers(Flatvals, [cast_strings, cast_bools, ignore_blanks,
+    %%                            cast_dates]),
+    %% product1(Nums).
 product1(Nums) ->
     foldl(fun(X, Acc) -> X * Acc end,
           1, Nums).
