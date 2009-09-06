@@ -68,8 +68,7 @@ col(Args, Rules) ->
 %% rules are ignored, the function should return the new value following
 %% the rule
 
-rl(Rule, {list, Vals}) ->
-    
+rl(Rule, {list, Vals}) ->    
     F = fun(X, Acc) ->
                 case rl(Rule, X) of
                     ignore       -> Acc;
@@ -90,6 +89,16 @@ rl(ignore_strings, String) when ?is_string(String) ->
     ignore;
 rl(ignore_errors, Err) when ?is_errval(Err) ->
     ignore;
+
+rl({ignore, Type}, {Area, Rows}=Val) when ?is_area(Val) ->
+    io:format("urm? ~p~n",[Val]),
+    {Area, [ muin_collect:col(X, [{ignore, Type}]) || X <- Rows ]};
+    %% case muin_util:get_type(Val) of
+    %%     Type  -> ignore;
+    %%     _Else -> Val
+    %% end;
+
+
 rl({ignore, Type}, Val) ->
     case muin_util:get_type(Val) of
         Type  -> ignore;
@@ -122,7 +131,6 @@ rl(flatten, {array,X}) ->
 
 rl({flatten, range}, {range,X}) ->
     {list, flat(X, [])};
-
 
 rl(num_as_bool, X) when is_number(X) andalso X==0; X==0.0 ->
     false;
@@ -189,13 +197,15 @@ rl(fetch, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 rl(fetch, Ref) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
     muin:fetch(Ref);
+%% WTF? (why are ranges tagged as arrays)
+rl(fetch, {array, [[Ref]]}) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
+    muin:fetch(Ref);
 
 rl({conv, Type, Value}, X) ->
     case muin_util:get_type(X) of
         Type  -> Value;
         _Else -> X
     end;
-
 
 % No Rules for this element
 rl(_Rule, Value) ->
@@ -206,7 +216,6 @@ flat([], Acc) ->
 flat([Head|Tail], Acc) ->
     flat(Tail, Acc ++ Head).
     
-
 %% Passes are a list of rules to perform on arguments once casting
 %% and such has happened
 pass(Args, []) ->
@@ -214,10 +223,22 @@ pass(Args, []) ->
 
 % if there are any errors in the parameters, return these
 pass(Args, [ return_errors | Rules ]) ->
-    case lists:keyfind(errval, 1, Args) of
+    
+    F = fun(X, _Acc) when ?is_errval(X) -> X;
+           ({_,Rows}=X, Acc)  when ?is_area(X) ->
+                L = [[ Y || Y<-Z, muin_util:get_type(Y) == error ] || Z<-Rows ],
+                case lists:flatten(L) of
+                    []      -> Acc;
+                    [Err|_] -> Err
+                end;
+           (_X, Acc) -> Acc
+        end,
+   
+    case lists:foldr(F, false, Args) of
         false -> pass(Args, Rules);
         Err   -> Err
     end;
+
 % Typically a type check, checks that all elements return true
 % for F(X)
 pass(Args, [ {all, F} | Rules ]) ->

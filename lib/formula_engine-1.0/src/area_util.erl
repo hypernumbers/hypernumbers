@@ -16,6 +16,11 @@
 
 -define(OUT_OF_RANGE, {error, out_of_range}).
 
+is_matrix({Type, Rows} = Area) when ?is_area(Area) ->
+    Size = length(hd(Rows)),
+    lists:all(fun(X) -> length(X) == Size end, Rows)
+        andalso length(Rows) == Size.
+
 %%% @doc Check if all areas in the list have the same dimensions as A.
 are_congruent(A, As) when ?is_area(A), is_list(As) ->
     {W, H} = {width(A), height(A)},

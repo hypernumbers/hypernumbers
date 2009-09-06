@@ -313,13 +313,10 @@ lcm1(A,[B|T]) -> Div=gcd2(A,B),
 %% Returns the remainder after number is divided by divisor. The result
 %% has the same sign as divisor.
 mod([V1, V2]) ->
-    % io:format("in stdfuns_math:mod V1 is ~p V2 is ~p~n", [V1, V2]),
     [Num, Divisor] = ?numbers([V1, V2], ?default_rules),
     ?ensure(Divisor =/= 0, ?ERR_DIV),
     ?ensure(Divisor =/= 0.0, ?ERR_DIV),    
-    % io:format("in stdfuns_math:mod Num is ~p Divisor is ~p~n", [Num, Divisor]),
     Num - Divisor * int([Num/Divisor]).
-
 
 %%% Arrays and matrices ~~~~~
 
@@ -327,14 +324,27 @@ transpose([A]) when ?is_area(A) ->
     {_, Rows} = A,
     {array, hslists:transpose(Rows)}.
 
-mdeterm([A]) when ?is_area(A) ->
-    W = area_util:width(A),
-    H = area_util:height(A),
-    ?ensure(W == H, ?ERR_VAL),
-    {_, Rows} = ?numbers(A, [ban_strings, ban_blanks, cast_bools, ban_dates]),
-    mdeterm1(Rows, W);
-mdeterm([V]) ->
-    mdeterm([{array, [[V]]}]).
+mdeterm([A]) when is_number(A) ->
+    A;
+
+mdeterm([A]) ->
+%% W = area_util:width(A),
+%% H = area_util:height(A),
+%% ?ensure(W == H, ?ERR_VAL),
+%% {_, Rows} = ?numbers(A, [ban_strings, ban_blanks, cast_bools, ban_dates]),
+    col([A], [eval_funs, fetch, {ignore, bool}, {ignore, str}, {ignore, blank}],
+        [return_errors],
+        fun mdeterm_/1).
+%    mdeterm1(Rows, W);
+
+mdeterm_([]) ->
+    ?ERRVAL_VAL;
+mdeterm_([{_Type, Rows}=Area]) when ?is_area(Area) -> 
+    case area_util:is_matrix(Area) of
+        false -> ?ERRVAL_VAL;
+        true  -> mdeterm1(Rows, area_util:width(Area))
+    end.
+
 mdeterm1(Rows, 1) ->
     [[Num]] = Rows,
     Num;
