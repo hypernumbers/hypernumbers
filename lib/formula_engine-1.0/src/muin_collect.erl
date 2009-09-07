@@ -91,7 +91,6 @@ rl(ignore_errors, Err) when ?is_errval(Err) ->
     ignore;
 
 rl({ignore, Type}, {Area, Rows}=Val) when ?is_area(Val) ->
-    io:format("urm? ~p~n",[Val]),
     {Area, [ muin_collect:col(X, [{ignore, Type}]) || X <- Rows ]};
     %% case muin_util:get_type(Val) of
     %%     Type  -> ignore;

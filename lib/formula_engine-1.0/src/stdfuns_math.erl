@@ -326,7 +326,6 @@ transpose([A]) when ?is_area(A) ->
 
 mdeterm([A]) when is_number(A) ->
     A;
-
 mdeterm([A]) ->
     col([A], [eval_funs, fetch, {ignore, bool}, {ignore, str}, {ignore, blank}],
         [return_errors],
@@ -361,36 +360,54 @@ munit([V]) ->
                                   end,
                                   Empty).
 
-minverse([L]) ->
-    % io:format("in minverse L is ~p~n", [L]),
-    %?IF(not(is_list(L)), ?ERR_VAL),
-    % io:format("Got to 1~n"),
-    ?ensure_numbers(flatten(L)),
-    % io:format("Got to 2~n"),
-    Mx = matrix:new(L),
-    % io:format("Got to 3~n"),
-    ?IF(not(matrix:is_square(Mx)), ?ERR_VAL),
-    % io:format("Got to 4~n"),
-    ?IF(matrix:det(Mx) == 0, ?ERR_NUM),
-    % io:format("Got to 5~n"),
-    {matrix, _, _, NewL} = matrix:invert(Mx),
-    % io:format("Got to 6~n"),
-    NewL.
+minverse(Args) ->
+    col(Args, [eval_funs, fetch, {ignore, bool}, {ignore, str},
+               {ignore, blank}], [return_errors],
+        fun minverse_/1).
+minverse_([{_Type, Rows}=Area]) when ?is_area(Area) -> 
+    case area_util:is_matrix(Area) of
+        false -> ?ERRVAL_VAL;
+        true  -> 0
+    end;
+minverse_([A]) when is_number(A) ->
+    minverse_([{array, [[A]]}]);
+minverse_([]) ->
+    ?ERRVAL_VAL.
 
-mmult([L1, L2]) ->
-    ?IF(not(is_list(L1)), ?ERR_VAL),
-    ?IF(not(is_list(L2)), ?ERR_VAL),
-    ?ensure_numbers(flatten(L1)),
-    ?ensure_numbers(flatten(L2)),
-    Mx1 = matrix:new(L1),
-    Mx2 = matrix:new(L2),
+    %% %?IF(not(is_list(L)), ?ERR_VAL),
+    %% % io:format("Got to 1~n"),
+    %% ?ensure_numbers(flatten(L)),
+    %% % io:format("Got to 2~n"),
+    %% Mx = matrix:new(L),
+    %% % io:format("Got to 3~n"),
+    %% ?IF(not(matrix:is_square(Mx)), ?ERR_VAL),
+    %% % io:format("Got to 4~n"),
+    %% ?IF(matrix:det(Mx) == 0, ?ERR_NUM),
+    %% % io:format("Got to 5~n"),
+    %% {matrix, _, _, NewL} = matrix:invert(Mx),
+    %% % io:format("Got to 6~n"),
+    %% NewL.
 
-    case matrix:multiply(Mx1, Mx2) of
-        {matrix, _, _, NewL} ->
-            NewL;
-        {error, _} ->
-            ?ERR_VAL
-    end.
+mmult(Args) ->
+    col(Args, [eval_funs, fetch, {ignore, bool}, {ignore, str},
+               {ignore, blank}], [return_errors],
+        fun mmult_/1).
+
+mmult_([{_, R1}=L1, {_, R2}=L2]) when ?is_area(L1), ?is_area(L2) -> 
+    case area_util:is_matrix(L1) andalso area_util:is_matrix(L2) of
+        false -> ?ERRVAL_VAL;
+        true  -> {array, to_list(mmult(to_tuple(R1), to_tuple(R2)))}
+    end;
+mmult_([A,B]) when is_number(A), is_number(B) ->
+    mmult_([{array, [[A]]}, {array, [[B]]}]);
+mmult_(_) ->
+    ?ERRVAL_VAL.
+
+%% eugh
+to_tuple(L1) ->
+    list_to_tuple([ list_to_tuple(X) || X<-L1]).
+to_list(T1) ->
+    [ tuple_to_list(X) || X <- tuple_to_list(T1) ].
 
 %% @todo not Excel 97 - no test suite
 multinomial(L) ->
@@ -1042,3 +1059,23 @@ degrees([V]) ->
 radians([V]) ->
     Angle = ?number(V, ?default_rules),
     Angle * math:pi() / 180.
+
+
+sumprod(0, _, _, Sum, _, _) -> Sum;
+sumprod(I, C, R, Sum, M1, M2) -> 
+    NewSum = Sum + (element(I,element(R,M1)) * element(C,element(I,M2))),
+    sumprod(I-1, C, R, NewSum, M1, M2).
+
+rowmult(_, 0, _, L, _, _) -> list_to_tuple(L);
+rowmult(I, C, R, L, M1, M2) -> 
+    SumProd = sumprod(I, C, R, 0, M1, M2),
+    rowmult(I, C-1, R, [SumProd|L], M1, M2).
+
+mmult(_, _, 0, MM, _, _) -> list_to_tuple(MM);
+mmult(I, C, R, MM, M1, M2) ->
+    NewRow = rowmult(I, C, R, [], M1, M2),
+    mmult(I, C, R-1, [NewRow|MM], M1, M2).
+
+mmult(M1, M2) -> 
+    NRows = size(M1), 
+    mmult(size(M2), NRows, NRows,[], M1, M2).
