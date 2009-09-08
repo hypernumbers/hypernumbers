@@ -37,6 +37,31 @@
   text-align:  left;
 }
 
+.hn_verythick
+{ 
+  height: 8px;
+}
+
+.hn_thick
+{ 
+  height: 5px
+}
+
+.hn_normal
+{ 
+  height: 3px;
+}
+
+.hn_thin
+{ 
+  height: 1px;
+}
+
+.hn_verythin
+{ 
+  height: 0.5px
+}
+
 *.textinput, .inputtext
 { 
   font:  12px Arial,"Helvetica Neue", sans-serif;

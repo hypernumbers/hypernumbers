@@ -94,6 +94,21 @@ body
   cursor: pointer;
 }
 
+#logout
+{ 
+  text-decoration: underline;
+}
+
+#logout:hover
+{ 
+  cursor: pointer;
+}
+
+.spacer
+{ 
+  width: 70px;
+}
+
 .mdialog
 { 
   text-align: left;
@@ -136,7 +151,7 @@ body
   border: 2px solid #00ff00;
 }
 
-.layoutsitem:hover
+.layoutsitem:hover, .elementsitem:hover, .widgetsitem:hover
 { 
   cursor: move;
 }
@@ -144,11 +159,6 @@ body
 .element:hover
 { 
   border: 2px solid #00ff00;
-}
-
-.elementsitem:hover
-{ 
-  cursor: move;
 }
 
 .toolstitle
@@ -304,9 +314,18 @@ body
   margin:  0;
 }
 
-.gridlines.layout, .gridlines.widget
+.gridlines.layout
 { 
   width:      98%;
+  height:     80px;
+  border:     2px dashed #f47d08;
+  padding:    6px;
+  margin:     6px;
+}
+
+.gridlines.widget
+{ 
+  width:      95%;
   height:     80px;
   border:     2px dashed #f47d08;
   padding:    6px;

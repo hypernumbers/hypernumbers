@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="/gui_builder/themes/theme1.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/hn.sheet.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/layouts/basic.css" />
+    <link rel="stylesheet" type="text/css" href="/gui_builder/widgets/simple.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/elements/core.css" />
     <link type="text/css" rel="stylesheet" href="http://jqueryui.com/themes/base/ui.all.css" />
   </head>
@@ -194,8 +195,8 @@
     </table>
     </div>
       <!-- not all the javascript is to be included in the finshed page -->
-      <!-- only that contained in the div 'scripts' -->
-      <div id="scripts"> 
+      <!-- only that contained in the div 'scripts1' and 'scripts2' -->
+      <div id="scripts1"> 
         <!-- Some jquery libraries to handle AJAX calls -->
         <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
         <!--<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>-->
@@ -225,21 +226,26 @@
         <!-- the Tools libraries (NEED TO BE CLEANED UP -->
         <script src="/gui_builder/hn.tools.js"></script>
         <script src="/gui_builder/hn.tools.util.js"></script>
- 
+       
+        <!-- the Tools libraries -->
+        <script src="/gui_builder/hn.tools.register.js"></script>
+        <script src="/gui_builder/hn.tools.toolbar.js"></script>
+        <script src="/gui_builder/hn.tools.layouts.js"></script>
+        <script src="/gui_builder/hn.tools.widgets.js"></script>
+        <script src="/gui_builder/hn.tools.elements.js"></script>
+
       </div>
-      
-      <!-- the Tools libraries -->
-      <script src="/gui_builder/hn.tools.register.js"></script>
-      <script src="/gui_builder/hn.tools.layouts.js"></script>
-      <script src="/gui_builder/hn.tools.toolbar.js"></script>
-      
+     
       <!-- The Tools libraries that the GUI Builder users -->
       <script src="/gui_builder/buildmain.js"></script>
-        
-      <!-- Load the layouts, elements and widgets last -->
-      <!-- They have to register themselves -->
-      <script src="/gui_builder/layouts/basic.js"></script>
-      <script src="/gui_builder/elements/core.js"></script>
+
+      <div id="scripts2">
+        <!-- Load the layouts, elements and widgets last -->
+        <!-- They have to register themselves -->
+        <script src="/gui_builder/layouts/basic.js"></script>
+        <script src="/gui_builder/widgets/simple.js"></script>
+        <script src="/gui_builder/elements/core.js"></script>
+      </div>
       <script src="/gui_builder/builddraw.js"></script>
     </body>
 
