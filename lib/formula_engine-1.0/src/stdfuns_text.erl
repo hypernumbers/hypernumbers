@@ -55,36 +55,49 @@ value([V]) ->
 value_([S]) ->
     S.
 
-search([FindText, WithinText])-> search([FindText, WithinText, 1]);
-search([FindText, WithinText, StartPoint])->
-    NewFind = ?string(FindText, ?default_str_rules),
-    NewWithin = ?string(WithinText, ?default_str_rules),
-    NewStart = ?int(StartPoint, ?default_num_rules),
-    ?ensure(NewStart >= 1, ?ERR_VAL),
-    ?ensure(NewStart =< length(NewWithin), ?ERR_VAL),
-    RegExp = wild_to_rgx(NewFind),
-    {_Start, End} = lists:split(NewStart-1, NewWithin),
-    case regexp:match(End, RegExp) of
-        {match,Start, _Length} -> Start + NewStart - 1;
-        nomatch                -> ?ERR_VAL
+search([FindText, WithinText])->
+    search([FindText, WithinText, 1]);
+
+search([V1, V2, V3])->
+    Str = col([V1, V2], [eval_funs, fetch, area_first, {cast, str}],
+              [return_errors, {all, fun muin_collect:is_string/1}]),
+    Num = col([V3], [eval_funs, fetch, area_first, {cast, num}, {cast, int}],
+              [return_errors, {all, fun is_number/1}]),    
+    muin_util:apply([Str, Num], fun search_/2).
+
+search_([Needle, Hay], [Start]) when Start < 1; Start > length(Hay) ->
+    ?ERRVAL_VAL;
+search_([Needle, Hay], [Start]) ->
+    RegExp = wild_to_rgx(Needle),
+    {_Start, End} = lists:split(Start-1, Hay),
+    case re:run(End, RegExp, [{capture, first}]) of
+        {match, [{S, _Length}]} -> S + Start;
+        nomatch                 -> ?ERRVAL_VAL
     end.
 
-replace([Str,Start,Replace,InsertStr]) ->
-    NewStr=?string(Str,?default_str_rules),
-    StartInt=?int(Start,?default_num_rules),
-    ?ensure(StartInt >= 0,?ERR_VAL),
-    ReplaceInt=?int(Replace,?default_num_rules),
-    ?ensure(ReplaceInt >= 0,?ERR_VAL),
-    NewInsertStr=?string(InsertStr,?default_str_rules),
-    if
-        (StartInt >= length(NewStr)) -> lists:concat([Str,NewInsertStr]);
-        
-        true                          ->
-            {StartStr,MiddleStr}=lists:split(StartInt-1,NewStr),
-            {_Delete,EndStr}=lists:split(ReplaceInt,MiddleStr),
-            lists:concat([StartStr,NewInsertStr,EndStr])
-    end.
 
+replace([V1, V2, V3, V4]) ->
+    Str = col([V1, V4], [eval_funs, fetch, area_first, {cast, str}],
+              [return_errors, {all, fun muin_collect:is_string/1}]),
+    Num = col([V2, V3], [eval_funs, fetch, area_first, {cast, num},
+                         {cast, int}],
+              [return_errors, {all, fun is_number/1}]),
+    muin_util:apply([Str, Num], fun replace_/2).
+
+replace_([Str, Replace], [Start, Len]) when Start =< 0; Len < 0 ->
+    ?ERRVAL_VAL;
+replace_([Str, Replace], [Start, Len]) when Start > length(Str) ->
+    lists:concat([Str, Replace]);
+replace_([Str, Replace], [Start, Len]) ->
+    {StartStr, Middle} = lists:split(Start-1, Str),
+    case Len > length(Middle) of
+        true ->
+            lists:concat([StartStr, Replace]);
+        false ->
+            {_Del, End} = lists:split(Len, Middle),
+            lists:concat([StartStr, Replace, End])
+    end.
+    
 
 exact([V1, V2]) ->
     Rules = [first_array, cast_numbers, cast_bools, ban_dates, cast_blanks],
@@ -349,21 +362,21 @@ wild_to_rgx(Str) -> wild_to_rgx(Str,[]).
 
 %% converts Excel wild cards into Erlang RegExps
 wild_to_rgx([],Acc)        -> lists:flatten(lists:reverse(Acc));
-wild_to_rgx([$~,$*|T],Acc) -> wild_to_rgx(T,[$*,"\\"|Acc]);   % escape Excel wild card
-wild_to_rgx([$~,$?|T],Acc) -> wild_to_rgx(T,[$?,"\\"|Acc]);   % escape Excel wild card
-wild_to_rgx(["\\"|T],Acc)  -> wild_to_rgx(T,["\\","\\"|Acc]); % escape Erlang RegExp
-wild_to_rgx([$^|T],Acc)    -> wild_to_rgx(T,[$^,"\\"|Acc]);   % escape Erlang RegExp
-wild_to_rgx([$$|T],Acc)    -> wild_to_rgx(T,[$$,"\\"|Acc]);   % escape Erlang RegExp
-wild_to_rgx([$[|T],Acc)    -> wild_to_rgx(T,[$[,"\\"|Acc]);   % escape Erlang RegExp
-wild_to_rgx([$]|T],Acc)    -> wild_to_rgx(T,[$],"\\"|Acc]);   % escape Erlang RegExp
-wild_to_rgx([$(|T],Acc)    -> wild_to_rgx(T,[$(,"\\"|Acc]);   % escape Erlang RegExp
-wild_to_rgx([$)|T],Acc)    -> wild_to_rgx(T,[$0,"\\"|Acc]);   % escape Erlang RegExp
-wild_to_rgx([$||T],Acc)    -> wild_to_rgx(T,[$|,"\\"|Acc]);   % escape Erlang RegExp
-wild_to_rgx([$+|T],Acc)    -> wild_to_rgx(T,[$+,"\\"|Acc]);   % escape Erlang RegExp
-wild_to_rgx([$.|T],Acc)    -> wild_to_rgx(T,[$.,"\\"|Acc]);   % escape Erlang RegExp
-wild_to_rgx([$*|T],Acc)    -> wild_to_rgx(T,[$+,$.|Acc]);     % convert Excel wildcard
-wild_to_rgx([$?|T],Acc)    -> wild_to_rgx(T,[$.|Acc]);        % convert Excel wildcard
-wild_to_rgx([H|T],Acc)     -> wild_to_rgx(T,[H|Acc]).         % let the char through
+wild_to_rgx([$~,$*|T],Acc) -> wild_to_rgx(T,[$*,"\\"|Acc]);   
+wild_to_rgx([$~,$?|T],Acc) -> wild_to_rgx(T,[$?,"\\"|Acc]);   
+wild_to_rgx(["\\"|T],Acc)  -> wild_to_rgx(T,["\\","\\"|Acc]); 
+wild_to_rgx([$^|T],Acc)    -> wild_to_rgx(T,[$^,"\\"|Acc]);
+wild_to_rgx([$$|T],Acc)    -> wild_to_rgx(T,[$$,"\\"|Acc]);
+wild_to_rgx([$[|T],Acc)    -> wild_to_rgx(T,[$[,"\\"|Acc]);
+wild_to_rgx([$]|T],Acc)    -> wild_to_rgx(T,[$],"\\"|Acc]);
+wild_to_rgx([$(|T],Acc)    -> wild_to_rgx(T,[$(,"\\"|Acc]);
+wild_to_rgx([$)|T],Acc)    -> wild_to_rgx(T,[$),"\\"|Acc]);
+wild_to_rgx([$||T],Acc)    -> wild_to_rgx(T,[$|,"\\"|Acc]);
+wild_to_rgx([$+|T],Acc)    -> wild_to_rgx(T,[$+,"\\"|Acc]);
+wild_to_rgx([$.|T],Acc)    -> wild_to_rgx(T,[$.,"\\"|Acc]);
+wild_to_rgx([$*|T],Acc)    -> wild_to_rgx(T,[$+,$.|Acc]);  
+wild_to_rgx([$?|T],Acc)    -> wild_to_rgx(T,[$.|Acc]);     
+wild_to_rgx([H|T],Acc)     -> wild_to_rgx(T,[H|Acc]).      
 
 %% escapes Erlang wild card characters for match expressions passed in from the
 %% front then
