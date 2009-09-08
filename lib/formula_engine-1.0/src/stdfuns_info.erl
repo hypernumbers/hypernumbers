@@ -159,9 +159,9 @@ n([Num]) when is_number(Num) -> Num;
 n([true])                    -> 1;
 n([false])                   -> 0;
 n([{errval, X}])             -> {errval, X};
-n([{datetime, Y, D}])        -> {datetime, Y, D};
-n(X)                         -> io:format("in n X is ~p~n", [X]),
-                                0.
+n([{datetime, _Y, _D}=Date]) -> muin_util:cast(Date, date, num);
+n([X]) when ?is_array(X)     -> 1;
+n(_X)                        -> 0.
     
 na([]) -> {errval, '#N/A'}.
 
