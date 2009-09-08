@@ -9,7 +9,7 @@
 -export(['='/1, '<>'/1, '<'/1, '>'/1, '<='/1, '>='/1]).
 -export(['and'/1, 'if'/1, iferror/1, 'not'/1, 'or'/1]).
 
--import( muin_collect, [ col/2, col/3 ]).
+-import( muin_collect, [ col/2, col/3, col/4 ]).
 
 -define(default_rules_bools, [cast_numbers, cast_strings,
                               cast_blanks, cast_dates]).
@@ -113,10 +113,12 @@
     not(?bool(V, [cast_strings, cast_numbers, cast_blanks, cast_dates])).
 
 'or'(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    ?ensure(Flatvs =/= [blank], ?ERR_VAL),
-    Bools = ?bools(Flatvs, [cast_strings, cast_numbers,
-                            cast_blanks, cast_dates]),
+    col(Vs,[eval_funs, fetch, area_first, {ignore, blank}, {cast, bool}],
+        [return_errors, {all, fun is_boolean/1}],
+        fun 'or_'/1).
+'or_'([]) ->
+    ?ERRVAL_VAL;
+'or_'(Bools) ->
     any(fun(X) -> X == true end, Bools).
 
 'if'([Test, TrueExpr]) ->
