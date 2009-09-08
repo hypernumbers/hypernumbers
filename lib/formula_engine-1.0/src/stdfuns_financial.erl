@@ -10,7 +10,9 @@
 
 -export([effect/1, fv/1, ipmt/1, ispmt/1, nominal/1, npv/1, pv/1,
          sln/1, syd/1, pmt/1, rate/1, nper/1]).
+
 -compile(export_all).
+
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 
 -import(muin_collect, [ col/2, col/3, col/4 ]).
@@ -27,17 +29,17 @@
 -define(dbrate,
         (stdfuns_math:round1(1 - math:pow(Salvage / Cost, 1 / Life), 3))).
 db1(Cost, Salvage, Life, Life, Month) -> % Last period
-    io:format("in stdfuns_financial:db1 (1)~n"),
+    %% io:format("in stdfuns_financial:db1 (1)~n"),
     Prevdepr = foldl(fun(X, Acc) ->
                              Acc + db1(Cost, Salvage, Life, X, Month)
                      end,
                      0, seq(1, Life - 1)),
     ((Cost - Prevdepr) * ?dbrate * (12 - Month)) / 12;
 db1(Cost, Salvage, Life, 1, Month) -> % First period
-    io:format("in stdfuns_financial:db1 (2)~n"),
+    %% io:format("in stdfuns_financial:db1 (2)~n"),
     Cost * ?dbrate * Month / 12;
 db1(Cost, Salvage, Life, Period, Month) -> % Some other period
-    io:format("in stdfuns_financial:db1 (3)~n"),
+    %% io:format("in stdfuns_financial:db1 (3)~n"),
     Prevdepr = foldl(fun(X, Acc) ->
                              Acc + db1(Cost, Salvage, Life, X, Month)
                      end,
@@ -177,19 +179,42 @@ pmt([A, B, C, D]) -> pmt([A, B, C, D, 0]);
 pmt([A, B, C])    -> pmt([A, B, C, 0, 0]);
 pmt(Args = [_, _, _, _, _]) ->
     [Rate, Nper, Pv, Fv, Partype] = ?numbers(Args, ?default_rules),
+    %% need to cast it proper Dale...
+    Partype2 = if
+                   Partype == 0                              -> 0;
+                   Partype == false                          -> 0;
+                   (Partype /= 0) andalso (Partype /= false) -> 1
+               end,
+    pmt1(Rate, Nper, Pv, Fv, Partype2).
+
+pmt1(Rate, Nper, Pv, Fv, _Partype) when (Rate == 0) ->
+    Pmt0 = 0,
+    Pmt1 = Pmt0 - 50,
+    X0 = xn0(Pmt0, Nper, Pv, Fv),
+    X1 = xn0(Pmt1, Nper, Pv, Fv),
+    secant(Pmt1, Pmt0, X1, X0,
+           fun(N) -> xn0(N, Nper, Pv, Fv) end);
+pmt1(Rate, Nper, Pv, Fv, Partype) ->
+    %% io:format("~p ~p ~p ~p ~p~n", [Rate, Nper, Pv, Fv, Partype]),
     Pmt0 = -Pv*Rate*(Nper/12)/Nper,
     Pmt1 = Pmt0 - 50,
+    %% io:format("~p ~p~n", [Pmt0, Pmt1]),
     X0 = xn(Pmt0, Rate, Nper, Pv, Fv, Partype),
     X1 = xn(Pmt1, Rate, Nper, Pv, Fv, Partype),
+    %% io:format("~p ~p~n", [X0, X1]),
     secant(Pmt1, Pmt0, X1, X0,
            fun(N) -> xn(N, Rate, Nper, Pv, Fv, Partype) end).
 
 rate([NPer, Pmt, PV]) ->
     rate([NPer, Pmt, PV, 0]);
+rate([NPer, Pmt, PV, undef]) ->
+    rate([NPer, Pmt, PV, 0]);
 rate([NPer, Pmt, PV, Fv]) ->
     rate([NPer, Pmt, PV, Fv, 0]);
+rate([NPer, Pmt, PV, undef, Type]) -> 
+   rate([NPer, Pmt, PV, 0, Type, 0.1]);
 rate([NPer, Pmt, PV, Fv, Type]) ->
-    rate([NPer, Pmt, PV, Fv, Type, 0.1]);
+   rate([NPer, Pmt, PV, Fv, Type, 0.1]);
 
 rate(Args = [_, _, _, _, _, _]) ->
     col(Args,
@@ -198,13 +223,18 @@ rate(Args = [_, _, _, _, _, _]) ->
         fun rate_/1).
 
 rate_([Nper, Pmt, Pv, Fv, Type, _Est]) ->
-    Rate0 = 0.01,
-    Rate1 = 0.09,
+    %% io:format("in rate ~p ~p ~p ~p ~p ~p~n", [Nper, Pmt, Pv, Fv, Type, _Est]),
+    Rate0 = 0.001,
+    Rate1 = 0.9,
     X0 = xn(Pmt, Rate0, Nper, Pv, Fv, Type),
     X1 = xn(Pmt, Rate1, Nper, Pv, Fv, Type),
+    %% io:format("X0 is ~p X1 is ~p~n", [X0, X1]),
     secant(Rate1, Rate0, X1, X0,
            fun(N) -> xn(Pmt, N, Nper, Pv, Fv, Type) end).
 
+% if the future value is ommitted it is zero
+nper([Rate, Pmt, Pv]) ->
+    nper([Rate, Pmt, Pv, 0, 0]);
 % if the Type is omitted it is zero
 nper([Rate, Pmt, Pv, Fv]) ->
     nper([Rate, Pmt, Pv, Fv, 0]);
@@ -214,6 +244,13 @@ nper(Args = [_, _, _, _, _]) ->
         [return_errors, {all, fun is_number/1}],
         fun nper_/1).
 
+nper_([Rate, Pmt, Pv, Fv, _Partype]) when (Rate == 0) ->
+    Nper0 = 10,
+    Nper1 = 16,
+    X0 = xn0(Pmt, Nper0, Pv, Fv),
+    X1 = xn0(Pmt, Nper1, Pv, Fv),
+    secant(Nper1, Nper0, X1, X0,
+           fun(N) -> xn0(Pmt, N, Pv, Fv) end);
 nper_([Rate, Pmt, Pv, Fv, Partype]) ->
     Nper0 = 10,
     Nper1 = 16,
@@ -230,13 +267,15 @@ secant(_, _, _, _, _, ?ITERATION_LIMIT) -> ?ERRVAL_NUM;
 secant(Pa, Ppa, Px, Ppx, Fun, I) ->
     Divisor = (Px - Ppx),
     case Divisor of
-        X when X == 0 -> ?ERRVAL_DIV; % floats cast to integer...
-         _ -> Ca = Pa - (Px * (Pa - Ppa))/Divisor,
-             Xn = Fun(Ca),
-             case Xn of
-                 V when V == 0 -> Ca;
-                 _             -> secant(Ca, Pa, Xn, Px, Fun, I + 1)
-             end
+        X when X == 0 -> %% io:format("secant dropping out with DIV0...~n"),
+                         %% io:format("~p ~p~n", [Px, Ppx]),
+                         ?ERRVAL_DIV; % floats cast to integer...
+        _             -> Ca = Pa - (Px * (Pa - Ppa))/Divisor,
+                         Xn = Fun(Ca),
+                         case Xn of
+                             V when V == 0 -> Ca;
+                             _             -> secant(Ca, Pa, Xn, Px, Fun, I + 1)
+                         end
     end.
 
 %% Calculate ?(X) given Pmt for current iteration of one of the arguments.
@@ -244,11 +283,16 @@ xn(Pmt, Rate, Nper, Pv, Fv, Partype) ->
     Tmp = math:pow(1+Rate, Nper),
     Pv * Tmp + Pmt * (1+Rate*Partype) * (Tmp-1) / Rate + Fv.
 
+%% variant when the rate is zero
+xn0(Pmt, Nper, Pv, Fv) ->
+    Pv + Fv + (Pmt * Nper).
+
 %%% tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -include_lib("eunit/include/eunit.hrl").
 
 cmp(F1, F2) ->
+    %% io:format("F1 is ~p F2 is ~p~n", [F1, F2]),
     erlang:abs(1 - F1 / F2) < 0.01.
 
 pmt_test_() ->
@@ -260,9 +304,9 @@ pmt_test_() ->
 
 rate_test_() ->
     [
-     ?_assert(cmp(rate([24, -250, 5000]), 0.02)),
-     ?_assert(cmp(rate([208, -700, 8000, undef, 1]), 0.01)),
-     ?_assert(cmp(rate([10, -1000, 6500]), 0.09))
+     ?_assert(cmp(rate([24, -250, 5000]), 0.015130844)),
+     ?_assert(cmp(rate([208, -700, 8000, undef, 1]), 0.09589041)),
+     ?_assert(cmp(rate([10, -1000, 6500]), 0.087113756))
     ].
 
 nper_test_() ->
