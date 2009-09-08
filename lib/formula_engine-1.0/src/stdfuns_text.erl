@@ -258,13 +258,27 @@ concatenate1([H|T],Acc) ->
     concatenate1(T,NewAcc).
 
 rept([Str, Reps]) ->
-    NewStr=?string(Str,?default_str_rules),
-    NewReps=?int(Reps,?default_num_rules),
-    Len=length(NewStr)*NewReps,
-    ?ensure(Len < 32767, ?ERR_VAL),
-    ?ensure(Len >= 0,    ?ERR_VAL),
-    Fun = fun(_) -> (NewStr) end,
-    lists:flatten(concatenate([map(Fun, lists:seq(1, NewReps))])).
+    A = col([Str],
+            [first_array, fetch, {cast,str}],
+            [return_errors, {all, fun muin_collect:is_string/1}]),
+    
+    B = col([Reps],
+            [first_array, fetch, {conv, blank, 0},
+             {cast, str, int}, {cast, bool, num}],
+            [return_errors, {all, fun is_number/1}]),
+
+    muin_util:apply([A, B], fun rept_/2).
+
+rept_(_Str, [Reps]) when Reps < 0 ->
+    ?ERRVAL_VAL;
+rept_([Str], [Reps2]) ->
+    Reps = erlang:trunc(Reps2),
+    case length(Str) * Reps of
+        X when X < 0; X > 32767 -> ?ERRVAL_VAL;
+        _ ->
+            Fun = fun(_) -> (Str) end,
+            lists:flatten(concatenate([lists:map(Fun, lists:seq(1, Reps))]))
+    end.
 
 substitute([Text,OldText,NewText]=Args) ->
     col(Args, [first_array, fetch_name,{cast,str}],

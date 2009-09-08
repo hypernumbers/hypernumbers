@@ -1,7 +1,6 @@
 %%% Financial functions.
 %%% <hasan@hypernumbers.com>
 %%% @private
-
 -module(stdfuns_financial).
 
 -include("handy_macros.hrl").

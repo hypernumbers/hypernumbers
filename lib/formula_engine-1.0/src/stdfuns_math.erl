@@ -382,7 +382,7 @@ minverse_([]) ->
     %% % io:format("Got to 3~n"),
     %% ?IF(not(matrix:is_square(Mx)), ?ERR_VAL),
     %% % io:format("Got to 4~n"),
-    %% ?IF(matrix:det(Mx) == 0, ?ERR_NUM),
+    %% ?IF(matsrix:det(Mx) == 0, ?ERR_NUM),
     %% % io:format("Got to 5~n"),
     %% {matrix, _, _, NewL} = matrix:invert(Mx),
     %% % io:format("Got to 6~n"),

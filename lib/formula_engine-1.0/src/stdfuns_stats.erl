@@ -106,38 +106,38 @@
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 -define(default_rules_bools, [cast_numbers, cast_strings, cast_blanks, cast_dates]).
 
-avedev(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    Rules = [cast_strings, cast_bools, ignore_blanks, ban_dates],
-    % Special case - all empty parameters throws a #NUM! error not a #VALUE!
-    case muin_util:attempt(?DEFER(?numbers(Flatvs, Rules))) of
-        {ok, Nums} -> avedev1(Nums);
-        {error, _} -> ?ERR_NUM
-    end.
+avedev(Args) ->
+    col(Args,
+        [eval_funs, {cast, str, num, ?ERRVAL_VAL}, fetch, flatten,
+         {ignore, blank}, {ignore, array}, {ignore, str}, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun avedev1/1).
+avedev1([]) ->
+    ?ERRVAL_NUM;
 avedev1(Nums) ->
     Avg = average(Nums),
     Deviation = foldl(fun(X, Acc) -> Acc + erlang:abs(Avg - X) end, 0, Nums),
     Deviation / length(Nums).
 
-average(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    ?ensure(Flatvs =/= [], ?ERR_DIV),
-    %% A bit of a special case here for backward compatibility with Excel which
-    %% returns #DIV/0! when none of the arguments to AVERAGE can be cast (e.g.
-    %% a range of empty cells). Our default is to return #VALUE! in such case.
-    case muin_util:attempt(?DEFER(?numbers(Flatvs, [ignore_strings, cast_bools, ignore_blanks, ban_dates]))) of
-        {ok, Nums} -> average1(Nums);
-        {error, _} -> ?ERRVAL_DIV
-    end.
+average(Args) ->
+    col(Args,
+        [eval_funs, {cast, str, num, ?ERRVAL_VAL}, {cast, num}, fetch,
+         flatten, {ignore, blank}, {ignore, bool}, {ignore, str}],
+        [return_errors, {all, fun is_number/1}],
+        fun average1/1).
+
+average1([]) ->
+    ?ERRVAL_DIV;
 average1(Nums) ->
     lists:sum(Nums)/length(Nums).
 
 %% TODO: errvals -> 0s in args.
-averagea(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    ?ensure(Flatvs =/= [], ?ERR_DIV),
-    Nums = ?numbers(Flatvs, ?default_rules),
-    average1(Nums).
+averagea(Args) ->    
+    col(Args,
+        [eval_funs, {cast, str, num, ?ERRVAL_VAL}, {cast, num}, fetch,
+         flatten, {ignore, blank}, {cast, bool, num}, {conv, str, 0}],
+        [return_errors, {all, fun is_number/1}],
+        fun average1/1).
 
 binomdist([V1, V2, V3, V4]) ->
     [Succn, Trials] = ?ints([V1, V2], ?default_rules),

@@ -50,7 +50,12 @@ to_num(Num) when is_number(Num) ->   Num.
 
 to_s(DateTime = {datetime, _D, _T}) -> muin_date:to_rfc1123_string(DateTime);
 to_s(Int) when is_integer(Int)      -> integer_to_list(Int);
-to_s(Flt) when is_float(Flt)        -> mochinum:digits(Flt);
+to_s(Flt) when is_float(Flt)        ->
+    %% definetaly a better way to test this (3.0 = "3")
+    case erlang:trunc(Flt) == Flt andalso Flt < 99999 of
+        true  -> integer_to_list(erlang:trunc(Flt));
+        false -> string:to_upper(mochinum:digits(Flt))
+    end;
 to_s(Str) when is_list(Str)         -> Str;
 to_s(A) when is_atom(A)             -> atom_to_list(A).
 

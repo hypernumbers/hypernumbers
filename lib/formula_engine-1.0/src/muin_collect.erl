@@ -92,11 +92,6 @@ rl(ignore_errors, Err) when ?is_errval(Err) ->
 
 rl({ignore, Type}, {Area, Rows}=Val) when ?is_area(Val) ->
     {Area, [ muin_collect:col(X, [{ignore, Type}]) || X <- Rows ]};
-    %% case muin_util:get_type(Val) of
-    %%     Type  -> ignore;
-    %%     _Else -> Val
-    %% end;
-
 
 rl({ignore, Type}, Val) ->
     case muin_util:get_type(Val) of
