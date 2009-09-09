@@ -26,6 +26,7 @@
          compile_html/2,
          delete_gen_html/0,
          generate_po/1,
+         generate_po_CHEATING/1,
          jsonify_val/1,
 
          refX_to_url/1,
@@ -131,9 +132,16 @@ compile_html(Html, Lang) ->
     file:write_file(Html++"."++Lang, NHtml),   
     ok.
 
+generate_po_CHEATING(Ref) ->
+    Body = hn_mochi:page_attributes_CHEATING(parse_url(Ref)),
+    generate_po1(Body).
+
 generate_po(Url) ->
     delete_gen_html(),
     {ok,{{_V,_Status,_R},_H,Body}} = http:request(get,{Url++"?attr",[]},[],[]),
+    generate_po1(Body).
+
+generate_po1(Body) ->
     {struct, Json} = mochijson2:decode(Body),
     {struct, Cells} = ?pget(<<"cell">>, Json),
     {struct, Pos} = ?pget(<<"2">>, Cells),

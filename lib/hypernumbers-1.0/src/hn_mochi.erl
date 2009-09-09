@@ -13,6 +13,8 @@
 
 -export([ req/1, style_to_css/2 ]).
 
+-export([page_attributes_CHEATING/1]). % for use in gui_generator
+
 -define(hdr,[{"Cache-Control","no-store, no-cache, must-revalidate"},
              {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
              {"Pragma",       "no-cache"},
@@ -166,7 +168,7 @@ iget(Req, Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", Val}}] when is_atom(Val) -> atom_to_list(Val);
             [{_Ref, {"value", {datetime, D, T}}}] ->
-                io:format("~p~n",[T]),
+                %% io:format("~p~n",[T]),
                 dh_date:format("Y/m/d H:i:s",{D,T});
             [{_Ref, {"value", {errval, Val}}}]    -> atom_to_list(Val);
             [{_Ref, {"value", Val}}] -> Val;
@@ -670,6 +672,10 @@ get_var_or_cookie(Key, Vars, Req) ->
         {value, {"auth", Auth}} ->
             {ok, Auth}
     end.
+
+page_attributes_CHEATING(Ref) ->
+    Data = page_attributes(Ref, anonymous),
+    (mochijson:encoder([{input_encoding, utf8}]))(Data).
 
 page_attributes(Ref, User) ->
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],

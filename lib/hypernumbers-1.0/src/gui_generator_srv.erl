@@ -72,7 +72,7 @@ start(Page) ->
 
 %%% @hidden
 tick(#state{page = Page} = State) -> 
-    hn_util:generate_po(Page),
+    hn_util:generate_po_CHEATING(Page),
     os:cmd(get_cmd()),
     timer:sleep(?CLOCKTICK),
     tick(State).
