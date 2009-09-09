@@ -151,6 +151,8 @@ pv(Args = [_, _, _, _, _]) ->
         [return_errors, {all, fun is_number/1}],
         fun pv_/1).
 
+pv_([Rate, Nper, Pmt, Fv, Partype]) when Partype =/= 1, Partype =/= 0 ->
+    pv_([Rate, Nper, Pmt, Fv, 1]);
 pv_([Rate, Nper, Pmt, Fv, _Partype]) when Rate == 0 ->
     - Fv - (Pmt * Nper);
 pv_([Rate, Nper, Pmt, Fv, Type]) ->
@@ -166,7 +168,15 @@ fv([Rate, NPer, Pmt, undef, Type]) ->
     fv([Rate, NPer, Pmt, 0, Type]);
 
 fv(Args = [_, _, _, _, _]) ->
-    [Rate, Nper, Pmt, Pv, Partype] = ?numbers(Args, ?default_rules),
+    col(Args,
+        [area_first, cast_num],
+        [return_errors, {all, fun is_number/1}],
+        fun fv_/1).
+
+fv_([Rate, Nper, Pmt, Pv, Partype]) when Partype =/= 1, Partype =/= 0 ->
+    fv_([Rate, Nper, Pmt, Pv, 1]);
+
+fv_([Rate, Nper, Pmt, Pv, Partype]) ->
     Fv0 = 0,
     Fv1 = 1000,
     X0 = xn(Pmt, Rate, Nper, Pv, Fv0, Partype),
@@ -278,6 +288,8 @@ secant(Pa, Ppa, Px, Ppx, Fun, I) ->
     end.
 
 %% Calculate ?(X) given Pmt for current iteration of one of the arguments.
+xn(Pmt, 0, Nper, Pv, Fv, _Type) ->
+    Pv + Fv + (Pmt * Nper);
 xn(Pmt, Rate, Nper, Pv, Fv, Partype) ->
     Tmp = math:pow(1+Rate, Nper),
     Pv * Tmp + Pmt * (1+Rate*Partype) * (Tmp-1) / Rate + Fv.
