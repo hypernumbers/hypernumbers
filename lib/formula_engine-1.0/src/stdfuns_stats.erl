@@ -398,37 +398,32 @@ median_(Args) ->
             (lists:nth(C, Nums) + lists:nth(C+1, Nums)) / 2
     end.
 
-mode(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    mode1(Nums).
+mode(Args) ->
+    col(Args,
+        [eval_funs, fetch, flatten, {ignore, str}, {ignore, bool},
+         {ignore, blank}], [return_errors, {all, fun is_number/1}],
+        fun mode_/1).
 
-mode1(Nums) ->
-    Maptbl = mode1(Nums, []),
-    {N,C,Uniq} = foldl(fun({V, Cnt, _}, Acc = {_, Maxcnt,_}) ->
-                               {NewV,NewCnt,_}=?COND(Cnt >= Maxcnt,{V,Cnt,false},Acc),
-                               NewUniq=?COND(Cnt == Maxcnt,false,true),
-                               {NewV,NewCnt,NewUniq}
-                         end,
-                         hd(Maptbl), tl(Maptbl)),
-    ?COND(C == 1,
-          ?ERR_NA, % no duplicates
-          ?COND(Uniq == false,
-                ?ERR_VAL, % must have one median (ie 1,2,2,3,3 is not valid)
-                N)).
-
-mode1([H|T], Maptbl) ->
-    case keysearch(H, 1, Maptbl) of
-        % update count
-        {value, {H, Cnt,true}} ->
-            mode1(T, lists:keyreplace(H, 1, Maptbl,{H, Cnt + 1,true}));
-        % create entry
-        % the third parameter true is used in the foldl of mode1/1
-        false ->
-            mode1(T, lists:merge([Maptbl,[{H,1,true}]]))
-    end;
-mode1([], Maptbl) ->
-    Maptbl.
-
+mode_([]) ->
+    ?ERRVAL_VAL;
+mode_(Args) ->
+       
+    F = fun({Num1, Freq}, {Num2, Freq})  -> Num1  > Num2;
+           ({_,    Freq1}, {_,   Freq2}) -> Freq1 > Freq2
+        end,
+    
+    Tree = mode_(Args, dh_tree:new()),
+    case lists:sort(F, dict:to_list(Tree)) of
+        [{_X, 1} | _ ] -> ?ERRVAL_NA;
+        [{X, _}  | _ ] -> X
+    end.
+   
+mode_([], Tree) ->
+    Tree;
+mode_([H|T], Tree) ->
+    F = fun(undefined) -> 1; (X) -> X+1 end,
+    mode_(T, dh_tree:update([H], Tree, F)).
+    
 %% TODO:
 normsdist([_, _, _, _]) ->
     0.

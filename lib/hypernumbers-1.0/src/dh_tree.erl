@@ -4,7 +4,7 @@
 -module(dh_tree).
 
 -include("hypernumbers.hrl").
--export([new/0, create/1, add/2, set/3, erase/2, flatlist/1]).
+-export([new/0, create/1, add/2, set/3, erase/2, flatlist/1, update/3]).
 
 %-spec create(List::list(list(string()))) -> any().
 %% doc take a list of keys and generate a tree
@@ -54,7 +54,22 @@ erase([H],Dict) ->
     dict:erase(H,Dict);
 erase([H|T],Dict) ->
     dict:store(H,erase(T,dict:fetch(H,Dict)),Dict).
-             
+
+update([H], Dict, F) ->
+    NDict = case dict:is_key(H, Dict) of
+                true  -> F(dict:fetch(H, Dict));
+                false -> F(undefined)
+            end,
+    dict:store(H, NDict, Dict);
+
+update([H|T], Dict, F) ->
+    NDict = case dict:is_key(H,Dict) of
+                true  -> dict:fetch(H,Dict);
+                false -> dict:new()
+            end,
+    dict:store(H, update(T,NDict, F),Dict).
+    
+
 %-spec flatlist(Dict::any()) -> {ok,list()}.
 %% @doc Generate a flat list of all the nodes
 %%      represented by the nested dict
