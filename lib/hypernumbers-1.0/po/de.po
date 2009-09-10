@@ -1,14 +1,11 @@
-msgid "Normal"
-msgstr "Normal"
-
 msgid "English"
 msgstr "English"
 
-msgid "Insert 1 below"
-msgstr "Legen Sie 1 unten"
+msgid "Normal"
+msgstr "Normal"
 
-msgid "Insert 1 left"
-msgstr "Legen Sie 1 Stück"
+msgid "empty"
+msgstr "leer"
 
 msgid "Clear "
 msgstr "Klar"
@@ -16,11 +13,14 @@ msgstr "Klar"
 msgid "Styles"
 msgstr "Arten"
 
-msgid "time"
-msgstr "Zeit"
+msgid "Insert before"
+msgstr "Legen Sie 1 Stück"
 
 msgid "Import Spreadsheets"
 msgstr "Tabellen-Import"
+
+msgid "time"
+msgstr "Zeit"
 
 msgid "My Spreadsheets"
 msgstr "Meine Tabellen"
@@ -28,44 +28,44 @@ msgstr "Meine Tabellen"
 msgid "currency"
 msgstr "Währung"
 
-msgid "Portuguese"
-msgstr "Português"
-
 msgid "Italian"
 msgstr "Italiano"
+
+msgid "Portuguese"
+msgstr "Português"
 
 msgid "Plain"
 msgstr "Ebene "
 
-msgid "Serif"
-msgstr "Serif"
-
-msgid "en_gb"
-msgstr "de"
-
 msgid "Russian"
 msgstr "Русский"
 
-msgid "Insert 1 right"
-msgstr "Legen Sie 1 rechts"
+msgid "Serif"
+msgstr "Serif"
 
-msgid "Contents"
-msgstr "Inhalt"
+msgid "Create New"
+msgstr "Neue"
 
 msgid "Login"
 msgstr "Logon"
 
-msgid "datetime"
-msgstr "Datum und Zeit"
+msgid "Contents"
+msgstr "Inhalt"
+
+msgid "Insert after"
+msgstr "Legen Sie 1 rechts"
 
 msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
 msgstr "Öffnen Microsoft Excel 97/2000/2003 (*.xls)"
 
-msgid "percentage"
-msgstr "Prozentsatz"
+msgid "datetime"
+msgstr "Datum und Zeit"
 
 msgid "File"
 msgstr "Datei"
+
+msgid "percentage"
+msgstr "Prozentsatz"
 
 msgid "Spanish"
 msgstr "Español"
@@ -79,25 +79,22 @@ msgstr "Deutsch"
 msgid "Monospace"
 msgstr "Monospace"
 
-msgid "empty"
-msgstr "leer"
+msgid "Logged in as"
+msgstr "wie angemeldet"
 
 msgid "Font"
 msgstr "Schriftname"
 
-msgid "Logged in as"
-msgstr "wie angemeldet"
-
 msgid "Delete Row(s)"
 msgstr "Zeile löschen (s)"
 
-msgid "Insert 1 above"
-msgstr "Legen Sie 1 oben"
+msgid "en_gb"
+msgstr "de"
 
 msgid "Edit"
 msgstr "Bearbeiten"
 
-msgid "Delete Column(s)"
+msgid "Delete columns(s)"
 msgstr "Löschen Sie Spalte (n)"
 
 msgid "Save"
@@ -106,21 +103,18 @@ msgstr "Speichern"
 msgid "date"
 msgstr "Datum"
 
+msgid "Log out"
+msgstr "Logout"
+
 msgid "decimals"
 msgstr "Dezimalstriche "
 
 msgid "financial"
 msgstr "finanziell"
 
-msgid "Log out"
-msgstr "Logout"
-
-msgid "Format"
-msgstr "Format"
-
 msgid "French"
 msgstr "Français"
 
-msgid "Create New"
-msgstr "Neue"
+msgid "Format"
+msgstr "Format"
 

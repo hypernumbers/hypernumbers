@@ -1,14 +1,14 @@
-msgid "Normal"
-msgstr "Normal"
-
 msgid "English"
 msgstr "English"
 
-msgid "Insert 1 below"
-msgstr "Insert 1 below"
+msgid "Normal"
+msgstr "Normal"
 
-msgid "Insert 1 left"
-msgstr "Insert 1 left"
+msgid "empty"
+msgstr "empty"
+
+msgid "Sorry, there was an error reading your spreadsheet. The file has been added to our test suite"
+msgstr "Sorry, there was an error reading your spreadsheet. The file has been added to our test suite"
 
 msgid "Clear "
 msgstr "Clear "
@@ -16,11 +16,20 @@ msgstr "Clear "
 msgid "Styles"
 msgstr "Styles"
 
-msgid "time"
-msgstr "time"
+msgid "Insert before"
+msgstr "Insert before"
+
+msgid "Your spreadsheet will be stored as"
+msgstr "Your spreadsheet will be stored as"
 
 msgid "Import Spreadsheets"
 msgstr "Import Spreadsheets"
+
+msgid "time"
+msgstr "time"
+
+msgid "You can also get us at"
+msgstr "You can also get us at"
 
 msgid "My Spreadsheets"
 msgstr "My Spreadsheets"
@@ -28,44 +37,68 @@ msgstr "My Spreadsheets"
 msgid "currency"
 msgstr "currency"
 
-msgid "Portuguese"
-msgstr "Portuguese"
+msgid "Microsoft Help"
+msgstr "Microsoft Help"
 
 msgid "Italian"
 msgstr "Italian"
 
+msgid "Portuguese"
+msgstr "Portuguese"
+
 msgid "Plain"
 msgstr "Plain"
 
-msgid "Serif"
-msgstr "Serif"
-
-msgid "en_gb"
-msgstr "en_gb"
+msgid "Usage"
+msgstr "Usage"
 
 msgid "Russian"
 msgstr "Russian"
 
-msgid "Insert 1 right"
-msgstr "Insert 1 right"
+msgid "Serif"
+msgstr "Serif"
 
-msgid "Contents"
-msgstr "Contents"
+msgid "Create New"
+msgstr "Create New"
+
+msgid "Create New Page"
+msgstr "Create New Page"
+
+msgid "Preferences"
+msgstr "Preferences"
 
 msgid "Login"
 msgstr "Login"
 
-msgid "datetime"
-msgstr "datetime"
+msgid "Contents"
+msgstr "Contents"
+
+msgid "Insert after"
+msgstr "Insert after"
+
+msgid "Warning"
+msgstr "Warning"
 
 msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
 msgstr "open Microsoft Excel 97/2000/2003 (*.xls)"
 
-msgid "percentage"
-msgstr "percentage"
+msgid "datetime"
+msgstr "datetime"
+
+msgid "Import Spreadsheet"
+msgstr "Import Spreadsheet"
 
 msgid "File"
 msgstr "File"
+
+msgid "percentage"
+msgstr "percentage"
+
+msgid "until we implement help properly"
+msgstr "until we implement help properly"
+
+msgid "Feedback / Report Bug"
+msgstr "Feedback / Report Bug"
 
 msgid "Spanish"
 msgstr "Spanish"
@@ -73,32 +106,44 @@ msgstr "Spanish"
 msgid "rounded"
 msgstr "rounded"
 
+msgid "Examples"
+msgstr "Examples"
+
 msgid "German"
 msgstr "German"
 
 msgid "Monospace"
 msgstr "Monospace"
 
-msgid "empty"
-msgstr "empty"
-
-msgid "Font"
-msgstr "Font"
-
-msgid "Logged in as"
-msgstr "Logged in as"
-
-msgid "Delete Row(s)"
-msgstr "Delete Row(s)"
-
-msgid "Insert 1 above"
-msgstr "Insert 1 above"
+msgid "Functions"
+msgstr "Functions"
 
 msgid "Edit"
 msgstr "Edit"
 
-msgid "Delete Column(s)"
-msgstr "Delete Column(s)"
+msgid "Logged in as"
+msgstr "Logged in as"
+
+msgid "Font"
+msgstr "Font"
+
+msgid "Delete Row(s)"
+msgstr "Delete Row(s)"
+
+msgid "en_gb"
+msgstr "en_gb"
+
+msgid "Loading"
+msgstr "Loading"
+
+msgid "Edit"
+msgstr "Edit"
+
+msgid "Delete columns(s)"
+msgstr "Delete columns(s)"
+
+msgid "Import a spreadsheet"
+msgstr "Import a spreadsheet"
 
 msgid "Save"
 msgstr "Save"
@@ -106,21 +151,27 @@ msgstr "Save"
 msgid "date"
 msgstr "date"
 
+msgid "Oops, did something break?"
+msgstr "Oops, did something break?"
+
+msgid "Log out"
+msgstr "Log out"
+
 msgid "decimals"
 msgstr "decimals"
 
 msgid "financial"
 msgstr "financial"
 
-msgid "Log out"
-msgstr "Log out"
-
-msgid "Format"
-msgstr "Format"
+msgid "Please use the"
+msgstr "Please use the"
 
 msgid "French"
 msgstr "French"
 
-msgid "Create New"
-msgstr "Create New"
+msgid "Format"
+msgstr "Format"
+
+msgid "Description"
+msgstr "Description"
 

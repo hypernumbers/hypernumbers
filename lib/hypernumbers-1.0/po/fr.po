@@ -1,77 +1,113 @@
-msgid "Normal"
-msgstr "Normal"
-
 msgid "English"
 msgstr "English"
 
-msgid "Insert 1 below"
-msgstr "insertion 1 ci-dessous"
+msgid "Normal"
+msgstr "Normal"
 
-msgid "Insert 1 left"
-msgstr "insérez 1 à gauche"
+msgid "empty"
+msgstr "vide"
+
+msgid "Sorry, there was an error reading your spreadsheet. The file has been added to our test suite"
+msgstr "Une erreur s'est produite pendant la lecture de votre feuille de calcul. Le fichier a été ajouté à notre base de test"
 
 msgid "Clear "
-msgstr "Gommer"
+msgstr "Effacer"
 
 msgid "Styles"
 msgstr "Modèles"
 
-msgid "time"
-msgstr "temps"
+msgid "Insert before"
+msgstr "Insérer avant"
+
+msgid "Your spreadsheet will be stored as"
+msgstr "Votre feuille de calcul sera stockée en tant que"
 
 msgid "Import Spreadsheets"
-msgstr "Importation des bilans"
+msgstr "Importer des feuilles de calcul"
+
+msgid "time"
+msgstr "heure"
+
+msgid "You can also get us at"
+msgstr "Vous pouvez aussi nous contacter à"
 
 msgid "My Spreadsheets"
-msgstr "Mes bilans"
+msgstr "Mes feuilles de calcul"
 
 msgid "currency"
 msgstr "monnaie"
 
-msgid "Portuguese"
-msgstr "Português"
+msgid "Microsoft Help"
+msgstr "Aide Microsoft"
 
 msgid "Italian"
 msgstr "Italiano"
 
+msgid "Portuguese"
+msgstr "Português"
+
 msgid "Plain"
-msgstr "plaine"
+msgstr "Sans formatage"
 
-msgid "Serif"
-msgstr "Serif"
-
-msgid "en_gb"
-msgstr "fr"
+msgid "Usage"
+msgstr "Utilisation"
 
 msgid "Russian"
 msgstr "Русский"
 
-msgid "Insert 1 right"
-msgstr "insérez 1 à droite"
+msgid "Serif"
+msgstr "Serif"
+
+msgid "Create New"
+msgstr "Créer nouveau"
+
+msgid "Create New Page"
+msgstr "Créer nouvelle page"
+
+msgid "Preferences"
+msgstr "Préférences"
+
+msgid "Login"
+msgstr "Ouvrir une session"
 
 msgid "Contents"
 msgstr "Contenu"
 
-msgid "Login"
-msgstr "Ouvrir Une Session"
+msgid "Insert after"
+msgstr "Insérer après"
 
-msgid "datetime"
-msgstr "date et temps"
+msgid "Warning"
+msgstr "Attention"
 
 msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
-msgstr "ouvrir Microsoft Excel 97/2000/2003 (*.xls)"
+msgstr "Ouvrir Microsoft Excel 97/2000/2003 (*.xls)"
+
+msgid "datetime"
+msgstr "date et heure"
+
+msgid "Import Spreadsheet"
+msgstr "Importer feuille de calcul"
+
+msgid "File"
+msgstr "Fichier"
 
 msgid "percentage"
 msgstr "pourcentage"
 
-msgid "File"
-msgstr "Fichier"
+msgid "until we implement help properly"
+msgstr "jusqu'à ce que l'aide en ligne soit correctement implémentée"
+
+msgid "Feedback / Report Bug"
+msgstr "Feed-back / Annonce de bugs"
 
 msgid "Spanish"
 msgstr "Español"
 
 msgid "rounded"
-msgstr "arrondir"
+msgstr "arrondi"
+
+msgid "Examples"
+msgstr "Exemples"
 
 msgid "German"
 msgstr "Deutsch"
@@ -79,26 +115,35 @@ msgstr "Deutsch"
 msgid "Monospace"
 msgstr "Monospace"
 
-msgid "empty"
-msgstr "vide"
-
-msgid "Font"
-msgstr "Police"
-
-msgid "Logged in as"
-msgstr "Ouvert Une Session Comme"
-
-msgid "Delete Row(s)"
-msgstr "ion des rangées"
-
-msgid "Insert 1 above"
-msgstr "insertion 1 ci-dessus"
+msgid "Functions"
+msgstr "Fonctions"
 
 msgid "Edit"
-msgstr "Édition"
+msgstr "Editer"
 
-msgid "Delete Column(s)"
-msgstr "Delete billets"
+msgid "Logged in as"
+msgstr "Session ouverte en tant que"
+
+msgid "Font"
+msgstr "Police de caractère"
+
+msgid "Delete Row(s)"
+msgstr "Effacer ligne(s)"
+
+msgid "en_gb"
+msgstr "fr"
+
+msgid "Loading"
+msgstr "Chargement"
+
+msgid "Edit"
+msgstr "Editer"
+
+msgid "Delete columns(s)"
+msgstr "Effacer colonne(s)"
+
+msgid "Import a spreadsheet"
+msgstr "Importer une feuille de calcul"
 
 msgid "Save"
 msgstr "Enregistrer"
@@ -106,21 +151,27 @@ msgstr "Enregistrer"
 msgid "date"
 msgstr "date"
 
+msgid "Oops, did something break?"
+msgstr "Oups, une erreur s'est-elle produite?"
+
+msgid "Log out"
+msgstr "Fermer la session"
+
 msgid "decimals"
 msgstr "décimales"
 
 msgid "financial"
 msgstr "financier"
 
-msgid "Log out"
-msgstr "Fermer Une Session"
-
-msgid "Format"
-msgstr "Format"
+msgid "Please use the"
+msgstr "Utilisez l'"
 
 msgid "French"
 msgstr "Français"
 
-msgid "Create New"
-msgstr "créez nouveau"
+msgid "Format"
+msgstr "Format"
+
+msgid "Description"
+msgstr "Description"
 

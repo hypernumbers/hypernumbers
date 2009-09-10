@@ -1,14 +1,11 @@
-msgid "Normal"
-msgstr "Normal"
-
 msgid "English"
 msgstr "English"
 
-msgid "Insert 1 below"
-msgstr "inserção 1 abaixo"
+msgid "Normal"
+msgstr "Normal"
 
-msgid "Insert 1 left"
-msgstr "introduza 1 à esquerda"
+msgid "empty"
+msgstr "vazio"
 
 msgid "Clear "
 msgstr "Desobstruídos"
@@ -16,11 +13,14 @@ msgstr "Desobstruídos"
 msgid "Styles"
 msgstr "Estilos"
 
-msgid "time"
-msgstr "tempo"
+msgid "Insert before"
+msgstr "introduza 1 à esquerda"
 
 msgid "Import Spreadsheets"
 msgstr "importando Spreadsheets"
+
+msgid "time"
+msgstr "tempo"
 
 msgid "My Spreadsheets"
 msgstr "Meus Spreadsheets"
@@ -28,44 +28,44 @@ msgstr "Meus Spreadsheets"
 msgid "currency"
 msgstr "moeda"
 
-msgid "Portuguese"
-msgstr "Português"
-
 msgid "Italian"
 msgstr "Italiano"
+
+msgid "Portuguese"
+msgstr "Português"
 
 msgid "Plain"
 msgstr "planície"
 
-msgid "Serif"
-msgstr "Serif"
-
-msgid "en_gb"
-msgstr "pt"
-
 msgid "Russian"
 msgstr "Русский"
 
-msgid "Insert 1 right"
-msgstr "introduza 1 à direita"
+msgid "Serif"
+msgstr "Serif"
 
-msgid "Contents"
-msgstr "íIndices"
+msgid "Create New"
+msgstr "crie novo"
 
 msgid "Login"
 msgstr "Início De Uma Sessão"
 
-msgid "datetime"
-msgstr "data e temp"
+msgid "Contents"
+msgstr "íIndices"
+
+msgid "Insert after"
+msgstr "introduza 1 à direita"
 
 msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
 msgstr "Abrir Microsoft Excel 97/2000/2003 (*.xls)"
 
-msgid "percentage"
-msgstr "porcentagem"
+msgid "datetime"
+msgstr "data e temp"
 
 msgid "File"
 msgstr "Lima"
+
+msgid "percentage"
+msgstr "porcentagem"
 
 msgid "Spanish"
 msgstr "Español"
@@ -79,25 +79,22 @@ msgstr "Deutsch"
 msgid "Monospace"
 msgstr "Monospace"
 
-msgid "empty"
-msgstr "vazio"
+msgid "Logged in as"
+msgstr "Entrado Como"
 
 msgid "Font"
 msgstr "Nomo Do Tipo De Letra"
 
-msgid "Logged in as"
-msgstr "Entrado Como"
-
 msgid "Delete Row(s)"
 msgstr "suprimindo de fileiras"
 
-msgid "Insert 1 above"
-msgstr "inserção 1 acima"
+msgid "en_gb"
+msgstr "br"
 
 msgid "Edit"
 msgstr "Editar"
 
-msgid "Delete Column(s)"
+msgid "Delete columns(s)"
 msgstr "Colunas da supressão"
 
 msgid "Save"
@@ -106,21 +103,18 @@ msgstr "Guardar"
 msgid "date"
 msgstr "data"
 
+msgid "Log out"
+msgstr "Saída"
+
 msgid "decimals"
 msgstr "decimais"
 
 msgid "financial"
 msgstr "financeiro"
 
-msgid "Log out"
-msgstr "Saída"
-
-msgid "Format"
-msgstr "Formatar"
-
 msgid "French"
 msgstr "Français"
 
-msgid "Create New"
-msgstr "crie novo"
+msgid "Format"
+msgstr "Formatar"
 

@@ -1,14 +1,11 @@
-msgid "Normal"
-msgstr "Normal"
-
 msgid "English"
 msgstr "English"
 
-msgid "Insert 1 below"
-msgstr "parte 1 movible abajo"
+msgid "Normal"
+msgstr "Normal"
 
-msgid "Insert 1 left"
-msgstr "inserte 1 a la izquierda"
+msgid "empty"
+msgstr "vacío"
 
 msgid "Clear "
 msgstr " Claros "
@@ -16,11 +13,14 @@ msgstr " Claros "
 msgid "Styles"
 msgstr "Estilos"
 
-msgid "time"
-msgstr "tiempo"
+msgid "Insert before"
+msgstr "inserte 1 a la izquierda"
 
 msgid "Import Spreadsheets"
 msgstr "Importación De Las Hojas De Balance"
+
+msgid "time"
+msgstr "tiempo"
 
 msgid "My Spreadsheets"
 msgstr "Mis Hojas De Balance"
@@ -28,44 +28,44 @@ msgstr "Mis Hojas De Balance"
 msgid "currency"
 msgstr "Moneda"
 
-msgid "Portuguese"
-msgstr "Português"
-
 msgid "Italian"
 msgstr "Italiano"
+
+msgid "Portuguese"
+msgstr "Português"
 
 msgid "Plain"
 msgstr "Llano"
 
-msgid "Serif"
-msgstr "Serif"
-
-msgid "en_gb"
-msgstr "es"
-
 msgid "Russian"
 msgstr "Русский"
 
-msgid "Insert 1 right"
-msgstr "inserte 1 a la derecha"
+msgid "Serif"
+msgstr "Serif"
 
-msgid "Contents"
-msgstr "Contenido"
+msgid "Create New"
+msgstr "cree nuevo"
 
 msgid "Login"
 msgstr "Connexion"
 
-msgid "datetime"
-msgstr "fecha y tiempo"
+msgid "Contents"
+msgstr "Contenido"
+
+msgid "Insert after"
+msgstr "inserte 1 a la derecha"
 
 msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
 msgstr "abrir Microsoft Excel 97/2000/2003 (*.xls)"
 
-msgid "percentage"
-msgstr "Porcentaje"
+msgid "datetime"
+msgstr "fecha y tiempo"
 
 msgid "File"
 msgstr "Archivo"
+
+msgid "percentage"
+msgstr "Porcentaje"
 
 msgid "Spanish"
 msgstr "Español"
@@ -79,25 +79,22 @@ msgstr "Deutsch"
 msgid "Monospace"
 msgstr "Monospace"
 
-msgid "empty"
-msgstr "vacío"
+msgid "Logged in as"
+msgstr "Abierto Una Sesión Como"
 
 msgid "Font"
 msgstr "Fuente"
 
-msgid "Logged in as"
-msgstr "Abierto Una Sesión Como"
-
 msgid "Delete Row(s)"
 msgstr "supresión de filas"
 
-msgid "Insert 1 above"
-msgstr "parte 1 movible arriba"
+msgid "en_gb"
+msgstr "es"
 
 msgid "Edit"
 msgstr "Editar"
 
-msgid "Delete Column(s)"
+msgid "Delete columns(s)"
 msgstr "Columnas de la cancelación"
 
 msgid "Save"
@@ -106,21 +103,18 @@ msgstr "Guardar"
 msgid "date"
 msgstr "fecha"
 
+msgid "Log out"
+msgstr "Registro De Estado De La Máquina"
+
 msgid "decimals"
 msgstr "decimales"
 
 msgid "financial"
 msgstr "Financier"
 
-msgid "Log out"
-msgstr "Registro De Estado De La Máquina"
-
-msgid "Format"
-msgstr "Formato"
-
 msgid "French"
 msgstr "Français"
 
-msgid "Create New"
-msgstr "cree nuevo"
+msgid "Format"
+msgstr "Formato"
 
