@@ -160,20 +160,26 @@ binomdist1(Ns, Nt, Ps, true) ->
     binomdist1(Ns, Nt, Ps, false) + binomdist1(Ns - 1, Nt, Ps, true).
 
 chidist([V1, V2]) ->
-    X = ?number(V1, ?default_rules),
-    Degfree = ?int(V2, ?default_rules),
-    ?ensure_non_negative(X),
-    ?ensure(Degfree >= 1, ?ERR_NUM),
-    ?ensure(Degfree =< 1.0e+10, ?ERR_NUM),
-    chidist1(X, Degfree).
-chidist1(X, Degfree) ->
+    col([V1, V2],
+        [eval_funs, fetch, area_first, {conv, blank, ?ERRVAL_NUM}, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun chidist_/1).
+
+chidist_([X, _Degfree]) when X < 0 ->
+    ?ERRVAL_NUM;
+chidist_([_X, Degfree]) when Degfree < 1, Degfree > 1.0e+10 ->
+    ?ERRVAL_NUM;
+
+chidist_([X, Degfree]) when is_float(Degfree) ->
+    chidist_([X, erlang:trunc(Degfree)]);
+chidist_([X, Degfree]) ->
     Alpha = Degfree / 2, % 2 is beta
-    Chi = 1 / (math:pow(2, Alpha) * stdfuns_math:fact1(Alpha)),
+    Chi = 1/(math:pow(Alpha, 2) * stdfuns_math:fact1(erlang:trunc(Alpha))),
     math:pow(Chi, (Alpha - 1)) * math:exp(X * -0.5).
 
 counta(Vs) ->
     Fvs = ?flatten_all(Vs),
-    length(filter(fun(X) -> not(muin_collect:is_blank(X)) end, Fvs)). % Discard blanks.
+    length(filter(fun(X) -> not(muin_collect:is_blank(X)) end, Fvs)).
 
 count(Vs) ->
     Vals = col(Vs, [flatten_as_str, ignore_blanks, cast_num,
@@ -498,25 +504,27 @@ rank1(N, Nums, false) ->
 
 skew(Arg) ->
     col(Arg,
-        [eval_funs, fetch, area_first, {cast, num}],
+        [eval_funs, {cast, num}, fetch, flatten, {ignore, str},
+         {ignore, blank}, {ignore, bool}],
         [return_errors, {all, fun is_number/1}],
         fun skew1/1).
 
-    %% Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    %% ?ensure(length(Nums) >= 3, ?ERR_DIV),
-    %% skew1(Nums).
 skew1(Nums) when length(Nums) < 3 ->
     ?ERRVAL_DIV;
 skew1(Nums) ->
-    moment(Nums, 3) / math:pow(moment(Nums, 2), 3).
-
-%% the casting for this is all over the place
-%% doens't cast left to right, blah-blah
+    Mean = lists:sum(Nums) / length(Nums),
+    Stdev = stdev(Nums),
+    N = length(Nums),
+    case Stdev of
+        X when X == 0, X == 0.0 -> ?ERRVAL_DIV;
+        _ -> lists:sum([ math:pow((X - Mean) / Stdev, 3) || X<-Nums])
+                 * (N / ((N - 1)*(N-2)))
+    end.
+   
 small([V1, V2]) ->
     Arr = col([V1],
-              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL},
-               fetch, flatten, 
-               {ignore, str}, {ignore, bool}, {ignore, blank}],
+              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch,
+               flatten,  {ignore, str}, {ignore, bool}, {ignore, blank}],
               [return_errors, {all, fun is_number/1}]),
     
     N = col([V2],[eval_funs, fetch, area_first, {cast, num}],
