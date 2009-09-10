@@ -87,7 +87,7 @@
          stdeva/1,
          stdevp/1,
          stdevpa/1,
-         steyx/1,
+         steyx/1,steyx_/2,
          %%tdist/1,
          %%tinv/1,
          %%trend/1,
@@ -502,10 +502,10 @@ rank1(N, Nums, true) ->
 rank1(N, Nums, false) ->
     (length(Nums) + 1) - rank1(N, Nums, true).
 
-skew(Arg) ->
+skew(Arg) ->    
     col(Arg,
-        [eval_funs, {cast, num}, fetch, flatten, {ignore, str},
-         {ignore, blank}, {ignore, bool}],
+        [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
+         {ignore, str}, {ignore, blank}, {ignore, bool}],
         [return_errors, {all, fun is_number/1}],
         fun skew1/1).
 
@@ -593,11 +593,36 @@ stdevpa(V1) ->
         fun stdevp/1).    
 
 steyx([V1, V2]) ->
-    Ys = ?numbers(?flatten_all(V1), ?default_rules),
-    Xs = ?numbers(?flatten_all(V2), ?default_rules),
-    steyx1(Ys, Xs).
-steyx1(Ys, Xs) -> 
-    math:pow(pearson1(Ys, Xs), 2).
+    One = col([V1],
+              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
+               {conv, str, 1}, {conv, bool, 1}, {conv, blank, 1}],
+              [return_errors, {all, fun is_number/1}]),
+    
+    Two = col([V2],
+              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
+               {conv, str, 1}, {conv, bool, 1}, {conv, blank, 1}],
+              [return_errors, {all, fun is_number/1}]),
+    
+    muin_util:apply([One, Two], fun steyx_/2).    
+
+steyx_(Ys, Xs) when length(Ys) < 3; length(Xs) < 3 ->
+    ?ERRVAL_DIV;
+steyx_(Ys, Xs) when length(Ys) =/= length(Xs) ->
+    ?ERRVAL_NA;
+steyx_(Ys, Xs) ->
+
+    N = length(Ys),
+    Ym = lists:sum(Ys) / N,
+    Xm = lists:sum(Xs) / N,
+    Y1 = lists:sum([ math:pow((Y-Ym), 2) || Y<-Ys ]),
+    X1 = lists:sum([ math:pow((X-Xm), 2) || X<-Xs ]),
+    XY1 = lists:sum([ (X-Xm)*(Y-Ym) || {X, Y} <- lists:zip(Xs,Ys) ]),
+    XY2 = math:pow(XY1, 2),
+    
+    case X1 of
+        X when X == 0, X==0.0 -> ?ERRVAL_DIV;
+        _ -> math:sqrt( (1/(N-2)) * (Y1 - (XY2 / X1)))
+    end.
 
 trimmean([V1, V2]) ->
     Nums = col([V1],
