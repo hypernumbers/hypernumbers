@@ -117,7 +117,8 @@ ArrayLiteral -> '-' float : lit('$2', fun(X) -> -X end).
 ArrayLiteral -> '+' int   : lit('$2').
 ArrayLiteral -> '+' float : lit('$2').
 ArrayLiteral -> bool      : lit('$1').
-ArrayLiteral -> str       : lit('$1').    
+ArrayLiteral -> str       : lit('$1').
+ArrayLiteral -> errval    : lit('$1').    
 
 Erlang code.
 

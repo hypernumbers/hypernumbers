@@ -79,36 +79,32 @@ cell1(_, _) ->
     ?ERR_VAL.
     
 
-'error.type'([?ERRVAL_NULL]) -> 1;
-'error.type'([?ERRVAL_DIV])  -> 2;
-'error.type'([?ERRVAL_VAL])  -> 3;
-'error.type'([?ERRVAL_REF])  -> 4;
-'error.type'([?ERRVAL_NAME]) -> 5;
-'error.type'([?ERRVAL_NUM])  -> 6;
-'error.type'([?ERRVAL_NA])   -> 7;
-'error.type'(_)              -> ?ERR_NA.
+errornum(?ERRVAL_NULL) -> 1;
+errornum(?ERRVAL_DIV)  -> 2;
+errornum(?ERRVAL_VAL)  -> 3;                                   
+errornum(?ERRVAL_REF)  -> 4;
+errornum(?ERRVAL_NAME) -> 5;
+errornum(?ERRVAL_NUM)  -> 6;
+errornum(?ERRVAL_NA)   -> 7.
+    
+
+'error.type'([X]) when ?is_errval(X)                  -> errornum(X);
+'error.type'([{array, [[X|_]|_]}]) when ?is_errval(X) -> errornum(X);
+'error.type'(_)                                       -> ?ERRVAL_NA.
 
 
 %% Returns the logical value TRUE if value refers to any error value except
 %% #N/A; otherwise it returns FALSE.
-iserr([?ERRVAL_NULL]) -> true;
-iserr([?ERRVAL_DIV])  -> true;
-iserr([?ERRVAL_VAL])  -> true;
-iserr([?ERRVAL_REF])  -> true;
-iserr([?ERRVAL_NAME]) -> true;
-iserr([?ERRVAL_NUM])  -> true;
-iserr(_)              -> false.
+iserr([?ERRVAL_NA])                            -> false;
+iserr([X]) when ?is_errval(X)                  -> true;
+iserr([{array, [[X|_]|_]}]) when ?is_errval(X) -> true;
+iserr(_)                                       -> false.
 
 
 %% Returns true if argument is any error value.
-iserror([?ERRVAL_NULL]) -> true;
-iserror([?ERRVAL_DIV])  -> true;
-iserror([?ERRVAL_VAL])  -> true;
-iserror([?ERRVAL_REF])  -> true;
-iserror([?ERRVAL_NAME]) -> true;
-iserror([?ERRVAL_NUM])  -> true;
-iserror([?ERRVAL_NA])   -> true;
-iserror(_)              -> false.
+iserror([X]) when ?is_errval(X)                  -> true;
+iserror([{array, [[X|_]|_]}]) when ?is_errval(X) -> true;
+iserror(_)                                       -> false.
 
 
 %% Returns TRUE if number is even, or FALSE if number is odd.
