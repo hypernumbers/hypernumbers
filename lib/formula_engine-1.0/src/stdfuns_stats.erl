@@ -69,7 +69,7 @@
          %%norminv/1,
          normsdist/1,
          %%normsinv/1,
-         pearson/1,
+         %%pearson/1,
          percentile/1,
          %%percentrank/1,
          permut/1,
@@ -87,7 +87,7 @@
          stdeva/1,
          stdevp/1,
          stdevpa/1,
-         steyx/1,steyx_/2,
+         steyx/1,
          %%tdist/1,
          %%tinv/1,
          %%trend/1,
@@ -314,7 +314,13 @@ kurt(V1) ->
     ?ensure(length(Nums) > 3, ?ERR_DIV),
     kurt1(Nums).
 kurt1(Nums) ->
-    (moment(Nums, 4) / math:pow(moment(Nums, 2), 2)) - 3.
+    N = length(Nums),
+    S = stdev(Nums),
+    Xm = lists:sum(Nums) / N,
+    Z = lists:sum([ math:pow((X - Xm) / S, 4) || X<-Nums ]),
+
+    (((N * (N+1)) / ((N-1)*(N-2)*(N-3))) * Z) -
+        ((3*math:pow(N-1, 2)) / ((N-2)*(N-3))).
 
 %% the casting for this is all over the place
 %% doens't cast left to right, blah-blah
@@ -432,12 +438,6 @@ mode_([H|T], Tree) ->
     
 %% TODO:
 normsdist([_, _, _, _]) ->
-    0.
-
-%% TODO:
-pearson([_, _]) ->
-    0.
-pearson1(_, _) ->
     0.
 
 percentile([V1, V2]) ->
@@ -594,29 +594,31 @@ stdevpa(V1) ->
 
 steyx([V1, V2]) ->
     One = col([V1],
-              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
-               {conv, str, 1}, {conv, bool, 1}, {conv, blank, 1}],
-              [return_errors, {all, fun is_number/1}]),
+              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten],
+              [return_errors]),
     
     Two = col([V2],
-              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
-               {conv, str, 1}, {conv, bool, 1}, {conv, blank, 1}],
-              [return_errors, {all, fun is_number/1}]),
+              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten],
+              [return_errors]),
     
-    muin_util:apply([One, Two], fun steyx_/2).    
+    muin_util:apply([One, Two], fun steyx_pass_/2).
 
-steyx_(Ys, Xs) when length(Ys) < 3; length(Xs) < 3 ->
-    ?ERRVAL_DIV;
-steyx_(Ys, Xs) when length(Ys) =/= length(Xs) ->
+steyx_pass_(Xs, Ys) when length(Ys) =/= length(Xs) ->
     ?ERRVAL_NA;
-steyx_(Ys, Xs) ->
+steyx_pass_(Xs, Ys) ->
+    steyx_( [ {Y,X} || {X, Y} <- lists:zip(Xs, Ys),
+                        is_number(X), is_number(Y) ] ).
 
-    N = length(Ys),
-    Ym = lists:sum(Ys) / N,
-    Xm = lists:sum(Xs) / N,
-    Y1 = lists:sum([ math:pow((Y-Ym), 2) || Y<-Ys ]),
-    X1 = lists:sum([ math:pow((X-Xm), 2) || X<-Xs ]),
-    XY1 = lists:sum([ (X-Xm)*(Y-Ym) || {X, Y} <- lists:zip(Xs,Ys) ]),
+steyx_(Vals) when length(Vals) < 3 ->
+    ?ERRVAL_DIV;
+
+steyx_(Vals) ->
+    N = length(Vals),
+    Ym = lists:sum([Y||{_X,Y}<-Vals]) / N,
+    Xm = lists:sum([X||{X,_Y}<-Vals]) / N,
+    Y1 = lists:sum([ math:pow((Y-Ym), 2) || {_,Y}<-Vals ]),
+    X1 = lists:sum([ math:pow((X-Xm), 2) || {X,_}<-Vals ]),
+    XY1 = lists:sum([ (X-Xm)*(Y-Ym) || {X, Y} <- Vals ]),
     XY2 = math:pow(XY1, 2),
     
     case X1 of

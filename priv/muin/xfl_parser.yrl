@@ -99,7 +99,9 @@ Funcall -> cellref '(' ')'       : [func_name('$1')].
 Funcall -> cellref '(' Args ')'  : func('$1', '$3').
     
 Args -> E                    : ['$1'].
+Args -> E ',' ',' Args       : ['$1'] ++ [undef] ++ '$4'.
 Args -> E ',' Args           : ['$1'] ++ '$3'.
+
 
 %%% arrays ( = lists of rows, which are lists of values of allowed types)
 Array -> '{' ArrayRows '}' : to_native_list('$2').
@@ -112,8 +114,8 @@ ArrayRow -> ArrayLiteral ',' ArrayRow : ['$1'] ++ '$3'.
 
 ArrayLiteral -> int       : lit('$1').
 ArrayLiteral -> float     : lit('$1').
-ArrayLiteral -> '-' int   : lit('$2', fun(X) -> -X end).
-ArrayLiteral -> '-' float : lit('$2', fun(X) -> -X end).
+ArrayLiteral -> '-' int   : lit('$2', fun(X) -> neg(X) end).
+ArrayLiteral -> '-' float : lit('$2', fun(X) -> neg(X) end).
 ArrayLiteral -> '+' int   : lit('$2').
 ArrayLiteral -> '+' float : lit('$2').
 ArrayLiteral -> bool      : lit('$1').
@@ -125,6 +127,11 @@ Erlang code.
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 -include("typechecks.hrl").
+
+neg(X) when is_integer(X) ->
+    -X;
+neg({F, _S}) ->
+    -F.
 
 %% Make a function name for the AST from lexer tokens:
 func_name({name, Name}) ->
@@ -197,7 +204,10 @@ postproc(Ast) ->
     replace_float_tuples(Ast).
 
 %% Replace {Float, OriginalString} tuples with Floats in the AST.
-replace_float({F, Str}) when is_float(F), ?is_string(Str) -> F;
+replace_float({F, Str}) when is_float(F), ?is_string(Str) ->
+    F;
+replace_float(X) when is_list(X) ->
+    [ replace_float(Y) || Y<-X ];
 replace_float({array, Values}) ->
     Vals = [ [ replace_float(Y) || Y <- X ] || X <- Values ],
     {array, Vals};

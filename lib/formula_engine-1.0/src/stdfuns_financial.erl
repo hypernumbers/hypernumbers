@@ -141,6 +141,7 @@ syd_(_,_) ->
 pv([Rate, NPer, Pmt])              -> pv([Rate, NPer, Pmt, 0]);
 pv([Rate, NPer, Pmt, Fv])          -> pv([Rate, NPer, Pmt, Fv, 0]);
 pv([Rate, NPer, Pmt, undef, Type]) -> pv([Rate, NPer, Pmt, 0, Type]);
+pv([Rate, NPer, undef, Fv, Type])  -> pv([Rate, NPer, 0, Fv, Type]);
 pv(Args = [_, _, _, _, _]) ->
     col(Args,
         [first_array, cast_num],

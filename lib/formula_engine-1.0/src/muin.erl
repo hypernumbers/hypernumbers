@@ -108,12 +108,12 @@ compile(Fla, {Col, Row}) ->
 %% Formula -> sexp, relative to coord.
 parse(Fla, {Col, Row}) ->
     Trans = translator:do(Fla),
-
     case catch (xfl_lexer:lex(Trans, {Col, Row})) of
-        {ok, Toks} -> case catch(xfl_parser:parse(Toks)) of
-                          {ok, Ast} -> {ok, Ast};
-                          _         -> ?syntax_error
-                      end;
+        {ok, Toks} ->
+            case catch(xfl_parser:parse(Toks)) of
+                {ok, Ast} -> {ok, Ast};
+                _         -> ?syntax_error
+            end;
         _ -> ?syntax_error
     end.                     
 
