@@ -374,20 +374,6 @@ minverse_([A]) when is_number(A) ->
 minverse_([]) ->
     ?ERRVAL_VAL.
 
-    %% %?IF(not(is_list(L)), ?ERR_VAL),
-    %% % io:format("Got to 1~n"),
-    %% ?ensure_numbers(flatten(L)),
-    %% % io:format("Got to 2~n"),
-    %% Mx = matrix:new(L),
-    %% % io:format("Got to 3~n"),
-    %% ?IF(not(matrix:is_square(Mx)), ?ERR_VAL),
-    %% % io:format("Got to 4~n"),
-    %% ?IF(matsrix:det(Mx) == 0, ?ERR_NUM),
-    %% % io:format("Got to 5~n"),
-    %% {matrix, _, _, NewL} = matrix:invert(Mx),
-    %% % io:format("Got to 6~n"),
-    %% NewL.
-
 mmult(Args) ->
     col(Args, [eval_funs, fetch, {ignore, bool}, {ignore, str},
                {ignore, blank}], [return_errors],
@@ -573,11 +559,13 @@ mround([V1, V2]) ->
     roundup1(Num, Multiple).
 
 odd([V1]) ->
-    Num = ?number(V1, ?default_rules),
-    odd1(Num).
-odd1(Num) when Num == 0 ->
+    col([V1], [eval_funs, area_first, fetchdb, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun odd1/1).
+
+odd1([Num]) when Num == 0 ->
     1;
-odd1(Num) ->
+odd1([Num]) ->
     E = even1(Num),
     ?COND(erlang:abs(E) - erlang:abs(Num) < 1,
           E + sign1(Num),

@@ -195,6 +195,22 @@ rl(fetch, Ref) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
 rl(fetch, {array, [[Ref]]}) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
     muin:fetch(Ref);
 
+rl(fetchdb, Ref) when ?is_rangeref(Ref) ->
+    case {Ref#rangeref.height, Ref#rangeref.width} of
+        {1, _} ->
+            0;
+        {_, 1} ->
+            {range, Rows} = muin:fetch(Ref),
+            {_,{offset, X}} = Ref#rangeref.tl,
+            [Val] = lists:nth(erlang:abs(X) + 1, Rows),
+            Val;
+        _ ->
+            ?ERRVAL_VAL
+    end;
+
+rl(fetchdb, Ref) when ?is_cellref(Ref) ->
+    muin:fetch(Ref);
+
 rl({conv, Type, Value}, X) ->
     case muin_util:get_type(X) of
         Type  -> Value;
@@ -241,6 +257,10 @@ pass(Args, [ {all, F} | Rules ]) ->
         false -> ?ERRVAL_VAL
     end.
 
+
+%% Everything below this should be replaced
+%% (by ^)
+
 %% for each arguments, check wether is should be ignored
 %% and if not, go through a list of collection rules, the ordering
 %% of the rules can be important (pick_first_array needs to be called
@@ -257,8 +277,6 @@ ignor(blank, [ignore_blanks | _Filters]) ->
     false;
 ignor(X, [ignore_blanks | Filters]) ->
     ignor(X, Filters).
-
-
 
 %% Rules
 % pick_first_array, ignore_blank_refs, cast_to_X_or_err, die_on_err,

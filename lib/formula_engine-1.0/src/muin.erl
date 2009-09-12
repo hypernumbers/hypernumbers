@@ -190,7 +190,8 @@ funcall(Fname, Args0) ->
     Funs = ['if', choose, column, row, cell, columns, 'and',
             timevalue, npv, max, maxa, min, mina, syd, sumsq, sum,
             stdevpa, stdevp, stdeva, stdev, '+', product, mdeterm,
-            median, average, averagea, replace, rows, countif, sumif],
+            median, average, averagea, replace, rows, countif, sumif,
+            odd],
     
     Args = case member(Fname, Funs) of
                true  -> Args0;
