@@ -547,7 +547,11 @@ floor1(Num, Multiple) ->
     erlang:trunc(Num / Multiple) * Multiple.
 
 int([V1]) ->
-    Num = ?number(V1, ?default_rules),
+    col([V1], [eval_funs, area_first, fetchdb, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun int_/1).
+
+int_([Num]) ->
     ?COND(erlang:round(Num) > Num,
           erlang:round(Num) - 1,
           erlang:round(Num)).
