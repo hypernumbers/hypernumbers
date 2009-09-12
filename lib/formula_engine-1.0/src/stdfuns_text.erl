@@ -173,7 +173,7 @@ lower([Str]) ->
     string:to_lower(NewStr).
 
 proper(Args) ->
-    col(Args, [first_array, fetch_name, {cast, str}],
+    col(Args, [eval_funs, first_array, fetch_name, fetchdb, {cast, str}],
         [return_errors, {all, fun muin_collect:is_string/1}],
         fun proper_/1).
 

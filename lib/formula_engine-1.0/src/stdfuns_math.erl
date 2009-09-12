@@ -1044,12 +1044,17 @@ atanh([V]) ->
     math:atanh(Num).
 
 degrees([V]) ->
-    case col([V], [area_first, cast_num],
-             [return_errors, {all, fun is_number/1}]) of
-        Err when ?is_errval(Err) -> Err;
-        [Angle]                  -> Angle / math:pi() * 180
-    end.
+    col([V], [eval_funs, area_first, fetchdb, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun degrees_/1).
+
+degrees_([Angle]) ->
+    Angle / math:pi() * 180.
 
 radians([V]) ->
-    Angle = ?number(V, ?default_rules),
+    col([V], [eval_funs, area_first, fetchdb, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun radians_/1).
+
+radians_([Angle]) ->
     Angle * math:pi() / 180.
