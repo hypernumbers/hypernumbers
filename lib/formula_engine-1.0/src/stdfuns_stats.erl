@@ -191,18 +191,16 @@ countblank(Vs) ->
     Flatvs = ?flatten_all(Vs),
     length([X || X <- Flatvs, muin_collect:is_blank(X)]).
 
+countif([A, Cr]) ->
+    
+    Vals   = col([A],  [eval_funs, fetch, flatten, {ignore, blank}]),
+    [Crit] = col([Cr], [eval_funs, fetch, flatten]),
 
-countif([A, CritSpec]) ->
-    ?ensure(?is_area(A), ?ERR_VAL),
-    ?ensure(?is_string(CritSpec), ?ERR_VAL),
-    case odf_criteria:create(CritSpec) of
+    case odf_criteria:create(Crit) of
         {error, _Reason} ->
             0;
-        Fun              ->
-            case filter(Fun, area_util:to_list(A)) of
-                [] -> 0;
-                L  -> count(L)
-            end
+        Fun ->
+            length(filter(Fun, Vals))
     end.    
 
 critbinom([V1, V2, V3]) ->

@@ -396,7 +396,7 @@ mmult(Args) ->
 mmult_([{_, R1}=L1, {_, R2}=L2]) when ?is_area(L1), ?is_area(L2) -> 
     case area_util:is_matrix(L1) andalso area_util:is_matrix(L2) of
         false -> ?ERRVAL_VAL;
-        true  -> {array, to_list(mmult(to_tuple(R1), to_tuple(R2)))}
+        true  -> {array, dh_matrix:multiply(R1, R2)}
     end;
 mmult_([A,B]) when is_number(A), is_number(B) ->
     mmult_([{array, [[A]]}, {array, [[B]]}]);
@@ -892,12 +892,24 @@ subtotal_(_, _) -> ?ERRVAL_VAL.
 
 sumif([L, Crit]) ->
     sumif([L, Crit, L]);
-sumif([V1, Crit, V2]) ->
-    
-    Areas = col([V1, V2], [],
-                [return_errors, {all, fun muin_collect:is_area/1}]),
-    
-    muin_util:apply([Areas, Crit], fun sumif1/2).
+sumif([V1, Cr, V2]) ->
+
+    Tmp = [eval_funs, fetch, flatten],
+    Val1   = col([V1], Tmp),
+    Val2   = col([V2], Tmp),
+    [Crit] = col([Cr], [eval_funs, fetch, flatten]),
+
+    case length(Val1) == length(Val2) of
+        false ->
+            ?ERRVAL_VAL;
+        true ->
+            case odf_criteria:create(Crit) of
+                {error, _Reason} ->
+                    0;
+                Fun ->
+                    sumif1(Val1, Val2, Fun, 0)
+            end
+    end.
 
 %% V1 and V2 must be areas of same dimensions
 %% ?ensure(?is_area(V1), ?ERR_VAL),
@@ -906,26 +918,16 @@ sumif([V1, Crit, V2]) ->
 %% case odf_criteria:create(Crit) of
 %%     {error, _Reason} -> 0;
 %%     Fun              ->
-    %%         sumif1(area_util:to_list(V1), area_util:to_list(V2), Fun)
+%%         sumif1(area_util:to_list(V1), area_util:to_list(V2), Fun)
 %% end.
-
-sumif1([V1, V2], Crit) ->
-    case area_util:are_congruent(V1, V2) of
-        false -> ?ERRVAL_VAL;
-        true ->
-            case odf_criteria:create(Crit) of
-                {error, _Reason} -> 0;
-                Fun ->
-                    sumif1(area_util:to_list(V1), area_util:to_list(V2),
-                           Fun, 0)
-            end
-    end.
 
 sumif1([], [], _F, Sum) ->
     Sum;
 sumif1([H1|T1], [H2|T2], Fun, Acc) ->
     case Fun(H1) of
-        true  -> sumif1(T1, T2, Fun, stdfuns_math:'+'([Acc, H2]));
+        true  ->
+            [Val] = col([H2], [{cast, num}, {conv, str, 0}]),
+            sumif1(T1, T2, Fun, stdfuns_math:'+'([Acc, Val]));
         false -> sumif1(T1, T2, Fun, Acc)
     end.
 
@@ -1059,23 +1061,3 @@ degrees([V]) ->
 radians([V]) ->
     Angle = ?number(V, ?default_rules),
     Angle * math:pi() / 180.
-
-
-sumprod(0, _, _, Sum, _, _) -> Sum;
-sumprod(I, C, R, Sum, M1, M2) -> 
-    NewSum = Sum + (element(I,element(R,M1)) * element(C,element(I,M2))),
-    sumprod(I-1, C, R, NewSum, M1, M2).
-
-rowmult(_, 0, _, L, _, _) -> list_to_tuple(L);
-rowmult(I, C, R, L, M1, M2) -> 
-    SumProd = sumprod(I, C, R, 0, M1, M2),
-    rowmult(I, C-1, R, [SumProd|L], M1, M2).
-
-mmult(_, _, 0, MM, _, _) -> list_to_tuple(MM);
-mmult(I, C, R, MM, M1, M2) ->
-    NewRow = rowmult(I, C, R, [], M1, M2),
-    mmult(I, C, R-1, [NewRow|MM], M1, M2).
-
-mmult(M1, M2) -> 
-    NRows = size(M1), 
-    mmult(size(M2), NRows, NRows,[], M1, M2).

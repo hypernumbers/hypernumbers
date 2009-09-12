@@ -6,6 +6,7 @@
 
 -export([create/1]).
 
+-include("muin_records.hrl").
 -include("typechecks.hrl").
 
 -define(INVALID_SPEC, {error, invalid_spec}).
@@ -19,40 +20,41 @@
 %%% For a number or logical value, the argument shall equal the given value.
 %%% "argument" = argument to resulting fun, "value" = value specified by user.
 %%% Value *must* be a constant, no references or expressions are allowed.
-create(V) when is_number(V); is_boolean(V) ->
-    fun(X) -> stdfuns_logical:'='([X, V]) end;
+create(V) when is_number(V) ->
+    fun(X) -> is_number(V) andalso X == V end;
+create(V) when is_boolean(V) ->
+    fun(X) -> is_boolean(V) andalso X == V end;
+create(V) when ?is_errval(V) ->
+    fun(X) -> X == V end;
+create(V) when is_record(V, datetime) ->
+    fun(X) -> X == V end;
+
 %%% For a string, first see if it begins with a logical operator in which case
 %%% the argument must compare appropriately with the value following the
 %%% operator. Otherwise, match the argument against the text.,
-create(S) when ?is_string(S) ->
-    Fun = case string:substr(S, 1, 2) of
-              "<=" ->
-                  C = lex_constant(string:substr(S, 3)),
-                  fun(X) -> stdfuns_logical:'<='([X, C]) end;
-              ">=" ->
-                  C = lex_constant(string:substr(S, 3)),
-                  fun(X) -> stdfuns_logical:'>='([X, C]) end;
-              "<>" ->
-                  C = lex_constant(string:substr(S, 3)),
-                  fun(X) -> stdfuns_logical:'<>'([X, C]) end;
-              _ ->
-                  case string:substr(S, 1, 1) of
-                      "<" ->
-                          C = lex_constant(string:substr(S, 2)),
-                          fun(X) -> stdfuns_logical:'<'([X, C]) end;
-                      ">" ->
-                          C = lex_constant(string:substr(S, 2)),
-                          fun(X) -> stdfuns_logical:'>'([X, C]) end;
-                      "=" ->
-                          C = lex_constant(string:substr(S, 2)),
-                          fun(X) -> stdfuns_logical:'='([X, C]) end;
-                      _ ->
-                          fun(X) -> stdfuns_logical:'='([X, S]) end
-                  end          
-          end,
-    Fun;
-create(_) ->
-    ?INVALID_SPEC.
+create(">="++C) -> type_fun( fun stdfuns_logical:'>='/1, C);
+create(">"++C)  -> type_fun( fun stdfuns_logical:'>'/1, C);
+create("<>"++C) -> type_fun( fun stdfuns_logical:'<>'/1, C);
+create("<="++C) -> type_fun( fun stdfuns_logical:'<='/1, C);
+create("<"++C)  -> type_fun( fun stdfuns_logical:'<'/1, C);
+create("="++C)  -> type_fun( fun stdfuns_logical:'='/1, C);
+create(C) ->
+    
+    Re1 = re:replace(C, "\\?", "[a-z0-9]{1}", [{return, list}, global]),
+    Re2 = re:replace(Re1, "\\*", "[a-z0-9]\\*", [{return, list}, global]),
+    Re3 = "^"++Re2++"$", %"
+                     
+    fun(X) ->
+            Sub = muin_util:cast(X, str),
+            not (nomatch == re:run(Sub, Re3, [caseless, anchored]))
+    end.
+
+type_fun(Fun, C) ->
+    Val = lex_constant(C),
+    fun(X) ->
+            muin_util:get_type(X) == muin_util:get_type(Val)
+                andalso Fun([X, Val])
+    end.
 
 %%% FIXME: lexer expects booleans to be in uppercase (fix in the lexer).
 %%% also: a potential source of confusion/errors is embedded string constants.
@@ -62,8 +64,9 @@ lex_constant(S) ->
             V;
         {ok, [{float, {F, _OrigStr}}]} ->
             F;
+        {ok, [{name, Str}]} ->
+            Str;
         Else ->
-            io:format("Else = ~p~n", [Else]),
             ?INVALID_SPEC
     end.
 
