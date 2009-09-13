@@ -521,7 +521,7 @@ skew1(Nums) ->
    
 small([V1, V2]) ->
     Arr = col([V1],
-              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch,
+              [eval_funs, {cast, num}, {convflat, str, ?ERRVAL_VAL}, fetch,
                flatten,  {ignore, str}, {ignore, bool}, {ignore, blank}],
               [return_errors, {all, fun is_number/1}]),
     
@@ -592,23 +592,25 @@ stdevpa(V1) ->
 
 steyx([V1, V2]) ->
     One = col([V1],
-              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten],
-              [return_errors]),
+              [eval_funs, {cast, num},
+               fetch, flatten], [return_errors]),
     
     Two = col([V2],
-              [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten],
-              [return_errors]),
-    
+              [eval_funs, {cast, num},
+               fetch, flatten], [return_errors]),
+
     muin_util:apply([One, Two], fun steyx_pass_/2).
 
 steyx_pass_(Xs, Ys) when length(Ys) =/= length(Xs) ->
     ?ERRVAL_NA;
 steyx_pass_(Xs, Ys) ->
-    steyx_( [ {Y,X} || {X, Y} <- lists:zip(Xs, Ys),
-                        is_number(X), is_number(Y) ] ).
-
-steyx_(Vals) when length(Vals) < 3 ->
-    ?ERRVAL_DIV;
+    NVals = [ {Y,X} || {X, Y} <- lists:zip(Xs, Ys),
+                       is_number(X), is_number(Y) ],
+    case {length(NVals), length(Xs)} of
+        {0, O} -> ?ERRVAL_VAL;
+        {_, O} when O < 3 -> ?ERRVAL_DIV;
+        _ -> steyx_(NVals)
+    end.
 
 steyx_(Vals) ->
     N = length(Vals),

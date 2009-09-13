@@ -191,7 +191,8 @@ funcall(Fname, Args0) ->
             timevalue, npv, max, maxa, min, mina, syd, sumsq, sum,
             stdevpa, stdevp, stdeva, stdev, '+', product, mdeterm,
             median, average, averagea, replace, rows, countif, sumif,
-            odd, int, degrees, radians, proper, index],
+            odd, int, degrees, radians, proper, index, var, steyx,
+            small, skew, large],
     
     Args = case member(Fname, Funs) of
                true  -> Args0;

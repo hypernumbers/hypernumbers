@@ -26,7 +26,7 @@
         (is_tuple(A) andalso (element(1, A) == range))).
 
 -define(is_area(A),
-        (?is_array(A) orelse ?is_range(A) orelse ?is_rangeref(A))).
+        (?is_array(A) orelse ?is_range(A))).
 
 -define(is_string(X),
         (( is_list(X) andalso (not(?is_funcall(X))) )

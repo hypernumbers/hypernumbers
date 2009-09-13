@@ -86,7 +86,7 @@ address1(Row, Col, 4, false) ->
 %% vertical/horizontal array is returned.
 
 index([A, V]) ->
-    case (?is_area(A)) of
+    case (?is_area(A) orelse ?is_rangeref(A)) of
         true ->
             case V > area_util:height(A)  of
                 true -> index([A, 1, V]);
@@ -101,10 +101,10 @@ index([A, V1, V2]) when ?is_funcall(A)   -> index([muin:eval(A), V1, V2]);
 index([A, _V1, _V2]) when ?is_namedexpr(A) -> ?ERRVAL_NAME;
 index([A, V1, V2]) when is_number(A) ->
     index([area_util:make_array([[A]]), V1, V2]);
-index([A, _V1, _V2]) when not( ?is_area(A) ) ->
+index([A, _V1, _V2]) when not( ?is_area(A) orelse ?is_rangeref(A) ) ->
     ?ERRVAL_VAL;
 
-index([A, V1, V2]) when ?is_area(A) ->
+index([A, V1, V2]) when ?is_area(A) orelse ?is_rangeref(A) ->
     Ind = col([V1, V2],
               [eval_funs, fetch, area_first, cast_num],
               [return_errors, {all, fun is_number/1}]),
@@ -113,7 +113,7 @@ index([A, V1, V2]) when ?is_area(A) ->
 index_(Area, [X, Y]) when X < 0; Y < 0 ->
     ?ERRVAL_VAL;
 
-index_(Area, [FY, FX]) when ?is_area(Area) ->
+index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
     
     [Y, X] = [ erlang:trunc(X) || X<-[FY, FX]],
     
