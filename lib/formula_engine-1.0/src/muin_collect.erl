@@ -211,6 +211,10 @@ rl(fetchdb, Ref) when ?is_rangeref(Ref) ->
 rl(fetchdb, Ref) when ?is_cellref(Ref) ->
     muin:fetch(Ref);
 
+
+rl({conv, Type, Val}, {Area, Rows}=Va) when ?is_area(Va) ->
+    {Area, [ muin_collect:col(X, [{conv, Type, Val}]) || X <- Rows ]};
+
 rl({conv, Type, Value}, X) ->
     case muin_util:get_type(X) of
         Type  -> Value;

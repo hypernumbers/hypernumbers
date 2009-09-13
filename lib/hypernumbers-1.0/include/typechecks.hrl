@@ -26,7 +26,7 @@
         (is_tuple(A) andalso (element(1, A) == range))).
 
 -define(is_area(A),
-        (?is_array(A) orelse ?is_range(A))).
+        (?is_array(A) orelse ?is_range(A) orelse ?is_rangeref(A))).
 
 -define(is_string(X),
         (( is_list(X) andalso (not(?is_funcall(X))) )
@@ -38,7 +38,7 @@
         element(1, X) == cellref).
 
 -define(is_rangeref(X),
-        element(1, X) == rangeref).
+        (is_tuple(X) andalso element(1, X) == rangeref)).
 
 -define(is_namedexpr(X),
         element(1, X) == namedexpr).

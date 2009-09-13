@@ -162,7 +162,6 @@ iget(Req, #refX{site = _S, path = _P}, page, [{"get_gui", FileName}], User) ->
 iget(Req, Ref, page, [{"pages", []}], _User) -> 
     json(Req, pages(Ref));
 iget(Req, Ref, page, [{"attr", []}], User) ->
-    
     json(Req, page_attributes(Ref, User));
 iget(Req, Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of

@@ -11,8 +11,10 @@
 -export([apply_each/2, width/1, height/1, at/3, make_array/2, to_list/1,
          col/2, row/2, are_congruent/2]).
 -compile(export_all).
+
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
+-include("muin_records.hrl").
 
 -define(OUT_OF_RANGE, {error, out_of_range}).
 
@@ -63,11 +65,15 @@ to_list(Row, [NRow|Rest], Acc) -> to_list(NRow, Rest, Acc ++ Row).
 
 %% @spec width(A :: area()) -> pos_integer()
 %% @doc Get width of array/range.
+width(Ref) when ?is_rangeref(Ref) ->
+    Ref#rangeref.width;
 width(A = {_, Rows}) when ?is_area(A) ->
     length(hd(Rows)).
 
 %% @spec height(A :: area()) -> pos_integer()
 %% @doc Get height of array/range.
+height(Ref) when ?is_rangeref(Ref) ->
+    Ref#rangeref.height;
 height(A = {_, Rows}) when ?is_area(A) ->
     length(Rows).
 

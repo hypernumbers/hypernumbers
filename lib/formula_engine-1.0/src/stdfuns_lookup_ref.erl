@@ -5,10 +5,11 @@
 
 -import(muin_collect, [ collect/3 ]).
 -export([address/1, choose/1, column/1, index/1, match/1, row/1]).
-
+-import(muin_collect, [ col/2, col/3, col/4 ]).
 -compile(export_all).
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
+-include("muin_records.hrl").
 
 choose([V|Vs]) ->
     [Idx]  = collect([V], int, [fetch_refs, pick_first_array,
@@ -84,27 +85,77 @@ address1(Row, Col, 4, false) ->
 %% If either of them is omitted for areas that aren't of height/width 1, a
 %% vertical/horizontal array is returned.
 
-index([A, V]) when ?is_area(A) ->
-    W = area_util:width(A),
-    if W == 1 -> index([A, V, 1]);
-       ?else  -> index([A, 1, V])
+index([A, V]) ->
+    case (?is_area(A)) of
+        true ->
+            case V > area_util:height(A)  of
+                true -> index([A, 1, V]);
+                _ -> index([A, V, 1])
+            end;
+        false ->
+            index([A, V, 1])
     end;
-index([X, V]) ->
-    index([area_util:make_array([[X]]), V]);
-index([A, V1, V2]) when ?is_area(A) ->
-    [Rown, Coln] = ?numbers([V1, V2], [cast_strings, cast_bools, ban_dates, ban_blanks]),
-    if Rown =< 0 andalso Coln =< 0 -> A;
-       Rown =< 0 -> area_util:col(Coln, A);
-       Coln =< 0 -> area_util:row(Rown, A);
-       ?else ->
-            case area_util:at(Coln, Rown, A) of
-                {ok, E}               -> E;
-                {error, out_of_range} -> ?ERR_REF
-            end
-    end;
-index([X, V1, V2]) ->
-    index([area_util:make_array([[X]]), V1, V2]).
 
+index([A, _V1, _V2]) when ?is_errval(A)    -> A;
+index([A, V1, V2]) when ?is_funcall(A)   -> index([muin:eval(A), V1, V2]);
+index([A, _V1, _V2]) when ?is_namedexpr(A) -> ?ERRVAL_NAME;
+index([A, V1, V2]) when is_number(A) ->
+    index([area_util:make_array([[A]]), V1, V2]);
+index([A, _V1, _V2]) when not( ?is_area(A) ) ->
+    ?ERRVAL_VAL;
+
+index([A, V1, V2]) when ?is_area(A) ->
+    Ind = col([V1, V2],
+              [eval_funs, fetch, area_first, cast_num],
+              [return_errors, {all, fun is_number/1}]),
+    muin_util:apply([A, Ind], fun index_/2).
+
+index_(Area, [X, Y]) when X < 0; Y < 0 ->
+    ?ERRVAL_VAL;
+
+index_(Area, [FY, FX]) when ?is_area(Area) ->
+    
+    [Y, X] = [ erlang:trunc(X) || X<-[FY, FX]],
+    
+    case (Y > area_util:height(Area) orelse X > area_util:width(Area)) of
+        true  -> ?ERRVAL_REF;
+        false ->
+
+            case ?is_array(Area) of
+                true ->                    
+                    [{_, Rows}] = col([Area], [fetch, {conv, blank, 0}]),
+                    
+                    case {Y, X} of
+                        {0, 0} -> {array, Rows};
+                        {0, _} -> area_util:col(X, {array, Rows});
+                        {_, 0} -> area_util:row(Y, {array, Rows});
+                        _      ->
+                            {ok, Val} = area_util:at(X, Y, {array, Rows}),
+                            Val
+                    end;
+                false ->
+
+                    #rangeref{tl = {{offset, X1}, {offset, Y1}},
+                              br = {{offset, X2}, {offset, Y2}},
+                              path = Path} = Area,
+                    
+                    case {Y, X} of
+                        {0, 0} -> Area;
+                        {0, _} ->
+                            Area#rangeref{tl={{offset,(X1+X)-1},{offset,Y1}},
+                                          br={{offset,(X1+X)-1},{offset,Y2}},
+                                          width=1, height=Y2-Y1};
+                        {_, 0} ->
+                            Area#rangeref{tl={{offset,X1},{offset,(Y1+X)-1}},
+                                          br={{offset,X2},{offset,(Y1+X)-1}},
+                                          width=X2-X1, height=1};
+                        _ ->
+                            #cellref{ row={offset, (Y1+Y)-1},
+                                      col={offset, (X1+X)-1},
+                                      path=Path}
+                    end
+            end    
+    end.
 
 match([V1, V2]) ->
     match([V1, V2, 1]);
