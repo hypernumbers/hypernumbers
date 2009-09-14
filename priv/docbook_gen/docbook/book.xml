@@ -63,8 +63,8 @@
         <tr valign="top" align="center"><td>Chapter</td><td>Description</td></tr>
       </thead>
       <tbody>
-        <tr valign="top"><td>Your Development Environment</td><td>This section outlines how to set up your development enironment and can be skipped by experienced javascript developers.</td></tr>
-        <tr valign="top"><td>The Binding API</td><td></td></tr>
+        <tr valign="top"><td>Your Development Environment</td><td>outlines how to set up your development enironment and can be skipped by experienced javascript developers.</td></tr>
+        <tr valign="top"><td>How Hypernumers GUI's work</td><td>shows how hypernumbers are bound to to the gui and describes how the GUI model works.</td></tr>
       </tbody>
     </table>
     <note>More sections to follow!</note>
@@ -76,6 +76,7 @@
   </sect1>
 
 </preface>
+
 <chapter>
   <title>Your Development Environment</title>
 
@@ -125,6 +126,40 @@
       </imageobject>
     </sect2>
 
+  </sect1>
+  
+</chapter>
+
+<chapter>
+  <title>Title</title>
+
+  <sect1>
+    <title>Overview</title>
+    <para>This chapter will
+    <itemizedlist>
+      <listitem></listitem>
+      <listitem></listitem>
+   </itemizedlist>
+    </para>
+    <note>Note</note>
+  </sect1>
+
+  <sect1>
+    <title>Section Title</title>
+    <para>Paragraph</para>
+
+    <sect2>
+      <title>Subsection Title 1</title>
+      <para>Para</para>
+      <para>Para</para>
+    </sect2>
+
+    <sect2>
+      <title>Subsection Title 2</title>
+      <para>Para</para>
+      <para>Para</para>
+    </sect2>
+    
   </sect1>
   
 </chapter>

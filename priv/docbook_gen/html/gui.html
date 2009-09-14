@@ -1,0 +1,327 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Building Web Pages For The Hypernumbers Server</title><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"></head><link rel="stylesheet" type="text/css" href="../css/book.css" /><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" title="Building Web Pages For The Hypernumbers Server"><div class="titlepage"><div><div><h1 class="title"><a name="id2749074"></a>Building Web Pages For The Hypernumbers Server</h1></div><div><div class="author"><h3 class="author"><span class="firstname">Gordon</span> <span class="surname">Guthrie</span></h3></div></div><div><p class="copyright">Copyright © 2009 Hypernumbers Ltd</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="preface"><a href="#id2749172">Foreword</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id2749142">Introduction</a></span></dt><dt><span class="sect1"><a href="#id2749154">Purpose</a></span></dt><dt><span class="sect1"><a href="#id2749325">Scope</a></span></dt><dt><span class="sect1"><a href="#id2749393">Who Is This Document <span class="emphasis"><em>Not</em></span> For</a></span></dt><dt><span class="sect1"><a href="#id2749418">Who Is This Document For</a></span></dt><dt><span class="sect1"><a href="#id2749443">Contents Of This Document</a></span></dt><dt><span class="sect1"><a href="#id2749530">Licensing</a></span></dt></dl></dd><dt><span class="chapter"><a href="#id2749548">1. Your Development Environment</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id2749556">Overview</a></span></dt><dt><span class="sect1"><a href="#id2749599">Configuring Firefox</a></span></dt><dd><dl><dt><span class="sect2"><a href="#id2749635">Firebug</a></span></dt><dt><span class="sect2"><a href="#id2749692">JSONView</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#id2749721">2. How hypernumbers GUI's Work</a></span></dt><dd><dl><dt><span class="sect1"><a href="#id2749728">Introduction</a></span></dt><dt><span class="sect1"><a href="#id2749766">Overview</a></span></dt><dt><span class="sect1"><a href="#id2749772">Hypernumbers' Inner Workings</a></span></dt><dt><span class="sect1"><a href="#id2749774">Hypernumbers Display API</a></span></dt><dd><dl><dt><span class="sect2"><a href="#id3614987">Introduction</a></span></dt><dt><span class="sect2"><a href="#id3615007">Attributes Information</a></span></dt><dt><span class="sect2"><a href="#id3615332">Updates Information</a></span></dt></dl></dd><dt><span class="sect1"><a href="#id3615530">Hypernumbers POST API</a></span></dt><dd><dl><dt><span class="sect2"><a href="#id3615535">Introduction</a></span></dt><dt><span class="sect2"><a href="#id3615570">Exercise For The Reader</a></span></dt></dl></dd><dt><span class="sect1"><a href="#id3615602">Multi-lingualisation</a></span></dt><dt><span class="sect1"><a href="#id3615633">Summary</a></span></dt><dd><dl><dt><span class="sect2"><a href="#id3615638">Introduction</a></span></dt><dt><span class="sect2"><a href="#id3615654">Developer Support</a></span></dt></dl></dd></dl></dd></dl></div><div class="list-of-tables"><p><b>List of Tables</b></p><dl><dt>Chapter Descriptions. <a href="#id2749449"></a></dt></dl></div><div class="preface" title="Foreword"><div class="titlepage"><div><div><h2 class="title"><a name="id2749172"></a>Foreword</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#id2749142">Introduction</a></span></dt><dt><span class="sect1"><a href="#id2749154">Purpose</a></span></dt><dt><span class="sect1"><a href="#id2749325">Scope</a></span></dt><dt><span class="sect1"><a href="#id2749393">Who Is This Document <span class="emphasis"><em>Not</em></span> For</a></span></dt><dt><span class="sect1"><a href="#id2749418">Who Is This Document For</a></span></dt><dt><span class="sect1"><a href="#id2749443">Contents Of This Document</a></span></dt><dt><span class="sect1"><a href="#id2749530">Licensing</a></span></dt></dl></div><div class="sect1" title="Introduction"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749142"></a>Introduction</h2></div></div></div><p><span class="emphasis"><em>Building Web Pages For The Hypernumbers Server</em></span> is aimed at the average software developer who wishes to build tools for normal people to use to build hypernumbers applications.</p></div><div class="sect1" title="Purpose"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749154"></a>Purpose</h2></div></div></div><p>The purpose of this document is to:
+      </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">explain how hypernumbers works</li><li class="listitem">show some worked examples of custom GUI's</li><li class="listitem">enable developers to write and deploy custom GUI's for their users</li></ul></div><p>
+    </p></div><div class="sect1" title="Scope"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749325"></a>Scope</h2></div></div></div><p>This document will cover the following things:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">how existing hypernumbers GUI's work</li><li class="listitem">building GUI's in Javascript using the existing open source hypernumbers Javascript libraries</li><li class="listitem">the main hypernumbers JSON GUI api</li></ul></div><p>
+    </p><p>This document will <span class="emphasis"><em>NOT</em></span> cover the following things:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">writing server-side functions</li><li class="listitem">deploying GUI's on the server</li><li class="listitem">storing information under your own attributes on a hypernumber</li><li class="listitem">modifying or extending the hypernumbers open source Javascript libraries</li><li class="listitem">building your own GUI framework using the raw hypernumbers server JSON API</li><li class="listitem">the JQuery library which hypernumbers uses 'under the covers'</li></ul></div><p>
+    </p></div><div class="sect1" title="Who Is This Document Not For"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749393"></a>Who Is This Document <span class="emphasis"><em>Not</em></span> For</h2></div></div></div><p>This is <span class="emphasis"><em>not</em></span> a document for non-technical people - you need to be a programmer. If you are a basic Excel user who wants to build things with hypernumbers <span class="emphasis"><em>this is not for you</em></span>. It is a technical document.</p></div><div class="sect1" title="Who Is This Document For"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749418"></a>Who Is This Document For</h2></div></div></div><p>This is a document for <span class="emphasis"><em>software developers</em></span> who wish to build tools for users to use with a hypernumbers server. These tools should be aimed at non-technical people - <span class="emphasis"><em>enabling them to build applications in the normal hypernumbers way</em></span>. It is aimed at the generalist and not the Javascript Guru.</p></div><div class="sect1" title="Contents Of This Document"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749443"></a>Contents Of This Document</h2></div></div></div><table cellpadding="5" id="id2749449"><thead><tr valign="top" align="center"><td>Chapter</td><td>Description</td></tr></thead><tbody><tr valign="top"><td>Your Development Environment</td><td>explains how to set up your machine in order to develop with, and debug hypernumbers GUI's</td></tr><tr valign="top"><td>How hypernumbers GUI's Work</td><td>steps through the event cycle of the hypernumbers GUI explaining in general terms how the system is architected</td></tr><tr valign="top"><td>The Internals GUI</td><td>shows how to build a basic internals GUI that displays the internals of the update cycle. This GUI is ideal to use to learn how hypernumbers apps work by following the event cycle and seeing how updates are pushed out to the client. It also forms the basic framework for building your own GUI's</td></tr><tr valign="top"><td>The Dashboard GUI</td><td>builds the most primitive sort of GUI in a step-by-step manner - a GUI that does no updates to the server side data but just presents the information on a spreadsheet in a more appropriate manner</td></tr></tbody></table><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>More sections to follow!</div></div><div class="sect1" title="Licensing"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749530"></a>Licensing</h2></div></div></div><p>This document is release under the Creative Commons License</p><p>All source code examples are available for download and are released under the Modified BSD license</p></div></div><div class="chapter" title="Chapter 1. Your Development Environment"><div class="titlepage"><div><div><h2 class="title"><a name="id2749548"></a>Chapter 1. Your Development Environment</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#id2749556">Overview</a></span></dt><dt><span class="sect1"><a href="#id2749599">Configuring Firefox</a></span></dt><dd><dl><dt><span class="sect2"><a href="#id2749635">Firebug</a></span></dt><dt><span class="sect2"><a href="#id2749692">JSONView</a></span></dt></dl></dd></dl></div><div class="sect1" title="Overview"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749556"></a>Overview</h2></div></div></div><p>This chapter will explain how to set your machine up to develop GUI's for hypernumbers. It will:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">focus on the Firefox broswer (suitable for Windows, Mac, Linux and other Unix development platforms)</li><li class="listitem">show which plug-ins are most useful for hypernumbers GUI developers</li><li class="listitem">provide a brief overview of Javascript debugging tools and techniques</li></ul></div><p>
+    </p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>If you are a Javascript Guru and happy with, for instance, the Safari development environment feel free to ignore this section and do yer own thang...</div><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>This is not a javascript tutorial or a detailed exposition of debugging Javascript programmes.</div></div><div class="sect1" title="Configuring Firefox"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749599"></a>Configuring Firefox</h2></div></div></div><p>hypernumbers needs Firefox 3 or above which can be obtained from http://www.mozilla.com/en-US/firefox/upgrade.html .</p><p>You should install the following plug-ins:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">Firebug</li><li class="listitem">JSONView</li></ul></div><p>
+    </p><div class="sect2" title="Firebug"><div class="titlepage"><div><div><h3 class="title"><a name="id2749635"></a>Firebug</h3></div></div></div><p>which can be installed from https://addons.mozilla.org/en-US/firefox/</p><p>Firebug enables you to trace hypernumbers AJAX calls and inspect the DOM to follow what is going on.</p><p>This screenshot shows us inspecting the background Ajax calls of the main hypernumbers spreadsheet GUI:</p><img src="../images/firebug1.png"><p>This screenshot shows us inspecting the DOM of the main hypernumbers spreadsheet GUI:</p><img src="../images/firebug2.png"><p>As we go on we will see these options being used to debug our application as we build it.</p></div><div class="sect2" title="JSONView"><div class="titlepage"><div><div><h3 class="title"><a name="id2749692"></a>JSONView</h3></div></div></div><p>JSONView just allows you to inspect JSON in the browser without having to save it as a file. The hypernumbers server speaks JSON exclusively so it is handy to be able to just peek at it as and when. This screenshot shows some JSON in the browser using JSONView:</p><img src="../images/jsonview.png"></div></div></div><div class="chapter" title="Chapter 2. How hypernumbers GUI's Work"><div class="titlepage"><div><div><h2 class="title"><a name="id2749721"></a>Chapter 2. How hypernumbers GUI's Work</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#id2749728">Introduction</a></span></dt><dt><span class="sect1"><a href="#id2749766">Overview</a></span></dt><dt><span class="sect1"><a href="#id2749772">Hypernumbers' Inner Workings</a></span></dt><dt><span class="sect1"><a href="#id2749774">Hypernumbers Display API</a></span></dt><dd><dl><dt><span class="sect2"><a href="#id3614987">Introduction</a></span></dt><dt><span class="sect2"><a href="#id3615007">Attributes Information</a></span></dt><dt><span class="sect2"><a href="#id3615332">Updates Information</a></span></dt></dl></dd><dt><span class="sect1"><a href="#id3615530">Hypernumbers POST API</a></span></dt><dd><dl><dt><span class="sect2"><a href="#id3615535">Introduction</a></span></dt><dt><span class="sect2"><a href="#id3615570">Exercise For The Reader</a></span></dt></dl></dd><dt><span class="sect1"><a href="#id3615602">Multi-lingualisation</a></span></dt><dt><span class="sect1"><a href="#id3615633">Summary</a></span></dt><dd><dl><dt><span class="sect2"><a href="#id3615638">Introduction</a></span></dt><dt><span class="sect2"><a href="#id3615654">Developer Support</a></span></dt></dl></dd></dl></div><div class="sect1" title="Introduction"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749728"></a>Introduction</h2></div></div></div><p>This section will:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">give an overview of how hypernumbers works</li><li class="listitem">show you how to inspect the inner workings using Firebug</li><li class="listitem">list the various pieces of data that the hypernumbers display API provides</li><li class="listitem">a quick look at the hypernumbers POST API that allows a GUI to change the server state</li><li class="listitem">multilingualisation</li></ul></div><p>
+    </p></div><div class="sect1" title="Overview"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749766"></a>Overview</h2></div></div></div><p>There are a number of key concepts to grasp that underpin the hypernumbers application. Hypernumbers makes a strict separation between <span class="emphasis"><em>pages</em></span> and <span class="emphasis"><em>hypernumbers</em></span> (or <span class="emphasis"><em>cells</em></span> as they appear to the end user).</p><p>It is easiest to just show this. Look at the following screenshot - notice that the URL ends in a slash - in hypernumbers this indicates a <span class="emphasis"><em>page</em></span>:</p><pre class="programlisting">
+      
+               http://127.0.0.1:9000/some/page/
+      
+    </pre><img src="../images/page.png"><p>Now lets look at cell e6 on the page. Notice that the URL for a hypernumber (or cell) ends in the cell reference:</p><pre class="programlisting">
+      
+               http://127.0.0.1:9000/some/page/e6
+      
+    </pre><img src="../images/cell1.png"><p>What appears to be a page of a spreadsheet is in fact an 'empty' page populated by lots of cells each of which has its own URL.</p><p>This is the basic operation of a hypernumbers server. The user requests a page - the hypernumbers server returns an html page with which uses Ajax calls to construct itself from a number of hypernumbers/cells. There are a number of conventions which determine which cells appear on which pages.</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">the cells 'on' that page</li><li class="listitem">the cells 'on' a page and a specific subpage</li><li class="listitem">the cells 'on' the parent page</li></ul></div><p>We will see some of the design patterns later in this document</p><div class="warning" title="Warning" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning</h3>Be sure to write examples of these design patterns prior to release of this doco, ya bas!</div><p>The basic cell URL is not so useful - it is worth expanding it with a decorator that will give us more information about the cell:</p><pre class="programlisting">
+        
+                 http://127.0.0.1:9000/some/page/e6?attr
+        
+      </pre><img src="../images/cell2.png"><p>We can use this approach to look at the attributes of cells, ranges, columns, rows and pages by using the appropriate notation for them:</p><pre class="programlisting">
+        
+                 http://127.0.0.1:9000/some/page/e1:f6?attr
+                 http://127.0.0.1:9000/some/page/e:f?attr
+                 http://127.0.0.1:9000/some/page/1:6?attr
+                 http://127.0.0.1:9000/some/page/?attr
+        
+      </pre><p>In addition individual objects can be referred to by names instead of absolute ranges - this has a similar syntax:</p><pre class="programlisting">
+      
+               http://127.0.0.1:9000/some/page/@name?attr
+      
+    </pre><p>Getting all the attributes of a page by using a page URL plays an important part in the hypernumbers GUI building lifecycle as we will see later.</p></div><div class="sect1" title="Hypernumbers' Inner Workings"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749772"></a>Hypernumbers' Inner Workings</h2></div></div></div><p>Lets use Firebug to see how the main hypernumbers GUI works. Simply (re)load a hypernumbers page and look at the Ajax traffic:</p><img src="../images/firebug1.png"><p>Firebug tells the story. Hypernumbers servers up the index page which looks like an Excel/OpenOffice spreadsheet interface. That page then makes 4 ajax requests.</p><pre class="programlisting">
+      
+               http://127.0.0.1:9000/some/page/?attr
+               http://127.0.0.1:9000/some/page/?pages
+               http://127.0.0.1:9000/some/page/?fns_en_db.json
+               http://127.0.0.1:9000/some/page/?updates=1234567890
+      
+    </pre><p>The first of these returns all the attributes of the current page - that is to say the attributes of all cells, rows and columns on the page, as well as any particular attributes of the page itself. This data is used to build the page - putting sdasf in cell e2 and a purple centred 3434343 in cell e6, etc, etc</p><p>The second of these returns a json structure that is a tree of pages which the current logged in user has permissions to see - this is used to build the <span class="emphasis"><em>My Spreadsheets</em></span> menu.</p><p>The third of these returns the data for the functions dialog box. Notice that it is marked by language. The current language that the spreadsheet is using is stored in a cookie and the appropriate version of the GUI is sent along with the function set in the selected language.</p><p>The fourth Ajax call is mysteriously not completed. The update call is acutally a long-lived Comet connection which the server uses to update the GUI.</p><p>This fourth connection is the key to the GUI event cycle in hypernumbers. The critical point is the user action on the GUI <span class="emphasis"><em>cannot</em></span> determine what the GUI should display. It is worth understanding why that is. Consider the following set of actions:</p><pre class="programlisting">
+      
+               INSERT INTO CELL   =&gt; b2   VALUE  =&gt; 5
+               SET FORMAT OF CELL =&gt; b3   FORMAT =&gt; "0"
+               INSERT INTO CELL   =&gt; b3   VALUE  =&gt; =b2/4
+      
+    </pre><p>So what value should cell b3 display? The answer is that the formula calculates to 1.25 and the format which indicates how the value should be displayed says it must be rounded to the nearest integer - so the result is shown as 1.</p><p>Lets see how this plays out in hypernumbers? If we peform the actions we can see the Ajax trail shown below:</p><img src="../images/updatecycle1.png"><p>It is worth breaking out the different things that have happened:</p><img src="../images/updatecycle2.png"><p>We see the user operations appear as a series of http POST's where very simple JSON objects are posted to the cell URL's and the response of these actions is streamed over the long-lived update COMET GET's. The updates have a time parameter on them which is used for sequencing responses but has not other menaing.</p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>The various trail posts are a special API that enables the GUI builder to have the GUI write back a little trail of user actions to the logs</div><img src="../images/trail.png"></div><div class="sect1" title="Hypernumbers Display API"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2749774"></a>Hypernumbers Display API</h2></div></div></div><div class="sect2" title="Introduction"><div class="titlepage"><div><div><h3 class="title"><a name="id3614987"></a>Introduction</h3></div></div></div><p>This section will look at how hypernumbers GUI's dispaly information:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">attributes information</li><li class="listitem">update information</li></ul></div></div><div class="sect2" title="Attributes Information"><div class="titlepage"><div><div><h3 class="title"><a name="id3615007"></a>Attributes Information</h3></div></div></div><div class="sect3" title="Overview"><div class="titlepage"><div><div><h4 class="title"><a name="id3615014"></a>Overview</h4></div></div></div><p>Lets look in detail at some of the information passed around in these various calls. Because Firebug doens't show off the JSON to best advantage we will just call the attributes URL in directly in the browser and examine it in JSONView. Here are all the attributes of a page copied from JSONView:</p><pre class="programlisting">
+          
+                   {
+                   
+    * time: 1247251662458203
+    * user: "anonymous"
+    * host: http://127.0.0.1:9000
+    * viewed-tour: "true"
+    * lang: "en_gb"
+    *
+      -
+      page: {
+      }
+    *
+      -
+      styles: {
+          o 5: "color:#FF00FF;font-weight:bold;text-align:center;"
+          o 2: "text-align:right;"
+          o 9: "font-weight:bold;text-decoration:line-through;"
+          o 10: "font-weight:bold;text-decoration:line-through;text-align:right;"
+          o 6: "font-weight:bold;"
+          o 3: "font-weight:bold;text-align:right;"
+          o 7: "font-weight:bold;text-align:left;"
+          o 4: "font-weight:bold;text-align:center;"
+          o 1: "text-align:left;"
+          o 8: "font-weight:bold;text-decoration:line-through;text-align:left;"
+      }
+    *
+      -
+      row: {
+      }
+    *
+      -
+      column: {
+      }
+    *
+      -
+      cell: {
+          o
+            -
+            2: {
+                +
+                  -
+                  5: {
+                      # rawvalue: "sdfasf"
+                      # formula: "sdfasf"
+                      # parents: "bleh"
+                      # value: "sdfasf"
+                      # style: 8
+                      # overwrite-color: "auto"
+                  }
+                +
+                  -
+                  2: {
+                      # rawvalue: 5
+                      # formula: "5"
+                      # parents: "bleh"
+                      # value: "5"
+                      # style: 10
+                      # overwrite-color: "auto"
+                  }
+                +
+                  -
+                  3: {
+                      # style: 9
+                  }
+                +
+                  -
+                  4: {
+                      # style: 9
+                  }
+            }
+          o
+            -
+            9: {
+                +
+                  -
+                  5: {
+                      # rawvalue: 3434348
+                      # formula: "=sum(E6:E8)"
+                      # parents: "bleh"
+                      # value: "3434348"
+                      # style: 2
+                      # overwrite-color: "auto"
+                  }
+            }
+          o
+            -
+            6: {
+                +
+                  -
+                  5: {
+                      # rawvalue: 3434343
+                      # formula: "3434343"
+                      # parents: "bleh"
+                      # value: "3434343"
+                      # style: 5
+                      # overwrite-color: "auto"
+                  }
+            }
+          o
+            -
+            3: {
+                +
+                  -
+                  5: {
+                      # rawvalue: "Now is the winter of our discontent"
+                      # formula: "Now is the winter of our discontent"
+                      # parents: "bleh"
+                      # value: "Now is the winter of our discontent"
+                      # style: 8
+                      # overwrite-color: "auto"
+                  }
+                +
+                  -
+                  2: {
+                      # rawvalue: 1.25
+                      # formula: "=B2/4"
+                      # parents: "bleh"
+                      # value: "1"
+                      # style: 10
+                      # format: "0"
+                      # overwrite-color: "auto"
+                  }
+                +
+                  -
+                  3: {
+                      # style: 9
+                  }
+                +
+                  -
+                  4: {
+                      # style: 9
+                  }
+            }
+          o
+            -
+            7: {
+                +
+                  -
+                  5: {
+                      # rawvalue: 2
+                      # formula: "2"
+                      # parents: "bleh"
+                      # value: "2"
+                      # style: 2
+                      # overwrite-color: "auto"
+                  }
+            }
+          o
+            -
+            4: {
+                +
+                  -
+                  5: {
+                      # style: 6
+                  }
+                +
+                  -
+                  2: {
+                      # style: 6
+                  }
+                +
+                  -
+                  3: {
+                      # style: 6
+                  }
+                +
+                  -
+                  4: {
+                      # style: 6
+                  }
+            }
+          o
+            -
+            8: {
+                +
+                  -
+                  5: {
+                      # rawvalue: 3
+                      # formula: "3"
+                      # parents: "bleh"
+                      # value: "3"
+                      # style: 2
+                      # overwrite-color: "auto"
+                  }
+            }
+      }
+      
+}
+      
+        </pre><p>Reading this JSON structure top to bottom we see 6 distinct things being conveyed:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">general information</li><li class="listitem">page attributes (here there are none)</li><li class="listitem">styles</li><li class="listitem">row attributes (here there are none)</li><li class="listitem">column attributes (here there are none)</li><li class="listitem">cell attributes</li></ul></div><p>We will discuss these 6 categories of information separately</p></div><div class="sect3" title="General Information"><div class="titlepage"><div><div><h4 class="title"><a name="id3615147"></a>General Information</h4></div></div></div><p>This just stores a range of general information, who the user is, wha the host is, have they seen the tour or should it be displayed and what language the user expects</p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>GUI developers <span class="emphasis"><em>cannot</em></span> define and persist their own general information to the server</div></div><div class="sect3" title="Page Attributes"><div class="titlepage"><div><div><h4 class="title"><a name="id3615167"></a>Page Attributes</h4></div></div></div><p>hypernumbers reserves no page attributes.</p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>GUI developers can define and persist their own page attributes and retrieve them to use in GUI's for any purpose they wish</div></div><div class="sect3" title="Styles"><div class="titlepage"><div><div><h4 class="title"><a name="id3615182"></a>Styles</h4></div></div></div><p>Hypernumbers operates a magic-style system. Various CSS attributes are recognised and may be set by the GUI. When this happens they are trapped in a magic style. Each cell has a style attribute which contains an index. That index is used to look up the style table.</p><p>The following CSS elements are in the magic style</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">border-right-style</li><li class="listitem">border-left-style</li><li class="listitem">border-top-style</li><li class="listitem">border-bottom-style</li><li class="listitem">border-right-color</li><li class="listitem">border-left-color</li><li class="listitem">border-top-color</li><li class="listitem">border-bottom-color</li><li class="listitem">border-right-width</li><li class="listitem">border-left-width</li><li class="listitem">border-top-width</li><li class="listitem">border-bottom-width</li><li class="listitem">color</li><li class="listitem">vertical-align</li><li class="listitem">background-color</li><li class="listitem">font-weight</li><li class="listitem">font-size</li><li class="listitem">font-family</li><li class="listitem">font-style</li><li class="listitem">font-stretch</li><li class="listitem">text-decoration</li><li class="listitem">text-shadow</li><li class="listitem">text-align</li><li class="listitem">whitespace</li></ul></div><p>Styles have page scope (which is why copy'n'paste is operated as a server-side function)</p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>GUI developers <span class="emphasis"><em>cannot</em></span> define and persist their own style elements</div></div><div class="sect3" title="Row Attributes"><div class="titlepage"><div><div><h4 class="title"><a name="id3615295"></a>Row Attributes</h4></div></div></div><p>The only row attribute currently set is height.</p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>GUI developers are free to set their own row attributes (eg 'hidden')</div></div><div class="sect3" title="Column Attributes"><div class="titlepage"><div><div><h4 class="title"><a name="id3615312"></a>Column Attributes</h4></div></div></div><p>The only column attribute currently set is width.</p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>GUI developers are free to set their own column attributes (eg 'hidden')</div></div><div class="sect3" title="Cell Attributes"><div class="titlepage"><div><div><h4 class="title"><a name="id3615330"></a>Cell Attributes</h4></div></div></div><p>The key attribute of a hypernumber/cell is the formula. This is essentially what the user types directly into the cell and it can be a range of things:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">a number</li><li class="listitem">a string</li><li class="listitem">a date</li><li class="listitem">a boolean</li><li class="listitem">a formula</li></ul></div><p>Numbers can be:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">positive</li><li class="listitem">negative</li><li class="listitem">integer</li><li class="listitem">float</li><li class="listitem">exponent</li></ul></div><p>Booleans can be:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">true</li><li class="listitem">false</li></ul></div><p>In addition you can force a string by quoting it. Thevariants of these 6 types of entry are shown below:</p><pre class="programlisting">
+            
+               1
+               -2
+               3.45e-1
+               -1.23E+1
+               bob's your uncle
+               and betty's "your aunt"
+               true
+               false
+               1/2/33             =&gt; a date: displayed as 1st February 2003
+               =1+2               =&gt; displays as 3
+               =1+2*b3/sum(c4:c9) =&gt; displays as the result of the calculation
+               '=1+2              =&gt; displays as =1+2
+               '1/2/33            =&gt; displays as 1/2/33
+      
+          </pre><p>From this basic relationship there flows a variety of cell attributes (not all of which are exposed to the GUI) which have a complex relationship.</p><img src="../images/cellattributes.png"><p>The 'formula' attribute is evaluated resulting in the 'rawvalue'.</p><pre class="programlisting">
+            
+               FORMULA =&gt; 1             RAWVALUE =&gt; 1
+               FORMULA =&gt; true          RAWVALUE =&gt; true
+               FORMULA =&gt; hello sailor  RAWVALUE =&gt; "hello sailor"
+               FORMULA =&gt; 1/2/33        RAWVALUE =&gt; 1st February 1903 00:00:00
+               FORMULA =&gt; =4/5          RAWVALUE =&gt; 1.25
+            
+          </pre><p>The 'format' is then applied to the 'rawvalue' resulting in the 'value' and the 'overwrite-color'. The formats are compatible with Microsoft Excel 97 formats. An Excel format allows text colours to be specified depending on the value (typically red text for negative numbers, but there are other options). The 'overwrite-color' is generated from the format (if appropriate).</p><p>The various 'magic' attributes are used to construct the style. If there is no style elements associated with a cell a default style is constructed for a cell. This is typically just an alignment:</p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem">numbers are aligned right</li><li class="listitem">booleans are aligned centre</li><li class="listitem">dates are aligned centre</li><li class="listitem">strings and quoted items are aligned right</li></ul></div></div></div><div class="sect2" title="Updates Information"><div class="titlepage"><div><div><h3 class="title"><a name="id3615332"></a>Updates Information</h3></div></div></div><p>Lets look at some typical update messages:</p><pre class="programlisting">
+          
+{
+
+    * time: 1247310974071121
+    *
+      -
+      msgs: [
+          o
+            -
+            {
+                + type: "change"
+                + reftype: "cell"
+                + ref: "H2"
+                + name: "style"
+                + value: 2
+            }
+      ]
+
+}
+
+{
+    * time: 1247311089661061
+    *
+      _
+      msgs: [
+
+          o
+            -
+            {
+                + type: "delete"
+                + reftype: cell"
+                + ref: "E2"
+                + name: "rawvalue"
+                + value: "sdfasf"
+            }
+      ]
+
+
+{
+    * time: 1247311470390915,
+    *
+      _
+      msgs: [
+
+          o
+            -
+            {
+                + type: "style"
+                + index: "11"
+                + css: "background-color:#000080
+                + text-align: "right;"
+            }
+            ]
+}
+            
+          </pre><p>We see that they split into 2 - cell and style messages - and that the cell messages have 2 types - change and delete. This is all fairly straightforward.</p></div></div><div class="sect1" title="Hypernumbers POST API"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id3615530"></a>Hypernumbers POST API</h2></div></div></div><div class="sect2" title="Introduction"><div class="titlepage"><div><div><h3 class="title"><a name="id3615535"></a>Introduction</h3></div></div></div><p>The best way to understand the hypernumbers POST API is simply to perform some actions in a normal spreadsheet and look at the AJAX calls in Firebug:</p><pre class="programlisting">
+          
+                   {"set":{"font-family":"serif"}}	
+                   {"set":{"mark":"Message for the logs"}}
+                   {"clear":"contents"}	
+                   {"copy":{"src":"http://127.0.0.1:9000/some/page/E8:E8"}}
+          
+        </pre><p>To understand how the POST API works it is important to look at the URL which is being posted to. Some actions are performed by POST'ing against a cell, some a range, some a column or row and some a page. On occassions the same API can be used against a combination of URL types (consult the API documentation for details).</p><div class="warning" title="Warning" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning</h3>Write the API documentation</div></div><div class="sect2" title="Exercise For The Reader"><div class="titlepage"><div><div><h3 class="title"><a name="id3615570"></a>Exercise For The Reader</h3></div></div></div><p>The reader is invited to explore the existing hypernumbers API and understand the various post mesages. The API is largely self-explanatory.</p><div class="note" title="Note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3>There are 2 post API calls which have a somewhat odd behaviour. These are 'trail' and 'mark'. 'trail' is used by a GUI designer to get the GUI to report back user behaviour (eg looking at menu items, or exploring aspects of the GUI) which the GUI designer would like to be able to monitor remotely. 'mark' is an API that simply collections a text string from the user and sends it. What both these API calls have in common is that neither touches the main hypernumbers server. They both simply write a message to the server-side logs. 'trail' messages leave a trail of the user behaviour in the logs. 'mark' messages mean that the developer can replay the server logs on a test or development machine and and then watch the users behaviour up to the point in which they feel the need to report a bug or make a comment</div></div></div><div class="sect1" title="Multi-lingualisation"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id3615602"></a>Multi-lingualisation</h2></div></div></div><p>Hypernumbers GUI's are multilingual and the translation of them is done via hypernumbers pages:</p><img src="../images/multilingual.png"><p>It is good practice to build your GUI's to be multi-lingual from the start and we will see how to do that later on in this document</p></div><div class="sect1" title="Summary"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id3615633"></a>Summary</h2></div></div></div><div class="sect2" title="Introduction"><div class="titlepage"><div><div><h3 class="title"><a name="id3615638"></a>Introduction</h3></div></div></div><p>Having now explained how the hypernumbers API's work and shown how to examine them, the next section of this document will step through building a custom GUI. Before doing that it is worth understanding hypernumbers strategy for supporting custom GUI development.</p></div><div class="sect2" title="Developer Support"><div class="titlepage"><div><div><h3 class="title"><a name="id3615654"></a>Developer Support</h3></div></div></div><p>The general architecture of the hypernumbers stack is shown below:</p><img src="../images/architecture.png"><p>The system has been architected with a modular design. There are large and well tested modular components (shown in white) which support the custom aspects of a particular hypernumbers deployment (the components shown in yellow). Although the hypernumbers GUI API's are pretty straightforward and a developer could build their own complete GUI on top of the raw AJAX calls it is much easier to build custom GUI's around a tested set of Javascript libraries that abstract out browser specific problems. It is this that we shall look at in the next section.</p></div></div></div></div></body></html>
