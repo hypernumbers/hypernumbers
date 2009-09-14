@@ -815,24 +815,14 @@ sumsq_(Nums) ->
     sum([X * X || X <- Nums]).
 
 sumproduct(Arrs) ->
-    NArrs = [col([X], [eval_funs,
-                       {conv, str, ?ERRVAL_VAL}, {conv, bool, ?ERRVAL_VAL},
-                       fetch, flatten,
-                       {conv, blank, 0}, {conv, str, 0}, {conv, bool, 0}],
+    NArrs = [col([X], [eval_funs, fetch, {convflat, str, ?ERRVAL_VAL},
+                       {convflat, bool, ?ERRVAL_VAL}, flatten,
+                       {conv, bool, 0}, {conv, blank, 0}, {conv, str, 0}],
                  [return_errors, {all, fun is_number/1}]) || X <- Arrs],    
     muin_util:run(NArrs, fun sumproduct_/1).
 
 sumproduct_(Arrs) ->
     lists:sum( [ product1(X) || X <- hslists:transpose(Arrs) ]).
-
-%%     ?ERRVAL_VAL;
-%% sumx2my2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
-%%     ?ERRVAL_NA;
-%% sumx2my2_(Nums1, Nums2) ->
-%%     sum(map(fun({X, Y}) ->
-%%                     (X * X) - (Y * Y)
-%%             end,
-%%             zip(Nums1, Nums2))).
 
 %% @todo not Excel 97 - no test suite
 seriessum([K, N, M, Coeffs]) ->

@@ -53,7 +53,8 @@ dstdevp([DbR, Fld, CR]) ->
     A = fun(Vs) -> stdfuns_stats:stdevp(Vs) end,
     db_aggregate_func(DbR, Fld, CR, A).
 
-dsum([DbR, Fld, CR]) ->
+dsum([DbR, Fld, CR]=Args) ->
+    io:format("Args ~p~n",[Args]),
     A = fun(Vs) -> stdfuns_math:sum(Vs) end,
     db_aggregate_func(DbR, Fld, CR, A).
 
@@ -84,6 +85,7 @@ generic_select_values(DbR, Fld, CR) ->
     Db = odf_db:from_range(DbR),
     Criteriaset = odf_db:criteria_from_range(CR),
     Matched = odf_db:select(Db, Criteriaset),
+    io:format("~p ~p~n",[Fld, Matched]),
     Vs = odf_db:db_field(Fld, Matched),
     case Vs of
         no_such_field -> ?ERR_VAL;
