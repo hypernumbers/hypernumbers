@@ -39,8 +39,8 @@ create("<="++C) -> type_fun( fun stdfuns_logical:'<='/1, C);
 create("<"++C)  -> type_fun( fun stdfuns_logical:'<'/1, C);
 create("="++C)  -> type_fun( fun stdfuns_logical:'='/1, C);
 create(C) ->
-    
-    Re1 = re:replace(C, "\\?", "[a-z0-9]{1}", [{return, list}, global]),
+    Re = stdfuns_text:esc_rgx(C),
+    Re1 = re:replace(Re, "\\?", "[a-z0-9]{1}", [{return, list}, global]),
     Re2 = re:replace(Re1, "\\*", "[a-z0-9]\\*", [{return, list}, global]),
     Re3 = "^"++Re2++"$", %"
                      

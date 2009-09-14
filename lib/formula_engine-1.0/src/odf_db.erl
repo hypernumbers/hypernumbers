@@ -48,8 +48,7 @@
           recs = []  % records
          }).
 
--define(hash(X),
-        X). % for tests
+-define(hash(X), string:to_upper(X)). % for tests
         %%erlang:md5(X)). % for production.
 
 %%% @doc Create a database from a range.
@@ -83,7 +82,7 @@ select([Record|T], Criteriaset, Acc) ->
 
 db_field(Field, #odf_db{fm = Fm, recs = Recs}) when ?is_string(Field) ->
     case keysearch(?hash(Field), 2, Fm) of
-        {value, {Field, InternalField}} ->
+        {value, {_Field, InternalField}} ->
             map(fun(Rec) -> record_field(InternalField, Rec) end, Recs);
         false ->
             no_such_field %% TODO: hmmmm......

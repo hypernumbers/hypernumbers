@@ -241,6 +241,17 @@ flat([Head|Tail], Acc) ->
 pass(Args, []) ->
     Args;
 
+pass(Args, [ return_flat_errors | Rules ]) ->
+    
+    F = fun(X, _Acc) when ?is_errval(X) -> X;
+           (_X, Acc) -> Acc
+        end,
+    
+    case lists:foldr(F, false, Args) of
+        false -> pass(Args, Rules);
+        Err   -> Err
+    end;
+
 % if there are any errors in the parameters, return these
 pass(Args, [ return_errors | Rules ]) ->
     
