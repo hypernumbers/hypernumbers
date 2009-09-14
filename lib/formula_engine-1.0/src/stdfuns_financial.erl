@@ -16,34 +16,57 @@
 
 -import(muin_collect, [ col/2, col/3, col/4 ]).
 
-%% db([V1, V2, V3, V4]) ->
-%%     "the function db has an infinite loop!";
-%%     % db([V1, V2, V3, V4, 12]);
-%% db([V1, V2, V3, V4, V5]) ->
-%%     [Cost, Salvage, Life, Period, Month] = ?numbers([V1, V2, V3, V4, V5],
-%%                                                     ?default_rules),
-%%     ?ensure((Month >= 1) andalso (Month =< 12), ?ERR_NUM), 
-%%     "the function db has an infinite loop!".
-%%     % db1(Cost, Salvage, Life, Period, Month).
--define(dbrate,
-        (stdfuns_math:round1(1 - math:pow(Salvage / Cost, 1 / Life), 3))).
-db1(Cost, Salvage, Life, Life, Month) -> % Last period
-    %% io:format("in stdfuns_financial:db1 (1)~n"),
-    Prevdepr = foldl(fun(X, Acc) ->
-                             Acc + db1(Cost, Salvage, Life, X, Month)
-                     end,
-                     0, seq(1, Life - 1)),
-    ((Cost - Prevdepr) * ?dbrate * (12 - Month)) / 12;
-db1(Cost, Salvage, Life, 1, Month) -> % First period
-    %% io:format("in stdfuns_financial:db1 (2)~n"),
-    Cost * ?dbrate * Month / 12;
-db1(Cost, Salvage, Life, Period, Month) -> % Some other period
-    %% io:format("in stdfuns_financial:db1 (3)~n"),
-    Prevdepr = foldl(fun(X, Acc) ->
-                             Acc + db1(Cost, Salvage, Life, X, Month)
-                     end,
-                     0, seq(1, Period - 1)),
-    (Cost - Prevdepr) * ?dbrate.
+db([V1, V2, V3, V4]) -> db([V1, V2, V3, V4, 12]);
+db([_, _, _, _, _]=Args) ->
+    col(Args,
+        [eval_funs, first_array, fetch_name, fetch_ref, cast_num],
+        [return_errors, {all, fun is_number/1}],
+        fun db_/1).
+
+db_([_, _, _, _, Month]) when Month < 1; Month > 12 -> ?ERRVAL_NUM;
+db_([Cost, _, _, _, _]) when Cost < 0               -> ?ERRVAL_NUM;
+db_([Cost, _, _, _, _]) when Cost == 0; Cost =:= 0  -> 0;
+db_([_, _, Life, Period, Month])
+  when Period > erlang:trunc(Life + (Month/12)) ->
+    ?ERRVAL_NUM;
+
+db_([Cost, Salvage, Life, Period, Month]) ->
+    db1(Cost, Salvage, erlang:trunc(Life), Period, Month).
+
+db1(Cost, Salvage, Life, Period, Month) when Period == 1 ->
+    Cost - dbvalue(Cost, Salvage, Life, 1, Month);
+
+db1(Cost, Salvage, Life, Period, Month) ->
+    dbvalue(Cost, Salvage, Life, Period, Month)
+        - dbvalue(Cost, Salvage, Life, Period-1, Month).
+
+dbrate(Salvage, Cost, Life) ->
+    (stdfuns_math:round([1 - math:pow( Salvage/Cost, 1/Life),3])).
+
+dbvalue(Cost, Salvage, Life, Period, Month) when Period < 1 ->
+    Cost * ( 1 - ((Month / 12) * dbrate(Salvage, Cost, Life)));
+dbvalue(Cost, Salvage, Life, Period, Month) when Period =< Life ->
+    dbvalue(Cost, Salvage, Life, Period-1, Month)
+        * (1/dbrate(Salvage, Cost, Life));
+dbvalue(_, _, _, _, _) ->
+    0.
+
+%% db1(Cost, Salvage, Life, Life, Month) ->
+%%     % Last period
+%%     Prevdepr = foldl(fun(X, Acc) ->
+%%                              Acc + db1(Cost, Salvage, Life, X, Month)
+%%                      end,
+%%                      0, seq(1, Life - 1)),
+%%     ((Cost - Prevdepr) * ?dbrate * (12 - Month)) / 12;
+
+
+%%     %% io:format("in stdfuns_financial:db1 (3)~n"),
+%%     Prevdepr = foldl(fun(X, Acc) ->
+%%                              Acc + db1(Cost, Salvage, Life, X, Month)
+%%                      end,
+%%                      0, seq(1, Period - 1)),
+%%     (Cost - Prevdepr) * ?dbrate.
+
 
 effect(Args = [_, _]) ->
     [Nomrate, Npery] = ?numbers(Args, ?default_rules),
@@ -210,7 +233,7 @@ rate(Args = [_, _, _, _, _, _]) ->
         [return_errors, {all, fun is_number/1}],
         fun rate_/1).
 
-rate_([Nper, Pmt, Pv, Fv, Type, _Est]) when Nper == 0 ->
+rate_([Nper, _Pmt, _Pv, _Fv, _Type, _Est]) when Nper == 0 ->
     ?ERRVAL_NUM;
 rate_([Nper, Pmt, Pv, Fv, Type, _Est]) ->
     Rate0 = 0.001,
