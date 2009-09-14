@@ -19,7 +19,7 @@ msgstr "Стили"
 msgid "Insert before"
 msgstr "Вставить 1 слева"
 
-msgid "Your spreadsheet will be stored as"
+msgid "Your spreadsheet is saved as"
 msgstr "Файл будет импортирован в"
 
 msgid "Import Spreadsheets"

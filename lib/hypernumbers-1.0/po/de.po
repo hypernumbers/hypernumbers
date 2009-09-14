@@ -8,13 +8,16 @@ msgid "empty"
 msgstr "leer"
 
 msgid "Clear "
-msgstr "Klar"
+msgstr "Löschen"
 
 msgid "Styles"
 msgstr "Arten"
 
 msgid "Insert before"
-msgstr "Legen Sie 1 Stück"
+msgstr "Vorher einfügen"
+
+msgid "Your spreadsheet is saved as"
+msgstr "Ihre Tabelle wird als ... gespeichert"
 
 msgid "Import Spreadsheets"
 msgstr "Tabellen-Import"
@@ -22,11 +25,17 @@ msgstr "Tabellen-Import"
 msgid "time"
 msgstr "Zeit"
 
+msgid "You can also get us at"
+msgstr "Sie erreichen uns auch unter"
+
 msgid "My Spreadsheets"
 msgstr "Meine Tabellen"
 
 msgid "currency"
 msgstr "Währung"
+
+msgid "Microsoft Help"
+msgstr "Microsoft Hilfe"
 
 msgid "Italian"
 msgstr "Italiano"
@@ -35,7 +44,10 @@ msgid "Portuguese"
 msgstr "Português"
 
 msgid "Plain"
-msgstr "Ebene "
+msgstr "Ohne Format"
+
+msgid "Usage"
+msgstr "Benutzung"
 
 msgid "Russian"
 msgstr "Русский"
@@ -44,28 +56,46 @@ msgid "Serif"
 msgstr "Serif"
 
 msgid "Create New"
-msgstr "Neue"
+msgstr "Neue erstellen"
+
+msgid "Create New Page"
+msgstr "Entschuldigung!  Beim Lesen Ihrer Tabelle ist ein Fehler aufgetreten.  Die Datei wurde zu Ihrer Test-Suite hinzugefügt."
+
+msgid "Preferences"
+msgstr "Präferenzen"
 
 msgid "Login"
-msgstr "Logon"
+msgstr "Anmeldung"
 
 msgid "Contents"
-msgstr "Inhalt"
+msgstr "Inhalte"
 
 msgid "Insert after"
-msgstr "Legen Sie 1 rechts"
+msgstr "Nachher einfügen"
+
+msgid "Warning"
+msgstr "Achtung"
 
 msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
-msgstr "Öffnen Microsoft Excel 97/2000/2003 (*.xls)"
+msgstr "Microsoft Excel 97/2000/2003 (*.xls) öffnen"
 
 msgid "datetime"
 msgstr "Datum und Zeit"
+
+msgid "Import Spreadsheet"
+msgstr "Tabelle importieren"
 
 msgid "File"
 msgstr "Datei"
 
 msgid "percentage"
-msgstr "Prozentsatz"
+msgstr "Prozentzahl"
+
+msgid "until we implement help properly"
+msgstr "bis wir die Hilfe selbst implementieren"
+
+msgid "Feedback / Report Bug"
+msgstr "Feedback / Fehler melden"
 
 msgid "Spanish"
 msgstr "Español"
@@ -73,29 +103,44 @@ msgstr "Español"
 msgid "rounded"
 msgstr "gerundet "
 
+msgid "Examples"
+msgstr "Beispiele"
+
 msgid "German"
 msgstr "Deutsch"
 
 msgid "Monospace"
 msgstr "Monospace"
 
+msgid "Functions"
+msgstr "Funktionen"
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
 msgid "Logged in as"
-msgstr "wie angemeldet"
+msgstr "Angemeldet als"
 
 msgid "Font"
-msgstr "Schriftname"
+msgstr "Schriftart"
 
 msgid "Delete Row(s)"
-msgstr "Zeile löschen (s)"
+msgstr "Zeile(n) löschen"
 
 msgid "en_gb"
 msgstr "de"
+
+msgid "Loading"
+msgstr "Laden"
 
 msgid "Edit"
 msgstr "Bearbeiten"
 
 msgid "Delete columns(s)"
-msgstr "Löschen Sie Spalte (n)"
+msgstr "Spalten löschen"
+
+msgid "Import a spreadsheet"
+msgstr "Eine Tabelle importieren"
 
 msgid "Save"
 msgstr "Speichern"
@@ -103,18 +148,27 @@ msgstr "Speichern"
 msgid "date"
 msgstr "Datum"
 
+msgid "Oops, did something break?"
+msgstr "Ups, ist etwas kaputt?"
+
 msgid "Log out"
-msgstr "Logout"
+msgstr "Abmeldung"
 
 msgid "decimals"
-msgstr "Dezimalstriche "
+msgstr "Dezimalzahlen"
 
 msgid "financial"
 msgstr "finanziell"
+
+msgid "Please use the"
+msgstr "Bitte benutzen Sie die"
 
 msgid "French"
 msgstr "Français"
 
 msgid "Format"
 msgstr "Format"
+
+msgid "Description"
+msgstr "Beschreibungen"
 

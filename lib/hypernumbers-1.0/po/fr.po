@@ -1,5 +1,5 @@
 msgid "English"
-msgstr "English"
+msgstr "Anglais"
 
 msgid "Normal"
 msgstr "Normal"
@@ -19,7 +19,7 @@ msgstr "Modèles"
 msgid "Insert before"
 msgstr "Insérer avant"
 
-msgid "Your spreadsheet will be stored as"
+msgid "Your spreadsheet is saved as"
 msgstr "Votre feuille de calcul sera stockée en tant que"
 
 msgid "Import Spreadsheets"
@@ -41,10 +41,10 @@ msgid "Microsoft Help"
 msgstr "Aide Microsoft"
 
 msgid "Italian"
-msgstr "Italiano"
+msgstr "Italien"
 
 msgid "Portuguese"
-msgstr "Português"
+msgstr "Portuguais"
 
 msgid "Plain"
 msgstr "Sans formatage"
@@ -53,7 +53,7 @@ msgid "Usage"
 msgstr "Utilisation"
 
 msgid "Russian"
-msgstr "Русский"
+msgstr "Russe"
 
 msgid "Serif"
 msgstr "Serif"
@@ -101,7 +101,7 @@ msgid "Feedback / Report Bug"
 msgstr "Feed-back / Annonce de bugs"
 
 msgid "Spanish"
-msgstr "Español"
+msgstr "Espagnol"
 
 msgid "rounded"
 msgstr "arrondi"
@@ -110,7 +110,7 @@ msgid "Examples"
 msgstr "Exemples"
 
 msgid "German"
-msgstr "Deutsch"
+msgstr "Allemand"
 
 msgid "Monospace"
 msgstr "Monospace"

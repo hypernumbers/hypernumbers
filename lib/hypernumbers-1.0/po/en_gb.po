@@ -19,8 +19,8 @@ msgstr "Styles"
 msgid "Insert before"
 msgstr "Insert before"
 
-msgid "Your spreadsheet will be stored as"
-msgstr "Your spreadsheet will be stored as"
+msgid "Your spreadsheet is saved as"
+msgstr "Your spreadsheet is saved as"
 
 msgid "Import Spreadsheets"
 msgstr "Import Spreadsheets"
