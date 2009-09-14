@@ -251,13 +251,8 @@ nper(Args = [_, _, _, _, _]) ->
         [return_errors, {all, fun is_number/1}],
         fun nper_/1).
 
-nper_([Rate, Pmt, Pv, Fv, _Partype]) when (Rate == 0) ->
-    Nper0 = 10,
-    Nper1 = 16,
-    X0 = xn0(Pmt, Nper0, Pv, Fv),
-    X1 = xn0(Pmt, Nper1, Pv, Fv),
-    secant(Nper1, Nper0, X1, X0,
-           fun(N) -> xn0(Pmt, N, Pv, Fv) end);
+nper_([_Rate, Pmt, _Pv, _Fv, _Partype]) when Pmt == 0 ->
+    ?ERRVAL_NUM;
 nper_([Rate, Pmt, Pv, Fv, Partype]) ->
     Nper0 = 10,
     Nper1 = 16,
