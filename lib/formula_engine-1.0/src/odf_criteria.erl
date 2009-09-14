@@ -20,14 +20,14 @@
 %%% For a number or logical value, the argument shall equal the given value.
 %%% "argument" = argument to resulting fun, "value" = value specified by user.
 %%% Value *must* be a constant, no references or expressions are allowed.
-create(V) when is_number(V) ->
-    fun(X) -> is_number(V) andalso X == V end;
-create(V) when is_boolean(V) ->
-    fun(X) -> is_boolean(V) andalso X == V end;
-create(V) when ?is_errval(V) ->
-    fun(X) -> X == V end;
-create(V) when is_record(V, datetime) ->
-    fun(X) -> X == V end;
+%% create(V) when is_number(V) ->
+%%     fun(X) -> is_number(V) andalso X == V end;
+%% create(V) when is_boolean(V) ->
+%%     fun(X) -> is_boolean(V) andalso X == V end;
+%% create(V) when ?is_errval(V) ->
+%%     fun(X) -> X == V end;
+%% create(V) when is_record(V, datetime) ->
+%%     fun(X) -> X == V end;
 
 %%% For a string, first see if it begins with a logical operator in which case
 %%% the argument must compare appropriately with the value following the
@@ -38,16 +38,31 @@ create("<>"++C) -> type_fun( fun stdfuns_logical:'<>'/1, C);
 create("<="++C) -> type_fun( fun stdfuns_logical:'<='/1, C);
 create("<"++C)  -> type_fun( fun stdfuns_logical:'<'/1, C);
 create("="++C)  -> type_fun( fun stdfuns_logical:'='/1, C);
+
 create(C) ->
-    Re = stdfuns_text:esc_rgx(C),
+
+    {DoRegex, Match} = conv_str(C),
+
+    fun(X) when is_boolean(C) ->
+            is_boolean(X) andalso X == C;
+       (X) when X =:= C -> true;
+       (X) when DoRegex == true ->
+            not (nomatch == re:run(muin_util:cast(X, str),
+                                   Match, [caseless, anchored]));
+       (_) -> false
+    end.
+
+conv_str(Str) when is_number(Str); is_atom(Str); ?is_string(Str) ->
+    Re = stdfuns_text:esc_rgx(tconv:to_s(Str)),
     Re1 = re:replace(Re, "\\?", "[a-z0-9]{1}", [{return, list}, global]),
     Re2 = re:replace(Re1, "\\*", "[a-z0-9]\\*", [{return, list}, global]),
-    Re3 = "^"++Re2++"$", %"
-                     
-    fun(X) ->
-            Sub = muin_util:cast(X, str),
-            not (nomatch == re:run(Sub, Re3, [caseless, anchored]))
-    end.
+    {true, "^"++Re2++"$"}; %"
+
+conv_str(Str) ->
+    {false, Str}.
+
+    
+                    
 
 type_fun(Fun, C) ->
     Val = lex_constant(C),

@@ -18,7 +18,9 @@
 %% Vs = values
 
 daverage([DbR, Fld, CR]) ->
-    A = fun(Vs) -> stdfuns_stats:average(Vs) end,
+    A = fun(Vs) ->
+                stdfuns_stats:average([ X || X <- Vs, is_number(X) ])
+        end,
     db_aggregate_func(DbR, Fld, CR, A) .
 
 dcount([DbR, Fld, CR]) ->
@@ -74,8 +76,9 @@ dvarp([DbR, Fld, CR]) ->
 db_aggregate_func(DbR, Fld, CR, A) ->
     
     F = fun([NDbR], [NFld], [NCR]) ->
-                Vs = generic_select_values(NDbR, NFld, NCR),               
-                A([ X || X <- Vs, is_number(X) ])
+                Vs = generic_select_values(NDbR, NFld, NCR),
+                io:format("Vs ~p",[Vs]),
+                A(Vs)
         end,
     
     generic_argument_check(DbR, Fld, CR, F).
