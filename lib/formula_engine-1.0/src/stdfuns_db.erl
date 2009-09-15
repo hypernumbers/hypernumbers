@@ -77,7 +77,6 @@ db_aggregate_func(DbR, Fld, CR, A) ->
     
     F = fun([NDbR], [NFld], [NCR]) ->
                 Vs = generic_select_values(NDbR, NFld, NCR),
-                io:format("Vs ~p",[Vs]),
                 A(Vs)
         end,
     
@@ -90,11 +89,13 @@ is_str_or_int(_) ->
 
 generic_argument_check(DbR, Fld, CR, F) ->
 
-    NDbr = col([DbR], [eval_funs, fetch], [return_flat_errors, {all, fun is_range/1}]),
+    NDbr = col([DbR], [eval_funs, fetch, {conv, blank, ?ERRVAL_VAL}],
+               [return_flat_errors, {all, fun is_range/1}]),
     NFld = col([Fld], [eval_funs, fetch, area_first, {cast, bool, num},
                        {conv, blank, 0}, {cast, num, int}],
                [return_errors, {all, fun is_str_or_int/1}]),
-    NCr  = col([CR],[eval_funs, fetch], [return_flat_errors, {all, fun is_range/1}]),
+    NCr  = col([CR],[eval_funs, fetch],
+               [return_flat_errors, {all, fun is_range/1}]),
 
     muin_util:apply([NDbr, NFld, NCr], F).
 
