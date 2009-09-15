@@ -18,7 +18,7 @@
 
 -define(OUT_OF_RANGE, {error, out_of_range}).
 
-is_matrix({Type, Rows} = Area) when ?is_area(Area) ->
+is_matrix({_Type, Rows} = Area) when ?is_area(Area) ->
     Size = length(hd(Rows)),
     lists:all(fun(X) -> length(X) == Size end, Rows)
         andalso length(Rows) == Size.

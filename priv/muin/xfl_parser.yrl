@@ -201,7 +201,7 @@ special_div2(E, CR2) when ?is_cellref(CR2) ->
     end.
 
 postproc(Ast) ->
-    replace_float_tuples(Ast).
+    replace_float(Ast).
 
 %% Replace {Float, OriginalString} tuples with Floats in the AST.
 replace_float({F, Str}) when is_float(F), ?is_string(Str) ->
@@ -213,13 +213,6 @@ replace_float({array, Values}) ->
     {array, Vals};
 replace_float(Else) ->
     Else.
-
-replace_float_tuples(Ast) when is_list(Ast) ->
-    hslists:deepmap(fun replace_float/1, Ast);
-replace_float_tuples(Arr) when ?is_array(Arr) ->
-    replace_float(Arr);
-replace_float_tuples(Ast) ->
-    Ast. % may be a single #cellref etc.
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -28,7 +28,9 @@ dcount([DbR, Fld, CR]) ->
     db_aggregate_func(DbR, Fld, CR, A) .
 
 dcounta([DbR, Fld, CR]) ->
-    A = fun(Vs) -> stdfuns_stats:counta(Vs) end,
+    A = fun(Vs) ->
+                stdfuns_stats:counta([ X || X <- Vs, not(?is_errval(X)) ])
+        end,
     db_aggregate_func(DbR, Fld, CR, A) .
 
 dget([DbR, Fld, CR]) ->

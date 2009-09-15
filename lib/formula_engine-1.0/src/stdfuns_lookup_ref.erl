@@ -36,11 +36,24 @@ column(_Else)                       -> ?ERRVAL_VAL.
 %% TODO: Needs to be recompiled every time -- how to handle that cleanly?
 %% (without writing to proc dict)
 indirect([S]) ->
-    ?ensure(?is_string(S), ?ERR_REF),
-    {ok, Ast} = muin:parse(
-                  S, {muin:context_setting(col), muin:context_setting(row)}),
-    muin:eval(Ast). % want to return a ref here, not a value.
+    indirect([S, true]);
+indirect([S, R1]) ->
+    Str  = col([S], [eval_funs, fetch, area_first, {cast, str}],
+              [return_errors, {all, fun muin_collect:is_string/1}]),
+    Bool = col([R1], [eval_funs, fetch, area_first, {cast, bool}],
+               [return_errors, {all, fun is_boolean/1}]),
+    muin_util:apply([Str, Bool], fun indirect_/2).
 
+indirect_([Str], [_Bool]) ->
+    case muin:parse(Str, {muin:context_setting(col),
+                          muin:context_setting(row)}) of
+        {ok, Ast} ->
+            case muin:eval(Ast) of
+                X when ?is_cellref(X) -> X;
+                _Else                 -> ?ERRVAL_REF
+            end;
+        {error, syntax_error} -> ?ERRVAL_REF
+    end.
 
 row([])                      -> muin:context_setting(row);
 row([C]) when ?is_cellref(C) -> muin:row_index(muin:row(C));
@@ -110,7 +123,7 @@ index([A, V1, V2]) when ?is_area(A) orelse ?is_rangeref(A) ->
               [return_errors, {all, fun is_number/1}]),
     muin_util:apply([A, Ind], fun index_/2).
 
-index_(Area, [X, Y]) when X < 0; Y < 0 ->
+index_(_Area, [X, Y]) when X < 0; Y < 0 ->
     ?ERRVAL_VAL;
 
 index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
