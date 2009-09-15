@@ -65,12 +65,12 @@ search([V1, V2, V3])->
               [return_errors, {all, fun is_number/1}]),    
     muin_util:apply([Str, Num], fun search_/2).
 
-search_([Needle, Hay], [Start]) when Start < 1; Start > length(Hay) ->
+search_([_Needle, Hay], [Start]) when Start < 1; Start > length(Hay) ->
     ?ERRVAL_VAL;
 search_([Needle, Hay], [Start]) ->
     RegExp = wild_to_rgx(Needle),
     {_Start, End} = lists:split(Start-1, Hay),
-    case re:run(End, RegExp, [{capture, first}]) of
+    case re:run(End, RegExp, [{capture, first}, caseless]) of
         {match, [{S, _Length}]} -> S + Start;
         nomatch                 -> ?ERRVAL_VAL
     end.
@@ -84,9 +84,9 @@ replace([V1, V2, V3, V4]) ->
               [return_errors, {all, fun is_number/1}]),
     muin_util:apply([Str, Num], fun replace_/2).
 
-replace_([Str, Replace], [Start, Len]) when Start =< 0; Len < 0 ->
+replace_([_Str, _Replace], [Start, Len]) when Start =< 0; Len < 0 ->
     ?ERRVAL_VAL;
-replace_([Str, Replace], [Start, Len]) when Start > length(Str) ->
+replace_([Str, Replace], [Start, _Len]) when Start > length(Str) ->
     lists:concat([Str, Replace]);
 replace_([Str, Replace], [Start, Len]) ->
     {StartStr, Middle} = lists:split(Start-1, Str),
@@ -122,9 +122,9 @@ mid([V1, V2, V3]) ->
               [return_errors, {all, fun is_number/1}]),    
     muin_util:apply([Str, Num], fun mid_/2).
 
-mid_([Str], [Start, Len]) when Len < 0; Start =< 0 ->
+mid_([_Str], [Start, Len]) when Len < 0; Start =< 0 ->
     ?ERRVAL_VAL;
-mid_([Str], [Start, Len]) when Start > length(Str) ->
+mid_([Str], [Start, _Len]) when Start > length(Str) ->
     [];
 mid_([Str], [Start, Len]) ->
     string:substr(Str, Start, Len).
@@ -133,7 +133,8 @@ clean([true])  -> "TRUE";
 clean([false]) -> "FALSE";
 clean([Str])   ->
     NewStr=?string(Str,?default_str_rules),
-    Clean = fun(X) -> io_lib:printable_list([X]) andalso X =/= 10 end,
+    Clean = fun(X) -> io_lib:printable_list([X])
+                          andalso X =/= 10 andalso X =/= 8 end,
     filter(Clean, NewStr).
 
 %% Fixed is a bit of a mess
@@ -182,8 +183,20 @@ capitalise([$",H|T]) ->
 capitalise([H|T]) ->
     string:to_upper([H]) ++ string:to_lower(T).
 
+make_proper([H|Rest]) ->
+    make_proper(string:to_upper([H]) ++ Rest, []).
+
+make_proper([], Acc) ->
+    lists:reverse(Acc);
+make_proper([Y, X | Rest], Acc) when Y == 32; Y == $- ->
+    make_proper(Rest, [hd(string:to_upper([X])), Y | Acc]);
+make_proper([X | Rest], Acc) ->
+    make_proper(Rest, [X | Acc]).
+
+proper_([[]]) ->
+    [];
 proper_([Str]) ->
-    string:join([ capitalise(X) || X <- string:tokens(Str, " ") ], " ").
+    make_proper(Str).
 
 upper([Str]) ->
     NewStr=?string(Str,?default_str_rules),
@@ -193,8 +206,8 @@ char([V1]) ->
     Code = ?int(V1, [cast_strings, cast_bools, ban_dates, ban_blanks]),
     xmerl_ucs:to_utf8([Code]).
 
-code([Str]) ->
-    xmerl_ucs:from_utf8(string:substr(Str, 1)).
+code([H|_Str]) ->
+    hd(H).
 
 find([Str, InStr]) ->
     find([Str, InStr, 1]);
@@ -293,12 +306,12 @@ rept_([Str], [Reps2]) ->
             lists:flatten(concatenate([lists:map(Fun, lists:seq(1, Reps))]))
     end.
 
-substitute([Text,OldText,NewText]=Args) ->
+substitute([_,_,_]=Args) ->
     col(Args, [first_array, fetch_name,{cast,str}],
         [return_errors, {all, fun muin_collect:is_string/1}],
         fun substitute_/1);
 
-substitute([Text,OldText,NewText, N]=Args) ->
+substitute([Text,OldText,NewText, N]) ->
     NArgs = col([Text,OldText,NewText],
                 [first_array, fetch_name,{cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
