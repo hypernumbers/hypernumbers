@@ -35,9 +35,9 @@ dcounta([DbR, Fld, CR]) ->
 
 dget([DbR, Fld, CR]) ->
     A = fun([])  -> ?ERR_VAL;
-             ([V]) -> V;
-             (_L)  -> ?ERR_NUM
-          end,
+           ([V]) -> V;
+           (_L)  -> ?ERR_NUM
+        end,
     db_aggregate_func(DbR, Fld, CR, A).
 
 dmax([DbR, Fld, CR]) ->

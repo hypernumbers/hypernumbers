@@ -91,26 +91,37 @@ address1(Row, Col, 3, false) ->
 address1(Row, Col, 4, false) ->
     "[" ++ tconv:to_s(Row) ++ "]R[" ++ tconv:to_s(Col) ++ "]C".
 
-%% This is the array form of INDEX. The reference form is in preproc.
 
-%% Arg1 should be an array or range, but constants and cellrefs are also allowed.
+%% Arg1 should be an array or range, but constants and cellrefs are also allowed
 %% Row number or column number can be omitted for areas of height/width of 1.
 %% If either of them is omitted for areas that aren't of height/width 1, a
 %% vertical/horizontal array is returned.
+index([{list, V1}, V2, V3, V4])  ->
+    
+    Num = col([V4],
+              [eval_funs, fetch, area_first, cast_num],
+              [return_errors, {all, fun is_number/1}]),
+
+    case Num of
+        X   when ?is_errval(X)  -> X;
+        [X] when X < 1          -> ?ERRVAL_VAL;
+        [X] when X > length(V1) -> ?ERRVAL_REF;
+        [X]                     -> index([lists:nth(X, V1), V2, V3])
+    end;
 
 index([A, V]) ->
     case (?is_area(A) orelse ?is_rangeref(A)) of
         true ->
             case V > area_util:height(A)  of
                 true -> index([A, 1, V]);
-                _ -> index([A, V, 1])
+                _    -> index([A, V, 1])
             end;
         false ->
             index([A, V, 1])
     end;
 
 index([A, _V1, _V2]) when ?is_errval(A)    -> A;
-index([A, V1, V2]) when ?is_funcall(A)   -> index([muin:eval(A), V1, V2]);
+index([A, V1, V2]) when ?is_funcall(A)     -> index([muin:eval(A), V1, V2]);
 index([A, _V1, _V2]) when ?is_namedexpr(A) -> ?ERRVAL_NAME;
 index([A, V1, V2]) when is_number(A) ->
     index([area_util:make_array([[A]]), V1, V2]);
@@ -127,13 +138,13 @@ index_(_Area, [X, Y]) when X < 0; Y < 0 ->
     ?ERRVAL_VAL;
 
 index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
-    
+
+    %% excel does boundary checking before truncating (dumb)
     [Y, X] = [ erlang:trunc(X) || X<-[FY, FX]],
     
     case (Y > area_util:height(Area) orelse X > area_util:width(Area)) of
         true  -> ?ERRVAL_REF;
         false ->
-
             case ?is_array(Area) of
                 true ->                    
                     [{_, Rows}] = col([Area], [fetch, {conv, blank, 0}]),
@@ -159,6 +170,7 @@ index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
                                           br={{offset,(X1+X)-1},{offset,Y2}},
                                           width=1, height=Y2-Y1};
                         {_, 0} ->
+                            
                             Area#rangeref{tl={{offset,X1},{offset,(Y1+X)-1}},
                                           br={{offset,X2},{offset,(Y1+X)-1}},
                                           width=X2-X1, height=1};
