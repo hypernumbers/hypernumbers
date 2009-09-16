@@ -184,14 +184,14 @@ capitalise([H|T]) ->
     string:to_upper([H]) ++ string:to_lower(T).
 
 make_proper([H|Rest]) ->
-    make_proper(string:to_upper([H]) ++ Rest, []).
+    make_proper(Rest, [hd(string:to_upper([H]))]).
 
 make_proper([], Acc) ->
     lists:reverse(Acc);
-make_proper([Y, X | Rest], Acc) when Y == 32; Y == $- ->
+make_proper([Y, X | Rest], Acc) when Y == 32; Y == $-; Y == $" ->
     make_proper(Rest, [hd(string:to_upper([X])), Y | Acc]);
 make_proper([X | Rest], Acc) ->
-    make_proper(Rest, [X | Acc]).
+    make_proper(Rest, [hd(string:to_lower([X])) | Acc]).
 
 proper_([[]]) ->
     [];
