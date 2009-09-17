@@ -41,11 +41,11 @@ dget([DbR, Fld, CR]) ->
     db_aggregate_func(DbR, Fld, CR, A).
 
 dmax([DbR, Fld, CR]) ->
-    A = fun(Vs) -> stdfuns_stats:max(Vs) end,
+    A = fun(Vs) -> stdfuns_stats:max([ X || X <- Vs, is_number(X) ]) end,
     db_aggregate_func(DbR, Fld, CR, A).
 
 dmin([DbR, Fld, CR]) ->
-    A = fun(Vs) -> stdfuns_stats:min(Vs) end,
+    A = fun(Vs) -> stdfuns_stats:min([ X || X <- Vs, is_number(X) ]) end,
     db_aggregate_func(DbR, Fld, CR, A).
 
 dproduct([DbR, Fld, CR]) ->
@@ -53,23 +53,23 @@ dproduct([DbR, Fld, CR]) ->
     db_aggregate_func(DbR, Fld, CR, A).
 
 dstdev([DbR, Fld, CR]) ->
-    A = fun(Vs) -> stdfuns_stats:stdev(Vs) end,
+    A = fun(Vs) -> stdfuns_stats:stdev([ X || X <- Vs, is_number(X) ]) end,
     db_aggregate_func(DbR, Fld, CR, A).
 
 dstdevp([DbR, Fld, CR]) ->
-    A = fun(Vs) -> stdfuns_stats:stdevp(Vs) end,
+    A = fun(Vs) -> stdfuns_stats:stdevp([ X || X <- Vs, is_number(X) ]) end,
     db_aggregate_func(DbR, Fld, CR, A).
 
 dsum([DbR, Fld, CR]) ->
-    A = fun(Vs) -> stdfuns_math:sum(Vs) end,
+    A = fun(Vs) -> stdfuns_math:sum([ X || X <- Vs, is_number(X) ]) end,
     db_aggregate_func(DbR, Fld, CR, A).
 
 dvar([DbR, Fld, CR]) ->
-    A = fun(Vs) -> stdfuns_stats:var(Vs) end,
+    A = fun(Vs) -> stdfuns_stats:var([ X || X <- Vs, is_number(X) ]) end,
     db_aggregate_func(DbR, Fld, CR, A).
 
 dvarp([DbR, Fld, CR]) ->
-    A = fun(Vs) -> stdfuns_stats:varp(Vs) end,
+    A = fun(Vs) -> stdfuns_stats:varp([ X || X <- Vs, is_number(X) ]) end,
     db_aggregate_func(DbR, Fld, CR, A).
 
 
@@ -78,8 +78,10 @@ dvarp([DbR, Fld, CR]) ->
 db_aggregate_func(DbR, Fld, CR, A) ->
     
     F = fun([NDbR], [NFld], [NCR]) ->
-                Vs = generic_select_values(NDbR, NFld, NCR),
-                A(Vs)
+                case generic_select_values(NDbR, NFld, NCR) of
+                    X when ?is_errval(X) -> X;
+                    Vals                 -> A(Vals)
+                end
         end,
     
     generic_argument_check(DbR, Fld, CR, F).
@@ -106,14 +108,14 @@ is_range(Range) when ?is_range(Range) orelse ?is_rangeref(Range) ->
     true;
 is_range(_) ->
     false.
-    
+
 generic_select_values(DbR, Fld, CR) ->
     Db = odf_db:from_range(DbR),
     Criteriaset = odf_db:criteria_from_range(CR),
     Matched = odf_db:select(Db, Criteriaset),
     Vs = odf_db:db_field(Fld, Matched),
     case Vs of
-        no_such_field -> ?ERR_VAL;
+        no_such_field -> ?ERRVAL_VAL;
         _             -> Vs
     end.
     
