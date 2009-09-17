@@ -13,6 +13,7 @@
          isnontext/1,
          isnumber/1,
          isodd/1,
+         isref/1,
          istext/1,
          n/1,
          na/1,
@@ -191,6 +192,10 @@ info(["path"]) -> case "/" ++ string:join(get(path), "/") ++ "/" of
                       "//" -> "/";
                       V    -> V
                   end.
+
+isref([R]) when ?is_rangeref(R) orelse ?is_cellref(R) -> true;
+isref(_R) ->
+    false.
 
 rows([R]) when ?is_rangeref(R)        -> R#rangeref.height;
 rows([A]) when ?is_array(A)           -> area_util:height(A);
