@@ -59,9 +59,12 @@ row([])                      -> muin:context_setting(row);
 row([C]) when ?is_cellref(C) -> muin:row_index(muin:row(C));
 row(_X)                       -> ?ERR_VAL.
 
-address([Row, Col])               -> address([Row, Col, 1]);
-address([Row, Col, IsAbs])        -> address([Row, Col, IsAbs, true]);
-address([Row, Col, IsAbs, IsA1])  -> address([Row, Col, IsAbs, IsA1, ""]);
+address([Row, Col]) ->
+    address([Row, Col, 1]);
+address([Row, Col, IsAbs]) ->
+    address([Row, Col, IsAbs, true]);
+address([Row, Col, IsAbs, IsA1]) ->
+    address([Row, Col, IsAbs, IsA1, ""]);
 
 address([Row, Col, undef, IsA1, Path]) ->
     address([Row, Col, 1, IsA1, Path]);
@@ -70,8 +73,7 @@ address([Row, Col, IsAbs, undef, Path]) ->
 address([Row, Col, undef, undef, Path]) ->
     address([Row, Col, 1, true, Path]);
 
-
-address([V1, V2, V3, V4, V5]=Args) ->
+address([V1, V2, V3, V4, V5]) ->
     N1 = col([V1, V2, V3],
              [eval_funs, fetch, area_first, {cast, num}, {cast, int}],
              [return_errors, {all, fun is_integer/1}]),
@@ -83,29 +85,21 @@ address([V1, V2, V3, V4, V5]=Args) ->
              [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:apply([N1, N2, N3], fun address_/3).
 
-address_([Row, Col, AbsNum], [IsA1], [Page])
+address_([Row, Col, AbsNum], [_IsA1], [_Page])
   when Row < 1; Col < 1; AbsNum < 1; AbsNum > 4 ->
     ?ERRVAL_VAL;
 address_([Row, Col, AbsNum], [IsA1], [Page]) ->
-    Addr = address1(Row, Col, AbsNum, IsA1),
+    Addr = address1(tconv:to_s(Row), tconv:to_b26(Col), AbsNum, IsA1),
     ?COND(Page == "", Addr, "../"++Page++"/"++Addr).
 
-address1(Row, Col, 1, true) ->
-    "$" ++ tconv:to_b26(Col) ++ "$" ++ tconv:to_s(Row);
-address1(Row, Col, 2, true) ->
-    tconv:to_b26(Col) ++ "$" ++ tconv:to_s(Row);
-address1(Row, Col, 3, true) ->
-    "$" ++ tconv:to_b26(Col) ++ tconv:to_s(Row);
-address1(Row, Col, 4, true) ->
-    tconv:to_b26(Col) ++ tconv:to_s(Row);
-address1(Row, Col, 1, false) ->
-    "R" ++ tconv:to_s(Row)  ++"C"++ tconv:to_s(Col);
-address1(Row, Col, 2, false) ->
-    "R" ++ tconv:to_s(Row) ++ "C[" ++ tconv:to_s(Col) ++ "]";
-address1(Row, Col, 3, false) ->
-    "R[" ++ tconv:to_s(Row) ++ "]C" ++ tconv:to_s(Col);
-address1(Row, Col, 4, false) ->
-    "R[" ++ tconv:to_s(Row) ++ "]C[" ++ tconv:to_s(Col) ++ "]".
+address1(Row, Col, 1, true)  -> "$" ++ Col ++ "$" ++ Row;
+address1(Row, Col, 2, true)  -> Col ++ "$" ++ Row; %"
+address1(Row, Col, 3, true)  -> "$" ++ Col ++ Row; %"
+address1(Row, Col, 4, true)  -> Col ++ Row;
+address1(Row, Col, 1, false) -> "R" ++ Row ++"C"++ Col;
+address1(Row, Col, 2, false) -> "R" ++ Row ++ "C[" ++ Col ++ "]";
+address1(Row, Col, 3, false) -> "R[" ++ Row ++ "]C" ++ Col;
+address1(Row, Col, 4, false) -> "R[" ++ Row ++ "]C[" ++ Col ++ "]".
 
 
 %% Arg1 should be an array or range, but constants and cellrefs are also allowed
