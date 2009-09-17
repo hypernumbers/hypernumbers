@@ -1,0 +1,32 @@
+*.beam
+*.dump
+*.~
+.DS_Store
+TAGS
+tags
+db/
+logs/
+ebin/hypernumbers.*
+
+
+## Script used for fetching svn externals
+lib/git-svn-clone-externals
+
+priv/hypernumbers.conf
+priv/muin/*.xrl
+
+lib/formula_engine*/doc/*.html
+lib/hypernumbers*/doc/*.html
+lib/read_excel*/doc/*.html
+lib/gettext/priv/
+
+lib/hypernumbers*/log
+lib/hypernumbers*/priv/docroot/hypernumbers/index.html.*
+lib/hypernumbers*/src/ms_util2.erl
+
+## Auto generated lexers/parsers
+lib/formula_engine*/src/*_lexer.erl
+lib/formula_engine*/src/*_parser.erl
+lib/formula_engine*/src/superlex.erl
+
+tests/excel_files/tests/common_test-1.3.0

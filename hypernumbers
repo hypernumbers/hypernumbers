@@ -54,6 +54,7 @@ function build
         echo "==============================="
         echo "      Compiling DEPTS          "
         echo "==============================="
+        mkdir -p ./lib/mochiweb/ebin
         cd ./lib/mochiweb/
         make
         cd ../../
