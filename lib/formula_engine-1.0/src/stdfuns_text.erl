@@ -178,10 +178,10 @@ proper(Args) ->
         [return_errors, {all, fun muin_collect:is_string/1}],
         fun proper_/1).
 
-capitalise([$",H|T]) ->
-    "\""++string:to_upper([H]) ++ string:to_lower(T);
-capitalise([H|T]) ->
-    string:to_upper([H]) ++ string:to_lower(T).
+proper_([[]]) ->
+    [];
+proper_([Str]) ->
+    make_proper(Str).
 
 make_proper([$",H|Rest]) ->
     make_proper(Rest, [hd(string:to_upper([H])), $"]);
@@ -194,11 +194,6 @@ make_proper([Y, X | Rest], Acc) when Y == 32; Y == $-; Y == $" ->
     make_proper(Rest, [hd(string:to_upper([X])), Y | Acc]);
 make_proper([X | Rest], Acc) ->
     make_proper(Rest, [hd(string:to_lower([X])) | Acc]).
-
-proper_([[]]) ->
-    [];
-proper_([Str]) ->
-    make_proper(Str).
 
 upper([Str]) ->
     NewStr=?string(Str,?default_str_rules),

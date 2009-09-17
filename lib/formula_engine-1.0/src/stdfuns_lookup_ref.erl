@@ -88,7 +88,7 @@ address_([Row, Col, AbsNum], [IsA1], [Page])
     ?ERRVAL_VAL;
 address_([Row, Col, AbsNum], [IsA1], [Page]) ->
     Addr = address1(Row, Col, AbsNum, IsA1),
-    ?COND(Page == "", Addr, Addr ++ "/" ++ Page).
+    ?COND(Page == "", Addr, "../"++Page++"/"++Addr).
 
 address1(Row, Col, 1, true) ->
     "$" ++ tconv:to_b26(Col) ++ "$" ++ tconv:to_s(Row);
