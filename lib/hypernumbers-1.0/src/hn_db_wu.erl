@@ -1351,7 +1351,7 @@ read_attrs(RefX, Lock)
 %% </ul>
 read_attrs(#refX{obj = {cell, _}} = RefX, Attrs, Lock) 
   when is_list(Attrs), 
-       (Lock == write orelse Lock == read) ->
+       (Lock == write orelse Lock == read) ->    
     #refX{site = S, path = P, obj= Obj} = RefX,
     H = #local_objs{path  = P, obj = Obj, _ = '_'},
     read_attrs1(S, {H, [], ['$_']}, Attrs, Lock);
@@ -3595,7 +3595,6 @@ delete_style_attr(#refX{site = S} = RefX, Key)  ->
 
 %% this function is called when a new attribute is set for a style
 process_styles(RefX, {Name, Val}) when is_record(RefX, refX) ->
-    
     NewSIdx = case read_attrs(RefX, ["style"], read) of 
                   []                       -> get_style(RefX, Name, Val);
                   [{RefX, {"style", Idx}}] -> get_style(RefX, Idx, Name, Val) 
@@ -3660,10 +3659,7 @@ tell_front_end(#refX{site=Site, path=Path}, Index, Style)
 
 tell_front_end1(Key, Tuple) ->
     List = get('front_end_notify'),
-    case lists:keymember(Key, 1, List) of
-        true  -> put('front_end_notify', lists:keyreplace(Key, 1, List, Tuple));
-        false -> put('front_end_notify', [Tuple | List])
-    end,
+    put('front_end_notify', [Tuple | List]),
     ok.
 
 make_tuple(Style, Counter, Index, Val) -> 

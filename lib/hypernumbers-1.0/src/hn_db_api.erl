@@ -255,7 +255,7 @@ set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX,
 set_borders2(RefX, Where, Border, B_Style, B_Color) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  B   = "border-" ++ Where,
+                  B   = "border-" ++ Where ++ "-width",
                   B_S = "border-" ++ Where ++ "-style",
                   B_C = "border-" ++ Where ++ "-color",
                   ok = hn_db_wu:write_attr(RefX, {B,   Border}),
@@ -1420,7 +1420,7 @@ tell_front_end("move", RefX) ->
     remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path).
 
 tell_front_end(_FnName) ->
-    List = get('front_end_notify'),
+    List = lists:reverse(get('front_end_notify')),
     Fun = fun({{Key, V}, A, B}) when is_record(Key, refX) ->
                   #refX{site = S1, path = P1, obj = Rf} = Key,
                   case V of
