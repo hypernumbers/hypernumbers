@@ -183,6 +183,8 @@ capitalise([$",H|T]) ->
 capitalise([H|T]) ->
     string:to_upper([H]) ++ string:to_lower(T).
 
+make_proper([$",H|Rest]) ->
+    make_proper(Rest, [hd(string:to_upper([H])), $"]);
 make_proper([H|Rest]) ->
     make_proper(Rest, [hd(string:to_upper([H]))]).
 
