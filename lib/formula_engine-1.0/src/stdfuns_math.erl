@@ -194,22 +194,20 @@ is_num_or_date(X) ->
     #rangeref{ tl = {{offset,BX1},{offset,BY1}},
                br = {{offset,BX2},{offset,BY2}} } = V2,
 
-    {{X1, Y1}, {X2, Y2}} = intersect({{AX1,AY1}, {AX2,AY2}},
-                                     {{BX1,BY1}, {BX2,BY2}}),
-
-    Tmp = #rangeref{ tl     = {{offset, X1},{offset, Y1}},
-                     br     = {{offset, X2},{offset, Y2}},
-                     path   = hn_util:list_to_path(muin:context_setting(path)),
-                     type   = finite,
-                     width  = (X2-X1)+1,
-                     height = (Y1-Y1)+1,
-                     text   = ""
-                    },    
-
-    io:format("~n~p~n~p~n~p~n",
-              [[AX1, AY1, AX2, AY2], [BX1, BY1, BX2, BY2], Tmp]),
-    
-    Tmp.
+    case intersect({{AX1,AY1}, {AX2,AY2}},
+                   {{BX1,BY1}, {BX2,BY2}}) of
+        
+        {error, no_intersect} ->
+            ?ERRVAL_NULL;
+        
+        {{X1, Y1}, {X2, Y2}} ->
+            Path = hn_util:list_to_path(muin:context_setting(path)),
+            #rangeref{ tl     = {{offset, X1},{offset, Y1}},
+                       br     = {{offset, X2},{offset, Y2}},
+                       path   = Path, type=finite, text="",
+                       width  = (X2-X1)+1,
+                       height = (Y1-Y1)+1 }
+    end.
 
 negate([V]) ->
     col([V],
@@ -387,7 +385,7 @@ minverse(Args) ->
     col(Args, [eval_funs, fetch, {ignore, bool}, {ignore, str},
                {ignore, blank}], [return_errors],
         fun minverse_/1).
-minverse_([{_Type, Rows}=Area]) when ?is_area(Area) -> 
+minverse_([{_Type, _Rows}=Area]) when ?is_area(Area) -> 
     case area_util:is_matrix(Area) of
         false -> ?ERRVAL_VAL;
         true  -> 0
@@ -1021,7 +1019,7 @@ atan2([V1, V2]) ->
     X = ?number(V1, ?default_rules),
     Y = ?number(V2, ?default_rules),
 
-    if X == 0 andalso Y == 0 -> ?ERR_DIV;
+    if X == 0 andalso Y == 0 -> ?ERRVAL_DIV;
        true -> ok
     end,
 
@@ -1030,7 +1028,7 @@ atan2([V1, V2]) ->
 sinh([V]) ->
     Num = ?number(V, ?default_rules),
     try   math:sinh(Num)
-    catch error:_Err -> ?ERR_NUM end.
+    catch error:_Err -> ?ERRVAL_NUM end.
 
 cosh([V]) ->
     Num = ?number(V, ?default_rules),
@@ -1071,15 +1069,21 @@ radians([V]) ->
 radians_([Angle]) ->
     Angle * math:pi() / 180.
 
-%intersect({{1,1}, {2,3}}, {{2, 1}, {3,3}}) ->
-intersect({{AX1,AY1}, {AX2,AY2}}, {{BX1, BY1}, {BX2,BY2}}) ->
-    X1 = lists:min([AX2, BX1]),
-    X2 = lists:max([AX2, BX1]),
-    Y1 = lists:min([AY2, BY1]),
-    Y2 = lists:max([AY2, BY1]),
-    %io:format("~p~n",[{{X1, Y1}, {X2, Y2}}]),
-    {{X1, Y1}, {X2, Y2}}.
+%% Make sure first range is top left
+intersect({{AX1, AY1}, _}=A, {{BX1, BY1}, _}=B)
+  when BX1 < AX1; BY1 < AY1 ->
+    intersect(B, A);
 
+intersect({{_,_}, {AX2,AY2}}, {{BX1, BY1}, {_, _}})
+  when AX2 < BX1; AY2 < BY1 ->
+    {error, no_intersect};
+
+intersect({{_,_}, {AX2,AY2}}, {{BX1, BY1}, {BX2,BY2}}) ->
+    X1 = lists:min([AX2, BX1]),
+    X2 = ?COND( AX2 > BX2, BX2, AX2), 
+    Y1 = lists:min([AY2, BY1]),
+    Y2 = ?COND( AY2 > BY2, BY2, AY2),
+    {{X1, Y1}, {X2, Y2}}.
 
 %%% tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
