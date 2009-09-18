@@ -128,25 +128,28 @@ transform_expected(Formula) ->
     Tmp6 = re:replace(Tmp5, "MIDB\\(", "MID\\(", Opt),
     Tmp7 = re:replace(Tmp6, "RIGHTB\\(", "RIGHT\\(", Opt),
     Tmp8 = re:replace(Tmp7, "SEARCHB\\(", "SEARCH\\(", Opt),
-    Tmp8 = re:replace(Tmp7, "SEARCHB\\(", "SEARCH\\(", Opt),
+
 
     % Change sheet!A1 to ../sheet/a1
     Tmp9 = re:replace(Tmp8, "(([a-z0-9]+)!([A-Z0-9]+))","../\\2/\\3", Opt),
     Tmp9.
 
-transform_got(Formula) ->
+transform_got(Formula2) ->
+    Formula = re:replace(Formula2, " / ", "/", [{return, list}, global]),
     % if row address, strip the column bounds (=$A169:$IV169) becomes (=169:169)
     Tmp = case re:run(Formula, "\\$A[0-9]+:\\$IV[0-9]+") of
               {match, _} -> re:replace(Formula, "\\$A|\\$IV", "",
                                        [{return, list}, global]);
               _          -> Formula
           end,
-    % fix-up the fact that we have changed the name of the function Error.Type 
-    % to ErrorType
-    % Ugly bodge
-    % change ../bob to bob
-    Tmp1 = re:replace(Tmp, "\.\./([a-z]+(?:,|\\)))","\\1", [{return, list}, global]),
-    stripfileref(Tmp1).
+
+    % change ../bob to bob, by itself
+    Tmp1 = re:replace(Tmp, "\.\./([a-z]+)$","\\1", %"
+                      [{return, list}, global]),
+    % change ../bob to bob when a parameter
+    Tmp2 = re:replace(Tmp1, "\.\./([a-z]+(?:,|\\)))","\\1",
+                      [{return, list}, global]),
+    stripfileref(Tmp2).
 
 %% Nasty function to convert 
 %% stuff'C:\\cygwin\\stuff\\[e_gnumeric_bitwise.xls]Name'!stuff

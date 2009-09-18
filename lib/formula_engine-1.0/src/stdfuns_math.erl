@@ -4,15 +4,7 @@
 %%% IMPORTANT NOTES:
 %%% ================
 %%%
-%%%
-%%% INCOMPATIBILITIES:
-%%%   1. Many (most? all?) Excel functions discard strings and booleans in
-%%%      the input, unless those have been typed directly *into the formula*.
-%%%      For example: SUM(A1) when A1="10" will evaluate to 0,
-%%%      but SUM("10") will evaluate to 10.
-%%%      We don't make this distinction, and simply discard non-numeric
-%%%      values.
-%%%      Examples of such functions: SUM, PRODUCT, POWER etc.
+%%% INCOMPATIBILITIES
 %%%
 %%%   2. This one applies for functions with a fixed number of arguments,
 %%%      e.g. ABS. If wrong number of arguments is entered, Excel displays an
@@ -1018,12 +1010,10 @@ atan([V]) ->
 atan2([V1, V2]) ->
     X = ?number(V1, ?default_rules),
     Y = ?number(V2, ?default_rules),
-
+    
     if X == 0 andalso Y == 0 -> ?ERRVAL_DIV;
-       true -> ok
-    end,
-
-    math:atan2(Y, X). % Yep, the order of args is reversed.
+       true                  -> math:atan2(Y, X)
+    end.
 
 sinh([V]) ->
     Num = ?number(V, ?default_rules),

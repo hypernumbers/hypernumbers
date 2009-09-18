@@ -557,7 +557,8 @@ read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
 to_str(addition)              -> "+";
 to_str(subtraction)           -> "-";
 to_str(multiply)              -> "*";
-to_str(divide)                -> "/";
+%% Add spaces to division to resolve abiguity
+to_str(divide)                -> " / "; 
 to_str(power)                 -> "^";
 to_str(concatenate)           -> "&";
 to_str(less_than)             -> "<";
