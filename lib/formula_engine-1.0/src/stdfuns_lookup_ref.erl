@@ -230,10 +230,26 @@ match1(LookupVal, List, 1) ->
 
 vlookup([V, A, I]) ->
     vlookup([V, A, I, true]);
-vlookup([V, A, I, B]) ->
-    {Tag, L} = A,
-    NewA = {Tag, transpose(L)},
-    hlookup([V, NewA, I, B]).
+vlookup([V, A, I0, B]) ->
+
+    I = ?int(I0, [cast_strings, cast_bools, ban_blanks, ban_dates]),
+    
+    ?ensure(?is_area(A), ?ERR_REF),
+    ?ensure(I =< area_util:height(A), ?ERR_REF),
+    ?ensure(I >= 1, ?ERR_VAL),
+    
+    Row = area_util:col(1, A),
+    case find(V, Row, B) of
+        0 ->
+            ?ERRVAL_NA;
+        VIndex ->
+            {ok, Ret} = area_util:at(I, VIndex, A),
+            Ret
+    end.
+
+    %% {Tag, L} = A,
+    %% NewA = {Tag, transpose(L)},
+    %% hlookup([V, NewA, I, B]).
     
 
 hlookup([V, A, I]) ->
@@ -249,7 +265,7 @@ hlookup([V, A, I0, B]) ->
     Row = area_util:row(1, A),
     case find(V, Row, B) of
         0 ->
-            ?ERR_NA;
+            ?ERRVAL_NA;
         VIndex ->
             {ok, Ret} = area_util:at(VIndex, I, A),
             Ret
@@ -284,7 +300,6 @@ non_exact_find(Value, L) ->
 %% Should this be a common utility function?
 %% TODO: Unit tests for this.
 %% TODO: Rewrite to tail-recursive.
-
 qsort([]) ->
     [];
 qsort([H|T]) ->
