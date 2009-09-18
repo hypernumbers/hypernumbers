@@ -133,7 +133,7 @@ is_num_or_date(X) ->
 %%% Operators ~~~~~
 '+'([V1, V2]) ->
     col([V1, V2],
-        [eval_funs, fetch, first_array, {cast, str, num, ?ERRVAL_VAL},
+        [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
          {cast, bool, num}, {cast, blank, num}],
         [return_errors, {all, fun is_num_or_date/1}, return_errors],
         fun '+_'/1).
@@ -180,6 +180,37 @@ is_num_or_date(X) ->
         _Else               -> Num1/Num2
     end.
 
+
+'^^'([_, _]=Args) ->
+    col(Args, [eval_funs],
+        [return_errors, {all, fun(X) -> ?is_rangeref(X) end}],
+        fun '^^_'/1).
+
+'^^_'([V1, V2]) ->
+    
+    #rangeref{ tl = {{offset,AX1},{offset,AY1}},
+               br = {{offset,AX2},{offset,AY2}} } = V1,
+    
+    #rangeref{ tl = {{offset,BX1},{offset,BY1}},
+               br = {{offset,BX2},{offset,BY2}} } = V2,
+
+    {{X1, Y1}, {X2, Y2}} = intersect({{AX1,AY1}, {AX2,AY2}},
+                                     {{BX1,BY1}, {BX2,BY2}}),
+
+    Tmp = #rangeref{ tl     = {{offset, X1},{offset, Y1}},
+                     br     = {{offset, X2},{offset, Y2}},
+                     path   = hn_util:list_to_path(muin:context_setting(path)),
+                     type   = finite,
+                     width  = (X2-X1)+1,
+                     height = (Y1-Y1)+1,
+                     text   = ""
+                    },    
+
+    io:format("~n~p~n~p~n~p~n",
+              [[AX1, AY1, AX2, AY2], [BX1, BY1, BX2, BY2], Tmp]),
+    
+    Tmp.
+
 negate([V]) ->
     col([V],
         [first_array, cast_num],
@@ -198,24 +229,16 @@ sum(Vs) ->
 sum1(Nums) ->
     lists:sum(Nums).
 
-product(Vals) ->
-
-    
+product(Vals) ->    
     col(Vals,
         [eval_funs, {cast, str, num, ?ERRVAL_VAL}, {cast, bool, num},
          fetch, flatten, area_first, {ignore, blank}, {ignore, str},
          {ignore, bool}],
         [return_errors, {all, fun is_number/1}],
         fun product1/1).
-    
-    %% Flatvals = ?flatten_all(Vals),
-    %% ?ensure_no_errvals(Flatvals),
-    %% Nums = ?numbers(Flatvals, [cast_strings, cast_bools, ignore_blanks,
-    %%                            cast_dates]),
-    %% product1(Nums).
+
 product1(Nums) ->
-    foldl(fun(X, Acc) -> X * Acc end,
-          1, Nums).
+    foldl(fun(X, Acc) -> X * Acc end, 1, Nums).
 
 %% @todo not an Excel 97 function - no test suite
 quotient([V1, V2]) ->
@@ -1006,7 +1029,6 @@ atan2([V1, V2]) ->
 
 sinh([V]) ->
     Num = ?number(V, ?default_rules),
-    % Dont throw formula errors when numbers are too large
     try   math:sinh(Num)
     catch error:_Err -> ?ERR_NUM end.
 
@@ -1048,3 +1070,37 @@ radians([V]) ->
 
 radians_([Angle]) ->
     Angle * math:pi() / 180.
+
+%intersect({{1,1}, {2,3}}, {{2, 1}, {3,3}}) ->
+intersect({{AX1,AY1}, {AX2,AY2}}, {{BX1, BY1}, {BX2,BY2}}) ->
+    X1 = lists:min([AX2, BX1]),
+    X2 = lists:max([AX2, BX1]),
+    Y1 = lists:min([AY2, BY1]),
+    Y2 = lists:max([AY2, BY1]),
+    %io:format("~p~n",[{{X1, Y1}, {X2, Y2}}]),
+    {{X1, Y1}, {X2, Y2}}.
+
+
+%%% tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-include_lib("eunit/include/eunit.hrl").
+
+intersect_test_() ->
+    [
+     ?_assertEqual({{2,1}, {2,3}},
+                   intersect({{1,1}, {2,3}}, {{2,1}, {3,3}})),
+     ?_assertEqual({{2,1}, {2,3}},
+                   intersect({{-1,-1}, {2,3}}, {{2,1}, {3,3}})),
+     ?_assertEqual({{2,1}, {2,3}},
+                   intersect({{2,1}, {3,3}}, {{1,1}, {2,3}})),
+     ?_assertEqual({{2,1}, {2,3}},
+                   intersect({{2,1}, {3,3}}, {{-1,-1}, {2,3}})),
+     ?_assertEqual({{2,0}, {3,0}},
+                   intersect({{1, 0}, {3,0}}, {{2,0}, {5,0}})),
+     ?_assertEqual({{5,0}, {6,0}},
+                   intersect({{5, 0}, {6,0}}, {{4,0}, {8,0}})),
+     ?_assertEqual({error, no_intersect},
+                   intersect({{1, 1}, {2,2}}, {{3,1}, {4,2}}))
+    ].
+
+

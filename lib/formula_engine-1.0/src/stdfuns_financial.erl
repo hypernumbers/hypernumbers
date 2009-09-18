@@ -120,8 +120,7 @@ npv([Rate | Args]) ->
     case {NRate, NArgs} of
         {Err, _} when ?is_errval(Err) -> Err;
         {_, Err} when ?is_errval(Err) -> Err;
-        {[NRate2], NArgs2} ->
-            npv_([NRate2 | NArgs2])
+        {[NRate2], NArgs2}            -> npv_([NRate2 | NArgs2])
     end.
 
 npv_([Rate | Vals]) ->

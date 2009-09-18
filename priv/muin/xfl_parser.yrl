@@ -58,7 +58,7 @@ E      -> Uplus  : '$1'.
 Uplus  -> '+' E  : '$2'.
 
 E -> E '^^' E : ['^^', '$1', '$3'].
-
+E -> rangeref rangeref  : ['^^', '$1', '$2'].
 %%% parenthesized expressions.
 
 E -> '(' E ')' : '$2'.    
@@ -71,14 +71,12 @@ E -> E cellref        : special_div2('$1', '$2').
 %%% TRUE() and FALSE() functions:
 
 E -> bool '(' ')' : lit('$1').
-    
 
 %%% funcalls
-
 E -> Funcall : '$1'.
 
+%%% ref lists
 E -> List : '$1'.
-
 List -> '(' Args ')' : arglist('$2').
 
 %%% constants / literals
