@@ -3299,7 +3299,9 @@ shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
 write_attr2(RefX, {"formula", Val}) ->
     case superparser:process(Val) of
         {formula, Fla}      -> write_formula1(RefX, Fla, Val);
-        [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
+        [NVal, Align, Frmt] ->
+            io:format("~p ~p ~p~n",[Val, NVal, Frmt]),
+            write_formula2(RefX, Val, NVal, Align, Frmt)
     end.
 
 %{muin_rti,"http://127.0.0.1:9000", ["e_operator_add","add"],22,22,false}

@@ -53,18 +53,26 @@
 
 %%% @doc Create a database from a range.
 
-from_range({range, [Fields|DataRows]}) when ?is_errval(hd(Fields)) ->
-    ?ERR_VAL;
+%% from_range({range, [Fields|DataRows]}) when not(?is_string(hd(Fields))) ->
+%%     ?ERR_VAL;
 from_range({range, [Fields|DataRows]}) ->
-    FieldsHash = [ ?hash(X) || X<-Fields ],
-    #odf_db{fm   = zip(Fields, FieldsHash),
-            recs = create_records(FieldsHash, DataRows)}.
+    case lists:any(fun(X) -> not( ?is_string(X) ) end, Fields) of
+        true -> ?ERR_VAL;
+        false ->
+            FieldsHash = [ ?hash(X) || X<-Fields ],
+            #odf_db{fm   = zip(Fields, FieldsHash),
+                    recs = create_records(FieldsHash, DataRows)}
+    end.
 
 %%% @doc Create criteria from a range.
 
 criteria_from_range({range, [Fields|Csds]}) ->
-    FsHash = [ ?hash(X) || X<-Fields ],
-    compile_criteriaset_descriptions(FsHash, Csds, []).
+    case lists:any(fun(X) -> not( ?is_string(X) ) end, Fields) of
+        true -> ?ERR_VAL;
+        false ->
+            FsHash = [ ?hash(X) || X<-Fields ],
+            compile_criteriaset_descriptions(FsHash, Csds, [])
+    end.
 
 %%% @doc Return database that contains only those records that satisfy
 %%%      specified criteria.
