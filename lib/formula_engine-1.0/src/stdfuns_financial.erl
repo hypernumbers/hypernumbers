@@ -172,6 +172,8 @@ pv(Args = [_, _, _, _, _]) ->
 
 pv_([Rate, Nper, Pmt, Fv, Partype]) when Partype =/= 1, Partype =/= 0 ->
     pv_([Rate, Nper, Pmt, Fv, 1]);
+pv_([Rate, _Nper, _Pmt, _Fv, _Type]) when Rate == -1 ->
+    ?ERRVAL_DIV;
 pv_([Rate, Nper, Pmt, Fv, _Partype]) when Rate == 0 ->
     - Fv - (Pmt * Nper);
 pv_([Rate, Nper, Pmt, Fv, Type]) ->
@@ -188,15 +190,14 @@ fv(Args = [_, _, _, _, _]) ->
         [return_errors, {all, fun is_number/1}],
         fun fv_/1).
 
-fv_([Rate, Nper, Pmt, Pv, Partype]) when Partype =/= 1, Partype =/= 0 ->
+fv_([Rate, Nper, Pmt, Pv, Type]) when Type =/= 1, Type =/= 0 ->
     fv_([Rate, Nper, Pmt, Pv, 1]);
-fv_([Rate, Nper, Pmt, Pv, Partype]) ->
-    Fv0 = 0,
-    Fv1 = 1000,
-    X0 = xn(Pmt, Rate, Nper, Pv, Fv0, Partype),
-    X1 = xn(Pmt, Rate, Nper, Pv, Fv1, Partype),
-    secant(Fv1, Fv0, X1, X0,
-           fun(N) -> xn(Pmt, Rate, Nper, Pv, N, Partype) end).
+fv_([0, Nper, Pmt, Pv, _Type]) ->
+    -1 * (Pv + Pmt * Nper);
+fv_([Rate, Nper, Pmt, Pv, Type]) ->
+    Tmp = math:pow(1+Rate, Nper),
+    (Pmt * (1+Rate*Type) * (1-Tmp)/Rate) - Pv * Tmp.
+
            
 pmt([A, B, C, D]) -> pmt([A, B, C, D, 0]);
 pmt([A, B, C])    -> pmt([A, B, C, 0, 0]);
@@ -206,41 +207,16 @@ pmt(Args = [_, _, _, _, _]) ->
         [return_errors, {all, fun is_number/1}],
         fun pmt_/1).
 
-pmt_([Rate, Nper, Pmt, Pv, Partype]) when Partype =/= 1, Partype =/= 0 ->
-    pmt1(Rate, Nper, Pmt, Pv, 1);
-pmt_([Rate, Nper, Pv, Fv, Partype]) ->
-    pmt1(Rate, Nper, Pv, Fv, Partype).
-
-pmt1(_Rate, Nper, _Pv, _Fv, _Partype) when Nper == 0 ->
+pmt_([Rate, Nper, Pmt, Pv, Type]) when Type =/= 1, Type =/= 0 ->
+    pmt_([Rate, Nper, Pmt, Pv, 1]);
+pmt_([_Rate, 0, _Pv, _Fv, _Type]) ->
     ?ERRVAL_DIV;
-pmt1(Rate, Nper, Pv, Fv, Partype) ->
-    Pmt0 = -Pv*Rate*(Nper/12)/Nper,
-    Pmt1 = Pmt0 - 50,
-    X0 = xn(Pmt0, Rate, Nper, Pv, Fv, Partype),
-    X1 = xn(Pmt1, Rate, Nper, Pv, Fv, Partype),
-    secant(Pmt1, Pmt0, X1, X0,
-           fun(N) -> xn(N, Rate, Nper, Pv, Fv, Partype) end).
+pmt_([0, Nper, Pv, Fv, _Type]) ->
+    -1 * (Pv + Fv) / Nper;
+pmt_([Rate, Nper, Pv, Fv, Type]) ->
+    Tmp = math:pow(1+Rate, Nper),
+    (Rate*(Fv+Pv*Tmp)) / ((1+Rate*Type) * (1 - Tmp)).
 
-rate([NPer, Pmt, PV])              -> rate([NPer, Pmt, PV, 0]);
-rate([NPer, Pmt, PV, undef])       -> rate([NPer, Pmt, PV, 0]);
-rate([NPer, Pmt, PV, Fv])          -> rate([NPer, Pmt, PV, Fv, 0]);
-rate([NPer, Pmt, PV, undef, Type]) -> rate([NPer, Pmt, PV, 0, Type, 0.1]);
-rate([NPer, Pmt, PV, Fv, Type])    -> rate([NPer, Pmt, PV, Fv, Type, 0.1]);
-rate(Args = [_, _, _, _, _, _]) ->
-    col(Args,
-        [area_first, cast_num],
-        [return_errors, {all, fun is_number/1}],
-        fun rate_/1).
-
-rate_([Nper, _Pmt, _Pv, _Fv, _Type, _Est]) when Nper == 0 ->
-    ?ERRVAL_NUM;
-rate_([Nper, Pmt, Pv, Fv, Type, _Est]) ->
-    Rate0 = 0.001,
-    Rate1 = 0.9,
-    X0 = xn(Pmt, Rate0, Nper, Pv, Fv, Type),
-    X1 = xn(Pmt, Rate1, Nper, Pv, Fv, Type),
-    secant(Rate1, Rate0, X1, X0,
-           fun(N) -> xn(Pmt, N, Nper, Pv, Fv, Type) end).
 
 nper([Rate, Pmt, Pv])     -> nper([Rate, Pmt, Pv, 0, 0]);
 nper([Rate, Pmt, Pv, Fv]) -> nper([Rate, Pmt, Pv, Fv, 0]);
@@ -250,48 +226,72 @@ nper(Args = [_, _, _, _, _]) ->
         [return_errors, {all, fun is_number/1}],
         fun nper_/1).
 
-nper_([_Rate, Pmt, _Pv, _Fv, _Partype]) when Pmt == 0 ->
+nper_([_Rate, 0, _Pv, _Fv, _Type]) ->
     ?ERRVAL_NUM;
-nper_([Rate, Pmt, Pv, Fv, Partype]) ->
-    Nper0 = 10,
-    Nper1 = 16,
-    X0 = xn(Pmt, Rate, Nper0, Pv, Fv, Partype),
-    X1 = xn(Pmt, Rate, Nper1, Pv, Fv, Partype),
-    secant(Nper1, Nper0, X1, X0,
-           fun(N) -> xn(Pmt, Rate, N, Pv, Fv, Partype) end).
+nper_([0, Pmt, Pv, Fv, _Type]) ->
+    -1 * (Pv + Fv) / Pmt;
+nper_([Rate, Pmt, Pv, Fv, Type]) ->
+    Tmp = 1+Rate*Type,
+    Numer = (Pmt*Tmp -Fv*Rate)/(Pmt*Tmp+Pv*Rate),
+    case (Numer =< 0) or ((1+Rate) =< 0) of
+        true -> ?ERRVAL_NUM;
+        false -> math:log10(Numer) / math:log10(1+Rate)
+    end.
 
+
+rate([NPer, Pmt, Pv])              -> rate([NPer, Pmt, Pv, 0]);
+rate([NPer, Pmt, Pv, undef])       -> rate([NPer, Pmt, Pv, 0]);
+rate([NPer, Pmt, Pv, Fv])          -> rate([NPer, Pmt, Pv, Fv, 0]);
+rate([NPer, Pmt, Pv, undef, Type]) -> rate([NPer, Pmt, Pv, 0, Type, 0.1]);
+rate([NPer, Pmt, Pv, Fv, Type])    -> rate([NPer, Pmt, Pv, Fv, Type, 0.1]);
+rate(Args = [_, _, _, _, _, _]) ->
+    col(Args,
+        [area_first, cast_num],
+        [return_errors, {all, fun is_number/1}],
+        fun rate_/1).
+
+rate_([Nper, _Pmt, _Pv, _Fv, _Type, _Guess]) when Nper =< 1 ->
+    ?ERRVAL_NUM;
+rate_([_Nper, _Pmt, _Pv, _Fv, _Type, Guess]) when Guess =< -1 ->
+    ?ERRVAL_VAL;
+rate_([Nper, Pmt, Pv, Fv, Type, Guess]=Args) ->
+    Rate0 = Guess * 0.1,
+    Rate1 = (1 + Guess) / 2,
+    X0 = xn(Pmt, Rate0, Nper, Pv, Fv, Type),
+    X1 = xn(Pmt, Rate1, Nper, Pv, Fv, Type),
+    secant(Rate1, Rate0, X1, X0,
+           fun(N) -> xn(Pmt, N, Nper, Pv, Fv, Type) end).
+
+             
 %%% helpers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -define(ITERATION_LIMIT, 200).
+-define(EPSILON, 0.0000001).
+
 %% Calculate next approximation of value based on two previous approximations.
 secant(Pa, Ppa, Px, Ppx, Fun) ->
     secant(Pa, Ppa, Px, Ppx, Fun, 1).
 secant(_, _, _, _, _, ?ITERATION_LIMIT) ->
+    io:format("Iter limit~n", []),
     ?ERRVAL_NUM;
 secant(Pa, Ppa, Px, Ppx, Fun, I) ->
     Divisor = (Px - Ppx),
     case Divisor of
         X when X == 0 -> 
-            ?ERRVAL_DIV; % floats cast to integer...
+            ?ERRVAL_NUM; % floats cast to integer...
         _ -> Ca = Pa - (Px * (Pa - Ppa))/Divisor,
              Xn = Fun(Ca),
-             case Xn of
-                 V when V == 0 -> Ca;
-                 _             -> secant(Ca, Pa, Xn, Px, Fun, I + 1)
+             if abs(Xn) =< ?EPSILON -> Ca;
+                true -> secant(Ca, Pa, Xn, Px, Fun, I + 1)
              end
     end.
 
 %% Calculate ?(X) given Pmt for current iteration of one of the arguments.
-xn(Pmt, 0, Nper, Pv, Fv, _Type) ->
+xn(Pmt, Rate, Nper, Pv, Fv, _Type) when Rate == 0 ->
     Pv + Fv + (Pmt * Nper);
-xn(_Pmt, Rate, _Nper, _Pv, Fv, _Partype) when Rate + Fv == 0 ->
-    ?ERR_DIV;
 xn(Pmt, Rate, Nper, Pv, Fv, Partype) ->
     Tmp = math:pow(1+Rate, Nper),
     Pv * Tmp + Pmt * (1+Rate*Partype) * (Tmp-1) / Rate + Fv.
 
-%% variant when the rate is zero
-xn0(Pmt, Nper, Pv, Fv) ->
-    Pv + Fv + (Pmt * Nper).
 
 %%% tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
