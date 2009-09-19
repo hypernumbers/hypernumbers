@@ -16,10 +16,13 @@
 
 -export([format/1, format/2]).
 -export([parse/1,  parse/2]).
+-export([nparse/1]).
 
 -define( is_num(X),      (X >= $0 andalso X =< $9) ).
 -define( is_meridian(X), (X==[] orelse X==[am] orelse X==[pm]) ).
 -define( is_sep(X),      (X==$- orelse X==$/) ).
+
+-define(GREGORIAN_SECONDS_1970, 62167219200).
 
 -import(calendar,[last_day_of_the_month/2, day_of_the_week/1,
                   datetime_to_gregorian_seconds/1, date_to_gregorian_days/1,
@@ -78,6 +81,15 @@ do_parse(Date, Now, Opts) ->
             end;
         _ -> {error, bad_date}
     end.              
+
+-spec nparse(string()) -> now().
+%% @doc parses the datetime from a string into 'now' format
+nparse(Date) ->
+    DateTime = parse(Date),
+    GSeconds = calendar:datetime_to_gregorian_seconds(DateTime),
+    ESeconds = GSeconds - ?GREGORIAN_SECONDS_1970,
+    {ESeconds div 1000000, ESeconds rem 1000000, 0}.
+
 
 %%
 %% LOCAL FUNCTIONS

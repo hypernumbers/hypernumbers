@@ -111,8 +111,18 @@ transform_date([], Acc) ->
     Acc;
 transform_date([{date, all} | T], Acc) ->
     transform_date(T, [{date, all} | Acc]);
+transform_date([{until, Date} | T], Acc) ->
+    transform_date(T, [{date, {dh_date:nparse("01/01/1900"),
+                               dh_date:nparse(Date)}} | Acc]);
+transform_date([{since, Date} | T], Acc) ->
+    transform_date(T, [{date, {dh_date:nparse(Date),
+                               now()}} | Acc]);
+transform_date([{between, Date1, Date2} | T], Acc) ->
+    transform_date(T, [{date, {dh_date:nparse(Date1),
+                               dh_date:nparse(Date2)}} | Acc]);
 transform_date([{date, Date} | T], Acc) ->
-    transform_date(T, [{date, fuzzy_date:nrange(Date)} | Acc]);
+    %% backwards compatible with date, just replaces with since
+    transform_date([{since, Date} | T], Acc);
 transform_date([H | T], Acc) ->
     transform_date(T, [H|Acc]).
     
