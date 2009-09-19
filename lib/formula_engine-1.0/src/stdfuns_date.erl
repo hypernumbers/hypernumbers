@@ -143,17 +143,17 @@ datedif1(Start, End, "YD") ->
 datevalue([V1]) ->
     ?date(V1, [first_array, cast_strings, ban_bools, ban_blanks, ban_numbers]).
 
-
 days360([Date1, Date2]) ->
     days360([Date1, Date2, true]);
 
 days360([PreDate1, PreDate2, PreMethod]) ->
-    
-    [Date1, Date2] = collect([PreDate1, PreDate2], date,
-                             [cast_or_err, die_on_err]),
-    [Method]       = collect([PreMethod], bool,
-                             [cast_or_err, die_on_err]),
-    
+    Dates = col([PreDate1, PreDate2], [eval_funs, fetch, {cast, date}],
+                [return_errors, {all, fun muin_collect:is_date/1}]),
+    Mth = col([PreMethod], [eval_funs, fetch, {cast, bool}],
+              [return_errors, {all, fun is_boolean/1}]),
+    muin_util:apply([Dates, Mth], fun days360_/2).    
+
+days360_([Date1, Date2], [Method]) ->
     days360(Date1, Date2, Method).
 
 days360(Date1, Date2, Method) when Date1 > Date2 ->
@@ -161,13 +161,11 @@ days360(Date1, Date2, Method) when Date1 > Date2 ->
 
 %% Same Year
 days360(#datetime{date={Y,M1,D1}},#datetime{date={Y,M2,D2}}, _Method) ->
-    (calendar:last_day_of_the_month(Y, M1) - D1) + ((M2 - M1) * 30) + D2;
-
+    (30 - D1) + ((M2 - M1 - 1) * 30) + D2;
 days360(#datetime{date={Y1,M1,D1}}, #datetime{date={Y2,M2,D2}}, _Method) ->
-    Left = calendar:last_day_of_the_month(Y1, M1) - D1 + (30 * (12 - M1)),
+    Left = (30 - D1) + (30 * (12 - M1)),
     FromStart = D2 + (30 * (M2-1)),
     Left + ((Y2 - Y1 - 1) * 360) + FromStart.
-
 
 %% TODO take out the guards, throw on selection
 day([Val]) when is_number(Val) andalso Val < 0 ->
