@@ -86,10 +86,11 @@ irr([Range, Guess]) ->
     muin_util:apply([NRange, NGuess], fun irr_/2).
 
 irr_(Range, Guess) ->
-    case col(Range, [fetch, flatten, {ignore, str},
-                     {conv, str, 0}, {conv, bool, 0},
+    case col(Range, [fetch, flatten, {ignore, str}, {ignore, bool},
+                     {ignore, blank},
                      {conv, error, ?ERRVAL_VAL}], [return_errors]) of
         X when ?is_errval(X) -> X;
+        []                   -> ?ERRVAL_NUM;
         Else ->
             io:format("~p ~p ~n", [Else, Guess]),
             0

@@ -1877,15 +1877,24 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
         [{Type, V},  _A, _F] ->
             V2 = case Incr of
                      false  ->
-                         tconv:to_s(V);
+                         case Type of
+                             datetime ->
+                                 {datetime, D, T} = V,
+                                 dh_date:format("d/m/Y", {D, T});
+                             _ ->
+                                 tconv:to_s(V)
+                         end;
                      _Other -> % Other can be a range of different values...
                          case Type of
-                             int      -> NewV = V + diff(FX, FY, TX, TY, Incr),
-                                         tconv:to_s(NewV);
-                             datetime -> {datetime, {Y, M, D}, T} = V,
-                                         D2 = D + diff(FX, FY, TX, TY, Incr),
-                                         tconv:to_s({datetime, {Y, M, D2}, T}); 
-                             _        -> tconv:to_s(V)
+                             int      ->
+                                 NewV = V + diff(FX, FY, TX, TY, Incr),
+                                 tconv:to_s(NewV);
+                             datetime ->
+                                 {datetime, {Y, M, D}, T} = V,
+                                 D2 = D + diff(FX, FY, TX, TY, Incr),
+                                 dh_date:format("d/m/Y", {{Y, M, D2}, T});
+                             _ ->
+                                 tconv:to_s(V)
                          end
                  end,
             ok = write_attr(To, {"formula", V2});
