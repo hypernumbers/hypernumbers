@@ -8,7 +8,7 @@
 -import(muin_util, [conv/2, cast/2]).
 
 -export([effect/1, fv/1, ipmt/1, ispmt/1, nominal/1, npv/1, pv/1,
-         sln/1, syd/1, pmt/1, rate/1, nper/1]).
+         sln/1, syd/1, pmt/1, rate/1, nper/1, irr/1]).
 
 -compile(export_all).
 
@@ -16,7 +16,8 @@
 
 -import(muin_collect, [ col/2, col/3, col/4 ]).
 
-db([V1, V2, V3, V4]) -> db([V1, V2, V3, V4, 12]);
+db([V1, V2, V3, V4]) ->
+    db([V1, V2, V3, V4, 12]);
 db([_, _, _, _, _]=Args) ->
     col(Args,
         [eval_funs, first_array, fetch_name, fetch_ref, cast_num],
@@ -69,6 +70,28 @@ ddb1_(Cost, Salvage, Life, Period, Factor) when Period < Life ->
     A = (Cost - ddb1_(Cost, Salvage, Life, Period-1, Factor)) * (Factor / Life),
     B = (Cost - Salvage - ddb1_(Cost, Salvage, Life, Period-1, Factor)),
     lists:min([A, B]).
+
+
+irr([Range]) ->
+    irr([Range, 1]);
+
+irr([Range, Guess]) when ?is_array(Range); is_number(Range) ->
+    ?ERRVAL_NUM;
+
+irr([Range, Guess]) ->
+    NRange = col([Range], [eval_funs, fetch_name],
+                 [return_errors, {all, fun(X) -> ?is_rangeref(X) end}]),
+    NGuess = col([Guess], [eval_funs, fetch, flatten, {cast, num}],
+                 [return_errors, {all, fun is_number/1}]),
+    muin_util:apply([NRange, NGuess], fun irr_/2).
+
+irr_(Range, Guess) ->
+    case col(Range, [fetch, flatten, {ignore, str},
+                     {conv, str, 0}, {conv, bool, 0},
+                     {conv, error, ?ERRVAL_VAL}], [return_errors]) of
+        X when ?is_errval(X) -> X;
+        Else -> 0
+    end.
 
 effect(Args = [_, _]) ->
     [Nomrate, Npery] = ?numbers(Args, ?default_rules),
