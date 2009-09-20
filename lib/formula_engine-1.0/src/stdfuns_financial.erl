@@ -25,7 +25,7 @@ db([_, _, _, _, _]=Args) ->
         fun db_/1).
 
 db_([Cost, _, _, _, _]) when Cost == 0; Cost =:= 0  -> 0;
-db_([Cost, Salvage, Life, Period, Month])
+db_([Cost, _Salvage, Life, Period, Month])
   when Month < 1; Month > 12; Cost < 0;
        Period > erlang:trunc(Life + (Month/12)) ->
     ?ERRVAL_NUM;
@@ -57,14 +57,14 @@ ddb([_, _, _, _, _]=Args) ->
         [return_errors, {all, fun is_number/1}],
         fun ddb_/1).
 
-ddb_([Cost, Salvage, Life, Period, Factor])
+ddb_([_Cost, _Salvage, Life, Period, Factor])
   when Life < 0; Period > Life; Factor < 0 ->
     ?ERRVAL_NUM;
 
 ddb_([Cost, Salvage, Life, Period, Factor]) ->
     ddb1_(Cost, Salvage, Life, Period, Factor).
 
-ddb1_(Cost, Salvage, Life, Period, Factor) when Period =< 1 ->
+ddb1_(Cost, _Salvage, Life, Period, Factor) when Period =< 1 ->
     Cost * (Factor / Life);
 ddb1_(Cost, Salvage, Life, Period, Factor) when Period < Life ->
     A = (Cost - ddb1_(Cost, Salvage, Life, Period-1, Factor)) * (Factor / Life),
@@ -73,9 +73,9 @@ ddb1_(Cost, Salvage, Life, Period, Factor) when Period < Life ->
 
 
 irr([Range]) ->
-    irr([Range, 1]);
+    irr([Range, 0.1]);
 
-irr([Range, Guess]) when ?is_array(Range); is_number(Range) ->
+irr([Range, _Guess]) when ?is_array(Range); is_number(Range) ->
     ?ERRVAL_NUM;
 
 irr([Range, Guess]) ->
@@ -90,7 +90,9 @@ irr_(Range, Guess) ->
                      {conv, str, 0}, {conv, bool, 0},
                      {conv, error, ?ERRVAL_VAL}], [return_errors]) of
         X when ?is_errval(X) -> X;
-        Else -> 0
+        Else ->
+            io:format("~p ~p ~n", [Else, Guess]),
+            0
     end.
 
 effect(Args = [_, _]) ->
