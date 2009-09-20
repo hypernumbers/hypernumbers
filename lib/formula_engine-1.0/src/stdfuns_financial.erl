@@ -23,19 +23,16 @@ db([_, _, _, _, _]=Args) ->
         [return_errors, {all, fun is_number/1}],
         fun db_/1).
 
-db_([_, _, _, _, Month]) when Month < 1; Month > 12 -> ?ERRVAL_NUM;
-db_([Cost, _, _, _, _]) when Cost < 0               -> ?ERRVAL_NUM;
 db_([Cost, _, _, _, _]) when Cost == 0; Cost =:= 0  -> 0;
-db_([_, _, Life, Period, Month])
-  when Period > erlang:trunc(Life + (Month/12)) ->
+db_([Cost, Salvage, Life, Period, Month])
+  when Month < 1; Month > 12; Cost < 0;
+       Period > erlang:trunc(Life + (Month/12)) ->
     ?ERRVAL_NUM;
 
 db_([Cost, Salvage, Life, Period, Month]) ->
     db1(Cost, Salvage, erlang:trunc(Life), Period, Month).
-
 db1(Cost, Salvage, Life, Period, Month) when Period == 1 ->
     Cost - dbvalue(Cost, Salvage, Life, 1, Month);
-
 db1(Cost, Salvage, Life, Period, Month) ->
     dbvalue(Cost, Salvage, Life, Period, Month)
         - dbvalue(Cost, Salvage, Life, Period-1, Month).
@@ -51,22 +48,27 @@ dbvalue(Cost, Salvage, Life, Period, Month) when Period =< Life ->
 dbvalue(_, _, _, _, _) ->
     0.
 
-%% db1(Cost, Salvage, Life, Life, Month) ->
-%%     % Last period
-%%     Prevdepr = foldl(fun(X, Acc) ->
-%%                              Acc + db1(Cost, Salvage, Life, X, Month)
-%%                      end,
-%%                      0, seq(1, Life - 1)),
-%%     ((Cost - Prevdepr) * ?dbrate * (12 - Month)) / 12;
+ddb([V1, V2, V3, V4]) ->
+    ddb([V1, V2, V3, V4, 2]);
+ddb([_, _, _, _, _]=Args) ->
+    col(Args,
+        [eval_funs, first_array, fetch_name, fetch_ref, cast_num],
+        [return_errors, {all, fun is_number/1}],
+        fun ddb_/1).
 
+ddb_([Cost, Salvage, Life, Period, Factor])
+  when Life < 0; Period > Life; Factor < 0 ->
+    ?ERRVAL_NUM;
 
-%%     %% io:format("in stdfuns_financial:db1 (3)~n"),
-%%     Prevdepr = foldl(fun(X, Acc) ->
-%%                              Acc + db1(Cost, Salvage, Life, X, Month)
-%%                      end,
-%%                      0, seq(1, Period - 1)),
-%%     (Cost - Prevdepr) * ?dbrate.
+ddb_([Cost, Salvage, Life, Period, Factor]) ->
+    ddb1_(Cost, Salvage, Life, Period, Factor).
 
+ddb1_(Cost, Salvage, Life, Period, Factor) when Period =< 1 ->
+    Cost * (Factor / Life);
+ddb1_(Cost, Salvage, Life, Period, Factor) when Period < Life ->
+    A = (Cost - ddb1_(Cost, Salvage, Life, Period-1, Factor)) * (Factor / Life),
+    B = (Cost - Salvage - ddb1_(Cost, Salvage, Life, Period-1, Factor)),
+    lists:min([A, B]).
 
 effect(Args = [_, _]) ->
     [Nomrate, Npery] = ?numbers(Args, ?default_rules),
@@ -238,12 +240,13 @@ nper_([Rate, Pmt, Pv, Fv, Type]) ->
         false -> math:log10(Numer) / math:log10(1+Rate)
     end.
 
-
 rate([NPer, Pmt, Pv])              -> rate([NPer, Pmt, Pv, 0]);
-rate([NPer, Pmt, Pv, undef])       -> rate([NPer, Pmt, Pv, 0]);
 rate([NPer, Pmt, Pv, Fv])          -> rate([NPer, Pmt, Pv, Fv, 0]);
-rate([NPer, Pmt, Pv, undef, Type]) -> rate([NPer, Pmt, Pv, 0, Type, 0.1]);
 rate([NPer, Pmt, Pv, Fv, Type])    -> rate([NPer, Pmt, Pv, Fv, Type, 0.1]);
+
+rate([NPer, Pmt, Pv, undef, Type, Guess]) ->
+    rate([NPer, Pmt, Pv, 0, Type, Guess]);
+
 rate(Args = [_, _, _, _, _, _]) ->
     col(Args,
         [area_first, cast_num],
@@ -254,7 +257,7 @@ rate_([Nper, _Pmt, _Pv, _Fv, _Type, _Guess]) when Nper =< 1 ->
     ?ERRVAL_NUM;
 rate_([_Nper, _Pmt, _Pv, _Fv, _Type, Guess]) when Guess =< -1 ->
     ?ERRVAL_VAL;
-rate_([Nper, Pmt, Pv, Fv, Type, Guess]=Args) ->
+rate_([Nper, Pmt, Pv, Fv, Type, Guess]) ->
     Rate0 = Guess * 0.1,
     Rate1 = (1 + Guess) / 2,
     X0 = xn(Pmt, Rate0, Nper, Pv, Fv, Type),
