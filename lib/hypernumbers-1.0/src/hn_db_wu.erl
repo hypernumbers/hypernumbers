@@ -1478,10 +1478,8 @@ shift_cells(From, Type, Disp, Rewritten)
 
             Fun2 = fun({RefX, {"formula", F1}}, Acc) ->
                            {St, F2} = offset_fm_w_rng(RefX, F1, From, {XO, YO}),
-                           % bits:log(io_lib:format("(3) F1 is ~p F2 is ~p~n",
-                           % [F1, F2])),
-                           % io:format("(3) F1 is ~p F2 is ~p~n",
-                           %          [F1, F2]),
+                           % this is the wrong test, if a link crosses the
+                           % deleted border either way, recalc is needed
                            ok = write_attr3(RefX, {"formula", F2}),
                            case St of
                                clean  -> Acc;
@@ -2599,6 +2597,8 @@ mk_f([{formula, S}       | T], {St, A})   -> mk_f(T, {St, [S | A]});
 mk_f([{str, S}           | T], {St, A})   -> mk_f(T, {St, [$", S, $" | A]});
 mk_f([{recalc, S}        | T], {_St, A})  -> mk_f(T, {dirty, [S | A]});
 mk_f([{name, "INDIRECT"} | T], {_St, A})  -> mk_f(T, {dirty, ["INDIRECT" | A]});
+mk_f([{name, "SUM"} | T], {_St, A})  -> mk_f(T, {dirty, ["SUM" | A]});
+mk_f([{name, "CELL"}     | T], {_St, A})  -> mk_f(T, {dirty, ["CELL" | A]});
 mk_f([{name, S}          | T], {St, A})   -> mk_f(T, {St, [S | A]});
 mk_f([{H}                | T], {St, A})   -> mk_f(T, {St, [atom_to_list(H) | A]}).
 
