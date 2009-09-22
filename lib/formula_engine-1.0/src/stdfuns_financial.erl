@@ -74,27 +74,46 @@ ddb1_(Cost, Salvage, Life, Period, Factor) when Period < Life ->
 
 irr([Range]) ->
     irr([Range, 0.1]);
-
-irr([Range, _Guess]) when ?is_array(Range); is_number(Range) ->
-    ?ERRVAL_NUM;
-
 irr([Range, Guess]) ->
-    NRange = col([Range], [eval_funs, fetch_name],
-                 [return_errors, {all, fun(X) -> ?is_rangeref(X) end}]),
-    NGuess = col([Guess], [eval_funs, fetch, flatten, {cast, num}],
-                 [return_errors, {all, fun is_number/1}]),
-    muin_util:apply([NRange, NGuess], fun irr_/2).
+    %% Warning, each ignore reverses the order. Odd ignores == Reverse list!!
+    VS = col([Range], [eval_funs, {cast, str, num, ?ERRVAL_VAL},
+                       fetch, flatten, 
+                       {ignore, blank}, {ignore, str}, {ignore, bool}],
+             [return_errors, {all, fun is_number/1}]),
+    NGuess = col([Guess], [eval_funs, fetch, flatten, {cast, num},
+                           {ignore, blank}, {ignore, str}, {ignore, bool}],
+                 [return_errors]),
+    case {VS, NGuess} of
+        {Err_VS, _} when ?is_errval(Err_VS), 
+                         ?is_rangeref(Range) -> ?ERRVAL_VAL;
+        {Err_VS, _} when ?is_errval(Err_VS)  -> Err_VS;
+        {_, Err_NG} when ?is_errval(Err_NG)  -> Err_NG;
+        {_, [NegG]} when NegG =< -1          -> ?ERRVAL_VAL;
+        {[], _    } when ?is_rangeref(Range) -> ?ERRVAL_NUM;
+        {L1, L2   } L1 == []; L2 == []       -> ?ERRVAL_VAL;
+        {VS2, NG2 } -> muin_util:apply([lists:reverse(VS2), hd(NG2)], 
+                                       fun irr_/2)
+    end.
+            
 
 irr_(Range, Guess) ->
-    case col(Range, [fetch, flatten, {ignore, str}, {ignore, bool},
-                     {ignore, blank},
-                     {conv, error, ?ERRVAL_VAL}], [return_errors]) of
-        X when ?is_errval(X) -> X;
-        []                   -> ?ERRVAL_NUM;
-        Else ->
-            io:format("~p ~p ~n", [Else, Guess]),
-            0
+    % Need both a positve and negative to compute.
+    case lists:any(fun(X) -> X > 0 end, Range) and
+         lists:any(fun(X) -> X < 0 end, Range) of
+        false ->
+            ?ERRVAL_NUM;
+        true ->
+            V1 = irr1(Guess, Guess * 1.1 + 0.01, Range),
+            V2 = irr1(0, 1, Range),
+            if is_number(V1), abs(V1 - Guess) =< abs(V2 - Guess) -> V1; 
+               true                                              -> V2 end
     end.
+
+irr1(Rate0, Rate1, Range) ->
+    X0 = npv1(Rate0, Range),
+    X1 = npv1(Rate1, Range),
+    secant(Rate1, Rate0, X1, X0, fun(N) -> npv1(N, Range) end).
+
 
 effect(Args = [_, _]) ->
     [Nomrate, Npery] = ?numbers(Args, ?default_rules),
@@ -293,14 +312,13 @@ rate_([Nper, Pmt, Pv, Fv, Type, Guess]) ->
 
              
 %%% helpers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--define(ITERATION_LIMIT, 200).
+-define(ITERATION_LIMIT, 20).
 -define(EPSILON, 0.0000001).
 
 %% Calculate next approximation of value based on two previous approximations.
 secant(Pa, Ppa, Px, Ppx, Fun) ->
     secant(Pa, Ppa, Px, Ppx, Fun, 1).
 secant(_, _, _, _, _, ?ITERATION_LIMIT) ->
-    io:format("Iter limit~n", []),
     ?ERRVAL_NUM;
 secant(Pa, Ppa, Px, Ppx, Fun, I) ->
     Divisor = (Px - Ppx),
