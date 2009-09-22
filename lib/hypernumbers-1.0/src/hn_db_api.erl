@@ -518,8 +518,11 @@ handle_dirty_cell(Site, Rec) ->
     
     case hn_db_wu:read_attrs(Cell, ["__shared"], read) of
         [] ->
-            [{C, KV}] = hn_db_wu:read_attrs(Cell, ["formula"], read),
-            hn_db_wu:write_attr(C, KV);
+            %% THIS IS BAD, we shouldnt hand dirty cells not
+            %% existing since they shouldnt be marked dirty
+            case hn_db_wu:read_attrs(Cell, ["formula"], read) of
+                [{C, KV}] -> hn_db_wu:write_attr(C, KV);
+                []        -> ok
         _  ->
             ?INFO("TODO: handle_dirty_cell shared formula", [])
     end,
