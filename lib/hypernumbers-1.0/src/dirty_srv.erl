@@ -108,9 +108,14 @@ read_table(Table) ->
             mnesia:subscribe({table, Table, simple}),
             no_dirty_cells;
         Id ->
-            [Rec] = mnesia:read(Table, Id, write),
-            ok = mnesia:delete(Table, Id, write),
-            proc_dirty(Table, Rec)
+            %% Eugh, shouldnt hangle missing cells
+            case mnesia:read(Table, Id, write) of
+                [Rec] ->
+                    ok = mnesia:delete(Table, Id, write),
+                    proc_dirty(Table, Rec);
+                _ ->
+                    ok
+            end
     end.
 
 -spec restart(list(), pid()) -> {noreply, any()}.
