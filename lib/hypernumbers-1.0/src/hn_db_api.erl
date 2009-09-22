@@ -523,6 +523,7 @@ handle_dirty_cell(Site, Rec) ->
             case hn_db_wu:read_attrs(Cell, ["formula"], read) of
                 [{C, KV}] -> hn_db_wu:write_attr(C, KV);
                 []        -> ok
+            end;
         _  ->
             ?INFO("TODO: handle_dirty_cell shared formula", [])
     end,
