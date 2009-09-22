@@ -122,6 +122,8 @@ rl(flatten, {range,X}) ->
     {list, flat(X, [])};
 rl(flatten, {array,X}) ->
     {list, flat(X,[])};
+rl(flatten, {list,X}) ->
+    {list, X};
 
 rl({flatten, range}, {range,X}) ->
     {list, flat(X, [])};
