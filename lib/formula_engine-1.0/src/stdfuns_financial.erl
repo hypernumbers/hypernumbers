@@ -97,8 +97,8 @@ irr([Range, Guess]) ->
             
 
 irr_(Range, Guess) ->
-    % Need both a positve and negative to compute.
-    case lists:any(fun(X) -> X > 0 end, Range) and
+    %% Need both a positve and negative to compute.
+    Irr = case lists:any(fun(X) -> X > 0 end, Range) and
          lists:any(fun(X) -> X < 0 end, Range) of
         false ->
             ?ERRVAL_NUM;
@@ -107,8 +107,11 @@ irr_(Range, Guess) ->
             V2 = irr1(0, 1, Range),
             if is_number(V1), abs(V1 - Guess) =< abs(V2 - Guess) -> V1; 
                true                                              -> V2 end
-    end.
+    end,
+    if is_number(Irr), Irr > 1.0e7 -> ?ERRVAL_NUM;
+       true                        -> Irr end.
 
+            
 irr1(Rate0, Rate1, Range) ->
     X0 = npv1(Rate0, Range),
     X1 = npv1(Rate1, Range),
@@ -303,8 +306,8 @@ rate_([Nper, _Pmt, _Pv, _Fv, _Type, _Guess]) when Nper =< 1 ->
 rate_([_Nper, _Pmt, _Pv, _Fv, _Type, Guess]) when Guess =< -1 ->
     ?ERRVAL_VAL;
 rate_([Nper, Pmt, Pv, Fv, Type, Guess]) ->
-    Rate0 = Guess * 0.1,
-    Rate1 = (1 + Guess) / 2,
+    Rate0 = Guess,
+    Rate1 = Guess * 1.1 + 0.01,
     X0 = xn(Pmt, Rate0, Nper, Pv, Fv, Type),
     X1 = xn(Pmt, Rate1, Nper, Pv, Fv, Type),
     secant(Rate1, Rate0, X1, X0,
@@ -312,8 +315,8 @@ rate_([Nper, Pmt, Pv, Fv, Type, Guess]) ->
 
              
 %%% helpers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--define(ITERATION_LIMIT, 20).
--define(EPSILON, 0.0000001).
+-define(ITERATION_LIMIT, 100).
+-define(EPSILON,  0.0000001).
 
 %% Calculate next approximation of value based on two previous approximations.
 secant(Pa, Ppa, Px, Ppx, Fun) ->
