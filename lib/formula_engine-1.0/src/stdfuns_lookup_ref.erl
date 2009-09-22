@@ -49,8 +49,8 @@ indirect_([Str], [_Bool]) ->
                           muin:context_setting(row)}) of
         {ok, Ast} ->
             case muin:eval(Ast) of
-                X when ?is_cellref(X) -> X;
-                _Else                 -> ?ERRVAL_REF
+                X when ?is_cellref(X); ?is_rangeref(X) -> X;
+                _Else                                  -> ?ERRVAL_REF
             end;
         {error, syntax_error} -> ?ERRVAL_REF
     end.
