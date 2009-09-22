@@ -90,7 +90,7 @@ irr([Range, Guess]) ->
         {_, Err_NG} when ?is_errval(Err_NG)  -> Err_NG;
         {_, [NegG]} when NegG =< -1          -> ?ERRVAL_VAL;
         {[], _    } when ?is_rangeref(Range) -> ?ERRVAL_NUM;
-        {L1, L2   } L1 == []; L2 == []       -> ?ERRVAL_VAL;
+        {L1, L2   } when L1 == []; L2 == []  -> ?ERRVAL_VAL;
         {VS2, NG2 } -> muin_util:apply([lists:reverse(VS2), hd(NG2)], 
                                        fun irr_/2)
     end.
