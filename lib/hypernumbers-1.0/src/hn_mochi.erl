@@ -296,7 +296,7 @@ ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr,
       [{"set", {struct, [{"language", Lang}]}}], User) ->
     hn_users:update(Site, User, "language", Lang);
 
-ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+ipost(_Req, #refX{site = S, path = P} = Ref, Type, _Attr, 
       [{"set", {struct, Attr}}], User) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     case Attr of 
@@ -305,7 +305,13 @@ ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr,
             post_range_values(Ref, Vals),
             ok;
         _Else ->
-            hn_db_api:write_attributes(Ref, Attr)
+            case Type of
+                column -> [{"formula", Val}] = Attr,
+                          hn_db_api:write_last([{Ref, Val}]);
+                row    -> [{"formula", Val}] = Attr,
+                          hn_db_api:write_last([{Ref, Val}]);
+                _Other -> hn_db_api:write_attributes(Ref, Attr)
+            end
     end;
 
 ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 

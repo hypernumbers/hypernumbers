@@ -877,23 +877,25 @@ write_last(List) when is_list(List) ->
                 #refX{obj = {cell, {_, LastRow}}} = LastRowRefX,
                 % Add 1 to because we are adding data 'as the last row'
                 % (or column) ie one more than the current last row/column
-                {Type, Pos} = case O of
-                                  {row, _}    -> Y = LastRow + 1, 
+                % NOTE a column reference appends to the 'LAST ROW' not the
+                % 'last column' (think about it!)
+                {Type, {PosX, PosY}} = case O of
+                                  {row, _}    -> Y = LastCol + 1, 
                                                  {row, {Y, Y}};
-                                  {column, _} -> X = LastCol + 1,
+                                  {column, _} -> X = LastRow + 1,
                                                  {column, {X, X}}
                               end,
 
                 % now convert the column or row references to cell references
                 Fun1 =
-                    fun({#refX{site = S1, path = P1, obj = {Type1, Idx}}, Val})  ->
+                    fun({#refX{site = S1, path = P1, obj = {Type1, {IdxX, IdxY}}}, Val})  ->
                             % FORCE ME to match (see above)
                             S = S1,
                             P = P1,
                             Type = Type1,
                             Obj = case Type1 of
-                                      row    -> {cell, {Pos, Idx}};
-                                      column -> {cell, {Idx, Pos}}
+                                      row    -> {cell, {PosX, IdxY}};
+                                      column -> {cell, {IdxX, PosY}}
                                   end,
                             RefX2 = #refX{site = S1, path = P1, obj = Obj},
                             ?wu:write_attr(RefX2, {"formula", Val})

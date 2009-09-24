@@ -1064,13 +1064,23 @@ get_refs_right(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
 get_last_refs(#refX{site = S, path = P}) ->
     RefX2 = #refX{site = S, path = P, obj = {page, "/"}},
     Cells = read_cells(RefX2, read),
-    Fun = fun({R, _}, {MaxRefX, MaxRefY}) ->
-                  #refX{obj = {cell, {X, Y}}} = R,
-                  #refX{obj = {cell, {MaxX, _}}} = MaxRefX,
-                  #refX{obj = {cell, {_, MaxY}}} = MaxRefY,
-                  NewX = ?COND(MaxX > X, MaxRefX, X),
-                  NewY = ?COND(MaxY > Y, MaxRefY, Y),
-                  {NewX, NewY}
+    Fun = fun({R, V}, {MaxRefX, MaxRefY}) ->
+                  {NewX, NewY} =
+                      case V of
+                          {"formula", _} ->
+                              #refX{obj = {cell, {X, Y}}} = R,
+                              #refX{obj = {cell, {MaxX, _}}} = MaxRefX,
+                              #refX{obj = {cell, {_, MaxY}}} = MaxRefY,
+                              NX = ?COND(MaxX > X, MaxX, X),
+                              NY = ?COND(MaxY > Y, MaxY, Y),
+                              {NX, NY};
+                          _ ->
+                              #refX{obj = {cell, {MaxX, _}}} = MaxRefX,
+                              #refX{obj = {cell, {_, MaxY}}} = MaxRefY,
+                              {MaxX, MaxY}
+                      end,
+                  {#refX{site = S, path = P, obj = {cell, {NewX, 0}}},
+                   #refX{site = S, path = P, obj = {cell, {0, NewY}}}}
           end,
     Zero = #refX{site = S, path = P, obj = {cell, {0, 0}}},
     lists:foldl(Fun, {Zero, Zero}, Cells).
@@ -2597,7 +2607,7 @@ mk_f([{formula, S}       | T], {St, A})   -> mk_f(T, {St, [S | A]});
 mk_f([{str, S}           | T], {St, A})   -> mk_f(T, {St, [$", S, $" | A]});
 mk_f([{recalc, S}        | T], {_St, A})  -> mk_f(T, {dirty, [S | A]});
 mk_f([{name, "INDIRECT"} | T], {_St, A})  -> mk_f(T, {dirty, ["INDIRECT" | A]});
-mk_f([{name, "SUM"} | T], {_St, A})  -> mk_f(T, {dirty, ["SUM" | A]});
+mk_f([{name, "SUM"}      | T], {_St, A})  -> mk_f(T, {dirty, ["SUM" | A]});
 mk_f([{name, "CELL"}     | T], {_St, A})  -> mk_f(T, {dirty, ["CELL" | A]});
 mk_f([{name, S}          | T], {St, A})   -> mk_f(T, {St, [S | A]});
 mk_f([{H}                | T], {St, A})   -> mk_f(T, {St, [atom_to_list(H) | A]}).
@@ -3666,7 +3676,7 @@ tell_front_end(#refX{site=Site, path=Path}, Index, Style)
     Tuple = {Key, Index, Style},
     tell_front_end1(Key, Tuple).
 
-tell_front_end1(Key, Tuple) ->
+tell_front_end1(_Key, Tuple) ->
     List = get('front_end_notify'),
     put('front_end_notify', [Tuple | List]),
     ok.
