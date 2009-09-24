@@ -101,11 +101,6 @@ handle_req(Method, Req, Ref, Vars, User) ->
                 _Else ->
                     Body = Req:recv_body(),
                     {ok, Post} = get_json_post(Body),
-
-                    % io:format("Req is ~p~n-Ref is ~p~n-Type is ~p~n-Vars is ~p~n-"++
-                    %            "Post is ~p~n-~p ~p~n",
-                    %           [Req, Ref, Type, Vars, Post, self(), now()]),
-
                     mochilog:log(Req, Ref, hn_users:name(User), Body),
                     case ipost(Req, Ref, Type, Vars, Post, User) of
                         ok  -> json(Req, "success");
@@ -126,7 +121,6 @@ serve_file(Req, File) ->
             Req:not_found()
     end.
 
-
 ensure(File, Lang) ->
     Path = docroot() ++ "/" ++ File,
     case filelib:is_file(Path++"."++Lang) of 
@@ -140,6 +134,11 @@ iget(Req, #refX{path=["_user", "login"]}, page, [], User) ->
 iget(Req, #refX{site = S, path = P}, page, [{"gui", FileName}], User) ->
     ok = status_srv:update_status(User, S, P, "viewed page as " ++ FileName),
     serve_html(Req, "hypernumbers/" ++ FileName ++ ".html", User);
+
+iget(Req, _, page, [{"gui", File},{"clean", []}], _) ->
+    serve_file(Req, File ++ ".html");
+
+
 iget(Req, #refX{site = S, path = P}, page, [], User) ->
     ok = status_srv:update_status(User, S, P, "viewed page"),
     serve_html(Req, "hypernumbers/index.html", User);
@@ -299,19 +298,18 @@ ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr,
 ipost(_Req, #refX{site = S, path = P} = Ref, Type, _Attr, 
       [{"set", {struct, Attr}}], User) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
-    case Attr of 
+    case Attr of
+        % TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
-            %% TODO : Get Rid of this
             post_range_values(Ref, Vals),
             ok;
+
+        % if posting a formula to a row or column, append
+        [{"formula", Val}] when Type == column; Type == row ->
+            hn_db_api:write_last([{Ref, Val}]);
+        
         _Else ->
-            case Type of
-                column -> [{"formula", Val}] = Attr,
-                          hn_db_api:write_last([{Ref, Val}]);
-                row    -> [{"formula", Val}] = Attr,
-                          hn_db_api:write_last([{Ref, Val}]);
-                _Other -> hn_db_api:write_attributes(Ref, Attr)
-            end
+            hn_db_api:write_attributes(Ref, Attr)
     end;
 
 ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
