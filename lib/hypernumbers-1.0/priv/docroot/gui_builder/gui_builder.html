@@ -6,9 +6,10 @@
     <link rel="stylesheet" type="text/css" href="/gui_builder/themes/theme1.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/hn.sheet.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/layouts/basic.css" />
+    <link rel="stylesheet" type="text/css" href="/gui_builder/layouts/jqueryui.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/widgets/simple.css" />
     <link rel="stylesheet" type="text/css" href="/gui_builder/elements/core.css" />
-    <link type="text/css" rel="stylesheet" href="http://jqueryui.com/themes/base/ui.all.css" />
+    <!-- <link type="text/css" rel="stylesheet" href="http://jqueryui.com/themes/base/ui.all.css" /> -->
   </head>
     <body>
       
@@ -137,7 +138,7 @@
                     <p>Drag elements onto the page and then click on them to configure them.</p>
                     <ul id="elementslist" class="toolbox">
                     </ul>
-                    <p>An element can be configured as a lable, a text box, a set of radio buttons or a dropdown menu, and so on...</p>
+                    <p>An element can be configured as a block element, a text box, a set of radio buttons or a dropdown menu, and so on...</p>
                   </div>
                   <div id="widgets" class="box">
                     <p class="toolstitle">Widgets</p>
@@ -200,10 +201,10 @@
         <!-- Some jquery libraries to handle AJAX calls -->
         <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
         <!--<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>-->
-        <!--<script src="/jquerytextbox/jquery.textbox.js"></script> -->
+        <script src="/jquerytextbox/jquery.textbox.js"></script>
         <!-- Special minified jquery.ui set done this way for dev only-->
         <script src="/jqueryui/js/jquery-ui-1.7.2.custom.min.js"></script>
-        <script type="text/javascript" src="http://jqueryui.com/themeroller/themeswitchertool/"></script>
+        <!-- <script type="text/javascript" src="http://jqueryui.com/themeroller/themeswitchertool/"></script> -->
 
         <script src="/hypernumbers/jquery.filemenu.js"></script>
         
@@ -217,6 +218,7 @@
         <script src="/hypernumbers/hn.callbacks.js"></script>
         
         <!-- the GUI libraries -->
+        <script src="/gui_builder/hn.util.js"></script>
         <script src="/gui_builder/hn.gui.js"></script>
         <script src="/gui_builder/hn.gui.util.js"></script>
         <script src="/gui_builder/hn.gui.register.js"></script>
@@ -243,6 +245,7 @@
         <!-- Load the layouts, elements and widgets last -->
         <!-- They have to register themselves -->
         <script src="/gui_builder/layouts/basic.js"></script>
+        <script src="/gui_builder/layouts/jqueryui.js"></script>
         <script src="/gui_builder/widgets/simple.js"></script>
         <script src="/gui_builder/elements/core.js"></script>
       </div>

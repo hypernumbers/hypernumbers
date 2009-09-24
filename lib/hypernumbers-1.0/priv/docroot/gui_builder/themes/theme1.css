@@ -12,27 +12,27 @@
 
 .hn_small *
 { 
-  font:       9px Arial,"Helvetica Neue", sans-serif;
+  font:       1px Arial,"Helvetica Neue", sans-serif;
   color:      #bcbcbc;
   text-align: left;
 }
 
 .hn_medium *
 {  
-  font:       12px Arial,"Helvetica Neue", sans-serif;
+  font:       14px Arial,"Helvetica Neue", sans-serif;
   text-align: left;
 }
 
 .hn_large *
 { 
-  font:        14px Arial,"Helvetica Neue", sans-serif;
+  font:        24px Arial,"Helvetica Neue", sans-serif;
   font-weight: bold;
   text-align:  left;
 }
 
 .hn_largest *
 { 
-  font:        20px Arial,"Helvetica Neue", sans-serif;
+  font:        32px Arial,"Helvetica Neue", sans-serif;
   font-weight: bold;
   text-align:  left;
 }
