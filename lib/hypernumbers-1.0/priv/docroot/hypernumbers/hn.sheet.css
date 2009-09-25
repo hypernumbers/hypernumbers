@@ -22,7 +22,7 @@ ul,li {
  padding: 0px;
 }
 
-p {  
+p,h1,h2,h3,h4,h5 {  
  margin: 0px 0px 6px 0px;
 }
 
