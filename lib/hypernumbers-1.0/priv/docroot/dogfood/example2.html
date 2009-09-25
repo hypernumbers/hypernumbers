@@ -21,27 +21,29 @@
     <h2>Append Posts</h2>
     <p>The bindings <code>a:a</code> means the first cell in column <code>a</code> after the end of data on a particular page. It is important to understand clearly what that means.It does <strong>not</strong> mean the first cell after the last entry in column <code>a</code>. If a worksheet is totally empty except for on value in <code>b2</code> then the binding <code>a</code> means <code>a3</code> and the binding <code>4:4</code> means <code>c4</code>.</p>
     <p>Look at the following:</p>
-    <pre><code>&lt;div class="hn" data-gui-element-type="select" data-source-binding="b3:b5" data-render-type="dynamic" data-post="auto" data-binding="a:a"&gt;&lt;/div&gt;
-    &lt;div class="hn" data-gui-element-type="select" data-source-binding="b3:b5" data-render-type="dynamic" data-post="auto" data-binding="1:1"&gt;&lt;/div&gt;</code></pre>
+    <pre><code>&lt;div class="hn" data-gui-element-type="select" data-binding-from="b3:b5" data-render-type="dynamic" data-post="auto" data-binding-to="a:a"&gt;&lt;/div&gt;
+    &lt;div class="hn" data-gui-element-type="select" data-binding-from="b3:b5" data-render-type="dynamic" data-post="auto" data-binding-to="1:1"&gt;&lt;/div&gt;</code></pre>
     <p>Notice that the first is bound to column <code>a</code> and the second to row <code>1</code>. When it fires it appends a value to the end of the page...</p>
     <div class="render">
       <p>Append to last row (put value in column A):</p>
-      <div class="hn" data-gui-element-type="select" data-source-binding="b3:b5" data-render-type="dynamic" data-post="auto" data-binding="a:a"></div>
+      <div class="hn" data-gui-element-type="select" data-binding-from="b3:b5" data-render-type="dynamic" data-post="auto" data-binding-to="a:a"></div>
       <p>Append to last column (put value in row 1):</p>
-      <div class="hn" data-gui-element-type="select" data-source-binding="b3:b5" data-render-type="dynamic" data-post="auto" data-binding="1:1"></div>
+      <div class="hn" data-gui-element-type="select" data-binding-from="b3:b5" data-render-type="dynamic" data-post="auto" data-binding-to="1:1"></div>
     </div>
+    </p><strong>Note:</strong> we are inserting formulae into cells by using a quoted formula in the source cell...</p>
     <h2>Relative Bindings</h2>
     <p>Relative Bindings are used to bind a display element to an item relative to the end of a list. What do we mean by that?</p>
-    <pre><code>&lt;div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding="a-1"&gt;&lt;/div&gt;</code>
-    <code>&lt;div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding="-a1"&gt;&lt;/div&gt;</code></pre>
+    <pre><code>&lt;div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-to="a-1"&gt;&lt;/div&gt;</code>
+<code>&lt;div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-to="-a1"&gt;&lt;/div&gt;</code></pre>
     <p>Relative bindings are designed to work with append posts. The two following fields are bound to 'track' the two last posts of the append posts above:
       <div class="render">
         <p>Last item in column <code>a</code>:</p>
-        <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding="a-1"></div>
+        <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="a-1" data-binding-to="a-1"></div>
         <p>Last item in row <code>1</code>:</p>
-        <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding="-a1"></div>
+        <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="-a1" data-binding-to="-a1"></div>
       </div>
-
+      <h2>Double Entry Bindings</h2>
+      <p>Double Entry bindings are a powerful way of storing data in a robust way. Essentially a cell is bound to two places and these places both get the new value.
     </div>
     <!-- Some jquery libraries to handle AJAX calls -->
     <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
