@@ -1073,6 +1073,8 @@ unit_test_() ->
      ?_assert(conv("you_sad_bastard")       == "<p>you_sad_bastard</p>"),
      ?_assert(conv("you \\*sad\\* bastard") == "<p>you *sad* bastard</p>"),
      ?_assert(conv("you \\_sad\\_ bastard") == "<p>you _sad_ bastard</p>"),
+     ?_assert(conv("*you* sad bastard")     == "<p><em>you</em> sad bastard</p>"),
+     ?_assert(conv("**you** sad bastard")   == "<p><strong>you</strong> sad bastard</p>"),
      % Breaking up in to lines
      ?_assert(conv("blah\nblah")       == "<p>blah\nblah</p>"),
      ?_assert(conv("blah\r\nblah")     == "<p>blah\nblah</p>"),
@@ -1203,6 +1205,10 @@ unit_test_() ->
               "<p>Some text <a href=\"/a/path\" title=\"\">hey</a> there</p>"),
       ?_assert(conv("[id]: /a/path\nSome text [hey]  [id] there") ==
               "<p>Some text [hey]  [id] there</p>"),
+      ?_assert(conv("My [id] test [id]:http://example.com") == 
+               "<p>My <a href=\"http://example.com\"></a> test</p>"),
+      ?_assert(conv("My [link][id] test [id]:http://example.com") == 
+               "<p>My <a href=\"http://example.com\">link</a> test</p>"),
      % Reference Images
       ?_assert(conv("[id]: /a/path\nSome text ![hey][id] there") ==
               "<p>Some text <img src=\"/a/path\" title=\"\" alt=\"hey\" /> there</p>"),
