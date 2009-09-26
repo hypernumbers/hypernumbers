@@ -4,29 +4,152 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     
-    <title>Hypernumbers</title>
-    <link rel="stylesheet" type="text/css" href="/hypernumbers/hn.sheet.css" />
-    
+    <title>Hypernumbers Web Builder</title>
+
+    <link rel="stylesheet" type="text/css" 
+          href="/guibuilder/templates.css" />
+    <link rel="stylesheet" type="text/css" 
+          href="/guibuilder/hn.builder.css" />
+    <link rel="stylesheet" type="text/css" 
+          href="/hypernumbers/hn.sheet.css" />
+
   </head>
   <body>
-    
-    
+
+    <div id="preview"> 
+      &nbsp;
+    </div>
+   
+    <div id="panelwrapper">
+      
+      <div class="panel" id="configurepanel">
+        
+        <h3 class="togglesubpanel">Configure</h3>
+        
+        <div class="subpanel configurepanel">
+          
+          <ul id="tabs">
+            <li><a name="add">add</a></li>
+            <li><a name="configure">configure</a></li>
+            <li><a name="templates">templates</a></li>
+          </ul>
+          
+          <div class="tab" id="add">
+            <input type="button" value="input" class="btn" />
+          </div>
+          
+          <div class="tab" id="configure">
+            configure shit
+          </div>
+          
+          <div id="toggle">
+            <label for="toggleview">
+              <input type="checkbox" id="toggleview" /> View Code
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel" id="sheetpanel">
+        
+        <div style="height:200px;width:300px;position:relative;" 
+             class="subpanel">
+          
+          <table cellspacing="0" cellpadding="0">
+            <tr height="20px">
+              <td id="corner"></td>
+              <td colspan="2" style="overflow:hidden">
+                <div style="position:relative;top:-10px;" id="columnsout">
+                  <div style="position:absolute;" id="columns"></div>
+                  <div id="csel"><div id="colselection">&nbsp;</div></div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="height:100%" valign="top">
+                <div style="position:relative;height:100%;overflow:hidden;" id="rowsout">
+                  <div style="position:absolute;" id="rows"></div>
+                  <div id="rsel"><div id="rowselection">&nbsp;</div></div>
+                </div>
+              </td>
+              <td height="100%">
+                <div style="position:relative;height:100%;overflow:hidden;">
+                  <div id="scroller">
+                    <div id="dragged"></div>
+                    <textarea id="input"></textarea>
+                    <div id="selection">
+                      <div id="dragger"></div>
+                    </div>
+                    <div id="current"></div>
+                    <div id="copied"></div>
+                    <div id="dragfill"></div>
+                    <div id="panes"></div>
+                  </div>
+                </div>
+              </td>
+              <td width="15px">
+                <table cellspacing="0" cellpadding="0">
+                  <tr><td id="up"></td></tr>
+                  <tr>
+                    <td style="height:100%" id="scrollbar-right">
+                      <div style="position: relative; height: 100%;">
+                        <div id="right-bar"></div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr><td id="down"></td></tr>
+                </table>
+              </td>
+            </tr>
+            <tr height="15px">
+              <td></td>
+              <td>
+                <table cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td id="left"></td>
+                    <td id="scrollbar-bottom">
+                      <div style="position: relative; width: 100%; height:13px;">
+                        <div id="bottom-bar"></div>
+                      </div>                    
+                    </td>
+                    <td id="right"></td>
+                  </tr>
+                </table>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+          <span id="hidden_input"></span>
+          <textarea id="paste"></textarea>
+          <div id="overlay"></div>        
+        </div>
+
+        <h3 class="togglesubpanel">Spreadsheet?</h3>
+
+      </div>
+    </div>
+
+  
   </body>
 
   <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
-  <script src="/hypernumbers/jquery.filemenu.js"></script>
   <script src="/hypernumbers/json2.js"></script>
-  <script src="/js/ajaxfileupload.js"></script>
   <script src="/hypernumbers/hn.js"></script>
   <script src="/hypernumbers/hn.util.js"></script>
+  <script src="/hypernumbers/hn.data.js"></script>
+
   <script src="/hypernumbers/hn.spreadsheet.js"></script>
   <script src="/hypernumbers/hn.data.js"></script>
+  <script src="/hypernumbers/hn.ui.js"></script>
+  <script src="/hypernumbers/hn.uiaction.js"></script>
   <script src="/hypernumbers/hn.sheet.js"></script>
   <script src="/hypernumbers/hn.layout.js"></script>
   <script src="/hypernumbers/hn.layout.panes.js"></script>
   <script src="/hypernumbers/hn.layout.pane.js"></script>
-  <script src="/hypernumbers/hn.toolbar.js"></script>
-  <script src="/hypernumbers/hn.callbacks.js"></script>
   <script src="/hypernumbers/hn.selection.js"></script>
-  <script src="/hypernumbers/hn.site.js"></script>  
+
+  <script src="/hypernumbers/hn.callbacks.js"></script>
+
+  <script src="/guibuilder/hn.builder.js"></script>
+
 </html>

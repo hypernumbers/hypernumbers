@@ -25,11 +25,17 @@
 make_src(A) when is_list(A) -> make_src2(lists:flatten(A));
 make_src(A)                 -> make_src2([A]).
 
+% This is bad
+-define(is_str,
+        "(( is_list(X) andalso X=/=[] andalso (not(is_atom(hd(X)))) )
+        orelse
+        ( is_tuple(X) andalso element(1, X) == ustring))").
+
 get_general()->
     Src = "fun(X) -> "++
         "    if"++
-%        "      not(is_number(X)) -> {auto, X};"++
-        "      not(is_number(X)) -> {auto, markdown:conv(X)};"++
+        "      "++?is_str++"     -> {auto, markdown:conv(X)};"++
+        "      not(is_number(X)) -> {auto, X};"++
         "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++ 
         "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
         "     end "++
