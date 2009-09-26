@@ -49,8 +49,7 @@ req(Req) ->
 
 do_req(Req) ->
 
-    Ref    = hn_util:parse_url(get_host(Req)),
-    #refX{site = Site} = Ref,
+    #refX{site = Site} = Ref = hn_util:parse_url(get_host(Req)),
     Vars   = Req:parse_qs(),
     Method = Req:get(method),
 
@@ -111,7 +110,8 @@ handle_req(Method, Req, Ref, Vars, User) ->
     end.    
 
 serve_html(Req, File, User) ->
-    serve_file(Req, ensure(File, get_lang(User))).
+    ok = ensure(File, get_lang(User)),
+    serve_file(Req, File++"."++get_lang(User)).
 
 serve_file(Req, File) ->
     case file:open(docroot() ++ "/" ++ File, [raw, binary]) of
@@ -123,22 +123,19 @@ serve_file(Req, File) ->
     end.
 
 ensure(File, Lang) ->
-    
     SrcHtml   = docroot() ++ "/" ++ File,
     TransHtml = SrcHtml++"."++Lang,
-    
     case not( filelib:is_file(TransHtml) ) orelse 
         hn_util:is_older(TransHtml, SrcHtml) of 
         true  -> hn_util:compile_html(SrcHtml, Lang);
         false -> ok
-    end,
-    File++"."++Lang.
+    end.
 
 iget(Req, #refX{path=["_user", "login"]}, page, [], User) ->
     serve_html(Req, "hypernumbers/login.html", User);
 iget(Req, #refX{site = S, path = P}, page, [{"gui", FileName}], User) ->
     ok = status_srv:update_status(User, S, P, "viewed page as " ++ FileName),
-    serve_html(Req, "hypernumbers/" ++ FileName ++ ".html", User);
+    serve_html(Req, FileName ++ ".html", User);
 iget(Req, #refX{site = S, path = P}, page, [], User) ->
     ok = status_srv:update_status(User, S, P, "viewed page"),
     serve_html(Req, "hypernumbers/index.html", User);
@@ -147,13 +144,13 @@ iget(Req, Ref, page, [{"updates", Time}], _User) ->
 iget(Req, #refX{site = S}, page, [{"status", []}], _User) -> 
     json(Req, status_srv:get_status(S));
 iget(Req, #refX{site = _S}, page, [{"guis", []}], User) ->
-    User2 = get_user(User),
+    User2 = hn_users:name(User),
     Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/" ++ User2 ++ "/",
     {ok, Files} = file:list_dir(Path),
     Files2 = hn_util:get_html_files(User2, Files),
     json(Req, {array, Files2});
 iget(Req, #refX{site = _S, path = _P}, page, [{"get_gui", FileName}], User) ->
-    User2 = get_user(User),
+    User2 = hn_users:name(User),
     File = code:lib_dir(hypernumbers, priv) ++ "/docroot/"
         ++ User2 ++ "/" ++ FileName ++ ".html",
     Canvas = gui_builder:get_file(File),
@@ -319,7 +316,7 @@ ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr,
 
 ipost(_Req, _Ref, _Type, _Attr, 
       [{"save_gui", {struct, [{"name", Name}, {"form", Form}]}}], User) ->
-    User2 = get_user(User),
+    User2 = hn_users:name(User),
     Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/" ++ User2 ++ "/",
     File = Path ++ filename:basename(Name) ++ ".html",
 
@@ -373,18 +370,14 @@ ipost(Req, Ref, _Type, _Attr,
     Sync1 = hn_db_api:check_page_vsn(Site, PVsn),
     Sync2 = hn_db_api:check_page_vsn(Site, CVsn),
     case Sync1 of
-        synched        -> ok;
-        unsynched      -> log_unsynched("notify_back_create", Site, PP, PV),
-                          hn_db_api:resync(Site, PVsn);
+        synched         -> ok;
+        unsynched       -> hn_db_api:resync(Site, PVsn);
         not_yet_synched -> ok % the child gets the version in this call...
     end,
     case Sync2 of
         synched         -> ok;
-        unsynched       -> log_unsynched("notify_back_create", Site, CP, CV),
-                           hn_db_api:resync(Site, CVsn);
-        not_yet_synched -> log_not_yet_synched("FATAL", "notify_back_create",
-                                               Site, CP, CV),
-                           ?exit
+        unsynched       -> hn_db_api:resync(Site, CVsn);
+        not_yet_synched -> ?exit
     end,
     {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX, 
                                                       Proxy, Biccie),
@@ -418,10 +411,6 @@ ipost(Req, Ref, _Type, _Attr,
     bits:log(Str),
 
     %% io:format("In ipost (notify_back) Stamp is ~p~n", [Stamp]),
-
-    %% bits:log("RECEIVED\t" ++ pid_to_list(self()) ++ "\t" ++ ParentUrl ++
-    %%         "\t from \t" ++ ChildUrl ++ json_util:to_str(Json)),
-
     %% there is only 1 parent and 1 child here
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
@@ -437,21 +426,15 @@ ipost(Req, Ref, _Type, _Attr,
             ok = hn_db_api:notify_back_from_web(ParentX, ChildX,
                                                 Biccie, Type);
         unsynched -> 
-            log_unsynched("notify_back", Site, PP, PV),
             hn_db_api:resync(Site, PVsn);
         not_yet_synched -> 
-            log_not_yet_synched("NOT FATAL", "notify_back",
-                                Site, CP, CV),
             ok = hn_db_api:initialise_remote_page_vsn(Site, PVsn)
     end,
     case Sync2 of
         synched -> ok;
         unsynched -> 
-            log_unsynched("notify_back", Site, PP, PV),
             ok = hn_db_api:resync(Site, CVsn);
         not_yet_synched -> 
-            log_not_yet_synched("NOT FATAL", "notify_back",
-                                Site, CP, CV),
             ok = hn_db_api:initialise_remote_page_vsn(Site, CVsn)
     end,
     Json = {struct, [{"result", "success"}, {"stamp", Stamp}]},
@@ -508,10 +491,8 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
             ok = hn_db_api:notify_from_web(ParentX, Ref, Type,
                                            Payload, Biccie);
         unsynched -> 
-            log_unsynched("notify", Site, PP, PV),
             ok = hn_db_api:resync(Site, PVsn);
         not_yet_synched -> 
-            log_not_yet_synched("FATAL", "notify", Site, PP, PV),
             ?exit
     end,
     %% there are 1 to many children and if they are out of synch ask for 
@@ -522,11 +503,8 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
                 #version{page = CP, version = CV} = X,
                 case Sync2 of
                     synched         -> ok;
-                    unsynched       -> log_unsynched("notify", Site, CP, CV),
-                                       ok = hn_db_api:resync(Site, X);
-                    not_yet_synched -> log_not_yet_synched("FATAL", "notify",
-                                                           Site, CP, CV),
-                                       ?exit
+                    unsynched       -> ok = hn_db_api:resync(Site, X);
+                    not_yet_synched -> ?exit
                 end
         end,
     [Fun(X) || X <- CVsn],
@@ -537,7 +515,6 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
     Str2 = "hn_mochi:ipost\tnotify\thandling post with\t" ++ 
         Stamp ++ "\t" ++ pid_to_list(self()) ++ "\t" ++ 
                                      binary_to_list(get(mochiweb_request_body)),
-    bits:log(Str2),
     ret;
 
 ipost(Req, _Ref, _Type, _Attr, _Post, _User) ->
@@ -639,19 +616,6 @@ post_column_values(Ref, Values, Offset) ->
          end,
     lists:foldl(F, 0, Values).
 
-log_unsynched(_Location, _Site, _Page, _Vsn) ->
-    %% bits:log("UNSYNCHED for "++ Location ++"\t" ++ pid_to_list(self()) ++
-    %%         "\t" ++ Site ++ "\t Page \t" ++ Page ++ "\t Version \t" ++
-    %%         tconv:to_s(Vsn)),
-    ok.
-
-log_not_yet_synched(_Severity, _Location, _Site, _Page, _Vsn) ->
-    %% Msg = Severity ++ " NOT_YET_SYNCHED for " ++ Location ++ "\t",
-    %% bits:log(Msg ++ pid_to_list(self()) ++ "\t" ++ Site ++
-    %%         "\t Page \t" ++ Page ++"\t Version \t" ++
-    %%         tconv:to_s(Vsn)).
-    ok.
-
 remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
     Socket = Req:get(socket),
     inet:setopts(Socket, [{active, once}]),
@@ -736,10 +700,3 @@ get_lang(User) ->
 json(Req, Data) ->
     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
     Req:ok({"application/json", ?hdr, Json}).
-
-get_user(User) ->
-    if 
-        is_atom(User) -> atom_to_list(User);
-        true          -> {hn_user, U, _, _, _, _} = User,
-                         U
-    end.
