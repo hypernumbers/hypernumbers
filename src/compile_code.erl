@@ -88,7 +88,7 @@ comp_lists([{File, Opt}|T], OldStatus) ->
     % Ensure output directory exists.
     [debug_info, {outdir, Dir} | _] = Options,
     filelib:ensure_dir(Dir ++ "/"),
-
+    
     Comp = fun() -> NewStatus = compile:file(File, Options),
                     case NewStatus of
                         {ok, FileName} ->
