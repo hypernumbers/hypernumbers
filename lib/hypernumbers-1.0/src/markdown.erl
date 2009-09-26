@@ -79,7 +79,7 @@ write(File, Text) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% special hypernumbers parse for a single normal line
-parse({[], [{normal, P} | []]}) -> P;
+parse({[], [{normal, P} | []]}) -> make_str(P, []);
 parse({Refs,  TypedLines})      -> p1(TypedLines, Refs, [], []).
 
 %% goes through the lines
@@ -943,12 +943,12 @@ interpolate2([H | T], Delim, Tag,  Acc)           -> interpolate2(T, Delim, Tag,
 unit_test_() ->
     [
      % Quick Start
-     ?_assert(conv("3 > 4")              == "<p>3 &gt; 4</p>"),
+     ?_assert(conv("3 > 4\n")              == "<p>3 &gt; 4</p>"),
      ?_assert(conv("Hey Ho!\n")          == "<p>Hey Ho!</p>"),
      ?_assert(conv("Hey\nHo!\nHardy\n\n") == "<p>Hey\nHo!\nHardy</p><br />"),
      % General Characters - First Char is an edge case
      % and make sure that the rest of the line parses to a list...
-     ?_assert(conv("<ab:c")    == "<p>&lt;ab:c</p>"),
+     ?_assert(conv("<ab:c\n\n")    == "<p>&lt;ab:c</p>"),
      ?_assert(conv("</ab:c")   == "<p>&lt;/ab:c</p>"),
      ?_assert(conv("/ab:c")    == "<p>/ab:c</p>"),
      ?_assert(conv("=ab:c")    == "<p>=ab:c</p>"),
