@@ -9,6 +9,7 @@
 -include("handy_macros.hrl").
 -include("hypernumbers.hrl").
 
+-include_lib("kernel/include/file.hrl").
 -include("gettext.hrl").
 
 -export([ req/1, style_to_css/2 ]).
@@ -122,10 +123,14 @@ serve_file(Req, File) ->
     end.
 
 ensure(File, Lang) ->
-    Path = docroot() ++ "/" ++ File,
-    case filelib:is_file(Path++"."++Lang) of 
-        true  -> ok;
-        false -> hn_util:compile_html(Path, Lang)
+    
+    SrcHtml   = docroot() ++ "/" ++ File,
+    TransHtml = SrcHtml++"."++Lang,
+    
+    case not( filelib:is_file(TransHtml) ) orelse 
+        hn_util:is_older(TransHtml, SrcHtml) of 
+        true  -> hn_util:compile_html(SrcHtml, Lang);
+        false -> ok
     end,
     File++"."++Lang.
 
@@ -134,11 +139,6 @@ iget(Req, #refX{path=["_user", "login"]}, page, [], User) ->
 iget(Req, #refX{site = S, path = P}, page, [{"gui", FileName}], User) ->
     ok = status_srv:update_status(User, S, P, "viewed page as " ++ FileName),
     serve_html(Req, "hypernumbers/" ++ FileName ++ ".html", User);
-
-iget(Req, _, page, [{"gui", File},{"clean", []}], _) ->
-    serve_file(Req, File ++ ".html");
-
-
 iget(Req, #refX{site = S, path = P}, page, [], User) ->
     ok = status_srv:update_status(User, S, P, "viewed page"),
     serve_html(Req, "hypernumbers/index.html", User);
@@ -166,7 +166,6 @@ iget(Req, Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", Val}}] when is_atom(Val) -> atom_to_list(Val);
             [{_Ref, {"value", {datetime, D, T}}}] ->
-                %% io:format("~p~n",[T]),
                 dh_date:format("Y/m/d H:i:s",{D,T});
             [{_Ref, {"value", {errval, Val}}}]    -> atom_to_list(Val);
             [{_Ref, {"value", Val}}] -> Val;

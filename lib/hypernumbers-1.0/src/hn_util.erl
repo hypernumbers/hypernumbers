@@ -13,6 +13,8 @@
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 
+-include_lib("kernel/include/file.hrl").
+
 -define(rfc1123, muin_date:to_rfc1123_string).
 -define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 
@@ -28,6 +30,7 @@
          generate_po/1,
          generate_po_CHEATING/1,
          jsonify_val/1,
+         is_older/2,
 
          refX_to_url/1,
          index_to_url/1,
@@ -129,8 +132,19 @@ compile_html(Html, Lang) ->
     gettext:store_pofile(Lang, Bin),
     {ok, C} = sgte:compile_file(Html),
     NHtml = sgte:render(C, [{options, [{gettext_lc, Lang}]}]),
-    file:write_file(Html++"."++Lang, NHtml),   
-    ok.
+    file:write_file(Html++"."++Lang, NHtml),
+
+    % Touch source file so file modification times can
+    % be checked
+    {ok, Info} = file:read_file_info(Html),
+    NewTime = Info#file_info{mtime=calendar:local_time()},
+    ok = file:write_file_info(Html, NewTime).
+
+
+is_older(File1, File2) ->
+    {ok, Info1} = file:read_file_info(File1),
+    {ok, Info2} = file:read_file_info(File2),
+    Info2#file_info.mtime > Info1#file_info.mtime.
 
 generate_po_CHEATING(Ref) ->
     Body = hn_mochi:page_attributes_CHEATING(parse_url(Ref)),
