@@ -52,12 +52,13 @@
       
       <div class="panel" id="sheetpanel">
         
-        <div style="height:100px; width:400px;position:relative;" class="subpanel">
+        <div style="height:200px;width:300px;position:relative;" 
+             class="subpanel">
           
-<!--          <table cellspacing="0" cellpadding="0">
+          <table cellspacing="0" cellpadding="0">
             <tr height="20px">
               <td id="corner"></td>
-              <td colspan="2">
+              <td colspan="2" style="overflow:hidden">
                 <div style="position:relative;top:-10px;" id="columnsout">
                   <div style="position:absolute;" id="columns"></div>
                   <div id="csel"><div id="colselection">&nbsp;</div></div>
@@ -120,7 +121,7 @@
           </table>
           <span id="hidden_input"></span>
           <textarea id="paste"></textarea>
-          <div id="overlay"></div>        -->  
+          <div id="overlay"></div>        
         </div>
 
         <h3 class="togglesubpanel">Spreadsheet?</h3>
@@ -139,6 +140,8 @@
 
   <script src="/hypernumbers/hn.spreadsheet.js"></script>
   <script src="/hypernumbers/hn.data.js"></script>
+  <script src="/hypernumbers/hn.ui.js"></script>
+  <script src="/hypernumbers/hn.uiaction.js"></script>
   <script src="/hypernumbers/hn.sheet.js"></script>
   <script src="/hypernumbers/hn.layout.js"></script>
   <script src="/hypernumbers/hn.layout.panes.js"></script>
