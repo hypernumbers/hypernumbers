@@ -78,8 +78,9 @@ write(File, Text) ->
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-parse({Refs,  TypedLines}) ->
-    p1(TypedLines, Refs, [], []).
+%% special hypernumbers parse for a single normal line
+parse({[], [{normal, P} | []]}) -> P;
+parse({Refs,  TypedLines})      -> p1(TypedLines, Refs, [], []).
 
 %% goes through the lines
 %% If it hits a 'start' like 'blockquote' it throws a HTML fragment into the mix
