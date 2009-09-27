@@ -76,6 +76,7 @@ check_auth(admin,     _, _)           -> ok.
 handle_req(Method, Req, Ref, Vars, User) ->
 
     Type = element(1, Ref#refX.obj),
+
     case Method of
         'GET'  -> 
             mochilog:log(Req, Ref, hn_users:name(User), undefined),
@@ -159,18 +160,23 @@ iget(Req, Ref, page, [{"pages", []}], _User) ->
     json(Req, pages(Ref));
 iget(Req, Ref, page, [{"attr", []}], User) ->
     json(Req, page_attributes(Ref, User));
-iget(Req, Ref, cell, [], _User) ->
+iget(Req, #refX{path = P, obj = {cell, {X, Y}}} = Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
-            [{_Ref, {"value", Val}}] when is_atom(Val) -> atom_to_list(Val);
+            [{_Ref, {"value", Val}}] when is_atom(Val) ->
+               atom_to_list(Val);
             [{_Ref, {"value", {datetime, D, T}}}] ->
                 dh_date:format("Y/m/d H:i:s",{D,T});
-            [{_Ref, {"value", {errval, Val}}}]    -> atom_to_list(Val);
-            [{_Ref, {"value", Val}}] -> Val;
+            [{_Ref, {"value", {errval, Val}}}] ->
+               atom_to_list(Val);
+            [{_Ref, {"value", Val}}] ->
+               Val;
             _Else ->
                 ?INFO("NO MATCH ~p",[_Else]),
                 "" 
         end,
-    Req:ok({"text/html",V});
+    Cell = util2:make_b26(X) ++ integer_to_list(Y),
+    HTML = make_mini_index(V, P, Cell),
+    Req:ok({"text/html", HTML});
 iget(Req, Ref, _Type,  Attr, _User) ->
     ?ERROR("404~n-~p~n-~p",[Ref, Attr]),
     Req:not_found().
@@ -700,3 +706,34 @@ get_lang(User) ->
 json(Req, Data) ->
     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
     Req:ok({"application/json", ?hdr, Json}).
+
+make_mini_index(V, P, Cell) ->
+    Path = hn_util:list_to_path(P),
+    Path2 = Path ++ Cell ++ "/",
+    Url1 = Path ++ Cell ++ "?attr",
+    Url2 = Path ++ Cell ++ "?hypernumbers",
+    HTML = "<html>"
+        ++ "<head>"
+        ++ "<title>this is a hypernumber "
+        ++ Cell ++ " on page " ++ Path
+        ++ "</head>"
+        ++ "<body>"
+        ++ "<img src=\"/img/logo_white.jpg\">"
+        ++ "<br /><br />"
+        ++ "This is the hypernumber <strong>" ++ Cell
+        ++ "</strong> on page <strong>" ++ Path ++ "</strong> with value <strong>"
+        ++ V ++ "</strong>"
+        ++ "<br /><br />"
+        ++ "You probably don't want to looking at a hypernumber "
+        ++ "but at one of these pages of hypernumbers:"
+        ++ "<ul>"
+        ++ "<li><a href=\"" ++ Path ++ "\">" ++ Path ++ "</a></li>"
+        ++ "<li><a href=\"" ++ Path2 ++ "\">" ++ Path2 ++ "</a></li>"
+        ++ "</ul>"
+        ++ "<h6><br />Developers might want to inspect this number in more detail:"
+        ++ "<ul>"
+        ++ "<li><a href=\"" ++ Url1 ++ "\">" ++ Url1 ++ "</a></li>"
+        ++ "<li><a href=\"" ++ Url2 ++ "\">" ++ Url2 ++ "</a></li>"
+        ++ "</ul></h6>"
+        ++ "</body>"
+        ++ "</html>".
