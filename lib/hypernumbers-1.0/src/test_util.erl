@@ -268,20 +268,10 @@ conv_for_no_reason(E) ->
                 _Other2 ->
                     case tconv:to_num(E) of
                         N when is_number(N) -> N;
-                        {error, nan}        -> E
+                        {error, nan}        -> markdown:conv(E)
                     end
             end
     end.
-
-    %% if
-    %%     is_float(G2) andalso is_float(E2) ->
-    %%         float_cmp(G2, E2, 5);
-    %%     is_integer(G2) andalso is_float(E2) ->
-    %%         % sometimes large integers appear as (exponented) floats from exce
-    %%         float_cmp(G2 * 1.0, E2, 5);
-    %%     true ->
-    %%         E2 == G2
-    %% end.
 
 conv_from_get(X) when is_float(X) -> X;
 conv_from_get(X) when is_integer(X) -> X;
