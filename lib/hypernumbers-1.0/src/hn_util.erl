@@ -373,7 +373,10 @@ parse_attr(row, Addr) ->
         {match,_,_} -> 
             [Cell1, Cell2] = string:tokens(Addr, ":"),
             {row, {ltoi(Cell1), ltoi(Cell2)}};
-        _ -> 
+        _ ->
+            % this is where references will be typed as names
+            % (when we get them in)
+            % {name, Addr}
             throw(invalid_reference)
     end.
 
