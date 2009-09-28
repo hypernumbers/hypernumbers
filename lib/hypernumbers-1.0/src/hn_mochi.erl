@@ -174,9 +174,9 @@ iget(Req, #refX{path = P, obj = {cell, {X, Y}}} = Ref, cell, [], _User) ->
                 ?INFO("NO MATCH ~p",[_Else]),
                 "" 
         end,
-    Cell = util2:make_b26(X) ++ integer_to_list(Y),
-    HTML = make_mini_index(V, P, Cell),
-    Req:ok({"text/html", HTML});
+    %% Cell = util2:make_b26(X) ++ integer_to_list(Y),
+    %% HTML = make_mini_index(V, P, Cell),
+    Req:ok({"text/html", V});
 iget(Req, Ref, _Type,  Attr, _User) ->
     ?ERROR("404~n-~p~n-~p",[Ref, Attr]),
     Req:not_found().
@@ -707,33 +707,33 @@ json(Req, Data) ->
     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
     Req:ok({"application/json", ?hdr, Json}).
 
-make_mini_index(V, P, Cell) ->
-    Path = hn_util:list_to_path(P),
-    Path2 = Path ++ Cell ++ "/",
-    Url1 = Path ++ Cell ++ "?attr",
-    Url2 = Path ++ Cell ++ "?hypernumbers",
-    HTML = "<html>"
-        ++ "<head>"
-        ++ "<title>this is a hypernumber "
-        ++ Cell ++ " on page " ++ Path
-        ++ "</head>"
-        ++ "<body>"
-        ++ "<img src=\"/img/logo_white.jpg\">"
-        ++ "<br /><br />"
-        ++ "This is the hypernumber <strong>" ++ Cell
-        ++ "</strong> on page <strong>" ++ Path ++ "</strong> with value <strong>"
-        ++ V ++ "</strong>"
-        ++ "<br /><br />"
-        ++ "You probably don't want to looking at a hypernumber "
-        ++ "but at one of these pages of hypernumbers:"
-        ++ "<ul>"
-        ++ "<li><a href=\"" ++ Path ++ "\">" ++ Path ++ "</a></li>"
-        ++ "<li><a href=\"" ++ Path2 ++ "\">" ++ Path2 ++ "</a></li>"
-        ++ "</ul>"
-        ++ "<h6><br />Developers might want to inspect this number in more detail:"
-        ++ "<ul>"
-        ++ "<li><a href=\"" ++ Url1 ++ "\">" ++ Url1 ++ "</a></li>"
-        ++ "<li><a href=\"" ++ Url2 ++ "\">" ++ Url2 ++ "</a></li>"
-        ++ "</ul></h6>"
-        ++ "</body>"
-        ++ "</html>".
+% make_mini_index(V, P, Cell) ->
+%     Path = hn_util:list_to_path(P),
+%     Path2 = Path ++ Cell ++ "/",
+%     Url1 = Path ++ Cell ++ "?attr",
+%     Url2 = Path ++ Cell ++ "?hypernumbers",
+%     HTML = "<html>"
+%         ++ "<head>"
+%         ++ "<title>this is a hypernumber "
+%         ++ Cell ++ " on page " ++ Path
+%         ++ "</head>"
+%         ++ "<body>"
+%         ++ "<img src=\"/img/logo_white.jpg\">"
+%         ++ "<br /><br />"
+%         ++ "This is the hypernumber <strong>" ++ Cell
+%         ++ "</strong> on page <strong>" ++ Path ++ "</strong> with value <strong>"
+%         ++ V ++ "</strong>"
+%         ++ "<br /><br />"
+%         ++ "You probably don't want to looking at a hypernumber "
+%         ++ "but at one of these pages of hypernumbers:"
+%         ++ "<ul>"
+%         ++ "<li><a href=\"" ++ Path ++ "\">" ++ Path ++ "</a></li>"
+%         ++ "<li><a href=\"" ++ Path2 ++ "\">" ++ Path2 ++ "</a></li>"
+%         ++ "</ul>"
+%         ++ "<h6><br />Developers might want to inspect this number in more detail:"
+%         ++ "<ul>"
+%         ++ "<li><a href=\"" ++ Url1 ++ "\">" ++ Url1 ++ "</a></li>"
+%         ++ "<li><a href=\"" ++ Url2 ++ "\">" ++ Url2 ++ "</a></li>"
+%         ++ "</ul></h6>"
+%         ++ "</body>"
+%         ++ "</html>".
