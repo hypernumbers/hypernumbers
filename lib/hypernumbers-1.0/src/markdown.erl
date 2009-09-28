@@ -113,9 +113,20 @@ p1([{blank, _} | T], R, [Close | Open], Acc) ->
 p1([{normal, P1}, {normal, P2} | T], R, Stack, Acc) ->
     p1([{normal, flatten([P1 | P2])} | T], R, Stack, Acc);
 
-%% setext h1 is a look behind
+%% setext h1 is a look behind and it overrides blockquote and code...
 p1([{normal, P}, {setext_h1, _} | T], R, Stack, Acc) ->
     p1(T, R, Stack, ["<h1>" ++ make_str(snip(P), R) ++ "</h1>" | Acc]); 
+p1([{blockquote, P}, {setext_h1, _} | T], R, Stack, Acc) ->
+    p1(T, R, Stack, ["<h1>" ++ make_str(snip(P), R) ++ "</h1>" | Acc]); 
+p1([{{codeblock, P}, _}, {setext_h1, _} | T], R, Stack, Acc) ->
+    p1(T, R, Stack, ["<h1>" ++ make_str(snip(P), R) ++ "</h1>" | Acc]); 
+p1([{{codeblock, P}, _}, {h2_or_hr, _} | T], R, Stack, Acc) ->
+    p1(T, R, Stack, ["<h2>" ++ make_str(snip(P), R) ++ "</h2>" | Acc]); 
+
+%% but a setext with no lookbehind is just rendered as a normal line,
+%% so change its type and rethrow it
+p1([{setext_h1, P} | T], R, Stack, Acc) ->
+    p1([{normal, P} | T], R, Stack, Acc); 
 
 %% setext h2 might be a look behind
 p1([{normal, P}, {h2_or_hr, _} | T], R, Stack, Acc) ->
@@ -494,29 +505,68 @@ type_ol1([{{punc, fullstop}, _},
           {{ws, _}, _} | T], _Acc) -> {ol, T};
 type_ol1(_List, _Acc)              -> normal.
 
+%% You need to understand what this function is trying to d...
+%% '### blah' is fine
+%% '### blah ###' is reduced to '### blah' because trailing #'s are
+%% just for show but...
+%% '##' is like appling '#' to '#' <-- applying 1 less styling to a single #
+%% and '###' is like appling '##' to '#' etc, etc
+%% but after you hit 6#'s you just get this for a single hash
+%% ie '#############' is like applying '######' to a single '#'
+%% but/and '######## blah' is like apply '######' to '## blah'
 %% strip trailing #'s as they are decorative only...
-type_atx(List) -> Stripped = reverse(strip_atx(reverse(List))),
-                  {type_atx1(Stripped), List}.
+type_atx(List) ->
+    {Sz, R} = get_atx_size(List),
+    A = [{{md, atx}, "#"}],
+    Type =
+        case is_all_hashes(R) of
+            true  ->
+                if
+                    Sz == 1 ->
+                        normal; 
+                    ((Sz > 1) andalso (Sz < 6)) ->
+                        Ns = integer_to_list(Sz - 1),
+                        Hn = list_to_atom("h" ++ Ns),
+                        {Hn, A};
+                    ((Sz == 6) andalso (R == [])) ->
+                        {h5, A};
+                    ((Sz == 6) andalso (R == [{{lf, lf}, "\n"}])) ->
+                        {h5, A};
+                    ((Sz == 6) andalso (R == [{{lf, crlf}, "\r\n"}])) ->
+                        {h5, A};
+                    ((Sz == 6) andalso (R =/= [])) ->
+                        {h6, A}
+                end;
+            false ->
+                Ns = integer_to_list(Sz),
+                Hn = list_to_atom("h" ++ Ns),
+                {Hn, strip_atx(R)}
+        end,
+    {Type, List}.
 
-strip_atx([{{lf, _}, _}, {{md, atx}, _} | T]) -> strip_atx(T);
-strip_atx([{{md, atx}, _} | T])               -> strip_atx(T);
-strip_atx(List)                               -> List.
+is_all_hashes([])                   -> true;
+is_all_hashes([{{md, atx}, _} | T]) -> is_all_hashes(T);
+is_all_hashes([{{lf, _}, _} | []])  -> true;
+is_all_hashes(_List)                -> false.
+              
+get_atx_size(List) -> g_atx_size1(List, 0).
 
-%% this is final clause terminal
-%% can't get a <h3> style header bigger than 6...
-type_atx1(List) -> t_atx1(List, 0).
+% this function also strips whitespace to the left...
+g_atx_size1([{{md, atx}, _} = A | T], N) when N == 6 -> {6, [A | T]};
+g_atx_size1([{{md, atx}, _} | T], N)                 -> g_atx_size1(T, N + 1);
+g_atx_size1([{{ws, _}, _} | T], N)                   -> g_atx_size1(T, N);
+g_atx_size1(List, N)                                 -> {N, List}.
 
-t_atx1([{{md, atx}, _} | T], 6) -> t_atx1(T, 6);
-t_atx1([{{md, atx}, _} | T], N) -> t_atx1(T, N + 1);
-t_atx1([{{ws, _}, _} | T], N)   -> t_atx1(T, N);
-t_atx1(List, N)                 -> Nh = "h" ++ integer_to_list(N),
-                                      Header = list_to_atom(Nh),
-                                      {Header, List}.
-                 
+strip_atx(List) -> reverse(s_atx1(reverse(List))).
+
+s_atx1([{{lf, _}, _}, {{md, atx}, _} | T]) -> s_atx1(T);
+s_atx1([{{md, atx}, _} | T])               -> s_atx1(T);
+s_atx1(List)                               -> List.
+
 type_setext_h1(List) -> type_s_h1_1(List, []).
 
 %% terminates on running out or new line
-type_s_h1_1([{{lf, _}, _} | []], Acc)     -> {setext_h1, reverse(Acc)};
+type_s_h1_1([{{lf, _}, _} = L | []], Acc) -> {setext_h1, reverse([L | Acc])};
 type_s_h1_1([], Acc)                      -> {setext_h1, reverse(Acc)};
 type_s_h1_1([[] | T], Acc)                -> type_s_h1_1(T, Acc);
 type_s_h1_1([{{md, eq}, _} = H | T], Acc) -> type_s_h1_1(T, [H | Acc]);
@@ -974,10 +1024,17 @@ interpolate2([H | T], Delim, Tag,  Acc)           -> interpolate2(T, Delim, Tag,
 %%%
 %%%-------------------------------------------------------------------
 
+%% we use a (very slightly) patched version which does no mark down if the input
+%% consists of a single line of text, so all the tests are written to be at
+%% least two lines just to stop all the unit tests breaking when we patch
+%% the code for our implementation
+%% Gordon Guthrie
+%% (our patch is the first commented out clause of the function parse/1)
+
 unit_test_() ->
     [
      % Quick Start
-     ?_assert(conv("3 > 4\na")              == "<p>3 &gt; 4\na</p>"),
+     ?_assert(conv("3 > 4\na")            == "<p>3 &gt; 4\na</p>"),
      ?_assert(conv("Hey Ho!\na")          == "<p>Hey Ho!\na</p>"),
      ?_assert(conv("Hey\nHo!\nHardy\n\n") == "<p>Hey\nHo!\nHardy</p><br />"),
      % General Characters - First Char is an edge case
@@ -1099,6 +1156,24 @@ unit_test_() ->
      ?_assert(conv("xyz\r\nab:c\na") == "<p>xyz\nab:c\na</p>"),
      % Escape a backtick
      ?_assert(conv("abc\\`def\na")   == "<p>abc`def\na</p>"),  % escaped \ in the string!
+     % single char tests on a line for significant chars
+     ?_assert(conv("=\na") == "<p>=\na</p>"),
+     ?_assert(conv("-\na") == "<hr /><p>a</p>"),
+     ?_assert(conv(">\na") == "<p>&gt;\na</p>"),
+     ?_assert(conv("[\na") == "<p>[\na</p>"),
+     ?_assert(conv("\n=\na") == "<br /><p>=\na</p>"),
+     ?_assert(conv("\n-\na") == "<br /><hr /><p>a</p>"),
+     ?_assert(conv("\n>\na") == "<br /><p>&gt;\na</p>"),
+     ?_assert(conv("\n[\na") == "<br /><p>[\na</p>"),
+     % atx headers are a real pain :(
+     ?_assert(conv("#\na") == "<p>#\na</p>"),
+     ?_assert(conv("##\na") == "<h1>#</h1><p>a</p>"),
+     ?_assert(conv("###\na") == "<h2>#</h2><p>a</p>"),
+     ?_assert(conv("####\na") == "<h3>#</h3><p>a</p>"),
+     ?_assert(conv("#####\na") == "<h4>#</h4><p>a</p>"),
+     ?_assert(conv("######\na") == "<h5>#</h5><p>a</p>"),
+     ?_assert(conv("#######\na") == "<h6>#</h6><p>a</p>"),
+     ?_assert(conv("########\na") == "<h6>#</h6><p>a</p>"),
      % Emphasis
      ?_assert(conv("you *sad* bastard\na")     == "<p>you <em>sad</em> bastard\na</p>"),
      ?_assert(conv("you **sad** bastard\na")   == "<p>you <strong>sad</strong> bastard\na</p>"),
@@ -1119,6 +1194,11 @@ unit_test_() ->
      ?_assert(conv("blahblah\n-----")  == "<h2>blahblah</h2>"),
      ?_assert(conv("blahblah\n====\nblah")   == "<h1>blahblah</h1><p>blah</p>"),
      ?_assert(conv("blahblah\n-----\nblah")  == "<h2>blahblah</h2><p>blah</p>"),
+     % Setext overrides blockquote and codeblock
+     ?_assert(conv("> a\n=")    == "<h1>&gt; a</h1>"),
+     ?_assert(conv("    a\n=") == "<h1>a</h1>"),
+     ?_assert(conv("> a\n-")    == "<h2>&gt; a</h2>"),
+     ?_assert(conv("    a\n-") == "<h2>a</h2>"),
      % ATX headers
      ?_assert(conv("# blahblah")       == "<h1>blahblah</h1>"),
      ?_assert(conv("## blahblah")      == "<h2>blahblah</h2>"),
@@ -1126,7 +1206,7 @@ unit_test_() ->
      ?_assert(conv("#### blahblah")    == "<h4>blahblah</h4>"),
      ?_assert(conv("##### blahblah")   == "<h5>blahblah</h5>"),
      ?_assert(conv("###### blahblah")  == "<h6>blahblah</h6>"),
-     ?_assert(conv("####### blahblah") == "<h6>blahblah</h6>"),
+     ?_assert(conv("####### blahblah") == "<h6># blahblah</h6>"),
      ?_assert(conv("# blahblah ###")   == "<h1>blahblah</h1>"),
      ?_assert(conv("# blahblah\nbleh")       == "<h1>blahblah\n</h1><p>bleh</p>"),
      ?_assert(conv("## blahblah\nbleh")      == "<h2>blahblah\n</h2><p>bleh</p>"),
@@ -1134,7 +1214,7 @@ unit_test_() ->
      ?_assert(conv("#### blahblah\nbleh")    == "<h4>blahblah\n</h4><p>bleh</p>"),
      ?_assert(conv("##### blahblah\nbleh")   == "<h5>blahblah\n</h5><p>bleh</p>"),
      ?_assert(conv("###### blahblah\nbleh")  == "<h6>blahblah\n</h6><p>bleh</p>"),
-     ?_assert(conv("####### blahblah\nbleh") == "<h6>blahblah\n</h6><p>bleh</p>"),
+     ?_assert(conv("####### blahblah\nbleh") == "<h6># blahblah\n</h6><p>bleh</p>"),
      ?_assert(conv("# blahblah ###\nbleh")   == "<h1>blahblah</h1><p>bleh</p>"),
      % Basic blockquotes
      ?_assert(conv("> blah\na")           == "<p>&gt; blah\na</p>"),
