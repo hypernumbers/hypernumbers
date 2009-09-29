@@ -199,13 +199,13 @@ parse_list(_Type, [], _R, A) ->
 %% if the '<li>' is followed by a blank then wrap it, throw the blank
 %% back onto the tail
 parse_list(Type, [{{Type, P}, _}, {blank, _} = B | T], R, A) ->
-     parse_list(Type, [B | T], R, ["<li><p>" ++ make_esc_str(P, R)
-                                      ++ "</p></li>" | A]);
+     parse_list(Type, [B | T], R, ["<li>" ++ make_esc_str(P, R)
+                                      ++ "</li>" | A]);
 %% this is the partner of the previous line...
 parse_list(Type, [{blank, _}, {{Type, P}, _} | T], R, A) ->
     {Rest, NewP} = grab(T, R, []),
-    parse_list(Type, Rest, R, ["<li><p>" ++ make_esc_str(P, R)
-                                  ++ NewP ++"</p></li>" | A]);
+    parse_list(Type, Rest, R, ["<li>" ++ make_esc_str(P, R)
+                                  ++ NewP ++"</li>" | A]);
 %% this is a plain old '<li>'
 parse_list(Type, [{{Type, P}, _} | T], R, A) ->
     {Rest, NewP} = grab(T, R, []),
@@ -442,7 +442,11 @@ is_block_tag(_Other)       -> false.
 
 type_underscore(List) -> case type_underscore1(trim_right(List)) of
                              hr    -> {hr, List};
-                             maybe -> {type_underscore2(List), List}
+                             maybe -> Type = type_underscore2(List),
+                                      case Type of
+                                          normal -> {normal, [{{ws, none}, none} | List]};
+                                          Other  -> {Other, List}
+                                      end
                          end.
 
 type_underscore1([])                          -> hr;
@@ -951,6 +955,16 @@ htmlchars([?CR, ?LF | T], Acc)     -> htmlchars(T, ["\n" | Acc]);
 %% there is a non-space filling white space represented by the atom 'none'
 %% which is created in the parser (NOT IN THE LEXER!) and which triggers
 %% emphasis or strong tags being turned on...
+htmlchars([$\\, $*, $*, $* | T], A)    -> htmlchars(T, [$*, $*, $* | A]);
+htmlchars([?TAB, $*, $*, $* | T], A)   -> {T2, NewA} = superstrong(T, $*),
+                                          htmlchars(T2, [NewA, ?TAB | A]);
+htmlchars([?SPACE, $*, $*, $* | T], A) -> {T2, NewA} = superstrong(T, $*),
+                                          htmlchars(T2, [NewA, ?SPACE | A]);
+%% the none atom is the non-space filling whitespace 
+htmlchars([none, $*, $*, $* | T], A)   -> {T2, NewA} = superstrong(T, $*),
+                                          htmlchars(T2, [NewA | A]);
+htmlchars([$*, $*, $* | T], A)         -> htmlchars(T, [$*, $*, $* | A]);
+% repeat for strong
 htmlchars([$\\, $*, $* | T], A)    -> htmlchars(T, [$*, $* | A]);
 htmlchars([?TAB, $*, $* | T], A)   -> {T2, NewA} = strong(T, $*),
                                       htmlchars(T2, [NewA, ?TAB | A]);
@@ -960,7 +974,7 @@ htmlchars([?SPACE, $*, $* | T], A) -> {T2, NewA} = strong(T, $*),
 htmlchars([none, $*, $* | T], A)   -> {T2, NewA} = strong(T, $*),
                                       htmlchars(T2, [NewA | A]);
 htmlchars([$*, $* | T], A)         -> htmlchars(T, [$*, $* | A]);
-%% likewise for strong
+%% likewise for emphasis
 htmlchars([$\\, $* | T], A)        -> htmlchars(T, [$* | A]);
 htmlchars([?TAB, $* | T], A)       -> {T2, NewA} = emphasis(T, $*),
                                       htmlchars(T2, [NewA, ?TAB | A]);
@@ -971,18 +985,34 @@ htmlchars([none, $* | T], A)       -> {T2, NewA} = emphasis(T, $*),
                                       htmlchars(T2, [NewA | A]);
 htmlchars([$* | T], A)             -> htmlchars(T, [$* | A]);
 %% and again for underscores
+htmlchars([$\\, $_, $_, $_ | T], A)    -> htmlchars(T, [$_, $_, $_ | A]);
+htmlchars([?TAB, $_, $_, $_ | T], A)   -> {T2, NewA} = superstrong(T, $_),
+                                          htmlchars(T2, [NewA, ?TAB | A]);
+htmlchars([?SPACE, $_, $_, $_ | T], A) -> {T2, NewA} = superstrong(T, $_),
+                                          htmlchars(T2, [NewA, ?SPACE | A]);
+%% the none atom is the non-space filling whitespace 
+htmlchars([none, $_, $_, $_ | T], A)   -> {T2, NewA} = superstrong(T, $_),
+                                          htmlchars(T2, [NewA | A]);
+htmlchars([$_, $_, $_ | T], A)         -> htmlchars(T, [$_, $_, $_ | A]);
+% and strong
 htmlchars([$\\, $_, $_ | T], A)    -> htmlchars(T, [$_, $_ | A]);
 htmlchars([?TAB, $_, $_ | T], A)   -> {T2, NewA} = strong(T, $_),
--                                      htmlchars(T2, [NewA, ?TAB | A]);
+                                      htmlchars(T2, [NewA, ?TAB | A]);
 htmlchars([?SPACE, $_, $_ | T], A) -> {T2, NewA} = strong(T, $_),
                                       htmlchars(T2, [NewA, ?SPACE | A]);
+%% the null list character is the non-space filling whitespace 
+htmlchars([none, $_, $_| T], A)   -> {T2, NewA} = strong(T, $_),
+                                     htmlchars(T2, [NewA | A]);
 htmlchars([$_, $_ | T], A)         -> htmlchars(T, [$_, $_ | A]);
-%% likewise for strong
+%% likewise for emphasis
 htmlchars([$\\, $_ | T], A)        -> htmlchars(T, [$_ | A]);
 htmlchars([?TAB, $_ | T], A)       -> {T2, NewA} = emphasis(T, $_),
                                       htmlchars(T2, [NewA, ?TAB | A]);
 htmlchars([?SPACE, $_ | T], A)     -> {T2, NewA} = emphasis(T, $_),
                                       htmlchars(T2, [NewA, ?SPACE | A]);
+%% the null list character is the non-space filling whitespace 
+htmlchars([none, $_ | T], A)       -> {T2, NewA} = emphasis(T, $_),
+                                      htmlchars(T2, [NewA | A]);
 htmlchars([$_ | T], A)             -> htmlchars(T, [$_ | A]);
 
 %% handle backtick escaping
@@ -997,12 +1027,13 @@ htmlchars([$> | T], A)             -> htmlchars(T, ["&gt;" | A]);
 htmlchars([?NBSP | T], A)          -> htmlchars(T, ["&nbsp;" | A]);
 htmlchars([H | T], A)              -> htmlchars(T, [H | A]).
 
-emphasis(List, Delim) -> interpolate(List, Delim, "em", []).
-strong(List, Delim)   -> interpolate2(List, Delim, "strong", []).
-dblcode(List)         -> {T, Tag} = interpolate2(List, $`, "code", []),
-                         {T, "<pre>" ++ Tag ++ "</pre>"}.
-code(List)            -> {T, Tag} = interpolate(List, $`, "code", []),
-                         {T, "<pre>" ++ Tag ++ "</pre>"}.
+emphasis(List, Delim)      -> interpolate(List, Delim, "em", []).
+strong(List, Delim)        -> interpolate2(List, Delim, "strong", []).
+superstrong(List, Delim)   -> interpolate3(List, Delim, "strong", "em", []).
+dblcode(List)              -> {T, Tag} = interpolate2(List, $`, "code", []),
+                              {T, "<pre>" ++ Tag ++ "</pre>"}.
+code(List)                 -> {T, Tag} = interpolate(List, $`, "code", []),
+                              {T, "<pre>" ++ Tag ++ "</pre>"}.
 
 %% interpolate is for single delimiters...
 interpolate([], _Delim, Tag,  Acc)        -> {[], "<" ++ Tag ++ ">"
@@ -1013,10 +1044,24 @@ interpolate([H | T], Delim, Tag,  Acc)    -> interpolate(T, Delim, Tag, [H | Acc
 
 %% interpolate two is for double delimiters...
 interpolate2([], _Delim, Tag,  Acc)               -> {[], "<" ++ Tag ++ ">"
-                                                  ++ reverse(Acc) ++ "</" ++ Tag ++ ">"};
+                                                      ++ reverse(Acc) ++ "</" ++ Tag ++ ">"};
 interpolate2([Delim, Delim | T], Delim, Tag, Acc) -> {T,  "<" ++ Tag ++ ">"
                                                   ++ reverse(Acc) ++ "</" ++ Tag ++ ">"};
 interpolate2([H | T], Delim, Tag,  Acc)           -> interpolate2(T, Delim, Tag, [H | Acc]).
+
+%% interpolate three is for double delimiters...
+interpolate3([], _D, Tag1, Tag2,  Acc)          -> {[], "<" ++ Tag1 ++ ">"
+                                                    ++ "<" ++ Tag2 ++ ">"
+                                                    ++ reverse(Acc)
+                                                    ++ "</" ++ Tag2 ++ ">"
+                                                    ++ "</" ++ Tag1 ++ ">"};
+interpolate3([D, D, D | T], D, Tag1, Tag2, Acc) -> {T,  "<" ++ Tag1 ++ ">"
+                                                    ++  "<" ++ Tag2 ++ ">"
+                                                    ++ reverse(Acc)
+                                                    ++ "</" ++ Tag2 ++ ">"
+                                                    ++ "</" ++ Tag1 ++ ">"};
+interpolate3([H | T], D, Tag1, Tag2,  Acc)      -> interpolate3(T, D, Tag1, Tag2, [H | Acc]).
+
 
 %%%-------------------------------------------------------------------
 %%%
@@ -1048,7 +1093,7 @@ unit_test_() ->
      ?_assert(conv(">ab:c\na")    == "<p>&gt;ab:c\na</p>"),
      ?_assert(conv("+ab:c\na")    == "<p>+ab:c\na</p>"),
      ?_assert(conv("*ab:c\na")    == "<p><em>ab:c\na</em></p>"),
-     ?_assert(conv("_ab:c\na")    == "<p>_ab:c\na</p>"),
+     ?_assert(conv("_ab:c\na")    == "<p><em>ab:c\na</em></p>"),
      ?_assert(conv("1ab:c\na")    == "<p>1ab:c\na</p>"),
      ?_assert(conv("2ab:c\na")    == "<p>2ab:c\na</p>"),
      ?_assert(conv("3ab:c\na")    == "<p>3ab:c\na</p>"),
@@ -1087,7 +1132,7 @@ unit_test_() ->
      ?_assert(conv("> ab:c\na")    == "<p>&gt; ab:c\na</p>"),
      ?_assert(conv("+ ab:c")    == "<ul><li>ab:c</li></ul>"),
      ?_assert(conv("* ab:c")    == "<ul><li>ab:c</li></ul>"),
-     ?_assert(conv("_ ab:c\na")    == "<p>_ ab:c\na</p>"),
+     ?_assert(conv("_ ab:c\na")    == "<p><em> ab:c\na</em></p>"),
      ?_assert(conv("1 ab:c\na")    == "<p>1 ab:c\na</p>"),
      ?_assert(conv("2 ab:c\na")    == "<p>2 ab:c\na</p>"),
      ?_assert(conv("3 ab:c\na")    == "<p>3 ab:c\na</p>"),
@@ -1177,14 +1222,20 @@ unit_test_() ->
      % Emphasis
      ?_assert(conv("you *sad* bastard\na")     == "<p>you <em>sad</em> bastard\na</p>"),
      ?_assert(conv("you **sad** bastard\na")   == "<p>you <strong>sad</strong> bastard\na</p>"),
+     ?_assert(conv("you ***sad*** bastard\na")   == "<p>you <strong><em>sad</em></strong> bastard\na</p>"),
      ?_assert(conv("you _sad_ bastard\na")     == "<p>you <em>sad</em> bastard\na</p>"),
      ?_assert(conv("you __sad__ bastard\na")   == "<p>you <strong>sad</strong> bastard\na</p>"),
+     ?_assert(conv("you ___sad___ bastard\na")   == "<p>you <strong><em>sad</em></strong> bastard\na</p>"),
      ?_assert(conv("you*sad*bastard\na")       == "<p>you*sad*bastard\na</p>"),
      ?_assert(conv("you_sad_bastard\na")       == "<p>you_sad_bastard\na</p>"),
      ?_assert(conv("you \\*sad\\* bastard\na") == "<p>you *sad* bastard\na</p>"),
      ?_assert(conv("you \\_sad\\_ bastard\na") == "<p>you _sad_ bastard\na</p>"),
      ?_assert(conv("*you* sad bastard\na")     == "<p><em>you</em> sad bastard\na</p>"),
      ?_assert(conv("**you** sad bastard\na")   == "<p><strong>you</strong> sad bastard\na</p>"),
+     ?_assert(conv("***you*** sad bastard\na")   == "<p><strong><em>you</em></strong> sad bastard\na</p>"),
+     ?_assert(conv("_you_ sad bastard\na")     == "<p><em>you</em> sad bastard\na</p>"),
+     ?_assert(conv("__you__ sad bastard\na")   == "<p><strong>you</strong> sad bastard\na</p>"),
+     ?_assert(conv("___you___ sad bastard\na")   == "<p><strong><em>you</em></strong> sad bastard\na</p>"),
      % Breaking up in to lines
      ?_assert(conv("blah\nblah")       == "<p>blah\nblah</p>"),
      ?_assert(conv("blah\r\nblah")     == "<p>blah\nblah</p>"),
@@ -1229,10 +1280,9 @@ unit_test_() ->
      ?_assert(conv("- blah")           == "<ul><li>blah</li></ul>"),
      ?_assert(conv("-blah\na")            == "<p>-blah\na</p>"),
      ?_assert(conv("- a\n+ b\n- c")    == "<ul><li>a\n</li><li>b\n</li><li>c</li></ul>"),   
-     ?_assert(conv("- a\n\n+ b")       == "<ul><li><p>a\n</p></li><li><p>b</p></li></ul>"),    
+     ?_assert(conv("- a\n\n+ b")       == "<ul><li>a\n</li><li>b</li></ul>"),    
      ?_assert(conv("- a\n\n+ b\n\n+ c\n* d") ==
-              "<ul><li><p>a\n</p></li><li><p>b\n</p></li><li><p>c\n</p>"
-              ++ "</li><li>d</li></ul>"),   
+              "<ul><li>a\n</li><li>b\n</li><li>c\n</li><li>d</li></ul>"),   
      ?_assert(conv("- blah\nblah")     == "<ul><li>blah\nblah</li></ul>"),
      % Ordered Lists
      ?_assert(conv("1. blah")          == "<ol><li>blah</li></ol>"),
@@ -1242,7 +1292,7 @@ unit_test_() ->
      ?_assert(conv("555.blah\na")         == "<p>555.blah\na</p>"),
      ?_assert(conv("4. blah\nblah")    == "<ol><li>blah\nblah</li></ol>"),
      ?_assert(conv("4. a\n5. b\n6. c") == "<ol><li>a\n</li><li>b\n</li><li>c</li></ol>"),
-     ?_assert(conv("4. a\n\n5. b\n\n6. c") == "<ol><li><p>a\n</p></li><li><p>b\n</p></li><li><p>c</p></li></ol>"),
+     ?_assert(conv("4. a\n\n5. b\n\n6. c") == "<ol><li>a\n</li><li>b\n</li><li>c</li></ol>"),
      % Basic Code
      ?_assert(conv("    b")            == "<pre><code>b</code></pre>"),
      ?_assert(conv("\tb")              == "<pre><code>b</code></pre>"),
@@ -1275,9 +1325,9 @@ unit_test_() ->
      ?_assert(conv("* * *")   == "<hr />"),
      ?_assert(conv("- - -")   == "<hr />"),
      ?_assert(conv("_ _ _")   == "<hr />"),
-     ?_assert(conv("***blah\na") == "<p><strong>*blah\na</strong></p>"),
+     ?_assert(conv("***blah\na") == "<p><strong><em>blah\na</em></strong></p>"),
      ?_assert(conv("---blah\na") == "<p>---blah\na</p>"),
-     ?_assert(conv("___blah\na") == "<p>___blah\na</p>"),
+     ?_assert(conv("___blah\na") == "<p><strong><em>blah\na</em></strong></p>"),
      % Reference Links
      ?_assert(conv("a\na\n[id]: http://example.com \"Title\"")   == "<p>a\na</p>"),
      ?_assert(conv("a\na\n[id]: http://example.com \'Title\'")   == "<p>a\na</p>"),
