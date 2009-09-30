@@ -34,13 +34,8 @@
             <li><a name="templates">templates</a></li>
           </ul>
           
-          <div class="tab" id="add">
-            <input type="button" value="input" class="btn" />
-          </div>
-          
-          <div class="tab" id="configure">
-            configure shit
-          </div>
+          <div class="tab" id="add"></div>
+          <div class="tab" id="configure"></div>
           
           <div id="toggle">
             <label for="toggleview">
@@ -52,7 +47,7 @@
       
       <div class="panel" id="sheetpanel">
         
-        <div style="height:200px;width:300px;position:relative;" 
+        <div style="height:200px;position:relative;" 
              class="subpanel">
           
           <table cellspacing="0" cellpadding="0">
@@ -103,7 +98,7 @@
             </tr>
             <tr height="15px">
               <td></td>
-              <td>
+              <td> 
                 <table cellspacing="0" cellpadding="0">
                   <tr>
                     <td id="left"></td>
@@ -138,10 +133,9 @@
   <script src="/hypernumbers/hn.util.js"></script>
   <script src="/hypernumbers/hn.data.js"></script>
 
-  <script src="/hypernumbers/hn.spreadsheet.js"></script>
   <script src="/hypernumbers/hn.data.js"></script>
   <script src="/hypernumbers/hn.ui.js"></script>
-  <script src="/hypernumbers/hn.uiaction.js"></script>
+  <script src="/hypernumbers/hn.uiactions.js"></script>
   <script src="/hypernumbers/hn.sheet.js"></script>
   <script src="/hypernumbers/hn.layout.js"></script>
   <script src="/hypernumbers/hn.layout.panes.js"></script>

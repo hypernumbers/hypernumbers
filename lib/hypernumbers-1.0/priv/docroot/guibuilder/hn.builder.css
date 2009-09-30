@@ -16,7 +16,6 @@ body {
 #placer {  
  height:50px;
  border: 2px dashed #999;
- margin:5px;
 }
 
 #tdpreview {  
@@ -32,8 +31,9 @@ body {
 
 #sheetpanel {  
  position:absolute;
- bottom:10px;
- left:20px;
+ width:100%;
+ bottom:-10px;
+ left:0px;
 }
 
 .panel {  
@@ -125,4 +125,17 @@ body {
  display:none;
  padding:10px 5px;
  background:lightblue;
+}
+
+.configuring {
+    background: #DDD;
+    border: 1px solid #AAA !important;
+}
+
+.hn {
+    border: 1px solid transparent;
+}
+
+.hn:hover {
+    border: 1px dashed #999;
 }

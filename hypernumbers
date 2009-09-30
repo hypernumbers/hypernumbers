@@ -71,7 +71,7 @@ function build
         echo " Generating Lexers And Parsers "
         echo "==============================="
         cd ./priv/muin/
-        erlc generate.erl
+        erlc +debug_info generate.erl
         erl -noshell -s generate gen -s init stop
         cd ../../
     fi
@@ -83,7 +83,7 @@ function build
     echo "==============================="
     echo "      Generating ms_util       "
     echo "==============================="
-    erlc -o $HN_DIR/ebin -I $HN_DIR/include priv/ms_util/make_ms_util.erl
+    erlc -o $HN_DIR/ebin +debug_info -I $HN_DIR/include priv/ms_util/make_ms_util.erl
     erl -pa $HN_DIR/ebin -noshell -s make_ms_util make -s init stop
     mv ms_util2.erl $HN_DIR/src
     echo "==============================="

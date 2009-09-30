@@ -3,7 +3,6 @@
 %%% @private
 
 -module(superparser).
-
 -export([process/1]).
 
 process([$= | Tl]) when Tl =/= [] ->

@@ -116,7 +116,7 @@ uptodate(File, Dir) ->
 
     % Find the beam corresponding to this erl file.
     Beam = Dir ++"/"++ filename:basename(File,".erl") ++ ".beam",
-
+    
     case beam_lib:chunks(Beam,[abstract_code]) of
         {error,_,_} -> % beam doesn't exist, recompile
             false;
@@ -139,7 +139,9 @@ uptodate(File, Dir) ->
 
             % if the beam is newer than the last change to any
             % of the source files, don't need to compile
-            filelib:last_modified(Beam) > Latest
+            filelib:last_modified(Beam) > Latest;
+        
+        _ -> false
     end.
 
 get_vsn(Module) ->

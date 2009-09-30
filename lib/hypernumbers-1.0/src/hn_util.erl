@@ -87,7 +87,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 get_html_files(User, List) -> get_html_files1(User, List, []).
 
-get_html_files1(User, [], Acc)      -> Acc; 
+get_html_files1(_User, [], Acc)      -> Acc;
 get_html_files1(User, [H | T], Acc) ->
     RegExp = "(\\.[h|H][t|T][m|M][l|L])$", %" highlighting fix
     NewAcc = case re:run(H, RegExp) of
@@ -132,13 +132,7 @@ compile_html(Html, Lang) ->
     gettext:store_pofile(Lang, Bin),
     {ok, C} = sgte:compile_file(Html),
     NHtml = sgte:render(C, [{options, [{gettext_lc, Lang}]}]),
-    file:write_file(Html++"."++Lang, NHtml),
-
-    % Touch source file so file modification times can
-    % be checked
-    {ok, Info} = file:read_file_info(Html),
-    NewTime = Info#file_info{mtime=calendar:local_time()},
-    ok = file:write_file_info(Html, NewTime).
+    ok = file:write_file(Html++"."++Lang, NHtml).
 
 
 is_older(File1, File2) ->

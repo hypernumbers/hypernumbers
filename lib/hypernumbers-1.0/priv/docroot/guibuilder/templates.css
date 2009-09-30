@@ -7,7 +7,7 @@
  background:#000;
 }
 
-.ventris .header h1 {  
+.ventris .header .title {  
  width:650px; 
  color:white;
  padding:20px;
@@ -15,7 +15,30 @@
 }
 
 .ventris .container {  
- width:700px; 
- margin:0px auto;
- background:#FFF;
+    width:700px; 
+    margin:0px auto;
+    overflow:auto;
+    background:#FFF;
+}
+
+.ventris .footer {  
+    width:680px; 
+    padding:10px;
+    margin:0px auto;
+    background:#DDD;
+}
+
+
+.ventris .content {
+    width:480px;
+    float:left;
+    padding:10px;
+}
+
+.ventris .rightpanel {
+    background:#CCC;
+    width:180px; 
+    float:right;
+    padding:5px;
+    margin:5px;
 }
