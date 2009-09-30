@@ -300,10 +300,7 @@ ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr,
 ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
       [{"set", {struct, [{"list", {array, Array}}]}}], User) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
-    io:format("Ref is ~p~n", [Ref]),
     {Lasts, Refs} = fix_up(Array, S, P),
-    io:format("got ~p in ipost~n", [Refs]),
-    io:format("Lasts are ~p~n", [Lasts]),
     ok = hn_db_api:write_last(Lasts),
     ok = hn_db_api:write_attributes(Refs);
 
@@ -730,8 +727,8 @@ f_up1([{struct, [{"ref", Ref}, {"formula", F}]} | T], S, P, A1, A2) ->
     Obj = hn_util:parse_attr(Ref),
     RefX = #refX{site = S, path = P, obj = Obj},
     case Obj of
-        {column, _} -> f_up1(T, S, P, [{RefX, [{"formula", F}]} | A1], A2);
-        {row, _}    -> f_up1(T, S, P, [{RefX, [{"formula", F}]} | A1], A2);
+        {column, _} -> f_up1(T, S, P, [{RefX, F} | A1], A2);
+        {row, _}    -> f_up1(T, S, P, [{RefX, F} | A1], A2);
         {cell, _}   -> f_up1(T, S, P, A1, [{RefX, [{"formula", F}]} | A2])
     end.
 
