@@ -111,7 +111,7 @@
 -define(not_ch, remoting_reg:notify_change).
 
 -export([
-         write_attributes/2,
+         write_attributes/1,
          write_last/1,
          % write_permission/2,
          write_style_IMPORT/2,
@@ -816,7 +816,7 @@ notify_back_create(Site, Record)
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("notify back create").
 
-%% @spec write_attributes(RefX :: #refX{}, List) -> ok  
+%% @spec write_attributes([{RefX :: #refX{}, List}]) -> ok  
 %% List = [{Key, Value}]
 %% Key = atom()
 %% Value = term()
@@ -828,16 +828,13 @@ notify_back_create(Site, Record)
 %% <li>a cell</li>
 %% <li>a range</li>
 %% </ul>
-write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
-    % ok = fprof:trace(start),
+write_attributes(List) ->
+    io:format("List is ~p~n", [List]),
     Fun = fun() ->
-                  ok = init_front_end_notify(),
-                  [ hn_db_wu:write_attr(RefX, X) || X <- List]
+                  [ok = write_attributes1(RefX, L) || {RefX, L} <- List]
           end,
     mnesia:activity(transaction, Fun),
-    ok = tell_front_end("write attributes"),
-    % ok = fprof:trace(stop),
-    ok.
+    ok = tell_front_end("write attributes").
 
 %% @spec write_last(List) -> ok
 %% List = [{#refX{}, Val}]
@@ -864,6 +861,11 @@ write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
 %% It will write the values to the last row/column as if they were
 %% 'formula' attributes
 %% Formulae can be inserted into row or column using <code>rc</code> notation
+%%@end
+%% write_last uses a match on the first element to enforce the fact that
+%% all refs are on the same page - this won't work with an empty list, so
+%% write a special clause for that case....
+write_last([]) -> ok;
 write_last(List) when is_list(List) ->
     % all the refX's in the list must have the same site/path/object type
     % so get those from the head of the list and enforce it by matching down
@@ -1380,6 +1382,11 @@ copy_style(#refX{obj = {cell, _}} = From,
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+write_attributes1(RefX, List) when is_record(RefX, refX), is_list(List) ->
+    ok = init_front_end_notify(),
+    [hn_db_wu:write_attr(RefX, X) || X <- List],
+    ok.
+
 shrink(ParentsList, List) ->
     shrink(ParentsList, List, []).
 

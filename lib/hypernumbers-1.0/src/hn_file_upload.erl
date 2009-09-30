@@ -54,7 +54,7 @@ split_sheets(X, {Ls, Fs}) ->
 write_data(Ref, {Sheet, Target, Data}) when is_list(Target) ->
     NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
                     obj  = hn_util:parse_attr(Target)},
-    hn_db_api:write_attributes(NRef, [{"formula", Data}]);
+    hn_db_api:write_attributes([{NRef, [{"formula", Data}]}]);
 
 write_data(_Ref, {_Sheet, {_Tl, _Br}, _Data}) ->
     %Name = excel_util:esc_tab_name(Sheet),
@@ -173,7 +173,7 @@ write_warnings_page(Ref, Sheets, User, Name, Warnings) ->
 
 write_to_cell(Ref, Str, Col, Row, Attrs) ->
     Attrs2 = [{"formula", Str} | Attrs],
-    hn_db_api:write_attributes(Ref#refX{obj = {cell, {Col, Row}}}, Attrs2).
+    hn_db_api:write_attributes([{Ref#refX{obj = {cell, {Col, Row}}}, Attrs2}]).
 
 write_warnings(_Ref, [], _) ->
     ok;

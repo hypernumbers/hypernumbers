@@ -160,7 +160,7 @@ iget(Req, Ref, page, [{"pages", []}], _User) ->
     json(Req, pages(Ref));
 iget(Req, Ref, page, [{"attr", []}], User) ->
     json(Req, page_attributes(Ref, User));
-iget(Req, #refX{path = P, obj = {cell, {X, Y}}} = Ref, cell, [], _User) ->
+iget(Req, #refX{path = _P, obj = {cell, {_X, _Y}}} = Ref, cell, [], _User) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", Val}}] when is_atom(Val) ->
                atom_to_list(Val);
@@ -297,6 +297,16 @@ ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr,
       [{"set", {struct, [{"language", Lang}]}}], User) ->
     hn_users:update(Site, User, "language", Lang);
 
+ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+      [{"set", {struct, [{"list", {array, Array}}]}}], User) ->
+    ok = status_srv:update_status(User, S, P, "edited page"),
+    io:format("Ref is ~p~n", [Ref]),
+    {Lasts, Refs} = fix_up(Array, S, P),
+    io:format("got ~p in ipost~n", [Refs]),
+    io:format("Lasts are ~p~n", [Lasts]),
+    ok = hn_db_api:write_last(Lasts),
+    ok = hn_db_api:write_attributes(Refs);
+
 ipost(_Req, #refX{site = S, path = P} = Ref, Type, _Attr, 
       [{"set", {struct, Attr}}], User) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
@@ -311,7 +321,7 @@ ipost(_Req, #refX{site = S, path = P} = Ref, Type, _Attr,
             hn_db_api:write_last([{Ref, Val}]);
         
         _Else ->
-            hn_db_api:write_attributes(Ref, Attr)
+            hn_db_api:write_attributes([{Ref, Attr}])
     end;
 
 ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
@@ -371,8 +381,8 @@ ipost(Req, Ref, _Type, _Attr,
     %% there is only 1 parent and 1 child for this action
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
-    #version{page = PP, version = PV} = PVsn,
-    #version{page = CP, version = CV} = CVsn,
+    %% #version{page = PP, version = PV} = PVsn,
+    %% #version{page = CP, version = CV} = CVsn,
     Sync1 = hn_db_api:check_page_vsn(Site, PVsn),
     Sync2 = hn_db_api:check_page_vsn(Site, CVsn),
     case Sync1 of
@@ -420,8 +430,8 @@ ipost(Req, Ref, _Type, _Attr,
     %% there is only 1 parent and 1 child here
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
-    #version{page = PP, version = PV} = PVsn,
-    #version{page = CP, version = CV} = CVsn,
+    %% #version{page = PP, version = PV} = PVsn,
+    %% #version{page = CP, version = CV} = CVsn,
     ChildX = hn_util:url_to_refX(ChildUrl),
     ParentX = hn_util:url_to_refX(ParentUrl),
     #refX{site = Site} = Ref,
@@ -483,7 +493,7 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
     #refX{site = Site} = ChildX,
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
-    #version{page = PP, version = PV} = PVsn,
+    %%#version{page = PP, version = PV} = PVsn,
 
     Sync1 = case Type of
                 "insert"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
@@ -506,7 +516,7 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
     Fun =
         fun(X) ->
                 Sync2 = hn_db_api:check_page_vsn(Site, X),
-                #version{page = CP, version = CV} = X,
+                %% #version{page = CP, version = CV} = X,
                 case Sync2 of
                     synched         -> ok;
                     unsynched       -> ok = hn_db_api:resync(Site, X);
@@ -518,9 +528,9 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
     json(Req, Json),
     io:format("In hn_mochi (notify) Json is ~p~n-process dictionary ~p~n",
               [Json, get(mochiweb_request_body)]),
-    Str2 = "hn_mochi:ipost\tnotify\thandling post with\t" ++ 
-        Stamp ++ "\t" ++ pid_to_list(self()) ++ "\t" ++ 
-                                     binary_to_list(get(mochiweb_request_body)),
+    %% Str2 = "hn_mochi:ipost\tnotify\thandling post with\t" ++ 
+    %%    Stamp ++ "\t" ++ pid_to_list(self()) ++ "\t" ++ 
+    %%                                 binary_to_list(get(mochiweb_request_body)),
     ret;
 
 ipost(Req, _Ref, _Type, _Attr, _Post, _User) ->
@@ -617,7 +627,7 @@ post_column_values(Ref, Values, Offset) ->
     F =  fun("", Acc)  -> Acc+1;
             (Val, Acc) -> 
                  NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
-                 ok = hn_db_api:write_attributes(NRef, [{"formula", Val}]),
+                 ok = hn_db_api:write_attributes([{NRef, [{"formula", Val}]}]),
                  Acc+1 
          end,
     lists:foldl(F, 0, Values).
@@ -706,6 +716,24 @@ get_lang(User) ->
 json(Req, Data) ->
     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
     Req:ok({"application/json", ?hdr, Json}).
+
+fix_up(List, S, P) -> f_up1(List, S, P, [], []).
+
+f_up1([], _S, _P, A1, A2) -> {A1, lists:flatten(A2)};
+f_up1([{struct, [{"ref", R}, {"formula", {array, L}}]} | T], S, P, A1, A2) ->
+    Obj = hn_util:parse_attr(R),
+    RefX = #refX{site = S, path = P, obj = Obj},
+    L2 = [[{"formula", X}] || X <- L],
+    NewAcc = lists:zip(hn_util:range_to_list(RefX), lists:reverse(L2)),
+    f_up1(T, S, P, A1, [NewAcc | A2]);
+f_up1([{struct, [{"ref", Ref}, {"formula", F}]} | T], S, P, A1, A2) ->
+    Obj = hn_util:parse_attr(Ref),
+    RefX = #refX{site = S, path = P, obj = Obj},
+    case Obj of
+        {column, _} -> f_up1(T, S, P, [{RefX, [{"formula", F}]} | A1], A2);
+        {row, _}    -> f_up1(T, S, P, [{RefX, [{"formula", F}]} | A1], A2);
+        {cell, _}   -> f_up1(T, S, P, A1, [{RefX, [{"formula", F}]} | A2])
+    end.
 
 % make_mini_index(V, P, Cell) ->
 %     Path = hn_util:list_to_path(P),

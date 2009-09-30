@@ -609,7 +609,7 @@ type_reference(Cell) ->
                 false ->
                     case hn_util:is_alpha(Cell) of
                         true  -> column;
-                        false -> 
+                        false ->
                             case regexp:match(Cell, ?RG_cell) of
                                 {match, _, _} -> cell;
                                 _  ->

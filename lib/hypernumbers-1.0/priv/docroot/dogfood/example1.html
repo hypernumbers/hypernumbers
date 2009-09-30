@@ -6,40 +6,40 @@
     <link rel="stylesheet" type="text/css" href="/dogfood/dogfood.css" />
   </head>
   <body>
-  <div id="header">
-    <img src="/img/logo.jpg">
-  </div>
-  <div id="layout">
-    <h1>Hypernumbers GUI Binding Examples</h1>
-    <h2>Introduction</h2>
-    <p>This looks at the specification of hypernumbers in webpages and how they are rendered in the browser by the hypernumbers libraries.</p>
-    <p>This page is the companion to the <em>Hypernumbers Gui Builder</em> document.</p>
-    <h2>Structure</h2>
-    <p>This page will just talk about the basic HTML elements, other details of the system will be discussed later on...</P
-    <h2>Basic Bindings</h2>
-    <p>The simplest example is a text lable. The marked-up HTML is very simple:</P>
-    <code>&lt;div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b4" data-binding-to="b4"&gt;&lt;/div&gt;</code>
-    <p> and it renders like this:
+    <div id="header">
+      <img src="/img/logo.jpg">
+    </div>
+    <div id="layout">
+      <h1>Hypernumbers GUI Binding Examples</h1>
+      <h2>Introduction</h2>
+      <p>This looks at the specification of hypernumbers in webpages and how they are rendered in the browser by the hypernumbers libraries.</p>
+      <p>This page is the companion to the <em>Hypernumbers Gui Builder</em> document.</p>
+      <h2>Structure</h2>
+      <p>This page will just talk about the basic HTML elements, other details of the system will be discussed later on...</p>
+      <h2>Basic Bindings</h2>
+      <p>The simplest example is a text lable. The marked-up HTML is very simple:</P>
+      <code>&lt;div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b4" data-binding-to="b4"&gt;&lt;/div&gt;</code>
+      <p> and it renders like this:
+        <div class="render">
+          <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b4" data-binding-to="b4"></div>
+        </div>
+      <p>By changing the type of the element we can force it to render in different ways:</p>
       <div class="render">
-        <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b4" data-binding-to="b4"></div>
-      </div>
-    <p>By changing the type of the element we can force it to render in different ways:</p>
-    <div class="render">
         <h1 class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b4" data-binding-to="b4"></h1>
         <h2 class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b4" data-binding-to="b4"></h2>
       </div>
     </div>
-  <p>These were done by swapping out the tag of the html element, like so:</p>
+    <p>These were done by swapping out the tag of the html element, like so:</p>
     <code>&lt;h1 class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b4" data-binding-to="b4"&gt;&lt;/h1&gt;</code><br />
     <code>&lt;h2 class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b4" data-binding-to="b4"&gt;&lt;/h2&gt;</code>
-<p>This is the mark-up for an input box:</p>
-      <code>&lt;div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="auto"  data-binding-from="b5" data-binding-to="b5"&gt;&lt;/div&gt</code>
+    <p>This is the mark-up for an input box:</p>
+    <code>&lt;div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="auto"  data-binding-from="b5" data-binding-to="b5"&gt;&lt;/div&gt</code>
     <p> and it renders like this:</p>
-      <div class="render">
-        <div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="auto" data-binding-from="b5" data-binding-to="b5"></div>
-      </div>
-      <p><a href="./" target="_">Open</a> this page as a normal hypernumbers spreadsheet page and edit either of these fields - and watch them update. When you edit the text in the input box on this page it will also update the spreadsheet page.</p>
-      <h2>Some More Examples</h2>
+    <div class="render">
+      <div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="auto" data-binding-from="b5" data-binding-to="b5"></div>
+    </div>
+    <p><a href="./" target="_">Open</a> this page as a normal hypernumbers spreadsheet page and edit either of these fields - and watch them update. When you edit the text in the input box on this page it will also update the spreadsheet page.</p>
+    <h2>Some More Examples</h2>
     <P>Radio buttons, checkboxes, area inputs and dropdown menus can also be implemented in this fashion.</p>
     <p>This the mark-up for a set of radio buttons:</p>
     <code>&lt;div class="hn" data-gui-element-type="radio" data-binding-from="b0:b12" data-render-type="dynamic" data-post="auto" data-binding-to="c10"&gt;&lt;/div&gt;
@@ -64,98 +64,79 @@
     <div class="render">
       <div class="hn" data-gui-element-type="select" data-binding-from="b14:b16" data-render-type="dynamic" data-post="auto" data-binding-to="c14"></div>
     </div>
-  <p>...this final items looks like a lable but can be double-clicked to edit:</p>
-      <code>&lt;div class="hn" data-gui-element-type="dblclick_block" data-render-type="dynamic" data-post="auto" data-binding-from="b19" data-binding-to="b19"&gt;&lt;/div&gt;</code>
-      <div class="render">
-        <div class="hn" data-gui-element-type="dblclick_block" data-render-type="dynamic" data-post="auto" data-binding-from="b19" data-binding-to="b19"></div>
-      </div>
-      <h2>Displaying Tables</h2>
-      <p>You can also show a table on a page - this is a display version:</p>
-      <code>&lt;div class="hn" data-gui-element-type="table" data-render-type="dynamic" data-post="auto" data-binding-from="a22:d25" data-binding-to="A22:D25"&gt;&lt;/div&gt;</code>
-      <div class="render">
-        <div class="hn" data-gui-element-type="table" data-render-type="dynamic" data-post="auto" data-binding-from="a22:d25" data-binding-to="A22:D25"></div>
-      </div>
-      <p>...this is the editable version, again double-click to get an input field:</p>
-      <code>&lt;div class="hn" data-gui-element-type="dblclick_table" data-render-type="dynamic" data-post="auto" data-binding-from="a22:d25" data-binding-to="A22:D25"&gt;&lt;/div&gt;</code>
-      <div class="render">
-        <div class="hn" data-gui-element-type="dblclick_table" data-render-type="dynamic" data-post="auto" data-binding-from="a22:d25" data-binding-to="A22:D25"></div>
-      </div>
-      <h2>The Structure Of A hypernumbers Element</h2>
-      <p>There are 5 elements that define the binding:</p>
-        <table>
-          <tr><td><code>data-gui-element-type</code></td><td>Tells the front-end what to render the element as. It can be one of:
-              <ul>
-                <li>block</li>
-                <li>inputtext</li>
-                <li>inputtextarea</li>
-                <li>radio</li>
-                <li>checkbox</li>
-                <li>select</li>
-                <li>dblclick_block</li>
-                <li>table</li>
-                <li>dblclick_table</li>
-              </ul>
-          </td></tr>
-          <tr><td><code>data-binding-to</code></td><td>gives the URL that should be rendered - binding the gui object to the data.</td></tr>
-          <tr><td><code>data-binding-from</code></td><td>for elements like drop down menus, gives the URL of the source of the options - the final value set is bound to the <code>data-binding-to</code></td></tr>
-          <tr><td><code>data-post</code></td><td>This value can be <code>auto</code> or <code>manual</code> and determines how the change is posted. <code>auto</code> is posted on a <code>blur</code> event. If this value is set to <code>manual</code> the user must manually trigger the update by using, for instance, a button on a form continaing the element.</td></tr>
-          <tr><td><code>data-render-type</code></td><td>This determines <em>where</em> the element is repelaced by a hypernumber. <code>dynamic</code> means bind it on the client so it changes dynamically, <code>static</code> means bind it on the server so it doesn't refresh without a page refresh. <code>both</code> leaves it up to the server. A normal user will be served a page with all <code>both</code> elements rendered dynamically and all <code>static</code> elements rendered statically. A search-engine spider will be served a page with all <code>static</code> and <code>both</code> data rendered statically and the dynamic data <strong>not rendered at all</strong></td></tr>
-        </table>
-  <p>Not all combinations of the above are valid. The table below identifies those combinations of <code>data-binding-to</code> and <code>data-post</code> that are valid for each type of control:</p>
-  <div class="render">
-    <div class="hn" data-gui-element-type="table" data-render-type="dynamic" data-post="auto" data-binding-to="A30:I40"></div>
-  </div>
-  <h2>An Example Of A Fancy Binding</h2>
-<p>Want to specify a drop down list that it is easy to add items to? Try this:</p>
+    <p>...this final items looks like a lable but can be double-clicked to edit:</p>
+    <code>&lt;div class="hn" data-gui-element-type="dblclick_block" data-render-type="dynamic" data-post="auto" data-binding-from="b19" data-binding-to="b19"&gt;&lt;/div&gt;</code>
+    <div class="render">
+      <div class="hn" data-gui-element-type="dblclick_block" data-render-type="dynamic" data-post="auto" data-binding-from="b19" data-binding-to="b19"></div>
+    </div>
+    <h2>Displaying Tables</h2>
+    <p>You can also show a table on a page - this is a display version:</p>
+    <code>&lt;div class="hn" data-gui-element-type="table" data-render-type="dynamic" data-post="auto" data-binding-from="a22:d25" data-binding-to="A22:D25"&gt;&lt;/div&gt;</code>
+    <div class="render">
+      <div class="hn" data-gui-element-type="table" data-render-type="dynamic" data-post="auto" data-binding-from="a22:d25" data-binding-to="A22:D25"></div>
+    </div>
+    <p>...this is the editable version, again double-click to get an input field:</p>
+    <code>&lt;div class="hn" data-gui-element-type="dblclick_table" data-render-type="dynamic" data-post="auto" data-binding-from="a22:d25" data-binding-to="A22:D25"&gt;&lt;/div&gt;</code>
+    <div class="render">
+      <div class="hn" data-gui-element-type="dblclick_table" data-render-type="dynamic" data-post="auto" data-binding-from="a22:d25" data-binding-to="A22:D25"></div>
+    </div>
+    <h2>The Structure Of A hypernumbers Element</h2>
+    <p>There are 5 elements that define the binding:</p>
+    <table>
+      <tr><td><code>data-gui-element-type</code></td><td>Tells the front-end what to render the element as. It can be one of:
+          <ul>
+            <li>block</li>
+            <li>inputtext</li>
+            <li>inputtextarea</li>
+            <li>radio</li>
+            <li>checkbox</li>
+            <li>select</li>
+            <li>dblclick_block</li>
+            <li>table</li>
+            <li>dblclick_table</li>
+          </ul>
+      </td></tr>
+      <tr><td><code>data-binding-to</code></td><td>gives the URL that should be rendered - binding the gui object to the data.</td></tr>
+      <tr><td><code>data-binding-from</code></td><td>for elements like drop down menus, gives the URL of the source of the options - the final value set is bound to the <code>data-binding-to</code></td></tr>
+      <tr><td><code>data-post</code></td><td>This value can be <code>auto</code> or <code>manual</code> and determines how the change is posted. <code>auto</code> is posted on a <code>blur</code> event. If this value is set to <code>manual</code> the user must manually trigger the update by using, for instance, a button on a form continaing the element.</td></tr>
+      <tr><td><code>data-render-type</code></td><td>This determines <em>where</em> the element is repelaced by a hypernumber. <code>dynamic</code> means bind it on the client so it changes dynamically, <code>static</code> means bind it on the server so it doesn't refresh without a page refresh. <code>both</code> leaves it up to the server. A normal user will be served a page with all <code>both</code> elements rendered dynamically and all <code>static</code> elements rendered statically. A search-engine spider will be served a page with all <code>static</code> and <code>both</code> data rendered statically and the dynamic data <strong>not rendered at all</strong></td></tr>
+    </table>
+    <p>Not all combinations of the above are valid. The table below identifies those combinations of <code>data-binding-to</code> and <code>data-post</code> that are valid for each type of control:</p>
+    <div class="render">
+      <div class="hn" data-gui-element-type="table" data-render-type="dynamic" data-post="auto" data-binding-to="A30:I40"></div>
+    </div>
+    <h2>An Example Of A Fancy Binding</h2>
+    <p>Want to specify a drop down list that it is easy to add items to? Try this:</p>
     <code>&lt;div class="hn" data-gui-element-type="select" data-binding-from="28:28" data-render-type="dynamic" data-post="auto" data-binding-to="b27"&gt;&lt;/div&gt;</code>
     <div class="render">
       <div class="hn" data-gui-element-type="select" data-binding-from="28:28" data-render-type="dynamic" data-post="auto" data-binding-to="b27"></div>
+      <p>It works by binding the from to a complete row - any value you add anywhere to that row will pop in...</p>
     </div>
 
-<!--        <h2>Forms, Auto And Manual Post</h2>
-  <p>Items with manual post simply wont fire in normal html, only within a field. Consider the following tow fields:</p>
-  <pre><code>
-      &lt;div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="auto" data-binding-to="b28"&gt;&lt;/div&gt
-      &lt;div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="manual" data-binding-to="B28"&gt;&lt;/div&gt
-</code></pre>
-  <p>The first of these will update the second:</p>
-  <div class="render">
-    <div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="auto" data-binding-to="b28"></div>
-  </div>
-  <p>...but this one won't:</p>
-  <div class="render">
-    <div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="manual" data-binding-to="b28"></div>
-  </div>
-  <p>Consider a basic form like below:</p>
-  <form id="helpform" onClick="return HN.Tools.Util.close_help_dialog();">
-    <div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="manual" data-binding-to="b28"></div>
-    <input type="button" class="action  ui-state-default" value="OK" />
-    </form> -->
-</div>
-<!-- Some jquery libraries to handle AJAX calls -->
-  <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
-
-  <!-- Standard JSON library -->
-  <script src="/hypernumbers/json2.js"></script>
-  
-  <!-- The basic hypernumbers javascript libaries -->
-  <script src="/hypernumbers/hn.js"></script>
-  <script src="/hypernumbers/hn.util.js"></script>
-  <script src="/hypernumbers/hn.data.js"></script>
-  <script src="/hypernumbers/hn.callbacks.js"></script>
-
-  <!-- some utils -->
-  <script src="/gui_builder/hn.util.js"></script>
-
-  <!-- the GUI libraries -->
-  <script src="/gui_builder/hn.gui.js"></script>
-  <script src="/gui_builder/hn.gui.util.js"></script>
-  <script src="/gui_builder/hn.gui.register.js"></script>
-  <script src="/gui_builder/hn.gui.builder.js"></script>
-  <script src="/gui_builder/hn.gui.dataoptions.js"></script>
-  <script src="/gui_builder/hn.gui.html.js"></script>        
-  
-  <!-- main javascript function -->
-  <script src="/dogfood/main.js"></script>
+    <!-- Some jquery libraries to handle AJAX calls -->
+    <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
+    
+    <!-- Standard JSON library -->
+    <script src="/hypernumbers/json2.js"></script>
+    
+    <!-- The basic hypernumbers javascript libaries -->
+    <script src="/hypernumbers/hn.js"></script>
+    <script src="/hypernumbers/hn.util.js"></script>
+    <script src="/hypernumbers/hn.data.js"></script>
+    <script src="/hypernumbers/hn.callbacks.js"></script>
+    
+    <!-- some utils -->
+    <script src="/gui_builder/hn.util.js"></script>
+    
+    <!-- the GUI libraries -->
+    <script src="/gui_builder/hn.gui.js"></script>
+    <script src="/gui_builder/hn.gui.util.js"></script>
+    <script src="/gui_builder/hn.gui.register.js"></script>
+    <script src="/gui_builder/hn.gui.builder.js"></script>
+    <script src="/gui_builder/hn.gui.dataoptions.js"></script>
+    <script src="/gui_builder/hn.gui.html.js"></script>        
+    
+    <!-- main javascript function -->
+    <script src="/dogfood/main.js"></script>
   </body>
 </html>

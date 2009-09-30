@@ -28,7 +28,7 @@
          hn_DEBUG/0]). % Debugging
 
 -import(hn_db_api, [
-                    write_attributes/2,
+                    write_attributes/1,
                     write_last/1,
                     % write_permission/2,
                     % write_style/2,
@@ -898,7 +898,7 @@ cut_n_drag_n_copy_n_drop_n_paste(Fun, Path, From, To) ->
 %% choose the site to write to
 write_value(Site, Path, Value, {X, Y}, Attributes) ->
     RefX = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
-    write_attributes(RefX, [{"formula", Value}]),
+    write_attributes([{RefX, [{"formula", Value}]}]),
     write_attr_DEBUG(RefX, Attributes).
 
 %% just write to the default
@@ -916,7 +916,7 @@ write_attr_DEBUG(RefX, [Attr | T]) ->
                 thin              -> {"width", 30}; 
                 thick             -> {"width", 200}
             end,
-    write_attributes(RefX, [Attr2]),
+    write_attributes([{RefX, [Attr2]}]),
     write_attr_DEBUG(RefX, T).
 
 colour(Path, {X, Y}, Colour) ->

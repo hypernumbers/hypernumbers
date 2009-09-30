@@ -66,7 +66,7 @@ write(_Ref, {"rawvalue", _}) -> ok;
 write(_Ref, {"value", _})    -> ok;
 write(Ref, {Key, Val}) ->
     %?INFO("Writing ~p ~p ~p", [Key, Val, Ref]),
-    hn_db_api:write_attributes(Ref, [{Key, tos(Val)}]),
+    hn_db_api:write_attributes([{Ref, [{Key, tos(Val)}]}]),
     ok.
 
 ltoi(X) ->        
