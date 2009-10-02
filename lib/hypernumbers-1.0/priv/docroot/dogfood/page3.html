@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <title>hypernumbers GUI Help Page 3</title>
+  </head>
+  <body>
+    <!-- Text -->
+    <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b1" data-binding-to="b1"></div>
+
+    <!-- Coupla input fields, one manual, one auto... -->
+     <div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="auto" data-binding-from="b2" data-binding-to="b2"></div>
+    <div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="manual" data-binding-from="b2" data-binding-to="b2"</div>
+
+    <!-- Text -->
+    <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b3" data-binding-to="b3"></div>
+
+    <form class="hn_form">
+      <fieldset><legend>Another Form</legend>
+        <div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="manual" data-binding-from="b4" data-binding-to="b4;./details/a:a"></div>
+        <div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="manual" data-binding-from="b5" data-binding-to="b5;./details/b:b"></div>
+      </fieldset>
+    </form>
+
+    <!-- Text -->
+    <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b6" data-binding-to="b6"></div>
+
+    <!-- Some jquery libraries to handle AJAX calls -->
+    <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
+    
+    <!-- Standard JSON library -->
+    <script src="/hypernumbers/json2.js"></script>
+    
+    <!-- The basic hypernumbers javascript libaries -->
+    <script src="/hypernumbers/hn.js"></script>
+    <script src="/hypernumbers/hn.util.js"></script>
+    <script src="/hypernumbers/hn.data.js"></script>
+    <script src="/hypernumbers/hn.callbacks.js"></script>
+    
+    <!-- some utils -->
+    <script src="/gui_builder/hn.util.js"></script>
+    
+    <!-- the GUI libraries -->
+    <script src="/gui_builder/hn.gui.js"></script>
+    <script src="/gui_builder/hn.gui.util.js"></script>
+    <script src="/gui_builder/hn.gui.register.js"></script>
+    <script src="/gui_builder/hn.gui.builder.js"></script>
+    <script src="/gui_builder/hn.gui.dataoptions.js"></script>
+    <script src="/gui_builder/hn.gui.html.js"></script>        
+    
+    <!-- main javascript function -->
+    <script src="/dogfood/main.js"></script>
+
+  </body>
+</html>

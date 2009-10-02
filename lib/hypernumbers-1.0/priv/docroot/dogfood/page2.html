@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <title>hypernumbers GUI Help Page 2</title>
+  </head>
+  <body>
+    <!-- Text -->
+    <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b1" data-binding-to="b1"></div>
+
+    <!-- Append Last Controls -->
+    <div class="hn" data-gui-element-type="select" data-binding-from="a2:a5" data-render-type="dynamic" data-post="auto" data-binding-to="a:a"></div>
+    <div class="hn" data-gui-element-type="select" data-binding-from="a2:a5" data-render-type="dynamic" data-post="auto" data-binding-to="1:1"></div>
+
+    <!-- More Text -->
+    <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b5" data-binding-to="b5"></div>
+    <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b6" data-binding-to="b6"></div>
+
+    <!-- Relative Bindings -->
+    <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="a-1" data-binding-to="a-1"></div>
+    <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="-a1" data-binding-to="-a1"></div>
+
+    <!-- More Text -->
+    <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b7" data-binding-to="b7"></div>
+
+    <!-- Input field with audit -->
+    <div class="hn" data-gui-element-type="inputtext" data-render-type="dynamic" data-post="auto" data-binding-from="b8" data-binding-to="b8;./audit/a:a"></div>
+
+    <!-- More Text -->
+    <div class="hn" data-gui-element-type="block" data-render-type="dynamic" data-post="auto" data-binding-from="b9" data-binding-to="b9"></div>
+
+    <!-- Some jquery libraries to handle AJAX calls -->
+    <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
+    
+    <!-- Standard JSON library -->
+    <script src="/hypernumbers/json2.js"></script>
+    
+    <!-- The basic hypernumbers javascript libaries -->
+    <script src="/hypernumbers/hn.js"></script>
+    <script src="/hypernumbers/hn.util.js"></script>
+    <script src="/hypernumbers/hn.data.js"></script>
+    <script src="/hypernumbers/hn.callbacks.js"></script>
+    
+    <!-- some utils -->
+    <script src="/gui_builder/hn.util.js"></script>
+    
+    <!-- the GUI libraries -->
+    <script src="/gui_builder/hn.gui.js"></script>
+    <script src="/gui_builder/hn.gui.util.js"></script>
+    <script src="/gui_builder/hn.gui.register.js"></script>
+    <script src="/gui_builder/hn.gui.builder.js"></script>
+    <script src="/gui_builder/hn.gui.dataoptions.js"></script>
+    <script src="/gui_builder/hn.gui.html.js"></script>        
+    
+    <!-- main javascript function -->
+    <script src="/dogfood/main.js"></script>
+
+  </body>
+</html>
