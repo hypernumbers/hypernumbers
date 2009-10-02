@@ -293,7 +293,7 @@ rept_([Str], [Reps2]) ->
         X when X < 0; X > 32767 -> ?ERRVAL_VAL;
         _ ->
             Fun = fun(_) -> (Str) end,
-            lists:flatten(concatenate([lists:map(Fun, lists:seq(1, Reps))]))
+            lists:flatten(concatenate(lists:map(Fun, lists:seq(1, Reps))))
     end.
 
 substitute([_,_,_]=Args) ->
