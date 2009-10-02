@@ -112,6 +112,7 @@
 
 -export([
          write_attributes/1,
+         write_attributes/2,
          write_last/1,
          % write_permission/2,
          write_style_IMPORT/2,
@@ -828,8 +829,11 @@ notify_back_create(Site, Record)
 %% <li>a cell</li>
 %% <li>a range</li>
 %% </ul>
+write_attributes(RefX, List) ->
+    mnesia:activity(transaction, fun write_attributes1/2, [RefX, List]),
+    ok = tell_front_end("write attributes").
+
 write_attributes(List) ->
-    io:format("List is ~p~n", [List]),
     Fun = fun() ->
                   [ok = write_attributes1(RefX, L) || {RefX, L} <- List]
           end,
