@@ -1014,14 +1014,16 @@ acosh_([Num]) ->
 
 
 atan([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
+    col([V], [eval_funs, array_first, fetch, {cast, num}],
         [return_errors, {all, fun is_number/1}],
         fun atan_/1).
 atan_([Num]) ->
     math:atan(Num).
 
+atan2([_, Y]) when ?is_rangeref(Y) ->
+    ?ERRVAL_VAL;
 atan2([_, _]=Args) ->
-    col(Args, [eval_funs, area_first, fetch, {cast, num}],
+    col(Args, [eval_funs, array_first, fetch, {cast, num}, {conv, str, ?ERRVAL_VAL}],
         [return_errors, {all, fun is_number/1}],
         fun atan2_/1).
 atan2_([X, Y]) when X == 0 andalso Y == 0 ->

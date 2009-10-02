@@ -183,7 +183,7 @@ counta(Vs) ->
 
 count(Vs) ->
     Vals = col(Vs, [eval_funs, fetch, flatten_as_str, {ignore, blank},
-                    {cast, num}, {ignore, error}, {ignore, string}]),
+                    {cast, num}, {ignore, error}, {ignore, str}]),
     length(Vals).
 
 countblank(Vs) ->
@@ -199,10 +199,8 @@ countif([A, Cr]) ->
     [Crit] = col([Cr], [eval_funs, fetch, flatten]),
 
     case odf_criteria:create(Crit) of
-        {error, _Reason} ->
-            0;
-        Fun ->
-            length(filter(Fun, Vals))
+        {error, _Reason} -> 0;
+        Fun              -> length(filter(Fun, Vals))
     end.    
 
 critbinom([V1, V2, V3]) ->
