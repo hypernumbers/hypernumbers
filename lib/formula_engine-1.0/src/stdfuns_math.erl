@@ -236,7 +236,11 @@ quotient([V1, V2]) ->
     ?MODULE:trunc('/'([Num, Divisor])).
 
 abs([V]) ->
-    Num = ?number(V, ?default_rules),
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun abs_/1).
+
+abs_([Num]) ->
     erlang:abs(Num).
 
 sqrt([V1]) ->
@@ -285,17 +289,10 @@ fact1(0) ->
 fact1(Num) ->
     foldl(fun(X, Acc) -> X * Acc end, 1, seq(1, Num)).
 
-%% Keep the rource of the old one until we are sure
-%% the new one works :)
-%%gcd([V1, V2]) ->
-%%    [A, B] = ?numbers([V1, V2], ?default_rules),
-%%    gcd1(A, B).
-%%gcd1(A, 0) -> A;
-%%gcd1(A, B) -> gcd1(B, A rem B).
-
 %% @todo not
-gcd(V) -> [A|T] = ?numbers(V, ?default_rules),
-          gcd1(A,T).
+gcd(V) ->
+    [A|T] = ?numbers(V, ?default_rules),
+    gcd1(A,T).
 
 gcd1(A,[])    -> A;
 gcd1(A,[0|T]) -> gcd1(A,T);
@@ -306,22 +303,17 @@ gcd2(A,0) -> A;
 gcd2(A,B) -> gcd2(B, A rem B).
 
 
-%% Keep the rource of the old one until we are sure
-%% the new one works :)    
-%% lcm([V1, V2]) ->
-%%    [A, B] = ?numbers([V1, V2], ?default_rules),
-%%    lcm1(A, B).
-%% lcm1(A, B) ->
-%%    A * B / gcd1(A, B).
+lcm(V) ->
+    [A|T] = ?numbers(V, ?default_rules),
+    lcm1(A,T).
 
-lcm(V) -> [A|T] = ?numbers(V, ?default_rules),
-          lcm1(A,T).
-
-lcm1(A,[])    -> A;
-lcm1(A,[B|T]) -> Div=gcd2(A,B),
-                 % A2 should be an integer - use round to cast it to one 
-                 A2=erlang:round(A*B/Div),
-                 lcm1(A2,T).
+lcm1(A,[])    ->
+    A;
+lcm1(A,[B|T]) ->
+    Div=gcd2(A,B),
+    % A2 should be an integer - use round to cast it to one 
+    A2=erlang:round(A*B/Div),
+    lcm1(A2,T).
 
 %% Returns the remainder after number is divided by divisor. The result
 %% has the same sign as divisor.
@@ -537,13 +529,15 @@ combin([V1, V2]) ->
     fact1(N) div (fact1(Chosen) * fact1(N - Chosen)).
 
 even([V1]) ->
-    Num = ?number(V1, ?default_rules),
-    even1(Num).
-even1(Num) when ?is_multiple(Num, 2) ->
+    col([V1], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun even1/1).
+
+even1([Num]) when ?is_multiple(Num, 2) ->
     Num;
-even1(Num) when Num > 0 ->
+even1([Num]) when Num > 0 ->
     ceiling1(Num, 2);
-even1(Num) when Num < 0 ->
+even1([Num]) when Num < 0 ->
     ceiling1(Num, -2).
 
 floor([V1, V2]) ->
@@ -583,7 +577,7 @@ odd([V1]) ->
 odd1([Num]) when Num == 0 ->
     1;
 odd1([Num]) ->
-    E = even1(Num),
+    E = even1([Num]),
     ?COND(erlang:abs(E) - erlang:abs(Num) < 1,
           E + sign1(Num),
           E - sign1(Num)).
@@ -870,7 +864,6 @@ subtotal_([8], L)  -> stdfuns_stats:stdevp([L]);
 subtotal_([9], L)  -> sum([L]);
 subtotal_([10], L) -> stdfuns_stats:var([L]);
 subtotal_([11], L) -> stdfuns_stats:varp([L]);
-
 subtotal_([101], L)  -> stdfuns_stats:average([L]);
 subtotal_([102], L)  -> stdfuns_stats:count([L]);
 subtotal_([103], L)  -> stdfuns_stats:counta([L]);
@@ -888,33 +881,21 @@ subtotal_(_, _) -> ?ERRVAL_VAL.
 sumif([L, Crit]) ->
     sumif([L, Crit, L]);
 sumif([V1, Cr, V2]) ->
-
+    
     Tmp = [eval_funs, fetch, flatten],
     Val1   = col([V1], Tmp),
     Val2   = col([V2], Tmp),
     [Crit] = col([Cr], [eval_funs, fetch, flatten]),
-
+    
     case length(Val1) == length(Val2) of
         false ->
             ?ERRVAL_VAL;
         true ->
             case odf_criteria:create(Crit) of
-                {error, _Reason} ->
-                    0;
-                Fun ->
-                    sumif1(Val1, Val2, Fun, 0)
+                {error, _Reason} -> 0;
+                Fun              -> sumif1(Val1, Val2, Fun, 0)
             end
     end.
-
-%% V1 and V2 must be areas of same dimensions
-%% ?ensure(?is_area(V1), ?ERR_VAL),
-%% ?ensure(?is_area(V2), ?ERR_VAL),
-%% ?ensure(area_util:are_congruent(V1, V2), ?ERR_VAL),
-%% case odf_criteria:create(Crit) of
-%%     {error, _Reason} -> 0;
-%%     Fun              ->
-%%         sumif1(area_util:to_list(V1), area_util:to_list(V2), Fun)
-%% end.
 
 sumif1([], [], _F, Sum) ->
     Sum;
@@ -979,69 +960,109 @@ sumxmy2_(Nums1, Nums2) ->
 %%% Trigonometry ~~~~~
 
 sin([V]) ->
-    Num = ?number(V, ?default_rules),
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun sin_/1).
+sin_([Num]) ->
     math:sin(Num).
 
 cos([V]) ->
-    Num = ?number(V, ?default_rules),
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun cos_/1).
+cos_([Num]) -> 
     math:cos(Num).
 
 tan([V]) ->
-    Num = ?number(V, ?default_rules),
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun tan_/1).
+tan_([Num]) ->
     math:tan(Num).
 
 asin([V]) ->
-    case col([V], [first_array, cast_num],
-             [return_errors, {all, fun is_number/1}]) of
-        Err when ?is_errval(Err)     -> Err;
-        [X] when X > 1 orelse X < -1 -> ?ERRVAL_NUM;
-        [X] -> math:asin(X)
-    end.
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun asin_/1).
+asin_([Num]) when Num > 1 orelse Num < -1 ->
+    ?ERRVAL_NUM;
+asin_([Num]) ->
+    math:asin(Num).
 
 acos([V]) ->
-    Num = ?number(V, ?default_rules),
-    ?ensure(Num >= -1 andalso Num =< 1, ?ERR_NUM),
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun acos_/1).
+acos_([Num]) when Num < -1 orelse Num > 1 ->
+    ?ERRVAL_NUM;
+acos_([Num]) ->
     math:acos(Num).
 
+acosh([V]) ->
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun acosh_/1).
+acosh_([Num]) when Num < 1 ->
+    ?ERRVAL_NUM;
+acosh_([Num]) ->
+    math:acosh(Num).
+
+
 atan([V]) ->
-    Num = ?number(V, ?default_rules),
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun atan_/1).
+atan_([Num]) ->
     math:atan(Num).
 
-atan2([V1, V2]) ->
-    X = ?number(V1, ?default_rules),
-    Y = ?number(V2, ?default_rules),
-    
-    if X == 0 andalso Y == 0 -> ?ERRVAL_DIV;
-       true                  -> math:atan2(Y, X)
-    end.
+atan2([_, _]=Args) ->
+    col(Args, [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun atan2_/1).
+atan2_([X, Y]) when X == 0 andalso Y == 0 ->
+    ?ERRVAL_DIV;
+atan2_([X, Y]) ->
+    math:atan2(Y, X).
+
+atanh([V]) ->
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun atanh_/1).
+atanh_([Num]) when Num =< -1 orelse Num >= 1 ->
+    ?ERRVAL_NUM;
+atanh_([Num]) ->
+    math:atanh(Num).
 
 sinh([V]) ->
-    Num = ?number(V, ?default_rules),
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun sinh_/1).
+sinh_([Num]) ->
     try   math:sinh(Num)
     catch error:_Err -> ?ERRVAL_NUM end.
 
 cosh([V]) ->
-    Num = ?number(V, ?default_rules),
-    ?ensure(Num < 711, ?ERR_NUM),
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun cosh_/1).
+cosh_([Num]) when Num >= 711 ->
+    ?ERRVAL_NUM;
+cosh_([Num]) ->
     math:cosh(Num).
 
 tanh([V]) ->
-    Num = ?number(V, ?default_rules),
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun tanh_/1).
+tanh_([Num]) ->
     math:tanh(Num).
 
 asinh([V]) ->
-    Num = ?number(V, ?default_rules),
+    col([V], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun asinh_/1).
+asinh_([Num]) ->
     math:asinh(Num).
-
-acosh([V]) ->
-    Num = ?number(V, ?default_rules),
-    ?ensure(Num >= 1, ?ERR_NUM),
-    math:acosh(Num).
-
-atanh([V]) ->
-    Num = ?number(V, ?default_rules),
-    ?ensure(Num > -1 andalso Num < 1, ?ERR_NUM),
-    math:atanh(Num).
 
 degrees([V]) ->
     col([V], [eval_funs, area_first, fetchdb, {cast, num}],

@@ -187,13 +187,19 @@ funcall(Fname, Args0) ->
     
     % TODO, this should be taken out, no reason to strictly
     % evaluate arguments
-    Funs = ['if', choose, column, row, cell, columns, 'and',
-            timevalue, npv, max, maxa, min, mina, syd, sumsq, sum,
-            stdevpa, stdevp, stdeva, stdev, '+', product, mdeterm,
-            median, average, averagea, replace, rows, countif, sumif,
-            odd, int, degrees, radians, proper, index, var, steyx,
-            small, skew, large, sumproduct, daverage, dcount, isref,
-            '^^', irr],
+    Funs = [ '+', '^^',
+             abs, acos, 'and', asin, asinh, atan, atan2, atanh, average,
+             averagea,
+             cos, cosh,
+             tan, tanh,
+             sin, sinh,
+             'if', choose, column, row,
+             cell, columns, timevalue, npv, max, maxa, min, mina, syd,
+             sumsq, sum, stdevpa, stdevp, stdeva, stdev, product, mdeterm,
+             median, replace, rows, countif, sumif,
+             odd, int, degrees, radians, proper, index, var, steyx,
+             small, skew, large, sumproduct, daverage, dcount, isref,
+             irr, even],
     
     Args = case member(Fname, Funs) of
                true  -> Args0;
