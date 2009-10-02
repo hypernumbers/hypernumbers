@@ -336,14 +336,14 @@ parse_attr(Addr) ->
     parse_attr(cell, Addr).
 
 parse_attr(cell, Addr) ->
-    case regexp:match(Addr,?RG_cell) of
-        {match,_,_} -> {cell, util2:strip_ref(Addr)};
-        _           -> parse_attr(range, Addr)
+    case re:run(Addr,?RG_cell) of
+        {match,_} -> {cell, util2:strip_ref(Addr)};
+        _         -> parse_attr(range, Addr)
     end;
 
 parse_attr(range, Addr) ->
-    case regexp:match(Addr,?RG_range) of
-        {match,_,_} -> 
+    case re:run(Addr,?RG_range) of
+        {match,_} -> 
             [Cell1, Cell2] = string:tokens(Addr, ":"),
             {X1, Y1} = util2:strip_ref(Cell1),
             {X2, Y2} = util2:strip_ref(Cell2),
@@ -354,8 +354,8 @@ parse_attr(range, Addr) ->
     end;
 
 parse_attr(column, Addr) ->
-    case regexp:match(Addr,?RG_col_range) of
-        {match,_,_} -> 
+    case re:run(Addr,?RG_col_range) of
+        {match,_} -> 
             [Cell1, Cell2] = string:tokens(Addr, ":"),
             {column, {tconv:b26_to_i(Cell1), tconv:b26_to_i(Cell2)}};
         _ -> 
@@ -363,8 +363,8 @@ parse_attr(column, Addr) ->
     end;
 
 parse_attr(row, Addr) ->
-    case regexp:match(Addr,?RG_row_range) of
-        {match,_,_} -> 
+    case re:run(Addr,?RG_row_range) of
+        {match,_} -> 
             [Cell1, Cell2] = string:tokens(Addr, ":"),
             {row, {ltoi(Cell1), ltoi(Cell2)}};
         _ ->
@@ -388,8 +388,8 @@ parse_ref(Ref) ->
               end,
     {RefType, RefVal}.
 
-undollar(A) -> {ok, NewA, _} = regexp:gsub(A, "\\$", ""), %")
-                   NewA.
+undollar(A) ->
+    re:replace(A, "\\$", "", [{return, list}, global]). %"
 
 get_req_type([{"format","json"}|_]) -> {ok,json};
 get_req_type([{"format","xml"}|_])  -> {ok,xml};
@@ -604,8 +604,8 @@ type_reference(Cell) ->
                     case hn_util:is_alpha(Cell) of
                         true  -> column;
                         false ->
-                            case regexp:match(Cell, ?RG_cell) of
-                                {match, _, _} -> cell;
+                            case re:run(Cell, ?RG_cell) of
+                                {match, _} -> cell;
                                 _  ->
                                     throw({invalid_reference, Cell})
                             end

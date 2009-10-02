@@ -32,6 +32,7 @@
 %% The module format is called from within generated code only
 %% It is *NOT* an interface that should be programmed against
 -export([
+         get_general/1,
          format/2,
          conditional/3
         ]).
@@ -91,15 +92,10 @@ conditional(A, "==", B)                  -> (A == B);
 conditional(A, "=<", B)                  -> (A =< B);
 conditional(A, "<", B)                   -> (A < B).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                                                                           %%%
-%%% Callback from parser - dont know at compile time which general format     %%%
-%%% to give the number X - is it a float? or an integer?                      %%%
-%%%                                                                           %%%
-%%% Appears as a compiler warning because the code that calls it is passed in %%%
-%%% to this module as source code and then 'evaled'                           %%%
-%%%                                                                           %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% @hidden
+%%% @doc Callback from parser - dont know at compile time which general format
+%%% to give the number X - is it a float? or an integer?
+%%% @end
 get_general(X) when is_integer(X) -> {format,"0"};
 get_general(X) when is_float(X)   -> {format, "0.00"}.
 
@@ -185,10 +181,10 @@ insert(Number,[{Int,Insert}|T],Type,DecPos,Offset) ->
     NewNumber=lists:concat([LeftStr,InsertStr,RightStr]),
     insert(NewNumber,T,Type,DecPos,NewOffset).
 
-get_dec_pos(Number)->
-    case regexp:match(Number,"\\.") of
-        {match,Start,_Len} -> length(Number)-Start+1;
-        nomatch            -> 0
+get_dec_pos(Number) ->
+    case re:run(Number,"\\.", [{capture, first}]) of
+        {match, [{Start,_Len}]} -> length(Number)-Start+1;
+        nomatch                 -> 0
     end.
 
 % The new insert point has to be shifted by a comma point if there are commas and the
@@ -373,7 +369,7 @@ make_number(Integers,Decimals) -> list_to_float(Integers++"."++Decimals).
 trunc(Decimals,Len) ->
     Divisor=math:pow(10,Len),
     RegExp="(e\\+000)",
-    {ok,Decimals2,_}=regexp:sub(Decimals,RegExp,""),
+    Decimals2 = re:replace(Decimals, RegExp, "", [{return, list}, global]),
     Trunc=round(list_to_integer(Decimals2)/Divisor),
     Trunc2=integer_to_list(Trunc),
     OldLen = string:len(Decimals)-Len,
@@ -426,14 +422,14 @@ get_pad(N,Char,Acc)  -> get_pad(N-1,Char,[Char|Acc]).
 
 has(_Type,null) -> {ok,false};
 has(Type,Format) ->
-    RegExp=case Type of
-               commas        -> ",";
-               hashes        -> "#";
-               questionmarks -> "\?";
-               fractions     -> "/";
-               exponent      -> "[E|e]"
-           end,
-    {ok,Format2,_}=regexp:gsub(Format,RegExp,""),
+    RegExp = case Type of
+                 commas        -> ",";
+                 hashes        -> "#";
+                 questionmarks -> "\?";
+                 fractions     -> "/";
+                 exponent      -> "[E|e]"
+             end,
+    Format2 = re:replace(Format, RegExp, "", [{return, list}, global]),
     case Format of
         Format2 -> {ok,false};
         _       -> {ok,true}
@@ -608,6 +604,4 @@ get_len(List) when is_list(List) -> length(List).
 
 %% strips commas out of a string
 strip_commas(A) ->
-    {ok,Return,_}=regexp:gsub(A,",",""),
-    Return.
-
+    re:replace(A, ",", "", [{return, list}, global]).

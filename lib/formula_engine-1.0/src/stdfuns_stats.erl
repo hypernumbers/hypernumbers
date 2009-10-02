@@ -607,9 +607,9 @@ steyx_pass_(Xs, Ys) ->
     NVals = [ {Y,X} || {X, Y} <- lists:zip(Xs, Ys),
                        is_number(X), is_number(Y) ],
     case {length(NVals), length(Xs)} of
-        {0, O} -> ?ERRVAL_VAL;
+        {0, _O}           -> ?ERRVAL_VAL;
         {_, O} when O < 3 -> ?ERRVAL_DIV;
-        _ -> steyx_(NVals)
+        _                 -> steyx_(NVals)
     end.
 
 steyx_(Vals) ->

@@ -7,8 +7,8 @@
 -export([make/1]).
 
 make(Str) ->
-    {ok, Newstr, _} = regexp:gsub(Str, "\\s+", ""),
-    match(Newstr).
+    NewStr = re:replace(Str, "\\s+", "", [{return, list}, global]),
+    match(NewStr).
 
 match([$<, $> | Tl]) ->
     compile("X=/=" ++ Tl);

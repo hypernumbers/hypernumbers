@@ -82,10 +82,10 @@ rev_chop(Path)-> lists:reverse(chop(Path)).
 invalid()->{1,[],[{"invalid code"}],[]}.
 
 make_num(List)->
-    case regexp:match(List,"^-?[0-9]*$") of %" to fix the syntax highlighting
-                      {match,_,_}  -> list_to_integer(List);
-                      _Other       -> list_to_float(List)
-                     end.
+    case re:run(List,"^-?[0-9]*$") of %" 
+                {match,_}  -> list_to_integer(List);
+                _Other     -> list_to_float(List)
+               end.
 
 parse_range(Range)->
     [Cell1,Cell2]=string:tokens(Range,":"),
@@ -172,9 +172,8 @@ mk_str_frm_list([],[_H|T]) ->
     lists:flatten(["[",lists:reverse(T),"]"]).
 
 strip_brackets(A1) when is_list(A1) ->
-    {ok,A2,1}=regexp:sub(A1,"^\\(",""),
-    {ok,A3,1}=regexp:sub(A2,"\\)$",""), %"
-    A3.
+    A2 = re:replace(A1, "^\\(", "", [{return, list}, global]),
+    re:replace(A2, "\\)$", "", [{return, list}, global]). %"
 
 print_as_hex(Text,Binary) ->
     io:format("In util2:print_as_hex Text is ~p: ",[Text]),

@@ -297,7 +297,7 @@ ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr,
       [{"set", {struct, [{"language", Lang}]}}], User) ->
     hn_users:update(Site, User, "language", Lang);
 
-ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+ipost(_Req, #refX{site = S, path = P}, _Type, _Attr, 
       [{"set", {struct, [{"list", {array, Array}}]}}], User) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     {Lasts, Refs} = fix_up(Array, S, P),
