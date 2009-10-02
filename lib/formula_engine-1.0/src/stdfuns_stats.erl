@@ -178,18 +178,20 @@ chidist_([X, Degfree]) ->
     math:pow(Chi, (Alpha - 1)) * math:exp(X * -0.5).
 
 counta(Vs) ->
-    Fvs = ?flatten_all(Vs),
-    length(filter(fun(X) -> not(muin_collect:is_blank(X)) end, Fvs)).
-
-count(Vs) ->
-    Vals = col(Vs, [flatten_as_str, ignore_blanks, cast_num,
-                    ignore_errors, ignore_strings]),
+    Vals = col(Vs, [eval_funs, fetch, flatten, {ignore, blank}]),
     length(Vals).
 
-countblank([Err]) when ?is_errval(Err) -> Err;
+count(Vs) ->
+    Vals = col(Vs, [eval_funs, fetch, flatten_as_str, {ignore, blank},
+                    {cast, num}, {ignore, error}, {ignore, string}]),
+    length(Vals).
+
 countblank(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    length([X || X <- Flatvs, muin_collect:is_blank(X)]).
+    col(Vs, [eval_funs, fetch, flatten], [], fun countblank_/1).
+
+countblank_([Err]) when ?is_errval(Err) -> Err;
+countblank_(Vals) ->
+    length([X || X <- Vals, muin_collect:is_blank(X)]).
 
 countif([A, Cr]) ->
     
@@ -264,7 +266,7 @@ frequency([A, B]) when ?is_area(A) andalso ?is_area(B) ->
                       Boundaries)),
     stdfuns_math:transpose([{array, [R]}]);
 frequency(_) ->
-    ?ERR_VAL.
+    ?ERRVAL_VAL.
 
 geomean(Vs) ->
     Flatvs = ?flatten_all(Vs),

@@ -29,7 +29,8 @@
 -import(muin_collect, [col/3, col/2, col/4]).
 
 %% Excel 2004 API.
--export([value/1, t/1, replace/1, search/1, '&'/1, char/1, clean/1, concatenate/1,
+-export([value/1, t/1, replace/1, search/1, '&'/1, char/1, clean/1,
+         concatenate/1,
          exact/1, find/1, fixed/1, left/1, len/1, lower/1, mid/1, proper/1,
          rept/1, right/1, substitute/1, text/1, trim/1, upper/1]).
 
@@ -129,13 +130,15 @@ mid_([Str], [Start, _Len]) when Start > length(Str) ->
 mid_([Str], [Start, Len]) ->
     string:substr(Str, Start, Len).
 
-clean([true])  -> "TRUE";
-clean([false]) -> "FALSE";
 clean([Str])   ->
-    NewStr=?string(Str,?default_str_rules),
+    col([Str], [eval_funs, fetch, area_first, {cast, str}],
+        [return_errors, {all, fun muin_collect:is_string/1}],
+        fun clean_/1).
+clean_([Str]) ->
     Clean = fun(X) -> io_lib:printable_list([X])
-                          andalso X =/= 10 andalso X =/= 8 end,
-    filter(Clean, NewStr).
+                          andalso X =/= 10 andalso X =/= 8
+            end,
+    filter(Clean, Str).
 
 %% Fixed is a bit of a mess
 fixed([Num]) ->
@@ -200,7 +203,10 @@ upper([Str]) ->
     string:to_upper(NewStr).
 
 char([V1]) ->
-    Code = ?int(V1, [cast_strings, cast_bools, ban_dates, ban_blanks]),
+    col([V1], [eval_funs, area_first, fetch, {cast, int}],
+        [return_errors, {all, fun is_integer/1}],
+        fun char_/1).
+char_([Code]) ->
     xmerl_ucs:to_utf8([Code]).
 
 code([H|_Str]) ->
@@ -260,26 +266,13 @@ right([Str, Len]) ->
     concatenate(Strs).
 
 concatenate(Str) ->
-    ?ensure_string_under_limit(concatenate1(Str, [])).
-    
-concatenate1([],Acc) ->
-    Acc;
-concatenate1([H|T],Acc) when is_float(H) ->
-    case mochinum:digits(H) of
-        "0.0" -> concatenate1(["0"|T],Acc);
-        S     -> concatenate1([S|T],Acc)
-    end;
-concatenate1([true|T],Acc) ->
-    concatenate1(["TRUE"|T],Acc);
-concatenate1([false|T],Acc) ->
-    concatenate1(["FALSE"|T],Acc);
-concatenate1(["0.0"|T],Acc) ->
-    concatenate1(["0"|T],Acc);
-concatenate1([H|T],Acc) ->
-    Str = ?string(H,?default_str_rules),
-    NewAcc=Acc++Str,
-    concatenate1(T,NewAcc).
+    col(Str, [eval_funs, fetch, area_first, {cast,str}],
+        [return_errors, {all, fun muin_collect:is_string/1}],
+        fun concatenate_/1).
 
+concatenate_(Str) ->
+    lists:flatten(Str).
+     
 rept([Str, Reps]) ->
     A = col([Str],
             [first_array, fetch, {cast,str}],

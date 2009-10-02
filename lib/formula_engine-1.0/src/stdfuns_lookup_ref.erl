@@ -12,13 +12,13 @@
 -include("muin_records.hrl").
 
 choose([V|Vs]) ->
-    [Idx]  = collect([V], int, [fetch_refs, pick_first_array,
-                                die_on_err, cast_or_err]),
-    List = collect(Vs, any, [pick_first_array]),
-    ?ensure(Idx > 0 andalso Idx =< length(Vs), ?ERR_VAL),
-    choose(Idx, List).
-
-choose(Idx, List) ->
+    Idx = col([V], [eval_funs, fetch, area_first, {cast, int}],
+              [return_errors, {all, fun is_integer/1}]),
+    List = col(Vs, [eval_funs, fetch, area_first]),
+    muin_util:apply([Idx, List], fun choose/2).
+choose([Idx], List) when Idx =< 0 orelse Idx > length(List) ->
+    ?ERRVAL_VAL;
+choose([Idx], List) ->
     case muin:eval(nth(Idx, List)) of
         % TODO: eugh
         {array,[Arr]} -> "{"++string:join([tconv:to_s(X)||X<-Arr], ",")++"}";
@@ -32,7 +32,6 @@ column([C]) when ?is_cellref(C)     -> muin:col_index(muin:col(C));
 column([Err]) when ?is_errval(Err)  -> Err;
 column(_Else)                       -> ?ERRVAL_VAL.
  
-
 %% TODO: Needs to be recompiled every time -- how to handle that cleanly?
 %% (without writing to proc dict)
 indirect([S]) ->

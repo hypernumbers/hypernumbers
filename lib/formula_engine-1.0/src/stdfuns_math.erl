@@ -503,15 +503,18 @@ roundup1(Num, NumDigits) ->
             end,
     Rndup(Num * Pow) / erlang:round(Pow).
 
-ceiling([V1, V2]) ->
-    [Num, Multiple] = ?numbers([V1, V2], ?default_rules),
-
-    Signs = (sign1(Num) == sign1(Multiple)
-             orelse Num =:= 0
-             orelse Multiple =:= 0),
+ceiling([_,_]=Args) ->
+    col(Args, [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun ceiling_/1).
     
-    ?ensure(Signs, ?ERR_NUM),
-    ceiling1(Num, Multiple).
+ceiling_([Num, Multiple]) ->
+    case (sign1(Num) == sign1(Multiple)
+          orelse Num =:= 0
+          orelse Multiple =:= 0) of
+        true  -> ceiling1(Num, Multiple);
+        false -> ?ERRVAL_NUM
+    end.
 ceiling1(_Num, 0) ->
     0;
 ceiling1(Num, Multiple) when ?is_multiple(Num, Multiple) ->
@@ -521,11 +524,13 @@ ceiling1(Num, Multiple) ->
 
 combin([V1, V2]) when V1 == 0 andalso V2 == 0 ->
     1;
-combin([V1, V2]) ->
-    [N, Chosen] = ?ints([V1, V2], ?default_rules),
-    ?ensure(N >= 0, ?ERR_NUM),
-    ?ensure(Chosen >= 0, ?ERR_NUM),
-    ?ensure(N >= Chosen, ?ERR_NUM),
+combin([_, _]=Args) ->
+    col(Args, [eval_funs, area_first, fetch, {cast, int}],
+        [return_errors, {all, fun is_integer/1}],
+        fun combin_/1).
+combin_([N, Chosen]) when N < 0 orelse Chosen < 0 orelse N < Chosen ->
+    ?ERRVAL_NUM;
+combin_([N, Chosen]) ->
     fact1(N) div (fact1(Chosen) * fact1(N - Chosen)).
 
 even([V1]) ->
