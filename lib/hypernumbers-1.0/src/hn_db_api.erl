@@ -94,22 +94,6 @@
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 
--define(wu, hn_db_wu).
--define(copy, copy_cell).
--define(wr_rem_link, write_remote_link).
--define(shift_ch, shift_children).
--define(make_rec, hn_util:dirty_not_bk_in).
--define(init, initialise_remote_page_vsn).
--define(u_inc_hn, update_inc_hn).
--define(to_xml, simplexml:to_xml_string).
--define(create(Name,Type,Storage),
-        fun() ->
-                Attr = [{attributes, record_info(fields, Name)},
-                        {type,Type},{Storage, [node()]}],
-                {atomic,ok} = mnesia:create_table(Name, Attr)
-        end()).
--define(not_ch, remoting_reg:notify_change).
-
 -export([
          write_attributes/1,
          write_attributes/2,
@@ -354,7 +338,7 @@ initialise_remote_page_vsn(Site, Version) when is_record(Version, version) ->
     #version{page = Page, version = V} = Version,
     RefX = hn_util:url_to_refX(Page),
     Fun = fun() ->
-                  ok = ?wu:initialise_remote_page_vsn(Site, RefX, V)
+                  ok = hn_db_wu:initialise_remote_page_vsn(Site, RefX, V)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -432,7 +416,7 @@ create_db(Site)->
 %% @todo break up payload in hn_mochi.erl
 incr_remote_page_vsn(Site, Version, Payload) when is_record(Version, version) ->
     Fun = fun() ->
-                  ?wu:incr_remote_page_vsn(Site, Version, Payload)
+                  hn_db_wu:incr_remote_page_vsn(Site, Version, Payload)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -443,15 +427,17 @@ check_page_vsn(Site, Version) when is_record(Version, version) ->
     F = fun() ->
                 #version{page = Page, version = NewV} = Version,
                 PageX = hn_util:url_to_refX(Page),
-                OldV = ?wu:read_page_vsn(Site, PageX),
+                OldV = hn_db_wu:read_page_vsn(Site, PageX),
                 bits:log("CHECK PAGE VSN £" ++ pid_to_list(self()) ++
                          "£" ++ Site ++ "£ of £" ++ Page ++
                          "£ New Version £" ++ tconv:to_s(NewV) ++
                          "£ Old Version £"++ tconv:to_s(OldV)),
                 case {NewV, OldV} of
                     {Vsn, Vsn}          -> synched;
-                    {"undefined", OldV} -> ok = ?wu:?init(Site, PageX, OldV),
-                                           synched;
+                    {"undefined", OldV} ->
+                        ok = hn_db_wu:initialise_remote_page_vsn(Site,
+                                                                 PageX, OldV),
+                        synched;
                     {NewV, "undefined"} -> not_yet_synched;
                     {NewV, OldV}        -> unsynched
                 end
@@ -468,12 +454,12 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  ?wu:write_remote_link(Parent, Child, outgoing),
-                  ?wu:register_out_hn(Parent, Child, Proxy, Biccie),
-                  List = ?wu:read_attrs(Parent, ["value", "dependency-tree"], read),
+                  hn_db_wu:write_remote_link(Parent, Child, outgoing),
+                  hn_db_wu:register_out_hn(Parent, Child, Proxy, Biccie),
+                  List = hn_db_wu:read_attrs(Parent, ["value", "dependency-tree"], read),
                   List2 = extract_kvs(List),
                   #refX{site = Site} = Parent,
-                  Version = ?wu:read_page_vsn(Site, Parent),
+                  Version = hn_db_wu:read_page_vsn(Site, Parent),
                   
                   % get the value (if there is one)
                   V = case lists:keysearch("value", 1, List2) of
@@ -494,9 +480,10 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
                   Vsn = #version{page = PUrl, version = Version},
                   VsnJson = json_util:jsonify(Vsn),
 
+                  Dep = simplexml:to_xml_string(D),
                   % now return a JSON ready structure...
                   {struct, [{"value",           V},
-                            {"dependency-tree", ?to_xml(D)},
+                            {"dependency-tree", Dep},
                             {"parent_vsn",      VsnJson}]}
           end,
     ok = mnesia:activity(transaction, Fun),
@@ -544,42 +531,31 @@ handle_dirty(Record) when is_record(Record, dirty_notify_in) ->
     Fun =
         fun() ->
                 ok = init_front_end_notify(),
-                Cells = ?wu:read_remote_children(Parent, incoming),
+                Cells = hn_db_wu:read_remote_children(Parent, incoming), %
                 Fun2 =
                     fun(X) ->
-                            [{RefX, KV}] = ?wu:read_attrs(X, ["formula"], write),
-                            ?wu:write_attr(RefX, KV)
+                            [{RefX, KV}] =
+                                hn_db_wu:read_attrs(X, ["formula"], write),
+                            hn_db_wu:write_attr(RefX, KV)
                     end,
                 [ok = Fun2(X)  || X <- Cells],
-                ?wu:clear_dirty(Record)
+                hn_db_wu:clear_dirty(Record)
         end,
     ok = mnesia:activity(transaction, Fun),
     ok = tell_front_end("handle dirty");
 handle_dirty(Record) when is_record(Record, dirty_notify_out) ->
     ok = horiz_api:notify(Record),
     % now delete the dirty outgoing hypernumber
-    Fun = fun() ->
-                  mnesia:delete_object(Record)
-          end,
-    mnesia:activity(transaction, Fun);
+    mnesia:activity(transaction, fun mnesia:delete_object/1, [Record]);
 handle_dirty(Record) when is_record(Record, dirty_notify_back_in) ->
     ok = horiz_api:notify_back(Record),
-    Fun = fun() ->
-                  ?wu:clear_dirty(Record)
-          end,
-    mnesia:activity(transaction, Fun);
+    mnesia:activity(transaction, fun hn_db_wu:clear_dirty/1, Record);
 handle_dirty(Record) when is_record(Record, dirty_notify_back_in) ->
     ok = horiz_api:notify_back(Record),
-    Fun = fun() ->
-                  ?wu:clear_dirty(Record)
-          end,
-    mnesia:activity(transaction, Fun);
+    mnesia:activity(transaction, fun hn_db_wu:clear_dirty/1, Record);
 handle_dirty(Record) when is_record(Record, dirty_notify_back_in) ->
     ok = horiz_api:notify_back(Record),
-    Fun = fun() ->
-                  ?wu:clear_dirty(Record)
-          end,
-    mnesia:activity(transaction, Fun);
+    mnesia:activity(transaction, fun hn_db_wu:clear_dirty/1, Record);
 handle_dirty(Record)
   when is_record(Record, dirty_notify_back_out) ->
     #dirty_notify_back_out{parent = P, child = C, change = Type} = Record,
@@ -587,11 +563,11 @@ handle_dirty(Record)
         fun() ->
                 case Type of
                     "unregister" ->
-                        ok = ?wu:unregister_out_hn(P, C),
-                        ok = ?wu:clear_dirty(Record);
+                        ok = hn_db_wu:unregister_out_hn(P, C),
+                        ok = hn_db_wu:clear_dirty(Record);
                     "new child" ->
-                        ok = ?wu:write_remote_link(P, C, outgoing),
-                        ok = ?wu:clear_dirty(Record)
+                        ok = hn_db_wu:write_remote_link(P, C, outgoing),
+                        ok = hn_db_wu:clear_dirty(Record)
                 end
         end,
     mnesia:activity(transaction, Fun).
@@ -615,8 +591,8 @@ notify_from_web(P, C, "new_value", Payload, Bic)
     DepTree2 = convertdep(C, DepTree),
     F = fun() ->
                 ok = init_front_end_notify(),
-                case ?wu:verify_biccie_in(ChildSite, P, Bic) of
-                    true  -> ?wu:update_inc_hn(P, C, Value, DepTree2, Bic);
+                case hn_db_wu:verify_biccie_in(ChildSite, P, Bic) of
+                    true  -> hn_db_wu:update_inc_hn(P, C, Value, DepTree2, Bic);
                     false -> ok
                 end
         end,
@@ -629,7 +605,7 @@ notify_from_web(P, C, "insert", Payload, Bic)
 
     F = fun() ->
                 ok = init_front_end_notify(),
-                case ?wu:verify_biccie_in(ChildSite, P, Bic) of
+                case hn_db_wu:verify_biccie_in(ChildSite, P, Bic) of
                     true  -> notify_from_web2(P, C, Payload, Bic);
                     false -> ok
                 end
@@ -657,7 +633,7 @@ notify_from_web2(Parent, Child, Payload, _Biccie) ->
     PageParent = Parent#refX{obj = {page, "/"}},
     #refX{site = ChildSite} = Child,
     % start by reading the incoming_hn's
-    case ?wu:read_incoming_hn(ChildSite, PageParent) of
+    case hn_db_wu:read_incoming_hn(ChildSite, PageParent) of
         []   ->
             io:format("in hn_db_api:notify_from_web no incoming "++
                       "hypernumbers - should log this!~n"),
@@ -673,7 +649,7 @@ notify_from_web2(Parent, Child, Payload, _Biccie) ->
             Fun3 = fun(I) ->
                            #incoming_hn{site_and_parent = {_S, P}} = I,
                            NewP = shift(P, XOff, YOff),
-                           ok = ?wu:shift_inc_hns(I, NewP)
+                           ok = hn_db_wu:shift_inc_hns(I, NewP)
                    end,
             lists:foreach(Fun3, Inc_Hns2),
 
@@ -691,7 +667,7 @@ notify_from_web2(Parent, Child, Payload, _Biccie) ->
             % move that item, then onto the next item...
             Fun5 =
                 fun(P) ->
-                        case ?wu:read_remote_children(P, incoming) of
+                        case hn_db_wu:read_remote_children(P, incoming) of
                             [] ->
                                 io:format("in hn_db_api:notify_from_web "++
                                           "no children of an incoming "++
@@ -700,9 +676,9 @@ notify_from_web2(Parent, Child, Payload, _Biccie) ->
                                 ok;
                             Children ->
                                 NewP = shift(P, XOff, YOff),
-                                ok = ?wu:?shift_ch(Children, P, NewP),
-                                ok = ?wu:shift_remote_links(parent, P, NewP,
-                                                            incoming)
+                                ok = hn_db_wu:shift_children(Children, P, NewP),
+                                ok = hn_db_wu:shift_remote_links(parent, P,
+                                                                 NewP, incoming)
                         end
                 end,
             lists:foreach(Fun5, HnsXs),
@@ -718,7 +694,7 @@ notify_back_from_web(P, C, B, Type)
     #refX{site = PSite} = P,
     Fun =
         fun() ->
-                case ?wu:verify_biccie_out(P, C, B) of
+                case hn_db_wu:verify_biccie_out(P, C, B) of
                     true -> Rec = #dirty_notify_back_out{child = C, parent = P,
                                                          change = Type},
                             hn_db_wu:mark_dirty(PSite, Rec);
@@ -732,7 +708,7 @@ notify_back_from_web(P, C, B, Type)
 write_remote_link(Parent, Child, Type)
   when is_record(Parent, refX), is_record(Child, refX) ->
     Fun = fun() ->
-                  ?wu:write_remote_link(Parent, Child, Type)
+                  hn_db_wu:write_remote_link(Parent, Child, Type)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -750,25 +726,25 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
     C2 = C#refX{obj = {page, "/"}},
     CUrl = hn_util:refX_to_url(C2),
     PUrl = hn_util:refX_to_url(P2),
-    PVsn = #version{page = PUrl, version = ?wu:read_page_vsn(CSite, P)},
-    CVsn = #version{page = CUrl, version = ?wu:read_page_vsn(CSite, C)},
+    PVsn = #version{page = PUrl, version = hn_db_wu:read_page_vsn(CSite, P)},
+    CVsn = #version{page = CUrl, version = hn_b_wu:read_page_vsn(CSite, C)},
     io:format("got to B~n"),
     F = fun() ->
-                case ?wu:read_incoming_hn(CSite, P) of
+                case hn_db_wu:read_incoming_hn(CSite, P) of
                     []   ->
                         io:format("got to C~n"),
                         Rec = #dirty_inc_hn_create{parent = P, child = C,
                                                    parent_vsn = PVsn, child_vsn = CVsn},
-                        ok = ?wu:mark_dirty(CSite, Rec),
+                        ok = hn_db_wu:mark_dirty(CSite, Rec),
                         % need to write a link
-                        ok = ?wu:?wr_rem_link(P, C, incoming),
+                        ok = hn_db_wu:write_remote_link(P, C, incoming),
                         {blank, []};
                     [Hn] ->
                         io:format("got to D~n"),
                         #incoming_hn{value = Val, biccie = B,
                                      'dependency-tree' = DepTree} = Hn,
                         % check if there is a remote cell
-                        RPs = ?wu:read_remote_parents(C, incoming),
+                        RPs = hn_db_wu:read_remote_parents(C, incoming),
                         ok =
                             case lists:keymember(P, 1, RPs) of
                                 false ->
@@ -777,7 +753,7 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
                                                               biccie = B,
                                                               parent_vsn = PVsn,
                                                               child_vsn = CVsn},
-                                    ?wu:mark_dirty(CSite, R);
+                                    hn_db_wu:mark_dirty(CSite, R);
                                 true  -> ok
                             end,
                         {Val, DepTree}
@@ -805,14 +781,14 @@ notify_back_create(Site, Record)
                 ok = init_front_end_notify(),
                 case Return of % will have to add NewCVsn in line below...
                     {Value, DepT, Biccie, _NewPVsn} ->
-                        ok = ?wu:?u_inc_hn(P, C, Value, DepT, Biccie);
+                        ok = hn_db_wu:update_inc_hn(P, C, Value, DepT, Biccie);
                     {error, unsynced, PVsn} ->
                         resync(CSite, PVsn);
                     {error, permission_denied} ->
                         exit("need to fix permission handling in "++
                              "hn_db_api:notify_back_create")
                 end,
-                ok = ?wu:clear_dirty(Site, Record)
+                ok = hn_db_wu:clear_dirty(Site, Record)
         end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("notify back create").
@@ -878,7 +854,7 @@ write_last(List) when is_list(List) ->
     Fun =
         fun() ->
                 ok = init_front_end_notify(),
-                {LastColumnRefX, LastRowRefX} = ?wu:get_last_refs(RefX),
+                {LastColumnRefX, LastRowRefX} = hn_db_wu:get_last_refs(RefX),
                 #refX{obj = {cell, {LastCol, _}}} = LastColumnRefX,
                 #refX{obj = {cell, {_, LastRow}}} = LastRowRefX,
                 % Add 1 to because we are adding data 'as the last row'
@@ -904,7 +880,7 @@ write_last(List) when is_list(List) ->
                                       column -> {cell, {IdxX, PosY}}
                                   end,
                             RefX2 = #refX{site = S1, path = P1, obj = Obj},
-                            ?wu:write_attr(RefX2, {"formula", Val})
+                            hn_db_wu:write_attr(RefX2, {"formula", Val})
                     end,
                 [Fun1(X) || X <- List]
 
@@ -976,7 +952,7 @@ read_whole_page(#refX{obj = {page, "/"}} = RefX) ->
 %% </ul>
 read(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
-                  ?wu:read_cells(RefX, read)
+                  hn_db_wu:read_cells(RefX, read)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -1013,8 +989,8 @@ read_styles(RefX) when is_record(RefX, refX) ->
 recalculate(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  Cells = ?wu:read_attrs(RefX, ["formula"], write),
-                  [ok = ?wu:write_attr(X, Y) || {X, Y} <- Cells]
+                  Cells = hn_db_wu:read_attrs(RefX, ["formula"], write),
+                  [ok = hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("recalculate").
@@ -1033,8 +1009,8 @@ recalculate(RefX) when is_record(RefX, refX) ->
 reformat(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  Cells = ?wu:read_attrs(RefX, ["format"], read),
-                  [ok = ?wu:write_attr(X, Y) || {X, Y} <- Cells]
+                  Cells = hn_db_wu:read_attrs(RefX, ["format"], read),
+                  [ok = hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("reformat").
@@ -1168,7 +1144,7 @@ move_tr(#refX{site = Site, obj = Obj} = RefX, Type, Disp) ->
     % children
     Change = {insert, Obj, Disp},
     % set the delay to zero
-    ok = ?wu:mark_notify_out_dirty(PageRef, Change, 0),
+    ok = hn_db_wu:mark_notify_out_dirty(PageRef, Change, 0),
     
     Status = lists:flatten([Status1, Status2]),
     % finally deal with any cells returned from delete_cells that
@@ -1176,13 +1152,14 @@ move_tr(#refX{site = Site, obj = Obj} = RefX, Type, Disp) ->
     % tables have been transformed
     Fun2 = 
         fun({dirty, X}) ->
-                [{X, {"formula", F}}] = ?wu:read_attrs(X, ["formula"], write),
-                ok = ?wu:write_attr(X, {"formula", F})
+                [{X, {"formula", F}}]
+                    = hn_db_wu:read_attrs(X, ["formula"], write),
+                ok = hn_db_wu:write_attr(X, {"formula", F})
         end,
     [ok = Fun2(X) || X <- Status],
     % Jobs a good'un, now for the remote parents
     % io:format("in hn_db_api:move do something with Parents...~n"),
-    _Parents =  ?wu:find_incoming_hn(Site, PageRef),
+    _Parents =  hn_db_wu:find_incoming_hn(Site, PageRef),
     % io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
     ok.
 
@@ -1217,7 +1194,7 @@ clear(RefX, Type) when is_record(RefX, refX) ->
     Fun =
         fun() ->
                 ok = init_front_end_notify(),
-                ?wu:clear_cells(RefX, Type)
+                hn_db_wu:clear_cells(RefX, Type)
         end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("clear").
@@ -1260,7 +1237,7 @@ cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   ok = copy_n_paste2(From, To),
-                  ok = ?wu:clear_cells(From, all)
+                  ok = hn_db_wu:clear_cells(From, all)
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("cut n paste").
@@ -1358,7 +1335,8 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   case is_valid_d_n_d(From, To) of
-                      {ok, single_cell, Incr}   -> ?wu:?copy(From, To, Incr);
+                      {ok, single_cell, Incr}   ->
+                          hn_db_wu:copy_cell(From, To, Incr);
                       {ok, 'onto self', _Incr}  -> ok;
                       {ok, cell_to_range, Incr} -> copy2(From, To, Incr)
                   end
@@ -1442,7 +1420,8 @@ tell_front_end(_FnName) ->
                   #refX{site = S1, path = P1, obj = Rf} = Key,
                   case V of
                       "__"++_ -> ok; 
-                      _Else   -> ?not_ch(S1, P1, B, Rf, V, A)
+                      _Else   ->
+                          remoting_reg:notify_change(S1, P1, B, Rf, V, A)
                   end;
              ({{S, P}, A, B}) ->
                   remoting_reg:notify_style(S, P, A, B)
@@ -1520,7 +1499,7 @@ copy_n_paste2(#refX{site = Site, obj = {page, "/"}} = From,
 %% this clause copies bits of pages
 copy_n_paste2(From, To) ->
     case is_valid_c_n_p(From, To) of
-        {ok, single_cell}    -> ?wu:copy_cell(From, To, false);
+        {ok, single_cell}    -> hn_db_wu:copy_cell(From, To, false);
         {ok, 'onto self'}    -> ok;
         {ok, cell_to_range}  -> copy2(From, To, false);
         {ok, range_to_cell}  -> To2 = cell_to_range(To),
@@ -1567,7 +1546,7 @@ is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 copy2(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
     #refX{site = Site} = To,
     List = hn_util:range_to_list(To),
-    lists:map(fun(X) -> ?wu:?copy(From, X, Incr) end, List),
+    lists:map(fun(X) -> hn_db_wu:copy_cell(From, X, Incr) end, List),
     ok = shrink_dirty_cell(Site),
     ok.
 
@@ -1584,8 +1563,9 @@ copy3a(From, [H | T], Incr) -> FromRange = hn_util:range_to_list(From),
                                copy3a(From, T, Incr).
 
 copy3b([], [], _Incr)              -> ok;
-copy3b([FH | FT], [TH | TT], Incr) -> ok = ?wu:copy_cell(FH, TH, Incr),
-                                      copy3b(FT, TT, Incr).
+copy3b([FH | FT], [TH | TT], Incr) ->
+    ok = hn_db_wu:copy_cell(FH, TH, Incr),
+    copy3b(FT, TT, Incr).
 
 get_tiles(#refX{obj = {range, {X1F, Y1F, X2F, Y2F}}},
           #refX{obj = {range, {X1T, Y1T, X2T, Y2T}}} = To) ->
