@@ -93,13 +93,13 @@ parse({Refs,  TypedLines})      -> p1(TypedLines, Refs, [], []).
 p1([], _R, [], Acc)    -> flatten(reverse(Acc)); 
 p1([], _R, Stack, Acc) -> flatten(reverse([reverse(Stack) | Acc]));
 
-%% Tags have the highest precedence...
-p1([{tag, Tag} | T], R, Stack, Acc) ->
+%% Unescaped Tags have the highest precedence...
+p1([{unesc_tag, Tag} | T], R, Stack, Acc) ->
     case T of
         [{blank, _} | T2] -> p1(T2, R, Stack,
                                 [make_tag_str(Tag) | Acc]);
         _Other            -> p1(T, R, Stack,
-                                ["<p>" ++ make_str(Tag, R) ++ "</p>" | Acc])
+                                ["<p>" ++ make_str([Tag], R) ++ "</p>" | Acc])
     end;
 %% These clauses handle state issues
 %% hit a blank line - you close the last open state (if it exists) and
@@ -389,7 +389,7 @@ t_l1([[{{{tag, _Type}, Tag}, _} = H | T1] = List | T], A1, A2) ->
     case is_blank(T1) of
         false -> t_l1(T, A1, [{normal , List} | A2]);
         true  -> case is_block_tag(Tag) of
-                     true  -> t_l1(T, A1, [{tag , H} | A2]);
+                     true  -> t_l1(T, A1, [{unesc_tag , H} | A2]);
                      false -> t_l1(T, A1, [{normal , List} | A2])
                  end
     end;
@@ -437,6 +437,8 @@ is_block_tag("OL")         -> true;
 is_block_tag("P")          -> true;
 is_block_tag("PRE")        -> true;
 is_block_tag("TABLE")      -> true;
+is_block_tag("TR")      -> true;
+is_block_tag("TD")      -> true;
 is_block_tag("UL")         -> true;
 is_block_tag(_Other)       -> false.
 
@@ -632,8 +634,8 @@ make_tag_str({{{tag, Type}, Tag}, _}) ->
 make_list_str([{{ws, _}, _} | T] = List) ->
     case is_double_indent(List) of
         false     -> T;
-        {true, R} -> flatten([{tags, "<pre><code>"} ,R ,
-                              {tags, "</code></pre>"} | []])
+        {true, R} -> flatten([{tag, "<pre><code>"} ,R ,
+                              {tag, "</code></pre>"} | []])
     end.
 
 %% All ref processing can ignore the original values 'cos those
@@ -816,7 +818,7 @@ closingdiv([], Acc)     -> {flatten([{{punc, bra}, "<"},
                                      | lex(reverse(Acc))]), []};  
 closingdiv([$>| T], Acc) -> Acc2 = flatten(reverse(Acc)),
                             Tag = string:to_upper(Acc2),
-                            {{{{tag, close}, Tag}, "<"
+                            {{{{tag, close}, Tag}, "</"
                               ++ Acc2 ++ ">"}, T};
 closingdiv([H|T], Acc)   -> closingdiv(T, [H | Acc]).
 
@@ -864,7 +866,7 @@ m_plain([{_, Str} | T], Acc) -> m_plain(T, [Str | Acc]).
 make_esc_str(List, Refs) -> m_esc(List, Refs, []).
 
 m_esc([], _R, A)               -> flatten(reverse(A));
-m_esc([{tags, Tag} | T], R, A) -> m_esc(T, R, [Tag | A]);
+m_esc([{tag, Tag} | T], R, A)  -> m_esc(T, R, [Tag | A]);
 m_esc([H | T], R, A)           -> m_esc(T, R, [make_str([H], R) | A]).
 
     
@@ -875,10 +877,10 @@ m_str1([], _R, A) ->
     htmlchars(Flat);
 m_str1([{{punc, bang}, B}, {{inline, open}, O} | T], R, A) ->
     case get_inline(T, R, []) of
-        {Rest, {Url, Title, Acc}} -> Tag = [{tags, "<img src=\""}, Url
+        {Rest, {Url, Title, Acc}} -> Tag = [{unesc_tag, "<img src=\""}, Url
                                             ++ "\" title=\"" ++ Title
                                             ++ "\" alt=\"" ++ Acc ++ "\"",
-                                            {tags," />"}],
+                                            {unesc_tag," />"}],
                                      m_str1(Rest, R, [Tag | A]);
         {Rest, Tag}               -> m_str1(Rest, R, [Tag, O, B | A])
     end;
@@ -887,17 +889,20 @@ m_str1([{{punc, bslash}, _}, {{inline, open}, O} | T], R, A) ->
     m_str1(T, R, [O | A]);
 m_str1([{{inline, open}, O} | T], R, A) ->
     case get_inline(T, R, []) of
-        {Rest, {Url, Title, Acc}} -> Tag = [{tags, "<a href=\""}, Url 
+        {Rest, {Url, Title, Acc}} -> Tag = [{unesc_tag, "<a href=\""}, Url 
                                             ++ "\" title=\"" ++ Title,
-                                            {tags, "\">"},  Acc,
-                                            {tags, "</a>"} | []],
+                                            {unesc_tag, "\">"},  Acc,
+                                            {unesc_tag, "</a>"} | []],
                                      m_str1(Rest, R, [Tag | A]);
         {Rest, Tag}               -> m_str1(Rest, R, [Tag, O | A])
     end;
 m_str1([{email, Addie} | T], R, A) ->
-    m_str1(T, R, [{tags, "\" />"}, Addie, {tags, "<a href=\"mailto:"}| A]);
+    m_str1(T, R, [{unesc_tag, "\" />"}, Addie, {unesc_tag, "<a href=\"mailto:"}| A]);
 m_str1([{url, Url} | T], R, A) ->
-    m_str1(T, R, [ {tags, "</a>"}, Url, {tags, "\">"}, Url, {tags, "<a href=\""} | A]);
+    m_str1(T, R, [ {unesc_tag, "</a>"}, Url, {unesc_tag, "\">"}, Url,
+                   {unesc_tag, "<a href=\""} | A]);
+m_str1([{{{tag, _}, _}, Tag} | T], R, A)  ->
+    m_str1(T, R, [{tag, Tag} | A]);
 m_str1([{_, Orig} | T], R, A)  ->
     m_str1(T, R, [Orig | A]).
 
@@ -945,8 +950,10 @@ g_id_diff1([H | T], Acc)                     -> g_id_diff1(T, [H | Acc]).
 htmlchars(List) -> htmlchars(List, []).
  
 htmlchars([], Acc) -> flatten(reverse(Acc));
-%% tags are just wheeched out unescapted
-htmlchars([{tags, Tag} | T], Acc)  -> htmlchars(T, [Tag | Acc]);
+%% unescapted tags are just wheeched out unescaped
+htmlchars([{unesc_tag, Tag} | T], Acc) -> htmlchars(T, [Tag | Acc]);
+%% normal tags are escaped...
+htmlchars([{tag, Tag} | T], Acc)       -> htmlchars(T, [esc(Tag) | Acc]);
 %% line ends are pushed to a space..
 htmlchars([?LF | T], Acc)          -> htmlchars(T, ["\n" | Acc]);
 htmlchars([?CR, ?LF | T], Acc)     -> htmlchars(T, ["\n" | Acc]);
@@ -1020,13 +1027,27 @@ htmlchars([$\\, $` | T], A)        ->  htmlchars(T, [$` | A]);
 htmlchars([$`, $` | T], A)         -> {T2, NewA} = dblcode(T),  
                                        htmlchars(T2, [NewA | A]);
 htmlchars([$` | T], A)             -> {T2, NewA} = code(T),
-                                      htmlchars(T2, [NewA | A]);
+                                      NewA2 = flatten_code(NewA),
+                                      htmlchars(T2, [NewA2 | A]);
 htmlchars([$& | T], A)             -> htmlchars(T, ["&amp;" | A]);
 htmlchars([$< | T], A)             -> htmlchars(T, ["&lt;" | A]);
 htmlchars([$> | T], A)             -> htmlchars(T, ["&gt;" | A]);
 htmlchars([?NBSP | T], A)          -> htmlchars(T, ["&nbsp;" | A]);
 htmlchars([H | T], A)              -> htmlchars(T, [H | A]).
 
+flatten_code(List) -> f_code1(List, []).
+
+f_code1([], Acc)               -> reverse(Acc);
+f_code1([{tag, Tag} | T], Acc) -> f_code1(T, [esc(Tag) | Acc]);
+f_code1([H | T], Acc)          -> f_code1(T, [H | Acc]).
+
+esc(List) -> e1(List, []).
+
+e1([], Acc)       -> reverse(Acc);
+e1([$< | T], Acc) -> e1(T, ["&lt;" | Acc]);
+e1([$> | T], Acc) -> e1(T, ["&gt;" | Acc]);
+e1([H | T], Acc)  -> e1(T, [H | Acc]).
+                             
 emphasis(List, Delim)      -> interpolate(List, Delim, "em", []).
 strong(List, Delim)        -> interpolate2(List, Delim, "strong", []).
 superstrong(List, Delim)   -> interpolate3(List, Delim, "strong", "em", []).
@@ -1089,7 +1110,7 @@ unit_test_() ->
      ?_assert(conv("/ab:c\na")    == "<p>/ab:c\na</p>"),
      ?_assert(conv("=ab:c\na")    == "<p>=ab:c\na</p>"),
      ?_assert(conv("-ab:c\na")    == "<p>-ab:c\na</p>"),
-     ?_assert(conv("#ab:c")    == "<h1>ab:c</h1>"),
+     ?_assert(conv("#ab:c")       == "<h1>ab:c</h1>"),
      ?_assert(conv(">ab:c\na")    == "<p>&gt;ab:c\na</p>"),
      ?_assert(conv("+ab:c\na")    == "<p>+ab:c\na</p>"),
      ?_assert(conv("*ab:c\na")    == "<p><em>ab:c\na</em></p>"),
@@ -1395,6 +1416,10 @@ unit_test_() ->
      % Erk, this is a bit spam-tastic...
      ?_assert(conv("blah <junk@spam.com> blah\na") ==
               "<p>blah <a href=\"mailto:junk@spam.com\" /> blah\na</p>"),
+
+     % tests for embedded html (add some more...)
+     ?_assert(conv("<table></table>") == "<table></table>"),
+     ?_assert(conv("<table>\n</table>") == "<table></table>"),
      %
      % The Rich Text Editor we use supports an abbreviated syntax for links
      %
@@ -1407,5 +1432,6 @@ unit_test_() ->
      % Bug fix regression tests
      %
      ?_assert(conv("Now\n\n    who\n\n> swine\n\n") ==
-              "<p>Now</p><br /><pre><code>who\n</code></pre><br /><blockquote><p>swine</p></blockquote><br />")
+              "<p>Now</p><br /><pre><code>who\n</code></pre><br /><blockquote><p>swine</p></blockquote><br />"),
+     ?_assert(conv("`<div>blah</div>`") == "<pre><code>&lt;div&gt;blah&lt;/div&gt;</code></pre>")
     ].
