@@ -686,7 +686,7 @@ shift_inc_hns(#incoming_hn{site_and_parent = SP} = Inc_Hn, NewParent)
   when is_record(Inc_Hn, incoming_hn), is_record(NewParent, refX) ->
     {Site, _OldP} = SP,
     NewRec = Inc_Hn#incoming_hn{site_and_parent = {Site, NewParent}},
-    ok = mnesia:delete_object(trans(Site, incoming_hn), Inc_Hn),
+    ok = mnesia:delete_object(trans(Site, incoming_hn), Inc_Hn, write),
     ok = mnesia:write(trans(Site, incoming_hn), NewRec, write).
 
 %% @spec shift_children(Children, OldParent::#refX{}, NewParent::#refX{}) -> ok
@@ -715,12 +715,9 @@ shift_children(Child, OldParent, NewParent)
                                                          "invalid formula is "++
                                                          "shift_children but "++
                                                          "you do~n-~p~n", [Formula]),
-                                      % S2 = io_lib:format("~p", [Child]),
-                                      % bits:log(S1 ++ " " ++ S2),
+
                                       Formula
                  end,
-    % bits:log(io_lib:format("(2) Formula is ~p NewFormula is ~p~n",
-    %                       [Formula, NewFormula])),
     write_attr(Child, {"formula", NewFormula}).
 
 %% @spec initialise_remote_page_vsn(Site, Page::#refX{}, Version) -> ok
@@ -862,12 +859,10 @@ verify_biccie_out(Parent, Child, Biccie)
     #outgoing_hn{biccie = Biccie2} = Hn,
     case Biccie of
         Biccie2 -> true;
-        _       -> PUrl = hn_util:refX_to_url(Parent),
-                   CUrl = hn_util:refX_to_url(Child),
-                   bits:log("BICCIE MATCH FAIL £ " ++ pid_to_list(self()) ++
-                            " £ "++ PUrl ++ " £ " ++ Biccie2 ++ " £ " ++ CUrl ++
-                            " £ " ++ Biccie),
-                   false
+        _       ->
+            _PUrl = hn_util:refX_to_url(Parent),
+            _CUrl = hn_util:refX_to_url(Child),
+            false
     end.
 
 %% @spec verify_biccie_in(Site, Parent::#refX{}, Biccie) -> [true | false]
@@ -909,7 +904,7 @@ write_remote_link(P, C, Type)
                              incoming -> C;
                              outgoing -> P
                          end,
-    mnesia:write(trans(Site, remote_cell_link), Rec).
+    mnesia:write(trans(Site, remote_cell_link), Rec, write).
 
 %% @spec update_inc_hn(Parent::#refX{}, Child::#refX{}, Val, 
 %% DepTree, Biccie) -> ok
@@ -2147,7 +2142,7 @@ unregister_out_hn(P, C)
     Head = #remote_cell_link{parent = P, child = C, type = outgoing, _ = '_'},
     Table = trans(ParentSite, remote_cell_link),
     [RemCellRec] = mnesia:select(Table, [{Head, [], ['$_']}], write),
-    ok = mnesia:delete_object(Table, RemCellRec),
+    ok = mnesia:delete_object(Table, RemCellRec, write),
     % now see if any other remote cell references match this site...
     % - if none do, delete the hypernumber from outgoing_hn
     % - if some do, do nothing...
@@ -2158,7 +2153,7 @@ unregister_out_hn(P, C)
                                      child_site = ChildSite, _ = '_'},
                Table2 = trans(ParentSite, outgoing_hn),
                [Rec] = mnesia:select(Table2, [{H6, [], ['$_']}], read),
-               mnesia:delete_object(Table2, Rec);
+               mnesia:delete_object(Table2, Rec, write);
         _   -> ok
     end.
 
@@ -2971,7 +2966,7 @@ shift_remote_links2(_Site, [], _To) -> ok;
 shift_remote_links2(Site, [H | T], To) ->
     % now read delete the old remote link
     NewLink = H#remote_cell_link{parent = To},
-    ok = mnesia:delete_object(trans(Site, remote_cell_link), H),
+    ok = mnesia:delete_object(trans(Site, remote_cell_link), H, write),
     ok = mnesia:write(trans(Site, NewLink)),
     shift_remote_links2(Site, T, To).
 
@@ -3285,8 +3280,6 @@ offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
                                    "formula is offset_fm_w_rng but "++
                                    "you do~n-~p~n", [Formula]),
-                         % S2 = io_lib:format("~p", [Cell]),
-                         % bits:log(S1 ++ " " ++ S2), 
                          {[], "=" ++ Formula}
     end;
 offset_fm_w_rng(_Cell, Value, _From, _Offset) -> Value.
@@ -3302,7 +3295,6 @@ offset_formula(Formula, {XO, YO}) ->
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
                                    "formula is offset_formula but "++
                                    "you do~n-~p~n", [Formula]),
-                         % bits:log(S1),
                          "=" ++ Formula
     end.
 

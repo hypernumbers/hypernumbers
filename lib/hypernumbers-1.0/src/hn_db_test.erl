@@ -121,14 +121,10 @@ delete() ->
     write_value(Path, "=63", {6, 9}, []),    
     write_value(Path, "=64", {6, 10}, []),
 
-    test_util:wait(100),
-
     io:format("about to delete a vertical range~n~n"),
     
     test_delete(Path, {range, {5, 2, 6, 3}}, vertical),
 
-    test_util:wait(200),
-    
     %io:format("about to insert a vertical range~n~n"),
 
     %test_insert(Path, {range, {5, 3, 6, 4}}, vertical),
@@ -167,21 +163,15 @@ dirty() ->
     % now write a line of hypernumbers pointing to the first cells
     dirty2(),
 
-    test_util:wait(75),
-
     io:format("in hn_db_test:dirty - triggering rewrite~n"),
     % now rewrite the first cell triggering all the cells and their
     % hypernumbers to recalculcate
     write_value(Path, "123", {1, 1}, []),
 
-    test_util:wait(75),
-
     io:format("in hn_db_test:dirty - testing dependency tree propagation~n"),
     % now write new value in the middle of the first list and check
     % that the hypernumbers dependency trees update properly
     write_value(Path, "Starts in Row 15", {1, 15}, []),
-
-    test_util:wait(75),
 
     io:format("in hn_db_test:dirty - going into Dirty 3~n"),
     % now clear some hypernumbers children and check that the parent side remote
@@ -330,8 +320,6 @@ clear_DEBUG2() ->
     
     io:format("Clearing the cells...~n"),
 
-    test_util:wait(20),
-
     % now write out the data and perform the tests
     write_value(Path, FunName, {1, 1}, [bold, underline, center]),
 
@@ -405,7 +393,6 @@ clear_TEST() ->
 
     make_thick(Path, 1),
 
-    test_util:wait(75),
 
     % rewrite the same formula
     write_value(Path, "=hn(\"http://il_ballo.dev:9000/data/E1?hypernumber\")",
@@ -463,8 +450,6 @@ copy_DEBUG3(FunName) ->
     Path = [FunName, "for_ranges"],
 
     clear_cells_DEBUG(Path),
-
-    test_util:wait(75),
 
     write_value(Path, FunName++" - ranges", {1, 1}, [bold, underline]),
 
@@ -569,8 +554,6 @@ copy_DEBUG2(FunName) ->
     Path = [FunName],
 
     clear_cells_DEBUG(Path),
-
-    test_util:wait(75),
 
     write_value(Path, FunName++" - cell to cell", {1, 1}, [bold, underline]),
 

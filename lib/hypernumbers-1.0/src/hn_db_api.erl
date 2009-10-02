@@ -347,9 +347,7 @@ initialise_remote_page_vsn(Site, Version) when is_record(Version, version) ->
 %% This function is called when version numbers are out of sync between local 
 %% and remote pages and forces a resynch
 %% @TODO write me, ya bas!
-resync(Site, #version{page = Page, version = Vsn}) ->
-    bits:log("RESYNC £" ++ pid_to_list(self()) ++ "£" ++ Site ++ "£ for  £" ++
-             Page ++ "£ version £" ++ tconv:to_s(Vsn)),
+resync(_Site, #version{page = _Page, version = _Vsn}) ->
     ok.
 
 %% @spec create_db(Site) -> ok
@@ -428,10 +426,6 @@ check_page_vsn(Site, Version) when is_record(Version, version) ->
                 #version{page = Page, version = NewV} = Version,
                 PageX = hn_util:url_to_refX(Page),
                 OldV = hn_db_wu:read_page_vsn(Site, PageX),
-                bits:log("CHECK PAGE VSN £" ++ pid_to_list(self()) ++
-                         "£" ++ Site ++ "£ of £" ++ Page ++
-                         "£ New Version £" ++ tconv:to_s(NewV) ++
-                         "£ Old Version £"++ tconv:to_s(OldV)),
                 case {NewV, OldV} of
                     {Vsn, Vsn}          -> synched;
                     {"undefined", OldV} ->
@@ -561,13 +555,15 @@ handle_dirty(Record)
     #dirty_notify_back_out{parent = P, child = C, change = Type} = Record,
     Fun =
         fun() ->
+                % hn_db_wu:clear_dirty doesnt exist, need to specify site
+                % not sure if child or parent
                 case Type of
                     "unregister" ->
-                        ok = hn_db_wu:unregister_out_hn(P, C),
-                        ok = hn_db_wu:clear_dirty(Record);
+                        ok = hn_db_wu:unregister_out_hn(P, C);
+                    %ok = hn_db_wu:clear_dirty(Record);
                     "new child" ->
-                        ok = hn_db_wu:write_remote_link(P, C, outgoing),
-                        ok = hn_db_wu:clear_dirty(Record)
+                        ok = hn_db_wu:write_remote_link(P, C, outgoing)
+                        %ok = hn_db_wu:clear_dirty(Record)
                 end
         end,
     mnesia:activity(transaction, Fun).
@@ -727,7 +723,7 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
     CUrl = hn_util:refX_to_url(C2),
     PUrl = hn_util:refX_to_url(P2),
     PVsn = #version{page = PUrl, version = hn_db_wu:read_page_vsn(CSite, P)},
-    CVsn = #version{page = CUrl, version = hn_b_wu:read_page_vsn(CSite, C)},
+    CVsn = #version{page = CUrl, version = hn_db_wu:read_page_vsn(CSite, C)},
     io:format("got to B~n"),
     F = fun() ->
                 case hn_db_wu:read_incoming_hn(CSite, P) of

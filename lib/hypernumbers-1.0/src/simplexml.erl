@@ -4,52 +4,9 @@
 -module(simplexml).
 
 -export([ 
-    to_json/1, 
-    to_json_string/1, 
-    from_json/1,
-    from_json_string/1,
     to_xml_string/1,
     from_xml_string/1,
     search/2 ]).
-
-%% @doc Exports a json encoded string taking "simple-form" XML content
-to_json_string(SimpleXML) -> 
-    JSON = to_json(SimpleXML),
-    lists:flatten(json:encode(JSON)).
-
-%% @doc Exports a json tuple representation
-to_json({El,Attr,Child}) ->
-    
-    NChild = lists:map(fun to_json/1, Child),
-    NAttr  = lists:map(
-               fun({K,V}) -> {struct,[{K,V}]} end,
-               Attr),
-    
-    {array,[atom_to_list(El),{array,NAttr ++ NChild}]};
-
-to_json(String) -> 
-    String.
-
-%% @doc from an json encoded string to simplexml tuple
-from_json_string(String) ->
-    {ok,JSON} = json:decode_string(String),
-    from_json(JSON).
-
-%% @doc creates a simplexml object from a json tuple representation
-from_json({array,[Name,{array,List}]}) ->
-    
-    {Children,Attributes} = 
-        lists:partition(fun({struct,_}) -> false;
-                           (_)          -> true
-                        end,List),
-    
-    NChild = lists:map(fun from_json/1,Children),
-    NAttr  = lists:map(fun({struct,[X]}) -> X end,Attributes),
-    
-    {list_to_atom(Name),NAttr,NChild};
-
-from_json(String) -> 
-    String.
 
 %% @doc Exports a xml encoded string
 to_xml_string(SimpleXML) ->

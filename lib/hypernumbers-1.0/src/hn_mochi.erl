@@ -361,19 +361,10 @@ ipost(Req, Ref, _Type, _Attr,
     CVsJson  = from("child_vsn",  T),
     Stamp    = from("stamp",      T),
 
-    Str = "hn_mochi:ipost\tnotify_back_create\thandling post with\t" ++ 
-        Stamp ++ "\t" ++ pid_to_list(self()),
-    bits:log(Str),
-
-    %% io:format("In ipost (notify_back_create) Stamp is ~p~n", [Stamp]),
-
     #refX{site = Site} = Ref,
     ParentX = Ref,
     _ParentUrl = hn_util:refX_to_url(ParentX),    
     ChildX = hn_util:url_to_refX(ChildUrl),
-
-    %% bits:log("RECEIVED\t" ++ pid_to_list(self()) ++ "\t" ++ ParentUrl ++
-    %%         "\t from \t" ++ ChildUrl ++ json_util:to_str(Json)),
 
     %% there is only 1 parent and 1 child for this action
     PVsn = json_util:unjsonify(PVsJson),
@@ -398,10 +389,6 @@ ipost(Req, Ref, _Type, _Attr,
     json(Req, {struct, Return2}),
     io:format("In hn_mochi (notify_back_create) Return2 is ~p~n-"++
               "process dictionary ~p~n", [Return2, get()]),
-    Str2 = "hn_mochi:ipost\tnotify_back_create\thandling post with\t" ++ 
-        Stamp ++ "\t" ++ pid_to_list(self()) ++ "\t" ++ 
-                                     binary_to_list(get(mochiweb_request_body)),
-    bits:log(Str2),
     ret;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -418,10 +405,6 @@ ipost(Req, Ref, _Type, _Attr,
     PVsJson   = from("parent_vsn", T),
     CVsJson   = from("child_vsn",  T),
     Stamp     = from("stamp",      T),
-
-    Str = "hn_mochi:ipost\tnotify_back\thandling post with\t" ++ Stamp ++ "\t" ++ 
-        pid_to_list(self()),
-    bits:log(Str),
 
     %% io:format("In ipost (notify_back) Stamp is ~p~n", [Stamp]),
     %% there is only 1 parent and 1 child here
@@ -454,10 +437,6 @@ ipost(Req, Ref, _Type, _Attr,
     json(Req, Json),
     io:format("In hn_mochi (notify_back) Json is ~p~n-process dictionary ~p~n",
               [Json, get(mochiweb_request_body)]),
-    Str2 = "hn_mochi:ipost\tnotify_back\thandling post with\t" ++ 
-        Stamp ++ "\t" ++ pid_to_list(self()) ++ "\t" ++ 
-                                     binary_to_list(get(mochiweb_request_body)),
-    bits:log(Str2),
     ret;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -474,18 +453,9 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
     CVsJson   = from("child_vsn",  T),
     Stamp     = from("stamp",      T),
 
-    Str = "hn_mochi:ipost\tnotify\thandling post with\t" ++ Stamp ++ "\t" ++ 
-        pid_to_list(self()),
-    bits:log(Str),
-
-    %% io:format("In ipost (notify) Stamp is ~p~n", [Stamp]),
-
     ParentX = hn_util:url_to_refX(ParentUrl),
     ChildX = Ref,
     _ChildUrl = hn_util:refX_to_url(ChildX),
-
-    %% bits:log("RECEIVED\t" ++ pid_to_list(self()) ++ "\t" ++ ChildUrl ++
-    %%         "\t from \t" ++ ParentUrl ++ json_util:to_str(Json)),
 
     #refX{site = Site} = ChildX,
     PVsn = json_util:unjsonify(PVsJson),

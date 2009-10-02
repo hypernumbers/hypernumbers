@@ -11,11 +11,11 @@
 
 -module(hn_templates).
 
--export([write_def/4,
-         get_next/3,
-         get_next2/3,
-         make_path/1,
-         get_templates/0]).
+%% -export([write_def/4,
+%%          get_next/3,
+%%          get_next2/3,
+%%          make_path/1,
+%%          get_templates/0]).
 
 -import(format_util,
         [clock_12/1,
@@ -40,72 +40,72 @@
 
 %% @spec write_def(TemplateName,IsDynamic,RootURL,GUI) -> {ok,ok} | {error,Error}
 %% @doc takes an incoming template and writes it to the database
-write_def(TemplateName,RootURL,GUI,Form) ->
-    hn_db:write_template(TemplateName,RootURL,GUI,Form).
+%% write_def(TemplateName,RootURL,GUI,Form) ->
+%%     hn_db:write_template(TemplateName,RootURL,GUI,Form).
 
 %% @spec get_next(Ref,TemplateName, UserName) -> NewName
 %% @doc gets the next valid page name
-get_next(Ref,TemplateName,UserName) ->
-    {ok,Template}=hn_db:read_template(TemplateName),
-    {template,TemplateName,TemplatePath,_Gui,_Form}=Template,
-    Return=new_path(Ref,TemplatePath,UserName),
-    Return.
+%% get_next(Ref,TemplateName,UserName) ->
+%%     {ok,Template}=hn_db:read_template(TemplateName),
+%%     {template,TemplateName,TemplatePath,_Gui,_Form}=Template,
+%%     Return=new_path(Ref,TemplatePath,UserName),
+%%     Return.
 
 %% @spec get_next2(Ref,Path,User) -> NewName
 %% @doc gets the next valid page name
-get_next2(Ref,Path,User) ->
-    new_path(Ref,Path,User).
+%% get_next2(Ref,Path,User) ->
+%%     new_path(Ref,Path,User).
 
 %% @spec make_path(List) -> NewList
 %% @doc compiles a path down to a form that can be processed
-make_path(List) when is_list(List) ->
-    NewList=string:tokens(List,"/"),
-    make_path(NewList,[]).
+%% make_path(List) when is_list(List) ->
+%%     NewList=string:tokens(List,"/"),
+%%     make_path(NewList,[]).
 
-make_path([],Acc)    -> lists:reverse(Acc);
-make_path([H|T],Acc) -> make_path(T,[parse(H)|Acc]).
+%% make_path([],Acc)    -> lists:reverse(Acc);
+%% make_path([H|T],Acc) -> make_path(T,[parse(H)|Acc]).
 
 %% @spec get_templates() -> Templates
 %% @doc returns all the templates on the system as a list
-get_templates() ->
-    {ok,Templates}=hn_db:get_templates(),
-    Fun=fun(X) ->
-                #template{name=Name,temp_path=Path,gui=Gui,form=Form}=X,
-                {template,[{name,[],[Name]},{path,[],[repath(Path)]},
-                           {gui,[],[Gui]},{form,[],[Form]}]}
-        end,
-    XML=lists:map(Fun,Templates),
-    {ok,{templates,[],XML}}.
+%% get_templates() ->
+%%     {ok,Templates}=hn_db:get_templates(),
+%%     Fun=fun(X) ->
+%%                 #template{name=Name,temp_path=Path,gui=Gui,form=Form}=X,
+%%                 {template,[{name,[],[Name]},{path,[],[repath(Path)]},
+%%                            {gui,[],[Gui]},{form,[],[Form]}]}
+%%         end,
+%%     XML=lists:map(Fun,Templates),
+%%     {ok,{templates,[],XML}}.
 
 %%
 %% Internal Functions
 %%
 
-repath(Path) -> repath(Path,[]).
+%% repath(Path) -> repath(Path,[]).
 
-repath([],[])           -> "/";
-repath([],Acc)          -> lists:concat([lists:reverse(Acc)|["/"]]);
-repath([{A,B,C}|T],Acc) -> repath(T,["{"++A++","++B++","++C++"}","/"|Acc]);
-repath([{A,B}|T],Acc)   -> repath(T,["{"++A++","++B++"}","/"|Acc]);
-repath([{A}|T],Acc)     -> repath(T,["{"++A++"}","/"|Acc]);
-repath([H|T],Acc)       -> repath(T,[H,"/"|Acc]).
+%% repath([],[])           -> "/";
+%% repath([],Acc)          -> lists:concat([lists:reverse(Acc)|["/"]]);
+%% repath([{A,B,C}|T],Acc) -> repath(T,["{"++A++","++B++","++C++"}","/"|Acc]);
+%% repath([{A,B}|T],Acc)   -> repath(T,["{"++A++","++B++"}","/"|Acc]);
+%% repath([{A}|T],Acc)     -> repath(T,["{"++A++"}","/"|Acc]);
+%% repath([H|T],Acc)       -> repath(T,[H,"/"|Acc]).
 
-parse(String) ->
-    [H|_Discard]=String,
-    T=last(String),
-    case {H,T} of
-        {${,$}} ->
-            String2=lists:sublist(String,2,string:len(String)-2),
-            List=string:tokens(String2,","),
-            case List of
-                [A]     -> {A};
-                [A,B]   -> {A,B};
-                [A,B,C] -> {A,B,C}
-            end;
-        _Other -> String
-    end.
+%% parse(String) ->
+%%     [H|_Discard]=String,
+%%     T=last(String),
+%%     case {H,T} of
+%%         {${,$}} ->
+%%             String2=lists:sublist(String,2,string:len(String)-2),
+%%             List=string:tokens(String2,","),
+%%             case List of
+%%                 [A]     -> {A};
+%%                 [A,B]   -> {A,B};
+%%                 [A,B,C] -> {A,B,C}
+%%             end;
+%%         _Other -> String
+%%     end.
 
-new_path(_A, _B, _C) -> ok. % make me compile!
+%% new_path(_A, _B, _C) -> ok. % make me compile!
 
 %new_path(Ref,TemplatePath,UserName) -> new_p2(Ref,TemplatePath,UserName,[]).
 

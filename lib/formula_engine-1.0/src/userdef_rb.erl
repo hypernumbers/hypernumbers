@@ -2,22 +2,22 @@
 -module(userdef_rb).
 -compile(export_all).
 
-start() ->
-    spawn(fun() ->
-                  register(userdef_rb, self()),
-                  process_flag(trap_exit, true),
-                  {ok, CurrDir} = file:get_cwd(),
-                  Root = muin_util:init(string:tokens(CurrDir, "/")),
-                  DrvPath = filename:join(["/"] ++ Root ++
-                                          ["lib",
-                                           "formula_engine-1.0",
-                                           "src",
-                                           "userdef_drv.rb"]),
-                  Cmd = "ruby " ++ DrvPath,
-                  Port = open_port({spawn, Cmd}, [{packet, 4}, use_stdio,
-                                                  exit_status, binary]),
-                  loop(Port)
-          end).
+%% start() ->
+%%     spawn(fun() ->
+%%                   register(userdef_rb, self()),
+%%                   process_flag(trap_exit, true),
+%%                   {ok, CurrDir} = file:get_cwd(),
+%%                   Root = muin_util:init(string:tokens(CurrDir, "/")),
+%%                   DrvPath = filename:join(["/"] ++ Root ++
+%%                                           ["lib",
+%%                                            "formula_engine-1.0",
+%%                                            "src",
+%%                                            "userdef_drv.rb"]),
+%%                   Cmd = "ruby " ++ DrvPath,
+%%                   Port = open_port({spawn, Cmd}, [{packet, 4}, use_stdio,
+%%                                                   exit_status, binary]),
+%%                   loop(Port)
+%%           end).
 
 stop() ->
     userdef_rb ! stop.
