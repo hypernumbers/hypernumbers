@@ -14,33 +14,33 @@ gen() ->
     DestDir = "../../lib/formula_engine-1.0/src/",
 
     %% Compile Leex.
-    {ok, leex} = compile:file("leex.erl"),
+    {ok, leeex} = compile:file("leeex.erl"),
     ?P("Compiled Leex"),
 
     %% Generate main lexers & parser.
-    leex:gen(xfl_lexer, xfl_lexer),
+    leeex:gen(xfl_lexer, xfl_lexer),
     ?P("Generated main lexer."),
     yecc:yecc(xfl_parser, xfl_parser),
     make_private(xfl_parser),
     ?P("Generated main parser."),
-    leex:gen(num_format_lex, num_format_lexer),
+    leeex:gen(num_format_lex, num_format_lexer),
     ?P("Generated number format lexer."),
     yecc:yecc(num_format, num_format_parser),
     make_private(num_format_parser),
     ?P("Generated number format parser."),
-    leex:gen(cond_lex, cond_lexer),
+    leeex:gen(cond_lex, cond_lexer),
     ?P("Generated conditional lexer."),
     yecc:yecc(cond_parser, cond_parser),
     make_private(cond_parser),
     ?P("Generated conditional parser."),
-    leex:gen(url_query_lex, url_query_lexer),
+    leeex:gen(url_query_lex, url_query_lexer),
     ?P("Generated url query lexer."),
     yecc:yecc(url_query, url_query_parser),
     make_private(url_query_parser),
     ?P("Generated url query parser."),
 	
     %% Generate super lexer.
-    leex:gen(superlex, superlex),
+    leeex:gen(superlex, superlex),
     ?P("Generated super lexer!"),
 
     %% Generate frontends.
@@ -79,7 +79,7 @@ gen_frontend(Lang) ->
     {ok, Currdir} = get_cwd(),
     copy(Currdir ++ "/language_frontends/" ++ Lang ++ "_lexer.xrl",
          Currdir ++ "/" ++ Lang ++ "_lexer.xrl"),
-    leex:gen(list_to_atom(Lang ++ "_lexer"), list_to_atom(Lang ++ "_lexer")),
+    leeex:gen(list_to_atom(Lang ++ "_lexer"), list_to_atom(Lang ++ "_lexer")),
     ?P("Generated " ++ string:to_upper([hd(Lang)]) ++ tl(Lang) ++ " frontend").
 
 make_private(FileName) ->

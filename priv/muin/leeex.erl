@@ -13,7 +13,7 @@
 %%  completing details were taken from "Compiler Design in C" by
 %%  Hollub.
 
--module(leex).
+-module(leeex).
 
 -doc([{author,'Robert Virding'},
       {title,"A Lexical Analyser Generator for Erlang"},
@@ -448,7 +448,7 @@ pack_dfa([], _NewN, Rs, PDFA) -> {PDFA,Rs}.
 out_file(OutFile, Out, DFA, DF, Actions, Code) ->
     io:fwrite("Writing file ~s, ", [OutFile]),
     case file:path_open([".", [code:lib_dir(),"/tools/include"]],
-			"leex.hrl", read) of
+			"leeex.hrl", read) of
 	{ok,Ifile,_Iname} ->
 	    case file:open(OutFile, write) of
 		{ok,Ofile} ->
