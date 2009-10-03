@@ -11,7 +11,7 @@
         ["russian", "french", "german", "italian", "spanish", "portuguese"]).
 
 gen() ->
-    DestDir = "../../lib/formula_engine-1.0/src/",
+    DestDir = "../src/",
 
     %% Compile Leex.
     {ok, leeex} = compile:file("leeex.erl"),
