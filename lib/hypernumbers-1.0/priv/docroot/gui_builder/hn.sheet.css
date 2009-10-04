@@ -69,8 +69,8 @@ ul,li {
  top:        50%;
  left:       50%;
  display:    none;
- /* background: white; */
- /* border:     5px solid #666; */
+ background: white;
+ border:     5px solid #666;
  border:     5px solid;
  z-index:    9999999;
  padding:    8px;

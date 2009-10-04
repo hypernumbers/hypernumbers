@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+    <link rel="stylesheet" type="text/css" href="/gui_builder/hn.sheet.css" />
+  </head>
+    <body>
+      <div id="cover"></div>
+      <ul id="menu">              
+        <li id="browse">
+          <a>File</a>
+          <ul>
+            <li id="gui_open"><a name="open">Open</a></li>
+            <li id="gui_view"><a name="view">View</a></li>
+            <!-- <li class="seperator"></li> -->
+            <li><a name="save_as">Save As...</a></li>
+          </ul>
+        </li>
+      </ul>
+      <hr />
+
+      <!-- Dialog Boxes -->
+      
+      <div id="dialog_boxes">
+        <div id="savedialog" class="mdialog">
+          <p>Save This Webpage</p><hr />
+          <div>Type in the name of the form (shouldn't contain spaces or punctuation but can have underscores, it should be <em>a_single_word</em><br /></div>
+          <span>Name</span>            
+          <input id="save_name" type="name" />
+          <form id="newpageform" onClick="return Toolbar.save_page();"> 
+            <input type="button" class="action" value="OK"  />
+          </form>
+        </div>
+      </div>
+
+      <!-- End of Dialog Boxes -->
+      
+      <!-- Display -->
+      <textarea id="display" cols=120 rows=40></textarea>
+
+      <!-- Some jquery libraries to handle AJAX calls -->
+      <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
+      <!--<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>-->
+      <script src="/jquerytextbox/jquery.textbox.js"></script>
+      <!-- Special minified jquery.ui set done this way for dev only-->
+      <script src="/jqueryui/js/jquery-ui-1.7.2.custom.min.js"></script>
+      <!-- <script type="text/javascript" src="http://jqueryui.com/themeroller/themeswitchertool/"></script> -->
+      
+      <script src="/hypernumbers/jquery.filemenu.js"></script>
+      
+      <!-- Standard JSON library -->
+      <script src="/hypernumbers/json2.js"></script>
+      
+      <!-- the Tools libraries (NEED TO BE CLEANED UP -->
+      <script src="/dogfood/hn.js"></script>
+      <script src="/gui_builder/hn.tools.js"></script>
+      <script src="/gui_builder/hn.tools.util.js"></script>
+      <script src="/hypernumbers/hn.util.js"></script>
+      
+      <!-- the Tools libraries -->
+      <script src="/dogfood/hn.tools.toolbar.js"></script>
+      
+      <!-- the Main -->
+      <script src="/dogfood/filemain.js"></script>
+     
+    </body>
+</html>

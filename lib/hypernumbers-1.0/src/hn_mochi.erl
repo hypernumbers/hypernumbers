@@ -144,18 +144,11 @@ iget(Req, Ref, page, [{"updates", Time}], _User) ->
     remoting_request(Req, Ref, Time);
 iget(Req, #refX{site = S}, page, [{"status", []}], _User) -> 
     json(Req, status_srv:get_status(S));
-iget(Req, #refX{site = _S}, page, [{"guis", []}], User) ->
-    User2 = hn_users:name(User),
-    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/" ++ User2 ++ "/",
+iget(Req, #refX{site = _S}, page, [{"guis", []}], _User) ->
+    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/dogfood2/",
     {ok, Files} = file:list_dir(Path),
-    Files2 = hn_util:get_html_files(User2, Files),
+    Files2 = hn_util:get_html_files(Files),
     json(Req, {array, Files2});
-iget(Req, #refX{site = _S, path = _P}, page, [{"get_gui", FileName}], User) ->
-    User2 = hn_users:name(User),
-    File = code:lib_dir(hypernumbers, priv) ++ "/docroot/"
-        ++ User2 ++ "/" ++ FileName ++ ".html",
-    Canvas = gui_builder:get_file(File),
-    json(Req, {struct, [{"html", Canvas}]});
 iget(Req, Ref, page, [{"pages", []}], _User) -> 
     json(Req, pages(Ref));
 iget(Req, Ref, page, [{"attr", []}], User) ->
@@ -328,9 +321,8 @@ ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr,
     hn_db_api:clear(Ref, list_to_atom(What));
 
 ipost(_Req, _Ref, _Type, _Attr, 
-      [{"save_gui", {struct, [{"name", Name}, {"form", Form}]}}], User) ->
-    User2 = hn_users:name(User),
-    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/" ++ User2 ++ "/",
+      [{"save_gui", {struct, [{"name", Name}, {"form", Form}]}}], _User) ->
+    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/dogfood2/",
     File = Path ++ filename:basename(Name) ++ ".html",
 
     _Return=filelib:ensure_dir(File),
