@@ -1,3 +1,5 @@
+*#*#
+*.#*
 *.beam
 *.dump
 *.~
@@ -18,7 +20,9 @@ priv/muin/*.xrl
 lib/formula_engine*/doc/*.html
 lib/hypernumbers*/doc/*.html
 lib/read_excel*/doc/*.html
+
 lib/gettext/priv/
+lib/formula_engine*/priv/*_lexer.xrl
 
 lib/hypernumbers*/log
 lib/hypernumbers*/priv/docroot/hypernumbers/index.html.*
