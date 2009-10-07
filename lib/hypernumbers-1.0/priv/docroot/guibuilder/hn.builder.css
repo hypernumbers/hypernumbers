@@ -137,5 +137,6 @@ body {
 }
 
 .hn:hover {
+    cursor:pointer;
     border: 1px dashed #999;
 }
