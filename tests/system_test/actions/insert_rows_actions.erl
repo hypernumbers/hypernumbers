@@ -7,8 +7,9 @@
 run() ->
     Url  = "http://127.0.0.1:9000/insert_rows/",
     Type = "application/json",
+    Accept = [{"Accept", "application/json"}],
     Data = "{\"insert\":\"before\"}",
-    http:request(post,{Url++"8:8?attr", [], Type, Data}, [], []),
-    http:request(post,{Url++"10:11?attr", [], Type, Data}, [], []),
+    http:request(post,{Url++"8:8", Accept, Type, Data}, [], []),
+    http:request(post,{Url++"10:11", Accept, Type, Data}, [], []),
     ok.
 

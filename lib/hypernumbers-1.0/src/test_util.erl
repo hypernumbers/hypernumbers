@@ -221,7 +221,8 @@ hnpost(Path, Ref, Postdata) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
     Postreq = "{\"formula\":\"" ++ Postdata ++ "\"}",
     Return = http:request(post,
-                          {Url, [], "application/json", Postreq},
+                          {Url, [{"Accept", "application/json"}],
+                           "application/json", Postreq},
                           [{timeout, 5000}],
                           []),
     handle_return(Return, Ref).

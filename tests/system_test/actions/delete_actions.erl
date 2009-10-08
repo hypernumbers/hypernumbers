@@ -8,5 +8,5 @@ run() ->
     Url  = "http://127.0.0.1:9000/delete/",
     Type = "application/json",
     Data = "{\"delete\":\"all\"}",
-    http:request(post,{Url, [], Type, Data}, [], []),
+    http:request(post,{Url, [{"Accept", "application/json"}], Type, Data}, [], []),
     ok.
