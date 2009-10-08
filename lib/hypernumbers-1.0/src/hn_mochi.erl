@@ -27,32 +27,48 @@
         exit("exit from hn_mochi:handle_req impossible page versions")).
 
 req(Req) ->
-
+    
     case filename:extension(Req:get(path)) of
-
-        %% Serve Static Files
+        
+        % Serve Static Files
         X when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; 
         X == ".ico"; X == ".json" ->
             "/"++RelPath = Req:get(path),
             Req:serve_file(RelPath, docroot());
-
+        
         [] ->
             case catch do_req(Req) of 
-                ok -> ok;
+                ok ->
+                    ok;
                 invalid_reference ->
                     Req:respond({500,[],[]});
                 Else ->
-                    ?ERROR("~p~n~p",[Else, erlang:get_stacktrace()]),
+                    Err = [Else, erlang:get_stacktrace()],
+                    error_logger:error_msg("~p~n~p~n", Err),
                     Req:respond({500,[],[]})
             end
     end.
 
-do_req(Req) ->
+content_type(Req) ->
+    
+    {value, {'Accept', Accept}} =
+        mochiweb_headers:lookup('Accept', Req:get(headers)),
 
+    case re:run(Accept, "application/json") of
+        {match, _} -> json;
+        nomatch    ->
+            case re:run(Accept, "text/html") of
+                {match, _} -> html;
+                nomatch    -> throw(unmatched_type)
+            end
+    end.
+
+do_req(Req) ->
+       
     #refX{site = Site} = Ref = hn_util:parse_url(get_host(Req)),
     Vars   = Req:parse_qs(),
     Method = Req:get(method),
-
+    
     {ok, Auth} = get_var_or_cookie("auth", Vars, Req),
     User = case hn_users:verify_token(Site, Auth) of
                {ok, Usr}        -> Usr;
@@ -76,11 +92,13 @@ check_auth(admin,     _, _)           -> ok.
 handle_req(Method, Req, Ref, Vars, User) ->
 
     Type = element(1, Ref#refX.obj),
-
+    CType = content_type(Req),
+    
     case Method of
+        
         'GET'  -> 
             mochilog:log(Req, Ref, hn_users:name(User), undefined),
-            iget(Req, Ref, Type, Vars, User);
+            iget(Req, Ref, Type, Vars, User, CType);
 
         'POST' ->
 
@@ -98,7 +116,7 @@ handle_req(Method, Req, Ref, Vars, User) ->
                     mochilog:log(Req, Ref, hn_users:name(User), {upload, Name}),
                     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
                     Req:ok({"text/html", ?hdr, Json});
-
+                
                 _Else ->
                     Body = Req:recv_body(),
                     {ok, Post} = get_json_post(Body),
@@ -132,46 +150,43 @@ ensure(File, Lang) ->
         false -> ok
     end.
 
-iget(Req, #refX{path=["_user", "login"]}, page, [], User) ->
+iget(Req, #refX{path=["_user", "login"]}, page, [], User, html) ->
     serve_html(Req, "hypernumbers/login.html", User);
-iget(Req, #refX{site = S, path = P}, page, [{"gui", FileName}], User) ->
-    ok = status_srv:update_status(User, S, P, "viewed page as " ++ FileName),
+iget(Req, _Ref, page, [{"gui", FileName}], User, html) ->
     serve_html(Req, FileName ++ ".html", User);
-iget(Req, #refX{site = S, path = P}, page, [], User) ->
-    ok = status_srv:update_status(User, S, P, "viewed page"),
+iget(Req, _Ref, page, [], User, html) ->
     serve_html(Req, "hypernumbers/index.html", User);
-iget(Req, Ref, page, [{"updates", Time}], _User) ->
+iget(Req, Ref, page, [{"updates", Time}], _User, _CType) ->
     remoting_request(Req, Ref, Time);
-iget(Req, #refX{site = S}, page, [{"status", []}], _User) -> 
+iget(Req, #refX{site = S}, page, [{"status", []}], _User, _CType) -> 
     json(Req, status_srv:get_status(S));
-iget(Req, #refX{site = _S}, page, [{"guis", []}], _User) ->
+iget(Req, #refX{site = _S}, page, [{"guis", []}], _User, _CType) ->
     Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/dogfood2/",
     {ok, Files} = file:list_dir(Path),
     Files2 = hn_util:get_html_files(Files),
     json(Req, {array, Files2});
-iget(Req, Ref, page, [{"pages", []}], _User) -> 
+iget(Req, Ref, page, [{"pages", []}], _User, _CType) -> 
     json(Req, pages(Ref));
-iget(Req, Ref, page, [{"attr", []}], User) ->
+iget(Req, Ref, page, [], User, json) ->
     json(Req, page_attributes(Ref, User));
-iget(Req, #refX{path = _P, obj = {cell, {_X, _Y}}} = Ref, cell, [], _User) ->
+
+iget(Req, #refX{path = _P, obj = {cell, {_X, _Y}}} = Ref, cell, [], _User, json) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", Val}}] when is_atom(Val) ->
-               atom_to_list(Val);
+                atom_to_list(Val);
             [{_Ref, {"value", {datetime, D, T}}}] ->
                 dh_date:format("Y/m/d H:i:s",{D,T});
             [{_Ref, {"value", {errval, Val}}}] ->
-               atom_to_list(Val);
+                atom_to_list(Val);
             [{_Ref, {"value", Val}}] ->
-               Val;
+                Val;
             _Else ->
-                ?INFO("NO MATCH ~p",[_Else]),
+                error_logger:error_msg("unmatched ~p~n", [_Else]),
                 "" 
         end,
-    %% Cell = util2:make_b26(X) ++ integer_to_list(Y),
-    %% HTML = make_mini_index(V, P, Cell),
     Req:ok({"text/html", V});
-iget(Req, Ref, _Type,  Attr, _User) ->
-    ?ERROR("404~n-~p~n-~p",[Ref, Attr]),
+iget(Req, Ref, _Type,  Attr, _User, _CType) ->
+    error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
     Req:not_found().
 
 ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
