@@ -12,7 +12,7 @@
 -export([start_link/0, init/1, handle_call/3, handle_cast/2, 
     handle_info/2, terminate/2, code_change/3]).
 
--export([ notify_change/6, notify_style/4, notify_error/5, 
+-export([ notify_change/5, notify_delete/5, notify_style/4, notify_error/5, 
           request_update/4, notify_refresh/2, timestamp/0 ]).
 
 start_link() ->
@@ -24,7 +24,6 @@ init([]) ->
 %% @doc  Handle incoming update mesage
 handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
     Packet   = {msg, Site, Path, Msg, timestamp()},
-    %?INFO("~p",[Packet]),
     NUpdates = [Packet | Updates], 
     {noreply, send_to_waiting(NUpdates, Waiting)};
 
@@ -42,21 +41,33 @@ request_update(Site, Path, Time, Pid) ->
 
 %% @doc  Notify server of full page refresh
 notify_refresh(Site, Path) ->
-    Msg = {struct, [{"type", "refresh"}]},
+    Msg = {struct, [{"type", "refresh"},
+                    {"path", hn_util:list_to_path(Path)}]},
     gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of change to a cell
-notify_change(Site, Path, Type, {RefType, _} = R, Name, Value) ->
+notify_change(Site, Path, {RefType, _} = R, Name, Value) ->
     {Name2, Val2} = hn_util:jsonify_val({Name, Value}), 
-    Msg = {struct, [{"type", Type}, {"reftype", RefType},
+    Msg = {struct, [{"type", "change"}, {"reftype", RefType},
+                    {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_str(R)}, 
                     {"name", Name2}, {"value", Val2}]},
     gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
 
+notify_delete(Site, Path, {RefType, _} = R, Name, Value) ->
+    {Name2, Val2} = hn_util:jsonify_val({Name, Value}), 
+    Msg = {struct, [{"type", "delete"}, {"reftype", RefType},
+                    {"path", hn_util:list_to_path(Path)},
+                    {"ref", hn_util:obj_to_str(R)}, 
+                    {"name", Name2}, {"value", Val2}]},
+    gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
+
+
 %% @doc  Notify server of a new style
 notify_style(Site, Path, Index, Style) ->
     {Key, CSS} = hn_mochi:style_to_css(Index, Style),
-    Msg = {struct, [{"type", "style"}, {"index", Key}, {"css", CSS}]},
+    Msg = {struct, [{"path", hn_util:list_to_path(Path)},
+                    {"type", "style"}, {"index", Key}, {"css", CSS}]},
     gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of an error to a cell
@@ -78,7 +89,8 @@ send_queued(Updates, Waiting) ->
     [{Site, Path, Time, Pid} | OldWaiting ] = Waiting, 
     
     F = fun({msg, Site1, Path1, _Msg, Time1}) -> 
-                Site1 == Site andalso Path1 == Path andalso Time < Time1
+                Site1 == Site andalso lists:member(Path1, Path)
+                    andalso Time < Time1
         end,
 
     {Match, _Else} = lists:partition(F, Updates), 
@@ -102,8 +114,8 @@ send_to_waiting(Updates, Waiting) ->
     lists:map(Send, Match),    
     {expire_updates(Updates), Rest}.
 
-is_site(Site, Path, {Site, Path, _Time, _Pid}) -> true;
-is_site(_Site, _Path, _Server)                 -> false.
+is_site(Site, Path, {Site, Path1, _Time, _Pid}) -> lists:member(Path, Path1);
+is_site(_Site, _Path, _Server)                  -> false.
 
 
 timestamp() ->
@@ -124,3 +136,46 @@ handle_call(_Req, _From, State) -> {reply,invalid_message, State}.
 handle_info(_Info, State)       -> {noreply, State}.
 terminate(_Reason, _State)      -> ok.
 code_change(_Old, State, _E)    -> {ok, State}.
+
+
+-include_lib("eunit/include/eunit.hrl").
+-define(SITE, "http://example.org:9000").
+
+run_changes() ->
+    notify_change(?SITE, [], {cell, {1,1}}, "value", 99),
+    notify_change(?SITE, ["test"], {cell, {1,1}}, "value", 88),
+    notify_change(?SITE, [], {cell, {1,1}}, "value", 77).
+
+get_changes(Path, Time) ->
+    request_update(?SITE, Path, Time, self()),    
+    receive
+        {msg, {struct, [{"time", TStamp}, {"msgs", {array, Msgs}}]}} ->
+            {TStamp, Msgs}
+    after
+        1000 -> {null, []}
+    end.
+
+basic_update_test() ->
+    Time = timestamp(),
+    run_changes(),
+    {_, Msgs} = get_changes([[]], Time),
+    ?assertEqual(2, length(Msgs)).
+
+multiple_update_test() ->
+    Time = timestamp(),
+    run_changes(),
+    {_, Msgs} = get_changes([[], ["test"]], Time),
+    ?assertEqual(3, length(Msgs)). 
+
+basic_waiting_test() ->
+    spawn( fun() -> timer:sleep(100), run_changes() end ), 
+    {Time, Changes1} = get_changes([[]], timestamp()),
+    {_, Changes2} = get_changes([[]], Time),
+    ?assertEqual(2, length(Changes1) + length(Changes2)).
+
+multiple_waiting_test() ->
+    spawn( fun() -> timer:sleep(100), run_changes() end ), 
+    {Time, Changes1} = get_changes([[], ["test"]], timestamp()),
+    {_, Changes2} = get_changes([[], ["test"]], Time),
+    ?assertEqual(3, length(Changes1) + length(Changes2)).
+

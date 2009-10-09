@@ -370,8 +370,8 @@ parse_attr(row, Addr) ->
         _ ->
             % this is where references will be typed as names
             % (when we get them in)
-            % {name, Addr}
-            throw(invalid_reference)
+            {name, Addr}
+            %throw(invalid_reference)
     end.
 
 ltoi(X) ->

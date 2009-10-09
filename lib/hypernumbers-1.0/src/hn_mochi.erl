@@ -27,7 +27,6 @@
         exit("exit from hn_mochi:handle_req impossible page versions")).
 
 req(Req) ->
-    
     case filename:extension(Req:get(path)) of
         
         % Serve Static Files
@@ -38,7 +37,7 @@ req(Req) ->
         
         [] ->
             case catch do_req(Req) of 
-                ok ->
+                ok ->                    
                     ok;
                 invalid_reference ->
                     Req:respond({500,[],[]});
@@ -64,7 +63,6 @@ content_type(Req) ->
     end.
 
 do_req(Req) ->
-       
     #refX{site = Site} = Ref = hn_util:parse_url(get_host(Req)),
     Vars   = Req:parse_qs(),
     Method = Req:get(method),
@@ -156,8 +154,9 @@ iget(Req, _Ref, page, [{"gui", FileName}], User, html) ->
     serve_html(Req, FileName ++ ".html", User);
 iget(Req, _Ref, page, [], User, html) ->
     serve_html(Req, "hypernumbers/index.html", User);
-iget(Req, Ref, page, [{"updates", Time}], _User, _CType) ->
-    remoting_request(Req, Ref, Time);
+iget(Req, Ref, page, [{"updates", Time}, {"path", Path}], _User, _CType) ->
+    Paths = [ string:tokens(X, "/") || X<-string:tokens(Path, ",")],
+    remoting_request(Req, Ref#refX.site, Paths, Time);
 iget(Req, #refX{site = S}, page, [{"status", []}], _User, _CType) -> 
     json(Req, status_srv:get_status(S));
 iget(Req, #refX{site = _S}, page, [{"guis", []}], _User, _CType) ->
@@ -185,8 +184,9 @@ iget(Req, #refX{path = _P, obj = {cell, {_X, _Y}}} = Ref, cell, [], _User, json)
                 "" 
         end,
     Req:ok({"text/html", V});
-iget(Req, Ref, _Type,  Attr, _User, _CType) ->
+iget(Req, Ref, _Type,  Attr, User, _CType) ->
     error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
+    serve_html(Req, "hypernumbers/404.html", User),
     Req:not_found().
 
 ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
@@ -606,19 +606,19 @@ post_column_values(Ref, Values, Offset) ->
          end,
     lists:foldl(F, 0, Values).
 
-remoting_request(Req, #refX{site=Site, path=Path}, Time) ->
+remoting_request(Req, Site, Paths, Time) ->
     Socket = Req:get(socket),
     inet:setopts(Socket, [{active, once}]),
-    remoting_reg:request_update(Site, Path, ltoi(Time), self()),
+    remoting_reg:request_update(Site, Paths, ltoi(Time), self()),
     receive 
         {tcp_closed, Socket} -> ok;
         {error, timeout}     -> Req:ok({"text/html",?hdr, <<"timeout">>});
         {msg, Data}          -> json(Req, Data)
     after
-        %% TODO : Fix, should be controlled by remoting_reg
+%% TODO : Fix, should be controlled by remoting_reg
         600000 ->
             json(Req, {struct, [{"time", remoting_reg:timestamp()},
-                                 {"timeout", "true"}]})
+                                {"timeout", "true"}]})
     end.
 
 get_var_or_cookie(Key, Vars, Req) ->
@@ -709,33 +709,4 @@ f_up1([{struct, [{"ref", Ref}, {"formula", F}]} | T], S, P, A1, A2) ->
         {cell, _}   -> f_up1(T, S, P, A1, [{RefX, [{"formula", F}]} | A2])
     end.
 
-% make_mini_index(V, P, Cell) ->
-%     Path = hn_util:list_to_path(P),
-%     Path2 = Path ++ Cell ++ "/",
-%     Url1 = Path ++ Cell ++ "?attr",
-%     Url2 = Path ++ Cell ++ "?hypernumbers",
-%     HTML = "<html>"
-%         ++ "<head>"
-%         ++ "<title>this is a hypernumber "
-%         ++ Cell ++ " on page " ++ Path
-%         ++ "</head>"
-%         ++ "<body>"
-%         ++ "<img src=\"/img/logo_white.jpg\">"
-%         ++ "<br /><br />"
-%         ++ "This is the hypernumber <strong>" ++ Cell
-%         ++ "</strong> on page <strong>" ++ Path ++ "</strong> with value <strong>"
-%         ++ V ++ "</strong>"
-%         ++ "<br /><br />"
-%         ++ "You probably don't want to looking at a hypernumber "
-%         ++ "but at one of these pages of hypernumbers:"
-%         ++ "<ul>"
-%         ++ "<li><a href=\"" ++ Path ++ "\">" ++ Path ++ "</a></li>"
-%         ++ "<li><a href=\"" ++ Path2 ++ "\">" ++ Path2 ++ "</a></li>"
-%         ++ "</ul>"
-%         ++ "<h6><br />Developers might want to inspect this number in more detail:"
-%         ++ "<ul>"
-%         ++ "<li><a href=\"" ++ Url1 ++ "\">" ++ Url1 ++ "</a></li>"
-%         ++ "<li><a href=\"" ++ Url2 ++ "\">" ++ Url2 ++ "</a></li>"
-%         ++ "</ul></h6>"
-%         ++ "</body>"
-%         ++ "</html>".
+                                                               

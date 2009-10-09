@@ -1412,13 +1412,13 @@ tell_front_end("move", RefX) ->
 
 tell_front_end(_FnName) ->
     List = lists:reverse(get('front_end_notify')),
-    Fun = fun({{Key, V}, A, B}) when is_record(Key, refX) ->
+    Fun = fun({{Key, "__"++_V}, _A, _B}) when is_record(Key, refX) -> ok;
+             ({{Key, V}, A, change}) when is_record(Key, refX) -> 
                   #refX{site = S1, path = P1, obj = Rf} = Key,
-                  case V of
-                      "__"++_ -> ok; 
-                      _Else   ->
-                          remoting_reg:notify_change(S1, P1, B, Rf, V, A)
-                  end;
+                  remoting_reg:notify_change(S1, P1, Rf, V, A);
+             ({{Key, V}, A, delete}) when is_record(Key, refX) -> 
+                  #refX{site = S1, path = P1, obj = Rf} = Key,
+                  remoting_reg:notify_delete(S1, P1, Rf, V, A);             
              ({{S, P}, A, B}) ->
                   remoting_reg:notify_style(S, P, A, B)
           end,

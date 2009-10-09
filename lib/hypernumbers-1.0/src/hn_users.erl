@@ -152,7 +152,7 @@ unix_timestamp(Now) ->
 
 %% Given a user find the most elevated permission
 %% granted to that user
-get_access_level(Usr, Ref=#refX{site = Site, path = Path}) ->
+get_access_level(Usr, #refX{site = Site, path = Path}) ->
 
     User = case Usr of
                anonymous -> anonymous;
@@ -163,7 +163,7 @@ get_access_level(Usr, Ref=#refX{site = Site, path = Path}) ->
 
     SiteRef = #refX{site=Site, path=[]},
     {ok, Groups}     = hn_db_api:read_inherited_value(SiteRef, "__groups", []),
-    {ok, Perms}      = hn_db_api:read_inherited_list(Ref, "__permissions"),
+    {ok, Perms}      = hn_db_api:read_inherited_list(SiteRef, "__permissions"),
     {ok, UserGroups} = get_usergroups(User, Groups, []),    
     {ok, Levels}     = get_perms(User, UserGroups, Perms, [Default]),
 
