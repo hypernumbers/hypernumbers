@@ -243,8 +243,8 @@ check_get_page1(Tree, {User, Groups}, Page, View) ->
     check_get(Tree, Page, Fun).
 
 check_get_page_attr1(Tree, _AuthSpec, Page) ->
-    Fun = fun(X) ->
-                  io:format("Fun for check_get_page_attr1 X is ~p~n", [X])
+    Fun = fun(_X) ->
+                 exit(erk, not_written_yet)
           end,
     check_get(Tree, Page, Fun).
     
@@ -392,11 +392,21 @@ check_get(Tree, [], Fun) ->
     Fun(Tree);
 check_get(Tree, [H | T], Fun) ->
     case gb_trees:lookup(H, Tree) of
-        none        -> {return, '404'};
+        none        -> check_programmatic(Tree, T, Fun);
         {value , V} -> check_get(V, T, Fun)
     end.          
 
-make_controls(AuthList, Perms, Def, Views) -> make_c1(AuthList, Perms, Def, Views, []).
+check_programmatic(Tree, List, Fun) ->
+    case gb_trees:lookup("[*]", Tree) of
+        none        -> case gb_trees:lookup("[**]", Tree) of
+                           none        -> {return, '404'};
+                           {value, V1} -> Fun(V1)
+                       end;
+        {value, V2} -> check_get(V2, List, Fun)
+    end.
+
+make_controls(AuthList, Perms, Def, Views) ->
+    make_c1(AuthList, Perms, Def, Views, []).
 
 make_c1([], _Perms, _Def, _Views, Acc)   -> Acc;
 make_c1([H | T], Perms, Def, Views, Acc) -> Ctl = #control{perms = Perms,
@@ -872,7 +882,7 @@ test36() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "index"}).
 
-%% now check if a page is permissible
+%% now check if a page is acceptable
 test37() ->
     P1 = ["a", "b"],
     P2 = ["a"],
@@ -891,7 +901,55 @@ test37() ->
     Ret3 = check_get_page1(Tree3, {"User", ["Group"]}, P3),
     io:format("Ret1 is ~p~nRet2 is ~p~nRet3 is ~p~n", [Ret1, Ret2, Ret3]),
     ({Ret1, Ret2, Ret3} == {{html, "special"}, {return, '403'}, {return, '404'}}).
-    
+
+%% now do the old wild card stuff
+test38() ->
+    P1 = ["a", "[*]", "c"],
+    P2 = ["a", "b", "c"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}], P1,
+                     [read], "index", ["index"]),
+    Ret = check_get_page1(Tree, {"User", ["Group"]}, P2),
+    % io:format("Tree is ~p~n", [Tree]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+test39() ->
+    P1 = ["a", "[**]"],
+    P2 = ["a", "b", "x", "y"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}], P1,
+                     [read], "index", ["index"]),
+    Ret = check_get_page1(Tree, {"User", ["Group"]}, P2),
+    % io:format("Tree is ~p~n", [Tree]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+%% specific (ie [*]) overrides the general (ie [**])
+test40() ->
+    P1 = ["a", "[**]"],
+    P2 = ["a", "[*]", "x"],
+    P3 = ["a", "b", "x"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}], P1,
+                     [read], "index", ["index"]),
+    Tree2 = add_perm1(Tree, [{user, "User"}], P2,
+                     [read], "special", ["index", "special"]),
+    Ret = check_get_page1(Tree2, {"User", ["Group"]}, P3),
+    % io:format("Tree is ~p~nTree2 is ~p~n", [Tree, Tree2]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "special"}).
+
+test41() ->
+    P1 = ["a", "[**]"],
+    P2 = ["a", "[*]", "x"],
+    P3 = ["a", "b", "x", "y"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}], P1,
+                     [read], "index", ["index"]),
+    Tree2 = add_perm1(Tree, [{user, "User"}], P2,
+                     [read], "special", ["index", "special"]),
+    Ret = check_get_page1(Tree2, {"User", ["Group"]}, P3),
+    % io:format("Tree is ~p~nTree2 is ~p~n", [Tree, Tree2]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '404'}).
+
 unit_test_() -> 
     [
      ?_assert(test1()),
@@ -932,5 +990,9 @@ unit_test_() ->
      ?_assert(test34()),  
      ?_assert(test35()),
      ?_assert(test36()),
-     ?_assert(test37())
+     ?_assert(test37()),
+     ?_assert(test38()),
+     ?_assert(test39()),
+     ?_assert(test40()),
+     ?_assert(test41())
   ].
