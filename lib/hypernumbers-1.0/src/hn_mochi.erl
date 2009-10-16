@@ -49,7 +49,6 @@ req(Req) ->
     end.
 
 content_type(Req) ->
-    
     {value, {'Accept', Accept}} =
         mochiweb_headers:lookup('Accept', Req:get(headers)),
 
@@ -90,11 +89,10 @@ check_auth(admin,     _, _)           -> ok.
 handle_req(Method, Req, Ref, Vars, User) ->
 
     Type = element(1, Ref#refX.obj),
-    CType = content_type(Req),
-    
     case Method of
         
         'GET'  -> 
+            CType = content_type(Req),
             mochilog:log(Req, Ref, hn_users:name(User), undefined),
             iget(Req, Ref, Type, Vars, User, CType);
 
@@ -361,6 +359,7 @@ ipost(_Req, _Ref, _Type, _Attr,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ipost(Req, Ref, _Type, _Attr,
       [{"action", "notify_back_create"}|T], _User) ->
+
     Biccie   = from("biccie",     T),
     Proxy    = from("proxy",      T),
     ChildUrl = from("child_url",  T),
@@ -393,10 +392,10 @@ ipost(Req, Ref, _Type, _Attr,
     {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX, 
                                                       Proxy, Biccie),
     Return2 = lists:append([Return, [{"stamp", Stamp}]]),
-    json(Req, {struct, Return2}),
-    io:format("In hn_mochi (notify_back_create) Return2 is ~p~n-"++
-              "process dictionary ~p~n", [Return2, get()]),
-    ret;
+    json(Req, {struct, Return2});
+    %% io:format("In hn_mochi (notify_back_create) Return2 is ~p~n-"++
+    %%           "process dictionary ~p~n", [Return2, get()]),
+    
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

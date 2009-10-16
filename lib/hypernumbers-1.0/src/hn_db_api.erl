@@ -129,7 +129,7 @@
          notify_back_from_web/4,
          handle_dirty_cell/2,
          shrink_dirty_cell/1,
-         handle_dirty/1,
+         handle_dirty/2,
          set_borders/5,
          register_hn_from_web/4,
          check_page_vsn/2,
@@ -480,8 +480,9 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
                             {"dependency-tree", Dep},
                             {"parent_vsn",      VsnJson}]}
           end,
-    ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("register_hn_from_web").
+    Str = mnesia:activity(transaction, Fun),
+    ok = tell_front_end("register_hn_from_web"),
+    Str.
 
 %% @spec handle_dirty_cell(Site, Timestamp) -> ok
 %% @doc handles a dirty cell.
@@ -519,13 +520,13 @@ handle_dirty_cell(Site, Rec) ->
 %% The reference must be to a cell
 %% @todo implement dirty ranges/functions/queries and stuff
 %% %@TODO list the full set of possible change messages and how they should
-handle_dirty(Record) when is_record(Record, dirty_notify_in) ->
-    #dirty_notify_in{parent = Parent} = Record,
+handle_dirty(Site, Record) when is_record(Record, dirty_notify_in) ->
+    Parent = Record#dirty_notify_in.parent,
     % read the incoming remote children and mark them dirty
     Fun =
         fun() ->
                 ok = init_front_end_notify(),
-                Cells = hn_db_wu:read_remote_children(Parent, incoming), %
+                Cells = hn_db_wu:read_remote_children(Parent, incoming),
                 Fun2 =
                     fun(X) ->
                             [{RefX, KV}] =
@@ -533,24 +534,24 @@ handle_dirty(Record) when is_record(Record, dirty_notify_in) ->
                             hn_db_wu:write_attr(RefX, KV)
                     end,
                 [ok = Fun2(X)  || X <- Cells],
-                hn_db_wu:clear_dirty(Record)
+                hn_db_wu:clear_dirty(Site, Record)
         end,
     ok = mnesia:activity(transaction, Fun),
     ok = tell_front_end("handle dirty");
-handle_dirty(Record) when is_record(Record, dirty_notify_out) ->
+handle_dirty(_Site, Record) when is_record(Record, dirty_notify_out) ->
     ok = horiz_api:notify(Record),
     % now delete the dirty outgoing hypernumber
     mnesia:activity(transaction, fun mnesia:delete_object/1, [Record]);
-handle_dirty(Record) when is_record(Record, dirty_notify_back_in) ->
+handle_dirty(Site, Record) when is_record(Record, dirty_notify_back_in) ->
     ok = horiz_api:notify_back(Record),
-    mnesia:activity(transaction, fun hn_db_wu:clear_dirty/1, Record);
-handle_dirty(Record) when is_record(Record, dirty_notify_back_in) ->
+    mnesia:activity(transaction, fun hn_db_wu:clear_dirty/2, [Site, Record]);
+handle_dirty(Site, Record) when is_record(Record, dirty_notify_back_in) ->
     ok = horiz_api:notify_back(Record),
-    mnesia:activity(transaction, fun hn_db_wu:clear_dirty/1, Record);
-handle_dirty(Record) when is_record(Record, dirty_notify_back_in) ->
+    mnesia:activity(transaction, fun hn_db_wu:clear_dirty/2, [Site, Record]);
+handle_dirty(Site, Record) when is_record(Record, dirty_notify_back_in) ->
     ok = horiz_api:notify_back(Record),
-    mnesia:activity(transaction, fun hn_db_wu:clear_dirty/1, Record);
-handle_dirty(Record)
+    mnesia:activity(transaction, fun hn_db_wu:clear_dirty/2, [Site, Record]);
+handle_dirty(_Site, Record)
   when is_record(Record, dirty_notify_back_out) ->
     #dirty_notify_back_out{parent = P, child = C, change = Type} = Record,
     Fun =
@@ -727,7 +728,7 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
     io:format("got to B~n"),
     F = fun() ->
                 case hn_db_wu:read_incoming_hn(CSite, P) of
-                    []   ->
+                    [] ->
                         io:format("got to C~n"),
                         Rec = #dirty_inc_hn_create{parent = P, child = C,
                                                    parent_vsn = PVsn, child_vsn = CVsn},

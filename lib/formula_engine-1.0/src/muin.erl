@@ -122,7 +122,6 @@ parse(Fla, {Col, Row}) ->
 %% when Mnesia is unrolling a transaction. When the '{aborted, {cyclic...'
 %% exit is caught it must be exited again...
 eval(_Node = [Func|Args]) when ?is_fn(Func) ->
-    
     case attempt(?MODULE, funcall, [Func, Args]) of
         {error, {errval, _}  = Err} -> Err;
         {error, {aborted, _} = Err} -> exit(Err); % re-exit
@@ -139,8 +138,8 @@ funcall(make_list, Args) ->
 
 %% Hypernumber function and its shorthand.
 funcall(hypernumber, [Url]) ->
-    {ok, #refX{site = RSite, path = RPath,
-               obj = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
+    #refX{site = RSite, path = RPath,
+          obj = {cell, {RX, RY}}} = hn_util:parse_url(Url),
     F = fun() -> get_hypernumber(?msite, ?mpath, ?mx, ?my,
                                  Url, RSite, RPath, RX, RY) end,
     get_value_and_link(F);
@@ -327,7 +326,6 @@ fetch(R) ->
 
 %% why are we passing in Url?
 get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
-
     % TODO get rid of
     NewMPath = lists:filter(fun(X) -> not(X == $/) end, MPath),
     NewRPath = lists:filter(fun(X) -> not(X == $/) end, RPath),
@@ -335,7 +333,7 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
     Child  = #refX{site=MSite, path=NewMPath, obj={cell, {MX, MY}}},
     Parent = #refX{site=RSite, path=NewRPath, obj={cell, {RX, RY}}},
 
-    case hn_db_wu:read_incoming_hn(Parent, Child) of
+    case hn_db_api:read_incoming_hn(Parent, Child) of
         
         {error,permission_denied} ->
             {{errval,'#AUTH'},[],[],[]};
@@ -348,7 +346,11 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
                 end,
             Dep = lists:map(F, DepTree) ++
                 [{"remote", {RSite, NewRPath, RX, RY}}],
-            {Val, Dep, [], [{"remote", {RSite, NewRPath, RX, RY}}]}
+            {Val, Dep, [], [{"remote", {RSite, NewRPath, RX, RY}}]};
+        
+        Else ->
+            io:format("I got: ~p~n", [Else]),
+            Else
     end.
 
 %% TODO: Beef up.

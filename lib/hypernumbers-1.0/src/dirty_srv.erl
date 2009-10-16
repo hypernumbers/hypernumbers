@@ -149,24 +149,21 @@ delete_first(Table) ->
 %% @spec proc_dirty(Rec, Type) -> ok
 %% @doc  processes the dirty record
 proc_dirty(Table, Rec) ->
-
     [Host, Port, _Table] = string:tokens(atom_to_list(Table), "&"),
     Site = "http://"++Host++":"++Port,
-    
-    Ret = case element(1, Rec) of
-              dirty_cell ->
-                  hn_db_api:handle_dirty_cell(Site, Rec);
-              dirty_inc_hn_create ->
-                  hn_db_api:notify_back_create(Rec);
-              dirty_notify_in ->
-                  hn_db_api:handle_dirty(Site, Rec);
-              dirty_notify_out ->
-                  #dirty_notify_out{delay = D} = Rec,
-                  ok = timer:sleep(D),
-                  hn_db_api:handle_dirty(Site, Rec);
-              dirty_notify_back_in  ->
-                  hn_db_api:handle_dirty(Site, Rec);
-              dirty_notify_back_out ->
-                  hn_db_api:handle_dirty(Site, Rec)
-          end,
-    Ret.
+    case element(1, Rec) of
+        dirty_cell ->
+            hn_db_api:handle_dirty_cell(Site, Rec);
+        dirty_inc_hn_create ->
+            hn_db_api:notify_back_create(Site, Rec);
+        dirty_notify_in ->
+            hn_db_api:handle_dirty(Site, Rec);
+        dirty_notify_out ->
+            #dirty_notify_out{delay = D} = Rec,
+            ok = timer:sleep(D),
+            hn_db_api:handle_dirty(Site, Rec);
+        dirty_notify_back_in  ->
+            hn_db_api:handle_dirty(Site, Rec);
+        dirty_notify_back_out ->
+            hn_db_api:handle_dirty(Site, Rec)
+    end.

@@ -823,7 +823,7 @@ register_out_hn(Parent, Child, Proxy, Biccie)
                       biccie          = Biccie,
                       child_site      = ChildSite,
                       child_proxy     = Proxy},
-    mnesia:write(trans(ParentSite, Hn)).
+    mnesia:write(trans(ParentSite, outgoing_hn), Hn, write).
 
 %% @spec does_remote_link_exist(Parent::#refX{}, Child::#refX{}, Type) -> 
 %% [true | false]
@@ -890,7 +890,7 @@ mark_dirty(Site, Record)
         orelse is_record(Record, dirty_notify_in)
         orelse is_record(Record, dirty_notify_back_out)
         orelse is_record(Record, dirty_inc_hn_create)) ->
-    mnesia:write(trans(Site, Record)).
+    mnesia:write(trans(Site, Record), Record, write).
 
 %% @spec write_remote_link(Parent::#refX{}, Child::#refX{}, Type) -> ok
 %% @doc writes a remote link between the parent and the child.
@@ -967,8 +967,7 @@ clear_dirty(Site, Rec) when (is_record(Rec, dirty_notify_in)
                        orelse is_record(Rec, dirty_inc_hn_create)
                        orelse is_record(Rec, dirty_notify_back_in)
                        orelse is_record(Rec, dirty_notify_back_out)) ->
-    Rec2 = trans(Site, Rec),
-    mnesia:delete_object(Rec2).
+    mnesia:delete_object(trans(Site, Rec), Rec, write).
 
 -spec clear_dirty_cell(string(), #dirty_cell{}) -> ok.
 %% @doc clears a dirty cell marker.
@@ -2181,15 +2180,13 @@ get_local_item_index(#refX{site = S, path = P, obj = O} = RefX) ->
         Idx   -> Idx        
     end.
             
-% converts a tablename into the site-specific tablename
+%% converts a tablename into the site-specific tablename
 trans(Site, TableName) when is_atom(TableName) ->
     Prefix = get_prefix(Site),
     list_to_atom(Prefix ++ "&" ++ atom_to_list(TableName));
-% converts a record into the site-specific record
+%% converts a record into the site-specific record
 trans(Site, Record) when is_tuple(Record) -> 
-    OldName = element(1, Record),
-    NewName = trans(Site, OldName),
-    setelement(1, Record, NewName).
+    trans(Site, element(1, Record)).
 
 % splits a tablename into the site and record
 split_trans(List) when is_list(List)->
@@ -2219,6 +2216,8 @@ trans_back(Record) when is_tuple(Record)->
     [_Site, _Port, NewName] = string:tokens(OldName2, "&"),
     setelement(1, Record, list_to_atom(NewName)).
 
+get_prefix(R) when is_record(R, refX) ->
+    get_prefix(R#refX.site);
 get_prefix(Site) ->
     [_Proto, Dom, Port] = string:tokens(Site, ":"),
     [$/, $/ | Dom2] = Dom,

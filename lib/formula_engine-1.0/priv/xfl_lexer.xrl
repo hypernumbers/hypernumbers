@@ -1,3 +1,4 @@
+%%% -*- mode: erlang -*-
 %%% @doc    Lexer for XFL.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 

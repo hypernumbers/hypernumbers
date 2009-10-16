@@ -82,11 +82,12 @@ notify_back(Record) when is_record(Record, dirty_notify_back_in) ->
                      {"parent_url", PUrl},
                      {"type",       Change},
                      {"parent_vsn", PVsJson},
-                     {"child_vsn",  CVsJson}]},
+                     {"child_vsn",  CVsJson},
+                     {"stamp",      0}]}, %% Todo: Add a real value
     Actions = lists:flatten(mochijson:encode(Vars)),
 
-    %% not very robust!
-    "success" = hn_util:post(PUrl, Actions, "application/json"),
+    %% not very robust! -- NEED to check for "success" and timetamp
+    hn_util:post(PUrl, Actions, "application/json"),
     ok.
 
 %% @spec notify_back_create(Record::#dirty_inc_hn_create{}) -> ok
@@ -114,15 +115,16 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
                      {"proxy",      Proxy},
                      {"child_url",  CUrl},
                      {"parent_vsn", PVsn2},
-                     {"child_vsn",  CVsn2}]},
+                     {"child_vsn",  CVsn2},
+                     {"stamp",      0}]}, % TODO: Add a proper value
     Actions = lists:flatten(mochijson:encode(Vars)),
 
     case http:request(post, {PUrl, [], "application/json", Actions}, [], []) of
         {ok, {{_V, 200, _R}, _H, Json}} ->
-            {struct, [{"value",            Value},
-                      {"__dependecy-tree", DepTree},
-                      {"parent_vsn",       NewPVsnJson}]}
-                = mochijson:decode(Json),
+            {struct, [{"value",           Value},
+                      {"dependency-tree", DepTree},
+                      {"parent_vsn",      NewPVsnJson},
+                      {"stamp",           _StampBack}]} = mochijson:decode(Json),
             NewPVsn = json_util:unjsonify(NewPVsnJson),
             % check that the pages are in sync
             {xml, [], DepTree2} = simplexml:from_xml_string(DepTree),

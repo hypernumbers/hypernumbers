@@ -74,7 +74,8 @@ notify_style(Site, Path, Index, Style) ->
 notify_error(Site, Path, Ref, error_in_formula, Value) ->
     Msg = {struct, [{"type", "error"}, {"reftype", "cell"},
                     {"ref", hn_util:obj_to_str(Ref)}, 
-                    {"original", Value}]},
+                    {"original", Value},
+                    {"path", hn_util:list_to_path(Path)}]},
     gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
 
 %% @doc  Send an update to the comet server to forward to client
