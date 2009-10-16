@@ -30,6 +30,6 @@ init([]) ->
                  permanent, 2000, worker, [auth_srv]},
 
     {ok,{{one_for_one,60,1}, [Config, Random, Remote, 
-                              Dirty_Sup, Dirty_Sub, Status,
-                              Auth]}}.
+                              Dirty_Sup, Dirty_Sub, Status
+                              ]}}.
 
