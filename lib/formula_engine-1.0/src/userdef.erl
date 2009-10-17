@@ -2,6 +2,15 @@
 -module(userdef).
 
 -include("spriki.hrl").
+-include("typechecks.hrl").
+
+-import(muin_collect, [col/2, col/3, col/4]).
+
+%% exports for Project
+-export([
+         vlookuphn/3,
+         is_unique/1
+         ]).
 
 %% exports for the AXA demo
 -export([
@@ -24,7 +33,32 @@
 
 -export([get_username/0]).
 
+is_unique(Args) ->
+    io:format("Args is ~p~n", [Args]),
+    col(Args,
+        [eval_funs, {cast, str, num, ?ERRVAL_VAL}, fetch, flatten,
+         {ignore, blank}, {ignore, array}, {ignore, str}, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun blah/1),
+    "mh, hmm...".
+
+blah(A) -> ok.
+
+is_unique1(Args) ->
+    io:format("Args is ~p~n", [Args]),
+    ok.
+
+vlookuphn(Key, {range, Array}, ResultCol) ->
+    {list, v_hn1(Key, Array, ResultCol, [])}.
+
+v_hn1(_Key, [], _, Acc)                -> lists:reverse(Acc);
+v_hn1(Key, [[Key | T] | T1], Pos, Acc) -> NewAcc = lists:nth(Pos - 1, T),
+                                          v_hn1(Key, T1, Pos, [NewAcc | Acc]);
+v_hn1(Key, [_H | T], Pos, Acc)         -> v_hn1(Key, T, Pos, Acc).
+    
+
 slow([_X]) -> wait(100000).
+
 
 wait(0) -> 1;
 wait(N) -> wait(N - 1).
