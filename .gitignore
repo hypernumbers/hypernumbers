@@ -12,7 +12,7 @@ ebin/hypernumbers.*
 
 
 ## Script used for fetching svn externals
-lib/git-svn-clone-externals
+lib/git-svn-*
 
 priv/hypernumbers.conf
 priv/muin/*.xrl

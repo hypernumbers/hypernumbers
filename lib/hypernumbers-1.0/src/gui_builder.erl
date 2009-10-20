@@ -15,7 +15,7 @@
 
 %%-export([test/0]).
 
--include("xmerl.hrl").
+-include_lib("xmerl/include/xmerl.hrl").
 
 get_file(File) ->
     {ParsResult, _Misc} = xmerl_scan:file(File),
