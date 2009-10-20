@@ -22,9 +22,6 @@
          notify_back/1,
          notify_back_create/1]).
 
--define(init, initialise_remote_page_vsn).
--define(api, hn_db_api).
-
 %% @spec notify(Record::#dirty_notify_out{}) -> ok
 %% @doc notifies any remote sites that a hypernumber has changed.
 %% the reference must be for a cell
@@ -128,11 +125,14 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
             NewPVsn = json_util:unjsonify(NewPVsnJson),
             % check that the pages are in sync
             {xml, [], DepTree2} = simplexml:from_xml_string(DepTree),
-            case ?api:check_page_vsn(CSite, NewPVsn) of
-                synched         -> {Value, DepTree2, Biccie, NewPVsn};
-                not_yet_synched -> {ok,ok} = ?api:?init(CSite, NewPVsn),
-                                   {Value, DepTree2, Biccie, PVsn};
-                unsynched       -> {error, unsynched, PVsn}
+            case hn_db_api:check_page_vsn(CSite, NewPVsn) of
+                synched -> 
+                    {Value, DepTree2, Biccie, NewPVsn};
+                not_yet_synched -> 
+                    {ok,ok} = hn_db_api:intialise_remote_page_vsn(CSite, NewPVsn),
+                    {Value, DepTree2, Biccie, PVsn};
+                unsynched ->
+                    {error, unsynched, PVsn}
             end;
         {ok, {{_V, 503, _R}, _H, _Body}} ->
             io:format("-returned 503~n"),
@@ -140,5 +140,3 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
                       "to the hypernumber here...~n"),
             {error, permission_denied}
     end.
-
-

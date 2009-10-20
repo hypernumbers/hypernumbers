@@ -392,7 +392,6 @@ ipost(Ref, _Type, _Attr,
     {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX, 
                                                       Proxy, Biccie),
     Return2 = lists:append([Return, [{"stamp", Stamp}]]),
-    io:format("Return2 -> ~p~n", [Return2]),
     {struct, Return2};
     %% io:format("In hn_mochi (notify_back_create) Return2 is ~p~n-"++
     %%           "process dictionary ~p~n", [Return2, get()]),

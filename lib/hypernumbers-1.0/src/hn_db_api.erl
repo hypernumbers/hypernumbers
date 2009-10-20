@@ -427,13 +427,16 @@ check_page_vsn(Site, Version) when is_record(Version, version) ->
                 PageX = hn_util:url_to_refX(Page),
                 OldV = hn_db_wu:read_page_vsn(Site, PageX),
                 case {NewV, OldV} of
-                    {Vsn, Vsn}          -> synched;
-                    {"undefined", OldV} ->
-                        ok = hn_db_wu:initialise_remote_page_vsn(Site,
-                                                                 PageX, OldV),
+                    {Vsn, Vsn} -> 
                         synched;
-                    {NewV, "undefined"} -> not_yet_synched;
-                    {NewV, OldV}        -> unsynched
+                    {"undefined", OldV} ->
+                        ok = hn_db_wu:initialise_remote_page_vsn(Site, PageX, 
+                                                                 OldV),
+                        synched;
+                    {NewV, "undefined"} -> 
+                        not_yet_synched;
+                    {NewV, OldV} -> 
+                        unsynched
                 end
         end,
     mnesia:activity(transaction, F).
@@ -452,7 +455,7 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
                   hn_db_wu:register_out_hn(Parent, Child, Proxy, Biccie),
                   List = hn_db_wu:read_attrs(Parent, ["value", "dependency-tree"], read),
                   List2 = extract_kvs(List),
-                  #refX{site = Site} = Parent,
+                  Site = Parent#refX.site,
                   Version = hn_db_wu:read_page_vsn(Site, Parent),
                   
                   % get the value (if there is one)
@@ -717,7 +720,7 @@ write_remote_link(Parent, Child, Type)
 %% trigger a creation process and return 'blank' for the moment... when the
 %% hypernumber is set up the 'correct' value will come through as per normal...
 read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
-    io:format("got to A~n"),
+    %%io:format("got to A~n"),
     #refX{site = CSite} = C,
     P2 = P#refX{obj = {page, "/"}},
     C2 = C#refX{obj = {page, "/"}},
@@ -725,11 +728,11 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
     PUrl = hn_util:refX_to_url(P2),
     PVsn = #version{page = PUrl, version = hn_db_wu:read_page_vsn(CSite, P)},
     CVsn = #version{page = CUrl, version = hn_db_wu:read_page_vsn(CSite, C)},
-    io:format("got to B~n"),
+    %%io:format("got to B~n"),
     F = fun() ->
                 case hn_db_wu:read_incoming_hn(CSite, P) of
                     [] ->
-                        io:format("got to C~n"),
+                        %%io:format("got to C~n"),
                         Rec = #dirty_inc_hn_create{parent = P, child = C,
                                                    parent_vsn = PVsn, child_vsn = CVsn},
                         ok = hn_db_wu:mark_dirty(CSite, Rec),
@@ -756,7 +759,7 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
                         {Val, DepTree}
                 end
         end,
-    io:format("got to E~n"),
+    %%io:format("got to E~n"),
     mnesia:activity(transaction, F).
 
 %% @spec notify_back_create(Site, Record::#dirty_inc_hn_create{}) -> ok
@@ -772,7 +775,6 @@ notify_back_create(Site, Record)
     #refX{site = CSite} = C,
 
     Return = horiz_api:notify_back_create(Record),
-
     Fun =
         fun() ->
                 ok = init_front_end_notify(),

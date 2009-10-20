@@ -913,6 +913,7 @@ write_remote_link(P, C, Type)
 %% a new value.
 %% Both Parent and Child must be cell references
 %% This function also triggers the child cells as dirty so they recalculate
+
 update_inc_hn(Parent, Child, Val, DepTree, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
     #refX{site = ChildSite} = Child,
