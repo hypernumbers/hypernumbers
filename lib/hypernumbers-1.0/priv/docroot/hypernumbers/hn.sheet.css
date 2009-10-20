@@ -1,6 +1,9 @@
+
+/* @override http://127.0.0.1:9000/hypernumbers/hn.sheet.css */
+
 /******************************************************************************
    TAG STYLES
-   ******************************************************************************/
+******************************************************************************/
 html,body { 
     overflow: hidden;
     height:   100%;
@@ -207,8 +210,124 @@ p,h1,h2,h3,h4,h5 {
 #languages .flag.en_us { background-position: -162px -179px; }
 
 /******************************************************************************
-	FILE MENU STYLES
-******************************************************************************/
+/* Page Menu
+/******************************************************************************/
+#pagemenu {
+    position: relative;
+    padding-left: 10px;
+	background-color: #ebeaeb;
+}
+
+/* icons */
+#pagemenu .crumb,
+#pagemenu .open,
+#pagemenu .leaf {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	vertical-align: middle;
+	background-repeat: no-repeat;
+}
+#pagemenu .crumb {
+	background-image: url(/hypernumbers/right.png);
+}
+#pagemenu .leaf {
+	background-image: ""
+}
+#pagemenu .open {
+	background-image: url(/img/page_edit.png);
+	visibility: hidden;
+}
+
+#pagebar div.trail {
+	display: inline-block;
+	max-width: 120px;
+    cursor: pointer;
+	vertical-align: middle;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	color: #004b97;
+	font-weight: bold;
+	text-overflow:ellipsis;
+	overflow:hidden;
+	white-space:nowrap;
+	font-size: 1.1em;
+}
+#pagebar div.current {
+	text-decoration: underline;
+}
+#pagebar div:hover {
+	font-style: italic;
+}
+
+#pagedialog {
+    position: absolute;
+   	display: none;
+	background-color: #c0c0c0;
+    left: 0px;
+    z-index: 20000;
+    min-height: 150px;
+	border: 2px none #a9a9a9;
+	border-bottom-style: solid;
+	border-right-style: solid;
+	border-top-style: solid;
+}
+#pagedialog ul {
+	float: left;
+	margin: 0px !important;
+	padding: 0px !important;
+}
+#pagedialog ul li {
+	padding: 10px !important;
+	cursor: pointer;
+	color: white;
+}
+#pagedialog ul li .title {
+	width: 200px;
+	float: left;
+	padding-right: 10px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;		
+}
+#pagedialog ul li .right {
+	background: green;
+	text-align: right;
+	float: right;
+}
+
+#pagedialog #pane_divider {
+	float: left;
+	width: 5px;
+	height: 1px;
+	background-color: #004b97;
+}
+
+#pagedialog ul#sibiling_pane li.selected {
+	background-color: #004b97;
+}
+#pagedialog ul#children_pane {
+	background-color: #797979;
+}
+#pagedialog ul li:hover {
+	background-color: #3076ad;
+}
+
+#pagedialog .pageurl {
+	clear: both;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin-left: 10px;
+	border-top: 1px solid #797979;
+	font-style: italic;
+	color: #424242;
+}
+
+
+/*****************************************************************************
+/* FILE MENU STYLES
+/*****************************************************************************/
+
 #menu { 
  height:     22px;
  background: #FFFFFF;
@@ -723,6 +842,7 @@ p,h1,h2,h3,h4,h5 {
  background: transparent;
  width:      1px;
  border:     0px;
+ visibility: hidden;
 }
 
 #current { 

@@ -58,10 +58,24 @@
           </ul>
         </td>
       </tr>
+      <tr height="32px">
+        <td>
+          <div id="pagemenu">
+            <div id="pagebar">
+              <div id="pageroot" class="trail">$txt:{My Spreadsheets}$</div>
+            </div>
+            <div id="pagedialog">
+              <ul id="sibiling_pane"></ul>
+              <div id="pane_divider"></div>
+              <ul id="children_pane"></ul>
+              <div class="pageurl">Url: <span id="pageurl"></span></div>
+            </div>
+          </div>
+        </td>
+      </tr>
       <tr>
         <td height="22px">
           <div>
-
             <ul id="menu">              
               <li id="browse">
                 <a>$txt:{My Spreadsheets}$</a>
@@ -351,16 +365,10 @@
           </table>
         </td>
       </tr>
-      <tr>
-        <td height="24px" id="footer">
-          <div style="position:relative;">
-            &nbsp;&nbsp;Currently Editing : <span id="path"></span>
-            <span id="hnpaste" style="display:none;width:250px; position:absolute;top:-7px;right:15px;"></span>
-            <span id="pathpaste" style="top:-7px;right:15px;display:none;"></span>
-          </div>
-        </td>
-      </tr>
     </table>
+
+    <span id="hnpaste" style="display:none;width:250px; position:absolute;top:-7px;right:15px;"></span>
+    <span id="pathpaste" style="top:-7px;right:15px;display:none;"></span>
 
     <span id="hidden_input"></span>
     <textarea id="paste"></textarea>
@@ -620,6 +628,7 @@
   <script src="/hypernumbers/hn.layout.js"></script>
   <script src="/hypernumbers/hn.layout.panes.js"></script>
   <script src="/hypernumbers/hn.layout.pane.js"></script>
+  <script src="/hypernumbers/hn.pagemenu.js"></script>
   <script src="/hypernumbers/hn.toolbar.js"></script>
   <script src="/hypernumbers/hn.callbacks.js"></script>
   <script src="/hypernumbers/hn.selection.js"></script>
