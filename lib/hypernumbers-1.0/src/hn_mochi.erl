@@ -28,10 +28,15 @@
 
 req(Req) ->
     case filename:extension(Req:get(path)) of
+
+        % Dont Cache templates
+        X when X == ".tpl" ->
+            "/"++RelPath = Req:get(path),
+            Req:serve_file(RelPath, docroot(), ?hdr);            
         
         % Serve Static Files
         X when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; 
-        X == ".ico"; X == ".json" ->
+        X == ".ico"; X == ".json"; X == ".tpl" ->
             "/"++RelPath = Req:get(path),
             Req:serve_file(RelPath, docroot());
         
@@ -157,17 +162,17 @@ iget(Req, Ref, page, [{"updates", Time}, {"path", Path}], _User, _CType) ->
     remoting_request(Req, Ref#refX.site, Paths, Time);
 iget(Req, #refX{site = S}, page, [{"status", []}], _User, _CType) -> 
     json(Req, status_srv:get_status(S));
-iget(Req, #refX{site = _S}, page, [{"guis", []}], _User, _CType) ->
-    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/dogfood2/",
-    {ok, Files} = file:list_dir(Path),
-    Files2 = hn_util:get_html_files(Files),
-    json(Req, {array, Files2});
+iget(Req, _Ref, page, [{"views", []}], _User, _CType) ->
+    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/views/",
+    Files = [ filename:basename(X, ".tpl")
+              || X <- filelib:wildcard(Path++"*.tpl")],
+    json(Req, {array, Files});
 iget(Req, Ref, page, [{"pages", []}], _User, _CType) -> 
     json(Req, pages(Ref));
 iget(Req, Ref, page, [], User, json) ->
     json(Req, page_attributes(Ref, User));
 
-iget(Req, #refX{path = _P, obj = {cell, {_X, _Y}}} = Ref, cell, [], _User, json) ->
+iget(Req, Ref, cell, [], _User, json) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", Val}}] when is_atom(Val) ->
                 atom_to_list(Val);
@@ -334,9 +339,9 @@ ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr,
     hn_db_api:clear(Ref, list_to_atom(What));
 
 ipost(_Req, _Ref, _Type, _Attr, 
-      [{"save_gui", {struct, [{"name", Name}, {"form", Form}]}}], _User) ->
-    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/dogfood2/",
-    File = Path ++ filename:basename(Name) ++ ".html",
+      [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], _User) ->
+    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/views/",
+    File = Path ++ filename:basename(Name) ++ ".tpl",
 
     _Return=filelib:ensure_dir(File),
     
@@ -347,9 +352,6 @@ ipost(_Req, _Ref, _Type, _Attr,
 	_ ->
 	    error
     end,
-    %% now delete all the get_text variants of the form
-    FileList = filelib:wildcard(File ++ ".*"),
-    [file:delete(X) || X <- FileList],
     ok;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -621,10 +623,11 @@ remoting_request(Req, Site, Paths, Time) ->
     end.
 
 get_var_or_cookie(Key, Vars, Req) ->
+
     case lists:keysearch(Key, 1, Vars) of
         false ->
             {ok, Req:get_cookie_value(Key)};
-        {value, {"auth", Auth}} ->
+        {value, {"auth", Auth}} -> 
             {ok, Auth}
     end.
 

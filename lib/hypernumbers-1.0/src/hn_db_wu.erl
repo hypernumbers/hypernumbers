@@ -1986,7 +1986,8 @@ copy_style(#refX{obj = {cell, _}} = From,
 %% or a list of them. (rows, columns and ranges are disallowed).
 %% @todo extend the hypernumbers paradigm to include registering with a range,
 %% column, row or query, etc, etc
-read_incoming_hn(Site, Args) -> read_incoming_hn2(Site, Args).
+read_incoming_hn(Site, Args) ->
+    read_incoming_hn2(Site, Args).
 
 read_incoming_hn2(Site, List) when is_list(List) ->
     Return = [read_incoming_hn2(Site, X) || X <- List], 
@@ -2001,6 +2002,7 @@ read_incoming_hn2(Site, #refX{obj = {cell, _}} = Parent)
 
 read_incoming_hn3(Site, Head) ->
     Table = trans(Site, incoming_hn),
+    io:format("~p~n",[Table]),
     mnesia:select(Table, [{Head, [], ['$_']}], write).
 
 %% @spec find_incoming_hn(Site, Parent) -> #incoming_hn{} | []

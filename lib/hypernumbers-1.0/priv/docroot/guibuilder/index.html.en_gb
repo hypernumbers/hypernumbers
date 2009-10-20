@@ -16,7 +16,19 @@
   </head>
   <body>
 
-    <div id="preview"> 
+    <div id="control">
+
+      <div id="viewspanel">
+        <input type="text" id="viewname" value="Enter Name" />
+        <ul id='views'></ul>
+        <input type="button" value="▾" id="viewviews" class="btn" />
+      </div>
+
+      <input type="button" value="save" class="btn" id="saveview" />
+      <input type="button" value="preview" class="btn" id="previewbtn" />
+      </div>
+
+    <div id="preview" class="editing"> 
       &nbsp;
     </div>
    
@@ -50,7 +62,7 @@
         <div style="height:200px;position:relative;" 
              class="subpanel">
           
-          <table cellspacing="0" cellpadding="0">
+          <table cellspacing="0" cellpadding="0" id="sheetwrapper">
             <tr height="20px">
               <td id="corner"></td>
               <td colspan="2" style="overflow:hidden">
@@ -117,11 +129,51 @@
           <span id="hidden_input"></span>
           <textarea id="paste"></textarea>
           <div id="overlay"></div>        
+          <input type="button" value="Use Range" id="use_range" />
         </div>
 
         <h3 class="togglesubpanel">Spreadsheet?</h3>
 
       </div>
+
+      <div id="configurehtml">
+        
+        <div id="configuretextpanel">
+          <em>text</em>
+          <table>
+            <tr><td><strong><label for="header">header</label></strong></td>
+              <td>
+                <input type="checkbox" name="header" class="header" />
+              </td>
+            </tr>
+            <tr><td><strong>bind:</strong></td>
+              <td><input type="text" class="bind" /></td></tr>
+            <tr><td></td>
+              <td><input type="button" class="delete" value="delete" />
+            </td></tr>
+          </table>          
+        </div>
+
+        <div id="configuregridpanel">
+          <em>grid</em>
+          <table>
+            <tr><td><strong>bind:</strong></td>
+              <td><input type="text" class="bind" /></td></tr>
+            <tr><td></td>
+              <td><input type="button" class="delete" value="delete" />
+            </td></tr>
+          </table>          
+        </div>
+        
+        <div id="controlholder">
+          <div class="control">
+            <input type="button" value="delete" /><br />
+            <input type="button" value="configure" /><br />
+            <input type="button" value="move" />
+          </div>
+        </div>
+      </div>
+
     </div>
 
   

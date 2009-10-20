@@ -10,7 +10,7 @@ html, body {
 body {  
  background: #FFF;
  margin: 0px;
- font:   11px Arial,"Helvetica Neue", sans-serif;
+ font:   12px Arial,"Helvetica Neue", sans-serif !important;
 }
 
 #placer {  
@@ -25,7 +25,7 @@ body {
 
 #configurepanel {  
  position:absolute;
- top:10px;
+ top:50px;
  right:20px;
 }
 
@@ -37,19 +37,28 @@ body {
 }
 
 .panel {  
- position:relative;
- background:#66A3D2;
- border:1px solid #4491C2;
- -moz-border-radius:3px;
- margin-bottom:10px;
+    position:relative;
+    background:#333333;
+    border:1px solid #999999;
+    -moz-border-radius:3px;
+    margin-bottom:10px;
 }
 
 .configurepanel {  
- padding-bottom:35px;
+    padding-bottom:35px;
+    color: #222222;
 }
 
 .disabled {  
  opacity:0.2;
+}
+
+#use_range {
+    padding:10px;
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    margin:20px;
 }
 
 .togglesubpanel {  
@@ -57,6 +66,8 @@ body {
  text-decoration:underline;
  cursor:pointer;
 }
+
+.panel.disabled .subpanel { display:none; }
 
 #previewcode {  
  width:100%; 
@@ -128,6 +139,7 @@ body {
 }
 
 .configuring {
+    color:#333333;
     background: #DDD;
     border: 1px solid #AAA !important;
 }
@@ -136,7 +148,108 @@ body {
     border: 1px solid transparent;
 }
 
-.hn:hover {
-    cursor:pointer;
-    border: 1px dashed #999;
+#control {
+    padding:10px;
+    vertical-align:middle;
+    background: #222222;
+    color: white;
 }
+
+#control #viewname  {
+    background:#CCCCCC;
+    border:2px solid #666666;
+    padding:2px;
+    color:#111111;
+    -moz-border-radius:4px; -webkit-border: 4px;
+}
+
+.btn {
+    background:#EEE;
+    border:1px solid #999;
+    padding:2px;
+    color:#111111;
+    -moz-border-radius:4px; -webkit-border: 4px;
+}
+
+#previewbtn {
+    width:70px;
+    float:right;
+}
+
+.control {
+    width:50px;
+    display:none;
+    position:absolute;
+    left:-50px;
+    text-align:right;
+    z-index:9999999;
+}
+
+.control input {
+    font-size:9px;
+    background:#222;
+    color:white;
+    border:0px;
+    margin-bottom:2px;
+    cursor:pointer;
+}
+
+.control input:hover {
+    background:#444;
+}
+
+.wrp:hover .control { display:block; }
+.wrp { position:relative;}
+
+
+#viewname { width:80px; }
+
+#views { 
+    position:absolute; width:80px; 
+    display:none;
+    background:#CCCCCC;
+    border:2px solid #666666;
+    padding:2px;
+    color:#111111;
+    left:0px;
+    z-index:999;
+    -moz-border-radius:4px; -webkit-border: 4px;
+}
+#views li:hover {
+    cursor:pointer;
+    background: #999999;
+}
+
+#control #viewspanel {
+    width:90px;
+    position:relative;
+    float:left;
+}
+
+#control #viewviews {
+    position:absolute;
+    top:1px;
+    right:5px;
+    background:none;
+    border:none;
+}
+
+.hnheader {
+    font-size: 18px; 
+    font-weight: bold;
+}
+
+.hn { margin:5px 5px 10px 5px; }
+p { margin:0px !important; }
+.editing .hn:hover { border:1px dashed #999; }
+
+label {
+    font-weight:bold;
+    display:block; 
+}
+
+.grid .by { margin: 0px; color:#999;} 
+.grid .hnheader { margin:0px; } 
+.grid .container { margin-bottom: 20px; }
+.grid hr { background:#999; height:1px; border:0px; }
+
