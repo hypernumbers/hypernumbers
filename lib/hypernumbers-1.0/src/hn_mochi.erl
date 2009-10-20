@@ -28,7 +28,7 @@
 
 req(Req) ->
     case filename:extension(Req:get(path)) of
-
+        
         % Dont Cache templates
         X when X == ".tpl" ->
             "/"++RelPath = Req:get(path),
@@ -107,9 +107,8 @@ handle_req(Method, Req, Ref, Vars, User) ->
                 mochiweb_headers:lookup('Content-Type', Req:get(headers)),
 
             %% TODO: Log file uploads.
-            case string:substr(Ct, 1, 19) of
-
-                "multipart/form-data" ->
+            case Ct of
+                "multipart/form-data" ++ _Rest ->
 
                     {Data, File} = hn_file_upload:handle_upload(Req, Ref, User),
                     Name = filename:basename(File),
@@ -122,9 +121,10 @@ handle_req(Method, Req, Ref, Vars, User) ->
                     Body = Req:recv_body(),
                     {ok, Post} = get_json_post(Body),
                     mochilog:log(Req, Ref, hn_users:name(User), Body),
-                    case ipost(Req, Ref, Type, Vars, Post, User) of
-                        ok  -> json(Req, "success");
-                        ret -> ok
+                    case ipost(Ref, Type, Vars, Post, User) of
+                        ok            -> json(Req, "success");
+                        {struct, _}=S -> json(Req, S);
+                        err           -> Req:not_found()
                     end
             end
     end.    
@@ -192,13 +192,13 @@ iget(Req, Ref, _Type,  Attr, User, _CType) ->
     serve_html(Req, "hypernumbers/404.html", User),
     Req:not_found().
 
-ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P} = Ref, _Type, _Attr, 
       [{"drag", {_, [{"range", Rng}]}}], User) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:drag_n_drop(Ref, Ref#refX{obj = hn_util:parse_attr(range,Rng)}),
     ok;
 
-ipost(Req, #refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
+ipost(#refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
     [{"email", Email},{"pass", Pass},{"remember", Rem}] = Data,
     Resp = case hn_users:login(Site, Email, Pass, Rem) of
                {error, invalid_user} -> 
@@ -206,28 +206,27 @@ ipost(Req, #refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
                {ok, Token} ->
                    [{"response","success"},{"token",Token}]
            end,
-    json(Req, {struct, Resp}),
-    ret;
+    {struct, Resp};
 
 %% the purpose of this message is to mark the mochilog so we don't 
 %% need to do nothing with anything...
-ipost(_Req, _Ref, _Type, [{"mark", []}], 
+ipost(_Ref, _Type, [{"mark", []}], 
       [{"set",{struct, [{"mark", _Msg}]}}], _User) ->
     ok;
 
 %% the purpose of this message is to write a GUI trail in the mochilog so we 
 %% don't need to do nothing with anything...
-ipost(_Req, _Ref, _Type, [{"trail", []}], 
+ipost(_Ref, _Type, [{"trail", []}], 
       [{"set",{struct, [{"trail", _Msg}]}}], _User) ->
     ok;
 
-ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"insert", "before"}], User)
   when O == row orelse O == column ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:insert(Ref);
 
-ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"insert", "after"}], User)
   when O == row orelse O == column ->
     ok = status_srv:update_status(User, S, P, "edited page"),
@@ -235,14 +234,14 @@ ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr,
     hn_db_api:insert(RefX2);
 
 %% by default cells and ranges displace vertically
-ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"insert", "before"}], User)
   when O == cell orelse O == range ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:insert(Ref, vertical);
 
 %% by default cells and ranges displace vertically
-ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"insert", "after"}], User)
   when O == cell orelse O == range ->
     ok = status_srv:update_status(User, S, P, "edited page"),
@@ -250,14 +249,14 @@ ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr,
     hn_db_api:insert(RefX2);
 
 %% but you can specify the displacement explicitly
-ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"insert", "before"}, {"displacement", D}], User)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:insert(Ref, list_to_existing_atom(D));
 
-ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"insert", "after"}, {"displacement", D}], User)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
@@ -265,31 +264,31 @@ ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr,
     RefX2 = make_after(Ref),
     hn_db_api:insert(RefX2, list_to_existing_atom(D));
 
-ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"delete", "all"}], User)
   when O == page ->
     ok = status_srv:update_status(User, S, P, "deleted page"),
     hn_db_api:delete(Ref);
 
-ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"delete", "all"}], User)
   when O == row orelse O == column ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:delete(Ref);
 
-ipost(_Req, #refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
       [{"delete", Direction}], User)
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:delete(Ref, Direction);
 
-ipost(_Req, #refX{site = S, path = P} = Ref, range, _Attr, 
+ipost(#refX{site = S, path = P} = Ref, range, _Attr, 
       [{"copy", {struct, [{"src", Src}]}}], User) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref);
 
-ipost(_Req, #refX{site = S, path = P, obj = {range, _}} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P, obj = {range, _}} = Ref, _Type, _Attr, 
       [{"borders", {struct, Attrs}}], User) ->
     Where = from("where", Attrs),
     Border = from("border", Attrs),
@@ -299,23 +298,22 @@ ipost(_Req, #refX{site = S, path = P, obj = {range, _}} = Ref, _Type, _Attr,
     ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
     ok;
 
-ipost(Req, _Ref, _Type, _Attr,
+ipost(_Ref, _Type, _Attr,
       [{"set", {struct, [{"language", _Lang}]}}], anonymous) ->
-    json(Req, {struct, [{"error", "cant set language for anonymous users"}]}),
-    ret;
+    {struct, [{"error", "cant set language for anonymous users"}]};
 
-ipost(_Req, #refX{site = Site, path=["_user"]}, _Type, _Attr, 
+ipost(#refX{site = Site, path=["_user"]}, _Type, _Attr, 
       [{"set", {struct, [{"language", Lang}]}}], User) ->
     hn_users:update(Site, User, "language", Lang);
 
-ipost(_Req, #refX{site = S, path = P}, _Type, _Attr, 
+ipost(#refX{site = S, path = P}, _Type, _Attr, 
       [{"set", {struct, [{"list", {array, Array}}]}}], User) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     {Lasts, Refs} = fix_up(Array, S, P),
     ok = hn_db_api:write_last(Lasts),
     ok = hn_db_api:write_attributes(Refs);
 
-ipost(_Req, #refX{site = S, path = P} = Ref, Type, _Attr, 
+ipost(#refX{site = S, path = P} = Ref, Type, _Attr, 
       [{"set", {struct, Attr}}], User) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     case Attr of
@@ -332,13 +330,13 @@ ipost(_Req, #refX{site = S, path = P} = Ref, Type, _Attr,
             hn_db_api:write_attributes([{Ref, Attr}])
     end;
 
-ipost(_Req, #refX{site = S, path = P} = Ref, _Type, _Attr, 
+ipost(#refX{site = S, path = P} = Ref, _Type, _Attr, 
       [{"clear", What}], User) 
   when What == "contents"; What == "style"; What == "all" ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:clear(Ref, list_to_atom(What));
 
-ipost(_Req, _Ref, _Type, _Attr, 
+ipost(_Ref, _Type, _Attr, 
       [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], _User) ->
     Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/views/",
     File = Path ++ filename:basename(Name) ++ ".tpl",
@@ -359,7 +357,7 @@ ipost(_Req, _Ref, _Type, _Attr,
 %%% Horizonal API = notify_back_create handler                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Req, Ref, _Type, _Attr,
+ipost(Ref, _Type, _Attr,
       [{"action", "notify_back_create"}|T], _User) ->
 
     Biccie   = from("biccie",     T),
@@ -394,7 +392,8 @@ ipost(Req, Ref, _Type, _Attr,
     {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX, 
                                                       Proxy, Biccie),
     Return2 = lists:append([Return, [{"stamp", Stamp}]]),
-    json(Req, {struct, Return2});
+    io:format("Return2 -> ~p~n", [Return2]),
+    {struct, Return2};
     %% io:format("In hn_mochi (notify_back_create) Return2 is ~p~n-"++
     %%           "process dictionary ~p~n", [Return2, get()]),
     
@@ -404,7 +403,7 @@ ipost(Req, Ref, _Type, _Attr,
 %%% Horizonal API = notify_back handler                                      %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Req, Ref, _Type, _Attr,
+ipost(Ref, _Type, _Attr,
       [{"action", "notify_back"} |T] = _Json, _User) ->
     Biccie    = from("biccie",     T),
     ChildUrl  = from("child_url",  T),
@@ -441,18 +440,17 @@ ipost(Req, Ref, _Type, _Attr,
         not_yet_synched -> 
             ok = hn_db_api:initialise_remote_page_vsn(Site, CVsn)
     end,
-    Json = {struct, [{"result", "success"}, {"stamp", Stamp}]},
-    json(Req, Json),
-    io:format("In hn_mochi (notify_back) Json is ~p~n-process dictionary ~p~n",
-              [Json, get(mochiweb_request_body)]),
-    ret;
+    {struct, [{"result", "success"}, {"stamp", Stamp}]};
+    %% io:format("In hn_mochi (notify_back) Json is ~p~n-process dictionary ~p~n",
+    %%           [Json, get(mochiweb_request_body)]),
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Horizonal API = notify handler                                           %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
+ipost(Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
     Biccie    = from("biccie",     T),
     ParentUrl = from("parent_url", T),
     Type      = from("type",       T),
@@ -499,19 +497,16 @@ ipost(Req, Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
                 end
         end,
     [Fun(X) || X <- CVsn],
-    Json = {struct, [{"result", "success"}, {"stamp", Stamp}]},
-    json(Req, Json),
-    io:format("In hn_mochi (notify) Json is ~p~n-process dictionary ~p~n",
-              [Json, get(mochiweb_request_body)]),
+    {struct, [{"result", "success"}, {"stamp", Stamp}]};
+    %% io:format("In hn_mochi (notify) Json is ~p~n-process dictionary ~p~n",
+    %%           [Json, get(mochiweb_request_body)]),
     %% Str2 = "hn_mochi:ipost\tnotify\thandling post with\t" ++ 
     %%    Stamp ++ "\t" ++ pid_to_list(self()) ++ "\t" ++ 
     %%                                 binary_to_list(get(mochiweb_request_body)),
-    ret;
 
-ipost(Req, _Ref, _Type, _Attr, _Post, _User) ->
+ipost(_Ref, _Type, _Attr, _Post, _User) ->
     ?ERROR("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
-    Req:not_found(),
-    ok.
+    error.
 
 %% Some clients dont send ip in the host header
 get_host(Req) ->
@@ -627,7 +622,7 @@ get_var_or_cookie(Key, Vars, Req) ->
     case lists:keysearch(Key, 1, Vars) of
         false ->
             {ok, Req:get_cookie_value(Key)};
-        {value, {"auth", Auth}} -> 
+        {value, {"auth", Auth}} ->
             {ok, Auth}
     end.
 
