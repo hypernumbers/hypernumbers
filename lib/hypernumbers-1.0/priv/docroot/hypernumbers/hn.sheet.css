@@ -276,6 +276,8 @@ p,h1,h2,h3,h4,h5 {
 	float: left;
 	margin: 0px !important;
 	padding: 0px !important;
+	width: 280px;
+	background-color: #6a6e75;
 }
 #pagedialog ul li {
 	padding: 10px !important;
@@ -283,9 +285,8 @@ p,h1,h2,h3,h4,h5 {
 	color: white;
 }
 #pagedialog ul li .title {
-	width: 200px;
 	float: left;
-	padding-right: 10px;
+	width: 225px;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;		
@@ -305,9 +306,6 @@ p,h1,h2,h3,h4,h5 {
 
 #pagedialog ul#sibiling_pane li.selected {
 	background-color: #004b97;
-}
-#pagedialog ul#children_pane {
-	background-color: #797979;
 }
 #pagedialog ul li:hover {
 	background-color: #3076ad;
