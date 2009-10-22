@@ -283,6 +283,9 @@ p,h1,h2,h3,h4,h5 {
 	padding: 10px !important;
 	cursor: pointer;
 	color: white;
+	border-width: 1px 0 1px 0;
+	border-style: dotted;
+	border-color: transparent;
 }
 #pagedialog ul li .title {
 	float: left;
@@ -296,19 +299,19 @@ p,h1,h2,h3,h4,h5 {
 	text-align: right;
 	float: right;
 }
+#pagedialog ul li:hover {
+	background-color: #3076ad;
+}
+#pagedialog ul#sibiling_pane li.selected {
+	background-color: #004b97;
+	border-color: #000;
+}
 
 #pagedialog #pane_divider {
 	float: left;
 	width: 5px;
 	height: 1px;
 	background-color: #004b97;
-}
-
-#pagedialog ul#sibiling_pane li.selected {
-	background-color: #004b97;
-}
-#pagedialog ul li:hover {
-	background-color: #3076ad;
 }
 
 #pageurl input {
