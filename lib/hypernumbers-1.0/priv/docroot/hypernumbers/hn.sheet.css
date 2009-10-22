@@ -313,14 +313,13 @@ p,h1,h2,h3,h4,h5 {
 	background-color: #3076ad;
 }
 
-#pagedialog .pageurl {
-	clear: both;
-	padding-top: 5px;
-	padding-bottom: 5px;
+#pageurl input {
+	font-size: 1.1em;
+	width: 380px;
+	height: 24px;
 	margin-left: 10px;
-	border-top: 1px solid #797979;
-	font-style: italic;
 	color: #424242;
+	margin: 5px 0px 5px 0px;
 }
 
 
