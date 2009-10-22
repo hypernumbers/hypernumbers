@@ -890,7 +890,8 @@ mark_dirty(Site, Record)
         orelse is_record(Record, dirty_notify_in)
         orelse is_record(Record, dirty_notify_back_out)
         orelse is_record(Record, dirty_inc_hn_create)) ->
-    mnesia:write(trans(Site, Record), Record, write).
+    Tbl = trans(Site, element(1,Record)),
+    mnesia:write(Tbl, Record, write).
 
 %% @spec write_remote_link(Parent::#refX{}, Child::#refX{}, Type) -> ok
 %% @doc writes a remote link between the parent and the child.
@@ -2187,9 +2188,10 @@ get_local_item_index(#refX{site = S, path = P, obj = O} = RefX) ->
 trans(Site, TableName) when is_atom(TableName) ->
     Prefix = get_prefix(Site),
     list_to_atom(Prefix ++ "&" ++ atom_to_list(TableName));
-%% converts a record into the site-specific record
 trans(Site, Record) when is_tuple(Record) -> 
-    trans(Site, element(1, Record)).
+    NRec = trans(Site, element(1, Record)),
+    setelement(1, Record, NRec).
+
 
 % splits a tablename into the site and record
 split_trans(List) when is_list(List)->
