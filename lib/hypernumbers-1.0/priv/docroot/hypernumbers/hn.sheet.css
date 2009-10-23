@@ -219,6 +219,7 @@ p,h1,h2,h3,h4,h5 {
 }
 
 /* icons */
+#pagemenu #pdclose,
 #pagemenu .crumb,
 #pagemenu .open,
 #pagemenu .leaf {
@@ -314,6 +315,9 @@ p,h1,h2,h3,h4,h5 {
 	background-color: #004b97;
 }
 
+#pageurl {
+	float: left;
+}
 #pageurl input {
 	font-size: 1.1em;
 	width: 380px;
@@ -321,6 +325,10 @@ p,h1,h2,h3,h4,h5 {
 	margin-left: 10px;
 	color: #424242;
 	margin: 5px 0px 5px 0px;
+}
+#pdclose {
+	float: right;
+		background-image: url(/img/cross.png);
 }
 
 
