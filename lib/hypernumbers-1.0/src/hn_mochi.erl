@@ -26,6 +26,7 @@
 -define(exit, 
         exit("exit from hn_mochi:handle_req impossible page versions")).
 
+
 req(Req) ->
     case filename:extension(Req:get(path)) of
         
