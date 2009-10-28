@@ -44,8 +44,10 @@
          terminate/2, code_change/3]).
 
 -define(SERVER, ?MODULE). 
+-define(TABLE, "auth_srv").
+-define(KEY, "auth_tree").
 
--record(state, {tree = []}).
+-record(state, {tree = [], file = []}).
 
 %%%===================================================================
 %%% API
@@ -77,8 +79,10 @@ start_link() ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
-    Tree = gb_trees:empty(),
-    {ok, #state{tree = Tree}}.
+    {ok, [[Dir]]} = init:get_argument(dets_dir),
+    Tree = load_tree(Dir, ?TABLE),
+    io:format("Tree is ~p~n", [Tree]),
+    {ok, #state{tree = Tree, file = ?TABLE}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -94,23 +98,27 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call(Request, _From, #state{tree = Tr}) ->
-    NewTr =
+handle_call(Request, _From, #state{tree = Tr, file = File}) ->
+    {NewTr, Write} =
         case Request of
-            {check_get_page, AS, P}          -> check_get_page1(Tr, AS, P);
-            {check_get_page, AS, P, Gui}     -> check_get_page1(Tr, AS, P, Gui);
-            {check_get_page_attr, AS, P}     -> check_get_page_attr1(Tr, AS, P);
-            {get_views, AS, P}                -> get_views1(Tr, AS, P);
-            {can_read, AS, P}                -> can_read1(Tr, AS, P);
-            {can_write, AS, P}               -> can_write1(Tr, AS, P);
-            {can_execute, AS, TS}            -> can_execute1(Tr, AS, TS);
-            {add_perm, AL, Pg, Perm, Df, Gs} -> add_perm1(Tr, AL, Pg, Perm, Df, Gs);
-            {add_views, AL, Pg, Gs}           -> add_views1(Tr, AL, Pg, Gs);
-            {add_default, AL, Pg, Df}        -> add_default1(Tr, AL, Pg, Df);
-            {rem_perm, AL, Pg, Perm}         -> remove_perm1(Tr, AL, Pg, Perm);
-            {remove_views, AL, Pg, Gs}        -> remove_views1(Tr, AL, Pg, Gs);
-            {remove_def, AL, Pg, Df}         -> remove_default1(Tr, AL, Pg, Df);
-            {get_groups}                     -> get_groups1(Tr)
+            {check_get_page, AS, P}        -> {check_get_page1(Tr, AS, P), false};
+            {check_get_page, AS, P, Gui}   -> {check_get_page1(Tr, AS, P, Gui), false};
+            {check_get_page_attr, AS, P}   -> {check_get_page_attr1(Tr, AS, P), false};
+            {get_views, AS, P}             -> {get_views1(Tr, AS, P), false};
+            {can_read, AS, P}              -> {can_read1(Tr, AS, P), false};
+            {can_write, AS, P}             -> {can_write1(Tr, AS, P), false};
+            {can_execute, AS, TS}          -> {can_execute1(Tr, AS, TS), false};
+            {add_perm, AL, Pg, Pm, Df, Gs} -> {add_perm1(Tr, AL, Pg, Pm, Df, Gs), true};
+            {add_views, AL, Pg, Gs}        -> {add_views1(Tr, AL, Pg, Gs), true};
+            {add_default, AL, Pg, Df}      -> {add_default1(Tr, AL, Pg, Df), true};
+            {rem_perm, AL, Pg, Pm}         -> {remove_perm1(Tr, AL, Pg, Pm), true};
+            {remove_views, AL, Pg, Gs}     -> {remove_views1(Tr, AL, Pg, Gs), true};
+            {remove_def, AL, Pg, Df}       -> {remove_default1(Tr, AL, Pg, Df), true};
+            {get_groups}                   -> {get_groups1(Tr), false}
+    end,
+    case Write of
+        true -> ok = dets:insert(File, {?KEY, NewTr});
+        _    -> ok
     end,
     Reply = ok,
     {reply, Reply, #state{tree = NewTr}}.
@@ -346,6 +354,18 @@ get_groups1(_Tree) -> {erk, not_written}.
 %%
 %% Helper functions
 %%
+load_tree(Dir, Table) ->
+    {ok, _} = dets:open_file(Table, [{file, Dir ++ Table}]),
+    % if the value of auth_tree is an empty list,
+    % create an empty tree and fire it in..
+    Tree = dets:lookup(Table, ?KEY),
+    case Tree of
+        [] -> Empty = gb_trees:empty(),
+              ok = dets:insert(Table, {?KEY, Empty}),
+              Empty;
+        _  -> Tree
+    end.            
+
 contains(_Element, [])            -> false;
 contains(Element, [Element | _T]) -> true;
 contains(Element, [_H | T])       -> contains(Element, T).
@@ -409,10 +429,9 @@ make_controls(AuthList, Perms, Def, Views) ->
     make_c1(AuthList, Perms, Def, Views, []).
 
 make_c1([], _Perms, _Def, _Views, Acc)   -> Acc;
-make_c1([H | T], Perms, Def, Views, Acc) -> Ctl = #control{perms = Perms,
-                                                          def_view = Def,
-                                                          views = Views},
-                                           make_c1(T, Perms, Def, Views, [{H, Ctl} | Acc]).
+make_c1([H | T], Perms, Def, Views, Acc) ->
+    Ctl = #control{perms = Perms, def_view = Def, views = Views},
+    make_c1(T, Perms, Def, Views, [{H, Ctl} | Acc]).
 
 get_control(Tree, User, Groups) ->
     case gb_trees:lookup(controls, Tree) of
@@ -461,7 +480,19 @@ dedup(List) -> dedup1(lists:merge([lists:sort(X) || X <- List]), []).
 dedup1([], Acc)         -> lists:reverse(Acc);
 dedup1([A, A | T], Acc) -> dedup1([A | T], Acc);
 dedup1([H | T], Acc)    -> dedup1(T, [H | Acc]).
-                             
+
+%%%===================================================================
+%%% Debugging interface
+%%%===================================================================
+
+debug() ->
+    auth_srv:add_perm([{user, "User"}, {group, "Group"}],
+                      ["a", "b", "c", "d"], [read, write],
+                      "index", ["index"]),
+    Ret = dets:lookup(?TABLE, ?KEY),
+    io:format("Ret is ~p~n", [Ret]),
+    ok.    
+
 %%%===================================================================
 %%% EUnit Tests
 %%%===================================================================

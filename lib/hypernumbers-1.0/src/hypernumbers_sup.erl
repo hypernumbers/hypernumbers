@@ -26,10 +26,16 @@ init([]) ->
                  permanent, 2000, worker, [hn_config]},
     Status    = {status_srv, {status_srv, start_link, []},
                  permanent, 2000, worker, [status_srv]},
-    Auth    = {auth_srv, {auth_srv, start_link, []},
+    Auth      = {auth_srv, {auth_srv, start_link, []},
                  permanent, 2000, worker, [auth_srv]},
 
-    {ok,{{one_for_one,60,1}, [Config, Random, Remote, 
-                              Dirty_Sup, Dirty_Sub, Status
+    {ok,{{one_for_one,60,1}, [
+                              Config,
+                              Random,
+                              Remote, 
+                              Dirty_Sup,
+                              Dirty_Sub,
+                              Status,
+                              Auth
                               ]}}.
 

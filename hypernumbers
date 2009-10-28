@@ -32,6 +32,7 @@ cd $ROOT
 LOG_DIR=$ROOT/logs
 CONFIG=$ROOT/priv/hypernumbers.conf
 MNESIA_DIR=$ROOT/db/$NODE
+DETS_DIR=$ROOT/dets/
 REL_DIR=$ROOT/ebin/$RELNAME
 SASL_DIR=$ROOT/priv/$SASL_CONF_FILE
 
@@ -45,6 +46,7 @@ SGTE_DIR="lib/sgte"
 [ -d $LOG_DIR ]        || mkdir -p $LOG_DIR
 [ -d $LOG_DIR/error ]  || mkdir -p $LOG_DIR/error
 [ -d $MNESIA_DIR ]     || mkdir -p $MNESIA_DIR
+[ -d $DETS_DIR ]       || mkdir -p $DETS_DIR
 [ -f $CONFIG ]         || cp $ROOT/priv/hypernumbers.conf.default $CONFIG
 
 function build
@@ -115,7 +117,8 @@ function start
         -config $SASL_DIR \
         -hn_config $CONFIG \
         -hn_log $LOG_DIR \
-        -mnesia dir "\"$MNESIA_DIR\""       
+        -mnesia dir "\"$MNESIA_DIR\"" \
+        -dets_dir $DETS_DIR
 }
 
 function inspect_mnesia
@@ -133,7 +136,8 @@ function load
         -config $SASL_DIR \
         -hn_config $CONFIG \
         -hn_log $LOG_DIR \
-        -mnesia dir "\"$MNESIA_DIR\""       
+        -mnesia dir "\"$MNESIA_DIR\"" \     
+        -dets_dir $DETS_DIR
 }
 
 
@@ -146,7 +150,8 @@ function gen_tests
         -config $SASL_DIR \
         -hn_config $CONFIG \
         -hn_log $LOG_DIR \
-        -mnesia dir "\"$MNESIA_DIR\""\
+        -mnesia dir "\"$MNESIA_DIR\"" \
+        -dets_dir $DETS_DIR \
         -pa ebin\
         -s generate_tests run \
         -s init stop
@@ -204,6 +209,7 @@ function test
         -hn_log $LOG_DIR \
         -logdir $LOG_DIR \
         -mnesia dir "\"$MNESIA_DIR\"" \
+        -dets_dir $DETS_DIR \
         -dir $TESTS
 }
 
