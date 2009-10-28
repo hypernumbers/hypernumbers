@@ -26,7 +26,6 @@
 -define(exit, 
         exit("exit from hn_mochi:handle_req impossible page versions")).
 
-
 req(Req) ->
     case filename:extension(Req:get(path)) of
         
@@ -213,12 +212,6 @@ ipost(#refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
 %% need to do nothing with anything...
 ipost(_Ref, _Type, [{"mark", []}], 
       [{"set",{struct, [{"mark", _Msg}]}}], _User) ->
-    ok;
-
-%% the purpose of this message is to write a GUI trail in the mochilog so we 
-%% don't need to do nothing with anything...
-ipost(_Ref, _Type, [{"trail", []}], 
-      [{"set",{struct, [{"trail", _Msg}]}}], _User) ->
     ok;
 
 ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 

@@ -8,10 +8,10 @@
 }
 
 .ventris .header .title {  
- width:650px; 
- color:white;
- padding:20px;
- margin:0px auto;
+    width:650px; 
+    color:white;
+    padding:20px;
+    margin:0px auto;
 }
 
 .ventris .container {  
@@ -27,7 +27,6 @@
     margin:0px auto;
     background:#DDD;
 }
-
 
 .ventris .content {
     width:480px;

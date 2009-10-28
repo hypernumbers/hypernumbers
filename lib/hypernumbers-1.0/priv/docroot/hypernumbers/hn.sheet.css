@@ -182,7 +182,7 @@ p,h1,h2,h3,h4,h5 {
 
 #lang a {  
  padding: 3px 5px;
- display: none; 
+ display: block; 
  color:   #BBB;
  text-decoration: none; 
 }
@@ -1003,10 +1003,6 @@ p,h1,h2,h3,h4,h5 {
 
 #selectedfun h4 { 
  margin: 0px; 
-}
-
-#borders, #bordersep, #menu #importmenu, #font_colour {  
- display: none;
 }
 
 #introduction {  
