@@ -50,11 +50,11 @@ notify(Record) when is_record(Record, dirty_notify_out) ->
                                     {"type",       Type},
                                     {"payload",    P},
                                     {"child_vsn",  CVJson},
-                                    {"parent_vsn", PVJson}
+                                    {"parent_vsn", PVJson},
+                                    {"stamp",      0}
                                    ]},
                    Actions = lists:flatten(mochijson:encode(Vars)),
-                   "success" =
-                       hn_util:post(Server, Actions, "application/json"),
+                   hn_util:post(Server, Actions, "application/json"),
                    ok
            end,
     [ok = Fun2(X) || X <- Outgoing],

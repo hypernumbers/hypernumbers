@@ -529,7 +529,7 @@ handle_dirty(Site, Record) when is_record(Record, dirty_notify_in) ->
     Fun =
         fun() ->
                 ok = init_front_end_notify(),
-                Cells = hn_db_wu:read_remote_children(Parent, incoming),
+                Cells = hn_db_wu:read_remote_children(Site, Parent, incoming),
                 Fun2 =
                     fun(X) ->
                             [{RefX, KV}] =
@@ -541,15 +541,9 @@ handle_dirty(Site, Record) when is_record(Record, dirty_notify_in) ->
         end,
     ok = mnesia:activity(transaction, Fun),
     ok = tell_front_end("handle dirty");
-handle_dirty(_Site, Record) when is_record(Record, dirty_notify_out) ->
+handle_dirty(Site, Record) when is_record(Record, dirty_notify_out) ->
     ok = horiz_api:notify(Record),
     % now delete the dirty outgoing hypernumber
-    mnesia:activity(transaction, fun mnesia:delete_object/1, [Record]);
-handle_dirty(Site, Record) when is_record(Record, dirty_notify_back_in) ->
-    ok = horiz_api:notify_back(Record),
-    mnesia:activity(transaction, fun hn_db_wu:clear_dirty/2, [Site, Record]);
-handle_dirty(Site, Record) when is_record(Record, dirty_notify_back_in) ->
-    ok = horiz_api:notify_back(Record),
     mnesia:activity(transaction, fun hn_db_wu:clear_dirty/2, [Site, Record]);
 handle_dirty(Site, Record) when is_record(Record, dirty_notify_back_in) ->
     ok = horiz_api:notify_back(Record),

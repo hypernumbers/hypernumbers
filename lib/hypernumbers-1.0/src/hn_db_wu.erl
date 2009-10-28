@@ -560,7 +560,8 @@
          read_local_parents_idx/2,
          read_local_children/1,
          read_remote_parents/2,
-         read_remote_children/2
+         read_remote_children/2,
+         read_remote_children/3
         ]).
 
 -export([
@@ -917,7 +918,7 @@ write_remote_link(P, C, Type)
 
 update_inc_hn(Parent, Child, Val, DepTree, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
-    #refX{site = ChildSite} = Child,
+    ChildSite = Child#refX.site,
     Rec1 = #incoming_hn{site_and_parent = {ChildSite, Parent}, value = Val,
                         'dependency-tree' = DepTree, biccie = Biccie},
     ok = mnesia:write(trans(ChildSite, incoming_hn), Rec1, write),
@@ -969,7 +970,8 @@ clear_dirty(Site, Rec) when (is_record(Rec, dirty_notify_in)
                        orelse is_record(Rec, dirty_inc_hn_create)
                        orelse is_record(Rec, dirty_notify_back_in)
                        orelse is_record(Rec, dirty_notify_back_out)) ->
-    mnesia:delete_object(trans(Site, Rec), Rec, write).
+    Tbl = trans(Site, element(1,Rec)),
+    mnesia:delete_object(Tbl, Rec, write).
 
 -spec clear_dirty_cell(string(), #dirty_cell{}) -> ok.
 %% @doc clears a dirty cell marker.
@@ -1122,12 +1124,16 @@ read_remote_parents(#refX{site = Site, obj = {cell, _}} = Child, Type)
 read_remote_children(List, Type) when is_list(List) ->
     Return = [read_remote_children(X, Type) || X <- List],
     lists:flatten(Return);
-read_remote_children(#refX{site = Site, obj = {cell, _}} = Parent, Type)
+read_remote_children(#refX{site = Site, obj = {cell, _}} = Parent, Type) ->
+    read_remote_children(Site, Parent, Type).
+
+read_remote_children(Site, #refX{obj = {cell,_}} = Parent, Type)
   when Type =:= incoming; Type =:= outgoing ->
     Match = #remote_cell_link{parent = Parent, type = Type, _ = '_'},
     Table = trans(Site, remote_cell_link),
     Links = mnesia:match_object(Table, Match, read),
-    get_remote_children(Links).
+    get_remote_children(Links).    
+
 
 %% @spec read_local_parents_idx(Site, Idx) -> IdxList
 %% @doc this returns the local parents of a reference. Both the parameters
@@ -2125,8 +2131,8 @@ mark_notify_out_dirty(#refX{site = Site} = P, {Type, _, _} = Change, Delay) ->
                                       outgoing = ChildrenList,
                                       parent_vsn = {version, ParentUrl, PVsn},
                                       delay = Delay},
-              Rec2 = trans(Site, Rec),
-              mnesia:write(Rec2)
+              Tbl = trans(Site, element(1,Rec)),
+              mnesia:write(Tbl, Rec, write)
     end.
 
 %% @spec unregister_out_hn(Parent::#refX{}, Child::#refX{}) -> ok
