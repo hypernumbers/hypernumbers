@@ -872,7 +872,7 @@ verify_biccie_out(Parent, Child, Biccie)
 %% the child site from the Child <code>#refX{}</code>.
 verify_biccie_in(Site, Parent, Biccie) when is_record(Parent, refX) ->
     Match = #incoming_hn{site_and_parent = {Site, Parent}, _ = '_'},
-    Table = trans(Site, outgoing_hn),
+    Table = trans(Site, incoming_hn),
     List = mnesia:match_object(Table, Match, read),
     case List of
         []   -> false;
