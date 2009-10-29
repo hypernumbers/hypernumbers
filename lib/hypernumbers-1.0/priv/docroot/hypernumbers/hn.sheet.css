@@ -139,7 +139,7 @@ p,h1,h2,h3,h4,h5 {
  float:    right;
  position: relative;
  top:      0px;
- margin:   0px 0px 0px 5px;
+ margin:   0px 5px 0px 5px;
 }
 
 #navigation li { 
@@ -161,7 +161,7 @@ p,h1,h2,h3,h4,h5 {
  background:  url(down.png) no-repeat right 1px;
  cursor:      pointer;
  padding:     2px 16px 2px 2px;
- margin:      -3px 12px 0px 0px;
+ margin:      -3px 5px 0px 0px;
  border:      1px solid transparent;
  float:       left;
 }
@@ -766,8 +766,8 @@ p,h1,h2,h3,h4,h5 {
 #wordwrap      { background-position: -138px -82px; }
 
 #markbtn { background-position: -138px -59px; }
-#rtebtn  { background-position: -22px -83px; }
-#guibuilder  { background-position: -68px -61px; }
+#rtebtn  { background-position: -161px -104px; }
+#guibuilder  { background-position: -138px -104px; }
 
 #feedback {  
  width:  430px; 
