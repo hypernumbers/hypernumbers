@@ -218,8 +218,11 @@ p,h1,h2,h3,h4,h5 {
 	background-color: #ebeaeb;
 }
 
+#pdpanes {     
+    overflow-x:scroll;
+}
+
 /* icons */
-#pagemenu #pdclose,
 #pagemenu .crumb,
 #pagemenu .open,
 #pagemenu .leaf {
@@ -258,39 +261,39 @@ p,h1,h2,h3,h4,h5 {
 	text-decoration: underline;
 }
 #pagebar div:hover {
-	font-style: italic;
+	color: #334bf9;
 }
 
 #pagedialog {
     position: absolute;
    	display: none;
-	background-color: #c0c0c0;
+	background-color: #FFFFFF;
     left: 0px;
     z-index: 20000;
-    min-height: 150px;
+    width:480px;
 	border: 2px none #a9a9a9;
 	border-bottom-style: solid;
 	border-right-style: solid;
 	border-top-style: solid;
 }
 #pagedialog ul {
+    height:150px;
+    overflow-y:scroll;
 	float: left;
 	margin: 0px !important;
 	padding: 0px !important;
-	width: 280px;
-	background-color: #6a6e75;
+	width: 235px;
 }
 #pagedialog ul li {
-	padding: 10px !important;
+	padding: 3px !important;
 	cursor: pointer;
-	color: white;
 	border-width: 1px 0 1px 0;
 	border-style: dotted;
 	border-color: transparent;
 }
 #pagedialog ul li .title {
+    width: 180px;
 	float: left;
-	width: 225px;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;		
@@ -300,37 +303,31 @@ p,h1,h2,h3,h4,h5 {
 	text-align: right;
 	float: right;
 }
-#pagedialog ul li:hover {
-	background-color: #3076ad;
-}
 #pagedialog ul#sibiling_pane li.selected {
 	background-color: #004b97;
 	border-color: #000;
 }
 
-#pagedialog #pane_divider {
-	float: left;
-	width: 5px;
-	height: 1px;
-	background-color: #004b97;
+#pageurl {
+    overflow:auto;
+    background-color: #DDDDDD;
 }
 
-#pageurl {
-	float: left;
-}
 #pageurl input {
-	font-size: 1.1em;
-	width: 380px;
-	height: 24px;
+	width: 300px;
 	margin-left: 10px;
 	color: #424242;
 	margin: 5px 0px 5px 0px;
 }
+
 #pdclose {
-	float: right;
-		background-image: url(/img/cross.png);
+    color:red;
 }
 
+#pdpanel {
+    padding: 3px;
+    background-color: #DDDDDD;
+}
 
 /*****************************************************************************
 /* FILE MENU STYLES
