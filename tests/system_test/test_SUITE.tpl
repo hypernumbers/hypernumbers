@@ -9,7 +9,7 @@
 -include(~p).
 
 init_per_suite(Config) ->
-    systest:restore(~p, ~p),
+    testsys:restore(~p, ~p),
     [hn_db_api:wait_for_dirty(S) || S <- sites()], 
     action(),
     [hn_db_api:wait_for_dirty(S) || S <- sites()], 

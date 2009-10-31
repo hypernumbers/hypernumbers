@@ -1,31 +1,17 @@
--module(systest).
+-module(testsys).
 
--export([run/0, run/1, generate/0]).
--export([save/2, restore/2]).
+-export([save/2, restore/2, generate/0]).
 
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
 
 -define(SYSTEST_DIR, "tests/system_test/").
 -define(FIXTURE_DIR, "tests/system_test/fixtures/").
--define(LOG_DIR,     "logs/").
 
 -define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 -define(rel(F), filename:absname(F, filename:dirname(
                                       filename:dirname(
                                         code:lib_dir(hypernumbers))))).
-
-
-run() ->
-    run([]).
-run(Suites) ->
-    SOpt = if Suites == [] -> [];
-              true         -> [{suites, Suites}] end,
-
-    Opts = [ {logdir, ?rel(?LOG_DIR)},
-             {dir, [?rel(?SYSTEST_DIR)]} ],
-
-    ct:run_test(Opts ++ SOpt).
 
 
 %% Persist the current page data located at Path as a json Fixture
@@ -63,10 +49,10 @@ gen_test(Template, Fixture) ->
     Suite  = Name++"_SUITE",
     AFile  = ?SYSTEST_DIR++"actions/"++Name,
 
-    Action = ?rel(case filelib:is_file(AFile) of 
-                      true  -> AFile;
-                      false -> ?SYSTEST_DIR++"actions/default"
-                  end),
+    Action = filename:absname(case filelib:is_file(AFile) of 
+                                  true  -> AFile;
+                                  false -> ?SYSTEST_DIR++"actions/default"
+                              end),
 
     {ok, JsonTxt} = file:read_file(Fixture),
     {struct, Json} = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),

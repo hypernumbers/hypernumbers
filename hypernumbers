@@ -140,23 +140,6 @@ function load
         -dets_dir $DETS_DIR
 }
 
-
-function gen_tests
-{
-    erl -noshell \
-        -setcookie $COOKIE \
-        -sname $NODE@$HOST \
-        -boot $REL_DIR \
-        -config $SASL_DIR \
-        -hn_config $CONFIG \
-        -hn_log $LOG_DIR \
-        -mnesia dir "\"$MNESIA_DIR\"" \
-        -dets_dir $DETS_DIR \
-        -pa ebin\
-        -s generate_tests run \
-        -s init stop
-}
-
 function gen_help
 {
     echo "==============================="
@@ -180,37 +163,6 @@ function statsvn
     java -Xms512m -Xmx1024m -jar ../../priv/statsvn/statsvn.jar \
          ./svn.log ../../\
          -exclude tests/**:lib/eunit/**:lib/yaws-1.76/**:lib/mochi-1.0/**:**/*.java:**/*.jar:testroot/**
-}
-
-function test
-{
-    if [ $# -lt 1 ] 
-    then
-        echo "hypernumbers test 1a - to run specific test"
-        echo "hypernumbers test 1  - to run specific X series"
-        exit
-    fi
-
-    TESTS=$(find $ROOT/tests/ -maxdepth 1 -name "*$1*" \
-        | grep -v .svn \
-        | grep -v excel_files)
-
-    erl \
-        -setcookie $COOKIE \
-        -sname $NODE@$HOST \
-        -noshell \
-        -boot $REL_DIR \
-        -config $SASL_DIR \
-        -hn_config $CONFIG \
-        -hn_log $LOG_DIR \
-        -mnesia dir "\"$MNESIA_DIR\"" \
-        -dets_dir $DETS_DIR \
-        -logdir $LOG_DIR \
-	    -pa $HN_DIR/tests/common_test-1.4.1/ebin \
-	    -pa $HN_DIR/tests/test_server-3.3.1/ebin \
-        -dir $TESTS \
-        -s ct_run script_start \
-	    -s erlang halt
 }
 
 function copyfiles
@@ -270,10 +222,8 @@ case $1 in
     build)          build $2;;
     statsvn)        statsvn;;
     visualise)      visualise;;
-    gen_tests)      gen_tests;;
     gen_help)       gen_help;;
     inspect_mnesia) inspect_mnesia;;
     clear_po)       clear_po;;
-    test)           test $2;;
     *)              echo "invalid parameters passed into hypernumbers script";;
 esac
