@@ -306,6 +306,7 @@ p,h1,h2,h3,h4,h5 {
 #pagedialog ul#sibiling_pane li.selected {
 	background-color: #004b97;
 	border-color: #000;
+    color: #fff;
 }
 
 #pageurl {
