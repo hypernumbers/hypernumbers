@@ -1,3 +1,0 @@
-#!/bin/bash
-
-./run_test -dir  ../../../../tests/excel_import_2b_test

@@ -7,30 +7,39 @@
 TAGS
 tags
 db/
+dets/
 logs/
 ebin/hypernumbers.*
+variables-*
 
 
 ## Script used for fetching svn externals
 lib/git-svn-*
 
+## Variable Config
 priv/hypernumbers.conf
-priv/muin/*.xrl
 
+## Documentation
 lib/formula_engine*/doc/*.html
 lib/hypernumbers*/doc/*.html
 lib/read_excel*/doc/*.html
 
-lib/gettext/priv/
-lib/formula_engine*/priv/*_lexer.xrl
-
+## Runtime Files
 lib/hypernumbers*/log
-lib/hypernumbers*/priv/docroot/hypernumbers/index.html.*
+lib/hypernumbers*/priv/docroot/hypernumbers/*.html.??_*
 lib/hypernumbers*/src/ms_util2.erl
 
-## Auto generated lexers/parsers
+## Generated lexers/parsers
+lib/gettext/priv/
+lib/formula_engine*/priv/*_lexer.xrl
+priv/muin/*.xrl
 lib/formula_engine*/src/*_lexer.erl
 lib/formula_engine*/src/*_parser.erl
 lib/formula_engine*/src/superlex.erl
 
-tests/excel_files/tests/common_test-1.3.0
+## Generated Test Files
+tests/common_test-*/priv/bin/
+tests/excel_import_*
+tests/system_test/*_SUITE.erl
+
+

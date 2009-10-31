@@ -9,11 +9,11 @@
 -include("spriki.hrl").
 
 run() ->    
-    Root = get_root(),
-    Tests = Root ++ "/tests/",
-    Files       = filelib:wildcard(Tests++"hn_files/*.json"),
+    Root         = get_root(),
+    Tests        = Root ++ "/tests/",
+    Files        = filelib:wildcard(Tests++"hn_files/*.json"),
     {ok, TmpTpl} = file:read_file(Tests++"system_test/test_SUITE.tpl"),
-    Tpl         = binary_to_list(TmpTpl),
+    Tpl          = binary_to_list(TmpTpl),
     [ gen_test(Tests,Tpl,X) || X <- Files ],
     ok.
 
@@ -42,11 +42,11 @@ gen_test(Path,Tpl,Src) ->
                 ""
         end,
     
-    {ok, JsonTxt}   = file:read_file(Src),
-    {struct, Json}  = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
-    {struct, Cells} = ?pget("cell", Json),
+    {ok, JsonTxt}     = file:read_file(Src),
+    {struct, Json}    = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
+    {struct, Cells}   = ?pget("cell", Json),
     {struct, HeadRow} = ?pget("1", Cells),
-    {struct, A1} = ?pget("1", HeadRow),
+    {struct, A1}      = ?pget("1", HeadRow),
     
     Count = case ?pget("value", A1) of
                 "NOTESTS" -> 0;
@@ -59,10 +59,10 @@ gen_test(Path,Tpl,Src) ->
     Root  = Ref#refX.site ++ hn_util:list_to_path(Ref#refX.path),
     
     Cases = gen_test_cases(Name, Name, Count),
-    Names   = gen_names(Name, Count),
+    Names = gen_names(Name, Count),
 
-    Test  = ?FORMAT(Tpl,[Suite, ActDir, Root, Src,A,Ref#refX.site,
-                        Names, Cases]),
+    Test  = ?FORMAT(Tpl, [Suite, ActDir, Root, Src, A, Ref#refX.site,
+                          Names, Cases]),
 
     file:write_file(SysDir++Suite++".erl",Test).
 
