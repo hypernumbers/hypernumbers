@@ -2,7 +2,7 @@
 
 -export([all/0, 
          sys/0, sys/1, 
-         excel/0, excel/1 ]).
+         excel/0, excel/1, excel/2 ]).
 
 -define(LOG_DIR,     "logs/").
 -define(TEST_DIR,    "tests/").
@@ -17,10 +17,9 @@ sys() ->
     sys([]).
 sys(Suites) ->
     SOpt = if Suites == [] -> [];
-              true         -> [{suites, Suites}] end,
-    Opts = [ {logdir, filename:absname(?LOG_DIR)},
-             {dir, [filename:absname(?SYSTEST_DIR)]} ],
-    ct:run_test(Opts ++ SOpt).
+              true         -> [{suite, Suites}] end,
+    Opts = [ {dir, [filename:absname(?SYSTEST_DIR)]} ],
+    do_test(Opts ++ SOpt).
 
 
 excel() ->
@@ -29,9 +28,18 @@ excel() ->
 excel(TName) ->
     WC = filename:absname(?TEST_DIR)++"/excel_import_"++TName++"*",
     Tests = filelib:wildcard(WC),
-    Opts = [ {logdir, filename:absname(?LOG_DIR)},
-             {dir, Tests} ],
-    ct:run_test(Opts).
-    
-    
-    
+    Opts = [ {dir, Tests} ],
+    do_test(Opts).
+excel(T, S) ->
+    Test = filename:absname(?TEST_DIR)++"/excel_import_"++T++"_test",
+    Suite = S ++ "_SUITE",
+    Opts = [ {dir, [Test]},
+             {suite, [Suite]} ],
+    do_test(Opts).
+
+
+do_test(Opts) ->
+    DefaultOps = [{logdir, filename:absname(?LOG_DIR)}],
+    ct:run_test(
+      lists:ukeymerge(
+        1, lists:keysort(1, Opts), lists:keysort(1, DefaultOps))).
