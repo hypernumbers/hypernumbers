@@ -1,9 +1,31 @@
 -module(systest).
--author(tom@hypernumbers.com).
 
+-export([run/0, run/1, generate/0]).
 -export([save/2, restore/2]).
 
--define(FIXTURE_DIR, "tests/system_test/fixtures").
+-include("hypernumbers.hrl").
+-include("spriki.hrl").
+
+-define(SYSTEST_DIR, "tests/system_test/").
+-define(FIXTURE_DIR, "tests/system_test/fixtures/").
+-define(LOG_DIR,     "logs/").
+
+-define(pget(Key, List), proplists:get_value(Key, List, undefined)).
+-define(rel(F), filename:absname(F, filename:dirname(
+                                      filename:dirname(
+                                        code:lib_dir(hypernumbers))))).
+
+
+run() ->
+    run([]).
+run(Suites) ->
+    SOpt = if Suites == [] -> [];
+              true         -> [{suites, Suites}] end,
+
+    Opts = [ {logdir, ?rel(?LOG_DIR)},
+             {dir, [?rel(?SYSTEST_DIR)]} ],
+
+    ct:run_test(Opts ++ SOpt).
 
 
 %% Persist the current page data located at Path as a json Fixture
@@ -23,9 +45,67 @@ restore(Path, Fixture) ->
     Body = "{\"delete\":\"all\"}",
     case http:request(post, {Path, [], Type, Body}, [], []) of
         {ok, {{"HTTP/1.1",200,"OK"}, _Hds, "\"success\""}} ->
-            FN = filename:join(?FIXTURE_DIR, Fixture++".json"),
+            FN = filename:join(?rel(?FIXTURE_DIR), Fixture++".json"),
             hn_import:json_file(Path, FN);
         Other ->
             throw({bad_http_request, Other})        
     end.
-    
+
+generate() ->
+    Files      = filelib:wildcard(?FIXTURE_DIR++"*.json"),
+    {ok, TplS} = file:read_file(?SYSTEST_DIR++"test_SUITE.tpl"),
+    Template   = binary_to_list(TplS),
+    [ gen_test(Template,X) || X <- Files ],
+    ok.
+
+gen_test(Template, Fixture) ->
+    Name   = filename:basename(Fixture,".json"),
+    Suite  = Name++"_SUITE",
+    AFile  = ?SYSTEST_DIR++"actions/"++Name,
+
+    Action = ?rel(case filelib:is_file(AFile) of 
+                      true  -> AFile;
+                      false -> ?SYSTEST_DIR++"actions/default"
+                  end),
+
+    {ok, JsonTxt} = file:read_file(Fixture),
+    {struct, Json} = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
+    {struct, Cells} = ?pget("cell", Json),
+    {struct, HeadRow} = ?pget("1", Cells),
+    {struct, A1} = ?pget("1", HeadRow),
+
+    Count = case ?pget("value", A1) of
+                "NOTESTS" -> 0;
+                Range ->                    
+                    {range, {_,X1,_,X2}} = hn_util:parse_attr(Range),
+                    X2-X1+2
+            end,
+
+    Ref   = #refX{site="http://127.0.0.1:9000", path=[Name]},
+    Url  = Ref#refX.site ++ hn_util:list_to_path(Ref#refX.path),
+
+    Names = gen_names(Name, Count),
+    Cases = gen_test_cases(Name, Name, Count),
+
+    Test  = ?FORMAT(Template, [Suite, Action, Url, Name, Ref#refX.site,
+                               Names, Cases]),
+
+    file:write_file(?SYSTEST_DIR++Suite++".erl", Test).
+
+gen_names(_Name, 0) ->
+    [];
+gen_names(Name, Count) ->
+    Str = [ Name++"_A"++itol(X) || X <- lists:seq(2, Count) ],
+    string:join(Str, ",").
+
+gen_test_cases(_Name, _Path, 0) ->
+    [];
+gen_test_cases(Name, Path, N) ->
+    Str = "~s(_Conf) -> ~n \"Success\" = get_val(#refX{path=[~p],obj="
+        "{cell,{1,~p}}}).~n",
+
+    [ ?FORMAT(Str,[Name++"_A"++itol(X), Path, X]) 
+      || X <- lists:seq(2, N) ].
+
+itol(X) ->
+    integer_to_list(X).

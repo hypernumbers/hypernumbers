@@ -1,10 +1,9 @@
--module(delete_rows_actions).
--compile(export_all).
+%% -*- mode: erlang -*-
 
--include_lib("hypernumbers/include/hypernumbers.hrl").
--include_lib("hypernumbers/include/spriki.hrl").
+%% Targeted Sites
+sites() -> ["http://127.0.0.1:9000"].
 
-run() ->
+action() ->
     Url  = "http://127.0.0.1:9000/delete_rows/",
     Type = "application/json",
     Accept = [{"Accept", "application/json"}],

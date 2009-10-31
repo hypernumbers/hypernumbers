@@ -1,3 +1,4 @@
+%%% -*- mode: erlang -*-
 -module(~s).
 -compile(export_all).
 
@@ -5,14 +6,13 @@
 -include_lib("hypernumbers/include/spriki.hrl").
 -include("ct.hrl").
 
+-include(~p).
+
 init_per_suite(Config) ->
-    hypernumbers_app:clean_start(),                      
-    code:add_path(~p),
-    hn_import:json_file("~s", 
-                        "~s"),
-    hn_db_api:wait_for_dirty("http://127.0.0.1:9000"),
-    ~s
-    hn_db_api:wait_for_dirty("http://127.0.0.1:9000"),
+    systest:restore(~p, ~p),
+    [hn_db_api:wait_for_dirty(S) || S <- sites()], 
+    action(),
+    [hn_db_api:wait_for_dirty(S) || S <- sites()], 
     Config.
 
 end_per_suite(_Config) ->
@@ -31,4 +31,3 @@ all() ->
     [~s].
 
 ~s
-

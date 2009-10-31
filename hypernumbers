@@ -180,7 +180,6 @@ function statsvn
     java -Xms512m -Xmx1024m -jar ../../priv/statsvn/statsvn.jar \
          ./svn.log ../../\
          -exclude tests/**:lib/eunit/**:lib/yaws-1.76/**:lib/mochi-1.0/**:**/*.java:**/*.jar:testroot/**
-             
 }
 
 function test
@@ -194,23 +193,24 @@ function test
 
     TESTS=$(find $ROOT/tests/ -maxdepth 1 -name "*$1*" \
         | grep -v .svn \
-        | grep -v common_test-1.3.0 \
-        | grep -v test_server-3.2.0 \
-        | grep -v excel_files \
-        | grep -v test_server-3.2.0)
+        | grep -v excel_files)
 
-    $ROOT/tests/common_test-1.3.0/priv/bin/run_test \
-        -noshell \
+    erl \
         -setcookie $COOKIE \
-        -sname $NODE-test@$HOST \
+        -sname $NODE@$HOST \
+        -noshell \
         -boot $REL_DIR \
         -config $SASL_DIR \
         -hn_config $CONFIG \
         -hn_log $LOG_DIR \
-        -logdir $LOG_DIR \
         -mnesia dir "\"$MNESIA_DIR\"" \
         -dets_dir $DETS_DIR \
-        -dir $TESTS
+        -logdir $LOG_DIR \
+	    -pa $HN_DIR/tests/common_test-1.4.1/ebin \
+	    -pa $HN_DIR/tests/test_server-3.3.1/ebin \
+        -dir $TESTS \
+        -s ct_run script_start \
+	    -s erlang halt
 }
 
 function copyfiles
