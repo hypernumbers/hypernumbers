@@ -77,19 +77,44 @@ do_req(Req) ->
                {error, _Reason} -> anonymous
            end,
 
-    {ok, Access} = hn_users:get_access_level(User, Ref),
-
-    case check_auth(Access, Ref#refX.path, Method)  of 
-        login -> Req:serve_file("hypernumbers/login.html", docroot(), ?hdr);
-        ok    -> handle_req(Method, Req, Ref, Vars, User)
+    Name = hn_users:name(User),
+    Groups = hn_users:groups(User),
+    
+    AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
+    case AuthRet of
+        %% these are the returns for the GET's
+        {return, '404'} -> serve_html(Req, "hypernumbers/404.html", User),
+                           Req:not_found();
+        {return, '503'} -> Req:serve_file("hypernumbers/login.html",
+                                          docroot(), ?hdr);
+        {html, File}    ->
+            case Vars of
+                [] -> handle_req(Method, Req, Ref, [{"view", File}], User);
+                _  -> handle_req(Method, Req, Ref, Vars, User)
+            end;
+        %% these are the returns for the POST's
+        true            -> handle_req(Method, Req, Ref, Vars, User);
+        false           -> Req:serve_file("hypernumbers/login.html",
+                                          docroot(), ?hdr) %503
     end,
     ok.
 
-check_auth(no_access, ["_user"|_], _) -> ok;
-check_auth(no_access, _, _)           -> login;
-check_auth(read,      _, 'GET')       -> ok;
-check_auth(write,     _, _)           -> ok;
-check_auth(admin,     _, _)           -> ok.
+get_auth(User, Groups, 'GET', #refX{site = Site, path = Path}, []) ->
+    auth_srv:check_get_page(Site, {User, Groups}, Path);
+get_auth(User, Groups, 'GET', #refX{site = Site, path = Path},
+         [{"view", View}]) ->
+    auth_srv:check_get_page(Site, {User, Groups}, Path, View);
+get_auth(User, Groups, 'GET', #refX{site = Site, path = Path}, Vars) ->
+    case lists:keyfind("path", 1, Vars) of
+        {"path", P2} -> P3 = case P2 of
+                                 "/" -> [];
+                                 _   -> util2:chop(P2)
+                             end,
+                        auth_srv:check_get_page(Site, {User, Groups}, P3);
+        false        -> auth_srv:check_get_page(Site, {User, Groups}, Path)
+    end;
+get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
+    auth_srv:can_write(Site, {User, Groups}, Path).
 
 handle_req(Method, Req, Ref, Vars, User) ->
 
@@ -153,7 +178,7 @@ ensure(File, Lang) ->
 
 iget(Req, #refX{path=["_user", "login"]}, page, [], User, html) ->
     serve_html(Req, "hypernumbers/login.html", User);
-iget(Req, _Ref, page, [{"gui", FileName}], User, html) ->
+iget(Req, _Ref, page, [{"view", FileName}], User, html) ->
     serve_html(Req, FileName ++ ".html", User);
 iget(Req, _Ref, page, [], User, html) ->
     serve_html(Req, "hypernumbers/index.html", User);
@@ -167,9 +192,13 @@ iget(Req, _Ref, page, [{"views", []}], _User, _CType) ->
     Files = [ filename:basename(X, ".tpl")
               || X <- filelib:wildcard(Path++"*.tpl")],
     json(Req, {array, Files});
-iget(Req, Ref, page, [{"pages", []}], _User, _CType) -> 
+iget(Req, Ref, page, [{"pages", []}], _User, _CType) ->
     json(Req, pages(Ref));
 iget(Req, Ref, page, [], User, json) ->
+    json(Req, page_attributes(Ref, User));
+%% If the browser wanted this page as html it would get the view
+%% but because it wants it as json it just gets the json...
+iget(Req, Ref, page, [{"view", _View}], User, json) ->
     json(Req, page_attributes(Ref, User));
 
 iget(Req, Ref, cell, [], _User, json) ->
@@ -187,8 +216,11 @@ iget(Req, Ref, cell, [], _User, json) ->
                 "" 
         end,
     Req:ok({"text/html", V});
-iget(Req, Ref, _Type,  Attr, User, _CType) ->
-    error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
+iget(Req, Ref, Type, Attr, User, CType) ->
+    io:format("Req is ~p~n-Ref is ~p~n-Type is ~p~nAttr is ~p~n-" ++
+              "User is ~p~n-CType is ~p~n",
+              [Req, Ref, Type, Attr, User, CType]),
+        error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
     serve_html(Req, "hypernumbers/404.html", User),
     Req:not_found().
 

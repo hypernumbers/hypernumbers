@@ -21,21 +21,25 @@
 %% API 
 -export([start_link/0]).
 
--export([check_get_page/2,
+-export([
          check_get_page/3,
-         check_get_page_attr/2,
-         get_views/2,
-         can_read/2,
-         can_write/2,
-         can_execute/2,
-         add_perm/3,
-         add_perm/5,
-         add_views/3,
-         add_default/3,
-         remove_perm/3,
-         remove_views/3,
-         remove_default/3,
-         get_groups/0]).
+         check_get_page/4,
+         get_views/3,
+         can_read/3,
+         can_write/3,
+         can_execute/3,
+         add_perm/4,
+         add_perm/6,
+         add_views/4,
+         add_default/4,
+         remove_perm/4,
+         remove_views/4,
+         remove_default/4,
+         get_groups/1
+        ]).
+
+-export([clear_all_perms_DEBUG/1]).
+
 
 -compile(export_all).
 
@@ -46,8 +50,9 @@
 -define(SERVER, ?MODULE). 
 -define(TABLE, "auth_srv").
 -define(KEY, "auth_tree").
+-define(INDEX, "hypernumbers/index").
 
--record(state, {tree = [], file = []}).
+-record(state, {trees = [], file = []}).
 
 %%%===================================================================
 %%% API
@@ -80,10 +85,9 @@ start_link() ->
 %%--------------------------------------------------------------------
 init([]) ->
     {ok, [[Dir]]} = init:get_argument(dets_dir),
-    Tree = load_tree(Dir, ?TABLE),
-    io:format("Tree is ~p~n", [Tree]),
-    {ok, #state{tree = Tree, file = ?TABLE}}.
-
+    Trees = load_trees(Dir, ?TABLE),
+    {ok, #state{trees = Trees, file = ?TABLE}}.
+    
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
@@ -98,30 +102,49 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call(Request, _From, #state{tree = Tr, file = File}) ->
-    {NewTr, Write} =
+handle_call(Request, _From, State) ->
+    #state{trees = Tr, file = File} = State,
+    Return1 =
         case Request of
-            {check_get_page, AS, P}        -> {check_get_page1(Tr, AS, P), false};
-            {check_get_page, AS, P, Gui}   -> {check_get_page1(Tr, AS, P, Gui), false};
-            {check_get_page_attr, AS, P}   -> {check_get_page_attr1(Tr, AS, P), false};
-            {get_views, AS, P}             -> {get_views1(Tr, AS, P), false};
-            {can_read, AS, P}              -> {can_read1(Tr, AS, P), false};
-            {can_write, AS, P}             -> {can_write1(Tr, AS, P), false};
-            {can_execute, AS, TS}          -> {can_execute1(Tr, AS, TS), false};
-            {add_perm, AL, Pg, Pm, Df, Gs} -> {add_perm1(Tr, AL, Pg, Pm, Df, Gs), true};
-            {add_views, AL, Pg, Gs}        -> {add_views1(Tr, AL, Pg, Gs), true};
-            {add_default, AL, Pg, Df}      -> {add_default1(Tr, AL, Pg, Df), true};
-            {rem_perm, AL, Pg, Pm}         -> {remove_perm1(Tr, AL, Pg, Pm), true};
-            {remove_views, AL, Pg, Gs}     -> {remove_views1(Tr, AL, Pg, Gs), true};
-            {remove_def, AL, Pg, Df}       -> {remove_default1(Tr, AL, Pg, Df), true};
-            {get_groups}                   -> {get_groups1(Tr), false}
-    end,
-    case Write of
-        true -> ok = dets:insert(File, {?KEY, NewTr});
-        _    -> ok
-    end,
-    Reply = ok,
-    {reply, Reply, #state{tree = NewTr}}.
+            {check_get_page, Host, AS, P} ->
+                {Host, check_get_page1(get(Host, Tr), AS, P), false};
+            {check_get_page, Host, AS, P, Gui} ->
+                {Host, check_get_page1(get(Host, Tr), AS, P, Gui), false};
+            {get_views, Host, AS, P} ->
+                {Host, get_views1(get(Host, Tr), AS, P), false};
+            {can_read, Host, AS, P} ->
+                {Host, can_read1(get(Host, Tr), AS, P), false};
+            {can_write, Host, AS, P} ->
+                {Host, can_write1(get(Host, Tr), AS, P), false};
+            {can_execute, Host, AS, TS} ->
+                {Host, can_execute1(get(Host, Tr), AS, TS), false};
+            {add_perm, Host, AL, Pg, Pm, Df, Gs} ->
+                {Host, add_perm1(get(Host, Tr), AL, Pg, Pm, Df, Gs), true};
+            {add_views, Host, AL, Pg, Gs} ->
+                {Host, add_views1(get(Host, Tr), AL, Pg, Gs), true};
+            {add_default, Host, AL, Pg, Df} ->
+                {Host, add_default1(get(Host, Tr), AL, Pg, Df), true};
+            {rem_perm, Host, AL, Pg, Pm} ->
+                {Host, remove_perm1(get(Host, Tr), AL, Pg, Pm), true};
+            {remove_views, Host, AL, Pg, Gs} ->
+                {Host, remove_views1(get(Host, Tr), AL, Pg, Gs), true};
+            {remove_def, Host, AL, Pg, Df} ->
+                {Host, remove_default1(get(Host, Tr), AL, Pg, Df), true};
+            {get_groups, Host} ->
+                {Host, get_groups1(get(Host, Tr)), false};
+            {clear_all_perms, Host} ->
+                {Host, gb_trees:empty(), true}
+        end,
+      {Reply, NewTr} =
+        case Return1 of
+            {Host2, Return2, Write} ->
+                case Write of
+                    true  -> {ok, update_trees(File, Host2, Return2, Tr)};
+                    false -> {Return2, Tr}
+                end;
+            Other               -> {ok, Other}
+        end,
+    {reply, Reply, State#state{trees = NewTr}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -177,88 +200,104 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Public API
 %%%===================================================================
-check_get_page(AuthSpec, Page) -> 
-    gen_server:call(auth_srv, {check_get_page, AuthSpec, Page}).
+start(Hosts) ->
+    gen_server:call(auth_srv, {start, Hosts}).
 
-check_get_page(AuthSpec, Page, Gui) ->
-    gen_server:call(auth_srv, {check_get_page, AuthSpec, Page, Gui}).
+check_get_page(Host, AuthSpec, Page) -> 
+    gen_server:call(auth_srv, {check_get_page, Host, AuthSpec, Page}).
 
-check_get_page_attr(AuthSpec, Page) ->
-    gen_server:call(auth_srv, {check_get_page_attr, AuthSpec, Page}).
+check_get_page(Host, AuthSpec, Page, Gui) ->
+    gen_server:call(auth_srv, {check_get_page, Host, AuthSpec, Page, Gui}).
 
-get_views(AuthSpec, Page) ->
-    gen_server:call(auth_srv, {get_views, AuthSpec, Page}).
+get_views(Host, AuthSpec, Page) ->
+    gen_server:call(auth_srv, {get_views, Host, AuthSpec, Page}).
 
-can_read(AuthSpec, Page) ->
-    gen_server:call(auth_srv, {can_read, AuthSpec, Page}).
+can_read(Host, AuthSpec, Page) ->
+    gen_server:call(auth_srv, {can_read, Host, AuthSpec, Page}).
 
-can_write(AuthSpec, Page) ->
-    gen_server:call(auth_srv, {can_write, AuthSpec, Page}).
+can_write(Host, AuthSpec, Page) ->
+    gen_server:call(auth_srv, {can_write, Host, AuthSpec, Page}).
 
-can_execute(AuthSpec, Trans_signature) ->
-    gen_server:call(auth_srv, {can_execute, AuthSpec, Trans_signature}).
+can_execute(Host, AuthSpec, Trans_signature) ->
+    gen_server:call(auth_srv, {can_execute, Host, AuthSpec, Trans_signature}).
 
-add_perm(AuthList, Page, Perm) ->
-    gen_server:call(auth_srv, {add_perm, AuthList, Page, Perm, "index", ["index"]}).
+add_perm(Host, AuthList, Page, Perm) ->
+    gen_server:call(auth_srv, {add_perm, Host, AuthList, Page, Perm,
+                               ?INDEX, [?INDEX]}).
     
-add_perm(AuthList, Page, Perm, Def, Views) ->
-    gen_server:call(auth_srv, {add_perm, AuthList, Page, Perm, Def, Views}).
+add_perm(Host, AuthList, Page, Perm, Def, Views) ->
+    gen_server:call(auth_srv, {add_perm, Host, AuthList, Page, Perm,
+                               Def, Views}).
 
-add_views(AuthList, Page, Views) ->
-    gen_server:call(auth_srv, {add_views, AuthList, Page, Views}).
+add_views(Host, AuthList, Page, Views) ->
+    gen_server:call(auth_srv, {add_views, Host, AuthList, Page, Views}).
 
-add_default(AuthList, Page, Gui) ->
-    gen_server:call(auth_srv, {add_perm, AuthList, Page, Gui}).
+add_default(Host, AuthList, Page, Gui) ->
+    gen_server:call(auth_srv, {add_default, Host, AuthList, Page, Gui}).
 
-remove_perm(AuthList, Page, Perm) ->
-    gen_server:call(auth_srv, {rem_perm, AuthList, Page, Perm}).
+remove_perm(Host, AuthList, Page, Perm) ->
+    gen_server:call(auth_srv, {rem_perm, Host, AuthList, Page, Perm}).
 
-remove_views(AuthList, Page, Views) ->
-    gen_server:call(auth_src, {rem_views, AuthList, Page, Views}).
+remove_views(Host, AuthList, Page, Views) ->
+    gen_server:call(auth_src, {rem_views, Host, AuthList, Page, Views}).
 
-remove_default(AuthList, Page, Gui) ->
-    gen_server:call(auth_src, {rem_default, AuthList, Page, Gui}).
+remove_default(Host, AuthList, Page, Gui) ->
+    gen_server:call(auth_src, {rem_default, Host, AuthList, Page, Gui}).
 
-get_groups() ->
-    gen_server:call(auth_srv, {get_groups}).
+get_groups(Host) ->
+    gen_server:call(auth_srv, {get_groups, Host}).
+
+clear_all_perms_DEBUG(Host) ->
+    gen_server:call(auth_srv, {clear_all_perms, Host}).
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+update_trees(File, Host, NewTree, Trees) ->
+    NewVal = {Host, NewTree},
+    NewTrees = case lists:keysearch(Host, 1, Trees) of
+                   false -> [NewVal | Trees];
+                   _     -> lists:keyreplace(Host, 1, Trees, NewVal)
+               end,
+    ok = dets:insert(File, {?KEY, NewTrees}),
+    NewTrees.
+
+get(Host, Trees) ->
+    case lists:keyfind(Host, 1, Trees) of
+        false          -> gb_trees:empty();
+        {_Host, Other} -> Other
+    end.            
+
 check_get_page1(Tree, {User, Groups}, Page) ->
     Fun = fun(X) -> case get_control(X, User, Groups) of
-                        none -> {return, '403'};
-                        Ctl  -> #control{perms = P} = Ctl,
-                                case has_perm(P, read) of
-                                    true  -> #control{def_view = G} = Ctl,
-                                             {html, G}; 
-                                    false -> {return, '403'}
-                                end
+                        none     -> {return, '404'};
+                        no_match -> {return, '503'};
+                        Ctl      -> #control{perms = P} = Ctl,
+                                    case has_perm(P, read) of
+                                        true  -> #control{def_view = G} = Ctl,
+                                                 {html, G}; 
+                                        false -> {return, '503'}
+                                    end
                     end
           end,
     check_get(Tree, Page, Fun).
 
 check_get_page1(Tree, {User, Groups}, Page, View) -> 
     Fun = fun(X) -> case get_control(X, User, Groups) of
-                        none -> {return, '403'};
-                        Ctl  -> #control{views = Vws} = Ctl,
-                                case contains(View, Vws) of
-                                    true  -> {html, View}; 
-                                    false -> {return, '403'}
-                                end
+                        none     -> {return, '404'};
+                        no_match -> {return, '503'};
+                        Ctl      -> #control{views = Vws} = Ctl,
+                                    case contains(View, Vws) of
+                                        true  -> {html, View}; 
+                                        false -> {return, '503'}
+                                    end
                     end
-          end,
-    check_get(Tree, Page, Fun).
-
-check_get_page_attr1(Tree, _AuthSpec, Page) ->
-    Fun = fun(_X) ->
-                 exit(erk, not_written_yet)
           end,
     check_get(Tree, Page, Fun).
     
 get_views1(Tree, {User, Groups}, Page) ->
     Fun = fun(X) -> case get_control(X, User, Groups) of
-                        none -> {return, '403'};
+                        none -> {return, '404'};
                         Ctl  -> #control{perms = P, views = Gs} = Ctl,
                                 case has_perm(P, read) of
                                     true  -> Gs; 
@@ -271,9 +310,10 @@ get_views1(Tree, {User, Groups}, Page) ->
 can_read1(Tree, {User, Groups}, Page) ->
     Fun = fun(X) ->
                   case get_control(X, User, Groups) of
-                      none -> false;
-                      Ctl  -> #control{perms = P} = Ctl,
-                              has_perm(P, read)
+                      none     -> false;
+                      no_match -> false;
+                      Ctl      -> #control{perms = P} = Ctl,
+                                  has_perm(P, read)
                   end
           end,
     check_get(Tree, Page, Fun).
@@ -281,9 +321,10 @@ can_read1(Tree, {User, Groups}, Page) ->
 can_write1(Tree, {User, Groups}, Page) -> 
     Fun = fun(X) ->
                   case get_control(X, User, Groups) of
-                      none -> false;
-                      Ctl  -> #control{perms = P} = Ctl,
-                              has_perm(P, write)
+                      none     -> false;
+                      no_match -> false;
+                      Ctl      -> #control{perms = P} = Ctl,
+                                  has_perm(P, write)
                   end
           end,
     check_get(Tree, Page, Fun).
@@ -291,11 +332,11 @@ can_write1(Tree, {User, Groups}, Page) ->
 can_execute1(_Tree, _AuthSpec, _Trans_signature) -> {erk, not_written}.
 
 add_perm1(Tree, AuthList, Page, Perms, Def, Views) ->
-    Fun = fun(#control{def_view = D1,  views = Vw1, perms = P1} = _Old,
+    Fun = fun(#control{def_view = D1, views = Vw1, perms = P1} = _Old,
               #control{def_view = D2, views = Vw2, perms = P2} = _New) ->
-                  P3 = dedup([P1, P2]),
+                  P3 = hslists:dedup([P1, P2]),
                   % push both the old and new defaults onto the list of views
-                  Vw3 = dedup([[D1], [D2], Vw1, Vw2]),
+                  Vw3 = hslists:dedup([[D1], [D2], Vw1, Vw2]),
                   #control{def_view = D2, views = Vw3, perms = P3}
           end,
     add_to_control(Tree, AuthList, Page, Perms, Def, Views, Fun).
@@ -304,15 +345,15 @@ add_perm1(Tree, AuthList, Page, Perms, Def, Views) ->
 add_views1(Tree, AuthList, Page, GuiList) ->
     Fun = fun(#control{def_view = D1,  views = Vw1, perms = P1} = _Old,
               #control{def_view = _D2, views = Vw2, perms = _P2} = _New) ->
-                  Vw3 = dedup([Vw1, Vw2]),
+                  Vw3 = hslists:dedup([Vw1, Vw2]),
                   #control{def_view = D1, views = Vw3, perms = P1}
           end,
     add_to_control(Tree, AuthList, Page, [], [], GuiList, Fun).
 
 add_default1(Tree, AuthList, Page, Default) ->
-    Fun = fun(#control{def_view = D1,  views = Vw1, perms = P1} = _Old,
+    Fun = fun(#control{def_view = D1, views = Vw1, perms = P1} = _Old,
               #control{def_view = D2, views = Vw2, perms = _P2} = _New) ->
-                  Vw3 = dedup([[D1], Vw1, Vw2]),
+                  Vw3 = hslists:dedup([[D1], Vw1, Vw2]),
                   #control{def_view = D2, views = Vw3, perms = P1}
           end,
     add_to_control(Tree, AuthList, Page, [], Default, [], Fun).
@@ -328,7 +369,7 @@ remove_perm1(Tree, AuthList, Page, Perms) ->
     remove_from_control(Tree, AuthList, Page, Fun).    
 
 remove_views1(Tree, AuthList, Page, Views) -> 
-    Fun = fun({K, #control{def_view = D1,  views = Vw1, perms = P1}}) ->
+    Fun = fun({K, #control{def_view = D1, views = Vw1, perms = P1}}) ->
                   {NewDef, NewViews} =
                       case contains(D1, Views) of
                           true  -> NewG = del(Vw1, Views),
@@ -336,15 +377,20 @@ remove_views1(Tree, AuthList, Page, Views) ->
                                    {NewD, NewG};
                           false -> {D1, del(Vw1, Views)}
                       end,
-                  {K, #control{def_view = new_def(NewViews, NewDef), views = NewViews, perms = P1}}
+                  {K, #control{def_view = new_def(NewViews, NewDef),
+                               views = NewViews, perms = P1}}
           end,
     remove_from_control(Tree, AuthList, Page, Fun).
 
 remove_default1(Tree, AuthList, Page, Default) ->
-    Fun = fun({K, #control{def_view = D1,  views = Vw1, perms = P1}}) ->
-                  case Default of % gotta have at least one gui 'index' if you have a control
-                      D1 -> {K, #control{def_view = new_def(Vw1, D1),  views = Vw1, perms = P1}};
-                      _O -> {K, #control{def_view = D1,  views = Vw1, perms = P1}}
+    Fun = fun({K, #control{def_view = D1, views = Vw1, perms = P1}}) ->
+                  case Default of
+                      % gotta have at least one gui 'index'
+                      % if you have a control
+                      D1 -> {K, #control{def_view = new_def(Vw1, D1),
+                                         views = Vw1, perms = P1}};
+                      _O -> {K, #control{def_view = D1,  views = Vw1,
+                                         perms = P1}}
                   end
           end,
     remove_from_control(Tree, AuthList, Page, Fun).
@@ -354,28 +400,26 @@ get_groups1(_Tree) -> {erk, not_written}.
 %%
 %% Helper functions
 %%
-load_tree(Dir, Table) ->
-    {ok, _} = dets:open_file(Table, [{file, Dir ++ Table}]),
-    % if the value of auth_tree is an empty list,
-    % create an empty tree and fire it in..
-    Tree = dets:lookup(Table, ?KEY),
-    case Tree of
-        [] -> Empty = gb_trees:empty(),
-              ok = dets:insert(Table, {?KEY, Empty}),
-              Empty;
-        _  -> Tree
-    end.            
 
 contains(_Element, [])            -> false;
 contains(Element, [Element | _T]) -> true;
 contains(Element, [_H | T])       -> contains(Element, T).
 
+load_trees(Dir, Table) ->
+    {ok, _} = dets:open_file(Table, [{file, Dir ++ Table}]),
+    % if the value of auth_tree is an empty list,
+    % create an empty tree and fire it in..
+    case dets:lookup(Table, ?KEY) of
+        []            -> [];            
+        [{?KEY, Val}] -> Val
+    end.
+
 del(List1, List2) -> case lists:subtract(List1, List2) of
-                         [] -> ["index"];
+                         [] -> [?INDEX];
                          L  -> L
                      end.                              
 
-new_def([], _Default)           -> "index";
+new_def([], _Default)           -> ?INDEX;
 new_def([Default | T], Default) -> new_def(T, Default);
 new_def([H | _T], _Default)     -> H.
 
@@ -438,15 +482,21 @@ get_control(Tree, User, Groups) ->
         none          -> none;
         {value, Ctls} ->
             case lists:keyfind({user, User}, 1, Ctls) of
-                false     -> get_control2(Groups, Ctls);
+                false     -> case lists:keyfind({user, "*"}, 1, Ctls) of
+                                 false     -> get_control2(Groups, Ctls);
+                                 {_P, Ctl} -> Ctl
+                             end;
                 {_P, Ctl} -> Ctl
             end
     end.
 
-get_control2([], _Controls)     -> none;
+get_control2([], _Controls)     -> no_match;
 get_control2([H | T], Controls) ->
     case lists:keyfind({group, H}, 1, Controls) of
-        false     -> get_control2(T, Controls);
+        false     -> case lists:keyfind({group, "*"}, 1, Controls) of
+                         false     -> get_control2(T, Controls);
+                         {_P, Ctl} -> Ctl
+                     end;
         {_P, Ctl} -> Ctl
     end.
 
@@ -475,20 +525,20 @@ merge1([{K, V} | T], List, Fun, Acc) ->
                    merge1(T, List2, Fun, [{K, NewCtl} | Acc])
     end.
         
-dedup(List) -> dedup1(lists:merge([lists:sort(X) || X <- List]), []).
-
-dedup1([], Acc)         -> lists:reverse(Acc);
-dedup1([A, A | T], Acc) -> dedup1([A | T], Acc);
-dedup1([H | T], Acc)    -> dedup1(T, [H | Acc]).
-
 %%%===================================================================
 %%% Debugging interface
 %%%===================================================================
 
 debug() ->
+    Start = dets:lookup(?TABLE, ?KEY),
+    io:format("Start is ~p~n", [Start]),
+    P = ["a", "b", "c", "d"],
     auth_srv:add_perm([{user, "User"}, {group, "Group"}],
-                      ["a", "b", "c", "d"], [read, write],
+                      P, [read, write],
                       "index", ["index"]),
+    io:format("got to here in debug...~n"),
+    auth_srv:add_default([{user, "User"}], P, "supervisor"),
+    io:format("now got to here in debug...~n"),
     Ret = dets:lookup(?TABLE, ?KEY),
     io:format("Ret is ~p~n", [Ret]),
     ok.    
@@ -496,6 +546,13 @@ debug() ->
 %%%===================================================================
 %%% EUnit Tests
 %%%===================================================================
+
+%% Pre-basic test - set no permissions but test against them
+test0() ->
+    P = ["a", "b", "c", "d"],
+    Ret = check_get_page1(gb_trees:empty(), {"gordon", ["Group"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '404'}).
 
 %% Basic tests - set 1 permission and check against it...
 
@@ -521,7 +578,7 @@ test1b() ->
                      [read, write], "index", ["index"]),
     Ret = check_get_page1(Tree, {"Fail", "Fail"}, P),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {return, '403'}).
+    (Ret == {return, '503'}).
 
 test2() ->
     P = ["a", "b", "c", "d"],
@@ -539,7 +596,7 @@ test3() ->
                      [read, write], "index", ["index"]),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {return, '403'}).
+    (Ret == {return, '404'}).
 
 test4() ->
     P = ["a", "b", "c", "d"],
@@ -558,6 +615,17 @@ test5() ->
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '404'}).
+
+%% set the same permission twice
+test5a() ->
+    P = ["a", "b", "c", "d"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
+                     [read, write], "index", ["index"]),
+    Tree2 = add_perm1(Tree, [{user, "User"}, {group, "Group"}], P,
+                     [read, write], "index", ["index"]),
+    Ret = check_get_page1(Tree2, {"gordon", ["Group"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
 
 %% Now set 2 permissions and check against them
 
@@ -654,7 +722,7 @@ test13() ->
                       [read, write], "index", ["index"]),
     Ret = check_get_page1(Tree2, {"bob", ["GroupFail"]}, P),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {return, '403'}).
+    (Ret == {return, '503'}).
 
 %% check can_read
 
@@ -867,7 +935,7 @@ test32() ->
     io:format("Tree3 is ~p~n", [Tree3]),
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "index"}).
+    (Ret == {html, ?INDEX}).
 
 test33() ->
     P = ["a", "b", "c", "d"],
@@ -880,7 +948,7 @@ test33() ->
     io:format("Tree3 is ~p~n", [Tree3]),
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "index"}).
+    (Ret == {html, ?INDEX}).
 
 %% remove a default
 test34() ->
@@ -911,7 +979,7 @@ test36() ->
     io:format("Tree2 is ~p~n", [Tree2]),
     Ret = check_get_page1(Tree2, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "index"}).
+    (Ret == {html, ?INDEX}).
 
 %% now check if a page is acceptable
 test37() ->
@@ -931,7 +999,7 @@ test37() ->
     Ret2 = check_get_page1(Tree3, {"User", ["Group"]}, P1, "epic fail"),
     Ret3 = check_get_page1(Tree3, {"User", ["Group"]}, P3),
     io:format("Ret1 is ~p~nRet2 is ~p~nRet3 is ~p~n", [Ret1, Ret2, Ret3]),
-    ({Ret1, Ret2, Ret3} == {{html, "special"}, {return, '403'}, {return, '404'}}).
+    ({Ret1, Ret2, Ret3} == {{html, "special"}, {return, '503'}, {return, '404'}}).
 
 %% now do the old wild card stuff
 test38() ->
@@ -971,7 +1039,7 @@ test40() ->
 test41() ->
     P1 = ["a", "[**]"],
     P2 = ["a", "[*]", "x"],
-    P3 = ["a", "b", "x", "y"],
+    P3 = ["a", "b", "x"],
     Tree = add_perm1(gb_trees:empty(), [{user, "User"}], P1,
                      [read], "index", ["index"]),
     Tree2 = add_perm1(Tree, [{user, "User"}], P2,
@@ -979,10 +1047,100 @@ test41() ->
     Ret = check_get_page1(Tree2, {"User", ["Group"]}, P3),
     % io:format("Tree is ~p~nTree2 is ~p~n", [Tree, Tree2]),
     io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "special"}).
+
+%% test wild card user and group names
+test42() ->
+    P = ["a", "b", "c", "d"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "*"}, {group, "Group"}], P,
+                     [read, write], "index", ["index"]),
+    Ret = check_get_page1(Tree, {"gordon", ["No Match"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+test43() ->
+    P = ["a", "b", "c", "d"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "*"}], P,
+                     [read, write], "index", ["index"]),
+    Ret = check_get_page1(Tree, {"gordon", ["No Match"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+test44() ->
+    P = ["[*]"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "*"}, {group, "*"}], P, [read],
+                     "index", ["index"]),
+    Ret = check_get_page1(Tree, {"junk", ["no way", "no how", "no soon"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+%% Insert a wild permission twice
+test45() ->
+    P = ["[*]"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "*"}, {group, "*"}], P, [read],
+                     "index", ["index"]),
+    Tree2 = add_perm1(Tree, [{user, "*"}, {group, "*"}], P, [read],
+                     "index", ["index"]),
+    Ret = check_get_page1(Tree2, {"junk", ["no way", "no how", "no soon"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+%% the root is a special case - check it carefully
+testX0() ->
+    P = [],
+    Ret = check_get_page1(gb_trees:empty(), {"gordon", ["Group"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '404'}).
+
+%% check the empty path
+testX0a() ->
+    P = [],
+    Ret = check_get_page1(gb_trees:empty(), {"gordon", ["Group"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '404'}).
+
+testX1() ->
+    P = [],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
+                     [read, write], "index", ["index"]),
+    Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+testX1a() ->
+    P = [],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
+                     [read, write], "index", ["index"]),
+    Ret = check_get_page1(Tree, {"User", "Fail"}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+testX1aa() ->
+    P = [],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
+                     [read, write], "index", ["index"]),
+    Ret = check_get_page1(Tree, {"User", "Fail"}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+testX() ->
+    P1 = [],
+    P2 = ["a", "b", "c"],
+    P3 = ["[**]"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1,
+                     [read, write], "index", ["index"]),
+    Tree2 = add_perm1(Tree, [{user, "Bob"}, {group, "Group"}], P2,
+                     [read, write], "index", ["index"]),
+    Tree3= add_perm1(Tree2, [{user, "Bobby"}, {group, "Gentry"}], P3,
+                     [read, write], "index", ["index"]),
+    Ret = check_get_page1(Tree3, {"User", "Fail"}, P1),
+    io:format("Tree3 is ~p~n", [Tree3]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
 
 unit_test_() -> 
     [
+     ?_assert(test0()),
      ?_assert(test1()),
      ?_assert(test1a()),
      ?_assert(test1b()),
@@ -990,6 +1148,7 @@ unit_test_() ->
      ?_assert(test3()),
      ?_assert(test4()),
      ?_assert(test5()),
+     ?_assert(test5a()),
      ?_assert(test6()),
      ?_assert(test7()),
      ?_assert(test8()),
@@ -1025,5 +1184,15 @@ unit_test_() ->
      ?_assert(test38()),
      ?_assert(test39()),
      ?_assert(test40()),
-     ?_assert(test41())
+     ?_assert(test41()),
+     ?_assert(test42()),
+     ?_assert(test43()),
+     ?_assert(test44()),
+     ?_assert(test45()),
+     ?_assert(testX0()),
+     ?_assert(testX0a()),
+     ?_assert(testX1()),
+     ?_assert(testX1a()),
+     ?_assert(testX1aa()),
+     ?_assert(testX())
   ].

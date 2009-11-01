@@ -178,7 +178,8 @@
           password    = [],
           authtoken   = null,
           created     = calendar:local_time(),
-          data        = dict:new()
+          data        = dict:new(),
+          groups      = []
          }).
 
 -record(template,

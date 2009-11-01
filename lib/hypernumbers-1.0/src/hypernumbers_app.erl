@@ -37,8 +37,9 @@ start(_Type, _Args) ->
         {exists, Tables} -> ok = mnesia:wait_for_tables(Tables, 1000000)
     end,
 
+    Sites = hn_util:get_hosts(hn_config:get(hosts)),
     ok =  load_muin_modules(),
-    [ok = dirty_srv:start(X) || X <- ?dirties],
+    [ok = dirty_srv:start(X, Sites) || X <- ?dirties],
     ok = start_mochiweb(),
     
     {ok, Pid}.

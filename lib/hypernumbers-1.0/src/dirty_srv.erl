@@ -19,7 +19,7 @@
          terminate/2,
          code_change/3]).
 
--export([start/1, stop/1, listen/1]).
+-export([start/2, stop/1, listen/1]).
 
 
 %% @spec start_link(Arg) -> StartLink
@@ -55,8 +55,7 @@ handle_cast(_Info, State) ->
 
 -spec handle_call(any(), any(), any()) -> any().
 %% @doc  subscribe to table events from mnesia
-handle_call(start,  _From, State) ->
-    Sites = hn_util:get_hosts(hn_config:get(hosts)),
+handle_call({start, Sites},  _From, State) ->
     F = fun(Site) ->
                 Tbl = hn_db_wu:trans(Site, State#state.table),
                 {start_listen(Tbl), Tbl}
@@ -83,8 +82,8 @@ code_change(_OldVsn, State, _Extra) -> {ok, State}.
 %%% Utility Functions
 %%% 
 
-start(Type) ->
-    ok = gen_server:call(Type, start).
+start(Type, Sites) ->
+    ok = gen_server:call(Type, {start, Sites}).
 
 stop(Type) ->
     ok = gen_server:call(Type, stop).

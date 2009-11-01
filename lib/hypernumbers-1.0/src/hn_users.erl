@@ -4,7 +4,10 @@
 
 -export([
          create/3,
+         create/4,
          delete/2,
+         add_groups/3,
+         remove_groups/3,
          login/4,
          exists/2,
          gen_authtoken/2,
@@ -13,8 +16,11 @@
          update/4,
          get/2,
          read/2,
-         name/1
+         name/1,
+         groups/1
         ]).
+
+-export([delete_all_users_DEBUG/1]).
 
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
@@ -23,8 +29,32 @@
 -define(trans, hn_db_wu:trans).
 -define(trans_back, hn_db_wu:trans_back).
 
+delete_all_users_DEBUG(Site) ->
+    mnesia:clear_table(?trans(Site, hn_user)).
+
 create(Site, Name, Pass) ->
     create_user_exec(Site, #hn_user{name = Name, password = p(Pass)}).
+
+create(Site, Name, Groups, Pass) ->
+    create_user_exec(Site, #hn_user{name = Name, password = p(Pass), groups = Groups}).
+
+add_gr(Site, Name, Groups) ->
+    {ok, #hn_user{groups = G} = User} = read(Site, Name),
+    NG = hslists:dedup([Groups, G]),
+    NU = User#hn_user{groups = NG},
+    mnesia:write(?trans(Site, hn_user), NU, write).
+
+add_groups(Site, Name, Groups) ->
+    mnesia:activity(transaction, fun add_gr/3, [Site, Name, Groups]).
+
+remove_gr(Site, Name, Groups) ->
+    {ok, #hn_user{groups = G} = User} = read(Site, Name),
+    NG = hslists:dedup([lists:subtract(G, Groups)]),
+    NU = User#hn_user{groups = NG},
+    mnesia:write(?trans(Site, hn_user), NU, write).    
+
+remove_groups(Site, Name, Groups) ->
+    mnesia:activity(transaction, fun remove_gr/3, [Site, Name, Groups]).
 
 delete_tr(Site, Name) ->
     {ok, User} = read(Site, Name),
@@ -34,7 +64,10 @@ delete(Site, Name) ->
     mnesia:activity(transaction, fun delete_tr/2, [Site, Name]).
 
 name(anonymous) -> "anonymous";
-name(User)     -> User#hn_user.name.
+name(User)      -> User#hn_user.name.
+
+groups(anonymous) -> [];
+groups(User)      -> User#hn_user.groups.
 
 exists(Site, Name) ->
 	
@@ -156,7 +189,7 @@ get_access_level(Usr, #refX{site = Site, path = Path}) ->
 
     User = case Usr of
                anonymous -> anonymous;
-               _Else -> Usr#hn_user.name
+               _Else     -> Usr#hn_user.name
            end,
     
     Default = case Path of ["u",User|_] -> write; _ -> no_access end,

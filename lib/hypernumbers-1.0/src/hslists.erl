@@ -4,14 +4,55 @@
 %%% @todo documentation needs to be updated
 
 -module(hslists).
--import(lists, [all/2, append/1, duplicate/2, flatten/1, foldl/3, foreach/2,
-                map/2, nth/2, nthtail/2, reverse/1, seq/2, sum/1, zip/2,
-                zipwith/3]).
+-import(lists, [
+                all/2,
+                append/1,
+                duplicate/2,
+                flatten/1,
+                foldl/3,
+                foreach/2,
+                map/2,
+                nth/2,
+                nthtail/2,
+                reverse/1,
+                seq/2,
+                sum/1,
+                zip/2,
+                zipwith/3
+               ]).
 
--export([detect/2, detect/3, find/2, init/1, mid/1, random/1, intersperse/2,
-         join/2, intercalate/2, transpose/1, product/1, average/1, loop/2,
-         shuffle/1, uniq/1, enumerate/1, drop/2, cartesian_product/2,
-         map_with_pos/2, deepmap/2, remove/2]).
+-export([
+         detect/2,
+         detect/3,
+         find/2,
+         init/1,
+         mid/1,
+         random/1,
+         intersperse/2,
+         join/2,
+         intercalate/2,
+         transpose/1,
+         product/1,
+         average/1,
+         loop/2,
+         shuffle/1,
+         uniq/1,
+         enumerate/1,
+         drop/2,
+         cartesian_product/2,
+         map_with_pos/2,
+         deepmap/2,
+         remove/2,
+         dedup/1
+        ]).
+
+%% takes a list of lists and returns a single deduplicated list
+dedup(List) -> dedup1(lists:merge([lists:sort(X) || X <- List]), []).
+
+dedup1([], Acc)         -> lists:reverse(Acc);
+dedup1([A, A | T], Acc) -> dedup1([A | T], Acc);
+dedup1([H | T], Acc)    -> dedup1(T, [H | Acc]).
+
 
 %% @doc Returns the first element for which the fun returns true. Returns 
 %% not_detected if there isn't such an element.

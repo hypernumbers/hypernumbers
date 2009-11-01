@@ -19,9 +19,29 @@
          upgrade_1817/0,
          upgrade_1825/0,
          upgrade_1838/0,
-         upgrade_1961/0
+         upgrade_1961/0,
+         upgrade_2449/0
         ]).
 
+upgrade_2449() ->
+    Fun1 = fun(X) -> 
+                   {hn_user, Name, Password, AuthToken, Created, Data} = X,
+                   {hn_user, Name, Password, AuthToken, Created, Data, []}
+           end,
+    
+    Tbl = fun(Host, Port, Table) ->
+                  list_to_atom(lists:concat([Host,"&",Port,"&",Table]))
+          end,
+    
+    Fun2 = fun("http://"++Site) ->
+                   [Host, Port] = string:tokens(Site, ":"),
+                   Name = Tbl(Host, Port, hn_user),
+                   Fields = ms_util2:get_record_info(hn_user), 
+                   mnesia:transform_table(Name, Fun1, Fields)
+           end,
+    
+    [Fun2(X) || X <- hn_util:get_hosts(hn_config:get(hosts))].
+    
 upgrade_1961() ->
     
     Fun1 = fun(X) -> 
@@ -42,7 +62,6 @@ upgrade_1961() ->
            end,
     
     [Fun2(X) || X <- hn_util:get_hosts(hn_config:get(hosts))].
-
 
 %% rejigs the magic style record in table styles
 upgrade_1838() ->
