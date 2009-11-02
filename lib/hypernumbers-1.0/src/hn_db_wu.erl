@@ -2392,28 +2392,33 @@ unregister_inc_hn(Parent, Child)
     #refX{site = ChildSite} = Child,
     Head = #incoming_hn{site_and_parent = {ChildSite, Parent}, _ = '_'},
     Table = trans(ChildSite, incoming_hn),
-    [Hn] = mnesia:select(Table, [{Head, [], ['$_']}], read),
-    #incoming_hn{biccie = Biccie} = Hn,
-    Head3 = #remote_cell_link{parent =  Parent, type = incoming, _ = '_'},
-    Table = trans(ChildSite, remote_cell_link),
-    ok = case mnesia:select(Table, [{Head3, [], ['$_']}], read) of
-             [] -> Table2 = trans(ChildSite, incoming_hn),
-                   ok = mnesia:delete({Table2, Parent});
-             _  -> ok % somebody else still wants it so don't unregister
-         end,
-    PPage = Parent#refX{obj = {page, "/"}},
-    CPage = Child#refX{obj = {page, "/"}},
-    PUrl = hn_util:refX_to_url(PPage),
-    CUrl = hn_util:refX_to_url(CPage),
-    PV = hn_db_wu:read_page_vsn(ChildSite, Parent),
-    CV = hn_db_wu:read_page_vsn(ChildSite, Child),
-    PVsn = #version{page = PUrl, version = PV},
-    CVsn = #version{page = CUrl, version = CV},
-    Rec = #dirty_notify_back_in{parent = Parent, child = Child,
-                                change = "unregister",
-                                biccie = Biccie, parent_vsn = PVsn,
-                                child_vsn = CVsn},
-    mark_dirty(ChildSite, Rec).
+    case mnesia:select(Table, [{Head, [], ['$_']}], read) of
+        [Hn] ->
+            #incoming_hn{biccie = Biccie} = Hn,
+            Head3 = #remote_cell_link{parent =  Parent, type = incoming, _ = '_'},
+            Table2 = trans(ChildSite, remote_cell_link),
+            ok = case mnesia:select(Table2, [{Head3, [], ['$_']}], read) of
+                     [] -> Table3 = trans(ChildSite, incoming_hn),
+                           ok = mnesia:delete({Table3, Parent});
+                     _  -> ok % somebody else still wants it so don't unregister
+                 end,
+            PPage = Parent#refX{obj = {page, "/"}},
+            CPage = Child#refX{obj = {page, "/"}},
+            PUrl = hn_util:refX_to_url(PPage),
+            CUrl = hn_util:refX_to_url(CPage),
+            PV = hn_db_wu:read_page_vsn(ChildSite, Parent),
+            CV = hn_db_wu:read_page_vsn(ChildSite, Child),
+            PVsn = #version{page = PUrl, version = PV},
+            CVsn = #version{page = CUrl, version = CV},
+            Rec = #dirty_notify_back_in{parent = Parent, child = Child,
+                                        change = "unregister",
+                                        biccie = Biccie, parent_vsn = PVsn,
+                                        child_vsn = CVsn},
+            mark_dirty(ChildSite, Rec);
+        _ ->
+            ok
+    end.
+
 
 %get_refXs(List) -> get_refXs(List, []).
 
