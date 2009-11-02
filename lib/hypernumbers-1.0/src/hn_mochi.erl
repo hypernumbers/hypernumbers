@@ -62,7 +62,9 @@ content_type(Req) ->
         nomatch    ->
             case re:run(Accept, "text/html") of
                 {match, _} -> html;
-                nomatch    -> throw(unmatched_type)
+                nomatch    -> io:format("content type unmatched: ~p~n",
+                                        [Accept]),
+                              throw(unmatched_type)
             end
     end.
 
@@ -81,6 +83,7 @@ do_req(Req) ->
     Groups = hn_users:groups(User),
     
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
+    
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} -> serve_html(Req, "hypernumbers/404.html", User),
@@ -94,8 +97,7 @@ do_req(Req) ->
             end;
         %% these are the returns for the POST's
         true            -> handle_req(Method, Req, Ref, Vars, User);
-        false           -> Req:serve_file("hypernumbers/login.html",
-                                          docroot(), ?hdr) %503
+        false           -> Req:respond({503, [], []})
     end,
     ok.
 
