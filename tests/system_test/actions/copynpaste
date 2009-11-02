@@ -3,7 +3,7 @@
 %% Targeted Sites
 sites() -> ["http://127.0.0.1:9000"].
 
-action() ->
+actions() ->
     Url  = "http://127.0.0.1:9000/copynpaste/",
     Type = "application/json",
     Data = "{\"copy\":{\"src\":\"http://127.0.0.1:9000/copynpaste/F4:F9\"}}",

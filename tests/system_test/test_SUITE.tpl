@@ -9,9 +9,15 @@
 -include(~p).
 
 init_per_suite(Config) ->
+    Init = fun(S) ->
+                   auth_srv:add_perm(S, [{user, "*"}, {group, "*"}], ["[**]"],
+                                     [read, write],
+                                     "hypernumbers/index", ["hypernumbers/index"]),
+                   hn_db_api:wait_for_dirty(S)
+           end,
+    [Init(S) || S <- sites()], 
     testsys:restore(~p, ~p),
-    [hn_db_api:wait_for_dirty(S) || S <- sites()], 
-    action(),
+    actions(),
     [hn_db_api:wait_for_dirty(S) || S <- sites()], 
     Config.
 

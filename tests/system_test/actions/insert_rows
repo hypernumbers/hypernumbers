@@ -3,7 +3,7 @@
 %% Targeted Sites
 sites() -> ["http://127.0.0.1:9000"].
 
-action() ->
+actions() ->
     Url  = "http://127.0.0.1:9000/insert_rows/",
     Type = "application/json",
     Accept = [{"Accept", "application/json"}],

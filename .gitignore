@@ -10,6 +10,7 @@ db/
 dets/
 logs/
 ebin/hypernumbers.*
+lib/*/ebin/*.erl
 
 
 ## Script used for fetching svn externals
@@ -39,3 +40,4 @@ lib/formula_engine*/src/superlex.erl
 ## Generated Test Files
 tests/excel_import_*
 tests/system_test/*_SUITE.erl
+tests/cover.data

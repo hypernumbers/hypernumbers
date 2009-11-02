@@ -9,6 +9,9 @@
 -define(SYSTEST_DIR, "tests/system_test/").
 -define(FIXTURE_DIR, "tests/system_test/fixtures/").
 
+-define(COVER_FILE, "tests/cover.spec").
+-define(COVER_DATA, "tests/cover.data").
+
 
 all() -> excel(), sys().
 
@@ -17,7 +20,7 @@ sys() ->
     sys([]).
 sys(Suites) ->
     SOpt = if Suites == [] -> [];
-              true         -> [{suite, Suites}] end,
+              true         -> [{suite, [S++"_SUITE" || S <- Suites]}] end,
     Opts = [ {dir, [filename:absname(?SYSTEST_DIR)]} ],
     do_test(Opts ++ SOpt).
 
@@ -39,7 +42,22 @@ excel(T, S) ->
 
 
 do_test(Opts) ->
-    DefaultOps = [{logdir, filename:absname(?LOG_DIR)}],
+    %% Copy source files
+    SrcDir = code:lib_dir(hypernumbers)++"/src/",
+    EbinDir = code:lib_dir(hypernumbers)++"/ebin/",
+
+    [file:copy(S, EbinDir++filename:basename(S)) 
+     || S <- filelib:wildcard(SrcDir++"*.erl")],
+
+    file:write_file(?COVER_DATA, []),
+    DefaultOps = [{logdir, filename:absname(?LOG_DIR)},
+                  {cover, filename:absname(?COVER_FILE)}],
+
     ct:run_test(
       lists:ukeymerge(
-        1, lists:keysort(1, Opts), lists:keysort(1, DefaultOps))).
+        1, lists:keysort(1, Opts), lists:keysort(1, DefaultOps))),
+
+    [file:delete(S) || S <- filelib:wildcard(EbinDir++"*.erl")],
+    ok.
+   
+
