@@ -618,11 +618,12 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
     Lang   = {"lang", get_lang(User)},
     Tour   = viewed_tour(Ref#refX.site, User),
     Perms = case auth_srv:can_read(S, {Name, Groups}, P) of
-                true  -> {"permissions", "read-write"};
-                false -> {"permissions", "read-only"}
+                true  -> {"permissions", {array, ["read", "write"]}};
+                false -> {"permissions", {array, ["read"]}}
             end,
-    V = [{view, X} || X <- auth_srv:get_views(S, {Name, Groups}, P)],
-    Views = {views, {struct, V}},
+
+    Views = {views, {array, auth_srv:get_views(S, {Name, Groups}, P)}},
+
     {struct, [Time, Usr, Host, Tour, Lang, Perms, Views
               | dict_to_struct(Dict)]}.
 
