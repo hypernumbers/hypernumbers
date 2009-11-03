@@ -85,16 +85,16 @@ setup() ->
     % * now the user spreadsheets
     auth_srv:add_perm(?SITE, [{user, "gordon"}], ["u", "gordon", "[**]"],
                       [read, write],  "_global/spreadsheet",
-                      [ "_global/spreadsheet"]), 
+                      ["_global/spreadsheet",  "_global/pagebuilder"]), 
     auth_srv:add_perm(?SITE, [{user, "tom"}], ["u", "tom", "[**]"],
                       [read, write],  "_global/spreadsheet",
-                      [ "_global/spreadsheet"]), 
+                      ["_global/spreadsheet",  "_global/pagebuilder"]), 
     auth_srv:add_perm(?SITE, [{user, "dale"}], ["u", "dale", "[**]"],
                       [read, write],  "_global/spreadsheet",
-                      [ "_global/spreadsheet"]), 
+                      ["_global/spreadsheet",  "_global/pagebuilder"]), 
     auth_srv:add_perm(?SITE, [{user, "stephen"}], ["u", "stephen", "[**]"],
                       [read, write],  "_global/spreadsheet",
-                      [ "_global/spreadsheet"]),
+                      ["_global/spreadsheet", "_global/pagebuilder"]),
  
     % now create the dev space
     auth_srv:add_perm(?SITE, [{group, "dev"}], ["dev", "[**]"],
