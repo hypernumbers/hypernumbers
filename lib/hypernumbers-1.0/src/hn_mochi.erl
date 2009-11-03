@@ -603,18 +603,28 @@ page_attributes_CHEATING(Ref) ->
     Data = page_attributes(Ref, anonymous),
     (mochijson:encoder([{input_encoding, utf8}]))(Data).
 
-page_attributes(Ref, User) ->
+page_attributes(#refX{site = S, path = P} = Ref, User) ->
+    Name = hn_users:name(User),
+    Groups = hn_users:groups(User),
+    %% now build the struct
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
     Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
     NTree  = add_styles(Styles, Tree),
     Dict   = to_dict(hn_db_api:read_whole_page(Ref), NTree),
     Time   = {"time", remoting_reg:timestamp()},
-    Usr    = {"user", hn_users:name(User)},
-    Host   = {"host", Ref#refX.site},
+    Usr    = {"user", Name},
+    Host   = {"host", S},
     Lang   = {"lang", get_lang(User)},
     Tour   = viewed_tour(Ref#refX.site, User),
-    {struct, [Time, Usr, Host, Tour, Lang | dict_to_struct(Dict)]}.
+    Perms = case auth_srv:can_read(S, {Name, Groups}, P) of
+                true  -> {"permissions", "read-write"};
+                false -> {"permissions", "read-only"}
+            end,
+    V = [{view, X} || X <- auth_srv:get_views(S, {Name, Groups}, P)],
+    Views = {views, {struct, V}},
+    {struct, [Time, Usr, Host, Tour, Lang, Perms, Views
+              | dict_to_struct(Dict)]}.
 
 viewed_tour(_Site, anonymous) ->
     {"viewed-tour", "true"};
