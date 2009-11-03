@@ -41,44 +41,25 @@ req(Req) ->
         
         [] ->
             case catch do_req(Req) of 
-                ok ->                    
-                    ok;
-                invalid_reference ->
-                    Req:respond({500,[],[]});
-                Else ->
-                    Err = [Else, erlang:get_stacktrace()],
-                    error_logger:error_msg("~p~n~p~n", Err),
-                    Req:respond({500,[],[]})
+                ok                -> ok;
+                invalid_reference -> Req:respond({500,[],[]});
+                Else              -> error(Req, Else)
             end
     end.
-
-content_type(Req) ->
-    {value, {'Accept', Accept}} =
-        mochiweb_headers:lookup('Accept', Req:get(headers)),
-
-    case re:run(Accept, "application/json") of
-        {match, _} -> json;
-        nomatch    ->
-            case re:run(Accept, "text/html") of
-                {match, _} -> html;
-                nomatch    -> io:format("content type unmatched: ~p~n",
-                                        [Accept]),
-                              throw(unmatched_type)
-            end
-    end.
-
+    
 do_req(Req) ->
     #refX{site = Site} = Ref = hn_util:parse_url(get_host(Req)),
+
     Vars   = Req:parse_qs(),
     Method = Req:get(method),
-    
+
     {ok, Auth} = get_var_or_cookie("auth", Vars, Req),
     User = case hn_users:verify_token(Site, Auth) of
                {ok, Usr}        -> Usr;
                {error, _Reason} -> anonymous
            end,
 
-    Name = hn_users:name(User),
+    Name   = hn_users:name(User),
     Groups = hn_users:groups(User),
     
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
@@ -86,9 +67,9 @@ do_req(Req) ->
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->
-            serve_html(404, Req, "hypernumbers/404.html", User);
+            serve_html(404, Req, viewroot()++"/_global/404.html", User);
         {return, '503'} ->
-            Req:serve_file("hypernumbers/login.html", docroot(), ?hdr);
+            serve_html(503, Req, viewroot()++"/_global/login.html", User);
         {html, File}    ->
             case Vars of
                 [] -> handle_req(Method, Req, Ref, [{"view", File}], User);
@@ -99,23 +80,6 @@ do_req(Req) ->
         false           -> Req:respond({503, [], []})
     end,
     ok.
-
-get_auth(User, Groups, 'GET', #refX{site = Site, path = Path}, []) ->
-    auth_srv:check_get_page(Site, {User, Groups}, Path);
-get_auth(User, Groups, 'GET', #refX{site = Site, path = Path},
-         [{"view", View}]) ->
-    auth_srv:check_get_page(Site, {User, Groups}, Path, View);
-get_auth(User, Groups, 'GET', #refX{site = Site, path = Path}, Vars) ->
-    case lists:keyfind("path", 1, Vars) of
-        {"path", P2} -> P3 = case P2 of
-                                 "/" -> [];
-                                 _   -> util2:chop(P2)
-                             end,
-                        auth_srv:check_get_page(Site, {User, Groups}, P3);
-        false        -> auth_srv:check_get_page(Site, {User, Groups}, Path)
-    end;
-get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
-    auth_srv:can_write(Site, {User, Groups}, Path).
 
 handle_req(Method, Req, Ref, Vars, User) ->
 
@@ -155,53 +119,38 @@ handle_req(Method, Req, Ref, Vars, User) ->
             end
     end.    
 
-serve_html(Req, File, User) ->
-    serve_html(200, Req, File, User).
-serve_html(Status, Req, File, User) ->
-    ok = ensure(File, get_lang(User)),
-    serve_file(Status, Req, File++"."++get_lang(User)).
 
-serve_file(Status, Req, File) ->
-    case file:open(docroot() ++ "/" ++ File, [raw, binary]) of
-        {ok, IoDevice} ->
-            Req:respond({Status, ?hdr,{file, IoDevice}}),
-            file:close(IoDevice);
-        _ ->
-            Req:not_found()
-    end.
+%%---------------
+%  GET REQUESTS
+%%---------------
+iget(Req, Ref=#refX{path=["_user", "login"]}, page, [], User, html) ->
+    iget(Req, Ref, page, [{"view", "_global/login"}], User, html);
 
-ensure(File, Lang) ->
-    SrcHtml   = docroot() ++ "/" ++ File,
-    TransHtml = SrcHtml++"."++Lang,
-    case not( filelib:is_file(TransHtml) ) orelse 
-        hn_util:is_older(TransHtml, SrcHtml) of 
-        true  -> hn_util:compile_html(SrcHtml, Lang);
-        false -> ok
-    end.
+iget(Req, Ref, page, [], User, html) ->
+    io:format("hello~n", []),
+    iget(Req, Ref, page, [{"view", "_global/spreadsheet"}], User, html);
 
-iget(Req, #refX{path=["_user", "login"]}, page, [], User, html) ->
-    serve_html(Req, "hypernumbers/login.html", User);
-iget(Req, _Ref, page, [{"view", FileName}], User, html) ->
-    serve_html(Req, FileName ++ ".html", User);
-iget(Req, _Ref, page, [], User, html) ->
-    serve_html(Req, "hypernumbers/index.html", User);
+iget(Req, _Ref, page, [{"view", FName}], User, html) ->
+    F = code:lib_dir(hypernumbers, priv) ++ "/docroot/views/"++FName++".html",
+    serve_html(Req, F, User);
+
 iget(Req, Ref, page, [{"updates", Time}, {"path", Path}], _User, _CType) ->
     Paths = [ string:tokens(X, "/") || X<-string:tokens(Path, ",")],
     remoting_request(Req, Ref#refX.site, Paths, Time);
+
 iget(Req, #refX{site = S}, page, [{"status", []}], _User, _CType) -> 
     json(Req, status_srv:get_status(S));
+
 iget(Req, _Ref, page, [{"views", []}], _User, _CType) ->
     Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/views/",
     Files = [ filename:basename(X, ".tpl")
               || X <- filelib:wildcard(Path++"*.tpl")],
     json(Req, {array, Files});
+
 iget(Req, Ref, page, [{"pages", []}], _User, _CType) ->
     json(Req, pages(Ref));
-iget(Req, Ref, page, [], User, json) ->
-    json(Req, page_attributes(Ref, User));
-%% If the browser wanted this page as html it would get the view
-%% but because it wants it as json it just gets the json...
-iget(Req, Ref, page, [{"view", _View}], User, json) ->
+
+iget(Req, Ref, page, _Attr, User, json) ->
     json(Req, page_attributes(Ref, User));
 
 iget(Req, Ref, cell, [], _User, json) ->
@@ -219,13 +168,14 @@ iget(Req, Ref, cell, [], _User, json) ->
                 "" 
         end,
     Req:ok({"text/html", V});
-iget(Req, Ref, Type, Attr, User, CType) ->
-    io:format("Req is ~p~n-Ref is ~p~n-Type is ~p~nAttr is ~p~n-" ++
-              "User is ~p~n-CType is ~p~n",
-              [Req, Ref, Type, Attr, User, CType]),
-        error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
+
+iget(Req, Ref, _Type, Attr, User, _CType) ->
+    error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
     serve_html(404, Req, "hypernumbers/404.html", User).
 
+%%---------------
+%  POST REQUESTS
+%%---------------
 ipost(#refX{site = S, path = P} = Ref, _Type, _Attr, 
       [{"drag", {_, [{"range", Rng}]}}], User) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
@@ -563,8 +513,8 @@ add_ref(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 
-docroot() ->
-    code:priv_dir(hypernumbers) ++ "/docroot".
+viewroot() -> docroot() ++ "/views".
+docroot()  -> code:priv_dir(hypernumbers) ++ "/docroot".
 
 itol(X) -> integer_to_list(X).
 ltoi(X) -> list_to_integer(X).
@@ -733,4 +683,61 @@ f_up1([{struct, [{"ref", Ref}, {"formula", F}]} | T], S, P, A1, A2) ->
         {cell, _}   -> f_up1(T, S, P, A1, [{RefX, [{"formula", F}]} | A2])
     end.
 
-                                                               
+serve_html(Req, File, User) ->
+    serve_html(200, Req, File, User).
+serve_html(Status, Req, File, User) ->
+    ok = ensure(File, get_lang(User)),
+    serve_file(Status, Req, File++"."++get_lang(User)).
+
+serve_file(Status, Req, File) ->
+    case file:open(File, [raw, binary]) of
+        {ok, IoDevice} ->
+            Req:respond({Status, ?hdr, {file, IoDevice}}),
+            file:close(IoDevice);
+        _ ->
+            Req:not_found()
+    end.
+
+ensure(Src, Lang) ->
+    TransHtml = Src++"."++Lang,
+    case not( filelib:is_file(TransHtml) ) orelse 
+        hn_util:is_older(TransHtml, Src) of 
+        true  -> hn_util:compile_html(Src, Lang);
+        false -> ok
+    end.
+
+content_type(Req) ->
+    {value, {'Accept', Accept}} =
+        mochiweb_headers:lookup('Accept', Req:get(headers)),
+
+    case re:run(Accept, "application/json") of
+        {match, _} -> json;
+        nomatch    ->
+            case re:run(Accept, "text/html") of
+                {match, _} -> html;
+                nomatch    -> throw(unmatched_type)
+            end
+    end.
+
+get_auth(User, Groups, 'GET', #refX{site = Site, path = Path}, []) ->
+    auth_srv:check_get_page(Site, {User, Groups}, Path);
+get_auth(User, Groups, 'GET', #refX{site = Site, path = Path},
+         [{"view", View}]) ->
+    auth_srv:check_get_page(Site, {User, Groups}, Path, View);
+get_auth(User, Groups, 'GET', #refX{site = Site, path = Path}, Vars) ->
+    case lists:keyfind("path", 1, Vars) of
+        {"path", P2} ->
+            P3 = case P2 of
+                     "/" -> [];
+                     _   -> util2:chop(P2)
+                 end,
+            auth_srv:check_get_page(Site, {User, Groups}, P3);
+        false ->
+            auth_srv:check_get_page(Site, {User, Groups}, Path)
+    end;
+get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
+    auth_srv:can_write(Site, {User, Groups}, Path).
+
+error(Req, Error) ->
+    error_logger:error_msg("~p~n~p~n", [Error, erlang:get_stacktrace()]),
+    Req:respond({500,[],[]}).

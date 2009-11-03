@@ -32,9 +32,8 @@ old_style() ->
     auth_srv:clear_all_perms_DEBUG(?SITE),
 
     % the home page
-    auth_srv:add_perm(?SITE, [{user, "*"}, {group, "*"}], ["[**]"],
-                      [read, write],
-                      "hypernumbers/index", ["hypernumbers/index"]).    
+    auth_srv:add_perm(?SITE, [{user, "*"}, {group, "*"}], ["[**]"],[read, write],
+                      "_global/spreadsheet", ["_global/spreadsheet"]).    
 
 setup() ->
     %
@@ -61,16 +60,16 @@ setup() ->
     % the login page
     auth_srv:add_perm(?SITE, [{user, "*"}, {group, "*"}], ["_user", "login"],
                       [read, write], "hypernumbers/login",
-                      ["hypernumbers/login"]),
+                      ["_global/login"]),
 
     % now make the public spreadsheets public
     % and give the admin group write access
     auth_srv:add_perm(?SITE, [{user, "*"}, {group, "*"}], ["public", "[**]"],
                       [read],
-                      "hypernumbers/index", ["hypernumbers/index"]),
+                       "_global/spreadsheet", [ "_global/spreadsheet"]),
     auth_srv:add_perm(?SITE, [{group, "admin"}], ["public", "[**]"],
                       [read, write],
-                      "hypernumbers/index", ["hypernumbers/index"]),
+                       "_global/spreadsheet", ["_global/spreadsheet"]),
 
     % now set up the user space
     % * first up the user home pages
@@ -85,22 +84,22 @@ setup() ->
  
     % * now the user spreadsheets
     auth_srv:add_perm(?SITE, [{user, "gordon"}], ["u", "gordon", "[**]"],
-                      [read, write], "hypernumbers/index",
-                      ["hypernumbers/index"]), 
+                      [read, write],  "_global/spreadsheet",
+                      [ "_global/spreadsheet"]), 
     auth_srv:add_perm(?SITE, [{user, "tom"}], ["u", "tom", "[**]"],
-                      [read, write], "hypernumbers/index",
-                      ["hypernumbers/index"]), 
+                      [read, write],  "_global/spreadsheet",
+                      [ "_global/spreadsheet"]), 
     auth_srv:add_perm(?SITE, [{user, "dale"}], ["u", "dale", "[**]"],
-                      [read, write], "hypernumbers/index",
-                      ["hypernumbers/index"]), 
+                      [read, write],  "_global/spreadsheet",
+                      [ "_global/spreadsheet"]), 
     auth_srv:add_perm(?SITE, [{user, "stephen"}], ["u", "stephen", "[**]"],
-                      [read, write], "hypernumbers/index",
-                      ["hypernumbers/index"]),
+                      [read, write],  "_global/spreadsheet",
+                      [ "_global/spreadsheet"]),
  
     % now create the dev space
     auth_srv:add_perm(?SITE, [{group, "dev"}], ["dev", "[**]"],
                       [read, write],
-                      "hypernumbers/index", ["hypernumbers/index"]).
+                       "_global/spreadsheet", [ "_global/spreadsheet"]).
     
     
 
