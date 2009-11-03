@@ -19,16 +19,17 @@ table {
     height: 100%;
 }
 
-ul,li {
-    list-style-type: none;
-    margin:  0px;
-    padding: 0px;
-}
-
 p,h1,h2,h3,h4,h5 {  
     margin: 0px 0px 6px 0px;
 }
 
+label { 
+    display:inline;
+}
+
+label * { 
+    vertical-align: middle;
+}
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
@@ -334,9 +335,12 @@ p,h1,h2,h3,h4,h5 {
 /* FILE MENU STYLES
 /*****************************************************************************/
 #menu { 
- height:     22px;
- background: #FFFFFF;
- float:left;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    height: 22px;
+    background: #FFFFFF;
+    float: left;
 }
 
 #menu .desc { 
