@@ -18,8 +18,7 @@
 
 -define(hdr,[{"Cache-Control","no-store, no-cache, must-revalidate"},
              {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
-             {"Pragma",       "no-cache"},
-             {"Status",       200}]).
+             {"Pragma",       "no-cache"}]).
 
 -define(html, [{"Content-Type", "text/html"} | ?hdr]).
 
@@ -86,10 +85,10 @@ do_req(Req) ->
     
     case AuthRet of
         %% these are the returns for the GET's
-        {return, '404'} -> serve_html(Req, "hypernumbers/404.html", User),
-                           Req:not_found();
-        {return, '503'} -> Req:serve_file("hypernumbers/login.html",
-                                          docroot(), ?hdr);
+        {return, '404'} ->
+            serve_html(404, Req, "hypernumbers/404.html", User);
+        {return, '503'} ->
+            Req:serve_file("hypernumbers/login.html", docroot(), ?hdr);
         {html, File}    ->
             case Vars of
                 [] -> handle_req(Method, Req, Ref, [{"view", File}], User);
@@ -157,13 +156,15 @@ handle_req(Method, Req, Ref, Vars, User) ->
     end.    
 
 serve_html(Req, File, User) ->
+    serve_html(200, Req, File, User).
+serve_html(Status, Req, File, User) ->
     ok = ensure(File, get_lang(User)),
-    serve_file(Req, File++"."++get_lang(User)).
+    serve_file(Status, Req, File++"."++get_lang(User)).
 
-serve_file(Req, File) ->
+serve_file(Status, Req, File) ->
     case file:open(docroot() ++ "/" ++ File, [raw, binary]) of
         {ok, IoDevice} ->
-            Req:ok({"text/html",?hdr,{file, IoDevice}}),
+            Req:respond({Status, ?hdr,{file, IoDevice}}),
             file:close(IoDevice);
         _ ->
             Req:not_found()
@@ -223,8 +224,7 @@ iget(Req, Ref, Type, Attr, User, CType) ->
               "User is ~p~n-CType is ~p~n",
               [Req, Ref, Type, Attr, User, CType]),
         error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
-    serve_html(Req, "hypernumbers/404.html", User),
-    Req:not_found().
+    serve_html(404, Req, "hypernumbers/404.html", User).
 
 ipost(#refX{site = S, path = P} = Ref, _Type, _Attr, 
       [{"drag", {_, [{"range", Rng}]}}], User) ->
