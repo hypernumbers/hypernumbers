@@ -126,10 +126,6 @@ handle_req(Method, Req, Ref, Vars, User) ->
 iget(Req, Ref=#refX{path=["_user", "login"]}, page, [], User, html) ->
     iget(Req, Ref, page, [{"view", "_global/login"}], User, html);
 
-iget(Req, Ref, page, [], User, html) ->
-    io:format("hello~n", []),
-    iget(Req, Ref, page, [{"view", "_global/spreadsheet"}], User, html);
-
 iget(Req, _Ref, page, [{"view", FName}], User, html) ->
     F = code:lib_dir(hypernumbers, priv) ++ "/docroot/views/"++FName++".html",
     serve_html(Req, F, User);
