@@ -617,7 +617,7 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
     Host   = {"host", S},
     Lang   = {"lang", get_lang(User)},
     Tour   = viewed_tour(Ref#refX.site, User),
-    Perms = case auth_srv:can_read(S, {Name, Groups}, P) of
+    Perms = case auth_srv:can_write(S, {Name, Groups}, P) of
                 true  -> {"permissions", {array, ["read", "write"]}};
                 false -> {"permissions", {array, ["read"]}}
             end,

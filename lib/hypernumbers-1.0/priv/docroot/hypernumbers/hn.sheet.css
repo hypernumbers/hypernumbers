@@ -616,6 +616,16 @@ p,h1,h2,h3,h4,h5 {
 /******************************************************************************
 		TOOLBAR
 ******************************************************************************/
+#toolbar.disabled * { 
+    opacity: 0.7; 
+}
+#toolbar.disabled a.toolbar-item:hover, #toolbar.disabled .expand:hover {
+    cursor: default;
+    border:  1px solid transparent;
+    background-color: transparent;
+}
+
+
 #toolbar {
  background:    #eee;
  height:        26px;
