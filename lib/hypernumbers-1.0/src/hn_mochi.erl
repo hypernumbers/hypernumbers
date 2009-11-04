@@ -1,7 +1,6 @@
 %%% @author Dale Harvey
 %%% @copyright 2008 Hypernumbers Ltd
 %%% @doc Handle Hypernumbers HTTP requests
-
 -module(hn_mochi).
 
 -include("regexp.hrl").
@@ -26,6 +25,7 @@
         exit("exit from hn_mochi:handle_req impossible page versions")).
 
 req(Req) ->
+    
     case filename:extension(Req:get(path)) of
         
         % Dont Cache templates
@@ -35,7 +35,7 @@ req(Req) ->
         
         % Serve Static Files
         X when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; 
-        X == ".ico"; X == ".json"; X == ".tpl" ->
+        X == ".ico"; X == ".json"; X == ".gif" ->
             "/"++RelPath = Req:get(path),
             Req:serve_file(RelPath, docroot());
         
@@ -48,8 +48,9 @@ req(Req) ->
     end.
     
 do_req(Req) ->
+    
     #refX{site = Site} = Ref = hn_util:parse_url(get_host(Req)),
-
+    
     Vars   = Req:parse_qs(),
     Method = Req:get(method),
 
@@ -59,25 +60,24 @@ do_req(Req) ->
                {error, _Reason} -> anonymous
            end,
 
-    Name   = hn_users:name(User),
-    Groups = hn_users:groups(User),
-    
+    Name    = hn_users:name(User),
+    Groups  = hn_users:groups(User),    
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
-    
+ 
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->
-            serve_html(404, Req, viewroot()++"/_global/404.html", User);
+            serve_html(404, Req, [viewroot(), "/_global/404.html"], User);
         {return, '503'} ->
-            serve_html(503, Req, viewroot()++"/_global/login.html", User);
+            serve_html(503, Req, [viewroot(), "/_global/login.html"], User);
         {html, File}    ->
             case Vars of
                 [] -> handle_req(Method, Req, Ref, [{"view", File}], User);
                 _  -> handle_req(Method, Req, Ref, Vars, User)
             end;
         %% these are the returns for the POST's
-        true            -> handle_req(Method, Req, Ref, Vars, User);
-        false           -> Req:respond({503, [], []})
+        true  -> handle_req(Method, Req, Ref, Vars, User);
+        false -> Req:respond({503, [], []})
     end,
     ok.
 
@@ -96,17 +96,17 @@ handle_req(Method, Req, Ref, Vars, User) ->
             {value, {'Content-Type', Ct}} =
                 mochiweb_headers:lookup('Content-Type', Req:get(headers)),
 
-            %% TODO: Log file uploads.
             case Ct of
+                % Uploads
                 "multipart/form-data" ++ _Rest ->
 
                     {Data, File} = hn_file_upload:handle_upload(Req, Ref, User),
                     Name = filename:basename(File),
-
+                    
                     mochilog:log(Req, Ref, hn_users:name(User), {upload, Name}),
                     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
                     Req:ok({"text/html", ?hdr, Json});
-                
+                % Normal Post Requests
                 _Else ->
                     Body = Req:recv_body(),
                     {ok, Post} = get_json_post(Body),
@@ -127,8 +127,21 @@ iget(Req, Ref=#refX{path=["_user", "login"]}, page, [], User, html) ->
     iget(Req, Ref, page, [{"view", "_global/login"}], User, html);
 
 iget(Req, _Ref, page, [{"view", FName}], User, html) ->
-    F = code:lib_dir(hypernumbers, priv) ++ "/docroot/views/"++FName++".html",
-    serve_html(Req, F, User);
+
+    %% If there is a template, generate html
+    Tpl  = [viewroot(), "/", FName, ".tpl"],
+    Html = [viewroot(), "/", FName, ".html"],
+    
+    ok = case filelib:is_file(Tpl) andalso
+             ( not(filelib:is_file(Html))
+               orelse hn_util:is_older(Html, Tpl) ) of
+             true  -> ok = build_tpl(FName); _ -> ok
+         end,
+        
+    case filelib:is_file(Html) of
+        true  -> serve_html(Req, Html, User);
+        false -> '404'(Req, User)
+    end;
 
 iget(Req, Ref, page, [{"updates", Time}, {"path", Path}], _User, _CType) ->
     Paths = [ string:tokens(X, "/") || X<-string:tokens(Path, ",")],
@@ -137,13 +150,30 @@ iget(Req, Ref, page, [{"updates", Time}, {"path", Path}], _User, _CType) ->
 iget(Req, #refX{site = S}, page, [{"status", []}], _User, _CType) -> 
     json(Req, status_srv:get_status(S));
 
-iget(Req, _Ref, page, [{"views", []}], _User, _CType) ->
-    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/views/",
-    Files = [ filename:basename(X, ".tpl")
-              || X <- filelib:wildcard(Path++"*.tpl")],
-    json(Req, {array, Files});
+% List of template pages
+iget(Req, _Ref, page, [{"templates", []}], _User, _CType) ->
+    File = [filename:basename(X)
+            || X<-filelib:wildcard(docroot()++"/templates/*")],
+    json(Req, {array, File});
 
-iget(Req, Ref, page, [{"pages", []}], _User, _CType) ->
+% List of views available to edit
+iget(Req, _Ref, page, [{"views", []}], User, _CType) ->
+    
+    Z = fun(X) ->
+                [File, Root | _ ] = lists:reverse(string:tokens(X, "/")),
+                Root ++ "/" ++ filename:basename(File, ".tpl")
+        end,
+    
+    F = fun(Y) -> [ Z(X) || X <- filelib:wildcard(Y++"*.tpl")] end,
+
+    Extra = case lists:member("admin", hn_users:groups(User)) of
+                true  -> F(viewroot()++"_global/");
+                false -> []
+            end,
+
+    json(Req, {array, F(viewroot()++hn_users:name(User)++"/")  ++ Extra});
+
+iget(Req, Ref, page, [{"pages", []}], _User, json) ->
     json(Req, pages(Ref));
 
 iget(Req, Ref, page, _Attr, User, json) ->
@@ -165,9 +195,10 @@ iget(Req, Ref, cell, [], _User, json) ->
         end,
     Req:ok({"text/html", V});
 
+
 iget(Req, Ref, _Type, Attr, User, _CType) ->
     error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
-    serve_html(404, Req, "hypernumbers/404.html", User).
+    '404'(Req, User).
 
 %%---------------
 %  POST REQUESTS
@@ -194,81 +225,59 @@ ipost(_Ref, _Type, [{"mark", []}],
       [{"set",{struct, [{"mark", _Msg}]}}], _User) ->
     ok;
 
-ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-      [{"insert", "before"}], User)
+ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)
   when O == row orelse O == column ->
-    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:insert(Ref);
 
-ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-      [{"insert", "after"}], User)
+ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}], _User)
   when O == row orelse O == column ->
-    ok = status_srv:update_status(User, S, P, "edited page"),
-    RefX2 = make_after(Ref), 
-    hn_db_api:insert(RefX2);
+    hn_db_api:insert(make_after(Ref));
 
 %% by default cells and ranges displace vertically
-ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-      [{"insert", "before"}], User)
+ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)
   when O == cell orelse O == range ->
-    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:insert(Ref, vertical);
 
 %% by default cells and ranges displace vertically
-ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-      [{"insert", "after"}], User)
+ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}], _User)
   when O == cell orelse O == range ->
-    ok = status_srv:update_status(User, S, P, "edited page"),
-    RefX2 = make_after(Ref),
-    hn_db_api:insert(RefX2);
+    hn_db_api:insert(make_after(Ref));
 
 %% but you can specify the displacement explicitly
-ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-      [{"insert", "before"}, {"displacement", D}], User)
+ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "before"}, {"displacement", D}], _User)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
-    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:insert(Ref, list_to_existing_atom(D));
 
-ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-      [{"insert", "after"}, {"displacement", D}], User)
+ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, 
+      [{"insert", "after"}, {"displacement", D}], _User)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
-    ok = status_srv:update_status(User, S, P, "edited page"),
     RefX2 = make_after(Ref),
     hn_db_api:insert(RefX2, list_to_existing_atom(D));
 
-ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-      [{"delete", "all"}], User)
+ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", "all"}], _User) 
   when O == page ->
-    ok = status_srv:update_status(User, S, P, "deleted page"),
     hn_db_api:delete(Ref);
 
-ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-      [{"delete", "all"}], User)
-  when O == row orelse O == column ->
-    ok = status_srv:update_status(User, S, P, "edited page"),
+ipost(Ref, _Type, _Attr, [{"delete", "all"}], _User) ->
     hn_db_api:delete(Ref);
 
-ipost(#refX{site = S, path = P, obj = {O, _}} = Ref, _Type, _Attr, 
-      [{"delete", Direction}], User)
+ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}], _User)
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
-    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:delete(Ref, Direction);
 
-ipost(#refX{site = S, path = P} = Ref, range, _Attr, 
-      [{"copy", {struct, [{"src", Src}]}}], User) ->
-    ok = status_srv:update_status(User, S, P, "edited page"),
+ipost(Ref, range, _Attr, [{"copy", {struct, [{"src", Src}]}}], _User) ->
     hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref);
 
-ipost(#refX{site = S, path = P, obj = {range, _}} = Ref, _Type, _Attr, 
-      [{"borders", {struct, Attrs}}], User) ->
+ipost(#refX{obj = {range, _}} = Ref, _Type, _Attr, 
+      [{"borders", {struct, Attrs}}], _User) ->
     Where = from("where", Attrs),
     Border = from("border", Attrs),
     Border_Style = from("border_style", Attrs),
     Border_Color = from("border_color", Attrs),
-    ok = status_srv:update_status(User, S, P, "edited page"),
     ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
     ok;
 
@@ -304,27 +313,32 @@ ipost(#refX{site = S, path = P} = Ref, Type, _Attr,
             hn_db_api:write_attributes([{Ref, Attr}])
     end;
 
-ipost(#refX{site = S, path = P} = Ref, _Type, _Attr, 
-      [{"clear", What}], User) 
+ipost(Ref, _Type, _Attr, [{"clear", What}], _User) 
   when What == "contents"; What == "style"; What == "all" ->
-    ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:clear(Ref, list_to_atom(What));
 
-ipost(_Ref, _Type, _Attr, 
-      [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], _User) ->
-    Path = code:lib_dir(hypernumbers, priv) ++ "/docroot/views/",
-    File = Path ++ filename:basename(Name) ++ ".tpl",
+ipost(Ref, _Type, _Attr, 
+      [{"saveview", {struct, [{"global", Global},
+                              {"name", Name}, {"tpl", Form}]}}], User) ->
 
-    _Return=filelib:ensure_dir(File),
+    Base  = [code:lib_dir(hypernumbers, priv), "docroot", "views"],
+    FName = filename:basename(Name) ++ ".tpl",
+    UName = hn_users:name(User),
     
-    case file:open(File, [write]) of
-	{ok, Id} ->
-	    io:fwrite(Id, "~s~n", [Form]),
-	    file:close(Id);
-	_ ->
-	    error
-    end,
-    ok;
+    case Global of
+        false ->
+            View = UName ++ "/" ++ filename:basename(Name),
+            File = filename:join(Base ++ [UName, FName]),
+            auth_srv:add_views(Ref#refX.site, [{user, UName}], 
+                              ["u", UName, "[**]"], [View]),            
+            ok = file:write_file(File, Form);
+        true  ->
+            View = "_global/" ++ filename:basename(Name),
+            File = filename:join(Base ++ ["_global", FName]),
+            auth_srv:add_views(Ref#refX.site, [{user, "*"}, {group, "*"}], 
+                              ["[**]"], [View]),            
+            ok = file:write_file(File, Form)
+    end;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -367,9 +381,6 @@ ipost(Ref, _Type, _Attr,
                                                       Proxy, Biccie),
     Return2 = lists:append([Return, [{"stamp", Stamp}]]),
     {struct, Return2};
-    %% io:format("In hn_mochi (notify_back_create) Return2 is ~p~n-"++
-    %%           "process dictionary ~p~n", [Return2, get()]),
-    
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -386,7 +397,6 @@ ipost(Ref, _Type, _Attr,
     CVsJson   = from("child_vsn",  T),
     Stamp     = from("stamp",      T),
 
-    %% io:format("In ipost (notify_back) Stamp is ~p~n", [Stamp]),
     %% there is only 1 parent and 1 child here
     PVsn = json_util:unjsonify(PVsJson),
     CVsn = json_util:unjsonify(CVsJson),
@@ -414,9 +424,6 @@ ipost(Ref, _Type, _Attr,
             ok = hn_db_api:initialise_remote_page_vsn(Site, CVsn)
     end,
     {struct, [{"result", "success"}, {"stamp", Stamp}]};
-    %% io:format("In hn_mochi (notify_back) Json is ~p~n-process dictionary ~p~n",
-    %%           [Json, get(mochiweb_request_body)]),
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -471,11 +478,6 @@ ipost(Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
         end,
     [Fun(X) || X <- CVsn],
     {struct, [{"result", "success"}, {"stamp", Stamp}]};
-    %% io:format("In hn_mochi (notify) Json is ~p~n-process dictionary ~p~n",
-    %%           [Json, get(mochiweb_request_body)]),
-    %% Str2 = "hn_mochi:ipost\tnotify\thandling post with\t" ++ 
-    %%    Stamp ++ "\t" ++ pid_to_list(self()) ++ "\t" ++ 
-    %%                                 binary_to_list(get(mochiweb_request_body)),
 
 ipost(_Ref, _Type, _Attr, _Post, _User) ->
     ?ERROR("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
@@ -511,6 +513,8 @@ add_ref(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
 
 viewroot() -> docroot() ++ "/views".
 docroot()  -> code:priv_dir(hypernumbers) ++ "/docroot".
+tmpdir()   -> code:lib_dir(hypernumbers) ++ "/tmp".
+     
 
 itol(X) -> integer_to_list(X).
 ltoi(X) -> list_to_integer(X).
@@ -584,7 +588,7 @@ remoting_request(Req, Site, Paths, Time) ->
         {error, timeout}     -> Req:ok({"text/html",?hdr, <<"timeout">>});
         {msg, Data}          -> json(Req, Data)
     after
-%% TODO : Fix, should be controlled by remoting_reg
+        % TODO : Fix, should be controlled by remoting_reg
         600000 ->
             json(Req, {struct, [{"time", remoting_reg:timestamp()},
                                 {"timeout", "true"}]})
@@ -693,8 +697,10 @@ f_up1([{struct, [{"ref", Ref}, {"formula", F}]} | T], S, P, A1, A2) ->
 serve_html(Req, File, User) ->
     serve_html(200, Req, File, User).
 serve_html(Status, Req, File, User) ->
-    ok = ensure(File, get_lang(User)),
-    serve_file(Status, Req, File++"."++get_lang(User)).
+    F = fun() ->
+                hn_util:compile_html(File, get_lang(User))
+        end,    
+    serve_file(Status, Req, cache(File, File++"."++get_lang(User), F)).
 
 serve_file(Status, Req, File) ->
     case file:open(File, [raw, binary]) of
@@ -705,13 +711,14 @@ serve_file(Status, Req, File) ->
             Req:not_found()
     end.
 
-ensure(Src, Lang) ->
-    TransHtml = Src++"."++Lang,
-    case not( filelib:is_file(TransHtml) ) orelse 
-        hn_util:is_older(TransHtml, Src) of 
-        true  -> hn_util:compile_html(Src, Lang);
-        false -> ok
-    end.
+cache(Source, CachedNm, Generator) ->
+    Cached = tmpdir() ++ "/" ++ hn_util:bin_to_hexstr(erlang:md5(CachedNm)),
+    case not( filelib:is_file(Cached) )
+        orelse hn_util:is_older(Cached, Source) of
+        true -> ok = file:write_file(Cached, Generator());
+        _    -> ok
+    end,
+    Cached.
 
 content_type(Req) ->
     {value, {'Accept', Accept}} =
@@ -748,3 +755,13 @@ get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
 error(Req, Error) ->
     error_logger:error_msg("~p~n~p~n", [Error, erlang:get_stacktrace()]),
     Req:respond({500,[],[]}).
+
+'404'(Req, User) ->
+    serve_html(404, Req, viewroot()++"/_global/404.html", User).
+
+build_tpl(Tpl) ->
+    {ok, Master} = file:read_file([viewroot(), "/built.tpl"]),
+    {ok, Gen}    = file:read_file([viewroot(), "/", Tpl, ".tpl"]),
+    New = re:replace(Master, "%BODY%", Gen, [{return, list}]),
+    file:write_file([viewroot(), "/", Tpl, ".html"], New).
+    

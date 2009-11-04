@@ -29,11 +29,17 @@ old_style() ->
     %
     % now setup perms
     %
-    auth_srv:clear_all_perms_DEBUG(?SITE),
+    auth_srv:clear_all_perms_DEBUG("http://127.0.0.1:9000"),
 
     % the home page
-    auth_srv:add_perm(?SITE, [{user, "*"}, {group, "*"}], ["[**]"],[read, write],
-                      "_global/spreadsheet", ["_global/spreadsheet"]).    
+    auth_srv:add_perm("http://127.0.0.1:9000", [{user, "*"}, {group, "*"}],
+                      ["[**]"],[read, write],
+                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]),
+
+    auth_srv:add_perm("http://127.0.0.1:9000", [{user, "*"}, {group, "*"}],
+                      [],[read, write],
+                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]).    
+
 
 setup() ->
     %

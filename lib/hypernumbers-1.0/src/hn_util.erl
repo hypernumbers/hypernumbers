@@ -131,8 +131,7 @@ compile_html(Html, Lang) ->
     {ok, Bin} = file:read_file(code:lib_dir(hypernumbers)++"/po/"++Lang++".po"),
     gettext:store_pofile(Lang, Bin),
     {ok, C} = sgte:compile_file(Html),
-    NHtml = sgte:render(C, [{options, [{gettext_lc, Lang}]}]),
-    ok = file:write_file(Html++"."++Lang, NHtml).
+    sgte:render(C, [{options, [{gettext_lc, Lang}]}]).
 
 
 is_older(File1, File2) ->

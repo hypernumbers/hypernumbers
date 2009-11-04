@@ -7,7 +7,7 @@
     <title>Hypernumbers Web Builder</title>
 
     <link rel="stylesheet" type="text/css" 
-          href="/guibuilder/templates.css" />
+          href="/templates/ventris/default.css" />
     <link rel="stylesheet" type="text/css" 
           href="/guibuilder/hn.builder.css" />
     <link rel="stylesheet" type="text/css" 
@@ -31,6 +31,9 @@
       </div>
 
       <input type="button" value="save" class="btn" id="saveview" />
+
+      <span id="viewlink"></span>
+
       <input type="button" value="preview" class="btn" id="previewbtn" />
       </div>
 
@@ -54,6 +57,9 @@
           
           <div class="tab" id="add"></div>
           <div class="tab" id="configure"></div>
+          <div class="tab" id="templates">
+            <ul id="templateslist"></ul>
+          </div>
           
           <div id="toggle">
             <label for="toggleview">

@@ -563,20 +563,21 @@ ul,li {
 }
 
 #toolbar a.toolbar-item {
- background-image: url(sprite.png);
- float:   left;
- cursor:  pointer;
- border:  1px solid transparent;
- padding: 2px;
- margin:  2px;
- display: block;
- height:  16px;
- width:   16px;
+    background-image   : url(sprite.png);
+    float              : left;
+    cursor             : pointer;
+    border             : 1px solid transparent;
+    padding            : 2px;
+    margin             : 2px;
+    display            : block;
+    height             : 16px;
+    width              : 16px;
+    -moz-border-radius: 3px 3px 3px 3px;
 }
 
 #toolbar a.toolbar-item:hover {
- border:           1px solid #BBB;
- background-color: #fff;
+    border             : 1px solid #BBB;
+    background-color   : #fff;
 }
 
 #toolbar a.color {

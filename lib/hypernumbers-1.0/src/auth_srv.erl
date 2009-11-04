@@ -1138,6 +1138,19 @@ testX() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "index"}).
 
+testXY() ->
+    auth_srv:add_perm("http://127.0.0.1:9000",
+                      [{user, "*"}, {group, "*"}], ["[**]"],[read, write],
+                      "default", ["default"]),
+
+    auth_srv:add_views("http://127.0.0.1:9000", [{user, "dale"}],
+                       ["u", "dale", "[**]"], ["test"]),
+    
+    {html, "default"} =
+        auth_srv:check_get_page("http://127.0.0.1:9000",
+                                {"dale", []}, ["u", "dale", "test"]).
+
+
 unit_test_() -> 
     [
      ?_assert(test0()),
