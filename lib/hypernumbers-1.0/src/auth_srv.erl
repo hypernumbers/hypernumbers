@@ -1189,6 +1189,18 @@ testXY() ->
                                 {"dale", []}, ["u", "dale", "test"]).
 
 
+testXZ() ->
+
+    auth_srv:clear_all_perms_DEBUG("http://127.0.0.1:9000"),
+
+    hn_auth:init_permissions("http://127.0.0.1:9000"),
+
+    % Permission to view this page is added in hn_auth
+    {html, "_global/spreadsheet"} =
+        auth_srv:check_get_page("http://127.0.0.1:9000",
+                                {"dale", ["dev"]}, [], "_global/spreadsheet").
+
+
 unit_test_() -> 
     [
      ?_assert(test0()),
