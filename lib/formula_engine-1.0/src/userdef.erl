@@ -29,12 +29,9 @@
          add_days/2,
          davie/2]).
 
--export([sendsms/2]).
-
 -export([get_username/0]).
 
 is_unique(Args) ->
-    io:format("Args is ~p~n", [Args]),
     col(Args,
         [eval_funs, {cast, str, num, ?ERRVAL_VAL}, fetch, flatten,
          {ignore, blank}, {ignore, array}, {ignore, str}, {cast, num}],
@@ -42,11 +39,7 @@ is_unique(Args) ->
         fun blah/1),
     "mh, hmm...".
 
-blah(A) -> ok.
-
-is_unique1(Args) ->
-    io:format("Args is ~p~n", [Args]),
-    ok.
+blah(_) -> ok.
 
 vlookuphn(Key, {range, Array}, ResultCol) ->
     {list, v_hn1(Key, Array, ResultCol, [])}.
@@ -78,21 +71,6 @@ sum3d(X) when is_list(X) ->
 
 sum3d([],Acc)    -> Acc;
 sum3d([H|T],Acc) -> sum3d(T,H+Acc).
-
-%% Number must include country code, e.g. "+447776251669"
-%% =SENDSMS("+447776251669", "sent from the gui")
-sendsms(Number, Text) ->
-    io:format("in userdef:sendsms sending ~p to ~p~n",[Text,Number]),
-    Msg = Number ++ " " ++ "\"" ++ Text ++ "\"",
-    Cmd = case os:type() of
-              {win32, nt} -> "send_win.bat " ++ Msg;
-              _           -> "sh send.sh "   ++ Msg
-          end,
-    file:set_cwd("lib/formula_engine-1.0/src"),
-    %%io:format("~p :: ~s~n", [file:get_cwd(), Cmd]),
-    os:cmd(Cmd),
-    file:set_cwd("../../.."),
-    "SMS to: " ++ Number.
 
 %% splits a postcode
 split(X,1) when is_list(X) -> [H|_T]=string:tokens(X," "),

@@ -26,11 +26,9 @@
 -include("spriki.hrl").
 
 -define(COOKIE, "somerandomcookie").
--define(trans, hn_db_wu:trans).
--define(trans_back, hn_db_wu:trans_back).
 
 delete_all_users_DEBUG(Site) ->
-    mnesia:clear_table(?trans(Site, hn_user)).
+    mnesia:clear_table(hn_db_wu:trans(Site, hn_user)).
 
 create(Site, Name, Pass) ->
     create_user_exec(Site, #hn_user{name = Name, password = p(Pass)}).
@@ -42,7 +40,7 @@ add_gr(Site, Name, Groups) ->
     {ok, #hn_user{groups = G} = User} = read(Site, Name),
     NG = hslists:dedup([Groups, G]),
     NU = User#hn_user{groups = NG},
-    mnesia:write(?trans(Site, hn_user), NU, write).
+    mnesia:write(hn_db_wu:trans(Site, hn_user), NU, write).
 
 add_groups(Site, Name, Groups) ->
     mnesia:activity(transaction, fun add_gr/3, [Site, Name, Groups]).
@@ -51,14 +49,14 @@ remove_gr(Site, Name, Groups) ->
     {ok, #hn_user{groups = G} = User} = read(Site, Name),
     NG = hslists:dedup([lists:subtract(G, Groups)]),
     NU = User#hn_user{groups = NG},
-    mnesia:write(?trans(Site, hn_user), NU, write).    
+    mnesia:write(hn_db_wu:trans(Site, hn_user), NU, write).    
 
 remove_groups(Site, Name, Groups) ->
     mnesia:activity(transaction, fun remove_gr/3, [Site, Name, Groups]).
 
 delete_tr(Site, Name) ->
     {ok, User} = read(Site, Name),
-    mnesia:delete_object(?trans(Site, hn_user), User, write).
+    mnesia:delete_object(hn_db_wu:trans(Site, hn_user), User, write).
 
 delete(Site, Name) ->
     mnesia:activity(transaction, fun delete_tr/2, [Site, Name]).
@@ -73,7 +71,7 @@ exists(Site, Name) ->
 	
     F = fun() ->
                 User = #hn_user{name=Name, _='_'},
-                mnesia:match_object(?trans(Site, hn_user), User, read)
+                mnesia:match_object(hn_db_wu:trans(Site, hn_user), User, read)
         end,
 	
     case mnesia:transaction(F) of
@@ -86,7 +84,7 @@ read(Site, Name) ->
 
 read_tr(Site, Name) ->
     Rec = #hn_user{name=Name, _='_'},
-    case mnesia:match_object(?trans(Site, hn_user), Rec, read) of
+    case mnesia:match_object(hn_db_wu:trans(Site, hn_user), Rec, read) of
         []     -> {error, no_user};
         [User] -> {ok, User}
     end.
@@ -99,7 +97,7 @@ get(User, Key) ->
 
 update_tr(Site, User, Key, Val) ->
     NUser = User#hn_user{data=dict:store(Key, Val, User#hn_user.data)},
-    mnesia:write(?trans(Site, hn_user), NUser, write).
+    mnesia:write(hn_db_wu:trans(Site, hn_user), NUser, write).
 
 update(Site, UserName, Key, Val) when is_list(UserName) ->
     {ok, User} = read(Site, UserName),
@@ -112,7 +110,7 @@ login(Site, Name, Pass, Remember) ->
 
     User = #hn_user{name=Name, password=p(Pass), _='_'},
     F = fun() ->
-                mnesia:match_object(?trans(Site, hn_user), User, read)
+                mnesia:match_object(hn_db_wu:trans(Site, hn_user), User, read)
         end,
  
     case mnesia:transaction(F) of
@@ -161,11 +159,23 @@ gen_authtoken(#hn_user{name=Name}, Remember) ->
 
 create_user_exec(Site, Rec) ->
     Fun = fun() ->
-                  mnesia:write(?trans(Site, hn_user), Rec, write)
+                  mnesia:write(hn_db_wu:trans(Site, hn_user), Rec, write) 
           end,
     case mnesia:transaction(Fun) of
         {aborted, Reason} -> {error, Reason};
-        {atomic, ok}      -> ok
+        {atomic, ok}      ->
+
+            %% Add permissions
+            
+            auth_srv:add_perm(Site, [{user, name(Rec)}],
+                              ["u", name(Rec)], [read, write],
+                              "site/userhome", ["site/userhome"]),
+            
+            auth_srv:add_perm(Site, [{user, name(Rec)}],
+                              ["u", name(Rec), "[**]"], [read, write],
+                              "_global/spreadsheet",
+                              hn_config:get(default_pages)),
+            ok
     end.
 
 p(Pass) ->

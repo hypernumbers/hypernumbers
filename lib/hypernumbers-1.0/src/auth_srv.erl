@@ -1176,6 +1176,7 @@ testX() ->
     (Ret == {html, "index"}).
 
 testXY() ->
+    
     auth_srv:add_perm("http://127.0.0.1:9000",
                       [{user, "*"}, {group, "*"}], ["[**]"],[read, write],
                       "default", ["default"]),

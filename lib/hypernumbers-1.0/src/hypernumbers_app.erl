@@ -3,22 +3,10 @@
 -module(hypernumbers_app).
 -behaviour(application).
 
--include("hypernumbers.hrl").
--include("spriki.hrl").
-
--define(cast, gen_server:cast).
-
 -export([start/2, stop/1, hup/0, clean_start/0 ]).
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
-%% @TODO this test is buggy - the schema is always on disc 
-%%      but invididual tables can be:
-%%      <ul>
-%%      <li>ram_copies</li>
-%%      <li>disc_copies</li>
-%%      <li>disc_only_copies</li>
-%%      </ul>
 start(_Type, _Args) ->
 
     case mnesia:table_info(schema, storage_type) of
@@ -32,14 +20,14 @@ start(_Type, _Args) ->
     {ok,[[Path]]} = init:get_argument(hn_config),	
     hn_config:read_conf(Path), 
     
-    case is_fresh_startup() of
-        true             -> clean_start2();
-        {exists, Tables} -> ok = mnesia:wait_for_tables(Tables, 1000000)
-    end,
-
+    ok = case is_fresh_startup() of
+             true             -> fresh_start();
+             {exists, Tables} -> mnesia:wait_for_tables(Tables, 1000000)
+         end,
+    
     Sites = hn_util:get_hosts(hn_config:get(hosts)),
-    ok =  load_muin_modules(),
-    [ok = dirty_srv:start(X, Sites) || X <- ?dirties],
+    [ok = dirty_srv:start(X, Sites) || X <- dirty_tables()],
+    ok = load_muin_modules(),
     ok = start_mochiweb(),
     
     {ok, Pid}.
@@ -52,7 +40,7 @@ load_muin_modules() ->
 
 hup() ->
     hn_config:hup(),
-    write_permissions().
+    init_permissions().
 
 %% @spec stop(State) -> ok
 %% @doc  Application Callback
@@ -70,10 +58,8 @@ is_fresh_startup() ->
         Tbls ->
             Me = node(),
             case mnesia:table_info(schema, cookie) of
-                {_,Me} ->
-                    {exists, Tbls};
-                _ ->
-                    true
+                {_,Me} -> {exists, Tbls};
+                _      -> true
             end
     end.
 
@@ -81,11 +67,17 @@ is_fresh_startup() ->
 %% @doc  delete/create existing database and set up
 %%       initial permissions
 clean_start() ->
-    [ok = dirty_srv:stop(X) || X <- ?dirties],
-    ok = clean_start2(),
-    [ok = dirty_srv:start(X) || X <- ?dirties].
+ 
+    Sites = hn_util:get_hosts(hn_config:get(hosts)),
 
-clean_start2() ->
+    [ auth_srv:clear_all_perms_DEBUG(X) || X<-Sites ],
+    
+    %auth_srv:clear_all_perms_DEBUG(?SITE),
+    [ok = dirty_srv:stop(X) || X <- dirty_tables()],
+    ok = fresh_start(),
+    [ok = dirty_srv:start(X, Sites) || X <- dirty_tables()].
+
+fresh_start() ->
 
     ok = application:stop(mnesia),
     ok = mnesia:delete_schema([node()]),
@@ -93,36 +85,31 @@ clean_start2() ->
     ok = mnesia:start(),
 
     HostsInfo = hn_config:get(hosts),
-    Sites = hn_util:get_hosts(HostsInfo),
+    Sites     = hn_util:get_hosts(HostsInfo),
 
     [ok = hn_db_api:create_db(X) || X <- Sites],
-    ok = write_permissions(),
-    ok.
+    
+    ok = init_permissions().
 
 %% @spec start_mochiweb() -> ok
 %% @doc  Start mochiweb http servers
 %% @todo this server will accept a connection to any
 %% domain name on the ip address, wtf?
 start_mochiweb() ->
-
-    List = hn_config:get(hosts),
-    % need to compress the list in case it contains duplicate ip address/port
-    % combos
-    List2 = compress(List),
-    Fun = fun(X) ->
-                  {IP, Port} = X,
-                  
-                  Opts = [{port, Port}, 
-                          {ip,   inet_parse:ntoa(IP)}, 
-                          {loop, {hn_mochi, req}}],
-                  
-                  mochilog:start(),
-                  mochiweb_http:start(Opts)
-          end,
-    [Fun(X) || X <- List2],
+    [ start_instance(X) || X <- compress(hn_config:get(hosts))],
     ok.
 
-compress(List) -> cmp1(List, []).
+start_instance({IP, Port}) ->
+    
+    Opts = [{port, Port}, 
+            {ip,   inet_parse:ntoa(IP)}, 
+            {loop, {hn_mochi, req}}],
+    
+    mochilog:start(),
+    mochiweb_http:start(Opts).
+
+compress(List) ->
+    cmp1(List, []).
 
 cmp1([], Acc) ->
     Acc;
@@ -132,15 +119,17 @@ cmp1([{IP, Port, _Hosts} | T], Acc) ->
         false -> cmp1(T, [{IP, Port} | Acc])
     end.
 
+init_permissions() ->
+    [ ok = hn_auth:init_permissions(Host)
+      || Host <- hn_util:get_hosts(hn_config:get(hosts)) ],
+    ok.
+
 %% @spec write_permissions() -> ok
 %% @doc  Set the default permissions on each domain
-write_permissions() ->
-    write_permissions("__permissions", hn_config:get(permissions)),
-    write_permissions("__groups",      hn_config:get(groups)).
-
-write_permissions(_Name, []) -> 
-    ok;
-write_permissions(Name, [{Domain, Value} | T]) ->
-    Ref = hn_util:parse_url(Domain),
-    hn_db_api:write_attributes(Ref, [{Name, Value}]),
-    write_permissions(Name, T).
+dirty_tables() ->
+    [ dirty_cell,
+      dirty_notify_in,
+      dirty_notify_back_in,
+      dirty_inc_hn_create,
+      dirty_notify_out,
+      dirty_notify_back_out ].
