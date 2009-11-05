@@ -53,6 +53,7 @@ setup() ->
     hn_users:create(?SITE, "tom", ["dev", "admin"], "password"),
     hn_users:create(?SITE, "dale", ["dev", "admin"], "password"),
     hn_users:create(?SITE, "stephen", ["dev", "admin"], "password"),
+    hn_users:create(?SITE, "user", ["user"], "password"),
 
     %
     % now setup perms
@@ -61,11 +62,11 @@ setup() ->
 
     % the home page
     auth_srv:add_perm(?SITE, [{user, "*"}, {group, "*"}], [], [read],
-                      "site/home", ["site/home"]),
+                      "_global/home", ["_global/home", "_global/spreadsheet"]),
 
     % the login page
     auth_srv:add_perm(?SITE, [{user, "*"}, {group, "*"}], ["_user", "login"],
-                      [read, write], "hypernumbers/login",
+                      [read, write], "_global/login",
                       ["_global/login"]),
 
     % now make the public spreadsheets public
@@ -80,13 +81,13 @@ setup() ->
     % now set up the user space
     % * first up the user home pages
     auth_srv:add_perm(?SITE, [{user, "gordon"}], ["u", "gordon"], [read],
-                      "site/userhome", ["site/userhome"]),
+                      "_global/userhome", ["_global/userhome"]),
     auth_srv:add_perm(?SITE, [{user, "tom"}], ["u", "tom"], [read],
-                      "site/userhome", ["site/userhome"]),
+                      "_global/userhome", ["_global/userhome"]),
     auth_srv:add_perm(?SITE, [{user, "dale"}], ["u", "dale"], [read],
-                      "site/userhome", ["site/userhome"]),
+                      "_global/userhome", ["_global/userhome"]),
     auth_srv:add_perm(?SITE, [{user, "stephen"}], ["u", "stephen"], [read],
-                      "site/userhome", ["site/userhome"]),
+                      "_global/userhome", ["_global/userhome"]),
  
     % * now the user spreadsheets
     auth_srv:add_perm(?SITE, [{user, "gordon"}], ["u", "gordon", "[**]"],
@@ -105,7 +106,9 @@ setup() ->
     % now create the dev space
     auth_srv:add_perm(?SITE, [{group, "dev"}], ["dev", "[**]"],
                       [read, write],
-                       "_global/spreadsheet", [ "_global/spreadsheet"]).
-    
-    
+                       "_global/spreadsheet", [ "_global/spreadsheet"]),
 
+    % now get the tree as json and print it
+    Json = auth_srv:get_as_json(?SITE, ["u"]),
+    Json2 = (mochijson:encoder([{input_encoding, utf8}]))(Json),
+    io:format("Json representation of the permissions tree is~n-~p~n", [Json2]).

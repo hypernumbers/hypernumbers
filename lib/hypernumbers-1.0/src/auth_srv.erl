@@ -35,6 +35,7 @@
          remove_perm/4,
          remove_views/4,
          remove_default/4,
+         get_as_json/2,
          get_groups/1
         ]).
 
@@ -130,6 +131,8 @@ handle_call(Request, _From, State) ->
                 {Host, remove_views1(get(Host, Tr), AL, Pg, Gs), true};
             {remove_def, Host, AL, Pg, Df} ->
                 {Host, remove_default1(get(Host, Tr), AL, Pg, Df), true};
+            {get_as_json, Host, Pg} ->
+                {Host, get_as_json1(get(Host, Tr), Pg), false};
             {get_groups, Host} ->
                 {Host, get_groups1(get(Host, Tr)), false};
             {clear_all_perms, Host} ->
@@ -239,10 +242,13 @@ remove_perm(Host, AuthList, Page, Perm) ->
     gen_server:call(auth_srv, {rem_perm, Host, AuthList, Page, Perm}).
 
 remove_views(Host, AuthList, Page, Views) ->
-    gen_server:call(auth_src, {rem_views, Host, AuthList, Page, Views}).
+    gen_server:call(auth_srv, {rem_views, Host, AuthList, Page, Views}).
 
 remove_default(Host, AuthList, Page, Gui) ->
-    gen_server:call(auth_src, {rem_default, Host, AuthList, Page, Gui}).
+    gen_server:call(auth_srv, {rem_default, Host, AuthList, Page, Gui}).
+
+get_as_json(Host, Page) ->
+    gen_server:call(auth_srv, {get_as_json, Host, Page}).
 
 get_groups(Host) ->
     gen_server:call(auth_srv, {get_groups, Host}).
@@ -253,23 +259,8 @@ clear_all_perms_DEBUG(Host) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-update_trees(File, Host, NewTree, Trees) ->
-    NewVal = {Host, NewTree},
-    NewTrees = case lists:keysearch(Host, 1, Trees) of
-                   false -> [NewVal | Trees];
-                   _     -> lists:keyreplace(Host, 1, Trees, NewVal)
-               end,
-    ok = dets:insert(File, {?KEY, NewTrees}),
-    NewTrees.
-
-get(Host, Trees) ->
-    case lists:keyfind(Host, 1, Trees) of
-        false          -> gb_trees:empty();
-        {_Host, Other} -> Other
-    end.            
-
 check_get_page1(Tree, {User, Groups}, Page) ->
-    Fun = fun(X) -> case get_control(X, User, Groups) of
+Fun = fun(X) -> case get_control(X, User, Groups) of
                         none     -> {return, '404'};
                         no_match -> {return, '503'};
                         Ctl      -> #control{perms = P} = Ctl,
@@ -395,34 +386,32 @@ remove_default1(Tree, AuthList, Page, Default) ->
           end,
     remove_from_control(Tree, AuthList, Page, Fun).
 
+get_as_json1(Tree, Page) ->
+    Fun = fun(X) ->
+                  make_json(X, [])
+          end,
+    check_get(Tree, Page, Fun).
+
 get_groups1(_Tree) -> {erk, not_written}.
 
+update_trees(File, Host, NewTree, Trees) ->
+    NewVal = {Host, NewTree},
+    NewTrees = case lists:keysearch(Host, 1, Trees) of
+                   false -> [NewVal | Trees];
+                   _     -> lists:keyreplace(Host, 1, Trees, NewVal)
+               end,
+    ok = dets:insert(File, {?KEY, NewTrees}),
+    NewTrees.
+
+get(Host, Trees) ->
+    case lists:keyfind(Host, 1, Trees) of
+        false          -> gb_trees:empty();
+        {_Host, Other} -> Other
+    end.            
+
 %%
-%% Helper functions
+%% Tree Helper functions
 %%
-
-contains(_Element, [])            -> false;
-contains(Element, [Element | _T]) -> true;
-contains(Element, [_H | T])       -> contains(Element, T).
-
-load_trees(Dir, Table) ->
-    {ok, _} = dets:open_file(Table, [{file, Dir ++ Table}]),
-    % if the value of auth_tree is an empty list,
-    % create an empty tree and fire it in..
-    case dets:lookup(Table, ?KEY) of
-        []            -> [];            
-        [{?KEY, Val}] -> Val
-    end.
-
-del(List1, List2) -> case lists:subtract(List1, List2) of
-                         [] -> [?INDEX];
-                         L  -> L
-                     end.                              
-
-new_def([], _Default)           -> ?INDEX;
-new_def([Default | T], Default) -> new_def(T, Default);
-new_def([H | _T], _Default)     -> H.
-
 remove_from_control(Tree, AuthList, [], Fun) ->
     case gb_trees:lookup(controls, Tree) of
         none       -> Tree;
@@ -451,6 +440,54 @@ add_to_control(Tree, AuthList, [H | T], Perms, Def, Views, Fun) ->
         {value, V} -> NewVal = add_to_control(V, AuthList, T, Perms, Def, Views, Fun),
                       gb_trees:enter(H, NewVal, Tree)
     end.
+
+%%
+%% General Helper functions
+%%
+make_json(Tree, Seg) ->
+    List = gb_trees:to_list(Tree),
+    {array, [make_json1(K, V, Seg) || {K, V}  <- List]}.
+
+make_json1(controls, V, Seg) ->
+    {struct, [{"seg", Seg},
+              {"controls", json_control(V)}]};
+make_json1(K, V, _Seg) when is_list(K) ->
+    make_json(V, K).
+
+
+json_control(List) -> json_control1(List, []).
+
+json_control1([], Acc) -> {array, lists:reverse(Acc)};
+json_control1([{{Type, Name}, C} | T], Acc) ->
+    NewCtl = {struct, [{"def_view", C#control.def_view},
+                       {"views", {array, C#control.views}},
+                       {"perms", {array, C#control.perms}}]},
+    NewAcc = {struct, [{"type", atom_to_list(Type)},
+                       {"name", Name},
+                       {"control", NewCtl}]},
+    json_control1(T, [NewAcc | Acc]).
+
+contains(_Element, [])            -> false;
+contains(Element, [Element | _T]) -> true;
+contains(Element, [_H | T])       -> contains(Element, T).
+
+load_trees(Dir, Table) ->
+    {ok, _} = dets:open_file(Table, [{file, Dir ++ Table}]),
+    % if the value of auth_tree is an empty list,
+    % create an empty tree and fire it in..
+    case dets:lookup(Table, ?KEY) of
+        []            -> [];            
+        [{?KEY, Val}] -> Val
+    end.
+
+del(List1, List2) -> case lists:subtract(List1, List2) of
+                         [] -> [?INDEX];
+                         L  -> L
+                     end.                              
+
+new_def([], _Default)           -> ?INDEX;
+new_def([Default | T], Default) -> new_def(T, Default);
+new_def([H | _T], _Default)     -> H.
 
 check_get(Tree, [], Fun) ->
     Fun(Tree);
