@@ -120,7 +120,7 @@ login(Site, Name, Pass, Remember) ->
     end.
 
 verify_token(_Site, undefined) ->
-    {error, invalid_token};
+    {error, no_token};
 verify_token(Site, Token) ->
     [Expires, User, Hash] = string:tokens(Token, ":"),
     
@@ -131,7 +131,7 @@ verify_token(Site, Token) ->
                 {ok, Usr}        -> {ok, Usr};
                 {error, no_user} -> {error, invalid_user}
             end;
-        _Else       ->  {error, invalid_token}
+        _Else ->  {error, invalid_token}
     end.
 
 is_expired("session") ->

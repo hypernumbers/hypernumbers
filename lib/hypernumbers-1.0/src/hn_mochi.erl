@@ -55,11 +55,29 @@ do_req(Req) ->
     Method = Req:get(method),
 
     {ok, Auth} = get_var_or_cookie("auth", Vars, Req),
-    User = case hn_users:verify_token(Site, Auth) of
-               {ok, Usr}        -> Usr;
-               {error, _Reason} -> anonymous
-           end,
 
+    User = case hn_users:verify_token(Site, Auth) of
+               
+               {error, no_token} -> anonymous;
+               {ok, Usr}         -> Usr;
+
+               % authtoken was invalid (probably did a clean_start() while
+               % logged in, kill the cookie
+               {error, _Reason}  ->
+
+                   Opts   = [{path, "/"}, {max_age, 0}],
+                   Cookie = mochiweb_cookies:cookie("auth", "expired", Opts),
+
+                   Req:respond(
+                     {302, [{"Location", hn_util:list_to_path(Ref#refX.path)},
+                            {"Content-Type", "text/html; charset=UTF-8"},
+                            Cookie], ""}),
+
+                   % heh probably not the best idea
+                   throw(ok)
+                   
+           end,
+    
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),    
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
