@@ -152,8 +152,16 @@ iget(Req, #refX{site = S}, page, [{"status", []}], _User, _CType) ->
 
 % List of template pages
 iget(Req, _Ref, page, [{"templates", []}], _User, _CType) ->
-    File = [filename:basename(X)
-            || X<-filelib:wildcard(docroot()++"/templates/*")],
+    Fun = fun(X) ->
+                  [F | _T] = lists:reverse(string:tokens(X, "/")),
+                  case F of
+                      [$. | _T1] -> true;
+                      _          -> false
+                  end
+          end,
+    Files = lists:dropwhile(Fun,
+              filelib:wildcard(docroot()++"/templates/*")),
+    File = [filename:basename(X) || X <- Files], 
     json(Req, {array, File});
 
 % List of views available to edit
