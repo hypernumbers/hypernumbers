@@ -867,6 +867,12 @@ p,h1,h2,h3,h4,h5 {
  z-index:    900;
 }
 
+#axiscontextmenucol ul, #axiscontextmenurow ul, #gridcontextmenu ul {
+    margin          : 0px;
+    padding         : 0px;
+    list-style-type : none;
+}
+
 #gridcontextmenu .disabled a.hover { 
  background: #f8f7f6;       
 }  

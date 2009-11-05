@@ -42,8 +42,7 @@ req(Req) ->
         [] ->
             case catch do_req(Req) of 
                 ok                -> ok;
-                invalid_reference -> Req:respond({500,[],[]});
-                Else              -> error(Req, Else)
+                Else              -> '500'(Req, Else)
             end
     end.
     
@@ -778,7 +777,7 @@ get_auth(User, Groups, 'GET', #refX{site = Site, path = Path}, Vars) ->
 get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
     auth_srv:can_write(Site, {User, Groups}, Path).
 
-error(Req, Error) ->
+'500'(Req, Error) ->
     error_logger:error_msg("~p~n~p~n", [Error, erlang:get_stacktrace()]),
     Req:respond({500,[],[]}).
 
