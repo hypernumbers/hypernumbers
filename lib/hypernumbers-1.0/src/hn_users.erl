@@ -169,7 +169,7 @@ create_user_exec(Site, Rec) ->
             
             auth_srv:add_perm(Site, [{user, name(Rec)}],
                               ["u", name(Rec)], [read, write],
-                              "site/userhome", ["site/userhome"]),
+                              "_global/userhome", ["_global/userhome"]),
             
             auth_srv:add_perm(Site, [{user, name(Rec)}],
                               ["u", name(Rec), "[**]"], [read, write],
