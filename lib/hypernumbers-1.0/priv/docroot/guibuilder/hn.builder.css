@@ -34,14 +34,15 @@ body {
 }
 
 #configurepanel {  
-    z-index:50000;
+ z-index:50000;
  position:absolute;
  top:50px;
  right:20px;
+ background-color: #dddddd;
 }
 
 #sheetpanel {  
-    z-index:50000;
+ z-index:50000;
  position:absolute;
  width:100%;
  bottom:-10px;
@@ -76,7 +77,9 @@ body {
 .togglesubpanel {  
  margin:4px;
  text-decoration:underline;
+ font-weight: bold;
  cursor:pointer;
+ color: #ffffff;
 }
 
 .panel.disabled .subpanel { display:none; }
