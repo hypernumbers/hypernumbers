@@ -9,7 +9,7 @@ WEBROOT=dev.hypernumbers.com
 TESTDIR=hn_test_stage
 LASTRUN=$HOME/$WEBROOT/tests/last_run/
 
-ERL_CALL=###
+ERL_CALL=/usr/local/lib/erlang/lib/erl_interface-3.6.1/bin/erl_call 
 COOKIE=abc
 TARGET=arrian@localhost
 
@@ -21,6 +21,7 @@ cd $TESTDIR
 
 ## Compile, and run Hypernumbers
 ./hypernumbers build
+./hypernumbers start detached
 ## run detached.
 
 ## Generate Excel Tests
@@ -54,6 +55,7 @@ $ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2e"]'
 $ERL_CALL -sname $TARGET -c $COOKIE -a 'test sys'
 
 ## Cleanup.
+./hypernumbers stop
 
 rm -rf $LASTRUN
 mkdir $LASTRUN

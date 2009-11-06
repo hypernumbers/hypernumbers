@@ -349,23 +349,17 @@ ipost(Ref, _Type, _Attr,
     FName = filename:basename(Name) ++ ".tpl",
     UName = hn_users:name(User),
     
-    case Global of
-        false ->
-            View = UName ++ "/" ++ filename:basename(Name),
-            File = [viewroot(), "/" ,UName, "/", FName],
-
-            auth_srv:add_views(Ref#refX.site, [{user, UName}], 
-                              ["u", UName, "[**]"], [View]),
-            
-            ok = filelib:ensure_dir(File),
-            ok = file:write_file(File, Form);
-        true  ->
-            View = "_global/" ++ filename:basename(Name),
-            File = filename:join(viewroot() ++ ["_global", FName]),
-            auth_srv:add_views(Ref#refX.site, [{user, "*"}, {group, "*"}], 
-                              ["[**]"], [View]),            
-            ok = file:write_file(File, Form)
-    end;
+    {Auth, Root} = case Global of
+                       false -> {[{user, UName}], UName};
+                       true  -> {[{user, "*"}, {group, "*"}]}
+                   end,
+        
+    View = Root ++ "/" ++ filename:basename(Name),
+    File = [viewroot(), "/" ,Root, "/", FName],
+    auth_srv:add_views(Ref#refX.site, Auth, Ref#refX.path, [View]),
+    
+    ok = filelib:ensure_dir(File),
+    ok = file:write_file(File, Form);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
