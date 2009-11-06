@@ -204,7 +204,7 @@ iget(Req, Ref, page, [{"pages", []}], _User, json) ->
 iget(Req, Ref, page, _Attr, User, json) ->
     json(Req, page_attributes(Ref, User));
 
-iget(Req, Ref, cell, [], _User, json) ->
+iget(Req, Ref, cell, _Attr, _User, json) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
             [{_Ref, {"value", Val}}] when is_atom(Val) ->
                 atom_to_list(Val);

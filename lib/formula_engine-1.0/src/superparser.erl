@@ -14,33 +14,32 @@ process(Input) ->
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Input), {1, 1}),
-
     case Toks of
-        [{bool, B}] ->
+        [{bool, _, B}] ->
             [{bool, B}, {"text-align", "center"}, {"format", "null"}];
-        [{float, {F, _OrigStr}}] ->
+        [{float, _, {F, _OrigStr}}] ->
             [{float, F}, {"text-align", "right"}, {"format", "null"}];
-        [{'('},{float, {F, _OrigStr}},{')'}] ->
+        [{'(',_},{float, _, {F, _OrigStr}},{')',_}] ->
             [{float, -F}, {"text-align", "right"}, {"format", "null"}];
-        [{int, I}] ->
+        [{int, _, I}] ->
             [{int, I}, {"text-align", "right"}, {"format", "null"}];
-        [{'('}, {int, I}, {')'}] ->
+        [{'(',_}, {int, _, I}, {')',_}] ->
             [{int, -I}, {"text-align", "right"}, {"format", "null"}];
-        [{'-'}, {float, {F, _OrigStr}}] ->
+        [{'-',_}, {float, _, {F, _OrigStr}}] ->
             [{float, -F}, {"text-align", "right"}, {"format", "null"}];
-        [{'-'}, {int, I}] ->
+        [{'-',_}, {int, _, I}] ->
             [{int, -I}, {"text-align", "right"}, {"format", "null"}];
-        [{float, {F, _OrigStr}}, {'%'}] -> 
+        [{float, _, {F, _OrigStr}}, {'%',_}] -> 
             [{float,F/100}, {"text-align", "right"}, {"format", "0.00%"}];
-        [{int, I}, {'%'}] ->
+        [{int, _, I}, {'%',_}] ->
             [{float,I/100}, {"text-align", "right"}, {"format", "0%"}];
-        [{'-'}, {float, {F, _OrigStr}}, {'%'}] ->
+        [{'-',_}, {float, _, {F, _OrigStr}}, {'%',_}] ->
             [{float,F/100}, {"text-align", "right"}, {"format", "0.00%"}];
-         [{'-'}, {int, I}, {'%'}]   ->
+         [{'-',_}, {int, _, I}, {'%',_}]   ->
             [{float,I/100}, {"text-align", "right"}, {"format", "0%"}];
         % type tag gets discarded by caller which is ok for 
         % the rest of them, but not here
-        [{errval, E}] ->
+        [{errval, _, E}] ->
             [{errval, {errval, E}}, {"text-align", "center"},
              {"format", "null"}]; 
         _Other              ->

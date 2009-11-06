@@ -34,27 +34,30 @@ Endsymbol  '$end'.
 
 Expr -> Cell : '$1'.
 
-Cell -> string integer : make_cell('$1','$2').
+Cell -> string integer : make_cell(lit('$1'),lit('$2')).
 
-Expr -> Cell Conditional integer    : make_cell_cond('$1', '$2', '$3').
-Expr -> Cell Stringcond string      : make_cell_cond2('$1', '$2', '$3') .
+Expr -> Cell Conditional integer    : make_cell_cond('$1', '$2', lit('$3')).
+Expr -> Cell Stringcond string      : make_cell_cond2('$1', '$2', lit('$3')) .
 
-Expr -> string  Conditional integer : make_col_cond('$1', '$2', '$3').
-Expr -> string  Conditional float   : make_col_cond('$1', '$2', '$3').
-Expr -> integer Conditional integer : make_row_cond('$1', '$2', '$3').
-Expr -> integer Conditional float   : make_row_cond('$1', '$2', '$3').
+Expr -> string  Conditional integer : make_col_cond(lit('$1'), '$2', lit('$3')).
+Expr -> string  Conditional float   : make_col_cond(lit('$1'), '$2', lit('$3')).
+Expr -> integer Conditional integer : make_row_cond(lit('$1'), '$2', lit('$3')).
+Expr -> integer Conditional float   : make_row_cond(lit('$1'), '$2', lit('$3')).
 
-Conditional -> greaterthan : '$1' .
-Conditional -> lessthan    : '$1' .
-Conditional -> gtorequal   : '$1' .
-Conditional -> ltorequal   : '$1' .
-Conditional -> Stringcond  : '$1' .
+Conditional -> greaterthan : lit('$1').
+Conditional -> lessthan    : lit('$1').
+Conditional -> gtorequal   : lit('$1').
+Conditional -> ltorequal   : lit('$1').
+Conditional -> Stringcond  : '$1'.
 
-Stringcond -> equals      : '$1' .
-Stringcond -> notequals   : '$1' .
+Stringcond -> equals      : lit('$1').
+Stringcond -> notequals   : lit('$1').
 
 
 Erlang code.
+
+lit({Cat, _LineNumber, Sym}) ->
+    {Cat, Sym}.
 
 %% Erlang code follows here
 make_cell({string,Col},{integer,Row})->

@@ -12,13 +12,13 @@ WHITESPACE = ([\000-\s]*)
 
 Rules.
 
-{CELLREF}  : {token, {cellref,  string:to_lower(YYtext)}}.
-{RANGEREF} : {token, {rangeref, string:to_lower(YYtext)}}.
+{CELLREF}  : {token, {cellref,  TokenLine, string:to_lower(TokenChars)}}.
+{RANGEREF} : {token, {rangeref, TokenLine, string:to_lower(TokenChars)}}.
 
 %% Preserve whitespace for reverse lexing.
-{WHITESPACE} : {token, {whitespace, YYtext}}.
+{WHITESPACE} : {token, {whitespace, TokenLine, TokenChars}}.
 
 \n : {end_token, {'$end'}}.
 
 %% Anything else -- we don't care about.
-.  : {token, {stuff, YYtext}}.
+.  : {token, {stuff, TokenLine, TokenChars}}.

@@ -75,9 +75,9 @@ type_fun(Fun, C) ->
 %%% also: a potential source of confusion/errors is embedded string constants.
 lex_constant(S) ->
     case xfl_lexer:lex(S, {1, 1}) of
-        {ok, [{T, V}]} when T == int; T == bool; T == str -> V;
-        {ok, [{float, {F, _OrigStr}}]}                    -> F;
-        {ok, [{name, Str}]}                               -> Str;
+        {ok, [{T, _, V}]} when T == int; T == bool; T == str -> V;
+        {ok, [{float, _, {F, _OrigStr}}]}                    -> F;
+        {ok, [{name, _, Str}]}                               -> Str;
         _Else                                             -> ?INVALID_SPEC
     end.
 

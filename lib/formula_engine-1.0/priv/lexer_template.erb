@@ -15,12 +15,13 @@ ALLOWED_PREFIXES = (\s+|=|\+|\-|\*|\/)
 Rules.
 
 %% Preserve strings as-is.
-{STRING} : {token, {string, YYtext}}.
+{STRING} : {token, {string, TokenChars}}.
 %% Kill whitespace.
-{WHITESPACE} : {token, {whitespace, YYtext}}.
+{WHITESPACE} : {token, {whitespace, TokenChars}}.
 
 <%= @function_rules %>
 
 \n : {end_token, {'$end'}}.
-.  : {token, {stuff, YYtext}}.
+.  : {token, {stuff, TokenChars}}.
 
+Erlang code.

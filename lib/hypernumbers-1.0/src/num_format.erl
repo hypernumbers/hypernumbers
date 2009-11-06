@@ -13,8 +13,6 @@
 
 -export([make_src/1,
          get_general/0,
-         concat/2,
-         concat/3,
          verify/1,
          esc/1,
          make_cond/1,
@@ -41,10 +39,6 @@ get_general()->
         "     end "++
         "end.", 
     {number,Src}.
-
-concat(A,B) -> [A,B].
-
-concat(A,B,C) -> [A,B,C].
 
 verify(A) when is_list(A) ->
     B=lists:flatten(A),

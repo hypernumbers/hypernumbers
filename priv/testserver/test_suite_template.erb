@@ -27,7 +27,8 @@
 %%% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 init_per_suite(Config) ->
-    hypernumbers_app:clean_start(),                       
+    hypernumbers_app:clean_start(),     
+    reset_perms(),                  
     %% TODO : should be configurable
     %Ref = #refX{site="http://127.0.0.1:9000", path=[]},
     %% TODO : ugh
@@ -35,6 +36,19 @@ init_per_suite(Config) ->
     hn_file_upload:test_import("<%= @basename %>", Ref),
     hn_db_api:wait_for_dirty("http://127.0.0.1:9000"),
     Config.
+
+reset_perms() ->
+    auth_srv:clear_all_perms_DEBUG("http://127.0.0.1:9000"),
+
+    % the home page
+    auth_srv:add_perm("http://127.0.0.1:9000", [{user, "*"}, {group, "*"}],
+                      ["[**]"],[read, write],
+                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]),
+
+    auth_srv:add_perm("http://127.0.0.1:9000", [{user, "*"}, {group, "*"}],
+                      [],[read, write],
+                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]).    
+
 
 end_per_suite(_Config) ->
     ok.

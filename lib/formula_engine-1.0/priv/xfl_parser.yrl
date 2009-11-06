@@ -1,3 +1,4 @@
+%%% -*- erlang -*-
 %%% @doc Parser for the formula language.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
@@ -44,12 +45,12 @@ E -> E '>'  E : op('$1', '$2', '$3').
 E -> E '<'  E : op('$1', '$2', '$3').
 E -> E '>=' E : op('$1', '$2', '$3').
 E -> E '<=' E : op('$1', '$2', '$3').
-E -> E '&' E  : op('$1', {concatenate}, '$3').    
+E -> E '&' E  : op('$1', {concatenate,1}, '$3').    
 E -> E '+' E  : op('$1', '$2',  '$3').
 E -> E '-' E  : op('$1', '$2',  '$3').
 E -> E '*' E  : op('$1', '$2',  '$3').
 E -> E '/' E  : op('$1', '$2', '$3').
-E -> E '^' E  : op('$1', {power}, '$3').
+E -> E '^' E  : op('$1', {power,1}, '$3').
 E -> E '%'    : ['/', '$1', 100].
 
 E      -> Uminus : '$1'.
@@ -58,15 +59,15 @@ E      -> Uplus  : '$1'.
 Uplus  -> '+' E  : '$2'.
 
 E -> E '^^' E : ['^^', '$1', '$3'].
-E -> rangeref rangeref  : ['^^', '$1', '$2'].
+E -> rangeref rangeref  : ['^^', lit('$1'), lit('$2')].
 %%% parenthesized expressions.
 
 E -> '(' E ')' : '$2'.    
 
 %%% special cases for slash ambiguity
 
-E -> E namedexpr Args : special_div1('$1', '$2', '$3').
-E -> E cellref        : special_div2('$1', '$2').
+E -> E namedexpr Args : special_div1('$1', lit('$2'), '$3').
+E -> E cellref        : special_div2('$1', lit('$2')).
 
 %%% TRUE() and FALSE() functions:
 
@@ -118,9 +119,11 @@ ArrayRow -> ArrayLiteral ',' ArrayRow : ['$1'] ++ '$3'.
 
 ArrayLiteral -> int       : lit('$1').
 ArrayLiteral -> float     : lit('$1').
-ArrayLiteral -> '-' int   : lit('$2', fun(X) -> neg(X) end).
-ArrayLiteral -> '-' float : lit('$2', fun(X) -> neg(X) end).
+ArrayLiteral -> '-' int   : neg(lit('$2')).
+ArrayLiteral -> '-' float : neg(lit('$2')).
 ArrayLiteral -> '+' int   : lit('$2').
+
+
 ArrayLiteral -> '+' float : lit('$2').
 ArrayLiteral -> bool      : lit('$1').
 ArrayLiteral -> str       : lit('$1').
@@ -132,35 +135,31 @@ Erlang code.
 -include("muin_records.hrl").
 -include("typechecks.hrl").
 
-neg(X) when is_integer(X) ->
-    -X;
-neg({F, _S}) ->
-    -F.
+neg(X) when is_integer(X) -> -X;
+neg({float, F, S}) -> {float, -F, S}.
 
 %% Make a function name for the AST from lexer tokens:
-func_name({name, Name}) ->
+func_name({name, _, Name}) ->
     list_to_atom(string:to_lower(Name));
-func_name(#cellref{text = Text}) ->
+func_name({cellref, _, #cellref{text = Text}}) ->
     list_to_atom(string:to_lower(Text)). % ATAN2 &c.
 
 %%% stuff from lexer -> stuff for AST.
 
 %%% Literals:
-
-lit(Name) when is_record(Name, namedexpr)        -> Name;
-lit(Cellref) when is_record(Cellref, cellref)    -> Cellref;
-lit(Rangeref) when is_record(Rangeref, rangeref) -> Rangeref;
-lit({name, Name})                                -> #namedexpr{path = "./", text = Name};
-lit({errval, Errval})                            -> {errval, Errval};
+lit({name, _, Name}) when is_record(Name, namedexpr) -> Name;
+lit({name, _, Name}) -> #namedexpr{path = "./", text = Name};
+lit({cellref, _, Cellref}) when is_record(Cellref, cellref) -> Cellref;
+lit({rangeref, _, Rangeref}) when is_record(Rangeref, rangeref) -> Rangeref;
+lit({errval, _, Errval}) -> {errval, Errval};
 %% OrigStr is used in normalization and then thrown away -- only float values make it
 %% to the final AST.
-lit({float, F, OrigStr})                         -> {float, F, OrigStr};
-lit({_Type, Data})                               -> Data.
-lit({_Type, Data}, Fun)                          -> Fun(Data).
+lit({float, _, {F, OrigStr}}) -> {float, F, OrigStr};
+lit({_Type, _, Data}) -> Data.
 
 %% operator function calls
-op(Arg1, {Op}, Arg2) -> [Op, Arg1, Arg2]; % used by production rule actions.
-op(Arg1, Op, Arg2)   -> [Op, Arg1, Arg2]. % used by helpers.
+op(Arg1, {Op,_}, Arg2) -> [Op, Arg1, Arg2]; % used by production rule actions.
+op(Arg1, Op, Arg2)     -> [Op, Arg1, Arg2]. % used by helpers.
 
 %% token + list of args -> function call for AST.
 func(Tuple, Args) -> [func_name(Tuple)] ++ Args.
@@ -210,7 +209,7 @@ postproc(Ast) ->
     replace_float(Ast).
 
 %% Replace {Float, OriginalString} tuples with Floats in the AST.
-replace_float({F, Str}) when is_float(F), ?is_string(Str) ->
+replace_float({float, F, Str}) when is_float(F), ?is_string(Str) ->
     F;
 replace_float(X) when is_list(X) ->
     [ replace_float(Y) || Y<-X ];

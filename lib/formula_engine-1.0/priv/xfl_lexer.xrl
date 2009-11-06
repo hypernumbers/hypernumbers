@@ -117,72 +117,72 @@ WHITESPACE = ([\000-\s]*)
 Rules.
 
 %% Basic data types.
-{INT}      : {token, {int, tconv:to_i(YYtext)}}.
-{FLOATDEC} : {token, {float, make_float(YYtext)}}.
-{FLOATSCI} : {token, {float, make_float(YYtext)}}.
-{BOOL}     : {token, {bool, string:to_upper(YYtext) == "TRUE"}}.
-{STR}      : {token, {str, hslists:mid(YYtext)}}.
-{ERRVAL} : {token, {errval, list_to_atom(YYtext)}}.
+{INT}      : {token, {int, TokenLine, tconv:to_i(TokenChars)}}.
+{FLOATDEC} : {token, {float, TokenLine, make_float(TokenChars)}}.
+{FLOATSCI} : {token, {float, TokenLine, make_float(TokenChars)}}.
+{BOOL}     : {token, {bool, TokenLine, string:to_upper(TokenChars) == "TRUE"}}.
+{STR}      : {token, {str, TokenLine, hslists:mid(TokenChars)}}.
+{ERRVAL}   : {token, {errval, TokenLine, list_to_atom(TokenChars)}}.
 
 %%% 1. Cell references:
 
-{A1_REF} : {token, to_cellref(YYtext, a1)}.
-{RC_REF} : {token, to_cellref(YYtext, rc)}.
+{A1_REF} : {token, to_cellref(TokenChars, TokenLine, a1)}.
+{RC_REF} : {token, to_cellref(TokenChars, TokenLine, rc)}.
 
-%%% 2. Finite ranges:
+%%% 2. Finite ranges:g
 
-{FINITE_RANGE_A1} : {token, finite_range(YYtext, a1)}.
-{FINITE_RANGE_RC} : {token, finite_range(YYtext, rc)}.
+{FINITE_RANGE_A1} : {token, finite_range(TokenChars, TokenLine, a1)}.
+{FINITE_RANGE_RC} : {token, finite_range(TokenChars, TokenLine, rc)}.
 
 %%% 3. Row & column ranges:
 
-{A1_COL_RANGE} : {token, a1_col_range(YYtext)}.
-{A1_ROW_RANGE} : {token, a1_row_range(YYtext)}.
-{RC_COL_RANGE} : {token, rc_col_range(YYtext)}.
-{RC_ROW_RANGE} : {token, rc_row_range(YYtext)}.
+{A1_COL_RANGE} : {token, a1_col_range(TokenChars, TokenLine)}.
+{A1_ROW_RANGE} : {token, a1_row_range(TokenChars, TokenLine)}.
+{RC_COL_RANGE} : {token, rc_col_range(TokenChars, TokenLine)}.
+{RC_ROW_RANGE} : {token, rc_row_range(TokenChars, TokenLine)}.
 
 %%% 4. Named expressions:
 
-{NAME_REF}     : {token, name(YYtext)}.
+{NAME_REF}     : {token, name(TokenChars, TokenLine)}.
 
 %% Discard whitespace:
-{WHITESPACE} : .
+{WHITESPACE} : skip_token.
 
 %% Punctuation & operators:
 
-=  : {token, {'='}}.
-,  : {token, {','}}.
-\( : {token, {'('}}.
-\) : {token, {')'}}.
-\{ : {token, {'{'}}.
-\} : {token, {'}'}}.
-\; : {token, {';'}}.
+=  : {token, {'=', TokenLine}}.
+,  : {token, {',', TokenLine}}.
+\( : {token, {'(', TokenLine}}.
+\) : {token, {')', TokenLine}}.
+\{ : {token, {'{', TokenLine}}.
+\} : {token, {'}', TokenLine}}.
+\; : {token, {';', TokenLine}}.
 
 %% Operators.
 %% Arithmetic.
-\+ : {token, {'+'}}.
-\- : {token, {'-'}}.
-\* : {token, {'*'}}.
-\/ : {token, {'/'}}.
-\^ : {token, {'^'}}.
+\+ : {token, {'+', TokenLine}}.
+\- : {token, {'-', TokenLine}}.
+\* : {token, {'*', TokenLine}}.
+\/ : {token, {'/', TokenLine}}.
+\^ : {token, {'^', TokenLine}}.
 
 %% Logical.
->  : {token, {'>'}}.
-<  : {token, {'<'}}.
->= : {token, {'>='}}.
-<= : {token, {'<='}}.
-<> : {token, {'<>'}}.
+>  : {token, {'>', TokenLine}}.
+<  : {token, {'<', TokenLine}}.
+>= : {token, {'>=', TokenLine}}.
+<= : {token, {'<=', TokenLine}}.
+<> : {token, {'<>', TokenLine}}.
 
 %% Other.
-&  : {token, {'&'}}.
-\% : {token, {'%'}}.
-\: : {token, {':'}}.
-\^\^ : {token, {'^^'}}.
+&    : {token, {'&', TokenLine}}.
+\%   : {token, {'%', TokenLine}}.
+\:   : {token, {':', TokenLine}}.
+\^\^ : {token, {'^^', TokenLine}}.
 
-\n : .
+\n : skip_token.
 
 %% Anything not covered by rules above is invalid.
-.  : {token, {invalid_token, YYtext}}.
+.  : {token, {invalid_token, TokenLine, TokenChars}}.
 
 Erlang code.
 
@@ -209,7 +209,7 @@ lex(Input, {Mx, My}) ->
     case string(Input) of
         {ok, Toks, _} ->
             case no_strings_above_limit(Toks) of
-                true -> {ok, Toks};
+                true ->  {ok, Toks};
                 false -> lexer_error
             end;
         _             ->
@@ -219,14 +219,14 @@ lex(Input, {Mx, My}) ->
 
 %% @doc Replace all !s with /s in a string. (Used to normalize references.)
 debang(Ssref) ->
-    {ok, Newssref, _} = regexp:gsub(Ssref, "!", "/"),
-    Newssref.
+    re:replace(Ssref, "!", "/", [global,{return,list}]).
+
 
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %%% @doc Check there are no string constants that are too large.
 no_strings_above_limit(Toks) ->
-    all(fun({str, Str}) ->
+    all(fun({str, _, Str}) ->
                 case string:len(Str) of
                     Ok when Ok < ?STRING_SIZE_LIMIT -> true;
                     _Else                           -> false
@@ -236,16 +236,17 @@ no_strings_above_limit(Toks) ->
         Toks).
 
 
-name(YYtext) when hd(YYtext) == $.; hd(YYtext) == $/ ->
-    {Path, Name} = split_ssref(YYtext),
-    #namedexpr{path = Path, text = Name};
-name(YYtext) ->
-    {name, YYtext}.
+name(TokenChars, TokenLine) when hd(TokenChars) == $.; hd(TokenChars) == $/ ->
+    {Path, Name} = split_ssref(TokenChars),
+    {namedexpr, TokenLine, #namedexpr{path = Path, text = Name}};
+name(TokenChars, TokenLine) ->
+    {name, TokenLine, TokenChars}.
 
-to_cellref(YYtext, Type) ->
-    {Path, Cell} = split_ssref(YYtext),
+to_cellref(TokenChars, TokenLine, Type) ->
+    {Path, Cell} = split_ssref(TokenChars),
     {ColCoord, RowCoord} = extract_coords(Cell, Type, ?pivot),
-    #cellref{col = ColCoord, row = RowCoord, path = Path, text = YYtext}.
+    {cellref, TokenLine, #cellref{col = ColCoord, row = RowCoord, 
+                                  path = Path, text = TokenChars}}.
 
 %%% @doc Return coordinates of a given **local** cell reference.
 
@@ -265,7 +266,7 @@ extract_coords(Ref, rc, {PivotCol, PivotRow}) ->
             {ColCoord, RowCoord}
     end;
 extract_coords(Ref, a1, {PivotCol, PivotRow}) ->
-    {ok, Ref2, _} = regexp:gsub(Ref, "\\$", ""), %"
+    Ref2 = re:replace(Ref, "\\$", "", [global,{return,list}]),
     ColStr = takewhile(fun is_alpha/1, string:to_lower(Ref2)),
     Col = tconv:to_i(ColStr),
     Row = tconv:to_i(lists:nthtail(length(ColStr), Ref2)),
@@ -276,11 +277,13 @@ extract_coords(Ref, a1, {PivotCol, PivotRow}) ->
              
 %% @doc Construct a range object from matched token text.
 
-finite_range(YYtext, Kind) ->
-    {Path, LhsArg, RhsArg} = split_range(YYtext),
+finite_range(TokenChars, TokenLine, Kind) ->
+    {Path, LhsArg, RhsArg} = split_range(TokenChars),
     {Tl, Br} = find_proper_bounds(LhsArg, RhsArg, Kind),
     {W, H} = finite_range_dimensions(Tl, Br),
-    #rangeref{type = finite, path = Path, tl = Tl, br = Br, width = W, height = H, text = YYtext}.
+    {rangeref, TokenLine, #rangeref{type = finite, path = Path, tl = Tl, br = Br, 
+                                    width = W, height = H, 
+                                    text = TokenChars}}.
 
 %% args are normalized/offset.
 
@@ -330,52 +333,52 @@ rc_col_to_coord(ColId) ->
 rc_row_to_coord(RowId) ->
     rc_col_to_coord(RowId).
 
-a1_col_range(YYtext) ->
-    {Path, LhsCol, RhsCol} = split_range(YYtext),
+a1_col_range(TokenChars, TokenLine) ->
+    {Path, LhsCol, RhsCol} = split_range(TokenChars),
     TlCoord = a1_col_to_coord(LhsCol),
     BrCoord = a1_col_to_coord(RhsCol),
     W = col_index(BrCoord) - col_index(TlCoord) + 1,
-    #rangeref{type = col,
-              path = Path,
-              tl = {col, TlCoord},
-              br = {col, BrCoord},
-              width = W,
-              height = na,
-              text = YYtext}.
+    {rangeref, TokenLine, #rangeref{type = col,
+                                    path = Path,
+                                    tl = {col, TlCoord},
+                                    br = {col, BrCoord},
+                                    width = W,
+                                    height = na,
+                                    text = TokenChars}}.
 
-a1_row_range(YYtext) ->
-    {Path, LhsRow, RhsRow} = split_range(YYtext),
+a1_row_range(TokenChars, TokenLine) ->
+    {Path, LhsRow, RhsRow} = split_range(TokenChars),
     TlCoord = a1_row_to_coord(LhsRow),
     BrCoord = a1_row_to_coord(RhsRow),
     H = row_index(BrCoord) - row_index(TlCoord) + 1,
-    #rangeref{type = row,
-              path = Path,
-              tl = {row, TlCoord},
-              br = {row, BrCoord},
-              width = na,
-              height = H,
-              text = YYtext}.
+    {rangeref, TokenLine, #rangeref{type = row,
+                                    path = Path,
+                                    tl = {row, TlCoord},
+                                    br = {row, BrCoord},
+                                    width = na,
+                                    height = H,
+                                    text = TokenChars}}.
 
-rc_col_range(YYtext) ->
-    {Path, LhsCol, RhsCol} = split_range(YYtext),
+rc_col_range(TokenChars, TokenLine) ->
+    {Path, LhsCol, RhsCol} = split_range(TokenChars),
     TlCoord = rc_col_to_coord(LhsCol),
     BrCoord = rc_col_to_coord(RhsCol),
     W = col_index(BrCoord) - col_index(TlCoord) + 1,
-    #rangeref{type = col,
-              path = Path,
-              tl = {col, rc_col_to_coord(LhsCol)},
-              br = {col, rc_col_to_coord(RhsCol)},
-              width = W,
-              height = na,
-              text = YYtext}.
+    {rangeref, TokenLine, #rangeref{type = col,
+                                    path = Path,
+                                    tl = {col, rc_col_to_coord(LhsCol)},
+                                    br = {col, rc_col_to_coord(RhsCol)},
+                                    width = W,
+                                    height = na,
+                                    text = TokenChars}}.
 
-rc_row_range(YYtext) ->
-    {Path, LhsRow, RhsRow} = split_range(YYtext),
-    #rangeref{type = row,
-              path = Path,
-              tl = {row, rc_row_to_coord(LhsRow)},
-              br = {row, rc_row_to_coord(RhsRow)},
-              text = YYtext}.
+rc_row_range(TokenChars, TokenLine) ->
+    {Path, LhsRow, RhsRow} = split_range(TokenChars),
+    {rangeref, TokenLine, #rangeref{type = row,
+                                    path = Path,
+                                    tl = {row, rc_row_to_coord(LhsRow)},
+                                    br = {row, rc_row_to_coord(RhsRow)},
+                                    text = TokenChars}}.
 
 %% @doc Takes coords of two cells defining bounds of some range, and returns
 %% coords for top-left and bottom-right cells of that range.
@@ -414,10 +417,10 @@ is_alpha([Char]) ->
 %% normalization step.  That then gets thrown away and only the float
 %% makes it into the final AST.
 
-make_float(YYtext) ->
-    FloatAsStr = case string:substr(YYtext, 1, 1) of
-                     "." -> string:concat("0", YYtext);
-                     _   -> YYtext
+make_float(TokenChars) ->
+    FloatAsStr = case string:substr(TokenChars, 1, 1) of
+                     "." -> string:concat("0", TokenChars);
+                     _   -> TokenChars
                  end,
     {tconv:to_f(FloatAsStr), FloatAsStr}.
 

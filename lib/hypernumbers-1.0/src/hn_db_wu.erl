@@ -595,6 +595,9 @@
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
 
+-include_lib("stdlib/include/ms_transform.hrl").
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Exported functions                                                       %%%

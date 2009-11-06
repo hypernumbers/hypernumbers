@@ -44,7 +44,7 @@ map.each do |k, v|
   rule = <<EOS
 {token,
  begin
-     {ok, Nowhsp, _} = regexp:gsub(YYtext, "\s+", ""),
+     Nowhsp = re:replace(TokenChars, "\s+", "", [global,{return,list}]),
      Hd = hd(Nowhsp),
      case lists:member(Hd, [$+, $-, $*, $/, $=]) of
          true  -> {func, [Hd|"#{k.upcase}("]};

@@ -22,23 +22,23 @@
 %%% maps to CSS which is yanktastic
 
 % autoparses tokens to match date/time formats
-autoparse([{int, D}, {'/'}, {int, Month}]) ->
+autoparse([{int, _, D}, {'/',_}, {int, _, Month}]) ->
     case make_date(D, tconv:to_i(Month)) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
                                  {"format", "dd-mmm"}]
     end;                
-autoparse([{int, D}, {'/'}, {int, Month}, {'/'}, {int, Y}]) ->
+autoparse([{int, _, D}, {'/',_}, {int, _, Month}, {'/', _}, {int, _, Y}]) ->
     case make_date(D, tconv:to_i(Month), tconv:to_i(Y)) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
                                  {"format", "dd-mmm-yyyy"}]
     end;
-autoparse([{int, D}, {'/'}, {int, Month},
-           {rangeref, _, _, {row, {offset, H}},
-            {row, {offset, Mn}}, _, _, _}]) ->
+autoparse([{int, _, D}, {'/',_}, {int, _, Month},
+           {rangeref, _, {rangeref, _, _, {row, {offset, H}},
+            {row, {offset, Mn}}, _, _, _}}]) ->
     % Rows got -1'd during lexing
     case make_datetime({D, tconv:to_i(Month)}, {H+1, Mn+1}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
@@ -46,9 +46,9 @@ autoparse([{int, D}, {'/'}, {int, Month},
                                  {"text-align", "center"}, 
                                  {"format", "dd-mmm hh:mm"}]
     end;                
-autoparse([{int, D}, {'/'}, {int, Month}, {'/'}, {int, Y},
-           {rangeref, _, _, {row, {offset, H}},
-            {row, {offset, Mn}}, _, _, _}]) ->
+autoparse([{int, _, D}, {'/', _}, {int, _, Month}, {'/',_}, {int, _, Y},
+           {rangeref, _, {rangeref, _, _, {row, {offset, H}},
+            {row, {offset, Mn}}, _, _, _}}]) ->
     % Rows got -1'd during lexing
     case make_datetime({D, tconv:to_i(Month), tconv:to_i(Y)},
                        {H+1, Mn+1}) of
@@ -57,9 +57,9 @@ autoparse([{int, D}, {'/'}, {int, Month}, {'/'}, {int, Y},
                                  {"text-align", "center"}, 
                                  {"format", "dd-mmm-yyyy hh:mm"}]
     end;
-autoparse([{int, D}, {'/'}, {int, Month},
-           {rangeref, _, _, {row, {offset, H}},
-            {row, {offset, Mn}}, _, _, _}, {':'},{int, S}]) ->
+autoparse([{int, _, D}, {'/', _}, {int, _, Month},
+           {rangeref, _, {rangeref, _, _, {row, {offset, H}},
+            {row, {offset, Mn}}, _, _, _}}, {':',_},{int,_, S}]) ->
     % Rows got -1'd during lexing
     case make_datetime({D, tconv:to_i(Month)}, {H+1, Mn+1, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
@@ -67,9 +67,10 @@ autoparse([{int, D}, {'/'}, {int, Month},
                            {"text-align", "center"}, 
                            {"format", "dd-mmm hh:mm:ss"}]
     end;
-autoparse([{int, D}, {'/'}, {int, Month}, {'/'}, {int, Y},
-           {rangeref, _, _, {row, {offset, H}},
-            {row, {offset, Mn}}, _, _, _}, {':'},{int, S}]) ->
+autoparse([{int, _, D}, {'/', _}, {int, _, Month}, {'/',_}, {int, _, Y},
+           {rangeref, _, {rangeref, _, _, {row, {offset, H}},
+            {row, {offset, Mn}}, _, _, _}}, 
+           {':',_},{int,_,S}]) ->
     case make_datetime({D, tconv:to_i(Month), tconv:to_i(Y)},
                        {H+1, Mn+1, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
@@ -77,66 +78,68 @@ autoparse([{int, D}, {'/'}, {int, Month}, {'/'}, {int, Y},
                                  {"text-align", "center"}, 
                                  {"format", "dd-mmm-yyyy hh:mm:ss"}]
     end;
-autoparse([{int,D}, {'-'}, {int, M}]) ->
+autoparse([{int,_, D}, {'-',_}, {int, _, M}]) ->
     case make_date(D, M) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
                                  {"format", "dd-mmm"}]
     end;
-autoparse([{int,D}, {'-'}, {int, M}, {rangeref, _, _, {row, {offset, H}},
-                                      {row, {offset, Mn}}, _, _, _}]) ->
+autoparse([{int,_,D}, {'-',_}, {int,_,M}, 
+           {rangeref, _, {rangeref, _, _, {row, {offset, H}},
+                                      {row, {offset, Mn}}, _, _, _}}]) ->
     case make_datetime({D, M}, {H, Mn}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
                                  {"format", "dd-mmm hh:mm"}]
     end;
-autoparse([{int,D}, {'-'}, {int, M}, {rangeref, _, _, {row, {offset, H}},
-                                      {row, {offset, Mn}}, _, _, _},
-           {':'}, {int, S}]) ->
+autoparse([{int,_,D}, {'-',_}, {int,_,M}, 
+           {rangeref, _, {rangeref, _, _, {row, {offset, H}},
+                                      {row, {offset, Mn}}, _, _, _}},
+           {':',_}, {int,_,S}]) ->
     case make_datetime({D, M}, {H, Mn, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
                                  {"format", "dd-mmm hh:mm"}]
     end;
-autoparse([{int,D}, {'-'}, {int, M}, {'-'}, {int, Y}]) ->
+autoparse([{int,_,D}, {'-',_}, {int,_,M}, {'-',_}, {int,_,Y}]) ->
     case make_date(D, M ,Y) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
                                  {"format", "dd-mmm-yyyy"}]
     end;
-autoparse([{int,D}, {'-'}, {int, M}, {'-'}, {int, Y},
-           {rangeref, _, _, {row, {offset, H}},
-            {row, {offset, Mn}}, _, _, _}]) ->
+autoparse([{int,_,D}, {'-',_}, {int,_,M}, {'-',_}, {int,_,Y},
+           {rangeref, _, {rangeref, _, _, {row, {offset, H}},
+            {row, {offset, Mn}}, _, _, _}}]) ->
     case make_datetime({D, M ,Y}, {H, Mn}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
                                  {"format", "dd-mmm-yyyy hh:mm"}]
     end;
-autoparse([{int,D}, {'-'}, {int, M}, {'-'}, {int, Y},
-           {rangeref, _, _, {row, {offset, H}},
-            {row, {offset, Mn}}, _, _, _},
-           {':'}, {int , S}]) ->
+autoparse([{int,_,D}, {'-',_}, {int,_,M}, {'-',_}, {int,_,Y},
+           {rangeref, _, {rangeref, _, _, {row, {offset, H}},
+            {row, {offset, Mn}}, _, _, _}},
+           {':',_}, {int,_,S}]) ->
     case make_datetime({D, M ,Y}, {H, Mn, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
                                  {"format", "dd-mmm-yyyy hh:mm:ss"}]
     end;
-autoparse([{rangeref, _, _, {row, {offset, H}},
-            {row, {offset, Mn}}, _, _, _}]) ->
+autoparse([{rangeref, _, {rangeref, _, _, {row, {offset, H}},
+            {row, {offset, Mn}}, _, _, _}}]) ->
     case make_time(H, Mn) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
                                  {"text-align", "center"}, 
                                  {"format", "hh:mm"}]
     end;
-autoparse([{rangeref, _, _, {row, {offset, H}},
-            {row, {offset, Mn}}, _, _, _}, {':'}, {int, S}]) ->
+autoparse([{rangeref, _, {rangeref, _, _, {row, {offset, H}},
+            {row, {offset, Mn}}, _, _, _}}, {':',_}, {int,_,S}]) ->
     case make_time(H, Mn, S) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},

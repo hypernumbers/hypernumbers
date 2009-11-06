@@ -26,11 +26,14 @@ WHITESPACE = ([\t]+|[\n]+)
 Rules.
 
 %% string tag means "leave as-is". TODO: rename.
-{SSA1REF}    : {token, {string, xfl_lexer:debang(YYtext)}}.
-{SSRCREF}    : {token, {string, xfl_lexer:debang(YYtext)}}.
-{SSNAMEREF}  : {token, {string, xfl_lexer:debang(YYtext)}}.
-{STRING}     : {token, {string, YYtext}}.
-{SPACE}      : {token, {string, YYtext}}.
+{SSA1REF}    : {token, {string, xfl_lexer:debang(TokenChars)}}.
+{SSRCREF}    : {token, {string, xfl_lexer:debang(TokenChars)}}.
+{SSNAMEREF}  : {token, {string, xfl_lexer:debang(TokenChars)}}.
+{STRING}     : {token, {string, TokenChars}}.
+{SPACE}      : {token, {string, TokenChars}}.
 {WHITESPACE} : skip_token.
-\n           : .
-.            : {token, {stuff, YYtext}}.
+\n           : skip_token.
+.            : {token, {stuff, TokenChars}}.
+
+
+Erlang code.

@@ -21,6 +21,7 @@
           text = ""       % token text (used in the parser for function names like ATAN2)
          }).
 
+%% super_util actually depends on rangeref order!!!
 -record(rangeref, {
           type,          % finite|col|row
           path,          % like in #cellref{}

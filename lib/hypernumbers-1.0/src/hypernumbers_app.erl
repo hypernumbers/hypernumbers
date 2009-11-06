@@ -67,7 +67,7 @@ is_fresh_startup() ->
 %% @doc  delete/create existing database and set up
 %%       initial permissions
 clean_start() ->
- 
+
     Sites = hn_util:get_hosts(hn_config:get(hosts)),
 
     [ auth_srv:clear_all_perms_DEBUG(X) || X<-Sites ],
@@ -85,10 +85,10 @@ fresh_start() ->
     ok = mnesia:start(),
 
     HostsInfo = hn_config:get(hosts),
-    Sites     = hn_util:get_hosts(HostsInfo),
+    Sites = hn_util:get_hosts(HostsInfo),
 
     [ok = hn_db_api:create_db(X) || X <- Sites],
-    
+
     ok = init_permissions().
 
 %% @spec start_mochiweb() -> ok
@@ -100,12 +100,12 @@ start_mochiweb() ->
     ok.
 
 start_instance({IP, Port}) ->
-    
-    Opts = [{port, Port}, 
-            {ip,   inet_parse:ntoa(IP)}, 
-            {loop, {hn_mochi, req}}],
-    
-    mochilog:start(),
+                  
+                  Opts = [{port, Port}, 
+                          {ip,   inet_parse:ntoa(IP)}, 
+                          {loop, {hn_mochi, req}}],
+                  
+                  mochilog:start(),
     mochiweb_http:start(Opts).
 
 compress(List) ->

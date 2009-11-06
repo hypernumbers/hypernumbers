@@ -11,6 +11,7 @@ dets/
 logs/
 ebin/hypernumbers.*
 lib/*/ebin/*.erl
+lib/hypernumbers*/src/ms_util2.erl
 
 
 ## Script used for fetching svn externals
@@ -27,12 +28,11 @@ lib/read_excel*/doc/*.html
 ## Runtime Files
 lib/hypernumbers*/log
 lib/hypernumbers*/priv/docroot/hypernumbers/*.html.??_*
-lib/hypernumbers*/src/ms_util2.erl
+lib/hypernumbers*/priv/docroot/views/_global/*.html\.*
 
 ## Generated lexers/parsers
 lib/gettext/priv/
 lib/formula_engine*/priv/*_lexer.xrl
-priv/muin/*.xrl
 lib/formula_engine*/src/*_lexer.erl
 lib/formula_engine*/src/*_parser.erl
 lib/formula_engine*/src/superlex.erl

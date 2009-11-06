@@ -19,10 +19,24 @@ all() -> excel(), sys().
 sys() ->
     sys([]).
 sys(Suites) ->
+    %% Copy source files
+    SrcDir = code:lib_dir(hypernumbers)++"/src/",
+    EbinDir = code:lib_dir(hypernumbers)++"/ebin/",
+    file:write_file(?COVER_DATA, []),
+    [file:copy(S, EbinDir++filename:basename(S)) 
+     || S <- filelib:wildcard(SrcDir++"*.erl")],
+    
+    %% Setup Options
     SOpt = if Suites == [] -> [];
               true         -> [{suite, [S++"_SUITE" || S <- Suites]}] end,
-    Opts = [ {dir, [filename:absname(?SYSTEST_DIR)]} ],
-    do_test(Opts ++ SOpt).
+    Opts = [ {dir, [filename:absname(?SYSTEST_DIR)]}, 
+             {cover, filename:absname(?COVER_FILE)} ],
+
+    do_test(SOpt ++ Opts),
+    
+    %% Cleanup
+    [file:delete(S) || S <- filelib:wildcard(EbinDir++"*.erl")],
+    ok.
 
 
 excel() ->
@@ -42,22 +56,7 @@ excel(T, S) ->
 
 
 do_test(Opts) ->
-    %% Copy source files
-    SrcDir = code:lib_dir(hypernumbers)++"/src/",
-    EbinDir = code:lib_dir(hypernumbers)++"/ebin/",
-
-    [file:copy(S, EbinDir++filename:basename(S)) 
-     || S <- filelib:wildcard(SrcDir++"*.erl")],
-
-    file:write_file(?COVER_DATA, []),
-    DefaultOps = [{logdir, filename:absname(?LOG_DIR)},
-                  {cover, filename:absname(?COVER_FILE)}],
-
+    DefaultOps = [{logdir, filename:absname(?LOG_DIR)}],
     ct:run_test(
       lists:ukeymerge(
-        1, lists:keysort(1, Opts), lists:keysort(1, DefaultOps))),
-
-    [file:delete(S) || S <- filelib:wildcard(EbinDir++"*.erl")],
-    ok.
-   
-
+        1, lists:keysort(1, Opts), lists:keysort(1, DefaultOps))).
