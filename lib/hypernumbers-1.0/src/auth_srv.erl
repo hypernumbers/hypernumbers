@@ -262,12 +262,12 @@ clear_all_perms_DEBUG(Host) ->
 check_get_page1(Tree, {User, Groups}, Page) ->
 Fun = fun(X) -> case get_control(X, User, Groups) of
                         none     -> {return, '404'};
-                        no_match -> {return, '503'};
+                        no_match -> {return, '401'};
                         Ctl      -> #control{perms = P} = Ctl,
                                     case has_perm(P, read) of
                                         true  -> #control{def_view = G} = Ctl,
                                                  {html, G}; 
-                                        false -> {return, '503'}
+                                        false -> {return, '401'}
                                     end
                     end
           end,
@@ -276,11 +276,11 @@ Fun = fun(X) -> case get_control(X, User, Groups) of
 check_get_page1(Tree, {User, Groups}, Page, View) -> 
     Fun = fun(X) -> case get_control(X, User, Groups) of
                         none     -> {return, '404'};
-                        no_match -> {return, '503'};
+                        no_match -> {return, '401'};
                         Ctl      -> #control{views = Vws} = Ctl,
                                     case contains(View, Vws) of
                                         true  -> {html, View}; 
-                                        false -> {return, '503'}
+                                        false -> {return, '401'}
                                     end
                     end
           end,
@@ -615,7 +615,7 @@ test1b() ->
                      [read, write], "index", ["index"]),
     Ret = check_get_page1(Tree, {"Fail", "Fail"}, P),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {return, '503'}).
+    (Ret == {return, '401'}).
 
 test2() ->
     P = ["a", "b", "c", "d"],
@@ -759,7 +759,7 @@ test13() ->
                       [read, write], "index", ["index"]),
     Ret = check_get_page1(Tree2, {"bob", ["GroupFail"]}, P),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {return, '503'}).
+    (Ret == {return, '401'}).
 
 %% check can_read
 
@@ -1036,7 +1036,7 @@ test37() ->
     Ret2 = check_get_page1(Tree3, {"User", ["Group"]}, P1, "epic fail"),
     Ret3 = check_get_page1(Tree3, {"User", ["Group"]}, P3),
     io:format("Ret1 is ~p~nRet2 is ~p~nRet3 is ~p~n", [Ret1, Ret2, Ret3]),
-    ({Ret1, Ret2, Ret3} == {{html, "special"}, {return, '503'}, {return, '404'}}).
+    ({Ret1, Ret2, Ret3} == {{html, "special"}, {return, '401'}, {return, '404'}}).
 
 %% now do the old wild card stuff
 test38() ->

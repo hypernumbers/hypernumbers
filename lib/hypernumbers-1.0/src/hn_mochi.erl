@@ -80,13 +80,13 @@ do_req(Req) ->
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),    
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
- 
+
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->
             serve_html(404, Req, [viewroot(), "/_global/404.html"], User);
-        {return, '503'} ->
-            serve_html(503, Req, [viewroot(), "/_global/login.html"], User);
+        {return, '401'} ->
+            serve_html(401, Req, [viewroot(), "/_global/login.html"], User);
         {html, File}    ->
             case Vars of
                 [] -> handle_req(Method, Req, Ref, [{"view", File}], User);
@@ -94,7 +94,7 @@ do_req(Req) ->
             end;
         %% these are the returns for the POST's
         true  -> handle_req(Method, Req, Ref, Vars, User);
-        false -> Req:respond({503, [], []})
+        false -> Req:respond({401, [], []})
     end,
     ok.
 
@@ -183,7 +183,7 @@ iget(Req, _Ref, page, [{"templates", []}], _User, _CType) ->
 
 % List of views available to edit
 iget(Req, _Ref, page, [{"views", []}], User, _CType) ->
-    
+
     Z = fun(X) ->
                 [File, Root | _ ] = lists:reverse(string:tokens(X, "/")),
                 Root ++ "/" ++ filename:basename(File, ".tpl")
@@ -192,11 +192,11 @@ iget(Req, _Ref, page, [{"views", []}], User, _CType) ->
     F = fun(Y) -> [ Z(X) || X <- filelib:wildcard(Y++"*.tpl")] end,
 
     Extra = case lists:member("admin", hn_users:groups(User)) of
-                true  -> F(viewroot()++"_global/");
+                true  -> F(viewroot()++"/_global/");
                 false -> []
             end,
 
-    json(Req, {array, F(viewroot()++hn_users:name(User)++"/")  ++ Extra});
+    json(Req, {array, F([viewroot(),"/",hn_users:name(User),"/"]) ++ Extra});
 
 iget(Req, Ref, page, [{"pages", []}], _User, json) ->
     json(Req, pages(Ref));
@@ -346,20 +346,22 @@ ipost(Ref, _Type, _Attr,
       [{"saveview", {struct, [{"global", Global},
                               {"name", Name}, {"tpl", Form}]}}], User) ->
 
-    Base  = [code:lib_dir(hypernumbers, priv), "docroot", "views"],
     FName = filename:basename(Name) ++ ".tpl",
     UName = hn_users:name(User),
     
     case Global of
         false ->
             View = UName ++ "/" ++ filename:basename(Name),
-            File = filename:join(Base ++ [UName, FName]),
+            File = [viewroot(), "/" ,UName, "/", FName],
+
             auth_srv:add_views(Ref#refX.site, [{user, UName}], 
-                              ["u", UName, "[**]"], [View]),            
+                              ["u", UName, "[**]"], [View]),
+            
+            ok = filelib:ensure_dir(File),
             ok = file:write_file(File, Form);
         true  ->
             View = "_global/" ++ filename:basename(Name),
-            File = filename:join(Base ++ ["_global", FName]),
+            File = filename:join(viewroot() ++ ["_global", FName]),
             auth_srv:add_views(Ref#refX.site, [{user, "*"}, {group, "*"}], 
                               ["[**]"], [View]),            
             ok = file:write_file(File, Form)
@@ -644,6 +646,7 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
     Time   = {"time", remoting_reg:timestamp()},
     Usr    = {"user", Name},
     Host   = {"host", S},
+    Grps   = {"groups", {array, Groups}},
     Lang   = {"lang", get_lang(User)},
     Tour   = viewed_tour(Ref#refX.site, User),
     Perms = case auth_srv:can_write(S, {Name, Groups}, P) of
@@ -653,7 +656,7 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
 
     Views = {views, {array, auth_srv:get_views(S, {Name, Groups}, P)}},
 
-    {struct, [Time, Usr, Host, Tour, Lang, Perms, Views
+    {struct, [Time, Usr, Host, Tour, Lang, Perms, Views, Grps
               | dict_to_struct(Dict)]}.
 
 viewed_tour(_Site, anonymous) ->

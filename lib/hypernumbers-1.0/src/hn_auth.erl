@@ -11,8 +11,8 @@ init_permissions(Host) ->
 
     Views = hn_config:get(default_pages),
     
-    auth_srv:add_views(Host, [{group, "dev"}], [], Views),
-    auth_srv:add_views(Host, [{group, "dev"}], ["[**]"], Views),
+    auth_srv:add_views(Host, [{group, "admin"}], [], Views),
+    auth_srv:add_views(Host, [{group, "admin"}], ["[**]"], Views),
     
     ok.
 
@@ -32,6 +32,6 @@ default_permissions() ->
        "_global/spreadsheet", hn_config:get(default_pages) },
      
      % Dev section
-     { [{group, "dev"}], ["dev", "[**]"], [read, write],
+     { [{group, "admin"}], ["dev", "[**]"], [read, write],
        "_global/spreadsheet", hn_config:get(default_pages) }    
     ].

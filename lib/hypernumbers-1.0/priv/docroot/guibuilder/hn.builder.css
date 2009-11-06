@@ -221,17 +221,31 @@ body {
 
 #viewname { width:80px; }
 
-#views { 
-    position:absolute; width:80px; 
-    display:none;
-    background:#CCCCCC;
-    border:2px solid #666666;
-    padding:2px;
-    color:#111111;
-    left:0px;
-    z-index:999;
-    -moz-border-radius:4px; -webkit-border: 4px;
+#views ul { 
+    list-style-type:none; 
 }
+
+#views { 
+    position           :absolute; 
+    width              :100px; 
+    display            :none;
+    background         :#CCCCCC;
+    border             :2px solid #666666;
+    padding            :2px;
+    color              :#111111;
+    left               :0px;
+    z-index            :999;
+    -moz-border-radius :4px; -webkit-border: 4px;
+}
+
+.global { 
+    display:none;
+}
+
+#views li {
+    text-indent: 5px;
+}
+
 #views li:hover {
     cursor:pointer;
     background: #999999;

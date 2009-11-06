@@ -19,14 +19,19 @@
     <div id="control">
 
         <label for="saveglobal">
-          <input type="checkbox" id="saveglobal" />
-          <span>Global</span>
+          <input type="checkbox" id="saveglobal" class="global" />
+          <span class="global">Global</span>
         </label>
 
 
       <div id="viewspanel">        
         <input type="text" id="viewname" value="Enter Name" />
-        <ul id='views'></ul>
+        <div id='views'>
+          <strong class="global">Global Views</strong>
+          <ul class="global" id="globalview"></ul>
+          <strong>Your Views</strong>
+          <ul id="userviews"></ul>
+        </div>
         <input type="button" value="▾" id="viewviews" class="btn" />
       </div>
 

@@ -205,12 +205,12 @@ ul,li {
 /******************************************************************************
 	FILE MENU STYLES
 ******************************************************************************/
-#menu { 
+#hn #menu { 
  height:     22px;
  background: #FFFFFF;
 }
 
-#menu .desc { 
+#hn #menu .desc { 
  font-size: 10px; 
  position:absolute; 
  color:grey;
@@ -218,17 +218,17 @@ ul,li {
  top:4px;
 }
 
-#menu li { 
+#hn #menu li { 
  float:      left; 
 }    
 
-#menu li li {
+#hn #menu li li {
  float:    none; 
  display:  block; 
  position: relative;
 }
 
-#menu ul { 
+#hn #menu ul { 
  display:      none; 
  position:     absolute;  
  border:       1px solid; 
@@ -238,12 +238,12 @@ ul,li {
  z-index:      99999;
 }
 
-#menu ul ul { 
+#hn #menu ul ul { 
  left: 100%; 
  top:  0; 
 } 
 
-#menu a {
+#hn #menu a {
  position:   relative;
  display:    block; 
  background: #FFFFFF;
@@ -254,31 +254,31 @@ ul,li {
  text-decoration: none;
 }
 
-#menu ul a { 
+#hn #menu ul a { 
  background: #f8f7f6;       
  padding:    3px 20px 3px 20px; 
  z-index:    200;
 }
 
-#menu .hover { 
+#hn #menu .hover { 
  background: #ffc47e; 
 }  
 
-#menu .disabled a.hover { 
+#hn #menu .disabled a.hover { 
  background: #f8f7f6;       
 }  
 
-#menu .disabled a { 
+#hn #menu .disabled a { 
  color: #AAA; 
 }  
 
-#menu li.seperator { 
+#hn #menu li.seperator { 
  height:     0px; 
  border-top: 1px solid #CCC; 
  margin:     3px 0px;      
 }
 
-#menu div.input {
+#hn #menu div.input {
  position: relative;
  padding:  0px;
  width:    16px;
@@ -287,16 +287,16 @@ ul,li {
  z-index:  500;
 }
 
-#menu .icon {
+#hn #menu .icon {
  background-repeat: no-repeat;
  background-position:3px 3px; 
 }
 
-#menu .arrow {
+#hn #menu .arrow {
  display:      none;
 }
 
-#menu ul li .arrow { 
+#hn #menu ul li .arrow { 
  display:    block;
  position:   absolute;
  height:     16px;
@@ -309,12 +309,12 @@ ul,li {
 /******************************************************************************
 	LAYOUT STYLES
 ******************************************************************************/
-#header { 
+#hn #header { 
  background: #000;
  height:     60px;
 }
 
-#header h1 { 
+#hn #header h1 { 
  display:     block;
  background:  url(sprite.png) 0px -127px;  
  height:      50px;
