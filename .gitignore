@@ -29,6 +29,7 @@ lib/read_excel*/doc/*.html
 lib/hypernumbers*/log
 lib/hypernumbers*/priv/docroot/hypernumbers/*.html.??_*
 lib/hypernumbers*/priv/docroot/views/_global/*.html\.*
+lib/hypernumbers*/tmp
 
 ## Generated lexers/parsers
 lib/gettext/priv/
