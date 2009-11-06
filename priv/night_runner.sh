@@ -9,36 +9,51 @@ WEBROOT=dev.hypernumbers.com
 TESTDIR=hn_test_stage
 LASTRUN=$HOME/$WEBROOT/tests/last_run/
 
+ERL_CALL=###
+COOKIE=abc
+TARGET=arrian@localhost
+
 cd $HOME
 
 svn co $REPO $HOME/$TESTDIR
 
 cd $TESTDIR
 
+## Compile, and run Hypernumbers
 ./hypernumbers build
-./hypernumbers gen_tests
+## run detached.
 
+## Generate Excel Tests
 cd priv/testserver
-
 ruby regen_tests.rb 1x
 ruby regen_tests.rb 2x
-
 cd ../../
 
-./hypernumbers test 1a
-./hypernumbers test 1b
-./hypernumbers test 1c
-./hypernumbers test 1d
-./hypernumbers test 1e
-./hypernumbers test 1f
-./hypernumbers test 2a
-./hypernumbers test 2b
-./hypernumbers test 2c
-./hypernumbers test 2d
-./hypernumbers test 2e
-./hypernumbers test 2f
-./hypernumbers test 2x
-./hypernumbers test system_test
+## Generate System Tests
+$ERL_CALL -sname $TARGET -c $COOKIE -a "testsys generate"
+
+## Run tests
+
+# Examples...
+#$ERL_CALL -sname $TARGET -c $COOKIE -a "test all"
+#$ERL_CALL -sname $TARGET -c $COOKIE -a "test excel"
+#$ERL_CALL -sname $TARGET -c $COOKIE -a "test sys"
+
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["1a"]'
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["1b"]'
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["1c"]'
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["1d"]'
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["1e"]'
+
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2a"]'
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2b"]'
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2c"]'
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2d"]'
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2e"]'
+
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test sys'
+
+## Cleanup.
 
 rm -rf $LASTRUN
 mkdir $LASTRUN
