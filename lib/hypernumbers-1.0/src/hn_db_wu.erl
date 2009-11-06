@@ -1518,7 +1518,7 @@ shift_cells(From, Type, Disp, Rewritten)
                            [Cell#local_objs{obj = O2} | Acc]
                    end,
             NewCells = lists:foldl(Fun3, [], Cells),
-            ok = delete_recs_new(Site, Cells),
+            ok = delete_recs(Site, Cells),
             [ok = mnesia:write(trans(Site, local_objs), X, write) 
              || X <- NewCells],
             % return the Status of dirty cells
@@ -1540,7 +1540,7 @@ delete_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}) ->
     M = [{H, C, B}],
     Table = trans(S, local_objs),
     Recs = mnesia:select(Table, M, write),
-    ok = delete_recs_new(S, Recs).
+    ok = delete_recs(S, Recs).
 
 -spec delete_row_objs(#refX{}) -> ok.
 %% @doc deletes any row objects completely covered by the #refX{}
@@ -1578,7 +1578,7 @@ shift_col_objs1(Shift, Change, Type) ->
                  insert -> YY2 - YY1 + 1;
                  delete -> -(YY2 - YY1 + 1)             end,
     New = Shift#local_objs{obj = {column, {Y1 + Offset, Y2 + Offset}}},
-    ok = delete_recs_new(S, [Shift]),
+    ok = delete_recs(S, [Shift]),
     ok = mnesia:write(trans(S, local_objs), New, write).
 
 -spec shift_row_objs(#refX{}, insert | delete) -> ok.
@@ -1606,7 +1606,7 @@ shift_row_objs1(Shift, Change, Type) ->
                  delete -> -(XX2 - XX1 + 1)
              end,
     New = Shift#local_objs{obj = {row, {X1 + Offset, X2 + Offset}}},
-    ok = delete_recs_new(S, [Shift]),
+    ok = delete_recs(S, [Shift]),
     ok = mnesia:write(trans(S, local_objs),  New, write).
 
 %% @spec read_styles(#refX{}) -> [Style]
@@ -2013,7 +2013,6 @@ read_incoming_hn2(Site, #refX{obj = {cell, _}} = Parent)
 
 read_incoming_hn3(Site, Head) ->
     Table = trans(Site, incoming_hn),
-    io:format("~p~n",[Table]),
     mnesia:select(Table, [{Head, [], ['$_']}], write).
 
 %% @spec find_incoming_hn(Site, Parent) -> #incoming_hn{} | []
@@ -2250,13 +2249,6 @@ delete_recs1(Site, Rec) ->
     Table = trans(Site, element(1, Rec)),
     mnesia:delete_object(Table, Rec, write).
 
-delete_recs_new(Site, List) when is_list(List) ->
-    [ok = delete_recs_new1(Site, X) || X <- List],
-    ok.
-
-delete_recs_new1(Site, Rec) ->
-    Table = trans(Site, element(1, Rec)),
-    ok = mnesia:delete_object(Table, Rec, write).
 
 %% mark_dirty_cells_deleted(#refX{site = S, obj = {cell, _}} = RefX) ->
 %%     Idx = read_local_item_index(RefX),
@@ -2314,16 +2306,10 @@ local_objs_to_refXs(Site, LocalObj) when is_record(LocalObj, local_objs) ->
 %% IF IT DOESN'T EXIST
 read_local_item_index(#refX{site = S, path = P, obj = Obj}) ->
     Table = trans(S, local_objs),
-    case mnesia:read(Table, P, read) of
-        []   -> false;
-        Recs -> I1 = ms_util2:get_index(local_objs, obj) + 1,
-                case lists:keysearch(Obj, I1, Recs) of
-                    false      -> false;
-                    {value, R} -> I2 = ms_util2:get_index(local_objs, idx) + 1,
-                                  element(I2, R)
-                end
+    case mnesia:match_object(Table, #local_objs{path=P, obj=Obj, _='_'}, read) of
+        [R] -> R#local_objs.idx;
+        _   -> false
     end.
-
 
 get_head(Site, Parent, Type) when ((Type == insert) orelse (Type == delete)) ->
     H1 = ms_util:make_ms(refX, [{site, Site}, {obj, {cell, {'_', '_'}}}]),
@@ -2391,36 +2377,33 @@ update_rem_parents(Child, OldParents, NewParents) when is_record(Child, refX) ->
 %% This function is called on a local cell to inform all remote cells that it
 %% used to reference as hypernumbers to no longer do so.
 unregister_inc_hn(Parent, Child)
-  when is_record(Child, refX), is_record(Parent, refX) ->
+  when is_record(Parent, refX), is_record(Child, refX) ->
+
     #refX{site = ChildSite} = Child,
     Head = #incoming_hn{site_and_parent = {ChildSite, Parent}, _ = '_'},
     Table = trans(ChildSite, incoming_hn),
-    case mnesia:select(Table, [{Head, [], ['$_']}], read) of
-        [Hn] ->
-            #incoming_hn{biccie = Biccie} = Hn,
-            Head3 = #remote_cell_link{parent =  Parent, type = incoming, _ = '_'},
-            Table2 = trans(ChildSite, remote_cell_link),
-            ok = case mnesia:select(Table2, [{Head3, [], ['$_']}], read) of
-                     [] -> Table3 = trans(ChildSite, incoming_hn),
-                           ok = mnesia:delete({Table3, Parent});
-                     _  -> ok % somebody else still wants it so don't unregister
-                 end,
-            PPage = Parent#refX{obj = {page, "/"}},
-            CPage = Child#refX{obj = {page, "/"}},
-            PUrl = hn_util:refX_to_url(PPage),
-            CUrl = hn_util:refX_to_url(CPage),
-            PV = hn_db_wu:read_page_vsn(ChildSite, Parent),
-            CV = hn_db_wu:read_page_vsn(ChildSite, Child),
-            PVsn = #version{page = PUrl, version = PV},
-            CVsn = #version{page = CUrl, version = CV},
-            Rec = #dirty_notify_back_in{parent = Parent, child = Child,
-                                        change = "unregister",
-                                        biccie = Biccie, parent_vsn = PVsn,
-                                        child_vsn = CVsn},
-            mark_dirty(ChildSite, Rec);
-        _ ->
-            ok
-    end.
+    [Hn] = mnesia:select(Table, [{Head, [], ['$_']}], read),
+    #incoming_hn{biccie = Biccie} = Hn,
+    Head3 = #remote_cell_link{parent =  Parent, type = incoming, _ = '_'},
+    Table2 = trans(ChildSite, remote_cell_link),
+    ok = case mnesia:select(Table2, [{Head3, [], ['$_']}], read) of
+             [] -> ok = mnesia:delete({Table, {ChildSite, Parent}});
+             _  -> ok % HN is still in use
+         end,
+    PPage = Parent#refX{obj = {page, "/"}},
+    CPage = Child#refX{obj = {page, "/"}},
+    PUrl = hn_util:refX_to_url(PPage),
+    CUrl = hn_util:refX_to_url(CPage),
+    PV = hn_db_wu:read_page_vsn(ChildSite, Parent),
+    CV = hn_db_wu:read_page_vsn(ChildSite, Child),
+    PVsn = #version{page = PUrl, version = PV},
+    CVsn = #version{page = CUrl, version = CV},
+    Rec = #dirty_notify_back_in{parent = Parent, child = Child,
+                                change = "unregister",
+                                biccie = Biccie, parent_vsn = PVsn,
+                                child_vsn = CVsn},
+    mark_dirty(ChildSite, Rec).
+
 
 
 %get_refXs(List) -> get_refXs(List, []).
@@ -2663,7 +2646,7 @@ offset_with_ranges(Toks, Cell, From, Offset) ->
 
 offset_with_ranges1([], _Cell, _From, _Offset, Acc) ->
     lists:reverse(Acc);
-offset_with_ranges1([#rangeref{path = Path, text = Text} = H | T],
+offset_with_ranges1([rangeref, _, #rangeref{path = Path, text = Text} = H | T],
                     Cell, #refX{path = FromPath} = From, Offset, Acc) ->
     #refX{path = CPath} = Cell,
     PathCompare = muin_util:walk_path(CPath, Path),
@@ -2684,7 +2667,7 @@ offset_with_ranges1([#rangeref{path = Path, text = Text} = H | T],
               end,
     NewAcc = H#rangeref{text = NewText},
     offset_with_ranges1(T, Cell, From, Offset, [NewAcc | Acc]);
-offset_with_ranges1([#cellref{path = Path, text = Text} = H | T],
+offset_with_ranges1([cellref, _, #cellref{path = Path, text = Text} = H | T],
                     Cell, #refX{path = FromPath} = From, {XO, YO}, Acc) ->
     #refX{path = CPath} = Cell,
     Prefix = case muin_util:just_path(Text) of
@@ -2935,15 +2918,12 @@ delete_remote_parents(#refX{site = Site} = Child) ->
     Table = trans(Site, remote_cell_link),
     Parents = mnesia:match_object(Table, Match, read),
     % unregister the hypernumbers
-    Fun = fun(X) ->
-                  #remote_cell_link{parent = P, child = C, type = incoming} = X,
-                  Rec = #remote_cell_link{parent = P, child = C,
-                                          type = incoming},
-                  ok = delete_recs_new(Site, [Rec]),
+    delete_recs(Site, Parents),
+    Fun = fun(#remote_cell_link{parent = P, child = C}) ->
                   unregister_inc_hn(P, C)
           end,
     [ok = Fun(X) || X <- Parents],
-    delete_recs(Site, Parents).
+    ok.
 
 delete_local_parents(#refX{site = Site} = Child) ->
     CIdx = read_local_item_index(Child),
@@ -3006,7 +2986,7 @@ deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
     make_formula(NewToks).
 
 deref1(_Child, [], _DeRefX, Acc) -> lists:reverse(Acc);
-deref1(Child, [#rangeref{text = Text} | T], DeRefX, Acc) ->
+deref1(Child, [rangeref, _, #rangeref{text = Text} | T], DeRefX, Acc) ->
     % only deref the range if it is completely obliterated by the deletion
     #refX{obj = Obj1} = DeRefX,
     Range = muin_util:just_ref(Text),
