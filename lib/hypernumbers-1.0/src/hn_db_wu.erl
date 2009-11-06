@@ -577,15 +577,8 @@
 
 %% bit of tidying up for later on
 
--define(hn, {name, "HN"}).
--define(bra, {'('}).
 -define(AND, andalso).
 -define(OR, orelse).
--define(rootcellref, {cellref, _, _, "/", R}).
--define(cellref, {cellref, _, _, _, R}).
--define(cellref2, {cellref, _, _, _, R2}).
--define(rangeref, {rangeref, _, _, _, __, _, _, R}).
--define(namedexpr, {namedexpr, P, N}).
 
 -define(lt, list_to_tuple).
 -define(lf, lists:flatten).
@@ -2333,9 +2326,13 @@ get_pages_and_vsns(Site, List) ->
 rewrite_hn_formula(Toks, OUrl, NUrl) -> rwf1(Toks, OUrl, NUrl, []).
 
 %% just swap out the old URL for the new one...
-rwf1([], _O, _N, {_St, Acc})        -> make_formula(lists:reverse(Acc));
-rwf1([?hn,?bra,{str,O}|T], O, N, A) -> rwf1(T, O, N, [{str,N},?bra,?hn|A]);
-rwf1([H | T], O, N, A)              -> rwf1(T, O, N, [H | A]).      
+rwf1([], _O, _N, {_St, Acc}) -> 
+    make_formula(lists:reverse(Acc));
+rwf1([{name, _, "HN"},{'{',_},{str,_,O}|T], O, N, A) -> 
+    rwf1(T, O, N, [{str,N},{'{'},{name,"HN"}|A]);
+rwf1([H | T], O, N, A) -> 
+    rwf1(T, O, N, [H | A]).      
+
 
 %% REMEMBER this is a BAG table and not a set table so writes
 %% do not delete!
@@ -2582,31 +2579,76 @@ make_formula(Toks) ->
     mk_f(Toks, {clean, []}).
 
 %% this function needs to be extended...
-mk_f([], {St, A})                         -> {St, "="++lists:flatten(lists:reverse(A))};
-mk_f([{errval, '#REF!'} | T], {St, A})    -> mk_f(T, {St, ["#REF!" | A]});
-mk_f([{deref, Text}     | T], {St, A})    -> mk_f(T, {St, [Text | A]});
-% special infering of division
-mk_f([?cellref, ?cellref2| T], {St, A})   -> mk_f(T, {St, [R2, "/", R | A]});
-mk_f([{int, I}, ?cellref| T], {St, A})      -> mk_f(T, {St, [R, "/", integer_to_list(I) | A]});
-mk_f([{float, F, _}, ?cellref| T], {St, A}) -> mk_f(T, {St, [R, "/", float_to_list(F) | A]});
-mk_f([{')'}, ?cellref| T], {St, A})         -> mk_f(T, {St, [R, "/", ")" | A]});
+mk_f([], {St, A}) -> 
+    {St, "="++lists:flatten(lists:reverse(A))};
+
+mk_f([{errval, _, '#REF!'} | T], {St, A}) -> 
+    mk_f(T, {St, ["#REF!" | A]});
+
+mk_f([{deref, _, Text} | T], {St, A}) -> 
+    mk_f(T, {St, [Text | A]});
+
+%% special infering of division
+mk_f([{cellref, _, C1}, {cellref, _, C2} | T], {St, A}) -> 
+    mk_f(T, {St, [C2#cellref.text, "/", C1#cellref.text | A]});
+
+mk_f([{int, _, I}, {cellref,_,C} | T], {St, A}) -> 
+    mk_f(T, {St, [C#cellref.text, "/", integer_to_list(I) | A]});
+
+mk_f([{float, _, {F, _}}, {cellref,_,C} | T], {St, A}) -> 
+    mk_f(T, {St, [C#cellref.text, "/", float_to_list(F) | A]});
+
+mk_f([{')',_}, {cellref,_,C} | T], {St, A}) ->
+    mk_f(T, {St, [C#cellref.text, "/", ")" | A]});
+
 %% order matters - now detecting 'root' cells
-mk_f([?rootcellref       | T], {St, A})     -> mk_f(T, {St, ["/" ++ R | A]});
-mk_f([?cellref           | T], {St, A})   -> mk_f(T, {St, [R | A]});
-mk_f([?rangeref          | T], {St, A})   -> mk_f(T, {St, [R | A]});
-mk_f([?namedexpr         | T], {St, A})   -> mk_f(T, {St, [P ++ N | A]});
-mk_f([{bool, H}          | T], {St, A})   -> mk_f(T, {St, [atom_to_list(H) | A]});
-mk_f([{atom, H}          | T], {St, A})   -> mk_f(T, {St, [atom_to_list(H) | A]});
-mk_f([{int, I}           | T], {St, A})   -> mk_f(T, {St, [integer_to_list(I) | A]});
-mk_f([{float, {F, _OrigStr}} | T], {St, A}) -> mk_f(T, {St, [float_to_list(F) | A]});
-mk_f([{formula, S}       | T], {St, A})   -> mk_f(T, {St, [S | A]});
-mk_f([{str, S}           | T], {St, A})   -> mk_f(T, {St, [$", S, $" | A]});
-mk_f([{recalc, S}        | T], {_St, A})  -> mk_f(T, {dirty, [S | A]});
-mk_f([{name, "INDIRECT"} | T], {_St, A})  -> mk_f(T, {dirty, ["INDIRECT" | A]});
-mk_f([{name, "SUM"}      | T], {_St, A})  -> mk_f(T, {dirty, ["SUM" | A]});
-mk_f([{name, "CELL"}     | T], {_St, A})  -> mk_f(T, {dirty, ["CELL" | A]});
-mk_f([{name, S}          | T], {St, A})   -> mk_f(T, {St, [S | A]});
-mk_f([{H}                | T], {St, A})   -> mk_f(T, {St, [atom_to_list(H) | A]}).
+mk_f([{cellref, _, #cellref{path="/", text=Text}} | T], {St, A}) -> 
+    mk_f(T, {St, ["/" ++ Text | A]});
+
+mk_f([{cellref, _, C} | T], {St, A}) ->
+    mk_f(T, {St, [C#cellref.text | A]});
+
+mk_f([{rangeref, _, R} | T], {St, A}) ->
+    mk_f(T, {St, [R#rangeref.text | A]});
+
+mk_f([{namedexpr, _, N} | T], {St, A}) ->
+    mk_f(T, {St, [N#namedexpr.path ++ N#namedexpr.text | A]});
+
+mk_f([{bool, _, H} | T], {St, A}) ->
+    mk_f(T, {St, [atom_to_list(H) | A]});
+
+mk_f([{atom, _, H} | T], {St, A}) ->
+    mk_f(T, {St, [atom_to_list(H) | A]});
+
+mk_f([{int, _, I} | T], {St, A}) ->
+    mk_f(T, {St, [integer_to_list(I) | A]});
+
+mk_f([{float, _, {F, _OrigStr}} | T], {St, A}) ->
+    mk_f(T, {St, [float_to_list(F) | A]});
+
+mk_f([{formula, _, S} | T], {St, A}) ->
+    mk_f(T, {St, [S | A]});
+
+mk_f([{str, _, S} | T], {St, A}) ->
+    mk_f(T, {St, [$", S, $" | A]});
+
+mk_f([{recalc, _, S} | T], {_St, A}) ->
+    mk_f(T, {dirty, [S | A]});
+
+mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
+    mk_f(T, {dirty, ["INDIRECT" | A]});
+
+mk_f([{name, _, "SUM"} | T], {_St, A}) ->
+    mk_f(T, {dirty, ["SUM" | A]});
+
+mk_f([{name, _, "CELL"} | T], {_St, A}) ->
+    mk_f(T, {dirty, ["CELL" | A]});
+
+mk_f([{name, _, S} | T], {St, A}) ->
+    mk_f(T, {St, [S | A]});
+
+mk_f([{H, _} | T], {St, A}) ->
+    mk_f(T, {St, [atom_to_list(H) | A]}).
 
 parse_cell(Cell) ->
     {XDollar, Rest} = is_fixed(Cell),
@@ -2646,7 +2688,7 @@ offset_with_ranges(Toks, Cell, From, Offset) ->
 
 offset_with_ranges1([], _Cell, _From, _Offset, Acc) ->
     lists:reverse(Acc);
-offset_with_ranges1([rangeref, _, #rangeref{path = Path, text = Text} = H | T],
+offset_with_ranges1([{rangeref, LineNo, #rangeref{path = Path, text = Text}=H} | T],
                     Cell, #refX{path = FromPath} = From, Offset, Acc) ->
     #refX{path = CPath} = Cell,
     PathCompare = muin_util:walk_path(CPath, Path),
@@ -2665,9 +2707,9 @@ offset_with_ranges1([rangeref, _, #rangeref{path = Path, text = Text} = H | T],
                                              From, Offset);
                   _        -> Text
               end,
-    NewAcc = H#rangeref{text = NewText},
+    NewAcc = {rangeref, LineNo, H#rangeref{text = NewText}},
     offset_with_ranges1(T, Cell, From, Offset, [NewAcc | Acc]);
-offset_with_ranges1([cellref, _, #cellref{path = Path, text = Text} = H | T],
+offset_with_ranges1([{cellref, LineNo, #cellref{path = Path, text = Text} = H} | T],
                     Cell, #refX{path = FromPath} = From, {XO, YO}, Acc) ->
     #refX{path = CPath} = Cell,
     Prefix = case muin_util:just_path(Text) of
@@ -2681,7 +2723,7 @@ offset_with_ranges1([cellref, _, #cellref{path = Path, text = Text} = H | T],
             FromPath -> make_cell(XDollar, X, XO, YDollar, Y, YO);
             _        -> Text
         end,
-    NewAcc = H#cellref{text = Prefix ++ NewCell},    
+    NewAcc = {cellref, LineNo, H#cellref{text = Prefix ++ NewCell}},    
     offset_with_ranges1(T, Cell, From, {XO, YO}, [NewAcc | Acc]);
 offset_with_ranges1([H | T], Cell, From, Offset, Acc) ->
     offset_with_ranges1(T, Cell, From, Offset, [H | Acc]).
@@ -2843,8 +2885,8 @@ d_n_d_c_n_p_offset(Toks, XOffset, YOffset) ->
     d_n_d_c_n_p_offset1(Toks, XOffset, YOffset, []).
 
 d_n_d_c_n_p_offset1([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
-d_n_d_c_n_p_offset1([#cellref{text = Text}
-         = H | T], XOffset, YOffset, Acc) ->
+d_n_d_c_n_p_offset1([{cellref, LineNo, #cellref{text = Text}= H} | T], 
+                    XOffset, YOffset, Acc) ->
     Cell = muin_util:just_ref(Text),
     Prefix = case muin_util:just_path(Text) of
                  "/"   -> "";
@@ -2852,9 +2894,9 @@ d_n_d_c_n_p_offset1([#cellref{text = Text}
              end,
     {XDollar, X, YDollar, Y} = parse_cell(Cell),
     NewCell = drag_n_drop_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
-    NewRef = H#cellref{text = Prefix ++ NewCell},
+    NewRef = {cellref, LineNo, H#cellref{text = Prefix ++ NewCell}},
     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewRef | Acc]);
-d_n_d_c_n_p_offset1([#rangeref{text = Text} = H | T], XOffset, YOffset, Acc) ->
+d_n_d_c_n_p_offset1([{rangeref, LineNo, #rangeref{text = Text}=H} | T], XOffset, YOffset, Acc) ->
     Range = muin_util:just_ref(Text),
     Pf = case muin_util:just_path(Text) of
              "/"   -> "";
@@ -2871,7 +2913,7 @@ d_n_d_c_n_p_offset1([#rangeref{text = Text} = H | T], XOffset, YOffset, Acc) ->
                   NC1 =/= "#REF!" andalso NC2 =/= "#REF!" ->
                       Pf ++ NC1 ++ ":" ++ NC2
               end,
-    NewR = H#rangeref{text = NewText},
+    NewR = {rangeref, LineNo, H#rangeref{text = NewText}},
     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewR | Acc]);
 d_n_d_c_n_p_offset1([H | T], XOffset, YOffset, Acc) ->
     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [H | Acc]).
@@ -2986,7 +3028,7 @@ deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
     make_formula(NewToks).
 
 deref1(_Child, [], _DeRefX, Acc) -> lists:reverse(Acc);
-deref1(Child, [rangeref, _, #rangeref{text = Text} | T], DeRefX, Acc) ->
+deref1(Child, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Acc) ->
     % only deref the range if it is completely obliterated by the deletion
     #refX{obj = Obj1} = DeRefX,
     Range = muin_util:just_ref(Text),
@@ -3003,7 +3045,8 @@ deref1(Child, [rangeref, _, #rangeref{text = Text} | T], DeRefX, Acc) ->
                  %                   Prefix ++ O
              end,
     deref1(Child, T, DeRefX, [NewTok | Acc]);
-deref1(Child, [#cellref{path = Path, text = Text} = H | T], DeRefX, Acc) ->
+deref1(Child, [{cellref, _, #cellref{path = Path, text = Text}}=H | T], 
+       DeRefX, Acc) ->
     NewTok = deref2(Child, H, Text, Path, DeRefX),
     deref1(Child, T, DeRefX, [NewTok | Acc]);
 deref1(Child, [H | T], DeRefX, Acc) ->
