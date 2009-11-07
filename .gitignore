@@ -33,7 +33,6 @@ lib/hypernumbers*/tmp
 
 ## Generated lexers/parsers
 lib/gettext/priv/
-lib/formula_engine*/priv/*_lexer.xrl
 lib/formula_engine*/src/*_lexer.erl
 lib/formula_engine*/src/*_parser.erl
 lib/formula_engine*/src/superlex.erl
