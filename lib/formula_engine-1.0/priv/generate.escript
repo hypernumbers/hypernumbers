@@ -70,10 +70,9 @@ gen_frontend(Lang, Force) ->
     Command = "generate_lexer.rb",
     case Force or needs_update([Source, Template, Command], Dest) of
         true ->
-            os:cmd(io_lib:format("./~s ~s", [Command, Lang])),
+            os:cmd(io_lib:format("ruby ~s ~s", [Command, Lang])),
             Name = [Lang, "_lexer"],
-            gen_lex(Name, true),
-            ok = file:delete([Name,".xrl"]);
+            gen_lex(Name, true);
         false ->
             ok
     end.
