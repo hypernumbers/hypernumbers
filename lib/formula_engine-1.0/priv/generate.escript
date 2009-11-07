@@ -72,8 +72,8 @@ gen_frontend(Lang, Force) ->
         true ->
             os:cmd(io_lib:format("ruby ~s ~s", [Command, Lang])),
             Name = [Lang, "_lexer"],
-            gen_lex(Name, true),
-            ok = file:delete([Name,".xrl"]);
+            gen_lex(Name, true);
+%            ok = file:delete([Name,".xrl"]);
         false ->
             ok
     end.

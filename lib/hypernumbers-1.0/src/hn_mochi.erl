@@ -76,7 +76,7 @@ do_req(Req) ->
                    throw(ok)
                    
            end,
-    
+
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),    
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
@@ -99,7 +99,7 @@ do_req(Req) ->
     ok.
 
 handle_req(Method, Req, Ref, Vars, User) ->
-
+    
     Type = element(1, Ref#refX.obj),
     case Method of
         

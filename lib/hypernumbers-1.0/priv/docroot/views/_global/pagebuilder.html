@@ -28,7 +28,7 @@
         <input type="text" id="viewname" value="Enter Name" />
         <div id='views'>
           <strong class="global">Global Views</strong>
-          <ul class="global" id="globalview"></ul>
+          <ul class="global" id="globalviews"></ul>
           <strong>Your Views</strong>
           <ul id="userviews"></ul>
         </div>
@@ -76,9 +76,29 @@
       
       <div class="panel" id="sheetpanel">
         
-        <div style="height:200px;position:relative;" 
-             class="subpanel">
+          <div id="pagemenu">
+            <div id="pagebar">
+              <div id="pageroot" class="trail">$txt:{My Spreadsheets}$</div>
+            </div>
+            <div id="pagedialog">
+              <div id="pageurl">
+                URL: <input type="text" />
+              </div>
+              <div id="pdpanes">
+                <ul id="sibiling_pane"></ul>
+                <ul id="children_pane"></ul>
+              </div>
+              <div id="pdpanel">
+                <input id="pdclose" type="submit" value="Close" />
+                <input id="pdvisit" type="submit" class="action" value="Visit" />
+              </div>
+            </div>
+          </div>
           
+
+        <div style="height:230px;position:relative;" 
+             class="subpanel">
+                    
           <table cellspacing="0" cellpadding="0" id="sheetwrapper">
             <tr height="20px">
               <td id="corner"></td>
@@ -197,6 +217,7 @@
   </body>
 
   <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
+  <script src="/hypernumbers/jquery-ext.js"></script>
   <script src="/hypernumbers/json2.js"></script>
   <script src="/hypernumbers/hn.js"></script>
   <script src="/hypernumbers/hn.util.js"></script>
@@ -206,6 +227,7 @@
   <script src="/hypernumbers/hn.ui.js"></script>
   <script src="/hypernumbers/hn.uiactions.js"></script>
   <script src="/hypernumbers/hn.sheet.js"></script>
+  <script src="/hypernumbers/hn.pagemenu.js"></script>
   <script src="/hypernumbers/hn.layout.js"></script>
   <script src="/hypernumbers/hn.layout.panes.js"></script>
   <script src="/hypernumbers/hn.layout.pane.js"></script>
@@ -213,6 +235,7 @@
 
   <script src="/hypernumbers/hn.callbacks.js"></script>
 
+  <script src="/guibuilder/hn.render.js"></script>
   <script src="/guibuilder/hn.builder.js"></script>
 
 </html>
