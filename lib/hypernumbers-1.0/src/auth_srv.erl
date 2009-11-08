@@ -10,6 +10,7 @@
 %%% @end
 %%% Created :  7 Oct 2009 by gordonguthrie <>
 %%%-------------------------------------------------------------------
+
 -module(auth_srv).
 
 -behaviour(gen_server).

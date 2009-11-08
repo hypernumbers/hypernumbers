@@ -15,8 +15,8 @@ body {
 }
 
 #header .header { 
-    margin: 8px;
-    float:left;
+    margin : 16px;
+    float  : left;
 }
 
 #outer {
@@ -34,33 +34,25 @@ body {
 
 #menu {
     padding  : 0px;
-    margin   : 0px 10px 10px 0px;
+    margin   : 0px 3px 10px 0px;
     position : absolute;
     bottom   : 0px;
     right    : 0px;
 }
 
-#menu ul { 
-    margin   : 0px;
-    padding  : 0px;
-    overflow : auto;
+#menu div {
+    float       : left; 
+    margin-left : 5px;
 }
 
-#menu ul li {
-    display      : block;
-    float        : left; 
-    margin-left: 5px;
-}
-
-#menu ul li a {
-    display     : block;
-    padding: 5px;
+#menu div a { 
+    padding     : 5px;
     font-size   : 12px;
     color       : #fff;
     font-weight : bold;
 }
 
-#menu ul li a:hover {
+#menu div a:hover {
     background      : #fff;
     color           : #4A4A24;
     text-decoration : none;
@@ -76,15 +68,35 @@ body {
 }
 
 #primarycontent {
+    padding: 0px 10px 10px 10px;
     min-height : 100px;
-    width      : 480px; 
+    width      : 460px; 
     float      : left;
+}
+
+#primarycontent p { 
+    margin-top: 0px;
 }
 
 #secondarycontent {
     min-height : 100px;
     width      : 200px;
     float      : right;
+    margin-bottom: 10px;
+}
+
+#secondarycontent .header {
+    font       : 16px Arial,"Helvetica Neue", sans-serif;    
+    margin-bottom: 5px;
+}
+
+#news .rowheader { 
+    color: #999;
+    font-style:italic;
+}
+
+#news .row {
+    margin-bottom:10px;
 }
 
 #footer {
@@ -92,6 +104,10 @@ body {
     position   : relative;
     background : #EEEEEE;
     color      : #A8A88D;
+}
+
+#footer p {
+    margin : 0px;
 }
 
 #ventris #footer a

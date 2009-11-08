@@ -19,7 +19,7 @@
       <div id="contentwrapper">
         
 	    <div id="primarycontent">
-
+          <div data-binding-from="/C9" class="hn" data-type="text"></div>
         </div>
         
 	    <div id="secondarycontent">
