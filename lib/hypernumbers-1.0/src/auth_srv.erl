@@ -1,12 +1,166 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers Ltd
-%%% @doc       this gen server handles:
-%%%            * valid paths
-%%%            * security
-%%%            * default pages
-%%%            * generation of sequential urls
+%%% @doc
+%%% 
+%%% == Overview ==
+%%% A gen server for managing how pages are displayed and to whom.   
 %%%
+%%% The auth_srv holds a variety of information about how URL's are
+%%% handled in the hypernumbers server:
+%%% <ul>
+%%% <li>valid paths</li>
+%%% <li>security</li>
+%%% <li>default pages</li>
+%%% <li>pages that can be viewed</li>
+%%% <li>(generation of sequential urls)</li>
+%%% </ul>
+%%% Some of these controls are stored against users and groups and some are not.
+%%% Each will be discussed separately here. 
+%%%
+%%% == Users And Groups ==
+%%%
+%%% Each user of the system can belong to a number of groups. There
+%%% are 2 special users and groups:
+%%% <ul>
+%%% <li>*</li>
+%%% <li>anonymous (the atom anonymous not the string anonymous)</li>
+%%% </ul>
+%%% The user '*' matches all users and user <code>anonymous</code> matches
+%%% unlogged in users only. Ditto for groups.
+%%% Because permissions, pages views etc are keyed against users
+%%% <em>and</em> groups there have to be rules about how the controls
+%%% compose when many of them pertain. These will be discussed in the
+%%% various sub-sections discussing the particular controls.
+%%% == Paths ==
+%%% === Overview ===
+%%% Paths form the backbone of the system. A path is simply that part
+%%% of the URL to the right of the port and terminating with the final
+%%% slash:<br /><br />
+%%% <code>http://example.com:1234/this/is/the/path/but?this=is not</code><br /><br />
+%%% has a path of <code>["this", "is", "the", "path"]</code><br />
+%%% === 'Normal' Paths ===
+%%% A 'normal' path can contain standard latin letters and numbers only.
+%%%
+%%% Other characters are reserved for use in programmatic path segments
+%%% which are delimited by square brackets:<br />
+%%% <code>http://example.com:1234/this/is/a/[programmatic segement]/</code><br />
+%%% === Programmatic Paths ===
+%%% Only 2 programatic paths are implemented so far:
+%%% <ul>
+%%% <li>"[*]"  - the parsimonious wild card - matches a single
+%%% path segement</li>
+%%% <li>"[**]" - the multiple wild card - matches multiple path segments</li>
+%%% </ul>
+%%% The multiple wild card will only match the smallest segment if it is used
+%%% interstitially. Consider the following match segment:<br />
+%%% <code>["some", "**", "wild"]</code><br />
+%%% were the following path to be matched against it:<br />
+%%% <code>["some", "path", "to", "a", "wild"]</code><br />
+%%% would match, but:<br />
+%%% <code>["some", "path", "to", "a", "wild", "or", "another", "wild"]</code><br />
+%%% would not.
+%%% == Cascade - General Principles ==
+%%% Controls can cascade down path trees, or between users and groups, and the
+%%% general principle of cascade is that in the event of conflict the more
+%%% specific one wins:
+%%% <ul>
+%%% <li>a user control beats a group control</li>
+%%% <li>all user/group controls on a path are exhausted before looking for
+%%% a less specific path</li>
+%%% <li>a fully specified path beats one with a parsimonious wild card</li>
+%%% <li>a parsimonious wild card beats a multiple wild card</li>
+%%% <li>a wild card further down the path tree beats one higher up
+%%% (even if the lower is multiple and the higher is a singe wild card)</li>
+%%% </ul>
+%%% == Controls ==
+%%% === Introduction ===
+%%% There are 3 controls implemented:
+%%% <ul>
+%%% <li><code>acl</code>'s - access control lists</li>
+%%% <li><code>default views</code> - specify the default view for a path</li>
+%%% <li><code>views</code> - determines what views are served to whom</li>
+%%% </ul>
+%%% === ACL's ===
+%%% Access control lists specify what resources a user can get access to.
+%%% They grant permissions. The current permission set is:
+%%% <ul>
+%%% <li><code>read</code></li>
+%%% <li><code>write</code></li>
+%%% </ul>
+%%% The permissions set will be extended later.
+%%% A permissions set is bound to a user or group and a path. Permissions
+%%% are <strong>additive</strong>. Consider the following set of permssions
+%%% on a particular path:<br />
+%%% <code>{user, "Alice"}, [read]<br />
+%%% {group, "restauranteuses"}, [read, write]<br /></code>
+%%% A user with the profile <code>{Alice, ["cryptographer", "admin"]</code>
+%%% would have permissions of <code>[read]</code> whereas a user with the
+%%% profile of <code>{Alice, ["restauranteuses", "admin"]</code> would
+%%% have permissions of <code>[read, write]</code>. A user of profile
+%%% <code>{Bobbie, ["restauranteuses", "admin"]</code> would have permissions
+%%% of <code>write</code>.
+%%% === Defaults Views ===
+%%% Defaults views are bound to particular paths and determine what
+%%% view is served by the ungarnished url (ie one that terminated in a '/').
+%%% The default view is identical for all users and groups. If there is
+%%% no default view for a particular path the spreadsheet view
+%%% <code>_global/spreadsheet</code> is served.
+%%% Default views cascade down from wild cards. Consider the following paths:<br />
+%%% <code>["a", "[**]"]</code><br />
+%%% <code>["a", "b", "[**]"]</code><br />
+%%% <code>["a", "b", "[*]"]</code><br />
+%%% <code>["a", "b", "c"]</code><br />
+%%% If there was no default view at <code>["a", "b", "c"]</code> then
+%%% the default at <code>["a", "b", "[*]"]</code> would be used. If none
+%%% there then the default at <code>["a", "b", "[**]"]</code>, and if not,
+%%% then that at <code>["a", "[**]"]</code>
+%%% Default views can be overridded by the override view specified in the
+%%% view control.
+%%% === Views ===
+%%% Views are the list of all possible files that can be served to a user
+%%% on a particular path. The files are specified relative to a root
+%%% and can be of the form <code>_global/<em>filename</em></code> or
+%%% <code><em>username</em>/<em>filename</em></code>
+%%% across the piece...
+%%% Views are bound to a <code>user</code> or a <code>group</code> and
+%%% contain 2 parts:
+%%% <ul>
+%%% <li>an overriding view</li>
+%%% <li>a list of views</li>
+%%% </ul>
+%%% There are two special views:
+%%% <ul>
+%%% <li>* - this matches all views defined in the user's view directory
+%%% ie views of the form <code><em>username</em>/<em>viewname</em></code></li>
+%%% <li>** - this matches all views in the <code>_global</code> directory
+%%% and <strong>all</strong> user views</li>
+%%% </ul>
+%%% A user who is part of many groups can therefore have more than
+%%% one 'overriding view' on a particular page. The overrides resolve
+%%% in the following order:
+%%% <ul>
+%%% <li>the override bound to the username takes prority</li>
+%%% <li>only if no overrideis bound to a username do the
+%%% per group overrides come into play. If more than one group
+%%% matches then <em>an</em> override from them will be applied
+%%% - which one is undefined</li>
+%%% </ul>
+%%% This per user/group override takes priority over to the main
+%%% default view and allows it to be overriden on a per case basis.
+%%% Views cascade. Consider the following paths and the views bound to
+%%% them (they are associated with the same users):<br />
+%%% <code>{[], ["first", "second"]}</code> bound to
+%%% <code>["a", "[**]"]</code><br />
+%%% <code>{[]. ["third"]}</code> bound to <code>["a", "b", "c"]</code><br />
+%%% The views that the user can see at <code>["a", "b", "c"]</code> is
+%%% <code>["first", "second", "third"]</code> and the default view
+%%% is undefined.
+%%% Override views cascade in a similar manner - user to group at the same
+%%% path and then up to the next less specific path, through the users and
+%%% groups there, etc, etc.
+%%% @todo extend paths from latin to unicode paths
+%%% @todo implement path restrictions - and make sure they occur
 %%% @end
 %%% Created :  7 Oct 2009 by gordonguthrie <>
 %%%-------------------------------------------------------------------
@@ -41,7 +195,6 @@
         ]).
 
 -export([clear_all_perms_DEBUG/1]).
-
 
 -compile(export_all).
 
@@ -584,6 +737,58 @@ debug() ->
 %%%===================================================================
 %%% EUnit Tests
 %%%===================================================================
+%% the root is a special case - check it carefully
+testX0() ->
+    P = [],
+    Ret = check_get_page1(gb_trees:empty(), {"gordon", ["Group"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '404'}).
+
+%% check the empty path
+testX0a() ->
+    P = [],
+    Ret = check_get_page1(gb_trees:empty(), {"gordon", ["Group"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '404'}).
+
+testX1() ->
+    P = [],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
+                     [read, write], "index", ["index"]),
+    Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+testX1a() ->
+    P = [],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
+                     [read, write], "index", ["index"]),
+    Ret = check_get_page1(Tree, {"User", "Fail"}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+testX1aa() ->
+    P = [],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
+                     [read, write], "index", ["index"]),
+    Ret = check_get_page1(Tree, {"User", "Fail"}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
+
+testX() ->
+    P1 = [],
+    P2 = ["a", "b", "c"],
+    P3 = ["[**]"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1,
+                     [read, write], "index", ["index"]),
+    Tree2 = add_perm1(Tree, [{user, "Bob"}, {group, "Group"}], P2,
+                     [read, write], "index", ["index"]),
+    Tree3= add_perm1(Tree2, [{user, "Bobby"}, {group, "Gentry"}], P3,
+                     [read, write], "index", ["index"]),
+    Ret = check_get_page1(Tree3, {"User", "Fail"}, P1),
+    io:format("Tree3 is ~p~n", [Tree3]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "index"}).
 
 %% Pre-basic test - set no permissions but test against them
 test0() ->
@@ -1123,60 +1328,10 @@ test45() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "index"}).
 
-%% the root is a special case - check it carefully
-testX0() ->
-    P = [],
-    Ret = check_get_page1(gb_trees:empty(), {"gordon", ["Group"]}, P),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {return, '404'}).
+%%
+%% regression tests
 
-%% check the empty path
-testX0a() ->
-    P = [],
-    Ret = check_get_page1(gb_trees:empty(), {"gordon", ["Group"]}, P),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {return, '404'}).
-
-testX1() ->
-    P = [],
-    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
-                     [read, write], "index", ["index"]),
-    Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "index"}).
-
-testX1a() ->
-    P = [],
-    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
-                     [read, write], "index", ["index"]),
-    Ret = check_get_page1(Tree, {"User", "Fail"}, P),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "index"}).
-
-testX1aa() ->
-    P = [],
-    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
-                     [read, write], "index", ["index"]),
-    Ret = check_get_page1(Tree, {"User", "Fail"}, P),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "index"}).
-
-testX() ->
-    P1 = [],
-    P2 = ["a", "b", "c"],
-    P3 = ["[**]"],
-    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1,
-                     [read, write], "index", ["index"]),
-    Tree2 = add_perm1(Tree, [{user, "Bob"}, {group, "Group"}], P2,
-                     [read, write], "index", ["index"]),
-    Tree3= add_perm1(Tree2, [{user, "Bobby"}, {group, "Gentry"}], P3,
-                     [read, write], "index", ["index"]),
-    Ret = check_get_page1(Tree3, {"User", "Fail"}, P1),
-    io:format("Tree3 is ~p~n", [Tree3]),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "index"}).
-
-testXY() ->
+test1001() ->
     
     auth_srv:add_perm("http://127.0.0.1:9000",
                       [{user, "*"}, {group, "*"}], ["[**]"],[read, write],
@@ -1190,7 +1345,7 @@ testXY() ->
                                 {"dale", []}, ["u", "dale", "test"]).
 
 
-testXZ() ->
+test1002() ->
 
     auth_srv:clear_all_perms_DEBUG("http://127.0.0.1:9000"),
 
@@ -1204,6 +1359,14 @@ testXZ() ->
 
 unit_test_() -> 
     [
+     % tests for the root page []
+     ?_assert(testX0()),
+     ?_assert(testX0a()),
+     ?_assert(testX1()),
+     ?_assert(testX1a()),
+     ?_assert(testX1aa()),
+     ?_assert(testX()),
+     % tests for other pages
      ?_assert(test0()),
      ?_assert(test1()),
      ?_assert(test1a()),
@@ -1252,11 +1415,5 @@ unit_test_() ->
      ?_assert(test42()),
      ?_assert(test43()),
      ?_assert(test44()),
-     ?_assert(test45()),
-     ?_assert(testX0()),
-     ?_assert(testX0a()),
-     ?_assert(testX1()),
-     ?_assert(testX1a()),
-     ?_assert(testX1aa()),
-     ?_assert(testX())
+     ?_assert(test45())
   ].
