@@ -16,6 +16,7 @@ init_per_suite(Config) ->
     [Init(S) || S <- sites()], 
     testsys:restore(~p, ~p),
     actions(),
+    timer:sleep(2000),
     [hn_db_api:wait_for_dirty(S) || S <- sites()], 
     Config.
 
