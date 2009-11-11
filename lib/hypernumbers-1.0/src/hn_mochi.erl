@@ -80,7 +80,7 @@ do_req(Req) ->
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),    
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
-
+    
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->

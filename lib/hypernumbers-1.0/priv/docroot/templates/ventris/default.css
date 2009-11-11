@@ -5,18 +5,24 @@ body {
     font       : 12px Arial,"Helvetica Neue", sans-serif;
 }
 
+.clear { 
+    overflow   : auto; 
+    position   : relative;     
+    background : #000;
+}
+
 #header {
     font       : bold 22px Arial,"Helvetica Neue", sans-serif;
     color      : #FFF;
-    height     : 60px;
-    background : #000;
-    overflow   : auto;
-    position   : relative;
 }
 
 #header .header { 
-    margin : 16px;
+    margin : 6px 6px 0px 6px;
     float  : left;
+}
+
+#header p {
+    margin: 0px; 
 }
 
 #outer {
@@ -110,7 +116,20 @@ body {
     margin : 0px;
 }
 
-#ventris #footer a
-{
+#ventris #footer a {
     color: #8C8C73;
+}
+
+form.hn { 
+    margin: 5px;
+}
+
+label { 
+    display: block;
+    margin: 10px 0px;
+}
+
+label span { 
+    font-weight: bold;
+    display: block;
 }

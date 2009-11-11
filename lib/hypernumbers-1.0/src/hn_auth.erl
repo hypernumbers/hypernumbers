@@ -34,6 +34,10 @@ default_permissions() ->
      { [{group, "admin"}], ["team"], [read, write],
        "_global/team", ["_global/team" | hn_config:get(default_pages) ] },
 
+     % Sign Up Page
+     { [{user, "anonymous"}], ["application"], [write, read], "_global/login", ["_global/login"] },
+     { [{group, "admin"}], ["application"], [read, write],
+       "_global/spreadsheet", hn_config:get(default_pages) },
      
      % Login Page
      { [{user, "*"}], ["_user", "login"], [read,write],

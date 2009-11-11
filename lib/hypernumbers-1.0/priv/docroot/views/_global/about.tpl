@@ -7,14 +7,14 @@
     
     <div id="inner">
       
-	  <div id="header">        
+	  <div class="clear"><div id="header">        
 	    <div data-binding-from="/C2" class="hn header" data-type="text"></div>
 	    
 	    <div id="menu">
 	      <div data-binding-from="/B6:G6" class="hn" data-type="text"></div>
         </div>
         
-      </div>
+      </div></div>
 	  
       <div id="contentwrapper">
         
