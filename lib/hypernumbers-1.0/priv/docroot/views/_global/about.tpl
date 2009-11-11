@@ -28,7 +28,7 @@
                class="hn header" data-type="text"></div>
 
           <div id="news">
-            <div data-binding-from="/B15:D13" class="hn" data-type="text">
+            <div data-binding-from="/B-1:D-3" class="hn" data-type="text">
               <div class="row">
                 <div class="rowheader">
                   <span data-offset="1"></span>, <span data-offset="2"></span>

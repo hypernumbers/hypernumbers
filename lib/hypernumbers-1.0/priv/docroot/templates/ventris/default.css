@@ -133,3 +133,8 @@ label span {
     font-weight: bold;
     display: block;
 }
+
+textarea {
+    width:80%;
+    height:100px;
+}
