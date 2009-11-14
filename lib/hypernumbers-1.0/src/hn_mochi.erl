@@ -80,7 +80,7 @@ do_req(Req) ->
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),    
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
-    
+
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->
@@ -756,6 +756,9 @@ content_type(Req) ->
             end
     end.
 
+get_auth(_User, _Groups, 'GET', _Ref, [{"updates", _Time}, {"path", _P}]) ->
+    % TODO: apply permissions to updates
+    true;
 get_auth(User, Groups, 'GET', #refX{site = Site, path = Path}, []) ->
     auth_srv:check_get_page(Site, {User, Groups}, Path);
 get_auth(User, Groups, 'GET', #refX{site = Site, path = Path},
