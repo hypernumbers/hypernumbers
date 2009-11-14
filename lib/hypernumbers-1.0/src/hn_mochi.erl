@@ -98,12 +98,13 @@ do_req(Req) ->
     end,
     ok.
 
+
 handle_req(Method, Req, Ref, Vars, User) ->
-    
-    Type = element(1, Ref#refX.obj),
+
+    Type = element(1, Ref#refX.obj), 
     case Method of
-        
-        'GET'  -> 
+         
+        'GET'  ->
             CType = content_type(Req),
             mochilog:log(Req, Ref, hn_users:name(User), undefined),
             iget(Req, Ref, Type, Vars, User, CType);

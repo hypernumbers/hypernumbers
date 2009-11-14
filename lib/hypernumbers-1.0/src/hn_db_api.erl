@@ -355,7 +355,7 @@ resync(_Site, #version{page = _Page, version = _Vsn}) ->
 create_db(Site)->
     % Seems sensible to keep this restricted
     % to disc_copies for now
-    Storage = disc_copies,
+    Storage = disc_only_copies,
     
     Tables = [
               {dirty_cell,            set},

@@ -15,7 +15,7 @@ start(_Type, _Args) ->
         _ -> 
             ok
     end,
-        
+
     {ok, Pid}     = hypernumbers_sup:start_link(),
     {ok,[[Path]]} = init:get_argument(hn_config),	
     hn_config:read_conf(Path), 

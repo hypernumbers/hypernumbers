@@ -22,17 +22,7 @@
   <script src="/hypernumbers/hn.util.js"></script>
   <script src="/hypernumbers/hn.data.js"></script>
 
-  <script src="/hypernumbers/hn.data.js"></script>
-  <script src="/hypernumbers/hn.ui.js"></script>
-  <script src="/hypernumbers/hn.uiactions.js"></script>
-  <script src="/hypernumbers/hn.sheet.js"></script>
-  <script src="/hypernumbers/hn.layout.js"></script>
-  <script src="/hypernumbers/hn.layout.panes.js"></script>
-  <script src="/hypernumbers/hn.layout.pane.js"></script>
-  <script src="/hypernumbers/hn.selection.js"></script>
-
-  <script src="/hypernumbers/hn.callbacks.js"></script>
-
   <script src="/guibuilder/hn.render.js"></script>
+  <script src="/guibuilder/hn.renderboot.js"></script>
 
 </html>
