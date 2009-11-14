@@ -45,7 +45,6 @@ excel() ->
 excel(TName) ->
     WC = filename:absname(?TEST_DIR)++"/excel_import_"++TName++"*",
     Tests = filelib:wildcard(WC),
-    io:format("~p ~p",[WC, Tests]),
     Opts = [ {dir, Tests} ],
     do_test(Opts).
 excel(T, S) ->
