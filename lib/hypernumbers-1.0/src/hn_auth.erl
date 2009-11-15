@@ -7,13 +7,13 @@
 % Default permissions for hypernumbers.com (use the same for dev)
 init_permissions(Host) ->
     
-    [ auth_srv:add_perm(Host, Users, Path, Perms, Default, Pages)
+    [ auth_srv:add_controls(Host, Users, Path, Perms, Default, Pages)
       || {Users, Path, Perms, Default, Pages} <- default_permissions() ],
 
     Views = hn_config:get(default_pages),
     
-    auth_srv:add_views(Host, [{group, "admin"}], [], Views),
-    auth_srv:add_views(Host, [{group, "admin"}], ["[**]"], Views),
+    auth_srv:add_default(Host, [], Views),
+    auth_srv:add_default(Host, ["[**]"], Views),
     
     ok.
 

@@ -167,14 +167,14 @@ create_user_exec(Site, Rec) ->
 
             %% Add permissions
             
-            auth_srv:add_perm(Site, [{user, name(Rec)}],
-                              ["u", name(Rec)], [read, write],
-                              "_global/userhome", ["_global/userhome"]),
+            auth_srv:add_controls(Site, [{user, name(Rec)}],
+                                  ["u", name(Rec)], [read, write],
+                                  "_global/userhome", ["_global/userhome"]),
             
-            auth_srv:add_perm(Site, [{user, name(Rec)}],
-                              ["u", name(Rec), "[**]"], [read, write],
-                              "_global/spreadsheet",
-                              hn_config:get(default_pages)),
+            auth_srv:add_controls(Site, [{user, name(Rec)}],
+                                  ["u", name(Rec), "[**]"], [read, write],
+                                  "_global/spreadsheet",
+                                  hn_config:get(default_pages)),
             ok
     end.
 
@@ -187,7 +187,6 @@ unix_timestamp(Now) ->
     calendar:datetime_to_gregorian_seconds( 
       calendar:now_to_universal_time(Now)) -
         calendar:datetime_to_gregorian_seconds({{1970,1,1},{0,0,0}}).
-
 
 %User   = {user,"username"},
 %Group  = {group,"groupname", [Users]}
