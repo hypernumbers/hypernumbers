@@ -1,6 +1,12 @@
--record(control,
+-record(views,
         {
-          def_view = "_global/spreadsheet",
-          views    = [],
-          perms    = []
+          override = [],
+          views    = []
+         }).
+
+-record(carry,
+        {
+          acl     = [],
+          default = [],
+          views   = []
          }).
