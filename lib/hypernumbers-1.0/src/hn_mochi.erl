@@ -746,7 +746,7 @@ cache(Source, CachedNm, Generator) ->
 content_type(Req) ->
     {value, {'Accept', Accept}} =
         mochiweb_headers:lookup('Accept', Req:get(headers)),
-
+    io:format("in hn_mochi_content_type Accept is ~p~n", [Accept]),
     case re:run(Accept, "application/json") of
         {match, _} -> json;
         nomatch    ->

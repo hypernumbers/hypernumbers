@@ -124,8 +124,6 @@ init_permissions() ->
       || Host <- hn_util:get_hosts(hn_config:get(hosts)) ],
     ok.
 
-%% @spec write_permissions() -> ok
-%% @doc  Set the default permissions on each domain
 dirty_tables() ->
     [ dirty_cell,
       dirty_notify_in,

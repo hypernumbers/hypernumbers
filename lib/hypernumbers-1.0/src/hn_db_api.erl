@@ -517,7 +517,7 @@ handle_dirty_cell(Site, Rec) ->
     ok = tell_front_end("handle dirty").
 
 
-%% @spec handle_dirty(Record) -> ok
+%% @spec handle_dirty(Site, Record) -> ok
 %% Record = #dirty_notify_in{}
 %% @doc handles a dirty .
 %% The reference must be to a cell
@@ -786,7 +786,7 @@ notify_back_create(Site, Record)
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("notify back create").
 
-%% @spec write_attributes([{RefX :: #refX{}, List}]) -> ok  
+%% @spec write_attributes(RefX :: #refX{}, List) -> ok  
 %% List = [{Key, Value}]
 %% Key = atom()
 %% Value = term()

@@ -38,26 +38,26 @@
 %% External API
 %%
 
-%% @spec write_def(TemplateName,IsDynamic,RootURL,GUI) -> {ok,ok} | {error,Error}
-%% @doc takes an incoming template and writes it to the database
+% %% @spec write_def(TemplateName,IsDynamic,RootURL,GUI) -> {ok,ok} | {error,Error}
+% %% @doc takes an incoming template and writes it to the database
 %% write_def(TemplateName,RootURL,GUI,Form) ->
 %%     hn_db:write_template(TemplateName,RootURL,GUI,Form).
 
-%% @spec get_next(Ref,TemplateName, UserName) -> NewName
-%% @doc gets the next valid page name
+% %% @spec get_next(Ref,TemplateName, UserName) -> NewName
+% %% @doc gets the next valid page name
 %% get_next(Ref,TemplateName,UserName) ->
 %%     {ok,Template}=hn_db:read_template(TemplateName),
 %%     {template,TemplateName,TemplatePath,_Gui,_Form}=Template,
 %%     Return=new_path(Ref,TemplatePath,UserName),
 %%     Return.
 
-%% @spec get_next2(Ref,Path,User) -> NewName
-%% @doc gets the next valid page name
+% %% @spec get_next2(Ref,Path,User) -> NewName
+% %% @doc gets the next valid page name
 %% get_next2(Ref,Path,User) ->
 %%     new_path(Ref,Path,User).
 
-%% @spec make_path(List) -> NewList
-%% @doc compiles a path down to a form that can be processed
+% %% @spec make_path(List) -> NewList
+% %% @doc compiles a path down to a form that can be processed
 %% make_path(List) when is_list(List) ->
 %%     NewList=string:tokens(List,"/"),
 %%     make_path(NewList,[]).
@@ -65,8 +65,8 @@
 %% make_path([],Acc)    -> lists:reverse(Acc);
 %% make_path([H|T],Acc) -> make_path(T,[parse(H)|Acc]).
 
-%% @spec get_templates() -> Templates
-%% @doc returns all the templates on the system as a list
+% %% @spec get_templates() -> Templates
+% %% @doc returns all the templates on the system as a list
 %% get_templates() ->
 %%     {ok,Templates}=hn_db:get_templates(),
 %%     Fun=fun(X) ->
