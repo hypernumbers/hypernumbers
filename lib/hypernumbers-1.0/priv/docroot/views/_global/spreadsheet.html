@@ -5,6 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>    
     <title>Hypernumbers</title>
     <link rel="stylesheet" type="text/css" href="/hypernumbers/hn.sheet.css" />	
+    <link rel="stylesheet" type="text/css" href="/hypernumbers/finder.css" />	
   </head>
   <body>
     
@@ -62,19 +63,16 @@
         <td>
           <div id="pagemenu">
             <div id="pagebar">
-              <div id="pageroot" class="trail">$txt:{My Spreadsheets}$</div>
+              <a data-href="home/u">$txt:{My Spreadsheets}$</a>
             </div>
-            <div id="pagedialog">
-              <div id="pageurl">
-                URL: <input type="text" />
-              </div>
-              <div id="pdpanes">
-                <ul id="sibiling_pane"></ul>
-                <ul id="children_pane"></ul>
-              </div>
+            <div id="finder">
+
+              <div class="panewrapper"><div class="pane"></div></div>
+              
               <div id="pdpanel">
                 <input id="pdclose" type="submit" value="Close" />
-                <input id="pdvisit" type="submit" class="action" value="Visit" />
+                <input id="pdvisit" type="submit" class="action" 
+                       value="Visit" />
               </div>
             </div>
           </div>
@@ -635,7 +633,7 @@
   <script src="/hypernumbers/hn.layout.js"></script>
   <script src="/hypernumbers/hn.layout.panes.js"></script>
   <script src="/hypernumbers/hn.layout.pane.js"></script>
-  <script src="/hypernumbers/hn.pagemenu.js"></script>
+  <script src="/hypernumbers/finder.js"></script>
   <script src="/hypernumbers/hn.toolbar.js"></script>
   <script src="/hypernumbers/hn.callbacks.js"></script>
   <script src="/hypernumbers/hn.selection.js"></script>

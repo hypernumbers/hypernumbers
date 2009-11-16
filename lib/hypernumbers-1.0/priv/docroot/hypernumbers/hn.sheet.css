@@ -237,7 +237,7 @@ p,h1,h2,h3,h4,h5 {
 	visibility: hidden;
 }
 
-#pagebar div.trail {
+#pagebar a {
 	display: inline-block;
 	max-width: 120px;
     cursor: pointer;
@@ -256,63 +256,6 @@ p,h1,h2,h3,h4,h5 {
 }
 #pagebar div:hover {
 	color: #334bf9;
-}
-
-#pagedialog {
-    position: absolute;
-   	display: none;
-	background-color: #FFFFFF;
-    left: 0px;
-    z-index: 20000;
-    width:480px;
-	border: 2px none #a9a9a9;
-	border-bottom-style: solid;
-	border-right-style: solid;
-	border-top-style: solid;
-}
-#pagedialog ul {
-    height:150px;
-    overflow-y:scroll;
-	float: left;
-	margin: 0px !important;
-	padding: 0px !important;
-	width: 235px;
-}
-#pagedialog ul li {
-	padding: 3px !important;
-	cursor: pointer;
-	border-width: 1px 0 1px 0;
-	border-style: dotted;
-	border-color: transparent;
-}
-#pagedialog ul li .title {
-    width: 180px;
-	float: left;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;		
-}
-#pagedialog ul li .right {
-	background: green;
-	text-align: right;
-	float: right;
-}
-#pagedialog ul#sibiling_pane li.selected {
-	background-color: #004b97;
-	border-color: #000;
-    color: #fff;
-}
-
-#pageurl {
-    overflow:auto;
-    background-color: #DDDDDD;
-}
-
-#pageurl input {
-	width: 300px;
-	margin-left: 10px;
-	color: #424242;
-	margin: 5px 0px 5px 0px;
 }
 
 #pdclose {
@@ -1007,9 +950,16 @@ p,h1,h2,h3,h4,h5 {
  overflow: auto;
 }
 
+#funlist ul { 
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+
 #selectedfun { 
  float: right;
  width: 180px;
+ margin-top:15px;
 }
 
 #selectedfun p { 
@@ -1078,7 +1028,7 @@ p,h1,h2,h3,h4,h5 {
 	border: 1px dashed #a9a9a9;
 }
 
-#wmd-preview ul,li {
+#wmd-preview ul,#wmd-preview li {
     list-style-type: inherit !important;
     margin:  inherit !important;
     padding: inherit !important;

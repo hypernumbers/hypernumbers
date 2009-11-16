@@ -1,0 +1,53 @@
+#finder {
+    position   : absolute;
+   	display    : none;
+    left       : 0px;
+    z-index    : 20000;
+    background : white;
+	border     : 2px solid #a9a9a9;
+    width      : 400px; 
+}
+
+#finder .panewrapper {
+    height     : 170px;
+    overflow-x : scroll; 
+    overflow-y : hidden; 
+}
+
+#finder .pane {  
+   height : 100%; 
+}
+
+#finder ul { 
+    margin          : 0px;
+    padding         : 0px;
+    width           : 120px; 
+    height          : 100%; 
+    list-style-type : none; 
+    float           : left; 
+    overflow-y      : scroll; 
+    overflow-x      : hidden;
+}
+
+#finder li { 
+    margin   : 0px;
+    cursor   : pointer; 
+    overflow : hidden; 
+    width    : 100px; 
+    padding  : 3px;
+}
+
+#finder li.haschild { 
+    background-image    : url(right.png);
+    background-repeat   : no-repeat;
+    background-position : 95% center; 
+}
+
+#finder li:hover {
+    background-color : #DDDDDD;
+}
+
+#finder li.selected { 
+    background-color : #004B97;
+    color            : white; 
+}

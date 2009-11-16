@@ -681,11 +681,9 @@ make_after(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
     DiffY = Y2 - Y1 - 1,
     RefX#refX{obj = {row, {Y1 - DiffY, Y2 - DiffY}}}. %
 
-pages(#refX{path = [], obj = {page, "/"}} = RefX) ->
-    {struct, dict_to_struct(hn_db_api:read_page_structure(RefX))};
-pages(#refX{path = [H | _T], obj = {page, "/"}} = RefX) ->
-    NewRefX = RefX#refX{path = [H]},
-    {struct, dict_to_struct(hn_db_api:read_page_structure(NewRefX))}.
+pages(#refX{} = RefX) ->
+    Tmp = pages_to_json(hn_db_api:read_page_structure(RefX)),    
+    {struct, [{"name", "home"}, {"children", {array, Tmp}}]}.
 
 get_lang(anonymous) ->
     "en_gb";
@@ -791,3 +789,20 @@ build_tpl(Tpl) ->
     New = re:replace(Master, "%BODY%", Gen, [{return, list}]),
     file:write_file([viewroot(), "/", Tpl, ".html"], New).
     
+pages_to_json(Dict) ->
+    F = fun(X) -> pages_to_json(X, dict:fetch(X, Dict)) end,
+    case is_dict(Dict) of 
+        true  -> lists:map(F, dict:fetch_keys(Dict));
+        false -> Dict
+    end.
+
+pages_to_json(X, Dict) ->
+    case is_dict(Dict) of
+        true  ->
+            case pages_to_json(Dict) of
+                [] -> {struct, [{"name", X}]};
+                Ch -> {struct, [{"name", X}, {"children", {array, Ch}}]}
+            end;
+        false -> {struct, [{"name", X}]}
+    end.
+
