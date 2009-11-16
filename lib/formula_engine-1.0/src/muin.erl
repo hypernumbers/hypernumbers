@@ -349,9 +349,8 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
             Dep = lists:map(F, DepTree) ++
                 [{"remote", {RSite, NewRPath, RX, RY}}],
             {Val, Dep, [], [{"remote", {RSite, NewRPath, RX, RY}}]};
-        
+
         Else ->
-            io:format("I got: ~p~n", [Else]),
             Else
     end.
 

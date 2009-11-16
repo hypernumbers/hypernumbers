@@ -914,8 +914,18 @@ write_remote_link(P, C, Type)
 
 update_inc_hn(Parent, Child, Val, DepTree, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
+    io:format("string ~p~n", [Val]),
+
+    Val2 = if is_list(Val) ->
+                   case superparser:process(Val) of
+                       {formula, {_Type, V}}       -> V;
+                       [{_Type, V}, _Align, _Frmt] -> V
+                   end;
+              true ->
+                   Val
+           end,
     ChildSite = Child#refX.site,
-    Rec1 = #incoming_hn{site_and_parent = {ChildSite, Parent}, value = Val,
+    Rec1 = #incoming_hn{site_and_parent = {ChildSite, Parent}, value = Val2,
                         'dependency-tree' = DepTree, biccie = Biccie},
     ok = mnesia:write(trans(ChildSite, incoming_hn), Rec1, write),
     Rec2 = #dirty_notify_in{parent = Parent},
