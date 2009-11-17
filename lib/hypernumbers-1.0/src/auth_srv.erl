@@ -454,7 +454,7 @@ check_get_page1(Tree, {User, Groups}, Page, View) ->
                     _Other          ->
                         Default = X#carry.default,
                         Views   = X#carry.views,
-                        AllViews = get_views(Default, Views, User, Groups),
+                        AllViews = get_all_views(Default, Views, User, Groups),
                         case has_wild(AllViews) of
                             global -> {html, View};
                             local  -> case is_local(User, View) of
@@ -471,9 +471,10 @@ check_get_page1(Tree, {User, Groups}, Page, View) ->
     check_get(Tree, Page, Fun).
 
 get_views1(Tree, {User, Groups}, Page) ->
-    Fun = fun(X) -> Default = X#carry.default,
-                    Views   = X#carry.views,
-                    get_views(Default, Views, User, Groups)
+    Fun = fun(X) ->
+                  Default = X#carry.default,
+                  Views   = X#carry.views,
+                  get_all_views(Default, Views, User, Groups)
           end,
     check_get(Tree, Page, Fun).
 
@@ -672,13 +673,9 @@ get_random_v2(Views, [H | T]) ->
 
 get_carry(Type, Tree, Carried) ->
     case gb_trees:lookup(Type, Tree) of
-        {value, V1} -> case gb_trees:lookup(acls, V1) of
-                           {value, _V2} -> V1; % take note return V1 not V2
-                           none         -> Carried
-                       end;
+        {value, V1} -> merge_carry(make_carry(V1), Carried);
         none        -> Carried
     end.
-
 
 get_ret_code([], _User, _Groups, read)  -> {return, '404'};
 get_ret_code([], _User, _Groups, write) -> false;
@@ -738,30 +735,6 @@ get_o2(Views, [H | T]) -> case lists:keyfind({group, H}, 1, Views) of
                               false  -> get_o2(Views, T);
                               {_, V} -> V#views.override
                           end.
-
-% extract_controls(Type, _Tree, User, Groups) ->
-%     case gb_tr of
-%         none              -> none;
-%         {value, Controls} ->
-%             case lists:keyfind({user, User}, 1, Controls) of
-%                 false         -> case lists:keyfind({user, "*"}, 1, Controls) of
-%                                      false         -> extract_controls2(Type, Groups,
-%                                                                         Controls);
-%                                      {_P, Control} -> Control
-%                                  end;
-%                 {_P, Control} -> Control
-%             end
-%     end.
-
-% extract_controls2(_Type, [], _Controls)    -> no_match;
-% extract_controls2(Type, [H | T], Controls) ->
-%     case lists:keyfind({group, H}, 1, Controls) of
-%         false     -> case lists:keyfind({group, "*"}, 1, Controls) of
-%                          false         -> extract_controls2(Type, T, Controls);
-%                          {_P, Control} -> Control
-%                      end;
-%         {_P, Control} -> Control
-%     end.
 
 make_prettyprint(Tree, Type) -> make_pp(Tree , Type, [], "", []).
 
@@ -860,9 +833,9 @@ json_control1([{{Type, Name}, C} | T], Acc) when is_list(C)  ->
     json_control1(T, [NewAcc | Acc]);
 json_control1([{{Type, Name}, C} | T], Acc) when is_tuple(C)  ->
     NewAcc = {struct, [{Type, Name}, {struct, [{"override", C#views.override},
-                                                   {array, C#views.views}]}]},
+                                               {array, C#views.views}]}]},
     json_control1(T, [NewAcc | Acc]).
-    
+
 contains(_Element, [])            -> false;
 contains(Element, [Element | _T]) -> true;
 contains(Element, [_H | T])       -> contains(Element, T).
@@ -886,73 +859,115 @@ new_def([Default | T], Default) -> new_def(T, Default);
 new_def([H | _T], _Default)     -> H.
 
 %% check_get has specific taking precendence over the particular
-check_get(Tree, List, Fun) -> check_get1(Tree, List, Fun, #carry{}).
+%% need to do funky stuff with the root permissions
+check_get(Tree, [], Fun)   -> Fun(make_carry(Tree));
+check_get(Tree, Page, Fun) -> Fun(check_get1(Tree, Page, make_carry(Tree))).
 
-check_get1(Tree, [], Fun, Carried) ->
-    Fun(merge_carry(Tree, Carried));
-check_get1(Tree, [H | T], Fun, Carried) ->
+check_get1(_Tree, [], Carried) ->
+    Carried;
+check_get1(Tree, [H | T], Carried) ->
+%% drill out the wild branches
+    NewCarry1 = case gb_trees:lookup("[**]", Tree) of
+                    {value, V1} -> NewC1 = get_carry("[**]", V1, Carried),
+                                   C1 = make_carry(V1),
+                                   merge_carry(C1, NewC1);
+                    none        -> Carried
+                end,
+    NewCarry2 = case gb_trees:lookup("[*]", Tree) of
+                    {value, V2} -> NewC2 = get_carry("[*]", V2, NewCarry1),
+                                   MC2 = merge_carry(make_carry(V2), NewC2),
+                                   check_get1(V2, T, MC2);
+                    none        -> NewCarry1
+                end,
     case gb_trees:lookup(H, Tree) of
-        {value, V} -> NewCarry = get_carry(H, V, Carried),
-                      check_get1(V, T, Fun, merge_carry(V, NewCarry));
-        none       ->
-            case gb_trees:lookup("[*]", Tree) of
-                {value, V1} -> NewCarry = get_carry("[*]", V1, Carried),
-                               check_get1(V1, T, Fun, merge_carry(V1, NewCarry));
-                none        ->
-                    case gb_trees:lookup("[**]", Tree) of
-                        {value, V2} -> NewCarry2 = get_carry("[**]", V2, Carried),
-                                       NewC2 = merge_carry(V2, NewCarry2),
-                                       check_get1(V2, T, Fun, NewC2);
-                        none -> Fun(merge_carry(Tree, Carried))
-                    end
-            end
+        {value, V3} -> NewC3 = get_carry(H, V3, NewCarry2),
+                       MC3 = merge_carry(make_carry(V3), NewC3),
+                       check_get1(V3, T, MC3);
+        none        -> NewCarry2
     end.
 
-merge_carry(New, Old) ->
-    A1 = case gb_trees:lookup(acl, New) of
+make_carry(Tree) ->
+    A1 = case gb_trees:lookup(acl, Tree) of
              none       -> [];
              {value, A} -> A
          end,
-    D1 = case gb_trees:lookup(default, New) of
+    D1 = case gb_trees:lookup(default, Tree) of
              none       -> [];
              {value, D} -> D
          end,
-    V1 = case gb_trees:lookup(views, New) of
+    V1 = case gb_trees:lookup(views, Tree) of
              none       -> [];
              {value, V} -> V
          end,
+    #carry{acl = A1, default = D1, views = V1}.    
+
+merge_carry(New, Old) ->
+    #carry{acl = A1, default = D1, views = V1} = New,
     #carry{acl = A2, default = D2, views = V2} = Old,
     #carry{acl = merge_controls(acl, A1, A2),
            default = merge_controls(default, D1, D2),
            views = merge_controls(views, V1, V2)}.
 
 % if there is no old, then merging is a no brainer...
-merge_controls(_Type, [], C2) -> C2;
-merge_controls(Type,  C1, C2) -> merge_controls1(Type, C1, C2, []).
+merge_controls(_Type, [], C2)   -> C2;
+merge_controls(acl, C1, C2)     -> merge_controls1(acl, C1, C2, []);
+merge_controls(views, C1, C2)   -> merge_controls1(views, C1, C2, []);
+merge_controls(Type, C1, C2)    -> merge_controls1(Type, C1, C2, []).
 
-merge_controls1(default, D1, D2, [])         -> merge_defs_overrides(D1, D2);
-merge_controls1(acl, [], _A2, Acc)           -> Acc;
+merge_controls1(default, D1, D2, []) ->
+    merge_defs(D1, D2);
+merge_controls1(acl, [], A2, Acc) ->
+    N1 = case lists:keysearch({user, "*"}, 1, A2) of
+             false       -> [];
+             {value, V1} -> V1
+         end,
+    N2 = case lists:keysearch({group, "*"}, 1, A2) of
+             false       -> [];
+             {value, V2} -> V2
+         end,
+    remove_empty([N1, N2 | Acc]);
 merge_controls1(acl, [{K, V1} | T], A2, Acc) ->
     case lists:keysearch(K, 1, A2) of
-        false       -> merge_controls1(acl, T, A2, [{K, V1} | Acc]);
-        {value, V2} -> merge_controls1(acl, T, A2, [{K, hslists:dedup([[V1], [V2]])} | Acc])
+        false            -> merge_controls1(acl, T, A2, [{K, V1} | Acc]);
+        {value, {K, V2}} -> merge_controls1(acl, T, A2, [{K, hslists:dedup([V1, V2])} | Acc])
     end;
-merge_controls1(views, [], _A2, Acc)           -> Acc;
+merge_controls1(views, [], A2, Acc) ->
+    N1 = case lists:keysearch({user, "*"}, 1, A2) of
+             false       -> [];
+             {value, V1} -> V1
+         end,
+    N2 = case lists:keysearch({group, "*"}, 1, A2) of
+             false       -> [];
+             {value, V2} -> V2
+         end,
+    remove_empty([N1, N2 | Acc]);
 merge_controls1(views, [{K, V1} | T], A2, Acc) ->
     case lists:keysearch(K, 1, A2) of
         false            -> merge_controls1(views, T, A2, [{K, V1} | Acc]);
-        {value, {K, V2}} -> O = merge_defs_overrides(V1#views.override, V2#views.override),
-                            Vs = hslists:dedup([V1#views.views, V2#views.views]),
+        {value, {K, V2}} -> {O, NewV}  = merge_overrides(V1#views.override, V2#views.override),
+                            Vs = remove_empty(hslists:dedup([V1#views.views,
+                                                             V2#views.views, [NewV]])),
                             merge_controls1(views, T, A2, [{K, #views{override = O,
                                                                       views = Vs}} | Acc])
     end.
 
-merge_defs_overrides(D1, D2) ->
+merge_defs(D1, D2) ->
     case {D1, D2} of
         {[], []} -> []; % both blank, stays blank
         {[], _}  -> D2; % new is blank, old stays
         {_, []}  -> D1; % old is blank, new carries
         {_, _}   -> D1  % otherwise just replace old with new
+    end.
+
+merge_overrides(D1, D2) ->
+    % creates the new override
+    % if appropriate pushes the old override out as the second
+    % return parameter to be put onto the view list..
+    case {D1, D2} of
+        {[], []} -> {[], []}; % both blank, stays blank
+        {[], _}  -> {D2, []}; % new is blank, old stays
+        {_, []}  -> {D1, []}; % old is blank, new carries
+        {_, _}   -> {D1, D2}  % otherwise just replace old with new
     end.
 
 get_for_pp(Tree, [], Fun) ->
@@ -977,21 +992,16 @@ make_controls(AuthList, Control) -> make_c1(AuthList, Control, []).
 make_c1([], _Control, Acc)     -> Acc;
 make_c1([H | T], Control, Acc) -> make_c1(T, Control, [{H, Control} | Acc]).
 
-get_views(Default, Views, User, Groups) ->
-    NewViews =
-        case keyfind({user, User}, Views) of
-            [] -> get_v2(Views, Groups, []);
-            V  -> case V#views.override of
-                      [] -> lists:merge([V#views.views, get_v2(Views, Groups, [])]);
-                      _  -> lists:merge([[V#views.override],
-                                         V#views.views, get_v2(Views, Groups, [])])
-                  end
-        end,
-    remove_empty(hslists:dedup([[Default], NewViews])).
+get_all_views(Default, Views, User, Groups) ->
+    User2 = ["*" | [User]],
+    Groups2 = ["*" | Groups],
+    NewViews1 = get_all_v2(Views, user, User2, []),
+    NewViews2 = get_all_v2(Views, group, Groups2, []),
+    remove_empty(hslists:dedup([[Default], NewViews1, NewViews2])).
 
-get_v2(_Control, [], Acc)      -> Acc;
-get_v2(Control, [H | T], Acc)  ->
-    NewAcc = case keyfind({group, H}, Control) of
+get_all_v2(_Control, _Type, [], Acc)      -> Acc;
+get_all_v2(Control, Type, [H | T], Acc)  ->
+    NewAcc = case keyfind({Type, H}, Control) of
                  [] -> [];
                  V  -> case V#views.override of
                            [] -> V#views.views;
@@ -999,8 +1009,8 @@ get_v2(Control, [H | T], Acc)  ->
                        end
              end,
     case NewAcc of
-        [] -> get_v2(Control, T, Acc);
-        _  -> get_v2(Control, T, hslists:dedup([NewAcc, Acc]))
+        [] -> get_all_v2(Control, Type, T, Acc);
+        _  -> get_all_v2(Control, Type, T, hslists:dedup([NewAcc, Acc]))
     end.
 
 get_control(Tree, User, Groups) ->
@@ -1571,8 +1581,7 @@ test25() ->
     PP = pretty_print1(Tree3, [], text),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "a view"}).
-
+    (Ret == {html, "override1"}).
 
 %% check wild resolution order
 test26() ->
@@ -1951,9 +1960,9 @@ test79() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "User"}], P,
                          [read], "default", ["index", "nodule"]),
     Tree2 = add_controls1(Tree, [{group, "Group1"}], P,
-                         [read], "", ["andy", "bob"]),
+                          [read], "", ["andy", "bob"]),
     Tree3 = add_controls1(Tree2, [{group, "Group2"}], P,
-                         [read], "charlie", ["dave", "eddie"]),
+                          [read], "charlie", ["dave", "eddie"]),
     Tree4 = add_default1(Tree3, P1, "x-ray"),
     Tree5 = add_default1(Tree4, P2, "zebra"),
     Ret = get_views1(Tree5, {"User", ["Group1", "Group2"]}, P),
@@ -2027,13 +2036,12 @@ test90() ->
     P = ["a", "b", "c", "d"],
     Tree = add_controls1(gb_trees:empty(), [{user, "User"}], P,
                          [read], "default", ["index", "default"]),
-    io:format("Tree is ~p~n", [Tree]),
     Tree2 = add_controls1(Tree, [{user, "Bob"}], P,
                           [read], "default2", ["index", "default2"]),
-    io:format("Tree2 is ~p~n", [Tree2]),
     Tree3 = remove_views1(Tree2, [{user, "User"}, {group, "Group"}], P, {"default", ["default"]}),
     io:format("Tree3 is ~p~n", [Tree3]),
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P),
+    io:format(pretty_print1(Tree3, [], text)),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "index"}).
 
@@ -2305,6 +2313,37 @@ test127() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "beezer"}).
 
+%% wild on wild...
+test128() ->
+    P1 = [],
+    P2 = ["a"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1,
+                         [read, write], "over1", ["view1"]),
+    Tree2 = add_controls1(Tree, [{user, "*"}, {group, "*"}], P1, [read, write],
+                          "over2", ["view2"]),
+    Tree3 = add_default1(Tree2, P1, "default1"),
+    Tree4 = add_controls1(Tree3, [{user, "User"}, {group, "Another"}], P2,
+                          [read, write], "over3", ["view3"]),
+    Ret = get_views1(Tree4, {"User", ["Group", "Another"]}, P2),
+    io:format(pretty_print1(Tree4, P1, text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == ["view3", "view2", "view1", "over3", "over2", "over1", "default1"]).
+
+test129() ->
+    P1 = ["a"],
+    P2 = ["a", "b"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1,
+                         [read, write], "over1", ["view1"]),
+    Tree2 = add_controls1(Tree, [{user, "*"}, {group, "*"}], P1, [read, write],
+                          "over2", ["view2"]),
+    Tree3 = add_default1(Tree2, P1, "default1"),
+    Tree4 = add_controls1(Tree3, [{user, "User"}, {group, "Another"}], P2,
+                          [read, write], "over3", ["view3"]),
+    Ret = get_views1(Tree4, {"User", ["Group", "Another"]}, P2),
+    io:format(pretty_print1(Tree4, P1, text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == ["view3", "view2", "view1", "over3", "over2", "over1", "default1"]).
+
 unit_test_() -> 
     [
      % tests for the root page []
@@ -2412,7 +2451,9 @@ unit_test_() ->
      ?_assert(test124()),
      ?_assert(test125()),
      ?_assert(test126()),
-     ?_assert(test127())
+     ?_assert(test127()),
+     ?_assert(test128()),
+     ?_assert(test129())
     ].
 
 debug() ->
