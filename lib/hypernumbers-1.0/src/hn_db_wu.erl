@@ -914,8 +914,6 @@ write_remote_link(P, C, Type)
 
 update_inc_hn(Parent, Child, Val, DepTree, Biccie)
   when is_record(Parent, refX), is_record(Child, refX) ->
-    io:format("string ~p~n", [Val]),
-
     Val2 = if is_list(Val) ->
                    case superparser:process(Val) of
                        {formula, {_Type, V}}       -> V;
