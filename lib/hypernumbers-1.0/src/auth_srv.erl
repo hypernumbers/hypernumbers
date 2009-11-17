@@ -90,7 +90,7 @@
 %%% are <strong>additive</strong>. Consider the following set of permssions
 %%% on a particular path:<br />
 %%% <code>{user, "Alice"}, [read]<br />
-%%% {group, "restauranteuses"}, [read, write]<br /></code>
+%%% {group, "restauranteuses"}, [write]<br /></code>
 %%% A user with the profile <code>{Alice, ["cryptographer", "admin"]</code>
 %%% would have permissions of <code>[read]</code> whereas a user with the
 %%% profile of <code>{Alice, ["restauranteuses", "admin"]</code> would
@@ -1080,6 +1080,7 @@ test02() ->
     Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '404'}).
@@ -1090,6 +1091,7 @@ test03() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write],
                          "override", ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"User", ["Fail"]}, P),
+    get_as_json1(Tree, []),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
@@ -1100,6 +1102,7 @@ test04() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write],
                          "override", ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"Fail", ["FailHarder"]}, P),
+    get_as_json1(Tree, []),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
     io:format("Tree is ~p~n", [Tree]),
@@ -1112,6 +1115,7 @@ test05() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write],
                          [], ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"User", ["Fail"]}, P),
+    get_as_json1(Tree, []),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
@@ -1123,6 +1127,7 @@ test06() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write],
                          "override", ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"User", "Fail"}, P),
+    get_as_json1(Tree, []),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
@@ -1136,6 +1141,7 @@ test07() ->
     Tree2 = add_default1(Tree, P, "default"),
     Ret = check_get_page1(Tree2, {"User", ["Fail"]}, P),
     PP = pretty_print1(Tree2, [], text),
+    get_as_json1(Tree2, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "override"}).
@@ -1148,6 +1154,7 @@ test08() ->
     Tree2 = add_default1(Tree, P, "default"),
     Ret = check_get_page1(Tree2, {"User", ["Fail"]}, P),
     PP = pretty_print1(Tree2, [], text),
+    get_as_json1(Tree2, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "default"}).
@@ -1160,6 +1167,7 @@ test09() ->
     Tree2 = add_default1(Tree, P, "default"),
     Ret = check_get_page1(Tree2, {"User", []}, P),
     PP = pretty_print1(Tree2, [], text),
+    get_as_json1(Tree2, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "default"}).
@@ -1174,6 +1182,7 @@ test010() ->
     Tree2 = add_default1(Tree, P, "default"),
     Ret = check_get_page1(Tree2, {"Fail", ["Fail", "Group2"]}, P),
     PP = pretty_print1(Tree2, [], text),
+    get_as_json1(Tree2, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "default"}).
@@ -1186,6 +1195,7 @@ test011() ->
     Tree2 = add_default1(Tree, P, "default"),
     Ret = check_get_page1(Tree2, {"User", ["Fail"]}, P),
     PP = pretty_print1(Tree2, [], text),
+    get_as_json1(Tree2, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "override"}).
@@ -1198,6 +1208,7 @@ test012() ->
     Tree2 = add_default1(Tree, P, "default"),
     Ret = check_get_page1(Tree2, {"User", ["Fail"]}, P),
     PP = pretty_print1(Tree2, [], text),
+    get_as_json1(Tree2, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "override"}).
@@ -1210,6 +1221,7 @@ test013() ->
     Tree2 = add_controls1(Tree, [{user, "King"}, {group, "*"}], P, [read, write],
                           "override2", ["a view", "another view"]),
     Tree3 = add_default1(Tree2, P, "default"),
+    get_as_json1(Tree3, []),
     Ret = check_get_page1(Tree3, {"Fail", ["FailAgain"]}, P),
     PP = pretty_print1(Tree3, [], text),
     io:format(PP),
@@ -1228,6 +1240,7 @@ test014() ->
     Tree4 = add_default1(Tree3, P, "default"),
     Ret = check_get_page1(Tree4, {"User", ["FailAgain"]}, P),
     PP = pretty_print1(Tree4, [], text),
+    get_as_json1(Tree4, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "hey!"}).
@@ -1242,6 +1255,7 @@ test015() ->
     Tree3 = add_controls1(Tree2, [{group, "*"}], P, [read, write],
                           "override2", ["a view", "another view"]),
     Tree4 = add_default1(Tree3, P, "default"),
+    get_as_json1(Tree4, []),
     Ret = check_get_page1(Tree4, {"Fail", ["Group"]}, P),
     PP = pretty_print1(Tree4, [], text),
     io:format(PP),
@@ -1260,6 +1274,7 @@ test016() ->
     Tree4 = add_default1(Tree3, P, "default"),
     Ret = check_get_page1(Tree4, {"User", ["FailAgain"]}, P),
     PP = pretty_print1(Tree4, [], text),
+    get_as_json1(Tree4, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "override1"}).
@@ -1276,6 +1291,7 @@ test017() ->
     Tree4 = add_default1(Tree3, P, "default"),
     Ret = check_get_page1(Tree4, {"Fail", ["Group"]}, P),
     PP = pretty_print1(Tree4, [], text),
+    get_as_json1(Tree4, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "override2"}).
@@ -1283,17 +1299,20 @@ test017() ->
 test018() ->
     P = [],
     Tree = remove_perm1(gb_trees:empty(), [{user, "Me"}, {groups, "Us"}], P, [read]),
+    get_as_json1(Tree, []),
     (Tree == gb_trees:empty()).
 
 test019() ->
     P = [],
     Tree = remove_views1(gb_trees:empty(), [{user, "Me"}, {groups, "Us"}], P,
                          {"big", ["rock", "candy", "mountain"]}),
+    get_as_json1(Tree, []),
     (Tree == gb_trees:empty()).
 
 test020() ->
     P = [],
     Tree = remove_default1(gb_trees:empty(), P, "banjo"),
+    get_as_json1(Tree, []),
     (Tree == gb_trees:empty()).
 
 %% add some extra controls
@@ -1307,6 +1326,7 @@ test10() ->
                           "override", ["third", "fourth"]),
     Tree3= add_controls1(Tree2, [{user, "Bobby"}, {group, "Gentry"}], P3,[read, write],
                          [], ["fifth"]),
+    get_as_json1(Tree3, []),
     Ret = check_get_page1(Tree3, {"User", "Fail"}, P1),
     PP = pretty_print1(Tree3, [], text),
     io:format(PP),
@@ -1328,6 +1348,7 @@ test12() ->
                          "index", ["other", "one"]),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "index"}).
@@ -1338,6 +1359,7 @@ test13() ->
                          "index", ["hey!"]),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"User", "Fail"}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "index"}).
@@ -1347,6 +1369,7 @@ test14() ->
     Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"Fail", "Fail"}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '401'}).
@@ -1357,6 +1380,7 @@ test15() ->
     Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '404'}).
@@ -1367,6 +1391,7 @@ test16() ->
     Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '404'}).
@@ -1376,6 +1401,7 @@ test17() ->
     P2 = ["a", "b", "c", "e"],
     Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
     io:format(pretty_print1(Tree, [], text), []),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '404'}).
@@ -1386,6 +1412,7 @@ test18() ->
     Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '404'}).
@@ -1399,6 +1426,7 @@ test19() ->
                           "index", ["hey!"]),
     PP = pretty_print1(Tree2, [], text),
     io:format(PP),
+    get_as_json1(Tree2, []),
     Ret = check_get_page1(Tree2, {"gordon", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "index"}).
@@ -1412,6 +1440,7 @@ test19a() ->
                           [read, write], "banana", ["index"]),
     Tree2 = add_controls1(Tree1, [{user, "User"}, {group, "Group"}], P1b,
                           [read, write], "index", ["index"]),
+    get_as_json1(Tree2, []),
     P2 = ["a", "b", "c", "d", "e"],
     Ret = check_get_page1(Tree2, {"gordon", ["Group"]}, P2),
     PP = pretty_print1(Tree2, [], text),
@@ -1427,6 +1456,7 @@ test19b() ->
                           [read, write], "index", ["index"]),
     Tree2 = add_controls1(Tree1, [{user, "User"}, {group, "Group"}], P1b,
                           [read, write], "special", ["index", "special"]),
+    get_as_json1(Tree2, []),
     Ret1 = check_get_page1(Tree2, {"gordon", ["Group"]}, P2),
     Ret2 = check_get_page1(Tree2, {"gordon", ["Group"]}, P1a),
     Ret3 = check_get_page1(Tree2, {"User", ["Group"]}, P1b),
@@ -1443,6 +1473,7 @@ test19c() ->
     Tree2 = add_controls1(Tree1, [{user, "User"}, {group, "Group"}], P1b,
                           [read, write], "apricot", ["index"]),
     P2 = ["a", "b", "c", "d", "e"],
+    get_as_json1(Tree2, []),
     Ret = check_get_page1(Tree2, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "lychee"}).
@@ -1455,6 +1486,7 @@ test19d() ->
     Tree2 = add_controls1(Tree1, [{user, "User"}, {group, "Group"}], P1b,
                           [read, write], "index", ["index"]),
     P2 = ["a", "b", "c", "d"],
+    get_as_json1(Tree2, []),
     Ret = check_get_page1(Tree2, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "index"}).
@@ -1466,6 +1498,7 @@ test19e() ->
                           [read, write], "index", ["index"]),
     Tree2 = add_controls1(Tree1, [{user, "User"}, {group, "Group"}], P1b,
                           [read, write], "index", ["index"]),
+    get_as_json1(Tree2, []),
     P2 = ["a", "b", "c", "d", "x"],
     Ret = check_get_page1(Tree2, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
@@ -1479,6 +1512,7 @@ test19f() ->
                          [read, write], "index", ["index"]),
     Tree2 = add_controls1(Tree, [{user, "New"}, {group, "Group"}], P,
                           [read, write], "index", ["index"]),
+    get_as_json1(Tree2, []),
     Ret = check_get_page1(Tree2, {"gordon", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "index"}).
@@ -1489,6 +1523,7 @@ test19g() ->
                          [read, write], "index", ["index"]),
     Tree2 = add_controls1(Tree, [{user, "New"}, {group, "Group"}], P,
                           [read, write], "index", ["index"]),
+    get_as_json1(Tree2, []),
     Ret = check_get_page1(Tree2, {"bob", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "index"}).
@@ -1499,6 +1534,7 @@ test19h() ->
                          [read, write], "index", ["index"]),
     Tree2 = add_controls1(Tree, [{user, "New"}, {group, "Group"}], P,
                           [read, write], "index", ["index"]),
+    get_as_json1(Tree2, []),
     Ret = check_get_page1(Tree2, {"bob", ["GroupFail"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '401'}).
@@ -1512,6 +1548,7 @@ test20() ->
                          "bob", ["other", "one"]),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "bob"}).
@@ -1523,6 +1560,7 @@ test21() ->
                          "bob", ["other", "one"]),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "bob"}).
@@ -1534,6 +1572,7 @@ test22() ->
                          "bob", ["other", "one"]),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "bob"}).
@@ -1545,6 +1584,7 @@ test23() ->
                          "bob", ["other", "one"]),
     PP = pretty_print1(Tree, [], text),
     io:format(PP),
+    get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "bob"}).
@@ -1564,6 +1604,7 @@ test24() ->
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P3),
     PP = pretty_print1(Tree3, [], text),
     io:format(PP),
+    get_as_json1(Tree3, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "override2"}).
 
@@ -1579,6 +1620,7 @@ test25() ->
                           "", ["a view", "another view"]),
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P3),
     PP = pretty_print1(Tree3, [], text),
+    get_as_json1(Tree3, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "override1"}).
@@ -1592,6 +1634,7 @@ test26() ->
     Tree2 = add_default1(Tree, P1, "default"),
     Ret = check_get_page1(Tree2, {"User", ["Group"]}, P2),
     PP = pretty_print1(Tree2, [], text),
+    get_as_json1(Tree2, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "default"}).
@@ -1604,6 +1647,7 @@ test30() ->
                          [read, write], "index", ["index"]),
     Tree2 = add_controls1(Tree, [{user, "gordon"}, {group, "Group"}], P,
                           [read, write], "index", ["index"]),
+    get_as_json1(Tree2, []),
     Ret = can_read1(Tree2, {"bob", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == true).
@@ -1616,6 +1660,7 @@ test31() ->
                           [read, write], "index", ["index"]),
     Ret = can_read1(Tree2, {"bob", ["GroupFail"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == false).
 
 test32() ->
@@ -1624,6 +1669,7 @@ test32() ->
                          [write], "index", ["index"]),
     Tree2 = add_controls1(Tree, [{user, "gordon"}, {group, "Group"}], P,
                           [write], "index", ["index"]),
+    get_as_json1(Tree2, []),
     Ret = can_read1(Tree2, {"bob", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == false).
@@ -1636,6 +1682,7 @@ test33() ->
     Tree2 = add_controls1(Tree, [{user, "gordon"}, {group, "Group"}], P1,
                           [read, write], "index", ["index"]),
     Ret = can_read1(Tree2, {"bob", ["Group"]}, P2),
+    get_as_json1(Tree2, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == true).
 
@@ -1647,6 +1694,7 @@ test34() ->
     Tree2 = add_controls1(Tree, [{user, "gordon"}, {group, "Group"}], P1,
                           [read, write], "index", ["index"]),
     Ret = can_read1(Tree2, {"User", ["None"]}, P2),
+    get_as_json1(Tree2, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == true).
 
@@ -1658,6 +1706,7 @@ test35() ->
                          [write], "index", ["index"]),
     Tree2 = add_controls1(Tree, [{user, "User"}], P2,
                           [read], "index", ["index"]),
+    get_as_json1(Tree2, []),
     Ret = can_read1(Tree2, {"User", ["None"]}, P3),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == true).
@@ -1671,6 +1720,7 @@ test40() ->
     Tree2 = add_controls1(Tree, [{user, "gordon"}, {group, "Group"}], P,
                           [read, write], "index", ["index"]),
     Ret = can_write1(Tree2, {"bob", ["Group"]}, P),
+    get_as_json1(Tree2, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == true).
 
@@ -1681,6 +1731,7 @@ test41() ->
     Tree2 = add_controls1(Tree, [{user, "gordon"}, {group, "Group"}], P,
                           [read, write], "index", ["index"]),
     Ret = can_write1(Tree2, {"bob", ["GroupFail"]}, P),
+    get_as_json1(Tree2, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == false).
 
@@ -1690,6 +1741,7 @@ test42() ->
                          [read], "index", ["index"]),
     Tree2 = add_controls1(Tree, [{user, "gordon"}, {group, "Group"}], P,
                           [read], "index", ["index"]),
+    get_as_json1(Tree2, []),
     Ret = can_write1(Tree2, {"bob", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == false).
@@ -1701,6 +1753,7 @@ test43() ->
                          [read, write], "index", ["index"]),
     Tree2 = add_controls1(Tree, [{user, "gordon"}, {group, "Group"}], P1,
                           [read, write], "index", ["index"]),
+    get_as_json1(Tree2, []),
     Ret = can_write1(Tree2, {"bob", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == true).
@@ -1712,6 +1765,7 @@ test44() ->
                          [read], "index", ["index"]),
     Tree2 = add_controls1(Tree, [{user, "User"}, {group, "Fail Again"}], P1,
                           [write], "index", ["index"]),
+    get_as_json1(Tree2, []),
     Ret = can_write1(Tree2, {"User", []}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == true).
@@ -1723,6 +1777,7 @@ test45() ->
                          [read], "index", ["index"]),
     Tree2 = add_controls1(Tree, [{user, "User"}, {group, "Fail Again"}], P1,
                           [write], "index", ["index"]),
+    get_as_json1(Tree2, []),
     Ret = can_write1(Tree2, {"Bollocks", []}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == false).
@@ -1733,6 +1788,7 @@ test50() ->
     Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [write]),
     Tree2 = add_perm1(Tree, [{user, "gordon"}], P, [read]),
     Tree3 = remove_perm1(Tree2, [{user, "gordon"}], P, [read]),
+    get_as_json1(Tree3, []),
     io:format("Tree is ~p~nTree2 is ~p~nTree3 is ~p~n", [Tree, Tree2, Tree3]),
     (Tree == Tree3).
 
@@ -1742,6 +1798,7 @@ test51() ->
                      [read]),
     Tree2 = add_perm1(Tree, [{user, "User"}], P, [write]),
     Tree3 = remove_perm1(Tree2, [{user, "User"}], P, [write]),
+    get_as_json1(Tree3, []),
     io:format("Tree is ~p~nTree3 is ~p~n", [Tree, Tree3]),
     (Tree == Tree3).
 
@@ -1753,6 +1810,7 @@ test52() ->
                       P, [read, write]),
     Tree3 = add_perm1(Tree2, [{user, "User"}], P, [write]),
     Tree4 = remove_perm1(Tree3, [{user, "User"}, {group, "Group"}], P, [write]),
+    get_as_json1(Tree4, []),
     Ret = can_write1(Tree4, {"User", []}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == false).
@@ -1763,6 +1821,7 @@ test60() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "User"}], P,
                          [read, {trans, 123}, {trans, 456}], "default", ["default"]),
     Ret = check_get_page1(Tree, {"User", ["Group"]}, P),
+    get_as_json1(Tree, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "default"}).
 
@@ -1771,6 +1830,7 @@ test61() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "User"}], P,
                          [read, {trans, 123}, {trans, 456}], "default", ["index", "default"]),
     Ret = check_get_page1(Tree, {"User", ["Group"]}, P),
+    get_as_json1(Tree, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "default"}).
 
@@ -1781,6 +1841,7 @@ test62() ->
     Tree2 = add_controls1(Tree, [{group, "Group"}], P,
                           [read, {trans, xxx}, {trans, yyy}], "supervisor",
                           ["index", "default", "supervisor"]),
+    get_as_json1(Tree2, []),
     Ret = check_get_page1(Tree2, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "default"}).
@@ -1793,6 +1854,7 @@ test63() ->
                           [read, {trans, xxx}, {trans, yyy}], "supervisor",
                           ["index", "default", "supervisor"]),
     Ret = check_get_page1(Tree2, {"User", ["Group"]}, P),
+    get_as_json1(Tree2, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "supervisor"}).
 
@@ -1807,6 +1869,7 @@ test64() ->
                           [read, {trans, ab12}, {trans, bc23}], "subordinate",
                           ["index", "default", "subordinate"]),
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P),
+    get_as_json1(Tree3, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "supervisor"}).
 
@@ -1820,6 +1883,7 @@ test65() ->
     Tree3 = add_controls1(Tree2, [{user, "User"}], P,
                           [read, {trans, ab12}, {trans, bc23}], "subordinate",
                           ["index", "default", "subordinate"]),
+    get_as_json1(Tree3, []),
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "subordinate"}).
@@ -1834,6 +1898,7 @@ test66() ->
     Tree3 = add_controls1(Tree2, [{user, "User"}], P,
                           [read], "subordinate",
                           []),
+    get_as_json1(Tree3, []),
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "subordinate"}).
@@ -1847,6 +1912,7 @@ test70() ->
                        ["supervisor"]),
     io:format("Tree2 is ~p~n", [Tree2]),
     Ret = get_views1(Tree2, {"User", ["Group"]}, P),
+    get_as_json1(Tree2, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == ["supervisor", "index", "default"]).
 
@@ -1860,6 +1926,7 @@ test71() ->
     io:format("Tree2 is ~p~n", [Tree3]),
     Ret = get_views1(Tree3, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree3, []),
     (Ret == ["supervisor", "index", "default", "and more..."]).
 
 test72() ->
@@ -1871,6 +1938,7 @@ test72() ->
     Tree3 = add_default1(Tree2, P, "and more..."),
     io:format("Tree2 is ~p~n", [Tree3]),
     Ret = get_views1(Tree3, {"User", ["Group"]}, P),
+    get_as_json1(Tree3, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == ["supervisor", "index", "default", "and more..."]).
 
@@ -1883,6 +1951,7 @@ test73() ->
     Tree3 = add_default1(Tree2, P, "and more..."),
     io:format("Tree2 is ~p~n", [Tree3]),
     Ret = get_views1(Tree3, {"User", ["Group"]}, P),
+    get_as_json1(Tree3, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == ["supervisor", "index", "default", "and more..."]).
 
@@ -1898,6 +1967,7 @@ test74() ->
     Ret = get_views1(Tree3, {"User", ["Group"]}, P3),
     PP = pretty_print1(Tree3, [], text),
     io:format(PP),
+    get_as_json1(Tree3, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == ["supervisor", "index", "default", "and more..."]).
 
@@ -1911,6 +1981,7 @@ test75() ->
     io:format("Tree2 is ~p~n", [Tree2]),
     Ret = get_views1(Tree2, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == ["index", "default"]).
 
 test76() ->
@@ -1923,6 +1994,7 @@ test76() ->
     io:format("Tree2 is ~p~n", [Tree2]),
     Ret = get_views1(Tree2, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == ["index"]).
 
 test77() ->
@@ -1935,6 +2007,7 @@ test77() ->
     io:format("Tree2 is ~p~n", [Tree2]),
     Ret = get_views1(Tree2, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == ["index"]).
 
 test78() ->
@@ -1950,6 +2023,7 @@ test78() ->
     io:format("Tree3 is ~p~n", [Tree3]),
     Ret = get_views1(Tree3, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree3, []),
     (Ret == ["nodule", "index", "default"]).
 
 %% now add many views to many groups etc...
@@ -1967,6 +2041,7 @@ test79() ->
     Tree5 = add_default1(Tree4, P2, "zebra"),
     Ret = get_views1(Tree5, {"User", ["Group1", "Group2"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree5, []),
     (Ret == ["zebra", "nodule", "index", "eddie", "default", "dave", "charlie", "bob", "andy"]).
 
 %% add a default or two
@@ -1978,6 +2053,7 @@ test80() ->
     io:format("Tree2 is ~p~n", [Tree2]),
     Ret = check_get_page1(Tree2, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == {html, "supervisor"}).
 
 test81() ->
@@ -1989,6 +2065,7 @@ test81() ->
     io:format("Tree3 is ~p~n", [Tree3]),
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree3, []),
     (Ret == {html, "blah-blah"}).
 
 test82() ->
@@ -1998,6 +2075,7 @@ test82() ->
     Tree2 = add_default1(Tree, P, "supervisor"),
     io:format("Tree2 is ~p~n", [Tree2]),
     Ret = get_views1(Tree2, {"User", ["Group"]}, P),
+    get_as_json1(Tree2, []),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == ["supervisor", "index", "default"]).
 
@@ -2013,6 +2091,7 @@ test83() ->
     io:format("Tree4 is ~p~n", [Tree4]),
     Ret = get_views1(Tree4, {"User", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree4, []),
     (Ret == ["oh, yeah!", "index", "ho!", "hey!", "default"]).
 
 test84() ->
@@ -2026,6 +2105,7 @@ test84() ->
     Tree5 = add_default1(Tree4, P2, "oh, yeaheroonie!"),
     Tree6 = add_controls1(Tree5, [{user, "User"}], P2,
                           [read], "", ["hey!", "ho!"]),
+    get_as_json1(Tree6, []),
     io:format("Tree6 is ~p~n", [Tree6]),
     Ret = get_views1(Tree6, {"User", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
@@ -2043,6 +2123,7 @@ test90() ->
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P),
     io:format(pretty_print1(Tree3, [], text)),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree3, []),
     (Ret == {html, "index"}).
 
 test91() ->
@@ -2058,6 +2139,7 @@ test91() ->
     io:format(PP),
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree3, []),
     (Ret == {html, "default"}).
 
 test92() ->
@@ -2073,6 +2155,7 @@ test92() ->
     io:format(PP),
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree3, []),
     (Ret == {return, '404'}).
 
 %% remove a default
@@ -2086,6 +2169,7 @@ test100() ->
     io:format(PP),
     Ret = check_get_page1(Tree3, {"User", ["Group"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree3, []),
     (Ret == {html, "default"}).
 
 test101() ->
@@ -2100,6 +2184,7 @@ test101() ->
     io:format(PP),
     Ret = check_get_page1(Tree4, {"User", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree4, []),
     (Ret == {html, "Sub"}).
 
 test102() ->
@@ -2114,6 +2199,7 @@ test102() ->
     Tree5 = remove_default1(Tree4, P3, "Banjo"),
     PP = pretty_print1(Tree5, [], text),
     io:format(PP),
+    get_as_json1(Tree5, []),
     Ret = check_get_page1(Tree5, {"User", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "Sub"}).
@@ -2134,6 +2220,7 @@ test110() ->
     Ret3 = check_get_page1(Tree3, {"User", ["Group"]}, P3),
     PP = pretty_print1(Tree3, [], text),
     io:format(PP),
+    get_as_json1(Tree3, []),
     io:format("Ret1 is ~p~nRet2 is ~p~nRet3 is ~p~n", [Ret1, Ret2, Ret3]),
     ({Ret1, Ret2, Ret3} == {{html, "index"}, {return, '401'}, {return, '404'}}).
 
@@ -2148,6 +2235,7 @@ test111() ->
     Ret = check_get_page1(Tree, {"User", ["Group"]}, P2),
     % io:format("Tree is ~p~n", [Tree]),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree, []),
     (Ret == {html, "index"}).
 
 test112() ->
@@ -2158,6 +2246,7 @@ test112() ->
     Ret = check_get_page1(Tree, {"User", ["Group"]}, P2),
     % io:format("Tree is ~p~n", [Tree]),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree, []),
     (Ret == {html, "index"}).
 
 %% specific (ie [*]) overrides the general (ie [**])
@@ -2172,6 +2261,7 @@ test113() ->
     Ret = check_get_page1(Tree2, {"User", ["Group"]}, P3),
     % io:format("Tree is ~p~nTree2 is ~p~n", [Tree, Tree2]),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == {html, "special"}).
 
 test114() ->
@@ -2185,6 +2275,7 @@ test114() ->
     Ret = check_get_page1(Tree2, {"User", ["Group"]}, P3),
     % io:format("Tree is ~p~nTree2 is ~p~n", [Tree, Tree2]),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == {html, "special"}).
 
 %% test wild card user and group names
@@ -2194,6 +2285,7 @@ test115() ->
                          [read, write], "index", ["index"]),
     Ret = check_get_page1(Tree, {"gordon", ["No Match"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree, []),
     (Ret == {html, "index"}).
 
 test116() ->
@@ -2202,6 +2294,7 @@ test116() ->
                          [read, write], "index", ["index"]),
     Ret = check_get_page1(Tree, {"gordon", ["No Match"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree, []),
     (Ret == {html, "index"}).
 
 test117() ->
@@ -2210,6 +2303,7 @@ test117() ->
                          "index", ["index"]),
     Ret = check_get_page1(Tree, {"junk", ["no way", "no how", "no soon"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree, []),
     (Ret == {html, "index"}).
 
 %% Insert a wild permission twice
@@ -2221,6 +2315,7 @@ test118() ->
                           "index", ["index"]),
     Ret = check_get_page1(Tree2, {"junk", ["no way", "no how", "no soon"]}, P),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == {html, "index"}).
 
 %% check_get_page with a page name...
@@ -2233,6 +2328,7 @@ test120() ->
     io:format(PP),
     Ret = check_get_page1(Tree2, {"User", ["nothing", "in", "particular"]}, P1, "default"),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == {html, "default"}).
 
 test121() ->
@@ -2244,6 +2340,7 @@ test121() ->
     io:format(PP),
     Ret = check_get_page1(Tree2, {"User", ["nothing", "in", "particular"]}, P1, "brick"),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == {html, "brick"}).
 
 test122() ->
@@ -2255,6 +2352,7 @@ test122() ->
     io:format(PP),
     Ret = check_get_page1(Tree2, {"User", ["nothing", "in", "particular"]}, P1, "bonkette"),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == {html, "bonkette"}).
 
 test123() ->
@@ -2266,6 +2364,7 @@ test123() ->
     io:format(PP),
     Ret = check_get_page1(Tree2, {"User", ["nothing", "in", "particular"]}, P1, "beezer"),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == {return, '404'}).
 
 test124() ->
@@ -2277,6 +2376,7 @@ test124() ->
     io:format(PP),
     Ret = check_get_page1(Tree2, {"User", ["nothing", "in", "particular"]}, P1, "beezer"),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == {html, "beezer"}).
 
 test125() ->
@@ -2288,6 +2388,7 @@ test125() ->
     io:format(PP),
     Ret = check_get_page1(Tree2, {"User", ["nothing", "in", "particular"]}, P1, "beezer"),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == {return, '401'}).
 
 test126() ->
@@ -2299,6 +2400,7 @@ test126() ->
     io:format(PP),
     Ret = check_get_page1(Tree2, {"User", ["nothing", "in", "particular"]}, P1, "User/beezer"),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree2, []),
     (Ret == {html, "User/beezer"}).
 
 %% global wild beats local wild
@@ -2309,6 +2411,7 @@ test127() ->
     Tree2 = add_default1(Tree, P1, "default"),
     PP = pretty_print1(Tree2, [], text),
     io:format(PP),
+    get_as_json1(Tree2, []),
     Ret = check_get_page1(Tree2, {"User", ["nothing", "in", "particular"]}, P1, "beezer"),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "beezer"}).
@@ -2327,6 +2430,7 @@ test128() ->
     Ret = get_views1(Tree4, {"User", ["Group", "Another"]}, P2),
     io:format(pretty_print1(Tree4, P1, text)),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree4, []),
     (Ret == ["view3", "view2", "view1", "over3", "over2", "over1", "default1"]).
 
 test129() ->
@@ -2342,6 +2446,7 @@ test129() ->
     Ret = get_views1(Tree4, {"User", ["Group", "Another"]}, P2),
     io:format(pretty_print1(Tree4, P1, text)),
     io:format("Ret is ~p~n", [Ret]),
+    get_as_json1(Tree4, []),
     (Ret == ["view3", "view2", "view1", "over3", "over2", "over1", "default1"]).
 
 unit_test_() -> 
