@@ -10,10 +10,10 @@ init_permissions(Host) ->
     [ auth_srv:add_controls(Host, Users, Path, Perms, Default, Pages)
       || {Users, Path, Perms, Default, Pages} <- default_permissions() ],
 
-    Views = hn_config:get(default_pages),
-    
-    auth_srv:add_default(Host, [], Views),
-    auth_srv:add_default(Host, ["[**]"], Views),
+    % Views = hn_config:get(default_pages),
+
+    %% auth_srv:add_default(Host, [], Views),
+    %% auth_srv:add_default(Host, ["[**]"], Views),
     
     ok.
 
@@ -34,6 +34,11 @@ default_permissions() ->
      { [{group, "admin"}], ["team"], [read, write],
        "_global/team", ["_global/team" | hn_config:get(default_pages) ] },
 
+     % Edit Page
+     { [{group, "admin"}], ["edit"], [read, write],
+       "_global/edit", ["_global/edit" | hn_config:get(default_pages) ] },
+
+     
      % Sign Up Page
      { [{user, "anonymous"}], ["application"], [write, read], "_global/login", ["_global/login"] },
      { [{group, "admin"}], ["application"], [read, write],

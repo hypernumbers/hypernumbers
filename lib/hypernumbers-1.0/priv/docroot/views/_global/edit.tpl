@@ -20,36 +20,6 @@
         
 	    <div id="primarycontent">
 
-          <div data-binding-from="/B9" class="hn" data-type="text"></div>
-          
-          <form class="hn" data-type="form">
-         
-            <label>
-              <span><div data-binding-from="/application/B2" class="hn" 
-                         data-type="text"></div></span>
-              <span class="hn" 
-                    data-type="input" 
-                    data-binding-to="/application/b:b"></span>
-            </label>
-            
-            <label>
-              <span><div data-binding-from="/application/B3" class="hn" 
-                         data-type="text"></div></span>
-              <span class="hn" 
-                    data-type="input" 
-                    data-binding-to="/application/c:c"></span>
-            </label>
-
-            <label>
-              <span><div data-binding-from="/application/B4" class="hn" 
-                         data-type="text"></div></span>
-              <span class="hn" data-type="textarea" 
-                    data-binding-to="/application/d:d"></span>
-            </label>
-
-            <input type="submit" value="Submit" />
-
-          </form>
         </div>
         
 	    <div id="secondarycontent">

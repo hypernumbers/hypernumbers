@@ -270,17 +270,10 @@ body {
     font-weight: bold;
 }
 
-.hn { margin:5px 5px 10px 5px; }
 p { margin:0px !important; }
 .editing .hn:hover { border:1px dashed #999; }
-
-label {
-    font-weight:bold;
-    display:block; 
-}
 
 .grid .by { margin: 0px; color:#999;} 
 .grid .hnheader { margin:0px; } 
 .grid .container { margin-bottom: 20px; }
 .grid hr { background:#999; height:1px; border:0px; }
-

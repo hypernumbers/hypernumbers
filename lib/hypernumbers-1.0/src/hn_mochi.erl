@@ -342,21 +342,21 @@ ipost(Ref, _Type, _Attr, [{"clear", What}], _User)
   when What == "contents"; What == "style"; What == "all" ->
     hn_db_api:clear(Ref, list_to_atom(What));
 
-ipost(Ref, _Type, _Attr, 
+ipost(_Ref, _Type, _Attr, 
       [{"saveview", {struct, [{"global", Global},
                               {"name", Name}, {"tpl", Form}]}}], User) ->
 
     FName = filename:basename(Name) ++ ".tpl",
     UName = hn_users:name(User),
     
-    {Auth, Root} = case Global of
-                       false -> {[{user, UName}], UName};
-                       true  -> {[{user, "*"}, {group, "*"}]}
-                   end,
+    {_Auth, Root} = case Global of
+                        false -> {[{user, UName}], UName};
+                        true  -> {[{user, "*"}, {group, "*"}]}
+                    end,
         
-    View = Root ++ "/" ++ filename:basename(Name),
+    %% View = Root ++ "/" ++ filename:basename(Name),
     File = [viewroot(), "/" ,Root, "/", FName],
-    auth_srv:add_views(Ref#refX.site, Auth, Ref#refX.path, [View]),
+    %% auth_srv:add_views(Ref#refX.site, Auth, Ref#refX.path, [View]),
     
     ok = filelib:ensure_dir(File),
     ok = file:write_file(File, Form);
@@ -648,10 +648,9 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
                 false -> {"permissions", {array, ["read"]}}
             end,
 
-    %% Views = {views, {array, auth_srv:get_views(S, {Name, Groups}, P)}},
-    %% io:format("Views ~p ~n",[auth_srv:get_views(S, {Name, Groups}, P)]),
+    Views = {views, {array, auth_srv:get_views(S, {Name, Groups}, P)}},
     
-    {struct, [Time, Usr, Host, Tour, Lang, Perms, Grps
+    {struct, [Time, Usr, Host, Tour, Lang, Perms, Grps, Views
               | dict_to_struct(Dict)]}.
 
 viewed_tour(_Site, anonymous) ->
