@@ -63,7 +63,15 @@
           </ul>
           
           <div class="tab" id="add"></div>
-          <div class="tab" id="configure"></div>
+          <div class="tab" id="configure">
+            <table>
+              <tr><td><strong>bind:</strong></td>
+                <td><input type="text" id="bind" /></td></tr>
+              <tr><td></td>
+                <td><input type="button" id="delete" value="delete" />
+              </td></tr>
+            </table>          
+          </div>
           <div class="tab" id="templates">
             <ul id="templateslist"></ul>
           </div>
@@ -80,7 +88,7 @@
         
         <div id="pagemenu">
           <div id="pagebar">
-            <a data-href="home/u">$txt:{My Spreadsheets}$</a>
+            <a data-href="home">$txt:{My Spreadsheets}$</a>
           </div>
           <div id="finder">
             
