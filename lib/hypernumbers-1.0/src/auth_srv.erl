@@ -68,8 +68,11 @@
 %%% <li>a wild card further down the path tree beats one higher up
 %%% (even if the lower is multiple and the higher is a singe wild card)</li>
 %%% </ul>
-%%% Note that you only get cascade if you have a path with a wild card in it
-%%% (ie <code>"[*]"</code> or <code>"[**]"</code>).
+%%% The other principle of cascade is that intermediate pages ALWAYS exist.
+%%% So if a permission is set on the path ["a", "b"] only then no permissions
+%%% are set on pages like ["a", "b", "c"]...
+%%% BUT if permissions are set on ["a", "b"] and ["a", "b", "c", "d"] then
+%%% the permissions from ["a", "b"] cascade down to ["a", "b", "c"] as well
 %%% == Controls ==
 %%% === Introduction ===
 %%% There are 3 controls implemented:
@@ -872,23 +875,28 @@ check_get1(_Tree, [], Carried) ->
     Carried;
 check_get1(Tree, [H | T], Carried) ->
 %% drill out the wild branches
-    NewCarry1 = case gb_trees:lookup("[**]", Tree) of
-                    {value, V1} -> NewC1 = get_carry("[**]", V1, Carried),
-                                   C1 = make_carry(V1),
-                                   merge_carry(C1, NewC1);
-                    none        -> Carried
-                end,
-    NewCarry2 = case gb_trees:lookup("[*]", Tree) of
-                    {value, V2} -> NewC2 = get_carry("[*]", V2, NewCarry1),
-                                   MC2 = merge_carry(make_carry(V2), NewC2),
-                                   check_get1(V2, T, MC2);
-                    none        -> NewCarry1
-                end,
+    {NewCarry1, Wild1} =
+        case gb_trees:lookup("[**]", Tree) of
+            {value, V1} -> NewC1 = get_carry("[**]", V1, Carried),
+                           C1 = make_carry(V1),
+                           {merge_carry(C1, NewC1), wild};
+            none        -> {Carried, tame}
+        end,
+    {NewCarry2, Wild2} =
+        case gb_trees:lookup("[*]", Tree) of
+            {value, V2} -> NewC2 = get_carry("[*]", V2, NewCarry1),
+                           MC2 = merge_carry(make_carry(V2), NewC2),
+                           {check_get1(V2, T, MC2), wild};
+            none        -> {NewCarry1, tame}
+        end,
     case gb_trees:lookup(H, Tree) of
         {value, V3} -> NewC3 = get_carry(H, V3, NewCarry2),
                        MC3 = merge_carry(make_carry(V3), NewC3),
                        check_get1(V3, T, MC3);
-        none        -> NewCarry2
+        none        -> case {Wild1, Wild2} of
+                           {tame, tame} -> #carry{};
+                           _            -> NewCarry2
+                       end
     end.
 
 make_carry(Tree) ->
@@ -1422,6 +1430,17 @@ test18() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '404'}).
 
+test18a() ->
+    P = [],
+    P2 = ["a", "b", "c", "d", "e"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
+    PP = pretty_print1(Tree, [], text),
+    io:format(PP),
+    get_as_json1(Tree, []),
+    Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '404'}).
+
 %% set the same permission twice
 test19() ->
     P = ["a", "b", "c", "d"],
@@ -1451,7 +1470,7 @@ test19a() ->
     PP = pretty_print1(Tree2, [], text),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "banana"}).
+    (Ret == {return, '404'}).
 
 test19b() ->
     P1a = ["a", "b", "c"],
@@ -1468,7 +1487,7 @@ test19b() ->
     PP = pretty_print1(Tree2, [], text),
     io:format(PP),
     io:format("Ret1 is ~p~nRet2 is ~p~nRet3 is ~p~n", [Ret1, Ret2, Ret3]),
-    ({Ret1, Ret2, Ret3} == {{html, "index"}, {html, "index"}, {html, "special"}}).
+    ({Ret1, Ret2, Ret3} == {{return, '404'}, {html, "index"}, {html, "special"}}).
 
 test19c() ->
     P1a = ["a", "b", "c", "d"],
@@ -1477,11 +1496,10 @@ test19c() ->
                           [read, write], "lychee", ["index"]),
     Tree2 = add_controls1(Tree1, [{user, "User"}, {group, "Group"}], P1b,
                           [read, write], "apricot", ["index"]),
-    P2 = ["a", "b", "c", "d", "e"],
     get_as_json1(Tree2, []),
-    Ret = check_get_page1(Tree2, {"gordon", ["Group"]}, P2),
+    Ret = check_get_page1(Tree2, {"gordon", ["Group"]}, P1b),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "lychee"}).
+    (Ret == {html, "apricot"}).
 
 test19d() ->
     P1a = ["a", "b", "c", "d"],
@@ -1642,7 +1660,7 @@ test26() ->
     get_as_json1(Tree2, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "default"}).
+    (Ret == {return, '404'}).
 
 %% check can_read
 
@@ -1689,7 +1707,7 @@ test33() ->
     Ret = can_read1(Tree2, {"bob", ["Group"]}, P2),
     get_as_json1(Tree2, []),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == true).
+    (Ret == false).
 
 test34() ->
     P1 = ["a"],
@@ -1701,7 +1719,7 @@ test34() ->
     Ret = can_read1(Tree2, {"User", ["None"]}, P2),
     get_as_json1(Tree2, []),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == true).
+    (Ret == false).
 
 test35() ->
     P1 = ["a"],
@@ -1714,7 +1732,7 @@ test35() ->
     get_as_json1(Tree2, []),
     Ret = can_read1(Tree2, {"User", ["None"]}, P3),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == true).
+    (Ret == false).
 
 %% check can_write
 
@@ -1761,7 +1779,7 @@ test43() ->
     get_as_json1(Tree2, []),
     Ret = can_write1(Tree2, {"bob", ["Group"]}, P2),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == true).
+    (Ret == false).
 
 test44() ->
     P1 = ["a"],
@@ -1773,7 +1791,7 @@ test44() ->
     get_as_json1(Tree2, []),
     Ret = can_write1(Tree2, {"User", []}, P2),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == true).
+    (Ret == false).
 
 test45() ->
     P1 = ["a"],
@@ -2487,6 +2505,7 @@ unit_test_() ->
      ?_assert(test16()),
      ?_assert(test17()),
      ?_assert(test18()),
+     ?_assert(test18a()),
      ?_assert(test19()),
      ?_assert(test19a()),
      ?_assert(test19b()),
