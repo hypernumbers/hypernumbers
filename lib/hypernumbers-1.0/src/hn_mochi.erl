@@ -351,13 +351,13 @@ ipost(_Ref, _Type, _Attr,
     
     {_Auth, Root} = case Global of
                         false -> {[{user, UName}], UName};
-                        true  -> {[{user, "*"}, {group, "*"}]}
+                        true  -> {[{user, "*"}, {group, "*"}], "_global"}
                     end,
         
     %% View = Root ++ "/" ++ filename:basename(Name),
     File = [viewroot(), "/" ,Root, "/", FName],
     %% auth_srv:add_views(Ref#refX.site, Auth, Ref#refX.path, [View]),
-    
+
     ok = filelib:ensure_dir(File),
     ok = file:write_file(File, Form);
 
