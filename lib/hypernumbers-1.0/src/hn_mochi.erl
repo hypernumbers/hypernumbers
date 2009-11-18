@@ -25,7 +25,6 @@
         exit("exit from hn_mochi:handle_req impossible page versions")).
 
 req(Req) ->
-    
     case filename:extension(Req:get(path)) of
         
         % Dont Cache templates
@@ -649,9 +648,10 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
                 false -> {"permissions", {array, ["read"]}}
             end,
 
-    Views = {views, {array, auth_srv:get_views(S, {Name, Groups}, P)}},
-
-    {struct, [Time, Usr, Host, Tour, Lang, Perms, Views, Grps
+    %% Views = {views, {array, auth_srv:get_views(S, {Name, Groups}, P)}},
+    %% io:format("Views ~p ~n",[auth_srv:get_views(S, {Name, Groups}, P)]),
+    
+    {struct, [Time, Usr, Host, Tour, Lang, Perms, Grps
               | dict_to_struct(Dict)]}.
 
 viewed_tour(_Site, anonymous) ->
@@ -682,7 +682,8 @@ make_after(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
     RefX#refX{obj = {row, {Y1 - DiffY, Y2 - DiffY}}}. %
 
 pages(#refX{} = RefX) ->
-    Tmp = pages_to_json(hn_db_api:read_page_structure(RefX)),    
+    Dict = hn_db_api:read_page_structure(RefX),
+    Tmp = pages_to_json(dh_tree:add(RefX#refX.path, Dict)),    
     {struct, [{"name", "home"}, {"children", {array, Tmp}}]}.
 
 get_lang(anonymous) ->
