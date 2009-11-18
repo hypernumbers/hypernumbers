@@ -12,33 +12,38 @@
         old_style/0]).
 
 -define(SITE, "http://127.0.0.1:9000").
+-define(SITES, ["http://127.0.0.1:9000", "http://localhost:9000"]).
 
 old_style() ->
-    %
-    % Users and Groups First
-    %    
-    % first delete all the users
-    % hn_users:delete_all_users_DEBUG(?SITE),
+    %%
+    %% Users and Groups First
+    %%    
+    %% first delete all the users
+    %% hn_users:delete_all_users_DEBUG(?SITE),
 
-    % now create some users
-    % hn_users:create(?SITE, "gordon", ["dev", "admin"], "password"),
-    % hn_users:create(?SITE, "tom", ["dev", "admin"], "password"),
-    % hn_users:create(?SITE, "dale", ["dev", "admin"], "password"),
-    % hn_users:create(?SITE, "stephen", ["dev", "admin"], "password"),
+    %% now create some users
+    %% hn_users:create(?SITE, "gordon", ["dev", "admin"], "password"),
+    %% hn_users:create(?SITE, "tom", ["dev", "admin"], "password"),
+    %% hn_users:create(?SITE, "dale", ["dev", "admin"], "password"),
+    %% hn_users:create(?SITE, "stephen", ["dev", "admin"], "password"),
 
-    %
-    % now setup perms
-    %
-    auth_srv:clear_all_perms_DEBUG("http://127.0.0.1:9000"),
+    %%
+    %% now setup perms
+    %%
+    F = fun(S) ->
+                auth_srv:clear_all_perms_DEBUG(S),
 
-    % the home page
-    auth_srv:add_controls("http://127.0.0.1:9000", [{user, "*"}, {group, "*"}],
-                      ["[**]"],[read, write],
-                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]),
+                                                % the home page
+                auth_srv:add_controls(S, [{user, "*"}, {group, "*"}],
+                                      ["[**]"],[read, write],
+                                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]),
 
-    auth_srv:add_controls("http://127.0.0.1:9000", [{user, "*"}, {group, "*"}],
-                      [],[read, write],
-                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]).    
+                auth_srv:add_controls(S, [{user, "*"}, {group, "*"}],
+                                      [],[read, write],
+                                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"])
+        end,
+    [F(S) || S <- ?SITES],
+    ok.
 
 
 setup() ->
