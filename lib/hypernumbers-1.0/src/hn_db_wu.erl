@@ -3013,9 +3013,10 @@ get_content_attrs([H | T], Acc) ->
 shift_remote_links2(_Site, [], _To) -> ok;
 shift_remote_links2(Site, [H | T], To) ->
     % now read delete the old remote link
+    Table = trans(Site, remote_cell_link),
     NewLink = H#remote_cell_link{parent = To},
-    ok = mnesia:delete_object(trans(Site, remote_cell_link), H, write),
-    ok = mnesia:write(trans(Site, NewLink)),
+    ok = mnesia:delete_object(Table, H, write),
+    ok = mnesia:write(Table, NewLink, write),
     shift_remote_links2(Site, T, To).
 
 deref_child(#refX{site = _S} = Child, DeRefX) ->
