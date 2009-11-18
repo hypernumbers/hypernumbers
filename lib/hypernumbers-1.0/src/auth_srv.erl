@@ -585,7 +585,12 @@ update_trees(File, Host, NewTree, Trees) ->
     ok = dets:insert(File, {?KEY, NewTrees}),
     NewTrees.
 
-get(Host, Trees) -> keyfind(Host, Trees).
+get(Host, Trees) -> 
+    case keyfind(Host, Trees) of
+        [] -> gb_trees:empty();
+        T  -> T
+    end.
+            
 
 %%
 %% Tree Helper functions
