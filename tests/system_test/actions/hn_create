@@ -15,8 +15,6 @@ actions() ->
     {ok, _} = http:request(post, {RemUrl++"A2", [{"Accept", Type}], Type, 
                                   "{\"set\":{\"formula\":\"\\\"0xDEADBEAF\\\"\"}}"}, 
                            [], []),
-
-    %% Put default values for create/delete/create again test.
     {ok, _} = http:request(post, {RemUrl++"A3", [{"Accept", Type}], Type, 
                                   "{\"set\":{\"formula\":\"false\"}}"}, 
                            [], []),
@@ -25,13 +23,19 @@ actions() ->
                            [], []),
 
     %% Delete existing hypernumbers, and then recreate them.
-    {ok, _} = http:request(post, {LocalUrl++"C8:C9", [{"Accept", Type}], Type,
+    {ok, _} = http:request(post, {LocalUrl++"C7:C10", [{"Accept", Type}], Type,
                                   "{\"clear\":\"all\"}"},
                            [], []),
+    {ok, _} = http:request(post, {LocalUrl++"C7", [{"Accept", Type}], Type,
+                                  "{\"set\":{\"formula\":\"=HN(\\\"http://localhost:9000/hn_create/a1\\\")\"}}"},
+                           [], []),
     {ok, _} = http:request(post, {LocalUrl++"C8", [{"Accept", Type}], Type,
-                                  "{\"set\":{\"formula\":\"=HN(\\\"http://localhost:9000/hn_create/a3\\\")\"}}"},
+                                  "{\"set\":{\"formula\":\"=HN(\\\"http://localhost:9000/hn_create/a2\\\")\"}}"},
                            [], []),
     {ok, _} = http:request(post, {LocalUrl++"C9", [{"Accept", Type}], Type,
+                                  "{\"set\":{\"formula\":\"=HN(\\\"http://localhost:9000/hn_create/a3\\\")\"}}"},
+                           [], []),
+    {ok, _} = http:request(post, {LocalUrl++"C10", [{"Accept", Type}], Type,
                                   "{\"set\":{\"formula\":\"=HN(\\\"http://localhost:9000/hn_create/a4\\\")\"}}"},
                            [], []).
 
