@@ -42,7 +42,7 @@
 
 
 t([V]) ->
-    case col([V], [eval_funs, area_first], [return_errors]) of
+    case col([V], [eval_funs, area_first, fetch], [return_errors]) of
         Err   when ?is_errval(Err) -> Err;
         [Str] when ?is_string(Str) -> Str;
         _Else -> ""
