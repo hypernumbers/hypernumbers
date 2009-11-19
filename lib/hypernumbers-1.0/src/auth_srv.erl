@@ -68,11 +68,16 @@
 %%% <li>a wild card further down the path tree beats one higher up
 %%% (even if the lower is multiple and the higher is a singe wild card)</li>
 %%% </ul>
-%%% The other principle of cascade is that intermediate pages ALWAYS exist.
+%%% There are two other principle of cascade that pertain.
+%%% The first is that intermediate pages ALWAYS exist.
 %%% So if a permission is set on the path ["a", "b"] only then no permissions
 %%% are set on pages like ["a", "b", "c"]...
 %%% BUT if permissions are set on ["a", "b"] and ["a", "b", "c", "d"] then
 %%% the permissions from ["a", "b"] cascade down to ["a", "b", "c"] as well
+%%% The second is that wild user permissions and views don't propagage
+%%% a view or permission set against {user, "*"} or {group, "*"} will only
+%%% pertain to the page they are set against (including wild pages
+%% with "[**]" and "[*]"
 %%% == Controls ==
 %%% === Introduction ===
 %%% There are 3 controls implemented:
@@ -929,31 +934,13 @@ merge_controls(Type, C1, C2)    -> merge_controls1(Type, C1, C2, []).
 
 merge_controls1(default, D1, D2, []) ->
     merge_defs(D1, D2);
-merge_controls1(acl, [], A2, Acc) ->
-    N1 = case lists:keysearch({user, "*"}, 1, A2) of
-             false       -> [];
-             {value, V1} -> V1
-         end,
-    N2 = case lists:keysearch({group, "*"}, 1, A2) of
-             false       -> [];
-             {value, V2} -> V2
-         end,
-    remove_empty([N1, N2 | Acc]);
+merge_controls1(acl, [], _A2, Acc) -> Acc;
 merge_controls1(acl, [{K, V1} | T], A2, Acc) ->
     case lists:keysearch(K, 1, A2) of
         false            -> merge_controls1(acl, T, A2, [{K, V1} | Acc]);
         {value, {K, V2}} -> merge_controls1(acl, T, A2, [{K, hslists:dedup([V1, V2])} | Acc])
     end;
-merge_controls1(views, [], A2, Acc) ->
-    N1 = case lists:keysearch({user, "*"}, 1, A2) of
-             false       -> [];
-             {value, V1} -> V1
-         end,
-    N2 = case lists:keysearch({group, "*"}, 1, A2) of
-             false       -> [];
-             {value, V2} -> V2
-         end,
-    remove_empty([N1, N2 | Acc]);
+merge_controls1(views, [], _A2, Acc) -> Acc;
 merge_controls1(views, [{K, V1} | T], A2, Acc) ->
     case lists:keysearch(K, 1, A2) of
         false            -> merge_controls1(views, T, A2, [{K, V1} | Acc]);
@@ -1646,7 +1633,7 @@ test25() ->
     get_as_json1(Tree3, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "override1"}).
+    (Ret == {html, "a view"}).
 
 %% check wild resolution order
 test26() ->
@@ -2439,7 +2426,7 @@ test127() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "beezer"}).
 
-%% wild on wild...
+%% wild on wild... (mind wild groups don't propagate!)
 test128() ->
     P1 = [],
     P2 = ["a"],
@@ -2454,7 +2441,7 @@ test128() ->
     io:format(pretty_print1(Tree4, P1, text)),
     io:format("Ret is ~p~n", [Ret]),
     get_as_json1(Tree4, []),
-    (Ret == ["view3", "view2", "view1", "over3", "over2", "over1", "default1"]).
+    (Ret == ["view3", "view1", "over3", "over1", "default1"]).
 
 test129() ->
     P1 = ["a"],
@@ -2470,7 +2457,7 @@ test129() ->
     io:format(pretty_print1(Tree4, P1, text)),
     io:format("Ret is ~p~n", [Ret]),
     get_as_json1(Tree4, []),
-    (Ret == ["view3", "view2", "view1", "over3", "over2", "over1", "default1"]).
+    (Ret == ["view3", "view1", "over3", "over1", "default1"]).
 
 unit_test_() -> 
     [
