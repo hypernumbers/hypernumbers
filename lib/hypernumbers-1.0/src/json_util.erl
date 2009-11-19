@@ -40,13 +40,13 @@ unjsonify({struct, [{"subtype", "version"},
 %% @spec payload_to_json(Term) -> Json
 %% @doc payload_to_json takes a Term representing a payload used in the 
 %% horizontal api and makes it into a mochijson encodable
-payload_to_json({Type, {column, {X1, X2}}})
+payload_to_json({Type, {column, {X1, X2}}, _Displacement})
   when (Type == insert) orelse (Type == delete) ->
     {insert, {struct, [{"type", Type},
                        {"ref",  "column"},
                        {"X1",   X1},
                        {"X2",   X2}]}};
-payload_to_json({Type, {row, {Y1, Y2}}})
+payload_to_json({Type, {row, {Y1, Y2}}, _Displacement})
   when (Type == insert) orelse (Type == delete) ->
     {insert, {struct, [{"type", Type},
                        {"ref",  "row"},

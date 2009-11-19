@@ -42,7 +42,7 @@ notify(Record) when is_record(Record, dirty_notify_out) ->
                    CVJson = json_util:jsonify(ChildVsn),
                    Server = X#outgoing_hn.child_proxy,
                    Biccie = X#outgoing_hn.biccie,
-                   
+
                    {Type, P} = json_util:payload_to_json(Change),
                    Vars = {struct, [{"action",     "notify"},
                                     {"biccie",     Biccie},

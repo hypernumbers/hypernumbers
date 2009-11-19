@@ -734,7 +734,7 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
                         ok = hn_db_wu:write_remote_link(P, C, incoming),
                         {blank, []};
                     [Hn] ->
-                        io:format("got to D~n"),
+                        %io:format("got to D~n"),
                         #incoming_hn{value = Val, biccie = B,
                                      'dependency-tree' = DepTree} = Hn,
                         % check if there is a remote cell
@@ -1140,20 +1140,23 @@ move_tr(#refX{site = Site, obj = Obj} = RefX, Type, Disp) ->
     ok = hn_db_wu:mark_notify_out_dirty(PageRef, Change, 0),
     
     Status = lists:flatten([Status1, Status2]),
+
     % finally deal with any cells returned from delete_cells that
     % are dirty - these need to be recalculated now that the link/local_objs
     % tables have been transformed
-    Fun2 = 
-        fun({dirty, X}) ->
-                [{X, {"formula", F}}]
-                    = hn_db_wu:read_attrs(X, ["formula"], write),
-                ok = hn_db_wu:write_attr(X, {"formula", F})
-        end,
-    [ok = Fun2(X) || X <- Status],
+    Fun2 = fun(X) ->
+                   case hn_db_wu:read_attrs(X, ["formula"], write) of
+                       [{X, {"formula", F}}] ->
+                           hn_db_wu:write_attr(X, {"formula", F});
+                       _  ->
+                           ok
+                   end
+           end,
+    [ok = Fun2(X) || {dirty, X} <- Status],
     % Jobs a good'un, now for the remote parents
     % io:format("in hn_db_api:move do something with Parents...~n"),
     _Parents =  hn_db_wu:find_incoming_hn(Site, PageRef),
-    % io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
+    %io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
     ok.
 
 %% @spec clear(#refX{}) -> ok
