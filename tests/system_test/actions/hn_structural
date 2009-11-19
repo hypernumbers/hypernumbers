@@ -4,22 +4,22 @@
 sites() -> ["http://127.0.0.1:9000"].
 
 actions() ->
+    LocalUrl = "http://127.0.0.1:9000/hn_structural/",
+    Type = "application/json",
+
+    %% Delete row 2
+    {ok, _} = http:request(post, {LocalUrl++"2:2", [{"Accept", Type}], Type,
+                                  "{\"delete\":\"all\"}"},
+                           [], [], systest),
+
+    %% Delete row number 13. 
+    {ok, _} = http:request(post, {LocalUrl++"13:13", [{"Accept", Type}], Type,
+                                  "{\"delete\":\"all\"}"},
+                           [], [], systest),
+
+    %% Delete column F
+    {ok, _} = http:request(post, {LocalUrl++"F:F", [{"Accept", Type}], Type,
+                                  "{\"delete\":\"all\"}"},
+                           [], [], systest),
     ok.
     
-    %% LocalUrl = "http://127.0.0.1:9000/hn_structural/",
-    %% Type = "application/json",
-
-    %% %% Delete row 2
-    %% {ok, _} = http:request(post, {LocalUrl++"2:2", [{"Accept", Type}], Type,
-    %%                               "{\"delete\":\"all\"}"},
-    %%                        [], []),
-
-    %% %% Delete row number 13. 
-    %% {ok, _} = http:request(post, {LocalUrl++"13:13", [{"Accept", Type}], Type,
-    %%                               "{\"delete\":\"all\"}"},
-    %%                        [], []),
-
-    %% %% Delete column F
-    %% {ok, _} = http:request(post, {LocalUrl++"F:F", [{"Accept", Type}], Type,
-    %%                               "{\"delete\":\"all\"}"},
-    %%                        [], []).

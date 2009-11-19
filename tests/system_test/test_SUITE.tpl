@@ -9,12 +9,13 @@
 -include(~p).
 
 init_per_suite(Config) ->
-    Init = fun(S) ->
+    InitSite = fun(S) ->
                    reset_perms(S),
                    hn_db_api:wait_for_dirty(S)
            end,
-    [Init(S) || S <- sites()], 
-    testsys:restore(~p, ~p),
+    [InitSite(S) || S <- sites()], 
+    inets:start(http, [{profile, systest}]),
+    testsys:restore(~p, ~p, systest),
     actions(),
     timer:sleep(2000),
     [hn_db_api:wait_for_dirty(S) || S <- sites()], 
@@ -33,7 +34,7 @@ reset_perms(S) ->
                       "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]).
 
 end_per_suite(_Config) ->
-    ok.
+    inets:stop(http, systest).
 
 init_per_testcase(_TestCase, Config) -> Config.
 end_per_testcase(_TestCase, _Config) -> ok.

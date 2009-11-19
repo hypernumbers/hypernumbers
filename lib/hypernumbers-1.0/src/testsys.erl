@@ -1,6 +1,6 @@
 -module(testsys).
 
--export([save/2, restore/2, generate/0]).
+-export([save/2, restore/2, restore/3, generate/0]).
 
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
@@ -27,9 +27,11 @@ save(Path, Fixture) ->
 
 
 restore(Path, Fixture) ->
+    restore(Path, Fixture, default).
+restore(Path, Fixture, Profile) ->
     Type = "application/json",
     Body = "{\"delete\":\"all\"}",
-    case http:request(post, {Path, [], Type, Body}, [], []) of
+    case http:request(post, {Path, [], Type, Body}, [], [], Profile) of
         {ok, {{"HTTP/1.1",200,"OK"}, _Hds, "\"success\""}} ->
             FN = filename:join(?rel(?FIXTURE_DIR), Fixture++".json"),
             hn_import:json_file(Path, FN);
