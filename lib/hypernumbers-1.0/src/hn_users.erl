@@ -166,15 +166,14 @@ create_user_exec(Site, Rec) ->
         {atomic, ok}      ->
 
             %% Add permissions
+
+            auth_srv:add_controls(Site, [{"dale", []}],
+                                  ["u", "dale"], [read, write],
+                                  [], ["_global/userhome"]),
             
-            auth_srv:add_controls(Site, [{user, name(Rec)}],
-                                  ["u", name(Rec)], [read, write],
-                                  "_global/userhome", ["_global/userhome"]),
-            
-            auth_srv:add_controls(Site, [{user, name(Rec)}],
-                                  ["u", name(Rec), "[**]"], [read, write],
-                                  "_global/spreadsheet",
-                                  hn_config:get(default_pages)),
+            auth_srv:add_controls(Site, [{"dale", []}],
+                                  ["u", "dale", "[**]"], [read, write],
+                                  [], ["*"]),
             ok
     end.
 

@@ -24,8 +24,9 @@ body {
 #control ul {list-style-type:none;}
 
 #placer {  
- height:50px;
- border: 2px dashed #999;
+    margin: 0px 10px;
+    height: 30px;
+    border: 2px dashed #999;
 }
 
 #tdpreview {  
@@ -60,6 +61,10 @@ body {
 .configurepanel {  
     padding-bottom:35px;
     color: #222222;
+}
+
+#configure input { 
+    width: 70px; 
 }
 
 .disabled {  

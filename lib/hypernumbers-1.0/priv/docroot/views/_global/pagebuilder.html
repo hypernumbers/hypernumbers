@@ -64,9 +64,23 @@
           
           <div class="tab" id="add"></div>
           <div class="tab" id="configure">
+           
             <table>
-              <tr><td><strong>bind:</strong></td>
-                <td><input type="text" id="bind" /></td></tr>
+              <tr><td><strong>change type:</strong></td>
+                <td><select id="changetype">
+                    <option>text</option>
+                    <option>input</option>
+                    <option>textarea</option>
+                    <option>select</option>
+                    <option>radio</option>
+                    <option>checkbox</option>
+                  </select>
+                </td></tr>
+              
+              <tr><td><strong>bind from:</strong></td>
+                <td><input type="text" id="bindfrom" readonly="readonly" /></td></tr>
+   <tr><td><strong>bind to:</strong></td>
+                <td><input type="text" id="bindto" readonly="readonly" /></td></tr>
               <tr><td></td>
                 <td><input type="button" id="delete" value="delete" />
               </td></tr>

@@ -20,14 +20,14 @@ init_permissions(Host) ->
 default_permissions() ->
     [
      % Home Page
-     { [{user, "anonymous"}], [], [read], "_global/home", ["_global/home"] },
+     { [{user, "anonymous"}], [], [read], [], ["_global/home"] },
      { [{group, "admin"}], [], [read, write],
-       "_global/home", ["_global/home" | hn_config:get(default_pages) ] },
+       [], ["_global/home" | hn_config:get(default_pages) ] },
 
      % About Page
-     { [{user, "anonymous"}], ["about"], [read], "_global/about", ["_global/about"] },
+     { [{user, "anonymous"}], ["about"], [read], [], ["_global/about"] },
      { [{group, "admin"}], ["about"], [read, write],
-       "_global/about", ["_global/about" | hn_config:get(default_pages) ] },
+       [], ["_global/about" | hn_config:get(default_pages) ] },
      
      % Team Page
      { [{user, "anonymous"}], ["team"], [read], "_global/team", ["_global/team"] },
