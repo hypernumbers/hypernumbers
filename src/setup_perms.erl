@@ -12,8 +12,8 @@
         old_style/0,
         hypernumbers_style/0]).
 
-%-define(SITE, "http://127.0.0.1:9000").
--define(SITES, ["http://127.0.0.1:9000", "http://localhost:9000", "http://192.168.56.101:9000"]).
+%-define(SITES, ["http://127.0.0.1:9000", "http://localhost:9000", "http://192.168.56.101:9000"]).
+-define(SITES, ["http://127.0.0.1:9000", "http://localhost:9000"]).
 
 old_style() ->
     %%
