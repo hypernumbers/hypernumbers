@@ -155,18 +155,30 @@ is_num_or_date(X) ->
     #datetime{date= calendar:gregorian_days_to_date(OldDays - Days),
               time = calendar:seconds_to_time(OldSecs - Secs)};
 '-'([V1, V2]) ->
-    [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
+    [Num1, Num2] = 
+        col([V1, V2],
+            [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
+             {cast, bool, num}, {cast, blank, num}],
+            [return_errors, {all, fun is_number/1}, return_errors]),
     Num1 - Num2.
 
 '*'([V1, V2]) ->
-    [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
+    [Num1, Num2] = 
+        col([V1, V2],
+            [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
+             {cast, bool, num}, {cast, blank, num}],
+            [return_errors, {all, fun is_number/1}, return_errors]),
     case Num1 * Num2 of
         X when X > ?GOOGOL -> ?ERRVAL_NUM;
         Result             -> Result
     end.
 
 '/'([V1, V2]) ->
-    [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
+    [Num1, Num2] = 
+        col([V1, V2],
+            [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
+             {cast, bool, num}, {cast, blank, num}],
+            [return_errors, {all, fun is_number/1}, return_errors]),
     case Num2 of
         X when X==0, X==0.0 -> ?ERRVAL_DIV;
         _Else               -> Num1/Num2

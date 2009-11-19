@@ -74,8 +74,8 @@
 %%% are set on pages like ["a", "b", "c"]...
 %%% BUT if permissions are set on ["a", "b"] and ["a", "b", "c", "d"] then
 %%% the permissions from ["a", "b"] cascade down to ["a", "b", "c"] as well
-%%% The second is that wild user permissions and views don't propagage
-%%% a view or permission set against {user, "*"} or {group, "*"} will only
+%%% The second is that wild user permissions and views don't propagate.
+%%% A view or permission set against {user, "*"} or {group, "*"} will only
 %%% pertain to the page they are set against (including wild pages
 %% with "[**]" and "[*]"
 %%% == Controls ==
@@ -84,7 +84,7 @@
 %%% <ul>
 %%% <li><code>acl</code>'s - access control lists</li>
 %%% <li><code>default views</code> - specify the default view for a path</li>
-%%% <li><code>views</code> - determines what views are served to whom</li>
+%%% <li><code>views</code> - determines which views are served to whom</li>
 %%% </ul>
 %%% === ACL's ===
 %%% Access control lists specify what resources a user can get access to.
@@ -120,7 +120,7 @@
 %%% the default at <code>["a", "b", "[*]"]</code> would be used. If none
 %%% there then the default at <code>["a", "b", "[**]"]</code>, and if not,
 %%% then that at <code>["a", "[**]"]</code>
-%%% Default views can be overridded by the override view specified in the
+%%% Default views can be overridden by the override view specified in the
 %%% view control.
 %%% === Views ===
 %%% Views are the list of all possible files that can be served to a user
