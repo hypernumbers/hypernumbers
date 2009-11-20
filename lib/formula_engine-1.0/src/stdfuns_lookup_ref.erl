@@ -194,11 +194,18 @@ index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
 match([V1, V2]) ->
     match([V1, V2, 1]);
 match([V1, V2, V3]) ->
-    ?ensure(?is_area(V2), ?ERR_VAL),
     MatchType = ?int(V3, [cast_strings, ban_bools, ban_dates, cast_blanks]),
     ?ensure(MatchType =< 1 andalso MatchType >= -1, ?ERR_NA),
-    %?ensure(area_util:height(V2) == 1, ?ERR_NA), % area must be horizontal
-    match1(V1, area_util:to_list(V2), MatchType).            
+
+    if ?is_area(V2) ->
+            io:format("~p~n", [area_util:to_list(V2)]),
+            match1(V1, area_util:to_list(V2), MatchType);
+       ?is_rangeref(V2) ->
+            {range, DList} = muin:fetch(V2),
+            match1(V1, lists:concat(DList), MatchType);
+       true ->
+            ?ERR_VAL
+    end.
 match1(LookupVal, List, -1) ->
     %% List must be in descending order.
     IsDesc = all(fun({X1, X2}) -> stdfuns_logical:'>'([X1, X2]) end,
