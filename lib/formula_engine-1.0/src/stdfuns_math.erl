@@ -127,7 +127,7 @@ is_num_or_date(X) ->
     col([V1, V2],
         [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
          {cast, bool, num}, {cast, blank, num}],
-        [return_errors, {all, fun is_num_or_date/1}, return_errors],
+        [return_errors, {all, fun is_num_or_date/1}],
         fun '+_'/1).
 
 '+_'([{datetime, D, T}, V2]) when is_number(V2) ->
@@ -155,34 +155,39 @@ is_num_or_date(X) ->
     #datetime{date= calendar:gregorian_days_to_date(OldDays - Days),
               time = calendar:seconds_to_time(OldSecs - Secs)};
 '-'([V1, V2]) ->
-    [Num1, Num2] = 
-        col([V1, V2],
-            [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
-             {cast, bool, num}, {cast, blank, num}],
-            [return_errors, {all, fun is_number/1}, return_errors]),
-    Num1 - Num2.
+    case col([V1, V2],
+             [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
+              {cast, bool, num}, {cast, blank, num}],
+             [return_errors, {all, fun is_number/1}]) of
+        [Num1, Num2] -> Num1 - Num2;
+        Other        -> Other
+    end.
 
 '*'([V1, V2]) ->
-    [Num1, Num2] = 
-        col([V1, V2],
-            [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
-             {cast, bool, num}, {cast, blank, num}],
-            [return_errors, {all, fun is_number/1}, return_errors]),
-    case Num1 * Num2 of
-        X when X > ?GOOGOL -> ?ERRVAL_NUM;
-        Result             -> Result
+    case col([V1, V2],
+             [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
+              {cast, bool, num}, {cast, blank, num}],
+             [return_errors, {all, fun is_number/1}]) of
+        [Num1, Num2] ->
+            case Num1 * Num2 of
+                X when X > ?GOOGOL -> ?ERRVAL_NUM;
+                Result             -> Result
+            end;
+        Other -> Other
     end.
 
 '/'([V1, V2]) ->
-    [Num1, Num2] = 
-        col([V1, V2],
-            [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
-             {cast, bool, num}, {cast, blank, num}],
-            [return_errors, {all, fun is_number/1}, return_errors]),
-    case Num2 of
-        X when X==0, X==0.0 -> ?ERRVAL_DIV;
-        _Else               -> Num1/Num2
+    case col([V1, V2],
+             [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
+              {cast, bool, num}, {cast, blank, num}],
+             [return_errors, {all, fun is_number/1}]) of
+        [_Num1, X] when X == 0 -> ?ERRVAL_DIV;
+        [Num1, Num2]           -> Num1 / Num2;
+        Other                  -> Other
     end.
+
+
+%%-define(default_rules, [first_array, cast_strings, cast_bools, cast_blanks, cast_dates]).
 
 
 '^^'([_, _]=Args) ->
