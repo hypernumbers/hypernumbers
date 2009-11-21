@@ -224,7 +224,7 @@ body {
 .wrp { position:relative;}
 
 
-#viewname { width:80px; }
+#viewname { width:90px; }
 
 #views ul { 
     list-style-type:none; 
@@ -265,7 +265,7 @@ body {
 #control #viewviews {
     position:absolute;
     top:1px;
-    right:5px;
+    right:-8px;
     background:none;
     border:none;
 }
