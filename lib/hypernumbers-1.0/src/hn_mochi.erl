@@ -79,7 +79,7 @@ do_req(Req) ->
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),    
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
-
+    
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->
@@ -166,6 +166,10 @@ iget(Req, Ref, page, [{"updates", Time}, {"path", Path}], _User, _CType) ->
 
 iget(Req, #refX{site = S}, page, [{"status", []}], _User, _CType) -> 
     json(Req, status_srv:get_status(S));
+
+iget(Req, #refX{site = S}, page, [{"permissions", []}], _User, CType) ->
+    io:format("getting permissons CType is ~p~n", [CType]),
+    Req:ok({"text/html", auth_srv:pretty_print(S, [], html)});
 
 % List of template pages
 iget(Req, _Ref, page, [{"templates", []}], _User, _CType) ->

@@ -456,6 +456,8 @@ check_get_page1(Tree, {User, Groups}, Page, View) ->
     % then see what view they should be getting
     Fun =
         fun(X) ->
+                io:format("in check_get_page1 X is ~p~n", [X]),
+                io:format("User is ~p Groups is ~p acl is ~p~n", [User, Groups, X#carry.acl]),
                 case get_ret_code(X#carry.acl, User, Groups, read) of
                     {return, '404'} -> {return, '404'}; 
                     {return, '401'} -> {return, '401'};
@@ -463,6 +465,7 @@ check_get_page1(Tree, {User, Groups}, Page, View) ->
                         Default = X#carry.default,
                         Views   = X#carry.views,
                         AllViews = get_all_views(Default, Views, User, Groups),
+                        io:format("AllViews is ~p~n", [AllViews]),
                         case has_wild(AllViews) of
                             global -> {html, View};
                             local  -> case is_local(User, View) of
@@ -749,7 +752,10 @@ get_o2(Views, [H | T]) -> case lists:keyfind({group, H}, 1, Views) of
                               {_, V} -> V#views.override
                           end.
 
-make_prettyprint(Tree, Type) -> make_pp(Tree , Type, [], "", []).
+make_prettyprint(Tree, html) -> Body = make_pp(Tree , html, [], "", []),
+                                "<html><head><title>Permissions Tree</title></head><body><code>"
+                                    ++ Body ++ "</code></body></html>";
+make_prettyprint(Tree, text) -> make_pp(Tree , text, [], "", []).
 
 make_pp(Tree, Type, Seg, Prefix, Acc) ->
     LineEnd = case Type of
@@ -762,10 +768,13 @@ make_pp(Tree, Type, Seg, Prefix, Acc) ->
                [] -> "/";
                _  -> "/" ++ Seg ++ "/"
            end,
-    NewPrefix = case length(Paths) of
-                    0 -> lists:append(Prefix, "  ");
-                    1 -> lists:append(Prefix, "  ");
-                    _ -> lists:append(Prefix, " |")
+    NewPrefix = case {length(Paths), Type} of
+                    {0, text} -> lists:append(Prefix, "  ");
+                    {1, text} -> lists:append(Prefix, "  ");
+                    {_, text} -> lists:append(Prefix, " |");
+                    {0, html} -> lists:append(Prefix, "&nbsp;&nbsp;");
+                    {1, html} -> lists:append(Prefix, "&nbsp;&nbsp;");
+                    {_, html} -> lists:append(Prefix, "&nbsp;|")
                 end,
     C = pp(Controls, Prefix, Type, []),
     make_pp2(Paths, Type, NewPrefix,
@@ -776,21 +785,22 @@ make_pp2([{K, V} | T], Type, Prefix, Acc) ->
     NewAcc = make_pp(V, Type, K, Prefix, []),
     make_pp2(T, Type, Prefix, [NewAcc | Acc]).
 
-pp([], Prefix, html, [])       -> Prefix ++ "   (no controls)" ++ "<br />";
+pp([], Prefix, html, [])       -> Prefix ++ "&nbsp;&nbsp;&nbsp;(no controls)" ++ "<br />";
 pp([], Prefix, text, [])       -> Prefix ++ "   (no controls)" ++ "~n";
 pp([], _Prefix, _Type, Acc)    -> lists:reverse(Acc);
 pp([H | T], Prefix, Type, Acc) -> pp(T, Prefix, Type, [pp_c(H, Prefix, Type, [])| Acc]).
 
 
-pp_c({acl, []}, Pf, html, A) -> Pf ++ "   <b>ACL is:</b> " ++ " <br />" ++ A;
+pp_c({acl, []}, Pf, html, A) -> Pf ++ "&nbsp;&nbsp;&nbsp;<b>ACL is:</b> " ++ " <br />" ++ A;
 pp_c({acl, []}, Pf, text, A) -> Pf ++ "   ACL is: " ++ "~n" ++ A;
-pp_c({views, []}, Pf, html, A) -> Pf ++ "   <b>Views</b> " ++ " <br />" ++ A;
+pp_c({views, []}, Pf, html, A) -> Pf ++ "&nbsp;&nbsp;&nbsp;<b>Views</b> " ++ " <br />" ++ A;
 pp_c({views, []}, Pf, text, A) -> Pf ++ "   Views " ++ "~n" ++ A;
-pp_c({default, D}, Pf, html, []) -> Pf ++ "   <b>Default View is:</b> " ++ D ++" <br />";
+pp_c({default, D}, Pf, html, []) -> Pf ++ "&nbsp;&nbsp;&nbsp;<b>Default View is:</b> "
+                                        ++ D ++" <br />";
 pp_c({default, D}, Pf, text, []) -> Pf ++ "   Default View is: " ++ D ++ "~n";
 pp_c({acl, [{{Ty, N}, L} | T]}, Pf, html, A) ->
-    NewA = Pf ++ "   - " ++ atom_to_list(Ty) ++ ": " ++ N
-        ++ "  -> " ++ pp_l(L, []) ++ "<br />",
+    NewA = Pf ++ "&nbsp;&nbsp;&nbsp;- " ++ atom_to_list(Ty) ++ ": " ++ N
+        ++ "&nbsp;&nbsp;-> " ++ pp_l(L, []) ++ "<br />",
     pp_c({acl, T}, Pf, html, [NewA | A]);
 pp_c({acl, [{{Ty, N}, L} | T]}, Pf, text, A) ->
     NewA = Pf ++ "   - " ++ atom_to_list(Ty) ++ ": " ++ N
@@ -801,9 +811,9 @@ pp_c({views, [{{Ty, N}, #views{override = O, views = V}} | T]}, Pf, html, A) ->
                [] -> "(none)";
                _  -> O
            end,
-    NewA = Pf ++ "   - " ++ atom_to_list(Ty) ++ ": " ++ N ++ "<br />" ++
-        Pf ++ "     -> override default is: " ++ NewO ++ "<br />" ++
-        Pf ++ "     -> views are:           " ++ pp_l(V, []) ++ "<br />",
+    NewA = Pf ++ "&nbsp;&nbsp;&nbsp;- " ++ atom_to_list(Ty) ++ ": " ++ N ++ "<br />" ++
+        Pf ++ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> override default is: " ++ NewO ++ "<br />" ++
+        Pf ++ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> views are:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" ++ pp_l(V, []) ++ "<br />",
     pp_c({views, T}, Pf, html, [NewA | A]);
 pp_c({views, [{{Ty, N}, #views{override = O, views = V}} | T]}, Pf, text, A) ->
     NewO = case O of
@@ -2459,6 +2469,137 @@ test129() ->
     get_as_json1(Tree4, []),
     (Ret == ["view3", "view1", "over3", "over1", "default1"]).
 
+%% bug fixes
+test200() ->
+    P1 = ["u", "gordon", "[*]"],
+    P2 = ["u", "gordon", "blahblah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "gordon/junk"}).
+
+test201() ->
+    P1 = ["u", "gordon", "[**]"],
+    P2 = ["u", "gordon", "blahblah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1, [read, write], "", ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "gordon/junk"}).
+
+test202() ->
+    P1 = ["u", "gordon", "[**]"],
+    P2 = ["u", "gordon", "blah", "blah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "gordon/junk"}).
+
+test203() ->
+    P1 = ["u", "gordon", "[*]"],
+    P2 = ["u", "gordon", "blah", "blah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '404'}).
+
+test204() ->
+    P1 = ["u", "gordon", "[*]"],
+    P2 = ["u", "gordon", "blahblah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["**", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "gordon/junk"}).
+
+test205() ->
+    P1 = ["u", "gordon", "[**]"],
+    P2 = ["u", "gordon", "blahblah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["**", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "gordon/junk"}).
+
+test206() ->
+    P1 = ["u", "gordon", "[**]"],
+    P2 = ["u", "gordon", "blah", "blah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["**", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "gordon/junk"}).
+
+test207() ->
+    P1 = ["u", "gordon", "[*]"],
+    P2 = ["u", "gordon", "blah", "blah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["**", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '404'}).
+
+test208() ->
+    P1 = ["u", "gordon", "[*]"],
+    P2 = ["u", "gordon", "blahblah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "_global/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '401'}).
+
+test209() ->
+    P1 = ["u", "gordon", "[**]"],
+    P2 = ["u", "gordon", "blahblah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "_global/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '401'}).
+
+test210() ->
+    P1 = ["u", "gordon", "[**]"],
+    P2 = ["u", "gordon", "blah", "blah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "_global/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '401'}).
+
+test211() ->
+    P1 = ["u", "gordon", "[*]"],
+    P2 = ["u", "gordon", "blah", "blah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "_global/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '404'}).
+
 unit_test_() -> 
     [
      % tests for the root page []
@@ -2569,7 +2710,19 @@ unit_test_() ->
      ?_assert(test126()),
      ?_assert(test127()),
      ?_assert(test128()),
-     ?_assert(test129())
+     ?_assert(test129()),
+     ?_assert(test200()),
+     ?_assert(test201()),
+     ?_assert(test202()),
+     ?_assert(test203()),
+     ?_assert(test204()),
+     ?_assert(test205()),
+     ?_assert(test206()),
+     ?_assert(test207()),
+     ?_assert(test208()),
+     ?_assert(test209()),
+     ?_assert(test210()),
+     ?_assert(test211())
     ].
 
 debug() ->
