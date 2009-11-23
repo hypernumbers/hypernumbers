@@ -618,6 +618,13 @@
       loading data...
     </div>
 
+    <div id="browsernotsupported">
+      <br /><br /><br />
+      <p>Your browser is not supported yet.</p>
+      <p>Please use Firefox, Safari or Chrome to view a hypernumbers 
+      page as a spreadsheet.</p>
+    </div>
+
   </body>
   
   <script src="/hypernumbers/jquery-1.3.2.min.js"></script>
@@ -627,6 +634,12 @@
   <script src="/hypernumbers/ajaxfileupload.js"></script>
   <script src="/hypernumbers/hn.js"></script>
   <script src="/hypernumbers/hn.util.js"></script>
+  <!-- I know bit of a bodge! -->
+  <script type="text/javascript"> 
+    if (($.browser.msie) ||($.browser.opera)) {
+    HN.Util.id("browsernotsupported").style.display="block";
+    }
+  </script>
   <script src="/hypernumbers/hn.data.js"></script>
   <script src="/hypernumbers/hn.ui.js"></script>
   <script src="/hypernumbers/hn.uiactions.js"></script>
