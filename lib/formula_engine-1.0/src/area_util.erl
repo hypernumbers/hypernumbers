@@ -10,6 +10,9 @@
 -module(area_util).
 -export([apply_each/2, width/1, height/1, at/3, make_array/2, to_list/1,
          col/2, row/2, are_congruent/2]).
+-export([to_absolute/3, to_relative/3]).
+
+%% vv -- needs to go.
 -compile(export_all).
 
 -include("handy_macros.hrl").
@@ -117,3 +120,22 @@ col(N, A = {Tag, Rows}) when ?is_area(A) andalso is_integer(N) ->
             R = foldr(fun(X, Acc) -> [[nth(N, X)]|Acc] end, [], Rows),
             {Tag, R}
     end.
+
+to_absolute(R, CellX, CellY) when ?is_rangeref(R) ->
+    abs_rel_convert(R, CellX, CellY, fun to_abs/2).
+
+to_relative(R, CellX, CellY) when ?is_rangeref(R) ->
+    abs_rel_convert(R, CellX, CellY, fun to_rel/2).
+
+to_abs({offset, O}, C) -> O + C; 
+to_abs(A, _)           -> A. 
+
+to_rel({offset, _}=O, _) -> O; 
+to_rel(P, C)             -> {offset, P - C}.
+
+abs_rel_convert(R, CellX, CellY, F) when ?is_rangeref(R) ->
+    {X1, Y1} = R#rangeref.tl,
+    {X2, Y2} = R#rangeref.br,
+    R#rangeref{tl = {F(X1, CellX), F(Y1, CellY)},
+               br = {F(X2, CellX), F(Y2, CellY)}}.
+

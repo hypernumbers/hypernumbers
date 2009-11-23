@@ -150,7 +150,7 @@ index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
 
     %% excel does boundary checking before truncating (dumb)
     [Y, X] = [ erlang:trunc(X) || X<-[FY, FX]],
-    
+
     case (Y > area_util:height(Area) orelse X > area_util:width(Area)) of
         true  -> ?ERRVAL_REF;
         false ->
@@ -167,26 +167,25 @@ index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
                             Val
                     end;
                 false ->
-
                     #rangeref{tl = {{offset, X1}, {offset, Y1}},
-                              br = {{offset, X2}, {offset, Y2}},
-                              path = Path} = Area,
-                    
+                              br = {{offset, X2}, {offset, Y2}}}
+                        = area_util:to_relative(Area, get(x), get(y)),
+
                     case {Y, X} of
-                        {0, 0} -> Area;
+                        {0, 0} -> 
+                            Area;
                         {0, _} ->
                             Area#rangeref{tl={{offset,(X1+X)-1},{offset,Y1}},
                                           br={{offset,(X1+X)-1},{offset,Y2}},
                                           width=1, height=Y2-Y1};
                         {_, 0} ->
-                            
                             Area#rangeref{tl={{offset,X1},{offset,(Y1+X)-1}},
                                           br={{offset,X2},{offset,(Y1+X)-1}},
                                           width=X2-X1, height=1};
                         _ ->
                             #cellref{ row={offset, (Y1+Y)-1},
                                       col={offset, (X1+X)-1},
-                                      path=Path}
+                                      path=Area#rangeref.path}
                     end
             end    
     end.
@@ -198,7 +197,6 @@ match([V1, V2, V3]) ->
     ?ensure(MatchType =< 1 andalso MatchType >= -1, ?ERR_NA),
 
     if ?is_area(V2) ->
-            io:format("~p~n", [area_util:to_list(V2)]),
             match1(V1, area_util:to_list(V2), MatchType);
        ?is_rangeref(V2) ->
             {range, DList} = muin:fetch(V2),
