@@ -456,8 +456,6 @@ check_get_page1(Tree, {User, Groups}, Page, View) ->
     % then see what view they should be getting
     Fun =
         fun(X) ->
-                io:format("in check_get_page1 X is ~p~n", [X]),
-                io:format("User is ~p Groups is ~p acl is ~p~n", [User, Groups, X#carry.acl]),
                 case get_ret_code(X#carry.acl, User, Groups, read) of
                     {return, '404'} -> {return, '404'}; 
                     {return, '401'} -> {return, '401'};
@@ -465,7 +463,6 @@ check_get_page1(Tree, {User, Groups}, Page, View) ->
                         Default = X#carry.default,
                         Views   = X#carry.views,
                         AllViews = get_all_views(Default, Views, User, Groups),
-                        io:format("AllViews is ~p~n", [AllViews]),
                         case has_wild(AllViews) of
                             global -> {html, View};
                             local  -> case is_local(User, View) of
