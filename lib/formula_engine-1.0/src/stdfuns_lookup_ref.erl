@@ -234,9 +234,12 @@ match1(LookupVal, List, 1) ->
 
 vlookup([V, A, I]) ->
     vlookup([V, A, I, true]);
-vlookup([V, A, I0, B]) ->
+vlookup([V, IA, I0, B]) ->
 
     I = ?int(I0, [cast_strings, cast_bools, ban_blanks, ban_dates]),
+    A = if ?is_rangeref(IA) -> muin:fetch(IA);
+           true             -> IA
+        end,
     
     ?ensure(?is_area(A), ?ERR_REF),
     ?ensure(I =< area_util:width(A), ?ERR_REF),
@@ -259,9 +262,12 @@ vlookup([V, A, I0, B]) ->
 
 hlookup([V, A, I]) ->
     hlookup([V, A, I, true]);
-hlookup([V, A, I0, B]) ->
+hlookup([V, IA, I0, B]) ->
     
     I = ?int(I0, [cast_strings, cast_bools, ban_blanks, ban_dates]),
+    A = if ?is_rangeref(IA) -> muin:fetch(IA);
+           true             -> IA
+        end,
     
     ?ensure(?is_area(A), ?ERR_REF),
     ?ensure(I =< area_util:height(A), ?ERR_REF),
