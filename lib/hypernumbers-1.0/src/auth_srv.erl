@@ -295,9 +295,9 @@ handle_call(Request, _From, State) ->
                 {Host, add_default1(get(Host, Tr), Pg, Df), true};
             {rem_perm, Host, AL, Pg, Pm} ->
                 {Host, remove_perm1(get(Host, Tr), AL, Pg, Pm), true};
-            {remove_views, Host, AL, Pg, Vs} ->
+            {rem_views, Host, AL, Pg, Vs} ->
                 {Host, remove_views1(get(Host, Tr), AL, Pg, Vs), true};
-            {remove_def, Host, Pg, Df} ->
+            {rem_def, Host, Pg, Df} ->
                 {Host, remove_default1(get(Host, Tr), Pg, Df), true};
             {get_as_json, Host, Pg} ->
                 {Host, get_as_json1(get(Host, Tr), Pg), false};
