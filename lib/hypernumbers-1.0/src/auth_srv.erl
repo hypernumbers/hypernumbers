@@ -2597,6 +2597,18 @@ test211() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '404'}).
 
+test212() ->
+    P1 = ["u", "gordon", "[**]"],
+    P2 = ["u", "gordon", "blah", "blah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["_global/spreadsheet", "_global/pagebuilder"]),
+    Tree1 = add_views1(Tree, [{user, "gordon"}], P1, "", ["**"]),
+    Ret = check_get_page1(Tree1, {"gordon", []}, P2, "gordon/junk"),
+    io:format(pretty_print1(Tree1, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "gordon/junk"}).
+
 unit_test_() -> 
     [
      % tests for the root page []
@@ -2719,7 +2731,8 @@ unit_test_() ->
      ?_assert(test208()),
      ?_assert(test209()),
      ?_assert(test210()),
-     ?_assert(test211())
+     ?_assert(test211()),
+     ?_assert(test212())
     ].
 
 debug() ->
