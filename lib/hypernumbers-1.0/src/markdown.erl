@@ -41,12 +41,12 @@
 %%%   - horizontal rules
 %%% the parser then does its magic interpolating the references as appropriate
 conv(String) -> Lex = lex(String),
-                io:format("Lex is ~p~n", [Lex]),
+                % io:format("Lex is ~p~n", [Lex]),
                 UntypedLines = make_lines(Lex),
-                io:format("UntypedLines are ~p~n", [UntypedLines]),
+                % io:format("UntypedLines are ~p~n", [UntypedLines]),
                 {TypedLines, Refs} = type_lines(UntypedLines),
-                io:format("TypedLines are ~p~nRefs is ~p~n",
-                         [TypedLines, Refs]),
+                % io:format("TypedLines are ~p~nRefs is ~p~n",
+                %         [TypedLines, Refs]),
                 parse(TypedLines, Refs).
                 
 conv_file(FileIn, FileOut) ->
