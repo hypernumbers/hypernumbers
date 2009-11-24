@@ -16,6 +16,7 @@ WHITE      = (\[(W|w)(H|h)(I|i)(T|t)(E|e)\])
 YELLOW     = (\[(Y|y)(E|e)(L|l)(L|l)(O|o)(W|w)\])
 
 GENERAL    = (G|g)(E|e)(N|n)(E|e)(R|r)(A|a)(L|l)
+MARKDOWN   = (M|m)(A|a)(R|r)(K|k)(D|d)(O|o)(W|w)(N|n)
 
 STRING     = (\"[^"\n]*\")
 
@@ -39,6 +40,7 @@ Rules.
 {YELLOW}     : {token, {colour, TokenLine, yellow}}.
 
 {GENERAL}    : {token, {general, TokenLine, TokenChars}}.
+{MARKDOWN}   : {token, {markdown, TokenLine, TokenChars}}.
 
 {STRING}     : {token, {string, TokenLine, TokenChars}}. 
 

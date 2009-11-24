@@ -1,3 +1,4 @@
+
 %%%-------------------------------------------------------------------
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 %%% @copyright (C) 2009, hypernumbers.com
@@ -13,6 +14,7 @@
 
 -export([make_src/1,
          get_general/0,
+         get_markdown/0,
          verify/1,
          esc/1,
          make_cond/1,
@@ -29,10 +31,20 @@ make_src(A)                 -> make_src2([A]).
         orelse
         ( is_tuple(X) andalso element(1, X) == ustring))").
 
-get_general()->
+get_markdown() ->
     Src = "fun(X) -> "++
         "    if"++
         "      "++?is_str++"     -> {auto, markdown:conv(X)};"++
+        "      not(is_number(X)) -> {auto, X};"++
+        "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++ 
+        "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
+        "     end "++
+        "end.", 
+    {number,Src}.    
+
+get_general() ->
+    Src = "fun(X) -> "++
+        "    if"++
         "      not(is_number(X)) -> {auto, X};"++
         "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++ 
         "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
@@ -356,8 +368,7 @@ make_clause3(N,[{condition,Cond},{colour,Col},{Type,Format}]) ->
     Clause = Y++" -> {"++atom_to_list(Col)++",format:format(X,"++Bits2++")}",
     {Cond2,Clause}.
 
-default_clause() -> "{auto, markdown(X)}".
-%default_clause() -> "{auto, X}".
+default_clause() -> "{auto, X}".
 
 %% tart_up just makes the condition clauses well behaved
 tart_up(Y, X, [?ASC_GT, ?ASC_EQ | Rest]) -> wrap(Y, X, [?ASC_GT, ?ASC_EQ], Rest);

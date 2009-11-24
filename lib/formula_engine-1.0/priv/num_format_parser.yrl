@@ -21,6 +21,7 @@ Terminals
 
 %% general format
 general
+markdown
 
 %% format stuff
 colour
@@ -69,9 +70,11 @@ Unary 100 Escaped2.
 
 %% ----- Grammar definition.
 
-Final -> FinalFormat    : num_format:make_src('$1').
-Final -> general        : num_format:get_general().
-Final -> general Tokens : num_format:get_general(). %% Bad boy - dropping terminal tokens for a general format...
+Final -> FinalFormat     : num_format:make_src('$1').
+Final -> general         : num_format:get_general().
+Final -> general Tokens  : num_format:get_general(). %% Bad boy - dropping terminal tokens for a general format...
+Final -> markdown        : num_format:get_markdown().
+Final -> markdown Tokens : num_format:get_markdown(). %% Bad boy - dropping terminal tokens for a markdown format...
 
 Semicolon -> semicolon : [lit('$1')].
 Semicolon -> semicolon Semicolon : [lit('$1') | '$2'].
