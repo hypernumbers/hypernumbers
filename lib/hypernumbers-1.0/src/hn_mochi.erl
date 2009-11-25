@@ -510,9 +510,20 @@ ipost(_Ref, _Type, _Attr, _Post, _User) ->
 
 %% Some clients dont send ip in the host header
 get_host(Req) ->
-    {ok, Port} = inet:port(Req:get(socket)),
-    [Domain | _] = string:tokens(Req:get_header_value("host"), ":"), 
-    lists:concat(["http://", Domain, ":", itol(Port), Req:get(path)]).
+    Host = case Req:get_header_value("HN-Host") of
+               undefined -> lists:takewhile(fun(X) -> X /= $: end,
+                                            Req:get_header_value("host")); 
+               ProxiedHost -> ProxiedHost
+           end,
+    Port = case Req:get_header_value("HN-Port") of
+               undefined -> 
+                   {ok, P} = inet:port(Req:get(socket)),
+                   integer_to_list(P);
+               ProxiedPort ->
+                   ProxiedPort
+           end,
+    lists:concat(["http://", Host, ":", Port, Req:get(path)]).
+
 
 get_json_post(undefined) ->
     {ok, undefined};
