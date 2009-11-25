@@ -7,6 +7,10 @@
 
 process([$= | Tl]) when Tl =/= [] ->
     {formula, super_util:upcase(Tl)};
+process([$+ | Tl] = L) when Tl =/= [] ->
+    {formula, super_util:upcase(L)};
+process([$- | Tl] = L) when Tl =/= [] ->
+    {formula, super_util:upcase(L)};
 process([39 | Tl]) -> % singly quoted string
     [{quote, Tl},{"text-align", "left"},{"format", "null"}];
 process(Input) ->
