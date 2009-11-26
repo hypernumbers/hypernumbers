@@ -15,6 +15,9 @@
 
 -export([page_attributes_CHEATING/1]). % for use in gui_generator
 
+-export([get_json_post/1]). % Used for mochilog replay rewrites
+
+
 -define(hdr,[{"Cache-Control","no-store, no-cache, must-revalidate"},
              {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
              {"Pragma",       "no-cache"}]).

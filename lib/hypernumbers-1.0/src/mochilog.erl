@@ -345,10 +345,28 @@ repost(LogName, #post{method='POST', body={upload, Name}} = Post, New) ->
     ok;
 
 repost(_Name, Post, New) when Post#post.method == 'POST' ->
+    Body = rewrite_command(New#refX.site, Post#post.body),
     Url  = New#refX.site ++ Post#post.path,
-    http:request(post,{Url, [], "application/json", Post#post.body}, [], []),
+    http:request(post,{Url, [], "application/json", Body}, [], []),
     ok.
 
+rewrite_command(NewSite, Body) ->
+    {ok, Json} = hn_mochi:get_json_post(Body),
+    Json2 = rewrite_command0(Json, NewSite),
+    iolist_to_binary(
+      (mochijson:encoder([{input_encoding, utf8}])) ({struct, Json2})).
+
+rewrite_command0([{"copy", {struct, [{"src", OldUrl}]}}], NewSite) ->
+    [{"copy", {struct, [{"src", rewrite_url(OldUrl, NewSite)}]}}];
+rewrite_command0(Json, _NewSite) ->
+    %%io:format("~p ~p~n", [Json, NewSite]),
+    Json.
+
+rewrite_url(OldUrl, NewSite) ->
+    [_Proto, _OldSite | Rest] = string:tokens(OldUrl, "/"),
+    string:join([NewSite] ++ Rest, "/").
+
+  
 startswith(_List1, []) ->    
     true;
 startswith([], _List2) ->    
