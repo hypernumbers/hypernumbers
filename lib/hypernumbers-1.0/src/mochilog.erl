@@ -12,7 +12,7 @@
 
 -record(post, {time, site, path, method, body, peer, user, referer, browser}).
 
--export([log/4, start/0, stop/0, replay/2, replay/3, clear/0,
+-export([log/4, start/0, stop/0, replay/2, replay/3, clear/0, repair/1,
          browse/1, browse/2, browse_marks/1, info/2, generate_mi/2 ]).
 
 %% @spec start() -> ok
@@ -56,6 +56,22 @@ stop() ->
 clear() ->
     stop(),
     file:delete(logfile()).
+
+
+%% Repair a logfile, useful for fixing specific copylogs
+-spec repair(string()) -> ok | {error, term()}. 
+repair(Name) ->
+    Opts = [{name, Name}, {file,logfile(Name)},
+            {type,wrap},  {size, {2097152, 99}},
+            {repair, true}],
+    case disk_log:open(Opts) of
+        {ok, Log} -> 
+            disk_log:close(Log);
+        {repaired, Log, Recover, Bad} ->
+            io:format("Repaired: recovered: ~p bad: ~p~n", [Recover, Bad]),
+            disk_log:close(Log)
+    end.
+
 
 -spec replay(string(), string()) -> ok.
 %% @doc alias for replay(Name, LogSite, NewSite, deep)
@@ -259,12 +275,14 @@ run_log(Name, Fun, Filter) ->
     end.
 
 walk(F, Cont, N, Filter) ->
-    case wrap_log_reader:chunk(Cont, 1) of
+    case wrap_log_reader:chunk(Cont) of
         {NCont, eof} ->
             {ok, NCont};
-        {NCont, [Term]} ->
-            handle_term(Filter, Term, N, F),
-            walk(F, NCont, N+1, Filter)
+        {NCont, Terms} ->
+            N2 = lists:foldl(fun(T, N0) -> handle_term(Filter, T, N0, F), N0+1 end,
+                             N,
+                             Terms),
+            walk(F, NCont, N2, Filter)
     end.
 
 handle_term(Opts, Post, N, F) ->
