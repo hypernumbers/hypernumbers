@@ -1,4 +1,4 @@
-* {  
+-* {  
  margin:0px; 
  padding: 0px;
 }
@@ -37,8 +37,8 @@ body {
 #configurepanel {  
  z-index:50000;
  position:absolute;
- top:50px;
- right:20px;
+ top:60px;
+ right:12px;
  background-color: #dddddd;
 }
 
@@ -64,7 +64,7 @@ body {
 }
 
 #configure input { 
-    width: 70px; 
+    width: 150px; 
 }
 
 .disabled {  
@@ -104,6 +104,12 @@ body {
 #toggle {  
  position:absolute;
  bottom:10px;
+ margin-left:5px;
+}
+
+#pathstyle {  
+ position:absolute;
+ bottom:-7px;
  margin-left:5px;
 }
 
@@ -162,8 +168,8 @@ body {
 
 .configuring {
     color:#333333;
-    background: #DDD;
-    border: 1px solid #AAA !important;
+    // background: #DDD;
+    border: 3px solid #AA0000 !important;
 }
 
 .hn {
@@ -182,6 +188,7 @@ body {
     border:2px solid #666666;
     padding:2px;
     color:#111111;
+    margin-top: 3px;
     -moz-border-radius:4px; -webkit-border: 4px;
 }
 
@@ -195,6 +202,11 @@ body {
 
 #previewbtn {
     width:70px;
+    float:right;
+}
+
+#sanitycheckbtn {
+    width:100px;
     float:right;
 }
 
