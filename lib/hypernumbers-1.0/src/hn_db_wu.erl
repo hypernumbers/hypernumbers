@@ -2721,22 +2721,30 @@ offset_with_ranges1([{rangeref, LineNo, #rangeref{path = Path, text = Text}=H} |
               end,
     NewAcc = {rangeref, LineNo, H#rangeref{text = NewText}},
     offset_with_ranges1(T, Cell, From, Offset, [NewAcc | Acc]);
-offset_with_ranges1([{cellref, LineNo, #cellref{path = Path, text = Text} = H} | T],
-                    Cell, #refX{path = FromPath} = From, {XO, YO}, Acc) ->
-    #refX{path = CPath} = Cell,
-    Prefix = case muin_util:just_path(Text) of
-                 "/"   -> "";
-                 Other -> Other
-             end,
+offset_with_ranges1([{cellref, LineNo, C=#cellref{path = Path, text = Text}}=H | T],
+                    Cell, #refX{path = FromPath} = From, {XO, YO}=Offset, Acc) ->
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
-    PathCompare = muin_util:walk_path(CPath, Path),
-    NewCell =
-        case PathCompare of
-            FromPath -> make_cell(XDollar, X, XO, YDollar, Y, YO);
-            _        -> Text
-        end,
-    NewAcc = {cellref, LineNo, H#cellref{text = Prefix ++ NewCell}},    
-    offset_with_ranges1(T, Cell, From, {XO, YO}, [NewAcc | Acc]);
+    case From#refX.obj of
+        {column,{_Left,Right}} when X =< Right ->
+            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
+        {row,{_Top,Bottom}} when Y =< Bottom ->
+            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
+        _Else ->
+            #refX{path = CPath} = Cell,
+            Prefix = case muin_util:just_path(Text) of
+                         "/"   -> "";
+                         Other -> Other
+                     end,
+
+            PathCompare = muin_util:walk_path(CPath, Path),
+            NewCell =
+                case PathCompare of
+                    FromPath -> make_cell(XDollar, X, XO, YDollar, Y, YO);
+                    _        -> Text
+                end,
+            NewAcc = {cellref, LineNo, C#cellref{text = Prefix ++ NewCell}},    
+            offset_with_ranges1(T, Cell, From, {XO, YO}, [NewAcc | Acc])
+    end;
 offset_with_ranges1([H | T], Cell, From, Offset, Acc) ->
     offset_with_ranges1(T, Cell, From, Offset, [H | Acc]).
 

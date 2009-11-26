@@ -1103,7 +1103,7 @@ do_delete(delete, RefX) ->
      hn_db_wu:read_local_children(RefX)}.
 
 move_tr(#refX{site = Site, obj = Obj} = RefX, Type, Disp) ->
-    
+
     ok = init_front_end_notify(),
     % if the Type is delete we first delete the original cells
     R = {insert, atom_to_list(Disp)},
