@@ -255,7 +255,6 @@ p,h1,h2,h3,h4,h5 {
 
 #pagebar a {
 	display: inline-block;
-	max-width: 120px;
     cursor: pointer;
 	vertical-align: middle;
 	padding-top: 5px;
