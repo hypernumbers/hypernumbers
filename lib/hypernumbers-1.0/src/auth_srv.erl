@@ -463,16 +463,16 @@ check_get_page1(Tree, {User, Groups}, Page, View) ->
                         Default = X#carry.default,
                         Views   = X#carry.views,
                         AllViews = get_all_views(Default, Views, User, Groups),
-                        case has_wild(AllViews) of
-                            global -> {html, View};
-                            local  -> case is_local(User, View) of
-                                          true  -> {html, View};
-                                          false -> {return, '401'}
-                                      end;
-                            none   -> case contains(View, AllViews) of
-                                          true  -> {html, View};
-                                          false -> {return, '404'}
-                                      end
+                        case contains(View, AllViews) of
+                            true  -> {html, View};
+                            false -> case has_wild(AllViews) of
+                                         global -> {html, View};
+                                         local  -> case is_local(User, View) of
+                                                       true  -> {html, View};
+                                                       false -> {return, '401'}
+                                                   end;
+                                         none   -> {return, '404'}
+                                     end
                         end
                 end
         end,
@@ -2520,6 +2520,28 @@ test204() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "gordon/junk"}).
 
+test204a() ->
+    P1 = ["u", "gordon", "[*]"],
+    P2 = ["u", "gordon", "blahblah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "gordon/junk"}).
+
+test204b() ->
+    P1 = ["u", "gordon", "[*]"],
+    P2 = ["u", "gordon", "blahblah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
+                         [read, write], "",
+                         ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Ret = check_get_page1(Tree, {"gordon", []}, P2, "_global/pagebuilder"),
+    io:format(pretty_print1(Tree, [], text)),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "_global/pagebuilder"}).
+
 test205() ->
     P1 = ["u", "gordon", "[**]"],
     P2 = ["u", "gordon", "blahblah"],
@@ -2725,6 +2747,8 @@ unit_test_() ->
      ?_assert(test202()),
      ?_assert(test203()),
      ?_assert(test204()),
+     ?_assert(test204a()),
+     ?_assert(test204b()),
      ?_assert(test205()),
      ?_assert(test206()),
      ?_assert(test207()),
