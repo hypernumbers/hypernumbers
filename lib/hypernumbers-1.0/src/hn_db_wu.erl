@@ -2748,7 +2748,8 @@ offset_with_ranges1([{cellref, LineNo, C=#cellref{path = Path, text = Text}}=H |
 offset_with_ranges1([H | T], Cell, From, Offset, Acc) ->
     offset_with_ranges1(T, Cell, From, Offset, [H | Acc]).
 
-make_new_range(Prefix, Cell1, Cell2, {X1D, X1, Y1D, Y1},
+make_new_range(Prefix, Cell1, Cell2, 
+               {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
                #refX{obj = {cell, {X, Y}}} = _From, {XO, YO}) ->
     NC1 =
@@ -2762,140 +2763,29 @@ make_new_range(Prefix, Cell1, Cell2, {X1D, X1, Y1D, Y1},
             _      -> Cell2
         end,
     Prefix ++ NC1 ++ ":" ++ NC2;
-% this clause is for a column delete
-make_new_range(Prefix, Cell1, Cell2, {X1D, X1, Y1D, Y1},
+
+%% handle rows
+make_new_range(Prefix, Cell1, Cell2, 
+               {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
-               #refX{obj = {column, {XA, XB}}} = _From, {XO, 0 = _YO})
-  when (XO < 0)->
-    {NC1, NC2} = if
-                     % if both columns are to the left of the range then
-                     % offset both
-                     (XA < X1) andalso (XB < X1) ->
-                         C1 = make_cell(X1D, X1, XO, Y1D, Y1, 0),
-                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
-                         {C1, C2};
-                     % if both are to the right, then offset neither
-                     (XA > X2) andalso (XB > X2) -> {Cell1, Cell2};
-                     % if the delete clips the left hand side then set the left-hand
-                     % of the range to the left most value of the clip
-                     (XA =< X1) andalso (XB >= X1) andalso (XB =< X2) ->
-                         C1 = make_cell(X1D, XA, 0,  Y1D, Y1, 0),
-                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
-                         {C1, C2};
-                     % if the delete clips the right hand site then set the right-hand
-                     % of the range to the LEFT most value of the clip
-                     (XA >= X1) andalso (XA =< X2) andalso (XB >= X2) ->
-                         C2 = make_cell(X2D, XA, 0, Y2D, Y2, 0),
-                         {Cell1, C2};
-                     % if the delete intersects the range then offset the right
-                     % hand only
-                     (XA >= X1) andalso (XB =< X2) ->
-                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
-                         {Cell1, C2}
-                 end,
+               #refX{obj = {row, {Top, _Bottom}}}, 
+               {0=_XOffset, YOffset}) ->
+    NC1 = if Top =< Y1 -> make_cell(X1D, X1, 0, Y1D, Y1, YOffset);
+             true      -> Cell1 end,
+    NC2 = if Top =< Y2 -> make_cell(X2D, X2, 0, Y2D, Y2, YOffset); 
+             true      -> Cell2 end,
     Prefix ++ NC1 ++ ":" ++ NC2;
-% this clause is for a column insert
-make_new_range(Prefix, Cell1, Cell2, {X1D, X1, Y1D, Y1},
+
+make_new_range(Prefix, Cell1, Cell2, 
+               {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
-               #refX{obj = {column, {XA, XB}}} = _From, {XO, 0 = _YO})
-  when (XO > 0)->
-    {NC1, NC2} = if
-                     % if both columns are to the left of the range
-                     % then offset them both
-                     (XA < X1) andalso (XB < X1) ->
-                         C1 = make_cell(X1D, X1, XO, Y1D, Y1, 0),
-                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
-                         {C1, C2};
-                     % if both columns are to the right of the range
-                     % then offset neither
-                     (XA > X2) andalso (XB > X2) -> {Cell1, Cell2};
-                     % if the insert clips the left hand side then offset
-                     % both sides
-                     (XA =< X1) andalso (XB >= X1) andalso (XB =< X2) ->
-                         C1 = make_cell(X1D, X1, XO, Y1D, Y1, 0),
-                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
-                         {C1, C2};
-                     % if the insert clips the right hand site then set the right-hand
-                     % of the range to the offset of the right hand of the clip
-                     (XA >= X1) andalso (XA =< X2) andalso (XB >= X2) ->
-                         C2 = make_cell(X2D, XB, XO, Y2D, Y2, 0),
-                         {Cell1, C2};
-                     % if the delete intersects the range then offset the right
-                     % hand only
-                     (XA >= X1) andalso (XB =< X2) ->
-                         C2 = make_cell(X2D, X2, XO, Y2D, Y2, 0),
-                         {Cell1, C2}
-                 end,
-    Prefix ++ NC1 ++ ":" ++ NC2;
-% this clause is for a row delete
-make_new_range(Prefix, Cell1, Cell2, {X1D, X1, Y1D, Y1},
-               {X2D, X2, Y2D, Y2},
-               #refX{obj = {row, {YA, YB}}} = _From, {0 = _XO, YO})
-  when (YO < 0) ->
-    {NC1, NC2} = if
-                     % if both rows are above the range then offset them both
-                     (YA < Y1) andalso (YB < Y1) ->
-                         C1 = make_cell(X1D, X1, 0, Y1D, Y1, YO),
-                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
-                         {C1, C2};
-                     % if both rows are below the range then offset neither
-                     (YA > Y2) andalso (YB > Y2) -> {Cell1, Cell2};
-                     % if the delete clips the top then set the top of the range
-                     % to the top of the clip
-                     (YA =< Y1) andalso (YB >= Y1) andalso (YB =< Y2) ->
-                         C1 = make_cell(X1D, X1, 0, Y1D, YA, 0),
-                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
-                         {C1, C2};
-                     % if the delete clips the bottom then set the bottom of the 
-                     % range to the top of the clip
-                     (YA >= Y1) andalso (YA =< Y2) andalso (YB >= Y2) ->
-                         C2 = make_cell(X2D, X2, 0, Y2D, YA, 0),
-                         {Cell1, C2};
-                     % if the delete intersects the range then offset the bottom
-                     % of the range only
-                     (YA >= Y1) andalso (YB =< Y2) ->
-                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
-                         {Cell1, C2}
-                 end,
-    Prefix ++ NC1 ++ ":" ++ NC2;
-% this clause is for a row insert
-make_new_range(Prefix, Cell1, Cell2, {X1D, X1, Y1D, Y1},
-               {X2D, X2, Y2D, Y2},
-               #refX{obj = {row, {YA, YB}}} = _From, {0 = _XO, YO})
-  when (YO > 0)->
-    {NC1, NC2} = if
-                     % if both rows are above the range offset them both
-                     (YA < Y1) andalso (YB < Y1) ->
-                         C1 = make_cell(X1D, X1, 0, Y1D, Y1, YO),
-                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
-                         {C1, C2};
-                     % if both rows are below the range offset neither
-                     (YA > Y2) andalso (YB > Y2) -> {Cell1, Cell2};
-                     % if the insert clips the top then offset the whole range
-                     (YA =< Y1) andalso (YB >= Y1) andalso (YB =< Y2) ->
-                         C1 = make_cell(X1D, X1, 0, Y1D, Y1, 0),
-                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
-                         {C1, C2};
-                     % if the insert clips the bottom then set the new bottom
-                     % to the bottom of the clip
-                     (YA >= Y1) andalso (YA =< Y2) andalso (YB >= Y2) ->
-                         C2 = make_cell(X2D, X2, 0, Y2D, YB, 0),
-                         {Cell1, C2};
-                     % if the delete intersects the range then offset the bottom
-                     % only
-                     (YA >= Y1) andalso (YB =< Y2) ->
-                         C2 = make_cell(X2D, X2, 0, Y2D, Y2, YO),
-                         {Cell1, C2}
-                 end,
-    Prefix ++ NC1 ++ ":" ++ NC2;
-make_new_range(_Prefix, _Cell1, _Cell2, {_X1D, _X1, _Y1D, _Y1},
-               {_X2D, _X2, _Y2D, _Y2},
-               #refX{obj = {range, _}} = _From, {_XO, _YO}) ->
-    exit("make_new_range for range not written yet!");
-make_new_range(_Prefix, _Cell1, _Cell2, {_X1D, _X1, _Y1D, _Y1},
-               {_X2D, _X2, _Y2D, _Y2},
-               #refX{obj = {cell, _}} = _From, {_XO, _YO}) ->
-    exit("make_new_range for not written yet!").        
+               #refX{obj = {column, {Left, _Right}}}, 
+               {XOffset, 0=_YOffset}) ->
+    NC1 = if Left =< X1 -> make_cell(X1D, X1, XOffset, Y1D, Y1, 0);
+             true       -> Cell1 end,
+    NC2 = if Left =< X2 -> make_cell(X2D, X2, XOffset, Y2D, Y2, 0); 
+             true       -> Cell2 end,
+    Prefix ++ NC1 ++ ":" ++ NC2.
 
 offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
     RefX#refX{obj = {cell, {X + XO, Y + YO}}}.
