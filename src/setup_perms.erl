@@ -264,9 +264,9 @@ alpha() ->
                        "_global/spreadsheet", [ "_global/spreadsheet"]),
 
     % now let devs read all the user pages
-    auth_srv:add_controls(Site, [{group, "dev"}], ["u", "[**]"],
-                      [read],
-                       "_global/spreadsheet", [ "_global/spreadsheet"]),
+    % auth_srv:add_controls(Site, [{group, "dev"}], ["u", "[**]"],
+    %                  [read],
+    %                   "_global/spreadsheet", [ "_global/spreadsheet"]),
 
     % now create the admin space
     auth_srv:add_controls(Site, [{group, "dev"}], ["admin", "[**]"],
