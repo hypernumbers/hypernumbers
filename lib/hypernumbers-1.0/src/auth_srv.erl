@@ -881,12 +881,13 @@ new_def([H | _T], _Default)     -> H.
 %% check_get has specific taking precendence over the particular
 %% need to do funky stuff with the root permissions
 check_get(Tree, [], Fun)   -> Fun(make_carry(Tree));
-check_get(Tree, Page, Fun) -> Fun(check_get1(Tree, Page, make_carry(Tree))).
+check_get(Tree, Page, Fun) ->
+    Fun(check_get1(Tree, Page, make_carry(Tree))).
 
 check_get1(_Tree, [], Carried) ->
     Carried;
 check_get1(Tree, [H | T], Carried) ->
-%% drill out the wild branches
+    % drill out the wild branches
     {NewCarry1, Wild1} =
         case gb_trees:lookup("[**]", Tree) of
             {value, V1} -> NewC1 = get_carry("[**]", V1, Carried),
@@ -935,27 +936,26 @@ merge_carry(New, Old) ->
 
 % if there is no old, then merging is a no brainer...
 merge_controls(_Type, [], C2)   -> C2;
-merge_controls(acl, C1, C2)     -> merge_controls1(acl, C1, C2, []);
-merge_controls(views, C1, C2)   -> merge_controls1(views, C1, C2, []);
-merge_controls(Type, C1, C2)    -> merge_controls1(Type, C1, C2, []).
-
-merge_controls1(default, D1, D2, []) ->
-    merge_defs(D1, D2);
-merge_controls1(acl, [], _A2, Acc) -> Acc;
-merge_controls1(acl, [{K, V1} | T], A2, Acc) ->
+merge_controls(default, D1, D2) -> merge_defs(D1, D2);
+merge_controls(acl, [], A2) -> A2;
+merge_controls(acl, [{K, V1} | T] , A2) ->
     case lists:keysearch(K, 1, A2) of
-        false            -> merge_controls1(acl, T, A2, [{K, V1} | Acc]);
-        {value, {K, V2}} -> merge_controls1(acl, T, A2, [{K, hslists:dedup([V1, V2])} | Acc])
+        false            -> merge_controls(acl, T, [{K, V1} | A2]);
+        {value, {K, V2}} -> NewV = hslists:dedup([V1, V2]),
+                            NewA2 = lists:keyreplace(K, 1, A2, {K, NewV}),
+                            merge_controls(acl, T, NewA2)
     end;
-merge_controls1(views, [], _A2, Acc) -> Acc;
-merge_controls1(views, [{K, V1} | T], A2, Acc) ->
+merge_controls(views, [], A2) -> A2;
+merge_controls(views, [{K, V1} | T], A2) ->
     case lists:keysearch(K, 1, A2) of
-        false            -> merge_controls1(views, T, A2, [{K, V1} | Acc]);
+        false            -> merge_controls(views, T, [{K, V1} | A2]);
         {value, {K, V2}} -> {O, NewV}  = merge_overrides(V1#views.override, V2#views.override),
                             Vs = remove_empty(hslists:dedup([V1#views.views,
                                                              V2#views.views, [NewV]])),
-                            merge_controls1(views, T, A2, [{K, #views{override = O,
-                                                                      views = Vs}} | Acc])
+
+                            NewViews = #views{override = O, views = Vs},
+                            NewA2 = lists:keyreplace(K, 1, A2, {K, NewViews}), 
+                            merge_controls(views, T, NewA2)
     end.
 
 merge_defs(D1, D2) ->
@@ -1640,7 +1640,7 @@ test25() ->
     get_as_json1(Tree3, []),
     io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "a view"}).
+    (Ret == {html, "override0"}).
 
 %% check wild resolution order
 test26() ->
@@ -2433,7 +2433,7 @@ test127() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "beezer"}).
 
-%% wild on wild... (mind wild groups don't propagate!)
+%% wild on wild...
 test128() ->
     P1 = [],
     P2 = ["a"],
@@ -2448,7 +2448,7 @@ test128() ->
     io:format(pretty_print1(Tree4, P1, text)),
     io:format("Ret is ~p~n", [Ret]),
     get_as_json1(Tree4, []),
-    (Ret == ["view3", "view1", "over3", "over1", "default1"]).
+    (Ret == ["view3", "view2", "view1", "over3", "over2", "over1", "default1"]).
 
 test129() ->
     P1 = ["a"],
@@ -2464,7 +2464,7 @@ test129() ->
     io:format(pretty_print1(Tree4, P1, text)),
     io:format("Ret is ~p~n", [Ret]),
     get_as_json1(Tree4, []),
-    (Ret == ["view3", "view1", "over3", "over1", "default1"]).
+    (Ret == ["view3", "view2","view1", "over3", "over2", "over1", "default1"]).
 
 %% bug fixes
 test200() ->
@@ -2631,6 +2631,36 @@ test212() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "gordon/junk"}).
 
+test220() ->
+    P1 = [],
+    P2 = ["u", "jonpuleston"],
+    P3 = ["u", "jonpuleston", "[**]"],
+    P4 = ["u", "stevie"],
+    P5 = ["u", "stevie", "[**]"],
+    P6 = ["u", "[**]"],
+    P7 = ["u", "jonpuleston", "blah", "bleh"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "*"}, {group, "*"}], P1, [read],
+                        "_global/home", ["_global/home"]),
+    Tree2 = add_controls1(Tree, [{user, "jonpuleston"}], P2, [read],
+                          "_global/userhome", ["_global/userhome"]),
+    Tree3 = add_controls1(Tree2, [{user, "jonpuleston"}], P3, [read, write],
+                          "_global/spreadsheet",
+                          ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Tree4 = add_controls1(Tree3, [{user, "stevie"}], P4, [read],
+                          "_global/userhome", ["_global/userhome"]),
+    Tree5 = add_controls1(Tree4, [{user, "stevei"}], P5, [read, write],
+                          "_global/spreadsheet",
+                          ["*", "_global/spreadsheet", "_global/pagebuilder"]),
+    Tree6 = add_controls1(Tree5, [{group, "dev"}], P6, [read], "_global/spreadsheet", ["_global/spreadsheet"]),
+    io:format(auth_srv:pretty_print1(Tree6, [], text)),
+    Ret1 = can_read1(Tree6, {"stevie", ["dev"]}, P7),
+    Ret2 = check_get_page1(Tree6, {"stevie", ["dev"]}, P7),
+    Ret3 = check_get_page1(Tree6, {"stevie", ["dev"]}, P7, "_global/spreadsheet"),
+    io:format("Ret1 is ~p~nRet2 is ~p~nRet3 is ~p~n", [Ret1, Ret2, Ret3]),
+    ({Ret1, Ret2, Ret3} == {true,
+                            {html, "_global/spreadsheet"},
+                            {html, "_global/spreadsheet"}}).
+
 unit_test_() -> 
     [
      % tests for the root page []
@@ -2756,7 +2786,8 @@ unit_test_() ->
      ?_assert(test209()),
      ?_assert(test210()),
      ?_assert(test211()),
-     ?_assert(test212())
+     ?_assert(test212()),
+     ?_assert(test220())
     ].
 
 debug() ->
