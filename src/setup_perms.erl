@@ -12,7 +12,9 @@
         old_style/0,
         hypernumbers_style/0,
         alpha/0,
-        alpha_users/0]).
+        alpha_users/0,
+        beta/0,
+        beta_users/0]).
 
 -include("spriki.hrl").
 
@@ -336,4 +338,79 @@ add_groups(User, Groups) ->
     Ret = mnesia:transaction(Fun),
     io:format("Ret is ~p~n", [Ret]).
 
+beta() ->
+    Site = "http://127.0.0.1:9000",
+    %
+    % Users and Groups First
+    %    
 
+    %
+    % now setup perms
+    %
+    auth_srv:clear_all_perms_DEBUG(Site),
+
+    % the home page
+    auth_srv:add_controls(Site, [{user, "*"}, {group, "*"}], [], [read],
+                      "_global/home", ["_global/home"]),
+
+    % the login page
+    auth_srv:add_controls(Site, [{user, "*"}, {group, "*"}], ["_user", "login"],
+                      [read, write], "_global/login",
+                      ["_global/login"]),
+
+    % /about/ and /team/
+    % note that anyone can read the data but they can't get a page to view it
+    % (ie the only acceptable view is JSON)
+    auth_srv:add_perm(Site, [{user, "*"}, {group, "*"}], ["about"], [read]),
+    auth_srv:add_perm(Site, [{user, "*"}, {group, "*"}], ["team"], [read]),
+    % now make admin able to edit these pages
+    auth_srv:add_controls(Site, [{group, "admin"}], [], [read, write],
+                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]),
+    auth_srv:add_controls(Site, [{group, "admin"}], ["about"], [read, write],
+                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]),
+    auth_srv:add_controls(Site, [{group, "admin"}], ["team"], [read, write],
+                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]),
+
+    % /application/ is writable but not readable by anyone
+    % not that secure !
+    auth_srv:add_perm(Site, [{user, "*"}, {group, "*"}], ["application"],
+                      [write]),
+    auth_srv:add_controls(Site, [{group, "admin"}], ["application"],
+                          [read, write],
+                      "_global/spreadsheet", ["_global/spreadsheet"]),
+
+    % now create the dev space
+    auth_srv:add_controls(Site, [{group, "dev"}], ["dev", "[**]"],
+                      [read, write],
+                       "_global/spreadsheet", [ "_global/spreadsheet"]),
+
+    % now let devs read all the user pages
+    auth_srv:add_controls(Site, [{group, "dev"}], ["u", "[**]"],
+                          [read],
+                          "_global/spreadsheet", ["**", "_global/pagebuilder",
+                                                  "_global/spreadsheet"]),
+
+    % now create the admin space
+    auth_srv:add_controls(Site, [{group, "dev"}], ["admin", "[**]"],
+                          [read, write],
+                          "_global/spreadsheet", ["**", "_global/pagebuilder",
+                                                  "_global/spreadsheet"]),
+    
+    io:format(auth_srv:pretty_print(Site, [], text)).
+
+beta_users() ->
+    Site = "http://127.0.0.1:9000",
+    Users = [
+             {"gordon", ["dev", "admin"]},
+             {"stevie", ["dev", "admin"]},
+             {"dale", ["dev", "admin"]},
+             {"tommcnulty", ["dev", "admin"]}
+            ],
+    % setup global user guff
+    auth_srv:add_default(Site, ["u"], "_global/spreadsheet"),
+    [user_perms(User, Site) || {User, _Groups} <- Users],
+    [add_groups(User, Groups) || {User, Groups} <- Users],
+    Pattern = {'_', '_', '_','_', '_','_', '_'},
+    Fun = fun() -> mnesia:match_object('127.0.0.1&9000&hn_user',
+                                       Pattern, read) end,
+    mnesia:transaction(Fun).
