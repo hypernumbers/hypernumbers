@@ -323,7 +323,7 @@ user_perms(User, Site) ->
 
     io:format(auth_srv:pretty_print(Site, [], text)).
 
-add_groups(User, Groups, Site) ->
+add_groups(User, Groups, [$h, $t, $t, $p, $:, $/, $/ | Site]) ->
     Table = list_to_atom(Site ++ "&hn_user"),
     Fun = fun() ->
                   Record  = mnesia:read({Table, User}),
