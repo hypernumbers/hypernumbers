@@ -304,7 +304,7 @@ alpha_users() ->
     % setup global user guff
     auth_srv:add_default(Site, ["u"], "_global/spreadsheet"),
     [user_perms(User, Site) || {User, _Groups} <- Users],
-    [add_groups(User, Groups, "127.0.0.1&9001&hn_user") || {User, Groups} <- Users],
+    [add_groups(User, Groups, '127.0.0.1&9001&hn_user') || {User, Groups} <- Users],
     Pattern = {'_', '_', '_','_', '_','_', '_'},
     Fun = fun() -> mnesia:match_object('127.0.0.1&9001&hn_user',
                                        Pattern, read) end,
@@ -407,7 +407,7 @@ beta_users() ->
     % setup global user guff
     auth_srv:add_default(Site, ["u"], "_global/spreadsheet"),
     [user_perms(User, Site) || {User, _Groups} <- Users],
-    [add_groups(User, Groups, "127.0.0.1&9000&hn_user") || {User, Groups} <- Users],
+    [add_groups(User, Groups, '127.0.0.1&9000&hn_user') || {User, Groups} <- Users],
     Pattern = {'_', '_', '_','_', '_','_', '_'},
     Fun = fun() -> mnesia:match_object('127.0.0.1&9000&hn_user',
                                        Pattern, read) end,
