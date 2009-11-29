@@ -304,7 +304,7 @@ alpha_users() ->
     % setup global user guff
     auth_srv:add_default(Site, ["u"], "_global/spreadsheet"),
     [user_perms(User, Site) || {User, _Groups} <- Users],
-    [add_groups(User, Groups) || {User, Groups} <- Users],
+    [add_groups(User, Groups, Site) || {User, Groups} <- Users],
     Pattern = {'_', '_', '_','_', '_','_', '_'},
     Fun = fun() -> mnesia:match_object('127.0.0.1&9001&hn_user',
                                        Pattern, read) end,
@@ -323,9 +323,8 @@ user_perms(User, Site) ->
 
     io:format(auth_srv:pretty_print(Site, [], text)).
 
-add_groups(User, Groups) ->
-    Table = '127.0.0.1&9001&hn_user',
-    % Table = '127.0.0.1&9000&hn_user',
+add_groups(User, Groups, Site) ->
+    Table = list_to_atom(Site + "hn_user"),
     Fun = fun() ->
                   Record  = mnesia:read({Table, User}),
                   case Record of
@@ -409,7 +408,7 @@ beta_users() ->
     % setup global user guff
     auth_srv:add_default(Site, ["u"], "_global/spreadsheet"),
     [user_perms(User, Site) || {User, _Groups} <- Users],
-    [add_groups(User, Groups) || {User, Groups} <- Users],
+    [add_groups(User, Groups, Site) || {User, Groups} <- Users],
     Pattern = {'_', '_', '_','_', '_','_', '_'},
     Fun = fun() -> mnesia:match_object('127.0.0.0&9000&hn_user',
                                        Pattern, read) end,
