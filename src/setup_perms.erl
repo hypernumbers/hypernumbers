@@ -398,7 +398,7 @@ beta() ->
     io:format(auth_srv:pretty_print(Site, [], text)).
 
 beta_users() ->
-    Site = "http://127.0.0.0:9000",
+    Site = "http://127.0.0.1:9000",
     Users = [
              {"gordon", ["dev", "admin"]},
              {"stevie", ["dev", "admin"]},
@@ -410,6 +410,6 @@ beta_users() ->
     [user_perms(User, Site) || {User, _Groups} <- Users],
     [add_groups(User, Groups, Site) || {User, Groups} <- Users],
     Pattern = {'_', '_', '_','_', '_','_', '_'},
-    Fun = fun() -> mnesia:match_object('127.0.0.0&9000&hn_user',
+    Fun = fun() -> mnesia:match_object('127.0.0.1&9000&hn_user',
                                        Pattern, read) end,
     mnesia:transaction(Fun).
