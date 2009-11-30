@@ -19,7 +19,8 @@
 -include("spriki.hrl").
 
 -define(SITES, ["http://127.0.0.1:9000", "http://localhost:9000", "http://192.168.56.101:9000",
-                "http://127.0.0.1:8000", "http://localhost:8000"]).
+                "http://127.0.0.1:8000", "http://localhost:8000",
+                "http://poll.tiny.hn:80"]).
 
 %-define(SITES, ["http://127.0.0.1:9000", "http://localhost:9000"]).
 
