@@ -42,7 +42,7 @@
       <span id="viewlink"></span>
 
       <input type="button" value="preview" class="btn" id="previewbtn" />
-      <!-- <input type="button" value="sanity check" class="btn" id="sanitycheckbtn" /> -->
+      <input type="button" value="sanity check" class="btn" id="sanitycheckbtn" />
       </div>
 
     <div id="preview" class="editing"> 
@@ -79,7 +79,7 @@
               
               <tr><td><strong>get data from:</strong></td>
                 <td><input type="text" id="bindfrom" readonly="readonly" /></td></tr>
-   <tr><td><strong>send data to:</strong></td>
+              <tr><td><strong>send data to:</strong></td>
                 <td><input type="text" id="bindto" readonly="readonly" /></td></tr>
               <tr><td></td>
                 <td><input type="button" id="delete" value="delete" />
@@ -95,9 +95,10 @@
               <input type="checkbox" id="toggleview" /> View Code
             </label>
           </div>
+
           <div id="pathstyle">
             <label for="togglepathstyle">
-              <input type="checkbox" id="togglepathstyle" /> Use Relative Paths
+              <input type="checkbox" id="togglepathstyle" checked="true"/> Use Relative Paths
             </label>
           </div>
         </div>
