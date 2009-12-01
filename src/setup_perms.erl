@@ -223,7 +223,7 @@ hn_style(Site) ->
     io:format(auth_srv:pretty_print(Site, [], text)).
     
 alpha() ->
-    Site = "http://127.0.0.1:9001",
+    Site = "http://alpha.hypernumbers.com:80",
     %
     % Users and Groups First
     %    
@@ -279,7 +279,7 @@ alpha() ->
     io:format(auth_srv:pretty_print(Site, [], text)).
 
 alpha_users() ->
-    Site = "http://127.0.0.1:9001",
+    Site = "http://alpha.hypernumbers.com:80",
     Users = [
              {"sean", []},
              {"hasan", []},
@@ -305,9 +305,9 @@ alpha_users() ->
     % setup global user guff
     auth_srv:add_default(Site, ["u"], "_global/spreadsheet"),
     [user_perms(User, Site) || {User, _Groups} <- Users],
-    [add_groups(User, Groups, '127.0.0.1&9001&hn_user') || {User, Groups} <- Users],
+    [add_groups(User, Groups, 'alpha.hypernumbers.com&80&hn_user') || {User, Groups} <- Users],
     Pattern = {'_', '_', '_','_', '_','_', '_'},
-    Fun = fun() -> mnesia:match_object('127.0.0.1&9001&hn_user',
+    Fun = fun() -> mnesia:match_object('alpha.hypernumbers.com&80&hn_user',
                                        Pattern, read) end,
     mnesia:transaction(Fun).
 
