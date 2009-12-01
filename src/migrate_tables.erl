@@ -2,9 +2,10 @@
 %%% Author  : Tom McNulty 
 %%% Created : 30 Nov 2009 by Tom McNulty
 
--module(move_tables).
+-module(migrate_tables).
 
--export([run/2, run/3]).
+-export([clone/2, clone/3]).
+-export([delete/1]).
 
 -define (IS_STRING(Term), (is_list(Term) andalso 
                            Term /= [] andalso 
@@ -13,17 +14,13 @@
 -define(BACKUP_TRANS, "movetables_trans").
 
 
-run({FromHost, FromPort}, {ToHost, ToPort}) ->
-    run({FromHost, FromPort}, {ToHost, ToPort}, false).
+clone(FromSite, ToSite) ->
+    clone(FromSite, ToSite, false).
 
-run({FromHost, FromPort}, {ToHost, ToPort}, Fresh) 
-  when is_integer(FromPort), is_integer(ToPort) ->
-    StrFromPort = integer_to_list(FromPort),
-    StrToPort = integer_to_list(ToPort),
+clone("http://"++From=FromSite, "http://"++To=ToSite, Fresh) ->
+    [FromHost, FromPort | _Rest] = string:tokens(From, ":/"),
+    [ToHost, ToPort | _Rest] = string:tokens(To, ":/"),
 
-    FromSite = "http://" ++ FromHost ++ ":" ++ StrFromPort,
-    ToSite = "http://" ++ ToHost ++ ":" ++ StrToPort,
-  
     %% String replacer
     {ok, Pat} = re:compile(FromSite),
     Replacer = fun(S1) ->
@@ -37,7 +34,7 @@ run({FromHost, FromPort}, {ToHost, ToPort}, Fresh)
          end,
 
     %% Create a checkpoint covering target tables.
-    Tables = candidates(FromHost, StrFromPort),
+    Tables = candidates(FromHost, FromPort),
     {ok, CP, _Nodes} = mnesia:activate_checkpoint([{max, Tables}]),
 
     %% Dump check point to backup file.
@@ -47,15 +44,21 @@ run({FromHost, FromPort}, {ToHost, ToPort}, Fresh)
     %% Apply transformations to the backup.
     {ok,_} = mnesia:traverse_backup(?BACKUP_SRC, ?BACKUP_TRANS, 
                                     fun convert/2, 
-                                    {ToHost, StrToPort, Replacer}),
+                                    {ToHost, ToPort, Replacer}),
 
     %% Load transformed backup into DB.
     {atomic, Restored} = mnesia:restore(
                            ?BACKUP_TRANS,
                            [{default_op, recreate_tables}]),
-    io:format("Converted tables: ~p~n", [Restored]).
+    io:format("Cloned tables: ~p~n", [Restored]).
 
-
+    
+delete("http://"++Delete) ->
+    [DelHost, DelPort | _Rest] = string:tokens(Delete, ":/"),
+    Tables = candidates(DelHost, DelPort),    
+    [{atomic, ok} = mnesia:delete_table(T) || T <- Tables],
+    ok.
+    
 convert({schema, db_nodes, _}=X, Acc) ->
     {[X], Acc}; 
 convert({schema, version, _}=X, Acc) ->
