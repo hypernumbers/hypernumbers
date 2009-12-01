@@ -67,8 +67,15 @@ convert({schema, cookie, _}=X, Acc) ->
     {[X], Acc}; 
 convert({schema, OldTab, CreateList}, {Host, Port, _}=Acc) ->
     Tab = rename(OldTab, Host, Port),
-    CreateList2 = lists:keyreplace(name, 1, CreateList, {name, Tab}),
-    {[{schema, Tab, CreateList2}], Acc};
+    CreateList2 = lists:keyreplace(name, 1, CreateList, 
+                                   {name, Tab}),
+    CreateList3 = lists:keyreplace(ram_copies, 1, CreateList2, 
+                                   {ram_copies, []}),
+    CreateList4 = lists:keyreplace(disc_copies, 1, CreateList3, 
+                                   {disc_copies, []}),
+    CreateList5 = lists:keyreplace(disc_only_copies, 1, CreateList4, 
+                                   {disc_only_copies, [node()]}),
+    {[{schema, Tab, CreateList5}], Acc};
 convert(Rec0, {Host, Port, Replacer}=Acc) ->
     %% Convert record to normal form, and transform
     Rec1 = convert_record(Rec0, Replacer),
