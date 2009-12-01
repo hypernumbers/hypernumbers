@@ -69,6 +69,8 @@ convert({schema, version, _}=X, Acc) ->
     {[X], Acc}; 
 convert({schema, cookie, _}=X, Acc) ->
     {[X], Acc}; 
+convert({schema, schema, _}=X, Acc) ->
+    {[X], Acc};
 convert({schema, OldTab, CreateList}, {Host, Port, _}=Acc) ->
     Tab = rename(OldTab, Host, Port),
     CreateList2 = lists:keyreplace(name, 1, CreateList, 
