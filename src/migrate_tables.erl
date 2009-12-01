@@ -26,7 +26,7 @@ clone("http://"++From=FromSite, "http://"++To=ToSite) ->
 
     %% Create a checkpoint covering target tables.
     Tables = candidates(FromHost, FromPort),
-    {ok, CP, _Nodes} = mnesia:activate_checkpoint([{max, Tables}]),
+    {ok, CP, _Nodes} = mnesia:activate_checkpoint([{max, [schema|Tables]}]),
 
     %% Dump check point to backup file.
     ok = mnesia:backup_checkpoint(CP, ?BACKUP_SRC),
@@ -39,9 +39,10 @@ clone("http://"++From=FromSite, "http://"++To=ToSite) ->
     ok.
 
 
+%% This isn't a good idea to use on big tables, since mnesia:restore attempts to do
+%% it's work in one transaction. Use mnesia:install_fallback instead.
 load_clone(ToSite) ->
     load_clone(ToSite, false).
-
 load_clone("http://"++To=ToSite, Fresh) ->
     [ToHost, _ToPort | _Rest] = string:tokens(To, ":/"),
 
