@@ -4,20 +4,17 @@
 
 -module(migrate_tables).
 
--export([clone/2, clone/3]).
+-export([clone/2]).
+-export([load_clone/1, load_clone/2]).
 -export([delete/1]).
 
 -define (IS_STRING(Term), (is_list(Term) andalso 
                            Term /= [] andalso 
                            is_integer(hd(Term)))).
 -define(BACKUP_SRC,   "movetables_source").
--define(BACKUP_TRANS, "movetables_trans").
 
 
-clone(FromSite, ToSite) ->
-    clone(FromSite, ToSite, false).
-
-clone("http://"++From=FromSite, "http://"++To=ToSite, Fresh) ->
+clone("http://"++From=FromSite, "http://"++To=ToSite) ->
     [FromHost, FromPort | _Rest] = string:tokens(From, ":/"),
     [ToHost, ToPort | _Rest] = string:tokens(To, ":/"),
 
@@ -26,12 +23,6 @@ clone("http://"++From=FromSite, "http://"++To=ToSite, Fresh) ->
     Replacer = fun(S1) ->
                        re:replace(S1, Pat, ToSite, [{return, list}])
                end,
-
-    %% Create tables if fresh
-    ok = case Fresh of
-             true  -> hn_db_api:create_db(ToSite);
-             false -> ok
-         end,
 
     %% Create a checkpoint covering target tables.
     Tables = candidates(FromHost, FromPort),
@@ -42,13 +33,25 @@ clone("http://"++From=FromSite, "http://"++To=ToSite, Fresh) ->
     ok = mnesia:deactivate_checkpoint(CP),
 
     %% Apply transformations to the backup.
-    {ok,_} = mnesia:traverse_backup(?BACKUP_SRC, ?BACKUP_TRANS, 
+    {ok,_} = mnesia:traverse_backup(?BACKUP_SRC, list_to_atom(ToHost++"_trans"),
                                     fun convert/2, 
                                     {ToHost, ToPort, Replacer}),
+    ok.
 
-    %% Load transformed backup into DB.
+
+load_clone(ToSite) ->
+    load_clone(ToSite, false).
+
+load_clone("http://"++To=ToSite, Fresh) ->
+    [ToHost, _ToPort | _Rest] = string:tokens(To, ":/"),
+
+    %% Create tables if fresh
+    ok = case Fresh of
+             true  -> hn_db_api:create_db(ToSite);
+             false -> ok
+         end,
     {atomic, Restored} = mnesia:restore(
-                           ?BACKUP_TRANS,
+                           list_to_atom(ToHost++"_trans"),
                            [{default_op, recreate_tables}]),
     io:format("Cloned tables: ~p~n", [Restored]).
 
