@@ -113,7 +113,7 @@ compress(List) ->
 
 cmp1([], Acc) ->
     Acc;
-cmp1([{IP, Port, _Hosts} | T], Acc) ->
+cmp1([{IP, Port, _Host} | T], Acc) ->
     case lists:member({IP, Port}, Acc) of
         true  -> cmp1(T, Acc);
         false -> cmp1(T, [{IP, Port} | Acc])

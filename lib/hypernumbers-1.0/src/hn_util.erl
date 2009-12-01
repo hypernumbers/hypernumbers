@@ -123,9 +123,8 @@ get_hosts(List) when is_list(List) ->
     get_hosts1(List, []).
 
 get_hosts1([], Acc) -> Acc;
-get_hosts1([{_IP, Port, [Host]} | T], Acc) ->
-    NewAcc = "http://" ++ Host ++ ":" ++ integer_to_list(Port),
-    get_hosts1(T, [NewAcc | Acc]).
+get_hosts1([{_IP, _Port, [Host]} | T], Acc) ->
+    get_hosts1(T, [Host | Acc]).
 
 compile_html(Html, Lang) ->
     {ok, Bin} = file:read_file(code:lib_dir(hypernumbers)++"/po/"++Lang++".po"),
