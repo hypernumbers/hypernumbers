@@ -6,9 +6,6 @@
     
     <title>Hypernumbers Web Builder</title>
 
-    <link rel="stylesheet" type="text/css" 
-          href="/templates/ventris/default.css" />
-
   </head>
   <body>
 
