@@ -1,0 +1,71 @@
+#!/usr/bin/env escript
+%% -*- erlang -*-
+
+-define(NAME, 'mi_logfetcher@localhost').
+-define(COOKIE, 'abc').
+-define(OUTDIR, "mi_logs").
+
+
+main([LogName, Target]) ->
+    init(),
+    TNode = list_to_atom(Target),
+    Since = yesterday(),
+    rpc:cast(TNode, mochilog, stream_log, [LogName, Since, self()]),
+    start_loop(filename(Since));
+
+main(_) ->
+    io:format("usage: mi_weblog log_name target_node~n", []).
+
+start_loop(FileName) ->
+    receive
+        {_, log_start} -> 
+            {ok, FD} = file:open([?OUTDIR, "/", FileName], 
+                                 [write, delayed_write, raw]),
+            server_loop(FileName, FD);
+        {_, {log_error, Reason}} ->
+            io:format(standard_error, "Server: ~p~n", [Reason]),
+            ok
+    after 5000 ->
+            io:format(standard_error, "Error starting~n", [])
+    end.
+
+server_loop(FileName, FD) ->
+    receive
+        {From, {log_chunk, Chunk}} ->
+            [file:write(FD, X) || X <- Chunk],
+            From ! {self(), log_continue_stream},
+            server_loop(FileName, FD);
+
+        {_, log_finished} ->
+            ok = file:close(FD),
+            Latest = [?OUTDIR, "/", "latest"],
+            file:delete(Latest),
+            ok = file:make_symlink(FileName, Latest)
+
+    after 20000 ->
+            io:format(standard_error, "Lost connection to server~n", []),
+            file:close(FD),
+            file:delete(FileName)
+    end.
+
+init() ->
+    filelib:ensure_dir(?OUTDIR),
+    file:make_dir(?OUTDIR),
+    os:cmd("epmd -daemon"), 
+    ok = application:start(inets),
+    {ok, _} = net_kernel:start([?NAME, shortnames]),
+    true = auth:set_cookie(?COOKIE).
+    
+filename(Str) ->
+    {H, M, S} = erlang:time(),
+    lists:flatten([Str, 
+                   " (",
+                   io_lib:format("~2.10.0b_~2.10.0b_~2.10.0b", [H,M,S]),
+                   ")"]).
+    
+%% all my troubles seem so far away...
+yesterday() ->
+    {Date, _} = calendar:now_to_local_time(erlang:now()),
+    Yesterday = calendar:date_to_gregorian_days(Date) - 1,
+    {YY, YM, YD} = calendar:gregorian_days_to_date(Yesterday),
+    lists:flatten(io_lib:format("~b-~b-~b", [YD, YM, YY])).

@@ -13,12 +13,13 @@
 -record(post, {time, site, path, method, body, peer, user, referer, browser}).
 
 -export([log/4, start/0, stop/0, replay/2, replay/3, clear/0, repair/1,
-         browse/1, browse/2, browse_marks/1, info/2, generate_mi/2 ]).
+         browse/1, browse/2, browse_marks/1, info/2 ]).
+
+-export([stream_log/3]).
 
 %% @spec start() -> ok
 %% @doc This starts the log
 start() ->
-
     Opts = [{name,?NAME}, {file,logfile()},
             {type,wrap},  {size, {2097152, 99}}],
 
@@ -73,6 +74,54 @@ repair(Name) ->
     end.
 
 
+%% 
+stream_log(Name, Since, Remote) ->
+    Log = logfile(Name ++ "/post_log"),
+    Filter = make_filter([{method, all}, {since, Since}]),
+    case filelib:is_file(Log++".siz") of 
+        false ->
+            Remote ! {self(), {log_error, no_such_log}};
+        true ->
+            Remote ! {self(), log_start},
+            Remote ! {self(), {log_chunk,
+                               ["Date,Site,Path,Body,Method,IP,User,"
+                                "Referer,User-Agent\n"]}},
+            {ok, Cont} = wrap_log_reader:open(Log),
+            {ok, End}  = walk(fun(Terms, _) -> 
+                                      do_stream(Remote, Filter, Terms) 
+                              end, Cont, 0),
+            wrap_log_reader:close(End),
+            Remote ! {self(), log_finished}
+    end.
+
+do_stream(Remote, Filter, Terms) ->
+    Messages = [handle_term(Filter, T, 0, fun mi_entry/2) || T <- Terms],
+    Remote ! {self(), {log_chunk, Messages}},
+    receive 
+        {Remote, log_continue_stream} ->
+            ok
+    after 2000 ->
+            exit(log_stream_timeout)
+    end.
+        
+mi_entry(Post, _) ->
+    Date = dh_date:format("r", Post#post.time),
+    #post{ site=Site, path=Path, body=Body, method=Mthd, peer=Peer,
+           user=Usr, referer=Rfr, browser=UA} = Post,
+    
+    S = case Body of
+            {upload, F} -> F;
+            _-> case io_lib:printable_list(btol(Body)) of
+                    true  -> btol(Body);
+                    false -> ""
+                end
+        end,
+    
+    Format = "~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
+    io_lib:format(Format, [Date, Site, Path, S, atol(Mthd),
+                           Peer, Usr, Rfr, UA]).
+
+
 -spec replay(string(), string()) -> ok.
 %% @doc alias for replay(Name, LogSite, NewSite, deep)
 replay(Name, NewSite) ->
@@ -92,36 +141,6 @@ replay(Name, Url, Options) ->
     run_log(Name, F, make_filter(Options)),
     io:format("~nReplay finished....~n"),
     ok.
-
-%% @spec generate_mi(Name, Path) -> ok
-%% @doc Name is the name of the log file to read from (must be 
-%% stored in /lib/hypernumbers-1.0/log/), Path is the path of 
-%% the file to write mi to
-generate_mi(Name, Path) ->
-    {ok, File} = file:open(Path, [write]),
-    io:format(File, "Date,Site,Path,Body,Method,IP,User,"
-              ++"Referer,User-Agent~n",[]),
-    Filter = make_filter([{method, all}]),
-    run_log(Name, fun(Post, _Id) -> do_mi(File, Post) end, Filter),
-    file:close(File).
-
-do_mi(File, Post) ->
-    
-    Date = dh_date:format("r", Post#post.time),
-    #post{ site=Site, path=Path, body=Body, method=Mthd, peer=Peer,
-           user=Usr, referer=Rfr, browser=UA} = Post,
-    
-    S = case Body of
-            {upload, F} -> F;
-            _-> case io_lib:printable_list(btol(Body)) of
-                    true  -> btol(Body);
-                    false -> ""
-                end
-        end,
-    
-    Str  = "~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
-    io:format(File, Str, [Date, Site, Path, S, atol(Mthd),
-                          Peer, Usr, Rfr, UA]).
 
 transform_date([], Acc) ->
     Acc;
@@ -269,20 +288,25 @@ run_log(Name, Fun, Filter) ->
         false ->
             {error, no_file};
         true ->
+            Fun2 = 
+                fun(Terms, N0) -> 
+                        lists:foldl(fun(T, N) ->
+                                            handle_term(Filter, T, N, Fun),
+                                            N + 1
+                                    end, N0, Terms)
+                end,
             {ok, Cont} = wrap_log_reader:open(Log),
-            {ok, End}  = walk(Fun, Cont, 0, Filter),
+            {ok, End}  = walk(Fun2, Cont, 0),
             wrap_log_reader:close(End)
     end.
 
-walk(F, Cont, N, Filter) ->
+walk(F, Cont, N) ->
     case wrap_log_reader:chunk(Cont) of
         {NCont, eof} ->
             {ok, NCont};
         {NCont, Terms} ->
-            N2 = lists:foldl(fun(T, N0) -> handle_term(Filter, T, N0, F), N0+1 end,
-                             N,
-                             Terms),
-            walk(F, NCont, N2, Filter)
+            N2 = F(Terms, N),
+            walk(F, NCont, N2)
     end.
 
 handle_term(Opts, Post, N, F) ->
@@ -295,12 +319,12 @@ handle_term(Opts, Post, N, F) ->
 
     case in_path(Path, Path2, Deep) andalso filter(Opts, Post, N) of
         true  ->
-            F(Post, N),
+            R = F(Post, N),
             timer:sleep(?pget(pause, Opts));
         false ->
-            ok
+            R = ok
     end,
-    ok.
+    R.
 
 in_path(Path, Path, false) ->
     true;
