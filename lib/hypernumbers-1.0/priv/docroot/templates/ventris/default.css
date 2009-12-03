@@ -123,11 +123,13 @@ body {
 
 form.hn { 
     margin: 5px;
+    padding: 5px;
+    border: 1px solid #EEE;
 }
 
 label { 
     display: block;
-    margin: 10px 0px;
+    margin: 2px 0px;
 }
 
 label span { 
