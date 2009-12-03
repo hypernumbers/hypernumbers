@@ -714,18 +714,24 @@ json(Req, Data) ->
     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
     Req:ok({"application/json", ?hdr, Json}).
 
-fix_up(List, S, P) -> f_up1(List, S, P, [], []).
+fix_up(List, S, P) ->
+    f_up1(List, S, P, [], []).
 
-f_up1([], _S, _P, A1, A2) -> {A1, lists:flatten(A2)};
+f_up1([], _S, _P, A1, A2) ->
+    {A1, lists:flatten(A2)};
 f_up1([{struct, [{"ref", R}, {"formula", {array, L}}]} | T], S, P, A1, A2) ->
-    Obj = hn_util:parse_attr(R),
-    RefX = #refX{site = S, path = P, obj = Obj},
-    L2 = [[{"formula", X}] || X <- L],
-    NewAcc = lists:zip(hn_util:range_to_list(RefX), lists:reverse(L2)),
+    [Attr | RPath] = lists:reverse(string:tokens(R, "/")),
+    Obj            = hn_util:parse_attr(Attr),
+    Path           = lists:reverse(RPath),
+    RefX           = #refX{site = S, path = Path, obj = Obj},
+    L2             = [[{"formula", X}] || X <- L],
+    NewAcc         = lists:zip(hn_util:range_to_list(RefX), lists:reverse(L2)),
     f_up1(T, S, P, A1, [NewAcc | A2]);
 f_up1([{struct, [{"ref", Ref}, {"formula", F}]} | T], S, P, A1, A2) ->
-    Obj = hn_util:parse_attr(Ref),
-    RefX = #refX{site = S, path = P, obj = Obj},
+    [Attr | RPath] = lists:reverse(string:tokens(Ref, "/")),
+    Obj            = hn_util:parse_attr(Attr),
+    Path           = lists:reverse(RPath),
+    RefX           = #refX{site = S, path = Path, obj = Obj},
     case Obj of
         {column, _} -> f_up1(T, S, P, [{RefX, F} | A1], A2);
         {row, _}    -> f_up1(T, S, P, [{RefX, F} | A1], A2);
