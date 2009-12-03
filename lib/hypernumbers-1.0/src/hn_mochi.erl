@@ -171,7 +171,6 @@ iget(Req, #refX{site = S}, page, [{"status", []}], _User, _CType) ->
     json(Req, status_srv:get_status(S));
 
 iget(Req, #refX{site = S}, page, [{"permissions", []}], _User, CType) ->
-    io:format("getting permissons CType is ~p~n", [CType]),
     Req:ok({"text/html", auth_srv:pretty_print(S, [], html)});
 
 % List of template pages
