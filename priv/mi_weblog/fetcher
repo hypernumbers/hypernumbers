@@ -3,10 +3,12 @@
 
 -define(NAME, 'mi_logfetcher@localhost').
 -define(COOKIE, 'abc').
--define(OUTDIR, "mi_logs").
+-define(OUTDIR, "logs").
 
 
-main([LogName, Target]) ->
+main([Target]) ->
+    main([Target, "."]);
+main([Target, LogName]) ->
     init(),
     TNode = list_to_atom(Target),
     StartDate = relative_date(1),
