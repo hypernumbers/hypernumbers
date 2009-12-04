@@ -309,8 +309,7 @@ ipost(#refX{obj = {range, _}} = Ref, _Type, _Attr,
     Border = from("border", Attrs),
     Border_Style = from("border_style", Attrs),
     Border_Color = from("border_color", Attrs),
-    ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
-    ok;
+    ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color);
 
 ipost(_Ref, _Type, _Attr,
       [{"set", {struct, [{"language", _Lang}]}}], anonymous) ->
