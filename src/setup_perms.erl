@@ -18,7 +18,8 @@
 
 -include("spriki.hrl").
 
--define(SITES, ["http://127.0.0.1:9000", "http://localhost:9000", "http://192.168.56.101:9000",
+-define(SITES, ["http://127.0.0.1:9000", "http://localhost:9000",
+                "http://192.168.56.101:9000",
                 "http://127.0.0.1:8000", "http://localhost:8000",
                 "http://poll.tiny.hn:80"]).
 
@@ -42,17 +43,17 @@ old_style() ->
     %%
     F = fun(S) ->
                 auth_srv:clear_all_perms_DEBUG(S),
-
-                                                % the home page
-                auth_srv:add_controls(S, [{user, "*"}, {group, "*"}],
-                                      ["[**]"],[read, write],
-                                      "_global/spreadsheet",
-                                      ["_global/spreadsheet", "_global/pagebuilder"]),
-
+                
+                % the home page
                 auth_srv:add_controls(S, [{user, "*"}, {group, "*"}],
                                       [],[read, write],
                                       "_global/spreadsheet",
-                                      ["_global/spreadsheet", "_global/pagebuilder"])
+                                      ["**", "_global/spreadsheet", "_global/pagebuilder"]),
+                
+                auth_srv:add_controls(S, [{user, "*"}, {group, "*"}],
+                                      ["[**]"],[read, write],
+                                      "_global/spreadsheet",
+                                      ["**", "_global/spreadsheet", "_global/pagebuilder"])
         end,
     [F(S) || S <- ?SITES],
     ok.
@@ -269,7 +270,7 @@ alpha() ->
     % now let devs read all the user pages
     auth_srv:add_controls(Site, [{group, "dev"}], ["u", "[**]"],
                           [read],
-                          "_global/spreadsheet", [ "_global/spreadsheet"]),
+                          "_global/spreadsheet", [ "**", "_global/spreadsheet"]),
 
     % now create the admin space
     auth_srv:add_controls(Site, [{group, "dev"}], ["admin", "[**]"],
