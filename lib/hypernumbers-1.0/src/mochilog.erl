@@ -15,7 +15,7 @@
 -export([log/4, start/0, stop/0, replay/2, replay/3, clear/0, repair/1,
          browse/1, browse/2, browse_marks/1, info/2 ]).
 
--export([stream_log/3]).
+-export([stream_log/4]).
 
 %% @spec start() -> ok
 %% @doc This starts the log
@@ -75,9 +75,9 @@ repair(Name) ->
 
 
 %% 
-stream_log(Name, Since, Remote) ->
+stream_log(Name, StartD, EndD, Remote) ->
     Log = logfile(Name ++ "/post_log"),
-    Filter = make_filter([{method, all}, {since, Since}]),
+    Filter = make_filter([{method, all}, {between, StartD, EndD}]),
     case filelib:is_file(Log++".siz") of 
         false ->
             Remote ! {self(), {log_error, no_such_log}};
@@ -250,7 +250,7 @@ filter([{method, _} | T], Post, Id) ->
 filter([{date, all} | T], Post, Id) ->
     filter(T, Post, Id);
 filter([{date, {Start, End}} | T], #post{time=Time}=Post, Id)
-  when Time >= Start, Time =< End ->
+  when Time >= Start, Time < End ->
     filter(T, Post, Id);
 filter([{date, _Date} | _T], _Post, _Id) ->
     false;

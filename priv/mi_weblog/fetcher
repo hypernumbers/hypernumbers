@@ -9,9 +9,11 @@
 main([LogName, Target]) ->
     init(),
     TNode = list_to_atom(Target),
-    Since = yesterday(),
-    rpc:cast(TNode, mochilog, stream_log, [LogName, Since, self()]),
-    start_loop(filename(Since));
+    StartDate = relative_date(1),
+    EndDate = relative_date(0),
+    rpc:cast(TNode, mochilog, stream_log, 
+             [LogName, StartDate, EndDate, self()]),
+    start_loop(filename(StartDate));
 
 main(_) ->
     io:format("usage: mi_weblog log_name target_node~n", []).
@@ -63,9 +65,10 @@ filename(Str) ->
                    io_lib:format("~2.10.0b_~2.10.0b_~2.10.0b", [H,M,S]),
                    ")"]).
     
-%% all my troubles seem so far away...
-yesterday() ->
+relative_date(Offset) ->
     {Date, _} = calendar:now_to_local_time(erlang:now()),
-    Yesterday = calendar:date_to_gregorian_days(Date) - 1,
-    {YY, YM, YD} = calendar:gregorian_days_to_date(Yesterday),
-    lists:flatten(io_lib:format("~b-~b-~b", [YD, YM, YY])).
+    Day = calendar:date_to_gregorian_days(Date),
+    format_date(calendar:gregorian_days_to_date(Day - Offset)).
+    
+format_date({Y, M, D}) ->
+    lists:flatten(io_lib:format("~b-~b-~b", [D, M, Y])).
