@@ -659,7 +659,6 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
     Host   = {"host", S},
     Grps   = {"groups", {array, Groups}},
     Lang   = {"lang", get_lang(User)},
-    Tour   = viewed_tour(Ref#refX.site, User),
     Perms = case auth_srv:can_write(S, {Name, Groups}, P) of
                 true  -> {"permissions", {array, ["read", "write"]}};
                 false -> {"permissions", {array, ["read"]}}
@@ -667,22 +666,8 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
 
     Views = {views, {array, auth_srv:get_views(S, {Name, Groups}, P)}},
     
-    {struct, [Time, Usr, Host, Tour, Lang, Perms, Grps, Views
+    {struct, [Time, Usr, Host, Lang, Perms, Grps, Views
               | dict_to_struct(Dict)]}.
-
-viewed_tour(_Site, anonymous) ->
-    {"viewed-tour", "true"};
-viewed_tour(Site, User) ->
-    View = case hn_users:get(User, "viewed-tour") of
-               undefined ->
-                   hn_users:update(Site, User, "viewed-tour", "true"),
-                   "false";
-               {ok, "false"} ->
-                   hn_users:update(Site, User, "viewed-tour", "true"),
-                   "false";
-               {ok, "true"} -> "true"
-           end,    
-    {"viewed-tour", View}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};
