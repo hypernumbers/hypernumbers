@@ -20,7 +20,8 @@
          "/lib/introspection-1.0/",
          "/lib/mnesia_logger-1.0/",
          "/lib/read_excel-1.0/",
-         "/lib/gui_generator-1.0/"]).
+         "/lib/gui_generator-1.0/",
+         "/lib/tiny-1.0/"]).
 
 -define(EXTRA_ERL_FILES, []).
 
@@ -38,6 +39,7 @@ start() ->
                 {i, Dir ++ "lib/gettext/include"},
                 {i, Dir ++ "lib/read_excel-1.0/include"},
                 {i, Dir ++ "lib/hypernumbers-1.0/include"},
+                {i, Dir ++ "lib/tiny-1.0/include"},
                 {i, code:lib_dir(xmerl)++"/include"}],
 
     % List of {ErlangFile, OutputDirectory} tuples.
@@ -152,7 +154,8 @@ get_vsn(Module) ->
 
 get_rel_file() ->
 
-    F = lists:append(["{release, {\"hypernumbers\",\"1.0\"}, ",
+    F = lists:append([
+                      "{release, {\"hypernumbers\",\"1.0\"}, ",
                       "{erts,\"",erlang:system_info(version),"\"},"
                       "[{kernel,\"",get_vsn(kernel),"\"},",
                       "{stdlib,\"",get_vsn(stdlib),"\"},",
@@ -166,7 +169,8 @@ get_rel_file() ->
                       "{starling_app,\"0.0.1\"},",
                       "{formula_engine,\"1.0\"},",
                       "{mochiweb,\"0.01\"},",
-                      "{hypernumbers,\"1.0\"}]}."]),
+                      "{hypernumbers,\"1.0\"}]}."
+                     ]),
     
     ok = file:write_file("hypernumbers.rel",F),
     ok = systools:make_script("hypernumbers",

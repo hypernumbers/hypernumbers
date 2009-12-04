@@ -58,7 +58,11 @@ handle_cast(_Info, State) ->
 handle_call({start, Sites},  _From, State) ->
     F = fun(Site) ->
                 Tbl = hn_db_wu:trans(Site, State#state.table),
-                {start_listen(Tbl), Tbl}
+                {state, _, Processes} = State,
+                case lists:keysearch(Tbl, 2, Processes) of
+                    false          -> {start_listen(Tbl), Tbl};
+                    {value, Tuple} -> Tuple
+                end
         end,
     NState = State#state{children = lists:map(F, Sites)},
     

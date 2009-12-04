@@ -3,7 +3,7 @@
 -module(hypernumbers_app).
 -behaviour(application).
 
--export([start/2, stop/1, hup/0, clean_start/0 ]).
+-export([start/2, stop/1, hup/0, clean_start_DEBUG/0 ]).
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
@@ -40,7 +40,8 @@ load_muin_modules() ->
 
 hup() ->
     hn_config:hup(),
-    init_permissions().
+    Sites = hn_util:get_hosts(hn_config:get(hosts)),
+    [ok = dirty_srv:start(X, Sites) || X <- dirty_tables()].
 
 %% @spec stop(State) -> ok
 %% @doc  Application Callback
@@ -63,10 +64,10 @@ is_fresh_startup() ->
             end
     end.
 
-%% @spec clean_start() -> ok
+%% @spec clean_start_DEBUG() -> ok
 %% @doc  delete/create existing database and set up
 %%       initial permissions
-clean_start() ->
+clean_start_DEBUG() ->
 
     Sites = hn_util:get_hosts(hn_config:get(hosts)),
 
@@ -87,9 +88,7 @@ fresh_start() ->
     HostsInfo = hn_config:get(hosts),
     Sites = hn_util:get_hosts(HostsInfo),
 
-    [ok = hn_db_api:create_db(X) || X <- Sites],
-
-    ok = init_permissions().
+    [ok = hn_db_api:create_db(X) || X <- Sites].
 
 %% @spec start_mochiweb() -> ok
 %% @doc  Start mochiweb http servers
@@ -118,11 +117,6 @@ cmp1([{IP, Port, _Host} | T], Acc) ->
         true  -> cmp1(T, Acc);
         false -> cmp1(T, [{IP, Port} | Acc])
     end.
-
-init_permissions() ->
-    [ ok = hn_auth:init_permissions(Host)
-      || Host <- hn_util:get_hosts(hn_config:get(hosts)) ],
-    ok.
 
 dirty_tables() ->
     [ dirty_cell,
