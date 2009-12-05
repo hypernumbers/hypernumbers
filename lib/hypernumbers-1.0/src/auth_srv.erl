@@ -206,7 +206,10 @@
          get_groups/1
         ]).
 
--export([clear_all_perms_DEBUG/1]).
+-export([
+         clear_all_perms_DEBUG/1,
+         permissions_DEBUG/3
+        ]).
 
 -compile(export_all).
 
@@ -306,7 +309,9 @@ handle_call(Request, _From, State) ->
             {get_groups, Host} ->
                 {Host, get_groups1(get(Host, Tr)), false};
             {clear_all_perms, Host} ->
-                {Host, gb_trees:empty(), true}
+                {Host, gb_trees:empty(), true};
+            {permissions_debug, Host, AS, P} ->
+                {Host, permissions_debug1(get(Host, Tr), AS, P), false}
         end,
     {Reply, NewTr} =
         case Return1 of
@@ -428,9 +433,28 @@ get_groups(Host) ->
 clear_all_perms_DEBUG(Host) ->
     gen_server:call(auth_srv, {clear_all_perms, Host}).
 
+permissions_DEBUG(Host, AuthSpec, Page) -> 
+    gen_server:call(auth_srv, {permissions_debug, Host, AuthSpec, Page}).
+
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+permissions_debug1(Tree, {U, Gs}, Page) ->
+    Fun =
+        fun(X) ->
+                Ret1 = io_lib:fwrite("User is ~p~n and Groups are ~p~n", [U, Gs]),
+                Ret2 = io_lib:fwrite("ACL's are ~p~n", [X#carry.acl]),
+                Ret3 = io_lib:fwrite("Default is ~p~n", [X#carry.default]),
+                Ret4 = io_lib:fwrite("Views are ~p~n", [X#carry.views]),
+                io:format("Ret1 is ~p Ret2 is ~p~n", [Ret1, Ret2]),
+                "<html><head></head><body><br />" ++ Ret1
+                    ++ "<br /><br />" ++ Ret2
+                    ++ "<br /><br />" ++ Ret3
+                    ++ "<br /><br />" ++ Ret4
+                    ++ "</body></html>"
+        end,
+    check_get(Tree, Page, Fun).    
+
 check_get_page1(Tree, {U, Gs}, Page) ->
     % first see if the user has permission to see the page
     % then see what page they should be getting
@@ -2473,30 +2497,36 @@ test200() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
                          [read, write], "",
                          ["*", "_global/spreadsheet", "_global/pagebuilder"]),
-    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret1 = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret2 = can_read1(Tree, {"gordon", []}, P2),
+    Ret3 = can_write1(Tree, {"gordon", []}, P2),
     io:format(pretty_print1(Tree, [], text)),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "gordon/junk"}).
+    io:format("Ret1 is ~p Ret2 is ~p Ret3 is ~p~n", [Ret1, Ret2, Ret3]),
+    ({Ret1, Ret2, Ret3} == {{html, "gordon/junk"}, true, true}).
 
 test201() ->
     P1 = ["u", "gordon", "[**]"],
     P2 = ["u", "gordon", "blahblah"],
     Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1, [read, write], "", ["*", "_global/spreadsheet", "_global/pagebuilder"]),
-    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret1 = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret2 = can_read1(Tree, {"gordon", []}, P2),
+    Ret3 = can_write1(Tree, {"gordon", []}, P2),
     io:format(pretty_print1(Tree, [], text)),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "gordon/junk"}).
-
+    io:format("Ret1 is ~p Ret2 is ~p Ret3 is ~p~n", [Ret1, Ret2, Ret3]),
+    ({Ret1, Ret2, Ret3} == {{html, "gordon/junk"}, true, true}).
+ 
 test202() ->
     P1 = ["u", "gordon", "[**]"],
     P2 = ["u", "gordon", "blah", "blah"],
     Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
                          [read, write], "",
                          ["*", "_global/spreadsheet", "_global/pagebuilder"]),
-    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret1 = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret2 = can_read1(Tree, {"gordon", []}, P2),
+    Ret3 = can_write1(Tree, {"gordon", []}, P2),
     io:format(pretty_print1(Tree, [], text)),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "gordon/junk"}).
+    io:format("Ret1 is ~p Ret2 is ~p Ret3 is ~p~n", [Ret1, Ret2, Ret3]),
+    ({Ret1, Ret2, Ret3} == {{html, "gordon/junk"}, true, true}).
 
 test203() ->
     P1 = ["u", "gordon", "[*]"],
@@ -2504,10 +2534,12 @@ test203() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
                          [read, write], "",
                          ["*", "_global/spreadsheet", "_global/pagebuilder"]),
-    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret1 = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret2 = can_read1(Tree, {"gordon", []}, P2),
+    Ret3 = can_write1(Tree, {"gordon", []}, P2),
     io:format(pretty_print1(Tree, [], text)),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {return, '404'}).
+    io:format("Ret1 is ~p Ret2 is ~p Ret3 is ~p~n", [Ret1, Ret2, Ret3]),
+    ({Ret1, Ret2, Ret3} == {{return, '404'}, false, false}).
 
 test204() ->
     P1 = ["u", "gordon", "[*]"],
@@ -2515,10 +2547,12 @@ test204() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
                          [read, write], "",
                          ["**", "_global/spreadsheet", "_global/pagebuilder"]),
-    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret1 = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret2 = can_read1(Tree, {"gordon", []}, P2),
+    Ret3 = can_write1(Tree, {"gordon", []}, P2),
     io:format(pretty_print1(Tree, [], text)),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "gordon/junk"}).
+    io:format("Ret1 is ~p Ret2 is ~p Ret3 is ~p~n", [Ret1, Ret2, Ret3]),
+    ({Ret1, Ret2, Ret3} == {{html, "gordon/junk"}, true, true}).
 
 test204a() ->
     P1 = ["u", "gordon", "[*]"],
@@ -2526,10 +2560,12 @@ test204a() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
                          [read, write], "",
                          ["*", "_global/spreadsheet", "_global/pagebuilder"]),
-    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret1 = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret2 = can_read1(Tree, {"gordon", []}, P2),
+    Ret3 = can_write1(Tree, {"gordon", []}, P2),
     io:format(pretty_print1(Tree, [], text)),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "gordon/junk"}).
+    io:format("Ret1 is ~p Ret2 is ~p Ret3 is ~p~n", [Ret1, Ret2, Ret3]),
+    ({Ret1, Ret2, Ret3} == {{html, "gordon/junk"}, true, true}).
 
 test204b() ->
     P1 = ["u", "gordon", "[*]"],
@@ -2537,10 +2573,12 @@ test204b() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
                          [read, write], "",
                          ["*", "_global/spreadsheet", "_global/pagebuilder"]),
-    Ret = check_get_page1(Tree, {"gordon", []}, P2, "_global/pagebuilder"),
+    Ret1 = check_get_page1(Tree, {"gordon", []}, P2, "_global/pagebuilder"),
+    Ret2 = can_read1(Tree, {"gordon", []}, P2),
+    Ret3 = can_write1(Tree, {"gordon", []}, P2),
     io:format(pretty_print1(Tree, [], text)),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "_global/pagebuilder"}).
+    io:format("Ret1 is ~p Ret2 is ~p Ret3 is ~p~n", [Ret1, Ret2, Ret3]),
+    ({Ret1, Ret2, Ret3} == {{html, "_global/pagebuilder"}, true, true}).
 
 test205() ->
     P1 = ["u", "gordon", "[**]"],
@@ -2548,10 +2586,12 @@ test205() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
                          [read, write], "",
                          ["**", "_global/spreadsheet", "_global/pagebuilder"]),
-    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret1 = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret2 = can_read1(Tree, {"gordon", []}, P2),
+    Ret3 = can_write1(Tree, {"gordon", []}, P2),
     io:format(pretty_print1(Tree, [], text)),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "gordon/junk"}).
+    io:format("Ret1 is ~p Ret2 is ~p Ret3 is ~p~n", [Ret1, Ret2, Ret3]),
+    ({Ret1, Ret2, Ret3} == {{html, "gordon/junk"}, true, true}).
 
 test206() ->
     P1 = ["u", "gordon", "[**]"],
@@ -2559,10 +2599,12 @@ test206() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
                          [read, write], "",
                          ["**", "_global/spreadsheet", "_global/pagebuilder"]),
-    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret1 = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret2 = can_read1(Tree, {"gordon", []}, P2),
+    Ret3 = can_write1(Tree, {"gordon", []}, P2),
     io:format(pretty_print1(Tree, [], text)),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {html, "gordon/junk"}).
+    io:format("Ret1 is ~p Ret2 is ~p Ret3 is ~p~n", [Ret1, Ret2, Ret3]),
+    ({Ret1, Ret2, Ret3} == {{html, "gordon/junk"}, true, true}).
 
 test207() ->
     P1 = ["u", "gordon", "[*]"],
@@ -2570,10 +2612,12 @@ test207() ->
     Tree = add_controls1(gb_trees:empty(), [{user, "gordon"}], P1,
                          [read, write], "",
                          ["**", "_global/spreadsheet", "_global/pagebuilder"]),
-    Ret = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret1 = check_get_page1(Tree, {"gordon", []}, P2, "gordon/junk"),
+    Ret2 = can_read1(Tree, {"gordon", []}, P2),
+    Ret3 = can_write1(Tree, {"gordon", []}, P2),
     io:format(pretty_print1(Tree, [], text)),
-    io:format("Ret is ~p~n", [Ret]),
-    (Ret == {return, '404'}).
+    io:format("Ret1 is ~p Ret2 is ~p Ret3 is ~p~n", [Ret1, Ret2, Ret3]),
+    ({Ret1, Ret2, Ret3} == {{return, '404'}, false, false}).
 
 test208() ->
     P1 = ["u", "gordon", "[*]"],
