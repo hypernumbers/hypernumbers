@@ -19,17 +19,17 @@ start(_Type, _Args) ->
     {ok, Pid}     = hypernumbers_sup:start_link(),
     {ok,[[Path]]} = init:get_argument(hn_config),	
     hn_config:read_conf(Path), 
-    
+
     ok = case is_fresh_startup() of
              true             -> fresh_start();
              {exists, Tables} -> mnesia:wait_for_tables(Tables, 1000000)
          end,
     
     Sites = hn_util:get_hosts(hn_config:get(hosts)),
-    [ok = dirty_srv:start(X, Sites) || X <- dirty_tables()],
-    ok = load_muin_modules(),
-    ok = start_mochiweb(),
-    
+    [ok   = dirty_srv:start(X, Sites) || X <- dirty_tables()],
+    ok    = load_muin_modules(),
+    ok    = start_mochiweb(),
+        
     {ok, Pid}.
 
 % these need to be loaded for exported_function() to work
@@ -86,9 +86,11 @@ fresh_start() ->
     ok = mnesia:start(),
 
     HostsInfo = hn_config:get(hosts),
-    Sites = hn_util:get_hosts(HostsInfo),
+    Sites     = hn_util:get_hosts(HostsInfo),
 
-    [ok = hn_db_api:create_db(X) || X <- Sites].
+    [ok = hn_db_api:create_db(X) || X <- Sites],
+
+    ok.
 
 %% @spec start_mochiweb() -> ok
 %% @doc  Start mochiweb http servers
