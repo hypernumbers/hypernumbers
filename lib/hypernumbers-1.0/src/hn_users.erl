@@ -20,12 +20,35 @@
          groups/1
         ]).
 
--export([delete_all_users_DEBUG/1]).
+-export([
+         delete_all_users_DEBUG/1,
+         prettyprint_DEBUG/1
+        ]).
 
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
 
 -define(COOKIE, "somerandomcookie").
+
+prettyprint_DEBUG(Site) ->
+    
+    Match = #hn_user{_ = '_'},
+    Fun = fun() ->
+                  mnesia:match_object(hn_db_wu:trans(Site, hn_user),
+                                      Match, read)
+          end,
+    {atomic, Users} = mnesia:transaction(Fun),
+    "<html><head></head><body>" ++
+        pp(Users, []) ++
+        "</body></html>".
+
+pp([], Acc)      -> lists:flatten(lists:reverse(Acc));
+pp([H | T], Acc) -> NewAcc = "<b>User</b>:&nbsp&nbsp&nbsp&nbsp&nbsp" ++
+                        io_lib:fwrite("~p", [H#hn_user.name]) ++
+                        "<br /><b>Groups</b>: " ++
+                        io_lib:fwrite("~p", [H#hn_user.groups]) ++
+                        "<br /><br />",
+                    pp(T, [NewAcc | Acc]).
 
 delete_all_users_DEBUG(Site) ->
     mnesia:clear_table(hn_db_wu:trans(Site, hn_user)).
