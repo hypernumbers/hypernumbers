@@ -8,7 +8,7 @@
 %%%-------------------------------------------------------------------
 -module(setup_perms).
 
--export([setup/0,
+-export([setup/1,setup/0,
         old_style/0,
         hypernumbers_style/0,
         alpha/0,
@@ -59,8 +59,12 @@ old_style() ->
     ok.
 
 setup() ->
-        [setup1(S) || S <- ?SITES],
+    setup(?SITES).
+
+setup(Sites) ->
+    [setup1(S) || S <- Sites],
     ok.
+
 
 setup1(Site) ->
     %
