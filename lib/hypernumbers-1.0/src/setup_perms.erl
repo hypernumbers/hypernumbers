@@ -87,8 +87,8 @@ setup1(Site) ->
     auth_srv:clear_all_perms_DEBUG(Site),
 
     % Admin Users should be able to access any page and any view
-    auth_srv:add_perm(Site,  [{group, "admin"}], [], [write]),
-    auth_srv:add_perm(Site,  [{group, "admin"}], ["**"], [write]),
+    auth_srv:add_perm(Site,  [{group, "admin"}], [], [write, read]),
+    auth_srv:add_perm(Site,  [{group, "admin"}], ["**"], [write, read]),
     auth_srv:add_views(Site, [{group, "admin"}], ["**"], "", ["**"]),
     auth_srv:add_views(Site, [{group, "admin"}], [], "", ["**"]),
     
