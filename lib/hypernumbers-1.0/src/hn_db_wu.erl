@@ -639,8 +639,10 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
 %% which should never be used except in file import
 write_style_IMPORT(RefX, Style)
   when is_record(RefX, refX), is_record(Style, magic_style) ->
+    % fprof:trace(start),
     NewIndex = write_style(RefX, Style),
     write_attr3(RefX, {"style", NewIndex}),
+    % fprof:trace(stop),
     ok.
 
 %% @spec read_all_dirty_cells(Site) -> List
@@ -1717,7 +1719,7 @@ delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
         end,
 
     Match = #local_objs{path = Path, _ = '_'},
-    Objs  = mnesia:match_object(trans(Site, local_objs), Match, read),
+    Objs  = mnesia:index_match_object(trans(Site, local_objs), Match, 1, read),
     
     [ ok = F(X) || X <- Objs ],
     
@@ -2307,7 +2309,8 @@ local_objs_to_refXs(Site, LocalObj) when is_record(LocalObj, local_objs) ->
 %% IF IT DOESN'T EXIST
 read_local_item_index(#refX{site = S, path = P, obj = Obj}) ->
     Table = trans(S, local_objs),
-    case mnesia:match_object(Table, #local_objs{path=P, obj=Obj, _='_'}, read) of
+    case mnesia:index_match_object(Table, #local_objs{path=P, obj=Obj, _='_'},
+                                   2, read) of
         [R] -> R#local_objs.idx;
         _   -> false
     end.
@@ -2355,7 +2358,7 @@ write_attr3(#refX{site = Site} = RefX, {Key, Val}) ->
     Rec   = Match#item{val = Val},
     Table = trans(Site, item),
     
-    case mnesia:match_object(Table, Match, write) of
+    case mnesia:index_match_object(Table, Match, 1, read) of
         [] ->
             ok = mnesia:write(Table, Rec, write);
         [OldRec] ->
@@ -3552,7 +3555,7 @@ delete_style_attr(#refX{site = S} = RefX, Key)  ->
     PageRefX = RefX#refX{obj = {page, "/"}},
     Match = #styles{refX = PageRefX, index = Idx, _ = '_'},
     Table = trans(S, styles),
-    [CurrentStyle] = mnesia:match_object(Table, Match, read),
+    [CurrentStyle] = mnesia:index_match_object(Table, Match, 1, read),
     NewStyleIdx = get_style(RefX, CurrentStyle, Key, []),
     write_attr3(RefX, {"style", NewStyleIdx}).    
 
@@ -3576,7 +3579,7 @@ get_style(#refX{site = Site} = RefX, StIdx, Name, Val) ->
     PageRefX = RefX#refX{obj = {page, "/"}},
     Match = #styles{refX = PageRefX, index = StIdx, _ = '_'},
     Table = trans(Site, styles),
-    Return = mnesia:match_object(Table, Match, read),
+    Return = mnesia:index_match_object(Table, Match, 1, read),
     [#styles{magic_style = CurrentStyle}] = Return, 
     Index = ms_util2:get_index(magic_style, Name), 
     Style2 = tuple_to_list(CurrentStyle), 
@@ -3592,7 +3595,7 @@ write_style(#refX{site = Site} = RefX, Style) ->
     Ref2 = RefX#refX{obj = {page, "/"}},
     Match = #styles{refX = Ref2, magic_style = Style, _ = '_'},
     Table = trans(Site, styles),
-    case mnesia:match_object(Table, Match, read) of 
+    case mnesia:index_match_object(Table, Match, 1, read) of 
         []                          -> write_style2(RefX, Style); 
         [#styles{index = NewIndex}] -> NewIndex
     end. 
