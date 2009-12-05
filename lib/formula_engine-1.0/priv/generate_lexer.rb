@@ -35,11 +35,12 @@ map = IO.readlines(mapfile).inject({}) { |acc, line|
 @function_rules = ""
 map.each do |k, v|
   bytes = []
+  macro = k.gsub(/\./, '__DOT__')
   v.each_byte { |b| bytes << b }
   octal_seq =
     "\\" + bytes.inject([]) { |acc, b| acc << b.to_s(8); acc }.join("\\")
 
-  @function_defs << "#{k} = ({ALLOWED_PREFIXES})(#{octal_seq})(\\s*)(\\()\n"
+  @function_defs << "#{macro} = ({ALLOWED_PREFIXES})(#{octal_seq})(\\s*)(\\()\n"
 
   rule = <<EOS
 {token,
@@ -54,7 +55,7 @@ map.each do |k, v|
 }.
 EOS
   
-  @function_rules << "{#{k}} : #{rule}"
+  @function_rules << "{#{macro}} : #{rule}"
 end
 
 template = ERB.new(IO.readlines("lexer_template.erb").flatten.join, 0, "%<>")

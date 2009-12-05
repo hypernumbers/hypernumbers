@@ -63,7 +63,6 @@ DURATION=ДЛИТ
 DVAR=БДДИСП
 DVARP=БДДИСПП
 EDATE=ДАТАМЕС
-effect=ЧИСЛКОМБ
 EFFECT=ЭФФЕКТ
 EOMONTH=КОНЕЦМЕСЯЦА
 ERF=ФОШ
