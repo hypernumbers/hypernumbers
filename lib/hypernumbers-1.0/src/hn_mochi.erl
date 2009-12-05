@@ -174,7 +174,6 @@ iget(Req, #refX{site = S}, page, [{"permissions", []}], _User, _CType) ->
     Req:ok({"text/html", auth_srv:pretty_print(S, [], html)});
 
 iget(Req, #refX{site = S, path = P}, page, [{"permissions_debug", []}], User, _CType) ->
-    io:format("User is ~p~n", [User]),
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),
     Req:ok({"text/html", auth_srv:permissions_DEBUG(S, {Name, Groups}, P)});

@@ -446,7 +446,6 @@ permissions_debug1(Tree, {U, Gs}, Page) ->
                 Ret2 = io_lib:fwrite("ACL's are ~p~n", [X#carry.acl]),
                 Ret3 = io_lib:fwrite("Default is ~p~n", [X#carry.default]),
                 Ret4 = io_lib:fwrite("Views are ~p~n", [X#carry.views]),
-                io:format("Ret1 is ~p Ret2 is ~p~n", [Ret1, Ret2]),
                 "<html><head></head><body><br />" ++ Ret1
                     ++ "<br /><br />" ++ Ret2
                     ++ "<br /><br />" ++ Ret3
