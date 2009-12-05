@@ -73,67 +73,54 @@ setup1(Site) ->
     % first delete all the users
     hn_users:delete_all_users_DEBUG(Site),
 
-    % now create some users
+    % now create some users, users spreadsheet permissions
+    % should be set up when a the user is created
     hn_users:create(Site, "gordon", ["dev", "admin"], "password"),
     hn_users:create(Site, "tom", ["dev", "admin"], "password"),
     hn_users:create(Site, "dale", ["dev", "admin"], "password"),
     hn_users:create(Site, "stephen", ["dev", "admin"], "password"),
     hn_users:create(Site, "user", ["user"], "password"),
-
+    
     %
     % now setup perms
     %
     auth_srv:clear_all_perms_DEBUG(Site),
 
+    % Admin Users should be able to access any page and any view
+    auth_srv:add_perm(Site,  [{group, "admin"}], [], [write]),
+    auth_srv:add_perm(Site,  [{group, "admin"}], ["**"], [write]),
+    auth_srv:add_views(Site, [{group, "admin"}], ["**"], "", ["**"]),
+    auth_srv:add_views(Site, [{group, "admin"}], [], "", ["**"]),
+    
     % the home page
-    auth_srv:add_controls(Site, [{user, "*"}, {group, "*"}], [], [read],
-                      "_global/home", ["_global/home", "_global/spreadsheet"]),
+    auth_srv:add_controls(Site, [{user, "*"}], [], [read],
+                          "_global/home", ["_global/home"]),
+    % the about page
+    auth_srv:add_controls(Site, [{user, "*"}], ["about"], [read],
+                          "_global/about", ["_global/about"]),
+    % the team page
+    auth_srv:add_controls(Site, [{user, "*"}], ["team"], [read],
+                          "_global/team", ["_global/team"]),
+    
+    % the application page
+    auth_srv:add_controls(Site, [{user, "*"}], ["application"], [read, write],
+                          "_global/503", []),
 
     % the login page
-    auth_srv:add_controls(Site, [{user, "*"}, {group, "*"}], ["_user", "login"],
-                      [read, write], "_global/login",
-                      ["_global/login"]),
-
+    auth_srv:add_controls(Site, [{user, "*"}], ["_user", "login"],
+                          [read, write], "_global/login",
+                          ["_global/login"]),
+    
     % now make the public spreadsheets public
     % and give the admin group write access
-    auth_srv:add_controls(Site, [{user, "*"}, {group, "*"}], ["public", "[**]"],
+    auth_srv:add_controls(Site, [{user, "*"}], ["public", "[**]"],
                       [read],
-                       "_global/spreadsheet", [ "_global/spreadsheet"]),
-    auth_srv:add_controls(Site, [{group, "admin"}], ["public", "[**]"],
-                      [read, write],
-                       "_global/spreadsheet", ["_global/spreadsheet"]),
-
-    % now set up the user space
-    % * first up the user home pages
-    auth_srv:add_controls(Site, [{user, "gordon"}], ["u", "gordon"], [read],
-                      "_global/userhome", ["_global/userhome"]),
-    auth_srv:add_controls(Site, [{user, "tom"}], ["u", "tom"], [read],
-                      "_global/userhome", ["_global/userhome"]),
-    auth_srv:add_controls(Site, [{user, "dale"}], ["u", "dale"], [read],
-                      "_global/userhome", ["_global/userhome"]),
-    auth_srv:add_controls(Site, [{user, "stephen"}], ["u", "stephen"], [read],
-                      "_global/userhome", ["_global/userhome"]),
- 
-    % * now the user spreadsheets
-    auth_srv:add_default(Site, ["u"], "_global/spreadsheet"),
-    auth_srv:add_controls(Site, [{user, "gordon"}], ["u", "gordon", "[**]"],
-                      [read, write], [],
-                      ["_global/spreadsheet",  "_global/pagebuilder"]), 
-    auth_srv:add_controls(Site, [{user, "tom"}], ["u", "tom", "[**]"],
-                      [read, write], [],
-                      ["_global/spreadsheet",  "_global/pagebuilder"]), 
-    auth_srv:add_controls(Site, [{user, "dale"}], ["u", "dale", "[**]"],
-                      [read, write], [],
-                      ["_global/spreadsheet",  "_global/pagebuilder"]), 
-    auth_srv:add_controls(Site, [{user, "stephen"}], ["u", "stephen", "[**]"],
-                      [read, write], [],
-                      ["_global/spreadsheet", "_global/pagebuilder"]),
- 
-    % now create the dev space
-    auth_srv:add_controls(Site, [{group, "dev"}], ["dev", "[**]"],
-                      [read, write],
-                       "_global/spreadsheet", [ "_global/spreadsheet"]),
-
+                          "_global/spreadsheet", [ "_global/spreadsheet"]),
+    auth_srv:add_controls(Site, [{user, "*"}], ["public"],
+                          [read],
+                          "_global/spreadsheet", [ "_global/spreadsheet"]),
+    
+    
     % now get the tree as json and print it
     %     Json = auth_srv:get_as_json(Site, ["u"]),
     %     Json2 = (mochijson:encoder([{input_encoding, utf8}]))(Json),
