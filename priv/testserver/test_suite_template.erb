@@ -27,7 +27,7 @@
 %%% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 init_per_suite(Config) ->
-    hypernumbers_app:clean_start(),     
+    hypernumbers_app:clean_start_DEBUG(),     
     reset_perms(),                  
     %% TODO : should be configurable
     %Ref = #refX{site="http://127.0.0.1:9000", path=[]},
