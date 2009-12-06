@@ -73,7 +73,7 @@ clean_start_DEBUG() ->
 
     [ auth_srv:clear_all_perms_DEBUG(X) || X<-Sites ],
 
-    ok = init_permissions().
+    ok = init_permissions(),
 
     [ok = dirty_srv:stop(X) || X <- dirty_tables()],
     ok = fresh_start(),
