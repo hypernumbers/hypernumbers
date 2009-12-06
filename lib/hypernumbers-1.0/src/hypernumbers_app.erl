@@ -72,8 +72,9 @@ clean_start_DEBUG() ->
     Sites = hn_util:get_hosts(hn_config:get(hosts)),
 
     [ auth_srv:clear_all_perms_DEBUG(X) || X<-Sites ],
-    
-    %auth_srv:clear_all_perms_DEBUG(?SITE),
+
+    ok = init_permissions().
+
     [ok = dirty_srv:stop(X) || X <- dirty_tables()],
     ok = fresh_start(),
     [ok = dirty_srv:start(X, Sites) || X <- dirty_tables()].
@@ -119,6 +120,11 @@ cmp1([{IP, Port, _Host} | T], Acc) ->
         true  -> cmp1(T, Acc);
         false -> cmp1(T, [{IP, Port} | Acc])
     end.
+
+init_permissions() -> 
+    [ ok = hn_auth:init_permissions(Host) 
+      || Host <- hn_util:get_hosts(hn_config:get(hosts)) ], 
+    ok. 
 
 dirty_tables() ->
     [ dirty_cell,
