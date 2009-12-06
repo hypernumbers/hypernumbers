@@ -72,7 +72,8 @@ setup1(Site) ->
     %    
     % first delete all the users
     hn_users:delete_all_users_DEBUG(Site),
-
+    auth_srv:clear_all_perms_DEBUG(Site),
+    
     % now create some users, users spreadsheet permissions
     % should be set up when a the user is created
     hn_users:create(Site, "gordon", ["dev", "admin"], "password"),
@@ -81,11 +82,6 @@ setup1(Site) ->
     hn_users:create(Site, "stephen", ["dev", "admin"], "password"),
     hn_users:create(Site, "user", ["user"], "password"),
     
-    %
-    % now setup perms
-    %
-    auth_srv:clear_all_perms_DEBUG(Site),
-
     % Admin Users should be able to access any page and any view
     auth_srv:add_perm(Site,  [{group, "admin"}], [], [write, read]),
     auth_srv:add_perm(Site,  [{group, "admin"}], ["**"], [write, read]),

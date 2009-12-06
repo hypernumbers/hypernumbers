@@ -188,15 +188,16 @@ create_user_exec(Site, Rec) ->
         {aborted, Reason} -> {error, Reason};
         {atomic, ok}      ->
 
-            %% Add permissions
-
-            auth_srv:add_controls(Site, [{"dale", []}],
-                                  ["u", "dale"], [read, write],
-                                  [], ["_global/userhome"]),
+            % Add permissions, this should run a hook defined
+            % in the site deployment thing 
+            auth_srv:add_controls(Site, [{user, Rec#hn_user.name}],
+                                  ["u", Rec#hn_user.name], [read, write],
+                                  "_global/userhome", ["_global/userhome"]),
             
-            auth_srv:add_controls(Site, [{"dale", []}],
-                                  ["u", "dale", "[**]"], [read, write],
-                                  [], ["*"]),
+            auth_srv:add_controls(Site, [{user, Rec#hn_user.name}],
+                                  ["u", Rec#hn_user.name, "[**]"],
+                                  [read, write],
+                                  "_global/spreadsheet", ["**"]),
             ok
     end.
 

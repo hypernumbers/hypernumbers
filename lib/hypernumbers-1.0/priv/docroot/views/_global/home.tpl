@@ -6,7 +6,7 @@
   <div id="outer">
     
     <div id="inner">
-      
+    
 	  <div class="clear"><div id="header">        
 	    <div data-binding-from="/C2" class="hn header" data-type="text"></div>
 	    

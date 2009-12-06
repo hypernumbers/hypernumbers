@@ -78,6 +78,7 @@ body {
     position:absolute;
     bottom:0px;
     right:0px;
+    z-index: 900000000;
     margin:20px;
 }
 
