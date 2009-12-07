@@ -19,7 +19,8 @@
 %% Debugging API
 -export([
          clear_down_mnesia_DEBUG/0,
-         hey/0
+         hey/0,
+         hey2/0
         ]).
 
 -include("password.hrl").
@@ -40,18 +41,21 @@ get_password() ->
     W1 ++ "!" ++ W2 ++ integer_to_list(N3).
 
 create_new_site(SubDom, Dom, Port, SiteType, User, Password) ->
-    case is_valid_email(User) of
-        not_email      -> {error, invalid_email};
-        {email, User} -> create_new_site2(SubDom, Dom, Port, SiteType, User, Password)
-    end.
-                      
+     case is_valid_email(User) of
+         not_email     -> {error, invalid_email};
+         {email, User} -> create_new_site2(SubDom, Dom, Port,
+                                           SiteType, User, Password)
+     end.
+
 create_new_site2(SubDom, Dom, Port, SiteType, User, Password) ->
 
     io:format("in create_new_site: ~p with ~p for ~p and password ~p~n",
-              [SubDom ++ "." ++ Dom ++ ":" ++ integer_to_list(Port), SiteType, User, Password]),
+              [SubDom ++ "." ++ Dom ++ ":" ++ integer_to_list(Port),
+               SiteType, User, Password]),
     
     % bit of housekeeping
-    DomainName = "http://" ++ SubDom ++ "." ++ Dom ++ ":" ++ integer_to_list(Port),
+    DomainName = "http://" ++ SubDom ++ "." ++ Dom ++ ":"
+        ++ integer_to_list(Port),
     Run_Details = #run_details{sub = SubDom, domain = Dom, port = Port,
                                email = User, password = Password},
     
@@ -67,6 +71,7 @@ create_new_site2(SubDom, Dom, Port, SiteType, User, Password) ->
     
     % push any custom info into the pages (eg username)
     SetupScript = Dir ++ "/" ++ "setup.script",
+    io:format("about to run setup script...~n"),
     case filelib:is_file(SetupScript) of
         true  -> run(SetupScript, Run_Details, fun run_script/2);
         false -> ok
@@ -74,6 +79,7 @@ create_new_site2(SubDom, Dom, Port, SiteType, User, Password) ->
     
     % create the appropriate permissions binding the appropriate tpl’s to the right paths
     PermsScript = Dir ++ "/" ++ "permissions.script",
+    io:format("about to run perms script...~n"),
     case filelib:is_file(PermsScript) of
         true  -> run(PermsScript, Run_Details, fun run_perms/2);
         false -> ok
@@ -173,6 +179,7 @@ get_path2(List)     -> lists:sublist(List, 1, length(List) -1).
 
 run(Script, Details, Fun) ->
     {ok, Terms} = file:consult(Script),
+    io:format("Terms are ~p~n", [Terms]),
     run1(Terms, Details, Fun).
 
 run1([], _D, _Fun)                      -> ok;
@@ -209,17 +216,18 @@ run_script2(Path, Expr, D) ->
     hn_db_api:write_attributes([{RefX, Attrs}]).
 
 is_valid_email(Email) ->
-    EMail_regex = "^[a-z0-9!#$%&'*+/=?^_`{|}~-]+"
+    EMail_regex = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+"
         ++ "(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
         ++ "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+"
         ++ "(?:[a-zA-Z]{2}|com|org|net|gov|mil"
-        ++ "|biz|info|mobi|name|aero|jobs|museum)$", %" for syntax highighting
+        ++ "|biz|info|mobi|name|aero|jobs|museum)", %" for syntax highighting
     case re:run(Email, EMail_regex) of
         nomatch    -> not_email;
         {match, _} -> {email, Email}
     end.
 
-run_perms({control, C}, Dt)  -> {list, L}     = get(list, C),
+run_perms({control, C}, Dt)  -> io:format("in Control ~p~n", [C]),
+                                {list, L}     = get(list, C),
                                 {page, Pg}    = get(page, C),
                                 {perms, Pm}   = get(perms, C),
                                 {override, O} = get(override, C),
@@ -228,14 +236,16 @@ run_perms({control, C}, Dt)  -> {list, L}     = get(list, C),
                                     ++ Dt#run_details.domain ++ ":"
                                     ++ integer_to_list(Dt#run_details.port),
                                 auth_srv:add_controls(Site, L, Pg, Pm, O, V);
-run_perms({perm, P}, Dt)     -> {list, L}     = get(list, P),
+run_perms({perm, P}, Dt)     -> io:format("in Perm ~p~n", [P]),
+                                {list, L}     = get(list, P),
                                 {page, Pg}    = get(page, P),
                                 {perms, Pm}   = get(perms, P),
                                 Site = "http://" ++ Dt#run_details.sub ++ "."
                                     ++ Dt#run_details.domain ++ ":"
                                     ++ integer_to_list(Dt#run_details.port),
                                 auth_srv:add_perm(Site, L, Pg, Pm);
-run_perms({views, V}, Dt)    -> {list, L}     = get(list, V),
+run_perms({views, V}, Dt)    -> io:format("in Views ~p~n", [V]),
+                                {list, L}     = get(list, V),
                                 {page, Pg}    = get(page, V),
                                 {override, O} = get(override, V),
                                 {views, Vw}    = get(views, V),
@@ -243,12 +253,13 @@ run_perms({views, V}, Dt)    -> {list, L}     = get(list, V),
                                     ++ Dt#run_details.domain ++ ":"
                                     ++ integer_to_list(Dt#run_details.port),
                                 auth_srv:add_views(Site, L, Pg, O, Vw);
-run_perms({defaults, D}, Dt) -> {default, Df}    = get(default, D),
-                                {page, Pg}    = get(page, D),
-                                Site = "http://" ++ Dt#run_details.sub ++ "."
-                                    ++ Dt#run_details.domain ++ ":"
-                                    ++ integer_to_list(Dt#run_details.port),
-                                auth_srv:add_default(Site, Pg, Df).
+run_perms({default, D}, Dt) -> io:format("in Defaults ~p~n", [D]),
+                               {default, Df}    = get(default, D),
+                               {page, Pg}    = get(page, D),
+                               Site = "http://" ++ Dt#run_details.sub ++ "."
+                                   ++ Dt#run_details.domain ++ ":"
+                                   ++ integer_to_list(Dt#run_details.port),
+                               auth_srv:add_default(Site, Pg, Df).
 
 get(Key, List) -> lists:keyfind(Key, 1, List).
 
@@ -270,6 +281,8 @@ make_terms([H | T], Acc) -> make_terms(T, [io_lib:fwrite("~p.~n~n", [H]) | Acc])
 %%
 hey() -> create_new_site(get_unallocated_sub(), "tiny.hn", 9000,
                          "tiny_hn/quiz", "gordon@hypernumbers.com", get_password()).
+hey2() -> create_new_site(get_unallocated_sub(), "tiny.hn", 9000,
+                         "hypernumbers", "gordon@hypernumbers.com", get_password()).
 
 clear_down_mnesia_DEBUG() ->
     Tables = mnesia:system_info(tables),
