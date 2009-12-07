@@ -1,0 +1,28 @@
+%%-*-erlang-*-
+%% this is a setupscript for kicking off a new site
+%% this script contains {QCell, Expression} tuples
+%% The value of the expression is pushed into the cell specified by
+%% the qualified cell (ie with an absolute path)
+%%
+%% There are 6 programmatic expressions:
+%% {"/some/path/beverlyhills90201", '$email'}.
+%% {"/some/path/beverlyhills90201", '$username'}.
+%% {"/some/path/beverlyhills90201", '$site'}.
+%% {"/some/path/beverlyhills90201", '$subdomain'}.
+%% {"/some/path/beverlyhills90201", '$expiry'}.
+%% {"/some/path/beverlyhills90201", '$password'}.
+%%
+%% Otherwise an expression of the form:
+%% {"/some/path/beverlyhills90201", "=sum(a1, b2)"}.
+%% will be entered as if they were a normal formula in a spreadsheet
+%%
+%% Note that the expressions end in a full stop '.'
+%%
+
+{"/B4", '$username'}.
+{"/B5", '$site'}.
+{"/B6", '$expiry'}.
+{"/b7", "This is a test, yowsa, yowsa"}.
+{"/B8", '$email'}.
+{"/B9", '$subdomain'}.
+{"/B10", '$password'}.
