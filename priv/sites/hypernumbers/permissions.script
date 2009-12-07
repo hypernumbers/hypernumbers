@@ -49,31 +49,54 @@
 %% Note that the expressions end in a full stop '.'
 %%
 
-{control, [{list,     [{user, "*"}]}, {page, []},
+% the home page
+{control, [{list,    [{user, "*"}, {group, "*"}]},
+           {page,     []},
+           {perms,    [read]},
+           {override, "_g/hypernumbers/home"},
+           {views,    ["_g/hypernumbers/home"]}
+          ]}.
+
+% the login page
+{control, [{list,     [{user, "*"}, {group, "*"}]},
+           {page,     ["_user", "login"]},
+           {perms,    [read, write]},
+           {override, "_global/login"},
+           {views,    ["_global/login"]}
+          ]}.
+
+% /about/ and /team/
+% note that anyone can read the data but they can't get a page to view it
+% (ie the only acceptable view is JSON)
+{perm, [{list,   [{user, "*"}, {group, "*"}]},
+        {page,   ["about"]},
+        {perms,  [read]}
+       ]}.
+
+{perm, [{list,   [{user, "*"}, {group, "*"}]},
+        {page,   ["team"]},
+        {perms,  [read]}
+       ]}.
+
+% /application/ is writable but not readable by anyone
+% not that secure!
+{perm, [{list,  [{user, "*"}, {group, "*"}]},
+        {page,  ["application"]},
+        {perms, [write]}
+       ]}.
+    
+% now create the dev space
+{control, [{list,     [{group, "dev"}]},
+           {page ,    ["dev", "[**]"]},
            {perms,    [read, write]},
            {override, "_global/spreadsheet"},
-           {views,    ["_global/spreadsheet", "_global/pagebuilder", "**"]}]}.
+           {views,    ["_global/spreadsheet"]}
+          ]}.
 
-{control, [{list,     [{user, "*"}]},
-           {page,     ["[**]"]},
-           {perms,    [read, write]},
-           {override, "_global/spreadsheet"},
-           {views,    ["_global/spreadsheet", "_global/pagebuilder", "**"]}]}.
-
-{control, [{list,     [{user, "gordon"}, {group, "dev"}, {group, "admin"}]},
-           {page,     ["some", "path"]},
-           {perms,    [read, write]},
-           {override, "_global/spreadsheet"},
-           {views,    ["_global/spreadsheet", "_global/pagebuilder", "**"]}]}.
-
-{perm, [{list,  [{user, "gordon"}, {group, "dev"}]},
-        {page,  ["some", "path"]},
-        {perms, [read, write]}]}.
-
-{views, [{list,     [{user, "gordon"}, {group, "dev"}]},
-         {page,     ["some", "path"]},
-         {override, ""},
-         {views,    ["_global/spreadsheet"]}]}.
-
-{default, [{page,    ["some", "page"]},
-           {default, "_global/home"}]}.
+% finally setup the static data space
+{control, [{list,     [{user, "*"}, {group, "*"}]},
+           {page,     ["_site", "[*]"]},
+           {perms,    [read]},
+           {override, ""},
+           {views,    []}
+           ]}.
