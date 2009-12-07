@@ -191,7 +191,6 @@ create_user_exec(Site, Rec) ->
 
             % Add permissions, this should run a hook defined
             % in the site deployment thing
-            io:format("Site is ~p~n", [Site]),
             auth_srv:add_controls(Site, [{user, Rec#hn_user.name}],
                                   ["u", Rec#hn_user.name], [read, write],
                                   "_g/hypernumbers/userhome",
