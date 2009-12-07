@@ -129,10 +129,10 @@ hn_style(Site) ->
     auth_srv:clear_all_perms_DEBUG(Site),
 
     % now create some users
-    hn_users:create(Site, "gordon", ["dev", "admin"], "password"),
-    hn_users:create(Site, "tom", ["dev", "admin"], "password"),
-    hn_users:create(Site, "dale", ["dev", "admin"], "password"),
-    hn_users:create(Site, "stephen", ["dev", "admin"], "password"),
+    hn_users:create(Site, "gordon", ["dev", "admin", "hypernumbers"], "password"),
+    hn_users:create(Site, "tom", ["dev", "admin", "hypernumbers"], "password"),
+    hn_users:create(Site, "dale", ["dev", "admin", "hypernumbers"], "password"),
+    hn_users:create(Site, "stephen", ["dev", "admin", "hypernumbers"], "password"),
     hn_users:create(Site, "user", ["user"], "password"),
 
     % the home page
@@ -159,7 +159,11 @@ hn_style(Site) ->
     auth_srv:add_controls(Site, [{group, "dev"}], ["dev", "[**]"],
                       [read, write],
                        "_global/spreadsheet", [ "_global/spreadsheet"]),
-    
+
+    % finally setup the static data space
+    auth_srv:add_controls(Site, [{user, "*"}, {group, "*"}], ["_site", "[*]"],
+                      [read], "", []),
+        
     io:format(auth_srv:pretty_print(Site, [], text)).
     
 alpha() ->
