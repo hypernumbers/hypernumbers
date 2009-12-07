@@ -57,7 +57,8 @@ create(Site, Name, Pass) ->
     create_user_exec(Site, #hn_user{name = Name, password = p(Pass)}).
 
 create(Site, Name, Groups, Pass) ->
-    create_user_exec(Site, #hn_user{name = Name, password = p(Pass), groups = Groups}).
+    create_user_exec(Site, #hn_user{name = Name, password = p(Pass),
+                                    groups = Groups}).
 
 add_gr(Site, Name, Groups) ->
     {ok, #hn_user{groups = G} = User} = read(Site, Name),
@@ -193,7 +194,8 @@ create_user_exec(Site, Rec) ->
             io:format("Site is ~p~n", [Site]),
             auth_srv:add_controls(Site, [{user, Rec#hn_user.name}],
                                   ["u", Rec#hn_user.name], [read, write],
-                                  "_g/hypernumbers/userhome", ["_g/hypernumbers/userhome"]),
+                                  "_g/hypernumbers/userhome",
+                                  ["_g/hypernumbers/userhome"]),
             
             auth_srv:add_controls(Site, [{user, Rec#hn_user.name}],
                                   ["u", Rec#hn_user.name, "[**]"],
