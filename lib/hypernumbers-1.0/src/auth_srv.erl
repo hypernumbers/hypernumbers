@@ -506,7 +506,6 @@ get_views1(Tree, {User, Groups}, Page) ->
 
 can_read1(Tree, {User, Groups}, Page) ->
      Fun = fun(X) ->
-                   io:format("X is ~p~n", [X]),
                    case get_ret_code(X#controls.acl, User, Groups, read) of
                        {return, '200'} -> true;
                        {return, '404'} -> false;
@@ -703,7 +702,6 @@ get_random_view(Views, User, Groups) ->
 get_random_v2(_Views, [], false)               -> {return, '404'};
 get_random_v2([], [], true)                    -> {html, ?SPREADSHEET};
 get_random_v2([{_Group, View} | _T], [], true) ->
-    io:format("View is ~p~n", [View]),
     case View#views.override of
         []       -> case View#views.views of
                         []        -> {html, ?SPREADSHEET};
