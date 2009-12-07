@@ -189,10 +189,11 @@ create_user_exec(Site, Rec) ->
         {atomic, ok}      ->
 
             % Add permissions, this should run a hook defined
-            % in the site deployment thing 
+            % in the site deployment thing
+            io:format("Site is ~p~n", [Site]),
             auth_srv:add_controls(Site, [{user, Rec#hn_user.name}],
                                   ["u", Rec#hn_user.name], [read, write],
-                                  "_global/userhome", ["_global/userhome"]),
+                                  "_g/hypernumbers/userhome", ["_g/hypernumbers/userhome"]),
             
             auth_srv:add_controls(Site, [{user, Rec#hn_user.name}],
                                   ["u", Rec#hn_user.name, "[**]"],

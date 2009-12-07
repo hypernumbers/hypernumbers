@@ -4,9 +4,10 @@
           views    = []
          }).
 
--record(carry,
+-record(controls,
         {
           acl     = [],
           default = [],
           views   = []
          }).
+
