@@ -245,7 +245,7 @@ body {
 
 #views { 
     position           :absolute; 
-    width              :100px; 
+    width              :200px; 
     display            :none;
     background         :#CCCCCC;
     border             :2px solid #666666;
@@ -270,6 +270,7 @@ body {
 }
 
 #control #viewspanel {
+    top:-3px;
     position:relative;
     float:left;
 }
@@ -301,3 +302,4 @@ p { margin:0px !important; }
     vertical-align: middle;
 }
 
+#sanitycheckbtn { display: none; }

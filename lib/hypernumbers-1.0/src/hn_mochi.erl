@@ -126,6 +126,7 @@ handle_req(Method, Req, Ref, Vars, User) ->
                     mochilog:log(Req, Ref, hn_users:name(User), {upload, Name}),
                     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
                     Req:ok({"text/html", ?hdr, Json});
+                
                 % Normal Post Requests
                 _Else ->
                     Body = Req:recv_body(),
@@ -198,19 +199,21 @@ iget(Req, _Ref, page, [{"templates", []}], _User, _CType) ->
 % List of views available to edit
 iget(Req, _Ref, page, [{"views", []}], User, _CType) ->
 
-    Z = fun(X) ->
-                [File, Root | _ ] = lists:reverse(string:tokens(X, "/")),
-                Root ++ "/" ++ filename:basename(File, ".tpl")
+    Dirs = [ "/_u/"++hn_users:name(User)++"/"
+             | [ "/_g/"++Group++"/" || Group <- hn_users:groups(User)] ],
+    
+    Strip = fun(FileName) ->
+                    [File, Name, Pre | _ ]
+                        = lists:reverse(string:tokens(FileName, "/")),
+                    Pre++"/"++Name++"/"++File
+            end,
+    
+    F = fun(Dir, Acc) ->
+                Files = filelib:wildcard(viewroot()++Dir++"*.tpl"),
+                Acc ++ [ Strip(X) || X <- Files ]
         end,
     
-    F = fun(Y) -> [ Z(X) || X <- filelib:wildcard(Y++"*.tpl")] end,
-
-    Extra = case lists:member("admin", hn_users:groups(User)) of
-                true  -> F(viewroot()++"/_global/");
-                false -> []
-            end,
-
-    json(Req, {array, F([viewroot(),"/",hn_users:name(User),"/"]) ++ Extra});
+    json(Req, {array, lists:foldl(F, [], Dirs)});
 
 iget(Req, Ref, page, [{"pages", []}], _User, json) ->
     json(Req, pages(Ref));
@@ -356,24 +359,18 @@ ipost(Ref, _Type, _Attr, [{"clear", What}], _User)
     hn_db_api:clear(Ref, list_to_atom(What));
 
 ipost(_Ref, _Type, _Attr, 
-      [{"saveview", {struct, [{"global", Global},
-                              {"name", Name}, {"tpl", Form}]}}], User) ->
+      [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], User) ->
 
-    FName = filename:basename(Name) ++ ".tpl",
-    UName = hn_users:name(User),
-    
-    {_Auth, Root} = case Global of
-                        false -> {[{user, UName}], UName};
-                        true  -> {[{user, "*"}, {group, "*"}], "_global"}
-                    end,
+    case can_save_view(User, Name) of
+        true ->
+            File = [viewroot(), "/" , Name ++ ".tpl"],
+            ok = filelib:ensure_dir(File),
+            ok = file:write_file(File, Form);
         
-    %% View = Root ++ "/" ++ filename:basename(Name),
-    File = [viewroot(), "/" ,Root, "/", FName],
-    %% auth_srv:add_views(Ref#refX.site, Auth, Ref#refX.path, [View]),
-
-    ok = filelib:ensure_dir(File),
-    ok = file:write_file(File, Form);
-
+        false -> 
+            err
+    end;
+        
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Horizonal API = notify_back_create handler                               %%%
@@ -516,6 +513,14 @@ ipost(Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
 ipost(_Ref, _Type, _Attr, _Post, _User) ->
     ?ERROR("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
     error.
+
+can_save_view(User, "_u/"++FName) ->
+    [Name | _] = string:tokens(FName, "/"),
+    Name == hn_users:name(User);
+
+can_save_view(User, "_g/"++FName) ->
+    [Group | _] = string:tokens(FName, "/"),
+    lists:member(Group, hn_users:groups(User)).
 
 %% Some clients dont send ip in the host header
 get_host(Req) ->
@@ -819,4 +824,3 @@ pages_to_json(X, Dict) ->
             end;
         false -> {struct, [{"name", X}]}
     end.
-

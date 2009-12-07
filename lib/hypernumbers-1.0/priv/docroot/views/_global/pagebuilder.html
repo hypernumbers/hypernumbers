@@ -7,8 +7,6 @@
     <title>Hypernumbers Web Builder</title>
 
     <link rel="stylesheet" type="text/css" 
-          href="/templates/ventris/default.css" />
-    <link rel="stylesheet" type="text/css" 
           href="/guibuilder/hn.builder.css" />
     <link rel="stylesheet" type="text/css" 
           href="/hypernumbers/hn.sheet.css" />
@@ -18,32 +16,26 @@
   </head>
   <body>
 
-    <div id="control">
-
-        <label for="saveglobal">
-          <input type="checkbox" id="saveglobal" class="global" />
-          <span class="global">Global</span>
-        </label>
-
-
+    <div id="control">          
+      
       <div id="viewspanel">        
         <input type="text" id="viewname" value="Enter Name" />
-        <div id='views'>
-          <strong class="global">Global Views</strong>
-          <ul class="global" id="globalviews"></ul>
-          <strong>Your Views</strong>
+        <div id="views">
           <ul id="userviews"></ul>
         </div>
         <input type="button" value="▾" id="viewviews" class="btn" />
       </div>
+      
+      <select id="groupslist">
+      </select>
 
       <input type="button" value="save" class="btn" id="saveview" />
-
+      
       <span id="viewlink"></span>
-
+      
       <input type="button" value="preview" class="btn" id="previewbtn" />
       <input type="button" value="sanity check" class="btn" id="sanitycheckbtn" />
-      </div>
+    </div>
 
     <div id="preview" class="editing"> 
       &nbsp;
@@ -94,7 +86,7 @@
             <label for="toggleview">
               <input type="checkbox" id="toggleview" /> 
               View Code
-            </label>
+            </label><br />
 
             <label for="togglepathstyle">
               <input type="checkbox" id="togglepathstyle" checked="true"/> 

@@ -76,10 +76,14 @@ setup1(Site) ->
     
     % now create some users, users spreadsheet permissions
     % should be set up when a the user is created
-    hn_users:create(Site, "gordon", ["dev", "admin"], "password"),
-    hn_users:create(Site, "tom", ["dev", "admin"], "password"),
-    hn_users:create(Site, "dale", ["dev", "admin"], "password"),
-    hn_users:create(Site, "stephen", ["dev", "admin"], "password"),
+    hn_users:create(Site, "gordon", ["dev", "admin", "hypernumbers"],
+                    "password"),
+    hn_users:create(Site, "tom", ["dev", "admin", "hypernumbers"],
+                    "password"),
+    hn_users:create(Site, "dale", ["dev", "admin", "hypernumbers"],
+                    "password"),
+    hn_users:create(Site, "stephen", ["dev", "admin", "hypernumbers"],
+                    "password"),
     hn_users:create(Site, "user", ["user"], "password"),
     
     % Admin Users should be able to access any page and any view
