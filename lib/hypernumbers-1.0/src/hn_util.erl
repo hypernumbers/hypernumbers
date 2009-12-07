@@ -22,8 +22,8 @@
          email/1,
          email_test_results/1,
          email_build_fail/1,
-
          get_html_files/1,
+
          % HyperNumbers Utils
          compile_html/2,
          delete_gen_html/0,
@@ -53,6 +53,7 @@
          parse_attr/1,
          parse_attr/2,
          parse_vars/1,
+         parse_site/1,
          
          % List Utils
          add_uniq/2,
@@ -77,7 +78,10 @@
          get_offset/3,
          js_to_utf8/1,
          diff/2,
-         lists_diff/2
+         lists_diff/2,
+
+         % file copy utils
+         recursive_copy/2
         ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -85,6 +89,32 @@
 %%% API functions                                                            %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+recursive_copy(From, To) ->
+    {ok, Files} = file:list_dir(From),
+    [ok = rec_copy1(From, To, X) || X <- Files],
+    ok.
+
+rec_copy1(_From, _To, [$. | _T]) -> ok; % ignore hidden
+rec_copy1(From, To, File) ->
+    
+    NewFrom = filename:join(From, File),
+    NewTo = filename:join(To, File),
+
+    case filelib:is_dir(NewFrom) of
+
+        true  -> NewDir = To ++ File ++ "/",
+                 filelib:ensure_dir(NewDir),
+                 recursive_copy(NewFrom, NewDir);
+
+        false -> case filelib:is_file(filename:join(From, File)) of
+
+                     true  -> {ok, _} = file:copy(NewFrom, NewTo),
+                              ok;
+                     false -> ok
+
+                 end
+    end.
+
 get_html_files(List) -> get_html_files1(List, []).
 
 get_html_files1([], Acc)      -> Acc;
@@ -319,6 +349,10 @@ post(Url,Data,Format) ->
     {ok, {{_V, _Status,_R},_H,Body}} =
         http:request(post,{Url,[],Format,Data},[],[]),
     Body.
+
+parse_site("http://"++Site) ->
+    [Host | [Port]] = string:tokens(Site, ":"),
+    Host ++ "." ++ Port.
 
 parse_url("http://"++Url) ->
     [Host | Path] = string:tokens(Url, "/"), 

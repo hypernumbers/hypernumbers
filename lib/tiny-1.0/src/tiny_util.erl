@@ -63,30 +63,37 @@ create_new_site2(SubDom, Dom, Port, SiteType, User, Password) ->
     ok = hn_db_api:create_db(DomainName),
 
     % copy the appropriate sets of pages into the database tables
-    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/sites/" ++ SiteType,
+    Dir = code:lib_dir(hypernumbers) ++ "/../../priv/site_templates/sites/" ++ SiteType,
 
     {ok, Files} = file:list_dir(Dir),
-    JsonFiles = get_json_files(Files), 
+    JsonFiles = get_json_files(Files),
     [hn_import:json_file(DomainName ++ Path, Dir ++ "/" ++ File) || {File, Path} <- JsonFiles],
     
     % push any custom info into the pages (eg username)
     SetupScript = Dir ++ "/" ++ "setup.script",
-    io:format("about to run setup script...~n"),
-    case filelib:is_file(SetupScript) of
-        true  -> run(SetupScript, Run_Details, fun run_script/2);
-        false -> ok
-    end,
-    
+    ok = run(SetupScript, Run_Details, fun run_script/2),
+     
     % create the appropriate permissions binding the appropriate tpl’s to the right paths
     PermsScript = Dir ++ "/" ++ "permissions.script",
-    io:format("about to run perms script...~n"),
-    case filelib:is_file(PermsScript) of
-        true  -> run(PermsScript, Run_Details, fun run_perms/2);
-        false -> ok
-    end,
+    ok = run(PermsScript, Run_Details, fun run_perms/2),
 
     % create the new user(s)
-    %% TODO
+    UserScript = Dir ++ "/" ++ "users.script",
+    ok = run(UserScript, Run_Details, fun run_users/2),
+
+    % copy over the view templates
+    Global = Dir ++ "/../../_global",
+    ViewTemplates = Dir ++ "/viewtemplates",
+    Dest = code:lib_dir(hypernumbers) ++ "/priv/docroot/views/"
+        ++ hn_util:parse_site(DomainName) ++ "/",
+    io:format("Dest is ~p~n", [Dest]),
+    io:format("Global is ~p~n", [Global]),
+    % create the destination directory
+    ok = filelib:ensure_dir(Dest),
+    
+    ok = hn_util:recursive_copy(Global, Dest),
+    io:format("ViewTemplates is ~p~n", [ViewTemplates]),
+    ok = hn_util:recursive_copy(ViewTemplates, Dest),
     
     % make the site ‘happen’ (ie mochiweb acts on it)
     % first up add the new site to the conf file
@@ -100,7 +107,7 @@ create_new_site2(SubDom, Dom, Port, SiteType, User, Password) ->
     % send out the activation e-mail
 
     ok.
-
+           
 make_subs() ->
     % List = make_subs1(make_subs1(make_subs1([[]]))),
     List = make_subs1([[]]),
@@ -177,10 +184,43 @@ get_path(String) ->
 get_path2(["json"]) -> [];
 get_path2(List)     -> lists:sublist(List, 1, length(List) -1).
 
+
+is_valid_email(Email) ->
+    EMail_regex = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+"
+        ++ "(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
+        ++ "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+"
+        ++ "(?:[a-zA-Z]{2}|com|org|net|gov|mil"
+        ++ "|biz|info|mobi|name|aero|jobs|museum)", %" for syntax highighting
+    case re:run(Email, EMail_regex) of
+        nomatch    -> not_email;
+        {match, _} -> {email, Email}
+    end.
+
+get(Key, List) -> lists:keyfind(Key, 1, List).
+
+add_host(Config, IP, Port, DomainName) ->
+    {hosts, Hosts} = get(hosts, Config),
+    NewHosts = {hosts, lists:merge([{IP, Port, [DomainName]}], lists:sort(Hosts))},
+    lists:keyreplace(hosts, 1, Config, NewHosts).
+
+persist_conf(FileName, Config) ->
+    NewConfig = make_terms(Config, []),
+    ok = file:write_file(FileName, NewConfig).
+
+make_terms([], Acc)      -> Header = "%% -*- mode: erlang -*-",
+                            lists:flatten([Header, 10, 10 | lists:reverse(Acc)]);
+make_terms([H | T], Acc) -> make_terms(T, [io_lib:fwrite("~p.~n~n", [H]) | Acc]).
+
+%%
+%% Mini-Scripting "Languages"
+%%
+
 run(Script, Details, Fun) ->
-    {ok, Terms} = file:consult(Script),
-    io:format("Terms are ~p~n", [Terms]),
-    run1(Terms, Details, Fun).
+    case filelib:is_file(Script) of
+        true  -> {ok, Terms} = file:consult(Script),
+                 run1(Terms, Details, Fun);
+        false -> ok
+    end.
 
 run1([], _D, _Fun)                      -> ok;
 run1([[?PERCENTAGE | _T1] | T], D, Fun) -> run1(T, D, Fun); % ignore comments 
@@ -215,19 +255,7 @@ run_script2(Path, Expr, D) ->
     RefX = hn_util:parse_url(Site ++ Path),
     hn_db_api:write_attributes([{RefX, Attrs}]).
 
-is_valid_email(Email) ->
-    EMail_regex = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+"
-        ++ "(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
-        ++ "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+"
-        ++ "(?:[a-zA-Z]{2}|com|org|net|gov|mil"
-        ++ "|biz|info|mobi|name|aero|jobs|museum)", %" for syntax highighting
-    case re:run(Email, EMail_regex) of
-        nomatch    -> not_email;
-        {match, _} -> {email, Email}
-    end.
-
-run_perms({control, C}, Dt)  -> io:format("in Control ~p~n", [C]),
-                                {list, L}     = get(list, C),
+run_perms({control, C}, Dt)  -> {list, L}     = get(list, C),
                                 {page, Pg}    = get(page, C),
                                 {perms, Pm}   = get(perms, C),
                                 {override, O} = get(override, C),
@@ -236,16 +264,14 @@ run_perms({control, C}, Dt)  -> io:format("in Control ~p~n", [C]),
                                     ++ Dt#run_details.domain ++ ":"
                                     ++ integer_to_list(Dt#run_details.port),
                                 auth_srv:add_controls(Site, L, Pg, Pm, O, V);
-run_perms({perm, P}, Dt)     -> io:format("in Perm ~p~n", [P]),
-                                {list, L}     = get(list, P),
+run_perms({perm, P}, Dt)     -> {list, L}     = get(list, P),
                                 {page, Pg}    = get(page, P),
                                 {perms, Pm}   = get(perms, P),
                                 Site = "http://" ++ Dt#run_details.sub ++ "."
                                     ++ Dt#run_details.domain ++ ":"
                                     ++ integer_to_list(Dt#run_details.port),
                                 auth_srv:add_perm(Site, L, Pg, Pm);
-run_perms({views, V}, Dt)    -> io:format("in Views ~p~n", [V]),
-                                {list, L}     = get(list, V),
+run_perms({views, V}, Dt)    -> {list, L}     = get(list, V),
                                 {page, Pg}    = get(page, V),
                                 {override, O} = get(override, V),
                                 {views, Vw}    = get(views, V),
@@ -253,28 +279,35 @@ run_perms({views, V}, Dt)    -> io:format("in Views ~p~n", [V]),
                                     ++ Dt#run_details.domain ++ ":"
                                     ++ integer_to_list(Dt#run_details.port),
                                 auth_srv:add_views(Site, L, Pg, O, Vw);
-run_perms({default, D}, Dt) -> io:format("in Defaults ~p~n", [D]),
-                               {default, Df}    = get(default, D),
-                               {page, Pg}    = get(page, D),
-                               Site = "http://" ++ Dt#run_details.sub ++ "."
-                                   ++ Dt#run_details.domain ++ ":"
-                                   ++ integer_to_list(Dt#run_details.port),
-                               auth_srv:add_default(Site, Pg, Df).
+run_perms({default, D}, Dt)  -> {default, Df}    = get(default, D),
+                                {page, Pg}    = get(page, D),
+                                Site = "http://" ++ Dt#run_details.sub ++ "."
+                                    ++ Dt#run_details.domain ++ ":"
+                                    ++ integer_to_list(Dt#run_details.port),
+                                auth_srv:add_default(Site, Pg, Df).
 
-get(Key, List) -> lists:keyfind(Key, 1, List).
+run_users({{user, User}, {group, Groups},
+           {email, EMail}, {password, Password}}, Dt) ->
+    User2    = get_user(User, Dt),
+    EMail2   = get_email(EMail, Dt),
+    Password = get_password(Password, Dt),
+    run_users2(User2, Groups, EMail2, Password, Dt).
 
-add_host(Config, IP, Port, DomainName) ->
-    {hosts, Hosts} = get(hosts, Config),
-    NewHosts = {hosts, lists:merge([{IP, Port, [DomainName]}], lists:sort(Hosts))},
-    lists:keyreplace(hosts, 1, Config, NewHosts).
+run_users2(User, Groups, _EMail, Password, Dt) ->
+    Site = "http://" ++ Dt#run_details.sub ++ "." ++ Dt#run_details.domain ++ ":"
+        ++ integer_to_list(Dt#run_details.port),
+    ok = hn_users:create(Site, User, Password),
+    ok = hn_users:add_groups(Site, User, Groups),
+    ok.
 
-persist_conf(FileName, Config) ->
-    NewConfig = make_terms(Config, []),
-    ok = file:write_file(FileName, NewConfig).
+get_user('$username', Dt) -> hd(string:tokens(Dt#run_details.email, "@"));
+get_user(User, _Dt)       -> User.
 
-make_terms([], Acc)      -> Header = "%% -*- mode: erlang -*-",
-                            lists:flatten([Header, 10, 10 | lists:reverse(Acc)]);
-make_terms([H | T], Acc) -> make_terms(T, [io_lib:fwrite("~p.~n~n", [H]) | Acc]).
+get_email('$email', Dt) -> Dt#run_details.email;
+get_email(EMail, _Dt)   -> EMail.
+
+get_password('$password', _Dt) -> get_password();
+get_password(Password, _Dt)    -> Password.
 
 %%
 %% Debugging stuff

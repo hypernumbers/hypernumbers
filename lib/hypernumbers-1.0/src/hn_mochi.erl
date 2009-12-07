@@ -76,7 +76,6 @@ do_req(Req) ->
 
                    % heh probably not the best idea
                    throw(ok)
-                   
            end,
 
     Name    = hn_users:name(User),
@@ -86,9 +85,9 @@ do_req(Req) ->
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->
-            serve_html(404, Req, [viewroot(), "/_global/404.html"], User);
+            serve_html(404, Req, [viewroot(Site), "/_global/404.html"], User);
         {return, '401'} ->
-            serve_html(401, Req, [viewroot(), "/_global/login.html"], User);
+            serve_html(401, Req, [viewroot(Site), "/_global/login.html"], User);
         {html, File}    ->
             case Vars of
                 [] -> handle_req(Method, Req, Ref, [{"view", File}], User);
@@ -147,16 +146,16 @@ handle_req(Method, Req, Ref, Vars, User) ->
 iget(Req, Ref=#refX{path=["_user", "login"]}, page, [], User, html) ->
     iget(Req, Ref, page, [{"view", "_global/login"}], User, html);
 
-iget(Req, _Ref, page, [{"view", FName}], User, html) ->
+iget(Req, #refX{site = Site} = _Ref, page, [{"view", FName}], User, html) ->
 
     %% If there is a template, generate html
-    Tpl  = [viewroot(), "/", FName, ".tpl"],
-    Html = [viewroot(), "/", FName, ".html"],
+    Tpl  = [viewroot(Site), "/", FName, ".tpl"],
+    Html = [viewroot(Site), "/", FName, ".html"],
     
     ok = case filelib:is_file(Tpl) andalso
              ( not(filelib:is_file(Html))
                orelse hn_util:is_older(Html, Tpl) ) of
-             true  -> ok = build_tpl(FName); _ -> ok
+             true  -> ok = build_tpl(Site, FName); _ -> ok
          end,
         
     case filelib:is_file(Html) of
@@ -197,7 +196,7 @@ iget(Req, _Ref, page, [{"templates", []}], _User, _CType) ->
     json(Req, {array, File});
 
 % List of views available to edit
-iget(Req, _Ref, page, [{"views", []}], User, _CType) ->
+iget(Req, #refX{site = Site} = _Ref, page, [{"views", []}], User, _CType) ->
 
     Dirs = [ "/_u/"++hn_users:name(User)++"/"
              | [ "/_g/"++Group++"/" || Group <- hn_users:groups(User)] ],
@@ -209,7 +208,7 @@ iget(Req, _Ref, page, [{"views", []}], User, _CType) ->
             end,
     
     F = fun(Dir, Acc) ->
-                Files = filelib:wildcard(viewroot()++Dir++"*.tpl"),
+                Files = filelib:wildcard(viewroot(Site)++Dir++"*.tpl"),
                 Acc ++ [ Strip(X) || X <- Files ]
         end,
     
@@ -358,12 +357,12 @@ ipost(Ref, _Type, _Attr, [{"clear", What}], _User)
   when What == "contents"; What == "style"; What == "all" ->
     hn_db_api:clear(Ref, list_to_atom(What));
 
-ipost(_Ref, _Type, _Attr, 
+ipost(#refX{site = Site} = _Ref, _Type, _Attr, 
       [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], User) ->
 
     case can_save_view(User, Name) of
         true ->
-            File = [viewroot(), "/" , Name ++ ".tpl"],
+            File = [viewroot(Site), "/" , Name ++ ".tpl"],
             ok = filelib:ensure_dir(File),
             ok = file:write_file(File, Form);
         
@@ -561,10 +560,9 @@ add_ref(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 
-viewroot() -> docroot() ++ "/views".
+viewroot(Site) -> docroot() ++ "/views/" ++ hn_util:parse_site(Site).
 docroot()  -> code:priv_dir(hypernumbers) ++ "/docroot".
 tmpdir()   -> code:lib_dir(hypernumbers) ++ "/tmp".
-     
 
 itol(X) -> integer_to_list(X).
 ltoi(X) -> list_to_integer(X).
@@ -800,13 +798,16 @@ get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
     Req:respond({500,[],[]}).
 
 '404'(Req, User) ->
-    serve_html(404, Req, viewroot()++"/_global/404.html", User).
 
-build_tpl(Tpl) ->
-    {ok, Master} = file:read_file([viewroot(), "/built.tpl"]),
-    {ok, Gen}    = file:read_file([viewroot(), "/", Tpl, ".tpl"]),
+    #refX{site = Site} = hn_util:parse_url(get_host(Req)),
+
+    serve_html(404, Req, viewroot(Site)++"/_global/404.html", User).
+
+build_tpl(Site, Tpl) ->
+    {ok, Master} = file:read_file([viewroot(Site), "/built.tpl"]),
+    {ok, Gen}    = file:read_file([viewroot(Site), "/", Tpl, ".tpl"]),
     New = re:replace(Master, "%BODY%", Gen, [{return, list}]),
-    file:write_file([viewroot(), "/", Tpl, ".html"], New).
+    file:write_file([viewroot(Site), "/", Tpl, ".html"], New).
     
 pages_to_json(Dict) ->
     F = fun(X) -> pages_to_json(X, dict:fetch(X, Dict)) end,
