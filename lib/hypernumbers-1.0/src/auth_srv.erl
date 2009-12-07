@@ -203,6 +203,7 @@
 -define(TABLE, "auth_srv").
 -define(KEY, "auth_tree").
 -define(INDEX, "hypernumbers/index").
+-define(SPREADSHEET, "_global/spreadsheet").
 
 -record(state, {trees = [], file = []}).
 
@@ -692,23 +693,34 @@ keyfind(K, L) ->
 get_random_view(Views, User, Groups) ->
     case lists:keyfind({user, User}, 1, Views) of
         false   -> get_random_v2(Views, Groups, is_admin(Groups));
-        {_K, V} -> {html, hd(V#views.views)}
+        {_K, V} -> case V#views.views of
+                       [] -> get_random_v2(Views, Groups, is_admin(Groups));
+                       _ -> {html, hd(V#views.views)}
+                   end
     end.
 
 %% the 3rd parameter is whether or not the group is "admin"
-get_random_v2(_Views, [], false) -> {return, '404'};
-get_random_v2([], [], true) -> {return, '404'};
+get_random_v2(_Views, [], false)               -> {return, '404'};
+get_random_v2([], [], true)                    -> {html, ?SPREADSHEET};
 get_random_v2([{_Group, View} | _T], [], true) ->
     io:format("View is ~p~n", [View]),
     case View#views.override of
-        []       -> [V | _T1] = View#views.views,
-                    {html, V};
+        []       -> case View#views.views of
+                        []        -> {html, ?SPREADSHEET};
+                        [V | _T1] -> {html, V}
+                    end;
         Override -> {html, Override}
     end;
-get_random_v2(Views, [H | T], IsAdmin) ->
+get_random_v2(Views, [H | T], IsAdmin)         ->
     case lists:keyfind({group, H}, 1, Views) of
         false   -> get_random_v2(Views, T, IsAdmin);
-        {_K, V} -> {html, hd(V#views.views)}
+        {_K, V} -> case V#views.views of
+                       [] -> case IsAdmin of
+                                 true  -> {html, ?SPREADSHEET};
+                                 false -> {return, '404'}
+                             end;
+                       _  -> {html, hd(V#views.views)}
+                   end
     end.            
 
 get_ret_code([], _User, _Groups, read)  -> {return, '404'};
@@ -1027,7 +1039,8 @@ remove(Type, [H | T], V, Fun)  ->
 
 merge(List1, List2, Fun) -> merge1(List1, List2, Fun, []).
 
-merge1([], List, _Fun, Acc)          -> lists:merge(lists:sort(List), lists:sort(Acc));
+merge1([], List, _Fun, Acc)          -> lists:merge(lists:sort(List),
+                                                    lists:sort(Acc));
 merge1([{K, V} | T], List, Fun, Acc) ->
     case lists:keyfind(K, 1, List) of
         false   -> merge1(T, List, Fun, [{K, V} | Acc]);
@@ -1328,7 +1341,7 @@ testB() ->
     get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["admin"]}, P),
     io:format("Ret is ~p~n", [Ret]),
-    (Ret == {return, '404'}).
+    (Ret == {html, "_global/spreadsheet"}).
 
 testC() ->
     P = [],
@@ -2937,6 +2950,41 @@ test220() ->
                             {return, '401'},
                             {return, '401'}}).
 
+test221() ->
+    P = [],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+                     P, [read]),
+    PP = pretty_print1(Tree, "test", [], text),
+    io:format(PP),
+    get_as_json1(Tree, []),
+    Ret = check_get_page1(Tree, {"gordon", ["admin"]}, P),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "_global/spreadsheet"}).
+
+test222() ->
+    P1 = ["_site", "[*]"],
+    P2 = ["_site", "static_data"],
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+                     P1, [read]),
+    PP = pretty_print1(Tree, "test", [], text),
+    io:format(PP),
+    get_as_json1(Tree, []),
+    Ret = check_get_page1(Tree, {"gordon", ["admin"]}, P2),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "_global/spreadsheet"}).
+
+test223() ->
+    P1 = ["_site", "[*]"],
+    P2 = ["_site", "static_data"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+                     P1, [read], "", []),
+    PP = pretty_print1(Tree, "test", [], text),
+    io:format(PP),
+    get_as_json1(Tree, []),
+    Ret = check_get_page1(Tree, {"gordon", ["admin"]}, P2),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "_global/spreadsheet"}).
+
 %% Numbered tests deal with normal users
 %% Lettered tests deal with the 'admin' group
 unit_test_() -> 
@@ -3081,7 +3129,10 @@ unit_test_() ->
      ?_assert(test210()),
      ?_assert(test211()),
      ?_assert(test212()),
-     ?_assert(test220())
+     ?_assert(test220()),
+     ?_assert(test221()),
+     ?_assert(test222()),
+     ?_assert(test223())
     ].
 
 debug() ->
@@ -3089,7 +3140,8 @@ debug() ->
     P2 = ["x", "y", "z"],
     Tree = add_default1(gb_trees:empty(), P1, "default"),
     Tree2 = add_default1(Tree, P1, "new default"),
-    Tree3 = add_controls1(Tree2, [{user, "User"}, {groups, "Admin"}], P1, [read, write],
+    Tree3 = add_controls1(Tree2, [{user, "User"}, {groups, "Admin"}],
+                          P1, [read, write],
                           "overide", ["index", "another"]),
     Tree4 = add_controls1(Tree3, [{user, "User2"}, {groups, "Admin"}], P2, [read],
                           "overideagain", ["index", "another one"]),
