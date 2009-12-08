@@ -12,66 +12,79 @@ json_file(Url, FileName) ->
     Ref = hn_util:parse_url(Url),
     {ok, JsonTxt}    = file:read_file(FileName),
     {struct, Json}   = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
-    %{struct, Style} = ?pget("styles", Json),
-    {struct, Cells} = ?pget("cell", Json),
-    [ rows(Ref, X) || X <- Cells],
-    %[ style(Ref, X) || X <- Style],
+    {struct, Styles} = ?pget("styles", Json),
+    {struct, Cells}  = ?pget("cell", Json),
+    {struct, Rows}   = ?pget("row", Json),
+    {struct, Cols}   = ?pget("column", Json),
 
-    %mnesia:dirty_write(hn_db_wu:trans(Ref#refX.site, style_counters),
-    %                   {style_counters,Ref,length(Style)}),
-
-    ok.
-
-%style(Ref, {Index, Styles}) ->
-%    L = string:tokens(Styles, ";"),
-%    F = fun(X, Acc) ->
-%                [Key, Val] = string:tokens(X, ":"),
-%                [{ms_util2:get_index(magic_style, Key), Val} | Acc]      
-%        end,
+    StyleRecs = [make_style_rec(X) || X <- Styles],
     
-%    Rec = lists:foldl(F, [], L),
+    [ rows(Ref, X, StyleRecs, cell,   fun write_cells/3) || X <- Cells],
 
-%    F2 = fun(X, R) ->
-%                 case ?pget(X, R) of
-%                     undefined -> [];
-%                     Else      -> Else
-%                 end
-%         end,
+    [ rows(Ref, X, StyleRecs, row,    fun write_col_row/3) || X <- Rows],
+    [ rows(Ref, X, StyleRecs, column, fun write_col_row/3) || X <- Cols],
     
-%    Rec2 = [ F2(X, Rec) || X <- lists:seq(1, 23)],
-
-%    MG = list_to_tuple([magic_style| Rec2]),
-
-%    Tbl = hn_db_wu:trans(Ref#refX.site, styles),
-%    mnesia:dirty_write(Tbl, #styles{index=list_to_integer(Index),
-%                                    refX = Ref,
-%                                    magic_style = MG}),    
-%    ok.
-
-rows(Ref, {Row, {struct, Cells}}) ->
-    [ cells(Ref, Row, X) || X <- Cells],
     ok.
 
-cells(Ref, Row, {Col, {struct, Attr}}) ->
-    NRef = Ref#refX{ obj={cell, {ltoi(Col), ltoi(Row)}}},
-    [ write(NRef, X) || X <- Attr],
+rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun) ->
+    [ cells(Ref, Row, X, Styles, Type, Fun) || X <- Cells],
     ok.
 
-write(_Ref, {"parents", _}) -> ok;
-write(_Ref, {"__dependency-tree", _})    -> ok;
-write(_Ref, {"overwrite-color", _}) -> ok;
-write(_Ref, {"style", _})    -> ok;
-write(_Ref, {"rawvalue", _}) -> ok;
-write(_Ref, {"value", _})    -> ok;
-write(Ref, {Key, Val}) ->
-    %?INFO("Writing ~p ~p ~p", [Key, Val, Ref]),
-    hn_db_api:write_attributes([{Ref, [{Key, tos(Val)}]}]),
+cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun) ->
+    NRef = Ref#refX{ obj={Type, {ltoi(Col), ltoi(Row)}}},
+    Fun(NRef, Attrs, Styles),
+    ok.
+
+write_col_row(_NRef, [], _Styles)   -> ok;
+write_col_row(NRef, Attrs, _Styles) ->
+    ok = hn_db_api:write_attributes(NRef, Attrs).    
+
+write_cells(NRef, Attrs, Styles) ->
+
+    case lists:keyfind("formula", 1, Attrs) of
+        false           -> ok;
+        {"formula", F1} ->
+            ok = hn_db_api:write_attributes(NRef, [{"formula", F1}])
+    end,
+
+    case lists:keyfind("format", 1, Attrs) of
+        false          -> ok;
+        {"format", F2} ->
+            ok = hn_db_api:write_attributes(NRef, [{"format", F2}])
+    end,
+
+    case lists:keyfind("style", 1, Attrs) of
+        {_, SIdx} -> Idx = integer_to_list(SIdx),
+                     {Idx, Style} = lists:keyfind(Idx, 1, Styles),
+                     ok = hn_db_api:write_style_IMPORT(NRef, Style);
+        false     -> ok
+    end,
     ok.
 
 ltoi(X) ->        
     list_to_integer(X).
     
-tos(X) when is_atom(X)    -> atom_to_list(X);
-tos(X) when is_integer(X) -> integer_to_list(X);
-tos(X) when is_float(X)   -> float_to_list(X);
-tos(X) -> X.
+% tos(X) when is_atom(X)    -> atom_to_list(X);
+% tos(X) when is_integer(X) -> integer_to_list(X);
+% tos(X) when is_float(X)   -> float_to_list(X);
+% tos(X) -> X.
+
+make_style_rec({Idx, Style}) ->
+    L = string:tokens(Style, ";"),
+    F = fun(X, Acc) ->
+                [Key, Val] = string:tokens(X, ":"),
+                [{ms_util2:get_index(magic_style, Key), Val} | Acc]      
+        end,
+    
+    Rec = lists:foldl(F, [], L),
+    F2 = fun(X, R) ->
+                 case ?pget(X, R) of
+                     undefined -> [];
+                     Else      -> Else
+                 end
+         end,
+
+    NoOfFields = ms_util2:no_of_fields(magic_style),
+    Rec2 = [ F2(X, Rec) || X <- lists:seq(1, NoOfFields)],
+    
+    {Idx, list_to_tuple([magic_style| Rec2])}.
