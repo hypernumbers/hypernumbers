@@ -166,6 +166,7 @@ get_rel_file() ->
                       "{gettext,\"1.3.0\"},",
                       "{sgte,\"0.7.1\"},",
                       "{read_excel,\"1.0\"},",
+                      "{tiny,\"1.0\"},",
                       "{starling_app,\"0.0.1\"},",
                       "{formula_engine,\"1.0\"},",
                       "{mochiweb,\"0.01\"},",

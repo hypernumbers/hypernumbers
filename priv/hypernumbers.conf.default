@@ -3,8 +3,8 @@
           {{127,0,0,1},9000, ["http://localhost:9000"]}
          ]}.
 
-{groups, [ {"http://127.0.0.1:9000/", [{"dev", ["dale", "gordon", "hasan"]}]},
-           {"http://localhost:9000/", [{"dev", ["dale", "gordon", "hasan"]}]}
+{groups, [ {"http://127.0.0.1:9000/", [{"dev", ["dale", "gordon", "tom"]}]},
+           {"http://localhost:9000/", [{"dev", ["dale", "gordon", "tom"]}]}
           ]}.
 
 {default_pages, ["_global/spreadsheet", "_global/pagebuilder"]}.

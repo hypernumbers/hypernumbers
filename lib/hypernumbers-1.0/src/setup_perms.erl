@@ -78,18 +78,22 @@ setup1(Site) ->
                     "password"),
     hn_users:create(Site, "user", ["user"], "password"),
         
-    % the home page
-    auth_srv:add_controls(Site, [{user, "*"}], [], [read],
+    % the home page (need write access to submit form, scary)
+    auth_srv:add_controls(Site, [{user, "*"}], [], [read, write],
                           "_g/hypernumbers/home", ["_g/hypernumbers/home"]),
     % the about page
     auth_srv:add_controls(Site, [{user, "*"}], ["about"], [read],
-                          "_global/about", ["_global/about"]),
+                          "_g/hypernumbers/about", ["_g/hypernumbers/about"]),
     % the team page
     auth_srv:add_controls(Site, [{user, "*"}], ["team"], [read],
-                          "_global/team", ["_global/team"]),
+                          "_g/hypernumbers/team", ["_g/hypernumbers/team"]),
+
     
     % the application page
-    auth_srv:add_controls(Site, [{user, "*"}], ["application"], [read, write],
+    auth_srv:add_controls(Site, [{user, "*"}], ["application"], [read],
+                          "_global/503", []),
+    % the user updates
+    auth_srv:add_controls(Site, [{user, "*"}], ["u"], [read],
                           "_global/503", []),
 
     % the login page
@@ -106,11 +110,11 @@ setup1(Site) ->
                           "_global/spreadsheet", [ "_global/spreadsheet"]),
         
     % now get the tree as json and print it
-    Json = auth_srv:get_as_json(Site, ["u"]),
-    Json2 = (mochijson:encoder([{input_encoding, utf8}]))(Json),
-    io:format("Json representation of the permissions tree is~n-~p~n", [Json2]),
-    PP = auth_srv:pretty_print(Site, [], text),
-    io:format(PP),
+%    Json = auth_srv:get_as_json(Site, ["u"]),
+%    Json2 = (mochijson:encoder([{input_encoding, utf8}]))(Json),
+%    io:format("Json representation of the permissions tree is~n-~p~n", [Json2]),
+%    PP = auth_srv:pretty_print(Site, [], text),
+%    io:format(PP),
     ok.
 
 hypernumbers_style() ->
