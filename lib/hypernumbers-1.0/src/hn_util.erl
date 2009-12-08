@@ -96,23 +96,25 @@ recursive_copy(From, To) ->
 
 rec_copy1(_From, _To, [$. | _T]) -> ok; % ignore hidden
 rec_copy1(From, To, File) ->
-    
+
     NewFrom = filename:join(From, File),
-    NewTo = filename:join(To, File),
+    NewTo   = filename:join(To, File),
 
     case filelib:is_dir(NewFrom) of
 
-        true  -> NewDir = To ++ File ++ "/",
-                 filelib:ensure_dir(NewDir),
-                 recursive_copy(NewFrom, NewDir);
-
-        false -> case filelib:is_file(filename:join(From, File)) of
-
-                     true  -> {ok, _} = file:copy(NewFrom, NewTo),
-                              ok;
-                     false -> ok
-
-                 end
+        true  ->
+            ok = filelib:ensure_dir(NewTo),
+            recursive_copy(NewFrom, NewTo);
+        
+        false ->
+            case filelib:is_file(NewFrom) of                
+                true  ->
+                    ok = filelib:ensure_dir(NewTo),
+                    {ok, _} = file:copy(NewFrom, NewTo),
+                    ok;
+                false ->
+                    ok            
+            end
     end.
 
 get_html_files(List) -> get_html_files1(List, []).
