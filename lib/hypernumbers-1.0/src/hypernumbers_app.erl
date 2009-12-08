@@ -80,9 +80,16 @@ start_instance({IP, Port}) ->
 bootstrap_sites() ->
     case application:get_env(hypernumbers, bootstrapped) of
         {ok, Sites} ->
-            [ok = hn_setup:site(S, T, O) || {S, T, O} <- Sites],
+            [ok = bootstrap_site(S, T, O) || {S, T, O} <- Sites],
             ok;
         _Else ->
             ok
     end.
 
+bootstrap_site(S, T, O) ->
+    case mnesia:transaction(fun() -> mnesia:read(core_site, S) end) of
+        {atomic, []} ->
+            hn_setup:site(S, T, O);
+        _Else ->
+            ok
+    end.
