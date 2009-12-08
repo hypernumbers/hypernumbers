@@ -1,0 +1,33 @@
+%%-*-erlang-*-
+%% This script allows for the creation of new users
+%% The basic form is:
+%% ({user, "the user name",
+%%   {email, "user@example.com"},
+%%   {groups, ["a group", "another group"]},
+%%   {password, "a password"}}.
+%% There are 3 programmatic expressions:
+%% {user, '$username'}
+%% {email, '$email'}
+%% {password, '$password'}
+
+%% (At the moment nothing is done with e-mail
+{{user, "gordon"},
+ {group, ["user", "dev", "admin", "hypernumbers"]},
+ {email, "gordon@hypernumbers.com"},
+ {password, "go!live"}}.
+{{user, "dale"},
+ {group, ["user", "dev", "admin", "hypernumbers"]},
+ {email, "dale@hypernumbers.com"},
+ {password, "the!bhoys"}}.
+{{user, "stevie"},
+ {group, ["user", "dev", "admin", "hypernumbers"]},
+ {email, "stephen@hypernumbers.com"},
+ {password, "celt!67"}}.
+{{user, "tom"},
+ {group, ["user", "dev", "admin", "hypernumbers"]},
+ {email, "tom@hypernumbers.com"},
+ {password, "o!canada"}}.
+{{user, "user"},
+ {group, ["user"]},
+ {email, "team@hypernumbers.com"},
+ {password, "password"}}.
