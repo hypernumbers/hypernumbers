@@ -73,19 +73,19 @@
        ]}.
 
 % /application/ 
-{perm, [{list,  [{user, "*"}, {group, "*"}]},
-        {page,  ["application"]},
-        {perms, [read]},
-        {override, "_global/503"},
-        {views,    ["_global/503"]}
-       ]}.
+{control, [{list,  [{user, "*"}, {group, "*"}]},
+           {page,  ["application"]},
+           {perms, [read]},
+           {override, "_global/503"},
+           {views,    ["_global/503"]}
+          ]}.
 % /u/ 
-{perm, [{list,  [{user, "*"}, {group, "*"}]},
-        {page,  ["u"]},
-        {perms, [read]},
-        {override, "_global/503"},
-        {views,    ["_global/503"]}        
-       ]}.
+{control, [{list,  [{user, "*"}, {group, "*"}]},
+           {page,  ["u"]},
+           {perms, [read]},
+           {override, "_global/503"},
+           {views,    ["_global/503"]}        
+          ]}.
 
 % the login page
 {control, [{list,     [{user, "*"}, {group, "*"}]},
