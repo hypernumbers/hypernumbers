@@ -639,10 +639,8 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
 %% which should never be used except in file import
 write_style_IMPORT(RefX, Style)
   when is_record(RefX, refX), is_record(Style, magic_style) ->
-    % fprof:trace(start),
     NewIndex = write_style(RefX, Style),
     write_attr3(RefX, {"style", NewIndex}),
-    % fprof:trace(stop),
     ok.
 
 %% @spec read_all_dirty_cells(Site) -> List
@@ -1222,7 +1220,7 @@ write_attr(#refX{obj = {cell, _}} = RefX, {"format", Format} = Attr) ->
     % now reformat values (if they exist)
     case read_attrs(RefX, ["rawvalue"], read) of
         []                               -> ok;
-        [{RefX, {"rawvalue", RawValue}}] -> 
+        [{RefX, {"rawvalue", RawValue}}] ->
             ok = process_format(RefX, Format, RawValue)
     end;
 write_attr(#refX{obj = {cell, _}} = RefX, {"__dependency-tree", DTree}) ->
@@ -3432,6 +3430,7 @@ write_rawvalue(RefX, Value) when is_record(RefX, refX) ->
 
 process_format(RefX, Format, Value) when is_record(RefX, refX) ->
     {erlang, {_Type, Output}} = format:get_src(Format),
+    % I *still* hate American spelling
     {ok, {Color, V}} = format:run_format(Value, Output),
     % first write the formatted value
     ok = write_attr3(RefX, {"value", V}),
