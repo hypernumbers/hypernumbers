@@ -51,7 +51,7 @@ req(Req) ->
 do_req(Req) ->
     
     #refX{site = Site} = Ref = hn_util:parse_url(get_host(Req)),
-    
+
     Vars   = Req:parse_qs(),
     Method = Req:get(method),
 
@@ -81,7 +81,7 @@ do_req(Req) ->
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),    
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
-    
+
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->
@@ -798,13 +798,11 @@ get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
     Req:respond({500,[],[]}).
 
 '404'(Req, User) ->
-
     #refX{site = Site} = hn_util:parse_url(get_host(Req)),
-
     serve_html(404, Req, viewroot(Site)++"/_global/404.html", User).
 
 build_tpl(Site, Tpl) ->
-    {ok, Master} = file:read_file([viewroot(Site), "/built.tpl"]),
+    {ok, Master} = file:read_file([viewroot(Site), "/_global/built.tpl"]),
     {ok, Gen}    = file:read_file([viewroot(Site), "/", Tpl, ".tpl"]),
     New = re:replace(Master, "%BODY%", Gen, [{return, list}]),
     file:write_file([viewroot(Site), "/", Tpl, ".html"], New).

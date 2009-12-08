@@ -1,4 +1,5 @@
 -define(NO_OF_WORDS, 852).
+
 -define(WORDS,[{1,"a"},
                {2,"able"},
                {3,"about"},

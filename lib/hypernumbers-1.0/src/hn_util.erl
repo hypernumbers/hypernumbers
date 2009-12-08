@@ -74,7 +74,6 @@
          url_to_refX/1,
 
          % general utilities
-         get_hosts/1,
          get_offset/3,
          js_to_utf8/1,
          diff/2,
@@ -151,19 +150,12 @@ get_offset(delete, D, {range,  {X1, Y1, X2, Y2}}) -> g_o1(D, -(X2 - X1 + 1),
 g_o1(vertical, _X, Y)   -> {0, Y};
 g_o1(horizontal, X, _Y) -> {X, 0}.
 
-get_hosts(List) when is_list(List) ->
-    get_hosts1(List, []).
-
-get_hosts1([], Acc) -> Acc;
-get_hosts1([{_IP, _Port, [Host]} | T], Acc) ->
-    get_hosts1(T, [Host | Acc]).
 
 compile_html(Html, Lang) ->
     {ok, Bin} = file:read_file(code:lib_dir(hypernumbers)++"/po/"++Lang++".po"),
     gettext:store_pofile(Lang, Bin),
     {ok, C} = sgte:compile_file(Html),
     sgte:render(C, [{options, [{gettext_lc, Lang}]}]).
-
 
 is_older(File1, File2) ->
     {ok, Info1} = file:read_file_info(File1),
@@ -357,13 +349,19 @@ parse_site("http://"++Site) ->
     Host ++ "." ++ Port.
 
 parse_url("http://"++Url) ->
-    [Host | Path] = string:tokens(Url, "/"), 
-    case lists:last(Url) of
+    {Host, Path, NUrl} = prs(Url),
+    case lists:last(NUrl) of
         $/ -> #refX{site="http://"++Host, path=Path, obj={page, "/"}};
         _  -> 
             [Addr | P] = lists:reverse(Path),
             Obj = parse_attr(cell, Addr),
             #refX{site="http://"++Host, path=lists:reverse(P), obj = Obj}
+    end.
+
+prs(Url) ->
+    case string:tokens(Url, "/") of
+        [Host]        -> {Host, [], "/"};
+        [Host | Path] -> {Host, Path, Url}
     end.
 
 parse_attr(Addr) ->

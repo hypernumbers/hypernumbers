@@ -69,9 +69,8 @@ create_new_site2(SubDom, Dom, Port, SiteType, User, Password) ->
         ++ SiteType,
 
     {ok, Files} = file:list_dir(Dir),
-    JsonFiles = get_json_files(Files),
     [ hn_import:json_file(DomainName ++ Path, Dir ++ "/" ++ File)
-      || {File, Path} <- JsonFiles],
+      || {File, Path} <- get_json_files(Files)],
     
     % push any custom info into the pages (eg username)
     SetupScript = Dir ++ "/" ++ "setup.script",

@@ -61,7 +61,6 @@ write(_Ref, {"parents", _}) -> ok;
 write(_Ref, {"__dependency-tree", _})    -> ok;
 write(_Ref, {"overwrite-color", _}) -> ok;
 write(_Ref, {"style", _})    -> ok;
-write(_Ref, {"format", _})    -> ok;
 write(_Ref, {"rawvalue", _}) -> ok;
 write(_Ref, {"value", _})    -> ok;
 write(Ref, {Key, Val}) ->

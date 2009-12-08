@@ -24,9 +24,8 @@ start(_Type, _Args) ->
              true             -> fresh_start();
              {exists, Tables} -> mnesia:wait_for_tables(Tables, 1000000)
          end,
-    
-    Sites = hn_util:get_hosts(hn_config:get(hosts)),
-    [ok   = dirty_srv:start(X, Sites) || X <- dirty_tables()],
+
+    [ok   = dirty_srv:start(X, hosts()) || X <- dirty_tables()],
     ok    = load_muin_modules(),
     ok    = start_mochiweb(),
         
@@ -40,8 +39,7 @@ load_muin_modules() ->
 
 hup() ->
     hn_config:hup(),
-    Sites = hn_util:get_hosts(hn_config:get(hosts)),
-    [ok = dirty_srv:start(X, Sites) || X <- dirty_tables()].
+    [ok = dirty_srv:start(X, hosts()) || X <- dirty_tables()].
 
 %% @spec stop(State) -> ok
 %% @doc  Application Callback
@@ -68,16 +66,9 @@ is_fresh_startup() ->
 %% @doc  delete/create existing database and set up
 %%       initial permissions
 clean_start_DEBUG() ->
-
-    Sites = hn_util:get_hosts(hn_config:get(hosts)),
-
-    [ auth_srv:clear_all_perms_DEBUG(X) || X<-Sites ],
-
-    ok = init_permissions(),
-
     [ok = dirty_srv:stop(X) || X <- dirty_tables()],
     ok = fresh_start(),
-    [ok = dirty_srv:start(X, Sites) || X <- dirty_tables()].
+    [ok = dirty_srv:start(X, hosts()) || X <- dirty_tables()].
 
 fresh_start() ->
 
@@ -86,11 +77,13 @@ fresh_start() ->
     ok = mnesia:create_schema([node()]),
     ok = mnesia:start(),
 
-    HostsInfo = hn_config:get(hosts),
-    Sites     = hn_util:get_hosts(HostsInfo),
+    F = fun({Host, Type, Opts}) ->
+                auth_srv:clear_all_perms_DEBUG(Host),
+                hn_setup:new_site(Host, Type, [{host, Host} | Opts])
+        end,
 
-    [ok = hn_db_api:create_db(X) || X <- Sites],
-
+    [ F(X) || X<-hn_config:get(hosts) ],
+    
     ok.
 
 %% @spec start_mochiweb() -> ok
@@ -98,33 +91,21 @@ fresh_start() ->
 %% @todo this server will accept a connection to any
 %% domain name on the ip address, wtf?
 start_mochiweb() ->
-    [ start_instance(X) || X <- compress(hn_config:get(hosts))],
+    mochilog:start(),
+    [ start_instance(X) || X <- hn_config:get(ips)],
     ok.
 
 start_instance({IP, Port}) ->
-                  
-                  Opts = [{port, Port}, 
-                          {ip,   inet_parse:ntoa(IP)}, 
-                          {loop, {hn_mochi, req}}],
-                  
-                  mochilog:start(),
-    mochiweb_http:start(Opts).
+    
+    Opts = [{port, Port},
+            {name, inet_parse:ntoa(IP)++":"++integer_to_list(Port)},
+            {ip,   inet_parse:ntoa(IP)}, 
+            {loop, {hn_mochi, req}}],
+    
+    {ok, _Pid} = mochiweb_http:start(Opts).
 
-compress(List) ->
-    cmp1(List, []).
-
-cmp1([], Acc) ->
-    Acc;
-cmp1([{IP, Port, _Host} | T], Acc) ->
-    case lists:member({IP, Port}, Acc) of
-        true  -> cmp1(T, Acc);
-        false -> cmp1(T, [{IP, Port} | Acc])
-    end.
-
-init_permissions() -> 
-    [ ok = hn_auth:init_permissions(Host) 
-      || Host <- hn_util:get_hosts(hn_config:get(hosts)) ], 
-    ok. 
+hosts() ->
+    [ Host || {Host, _Type, _Opts} <- hn_config:get(hosts) ].
 
 dirty_tables() ->
     [ dirty_cell,

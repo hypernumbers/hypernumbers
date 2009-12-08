@@ -49,46 +49,55 @@
 %% Note that the expressions end in a full stop '.'
 %%
 
-% the home page
-{control, [{list,    [{user, "*"}, {group, "*"}]},
+% the home page (writable, very wrong)
+{control, [{list,    [{user, "*"}]},
            {page,     []},
-           {perms,    [read]},
+           {perms,    [read, write]},
            {override, "_g/hypernumbers/home"},
            {views,    ["_g/hypernumbers/home"]}
           ]}.
 
+% /about/ and /team/
+{perm, [{list,   [{user, "*"}]},
+        {page,   ["about"]},
+        {perms,  [read]},
+        {override, "_g/hypernumbers/about"},
+        {views,    ["_g/hypernumbers/about"]}
+       ]}.
+
+{perm, [{list,   [{user, "*"}]},
+        {page,   ["team"]},
+        {perms,  [read]},
+        {override, "_g/hypernumbers/team"},
+        {views,    ["_g/hypernumbers/team"]}
+       ]}.
+
+% /application/ 
+{perm, [{list,  [{user, "*"}]},
+        {page,  ["application"]},
+        {perms, [read]}
+       ]}.
+
 % the login page
-{control, [{list,     [{user, "*"}, {group, "*"}]},
+{control, [{list,     [{user, "*"}]},
            {page,     ["_user", "login"]},
            {perms,    [read, write]},
            {override, "_global/login"},
            {views,    ["_global/login"]}
           ]}.
-
-% /about/ and /team/
-% note that anyone can read the data but they can't get a page to view it
-% (ie the only acceptable view is JSON)
-{perm, [{list,   [{user, "*"}, {group, "*"}]},
-        {page,   ["about"]},
-        {perms,  [read]}
-       ]}.
-
-{perm, [{list,   [{user, "*"}, {group, "*"}]},
-        {page,   ["team"]},
-        {perms,  [read]}
-       ]}.
-
-% /application/ is writable but not readable by anyone
-% not that secure!
-{perm, [{list,  [{user, "*"}, {group, "*"}]},
-        {page,  ["application"]},
-        {perms, [write]}
-       ]}.
     
 % now create the dev space
 {control, [{list,     [{group, "dev"}]},
            {page ,    ["dev", "[**]"]},
            {perms,    [read, write]},
+           {override, "_global/spreadsheet"},
+           {views,    ["_global/spreadsheet"]}
+          ]}.
+
+% now create the public space
+{control, [{list,     [{user, "*"}]},
+           {page ,    ["public", "[**]"]},
+           {perms,    [read]},
            {override, "_global/spreadsheet"},
            {views,    ["_global/spreadsheet"]}
           ]}.

@@ -188,18 +188,18 @@ create_user_exec(Site, Rec) ->
     case mnesia:transaction(Fun) of
         {aborted, Reason} -> {error, Reason};
         {atomic, ok}      ->
-            Global =hn_util:parse_site(Site) ++ "/global/",
+            
             % Add permissions, this should run a hook defined
             % in the site deployment thing
             auth_srv:add_controls(Site, [{user, Rec#hn_user.name}],
                                   ["u", Rec#hn_user.name], [read, write],
-                                  Global ++ "userhome",
-                                  [Global ++ "userhome"]),
+                                  "_g/hypernumbers/userhome",
+                                  ["_g/hypernumbers/userhome"]),
             
             auth_srv:add_controls(Site, [{user, Rec#hn_user.name}],
                                   ["u", Rec#hn_user.name, "[**]"],
                                   [read, write],
-                                  Global ++ "spreadsheet", ["**"]),
+                                  "_global/spreadsheet", ["*"]),
             ok
     end.
 
