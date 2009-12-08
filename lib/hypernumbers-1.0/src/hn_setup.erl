@@ -62,7 +62,8 @@ is_term([37 | _T1]) -> false;
 is_term("\n") -> false;
 is_term(_) -> true.
 
-run_users({{user,Usr}, {group,Grp}, {email,_Mail}, {password,Pass}}, Opts) ->
+run_users({{user,Usr}, {group,Grp},
+           {email,_Mail}, {password,Pass}}, Opts) ->
     ok = hn_users:create(pget(host, Opts),
                          get_user(Usr, Opts),
                          Grp,

@@ -56,6 +56,7 @@
            };
                                   
             $("#newpage .submit").click( function(e) {
+              e.preventDefault();
               do_new($("#newpagename").val());
               return false;
             });
@@ -69,7 +70,7 @@
                class="hn header" data-type="text"></div>
 
           <div>
-            <div data-binding-from="/u/B10:C6" class="hn" data-type="text">
+            <div data-binding-from="/u/B8:C6" class="hn" data-type="text">
               <div class="row">
                 <div class="rowheader">
                   <span data-offset="1"></span>, <span data-offset="2"></span>

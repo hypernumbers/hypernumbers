@@ -50,7 +50,7 @@
 %%
 
 % the home page (writable, very wrong)
-{control, [{list,    [{user, "*"}]},
+{control, [{list,    [{user, "*"}, {group, "*"}]},
            {page,     []},
            {perms,    [read, write]},
            {override, "_g/hypernumbers/home"},
@@ -58,14 +58,14 @@
           ]}.
 
 % /about/ and /team/
-{perm, [{list,   [{user, "*"}]},
+{control, [{list,   [{user, "*"}, {group, "*"}]},
         {page,   ["about"]},
         {perms,  [read]},
         {override, "_g/hypernumbers/about"},
         {views,    ["_g/hypernumbers/about"]}
        ]}.
 
-{perm, [{list,   [{user, "*"}]},
+{control, [{list,   [{user, "*"}, {group, "*"}]},
         {page,   ["team"]},
         {perms,  [read]},
         {override, "_g/hypernumbers/team"},
@@ -73,13 +73,22 @@
        ]}.
 
 % /application/ 
-{perm, [{list,  [{user, "*"}]},
+{perm, [{list,  [{user, "*"}, {group, "*"}]},
         {page,  ["application"]},
-        {perms, [read]}
+        {perms, [read]},
+        {override, "_global/503"},
+        {views,    ["_global/503"]}
+       ]}.
+% /u/ 
+{perm, [{list,  [{user, "*"}, {group, "*"}]},
+        {page,  ["u"]},
+        {perms, [read]},
+        {override, "_global/503"},
+        {views,    ["_global/503"]}        
        ]}.
 
 % the login page
-{control, [{list,     [{user, "*"}]},
+{control, [{list,     [{user, "*"}, {group, "*"}]},
            {page,     ["_user", "login"]},
            {perms,    [read, write]},
            {override, "_global/login"},
@@ -95,7 +104,7 @@
           ]}.
 
 % now create the public space
-{control, [{list,     [{user, "*"}]},
+{control, [{list,     [{user, "*"}, {group, "*"}]},
            {page ,    ["public", "[**]"]},
            {perms,    [read]},
            {override, "_global/spreadsheet"},
