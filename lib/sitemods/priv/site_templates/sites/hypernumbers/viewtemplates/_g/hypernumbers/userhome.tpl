@@ -35,7 +35,7 @@
 
           <script>
             var is_valid_name = function(nm) {
-              return nm !==  "" \&\&  nm.match(/^[0-9a-zA-Z_-]+$/);
+              return nm !==  "" &&  nm.match(/^[0-9a-zA-Z_-]+$/);
             };
 
             var do_new = function(name) {
@@ -55,9 +55,10 @@
              }
            };
                                   
-            $("#newpage .submit").click( function(e) {
+            $("#newpage").submit( function(e) {
               e.preventDefault();
               do_new($("#newpagename").val());
+              $("#newpagename").val("")
               return false;
             });
           </script>

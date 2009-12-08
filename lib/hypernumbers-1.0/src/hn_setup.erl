@@ -1,39 +1,60 @@
 %%% It is expected that all system, and module support tables are
 %%% inplace prior to calling functions in this module.
-
 -module(hn_setup).
+
 -export([ site/3,
-          startup/0
+          startup/0,
+          update/3, update/4
         ]).
 
 -include("spriki.hrl").
 
-
 -spec site(string(), atom(), [{atom(), any()}]) -> ok. 
-site(Site, Type, Opts) when is_list(Site), is_atom(Type) -> 
+site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
+
+    error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
+    
     ok = create_site(Site, Type),
-    Dir = code:priv_dir(sitemods) 
-        ++ "/site_templates/sites/" ++ atom_to_list(Type),
 
-    % copy the appropriate sets of pages into the database tables
-    ok = import_json(Site, Dir),
+    ok = setup(Site, Type, Opts, files),
+    ok = setup(Site, Type, Opts, templates),
+    ok = setup(Site, Type, Opts, permissions),
+    ok = setup(Site, Type, Opts, script),
+    ok = setup(Site, Type, Opts, users),
 
-    % copy over the view templates
+    ok.
+
+-spec setup(string(), atom(), list(), atom()) -> ok.
+setup(Site, Type, _Opts, templates) ->
     Dest = code:priv_dir(hypernumbers) ++ "/docroot/views/"
         ++ hn_util:parse_site(Site) ++ "/",
-    ok = hn_util:recursive_copy(Dir ++ "/../../_global", Dest++"_global"),
-    ok = hn_util:recursive_copy(Dir ++ "/viewtemplates", Dest),
+    ok = hn_util:recursive_copy(moddir(Type)++"/../../_global",
+                                Dest++"_global"),
+    ok = hn_util:recursive_copy(moddir(Type)++"/viewtemplates", Dest);
+setup(Site, Type, _Opts, json) ->
+    ok = import_json(Site, moddir(Type));
+setup(Site, Type, _Opts, permissions) ->
+    Fun = fun(T) -> run_perms(T, Site) end,
+    ok  = run([moddir(Type),"/","permissions.script"], Fun);
+setup(Site, Type, Opts, script) ->
+    Fun = fun(T) -> run_script(T, Site, Opts) end, 
+    ok = run([moddir(Type),"/","setup.script"], Fun);
+setup(Site, Type, Opts, users) ->
+    Fun = fun(T) -> run_users(T, Site, Opts) end,
+    ok  = run([moddir(Type),"/","users.script"], Fun).
 
-    % create the appropriate permissions binding the appropriate tpl’s
-    % to the right paths
-    ok = run([Dir,"/","permissions.script"], fun(T) -> run_perms(T, Site) end),
+-spec update(string(), atom(), list()) -> ok. 
+update(Site, Type, ToUpdate) ->
+    update(Site, Type, [], ToUpdate).
+-spec update(string(), atom(), list(), list()) -> ok. 
+update(Site, Type, Opts, ToUpdate) ->
+    [ ok = setup(Site, Type, Opts, X) || X <- ToUpdate ],
+    ok.
 
-    % push any custom info into the pages (eg username)
-    ok = run([Dir,"/","setup.script"], fun(T) -> run_script(T, Site, Opts) end),
-    
-    % create the new user(s)
-    ok = run([Dir,"/","users.script"], fun(T) -> run_users(T, Site, Opts) end).
-
+-spec moddir(atom()) -> string(). 
+moddir(Type) ->
+    code:priv_dir(sitemods) 
+        ++ "/site_templates/sites/" ++ atom_to_list(Type).
 
 -spec startup() -> ok. 
 %% Startup current sites. 
