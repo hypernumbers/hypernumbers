@@ -16,7 +16,7 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     
     ok = create_site(Site, Type),
 
-    ok = setup(Site, Type, Opts, files),
+    ok = setup(Site, Type, Opts, json),
     ok = setup(Site, Type, Opts, templates),
     ok = setup(Site, Type, Opts, permissions),
     ok = setup(Site, Type, Opts, script),
