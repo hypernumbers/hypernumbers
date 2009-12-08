@@ -19,7 +19,7 @@
          terminate/2,
          code_change/3]).
 
--export([start/2, stop/1, listen/1]).
+-export([start/1, stop/1, listen/1]).
 
 
 %% @spec start_link(Arg) -> StartLink
@@ -55,17 +55,13 @@ handle_cast(_Info, State) ->
 
 -spec handle_call(any(), any(), any()) -> any().
 %% @doc  subscribe to table events from mnesia
-handle_call({start, Sites},  _From, State) ->
-    F = fun(Site) ->
-                Tbl = hn_db_wu:trans(Site, State#state.table),
-                {state, _, Processes} = State,
-                case lists:keysearch(Tbl, 2, Processes) of
-                    false          -> {start_listen(Tbl), Tbl};
-                    {value, Tuple} -> Tuple
-                end
-        end,
-    NState = State#state{children = lists:map(F, Sites)},
-    
+handle_call({start, Site},  _From, State) ->
+    Tbl = hn_db_wu:trans(Site, State#state.table),
+    Child = case lists:keysearch(Tbl, 2, State#state.children) of
+                false          -> {start_listen(Tbl), Tbl};
+                {value, Tuple} -> Tuple
+            end,
+    NState = State#state{children = [Child | State#state.children]},
     {reply, ok, NState};
 
 handle_call(stop,  _From, State) ->
@@ -86,8 +82,15 @@ code_change(_OldVsn, State, _Extra) -> {ok, State}.
 %%% Utility Functions
 %%% 
 
-start(Type, Sites) ->
-    ok = gen_server:call(Type, {start, Sites}).
+start(Site) ->
+    DirtyTbls = [ dirty_cell,
+                  dirty_notify_in,
+                  dirty_notify_back_in,
+                  dirty_inc_hn_create,
+                  dirty_notify_out,
+                  dirty_notify_back_out ],
+    [ok = gen_server:call(D, {start, Site}) || D <- DirtyTbls],
+    ok.
 
 stop(Type) ->
     ok = gen_server:call(Type, stop).

@@ -5,7 +5,6 @@ export HEART_COMMAND="./hypernumbers start detached"
 NODE=arrian
 HOST=localhost
 RELNAME=hypernumbers
-SASL_CONF_FILE=sasl_dev_conf.config
 COOKIE=abc
 
 # If anything is broken, probably here
@@ -30,7 +29,8 @@ fi
 cd $ROOT
 
 LOG_DIR=$ROOT/logs
-CONFIG=$ROOT/priv/hypernumbers.conf
+CONFIG=$ROOT/conf/sys.config
+
 MNESIA_DIR=$ROOT/db/$NODE
 DETS_DIR=$ROOT/dets/
 REL_DIR=$ROOT/ebin/$RELNAME
@@ -47,7 +47,6 @@ SGTE_DIR="lib/sgte"
 [ -d $LOG_DIR/error ]  || mkdir -p $LOG_DIR/error
 [ -d $MNESIA_DIR ]     || mkdir -p $MNESIA_DIR
 [ -d $DETS_DIR ]       || mkdir -p $DETS_DIR
-[ -f $CONFIG ]         || cp $ROOT/priv/hypernumbers.conf.default $CONFIG
 
 function build
 {
@@ -113,19 +112,15 @@ function start
 	    $HEART \
         -setcookie $COOKIE \
         -sname $NODE@$HOST \
-        -boot $REL_DIR \
-        -config $SASL_DIR \
-        -hn_config $CONFIG \
-        -hn_log $LOG_DIR \
-        -mnesia dir "\"$MNESIA_DIR\"" \
-        -dets_dir $DETS_DIR
+        -config $CONFIG \
+        -boot $REL_DIR
 }
 
 function inspect_mnesia
 {
     erl -setcookie $COOKIE \
         -sname $NODE@$HOST \
-        -mnesia dir "\"$MNESIA_DIR\""
+        -config $CONFIG
 }
 
 function load
@@ -133,11 +128,7 @@ function load
     erl $MODE \
         -setcookie $COOKIE \
         -sname $NODE@$HOST \
-        -config $SASL_DIR \
-        -hn_config $CONFIG \
-        -hn_log $LOG_DIR \
-        -mnesia dir "\"$MNESIA_DIR\"" \     
-        -dets_dir $DETS_DIR
+        -config $CONFIG
 }
 
 function gen_help

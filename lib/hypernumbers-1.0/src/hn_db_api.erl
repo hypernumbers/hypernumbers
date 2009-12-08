@@ -137,6 +137,7 @@
          incr_remote_page_vsn/3,
          resync/2,
          create_db/1,
+         create_systables/0,
          write_formula_to_range/2,
          wait_for_dirty/1
         ]).
@@ -351,8 +352,28 @@ initialise_remote_page_vsn(Site, Version) when is_record(Version, version) ->
 resync(_Site, #version{page = _Page, version = _Vsn}) ->
     ok.
 
-%% @spec create_db(Site) -> ok
-%% @doc  Creates the database for hypernumbers
+-spec(create_systables() -> ok). 
+create_systables() ->
+    Storage = disc_only_copies,
+    Tables = [ {hnsys_sub,  record_info(fields, hnsys_sub), set, []},
+               {hnsys_site, record_info(fields, hnsys_site), set, []}],
+
+    F = fun({Name, Fields, Type, Indicies}) ->
+                R = mnesia:create_table(Name, [{attributes, Fields},
+                                               {type, Type},
+                                               {Storage, [node()]},
+                                               {index, Indicies}]),
+                case R of 
+                    {atomic, ok}                   -> ok;
+                    {aborted, {already_exists, _}} -> ok;
+                    {aborrted, Reason}             -> throw(Reason)
+                end
+        end,
+    [F(T) || T <- Tables],
+    ok.
+
+
+-spec(create_db(string()) -> ok).
 create_db(Site)->
     % Seems sensible to keep this restricted
     % to disc_copies for now

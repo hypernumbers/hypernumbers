@@ -20,22 +20,18 @@ init([]) ->
                  permanent, 2000, supervisor, [start]},
     Dirty_Sup = {dirty_sup, {dirty_sup, start_link, []},
                  permanent, 2000, supervisor, [start]},
-    Config    = {hn_config, {hn_config, start_link, []},
-                 permanent, 2000, worker, [hn_config]},
     Dirty_Sub = {dirty_subscriber, {dirty_subscriber, start_link, []},
-                 permanent, 2000, worker, [hn_config]},
+                 permanent, 2000, worker, [dirty_subscriber]},
     Status    = {status_srv, {status_srv, start_link, []},
                  permanent, 2000, worker, [status_srv]},
     Auth      = {auth_srv, {auth_srv, start_link, []},
                  permanent, 2000, worker, [auth_srv]},
 
-    {ok,{{one_for_one,60,1}, [
-                              Config,
-                              Random,
-                              Remote, 
-                              Dirty_Sup,
-                              Dirty_Sub,
-                              Status,
-                              Auth
-                              ]}}.
+    {ok,{{one_for_one,60,1}, [ Random,
+                               Remote, 
+                               Dirty_Sup,
+                               Dirty_Sub,
+                               Status,
+                               Auth
+                             ]}}.
 

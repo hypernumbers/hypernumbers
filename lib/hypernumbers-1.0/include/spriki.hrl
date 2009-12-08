@@ -15,6 +15,16 @@
 -define(HN_URL1,   "http://127.0.0.1:9000").
 -define(HN_URL2,   "http://127.0.0.1:9001").
 
+
+%% System Tables
+
+-record(hnsys_site, {site = [] :: string(),
+                     type :: atom()}).
+
+-record(hnsys_sub, {sub = [] :: string(),
+                    alocated = false :: true | false}).
+
+
 -record(index,
         {
           site,

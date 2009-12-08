@@ -237,7 +237,7 @@ start_link() ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
-    {ok, [[Dir]]} = init:get_argument(dets_dir),
+    {ok, Dir} = application:get_env(hypernumbers, dets_dir),
     Trees = load_trees(Dir, ?TABLE),
     {ok, #state{trees = Trees, file = ?TABLE}}.
 

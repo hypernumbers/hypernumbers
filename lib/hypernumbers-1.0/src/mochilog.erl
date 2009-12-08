@@ -52,7 +52,7 @@ log(Req, Ref, User, Body) ->
 %% @spec stop() -> ok
 %% @doc Closes log
 stop() ->
-    disk_log:close(?NAME).
+    ok = disk_log:close(?NAME).
 
 %% @spec clear() -> ok
 %% @doc Deletes current log
