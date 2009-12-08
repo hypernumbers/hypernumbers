@@ -16,6 +16,7 @@ start(_Type, _Args) ->
     ok = mochilog:start(),
     {ok, Pid} = hypernumbers_sup:start_link(),
     ok = start_mochiweb(),
+    ok = bootstrap_sites(),
     {ok, Pid}.
 
 %% @spec stop(State) -> ok
@@ -67,7 +68,20 @@ start_mochiweb() ->
     ok.
 
 start_instance({IP, Port}) ->
+    StrIp = inet_parse:ntoa(IP),
     Opts = [{port, Port}, 
-            {ip,   inet_parse:ntoa(IP)}, 
+            {ip,   StrIp},
+            {name, StrIp ++ integer_to_list(Port)},
             {loop, {hn_mochi, req}}],
-    mochiweb_http:start(Opts).
+    {ok, _Pid} = mochiweb_http:start(Opts),
+    ok.
+
+bootstrap_sites() ->
+    case application:get_env(hypernumbers, bootstrapped) of
+        {ok, Sites} ->
+            [ok = hn_setup:site(S, T, O) || {S, T, O} <- Sites],
+            ok;
+        _Else ->
+            ok
+    end.
+

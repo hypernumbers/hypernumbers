@@ -32,7 +32,7 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     ok = run([Dir,"/","setup.script"], fun(T) -> run_script(T, Site, Opts) end),
     
     % create the new user(s)
-    ok = run([Dir,"/","users.script"], fun(T) -> run_users(T, Site) end).
+    ok = run([Dir,"/","users.script"], fun(T) -> run_users(T, Site, Opts) end).
 
 
 -spec startup() -> ok. 
@@ -114,8 +114,28 @@ is_term("\n") -> false;
 is_term(_) -> true.
 
 run_users({{user,Usr}, {group,Grp}, {email,_Mail}, {password,Pass}},
-          Site) ->
-    ok = hn_users:create(Site, Usr, Grp, Pass).
+          Site, Opts) ->
+    ok = hn_users:create(Site,
+                         get_user(Usr, Opts),
+                         Grp,
+                         get_password(Pass, Opts)).
+
+
+get_user('$user', Opts) -> case pget(user, Opts, undefined) of
+                               undefined -> throw(no_user);
+                               U -> U
+                           end;
+get_user(User, _Opts) -> User.
+ 
+%% get_email('$email', Opts) -> pget(email, Opts);
+%% get_email(EMail, _Opts)     -> EMail.
+ 
+get_password('$password', Opts) -> case pget(password, Opts, undefined) of
+                                       undefined -> throw(no_pass);
+                                       P -> P
+                                   end;
+get_password(Password, _Opts) -> Password.
+
 
 run_perms({control, C}, Site) ->
     auth_srv:add_controls(Site,  lget(list, C),
@@ -135,32 +155,35 @@ run_perms({default, D}, Site)  ->
     auth_srv:add_default(Site,
                          lget(page, D), lget(default, D)).
 
-run_script({Path, '$email'}, _Site, Opts) ->
-    run_script2(Path, pget(email, Opts), Opts);
-run_script({Path, '$username'}, _Site, Opts) ->
-    run_script2(Path, pget(username, Opts), Opts);
-run_script({Path, '$site'}, Site, Opts) ->
-    run_script2(Path, Site, Opts);
-run_script({Path, '$subdomain'}, _Site, Opts) ->
-    run_script2(Path, pget(subdomain, Opts), Opts);
-run_script({Path, '$expiry'}, _Site, Opts) ->
+run_script({Path, '$email'}, Site, Opts) ->
+    run_script2(Path, Site, pget(email, Opts));
+run_script({Path, '$username'}, Site, Opts) ->
+    run_script2(Path, Site, pget(username, Opts));
+run_script({Path, '$site'}, Site, _Opts) ->
+    run_script2(Path, Site, Site);
+run_script({Path, '$subdomain'}, Site, Opts) ->
+    run_script2(Path, Site, pget(subdomain, Opts));
+run_script({Path, '$expiry'}, Site, _Opts) ->
     {Date, _Time} = calendar:now_to_datetime(now()),
     NewDays = calendar:date_to_gregorian_days(Date) + 31,
     NewDate = calendar:gregorian_days_to_date(NewDays),
     Expr = "This site will expire on "
         ++ dh_date:format("D d M Y", {NewDate, {0, 0, 0}}),
-    run_script2(Path, Expr, Opts);
-run_script({Path, '$password'}, _Site, Opts) ->
-    run_script2(Path, pget(password, Opts), Opts);
-run_script({Path, Expr}, _S, D) ->
-    run_script2(Path, Expr, D).
+    run_script2(Path, Site, Expr);
+run_script({Path, '$password'}, Site, Opts) ->
+    run_script2(Path, Site, pget(password, Opts));
+run_script({Path, Expr}, Site, _Opts) ->
+    run_script2(Path, Site, Expr).
 
-run_script2(Path, Expr, Opts) ->
-    RefX = hn_util:parse_url(pget(host, Opts)++Path), 
+run_script2(Path, Site, Expr) ->
+    RefX = hn_util:parse_url(Site++Path), 
     hn_db_api:write_attributes([{RefX, [{"formula", Expr}]}]).
 
+    
 pget(Key, List) ->
-    proplists:get_value(Key, List, undefined).
+    pget(Key, List, "").
+pget(Key, List, Default) ->
+    proplists:get_value(Key, List, Default).
 
 lget(Key, List) ->
     element(2, lists:keyfind(Key, 1, List)).
