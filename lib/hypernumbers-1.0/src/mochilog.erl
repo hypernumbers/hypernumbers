@@ -10,7 +10,8 @@
 -define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 -define(NAME, "post_log").
 
--record(post, {time, site, path, method, body, peer, user, referer, browser}).
+-record(post, {time, site, path, method, body, peer,
+               user, referer, browser, accept}).
 
 -export([log/4, start/0, stop/0, replay/2, replay/3, clear/0, repair/1,
          browse/1, browse/2, browse_marks/1, info/2 ]).
@@ -34,15 +35,16 @@ start() ->
 log(Req, Ref, User, Body) ->
 
     Log = #post { 
-      time = erlang:now(),
-      site = Ref#refX.site, 
-      path = Req:get(raw_path),
-      method = Req:get(method),
-      body = Body,
-      user = User,
-      peer = Req:get_header_value("x-forwarded-for"),
+      time    = erlang:now(),
+      site    = Ref#refX.site, 
+      path    = Req:get(raw_path),
+      method  = Req:get(method),
+      body    = Body,
+      user    = User,
+      peer    = Req:get_header_value("x-forwarded-for"),
       referer = Req:get_header_value("Referer"),
-      browser = Req:get_header_value("User-Agent")
+      browser = Req:get_header_value("User-Agent"),
+      accept  = Req:get_header_value("Accept")
      },
     
     disk_log:alog(?NAME, Log).
@@ -85,7 +87,7 @@ stream_log(Name, StartD, EndD, Remote) ->
             Remote ! {self(), log_start},
             Remote ! {self(), {log_chunk,
                                ["Date,Site,Path,Body,Method,IP,User,"
-                                "Referer,User-Agent\n"]}},
+                                "Referer,User-Agent,Accept\n"]}},
             {ok, Cont} = wrap_log_reader:open(Log),
             {ok, End}  = walk(fun(Terms, _) -> 
                                       do_stream(Remote, Filter, Terms) 
@@ -105,9 +107,10 @@ do_stream(Remote, Filter, Terms) ->
     end.
         
 mi_entry(Post, _) ->
+    
     Date = dh_date:format("r", Post#post.time),
     #post{ site=Site, path=Path, body=Body, method=Mthd, peer=Peer,
-           user=Usr, referer=Rfr, browser=UA} = Post,
+           user=Usr, referer=Rfr, browser=UA, accept=Accept} = Post,
     
     S = case Body of
             {upload, F} -> F;
@@ -117,9 +120,9 @@ mi_entry(Post, _) ->
                 end
         end,
     
-    Format = "~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
+    Format = "~p,~p,~p,~p,~p,~p,~p,~p,~p~p~n",
     io_lib:format(Format, [Date, Site, Path, S, atol(Mthd),
-                           Peer, Usr, Rfr, UA]).
+                           Peer, Usr, Rfr, UA, Accept]).
 
 
 -spec replay(string(), string()) -> ok.
@@ -349,7 +352,7 @@ upload_file(Url, Path, Field) ->
             binary_to_list(File),
             "--"++Boundary++"--"],
     
-            Post = string:join(Data, "\r\n") ++ "\r\n",
+    Post = string:join(Data, "\r\n") ++ "\r\n",
     Type = "multipart/form-data; boundary="++Boundary,
     
     http:request(post,{Url, [], Type, Post}, [], []).
