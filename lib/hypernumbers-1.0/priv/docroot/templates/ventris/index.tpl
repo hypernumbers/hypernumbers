@@ -10,7 +10,7 @@
 	  <div class="clear">
         <div id="header">
           
-	      <div data-binding-from="A1" 
+	      <div data-binding-from="/A1" 
                class="hn header" 
                data-type="text"></div>
 	      
