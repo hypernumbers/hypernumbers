@@ -17,6 +17,7 @@ start(_Type, _Args) ->
     {ok, Pid} = hypernumbers_sup:start_link(),
     ok = start_mochiweb(),
     ok = bootstrap_sites(),
+    ok = hn_setup:startup(),
     {ok, Pid}.
 
 %% @spec stop(State) -> ok

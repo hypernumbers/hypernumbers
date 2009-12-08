@@ -43,8 +43,8 @@ startup() ->
                 Acc
         end,
     Trans = fun() -> mnesia:foldl(F, nil, core_site) end,
-    mnesia:transaction(Trans).
-
+    {atomic, _} = mnesia:transaction(Trans),
+    ok.
 
 -spec launch_site(string()) -> ok. 
 launch_site(Site) ->
