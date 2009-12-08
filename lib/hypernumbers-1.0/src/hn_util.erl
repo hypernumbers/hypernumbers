@@ -79,6 +79,8 @@
          diff/2,
          lists_diff/2,
 
+         esc_regex/1,
+         
          % file copy utils
          recursive_copy/2
         ]).
@@ -88,6 +90,21 @@
 %%% API functions                                                            %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Escape the replacement part of the regular expression
+%% so no spurios replacements
+esc_regex(List) when is_binary(List) ->
+    esc_regex(binary_to_list(List));
+esc_regex(List) ->
+    esc_regex(List, []).
+
+esc_regex([], Acc) ->
+    lists:flatten(lists:reverse(Acc));
+
+esc_regex([$&   | Rest], Acc) -> esc_regex(Rest, ["\\&" | Acc]);
+%esc_regex([$\   | Rest], Acc) -> esc_regex(Rest, ["\\" | Acc]);
+esc_regex([Else | Rest], Acc) -> esc_regex(Rest, [Else | Acc]).
+
 recursive_copy(From, To) ->
     {ok, Files} = file:list_dir(From),
     [ok = rec_copy1(From, To, X) || X <- Files],
