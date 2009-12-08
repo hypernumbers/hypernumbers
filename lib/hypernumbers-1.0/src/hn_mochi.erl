@@ -808,7 +808,10 @@ get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
 build_tpl(Site, Tpl) ->
     {ok, Master} = file:read_file([viewroot(Site), "/_global/built.tpl"]),
     {ok, Gen}    = file:read_file([viewroot(Site), "/", Tpl, ".tpl"]),
-    New = re:replace(Master, "%BODY%", Gen, [{return, list}]),
+
+    io:format("~p~n~n~p~n",[Gen, esc_regex(Gen)]),
+    
+    New = re:replace(Master, "%BODY%", esc_regex(Gen), [{return, list}]),
     file:write_file([viewroot(Site), "/", Tpl, ".html"], New).
     
 pages_to_json(Dict) ->
@@ -827,3 +830,12 @@ pages_to_json(X, Dict) ->
             end;
         false -> {struct, [{"name", X}]}
     end.
+
+esc_regex(List) ->
+    esc_regex(List, []).
+
+esc_regex([], Acc) ->
+    lists:flatten(lists:reverse(Acc));
+
+esc_regex([$&   | Rest], Acc) -> esc_regex(Rest, ["\\&" | Acc]);
+esc_regex([$\   | Rest], Acc) -> esc_regex(Rest, ["\\" | Acc]).

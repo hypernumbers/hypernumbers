@@ -26,7 +26,7 @@
           <br />
           <div id="newpageerror" style="visibility:hidden;">
             <strong>Error : </strong> The
-            name can only contain letters, numbers or underscores
+            name can only \1 contain letters, numbers or underscores
           </div>
           <form id="newpage"> 
             <input type="text" id="newpagename" />
