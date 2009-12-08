@@ -1,8 +1,5 @@
--record(tiny_sub_domains,
-        {
-          sub = [],
-          allocated = false
-         }).
+-record(tiny_sub, {sub = [] :: string(),
+                   allocated = false :: true | false}).
 
 -record(run_details,
         {
@@ -12,5 +9,3 @@
           email,
           password
          }).
-
-

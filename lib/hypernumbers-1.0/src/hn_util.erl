@@ -345,8 +345,8 @@ post(Url,Data,Format) ->
     Body.
 
 parse_site("http://"++Site) ->
-    [Host | [Port]] = string:tokens(Site, ":"),
-    Host ++ "." ++ Port.
+    [case S of $: -> $_; S  -> S end 
+     || S <- Site].
 
 parse_url("http://"++Url) ->
     {Host, Path, NUrl} = prs(Url),

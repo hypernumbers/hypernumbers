@@ -1,7 +1,7 @@
-{application, tiny,
-	[{description,  "tiny"},
+{application, sitemods,
+	[{description,  "Custom modification hypernumbers"},
 	 {vsn,          "1.0"},
-	 {modules,      []},
+	 {modules,      [tiny_util]},
 	 {registered,   []},
 	 {included_applications, []},
 	 {applications, [kernel, stdlib]}]}.

@@ -914,7 +914,7 @@ contains(Element, [Element | _T]) -> true;
 contains(Element, [_H | T])       -> contains(Element, T).
 
 load_trees(Dir, Table) ->
-    {ok, _} = dets:open_file(Table, [{file, Dir ++ Table}]),
+    {ok, _} = dets:open_file(Table, [{file, filename:join(Dir,Table)}]),
     % if the value of auth_tree is an empty list,
     % create an empty tree and fire it in..
     case dets:lookup(Table, ?KEY) of

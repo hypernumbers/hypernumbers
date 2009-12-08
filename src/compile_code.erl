@@ -21,7 +21,7 @@
          "/lib/mnesia_logger-1.0/",
          "/lib/read_excel-1.0/",
          "/lib/gui_generator-1.0/",
-         "/lib/tiny-1.0/"]).
+         "/lib/sitemods/"]).
 
 -define(EXTRA_ERL_FILES, []).
 
@@ -39,7 +39,7 @@ start() ->
                 {i, Dir ++ "lib/gettext/include"},
                 {i, Dir ++ "lib/read_excel-1.0/include"},
                 {i, Dir ++ "lib/hypernumbers-1.0/include"},
-                {i, Dir ++ "lib/tiny-1.0/include"},
+                {i, Dir ++ "lib/sitemods/include"},
                 {i, code:lib_dir(xmerl)++"/include"}],
 
     % List of {ErlangFile, OutputDirectory} tuples.
@@ -166,7 +166,7 @@ get_rel_file() ->
                       "{gettext,\"1.3.0\"},",
                       "{sgte,\"0.7.1\"},",
                       "{read_excel,\"1.0\"},",
-                      "{tiny,\"1.0\"},",
+                      "{sitemods,\"1.0\"},",
                       "{starling_app,\"0.0.1\"},",
                       "{formula_engine,\"1.0\"},",
                       "{mochiweb,\"0.01\"},",

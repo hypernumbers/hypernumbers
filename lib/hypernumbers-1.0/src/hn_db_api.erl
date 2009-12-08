@@ -95,6 +95,7 @@
 -include("hypernumbers.hrl").
 
 -export([
+         create_table/6,
          write_attributes/1,
          write_attributes/2,
          write_last/1,
@@ -136,8 +137,6 @@
          initialise_remote_page_vsn/2,
          incr_remote_page_vsn/3,
          resync/2,
-         create_db/1,
-         create_systables/0,
          write_formula_to_range/2,
          wait_for_dirty/1
         ]).
@@ -147,6 +146,24 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+-spec create_table(atom(), atom(),
+                   any(),
+                   disc_only_copies | disc_copies | ram_copies,
+                   set | bag | ordered_set,
+                   [atom()]) -> ok. 
+create_table(TblName, Rec, Fields, Storage, Type, Indicies) ->
+    R = mnesia:create_table(TblName, [{record_name, Rec},
+                                      {attributes, Fields},
+                                      {Storage, [node()]},
+                                      {type, Type},
+                                      {index, Indicies}]),
+    case R of 
+        {atomic, ok}                   -> ok;
+        {aborted, {already_exists, _}} -> ok;
+        {aborted, Reason}              -> throw(Reason)
+    end.
+    
 -spec set_borders(#refX{}, any(), any(), any(), any()) -> ok.
 %% @doc  takes a range reference and sets the borders for the range according
 %% to the borders parameter passed in
@@ -350,80 +367,6 @@ initialise_remote_page_vsn(Site, Version) when is_record(Version, version) ->
 %% and remote pages and forces a resynch
 %% @TODO write me, ya bas!
 resync(_Site, #version{page = _Page, version = _Vsn}) ->
-    ok.
-
--spec(create_systables() -> ok). 
-create_systables() ->
-    Storage = disc_only_copies,
-    Tables = [ {hnsys_sub,  record_info(fields, hnsys_sub), set, []},
-               {hnsys_site, record_info(fields, hnsys_site), set, []}],
-
-    F = fun({Name, Fields, Type, Indicies}) ->
-                R = mnesia:create_table(Name, [{attributes, Fields},
-                                               {type, Type},
-                                               {Storage, [node()]},
-                                               {index, Indicies}]),
-                case R of 
-                    {atomic, ok}                   -> ok;
-                    {aborted, {already_exists, _}} -> ok;
-                    {aborrted, Reason}             -> throw(Reason)
-                end
-        end,
-    [F(T) || T <- Tables],
-    ok.
-
-
--spec(create_db(string()) -> ok).
-create_db(Site)->
-    % Seems sensible to keep this restricted
-    % to disc_copies for now
-    Storage = disc_only_copies,
-    
-    Tables = [
-              {dirty_cell,            set},
-              {dirty_notify_in,       set},
-              {dirty_inc_hn_create,   set},
-              {dirty_notify_back_in,  set},
-              {dirty_notify_out,      set},
-              {dirty_notify_back_out, set},
-              {item,                  bag},
-              {local_objs,            bag},
-              {local_cell_link,       bag},
-              {hn_user,               set},
-              {remote_objs,           set},
-              {remote_cell_link,      bag},
-              {incoming_hn,           set},
-              {outgoing_hn,           set},
-              {styles,                bag},
-              {style_counters,        set},
-              {page_vsn,              set},
-              {page_history,          bag}
-             ],
-    
-    Indices = [
-               {dirty_cell, idx},
-               {item, key},
-               {local_cell_link, childidx},
-               {local_objs, obj},
-               {local_objs, idx},
-               {local_cell, childidx}
-              ],
-    
-    %% now recursively create all the tables and all the indices
-    Fun1 = fun({Name, Type}) ->
-                   Attr = [{record_name, Name},
-                           {attributes, ms_util2:get_record_info(Name)},
-                           {type, Type}, {Storage, [node()]}],
-                   NewName = hn_db_wu:trans(Site, Name),
-                   {atomic, ok} = mnesia:create_table(NewName, Attr)
-           end,
-    [Fun1(X) || X <- Tables],
-
-    Fun2 = fun({Name, Index}) ->
-                   NewName = hn_db_wu:trans(Site, Name),
-                   mnesia:add_table_index(NewName, Index)
-           end,
-    [Fun2(X) || X <- Indices],
     ok.
 
 %% @spec incr_remote_page_vsn(Site, Version::#version{}, Payload) -> 

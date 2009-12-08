@@ -2,14 +2,16 @@
 %% @copyright Hypernumbers Ltd.
 -module(hypernumbers_app).
 -behaviour(application).
-
 -export([start/2, stop/1]).
+
+-include("spriki.hrl").
+-include("tiny.hrl").
 
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
 start(_Type, _Args) ->
-    ok = init_systables(),
+    ok = init_tables(),
     ok = load_muin_modules(),
     ok = mochilog:start(),
     {ok, Pid} = hypernumbers_sup:start_link(),
@@ -27,9 +29,19 @@ load_muin_modules() ->
       || Module <- muin:get_modules() ],
     ok.
 
-init_systables() -> 
+init_tables() -> 
     ensure_schema(),
-    hn_db_api:create_systables().
+    Storage = disc_only_copies,
+
+    %% Core system tables -- required to operate system
+    CoreTbls = [ {core_site, record_info(fields, core_site), set, []}],
+
+    %% SiteMod tables 
+    ModTbls = [ {tiny_sub, record_info(fields, tiny_sub), set, []}],
+    
+    [ok = hn_db_api:create_table(N, N, F, Storage, T, I) 
+     || {N,F,T,I} <- CoreTbls ++ ModTbls],
+    ok.
 
 ensure_schema() ->
     case mnesia:system_info(tables) of

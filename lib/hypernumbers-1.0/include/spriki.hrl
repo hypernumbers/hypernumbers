@@ -16,14 +16,10 @@
 -define(HN_URL2,   "http://127.0.0.1:9001").
 
 
-%% System Tables
+%% Core Tables
 
--record(hnsys_site, {site = [] :: string(),
-                     type :: atom()}).
-
--record(hnsys_sub, {sub = [] :: string(),
-                    alocated = false :: true | false}).
-
+-record(core_site, {site = [] :: string(),
+                    type :: atom()}).
 
 -record(index,
         {
