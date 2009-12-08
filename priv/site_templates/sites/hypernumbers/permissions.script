@@ -75,7 +75,7 @@
 % /application/ 
 {perm, [{list,  [{user, "*"}, {group, "*"}]},
         {page,  ["application"]},
-        {perms, [read]},
+        {perms, [read, write]},
         {override, "_global/503"},
         {views,    ["_global/503"]}
        ]}.
