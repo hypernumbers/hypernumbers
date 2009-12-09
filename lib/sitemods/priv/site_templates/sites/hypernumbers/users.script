@@ -30,4 +30,4 @@
 {{user, "user"},
  {group, ["user"]},
  {email, "team@hypernumbers.com"},
- {password, "password"}}.
+ {password, "secure!ya!bas"}}.

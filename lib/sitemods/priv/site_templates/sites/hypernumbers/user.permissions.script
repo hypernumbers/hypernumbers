@@ -11,5 +11,5 @@
            {page,     ["u", "$user", "[**]"]},
            {perms,    [read, write]},
            {override, "_global/spreadsheet"},
-           {views,    ["_global/spreadsheet"]}
+           {views,    ["**"]}
            ]}.
