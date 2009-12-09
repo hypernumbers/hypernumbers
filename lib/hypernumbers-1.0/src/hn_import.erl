@@ -18,12 +18,12 @@ json_file(Url, FileName) ->
     {struct, Cols}   = ?pget("column", Json),
 
     StyleRecs = [make_style_rec(X) || X <- Styles],
-    
-    [ rows(Ref, X, StyleRecs, cell,   fun write_cells/3) || X <- Cells],
 
     [ rows(Ref, X, StyleRecs, row,    fun write_col_row/3) || X <- Rows],
     [ rows(Ref, X, StyleRecs, column, fun write_col_row/3) || X <- Cols],
-    
+        
+    [ rows(Ref, X, StyleRecs, cell,   fun write_cells/3) || X <- Cells],
+
     ok.
 
 rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun) ->
