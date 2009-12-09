@@ -1,0 +1,15 @@
+%% Home page
+{control, [{list,     [{user, "$user"}]},
+           {page ,    ["u", "$user"]},
+           {perms,    [read, write]},
+           {override, "_g/hypernumbers/userhome"},
+           {views,    ["_g/hypernumbers/userhome"]}
+          ]}.
+
+%% Let them go wild
+{control, [{list,     [{user, "$user"}]},
+           {page,     ["u", "$user", "[**]"]},
+           {perms,    [read, write]},
+           {override, "_global/spreadsheet"},
+           {views,    ["_global/spreadsheet"]}
+           ]}.

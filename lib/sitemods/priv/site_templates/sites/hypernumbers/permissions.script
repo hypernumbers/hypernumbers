@@ -76,15 +76,15 @@
 {control, [{list,  [{user, "*"}, {group, "*"}]},
            {page,  ["application"]},
            {perms, [read]},
-           {override, "_global/503"},
-           {views,    ["_global/503"]}
+           {override, "_global/login"},
+           {views,    ["_global/login"]}
           ]}.
 % /u/ 
 {control, [{list,  [{user, "*"}, {group, "*"}]},
            {page,  ["u"]},
            {perms, [read]},
-           {override, "_global/503"},
-           {views,    ["_global/503"]}        
+           {override, "_global/login"},
+           {views,    ["_global/login"]}        
           ]}.
 
 % the login page

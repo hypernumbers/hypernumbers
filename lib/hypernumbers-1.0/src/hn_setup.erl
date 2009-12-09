@@ -4,7 +4,8 @@
 
 -export([ site/3,
           startup/0,
-          update/3, update/4
+          update/3, update/4,
+          add_user/2
         ]).
 
 -include("spriki.hrl").
@@ -20,6 +21,7 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     ok = setup(Site, Type, Opts, templates),
     ok = setup(Site, Type, Opts, permissions),
     ok = setup(Site, Type, Opts, script),
+    ok = setup(Site, Type, Opts, user_permissions),
     ok = setup(Site, Type, Opts, users),
 
     ok.
@@ -41,7 +43,12 @@ setup(Site, Type, Opts, script) ->
     ok = run([moddir(Type),"/","setup.script"], Fun);
 setup(Site, Type, Opts, users) ->
     Fun = fun(T) -> run_users(T, Site, Opts) end,
-    ok  = run([moddir(Type),"/","users.script"], Fun).
+    ok  = run([moddir(Type),"/","users.script"], Fun);
+setup(Site, _Type, _Opts, user_permissions) ->    
+    Users = mnesia:dirty_match_object(hn_db_wu:trans(Site, hn_user),
+                                      #hn_user{_='_'}),
+    [ add_user(Site, User) || User <- Users],
+    ok.
 
 -spec update(string(), atom(), list()) -> ok. 
 update(Site, Type, ToUpdate) ->
@@ -142,21 +149,22 @@ run_users({{user,Usr}, {group,Grp}, {email,_Mail}, {password,Pass}},
                          get_password(Pass, Opts)).
 
 
-get_user('$user', Opts) -> case pget(user, Opts, undefined) of
-                               undefined -> throw(no_user);
-                               U -> U
-                           end;
+get_user('$user', Opts) ->
+    case pget(user, Opts, undefined) of
+        undefined -> throw(no_user);
+        U -> U
+    end;
 get_user(User, _Opts) -> User.
  
 %% get_email('$email', Opts) -> pget(email, Opts);
 %% get_email(EMail, _Opts)     -> EMail.
  
-get_password('$password', Opts) -> case pget(password, Opts, undefined) of
-                                       undefined -> throw(no_pass);
-                                       P -> P
-                                   end;
+get_password('$password', Opts) ->
+    case pget(password, Opts, undefined) of
+        undefined -> throw(no_pass);
+        P -> P
+    end;
 get_password(Password, _Opts) -> Password.
-
 
 run_perms({control, C}, Site) ->
     auth_srv:add_controls(Site,  lget(list, C),
@@ -167,7 +175,7 @@ run_perms({perm, P}, Site) ->
     auth_srv:add_perm(Site, 
                       lget(list, P), lget(page, P), lget(perms, P));
 
-run_perms({views, V}, Site)    ->
+run_perms({views, V}, Site) ->
     auth_srv:add_views(Site,
                        lget(list, V),     lget(page, V),
                        lget(override, V), lget(views, V));
@@ -208,3 +216,39 @@ pget(Key, List, Default) ->
 
 lget(Key, List) ->
     element(2, lists:keyfind(Key, 1, List)).
+
+
+replace(Key, Val, Key) ->
+    Val;
+replace(Key, Val, Rep) when is_list(Rep) ->
+    [ replace(Key, Val, X) || X <- Rep ];
+replace(Key, Val, Rep) when is_tuple(Rep) ->
+    list_to_tuple( replace(Key, Val, tuple_to_list(Rep) ));
+replace(_Key, _Val, Else) ->
+    Else.
+
+add_u(Site, User, {control,
+                   [{list,     Auth},
+                    {page ,    Page},
+                    {perms,    Perms},
+                    {override, Def},
+                    {views,    Views}
+                   ]}) ->
+    
+    auth_srv:add_controls(Site,
+                          replace("$user", hn_users:name(User), Auth),
+                          replace("$user", hn_users:name(User), Page),
+                          Perms, Def, Views).
+
+%-spec(#refX{}, #hn_user{}).
+add_user(Site, User) ->
+    [{core_site, Site, Type}] = mnesia:dirty_read(core_site, Site),
+    Script = [moddir(Type),"/","user.permissions.script"],
+    case filelib:is_file(Script) of
+        true  ->
+            {ok, Terms} = file:consult(Script),
+            [ add_u(Site, User, Term) || Term<-Terms, is_term(Term)],
+            ok;
+        false ->
+            ok
+    end.
