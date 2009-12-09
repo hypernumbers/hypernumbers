@@ -2,7 +2,10 @@
 %% @copyright Hypernumbers Ltd.
 -module(hypernumbers_app).
 -behaviour(application).
+
 -export([start/2, stop/1]).
+
+-export([clean_start_DEBUG/0]).
 
 -include("spriki.hrl").
 -include("tiny.hrl").
@@ -93,3 +96,9 @@ bootstrap_site(S, T, O) ->
         _Else ->
             ok
     end.
+
+-spec clean_start_DEBUG() -> ok. 
+clean_start_DEBUG() ->
+    dirty_srv:stop(),
+    build_schema(),
+    bootstrap_sites().

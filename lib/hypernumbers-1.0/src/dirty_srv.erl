@@ -19,7 +19,7 @@
          terminate/2,
          code_change/3]).
 
--export([start/1, stop/1, listen/1]).
+-export([start/1, stop/0, listen/1]).
 
 
 %% @spec start_link(Arg) -> StartLink
@@ -83,17 +83,12 @@ code_change(_OldVsn, State, _Extra) -> {ok, State}.
 %%% 
 
 start(Site) ->
-    DirtyTbls = [ dirty_cell,
-                  dirty_notify_in,
-                  dirty_notify_back_in,
-                  dirty_inc_hn_create,
-                  dirty_notify_out,
-                  dirty_notify_back_out ],
-    [ok = gen_server:call(D, {start, Site}) || D <- DirtyTbls],
+    [ok = gen_server:call(D, {start, Site}) || D <- dirty_tbls()],
     ok.
 
-stop(Type) ->
-    ok = gen_server:call(Type, stop).
+stop() ->
+    [ok = gen_server:call(D, stop) || D <- dirty_tbls()],
+    ok.
 
 listen(Table) ->
     case mnesia:activity(transaction, fun read_table/1, [Table]) of
@@ -173,3 +168,12 @@ proc_dirty(Table, Rec) ->
         dirty_notify_back_out ->
             hn_db_api:handle_dirty(Site, Rec)
     end.
+
+
+dirty_tbls() ->
+    [ dirty_cell,
+      dirty_notify_in,
+      dirty_notify_back_in,
+      dirty_inc_hn_create,
+      dirty_notify_out,
+      dirty_notify_back_out ].
