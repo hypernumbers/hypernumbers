@@ -240,7 +240,7 @@ add_u(Site, User, {control,
                           replace("$user", hn_users:name(User), Page),
                           Perms, Def, Views).
 
-%-spec(#refX{}, #hn_user{}).
+-spec add_user(#refX{}, #hn_user{}) -> ok.
 add_user(Site, User) ->
     [{core_site, Site, Type}] = mnesia:dirty_read(core_site, Site),
     Script = [moddir(Type),"/","user.permissions.script"],
