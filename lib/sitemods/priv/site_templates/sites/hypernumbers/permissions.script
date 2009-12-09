@@ -111,6 +111,15 @@
            {views,    ["_global/spreadsheet"]}
           ]}.
 
+% now create the public space
+{control, [{list,     [{user, "*"}, {group, "*"}]},
+           {page ,    ["public"]},
+           {perms,    [read]},
+           {override, "_global/spreadsheet"},
+           {views,    ["_global/spreadsheet"]}
+          ]}.
+
+
 % finally setup the static data space
 {control, [{list,     [{user, "*"}, {group, "*"}]},
            {page,     ["_site", "[*]"]},
