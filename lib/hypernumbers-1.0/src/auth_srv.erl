@@ -443,8 +443,10 @@ check_get_page1(Tree, {U, Gs}, Page) ->
     % then see what page they should be getting
      Fun =
          fun(X) ->
+                 io:format("X is ~p~nU is ~p~nGs is ~p~n", [X, U, Gs]),
                  case get_ret_code(X#controls.acl, U, Gs, read) of
-                     {return, '404'} -> {return, '404'};
+                     {return, '404'} -> io:format("exiting here...~n"),
+                                        {return, '404'};
                      {return, '401'} -> {return, '401'};
                      _Other          ->
                          case get_override(X#controls.views, U, Gs) of
@@ -694,14 +696,14 @@ get_random_view(Views, User, Groups) ->
         false   -> get_random_v2(Views, Groups, is_admin(Groups));
         {_K, V} -> case V#views.views of
                        [] -> get_random_v2(Views, Groups, is_admin(Groups));
-                       _ -> {html, hd(V#views.views)}
+                       _  -> {html, hd(V#views.views)}
                    end
     end.
 
 %% the 3rd parameter is whether or not the group is "admin"
-get_random_v2(_Views, [], false)               -> {return, '404'};
+get_random_v2(Views, [], false)                -> get_random_v3(Views);
 get_random_v2([], [], true)                    -> {html, ?SPREADSHEET};
-get_random_v2([{_Group, View} | _T], [], true) ->
+get_random_v2([{_, View} | _T], [], true) ->
     case View#views.override of
         []       -> case View#views.views of
                         []        -> {html, ?SPREADSHEET};
@@ -717,9 +719,20 @@ get_random_v2(Views, [H | T], IsAdmin)         ->
                                  true  -> {html, ?SPREADSHEET};
                                  false -> {return, '404'}
                              end;
-                       _  -> {html, hd(V#views.views)}
+                       _  -> get_first(V#views.views)
                    end
     end.            
+
+get_random_v3([])                   -> {return, '404'};
+get_random_v3([{{_, "*"}, V} | _T]) -> get_first(V#views.views);
+get_random_v3([_H | T])             -> get_random_v3(T).
+
+%% get first is only called if there are *some* views, so
+%% if the only views are '**' or '*' you get a spreadsheet
+get_first([])         -> {html, ?SPREADSHEET};
+get_first(["**" | T]) -> get_first(T);
+get_first(["*" | T])  -> get_first(T);
+get_first([H | _T])   -> {html, H}.
 
 get_ret_code([], _User, _Groups, read)  -> {return, '404'};
 get_ret_code([], _User, _Groups, write) -> false;
@@ -961,7 +974,7 @@ make_controls(Tree) ->
              none       -> [];
              {value, V} -> V
          end,
-    #controls{acl = A1, default = D1, views = V1}.    
+    #controls{acl = A1, default = D1, views = V1}.
 
 get_for_pp(Tree, [], Fun) ->
     Fun(Tree);
@@ -2983,6 +2996,20 @@ test223() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "_global/spreadsheet"}).
 
+test224() ->
+    P1 = [],
+    P2 = ["[**]"],
+    P3 = ["blah", "blah"],
+    Tree = add_controls1(gb_trees:empty(), [{user, "*"}],
+                     P1, [read, write], "", ["**", "_global/spreadsheet"]),
+    Tree2 = add_controls1(Tree, [{user, "*"}],
+                     P2, [read, write], "", ["**", "_global/spreadsheet"]),
+    io:format(pretty_print1(Tree2, "test", [], text)),
+    Ret = check_get_page1(Tree2, {"anonymous", []}, P3),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "_global/spreadsheet"}).
+    
+
 %% Numbered tests deal with normal users
 %% Lettered tests deal with the 'admin' group
 unit_test_() -> 
@@ -3130,7 +3157,8 @@ unit_test_() ->
      ?_assert(test220()),
      ?_assert(test221()),
      ?_assert(test222()),
-     ?_assert(test223())
+     ?_assert(test223()),
+     ?_assert(test224())
     ].
 
 debug() ->
