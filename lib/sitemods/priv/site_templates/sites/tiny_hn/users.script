@@ -6,7 +6,7 @@
 %%   {groups, ["a group", "another group"]},
 %%   {password, "a password"}}.
 %% There are 3 programmatic expressions:
-%% {user, '$username'}
+%% {user, '$user'}
 %% {email, '$email'}
 %% {password, '$password'}
 

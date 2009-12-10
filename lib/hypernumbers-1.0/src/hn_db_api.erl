@@ -99,6 +99,7 @@
          write_attributes/1,
          write_attributes/2,
          write_last/1,
+         read_last/1,
          % write_permission/2,
          write_style_IMPORT/2,
          read_attributes/2,
@@ -847,6 +848,23 @@ write_last(List) when is_list(List) ->
     ok = tell_front_end("write last"),
     ok.
 
+%% @spec read_last(RefX) -> ok
+%% @doc takes a list of references and appends either a column or row at the end of them
+%% 
+%% The reference must be either a:
+%% <ul>
+%% <li>column</li>
+%% <li>row</li>
+%% </ul>
+read_last(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
+
+    Fun = fun() ->
+                  Values = hn_db_wu:read_attrs(RefX, ["formula"], write),
+                  biggest(Values, R)
+          end,
+
+    mnesia:activity(transaction, Fun).
+
 %% @spec read_inherited_list(#refX{}, Attribute) -> {#refX{}, Val}
 %% Attribute = string()
 %% @doc Scans the tree and returns a list of value stored against
@@ -1325,6 +1343,26 @@ copy_style(#refX{obj = {cell, _}} = From,
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+biggest(List, Type) ->
+    StartAcc = #refX{obj = {cell, {0, 0}}},
+    Fun = fun({Ref, _V}, Acc) ->
+       
+                  #refX{obj = {cell, {X1, Y1}}} = Ref,
+                  #refX{obj = {cell, {X2, Y2}}} = Acc,
+       
+                  case Type of
+                      column -> if
+                                    Y1 >  Y2 -> Ref;
+                                    Y1 =< Y2 -> Acc
+                                end;
+                      row    -> if
+                                    X1 >  X2 -> Ref; 
+                                    X1 =< X2 -> Acc
+                                end
+                  end
+          end,
+    lists:foldl(Fun, StartAcc, List).
+
 write_attributes1(RefX, List) when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),
     [hn_db_wu:write_attr(RefX, X) || X <- List],

@@ -49,26 +49,31 @@
 %% Note that the expressions end in a full stop '.'
 %%
 
-% the home page (writable, very wrong)
-{control, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},
-           {page,     []},
+{control, [{list,     [{user, "*"}]}, {page, []},
            {perms,    [read, write]},
-           {override, "_g/tiny"},
-           {views,    ["_g/tiny", "**"]}
-          ]}.
+           {override, "_global/spreadsheet"},
+           {views,    ["_global/spreadsheet", "_global/pagebuilder", "**"]}]}.
 
-{control, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},
-           {page,     ["_user", "login"]},
-           {perms,    [read, write]},
-           {override, ""},
-           {views,    ["_global/login"]}
-          ]}.
-
-
-{control, [{list,    [{user, "*"}, {group, "*"}]},
+{control, [{list,     [{user, "*"}]},
            {page,     ["[**]"]},
            {perms,    [read, write]},
-           {override, ""},
-           {views,    ["**", "_global/spreadsheet"]}
-          ]}.
+           {override, "_global/spreadsheet"},
+           {views,    ["_global/spreadsheet", "_global/pagebuilder", "**"]}]}.
 
+{control, [{list,     [{user, "gordon"}, {group, "dev"}, {group, "admin"}]},
+           {page,     ["some", "path"]},
+           {perms,    [read, write]},
+           {override, "_global/spreadsheet"},
+           {views,    ["_global/spreadsheet", "_global/pagebuilder", "**"]}]}.
+
+{perm, [{list,  [{user, "gordon"}, {group, "dev"}]},
+        {page,  ["some", "path"]},
+        {perms, [read, write]}]}.
+
+{views, [{list,     [{user, "gordon"}, {group, "dev"}]},
+         {page,     ["some", "path"]},
+         {override, ""},
+         {views,    ["_global/spreadsheet"]}]}.
+
+{default, [{page,    ["some", "page"]},
+           {default, "_global/home"}]}.

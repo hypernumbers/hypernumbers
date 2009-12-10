@@ -2,10 +2,12 @@
 %%% inplace prior to calling functions in this module.
 -module(hn_setup).
 
--export([ site/3,
-          startup/0,
-          update/3, update/4,
-          add_user/2
+-export([
+         site/3,
+         startup/0,
+         update/3,
+         update/4,
+         add_user/2
         ]).
 
 -include("spriki.hrl").
@@ -138,33 +140,33 @@ run(Script, Fun) ->
     end.
 
 is_term([37 | _T1]) -> false;
-is_term("\n") -> false;
-is_term(_) -> true.
+is_term("\n")       -> false;
+is_term(_)          -> true.
 
 run_users({{user,Usr}, {group,Grp}, {email,_Mail}, {password,Pass}},
           Site, Opts) ->
     ok = hn_users:create(Site,
-                         get_user(Usr, Opts),
+                         resolve_user(Usr, Opts),
                          Grp,
-                         get_password(Pass, Opts)).
+                         resolve_password(Pass, Opts)).
 
 
-get_user('$user', Opts) ->
+resolve_user('$user', Opts) ->
     case pget(user, Opts, undefined) of
         undefined -> throw(no_user);
         U -> U
     end;
-get_user(User, _Opts) -> User.
+resolve_user(User, _Opts) -> User.
  
-%% get_email('$email', Opts) -> pget(email, Opts);
-%% get_email(EMail, _Opts)     -> EMail.
+%% resolve_email('$email', Opts) -> pget(email, Opts);
+%% resolve_email(EMail, _Opts)     -> EMail.
  
-get_password('$password', Opts) ->
+resolve_password('$password', Opts) ->
     case pget(password, Opts, undefined) of
         undefined -> throw(no_pass);
         P -> P
     end;
-get_password(Password, _Opts) -> Password.
+resolve_password(Password, _Opts) -> Password.
 
 run_perms({control, C}, Site) ->
     auth_srv:add_controls(Site,  lget(list, C),
@@ -186,8 +188,8 @@ run_perms({default, D}, Site)  ->
 
 run_script({Path, '$email'}, Site, Opts) ->
     run_script2(Path, Site, pget(email, Opts));
-run_script({Path, '$username'}, Site, Opts) ->
-    run_script2(Path, Site, pget(username, Opts));
+run_script({Path, '$user'}, Site, Opts) ->
+    run_script2(Path, Site, pget(user, Opts));
 run_script({Path, '$site'}, Site, _Opts) ->
     run_script2(Path, Site, Site);
 run_script({Path, '$subdomain'}, Site, Opts) ->
@@ -247,7 +249,7 @@ add_user(Site, User) ->
     case filelib:is_file(Script) of
         true  ->
             {ok, Terms} = file:consult(Script),
-            [ add_u(Site, User, Term) || Term<-Terms, is_term(Term)],
+            [ add_u(Site, User, Term) || Term <- Terms, is_term(Term)],
             ok;
         false ->
             ok

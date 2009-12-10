@@ -8,8 +8,6 @@
 -export([clean_start_DEBUG/0]).
 
 -include("spriki.hrl").
--include("tiny.hrl").
-
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
@@ -40,12 +38,9 @@ init_tables() ->
 
     %% Core system tables -- required to operate system
     CoreTbls = [ {core_site, record_info(fields, core_site), set, []}],
-
-    %% SiteMod tables 
-    ModTbls = [ {tiny_sub, record_info(fields, tiny_sub), set, []}],
     
     [ok = hn_db_api:create_table(N, N, F, Storage, T, I) 
-     || {N,F,T,I} <- CoreTbls ++ ModTbls],
+     || {N,F,T,I} <- CoreTbls],
     ok.
 
 ensure_schema() ->
