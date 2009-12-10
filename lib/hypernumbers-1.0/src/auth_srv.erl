@@ -443,10 +443,8 @@ check_get_page1(Tree, {U, Gs}, Page) ->
     % then see what page they should be getting
      Fun =
          fun(X) ->
-                 io:format("X is ~p~nU is ~p~nGs is ~p~n", [X, U, Gs]),
                  case get_ret_code(X#controls.acl, U, Gs, read) of
-                     {return, '404'} -> io:format("exiting here...~n"),
-                                        {return, '404'};
+                     {return, '404'} -> {return, '404'};
                      {return, '401'} -> {return, '401'};
                      _Other          ->
                          case get_override(X#controls.views, U, Gs) of
