@@ -96,10 +96,11 @@ handle_call(_Request, _From, State) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_cast(tock, State) ->
-    RefX1 = #refX{site = State#state.site,
+    SiteName = "http://" ++ State#state.site ++ ":" ++ State#state.port,
+    RefX1 = #refX{site = SiteName,
                   path = ?PATH,
                   obj = {column, {1, 1}}},
-    RefX2 = #refX{site = State#state.site,
+    RefX2 = #refX{site = SiteName,
                   path = ?PATH,
                   obj = {column, {3, 3}}},
     Requested = hn_db_api:read_last(RefX1),
@@ -169,36 +170,42 @@ tick() ->
     timer:sleep(?CLOCKTICK),
     tiny_srv:tock().
 
-provision(Site, _Port, Row) ->
-    RefX = #refX{site = Site, path = ?PATH, obj = {range, {1, Row, 2, Row}}},
+provision(Site, Port, Row) ->
+    
+    SiteName = "http://" ++ Site ++ ":" ++ Port,
+    RefX = #refX{site = SiteName, path = ?PATH,
+                 obj = {range, {1, Row, 2, Row}}},
     List = hn_db_api:read_attributes(RefX, ["formula"]),
-    io:format("List is ~p~n", [List]),
+    
     {Email, Type} = parse(List),
+
     Type2 = normalise(Type),
     Password = tiny_util:get_password(),
     Sub = tiny_util:get_unallocated_sub(),
-    io:format("Email is ~p Type is ~p~n", [Email, Type]),
-    io:format("Password is ~p Sub is ~p~n", [Password, Sub]),
     IsValidEmail = tiny_util:is_valid_email(Email),
-    io:format("IsValidEmail is ~p~n", [IsValidEmail]),
     [User | _T] = string:tokens(Email, "@"),
-    io:format("Username is ~p~n", [User]),
     Expiry = "=now()+31",
+
     RefX1 = RefX#refX{obj = {cell, {3, Row}}},
     RefX2 = RefX#refX{obj = {cell, {4, Row}}},
     RefX3 = RefX#refX{obj = {cell, {5, Row}}},
     RefX4 = RefX#refX{obj = {cell, {6, Row}}},
+
     case IsValidEmail of
        false -> Sub2 = "Not Allocated";
        _     -> Sub2 = Sub,
-                hn_setup:site("http://" ++ Sub2 ++ ".tiny.hn:9000", list_to_atom(Type2),
-                              [
-                               {user, User},
+                {ok, Host} = application:get_env(tiny, host),
+                {ok, Port2} = application:get_env(tiny, port),
+                SiteName2 = "http://" ++ Sub2 ++ "."  ++ Host  ++ ":"
+                    ++ integer_to_list(Port2),
+                hn_setup:site(SiteName2, list_to_atom(Type2),
+                              [{user, User},
                                {email, Email},
-                               {site, "http://" ++ Sub2 ++ ".tiny.hn:9000"},
+                               {site, SiteName},
                                {password, Password},
                                {subdomain, Sub2}
                               ])
+                %% hn_util:send_email("team@tiny.hn", Email, "hey!")
     end,
     ok = hn_db_api:write_attributes([
                       {RefX1, [{"formula", Sub2}]},

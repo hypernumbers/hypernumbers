@@ -17,6 +17,11 @@
          is_valid_email/1
         ]).
 
+%% Debugging API
+-export([
+         clear_down_mnesia_DEBUG/0
+        ]).
+
 -include("password.hrl").
 -include("tiny.hrl").
 -include("spriki.hrl").
@@ -52,11 +57,18 @@ get_password() ->
     W1 ++ "!" ++ W2 ++ integer_to_list(N3).
 
 make_subs() ->
-    % List = make_subs1(make_subs1(make_subs1([[]]))),
-    List = gen_subs(1),
-    Rand = make_random(List, []),
+    List1 = gen_subs(2),
+    io:format("generated list 1~n"),
+    List2 = gen_nums(99),
+    io:format("generated list 2~n"),
+    List3 = multiply(List1, List2),
+    io:format("muliplied lists~n"),
+    Rand = make_random(List3, 26*26*9, []),
+    io:format("prepping randomised lists~n"),
     NewList = lists:keysort(1, Rand),
+    io:format("list randomised...~n"),
     ok = create_sub_table(),
+    io:format("going to write the list, can be long...~n"),
     write(NewList).
 
 get_unallocated_sub() ->
@@ -74,6 +86,18 @@ get_unallocated_sub() ->
 %% Internal Functions
 %%
 
+multiply(List1, List2) -> m1(List1, List2, []).
+
+m1([], _List2, Acc)     -> Acc;
+m1([H | T], List2, Acc) -> NewAcc = [H ++ integer_to_list(X) || X <- List2],
+                           m1(T, List2, lists:merge(NewAcc, Acc)).
+
+gen_nums(N) -> gen_n(N, N, []).
+
+gen_n(0, _Size, Acc) -> Acc;
+gen_n(N, Size, Acc)  -> Num = random:uniform(Size),
+                        gen_n(N - 1, Size, [Num | Acc]).
+                       
 gen_subs(X) -> 
     gen_subs(X, [[]]).
 gen_subs(0, Subs) -> Subs;
@@ -82,10 +106,9 @@ gen_subs(N, Subs) ->
     gen_subs(N-1, Subs2).
 
 
-make_random([], Acc) -> Acc;
-make_random([H | T], Acc) ->
-    R = random:uniform(26*26*26),
-    make_random(T, [{R, H} | Acc]).
+make_random([], _N, Acc)     -> Acc;
+make_random([H | T], N, Acc) -> R = random:uniform(N),
+                                make_random(T, N, [{R, H} | Acc]).
 
 write([]) -> ok;
 write([{_K, V} | T]) ->
@@ -102,7 +125,6 @@ create_sub_table() ->
         false ->  Attrs = [{record_name, ?SUBS},
                            {attributes, record_info(fields, ?SUBS)},
                            {type, set},
-                           {index, [allocated]},
                            {disc_only_copies, [node()]}],
                   {atomic, ok} = mnesia:create_table(?SUBS, Attrs),
                   ok
@@ -118,3 +140,23 @@ is_valid_email(Email) ->
         nomatch    -> not_email;
         {match, _} -> {email, Email}
     end.
+
+%%
+%% Debugging Stuff
+%%
+
+clear_down_mnesia_DEBUG() ->
+    Tables = mnesia:system_info(tables),
+    delete_table(Tables).
+
+delete_table([])      -> ok;
+delete_table([H | T]) ->
+    Tab = atom_to_list(H),
+    case Tab of
+        "core_site"           -> ok;
+        [$t, $i, $n, $y | _T] -> ok;
+        "schema"              -> ok;
+        [49 | _T]             -> ok; %49 is ASCII for '1'
+        _                     -> {atomic, ok} = mnesia:delete_table(H)
+    end,
+    delete_table(T). 
