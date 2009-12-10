@@ -3,7 +3,7 @@
 [
  {hypernumbers, 
   [
-   %% Hosts to bind Mochiweb to
+   % Hosts to bind Mochiweb to
    {hosts, [
             {{127,0,0,1}, 9000},
             {{127,0,0,1}, 9001}
@@ -12,23 +12,30 @@
    {bootstrapped, [
                    {"http://127.0.0.1:9000", hypernumbers, []},
                    {"http://127.0.0.1:9001", tiny_hn,      []} 
-                  ]}
+                  ]},
+   % Mail Setup
+   {mailserver,   "mail.arandomurl.com"},
+   {mailuser,     "build@hypernumbers.com"},
+   {mailpassword, "the!bot"},
+   {mailaddress,  "dale@arandomurl.com"}
   ]},
  
 %% Mnesia Config
  {mnesia, [{dir, "db/arrian"}]},
  
 %% Development Config
- {sasl, [
-         {sasl_error_logger,        false},
-         {error_logger_mf_dir,      "../logs/error"},
-         {error_logger_mf_maxbytes, 10485760},
-         {error_logger_mf_maxfiles, 10}
-        ]},
+ {sasl,
+  [
+   {sasl_error_logger,        false},
+   {error_logger_mf_dir,      "../logs/error"},
+   {error_logger_mf_maxbytes, 10485760},
+   {error_logger_mf_maxfiles, 10}
+  ]},
  
 %% Tiny Config
- {tiny, [
-         {host, "tiny.hn"},
-         {port, 9000}
-        ]}
+ {tiny,
+  [
+   {host, "tiny.hn"},
+   {port, 9000}
+  ]}
 ].

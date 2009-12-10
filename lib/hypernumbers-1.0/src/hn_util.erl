@@ -23,6 +23,7 @@
          email_test_results/1,
          email_build_fail/1,
          get_html_files/1,
+         send_email/3,
 
          % HyperNumbers Utils
          compile_html/2,
@@ -695,7 +696,23 @@ email(Msg) ->
 
     ok = smtp_fsm:sendemail(Pid, User, ?pget(address, Conf), Msg),
     smtp_fsm:close(Pid).
+
+send_email(From, To, Msg) ->
+    {ok, Server} = application:get_env(hypernumbers, mailserver),
+    {ok, Password} = application:get_env(hypernumbers, mailpassword),
+    {ok, User} = application:get_env(hypernumbers, mailuser),
+    io:format("Server is ~p password is ~p~n", [Server, Password]),
+    {ok, IP}  = inet:getaddr(Server, inet),
+    {ok, Pid} = smtp_fsm:start(inet_parse:ntoa(IP)),
     
+    {ok, _}   = smtp_fsm:ehlo(Pid),
+    {ok, _}   = smtp_fsm:plain_login(Pid, User, Password),
+
+    io:format("about to send e-mail~n"),
+    ok = smtp_fsm:sendemail(Pid, From, To, Msg),
+    smtp_fsm:close(Pid).
+    
+
 tests_failed_tpl() ->
     "Systems tests failed on Revision ~p\nPassed :\t~p\n"
         "Failed :  \t~p\nSkipped :\t~p\n".
