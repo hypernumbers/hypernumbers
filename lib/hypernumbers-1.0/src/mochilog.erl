@@ -120,7 +120,7 @@ mi_entry(Post, _) ->
                 end
         end,
     
-    Format = "~p,~p,~p,~p,~p,~p,~p,~p,~p~p~n",
+    Format = "~p,~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
     io_lib:format(Format, [Date, Site, Path, S, atol(Mthd),
                            Peer, Usr, Rfr, UA, Accept]).
 
