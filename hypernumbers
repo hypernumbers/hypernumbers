@@ -47,7 +47,7 @@ SGTE_DIR="lib/sgte"
 [ -d $LOG_DIR/error ]  || mkdir -p $LOG_DIR/error
 [ -d $MNESIA_DIR ]     || mkdir -p $MNESIA_DIR
 [ -d $DETS_DIR ]       || mkdir -p $DETS_DIR
-[ -f $CONFIG ]         || cp $ROOT/priv/sys.config.default $CONFIG 
+[ -f $CONFIG ]         || cp $ROOT/conf/sys.config.default $CONFIG 
 
 function build
 {
