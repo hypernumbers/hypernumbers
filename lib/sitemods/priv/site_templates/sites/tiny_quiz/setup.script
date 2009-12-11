@@ -19,10 +19,5 @@
 %% Note that the expressions end in a full stop '.'
 %%
 
-{"/B4", '$user'}.
-{"/B5", '$site'}.
-{"/B6", '$expiry'}.
-{"/b7", "This is a test, yowsa, yowsa"}.
-{"/B8", '$email'}.
-{"/B9", '$subdomain'}.
-{"/B10", '$password'}.
+{"/B3", '$user'}.
+{"/B8", '$expiry'}.
