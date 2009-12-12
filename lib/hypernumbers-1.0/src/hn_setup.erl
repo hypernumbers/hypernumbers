@@ -168,23 +168,23 @@ resolve_password('$password', Opts) ->
     end;
 resolve_password(Password, _Opts) -> Password.
 
-run_perms({control, C}, Site) ->
-    auth_srv:add_controls(Site,  lget(list, C),
-                          lget(page, C),     lget(perms, C),
-                          lget(override, C), lget(views, C));
+run_perms({perms_and_views, C}, Site) ->
+    auth_srv:add_perms_and_views(Site,  lget(list, C),
+                                 lget(path, C),     lget(perms, C),
+                                 lget(override, C), lget(views, C));
 
 run_perms({perm, P}, Site) ->
     auth_srv:add_perm(Site, 
-                      lget(list, P), lget(page, P), lget(perms, P));
+                      lget(list, P), lget(path, P), lget(perms, P));
 
 run_perms({views, V}, Site) ->
     auth_srv:add_views(Site,
-                       lget(list, V),     lget(page, V),
+                       lget(list, V),     lget(path, V),
                        lget(override, V), lget(views, V));
 
 run_perms({default, D}, Site)  ->
     auth_srv:add_default(Site,
-                         lget(page, D), lget(default, D)).
+                         lget(path, D), lget(default, D)).
 
 run_script({Path, '$email'}, Site, Opts) ->
     run_script2(Path, Site, pget(email, Opts));
@@ -229,18 +229,18 @@ replace(Key, Val, Rep) when is_tuple(Rep) ->
 replace(_Key, _Val, Else) ->
     Else.
 
-add_u(Site, User, {control,
+add_u(Site, User, {perms_and_views,
                    [{list,     Auth},
-                    {page ,    Page},
+                    {path,     Path},
                     {perms,    Perms},
                     {override, Def},
                     {views,    Views}
                    ]}) ->
     
-    auth_srv:add_controls(Site,
-                          replace("$user", hn_users:name(User), Auth),
-                          replace("$user", hn_users:name(User), Page),
-                          Perms, Def, Views).
+    auth_srv:add_perms_and_views(Site,
+                                 replace("$user", hn_users:name(User), Auth),
+                                 replace("$user", hn_users:name(User), Path),
+                                 Perms, Def, Views).
 
 -spec add_user(#refX{}, #hn_user{}) -> ok.
 add_user(Site, User) ->
