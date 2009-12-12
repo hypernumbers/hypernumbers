@@ -2,15 +2,15 @@
 %% this is a permissions script for creating a new site
 %%
 %% There are 4 types of entries
-%% * controls
+%% * views_and_perms
 %% * permissions
 %% * views
 %% * defaults
 
 %% Examples of them are:
-%% {control, [
+%% {views_and_perms, [
 %%            {list, [{user, "gordon"},{group, "dev"}],
-%%            {page, ["some", "path"]},
+%%            {path, ["some", "path"]},
 %%            {perms, [read, write]},
 %%            {override, "_global/spreadsheet"},
 %%            {views, ["_global/spreadsheet", "_global/pagebuilder", "**"]}
@@ -18,31 +18,31 @@
 %%
 %% {perm, [
 %%         {list, [{user, "gordon"}, {group, "dev"}]},
-%%         {page, ["some", "path"]},
+%%         {path, ["some", "path"]},
 %%         {perms, [read, write]}
 %%        ]}.
 %%        
 %% {views, [
 %%          {list, [{user, "gordon"}, {group, "dev"}]},
-%%          {page, ["some", "path"]},
+%%          {path, ["some", "path"]},
 %%          {override, ""},
 %%          {views, ["_global/spreadsheet"]}
 %%         ]}.
 %%
 %% {default, [
-%%            {page, ["some", "page"]},
+%%            {path, ["some", "page"]},
 %%            {default, "_global/home"}
 %%           ]}.
 %%
 %% The 'list' can be any mixture of users and groups
 %%
-%% The controls set both permissions and views in a oner
+%% The views_and_permss set both permissions and views in a oner
 %%
 %% There are a number of special constructions to remember
 %% {user, "*"} matches all
 %% {group, "*"} matches all
-%% {page, ["some", "[*]", "path"]} matches a specific segment
-%% {page, ["some", "path", "[**]"] matches all subsegments - wild must be last
+%% {path, ["some", "[*]", "path"]} matches a specific segment
+%% {path, ["some", "path", "[**]"] matches all subsegments - wild must be last
 %% {views, ["**"]} matches all views both global and per user
 %% {views, ["*"]} matches all per user views
 %%
@@ -50,25 +50,25 @@
 %%
 
 % the home page (writable, very wrong)
-{control, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},
-           {page,     []},
-           {perms,    [read, write]},
-           {override, "_g/tiny"},
-           {views,    ["_g/tiny", "**"]}
-          ]}.
+{views_and_perms, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},
+                   {path,     []},
+                   {perms,    [read, write]},
+                   {override, "_g/tiny"},
+                   {views,    ["_g/tiny", "**"]}
+                  ]}.
 
-{control, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},
-           {page,     ["_user", "login"]},
-           {perms,    [read, write]},
-           {override, ""},
-           {views,    ["_global/login"]}
-          ]}.
+{views_and_perms, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},
+                   {path,     ["_user", "login"]},
+                   {perms,    [read, write]},
+                   {override, ""},
+                   {views,    ["_global/login"]}
+                  ]}.
 
 
-{control, [{list,    [{user, "*"}, {group, "*"}]},
-           {page,     ["[**]"]},
-           {perms,    [read, write]},
-           {override, ""},
-           {views,    ["**", "_global/spreadsheet"]}
-          ]}.
+{views_and_perms, [{list,    [{user, "*"}, {group, "*"}]},
+                   {path,     ["[**]"]},
+                   {perms,    [read, write]},
+                   {override, ""},
+                   {views,    ["**", "_global/spreadsheet"]}
+                  ]}.
 
