@@ -74,7 +74,7 @@ make_subs_production() ->
     List1 = gen_subs(2),
     List2 = gen_nums(99),
     List3 = multiply(List1, List2),
-    Rand = make_random(List3, 26*26*9, []),
+    Rand = make_random(List3, 26*26*99, []),
     NewList = lists:keysort(1, Rand),
     NewList.
 
