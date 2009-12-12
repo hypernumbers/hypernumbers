@@ -5,8 +5,6 @@
 
 -export([start/2, stop/1]).
 
--export([clean_start_DEBUG/0]).
-
 -include("spriki.hrl").
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
@@ -52,10 +50,10 @@ ensure_schema() ->
     end.
 
 build_schema() ->
-    ok = application:stop(mnesia),
+    application:stop(mnesia),
     ok = mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
-    ok = mnesia:start().
+    ok = application:start(mnesia).
 
 %% @spec start_mochiweb() -> ok
 %% @doc  Start mochiweb http servers
@@ -91,9 +89,3 @@ bootstrap_site(S, T, O) ->
         _Else ->
             ok
     end.
-
--spec clean_start_DEBUG() -> ok. 
-clean_start_DEBUG() ->
-    dirty_srv:stop(),
-    build_schema(),
-    bootstrap_sites().
