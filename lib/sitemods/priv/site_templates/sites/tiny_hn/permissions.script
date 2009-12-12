@@ -2,13 +2,13 @@
 %% this is a permissions script for creating a new site
 %%
 %% There are 4 types of entries
-%% * views_and_perms
+%% * perms_and_views
 %% * permissions
 %% * views
 %% * defaults
 
 %% Examples of them are:
-%% {views_and_perms, [
+%% {perms_and_views, [
 %%            {list, [{user, "gordon"},{group, "dev"}],
 %%            {path, ["some", "path"]},
 %%            {perms, [read, write]},
@@ -36,7 +36,7 @@
 %%
 %% The 'list' can be any mixture of users and groups
 %%
-%% The views_and_permss set both permissions and views in a oner
+%% The perms_and_viewss set both permissions and views in a oner
 %%
 %% There are a number of special constructions to remember
 %% {user, "*"} matches all
@@ -50,14 +50,14 @@
 %%
 
 % the home page (writable, very wrong)
-{views_and_perms, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},
+{perms_and_views, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},
                    {path,     []},
                    {perms,    [read, write]},
                    {override, "_g/tiny"},
                    {views,    ["_g/tiny", "**"]}
                   ]}.
 
-{views_and_perms, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},
+{perms_and_views, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},
                    {path,     ["_user", "login"]},
                    {perms,    [read, write]},
                    {override, ""},
@@ -65,7 +65,7 @@
                   ]}.
 
 
-{views_and_perms, [{list,    [{user, "*"}, {group, "*"}]},
+{perms_and_views, [{list,    [{user, "*"}, {group, "*"}]},
                    {path,     ["[**]"]},
                    {perms,    [read, write]},
                    {override, ""},
