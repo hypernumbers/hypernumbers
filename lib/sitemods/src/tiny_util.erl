@@ -57,19 +57,26 @@ get_password() ->
     W1 ++ "!" ++ W2 ++ integer_to_list(N3).
 
 make_subs() ->
-    List1 = gen_subs(2),
-    io:format("generated list 1~n"),
-    List2 = gen_nums(99),
-    io:format("generated list 2~n"),
-    List3 = multiply(List1, List2),
-    io:format("muliplied lists~n"),
-    Rand = make_random(List3, 26*26*9, []),
-    io:format("prepping randomised lists~n"),
-    NewList = lists:keysort(1, Rand),
-    io:format("list randomised...~n"),
+    List = case application:get_env(hypernumbers, environment) of
+               {ok, development} -> make_subs_development();
+               {ok, production}  -> make_subs_production()
+           end,
     ok = create_sub_table(),
-    io:format("going to write the list, can be long...~n"),
-    write(NewList).
+    write(List).
+
+make_subs_development() ->
+    List1 = gen_subs(1),
+    Rand = make_random(List1, 26, []),
+    NewList = lists:keysort(1, Rand),
+    NewList.
+
+make_subs_production() ->
+    List1 = gen_subs(2),
+    List2 = gen_nums(99),
+    List3 = multiply(List1, List2),
+    Rand = make_random(List3, 26*26*9, []),
+    NewList = lists:keysort(1, Rand),
+    NewList.
 
 get_unallocated_sub() ->
     Fun = fun() ->
