@@ -45,12 +45,14 @@ $ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["1b"]'
 $ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["1c"]'
 $ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["1d"]'
 $ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["1e"]'
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["1f"]'
 
 $ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2a"]'
 $ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2b"]'
 $ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2c"]'
 $ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2d"]'
 $ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2e"]'
+$ERL_CALL -sname $TARGET -c $COOKIE -a 'test excel ["2f"]'
 
 $ERL_CALL -sname $TARGET -c $COOKIE -a 'test sys'
 
