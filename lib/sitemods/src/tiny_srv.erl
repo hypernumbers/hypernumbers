@@ -177,11 +177,10 @@ provision(Site, Port, Row) ->
                  obj = {range, {1, Row, 2, Row}}},
     List = hn_db_api:read_attributes(RefX, ["formula"]),
     
-    {Email, Type} = parse(List),
-
+    {Type, Email} = parse(List),
+ 
     Type2 = normalise(Type),
     Password = tiny_util:get_password(),
-    Sub = tiny_util:get_unallocated_sub(),
     IsValidEmail = tiny_util:is_valid_email(Email),
     [User | _T] = string:tokens(Email, "@"),
     Expiry = "=now()+31",
@@ -190,28 +189,36 @@ provision(Site, Port, Row) ->
     RefX2 = RefX#refX{obj = {cell, {4, Row}}},
     RefX3 = RefX#refX{obj = {cell, {5, Row}}},
     RefX4 = RefX#refX{obj = {cell, {6, Row}}},
-
-    case IsValidEmail of
-       false -> Sub2 = "Not Allocated";
-       _     -> Sub2 = Sub,
-                {ok, Host} = application:get_env(tiny, host),
-                {ok, Port2} = application:get_env(tiny, port),
-                SiteName2 = "http://" ++ Sub2 ++ "."  ++ Host  ++ ":"
-                    ++ integer_to_list(Port2),
-                hn_setup:site(SiteName2, list_to_atom(Type2),
-                              [{user, User},
-                               {email, Email},
-                               {site, SiteName},
-                               {password, Password},
-                               {subdomain, Sub2}
-                              ])
-                %% hn_util:send_email("team@tiny.hn", Email, "hey!")
+    
+    Template = code:priv_dir(sitemods) 
+        ++ "/site_templates/sites/" ++ Type2,
+    
+    DoesSiteTemplateExist = filelib:is_dir(Template),
+    
+    case {IsValidEmail, DoesSiteTemplateExist} of
+       {not_email, false} -> Sub = "Not Allocated - invalid e-mail " ++ Email
+                             ++ "and non-existant template " ++ Type2;
+       {not_email, _}     -> Sub = "Not Allocated - invalid e-mail " ++ Email;
+       {_, false}         -> Sub = "Not Allocated non-existant template " ++ Type2;
+       _                  -> Sub = tiny_util:get_unallocated_sub(),
+                             {ok, Host}  = application:get_env(tiny, host),
+                             {ok, Port2} = application:get_env(tiny, port),
+                             SiteName2 = "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
+                                 ++ integer_to_list(Port2),
+                             hn_setup:site(SiteName2, list_to_atom(Type2),
+                                           [{user, User},
+                                            {email, Email},
+                                            {site, SiteName},
+                                            {password, Password},
+                                        {subdomain, Sub }
+                                           ])
+%% hn_util:send_email("team@tiny.hn", Email, "hey!")
     end,
     ok = hn_db_api:write_attributes([
-                      {RefX1, [{"formula", Sub2}]},
-                      {RefX2, [{"formula", User}]},
-                      {RefX3, [{"formula", Password}]},
-                      {RefX4, [{"formula", Expiry}]}
+                                     {RefX1, [{"formula", Sub}]},
+                                     {RefX2, [{"formula", User}]},
+                                     {RefX3, [{"formula", Password}]},
+                                     {RefX4, [{"formula", Expiry}]}
                      ]),
     ok.
 
