@@ -227,8 +227,19 @@ provision(Site, Port, Row, State) ->
                            {site, SiteName},
                            {password, Password},
                            {subdomain, Sub }
-                          ])
-            % hn_util:send_email("team@tiny.hn", Email, "hey!")
+                          ]),
+
+
+            Msg = fmt("Welcome to tiny.hn, blah blah ~s ~s~n",
+                      [User, Password]),
+            
+            case application:get_env(hypernumbers, environment) of
+                {ok, development} ->
+                    io:format("~p",[Msg]);
+                {ok, production}  ->
+                    hn_util:email(Email, "\"Tiny Team\" <noreply@tiny.hn>",
+                                  "Welcome to Tiny", Msg)
+            end
     end,
     
     ok = hn_db_api:write_attributes([
@@ -253,4 +264,8 @@ normalise(String) ->
     String2 = re:replace(string:to_lower(String), " ", "_",
                          [global, {return, list}]),
     re:replace(String2, "-", "_", [global, {return, list}]).
+
+fmt(Str, Args) ->
+    lists:flatten(io_lib:format(Str, Args)).
+    
     

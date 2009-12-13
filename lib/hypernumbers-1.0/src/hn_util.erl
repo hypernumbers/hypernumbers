@@ -19,11 +19,8 @@
 -define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 
 -export([
-         email/1,
-         email_test_results/1,
-         email_build_fail/1,
+         email/4, email/5,
          get_html_files/1,
-         send_email/3,
 
          % HyperNumbers Utils
          compile_html/2,
@@ -665,57 +662,81 @@ type_reference(Cell) ->
             range
     end.
 
-email_build_fail(Rev) ->
-    email(?FORMAT(build_failed_tpl(), [Rev])).
+%% email_build_fail(Rev) ->
+%%     email(?FORMAT(build_failed_tpl(), [Rev])).
 
-email_test_results(Rev) ->
-    TestRoot = code:lib_dir(hypernumbers)++"/../../logs/",
-    Runs     = filelib:wildcard(TestRoot++"ct_run.*"),
-    LastRun  = lists:last(lists:sort(Runs)),
+%% email_test_results(Rev) ->
+%%     TestRoot = code:lib_dir(hypernumbers)++"/../../logs/",
+%%     Runs     = filelib:wildcard(TestRoot++"ct_run.*"),
+%%     LastRun  = lists:last(lists:sort(Runs)),
     
-    {ok, Bin} = file:read_file(LastRun++"/last_name"),
-    Summary = string:strip(binary_to_list(Bin), right, $\n)++"/suite.summary",
+%%     {ok, Bin} = file:read_file(LastRun++"/last_name"),
+%%     Summary = string:strip(binary_to_list(Bin), right, $\n)++"/suite.summary",
     
-    {ok, [{summary, {Pass, Fail, Skip}}]} = file:consult(Summary),
+%%     {ok, [{summary, {Pass, Fail, Skip}}]} = file:consult(Summary),
 
-    case {Fail > 0, Skip > 0} of
-        {false, false} -> ok;
-        _Else ->
-            email(?FORMAT(tests_failed_tpl(), [Rev, Pass, Fail, Skip]))
-    end.
+%%     case {Fail > 0, Skip > 0} of
+%%         {false, false} -> ok;
+%%         _Else ->
+%%             email(?FORMAT(tests_failed_tpl(), [Rev, Pass, Fail, Skip]))
+%%     end.    
 
-email(Msg) ->    
-    Conf = hn_config:get(mail),
-    User = ?pget(user, Conf),
-    
-    {ok, IP}  = inet:getaddr(?pget(server, Conf), inet),
-    {ok, Pid} = smtp_fsm:start(inet_parse:ntoa(IP)),
-    
-    {ok, _}   = smtp_fsm:ehlo(Pid),
-    {ok, _}   = smtp_fsm:plain_login(Pid, User, ?pget(pass, Conf)),
+%% tests_failed_tpl() ->
+%%     "Systems tests failed on Revision ~p\nPassed :\t~p\n"
+%%         "Failed :  \t~p\nSkipped :\t~p\n".
 
-    ok = smtp_fsm:sendemail(Pid, User, ?pget(address, Conf), Msg),
-    smtp_fsm:close(Pid).
+%% build_failed_tpl() ->
+%%     "Hypernumbers failed to build after Revision ~p".
 
-send_email(From, To, Msg) ->
-    {ok, Server} = application:get_env(hypernumbers, mailserver),
+email(To, From, Subject, Msg) ->
+    {ok, Server}   = application:get_env(hypernumbers, mailserver),
     {ok, Password} = application:get_env(hypernumbers, mailpassword),
-    {ok, User} = application:get_env(hypernumbers, mailuser),
-    io:format("Server is ~p password is ~p~n", [Server, Password]),
-    {ok, IP}  = inet:getaddr(Server, inet),
-    {ok, Pid} = smtp_fsm:start(inet_parse:ntoa(IP)),
+    {ok, User}     = application:get_env(hypernumbers, mailuser),
+    email([{server, Server}, {user, User}, {password, Password}],
+          To, From, Subject, Msg).
     
-    {ok, _}   = smtp_fsm:ehlo(Pid),
-    {ok, _}   = smtp_fsm:plain_login(Pid, User, Password),
-
-    io:format("about to send e-mail~n"),
-    ok = smtp_fsm:sendemail(Pid, From, To, Msg),
-    smtp_fsm:close(Pid).
     
+email(Details, To, From, Subject, Msg) ->
 
-tests_failed_tpl() ->
-    "Systems tests failed on Revision ~p\nPassed :\t~p\n"
-        "Failed :  \t~p\nSkipped :\t~p\n".
+    Server = proplists:get_value(server, Details),    
+    User   = proplists:get_value(user, Details),
+    Pass   = proplists:get_value(password, Details),
+    
+    {ok, Socket} = ssl:connect(Server, 465, [{active, false}], 1000),
+    
+    recv(Socket),
+    send(Socket, "HELO localhost"),
+    send(Socket, "AUTH LOGIN"),
+    send(Socket, binary_to_list(base64:encode(User))),
+    send(Socket, binary_to_list(base64:encode(Pass))),
+    send(Socket, "MAIL FROM:<"++parse_email_address(From)++">"),
+    send(Socket, "RCPT TO:<"++parse_email_address(To)++">"),
+    send(Socket, "DATA"),
+    send_no_receive(Socket, "From: "++From),
+    send_no_receive(Socket, "To: "++To),
+    send_no_receive(Socket, "Date: "++dh_date:format("r")),
+    send_no_receive(Socket, "Subject: "++Subject),
+    send_no_receive(Socket, ""),
+    send_no_receive(Socket, Msg),
+    send_no_receive(Socket, ""),
+    send(Socket, "."),
+    send(Socket, "QUIT"),
+    ssl:close(Socket).
 
-build_failed_tpl() ->
-    "Hypernumbers failed to build after Revision ~p".
+parse_email_address(Address) ->
+    lists:last(string:tokens(Address, "<>")).
+
+send_no_receive(Socket, Data) ->
+    io:format("SEND: ~p~n", [Data]),
+    ssl:send(Socket, Data ++ "\r\n").
+
+send(Socket, Data) ->
+    io:format("SEND: ~p~n", [Data]),
+    ssl:send(Socket, Data ++ "\r\n"),
+    recv(Socket).
+
+recv(Socket) ->
+    case ssl:recv(Socket, 0, 5000) of
+        {ok, Return}    -> io:format("RECV: ~p~n", [Return]);
+        {error, Reason} -> io:format("ERROR: ~p~n", [Reason])
+    end.

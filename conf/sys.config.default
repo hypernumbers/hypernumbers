@@ -14,11 +14,12 @@
       [{init_args, [{host, "127.0.0.1"}, {port, 9002},
                     {self, "http://127.0.0.1:9001"}]}]}
     ]},
+      
    % Mail Setup
-   {mailserver,   "mail.arandomurl.com"},
-   {mailuser,     "build@hypernumbers.com"},
-   {mailpassword, "the!bot"},
-   {mailaddress,  "dale@arandomurl.com"},
+   {mailserver,   "smtp.gmail.com"},
+   {mailuser,     "noreply@hypernumbers.com"},
+   {mailpassword, "mick!ventris09"},
+
    % where are we running?
    % can be development or production (mebbies add testing?)
    {environment, production}

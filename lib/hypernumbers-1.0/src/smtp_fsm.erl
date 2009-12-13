@@ -279,8 +279,8 @@ features(Fsm) -> gen_fsm:sync_send_event(Fsm, features).
 
 init([Server,Port]) ->
     io:format("connecting to ~p~n",[Server]),
-    Args = [list,{packet,0}],
-    {ok,Socket} = gen_tcp:connect(Server,Port,Args),
+    Args = [list, {packet, 0}],
+    {ok, Socket} = gen_tcp:connect(Server, Port, Args, 5000),
     io:format("socket open~n"),
     case get_response(Socket) of
     {"220", _Resp} ->

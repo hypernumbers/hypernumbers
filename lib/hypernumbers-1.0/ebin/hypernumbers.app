@@ -4,5 +4,5 @@
 	 {modules,      []},
 	 {registered,   [ ]},   
 	 {included_applications, []},   
-	 {applications, [kernel, stdlib, crypto, inets, mnesia]},
+	 {applications, [kernel, stdlib, crypto, inets, mnesia, ssl]},
 	 {mod,		{hypernumbers_app, [ ]}}]}.

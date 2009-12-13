@@ -86,7 +86,7 @@ launch_site(Site) ->
 create_site(Site, Type)->
     %% Seems sensible to keep this restricted
     %% to disc_copies for now
-    Storage = disc_only_copies,
+    Storage = disc_copies,
     Opts = 
         [{dirty_cell,            ?RIF(dirty_cell),            set, []},      
          {dirty_notify_in,       ?RIF(dirty_notify_in),       set, []},         
