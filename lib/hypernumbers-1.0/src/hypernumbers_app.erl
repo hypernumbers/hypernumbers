@@ -96,7 +96,10 @@ bootstrap_site(S, T, O) ->
             case catch App:module_info() of
                 {'EXIT', _ } -> ok;
                 _Mod         ->
-                    App:start_link(),
+                    case proplists:get_value(init_args, O) of
+                        undefined -> App:start_link();
+                        Args      -> App:start_link(Args)
+                    end,
                     ok
             end
     end.

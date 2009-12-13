@@ -11,7 +11,7 @@
 -behaviour(supervisor).
 
 %% API
--export([start_link/0]).
+-export([start_link/1]).
 
 %% Supervisor callbacks
 -export([init/1]).
@@ -29,8 +29,8 @@
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
-start_link() ->
-    supervisor:start_link({local, ?SERVER}, ?MODULE, []).
+start_link(Args) ->
+    supervisor:start_link({local, ?SERVER}, ?MODULE, Args).
 
 %%%===================================================================
 %%% Supervisor callbacks
@@ -49,15 +49,15 @@ start_link() ->
 %%                     {error, Reason}
 %% @end
 %%--------------------------------------------------------------------
-init([]) ->
+init(Args) ->
 
     RestartStrategy = one_for_one,
     MaxRestarts = 1000,
     MaxSecondsBetweenRestarts = 3600,
 
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
-
-    Tiny_Srv = {tiny_srv, {tiny_srv, start_link, []},
+    
+    Tiny_Srv = {tiny_srv, {tiny_srv, start_link, [Args]},
                 permanent, 2000, worker, [tiny_srv]},
 
     {ok, {SupFlags, [Tiny_Srv]}}.

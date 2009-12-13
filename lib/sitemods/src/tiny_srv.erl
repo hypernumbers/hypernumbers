@@ -13,7 +13,7 @@
 -include("spriki.hrl").
 
 %% API
--export([start_link/0]).
+-export([start_link/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -26,7 +26,7 @@
 -define(CLOCKTICK, 2000).
 -define(PATH, ["request_site"]).
 
--record(state, {site, port}).
+-record(state, {site, port, args}).
 
 %%%===================================================================
 %%% API
@@ -39,8 +39,8 @@
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
-start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+start_link(Args) ->
+    gen_server:start_link({local, ?SERVER}, ?MODULE, Args, []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -57,18 +57,20 @@ start_link() ->
 %%                     {stop, Reason}
 %% @end
 %%--------------------------------------------------------------------
-init([]) ->
+init(Args) ->
 
+    %% Create sub domains if not created
     case catch mnesia:table_info(tiny_sub, all) of
         {'EXIT',{aborted,_Abort}} ->
             tiny_util:make_subs();
         _Else ->
             ok
     end,
-    
-    Site = tiny_util:get_tiny_site(),
+
+    Site = proplists:get_value(self, Args),
     [_, "//" ++ Site2, Port] = string:tokens(Site, ":"),
-    NewState = #state{site = Site2, port = Port},
+    
+    NewState = #state{site=Site2, port=Port, args=Args},
 
     _Pid = spawn_link(?MODULE, tick, []),
     
@@ -116,7 +118,8 @@ handle_cast(tock, State) ->
     #refX{obj = {cell, {_, MaxF}}} = Fulfilled,
     ok = case MaxR of
              MaxF   -> ok;
-             _Other -> provision(State#state.site, State#state.port, MaxF + 1)
+             _Other -> provision(State#state.site, State#state.port,
+                                 MaxF + 1, State)
          end,
     _Pid = spawn_link(?MODULE, tick, []),
     {noreply, State};
@@ -177,14 +180,14 @@ tick() ->
     timer:sleep(?CLOCKTICK),
     tiny_srv:tock().
 
-provision(Site, Port, Row) ->
+provision(Site, Port, Row, State) ->
     
     SiteName = "http://" ++ Site ++ ":" ++ Port,
     RefX = #refX{site = SiteName, path = ?PATH,
                  obj = {range, {1, Row, 2, Row}}},
     List = hn_db_api:read_attributes(RefX, ["formula"]),
     
-    {Type, Email} = parse(List),
+    {Email, Type} = parse(List),
  
     Type2 = normalise(Type),
     Password = tiny_util:get_password(),
@@ -212,8 +215,10 @@ provision(Site, Port, Row) ->
             Sub = "Not Allocated non-existant template " ++ Type2;
         _ ->
             Sub = tiny_util:get_unallocated_sub(),
-            {ok, Host}  = application:get_env(tiny, host),
-            {ok, Port2} = application:get_env(tiny, port),
+
+            Host  = proplists:get_value(host, State#state.args),
+            Port2 = proplists:get_value(port, State#state.args),
+            
             SiteName2 = "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
                 ++ integer_to_list(Port2),
             hn_setup:site(SiteName2, list_to_atom(Type2),
