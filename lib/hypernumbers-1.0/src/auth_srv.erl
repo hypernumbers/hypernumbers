@@ -756,8 +756,8 @@ get_random_v2([], [], true)                    -> {html, ?SPREADSHEET};
 get_random_v2([{_, View} | _T], [], true) ->
     case View#views.override of
         []       -> case View#views.views of
-                        []        -> {html, ?SPREADSHEET};
-                        [V | _T1] -> {html, V}
+                        [] -> {html, ?SPREADSHEET};
+                        Vs -> get_first(Vs)
                     end;
         Override -> {html, Override}
     end;
@@ -924,8 +924,10 @@ pp_c({views, [{{Ty, N}, #views{override = O, views = V}} | T]}, Pf, html, A) ->
                [] -> "(none)";
                _  -> O
            end,
-    NewA = Pf ++ "&nbsp;&nbsp;&nbsp;- " ++ atom_to_list(Ty) ++ ": " ++ N ++ "<br />" ++
-        Pf ++ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> override default is: " ++ NewO ++ "<br />" ++
+    NewA = Pf ++ "&nbsp;&nbsp;&nbsp;- " ++ atom_to_list(Ty) ++ ": "
+        ++ N ++ "<br />" ++
+        Pf ++ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> override default is: "
+        ++ NewO ++ "<br />" ++
         Pf ++ "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-> views are:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" ++ pp_l(V, []) ++ "<br />",
     pp_c({views, T}, Pf, html, [NewA | A]);
 pp_c({views, [{{Ty, N}, #views{override = O, views = V}} | T]}, Pf, text, A) ->
@@ -1052,7 +1054,8 @@ get_all_v2(Control, Type, [H | T], Acc)  ->
                  [] -> [];
                  V  -> case V#views.override of
                            [] -> V#views.views;
-                           _  -> hslists:dedup([[V#views.override], V#views.views])
+                           _  -> hslists:dedup([[V#views.override],
+                                                V#views.views])
                        end
              end,
     case NewAcc of
@@ -1137,7 +1140,8 @@ test02() ->
 %% add a control
 test03() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "override", ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"User", ["Fail"]}, P),
@@ -1149,7 +1153,8 @@ test03() ->
 
 test04() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "override", ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"Fail", ["FailHarder"]}, P),
@@ -1163,7 +1168,8 @@ test04() ->
 %% add a control with a view but no default view
 test05() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          [], ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"User", ["Fail"]}, P),
@@ -1176,7 +1182,8 @@ test05() ->
 %% add a control with a view and an override view but no default view
 test06() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "override", ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"User", ["Fail"]}, P),
@@ -1189,7 +1196,8 @@ test06() ->
 %% add a control with a view, an override view and a default view
 test07() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "override", ["a view", "another view"]),
     Tree2 = add_default1(Tree, P, "default"),
@@ -1203,7 +1211,8 @@ test07() ->
 %% add a control with a view, no override view and a default view
 test08() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          [], ["a view", "another view"]),
     Tree2 = add_default1(Tree, P, "default"),
@@ -1217,7 +1226,8 @@ test08() ->
 %% a user with no groups
 test09() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          [], ["a view", "another view"]),
     Tree2 = add_default1(Tree, P, "default"),
@@ -1233,7 +1243,8 @@ test010() ->
     P = [],
     Tree = add_perms_and_views1(gb_trees:empty(),
                          [{user, "User"}, {user, "User2"},
-                                            {group, "Group"}, {group, "Group2"}],
+                          {group, "Group"}, {group, "Group2"}
+                         ],
                          P, [read, write],
                          [], ["a view", "another view"]),
     Tree2 = add_default1(Tree, P, "default"),
@@ -1247,7 +1258,8 @@ test010() ->
 %% test a single wild card user
 test011() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "*"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "*"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "override", ["a view", "another view"]),
     Tree2 = add_default1(Tree, P, "default"),
@@ -1261,7 +1273,8 @@ test011() ->
 %% test a single wild card group
 test012() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "King"}, {group, "*"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "King"},
+                                                   {group, "*"}],
                          P, [read, write],
                          "override", ["a view", "another view"]),
     Tree2 = add_default1(Tree, P, "default"),
@@ -1275,10 +1288,12 @@ test012() ->
 %% test that a user wild overcomes group wild
 test013() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "*"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "*"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "override1", ["a view", "another view"]),
-    Tree2 = add_perms_and_views1(Tree, [{user, "King"}, {group, "*"}], P, [read, write],
+    Tree2 = add_perms_and_views1(Tree, [{user, "King"}, {group, "*"}],
+                                 P, [read, write],
                           "override2", ["a view", "another view"]),
     Tree3 = add_default1(Tree2, P, "default"),
     get_as_json1(Tree3, []),
@@ -1291,7 +1306,8 @@ test013() ->
 %% test that a user match comes in before a pair of wilds
 test014() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "hey!", ["a view", "another view"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "*"}, {group, "Group"}],
@@ -1311,7 +1327,8 @@ test014() ->
 %% test that a group match comes in before a pair of wilds
 test015() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "hey!", ["a view", "another view"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "*"}], P, [read, write],
@@ -1330,7 +1347,8 @@ test015() ->
 %% no default set
 test016() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "", ["a view", "another view"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "*"}, {group, "Group"}],
@@ -1351,7 +1369,8 @@ test016() ->
 %% no default set
 test017() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "", ["a view", "another view"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "*"}], P, [read, write],
@@ -1406,7 +1425,8 @@ testB() ->
 
 testC() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "override", ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"benjamin", ["admin"]}, P),
@@ -1418,7 +1438,8 @@ testC() ->
 
 testD() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          [], ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"Benjamin", ["admin"]}, P),
@@ -1430,7 +1451,8 @@ testD() ->
     
 testE() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "override", ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"Benjamin", ["admin"]}, P),
@@ -1442,7 +1464,8 @@ testE() ->
 
 testF() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          "override", ["a view", "another view"]),
     Tree2 = add_default1(Tree, P, "default"),
@@ -1455,7 +1478,8 @@ testF() ->
 
 testG() ->
     P = [],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P, [read, write],
                          [], ["a view", "another view"]),
     Tree2 = add_default1(Tree, P, "default"),
@@ -1498,7 +1522,8 @@ test10() ->
     P1 = [],
     P2 = ["a", "b", "c"],
     P3 = ["[**]"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P1,[read, write],
                          "index", ["first", "second"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "Bob"}, {group, "Group"}],
@@ -1525,7 +1550,9 @@ test11() ->
 
 test12() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
+                                P, [read, write],
                          "index", ["other", "one"]),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
@@ -1536,7 +1563,9 @@ test12() ->
 
 test13() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
+                                P, [read, write],
                          "index", ["hey!"]),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
@@ -1547,7 +1576,8 @@ test13() ->
 
 test14() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+                     P, [read, write]),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
     get_as_json1(Tree, []),
@@ -1558,7 +1588,8 @@ test14() ->
 test15() ->
     P = ["a", "b", "c", "d"],
     P2 = ["fail"],
-    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+                     P, [read, write]),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
     get_as_json1(Tree, []),
@@ -1569,7 +1600,8 @@ test15() ->
 test16() ->
     P = ["a", "b", "c", "d"],
     P2 = ["a", "b"],
-    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+                     P, [read, write]),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
     get_as_json1(Tree, []),
@@ -1580,7 +1612,8 @@ test16() ->
 test17() ->
     P = ["a", "b", "c", "d"],
     P2 = ["a", "b", "c", "e"],
-    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+                     P, [read, write]),
     io:format(pretty_print1(Tree, "test", [], text), []),
     get_as_json1(Tree, []),
     Ret = check_get_page1(Tree, {"gordon", ["Group"]}, P2),
@@ -1590,7 +1623,8 @@ test17() ->
 test18() ->
     P = ["a", "b", "c", "d"],
     P2 = ["a", "b", "c", "d", "e"],
-    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+                     P, [read, write]),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
     get_as_json1(Tree, []),
@@ -1601,7 +1635,8 @@ test18() ->
 test18a() ->
     P = [],
     P2 = ["a", "b", "c", "d", "e"],
-    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write]),
+    Tree = add_perm1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+                     P, [read, write]),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
     get_as_json1(Tree, []),
@@ -1612,7 +1647,9 @@ test18a() ->
 %% set the same permission twice
 test19() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P, [read, write],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
+                                P, [read, write],
                          "index", ["hey!"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "User"}, {group, "Group"}], P, [read, write],
                           "index", ["hey!"]),
@@ -1628,7 +1665,8 @@ test19() ->
 test19a() ->
     P1a = ["a", "b", "c", "d"],
     P1b = ["1", "2", "3", "4"],
-    Tree1 = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1a,
+    Tree1 = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                    {group, "Group"}], P1a,
                           [read, write], "banana", ["index"]),
     Tree2 = add_perms_and_views1(Tree1, [{user, "User"}, {group, "Group"}], P1b,
                           [read, write], "index", ["index"]),
@@ -1644,7 +1682,8 @@ test19b() ->
     P1a = ["a", "b", "c"],
     P1b = ["a"],
     P2 = ["a", "b", "c", "d", "e"],
-    Tree1 = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1a,
+    Tree1 = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                    {group, "Group"}], P1a,
                           [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree1, [{user, "User"}, {group, "Group"}], P1b,
                           [read, write], "special", ["index", "special"]),
@@ -1660,7 +1699,8 @@ test19b() ->
 test19c() ->
     P1a = ["a", "b", "c", "d"],
     P1b = ["a", "b", "c", "d", "x"],
-    Tree1 = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1a,
+    Tree1 = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                    {group, "Group"}], P1a,
                           [read, write], "lychee", ["index"]),
     Tree2 = add_perms_and_views1(Tree1, [{user, "User"}, {group, "Group"}], P1b,
                           [read, write], "apricot", ["index"]),
@@ -1672,7 +1712,8 @@ test19c() ->
 test19d() ->
     P1a = ["a", "b", "c", "d"],
     P1b = ["a", "b", "c", "d", "x"],
-    Tree1 = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1a,
+    Tree1 = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                    {group, "Group"}], P1a,
                           [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree1, [{user, "User"}, {group, "Group"}], P1b,
                           [read, write], "index", ["index"]),
@@ -1685,7 +1726,8 @@ test19d() ->
 test19e() ->
     P1a = ["a", "b", "c", "d"],
     P1b = ["a", "b", "c", "d", "x"],
-    Tree1 = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1a,
+    Tree1 = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                    {group, "Group"}], P1a,
                           [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree1, [{user, "User"}, {group, "Group"}], P1b,
                           [read, write], "index", ["index"]),
@@ -1699,7 +1741,8 @@ test19e() ->
 
 test19f() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}], P,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "New"}, {group, "Group"}], P,
                           [read, write], "index", ["index"]),
@@ -1710,7 +1753,8 @@ test19f() ->
 
 test19g() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}], P,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "New"}, {group, "Group"}], P,
                           [read, write], "index", ["index"]),
@@ -1721,7 +1765,8 @@ test19g() ->
 
 test19h() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P,
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}], P,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "New"}, {group, "Group"}], P,
                           [read, write], "index", ["index"]),
@@ -1735,7 +1780,9 @@ test19h() ->
 test20() ->
     P1 = ["[**]"],
     P2 = ["a"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1, [read, write],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
+                                P1, [read, write],
                          "bob", ["other", "one"]),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
@@ -1747,7 +1794,9 @@ test20() ->
 test21() ->
     P1 = ["[**]"],
     P2 = ["a", "b", "c"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1, [read, write],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
+                                P1, [read, write],
                          "bob", ["other", "one"]),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
@@ -1759,7 +1808,9 @@ test21() ->
 test22() ->
     P1 = ["[*]", "b"],
     P2 = ["a", "b"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1, [read, write],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
+                                P1, [read, write],
                          "bob", ["other", "one"]),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
@@ -1771,7 +1822,9 @@ test22() ->
 test23() ->
     P1 = ["a", "[*]", "c"],
     P2 = ["a", "b", "c"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}], P1, [read, write],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
+                                P1, [read, write],
                          "bob", ["other", "one"]),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
@@ -1786,7 +1839,8 @@ test24() ->
     P1 = ["[**]"],
     P2 = ["a", "[*]", "c"],
     P3 = ["a", "b", "c"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}], P1, [read, write],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}],
+                                P1, [read, write],
                          "override0", ["a view", "another view"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "*"}], P2, [read, write],
                           "override1", ["a view", "another view"]),
@@ -1803,7 +1857,8 @@ test25() ->
     P1 = ["[**]"],
     P2 = ["a", "[*]", "c"],
     P3 = ["a", "b", "c"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}], P1, [read, write],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}],
+                                P1, [read, write],
                          "override0", ["a view", "another view"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "*"}], P2, [read, write],
                           "override1", ["a view", "another view"]),
@@ -1820,7 +1875,8 @@ test25() ->
 test26() ->
     P1 = ["a", "[*]"],
     P2 = ["a", "b", "c", "d", "e"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}], P1, [read, write],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}],
+                                P1, [read, write],
                          "", ["a view", "another view"]),
     Tree2 = add_default1(Tree, P1, "default"),
     Ret = check_get_page1(Tree2, {"User", ["Group"]}, P2),
@@ -1834,7 +1890,8 @@ test26() ->
 
 test30() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P,
@@ -1846,7 +1903,8 @@ test30() ->
 
 test31() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P,
@@ -1858,7 +1916,8 @@ test31() ->
 
 test32() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P,
                          [write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P,
@@ -1871,10 +1930,12 @@ test32() ->
 test33() ->
     P1 = ["a"],
     P2 = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P1,
                          [read, write], "index", ["index"]),
-    Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P1,
+    Tree2 = add_perms_and_views1(Tree, [{user, "gordon"},
+                                        {group, "Group"}], P1,
                           [read, write], "index", ["index"]),
     Ret = can_read1(Tree2, {"bob", ["Group"]}, P2),
     get_as_json1(Tree2, []),
@@ -1884,7 +1945,8 @@ test33() ->
 test34() ->
     P1 = ["a"],
     P2 = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P1,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P1,
@@ -1909,7 +1971,8 @@ test35() ->
 
 test30A() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P,
@@ -1922,7 +1985,8 @@ test30A() ->
 test30B() ->
     P1 = ["a"],
     P2 = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P1,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P1,
@@ -1937,7 +2001,8 @@ test30B() ->
 
 test40() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P,
@@ -1949,7 +2014,8 @@ test40() ->
 
 test41() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P,
@@ -1961,7 +2027,8 @@ test41() ->
 
 test42() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P,
                          [read], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P,
@@ -1974,10 +2041,12 @@ test42() ->
 test43() ->
     P1 = ["a"],
     P2 = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P1,
                          [read, write], "index", ["index"]),
-    Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P1,
+    Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}],
+                                 P1,
                           [read, write], "index", ["index"]),
     get_as_json1(Tree2, []),
     Ret = can_write1(Tree2, {"bob", ["Group"]}, P2),
@@ -1987,7 +2056,8 @@ test43() ->
 test44() ->
     P1 = ["a"],
     P2 = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Fail"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Fail"}],
                          P1,
                          [read], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "User"}, {group, "Fail Again"}], P1,
@@ -2000,7 +2070,8 @@ test44() ->
 test45() ->
     P1 = ["a"],
     P2 = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Fail"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Fail"}],
                          P1,
                          [read], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "User"}, {group, "Fail Again"}], P1,
@@ -2012,7 +2083,8 @@ test45() ->
 
 test40A() ->
      P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P,
@@ -2025,7 +2097,8 @@ test40A() ->
 test40B() ->
     P1 = ["a"],
     P2 = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                          P1,
                          [read, write], "index", ["index"]),
     Tree2 = add_perms_and_views1(Tree, [{user, "gordon"}, {group, "Group"}], P1,
@@ -2596,7 +2669,8 @@ test114() ->
 %% test wild card user and group names
 test115() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "*"}, {group, "Group"}], P,
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "*"},
+                                                   {group, "Group"}], P,
                          [read, write], "index", ["index"]),
     Ret = check_get_page1(Tree, {"gordon", ["No Match"]}, P),
     io:format("Ret is ~p~n", [Ret]),
@@ -2605,7 +2679,8 @@ test115() ->
 
 test116() ->
     P = ["a", "b", "c", "d"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "*"}], P,
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "*"}], P,
                          [read, write], "index", ["index"]),
     Ret = check_get_page1(Tree, {"gordon", ["No Match"]}, P),
     io:format("Ret is ~p~n", [Ret]),
@@ -3037,7 +3112,8 @@ test222() ->
 test223() ->
     P1 = ["_site", "[*]"],
     P2 = ["_site", "static_data"],
-    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"}, {group, "Group"}],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "User"},
+                                                   {group, "Group"}],
                      P1, [read], "", []),
     PP = pretty_print1(Tree, "test", [], text),
     io:format(PP),
@@ -3058,7 +3134,26 @@ test224() ->
     Ret = check_get_page1(Tree2, {"anonymous", []}, P3),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "_global/spreadsheet"}).
-    
+
+test225() ->
+    P1 = [],
+    P2 = ["[**]"],
+    P3 = ["_user", "login"],
+    P4 = ["blah", "bloh"],
+    Tree = add_perms_and_views1(gb_trees:empty(), [{user, "anonymous"},
+                                                   {group, "anonymous"}],
+                     P1, [read, write], "", ["_g/tiny", "**"]),
+    Tree2 = add_perms_and_views1(Tree, [{user, "*"}, {group, "*"}],
+                     P2, [read, write], "", ["**", "_global/spreadsheet"]),
+    Tree3 = add_perms_and_views1(Tree2, [{user, "anonymous"},
+                                         {group, "anonymous"}],
+                     P3, [read, write], "", ["_global/login"]),
+    io:format(pretty_print1(Tree3, "test", [], text)),
+    Ret = check_get_page1(Tree3, {"gordon", ["user", "dev",
+                                              "admin", "hypernumbers"]}, P4),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "_global/spreadsheet"}).
+
 
 %% Numbered tests deal with normal users
 %% Lettered tests deal with the 'admin' group
@@ -3208,7 +3303,8 @@ unit_test_() ->
      ?_assert(test221()),
      ?_assert(test222()),
      ?_assert(test223()),
-     ?_assert(test224())
+     ?_assert(test224()),
+     ?_assert(test225())
     ].
 
 debug() ->
