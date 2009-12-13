@@ -45,7 +45,7 @@ run() ->
     do_jf("ru", "russian",    ?russian_fns).
 
 
-do_jf(Code, Lang, Fns) ->
+do_jf(Code, _Lang, Fns) ->
     %% Find entry in ?notes for this language.
     {value, {Code, Notes}} = lists:keysearch(Code, 1, ?notes),
     
