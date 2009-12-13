@@ -97,9 +97,6 @@ bootstrap_site(S, T, O) ->
                 {'EXIT', _ } -> ok;
                 _Mod         ->
                     App:start_link(),
-                    io:format("~p~n",[App]),
-                    %% ok = application:load(T),
-                    %% ok = application:start(T)
                     ok
             end
     end.

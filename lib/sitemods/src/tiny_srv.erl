@@ -59,6 +59,13 @@ start_link() ->
 %%--------------------------------------------------------------------
 init([]) ->
 
+    case catch mnesia:table_info(tiny_sub, all) of
+        {'EXIT',{aborted,_Abort}} ->
+            tiny_util:make_subs();
+        _Else ->
+            ok
+    end,
+    
     Site = tiny_util:get_tiny_site(),
     [_, "//" ++ Site2, Port] = string:tokens(Site, ":"),
     NewState = #state{site = Site2, port = Port},
@@ -196,39 +203,49 @@ provision(Site, Port, Row) ->
     DoesSiteTemplateExist = filelib:is_dir(Template),
     
     case {IsValidEmail, DoesSiteTemplateExist} of
-       {not_email, false} -> Sub = "Not Allocated - invalid e-mail " ++ Email
-                             ++ "and non-existant template " ++ Type2;
-       {not_email, _}     -> Sub = "Not Allocated - invalid e-mail " ++ Email;
-       {_, false}         -> Sub = "Not Allocated non-existant template " ++ Type2;
-       _                  -> Sub = tiny_util:get_unallocated_sub(),
-                             {ok, Host}  = application:get_env(tiny, host),
-                             {ok, Port2} = application:get_env(tiny, port),
-                             SiteName2 = "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
-                                 ++ integer_to_list(Port2),
-                             hn_setup:site(SiteName2, list_to_atom(Type2),
-                                           [{user, User},
-                                            {email, Email},
-                                            {site, SiteName},
-                                            {password, Password},
-                                        {subdomain, Sub }
-                                           ])
-%% hn_util:send_email("team@tiny.hn", Email, "hey!")
+        {not_email, false} ->
+            Sub = "Not Allocated - invalid e-mail " ++ Email
+                ++ "and non-existant template " ++ Type2;
+        {not_email, _} ->
+            Sub = "Not Allocated - invalid e-mail " ++ Email;
+        {_, false} ->
+            Sub = "Not Allocated non-existant template " ++ Type2;
+        _ ->
+            Sub = tiny_util:get_unallocated_sub(),
+            {ok, Host}  = application:get_env(tiny, host),
+            {ok, Port2} = application:get_env(tiny, port),
+            SiteName2 = "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
+                ++ integer_to_list(Port2),
+            hn_setup:site(SiteName2, list_to_atom(Type2),
+                          [{user, User},
+                           {email, Email},
+                           {site, SiteName},
+                           {password, Password},
+                           {subdomain, Sub }
+                          ])
+            % hn_util:send_email("team@tiny.hn", Email, "hey!")
     end,
+    
     ok = hn_db_api:write_attributes([
                                      {RefX1, [{"formula", Sub}]},
                                      {RefX2, [{"formula", User}]},
                                      {RefX3, [{"formula", Password}]},
                                      {RefX4, [{"formula", Expiry}]}
-                     ]),
+                                    ]),
     ok.
 
-parse(List) -> p1(List, [], []).
+parse(List) ->
+    p1(List, [], []).
 
-p1([], Email, Type)                                          -> {Email, Type};
-p1([{#refX{obj = {cell, {1, _}}}, {_, Type}}  | T], A1, _A2) -> p1(T, A1, Type);
-p1([{#refX{obj = {cell, {2, _}}}, {_, Email}} | T], _A1, A2) -> p1(T, Email, A2).
+p1([], Email, Type) ->
+    {Email, Type};
+p1([{#refX{obj = {cell, {1, _}}}, {_, Type}}  | T], A1, _A2) ->
+    p1(T, A1, Type);
+p1([{#refX{obj = {cell, {2, _}}}, {_, Email}} | T], _A1, A2) ->
+    p1(T, Email, A2).
 
 normalise(String) ->
-    String2 = re:replace(string:to_lower(String), " ", "_", [global, {return, list}]),
+    String2 = re:replace(string:to_lower(String), " ", "_",
+                         [global, {return, list}]),
     re:replace(String2, "-", "_", [global, {return, list}]).
     

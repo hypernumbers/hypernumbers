@@ -129,12 +129,13 @@ create_sub_table() ->
     Tables = mnesia:system_info(tables),
     case lists:member(?SUBS, Tables) of
         true  -> ok;
-        false ->  Attrs = [{record_name, ?SUBS},
-                           {attributes, record_info(fields, ?SUBS)},
-                           {type, set},
-                           {disc_only_copies, [node()]}],
-                  {atomic, ok} = mnesia:create_table(?SUBS, Attrs),
-                  ok
+        false ->
+            Attrs = [{record_name, ?SUBS},
+                     {attributes, record_info(fields, ?SUBS)},
+                     {type, set},
+                     {disc_only_copies, [node()]}],
+            {atomic, ok} = mnesia:create_table(?SUBS, Attrs),
+            ok
     end.
 
 is_valid_email(Email) ->

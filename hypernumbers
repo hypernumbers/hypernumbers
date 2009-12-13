@@ -49,6 +49,11 @@ SGTE_DIR="lib/sgte"
 [ -d $DETS_DIR ]       || mkdir -p $DETS_DIR
 [ -f $CONFIG ]         || cp $ROOT/conf/sys.config.default $CONFIG 
 
+if [ $ROOT/conf/sys.config.default -nt $CONFIG ] 
+then 
+    echo -e "\n***WARNING*** Default Config File has been updated\n"
+fi
+
 function build
 {
     if [ $# -lt 1 ] 

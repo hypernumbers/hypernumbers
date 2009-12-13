@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 10 Dec 2009 by gordon@hypernumbers.com
 %%%-------------------------------------------------------------------
--module(tiny_sup).
+-module(tiny_hn_sup).
 
 -behaviour(supervisor).
 
