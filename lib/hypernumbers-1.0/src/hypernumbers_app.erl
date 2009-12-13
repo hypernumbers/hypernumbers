@@ -83,9 +83,23 @@ bootstrap_sites() ->
     end.
 
 bootstrap_site(S, T, O) ->
+    
     case mnesia:transaction(fun() -> mnesia:read(core_site, S) end) of
-        {atomic, []} ->
-            hn_setup:site(S, T, O);
-        _Else ->
-            ok
+        {atomic, []} -> hn_setup:site(S, T, O);
+        _Else        -> ok
+    end,
+
+    case list_to_atom(atom_to_list(T)++"_sup") of
+        hypernumbers_sup ->
+            ok;
+        App ->
+            case catch App:module_info() of
+                {'EXIT', _ } -> ok;
+                _Mod         ->
+                    App:start_link(),
+                    io:format("~p~n",[App]),
+                    %% ok = application:load(T),
+                    %% ok = application:start(T)
+                    ok
+            end
     end.
