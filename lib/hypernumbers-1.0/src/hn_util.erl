@@ -93,7 +93,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Escape the replacement part of the regular expression
-%% so no spurios replacements
+%% so no spurious replacements
 esc_regex(List) when is_binary(List) ->
     esc_regex(binary_to_list(List));
 esc_regex(List) ->

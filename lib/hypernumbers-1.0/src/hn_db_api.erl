@@ -95,7 +95,6 @@
 -include("hypernumbers.hrl").
 
 -export([
-         create_table/6,
          write_attributes/1,
          write_attributes/2,
          write_last/1,
@@ -147,23 +146,6 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
--spec create_table(atom(), atom(),
-                   any(),
-                   disc_only_copies | disc_copies | ram_copies,
-                   set | bag | ordered_set,
-                   [atom()]) -> ok. 
-create_table(TblName, Rec, Fields, Storage, Type, Indicies) ->
-    R = mnesia:create_table(TblName, [{record_name, Rec},
-                                      {attributes, Fields},
-                                      {Storage, [node()]},
-                                      {type, Type},
-                                      {index, Indicies}]),
-    case R of 
-        {atomic, ok}                   -> ok;
-        {aborted, {already_exists, _}} -> ok;
-        {aborted, Reason}              -> throw(Reason)
-    end.
     
 -spec set_borders(#refX{}, any(), any(), any(), any()) -> ok.
 %% @doc  takes a range reference and sets the borders for the range according

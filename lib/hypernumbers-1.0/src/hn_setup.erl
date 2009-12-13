@@ -107,7 +107,7 @@ create_site(Site, Type)->
          {page_vsn,              ?RIF(page_vsn),              set, []},         
          {page_history,          ?RIF(page_history),          bag, []}],        
 
-    [ok = hn_db_api:create_table(hn_db_wu:trans(Site, N), 
+    [ok = hn_db_admin:create_table(hn_db_wu:trans(Site, N), 
                                  N, F, Storage, T, I)
      || {N,F,T,I} <- Opts],
     Trans = fun() ->

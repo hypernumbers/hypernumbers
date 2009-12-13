@@ -37,7 +37,7 @@ init_tables() ->
     %% Core system tables -- required to operate system
     CoreTbls = [ {core_site, record_info(fields, core_site), set, []}],
     
-    [ok = hn_db_api:create_table(N, N, F, Storage, T, I) 
+    [ok = hn_db_admin:create_table(N, N, F, Storage, T, I) 
      || {N,F,T,I} <- CoreTbls],
     ok.
 
