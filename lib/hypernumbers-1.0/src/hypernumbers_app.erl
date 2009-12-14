@@ -10,6 +10,7 @@
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
 start(_Type, _Args) ->
+    ensure_dirs(),
     ok = init_tables(),
     ok = load_muin_modules(),
     ok = mochilog:start(),
@@ -23,6 +24,13 @@ start(_Type, _Args) ->
 %% @doc  Application Callback
 stop(_State) ->
     ok = mochilog:stop().
+
+ensure_dirs() ->
+    Dirs = [application:get_env(hypernumbers, dets_dir),
+            application:get_env(mnesia, dir),
+            application:get_env(sasl, error_logger_mf_dir)],
+    [filelib:ensure_dir(D++"/") || {ok, D} <- Dirs],
+    ok.
 
 % these need to be loaded for exported_function() to work
 load_muin_modules() ->
@@ -82,8 +90,7 @@ bootstrap_sites() ->
             ok
     end.
 
-bootstrap_site(S, T, O) ->
-    
+bootstrap_site(S, T, O) ->    
     case mnesia:transaction(fun() -> mnesia:read(core_site, S) end) of
         {atomic, []} -> hn_setup:site(S, T, O);
         _Else        -> ok

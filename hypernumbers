@@ -1,55 +1,24 @@
-#! /bin/bash
+#!/bin/bash
 
 export HEART_COMMAND="./hypernumbers start detached"
 
 NODE=arrian
 HOST=localhost
-RELNAME=hypernumbers
 COOKIE=abc
+RELNAME=hypernumbers
 
-# If anything is broken, probably here
-# this is the full path to the hypernumbers root dir, 
-# readlink might need installed 
-# if it breaks, can replace with 
-# (/home/dale/hypernumbers) temporarily
-# check if we are running under cywgin
-OS_PLATFORM=`uname -a | cut -f 1 -d " "`
-
-if [ $OS_PLATFORM = "CYGWIN_NT-6.0" ]
-then
-    TMP=`pwd`
-    ROOT="c:/"`echo $TMP | cut -d "/" -f 4-`
-elif [ $OS_PLATFORM = "Darwin" ]
-then
-    ROOT=`pwd`
-else
-    ROOT=$(dirname `readlink -f "$0"`)
-fi
-
-cd $ROOT
-
-LOG_DIR=$ROOT/logs
-CONFIG=$ROOT/conf/sys.config
-
-MNESIA_DIR=$ROOT/db/$NODE
-DETS_DIR=$ROOT/dets/
-REL_DIR=$ROOT/ebin/$RELNAME
-SASL_DIR=$ROOT/priv/$SASL_CONF_FILE
+REL_DIR=ebin/$RELNAME
+CONFIG=conf/sys.config
 
 HN_DIR="lib/hypernumbers-1.0"
 MOCHI_DIR="lib/mochiweb"
-GETTEXT_DIR="lib/gettext"
-SGTE_DIR="lib/sgte"
 
 ## Create mnesia and log directories
 ## and config file if they dont exist
-[ -d $LOG_DIR ]        || mkdir -p $LOG_DIR
-[ -d $LOG_DIR/error ]  || mkdir -p $LOG_DIR/error
-[ -d $MNESIA_DIR ]     || mkdir -p $MNESIA_DIR
-[ -d $DETS_DIR ]       || mkdir -p $DETS_DIR
-[ -f $CONFIG ]         || cp $ROOT/conf/sys.config.default $CONFIG 
 
-if [ $ROOT/conf/sys.config.default -nt $CONFIG ] 
+[ -f $CONFIG ] || cp conf/sys.config.default $CONFIG 
+
+if [ conf/sys.config.default -nt $CONFIG ] 
 then 
     echo -e "\n***WARNING*** Default Config File has been updated\n"
 fi
@@ -122,21 +91,6 @@ function start
         -boot $REL_DIR
 }
 
-function inspect_mnesia
-{
-    erl -setcookie $COOKIE \
-        -sname $NODE@$HOST \
-        -config $CONFIG
-}
-
-function load
-{
-    erl $MODE \
-        -setcookie $COOKIE \
-        -sname $NODE@$HOST \
-        -config $CONFIG
-}
-
 function gen_help
 {
     echo "==============================="
@@ -184,19 +138,6 @@ function copylog
 function debug
 {
     erl -sname debug@$HOST -setcookie $COOKIE -remsh $NODE@$HOST
-}
-
-function clear_po
-{
-    rm $ROOT/lib/hypernumbers-1.0/priv/docroot/hypernumbers/index.html.*
-}
-
-function run
-{
-    erl -sname $NODE-ctrl@$HOST \
-        -setcookie $COOKIE \
-        -eval "rpc:call($NODE@$HOST,$1,$2,$3)." \
-        -s init stop
 }
 
 function stop

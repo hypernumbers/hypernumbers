@@ -6,9 +6,7 @@
 .DS_Store
 TAGS
 tags
-db/
-dets/
-logs/
+var
 ebin/hypernumbers.*
 lib/*/ebin/*.erl
 lib/hypernumbers*/src/ms_util2.erl
@@ -18,7 +16,7 @@ lib/hypernumbers*/src/ms_util2.erl
 lib/git-svn-*
 
 ## Variable Config
-priv/hypernumbers.conf
+conf/sys.config
 
 ## Documentation
 lib/formula_engine*/doc/*.html

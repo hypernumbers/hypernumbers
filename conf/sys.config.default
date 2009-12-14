@@ -7,7 +7,7 @@
      {{127,0,0,1}, 9001},
      {{127,0,0,1}, 9002}
     ]},
-   {dets_dir, "dets"},
+   {dets_dir, "var/dets"},
    {bootstrapped,
     [{"http://127.0.0.1:9000", hypernumbers, []},
      {"http://127.0.0.1:9001", tiny_hn,
@@ -26,13 +26,13 @@
   ]},
  
 %% Mnesia Config
- {mnesia, [{dir, "db/arrian"}]},
+ {mnesia, [{dir, "var/db"}]},
  
 %% Development Config
  {sasl,
   [
    {sasl_error_logger,        false},
-   {error_logger_mf_dir,      "../logs/error"},
+   {error_logger_mf_dir,      "var/logs/error"},
    {error_logger_mf_maxbytes, 10485760},
    {error_logger_mf_maxfiles, 10}
   ]}
