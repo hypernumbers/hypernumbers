@@ -139,6 +139,13 @@ function stop
         -s init stop
 }
 
+function mergemod
+{
+    cd lib/sitemods/priv/$1/docroot
+    DEST=$ROOT/lib/sitemods/priv/$2/docroot
+    find . \( ! -regex '.*/\..*' \) -print | cpio -dump $DEST
+}
+
 case $1 in 
     start)          start $2;;
     run)            run $2 $3 $4;;
@@ -147,6 +154,7 @@ case $1 in
     copylog)        copylog $2;;
     copyfiles)      copyfiles $2;;
     build)          build $2;;
+    mergemod)       mergemod $2 $3;;
     statsvn)        statsvn;;
     visualise)      visualise;;
     *)              echo "invalid parameters passed into hypernumbers script";;
