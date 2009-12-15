@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     
-    <title>Hypernumbers Web Builder</title>
+    <title>tiny.hn - for all your tiny website needs</title>
     <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
 
   </head>
