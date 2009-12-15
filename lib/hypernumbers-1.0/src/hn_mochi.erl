@@ -29,7 +29,6 @@
 
 req(Req) ->
 
-
     #refX{site = Site} = hn_util:parse_url(get_host(Req)),
 
     case filename:extension(Req:get(path)) of
@@ -43,7 +42,6 @@ req(Req) ->
         X when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; 
         X == ".ico"; X == ".json"; X == ".gif" ->
             "/"++RelPath = Req:get(path),
-            io:format("~p ~p~n",[RelPath, docroot(Site)]),
             Req:serve_file(RelPath, docroot(Site));
         
         [] ->

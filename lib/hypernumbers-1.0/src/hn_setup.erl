@@ -33,7 +33,7 @@ setup(Site, Type, _Opts, templates) ->
     Dest = code:lib_dir(hypernumbers) ++ "/../../var/docroot/"
         ++ hn_util:parse_site(Site) ++ "/",
     ok = filelib:ensure_dir(Dest),
-    ok = hn_util:recursive_copy(moddir(Type)++"/views", Dest);
+    ok = hn_util:recursive_copy(moddir(Type)++"/docroot", Dest);
 
 setup(Site, Type, _Opts, json) ->
     ok = import_json(Site, moddir(Type));
@@ -116,7 +116,6 @@ create_site(Site, Type)->
             end,
     {atomic, ok} = mnesia:transaction(Trans),
     ok.
-
 
 %% Import a set of json files into the live spreadsheet
 import_json(Site, Dir) ->
