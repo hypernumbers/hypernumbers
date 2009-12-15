@@ -761,6 +761,7 @@ serve_file(Status, Req, File) ->
 
 cache(Source, CachedNm, Generator) ->
     Cached = tmpdir() ++ "/" ++ hn_util:bin_to_hexstr(erlang:md5(CachedNm)),
+    ok = filelib:ensure_dir(Cached),
     case not( filelib:is_file(Cached) )
         orelse hn_util:is_older(Cached, Source) of
         true -> ok = file:write_file(Cached, Generator());
