@@ -30,11 +30,11 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
 
 -spec setup(string(), atom(), list(), atom()) -> ok.
 setup(Site, Type, _Opts, templates) ->
-    Dest = code:priv_dir(hypernumbers) ++ "/docroot/views/"
+    Dest = code:lib_dir(hypernumbers) ++ "/../../var/docroot/"
         ++ hn_util:parse_site(Site) ++ "/",
-    ok = hn_util:recursive_copy(moddir(Type)++"/../../_global",
-                                Dest++"_global"),
+    ok = filelib:ensure_dir(Dest),
     ok = hn_util:recursive_copy(moddir(Type)++"/viewtemplates", Dest);
+
 setup(Site, Type, _Opts, json) ->
     ok = import_json(Site, moddir(Type));
 setup(Site, Type, _Opts, permissions) ->

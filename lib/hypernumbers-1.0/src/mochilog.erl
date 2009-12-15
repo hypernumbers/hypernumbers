@@ -21,6 +21,9 @@
 %% @spec start() -> ok
 %% @doc This starts the log
 start() ->
+
+    filelib:ensure_dir(logfile()),
+    
     Opts = [{name,?NAME}, {file,logfile()},
             {type,wrap},  {size, {2097152, 99}}],
 
@@ -406,7 +409,8 @@ startswith(_List1, _List2) ->
 logfile() ->
     logfile(?NAME).
 logfile(Name) ->
-    lists:concat([code:lib_dir(hypernumbers),"/log/",Name,".LOG"]).
+    lists:concat([code:lib_dir(hypernumbers),
+                  "/../../var/mochilog/",Name,".LOG"]).
 
 atol(X) ->
     atom_to_list(X).

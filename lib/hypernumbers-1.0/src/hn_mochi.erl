@@ -564,9 +564,14 @@ add_ref(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 
-viewroot(Site) -> docroot() ++ "/views/" ++ hn_util:parse_site(Site).
-docroot()  -> code:priv_dir(hypernumbers) ++ "/docroot".
-tmpdir()   -> code:lib_dir(hypernumbers) ++ "/tmp".
+viewroot(Site) ->
+    code:lib_dir(hypernumbers) ++ "/../../var/docroot/"
+        ++ hn_util:parse_site(Site).
+docroot() ->
+    code:priv_dir(hypernumbers) ++ "/docroot".
+tmpdir() ->
+    code:lib_dir(hypernumbers) ++ "/../../var/tmp/".
+              
 
 itol(X) -> integer_to_list(X).
 ltoi(X) -> list_to_integer(X).
