@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     
     <title>Hypernumbers App For Blonde</title>
-    <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
+    <script src="/hypernumbers/jquery-1.3.2.min.js"></script>
 
   </head>
   <body>
