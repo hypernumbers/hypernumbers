@@ -12,7 +12,6 @@ MOCHI_DIR="lib/mochiweb"
 
 ## Create mnesia and log directories
 ## and config file if they dont exist
-
 [ -f $CONFIG ] || cp conf/sys.config.default $CONFIG 
 
 if [ conf/sys.config.default -nt $CONFIG ] 
@@ -121,7 +120,9 @@ function copylog
 
 function debug
 {
-    erl -sname debug-$(date +%s)@$HOST -setcookie $COOKIE -remsh $NODE@$HOST
+    erl -sname debug-$(date +%s)@$HOST \
+        -setcookie $COOKIE \
+        -remsh $NODE@$HOST
 }
 
 function stop
