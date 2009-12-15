@@ -53,8 +53,8 @@
 {perms_and_views, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},
                    {path,     []},
                    {perms,    [read, write]},
-                   {override, "_g/tiny"},
-                   {views,    ["_g/tiny", "**"]}
+                   {override, "_g/tiny/tiny"},
+                   {views,    ["_g/tiny/tiny", "**"]}
                   ]}.
 
 {perms_and_views, [{list,    [{user, "anonymous"}, {group, "anonymous"}]},

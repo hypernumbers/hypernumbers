@@ -446,7 +446,8 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 %% @todo extend this to a dirty shared formula
 %% @todo needs to be ran inside transaction from
 %% other module, kinda ugly, fix
-handle_dirty_cell(Site, Rec) ->    
+handle_dirty_cell(Site, Rec) ->
+    
     ok   = init_front_end_notify(),  
     Cell = hn_db_wu:read_dirty_cell(Site, Rec),
     

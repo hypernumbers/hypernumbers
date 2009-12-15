@@ -1,7 +1,7 @@
 body { 
     margin     : 0px;
     padding    : 0px;
-    background : #F9F9F9;
+    background : #FFF;
     font       : 12px Arial,"Helvetica Neue", sans-serif;
 }
 
@@ -28,9 +28,8 @@ body {
 
 #outer {
     position   : relative;
-    width      : 950px;
+    width      : 800px;
     margin     : 0 auto;
-    background : #fff url('images/abg.gif') repeat-y;
 }
 
 #inner {
@@ -77,7 +76,7 @@ body {
 #primarycontent {
     padding: 0px 10px 10px 10px;
     min-height : 100px;
-    width      : 460px; 
+    width      : 580px; 
     float      : left;
 }
 
@@ -124,7 +123,6 @@ body {
 form.hn { 
     margin: 5px;
     padding: 5px;
-    border: 1px solid #EEE;
 }
 
 label { 
@@ -140,4 +138,22 @@ label span {
 textarea {
     width:80%;
     height:100px;
+}
+
+.submit {
+    margin:20px 0px;
+    padding:10px;
+    font       : bold 18px Arial,"Helvetica Neue", sans-serif;
+}
+
+#secondarycontent .row { 
+    background: #EEE;
+    margin:5px;
+    padding:5px;
+}
+
+.choice {
+    float:left;
+    margin: 10px;
+    text-align:center;
 }

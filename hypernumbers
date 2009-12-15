@@ -1,13 +1,10 @@
 #!/bin/bash
 
-export HEART_COMMAND="./hypernumbers start detached"
-
 NODE=arrian
 HOST=localhost
 COOKIE=abc
-RELNAME=hypernumbers
 
-REL_DIR=ebin/$RELNAME
+BOOTFILE=ebin/hypernumbers
 CONFIG=conf/sys.config
 
 HN_DIR="lib/hypernumbers-1.0"
@@ -73,31 +70,19 @@ function start
 {
     MODE="-detached"
     RELOAD=""
-    HEART=""
 
     if [ $# -lt 1 ] 
     then
         MODE=""
         RELOAD="-run reloader start"
-        HEART=""
     fi
 
     erl $MODE \
         $RELOAD \
-	    $HEART \
         -setcookie $COOKIE \
         -sname $NODE@$HOST \
         -config $CONFIG \
-        -boot $REL_DIR
-}
-
-function gen_help
-{
-    echo "==============================="
-    echo "     Building Help Files       "
-    echo "==============================="
-    erlc -o ebin -I $HN_DIR/include priv/make_help/generate_help.erl
-    erl -pa ebin -pa $HN_DIR/ebin -pa $MOCHI_DIR/ebin -s generate_help run -s init stop
+        -boot $BOOTFILE
 }
 
 function visualise
@@ -122,8 +107,7 @@ function copyfiles
     SRC=$NAME@$1:www/$1/priv/uploads/*
     DEST=lib/hypernumbers-1.0/log/$1/uploads/
     [ -d $DEST ] || /bin/mkdir -p $DEST
-    /usr/bin/scp $SRC $DEST
-        
+    /usr/bin/scp $SRC $DEST        
 }
 
 function copylog
@@ -137,7 +121,7 @@ function copylog
 
 function debug
 {
-    erl -sname debug@$HOST -setcookie $COOKIE -remsh $NODE@$HOST
+    erl -sname debug-$(date +%s)@$HOST -setcookie $COOKIE -remsh $NODE@$HOST
 }
 
 function stop
@@ -151,7 +135,6 @@ function stop
 
 case $1 in 
     start)          start $2;;
-    load)           load;;
     run)            run $2 $3 $4;;
     debug)          debug;;
     stop)           stop;;
@@ -160,8 +143,5 @@ case $1 in
     build)          build $2;;
     statsvn)        statsvn;;
     visualise)      visualise;;
-    gen_help)       gen_help;;
-    inspect_mnesia) inspect_mnesia;;
-    clear_po)       clear_po;;
     *)              echo "invalid parameters passed into hypernumbers script";;
 esac
