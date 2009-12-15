@@ -3,30 +3,73 @@
 -module(hn_setup).
 
 -export([
-         site/3,
          startup/0,
+         site/3,
+         update/0,
          update/3,
-         update/4,
          add_user/2
         ]).
 
 -include("spriki.hrl").
 
--spec site(string(), atom(), [{atom(), any()}]) -> ok. 
-site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
-
-    error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
-    
-    ok = create_site(Site, Type),
-
-    ok = setup(Site, Type, Opts, json),
-    ok = setup(Site, Type, Opts, templates),
-    ok = setup(Site, Type, Opts, permissions),
-    ok = setup(Site, Type, Opts, script),
-    ok = setup(Site, Type, Opts, user_permissions),
-    ok = setup(Site, Type, Opts, users),
-
+%% Startup current sites. 
+-spec startup() -> ok. 
+startup() ->
+    F = fun(#core_site{site = Site}, _Acc) ->
+                ok = launch_site(Site)
+        end,
+    Trans = fun() -> mnesia:foldl(F, nil, core_site) end,
+    {atomic, _} = mnesia:transaction(Trans),
     ok.
+
+
+%% Setup a new site from scratch
+-spec site(string(), atom(), [{atom(), any()}]) -> ok.
+site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
+    error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
+    All = [json, templates, permissions, script, user_permissions, users],
+    ok  = create_site(Site, Type),
+    ok  = update(Site, Type, Opts, All).
+
+
+%% Update all existing sites with default options
+-spec update() -> ok. 
+update() ->
+    update([], [templates]).
+
+%% Update all sites
+-spec update(list(), list()) -> ok. 
+update(Opaque, Opts) ->
+    F = fun(#core_site{site=Site, type=Type}, _Acc) ->
+                update(Site, Type, Opaque, Opts)
+        end,
+    Trans = fun() -> mnesia:foldl(F, nil, core_site) end,
+    {atomic, _} = mnesia:transaction(Trans),
+    ok.
+
+-spec update(string(), list(), list()) -> ok.
+update(Site, Opaque, Opts) ->
+    update(Site, get_type_by_site(Site), Opaque, Opts).
+
+-spec update(string(), atom(), list(), list()) -> ok.
+update(Site, Type, Opaque, Opts) ->
+    [ ok = setup(Site, Type, Opaque, X) || X <- Opts ],
+    ok.
+
+
+-spec add_user(#refX{}, #hn_user{}) -> ok.
+add_user(Site, User) ->
+    Type   = get_type_by_site(Site),
+    Script = [moddir(Type),"/","user.permissions.script"],
+    case filelib:is_file(Script) of
+        true  ->
+            {ok, Terms} = file:consult(Script),
+            [ add_u(Site, User, Term) || Term <- Terms, is_term(Term)],
+            ok;
+        false ->
+            ok
+    end.
+
 
 -spec setup(string(), atom(), list(), atom()) -> ok.
 setup(Site, Type, _Opts, templates) ->
@@ -52,34 +95,14 @@ setup(Site, _Type, _Opts, user_permissions) ->
     [ add_user(Site, User) || User <- Users],
     ok.
 
--spec update(string(), atom(), list()) -> ok. 
-update(Site, Type, ToUpdate) ->
-    update(Site, Type, [], ToUpdate).
--spec update(string(), atom(), list(), list()) -> ok. 
-update(Site, Type, Opts, ToUpdate) ->
-    [ ok = setup(Site, Type, Opts, X) || X <- ToUpdate ],
-    ok.
-
 -spec moddir(atom()) -> string(). 
 moddir(Type) ->
     code:priv_dir(sitemods) 
         ++ "/" ++ atom_to_list(Type).
 
--spec startup() -> ok. 
-%% Startup current sites. 
-startup() ->
-    F = fun(#core_site{site = Site}, Acc) ->
-                ok = launch_site(Site),
-                Acc
-        end,
-    Trans = fun() -> mnesia:foldl(F, nil, core_site) end,
-    {atomic, _} = mnesia:transaction(Trans),
-    ok.
-
 -spec launch_site(string()) -> ok. 
 launch_site(Site) ->
     ok = dirty_srv:start(Site).
-
 
 -define(RIF(R), record_info(fields, R)).
 -spec create_site(string(), atom()) -> ok.
@@ -144,28 +167,24 @@ is_term(_)          -> true.
 
 run_users({{user,Usr}, {group,Grp}, {email,_Mail}, {password,Pass}},
           Site, Opts) ->
-    ok = hn_users:create(Site,
-                         resolve_user(Usr, Opts),
-                         Grp,
-                         resolve_password(Pass, Opts)).
-
+    ok = hn_users:create(Site, resolve_user(Usr, Opts),
+                         Grp,  resolve_password(Pass, Opts)).
 
 resolve_user('$user', Opts) ->
     case pget(user, Opts, undefined) of
         undefined -> throw(no_user);
-        U -> U
+        U         -> U
     end;
-resolve_user(User, _Opts) -> User.
- 
-%% resolve_email('$email', Opts) -> pget(email, Opts);
-%% resolve_email(EMail, _Opts)     -> EMail.
+resolve_user(User, _Opts) ->
+    User.
  
 resolve_password('$password', Opts) ->
     case pget(password, Opts, undefined) of
         undefined -> throw(no_pass);
-        P -> P
+        P         -> P
     end;
-resolve_password(Password, _Opts) -> Password.
+resolve_password(Password, _Opts) ->
+    Password.
 
 run_perms({perms_and_views, C}, Site) ->
     auth_srv:add_perms_and_views(Site,  lget(list, C),
@@ -182,8 +201,7 @@ run_perms({views, V}, Site) ->
                        lget(override, V), lget(views, V));
 
 run_perms({default, D}, Site)  ->
-    auth_srv:add_default(Site,
-                         lget(path, D), lget(default, D)).
+    auth_srv:add_default(Site, lget(path, D), lget(default, D)).
 
 run_script({Path, '$email'}, Site, Opts) ->
     run_script2(Path, Site, pget(email, Opts));
@@ -235,21 +253,14 @@ add_u(Site, User, {perms_and_views,
                     {override, Def},
                     {views,    Views}
                    ]}) ->
-    
     auth_srv:add_perms_and_views(Site,
                                  replace("$user", hn_users:name(User), Auth),
                                  replace("$user", hn_users:name(User), Path),
                                  Perms, Def, Views).
 
--spec add_user(#refX{}, #hn_user{}) -> ok.
-add_user(Site, User) ->
-    [{core_site, Site, Type}] = mnesia:dirty_read(core_site, Site),
-    Script = [moddir(Type),"/","user.permissions.script"],
-    case filelib:is_file(Script) of
-        true  ->
-            {ok, Terms} = file:consult(Script),
-            [ add_u(Site, User, Term) || Term <- Terms, is_term(Term)],
-            ok;
-        false ->
-            ok
-    end.
+
+-spec get_type_by_site(list()) -> ok.
+get_type_by_site(Site) ->
+    [#core_site{type=Type}] = mnesia:dirty_read(core_site, Site),
+    Type.
+

@@ -46,8 +46,8 @@ req(Req) ->
         
         [] ->
             case catch do_req(Req) of 
-                ok                -> ok;
-                Else              -> '500'(Req, Else)
+                ok   -> ok;
+                Else -> '500'(Req, Else)
             end
     end.
     
