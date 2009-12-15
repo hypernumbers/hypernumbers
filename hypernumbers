@@ -3,6 +3,7 @@
 NODE=arrian
 HOST=localhost
 COOKIE=abc
+ETS_TABLES=18000
 
 BOOTFILE=ebin/hypernumbers
 CONFIG=conf/sys.config
@@ -81,7 +82,8 @@ function start
         -setcookie $COOKIE \
         -sname $NODE@$HOST \
         -config $CONFIG \
-        -boot $BOOTFILE
+        -boot $BOOTFILE \
+        -env ERL_MAX_ETS_TABLES $ETS_TABLES
 }
 
 function visualise
