@@ -33,7 +33,7 @@ setup(Site, Type, _Opts, templates) ->
     Dest = code:lib_dir(hypernumbers) ++ "/../../var/docroot/"
         ++ hn_util:parse_site(Site) ++ "/",
     ok = filelib:ensure_dir(Dest),
-    ok = hn_util:recursive_copy(moddir(Type)++"/viewtemplates", Dest);
+    ok = hn_util:recursive_copy(moddir(Type)++"/views", Dest);
 
 setup(Site, Type, _Opts, json) ->
     ok = import_json(Site, moddir(Type));
@@ -63,7 +63,7 @@ update(Site, Type, Opts, ToUpdate) ->
 -spec moddir(atom()) -> string(). 
 moddir(Type) ->
     code:priv_dir(sitemods) 
-        ++ "/site_templates/sites/" ++ atom_to_list(Type).
+        ++ "/" ++ atom_to_list(Type).
 
 -spec startup() -> ok. 
 %% Startup current sites. 
@@ -121,7 +121,7 @@ create_site(Site, Type)->
 %% Import a set of json files into the live spreadsheet
 import_json(Site, Dir) ->
     [ ok = hn_import:json_file(Site ++ create_path_from_name(Json), Json)
-      || Json <- filelib:wildcard(Dir++"/*.json")],
+      || Json <- filelib:wildcard(Dir++"/data/*.json")],
     ok.
 
 create_path_from_name(Name) ->
