@@ -28,18 +28,23 @@
         exit("exit from hn_mochi:handle_req impossible page versions")).
 
 req(Req) ->
+
+
+    #refX{site = Site} = hn_util:parse_url(get_host(Req)),
+
     case filename:extension(Req:get(path)) of
         
         % Dont Cache templates
         X when X == ".tpl" ->
             "/"++RelPath = Req:get(path),
-            Req:serve_file(RelPath, docroot(), ?hdr);            
+            Req:serve_file(RelPath, docroot(Site), ?hdr);            
         
         % Serve Static Files
         X when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; 
         X == ".ico"; X == ".json"; X == ".gif" ->
             "/"++RelPath = Req:get(path),
-            Req:serve_file(RelPath, docroot());
+            io:format("~p ~p~n",[RelPath, docroot(Site)]),
+            Req:serve_file(RelPath, docroot(Site));
         
         [] ->
             case catch do_req(Req) of 
@@ -85,9 +90,9 @@ do_req(Req) ->
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->
-            serve_html(404, Req, [viewroot(Site), "/_global/404.html"], User);
+            serve_html(404, Req, [docroot(Site), "/_global/404.html"], User);
         {return, '401'} ->
-            serve_html(401, Req, [viewroot(Site), "/_global/login.html"], User);
+            serve_html(401, Req, [docroot(Site), "/_global/login.html"], User);
         {html, File}    ->
             case Vars of
                 [] -> handle_req(Method, Req, Ref, [{"view", File}], User);
@@ -148,13 +153,13 @@ iget(Req, Ref=#refX{path=["_user", "login"]}, page, [], User, html) ->
 
 iget(Req, #refX{site = Site} = _Ref, page, [{"view", FName}, {"template", []}],
      User, html) ->
-    serve_html(Req, [viewroot(Site), "/", FName, ".tpl"], User);
+    serve_html(Req, [docroot(Site), "/", FName, ".tpl"], User);
     
 iget(Req, #refX{site = Site} = _Ref, page, [{"view", FName}], User, html) ->
 
     %% If there is a template, generate html
-    Tpl  = [viewroot(Site), "/", FName, ".tpl"],
-    Html = [viewroot(Site), "/", FName, ".html"],
+    Tpl  = [docroot(Site), "/", FName, ".tpl"],
+    Html = [docroot(Site), "/", FName, ".html"],
     
     ok = case filelib:is_file(Tpl) andalso
              ( not(filelib:is_file(Html))
@@ -186,7 +191,7 @@ iget(Req, #refX{site = S, path = P}, page, [{"permissions_debug", []}], User, _C
     Req:ok({"text/html", auth_srv:permissions_DEBUG(S, {Name, Groups}, P)});
 
 % List of template pages
-iget(Req, _Ref, page, [{"templates", []}], _User, _CType) ->
+iget(Req, Ref, page, [{"templates", []}], _User, _CType) ->
     Fun = fun(X) ->
                   [F | _T] = lists:reverse(string:tokens(X, "/")),
                   case F of
@@ -195,7 +200,7 @@ iget(Req, _Ref, page, [{"templates", []}], _User, _CType) ->
                   end
           end,
     Files = lists:dropwhile(Fun,
-              filelib:wildcard(docroot()++"/templates/*")),
+              filelib:wildcard(docroot(Ref#refX.site)++"/templates/*")),
     File = [filename:basename(X) || X <- Files], 
     json(Req, {array, File});
 
@@ -212,7 +217,7 @@ iget(Req, #refX{site = Site} = _Ref, page, [{"views", []}], User, _CType) ->
             end,
     
     F = fun(Dir, Acc) ->
-                Files = filelib:wildcard(viewroot(Site)++Dir++"*.tpl"),
+                Files = filelib:wildcard(docroot(Site)++Dir++"*.tpl"),
                 Acc ++ [ Strip(X) || X <- Files ]
         end,
     
@@ -366,7 +371,7 @@ ipost(#refX{site = Site} = _Ref, _Type, _Attr,
 
     case can_save_view(User, Name) of
         true ->
-            File = [viewroot(Site), "/" , Name ++ ".tpl"],
+            File = [docroot(Site), "/" , Name ++ ".tpl"],
             ok = filelib:ensure_dir(File),
             ok = file:write_file(File, Form);
         
@@ -528,9 +533,11 @@ can_save_view(User, "_g/"++FName) ->
 %% Some clients dont send ip in the host header
 get_host(Req) ->
     Host = case Req:get_header_value("HN-Host") of
-               undefined -> lists:takewhile(fun(X) -> X /= $: end,
-                                            Req:get_header_value("host")); 
-               ProxiedHost -> ProxiedHost
+               undefined ->
+                   lists:takewhile(fun(X) -> X /= $: end,
+                                   Req:get_header_value("host")); 
+               ProxiedHost ->
+                   ProxiedHost
            end,
     Port = case Req:get_header_value("HN-Port") of
                undefined -> 
@@ -564,11 +571,9 @@ add_ref(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 
-viewroot(Site) ->
+docroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/docroot/"
         ++ hn_util:parse_site(Site).
-docroot() ->
-    code:priv_dir(hypernumbers) ++ "/docroot".
 tmpdir() ->
     code:lib_dir(hypernumbers) ++ "/../../var/tmp/".
               
@@ -809,15 +814,15 @@ get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
 
 '404'(Req, User) ->
     #refX{site = Site} = hn_util:parse_url(get_host(Req)),
-    serve_html(404, Req, viewroot(Site)++"/_global/404.html", User).
+    serve_html(404, Req, docroot(Site)++"/_global/404.html", User).
 
 build_tpl(Site, Tpl) ->
-    {ok, Master} = file:read_file([viewroot(Site), "/_global/built.tpl"]),
-    {ok, Gen}    = file:read_file([viewroot(Site), "/", Tpl, ".tpl"]),
+    {ok, Master} = file:read_file([docroot(Site), "/_global/built.tpl"]),
+    {ok, Gen}    = file:read_file([docroot(Site), "/", Tpl, ".tpl"]),
 
     New = re:replace(Master, "%BODY%", hn_util:esc_regex(Gen),
                      [{return, list}]),
-    file:write_file([viewroot(Site), "/", Tpl, ".html"], New).
+    file:write_file([docroot(Site), "/", Tpl, ".html"], New).
     
 pages_to_json(Dict) ->
     F = fun(X) -> pages_to_json(X, dict:fetch(X, Dict)) end,
