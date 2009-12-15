@@ -30,7 +30,7 @@ body {
     position   : relative;
     width      : 747px;
     margin     : 0 auto;
-    background : #fff url('images/abg.gif') repeat-y;
+    background : #fff url('abg.gif') repeat-y;
 }
 
 #inner {
