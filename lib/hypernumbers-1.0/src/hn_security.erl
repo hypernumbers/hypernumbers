@@ -10,7 +10,25 @@
 
 -export([run/0]).
 
+-compile(export_all).
+
+-include_lib("eunit/include/eunit.hrl").
 -include("security.hrl").
+
+%% this is how a form posts...
+%% in ipost Array is [{struct,[{"ref","/u/gordon/blah/A:A"},
+%%                             {"formula","Field 1"}]},
+%%                    {struct,[{"ref","/u/gordon/blah/B:B"},
+%%                             {"formula","Field 2"}]},
+%%                    {struct,[{"ref","/u/gordon/blah/C:C"},
+%%                             {"formula","Field 3"}]},
+%%                    {struct,[{"ref","/u/gordon/blah/D:D"},
+%%                             {"formula","Field 4"}]}]
+%% Ref is {refX,"http://127.0.0.1:9000",["u","gordon","blah"],{page,"/"},[]}
+%%
+%% this is how a cell posts
+%% in ipost Array is [{struct,[{"ref","/u/gordon/blah/D:D"},{"formula","Test"}]}]
+%% Ref is {refX,"http://127.0.0.1:9000",["u","gordon","blah"],{page,"/"},[]}
 
 run() ->
     File = "/opt/code/trunk/lib/hypernumbers-1.0/priv/docroot/"
@@ -58,3 +76,34 @@ make_t1([formstart | T], A1, A2, false) -> make_t1(T, A1, A2, true);
 make_t1([formend | T], A1, A2, true)    -> make_t1(T, [], [A1 | A2], false);
 make_t1([H | T], A1, A2, true)          -> make_t1(T, [H | A1], A2, true);
 make_t1([H | T], A1, A2, false)         -> make_t1(T, A1, [H | A2], false).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                          %%%
+%%% EUnit Tests                                                              %%%
+%%%                                                                          %%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+test1() ->
+    _Input = [{struct,[{"ref","/u/gordon/blah/A:A"},
+                      {"formula","Field 1"}]},
+             {struct,[{"ref","/u/gordon/blah/B:B"},
+                      {"formula","Field 2"}]},
+             {struct,[{"ref","/u/gordon/blah/C:C"},
+                      {"formula","Field 3"}]},
+             {struct,[{"ref","/u/gordon/blah/D:D"},
+                      {"formula","Field 4"}]}],
+    _Ref   = {refX,"http://127.0.0.1:9000",["u","gordon","blah"],{page,"/"},[]},
+    _Form  = "<div id='ventris'><link rel='stylesheet' type='text/css' href='/templates/ventris/default.css'></link><div id='outer'><div id='inner'><div class='clear'><div id='header'><div data-binding-from='/A1' class='hn header' data-type='text'></div><div id='menu'></div></div></div><div id='contentwrapper'><div id='primarycontent'></div><div id='secondarycontent'><form class='hn' data-type='form'><label><span><div data-binding-from='A3' class='hn' data-type='text'></div></span></label><div class='hn' data-type='input' data-binding-to='A:A'></div><label><span><div data-binding-from='B3' class='hn' data-type='text'></div></span></label><div class='hn' data-type='input' data-binding-to='B:B'></div><label><span><div data-binding-from='C3' class='hn' data-type='text'></div></span></label><div class='hn' data-type='input' data-binding-to='C:C'></div><label><span><div data-binding-from='D3' class='hn' data-type='text'></div></span></label><div class='hn' data-type='input' data-binding-to='D:D'></div><input type='submit' value='submit'></input></form></div></div><div id='footer'></div></div></div></div>",
+    false.
+
+test2() ->
+    _Input = [{struct,[{"ref","/u/gordon/blah/D:D"},{"formula","Test"}]}],
+    _Ref   = {refX,"http://127.0.0.1:9000",["u","gordon","blah"],{page,"/"},[]},
+    _Form  = "<link href='/templates/tiny/default.css' type='text/css' rel='stylesheet'></link><div id='outer'><div id='inner'><div class='clear'><div id='header'><div data-type='text' class='hn header' data-binding-from='B2'></div><div id='menu'></div></div></div><div id='plaincontent'></div><div id='contentwrapper'><div id='primarycontent'></div><div id='secondarycontent'></div><div data-type='input' class='hn' data-binding-to='D6'></div></div><div id='plaincontent'></div><div id='footer'></div></div></div></div>",
+    false.
+
+unit_test_() -> 
+    [
+     ?_assert(test1()),
+     ?_assert(test2())
+    ].
