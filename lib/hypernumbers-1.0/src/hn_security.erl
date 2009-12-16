@@ -47,14 +47,11 @@ is_approved(RefX, Json, [H | T]) ->
     end.
 
 is_approved2(RefX, Json, Transaction) ->
-    io:format("RefX is ~p~nJson is ~p~nTransaction is ~p~n", [RefX, Json, Transaction]),
     Approved = make_approved(RefX, Transaction),
-    io:format("Approved is ~p~n", [Approved]),
     Candidate = make_candidate(Json),
-    io:format("Candidate is ~p~n", [Candidate]),
     is_app3(Candidate, Approved).
 
-%% both lists must be the same lentgh
+%% both lists must be the same length
 is_app3([], [])                              -> true;
 is_app3(_X, [])                              -> false;
 is_app3([], _X)                              -> false;
@@ -77,7 +74,6 @@ make_a2(_RefX, [], Acc)      -> Acc;
 make_a2(RefX,  [H | T], Acc) -> make_a2(RefX, T, [make_a3(RefX, H) | Acc]).
 
 make_a3(#refX{path = P}, #binding{type = Type, to = To}) ->
-    io:format("P is ~p Type is ~p To is ~p~n", [P, Type, To]),
     P2 = make_abs_path(P, To),
     {P2, allowed_values(P2, Type)}.
 
