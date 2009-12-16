@@ -1,4 +1,4 @@
-%-----------------------------------------------------------------------------
+%%%-----------------------------------------------------------------------------
 %%% File        hn_util.erl
 %%% @author     Dale Harvey
 %%% @doc        Utilities for hypernumbers application
@@ -20,7 +20,7 @@
 
 -export([
          email/4, email/5,
-         get_html_files/1,
+         % get_html_files/1, commented out 16/12/2009 = delete after a month GG
 
          % HyperNumbers Utils
          compile_html/2,
@@ -131,19 +131,19 @@ rec_copy1(From, To, File) ->
             end
     end.
 
-get_html_files(List) -> get_html_files1(List, []).
+% get_html_files(List) -> get_html_files1(List, []).
 
-get_html_files1([], Acc)      -> Acc;
-get_html_files1([H | T], Acc) ->
-    RegExp = "(\\.[h|H][t|T][m|M][l|L])$", %" highlighting fix
-    NewAcc = case re:run(H, RegExp) of
-                 {match, _} -> R = re:replace(H, RegExp, "", [{return, list}]),
-                               S = {struct, [{path, "/dogfood2/"},
-                                             {file, R}]},
-                               [S | Acc];
-                 nomatch    -> Acc
-             end,
-    get_html_files1(T, NewAcc).
+% get_html_files1([], Acc)      -> Acc;
+% get_html_files1([H | T], Acc) ->
+%     RegExp = "(\\.[h|H][t|T][m|M][l|L])$", %" highlighting fix
+%     NewAcc = case re:run(H, RegExp) of
+%                  {match, _} -> R = re:replace(H, RegExp, "", [{return, list}]),
+%                                S = {struct, [{path, "/dogfood2/"},
+%                                              {file, R}]},
+%                                [S | Acc];
+%                  nomatch    -> Acc
+%              end,
+%     get_html_files1(T, NewAcc).
 
 diff(Time2, Time1) ->
     {Mega2, Sec2, Micro2} = Time2,
