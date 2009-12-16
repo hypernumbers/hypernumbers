@@ -200,11 +200,11 @@ provision(Site, Port, Row, State) ->
     RefX3 = RefX#refX{obj = {cell, {5, Row}}},
     RefX4 = RefX#refX{obj = {cell, {6, Row}}},
     
-    Template = code:priv_dir(sitemods) 
-        ++ "/site_templates/sites/" ++ Type2,
-    
+    Template = code:priv_dir(sitemods) ++
+        "/" ++ Type2,
+
     DoesSiteTemplateExist = filelib:is_dir(Template),
-    
+
     case {IsValidEmail, DoesSiteTemplateExist} of
         {not_email, false} ->
             Sub = "Not Allocated - invalid e-mail " ++ Email

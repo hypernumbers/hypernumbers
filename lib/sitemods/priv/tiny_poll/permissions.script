@@ -48,32 +48,18 @@
 %% Note that the expressions end in a full stop '.'
 %%
 
-{perms_and_views, [{list,     [{user, "*"}]},
-                   {path,     []},
-                   {perms,    [read, write]},
-                   {override, "_global/spreadsheet"},
-                   {views,    ["_global/spreadsheet", "_global/pagebuilder", "**"]}]}.
+{perms_and_views,
+ [{list,     [{user, "*"}]},
+  {path,     []},
+  {perms,    [read, write]},
+  {override, "_g/tiny_poll/home"},
+  {views,    ["_g/tiny_poll/home"]}
+ ]}.
 
-{perms_and_views, [{list,     [{user, "*"}]},
-                   {path,     ["[**]"]},
-                   {perms,    [read, write]},
-                   {override, "_global/spreadsheet"},
-                   {views,    ["_global/spreadsheet", "_global/pagebuilder", "**"]}]}.
-
-{perms_and_views, [{list,     [{user, "gordon"}, {group, "dev"}, {group, "admin"}]},
-                   {path,     ["some", "path"]},
-                   {perms,    [read, write]},
-                   {override, "_global/spreadsheet"},
-                   {views,    ["_global/spreadsheet", "_global/pagebuilder", "**"]}]}.
-
-{perm, [{list,  [{user, "gordon"}, {group, "dev"}]},
-        {path,  ["some", "path"]},
-        {perms, [read, write]}]}.
-
-{views, [{list,     [{user, "gordon"}, {group, "dev"}]},
-         {path,     ["some", "path"]},
-         {override, ""},
-         {views,    ["_global/spreadsheet"]}]}.
-
-{default, [{path,    ["some", "page"]},
-           {default, "_global/home"}]}.
+{perms_and_views,
+ [{list,     [{user, "*"}]},
+  {path,     ["_user", "login"]},
+  {perms,    [read, write]},
+  {override, "_global/login"},
+  {views,    ["_global/login"]}
+ ]}.

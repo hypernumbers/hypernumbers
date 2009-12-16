@@ -5,12 +5,13 @@
 -export([
          startup/0,
          site/3,
-         update/0,
+         update/0, update/1,
          update/3,
          add_user/2
         ]).
 
 -include("spriki.hrl").
+
 
 %% Startup current sites. 
 -spec startup() -> ok. 
@@ -36,6 +37,10 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
 -spec update() -> ok. 
 update() ->
     update([], [templates]).
+
+-spec update(list()) -> ok. 
+update(Opts) ->
+    update([], Opts).
 
 %% Update all sites
 -spec update(list(), list()) -> ok. 
@@ -247,19 +252,16 @@ replace(_Key, _Val, Else) ->
     Else.
 
 add_u(Site, User, {perms_and_views,
-                   [{list,     Auth},
-                    {path,     Path},
-                    {perms,    Perms},
-                    {override, Def},
-                    {views,    Views}
-                   ]}) ->
+                   [{list,     Auth},  {path,     Path},
+                    {perms,    Perms}, {override, Def},
+                    {views,    Views}]}) ->
     auth_srv:add_perms_and_views(Site,
-                                 replace("$user", hn_users:name(User), Auth),
-                                 replace("$user", hn_users:name(User), Path),
+                                 replace('$user', hn_users:name(User), Auth),
+                                 replace('$user', hn_users:name(User), Path),
                                  Perms, Def, Views).
 
 
--spec get_type_by_site(list()) -> ok.
+-spec get_type_by_site(list()) -> atom().
 get_type_by_site(Site) ->
     [#core_site{type=Type}] = mnesia:dirty_read(core_site, Site),
     Type.

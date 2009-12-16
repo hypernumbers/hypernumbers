@@ -1,0 +1,18 @@
+%%-*-erlang-*-
+
+%% Home page
+{perms_and_views,
+ [{list,     [{user, '$user'}]},
+  {path ,    []},
+  {perms,    [read, write]},
+  {override, "_g/tiny_poll/home"},
+  {views,    ["_g/tiny_poll/home"]}
+ ]}.
+
+{perms_and_views,
+ [{list,     [{user, '$user'}]},
+  {path ,    ["admin"]},
+  {perms,    [read, write]},
+  {override, "_g/tiny_poll/admin"},
+  {views,    ["_g/tiny_poll/admin"]}
+ ]}.
