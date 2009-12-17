@@ -128,7 +128,6 @@ moddir(Type) ->
 launch_site(Site) ->
     ok = dirty_srv:start(Site).
 
--define(RIF(R), record_info(fields, R)).
 -spec create_site(string(), atom()) -> ok.
 create_site(Site, Type)->
     %% Seems sensible to keep this restricted
@@ -144,6 +143,7 @@ create_site(Site, Type)->
     {atomic, ok} = mnesia:transaction(Trans),
     ok.
 
+-define(RIF(R), record_info(fields, R)).
 tables() ->
     [{dirty_cell,            ?RIF(dirty_cell),            set, []},      
      {dirty_notify_in,       ?RIF(dirty_notify_in),       set, []},         
