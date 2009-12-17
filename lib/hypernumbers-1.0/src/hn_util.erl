@@ -20,9 +20,9 @@
 
 -export([
          email/4, email/5,
-         % get_html_files/1, commented out 16/12/2009 = delete after a month GG
 
          % HyperNumbers Utils
+         delete_directory/1,
          compile_html/2,
          delete_gen_html/0,
          generate_po/1,
@@ -76,7 +76,6 @@
          js_to_utf8/1,
          diff/2,
          lists_diff/2,
-
          esc_regex/1,
          
          % file copy utils
@@ -91,6 +90,7 @@
 
 %% Escape the replacement part of the regular expression
 %% so no spurious replacements
+-spec esc_regex(list() | binary()) -> list().
 esc_regex(List) when is_binary(List) ->
     esc_regex(binary_to_list(List));
 esc_regex(List) ->
@@ -108,7 +108,10 @@ recursive_copy(From, To) ->
     [ok = rec_copy1(From, To, X) || X <- Files],
     ok.
 
-rec_copy1(_From, _To, [$. | _T]) -> ok; % ignore hidden
+
+% ignore hidden
+rec_copy1(_From, _To, [$. | _T]) ->
+    ok; 
 rec_copy1(From, To, File) ->
 
     NewFrom = filename:join(From, File),
@@ -131,19 +134,19 @@ rec_copy1(From, To, File) ->
             end
     end.
 
-% get_html_files(List) -> get_html_files1(List, []).
 
-% get_html_files1([], Acc)      -> Acc;
-% get_html_files1([H | T], Acc) ->
-%     RegExp = "(\\.[h|H][t|T][m|M][l|L])$", %" highlighting fix
-%     NewAcc = case re:run(H, RegExp) of
-%                  {match, _} -> R = re:replace(H, RegExp, "", [{return, list}]),
-%                                S = {struct, [{path, "/dogfood2/"},
-%                                              {file, R}]},
-%                                [S | Acc];
-%                  nomatch    -> Acc
-%              end,
-%     get_html_files1(T, NewAcc).
+%% Delete a directory (and all its children)
+-spec delete_directory(string()) -> ok.
+delete_directory(From) ->
+    {ok, Files} = file:list_dir(From),
+    [ok = delete_dir(filename:join(From, File)) || File <- Files],
+    ok = file:del_dir(From).
+
+delete_dir(File) ->
+    case filelib:is_dir(File) of
+        true  -> delete_directory(File);
+        false -> file:delete(File)
+    end.
 
 diff(Time2, Time1) ->
     {Mega2, Sec2, Micro2} = Time2,

@@ -5,6 +5,7 @@
 -export([
          startup/0,
          site/3,
+         delete_site/1,
          update/0, update/1,
          update/3,
          add_user/2
@@ -33,6 +34,24 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     ok  = update(Site, Type, Opts, All).
 
 
+%% Delete a site
+%% TODO : stop any supervisors if they are running
+-spec delete_site(string()) -> ok.
+delete_site(Host) ->
+
+    Dest = code:lib_dir(hypernumbers) ++ "/../../var/docroot/"
+        ++ hn_util:parse_site(Host) ++ "/",
+    
+    auth_srv:clear_all_perms_DEBUG(Host),
+    [ {atomic, ok}  = mnesia:delete_table(hn_db_wu:trans(Host, Table))
+      || {Table, _F, _T, _I} <- tables()],
+    
+    ok = hn_util:delete_directory(Dest),
+    ok = mnesia:dirty_delete(core_site, Host).
+
+
+
+  
 %% Update all existing sites with default options
 -spec update() -> ok. 
 update() ->
@@ -115,35 +134,36 @@ create_site(Site, Type)->
     %% Seems sensible to keep this restricted
     %% to disc_copies for now
     Storage = disc_copies,
-    Opts = 
-        [{dirty_cell,            ?RIF(dirty_cell),            set, []},      
-         {dirty_notify_in,       ?RIF(dirty_notify_in),       set, []},         
-         {dirty_inc_hn_create,   ?RIF(dirty_inc_hn_create),   set, []},         
-         {dirty_notify_back_in,  ?RIF(dirty_notify_back_in),  set, []},         
-         {dirty_notify_out,      ?RIF(dirty_notify_out),      set, []},         
-         {dirty_notify_back_out, ?RIF(dirty_notify_back_out), set, []},         
-         {item,                  ?RIF(item),                  bag, [key]},      
-         {local_objs,            ?RIF(local_objs),            bag, [obj,idx]}, 
-         {local_cell_link,       ?RIF(local_cell_link),       bag, [childidx]}, 
-         {hn_user,               ?RIF(hn_user),               set, []},         
-         {remote_objs,           ?RIF(remote_objs),           set, []},         
-         {remote_cell_link,      ?RIF(remote_cell_link),      bag, []},         
-         {incoming_hn,           ?RIF(incoming_hn),           set, []},         
-         {outgoing_hn,           ?RIF(outgoing_hn),           set, []},         
-         {styles,                ?RIF(styles),                bag, []},         
-         {style_counters,        ?RIF(style_counters),        set, []},         
-         {page_vsn,              ?RIF(page_vsn),              set, []},         
-         {page_history,          ?RIF(page_history),          bag, []}],        
-
-    [ok = hn_db_admin:create_table(hn_db_wu:trans(Site, N), 
-                                 N, F, Storage, T, I)
-     || {N,F,T,I} <- Opts],
+    [ok = hn_db_admin:create_table(hn_db_wu:trans(Site, N),
+                                   N, F, Storage, T, I)
+     || {N,F,T,I} <- tables()],
     Trans = fun() ->
                     ok = mnesia:write(#core_site{site = Site, type = Type}),
                     launch_site(Site)
             end,
     {atomic, ok} = mnesia:transaction(Trans),
     ok.
+
+tables() ->
+    [{dirty_cell,            ?RIF(dirty_cell),            set, []},      
+     {dirty_notify_in,       ?RIF(dirty_notify_in),       set, []},         
+     {dirty_inc_hn_create,   ?RIF(dirty_inc_hn_create),   set, []},         
+     {dirty_notify_back_in,  ?RIF(dirty_notify_back_in),  set, []},         
+     {dirty_notify_out,      ?RIF(dirty_notify_out),      set, []},         
+     {dirty_notify_back_out, ?RIF(dirty_notify_back_out), set, []},         
+     {item,                  ?RIF(item),                  bag, [key]},      
+     {local_objs,            ?RIF(local_objs),            bag, [obj,idx]}, 
+     {local_cell_link,       ?RIF(local_cell_link),       bag, [childidx]}, 
+     {hn_user,               ?RIF(hn_user),               set, []},         
+     {remote_objs,           ?RIF(remote_objs),           set, []},         
+     {remote_cell_link,      ?RIF(remote_cell_link),      bag, []},         
+     {incoming_hn,           ?RIF(incoming_hn),           set, []},         
+     {outgoing_hn,           ?RIF(outgoing_hn),           set, []},         
+     {styles,                ?RIF(styles),                bag, []},         
+     {style_counters,        ?RIF(style_counters),        set, []},         
+     {page_vsn,              ?RIF(page_vsn),              set, []},         
+     {page_history,          ?RIF(page_history),          bag, []}].
+    
 
 %% Import a set of json files into the live spreadsheet
 import_json(Site, Dir) ->
