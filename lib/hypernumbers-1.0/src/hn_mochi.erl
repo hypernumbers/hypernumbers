@@ -370,11 +370,13 @@ ipost(#refX{site = Site} = _Ref, _Type, _Attr,
     case can_save_view(User, Name) of
         true ->
             TplFile = [docroot(Site), "/" , Name ++ ".tpl"],
-            TransFile = [docroot(Site), "/" , Name ++ ".trans"],
             ok = filelib:ensure_dir(TplFile),
-            ok = file:write_file(TplFile, Form),
-            Transactions = io_lib:fwrite("~p.~n", [hn_security:make_security(Form)]),
-            ok = file:write_file(TransFile, Transactions);
+            ok = file:write_file(TplFile, Form);
+
+        % Broke ability to save
+        %TransFile = [docroot(Site), "/" , Name ++ ".trans"],
+        %Transactions = io_lib:fwrite("~p.~n", [hn_security:make_security(Form)]),
+        %ok = file:write_file(TransFile, Transactions);
         
         false -> 
             err

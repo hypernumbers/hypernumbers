@@ -234,6 +234,8 @@ run_script({Path, '$user'}, Site, Opts) ->
     run_script2(Path, Site, pget(user, Opts));
 run_script({Path, '$site'}, Site, _Opts) ->
     run_script2(Path, Site, Site);
+run_script({Path, '$domain'}, Site, _Opts) ->
+    run_script2(Path, Site, Site);
 run_script({Path, '$subdomain'}, Site, Opts) ->
     run_script2(Path, Site, pget(subdomain, Opts));
 run_script({Path, '$expiry'}, Site, _Opts) ->
