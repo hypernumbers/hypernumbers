@@ -88,7 +88,7 @@ do_req(Req) ->
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->
-            serve_html(404, Req, [docroot(Site), "/_global/404.html"], User);
+            serve_html(404, Req, [docroot(Site), "/_global/login.html"], User);
         {return, '401'} ->
             serve_html(401, Req, [docroot(Site), "/_global/login.html"], User);
         {html, File}    ->
@@ -815,7 +815,7 @@ get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
 
 '404'(Req, User) ->
     #refX{site = Site} = hn_util:parse_url(get_host(Req)),
-    serve_html(404, Req, docroot(Site)++"/_global/404.html", User).
+    serve_html(404, Req, docroot(Site)++"/_global/login.html", User).
 
 build_tpl(Site, Tpl) ->
     {ok, Master} = file:read_file([docroot(Site), "/_global/built.tpl"]),
