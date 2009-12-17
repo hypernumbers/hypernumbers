@@ -11,8 +11,8 @@ CONFIG=conf/sys.config
 HN_DIR="lib/hypernumbers-1.0"
 MOCHI_DIR="lib/mochiweb"
 
-ROOT=$(dirname `readlink -f "$0"`)
-cd $ROOT
+cd `dirname $0`
+ROOT=`pwd`
 
 ## Create mnesia and log directories
 ## and config file if they dont exist
