@@ -171,6 +171,7 @@ function debug_remote
 
 function stop
 {
+    HOST="localhost"
     erl -detached \
         -sname $NODE-ctrl@$HOST \
         -setcookie $COOKIE \
