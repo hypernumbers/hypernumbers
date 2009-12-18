@@ -16,7 +16,7 @@
                end).
 
 init_per_suite(Config) ->
-    File = "../../tests/excel_files/Win_Excel07_As_97/<%= @basename + ".xls"%>",
+    File = "../../../tests/excel_files/Win_Excel07_As_97/<%= @basename + ".xls"%>",
     {Vals, _Names, _Formats, _CSS, _Warnings, _Sheets} = filefilters:read(excel, File),
     
     hn_db_api:wait_for_dirty("http://127.0.0.1:9000"),
