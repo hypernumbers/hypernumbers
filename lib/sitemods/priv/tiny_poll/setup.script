@@ -22,5 +22,3 @@
 {"/admin/C4", '$user'}.
 {"/admin/C5", '$site'}.
 {"/admin/C6", '$expiry'}.
-{"/admin/C7", '$subdomain'}.
-{"/admin/C8", '$domain'}.
