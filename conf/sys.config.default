@@ -19,10 +19,6 @@
    {mailserver,   "smtp.gmail.com"},
    {mailuser,     "noreply@hypernumbers.com"},
    {mailpassword, "mick!ventris09"},
-
-   % where are we running?
-   % can be development or production (mebbies add testing?)
-   {environment, production}
   ]},
  
 %% Mnesia Config

@@ -69,24 +69,17 @@ function build
     erl -pa ebin -noshell -s compile_code -s init stop
 }
 
-function start
+function start_dev
 {
-    MODE="-detached"
-    RELOAD=""
-
-    if [ $# -lt 1 ] 
-    then
-        MODE=""
-        RELOAD="-run reloader start"
-    fi
-
     erl $MODE \
         $RELOAD \
         -boot $BOOTFILE \
         -setcookie $COOKIE \
         -sname $NODE@$HOST \
         -config $CONFIG \
-        -env ERL_MAX_ETS_TABLES $ETS_TABLES
+        -env ERL_MAX_ETS_TABLES $ETS_TABLES \
+        -hypernumbers environment development \
+        -run reloader start
 }
 
 function start_production
@@ -209,7 +202,7 @@ function mergemod
 }
 
 case $1 in 
-    start)            start $2;;
+    start_dev)        start_dev $2;;
     start_production) start_production $2;; 
     debug)            debug;;
     debug_remote)     debug_remote $2;;
