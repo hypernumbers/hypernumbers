@@ -65,7 +65,6 @@ function build
     echo "==============================="
     echo "            Compiling          "
     echo "==============================="
-    mkdir -p lib/hypernumbers-1.0/tmp/
     cd ebin
     erl -pa ebin -noshell -s compile_code -s init stop
 }
