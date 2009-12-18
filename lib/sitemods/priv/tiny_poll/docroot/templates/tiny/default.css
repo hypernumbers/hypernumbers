@@ -157,3 +157,11 @@ textarea {
     margin: 10px;
     text-align:center;
 }
+
+.error { 
+    background:#CC0000;
+    color:white;
+    padding:7px 15px;
+    font-size: 12px;
+    margin: 5px 0px;
+}
