@@ -1,18 +1,19 @@
 #!/bin/bash
 
+cd `dirname $0`
+ROOT=`pwd`
+
 NODE=arrian
 HOST=localhost
 COOKIE=abc
 ETS_TABLES=18000
 
 BOOTFILE=ebin/hypernumbers
+SSLBOOT=ebin/start_ssl
 CONFIG=conf/sys.config
 
 HN_DIR="lib/hypernumbers-1.0"
 MOCHI_DIR="lib/mochiweb"
-
-cd `dirname $0`
-ROOT=`pwd`
 
 ## Create mnesia and log directories
 ## and config file if they dont exist
@@ -82,13 +83,33 @@ function start
 
     erl $MODE \
         $RELOAD \
+        -boot $BOOTFILE \
         -setcookie $COOKIE \
         -sname $NODE@$HOST \
         -config $CONFIG \
-        -boot $BOOTFILE \
         -env ERL_MAX_ETS_TABLES $ETS_TABLES
 }
 
+function start_production
+{
+    if [ "$1" != "" ]
+        then NODENAME=$1
+        else NODENAME=$NODE
+    fi
+
+    erl -name $NODENAME \
+        -detached \
+        -boot $BOOTFILE \
+        -proto_dist inet_ssl \
+        -ssl_dist_opt server_certfile "keys/servercert.pem" \
+        -ssl_dist_opt client_certfile "keys/clientcert.pem" \
+        -ssl_dist_opt keyfile "keys/key.pem" \
+        -setcookie $COOKIE \
+        -env ERL_MAX_ETS_TABLES $ETS_TABLES \
+        -config $CONFIG \
+        -hypernumbers environment production
+}
+    
 function visualise
 {
     cd ./priv/test_visualiser/
@@ -130,12 +151,53 @@ function debug
         -remsh $NODE@$HOST
 }
 
+function debug_remote
+{
+    if [ "$1" == "" ]
+    then
+        echo "Need a remote target"
+        exit 1
+    fi
+
+    erl -name debug-$(date +%s) \
+        -boot $SSLBOOT \
+        -proto_dist inet_ssl \
+        -hidden \
+        -ssl_dist_opt client_certfile "keys/clientcert.pem" \
+        -ssl_dist_opt server_certfile "keys/servercert.pem" \
+        -ssl_dist_opt keyfile "keys/key.pem" \
+        -setcookie $COOKIE \
+        -remsh $1
+}
+
+
 function stop
 {
     erl -detached \
         -sname $NODE-ctrl@$HOST \
         -setcookie $COOKIE \
         -eval "rpc:call($NODE@$HOST,init,stop,[])" \
+        -s init stop
+}
+
+function stop_remote
+{
+    if [ "$1" == "" ]
+    then
+        echo "Need a remote target"
+        exit 1
+    fi
+
+    erl -detached \
+        -name debug-$(date +%s) \
+        -boot $SSLBOOT \
+        -proto_dist inet_ssl \
+        -hidden \
+        -ssl_dist_opt client_certfile "keys/clientcert.pem" \
+        -ssl_dist_opt server_certfile "keys/servercert.pem" \
+        -ssl_dist_opt keyfile "keys/key.pem" \
+        -setcookie $COOKIE \
+        -eval "rpc:call($1,init,stop,[])" \
         -s init stop
 }
 
@@ -148,15 +210,17 @@ function mergemod
 }
 
 case $1 in 
-    start)          start $2;;
-    run)            run $2 $3 $4;;
-    debug)          debug;;
-    stop)           stop;;
-    copylog)        copylog $2;;
-    copyfiles)      copyfiles $2;;
-    build)          build $2;;
-    mergemod)       mergemod $2 $3;;
-    statsvn)        statsvn;;
-    visualise)      visualise;;
-    *)              echo "invalid parameters passed into hypernumbers script";;
+    start)            start $2;;
+    start_production) start_production $2;; 
+    debug)            debug;;
+    debug_remote)     debug_remote $2;;
+    stop)             stop;;
+    stop_remote)      stop_remote $2;;
+    copylog)          copylog $2;;
+    copyfiles)        copyfiles $2;;
+    build)            build $2;;
+    mergemod)         mergemod $2 $3;;
+    statsvn)          statsvn;;
+    visualise)        visualise;;
+    *)                echo "invalid parameters passed into hypernumbers script";;
 esac

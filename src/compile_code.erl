@@ -56,7 +56,8 @@ start() ->
     Extra = lists:map(Fun3, ?EXTRA_ERL_FILES),
 
     compile_funcs(Dirs++Extra, Inc_list),
-    get_rel_file(),                
+    get_rel_file(),
+    get_ssl_rel_file(),
     delete_gen_html().
 
 delete_gen_html() ->
@@ -179,4 +180,15 @@ get_rel_file() ->
                          [local,{path,["../lib/*/ebin","."]}]).
 
 
-
+get_ssl_rel_file() ->
+    F = lists:append([
+                      "{release, {\"SSL START\",\"1.0\"}, ",
+                      "{erts,\"",erlang:system_info(version),"\"},"
+                      "[{kernel,\"",get_vsn(kernel),"\"},",
+                      "{stdlib,\"",get_vsn(stdlib),"\"},",
+                      "{ssl,\"",get_vsn(ssl),"\"}]}."
+                     ]),
+    
+    ok = file:write_file("start_ssl.rel",F),
+    ok = systools:make_script("start_ssl", [local]).
+    
