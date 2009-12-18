@@ -66,7 +66,7 @@ cd priv/test_visualiser
 #ruby visualise_tests.rb
 cd ../..
 
-cp -r logs/* $LASTRUN
-cp logs/index.html $HOME/$WEBROOT/tests/$DATE.html
+cp -r var/tests/* $LASTRUN
+cp var/tests/index.html $HOME/$WEBROOT/tests/$DATE.html
 
 rm -rf $HOME/$TESTDIR

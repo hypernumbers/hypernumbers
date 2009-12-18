@@ -25,11 +25,11 @@ reset_perms(S) ->
     auth_srv:clear_all_perms_DEBUG(S),
 
     % the home page
-    auth_srv:add_controls(S, [{user, "*"}, {group, "*"}],
+    auth_srv:add_perms_and_views(S, [{user, "*"}, {group, "*"}],
                       ["[**]"],[read, write],
                       "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]),
 
-    auth_srv:add_controls(S, [{user, "*"}, {group, "*"}],
+    auth_srv:add_perms_and_views(S, [{user, "*"}, {group, "*"}],
                       [],[read, write],
                       "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]).
 

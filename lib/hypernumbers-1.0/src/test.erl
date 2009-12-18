@@ -4,7 +4,7 @@
          sys/0, sys/1, 
          excel/0, excel/1, excel/2 ]).
 
--define(LOG_DIR,     "logs/").
+-define(LOG_DIR,     "var/tests/").
 -define(TEST_DIR,    "tests/").
 -define(SYSTEST_DIR, "tests/system_test/").
 -define(FIXTURE_DIR, "tests/system_test/fixtures/").
@@ -56,6 +56,7 @@ excel(T, S) ->
 
 
 do_test(Opts) ->
+    filelib:ensure_dir(filename:absname(?LOG_DIR)++"/"),
     DefaultOps = [{logdir, filename:absname(?LOG_DIR)}],
     ct:run_test(
       lists:ukeymerge(
