@@ -230,8 +230,13 @@ provision(Site, Port, Row, State) ->
                           ]),
 
 
-            Msg = fmt("Welcome to tiny.hn, blah blah ~s ~s~n",
-                      [User, Password]),
+            S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site"
+                " at:~n~n ~s~n~nTo make changes to the site, you can login"
+                " at:~n~n ~s/admin/~n~nYour Username: ~s~nYour Password: ~s~n"
+                "~nThanks for signing up, hope you enjoy your tiny site!~n"
+                "The tiny.hn team",
+            
+            Msg = fmt(S, [User, SiteName2, SiteName2, User, Password]),
             
             case application:get_env(hypernumbers, environment) of
                 {ok, development} ->
