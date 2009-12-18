@@ -98,9 +98,10 @@ function start_production
 
     erl -name $NODENAME@$HOST \
         -boot $BOOTFILE \
+        -detached \
         -setcookie $COOKIE \
         -hypernumbers environment production \
-        -config $CONFIG
+        -config $CONFIG \
         -proto_dist inet_ssl \
         -ssl_dist_opt server_certfile "keys/servercert.pem" \
         -ssl_dist_opt client_certfile "keys/clientcert.pem" \
