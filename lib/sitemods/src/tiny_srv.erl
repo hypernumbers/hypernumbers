@@ -118,8 +118,18 @@ handle_cast(tock, State) ->
     #refX{obj = {cell, {_, MaxF}}} = Fulfilled,
     ok = case MaxR of
              MaxF   -> ok;
-             _Other -> provision(State#state.site, State#state.port,
-                                 MaxF + 1, State)
+             _Other ->
+                 case catch provision(State#state.site, State#state.port,
+                                      MaxF + 1, State) of
+                     ok ->
+                         ok;
+                     Else ->
+                         Msg = lists:flatten(io_lib:format("~p",[Else])),
+                         Ref = RefX1#refX{obj = {cell, {3, MaxF+1}}},
+                         ok = hn_db_api:write_attributes(
+                                [{Ref, [{"formula", Msg}]}])
+                 end
+         
          end,
     _Pid = spawn_link(?MODULE, tick, []),
     {noreply, State};

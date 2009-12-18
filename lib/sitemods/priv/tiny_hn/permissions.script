@@ -59,6 +59,15 @@
  ]}.
 
 {perms_and_views,
+ [{list,    [{group, "admin"}]},
+  {path,     ["request_site"]},
+  {perms,    [read, write]},
+  {override, "_global/spreadsheet"},
+  {views,    ["_global/spreadsheet"]}
+ ]}.
+
+
+{perms_and_views,
  [{list,     [{user, "*"}]},
   {path,     ["_user", "login"]},
   {perms,    [read, write]},

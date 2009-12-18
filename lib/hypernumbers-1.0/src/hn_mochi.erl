@@ -17,7 +17,6 @@
 
 -export([get_json_post/1]). % Used for mochilog replay rewrites
 
-
 -define(hdr,[{"Cache-Control","no-store, no-cache, must-revalidate"},
              {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
              {"Pragma",       "no-cache"}]).
@@ -84,7 +83,7 @@ do_req(Req) ->
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),    
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
-
+    
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->
