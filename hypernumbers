@@ -4,7 +4,7 @@ cd `dirname $0`
 ROOT=`pwd`
 
 NODE=arrian
-HOST=localhost
+HOST=$(hostname)
 COOKIE=abc
 ETS_TABLES=18000
 
@@ -71,6 +71,13 @@ function build
 
 function start_dev
 {
+    MODE="-detached"
+    HOST="localhost"
+	if [ $# -lt 1 ]
+	then
+	    MODE=""
+	fi
+
     erl $MODE \
         $RELOAD \
         -boot $BOOTFILE \
@@ -89,17 +96,16 @@ function start_production
         else NODENAME=$NODE
     fi
 
-    erl -name $NODENAME \
-        -detached \
+    erl -name $NODENAME@$HOST \
         -boot $BOOTFILE \
+        -setcookie $COOKIE \
+        -hypernumbers environment production \
+        -config $CONFIG
         -proto_dist inet_ssl \
         -ssl_dist_opt server_certfile "keys/servercert.pem" \
         -ssl_dist_opt client_certfile "keys/clientcert.pem" \
         -ssl_dist_opt keyfile "keys/key.pem" \
-        -setcookie $COOKIE \
-        -env ERL_MAX_ETS_TABLES $ETS_TABLES \
-        -config $CONFIG \
-        -hypernumbers environment production
+        -env ERL_MAX_ETS_TABLES $ETS_TABLES
 }
     
 function visualise

@@ -21,7 +21,7 @@ cd $TESTDIR
 
 ## Compile, and run Hypernumbers
 ./hypernumbers build
-./hypernumbers start detached
+./hypernumbers start_dev detached
 ## run detached.
 
 ## Generate Excel Tests
