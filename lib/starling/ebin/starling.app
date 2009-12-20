@@ -1,4 +1,4 @@
-{application, starling_app, [
+{application, starling, [
     {description, "Starling - Unicode strings for Erlang"},
     {vsn, "0.0.1"},
     {modules, [starling_app, starling_server, starling_sup, ustring]},

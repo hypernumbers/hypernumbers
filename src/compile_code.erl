@@ -1,4 +1,3 @@
-
 -module(compile_code).
 -export([start/0]).
 
@@ -18,25 +17,21 @@
          "/lib/hypernumbers-1.0/",
          "/lib/formula_engine-1.0/",
          "/lib/introspection-1.0/",
-         "/lib/mnesia_logger-1.0/",
          "/lib/read_excel-1.0/",
-         "/lib/gui_generator-1.0/",
          "/lib/sitemods/"]).
-
--define(EXTRA_ERL_FILES, []).
 
 start() ->
     
     Dir = get_root(),
     
     io:fwrite("~nStarting the compilation~n~n", []),
-    code:add_pathz(Dir ++ "/lib/eunit/ebin"),
-    code:add_pathz(Dir ++ "/lib/gettext/ebin"),
 
+    % Add ebins for everything in /lib/ (eugh)
+    [ code:add_pathz(X ++ "/ebin")
+      || X <- filelib:wildcard(Dir++"/lib/*") ],
+        
     % First set up the include file
-    Inc_list = [{i, Dir ++ "include"},
-                {i, Dir ++ "lib/eunit/include"},
-                {i, Dir ++ "lib/gettext/include"},
+    Inc_list = [{i, Dir ++ "lib/gettext/include"},
                 {i, Dir ++ "lib/read_excel-1.0/include"},
                 {i, Dir ++ "lib/hypernumbers-1.0/include"},
                 {i, Dir ++ "lib/sitemods/include"},
@@ -49,20 +44,12 @@ start() ->
                   Dot = filelib:wildcard(Dir ++ X ++ "src/.*.erl"),
                   lists:map(Fun2, Src -- Dot)
           end,
-    Dirs = lists:flatten(lists:map(Fun, ?DIRS)),
-
-    Fun3 = fun(X) -> {Dir++X,Dir++"ebin"} end,
     
-    Extra = lists:map(Fun3, ?EXTRA_ERL_FILES),
-
-    compile_funcs(Dirs++Extra, Inc_list),
+    Dirs = lists:flatten(lists:map(Fun, ?DIRS)),
+    
+    compile_funcs(Dirs, Inc_list),
     get_rel_file(),
-    get_ssl_rel_file(),
-    delete_gen_html().
-
-delete_gen_html() ->
-    Dir = get_root()++"lib/hypernumbers-1.0/priv/docroot/hypernumbers/",
-    [file:delete(X) || X <- filelib:wildcard(Dir++"*.html.*")].
+    get_ssl_rel_file().
 
 get_root() ->
 
@@ -77,14 +64,14 @@ get_root() ->
     Pre++string:join(lists:reverse(Rest),"/")++"/".
 
 compile_funcs(List, Inc_list) ->
-    New_list = [{X, [debug_info, {outdir, Y} | Inc_list]} || {X, Y} <- List],
-    comp_lists(New_list,ok).
+    [ ok = compile({X, [debug_info, {outdir, Y} | Inc_list]})
+      || {X, Y} <- List ].
 
-comp_lists([{File, Opt}|T], OldStatus) ->
+compile({File, Opt}) ->
     
     Append = case lists:member(filename:basename(File), ?NO_WARNINGS) of
                  true  -> [report_errors];
-                 false -> [report_errors,report_warnings]
+                 false -> [report_errors, report_warnings]
              end,
     Options = lists:append(Opt,Append),
     
@@ -92,26 +79,23 @@ comp_lists([{File, Opt}|T], OldStatus) ->
     [debug_info, {outdir, Dir} | _] = Options,
     filelib:ensure_dir(Dir ++ "/"),
     
-    Comp = fun() -> NewStatus = compile:file(File, Options),
-                    case NewStatus of
-                        {ok, FileName} ->
-                            io:fwrite("OK: ~s~n", [File]),
-                            code:delete(FileName),
-                            code:purge(FileName),
-                            code:load_file(FileName),
-                            comp_lists(T, OldStatus);
-                        _Error ->
-                            comp_lists(T, error)
-                    end
-           end,
-
     case uptodate(File, Dir) of
-        false -> Comp();
-        _     -> comp_lists(T, OldStatus)
-    end;
-comp_lists([], Status) ->
-    io:fwrite("   Termination Status: ~p~n", [Status]),
-    Status.
+        false -> compile(File, Options);
+        _     -> ok
+    end.
+
+compile(File, Options) ->
+    case compile:file(File, Options) of
+        {ok, FileName} ->
+            io:fwrite("OK: ~s~n", [File]),
+            code:delete(FileName),
+            code:purge(FileName),
+            code:load_file(FileName),
+            ok;
+        _Error ->
+            erlang:halt(0)
+    end.
+    
 
 %% Is the beam older than the erl file? check the date of 
 %% any included .hrl files
@@ -120,7 +104,7 @@ uptodate(File, Dir) ->
     % Find the beam corresponding to this erl file.
     Beam = Dir ++"/"++ filename:basename(File,".erl") ++ ".beam",
     
-    case beam_lib:chunks(Beam,[abstract_code]) of
+    case beam_lib:chunks(Beam, [abstract_code]) of
         {error,_,_} -> % beam doesn't exist, recompile
             false;
 
@@ -147,48 +131,38 @@ uptodate(File, Dir) ->
         _ -> false
     end.
 
+%% given an application name, return its version (based on reading its .app)
+-spec get_vsn(atom()) -> string().
 get_vsn(Module) ->
-    AppFile = code:lib_dir(Module)++"/ebin/"++atom_to_list(Module)++".app",
-    {ok,[{application,_App,Attrs}]} = file:consult(AppFile),
-    {value,{vsn,Vsn}} = lists:keysearch(vsn,1,Attrs),
+    AppFile = [code:lib_dir(Module), "/ebin/", atom_to_list(Module), ".app"],
+    {ok, [{application, _App, Attrs}]} = file:consult(AppFile),
+    {vsn, Vsn} = lists:keyfind(vsn, 1, Attrs),
     Vsn.
 
+%% build the release description
+-spec make_rel_file(string(), string(), list()) -> tuple().
+make_rel_file(App, Version, Deps) ->
+    {release, 
+     {App, Version}, {erts, erlang:system_info(version)},
+     [ {X, get_vsn(X)} || X <- Deps ]
+    }.
+
 get_rel_file() ->
-
-    F = lists:append([
-                      "{release, {\"hypernumbers\",\"1.0\"}, ",
-                      "{erts,\"",erlang:system_info(version),"\"},"
-                      "[{kernel,\"",get_vsn(kernel),"\"},",
-                      "{stdlib,\"",get_vsn(stdlib),"\"},",
-                      "{inets,\"",get_vsn(inets),"\"},",
-                      "{crypto,\"",get_vsn(crypto),"\"},",
-                      "{sasl,\"",get_vsn(sasl),"\"},",
-                      "{mnesia,\"",get_vsn(mnesia),"\"},",
-                      "{ssl,\"",get_vsn(ssl),"\"},",
-                      "{gettext,\"1.3.0\"},",
-                      "{sgte,\"0.7.1\"},",
-                      "{read_excel,\"1.0\"},",
-                      "{sitemods,\"1.0\"},",
-                      "{starling_app,\"0.0.1\"},",
-                      "{formula_engine,\"1.0\"},",
-                      "{mochiweb,\"0.01\"},",
-                      "{hypernumbers,\"1.0\"}]}."
-                     ]),
-    
-    ok = file:write_file("hypernumbers.rel",F),
-    ok = systools:make_script("hypernumbers",
-                         [local,{path,["../lib/*/ebin","."]}]).
-
+    Apps = [kernel, stdlib, inets, crypto, sasl, mnesia, ssl, gettext,
+            sgte, read_excel, sitemods, starling, formula_engine, mochiweb,
+            hypernumbers],
+    Rel  = make_rel_file("hypernumbers", "1.0", Apps),
+    ok   = file:write_file("hypernumbers.rel", fmt("~p.", [Rel])),
+    ok   = systools:make_script("hypernumbers",
+                                [local,{path,["../lib/*/ebin","."]}]).
 
 get_ssl_rel_file() ->
-    F = lists:append([
-                      "{release, {\"SSL START\",\"1.0\"}, ",
-                      "{erts,\"",erlang:system_info(version),"\"},"
-                      "[{kernel,\"",get_vsn(kernel),"\"},",
-                      "{stdlib,\"",get_vsn(stdlib),"\"},",
-                      "{ssl,\"",get_vsn(ssl),"\"}]}."
-                     ]),
-    
-    ok = file:write_file("start_ssl.rel",F),
-    ok = systools:make_script("start_ssl", [local]).
-    
+    Rel = make_rel_file("START SSL", "1.0", [kernel, stdlib, ssl]),
+    ok  = file:write_file("start_ssl.rel", fmt("~p.", [Rel])),
+    ok  = systools:make_script("start_ssl", [local]).
+
+%% short hand to format and flatten
+-spec fmt(string(), list()) -> string().
+fmt(Str, Args) ->
+    lists:flatten(io_lib:format(Str, Args)).
+
