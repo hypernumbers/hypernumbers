@@ -152,7 +152,7 @@ call(Msg) ->
     gen_server:call(starling_server, Msg, timeout()).
 
 timeout() ->
-    {ok, Value} = application:get_env(starling_app, timeout),
+    {ok, Value} = application:get_env(starling, timeout),
     Value.
 
 %%% ----------------- %%%
