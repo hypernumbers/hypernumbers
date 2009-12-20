@@ -228,9 +228,12 @@ provision(Site, Port, Row, State) ->
 
             Host  = proplists:get_value(host, State#state.args),
             Port2 = proplists:get_value(port, State#state.args),
-            
-            SiteName2 = "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
-                ++ integer_to_list(Port2),
+            SiteName2 = case Port2 of
+                            80  -> "http://" ++ Sub  ++ "."  ++ Host;
+                            443 -> "https://" ++ Sub  ++ "."  ++ Host;
+                            _   -> "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
+                                      ++ integer_to_list(Port2)
+                        end,
             hn_setup:site(SiteName2, list_to_atom(Type2),
                           [{user, User},
                            {email, Email},
@@ -240,10 +243,14 @@ provision(Site, Port, Row, State) ->
                           ]),
 
 
-            S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site"
-                " at:~n~n ~s~n~nTo make changes to the site, you can login"
-                " at:~n~n ~s/admin/~n~nYour Username: ~s~nYour Password: ~s~n"
-                "~nThanks for signing up, hope you enjoy your tiny site!~n"
+            S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site "
+                "at:~n~n ~s~n~nTo make changes to the site follow the "
+                "instructions on the main page"
+                "~n~nYour Username:     ~s     Your Password:"
+                "     ~s~n~nThanks for signing up, "
+                "hope you enjoy your tiny site!~n~n"
+                "When you've finished customising your site don't forget "
+                "to email or twitter your friends!~n~n"
                 "The tiny.hn team",
             
             Msg = fmt(S, [User, SiteName2, SiteName2, User, Password]),
@@ -252,8 +259,8 @@ provision(Site, Port, Row, State) ->
                 {ok, development} ->
                     io:format("~p",[Msg]);
                 {ok, production}  ->
-                    hn_util:email(Email, "\"Tiny Team\" <noreply@tiny.hn>",
-                                  "Welcome to Tiny", Msg)
+                    hn_util:email(Email, "\"tiny.hn Team\" <noreply@tiny.hn>",
+                                  "Your new tiny.hn site is live!", Msg)
             end
     end,
     
