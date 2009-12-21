@@ -9,30 +9,19 @@
 %%%-----------------------------------------------------------------------------
 -module(util2).
 
--include("spriki.hrl").
-
 -export([
          get_timestamp/0,
          bake_biccie/0,
-         remove_auth/1,
          chop/1,
          rev_chop/1,
-         invalid/0,
-         make_num/1,
          parse_range/1,
          strip_ref/1,
          make_ref/1,
-         get_page_path/1,
          make_text/1,
          repath/1,
          pad_list/1,
          mk_str_frm_list/1,
-         strip_brackets/1,
-         print_as_hex/2,
-         make_paths/1,
-         make_b26/1,
-         relative_error/2,
-         sloppy_equals/2]).
+         strip_brackets/1]).
 
 %%%-----------------------------------------------------------------------------
 %%%
@@ -47,7 +36,6 @@
 %%% These functions are all utility functions                                %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 get_timestamp()->
     {Mega, Sec, Micro} = now(),
     1000000000000 * Mega + 1000000 * Sec + Micro.
@@ -67,25 +55,11 @@ bake_biccie() ->
     N = gen_server:call(random_srv,{random, int, 16#ffffffffffffffff}),
     atom_to_list(node()) ++ [$-|integer_to_list(N)].
 
-remove_auth(Site)->
-    [Protocol,Rest]=string:tokens(Site,"//"),
-    Site3=case string:tokens(Rest,"@") of
-              [_Auth,Site2] -> Site2;
-              [Site2]      -> Site2
-          end,
-    Protocol++"//"++Site3.
+chop(Path)->
+    string:tokens(Path, "/").
 
-chop(Path)-> string:tokens(Path, "/").
-
-rev_chop(Path)-> lists:reverse(chop(Path)).
-
-invalid()->{1,[],[{"invalid code"}],[]}.
-
-make_num(List)->
-    case re:run(List,"^-?[0-9]*$") of %" 
-                {match,_}  -> list_to_integer(List);
-                _Other     -> list_to_float(List)
-               end.
+rev_chop(Path)->
+    lists:reverse(chop(Path)).
 
 parse_range(Range)->
     [Cell1,Cell2]=string:tokens(Range,":"),
@@ -121,11 +95,6 @@ strip_ref(Ref) ->
 
 make_ref({X, Y}) -> tconv:to_b26(X)++tconv:to_s(Y).
 
-get_page_path(Path) ->
-    case util2:rev_chop(Path) of
-        [_ValRef,"?flextoolbar"|Rest] -> repath(Rest)
-    end.
-
 make_text(Item) ->
     case Item of
         Item when is_integer(Item)-> integer_to_list(Item);
@@ -142,13 +111,16 @@ repath("/")  -> "/";
 repath([])   -> "/";
 repath(Rest) -> repath(Rest,[]).
 
-repath([],Residuum)          -> lists:concat([Residuum,"/"]);
-repath([{A}|T],Residuum)     -> repath(T,lists:concat(["/","{",A,"}",Residuum]));
-repath([{A,B}|T],Residuum)   -> repath(T,lists:concat(["/","{",A,",",B,"}",
-                                                     Residuum]));
-repath([{A,B,C}|T],Residuum) -> repath(T,lists:concat(["/","{",A,",",B,",",C,"}",
-                                                     Residuum]));
-repath([H|T],Residuum)       -> repath(T,lists:concat(["/",H,Residuum])).
+repath([],Residuum) ->
+    lists:concat([Residuum,"/"]);
+repath([{A}|T],Residuum) ->
+    repath(T,lists:concat(["/","{",A,"}",Residuum]));
+repath([{A,B}|T],Residuum) ->
+    repath(T,lists:concat(["/","{",A,",",B,"}", Residuum]));
+repath([{A,B,C}|T],Residuum) ->
+    repath(T,lists:concat(["/","{",A,",",B,",",C,"}", Residuum]));
+repath([H|T],Residuum) ->
+    repath(T,lists:concat(["/",H,Residuum])).
 
 pad_list(List)->
     pad_list(List,[]).
@@ -174,33 +146,3 @@ mk_str_frm_list([],[_H|T]) ->
 strip_brackets(A1) when is_list(A1) ->
     A2 = re:replace(A1, "^\\(", "", [{return, list}, global]),
     re:replace(A2, "\\)$", "", [{return, list}, global]). %"
-
-print_as_hex(Text,Binary) ->
-    io:format("In util2:print_as_hex Text is ~p: ",[Text]),
-    print_as_hex(Binary).
-
-print_as_hex(<<>>) ->
-    io:format("in util2:print_as_hex - not sure what this is for...~n",[]);
-print_as_hex(<<H:8/integer,Rest/binary>>) ->
-    io:format("in util2:print_as_hex~.16B ",[H]),
-    print_as_hex(Rest).
-
-make_paths(List) when is_list(List) ->
-    Fun=fun({S,P,X,Y})->lists:concat(["\"",S,P,"/","x",X,":","y",Y,"\","]) end,
-    NewList=lists:map(Fun,List),
-    NewList2=lists:flatten(NewList),
-    % Now strip the last ',' off
-    string:strip(NewList2,right,$,).
-
-%% @TODO: Remove and fix all code that uses this function to use tconv:to_b26().
-make_b26(Int) when is_integer(Int) ->
-    tconv:to_b26(Int).
-
-%% This function computes relative error, which provides a way
-%% to compare two floats regardless of their range.
-relative_error(0, 0.00000)    -> 0.00000000001;
-relative_error(0.00000, 0)    -> 0.00000000001;
-relative_error(0, 0)          -> 0.0000000001;
-relative_error(Res, Expected) -> erlang:abs((Res - Expected) / Expected).
-
-sloppy_equals(N1, N2) -> relative_error(N1, N2) =< 0.0001.

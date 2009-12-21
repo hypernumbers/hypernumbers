@@ -642,13 +642,13 @@ to_str({float,Val}) ->
     end;
 
 to_str({abs_ref,Y,X,rel_row,rel_col}) ->
-    util2:make_b26(X)++integer_to_list(Y);
+    tconv:to_b26(X)++integer_to_list(Y);
 to_str({abs_ref,Y,X,abs_row,rel_col}) ->
-    util2:make_b26(X)++"$"++integer_to_list(Y); %"; fix syntax highlight
+    tconv:to_b26(X)++"$"++integer_to_list(Y); %"; fix syntax highlight
 to_str({abs_ref,Y,X,rel_row,abs_col}) ->
-    "$"++util2:make_b26(X)++integer_to_list(Y); %"; fix syntax highlight
+    "$"++tconv:to_b26(X)++integer_to_list(Y); %"; fix syntax highlight
 to_str({abs_ref,Y,X,abs_row,abs_col}) ->
-    "$"++util2:make_b26(X)++"$"++integer_to_list(Y); 
+    "$"++tconv:to_b26(X)++"$"++integer_to_list(Y); 
 to_str({L,S1,O,S2,R}) ->
     to_str(L)++to_str(S1)++to_str(O)++to_str(S2)++to_str(R).
 
@@ -703,13 +703,13 @@ make_range(StartCell,EndCell)->
 %% make a cell from 0-Indexed Row and Column indices
 %% - this means adding a 1 to the Indices
 make_cell({Row,Col,rel_row,rel_col}) ->
-    string:to_upper(util2:make_b26(Col+1)++integer_to_list(Row+1));
+    string:to_upper(tconv:to_b26(Col+1)++integer_to_list(Row+1));
 make_cell({Row,Col,abs_row,rel_col}) ->
-    string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)); %"
+    string:to_upper(tconv:to_b26(Col+1)++"$"++integer_to_list(Row+1)); %"
                     make_cell({Row,Col,rel_row,abs_col}) ->
-                           string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1)); %"
+                           string:to_upper("$"++tconv:to_b26(Col+1)++integer_to_list(Row+1)); %"
                                            make_cell({Row,Col,abs_row,abs_col}) ->
-                                                  string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
+                                                  string:to_upper("$"++tconv:to_b26(Col+1)++"$"++integer_to_list(Row+1)).
 
 macro_to_string_WARNING(X) -> macro_to_string(X).
 
