@@ -108,6 +108,7 @@
          read_inherited_value/3,
          read_styles/1,
          read_page_structure/1,
+         read_pages/1,
          % update_style/2,
          recalculate/1,
          reformat/1,
@@ -330,6 +331,12 @@ read_page_structure(RefX) when is_record(RefX, refX) ->
                   hn_db_wu:read_page_structure(RefX)
           end,
     mnesia:activity(transaction, Fun).
+
+read_pages(RefX) when is_record(RefX, refX) ->
+    Fun = fun() ->
+                  hn_db_wu:read_pages(RefX)
+          end,
+    mnesia:activity(transaction, Fun).    
 
 %% @spec initialise_remote_page_vsn(Site, Version) -> ok
 %% @doc intialises the page version for a 'newly discovered' remote page.

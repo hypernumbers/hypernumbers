@@ -538,6 +538,7 @@
          read_page_vsn/2,
          initialise_remote_page_vsn/3, 
          read_page_structure/1,
+         read_pages/1,
          get_cell_for_muin/1,
          get_local_item_index/1
         ]).
@@ -2175,6 +2176,9 @@ unregister_out_hn(P, C)
 read_page_structure(#refX{site = Site, obj = {page, "/"}}) ->
     Items = mnesia:dirty_all_keys(trans(Site, local_objs)),
     filter_pages(Items, dh_tree:new()).
+
+read_pages(#refX{site = Site, obj = {page, "/"}}) ->
+    mnesia:dirty_all_keys(trans(Site, local_objs)).
 
 filter_pages([], Tree) ->
     Tree;

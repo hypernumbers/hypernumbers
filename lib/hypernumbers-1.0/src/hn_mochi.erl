@@ -13,7 +13,7 @@
 
 -export([ req/1, style_to_css/2 ]).
 
--export([page_attributes_CHEATING/1]). % for use in gui_generator
+-export([page_attributes/2]).
 
 -export([get_json_post/1]). % Used for mochilog replay rewrites
 
@@ -144,7 +144,7 @@ handle_req(Method, Req, Ref, Vars, User) ->
 
 %%---------------
 %  GET REQUESTS
-%%---------------
+%%---------------s
 iget(Req, Ref=#refX{path=["_user", "login"]}, page, [], User, html) ->
     iget(Req, Ref, page, [{"view", "_global/login"}], User, html);
 
@@ -666,10 +666,6 @@ get_var_or_cookie(Key, Vars, Req) ->
         {value, {"auth", Auth}} ->
             {ok, Auth}
     end.
-
-page_attributes_CHEATING(Ref) ->
-    Data = page_attributes(Ref, anonymous),
-    (mochijson:encoder([{input_encoding, utf8}]))(Data).
 
 page_attributes(#refX{site = S, path = P} = Ref, User) ->
     Name = hn_users:name(User),

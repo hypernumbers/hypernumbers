@@ -40,6 +40,7 @@
          range_to_list/1,
          rectify_range/4,
          rectify_row_or_col/2,
+         path_to_json_path/1,
 
          % HTTP Utils
          req/1,
@@ -181,7 +182,7 @@ is_older(File1, File2) ->
     Info2#file_info.mtime > Info1#file_info.mtime.
 
 generate_po_CHEATING(Ref) ->
-    Body = hn_mochi:page_attributes_CHEATING(parse_url(Ref)),
+    Body = hn_mochi:page_attributes(parse_url(Ref)),
     generate_po1(Body).
 
 generate_po(Url) ->
@@ -301,6 +302,10 @@ list_to_path(Path) -> "/" ++ string:join(Path, "/") ++ "/".
 refX_to_index(#refX{site = S, path = P, obj = {cell, {X, Y}}}) ->
     #index{site = S, path = P, column = X, row = Y}.
 
+path_to_json_path([])                -> "path.json";
+path_to_json_path(P) when is_list(P) -> "path." ++ string:join(P, ".")
+                                            ++ ".json".
+
 obj_to_str({page,Path})           -> Path;   
 obj_to_str({cell,{X,Y}})          -> tconv:to_b26(X)++text(Y);
 obj_to_str({row,{Y,Y}})           -> text(Y);
@@ -363,7 +368,7 @@ post(Url,Data,Format) ->
     Body.
 
 parse_site("http://"++Site) ->
-    [case S of $: -> $_; S  -> S end 
+    [case S of $: -> $&; S  -> S end 
      || S <- Site].
 
 parse_url("http://"++Url) ->

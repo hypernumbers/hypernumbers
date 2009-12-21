@@ -12,8 +12,31 @@
 -export([
          create_table/6,
          into_mem/1,
-         outof_mem/1
+         outof_mem/1,
+         backup/3,
+         restore/2
         ]).
+
+-spec restore(list(), list()) -> ok.
+restore(Dir, Name) ->
+    {atomic, Tables} = mnesia:restore(Dir ++ Name,
+                                     [{default_op, recreate_tables}]),
+    ok.
+
+-spec backup(list(), list(), list()) -> ok.
+backup(Tables, Dir, Name) ->
+
+    ChP = {name, Name},
+    ChPDef = {min, Tables},
+
+    % start by checkpointing
+    {ok, ChPName, _} = mnesia:activate_checkpoint([ChP, ChPDef]),
+
+    % do the backup
+    ok = mnesia:backup_checkpoint(Name, Dir ++ Name, []),
+
+    % delete the checkpoint    
+    ok = mnesia:deactivate_checkpoint(ChPName).    
 
 -spec create_table(atom(), atom(),
                    any(),
@@ -51,3 +74,4 @@ chg_copy_type(Site, Port, Table, Mode) ->
                                         ++ Port ++ "&"
                                         ++ Table),
     mnesia:change_table_copy_type(ActualTable, node(), Mode).
+

@@ -8,11 +8,18 @@
          delete_site/1,
          update/0, update/1,
          update/3,
-         add_user/2
+         add_user/2,
+         get_sites/0
         ]).
 
 -include("spriki.hrl").
 
+-spec get_sites() -> list().
+get_sites() ->
+    Fun = fun() ->
+                  mnesia:all_keys(core_site)
+          end,
+    mnesia:activity(transaction, Fun).
 
 %% Startup current sites. 
 -spec startup() -> ok. 
@@ -48,18 +55,17 @@ delete_site(Host) ->
     
     ok = hn_util:delete_directory(Dest),
     ok = mnesia:dirty_delete(core_site, Host).
-
-
-
   
 %% Update all existing sites with default options
 -spec update() -> ok. 
 update() ->
     update([], [templates]).
 
+
 -spec update(list()) -> ok. 
 update(Opts) ->
     update([], Opts).
+
 
 %% Update all sites
 -spec update(list(), list()) -> ok. 
@@ -71,9 +77,11 @@ update(Opaque, Opts) ->
     {atomic, _} = mnesia:transaction(Trans),
     ok.
 
+
 -spec update(string(), list(), list()) -> ok.
 update(Site, Opaque, Opts) ->
     update(Site, get_type_by_site(Site), Opaque, Opts).
+
 
 -spec update(string(), atom(), list(), list()) -> ok.
 update(Site, Type, Opaque, Opts) ->
@@ -101,7 +109,6 @@ setup(Site, Type, _Opts, templates) ->
         ++ hn_util:parse_site(Site) ++ "/",
     ok = filelib:ensure_dir(Dest),
     ok = hn_util:recursive_copy(moddir(Type)++"/docroot", Dest);
-
 setup(Site, Type, _Opts, json) ->
     ok = import_json(Site, moddir(Type));
 setup(Site, Type, _Opts, permissions) ->
@@ -119,14 +126,17 @@ setup(Site, _Type, _Opts, user_permissions) ->
     [ add_user(Site, User) || User <- Users],
     ok.
 
+
 -spec moddir(atom()) -> string(). 
 moddir(Type) ->
     code:priv_dir(sitemods) 
         ++ "/" ++ atom_to_list(Type).
 
+
 -spec launch_site(string()) -> ok. 
 launch_site(Site) ->
     ok = dirty_srv:start(Site).
+
 
 -spec create_site(string(), atom()) -> ok.
 create_site(Site, Type)->
@@ -142,6 +152,7 @@ create_site(Site, Type)->
             end,
     {atomic, ok} = mnesia:transaction(Trans),
     ok.
+
 
 -define(RIF(R), record_info(fields, R)).
 tables() ->
@@ -171,10 +182,12 @@ import_json(Site, Dir) ->
       || Json <- filelib:wildcard(Dir++"/data/*.json")],
     ok.
 
+
 create_path_from_name(Name) ->
     [ "path" | Rest ]
         = string:tokens(filename:basename(Name, ".json"), "."),
     hn_util:list_to_path(Rest).
+
 
 run(Script, Fun) ->
     case filelib:is_file(Script) of

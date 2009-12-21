@@ -186,7 +186,9 @@
          get_as_json/2,
          pretty_print/3,
          dump_script/1,
-         get_groups/1
+         get_groups/1,
+         backup/2,
+         restore/2
         ]).
 
 -export([
@@ -294,6 +296,10 @@ handle_call(Request, _From, State) ->
                 {Host, dump_script1(get(Host, Tr)), false};
             {get_groups, Host} ->
                 {Host, get_groups1(get(Host, Tr)), false};
+            {backup, Host, Destination} ->
+                {Host, backup1(get(Host, Tr), Destination), false};
+            {restore, Host, Tree} ->
+                {Host, Tree , true};
             {clear_all_perms, Host} ->
                 {Host, gb_trees:empty(), true};
             {permissions_debug, Host, AS, P} ->
@@ -419,6 +425,12 @@ dump_script(Host) ->
 get_groups(Host) ->
     gen_server:call(auth_srv, {get_groups, Host}).
 
+backup(Host, Destination) ->
+    gen_server:call(auth_srv, {backup, Host, Destination}).
+
+restore(Host, Tree) ->
+    gen_server:call(auth_srv, {restore, Host, Tree}).
+
 clear_all_perms_DEBUG(Host) ->
     gen_server:call(auth_srv, {clear_all_perms, Host}).
 
@@ -430,49 +442,52 @@ permissions_DEBUG(Host, AuthSpec, Page) ->
 %%%===================================================================
 dump_script1(Tree) -> dump_s1(Tree, [], []).
 
-% dump_s1([], _Path, Acc) -> lists:flatten(lists:reverse(Acc));
+% dump_s1([], _Path, Acc)  -> lists:flatten(lists:reverse(Acc));
 dump_s1(Tree, Path, Acc) ->
     List = gb_trees:to_list(Tree),
     dump_s2(List, Path, Acc).
 
-dump_s2([], _Path, Acc)                  -> lists:flatten(lists:reverse(Acc));
+dump_s2([], _Path, Acc)                  -> Acc2 = lists:reverse(Acc),
+                                            lists:flatten(Acc2);
 dump_s2([{acl, ACL} | T], Path, Acc)     -> NewAcc = write_perms(Path, ACL),
                                             dump_s2(T, Path, [NewAcc | Acc]);
 dump_s2([{views, Views} | T], Path, Acc) -> NewAcc = write_views(Path, Views),
                                             dump_s2(T, Path, [NewAcc | Acc]);
 dump_s2([{default, Def} | T], Path, Acc) -> NewAcc = write_default(Path, Def),
                                             dump_s2(T, Path, [NewAcc | Acc]);
-dump_s2([H | T], Path, Acc)              -> NewAcc = dump_s3(H, Path, Acc),
-                                            dump_s2(T, Path, lists:flatten([NewAcc | Acc])).
-
-dump_s3([], _Path, Acc)        -> Acc;
-dump_s3({Path1, H}, Path, Acc) -> dump_s1(H, [Path1 | Path], Acc).
+dump_s2([{Path1, H} | T], Path, Acc)     ->
+    NewAcc =  dump_s1(H, lists:append(Path, [Path1]), []),
+    dump_s2(T, Path, [NewAcc | Acc]).
 
 write_perms(Path, Perms) -> write_p1(Path, Perms, []).
 
 write_p1(_Path, [], Acc)                  -> Acc;
-write_p1(Path, [{U_or_G, Perm} | T], Acc) -> NewAcc = {perm, [
-                                                              {list, [U_or_G]},
-                                                              {page, lists:reverse(Path)},
-                                                              {perms, Perm}
-                                                             ]},
-                                             write_p1(Path, T, [NewAcc | Acc]).
+write_p1(Path, [{U_or_G, Perm} | T], Acc) ->
+    NewAcc = {perm, [
+                     {list, [U_or_G]},
+                     {page, Path},
+                     {perms, Perm}
+                    ]},
+    write_p1(Path, T, [io_lib:fwrite("~p.~n", [NewAcc]) | Acc]).
 
 write_views(Path, Views) -> write_v1(Path, Views, []).
 
 write_v1(_Path, [], Acc)               -> Acc;
-write_v1(Path, [{U_or_G, V} | T], Acc) -> NewAcc = {views, [
-                                                           {list, [U_or_G]},
-                                                           {page, lists:reverse(Path)},
-                                                           {override, V#views.override},
-                                                           {views, V#views.views}
-                                                          ]},
-                                          write_v1(Path, T, [NewAcc | Acc]).
+write_v1(Path, [{U_or_G, V} | T], Acc) ->
+    NewAcc = {views, [
+                      {list, [U_or_G]},
+                      {page, Path},
+                      {override, V#views.override},
+                      {views, V#views.views}
+                     ]},
+    write_v1(Path, T, [io_lib:fwrite("~p.~n", [NewAcc]) | Acc]).
 
-write_default(Path, Def) -> {default, [
-                                       {page, lists:reverse(Path)},
-                                       {default, Def}
-                                      ]}.
+write_default(Path, Def) ->
+    Ret =  {default, [
+                      {page, Path},
+                      {default, Def}
+                     ]},
+    io_lib:fwrite("~p.~n", [Ret]).
 
 permissions_debug1(Tree, {U, Gs}, Page) ->
     Fun =
@@ -654,6 +669,11 @@ pretty_print1(Tree, Host, Page, Type) ->
     get_for_pp(Tree, Page, Fun).
 
 get_groups1(_Tree) -> {erk, not_written}.
+
+backup1(Tree, Destination) ->
+    Binary = io_lib:fwrite("~p.~n", [Tree]),
+    ok = filelib:ensure_dir(Destination),
+    ok = file:write_file(Destination, Binary).
 
 update_trees(File, Host, NewTree, Trees) ->
     NewVal = {Host, NewTree},
