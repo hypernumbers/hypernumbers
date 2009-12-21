@@ -8,148 +8,120 @@ html,body {
     overflow : hidden;
     height   : 100%;
 }
-
 body {  
     margin : 0px;
     font   : 11px Arial,"Helvetica Neue", sans-serif;
 }
-
 table {  
     width  : 100%;
     height : 100%;
 }
-
 p,h1,h2,h3,h4,h5 {  
     margin : 0px 0px 6px 0px;
 }
-
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
 .warning { 
- color:      red;
- font-size:  10px;
+ color     : red;
+ font-size : 10px;
 }
-
 .note { 
-    color:      grey;
-    font-size:  10px;
+    color     : grey;
+    font-size : 10px;
 }
-
-/* Covers entire page, background for modal dialogs */
 #cover { 
- position:   fixed;
- top:        0px;
- left:       0px;
- width:      100%;
- height:     100%;
- background: black;
- opacity:    0.5;
- z-index:    999999;
+    position   : fixed;
+    top        : 0px;
+    left       : 0px;
+    width      : 100%;
+    height     : 100%;
+    background : black;
+    opacity    : 0.5;
+    z-index    : 999999;
 }
 
 #loading {  
- position: absolute;
- top: 10px;
- left: 10px;
- background: white;
- z-index:  9999999;
- padding: 10px;
- font-size:  16px;
-}
-
-#browsernotsupported {  
- position: fixed;
- top: 10px;
- left: 10px;
- width: 100%;
- height: 100%;
- background: white;
- opacity: 0.8;
- z-index:  999999999;
- padding: 10px;
- font-size:  24px;
- font-weight: bold;
- color: #a9a9a9;
- display: none;
+    position   : absolute;
+    top        : 10px;
+    left       : 10px;
+    background : white;
+    z-index    : 9999999;
+    padding    : 10px;
+    font-size  : 16px;
 }
 
 .red {  
-  color:red;
+    color : red;
+}
+
+.dialoglink {
+    cursor : pointer;
 }
 
 /******************************************************************************
 	DIALOG STYLES
 ******************************************************************************/
-/* mdialog is a modal dialog */
 .mdialog { 
- position:   absolute;
- top:        50%;
- left:       50%;
- display:    none;
- background: white;
- border:     5px solid #666;
- z-index:    9999999;
- padding:    8px;
+    position   : absolute;
+    top        : 50%;
+    left       : 50%;
+    display    : none;
+    background : white;
+    border     : 5px solid #666;
+    z-index    : 9999999;
+    padding    : 8px;
 }
-
 .mdialog h2 { 
- margin:0px;
+    margin:0px;
 }
-
-/* close button bottom left of modal dialogs */
 .mclose {  
- float:left;
- color:red;
+    float : left;
+    color : red;
 }
-
-/* "confirm action" button bottom right of modal dialogs */
 .action {  
- float:right;
- color:green;
+    float : right;
+    color : green;
 }
-
 .dialog { 
- display:    none;
- position:   absolute;
- top:        50px; 
- left:       50px;
- background: white;
- min-width:  200px;
- border:     1px solid #666;
- z-index:    999999;
- -moz-border-radius: 3px 3px 3px 3px;
+    display            : none;
+    position           : absolute;
+    top                : 50px; 
+    left               : 50px;
+    background         : white;
+    min-width          : 200px;
+    border             : 1px solid #666;
+    z-index            : 999999;
+    -moz-border-radius : 3px 3px 3px 3px;
 }
-
 .dialog h2 {
- display:       block;
- margin:        0px;
- font:          bold 10px sans-serif;
- padding:       4px;
- border-bottom: 1px solid #66AA00;
- background:    orange;
- -moz-border-radius: 3px 3px 0px 0px;
+    display            : block;
+    margin             : 0px;
+    font               : bold 10px sans-serif;
+    padding            : 4px;
+    border-bottom      : 1px solid #66AA00;
+    background         : orange;
+    -moz-border-radius : 3px 3px 0px 0px;
 }
-
 .dialog .close {
- cursor:     pointer;
- position:   absolute;
- top:        5px;
- right:      5px;
- height:     11px;
- width:      11px;
- background-image:    url(sprite.png);
- background-position: -49px -3px;
+    cursor              : pointer;
+    position            : absolute;
+    top                 : 5px;
+    right               : 5px;
+    height              : 11px;
+    width               : 11px;
+    background-image    : url(sprite.png);
+    background-position : -49px -3px;
 }
-
 /******************************************************************************
 	TOP NAVIGATION STYLES
 ******************************************************************************/
 #navigation {  
- float:    right;
- position: relative;
- top:      0px;
- margin:   0px 5px 0px 5px;
+    float:    right;
+    position: relative;
+    top:      5px;
+    margin:   0px;
+    padding:0px;
 }
 
 #navigation li { 
@@ -391,26 +363,43 @@ p,h1,h2,h3,h4,h5 {
 }
 
 #permissions {
-    float:right;
-    margin:5px;
+    float  : right;
+    margin : 5px;
 }
 /******************************************************************************
 	LAYOUT STYLES
 ******************************************************************************/
 #hn #header { 
- background: #000;
- height:     60px;
+    background : #000;
+    height     : 26px;
+}
+#hn #header h1 { 
+    float  : left;
+    height : 26px;
+}
+#hn #header h1 a { 
+    font            : normal 16px serif;
+    color           : #FFF;
+    text-decoration : none;
+    display         : block;
+    margin          : 6px 0px 0px 10px;
+}
+#hn #header h1 a span { 
+    font            : bold 16px sans-serif;
+    text-decoration : underline;
+    color           : orange;
+}
+#hn #header .beta { 
+    float  : left; 
+    color  : white; 
+    margin : 2px; 2px;
+}
+#hn #header .beta a { 
+    color           : red; 
+    text-decoration : none; 
+    font-weight     : bold;
 }
 
-#hn #header h1 { 
- display:     block;
- background:  url(sprite.png) 0px -127px;  
- height:      50px;
- width:       256px;
- text-indent: -999px;
- margin:      0px 0px 0px 10px;
- float:       left;
-}
 
 #formulabar {
  height: 18px;
@@ -690,26 +679,6 @@ p,h1,h2,h3,h4,h5 {
 #toolbar a.color:hover {
   border: 1px solid #666;
 }
-
-#color_000000 { background:#000000; }
-#color_FFFFFF { background:#FFFFFF; }
-#color_FF0000 { background:#FF0000; }
-#color_00FF00 { background:#00FF00; }
-#color_0000FF { background:#0000FF; }
-#color_FFFF00 { background:#FFFF00; }
-#color_FF00FF { background:#FF00FF; }
-#color_00FFFF { background:#00FFFF; }
-#color_800000 { background:#800000; }
-#color_008000 { background:#008000; }
-#color_000080 { background:#000080; }
-#color_808000 { background:#808000; }
-#color_800080 { background:#800080; }
-#color_008080 { background:#008080; }
-#color_C0C0C0 { background:#C0C0C0; }
-#color_808080 { background:#808080; }
-#color_9999FF { background:#9999FF; }
-#color_993366 { background:#993366; }
-#color_FFFFCC { background:#FFFFCC; }
 
 #left-head      { background-position: -2px -63px; }
 #border-head    { background-position: -68px -85px; }

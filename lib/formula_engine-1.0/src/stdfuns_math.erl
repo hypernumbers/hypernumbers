@@ -32,6 +32,7 @@
          '-'/1,
          '*'/1,
          '/'/1,
+         '^^'/1,
          negate/1,
 
          %% Arithmetic
@@ -108,10 +109,11 @@
          acosh/1,
          atanh/1,
          degrees/1,
-         radians/1
-        ]).
+         radians/1,
 
--compile(export_all).
+         % Easter Egg
+         thelifeuniverseandeverything/1
+        ]).
 
 -define(is_multiple(Num, Mult),
         (erlang:trunc(Num / Mult) * Mult) == (Num * 1.0)).
@@ -410,12 +412,6 @@ mmult_([A,B]) when is_number(A), is_number(B) ->
     mmult_([{array, [[A]]}, {array, [[B]]}]);
 mmult_(_) ->
     ?ERRVAL_VAL.
-
-%% eugh
-to_tuple(L1) ->
-    list_to_tuple([ list_to_tuple(X) || X<-L1]).
-to_list(T1) ->
-    [ tuple_to_list(X) || X <- tuple_to_list(T1) ].
 
 %% @todo not Excel 97 - no test suite
 multinomial(L) ->
@@ -1120,6 +1116,9 @@ intersect({{_,_}, {AX2,AY2}}, {{BX1, BY1}, {BX2,BY2}}) ->
     Y1 = lists:min([AY2, BY1]),
     Y2 = ?COND( AY2 > BY2, BY2, AY2),
     {{X1, Y1}, {X2, Y2}}.
+
+thelifeuniverseandeverything([]) ->
+    42.
 
 %%% tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

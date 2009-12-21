@@ -11,10 +11,17 @@
     
     <table cellspacing="0" cellpadding="0" id="hn">
 
-      <tr height="60px;">
+      <tr height="26px;">
 
         <td id="header">
-          <h1><a href="">Hypernumbers</a></h1>
+          <div id="headerwrapper">
+            <h1><a href="">hyper<span>numbers</span></a></h1>
+            <span class="beta">beta <a class="dialoglink" 
+                                       data-id="mark">
+                Report Problems / Feedback</a></span>
+          </div>
+          
+
           <ul id="navigation">
             
             <!-- Shown to non logged in users -->
@@ -50,10 +57,10 @@
                 </div>
               </div>
               
-                $txt:{Logged in as}$ &nbsp;<a id="home"></a> 
-                &nbsp;&nbsp;&nbsp;
-                <a id="logout">$txt:{Log out}$</a>
-
+              $txt:{Logged in as}$ &nbsp;<a id="home"></a> 
+              &nbsp;&nbsp;&nbsp;
+              <a id="logout">$txt:{Log out}$</a>
+              
             </li>
 
           </ul>
@@ -228,64 +235,20 @@
               <a id="border_bottom" class="toolbar-item"></a>
             </div>
           </div>
-          <a class="separator" id="bordersep"></a>          
-          <div class="expand">
-            <span><a title="Set Background Colours" id="bgcolor-head" class="icon"></a></span>
-            <div id="bgcolors">
-              <a id="color_000000" class="color"></a>
-              <a id="color_FFFFFF" class="color"></a>
-              <a id="color_FF0000" class="color"></a>
-              <a id="color_00FF00" class="color"></a>
-              <a id="color_0000FF" class="color"></a><br />
-              <a id="color_FFFF00" class="color"></a>
-              <a id="color_FF00FF" class="color"></a>
-              <a id="color_00FFFF" class="color"></a>
-              <a id="color_800000" class="color"></a>
-              <a id="color_008000" class="color"></a><br />
-              <a id="color_000080" class="color"></a>
-              <a id="color_000000" class="color"></a>
-              <a id="color_808000" class="color"></a>
-              <a id="color_800080" class="color"></a>
-              <a id="color_008080" class="color"></a><br />
-              <a id="color_C0C0C0" class="color"></a>
-              <a id="color_808080" class="color"></a>
-              <a id="color_9999FF" class="color"></a>
-              <a id="color_993366" class="color"></a>
-              <a id="color_FFFFCC" class="color"></a>
-            </div>
-          </div>
 
+          <a class="separator" id="bordersep"></a>          
+          <div title="Set Background Colours" class="expand">
+            <span><a id="bgcolor-head" class="icon"></a></span>
+            <div id="bgcolors"></div>
+          </div>
+          
           <div title="Set Font Colour" class="expand" id="font_colour">
             <span><a id="fontcolor-head" class="icon"></a></span>
-            <div id="fontcolors">
-
-              <a id="color_000000" class="color"></a>
-              <a id="color_FFFFFF" class="color"></a>
-              <a id="color_FF0000" class="color"></a>
-              <a id="color_00FF00" class="color"></a>
-              <a id="color_0000FF" class="color"></a><br />
-              <a id="color_FFFF00" class="color"></a>
-              <a id="color_FF00FF" class="color"></a>
-              <a id="color_00FFFF" class="color"></a>
-              <a id="color_800000" class="color"></a>
-              <a id="color_008000" class="color"></a><br />
-              <a id="color_000080" class="color"></a>
-              <a id="color_000000" class="color"></a>
-              <a id="color_808000" class="color"></a>
-              <a id="color_800080" class="color"></a>
-              <a id="color_008080" class="color"></a><br />
-              <a id="color_C0C0C0" class="color"></a>
-              <a id="color_808080" class="color"></a>
-              <a id="color_9999FF" class="color"></a>
-              <a id="color_993366" class="color"></a>
-              <a id="color_FFFFCC" class="color"></a>
-            </div>
+            <div id="fontcolors"></div>
           </div>
+
           <a class="separator"></a>          
           <a title="Web Page Builder" class="toolbar-item" id="guibuilder"></a>
-          <a class="separator"></a>
-          <a title="Feedback/Report Bug" class="toolbar-item" id="markbtn"></a>
-
         </td>
       </tr>
       <tr>
@@ -533,15 +496,6 @@
   <script src="/hypernumbers/ajaxfileupload.js"></script>
   <script src="/hypernumbers/hn.js"></script>
   <script src="/hypernumbers/hn.util.js"></script>
-
-  <!-- I know bit of a bodge! -->
-  <script type="text/javascript"> 
-    if (($.browser.msie) ||($.browser.opera)) {
-       $("#loading").html("<strong>Error: </strong> - Sorry, your browser is "
-    +"not supported yet, please try Firefox, Safari or Chrome");
-    }
-  </script>
-
   <script src="/hypernumbers/hn.data.js"></script>
   <script src="/hypernumbers/hn.ui.js"></script>
   <script src="/hypernumbers/hn.uiactions.js"></script>

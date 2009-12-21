@@ -195,6 +195,7 @@ funcall(Fname, Args0) ->
              concatenate, cos, cosh, count, counta, countblank, countif,
              tan, tanh,
              sin, sinh,
+             thelifeuniverseandeverything,
              'if', row,
              cell, timevalue, npv, max, maxa, min, mina, syd,
              sumsq, sum, stdevpa, stdevp, stdeva, stdev, product, mdeterm,
@@ -209,6 +210,8 @@ funcall(Fname, Args0) ->
            end,
     
     Modules = get_modules(),
+
+    
     
     case call_fun(Fname, Args, Modules) of
         {error, not_found} -> userdef_call(Fname, Args);
