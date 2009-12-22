@@ -19,7 +19,7 @@
 
 -spec restore(list(), list()) -> ok.
 restore(Dir, Name) ->
-    {atomic, Tables} = mnesia:restore(Dir ++ Name,
+    {atomic, _Tables} = mnesia:restore(Dir ++ Name,
                                      [{default_op, recreate_tables}]),
     ok.
 
