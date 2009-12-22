@@ -253,7 +253,7 @@ provision(Site, Port, Row, State) ->
                 "to email or twitter your friends!~n~n"
                 "The tiny.hn team",
             
-            Msg = fmt(S, [User, SiteName2, SiteName2, User, Password]),
+            Msg = fmt(S, [User, SiteName2, User, Password]),
             
             case application:get_env(hypernumbers, environment) of
                 {ok, development} ->
