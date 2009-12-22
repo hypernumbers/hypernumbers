@@ -1,0 +1,304 @@
+* {  
+ margin:0px; 
+ padding: 0px;
+}
+
+html, body {  
+ height:100%;
+}
+
+body {  
+ background: #FFF;
+ margin: 0px;
+ font:   12px Arial,"Helvetica Neue", sans-serif !important;
+}
+
+#control label, .panel label { 
+    display : inline;
+}
+
+#control label * { 
+    vertical-align : middle;
+}
+
+.subpanel ul, #control ul {
+    list-style-type:none;
+}
+
+#placer {  
+    margin: 0px 10px;
+    height: 30px;
+    border: 2px dashed #999;
+}
+
+#tdpreview {  
+ height:100%;
+ padding:5px;
+}
+
+#configurepanel {  
+ z-index:50000;
+ position:absolute;
+ top:60px;
+ right:12px;
+ background-color: #dddddd;
+}
+
+#sheetpanel {  
+ z-index:50000;
+ position:absolute;
+ width:100%;
+ bottom:-10px;
+ left:0px;
+}
+
+.panel {  
+    position:relative;
+    background:#333333;
+    border:1px solid #999999;
+    -moz-border-radius:3px;
+    margin-bottom:10px;
+}
+
+.configurepanel {  
+    padding-bottom:50px;
+    color: #222222;
+}
+
+#configure input { 
+    width: 150px; 
+}
+
+.disabled {  
+ opacity:0.2;
+}
+
+#use_range {
+    padding:10px;
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    z-index: 900000000;
+    margin:20px;
+}
+
+.togglesubpanel {  
+ margin:4px;
+ text-decoration:underline;
+ font-weight: bold;
+ cursor:pointer;
+ color: #ffffff;
+}
+
+.panel.disabled .subpanel { display:none; }
+
+
+#previewcode {  
+ width:100%; 
+ height:100%;
+ border:0px;
+}
+
+#preview {  
+    height:100%;
+    overflow:auto;
+}
+
+#toggle {  
+ position:absolute;
+ bottom:10px;
+ margin-left:5px;
+}
+
+#pathstyle {  
+ position:absolute;
+ bottom:-7px;
+ margin-left:5px;
+}
+
+#toggle input { 
+ vertical-align:bottom;
+}
+
+.btn {  
+ text-align:      center; 
+ padding:         3px;
+ background:      #F9F9F9;
+ text-decoration: none;
+ color:           #333;
+ border-color:    #CCC #999 #999 #CCC;
+ border-width:    1px;
+ border-style:    solid;
+ -moz-border-radius:    4px;
+ -webkit-border-radius: 4px;
+ outline:none;
+}
+
+.btn:hover {  
+ cursor:pointer;
+ color:        #111;
+ border-color: #9CFF00 #669900 #669900 #9CFF00;
+}
+
+#tabs {  
+ overflow:auto;
+ list-style-type:none;
+}
+
+#tabs .selected {  
+ background:lightblue;
+}
+
+#tabs li {  
+ float:left;
+}
+
+#tabs li a {  
+ -moz-border-radius-topleft:4px;  -webkit-border-top-left-radius:4px;
+ -moz-border-radius-topright:4px; -webkit-border-top-right-radius: 4px;
+ padding:6px 12px;
+ float:left;
+ text-align:center;
+ font-weight:bold;
+ cursor:pointer;
+}
+
+.configurepanel .tab {  
+    display    : none;
+    padding    : 10px 5px;
+    background : lightblue;
+}
+
+.configuring {
+    color:#333333;
+    border: 3px solid #AA0000 !important;
+}
+
+.hn {
+    border: 1px solid transparent;
+}
+
+#control {
+    padding:10px;
+    vertical-align:middle;
+    background: #222222;
+    color: white;
+}
+
+#control #viewname  {
+    width              : 90px;
+    background         : #CCCCCC;
+    border             : 2px solid #666666;
+    padding            : 2px;
+    color              : #111111;
+    margin-top         : 3px;
+    -moz-border-radius : 4px; 
+    -webkit-border     : 4px;
+}
+
+.btn {
+    background:#EEE;
+    border:1px solid #999;
+    padding:2px;
+    color:#111111;
+    -moz-border-radius:4px; -webkit-border: 4px;
+}
+
+#previewbtn {
+    width:70px;
+    float:right;
+}
+
+#sanitycheckbtn {
+    width:100px;
+    float:right;
+}
+
+.control {
+    width:50px;
+    display:none;
+    position:absolute;
+    left:-50px;
+    text-align:right;
+    z-index:9999999;
+}
+
+.control input {
+    font-size:9px;
+    background:#222;
+    color:white;
+    border:0px;
+    margin-bottom:2px;
+    cursor:pointer;
+}
+
+.control input:hover {
+    background:#444;
+}
+
+.wrp:hover .control { display:block; }
+.wrp { position:relative;}
+
+#views ul { 
+    list-style-type:none; 
+}
+
+#views { 
+    position           :absolute; 
+    width              :200px; 
+    display            :none;
+    background         :#CCCCCC;
+    border             :2px solid #666666;
+    padding            :2px;
+    color              :#111111;
+    left               :0px;
+    z-index            :999;
+    -moz-border-radius :4px; -webkit-border: 4px;
+}
+
+.global { 
+    display:none;
+}
+
+#views li {
+    text-indent: 5px;
+}
+
+#views li:hover {
+    cursor:pointer;
+    background: #999999;
+}
+
+#control #viewspanel {
+    top:-3px;
+    position:relative;
+    float:left;
+}
+
+#control #viewviews {
+    position:absolute;
+    top:4px;
+    right:1px;
+    background:none;
+    border:none;
+}
+
+.hnheader {
+    font-size: 18px; 
+    font-weight: bold;
+}
+
+.editing .hn:hover { border:1px dashed #999; }
+
+.grid .by { margin: 0px; color:#999;} 
+.grid .hnheader { margin:0px; } 
+.grid .container { margin-bottom: 20px; }
+.grid hr { background:#999; height:1px; border:0px; }
+
+#toggle label {
+    margin: 0px 0px;
+    padding: 0px;
+    vertical-align: middle;
+}
+
+#sanitycheckbtn { display: none; }
