@@ -26,7 +26,7 @@
               </div>
               
               <div class='choice'>
-                <label disabled='disabled' for='quiz'>
+                <label for='quiz'>
                   <img src='/img/questionnaire.png'></img><br></br>Customer Questionnaire</label>
                 <input type='radio' id='quiz' value='Questionnaire'></input>
               </div>
