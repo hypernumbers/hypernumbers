@@ -191,7 +191,8 @@ tick() ->
     tiny_srv:tock().
 
 provision(Site, Port, Row, State) ->
-    
+    io:format("in provision Site is ~p Port is ~p Row is ~p State is ~p~n",
+              [Site, Port, Row, State]),
     SiteName = "http://" ++ Site ++ ":" ++ Port,
     RefX = #refX{site = SiteName, path = ?PATH,
                  obj = {range, {1, Row, 2, Row}}},
@@ -234,10 +235,10 @@ provision(Site, Port, Row, State) ->
                             _   -> "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
                                       ++ integer_to_list(Port2)
                         end,
-            hn_setup:site(SiteName2, list_to_atom(Type2),
+            hn_setup:site(SiteName, list_to_atom(Type2),
                           [{user, User},
                            {email, Email},
-                           {site, SiteName},
+                           {site, SiteName2},
                            {password, Password},
                            {subdomain, Sub }
                           ]),
