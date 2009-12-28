@@ -21,20 +21,20 @@
 -export([start_link/0]).
 
 -export([
-         check_get_page/3,
-         check_get_challenger/3,
-         check_get_page/4,
-         get_views/3,
-         add_views/3,
-         add_users_and_groups/4,
-         set_champion/3,
-         set_challenger/3,
-         remove_views/4,
-         remove_champion/2,
-         remove_challenger/2,
-         get_as_json/2,
-         pretty_print/3,
-         dump_script/1
+         check_get_page/3,        % tests
+         check_particular_page/4, %
+         check_get_challenger/3,  % tests
+         get_views/3,             % 
+         add_views/3,             % tests
+         add_users_and_groups/4,  % tests
+         set_champion/3,          % tests
+         set_challenger/3,        % tests
+         remove_views/4,          % tests
+         remove_champion/2,       % tests
+         remove_challenger/2,     % tests
+         get_as_json/2,           %
+         pretty_print/3,          %
+         dump_script/1            %
         ]).
 
 -export([
@@ -112,8 +112,8 @@ handle_call(Request, _From, State) ->
                 {Host, check_get_page1(get(Host, Tr), AS, P, champion), false};
             {check_get_challenger, Host, AS, P} ->
                 {Host, check_get_page1(get(Host, Tr), AS, P, challenger), false};
-            {check_get_page, Host, AS, P, Gui} ->
-                {Host, check_get_page1(get(Host, Tr), AS, P, Gui), false};
+            {check_particular_page, Host, AS, P, Gui} ->
+                {Host, check_particular_page1(get(Host, Tr), AS, P, Gui), false};
             {get_views, Host, AS, P} ->
                 {Host, get_views1(get(Host, Tr), AS, P), false};
             {add_views, Host, Pg, Vs} ->
@@ -212,8 +212,8 @@ check_get_page(Host, AuthSpec, Page) ->
 check_get_challenger(Host, AuthSpec, Page) -> 
     gen_server:call(auth_srv, {check_get_challenger, Host, AuthSpec, Page}).
 
-check_get_page(Host, AuthSpec, Page, Gui) ->
-    gen_server:call(auth_srv, {check_get_page, Host, AuthSpec, Page, Gui}).
+check_particular_page(Host, AuthSpec, Page, Gui) ->
+    gen_server:call(auth_srv, {check_particular_page, Host, AuthSpec, Page, Gui}).
 
 get_views(Host, AuthSpec, Page) ->
     gen_server:call(auth_srv, {get_views, Host, AuthSpec, Page}).
@@ -279,19 +279,30 @@ check_get_page1(Tree, {User, Groups}, Page, Type)
          fun(X) ->
                  get_page(X, User, Groups, Type)
          end,
-    check_get(Tree, Page, Fun);
-check_get_page1(Tree, {_User, _Groups}, Page, _View) -> 
-    % first see if the user has permission to see the page
-    % then see what view they should be getting
-     Fun =
-         fun(_X) ->
-                 ok
-         end,
     check_get(Tree, Page, Fun).
 
-get_views1(Tree, {_User, _Groups}, Page) ->
-    Fun = fun(_X) ->
-                  ok
+check_particular_page1(Tree, {User, Groups}, Page, View) ->
+    io:format("Tree is ~p~n-User is ~p~n-Groups is ~p~n-Page is ~p~n-View is ~p~n",
+              [Tree, User, Groups, Page, View]),
+    % first see if the user has permission to see the page
+    % then see what view they should be getting
+    Fun = fun(X) ->
+                  io:format("X is ~p~n", [X]),
+                  case lists:keymember(View, 2, X) of
+                      false -> {return, '404'};
+                      true  -> case can_read(lists:keyfind(View, 2, X), User, Groups) of
+                                   false -> {return, '503'};
+                                   true  -> {html, View}
+                               end
+                  end
+          end,
+    check_get(Tree, Page, Fun).
+
+get_views1(Tree, {User, Groups}, Page) ->
+    io:format("Tree is ~p User is ~p~n-Groups is ~p~n-Page is ~p~n",
+              [Tree, User, Groups, Page]),
+    Fun = fun(X) ->
+                  collect_views(X, User, Groups)
           end,
     check_get(Tree, Page, Fun).
 
@@ -370,12 +381,37 @@ pretty_print1(Tree, Host, Page, Type) ->
 %% Internal Functions
 %%
 
+collect_views(Controls, User, Groups) -> collect_v1(Controls, User, Groups, []).
+
+collect_v1([], _User, _Groups, Acc)    -> Acc;
+collect_v1([H | T], User, Groups, Acc) ->
+    NewAcc = case can_read(H, User, Groups) of
+                 true  -> #control{view = V} = H,
+                          [V | Acc];
+                 false -> Acc
+             end,
+    collect_v1(T, User, Groups, NewAcc).
+            
+
+can_read(Control, User, Groups) ->
+    #control{users = Users, groups = Groups2} = Control,
+    case lists:member(User, Users) of
+        true  -> true;
+        false -> can_read2(Groups, Groups2)
+    end .    
+
+can_read2([], _Groups2) -> false;
+can_read2([H | T], Groups2) ->
+    case lists:member(H, Groups2) of
+        true  -> true;
+        false -> can_read2(T, Groups2)
+    end.
+
 add_to_tree(Tree, [], Params, Fun) ->
     case gb_trees:lookup(controls, Tree) of
         none       -> NewCtrls = Fun([], Params),
                       gb_trees:insert(controls, NewCtrls, Tree);
-        {value, V} -> io:format("V is ~p~n", [V]),
-                      NewVs = Fun(V, Params),
+        {value, V} -> NewVs = Fun(V, Params),
                       gb_trees:enter(controls, NewVs, Tree)
     end;
 add_to_tree(Tree, [H | T], Params, Fun) ->
@@ -424,8 +460,7 @@ unset_default(Views, Type) ->
     end.
                      
 
-add_us_and_gps(Views, _View, [])                -> io:format("exiting here with ~p~n", [Views]),
-                                                   Views;
+add_us_and_gps(Views, _View, [])                -> Views;
 add_us_and_gps(Views, View, [{Type, Role} | T]) ->
     case lists:keysearch(View, #control.view, Views) of
         false        -> Ctrl = [#control{view = View}],
@@ -445,7 +480,7 @@ add_us_and_gps(Views, View, [{Type, Role} | T]) ->
     add_us_and_gps(NewViews, View, T).
 
 get_page([], _User, _Groups, _Type) -> io:format("return from get_page (1) ~n"),
-                                      {return, '404'};
+                                       {return, '404'};
 get_page(List, User, Groups, Type)  ->
     case lists:keyfind(Type, #control.default, List) of
         #control{view = F}-> io:format("return from get_page (2) ~n"),
@@ -600,10 +635,13 @@ make_pp(_Tree, _Type, _Seg, _Prefix, _Acc) -> "fix me up!~n".
 
 make_json(Tree, Seg) ->
     List = gb_trees:to_list(Tree),
+    % io:format("List is ~p~n", [List]),
     {array, [make_json1(K, V, Seg) || {K, V}  <- List]}.
 
-make_json1(_Type, _V, _Seg)              -> "fix me ya bozo".
-% make_json1(_K, _V, _Seg) when is_list(_K) -> "fix me as well".
+make_json1(_Type, _V, _Seg) ->
+    % io:format("in make_json1: Type is ~p~n-V is ~p~n-Seg is ~p~n",
+    %          [Type, V, Seg]),
+    "fix me ya bozo".
 
 load_trees(Dir, Table) ->
     {ok, _} = dets:open_file(Table, [{file, filename:join(Dir,Table)}]),
@@ -686,7 +724,8 @@ testA2() ->
     P = [],
     Tree = add_views1(gb_trees:empty(), P, ["a view", "another view"]),
     Ret = check_get_page1(Tree, {"User", ["Fail"]}, P, champion),
-    get_as_json1(Tree, []),
+    Json = get_as_json1(Tree, []),
+    io:format("Json is ~p~n", [Json]),
     % PP = pretty_print1(Tree, "test", [], text),
     % io:format(PP),
     io:format("Tree is ~p~n", [Tree]),
@@ -884,7 +923,7 @@ testA13() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
 
-%% remove defaults/challenger
+%% get all views available to a user
 testA14() ->
     P = [],
     Tree = set_default1(gb_trees:empty(), P, "another view", challenger),
@@ -898,6 +937,42 @@ testA14() ->
     io:format("Tree2 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == ["a view"]).
+
+%% get all views available to a user
+testA15() ->
+    P = [],
+    Tree = set_default1(gb_trees:empty(), P, "another view", challenger),
+    Tree1 = set_default1(Tree, P, "a third view", champion),
+    Tree2 = add_users_and_groups1(Tree1, P, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree3 = add_users_and_groups1(Tree2, P, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Ret = get_views1(Tree3, {"Fail", ["admin"]}, P),
+    get_as_json1(Tree3, []),
+    % PP = pretty_print1(Tree3, "test", [], text),
+    % io:format(PP),
+    io:format("Tree3 is ~p~n", [Tree3]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == ["a view", "a fourth view"]).
+
+% check a particular page
+testA16() ->
+    P = [],
+    Tree1 = add_users_and_groups1(gb_trees:empty(), P, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree2 = add_users_and_groups1(Tree1, P, "another view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree3 = add_users_and_groups1(Tree2, P, "a third view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree4 = add_users_and_groups1(Tree3, P, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Ret = check_particular_page1(Tree4, {"Fail", ["admin"]}, P, "a third view"),
+    get_as_json1(Tree4, []),
+    % PP = pretty_print1(Tree4, "test", [], text),
+    % io:format(PP),
+    io:format("Tree4 is ~p~n", [Tree4]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "a third view"}).
 
 
 % test the non-empty path
@@ -1104,6 +1179,58 @@ testB13() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a third view"}).
 
+%% get all views available to a user
+testB14() ->
+    P = ["bingo", "masters", "breakout"],
+    Tree = set_default1(gb_trees:empty(), P, "another view", challenger),
+    Tree1 = set_default1(Tree, P, "a third view", champion),
+    Tree2 = add_users_and_groups1(Tree1, P, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Ret = get_views1(Tree2, {"Fail", ["admin"]}, P),
+    get_as_json1(Tree2, []),
+    % PP = pretty_print1(Tree, "test", [], text),
+    % io:format(PP),
+    io:format("Tree2 is ~p~n", [Tree2]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == ["a view"]).
+
+%% get all views available to a user
+testB15() ->
+    P = ["bingo", "masters", "breakout"],
+    Tree = set_default1(gb_trees:empty(), P, "another view", challenger),
+    Tree1 = set_default1(Tree, P, "a third view", champion),
+    Tree2 = add_users_and_groups1(Tree1, P, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree3 = add_users_and_groups1(Tree2, P, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Ret = get_views1(Tree3, {"Fail", ["admin"]}, P),
+    get_as_json1(Tree3, []),
+    % PP = pretty_print1(Tree3, "test", [], text),
+    % io:format(PP),
+    io:format("Tree3 is ~p~n", [Tree3]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == ["a view", "a fourth view"]).
+
+% check a particular page
+testB16() ->
+    P = ["bingo", "masters", "breakout"],
+    Tree1 = add_users_and_groups1(gb_trees:empty(), P, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree2 = add_users_and_groups1(Tree1, P, "another view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree3 = add_users_and_groups1(Tree2, P, "a third view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree4 = add_users_and_groups1(Tree3, P, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Ret = check_particular_page1(Tree4, {"Fail", ["admin"]}, P, "a third view"),
+    get_as_json1(Tree4, []),
+    % PP = pretty_print1(Tree4, "test", [], text),
+    % io:format(PP),
+    io:format("Tree4 is ~p~n", [Tree4]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "a third view"}).
+
+
 
 %% Numbered tests deal with normal users
 %% Lettered tests deal with the 'admin' group
@@ -1125,7 +1252,9 @@ unit_test_() ->
      ?_assert(testA11()),
      ?_assert(testA12()),
      ?_assert(testA13()),
-     % ?_assert(testA14()),
+     ?_assert(testA14()), 
+     ?_assert(testA15()),
+     ?_assert(testA16()),
      ?_assert(testB1()),
      ?_assert(testB2()),
      ?_assert(testB3()),
@@ -1140,5 +1269,8 @@ unit_test_() ->
      ?_assert(testB10()),
      ?_assert(testB11()),
      ?_assert(testB12()),
-     ?_assert(testB13())
+     ?_assert(testB13()),
+     ?_assert(testB14()),
+     ?_assert(testB15()),
+     ?_assert(testB16())
     ].
