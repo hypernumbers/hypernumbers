@@ -190,11 +190,10 @@ tick() ->
     timer:sleep(?CLOCKTICK),
     tiny_srv:tock().
 
-provision(Site, Port, Row, State) ->
-    io:format("in provision Site is ~p Port is ~p Row is ~p State is ~p~n",
-              [Site, Port, Row, State]),
-    SiteName = "http://" ++ Site ++ ":" ++ Port,
-    RefX = #refX{site = SiteName, path = ?PATH,
+provision(CurrentSite, Port, Row, State) ->
+
+    CurrentSiteName = "http://" ++ CurrentSite ++ ":" ++ Port,
+    RefX = #refX{site = CurrentSiteName, path = ?PATH,
                  obj = {range, {1, Row, 2, Row}}},
     List = hn_db_api:read_attributes(RefX, ["formula"]),
     
@@ -229,21 +228,23 @@ provision(Site, Port, Row, State) ->
 
             Host  = proplists:get_value(host, State#state.args),
             Port2 = proplists:get_value(port, State#state.args),
-            SiteName2 = case Port2 of
+            NewSite  = "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
+                ++ integer_to_list(Port2),
+            EmailNewSite = case Port2 of
                             80  -> "http://" ++ Sub  ++ "."  ++ Host;
-                            443 -> "https://" ++ Sub  ++ "."  ++ Host;
+                            % 443 -> "https://" ++ Sub  ++ "."  ++ Host;
                             _   -> "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
                                       ++ integer_to_list(Port2)
                         end,
-            hn_setup:site(SiteName, list_to_atom(Type2),
-                          [{user, User},
-                           {email, Email},
-                           {site, SiteName2},
-                           {password, Password},
-                           {subdomain, Sub }
-                          ]),
 
-
+            ok = hn_setup:site(NewSite, list_to_atom(Type2),
+                               [{user, User},
+                                {email, Email},
+                                {site, EmailNewSite},
+                                {password, Password},
+                                {subdomain, Sub }
+                               ]),
+            
             S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site "
                 "at:~n~n ~s~n~nTo make changes to the site follow the "
                 "instructions on the main page"
@@ -254,7 +255,7 @@ provision(Site, Port, Row, State) ->
                 "to email or twitter your friends!~n~n"
                 "The tiny.hn team",
             
-            Msg = fmt(S, [User, SiteName2, User, Password]),
+            Msg = fmt(S, [User, EmailNewSite, User, Password]),
             
             case application:get_env(hypernumbers, environment) of
                 {ok, development} ->
