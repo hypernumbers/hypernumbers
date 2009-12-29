@@ -22,9 +22,9 @@
 
 -export([
          check_get_page/3,        % tests
-         check_particular_page/4, %
+         check_particular_page/4, % tests
          check_get_challenger/3,  % tests
-         get_views/3,             % 
+         get_views/3,             % tests
          add_views/3,             % tests
          add_users_and_groups/4,  % tests
          set_champion/3,          % tests
@@ -32,7 +32,7 @@
          remove_views/4,          % tests
          remove_champion/2,       % tests
          remove_challenger/2,     % tests
-         get_as_json/2,           %
+         get_as_json/2,           % tests
          pretty_print/3,          %
          dump_script/1            %
         ]).
@@ -282,12 +282,9 @@ check_get_page1(Tree, {User, Groups}, Page, Type)
     check_get(Tree, Page, Fun).
 
 check_particular_page1(Tree, {User, Groups}, Page, View) ->
-    io:format("Tree is ~p~n-User is ~p~n-Groups is ~p~n-Page is ~p~n-View is ~p~n",
-              [Tree, User, Groups, Page, View]),
     % first see if the user has permission to see the page
     % then see what view they should be getting
     Fun = fun(X) ->
-                  io:format("X is ~p~n", [X]),
                   case lists:keymember(View, 2, X) of
                       false -> {return, '404'};
                       true  -> case can_read(lists:keyfind(View, 2, X), User, Groups) of
@@ -299,8 +296,6 @@ check_particular_page1(Tree, {User, Groups}, Page, View) ->
     check_get(Tree, Page, Fun).
 
 get_views1(Tree, {User, Groups}, Page) ->
-    io:format("Tree is ~p User is ~p~n-Groups is ~p~n-Page is ~p~n",
-              [Tree, User, Groups, Page]),
     Fun = fun(X) ->
                   collect_views(X, User, Groups)
           end,
@@ -367,7 +362,7 @@ remove_default1(Tree, [H | T], Type) ->
    
 get_as_json1(Tree, Page) ->
     Fun = fun(X) ->
-                  make_json(X, [])
+                  make_json(X)
           end,
     get_for_pp(Tree, Page, Fun).
 
@@ -631,17 +626,109 @@ make_prettyprint(Tree, Host, html) -> Body = make_pp(Tree, html, [], "", []),
 make_prettyprint(Tree, Host, text) -> "Permissions for " ++ Host ++ "~n" ++
                                           make_pp(Tree, text, [], "", []).
 
-make_pp(_Tree, _Type, _Seg, _Prefix, _Acc) -> "fix me up!~n".
-
-make_json(Tree, Seg) ->
+make_pp(Tree, Type, Seg, Prefix, Acc) ->
+    LineEnd = case Type of
+                  html -> "<br />";
+                  text -> "~n"
+              end,
     List = gb_trees:to_list(Tree),
-    % io:format("List is ~p~n", [List]),
-    {array, [make_json1(K, V, Seg) || {K, V}  <- List]}.
+    {Controls, Paths} = split(List),
+    Seg2 = case Seg of
+               [] -> "/";
+               _  -> "/" ++ Seg ++ "/"
+           end,
+    NewPrefix = case {length(Paths), Type} of
+                    {0, text} -> lists:append(Prefix, "  ");
+                    {1, text} -> lists:append(Prefix, "  ");
+                    {_, text} -> lists:append(Prefix, " |");
+                    {0, html} -> lists:append(Prefix, "&nbsp;&nbsp;");
+                    {1, html} -> lists:append(Prefix, "&nbsp;&nbsp;");
+                    {_, html} -> lists:append(Prefix, "&nbsp;|")
+                end,
+    C = pp(Controls, Prefix, Type, []),
+    make_pp2(Paths, Type, NewPrefix,
+             [C, LineEnd, Seg2, "-> ", Prefix, LineEnd, Prefix | Acc]).
 
-make_json1(_Type, _V, _Seg) ->
-    % io:format("in make_json1: Type is ~p~n-V is ~p~n-Seg is ~p~n",
-    %          [Type, V, Seg]),
-    "fix me ya bozo".
+make_pp2([], text, _Prefix, Acc) -> lists:flatten(lists:reverse(Acc));
+make_pp2([], html, _Prefix, Acc) -> lists:flatten(lists:reverse(Acc));
+make_pp2([{{seg, K}, V} | T], Type, Prefix, Acc) ->
+    NewAcc = make_pp(V, Type, K, Prefix, []),
+    make_pp2(T, Type, Prefix, [NewAcc | Acc]).
+
+pp([], Prefix, html, [])       -> Prefix ++ "&nbsp;&nbsp;&nbsp;(no controls)" ++ "<br />";
+pp([], Prefix, text, [])       -> Prefix ++ "   (no controls)" ++ "~n";
+pp([], _Prefix, _Type, Acc)    -> lists:reverse(Acc);
+pp([{controls, H} | T], Prefix, Type, Acc) -> pp(T, Prefix, Type, [pp_c(H, Prefix, Type, [])| Acc]).
+
+
+pp_c([], _Prefix, _Type, Acc)    -> Acc;
+pp_c([H | T], Prefix, html, Acc) ->
+    #control{view = V, default = D, users = U, groups = G} = H,
+    NewAcc =
+        case D of
+            false ->
+                Prefix ++ "&nbsp;&nbsp;&nbsp;view: " ++ V ++ "<br />"
+                    ++ Prefix ++ "&nbsp;&nbsp;&nbsp;&nbsp;users&nbsp; : " ++ make_list(U, []) ++ "<br />"
+                    ++ Prefix ++ "&nbsp;&nbsp;&nbsp;&nbsp;groups : " ++ make_list(G, []) ++ "<br />";
+            _ ->
+                Prefix ++ "&nbsp;&nbsp;&nbsp;view: " ++ V ++ " ("++ make_string(D) ++ ")<br />"
+                    ++ Prefix ++ "&nbsp;&nbsp;&nbsp;&nbsp;users&nbsp; : " ++ make_list(U, []) ++ "<br />"
+                    ++ Prefix ++ "&nbsp;&nbsp;&nbsp;&nbsp;groups : " ++ make_list(G, []) ++ "<br />"
+        end,
+    pp_c(T, Prefix, html, [NewAcc | Acc]);
+pp_c([H | T], Prefix, text, Acc) ->
+    #control{view = V, default = D, users = U, groups = G} = H,
+    NewAcc =
+        case D of
+            false ->
+                Prefix ++ "   view: " ++ V ++ "~n"
+                    ++ Prefix ++ "    users  : " ++ make_list(U, []) ++ "~n"
+                    ++ Prefix ++ "    groups : " ++ make_list(G, []) ++ "~n";
+            _ ->
+                Prefix ++ "   view: " ++ V ++ " ("++ make_string(D) ++ ")~n"
+                    ++ Prefix ++ "    users  : " ++ make_list(U, []) ++ "~n"
+                    ++ Prefix ++ "    groups : " ++ make_list(G, []) ++ "~n"
+        end,
+    pp_c(T, Prefix, text, [NewAcc | Acc]).
+
+make_string(champion)          -> "champion/default page";
+make_string(challenger)        -> "challenger";
+make_string(X) when is_list(X) -> X.
+
+make_list([], Acc)      -> string:strip(string:strip(Acc, right), right, $,);
+make_list([H | T], Acc) -> make_list(T, H ++ ", " ++ Acc).
+
+pp_l([], [])                       -> ""; % blank list is just blank!
+pp_l([], [_H | Acc])               -> lists:flatten(lists:reverse(Acc));
+pp_l([H | T], Acc) when is_atom(H) -> pp_l(T, [", ", atom_to_list(H) | Acc]);
+pp_l([H | T], Acc) when is_list(H) -> pp_l(T, [", ", H | Acc]).
+
+split(L) -> sp1(L, [], []).
+
+sp1([], Controls, Paths)      -> {lists:sort(Controls), lists:sort(Paths)};
+sp1([H | T], Controls, Paths) ->
+    case element(1, H) of
+        controls  -> sp1(T, [H | Controls], Paths);
+        {seg, _S} -> sp1(T, Controls, [H | Paths])
+    end.
+
+make_json(Tree) ->
+    List = gb_trees:to_list(Tree),
+    {array, [make_json1(K, V) || {K, V}  <- List]}.
+
+make_json1({seg, Seg}, V) ->
+    {struct, [{{path, Seg}, make_json(V)}]};
+make_json1(controls, Ctrls) ->
+    {struct, [{controls, {array, make_json2(Ctrls, [])}}]}.
+
+make_json2([], Acc)      -> Acc;
+make_json2([H | T], Acc) ->
+    #control{view = V, default = D, users = U, groups = G} = H,
+    NewAcc = {struct, [{view, V},
+                       {default, D},
+                       {users, {array, U}},
+                       {groups, {array, G}}]},
+    make_json2(T, [NewAcc | Acc]).
 
 load_trees(Dir, Table) ->
     {ok, _} = dets:open_file(Table, [{file, filename:join(Dir,Table)}]),
@@ -726,8 +813,8 @@ testA2() ->
     Ret = check_get_page1(Tree, {"User", ["Fail"]}, P, champion),
     Json = get_as_json1(Tree, []),
     io:format("Json is ~p~n", [Json]),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree, "test", [], text),
+    io:format(PP),
     io:format("Tree is ~p~n", [Tree]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '503'}).
@@ -740,8 +827,8 @@ testA3() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_get_page1(Tree1, {"User", ["Fail"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree, "test", [], text),
+    io:format(PP),
     io:format("Tree1 is ~p~n", [Tree1]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '503'}).
@@ -753,8 +840,8 @@ testA4() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_get_page1(Tree1, {"gordon", ["Fail"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree1 is ~p~n", [Tree1]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -765,8 +852,8 @@ testA4a() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_get_page1(Tree, {"gordon", ["Fail"]}, P, champion),
     get_as_json1(Tree, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree, "test", [], text),
+    io:format(PP),
     io:format("Tree is ~p~n", [Tree]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -778,8 +865,8 @@ testA5() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_get_page1(Tree1, {"Fail", ["admin"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree1 is ~p~n", [Tree1]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -793,8 +880,8 @@ testA6() ->
     Tree2 = set_default1(Tree1, P, "another view", champion),
     Ret = check_get_page1(Tree2, {"Fail", ["admin"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree2 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "another view"}).
@@ -808,8 +895,8 @@ testA7() ->
     Tree3 = set_default1(Tree2, P, "another view", champion),
     Ret = check_get_page1(Tree3, {"Fail", ["admin"]}, P, champion),
     get_as_json1(Tree3, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree3, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree3]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "another view"}).
@@ -822,8 +909,8 @@ testA7a() ->
     Tree2 = set_default1(Tree1, P, "another view", champion),
     Ret = check_get_page1(Tree2, {"Fail", ["admin"]}, P, champion),
     get_as_json1(Tree2, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree2, "test", [], text),
+    io:format(PP),
     io:format("Tree2 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "another view"}).
@@ -839,8 +926,8 @@ testA8() ->
     Tree3 = remove_views1(Tree2, P, ["another view"]),
     Ret = check_get_page1(Tree3, {"gordon", ["Fail"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree3]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -855,8 +942,8 @@ testA9() ->
     Tree3 = remove_views1(Tree2, P, ["another view", "a third"]),
     Ret = check_get_page1(Tree3, {"gordon", ["Fail"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree3]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -871,8 +958,8 @@ testA10() ->
     Tree3 = remove_views1(Tree2, P, ["a view", "a third"]),
     Ret = check_get_page1(Tree3, {"gordon", ["Fail"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree3]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "another view"}).
@@ -886,8 +973,8 @@ testA11() ->
     Tree2 = remove_default1(Tree1, P, champion),
     Ret = check_get_page1(Tree2, {"Fail", ["admin"]}, P, champion),
     get_as_json1(Tree2, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree2, "test", [], text),
+    io:format(PP),
     io:format("Tree2 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -901,8 +988,8 @@ testA12() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_get_page1(Tree2, {"Fail", ["admin"]}, P, challenger),
     get_as_json1(Tree2, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree2, "test", [], text),
+    io:format(PP),
     io:format("Tree2 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "another view"}).
@@ -917,8 +1004,8 @@ testA13() ->
     Tree3 = remove_default1(Tree2, P, challenger),
     Ret = check_get_page1(Tree3, {"Fail", ["admin"]}, P, challenger),
     get_as_json1(Tree3, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree3, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -932,8 +1019,8 @@ testA14() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = get_views1(Tree2, {"Fail", ["admin"]}, P),
     get_as_json1(Tree2, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree2, "test", [], text),
+    io:format(PP),
     io:format("Tree2 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == ["a view"]).
@@ -949,8 +1036,8 @@ testA15() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = get_views1(Tree3, {"Fail", ["admin"]}, P),
     get_as_json1(Tree3, []),
-    % PP = pretty_print1(Tree3, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree3, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree3]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == ["a view", "a fourth view"]).
@@ -967,9 +1054,10 @@ testA16() ->
     Tree4 = add_users_and_groups1(Tree3, P, "a fourth view",
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_particular_page1(Tree4, {"Fail", ["admin"]}, P, "a third view"),
-    get_as_json1(Tree4, []),
-    % PP = pretty_print1(Tree4, "test", [], text),
-    % io:format(PP),
+    Json = get_as_json1(Tree4, []),
+    io:format("Json is ~p~n", [Json]),
+    PP = pretty_print1(Tree4, "test", [], text),
+    io:format(PP),
     io:format("Tree4 is ~p~n", [Tree4]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a third view"}).
@@ -988,8 +1076,8 @@ testB2() ->
     io:format("Tree is ~p~n", [Tree]),
     Ret = check_get_page1(Tree, {"User", ["Fail"]}, P, champion),
     get_as_json1(Tree, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree, "test", [], text),
+    io:format(PP),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '503'}).
 
@@ -1000,8 +1088,8 @@ testB3() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_get_page1(Tree1, {"User", ["Fail"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree1 is ~p~n", [Tree1]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {return, '503'}).
@@ -1013,8 +1101,8 @@ testB4() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_get_page1(Tree1, {"gordon", ["Fail"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree1 is ~p~n", [Tree1]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -1025,8 +1113,8 @@ testB4a() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_get_page1(Tree, {"gordon", ["Fail"]}, P, champion),
     get_as_json1(Tree, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree, "test", [], text),
+    io:format(PP),
     io:format("Tree is ~p~n", [Tree]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -1038,8 +1126,8 @@ testB5() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_get_page1(Tree1, {"Fail", ["admin"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree1 is ~p~n", [Tree1]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -1052,8 +1140,8 @@ testB6() ->
     Tree2 = set_default1(Tree1, P, "another view", champion),
     Ret = check_get_page1(Tree2, {"Fail", ["admin"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree2 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "another view"}).
@@ -1067,8 +1155,8 @@ testB7() ->
     Tree3 = set_default1(Tree2, P, "another view", champion),
     Ret = check_get_page1(Tree3, {"Fail", ["admin"]}, P, champion),
     get_as_json1(Tree3, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree3, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree3]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "another view"}).
@@ -1081,8 +1169,8 @@ testB7a() ->
     Tree2 = set_default1(Tree1, P, "another view", champion),
     Ret = check_get_page1(Tree2, {"Fail", ["admin"]}, P, champion),
     get_as_json1(Tree2, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree2, "test", [], text),
+    io:format(PP),
     io:format("Tree2 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "another view"}).
@@ -1097,8 +1185,8 @@ testB8() ->
     Tree3 = remove_views1(Tree2, P, ["another view"]),
     Ret = check_get_page1(Tree3, {"gordon", ["Fail"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree3]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -1113,8 +1201,8 @@ testB9() ->
     Tree3 = remove_views1(Tree2, P, ["another view", "a third"]),
     Ret = check_get_page1(Tree3, {"gordon", ["Fail"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree1, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree3]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -1129,8 +1217,8 @@ testB10() ->
     Tree3 = remove_views1(Tree2, P, ["a view", "a third"]),
     Ret = check_get_page1(Tree3, {"gordon", ["Fail"]}, P, champion),
     get_as_json1(Tree1, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree3, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree3]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "another view"}).
@@ -1143,8 +1231,8 @@ testB11() ->
     Tree2 = remove_default1(Tree1, P, champion),
     Ret = check_get_page1(Tree2, {"Fail", ["admin"]}, P, champion),
     get_as_json1(Tree2, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree2, "test", [], text),
+    io:format(PP),
     io:format("Tree2 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a view"}).
@@ -1158,8 +1246,8 @@ testB12() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_get_page1(Tree2, {"Fail", ["admin"]}, P, challenger),
     get_as_json1(Tree2, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree2, "test", [], text),
+    io:format(PP),
     io:format("Tree2 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "another view"}).
@@ -1173,8 +1261,8 @@ testB13() ->
     Tree3 = remove_default1(Tree2, P, challenger),
     Ret = check_get_page1(Tree3, {"Fail", ["admin"]}, P, champion),
     get_as_json1(Tree3, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree3, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree3]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a third view"}).
@@ -1188,8 +1276,8 @@ testB14() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = get_views1(Tree2, {"Fail", ["admin"]}, P),
     get_as_json1(Tree2, []),
-    % PP = pretty_print1(Tree, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree2, "test", [], text),
+    io:format(PP),
     io:format("Tree2 is ~p~n", [Tree2]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == ["a view"]).
@@ -1205,8 +1293,8 @@ testB15() ->
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = get_views1(Tree3, {"Fail", ["admin"]}, P),
     get_as_json1(Tree3, []),
-    % PP = pretty_print1(Tree3, "test", [], text),
-    % io:format(PP),
+    PP = pretty_print1(Tree3, "test", [], text),
+    io:format(PP),
     io:format("Tree3 is ~p~n", [Tree3]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == ["a view", "a fourth view"]).
@@ -1223,14 +1311,13 @@ testB16() ->
     Tree4 = add_users_and_groups1(Tree3, P, "a fourth view",
                                   [{user, "gordon"}, {group, "admin"}]),
     Ret = check_particular_page1(Tree4, {"Fail", ["admin"]}, P, "a third view"),
-    get_as_json1(Tree4, []),
-    % PP = pretty_print1(Tree4, "test", [], text),
-    % io:format(PP),
+    Json = get_as_json1(Tree4, []),
+    io:format("Json is ~p~n", [Json]),
+    PP = pretty_print1(Tree4, "test", [], text),
+    io:format(PP),
     io:format("Tree4 is ~p~n", [Tree4]),
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a third view"}).
-
-
 
 %% Numbered tests deal with normal users
 %% Lettered tests deal with the 'admin' group
