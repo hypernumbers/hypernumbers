@@ -21,25 +21,26 @@
 -export([start_link/0]).
 
 -export([
-         check_get_page/3,        % tests
-         check_particular_page/4, % tests
-         check_get_challenger/3,  % tests
-         get_views/3,             % tests
-         add_views/3,             % tests
-         add_users_and_groups/4,  % tests
-         set_champion/3,          % tests
-         set_challenger/3,        % tests
-         remove_views/4,          % tests
-         remove_champion/2,       % tests
-         remove_challenger/2,     % tests
-         get_as_json/2,           % tests
-         pretty_print/3,          % tests
-         dump_script/1            %
+         check_get_page/3,
+         check_particular_page/4,
+         check_get_challenger/3,
+         get_views/3,
+         add_views/3,
+         add_users_and_groups/4,
+         set_champion/3,
+         set_challenger/3,
+         remove_views/4,
+         remove_champion/2,
+         remove_challenger/2,
+         get_as_json/2,
+         pretty_print/3,
+         dump_script/1
         ]).
 
 -export([
          clear_all_perms_DEBUG/1,
-         permissions_DEBUG/3
+         permissions_DEBUG/3,
+         demo_DEBUG/0
         ]).
 
 -compile(export_all).
@@ -290,7 +291,10 @@ check_particular_page1(Tree, {User, Groups}, Page, View) ->
     % then see what view they should be getting
     Fun = fun(X) ->
                   case lists:keymember(View, 2, X) of
-                      false -> {return, '404'};
+                      false -> case has_wild_view(X, User, Groups) of
+                                   false -> {return, '404'};
+                                   true  -> {html, View}
+                               end;
                       true  -> case can_read(lists:keyfind(View, 2, X),
                                              User, Groups) of
                                    false -> {return, '503'};
@@ -380,6 +384,15 @@ pretty_print1(Tree, Host, Page, Type) ->
 %%
 %% Internal Functions
 %%
+
+has_wild_view(X, User, Groups) ->
+    case lists:keymember("*", 2, X) of
+        false -> {return, '404'};
+        true  -> case can_read(lists:keyfind("*", 2, X), User, Groups) of
+                     false -> false;
+                     true  -> true
+                 end
+    end.
 
 collect_views(Ctrls, User, Groups) -> collect_v1(Ctrls, User, Groups, []).
 
@@ -763,6 +776,41 @@ merge1([{K, V} | T], List, Fun, Acc) ->
                    NewCtl = Fun(V, V2),
                    merge1(T, List2, Fun, [{K, NewCtl} | Acc])
     end.
+%%%===================================================================
+%%% Demo to show off how the permissions are stored...
+%%%===================================================================
+demo_DEBUG() ->
+    P1 = ["hip"],
+    P2 = ["hip", "[*]"],
+    P3 = ["dont", "stop"],
+    Tree1 = add_users_and_groups1(gb_trees:empty(), P1, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree2 = add_users_and_groups1(Tree1, P1, "another view",
+                                  [{user, "betty"}, {group, "admin"}]),
+    Tree3 = add_users_and_groups1(Tree2, P1, "a third view",
+                                  [{group, "himbos"}]),
+    Tree4 = add_users_and_groups1(Tree3, P1, "a fourth view",
+                                  [{user, "jamie"}, {user, "annie"}]),
+    Tree4a = set_default1(Tree4, P1, "another view", champion),
+    Tree4b = set_default1(Tree4a, P1, "a view", challenger),
+    Tree5 = add_users_and_groups1(Tree4b, P2, "*",
+                                  [{group, "admin"}]),
+    Tree6 = add_users_and_groups1(Tree5, P2, "_g/blah",
+                                 [{user, "gordon"}, {group, "admin"}]),
+    Tree7 = add_users_and_groups1(Tree6, P2, "_u/stevie/bleh",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree8 = add_users_and_groups1(Tree7, P2, "whatever",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree9 = add_users_and_groups1(Tree8, P3, "a view",
+                                  [{user, "stevie"}]),
+    Tree10 = add_users_and_groups1(Tree9, P3, "another view",
+                                  [{user, "dale"}]),
+    Tree11 = add_users_and_groups1(Tree10, P3, "yeah, yeah!",
+                                  [{group, "user"}, {group, "admin"}]),
+    Tree12 = add_users_and_groups1(Tree11, P3, "*",
+                                  [{group, "admin"}]),
+    PP = pretty_print1(Tree12, "test", [], text),
+    io:format(PP).
 
 %%%===================================================================
 %%% EUnit Tests
@@ -1516,9 +1564,193 @@ testC16() ->
     io:format("Ret is ~p~n", [Ret]),
     (Ret == {html, "a third view"}).
 
+%% test wild cards
+testD1() ->
+    P1 = ["hip", "hop"],
+    P2 = ["[**]"],
+    Tree1 = add_users_and_groups1(gb_trees:empty(), P2, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree2 = add_users_and_groups1(Tree1, P2, "another view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree3 = add_users_and_groups1(Tree2, P2, "a third view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree4 = add_users_and_groups1(Tree3, P2, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree5 = set_default1(Tree4, P2, "another view", champion),
+    Ret = check_get_page1(Tree5, {"Fail", ["admin"]}, P1, champion),
+    Json = get_as_json1(Tree5, []),
+    Script = dump_script1(Tree5),
+    io:format("Script is ~p~n", [Script]),
+    io:format("Json is ~p~n", [Json]),
+    PP = pretty_print1(Tree5, "test", [], text),
+    io:format(PP),
+    io:format("Tree5 is ~p~n", [Tree5]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "another view"}).
 
-%% Numbered tests deal with normal users
-%% Lettered tests deal with the 'admin' group
+testD2() ->
+    P1 = ["hip", "hop"],
+    P2 = ["hip", "[*]"],
+    Tree1 = add_users_and_groups1(gb_trees:empty(), P2, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree2 = add_users_and_groups1(Tree1, P2, "another view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree3 = add_users_and_groups1(Tree2, P2, "a third view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree4 = add_users_and_groups1(Tree3, P2, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree5 = set_default1(Tree4, P2, "another view", champion),
+    Ret = check_get_page1(Tree5, {"Fail", ["admin"]}, P1, champion),
+    Json = get_as_json1(Tree5, []),
+    Script = dump_script1(Tree5),
+    io:format("Script is ~p~n", [Script]),
+    io:format("Json is ~p~n", [Json]),
+    PP = pretty_print1(Tree5, "test", [], text),
+    io:format(PP),
+    io:format("Tree5 is ~p~n", [Tree5]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "another view"}).
+
+testD3() ->
+    P1 = ["hip", "hop"],
+    P2 = ["[*]"],
+    Tree1 = add_users_and_groups1(gb_trees:empty(), P2, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree2 = add_users_and_groups1(Tree1, P2, "another view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree3 = add_users_and_groups1(Tree2, P2, "a third view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree4 = add_users_and_groups1(Tree3, P2, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Ret = check_get_page1(Tree4, {"Fail", ["admin"]}, P1, champion),
+    Json = get_as_json1(Tree4, []),
+    Script = dump_script1(Tree4),
+    io:format("Script is ~p~n", [Script]),
+    io:format("Json is ~p~n", [Json]),
+    PP = pretty_print1(Tree4, "test", [], text),
+    io:format(PP),
+    io:format("Tree4 is ~p~n", [Tree4]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {return, '404'}).
+
+% specific overrides the general
+testD4() ->
+    P1 = ["hip", "hop"],
+    P2 = ["[**]"],
+    Tree1 = add_users_and_groups1(gb_trees:empty(), P2, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree2 = add_users_and_groups1(Tree1, P2, "another view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree3 = add_users_and_groups1(Tree2, P2, "a third view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree4 = add_users_and_groups1(Tree3, P2, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree4 = add_users_and_groups1(Tree3, P2, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree5 = add_users_and_groups1(Tree4, P1, "blurgh",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Ret = check_get_page1(Tree5, {"Fail", ["admin"]}, P1, champion),
+    Json = get_as_json1(Tree5, []),
+    Script = dump_script1(Tree5),
+    io:format("Script is ~p~n", [Script]),
+    io:format("Json is ~p~n", [Json]),
+    PP = pretty_print1(Tree5, "test", [], text),
+    io:format(PP),
+    io:format("Tree5 is ~p~n", [Tree5]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "blurgh"}).
+
+testD5() ->
+    P1 = ["hip", "hop"],
+    P2 = ["hip", "[*]"],
+    Tree1 = add_users_and_groups1(gb_trees:empty(), P2, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree2 = add_users_and_groups1(Tree1, P2, "another view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree3 = add_users_and_groups1(Tree2, P2, "a third view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree4 = add_users_and_groups1(Tree3, P2, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree4 = add_users_and_groups1(Tree3, P2, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree5 = add_users_and_groups1(Tree4, P1, "blurgh",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Ret = check_get_page1(Tree5, {"Fail", ["admin"]}, P1, champion),
+    Json = get_as_json1(Tree5, []),
+    Script = dump_script1(Tree5),
+    io:format("Script is ~p~n", [Script]),
+    io:format("Json is ~p~n", [Json]),
+    PP = pretty_print1(Tree5, "test", [], text),
+    io:format(PP),
+    io:format("Tree5 is ~p~n", [Tree5]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "blurgh"}).
+
+testD6() ->
+    P1 = ["hip", "hop"],
+    P2 = ["hip", "[*]"],
+    P3 = ["hip", "[**]"],
+    P4 = ["[**]"],
+    Tree1 = add_users_and_groups1(gb_trees:empty(), P2, "a view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree2 = add_users_and_groups1(Tree1, P2, "another view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree3 = add_users_and_groups1(Tree2, P2, "a third view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree4 = add_users_and_groups1(Tree3, P2, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree4 = add_users_and_groups1(Tree3, P2, "a fourth view",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree5 = add_users_and_groups1(Tree4, P1, "blurgh",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree6 = add_users_and_groups1(Tree5, P3, "boodle",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree7 = add_users_and_groups1(Tree6, P4, "banjo",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Ret = check_get_page1(Tree7, {"Fail", ["admin"]}, P1, champion),
+    Json = get_as_json1(Tree7, []),
+    Script = dump_script1(Tree7),
+    io:format("Script is ~p~n", [Script]),
+    io:format("Json is ~p~n", [Json]),
+    PP = pretty_print1(Tree7, "test", [], text),
+    io:format(PP),
+    io:format("Tree7 is ~p~n", [Tree7]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "blurgh"}).
+
+testD7() ->
+    P = [],
+    Tree = add_users_and_groups1(gb_trees:empty(), P, "*",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree1 = add_users_and_groups1(Tree, P, "blah",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree2 = add_users_and_groups1(Tree1, P, "blerg",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Ret = get_views1(Tree2, {"Fail", ["admin"]}, P),
+    get_as_json1(Tree2, []),
+    PP = pretty_print1(Tree2, "test", [], text),
+    io:format(PP),
+    io:format("Tree2 is ~p~n", [Tree2]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == ["blerg", "blah", "*"]).
+
+testD8() ->
+    P = [],
+    Tree = add_users_and_groups1(gb_trees:empty(), P, "*",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree1 = add_users_and_groups1(Tree, P, "blah",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Tree2 = add_users_and_groups1(Tree1, P, "blerg",
+                                  [{user, "gordon"}, {group, "admin"}]),
+    Ret = check_particular_page1(Tree2, {"Fail", ["admin"]},
+                                 P, "random chops, tonto"),
+    get_as_json1(Tree2, []),
+    PP = pretty_print1(Tree2, "test", [], text),
+    io:format(PP),
+    io:format("Tree2 is ~p~n", [Tree2]),
+    io:format("Ret is ~p~n", [Ret]),
+    (Ret == {html, "random chops, tonto"}).
+
 unit_test_() -> 
     [
      % tests for the root page []
@@ -1566,5 +1798,13 @@ unit_test_() ->
      ?_assert(testC12()),
      ?_assert(testC13()),
      ?_assert(testC15()),
-     ?_assert(testC16())
+     ?_assert(testC16()),
+     ?_assert(testD1()),
+     ?_assert(testD2()),
+     ?_assert(testD3()),
+     ?_assert(testD4()),
+     ?_assert(testD5()),
+     ?_assert(testD6()),
+     ?_assert(testD7()),
+     ?_assert(testD8())
     ].
