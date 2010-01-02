@@ -226,23 +226,35 @@ iget(Req, Ref, page, [{"pages", []}], _User, json) ->
 iget(Req, Ref, page, _Attr, User, json) ->
     json(Req, page_attributes(Ref, User));
 
-iget(Req, Ref, cell, _Attr, _User, json) ->
+iget(Req, Ref, Type, _Attr, _User, json) when (Type == cell) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
-            [{_Ref, {"value", Val}}] when is_atom(Val) ->
-                atom_to_list(Val);
-            [{_Ref, {"value", {datetime, D, T}}}] ->
-                dh_date:format("Y/m/d H:i:s",{D,T});
-            [{_Ref, {"value", {errval, Val}}}] ->
-                atom_to_list(Val);
-            [{_Ref, {"value", Val}}] ->
-                Val;
-            _Else ->
-                error_logger:error_msg("unmatched ~p~n", [_Else]),
-                "" 
-        end,
-    Req:ok({"text/html", V});
+               [{_Ref, {"value", Val}}] when is_atom(Val) ->
+                   atom_to_list(Val);
+	            [{_Ref, {"value", {datetime, D, T}}}] ->
+                   dh_date:format("Y/m/d H:i:s",{D,T});
+               [{_Ref, {"value", {errval, Val}}}] ->
+                   atom_to_list(Val);
+               [{_Ref, {"value", Val}}] ->
+                   Val;
+               _Else ->
+                   error_logger:error_msg("unmatched ~p~n", [_Else]),
+                   ""
+           end,
+    json(Req, {struct, [{rawvalue, V}]});
 
+iget(Req, Ref, Type, _Attr, _User, json)
+  when (Type == range)
+       orelse (Type == column)
+       orelse (Type == row) ->
+    
+    Init   = [["cell"], ["column"], ["row"], ["page"]],
+    Tree   = dh_tree:create(Init),
+    Dict = to_dict(hn_db_api:read_attributes(Ref,[]), Tree),
+    json(Req, {struct, dict_to_struct(Dict)});
 
+iget(Req, #refX{site = Site} = _Ref, cell, _Attr, User, html) ->
+    serve_html(Req, docroot(Site) ++ "/_global/cell.html", User);
+    
 iget(Req, Ref, _Type, Attr, User, _CType) ->
     error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
     '404'(Req, User).
