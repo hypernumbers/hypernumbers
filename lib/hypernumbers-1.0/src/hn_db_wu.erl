@@ -1693,10 +1693,13 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
             %[ok = mark_dirty_cells_deleted(X) || X <- List2],
             % now delete the links to the cells
             [ok = delete_parent_links(X) || X <- List2],
-            % finally delete all the attributes
+            % delete all the attributes
             List3 = get_content_attrs(List1),
-            [delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
+            [ok = delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
             [ok = mark_cells_dirty(X) || X <- List2],
+            % finally delete the format record
+            List4 = get_formats(List1),
+            [ok = delete_attrs(X, Key) || {X, {Key, _Val}} <- List4],
             ok
     end.
 
@@ -2897,7 +2900,13 @@ write_local_parents(#refX{site = Site} = Child, List) ->
           end,
     [Fun(X) || X <- List],
     ok.
-            
+
+get_formats(List) -> get_f1(List, []).
+
+get_f1([], Acc)                            -> Acc;
+get_f1([{_, {"format", _V}} = H | T], Acc) -> get_f1(T, [H | Acc]);
+get_f1([_H | T], Acc)                      -> get_f1(T, Acc).
+    
 get_content_attrs(List) -> get_content_attrs(List, []).
 
 get_content_attrs([], Acc)      -> Acc;
