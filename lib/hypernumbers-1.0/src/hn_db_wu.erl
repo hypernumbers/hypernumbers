@@ -1661,8 +1661,9 @@ clear_cells(RefX) when is_record(RefX, refX) ->
 %% 
 %% The behaviour depends on the value of type
 %% <ul>
-%% <li><code>contents</code> - deletes the formula/value but not the attributes
+%% <li><code>contents</code> - deletes the formula/value but not the style attributes
 %% or formats (or the cell itself)</li>
+%% <li><code>style</code> - deletes the style of the cell AND THE FORMAT</li>
 %% <li><code>all</code> - deletes the contents, formats, styles 
 %% and attributes (but not the cell itself)</li>
 %% </ul>
@@ -1680,6 +1681,10 @@ clear_cells(RefX, all) when is_record(RefX, refX)->
 clear_cells(RefX, style) when is_record(RefX, refX) ->
     List = read_attrs(RefX, ["style"], write),
     [delete_attrs(X, Key) || {X, {Key, _Val}} <- List],
+    List2 = read_attrs(RefX, write),
+    [ok = delete_attrs(X, Key) || {X, {Key, _Val}} <- get_formats(List2)],
+    % now read and rewrite the rawvalue to display the format changes
+    [ok = write_rawvalue(X, V) || {X, {_K, V}} <- get_rawvalues(List2)],    
     ok;
 clear_cells(RefX, contents) when is_record(RefX, refX) ->
     
@@ -1693,13 +1698,10 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
             %[ok = mark_dirty_cells_deleted(X) || X <- List2],
             % now delete the links to the cells
             [ok = delete_parent_links(X) || X <- List2],
-            % delete all the attributes
+            % finally delete all the attributes
             List3 = get_content_attrs(List1),
             [ok = delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
             [ok = mark_cells_dirty(X) || X <- List2],
-            % finally delete the format record
-            List4 = get_formats(List1),
-            [ok = delete_attrs(X, Key) || {X, {Key, _Val}} <- List4],
             ok
     end.
 
@@ -2901,6 +2903,12 @@ write_local_parents(#refX{site = Site} = Child, List) ->
     [Fun(X) || X <- List],
     ok.
 
+get_rawvalues(List) -> get_rv1(List, []).
+
+get_rv1([], Acc)                              -> Acc;
+get_rv1([{_, {"rawvalue", _V}} = H | T], Acc) -> get_rv1(T, [H | Acc]);
+get_rv1([_H | T], Acc)                        -> get_rv1(T, Acc).
+
 get_formats(List) -> get_f1(List, []).
 
 get_f1([], Acc)                            -> Acc;
@@ -3326,7 +3334,7 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
     end.
 
 % if there is a style set for the cell don't write the default
-% aignment
+% alignment
 write_default_alignment(RefX, Res) ->
     case read_attrs(RefX, ["style"], read) of
         [] -> write_default_alignment1(RefX, Res);
