@@ -1,0 +1,18 @@
+%%-*-erlang-*-
+%% Home page
+{perms_and_views,
+ [{list,     [{user, '$user'}]},
+  {path ,    ["u", '$user']},
+  {perms,    [read, write]},
+  {override, "_g/hypernumbers/userhome"},
+  {views,    ["_g/hypernumbers/userhome"]}
+ ]}.
+
+%% Let them go wild
+{perms_and_views,
+ [{list,     [{user, '$user'}]},
+  {path,     ["u", '$user', "[**]"]},
+  {perms,    [read, write]},
+  {override, "_global/spreadsheet"},
+  {views,    ["**"]}
+ ]}.

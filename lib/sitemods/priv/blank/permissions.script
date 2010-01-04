@@ -1,0 +1,139 @@
+%%-*-erlang-*-
+%% this is a permissions script for creating a new site
+%%
+%% There are 4 types of entries
+%% * perms_and_views
+%% * permissions
+%% * views
+%% * defaults
+
+%% Examples of them are:
+%% {perms_and_views, [
+%%            {list, [{user, "gordon"},{group, "dev"}],
+%%            {page, ["some", "path"]},
+%%            {perms, [read, write]},
+%%            {override, "_global/spreadsheet"},
+%%            {views, ["_global/spreadsheet", "_global/pagebuilder", "**"]}
+%%           ]}.
+%%
+%% {perm, [
+%%         {list, [{user, "gordon"}, {group, "dev"}]},
+%%         {page, ["some", "path"]},
+%%         {perms, [read, write]}
+%%        ]}.
+%%        
+%% {views, [
+%%          {list, [{user, "gordon"}, {group, "dev"}]},
+%%          {page, ["some", "path"]},
+%%          {override, ""},
+%%          {views, ["_global/spreadsheet"]}
+%%         ]}.
+%%
+%% {default, [
+%%            {page, ["some", "page"]},
+%%            {default, "_global/home"}
+%%           ]}.
+%%
+%% The 'list' can be any mixture of users and groups
+%%
+%% The perms_and_views set both permissions and views in a oner
+%%
+%% There are a number of special constructions to remember
+%% {user, "*"} matches all
+%% {group, "*"} matches all
+%% {page, ["some", "[*]", "path"]} matches a specific segment
+%% {page, ["some", "path", "[**]"] matches all subsegments - wild must be last
+%% {views, ["**"]} matches all views both global and per user
+%% {views, ["*"]} matches all per user views
+%%
+%% Note that the expressions end in a full stop '.'
+%%
+
+% the home page (writable, very wrong)
+{perms_and_views,
+ [{list,    [{user, "*"}, {group, "*"}]},
+  {path,     []},
+  {perms,    [read, write]},
+  {override, "_g/hypernumbers/home"},
+  {views,    ["_g/hypernumbers/home"]}
+ ]}.
+
+% /about/ and /team/
+{perms_and_views,
+ [{list,   [{user, "*"}, {group, "*"}]},
+  {path,   ["about"]},
+  {perms,  [read]},
+  {override, "_g/hypernumbers/about"},
+  {views,    ["_g/hypernumbers/about"]}
+ ]}.
+
+{perms_and_views,
+ [{list,   [{user, "*"}, {group, "*"}]},
+  {path,   ["team"]},
+  {perms,  [read]},
+  {override, "_g/hypernumbers/team"},
+  {views,    ["_g/hypernumbers/team"]}
+ ]}.
+
+% /application/ 
+{perms_and_views,
+ [{list,  [{user, "*"}, {group, "*"}]},
+  {path,  ["application"]},
+  {perms, [read]},
+  {override, "_global/login"},
+  {views,    ["_global/login"]}
+ ]}.
+
+% /u/ 
+{perms_and_views,
+ [{list,  [{user, "*"}, {group, "*"}]},
+  {path,  ["u"]},
+  {perms, [read]},
+  {override, "_global/login"},
+  {views,    ["_global/login"]}        
+ ]}.
+
+% the login path
+{perms_and_views,
+ [{list,     [{user, "*"}, {group, "*"}]},
+  {path,     ["_user", "login"]},
+  {perms,    [read, write]},
+  {override, "_global/login"},
+  {views,    ["_global/login"]}
+ ]}.
+
+% now create the dev space
+{perms_and_views,
+ [{list,     [{group, "dev"}]},
+  {path ,    ["dev", "[**]"]},
+  {perms,    [read, write]},
+  {override, "_global/spreadsheet"},
+  {views,    ["_global/spreadsheet"]}
+ ]}.
+
+% now create the public space
+{perms_and_views,
+ [{list,     [{user, "*"}, {group, "*"}]},
+  {path ,    ["public", "[**]"]},
+  {perms,    [read]},
+  {override, "_global/spreadsheet"},
+  {views,    ["_global/spreadsheet"]}
+ ]}.
+
+% now create the public space
+{perms_and_views,
+ [{list,     [{user, "*"}, {group, "*"}]},
+  {path ,    ["public"]},
+  {perms,    [read]},
+  {override, "_global/spreadsheet"},
+  {views,    ["_global/spreadsheet"]}
+ ]}.
+
+% finally setup the static data space
+{perms_and_views,
+ [{list,     [{user, "*"}, {group, "*"}]},
+  {path,     ["_site", "[*]"]},
+  {perms,    [read]},
+  {override, ""},
+  {views,    []}
+ ]}.
