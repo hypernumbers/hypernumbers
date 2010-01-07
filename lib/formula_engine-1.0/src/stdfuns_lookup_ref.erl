@@ -233,13 +233,15 @@ match1(LookupVal, List, 1) ->
 
 
 vlookup([V, A, I]) ->
+    io:format("bumping up to vlookup/4"),
     vlookup([V, A, I, true]);
-vlookup([V, IA, I0, B]) ->
+vlookup([V, IA, I0, IB]) ->
 
     I = ?int(I0, [cast_strings, cast_bools, ban_blanks, ban_dates]),
     A = if ?is_rangeref(IA) -> muin:fetch(IA);
            true             -> IA
         end,
+    B = ?bool(IB, [cast_numbers, cast_dates, cast_blanks, ban_strings]),
     
     ?ensure(?is_area(A), ?ERR_REF),
     ?ensure(I =< area_util:width(A), ?ERR_REF),
