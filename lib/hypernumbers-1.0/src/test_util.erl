@@ -76,9 +76,9 @@ read_from_excel_data(Cells, Ranges, {Sheet, Row, Col})->
 float_cmp(0.0, 0.0, _Digit) ->
     true;
 float_cmp(F1, 0.0, _Digit) ->
-    (F1 < math:pow(0.1, 2));
+    (F1 < ?EXCEL_IMPORT_FLOAT_PRECISION);
 float_cmp(F1, F2, _Digit) ->
-    erlang:abs(1 - F1 / F2) < math:pow(0.1, 2).
+    (erlang:abs((F1 - F2)/ F1) < ?EXCEL_IMPORT_FLOAT_PRECISION).
 
 excel_equal(X, X) ->
     true;
@@ -191,7 +191,7 @@ make_float(List) ->
               catch
                 exit:_Reason   -> "not float";
                 error:_Message -> "not float";
-                throw:_Term     -> "not float"
+                throw:_Term    -> "not float"
             end,
     case Return of
       "not float" -> make_float2(List);
