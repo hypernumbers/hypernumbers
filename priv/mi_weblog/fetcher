@@ -7,18 +7,21 @@
 
 
 main([Target]) ->
-    main([Target, "."]);
-main([Target, LogName]) ->
+    main([Target, "1", "."]);
+main([Target, DaysAgo]) ->
+    main([Target, DaysAgo, "."]);
+main([Target, NStr, PostlogDir]) ->
     init(),
+    N = list_to_integer(NStr),
     TNode = list_to_atom(Target),
-    StartDate = relative_date(1),
-    EndDate = relative_date(0),
+    StartDate = relative_date(N),
+    EndDate = relative_date(N-1),
     rpc:cast(TNode, mochilog, stream_log, 
-             [LogName, StartDate, EndDate, self()]),
+                [PostlogDir, StartDate, EndDate, self()]),
     start_loop(filename(StartDate));
 
 main(_) ->
-    io:format("usage: mi_weblog log_name target_node~n", []).
+    io:format("usage: fetcher target [day_ago=1] [postlog_dir=\".\"]~n", []).
 
 start_loop(FileName) ->
     receive
