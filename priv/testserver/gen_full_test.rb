@@ -57,4 +57,4 @@ end
 
 templ = ERB.new(IO.readlines("test_suite_template.erb").flatten.join, 0, "%<>")
 testcode = templ.result
-File.open("#{@basename}_SUITE.erl", "w") { |f| f << testcode }
+File.open("#{@basename}_2_SUITE.erl", "w") { |f| f << testcode }
