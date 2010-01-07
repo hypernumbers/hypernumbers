@@ -7,334 +7,276 @@
     <link rel="stylesheet" type="text/css" href="/hypernumbers/hn.sheet.css" />	
     <link rel="stylesheet" type="text/css" href="/hypernumbers/finder.css" />	
   </head>
-  <body>
-    
-    <table cellspacing="0" cellpadding="0" id="hn">
 
-      <tr height="26px;">
+  <body id="hn">
 
-        <td id="header">
-          <div id="headerwrapper">
-            <h1><a href="">hyper<span>numbers</span></a></h1>
-            <span class="beta">beta <a class="dialoglink" 
-                                       data-id="mark">
-                Report Problems / Feedback</a></span>
+    <div id="header">
+
+      <div id="headerwrapper">
+        <h1><a href="">hyper<span>numbers</span></a></h1>
+        <span class="beta">beta <a class="dialoglink" data-id="mark">
+            Report Problems / Feedback</a></span>
+      </div>
+      
+      <ul id="navigation">
+        <!-- Shown to non logged in users -->
+        <li id="anonymous"><a href="/_user/login/">$txt:{Login}$</a></li>  
+        <!-- Shown to logged in users -->
+        <li id="loggedin">
+          <!-- Languages drop down -->
+          <div class="expand" id="languages">
+            <a id="currentLanguage">
+              <span class="flag $txt:{en_gb}$">&nbsp;</span>
+            </a>
+            <div id="lang">
+              <a name="en_gb"><span class="flag en_gb">&nbsp;</span>
+                $txt:{English}$</a>
+              <a name="fr"><span class="flag fr">&nbsp;</span>
+                $txt:{French}$</a>
+              <a name="ru"><span class="flag ru">&nbsp;</span>
+                $txt:{Russian}$</a>
+              <a name="de"><span class="flag de">&nbsp;</span>
+                $txt:{German}$</a>
+              <a name="es"><span class="flag es">&nbsp;</span>
+                $txt:{Spanish}$</a>
+              <a name="br"><span class="flag br">&nbsp;</span>
+                $txt:{Portuguese}$</a>
+              <a name="it"><span class="flag it">&nbsp;</span>
+                $txt:{Italian}$</a>
+              <a name="pt"><span class="flag br">&nbsp;</span>
+                $txt:{Brazilian}$</a>
+              <a name="en_us"><span class="flag en_us">&nbsp;</span>
+                $txt:{United States}$</a>
+            </div>
           </div>
-          
+          $txt:{Logged in as}$ &nbsp;<a id="home"></a> 
+          &nbsp;&nbsp;&nbsp;
+          <a id="logout">$txt:{Log out}$</a>
+        </li>  
+      </ul>
+    </div>
 
-          <ul id="navigation">
-            
-            <!-- Shown to non logged in users -->
-            <li id="anonymous"><a href="/_user/login/">$txt:{Login}$</a></li>
-            
-            <!-- Shown to logged in users -->
-            <li id="loggedin">
+    <div id="pagemenu">
+      <div id="pagebar">
+        <a data-href="home">$txt:{My Spreadsheets}$</a>
+      </div>
+      <div id="finder">
+        <div class="panewrapper"><div class="pane"></div></div>
+        <div id="pdpanel">
+          <input id="pdclose" type="submit" style="float:left" value="Close" />
+          <input id="pdvisit" type="submit" class="action" value="Visit" />
+          <div style="clear:both"></div>
+        </div>
+      </div>
+    </div>
 
-              <!-- Languages drop down -->
-              <div class="expand" id="languages">
-                <a id="currentLanguage">
-                  <span class="flag $txt:{en_gb}$">&nbsp;</span>
-                </a>
-                <div id="lang">
-                  <a name="en_gb"><span class="flag en_gb">&nbsp;</span>
-                    $txt:{English}$</a>
-                  <a name="fr"><span class="flag fr">&nbsp;</span>
-                    $txt:{French}$</a>
-                  <a name="ru"><span class="flag ru">&nbsp;</span>
-                    $txt:{Russian}$</a>
-                  <a name="de"><span class="flag de">&nbsp;</span>
-                    $txt:{German}$</a>
-                  <a name="es"><span class="flag es">&nbsp;</span>
-                    $txt:{Spanish}$</a>
-                  <a name="br"><span class="flag br">&nbsp;</span>
-                    $txt:{Portuguese}$</a>
-                  <a name="it"><span class="flag it">&nbsp;</span>
-                    $txt:{Italian}$</a>
-                  <a name="pt"><span class="flag br">&nbsp;</span>
-                    $txt:{Brazilian}$</a>
-                  <a name="en_us"><span class="flag en_us">&nbsp;</span>
-                    $txt:{United States}$</a>
-                </div>
-              </div>
-              
-              $txt:{Logged in as}$ &nbsp;<a id="home"></a> 
-              &nbsp;&nbsp;&nbsp;
-              <a id="logout">$txt:{Log out}$</a>
-              
-            </li>
-
+    <div id="menuwrap">
+      <ul id="menu">              
+        <li id="browse">
+          <a>$txt:{File}$</a>
+          <ul>
+            <li><a name="newpage">$txt:{New}$</a></li>
+            <li id="importmenu"><a name="import">$txt:{Import}$</a></li>
+            <li class="seperator"></li>
+            <li><a name="delete">$txt:{Delete}$</a></li>
           </ul>
-        </td>
-      </tr>
-      <tr height="26px">
-        <td>
-          <div id="pagemenu">
-            <div id="pagebar">
-              <a data-href="home">$txt:{My Spreadsheets}$</a>
-            </div>
-            <div id="finder">
-
-              <div class="panewrapper"><div class="pane"></div></div>
-              
-              <div id="pdpanel">
-                <input id="pdclose" type="submit" style="float:left" value="Close" />
-                <input id="pdvisit" type="submit" class="action" 
-                       value="Visit" />
-                <div style="clear:both"></div>
+        </li>
+        <li><a id="edit">$txt:{Edit}$</a>
+          <ul style="width:140px;">
+        	<li><a name="copy">$txt:{Copy}$
+                <span class="desc">Ctrl+C</span></a></li>
+        	<li class="disabled paste"><a name="paste">$txt:{Paste}$
+                <span class="desc">Ctrl+V</span></a></li>
+        	<li class="disabled paste"><a name="pastevalue">$txt:{Paste}$ 
+                <strong>$txt:{Contents}$</strong></a></li>
+            <li class="disabled paste"><a name="pastelink">$txt:{Paste}$
+                <strong>$txt:{Links}$</strong></a></li>
+            <li class="seperator"></li>
+            <li><a>$txt:{Clear}$</a>
+              <ul style="width:140px;">
+                <li><a name="clearboth">$txt:{Clear}$
+                    <strong>$txt:{All}$</strong></a></li> 
+        	    <li><a name="clearformat">$txt:{Clear}$
+                    <strong>$txt:{Styles}$</strong></a></li>
+        	    <li><a name="clearcontent">$txt:{Clear}$ 
+                    <strong>$txt:{Contents}$</strong></a></li>
+              </ul>
+            </li>
+            <li class="seperator"></li>
+            <li>
+              <div class="input">
+                <input type="checkbox" id="copyformula" />
               </div>
-            </div>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td height="22px">
-          <div>
-            <ul id="menu">              
-              <li id="browse">
-                <a>$txt:{File}$</a>
-                <ul>
-                  <li><a name="newpage">$txt:{New}$</a></li>
-                  <li id="importmenu"><a name="import">$txt:{Import}$</a></li>
-                  <li class="seperator"></li>
-                  <li><a name="delete">$txt:{Delete}$</a></li>
-                </ul>
-              </li>
-              <li><a id="edit">$txt:{Edit}$</a>
-                <ul style="width:140px;">
-        	      <li><a name="copy">$txt:{Copy}$
-                      <span class="desc">Ctrl+C</span></a></li>
-        	      <li class="disabled paste"><a name="paste">$txt:{Paste}$
-                      <span class="desc">Ctrl+V</span></a></li>
-        	      <li class="disabled paste"><a name="pastevalue">$txt:{Paste}$ 
-                      <strong>$txt:{Contents}$</strong></a></li>
-                  <li class="disabled paste"><a name="pastelink">$txt:{Paste}$
-                      <strong>$txt:{Links}$</strong></a></li>
-                  <li class="seperator"></li>
-                  <li><a>$txt:{Clear}$</a>
-                    <ul style="width:140px;">
-                      <li><a name="clearboth">$txt:{Clear}$
-                          <strong>$txt:{All}$</strong></a></li> 
-        	          <li><a name="clearformat">$txt:{Clear}$
-                          <strong>$txt:{Styles}$</strong></a></li>
-        	          <li><a name="clearcontent">$txt:{Clear}$ 
-                          <strong>$txt:{Contents}$</strong></a></li>
-                    </ul>
-                  </li>
-                  <li class="seperator"></li>
-                  <li>
-                    <div class="input">
-                      <input type="checkbox" id="copyformula" />
-                    </div>
-                    <a>$txt:{Copy Formulas}$</a>
-                  </li>
-                </ul>
-              </li>
-              
-              <li><a>$txt:{Insert}$</a>
-                <ul>
-        	      <li><a name="insertrowsbefore">$txt:{Rows}$</a></li>
-        	      <li><a name="insertcolsbefore">$txt:{Columns}$</a></li>
-                  <li class="seperator"></li>
-                  <li><a name="functions">$txt:{Function...}$</a></li>
-                </ul>
-              </li>
+              <a>$txt:{Copy Formulas}$</a>
+            </li>
+          </ul>
+        </li>
+        
+        <li><a>$txt:{Insert}$</a>
+          <ul>
+        	<li><a name="insertrowsbefore">$txt:{Rows}$</a></li>
+        	<li><a name="insertcolsbefore">$txt:{Columns}$</a></li>
+            <li class="seperator"></li>
+            <li><a name="functions">$txt:{Function...}$</a></li>
+          </ul>
+        </li>
+        
+        <li><a>$txt:{Help}$</a>
+          <ul>
+        	<li><a name="feedback">$txt:{Feedback / Report Bug}$</a></li>
+          </ul>
+        </li>
+        
+      </ul>
+      
+      <div id="permissions"></div>
 
-              <li><a>$txt:{Help}$</a>
-                <ul>
-        	      <li><a name="feedback">$txt:{Feedback / Report Bug}$</a></li>
-                </ul>
-              </li>
+    </div>
 
-            </ul>
+    <div id="toolbar">
+    
+      <div class="expand fonts">
+        <span id="font">$txt:{Font}$</span>
+        <div id="ffamily">
+          <a id="fstyle_sans-serif">$txt:{Normal}$</a>
+          <a id="fstyle_serif">$txt:{Serif}$</a>
+          <a id="fstyle_monospace">$txt:{Monospace}$</a>
+        </div>
+      </div>
+      
+      <div class="expand fonts">
+        <span>11px</span>
+        <div id="sizes">
+          <a id="size_8">8px</a>
+          <a id="size_11">11px</a>
+          <a id="size_16">16px</a>
+          <a id="size_20">20px</a>
+        </div>
+      </div>
+      
+      <a class="separator"></a>
+      
+      <div class="expand fonts">
+        <span id="format">$txt:{Format}$</span>
+        <div id="formats">
+          <a id="fmt_0">$txt:{Plain}$</a>
+          <hr />
+          <a id="fmt_1">100 <span class="desc">($txt:{rounded}$)</span></a>
+          <a id="fmt_2">100.00 <span class="desc">(2 $txt:{decimals}$)</span></a>
+          <a id="fmt_3">
+            <span class="red">100</span><span class="desc">($txt:{rounded}$)</span></a>
+          <hr />
+          <a id="fmt_4">(100) <span class="desc">($txt:{financial}$)</span></a>
+          <a id="fmt_5">(100.00) <span class="desc">($txt:{financial}$)</span></a>
+          <hr />
+          <a id="fmt_6">£100 <span class="desc">($txt:{currency}$)</span></a>
+          <a id="fmt_7">£100.00 <span class="desc">($txt:{currency}$)</span></a>
+          <a id="fmt_8"><span class="red">£100</span>
+            <span class="desc">($txt:{currency}$)</span></a>
+          <hr />
+          <a id="fmt_9">10% <span class="desc">($txt:{percentage}$)</span></a>
+          <a id="fmt_10">10.12% <span class="desc">($txt:{percentage}$)</span></a>
+          <hr />
+          <a id="fmt_11">03/02/2009 <span class="desc">($txt:{date}$)</span></a>
+          <a id="fmt_12">14:49:00 <span class="desc">($txt:{time}$)</span></a>
+          <a id="fmt_13">03/02/2009 14:49:00 <span class="desc">($txt:{datetime}$)</span></a>
+          <a id="fmt_14">Markdown <span class="desc">($txt:{rich text}$)</span></a>
+        </div>
+      </div>
+      
+      <a class="separator"></a>
+      
+      <div class="expand">
+        <span><a id="left-head" class="icon"></a></span>
+        <div id="aligntext">
+          <a title="Left align" id="align_left" class="toolbar-item"></a>
+          <a title="Center align" id="align_center" class="toolbar-item"></a>
+          <a title="Right align" id="align_right" class="toolbar-item"></a>
+        </div>
+      </div>
+      <a class="separator"></a>
+      <a title="Bold" id="bold" class="toolbar-item"></a>
+      <a title="Italic" id="italic" class="toolbar-item"></a>
+      <a title="Strikethough" id="strike" class="toolbar-item"></a>
+      <a title="Rich Text Editor" class="toolbar-item" id="rtebtn"></a>
+      <a class="separator"></a>
+      
+      <a title="Word Wrap" id="wordwrap" class="toolbar-item"></a>
+      <a class="separator"></a>
+      
+      <div class="expand" id="borders">
+        <span><a title="Set Borders" id="border-head" class="icon"></a></span>
+        <div id="borders">
+          <a id="border_surround" class="toolbar-item"></a>
+          <a id="border_inside" class="toolbar-item"></a>
+          <a id="border_none" class="toolbar-item"></a>
+          <a id="border_all" class="toolbar-item"></a><br />
+          <a id="border_left" class="toolbar-item"></a>
+          <a id="border_top" class="toolbar-item"></a>
+          <a id="border_right" class="toolbar-item"></a>
+          <a id="border_bottom" class="toolbar-item"></a>
+        </div>
+      </div>
+      
+      <a class="separator" id="bordersep"></a>          
+      <div title="Set Background Colours" class="expand">
+        <span><a id="bgcolor-head" class="icon"></a></span>
+        <div id="bgcolors"></div>
+      </div>
+      
+      <div title="Set Font Colour" class="expand" id="font_colour">
+        <span><a id="fontcolor-head" class="icon"></a></span>
+        <div id="fontcolors"></div>
+      </div>
+      
+      <a class="separator"></a>          
+      <a title="Web Page Builder" class="toolbar-item" id="guibuilder"></a>
+    </div>
+    
+    <div id="formulabar">
+      <span id="name"></span>
+      <input type="button" id="functionsbtn" 
+             value="f(x)" title="functions help" />
+      <input type="text" id="formula"/>
+    </div>
 
-            <div id="permissions"></div>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td id="toolbar">
-          <div class="expand fonts">
-            <span id="font">$txt:{Font}$</span>
-            <div id="ffamily">
-              <a id="fstyle_sans-serif">$txt:{Normal}$</a>
-              <a id="fstyle_serif">$txt:{Serif}$</a>
-              <a id="fstyle_monospace">$txt:{Monospace}$</a>
-            </div>
-          </div>
-
-          <div class="expand fonts">
-            <span>11px</span>
-            <div id="sizes">
-              <a id="size_8">8px</a>
-              <a id="size_11">11px</a>
-              <a id="size_16">16px</a>
-              <a id="size_20">20px</a>
-            </div>
-          </div>
-
-          <a class="separator"></a>
-
-          <div class="expand fonts">
-            <span id="format">$txt:{Format}$</span>
-            <div id="formats">
-              <a id="fmt_0">$txt:{Plain}$</a>
-              <hr />
-              <a id="fmt_1">100 <span class="desc">($txt:{rounded}$)</span></a>
-              <a id="fmt_2">100.00 <span class="desc">(2 $txt:{decimals}$)</span></a>
-              <a id="fmt_3">
-                <span class="red">100</span><span class="desc">($txt:{rounded}$)</span></a>
-              <hr />
-              <a id="fmt_4">(100) <span class="desc">($txt:{financial}$)</span></a>
-              <a id="fmt_5">(100.00) <span class="desc">($txt:{financial}$)</span></a>
-              <hr />
-              <a id="fmt_6">£100 <span class="desc">($txt:{currency}$)</span></a>
-              <a id="fmt_7">£100.00 <span class="desc">($txt:{currency}$)</span></a>
-              <a id="fmt_8"><span class="red">£100</span>
-                <span class="desc">($txt:{currency}$)</span></a>
-              <hr />
-              <a id="fmt_9">10% <span class="desc">($txt:{percentage}$)</span></a>
-              <a id="fmt_10">10.12% <span class="desc">($txt:{percentage}$)</span></a>
-              <hr />
-              <a id="fmt_11">03/02/2009 <span class="desc">($txt:{date}$)</span></a>
-              <a id="fmt_12">14:49:00 <span class="desc">($txt:{time}$)</span></a>
-              <a id="fmt_13">03/02/2009 14:49:00 <span class="desc">($txt:{datetime}$)</span></a>
-              <a id="fmt_14">Markdown <span class="desc">($txt:{rich text}$)</span></a>
-            </div>
-          </div>
-
-          <a class="separator"></a>
-          
-          <div class="expand">
-            <span><a id="left-head" class="icon"></a></span>
-            <div id="aligntext">
-              <a title="Left align" id="align_left" class="toolbar-item"></a>
-              <a title="Center align" id="align_center" class="toolbar-item"></a>
-              <a title="Right align" id="align_right" class="toolbar-item"></a>
-            </div>
-          </div>
-          <a class="separator"></a>
-          <a title="Bold" id="bold" class="toolbar-item"></a>
-          <a title="Italic" id="italic" class="toolbar-item"></a>
-          <a title="Strikethough" id="strike" class="toolbar-item"></a>
-          <a title="Rich Text Editor" class="toolbar-item" id="rtebtn"></a>
-          <a class="separator"></a>
-
-          <a title="Word Wrap" id="wordwrap" class="toolbar-item"></a>
-          <a class="separator"></a>
-          
-          <div class="expand" id="borders">
-            <span><a title="Set Borders" id="border-head" class="icon"></a></span>
-            <div id="borders">
-              <a id="border_surround" class="toolbar-item"></a>
-              <a id="border_inside" class="toolbar-item"></a>
-              <a id="border_none" class="toolbar-item"></a>
-              <a id="border_all" class="toolbar-item"></a><br />
-              <a id="border_left" class="toolbar-item"></a>
-              <a id="border_top" class="toolbar-item"></a>
-              <a id="border_right" class="toolbar-item"></a>
-              <a id="border_bottom" class="toolbar-item"></a>
-            </div>
-          </div>
-
-          <a class="separator" id="bordersep"></a>          
-          <div title="Set Background Colours" class="expand">
-            <span><a id="bgcolor-head" class="icon"></a></span>
-            <div id="bgcolors"></div>
-          </div>
-          
-          <div title="Set Font Colour" class="expand" id="font_colour">
-            <span><a id="fontcolor-head" class="icon"></a></span>
-            <div id="fontcolors"></div>
-          </div>
-
-          <a class="separator"></a>          
-          <a title="Web Page Builder" class="toolbar-item" id="guibuilder"></a>
-        </td>
-      </tr>
-      <tr>
-        <td id="formulabar">
-          <table cellspacing="0" cellpadding="0">
-            <tr>
-              <td width="80px" style="text-align:center;">
-                <span id="name"></span></td>
-              <td width="30px">
-                <input type="button" id="functionsbtn" value="f(x)" title="functions help" />
-              </td>
-              <td><input type="text" id="formula"/></td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <table cellspacing="0" cellpadding="0" id="sheetwrapper">
-            <tr height="20px">
-              <td id="corner"></td>
-              <td colspan="2">
-                <div style="position:relative;top:-10px;" id="columnsout">
-                  <div style="position:absolute;" id="columns"></div>
-                  <div id="csel"><div id="colselection">&nbsp;</div></div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td style="height:100%" valign="top">
-                <div style="position:relative;height:100%;overflow:hidden;" id="rowsout">
-                  <div style="position:absolute;" id="rows"></div>
-                  <div id="rsel"><div id="rowselection">&nbsp;</div></div>
-                </div>
-              </td>
-              <td height="100%">
-                <div style="position:relative;height:100%;overflow:hidden;">
-                  <div id="scroller">
-                    <div id="dragged"></div>
-                    <textarea id="input"></textarea>
-                    <div id="selection">
-                      <div id="dragger"></div>
-                    </div>
-                    <div id="current"></div>
-                    <div id="copied"></div>
-                    <div id="dragfill"></div>
-                    <div id="panes"></div>
-                  </div>
-                </div>
-              </td>
-              <td width="15px">
-                <table cellspacing="0" cellpadding="0">
-                  <tr><td id="up"></td></tr>
-                  <tr>
-                    <td style="height:100%" id="scrollbar-right">
-                      <div style="position: relative; height: 100%;">
-                        <div id="right-bar"></div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr><td id="down"></td></tr>
-                </table>
-              </td>
-            </tr>
-            <tr height="15px">
-              <td></td>
-              <td>
-                <table cellspacing="0" cellpadding="0">
-                  <tr>
-                    <td id="left"></td>
-                    <td id="scrollbar-bottom">
-                      <div style="position: relative; width: 100%; height:13px;">
-                        <div id="bottom-bar"></div>
-                      </div>                    
-                    </td>
-                    <td id="right"></td>
-                  </tr>
-                </table>
-              </td>
-              <td></td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-
+    <div id="grid">
+      
+      <div id="columnsout">
+        <div id="columns"></div>
+        <div id="csel"><div id="colselection">&nbsp;</div></div>
+      </div>
+      
+      <div id="rowsout">
+        <div id="rows"></div>
+        <div id="rsel"><div id="rowselection">&nbsp;</div></div>
+      </div>      
+      
+      <div id="innergrid"><div id="test">
+        <div id="scroller">
+          <div id="dragged"></div>
+          <textarea id="input"></textarea>
+          <div id="selection"> <div id="dragger"></div> </div>
+          <div id="current"></div>
+          <div id="copied"></div>
+          <div id="dragfill"></div>
+          <div id="panes"></div>
+        </div>
+      </div></div>
+      
+      <div id="scrollbar-right"><div id="scrollbar-right-inner">
+        <div id="up"></div>
+        <div id="right-gutter"><div id="right-bar"></div></div>
+        <div id="down"></div>
+      </div></div>
+      
+      <div id="scrollbar-bottom"><div id="scrollbar-bottom-inner">
+        <div id="left"></div>
+        <div id="bottom-gutter"><div id="bottom-bar"></div></div>
+        <div id="right"></div>
+      </div>
+    </div></div>
+    
     <span id="hnpaste" style="display:none;width:250px; position:absolute;top:-7px;right:15px;"></span>
     <span id="pathpaste" style="top:-7px;right:15px;display:none;"></span>
 
@@ -427,10 +369,8 @@
 	    <textarea id="wmd-input"></textarea>
 	  </div>
 	  <div id="wmd-preview" class="wmd-panel"></div>
-      This is an editor for cells with the format 'Markdown'
       <input class="mclose" type="submit" value="Cancel" />
       <input type="button" class="action" id="rte_submit" value="Insert" />
-
     </div>
 
 	<div class="mdialog" id="import">
