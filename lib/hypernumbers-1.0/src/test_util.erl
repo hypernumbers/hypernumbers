@@ -212,10 +212,9 @@ make_float2(List)->
 hnget(Path, Ref) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
     Type = "application/json",
-    io:format("In hnget Url is ~p~n", [Url]),
     {ok, {{_V, _Code, _R}, _H, Body}}
         = http:request(get, {Url, [{"Accept", Type}]}, [], []),
-    Body.
+    string:strip(Body, both, $").
   
 hnpost(Path, Ref, Postdata) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
@@ -238,7 +237,7 @@ handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
 cmp(A,A) ->
     true;
 cmp(G, E) ->
-
+    
     G2 = conv_from_get(G),
     E2 = conv_for_no_reason(E),
     
