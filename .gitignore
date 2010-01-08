@@ -7,7 +7,7 @@
 TAGS
 tags
 var
-ebin/hypernumbers.*
+ebin
 lib/*/ebin/*.erl
 lib/hypernumbers*/src/ms_util2.erl
 

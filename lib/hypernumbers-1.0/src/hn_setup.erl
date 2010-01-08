@@ -154,27 +154,27 @@ create_site(Site, Type)->
     ok.
 
 
--define(RIF(R), record_info(fields, R)).
+-define(TBL(N, T, I), {N, record_info(fields, N), T, I}).
 tables() ->
-    [{dirty_queue,           ?RIF(dirty_queue),           set, []},      
-     {dirty_notify_in,       ?RIF(dirty_notify_in),       set, []},         
-     {dirty_inc_hn_create,   ?RIF(dirty_inc_hn_create),   set, []},         
-     {dirty_notify_back_in,  ?RIF(dirty_notify_back_in),  set, []},         
-     {dirty_notify_out,      ?RIF(dirty_notify_out),      set, []},         
-     {dirty_notify_back_out, ?RIF(dirty_notify_back_out), set, []},         
-     {item,                  ?RIF(item),                  bag, [key]},      
-     {local_objs,            ?RIF(local_objs),            bag, [obj,idx]}, 
-     {local_cell_link,       ?RIF(local_cell_link),       bag, [childidx]}, 
-     {relation,              ?RIF(relation),              set, []},
-     {hn_user,               ?RIF(hn_user),               set, []},         
-     {remote_objs,           ?RIF(remote_objs),           set, []},         
-     {remote_cell_link,      ?RIF(remote_cell_link),      bag, []},         
-     {incoming_hn,           ?RIF(incoming_hn),           set, []},         
-     {outgoing_hn,           ?RIF(outgoing_hn),           set, []},         
-     {styles,                ?RIF(styles),                bag, []},         
-     {style_counters,        ?RIF(style_counters),        set, []},         
-     {page_vsn,              ?RIF(page_vsn),              set, []},         
-     {page_history,          ?RIF(page_history),          bag, []}].
+    [ ?TBL(dirty_queue,           ordered_set, []),
+      ?TBL(dirty_notify_in,       set,     	   []),         
+      ?TBL(dirty_inc_hn_create,   set,    	   []),         
+      ?TBL(dirty_notify_back_in,  set,    	   []),         
+      ?TBL(dirty_notify_out,      set,    	   []),         
+      ?TBL(dirty_notify_back_out, set,    	   []),         
+      ?TBL(item,                  bag,    	   [key]),      
+      ?TBL(local_objs,            bag,    	   [obj,idx]), 
+      ?TBL(local_cell_link,       bag,    	   [childidx]), 
+      ?TBL(relation,              set,    	   []),
+      ?TBL(hn_user,               set,    	   []),         
+      ?TBL(remote_objs,           set,    	   []),         
+      ?TBL(remote_cell_link,      bag,    	   []),         
+      ?TBL(incoming_hn,           set,    	   []),         
+      ?TBL(outgoing_hn,           set,    	   []),         
+      ?TBL(styles,                bag,    	   []),         
+      ?TBL(style_counters,        set,    	   []),         
+      ?TBL(page_vsn,              set,    	   []),         
+      ?TBL(page_history,          bag,    	   []) ].
     
 
 %% Import a set of json files into the live spreadsheet
