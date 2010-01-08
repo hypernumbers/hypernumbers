@@ -253,7 +253,7 @@ set_borders2(RefX, Where, Border, B_Style, B_Color) ->
     ok = tell_front_end("set_borders2").
 
 wait_for_dirty(Site) ->
-    case mnesia:dirty_first(hn_db_wu:trans(Site, dirty_cell)) of
+    case mnesia:dirty_first(hn_db_wu:trans(Site, dirty_queue)) of
         '$end_of_table' ->
             ok;
         _Index ->
