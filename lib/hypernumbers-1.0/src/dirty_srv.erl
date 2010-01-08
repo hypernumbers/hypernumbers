@@ -10,6 +10,7 @@
          handle_cast/2,
          handle_info/2,
          terminate/2,
+         listen_dirty_queue/3,
          code_change/3]).
 
 -export([start/1, stop/0, listen/2]).
@@ -113,7 +114,7 @@ start_listen(T, Site) ->
     spawn_link(fun() -> listen(Site, Table) end).
 
 -spec restart_children([listener()], pid(), atom(), [listener()]) 
-                      -> {noreply, any()}.
+                      -> [listener()].
 restart_children([], _Pid, _T, Acc) ->
     Acc;
 restart_children([{Pid, Site} | Tl], Pid, T, Acc) ->
@@ -121,13 +122,14 @@ restart_children([{Pid, Site} | Tl], Pid, T, Acc) ->
 restart_children([Hd | Tl], Pid, T, Acc) ->
     restart_children(Tl, Pid, T, [Hd | Acc]).
 
+-spec listen_dirty_queue_init(string(), atom()) -> no_return(). 
 listen_dirty_queue_init(Site, Table) ->
     mnesia:subscribe({table, Table, simple}),
-    Q = fill_queue(hn_workq:new(), Table),
+    Q = fill_queue(hn_workq:new(0), Table),
     listen_dirty_queue(Site, Table, Q).
 
--spec listen_dirty_queue(string(), atom(), hn_workq:work_queue()) -> 
-                                no_return().
+-spec listen_dirty_queue(string(), atom(), hn_workq:work_queue()) 
+                        -> no_return().
 listen_dirty_queue(Site, Table, Q) ->
     case hn_workq:is_empty(Q) of
         true -> clear_dirty_queue(Q, Table);
@@ -138,8 +140,8 @@ listen_dirty_queue(Site, Table, Q) ->
                 {empty, Q3} ->
                     %% shouldn't happen
                     Q3;
-                {DirtyCell, Q3} ->
-                    hn_db_api:handle_dirty_cell(Site, DirtyCell),
+                {DirtyCellIdx, Q3} ->
+                    hn_db_api:handle_dirty_cell(Site, DirtyCellIdx),
                     Q3
             end,
     ?MODULE:listen_dirty_queue(Site, Table, QNext).
@@ -154,10 +156,10 @@ listen_dirty_queue(Site, Table, Q) ->
 -spec merge_latest(hn_workq:work_queue(), atom()) -> hn_workq:work_queue().
 merge_latest(Q, Table) ->    
     Wait = case hn_workq:is_empty(Q) of 
-               true  -> infinite;
+               true  -> infinity;
                false -> 0 end,
     receive 
-        {write, _, _} ->
+        {mnesia_table_event, {write, _, _}} ->
             fill_queue(Q, Table);
         _Other ->
             merge_latest(Q, Table)
@@ -169,8 +171,9 @@ merge_latest(Q, Table) ->
 -spec fill_queue(hn_workq:work_queue(), atom()) -> hn_workq:work_queue(). 
 fill_queue(Q, Table) ->
     Id = hn_workq:id(Q),
-    M = ets:fun2ms(fun(#dirty_queue{id = T}=DQ) when T > Id -> DQ end),
-    Qs = mnesia:select(Table, M, read),
+    M = ets:fun2ms(fun(#dirty_queue{id = T, queue = NQ}) when T > Id -> NQ end),
+    F = fun() -> mnesia:select(Table, M, read) end,
+    {atomic, Qs} = mnesia:transaction(F),
     hn_workq:merge(Q, Qs).
 
 %% Clears out process work from the dirty_queue table.

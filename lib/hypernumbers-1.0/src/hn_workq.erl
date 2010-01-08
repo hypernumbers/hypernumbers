@@ -7,7 +7,7 @@
 %%%-------------------------------------------------------------------
 -module(hn_workq).
 
--export([new/0,
+-export([new/0, new/1,
          add/3,
          next/1,
          id/1,
@@ -17,13 +17,18 @@
 -export([test/0]).
 
 -type now() :: {integer(),integer(),integer()}.
--type work_queue() :: {dict(), nil | [{pos_integer(), any()}], now()}.
+-type work_queue() :: {dict(), 
+                       nil | [{pos_integer(), any()}], 
+                       integer() | now()}.
 
 
 -spec new() -> work_queue().
 new() -> {dict:new(), nil, erlang:now()}.
 
--spec id(work_queue()) -> now().
+-spec new(integer()) -> work_queue().
+new(Ts) -> {dict:new(), nil, Ts}. 
+
+-spec id(work_queue()) -> integer() | now().
 id({_, _, Ts}) -> Ts.
 
 -spec is_empty(work_queue()) -> true | false.
@@ -51,9 +56,11 @@ next({Map, [{_Priority, Elem} | Rest], Ts}) ->
 %% retained (higher priorities are calculated later).
 -spec merge(work_queue(), work_queue() | [work_queue()]) -> work_queue().
 
-merge(Q, Qs) when is_list(Qs) ->
-    lists:foldl(fun merge/2, Q, Qs);
-
+merge(Q, []) ->
+    Q;
+merge(Q, [QR|Qs]) ->
+    Q2 = merge(Q, QR),
+    merge(Q2, Qs);
 merge({LMap, _, _}, {RMap, _, RTs}) ->
     Map2 = dict:merge(fun merge_fun/3, LMap, RMap),
     {Map2, nil, RTs}.

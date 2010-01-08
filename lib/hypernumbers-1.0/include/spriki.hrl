@@ -90,10 +90,10 @@
          }).
 
 -record(relation,
-        {cellidx                 :: cellidx(),
-         children = ordset:new() :: ordsets:ordset(cellidx()),
-         parents = ordset:new()  :: ordsets:ordset(cellidx()),
-         priority = 0            :: pos_integer() }).
+        {cellidx                  :: cellidx(),
+         children = ordsets:new() :: ordsets:ordset(cellidx()),
+         parents = ordsets:new()  :: ordsets:ordset(cellidx()),
+         priority = 0             :: pos_integer() }).
          
 -record(outgoing_hn,
         {
@@ -112,8 +112,8 @@
          }).
 
 -record(dirty_queue,
-        {id = now() :: now(),
-         queue :: hn_workq:work_queue()}).
+        {id = now(),
+         queue}).
 
 -record(dirty_inc_hn_create,
         {

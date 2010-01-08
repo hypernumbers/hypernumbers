@@ -497,6 +497,7 @@
          read_inherited_list/2,
          read_styles/1,
          read_incoming_hn/2,
+         local_idx_to_refX/2,
          %&read_dirty_cell/2,
          %&read_all_dirty_cells/1,
          read_whole_page/1,
@@ -2929,8 +2930,10 @@ set_local_parents(#refX{site = Site} = Cell, Parents) ->
     [del_local_child(P, CellIdx, Tbl) || P <- LostParents],
     Priorities = [add_local_child(P, CellIdx, Tbl) || P <- ParentIdxs],
     Priority = lists:sum(Priorities) + 2,
-    ok = mnesia:write(Tbl, Rel#relation{parents = ParentIdxs,
-                                        priority = Priority}).
+    ok = mnesia:write(Tbl, 
+                      Rel#relation{parents = ParentIdxs,
+                                   priority = Priority},
+                      write).
 
 -spec del_local_child(cellidx(), cellidx(), atom()) -> ok.
 del_local_child(CellIdx, Child, Tbl) ->
@@ -2938,7 +2941,7 @@ del_local_child(CellIdx, Child, Tbl) ->
         [R] ->
             Children = ordsets:del_element(Child, R#relation.children),
             R2 = R#relation{children = Children},
-            mnesia:write(Tbl, R2);
+            mnesia:write(Tbl, R2, write);
         _ ->
             ok
     end.
@@ -2950,7 +2953,7 @@ add_local_child(CellIdx, Child, Tbl) ->
               [] -> #relation{cellidx = CellIdx}
           end,
     Children = ordsets:add_element(Child, Rel#relation.children),
-    ok = mnesia:write(Tbl, Rel#relation{children = Children}),
+    ok = mnesia:write(Tbl, Rel#relation{children = Children}, write),
     Rel#relation.priority.
 
 
@@ -3449,7 +3452,8 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     [{RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"], read),
 
     %% mark this cell as a possible dirty hypernumber
-    mark_notify_out_dirty(RefX, {new_value, RawValue, DepTree}).
+    mark_notify_out_dirty(RefX, {new_value, RawValue, DepTree}),
+    ok.
 
 split_parents(Old, New) -> split_parents1(lists:sort(Old),
                                           lists:sort(New), {[],[]}).

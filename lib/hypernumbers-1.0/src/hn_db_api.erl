@@ -442,7 +442,6 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
     ok = tell_front_end("register_hn_from_web"),
     Str.
 
-%% @spec handle_dirty_cell(Site, Timestamp) -> ok
 %% @doc handles a dirty cell.
 %% Timestamp is the timestamp of the dirty cell - the actual
 %% record itself may have been rewritten before it is processed.
@@ -453,23 +452,17 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 %% @todo extend this to a dirty shared formula
 %% @todo needs to be ran inside transaction from
 %% other module, kinda ugly, fix
-handle_dirty_cell(Site, Rec) ->
-    
+-spec handle_dirty_cell(string(), cellidx()) -> ok. 
+handle_dirty_cell(Site, Idx) ->
     ok   = init_front_end_notify(),  
-    Cell = hn_db_wu:read_dirty_cell(Site, Rec),
-    
-    case hn_db_wu:read_attrs(Cell, ["__shared"], read) of
-        [] ->
-            %% THIS IS BAD, we shouldnt hand dirty cells not
-            %% existing since they shouldnt be marked dirty
-            case hn_db_wu:read_attrs(Cell, ["formula"], read) of
-                [{C, KV}] -> hn_db_wu:write_attr(C, KV);
-                []        -> ok
-            end;
-        _  ->
-            ?INFO("TODO: handle_dirty_cell shared formula", [])
-    end,
-    
+    F = fun() ->
+                Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
+                case hn_db_wu:read_attrs(Cell, ["formula"], read) of
+                    [{C, KV}] -> hn_db_wu:write_attr(C, KV);
+                    []        -> ok
+                end
+        end,
+    {atomic, ok} = mnesia:transaction(F),
     ok = tell_front_end("handle dirty").
 
 
