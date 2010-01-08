@@ -240,7 +240,6 @@ iget(Req, Ref, Type, _Attr, _User, json) when (Type == cell) ->
                    error_logger:error_msg("unmatched ~p~n", [_Else]),
                    ""
            end,
-    %Req:ok({"text/html", V});
     json(Req, V);
 
 iget(Req, Ref, Type, _Attr, _User, json)
