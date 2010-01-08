@@ -2071,24 +2071,35 @@ mark_dirty(Site, Record)
 mark_children_dirty(#refX{site = Site} = RefX) ->
     Tbl = trans(Site, relation),
     Children = get_local_children(RefX),
-    Q = insert_dirty_queue(Children, Tbl, tm_workq:new()),
+    Q = insert_dirty_queue(Children, Tbl, -1, tm_workq:new()),
     Entry = #dirty_queue{queue = Q},
     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
 
-insert_dirty_queue([], _Tbl, Q) ->
+
+%% We pass down a minimum priority to retain the invariant that
+%% children *always* have a higher priority than their parent.
+-spec insert_dirty_queue([cellidx()], 
+                         atom(), 
+                         integer(), 
+                         tm_workq:work_queue())
+                        -> tm_workq:work_queue(). 
+insert_dirty_queue([], _Tbl, _MinPri, Q) ->
     Q;
-insert_dirty_queue([Idx|Rest], Tbl, Q) ->
+insert_dirty_queue([Idx|Rest], Tbl, MinPri, Q) ->
     case mnesia:read(Tbl, Idx) of
         [R] ->
+            Priority = case R#relation.priority of
+                           P when P =< MinPri -> MinPri + 1;
+                           P -> P
+                       end,
             Children = ordsets:to_list(R#relation.children),
-            Priority = R#relation.priority,
-            Q2 = insert_dirty_queue(Children, Tbl, Q);
+            Q2 = insert_dirty_queue(Children, Tbl, Priority, Q);
         _ ->
             Priority = 0,
             Q2 = Q
     end,
     Q3 = tm_workq:add(Idx, Priority, Q2),
-    insert_dirty_queue(Rest, Tbl, Q3).
+    insert_dirty_queue(Rest, Tbl, MinPri, Q3).
 
 
 %% @spec mark_notify_out_dirty(Parent::#refX{}, Change)  -> ok
@@ -2898,13 +2909,12 @@ get_local_children(#refX{site = Site, obj = {cell, _}} = Ref) ->
         false -> 
             [];
         Idx -> 
-            Table = trans(Site, local_cell_link),
+            Table = trans(Site, relation),
             case mnesia:read(Table, Idx, read) of
                 [R] -> R#relation.children;
                 _   -> []
             end
     end.
-
 
 -spec set_local_parents(#refX{}, [#refX{}]) -> ok.
 set_local_parents(#refX{site = Site} = Cell, Parents) ->
@@ -2917,8 +2927,10 @@ set_local_parents(#refX{site = Site} = Cell, Parents) ->
     ParentIdxs = ordsets:from_list([get_local_item_index(P) || P <- Parents]),
     LostParents = ordsets:subtract(Rel#relation.parents, ParentIdxs),
     [del_local_child(P, CellIdx, Tbl) || P <- LostParents],
-    [add_local_child(P, CellIdx, Tbl) || P <- ParentIdxs],
-    ok = mnesia:write(Tbl, Rel#relation{parents = ParentIdxs}).
+    Priorities = [add_local_child(P, CellIdx, Tbl) || P <- ParentIdxs],
+    Priority = lists:sum(Priorities) + 2,
+    ok = mnesia:write(Tbl, Rel#relation{parents = ParentIdxs,
+                                        priority = Priority}).
 
 -spec del_local_child(cellidx(), cellidx(), atom()) -> ok.
 del_local_child(CellIdx, Child, Tbl) ->
@@ -2938,9 +2950,8 @@ add_local_child(CellIdx, Child, Tbl) ->
               [] -> #relation{cellidx = CellIdx}
           end,
     Children = ordsets:add_element(Child, Rel#relation.children),
-    mnesia:write(Tbl, Rel#relation{children = Children}).
-
-
+    ok = mnesia:write(Tbl, Rel#relation{children = Children}),
+    Rel#relation.priority.
 
 
 get_content_attrs(List) -> get_content_attrs(List, []).

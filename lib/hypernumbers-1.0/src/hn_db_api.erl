@@ -130,7 +130,7 @@
          notify_from_web/5,
          notify_back_from_web/4,
          handle_dirty_cell/2,
-         shrink_dirty_cell/1,
+         %%shrink_dirty_cell/1,
          handle_dirty/2,
          set_borders/5,
          register_hn_from_web/4,
@@ -262,23 +262,23 @@ wait_for_dirty(Site) ->
     end.
 
 
-%% @todo write documentation for shrink_dirty_cell
-shrink_dirty_cell(Site) ->
-    mnesia:activity(sync_dirty, fun do_shrink_dirty_cell/1, [Site]).
+%% %% @todo write documentation for shrink_dirty_cell
+%% shrink_dirty_cell(Site) ->
+%%     mnesia:activity(sync_dirty, fun do_shrink_dirty_cell/1, [Site]).
 
-do_shrink_dirty_cell(Site) ->
-    List = hn_db_wu:read_all_dirty_cells(Site),
-    Fun2 = fun(#dirty_cell{idx = Idx} = D, Acc) ->
-                   L =  hn_db_wu:read_local_parents_idx(Site, Idx),
-                   case L of
-                       [] -> Acc;
-                       _  -> [{D, L} | Acc]
-                   end
-           end,
-    ParentsList = lists:foldl(Fun2, [], List),
-    % now dedup the dirty list
-    DeleteList = shrink(ParentsList, List),
-    ok = hn_db_wu:delete_dirty_cells(Site, DeleteList).
+%% do_shrink_dirty_cell(Site) ->
+%%     List = hn_db_wu:read_all_dirty_cells(Site),
+%%     Fun2 = fun(#dirty_cell{idx = Idx} = D, Acc) ->
+%%                    L =  hn_db_wu:read_local_parents_idx(Site, Idx),
+%%                    case L of
+%%                        [] -> Acc;
+%%                        _  -> [{D, L} | Acc]
+%%                    end
+%%            end,
+%%     ParentsList = lists:foldl(Fun2, [], List),
+%%     % now dedup the dirty list
+%%     DeleteList = shrink(ParentsList, List),
+%%     ok = hn_db_wu:delete_dirty_cells(Site, DeleteList).
 
 %% @todo write documentation for write_formula_to_range
 write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
@@ -1353,35 +1353,35 @@ biggest(List, Type) ->
 write_attributes1(RefX, List) when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),
     [hn_db_wu:write_attr(RefX, X) || X <- List],
-    ok.
+    ok = hn_db_wu:mark_children_dirty(RefX).
 
-shrink(ParentsList, List) ->
-    shrink(ParentsList, List, []).
+%% shrink(ParentsList, List) ->
+%%     shrink(ParentsList, List, []).
 
-shrink([], _List, Acc) ->
-    Acc;
-shrink([Dirty | T], List, Acc) ->
-    DirtyParents = has_dirty_parent(List, Dirty),
-    NewAcc = case DirtyParents of
-                 false  -> Acc;
-                 Dirty2 -> [Dirty2 | Acc]
-             end,
-    shrink(T, List, NewAcc).
+%% shrink([], _List, Acc) ->
+%%     Acc;
+%% shrink([Dirty | T], List, Acc) ->
+%%     DirtyParents = has_dirty_parent(List, Dirty),
+%%     NewAcc = case DirtyParents of
+%%                  false  -> Acc;
+%%                  Dirty2 -> [Dirty2 | Acc]
+%%              end,
+%%     shrink(T, List, NewAcc).
 
-has_dirty_parent(List, {Cell , PIdxList}) ->
-    case has_dirty_parent2(List, PIdxList, false) of
-        false -> false;
-        true  -> Cell
-    end.
+%% has_dirty_parent(List, {Cell , PIdxList}) ->
+%%     case has_dirty_parent2(List, PIdxList, false) of
+%%         false -> false;
+%%         true  -> Cell
+%%     end.
 
-%% One true is good enough!
-has_dirty_parent2(_List, _P, true) -> true;
-has_dirty_parent2(_List, [], false) -> false;
-has_dirty_parent2(List, [#local_cell_link{parentidx = Idx} | T], false) -> 
-    case lists:keymember(Idx, 2, List) of
-        true  -> true;
-        false -> has_dirty_parent2(List, T, false)
-    end.
+%% %% One true is good enough!
+%% has_dirty_parent2(_List, _P, true) -> true;
+%% has_dirty_parent2(_List, [], false) -> false;
+%% has_dirty_parent2(List, [#local_cell_link{parentidx = Idx} | T], false) -> 
+%%     case lists:keymember(Idx, 2, List) of
+%%         true  -> true;
+%%         false -> has_dirty_parent2(List, T, false)
+%%     end.
 
 %% has_dirty_parent([], _Dirty)       -> false;
 %% has_dirty_parent([H | T], Parent)  -> %io:format("H is ~p~n", [H]),
@@ -1530,10 +1530,10 @@ is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 
 %% cell to range
 copy2(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
-    #refX{site = Site} = To,
+    %%#refX{site = Site} = To,
     List = hn_util:range_to_list(To),
     lists:map(fun(X) -> hn_db_wu:copy_cell(From, X, Incr) end, List),
-    ok = shrink_dirty_cell(Site),
+    %%ok = shrink_dirty_cell(Site),
     ok.
 
 %% range to range
