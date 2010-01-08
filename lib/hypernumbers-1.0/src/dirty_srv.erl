@@ -25,12 +25,7 @@
 %% @spec start_link(Arg) -> StartLink
 %% @doc  start a link between this and supervisor
 start_link(Arg) ->
-    R = {ok, Pid} = gen_server:start_link({local, Arg}, ?MODULE, [Arg], []),
-    if Arg == dirty_cell ->
-            ok = fprof:trace([start, {procs, Pid}]);
-       true -> ok 
-    end,
-    R.
+    {ok, Pid} = gen_server:start_link({local, Arg}, ?MODULE, [Arg], []).
 
 %% @spec init(Arg) -> {ok, State}
 %% @doc  Start server
@@ -44,7 +39,6 @@ handle_info({'EXIT', Pid, stopping}, State) ->
     {noreply, State#state{children = NChild}};
 
 handle_info({'EXIT', Pid, Reason}, State) ->
-
     case Reason of
         killed -> ok;
         _Else  -> report_error(Pid, Reason, State)
@@ -158,8 +152,8 @@ proc_dirty(Table, Rec) ->
     [Host, Port, _Table] = string:tokens(atom_to_list(Table), "&"),
     Site = "http://"++Host++":"++Port,
     case element(1, Rec) of
-        dirty_cell ->
-            hn_db_api:handle_dirty_cell(Site, Rec);
+        dirty_queue ->
+            hn_db_api:handle_dirty_queue(Site, Rec);
         dirty_inc_hn_create ->
             hn_db_api:notify_back_create(Site, Rec);
         dirty_notify_in ->
@@ -176,7 +170,7 @@ proc_dirty(Table, Rec) ->
 
 
 dirty_tbls() ->
-    [ dirty_cell,
+    [ dirty_queue,
       dirty_notify_in,
       dirty_notify_back_in,
       dirty_inc_hn_create,

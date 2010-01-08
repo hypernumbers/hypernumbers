@@ -36,6 +36,8 @@
 %%% These functions are all utility functions                                %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+-spec get_timestamp() -> pos_integer(). 
 get_timestamp()->
     {Mega, Sec, Micro} = now(),
     1000000000000 * Mega + 1000000 * Sec + Micro.
