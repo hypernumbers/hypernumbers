@@ -1286,7 +1286,7 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
                   ok = init_front_end_notify(),
                   case is_valid_d_n_d(From, To) of
                       {ok, single_cell, Incr}   ->
-                          hn_db_wu:copy_cell(From, To, Incr);
+                          copy_cell(From, To, Incr);
                       {ok, 'onto self', _Incr}  -> ok;
                       {ok, cell_to_range, Incr} -> copy2(From, To, Incr)
                   end
@@ -1339,6 +1339,11 @@ write_attributes1(RefX, List) when is_record(RefX, refX), is_list(List) ->
     [hn_db_wu:write_attr(RefX, X) || X <- List],
     ok = hn_db_wu:mark_children_dirty(RefX).
 
+-spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
+copy_cell(From, To, Incr) ->
+    hn_db_wu:copy_cell(From, To, Incr),
+    hn_db_wu:mark_children_dirty(To).
+        
 %% shrink(ParentsList, List) ->
 %%     shrink(ParentsList, List, []).
 
@@ -1462,14 +1467,14 @@ copy_n_paste2(#refX{site = Site, obj = {page, "/"}} = From,
               #refX{site = Site, path = NewPath, obj = {page, "/"}}) ->
     Cells = hn_db_wu:get_cells(From),
     Fun = fun(X) ->
-                  ok = hn_db_wu:copy_cell(X, X#refX{path = NewPath}, false)
+                  ok = copy_cell(X, X#refX{path = NewPath}, false)
           end,
     [Fun(X) || X <- Cells],
     ok;
 %% this clause copies bits of pages
 copy_n_paste2(From, To) ->
     case is_valid_c_n_p(From, To) of
-        {ok, single_cell}    -> hn_db_wu:copy_cell(From, To, false);
+        {ok, single_cell}    -> copy_cell(From, To, false);
         {ok, 'onto self'}    -> ok;
         {ok, cell_to_range}  -> copy2(From, To, false);
         {ok, range_to_cell}  -> To2 = cell_to_range(To),
@@ -1516,7 +1521,7 @@ is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 copy2(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
     %%#refX{site = Site} = To,
     List = hn_util:range_to_list(To),
-    lists:map(fun(X) -> hn_db_wu:copy_cell(From, X, Incr) end, List),
+    lists:map(fun(X) -> copy_cell(From, X, Incr) end, List),
     %%ok = shrink_dirty_cell(Site),
     ok.
 
@@ -1534,7 +1539,7 @@ copy3a(From, [H | T], Incr) -> FromRange = hn_util:range_to_list(From),
 
 copy3b([], [], _Incr)              -> ok;
 copy3b([FH | FT], [TH | TT], Incr) ->
-    ok = hn_db_wu:copy_cell(FH, TH, Incr),
+    ok = copy_cell(FH, TH, Incr),
     copy3b(FT, TT, Incr).
 
 get_tiles(#refX{obj = {range, {X1F, Y1F, X2F, Y2F}}},

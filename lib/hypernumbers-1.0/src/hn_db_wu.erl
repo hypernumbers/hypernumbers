@@ -891,7 +891,6 @@ update_inc_hn(Parent, Child, Val, DepTree, Biccie)
     Rec2 = #dirty_notify_in{parent = Parent},
     ok = mark_dirty(ChildSite, Rec2).
 
-%% @spec get_cells(RefX::#refX{}) -> [#refX{}]
 %% @doc takes a reference and expands it to *populated* cell references.
 %% The reference can be any of:
 %% <ul>
@@ -906,6 +905,7 @@ update_inc_hn(Parent, Child, Val, DepTree, Biccie)
 %% If you want to expand a range to a list of cell references 
 %% irrespective of wether or not they are populated then use
 %% hn_util:range_to_list(refX{})
+-spec get_cells(#refX{}) -> [#refX{}]. 
 get_cells(#refX{obj = {cell, _}} = RefX) -> [RefX];
 get_cells(#refX{site = S, obj = {range, _}} = RefX) ->
     MatchRef = make_range_match_ref(RefX),
@@ -1646,6 +1646,18 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
             ok
     end.
 
+get_rawvalues(List) -> get_rv1(List, []).
+
+get_rv1([], Acc)                              -> Acc;
+get_rv1([{_, {"rawvalue", _V}} = H | T], Acc) -> get_rv1(T, [H | Acc]);
+get_rv1([_H | T], Acc)                        -> get_rv1(T, Acc).
+
+get_formats(List) -> get_f1(List, []).
+
+get_f1([], Acc)                            -> Acc;
+get_f1([{_, {"format", _V}} = H | T], Acc) -> get_f1(T, [H | Acc]);
+get_f1([_H | T], Acc)                      -> get_f1(T, Acc).
+
 %% @spec delete_page(RefX) -> Status
 %% @doc takes a reference to a page, does delete_cells,
 %% Then reads any existing local_objs and deletes any
@@ -1821,9 +1833,8 @@ delete_if_attrs(#refX{site = S} = RefX, Key) ->
             end
     end.
 
-%% @spec copy_cell(From :: #refX{}, To ::#refX{}, Incr) -> ok
-%% Incr = [false | horizonal | vertical]
 %% @doc copys cells from a reference to a reference
+-spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
 copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
   when is_record(From, refX), is_record(To, refX) ->
     FromList = read_cells_raw(From, read),
@@ -1871,8 +1882,7 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
     %% you want to carry that forward.
     AttrList = get_attr_keys(FilteredList),
     ok = copy_attrs(From, To, AttrList).
-    %% now mark the To cell dirty...
-    %ok = mark_cells_dirty(To).
+
 
 %% @spec copy_attrs(From :: #refX{}, To :: #refX{}, AttrList) -> ok
 %% AttrList = [atom()]
