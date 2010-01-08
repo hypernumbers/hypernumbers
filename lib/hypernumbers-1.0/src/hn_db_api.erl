@@ -996,13 +996,13 @@ insert(#refX{obj = {R, _}} = RefX, Disp)
        (Disp == horizontal orelse Disp == vertical)->
     move(RefX, insert, Disp).
 
-%% @spec delete(Ref :: #refX{}) -> ok
 %% @doc deletes a column or a row or a page
 %% 
 %% @todo this is all bollocks - should be row, column then cell/range as 
 %% per insert/2.
 %% This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
+-spec delete(#refX{}) -> ok.
 delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
     Disp = case R of
                row    -> vertical;
@@ -1024,8 +1024,6 @@ delete(#refX{obj = {page, _}} = RefX) ->
     mnesia:activity(transaction, Fun1),
     ok = tell_front_end("delete").
 
-%% @spec delete(RefX :: #refX{}, Type) -> ok
-%% Type = [horizontal | vertical]
 %% @doc deletes a reference.
 %% 
 %% The <code>refX{}</code> can be one of a:
@@ -1144,7 +1142,8 @@ clear(RefX, Type) when is_record(RefX, refX) ->
     Fun =
         fun() ->
                 ok = init_front_end_notify(),
-                hn_db_wu:clear_cells(RefX, Type)
+                hn_db_wu:clear_cells(RefX, Type),
+                hn_db_wu:mark_children_dirty(RefX)
         end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("clear").

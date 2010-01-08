@@ -1682,8 +1682,6 @@ delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
 
     Status.
 
-%% @spec delete_cells(RefX) -> Status
-%% Status = list()
 %% @doc takes a reference to a
 %% <ul>
 %% <li>page</li>
@@ -1692,7 +1690,7 @@ delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
 %% <li>range</li>
 %% <li>cell</li>
 %% </ul>
-%% and then deletes all the cells including their indices in local_objs) 
+%% and then deletes all the cells including their indices in local_objs
 %% and makes all cells that are their children throw a #ref! error
 %% and deletes the links there the old cell was the child of another cell
 %% @todo this is ineffiecient because it reads and then deletes each
