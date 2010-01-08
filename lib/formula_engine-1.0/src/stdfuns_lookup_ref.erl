@@ -233,7 +233,6 @@ match1(LookupVal, List, 1) ->
 
 
 vlookup([V, A, I]) ->
-    io:format("bumping up to vlookup/4"),
     vlookup([V, A, I, true]);
 vlookup([V, IA, I0, IB]) ->
 
