@@ -16,6 +16,8 @@
 -define(HN_URL2,   "http://127.0.0.1:9001").
 
 
+-type cellidx() :: pos_integer().
+
 %% Core Tables
 
 -record(core_site, {site = [] :: string(),
@@ -86,6 +88,12 @@
           type        = null      % incoming or outgoing
          }).
 
+-record(relation,
+        {cellidx                 :: cellidx(),
+         children = ordset:new() :: ordsets:ordset(cellidx()),
+         parents = ordset:new()  :: ordsets:ordset(cellidx()),
+         priority = 0            :: pos_integer() }).
+         
 -record(outgoing_hn,
         {
           site_and_parent,
@@ -102,11 +110,9 @@
           biccie            = []    % a shared token
          }).
 
--record(dirty_cell,
-        {
-          idx,
-          timestamp   = now()
-         }).
+-record(dirty_queue,
+        {id = now(),
+         queue :: tm_workq:work_queue()}).
 
 -record(dirty_inc_hn_create,
         {
