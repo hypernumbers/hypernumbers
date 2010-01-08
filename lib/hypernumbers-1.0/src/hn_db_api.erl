@@ -1039,7 +1039,6 @@ delete(#refX{obj = {R, _}} = RefX, Disp)
 move(RefX, Type, Disp)
   when (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
-    io:format("Told to insert: ~p by ~p~n", [RefX, Disp]),
     ok = mnesia:activity(transaction, fun move_tr/3, [RefX, Type, Disp]),
     ok = tell_front_end("move", RefX).
 
