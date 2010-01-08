@@ -156,7 +156,7 @@ create_site(Site, Type)->
 
 -define(RIF(R), record_info(fields, R)).
 tables() ->
-    [{dirty_cell,            ?RIF(dirty_cell),            set, []},      
+    [{dirty_queue,           ?RIF(dirty_queue),           set, []},      
      {dirty_notify_in,       ?RIF(dirty_notify_in),       set, []},         
      {dirty_inc_hn_create,   ?RIF(dirty_inc_hn_create),   set, []},         
      {dirty_notify_back_in,  ?RIF(dirty_notify_back_in),  set, []},         
@@ -165,6 +165,7 @@ tables() ->
      {item,                  ?RIF(item),                  bag, [key]},      
      {local_objs,            ?RIF(local_objs),            bag, [obj,idx]}, 
      {local_cell_link,       ?RIF(local_cell_link),       bag, [childidx]}, 
+     {relation,              ?RIF(relation),              set, []},
      {hn_user,               ?RIF(hn_user),               set, []},         
      {remote_objs,           ?RIF(remote_objs),           set, []},         
      {remote_cell_link,      ?RIF(remote_cell_link),      bag, []},         
