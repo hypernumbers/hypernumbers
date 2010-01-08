@@ -710,11 +710,11 @@ make_after(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     DiffY = Y2 - Y1 - 1,
     RefX#refX{obj = {range, {X1 - DiffX, Y1 - DiffY, X2 - DiffX, Y2 - DiffY}}};
 make_after(#refX{obj = {column, {X1, X2}}} = RefX) ->
-    DiffX = X2 - X1 - 1,
-    RefX#refX{obj = {column, {X1 - DiffX, X2 - DiffX}}};
+    DiffX = X2 - X1 + 1,
+    RefX#refX{obj = {column, {X1 + DiffX, X2 + DiffX}}};
 make_after(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
-    DiffY = Y2 - Y1 - 1,
-    RefX#refX{obj = {row, {Y1 - DiffY, Y2 - DiffY}}}. %
+    DiffY = Y2 - Y1 + 1,
+    RefX#refX{obj = {row, {Y1 + DiffY, Y2 + DiffY}}}. %
 
 pages(#refX{} = RefX) ->
     Dict = hn_db_api:read_page_structure(RefX),

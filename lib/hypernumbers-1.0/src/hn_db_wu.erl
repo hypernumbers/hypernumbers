@@ -2586,9 +2586,9 @@ offset_with_ranges1([{cellref, LineNo, C=#cellref{path = Path, text = Text}}=H |
                     Cell, #refX{path = FromPath} = From, {XO, YO}=Offset, Acc) ->
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
-        {column,{_Left,Right}} when X < Right ->
+        {column,{Left,_Right}} when X < Left ->
             offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
-        {row,{_Top,Bottom}} when Y < Bottom ->
+        {row,{Top,_Bottom}} when Y < Top ->
             offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
         _Else ->
             #refX{path = CPath} = Cell,
