@@ -2241,10 +2241,9 @@ trans_back(Record) when is_tuple(Record)->
 
 get_prefix(R) when is_record(R, refX) ->
     get_prefix(R#refX.site);
-get_prefix(Site) ->
-    [_Proto, Dom, Port] = string:tokens(Site, ":"),
-    [$/, $/ | Dom2] = Dom,
-    Dom2 ++ "&" ++ Port.
+get_prefix("http://"++Site) ->
+    [case S of $: -> $&; S  -> S end 
+     || S <- Site].
   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

@@ -25,7 +25,12 @@
 %% @spec start_link(Arg) -> StartLink
 %% @doc  start a link between this and supervisor
 start_link(Arg) ->
-    gen_server:start_link({local, Arg}, ?MODULE, [Arg], []).
+    R = {ok, Pid} = gen_server:start_link({local, Arg}, ?MODULE, [Arg], []),
+    if Arg == dirty_cell ->
+            ok = fprof:trace([start, {procs, Pid}]);
+       true -> ok 
+    end,
+    R.
 
 %% @spec init(Arg) -> {ok, State}
 %% @doc  Start server

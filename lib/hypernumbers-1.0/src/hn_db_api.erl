@@ -756,7 +756,8 @@ write_attributes(RefX, List) ->
 
 write_attributes(List) ->
     Fun = fun() ->
-                  [ok = write_attributes1(RefX, L) || {RefX, L} <- List]
+                  [ok = write_attributes1(RefX, L) || {RefX, L} <- List],
+                  ok
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("write attributes").

@@ -162,10 +162,8 @@ shuffle1(L, Acc) ->
     shuffle1(L -- [RandElt], [RandElt | Acc]).
 
 %% @doc Return a copy of list with duplicates removed.
-uniq([Hd | Tl]) ->
-    [ Hd | uniq([Y || Y <- Tl, Y =/= Hd])];
-uniq([]) ->
-    [].
+uniq(L) ->
+    lists:usort(L).
 
 %% @doc Return list with Item removed
 remove(Item, List) ->
