@@ -151,7 +151,7 @@ listen_dirty_queue(Site, Table, Q) ->
 %% *immediately*, the result of all the current and new workqueues are
 %% merged and returned. When the current queue is empty and new work
 %% is not available, we wait for new work to arrive. Otherwise we
-%% simply return the current queue if it is not empty, and no new work
+%% simply return the current queue if it is not empty and no new work
 %% is available.
 -spec merge_latest(hn_workq:work_queue(), atom()) -> hn_workq:work_queue().
 merge_latest(Q, Table) ->    

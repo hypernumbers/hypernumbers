@@ -442,16 +442,7 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
     ok = tell_front_end("register_hn_from_web"),
     Str.
 
-%% @doc handles a dirty cell.
-%% Timestamp is the timestamp of the dirty cell - the actual
-%% record itself may have been rewritten before it is processed.
-%% If the target of the dirty cell has been deleted the dirty cell record
-%% will have been written to have an index of 'deleted' and this function
-%% will skip it
-%% Silently fails if the cell is part of a shared range
-%% @todo extend this to a dirty shared formula
-%% @todo needs to be ran inside transaction from
-%% other module, kinda ugly, fix
+
 -spec handle_dirty_cell(string(), cellidx()) -> ok. 
 handle_dirty_cell(Site, Idx) ->
     ok   = init_front_end_notify(),  

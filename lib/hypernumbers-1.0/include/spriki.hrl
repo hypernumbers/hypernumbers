@@ -93,7 +93,7 @@
         {cellidx                  :: cellidx(),
          children = ordsets:new() :: ordsets:ordset(cellidx()),
          parents = ordsets:new()  :: ordsets:ordset(cellidx()),
-         priority = 0             :: pos_integer() }).
+         priority = 0             :: integer() }).
          
 -record(outgoing_hn,
         {

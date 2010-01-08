@@ -498,8 +498,6 @@
          read_styles/1,
          read_incoming_hn/2,
          local_idx_to_refX/2,
-         %&read_dirty_cell/2,
-         %&read_all_dirty_cells/1,
          read_whole_page/1,
          find_incoming_hn/2,
          read_outgoing_hns/2,
@@ -508,9 +506,6 @@
          delete_page/1,
          delete_cells/1,
          delete_attrs/2,
-         %%clear_dirty/2,
-         %%clear_dirty_cell/2,
-         %%delete_dirty_cells/2,
          shift_cells/4,
          shift_row_objs/2,
          shift_col_objs/2,
@@ -598,19 +593,6 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% @spec delete_dirty_cells(Site, List) -> ok
-%% @doc this function takes a list  of dirty cells and 
-%% rewrites all of them to be deleted
-%% delete_dirty_cells(Site, List) when is_list(List) ->
-%%     [ok = delete_dirty_cell(trans(Site, dirty_cell), X) || X <- List],
-%%     ok.
-
-%% delete_dirty_cell(Table, Cell) when is_record(Cell, dirty_cell) ->
-%%     mnesia:delete_object(Table, Cell, write);
-%% delete_dirty_cell(Table, Cell) when is_record(Cell, refX) ->
-%%     mnesia:delete(Table, get_local_item_index(Cell), write);
-%% delete_dirty_cell(Table, Id) when is_list(Id) ->
-%%     mnesia:delete(Table, Id, write).
 
 -spec get_cell_for_muin(#refX{}) -> {any(), any(), any(), any()}.
 %% @doc this function is called by muin during recalculation and should
@@ -644,17 +626,6 @@ write_style_IMPORT(RefX, Style)
     NewIndex = write_style(RefX, Style),
     write_attr3(RefX, {"style", NewIndex}),
     ok.
-
-%% %% @spec read_all_dirty_cells(Site) -> List
-%% %% @doc reads the complete list of dirty cells
-%% read_all_dirty_cells(Site) ->
-%%     Table = trans(Site, dirty_cell),
-%%     mnesia:match_object(Table, #dirty_cell{_ = '_'}, write).
-
-%% -spec read_dirty_cell(any(), any()) -> #refX{}.
-%% %% @doc reads a dirty_cell based on its timestamp
-%% read_dirty_cell(Site, #dirty_cell{idx=IdX}) ->
-%%     local_idx_to_refX(Site, IdX).
 
 %% @spec shift_remote_links(Type1, OldRef::#refX{}, 
 %% NewRef::#refX{}, Type1)  -> ok
@@ -956,23 +927,6 @@ get_cells1(Site, MatchRef) ->
                   #refX{site = Site, path = Path, obj = Obj}
           end,
     [Fun(X) || X <- List].
-
-%% %% @spec clear_dirty(Site, Record) -> ok
-%% %% Record = #dirty_notify_back_in{} | #dirty_inc_hn_create{} | #dirty_notify_in{}
-%% %% @doc clears a dirty record.
-%% clear_dirty(Site, Rec) when (is_record(Rec, dirty_notify_in)
-%%                              orelse is_record(Rec, dirty_notify_out)
-%%                              orelse is_record(Rec, dirty_inc_hn_create)
-%%                              orelse is_record(Rec, dirty_notify_back_in)
-%%                              orelse is_record(Rec, dirty_notify_back_out)) ->
-%%     Tbl = trans(Site, element(1,Rec)),
-%%     mnesia:delete_object(Tbl, Rec, write).
-
-%% -spec clear_dirty_cell(string(), #dirty_cell{}) -> ok.
-%% %% @doc clears a dirty cell marker.
-%% %% The reference must be to a cell
-%% clear_dirty_cell(Site, Record) when is_record(Record, dirty_cell) ->
-%%     mnesia:delete_object(trans(Site, dirty_cell), Record, write).
 
 %% @spec get_refs_below(#refX{}) -> [#refX{}]
 %% @doc gets all the refs equal to or below a given reference as well as
@@ -1679,21 +1633,16 @@ clear_cells(RefX, style) when is_record(RefX, refX) ->
     [ok = write_rawvalue(X, V) || {X, {_K, V}} <- get_rawvalues(List2)],    
     ok;
 clear_cells(RefX, contents) when is_record(RefX, refX) ->
-
-                                                % first up clear the list
+    %% first up clear the list
     case read_attrs(RefX, write) of
         [] -> ok;
         List1 ->
             List2 = get_cells(RefX),
-            %% first set all the dirty cells that match to deleted
-            %ok = delete_dirty_cells(RefX#refX.site, List2),
-                                                %[ok = mark_dirty_cells_deleted(X) || X <- List2],
             %% now delete the links to the cells
             [ok = delete_parent_links(X) || X <- List2],
             %% finally delete all the attributes
             List3 = get_content_attrs(List1),
             [delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
-            %%[ok = mark_cells_dirty(X) || X <- List2],
             ok
     end.
 
@@ -1743,7 +1692,6 @@ delete_cells(#refX{site = S} = DelX) ->
     case Cells of
         [] -> [];
         _ -> %% first delete any dirty cell references that point to these cells
-            %delete_dirty_cells(S, Cells), % TODO: Duz want?
 
             %%[ok = mark_dirty_cells_deleted(X) || X <- Cells],
             %% update the children that point to the cell that is being deleted
@@ -2079,6 +2027,9 @@ mark_children_dirty(#refX{site = Site} = RefX) ->
 
 %% We pass down a minimum priority to retain the invariant that
 %% children *always* have a higher priority than their parent.
+%%
+%% NOTE: Invariant violations might be precluded by transactional
+%% operations.
 -spec insert_dirty_queue([cellidx()], 
                          atom(), 
                          integer(), 
@@ -2266,18 +2217,6 @@ delete_recs1(Site, Rec) ->
     Table = trans(Site, element(1, Rec)),
     mnesia:delete_object(Table, Rec, write).
 
-
-%% mark_dirty_cells_deleted(#refX{site = S, obj = {cell, _}} = RefX) ->
-%%     Idx = read_local_item_index(RefX),
-%%     H = trans(S, #dirty_cell{idx = Idx, _ = '_'}),
-%%     M = [{H, [], ['$_']}],
-%%     case trans_back(mnesia:select(trans(S, dirty_cell), M)) of
-%%         [] -> ok;
-%%         [#dirty_cell{timestamp = T}] ->
-%%             D = #dirty_cell{idx = deleted, timestamp = T},
-%%             ok = mnesia:write(trans(S, D))
-%%     end.
-
 insert_shift(#refX{obj = {cell, {X, Y}}} = RefX, vertical) ->
     RefX#refX{obj = {cell, {X, Y - 1}}};
 insert_shift(#refX{obj = {cell, {X, Y}}} = RefX, horizontal) ->
@@ -2437,10 +2376,6 @@ unregister_inc_hn(Parent, Child)
 
 %%get_refXs([], Acc)              -> hslists:uniq(Acc);
 %%get_refXs([{RefX, _} | T], Acc) -> get_refXs(T, [RefX | Acc]).
-
-delete_parent_links(RefX) ->
-    ok = set_local_parents(RefX, []),
-    ok = delete_remote_parents(RefX).
 
 get_refs_below2(RefX, MinX, MaxX, Y) ->
     #refX{site = S, path = P} = RefX,
@@ -2870,6 +2805,11 @@ fl([H | T], A, B)                             -> fl(T, A, [H | B]).
 %%     RefX = local_idx_to_refX(Site, C),
 %%     get_l_c(Site, T, [RefX | Acc]).
 
+-spec delete_parent_links(#refX{}) -> ok.
+delete_parent_links(RefX) ->
+    ok = set_local_parents(RefX, []),
+    ok = delete_remote_parents(RefX).
+
 get_remote_parents(List) -> get_r_p(List, []).
 
 get_r_p([], Acc) -> Acc;
@@ -2946,7 +2886,7 @@ del_local_child(CellIdx, Child, Tbl) ->
             ok
     end.
 
--spec add_local_child(cellidx(), cellidx(), atom()) -> ok.
+-spec add_local_child(cellidx(), cellidx(), atom()) -> integer().
 add_local_child(CellIdx, Child, Tbl) ->
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R;
@@ -3420,7 +3360,6 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     %% * reads the old set of remote links:
     %%   - writes any remote links that aren't already there
     %%   - deletes any remote links that are no longer there
-                                                % * marks this cell dirty
     {NewLocPs, NewRemotePs} = split_local_remote(Parents),
 
     %% write the formula
@@ -3670,7 +3609,7 @@ write_style2(#refX{site = Site} = RefX, Style) ->
     ok = mnesia:write(trans(Site, styles), Rec, write),
     NewIndex. 
 
--spec tell_front_end(#refX{}, {any(), any()}, insert | delete) -> ok.
+-spec tell_front_end(#refX{}, {any(), any()}, insert | delete | change) -> ok.
 %% Type = [change | delete]
 %% @doc calls the remoting server and tells is that something has changed
 %% names like '__name' are not notified to front-end
