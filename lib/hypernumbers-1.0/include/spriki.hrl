@@ -16,6 +16,7 @@
 -define(HN_URL2,   "http://127.0.0.1:9001").
 
 
+-type now() :: {integer(),integer(),integer()}.
 -type cellidx() :: pos_integer().
 
 %% Core Tables
@@ -111,8 +112,8 @@
          }).
 
 -record(dirty_queue,
-        {id = now(),
-         queue :: tm_workq:work_queue()}).
+        {id = now() :: now(),
+         queue :: hn_workq:work_queue()}).
 
 -record(dirty_inc_hn_create,
         {

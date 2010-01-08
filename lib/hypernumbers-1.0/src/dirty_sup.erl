@@ -12,8 +12,8 @@ start_link() ->
 
 init([]) ->
 
-    Cell      = {dirty_cell,      {dirty_srv, start_link,
-                                   [dirty_cell]},
+    Cell      = {dirty_queue,      {dirty_srv, start_link,
+                                   [dirty_queue]},
                  transient, 2000, worker, [start]},    
     NotifyIn  = {notify_in,       {dirty_srv, start_link,
                                    [dirty_notify_in]},

@@ -2071,8 +2071,8 @@ mark_dirty(Site, Record)
 mark_children_dirty(#refX{site = Site} = RefX) ->
     Tbl = trans(Site, relation),
     Children = get_local_children(RefX),
-    Q = insert_dirty_queue(Children, Tbl, -1, tm_workq:new()),
-    Entry = #dirty_queue{queue = Q},
+    Q = insert_dirty_queue(Children, Tbl, -1, hn_workq:new()),
+    Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
 
 
@@ -2081,8 +2081,8 @@ mark_children_dirty(#refX{site = Site} = RefX) ->
 -spec insert_dirty_queue([cellidx()], 
                          atom(), 
                          integer(), 
-                         tm_workq:work_queue())
-                        -> tm_workq:work_queue(). 
+                         hn_workq:work_queue())
+                        -> hn_workq:work_queue(). 
 insert_dirty_queue([], _Tbl, _MinPri, Q) ->
     Q;
 insert_dirty_queue([Idx|Rest], Tbl, MinPri, Q) ->
@@ -2098,7 +2098,7 @@ insert_dirty_queue([Idx|Rest], Tbl, MinPri, Q) ->
             Priority = 0,
             Q2 = Q
     end,
-    Q3 = tm_workq:add(Idx, Priority, Q2),
+    Q3 = hn_workq:add(Idx, Priority, Q2),
     insert_dirty_queue(Rest, Tbl, MinPri, Q3).
 
 
