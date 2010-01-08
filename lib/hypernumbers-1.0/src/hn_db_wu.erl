@@ -511,6 +511,7 @@
          shift_col_objs/2,
          delete_row_objs/1,
          delete_col_objs/1,
+         get_local_children/1,
          shift_children/3,
          shift_remote_links/4,
          shift_inc_hns/2,
@@ -553,9 +554,6 @@
 
 %% These functions are exposed for the dirty_srv to use
 -export([
-         %% read_local_parents/1,
-         %% read_local_parents_idx/2,
-         %% read_local_children/1,
          read_remote_parents/2,
          read_remote_children/2,
          read_remote_children/3
@@ -952,11 +950,8 @@ get_refs_below(#refX{site = S, path = P, obj = {row, {Y1, Y2}}} = RefX) ->
     RefXs1 = local_objs_to_refXs(S, get_local_idxs(S, {Head1, Cond, Body})),
     %% now get the local cells that are children of
     %% cells below the refX
-    PIdx = read_local_item_index(RefX),
-    Head2 = #local_cell_link{parentidx = PIdx, _ = '_'},
-    RefXs2 = get_local_links_refs(S, {Head2, [], Body}),
-    RefXs = lists:append([RefXs1, RefXs2]),
-    hslists:uniq(RefXs);
+    RefXs2 = get_local_children(RefX),
+    hslists:uniq(lists:append([RefXs1, RefXs2]));
 get_refs_below(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     %% rectify the ranges in case they are reversed...
     YY = ?COND(Y1 > Y2, Y1, Y2),
@@ -986,11 +981,8 @@ get_refs_right(#refX{site = S, obj = {column, {X1, X2}}} = RefX) ->
     RefXs1 = local_objs_to_refXs(S, get_local_idxs(S, {Head1a, Cond, Body})),
     %% now get the local pages that are children of
     %%  cells below the refX
-    PIdx = read_local_item_index(RefX),
-    Head2 = #local_cell_link{parentidx = PIdx, _ = '_'},
-    RefXs2 = get_local_links_refs(S, {Head2, [], Body}),
-    RefXs = lists:append([RefXs1, RefXs2]),
-    hslists:uniq(RefXs);
+    RefXs2 = get_local_children(RefX),
+    hslists:uniq(lists:append([RefXs1, RefXs2]));
 get_refs_right(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     %% rectify the ranges in case they are reversed...
     XX = ?COND(X1 > X2, X1, X2),
@@ -1082,57 +1074,6 @@ read_remote_children(Site, #refX{obj = {cell,_}} = Parent, Type)
     Table = trans(Site, remote_cell_link),
     Links = mnesia:match_object(Table, Match, read),
     get_remote_children(Links).    
-
-
-%% %% @spec read_local_parents_idx(Site, Idx) -> IdxList
-%% %% @doc this returns the local parents of a reference. Both the parameters
-%% %% in and list out are Idx's
-%% %% 
-%% read_local_parents_idx(Site, CIdx)  ->
-%%     Table = trans(Site, local_cell_link),
-%%     mnesia:index_read(Table, CIdx, childidx).
-
-%% %% @spec read_local_parents(RefX :: #refX{}) -> [#refX{}]
-%% %% @doc this returns the local parents of a reference. The reference can only
-%% %% be to a cell and not a range, column, row or page
-%% %% 
-%% %% This fn is called read_local_parents because it consists of all the
-%% %% local links where the current RefX is the child
-%% read_local_parents(#refX{site = Site} = Child)  ->
-%%     case read_local_item_index(Child) of
-%%         false -> [];
-%%         CIdx  -> Table = trans(Site, relation),
-                 
-                 
-%%                  Links = mnesia:index_read(Table, CIdx, childidx),
-%%                  get_local_parents(Site, Links)
-%%     end.
-
-%% %% @spec read_local_children(RefX :: #refX{}) -> [#refX{}]
-%% %% @doc this returns the local children of a reference. The reference can only
-%% %% be to a 
-%% %% <ul>
-%% %% <li>cell</li>
-%% %% <li>range</li>
-%% %% <li>column</li>
-%% %% <li>row</li>
-%% %% <li>page</li>
-%% %% </ul>
-%% %% 
-%% %% This fn is called read_local_children because it consists of all the
-%% %% local links where the current RefX is the parent
-%% read_local_children(#refX{obj = {Type, _}} = Parent)
-%%   when (Type == row) orelse (Type == column)
-%%        orelse (Type == range) orelse (Type == page) ->
-%%     Cells = get_cells(Parent),
-%%     lists:flatten([read_local_children(X) || X <- Cells]);
-%% read_local_children(#refX{site = Site, obj = {cell, _}} = Parent) ->
-%%     case read_local_item_index(Parent) of
-%%         false -> [];
-%%         PIdx  -> Table = trans(Site, local_cell_link),
-%%                  Links = mnesia:read(Table, PIdx, read),
-%%                  get_local_children(Site, Links)
-%%     end.
 
 %% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> ok
 %% Key = atom()
@@ -1405,31 +1346,26 @@ shift_cells(From, Type, Disp, Rewritten)
                    {insert, horizontal} ->
                        RefX2 = insert_shift(From, Disp),
                        get_refs_right(RefX2);
-                   {insert, vertical}   ->
+                   {insert, vertical} ->
                        RefX2 = insert_shift(From, Disp),
                        get_refs_below(RefX2);
                    {delete, horizontal} ->
                        get_refs_right(From);
-                   {delete, vertical}   ->
+                   {delete, vertical} ->
                        get_refs_below(From)
                end,
+
+    io:format("RefX is ~p~n", [RefXList]),
+
     case RefXList of
-        [] -> [];
+        [] -> ok;
         _  ->
             [ok = shift_cells1(X, offset(X, {XO, YO})) || X <- RefXList],
-
-            %% now get the indexes of all the objs referred to
-            IdxList = [read_local_item_index(X) || X <- RefXList],
 
             %% now rewrite the formula of all the child cells
             %%  - get the formulae
             %%  - rewrite the formulae and save the cells
-            H1 = #local_cell_link{childidx = '$1', parentidx = '$2', _ = '_'},
-            C1 = make_clause(IdxList, '$2', 'orelse'),
-            B1 = ['$1'],
-            Table1 = trans(Site, local_cell_link),
-            CIdxList = mnesia:select(Table1, [{H1, C1, B1}], write),
-            ChildCells = [local_idx_to_refX(Site, X) || X <- CIdxList],
+            ChildCells = lists:flatten([get_local_children(X) || X <- RefXList]),
             ChildCells2 = hslists:uniq(ChildCells),
             DedupedChildren = lists:subtract(ChildCells2, Rewritten),
 
@@ -1449,13 +1385,15 @@ shift_cells(From, Type, Disp, Rewritten)
                                dirty -> [{dirty, RefX} | Acc]
                            end
                    end,
-            Status = lists:foldl(Fun2, [], FormulaList2),              
+            lists:foldl(Fun2, [], FormulaList2),              
             %% now shift the actual cells
             %% - first up adjust the local_objs table 
             %%   - read all the cell indices
             %%   - adjust them all
             %%   - delete the old ones
             %%   - write the new ones
+
+            IdxList = [read_local_item_index(X) || X <- RefXList],
             H2 = #local_objs{idx = '$1', _ = '_'},
             C2 = make_or(IdxList, '$1'),
             B2 = ['$_'],
@@ -1469,8 +1407,7 @@ shift_cells(From, Type, Disp, Rewritten)
             ok = delete_recs(Site, Cells),
             [ok = mnesia:write(trans(Site, local_objs), X, write) 
              || X <- NewCells],
-            %% return the Status of dirty cells
-            Status
+            ok
     end.
 
 shift_cells1(From, To) when is_record(From, refX), is_record(To, refX) ->
@@ -1665,7 +1602,7 @@ get_f1([_H | T], Acc)                      -> get_f1(T, Acc).
 %% Returns a list of dereferenced cells thatneed to be set dirty to recalculate
 delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
 
-    Status = delete_cells(RefX),
+    ok = delete_cells(RefX),
 
     F = fun(#local_objs{obj = {X, _Y}, idx = Id} = Obj)
               when X == column; X == row ->
@@ -1679,8 +1616,7 @@ delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
     Objs  = mnesia:index_match_object(trans(Site, local_objs), Match, 1, read),
 
     [ ok = F(X) || X <- Objs ],
-
-    Status.
+    ok.
 
 %% @doc takes a reference to a
 %% <ul>
@@ -1700,53 +1636,21 @@ delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
 delete_cells(#refX{site = S} = DelX) ->
     Cells = get_cells(DelX),
     case Cells of
-        [] -> [];
-        _ -> %% first delete any dirty cell references that point to these cells
-
-            %%[ok = mark_dirty_cells_deleted(X) || X <- Cells],
+        [] -> ok;
+        _ -> 
             %% update the children that point to the cell that is being deleted
             %% by rewriting the formulae of all the children cells replacing the 
             %% reference to this cell with #ref!
-            LocalChildren = [], % [read_local_children(X) || X <- Cells],
-            throw(read_local_children),
-
+            LocalChildren = [get_local_children(C) || C <- Cells],
             LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
             %% sometimes a cell will have local children that are 
             %% also in the delete zone these need to be removed 
             %% before we do anything else...
             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
-            %% now split this list into two
-            %% * a list of child/parents to delink
-            %% * a list of children to deref
-            %% first up deref the children
-            Fun1 = fun(X, Acc) ->
-                           Status = deref_child(X, DelX),
-                           case Status of
-                               []   -> Acc;
-                               Recs -> [Recs | Acc]
-                           end
-                   end,
-            Status = lists:flatten(lists:foldl(Fun1, [], LocalChildren3)),
+            [deref_child(C, DelX) || C <- LocalChildren3],
 
-            %% now delink all the cells that are being deleted
-            Fun2 = fun(X) ->
-                           Idx = get_local_item_index(X),
-                           case mnesia:read(trans(S, local_cell_link), Idx, write) of
-                               [] -> ok;
-                               _  -> ok % io:format("~nCell IS a local parent~n")
-                           end,
-                           ok = mnesia:delete(trans(S, local_cell_link), Idx, write)
-                   end,
-            [ok = Fun2(X) || X <- Cells],
-
-            %% now remove all the links where these cells were the children
-            Fun3 = fun(X) ->
-                           CIdx = read_local_item_index(X),
-                           Table = trans(S, local_cell_link),
-                           Recs = mnesia:index_read(Table, CIdx, childidx),
-                           ok = delete_recs(S, Recs)
-                   end,
-
+            %% fix relations table.
+            Fun3 = fun(X) -> delete_local_relation(X) end,
             [ok = Fun3(X) || X <- Cells],
 
             %% get the index of all items to be deleted
@@ -1779,8 +1683,7 @@ delete_cells(#refX{site = S} = DelX) ->
             %% finally delete the index records themselves
             [ ok = mnesia:delete_object(trans(S, local_objs), X, write)
               || X <- Recs],
-            %% need to return any cells that need to recalculate after the move
-            Status
+            ok
     end.
 
 make_del_cond([]) ->
@@ -2027,7 +1930,7 @@ mark_dirty(Site, Record)
 -spec mark_children_dirty(#refX{}) -> ok. 
 mark_children_dirty(#refX{site = Site} = RefX) ->
     Tbl = trans(Site, relation),
-    Children = get_local_children(RefX),
+    Children = get_local_children_idxs(RefX),
     Q = insert_dirty_queue(Children, Tbl, -1, hn_workq:new()),
     Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
@@ -2378,55 +2281,52 @@ unregister_inc_hn(Parent, Child)
             ok
     end.
 
+get_refs_below2(_RefX, _MinX, _MaxX, _Y) ->
+    throw(get_refs_below2),
+    [].
+    %% #refX{site = S, path = P} = RefX,
+    %% Obj = {cell, {'$1', '$2'}},
+    %% Head = #local_objs{path = P, obj = Obj, _ ='_'},
+    %% Cond = case MinX of
+    %%            MaxX -> [{'and', {'>', '$2', Y}, {'==', '$1', MinX}}];
+    %%            _    -> [{'and', {'>', '$2', Y}, {'>', '$1', MinX},
+    %%                      {'=<', '$1', MaxX}}]
+    %%        end,
+    %% Body = ['$_'],
+    %% Idxs = get_local_idxs(S, {Head, Cond, Body}),
+    %% RefXs1 = local_objs_to_refXs(S, Idxs),
+    %% RefXs2 = get_local_links_refs(S, RefXs1),
+    %% RefXs = lists:merge([RefXs1, RefXs2]),
+    %% hslists:uniq(RefXs).    
 
+get_refs_right2(_RefX, _X, _MinY, _MaxY) ->
+    throw(get_refs_below2),
+    [].
+%%     #refX{site = S, path = P} = RefX,
+%%     Obj = {cell, {'$1', '$2'}},
+%%     Head = #local_objs{path = P, obj = Obj, _ = '_'},
+%%     Cond = case MinY of
+%%                MaxY -> [{'and', {'>', '$1', X}, {'==', '$2', MinY}}];
+%%                _    -> [{'and', {'>', '$1', X}, {'>', '$2', MinY},
+%%                          {'=<', '$2', MaxY}}]
+%%            end,
+%%     Body = ['$_'],
+%%     Idxs = get_local_idxs(S, {Head, Cond, Body}),
+%%     RefXs1 = local_objs_to_refXs(S, Idxs),
+%%     RefXs2 = get_local_links_refs(S, RefXs1),
+%%     RefXs = lists:merge([RefXs1, RefXs2]),
+%%     hslists:uniq(RefXs).
 
-%%get_refXs(List) -> get_refXs(List, []).
-
-%%get_refXs([], Acc)              -> hslists:uniq(Acc);
-%%get_refXs([{RefX, _} | T], Acc) -> get_refXs(T, [RefX | Acc]).
-
-get_refs_below2(RefX, MinX, MaxX, Y) ->
-    #refX{site = S, path = P} = RefX,
-    Obj = {cell, {'$1', '$2'}},
-    Head = #local_objs{path = P, obj = Obj, _ ='_'},
-    Cond = case MinX of
-               MaxX -> [{'and', {'>', '$2', Y}, {'==', '$1', MinX}}];
-               _    -> [{'and', {'>', '$2', Y}, {'>', '$1', MinX},
-                         {'=<', '$1', MaxX}}]
-           end,
-    Body = ['$_'],
-    Idxs = get_local_idxs(S, {Head, Cond, Body}),
-    RefXs1 = local_objs_to_refXs(S, Idxs),
-    RefXs2 = get_local_links_refs(S, RefXs1),
-    RefXs = lists:merge([RefXs1, RefXs2]),
-    hslists:uniq(RefXs).    
-
-get_refs_right2(RefX, X, MinY, MaxY) ->
-    #refX{site = S, path = P} = RefX,
-    Obj = {cell, {'$1', '$2'}},
-    Head = #local_objs{path = P, obj = Obj, _ = '_'},
-    Cond = case MinY of
-               MaxY -> [{'and', {'>', '$1', X}, {'==', '$2', MinY}}];
-               _    -> [{'and', {'>', '$1', X}, {'>', '$2', MinY},
-                         {'=<', '$2', MaxY}}]
-           end,
-    Body = ['$_'],
-    Idxs = get_local_idxs(S, {Head, Cond, Body}),
-    RefXs1 = local_objs_to_refXs(S, Idxs),
-    RefXs2 = get_local_links_refs(S, RefXs1),
-    RefXs = lists:merge([RefXs1, RefXs2]),
-    hslists:uniq(RefXs).
-
-get_local_links_refs(Site, {Head, Cond, Body}) ->
-    Head2 = trans(Site, Head),
-    Table = trans(Site, local_cell_link),
-    Return = trans_back(mnesia:select(Table, [{Head2, Cond, Body}])),
-    %% now tidy them up, get the relevant refX's and dedup them all...
-    Fun = fun(#local_cell_link{parentidx = P}, Acc) ->
-                  [local_idx_to_refX(Site, P) | Acc]
-          end,
-    Return1 = lists:foldl(Fun, [], Return),
-    hslists:uniq(Return1).
+%% get_local_links_refs(Site, {Head, Cond, Body}) ->
+%%     Head2 = trans(Site, Head),
+%%     Table = trans(Site, local_cell_link),
+%%     Return = trans_back(mnesia:select(Table, [{Head2, Cond, Body}])),
+%%     %% now tidy them up, get the relevant refX's and dedup them all...
+%%     Fun = fun(#local_cell_link{parentidx = P}, Acc) ->
+%%                   [local_idx_to_refX(Site, P) | Acc]
+%%           end,
+%%     Return1 = lists:foldl(Fun, [], Return),
+%%     hslists:uniq(Return1).
 
 make_page_match(Site, RefX, RecordName) ->
     #refX{site = S, path = P} = RefX,
@@ -2686,9 +2586,9 @@ offset_with_ranges1([{cellref, LineNo, C=#cellref{path = Path, text = Text}}=H |
                     Cell, #refX{path = FromPath} = From, {XO, YO}=Offset, Acc) ->
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
-        {column,{_Left,Right}} when X =< Right ->
+        {column,{_Left,Right}} when X < Right ->
             offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
-        {row,{_Top,Bottom}} when Y =< Bottom ->
+        {row,{_Top,Bottom}} when Y < Bottom ->
             offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
         _Else ->
             #refX{path = CPath} = Cell,
@@ -2800,18 +2700,6 @@ fl([{_, {"__ast", _}} | T], A, B)             -> fl(T, A, B);
 fl([{_, {"formula", V}}| T], A, B)            -> fl(T, [V | A], B);
 fl([H | T], A, B)                             -> fl(T, A, [H | B]).
 
-%% get_local_parents(Site, List) -> get_l_p(Site, List, []).
-
-%% get_l_p(_Site, [], Acc) -> Acc;
-%% get_l_p(Site, [#local_cell_link{parentidx = P} | T], Acc) ->
-%%     get_l_p(Site, T, [local_idx_to_refX(Site, P) | Acc]).
-
-%% get_local_children(Site, List) -> get_l_c(Site, List, []).
-
-%% get_l_c(_Site, [], Acc) -> Acc;
-%% get_l_c(Site, [#local_cell_link{childidx = C} | T], Acc) ->
-%%     RefX = local_idx_to_refX(Site, C),
-%%     get_l_c(Site, T, [RefX | Acc]).
 
 -spec delete_parent_links(#refX{}) -> ok.
 delete_parent_links(RefX) ->
@@ -2847,13 +2735,18 @@ delete_remote_parents(#refX{site = Site} = Child) ->
 %%% Local Relations 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec get_local_children(#refX{}) -> [cellidx()]. 
-get_local_children(#refX{obj = {Type, _}} = Ref) 
+-spec get_local_children(#refX{}) -> [#refX{}].
+get_local_children(#refX{site = Site} = X) ->
+    ChildIdxs = get_local_children_idxs(X),
+    [local_idx_to_refX(Site, C) || C <- ChildIdxs].
+    
+-spec get_local_children_idxs(#refX{}) -> [cellidx()]. 
+get_local_children_idxs(#refX{obj = {Type, _}} = Ref) 
   when (Type == row) orelse (Type == column) orelse 
        (Type == range) orelse (Type == page) ->
     Cells = get_cells(Ref),
-    lists:flatten([get_local_children(X) || X <- Cells]);
-get_local_children(#refX{site = Site, obj = {cell, _}} = Ref) ->
+    lists:flatten([get_local_children_idxs(X) || X <- Cells]);
+get_local_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
     case read_local_item_index(Ref) of
         false -> 
             [];
@@ -2865,6 +2758,29 @@ get_local_children(#refX{site = Site, obj = {cell, _}} = Ref) ->
             end
     end.
 
+-spec delete_local_relation(cellidx()) -> ok.
+delete_local_relation(#refX{site = Site} = Cell) ->
+    Tbl = trans(Site, relation),
+    CellIdx = get_local_item_index(Cell),
+    case mnesia:read(Tbl, CellIdx, write) of
+        [R] ->
+            [del_local_child(P, CellIdx, Tbl) || P <- R#relation.parents],
+            ok = mnesia:delete(Tbl, CellIdx, write);
+        _ ->
+            ok
+    end.
+
+-spec del_local_child(cellidx(), cellidx(), atom()) -> ok.
+del_local_child(CellIdx, Child, Tbl) ->
+    case mnesia:read(Tbl, CellIdx, write) of
+        [R] ->
+            Children = ordsets:del_element(Child, R#relation.children),
+            R2 = R#relation{children = Children},
+            mnesia:write(Tbl, R2, write);
+        _ ->
+            ok
+    end.
+                  
 -spec set_local_parents(#refX{}, [#refX{}]) -> ok.
 set_local_parents(#refX{site = Site} = Cell, Parents) ->
     Tbl = trans(Site, relation),
@@ -2882,17 +2798,6 @@ set_local_parents(#refX{site = Site} = Cell, Parents) ->
                       Rel#relation{parents = ParentIdxs,
                                    priority = Priority},
                       write).
-
--spec del_local_child(cellidx(), cellidx(), atom()) -> ok.
-del_local_child(CellIdx, Child, Tbl) ->
-    case mnesia:read(Tbl, CellIdx, write) of
-        [R] ->
-            Children = ordsets:del_element(Child, R#relation.children),
-            R2 = R#relation{children = Children},
-            mnesia:write(Tbl, R2, write);
-        _ ->
-            ok
-    end.
 
 -spec add_local_child(cellidx(), cellidx(), atom()) -> integer().
 add_local_child(CellIdx, Child, Tbl) ->
@@ -2935,13 +2840,8 @@ shift_remote_links2(Site, [H | T], To) ->
 
 deref_child(#refX{site = _S} = Child, DeRefX) ->
     [{Child, {"formula", Formula}}] = read_attrs(Child, ["formula"], write),
-    {Status, NewFormula} = deref(Child, Formula, DeRefX),
-    ok = write_attr(Child, {"formula", NewFormula}),
-
-    case Status of
-        dirty -> {dirty, Child};
-        clean -> []
-    end.
+    {_Status, NewFormula} = deref(Child, Formula, DeRefX),
+    ok = write_attr(Child, {"formula", NewFormula}).
 
 
 %% dereferences a formula

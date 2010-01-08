@@ -1012,14 +1012,8 @@ delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
 delete(#refX{obj = {page, _}} = RefX) ->
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
-                   Status = hn_db_wu:delete_page(RefX),
-                   %% now force all deferenced cells to recalculate
-                   Fun2 = fun({dirty, X}) ->
-                                  [{X, {"formula", F}}] = 
-                                      hn_db_wu:read_attrs(X,["formula"], write),
-                                  ok = hn_db_wu:write_attr(X, {"formula", F})
-                          end,
-                   [ok = Fun2(X) || X <- Status]
+                   hn_db_wu:mark_children_dirty(RefX),
+                   hn_db_wu:delete_page(RefX)
            end,
     mnesia:activity(transaction, Fun1),
     ok = tell_front_end("delete").
@@ -1045,16 +1039,11 @@ delete(#refX{obj = {R, _}} = RefX, Disp)
 move(RefX, Type, Disp)
   when (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
+    io:format("Told to insert: ~p by ~p~n", [RefX, Disp]),
     ok = mnesia:activity(transaction, fun move_tr/3, [RefX, Type, Disp]),
     ok = tell_front_end("move", RefX).
 
-do_delete(insert, _RefX) ->
-    {[], []};
-do_delete(delete, RefX) ->
-    {hn_db_wu:delete_cells(RefX),
-     hn_db_wu:read_local_children(RefX)}.
-
-move_tr(#refX{site = Site, obj = Obj} = RefX, Type, Disp) ->
+move_tr(#refX{obj = Obj} = RefX, Type, Disp) ->
 
     ok = init_front_end_notify(),
     % if the Type is delete we first delete the original cells
@@ -1067,9 +1056,11 @@ move_tr(#refX{site = Site, obj = Obj} = RefX, Type, Disp) ->
     % To make this work we shift the RefX up 1, left 1 
     % before getting the cells to shift for INSERT
     % if this is a delete - we need to actually delete the cells
+
+    hn_db_wu:mark_children_dirty(RefX),
         
-    {Status1, ReWr} = do_delete(Type, RefX),
-    Status2 = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
+    ReWr = do_delete(Type, RefX),
+    hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
     case Obj of
         {row,    _} ->
             ok = hn_db_wu:delete_row_objs(RefX),
@@ -1091,25 +1082,31 @@ move_tr(#refX{site = Site, obj = Obj} = RefX, Type, Disp) ->
     % set the delay to zero
     ok = hn_db_wu:mark_notify_out_dirty(PageRef, Change, 0),
     
-    Status = lists:flatten([Status1, Status2]),
+    %% Status = lists:flatten([Status1, Status2]),
 
-    % finally deal with any cells returned from delete_cells that
-    % are dirty - these need to be recalculated now that the link/local_objs
-    % tables have been transformed
-    Fun2 = fun(X) ->
-                   case hn_db_wu:read_attrs(X, ["formula"], write) of
-                       [{X, {"formula", F}}] ->
-                           hn_db_wu:write_attr(X, {"formula", F});
-                       _  ->
-                           ok
-                   end
-           end,
-    [ok = Fun2(X) || {dirty, X} <- Status],
+    %% % finally deal with any cells returned from delete_cells that
+    %% % are dirty - these need to be recalculated now that the link/local_objs
+    %% % tables have been transformed
+    %% Fun2 = fun(X) ->
+    %%                case hn_db_wu:read_attrs(X, ["formula"], write) of
+    %%                    [{X, {"formula", F}}] ->
+    %%                        hn_db_wu:write_attr(X, {"formula", F});
+    %%                    _  ->
+    %%                        ok
+    %%                end
+    %%        end,
+    %% [ok = Fun2(X) || {dirty, X} <- Status],
     % Jobs a good'un, now for the remote parents
     % io:format("in hn_db_api:move do something with Parents...~n"),
-    _Parents =  hn_db_wu:find_incoming_hn(Site, PageRef),
+    %%_Parents =  hn_db_wu:find_incoming_hn(Site, PageRef),
     %io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
     ok.
+
+do_delete(insert, _RefX) ->
+    [];
+do_delete(delete, RefX) ->
+    ok = hn_db_wu:delete_cells(RefX),
+    hn_db_wu:get_local_children(RefX).
 
 %% @spec clear(#refX{}) -> ok
 %% @doc same as <code>clear(refX{}, all)</code>.
@@ -1342,44 +1339,6 @@ write_attributes1(RefX, List) when is_record(RefX, refX), is_list(List) ->
 copy_cell(From, To, Incr) ->
     hn_db_wu:copy_cell(From, To, Incr),
     hn_db_wu:mark_children_dirty(To).
-        
-%% shrink(ParentsList, List) ->
-%%     shrink(ParentsList, List, []).
-
-%% shrink([], _List, Acc) ->
-%%     Acc;
-%% shrink([Dirty | T], List, Acc) ->
-%%     DirtyParents = has_dirty_parent(List, Dirty),
-%%     NewAcc = case DirtyParents of
-%%                  false  -> Acc;
-%%                  Dirty2 -> [Dirty2 | Acc]
-%%              end,
-%%     shrink(T, List, NewAcc).
-
-%% has_dirty_parent(List, {Cell , PIdxList}) ->
-%%     case has_dirty_parent2(List, PIdxList, false) of
-%%         false -> false;
-%%         true  -> Cell
-%%     end.
-
-%% %% One true is good enough!
-%% has_dirty_parent2(_List, _P, true) -> true;
-%% has_dirty_parent2(_List, [], false) -> false;
-%% has_dirty_parent2(List, [#local_cell_link{parentidx = Idx} | T], false) -> 
-%%     case lists:keymember(Idx, 2, List) of
-%%         true  -> true;
-%%         false -> has_dirty_parent2(List, T, false)
-%%     end.
-
-%% has_dirty_parent([], _Dirty)       -> false;
-%% has_dirty_parent([H | T], Parent)  -> %io:format("H is ~p~n", [H]),
-%%                                       {dirty_cell, Index, _} = H,
-%%                                       {_Cell, Links} = Parent,
-%%                                       %io:format("Links is ~p~n", [Links]),
-%%                                       case lists:keymember(Index, 3, Links) of
-%%                                           true  -> H;
-%%                                           false -> has_dirty_parent(T, Parent)
-%%                                       end.
 
 init_front_end_notify() ->
     _Return = put('front_end_notify', []),
