@@ -72,7 +72,6 @@ function build
 function start_dev
 {
     MODE="-detached"
-    HOST="localhost"
 	if [ $# -lt 1 ]
 	then
 	    MODE=""
@@ -82,7 +81,7 @@ function start_dev
         $RELOAD \
         -boot $BOOTFILE \
         -setcookie $COOKIE \
-        -sname $NODE@$HOST \
+        -name $NODE@$HOST \
         -config $CONFIG \
         -env ERL_MAX_ETS_TABLES $ETS_TABLES \
         -hypernumbers environment development \
@@ -145,7 +144,7 @@ function copylog
 
 function debug
 {
-    erl -sname debug-$(date +%s)@$HOST \
+    erl -name debug-$(date +%s)@$HOST \
         -setcookie $COOKIE \
         -remsh $NODE@$HOST
 }
@@ -172,9 +171,8 @@ function debug_remote
 
 function stop
 {
-    HOST="localhost"
     erl -detached \
-        -sname $NODE-ctrl@$HOST \
+        -name $NODE-ctrl@$HOST \
         -setcookie $COOKIE \
         -eval "rpc:call($NODE@$HOST,init,stop,[])" \
         -s init stop
