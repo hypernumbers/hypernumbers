@@ -79,7 +79,7 @@ make_a3(#refX{path = P}, #binding{type = Type, to = To}) ->
 
 allowed_values(_Path, "text")     -> "lookup text";
 allowed_values(_Path, "input")    -> anything;
-allowed_values(_Path, "textares") -> anything;
+allowed_values(_Path, "textarea") -> anything;
 allowed_values(_Path, "select")   -> "lookup select";
 allowed_values(_Path, "radio")    -> "lookup radio";
 allowed_values(_Path, "checkbox") -> "lookup checkbox".
@@ -169,8 +169,7 @@ post_only3([H | T], Acc)                 -> post_only3(T, [H | Acc]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 run() ->
-    File = "/opt/code/trunk/lib/hypernumbers-1.0/priv/docroot/"
-        ++ "views/x.tiny.hn_9000/_u/anonymous/tiny.tpl",
+    File = "/opt/code/trunk/var/docroot/127.0.0.1&9000/_g/hypernumbers/home.tpl",
     Opts = [{event_fun, fun process/3}],
 
     {ok, List, _} = xmerl_sax_parser:file(File, Opts),
@@ -252,6 +251,7 @@ test1() ->
         ++ "</div>"
         ++ "</div>",
     Transactions = make_security(Form),
+    io:format("Transactions is ~p~n", [Transactions]),
     (true == is_approved(RefX, Json, Transactions)).
     
 test2() ->
@@ -287,7 +287,7 @@ test2() ->
         ++ "</div>"
         ++ "</div>",
     Transactions = make_security(Form),
-    Transactions = make_security(Form),
+    io:format("Transactions is ~p~n", [Transactions]),
     is_approved(RefX, Json, Transactions).
 
 test3() ->
@@ -323,7 +323,7 @@ test3() ->
         ++ "</div>"
         ++ "</div>",
     Transactions = make_security(Form),
-    Transactions = make_security(Form),
+    io:format("Transactions is ~p~n", [Transactions]),
     (false == is_approved(RefX, Json, Transactions)).
 
 test4() ->
@@ -359,7 +359,7 @@ test4() ->
         ++ "</div>"
         ++ "</div>",
     Transactions = make_security(Form),
-    Transactions = make_security(Form),
+    io:format("Transactions is ~p~n", [Transactions]),
     (false == is_approved(RefX, Json, Transactions)).
 
 test5() ->
@@ -395,7 +395,7 @@ test5() ->
         ++ "</div>"
         ++ "</div>",
     Transactions = make_security(Form),
-    Transactions = make_security(Form),
+    io:format("Transactions is ~p~n", [Transactions]),
     (false == is_approved(RefX, Json, Transactions)).
 
 testA() ->
