@@ -1,10 +1,9 @@
 #!/usr/bin/env escript
 %% -*- erlang -*-
+%%! -boot start_ssl -proto_dist inet_ssl -ssl_dist_opt server_certfile "../../keys/servercert.pem" -ssl_dist_opt client_certfile "../../keys/clientcert.pem" -ssl_dist_opt keyfile "../../keys/key.pem"
 
--define(NAME, 'mi_logfetcher@localhost').
 -define(COOKIE, 'abc').
 -define(OUTDIR, "logs").
-
 
 main([Target]) ->
     main([Target, "1", "."]);
@@ -60,7 +59,9 @@ init() ->
     file:make_dir(?OUTDIR),
     os:cmd("epmd -daemon"), 
     ok = application:start(inets),
-    {ok, _} = net_kernel:start([?NAME, shortnames]),
+    Host = net_adm:localhost(),
+    Name = list_to_atom("mi_fetcher@" ++ Host),
+    {ok, _} = net_kernel:start([Name, longnames]),
     true = auth:set_cookie(?COOKIE).
     
 filename(Str) ->
