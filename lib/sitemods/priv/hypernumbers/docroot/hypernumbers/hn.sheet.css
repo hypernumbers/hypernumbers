@@ -384,15 +384,16 @@ p,h1,h2,h3,h4,h5 {
 #formulabar {
     overflow:auto;
     height: 18px;
+ line-height:18px;
 }
 
 #name {
- border:     0px;
- display:block;
- float:      left;
- width:      80px;
- height:     20px;
- text-align: center;
+    border     : 0px;
+    display    : block;
+    float      : left;
+    width      : 80px;
+    height     : 20px;
+    text-align : center;
 }
 
 #formula {
@@ -403,19 +404,27 @@ p,h1,h2,h3,h4,h5 {
 }
 
 #functionsbtn { 
- font:       10px sans-serif;
- background: #EAEAEA;
- color:      #333333;
- border:     1px solid #BBB;
- display:    block;
- height:     20px;
- width:      30px;
- float:      left; 
+    font           : 10px sans-serif;
+    background     : #EAEAEA;
+    color          : #333333;
+    border         : 1px solid #BBB;
+    border-top     : 0px;
+    border-bottom  : 0px;
+    display        : block;
+    line-height    : 18px;
+    height         : 18px;
+    padding-bottom : 2px;
+    width          : 30px;
+    float          : left; 
+    outline        :none;
 }
 
 #functionsbtn:hover { 
  background: #DDD;
  border:     1px solid #888;
+ border-top: 0px;
+ border-bottom: 0px;
+
 }
 
 
@@ -430,11 +439,37 @@ p,h1,h2,h3,h4,h5 {
 /******************************************************************************
 	    CELLS
 ******************************************************************************/
-#grid { 
+#spreadsheet { 
     position : relative;
-    width    : 100%;
-    height   : 400px; 
 }
+
+#grid { 
+    position : absolute;
+    width    : 100%;
+    top      : 0px;
+    bottom   : 20px;
+}
+
+#tabs {
+    position :absolute;
+    bottom   : 5px;
+    left     : 21px; 
+}
+
+#tabs a { 
+    font-size       : 10px;
+    margin          : 0px 5px;
+    padding         : 2px 4px;
+    text-decoration : none; 
+    border          : 1px solid #999;
+    border-top      : 0px;
+    background      : #DDD;
+    color           : #004B97;
+}
+
+#tabs a.current {
+    font-weight: bold;
+} 
 
 #test { 
     position : relative;

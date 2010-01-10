@@ -1,21 +1,21 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
+
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>    
+    <meta charset="utf-8" />
     <title>Hypernumbers</title>
-    <link rel="stylesheet" type="text/css" href="/hypernumbers/hn.sheet.css" />	
-    <link rel="stylesheet" type="text/css" href="/hypernumbers/finder.css" />	
+    <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />	
+    <link rel="stylesheet" href="/hypernumbers/finder.css" />	
   </head>
-
+  
   <body id="hn">
-
+    
     <div id="header">
-
+      
       <div id="headerwrapper">
         <h1><a href="">hyper<span>numbers</span></a></h1>
         <span class="beta">beta <a class="dialoglink" data-id="mark">
-            Report Problems / Feedback</a></span>
+            Feedback</a></span>
       </div>
       
       <ul id="navigation">
@@ -69,7 +69,7 @@
         </div>
       </div>
     </div>
-
+    
     <div id="menuwrap">
       <ul id="menu">              
         <li id="browse">
@@ -121,20 +121,14 @@
           </ul>
         </li>
         
-        <li><a>$txt:{Help}$</a>
-          <ul>
-        	<li><a name="feedback">$txt:{Feedback / Report Bug}$</a></li>
-          </ul>
-        </li>
-        
       </ul>
       
       <div id="permissions"></div>
 
     </div>
-
-    <div id="toolbar">
     
+    <div id="toolbar">
+      
       <div class="expand fonts">
         <span id="font">$txt:{Font}$</span>
         <div id="ffamily">
@@ -240,42 +234,48 @@
       <input type="text" id="formula"/>
     </div>
 
-    <div id="grid">
-      
-      <div id="columnsout">
-        <div id="columns"></div>
-        <div id="csel"><div id="colselection">&nbsp;</div></div>
-      </div>
-      
-      <div id="rowsout">
-        <div id="rows"></div>
-        <div id="rsel"><div id="rowselection">&nbsp;</div></div>
-      </div>      
-      
-      <div id="innergrid"><div id="test">
-        <div id="scroller">
-          <div id="dragged"></div>
-          <textarea id="input"></textarea>
-          <div id="selection"> <div id="dragger"></div> </div>
-          <div id="current"></div>
-          <div id="copied"></div>
-          <div id="dragfill"></div>
-          <div id="panes"></div>
+    <div id="spreadsheet">
+      <div id="grid">
+
+        <div id="columnsout">
+          <div id="columns"></div>
+          <div id="csel"><div id="colselection">&nbsp;</div></div>
         </div>
-      </div></div>
-      
-      <div id="scrollbar-right"><div id="scrollbar-right-inner">
-        <div id="up"></div>
-        <div id="right-gutter"><div id="right-bar"></div></div>
-        <div id="down"></div>
-      </div></div>
-      
-      <div id="scrollbar-bottom"><div id="scrollbar-bottom-inner">
-        <div id="left"></div>
-        <div id="bottom-gutter"><div id="bottom-bar"></div></div>
-        <div id="right"></div>
+        
+        <div id="rowsout">
+          <div id="rows"></div>
+          <div id="rsel"><div id="rowselection">&nbsp;</div></div>
+        </div>      
+        
+        <div id="innergrid"><div id="test">
+            <div id="scroller">
+              <div id="dragged"></div>
+              <textarea id="input"></textarea>
+              <div id="selection"> <div id="dragger"></div> </div>
+              <div id="current"></div>
+              <div id="copied"></div>
+              <div id="dragfill"></div>
+              <div id="panes"></div>
+            </div>
+        </div></div>
+        
+        <div id="scrollbar-right"><div id="scrollbar-right-inner">
+            <div id="up"></div>
+            <div id="right-gutter"><div id="right-bar"></div></div>
+          <div id="down"></div>
+        </div></div>
+        
+        <div id="scrollbar-bottom"><div id="scrollbar-bottom-inner">
+            <div id="left"></div>
+            <div id="bottom-gutter"><div id="bottom-bar"></div></div>
+            <div id="right"></div>
+        </div></div>
+
+        <div id="corner"> </div> 
+        
       </div>
-    </div></div>
+      <div id="tabs"></div>
+    </div>
     
     <span id="hnpaste" style="display:none;width:250px; position:absolute;top:-7px;right:15px;"></span>
     <span id="pathpaste" style="top:-7px;right:15px;display:none;"></span>
