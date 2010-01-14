@@ -174,7 +174,7 @@ function stop
     erl -detached \
         -name $NODE-ctrl@$HOST \
         -setcookie $COOKIE \
-        -eval "rpc:call($NODE@$HOST,init,stop,[])" \
+        -eval "rpc:call('$NODE@$HOST',init,stop,[])" \
         -s init stop
 }
 
