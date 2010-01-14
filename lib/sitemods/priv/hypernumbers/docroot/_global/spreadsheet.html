@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
+  
   <head>
     <meta charset="utf-8" />
     <title>Hypernumbers</title>
     <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />	
+    <link rel="stylesheet" href="/guibuilder/hn.builder.css" />
     <link rel="stylesheet" href="/hypernumbers/finder.css" />	
   </head>
   
   <body id="hn">
     
-    <div id="header">
+    <div id="hnheader">
       
       <div id="headerwrapper">
         <h1><a href="">hyper<span>numbers</span></a></h1>
@@ -71,7 +72,7 @@
     </div>
     
     <div id="menuwrap">
-      <ul id="menu">              
+      <ul id="hnmenu">              
         <li id="browse">
           <a>$txt:{File}$</a>
           <ul>
@@ -120,11 +121,18 @@
             <li><a name="functions">$txt:{Function...}$</a></li>
           </ul>
         </li>
+
+        <li><a>$txt:{Views}$</a>
+          <ul id="existingviews">
+        	<li><a name="newview">$txt:{Create New View}$</a></li>
+            <li class="seperator"></li>
+          </ul>
+        </li>
         
       </ul>
       
       <div id="permissions"></div>
-
+      
     </div>
     
     <div id="toolbar">
@@ -222,9 +230,6 @@
         <span><a id="fontcolor-head" class="icon"></a></span>
         <div id="fontcolors"></div>
       </div>
-      
-      <a class="separator"></a>          
-      <a title="Web Page Builder" class="toolbar-item" id="guibuilder"></a>
     </div>
     
     <div id="formulabar">
@@ -273,8 +278,79 @@
 
         <div id="corner"> </div> 
         
+        <input type="button" value="Use Selection" id="use-range" />
+
       </div>
+
       <div id="tabs"></div>
+
+      <div id="viewbuilder">
+
+        <div id="mainviewbuilder">
+
+          <div id="viewbuildertoolbar">
+
+            <div id="add"></div>
+
+            <strong>change type:</strong>
+            <select id="changetype">
+              <option>text</option>
+              <option>input</option>
+              <option>textarea</option>
+              <option>select</option>
+              <option>radio</option>
+              <option>checkbox</option>
+            </select>
+            
+            <strong>get data from:</strong>
+            <input type="text" id="bindfrom" readonly="readonly" />
+            
+            <strong>send data to:</strong>
+            <input type="text" id="bindto" readonly="readonly" />
+            
+            <input type="button" id="delete" value="delete" />
+            
+          </div>
+          
+          <div id="preview" class="editing"> 
+            &nbsp;
+          </div>
+
+          <div id="viewbuilderfooter">
+            <label for="toggleview">
+              <input type="checkbox" id="toggleview" /> View Code
+            </label>
+            <input type="button" value="preview" class="btn" id="previewbtn" />
+            <input type="button" value="save" class="btn" id="saveviewbtn" />
+            <input type="button" value="close" class="btn" id="closeviewbtn" />
+          </div>
+
+        </div>
+
+        <div id="viewbuilderintro">
+          <div id="newview">
+            <h2>Create a new View</h2>
+            <table>
+              <tr><td>Choose a name</td>
+                <td><input type="text" id="newviewname" /></td></tr>
+              <tr><td>Pick a Template</td>
+                <td><select id="viewtemplates">
+                    <option value="blank">Blank Page</option>
+                  </select>
+              </td></tr>
+              <tr><td>Choose a group</td>
+                <td><select id="groups">
+                    <option value="me">Personal</option>
+                  </select>
+              </td></tr>
+            </table>
+            <input type="submit" class="submit" 
+                   value="Create View" id="createviewbtn" />
+          </div>
+        </div>
+        
+      </div>
+      
     </div>
     
     <span id="hnpaste" style="display:none;width:250px; position:absolute;top:-7px;right:15px;"></span>
@@ -426,7 +502,7 @@
     <div id="loading">
       loading data...
     </div>
-
+    
   </body>
   
   <script src="/hypernumbers/jquery-1.3.2.min.js"></script>
@@ -448,8 +524,12 @@
   <script src="/hypernumbers/hn.callbacks.js"></script>
   <script src="/hypernumbers/hn.selection.js"></script>
   <script src="/hypernumbers/hn.logger.js"></script>  
-  <script src="/hypernumbers/hn.site.js"></script>  
   <script src="/wmd/showdown.js"></script>
   <script src="/wmd/wmd.js"></script>
+
+  <script src="/guibuilder/hn.render.js"></script>
+  <script src="/hypernumbers/hn.builder.js"></script>
+
+  <script src="/hypernumbers/hn.site.js"></script>  
 
 </html>

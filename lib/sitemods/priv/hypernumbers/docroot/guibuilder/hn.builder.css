@@ -1,18 +1,3 @@
-* {  
- margin:0px; 
- padding: 0px;
-}
-
-html, body {  
- height:100%;
-}
-
-body {  
- background: #FFF;
- margin: 0px;
- font:   12px Arial,"Helvetica Neue", sans-serif !important;
-}
-
 #control label, .panel label { 
     display : inline;
 }
@@ -73,7 +58,8 @@ body {
  opacity:0.2;
 }
 
-#use_range {
+#use-range {
+    display:none;
     padding:10px;
     position:absolute;
     bottom:0px;
@@ -91,18 +77,6 @@ body {
 }
 
 .panel.disabled .subpanel { display:none; }
-
-
-#previewcode {  
- width:100%; 
- height:100%;
- border:0px;
-}
-
-#preview {  
-    height:100%;
-    overflow:auto;
-}
 
 #toggle {  
  position:absolute;
@@ -138,29 +112,6 @@ body {
  cursor:pointer;
  color:        #111;
  border-color: #9CFF00 #669900 #669900 #9CFF00;
-}
-
-#tabs {  
- overflow:auto;
- list-style-type:none;
-}
-
-#tabs .selected {  
- background:lightblue;
-}
-
-#tabs li {  
- float:left;
-}
-
-#tabs li a {  
- -moz-border-radius-topleft:4px;  -webkit-border-top-left-radius:4px;
- -moz-border-radius-topright:4px; -webkit-border-top-right-radius: 4px;
- padding:6px 12px;
- float:left;
- text-align:center;
- font-weight:bold;
- cursor:pointer;
 }
 
 .configurepanel .tab {  
@@ -206,7 +157,6 @@ body {
 
 #previewbtn {
     width:70px;
-    float:right;
 }
 
 #sanitycheckbtn {

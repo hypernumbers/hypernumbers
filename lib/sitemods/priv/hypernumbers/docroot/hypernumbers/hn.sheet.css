@@ -234,7 +234,7 @@ p,h1,h2,h3,h4,h5 {
 /*****************************************************************************
 /* FILE MENU STYLES
 /*****************************************************************************/
-#hn #menu { 
+#hnmenu { 
     list-style-type: none;
     margin: 0px;
     padding: 0px;
@@ -247,7 +247,7 @@ p,h1,h2,h3,h4,h5 {
     overflow:auto;
 }
 
-#hn #menu .desc { 
+#hnmenu .desc { 
  font-size: 10px; 
  position:absolute; 
  color:grey;
@@ -255,32 +255,32 @@ p,h1,h2,h3,h4,h5 {
  top:4px;
 }
 
-#hn #menu li { 
+#hnmenu li { 
  float:      left; 
 }    
 
-#hn #menu li li {
+#hnmenu li li {
  float:    none; 
  display:  block; 
  position: relative;
 }
 
-#hn #menu ul { 
+#hnmenu ul { 
  display:      none; 
  position:     absolute;  
  border:       1px solid; 
  border-color: #DDD #AAA #AAA #DDD;  
  padding:      1px 0px; 
- background:   #FFFFFF; 
+ background: #f8f7f6;       
  z-index:      99999;
 }
 
-#hn #menu ul ul { 
+#hnmenu ul ul { 
  left: 100%; 
  top:  0; 
 } 
 
-#hn #menu a {
+#hnmenu a {
  position:   relative;
  display:    block; 
  background: #FFFFFF;
@@ -291,31 +291,31 @@ p,h1,h2,h3,h4,h5 {
  text-decoration: none;
 }
 
-#hn #menu ul a { 
+#hnmenu ul a { 
  background: #f8f7f6;       
  padding:    3px 20px 3px 20px; 
  z-index:    200;
 }
 
-#hn #menu .hover { 
+#hnmenu .hover { 
  background: #ffc47e; 
 }  
 
-#hn #menu .disabled a.hover { 
+#hnmenu .disabled a.hover { 
  background: #f8f7f6;       
 }  
 
-#hn #menu .disabled a { 
+#hnmenu .disabled a { 
  color: #AAA; 
 }  
 
-#hn #menu li.seperator { 
+#hnmenu li.seperator { 
     height:     0px; 
     border-top: 1px solid #CCC; 
     margin:     3px 0px;      
 }
 
-#hn #menu div.input {
+#hnmenu div.input {
     position: relative;
     padding:  0px;
     width:    16px;
@@ -324,16 +324,16 @@ p,h1,h2,h3,h4,h5 {
     z-index:  500;
 }
 
-#hn #menu .icon {
+#hnmenu .icon {
     background-repeat: no-repeat;
     background-position:3px 3px; 
 }
 
-#hn #menu .arrow {
+#hnmenu .arrow {
  display:      none;
 }
 
-#hn #menu ul li .arrow { 
+#hnmenu ul li .arrow { 
  display:    block;
  position:   absolute;
  height:     16px;
@@ -350,41 +350,42 @@ p,h1,h2,h3,h4,h5 {
 /******************************************************************************
 	LAYOUT STYLES
 ******************************************************************************/
-#hn #header { 
+#hn #hnheader { 
     background : #000;
     height     : 30px;
     overflow   : auto;
 }
-#hn #header h1 { 
+#hn #hnheader h1 { 
     float  : left;
     height : 26px;
 }
-#hn #header h1 a { 
+#hn #hnheader h1 a { 
     font            : normal 16px serif;
     color           : #FFF;
     text-decoration : none;
     display         : block;
     margin          : 6px 0px 0px 10px;
 }
-#hn #header h1 a span { 
+#hn #hnheader h1 a span { 
     font            : bold 16px sans-serif;
     text-decoration : underline;
     color           : orange;
 }
-#hn #header .beta { 
+#hn #hnheader .beta { 
     float  : left; 
     color  : white; 
     margin : 2px; 2px;
 }
-#hn #header .beta a { 
+#hn #hnheader .beta a { 
     color           : red; 
     text-decoration : none; 
     font-weight     : bold;
 }
 #formulabar {
-    overflow:auto;
+    overflow:none;
+    position:relative;
     height: 18px;
- line-height:18px;
+    line-height:18px;
 }
 
 #name {
@@ -397,10 +398,14 @@ p,h1,h2,h3,h4,h5 {
 }
 
 #formula {
- border:      0px;
- height:      100%;
- text-indent: 4px;
- background:  #FFF;
+    position    : absolute;
+    display     : block;
+    width: 100%;
+    top:2px;
+    margin-left: 110px;
+    border      : 0px;
+    text-indent : 4px;
+    background  : #FFF;
 }
 
 #functionsbtn { 
@@ -427,7 +432,6 @@ p,h1,h2,h3,h4,h5 {
 
 }
 
-
 #corner {
  height:        19px;
  width:         25px;
@@ -444,10 +448,15 @@ p,h1,h2,h3,h4,h5 {
 }
 
 #grid { 
-    position : absolute;
-    width    : 100%;
-    top      : 0px;
-    bottom   : 20px;
+    position   : absolute;
+    width      : 100%;
+    top        : 0px;
+    bottom     : 20px;
+    background : #DDDDDD;
+}
+
+#viewbuilder { 
+    position: absolute;
 }
 
 #tabs {
@@ -1149,4 +1158,91 @@ p,h1,h2,h3,h4,h5 {
 	border      : 1px solid #888888;
 	font-size   : 0.8em;
 	font-weight : bold;
+}
+
+/*****************************************************************************
+/* VIEW BUILDER STYLES
+/*****************************************************************************/
+#viewbuilder {
+    top:-92px;
+    bottom:0px;
+    border-left:4px solid #555;
+}
+
+#mainviewbuilder {
+    position:relative;
+    height:100%;
+    overflow:none;
+}
+
+#newview { 
+    width: 300px;
+    float:left; 
+    margin:20px;
+}
+
+#viewbuilderintro { 
+    display:none;
+    position:absolute;
+    top:0px;
+    opacity:0.95;
+    background: #111;
+    color: #EEE;
+    width:100%;
+    height:100%;
+}
+
+/* #existingviews { */
+/*     width: 300px;  */
+/*     float:right; */
+/*     margin:20px; */
+/* } */
+/* #existingviews li { */
+/*     list-style-type: none; */
+/*     margin-left: 20px; */
+/*     font-weight:bold; */
+/*     margin:3px; */
+/*     cursor:pointer; */
+/* } */
+
+#viewbuildertoolbar { 
+ background:    #eee;
+ height:        50px;
+ overflow:      hidden;
+ border-bottom: 1px solid #999;
+ border-top:    1px solid #ddd;
+}
+
+#viewbuilderfooter { 
+    position:absolute;
+    bottom:0px;
+    height:24px;
+    width:100%;
+    background:    #eee;
+    border-top: 1px solid #999;
+}
+
+#previewcode {  
+ width:100%; 
+ height:100%;
+ border:0px;
+ margin:0px;
+ padding:0px;
+}
+
+#preview {  
+    position:absolute;
+    top:52px;
+    bottom: 25px;
+    width:100%;
+    overflow:auto;
+    background:#FFFFFF;
+}
+
+#add { 
+    padding: 3px;
+}
+
+#add input { 
+    margin: 0px 5px;
 }
