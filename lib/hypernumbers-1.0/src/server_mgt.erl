@@ -25,7 +25,7 @@ grab_site(URL) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
     Prefix = Site ++ "&" ++ Port,
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/" ++ "grab/"
-        ++ Site ++ "&" ++ Port ++ "/",
+        ++ Site ++ "&" ++ Port,
     ok = case filelib:is_dir(Dir) of
              true  -> hn_util:delete_directory(Dir);
              false -> ok
@@ -124,7 +124,7 @@ backup_auth_srv(Timestamp, ["http://" ++ H = Url | T], Type) ->
 grab_pages(URL, Dir) ->
     RefX = hn_util:url_to_refX(URL),
     Pages = hn_db_api:read_pages(RefX),
-    grab_pages2(RefX, Pages, Dir).
+    grab_pages2(RefX, Pages, Dir ++ "/data/").
 
 grab_pages2(_RefX, [], _Dir)    -> ok;
 grab_pages2(RefX, [H | T], Dir) ->
@@ -136,7 +136,7 @@ grab_pages2(RefX, [H | T], Dir) ->
 
 grab_auth_srv(URL, Dir) ->
     Perms = auth_srv:dump_script(URL),
-    ok = file:write_file(Dir ++ permissions.script, Perms).
+    ok = file:write_file(Dir ++ "/auth_srv/" ++ permissions.script, Perms).
 
 get_views(_Timestamp, [], _Type, _Kind)                -> ok;
 get_views(Timestamp, ["http://" ++ H | T], Type, Kind) ->
