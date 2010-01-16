@@ -129,8 +129,9 @@ grab_pages(URL, Dir) ->
 grab_pages2(_RefX, [], _Dir)    -> ok;
 grab_pages2(RefX, [H | T], Dir) ->
     Page = hn_mochi:page_attributes(RefX#refX{path = H}, anonymous),
+    Page2 = (mochijson:encoder([{input_encoding, utf8}]))(Page),
     Name = hn_util:path_to_json_path(H),
-    Pg = io_lib:fwrite("~p.~n", [Page]),
+    Pg = io_lib:fwrite("~p.~n", [Page2]),
     ok = file:write_file(Dir ++ Name, Pg),
     grab_pages2(RefX, T, Dir).
 
