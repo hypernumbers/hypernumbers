@@ -14,7 +14,6 @@
   
   </body>
 
-  <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
   <script src="/hypernumbers/json2.js"></script>
   <script src="/hypernumbers/hn.js"></script>
   <script src="/hypernumbers/hn.util.js"></script>
