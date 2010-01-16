@@ -47,8 +47,7 @@ grab_site(URL) ->
 %%
 
 create_path_from_name(Name) ->
-    [ "path" | Rest ]
-        = string:tokens(filename:basename(Name, ".json"), "."),
+    [ "path" | Rest ] = string:tokens(filename:basename(Name, ".json"), "."),
     hn_util:list_to_path(Rest).
 
 grab_pages(URL, Dir) ->
