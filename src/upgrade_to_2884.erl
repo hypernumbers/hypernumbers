@@ -20,8 +20,7 @@ import_site(URL) ->
     "http://" ++ SiteAndPort = URL,
     [Site, Port] = string:tokens(SiteAndPort, ":"),
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/" ++ "grab/"
-        ++ Site ++ "&" ++ Port ++ "/",
-    io:format("ayeee!~n"),
+        ++ Site ++ "&" ++ Port,
     [ ok = hn_import:json_file("http://" ++ Site ++ ":" ++ Port
         ++ create_path_from_name(Json), Json)
       || Json <- filelib:wildcard(Dir++"/data/*.json")],
@@ -61,7 +60,7 @@ grab_pages2(RefX, [H | T], Dir) ->
     io:format("grabbing page ~p~n", [H]),
     Page2 = (mochijson:encoder([{input_encoding, utf8}]))(Page),
     Name = path_to_json_path(H),
-    Pg = io_lib:fwrite("~p.~n", [Page2]),
+    Pg = io_lib:fwrite("~s", [lists:flatten(Page2)]),
     ok = file:write_file(Dir ++ Name, Pg),
     grab_pages2(RefX, T, Dir).
 
