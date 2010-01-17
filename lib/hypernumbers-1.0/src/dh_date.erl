@@ -410,8 +410,10 @@ itol(X) ->
 
 -spec pad2(integer()) -> list().
 %% @doc int padded with 0 to make sure its 2 chars
-pad2(X) -> 
-    io_lib:format("~2.10.0B",[X]).
+pad2(X) when is_integer(X) -> 
+    io_lib:format("~2.10.0B",[X]);
+pad2(X) when is_float(X) ->
+    io_lib:format("~2.10.0B",[trunc(X)]).
 
 ltoi(X) ->
     list_to_integer(X).
