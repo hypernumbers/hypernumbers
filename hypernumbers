@@ -10,14 +10,14 @@ ETS_TABLES=18000
 
 BOOTFILE=ebin/hypernumbers
 SSLBOOT=ebin/start_ssl
-CONFIG=conf/sys.config
+CONFIG=var/sys.config
 
 HN_DIR="lib/hypernumbers-1.0"
 MOCHI_DIR="lib/mochiweb"
 
 ## Create mnesia and log directories
 ## and config file if they dont exist
-[ -f $CONFIG ] || cp conf/sys.config.default $CONFIG 
+[ -f $CONFIG ] || cp priv/sys.config.default $CONFIG 
 
 if [ conf/sys.config.default -nt $CONFIG ] 
 then 
