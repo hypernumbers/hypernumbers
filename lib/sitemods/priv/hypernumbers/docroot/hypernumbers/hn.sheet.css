@@ -1173,6 +1173,7 @@ p,h1,h2,h3,h4,h5 {
     position:relative;
     height:100%;
     overflow:none;
+    display:none;
 }
 
 #newview { 
