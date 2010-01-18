@@ -17,7 +17,7 @@ MOCHI_DIR="lib/mochiweb"
 
 ## Create mnesia and log directories
 ## and config file if they dont exist
-[ -f var ] || mkdir var 
+mkdir -p var 
 [ -f $CONFIG ] || cp priv/sys.config.default $CONFIG 
 
 if [ conf/sys.config.default -nt $CONFIG ] 
