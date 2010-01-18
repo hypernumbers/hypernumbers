@@ -102,9 +102,9 @@ function start_production
         -hypernumbers environment production \
         -config $CONFIG \
         -proto_dist inet_ssl \
-        -ssl_dist_opt server_certfile "keys/servercert.pem" \
-        -ssl_dist_opt client_certfile "keys/clientcert.pem" \
-        -ssl_dist_opt keyfile "keys/key.pem" \
+        -ssl_dist_opt server_certfile "priv/keys/servercert.pem" \
+        -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" \
+        -ssl_dist_opt keyfile "priv/keys/key.pem" \
         -env ERL_MAX_ETS_TABLES $ETS_TABLES
 }
     
@@ -161,9 +161,9 @@ function debug_remote
         -boot $SSLBOOT \
         -proto_dist inet_ssl \
         -hidden \
-        -ssl_dist_opt client_certfile "keys/clientcert.pem" \
-        -ssl_dist_opt server_certfile "keys/servercert.pem" \
-        -ssl_dist_opt keyfile "keys/key.pem" \
+        -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" \
+        -ssl_dist_opt server_certfile "priv/keys/servercert.pem" \
+        -ssl_dist_opt keyfile "priv/keys/key.pem" \
         -setcookie $COOKIE \
         -remsh $1
 }
@@ -191,9 +191,9 @@ function stop_remote
         -boot $SSLBOOT \
         -proto_dist inet_ssl \
         -hidden \
-        -ssl_dist_opt client_certfile "keys/clientcert.pem" \
-        -ssl_dist_opt server_certfile "keys/servercert.pem" \
-        -ssl_dist_opt keyfile "keys/key.pem" \
+        -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" \
+        -ssl_dist_opt server_certfile "priv/keys/servercert.pem" \
+        -ssl_dist_opt keyfile "priv/keys/key.pem" \
         -setcookie $COOKIE \
         -eval "rpc:call($1,init,stop,[])" \
         -s init stop
