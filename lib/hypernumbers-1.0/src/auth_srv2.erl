@@ -240,7 +240,6 @@ code_change(_OldVsn, State, _Extra) ->
 
 check_get_view1(Tree, Path, {User, Groups}, Type) ->
     Fun = fun(C) -> 
-                  io:format("Control is ~p~n", [C]),
                   get_view(C, User, Groups, Type) end,
     run_ctl(Tree, Path, Fun).
 
@@ -308,6 +307,9 @@ rem_challenger([Chal | _Vs], Chal, C) -> C#control{challenger = []};
 rem_challenger([_V | Vs], Chal, C) -> rem_challenger(Vs, Chal, C).
 
 add_us_and_gps(V, []) -> V;
+add_us_and_gps(V, [everyone | Rest]) ->
+    V2 = V#view{everyone = true},
+    add_us_and_gps(V2, Rest);
 add_us_and_gps(V, [{user, User} | Rest]) ->
     V2 = V#view{users = gb_sets:add(User, V#view.users)},
     add_us_and_gps(V2, Rest);
@@ -368,6 +370,8 @@ get_role_view(KVs, User, Groups) ->
     end.
 
 get_user_view([], _User) -> none; 
+get_user_view([{V, #view{everyone = true}} | _Rest], _User) ->
+    V;
 get_user_view([{V, #view{users = Users}} | Rest], User) ->
     case gb_sets:is_member(User, Users) of
         true  -> V; 
@@ -703,7 +707,6 @@ demo_DEBUG() ->
 %% check_get_view (general)
 testA1(P) ->
     Ret = check_get_view1(gb_trees:empty(), P, {"gordon", ["Group"]}, champion),
-    io:format("Ret is ~p~n", [Ret]),
     ?assertEqual({return, 404}, Ret).
 
 %% add views
@@ -723,6 +726,13 @@ testA3(P) ->
     Tree3 = set_default(Tree2, P, "a view", champion),
     Ret = check_get_view1(Tree3, P, {"gordon", ["Fail"]}, champion),
     ?assertEqual({html, "a view"}, Ret).
+
+%% Test everyone
+testA4(P) ->
+    UGs = [{user, "gordon"}, {group, "admin"}, everyone],
+    Tree1 = add_view1(gb_trees:empty(), P, UGs, "my view"),
+    Ret = check_get_view1(Tree1, P, {"nowhereman", []}, "my view"),
+    ?assertEqual({html, "my view"}, Ret).
 
 testA7(P) ->
     Tree = add_view1(gb_trees:empty(), P, 
@@ -975,6 +985,7 @@ unit_test_() ->
     SeriesA = [fun testA1/1,
                fun testA2/1,
                fun testA3/1,
+               fun testA4/1,
                fun testA7/1,
                fun testA8/1,
                fun testA10/1,
