@@ -14,13 +14,12 @@
          is_empty/1,
          merge/2]).
 
--export([test/0]).
+-include_lib("eunit/include/eunit.hrl").
 
 -type now() :: {integer(),integer(),integer()}.
 -type work_queue() :: {dict(), 
                        nil | [{pos_integer(), any()}], 
                        integer() | now()}.
-
 
 -spec new() -> work_queue().
 new() -> {dict:new(), nil, erlang:now()}.
@@ -75,10 +74,10 @@ merge_fun(_Key, _V1, V2) ->
 %% Tests
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test() ->
-    ok = test_add(),
-    ok = test_merge(),
-    ok = test_merge_multi().
+unit_test_() ->
+    [?_test(fun test_add/0),
+     ?_test(fun test_merge/0),
+     ?_test(fun test_merge_multi/0)].
 
 test_add() ->
     Q0 = ?MODULE:new(),
