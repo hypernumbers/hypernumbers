@@ -650,10 +650,10 @@ run_ctl(Tree, [W="[*]" | T], Fun) ->
         none -> run_ctl(Tree, ["[**]" | T], Fun);
         {value, V} -> run_ctl(V, T, Fun)
     end;
-run_ctl(Tree, [W="[**]" | T], Fun) ->
+run_ctl(Tree, [W="[**]" | _T], Fun) ->
     case gb_trees:lookup({seg, W}, Tree) of
         none -> Fun(get_control(leaf));
-        {value, V} -> run_ctl(V, T, Fun)
+        {value, V} -> Fun(get_control(V))
     end;
 run_ctl(Tree, [H | T], Fun) ->
     case gb_trees:lookup({seg, H}, Tree) of
@@ -900,7 +900,8 @@ testD4() ->
                       [{user, "gordon"}, {group, "admin"}]),
     Tree5 = add_view1(Tree4, P1, "blurgh",
                       [{user, "gordon"}, {group, "admin"}]),
-    Ret = check_get_view1(Tree5, P1, {"Fail", ["admin"]}, champion),
+    Tree6 = set_default(Tree5, P1, "blurgh", champion),
+    Ret = check_get_view1(Tree6, P1, {"Fail", ["admin"]}, champion),
     ?assertEqual({html, "blurgh"}, Ret).
 
 testD5() ->
@@ -918,7 +919,8 @@ testD5() ->
                       [{user, "gordon"}, {group, "admin"}]),
     Tree5 = add_view1(Tree4, P1, "blurgh",
                       [{user, "gordon"}, {group, "admin"}]),
-    Ret = check_get_view1(Tree5, P1, {"Fail", ["admin"]}, champion),
+    Tree6 = set_default(Tree5, P1, "blurgh", champion),
+    Ret = check_get_view1(Tree6, P1, {"Fail", ["admin"]}, champion),
     ?assertEqual({html, "blurgh"}, Ret).
 
 testD6() ->
