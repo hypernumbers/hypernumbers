@@ -171,6 +171,7 @@ g_o1(horizontal, X, _Y) -> {X, 0}.
 
 
 compile_html(Html, Lang) ->
+    io:format("~p~n",[Html]),
     {ok, Bin} = file:read_file(code:lib_dir(hypernumbers)++"/po/"++Lang++".po"),
     gettext:store_pofile(Lang, Bin),
     {ok, C} = sgte:compile_file(Html),
