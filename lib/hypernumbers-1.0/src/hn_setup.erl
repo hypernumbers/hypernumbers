@@ -44,18 +44,17 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
 %% Delete a site
 %% TODO : stop any supervisors if they are running
 -spec delete_site(string()) -> ok.
-delete_site(Host) ->
+delete_site(Site) ->
 
     Dest = code:lib_dir(hypernumbers) ++ "/../../var/docroot/"
-        ++ hn_util:parse_site(Host) ++ "/",
+        ++ hn_util:parse_site(Site) ++ "/",
     
-    throw(add_in_clear_all_perms),
-    %%auth_srv:clear_all_perms_DEBUG(Host),
-    [ {atomic, ok}  = mnesia:delete_table(hn_db_wu:trans(Host, Table))
+    auth_srv2:clear_all_perms_DEBUG(Site),
+    [ {atomic, ok}  = mnesia:delete_table(hn_db_wu:trans(Site, Table))
       || {Table, _F, _T, _I} <- tables()],
     
     ok = hn_util:delete_directory(Dest),
-    ok = mnesia:dirty_delete(core_site, Host).
+    ok = mnesia:dirty_delete(core_site, Site).
   
 %% Update all existing sites with default options
 -spec update() -> ok. 

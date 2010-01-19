@@ -29,9 +29,9 @@
         ]).
 
 -export([
-         %% clear_all_perms_DEBUG/1,
-         %% permissions_DEBUG/3,
+         clear_all_perms_DEBUG/1,
          demo_DEBUG/0
+         %% permissions_DEBUG/3,
         ]).
 
 %% gen_server callbacks
@@ -103,8 +103,8 @@ remove_views(Site, Path, AuthSpec, Views) ->
 %% dump_script(Site) ->
 %%     gen_server:call(?MODULE, {dump_script, Site}).
 
-%% clear_all_perms_DEBUG(Site) ->
-%%     gen_server:call(?MODULE, {clear_all_perms, Site}).
+clear_all_perms_DEBUG(Site) ->
+    gen_server:call(?MODULE, {clear_all_perms, Site}).
 
 %% permissions_DEBUG(Site, AuthSpec, Path) -> 
 %%     gen_server:call(?MODULE, {permissions_debug, Site, AuthSpec, Path}).
@@ -153,7 +153,7 @@ handle_call(Request, _From, State) ->
                 {Site, check_get_view1(tree(Site, Tr), P, AR, challenger),
                  false};
             {check_particular_view, Site, P, AR, V} ->
-                {Site, check_get_view1(tree(Site, Tr), P, AR, V), false};
+                {Site, check_particular_view1(tree(Site, Tr), P, AR, V), false};
             {get_views, Site, P, AR} ->
                 {Site, get_views1(tree(Site, Tr), P, AR), false};
             {add_view, Site, Pg, AS, V} ->
@@ -163,18 +163,18 @@ handle_call(Request, _From, State) ->
             {set_challenger, Site, Pg, Df} ->
                 {Site, set_default(tree(Site, Tr), Pg, Df, challenger), true};
             {rem_views, Site, Pg, Vs} ->
-                {Site, remove_views1(tree(Site, Tr), Pg, Vs), true}
-                %% {get_as_json, Site, Pg} ->
-                %%     {Site, get_as_json1(tree(Site, Tr), Pg), false};
-                %% {pretty_print, Site, Pg, Type} ->
-                %%     {Site, pretty_print1(tree(Site, Tr), Site, Pg, Type), false};
-                %% {dump_script, Site} ->
-                %%     {Site, dump_script1(tree(Site, Tr)), false};
-                %% {clear_all_perms, Site} ->
-                %%     {Site, gb_trees:empty(), true};
+                {Site, remove_views1(tree(Site, Tr), Pg, Vs), true};
+            {clear_all_perms, Site} ->
+                {Site, gb_trees:empty(), true}
+            %% {get_as_json, Site, Pg} ->
+            %%     {Site, get_as_json1(tree(Site, Tr), Pg), false};
+            %% {pretty_print, Site, Pg, Type} ->
+            %%     {Site, pretty_print1(tree(Site, Tr), Site, Pg, Type), false};
+            %% {dump_script, Site} ->
+            %%     {Site, dump_script1(tree(Site, Tr)), false};
                 %% {permissions_debug, Site, AR, P} ->
-                %%     {Site, permissions_debug1(tree(Site, Tr), AR, P), false}
-        end,
+            %%     {Site, permissions_debug1(tree(Site, Tr), AR, P), false}
+            end,
     {Reply, NewTr} =
         case Return1 of
             {Site2, Return2, true} ->
@@ -241,8 +241,11 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 
 check_get_view1(Tree, Path, {User, Groups}, Type) ->
-    Fun = fun(C) -> 
-                  get_view(C, User, Groups, Type) end,
+    Fun = fun(C) -> get_view(C, User, Groups, Type) end,
+    run_ctl(Tree, Path, Fun).
+
+check_particular_view1(Tree, Path, {User, Groups}, Type) ->
+    Fun = fun(C) -> get_particular_view(C, User, Groups, Type) end,
     run_ctl(Tree, Path, Fun).
 
 get_views1(Tree, Path, {User, Groups}) ->
@@ -322,18 +325,13 @@ add_us_and_gps(V, [{group, Group} | Rest]) ->
 %% of view is returned providing the necessary credentials are met.
 %% For requests of type 'any', the first view which can be satisifed by
 %% the user's credentials will be returned.
-%%
-%% To consider only a particular view, use that view as the type name.
-%%
-%% Otherwise the request fails with 404 if no views exist, and ultimately
-%% with 401 if the request cannot be handled. 
 -spec get_view(#control{}, 
                string(), [string()],
-               champion | challenger | any | string())
+               champion | challenger | any)
               -> {html, string()} | {return, integer()}.
 get_view(#control{views = ?EMPTY_TREE}, _U, _G, _T) ->
     {return, 404};
-get_view(#control{champion = []}, _U, _G, _T) ->
+get_view(#control{champion = [], challenger = []}, _U, _G, _T) ->
     {return, 404};
 get_view(#control{champion = V}=C, User, Groups, champion) ->
     View = gb_trees:get(V, C#control.views),
@@ -352,8 +350,13 @@ get_view(C, User, Groups, any) ->
     case get_role_view(KVs, User, Groups) of 
         none -> {return, 401}; 
         V -> {html, V}
-    end;
-get_view(C, User, Groups, V) ->
+    end.
+
+-spec get_particular_view(#control{}, 
+                          string(), [string()],
+                          string())
+                         -> {html, string()} | {return, integer()}.
+get_particular_view(C, User, Groups, V) ->
     %% we don't know this actually exists
     case gb_trees:lookup(V, C#control.views) of
         none -> {return, 401};
@@ -540,7 +543,8 @@ testA3(P) ->
 testA4(P) ->
     UGs = [{user, "gordon"}, {group, "admin"}, everyone],
     Tree1 = add_view1(gb_trees:empty(), P, UGs, "my view"),
-    Ret = check_get_view1(Tree1, P, {"nowhereman", []}, "my view"),
+    Tree2 = set_default(Tree1, P, "my view", champion),
+    Ret = check_particular_view1(Tree2, P, {"nowhereman", []}, "my view"),
     ?assertEqual({html, "my view"}, Ret).
 
 testA7(P) ->
@@ -567,7 +571,7 @@ testA8(P) ->
     Tree4 = remove_views1(Tree3, P, ["another view"]),
     Ret = check_get_view1(Tree4, P, {"gordon", ["Fail"]}, champion),
     %% no permission to see 'champion'... it's gone.
-    ?assertEqual({return, 401}, Ret). 
+    ?assertEqual({return, 404}, Ret). 
 
 testA10(P) ->
     Tree = add_view1(gb_trees:empty(), P, 
@@ -621,7 +625,7 @@ testA16(P) ->
                       "a third view"),
     Tree4 = add_view1(Tree3, P, [{user, "gordon"}, {group, "admin"}],
                       "a fourth view"),
-    Ret = check_get_view1(Tree4, P, {"Fail", ["admin"]},
+    Ret = check_particular_view1(Tree4, P, {"Fail", ["admin"]},
                           "a third view"),
     ?assertEqual(Ret, {html, "a third view"}).
 
@@ -653,7 +657,7 @@ testC() ->
                        "a third view"),
     Tree12 = add_view1(Tree11, P3, [{user, "gordon"}, {group, "admin"}],
                        "a fourth view"),
-    Ret = check_get_view1(Tree12, P2, {"Fail", ["admin"]},
+    Ret = check_particular_view1(Tree12, P2, {"Fail", ["admin"]},
                           "a third view"),
     ?assertEqual({html, "a third view"}, Ret).
 
@@ -785,7 +789,7 @@ testE2() ->
                       "blah"),
     Tree2 = add_view1(Tree1, P, [{user, "gordon"}, {group, "admin"}],
                       "blerg"),
-    Ret = check_get_view1(Tree2, P, {"Fail", ["admin"]},
+    Ret = check_particular_view1(Tree2, P, {"Fail", ["admin"]},
                           "random chops, tonto"),
     ?assertEqual({html, "random chops, tonto"}, Ret).
 
