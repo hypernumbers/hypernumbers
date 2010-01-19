@@ -50,35 +50,44 @@
 %%
 
 % the home page (writable, very wrong)
-{perms_and_views,
- [{list,    [{user, "anonymous"}]},
-  {path,     []},
-  {perms,    [read, write]},
-  {override, "_g/tiny/tiny"},
-  {views,    ["_g/tiny/tiny"]}
- ]}.
 
-{perms_and_views,
- [{list,    [{group, "admin"}]},
-  {path,     ["request_site"]},
-  {perms,    [read, write]},
-  {override, "_global/spreadsheet"},
-  {views,    ["_global/spreadsheet"]}
+{add_view, 
+ [{path, []},
+  {perms, [everyone]},
+  {view, "_g/tiny/tiny"}
+ ]}.
+{champion,
+ [{path, []},
+  {view, "_g/tiny/tiny"}
  ]}.
 
 
-{perms_and_views,
- [{list,     [{user, "*"}]},
-  {path,     ["_user", "login"]},
-  {perms,    [read, write]},
-  {override, "_global/login"},
-  {views,    ["_global/login"]}
+{add_view, 
+ [{path, []},
+  {perms, [{group, "admin"}]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
+{champion,
+ [{path, []},
+  {view, "_g/core/spreadsheet"}
  ]}.
 
-{perms_and_views,
- [{list,    [{user, "*"}]},
-  {path,     ["contact"]},
-  {perms,    [read, write]},
-  {override, "_g/tiny/contact"},
-  {views,    ["_g/tiny/contact"]}
+{add_view, 
+ [{path, ["_user", "login"]},
+  {perms, [everyone]},
+  {view, "_g/core/login"}
+ ]}.
+{champion,
+ [{path, ["public"]},
+  {view, "_g/core/login"}
+ ]}.
+
+{add_view, 
+ [{path, ["contact"]},
+  {perms, [everyone]},
+  {view, "_g/tiny/contact"}
+ ]}.
+{champion,
+ [{path, ["contact"]},
+  {view, "_g/tiny/contact"}
  ]}.

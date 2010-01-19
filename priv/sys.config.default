@@ -9,10 +9,10 @@
     ]},
    {dets_dir, "var/dets"},
    {bootstrapped,
-    [{"http://127.0.0.1:9000", hypernumbers, []}
-     %% {"http://127.0.0.1:9001", tiny_hn,
-     %%  [{init_args, [{host, "localhost"}, {port, 9002},
-     %%                {self, "http://127.0.0.1:9001"}]}]}
+    [{"http://127.0.0.1:9000", hypernumbers, []},
+     {"http://127.0.0.1:9001", tiny_hn,
+      [{init_args, [{host, "localhost"}, {port, 9002},
+                    {self, "http://127.0.0.1:9001"}]}]}
     ]},
       
    % Mail Setup
