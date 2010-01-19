@@ -695,14 +695,9 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
     Host   = {"host", S},
     Grps   = {"groups", {array, Groups}},
     Lang   = {"lang", get_lang(User)},
-    Perms = case auth_srv:can_write(S, {Name, Groups}, P) of
-                true  -> {"permissions", {array, ["read", "write"]}};
-                false -> {"permissions", {array, ["read"]}}
-            end,
-
     Views = {views, {array, auth_srv:get_views(S, {Name, Groups}, P)}},
     
-    {struct, [Time, Usr, Host, Lang, Perms, Grps, Views
+    {struct, [Time, Usr, Host, Lang, Grps, Views
               | dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
