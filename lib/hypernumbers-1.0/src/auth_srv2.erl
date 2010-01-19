@@ -80,7 +80,6 @@ get_views(Site, Path, AuthReq) ->
 
 -spec add_view(string(), [string()], auth_spec(), string()) -> string(). 
 add_view(Site, Path, AuthSpec, View) ->
-    io:format("Adding: ~p ~p ~p ~p~n", [Site, Path, AuthSpec, View]),
     gen_server:call(?MODULE, {add_view, Site, Path, AuthSpec, View}).
 
 -spec set_champion(string(), [string()], string()) -> ok. 

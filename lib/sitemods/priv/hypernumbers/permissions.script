@@ -51,12 +51,16 @@
 
 {add_view, 
  [{path, []},
-  {perms, [{group, dev}]},
+  {perms, [{group, "dev"}]},
   {view, "_g/hypernumbers/home"}
  ]}.
 
-%% {add_view, [], [{group, dev}], "*"}
-%% {add_view, ["[**]"], [{group, dev}], "*"}
+{add_view, 
+ [{path, ["[**]"]},
+  {perms, [{group, "dev"}]},
+  {view, "_g/hypernumbers/home"}
+ ]}.
+
 
 %% {default, [], [everyone], "_g/tiny/home"}
 %% {default, ["about"], [everyone], "_g/tiny/about"}

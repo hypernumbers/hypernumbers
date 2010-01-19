@@ -84,7 +84,7 @@ do_req(Req) ->
     Groups  = hn_users:groups(User),    
     AuthRet = authorize(Name, Groups, Method, Ref, Vars),
 
-    io:format("Authret is: ~p~n", [AuthRet]),
+    io:format("Authret is: ~p for ~p ~n", [AuthRet, Ref#refX.path]),
     
     case AuthRet of
         %% these are the returns for the GET's
@@ -827,7 +827,11 @@ authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
 %%     end;
 authorize(_User, _Groups, 'POST', #refX{site = _Site, path = _Path}, _Vars) ->
     %%auth_srv:can_write(Site, {User, Groups}, Path).
-    true. %% TODO: hook in security transaction
+    true; %% TODO: hook in security transaction
+authorize(User, Groups, Req, Ref, Vars) ->
+    io:format("HACK ALLOW~nuser: ~p group~p~nreq:~p~nref:~p~nvars:~p~n",
+              [User, Groups, Req, Ref, Vars]),
+    true.
 
 '500'(Req, Error) ->
     error_logger:error_msg("~p~n~p~n", [Error, erlang:get_stacktrace()]),
