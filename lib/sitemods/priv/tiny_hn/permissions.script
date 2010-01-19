@@ -63,14 +63,15 @@
 
 
 {add_view, 
- [{path, []},
+ [{path, ["request_site"]},
   {perms, [{group, "admin"}]},
   {view, "_g/core/spreadsheet"}
  ]}.
-{champion,
- [{path, []},
+{champion, 
+ [{path, ["request_site"]},
   {view, "_g/core/spreadsheet"}
  ]}.
+
 
 {add_view, 
  [{path, ["_user", "login"]},
