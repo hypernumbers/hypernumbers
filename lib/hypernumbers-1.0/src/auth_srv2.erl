@@ -333,7 +333,9 @@ add_us_and_gps(V, [{group, Group} | Rest]) ->
               -> {html, string()} | {return, integer()}.
 get_view(#control{views = ?EMPTY_TREE}, _U, _G, _T) ->
     {return, 404};
-get_view(#control{champion = V}=C, User, Groups, champion) when V /= [] ->
+get_view(#control{champion = []}, _U, _G, _T) ->
+    {return, 404};
+get_view(#control{champion = V}=C, User, Groups, champion) ->
     View = gb_trees:get(V, C#control.views),
     case get_role_view([{V,View}], User, Groups) of
         V -> {html, V}; 
