@@ -380,7 +380,7 @@ ipost(#refX{site = Site} = _Ref, _Type, _Attr,
 
     case can_save_view(User, Name) of
         true ->
-            TplFile = [docroot(Site), "/" , Name ++ ".tpl"],
+            TplFile = [docroot(Site), "/views/" , Name],
             ok = filelib:ensure_dir(TplFile),
             ok = file:write_file(TplFile, Form);
 
