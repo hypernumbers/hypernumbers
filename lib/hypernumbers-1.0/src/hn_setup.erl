@@ -275,10 +275,15 @@ replace(Key, Val, Rep) when is_tuple(Rep) ->
 replace(_Key, _Val, Else) ->
     Else.
 
+add_u(Site, User, {champion, C}) ->
+    UserName = hn_users:name(User),
+    Path     = replace('$user', UserName, lget(path, C)),
+    auth_srv2:set_champion(Site, Path, lget(view, C));
+
 add_u(Site, User, {add_view, C}) -> 
     UserName = hn_users:name(User),
-    Perms = replace('$user', UserName, lget(perms, C)),
-    Path = replace('$user', UserName, lget(path, C)),
+    Perms    = replace('$user', UserName, lget(perms, C)),
+    Path     = replace('$user', UserName, lget(path, C)),
     auth_srv2:add_view(Site, Path, Perms, lget(view, C)).
 
 -spec get_type_by_site(list()) -> atom().

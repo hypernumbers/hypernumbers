@@ -52,13 +52,53 @@
 {add_view, 
  [{path, []},
   {perms, [{group, "dev"}]},
-  {view, "_g/hypernumbers/home"}
+  {view, "_g/core/spreadsheet"}
  ]}.
 
 {add_view, 
  [{path, ["[**]"]},
   {perms, [{group, "dev"}]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
+
+{add_view, 
+ [{path, []},
+  {perms, [everyone]},
   {view, "_g/hypernumbers/home"}
+ ]}.
+{champion,
+ [{path, []},
+  {view, "_g/hypernumbers/home"}
+ ]}.
+
+{add_view, 
+ [{path, ["about"]},
+  {perms, [everyone]},
+  {view, "_g/hypernumbers/about"}
+ ]}.
+{champion,
+ [{path, ["about"]},
+  {view, "_g/hypernumbers/about"}
+ ]}.
+
+{add_view, 
+ [{path, ["team"]},
+  {perms, [everyone]},
+  {view, "_g/hypernumbers/team"}
+ ]}.
+{champion,
+ [{path, ["team"]},
+  {view, "_g/hypernumbers/team"}
+ ]}.
+
+{add_view, 
+ [{path, ["public"]},
+  {perms, [everyone]},
+  {view, "_g/core/readonly"}
+ ]}.
+{champion,
+ [{path, ["public"]},
+  {view, "_g/core/readonly"}
  ]}.
 
 
