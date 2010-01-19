@@ -261,20 +261,16 @@ add_view1(Tree, Path, UAndGs, V) ->
                              {value, Val} -> Val end,
                   View2 = add_us_and_gps(View1, UAndGs),
                   NewViews = gb_trees:enter(V, View2, CurViews),
-                  add_view2(C#control{views = NewViews}, V)
+                  C#control{views = NewViews}
           end,
     alter_tree(Tree, Path, Fun).
 
-%%% Add in champion / challenger if one isn't set.
--spec add_view2(#control{}, string()) -> #control{}. 
-add_view2(C=#control{champion = []}, V)   -> C#control{champion = V};
-add_view2(C=#control{challenger = []}, V) -> C#control{challenger = V};
-add_view2(C, _) -> C.
-
-%% Set default allows to change a champion or challenger.
-%% The new candidate MUST already exist. 
-set_default(Tree, _Path, [], _Type) ->
-    Tree;
+%% Set default allows to change a champion or challenger.  The new
+%% candidate MUST already exist, unless we're nullifying a
+%% champion/challenger
+set_default(Tree, Path, [], Type) ->
+    Fun = fun(C) -> set_default2(Type, [], C) end,
+    alter_tree(Tree, Path, Fun);
 set_default(Tree, Path, V, Type) ->
     Fun = fun(C=#control{views = Views}) ->  
                   case gb_trees:lookup(V, Views) of
