@@ -49,7 +49,8 @@ delete_site(Host) ->
     Dest = code:lib_dir(hypernumbers) ++ "/../../var/docroot/"
         ++ hn_util:parse_site(Host) ++ "/",
     
-    auth_srv:clear_all_perms_DEBUG(Host),
+    throw(add_in_clear_all_perms),
+    %%auth_srv:clear_all_perms_DEBUG(Host),
     [ {atomic, ok}  = mnesia:delete_table(hn_db_wu:trans(Host, Table))
       || {Table, _F, _T, _I} <- tables()],
     
@@ -225,22 +226,12 @@ resolve_password('$password', Opts) ->
 resolve_password(Password, _Opts) ->
     Password.
 
-run_perms({perms_and_views, C}, Site) ->
-    auth_srv:add_perms_and_views(Site,  lget(list, C),
-                                 lget(path, C),     lget(perms, C),
-                                 lget(override, C), lget(views, C));
-
-run_perms({perm, P}, Site) ->
-    auth_srv:add_perm(Site, 
-                      lget(list, P), lget(path, P), lget(perms, P));
-
-run_perms({views, V}, Site) ->
-    auth_srv:add_views(Site,
-                       lget(list, V),     lget(path, V),
-                       lget(override, V), lget(views, V));
-
-run_perms({default, D}, Site)  ->
-    auth_srv:add_default(Site, lget(path, D), lget(default, D)).
+run_perms({add_view, C}, Site) ->
+    auth_srv2:add_view(Site, lget(path, C), lget(perms, C), lget(view, C));
+run_perms({champion, C}, Site) ->
+    auth_srv2:set_champion(Site, lget(path, C), lget(view, C));
+run_perms({challenger, C}, Site) ->
+    auth_srv2:set_challenger(Site, lget(path, C), lget(view, C)).
 
 run_script({Path, '$email'}, Site, Opts) ->
     run_script2(Path, Site, pget(email, Opts));
@@ -275,7 +266,6 @@ pget(Key, List, Default) ->
 lget(Key, List) ->
     element(2, lists:keyfind(Key, 1, List)).
 
-
 replace(Key, Val, Key) ->
     Val;
 replace(Key, Val, Rep) when is_list(Rep) ->
@@ -285,18 +275,13 @@ replace(Key, Val, Rep) when is_tuple(Rep) ->
 replace(_Key, _Val, Else) ->
     Else.
 
-add_u(Site, User, {perms_and_views,
-                   [{list,     Auth},  {path,     Path},
-                    {perms,    Perms}, {override, Def},
-                    {views,    Views}]}) ->
-    auth_srv:add_perms_and_views(Site,
-                                 replace('$user', hn_users:name(User), Auth),
-                                 replace('$user', hn_users:name(User), Path),
-                                 Perms, Def, Views).
-
+add_u(Site, User, {add_view, C}) -> 
+    UserName = hn_users:name(User),
+    Perms = replace('$user', UserName, lget(perms, C)),
+    Path = replace('$user', UserName, lget(path, C)),
+    auth_srv2:add_view(Site, Path, Perms, lget(view, C)).
 
 -spec get_type_by_site(list()) -> atom().
 get_type_by_site(Site) ->
     [#core_site{type=Type}] = mnesia:dirty_read(core_site, Site),
     Type.
-

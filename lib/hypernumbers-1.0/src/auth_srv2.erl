@@ -80,6 +80,7 @@ get_views(Site, Path, AuthReq) ->
 
 -spec add_view(string(), [string()], auth_spec(), string()) -> string(). 
 add_view(Site, Path, AuthSpec, View) ->
+    io:format("Adding: ~p ~p ~p ~p~n", [Site, Path, AuthSpec, View]),
     gen_server:call(?MODULE, {add_view, Site, Path, AuthSpec, View}).
 
 -spec set_champion(string(), [string()], string()) -> ok. 
@@ -330,7 +331,7 @@ add_us_and_gps(V, [{group, Group} | Rest]) ->
 %% To consider only a particular view, use that view as the type name.
 %%
 %% Otherwise the request fails with 404 if no views exist, and ultimately
-%% with 503 if the request cannot be handled. 
+%% with 401 if the request cannot be handled. 
 -spec get_view(#control{}, 
                string(), [string()],
                champion | challenger | any | string())
@@ -341,27 +342,27 @@ get_view(#control{champion = V}=C, User, Groups, champion) when V /= [] ->
     View = gb_trees:get(V, C#control.views),
     case get_role_view([{V,View}], User, Groups) of
         V -> {html, V}; 
-        _ -> {return, 503}
+        _ -> {return, 401}
     end;
 get_view(#control{challenger = V}=C, User, Groups, challenger) when V /= [] ->
     View = gb_trees:get(V, C#control.views),
     case get_role_view([{V,View}], User, Groups) of
         V -> {html, V}; 
-        _ -> {return, 503}
+        _ -> {return, 401}
     end;
 get_view(C, User, Groups, any) ->
     KVs = gb_trees:to_list(C#control.views),
     case get_role_view(KVs, User, Groups) of 
-        none -> {return, 503}; 
+        none -> {return, 401}; 
         V -> {html, V}
     end;
 get_view(C, User, Groups, V) ->
     %% we don't know this actually exists
     case gb_trees:lookup(V, C#control.views) of
-        none -> {return, 503};
+        none -> {return, 401};
         {value, View} -> 
             case get_role_view([{V,View}], User, Groups) of
-                none -> {return, 503};
+                none -> {return, 401};
                 V -> {html, V}
             end
     end.
@@ -527,7 +528,7 @@ testA2(P) ->
     Tree2 = add_view1(Tree1, P, UGs, "another view"),
     Tree3 = set_default(Tree2, P, "a view", champion),
     Ret = check_get_view1(Tree3, P, {"User", ["Fail"]}, champion),
-    ?assertEqual({return, 503}, Ret).
+    ?assertEqual({return, 401}, Ret).
 
 %% Users and groups
 testA3(P) ->
@@ -569,7 +570,7 @@ testA8(P) ->
     Tree4 = remove_views1(Tree3, P, ["another view"]),
     Ret = check_get_view1(Tree4, P, {"gordon", ["Fail"]}, champion),
     %% no permission to see 'champion'... it's gone.
-    ?assertEqual({return, 503}, Ret). 
+    ?assertEqual({return, 401}, Ret). 
 
 testA10(P) ->
     Tree = add_view1(gb_trees:empty(), P, 

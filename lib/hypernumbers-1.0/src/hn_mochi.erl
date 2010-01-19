@@ -82,16 +82,16 @@ do_req(Req) ->
 
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),    
-    AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
+    AuthRet = authorize(Name, Groups, Method, Ref, Vars),
 
+    io:format("Authret is: ~p~n", [AuthRet]),
+    
     case AuthRet of
         %% these are the returns for the GET's
-        {return, '404'} ->
-            serve_html(404, Req, [docroot(Site),
-                                  "/views/_g/core/login.html"], User);
-        {return, '401'} ->
-            serve_html(401, Req, [docroot(Site),
-                                  "/views/_g/core/login.html"], User);
+        {return, 404} ->
+            serve_html(404, Req, [docroot(Site), "/views/_g/core/login.html"], User);
+        {return, 401} ->
+            serve_html(401, Req, [docroot(Site), "/views/_g/core/login.html"], User);
         {html, File}    ->
             case Vars of
                 [] -> handle_req(Method, Req, Ref, [{"view", File}], User);
@@ -798,27 +798,36 @@ content_type(Req) ->
             end
     end.
 
-get_auth(_User, _Groups, 'GET', _Ref, [{"updates", _Time}, {"path", _P}]) ->
+-spec authorize(string(), [string()],
+                'GET' | 'PUT',
+                #refX{},
+                [{string(), any()}])
+               -> {return, integer()} | {html, string()} | true | false.
+authorize(_User, _Groups, 'GET', _Ref, [{"updates", _Time}, {"path", _P}]) ->
     % TODO: apply permissions to updates
     true;
-get_auth(User, Groups, 'GET', #refX{site = Site, path = Path}, []) ->
-    auth_srv:check_get_page(Site, {User, Groups}, Path);
-get_auth(User, Groups, 'GET', #refX{site = Site, path = Path},
+authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, []) ->
+    auth_srv2:check_get_view(Site, Path, {User, Groups});
+authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
          [{"view", View}]) ->
-    auth_srv:check_get_page(Site, {User, Groups}, Path, View);
-get_auth(User, Groups, 'GET', #refX{site = Site, path = Path}, Vars) ->
-    case lists:keyfind("path", 1, Vars) of
-        {"path", P2} ->
-            P3 = case P2 of
-                     "/" -> [];
-                     _   -> util2:chop(P2)
-                 end,
-            auth_srv:check_get_page(Site, {User, Groups}, P3);
-        false ->
-            auth_srv:check_get_page(Site, {User, Groups}, Path)
-    end;
-get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
-    auth_srv:can_write(Site, {User, Groups}, Path).
+    auth_srv2:check_particular_view(Site, Path, {User, Groups}, View);
+authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
+         [{"challenger", true}]) ->
+    auth_srv2:check_get_challenger(Site, Path, {User, Groups});
+%% authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, Vars) ->
+%%     case lists:keyfind("path", 1, Vars) of
+%%         {"path", P2} ->
+%%             P3 = case P2 of
+%%                      "/" -> [];
+%%                      _   -> util2:chop(P2)
+%%                  end,
+%%             auth_srv:check_get_page(Site, {User, Groups}, P3);
+%%         false ->
+%%             auth_srv:check_get_page(Site, {User, Groups}, Path)
+%%     end;
+authorize(_User, _Groups, 'POST', #refX{site = _Site, path = _Path}, _Vars) ->
+    %%auth_srv:can_write(Site, {User, Groups}, Path).
+    true. %% TODO: hook in security transaction
 
 '500'(Req, Error) ->
     error_logger:error_msg("~p~n~p~n", [Error, erlang:get_stacktrace()]),

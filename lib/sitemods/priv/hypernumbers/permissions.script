@@ -49,91 +49,115 @@
 %% Note that the expressions end in a full stop '.'
 %%
 
-% the home page (writable, very wrong)
-{perms_and_views,
- [{list,    [{user, "*"}, {group, "*"}]},
-  {path,     []},
-  {perms,    [read, write]},
-  {override, "_g/hypernumbers/home"},
-  {views,    ["_g/hypernumbers/home"]}
+{add_view, 
+ [{path, []},
+  {perms, [{group, dev}]},
+  {view, "_g/hypernumbers/home"}
  ]}.
 
-% /about/ and /team/
-{perms_and_views,
- [{list,   [{user, "*"}, {group, "*"}]},
-  {path,   ["about"]},
-  {perms,  [read]},
-  {override, "_g/hypernumbers/about"},
-  {views,    ["_g/hypernumbers/about"]}
- ]}.
+%% {add_view, [], [{group, dev}], "*"}
+%% {add_view, ["[**]"], [{group, dev}], "*"}
 
-{perms_and_views,
- [{list,   [{user, "*"}, {group, "*"}]},
-  {path,   ["team"]},
-  {perms,  [read]},
-  {override, "_g/hypernumbers/team"},
-  {views,    ["_g/hypernumbers/team"]}
- ]}.
+%% {default, [], [everyone], "_g/tiny/home"}
+%% {default, ["about"], [everyone], "_g/tiny/about"}
+%% {default, ["team"], [everyone], "_g/tiny/team"}
 
-% /application/ 
-{perms_and_views,
- [{list,  [{user, "*"}, {group, "*"}]},
-  {path,  ["application"]},
-  {perms, [read]},
-  {override, "_global/login"},
-  {views,    ["_global/login"]}
- ]}.
+%% {default, ["public"], [everyone], "g/core/readonly"}
+%% {default, ["public", "[**]"], [everyone], "g/core/readonly"}
 
-% /u/ 
-{perms_and_views,
- [{list,  [{user, "*"}, {group, "*"}]},
-  {path,  ["u"]},
-  {perms, [read]},
-  {override, "_g/core/login"},
-  {views,    ["_g/core/login"]}        
- ]}.
+%% % User gets home page, can see/make any spreadsheet in home set in users.permissions
+%% {default, ["u", "dale"], [{user, "dale"}], "_g/hypernumbers/userhome"} 
+%% {default, ["u", "dale", "[**]"], [{user, "dale"}], "_g/core/spreadsheet"} 
+%% {add_view, ["u", "dale", "[**]"], [{user, "dale"}], "*"} %?
 
-% the login path
-{perms_and_views,
- [{list,     [{user, "*"}, {group, "*"}]},
-  {path,     ["_user", "login"]},
-  {perms,    [read, write]},
-  {override, "_g/core/login"},
-  {views,    ["_g/core/login"]}
- ]}.
 
-% now create the dev space
-{perms_and_views,
- [{list,     [{group, "dev"}]},
-  {path ,    ["dev", "[**]"]},
-  {perms,    [read, write]},
-  {override, "_g/core/spreadsheet"},
-  {views,    ["_g/core/spreadsheet"]}
- ]}.
 
-% now create the public space
-{perms_and_views,
- [{list,     [{user, "*"}, {group, "*"}]},
-  {path ,    ["public", "[**]"]},
-  {perms,    [read]},
-  {override, "_g/core/spreadsheet"},
-  {views,    ["_g/core/spreadsheet"]}
- ]}.
+%% BACKUP OLD STYLE
+%% % the home page (writable, very wrong)
+%% {perms_and_views,
+%%  [{list,    [{user, "*"}, {group, "*"}]},
+%%   {path,     []},
+%%   {perms,    [read, write]},
+%%   {override, "_g/hypernumbers/home"},
+%%   {views,    ["_g/hypernumbers/home"]}
+%%  ]}.
 
-% now create the public space
-{perms_and_views,
- [{list,     [{user, "*"}, {group, "*"}]},
-  {path ,    ["public"]},
-  {perms,    [read]},
-  {override, "_g/core/spreadsheet"},
-  {views,    ["_g/core/spreadsheet"]}
- ]}.
+%% % /about/ and /team/
+%% {perms_and_views,
+%%  [{list,   [{user, "*"}, {group, "*"}]},
+%%   {path,   ["about"]},
+%%   {perms,  [read]},
+%%   {override, "_g/hypernumbers/about"},
+%%   {views,    ["_g/hypernumbers/about"]}
+%%  ]}.
 
-% finally setup the static data space
-{perms_and_views,
- [{list,     [{user, "*"}, {group, "*"}]},
-  {path,     ["_site", "[*]"]},
-  {perms,    [read]},
-  {override, ""},
-  {views,    []}
- ]}.
+%% {perms_and_views,
+%%  [{list,   [{user, "*"}, {group, "*"}]},
+%%   {path,   ["team"]},
+%%   {perms,  [read]},
+%%   {override, "_g/hypernumbers/team"},
+%%   {views,    ["_g/hypernumbers/team"]}
+%%  ]}.
+
+%% % /application/ 
+%% {perms_and_views,
+%%  [{list,  [{user, "*"}, {group, "*"}]},
+%%   {path,  ["application"]},
+%%   {perms, [read]},
+%%   {override, "_global/login"},
+%%   {views,    ["_global/login"]}
+%%  ]}.
+
+%% % /u/ 
+%% {perms_and_views,
+%%  [{list,  [{user, "*"}, {group, "*"}]},
+%%   {path,  ["u"]},
+%%   {perms, [read]},
+%%   {override, "_g/core/login"},
+%%   {views,    ["_g/core/login"]}        
+%%  ]}.
+
+%% % the login path
+%% {perms_and_views,
+%%  [{list,     [{user, "*"}, {group, "*"}]},
+%%   {path,     ["_user", "login"]},
+%%   {perms,    [read, write]},
+%%   {override, "_g/core/login"},
+%%   {views,    ["_g/core/login"]}
+%%  ]}.
+
+%% % now create the dev space
+%% {perms_and_views,
+%%  [{list,     [{group, "dev"}]},
+%%   {path ,    ["dev", "[**]"]},
+%%   {perms,    [read, write]},
+%%   {override, "_g/core/spreadsheet"},
+%%   {views,    ["_g/core/spreadsheet"]}
+%%  ]}.
+
+%% % now create the public space
+%% {perms_and_views,
+%%  [{list,     [{user, "*"}, {group, "*"}]},
+%%   {path ,    ["public", "[**]"]},
+%%   {perms,    [read]},
+%%   {override, "_g/core/spreadsheet"},
+%%   {views,    ["_g/core/spreadsheet"]}
+%%  ]}.
+
+%% % now create the public space
+%% {perms_and_views,
+%%  [{list,     [{user, "*"}, {group, "*"}]},
+%%   {path ,    ["public"]},
+%%   {perms,    [read]},
+%%   {override, "_g/core/spreadsheet"},
+%%   {views,    ["_g/core/spreadsheet"]}
+%%  ]}.
+
+%% % finally setup the static data space
+%% {perms_and_views,
+%%  [{list,     [{user, "*"}, {group, "*"}]},
+%%   {path,     ["_site", "[*]"]},
+%%   {perms,    [read]},
+%%   {override, ""},
+%%   {views,    []}
+%%  ]}.
