@@ -588,8 +588,8 @@ add_ref(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 
 docroot(Site) ->
-    code:lib_dir(hypernumbers) ++ "/../../var/docroot/"
-        ++ hn_util:parse_site(Site).
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:parse_site(Site)++"/docroot".
 tmpdir() ->
     code:lib_dir(hypernumbers) ++ "/../../var/tmp/".
               

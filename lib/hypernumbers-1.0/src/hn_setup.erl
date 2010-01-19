@@ -36,7 +36,7 @@ startup() ->
 -spec site(string(), atom(), [{atom(), any()}]) -> ok.
 site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
-    All = [json, templates, permissions, script, user_permissions, users],
+    All = [templates, json, permissions, script, user_permissions, users],
     ok  = create_site(Site, Type),
     ok  = update(Site, Type, Opts, All).
 
@@ -92,8 +92,7 @@ update(Site, Type, Opaque, Opts) ->
 
 -spec add_user(#refX{}, #hn_user{}) -> ok.
 add_user(Site, User) ->
-    Type   = get_type_by_site(Site),
-    Script = [moddir(Type),"/","user.permissions.script"],
+    Script = [sitedir(Site),"/","user.permissions.script"],
     case filelib:is_file(Script) of
         true  ->
             {ok, Terms} = file:consult(Script),
@@ -106,21 +105,19 @@ add_user(Site, User) ->
 
 -spec setup(string(), atom(), list(), atom()) -> ok.
 setup(Site, Type, _Opts, templates) ->
-    Dest = code:lib_dir(hypernumbers) ++ "/../../var/docroot/"
-        ++ hn_util:parse_site(Site) ++ "/",
-    ok = filelib:ensure_dir(Dest),
-    ok = hn_util:recursive_copy(moddir(Type)++"/docroot", Dest);
+    ok = filelib:ensure_dir(sitedir(Site)),
+    ok = hn_util:recursive_copy(moddir(Type), sitedir(Site));
 setup(Site, Type, _Opts, json) ->
     ok = import_json(Site, moddir(Type));
-setup(Site, Type, _Opts, permissions) ->
+setup(Site, _Type, _Opts, permissions) ->
     Fun = fun(T) -> run_perms(T, Site) end,
-    ok  = run([moddir(Type),"/","permissions.script"], Fun);
-setup(Site, Type, Opts, script) ->
+    ok  = run([sitedir(Site),"/","permissions.script"], Fun);
+setup(Site, _Type, Opts, script) ->
     Fun = fun(T) -> run_script(T, Site, Opts) end, 
-    ok = run([moddir(Type),"/","setup.script"], Fun);
-setup(Site, Type, Opts, users) ->
+    ok = run([sitedir(Site),"/","setup.script"], Fun);
+setup(Site, _Type, Opts, users) ->
     Fun = fun(T) -> run_users(T, Site, Opts) end,
-    ok  = run([moddir(Type),"/","users.script"], Fun);
+    ok  = run([sitedir(Site),"/","users.script"], Fun);
 setup(Site, _Type, _Opts, user_permissions) ->    
     Users = mnesia:dirty_match_object(hn_db_wu:trans(Site, hn_user),
                                       #hn_user{_='_'}),
@@ -130,8 +127,13 @@ setup(Site, _Type, _Opts, user_permissions) ->
 
 -spec moddir(atom()) -> string(). 
 moddir(Type) ->
-    code:priv_dir(sitemods) 
-        ++ "/" ++ atom_to_list(Type).
+    code:priv_dir(sitemods) ++ "/" ++ atom_to_list(Type).
+
+
+-spec sitedir(atom()) -> string(). 
+sitedir(Site) ->
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:parse_site(Site) ++ "/".
 
 
 -spec launch_site(string()) -> ok. 
