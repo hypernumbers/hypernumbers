@@ -83,13 +83,15 @@ do_req(Req) ->
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),    
     AuthRet = get_auth(Name, Groups, Method, Ref, Vars),
-    
+
     case AuthRet of
         %% these are the returns for the GET's
         {return, '404'} ->
-            serve_html(404, Req, [docroot(Site), "/_global/login.html"], User);
+            serve_html(404, Req, [docroot(Site),
+                                  "/views/_g/core/login.html"], User);
         {return, '401'} ->
-            serve_html(401, Req, [docroot(Site), "/_global/login.html"], User);
+            serve_html(401, Req, [docroot(Site),
+                                  "/views/_g/core/login.html"], User);
         {html, File}    ->
             case Vars of
                 [] -> handle_req(Method, Req, Ref, [{"view", File}], User);
@@ -146,17 +148,17 @@ handle_req(Method, Req, Ref, Vars, User) ->
 %  GET REQUESTS
 %%---------------s
 iget(Req, Ref=#refX{path=["_user", "login"]}, page, [], User, html) ->
-    iget(Req, Ref, page, [{"view", "_global/login"}], User, html);
+    iget(Req, Ref, page, [{"view", "_g/core/login"}], User, html);
 
 iget(Req, #refX{site = Site} = _Ref, page, [{"view", FName}, {"template", []}],
      User, html) ->
-    serve_html(Req, [docroot(Site), "/", FName, ".tpl"], User);
+    serve_html(Req, [docroot(Site), "/views/", FName, ".tpl"], User);
     
 iget(Req, #refX{site = Site} = _Ref, page, [{"view", FName}], User, html) ->
 
     %% If there is a template, generate html
-    Tpl  = [docroot(Site), "/", FName, ".tpl"],
-    Html = [docroot(Site), "/", FName, ".html"],
+    Tpl  = [docroot(Site), "/views/", FName, ".tpl"],
+    Html = [docroot(Site), "/views/", FName, ".html"],
     
     ok = case filelib:is_file(Tpl) andalso
              ( not(filelib:is_file(Html))
@@ -204,8 +206,8 @@ iget(Req, Ref, page, [{"templates", []}], _User, _CType) ->
 % List of views available to edit
 iget(Req, #refX{site = Site} = _Ref, page, [{"views", []}], User, _CType) ->
 
-    Dirs = [ "/_u/"++hn_users:name(User)++"/"
-             | [ "/_g/"++Group++"/" || Group <- hn_users:groups(User)] ],
+    Dirs = [ "/views/_u/"++hn_users:name(User)++"/"
+             | [ "/views/_g/"++Group++"/" || Group <- hn_users:groups(User)] ],
     
     Strip = fun(FileName) ->
                     [File, Name, Pre | _ ]
@@ -253,7 +255,7 @@ iget(Req, Ref, Type, _Attr, _User, json)
     json(Req, {struct, dict_to_struct(Dict)});
 
 iget(Req, #refX{site = Site} = _Ref, cell, _Attr, User, html) ->
-    serve_html(Req, docroot(Site) ++ "/_global/cell.html", User);
+    serve_html(Req, docroot(Site) ++ "/_g/core/cell.html", User);
     
 iget(Req, Ref, _Type, Attr, User, _CType) ->
     error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
@@ -824,15 +826,15 @@ get_auth(User, Groups, 'POST', #refX{site = Site, path = Path}, _Vars) ->
 
 '404'(Req, User) ->
     #refX{site = Site} = hn_util:parse_url(get_host(Req)),
-    serve_html(404, Req, docroot(Site)++"/_global/login.html", User).
+    serve_html(404, Req, docroot(Site)++"/views/_g/core/login.html", User).
 
 build_tpl(Site, Tpl) ->
-    {ok, Master} = file:read_file([docroot(Site), "/_global/built.tpl"]),
-    {ok, Gen}    = file:read_file([docroot(Site), "/", Tpl, ".tpl"]),
+    {ok, Master} = file:read_file([docroot(Site), "/views/_g/core/built.tpl"]),
+    {ok, Gen}    = file:read_file([docroot(Site), "/views/", Tpl, ".tpl"]),
 
     New = re:replace(Master, "%BODY%", hn_util:esc_regex(Gen),
                      [{return, list}]),
-    file:write_file([docroot(Site), "/", Tpl, ".html"], New).
+    file:write_file([docroot(Site), "/views/", Tpl, ".html"], New).
     
 pages_to_json(Dict) ->
     F = fun(X) -> pages_to_json(X, dict:fetch(X, Dict)) end,

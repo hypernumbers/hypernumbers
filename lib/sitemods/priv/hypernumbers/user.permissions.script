@@ -13,6 +13,6 @@
  [{list,     [{user, '$user'}]},
   {path,     ["u", '$user', "[**]"]},
   {perms,    [read, write]},
-  {override, "_global/spreadsheet"},
+  {override, "_g/core/spreadsheet"},
   {views,    ["**"]}
  ]}.
