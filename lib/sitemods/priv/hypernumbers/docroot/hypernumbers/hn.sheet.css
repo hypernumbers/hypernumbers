@@ -141,13 +141,12 @@ p,h1,h2,h3,h4,h5 {
     border : 1px solid #666; 
 }
 #languages div { 
-    z-index    : 9999;
+    position   : absolute;
     background : #000;
     border     : 1px solid #666;
-    position   : absolute;
     top        : auto;
     display    : none;
-    z-index    : 1000;
+    z-index    : 99999999;
 }
 #navigation a#currentLanguage {
     text-decoration : none;
@@ -334,13 +333,13 @@ p,h1,h2,h3,h4,h5 {
 }
 
 #hnmenu ul li .arrow { 
- display:    block;
- position:   absolute;
- height:     16px;
- width:      16px;
- background: url(../img/arrow.png);
- top:        3px;
- right:      0px;
+    display:    block;
+    position:   absolute;
+    height:     16px;
+    width:      16px;
+    background: url(../img/arrow.png);
+    top:        3px;
+    right:      0px;
 }
 
 #permissions {
@@ -352,8 +351,7 @@ p,h1,h2,h3,h4,h5 {
 ******************************************************************************/
 #hn #hnheader { 
     background : #000;
-    height     : 30px;
-    overflow   : auto;
+    height     : 32px;
 }
 #hn #hnheader h1 { 
     float  : left;

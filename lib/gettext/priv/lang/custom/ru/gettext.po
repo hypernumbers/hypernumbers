@@ -1,126 +1,174 @@
-msgid "Normal"
-msgstr "Нормальный"
-
 msgid "English"
 msgstr "English"
 
-msgid "Insert 1 below"
-msgstr "Вставка 1 ниже"
+msgid "Normal"
+msgstr "Нормальный"
 
-msgid "Insert 1 left"
-msgstr "Вставьте левый 1"
+msgid "empty"
+msgstr "Таблиц нет"
+
+msgid "Sorry, there was an error reading your spreadsheet. The file has been added to our test suite"
+msgstr "Произошла ошибка при импортировании. Мы ваш файл сохранили и обязательно это скоро починим."
 
 msgid "Clear "
-msgstr "Ясный"
+msgstr "Очистить"
 
 msgid "Styles"
 msgstr "Стили"
 
-msgid "time"
-msgstr "время"
+msgid "Insert before"
+msgstr "Вставить 1 слева"
+
+msgid "Your spreadsheet is saved as"
+msgstr "Файл будет импортирован в"
 
 msgid "Import Spreadsheets"
-msgstr "Импорт таблиц"
+msgstr "Импортировать таблицу"
+
+msgid "time"
+msgstr "Время"
+
+msgid "You can also get us at"
+msgstr "Вы также можете написать нам на"
 
 msgid "My Spreadsheets"
 msgstr "Мои таблицы"
 
 msgid "currency"
-msgstr "валюта"
+msgstr "Валюта"
 
-msgid "Portuguese"
-msgstr "Português"
+msgid "Microsoft Help"
+msgstr "руководства от Microsoft"
 
 msgid "Italian"
 msgstr "Italiano"
 
+msgid "Portuguese"
+msgstr "Português"
+
 msgid "Plain"
-msgstr "Обычная"
+msgstr "Обычный"
 
-msgid "Serif"
-msgstr "Serif"
-
-msgid "en_gb"
-msgstr "ru"
+msgid "Usage"
+msgstr "Использование"
 
 msgid "Russian"
 msgstr "Русский"
 
-msgid "Insert 1 right"
-msgstr "Вставка 1 праве"
+msgid "Serif"
+msgstr "С засечками"
+
+msgid "Create New"
+msgstr "Создать новую таблицу"
+
+msgid "Create New Page"
+msgstr "Создать новую таблицу"
+
+msgid "Preferences"
+msgstr "Настройки"
+
+msgid "Login"
+msgstr "Войти"
 
 msgid "Contents"
 msgstr "Содержание"
 
-msgid "Login"
-msgstr ""
+msgid "Insert after"
+msgstr "Вставить 1 справа"
+
+msgid "Warning"
+msgstr "Предупреждение"
 
 msgid "datetime"
-msgstr "datetime"
+msgstr "Дата и время"
 
-msgid "open Microsoft Excel 97/2000/2003 (*.xls)"
-msgstr ""
-
-msgid "percentage"
-msgstr "Процент"
+msgid "Import Spreadsheet"
+msgstr "Импортировать файл"
 
 msgid "File"
 msgstr "Файл"
+
+msgid "percentage"
+msgstr "Проценты"
+
+msgid "until we implement help properly"
+msgstr "пока мы не написали свои собственные"
+
+msgid "Feedback / Report Bug"
+msgstr "Сообщить об ошибке / Предложить улучшения"
 
 msgid "Spanish"
 msgstr "Español"
 
 msgid "rounded"
-msgstr "округляться"
+msgstr "Округленный"
+
+msgid "Examples"
+msgstr "Примеры"
 
 msgid "German"
 msgstr "Deutsch"
 
 msgid "Monospace"
-msgstr "Monospace"
+msgstr "Моноширинный"
 
-msgid "empty"
-msgstr "пустой"
-
-msgid "Font"
-msgstr "Шрифт"
-
-msgid "Logged in as"
-msgstr "Английский"
-
-msgid "Delete Row(s)"
-msgstr "Удалить строки (ов)"
-
-msgid "Insert 1 above"
-msgstr "Вставка 1 выше"
+msgid "Functions"
+msgstr "Функции"
 
 msgid "Edit"
 msgstr "Изменить"
 
-msgid "Delete Column(s)"
-msgstr "Удалить столбец (ы)"
+msgid "Logged in as"
+msgstr "Аккаунт"
+
+msgid "Font"
+msgstr "Шрифт"
+
+msgid "Delete Row(s)"
+msgstr "Удалить ряд(ы)"
+
+msgid "en_gb"
+msgstr "ru"
+
+msgid "Loading"
+msgstr "Идет загрузка"
+
+msgid "Edit"
+msgstr "Изменить"
+
+msgid "Delete columns(s)"
+msgstr "Удалить столбец(ы)"
+
+msgid "Import a spreadsheet"
+msgstr "Импортировать файл"
 
 msgid "Save"
 msgstr "Сохранить"
 
 msgid "date"
-msgstr "свидание"
+msgstr "Дата"
 
-msgid "decimals"
-msgstr "десятичные"
-
-msgid "financial"
-msgstr "финансовые"
+msgid "Oops, did something break?"
+msgstr "Что-нибудь сломалось?"
 
 msgid "Log out"
-msgstr "Выйдите"
+msgstr "Выйти"
 
-msgid "Format"
-msgstr "Формат"
+msgid "decimals"
+msgstr "Десятичный"
+
+msgid "financial"
+msgstr "Финансовый"
+
+msgid "Please use the"
+msgstr "Используйте"
 
 msgid "French"
 msgstr "Français"
 
-msgid "Create New"
-msgstr "Создать новый"
+msgid "Format"
+msgstr "Формат"
+
+msgid "Description"
+msgstr "Описание"
 
