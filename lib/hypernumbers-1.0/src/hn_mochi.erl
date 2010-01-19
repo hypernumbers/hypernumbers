@@ -84,12 +84,10 @@ do_req(Req) ->
     Groups  = hn_users:groups(User),    
     AuthRet = authorize(Name, Groups, Method, Ref, Vars),
 
-    io:format("Authret is: ~p for ~p ~n", [AuthRet, Ref#refX.path]),
-    
     case AuthRet of
         %% these are the returns for the GET's
         {return, 404} ->
-            serve_html(404, Req, [docroot(Site), "/views/_g/core/login.html"], User);
+            serve_html(404, Req, [docroot(Site), "/views/_g/core/404.html"], User);
         {return, 401} ->
             serve_html(401, Req, [docroot(Site), "/views/_g/core/login.html"], User);
         {html, File}    ->
