@@ -39,7 +39,7 @@ req(Req) ->
         
         % Serve Static Files
         X when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; 
-        X == ".ico"; X == ".json"; X == ".gif" ->
+        X == ".ico"; X == ".json"; X == ".gif"; X == ".html" ->
             "/"++RelPath = Req:get(path),
             Req:serve_file(RelPath, docroot(Site));
         

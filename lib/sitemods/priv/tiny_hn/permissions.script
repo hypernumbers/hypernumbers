@@ -88,6 +88,11 @@
   {perms, [everyone]},
   {view, "_g/tiny/contact"}
  ]}.
+{add_view, 
+ [{path, ["contact"]},
+  {perms, [{group, "dev"}]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
 {champion,
  [{path, ["contact"]},
   {view, "_g/tiny/contact"}

@@ -1,18 +1,18 @@
 %%-*-erlang-*-
 
 %% Home page
-{perms_and_views,
- [{list,     [{user, '$user'}]},
-  {path ,    []},
-  {perms,    [read, write]},
-  {override, "_g/tiny_poll/home"},
-  {views,    ["_g/tiny_poll/home"]}
+{add_view, 
+ [{path, ["admin"]},
+  {perms, [{user, '$user'}]},
+  {view, "_g/tiny_poll/admin"}
+ ]}.
+{champion,
+ [{path, ["admin"]},
+  {view, "_g/tiny_poll/admin"}
  ]}.
 
-{perms_and_views,
- [{list,     [{user, '$user'}]},
-  {path ,    ["admin"]},
-  {perms,    [read, write]},
-  {override, "_g/tiny_poll/admin"},
-  {views,    ["_g/tiny_poll/admin"]}
+{add_view, 
+ [{path, []},
+  {perms, [{user, '$user'}]},
+  {view, "_g/core/spreadsheet"}
  ]}.

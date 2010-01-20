@@ -204,7 +204,7 @@ function mergemod
 {
     cd lib/sitemods/priv/$1/docroot
     DEST=$ROOT/lib/sitemods/priv/$2/docroot
-    find . \( ! -regex '.*/\..*' \) -print | cpio -pd  $DEST
+    find . \( ! -regex '.*/\..*' \) -print | cpio -dump  $DEST
 }
 
 case $1 in 
