@@ -16,7 +16,7 @@
 
 %% Persist the current page data located at Path as a json Fixture
 save(Path, Fixture) ->
-    CHeaders = [{"accept", "application/json"}],
+    CHeaders = [{"Accept", "application/json"}],
     case http:request(get, {Path, CHeaders}, [], []) of
         {ok, {{"HTTP/1.1",200,"OK"}, _Hds, JSON}} ->
             FN = filename:join(?FIXTURE_DIR, Fixture++".json"),
@@ -29,9 +29,10 @@ save(Path, Fixture) ->
 restore(Path, Fixture) ->
     restore(Path, Fixture, default).
 restore(Path, Fixture, Profile) ->
-    Type = "application/json",
-    Body = "{\"delete\":\"all\"}",
-    case http:request(post, {Path, [], Type, Body}, [], [], Profile) of
+    Type    = "application/json",
+    Headers = [{"Accept", Type}],
+    Body    = "{\"delete\":\"all\"}",
+    case http:request(post, {Path, Headers, Type, Body}, [], [], Profile) of
         {ok, {{"HTTP/1.1",200,"OK"}, _Hds, "\"success\""}} ->
             FN = filename:join(?rel(?FIXTURE_DIR), Fixture++".json"),
             hn_import:json_file(Path, FN);
