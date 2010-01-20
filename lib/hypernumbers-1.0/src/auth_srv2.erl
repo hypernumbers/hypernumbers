@@ -455,7 +455,8 @@ seek_ctl_normal([H | Rest], Tree) ->
         {value, Tree2} -> seek_ctl_normal(Rest, Tree2)
     end.
 
--spec seek_ctl_wild([string()], gb_tree(), none | #control{}) -> none | #control{}. 
+-spec seek_ctl_wild([string()], gb_tree(), none | #control{}) 
+                   -> none | #control{}. 
 seek_ctl_wild([], _Tree, AccCtl) ->
     AccCtl;
 seek_ctl_wild([H | Rest], Tree, AccCtl) ->
@@ -473,9 +474,10 @@ seek_ctl_wild([H | Rest], Tree, AccCtl) ->
             end
     end.
 
-
-%% Most effecient if the smaller tree is on the right, and due to the
-%% way champions and challengers are merged, wilds should be on the right.
+%% Left side is favored during merges. When merging normal and wild
+%% controls, the normal should be on the left. Futhermore, when
+%% munching down the wild tree, deeper controls should be left
+%% favored.
 -spec merge_ctl(none | #control{}, none | #control{}) -> #control{}. 
 merge_ctl(none, none) -> #control{}; 
 merge_ctl(C, none) -> C;
@@ -497,7 +499,7 @@ add_to_views({V, NewView}, Views) ->
         none ->
             gb_trees:insert(V, NewView, Views);
         {value, CurView} ->
-            Everyone = merge_left(CurView#view.everyone, NewView#view.everyone),
+            Everyone = CurView#view.everyone,
             Users = gb_sets:union(CurView#view.users, NewView#view.users),
             Groups = gb_sets:union(CurView#view.groups, NewView#view.groups),
             Merged = #view{everyone = Everyone,
@@ -547,7 +549,7 @@ view_to_json({V, View, Iter}) ->
 -spec dump_script(gb_tree()) -> [any()]. 
 dump_script1(Tree) ->
     Iter = gb_trees:iterator(Tree),
-    dump_tree(gb_trees:next(Iter), []).
+    lists:flatten(dump_tree(gb_trees:next(Iter), [])).
 
 dump_tree(none, _Path) -> [];
 dump_tree({{seg, S}, Tree2, Iter}, Path) ->
@@ -619,8 +621,7 @@ demo_DEBUG() ->
                                    "yeah, yeah!"),
     Tree12 = add_view1(Tree11, P3, [{group, "admin"}],
                                    "*"),
-    %%PP = pretty_print1(Tree12, "test", [], text),
-    io:format("~p~n", [Tree12]).
+    dump_script1(Tree12).
 
 %%%===================================================================
 %% %%% EUnit Tests
@@ -737,7 +738,8 @@ testA15(P) ->
 
 %% check a particular view
 testA16(P) ->
-    Tree1 = add_view1(gb_trees:empty(), P, [{user, "gordon"}, {group, "admin"}],
+    Tree1 = add_view1(gb_trees:empty(), P, 
+                      [{user, "gordon"}, {group, "admin"}],
                       "a view"),
     Tree2 = add_view1(Tree1, P, [{user, "gordon"}, {group, "admin"}],
                       "another view"),
@@ -753,7 +755,8 @@ testC() ->
     P1 = ["hip"],
     P2 = ["hip", "hop"],
     P3 = ["dont", "stop"],
-    Tree1 = add_view1(gb_trees:empty(), P1, [{user, "gordon"}, {group, "admin"}],
+    Tree1 = add_view1(gb_trees:empty(), P1, 
+                      [{user, "gordon"}, {group, "admin"}],
                       "a view"),
     Tree2 = add_view1(Tree1, P1, [{user, "gordon"}, {group, "admin"}],
                       "another view"),
@@ -785,7 +788,8 @@ testC() ->
 testD1() ->
     P1 = ["hip", "hop"],
     P2 = ["[**]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, [{user, "gordon"}, {group, "admin"}],
+    Tree1 = add_view1(gb_trees:empty(), P2, 
+                      [{user, "gordon"}, {group, "admin"}],
                       "a view"),
     Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
                       "another view"),
@@ -800,7 +804,8 @@ testD1() ->
 testD2() ->
     P1 = ["hip", "hop"],
     P2 = ["hip", "[*]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, [{user, "gordon"}, {group, "admin"}],
+    Tree1 = add_view1(gb_trees:empty(), P2, 
+                      [{user, "gordon"}, {group, "admin"}],
                       "a view"),
     Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
                       "another view"),
@@ -815,7 +820,8 @@ testD2() ->
 testD3() ->
     P1 = ["hip", "hop"],
     P2 = ["[*]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, [{user, "gordon"}, {group, "admin"}],
+    Tree1 = add_view1(gb_trees:empty(), P2, 
+                      [{user, "gordon"}, {group, "admin"}],
                       "a view"),
     Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
                       "another view"),
@@ -830,7 +836,8 @@ testD3() ->
 testD4() ->
     P1 = ["hip", "hop"],
     P2 = ["[**]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, [{user, "gordon"}, {group, "admin"}],
+    Tree1 = add_view1(gb_trees:empty(), P2, 
+                      [{user, "gordon"}, {group, "admin"}],
                       "a view"),
     Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
                       "another view"),
@@ -849,7 +856,8 @@ testD4() ->
 testD5() ->
     P1 = ["hip", "hop"],
     P2 = ["hip", "[*]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, [{user, "gordon"}, {group, "admin"}],
+    Tree1 = add_view1(gb_trees:empty(), P2, 
+                      [{user, "gordon"}, {group, "admin"}],
                       "a view"),
     Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
                       "another view"),
@@ -870,7 +878,8 @@ testD6() ->
     P2 = ["hip", "[*]"],
     P3 = ["hip", "[**]"],
     P4 = ["[**]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, [{user, "gordon"}, {group, "admin"}],
+    Tree1 = add_view1(gb_trees:empty(), P2, 
+                      [{user, "gordon"}, {group, "admin"}],
                       "a view"),
     Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
                       "another view"),
@@ -893,9 +902,11 @@ testD6() ->
 testD7() ->
     P1 = ["[**]"],
     P2 = ["u", "dale", "sheet"],
-    Tree1 = add_view1(gb_trees:empty(), P1, [{user, "dale"}], "i/love/spreadsheets"),
+    Tree1 = add_view1(gb_trees:empty(), P1, [{user, "dale"}], 
+                      "i/love/spreadsheets"),
     Tree2 = add_view1(Tree1, P2, [{user, "dale"}], "other view"),
-    Ret = check_particular_view1(Tree2, P2, {"dale", []}, "i/love/spreadsheets"),
+    Ret = check_particular_view1(Tree2, P2, {"dale", []}, 
+                                 "i/love/spreadsheets"),
     ?assertEqual({html, "i/love/spreadsheets"}, Ret).
 
 
@@ -913,7 +924,8 @@ testD8() ->
 
 testE1() ->
     P = [],
-    Tree = add_view1(gb_trees:empty(), P, [{user, "gordon"}, {group, "admin"}],
+    Tree = add_view1(gb_trees:empty(), P, 
+                     [{user, "gordon"}, {group, "admin"}],
                      "*"),
     Tree1 = add_view1(Tree, P, [{user, "gordon"}, {group, "admin"}],
                       "blah"),
@@ -924,8 +936,8 @@ testE1() ->
 
 testE2() ->
     P = [],
-    Tree = add_view1(gb_trees:empty(), P, [{user, "gordon"}, {group, "admin"}],
-                     "*"),
+    Tree = add_view1(gb_trees:empty(), P, 
+                     [{user, "gordon"}, {group, "admin"}], "*"),
     Tree1 = add_view1(Tree, P, [{user, "gordon"}, {group, "admin"}],
                       "blah"),
     Tree2 = add_view1(Tree1, P, [{user, "gordon"}, {group, "admin"}],
