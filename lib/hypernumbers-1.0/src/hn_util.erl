@@ -744,7 +744,7 @@ send(Socket, Data) ->
     recv(Socket).
 
 recv(Socket) ->
-    case ssl:recv(Socket, 0, 5000) of
+    case ssl:recv(Socket, 0, 100000) of
         {ok, Return}    -> io:format("RECV: ~p~n", [Return]);
         {error, Reason} -> io:format("ERROR: ~p~n", [Reason])
     end.

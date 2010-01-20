@@ -17,7 +17,7 @@
       
    % Mail Setup
    {mailserver,   "smtp.gmail.com"},
-   {mailuser,     "noreply@hypernumbers.com"},
+   {mailuser,     "team@hypernumbers.com"},
    {mailpassword, "mick!ventris09"}
   ]},
  
