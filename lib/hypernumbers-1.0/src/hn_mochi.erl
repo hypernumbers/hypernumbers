@@ -695,7 +695,7 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
     Host   = {"host", S},
     Grps   = {"groups", {array, Groups}},
     Lang   = {"lang", get_lang(User)},
-    Views = {views, {array, auth_srv:get_views(S, {Name, Groups}, P)}},
+    Views = {views, {array, auth_srv2:get_views(S, P, {Name, Groups})}},
     
     {struct, [Time, Usr, Host, Lang, Grps, Views
               | dict_to_struct(Dict)]}.
