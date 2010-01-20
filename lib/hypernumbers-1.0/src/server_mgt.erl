@@ -6,6 +6,8 @@
 %%%
 %%% @end
 %%% Created : 18 Dec 2009 by Gordon Guthrie gordon@hypernumbers.com
+%%%
+%%% TODO: Work with new auth server2
 %%%-------------------------------------------------------------------
 -module(server_mgt).
 

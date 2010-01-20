@@ -27,28 +27,24 @@
 %%% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 init_per_suite(Config) ->
-    reset_perms(),                  
+    Site = "http://127.0.0.1:9000",
+    reset_perms(Site),                  
     %% TODO : should be configurable
     %Ref = #refX{site="http://127.0.0.1:9000", path=[]},
     %% TODO : ugh
-    Ref = {refX,"http://127.0.0.1:9000", [], undefined, []},
+    Ref = {refX, Site, [], undefined, []},
     hn_file_upload:test_import("<%= @basename %>", Ref),
-    hn_db_api:wait_for_dirty("http://127.0.0.1:9000"),
+    hn_db_api:wait_for_dirty(Site),
     Config.
 
-reset_perms() ->
-    auth_srv:clear_all_perms_DEBUG("http://127.0.0.1:9000"),
-
-    % the home page
-    auth_srv:add_perms_and_views("http://127.0.0.1:9000", [{user, "*"}, {group, "*"}],
-                      ["[**]"],[read, write],
-                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]),
-
-    auth_srv:add_perms_and_views("http://127.0.0.1:9000", [{user, "*"}, {group, "*"}],
-                      [],[read, write],
-                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]).
-
-
+reset_perms(Site) ->
+    View = "_global/spreadsheet",
+    auth_srv2:clear_all_perms_DEBUG(Site),
+    auth_srv2:add_view(Site, [], [everyone], View),
+    auth_srv2:add_view(Site, ["[**]"], [everyone], View),
+    auth_srv2:set_champion(Site, [], View),
+    auth_srv2:set_champion(Site, ["[**]"], View).
+    
 end_per_suite(_Config) ->
     ok.
 
