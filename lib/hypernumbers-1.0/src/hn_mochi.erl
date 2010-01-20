@@ -161,11 +161,12 @@ iget(Req, #refX{site = Site} = _Ref, page, [{"view", FName}], User, html) ->
     Html = [docroot(Site), "/views/", FName, ".html"],
     
     ok = case filelib:is_file(Tpl) andalso
-             ( not(filelib:is_file(Html))
-               orelse hn_util:is_older(Html, Tpl) ) of
-             true  -> ok = build_tpl(Site, FName); _ -> ok
+             (not(filelib:is_file(Html)) orelse
+              hn_util:is_older(Html, Tpl) ) of
+             true -> ok = build_tpl(Site, FName);
+             _    -> ok
          end,
-        
+    
     case filelib:is_file(Html) of
         true  -> serve_html(Req, Html, User);
         false -> '404'(Req, User)
@@ -379,11 +380,15 @@ ipost(Ref, _Type, _Attr, [{"clear", What}], _User)
   when What == "contents"; What == "style"; What == "all" ->
     hn_db_api:clear(Ref, list_to_atom(What));
 
-ipost(#refX{site = Site} = _Ref, _Type, _Attr, 
+ipost(#refX{site=Site, path=Path} = _Ref, _Type, _Attr, 
       [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], User) ->
 
     case can_save_view(User, Name) of
         true ->
+
+            Auth = [{user, hn_users:name(User)}, {group, "dev"}],
+            auth_srv2:add_view(Site, Path, Auth, Name),
+            
             TplFile = [docroot(Site), "/views/" , Name],
             ok = filelib:ensure_dir(TplFile),
             ok = file:write_file(TplFile, Form);
