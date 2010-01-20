@@ -160,13 +160,9 @@ handle_call(Request, _From, State) ->
             {get_as_json, Site, P} ->
                 {Site, get_as_json1(tree(Site, Tr), P), false};
             {clear_all_perms, Site} ->
-                {Site, gb_trees:empty(), true}
-            %% {pretty_print, Site, Pg, Type} ->
-            %%     {Site, pretty_print1(tree(Site, Tr), Site, Pg, Type), false};
-            %% {dump_script, Site} ->
-            %%     {Site, dump_script1(tree(Site, Tr)), false};
-                %% {permissions_debug, Site, AR, P} ->
-            %%     {Site, permissions_debug1(tree(Site, Tr), AR, P), false}
+                {Site, gb_trees:empty(), true};
+            {dump_script, Site} ->
+                {Site, dump_script1(tree(Site, Tr)), false}
             end,
     {Reply, NewTr} =
         case Return1 of
@@ -459,7 +455,7 @@ seek_ctl_normal([H | Rest], Tree) ->
         {value, Tree2} -> seek_ctl_normal(Rest, Tree2)
     end.
 
--spec seek_ctl_wild([string()], gb_tree(), none) -> none | #control{}. 
+-spec seek_ctl_wild([string()], gb_tree(), none | #control{}) -> none | #control{}. 
 seek_ctl_wild([], _Tree, AccCtl) ->
     AccCtl;
 seek_ctl_wild([H | Rest], Tree, AccCtl) ->
@@ -520,6 +516,75 @@ get_control(Tree) ->
         none       -> none;
         {value, V} -> V
     end.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Pretty Print
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+-define(LB(X), list_to_binary(X)).
+-spec get_as_json1(gb_tree(), [string()]) -> {struct, any()}.
+get_as_json1(Tree, Path) ->
+    run_ctl(Tree, Path, fun ctl_to_json/1).
+
+ctl_to_json(C) ->
+    ViewIter = gb_trees:iterator(C#control.views),
+    Views = {struct, view_to_json(gb_trees:next(ViewIter))},
+    {struct, [{champion, ?LB(C#control.champion)},
+              {challenger, ?LB(C#control.challenger)},
+              {views, Views}]}.
+
+view_to_json(none) -> [];
+view_to_json({V, View, Iter}) ->
+    Users = [?LB(U) || U <- gb_sets:to_list(View#view.users)],
+    Groups = [?LB(G) || G <- gb_sets:to_list(View#view.groups)],
+    S = {?LB(V), {struct, [{everyone, View#view.everyone},
+                           {users, Users},
+                           {groups, Groups}]}},
+    [S | view_to_json(gb_trees:next(Iter))].
+
+
+-spec dump_script(gb_tree()) -> [any()]. 
+dump_script1(Tree) ->
+    Iter = gb_trees:iterator(Tree),
+    dump_tree(gb_trees:next(Iter), []).
+
+dump_tree(none, _Path) -> [];
+dump_tree({{seg, S}, Tree2, Iter}, Path) ->
+    SubIter = gb_trees:iterator(Tree2),
+    SubTree = dump_tree(gb_trees:next(SubIter), Path ++ [S]),
+    [SubTree | dump_tree(gb_trees:next(Iter), Path)];
+dump_tree({control, C, Iter}, Path) ->
+    CD = dump_control(C, Path),
+    [CD | dump_tree(gb_trees:next(Iter), Path)].
+
+dump_control(C, Path) ->
+    Views = dump_views(gb_trees:to_list(C#control.views), Path),
+    Champion = case C#control.champion of
+                   [] -> [];
+                   Chmp -> {champion, [{path, Path},
+                                       {view, Chmp}]}
+               end,
+    Challenger = case C#control.challenger of
+                     [] -> [];
+                     Chal -> {challenger, [{path, Path},
+                                           {view, Chal}]}
+                 end,
+    [Views, Champion, Challenger].
+
+dump_views([], _) -> [];
+dump_views([{V, View} | Rest], Path) ->
+    Users = [{user, U} || U <- gb_sets:to_list(View#view.users)],
+    Groups = [{group, G} || G <- gb_sets:to_list(View#view.groups)],
+    Perms = Users ++ Groups ++ case View#view.everyone of
+                                   true -> [everyone];
+                                   false -> []
+                               end,
+    AddView = {add_view, [{path, Path},
+                          {perms, Perms},
+                          {view, V}]},
+    [AddView | dump_views(Rest, Path)].
+
 
 %%%===================================================================
 %%% Demo to show off how the permissions are stored...
@@ -904,232 +969,3 @@ unit_test_() ->
      SeriesD
      %%SeriesE
     ].
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Pretty Print
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
--define(LB(X), list_to_binary(X)).
--spec get_as_json1(gb_tree(), [string()]) -> {struct, any()}.
-get_as_json1(Tree, Path) ->
-    run_ctl(Tree, Path, fun ctl_to_json/1).
-
-ctl_to_json(C) ->
-    ViewIter = gb_trees:iterator(C#control.views),
-    Views = {struct, view_to_json(gb_trees:next(ViewIter))},
-    {struct, [{champion, ?LB(C#control.champion)},
-              {challenger, ?LB(C#control.challenger)},
-              {views, Views}]}.
-
-view_to_json(none) -> [];
-view_to_json({V, View, Iter}) ->
-    Users = [?LB(U) || U <- gb_sets:to_list(View#view.users)],
-    Groups = [?LB(G) || G <- gb_sets:to_list(View#view.groups)],
-    S = {?LB(V), {struct, [{everyone, View#view.everyone},
-                           {users, Users},
-                           {groups, Groups}]}},
-    [S | view_to_json(gb_trees:next(Iter))].
-
-
-%% -spec dump_script(gb_tree()) -> [any()]. 
-%% dump_script1(_TreeofTrees) ->
-%%     ok.
-
-
-%% dump_site(_Tree) ->
-%%     ok.
-
-
-    %%Iter = gb_trees:iterator(Tree),
-    
-%% dump_s1(Tree, Path, Acc) ->
-%%     List = gb_trees:to_list(Tree),
-%%     dump_s2(List, Path, Acc).
-
-%% dump_s2([], _Path, Acc)                 -> lists:flatten(lists:reverse(Acc));
-%% dump_s2([{control, C} | T], Path, Acc) -> NewAcc = write_control(Path, C),
-%%                                            dump_s2(T, Path, [NewAcc | Acc]);
-%% dump_s2([H | T], Path, Acc)             ->
-%%     NewAcc = dump_s3(H, Path, Acc),
-%%     dump_s2(T, Path, lists:flatten([NewAcc | Acc])).
-
-%% dump_s3([], _Path, Acc)               -> Acc;
-%% dump_s3({{seg, Path1}, H}, Path, Acc) -> dump_s1(H, [Path1 | Path], Acc).
-
-%% write_control(Path, C) -> write_c(Path, C, []).
-
-%% write_c(_Path, [], Acc)     -> lists:reverse(Acc);
-%% write_c(Path, [H | T], Acc) ->
-%%     #control{view = V, default = D, users = U, groups = G} = H,
-%%     NewAcc1 = {add_view,
-%%                [{path, lists:reverse(Path)},
-%%                 {view, [V]}]},
-%%     NewAcc2 = {add_users_and_groups,
-%%                [{path, lists:reverse(Path)},
-%%                 {view, V},
-%%                 {users, U},
-%%                 {groups, G}]},
-%%     case D of
-%%         false    -> write_c(Path, T, [NewAcc2, NewAcc1 | Acc]);
-%%         champion -> NewAcc3 = {set_champion,
-%%                                [{path, lists:reverse(Path)},
-%%                                 {view, V}]},
-%%                     write_c(Path, T, [NewAcc3, NewAcc2, NewAcc1 | Acc]);
-%%         challenger -> NewAcc3 = {set_challenger,
-%%                                  [{path, lists:reverse(Path)},
-%%                                   {view, V}]},
-%%                       write_c(Path, T, [NewAcc3, NewAcc2, NewAcc1 | Acc])
-%%     end.
-
-
-%% make_prettyprint(Tree, Site, html) ->
-%%     Body = make_pp(Tree, html, [], "", []),
-%%     "<html><head><title>Permissions Tree</title></head><body><code>"
-%%         "<bold>Permissions for " ++ Site ++
-%%         "</bold><br />" ++
-%%         Body ++ "</code></body></html>";
-%% make_prettyprint(Tree, Site, text) ->
-%%     "Permissions for " ++ Site ++ "~n" ++
-%%         make_pp(Tree, text, [], "", []).
-
-%% make_pp(Tree, Type, Seg, Prefix, Acc) ->
-%%     LineEnd = case Type of
-%%                   html -> "<br />";
-%%                   text -> "~n"
-%%               end,
-%%     List = gb_trees:to_list(Tree),
-%%     {Control, Paths} = split(List),
-%%     Seg2 = case Seg of
-%%                [] -> "/";
-%%                _  -> "/" ++ Seg ++ "/"
-%%            end,
-%%     NewPrefix = case {length(Paths), Type} of
-%%                     {0, text} -> lists:append(Prefix, "  ");
-%%                     {1, text} -> lists:append(Prefix, "  ");
-%%                     {_, text} -> lists:append(Prefix, " |");
-%%                     {0, html} -> lists:append(Prefix, "&nbsp;&nbsp;");
-%%                     {1, html} -> lists:append(Prefix, "&nbsp;&nbsp;");
-%%                     {_, html} -> lists:append(Prefix, "&nbsp;|")
-%%                 end,
-%%     C = pp(Control, Prefix, Type, []),
-%%     make_pp2(Paths, Type, NewPrefix,
-%%              [C, LineEnd, Seg2, "-> ", Prefix, LineEnd, Prefix | Acc]).
-
-%% make_pp2([], text, _Prefix, Acc) -> lists:flatten(lists:reverse(Acc));
-%% make_pp2([], html, _Prefix, Acc) -> lists:flatten(lists:reverse(Acc));
-%% make_pp2([{{seg, K}, V} | T], Type, Prefix, Acc) ->
-%%     NewAcc = make_pp(V, Type, K, Prefix, []),
-%%     make_pp2(T, Type, Prefix, [NewAcc | Acc]).
-
-%% pp([], Prefix, html, [])       -> Prefix ++ "&nbsp;&nbsp;&nbsp;(no control)"
-%%                                       ++ "<br />";
-%% pp([], Prefix, text, [])       -> Prefix ++ "   (no control)" ++ "~n";
-%% pp([], _Prefix, _Type, Acc)    -> lists:reverse(Acc);
-%% pp([{control, H} | T], Prefix, Type, Acc) ->
-%%     pp(T, Prefix, Type, [pp_c(H, Prefix, Type, [])| Acc]).
-
-
-%% pp_c([], _Prefix, _Type, Acc)    -> Acc;
-%% pp_c([H | T], Prefix, html, Acc) ->
-%%     #control{view = V, default = D, users = U, groups = G} = H,
-%%     NewAcc =
-%%         case D of
-%%             false ->
-%%                 Prefix ++ "&nbsp;&nbsp;&nbsp;view: " ++ V ++ "<br />"
-%%                     ++ Prefix ++ "&nbsp;&nbsp;&nbsp;&nbsp;users&nbsp; : "
-%%                     ++ make_list(U, []) ++ "<br />"
-%%                     ++ Prefix ++ "&nbsp;&nbsp;&nbsp;&nbsp;groups : "
-%%                     ++ make_list(G, []) ++ "<br />";
-%%             _ ->
-%%                 Prefix ++ "&nbsp;&nbsp;&nbsp;view: " ++ V ++ " ("
-%%                     ++ make_string(D) ++ ")<br />"
-%%                     ++ Prefix ++ "&nbsp;&nbsp;&nbsp;&nbsp;users&nbsp; : "
-%%                     ++ make_list(U, []) ++ "<br />"
-%%                     ++ Prefix ++ "&nbsp;&nbsp;&nbsp;&nbsp;groups : "
-%%                     ++ make_list(G, []) ++ "<br />"
-%%         end,
-%%     pp_c(T, Prefix, html, [NewAcc | Acc]);
-%% pp_c([H | T], Prefix, text, Acc) ->
-%%     #control{view = V, default = D, users = U, groups = G} = H,
-%%     NewAcc =
-%%         case D of
-%%             false ->
-%%                 Prefix ++ "   view: " ++ V ++ "~n"
-%%                     ++ Prefix ++ "    users  : " ++ make_list(U, []) ++ "~n"
-%%                     ++ Prefix ++ "    groups : " ++ make_list(G, []) ++ "~n";
-%%             _ ->
-%%                 Prefix ++ "   view: " ++ V ++ " ("++ make_string(D) ++ ")~n"
-%%                     ++ Prefix ++ "    users  : " ++ make_list(U, []) ++ "~n"
-%%                     ++ Prefix ++ "    groups : " ++ make_list(G, []) ++ "~n"
-%%         end,
-%%     pp_c(T, Prefix, text, [NewAcc | Acc]).
-
-%% make_string(champion)          -> "champion/default view";
-%% make_string(challenger)        -> "challenger";
-%% make_string(X) when is_list(X) -> X.
-
-%% make_list([], Acc)      -> string:strip(string:strip(Acc, right), right, $,);
-%% make_list([H | T], Acc) -> make_list(T, H ++ ", " ++ Acc).
-
-%% pp_l([], [])                       -> ""; % blank list is just blank!
-%% pp_l([], [_H | Acc])               -> lists:flatten(lists:reverse(Acc));
-%% pp_l([H | T], Acc) when is_atom(H) -> pp_l(T, [", ", atom_to_list(H) | Acc]);
-%% pp_l([H | T], Acc) when is_list(H) -> pp_l(T, [", ", H | Acc]).
-
-%% split(L) -> sp1(L, [], []).
-
-%% sp1([], Control, Paths)      -> {lists:sort(Control), lists:sort(Paths)};
-%% sp1([H | T], Control, Paths) ->
-%%     case element(1, H) of
-%%         control  -> sp1(T, [H | Control], Paths);
-%%         {seg, _S} -> sp1(T, Control, [H | Paths])
-%%     end.
-
-%% make_json(Tree) ->
-%%     List = gb_trees:to_list(Tree),
-%%     {array, [make_json1(K, V) || {K, V}  <- List]}.
-
-%% make_json1({seg, Seg}, V) ->
-%%     {struct, [{{path, Seg}, make_json(V)}]};
-%% make_json1(control, Ctrls) ->
-%%     {struct, [{control, {array, make_json2(Ctrls, [])}}]}.
-
-%% make_json2([], Acc)      -> Acc;
-%% make_json2([H | T], Acc) ->
-%%     #control{view = V, default = D, users = U, groups = G} = H,
-%%     NewAcc = {struct, [{view, V},
-%%                        {default, D},
-%%                        {users, {array, U}},
-%%                        {groups, {array, G}}]},
-%%     make_json2(T, [NewAcc | Acc]).
-
-%% get_for_pp(Tree, [], Fun) ->
-%%     Fun(Tree);
-%% get_for_pp(Tree, [H | T], Fun) ->
-%%     case gb_trees:lookup(H, Tree) of
-%%         none        -> check_programmatic(Tree, T, Fun);
-%%         {value , V} -> get_for_pp(V, T, Fun)
-%%     end.
-
-%% dump_script1(Tree) -> dump_s1(Tree, [], []).
-
-%% permissions_debug1(Tree, {_U, _Gs}, Path) ->
-%%     Fun =
-%%         fun(_X) ->
-%%                 ok
-%%         end,
-%%     run_ctl(Tree, Path, Fun).
-
-%% get_as_json1(Tree, Path) ->
-%%     Fun = fun(X) ->
-%%                   make_json(X)
-%%           end,
-%%     get_for_pp(Tree, Path, Fun).
-
-%% pretty_print1(Tree, Site, Path, Type) ->
-%%     Fun = fun(X) ->
-%%                   make_prettyprint(X, Site, Type)
-%%           end,
-%%     get_for_pp(Tree, Path, Fun).
-
