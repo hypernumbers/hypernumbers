@@ -442,7 +442,8 @@ force_terminal([H | T]) ->
 -spec run_ctl(gb_tree(), [string()], fun((#control{}) -> X)) -> X.
 run_ctl(Tree, Path, Fun) ->
     CtlNorm = seek_ctl_normal(Path, Tree),
-    CtlWild = seek_ctl_wild(Path, Tree),
+    CtlWild = seek_ctl_wild(Path, Tree, none),
+    io:format("Wild: ~p~n", [CtlWild]),
     Fun(merge_ctl(CtlNorm, CtlWild)).
                 
 -spec seek_ctl_normal([string()], gb_tree()) -> none | #control{}. 
@@ -459,17 +460,23 @@ seek_ctl_normal([H | Rest], Tree) ->
         {value, Tree2} -> seek_ctl_normal(Rest, Tree2)
     end.
 
--spec seek_ctl_wild([string()], gb_tree()) -> none | #control{}. 
-seek_ctl_wild([], _Tree) ->
-    none;
-seek_ctl_wild([H | Rest], Tree) ->
+-spec seek_ctl_wild([string()], gb_tree(), none) -> none | #control{}. 
+seek_ctl_wild([], _Tree, AccCtl) ->
+    AccCtl;
+seek_ctl_wild([H | Rest], Tree, AccCtl) ->
+    io:format("Header ~p~n", [H]),
     case gb_trees:lookup({seg, "[**]"}, Tree) of
         none -> 
             case gb_trees:lookup({seg, H}, Tree) of
-                none -> none;
-                {value, Tree2} -> seek_ctl_wild(Rest, Tree2)
+                none -> AccCtl;
+                {value, Tree2} -> seek_ctl_wild(Rest, Tree2, AccCtl)
             end;
-        {value, Tree2} -> get_control(Tree2)
+        {value, TreeWild} -> 
+            AccCtl2 = merge_ctl(get_control(TreeWild), AccCtl),
+            case gb_trees:lookup({seg, H}, Tree) of
+                none -> AccCtl2; 
+                {value, Tree2} -> seek_ctl_wild(Rest, Tree2, AccCtl2)
+            end
     end.
 
 
@@ -827,7 +834,20 @@ testD7() ->
     Tree2 = add_view1(Tree1, P2, [{user, "dale"}], "other view"),
     Ret = check_particular_view1(Tree2, P2, {"dale", []}, "i/love/spreadsheets"),
     ?assertEqual({html, "i/love/spreadsheets"}, Ret).
-    
+
+
+%% Test multiple wild cards
+testD8() ->
+    P1 = ["[**]"],
+    P2 = ["u", "dale", "sheet", "[**]"],
+    P3 = ["u", "dale", "sheet", "new"],
+    Tree1 = add_view1(gb_trees:empty(), P1, [{user, "dale"}], "global_stuff"),
+    Tree2 = add_view1(Tree1, P2, [{user, "dale"}], "i/love/spreadsheets"),
+    Tree3 = set_default(Tree2, P1, "global_stuff", champion),
+    Tree4 = set_default(Tree3, P2, "i/love/spreadsheets", champion),
+    Ret = get_views1(Tree4, P3, {"dale", []}),
+    ?assertEqual(["global_stuff", "i/love/spreadsheets"], lists:sort(Ret)).
+
 testE1() ->
     P = [],
     Tree = add_view1(gb_trees:empty(), P, [{user, "gordon"}, {group, "admin"}],
@@ -874,7 +894,8 @@ unit_test_() ->
                fun testD4/0,
                fun testD5/0,
                fun testD6/0,
-               fun testD7/0 ],
+               fun testD7/0,
+               fun testD8/0 ],
 
     _SeriesE = [fun testE1/0,
                fun testE2/0],
