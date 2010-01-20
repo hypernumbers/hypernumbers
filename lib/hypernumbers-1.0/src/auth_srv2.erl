@@ -24,14 +24,13 @@
          set_champion/3,
          set_challenger/3,
          remove_views/4,
-         get_as_json/2
-         %% dump_script/1
+         get_as_json/2,
+         dump_script/1
         ]).
 
 -export([
          clear_all_perms_DEBUG/1,
          demo_DEBUG/0
-         %% permissions_DEBUG/3,
         ]).
 
 %% gen_server callbacks
@@ -97,17 +96,11 @@ remove_views(Site, Path, AuthSpec, Views) ->
 get_as_json(Site, Path) ->
     gen_server:call(?MODULE, {get_as_json, Site, Path}).
 
-%% pretty_print(Site, Path, Type) ->
-%%     gen_server:call(?MODULE, {pretty_print, Site, Path, Type}).
-
-%% dump_script(Site) ->
-%%     gen_server:call(?MODULE, {dump_script, Site}).
+dump_script(Site) ->
+    gen_server:call(?MODULE, {dump_script, Site}).
 
 clear_all_perms_DEBUG(Site) ->
     gen_server:call(?MODULE, {clear_all_perms, Site}).
-
-%% permissions_DEBUG(Site, AuthSpec, Path) -> 
-%%     gen_server:call(?MODULE, {permissions_debug, Site, AuthSpec, Path}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -447,29 +440,79 @@ force_terminal([H | T]) ->
      end.
 
 -spec run_ctl(gb_tree(), [string()], fun((#control{}) -> X)) -> X.
-run_ctl(Tree, [], Fun) ->
-    Fun(get_control(Tree));
-run_ctl(Tree, [W="[*]" | T], Fun) ->
+run_ctl(Tree, Path, Fun) ->
+    CtlNorm = seek_ctl_normal(Path, Tree),
+    CtlWild = seek_ctl_wild(Path, Tree),
+    Fun(merge_ctl(CtlNorm, CtlWild)).
+                
+-spec seek_ctl_normal([string()], gb_tree()) -> none | #control{}. 
+seek_ctl_normal([], Tree) ->
+    get_control(Tree);
+seek_ctl_normal([W="[*]" | Rest], Tree) ->
     case gb_trees:lookup({seg, W}, Tree) of
-        none -> run_ctl(Tree, ["[**]" | T], Fun);
-        {value, V} -> run_ctl(V, T, Fun)
+        none -> none;
+        {value, Tree2} -> seek_ctl_normal(Rest, Tree2)
     end;
-run_ctl(Tree, [W="[**]" | _T], Fun) ->
-    case gb_trees:lookup({seg, W}, Tree) of
-        none -> Fun(get_control(leaf));
-        {value, V} -> Fun(get_control(V))
-    end;
-run_ctl(Tree, [H | T], Fun) ->
+seek_ctl_normal([H | Rest], Tree) ->
     case gb_trees:lookup({seg, H}, Tree) of
-        none -> run_ctl(Tree, ["[*]" | T], Fun);
-        {value, V} -> run_ctl(V, T, Fun)
+        none -> seek_ctl_normal(["[*]" | Rest], Tree);
+        {value, Tree2} -> seek_ctl_normal(Rest, Tree2)
     end.
 
--spec get_control(leaf | gb_tree()) -> #control{}.
-get_control(leaf) -> #control{};
+-spec seek_ctl_wild([string()], gb_tree()) -> none | #control{}. 
+seek_ctl_wild([], _Tree) ->
+    none;
+seek_ctl_wild([H | Rest], Tree) ->
+    case gb_trees:lookup({seg, "[**]"}, Tree) of
+        none -> 
+            case gb_trees:lookup({seg, H}, Tree) of
+                none -> none;
+                {value, Tree2} -> seek_ctl_wild(Rest, Tree2)
+            end;
+        {value, Tree2} -> get_control(Tree2)
+    end.
+
+
+%% Most effecient if the smaller tree is on the right, and due to the
+%% way champions and challengers are merged, wilds should be on the right.
+-spec merge_ctl(none | #control{}, none | #control{}) -> #control{}. 
+merge_ctl(none, none) -> #control{}; 
+merge_ctl(C, none) -> C;
+merge_ctl(none, C) -> C;
+merge_ctl(C1, C2) ->
+    Champion = merge_left(C1#control.champion, C2#control.champion),
+    Challenger = merge_left(C1#control.challenger, C2#control.challenger),
+    Views = merge_left_views(C1#control.views, C2#control.views),
+    #control{champion = Champion,
+             challenger = Challenger,
+             views = Views}.
+
+merge_left_views(ViewsL, ViewsR) ->
+    KVs = gb_trees:to_list(ViewsR),
+    lists:foldl(fun add_to_views/2, ViewsL, KVs).
+
+add_to_views({V, NewView}, Views) ->
+    case gb_trees:lookup(V, Views) of
+        none ->
+            gb_trees:insert(V, NewView, Views);
+        {value, CurView} ->
+            Everyone = merge_left(CurView#view.everyone, NewView#view.everyone),
+            Users = gb_sets:union(CurView#view.users, NewView#view.users),
+            Groups = gb_sets:union(CurView#view.groups, NewView#view.groups),
+            Merged = #view{everyone = Everyone,
+                           users = Users,
+                           groups = Groups},
+            gb_trees:enter(V, Merged, Views)
+    end.
+                
+merge_left([], C) -> C; 
+merge_left(C, []) -> C;
+merge_left(C, _) -> C.
+    
+-spec get_control(gb_tree()) -> none | #control{}.
 get_control(Tree) ->
     case gb_trees:lookup(control, Tree) of
-        none       -> #control{};
+        none       -> none;
         {value, V} -> V
     end.
 
@@ -544,6 +587,14 @@ testA4(P) ->
     Tree1 = add_view1(gb_trees:empty(), P, UGs, "my view"),
     Tree2 = set_default(Tree1, P, "my view", champion),
     Ret = check_particular_view1(Tree2, P, {"nowhereman", []}, "my view"),
+    ?assertEqual({html, "my view"}, Ret).
+
+%% Get any view
+testA5(P) ->
+    UGs = [{user, "gordon"}, {group, "admin"}],
+    Tree1 = add_view1(gb_trees:empty(), P, UGs, "my view"),
+    Tree2 = set_default(Tree1, P, "my view", champion),
+    Ret = check_get_view1(Tree2, P, {"gordon", []}, any),
     ?assertEqual({html, "my view"}, Ret).
 
 testA7(P) ->
@@ -767,8 +818,16 @@ testD6() ->
                       "banjo"),
     Tree8 = set_default(Tree7, P1, "blurgh", champion),
     Ret = check_get_view1(Tree8, P1, {"Fail", ["admin"]}, champion),
-    ?assertEqual(Ret, {html, "blurgh"}).
+    ?assertEqual({html, "blurgh"}, Ret).
 
+testD7() ->
+    P1 = ["[**]"],
+    P2 = ["u", "dale", "sheet"],
+    Tree1 = add_view1(gb_trees:empty(), P1, [{user, "dale"}], "i/love/spreadsheets"),
+    Tree2 = add_view1(Tree1, P2, [{user, "dale"}], "other view"),
+    Ret = check_particular_view1(Tree2, P2, {"dale", []}, "i/love/spreadsheets"),
+    ?assertEqual({html, "i/love/spreadsheets"}, Ret).
+    
 testE1() ->
     P = [],
     Tree = add_view1(gb_trees:empty(), P, [{user, "gordon"}, {group, "admin"}],
@@ -798,6 +857,7 @@ unit_test_() ->
                fun testA2/1,
                fun testA3/1,
                fun testA4/1,
+               fun testA5/1,
                fun testA7/1,
                fun testA8/1,
                fun testA10/1,
@@ -813,7 +873,8 @@ unit_test_() ->
                fun testD3/0,
                fun testD4/0,
                fun testD5/0,
-               fun testD6/0 ],
+               fun testD6/0,
+               fun testD7/0 ],
 
     _SeriesE = [fun testE1/0,
                fun testE2/0],
@@ -831,6 +892,7 @@ unit_test_() ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -define(LB(X), list_to_binary(X)).
+-spec get_as_json1(gb_tree(), [string()]) -> {struct, any()}.
 get_as_json1(Tree, Path) ->
     run_ctl(Tree, Path, fun ctl_to_json/1).
 
@@ -844,14 +906,23 @@ ctl_to_json(C) ->
 view_to_json(none) -> [];
 view_to_json({V, View, Iter}) ->
     Users = [?LB(U) || U <- gb_sets:to_list(View#view.users)],
-    Groups = [?LB(U) || U <- gb_sets:to_list(View#view.groups)],
+    Groups = [?LB(G) || G <- gb_sets:to_list(View#view.groups)],
     S = {?LB(V), {struct, [{everyone, View#view.everyone},
                            {users, Users},
                            {groups, Groups}]}},
     [S | view_to_json(gb_trees:next(Iter))].
 
 
+%% -spec dump_script(gb_tree()) -> [any()]. 
+%% dump_script1(_TreeofTrees) ->
+%%     ok.
 
+
+%% dump_site(_Tree) ->
+%%     ok.
+
+
+    %%Iter = gb_trees:iterator(Tree),
     
 %% dump_s1(Tree, Path, Acc) ->
 %%     List = gb_trees:to_list(Tree),
