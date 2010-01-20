@@ -443,7 +443,6 @@ force_terminal([H | T]) ->
 run_ctl(Tree, Path, Fun) ->
     CtlNorm = seek_ctl_normal(Path, Tree),
     CtlWild = seek_ctl_wild(Path, Tree, none),
-    io:format("Wild: ~p~n", [CtlWild]),
     Fun(merge_ctl(CtlNorm, CtlWild)).
                 
 -spec seek_ctl_normal([string()], gb_tree()) -> none | #control{}. 
@@ -464,7 +463,6 @@ seek_ctl_normal([H | Rest], Tree) ->
 seek_ctl_wild([], _Tree, AccCtl) ->
     AccCtl;
 seek_ctl_wild([H | Rest], Tree, AccCtl) ->
-    io:format("Header ~p~n", [H]),
     case gb_trees:lookup({seg, "[**]"}, Tree) of
         none -> 
             case gb_trees:lookup({seg, H}, Tree) of
