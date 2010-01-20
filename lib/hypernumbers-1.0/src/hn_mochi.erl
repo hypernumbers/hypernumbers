@@ -82,7 +82,7 @@ do_req(Req) ->
 
     Name    = hn_users:name(User),
     Groups  = hn_users:groups(User),    
-    AuthRet = authorize(Name, Groups, Method, Ref, Vars),
+    AuthRet = authorize(Name, Groups, Method, Ref, Vars, content_type(Req)),
 
     case AuthRet of
         %% these are the returns for the GET's
@@ -805,20 +805,21 @@ content_type(Req) ->
     end.
 
 -spec authorize(string(), [string()],
-                'GET' | 'PUT',
+               'GET' | 'PUT',
                 #refX{},
-                [{string(), any()}])
+                [{string(), any()}],
+               'json' | 'html')
                -> {return, integer()} | {html, string()} | true | false.
-authorize(_User, _Groups, 'GET', _Ref, [{"updates", _Time}, {"path", _P}]) ->
-    % TODO: apply permissions to updates
+
+authorize(_User, _Groups, 'GET', #refX{site = _Site, path = _Path}, [], json) ->
     true;
-authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, []) ->
+authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, [], html) ->
     auth_srv2:check_get_view(Site, Path, {User, Groups});
 authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
-         [{"view", View}]) ->
+         [{"view", View}], _Type) ->
     auth_srv2:check_particular_view(Site, Path, {User, Groups}, View);
 authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
-         [{"challenger", true}]) ->
+         [{"challenger", true}], _Type) ->
     auth_srv2:check_get_challenger(Site, Path, {User, Groups});
 %% authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, Vars) ->
 %%     case lists:keyfind("path", 1, Vars) of
@@ -831,10 +832,11 @@ authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
 %%         false ->
 %%             auth_srv:check_get_page(Site, {User, Groups}, Path)
 %%     end;
-authorize(_User, _Groups, 'POST', #refX{site = _Site, path = _Path}, _Vars) ->
+authorize(_User, _Groups, 'POST', #refX{site = _Site, path = _Path}, _Vars,
+          _Type) ->
     %%auth_srv:can_write(Site, {User, Groups}, Path).
     true; %% TODO: hook in security transaction
-authorize(User, Groups, Req, Ref, Vars) ->
+authorize(User, Groups, Req, Ref, Vars, _Type) ->
     io:format("HACK ALLOW~nuser: ~p group~p~nreq:~p~nref:~p~nvars:~p~n",
               [User, Groups, Req, Ref, Vars]),
     true.
