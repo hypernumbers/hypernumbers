@@ -178,16 +178,18 @@ iget(Req, Ref, page, [{"updates", Time}, {"path", Path}], _User, _CType) ->
 iget(Req, #refX{site = S}, page, [{"status", []}], _User, _CType) -> 
     json(Req, status_srv:get_status(S));
 
-iget(Req, #refX{site = S}, page, [{"permissions", []}], _User, _CType) ->
-    Req:ok({"text/html", auth_srv:pretty_print(S, [], html)});
+iget(Req, #refX{site = S, path  = P}, page, [{"permissions", []}], 
+     _User, _CType) ->
+    Data = auth_srv2:get_as_json(S, P),
+    json2(Req, Data);
 
 iget(Req, #refX{site = S}, page, [{"users", []}], _User, _CType) ->
     Req:ok({"text/html", hn_users:prettyprint_DEBUG(S)});
 
-iget(Req, #refX{site = S, path = P}, page, [{"permissions_debug", []}], User, _CType) ->
-    Name    = hn_users:name(User),
-    Groups  = hn_users:groups(User),
-    Req:ok({"text/html", auth_srv:permissions_DEBUG(S, {Name, Groups}, P)});
+%% iget(Req, #refX{site = S, path = P}, page, [{"permissions_debug", []}], User, _CType) ->
+%%     Name    = hn_users:name(User),
+%%     Groups  = hn_users:groups(User),
+%%     Req:ok({"text/html", auth_srv:permissions_DEBUG(S, {Name, Groups}, P)});
 
 % List of template pages
 iget(Req, Ref, page, [{"templates", []}], _User, _CType) ->
@@ -728,6 +730,10 @@ get_lang(User) ->
 
 json(Req, Data) ->
     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
+    Req:ok({"application/json", ?hdr, Json}).
+
+json2(Req, Data) ->
+    Json = (mochijson2:encoder([{utf8, true}]))(Data),
     Req:ok({"application/json", ?hdr, Json}).
 
 fix_up(List, S, P) ->

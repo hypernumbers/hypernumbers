@@ -23,8 +23,8 @@
          add_view/4,
          set_champion/3,
          set_challenger/3,
-         remove_views/4
-         %% get_as_json/2,
+         remove_views/4,
+         get_as_json/2
          %% dump_script/1
         ]).
 
@@ -94,8 +94,8 @@ set_challenger(Site, Path, View) ->
 remove_views(Site, Path, AuthSpec, Views) ->
     gen_server:call(?MODULE, {rem_views, Site, Path, AuthSpec, Views}).
 
-%% get_as_json(Site, Path) ->
-%%     gen_server:call(?MODULE, {get_as_json, Site, Path}).
+get_as_json(Site, Path) ->
+    gen_server:call(?MODULE, {get_as_json, Site, Path}).
 
 %% pretty_print(Site, Path, Type) ->
 %%     gen_server:call(?MODULE, {pretty_print, Site, Path, Type}).
@@ -162,12 +162,12 @@ handle_call(Request, _From, State) ->
                 {Site, set_default(tree(Site, Tr), Pg, Df, champion), true};
             {set_challenger, Site, Pg, Df} ->
                 {Site, set_default(tree(Site, Tr), Pg, Df, challenger), true};
-            {rem_views, Site, Pg, Vs} ->
-                {Site, remove_views1(tree(Site, Tr), Pg, Vs), true};
+            {rem_views, Site, P, Vs} ->
+                {Site, remove_views1(tree(Site, Tr), P, Vs), true};
+            {get_as_json, Site, P} ->
+                {Site, get_as_json1(tree(Site, Tr), P), false};
             {clear_all_perms, Site} ->
                 {Site, gb_trees:empty(), true}
-            %% {get_as_json, Site, Pg} ->
-            %%     {Site, get_as_json1(tree(Site, Tr), Pg), false};
             %% {pretty_print, Site, Pg, Type} ->
             %%     {Site, pretty_print1(tree(Site, Tr), Site, Pg, Type), false};
             %% {dump_script, Site} ->
@@ -234,7 +234,6 @@ terminate(_Reason, _State) ->
 %%--------------------------------------------------------------------
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
-
 
 %%%===================================================================
 %%% Internal functions
@@ -831,6 +830,29 @@ unit_test_() ->
 %% Pretty Print
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+-define(LB(X), list_to_binary(X)).
+get_as_json1(Tree, Path) ->
+    run_ctl(Tree, Path, fun ctl_to_json/1).
+
+ctl_to_json(C) ->
+    ViewIter = gb_trees:iterator(C#control.views),
+    Views = {struct, view_to_json(gb_trees:next(ViewIter))},
+    {struct, [{champion, ?LB(C#control.champion)},
+              {challenger, ?LB(C#control.challenger)},
+              {views, Views}]}.
+
+view_to_json(none) -> [];
+view_to_json({V, View, Iter}) ->
+    Users = [?LB(U) || U <- gb_sets:to_list(View#view.users)],
+    Groups = [?LB(U) || U <- gb_sets:to_list(View#view.groups)],
+    S = {?LB(V), {struct, [{everyone, View#view.everyone},
+                           {users, Users},
+                           {groups, Groups}]}},
+    [S | view_to_json(gb_trees:next(Iter))].
+
+
+
+    
 %% dump_s1(Tree, Path, Acc) ->
 %%     List = gb_trees:to_list(Tree),
 %%     dump_s2(List, Path, Acc).
