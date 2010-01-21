@@ -837,9 +837,9 @@ authorize(_User, _Groups, 'POST', #refX{site = _Site, path = _Path}, _Vars,
           _Type) ->
     %%auth_srv:can_write(Site, {User, Groups}, Path).
     true; %% TODO: hook in security transaction
-authorize(User, Groups, Req, Ref, Vars, _Type) ->
-    io:format("HACK ALLOW~nuser: ~p group~p~nreq:~p~nref:~p~nvars:~p~n",
-              [User, Groups, Req, Ref, Vars]),
+authorize(_User, _Groups, _Req, _Ref, _Vars, _Type) ->
+    %% io:format("HACK ALLOW~nuser: ~p group~p~nreq:~p~nref:~p~nvars:~p~n",
+    %%           [User, Groups, Req, Ref, Vars]),
     true.
 
 '500'(Req, Error) ->

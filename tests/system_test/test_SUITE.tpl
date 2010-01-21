@@ -9,25 +9,24 @@
 -include(~p).
 
 init_per_suite(Config) ->
+    Target = ~p,
+    Test = ~p,
     InitSite = fun(S) ->
-                       reset_perms(S),
+                       reset_perms(S, Test),
                        hn_db_api:wait_for_dirty(S)
                end,
-    [InitSite(S) || S <- sites()], 
+    [InitSite(S) || S <- sites()],
     inets:start(http, [{profile, systest}]),
-    testsys:restore(~p, ~p, systest),
+    testsys:restore(Target, Test, systest),
     actions(),
     timer:sleep(2000),
     [hn_db_api:wait_for_dirty(S) || S <- sites()], 
     Config.
 
-reset_perms(Site) ->
-    View = "_global/spreadsheet",
-    auth_srv2:clear_all_perms_DEBUG(Site),
-    auth_srv2:add_view(Site, [], [everyone], View),
-    auth_srv2:add_view(Site, ["[**]"], [everyone], View),
-    auth_srv2:set_champion(Site, [], View),
-    auth_srv2:set_champion(Site, ["[**]"], View).
+reset_perms(Site, Test) ->
+    View = "_g/core/spreadsheet",
+    auth_srv2:add_view(Site, [Test], [everyone], View),
+    auth_srv2:set_champion(Site, [Test], View).
 
 end_per_suite(_Config) ->
     inets:stop(http, systest).

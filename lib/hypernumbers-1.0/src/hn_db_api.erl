@@ -1060,9 +1060,10 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp) ->
     % if this is a delete - we need to actually delete the cells
 
     hn_db_wu:mark_children_dirty(RefX),
-        
     ReWr = do_delete(Type, RefX),
-    hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
+    MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
+    hn_db_wu:mark_these_dirty(MoreDirty),
+
     case Obj of
         {row,    _} ->
             ok = hn_db_wu:delete_row_objs(RefX),

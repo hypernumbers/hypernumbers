@@ -520,6 +520,7 @@
          copy_style/2,
          get_cells/1,
          mark_children_dirty/1,
+         mark_these_dirty/1,
          mark_dirty/2,
          mark_notify_out_dirty/2,            
          mark_notify_out_dirty/3,      
@@ -1327,7 +1328,7 @@ make_refXs3A(Site, #local_objs{path = P, obj = O} = LocalObj, [H | T], Acc) ->
     NewAcc = {#refX{site = Site, path = P, obj = O}, {K,V}},
     make_refXs3A(Site, LocalObj, T, [NewAcc | Acc]).
 
--spec shift_cells(#refX{}, any(), any(), any()) -> any().
+-spec shift_cells(#refX{}, any(), any(), any()) -> [#refX{}].
 %% Status = list()
 %% @doc shift_cells takes a range, row or column and shifts it by the offset.
 %% The list of cells that are passed in as Rewritten are not to be rewritten
@@ -1373,17 +1374,18 @@ shift_cells(From, Type, Disp, Rewritten)
             FormulaList1 = [Fun1(X) || X <- DedupedChildren],
             FormulaList2 = hslists:uniq(lists:flatten(FormulaList1)),
 
-            Fun2 = fun({RefX, {"formula", F1}}, Acc) ->
-                           {St, F2} = offset_fm_w_rng(RefX, F1, From, {XO, YO}),
+            Fun2 = fun({ChildRef, {"formula", F1}}, Acc) ->
+                           {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XO, YO}),
                            %% this is the wrong test, if a link crosses the
                            %% deleted border either way, recalc is needed
-                           ok = write_attr3(RefX, {"formula", F2}),
+                           ok = write_attr3(ChildRef, {"formula", F2}),
                            case St of
                                clean  -> Acc;
-                               dirty -> [{dirty, RefX} | Acc]
+                               dirty -> [ChildRef | Acc]
                            end
                    end,
-            lists:foldl(Fun2, [], FormulaList2),              
+            DirtyChildren = lists:foldl(Fun2, [], FormulaList2),
+
             %% now shift the actual cells
             %% - first up adjust the local_objs table 
             %%   - read all the cell indices
@@ -1405,7 +1407,7 @@ shift_cells(From, Type, Disp, Rewritten)
             ok = delete_recs(Site, Cells),
             [ok = mnesia:write(trans(Site, local_objs), X, write) 
              || X <- NewCells],
-            ok
+            DirtyChildren
     end.
 
 shift_cells1(From, To) when is_record(From, refX), is_record(To, refX) ->
@@ -1925,6 +1927,19 @@ mark_dirty(Site, Record)
     Tbl = trans(Site, element(1,Record)),
     mnesia:write(Tbl, Record, write).
 
+-spec mark_these_dirty([#refX{}]) -> ok.
+mark_these_dirty([]) -> ok;
+mark_these_dirty(Refs = [#refX{site = Site}|_]) ->
+    F = fun(C) -> case read_local_item_index(C) of
+                    false -> []; 
+                    Idx -> Idx end
+        end,
+    Tbl = trans(Site, relation),
+    Idxs = lists:flatten([F(C) || R <- Refs, C <- get_cells(R)]),
+    Q = insert_dirty_queue(Idxs, Tbl, -1, hn_workq:new()),
+    Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
+    ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
+    
 -spec mark_children_dirty(#refX{}) -> ok. 
 mark_children_dirty(#refX{site = Site} = RefX) ->
     Tbl = trans(Site, relation),
@@ -2739,11 +2754,6 @@ get_local_children(#refX{site = Site} = X) ->
     [local_idx_to_refX(Site, C) || C <- ChildIdxs].
     
 -spec get_local_children_idxs(#refX{}) -> [cellidx()]. 
-get_local_children_idxs(#refX{obj = {Type, _}} = Ref) 
-  when (Type == row) orelse (Type == column) orelse 
-       (Type == range) orelse (Type == page) ->
-    Cells = get_cells(Ref),
-    lists:flatten([get_local_children_idxs(X) || X <- Cells]);
 get_local_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
     case read_local_item_index(Ref) of
         false -> 
@@ -2754,7 +2764,13 @@ get_local_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
                 [R] -> R#relation.children;
                 _   -> []
             end
-    end.
+    end;
+get_local_children_idxs(#refX{obj = {Type, _}} = Ref) 
+  when (Type == row) orelse (Type == column) orelse 
+       (Type == range) orelse (Type == page) ->
+    Cells = get_cells(Ref),
+    lists:flatten([get_local_children_idxs(X) || X <- Cells]).
+
 
 -spec delete_local_relation(cellidx()) -> ok.
 delete_local_relation(#refX{site = Site} = Cell) ->
