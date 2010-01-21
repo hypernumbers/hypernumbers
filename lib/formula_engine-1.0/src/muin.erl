@@ -231,9 +231,9 @@ call_fun(Fun, Args, [Module | Rest]) ->
 get_modules() ->
     [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date,
      stdfuns_financial, stdfuns_info, stdfuns_lookup_ref,
-     stdfuns_eng, stdfuns_logical, stdfuns_text, stdfuns_db].
+     stdfuns_eng, stdfuns_logical, stdfuns_text, stdfuns_db, hnfuns_graphs].
 
-%%% Utility functios ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% Intersect current cell with a range.
 implicit_intersection(R) when ?is_rangeref(R) ->
     case R#rangeref.type of
