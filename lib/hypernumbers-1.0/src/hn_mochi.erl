@@ -1,31 +1,21 @@
-%%% @author Dale Harvey
 %%% @copyright 2008 Hypernumbers Ltd
 %%% @doc Handle Hypernumbers HTTP requests
 -module(hn_mochi).
 
--include("regexp.hrl").
 -include("spriki.hrl").
--include("handy_macros.hrl").
--include("hypernumbers.hrl").
 
 -include_lib("kernel/include/file.hrl").
 -include("gettext.hrl").
 
--export([ req/1, style_to_css/2, docroot/1 ]).
+-export([ req/1,
+          style_to_css/2,
+          docroot/1,
+          page_attributes/2,
+          get_json_post/1 % Used for mochilog replay rewrites
+         ]).
 
--export([page_attributes/2]).
 
--export([get_json_post/1]). % Used for mochilog replay rewrites
-
--define(hdr,[{"Cache-Control","no-store, no-cache, must-revalidate"},
-             {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
-             {"Pragma",       "no-cache"}]).
-
--define(html, [{"Content-Type", "text/html"} | ?hdr]).
-
--define(exit, 
-        exit("exit from hn_mochi:handle_req impossible page versions")).
-
+-spec req(any()) -> ok.
 req(Req) ->
 
     #refX{site = Site} = hn_util:parse_url(get_host(Req)),
@@ -35,7 +25,7 @@ req(Req) ->
         % Dont Cache templates
         X when X == ".tpl" ->
             "/"++RelPath = Req:get(path),
-            Req:serve_file(RelPath, docroot(Site), ?hdr);            
+            Req:serve_file(RelPath, docroot(Site), nocache());
         
         % Serve Static Files
         X when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; 
@@ -46,10 +36,13 @@ req(Req) ->
         [] ->
             case catch do_req(Req) of 
                 ok   -> ok;
-                Else -> '500'(Req, Else)
+                Else ->
+                    '500'(Req, Else),
+                    ok
             end
     end.
-    
+
+-spec do_req(any()) -> ok.
 do_req(Req) ->
     
     #refX{site = Site} = Ref = hn_util:parse_url(get_host(Req)),
@@ -88,10 +81,10 @@ do_req(Req) ->
         %% these are the returns for the GET's
         {return, 404} ->
             serve_html(404, Req,
-                       [docroot(Site), "/views/_g/core/404.html"], User);
+                       [viewroot(Site), "/_g/core/404.html"], User);
         {return, 401} ->
             serve_html(401, Req,
-                       [docroot(Site), "/views/_g/core/login.html"], User);
+                       [viewroot(Site), "/_g/core/login.html"], User);
         {html, File}    ->
             case Vars of
                 [] -> handle_req(Method, Req, Ref, [{"view", File}], User);
@@ -128,7 +121,7 @@ handle_req(Method, Req, Ref, Vars, User) ->
                     
                     mochilog:log(Req, Ref, hn_users:name(User), {upload, Name}),
                     Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
-                    Req:ok({"text/html", ?hdr, Json});
+                    Req:ok({"text/html", nocache(), Json});
                 
                 % Normal Post Requests
                 _Else ->
@@ -152,17 +145,14 @@ iget(Req, Ref=#refX{path=["_user", "login"]}, page, [], User, html) ->
 
 iget(Req, #refX{site = Site} = _Ref, page, [{"view", FName}, {"template", []}],
      User, html) ->
-    serve_html(Req, [docroot(Site), "/views/", FName, ".tpl"], User);
-    
-iget(Req, #refX{site = Site} = _Ref, page, [{"view", FName}], User, html) ->
+    serve_html(Req, [viewroot(Site), "/", FName, ".tpl"], User);    
 
-    %% If there is a template, generate html
-    Tpl  = [docroot(Site), "/views/", FName, ".tpl"],
-    Html = [docroot(Site), "/views/", FName, ".html"],
+iget(Req, #refX{site = Site} = _Ref, page, [{"view", FName}], User, html) ->
     
-    ok = case filelib:is_file(Tpl) andalso
-             (not(filelib:is_file(Html)) orelse
-              hn_util:is_older(Html, Tpl) ) of
+    Tpl  = [viewroot(Site), "/", FName, ".tpl"],
+    Html = [viewroot(Site), "/", FName, ".html"],
+    
+    ok = case should_regen(Tpl, Html) of
              true -> ok = build_tpl(Site, FName);
              _    -> ok
          end,
@@ -181,16 +171,10 @@ iget(Req, #refX{site = S}, page, [{"status", []}], _User, _CType) ->
 
 iget(Req, #refX{site = S, path  = P}, page, [{"permissions", []}], 
      _User, _CType) ->
-    Data = auth_srv2:get_as_json(S, P),
-    json2(Req, Data);
+    json2(Req, auth_srv2:get_as_json(S, P));
 
 iget(Req, #refX{site = S}, page, [{"users", []}], _User, _CType) ->
     Req:ok({"text/html", hn_users:prettyprint_DEBUG(S)});
-
-%% iget(Req, #refX{site = S, path = P}, page, [{"permissions_debug", []}], User, _CType) ->
-%%     Name    = hn_users:name(User),
-%%     Groups  = hn_users:groups(User),
-%%     Req:ok({"text/html", auth_srv:permissions_DEBUG(S, {Name, Groups}, P)});
 
 % List of template pages
 iget(Req, Ref, page, [{"templates", []}], _User, _CType) ->
@@ -209,8 +193,8 @@ iget(Req, Ref, page, [{"templates", []}], _User, _CType) ->
 % List of views available to edit
 iget(Req, #refX{site = Site} = _Ref, page, [{"views", []}], User, _CType) ->
 
-    Dirs = [ "/views/_u/"++hn_users:name(User)++"/"
-             | [ "/views/_g/"++Group++"/" || Group <- hn_users:groups(User)] ],
+    Dirs = [ "/_u/"++hn_users:name(User)++"/"
+             | [ "/_g/"++Group++"/" || Group <- hn_users:groups(User)] ],
     
     Strip = fun(FileName) ->
                     [File, Name, Pre | _ ]
@@ -219,7 +203,7 @@ iget(Req, #refX{site = Site} = _Ref, page, [{"views", []}], User, _CType) ->
             end,
     
     F = fun(Dir, Acc) ->
-                Files = filelib:wildcard(docroot(Site)++Dir++"*.tpl"),
+                Files = filelib:wildcard(viewroot(Site)++Dir++"*.tpl"),
                 Acc ++ [ Strip(X) || X <- Files ]
         end,
     
@@ -389,7 +373,7 @@ ipost(#refX{site=Site, path=Path} = _Ref, _Type, _Attr,
             Auth = [{user, hn_users:name(User)}, {group, "dev"}],
             auth_srv2:add_view(Site, Path, Auth, Name),
             
-            TplFile = [docroot(Site), "/views/" , Name, ".tpl"],
+            TplFile = [viewroot(Site), "/" , Name, ".tpl"],
             
             ok = filelib:ensure_dir(TplFile),
             ok = file:write_file(TplFile, Form);
@@ -438,7 +422,7 @@ ipost(Ref, _Type, _Attr,
     case Sync2 of
         synched         -> ok;
         unsynched       -> hn_db_api:resync(Site, CVsn);
-        not_yet_synched -> ?exit
+        not_yet_synched -> sync_exit()
     end,
     {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX, 
                                                       Proxy, Biccie),
@@ -525,7 +509,7 @@ ipost(Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
         unsynched -> 
             ok = hn_db_api:resync(Site, PVsn);
         not_yet_synched -> 
-            ?exit
+            sync_exit()
     end,
     %% there are 1 to many children and if they are out of synch ask for 
     %% a resynch for each of them
@@ -536,14 +520,14 @@ ipost(Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
                 case Sync2 of
                     synched         -> ok;
                     unsynched       -> ok = hn_db_api:resync(Site, X);
-                    not_yet_synched -> ?exit
+                    not_yet_synched -> sync_exit()
                 end
         end,
     [Fun(X) || X <- CVsn],
     {struct, [{"result", "success"}, {"stamp", Stamp}]};
 
 ipost(_Ref, _Type, _Attr, _Post, _User) ->
-    ?ERROR("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
+    error_logger:error_msg("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
     error.
 
 can_save_view(User, "_u/"++FName) ->
@@ -598,6 +582,8 @@ add_ref(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
 docroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:parse_site(Site)++"/docroot".
+viewroot(Site) ->
+    docroot(Site) ++ "/views".
 tmpdir() ->
     code:lib_dir(hypernumbers) ++ "/../../var/tmp/".              
 
@@ -670,7 +656,7 @@ remoting_request(Req, Site, Paths, Time) ->
     remoting_reg:request_update(Site, Paths, ltoi(Time), self()),
     receive 
         {tcp_closed, Socket} -> ok;
-        {error, timeout}     -> Req:ok({"text/html",?hdr, <<"timeout">>});
+        {error, timeout}     -> Req:ok({"text/html", nocache(), <<"timeout">>});
         {msg, Data}          -> json(Req, Data)
     after
         % TODO : Fix, should be controlled by remoting_reg
@@ -680,7 +666,6 @@ remoting_request(Req, Site, Paths, Time) ->
     end.
 
 get_var_or_cookie(Key, Vars, Req) ->
-
     case lists:keysearch(Key, 1, Vars) of
         false ->
             {ok, Req:get_cookie_value(Key)};
@@ -722,7 +707,7 @@ make_after(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
 
 pages(#refX{} = RefX) ->
     Dict = hn_db_api:read_page_structure(RefX),
-    Tmp = pages_to_json(dh_tree:add(RefX#refX.path, Dict)),    
+    Tmp  = pages_to_json(dh_tree:add(RefX#refX.path, Dict)),    
     {struct, [{"name", "home"}, {"children", {array, Tmp}}]}.
 
 get_lang(anonymous) ->
@@ -734,12 +719,16 @@ get_lang(User) ->
     end.
 
 json(Req, Data) ->
-    Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
-    Req:ok({"application/json", ?hdr, Json}).
+    Req:ok({"application/json",
+            nocache(),
+            (mochijson:encoder([{input_encoding, utf8}]))(Data)
+           }).
 
 json2(Req, Data) ->
-    Json = (mochijson2:encoder([{utf8, true}]))(Data),
-    Req:ok({"application/json", ?hdr, Json}).
+    Req:ok({"application/json",
+            nocache(),
+            (mochijson2:encoder([{utf8, true}]))(Data)
+           }).
 
 fix_up(List, S, P) ->
     f_up1(List, S, P, [], []).
@@ -776,17 +765,20 @@ serve_html(Status, Req, File, User) ->
 serve_file(Status, Req, File) ->
     case file:open(File, [raw, binary]) of
         {ok, IoDevice} ->
-            Req:respond({Status, ?hdr, {file, IoDevice}}),
+            Req:respond({Status, nocache(), {file, IoDevice}}),
             file:close(IoDevice);
         _ ->
             Req:not_found()
     end.
 
+isnt_cached(Cached, Source) ->
+    not( filelib:is_file(Cached) )
+        orelse hn_util:is_older(Cached, Source).
+
 cache(Source, CachedNm, Generator) ->
     Cached = tmpdir() ++ "/" ++ hn_util:bin_to_hexstr(erlang:md5(CachedNm)),
-    ok = filelib:ensure_dir(Cached),
-    case not( filelib:is_file(Cached) )
-        orelse hn_util:is_older(Cached, Source) of
+    ok     = filelib:ensure_dir(Cached),
+    case isnt_cached(Cached, Source) of
         true -> ok = file:write_file(Cached, Generator());
         _    -> ok
     end,
@@ -847,15 +839,15 @@ authorize(_User, _Groups, _Req, _Ref, _Vars, _Type) ->
 
 '404'(Req, User) ->
     #refX{site = Site} = hn_util:parse_url(get_host(Req)),
-    serve_html(404, Req, docroot(Site)++"/views/_g/core/login.html", User).
+    serve_html(404, Req, viewroot(Site)++"/_g/core/login.html", User).
 
 build_tpl(Site, Tpl) ->
-    {ok, Master} = file:read_file([docroot(Site), "/views/_g/core/built.tpl"]),
-    {ok, Gen}    = file:read_file([docroot(Site), "/views/", Tpl, ".tpl"]),
+    {ok, Master} = file:read_file([viewroot(Site), "/_g/core/built.tpl"]),
+    {ok, Gen}    = file:read_file([viewroot(Site), "/", Tpl, ".tpl"]),
 
     New = re:replace(Master, "%BODY%", hn_util:esc_regex(Gen),
                      [{return, list}]),
-    file:write_file([docroot(Site), "/views/", Tpl, ".html"], New).
+    file:write_file([viewroot(Site), "/", Tpl, ".html"], New).
     
 pages_to_json(Dict) ->
     F = fun(X) -> pages_to_json(X, dict:fetch(X, Dict)) end,
@@ -873,3 +865,16 @@ pages_to_json(X, Dict) ->
             end;
         false -> {struct, [{"name", X}]}
     end.
+
+sync_exit() ->
+    exit("exit from hn_mochi:handle_req impossible page versions").
+    
+nocache() ->
+    [{"Cache-Control","no-store, no-cache, must-revalidate"},
+     {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
+     {"Pragma",       "no-cache"}].
+
+should_regen(Tpl, Html) ->
+    filelib:is_file(Tpl)
+        andalso ( not(filelib:is_file(Html)) orelse
+                  hn_util:is_older(Html, Tpl) ). 
