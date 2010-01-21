@@ -389,7 +389,8 @@ ipost(#refX{site=Site, path=Path} = _Ref, _Type, _Attr,
             Auth = [{user, hn_users:name(User)}, {group, "dev"}],
             auth_srv2:add_view(Site, Path, Auth, Name),
             
-            TplFile = [docroot(Site), "/views/" , Name, ".tpl"],
+            TplFile = [docroot(Site), "/views/" , Name],
+            
             ok = filelib:ensure_dir(TplFile),
             ok = file:write_file(TplFile, Form);
 
