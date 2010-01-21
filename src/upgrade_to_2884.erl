@@ -33,7 +33,8 @@ grab_site(URL) ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/" ++ "grab/"
         ++ Site ++ "&" ++ Port ++ "/data/",
     ok = case filelib:is_dir(Dir) of
-             true  -> delete_directory(Dir);
+             true  -> io:format("deleting directory ~p~n", [Dir]),
+                      delete_directory(Dir);
              false -> ok
          end,
     ok = filelib:ensure_dir(Dir),
@@ -78,7 +79,8 @@ delete_directory(From) ->
 delete_dir(File) ->
     case filelib:is_dir(File) of
         true  -> delete_directory(File);
-        false -> file:delete(File)
+        false -> io:format("Deleting file ~p~n", [File]),
+                 file:delete(File)
     end.
 
 page_attributes(#refX{site = S, path = P} = Ref, User) ->
