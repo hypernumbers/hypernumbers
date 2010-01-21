@@ -10,9 +10,9 @@
 
 init_per_suite(Config) ->
     InitSite = fun(S) ->
-                   reset_perms(S),
-                   hn_db_api:wait_for_dirty(S)
-           end,
+                       reset_perms(S),
+                       hn_db_api:wait_for_dirty(S)
+               end,
     [InitSite(S) || S <- sites()], 
     inets:start(http, [{profile, systest}]),
     testsys:restore(~p, ~p, systest),
@@ -21,17 +21,13 @@ init_per_suite(Config) ->
     [hn_db_api:wait_for_dirty(S) || S <- sites()], 
     Config.
 
-reset_perms(S) ->
-    auth_srv:clear_all_perms_DEBUG(S),
-
-    % the home page
-    auth_srv:add_perms_and_views(S, [{user, "*"}, {group, "*"}],
-                      ["[**]"],[read, write],
-                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]),
-
-    auth_srv:add_perms_and_views(S, [{user, "*"}, {group, "*"}],
-                      [],[read, write],
-                      "_global/spreadsheet", ["_global/spreadsheet", "_global/pagebuilder"]).
+reset_perms(Site) ->
+    View = "_global/spreadsheet",
+    auth_srv2:clear_all_perms_DEBUG(Site),
+    auth_srv2:add_view(Site, [], [everyone], View),
+    auth_srv2:add_view(Site, ["[**]"], [everyone], View),
+    auth_srv2:set_champion(Site, [], View),
+    auth_srv2:set_champion(Site, ["[**]"], View).
 
 end_per_suite(_Config) ->
     inets:stop(http, systest).

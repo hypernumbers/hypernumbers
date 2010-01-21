@@ -509,7 +509,6 @@ add_to_views({V, NewView}, Views) ->
     end.
                 
 merge_left([], C) -> C; 
-merge_left(C, []) -> C;
 merge_left(C, _) -> C.
     
 -spec get_control(gb_tree()) -> none | #control{}.

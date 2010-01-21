@@ -1355,8 +1355,6 @@ shift_cells(From, Type, Disp, Rewritten)
                        get_refs_below(From)
                end,
 
-    io:format("RefX is ~p~n", [RefXList]),
-
     case RefXList of
         [] -> ok;
         _  ->
