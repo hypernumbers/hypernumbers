@@ -1,12 +1,12 @@
 %%%-------------------------------------------------------------------
-%%% @author     Gordon Guthrie
-%%% @copyright (C) 2009, Hypernumbers Ltd
-%%% @doc
+%%% @author    Gordon Guthrie gordon@hypernumbers.com
+%%% @copyright (C) 2010 Hypernumbers Ltd
+%%% @doc       The supervisor for the factory app
 %%%
 %%% @end
-%%% Created : 10 Dec 2009 by gordon@hypernumbers.com
+%%% Created :  6 Jan 2010 by Gordon Guthrie 
 %%%-------------------------------------------------------------------
--module(tiny_hn_sup).
+-module(factory_sup).
 
 -behaviour(supervisor).
 
@@ -39,7 +39,7 @@ start_link(Args) ->
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
-%% Whenqever a supervisor is started using supervisor:start_link/[2,3],
+%% Whenever a supervisor is started using supervisor:start_link/[2,3],
 %% this function is called by the new process to find out about
 %% restart strategy, maximum restart frequency and child
 %% specifications.
@@ -56,10 +56,15 @@ init(Args) ->
     MaxSecondsBetweenRestarts = 3600,
 
     SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
-    
-    Tiny_Srv = {tiny_srv, {tiny_srv, start_link, [Args]},
-                permanent, 2000, worker, [tiny_srv]},
-    {ok, {SupFlags, [Tiny_Srv]}}.
+
+    Restart = permanent,
+    Shutdown = 2000,
+    Type = worker,
+
+    Factory_Srv = {factory_srv, {factory_srv, start_link, [Args]},
+              Restart, Shutdown, Type, [factory_srv]},
+
+    {ok, {SupFlags, [Factory_Srv]}}.
 
 %%%===================================================================
 %%% Internal functions

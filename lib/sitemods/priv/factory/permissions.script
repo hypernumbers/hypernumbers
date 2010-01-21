@@ -1,4 +1,5 @@
-%%-*-erlang-*- %% this is a permissions script for creating a new site
+%%-*-erlang-*-
+%% this is a permissions script for creating a new site
 %%
 %% There are 4 types of entries
 %% * perms_and_views
@@ -35,7 +36,7 @@
 %%
 %% The 'list' can be any mixture of users and groups
 %%
-%% The perms_and_views set both permissions and views in a oner
+%% The perms_and_viewss set both permissions and views in a oner
 %%
 %% There are a number of special constructions to remember
 %% {user, "*"} matches all
@@ -47,15 +48,35 @@
 %%
 %% Note that the expressions end in a full stop '.'
 %%
+
+% the home page (writable, very wrong)
+
 {add_view, 
  [{path, []},
-  {perms, [everyone]},
-  {view, "_g/tiny_poll/home"}
+  {perms, [{group, "admin"}]},
+  {view, "_g/tiny/tiny"}
+ ]}.
+{add_view, 
+ [{path, []},
+  {perms, [{group, "admin"}]},
+  {view, "_g/core/spreadsheet"}
  ]}.
 {champion,
  [{path, []},
-  {view, "_g/tiny_poll/home"}
+  {view, "_g/tiny/tiny"}
  ]}.
+
+
+{add_view, 
+ [{path, ["request_site"]},
+  {perms, [{group, "admin"}]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
+{champion, 
+ [{path, ["request_site"]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
+
 
 {add_view, 
  [{path, ["_user", "login"]},
@@ -63,6 +84,21 @@
   {view, "_g/core/login"}
  ]}.
 {champion,
- [{path, ["_user", "login"]},
+ [{path, ["public"]},
   {view, "_g/core/login"}
+ ]}.
+
+{add_view, 
+ [{path, ["contact"]},
+  {perms, [everyone]},
+  {view, "_g/tiny/contact"}
+ ]}.
+{add_view, 
+ [{path, ["contact"]},
+  {perms, [{group, "dev"}]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
+{champion,
+ [{path, ["contact"]},
+  {view, "_g/tiny/contact"}
  ]}.

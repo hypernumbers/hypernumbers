@@ -1,12 +1,12 @@
 %%%-------------------------------------------------------------------
-%%% @author Gordon Guthrie gordon@hypernumbers.com
-%%% @copyright (C) 2009 Hypernumbers Ltd
+%%% @author Gordon Guthrie gordon@hypernumbers
+%%% @copyright (C) 2010 Hypernumbers Ltd
 %%% @doc
 %%%
 %%% @end
-%%% Created : 10 Dec 2009 by Gordon Guthrie
+%%% Created : 6th January 2010
 %%%-------------------------------------------------------------------
--module(tiny_srv).
+-module(factory_srv).
 
 -behaviour(gen_server).
 
@@ -58,15 +58,6 @@ start_link(Args) ->
 %% @end
 %%--------------------------------------------------------------------
 init(Args) ->
-    
-    %% Create sub domains if not created
-    case catch mnesia:table_info(tiny_sub, all) of
-        {'EXIT',{aborted,_Abort}} ->
-            tiny_util:make_subs();
-        _Else ->
-            ok
-    end,
-
     NewState = parse_args(Args),
 
     _Pid = spawn_link(?MODULE, tick, []),
@@ -108,6 +99,36 @@ handle_cast(tock, State) ->
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
+handle_tock([])      -> ok;
+handle_tock([H | T]) ->
+    SiteName = "http://" ++ H#state.site ++ ":" ++ H#state.port,
+    RefX1 = #refX{site = SiteName,
+                  path = ?PATH,
+                  obj = {column, {1, 1}}},
+    RefX2 = #refX{site = SiteName,
+                  path = ?PATH,
+                  obj = {column, {4, 4}}},
+    Requested = hn_db_api:read_last(RefX1),
+    Fulfilled = hn_db_api:read_last(RefX2),
+    #refX{obj = {cell, {_, MaxR}}} = Requested,
+    #refX{obj = {cell, {_, MaxF}}} = Fulfilled,
+    ok = case MaxR of
+             MaxF   -> ok;
+             _Other ->
+                 case catch provision(H#state.site, H#state.port,
+                                      MaxF + 1, H) of
+                     ok ->
+                         ok;
+                     Else ->
+                         Msg = lists:flatten(io_lib:format("~p",[Else])),
+                         Ref = RefX1#refX{obj = {cell, {3, MaxF+1}}},
+                         ok = hn_db_api:write_attributes(
+                                [{Ref, [{"formula", Msg}]}])
+                 end
+         
+         end,
+    handle_tock(T).
+    
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
@@ -160,113 +181,67 @@ tock() ->
 
 tick() -> 
     timer:sleep(?CLOCKTICK),
-    tiny_srv:tock().
-
-handle_tock([])      -> ok;
-handle_tock([H | T]) ->
-    SiteName = "http://" ++ H#state.site ++ ":" ++ H#state.port,
-    RefX1 = #refX{site = SiteName,
-                  path = ?PATH,
-                  obj = {column, {1, 1}}},
-    RefX2 = #refX{site = SiteName,
-                  path = ?PATH,
-                  obj = {column, {3, 3}}},
-    Requested = hn_db_api:read_last(RefX1),
-    Fulfilled = hn_db_api:read_last(RefX2),
-    #refX{obj = {cell, {_, MaxR}}} = Requested,
-    #refX{obj = {cell, {_, MaxF}}} = Fulfilled,
-
-    ok = case MaxR of
-             MaxF   -> ok;
-             _Other ->
-                 case catch provision(H#state.site, H#state.port,
-                                      MaxF + 1, H) of
-                     ok ->
-                         ok;
-                     Else ->
-                         Msg = lists:flatten(io_lib:format("~p",[Else])),
-                         Ref = RefX1#refX{obj = {cell, {3, MaxF+1}}},
-                         ok = hn_db_api:write_attributes(
-                                [{Ref, [{"formula", Msg}]}])
-                 end
-         
-         end,
-
-    handle_tock(T).
+    factory_srv:tock().
 
 parse_args(Args) -> parse_a1(Args, []).
 
-parse_a1([], Acc) -> Acc;
+parse_a1([], Acc)      -> Acc;
 parse_a1([H | T], Acc) ->
     Site = proplists:get_value(self, H),
     [_, "//" ++ Site2, Port] = string:tokens(Site, ":"),
     parse_a1(T, [#state{site=Site2, port=Port, args=H} | Acc]).
 
 provision(CurrentSite, Port, Row, State) ->
-    
+
     CurrentSiteName = "http://" ++ CurrentSite ++ ":" ++ Port,
     RefX = #refX{site = CurrentSiteName, path = ?PATH,
-                 obj = {range, {1, Row, 2, Row}}},
+                 obj = {range, {1, Row, 3, Row}}},
     List = hn_db_api:read_attributes(RefX, ["formula"]),
+
+    {Type, Email, SubDomain} = parse(List),
     
-    {Email, Type} = parse(List),
- 
     Type2 = normalise(Type),
     Password = tiny_util:get_password(),
-    IsValidEmail = tiny_util:is_valid_email(Email),
     [User | _T] = string:tokens(Email, "@"),
-    Expiry = "=now()+31",
-
-    RefX1 = RefX#refX{obj = {cell, {3, Row}}},
-    RefX2 = RefX#refX{obj = {cell, {4, Row}}},
-    RefX3 = RefX#refX{obj = {cell, {5, Row}}},
-    RefX4 = RefX#refX{obj = {cell, {6, Row}}},
+    RefX1 = RefX#refX{obj = {cell, {4, Row}}},
+    RefX2 = RefX#refX{obj = {cell, {5, Row}}},
     
     Template = code:priv_dir(sitemods) ++
         "/" ++ Type2,
-
+    
     DoesSiteTemplateExist = filelib:is_dir(Template),
 
-    case {IsValidEmail, DoesSiteTemplateExist} of
-        {not_email, false} ->
-            Sub = "Not Allocated - invalid e-mail " ++ Email
-                ++ "and non-existant template " ++ Type2;
-        {not_email, _} ->
-            Sub = "Not Allocated - invalid e-mail " ++ Email;
-        {_, false} ->
-            Sub = "Not Allocated non-existant template " ++ Type2;
+    case DoesSiteTemplateExist of
+        false ->
+            Sub = "Not Allocated - site type doesn't exist " ++ Email;
         _ ->
-            Sub = tiny_util:get_unallocated_sub(),
-
+            Sub = SubDomain,
             Host  = proplists:get_value(host, State#state.args),
             Port2 = proplists:get_value(port, State#state.args),
-
             NewSite  = "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
                 ++ integer_to_list(Port2),
             EmailNewSite = case Port2 of
-                            80  -> "http://" ++ Sub  ++ "."  ++ Host;
-                            % 443 -> "https://" ++ Sub  ++ "."  ++ Host;
-                            _   -> "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
-                                      ++ integer_to_list(Port2)
-                        end,
-
+                               80  -> "http://" ++ Sub  ++ "."  ++ Host;
+                               % 443 -> "https://" ++ Sub  ++ "."  ++ Host;
+                               _   -> "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
+                                          ++ integer_to_list(Port2)
+                           end,
+            
             ok = hn_setup:site(NewSite, list_to_atom(Type2),
                                [{user, User},
-                                {email, Email},
+                                {email, Email ++ "@hypernumbers.com"},
                                 {site, EmailNewSite},
                                 {password, Password},
                                 {subdomain, Sub }
                                ]),
             
-            S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site "
+            S = "Hi ~s~n~nWelcome to hypernumbers, we have set up your site "
                 "at:~n~n ~s~n~nTo make changes to the site follow the "
                 "instructions on the main page"
                 "~n~nYour Username:     ~s     Your Password:"
                 "     ~s~n~nThanks for signing up, "
-                "hope you enjoy your tiny site!~n~n"
-                "When you've finished customising your site don't forget "
-                "to email or twitter your friends!~n~n"
-                "The tiny.hn team",
+                "hope you enjoy your new site!~n~n"
+                "The hypernumbers team",
             
             Msg = fmt(S, [User, EmailNewSite, User, Password]),
             
@@ -274,29 +249,29 @@ provision(CurrentSite, Port, Row, State) ->
                 {ok, development} ->
                     io:format("~p",[Msg]);
                 {ok, production}  ->
-                    hn_util:email(Email, "\"tiny.hn Team\" <noreply@tiny.hn>",
-                                  "Your new tiny.hn site is live!", Msg)
+                    hn_util:email(Email, "\"Hypernumbers Team\" <noreply@hypernumbers.com>",
+                                  "Your new Hypernumbers site is live!", Msg)
             end
     end,
 
     ok = hn_db_api:write_attributes([
                                      {RefX1, [{"formula", Sub}]},
-                                     {RefX2, [{"formula", User}]},
-                                     {RefX3, [{"formula", Password}]},
-                                     {RefX4, [{"formula", Expiry}]}
+                                     {RefX2, [{"formula", Password}]}
                                     ]),
 
     ok.
 
 parse(List) ->
-    p1(List, [], []).
+    p1(List, [], [], []).
 
-p1([], Email, Type) ->
-    {Email, Type};
-p1([{#refX{obj = {cell, {1, _}}}, {_, Type}}  | T], A1, _A2) ->
-    p1(T, A1, Type);
-p1([{#refX{obj = {cell, {2, _}}}, {_, Email}} | T], _A1, A2) ->
-    p1(T, Email, A2).
+p1([], Email, Type, SubDomain) ->
+    {Email, Type, SubDomain};
+p1([{#refX{obj = {cell, {1, _}}}, {_, Type}}  | T], _A1, A2, A3) ->
+    p1(T, Type, A2, A3);
+p1([{#refX{obj = {cell, {2, _}}}, {_, Email}} | T], A1, _A2, A3) ->
+    p1(T, A1, Email, A3);
+p1([{#refX{obj = {cell, {3, _}}}, {_, SubDomain}} | T], A1, A2, _A3) ->
+    p1(T, A1, A2, SubDomain).
 
 normalise(String) ->
     String2 = re:replace(string:to_lower(String), " ", "_",
@@ -304,6 +279,6 @@ normalise(String) ->
     re:replace(String2, "-", "_", [global, {return, list}]).
 
 fmt(Str, Args) ->
-    lists:flatten(io_lib:format(Str, Args)).
-    
+     lists:flatten(io_lib:format(Str, Args)).
+
     

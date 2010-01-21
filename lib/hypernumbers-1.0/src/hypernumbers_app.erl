@@ -16,7 +16,6 @@ start(_Type, _Args) ->
     ok = mochilog:start(),
     {ok, Pid} = hypernumbers_sup:start_link(),
     ok = start_mochiweb(),
-    ok = bootstrap_sites(),
     ok = hn_setup:startup(),
     {ok, Pid}.
 
@@ -69,7 +68,7 @@ build_schema() ->
 %% domain name on the ip address, wtf?
 start_mochiweb() ->
     {ok, Hs} = application:get_env(hypernumbers, hosts),
-    [ start_instance(H) || H <- Hs],
+    [start_instance(H) || H <- Hs],
     ok.
 
 start_instance({IP, Port}) ->
@@ -81,32 +80,3 @@ start_instance({IP, Port}) ->
     {ok, _Pid} = mochiweb_http:start(Opts),
     ok.
 
-bootstrap_sites() ->
-    case application:get_env(hypernumbers, bootstrapped) of
-        {ok, Sites} ->
-            [ok = bootstrap_site(S, T, O) || {S, T, O} <- Sites],
-            ok;
-        _Else ->
-            ok
-    end.
-
-bootstrap_site(S, T, O) ->    
-    case mnesia:transaction(fun() -> mnesia:read(core_site, S) end) of
-        {atomic, []} -> hn_setup:site(S, T, O);
-        _Else        -> ok
-    end,
-
-    case list_to_atom(atom_to_list(T)++"_sup") of
-        hypernumbers_sup ->
-            ok;
-        App ->
-            case catch App:module_info() of
-                {'EXIT', _ } -> ok;
-                _Mod         ->
-                    case proplists:get_value(init_args, O) of
-                        undefined -> App:start_link();
-                        Args      -> App:start_link(Args)
-                    end,
-                    ok
-            end
-    end.
