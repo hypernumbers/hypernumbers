@@ -940,7 +940,7 @@ get_cells1(Site, MatchRef) ->
 %% </ul>
 get_refs_below(#refX{obj = {cell, {X, Y}}} = RefX) ->
     get_refs_below2(RefX, X, X, Y);
-get_refs_below(#refX{site = S, path = P, obj = {row, {Y1, Y2}}} = RefX) ->
+get_refs_below(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}) ->
     %% rectify the row range in case they are reversed...
     YY = ?COND(Y1 > Y2, Y1, Y2),
     Obj = {cell, {'_', '$1'}},
@@ -949,10 +949,7 @@ get_refs_below(#refX{site = S, path = P, obj = {row, {Y1, Y2}}} = RefX) ->
     Cond = [{'>', '$1', YY}],
     Body = ['$_'],
     RefXs1 = local_objs_to_refXs(S, get_local_idxs(S, {Head1, Cond, Body})),
-    %% now get the local cells that are children of
-    %% cells below the refX
-    RefXs2 = get_local_children(RefX),
-    hslists:uniq(lists:append([RefXs1, RefXs2]));
+    hslists:uniq(RefXs1);
 get_refs_below(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     %% rectify the ranges in case they are reversed...
     YY = ?COND(Y1 > Y2, Y1, Y2),
@@ -971,19 +968,15 @@ get_refs_below(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
 %% </ul>
 get_refs_right(#refX{obj = {cell, {X, Y}}} = RefX) ->
     get_refs_right2(RefX, X, Y, Y);
-get_refs_right(#refX{site = S, obj = {column, {X1, X2}}} = RefX) ->
+get_refs_right(#refX{site = S, obj = {column, {X1, X2}}, path = P}) ->
     %% rectify the row range in case they are reversed...
     XX = ?COND(X1 > X2, X1, X2),
-    #refX{site = S, path = P} = RefX,
     Obj = {cell, {'$1', '_'}},
     Head1a = #local_objs{path = P, obj = Obj, _ = '_'},
     Cond = [{'>', '$1', XX}],
     Body = ['$_'],
     RefXs1 = local_objs_to_refXs(S, get_local_idxs(S, {Head1a, Cond, Body})),
-    %% now get the local pages that are children of
-    %%  cells below the refX
-    RefXs2 = get_local_children(RefX),
-    hslists:uniq(lists:append([RefXs1, RefXs2]));
+    hslists:uniq(RefXs1);
 get_refs_right(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     %% rectify the ranges in case they are reversed...
     XX = ?COND(X1 > X2, X1, X2),
@@ -1357,7 +1350,7 @@ shift_cells(From, Type, Disp, Rewritten)
                end,
 
     case RefXList of
-        [] -> ok;
+        [] -> [];
         _  ->
             [ok = shift_cells1(X, offset(X, {XO, YO})) || X <- RefXList],
 
