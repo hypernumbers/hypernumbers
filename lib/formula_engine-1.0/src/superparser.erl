@@ -17,7 +17,7 @@ process(Input) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
-    {ok, Toks} = xfl_lexer:lex(Input, {1, 1}),
+    {ok, Toks} = xfl_lexer:lex(super_util:upcase(Input), {1, 1}),
     case Toks of
         [{bool, _, B}] ->
             [{bool, B}, {"text-align", "center"}, {"format", "null"}];
