@@ -445,12 +445,15 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 
 -spec handle_dirty_cell(string(), cellidx()) -> ok. 
 handle_dirty_cell(Site, Idx) ->
-    ok   = init_front_end_notify(),  
+    ok = init_front_end_notify(),  
     F = fun() ->
-                Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
-                case hn_db_wu:read_attrs(Cell, ["formula"], read) of
-                    [{C, KV}] -> hn_db_wu:write_attr(C, KV);
-                    []        -> ok
+                case hn_db_wu:local_idx_to_refX(Site, Idx) of
+                    {error, _, _} -> ok;
+                    Cell ->
+                        case hn_db_wu:read_attrs(Cell, ["formula"], read) of
+                            [{C, KV}] -> hn_db_wu:write_attr(C, KV);
+                            []        -> ok
+                        end
                 end
         end,
     {atomic, ok} = mnesia:transaction(F),
