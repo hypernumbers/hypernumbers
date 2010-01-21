@@ -7,11 +7,20 @@
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 
+%% holds upload state for callback function in the hn_file_upload module.
+-record(file_upload_state, {
+          ref,               % The RefX for the request
+          original_filename, % file name as it comes from the user
+          filename,          % file name as saved on the server
+          file
+         }).
+
+
 %% @doc Handles a file upload request from a user. Imports the file etc and
 %% returns response data to be sent back to the client.
 handle_upload(Req, Ref, User) ->
 
-    {ok, File, Name} = stream_to_file(Req, User),
+    {ok, File, Name} = stream_to_file(Req, Ref, User),
     NRef = Ref#refX{path = Ref#refX.path ++ [make_name(Name)]},
     
     try
@@ -218,9 +227,10 @@ conv_for_post(Val) ->
 setup_state(S, {"content-disposition",
                 {"form-data", [_Nm, {"filename", FileName}]}}) ->
     
-    Root  = code:lib_dir(hypernumbers),
     Stamp = S#file_upload_state.filename ++ "__" ++ FileName,
-    Name  = filename:join([Root, "..", "..", "priv", "uploads", Stamp]),
+    Site  = (S#file_upload_state.ref)#refX.site,
+    Name  = filename:join([hn_mochi:docroot(Site), "..", "uploads", Stamp]),
+    filelib:ensure_dir(Name),
     {ok, File} = file:open(Name, [raw, write]),
     
     #file_upload_state{original_filename = FileName,
@@ -231,9 +241,9 @@ make_name(Name) ->
     Basename = filename:basename(Name, ".xls"),
     re:replace(Basename,"\s","_",[{return,list}, global]).
 
-stream_to_file(Req, User) ->
+stream_to_file(Req, Ref, User) ->
     Stamp    = hn_users:name(User) ++ dh_date:format("__Y_m_d_h_i_s"),
-    Rec      = #file_upload_state{filename = Stamp},
+    Rec      = #file_upload_state{filename=Stamp, ref=Ref},
     CallBack = fun(N) -> file_upload_callback(N, Rec) end,
     {_, _, State} = mochiweb_multipart:parse_multipart_request(Req, CallBack),
     

@@ -11,7 +11,7 @@
 -include_lib("kernel/include/file.hrl").
 -include("gettext.hrl").
 
--export([ req/1, style_to_css/2 ]).
+-export([ req/1, style_to_css/2, docroot/1 ]).
 
 -export([page_attributes/2]).
 
@@ -599,8 +599,7 @@ docroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:parse_site(Site)++"/docroot".
 tmpdir() ->
-    code:lib_dir(hypernumbers) ++ "/../../var/tmp/".
-              
+    code:lib_dir(hypernumbers) ++ "/../../var/tmp/".              
 
 itol(X) -> integer_to_list(X).
 ltoi(X) -> list_to_integer(X).
