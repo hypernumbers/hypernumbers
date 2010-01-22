@@ -1,10 +1,6 @@
-%%%-----------------------------------------------------------------------------
-%%% File        hn_util.erl
-%%% @author     Dale Harvey
-%%% @doc        Utilities for hypernumbers application
-%%% @private
 %%% @copyright Hypernumbers Ltd
-%%%-----------------------------------------------------------------------------
+%%% @doc Utilities for hypernumbers application
+
 -module(hn_util).
 
 -include("spriki.hrl").
@@ -14,9 +10,6 @@
 -include("muin_records.hrl").
 
 -include_lib("kernel/include/file.hrl").
-
--define(rfc1123, muin_date:to_rfc1123_string).
--define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 
 -export([
          email/4, email/5,
@@ -33,61 +26,40 @@
          refX_to_url/1,
          index_to_url/1,
          obj_to_str/1,
-         xml_to_val/1,
          in_range/2,
-         to_xml/1,
-         refX_to_index/1,
          range_to_list/1,
          rectify_range/4,
          rectify_row_or_col/2,
          path_to_json_path/1,
 
          % HTTP Utils
-         req/1,
-         post/2,
          post/3,
-         url_encode/1,
          parse_url/1,
          parse_ref/1,
          parse_attr/1,
          parse_attr/2,
-         parse_vars/1,
          parse_site/1,
          
          % List Utils
-         add_uniq/2,
          is_alpha/1,
          is_numeric/1,
          text/1,
-         trim/1,
-         random_string/1,
-         intersection/2,
          bin_to_hexstr/1,
-         hexstr_to_bin/1,
-         get_req_type/1,
          list_to_path/1,
 
          % Just some record conversion utilities
          refX_from_index/1,
-         index_from_refX/1,
          url_to_refX/1,
 
          % general utilities
          get_offset/3,
          js_to_utf8/1,
-         diff/2,
-         lists_diff/2,
          esc_regex/1,
          
          % file copy utils
          recursive_copy/2
         ]).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                                                                          %%%
-%%% API functions                                                            %%%
-%%%                                                                          %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Escape the replacement part of the regular expression
 %% so no spurious replacements
@@ -100,15 +72,18 @@ esc_regex(List) ->
 esc_regex([], Acc) ->
     lists:flatten(lists:reverse(Acc));
 
-esc_regex([$&   | Rest], Acc) -> esc_regex(Rest, ["\\&" | Acc]);
-%esc_regex([$\   | Rest], Acc) -> esc_regex(Rest, ["\\" | Acc]);
-esc_regex([Else | Rest], Acc) -> esc_regex(Rest, [Else | Acc]).
+esc_regex([$&   | Rest], Acc) ->
+    esc_regex(Rest, ["\\&" | Acc]);
+esc_regex([Else | Rest], Acc) ->
+    esc_regex(Rest, [Else | Acc]).
 
+
+%% Recursively copy directories
+-spec recursive_copy(list(), list()) -> ok.                            
 recursive_copy(From, To) ->
     {ok, Files} = file:list_dir(From),
     [ok = rec_copy1(From, To, X) || X <- Files],
     ok.
-
 
 % ignore hidden
 rec_copy1(_From, _To, [$. | _T]) ->
@@ -148,13 +123,57 @@ delete_dir(File) ->
         true  -> delete_directory(File);
         false -> file:delete(File)
     end.
-
-diff(Time2, Time1) ->
-    {Mega2, Sec2, Micro2} = Time2,
-    {Mega1, Sec1, Micro1} = Time1,
-    (1000000000000 * Mega2 + 1000000 * Sec2 + Micro2) - 
-        (1000000000000 * Mega1 + 1000000 * Sec1 + Micro1).
    
+
+%% is string a list of alpha(a-z) characters
+-spec is_alpha(string()) -> true | false.
+is_alpha(Str) ->
+    Fun = fun(XX) ->         
+                  if XX < 97  -> false;  
+                     XX > 122 -> false;
+                     true     -> true      
+                  end                  
+          end,
+    case is_list(Str) of
+        false -> false;
+        true  -> lists:all(Fun, Str)
+    end.
+
+
+%% is string a list of digits
+-spec is_numeric(string()) -> true | false.
+is_numeric([]) -> false;
+is_numeric(Str) ->
+    Fun = fun(XX) ->         
+                  if XX < 48 -> false;  
+                     XX > 57 -> false;
+                     true    -> true      
+                  end                  
+          end,
+    case is_list(Str) of
+        false -> false;
+        true  -> lists:all(Fun, Str)
+    end.
+
+
+%% Convert binary to hex string
+-spec bin_to_hexstr(binary()) -> string().                           
+bin_to_hexstr(Bin) ->
+    list_to_hexstr(binary_to_list(Bin)).
+
+hex(N) when N < 10 ->
+    $0+N;
+hex(N) when N >= 10, N < 16 ->
+    $a+(N-10).
+
+to_hex(N) when N < 256 ->
+    [hex(N div 16), hex(N rem 16)].
+
+list_to_hexstr([]) -> 
+    [];
+list_to_hexstr([H|T]) ->
+    to_hex(H) ++ list_to_hexstr(T).
+
 
 get_offset(insert, D, {cell,     _})              -> g_o1(D, 1, 1);
 get_offset(insert, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, Y2 - Y1 + 1); 
@@ -192,15 +211,15 @@ generate_po(Url) ->
 
 generate_po1(Body) ->
     {struct, Json} = mochijson2:decode(Body),
-    {struct, Cells} = ?pget(<<"cell">>, Json),
-    {struct, Pos} = ?pget(<<"2">>, Cells),
+    {struct, Cells} = pget(<<"cell">>, Json),
+    {struct, Pos} = pget(<<"2">>, Cells),
     Files = lists:map(fun po_files/1, Pos),
     lists:map(fun(X) -> po_row(Files, X) end, Cells),
     lists:map(fun({_I, F}) -> file:close(F) end, Files),
     ok.
 
 po_files({Index, {struct, List}}) ->
-    Lang = binary_to_list(?pget(<<"value">>, List)),
+    Lang = binary_to_list(pget(<<"value">>, List)),
     Path = code:lib_dir(hypernumbers)++"/po/"++Lang++".po",
     {ok, File} = file:open(Path, [write]),
     {Index, File}.
@@ -208,14 +227,14 @@ po_files({Index, {struct, List}}) ->
 po_row(_File, {<<"1">>, _Children}) -> ok;
 po_row(_File, {<<"2">>, _Children}) -> ok;
 po_row(File, {_Row, {struct, Children}}) ->
-    {struct, Attr} = ?pget(<<"1">>, Children),
-    Id = ?pget(<<"value">>, Attr),
+    {struct, Attr} = pget(<<"1">>, Children),
+    Id = pget(<<"value">>, Attr),
     lists:map(fun(X) -> po_val(File, Id, X) end, Children),
     ok.
    
 po_val(Files, Id, {Col, {struct, Cell}}) ->
     Str = "msgid \"~s\"\nmsgstr \"~s\"\n\n",
-    io:format(?pget(Col, Files), Str, [Id, ?pget(<<"value">>, Cell)]).
+    io:format(pget(Col, Files), Str, [Id, pget(<<"value">>, Cell)]).
 
 delete_gen_html() ->
     Dir = code:lib_dir(hypernumbers)++"/priv/docroot/hypernumbers/",
@@ -246,9 +265,6 @@ url_to_refX(Url) ->
 
 refX_from_index(#index{site = S, path = P, column = X, row = Y}) ->
     #refX{site = S, path = P, obj = {cell, {X, Y}}}.
-
-index_from_refX(#refX{site = S, path = P, obj = {cell, {X, Y}}}) ->
-    #index{site = S, path = P, column = X, row = Y}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -299,9 +315,6 @@ index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
 list_to_path([])   -> "/";
 list_to_path(Path) -> "/" ++ string:join(Path, "/") ++ "/".
 
-refX_to_index(#refX{site = S, path = P, obj = {cell, {X, Y}}}) ->
-    #index{site = S, path = P, column = X, row = Y}.
-
 path_to_json_path([])                -> "path.json";
 path_to_json_path(P) when is_list(P) -> "path." ++ string:join(P, ".")
                                             ++ ".json".
@@ -315,54 +328,15 @@ obj_to_str({column,{X1,X2}})      -> tconv:to_b26(X1)++":"++tconv:to_b26(X2);
 obj_to_str({range,{X1,Y1,X2,Y2}}) -> tconv:to_b26(X1)++text(Y1)++":"++
                                          tconv:to_b26(X2)++text(Y2).
 
-xml_to_val({bool,[],[true]})      -> true;
-xml_to_val({bool,[],[false]})     -> false;
-xml_to_val({errval,[],[Ref]})     -> Ref;
-xml_to_val({float,[],[Ref]})      -> list_to_float(Ref);
-xml_to_val({int,[],[Ref]})        -> list_to_integer(Ref);
-xml_to_val({string,[],[Ref]})     -> Ref;
-xml_to_val({datetime, [], [Ref]}) -> Ref;
-xml_to_val(Else)                  -> Else.
-
 in_range({range,{X1,Y1,X2,Y2}}, {cell,{X,Y}}) ->
     Y >= Y1 andalso Y =< Y2 andalso X >= X1 andalso X =< X2.
-
-to_xml(true)                     -> [{bool,[],  ["true"]}];
-to_xml(false)                    -> [{bool,[],  ["false"]}];    
-to_xml(Val) when is_integer(Val) -> [{int,[],   [integer_to_list(Val)]}];
-to_xml(Val) when is_float(Val)   -> [{float,[], [float_to_list(Val)]}];
-to_xml({errval, Errval})         -> [{error,[], [atom_to_list(Errval)]}];
-to_xml({error, Errval})          -> [{error,[], [atom_to_list(Errval)]}];
-to_xml({blank, [], []})          -> [{blank,[], []}];
-to_xml(Dt) when is_record(Dt, datetime) ->
-    [{string, [], [muin_date:to_rfc1123_string(Dt)]}];
-to_xml({X,Values}) when X == range; X == array ->
-    ?INFO("range ~p",[Values]),
-    F = fun(Z) when is_list(Z) -> {row,[],lists:map(fun to_xml/1,Z)};
-           (_)                 -> throw({not_range,{X,Values}})
-        end,
-    [{X,[],lists:map(F,Values)}];
-to_xml(Else) ->
-    case io_lib:char_list(Else) of
-        true  -> [{string,[],[Else]}];
-        false -> throw({unmatched_type,Else})
-    end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Http Utils                                                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-req(Url) ->
-    {ok,{{_V,_Status,_R},_H,Body}} = http:request(get,{Url,[]},[],[]),
-    Body.
-
-post(Url,Data) ->
-    {ok, {{_V,_Status,_R},_H,Body}} = 
-        http:request(post,{Url,[],"text/plain",Data},[],[]),
-    Body.
-
-post(Url,Data,Format) ->
+post(Url, Data, Format) ->
     {ok, {{_V, _Status,_R},_H,Body}} =
         http:request(post,{Url,[],Format,Data},[],[]),
     Body.
@@ -446,168 +420,6 @@ parse_ref(Ref) ->
 undollar(A) ->
     re:replace(A, "\\$", "", [{return, list}, global]). %"
 
-get_req_type([{"format","json"}|_]) -> {ok,json};
-get_req_type([{"format","xml"}|_])  -> {ok,xml};
-get_req_type([])                    -> {ok,xml};
-get_req_type([_N|Tail])             -> get_req_type(Tail).
-
-parse_vars([]) -> {ok,[]};
-parse_vars(Query) ->
-
-    Split = fun(X) -> 
-                    case string:chr(X,$=) of
-                        0 -> 
-                            X;
-                        _ -> 
-                            [H,T] = string:tokens(X,"="),
-                            {H,T}
-                    end
-            end,
-
-    Pairs = lists:map(Split,string:tokens(Query,"&")),
-    {ok,Pairs}.
-
-url_encode([H|T]) ->
-    if
-        H >= $a, $z >= H ->
-            [H|url_encode(T)];
-        H >= $A, $Z >= H ->
-            [H|url_encode(T)];
-        H >= $0, $9 >= H ->
-            [H|url_encode(T)];
-        H == $_; H == $.; H == $-; H == $/; H == $: -> % FIXME: more..
-            [H|url_encode(T)];
-        true ->
-            case erlang:integer_to_list(H, 16) of
-                [X, Y] ->
-                    [$%, X, Y | url_encode(T)];
-                [X] ->
-                    [$%, $0, X | url_encode(T)]
-            end
-     end;
-
-url_encode([]) ->
-    [].
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                                                                          %%%
-%%% List Utils                                                               %%%
-%%%                                                                          %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-intersection(ListA,ListB) ->
-    intersection(ListA,ListB,[]).
-
-intersection([],_List,Acc) ->
-    Acc;
-intersection([H|T],List,Acc) ->
-    NAcc = case lists:member(H,List) of
-               true  -> [H|Acc];
-               false -> Acc
-           end,
-    intersection(T,List,NAcc).
-
-%%--------------------------------------------------------------------
-%% Function:    add_uniq/2
-%%
-%% Description: 
-%%--------------------------------------------------------------------
-add_uniq(List,Item) -> 
-
-    [Item] ++ lists:filter(
-                fun(X) -> ?COND(X == Item,false,true) end,
-                List).
-
-%%--------------------------------------------------------------------
-%% Function:    trim/2
-%%--------------------------------------------------------------------
-trim(String) -> 
-    strip_ws(lists:reverse(strip_ws(lists:reverse(String)))).
-
-strip_ws([H|Rest]) when H == 10; H == 13; H == 32 -> 
-    strip_ws(Rest);
-strip_ws(String) -> 
-    String.
-
-%%--------------------------------------------------------------------
-%% Function:    is_alpha/1
-%% Description: Returns true if a string is a list of a-z
-%%--------------------------------------------------------------------
-is_alpha(Str) ->
-    Fun = fun(XX) ->         
-                  if XX < 97  -> false;  
-                     XX > 122 -> false;
-                     true     -> true      
-                  end                  
-          end,
-    case is_list(Str) of
-        false -> false;
-        true  -> lists:all(Fun, Str)
-    end.
-
-%%--------------------------------------------------------------------
-%% Function:    is_numeric/1
-%% Description: Returns true if a string is a list of digits
-%%--------------------------------------------------------------------
-is_numeric([]) -> false;
-is_numeric(Str) ->
-    Fun = fun(XX) ->         
-                  if XX < 48 -> false;  
-                     XX > 57 -> false;
-                     true    -> true      
-                  end                  
-          end,
-    case is_list(Str) of
-        false -> false;
-        true -> lists:all(Fun, Str)
-    end.
-
-random_string(Len) ->
-    {A1,A2,A3} = now(),
-    random:seed(A1, A2, A3),
-    random_string("",Len).
-
-random_string(Str,0) ->
-    Str;
-
-random_string(Str,Len) ->
-    case random:uniform(3) of
-        1 -> Asc = 96 + random:uniform(26);
-        2 -> Asc = 47 + random:uniform(9);
-        3 -> Asc = 64 + random:uniform(26)
-    end,
-    random_string([Asc|Str],Len-1).
-
-hex(N) when N < 10 ->
-    $0+N;
-hex(N) when N >= 10, N < 16 ->
-    $a+(N-10).
-
-int(C) when $0 =< C, C =< $9 ->
-    C - $0;
-int(C) when $A =< C, C =< $F ->
-    C - $A + 10;
-int(C) when $a =< C, C =< $f ->
-    C - $a + 10.
-
-to_hex(N) when N < 256 ->
-    [hex(N div 16), hex(N rem 16)].
-
-list_to_hexstr([]) -> 
-    [];
-list_to_hexstr([H|T]) ->
-    to_hex(H) ++ list_to_hexstr(T).
-
-bin_to_hexstr(Bin) ->
-    list_to_hexstr(binary_to_list(Bin)).
-
-hexstr_to_bin(S) ->
-    list_to_binary(hexstr_to_list(S)).
-
-hexstr_to_list([X,Y|T]) ->
-    [int(X)*16 + int(Y) | hexstr_to_list(T)];
-hexstr_to_list([]) ->
-    [].
-
 %%--------------------------------------------------------------------
 %% Function:    text/1
 %% Description: Returns a string representation of the parameter
@@ -625,24 +437,6 @@ js_to_utf8({array, Val})  -> {array,  lists:map(fun js_to_utf8/1, Val)};
 js_to_utf8({Key, Val})    -> {xmerl_ucs:to_utf8(Key), js_to_utf8(Val)};
 js_to_utf8(X) when is_integer(X); is_float(X); is_atom(X) -> X;
 js_to_utf8(X)             -> xmerl_ucs:to_utf8(X).
-
-lists_diff(List1, List2) ->
-    lists_diff(lists:sort(List1), lists:sort(List2), []).
-
-lists_diff([], [], Acc) ->
-    Acc;
-lists_diff([], L2, Acc) ->
-    [{extra, L2} | Acc];
-lists_diff(L1, [], Acc) ->
-    [{missing, L1} | Acc];
-lists_diff([{K, V} | Tl1], [{K, V} | Tl2], Acc) ->
-    lists_diff(Tl1, Tl2, Acc);
-lists_diff([{K1, V1} | Tl1], [{K2, _V2} | _Tl2] = L2, Acc) when K1 < K2 ->
-    lists_diff(Tl1, L2, [{missing, {K1, V1}} | Acc]);
-lists_diff([{K1, _V1} | _Tl1] = L1, [{K2, V2} | Tl2], Acc) when K2 < K1 ->
-    lists_diff(L1, Tl2, [{extra, {K2, V2}} | Acc]);
-lists_diff([{K, V1} | Tl1], [{K, V2} | Tl2], Acc) ->
-    lists_diff(Tl1, Tl2, [{K, V1, V2} | Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -670,40 +464,13 @@ type_reference(Cell) ->
             range
     end.
 
-%% email_build_fail(Rev) ->
-%%     email(?FORMAT(build_failed_tpl(), [Rev])).
-
-%% email_test_results(Rev) ->
-%%     TestRoot = code:lib_dir(hypernumbers)++"/../../logs/",
-%%     Runs     = filelib:wildcard(TestRoot++"ct_run.*"),
-%%     LastRun  = lists:last(lists:sort(Runs)),
-    
-%%     {ok, Bin} = file:read_file(LastRun++"/last_name"),
-%%     Summary = string:strip(binary_to_list(Bin), right, $\n)++"/suite.summary",
-    
-%%     {ok, [{summary, {Pass, Fail, Skip}}]} = file:consult(Summary),
-
-%%     case {Fail > 0, Skip > 0} of
-%%         {false, false} -> ok;
-%%         _Else ->
-%%             email(?FORMAT(tests_failed_tpl(), [Rev, Pass, Fail, Skip]))
-%%     end.    
-
-%% tests_failed_tpl() ->
-%%     "Systems tests failed on Revision ~p\nPassed :\t~p\n"
-%%         "Failed :  \t~p\nSkipped :\t~p\n".
-
-%% build_failed_tpl() ->
-%%     "Hypernumbers failed to build after Revision ~p".
-
 email(To, From, Subject, Msg) ->
     {ok, Server}   = application:get_env(hypernumbers, mailserver),
     {ok, Password} = application:get_env(hypernumbers, mailpassword),
     {ok, User}     = application:get_env(hypernumbers, mailuser),
     email([{server, Server}, {user, User}, {password, Password}],
           To, From, Subject, Msg).
-    
-    
+        
 email(Details, To, From, Subject, Msg) ->
 
     Server = proplists:get_value(server, Details),    
@@ -748,3 +515,6 @@ recv(Socket) ->
         {ok, Return}    -> io:format("RECV: ~p~n", [Return]);
         {error, Reason} -> io:format("ERROR: ~p~n", [Reason])
     end.
+
+pget(Key, List) ->
+    proplists:get_value(Key, List, undefined).
