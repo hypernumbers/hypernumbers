@@ -11,7 +11,6 @@ ebin
 lib/*/ebin/*.erl
 lib/hypernumbers*/src/ms_util2.erl
 
-
 ## Script used for fetching svn externals
 lib/git-svn-*
 
@@ -22,12 +21,6 @@ conf/sys.config
 lib/formula_engine*/doc/*.html
 lib/hypernumbers*/doc/*.html
 lib/read_excel*/doc/*.html
-
-## Runtime Files
-lib/hypernumbers*/log
-lib/hypernumbers*/priv/docroot/hypernumbers/*.html.??_*
-lib/hypernumbers*/priv/docroot/views/
-lib/hypernumbers*/tmp
 
 ## Generated lexers/parsers
 lib/gettext/priv/
