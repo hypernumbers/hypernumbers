@@ -16,7 +16,7 @@
           
        <div data-type='text' class='hn header' data-binding-from='B7'></div>
           
-          <div data-type='radio' class='hn' data-binding-from='/B12:B17' data-dbinding-to:'/request_site/A:A'></div>
+          <div data-type='radio' class='hn' data-binding-from='B12:B17' data-binding-to='/request_site/A:A'></div>
           
     <div data-type='text' class='hn header' data-binding-from='B8'></div>
           
