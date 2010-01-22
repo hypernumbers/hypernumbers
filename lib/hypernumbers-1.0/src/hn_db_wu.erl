@@ -1938,9 +1938,11 @@ mark_children_dirty(#refX{site = Site} = RefX) ->
     Tbl = trans(Site, relation),
     Children = get_local_children_idxs(RefX),
     Q = insert_dirty_queue(Children, Tbl, -1, hn_workq:new()),
-    Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
-    ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
-
+    case hn_workq:is_empty(Q) of
+        true -> ok;
+        false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
+                 ok = mnesia:write(trans(Site, dirty_queue), Entry, write)
+    end.
 
 %% We pass down a minimum priority to retain the invariant that
 %% children *always* have a higher priority than their parent.
