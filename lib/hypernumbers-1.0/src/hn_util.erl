@@ -12,6 +12,9 @@
 -include_lib("kernel/include/file.hrl").
 
 -export([
+         esc_regex/1,     
+         recursive_copy/2,
+
          email/4, email/5,
 
          % HyperNumbers Utils
@@ -53,11 +56,7 @@
 
          % general utilities
          get_offset/3,
-         js_to_utf8/1,
-         esc_regex/1,
-         
-         % file copy utils
-         recursive_copy/2
+         js_to_utf8/1
         ]).
 
 
