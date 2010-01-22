@@ -85,7 +85,7 @@ b26_to_i([H|T],Power,Value)->
                    true ->
                        round((H - 96) * math:pow(26, Power));
                    _    ->
-                       exit([H | T] ++ " is not a valid base 26 number")
+                       erlang:error([H | T] ++ " is not a valid base 26 number")
                end,
     b26_to_i(T, Power + 1, NewValue + Value).
 
