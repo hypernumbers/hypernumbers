@@ -14,17 +14,13 @@ start_link() ->
 %% @spec init([]) -> {ok,Children}
 %% @doc  Supervisor call back
 init([]) ->
-
     ChildList = bootstrap_sites(),
-    
     {ok,{{one_for_one,60,1}, ChildList}}.
 
 bootstrap_sites() ->
     case application:get_env(hypernumbers, bootstrapped) of
-        {ok, Sites} ->
-            consolidate([bootstrap_site(S, T, O) || {S, T, O} <- Sites]);
-        _Else ->
-            []
+        {ok, Sites} -> consolidate([bootstrap_site(S, T, O) || {S, T, O} <- Sites]);
+        _Else       -> []
     end.
 
 bootstrap_site(S, T, O) ->
@@ -38,7 +34,7 @@ bootstrap_site(S, T, O) ->
             [];
         App ->
             case catch App:module_info() of
-                {'EXIT', _ } -> ok;
+                {'EXIT', _ } -> [];
                 _Mod         ->
                     case proplists:get_value(init_args, O) of
                         undefined -> {App, []};
