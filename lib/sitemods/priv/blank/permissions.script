@@ -49,91 +49,19 @@
 %% Note that the expressions end in a full stop '.'
 %%
 
-% the home page (writable, very wrong)
-{perms_and_views,
- [{list,    [{user, "*"}, {group, "*"}]},
-  {path,     []},
-  {perms,    [read, write]},
-  {override, "_g/hypernumbers/home"},
-  {views,    ["_g/hypernumbers/home"]}
+{add_view, 
+ [{path, []},
+  {perms, [{group, "dev"}]},
+  {view, "_g/core/spreadsheet"}
  ]}.
 
-% /about/ and /team/
-{perms_and_views,
- [{list,   [{user, "*"}, {group, "*"}]},
-  {path,   ["about"]},
-  {perms,  [read]},
-  {override, "_g/hypernumbers/about"},
-  {views,    ["_g/hypernumbers/about"]}
+{add_view, 
+ [{path, ["[**]"]},
+  {perms, [{group, "dev"}]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
+{champion,
+ [{path, []},
+  {view, "_g/core/spreadsheet"}
  ]}.
 
-{perms_and_views,
- [{list,   [{user, "*"}, {group, "*"}]},
-  {path,   ["team"]},
-  {perms,  [read]},
-  {override, "_g/hypernumbers/team"},
-  {views,    ["_g/hypernumbers/team"]}
- ]}.
-
-% /application/ 
-{perms_and_views,
- [{list,  [{user, "*"}, {group, "*"}]},
-  {path,  ["application"]},
-  {perms, [read]},
-  {override, "_global/login"},
-  {views,    ["_global/login"]}
- ]}.
-
-% /u/ 
-{perms_and_views,
- [{list,  [{user, "*"}, {group, "*"}]},
-  {path,  ["u"]},
-  {perms, [read]},
-  {override, "_global/login"},
-  {views,    ["_global/login"]}        
- ]}.
-
-% the login path
-{perms_and_views,
- [{list,     [{user, "*"}, {group, "*"}]},
-  {path,     ["_user", "login"]},
-  {perms,    [read, write]},
-  {override, "_global/login"},
-  {views,    ["_global/login"]}
- ]}.
-
-% now create the dev space
-{perms_and_views,
- [{list,     [{group, "dev"}]},
-  {path ,    ["dev", "[**]"]},
-  {perms,    [read, write]},
-  {override, "_global/spreadsheet"},
-  {views,    ["_global/spreadsheet"]}
- ]}.
-
-% now create the public space
-{perms_and_views,
- [{list,     [{user, "*"}, {group, "*"}]},
-  {path ,    ["public", "[**]"]},
-  {perms,    [read]},
-  {override, "_global/spreadsheet"},
-  {views,    ["_global/spreadsheet"]}
- ]}.
-
-% now create the public space
-{perms_and_views,
- [{list,     [{user, "*"}, {group, "*"}]},
-  {path ,    ["public"]},
-  {perms,    [read]},
-  {override, "_global/spreadsheet"},
-  {views,    ["_global/spreadsheet"]}
- ]}.
-
-% finally setup the static data space
-{perms_and_views,
- [{list,     [{user, "*"}, {group, "*"}]},
-  {path,     ["_site", "[*]"]},
-  {perms,    [read]},
-  {override, ""},
-  {views,    []}
- ]}.
