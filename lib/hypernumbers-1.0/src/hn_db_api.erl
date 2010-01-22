@@ -130,7 +130,6 @@
          notify_from_web/5,
          notify_back_from_web/4,
          handle_dirty_cell/2,
-         %%shrink_dirty_cell/1,
          handle_dirty/2,
          set_borders/5,
          register_hn_from_web/4,
@@ -260,25 +259,6 @@ wait_for_dirty(Site) ->
             timer:sleep(100),
             wait_for_dirty(Site) 
     end.
-
-
-%% %% @todo write documentation for shrink_dirty_cell
-%% shrink_dirty_cell(Site) ->
-%%     mnesia:activity(sync_dirty, fun do_shrink_dirty_cell/1, [Site]).
-
-%% do_shrink_dirty_cell(Site) ->
-%%     List = hn_db_wu:read_all_dirty_cells(Site),
-%%     Fun2 = fun(#dirty_cell{idx = Idx} = D, Acc) ->
-%%                    L =  hn_db_wu:read_local_parents_idx(Site, Idx),
-%%                    case L of
-%%                        [] -> Acc;
-%%                        _  -> [{D, L} | Acc]
-%%                    end
-%%            end,
-%%     ParentsList = lists:foldl(Fun2, [], List),
-%%     % now dedup the dirty list
-%%     DeleteList = shrink(ParentsList, List),
-%%     ok = hn_db_wu:delete_dirty_cells(Site, DeleteList).
 
 %% @todo write documentation for write_formula_to_range
 write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
@@ -447,13 +427,10 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 handle_dirty_cell(Site, Idx) ->
     ok = init_front_end_notify(),  
     F = fun() ->
-                case hn_db_wu:local_idx_to_refX(Site, Idx) of
-                    {error, _, _} -> ok;
-                    Cell ->
-                        case hn_db_wu:read_attrs(Cell, ["formula"], read) of
-                            [{C, KV}] -> hn_db_wu:write_attr(C, KV);
-                            []        -> ok
-                        end
+                Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
+                case hn_db_wu:read_attrs(Cell, ["formula"], read) of
+                    [{C, KV}] -> hn_db_wu:write_attr(C, KV);
+                    []        -> ok
                 end
         end,
     {atomic, ok} = mnesia:transaction(F),
@@ -1015,8 +992,8 @@ delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
 delete(#refX{obj = {page, _}} = RefX) ->
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
-                   hn_db_wu:mark_children_dirty(RefX),
-                   hn_db_wu:delete_page(RefX)
+                   Dirty = hn_db_wu:delete_page(RefX),
+                   hn_db_wu:mark_these_dirty(Dirty)
            end,
     mnesia:activity(transaction, Fun1),
     ok = tell_front_end("delete").
@@ -1059,9 +1036,9 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp) ->
     % before getting the cells to shift for INSERT
     % if this is a delete - we need to actually delete the cells
 
-    hn_db_wu:mark_children_dirty(RefX),
     ReWr = do_delete(Type, RefX),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
+    hn_db_wu:mark_these_dirty(ReWr),
     hn_db_wu:mark_these_dirty(MoreDirty),
 
     case Obj of
@@ -1108,8 +1085,7 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp) ->
 do_delete(insert, _RefX) ->
     [];
 do_delete(delete, RefX) ->
-    ok = hn_db_wu:delete_cells(RefX),
-    hn_db_wu:get_local_children(RefX).
+    hn_db_wu:delete_cells(RefX).
 
 %% @spec clear(#refX{}) -> ok
 %% @doc same as <code>clear(refX{}, all)</code>.
@@ -1483,7 +1459,6 @@ copy2(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
     %%#refX{site = Site} = To,
     List = hn_util:range_to_list(To),
     lists:map(fun(X) -> copy_cell(From, X, Incr) end, List),
-    %%ok = shrink_dirty_cell(Site),
     ok.
 
 %% range to range

@@ -18,8 +18,8 @@ init_per_suite(Config) ->
     [InitSite(S) || S <- sites()],
     inets:start(http, [{profile, systest}]),
     testsys:restore(Target, Test, systest),
+    [hn_db_api:wait_for_dirty(S) || S <- sites()], 
     actions(),
-    timer:sleep(2000),
     [hn_db_api:wait_for_dirty(S) || S <- sites()], 
     Config.
 

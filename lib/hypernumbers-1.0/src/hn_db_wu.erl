@@ -1360,25 +1360,20 @@ shift_cells(From, Type, Disp, Rewritten)
             ChildCells = lists:flatten([get_local_children(X) || X <- RefXList]),
             ChildCells2 = hslists:uniq(ChildCells),
             DedupedChildren = lists:subtract(ChildCells2, Rewritten),
-
-            Fun1 = fun(X) ->
-                           read_attrs(X, ["formula"], write)
-                   end,
-            FormulaList1 = [Fun1(X) || X <- DedupedChildren],
-            FormulaList2 = hslists:uniq(lists:flatten(FormulaList1)),
-
-            Fun2 = fun({ChildRef, {"formula", F1}}, Acc) ->
-                           {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XO, YO}),
-                           %% this is the wrong test, if a link crosses the
-                           %% deleted border either way, recalc is needed
-                           ok = write_attr3(ChildRef, {"formula", F2}),
-                           case St of
-                               clean  -> Acc;
-                               dirty -> [ChildRef | Acc]
-                           end
-                   end,
-            DirtyChildren = lists:foldl(Fun2, [], FormulaList2),
-
+            Formulas = [F || X <- DedupedChildren,
+                             F <- read_attrs(X, ["formula"], write)],
+            Fun = fun({ChildRef, {"formula", F1}}, Acc) ->
+                          {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XO, YO}),
+                          %% this is the wrong test, if a link crosses the
+                          %% deleted border either way, recalc is needed
+                          ok = write_attr3(ChildRef, {"formula", F2}),
+                          case St of
+                              clean  -> Acc;
+                              dirty -> [ChildRef | Acc]
+                          end
+                  end,
+            DirtyChildren = lists:foldl(Fun, [], Formulas),
+            
             %% now shift the actual cells
             %% - first up adjust the local_objs table 
             %%   - read all the cell indices
@@ -1595,7 +1590,7 @@ get_f1([_H | T], Acc)                      -> get_f1(T, Acc).
 %% Returns a list of dereferenced cells thatneed to be set dirty to recalculate
 delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
 
-    ok = delete_cells(RefX),
+    Dirty = delete_cells(RefX),
 
     F = fun(#local_objs{obj = {X, _Y}, idx = Id} = Obj)
               when X == column; X == row ->
@@ -1609,7 +1604,7 @@ delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
     Objs  = mnesia:index_match_object(trans(Site, local_objs), Match, 1, read),
 
     [ ok = F(X) || X <- Objs ],
-    ok.
+    Dirty.
 
 %% @doc takes a reference to a
 %% <ul>
@@ -1625,11 +1620,11 @@ delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
 %% @todo this is ineffiecient because it reads and then deletes each
 %% record individually - if remoting_reg supported a {delete refX all}
 %% type message it could be speeded up
--spec delete_cells(#refX{}) -> list(). 
+-spec delete_cells(#refX{}) -> [#refX{}].
 delete_cells(#refX{site = S} = DelX) ->
     Cells = get_cells(DelX),
     case Cells of
-        [] -> ok;
+        [] -> [];
         _ -> 
             %% update the children that point to the cell that is being deleted
             %% by rewriting the formulae of all the children cells replacing the 
@@ -1640,14 +1635,19 @@ delete_cells(#refX{site = S} = DelX) ->
             %% also in the delete zone these need to be removed 
             %% before we do anything else...
             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
-            [deref_child(C, DelX) || C <- LocalChildren3],
+
+            Fun = fun({ChildRef, {"formula", F1}}) ->
+                          {_Status, NewFormula} = deref(ChildRef, F1, DelX),
+                          ok = write_attr(ChildRef, {"formula", NewFormula}),
+                          ChildRef
+                  end,
+            DirtyChildren = [Fun(F) || X <- LocalChildren3,
+                                       F <- read_attrs(X, ["formula"], write)],
 
             %% fix relations table.
-            Fun3 = fun(X) -> delete_local_relation(X) end,
-            [ok = Fun3(X) || X <- Cells],
+            [ok = delete_local_relation(X) || X <- Cells],
 
             %% get the index of all items to be deleted
-            #refX{site = S} = DelX,
             H1 = #local_objs{path = '$1', obj = '$2', _ = '_'},
             C1 = make_del_cond(Cells),
             Table1 = trans(S, local_objs),
@@ -1676,7 +1676,7 @@ delete_cells(#refX{site = S} = DelX) ->
             %% finally delete the index records themselves
             [ ok = mnesia:delete_object(trans(S, local_objs), X, write)
               || X <- Recs],
-            ok
+            DirtyChildren
     end.
 
 make_del_cond([]) ->
@@ -2844,12 +2844,6 @@ shift_remote_links2(Site, [H | T], To) ->
     ok = mnesia:delete_object(Table, H, write),
     ok = mnesia:write(Table, NewLink, write),
     shift_remote_links2(Site, T, To).
-
-deref_child(#refX{site = _S} = Child, DeRefX) ->
-    [{Child, {"formula", Formula}}] = read_attrs(Child, ["formula"], write),
-    {_Status, NewFormula} = deref(Child, Formula, DeRefX),
-    ok = write_attr(Child, {"formula", NewFormula}).
-
 
 %% dereferences a formula
 deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
