@@ -16,3 +16,9 @@
   {perms, [{user, '$user'}]},
   {view, "_g/core/spreadsheet"}
  ]}.
+
+{add_view, 
+ [{path, ["admin"]},
+  {perms, [{user, '$user'}]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
