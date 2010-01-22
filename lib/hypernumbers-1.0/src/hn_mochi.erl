@@ -26,13 +26,13 @@ req(Req) ->
         X when X == ".tpl" ->
             "/"++RelPath = Req:get(path),
             Req:serve_file(RelPath, docroot(Site), nocache());
-        
+
         % Serve Static Files
         X when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; 
         X == ".ico"; X == ".json"; X == ".gif"; X == ".html" ->
             "/"++RelPath = Req:get(path),
             Req:serve_file(RelPath, docroot(Site));
-        
+
         [] ->
             case catch do_req(Req) of 
                 ok   -> ok;

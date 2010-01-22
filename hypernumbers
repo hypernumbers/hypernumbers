@@ -12,6 +12,11 @@ BOOTFILE=ebin/hypernumbers
 SSLBOOT=ebin/start_ssl
 CONFIG=var/sys.config
 
+RUN_SSL='-ssl_dist_opt server_certfile "priv/keys/servercert.pem"
+-ssl_dist_opt client_certfile "priv/keys/clientcert.pem" 
+-ssl_dist_opt keyfile "priv/keys/key.pem" 
+-proto_dist inet_ssl'
+
 HN_DIR="lib/hypernumbers-1.0"
 MOCHI_DIR="lib/mochiweb"
 
@@ -20,7 +25,7 @@ MOCHI_DIR="lib/mochiweb"
 mkdir -p var 
 [ -f $CONFIG ] || cp priv/sys.config.default $CONFIG 
 
-if [ conf/sys.config.default -nt $CONFIG ] 
+if [ priv/sys.config.default -nt $CONFIG ] 
 then 
     echo -e "\n***WARNING*** Default Config File has been updated\n"
 fi
@@ -70,43 +75,23 @@ function build
     erl -pa ebin -noshell -s compile_code -s init stop
 }
 
-function start_dev
+function start 
 {
-    MODE="-detached"
-	if [ $# -lt 1 ]
-	then
-	    MODE=""
-	fi
+    NAME=$1
+    DETACHED=$2
+    DEVELOPMENT=$3
+    RELOAD=$4
+    SSL=$5
 
-    erl $MODE \
-        $RELOAD \
-        -boot $BOOTFILE \
+    erl -name $NAME@$HOST \
         -setcookie $COOKIE \
-        -name $NODE@$HOST \
         -config $CONFIG \
+        -boot $BOOTFILE \
+        $DETACHED \
+        $SSL \
         -env ERL_MAX_ETS_TABLES $ETS_TABLES \
-        -hypernumbers environment development \
-        -run reloader start
-}
-
-function start_production
-{
-    if [ "$1" != "" ]
-        then NODENAME=$1
-        else NODENAME=$NODE
-    fi
-
-    erl -name $NODENAME@$HOST \
-        -boot $BOOTFILE \
-        -detached \
-        -setcookie $COOKIE \
-        -hypernumbers environment production \
-        -config $CONFIG \
-        -proto_dist inet_ssl \
-        -ssl_dist_opt server_certfile "priv/keys/servercert.pem" \
-        -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" \
-        -ssl_dist_opt keyfile "priv/keys/key.pem" \
-        -env ERL_MAX_ETS_TABLES $ETS_TABLES
+        -hypernumbers environment $DEVELOPMENT \
+        $RELOAD
 }
     
 function visualise
@@ -123,24 +108,6 @@ function statsvn
     java -Xms512m -Xmx1024m -jar ../../priv/statsvn/statsvn.jar \
          ./svn.log ../../\
          -exclude tests/**:lib/eunit/**:lib/yaws-1.76/**:lib/mochi-1.0/**:**/*.java:**/*.jar:testroot/**
-}
-
-function copyfiles
-{
-    NAME=hypernumbers
-    SRC=$NAME@$1:www/$1/priv/uploads/*
-    DEST=lib/hypernumbers-1.0/log/$1/uploads/
-    [ -d $DEST ] || /bin/mkdir -p $DEST
-    /usr/bin/scp $SRC $DEST        
-}
-
-function copylog
-{
-    NAME=hypernumbers
-    DEST=lib/hypernumbers-1.0/log/$1/
-    SRC=$NAME@$1:www/$1/lib/hypernumbers-1.0/log/post_log.LOG.*
-    [ -d $DEST ] || /bin/mkdir -p $DEST
-    /usr/bin/scp $SRC $DEST
 }
 
 function debug
@@ -160,11 +127,8 @@ function debug_remote
 
     erl -name debug-$(date +%s) \
         -boot $SSLBOOT \
-        -proto_dist inet_ssl \
         -hidden \
-        -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" \
-        -ssl_dist_opt server_certfile "priv/keys/servercert.pem" \
-        -ssl_dist_opt keyfile "priv/keys/key.pem" \
+        $RUN_SSL \
         -setcookie $COOKIE \
         -remsh $1
 }
@@ -173,9 +137,9 @@ function debug_remote
 function stop
 {
     erl -detached \
-        -name $NODE-ctrl@$HOST \
+        -name $1-ctrl@$HOST \
         -setcookie $COOKIE \
-        -eval "rpc:call('$NODE@$HOST',init,stop,[])" \
+        -eval "rpc:call('$1@$HOST',init,stop,[])" \
         -s init stop
 }
 
@@ -207,17 +171,49 @@ function mergemod
     find . \( ! -regex '.*/\..*' \) -print | cpio -dump  $DEST
 }
 
-case $1 in 
-    start_dev)        start_dev $2;;
-    start_production) start_production $2;; 
+
+COMMAND=$1
+shift
+
+case $COMMAND in 
+
+    #eugh, would prefer the parsing done elsewhere
+    start) 
+        
+        SSL=""
+        DETACHED=""
+        DEVELOPMENT="development"
+        RELOAD="-run reloader start"
+        
+        while [ "$1" != "" ]; do
+            case $1 in
+                -node ) 
+                    shift
+                    NODE=$1
+                    ;;
+                -detached ) 
+                    DETACHED="-detached"
+                    ;;
+                -production ) 
+                    DEVELOPMENT="production"
+                    RELOAD=""
+                    SSL=$RUN_SSL
+                    ;;
+                * )
+                    echo "Invalid parameters $1"
+                    exit 1
+            esac
+            shift
+        done
+
+        start "$NODE" "$DETACHED" "$DEVELOPMENT" "$RELOAD" "$SSL";;
+
     debug)            debug;;
-    debug_remote)     debug_remote $2;;
-    stop)             stop;;
-    stop_remote)      stop_remote $2;;
-    copylog)          copylog $2;;
-    copyfiles)        copyfiles $2;;
-    build)            build $2;;
-    mergemod)         mergemod $2 $3;;
+    debug_remote)     debug_remote $1;;
+    stop)             stop $1;;
+    stop_remote)      stop_remote $1;;
+    build)            build $1;;
+    mergemod)         mergemod $1 $2;;
     statsvn)          statsvn;;
     visualise)        visualise;;
     *)                echo "invalid parameters passed into hypernumbers script";;
