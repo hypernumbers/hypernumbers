@@ -34,7 +34,7 @@ cd ../../
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a "testsys generate")
 
 ## Run tests
-echo pwd
+echo $(pwd)
 echo "running tests"
 
 # Examples...
@@ -61,16 +61,16 @@ echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test sys')
 echo "stopping"
 
 ## Cleanup.
-./hypernumbers stop
+# ./hypernumbers stop
 
-rm -rf $LASTRUN
-mkdir $LASTRUN
+# rm -rf $LASTRUN
+# mkdir $LASTRUN
 
-cd priv/test_visualiser
-#ruby visualise_tests.rb
-cd ../..
+# cd priv/test_visualiser
+# #ruby visualise_tests.rb
+# cd ../..
 
-cp -r var/tests/* $LASTRUN
-cp var/tests/index.html $HOME/$WEBROOT/tests/$DATE.html
+# cp -r var/tests/* $LASTRUN
+# cp var/tests/index.html $HOME/$WEBROOT/tests/$DATE.html
 
-rm -rf $HOME/$TESTDIR
+# rm -rf $HOME/$TESTDIR
