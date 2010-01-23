@@ -31,7 +31,7 @@ ruby regen_tests.rb 2x
 cd ../../
 
 ## Generate System Tests
-$ERL_CALL -name $TARGET -c $COOKIE -a "testsys generate"
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a "testsys generate")
 
 ## Run tests
 
@@ -40,21 +40,21 @@ $ERL_CALL -name $TARGET -c $COOKIE -a "testsys generate"
 #$ERL_CALL -name $TARGET -c $COOKIE -a "test excel"
 #$ERL_CALL -name $TARGET -c $COOKIE -a "test sys"
 
-$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1a"]'
-$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1b"]'
-$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1c"]'
-$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1d"]'
-$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1e"]'
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1a"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1b"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1c"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1d"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1e"]')
 #$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1f"]'
 
-$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2a"]'
-$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2b"]'
-$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2c"]'
-$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2d"]'
-$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2e"]'
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2a"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2b"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2c"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2d"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2e"]')
 #$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2f"]'
 
-$ERL_CALL -name $TARGET -c $COOKIE -a 'test sys'
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test sys')
 
 ## Cleanup.
 ./hypernumbers stop
