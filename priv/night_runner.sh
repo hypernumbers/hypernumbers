@@ -34,6 +34,8 @@ cd ../../
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a "testsys generate")
 
 ## Run tests
+echo pwd
+echo "running tests"
 
 # Examples...
 #$ERL_CALL -name $TARGET -c $COOKIE -a "test all"
@@ -55,6 +57,8 @@ echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2e"]')
 #$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2f"]'
 
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test sys')
+
+echo "stopping"
 
 ## Cleanup.
 ./hypernumbers stop
