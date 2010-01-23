@@ -34,8 +34,6 @@ cd ../../
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a "testsys generate")
 
 ## Run tests
-echo $(pwd)
-echo "running tests"
 
 # Examples...
 #$ERL_CALL -name $TARGET -c $COOKIE -a "test all"
@@ -44,21 +42,19 @@ echo "running tests"
 
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1a"]')
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1b"]')
-# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1c"]')
-# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1d"]')
-# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1e"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1c"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1d"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1e"]')
 #$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1f"]'
 
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2a"]')
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2b"]')
-# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2c"]')
-# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2d"]')
-# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2e"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2c"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2d"]')
+echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2e"]')
 #$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2f"]'
 
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test sys')
-
-echo "stopping"
 
 ## Cleanup.
 ./hypernumbers stop
