@@ -21,7 +21,7 @@ cd $TESTDIR
 
 ## Compile, and run Hypernumbers
 ./hypernumbers build
-./hypernumbers start_dev detached
+./hypernumbers start -detached
 ## run detached.
 
 ## Generate Excel Tests
@@ -44,16 +44,16 @@ echo "running tests"
 
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1a"]')
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1b"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1c"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1d"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1e"]')
+# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1c"]')
+# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1d"]')
+# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1e"]')
 #$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1f"]'
 
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2a"]')
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2b"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2c"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2d"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2e"]')
+# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2c"]')
+# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2d"]')
+# echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2e"]')
 #$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2f"]'
 
 echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test sys')
@@ -61,16 +61,16 @@ echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test sys')
 echo "stopping"
 
 ## Cleanup.
-# ./hypernumbers stop
+./hypernumbers stop
 
-# rm -rf $LASTRUN
-# mkdir $LASTRUN
+rm -rf $LASTRUN
+mkdir $LASTRUN
 
-# cd priv/test_visualiser
-# #ruby visualise_tests.rb
-# cd ../..
+cd priv/test_visualiser
+#ruby visualise_tests.rb
+cd ../..
 
-# cp -r var/tests/* $LASTRUN
-# cp var/tests/index.html $HOME/$WEBROOT/tests/$DATE.html
+cp -r var/tests/* $LASTRUN
+cp var/tests/index.html $HOME/$WEBROOT/tests/$DATE.html
 
-# rm -rf $HOME/$TESTDIR
+rm -rf $HOME/$TESTDIR
