@@ -8,6 +8,6 @@ cd $HOME
 
 echo "Starting tarsnap $DATE"
 
-echo tarsnap
+echo $(/usr/local/bin/tarsnap)
 
-tarsnap --cachedir tarsnap-cache --keyfile www/$SITE/priv/tarsnap/$SITE.tarsnap.key -v -c -f $SITE-var-$DATE www/$SITE/var
+/usr/local/bin/tarsnap --cachedir tarsnap-cache --keyfile www/$SITE/priv/tarsnap/$SITE.tarsnap.key -v -c -f $SITE-var-$DATE www/$SITE/var
