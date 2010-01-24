@@ -6,6 +6,8 @@
 SVN_FILE=$1
 LOCAL_FILE="./script.sh"
 
+shift #get rid of script name from command line args
+
 svn export $SVN_FILE $LOCAL_FILE
-$LOCAL_FILE
+$LOCAL_FILE $@
 rm $LOCAL_FILE
