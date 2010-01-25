@@ -20,7 +20,7 @@ main([Target, NStr, PostlogDir]) ->
     EndDate = relative_date(N-1),
     _Ret = rpc:cast(TNode, mochilog, stream_log, 
                 [PostlogDir, StartDate, EndDate, self()]),
-    start_loop(filename(Target ++ StartDate));
+    start_loop(Target ++ StartDate);
 
 main(_) ->
     io:format("usage: fetcher target [day_ago=1] [postlog_dir=\".\"]~n", []).
@@ -66,12 +66,12 @@ init() ->
     io:format("in init for node ~p with ~p~n", [node(), init:script_id()]),
     true = auth:set_cookie(?COOKIE).
     
-filename(Str) ->
-    {H, M, S} = erlang:time(),
-    lists:flatten([Str, 
-                   " (",
-                   io_lib:format("~2.10.0b_~2.10.0b_~2.10.0b", [H,M,S]),
-                   ")"]).
+% filename(Str) ->
+%     {H, M, S} = erlang:time(),
+%     lists:flatten([Str, 
+%                    " (",
+%                    io_lib:format("~2.10.0b_~2.10.0b_~2.10.0b", [H,M,S]),
+%                    ")"]).
     
 relative_date(Offset) ->
     {Date, _} = calendar:now_to_local_time(erlang:now()),
