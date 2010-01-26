@@ -247,9 +247,10 @@ provision(CurrentSite, Port, Row, State) ->
             
             case application:get_env(hypernumbers, environment) of
                 {ok, development} ->
+                    io:format("Email is ~p~n", [Email]),
                     io:format("~p",[Msg]);
                 {ok, production}  ->
-                    hn_util:email(Email, "\"Hypernumbers Team\" <noreply@hypernumbers.com>",
+                    hn_util:email(Email ++ "@hypernumbers.com", "\"Hypernumbers Team\" <noreply@hypernumbers.com>",
                                   "Your new Hypernumbers site is live!", Msg)
             end
     end,
