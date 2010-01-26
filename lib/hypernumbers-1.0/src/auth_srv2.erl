@@ -20,6 +20,7 @@
          check_particular_view/4,
          check_get_challenger/3,
          get_views/3,
+         get_any_view/3,
          add_view/4,
          set_champion/3,
          set_challenger/3,
@@ -59,25 +60,32 @@
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
--spec check_get_view(string(), [string()], auth_req()) -> string(). 
+-spec check_get_view(string(), [string()], auth_req()) 
+                    -> {view, string} | {status, integer()}.
 check_get_view(Site, Path, AuthReq) -> 
     gen_server:call(?MODULE, {check_get_view, Site, Path, AuthReq}).
 
--spec check_get_challenger(string(), [string()], auth_req()) -> string(). 
+-spec check_get_challenger(string(), [string()], auth_req()) 
+                          -> {view, string} | {status, integer()}.
 check_get_challenger(Site, Path, AuthReq) -> 
     gen_server:call(?MODULE, {check_get_challenger, Site, Path, AuthReq}).
 
 -spec check_particular_view(string(), [string()], auth_req(), string())
-                           -> string(). 
+                           -> {view, string} | {status, integer()}.
 check_particular_view(Site, Path, AuthReq, View) ->
     gen_server:call(?MODULE, {check_particular_view, Site, Path,
                               AuthReq, View}).
+
+-spec get_any_view(string(), [string()], auth_req()) 
+                  -> {view, string} | {status, integer()}.
+get_any_view(Site, Path, AuthReq) ->
+    gen_server:call(?MODULE, {get_any_view, Site, Path, AuthReq}).
 
 -spec get_views(string(), [string()], auth_req()) -> [string()]. 
 get_views(Site, Path, AuthReq) ->
     gen_server:call(?MODULE, {get_views, Site, Path, AuthReq}).
 
--spec add_view(string(), [string()], auth_spec(), string()) -> string(). 
+-spec add_view(string(), [string()], auth_spec(), string()) -> ok.
 add_view(Site, Path, AuthSpec, View) ->
     gen_server:call(?MODULE, {add_view, Site, Path, AuthSpec, View}).
 
@@ -149,6 +157,8 @@ handle_call(Request, _From, State) ->
                 {Site, check_particular_view1(tree(Site, Tr), P, AR, V), false};
             {get_views, Site, P, AR} ->
                 {Site, get_views1(tree(Site, Tr), P, AR), false};
+            {get_any_view, Site, P, AR} ->
+                {Site, check_get_view1(tree(Site, Tr), P, AR, any), false};
             {add_view, Site, Pg, AS, V} ->
                 {Site, add_view1(tree(Site, Tr), Pg, AS, V), true};
             {set_champion, Site, Pg, Df} ->
@@ -316,42 +326,42 @@ add_us_and_gps(V, [{group, Group} | Rest]) ->
 -spec get_view(#control{}, 
                string(), [string()],
                champion | challenger | any)
-              -> {html, string()} | {return, integer()}.
+              -> {view, string()} | {status, integer()}.
 get_view(#control{views = ?EMPTY_TREE}, _U, _G, _T) ->
-    {return, 404};
+    {status, 404};
+get_view(C, User, Groups, any) ->
+    KVs = gb_trees:to_list(C#control.views),
+    case get_role_view(KVs, User, Groups) of 
+        none -> {status, 401}; 
+        V -> {view, V}
+    end;
 get_view(#control{champion = [], challenger = []}, _U, _G, _T) ->
-    {return, 404};
+    {status, 404};
 get_view(#control{champion = V}=C, User, Groups, champion) ->
     View = gb_trees:get(V, C#control.views),
     case get_role_view([{V,View}], User, Groups) of
-        V -> {html, V}; 
-        _ -> {return, 401}
+        V -> {view, V}; 
+        _ -> {status, 401}
     end;
 get_view(#control{challenger = V}=C, User, Groups, challenger) when V /= [] ->
     View = gb_trees:get(V, C#control.views),
     case get_role_view([{V,View}], User, Groups) of
-        V -> {html, V}; 
-        _ -> {return, 401}
-    end;
-get_view(C, User, Groups, any) ->
-    KVs = gb_trees:to_list(C#control.views),
-    case get_role_view(KVs, User, Groups) of 
-        none -> {return, 401}; 
-        V -> {html, V}
+        V -> {view, V}; 
+        _ -> {status, 401}
     end.
 
 -spec get_particular_view(#control{}, 
                           string(), [string()],
                           string())
-                         -> {html, string()} | {return, integer()}.
+                         -> {view, string()} | {status, integer()}.
 get_particular_view(C, User, Groups, V) ->
     %% we don't know this actually exists
     case gb_trees:lookup(V, C#control.views) of
-        none -> {return, 401};
+        none -> {status, 401};
         {value, View} -> 
             case get_role_view([{V,View}], User, Groups) of
-                none -> {return, 401};
-                V -> {html, V}
+                none -> {status, 401};
+                V -> {view, V}
             end
     end.
 
@@ -631,7 +641,7 @@ demo_DEBUG() ->
 %% check_get_view (general)
 testA1(P) ->
     Ret = check_get_view1(gb_trees:empty(), P, {"gordon", ["Group"]}, champion),
-    ?assertEqual({return, 404}, Ret).
+    ?assertEqual({status, 404}, Ret).
 
 %% add views
 testA2(P) ->
@@ -640,7 +650,7 @@ testA2(P) ->
     Tree2 = add_view1(Tree1, P, UGs, "another view"),
     Tree3 = set_default(Tree2, P, "a view", champion),
     Ret = check_get_view1(Tree3, P, {"User", ["Fail"]}, champion),
-    ?assertEqual({return, 401}, Ret).
+    ?assertEqual({status, 401}, Ret).
 
 %% Users and groups
 testA3(P) ->
@@ -649,7 +659,7 @@ testA3(P) ->
     Tree2 = add_view1(Tree1, P, UGs, "another view"),
     Tree3 = set_default(Tree2, P, "a view", champion),
     Ret = check_get_view1(Tree3, P, {"gordon", ["Fail"]}, champion),
-    ?assertEqual({html, "a view"}, Ret).
+    ?assertEqual({view, "a view"}, Ret).
 
 %% Test everyone
 testA4(P) ->
@@ -657,7 +667,7 @@ testA4(P) ->
     Tree1 = add_view1(gb_trees:empty(), P, UGs, "my view"),
     Tree2 = set_default(Tree1, P, "my view", champion),
     Ret = check_particular_view1(Tree2, P, {"nowhereman", []}, "my view"),
-    ?assertEqual({html, "my view"}, Ret).
+    ?assertEqual({view, "my view"}, Ret).
 
 %% Get any view
 testA5(P) ->
@@ -665,7 +675,7 @@ testA5(P) ->
     Tree1 = add_view1(gb_trees:empty(), P, UGs, "my view"),
     Tree2 = set_default(Tree1, P, "my view", champion),
     Ret = check_get_view1(Tree2, P, {"gordon", []}, any),
-    ?assertEqual({html, "my view"}, Ret).
+    ?assertEqual({view, "my view"}, Ret).
 
 testA7(P) ->
     Tree = add_view1(gb_trees:empty(), P, 
@@ -677,7 +687,7 @@ testA7(P) ->
     Tree2 = set_default(Tree1, P, "a view", champion),
     Tree3 = set_default(Tree2, P, "another view", champion),
     Ret = check_get_view1(Tree3, P, {"Fail", ["admin"]}, champion),
-    ?assertEqual({html, "another view"}, Ret).
+    ?assertEqual({view, "another view"}, Ret).
 
 %% remove views
 testA8(P) ->
@@ -691,7 +701,7 @@ testA8(P) ->
     Tree4 = remove_views1(Tree3, P, ["another view"]),
     Ret = check_get_view1(Tree4, P, {"gordon", ["Fail"]}, champion),
     %% no permission to see 'champion'... it's gone.
-    ?assertEqual({return, 404}, Ret). 
+    ?assertEqual({status, 404}, Ret). 
 
 testA10(P) ->
     Tree = add_view1(gb_trees:empty(), P, 
@@ -706,7 +716,7 @@ testA10(P) ->
     Tree3 = remove_views1(Tree2, P, ["some view", "a view"]),
     Tree4 = set_default(Tree3, P, "another view", champion),
     Ret = check_get_view1(Tree4, P, {"gordon", ["Fail"]}, champion),
-    ?assertEqual({html, "another view"}, Ret).
+    ?assertEqual({view, "another view"}, Ret).
 
 %% get the challenger
 testA12(P) ->
@@ -714,7 +724,7 @@ testA12(P) ->
                       "a view"),
     Tree2 = set_default(Tree1, P, "a view", challenger),
     Ret = check_get_view1(Tree2, P, {"Fail", ["admin"]}, challenger),
-    ?assertEqual({html, "a view"}, Ret).
+    ?assertEqual({view, "a view"}, Ret).
 
 %% get all views available to a user
 testA14(P) ->
@@ -748,7 +758,7 @@ testA16(P) ->
                       "a fourth view"),
     Ret = check_particular_view1(Tree4, P, {"Fail", ["admin"]},
                           "a third view"),
-    ?assertEqual(Ret, {html, "a third view"}).
+    ?assertEqual(Ret, {view, "a third view"}).
 
 testC() ->
     P1 = ["hip"],
@@ -781,7 +791,7 @@ testC() ->
                        "a fourth view"),
     Ret = check_particular_view1(Tree12, P2, {"Fail", ["admin"]},
                           "a third view"),
-    ?assertEqual({html, "a third view"}, Ret).
+    ?assertEqual({view, "a third view"}, Ret).
 
 %% test wild cards
 testD1() ->
@@ -798,7 +808,7 @@ testD1() ->
                       "a fourth view"),
     Tree5 = set_default(Tree4, P2, "another view", champion),
     Ret = check_get_view1(Tree5, P1, {"Fail", ["admin"]}, champion),
-    ?assertEqual({html, "another view"}, Ret).
+    ?assertEqual({view, "another view"}, Ret).
 
 testD2() ->
     P1 = ["hip", "hop"],
@@ -814,7 +824,7 @@ testD2() ->
                       "a fourth view"),
     Tree5 = set_default(Tree4, P2, "another view", champion),
     Ret = check_get_view1(Tree5, P1, {"Fail", ["admin"]}, champion),
-    ?assertEqual({html, "another view"}, Ret).
+    ?assertEqual({view, "another view"}, Ret).
 
 testD3() ->
     P1 = ["hip", "hop"],
@@ -829,7 +839,7 @@ testD3() ->
     Tree4 = add_view1(Tree3, P2, [{user, "gordon"}, {group, "admin"}],
                       "a fourth view"),
     Ret = check_get_view1(Tree4, P1, {"Fail", ["admin"]}, champion),
-    ?assertEqual({return, 404}, Ret).
+    ?assertEqual({status, 404}, Ret).
 
 % specific overrides the general
 testD4() ->
@@ -850,7 +860,7 @@ testD4() ->
                       "blurgh"),
     Tree6 = set_default(Tree5, P1, "blurgh", champion),
     Ret = check_get_view1(Tree6, P1, {"Fail", ["admin"]}, champion),
-    ?assertEqual({html, "blurgh"}, Ret).
+    ?assertEqual({view, "blurgh"}, Ret).
 
 testD5() ->
     P1 = ["hip", "hop"],
@@ -870,7 +880,7 @@ testD5() ->
                       "blurgh"),
     Tree6 = set_default(Tree5, P1, "blurgh", champion),
     Ret = check_get_view1(Tree6, P1, {"Fail", ["admin"]}, champion),
-    ?assertEqual({html, "blurgh"}, Ret).
+    ?assertEqual({view, "blurgh"}, Ret).
 
 testD6() ->
     P1 = ["hip", "hop"],
@@ -896,7 +906,7 @@ testD6() ->
                       "banjo"),
     Tree8 = set_default(Tree7, P1, "blurgh", champion),
     Ret = check_get_view1(Tree8, P1, {"Fail", ["admin"]}, champion),
-    ?assertEqual({html, "blurgh"}, Ret).
+    ?assertEqual({view, "blurgh"}, Ret).
 
 testD7() ->
     P1 = ["[**]"],
@@ -906,7 +916,7 @@ testD7() ->
     Tree2 = add_view1(Tree1, P2, [{user, "dale"}], "other view"),
     Ret = check_particular_view1(Tree2, P2, {"dale", []}, 
                                  "i/love/spreadsheets"),
-    ?assertEqual({html, "i/love/spreadsheets"}, Ret).
+    ?assertEqual({view, "i/love/spreadsheets"}, Ret).
 
 
 %% Test multiple wild cards
@@ -943,7 +953,7 @@ testE2() ->
                       "blerg"),
     Ret = check_particular_view1(Tree2, P, {"Fail", ["admin"]},
                           "random chops, tonto"),
-    ?assertEqual({html, "random chops, tonto"}, Ret).
+    ?assertEqual({view, "random chops, tonto"}, Ret).
 
 
 unit_test_() -> 

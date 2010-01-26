@@ -73,26 +73,27 @@ do_req(Req) ->
                    throw(ok)
            end,
 
-    Name    = hn_users:name(User),
-    Groups  = hn_users:groups(User),    
-    AuthRet = authorize(Name, Groups, Method, Ref, Vars, content_type(Req)),
+    Name = hn_users:name(User),
+    Groups = hn_users:groups(User),    
+    Type = content_type(Req),
+    AuthRet = authorize(Name, Groups, Method, Ref, Vars, Type),
 
     case AuthRet of
-        %% these are the returns for the GET's
-        {return, 404} ->
-            serve_html(404, Req,
-                       [viewroot(Site), "/_g/core/404.html"], User);
-        {return, 401} ->
-            serve_html(401, Req,
-                       [viewroot(Site), "/_g/core/login.html"], User);
-        {html, File}    ->
+        allowed ->
+            handle_req(Method, Req, Ref, Vars, User);
+        {view, View} ->
             case Vars of
-                [] -> handle_req(Method, Req, Ref, [{"view", File}], User);
+                [] -> handle_req(Method, Req, Ref, [{"view", View}], User);
                 _  -> handle_req(Method, Req, Ref, Vars, User)
             end;
-        %% these are the returns for the POST's
-        true  -> handle_req(Method, Req, Ref, Vars, User);
-        false -> Req:respond({401, [], []})
+        {status, 404} when Type == html ->
+            serve_html(404, Req,
+                       [viewroot(Site), "/_g/core/404.html"], User);
+        {status, 401} when Type == html ->
+            serve_html(401, Req,
+                       [viewroot(Site), "/_g/core/login.html"], User);
+        {status, Code} ->
+            Req:respond({Code, [], []})
     end,
     ok.
 
@@ -800,38 +801,39 @@ content_type(Req) ->
                'GET' | 'PUT',
                 #refX{},
                 [{string(), any()}],
-               'json' | 'html')
-               -> {return, integer()} | {html, string()} | true | false.
-
-authorize(_User, _Groups, 'GET', #refX{site = _Site, path = _Path}, [], json) ->
-    true;
+               json | html)
+               -> {view, string()} | {status, integer()} | allowed.
+authorize(_User, _Groups, 'POST', #refX{site = _Site, path = _Path}, _Vars,
+          _Type) ->
+    allowed;
+authorize(_User, _Groups, 'GET', _Ref, [{VPR, _}], json) 
+  when VPR == "views";
+       VPR == "templates";
+       VPR == "pages" ->
+    allowed;
+authorize(_User, _Groups, 'GET', _Ref, [{"permissions", _}], html) ->
+    allowed;
+authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, [], json) ->
+    case auth_srv2:get_any_view(Site, Path, {User, Groups}) of
+        {view, _} -> allowed;
+        _Else -> {status, 401}
+    end;
+authorize(User, Groups, 'GET', #refX{site=Site}, 
+          [{"updates",_},{"path",Path}|_], json) ->
+    case auth_srv2:get_any_view(Site, Path, {User, Groups}) of
+        {view, _} -> allowed;
+        _Else -> {status, 401}
+    end;
 authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, [], html) ->
     auth_srv2:check_get_view(Site, Path, {User, Groups});
 authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
          [{"view", View}], _Type) ->
     auth_srv2:check_particular_view(Site, Path, {User, Groups}, View);
 authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
-         [{"challenger", true}], _Type) ->
+          [{"challenger", true}], _Type) ->
     auth_srv2:check_get_challenger(Site, Path, {User, Groups});
-%% authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, Vars) ->
-%%     case lists:keyfind("path", 1, Vars) of
-%%         {"path", P2} ->
-%%             P3 = case P2 of
-%%                      "/" -> [];
-%%                      _   -> util2:chop(P2)
-%%                  end,
-%%             auth_srv:check_get_page(Site, {User, Groups}, P3);
-%%         false ->
-%%             auth_srv:check_get_page(Site, {User, Groups}, Path)
-%%     end;
-authorize(_User, _Groups, 'POST', #refX{site = _Site, path = _Path}, _Vars,
-          _Type) ->
-    %%auth_srv:can_write(Site, {User, Groups}, Path).
-    true; %% TODO: hook in security transaction
-authorize(_User, _Groups, _Req, _Ref, _Vars, _Type) ->
-    %% io:format("HACK ALLOW~nuser: ~p group~p~nreq:~p~nref:~p~nvars:~p~n",
-    %%           [User, Groups, Req, Ref, Vars]),
-    true.
+authorize(_U, _Gs, _GP, _Ref, _Vars, _Type) ->
+    {status, 401}.
 
 '500'(Req, Error) ->
     error_logger:error_msg("~p~n~p~n", [Error, erlang:get_stacktrace()]),
