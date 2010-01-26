@@ -61,23 +61,23 @@ start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 -spec check_get_view(string(), [string()], auth_req()) 
-                    -> {view, string} | {status, integer()}.
+                    -> {view, string()} | {status, integer()}.
 check_get_view(Site, Path, AuthReq) -> 
     gen_server:call(?MODULE, {check_get_view, Site, Path, AuthReq}).
 
 -spec check_get_challenger(string(), [string()], auth_req()) 
-                          -> {view, string} | {status, integer()}.
+                          -> {view, string()} | {status, integer()}.
 check_get_challenger(Site, Path, AuthReq) -> 
     gen_server:call(?MODULE, {check_get_challenger, Site, Path, AuthReq}).
 
 -spec check_particular_view(string(), [string()], auth_req(), string())
-                           -> {view, string} | {status, integer()}.
+                           -> {view, string()} | {status, integer()}.
 check_particular_view(Site, Path, AuthReq, View) ->
     gen_server:call(?MODULE, {check_particular_view, Site, Path,
                               AuthReq, View}).
 
 -spec get_any_view(string(), [string()], auth_req()) 
-                  -> {view, string} | {status, integer()}.
+                  -> {view, string()} | {status, integer()}.
 get_any_view(Site, Path, AuthReq) ->
     gen_server:call(?MODULE, {get_any_view, Site, Path, AuthReq}).
 

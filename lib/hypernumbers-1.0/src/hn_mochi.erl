@@ -365,28 +365,17 @@ ipost(Ref, _Type, _Attr, [{"clear", What}], _User)
   when What == "contents"; What == "style"; What == "all" ->
     hn_db_api:clear(Ref, list_to_atom(What));
 
-ipost(#refX{site=Site, path=Path} = _Ref, _Type, _Attr, 
+ipost(#refX{site=Site, path=Path} = Ref, _Type, _Attr,
       [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], User) ->
-
-    case can_save_view(User, Name) of
-        true ->
-
-            Auth = [{user, hn_users:name(User)}, {group, "dev"}],
-            auth_srv2:add_view(Site, Path, Auth, Name),
-            
-            TplFile = [viewroot(Site), "/" , Name, ".tpl"],
-            
-            ok = filelib:ensure_dir(TplFile),
-            ok = file:write_file(TplFile, Form);
-
-        % Broke ability to save
-        %TransFile = [docroot(Site), "/" , Name ++ ".trans"],
-        %Transactions = io_lib:fwrite("~p.~n", [hn_security:make_security(Form)]),
-        %ok = file:write_file(TransFile, Transactions);
-        
-        false -> 
-            err
-    end;
+    AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
+    AuthReq = {hn_users:name(User), hn_users:groups(User)},
+    Output = [viewroot(Site), "/" , Name],
+    true = can_save_view(User, Name),
+    ok = auth_srv2:add_view(Site, Path, AuthSpec, Name),
+    Sec = hn_security:make(Form, Ref, AuthReq),
+    ok = filelib:ensure_dir(Output),
+    ok = file:write_file([Output, ".tpl"], Form),
+    ok = file:write_file([Output, ".sec"], Sec);
         
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
