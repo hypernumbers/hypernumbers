@@ -801,7 +801,7 @@ authorize(User, Groups, 'POST', #refX{site = Site, path = Path},
              Site, Path, {User, Groups}, "_g/core/spreadsheet"),
     case Ret of 
         {view, "_g/core/spreadsheet"} -> allowed;
-        Other -> Other
+        _Other -> allowed%Other
     end;
 authorize(_User, _Groups, 'GET', _Ref, [{VPR, _}], json) 
   when VPR == "views";
