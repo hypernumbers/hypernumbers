@@ -798,20 +798,28 @@ content_type(Req) ->
     end.
 
 -spec authorize(string(), [string()],
-               'GET' | 'PUT',
+               'GET' | 'POST',
                 #refX{},
                 [{string(), any()}],
                json | html)
                -> {view, string()} | {status, integer()} | allowed.
-authorize(_User, _Groups, 'POST', #refX{site = _Site, path = _Path}, _Vars,
-          _Type) ->
+authorize(_User, _Groups, 'POST', #refX{path = ["_user", "login"]}, 
+          _Vs, json) ->
     allowed;
+authorize(User, Groups, 'POST', #refX{site = Site, path = Path}, 
+          _Vs, json) ->
+    Ret = auth_srv2:check_particular_view(
+             Site, Path, {User, Groups}, "_g/core/spreadsheet"),
+    case Ret of 
+        {view, "_g/core/spreadsheet"} -> allowed;
+        Other -> Other
+    end;
 authorize(_User, _Groups, 'GET', _Ref, [{VPR, _}], json) 
   when VPR == "views";
        VPR == "templates";
        VPR == "pages" ->
     allowed;
-authorize(_User, _Groups, 'GET', _Ref, [{"permissions", _}], html) ->
+authorize(_User, _Groups, 'GET', _Ref, [{"permissions", _}], _Any) ->
     allowed;
 authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, [], json) ->
     case auth_srv2:get_any_view(Site, Path, {User, Groups}) of
@@ -819,7 +827,8 @@ authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, [], json) ->
         _Else -> {status, 401}
     end;
 authorize(User, Groups, 'GET', #refX{site=Site}, 
-          [{"updates",_},{"path",Path}|_], json) ->
+          [{"updates",_},{"path",P}|_], json) ->
+    Path = string:tokens(P, "/"),
     case auth_srv2:get_any_view(Site, Path, {User, Groups}) of
         {view, _} -> allowed;
         _Else -> {status, 401}
