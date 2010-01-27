@@ -29,27 +29,33 @@ linegraph([1, {range, Data}, Colour]) ->
     Data2 = make_data(get_data(Data)),
     Colours2 = make_colours([Colour]),
     lineg1(Data2, 0, 100, Colours2);
-linegraph([2, {range, Data1}, {range, Data2}, {range, Colours}]) ->
+linegraph([2, {range, Data1}, {range, Data2}, {range, [Colours]}]) ->
     io:format("Data1 is ~p~nData2 is ~p~nColours is ~p~n",
               [Data1, Data2, Colours]),
     Data1a = make_data(get_data(Data1)),
     Data2a = make_data(get_data(Data2)),
-    Coloursa = make_colours(get_data(Colours)),
+    Coloursa = make_colours(Colours),
     lineg1(Data1a ++ "|" ++ Data2a, 0, 100, Coloursa);
-linegraph([3, {range, Data1}, {range, Data2}, {range, Data3}, {range, Colours}]) ->
+linegraph([3, {range, Data1}, {range, Data2}, {range, Data3}, {range, [Colours]}]) ->
     Data1a = make_data(get_data(Data1)),
     Data2a = make_data(get_data(Data2)),
     Data3a = make_data(get_data(Data3)),
-    Coloursa = make_colours(get_data(Colours)),
+    Coloursa = make_colours(Colours),
     lineg1(Data1a ++ "|" ++ Data2a ++ "|" ++ Data3a, 0, 100, Coloursa);
 linegraph([4, {range, Data1}, {range, Data2},
            {range, Data3}, {range, Data4},
-           {range, Colours}]) ->
+           {range, [Colours]}]) ->
+    io:format("Data1 is ~p~nData2 is ~p~nData3 is ~p~nData4 is ~p~n",
+              [Data1, Data2, Data3, Data4]),
+    io:format("Colours is ~p~n", [Colours]),
     Data1a = make_data(get_data(Data1)),
     Data2a = make_data(get_data(Data2)),
     Data3a = make_data(get_data(Data3)),
     Data4a = make_data(get_data(Data4)),
-    Coloursa = make_colours(get_data(Colours)),
+    io:format("Data1a is ~p~nData2a is ~p~nData3a is ~p~nData4a is ~p~n",
+              [Data1a, Data2a, Data3a, Data4a]),
+    Coloursa = make_colours(Colours),
+    io:format("Coloursa is ~p~n", [Coloursa]),
     lineg1(Data1a ++ "|" ++ Data2a ++ "|" ++ Data3a ++ "|" ++ Data4a,
            0, 100, Coloursa).
 
