@@ -66,12 +66,12 @@ lineg1(Data, Min, Max, Colours) ->
         ++ ")".
 
 piechart([{range, Data}, {range, Titles}, {range, Colours}]) ->
-    Data2 = make_data(get_data(Data)),
+    Data2 = make_data(normalise(get_data(Data))),
     Titles2 = make_titles(get_data(Titles)),
     Colours2 = make_colours(get_data(Colours)),
     "![graph](http://chart.apis.google.com/chart?cht=p3&amp;chd=t:"
         ++ Data2
-        ++ "&amp;chs=250x100&amp;chl="
+        ++ "&amp;chs=450x100&amp;chl="
         ++ Titles2
         ++ "&amp;chco="
         ++ Colours2.
@@ -83,7 +83,12 @@ histogram([{range, Data}, {range, Titles}]) ->
         ++ Data2
         ++ "&amp;chs=250x100&amp;chl="
         ++ Titles2.
-    
+
+normalise(Data) ->
+    Total = lists:sum(Data),
+    Fun = fun(X) -> trunc(100*X/Total) end,
+    lists:map(Fun, Data).
+
 get_data(List) -> get_d1(List, []).
 
 get_d1([], Acc)                      -> lists:reverse(Acc);
