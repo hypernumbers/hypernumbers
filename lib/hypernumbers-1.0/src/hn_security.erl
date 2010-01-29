@@ -30,11 +30,6 @@
          is_valid/3
         ]).
 
-%% debugging API
--export([run/0]).
-
--compile([export_all]).
-
 -include_lib("eunit/include/eunit.hrl").
 -include("spriki.hrl").
 -include("auth2.hrl").
@@ -45,19 +40,22 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec is_valid(security(), #refX{}, any()) -> true | false.
-is_valid(Sec, Ref, Json) ->
-    Approved = make_sec_approved(Ref, Sec),
+is_valid({_, TransSet}, Ref, Json) ->
+    Approved = make_trans_set_approved(Ref, TransSet),
     Candidate = make_candidate(Ref, Json),
-    is_valid(Approved, Candidate).
+    io:format("TransSet: ~n~p~n", [TransSet]),
+    io:format("Approved: ~n~p~n", [Approved]),
+    io:format("Candidate: ~n~p~n", [Candidate]),
+    is_valid_(Approved, Candidate).
 
--spec is_valid([[{string(), #binding{}}]],
-               [{string(), string()}])
+-spec is_valid_([[{string(), #binding{}}]],
+                [{string(), string()}])
               -> true | false. 
-is_valid([], _Candidate) -> false;
-is_valid([Trans | Rest], Candidate) ->
+is_valid_([], _Candidate) -> false;
+is_valid_([Trans | Rest], Candidate) ->
     case screen_candidate(Trans, Candidate) of
         true -> true; 
-        false -> is_valid(Rest, Candidate)
+        false -> is_valid_(Rest, Candidate)
     end.
 
 -spec screen_candidate([{string(), #binding{}}], 
@@ -71,9 +69,10 @@ screen_candidate([{To, #binding{from=F}} | RestApp], [{To, F} | RestCan]) ->
     screen_candidate(RestApp, RestCan);
 screen_candidate(_, _) -> false.
 
--spec make_sec_approved(#refX{}, security()) -> [[{string(), #binding{}}]].
-make_sec_approved(#refX{path=Base}, Security) ->
-    [make_trans_approved(Base, S) || S <- Security].
+-spec make_trans_set_approved(#refX{}, [transaction()]) 
+                             -> [[{string(), #binding{}}]].
+make_trans_set_approved(#refX{path=Base}, TransSet) ->
+    [make_trans_approved(Base, T) || T <- TransSet].
     
 -spec make_trans_approved(string(), transaction()) -> [{string(), #binding{}}].
 make_trans_approved(Base, Trans) ->
@@ -121,19 +120,19 @@ make(Form, Ref, Auth) ->
         {_ErrTag, Reason} ->
             throw(Reason);
         {ok, {_, _, List}, _} ->
-            parse_transactions(lists:reverse(List))
+            parse_bindings(lists:reverse(List), Ref, Auth)
     end.
 
-process({startElement, [], "div", {[], "div"}, List}, _Y, {Ref, Auth, Acc}) ->
+process({startElement, [], "div", {[], "div"}, List}, _Y, {Ref, AR, Acc}) ->
     Acc2 = case is_hn(List) of
-               true  -> add_rec(List, Ref, Auth, Acc);
+               true  -> [bind(List, Ref, AR, #binding{}) | Acc];
                false -> Acc
            end,
-    {Ref, Auth, Acc2};
-process({startElement, [], "form", {[], "form"}, _List}, _Y, {Ref, Auth, Acc}) ->
-    {Ref, Auth, [formstart | Acc]};
-process({endElement, [], "form", {[], "form"}}, _Y, {Ref, Auth, Acc}) ->
-    {Ref, Auth, [formend | Acc]};
+    {Ref, AR, Acc2};
+process({startElement, [], "form", {[], "form"}, _List}, _Y, {Ref, AR, Acc}) ->
+    {Ref, AR, [formstart | Acc]};
+process({endElement, [], "form", {[], "form"}}, _Y, {Ref, AR, Acc}) ->
+    {Ref, AR, [formend | Acc]};
 process(_X, _Y, State) -> State.
 
 is_hn(List) ->
@@ -142,38 +141,42 @@ is_hn(List) ->
         _Tuple -> true
     end.
 
--spec add_rec(list(), #refX{}, auth_req(), [#binding{}]) -> [#binding{}]. 
-add_rec(List, Ref, Auth, Acc) -> 
-    case make_r1(List, Ref, Auth, #binding{}) of
-        #binding{to = []} -> Acc;
-        B                 -> [B | Acc]
+-spec can_read(string(), string(), auth_req()) -> true | false.
+can_read(Site, P, AR) ->
+    Path = extract_path(P),
+    case auth_srv2:get_any_view(Site, Path, AR) of
+        {view, _} -> true;
+        _Else -> false
     end.
 
--spec make_r1(any(), #refX{}, auth_req(), #binding{}) -> #binding{}. 
-make_r1([], _R, _AR, A) ->
-    A;
-make_r1([{[], [], "class", _} | T], R, AR, A) ->
-    make_r1(T, R, AR, A);
-make_r1([{[], [], "data-type", Ty} | T], R, AR, A) -> 
-    make_r1(T, R, AR, A#binding{type = Ty});
-make_r1([{[], [], "data-binding-from", F} | T], R, AR, A) -> 
-    Path = extract_path(abs_path(R#refX.path, F)),
-    case auth_srv2:get_any_view(R#refX.site, Path, AR) of
-        {view, _} ->
-            make_r1(T, R, AR, A#binding{from = F});
-        _Else ->
-            throw({permission_denied, F})
-    end;
-make_r1([{[], [], "data-binding-to", To} | T], R, AR, A)  -> 
+-spec can_write(string(), string(), auth_req()) -> true | false. 
+can_write(Site, P, AR) ->
     S = "_g/core/spreadsheet",
-    Path = extract_path(abs_path(R#refX.path, To)),
-    case auth_srv2:check_particular_view(R#refX.site, Path, AR, S) of
-        {view, S} ->
-            make_r1(T, R, AR, A#binding{to = To});
-        _Else ->
-            throw({permission_denied, To})
+    Path = extract_path(P),
+    case auth_srv2:check_particular_view(Site, Path, AR, S) of
+        {view, S} -> true; 
+        _Else -> false
     end.
 
+-spec bind(list(), #refX{}, auth_req(), #binding{}) -> #binding{}. 
+bind([], _R, _AR, B) ->
+    B;
+bind([{[], [], "class", _} | T], R, AR, B) ->
+    bind(T, R, AR, B);
+bind([{[], [], "data-type", Ty} | T], R, AR, B) -> 
+    bind(T, R, AR, B#binding{type = Ty});
+bind([{[], [], "data-binding-from", F} | T], R, AR, B) -> 
+    case can_read(R#refX.site, abs_path(R#refX.path, F), AR) of
+        true -> bind(T, R, AR, B#binding{from = F});
+        false -> throw({permission_denied, F})
+    end;
+bind([{[], [], "data-binding-to", To} | T], R, AR, B) -> 
+    case can_write(R#refX.site, abs_path(R#refX.path, To), AR) of
+        true -> bind(T, R, AR, B#binding{to = To});
+        false -> throw({permission_denied, To})
+    end.
+
+-spec extract_path(string()) -> [string()].
 extract_path([$/|_] = Url) ->
     case string:tokens(Url, "/") of
         [] -> []; 
@@ -181,35 +184,34 @@ extract_path([$/|_] = Url) ->
     end;
 extract_path(_Other) -> [].
 
+-spec drop_last(list()) -> list().
 drop_last([_]) -> []; 
 drop_last([X | Rest]) -> [X | drop_last(Rest)].
         
--spec parse_transactions([formstart | formend | #binding{}]) -> security().
+-spec parse_bindings([formstart | formend | #binding{}], 
+                     #refX{}, 
+                     auth_req()) 
+                    -> security().
 %% if the boolean is true we are in a form and we accumulate the bindings in A1
 %% when the form ends we throw the contents of A1 into the main accumulator in A2
 %% if the boolean is false, then each binding is a transaction in its own right
 %% expects forms to terminate in the model or will crash
-parse_transactions(List) -> make_t1(List, [], [], false).
+parse_bindings(List, #refX{site=Site, path=Path}, AR) ->
+    Gets = lists:usort([F || #binding{from = F} <- List,
+                             F /= [],
+                             can_read(Site, abs_path(Path, F), AR)]),
+    Filter = fun(#binding{to = []}) -> false;
+                (_) -> true 
+             end,
+    List2 = lists:filter(Filter, List),
+    TransSet = gather(List2, [], [], false),
+    {Gets, TransSet}.
 
-make_t1([], [], A2, false)              -> A2;
-make_t1([formstart | T], A1, A2, false) -> make_t1(T, A1, A2, true);
-make_t1([formend | T], A1, A2, true)    -> make_t1(T, [], [A1 | A2], false);
-make_t1([H | T], A1, A2, true)          -> make_t1(T, [H | A1], A2, true);
-make_t1([H | T], _A1, A2, false)        -> make_t1(T, [], [[H] | A2], false).
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                                                                          %%%
-%%% Debugging API                                                            %%%
-%%%                                                                          %%% 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-run() ->
-    File = "/opt/code/trunk/var/docroot/127.0.0.1&9000/_g/hypernumbers/home.tpl",
-    Opts = [{event_fun, fun process/3}],
-
-    {ok, List, _} = xmerl_sax_parser:file(File, Opts),
-    parse_transactions(lists:reverse(List)).
+gather([], [], A2, false)              -> A2;
+gather([formstart | T], A1, A2, false) -> gather(T, A1, A2, true);
+gather([formend | T], A1, A2, true)    -> gather(T, [], [A1 | A2], false);
+gather([H | T], A1, A2, true)          -> gather(T, [H | A1], A2, true);
+gather([H | T], _A1, A2, false)        -> gather(T, [], [[H] | A2], false).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -467,9 +469,7 @@ secure_no_perms_test_() ->
     auth_srv2:set_champion(Site, ["[**]"], "_g/core/spreadsheet"),
 
     RefX = #refX{site = Site,
-                 path = ["u","testuser","blah"],
-                 obj = {page,"/"},
-                 auth = []},
+                 path = ["u","testuser","blah"]},
     {with, RefX, [fun test1/1,
                   fun test2/1,
                   fun test3/1,

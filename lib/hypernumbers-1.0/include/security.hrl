@@ -6,4 +6,5 @@
          }).
 
 -type transaction() :: [#binding{}].
--type security() :: [transaction()].
+-type security() :: {[string()], 
+                     [transaction()]}.

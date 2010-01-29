@@ -22,7 +22,7 @@
          compile_html/2,
          delete_gen_html/0,
          generate_po/1,
-         generate_po_CHEATING/1,
+         %generate_po_CHEATING/1,
          jsonify_val/1,
          is_older/2,
 
@@ -199,9 +199,10 @@ is_older(File1, File2) ->
     {ok, Info2} = file:read_file_info(File2),
     Info2#file_info.mtime > Info1#file_info.mtime.
 
-generate_po_CHEATING(Ref) ->
-    Body = hn_mochi:page_attributes(parse_url(Ref)),
-    generate_po1(Body).
+%% generate_po_CHEATING(Ref) ->
+%%     Needs a user object.... 
+%%     Body = hn_mochi:page_attributes(parse_url(Ref)),
+%%     generate_po1(Body).
 
 generate_po(Url) ->
     delete_gen_html(),
