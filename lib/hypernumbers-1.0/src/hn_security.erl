@@ -27,7 +27,7 @@
 %% API
 -export([
          make/3,
-         %%validate_get/3,
+         validate_get/3,
          validate_trans/3
         ]).
 
@@ -40,12 +40,22 @@
 %% Validate requests
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% validate_get(security(), #refX{}, Target) ->
-%%     ok.
+-spec validate_get(security(), #refX{}, string()) -> true | false. 
+validate_get({Gets, _}, #refX{path = Path}, Target) ->
+    AbsTarget = abs_path(Path, Target),
+    is_valid_get(Gets, Path, AbsTarget).
 
+-spec is_valid_get([string()], [string()], string()) -> true | false. 
+is_valid_get([], _, _) -> false;
+is_valid_get([GetRel | Rest], Base, AbsTarget) ->
+    case abs_path(Base, GetRel) of
+        AbsTarget -> true;
+        _Else -> is_valid_get(Rest, Base, AbsTarget)
+    end.
+    
 -spec validate_trans(security(), #refX{}, any()) -> true | false.
 validate_trans({_, TransSet}, Ref, Json) ->
-    Approved = make_trans_set_approved(Ref, TransSet),
+    Approved = make_approved(Ref, TransSet),
     Candidate = make_candidate(Ref, Json),
     is_valid_trans(Approved, Candidate).
 
@@ -70,9 +80,9 @@ screen_candidate([{To, #binding{from=F}} | RestApp], [{To, F} | RestCan]) ->
     screen_candidate(RestApp, RestCan);
 screen_candidate(_, _) -> false.
 
--spec make_trans_set_approved(#refX{}, [transaction()]) 
+-spec make_approved(#refX{}, [transaction()]) 
                              -> [[{string(), #binding{}}]].
-make_trans_set_approved(#refX{path=Base}, TransSet) ->
+make_approved(#refX{path=Base}, TransSet) ->
     [make_trans_approved(Base, T) || T <- TransSet].
     
 -spec make_trans_approved(string(), transaction()) -> [{string(), #binding{}}].
@@ -86,24 +96,6 @@ make_candidate(#refX{path=Base}, Json) ->
                                               {"formula", V}]}
                                          <- Json],
     lists:keysort(1, PVs).
-
--spec abs_path([string()], string()) -> string(). 
-abs_path(Path, [$. | _T] = Path2)  -> make_abs2(Path, Path2);
-abs_path(_Path, [$/ | _T] = Path2) -> Path2;
-abs_path(Path, Path2)              -> hn_util:list_to_path(Path) ++ Path2.
-
-make_abs2(Path, Path2) ->
-    R = lists:reverse(Path),
-    P3 = string:tokens(Path2, "/"),
-    {P4, [Ref]} = lists:split(length(P3) - 1, P3),
-    NewPath = make_abs3(R, P4),
-    NewPath ++ Ref.
-
-make_abs3(Path, [])                -> hn_util:list_to_path(lists:reverse(Path));
-make_abs3(Path, ["." | T2])        -> make_abs3(Path, T2);
-make_abs3([_H1 | T1], [".." | T2]) -> make_abs3(T1, T2);
-make_abs3(Path, [H2 | T2])         -> make_abs3([H2 | Path], T2).
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Construct Security Objects
@@ -144,7 +136,7 @@ is_hn(List) ->
 
 -spec can_read(string(), string(), auth_req()) -> true | false.
 can_read(Site, P, AR) ->
-    Path = extract_path(P),
+    Path = string:tokens(just_path(P), "/"),
     case auth_srv2:get_any_view(Site, Path, AR) of
         {view, _} -> true;
         _Else -> false
@@ -153,7 +145,7 @@ can_read(Site, P, AR) ->
 -spec can_write(string(), string(), auth_req()) -> true | false. 
 can_write(Site, P, AR) ->
     S = "_g/core/spreadsheet",
-    Path = extract_path(P),
+    Path = string:tokens(just_path(P), "/"),
     case auth_srv2:check_particular_view(Site, Path, AR, S) of
         {view, S} -> true; 
         _Else -> false
@@ -177,18 +169,6 @@ bind([{[], [], "data-binding-to", To} | T], R, AR, B) ->
         false -> throw({permission_denied, To})
     end.
 
--spec extract_path(string()) -> [string()].
-extract_path([$/|_] = Url) ->
-    case string:tokens(Url, "/") of
-        [] -> []; 
-        L -> drop_last(L)
-    end;
-extract_path(_Other) -> [].
-
--spec drop_last(list()) -> list().
-drop_last([_]) -> []; 
-drop_last([X | Rest]) -> [X | drop_last(Rest)].
-        
 -spec parse_bindings([formstart | formend | #binding{}], 
                      #refX{}, 
                      auth_req()) 
@@ -198,9 +178,10 @@ drop_last([X | Rest]) -> [X | drop_last(Rest)].
 %% if the boolean is false, then each binding is a transaction in its own right
 %% expects forms to terminate in the model or will crash
 parse_bindings(List, #refX{site=Site, path=Path}, AR) ->
-    Gets = lists:usort([F || #binding{from = F} <- List,
-                             F /= [],
-                             can_read(Site, abs_path(Path, F), AR)]),
+    Gets = lists:usort([just_path(F)
+                        || #binding{from = F} <- List,
+                           F /= [],
+                           can_read(Site, abs_path(Path, F), AR)]),
     Filter = fun(#binding{to = []}) -> false;
                 (_) -> true 
              end,
@@ -213,6 +194,39 @@ gather([formstart | T], A1, A2, false) -> gather(T, A1, A2, true);
 gather([formend | T], A1, A2, true)    -> gather(T, [], [A1 | A2], false);
 gather([H | T], A1, A2, true)          -> gather(T, [H | A1], A2, true);
 gather([H | T], _A1, A2, false)        -> gather(T, [], [[H] | A2], false).
+
+-spec just_path(string()) -> string().
+just_path(Url) ->
+    case lists:last(Url) of
+        $/ -> Url;
+        _Or ->
+            case string:tokens(Url, "/") of
+                [] -> "/"; 
+                L -> hn_util:list_to_path(drop_last(L))
+            end
+    end.
+
+-spec drop_last(list()) -> list().
+drop_last([_]) -> []; 
+drop_last([X | Rest]) -> [X | drop_last(Rest)].
+
+-spec abs_path([string()], string()) -> string(). 
+abs_path(Path, [$. | _T] = Path2)  -> make_abs2(Path, Path2);
+abs_path(_Path, [$/ | _T] = Path2) -> Path2;
+abs_path(Path, Path2)              -> hn_util:list_to_path(Path) ++ Path2.
+
+make_abs2(Path, Path2) ->
+    R = lists:reverse(Path),
+    P3 = string:tokens(Path2, "/"),
+    {P4, [Ref]} = lists:split(length(P3) - 1, P3),
+    NewPath = make_abs3(R, P4),
+    NewPath ++ Ref.
+
+make_abs3(Path, [])                -> hn_util:list_to_path(lists:reverse(Path));
+make_abs3(Path, ["." | T2])        -> make_abs3(Path, T2);
+make_abs3([_H1 | T1], [".." | T2]) -> make_abs3(T1, T2);
+make_abs3(Path, [H2 | T2])         -> make_abs3([H2 | Path], T2).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -455,13 +469,12 @@ testC() ->
     io:format("Ret is ~p~n", [Ret]),
     ?assertEqual("/blah/bloh/bleh/d1", Ret).
 
-
 path_test_() ->
     [fun testA/0,
      fun testB/0,
      fun testC/0].
 
-secure_no_perms_test_() -> 
+trans_all_perms_test_() -> 
     Site = "http://unit_test:1234",
     auth_srv2:clear_all_perms_DEBUG(Site),
     auth_srv2:add_view(Site, [], [everyone], "_g/core/spreadsheet"),
