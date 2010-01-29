@@ -5,7 +5,6 @@
     <meta charset="utf-8" />
     <title>Hypernumbers</title>
     <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />	
-    <link rel="stylesheet" href="/guibuilder/hn.builder.css" />
     <link rel="stylesheet" href="/hypernumbers/finder.css" />	
   </head>
   
@@ -108,7 +107,7 @@
               <div class="input">
                 <input type="checkbox" id="copyformula" />
               </div>
-              <a>$txt:{Copy Formulas}$</a>
+              <a name="copyFormula">$txt:{Copy Formulas}$</a>
             </li>
           </ul>
         </li>
@@ -285,31 +284,70 @@
       <div id="tabs"></div>
 
       <div id="viewbuilder">
-
+        
         <div id="mainviewbuilder">
-
+          
           <div id="viewbuildertoolbar">
+            
+            <div id="viewbuilderheader">
 
-            <div id="add"></div>
+              <a href="" target="_blank" id="viewname">&nbsp;</a>
 
-            <strong>change type:</strong>
-            <select id="changetype">
-              <option>text</option>
-              <option>input</option>
-              <option>textarea</option>
-              <option>select</option>
-              <option>radio</option>
-              <option>checkbox</option>
-            </select>
+              <div id="viewtabs">
+                <a href="#add">Add Widget</a>
+                <a href="#configuring">Configure</a>
+              </div>
+
+              <input type="button" value="close" class="btn" 
+                     id="closeviewbtn" />
+            </div>           
             
-            <strong>get data from:</strong>
-            <input type="text" id="bindfrom" readonly="readonly" />
-            
-            <strong>send data to:</strong>
-            <input type="text" id="bindto" readonly="readonly" />
-            
-            <input type="button" id="delete" value="delete" />
-            
+            <div id="tabwins">
+
+              <div id="add">                
+                <input data-obj="text" class="table btn" 
+                       value="Cells" type="button" />
+                <input data-obj="form" class="form btn" 
+                       value="Form" type="button" />
+                <input data-obj="input" class="text btn" 
+                       value="Text Input" type="button" />
+                <input data-obj="radio" class="radio btn" 
+                       value="Multiple Choice" type="button" />
+                <input data-obj="select" class="select btn" 
+                       value="List" type="button" />
+              </div>
+              
+              <div id="configuring">
+                
+                <table><tr>
+                    <td id="viewconfbinding" valign="top">
+                      <table cellspacing="0"><tr>
+                          <td width="80"><strong>get data from:</strong></td>
+                          <td><input type="button" id="bindfrom" /></td>
+                        </tr><tr>
+                          <td><strong>send data to:</strong></td>
+                          <td><input type="button" id="bindto"  /></td>
+                      </tr></table>
+                    </td>
+                    <td valign="top" id="viewconftype">                      
+                      <strong>type:</strong>
+                      <select id="changetype">
+                        <option>text</option>
+                        <option>input</option>
+                        <option>textarea</option>
+                        <option>select</option>
+                        <option>radio</option>
+                        <option>checkbox</option>
+                      </select>
+                    </td>
+                    <td valign="top" id="viewconfdelete">
+                      <input type="button" id="delete" 
+                             value="Delete" />
+                    </td>
+                </tr></table>
+              
+              </div>
+            </div>
           </div>
           
           <div id="preview" class="editing"> 
@@ -317,14 +355,16 @@
           </div>
 
           <div id="viewbuilderfooter">
-            <label for="toggleview">
+
+            <input type="button" value="save" class="btn" 
+                   id="saveviewbtn" />
+            
+            <label for="toggleview" id="toggle">
               <input type="checkbox" id="toggleview" /> View Code
             </label>
-            <input type="button" value="preview" class="btn" id="previewbtn" />
-            <input type="button" value="save" class="btn" id="saveviewbtn" />
-            <input type="button" value="close" class="btn" id="closeviewbtn" />
-          </div>
 
+          </div>
+          
         </div>
 
         <div id="viewbuilderintro">
@@ -344,6 +384,8 @@
                   </select>
               </td></tr>
             </table>
+            <input type="submit" class="submit" 
+                   value="Cancel" id="cancelviewbtn" />
             <input type="submit" class="submit" 
                    value="Create View" id="createviewbtn" />
           </div>
@@ -507,11 +549,11 @@
   
   <script src="/hypernumbers/jquery-1.3.2.min.js"></script>
   <script src="/hypernumbers/jquery-ext.js"></script>
-  <script src="/hypernumbers/jquery.filemenu.js"></script>
   <script src="/hypernumbers/json2.js"> </script>
   <script src="/hypernumbers/ajaxfileupload.js"></script>
   <script src="/hypernumbers/hn.js"></script>
   <script src="/hypernumbers/hn.util.js"></script>
+  <script src="/hypernumbers/jquery.filemenu.js"></script>
   <script src="/hypernumbers/hn.data.js"></script>
   <script src="/hypernumbers/hn.ui.js"></script>
   <script src="/hypernumbers/hn.uiactions.js"></script>
