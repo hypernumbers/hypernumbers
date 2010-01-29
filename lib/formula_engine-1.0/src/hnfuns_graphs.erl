@@ -10,9 +10,27 @@
 
 -export([
          linegraph/1,
+         linegraph3/1,
          piechart/1,
-         histogram/1
+         histogram/1,
+         test/1
         ]).
+
+-define(ROW, 0).
+-define(COLUMN, 1).
+
+-include("typechecks.hrl").
+-include("muin_records.hrl").
+
+-import(muin_util, [cast/2]).
+-import(muin_collect, [ col/2, col/3, col/4 ]).
+
+test([Data, 0]) ->
+    io:format("Data (in rows) is ~p~n", [Data]),
+    "banzai!";
+test([Data, 1]) ->
+    io:format("Data (in columns) is ~p~n", [Data]),
+    "bonzai!".
 
 linegraph([{range, Data}]) ->
     Data2 = make_data(get_data(Data)),
@@ -36,7 +54,8 @@ linegraph([2, {range, Data1}, {range, Data2}, {range, [Colours]}]) ->
     Data2a = make_data(get_data(Data2)),
     Coloursa = make_colours(Colours),
     lineg1(Data1a ++ "|" ++ Data2a, 0, 100, Coloursa);
-linegraph([3, {range, Data1}, {range, Data2}, {range, Data3}, {range, [Colours]}]) ->
+linegraph([3, {range, Data1}, {range, Data2}, {range, Data3},
+           {range, [Colours]}]) ->
     Data1a = make_data(get_data(Data1)),
     Data2a = make_data(get_data(Data2)),
     Data3a = make_data(get_data(Data3)),
@@ -45,17 +64,11 @@ linegraph([3, {range, Data1}, {range, Data2}, {range, Data3}, {range, [Colours]}
 linegraph([4, {range, Data1}, {range, Data2},
            {range, Data3}, {range, Data4},
            {range, [Colours]}]) ->
-    io:format("Data1 is ~p~nData2 is ~p~nData3 is ~p~nData4 is ~p~n",
-              [Data1, Data2, Data3, Data4]),
-    io:format("Colours is ~p~n", [Colours]),
     Data1a = make_data(get_data(Data1)),
     Data2a = make_data(get_data(Data2)),
     Data3a = make_data(get_data(Data3)),
     Data4a = make_data(get_data(Data4)),
-    io:format("Data1a is ~p~nData2a is ~p~nData3a is ~p~nData4a is ~p~n",
-              [Data1a, Data2a, Data3a, Data4a]),
     Coloursa = make_colours(Colours),
-    io:format("Coloursa is ~p~n", [Coloursa]),
     lineg1(Data1a ++ "|" ++ Data2a ++ "|" ++ Data3a ++ "|" ++ Data4a,
            0, 100, Coloursa).
 
@@ -66,10 +79,122 @@ lineg1(Data, Min, Max, Colours) ->
         ++ "t:" ++ Data
         ++ "&amp;cht=lc&amp;"
         ++ "chds="++ Min1 ++ "," ++ Max1 ++ "&amp;"
-        ++ "chxt=y&amp;chxr=0," ++ Min1 ++ "," ++ Max1
+        ++ "chxt=x&amp;chxr="
+        ++ "0," ++ Min1 ++ "," ++ Max1
         ++ "&amp;chco="
         ++ Colours
         ++ ")".
+
+%% Variable 'O' is 'Orientation'
+linegraph3([Data])              -> lg3(Data, ?ROW, {{scale, auto},
+                                                    noAxes, randCol});
+linegraph3([Data, O])           -> lg3(Data, O, {{scale, auto},
+                                                 noAxes, randCol});
+linegraph3([Data, O, Min, Max]) -> lg3(Data, O, {{Min, Max}, noAxes, randCol});
+linegraph3([Data, O, Min, Max, XAxis]) ->
+                  lg3(Data, O, {{Min, Max}, XAxis, randCol});
+linegraph3([Data, O, Min, Max, XAxis, Cols]) ->
+                  lg3(Data, O, {{Min, Max}, XAxis, Cols}).
+    
+lg3(Data, Orientation, {Scale, Axes, Colours}) ->
+    {Data2, _NoOfRows, _NoOfCols} = extract(Data, Orientation),
+    Data3 = [col([X],
+                 [eval_funs,
+                  fetch, flatten,
+                  {cast, str, num, ?ERRVAL_VAL},
+                  {cast, bool, num},
+                  {cast, blank, num},
+                  {ignore, str},
+                  {ignore, blank}
+                 ],
+                 [return_errors, {all, fun is_number/1}]) || X <- Data2],
+    % check for errors and then fix the reversed lists problems
+    case has_error(Data3) of
+        {true, Error} -> Error;
+        false         -> lg3a(rev(Data3), Scale, Axes, Colours)
+    end.
+
+lg3a(Data, Scale, Axes, Colours) ->
+    {Min, Max} = get_scale(Scale, Data),
+    XAxis2 = get_axes(Axes),
+    Colours2 = get_colours(Colours),
+    io:format("XAxis2 is ~p~nColours2 is ~p~n",
+               [XAxis2, Colours2]),
+    Ret = "![graph](http://chart.apis.google.com/chart?chs=350x150&amp;chd="
+        ++ "t:" ++ conv_data(Data) ++ "&amp;cht=lc&amp;"
+        ++ "chds="++ tconv:to_s(Min) ++ "," ++ tconv:to_s(Max) ++ "&amp;"
+        ++ "chxt="
+        ++ conv_x_axis(XAxis2)
+        ++ "1:|" ++ tconv:to_s(Min) ++ "|" ++ tconv:to_s(Max)
+        ++ conv_colours(Colours2)
+        ++ ")",
+    io:format("Ret is ~p~n", [Ret]),
+    Ret.
+
+conv_colours([])      -> [];
+conv_colours(Colours) -> "&amp;chco=" ++ make_colours(Colours).
+
+conv_x_axis([])    -> "y&amp;chxl=";
+conv_x_axis(XAxis) -> "x,y&amp;chxl=0:|" ++ string:join(XAxis, "|") ++ "|". 
+
+conv_data(Data) -> conv_d1(Data, []).
+
+conv_d1([], Acc)      -> string:join(lists:reverse(Acc), "|");
+conv_d1([H | T], Acc) -> conv_d1(T, [make_data(H) | Acc]).
+
+get_colours(randCol) -> [];
+get_colours(Colours) ->
+    io:format("Colours is ~p~n", [Colours]),
+    col([Colours],
+         [eval_funs,
+          {ignore, bool},
+          {ignore, num},
+          {ignore,date},
+          fetch, flatten],
+          [return_errors]).
+
+get_axes(noAxes) -> [];
+get_axes(XAxis)  -> col([XAxis],
+                        [eval_funs,
+                         {cast, num, str},
+                         {cast, bool, str},
+                         {cast, date, str},
+                         {cast, blank, str},
+                         fetch, flatten],
+                        [return_errors]).
+
+get_scale({scale, auto}, Data) ->
+    Min = tconv:to_s(stdfuns_stats:min(lists:merge(Data))),
+    Max = tconv:to_s(stdfuns_stats:max(lists:merge(Data))),
+    {Min, Max};
+get_scale(Scale, _Data) -> Scale.
+    
+extract({range, Data}, ?ROW)    -> tartup(Data);
+extract({range, Data}, ?COLUMN) -> tartup(hslists:transpose(Data)).
+
+tartup(Data) ->
+    [F | _T] = Data,
+    NoOfCols = length(F), % rectangular matrix
+    {chunk(Data), length(Data), NoOfCols}.
+
+
+rev(List) -> rev1(List, []).
+
+rev1([], Acc)      -> lists:reverse(Acc);
+rev1([H | T], Acc) -> rev1(T, [lists:reverse(H) | Acc]).
+
+chunk(Data) -> chk2(Data, []).
+
+chk2([], Acc)      -> lists:reverse(Acc);
+chk2([H | T], Acc) -> chk2(T, [{range, [H]} | Acc]).
+
+has_error([])                      -> false;
+has_error([{errval, Val} | _T])    -> {true, {errval, Val}};
+has_error([H | T]) when is_list(H) -> case has_error(H) of
+                                          {true, E} -> {true, E};
+                                          false     -> has_error(T)
+                                      end;
+has_error([_H | T])                -> has_error(T).
 
 piechart([{range, Data}, {range, Titles}, {range, Colours}]) ->
     Data2 = make_data(normalise(get_data(Data))),
@@ -108,7 +233,7 @@ make_d1([], Acc)      -> string:join(lists:reverse(Acc), ",");
 make_d1([H | T], Acc) when is_integer(H) ->
     make_d1(T, [integer_to_list(H) | Acc]);
 make_d1([H | T], Acc) when is_float(H) ->
-    make_d1(T, [float_to_list(H) | Acc]).
+    make_d1(T, [tconv:to_s(H) | Acc]).
 
 make_titles(List) -> string:join(List, "|").
 
@@ -125,5 +250,3 @@ make_c1(["black"   | T], Acc) -> make_c1(T, ["000000" | Acc]);
 make_c1(["white"   | T], Acc) -> make_c1(T, ["FFFFFF" | Acc]);
 make_c1(["orange"  | T], Acc) -> make_c1(T, ["FF7F00" | Acc]);
 make_c1([H | T], Acc)         -> make_c1(T, [H | Acc]).
-
-
