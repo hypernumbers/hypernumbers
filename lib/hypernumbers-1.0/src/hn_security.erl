@@ -27,7 +27,8 @@
 %% API
 -export([
          make/3,
-         is_valid/3
+         %%validate_get/3,
+         validate_trans/3
         ]).
 
 -include_lib("eunit/include/eunit.hrl").
@@ -39,23 +40,23 @@
 %% Validate requests
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec is_valid(security(), #refX{}, any()) -> true | false.
-is_valid({_, TransSet}, Ref, Json) ->
+%% validate_get(security(), #refX{}, Target) ->
+%%     ok.
+
+-spec validate_trans(security(), #refX{}, any()) -> true | false.
+validate_trans({_, TransSet}, Ref, Json) ->
     Approved = make_trans_set_approved(Ref, TransSet),
     Candidate = make_candidate(Ref, Json),
-    io:format("TransSet: ~n~p~n", [TransSet]),
-    io:format("Approved: ~n~p~n", [Approved]),
-    io:format("Candidate: ~n~p~n", [Candidate]),
-    is_valid_(Approved, Candidate).
+    is_valid_trans(Approved, Candidate).
 
--spec is_valid_([[{string(), #binding{}}]],
-                [{string(), string()}])
-              -> true | false. 
-is_valid_([], _Candidate) -> false;
-is_valid_([Trans | Rest], Candidate) ->
+-spec is_valid_trans([[{string(), #binding{}}]],
+                     [{string(), string()}])
+                    -> true | false. 
+is_valid_trans([], _Candidate) -> false;
+is_valid_trans([Trans | Rest], Candidate) ->
     case screen_candidate(Trans, Candidate) of
         true -> true; 
-        false -> is_valid_(Rest, Candidate)
+        false -> is_valid_trans(Rest, Candidate)
     end.
 
 -spec screen_candidate([{string(), #binding{}}], 
@@ -288,7 +289,7 @@ test1(RefX) ->
         ++ "</div>"
         ++ "</div>",
     Security = make(Form, RefX, {"testuser", []}),
-    ?assert(is_valid(Security, RefX, Json)).
+    ?assert(validate_trans(Security, RefX, Json)).
     
 test2(RefX) ->
     Json = [{struct,[{"ref","/u/testuser/blah/D6"},{"formula","Test"}]}],
@@ -322,7 +323,7 @@ test2(RefX) ->
         ++ "</div>"
         ++ "</div>",
     Security = make(Form, RefX, {"testuser", []}),
-    ?assert(is_valid(Security, RefX, Json)).
+    ?assert(validate_trans(Security, RefX, Json)).
 
 %% Same path, but column target vs accepted cell target.
 test3(RefX) ->
@@ -357,7 +358,7 @@ test3(RefX) ->
         ++ "</div>"
         ++ "</div>",
     Security = make(Form, RefX, {"testuser", []}),
-    ?assertNot(is_valid(Security, RefX, Json)).
+    ?assertNot(validate_trans(Security, RefX, Json)).
 
 test4(RefX) ->
     Json = [{struct,[{"ref","/u/testuser/blah/D6"},{"formula","Test"}]}],
@@ -391,7 +392,7 @@ test4(RefX) ->
         ++ "</div>"
         ++ "</div>",
     Security = make(Form, RefX, {"testuser", []}),
-    ?assertNot(is_valid(Security, RefX, Json)).
+    ?assertNot(validate_trans(Security, RefX, Json)).
 
 %% tests an absolute and a relative path binding
 test5(RefX) ->
@@ -431,7 +432,7 @@ test5(RefX) ->
         ++ "</div>"
         ++ "</div>",
     Security = make(Form, RefX, {"testuser", []}),
-    ?assert(is_valid(Security, RefX, Json)).
+    ?assert(validate_trans(Security, RefX, Json)).
 
 testA() ->
     Path = ["blah", "bloh", "bleh"],

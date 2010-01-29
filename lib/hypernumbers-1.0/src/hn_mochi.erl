@@ -402,7 +402,9 @@ ipost(#refX{site=Site, path=Path} = Ref, _Attr,
     Sec = hn_security:make(Form, Ref, AuthReq),
     ok = filelib:ensure_dir(Output),
     ok = file:write_file([Output, ".tpl"], Form),
-    ok = file:write_file([Output, ".sec"], term_to_binary(Sec)),
+    {ok, F} = file:open([Output, ".sec"], [write]),
+    ok = io:format(F, "~p.", [Sec]),
+    ok = file:close(F),
     json(Req, "success");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
