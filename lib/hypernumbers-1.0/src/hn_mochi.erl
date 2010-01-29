@@ -14,6 +14,8 @@
           get_json_post/1 % Used for mochilog replay rewrites
          ]).
 
+-define(SHEETVIEW, "_g/core/spreadsheet").
+
 
 -spec req(any()) -> ok.
 req(Req) ->
@@ -797,11 +799,18 @@ authorize(_User, _Groups, 'POST', #refX{path = ["_user", "login"]},
     allowed;
 authorize(User, Groups, 'POST', #refX{site = Site, path = Path}, 
           _Vs, json) ->
-    Ret = auth_srv2:check_particular_view(
-             Site, Path, {User, Groups}, "_g/core/spreadsheet"),
-    case Ret of 
-        {view, "_g/core/spreadsheet"} -> allowed;
-        _Other -> allowed%Other
+    case auth_srv2:check_particular_view(Site, Path, {User, Groups}, 
+                                         ?SHEETVIEW) of
+        {view, ?SHEETVIEW} -> 
+            allowed;
+        _ -> 
+            case auth_srv2:get_any_view(Site, Path, {User, Groups}) of
+                {view, _V} ->
+                    %% get the security object.
+                    allowed;
+                _Other ->
+                    {status, 401}
+            end
     end;
 authorize(_User, _Groups, 'GET', _Ref, [{VPR, _}], json) 
   when VPR == "views";
@@ -816,16 +825,18 @@ authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, [], json) ->
         _Else -> {status, 401}
     end;
 authorize(User, Groups, 'GET', #refX{site=Site}, 
-          [{"updates",_},{"path",P}|_], json) ->
-    Path = string:tokens(P, "/"),
-    case auth_srv2:get_any_view(Site, Path, {User, Groups}) of
-        {view, _} -> allowed;
+          [{"updates",_},{"path",Paths}|_], json) ->
+    Views = [auth_srv2:get_any_view(Site, P, {User, Groups}) ||
+                Path <- string:tokens(Paths, ","),
+                P <- string:tokens(Path, "/")],
+    case lists:all(fun({view, _}) -> true; (_) -> false end, Views) of 
+        true -> allowed;
         _Else -> {status, 401}
     end;
 authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, [], html) ->
     auth_srv2:check_get_view(Site, Path, {User, Groups});
 authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
-         [{"view", View}], _Type) ->
+          [{"view", View}], _Type) ->
     auth_srv2:check_particular_view(Site, Path, {User, Groups}, View);
 authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
           [{"challenger", true}], _Type) ->
