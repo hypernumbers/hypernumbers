@@ -6,8 +6,9 @@
 
 -include_lib("kernel/include/file.hrl").
 -include("gettext.hrl").
+-include("auth2.hrl").
 
--export([ req/1,
+-export([ handle/1,
           style_to_css/2,
           docroot/1,
           page_attributes/2,
@@ -16,171 +17,182 @@
 
 -define(SHEETVIEW, "_g/core/spreadsheet").
 
-
--spec req(any()) -> ok.
-req(Req) ->
-
-    #refX{site = Site} = hn_util:parse_url(get_host(Req)),
-
-    case filename:extension(Req:get(path)) of
-        
-        % Dont Cache templates
-        X when X == ".tpl" ->
-            "/"++RelPath = Req:get(path),
-            Req:serve_file(RelPath, docroot(Site), nocache());
-
-        % Serve Static Files
-        X when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; 
-        X == ".ico"; X == ".json"; X == ".gif"; X == ".html" ->
-            "/"++RelPath = Req:get(path),
-            Req:serve_file(RelPath, docroot(Site));
-
-        [] ->
-            case catch do_req(Req) of 
-                ok   -> ok;
-                Else ->
-                    '500'(Req, Else),
-                    ok
-            end
+-record(req, {mochi,
+              headers = [],
+              user,
+              accept}).
+              
+-spec handle(any()) -> ok.
+handle(MochiReq) ->
+    Ref = hn_util:parse_url(get_real_uri(MochiReq)),
+    case filename:extension(MochiReq:get(path)) of
+        [] -> 
+            Req = #req{mochi = MochiReq, 
+                       accept = accept_type(MochiReq)},
+            case catch authorize_resource(Req, Ref) of
+                ok -> ok;
+                Else -> '500'(Req, Else)
+            end;
+        Ext -> 
+            Root = docroot(Ref#refX.site),
+            handle_static(Ext, Root, MochiReq)
     end.
 
--spec do_req(any()) -> ok.
-do_req(Req) ->
-    
-    #refX{site = Site} = Ref = hn_util:parse_url(get_host(Req)),
+-spec authorize_resource(#req{}, #refX{}) -> no_return(). 
+authorize_resource(Req=#req{mochi = Mochi, accept = AType}, Ref) -> 
+    Req2 = #req{user = User} = get_user(Ref#refX.site, Req),
+    Ar = {hn_users:name(User), hn_users:groups(User)},
+    Attr = Mochi:parse_qs(),
+    Method = Mochi:get(method),
+    AuthRet = case Method of
+                  'GET' -> authorize_get(Ref, Attr, AType, Ar);
+                  'POST' -> authorize_post(Ref, Attr, AType, Ar)
+              end,
+    case {AuthRet, AType} of
+        {allowed, _} ->
+            handle_resource(Method, Ref, Attr, Req2);
+        {{view, View}, html} ->
+            handle_resource(Method, Ref, [{"view", View}|Attr], Req2);
+        {not_found, html} ->
+            serve_html(404, Req2, 
+                       [viewroot(Ref#refX.site), "/_g/core/404.html"]);
+        {denied, html} ->
+            serve_html(401, Req2,
+                       [viewroot(Ref#refX.site), "/_g/core/login.html"]);
+        {not_found, json} ->
+            respond(404, Req2);
+        _NoPermission ->
+            respond(401, Req2)
+    end.
 
-    Vars   = Req:parse_qs(),
-    Method = Req:get(method),
+handle_resource('GET', Ref, Attr, Req=#req{mochi = Mochi, user = User}) ->
+    mochilog:log(Mochi, Ref, hn_users:name(User), undefined),
+    ObjType = element(1, Ref#refX.obj),
+    iget(Ref, ObjType, Attr, Req);
 
-    {ok, Auth} = get_var_or_cookie("auth", Vars, Req),
+handle_resource('POST', Ref, Attr, Req=#req{mochi = Mochi, user = User}) ->
+    {value, {'Content-Type', Ct}} =
+        mochiweb_headers:lookup('Content-Type', Mochi:get(headers)),
+    case Ct of
+        %% Uploads
+        "multipart/form-data" ++ _Rest ->
+            {Data, File} = hn_file_upload:handle_upload(Mochi, Ref, User),
+            Name = filename:basename(File),
+            mochilog:log(Mochi, Ref, hn_users:name(User), {upload, Name}),
+            json(Req, Data);
 
-    User = case hn_users:verify_token(Site, Auth) of
-               
-               {error, no_token} -> anonymous;
-               {ok, Usr}         -> Usr;
+        %% Normal Post Requests
+        _Else ->
+            Body = Mochi:recv_body(),
+            {ok, Post} = get_json_post(Body),
+            mochilog:log(Mochi, Ref, hn_users:name(User), Body),
+            ipost(Ref, Attr, Post, Req)
+    end.
 
-               % authtoken was invalid (probably did a clean_start() while
-               % logged in, kill the cookie
-               {error, _Reason}  ->
+-spec handle_static(string(), iolist(), any()) -> any(). 
+handle_static(".tpl", Root, Mochi) ->
+    %% Don't cache templates
+    "/"++RelPath = Mochi:get(path),
+    Mochi:serve_file(RelPath, Root, nocache());
+handle_static(E, Root, Mochi)
+  when E == ".png"; E == ".jpg"; E == ".css"; E == ".js"; 
+       E == ".ico"; E == ".json"; E == ".gif"; E == ".html" ->
+    %% todo: do a better job with caching, etags etc.
+    "/"++RelPath = Mochi:get(path),
+    Mochi:serve_file(RelPath, Root).
 
-                   Opts   = [{path, "/"}, {max_age, 0}],
-                   Cookie = mochiweb_cookies:cookie("auth", "expired", Opts),
+-spec authorize_get(#refX{}, [tuple()], json | html, auth_req()) 
+                   -> {view, string()} | allowed | denied | not_found.
+authorize_get(_Ref, [{VPR, _}], json, _Ar)
+  when VPR == "views";
+       VPR == "templates";
+       VPR == "pages" ->
+    allowed;
+authorize_get(_Ref, [{"permissions", _}], _Any, _Ar) ->
+    allowed;
+authorize_get(#refX{site = Site, path = Path}, [], json, Ar) ->
+    case auth_srv2:get_any_view(Site, Path, Ar) of
+        {view, _} -> allowed;
+        _Else -> denied
+    end;
+authorize_get(#refX{site=Site}, [{"updates",_},{"path",Paths}|_], json, Ar) ->
+    Views = [auth_srv2:get_any_view(Site, string:tokens(P, "/"), Ar) 
+             || P <- string:tokens(Paths, ",")],
+    case lists:all(fun({view, _}) -> true; (_) -> false end, Views) of 
+        true -> allowed;
+        _Else -> denied
+    end;
+authorize_get(#refX{site = Site, path = Path}, [], html, Ar) ->
+    auth_srv2:check_get_view(Site, Path, Ar);
+authorize_get(#refX{site = Site, path = Path}, [{"view", View}], html, Ar) ->
+    auth_srv2:check_particular_view(Site, Path, Ar, View);
+authorize_get(#refX{site = Site, path = Path}, [{"challenger", true}], 
+              html, Ar) ->
+    auth_srv2:check_get_challenger(Site, Path, Ar);
+authorize_get(_Ref, _Attr, _Type, _Ar) ->
+    denied.
 
-                   Req:respond(
-                     {302, [{"Location", hn_util:list_to_path(Ref#refX.path)},
-                            {"Content-Type", "text/html; charset=UTF-8"},
-                            Cookie], ""}),
-
-                   % heh probably not the best idea
-                   throw(ok)
-           end,
-
-    Name = hn_users:name(User),
-    Groups = hn_users:groups(User),    
-    Type = content_type(Req),
-    AuthRet = authorize(Name, Groups, Method, Ref, Vars, Type),
-
-    case AuthRet of
-        allowed ->
-            handle_req(Method, Req, Ref, Vars, User);
-        {view, View} ->
-            case Vars of
-                [] -> handle_req(Method, Req, Ref, [{"view", View}], User);
-                _  -> handle_req(Method, Req, Ref, Vars, User)
-            end;
-        {status, 404} when Type == html ->
-            serve_html(404, Req,
-                       [viewroot(Site), "/_g/core/404.html"], User);
-        {status, 401} when Type == html ->
-            serve_html(401, Req,
-                       [viewroot(Site), "/_g/core/login.html"], User);
-        {status, Code} ->
-            Req:respond({Code, [], []})
-    end,
-    ok.
-
-
-handle_req(Method, Req, Ref, Vars, User) ->
-
-    Type = element(1, Ref#refX.obj), 
-    case Method of
-         
-        'GET'  ->
-            CType = content_type(Req),
-            mochilog:log(Req, Ref, hn_users:name(User), undefined),
-            iget(Req, Ref, Type, Vars, User, CType);
-
-        'POST' ->
-
-            {value, {'Content-Type', Ct}} =
-                mochiweb_headers:lookup('Content-Type', Req:get(headers)),
-
-            case Ct of
-                % Uploads
-                "multipart/form-data" ++ _Rest ->
-
-                    {Data, File} = hn_file_upload:handle_upload(Req, Ref, User),
-                    Name = filename:basename(File),
-                    
-                    mochilog:log(Req, Ref, hn_users:name(User), {upload, Name}),
-                    Json = (mochijson:encoder([{input_encoding, utf8}]))(Data),
-                    Req:ok({"text/html", nocache(), Json});
-                
-                % Normal Post Requests
-                _Else ->
-                    Body = Req:recv_body(),
-                    {ok, Post} = get_json_post(Body),
-                    mochilog:log(Req, Ref, hn_users:name(User), Body),
-                    case ipost(Ref, Type, Vars, Post, User) of
-                        ok            -> json(Req, "success");
-                        {struct, _}=S -> json(Req, S);
-                        err           -> Req:not_found()
-                    end
+-spec authorize_post(#refX{}, [tuple()], json | html, auth_req()) 
+                    -> {view, string()} | allowed | denied | not_found.
+authorize_post(#refX{path = ["_user", "login"]}, _Vs, json, _Ar) ->
+    allowed;
+authorize_post(#refX{site = Site, path = Path}, _Vs, json, Ar) ->
+    case auth_srv2:check_particular_view(Site, Path, Ar, ?SHEETVIEW) of
+        {view, ?SHEETVIEW} -> 
+            allowed;
+        _ -> 
+            case auth_srv2:get_any_view(Site, Path, Ar) of
+                {view, _V} ->
+                    %% {ok, Bin} = file:open([viewroot(Site), "/", V, ".sec"], [read]),
+                    %% _Sec = binary_to_term(Bin),
+                    %% get the security object.
+                    allowed;
+                _Other ->
+                    denied
             end
-    end.    
+    end;
+authorize_post(_Ref, _Attr, _Type, _Ar) ->
+    denied.
 
+-spec iget(#refX{}, 
+           page | cell | row | column | range,
+           list(), 
+           #req{}) 
+          -> any(). 
 
-%%---------------
-%  GET REQUESTS
-%%---------------s
-iget(Req, Ref=#refX{path=["_user", "login"]}, page, [], User, html) ->
-    iget(Req, Ref, page, [{"view", "_g/core/login"}], User, html);
+iget(Ref=#refX{path=["_user", "login"]}, page, [], Req) ->
+    iget(Ref, page, [{"view", "_g/core/login"}], Req);
 
-iget(Req, #refX{site = Site} = _Ref, page, [{"view", FName}, {"template", []}],
-     User, html) ->
-    serve_html(Req, [viewroot(Site), "/", FName, ".tpl"], User);    
+iget(#refX{site = Site}, page, [{"view", FName}, {"template", []}], Req) ->
+    serve_html(Req, [viewroot(Site), "/", FName, ".tpl"]);    
 
-iget(Req, #refX{site = Site} = _Ref, page, [{"view", FName}], User, html) ->
-    
+iget(Ref=#refX{site = Site}, page, [{"view", FName}], Req) ->
     Tpl  = [viewroot(Site), "/", FName, ".tpl"],
     Html = [viewroot(Site), "/", FName, ".html"],
-    
     ok = case should_regen(Tpl, Html) of
              true -> ok = build_tpl(Site, FName);
              _    -> ok
          end,
-    
     case filelib:is_file(Html) of
-        true  -> serve_html(Req, Html, User);
-        false -> '404'(Req, User)
+        true  -> serve_html(Req, Html);
+        false -> '404'(Ref, Req)
     end;
 
-iget(Req, Ref, page, [{"updates", Time}, {"path", Path}], _User, _CType) ->
+iget(Ref, page, [{"updates", Time}, {"path", Path}], Req) ->
     Paths = [ string:tokens(X, "/") || X<-string:tokens(Path, ",")],
     remoting_request(Req, Ref#refX.site, Paths, Time);
 
-iget(Req, #refX{site = S}, page, [{"status", []}], _User, _CType) -> 
+iget(#refX{site = S}, page, [{"status", []}], Req) -> 
     json(Req, status_srv:get_status(S));
 
-iget(Req, #refX{site = S, path  = P}, page, [{"permissions", []}], 
-     _User, _CType) ->
+iget(#refX{site = S, path  = P}, page, [{"permissions", []}], Req) ->
     json2(Req, auth_srv2:get_as_json(S, P));
 
-iget(Req, #refX{site = S}, page, [{"users", []}], _User, _CType) ->
-    Req:ok({"text/html", hn_users:prettyprint_DEBUG(S)});
+iget(#refX{site = S}, page, [{"users", []}], Req) ->
+    text_html(Req, hn_users:prettyprint_DEBUG(S));
 
 % List of template pages
-iget(Req, Ref, page, [{"templates", []}], _User, _CType) ->
+iget(Ref, page, [{"templates", []}], Req) ->
     Fun = fun(X) ->
                   [F | _T] = lists:reverse(string:tokens(X, "/")),
                   case F of
@@ -194,8 +206,7 @@ iget(Req, Ref, page, [{"templates", []}], _User, _CType) ->
     json(Req, {array, File});
 
 % List of views available to edit
-iget(Req, #refX{site = Site} = _Ref, page, [{"views", []}], User, _CType) ->
-
+iget(#refX{site = Site}, page, [{"views", []}], Req=#req{user = User}) ->
     Dirs = [ "/_u/"++hn_users:name(User)++"/"
              | [ "/_g/"++Group++"/" || Group <- hn_users:groups(User)] ],
     
@@ -209,16 +220,15 @@ iget(Req, #refX{site = Site} = _Ref, page, [{"views", []}], User, _CType) ->
                 Files = filelib:wildcard(viewroot(Site)++Dir++"*.tpl"),
                 Acc ++ [ Strip(X) || X <- Files ]
         end,
-    
     json(Req, {array, lists:foldl(F, [], Dirs)});
 
-iget(Req, Ref, page, [{"pages", []}], _User, json) ->
+iget(Ref, page, [{"pages", []}], Req=#req{accept = json}) ->
     json(Req, pages(Ref));
 
-iget(Req, Ref, page, _Attr, User, json) ->
+iget(Ref, page, _Attr, Req=#req{accept = json, user = User}) ->
     json(Req, page_attributes(Ref, User));
 
-iget(Req, Ref, Type, _Attr, _User, json) when (Type == cell) ->
+iget(Ref, cell, _Attr, Req=#req{accept = json}) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
                [{_Ref, {"value", Val}}] when is_atom(Val) ->
                    atom_to_list(Val);
@@ -234,33 +244,32 @@ iget(Req, Ref, Type, _Attr, _User, json) when (Type == cell) ->
            end,
     json(Req, V);
 
-iget(Req, Ref, Type, _Attr, _User, json)
-  when (Type == range)
-       orelse (Type == column)
-       orelse (Type == row) ->
-    
-    Init   = [["cell"], ["column"], ["row"], ["page"]],
-    Tree   = dh_tree:create(Init),
+iget(Ref, Type, _Attr, Req=#req{accept=json})
+  when Type == range;
+       Type == column;
+       Type == row ->
+    Init = [["cell"], ["column"], ["row"], ["page"]],
+    Tree = dh_tree:create(Init),
     Dict = to_dict(hn_db_api:read_attributes(Ref,[]), Tree),
     json(Req, {struct, dict_to_struct(Dict)});
 
-iget(Req, #refX{site = Site} = _Ref, cell, _Attr, User, html) ->
-    serve_html(Req, docroot(Site) ++ "/_g/core/cell.html", User);
-    
-iget(Req, Ref, _Type, Attr, User, _CType) ->
-    error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
-    '404'(Req, User).
+iget(#refX{site = Site}, cell, _Attr, Req=#req{accept=html}) ->
+    serve_html(Req, [docroot(Site),"/_g/core/cell.html"]);
 
-%%---------------
-%  POST REQUESTS
-%%---------------
-ipost(#refX{site = S, path = P} = Ref, _Type, _Attr, 
-      [{"drag", {_, [{"range", Rng}]}}], User) ->
+iget(Ref, _Type, Attr, Req) ->
+    error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
+    '404'(Ref, Req).
+
+
+-spec ipost(#refX{}, list(), any(), #req{}) -> any().
+
+ipost(#refX{site = S, path = P} = Ref, _Attr, 
+      [{"drag", {_, [{"range", Rng}]}}], Req=#req{user=User}) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:drag_n_drop(Ref, Ref#refX{obj = hn_util:parse_attr(range,Rng)}),
-    ok;
+    json(Req, "success");
 
-ipost(#refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
+ipost(#refX{site = Site, path=["_user","login"]}, _Attr, Data, Req) ->
     [{"email", Email},{"pass", Pass},{"remember", Rem}] = Data,
     Resp = case hn_users:login(Site, Email, Pass, Rem) of
                {error, invalid_user} -> 
@@ -268,107 +277,123 @@ ipost(#refX{site = Site, path=["_user","login"]}, _T, _At, Data, _User) ->
                {ok, Token} ->
                    [{"response","success"},{"token",Token}]
            end,
-    {struct, Resp};
+    json(Req, {struct, Resp});
 
 %% the purpose of this message is to mark the mochilog so we don't 
 %% need to do nothing with anything...
-ipost(_Ref, _Type, [{"mark", []}], 
-      [{"set",{struct, [{"mark", _Msg}]}}], _User) ->
-    ok;
+ipost(_Ref, [{"mark", []}], [{"set",{struct, [{"mark", _Msg}]}}], Req) ->
+    json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)
+ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"insert", "before"}], Req)
   when O == row orelse O == column ->
-    hn_db_api:insert(Ref);
+    ok = hn_db_api:insert(Ref),
+    json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}], _User)
+ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"insert", "after"}], Req)
   when O == row orelse O == column ->
-    hn_db_api:insert(make_after(Ref));
+    ok = hn_db_api:insert(make_after(Ref)),
+    json(Req, "success");
 
 %% by default cells and ranges displace vertically
-ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "before"}], _User)
+ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"insert", "before"}], Req)
   when O == cell orelse O == range ->
-    hn_db_api:insert(Ref, vertical);
+    ok = hn_db_api:insert(Ref, vertical),
+    json(Req, "success");
 
 %% by default cells and ranges displace vertically
-ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"insert", "after"}], _User)
+ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"insert", "after"}], Req)
   when O == cell orelse O == range ->
-    hn_db_api:insert(make_after(Ref));
+    ok = hn_db_api:insert(make_after(Ref)),
+    json(Req, "success");
 
 %% but you can specify the displacement explicitly
-ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, 
-      [{"insert", "before"}, {"displacement", D}], _User)
+ipost(#refX{obj = {O, _}} = Ref, _Attr, 
+      [{"insert", "before"}, {"displacement", D}], Req)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
-    hn_db_api:insert(Ref, list_to_existing_atom(D));
+    ok = hn_db_api:insert(Ref, list_to_existing_atom(D)),
+    json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, 
-      [{"insert", "after"}, {"displacement", D}], _User)
+ipost(#refX{obj = {O, _}} = Ref, _Attr, 
+      [{"insert", "after"}, {"displacement", D}], Req)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
     RefX2 = make_after(Ref),
-    hn_db_api:insert(RefX2, list_to_existing_atom(D));
+    ok = hn_db_api:insert(RefX2, list_to_existing_atom(D)),
+    json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", "all"}], _User) 
+ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"delete", "all"}], Req) 
   when O == page ->
-    hn_db_api:delete(Ref);
+    ok = hn_db_api:delete(Ref),
+    json(Req, "success");
 
-ipost(Ref, _Type, _Attr, [{"delete", "all"}], _User) ->
-    hn_db_api:delete(Ref);
+ipost(Ref, _Attr, [{"delete", "all"}], Req) ->
+    ok = hn_db_api:delete(Ref),
+    json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Type, _Attr, [{"delete", Direction}], _User)
+ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"delete", Direction}], Req)
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
-    hn_db_api:delete(Ref, Direction);
+    ok = hn_db_api:delete(Ref, Direction),
+    json(Req, "success");
 
-ipost(Ref, range, _Attr, [{"copy", {struct, [{"src", Src}]}}], _User) ->
-    hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref);
+ipost(Ref=#refX{obj = {range, _}}, _Attr, [{"copy", {struct, [{"src", Src}]}}], Req) ->
+    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref),
+    json(Req, "success");
 
-ipost(#refX{obj = {range, _}} = Ref, _Type, _Attr, 
-      [{"borders", {struct, Attrs}}], _User) ->
+ipost(#refX{obj = {range, _}} = Ref, _Attr, 
+      [{"borders", {struct, Attrs}}], Req) ->
     Where = from("where", Attrs),
     Border = from("border", Attrs),
     Border_Style = from("border_style", Attrs),
     Border_Color = from("border_color", Attrs),
-    ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color);
+    ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
+    json(Req, "success");
 
-ipost(_Ref, _Type, _Attr,
-      [{"set", {struct, [{"language", _Lang}]}}], anonymous) ->
-    {struct, [{"error", "cant set language for anonymous users"}]};
+ipost(_Ref, _Attr,
+      [{"set", {struct, [{"language", _Lang}]}}], Req=#req{user=anonymous}) ->
+    S = {struct, [{"error", "cant set language for anonymous users"}]},
+    json(Req, S);
 
-ipost(#refX{site = Site, path=["_user"]}, _Type, _Attr, 
-      [{"set", {struct, [{"language", Lang}]}}], User) ->
-    hn_users:update(Site, User, "language", Lang);
+ipost(#refX{site = Site, path=["_user"]}, _Attr, 
+      [{"set", {struct, [{"language", Lang}]}}], Req=#req{user=User}) ->
+    ok = hn_users:update(Site, User, "language", Lang),
+    json(Req, "success");
 
-ipost(#refX{site = S, path = P}, _Type, _Attr, 
-      [{"set", {struct, [{"list", {array, Array}}]}}], User) ->
+ipost(#refX{site = S, path = P}, _Attr, 
+      [{"set", {struct, [{"list", {array, Array}}]}}], Req=#req{user=User}) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     {Lasts, Refs} = fix_up(Array, S, P),
     ok = hn_db_api:write_last(Lasts),
-    ok = hn_db_api:write_attributes(Refs);
+    ok = hn_db_api:write_attributes(Refs),
+    json(Req, "success");
 
-ipost(#refX{site = S, path = P} = Ref, Type, _Attr, 
-      [{"set", {struct, Attr}}], User) ->
+ipost(#refX{site = S, path = P, obj = O} = Ref, _Attr, 
+      [{"set", {struct, Attr}}], Req=#req{user=User}) ->
+    Type = element(1, O),
     ok = status_srv:update_status(User, S, P, "edited page"),
     case Attr of
-        % TODO : Get Rid of this (for pasting a range of values)
+        %% TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
-            post_range_values(Ref, Vals),
-            ok;
+            post_range_values(Ref, Vals);
 
-        % if posting a formula to a row or column, append
+        %% if posting a formula to a row or column, append
         [{"formula", Val}] when Type == column; Type == row ->
-            hn_db_api:write_last([{Ref, Val}]);
-        
+            ok = hn_db_api:write_last([{Ref, Val}]);
+
         _Else ->
-            hn_db_api:write_attributes([{Ref, Attr}])
-    end;
+            ok = hn_db_api:write_attributes([{Ref, Attr}])
+    end,
+    json(Req, "success");
 
-ipost(Ref, _Type, _Attr, [{"clear", What}], _User) 
+ipost(Ref, _Attr, [{"clear", What}], Req) 
   when What == "contents"; What == "style"; What == "all" ->
-    hn_db_api:clear(Ref, list_to_atom(What));
+    ok = hn_db_api:clear(Ref, list_to_atom(What)),
+    json(Req, "success");
 
-ipost(#refX{site=Site, path=Path} = Ref, _Type, _Attr,
-      [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], User) ->
+ipost(#refX{site=Site, path=Path} = Ref, _Attr,
+      [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], 
+      Req=#req{user=User}) ->
     AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
     AuthReq = {hn_users:name(User), hn_users:groups(User)},
     Output = [viewroot(Site), "/" , Name],
@@ -377,15 +402,16 @@ ipost(#refX{site=Site, path=Path} = Ref, _Type, _Attr,
     Sec = hn_security:make(Form, Ref, AuthReq),
     ok = filelib:ensure_dir(Output),
     ok = file:write_file([Output, ".tpl"], Form),
-    ok = file:write_file([Output, ".sec"], Sec);
-        
+    ok = file:write_file([Output, ".sec"], term_to_binary(Sec)),
+    json(Req, "success");
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Horizonal API = notify_back_create handler                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Ref, _Type, _Attr,
-      [{"action", "notify_back_create"}|T], _User) ->
+ipost(Ref, _Attr,
+      [{"action", "notify_back_create"}|T], Req) ->
 
     Biccie   = from("biccie",     T),
     Proxy    = from("proxy",      T),
@@ -419,15 +445,15 @@ ipost(Ref, _Type, _Attr,
     {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX, 
                                                       Proxy, Biccie),
     Return2 = lists:append([Return, [{"stamp", Stamp}]]),
-    {struct, Return2};
+    json(Req, {struct, Return2});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Horizonal API = notify_back handler                                      %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Ref, _Type, _Attr,
-      [{"action", "notify_back"} |T] = _Json, _User) ->
+ipost(Ref, _Attr,
+      [{"action", "notify_back"} |T] = _Json, Req) ->
     Biccie    = from("biccie",     T),
     ChildUrl  = from("child_url",  T),
     ParentUrl = from("parent_url", T),
@@ -462,14 +488,15 @@ ipost(Ref, _Type, _Attr,
         not_yet_synched -> 
             ok = hn_db_api:initialise_remote_page_vsn(Site, CVsn)
     end,
-    {struct, [{"result", "success"}, {"stamp", Stamp}]};
+    S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
+    json(Req, S);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Horizonal API = notify handler                                           %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
+ipost(Ref, _Attr, [{"action", "notify"} | T] = _Json, Req) ->
     Biccie    = from("biccie",     T),
     ParentUrl = from("parent_url", T),
     Type      = from("type",       T),
@@ -516,11 +543,18 @@ ipost(Ref, _Type, _Attr, [{"action", "notify"} | T] = _Json, _User) ->
                 end
         end,
     [Fun(X) || X <- CVsn],
-    {struct, [{"result", "success"}, {"stamp", Stamp}]};
+    S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
+    json(Req, S);
 
-ipost(_Ref, _Type, _Attr, _Post, _User) ->
-    error_logger:error_msg("404~n-~p~n-~p~n-~p",[_Ref, _Attr, _Post]),
-    error.
+ipost(Ref, Attr, Post, Req) ->
+    error_logger:error_msg("404~n-~p~n-~p~n-~p",[Ref, Attr, Post]),
+    '404'(Ref, Req).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% 
+%%% Helpers
+%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 can_save_view(User, "_u/"++FName) ->
     [Name | _] = string:tokens(FName, "/"),
@@ -530,8 +564,23 @@ can_save_view(User, "_g/"++FName) ->
     [Group | _] = string:tokens(FName, "/"),
     lists:member(Group, hn_users:groups(User)).
 
+-spec get_user(string(), #req{}) -> #req{}. 
+get_user(Site, R=#req{mochi = Mochi}) ->
+    Auth = Mochi:get_cookie_value("auth"),
+    case hn_users:verify_token(Site, Auth) of
+        {ok, User}        -> R#req{user = User};
+        {error, no_token} -> R#req{user = anonymous};
+        {error, _Reason}  ->
+            %% authtoken was invalid (probably did a clean_start() while
+            %% logged in, kill the cookie
+            Opts = [{path, "/"}, {max_age, 0}],
+            Cookie = mochiweb_cookies:cookie("auth", "expired", Opts),
+            R#req{user = anonymous, 
+                  headers = [Cookie | R#req.headers]}
+    end.
+
 %% Some clients dont send ip in the host header
-get_host(Req) ->
+get_real_uri(Req) ->
     Host = case Req:get_header_value("HN-Host") of
                undefined ->
                    lists:takewhile(fun(X) -> X /= $: end,
@@ -547,7 +596,6 @@ get_host(Req) ->
                    ProxiedPort
            end,
     lists:concat(["http://", Host, ":", Port, Req:get(path)]).
-
 
 get_json_post(undefined) ->
     {ok, undefined};
@@ -642,27 +690,19 @@ post_column_values(Ref, Values, Offset) ->
          end,
     lists:foldl(F, 0, Values).
 
-remoting_request(Req, Site, Paths, Time) ->
-    Socket = Req:get(socket),
+remoting_request(Req=#req{mochi=Mochi}, Site, Paths, Time) ->
+    Socket = Mochi:get(socket),
     inet:setopts(Socket, [{active, once}]),
     remoting_reg:request_update(Site, Paths, ltoi(Time), self()),
     receive 
         {tcp_closed, Socket} -> ok;
-        {error, timeout}     -> Req:ok({"text/html", nocache(), <<"timeout">>});
+        {error, timeout}     -> json(Req, <<"timeout">>);
         {msg, Data}          -> json(Req, Data)
     after
-        % TODO : Fix, should be controlled by remoting_reg
+        %% TODO : Fix, should be controlled by remoting_reg
         600000 ->
             json(Req, {struct, [{"time", remoting_reg:timestamp()},
                                 {"timeout", "true"}]})
-    end.
-
-get_var_or_cookie(Key, Vars, Req) ->
-    case lists:keysearch(Key, 1, Vars) of
-        false ->
-            {ok, Req:get_cookie_value(Key)};
-        {value, {"auth", Auth}} ->
-            {ok, Auth}
     end.
 
 page_attributes(#refX{site = S, path = P} = Ref, User) ->
@@ -702,26 +742,6 @@ pages(#refX{} = RefX) ->
     Tmp  = pages_to_json(dh_tree:add(RefX#refX.path, Dict)),    
     {struct, [{"name", "home"}, {"children", {array, Tmp}}]}.
 
-get_lang(anonymous) ->
-    "en_gb";
-get_lang(User) ->
-    case hn_users:get(User, "language") of
-        {ok, Lang} -> Lang;
-        undefined  -> "en_gb"
-    end.
-
-json(Req, Data) ->
-    Req:ok({"application/json",
-            nocache(),
-            (mochijson:encoder([{input_encoding, utf8}]))(Data)
-           }).
-
-json2(Req, Data) ->
-    Req:ok({"application/json",
-            nocache(),
-            (mochijson2:encoder([{utf8, true}]))(Data)
-           }).
-
 fix_up(List, S, P) ->
     f_up1(List, S, P, [], []).
 
@@ -746,111 +766,13 @@ f_up1([{struct, [{"ref", Ref}, {"formula", F}]} | T], S, P, A1, A2) ->
         {cell, _}   -> f_up1(T, S, P, A1, [{RefX, [{"formula", F}]} | A2])
     end.
 
-serve_html(Req, File, User) ->
-    serve_html(200, Req, File, User).
-serve_html(Status, Req, File, User) ->
-    F = fun() ->
-                hn_util:compile_html(File, get_lang(User))
-        end,    
-    serve_file(Status, Req, cache(File, File++"."++get_lang(User), F)).
-
-serve_file(Status, Req, File) ->
-    case file:open(File, [raw, binary]) of
-        {ok, IoDevice} ->
-            Req:respond({Status, nocache(), {file, IoDevice}}),
-            file:close(IoDevice);
-        _ ->
-            Req:not_found()
-    end.
-
-isnt_cached(Cached, Source) ->
-    not( filelib:is_file(Cached) )
-        orelse hn_util:is_older(Cached, Source).
-
-cache(Source, CachedNm, Generator) ->
-    Cached = tmpdir() ++ "/" ++ hn_util:bin_to_hexstr(erlang:md5(CachedNm)),
-    ok     = filelib:ensure_dir(Cached),
-    case isnt_cached(Cached, Source) of
-        true -> ok = file:write_file(Cached, Generator());
-        _    -> ok
-    end,
-    Cached.
-
-content_type(Req) ->
+accept_type(Req) ->
     {value, {'Accept', Accept}} =
         mochiweb_headers:lookup('Accept', Req:get(headers)),
     case re:run(Accept, "application/json") of
         {match, _} -> json;
-        nomatch    ->
-            case re:run(Accept, "\\*/\\*") of
-                {match, _} -> html;
-                nomatch    -> throw(unmatched_type)
-            end
+        nomatch -> html
     end.
-
--spec authorize(string(), [string()],
-               'GET' | 'POST',
-                #refX{},
-                [{string(), any()}],
-               json | html)
-               -> {view, string()} | {status, integer()} | allowed.
-authorize(_User, _Groups, 'POST', #refX{path = ["_user", "login"]}, 
-          _Vs, json) ->
-    allowed;
-authorize(User, Groups, 'POST', #refX{site = Site, path = Path}, 
-          _Vs, json) ->
-    case auth_srv2:check_particular_view(Site, Path, {User, Groups}, 
-                                         ?SHEETVIEW) of
-        {view, ?SHEETVIEW} -> 
-            allowed;
-        _ -> 
-            case auth_srv2:get_any_view(Site, Path, {User, Groups}) of
-                {view, _V} ->
-                    %% get the security object.
-                    allowed;
-                _Other ->
-                    {status, 401}
-            end
-    end;
-authorize(_User, _Groups, 'GET', _Ref, [{VPR, _}], json) 
-  when VPR == "views";
-       VPR == "templates";
-       VPR == "pages" ->
-    allowed;
-authorize(_User, _Groups, 'GET', _Ref, [{"permissions", _}], _Any) ->
-    allowed;
-authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, [], json) ->
-    case auth_srv2:get_any_view(Site, Path, {User, Groups}) of
-        {view, _} -> allowed;
-        _Else -> {status, 401}
-    end;
-authorize(User, Groups, 'GET', #refX{site=Site}, 
-          [{"updates",_},{"path",Paths}|_], json) ->
-    Views = [auth_srv2:get_any_view(Site, P, {User, Groups}) ||
-                Path <- string:tokens(Paths, ","),
-                P <- string:tokens(Path, "/")],
-    case lists:all(fun({view, _}) -> true; (_) -> false end, Views) of 
-        true -> allowed;
-        _Else -> {status, 401}
-    end;
-authorize(User, Groups, 'GET', #refX{site = Site, path = Path}, [], html) ->
-    auth_srv2:check_get_view(Site, Path, {User, Groups});
-authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
-          [{"view", View}], _Type) ->
-    auth_srv2:check_particular_view(Site, Path, {User, Groups}, View);
-authorize(User, Groups, 'GET', #refX{site = Site, path = Path},
-          [{"challenger", true}], _Type) ->
-    auth_srv2:check_get_challenger(Site, Path, {User, Groups});
-authorize(_U, _Gs, _GP, _Ref, _Vars, _Type) ->
-    {status, 401}.
-
-'500'(Req, Error) ->
-    error_logger:error_msg("~p~n~p~n", [Error, erlang:get_stacktrace()]),
-    Req:respond({500,[],[]}).
-
-'404'(Req, User) ->
-    #refX{site = Site} = hn_util:parse_url(get_host(Req)),
-    serve_html(404, Req, viewroot(Site)++"/_g/core/login.html", User).
 
 build_tpl(Site, Tpl) ->
     {ok, Master} = file:read_file([viewroot(Site), "/_g/core/built.tpl"]),
@@ -880,12 +802,93 @@ pages_to_json(X, Dict) ->
 sync_exit() ->
     exit("exit from hn_mochi:handle_req impossible page versions").
     
-nocache() ->
-    [{"Cache-Control","no-store, no-cache, must-revalidate"},
-     {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
-     {"Pragma",       "no-cache"}].
-
 should_regen(Tpl, Html) ->
     filelib:is_file(Tpl)
         andalso ( not(filelib:is_file(Html)) orelse
                   hn_util:is_older(Html, Tpl) ). 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% Output Functions
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+'404'(#refX{site = Site}, Req) ->
+    serve_html(404, Req, [viewroot(Site), "/_g/core/login.html"]).
+
+'500'(Req, Error) ->
+    error_logger:error_msg("~p~n~p~n", [Error, erlang:get_stacktrace()]),
+    respond(500, Req).
+
+respond(Code, #req{mochi = Mochi, headers = Headers}) ->
+    Mochi:respond({Code, Headers, []}),
+    ok.
+
+text_html(#req{mochi = Mochi, headers = Headers}, Text) ->
+    Mochi:ok({"text/html", Headers, Text}),
+    ok.
+    
+-spec json(#req{}, any()) -> any(). 
+json(#req{mochi = Mochi, headers = Headers}, Data) ->
+    Mochi:ok({"application/json",
+            Headers ++ nocache(),
+            (mochijson:encoder([{input_encoding, utf8}]))(Data)
+           }),
+    ok.
+
+-spec json2(#req{}, any()) -> any(). 
+json2(#req{mochi = Mochi, headers = Headers}, Data) ->
+    Mochi:ok({"application/json",
+              Headers ++ nocache(),
+              (mochijson2:encoder([{utf8, true}]))(Data)
+             }),
+    ok.
+
+-spec serve_html(#req{}, iolist()) -> any().
+serve_html(Req, File) ->
+    serve_html(200, Req, File).
+
+-spec serve_html(integer(), #req{}, iolist()) -> any(). 
+serve_html(Status, Req=#req{user = User}, File) ->
+    F = fun() -> hn_util:compile_html(File, get_lang(User)) end,
+    Response = cache(File, File++"."++get_lang(User), F),
+    serve_html_file(Status, Req, Response),
+    ok.
+
+serve_html_file(Status, #req{mochi = Mochi, headers = Headers}, File) ->
+    case file:open(File, [raw, binary]) of
+        {ok, IoDevice} ->
+            Mochi:respond({Status, 
+                           Headers ++ nocache(), 
+                           {file, IoDevice}}),
+            file:close(IoDevice);
+        _ ->
+            Mochi:not_found(Headers)
+    end.
+
+get_lang(anonymous) ->
+    "en_gb";
+get_lang(User) ->
+    case hn_users:get(User, "language") of
+        {ok, Lang} -> Lang;
+        undefined  -> "en_gb"
+    end.
+
+cache(Source, CachedNm, Generator) ->
+    Cached = tmpdir() ++ "/" ++ hn_util:bin_to_hexstr(erlang:md5(CachedNm)),
+    ok = filelib:ensure_dir(Cached),
+    case isnt_cached(Cached, Source) of
+        true -> ok = file:write_file(Cached, Generator());
+        _    -> ok
+    end,
+    Cached.
+
+isnt_cached(Cached, Source) ->
+    not( filelib:is_file(Cached) )
+        orelse hn_util:is_older(Cached, Source).
+
+nocache() ->
+    [{"Cache-Control","no-store, no-cache, must-revalidate"},
+     {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
+     {"Pragma",       "no-cache"}].

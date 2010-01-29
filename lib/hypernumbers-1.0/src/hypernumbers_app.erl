@@ -76,7 +76,7 @@ start_instance({IP, Port}) ->
     Opts = [{port, Port}, 
             {ip,   StrIp},
             {name, StrIp ++ integer_to_list(Port)},
-            {loop, {hn_mochi, req}}],
+            {loop, {hn_mochi, handle}}],
     {ok, _Pid} = mochiweb_http:start(Opts),
     ok.
 

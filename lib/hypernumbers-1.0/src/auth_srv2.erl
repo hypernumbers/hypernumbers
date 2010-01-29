@@ -61,23 +61,23 @@ start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 -spec check_get_view(string(), [string()], auth_req()) 
-                    -> {view, string()} | {status, integer()}.
+                    -> {view, string()} | not_found | denied.
 check_get_view(Site, Path, AuthReq) -> 
     gen_server:call(?MODULE, {check_get_view, Site, Path, AuthReq}).
 
 -spec check_get_challenger(string(), [string()], auth_req()) 
-                          -> {view, string()} | {status, integer()}.
+                          -> {view, string()} | not_found | denied.
 check_get_challenger(Site, Path, AuthReq) -> 
     gen_server:call(?MODULE, {check_get_challenger, Site, Path, AuthReq}).
 
 -spec check_particular_view(string(), [string()], auth_req(), string())
-                           -> {view, string()} | {status, integer()}.
+                           -> {view, string()} | not_found | denied.
 check_particular_view(Site, Path, AuthReq, View) ->
     gen_server:call(?MODULE, {check_particular_view, Site, Path,
                               AuthReq, View}).
 
 -spec get_any_view(string(), [string()], auth_req()) 
-                  -> {view, string()} | {status, integer()}.
+                  -> {view, string()} | not_found | denied.
 get_any_view(Site, Path, AuthReq) ->
     gen_server:call(?MODULE, {get_any_view, Site, Path, AuthReq}).
 
@@ -326,41 +326,41 @@ add_us_and_gps(V, [{group, Group} | Rest]) ->
 -spec get_view(#control{}, 
                string(), [string()],
                champion | challenger | any)
-              -> {view, string()} | {status, integer()}.
+              -> {view, string()} | not_found | denied.
 get_view(#control{views = ?EMPTY_TREE}, _U, _G, _T) ->
-    {status, 404};
+    not_found;
 get_view(C, User, Groups, any) ->
     KVs = gb_trees:to_list(C#control.views),
     case get_role_view(KVs, User, Groups) of 
-        none -> {status, 401}; 
+        none -> denied; 
         V -> {view, V}
     end;
 get_view(#control{champion = [], challenger = []}, _U, _G, _T) ->
-    {status, 404};
+    not_found;
 get_view(#control{champion = V}=C, User, Groups, champion) ->
     View = gb_trees:get(V, C#control.views),
     case get_role_view([{V,View}], User, Groups) of
         V -> {view, V}; 
-        _ -> {status, 401}
+        _ -> denied
     end;
 get_view(#control{challenger = V}=C, User, Groups, challenger) when V /= [] ->
     View = gb_trees:get(V, C#control.views),
     case get_role_view([{V,View}], User, Groups) of
         V -> {view, V}; 
-        _ -> {status, 401}
+        _ -> denied
     end.
 
 -spec get_particular_view(#control{}, 
                           string(), [string()],
                           string())
-                         -> {view, string()} | {status, integer()}.
+                         -> {view, string()} | not_found | denied.
 get_particular_view(C, User, Groups, V) ->
     %% we don't know this actually exists
     case gb_trees:lookup(V, C#control.views) of
-        none -> {status, 401};
+        none -> denied;
         {value, View} -> 
             case get_role_view([{V,View}], User, Groups) of
-                none -> {status, 401};
+                none -> denied;
                 V -> {view, V}
             end
     end.
@@ -641,7 +641,7 @@ demo_DEBUG() ->
 %% check_get_view (general)
 testA1(P) ->
     Ret = check_get_view1(gb_trees:empty(), P, {"gordon", ["Group"]}, champion),
-    ?assertEqual({status, 404}, Ret).
+    ?assertEqual(not_found, Ret).
 
 %% add views
 testA2(P) ->
@@ -650,7 +650,7 @@ testA2(P) ->
     Tree2 = add_view1(Tree1, P, UGs, "another view"),
     Tree3 = set_default(Tree2, P, "a view", champion),
     Ret = check_get_view1(Tree3, P, {"User", ["Fail"]}, champion),
-    ?assertEqual({status, 401}, Ret).
+    ?assertEqual(denied, Ret).
 
 %% Users and groups
 testA3(P) ->
@@ -701,7 +701,7 @@ testA8(P) ->
     Tree4 = remove_views1(Tree3, P, ["another view"]),
     Ret = check_get_view1(Tree4, P, {"gordon", ["Fail"]}, champion),
     %% no permission to see 'champion'... it's gone.
-    ?assertEqual({status, 404}, Ret). 
+    ?assertEqual(not_found, Ret). 
 
 testA10(P) ->
     Tree = add_view1(gb_trees:empty(), P, 
@@ -839,7 +839,7 @@ testD3() ->
     Tree4 = add_view1(Tree3, P2, [{user, "gordon"}, {group, "admin"}],
                       "a fourth view"),
     Ret = check_get_view1(Tree4, P1, {"Fail", ["admin"]}, champion),
-    ?assertEqual({status, 404}, Ret).
+    ?assertEqual(not_found, Ret).
 
 % specific overrides the general
 testD4() ->
