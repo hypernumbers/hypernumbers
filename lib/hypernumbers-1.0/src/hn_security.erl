@@ -488,7 +488,9 @@ just_path_test_() ->
      ?_assertEqual("", just_path("blah")),
      ?_assertEqual("/", just_path("/blah")),
      ?_assertEqual("/blah/", just_path("/blah/")),
-     ?_assertEqual("/blah/", just_path("/blah/A:A"))].
+     ?_assertEqual("/blah/", just_path("/blah/A:A")),
+     ?_assertEqual("/blah/more/path/", just_path("/blah/more/path/A:A"))
+    ].
 
 trans_all_perms_test_() -> 
     Site = "http://unit_test:1234",
