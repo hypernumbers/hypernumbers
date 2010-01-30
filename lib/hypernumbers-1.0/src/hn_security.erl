@@ -196,14 +196,18 @@ gather([H | T], A1, A2, true)          -> gather(T, [H | A1], A2, true);
 gather([H | T], _A1, A2, false)        -> gather(T, [], [[H] | A2], false).
 
 -spec just_path(string()) -> string().
+just_path([]) -> [];
 just_path(Url) ->
     case lists:last(Url) of
         $/ -> Url;
         _Or ->
-            case string:tokens(Url, "/") of
-                [] -> "/"; 
-                L -> hn_util:list_to_path(drop_last(L))
-            end
+            Lead = if hd(Url) == $/ -> "/";
+                      true -> [] end,
+            Lead ++ case string:tokens(Url, "/") of
+                        [] -> [];
+                        [_S] -> [];
+                        L -> string:join(drop_last(L), "/") ++ "/"
+                    end
     end.
 
 -spec drop_last(list()) -> list().
@@ -473,6 +477,18 @@ path_test_() ->
     [fun testA/0,
      fun testB/0,
      fun testC/0].
+
+just_path_test_() ->
+    [?_assertEqual("", just_path("")),
+     ?_assertEqual("/", just_path("/")),
+     ?_assertEqual("/", just_path("/blah")),
+     ?_assertEqual("", just_path("..")),
+     ?_assertEqual("../", just_path("../")),
+     ?_assertEqual("./", just_path("./A1")),
+     ?_assertEqual("", just_path("blah")),
+     ?_assertEqual("/", just_path("/blah")),
+     ?_assertEqual("/blah/", just_path("/blah/")),
+     ?_assertEqual("/blah/", just_path("/blah/A:A"))].
 
 trans_all_perms_test_() -> 
     Site = "http://unit_test:1234",
