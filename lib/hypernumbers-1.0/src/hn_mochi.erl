@@ -52,7 +52,11 @@ authorize_resource(Req=#req{mochi = Mochi, accept = AType}, Ref) ->
         {allowed, _} ->
             handle_resource(Method, Ref, Attr, Req2);
         {{view, View}, html} ->
-            handle_resource(Method, Ref, [{"view", View}|Attr], Req2);
+            case Attr of
+                %% Bit ugly...
+                [] -> handle_resource(Method, Ref, [{"view", View}], Req2);
+                _  -> handle_resource(Method, Ref, Attr, Req2)
+            end;
         {not_found, html} ->
             serve_html(404, Req2, 
                        [viewroot(Ref#refX.site), "/_g/core/404.html"]);
