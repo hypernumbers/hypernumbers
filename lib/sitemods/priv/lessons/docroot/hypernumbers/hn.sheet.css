@@ -1215,7 +1215,7 @@ p,h1,h2,h3,h4,h5 {
     width: 100%;
     height     : 23px;
     border-top : 1px solid #999;
-    background : #EEE;
+    background : #FDDA9C;
 }
 
 
@@ -1545,7 +1545,7 @@ table, tr, td { margin:0px; padding: 0px; border:0px; }
 
 .configuring {
     color  : #333333;
-    background: #FFB329;
+    background: #FDDA9C;
 }
 
 #viewtabs a.selected {
@@ -1559,7 +1559,7 @@ table, tr, td { margin:0px; padding: 0px; border:0px; }
 }
 
 #viewbuildertoolbar { 
-    background    : #FFB329;
+    background    : #FDDA9C;
     height        : 72px;
     overflow      : hidden;
     border-bottom : 1px solid #999;
