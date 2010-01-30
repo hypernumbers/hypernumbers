@@ -8,26 +8,24 @@
     <div id="inner">
       
 	  <div class="clear">
-        <div id="header">
+        <div id="header" class="droppable">
           
-	      <div data-binding-from="B2" 
+	      <div data-binding-from="/A1" 
                class="hn header" 
                data-type="text"></div>
 	      
-	      <div id="menu">
+	      <div id="menu" class="droppable">
 	      </div>
 	    
         </div>
       </div>
       
-      <div id="plaincontent"></div>
       <div id="contentwrapper">
-	    <div id="primarycontent"></div>
-	    <div id="secondarycontent"></div>
+	    <div id="primarycontent" class="droppable"></div>
+	    <div id="secondarycontent" class="droppable"></div>
       </div>
-      <div id="plaincontent"></div>
       
-	  <div id="footer"></div>
+	  <div id="footer" class="droppable"></div>
       
 	</div>
     

@@ -144,7 +144,7 @@ p,h1,h2,h3,h4,h5 {
     position   : absolute;
     background : #000;
     border     : 1px solid #666;
-    top        : auto;
+    top        : 18px;
     display    : none;
     z-index    : 99999999;
 }
@@ -1204,22 +1204,20 @@ p,h1,h2,h3,h4,h5 {
 /*     cursor:pointer; */
 /* } */
 
-#viewbuildertoolbar { 
- background:    #eee;
- height:        50px;
- overflow:      hidden;
- border-bottom: 1px solid #999;
- border-top:    1px solid #ddd;
+#viewbuilderheader { 
+    padding    : 0px 10px;
+    background : #EEE;
 }
 
 #viewbuilderfooter { 
     position:absolute;
     bottom:0px;
-    height:24px;
-    width:100%;
-    background:    #eee;
-    border-top: 1px solid #999;
+    width: 100%;
+    height     : 23px;
+    border-top : 1px solid #999;
+    background : #EEE;
 }
+
 
 #previewcode {  
  width:100%; 
@@ -1231,7 +1229,7 @@ p,h1,h2,h3,h4,h5 {
 
 #preview {  
     position:absolute;
-    top:52px;
+    top:74px;
     bottom: 25px;
     width:100%;
     overflow:auto;
@@ -1242,6 +1240,336 @@ p,h1,h2,h3,h4,h5 {
     padding: 3px;
 }
 
+#control label, .panel label { 
+    display : inline;
+}
+
+#control label * { 
+    vertical-align : middle;
+}
+
+.subpanel ul, #control ul {
+    list-style-type:none;
+}
+
+#placer {  
+    margin: 0px 10px;
+    height: 30px;
+    border: 2px dashed #999;
+}
+
+#tdpreview {  
+ height:100%;
+ padding:5px;
+}
+
+#configurepanel {  
+ z-index:50000;
+ position:absolute;
+ top:60px;
+ right:12px;
+ background-color: #dddddd;
+}
+
+#sheetpanel {  
+ z-index:50000;
+ position:absolute;
+ width:100%;
+ bottom:-10px;
+ left:0px;
+}
+
+.panel {  
+    position:relative;
+    background:#333333;
+    border:1px solid #999999;
+    -moz-border-radius:3px;
+    margin-bottom:10px;
+}
+
+.configurepanel {  
+    padding-bottom:50px;
+    color: #222222;
+}
+
+#configure input { 
+    width: 150px; 
+}
+
+.disabled {  
+ opacity:0.2;
+}
+
+#use-range {
+    display:none;
+    padding:10px;
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    z-index: 900000000;
+    margin:20px;
+}
+
+.togglesubpanel {  
+ margin:4px;
+ text-decoration:underline;
+ font-weight: bold;
+ cursor:pointer;
+ color: #ffffff;
+}
+
+.panel.disabled .subpanel { display:none; }
+
+#pathstyle {  
+ position:absolute;
+ bottom:-7px;
+ margin-left:5px;
+}
+
+#toggle input { 
+ vertical-align:bottom;
+}
+
+.btn {  
+    text-align:      center; 
+    padding:         1px;
+    background:      #F9F9F9;
+    text-decoration: none;
+    color:           #333;
+    border-color:    #CCC #999 #999 #CCC;
+    border-width:    1px;
+    border-style:    solid;
+    -moz-border-radius:    4px;
+    -webkit-border-radius: 4px;
+    outline:none;
+}
+
+.btn:hover {  
+ cursor:pointer;
+ color:        #111;
+ border-color: #9CFF00 #669900 #669900 #9CFF00;
+}
+
+.configurepanel .tab {  
+    display    : none;
+    padding    : 10px 5px;
+    background : lightblue;
+}
+
+.hn {
+    border : 1px solid transparent;
+}
+
+.editing .hn:hover { 
+    cursor : pointer;
+    border : 1px dashed #999; 
+}
+
+#control {
+    padding:10px;
+    vertical-align:middle;
+    background: #222222;
+    color: white;
+}
+
+#control #viewname  {
+    width              : 90px;
+    background         : #CCCCCC;
+    border             : 2px solid #666666;
+    padding            : 2px;
+    color              : #111111;
+    margin-top         : 3px;
+    -moz-border-radius : 4px; 
+    -webkit-border     : 4px;
+}
+
+#previewbtn {
+    width:70px;
+}
+
+.control {
+    width:50px;
+    display:none;
+    position:absolute;
+    left:-50px;
+    text-align:right;
+    z-index:9999999;
+}
+
+.control input {
+    font-size:9px;
+    background:#222;
+    color:white;
+    border:0px;
+    margin-bottom:2px;
+    cursor:pointer;
+}
+
+.control input:hover {
+    background:#444;
+}
+
+.wrp:hover .control { display:block; }
+.wrp { position:relative;}
+
+#views ul { 
+    list-style-type:none; 
+}
+
+#views { 
+    position           :absolute; 
+    width              :200px; 
+    display            :none;
+    background         :#CCCCCC;
+    border             :2px solid #666666;
+    padding            :2px;
+    color              :#111111;
+    left               :0px;
+    z-index            :999;
+    -moz-border-radius :4px; -webkit-border: 4px;
+}
+
+.global { 
+    display:none;
+}
+
+#views li {
+    text-indent: 5px;
+}
+
+#views li:hover {
+    cursor:pointer;
+    background: #999999;
+}
+
+#control #viewspanel {
+    top:-3px;
+    position:relative;
+    float:left;
+}
+
+#control #viewviews {
+    position:absolute;
+    top:4px;
+    right:1px;
+    background:none;
+    border:none;
+}
+
+.hnheader {
+    font-size: 18px; 
+    font-weight: bold;
+}
+
+.grid .by { margin: 0px; color:#999;} 
+.grid .hnheader { margin:0px; } 
+.grid .container { margin-bottom: 20px; }
+.grid hr { background:#999; height:1px; border:0px; }
+
+#toggle {
+    position : absolute;
+    right    : 10px;
+    top      : 4px;
+    color    : #333;
+}
+
+#toggle input {
+    vertical-align: bottom;
+    margin:0px;
+}   
+
+#configuring { display:none;  }
+
+#viewbuilderheader a { 
+    cursor          : pointer;
+	color           : #004b97;
+	font-weight     : bold;
+	font-size       : 1.1em;
+	padding-top     : 5px;
+	padding-bottom  : 5px;
+    text-decoration : none;
+    display         : inline-block;
+    overflow        : hidden;
+    vertical-align  : middle;
+    white-space     : nowrap;
+}
+
+#saveviewbtn { 
+    margin: 2px 5px;
+}
+
+#closeviewbtn { 
+    position:absolute;
+    right: 10px;
+    top: 2px;
+}
+
+#viewtabs {
+    display:inline;
+    margin: 0px 25px;
+}
+
+#viewtabs a {
+    -moz-border-radius : 3px 3px 0px 0px;
+    padding: 3px 6px;
+    margin:4px 5px 0px 5px;
+    background:#DDD;
+    font-size: 11px;
+    font-weight: normal;
+    outline: none;
+    color:#666;
+}
+
+#add .table { background-image: url(/hypernumbers/table.png) }
+#add .form { background-image: url(/hypernumbers/application_form.png) }
+#add .text { background-image: url(/hypernumbers/textfield.png) }
+/* #add .form { background-image: url(/hypernumbers/application_form.png) } */
+/* #add .form { background-image: url(/hypernumbers/application_form.png) } */
+/* #add .form { background-image: url(/hypernumbers/application_form.png) } */
+
 #add input { 
-    margin: 0px 5px;
+    background-repeat: no-repeat;
+    background-position: 6px center;
+    padding: 5px 5px 5px 22px;
+    margin:7px 2px;
+}
+
+#viewconfbinding input {
+    width: 120px;
+    font-size:9px;
+}
+
+table, tr, td { margin:0px; padding: 0px; border:0px; }
+
+#delete { color: red; }
+
+.configuring {
+    color  : #333333;
+    background: #FFB329;
+}
+
+#viewtabs a.selected {
+    font-weight: bold;
+    color:#333;
+    background:#FFB329;
+}
+
+#configuring { 
+    padding: 2px; 
+}
+
+#viewbuildertoolbar { 
+    background    : #FFB329;
+    height        : 72px;
+    overflow      : hidden;
+    border-bottom : 1px solid #999;
+    border-top    : 1px solid #ddd;
+}
+
+#viewconfbinding { 
+    width:250px;
+}
+
+#viewconftype { 
+    width: 200px; 
 }
