@@ -52,23 +52,31 @@ histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
 %% Internal Functions
 %%
 hist1(Data, {Scale, Titles, Colours}) ->
-    Data2 = cast_data(Data),
-    Titles2 = make_titles(cast_titles(Titles)),
-    Colours2 = conv_colours(get_colours(Colours)),
-    Data3 = lists:reverse(Data2),
+    Data2 = lists:reverse(cast_data(Data)),
+    Titles2 = cast_titles(Titles),
+    Colours2 = get_colours(Colours),
     {Min, Max} = get_scale(Scale, Data2),
+    case has_error([Data2, Min, Max, Titles2, Colours2]) of
+        {true, Error} -> Error;
+        false         -> hist2(Data2, Min, Max, Titles2, Colours2)
+    end.
+
+hist2(Data, Min, Max, Titles, Colours) ->
+    Data1 = make_data(normalise(Data)),
+    Titles1 = make_titles(Titles),
+    Colours1 = conv_colours(Colours),
     "![graph](http://chart.apis.google.com/chart?cht=bvs&amp;chd=t:"
-        ++ make_data(Data3)
+        ++ Data1
         ++ "&amp;chxt=y&amp;chxl=0:|"
         ++ tconv:to_s(Min) ++ "|" ++ tconv:to_s(Max)
         ++ "&amp;chs=250x100&amp;chl="
-        ++ Titles2
-        ++ Colours2.
+        ++ Titles1
+        ++ Colours1.
 
 pie1(Data, Titles, Colours) ->
-    Data2 = cast_data(Data),
+    Data2 = lists:reverse(cast_data(Data)),
     Titles2 = cast_titles(Titles),
-    Colours2 = conv_colours(get_colours(Colours)),
+    Colours2 = get_colours(Colours),
     case has_error([Data2, Titles2, Colours2]) of
         {true, Error} -> Error;
         false         -> pie2(Data2, Titles2, Colours2)
@@ -77,7 +85,7 @@ pie1(Data, Titles, Colours) ->
 pie2(Data, Titles, Colours) ->
     Data1 = make_data(normalise(Data)),
     Titles1 = make_titles(Titles),
-    Colours1 = conv_colours(get_colours(Colours)),
+    Colours1 = conv_colours(Colours),
     "![graph](http://chart.apis.google.com/chart?cht=p3&amp;chd=t:"
         ++ Data1
         ++ "&amp;chs=450x100&amp;chl="
@@ -93,7 +101,7 @@ lg1(Data, Orientation, {Scale, Axes, Colours}) ->
     XAxis2 = get_axes(Axes),
     case has_error([Data3, Colours2, Min, Max, XAxis2]) of
         {true, Error} -> Error;
-        false         -> lg2(rev(Data3), {Min, Max}, XAxis2, Colours)
+        false         -> lg2(rev(Data3), {Min, Max}, XAxis2, Colours2)
     end.
 
 lg2(Data, {Min, Max}, XAxis, Colours) ->
@@ -126,8 +134,8 @@ cast_titles(Titles) ->
                    {cast, blank, str}],
                   [return_errors]).
 
-conv_colours([])      -> [];
-conv_colours(Colours) -> "&amp;chco=" ++ make_colours(get_colours(Colours)).
+conv_colours([[]])      -> [];
+conv_colours(Colours) -> "&amp;chco=" ++ make_colours(Colours).
 
 conv_x_axis([])    -> "y&amp;chxl=";
 conv_x_axis(XAxis) -> "x,y&amp;chxl=0:|"
@@ -209,14 +217,145 @@ make_titles(List) -> string:join(List, "|").
 
 make_colours(List) -> make_c1(List, []).
 
-make_c1([], Acc)              -> string:join(lists:reverse(Acc), ",");
-make_c1(["red"     | T], Acc) -> make_c1(T, ["FF0000" | Acc]);
-make_c1(["green"   | T], Acc) -> make_c1(T, ["00FF00" | Acc]);
-make_c1(["blue"    | T], Acc) -> make_c1(T, ["0000FF" | Acc]);
-make_c1(["yellow"  | T], Acc) -> make_c1(T, ["FFFF00" | Acc]);
-make_c1(["cyan"    | T], Acc) -> make_c1(T, ["00FFFF" | Acc]);
-make_c1(["magenta" | T], Acc) -> make_c1(T, ["FF00FF" | Acc]);
-make_c1(["black"   | T], Acc) -> make_c1(T, ["000000" | Acc]);
-make_c1(["white"   | T], Acc) -> make_c1(T, ["FFFFFF" | Acc]);
-make_c1(["orange"  | T], Acc) -> make_c1(T, ["FF7F00" | Acc]);
-make_c1([H | T], Acc)         -> make_c1(T, [H | Acc]).
+make_c1([], Acc) -> string:join(lists:reverse(Acc), ",");
+make_c1(["aliceblue"            | T], Acc) -> make_c1(T, ["F0F8FF" | Acc]);
+make_c1(["antiquewhite"         | T], Acc) -> make_c1(T, ["FAEBD7" | Acc]);
+make_c1(["aqua"                 | T], Acc) -> make_c1(T, ["00FFFF" | Acc]);
+make_c1(["aquamarine"           | T], Acc) -> make_c1(T, ["7FFFD4" | Acc]);
+make_c1(["azure"                | T], Acc) -> make_c1(T, ["F0FFFF" | Acc]);
+make_c1(["beige"                | T], Acc) -> make_c1(T, ["F5F5DC" | Acc]);
+make_c1(["bisque"               | T], Acc) -> make_c1(T, ["FFE4C4" | Acc]);
+make_c1(["black"                | T], Acc) -> make_c1(T, ["000000" | Acc]);
+make_c1(["blanchedalmond"       | T], Acc) -> make_c1(T, ["FFEBCD" | Acc]);
+make_c1(["blue"                 | T], Acc) -> make_c1(T, ["0000FF" | Acc]);
+make_c1(["blueviolet"           | T], Acc) -> make_c1(T, ["8A2BE2" | Acc]);
+make_c1(["brown"                | T], Acc) -> make_c1(T, ["A52A2A" | Acc]);
+make_c1(["burlywood"            | T], Acc) -> make_c1(T, ["DEB887" | Acc]);
+make_c1(["cadetblue"            | T], Acc) -> make_c1(T, ["5F9EA0" | Acc]);
+make_c1(["chartreuse"           | T], Acc) -> make_c1(T, ["7FFF00" | Acc]);
+make_c1(["chocolate"            | T], Acc) -> make_c1(T, ["D2691E" | Acc]);
+make_c1(["coral"                | T], Acc) -> make_c1(T, ["FF7F50" | Acc]);
+make_c1(["cornflowerblue"       | T], Acc) -> make_c1(T, ["6495ED" | Acc]);
+make_c1(["cornsilk"             | T], Acc) -> make_c1(T, ["FFF8DC" | Acc]);
+make_c1(["crimson"              | T], Acc) -> make_c1(T, ["DC143C" | Acc]);
+make_c1(["cyan"                 | T], Acc) -> make_c1(T, ["00FFFF" | Acc]);
+make_c1(["darkblue"             | T], Acc) -> make_c1(T, ["00008B" | Acc]);
+make_c1(["darkcyan"             | T], Acc) -> make_c1(T, ["008B8B" | Acc]);
+make_c1(["darkgoldenrod"        | T], Acc) -> make_c1(T, ["B8860B" | Acc]);
+make_c1(["darkgray"             | T], Acc) -> make_c1(T, ["A9A9A9" | Acc]);
+make_c1(["darkgreen"            | T], Acc) -> make_c1(T, ["006400" | Acc]);
+make_c1(["darkkhaki"            | T], Acc) -> make_c1(T, ["BDB76B" | Acc]);
+make_c1(["darkmagenta"          | T], Acc) -> make_c1(T, ["8B008B" | Acc]);
+make_c1(["darkolivegreen"       | T], Acc) -> make_c1(T, ["556B2F" | Acc]);
+make_c1(["darkorange"           | T], Acc) -> make_c1(T, ["FF8C00" | Acc]);
+make_c1(["darkorchid"           | T], Acc) -> make_c1(T, ["9932CC" | Acc]);
+make_c1(["darkred"              | T], Acc) -> make_c1(T, ["8B0000" | Acc]);
+make_c1(["darksalmon"           | T], Acc) -> make_c1(T, ["E9967A" | Acc]);
+make_c1(["darkseagreen"         | T], Acc) -> make_c1(T, ["8FBC8F" | Acc]);
+make_c1(["darkslateblue"        | T], Acc) -> make_c1(T, ["483D8B" | Acc]);
+make_c1(["darkslategray"        | T], Acc) -> make_c1(T, ["2F4F4F" | Acc]);
+make_c1(["darkturquoise"        | T], Acc) -> make_c1(T, ["00CED1" | Acc]);
+make_c1(["darkviolet"           | T], Acc) -> make_c1(T, ["9400D3" | Acc]);
+make_c1(["deeppink"             | T], Acc) -> make_c1(T, ["FF1493" | Acc]);
+make_c1(["deepskyblue"          | T], Acc) -> make_c1(T, ["00BFFF" | Acc]);
+make_c1(["dimgray"              | T], Acc) -> make_c1(T, ["696969" | Acc]);
+make_c1(["dodgerblue"           | T], Acc) -> make_c1(T, ["1E90FF" | Acc]);
+make_c1(["firebrick"            | T], Acc) -> make_c1(T, ["B22222" | Acc]);
+make_c1(["floralwhite"          | T], Acc) -> make_c1(T, ["FFFAF0" | Acc]);
+make_c1(["forestgreen"          | T], Acc) -> make_c1(T, ["228B22" | Acc]);
+make_c1(["fuchsia"              | T], Acc) -> make_c1(T, ["FF00FF" | Acc]);
+make_c1(["gainsboro"            | T], Acc) -> make_c1(T, ["DCDCDC" | Acc]);
+make_c1(["ghostwhite"           | T], Acc) -> make_c1(T, ["F8F8FF" | Acc]);
+make_c1(["gold"                 | T], Acc) -> make_c1(T, ["FFD700" | Acc]);
+make_c1(["goldenrod"            | T], Acc) -> make_c1(T, ["DAA520" | Acc]);
+make_c1(["gray"                 | T], Acc) -> make_c1(T, ["808080" | Acc]);
+make_c1(["green"                | T], Acc) -> make_c1(T, ["008000" | Acc]);
+make_c1(["greenyellow"          | T], Acc) -> make_c1(T, ["ADFF2F" | Acc]);
+make_c1(["honeydew"             | T], Acc) -> make_c1(T, ["F0FFF0" | Acc]);
+make_c1(["hotpink"              | T], Acc) -> make_c1(T, ["FF69B4" | Acc]);
+make_c1(["indianred"            | T], Acc) -> make_c1(T, ["CD5C5C" | Acc]);
+make_c1(["indigo"               | T], Acc) -> make_c1(T, ["4B0082" | Acc]);
+make_c1(["ivory"                | T], Acc) -> make_c1(T, ["FFFFF0" | Acc]);
+make_c1(["khaki"                | T], Acc) -> make_c1(T, ["F0E68C" | Acc]);
+make_c1(["lavender"             | T], Acc) -> make_c1(T, ["E6E6FA" | Acc]);
+make_c1(["lavenderblush"        | T], Acc) -> make_c1(T, ["FFF0F5" | Acc]);
+make_c1(["lawngreen"            | T], Acc) -> make_c1(T, ["7CFC00" | Acc]);
+make_c1(["lemonchiffon"         | T], Acc) -> make_c1(T, ["FFFACD" | Acc]);
+make_c1(["lightblue"            | T], Acc) -> make_c1(T, ["ADD8E6" | Acc]);
+make_c1(["lightcoral"           | T], Acc) -> make_c1(T, ["F08080" | Acc]);
+make_c1(["lightcyan"            | T], Acc) -> make_c1(T, ["E0FFFF" | Acc]);
+make_c1(["lightgoldenrodyellow" | T], Acc) -> make_c1(T, ["FAFAD2" | Acc]);
+make_c1(["lightgreen"           | T], Acc) -> make_c1(T, ["90EE90" | Acc]);
+make_c1(["lightgrey"            | T], Acc) -> make_c1(T, ["D3D3D3" | Acc]);
+make_c1(["lightpink"            | T], Acc) -> make_c1(T, ["FFB6C1" | Acc]);
+make_c1(["lightsalmon"          | T], Acc) -> make_c1(T, ["FFA07A" | Acc]);
+make_c1(["lightseagreen"        | T], Acc) -> make_c1(T, ["20B2AA" | Acc]);
+make_c1(["lightskyblue"         | T], Acc) -> make_c1(T, ["87CEFA" | Acc]);
+make_c1(["lightslategray"       | T], Acc) -> make_c1(T, ["778899" | Acc]);
+make_c1(["lightsteelblue"       | T], Acc) -> make_c1(T, ["B0C4DE" | Acc]);
+make_c1(["lightyellow"          | T], Acc) -> make_c1(T, ["FFFFE0" | Acc]);
+make_c1(["lime"                 | T], Acc) -> make_c1(T, ["00FF00" | Acc]);
+make_c1(["limegreen"            | T], Acc) -> make_c1(T, ["32CD32" | Acc]);
+make_c1(["linen"                | T], Acc) -> make_c1(T, ["FAF0E6" | Acc]);
+make_c1(["magenta"              | T], Acc) -> make_c1(T, ["FF00FF" | Acc]);
+make_c1(["maroon"               | T], Acc) -> make_c1(T, ["800000" | Acc]);
+make_c1(["mediumaquamarine"     | T], Acc) -> make_c1(T, ["66CDAA" | Acc]);
+make_c1(["mediumblue"           | T], Acc) -> make_c1(T, ["0000CD" | Acc]);
+make_c1(["mediumorchid"         | T], Acc) -> make_c1(T, ["BA55D3" | Acc]);
+make_c1(["mediumpurple"         | T], Acc) -> make_c1(T, ["9370DB" | Acc]);
+make_c1(["mediumseagreen"       | T], Acc) -> make_c1(T, ["3CB371" | Acc]);
+make_c1(["mediumslateblue"      | T], Acc) -> make_c1(T, ["7B68EE" | Acc]);
+make_c1(["mediumspringgreen"    | T], Acc) -> make_c1(T, ["00FA9A" | Acc]);
+make_c1(["mediumturquoise"      | T], Acc) -> make_c1(T, ["48D1CC" | Acc]);
+make_c1(["mediumvioletred"      | T], Acc) -> make_c1(T, ["C71585" | Acc]);
+make_c1(["midnightblue"         | T], Acc) -> make_c1(T, ["191970" | Acc]);
+make_c1(["mintcream"            | T], Acc) -> make_c1(T, ["F5FFFA" | Acc]);
+make_c1(["mistyrose"            | T], Acc) -> make_c1(T, ["FFE4E1" | Acc]);
+make_c1(["moccasin"             | T], Acc) -> make_c1(T, ["FFE4B5" | Acc]);
+make_c1(["navajowhite"          | T], Acc) -> make_c1(T, ["FFDEAD" | Acc]);
+make_c1(["navy"                 | T], Acc) -> make_c1(T, ["000080" | Acc]);
+make_c1(["oldlace"              | T], Acc) -> make_c1(T, ["FDF5E6" | Acc]);
+make_c1(["olive"                | T], Acc) -> make_c1(T, ["808000" | Acc]);
+make_c1(["olivedrab"            | T], Acc) -> make_c1(T, ["6B8E23" | Acc]);
+make_c1(["orange"               | T], Acc) -> make_c1(T, ["FFA500" | Acc]);
+make_c1(["orangered"            | T], Acc) -> make_c1(T, ["FF4500" | Acc]);
+make_c1(["orchid"               | T], Acc) -> make_c1(T, ["DA70D6" | Acc]);
+make_c1(["palegoldenrod"        | T], Acc) -> make_c1(T, ["EEE8AA" | Acc]);
+make_c1(["palegreen"            | T], Acc) -> make_c1(T, ["98FB98" | Acc]);
+make_c1(["paleturquoise"        | T], Acc) -> make_c1(T, ["AFEEEE" | Acc]);
+make_c1(["palevioletred"        | T], Acc) -> make_c1(T, ["DB7093" | Acc]);
+make_c1(["papayawhip"           | T], Acc) -> make_c1(T, ["FFEFD5" | Acc]);
+make_c1(["peachpuff"            | T], Acc) -> make_c1(T, ["FFDAB9" | Acc]);
+make_c1(["peru"                 | T], Acc) -> make_c1(T, ["CD853F" | Acc]);
+make_c1(["pink"                 | T], Acc) -> make_c1(T, ["FFC0CB" | Acc]);
+make_c1(["plum"                 | T], Acc) -> make_c1(T, ["DDA0DD" | Acc]);
+make_c1(["powderblue"           | T], Acc) -> make_c1(T, ["B0E0E6" | Acc]);
+make_c1(["purple"               | T], Acc) -> make_c1(T, ["800080" | Acc]);
+make_c1(["red"                  | T], Acc) -> make_c1(T, ["FF0000" | Acc]);
+make_c1(["rosybrown"            | T], Acc) -> make_c1(T, ["BC8F8F" | Acc]);
+make_c1(["royalblue"            | T], Acc) -> make_c1(T, ["041690" | Acc]);
+make_c1(["saddlebrown"          | T], Acc) -> make_c1(T, ["8B4513" | Acc]);
+make_c1(["salmon"               | T], Acc) -> make_c1(T, ["FA8072" | Acc]);
+make_c1(["sandybrown"           | T], Acc) -> make_c1(T, ["F4A460" | Acc]);
+make_c1(["seagreen"             | T], Acc) -> make_c1(T, ["2E8B57" | Acc]);
+make_c1(["seashell"             | T], Acc) -> make_c1(T, ["FFF5EE" | Acc]);
+make_c1(["sienna"               | T], Acc) -> make_c1(T, ["A0522D" | Acc]);
+make_c1(["silver"               | T], Acc) -> make_c1(T, ["C0C0C0" | Acc]);
+make_c1(["skyblue"              | T], Acc) -> make_c1(T, ["87CEEB" | Acc]);
+make_c1(["slateblue"            | T], Acc) -> make_c1(T, ["6A5ACD" | Acc]);
+make_c1(["slategray"            | T], Acc) -> make_c1(T, ["708090" | Acc]);
+make_c1(["snow"                 | T], Acc) -> make_c1(T, ["FFFAFA" | Acc]);
+make_c1(["springgreen"          | T], Acc) -> make_c1(T, ["00FF7F" | Acc]);
+make_c1(["steelblue"            | T], Acc) -> make_c1(T, ["4682B4" | Acc]);
+make_c1(["tan"                  | T], Acc) -> make_c1(T, ["D2B48C" | Acc]);
+make_c1(["teal"                 | T], Acc) -> make_c1(T, ["088080" | Acc]);
+make_c1(["thistle"              | T], Acc) -> make_c1(T, ["D8BFD8" | Acc]);
+make_c1(["tomato"               | T], Acc) -> make_c1(T, ["FF6347" | Acc]);
+make_c1(["turquoise"            | T], Acc) -> make_c1(T, ["40E0D0" | Acc]);
+make_c1(["violet"               | T], Acc) -> make_c1(T, ["EE82EE" | Acc]);
+make_c1(["wheat"                | T], Acc) -> make_c1(T, ["F5DEB3" | Acc]);
+make_c1(["white"                | T], Acc) -> make_c1(T, ["FFFFFF" | Acc]);
+make_c1(["whitesmoke"           | T], Acc) -> make_c1(T, ["F5F5F5" | Acc]);
+make_c1(["yellow"               | T], Acc) -> make_c1(T, ["FFFF00" | Acc]);
+make_c1(["yellowgreen"          | T], Acc) -> make_c1(T, ["9ACD32" | Acc]);
+make_c1([H | T], Acc) -> make_c1(T, [H | Acc]).
