@@ -1,0 +1,79 @@
+* { 
+    font :  11px Arial, sans-serif; 
+    margin: 0px; 
+    padding:0px; 
+}
+html, body { 
+    height :100%; 
+    width  :100%; 
+}
+h3 { 
+    font: bold 13px Arial, sans-serif; 
+}
+ul { 
+    list-style-type:none; 
+}
+p { 
+    padding: 5px 0px; 
+}
+strong { 
+    font-weight:bold; 
+}
+body {  
+    background:#DDD; 
+}
+input[type=text],input[type=password] { 
+    font-size     : 12px; 
+    margin-bottom : 10px; 
+    padding       : 2px; 
+    width         : 300px;
+}
+input[type=checkbox] { 
+    margin-bottom : 10px;
+}
+#submit { 
+    width : 80px; 
+}
+#feedback { 
+    border      : 1px solid green; 
+    background  : #EEE; 
+    height      : 15px; 
+    padding     : 4px 0px;
+    margin      : 8px;
+    font-weight : bold;
+    text-align  : center;
+}
+#feedback.error { 
+    border:1px solid red; 
+}
+#wrapper { 
+  background  : white;
+  top         : 50%;
+  left        : 50%;
+  margin-left : -155px;
+  margin-top  : -150px;
+  position    : absolute;
+  width       : 330px;
+  height      : 320px;
+  border      : 5px solid #999;
+}
+#header { 
+    background:#000; 
+    height:50px; 
+    padding:5px 0px; 
+}
+#header h1 { 
+     display     : block;
+     background  : url(/hypernumbers/sprite.png) 0px -127px;  
+     height      : 50px;
+     width       : 256px;
+     text-indent : -999px;
+     margin      : 0px auto;
+}
+label input { 
+    position : relative; 
+    top      : 3px; 
+}
+small { 
+    color : #999;
+}
