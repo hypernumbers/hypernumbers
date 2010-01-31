@@ -89,7 +89,7 @@ lg1(Data, Orientation, {Scale, Axes, Colours}) ->
     Data3 = [cast_data(X) || X <- Data2],
     % check for errors and then fix the reversed lists problems
     Colours2 = get_colours(Colours),
-    {Min, Max} = get_scale(Scale, Data),
+    {Min, Max} = get_scale(Scale, Data3),
     XAxis2 = get_axes(Axes),
     case has_error([Data3, Colours2, Min, Max, XAxis2]) of
         {true, Error} -> Error;
@@ -112,9 +112,7 @@ cast_data(Data) ->
                  fetch, flatten,
                  {cast, str, num, ?ERRVAL_VAL},
                  {cast, bool, num},
-                 {cast, blank, num},
-                 {ignore, str},
-                 {ignore, blank}
+                 {cast, blank, num}
                 ],
                 [return_errors, {all, fun is_number/1}]).
 
@@ -129,7 +127,7 @@ cast_titles(Titles) ->
                   [return_errors]).
 
 conv_colours([])      -> [];
-conv_colours(Colours) -> "&amp;chco=" ++ make_colours(Colours).
+conv_colours(Colours) -> "&amp;chco=" ++ make_colours(get_colours(Colours)).
 
 conv_x_axis([])    -> "y&amp;chxl=";
 conv_x_axis(XAxis) -> "x,y&amp;chxl=0:|"
