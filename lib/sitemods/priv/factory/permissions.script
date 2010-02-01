@@ -1,55 +1,6 @@
 %%-*-erlang-*-
 %% this is a permissions script for creating a new site
 %%
-%% There are 4 types of entries
-%% * perms_and_views
-%% * permissions
-%% * views
-%% * defaults
-
-%% Examples of them are:
-%% {perms_and_views, [
-%%            {list, [{user, "gordon"},{group, "dev"}],
-%%            {path, ["some", "path"]},
-%%            {perms, [read, write]},
-%%            {override, "_global/spreadsheet"},
-%%            {views, ["_global/spreadsheet", "_global/pagebuilder", "**"]}
-%%           ]}.
-%%
-%% {perm, [
-%%         {list, [{user, "gordon"}, {group, "dev"}]},
-%%         {path, ["some", "path"]},
-%%         {perms, [read, write]}
-%%        ]}.
-%%        
-%% {views, [
-%%          {list, [{user, "gordon"}, {group, "dev"}]},
-%%          {path, ["some", "path"]},
-%%          {override, ""},
-%%          {views, ["_global/spreadsheet"]}
-%%         ]}.
-%%
-%% {default, [
-%%            {path, ["some", "page"]},
-%%            {default, "_global/home"}
-%%           ]}.
-%%
-%% The 'list' can be any mixture of users and groups
-%%
-%% The perms_and_viewss set both permissions and views in a oner
-%%
-%% There are a number of special constructions to remember
-%% {user, "*"} matches all
-%% {group, "*"} matches all
-%% {path, ["some", "[*]", "path"]} matches a specific segment
-%% {path, ["some", "path", "[**]"] matches all subsegments - wild must be last
-%% {views, ["**"]} matches all views both global and per user
-%% {views, ["*"]} matches all per user views
-%%
-%% Note that the expressions end in a full stop '.'
-%%
-
-% the home page (writable, very wrong)
 
 {add_view, 
  [{path, []},
