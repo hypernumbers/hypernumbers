@@ -21,7 +21,7 @@
               headers = [],
               user,
               accept}).
-              
+
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
     Ref = hn_util:parse_url(get_real_uri(MochiReq)),
@@ -107,12 +107,12 @@ handle_static(E, Root, Mochi)
 
 -spec authorize_get(#refX{}, [tuple()], json | html, auth_req()) 
                    -> {view, string()} | allowed | denied | not_found.
-authorize_get(_Ref, [{VPR, _}], json, _Ar)
-  when VPR == "views";
-       VPR == "templates";
-       VPR == "pages" ->
-    allowed;
-authorize_get(_Ref, [{"permissions", _}], _Any, _Ar) ->
+authorize_get(_Ref, [{A, _}], _Any, _Ar)
+  when A == "views";
+       A == "templates";
+       A == "permissions";
+       A == "status";
+       A == "pages" ->
     allowed;
 authorize_get(#refX{site = Site, path = Path}, [], json, Ar) ->
     case auth_srv2:get_any_view(Site, Path, Ar) of
@@ -812,7 +812,6 @@ should_regen(Tpl, Html) ->
     filelib:is_file(Tpl)
         andalso ( not(filelib:is_file(Html)) orelse
                   hn_util:is_older(Html, Tpl) ). 
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
