@@ -395,19 +395,19 @@ ipost(Ref, _Attr, [{"clear", What}], Req)
     ok = hn_db_api:clear(Ref, list_to_atom(What)),
     json(Req, "success");
 
-ipost(#refX{site=Site, path=Path} = Ref, _Attr,
+ipost(#refX{site=Site, path=Path} = _Ref, _Attr,
       [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], 
       Req=#req{user=User}) ->
     AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
-    AuthReq = {hn_users:name(User), hn_users:groups(User)},
+    _AuthReq = {hn_users:name(User), hn_users:groups(User)},
     Output = [viewroot(Site), "/" , Name],
-    true = can_save_view(User, Name),
+    % true = can_save_view(User, Name),
     ok = auth_srv2:add_view(Site, Path, AuthSpec, Name),
-    Sec = hn_security:make(Form, Ref, AuthReq),
+    % Sec = hn_security:make(Form, Ref, AuthReq),
     ok = filelib:ensure_dir(Output),
     ok = file:write_file([Output, ".tpl"], Form),
     {ok, F} = file:open([Output, ".sec"], [write]),
-    ok = io:format(F, "~p.", [Sec]),
+    %ok = io:format(F, "~p.", [Sec]),
     ok = file:close(F),
     json(Req, "success");
 
