@@ -14,8 +14,8 @@
          histogram/1
         ]).
 
--define(ROW, 0).
--define(COLUMN, 1).
+-define(ROW, [true]).
+-define(COLUMN, [false]).
 
 -include("typechecks.hrl").
 -include("muin_records.hrl").
@@ -93,6 +93,13 @@ pie2(Data, Titles, Colours) ->
         ++ Colours1.
 
 lg1(Data, Orientation, {Scale, Axes, Colours}) ->
+    Orientation2 = cast_orientation(Orientation),
+    case has_error([Orientation2]) of
+        {true, Error} -> Error;
+        false         -> lg2(Data, Orientation2, Scale, Axes, Colours)
+    end.
+
+lg2(Data, Orientation, Scale, Axes, Colours) ->
     {Data2, _NoOfRows, _NoOfCols} = extract(Data, Orientation),
     Data3 = [cast_data(X) || X <- Data2],
     % check for errors and then fix the reversed lists problems
@@ -120,7 +127,9 @@ cast_data(Data) ->
                  fetch, flatten,
                  {cast, str, num, ?ERRVAL_VAL},
                  {cast, bool, num},
-                 {cast, blank, num}
+                 {cast, blank, num},
+                 {ignore, str},
+                 {ignore, blank}
                 ],
                 [return_errors, {all, fun is_number/1}]).
 
@@ -133,6 +142,14 @@ cast_titles(Titles) ->
                    {cast, date, str},
                    {cast, blank, str}],
                   [return_errors]).
+
+cast_orientation(O) ->
+    col([O],
+        [eval_funs,
+         fetch,
+         {cast, num, bool, ?ERRVAL_VAL},
+         {cast, str, bool, ?ERRVAL_VAL}],
+        [return_errors, {all, fun is_boolean/1}]).
 
 conv_colours([[]])      -> [];
 conv_colours(Colours) -> "&amp;chco=" ++ make_colours(Colours).
@@ -153,7 +170,7 @@ get_colours(Colours) ->
           {ignore, num},
           {ignore,date},
           fetch, flatten],
-          [return_errors]).
+          [return_errors, {all, fun is_list/1}]).
 
 get_axes(XAxis)  -> col([XAxis],
                         [eval_funs,
