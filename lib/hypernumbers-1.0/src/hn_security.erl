@@ -237,6 +237,46 @@ make_abs3(Path, [H2 | T2])         -> make_abs3([H2 | Path], T2).
 %%% EUnit Tests                                                              %%%
 %%%                                                                          %%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+abspath_test_() ->
+    Base = ["blah", "bloh", "bleh"],
+    [?_assertEqual("/blah/bloh/bleh/d1", abs_path(Base, "d1")),
+     ?_assertEqual("/blah/bloh/bleh/d1", abs_path(Base, "./d1")),
+     ?_assertEqual("/blah/bloh/d1", abs_path(Base, "../d1")),
+     ?_assertEqual("/d1", abs_path(Base, "../bleh/../.././../././blah//../d1")),
+     ?_assertEqual("/already/absolute", abs_path(Base, "/already/absolute"))
+    ].
+
+just_path_test_() ->
+    [?_assertEqual("", just_path("")),
+     ?_assertEqual("/", just_path("/")),
+     ?_assertEqual("/", just_path("/blah")),
+     ?_assertEqual("", just_path("..")),
+     ?_assertEqual("../", just_path("../")),
+     ?_assertEqual("../", just_path("../A1")),
+     ?_assertEqual("./", just_path("./A1")),
+     ?_assertEqual("", just_path("blah")),
+     ?_assertEqual("/", just_path("/blah")),
+     ?_assertEqual("/blah/", just_path("/blah/")),
+     ?_assertEqual("/blah/", just_path("/blah/A:A")),
+     ?_assertEqual("/blah/more/path/", just_path("/blah/more/path/A:A"))
+    ].
+
+trans_all_perms_test_() -> 
+    Site = "http://unit_test:1234",
+    auth_srv2:clear_all_perms_DEBUG(Site),
+    auth_srv2:add_view(Site, [], [everyone], "_g/core/spreadsheet"),
+    auth_srv2:add_view(Site, ["[**]"], [everyone], "_g/core/spreadsheet"),
+    auth_srv2:set_champion(Site, [], "_g/core/spreadsheet"),
+    auth_srv2:set_champion(Site, ["[**]"], "_g/core/spreadsheet"),
+
+    RefX = #refX{site = Site,
+                 path = ["u","testuser","blah"]},
+    {with, RefX, [fun test1/1,
+                  fun test2/1,
+                  fun test3/1,
+                  fun test4/1,
+                  fun test5/1]}.
 test1(RefX) ->
     Json = [{struct,[{"ref","/u/testuser/blah/A:A"},
                      {"formula","Field 1"}]},
@@ -451,59 +491,3 @@ test5(RefX) ->
         ++ "</div>",
     Security = make(Form, RefX, {"testuser", []}),
     ?assert(validate_trans(Security, RefX, Json)).
-
-testA() ->
-    Path = ["blah", "bloh", "bleh"],
-    Path2 = "d1",
-    Ret = abs_path(Path, Path2),
-    io:format("Ret is ~p~n", [Ret]),
-    ?assertEqual("/blah/bloh/bleh/d1", Ret).
-
-testB() ->
-    Path = ["blah", "bloh", "bleh"],
-    Path2 = "../d1",
-    Ret = abs_path(Path, Path2),
-    io:format("Ret is ~p~n", [Ret]),
-    ?assertEqual("/blah/bloh/d1", Ret).
-
-testC() ->
-    Path = ["blah", "bloh", "bleh"],
-    Path2 = "./d1",
-    Ret = abs_path(Path, Path2),
-    io:format("Ret is ~p~n", [Ret]),
-    ?assertEqual("/blah/bloh/bleh/d1", Ret).
-
-path_test_() ->
-    [fun testA/0,
-     fun testB/0,
-     fun testC/0].
-
-just_path_test_() ->
-    [?_assertEqual("", just_path("")),
-     ?_assertEqual("/", just_path("/")),
-     ?_assertEqual("/", just_path("/blah")),
-     ?_assertEqual("", just_path("..")),
-     ?_assertEqual("../", just_path("../")),
-     ?_assertEqual("./", just_path("./A1")),
-     ?_assertEqual("", just_path("blah")),
-     ?_assertEqual("/", just_path("/blah")),
-     ?_assertEqual("/blah/", just_path("/blah/")),
-     ?_assertEqual("/blah/", just_path("/blah/A:A")),
-     ?_assertEqual("/blah/more/path/", just_path("/blah/more/path/A:A"))
-    ].
-
-trans_all_perms_test_() -> 
-    Site = "http://unit_test:1234",
-    auth_srv2:clear_all_perms_DEBUG(Site),
-    auth_srv2:add_view(Site, [], [everyone], "_g/core/spreadsheet"),
-    auth_srv2:add_view(Site, ["[**]"], [everyone], "_g/core/spreadsheet"),
-    auth_srv2:set_champion(Site, [], "_g/core/spreadsheet"),
-    auth_srv2:set_champion(Site, ["[**]"], "_g/core/spreadsheet"),
-
-    RefX = #refX{site = Site,
-                 path = ["u","testuser","blah"]},
-    {with, RefX, [fun test1/1,
-                  fun test2/1,
-                  fun test3/1,
-                  fun test4/1,
-                  fun test5/1]}.
