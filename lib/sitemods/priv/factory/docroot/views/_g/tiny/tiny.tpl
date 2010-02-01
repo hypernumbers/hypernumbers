@@ -1,44 +1,45 @@
 <div id='ventris'>
 
-  <link type='text/css' rel='stylesheet' href='/templates/tiny/default.css'></link>
+  <link href='/templates/tiny/default.css' rel='stylesheet' type='text/css'></link>
 
   <div id='outer'>
     
-    <div data-type='text' class='hn header' data-binding-from='B2'></div>
+    <div data-binding-from='B2' class='hn header' data-type='text'></div>
     
     <div id='contentwrapper'>
       <div id='primarycontent'>
  
         
-        <form class='hn' data-type='form'>
+        <form data-type='form' class='hn'>
 
-        <div data-type='text' class='hn' data-binding-from='B3'></div>
+        <div data-binding-from='B3' class='hn' data-type='text'></div>
           
-       <div data-type='text' class='hn header' data-binding-from='B7'></div>
+       <div data-binding-from='B7' class='hn header' data-type='text'></div>
           
-          <div data-type='radio' class='hn' data-binding-from='B12:B18' data-binding-to='/request_site/A:A'></div>
+          <div data-binding-to='/request_site/A:A' data-binding-from='/B12:B19' class='hn' data-type='radio'></div>
           
-    <div data-type='text' class='hn header' data-binding-from='B8'></div>
+    <div data-binding-from='B8' class='hn header' data-type='text'></div>
           
-          <table><colgroup><col width='70'></col><col width='70'></col></colgroup><tbody><tr><td><div class='hn' data-type='input' data-binding-to='/request_site/B:B'></div></td><td>@hypernumbers.com</td></tr></tbody></table>
+          <table><colgroup><col width='70'></col><col width='70'></col></colgroup><tbody><tr><td><div data-binding-to='/request_site/B:B' data-type='input' class='hn'></div></td><td>@hypernumbers.com</td></tr></tbody></table>
           
-    <div data-type='text' class='hn header' data-binding-from='B9'></div>
+    <div data-binding-from='B9' class='hn header' data-type='text'></div>
 
-         <div class='hn' data-type='input' data-binding-to='/request_site/C:C'></div>
+         <div data-binding-to='/request_site/C:C' data-type='input' class='hn'></div>
 
-          <input type='submit' class='submit' value='Create Your Site'></input>
+          <input type='submit' value='Create Your Site' class='submit'></input>
         </form>
 
       </div>
       
       
       <div id='secondarycontent'>
-        <div data-type='text' class='hn' data-binding-from='D-1:D-3'></div></div>
+        <div data-binding-from='D-1:D-3' class='hn' data-type='text'></div></div>
     </div>
     
     
     <div id='footer'>  
-      <div data-type='text' class='hn' data-binding-from='B4'></div>
+      <div data-binding-from='B4' class='hn' data-type='text'></div>
     </div>
     
   </div>
+</div>
