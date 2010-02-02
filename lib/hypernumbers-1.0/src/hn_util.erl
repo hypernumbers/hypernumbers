@@ -47,7 +47,6 @@
          is_alpha/1,
          is_numeric/1,
          text/1,
-         bin_to_hexstr/1,
          list_to_path/1,
 
          % Just some record conversion utilities
@@ -153,26 +152,6 @@ is_numeric(Str) ->
         false -> false;
         true  -> lists:all(Fun, Str)
     end.
-
-
-%% Convert binary to hex string
--spec bin_to_hexstr(binary()) -> string().                           
-bin_to_hexstr(Bin) ->
-    list_to_hexstr(binary_to_list(Bin)).
-
-hex(N) when N < 10 ->
-    $0+N;
-hex(N) when N >= 10, N < 16 ->
-    $a+(N-10).
-
-to_hex(N) when N < 256 ->
-    [hex(N div 16), hex(N rem 16)].
-
-list_to_hexstr([]) -> 
-    [];
-list_to_hexstr([H|T]) ->
-    to_hex(H) ++ list_to_hexstr(T).
-
 
 get_offset(insert, D, {cell,     _})              -> g_o1(D, 1, 1);
 get_offset(insert, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, Y2 - Y1 + 1); 

@@ -16,33 +16,42 @@
          ]).
 
 -define(SHEETVIEW, "_g/core/spreadsheet").
+-define(TWO_YEARS, 63113852).
 
 -record(req, {mochi,
               headers = [],
               user,
+              uid,
               accept}).
 
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
     Ref = hn_util:parse_url(get_real_uri(MochiReq)),
-    case filename:extension(MochiReq:get(path)) of
-        [] -> 
-            Req = #req{mochi = MochiReq, 
-                       accept = accept_type(MochiReq)},
-            case catch authorize_resource(Req, Ref) of
-                ok -> ok;
-                Else -> '500'(Req, Else)
-            end;
-        Ext -> 
-            Root = docroot(Ref#refX.site),
-            handle_static(Ext, Root, MochiReq)
+    Req = #req{mochi = MochiReq, 
+               accept = accept_type(MochiReq)},
+    Qry = parse_query(Req),
+    case catch handle_(Ref, Req, Qry) of
+        ok -> ok; 
+        Else -> '500'(Req, Else)
     end.
 
--spec authorize_resource(#req{}, #refX{}) -> no_return(). 
-authorize_resource(Req=#req{mochi = Mochi, accept = AType}, Ref) -> 
-    Req2 = #req{user = User} = get_user(Ref#refX.site, Req),
+-spec handle_(#refX{}, #req{}, #qry{}) -> ok. 
+
+handle_(#refX{path=["ping"]}, Req, #qry{uid=Uid, return=Return}) 
+  when Return /= undefined, uid /= undefined ->
+    handle_ping(Req, Uid, Return);
+handle_(Ref, Req, Qry) ->
+    case filename:extension((Req#req.mochi):get(path)) of
+        [] -> authorize_resource(Req, Ref, Qry);
+        Ext -> Root = docroot(Ref#refX.site),
+               handle_static(Ext, Root, Req#req.mochi)
+    end.
+
+-spec authorize_resource(#req{}, #refX{}, #qry{}) -> no_return(). 
+authorize_resource(Req, Ref, Qry) -> 
+    Req2 = process_request(Ref#refX.site, Req),
+    #req{mochi=Mochi, user=User, accept=AType} = Req2,
     Ar = {hn_users:name(User), hn_users:groups(User)},
-    Qry = parse_query(Req2),
     Method = Mochi:get(method),
     AuthRet = case Method of
                   'GET' -> authorize_get(Ref, Qry, AType, Ar);
@@ -93,14 +102,24 @@ handle_resource('POST', Ref, Qry, Req=#req{mochi = Mochi, user = User}) ->
 handle_static(".tpl", Root, Mochi) ->
     %% Don't cache templates
     "/"++RelPath = Mochi:get(path),
-    Mochi:serve_file(RelPath, Root, nocache());
+    Mochi:serve_file(RelPath, Root, nocache()),
+    ok;
 handle_static(E, Root, Mochi)
   when E == ".png"; E == ".jpg"; E == ".css"; E == ".js"; 
        E == ".ico"; E == ".json"; E == ".gif"; E == ".html" ->
     %% todo: do a better job with caching, etags etc.
     "/"++RelPath = Mochi:get(path),
-    Mochi:serve_file(RelPath, Root).
+    Mochi:serve_file(RelPath, Root),
+    ok.
 
+-spec handle_ping(#req{}, string(), string()) -> ok. 
+handle_ping(R, Uid, Return) ->
+    Opts = [{path, "/"}, {max_age, ?TWO_YEARS}],
+    Cookie = mochiweb_cookies:cookie("uid", Uid, Opts),
+    Redirect = {"Location", mochiweb_util:unquote(Return)},
+    R2 = R#req{headers = [Redirect, Cookie | R#req.headers]},
+    respond(302, R2).
+    
 -spec authorize_get(#refX{}, #qry{}, json | html, auth_req()) 
                    -> {view, string()} | allowed | denied | not_found.
 authorize_get(_Ref, #qry{permissions = [], _ = undefined}, html, _Ar) ->
@@ -545,6 +564,11 @@ can_save_view(User, "_g/"++FName) ->
     [Group | _] = string:tokens(FName, "/"),
     lists:member(Group, hn_users:groups(User)).
 
+-spec process_request(string(), #req{}) -> #req{}. 
+process_request(Site, R) ->
+    R2 = get_user(Site, R),
+    get_uid(Site, R2).
+
 -spec get_user(string(), #req{}) -> #req{}. 
 get_user(Site, R=#req{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
@@ -560,6 +584,30 @@ get_user(Site, R=#req{mochi = Mochi}) ->
                   headers = [Cookie | R#req.headers]}
     end.
 
+-spec get_uid(string(), #req{}) -> #req{}.
+get_uid(Site, R=#req{mochi = Mochi}) ->
+    case Mochi:get_cookie_value("uid") of
+        undefined ->
+            Uid = mochihex:to_hex(crypto:rand_bytes(8)),
+            Opts = [{path, "/"}, {max_age, ?TWO_YEARS}],
+            Cookie = mochiweb_cookies:cookie("uid", Uid, Opts),
+            R2 = R#req{uid = Uid, headers = [Cookie | R#req.headers]},
+            case application:get_env(hypernumbers, pingto) of
+                {ok, PingTo} ->
+                    Current = 
+                        Site ++ 
+                        mochiweb_util:quote_plus(Mochi:get(raw_path)),
+                    Redir = PingTo++"/ping/?uid="++Uid++"&return="++Current,
+                    Redirect = {"Location", Redir},
+                    respond(302, R2#req{headers = [Redirect | R2#req.headers]}),
+                    throw(ok);
+                _Else ->
+                    R2
+            end;
+        Uid ->
+            R#req{uid = Uid}
+    end.
+    
 %% Some clients dont send ip in the host header
 get_real_uri(Req) ->
     Host = case Req:get_header_value("HN-Host") of
@@ -576,7 +624,10 @@ get_real_uri(Req) ->
                ProxiedPort ->
                    ProxiedPort
            end,
-    lists:concat(["http://", Host, ":", Port, Req:get(path)]).
+    lists:concat(["http://", string:to_lower(Host), ":", Port, 
+                  Req:get(path)]).
+
+
 
 get_json_post(undefined) ->
     {ok, undefined};
@@ -883,7 +934,7 @@ get_lang(User) ->
     end.
 
 cache(Source, CachedNm, Generator) ->
-    Cached = tmpdir() ++ "/" ++ hn_util:bin_to_hexstr(erlang:md5(CachedNm)),
+    Cached = tmpdir() ++ "/" ++ mochihex:to_hex(erlang:md5(CachedNm)),
     ok = filelib:ensure_dir(Cached),
     case isnt_cached(Cached, Source) of
         true -> ok = file:write_file(Cached, Generator());

@@ -28,7 +28,7 @@
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
 
--define(COOKIE, "somerandomcookie").
+-define(USER_SALT, "somerandomcookie").
 
 prettyprint_DEBUG(Site) ->
     
@@ -169,8 +169,8 @@ ltoi(I) ->
     list_to_integer(I).
 
 gen_hash(Name, Expires) ->
-    Tmp = ?FORMAT("~s~s~s",[Expires, Name, ?COOKIE]),
-    hn_util:bin_to_hexstr(crypto:md5(Tmp)).
+    Tmp = ?FORMAT("~s~s~s",[Expires, Name, ?USER_SALT]),
+    mochihex:to_hex(crypto:md5(Tmp)).
 
 expires("true")  -> 
     itol(unix_timestamp() + 2678400);

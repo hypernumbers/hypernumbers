@@ -294,10 +294,12 @@
                pages,
                path,
                permissions,
+               return,
                status,
                template,
                templates,
                updates,
+               uid,
                users,
                view
              }).
