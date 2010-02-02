@@ -45,8 +45,7 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
 %% TODO : stop any supervisors if they are running
 -spec delete_site(string()) -> ok.
 delete_site(Site) ->
-
-    Dest = code:lib_dir(hypernumbers) ++ "/../../var/docroot/"
+    Dest = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:parse_site(Site) ++ "/",
     
     auth_srv2:clear_all_perms_DEBUG(Site),
