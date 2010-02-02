@@ -40,6 +40,11 @@ handle(MochiReq) ->
 handle_(#refX{path=["ping"]}, Req, #qry{uid=Uid, return=Return}) 
   when Return /= undefined, uid /= undefined ->
     handle_ping(Req, Uid, Return);
+
+handle_(#refX{path=["pong"]}, Req, #qry{uid=Uid, return=Return}) 
+  when Return /= undefined, uid /= undefined ->
+    handle_pong(Req, Uid, Return);
+
 handle_(Ref, Req, Qry) ->
     case filename:extension((Req#req.mochi):get(path)) of
         [] -> authorize_resource(Req, Ref, Qry);
@@ -113,10 +118,32 @@ handle_static(E, Root, Mochi)
     ok.
 
 -spec handle_ping(#req{}, string(), string()) -> ok. 
-handle_ping(R, Uid, Return) ->
+handle_ping(R=#req{mochi = Mochi}, Uid, Return) ->
+    Opts = [{path, "/"}, {max_age, ?TWO_YEARS}],
+    Original = mochiweb_util:unquote(Return),
+    R2 = case Mochi:get_cookie_value("uid") of
+             undefined ->
+                 %% Use the given cookie, simply resume.
+                 Redirect = {"Location", Original},
+                 Cookie = mochiweb_cookies:cookie("uid", Uid, Opts),
+                 R#req{headers = [Redirect, Cookie | R#req.headers]};
+             OwnUid ->
+                 %% Have own cookie already! This must take
+                 %% precedence. So we tell the 'pinger' to use this
+                 %% with a PONG request.
+                 #refX{site = OrigSite} = hn_util:parse_url(Original),
+                 Redir = OrigSite++"/pong/?uid="++OwnUid++"&return="++Return,
+                 Redirect = {"Location", Redir},
+                 R#req{headers = [Redirect | R#req.headers]}
+         end,
+    respond(302, R2).
+
+-spec handle_pong(#req{}, string(), string()) -> ok. 
+handle_pong(R, Uid, Return) ->
     Opts = [{path, "/"}, {max_age, ?TWO_YEARS}],
     Cookie = mochiweb_cookies:cookie("uid", Uid, Opts),
-    Redirect = {"Location", mochiweb_util:unquote(Return)},
+    Original = mochiweb_util:unquote(Return),
+    Redirect = {"Location", Original},
     R2 = R#req{headers = [Redirect, Cookie | R#req.headers]},
     respond(302, R2).
     
@@ -593,6 +620,9 @@ get_uid(Site, R=#req{mochi = Mochi}) ->
             Cookie = mochiweb_cookies:cookie("uid", Uid, Opts),
             R2 = R#req{uid = Uid, headers = [Cookie | R#req.headers]},
             case application:get_env(hypernumbers, pingto) of
+                {ok, Site} ->
+                    %% No ping pong today
+                    R2;
                 {ok, PingTo} ->
                     Current = 
                         Site ++ 
