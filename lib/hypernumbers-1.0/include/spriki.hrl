@@ -285,3 +285,19 @@
           page,
           integer
          }).
+
+
+%% HN Mochi Query Parameters. Leave as undefined.
+
+-record(qry, { challenger,
+               mark,
+               pages,
+               path,
+               permissions,
+               status,
+               template,
+               templates,
+               updates,
+               users,
+               view
+             }).

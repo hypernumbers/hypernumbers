@@ -42,21 +42,17 @@ handle(MochiReq) ->
 authorize_resource(Req=#req{mochi = Mochi, accept = AType}, Ref) -> 
     Req2 = #req{user = User} = get_user(Ref#refX.site, Req),
     Ar = {hn_users:name(User), hn_users:groups(User)},
-    Attr = Mochi:parse_qs(),
+    Qry = parse_query(Req2),
     Method = Mochi:get(method),
     AuthRet = case Method of
-                  'GET' -> authorize_get(Ref, Attr, AType, Ar);
-                  'POST' -> authorize_post(Ref, Attr, AType, Ar)
+                  'GET' -> authorize_get(Ref, Qry, AType, Ar);
+                  'POST' -> authorize_post(Ref, Qry, AType, Ar)
               end,
     case {AuthRet, AType} of
         {allowed, _} ->
-            handle_resource(Method, Ref, Attr, Req2);
+            handle_resource(Method, Ref, Qry, Req2);
         {{view, View}, html} ->
-            case Attr of
-                %% Bit ugly...
-                [] -> handle_resource(Method, Ref, [{"view", View}], Req2);
-                _  -> handle_resource(Method, Ref, Attr, Req2)
-            end;
+            handle_resource(Method, Ref, Qry#qry{view = View}, Req2);
         {not_found, html} ->
             serve_html(404, Req2, 
                        [viewroot(Ref#refX.site), "/_g/core/404.html"]);
@@ -69,12 +65,12 @@ authorize_resource(Req=#req{mochi = Mochi, accept = AType}, Ref) ->
             respond(401, Req2)
     end.
 
-handle_resource('GET', Ref, Attr, Req=#req{mochi = Mochi, user = User}) ->
+handle_resource('GET', Ref, Qry, Req=#req{mochi = Mochi, user = User}) ->
     mochilog:log(Mochi, Ref, hn_users:name(User), undefined),
     ObjType = element(1, Ref#refX.obj),
-    iget(Ref, ObjType, Attr, Req);
+    iget(Ref, ObjType, Qry, Req);
 
-handle_resource('POST', Ref, Attr, Req=#req{mochi = Mochi, user = User}) ->
+handle_resource('POST', Ref, Qry, Req=#req{mochi = Mochi, user = User}) ->
     {value, {'Content-Type', Ct}} =
         mochiweb_headers:lookup('Content-Type', Mochi:get(headers)),
     case Ct of
@@ -90,7 +86,7 @@ handle_resource('POST', Ref, Attr, Req=#req{mochi = Mochi, user = User}) ->
             Body = Mochi:recv_body(),
             {ok, Post} = get_json_post(Body),
             mochilog:log(Mochi, Ref, hn_users:name(User), Body),
-            ipost(Ref, Attr, Post, Req)
+            ipost(Ref, Qry, Post, Req)
     end.
 
 -spec handle_static(string(), iolist(), any()) -> any(). 
@@ -105,42 +101,35 @@ handle_static(E, Root, Mochi)
     "/"++RelPath = Mochi:get(path),
     Mochi:serve_file(RelPath, Root).
 
--spec authorize_get(#refX{}, [tuple()], json | html, auth_req()) 
+-spec authorize_get(#refX{}, #qry{}, json | html, auth_req()) 
                    -> {view, string()} | allowed | denied | not_found.
-authorize_get(_Ref, [{A, _}], _Any, _Ar)
-  when A == "views";
-       A == "templates";
-       A == "permissions";
-       A == "status";
-       A == "pages" ->
+authorize_get(_Ref, #qry{permissions = [], _ = undefined}, html, _Ar) ->
     allowed;
-authorize_get(#refX{site = Site, path = Path}, [], json, Ar) ->
+authorize_get(#refX{site = Site, path = Path}, #qry{view = View}, html, Ar) 
+  when View /= undefined -> 
+    auth_srv2:check_particular_view(Site, Path, Ar, View);
+authorize_get(#refX{site = Site, path = Path}, #qry{challenger=[]}, html, Ar) ->
+    auth_srv2:check_get_challenger(Site, Path, Ar);
+%% authorize_get(#refX{site=Site}, [{"updates",_},{"path",Paths}|_], json, Ar) ->
+%%     Views = [auth_srv2:get_any_view(Site, string:tokens(P, "/"), Ar) 
+%%              || P <- string:tokens(Paths, ",")],
+%%     case lists:all(fun({view, _}) -> true; (_) -> false end, Views) of 
+%%         true -> allowed;
+%%         _Else -> denied
+%%     end;
+authorize_get(#refX{site = Site, path = Path}, #qry{_ = undefined}, html, Ar) ->
+    auth_srv2:check_get_view(Site, Path, Ar);
+authorize_get(#refX{site = Site, path = Path}, _Qry, _Any, Ar) ->
     case auth_srv2:get_any_view(Site, Path, Ar) of
         {view, _} -> allowed;
         _Else -> denied
-    end;
-authorize_get(#refX{site=Site}, [{"updates",_},{"path",Paths}|_], json, Ar) ->
-    Views = [auth_srv2:get_any_view(Site, string:tokens(P, "/"), Ar) 
-             || P <- string:tokens(Paths, ",")],
-    case lists:all(fun({view, _}) -> true; (_) -> false end, Views) of 
-        true -> allowed;
-        _Else -> denied
-    end;
-authorize_get(#refX{site = Site, path = Path}, [], html, Ar) ->
-    auth_srv2:check_get_view(Site, Path, Ar);
-authorize_get(#refX{site = Site, path = Path}, [{"view", View}], html, Ar) ->
-    auth_srv2:check_particular_view(Site, Path, Ar, View);
-authorize_get(#refX{site = Site, path = Path}, [{"challenger", true}], 
-              html, Ar) ->
-    auth_srv2:check_get_challenger(Site, Path, Ar);
-authorize_get(_Ref, _Attr, _Type, _Ar) ->
-    denied.
+    end.
 
--spec authorize_post(#refX{}, [tuple()], json | html, auth_req()) 
+-spec authorize_post(#refX{}, #qry{}, json | html, auth_req()) 
                     -> {view, string()} | allowed | denied | not_found.
-authorize_post(#refX{path = ["_user", "login"]}, _Vs, json, _Ar) ->
+authorize_post(#refX{path = ["_user", "login"]}, _Qry, json, _Ar) ->
     allowed;
-authorize_post(#refX{site = Site, path = Path}, _Vs, json, Ar) ->
+authorize_post(#refX{site = Site, path = Path}, _Qry, json, Ar) ->
     case auth_srv2:check_particular_view(Site, Path, Ar, ?SHEETVIEW) of
         {view, ?SHEETVIEW} -> 
             allowed;
@@ -155,22 +144,24 @@ authorize_post(#refX{site = Site, path = Path}, _Vs, json, Ar) ->
                     denied
             end
     end;
-authorize_post(_Ref, _Attr, _Type, _Ar) ->
+authorize_post(_Ref, _Qry, _Type, _Ar) ->
     denied.
 
 -spec iget(#refX{}, 
            page | cell | row | column | range,
-           list(), 
+           #qry{},
            #req{}) 
           -> any(). 
 
-iget(Ref=#refX{path=["_user", "login"]}, page, [], Req) ->
-    iget(Ref, page, [{"view", "_g/core/login"}], Req);
+iget(Ref=#refX{path=["_user", "login"]}, page, _Qry, Req) ->
+    iget(Ref, page, #qry{view = "_g/core/login"}, Req);
 
-iget(#refX{site = Site}, page, [{"view", FName}, {"template", []}], Req) ->
+iget(#refX{site = Site}, page, #qry{view = FName, template = []}, Req) 
+  when FName /= undefined -> 
     serve_html(Req, [viewroot(Site), "/", FName, ".tpl"]);    
 
-iget(Ref=#refX{site = Site}, page, [{"view", FName}], Req) ->
+iget(Ref=#refX{site = Site}, page, #qry{view = FName}, Req)
+    when FName /= undefined ->
     Tpl  = [viewroot(Site), "/", FName, ".tpl"],
     Html = [viewroot(Site), "/", FName, ".html"],
     ok = case should_regen(Tpl, Html) of
@@ -182,21 +173,22 @@ iget(Ref=#refX{site = Site}, page, [{"view", FName}], Req) ->
         false -> '404'(Ref, Req)
     end;
 
-iget(Ref, page, [{"updates", Time}, {"path", Path}], Req) ->
+iget(Ref, page, #qry{updates = Time, path = Path}, Req)
+  when Time /= undefined, Path /= undefined ->
     Paths = [ string:tokens(X, "/") || X<-string:tokens(Path, ",")],
     remoting_request(Req, Ref#refX.site, Paths, Time);
 
-iget(#refX{site = S}, page, [{"status", []}], Req) -> 
+iget(#refX{site = S}, page, #qry{status = []}, Req) -> 
     json(Req, status_srv:get_status(S));
 
-iget(#refX{site = S, path  = P}, page, [{"permissions", []}], Req) ->
+iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Req) ->
     json2(Req, auth_srv2:get_as_json(S, P));
 
-iget(#refX{site = S}, page, [{"users", []}], Req) ->
+iget(#refX{site = S}, page, #qry{users= []}, Req) ->
     text_html(Req, hn_users:prettyprint_DEBUG(S));
 
 % List of template pages
-iget(Ref, page, [{"templates", []}], Req) ->
+iget(Ref, page, #qry{templates = []}, Req) ->
     Fun = fun(X) ->
                   [F | _T] = lists:reverse(string:tokens(X, "/")),
                   case F of
@@ -209,30 +201,13 @@ iget(Ref, page, [{"templates", []}], Req) ->
     File = [filename:basename(X) || X <- Files], 
     json(Req, {array, File});
 
-% List of views available to edit
-iget(#refX{site = Site}, page, [{"views", []}], Req=#req{user = User}) ->
-    Dirs = [ "/_u/"++hn_users:name(User)++"/"
-             | [ "/_g/"++Group++"/" || Group <- hn_users:groups(User)] ],
-    
-    Strip = fun(FileName) ->
-                    [File, Name, Pre | _ ]
-                        = lists:reverse(string:tokens(FileName, "/")),
-                    Pre++"/"++Name++"/"++File
-            end,
-    
-    F = fun(Dir, Acc) ->
-                Files = filelib:wildcard(viewroot(Site)++Dir++"*.tpl"),
-                Acc ++ [ Strip(X) || X <- Files ]
-        end,
-    json(Req, {array, lists:foldl(F, [], Dirs)});
-
-iget(Ref, page, [{"pages", []}], Req=#req{accept = json}) ->
+iget(Ref, page, #qry{pages = []}, Req=#req{accept = json}) ->
     json(Req, pages(Ref));
 
-iget(Ref, page, _Attr, Req=#req{accept = json, user = User}) ->
+iget(Ref, page, _Qry, Req=#req{accept = json, user = User}) ->
     json(Req, page_attributes(Ref, User));
 
-iget(Ref, cell, _Attr, Req=#req{accept = json}) ->
+iget(Ref, cell, _Qry, Req=#req{accept = json}) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
                [{_Ref, {"value", Val}}] when is_atom(Val) ->
                    atom_to_list(Val);
@@ -248,7 +223,7 @@ iget(Ref, cell, _Attr, Req=#req{accept = json}) ->
            end,
     json(Req, V);
 
-iget(Ref, Type, _Attr, Req=#req{accept=json})
+iget(Ref, Type, _Qry, Req=#req{accept=json})
   when Type == range;
        Type == column;
        Type == row ->
@@ -257,23 +232,23 @@ iget(Ref, Type, _Attr, Req=#req{accept=json})
     Dict = to_dict(hn_db_api:read_attributes(Ref,[]), Tree),
     json(Req, {struct, dict_to_struct(Dict)});
 
-iget(#refX{site = Site}, cell, _Attr, Req=#req{accept=html}) ->
+iget(#refX{site = Site}, cell, _Qry, Req=#req{accept=html}) ->
     serve_html(Req, [docroot(Site),"/_g/core/cell.html"]);
 
-iget(Ref, _Type, Attr, Req) ->
-    error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Attr]),
+iget(Ref, _Type, Qry, Req) ->
+    error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Qry]),
     '404'(Ref, Req).
 
 
--spec ipost(#refX{}, list(), any(), #req{}) -> any().
+-spec ipost(#refX{}, #qry{}, any(), #req{}) -> any().
 
-ipost(#refX{site = S, path = P} = Ref, _Attr, 
+ipost(#refX{site = S, path = P} = Ref, _Qry, 
       [{"drag", {_, [{"range", Rng}]}}], Req=#req{user=User}) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     hn_db_api:drag_n_drop(Ref, Ref#refX{obj = hn_util:parse_attr(range,Rng)}),
     json(Req, "success");
 
-ipost(#refX{site = Site, path=["_user","login"]}, _Attr, Data, Req) ->
+ipost(#refX{site = Site, path=["_user","login"]}, _Qry, Data, Req) ->
     [{"email", Email},{"pass", Pass},{"remember", Rem}] = Data,
     Resp = case hn_users:login(Site, Email, Pass, Rem) of
                {error, invalid_user} -> 
@@ -285,40 +260,40 @@ ipost(#refX{site = Site, path=["_user","login"]}, _Attr, Data, Req) ->
 
 %% the purpose of this message is to mark the mochilog so we don't 
 %% need to do nothing with anything...
-ipost(_Ref, [{"mark", []}], [{"set",{struct, [{"mark", _Msg}]}}], Req) ->
+ipost(_Ref, #qry{mark = []}, [{"set",{struct, [{"mark", _Msg}]}}], Req) ->
     json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"insert", "before"}], Req)
+ipost(#refX{obj = {O, _}} = Ref, _Qry, [{"insert", "before"}], Req)
   when O == row orelse O == column ->
     ok = hn_db_api:insert(Ref),
     json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"insert", "after"}], Req)
+ipost(#refX{obj = {O, _}} = Ref, _Qry, [{"insert", "after"}], Req)
   when O == row orelse O == column ->
     ok = hn_db_api:insert(make_after(Ref)),
     json(Req, "success");
 
 %% by default cells and ranges displace vertically
-ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"insert", "before"}], Req)
+ipost(#refX{obj = {O, _}} = Ref, _Qry, [{"insert", "before"}], Req)
   when O == cell orelse O == range ->
     ok = hn_db_api:insert(Ref, vertical),
     json(Req, "success");
 
 %% by default cells and ranges displace vertically
-ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"insert", "after"}], Req)
+ipost(#refX{obj = {O, _}} = Ref, _Qry, [{"insert", "after"}], Req)
   when O == cell orelse O == range ->
     ok = hn_db_api:insert(make_after(Ref)),
     json(Req, "success");
 
 %% but you can specify the displacement explicitly
-ipost(#refX{obj = {O, _}} = Ref, _Attr, 
+ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       [{"insert", "before"}, {"displacement", D}], Req)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
     ok = hn_db_api:insert(Ref, list_to_existing_atom(D)),
     json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Attr, 
+ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       [{"insert", "after"}, {"displacement", D}], Req)
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
@@ -326,26 +301,26 @@ ipost(#refX{obj = {O, _}} = Ref, _Attr,
     ok = hn_db_api:insert(RefX2, list_to_existing_atom(D)),
     json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"delete", "all"}], Req) 
+ipost(#refX{obj = {O, _}} = Ref, _Qry, [{"delete", "all"}], Req) 
   when O == page ->
     ok = hn_db_api:delete(Ref),
     json(Req, "success");
 
-ipost(Ref, _Attr, [{"delete", "all"}], Req) ->
+ipost(Ref, _Qry, [{"delete", "all"}], Req) ->
     ok = hn_db_api:delete(Ref),
     json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Attr, [{"delete", Direction}], Req)
+ipost(#refX{obj = {O, _}} = Ref, _Qry, [{"delete", Direction}], Req)
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
     ok = hn_db_api:delete(Ref, Direction),
     json(Req, "success");
 
-ipost(Ref=#refX{obj = {range, _}}, _Attr, [{"copy", {struct, [{"src", Src}]}}], Req) ->
+ipost(Ref=#refX{obj = {range, _}}, _Qry, [{"copy", {struct, [{"src", Src}]}}], Req) ->
     ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref),
     json(Req, "success");
 
-ipost(#refX{obj = {range, _}} = Ref, _Attr, 
+ipost(#refX{obj = {range, _}} = Ref, _Qry, 
       [{"borders", {struct, Attrs}}], Req) ->
     Where = from("where", Attrs),
     Border = from("border", Attrs),
@@ -354,17 +329,17 @@ ipost(#refX{obj = {range, _}} = Ref, _Attr,
     ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
     json(Req, "success");
 
-ipost(_Ref, _Attr,
+ipost(_Ref, _Qry,
       [{"set", {struct, [{"language", _Lang}]}}], Req=#req{user=anonymous}) ->
     S = {struct, [{"error", "cant set language for anonymous users"}]},
     json(Req, S);
 
-ipost(#refX{site = Site, path=["_user"]}, _Attr, 
+ipost(#refX{site = Site, path=["_user"]}, _Qry, 
       [{"set", {struct, [{"language", Lang}]}}], Req=#req{user=User}) ->
     ok = hn_users:update(Site, User, "language", Lang),
     json(Req, "success");
 
-ipost(#refX{site = S, path = P}, _Attr, 
+ipost(#refX{site = S, path = P}, _Qry, 
       [{"set", {struct, [{"list", {array, Array}}]}}], Req=#req{user=User}) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     {Lasts, Refs} = fix_up(Array, S, P),
@@ -372,7 +347,7 @@ ipost(#refX{site = S, path = P}, _Attr,
     ok = hn_db_api:write_attributes(Refs),
     json(Req, "success");
 
-ipost(#refX{site = S, path = P, obj = O} = Ref, _Attr, 
+ipost(#refX{site = S, path = P, obj = O} = Ref, _Qry, 
       [{"set", {struct, Attr}}], Req=#req{user=User}) ->
     Type = element(1, O),
     ok = status_srv:update_status(User, S, P, "edited page"),
@@ -390,12 +365,12 @@ ipost(#refX{site = S, path = P, obj = O} = Ref, _Attr,
     end,
     json(Req, "success");
 
-ipost(Ref, _Attr, [{"clear", What}], Req) 
+ipost(Ref, _Qry, [{"clear", What}], Req) 
   when What == "contents"; What == "style"; What == "all" ->
     ok = hn_db_api:clear(Ref, list_to_atom(What)),
     json(Req, "success");
 
-ipost(#refX{site=Site, path=Path} = _Ref, _Attr,
+ipost(#refX{site=Site, path=Path} = _Ref, _Qry,
       [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], 
       Req=#req{user=User}) ->
     AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
@@ -416,7 +391,7 @@ ipost(#refX{site=Site, path=Path} = _Ref, _Attr,
 %%% Horizonal API = notify_back_create handler                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Ref, _Attr,
+ipost(Ref, _Qry,
       [{"action", "notify_back_create"}|T], Req) ->
 
     Biccie   = from("biccie",     T),
@@ -458,7 +433,7 @@ ipost(Ref, _Attr,
 %%% Horizonal API = notify_back handler                                      %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Ref, _Attr,
+ipost(Ref, _Qry,
       [{"action", "notify_back"} |T] = _Json, Req) ->
     Biccie    = from("biccie",     T),
     ChildUrl  = from("child_url",  T),
@@ -502,7 +477,7 @@ ipost(Ref, _Attr,
 %%% Horizonal API = notify handler                                           %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Ref, _Attr, [{"action", "notify"} | T] = _Json, Req) ->
+ipost(Ref, _Qry, [{"action", "notify"} | T] = _Json, Req) ->
     Biccie    = from("biccie",     T),
     ParentUrl = from("parent_url", T),
     Type      = from("type",       T),
@@ -552,8 +527,8 @@ ipost(Ref, _Attr, [{"action", "notify"} | T] = _Json, Req) ->
     S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
     json(Req, S);
 
-ipost(Ref, Attr, Post, Req) ->
-    error_logger:error_msg("404~n-~p~n-~p~n-~p",[Ref, Attr, Post]),
+ipost(Ref, Qry, Post, Req) ->
+    error_logger:error_msg("404~n-~p~n-~p~n-~p",[Ref, Qry, Post]),
     '404'(Ref, Req).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -812,6 +787,33 @@ should_regen(Tpl, Html) ->
     filelib:is_file(Tpl)
         andalso ( not(filelib:is_file(Html)) orelse
                   hn_util:is_older(Html, Tpl) ). 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%
+%%% Parse Attributes
+%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+-spec parse_query(#req{}) -> #qry{}. 
+parse_query(#req{mochi = Mochi}) ->
+    Lst = Mochi:parse_qs(),
+    parse_query_(Lst, #qry{}).
+    
+parse_query_([], Qry) -> Qry;
+parse_query_([{Param, Value} | Rest], Qry) ->
+    Qry2 = case catch list_to_existing_atom(Param) of
+             P when is_atom(P) ->
+                 case ms_util2:is_in_record(qry, P) of
+                     true -> 
+                         Idx = ms_util2:get_index(qry, P) + 1,
+                         setelement(Idx, Qry, Value);
+                     false ->
+                         Qry
+                 end;
+             _Else -> Qry
+         end,
+    parse_query_(Rest, Qry2).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
