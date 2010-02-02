@@ -61,7 +61,7 @@ init(Args) ->
     NewState = parse_args(Args),
 
     _Pid = spawn_link(?MODULE, tick, []),
-    
+
     {ok, NewState}.
 
 %%--------------------------------------------------------------------
@@ -125,10 +125,10 @@ handle_tock([H | T]) ->
                          ok = hn_db_api:write_attributes(
                                 [{Ref, [{"formula", Msg}]}])
                  end
-         
+
          end,
     handle_tock(T).
-    
+
 %%--------------------------------------------------------------------
 %% @private
 %% @doc
@@ -199,23 +199,24 @@ provision(CurrentSite, Port, Row, State) ->
     List = hn_db_api:read_attributes(RefX, ["formula"]),
 
     {Type, Email, SubDomain} = parse(List),
-    
+    SubDomain2 = ustring:pr(ustring:to_lower(ustring:new(SubDomain))),
+    io:format("SubDomain2 is ~p~n", [SubDomain2]),
     Type2 = normalise(Type),
     Password = tiny_util:get_password(),
     [User | _T] = string:tokens(Email, "@"),
     RefX1 = RefX#refX{obj = {cell, {4, Row}}},
     RefX2 = RefX#refX{obj = {cell, {5, Row}}},
-    
+
     Template = code:priv_dir(sitemods) ++
         "/" ++ Type2,
-    
+
     DoesSiteTemplateExist = filelib:is_dir(Template),
 
     case DoesSiteTemplateExist of
         false ->
             Sub = "Not Allocated - site type doesn't exist " ++ Email;
         _ ->
-            Sub = SubDomain,
+            Sub = SubDomain2,
             Host  = proplists:get_value(host, State#state.args),
             Port2 = proplists:get_value(port, State#state.args),
             NewSite  = "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
@@ -226,7 +227,7 @@ provision(CurrentSite, Port, Row, State) ->
                                _   -> "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
                                           ++ integer_to_list(Port2)
                            end,
-            
+
             ok = hn_setup:site(NewSite, list_to_atom(Type2),
                                [{user, User},
                                 {email, Email ++ "@hypernumbers.com"},
@@ -234,7 +235,7 @@ provision(CurrentSite, Port, Row, State) ->
                                 {password, Password},
                                 {subdomain, Sub }
                                ]),
-            
+
             S = "Hi ~s~n~nWelcome to hypernumbers, we have set up your site "
                 "at:~n~n ~s~n~nTo make changes to the site follow the "
                 "instructions on the main page"
@@ -242,9 +243,9 @@ provision(CurrentSite, Port, Row, State) ->
                 "     ~s~n~nThanks for signing up, "
                 "hope you enjoy your new site!~n~n"
                 "The hypernumbers team",
-            
+
             Msg = fmt(S, [User, EmailNewSite, User, Password]),
-            
+
             case application:get_env(hypernumbers, environment) of
                 {ok, development} ->
                     io:format("Email is ~p~n", [Email]),
@@ -259,7 +260,6 @@ provision(CurrentSite, Port, Row, State) ->
                                      {RefX1, [{"formula", Sub}]},
                                      {RefX2, [{"formula", Password}]}
                                     ]),
-
     ok.
 
 parse(List) ->
@@ -280,6 +280,6 @@ normalise(String) ->
     re:replace(String2, "-", "_", [global, {return, list}]).
 
 fmt(Str, Args) ->
-     lists:flatten(io_lib:format(Str, Args)).
+    lists:flatten(io_lib:format(Str, Args)).
 
-    
+
