@@ -33,11 +33,11 @@ handle(MochiReq) ->
 -spec handle_(#refX{}, #req{}, #qry{}) -> ok. 
 
 handle_(#refX{path=["ping"]}, Req, #qry{uid=Uid, return=Return}) 
-  when Return /= undefined, uid /= undefined ->
+  when Return /= undefined, Uid /= undefined ->
     handle_ping(Req, Uid, Return);
 
 handle_(#refX{path=["pong"]}, Req, #qry{uid=Uid, return=Return}) 
-  when Return /= undefined, uid /= undefined ->
+  when Return /= undefined, Uid /= undefined ->
     handle_pong(Req, Uid, Return);
 
 handle_(Ref, Req, Qry) ->
