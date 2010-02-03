@@ -7,6 +7,7 @@
 -include_lib("kernel/include/file.hrl").
 -include("gettext.hrl").
 -include("auth2.hrl").
+-include("hn_mochi.hrl").
 
 -export([ handle/1,
           style_to_css/2,
@@ -17,12 +18,6 @@
 
 -define(SHEETVIEW, "_g/core/spreadsheet").
 -define(TWO_YEARS, 63113852).
-
--record(req, {mochi,
-              headers = [],
-              user,
-              uid,
-              accept}).
 
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
@@ -62,6 +57,7 @@ authorize_resource(Req, Ref, Qry) ->
                   'GET' -> authorize_get(Ref, Qry, AType, Ar);
                   'POST' -> authorize_post(Ref, Qry, AType, Ar)
               end,
+    io:format("Auth ret ~p~n", [AuthRet]),
     case {AuthRet, AType} of
         {allowed, _} ->
             handle_resource(Method, Ref, Qry, Req2);
@@ -79,8 +75,8 @@ authorize_resource(Req, Ref, Qry) ->
             respond(401, Req2)
     end.
 
-handle_resource('GET', Ref, Qry, Req=#req{mochi = Mochi, user = User}) ->
-    mochilog:log(Mochi, Ref, hn_users:name(User), undefined),
+handle_resource('GET', Ref, Qry, Req) ->
+    mochilog:log(Req, Ref, undefined),
     ObjType = element(1, Ref#refX.obj),
     iget(Ref, ObjType, Qry, Req);
 
@@ -92,14 +88,14 @@ handle_resource('POST', Ref, Qry, Req=#req{mochi = Mochi, user = User}) ->
         "multipart/form-data" ++ _Rest ->
             {Data, File} = hn_file_upload:handle_upload(Mochi, Ref, User),
             Name = filename:basename(File),
-            mochilog:log(Mochi, Ref, hn_users:name(User), {upload, Name}),
+            mochilog:log(Req, Ref, {upload, Name}),
             json(Req, Data);
 
         %% Normal Post Requests
         _Else ->
             Body = Mochi:recv_body(),
             {ok, Post} = get_json_post(Body),
-            mochilog:log(Mochi, Ref, hn_users:name(User), Body),
+            mochilog:log(Req, Ref, Body),
             ipost(Ref, Qry, Post, Req)
     end.
 
@@ -829,8 +825,7 @@ f_up1([{struct, [{"ref", Ref}, {"formula", F}]} | T], S, P, A1, A2) ->
     end.
 
 accept_type(Req) ->
-    {value, {'Accept', Accept}} =
-        mochiweb_headers:lookup('Accept', Req:get(headers)),
+    Accept = Req:get_header_value('Accept'),
     case re:run(Accept, "application/json") of
         {match, _} -> json;
         nomatch -> html

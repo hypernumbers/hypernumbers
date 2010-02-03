@@ -6,14 +6,12 @@
 
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
+-include("hn_mochi.hrl").
 
 -define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 -define(NAME, "post_log").
 
--record(post, {time, site, path, method, body, peer,
-               user, referer, browser, accept}).
-
--export([log/4, start/0, stop/0, replay/2, replay/3, clear/0, repair/1,
+-export([log/3, start/0, stop/0, replay/2, replay/3, clear/0, repair/1,
          browse/1, browse/2, browse_marks/1, info/2 ]).
 
 -export([stream_log/4]).
@@ -33,24 +31,21 @@ start() ->
         _Else               -> throw({failed_open_log})
     end.
 
-%% @spec log(term(), term(), term(), term()) -> ok
 %% @doc Logs individual requests
-log(Req, Ref, User, Body) ->
-
-    Log = #post { 
-      time    = erlang:now(),
-      site    = Ref#refX.site, 
-      path    = Req:get(raw_path),
-      method  = Req:get(method),
-      body    = Body,
-      user    = User,
-      peer    = Req:get_header_value("x-forwarded-for"),
-      referer = Req:get_header_value("Referer"),
-      browser = Req:get_header_value("User-Agent"),
-      accept  = Req:get_header_value("Accept")
-     },
-    
-    disk_log:alog(?NAME, Log).
+-spec log(#req{}, #refX{}, any()) -> ok.
+log(Req=#req{mochi = Mochi, user = User}, Ref, Body) ->
+    Post = [{time, erlang:now()},
+            {site, Ref#refX.site},
+            {path, Mochi:get(raw_path)},
+            {method, Mochi:get(method)},
+            {body, Body},
+            {user, hn_users:name(User)},
+            {uid, Req#req.uid},
+            {peer, Mochi:get_header_value("x-forwarded-for")},
+            {referer, Mochi:get_header_value("Referer")},
+            {browser, Mochi:get_header_value("User-Agent")},
+            {accept, Mochi:get_header_value("Accept")} ],
+    disk_log:alog(?NAME, Post).
 
 %% @spec stop() -> ok
 %% @doc Closes log
@@ -110,11 +105,17 @@ do_stream(Remote, Filter, Terms) ->
     end.
         
 mi_entry(Post, _) ->
-    
-    Date = dh_date:format("r", Post#post.time),
-    #post{ site=Site, path=Path, body=Body, method=Mthd, peer=Peer,
-           user=Usr, referer=Rfr, browser=UA, accept=Accept} = Post,
-    
+    Date = dh_date:format("r", proplists:get_value(time, Post)),
+    Body = proplists:get_value(body, Post),
+    Site = proplists:get_value(site, Post),
+    Path = proplists:get_value(path, Post),
+    Mthd = proplists:get_value(method, Post),
+    Peer = proplists:get_value(peer, Post),
+    Usr = proplists:get_value(user, Post),
+    Rfr = proplists:get_value(referer, Post),
+    UA = proplists:get_value(browser, Post),
+    Accept = proplists:get_value(accept, Post),
+
     S = case Body of
             {upload, F} -> F;
             _-> case io_lib:printable_list(btol(Body)) of
@@ -122,7 +123,7 @@ mi_entry(Post, _) ->
                     false -> ""
                 end
         end,
-    
+
     Format = "~p,~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
     io_lib:format(Format, [Date, Site, Path, S, atol(Mthd),
                            Peer, Usr, Rfr, UA, Accept]).
@@ -212,54 +213,65 @@ bodystr(Body) ->
     binary_to_list(Body).
 
 print(short, Post, Id) ->
-    #post{time=Time, path=FullPath, body=Body, user=User} = Post,
+    Time = proplists:get_value(time, Post),
+    FullPath = proplists:get_value(path, Post),
+    Body = proplists:get_value(body, Post),
+    User = proplists:get_value(user, Post),
+    Uid = proplists:get_value(uid, Post),
     Date = dh_date:format("j/m/y, g:ia", Time),
     [Path | _] = string:tokens(FullPath, "?"),
-    io:format("~6B  ~-18s  ~-10s  ~-20s  ~-35s~n",
-              [Id, Date, User, Path, bodystr(Body)]);
+    io:format("~6B  ~-18s  ~-10s  ~-16s  ~-20s  ~-35s~n",
+              [Id, Date, User, Uid, Path, bodystr(Body)]);
 
 print(post, Post, Id) ->
-    #post{path=FullPath, body=Body} = Post,
+    FullPath = proplists:get_value(path, Post),
+    Body = proplists:get_value(body, Post),
     [Path | _] = string:tokens(FullPath, "?"),
     io:format("P: ~6B  ~-26s  ~-35s~n", [Id, Path, bodystr(Body)]);
 
 print(long, Post, Id) ->
-    
-    #post { 
-      time = Time,
-      site = Site, 
-      path = Path,
-      method = Method,
-      body = Body,
-      user = User,
-      peer = Peer,
-      referer = Referer,
-      browser = Browser
-     } = Post,
-    
+    Time = proplists:get_value(time, Post),
+    Site = proplists:get_value(site, Post),
+    Path = proplists:get_value(path, Post),
+    Method = proplists:get_value(method, Post),
+    Body = proplists:get_value(body, Post),
+    User = proplists:get_value(user, Post),
+    Uid = proplists:get_value(uid, Post),
+    Peer = proplists:get_value(peer, Post),
+    Referer = proplists:get_value(referer, Post),
+    Browser = proplists:get_value(browser, Post),
+
     Msg = "~nId: ~p ~s Request on ~s~n"
-        "User:       ~s(~s)~nUrl:        ~s~n"
-        "User-Agent: ~s~nReferrer:   ~s~n"
+        "User:       ~s (~s) (~s)~n"
+        "Url:        ~s~n"
+        "User-Agent: ~s~n"
+        "Referrer:   ~s~n"
         "Body:       ~s~n~n",
     
-    io:format(Msg,[Id, Method, dh_date:format("m.d.y, g:ia", Time), User,
-                   Peer, Site++Path, Browser, Referer, bodystr(Body)]).
+    io:format(Msg,[Id, Method, dh_date:format("m.d.y, g:ia", Time), 
+                   User, Uid, Peer, Site++Path, Browser, Referer, 
+                   bodystr(Body)]).
 
 filter([], _Post, _Id) ->
     true;
 
-filter([{method, post} | _T], Post, _Id) when Post#post.method == 'GET' ->
-    false;
-filter([{method, _} | T], Post, Id) ->
-    filter(T, Post, Id);
+filter([{method, P} | T], Post, Id) ->
+    case proplists:get_value(method, Post) of
+        'GET' when P == get -> filter(T, Post, Id);
+        'POST' when P == post -> filter(T, Post, Id);
+        _X when P == all ->  filter(T, Post, Id);
+        _ -> false
+    end;
 
 filter([{date, all} | T], Post, Id) ->
     filter(T, Post, Id);
-filter([{date, {Start, End}} | T], #post{time=Time}=Post, Id)
-  when Time >= Start, Time < End ->
-    filter(T, Post, Id);
-filter([{date, _Date} | _T], _Post, _Id) ->
-    false;
+filter([{date, {Start, End}} | T], Post, Id) ->
+    case proplists:get_value(time, Post) of
+        Time when Time >= Start, Time < End -> 
+            filter(T, Post, Id);
+        _ ->
+            false
+    end;
 
 filter([{id, all} | T], Post, Id) ->
     filter(T, Post, Id);
@@ -272,15 +284,16 @@ filter([{id, _Id} | _T], _Post, _NId) ->
 
 filter([{user, all} | T], Post, Id) ->
     filter(T, Post, Id);
-filter([{user, User} | T], #post{user=User} = Post, Id) ->
-    filter(T, Post, Id);
-filter([{user, _User} | _T], #post{user=_NUser}, _NId) ->
-    false;
+filter([{user, User} | T], Post, Id) ->
+    case proplists:get_value(user, Post) of
+        User -> filter(T, Post, Id);
+        _ -> false
+    end;
 
 filter([{body, all} | T], Post, Id) ->
     filter(T, Post, Id);
-filter([{body, mark} | T], #post{body = Body} = Post, Id) ->
-    case Body of
+filter([{body, mark} | T], Post, Id) ->
+    case proplists:get_value(body, Post) of
         <<"{\"set\":{\"mark\":",_Rest/binary>> -> filter(T, Post, Id);
         _Other                                 -> false
     end;
@@ -320,7 +333,7 @@ handle_term(Opts, Post, N, F) ->
     Path = string:tokens(?pget(path, Opts), "/"),
     Deep = ?pget(deep, Opts),
     
-    [Raw | _ ] = string:tokens(Post#post.path, "?"),
+    [Raw | _ ] = string:tokens(proplists:get_value(path, Post), "?"),
     Path2 = string:tokens(Raw, "/"),
 
     case in_path(Path, Path2, Deep) andalso filter(Opts, Post, N) of
@@ -361,9 +374,14 @@ upload_file(Url, Path, Field) ->
     http:request(post,{Url, [], Type, Post}, [], []).
 
 
-repost(LogName, #post{method='POST', body={upload, Name}} = Post, New) ->
+repost(Logname, Post, New) ->
+    Method = proplists:get_value(method, Post),
+    Body = proplists:get_value(body, Post),
+    repost_(Method, Body, Logname, Post, New).
+
+repost_('POST', {upload, Name}, LogName, Post, New) ->
     [Dir, _Nm] = string:tokens(LogName, "/"),
-    Url  = New#refX.site ++ Post#post.path,
+    Url  = New#refX.site ++ proplists:get_value(path, Post),
     Root = code:lib_dir(hypernumbers),
     Path = filename:join([Root, "log", Dir, "uploads", Name]),
     case filelib:is_file(Path) of
@@ -373,11 +391,13 @@ repost(LogName, #post{method='POST', body={upload, Name}} = Post, New) ->
             upload_file(Url, Path, "Filedata")
     end,
     ok;
-
-repost(_Name, Post, New) when Post#post.method == 'POST' ->
-    Body = rewrite_command(New#refX.site, Post#post.body),
-    Url  = New#refX.site ++ Post#post.path,
-    http:request(post,{Url, [], "application/json", Body}, [], []),
+repost_('POST', _Body, _Name, Post, New) ->
+    Body = rewrite_command(New#refX.site, proplists:get_value(body, Post)),
+    Url  = New#refX.site ++ proplists:get_value(path, Post),
+    Headers = [{"Accept", "application/json"}],
+    http:request(post,{Url, Headers, "application/json", Body}, [], []),
+    ok;
+repost_(_, _Body, _Name, _Post, _New) ->
     ok.
 
 rewrite_command(NewSite, Body) ->
