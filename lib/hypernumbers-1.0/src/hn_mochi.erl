@@ -839,12 +839,15 @@ accept_type(Req) ->
     end.
 
 build_tpl(Site, Tpl) ->
+    
     {ok, Master} = file:read_file([viewroot(Site), "/_g/core/built.tpl"]),
     {ok, Gen}    = file:read_file([viewroot(Site), "/", Tpl, ".tpl"]),
-
-    New = re:replace(Master, "%BODY%", hn_util:esc_regex(Gen),
+    
+    New1 = re:replace(Master, "%BODY%", hn_util:esc_regex(Gen),
                      [{return, list}]),
-    file:write_file([viewroot(Site), "/", Tpl, ".html"], New).
+    New2 = re:replace(New1, "%VIEW%", Tpl, [{return, list}]),
+
+    file:write_file([viewroot(Site), "/", Tpl, ".html"], New2).
     
 pages_to_json(Dict) ->
     F = fun(X) -> pages_to_json(X, dict:fetch(X, Dict)) end,
