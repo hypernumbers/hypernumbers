@@ -292,7 +292,7 @@
 -record(qry, { challenger,
                mark,
                pages,
-               path,
+               paths,
                permissions,
                return,
                status,
@@ -301,5 +301,6 @@
                updates,
                uid,
                users,
+               via,
                view
              }).

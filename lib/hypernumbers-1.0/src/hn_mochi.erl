@@ -32,11 +32,11 @@ handle(MochiReq) ->
 
 -spec handle_(#refX{}, #req{}, #qry{}) -> ok. 
 
-handle_(#refX{path=["ping"]}, Req, #qry{uid=Uid, return=Return}) 
+handle_(#refX{path=["_ping"]}, Req, #qry{uid=Uid, return=Return}) 
   when Return /= undefined, Uid /= undefined ->
     handle_ping(Req, Uid, Return);
 
-handle_(#refX{path=["pong"]}, Req, #qry{uid=Uid, return=Return}) 
+handle_(#refX{path=["_pong"]}, Req, #qry{uid=Uid, return=Return}) 
   when Return /= undefined, Uid /= undefined ->
     handle_pong(Req, Uid, Return);
 
@@ -60,7 +60,7 @@ authorize_resource(Req, Ref, Qry) ->
     case {AuthRet, AType} of
         {allowed, _} ->
             handle_resource(Method, Ref, Qry, Req2);
-        {{view, View}, html} ->
+        {{view, View}, _} ->
             handle_resource(Method, Ref, Qry#qry{view = View}, Req2);
         {not_found, html} ->
             serve_html(404, Req2, 
@@ -127,7 +127,7 @@ handle_ping(R=#req{mochi = Mochi}, Uid, Return) ->
                  %% precedence. So we tell the 'pinger' to use this
                  %% with a PONG request.
                  #refX{site = OrigSite} = hn_util:parse_url(Original),
-                 Redir = OrigSite++"/pong/?uid="++OwnUid++"&return="++Return,
+                 Redir = OrigSite++"/_pong/?uid="++OwnUid++"&return="++Return,
                  Redirect = {"Location", Redir},
                  R#req{headers = [Redirect | R#req.headers]}
          end,
@@ -146,20 +146,51 @@ handle_pong(R, Uid, Return) ->
                    -> {view, string()} | allowed | denied | not_found.
 authorize_get(_Ref, #qry{permissions = [], _ = undefined}, html, _Ar) ->
     allowed;
-authorize_get(#refX{site = Site, path = Path}, #qry{view = View}, html, Ar) 
-  when View /= undefined -> 
-    auth_srv2:check_particular_view(Site, Path, Ar, View);
-authorize_get(#refX{site = Site, path = Path}, #qry{challenger=[]}, html, Ar) ->
-    auth_srv2:check_get_challenger(Site, Path, Ar);
-%% authorize_get(#refX{site=Site}, [{"updates",_},{"path",Paths}|_], json, Ar) ->
-%%     Views = [auth_srv2:get_any_view(Site, string:tokens(P, "/"), Ar) 
-%%              || P <- string:tokens(Paths, ",")],
-%%     case lists:all(fun({view, _}) -> true; (_) -> false end, Views) of 
-%%         true -> allowed;
-%%         _Else -> denied
-%%     end;
+
+authorize_get(#refX{site = Site, path = Path}, 
+              #qry{updates = U, view = View, paths = More}, json, Ar) 
+  when U /= undefined, View /= undefined -> 
+    case auth_srv2:check_particular_view(Site, Path, Ar, View) of
+        {view, ?SHEETVIEW} ->
+            MoreViews = [auth_srv2:get_any_view(Site, string:tokens(P, "/"), Ar) 
+                         || P <- string:tokens(More, ",")],
+            case lists:all(fun({view, _}) -> true; 
+                              (_) -> false end, 
+                           MoreViews) of
+                true -> allowed;
+                _Else -> denied
+            end;        
+        {view, View} ->
+            {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
+            Results = [hn_security:validate_get(Sec, Path, P) 
+                       || P <- string:tokens(More, ",")],
+            case lists:all(fun(X) -> X end, Results) of 
+                true -> allowed;
+                false -> denied
+            end;
+        _Else ->
+            denied
+    end;
+
 authorize_get(#refX{site = Site, path = Path}, #qry{_ = undefined}, html, Ar) ->
     auth_srv2:check_get_view(Site, Path, Ar);
+
+authorize_get(#refX{site = Site, path = Path}, #qry{challenger=[]}, html, Ar) ->
+    auth_srv2:check_get_challenger(Site, Path, Ar);
+
+authorize_get(#refX{site = Site, path = Path}, #qry{view = View}, _Any, Ar) 
+  when View /= undefined -> 
+    auth_srv2:check_particular_view(Site, Path, Ar, View);
+
+authorize_get(#refX{site = Site, path = Path}, 
+              #qry{view = View, via = Base}, json, _Ar)
+  when View /= undefined, Base /= undefined ->
+    {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
+    case hn_security:validate_get(Sec, Base, Path) of
+        true -> allowed; 
+        false -> denied
+    end;
+
 authorize_get(#refX{site = Site, path = Path}, _Qry, _Any, Ar) ->
     case auth_srv2:get_any_view(Site, Path, Ar) of
         {view, _} -> allowed;
@@ -201,7 +232,7 @@ iget(#refX{site = Site}, page, #qry{view = FName, template = []}, Req)
   when FName /= undefined -> 
     serve_html(Req, [viewroot(Site), "/", FName, ".tpl"]);    
 
-iget(Ref=#refX{site = Site}, page, #qry{view = FName}, Req)
+iget(Ref=#refX{site = Site}, page, #qry{view = FName}, Req=#req{accept = html})
     when FName /= undefined ->
     Tpl  = [viewroot(Site), "/", FName, ".tpl"],
     Html = [viewroot(Site), "/", FName, ".html"],
@@ -214,10 +245,11 @@ iget(Ref=#refX{site = Site}, page, #qry{view = FName}, Req)
         false -> '404'(Ref, Req)
     end;
 
-iget(Ref, page, #qry{updates = Time, path = Path}, Req)
-  when Time /= undefined, Path /= undefined ->
-    Paths = [ string:tokens(X, "/") || X<-string:tokens(Path, ",")],
-    remoting_request(Req, Ref#refX.site, Paths, Time);
+iget(#refX{site = Site, path = Path}, page, 
+     #qry{updates = Time, paths = More}, Req=#req{accept = json})
+  when Time /= undefined, More /= undefined ->
+    Paths = [Path | [ string:tokens(X, "/") || X<-string:tokens(More, ",")]],
+    remoting_request(Req, Site, Paths, Time);
 
 iget(#refX{site = S}, page, #qry{status = []}, Req) -> 
     json(Req, status_srv:get_status(S));
@@ -411,17 +443,17 @@ ipost(Ref, _Qry, [{"clear", What}], Req)
     ok = hn_db_api:clear(Ref, list_to_atom(What)),
     json(Req, "success");
 
-ipost(#refX{site=Site, path=Path} = _Ref, _Qry,
+ipost(#refX{site=Site, path=Path} = Ref, _Qry,
       [{"saveview", {struct, [{"name", Name}, {"tpl", Form},
                               {"overwrite", OverWrite}]}}], 
       Req=#req{user=User}) ->
     AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
-    _AuthReq = {hn_users:name(User), hn_users:groups(User)},
+    AuthReq = {hn_users:name(User), hn_users:groups(User)},
     Output   = [viewroot(Site), "/" , Name],
     TplPath  = [Output, ".tpl"],
-    % true = can_save_view(User, Name),
+    true = can_save_view(User, Name),
     ok = auth_srv2:add_view(Site, Path, AuthSpec, Name),
-    % Sec = hn_security:make(Form, Ref, AuthReq),
+    Sec = hn_security:make(Form, Ref, AuthReq),
     ok = filelib:ensure_dir(Output),
     
     case (OverWrite == false) andalso filelib:is_file(TplPath) of
@@ -430,7 +462,7 @@ ipost(#refX{site=Site, path=Path} = _Ref, _Qry,
         false ->
             ok = file:write_file([Output, ".tpl"], Form),
             {ok, F} = file:open([Output, ".sec"], [write]),
-            %ok = io:format(F, "~p.", [Sec]),
+            ok = io:format(F, "~p.", [Sec]),
             ok = file:close(F),
             json(Req, "success")
     end;
@@ -630,7 +662,7 @@ get_uid(Site, R=#req{mochi = Mochi}) ->
                     Current = 
                         Site ++ 
                         mochiweb_util:quote_plus(Mochi:get(raw_path)),
-                    Redir = PingTo++"/ping/?uid="++Uid++"&return="++Current,
+                    Redir = PingTo++"/_ping/?uid="++Uid++"&return="++Current,
                     Redirect = {"Location", Redir},
                     respond(302, R2#req{headers = [Redirect | R2#req.headers]}),
                     throw(ok);

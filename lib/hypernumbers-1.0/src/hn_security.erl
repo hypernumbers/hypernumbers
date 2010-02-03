@@ -40,10 +40,10 @@
 %% Validate requests
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec validate_get(security(), #refX{}, string()) -> true | false. 
-validate_get({Gets, _}, #refX{path = Path}, Target) ->
-    AbsTarget = abs_path(Path, Target),
-    is_valid_get(Gets, Path, AbsTarget).
+-spec validate_get(security(), string(), string()) -> true | false. 
+validate_get({Gets, _}, BasePath, Target) ->
+    AbsTarget = abs_path(BasePath, Target),
+    is_valid_get(Gets, BasePath, AbsTarget).
 
 -spec is_valid_get([string()], [string()], string()) -> true | false. 
 is_valid_get([], _, _) -> false;
