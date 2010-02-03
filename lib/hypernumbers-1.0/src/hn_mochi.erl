@@ -57,7 +57,6 @@ authorize_resource(Req, Ref, Qry) ->
                   'GET' -> authorize_get(Ref, Qry, AType, Ar);
                   'POST' -> authorize_post(Ref, Qry, AType, Ar)
               end,
-    io:format("Auth ret ~p~n", [AuthRet]),
     case {AuthRet, AType} of
         {allowed, _} ->
             handle_resource(Method, Ref, Qry, Req2);
