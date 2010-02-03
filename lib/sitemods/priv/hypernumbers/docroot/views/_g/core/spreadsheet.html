@@ -280,9 +280,9 @@
         <input type="button" value="Use Selection" id="use-range" />
 
       </div>
-
+      
       <div id="tabs"></div>
-
+      
       <div id="viewbuilder">
         
         <div id="mainviewbuilder">
@@ -290,16 +290,14 @@
           <div id="viewbuildertoolbar">
             
             <div id="viewbuilderheader">
-
+              
               <a href="" target="_blank" id="viewname">&nbsp;</a>
-
+              
               <div id="viewtabs">
                 <a href="#add">Add Widget</a>
                 <a href="#configuring">Configure</a>
               </div>
 
-              <input type="button" value="close" class="btn" 
-                     id="closeviewbtn" />
             </div>           
             
             <div id="tabwins">
@@ -323,10 +321,16 @@
                     <td id="viewconfbinding" valign="top">
                       <table cellspacing="0"><tr>
                           <td width="80"><strong>get data from:</strong></td>
-                          <td><input type="button" id="bindfrom" /></td>
+                          <td>
+                            <input type="button" id="bindfrom" />
+                            <input type="button" value="clear" class="clear from" />
+                          </td>
                         </tr><tr>
                           <td><strong>send data to:</strong></td>
-                          <td><input type="button" id="bindto"  /></td>
+                          <td>
+                            <input type="button" id="bindto"  />
+                            <input type="button" value="clear" class="clear to" />
+                          </td>
                       </tr></table>
                     </td>
                     <td valign="top" id="viewconftype">                      
@@ -364,16 +368,21 @@
             </label>
 
           </div>
-          
+         
         </div>
 
+        <input type="button" value="close" class="btn" 
+               id="closeviewbtn" />
+        
         <div id="viewbuilderintro">
           <div id="newview">
             <h2>Create a new View</h2>
-            <table>
-              <tr><td>Choose a name</td>
+            <table cellspacing="10">
+              <tr><td><strong>Current Path<strong></td>
+                <td><span id="currentViewPath"></span></td></tr>
+              <tr><td><strong>Choose a name<strong></td>
                 <td><input type="text" id="newviewname" /></td></tr>
-              <tr><td>Pick a Template</td>
+              <tr><td><strong>Pick a Template<strong></td>
                 <td><select id="viewtemplates">
                     <option value="blank">Blank Page</option>
                   </select>
@@ -384,10 +393,12 @@
                   </select>
               </td></tr>
             </table>
-            <input type="submit" class="submit" 
-                   value="Cancel" id="cancelviewbtn" />
+
+            <span id="createfeedback" class="warning"></span>
+            
             <input type="submit" class="submit" 
                    value="Create View" id="createviewbtn" />
+
           </div>
         </div>
         
@@ -553,6 +564,7 @@
   <script src="/hypernumbers/ajaxfileupload.js"></script>
   <script src="/hypernumbers/hn.js"></script>
   <script src="/hypernumbers/hn.util.js"></script>
+  <script src="/hypernumbers/hn.hashurl.js"></script>
   <script src="/hypernumbers/jquery.filemenu.js"></script>
   <script src="/hypernumbers/hn.data.js"></script>
   <script src="/hypernumbers/hn.ui.js"></script>
@@ -565,7 +577,7 @@
   <script src="/hypernumbers/hn.toolbar.js"></script>
   <script src="/hypernumbers/hn.callbacks.js"></script>
   <script src="/hypernumbers/hn.selection.js"></script>
-  <script src="/hypernumbers/hn.logger.js"></script>  
+  <script src="/hypernumbers/hn.logger.js"></script>
   <script src="/wmd/showdown.js"></script>
   <script src="/wmd/wmd.js"></script>
 

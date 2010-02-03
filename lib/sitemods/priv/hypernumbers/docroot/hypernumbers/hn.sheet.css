@@ -1507,6 +1507,9 @@ p,h1,h2,h3,h4,h5 {
     position:absolute;
     right: 10px;
     top: 2px;
+    padding:1px;
+    color:red;
+    z-index: 9999999;
 }
 
 #viewtabs {
@@ -1539,11 +1542,6 @@ p,h1,h2,h3,h4,h5 {
     margin:7px 2px;
 }
 
-#viewconfbinding input {
-    width: 120px;
-    font-size:9px;
-}
-
 table, tr, td { margin:0px; padding: 0px; border:0px; }
 
 #delete { color: red; }
@@ -1572,9 +1570,25 @@ table, tr, td { margin:0px; padding: 0px; border:0px; }
 }
 
 #viewconfbinding { 
-    width:250px;
+    width:350px;
+}
+
+#viewconfbinding input {
+    width: 200px;
+    font-size:9px;
+}
+
+#viewconfbinding input.clear {
+    width: 40px;
+    font-size:9px;
 }
 
 #viewconftype { 
     width: 200px; 
+}
+
+#createviewbtn { 
+    padding:3px;
+    font-size: 13px;
+    color:green;
 }

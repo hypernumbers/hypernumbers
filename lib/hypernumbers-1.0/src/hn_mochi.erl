@@ -412,20 +412,28 @@ ipost(Ref, _Qry, [{"clear", What}], Req)
     json(Req, "success");
 
 ipost(#refX{site=Site, path=Path} = _Ref, _Qry,
-      [{"saveview", {struct, [{"name", Name}, {"tpl", Form}]}}], 
+      [{"saveview", {struct, [{"name", Name}, {"tpl", Form},
+                              {"overwrite", OverWrite}]}}], 
       Req=#req{user=User}) ->
     AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
     _AuthReq = {hn_users:name(User), hn_users:groups(User)},
-    Output = [viewroot(Site), "/" , Name],
+    Output   = [viewroot(Site), "/" , Name],
+    TplPath  = [Output, ".tpl"],
     % true = can_save_view(User, Name),
     ok = auth_srv2:add_view(Site, Path, AuthSpec, Name),
     % Sec = hn_security:make(Form, Ref, AuthReq),
     ok = filelib:ensure_dir(Output),
-    ok = file:write_file([Output, ".tpl"], Form),
-    {ok, F} = file:open([Output, ".sec"], [write]),
-    %ok = io:format(F, "~p.", [Sec]),
-    ok = file:close(F),
-    json(Req, "success");
+    
+    case (OverWrite == false) andalso filelib:is_file(TplPath) of
+        true ->
+            json(Req, "error");
+        false ->
+            ok = file:write_file([Output, ".tpl"], Form),
+            {ok, F} = file:open([Output, ".sec"], [write]),
+            %ok = io:format(F, "~p.", [Sec]),
+            ok = file:close(F),
+            json(Req, "success")
+    end;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
