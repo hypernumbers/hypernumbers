@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/hypernumbers/finder.css" />	
   </head>
   
-  <body id="hn" data-view="_/g/core/spreadsheet">
+  <body id="hn" data-view="_g/core/spreadsheet">
     
     <div id="hnheader">
       
@@ -376,6 +376,7 @@
         <div id="viewbuilderintro">
           <div id="newview">
             <h2>Create a new View</h2>
+            <div id="newviewfeedback" class="warning"></div>
             <table cellspacing="10">
               <tr><td><strong>Current Path<strong></td>
                 <td><span id="currentViewPath"></span></td></tr>
@@ -393,8 +394,17 @@
               </td></tr>
             </table>
 
-            <span id="createfeedback" class="warning"></span>
-            
+            <div id="viewexists">
+
+              <span id="viewwarning">
+                Sorry, A view with that name already exists, overwrite?
+              </span>
+              
+              <input type="submit" id="overwrite" value="Overwrite" />
+              <input type="submit" id="overwritecancel" value="Cancel" />
+                            
+            </div>
+              
             <input type="submit" class="submit" 
                    value="Create View" id="createviewbtn" />
 

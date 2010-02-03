@@ -1592,3 +1592,23 @@ table, tr, td { margin:0px; padding: 0px; border:0px; }
     font-size: 13px;
     color:green;
 }
+
+#viewexists { 
+    display: none;
+}
+
+.droppable { 
+    min-height: 20px;
+    padding:5px;
+}
+
+#viewexists span {
+    display:block;
+    background:red;
+    padding: 5px;
+    margin: 5px;
+}
+
+#viewexists #overwrite {
+    margin-right: 150px;
+}
