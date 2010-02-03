@@ -112,6 +112,7 @@ mi_entry(Post, _) ->
     Mthd = proplists:get_value(method, Post),
     Peer = proplists:get_value(peer, Post),
     Usr = proplists:get_value(user, Post),
+    Uid = proplists:get_value(uid, Post),
     Rfr = proplists:get_value(referer, Post),
     UA = proplists:get_value(browser, Post),
     Accept = proplists:get_value(accept, Post),
@@ -124,9 +125,9 @@ mi_entry(Post, _) ->
                 end
         end,
 
-    Format = "~p,~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
+    Format = "~p,~p,~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
     io_lib:format(Format, [Date, Site, Path, S, atol(Mthd),
-                           Peer, Usr, Rfr, UA, Accept]).
+                           Peer, Usr, Uid, Rfr, UA, Accept]).
 
 
 -spec replay(string(), string()) -> ok.
