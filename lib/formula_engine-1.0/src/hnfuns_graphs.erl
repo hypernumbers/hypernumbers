@@ -101,7 +101,7 @@ lg1(Data, Orientation, {Scale, Axes, Colours}) ->
 
 lg2(Data, Orientation, Scale, Axes, Colours) ->
     {Data2, _NoOfRows, _NoOfCols} = extract(Data, Orientation),
-    Data3 = rev([cast_data(X) || X <- Data2]),
+    Data3 = [cast_data(X) || X <- Data2],
     % check for errors and then fix the reversed lists problems
     Colours2 = get_colours(Colours),
     {Min, Max} = get_scale(Scale, Data3),
