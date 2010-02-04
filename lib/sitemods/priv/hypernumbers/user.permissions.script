@@ -11,6 +11,9 @@
   {view, "_g/hypernumbers/userhome"}
  ]}.
 
+{import,
+ [{path, ["u", '$user'}]}.
+
 {add_view, 
  [{perms, [{user, '$user'}]},
   {path, ["u", '$user', "[**]"]},
