@@ -28,8 +28,9 @@
 %%
 
 %% Variable 'O' is 'Orientation'
-linegraph([Data])              ->
-    lg1(Data, ?ROW, {{scale, auto}, [], []});
+linegraph([Data]) ->
+    [Alignment] = ?ROW,
+    lg1(Data, Alignment, {{scale, auto}, [], []});
 linegraph([Data, O])           ->
     lg1(Data, O, {{scale, auto}, [], []});
 linegraph([Data, O, Min, Max]) ->
