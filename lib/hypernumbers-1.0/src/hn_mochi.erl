@@ -172,6 +172,22 @@ authorize_get(#refX{site = Site, path = Path},
             denied
     end;
 
+authorize_get(#refX{site = Site, path = Path}, 
+              #qry{view = View, via = Via}, json, Ar)
+  when View /= undefined, View /= ?SHEETVIEW, Via /= undefined ->
+    Base = string:tokens(Via, "/"),
+    case auth_srv2:check_particular_view(Site, Base, Ar, View) of
+        {view, View} ->
+            Target = hn_util:list_to_path(Path),
+            {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
+            case hn_security:validate_get(Sec, Base, Target) of
+                true -> allowed; 
+                false -> denied
+            end;
+        _Else ->
+            denied
+    end;
+
 authorize_get(#refX{site = Site, path = Path}, #qry{_ = undefined}, html, Ar) ->
     auth_srv2:check_get_view(Site, Path, Ar);
 
@@ -181,15 +197,6 @@ authorize_get(#refX{site = Site, path = Path}, #qry{challenger=[]}, html, Ar) ->
 authorize_get(#refX{site = Site, path = Path}, #qry{view = View}, _Any, Ar) 
   when View /= undefined -> 
     auth_srv2:check_particular_view(Site, Path, Ar, View);
-
-authorize_get(#refX{site = Site, path = Path}, 
-              #qry{view = View, via = Base}, json, _Ar)
-  when View /= undefined, Base /= undefined ->
-    {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
-    case hn_security:validate_get(Sec, Base, Path) of
-        true -> allowed; 
-        false -> denied
-    end;
 
 authorize_get(#refX{site = Site, path = Path}, _Qry, _Any, Ar) ->
     case auth_srv2:get_any_view(Site, Path, Ar) of

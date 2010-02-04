@@ -173,10 +173,7 @@ bind([{[], [], "data-binding-to", To} | T], R, AR, B) ->
                      #refX{}, 
                      auth_req()) 
                     -> security().
-%% if the boolean is true we are in a form and we accumulate the bindings in A1
-%% when the form ends we throw the contents of A1 into the main accumulator in A2
-%% if the boolean is false, then each binding is a transaction in its own right
-%% expects forms to terminate in the model or will crash
+
 parse_bindings(List, #refX{site=Site, path=Path}, AR) ->
     Gets = lists:usort([just_path(F)
                         || #binding{from = F} <- List,
@@ -189,6 +186,10 @@ parse_bindings(List, #refX{site=Site, path=Path}, AR) ->
     TransSet = gather(List2, [], [], false),
     {Gets, TransSet}.
 
+%% if the boolean is true we are in a form and we accumulate the bindings in A1
+%% when the form ends we throw the contents of A1 into the main accumulator in A2
+%% if the boolean is false, then each binding is a transaction in its own right
+%% expects forms to terminate in the model or will crash
 gather([], [], A2, false)              -> A2;
 gather([formstart | T], A1, A2, false) -> gather(T, A1, A2, true);
 gather([formend | T], A1, A2, true)    -> gather(T, [], [A1 | A2], false);
