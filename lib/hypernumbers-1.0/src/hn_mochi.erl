@@ -142,11 +142,20 @@ handle_pong(R, Uid, Return) ->
     R2 = R#req{headers = [Redirect, Cookie | R#req.headers]},
     respond(302, R2).
     
+
 -spec authorize_get(#refX{}, #qry{}, json | html, auth_req()) 
                    -> {view, string()} | allowed | denied | not_found.
+
+%% Specifically allow access to the json permissions. Only the permissions,
+%% query may be present.
 authorize_get(_Ref, #qry{permissions = [], _ = undefined}, html, _Ar) ->
     allowed;
 
+%% Authorize update requests. When the update is targeted towards a
+%% spreadsheet via, we perform a 'run-time' check to listen to
+%% additional sources. Otherwise, we validate these additional sources
+%% against the security object created at view 'save-time'. In either
+%% case, the caller must have SOME view access to the primary target.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{updates = U, view = View, paths = More}, json, Ar) 
   when U /= undefined, View /= undefined -> 
@@ -172,6 +181,8 @@ authorize_get(#refX{site = Site, path = Path},
             denied
     end;
 
+%% Access to seconadary data sources, described by some initial view
+%% declared herin as 'via'.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{view = View, via = Via}, json, Ar)
   when View /= undefined, View /= ?SHEETVIEW, Via /= undefined ->
@@ -188,16 +199,22 @@ authorize_get(#refX{site = Site, path = Path},
             denied
     end;
 
+%% Authorize access to the DEFAULT page. Notice that no query
+%% parameters have been set.
 authorize_get(#refX{site = Site, path = Path}, #qry{_ = undefined}, html, Ar) ->
     auth_srv2:check_get_view(Site, Path, Ar);
 
+%% Authorize access to the challenger view.
 authorize_get(#refX{site = Site, path = Path}, #qry{challenger=[]}, html, Ar) ->
     auth_srv2:check_get_challenger(Site, Path, Ar);
 
+%% Authorize access to one particular view.
 authorize_get(#refX{site = Site, path = Path}, #qry{view = View}, _Any, Ar) 
   when View /= undefined -> 
     auth_srv2:check_particular_view(Site, Path, Ar, View);
 
+%% As a last resort, we will authorize a GET request to a location
+%% from which we have a view.
 authorize_get(#refX{site = Site, path = Path}, _Qry, _Any, Ar) ->
     case auth_srv2:get_any_view(Site, Path, Ar) of
         {view, _} -> allowed;
@@ -267,6 +284,9 @@ iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Req) ->
 iget(#refX{site = S}, page, #qry{users= []}, Req) ->
     text_html(Req, hn_users:prettyprint_DEBUG(S));
 
+iget(Ref, page, #qry{pages = []}, Req=#req{accept = json}) ->
+    json(Req, pages(Ref));
+
 % List of template pages
 iget(Ref, page, #qry{templates = []}, Req) ->
     Fun = fun(X) ->
@@ -280,9 +300,6 @@ iget(Ref, page, #qry{templates = []}, Req) ->
               filelib:wildcard(docroot(Ref#refX.site)++"/templates/*")),
     File = [filename:basename(X) || X <- Files], 
     json(Req, {array, File});
-
-iget(Ref, page, #qry{pages = []}, Req=#req{accept = json}) ->
-    json(Req, pages(Ref));
 
 iget(Ref, page, _Qry, Req=#req{accept = json, user = User}) ->
     json(Req, page_attributes(Ref, User));
