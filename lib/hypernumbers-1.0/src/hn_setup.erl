@@ -180,10 +180,17 @@ tables() ->
 
 %% Import a set of json files into the live spreadsheet
 import_json(Site, Dir) ->
+    Files = filelib:wildcard(Dir++"/data/*.json"),
+    JsonFiles = lists:filter(fun is_path/1, Files),
     [ ok = hn_import:json_file(Site ++ create_path_from_name(Json), Json)
-      || Json <- filelib:wildcard(Dir++"/data/*.json")],
+      || Json <- JsonFiles],
     ok.
 
+is_path(L) ->
+    case string:tokens(L, ".") of
+        ["path" | _T] -> true;
+        _Other        -> false
+    end.
 
 create_path_from_name(Name) ->
     [ "path" | Rest ]
@@ -284,7 +291,18 @@ add_u(Site, User, {add_view, C}) ->
     UserName = hn_users:name(User),
     Perms    = replace('$user', UserName, lget(perms, C)),
     Path     = replace('$user', UserName, lget(path, C)),
-    auth_srv2:add_view(Site, Path, Perms, lget(view, C)).
+    auth_srv2:add_view(Site, Path, Perms, lget(view, C));
+
+add_u(Site, User, {import, P}) ->
+    UserName = hn_users:name(User),
+    P2 = replace('$user', "$user", lget(path, P)),
+    Path = replace('$user', UserName, lget(path, P)),
+    FileName = re:replace(hn_util:path_to_json_path(P2), "^path.",
+                          "template.", [{return, list}]),
+    Dest = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:parse_site(Site) ++ "/data/",
+    Url = Site ++ hn_util:list_to_path(Path),
+    ok = hn_import:json_file(Url, Dest ++ FileName).
 
 -spec get_type_by_site(list()) -> atom().
 get_type_by_site(Site) ->
