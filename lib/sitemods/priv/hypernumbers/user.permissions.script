@@ -12,7 +12,7 @@
  ]}.
 
 {import,
- [{path, ["u", '$user'}]}.
+ [{path, ["u", '$user']}]}.
 
 {add_view, 
  [{perms, [{user, '$user'}]},
