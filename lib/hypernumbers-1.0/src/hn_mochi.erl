@@ -53,10 +53,7 @@ authorize_resource(Req, Ref, Qry) ->
     #req{mochi=Mochi, user=User, accept=AType} = Req2,
     Ar = {hn_users:name(User), hn_users:groups(User)},
     Method = Mochi:get(method),
-    AuthRet = case Method of
-                  'GET' -> authorize_get(Ref, Qry, AType, Ar);
-                  'POST' -> authorize_post(Ref, Qry, AType, Ar)
-              end,
+    AuthRet = authorize(Method, Ref, Qry, AType, Ar),
     case {AuthRet, AType} of
         {allowed, _} ->
             handle_resource(Method, Ref, Qry, Req2);
@@ -70,6 +67,10 @@ authorize_resource(Req, Ref, Qry) ->
                        [viewroot(Ref#refX.site), "/_g/core/login.html"]);
         {not_found, json} ->
             respond(404, Req2);
+        {site_not_found, _} ->
+            text_html(Req2, "The web site you seek "
+                      "cannot be located, but "
+                      "countless more exist.");
         _NoPermission ->
             respond(401, Req2)
     end.
@@ -141,8 +142,22 @@ handle_pong(R, Uid, Return) ->
     Redirect = {"Location", Original},
     R2 = R#req{headers = [Redirect, Cookie | R#req.headers]},
     respond(302, R2).
-    
 
+
+-spec authorize('GET' | 'POST', 
+                #refX{}, #qry{}, json | html, auth_req())
+               -> {view, string()} 
+                      | allowed | denied 
+                      | site_not_found | not_found.
+authorize(Method, Ref, Qry, AType, Ar) ->
+    case mnesia:dirty_read(core_site, Ref#refX.site) of
+        [_X] -> case Method of
+                    'GET' -> authorize_get(Ref, Qry, AType, Ar);
+                    'POST' -> authorize_post(Ref, Qry, AType, Ar)
+                end;
+        _ -> site_not_found
+    end.
+            
 -spec authorize_get(#refX{}, #qry{}, json | html, auth_req()) 
                    -> {view, string()} | allowed | denied | not_found.
 
@@ -152,7 +167,7 @@ authorize_get(_Ref, #qry{permissions = [], _ = undefined}, html, _Ar) ->
     allowed;
 
 %% Authorize update requests. When the update is targeted towards a
-%% spreadsheet via, we perform a 'run-time' check to listen to
+%% spreadsheet we perform a 'run-time' check to listen to
 %% additional sources. Otherwise, we validate these additional sources
 %% against the security object created at view 'save-time'. In either
 %% case, the caller must have SOME view access to the primary target.
@@ -181,8 +196,8 @@ authorize_get(#refX{site = Site, path = Path},
             denied
     end;
 
-%% Access to seconadary data sources, described by some initial view
-%% declared herin as 'via'.
+%% Access to secondary data sources, described by some initial view
+%% declared herein as 'via'.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{view = View, via = Via}, json, Ar)
   when View /= undefined, View /= ?SHEETVIEW, Via /= undefined ->
@@ -223,8 +238,11 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, _Any, Ar) ->
 
 -spec authorize_post(#refX{}, #qry{}, json | html, auth_req()) 
                     -> {view, string()} | allowed | denied | not_found.
+
+%% Allow logins to occur.
 authorize_post(#refX{path = ["_user", "login"]}, _Qry, json, _Ar) ->
     allowed;
+
 authorize_post(#refX{site = Site, path = Path}, _Qry, json, Ar) ->
     case auth_srv2:check_particular_view(Site, Path, Ar, ?SHEETVIEW) of
         {view, ?SHEETVIEW} -> 
@@ -240,6 +258,8 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, json, Ar) ->
                     denied
             end
     end;
+
+%% By default, deny.
 authorize_post(_Ref, _Qry, _Type, _Ar) ->
     denied.
 
