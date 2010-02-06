@@ -9,7 +9,8 @@
          update/0, update/1,
          update/3,
          add_user/2,
-         get_sites/0
+         get_sites/0,
+         resave_views/0
         ]).
 
 -include("spriki.hrl").
@@ -137,6 +138,21 @@ sitedir(Site) ->
 -spec launch_site(string()) -> ok. 
 launch_site(Site) ->
     ok = dirty_srv:start(Site).
+
+
+-spec resave_views() -> ok.
+resave_views() ->
+
+    ViewsPath = "/../../var/sites/*/docroot/views/*/*/*.tpl",
+    
+    [ resave_view(X)
+      || X <- filelib:wildcard(code:lib_dir(hypernumbers) ++ ViewsPath) ],
+    
+    ok.
+
+-spec resave_view(string()) -> ok.
+resave_view(Path) ->
+    ok.
 
 
 -spec create_site(string(), atom()) -> ok.

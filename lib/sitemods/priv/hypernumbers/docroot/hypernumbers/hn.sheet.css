@@ -455,6 +455,7 @@ p,h1,h2,h3,h4,h5 {
 
 #viewbuilder { 
     position: absolute;
+    background: white;
 }
 
 #tabs {
@@ -1504,6 +1505,7 @@ p,h1,h2,h3,h4,h5 {
 }
 
 #closeviewbtn { 
+    display:none;
     position:absolute;
     right: 10px;
     top: 2px;

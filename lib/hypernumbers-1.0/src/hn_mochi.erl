@@ -51,9 +51,10 @@ handle_(Ref, Req, Qry) ->
 authorize_resource(Req, Ref, Qry) -> 
     Req2 = process_request(Ref#refX.site, Req),
     #req{mochi=Mochi, user=User, accept=AType} = Req2,
-    Ar = {hn_users:name(User), hn_users:groups(User)},
-    Method = Mochi:get(method),
+    Ar      = {hn_users:name(User), hn_users:groups(User)},
+    Method  = Mochi:get(method),
     AuthRet = authorize(Method, Ref, Qry, AType, Ar),
+
     case {AuthRet, AType} of
         {allowed, _} ->
             handle_resource(Method, Ref, Qry, Req2);
@@ -491,23 +492,18 @@ ipost(#refX{site=Site, path=Path} = Ref, _Qry,
       [{"saveview", {struct, [{"name", Name}, {"tpl", Form},
                               {"overwrite", OverWrite}]}}], 
       Req=#req{user=User}) ->
-    AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
-    AuthReq = {hn_users:name(User), hn_users:groups(User)},
-    Output   = [viewroot(Site), "/" , Name],
-    TplPath  = [Output, ".tpl"],
-    true = can_save_view(User, Name),
-    ok = auth_srv2:add_view(Site, Path, AuthSpec, Name),
-    Sec = hn_security:make(Form, Ref, AuthReq),
-    ok = filelib:ensure_dir(Output),
+    
+    TplPath = [viewroot(Site), "/" , Name, ".tpl"],
+    ok      = filelib:ensure_dir([viewroot(Site), "/" , Name]),
     
     case (OverWrite == false) andalso filelib:is_file(TplPath) of
         true ->
             json(Req, "error");
         false ->
-            ok = file:write_file([Output, ".tpl"], Form),
-            {ok, F} = file:open([Output, ".sec"], [write]),
-            ok = io:format(F, "~p.", [Sec]),
-            ok = file:close(F),
+            ok       = save_view(Site, Name, Form, User, Ref),
+            AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
+            ok       = auth_srv2:add_view(Site, Path, AuthSpec, Name),
+            ok       = file:write_file(TplPath, Form),
             json(Req, "success")
     end;
 
@@ -661,15 +657,6 @@ ipost(Ref, Qry, Post, Req) ->
 %%% Helpers
 %%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-can_save_view(User, "_u/"++FName) ->
-    [Name | _] = string:tokens(FName, "/"),
-    Name == hn_users:name(User);
-
-can_save_view(User, "_g/"++FName) ->
-    [Group | _] = string:tokens(FName, "/"),
-    lists:member(Group, hn_users:groups(User)).
-
 -spec process_request(string(), #req{}) -> #req{}. 
 process_request(Site, R) ->
     R2 = get_user(Site, R),
@@ -955,7 +942,6 @@ should_regen(Tpl, Html) ->
 %%% Parse Attributes
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 -spec parse_query(#req{}) -> #qry{}. 
 parse_query(#req{mochi = Mochi}) ->
     Lst = Mochi:parse_qs(),
@@ -1061,3 +1047,12 @@ nocache() ->
     [{"Cache-Control","no-store, no-cache, must-revalidate"},
      {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
      {"Pragma",       "no-cache"}].
+
+-spec save_view(string(), string(), string(), string(), #refX{}) -> ok.
+%%
+save_view(Site, ViewName, ViewContent, User, Ref) ->
+    AuthReq = {hn_users:name(User), hn_users:groups(User)},
+    Sec     = hn_security:make(ViewContent, Ref, AuthReq),
+    {ok, F} = file:open([viewroot(Site), "/" , ViewName, ".sec"], [write]),
+    ok      = io:format(F, "~p.", [Sec]),
+    ok      = file:close(F).
