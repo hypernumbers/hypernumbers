@@ -91,10 +91,14 @@ make_trans_approved(Base, Trans) ->
     lists:keysort(1, Trans2).
 
 -spec make_candidate(#refX{}, any()) -> [{string(), string()}]. 
-make_candidate(#refX{path=Base}, Json) ->
-    PVs = [{abs_path(Base, P), V} || {struct,[{"ref", P},
-                                              {"formula", V}]}
-                                         <- Json],
+make_candidate(Ref, [{"set", {struct, [{"list", {array, Trans}}]}}]) ->
+    make_candidate_(Ref, Trans);
+make_candidate(Ref, [{"set", Action}]) ->
+    make_candidate_(Ref, [Action]).
+
+make_candidate_(#refX{path=Base}, Trans) ->
+    PVs = [{abs_path(Base, P), V} ||
+              {struct,[{"ref", P}, {"formula", V}]} <- Trans],
     lists:keysort(1, PVs).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -279,14 +283,16 @@ trans_all_perms_test_() ->
                   fun test4/1,
                   fun test5/1]}.
 test1(RefX) ->
-    Json = [{struct,[{"ref","/u/testuser/blah/A:A"},
-                     {"formula","Field 1"}]},
-            {struct,[{"ref","/u/testuser/blah/B:B"},
-                     {"formula","Field 2"}]},
-            {struct,[{"ref","/u/testuser/blah/C:C"},
-                     {"formula","Field 3"}]},
-            {struct,[{"ref","/u/testuser/blah/D:D"},
-                     {"formula","Field 4"}]}],
+    Json = [{"set",
+             {struct,[{"list",
+                       {array,[{struct,[{"ref","/u/testuser/blah/A:A"},
+                                        {"formula","Field 1"}]},
+                               {struct,[{"ref","/u/testuser/blah/B:B"},
+                                        {"formula","Field 2"}]},
+                               {struct,[{"ref","/u/testuser/blah/C:C"},
+                                        {"formula","Field 3"}]},
+                               {struct,[{"ref","/u/testuser/blah/D:D"},
+                                        {"formula","Field 4"}]}]}}]}}],
     Form = "<div id='ventris'>"
         ++ "<link rel='stylesheet' type='text/css' href='/templates/ventris/default.css'>"
         ++ "</link>"
@@ -351,7 +357,8 @@ test1(RefX) ->
     ?assert(validate_trans(Security, RefX, Json)).
     
 test2(RefX) ->
-    Json = [{struct,[{"ref","/u/testuser/blah/D6"},{"formula","Test"}]}],
+    Json = [{"set",
+             {struct,[{"ref","/u/testuser/blah/D6"},{"formula","Test"}]}}],
     Form  = "<link href='/templates/tiny/default.css' type='text/css' rel='stylesheet'>"
         ++ "</link>"
         ++ "<div id='outer'>"
@@ -386,7 +393,7 @@ test2(RefX) ->
 
 %% Same path, but column target vs accepted cell target.
 test3(RefX) ->
-    Json = [{struct,[{"ref","/u/testuser/blah/D:D"},{"formula","Test"}]}],
+    Json = [{"set", {struct,[{"ref","/u/testuser/blah/D:D"},{"formula","Test"}]}}],
     Form  = "<link href='/templates/tiny/default.css' type='text/css' rel='stylesheet'>"
         ++ "</link>"
         ++ "<div id='outer'>"
@@ -420,7 +427,7 @@ test3(RefX) ->
     ?assertNot(validate_trans(Security, RefX, Json)).
 
 test4(RefX) ->
-    Json = [{struct,[{"ref","/u/testuser/blah/D6"},{"formula","Test"}]}],
+    Json = [{"set", {struct,[{"ref","/u/testuser/blah/D6"},{"formula","Test"}]}}],
     Form  = "<link href='/templates/tiny/default.css' type='text/css' rel='stylesheet'>"
         ++ "</link>"
         ++ "<div id='outer'>"
@@ -455,8 +462,11 @@ test4(RefX) ->
 
 %% tests an absolute and a relative path binding
 test5(RefX) ->
-    Json = [{struct,[{"ref","/u/testuser/D6"},{"formula","Test"}]},
-            {struct,[{"ref","/u/testuser/D7"},{"formula","Test"}]}],
+    Json = [{"set",
+             {struct,[{"list",
+                       {array, [{struct,[{"ref","/u/testuser/D6"},{"formula","Test"}]},
+                                {struct,[{"ref","/u/testuser/D7"},{"formula","Test"}]}]
+                       }}]}}],
     Form = "<link href='/templates/tiny/default.css' type='text/css' rel='stylesheet'>"
         ++ "</link>"
         ++ "<div id='outer'>"
