@@ -1,5 +1,7 @@
 -record(req, {mochi,
-              headers = [],
+              headers = [], %% These are 'response' headers.
+              body,
+              method,
               user,
               uid,
               accept}).

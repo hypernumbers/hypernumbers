@@ -11,7 +11,7 @@
 -define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 -define(NAME, "post_log").
 
--export([log/3, start/0, stop/0, replay/2, replay/3, clear/0, repair/1,
+-export([log/2, start/0, stop/0, replay/2, replay/3, clear/0, repair/1,
          browse/1, browse/2, browse_marks/1, info/2 ]).
 
 -export([stream_log/4]).
@@ -32,8 +32,8 @@ start() ->
     end.
 
 %% @doc Logs individual requests
--spec log(#req{}, #refX{}, any()) -> ok.
-log(Req=#req{mochi = Mochi, user = User}, Ref, Body) ->
+-spec log(#req{}, #refX{}) -> ok.
+log(Req=#req{mochi = Mochi, user = User, body = Body}, Ref) ->
     Post = [{time, erlang:now()},
             {site, Ref#refX.site},
             {path, Mochi:get(raw_path)},
