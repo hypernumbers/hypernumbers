@@ -1,0 +1,23 @@
+%%-*-erlang-*-
+%% Home page
+
+{add_view, 
+ [{perms, [{user, '$user'}]},
+  {path, ["u", '$user']},
+  {view, "_g/hypernumbers/userhome"}
+ ]}.
+{champion,
+ [{path, ["u", '$user']},
+  {view, "_g/hypernumbers/userhome"}
+ ]}.
+
+{add_view, 
+ [{perms, [{user, '$user'}]},
+  {path, ["u", '$user', "[**]"]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
+{champion, 
+ [{path, ["u", '$user', "[**]"]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
+
