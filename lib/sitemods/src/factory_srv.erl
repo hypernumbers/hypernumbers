@@ -200,15 +200,13 @@ provision(CurrentSite, Port, Row, State) ->
 
     {Type, Email, SubDomain} = parse(List),
     SubDomain2 = ustring:pr(ustring:to_lower(ustring:new(SubDomain))),
-    io:format("SubDomain2 is ~p~n", [SubDomain2]),
     Type2 = normalise(Type),
     Password = tiny_util:get_password(),
     [User | _T] = string:tokens(Email, "@"),
     RefX1 = RefX#refX{obj = {cell, {4, Row}}},
     RefX2 = RefX#refX{obj = {cell, {5, Row}}},
 
-    Template = code:priv_dir(sitemods) ++
-        "/" ++ Type2,
+    Template = code:priv_dir(sitemods) ++ "/" ++ Type2,
 
     DoesSiteTemplateExist = filelib:is_dir(Template),
 
@@ -221,16 +219,17 @@ provision(CurrentSite, Port, Row, State) ->
             Port2 = proplists:get_value(port, State#state.args),
             NewSite  = "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
                 ++ integer_to_list(Port2),
-            EmailNewSite = case Port2 of
-                               80  -> "http://" ++ Sub  ++ "."  ++ Host;
-                               % 443 -> "https://" ++ Sub  ++ "."  ++ Host;
-                               _   -> "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
-                                          ++ integer_to_list(Port2)
-                           end,
-
+            EmailNewSite =
+                case Port2 of
+                    80  -> "http://" ++ Sub  ++ "."  ++ Host;
+                    % 443 -> "https://" ++ Sub  ++ "."  ++ Host;
+                    _   -> "http://" ++ Sub  ++ "."  ++ Host  ++ ":"
+                               ++ integer_to_list(Port2)
+                end,
+            
             ok = hn_setup:site(NewSite, list_to_atom(Type2),
                                [{user, User},
-                                {email, Email ++ "@hypernumbers.com"},
+                                {email, Email},
                                 {site, EmailNewSite},
                                 {password, Password},
                                 {subdomain, Sub }
@@ -251,7 +250,9 @@ provision(CurrentSite, Port, Row, State) ->
                     io:format("Email is ~p~n", [Email]),
                     io:format("~p",[Msg]);
                 {ok, production}  ->
-                    hn_util:email(Email ++ "@hypernumbers.com", "\"Hypernumbers Team\" <noreply@hypernumbers.com>",
+                    hn_util:email(Email,
+                                  "\"Hypernumbers Team\""
+                                  ++ "<noreply@hypernumbers.com>",
                                   "Your new Hypernumbers site is live!", Msg)
             end
     end,
