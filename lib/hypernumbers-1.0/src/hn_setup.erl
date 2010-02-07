@@ -48,14 +48,14 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
 delete_site(Site) ->
     Dest = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:parse_site(Site) ++ "/",
-    
+
     auth_srv2:clear_all_perms_DEBUG(Site),
     [ {atomic, ok}  = mnesia:delete_table(hn_db_wu:trans(Site, Table))
       || {Table, _F, _T, _I} <- tables()],
-    
+
     ok = hn_util:delete_directory(Dest),
     ok = mnesia:dirty_delete(core_site, Site).
-  
+
 %% Update all existing sites with default options
 -spec update() -> ok. 
 update() ->
@@ -105,6 +105,8 @@ add_user(Site, User) ->
 -spec setup(string(), atom(), list(), atom()) -> ok.
 setup(Site, Type, _Opts, templates) ->
     ok = filelib:ensure_dir(sitedir(Site)),
+    % first copy over the standard type
+    ok = hn_util:recursive_copy(coreinstalldir(), sitedir(Site)),
     ok = hn_util:recursive_copy(moddir(Type), sitedir(Site));
 setup(Site, Type, _Opts, json) ->
     ok = import_json(Site, moddir(Type));
@@ -120,14 +122,16 @@ setup(Site, _Type, Opts, users) ->
 setup(Site, _Type, _Opts, user_permissions) ->    
     Users = mnesia:dirty_match_object(hn_db_wu:trans(Site, hn_user),
                                       #hn_user{_='_'}),
-    [ add_user(Site, User) || User <- Users],
+                 [ add_user(Site, User) || User <- Users],
     ok.
 
+-spec coreinstalldir() -> string().
+coreinstalldir() ->
+    code:priv_dir(sitemods) ++ "/core_install".
 
 -spec moddir(atom()) -> string(). 
 moddir(Type) ->
-    code:priv_dir(sitemods) ++ "/" ++ atom_to_list(Type).
-
+    code:priv_dir(sitemods) ++ "/site_types/" ++ atom_to_list(Type).
 
 -spec sitedir(atom()) -> string(). 
 sitedir(Site) ->
@@ -144,10 +148,10 @@ launch_site(Site) ->
 resave_views() ->
 
     ViewsPath = "/../../var/sites/*/docroot/views/*/*/*.tpl",
-    
+
     [ resave_view(X)
       || X <- filelib:wildcard(code:lib_dir(hypernumbers) ++ ViewsPath) ],
-    
+
     ok.
 
 -spec resave_view(string()) -> ok.
@@ -157,8 +161,8 @@ resave_view(Path) ->
 
 -spec create_site(string(), atom()) -> ok.
 create_site(Site, Type)->
-    %% Seems sensible to keep this restricted
-    %% to disc_copies for now
+%% Seems sensible to keep this restricted
+%% to disc_copies for now
     Storage = disc_copies,
     [ok = hn_db_admin:create_table(hn_db_wu:trans(Site, N),
                                    N, F, Storage, T, I)
@@ -192,7 +196,7 @@ tables() ->
       ?TBL(style_counters,        set,    	   []),         
       ?TBL(page_vsn,              set,    	   []),         
       ?TBL(page_history,          bag,    	   []) ].
-    
+
 
 %% Import a set of json files into the live spreadsheet
 import_json(Site, Dir) ->
@@ -240,7 +244,7 @@ resolve_user('$user', Opts) ->
     end;
 resolve_user(User, _Opts) ->
     User.
- 
+
 resolve_password('$password', Opts) ->
     case pget(password, Opts, undefined) of
         undefined -> throw(no_pass);
@@ -280,7 +284,7 @@ run_script2(Path, Site, Expr) ->
     RefX = hn_util:parse_url(Site++Path), 
     hn_db_api:write_attributes([{RefX, [{"formula", Expr}]}]).
 
-    
+
 pget(Key, List) ->
     pget(Key, List, "").
 pget(Key, List, Default) ->
