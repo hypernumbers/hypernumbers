@@ -207,7 +207,9 @@ import_json(Site, Dir) ->
     ok.
 
 is_path(L) ->
-    case string:tokens(L, ".") of
+    Tokens = string:tokens(L, "/"),
+    File = hd(lists:reverse(Tokens)),
+    case string:tokens(File, ".") of
         ["path" | _T] -> true;
         _Other        -> false
     end.
