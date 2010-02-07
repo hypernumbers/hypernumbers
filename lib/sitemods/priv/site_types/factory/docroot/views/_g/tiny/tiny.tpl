@@ -19,8 +19,8 @@
           <div data-binding-to='/request_site/A:A' data-binding-from='/B12:B19' class='hn' data-type='radio'></div>
           
     <div data-binding-from='B8' class='hn header' data-type='text'></div>
-          
-          <table><colgroup><col width='70'></col><col width='70'></col></colgroup><tbody><tr><td><div data-binding-to='/request_site/B:B' data-type='input' class='hn'></div></td><td>@hypernumbers.com</td></tr></tbody></table>
+                                
+    <div data-binding-to='/request_site/B:B' data-type='input' class='hn'></div>
           
     <div data-binding-from='B9' class='hn header' data-type='text'></div>
 

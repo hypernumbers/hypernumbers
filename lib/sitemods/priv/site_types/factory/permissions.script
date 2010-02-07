@@ -17,18 +17,6 @@
   {view, "_g/tiny/tiny"}
  ]}.
 
-
-{add_view, 
- [{path, ["request_site"]},
-  {perms, [{group, "admin"}]},
-  {view, "_g/core/spreadsheet"}
- ]}.
-{champion, 
- [{path, ["request_site"]},
-  {view, "_g/core/spreadsheet"}
- ]}.
-
-
 {add_view, 
  [{path, ["_user", "login"]},
   {perms, [everyone]},
@@ -37,19 +25,4 @@
 {champion,
  [{path, ["public"]},
   {view, "_g/core/login"}
- ]}.
-
-{add_view, 
- [{path, ["contact"]},
-  {perms, [everyone]},
-  {view, "_g/tiny/contact"}
- ]}.
-{add_view, 
- [{path, ["contact"]},
-  {perms, [{group, "dev"}]},
-  {view, "_g/core/spreadsheet"}
- ]}.
-{champion,
- [{path, ["contact"]},
-  {view, "_g/tiny/contact"}
  ]}.

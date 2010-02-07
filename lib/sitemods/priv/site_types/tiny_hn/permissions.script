@@ -6,6 +6,11 @@
   {perms, [everyone]},
   {view, "_g/tiny/tiny"}
  ]}.
+{add_view, 
+ [{path, []},
+  {perms, [{group, "admin"}]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
 {champion,
  [{path, []},
   {view, "_g/tiny/tiny"}

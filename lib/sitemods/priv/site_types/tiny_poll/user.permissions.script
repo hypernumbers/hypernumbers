@@ -6,6 +6,11 @@
   {perms, [{user, '$user'}]},
   {view, "_g/tiny_poll/admin"}
  ]}.
+{add_view, 
+ [{path, ["admin"]},
+  {perms, [{user, '$user'}]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
 {champion,
  [{path, ["admin"]},
   {view, "_g/tiny_poll/admin"}

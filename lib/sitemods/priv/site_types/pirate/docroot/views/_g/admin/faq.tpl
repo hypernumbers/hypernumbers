@@ -1,28 +1,28 @@
 <div id='ventris'>
   
-  <link href='/templates/ventris/default.css' type='text/css' rel='stylesheet'></link>
+  <link rel='stylesheet' type='text/css' href='/templates/ventris/default.css'></link>
   
   <div id='outer'>
     
     <div id='inner'>
       
 	  <div class='clear'>
-        <div class='droppable' id='header'>
+        <div id='header' class='droppable'>
           
-	      <div data-type='text' class='hn header' data-binding-from='c4'></div>
+	      <div data-binding-from='c4' class='hn header' data-type='text'></div>
 	      
-	      <div class='droppable' id='menu'>
+	      <div id='menu' class='droppable'>
 	      </div>
 	    
         </div>
       </div>
       
       <div id='contentwrapper'>
-	    <div class='droppable' id='primarycontent'><div data-binding-from='/faq/C6' class='hn' data-type='text'></div></div>
-	    <div class='droppable' id='secondarycontent'></div>
+	    <div id='primarycontent' class='droppable'><div data-type='text' class='hn' data-binding-from='/faq/C6'></div></div>
+	    <div id='secondarycontent' class='droppable'></div>
       </div>
       
-	  <div class='droppable' id='footer'><div data-type='text' class='hn' data-binding-from='/faq/C8'></div></div>
+	  <div id='footer' class='droppable'><div data-binding-from='/faq/C8' class='hn' data-type='text'></div></div>
       
 	</div>
     
