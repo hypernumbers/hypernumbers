@@ -558,7 +558,14 @@ view_to_json({V, View, Iter}) ->
 -spec dump_script(gb_tree()) -> [any()]. 
 dump_script1(Tree) ->
     Iter = gb_trees:iterator(Tree),
-    lists:flatten(dump_tree(gb_trees:next(Iter), [])).
+    List = lists:flatten(dump_tree(gb_trees:next(Iter), [])),
+    to_script(List, []).
+
+to_script([], Acc)      -> FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
+                           lists:flatten([FirstLine | lists:reverse(Acc)]);
+to_script([H | T], Acc) ->
+    NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
+    to_script(T, [NewAcc | Acc]).
 
 dump_tree(none, _Path) -> [];
 dump_tree({{seg, S}, Tree2, Iter}, Path) ->
