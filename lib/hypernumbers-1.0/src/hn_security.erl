@@ -76,7 +76,7 @@ screen_candidate([], []) -> true;
 screen_candidate([{To, #binding{type=T}} | RestApp], [{To, _V} | RestCan]) 
   when T =:= "input"; T =:= "textarea" ->
     screen_candidate(RestApp, RestCan);
-screen_candidate([{To, #binding{from=F}} | RestApp], [{To, F} | RestCan]) ->
+screen_candidate([{To, _Binding} | RestApp], [{To, _V} | RestCan]) ->
     screen_candidate(RestApp, RestCan);
 screen_candidate(_, _) -> false.
 
