@@ -223,7 +223,7 @@ provision(CurrentSite, Port, Row, State) ->
     RefX4 = RefX#refX{obj = {cell, {6, Row}}},
     
     Template = code:priv_dir(sitemods) ++
-        "/" ++ Type2,
+        "/site_types/" ++ Type2,
 
     DoesSiteTemplateExist = filelib:is_dir(Template),
 
