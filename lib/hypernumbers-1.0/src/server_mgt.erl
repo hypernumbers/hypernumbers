@@ -30,7 +30,7 @@
 grab_site(URL) ->
     "http://" ++ SiteAndPort = URL,
     [Site, Port] = string:tokens(SiteAndPort, ":"),
-    _Prefix = Site ++ "&" ++ Port,
+    Prefix = Site ++ "&" ++ Port,
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/" ++ "grab/"
         ++ Site ++ "&" ++ Port ++ "/",
     
@@ -40,8 +40,8 @@ grab_site(URL) ->
          end,
     ok = filelib:ensure_dir(Dir),
     ok = grab_pages(URL, Dir),
-    %ok = get_views(ignored, [URL], Prefix, grab),
-    %ok = grab_auth_srv(URL, Dir),
+    ok = get_views(ignored, [URL], Prefix, grab),
+    ok = grab_auth_srv(URL, Dir),
     ok.
 
 -spec restore_srv(list()) -> ok.
@@ -145,19 +145,22 @@ grab_pages2(RefX, [H | T], Dir) ->
     grab_pages2(RefX, T, Dir).
 
 grab_auth_srv(URL, Dir) ->
-    Perms = auth_srv:dump_script(URL),
-    ok = file:write_file(Dir ++ "/auth_srv/" ++ permissions.script, Perms).
+    Perms = auth_srv2:dump_script(URL),
+    ok = filelib:ensure_dir(Dir),
+    ok = file:write_file(Dir ++ permissions.script, Perms).
 
 get_views(_Timestamp, [], _Type, _Kind)                -> ok;
 get_views(Timestamp, ["http://" ++ H | T], Type, Kind) ->
     [Site, Port] = string:tokens(H, ":"),
     Prefix = code:lib_dir(hypernumbers) ++ "/../../var/",
-    From = Prefix ++ "docroot/" ++ Site ++ "&" ++ Port ++ "/",
+    From = Prefix ++ "sites/" ++ Site ++ "&" ++ Port ++ "/docroot/",
     To = case Kind of
              backup -> Prefix ++ "backup/" ++ Type ++ "/" ++ Timestamp ++ "/"
                            ++ Site ++ "&" ++ Port ++ "/views/";
-             grab   -> Prefix ++ "grab/" ++ Site ++ "&" ++ Port ++ "/views/"
+             grab   -> Prefix ++ "grab/" ++ Site ++ "&" ++ Port
+                           ++ "/docroot/"
          end,
+    ok = filelib:ensure_dir(To),
     ok = hn_util:recursive_copy(From, To),
     get_views(Timestamp, T, Type, Kind).
 
