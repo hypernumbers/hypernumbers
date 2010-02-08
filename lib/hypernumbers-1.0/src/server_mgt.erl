@@ -15,6 +15,7 @@
 
 -export([
          grab_site/1,
+         grab_as_site_type/2,
          backup_srv/0,
          backup_site/1,
          restore_srv/1,
@@ -25,15 +26,25 @@
     
 %%     ok.
     
+-spec grab_as_site_type(list(), list()) -> ok.
+grab_as_site_type(URL, SiteType) ->
+    {GrabPrefix, GrabDir} = parse_url_for_grab(URL),
+    ok = grab_site1(URL, GrabPrefix, GrabDir),
+    SiteTypePrefix = code:lib_dir(sitemods) ++ "/priv/site_types/",
+    ToDir = SiteTypePrefix ++ SiteType,
+    ok = case filelib:is_dir(ToDir) of
+             true  -> hn_util:delete_directory(ToDir);
+             false -> ok
+         end,
+    ok = filelib:ensure_dir(ToDir),
+    ok = hn_util:recursive_copy(GrabDir, ToDir).
 
 -spec grab_site(list()) -> ok.
 grab_site(URL) ->
-    "http://" ++ SiteAndPort = URL,
-    [Site, Port] = string:tokens(SiteAndPort, ":"),
-    Prefix = Site ++ "&" ++ Port,
-    Dir = code:lib_dir(hypernumbers) ++ "/../../var/" ++ "grab/"
-        ++ Site ++ "&" ++ Port ++ "/",
-    
+    {Prefix, Dir} = parse_url_for_grab(URL),
+    grab_site1(URL, Prefix, Dir).
+
+grab_site1(URL, Prefix, Dir) ->
     ok = case filelib:is_dir(Dir) of
              true  -> hn_util:delete_directory(Dir);
              false -> ok
@@ -102,6 +113,13 @@ backup_site(URL) ->
 %%
 %% Internal Functions
 %%
+parse_url_for_grab(URL) ->
+    "http://" ++ SiteAndPort = URL,
+    [Site, Port] = string:tokens(SiteAndPort, ":"),
+    Prefix = Site ++ "&" ++ Port,
+    {Prefix, code:lib_dir(hypernumbers) ++ "/../../var/" ++ "grab/"
+        ++ Site ++ "&" ++ Port ++ "/"}.
+
 restore_auth_srv(Dir, Site) ->
     File = Dir ++ Site ++ "/auth_srv/auth_srv.dump",
     {ok, [Tree]} = file:consult(File),
