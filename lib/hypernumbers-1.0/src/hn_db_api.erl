@@ -113,9 +113,9 @@
          % update_style/2,
          recalculate/1,
          reformat/1,
-         drag_n_drop/2,
-         copy_n_paste/2,
-         cut_n_paste/2,
+         drag_n_drop/3,
+         copy_n_paste/3,
+         cut_n_paste/3,
          copy_style/2,
          insert/2,
          insert/3,
@@ -1154,10 +1154,10 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
 %% </ul> 
 %% 
 %% @todo cut'n'paste a page
-cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
+cut_n_paste(From, To, Ar) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  ok = copy_n_paste2(From, To),
+                  ok = copy_n_paste2(From, To, Ar),
                   ok = hn_db_wu:clear_cells(From, all)
           end,
     mnesia:activity(transaction, Fun),
@@ -1179,10 +1179,10 @@ cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 %%
 %% Also whole pages can be copy_n_pasted by making both From and To 
 %% page refX's
-copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
+copy_n_paste(From, To, Ar) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  ok = copy_n_paste2(From, To)
+                  ok = copy_n_paste2(From, To, Ar)
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("copy n paste").
@@ -1252,13 +1252,14 @@ copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% <b>to</b> range</li>
 %% <li>the <b>from</b> must be the same height as the
 %% <b>to</b> range</li></ul> 
-drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
+drag_n_drop(From, To, Ar) 
+  when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   case is_valid_d_n_d(From, To) of
-                      {ok, single_cell, Incr} -> copy_cell(From, To, Incr);
+                      {ok, single_cell, Incr} -> copy_cell(From, To, Incr, Ar);
                       {ok, 'onto self', _Incr} -> ok;
-                      {ok, cell_to_range, Incr} -> copy2(From, To, Incr)
+                      {ok, cell_to_range, Incr} -> copy2(From, To, Incr, Ar)
                   end
           end,
     ok = mnesia:activity(transaction, Fun),
@@ -1310,11 +1311,18 @@ write_attributes1(RefX, List, Ar)
     [hn_db_wu:write_attr(RefX, X, Ar) || X <- List],
     ok = hn_db_wu:mark_children_dirty(RefX, Ar).
 
--spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
-copy_cell(From, To, Incr) ->
-    %% TODO: Secure this
-    hn_db_wu:copy_cell(From, To, Incr),
-    hn_db_wu:mark_children_dirty(To, nil).
+-spec copy_cell(#refX{}, #refX{}, 
+                false | horizontal | vertical, 
+                auth_req()) 
+               -> ok.
+copy_cell(From = #refX{site = Site, path = Path}, To, Incr, Ar) ->
+    case auth_srv2:get_any_view(Site, Path, Ar) of
+        {view, _} ->
+            hn_db_wu:copy_cell(From, To, Incr),
+            hn_db_wu:mark_children_dirty(To, Ar);
+        _ ->
+            throw(auth_error)
+    end.
 
 init_front_end_notify() ->
     _Return = put('front_end_notify', []),
@@ -1398,22 +1406,23 @@ extract_kvs1([{_R, KV} | T], Acc) -> extract_kvs1(T, [KV | Acc]).
 
 %% this clause copies whole pages
 copy_n_paste2(#refX{site = Site, obj = {page, "/"}} = From, 
-              #refX{site = Site, path = NewPath, obj = {page, "/"}}) ->
+              #refX{site = Site, path = NewPath, obj = {page, "/"}},
+              Ar) ->
     Cells = hn_db_wu:get_cells(From),
     Fun = fun(X) ->
-                  ok = copy_cell(X, X#refX{path = NewPath}, false)
+                  ok = copy_cell(X, X#refX{path = NewPath}, false, Ar)
           end,
     [Fun(X) || X <- Cells],
     ok;
 %% this clause copies bits of pages
-copy_n_paste2(From, To) ->
+copy_n_paste2(From, To, Ar) ->
     case is_valid_c_n_p(From, To) of
-        {ok, single_cell}    -> copy_cell(From, To, false);
+        {ok, single_cell}    -> copy_cell(From, To, false, Ar);
         {ok, 'onto self'}    -> ok;
-        {ok, cell_to_range}  -> copy2(From, To, false);
+        {ok, cell_to_range}  -> copy2(From, To, false, Ar);
         {ok, range_to_cell}  -> To2 = cell_to_range(To),
-                                copy3(From, To2, false);
-        {ok, range_to_range} -> copy3(From, To, false)
+                                copy3(From, To2, false, Ar);
+        {ok, range_to_range} -> copy3(From, To, false, Ar)
     end.
 
 cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
@@ -1452,28 +1461,30 @@ is_valid_d_n_d(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
 is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 
 %% cell to range
-copy2(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
+copy2(From, To, Incr, Ar) when is_record(From, refX), is_record(To, refX) ->
     %%#refX{site = Site} = To,
     List = hn_util:range_to_list(To),
-    lists:map(fun(X) -> copy_cell(From, X, Incr) end, List),
+    lists:map(fun(X) -> copy_cell(From, X, Incr, Ar) end, List),
     ok.
 
 %% range to range
-copy3(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
+copy3(From, To, Incr, Ar) 
+  when is_record(From, refX), is_record(To, refX) ->
     % range to range copies are 'tiled'
     TileList = get_tiles(From, To),
-    copy3a(From, TileList, Incr).
+    copy3a(From, TileList, Incr, Ar).
 
-copy3a(_From, [], _Incr)    -> ok;
-copy3a(From, [H | T], Incr) -> FromRange = hn_util:range_to_list(From),
-                               ToRange = hn_util:range_to_list(H),
-                               ok = copy3b(FromRange, ToRange, Incr),
-                               copy3a(From, T, Incr).
+copy3a(_From, [], _Incr, _Ar) -> ok;
+copy3a(From, [H | T], Incr, Ar) -> 
+    FromRange = hn_util:range_to_list(From),
+    ToRange = hn_util:range_to_list(H),
+    ok = copy3b(FromRange, ToRange, Incr, Ar),
+    copy3a(From, T, Incr, Ar).
 
-copy3b([], [], _Incr)              -> ok;
-copy3b([FH | FT], [TH | TT], Incr) ->
-    ok = copy_cell(FH, TH, Incr),
-    copy3b(FT, TT, Incr).
+copy3b([], [], _Incr, _Ar)             -> ok;
+copy3b([FH | FT], [TH | TT], Incr, Ar) ->
+    ok = copy_cell(FH, TH, Incr, Ar),
+    copy3b(FT, TT, Incr, Ar).
 
 get_tiles(#refX{obj = {range, {X1F, Y1F, X2F, Y2F}}},
           #refX{obj = {range, {X1T, Y1T, X2T, Y2T}}} = To) ->

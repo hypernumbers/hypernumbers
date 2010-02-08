@@ -381,95 +381,100 @@ iget(Ref, _Type, Qry, Req) ->
 -spec ipost(#refX{}, #qry{}, #req{}) -> any().
 
 ipost(Ref=#refX{site = S, path = P}, _Qry, 
-      Req=#req{body=[{"drag", {_, [{"range", Rng}]}}], user=User}) ->
+      Req=#req{body = [{"drag", {_, [{"range", Rng}]}}],
+               auth_req = Ar,
+               user = User}) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
-    hn_db_api:drag_n_drop(Ref, Ref#refX{obj = hn_util:parse_attr(range,Rng)}),
-    json(Req, "success");
+    hn_db_api:drag_n_drop(Ref, 
+                          Ref#refX{obj = hn_util:parse_attr(range,Rng)},
+                         Ar),
+     json(Req, "success");
 
-ipost(#refX{site = Site, path=["_user","login"]}, _Qry, Req) ->
-    [{"email", Email},{"pass", Pass},{"remember", Rem}] = Req#req.body,
-    Resp = case hn_users:login(Site, Email, Pass, Rem) of
-               {error, invalid_user} -> 
-                   [{"response","error"}];
-               {ok, Token} ->
-                   [{"response","success"},{"token",Token}]
-           end,
-    json(Req, {struct, Resp});
+ ipost(#refX{site = Site, path=["_user","login"]}, _Qry, Req) ->
+     [{"email", Email},{"pass", Pass},{"remember", Rem}] = Req#req.body,
+     Resp = case hn_users:login(Site, Email, Pass, Rem) of
+                {error, invalid_user} -> 
+                    [{"response","error"}];
+                {ok, Token} ->
+                    [{"response","success"},{"token",Token}]
+            end,
+     json(Req, {struct, Resp});
 
-%% the purpose of this message is to mark the mochilog so we don't 
-%% need to do nothing with anything...
-ipost(_Ref, #qry{mark = []}, 
-      Req=#req{body = [{"set",{struct, [{"mark", _Msg}]}}]}) ->
-    json(Req, "success");
+ %% the purpose of this message is to mark the mochilog so we don't 
+ %% need to do nothing with anything...
+ ipost(_Ref, #qry{mark = []}, 
+       Req=#req{body = [{"set",{struct, [{"mark", _Msg}]}}]}) ->
+     json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "before"}], auth_req = Ar})
-  when O == row orelse O == column ->
-    ok = hn_db_api:insert(Ref, Ar),
-    json(Req, "success");
+ ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+       Req=#req{body=[{"insert", "before"}], auth_req = Ar})
+   when O == row orelse O == column ->
+     ok = hn_db_api:insert(Ref, Ar),
+     json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "after"}], auth_req = Ar})
-  when O == row orelse O == column ->
-    ok = hn_db_api:insert(make_after(Ref), Ar),
-    json(Req, "success");
+ ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+       Req=#req{body=[{"insert", "after"}], auth_req = Ar})
+   when O == row orelse O == column ->
+     ok = hn_db_api:insert(make_after(Ref), Ar),
+     json(Req, "success");
 
-%% by default cells and ranges displace vertically
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "before"}], auth_req = Ar})
-  when O == cell orelse O == range ->
-    ok = hn_db_api:insert(Ref, vertical, Ar),
-    json(Req, "success");
+ %% by default cells and ranges displace vertically
+ ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+       Req=#req{body=[{"insert", "before"}], auth_req = Ar})
+   when O == cell orelse O == range ->
+     ok = hn_db_api:insert(Ref, vertical, Ar),
+     json(Req, "success");
 
-%% by default cells and ranges displace vertically
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "after"}], auth_req = Ar})
-  when O == cell orelse O == range ->
-    ok = hn_db_api:insert(make_after(Ref), Ar),
-    json(Req, "success");
+ %% by default cells and ranges displace vertically
+ ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+       Req=#req{body=[{"insert", "after"}], auth_req = Ar})
+   when O == cell orelse O == range ->
+     ok = hn_db_api:insert(make_after(Ref), Ar),
+     json(Req, "success");
 
-%% but you can specify the displacement explicitly
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "before"}, {"displacement", D}],
-               auth_req = Ar})
-  when O == cell orelse O == range,
-       D == "horizontal" orelse D == "vertical" ->
-    ok = hn_db_api:insert(Ref, list_to_existing_atom(D), Ar),
-    json(Req, "success");
+ %% but you can specify the displacement explicitly
+ ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+       Req=#req{body=[{"insert", "before"}, {"displacement", D}],
+                auth_req = Ar})
+   when O == cell orelse O == range,
+        D == "horizontal" orelse D == "vertical" ->
+     ok = hn_db_api:insert(Ref, list_to_existing_atom(D), Ar),
+     json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "after"}, {"displacement", D}],
-               auth_req = Ar})
-  when O == cell orelse O == range,
-       D == "horizontal" orelse D == "vertical" ->
-    RefX2 = make_after(Ref),
-    ok = hn_db_api:insert(RefX2, list_to_existing_atom(D), Ar),
-    json(Req, "success");
+ ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+       Req=#req{body=[{"insert", "after"}, {"displacement", D}],
+                auth_req = Ar})
+   when O == cell orelse O == range,
+        D == "horizontal" orelse D == "vertical" ->
+     RefX2 = make_after(Ref),
+     ok = hn_db_api:insert(RefX2, list_to_existing_atom(D), Ar),
+     json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"delete", "all"}],
-               auth_req = Ar}) 
-  when O == page ->
-    ok = hn_db_api:delete(Ref, Ar),
-    json(Req, "success");
+ ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+       Req=#req{body=[{"delete", "all"}],
+                auth_req = Ar}) 
+   when O == page ->
+     ok = hn_db_api:delete(Ref, Ar),
+     json(Req, "success");
 
-ipost(Ref, _Qry, 
-      Req=#req{body=[{"delete", "all"}],
-               auth_req = Ar}) ->
-    ok = hn_db_api:delete(Ref, Ar),
-    json(Req, "success");
+ ipost(Ref, _Qry, 
+       Req=#req{body=[{"delete", "all"}],
+                auth_req = Ar}) ->
+     ok = hn_db_api:delete(Ref, Ar),
+     json(Req, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"delete", Direction}],
-               auth_req = Ar})
-  when O == cell orelse O == range,
-       Direction == "horizontal" orelse Direction == "vertical" ->
-    ok = hn_db_api:delete(Ref, Direction, Ar),
-    json(Req, "success");
+ ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+       Req=#req{body=[{"delete", Direction}],
+                auth_req = Ar})
+   when O == cell orelse O == range,
+        Direction == "horizontal" orelse Direction == "vertical" ->
+     ok = hn_db_api:delete(Ref, Direction, Ar),
+     json(Req, "success");
 
-ipost(Ref=#refX{obj = {range, _}}, _Qry,
-      Req=#req{body=[{"copy", {struct, [{"src", Src}]}}]}) ->
-    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref),
+ ipost(Ref=#refX{obj = {range, _}}, _Qry,
+       Req=#req{body=[{"copy", {struct, [{"src", Src}]}}],
+                auth_req = Ar}) ->
+     ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, Ar),
     json(Req, "success");
 
 ipost(#refX{obj = {range, _}} = Ref, _Qry, 
