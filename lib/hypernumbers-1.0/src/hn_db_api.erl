@@ -93,6 +93,7 @@
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
+-include("auth2.hrl").
 
 -export([
          write_attributes/1,
@@ -129,7 +130,7 @@
          write_remote_link/3,
          notify_from_web/5,
          notify_back_from_web/4,
-         handle_dirty_cell/2,
+         handle_dirty_cell/3,
          handle_dirty/2,
          set_borders/5,
          register_hn_from_web/4,
@@ -423,13 +424,13 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
     Str.
 
 
--spec handle_dirty_cell(string(), cellidx()) -> ok. 
-handle_dirty_cell(Site, Idx) ->
+-spec handle_dirty_cell(string(), cellidx(), nil | auth_req()) -> ok. 
+handle_dirty_cell(Site, Idx, Pending) ->
     ok = init_front_end_notify(),  
     F = fun() ->
                 Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
                 case hn_db_wu:read_attrs(Cell, ["formula"], read) of
-                    [{C, KV}] -> hn_db_wu:write_attr(C, KV);
+                    [{C, KV}] -> hn_db_wu:write_attr(C, KV, Pending);
                     []        -> ok
                 end
         end,
@@ -993,7 +994,7 @@ delete(#refX{obj = {page, _}} = RefX) ->
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
                    Dirty = hn_db_wu:delete_page(RefX),
-                   hn_db_wu:mark_these_dirty(Dirty)
+                   hn_db_wu:mark_these_dirty(Dirty, nil)
            end,
     mnesia:activity(transaction, Fun1),
     ok = tell_front_end("delete").
@@ -1038,8 +1039,8 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp) ->
 
     ReWr = do_delete(Type, RefX),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
-    hn_db_wu:mark_these_dirty(ReWr),
-    hn_db_wu:mark_these_dirty(MoreDirty),
+    hn_db_wu:mark_these_dirty(ReWr, nil),
+    hn_db_wu:mark_these_dirty(MoreDirty, nil),
 
     case Obj of
         {row,    _} ->
@@ -1119,7 +1120,7 @@ clear(RefX, Type) when is_record(RefX, refX) ->
         fun() ->
                 ok = init_front_end_notify(),
                 hn_db_wu:clear_cells(RefX, Type),
-                hn_db_wu:mark_children_dirty(RefX)
+                hn_db_wu:mark_children_dirty(RefX, nil)
         end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("clear").
@@ -1313,12 +1314,13 @@ write_attributes1(RefX, List, Pending)
   when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),
     [hn_db_wu:write_attr(RefX, X, Pending) || X <- List],
-    ok = hn_db_wu:mark_children_dirty(RefX).
+    ok = hn_db_wu:mark_children_dirty(RefX, Pending).
 
 -spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
 copy_cell(From, To, Incr) ->
+    %% TODO: Secure this
     hn_db_wu:copy_cell(From, To, Incr),
-    hn_db_wu:mark_children_dirty(To).
+    hn_db_wu:mark_children_dirty(To, nil).
 
 init_front_end_notify() ->
     _Return = put('front_end_notify', []),

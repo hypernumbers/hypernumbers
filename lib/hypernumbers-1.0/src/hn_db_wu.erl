@@ -520,8 +520,8 @@
          copy_attrs/3,
          copy_style/2,
          get_cells/1,
-         mark_children_dirty/1,
-         mark_these_dirty/1,
+         mark_children_dirty/2,
+         mark_these_dirty/2,
          mark_dirty/2,
          mark_notify_out_dirty/2,            
          mark_notify_out_dirty/3,      
@@ -584,6 +584,7 @@
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
+-include("auth2.hrl").
 
 -include_lib("stdlib/include/ms_transform.hrl").
 
@@ -1924,24 +1925,24 @@ mark_dirty(Site, Record)
     Tbl = trans(Site, element(1,Record)),
     mnesia:write(Tbl, Record, write).
 
--spec mark_these_dirty([#refX{}]) -> ok.
-mark_these_dirty([]) -> ok;
-mark_these_dirty(Refs = [#refX{site = Site}|_]) ->
+-spec mark_these_dirty([#refX{}], nil | auth_req()) -> ok.
+mark_these_dirty([], _) -> ok;
+mark_these_dirty(Refs = [#refX{site = Site}|_], Pending) ->
     F = fun(C) -> case read_local_item_index(C) of
                     false -> []; 
                     Idx -> Idx end
         end,
     Tbl = trans(Site, relation),
     Idxs = lists:flatten([F(C) || R <- Refs, C <- get_cells(R)]),
-    Q = insert_dirty_queue(Idxs, Tbl, -1, hn_workq:new()),
+    Q = insert_dirty_queue(Idxs, Tbl, -1, hn_workq:new(Pending)),
     Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
     
--spec mark_children_dirty(#refX{}) -> ok. 
-mark_children_dirty(#refX{site = Site} = RefX) ->
+-spec mark_children_dirty(#refX{}, nil | auth_req()) -> ok. 
+mark_children_dirty(#refX{site = Site} = RefX, Pending) ->
     Tbl = trans(Site, relation),
     Children = get_local_children_idxs(RefX),
-    Q = insert_dirty_queue(Children, Tbl, -1, hn_workq:new()),
+    Q = insert_dirty_queue(Children, Tbl, -1, hn_workq:new(Pending)),
     case hn_workq:is_empty(Q) of
         true -> ok;
         false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},

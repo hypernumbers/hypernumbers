@@ -125,7 +125,7 @@ restart_children([Hd | Tl], Pid, T, Acc) ->
 -spec listen_dirty_queue_init(string(), atom()) -> no_return(). 
 listen_dirty_queue_init(Site, Table) ->
     mnesia:subscribe({table, Table, simple}),
-    Q = fill_queue(hn_workq:new(0), Table),
+    Q = fill_queue(hn_workq:new(nil, 0), Table),
     listen_dirty_queue(Site, Table, Q).
 
 -spec listen_dirty_queue(string(), atom(), hn_workq:work_queue()) 
@@ -137,11 +137,11 @@ listen_dirty_queue(Site, Table, Q) ->
     end,
     Q2 = merge_latest(Q, Table),
     QNext = case hn_workq:next(Q2) of
-                {empty, Q3} ->
+                {empty, _, Q3} ->
                     %% shouldn't happen
                     Q3;
-                {DirtyCellIdx, Q3} ->
-                    hn_db_api:handle_dirty_cell(Site, DirtyCellIdx),
+                {DirtyCellIdx, Ar, Q3} ->
+                    hn_db_api:handle_dirty_cell(Site, DirtyCellIdx, Ar),
                     Q3
             end,
     ?MODULE:listen_dirty_queue(Site, Table, QNext).
