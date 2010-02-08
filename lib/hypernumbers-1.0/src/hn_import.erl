@@ -37,20 +37,20 @@ cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun) ->
 
 write_col_row(_NRef, [], _Styles)   -> ok;
 write_col_row(NRef, Attrs, _Styles) ->
-    ok = hn_db_api:write_attributes(NRef, Attrs).    
+    ok = hn_db_api:write_attributes([{NRef, Attrs}]).    
 
 write_cells(NRef, Attrs, Styles) ->
 
     case lists:keyfind("formula", 1, Attrs) of
         false           -> ok;
         {"formula", F1} ->
-            ok = hn_db_api:write_attributes(NRef, [{"formula", F1}])
+            ok = hn_db_api:write_attributes([{NRef, [{"formula", F1}]}])
     end,
 
     case lists:keyfind("format", 1, Attrs) of
         false          -> ok;
         {"format", F2} ->
-            ok = hn_db_api:write_attributes(NRef, [{"format", F2}])
+            ok = hn_db_api:write_attributes([{NRef, [{"format", F2}]}])
     end,
 
     case lists:keyfind("style", 1, Attrs) of

@@ -714,13 +714,13 @@ notify_back_create(Site, Record)
 %% <li>a cell</li>
 %% <li>a range</li>
 %% </ul>
-write_attributes(RefX, List) ->
-    mnesia:activity(transaction, fun write_attributes1/2, [RefX, List]),
-    ok = tell_front_end("write attributes").
 
 write_attributes(List) ->
+    write_attributes(List, nil).
+write_attributes(List, Pending) ->
     Fun = fun() ->
-                  [ok = write_attributes1(RefX, L) || {RefX, L} <- List],
+                  [ok = write_attributes1(RefX, L, Pending) 
+                   || {RefX, L} <- List],
                   ok
           end,
     mnesia:activity(transaction, Fun),
@@ -1309,9 +1309,10 @@ biggest(List, Type) ->
           end,
     lists:foldl(Fun, StartAcc, List).
 
-write_attributes1(RefX, List) when is_record(RefX, refX), is_list(List) ->
+write_attributes1(RefX, List, Pending) 
+  when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),
-    [hn_db_wu:write_attr(RefX, X) || X <- List],
+    [hn_db_wu:write_attr(RefX, X, Pending) || X <- List],
     ok = hn_db_wu:mark_children_dirty(RefX).
 
 -spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.

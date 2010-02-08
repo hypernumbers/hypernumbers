@@ -55,6 +55,9 @@ authorize_resource(Req, Ref, Qry) ->
     case {AuthRet, AType} of
         {allowed, _} ->
             handle_resource(Ref, Qry, Req2);
+        {allowed_pending, json} ->
+            %%Save auth request incase needed to authorize formula
+            handle_resource(Ref, Qry, Req2#req{pending = Ar});
         {{view, View}, _} ->
             handle_resource(Ref, Qry#qry{view = View}, Req2);
         {not_found, html} ->
@@ -144,7 +147,7 @@ handle_pong(R, Uid, Return) ->
 
 -spec authorize(#req{}, #refX{}, #qry{}, json | html, auth_req())
                -> {view, string()} 
-                      | allowed | denied 
+                      | allowed | allowed_pending | denied 
                       | site_not_found | not_found.
 authorize(Req, Ref, Qry, AType, Ar) ->
     case mnesia:dirty_read(core_site, Ref#refX.site) of
@@ -245,7 +248,9 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, _Any, Ar) ->
     end.
 
 -spec authorize_post(#refX{}, #qry{}, json | html, auth_req(), #req{}) 
-                    -> {view, string()} | allowed | denied | not_found.
+                    -> {view, string()} | 
+                           allowed | allowed_pending | 
+                           denied | not_found.
 
 %% Allow logins to occur.
 authorize_post(#refX{path = ["_user", "login"]}, _Qry, json, _Ar, _Req) ->
@@ -266,10 +271,11 @@ authorize_post(Ref=#refX{site = Site, path = Path},
         _ -> denied
     end;
 
-%% Allow a post to occur, if the user has access to a spreadsheet.
-authorize_post(#refX{site = Site, path = Path}, _Qry, json, Ar, _Req) ->
+%% Allow a post to occur, if the user has access to a spreadsheet on the target.
+%% the actual operation may need further validation, so flag as 'allowed_pending'.
+authorize_post(#refX{site = Site, path = Path}, _Qry, _Any, Ar, _Req) ->
     case auth_srv2:check_particular_view(Site, Path, Ar, ?SHEETVIEW) of
-        {view, ?SHEETVIEW} -> allowed;
+        {view, ?SHEETVIEW} -> allowed_pending;
         _ -> denied
     end.
 
@@ -480,29 +486,31 @@ ipost(#refX{site = Site, path=["_user"]}, _Qry,
 
 ipost(#refX{site = S, path = P}, _Qry, 
       Req=#req{body = [{"set", {struct, [{"list", {array, Array}}]}}], 
+               pending = Pending,
                user = User}) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     {Lasts, Refs} = fix_up(Array, S, P),
     ok = hn_db_api:write_last(Lasts),
-    ok = hn_db_api:write_attributes(Refs),
+    ok = hn_db_api:write_attributes(Refs, Pending),
     json(Req, "success");
 
 ipost(#refX{site = S, path = P, obj = O} = Ref, _Qry, 
       Req=#req{body = [{"set", {struct, Attr}}], 
+               pending = Pending,
                user = User}) ->
     Type = element(1, O),
     ok = status_srv:update_status(User, S, P, "edited page"),
     case Attr of
         %% TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
-            post_range_values(Ref, Vals);
+            post_range_values(Ref, Vals, Pending);
 
         %% if posting a formula to a row or column, append
         [{"formula", Val}] when Type == column; Type == row ->
             ok = hn_db_api:write_last([{Ref, Val}]);
 
         _Else ->
-            ok = hn_db_api:write_attributes([{Ref, Attr}])
+            ok = hn_db_api:write_attributes([{Ref, Attr}], Pending)
     end,
     json(Req, "success");
 
@@ -778,18 +786,19 @@ from(Key, List) ->
     {value, {Key, Value}} = lists:keysearch(Key, 1, List),
     Value.
 
-post_range_values(Ref, Values) ->
+post_range_values(Ref, Values, Pending) ->
     F = fun({array, Vals}, Acc) -> 
-                post_column_values(Ref, Vals, Acc), Acc+1 
+                post_column_values(Ref, Vals, Pending, Acc), Acc+1 
         end,
     lists:foldl(F, 0, Values).
 
-post_column_values(Ref, Values, Offset) ->
+post_column_values(Ref, Values, Pending, Offset) ->
     #refX{obj={range,{X1, Y1, _X2, _Y2}}} = Ref,
     F =  fun("", Acc)  -> Acc+1;
             (Val, Acc) -> 
                  NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
-                 ok = hn_db_api:write_attributes([{NRef, [{"formula", Val}]}]),
+                 ok = hn_db_api:write_attributes([{NRef, [{"formula", Val}]}], 
+                                                 Pending),
                  Acc+1 
          end,
     lists:foldl(F, 0, Values).
