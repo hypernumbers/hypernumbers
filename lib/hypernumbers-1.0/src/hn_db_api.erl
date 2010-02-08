@@ -117,10 +117,10 @@
          copy_n_paste/2,
          cut_n_paste/2,
          copy_style/2,
-         insert/1,
          insert/2,
-         delete/1,
+         insert/3,
          delete/2,
+         delete/3,
          clear/1,
          clear/2,
          % delete_permission/1,
@@ -425,12 +425,12 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 
 
 -spec handle_dirty_cell(string(), cellidx(), nil | auth_req()) -> ok. 
-handle_dirty_cell(Site, Idx, Pending) ->
+handle_dirty_cell(Site, Idx, AR) ->
     ok = init_front_end_notify(),  
     F = fun() ->
                 Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
                 case hn_db_wu:read_attrs(Cell, ["formula"], read) of
-                    [{C, KV}] -> hn_db_wu:write_attr(C, KV, Pending);
+                    [{C, KV}] -> hn_db_wu:write_attr(C, KV, AR);
                     []        -> ok
                 end
         end,
@@ -718,9 +718,9 @@ notify_back_create(Site, Record)
 
 write_attributes(List) ->
     write_attributes(List, nil).
-write_attributes(List, Pending) ->
+write_attributes(List, AR) ->
     Fun = fun() ->
-                  [ok = write_attributes1(RefX, L, Pending) 
+                  [ok = write_attributes1(RefX, L, AR) 
                    || {RefX, L} <- List],
                   ok
           end,
@@ -954,12 +954,13 @@ reformat(RefX) when is_record(RefX, refX) ->
 %% 
 %% @todo This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
-insert(#refX{obj = {column, _}} = RefX)  ->
-    move(RefX, insert, horizontal);
-insert(#refX{obj = {row, _}} = RefX)  ->
-    move(RefX, insert, vertical);
-insert(#refX{obj = R} = RefX) when R == cell orelse R == range  ->
-    move(RefX, insert, vertical).
+insert(#refX{obj = {column, _}} = RefX, AR) ->
+    move(RefX, insert, horizontal, AR);
+insert(#refX{obj = {row, _}} = RefX, AR)  ->
+    move(RefX, insert, vertical, AR);
+insert(#refX{obj = R} = RefX, AR) 
+  when R == cell orelse R == range ->
+    move(RefX, insert, vertical, AR).
 
 %% @spec insert(RefX :: #refX{}, Type) -> ok 
 %% Type = [horizontal | vertical]
@@ -972,10 +973,10 @@ insert(#refX{obj = R} = RefX) when R == cell orelse R == range  ->
 %% </ul>
 %% 
 %% The Type variable determines how the insert displaces the existing cases...
-insert(#refX{obj = {R, _}} = RefX, Disp)
+insert(#refX{obj = {R, _}} = RefX, Disp, AR)
   when is_record(RefX, refX), (R == cell orelse R == range),
        (Disp == horizontal orelse Disp == vertical)->
-    move(RefX, insert, Disp).
+    move(RefX, insert, Disp, AR).
 
 %% @doc deletes a column or a row or a page
 %% 
@@ -983,18 +984,18 @@ insert(#refX{obj = {R, _}} = RefX, Disp)
 %% per insert/2.
 %% This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
--spec delete(#refX{}) -> ok.
-delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
+-spec delete(#refX{}, nil | auth_req()) -> ok.
+delete(#refX{obj = {R, _}} = RefX, AR) when R == column orelse R == row ->
     Disp = case R of
                row    -> vertical;
                column -> horizontal
            end,
-    move(RefX, delete, Disp);
-delete(#refX{obj = {page, _}} = RefX) ->
+    move(RefX, delete, Disp, AR);
+delete(#refX{obj = {page, _}} = RefX, AR) ->
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
                    Dirty = hn_db_wu:delete_page(RefX),
-                   hn_db_wu:mark_these_dirty(Dirty, nil)
+                   hn_db_wu:mark_these_dirty(Dirty, AR)
            end,
     mnesia:activity(transaction, Fun1),
     ok = tell_front_end("delete").
@@ -1013,17 +1014,17 @@ delete(#refX{obj = {page, _}} = RefX) ->
 %% and closes up the rest of them. If Disp is Horizontal it moves 
 %% cells right-to-left to close the gap. If Disp is vertical is moves
 %% cells bottom-to-top to close the gap
-delete(#refX{obj = {R, _}} = RefX, Disp)
+delete(#refX{obj = {R, _}} = RefX, Disp, AR)
   when R == cell orelse R == range orelse R == row orelse R == column ->
-    move(RefX, delete, Disp).
+    move(RefX, delete, Disp, AR).
 
-move(RefX, Type, Disp)
+move(RefX, Type, Disp, AR)
   when (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
-    ok = mnesia:activity(transaction, fun move_tr/3, [RefX, Type, Disp]),
+    ok = mnesia:activity(transaction, fun move_tr/4, [RefX, Type, Disp, AR]),
     ok = tell_front_end("move", RefX).
 
-move_tr(#refX{obj = Obj} = RefX, Type, Disp) ->
+move_tr(#refX{obj = Obj} = RefX, Type, Disp, AR) ->
 
     ok = init_front_end_notify(),
     % if the Type is delete we first delete the original cells
@@ -1039,8 +1040,8 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp) ->
 
     ReWr = do_delete(Type, RefX),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
-    hn_db_wu:mark_these_dirty(ReWr, nil),
-    hn_db_wu:mark_these_dirty(MoreDirty, nil),
+    hn_db_wu:mark_these_dirty(ReWr, AR),
+    hn_db_wu:mark_these_dirty(MoreDirty, AR),
 
     case Obj of
         {row,    _} ->
@@ -1310,11 +1311,11 @@ biggest(List, Type) ->
           end,
     lists:foldl(Fun, StartAcc, List).
 
-write_attributes1(RefX, List, Pending) 
+write_attributes1(RefX, List, AR) 
   when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),
-    [hn_db_wu:write_attr(RefX, X, Pending) || X <- List],
-    ok = hn_db_wu:mark_children_dirty(RefX, Pending).
+    [hn_db_wu:write_attr(RefX, X, AR) || X <- List],
+    ok = hn_db_wu:mark_children_dirty(RefX, AR).
 
 -spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
 copy_cell(From, To, Incr) ->

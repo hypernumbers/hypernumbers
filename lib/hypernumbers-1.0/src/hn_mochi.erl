@@ -399,63 +399,68 @@ ipost(_Ref, #qry{mark = []},
     json(Req, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "before"}]})
+      Req=#req{body=[{"insert", "before"}], pending = Pending})
   when O == row orelse O == column ->
-    ok = hn_db_api:insert(Ref),
+    ok = hn_db_api:insert(Ref, Pending),
     json(Req, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "after"}]})
+      Req=#req{body=[{"insert", "after"}], pending = Pending})
   when O == row orelse O == column ->
-    ok = hn_db_api:insert(make_after(Ref)),
+    ok = hn_db_api:insert(make_after(Ref), Pending),
     json(Req, "success");
 
 %% by default cells and ranges displace vertically
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "before"}]})
+      Req=#req{body=[{"insert", "before"}], pending = Pending})
   when O == cell orelse O == range ->
-    ok = hn_db_api:insert(Ref, vertical),
+    ok = hn_db_api:insert(Ref, vertical, Pending),
     json(Req, "success");
 
 %% by default cells and ranges displace vertically
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "after"}]})
+      Req=#req{body=[{"insert", "after"}], pending = Pending})
   when O == cell orelse O == range ->
-    ok = hn_db_api:insert(make_after(Ref)),
+    ok = hn_db_api:insert(make_after(Ref), Pending),
     json(Req, "success");
 
 %% but you can specify the displacement explicitly
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "before"}, {"displacement", D}]})
+      Req=#req{body=[{"insert", "before"}, {"displacement", D}],
+               pending = Pending})
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
-    ok = hn_db_api:insert(Ref, list_to_existing_atom(D)),
+    ok = hn_db_api:insert(Ref, list_to_existing_atom(D), Pending),
     json(Req, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "after"}, {"displacement", D}]})
+      Req=#req{body=[{"insert", "after"}, {"displacement", D}],
+               pending = Pending})
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
     RefX2 = make_after(Ref),
-    ok = hn_db_api:insert(RefX2, list_to_existing_atom(D)),
+    ok = hn_db_api:insert(RefX2, list_to_existing_atom(D), Pending),
     json(Req, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"delete", "all"}]}) 
+      Req=#req{body=[{"delete", "all"}],
+               pending = Pending}) 
   when O == page ->
-    ok = hn_db_api:delete(Ref),
+    ok = hn_db_api:delete(Ref, Pending),
     json(Req, "success");
 
 ipost(Ref, _Qry, 
-      Req=#req{body=[{"delete", "all"}]}) ->
-    ok = hn_db_api:delete(Ref),
+      Req=#req{body=[{"delete", "all"}],
+               pending = Pending}) ->
+    ok = hn_db_api:delete(Ref, Pending),
     json(Req, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"delete", Direction}]})
+      Req=#req{body=[{"delete", Direction}],
+               pending = Pending})
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
-    ok = hn_db_api:delete(Ref, Direction),
+    ok = hn_db_api:delete(Ref, Direction, Pending),
     json(Req, "success");
 
 ipost(Ref=#refX{obj = {range, _}}, _Qry,
