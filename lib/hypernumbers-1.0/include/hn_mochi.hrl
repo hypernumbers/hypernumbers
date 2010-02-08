@@ -3,6 +3,6 @@
                headers = [], %% These are 'response' headers.
                method,
                mochi,
-               pending = nil, 
+               auth_req,
                uid,
                user }).

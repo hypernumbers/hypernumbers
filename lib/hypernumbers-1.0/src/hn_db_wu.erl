@@ -1095,13 +1095,13 @@ read_remote_children(Site, #refX{obj = {cell,_}} = Parent, Type)
 %% This clause deals with a formula
 write_attr(Ref, Attr) ->
     write_attr(Ref, Attr, nil).
-write_attr(#refX{obj = {cell, _}} = RefX, {"formula", _} = Attr, Pending) ->
+write_attr(#refX{obj = {cell, _}} = RefX, {"formula", _} = Attr, Ar) ->
     %% first check that the formula is not part of a shared array
     case read_attrs(RefX, ["__shared"], read) of
         [_X] -> throw({error, cant_change_part_of_array});
-        []   -> write_attr2(RefX, Attr, Pending)
+        []   -> write_attr2(RefX, Attr, Ar)
     end;
-write_attr(#refX{obj = {cell, _}} = RefX, {"format", Format} = Attr, _Pending) ->
+write_attr(#refX{obj = {cell, _}} = RefX, {"format", Format} = Attr, _Ar) ->
     ok = write_attr3(RefX, Attr),
     %% now reformat values (if they exist)
     case read_attrs(RefX, ["rawvalue"], read) of
@@ -1110,20 +1110,20 @@ write_attr(#refX{obj = {cell, _}} = RefX, {"format", Format} = Attr, _Pending) -
             ok = process_format(RefX, Format, RawValue)
     end;
 write_attr(#refX{obj = {cell, _}} = RefX, 
-           {"__dependency-tree", DTree}, _Pending) ->
+           {"__dependency-tree", DTree}, _Ar) ->
     write_attr3(RefX, {"__dependency-tree", DTree});
-write_attr(#refX{obj = {cell, _}} = RefX, {Key, Val} = Attr, _Pending) ->
+write_attr(#refX{obj = {cell, _}} = RefX, {Key, Val} = Attr, _Ar) ->
     %% NOTE the attribute 'overwrite-color' isn't in a magic style and shouldn't be
     case ms_util2:is_in_record(magic_style, Key) of 
         true  -> process_styles(RefX, Attr);
         false -> write_attr3(RefX, {Key, Val})
     end;
-write_attr(#refX{obj = {range, _}} = RefX, Attr, Pending) ->
+write_attr(#refX{obj = {range, _}} = RefX, Attr, Ar) ->
     List = hn_util:range_to_list(RefX),
-    [ok = write_attr(X, Attr, Pending) || X <- List],
+    [ok = write_attr(X, Attr, Ar) || X <- List],
     ok;
 %% for the rest just write 'em out
-write_attr(RefX, {Key, Val}, _Pending) when is_record(RefX, refX) ->
+write_attr(RefX, {Key, Val}, _Ar) when is_record(RefX, refX) ->
     write_attr3(RefX, {Key, Val}).
 
 %% @spec read_whole_page(#refX{}) -> [{#refX{}, {Key, Value}}]
@@ -1927,22 +1927,22 @@ mark_dirty(Site, Record)
 
 -spec mark_these_dirty([#refX{}], nil | auth_req()) -> ok.
 mark_these_dirty([], _) -> ok;
-mark_these_dirty(Refs = [#refX{site = Site}|_], Pending) ->
+mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
     F = fun(C) -> case read_local_item_index(C) of
                     false -> []; 
                     Idx -> Idx end
         end,
     Tbl = trans(Site, relation),
     Idxs = lists:flatten([F(C) || R <- Refs, C <- get_cells(R)]),
-    Q = insert_dirty_queue(Idxs, Tbl, -1, hn_workq:new(Pending)),
+    Q = insert_dirty_queue(Idxs, Tbl, -1, hn_workq:new(Ar)),
     Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
     
 -spec mark_children_dirty(#refX{}, nil | auth_req()) -> ok. 
-mark_children_dirty(#refX{site = Site} = RefX, Pending) ->
+mark_children_dirty(#refX{site = Site} = RefX, Ar) ->
     Tbl = trans(Site, relation),
     Children = get_local_children_idxs(RefX),
-    Q = insert_dirty_queue(Children, Tbl, -1, hn_workq:new(Pending)),
+    Q = insert_dirty_queue(Children, Tbl, -1, hn_workq:new(Ar)),
     case hn_workq:is_empty(Q) of
         true -> ok;
         false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
@@ -3183,15 +3183,15 @@ shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
                      ok = mnesia:write(trans(Site, NewDirty))
     end.
 
-write_attr2(RefX, {"formula", Val}, Pending) ->
+write_attr2(RefX, {"formula", Val}, Ar) ->
     case superparser:process(Val) of
-        {formula, Fla}      -> write_formula1(RefX, Fla, Val, Pending);
+        {formula, Fla}      -> write_formula1(RefX, Fla, Val, Ar);
         [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
     end.
 
 %%{muin_rti,"http://127.0.0.1:9000", ["e_operator_add","add"],22,22,false}
 
-write_formula1(RefX, Fla, Val, Pending) ->
+write_formula1(RefX, Fla, Val, Ar) ->
     Rti = refX_to_rti(RefX, false),
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
@@ -3204,7 +3204,7 @@ write_formula1(RefX, Fla, Val, Pending) ->
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
-            Res2 = case Pending of 
+            Res2 = case Ar of 
                        nil -> Res; 
                        Ar ->
                            Vs = [auth_srv2:get_any_view(PSite, PPath, Ar)

@@ -49,15 +49,10 @@ handle_(Ref, Req, Qry) ->
 -spec authorize_resource(#req{}, #refX{}, #qry{}) -> no_return(). 
 authorize_resource(Req, Ref, Qry) -> 
     Req2 = process_cookies(Ref#refX.site, Req),
-    #req{user=User, accept=AType} = Req2,
-    Ar = {hn_users:name(User), hn_users:groups(User)},
-    AuthRet = authorize(Req2, Ref, Qry, AType, Ar),
-    case {AuthRet, AType} of
+    AuthRet = authorize(Req2, Ref, Qry),
+    case {AuthRet, Req2#req.accept} of
         {allowed, _} ->
             handle_resource(Ref, Qry, Req2);
-        {allowed_pending, json} ->
-            %%Save auth request incase needed to authorize formula
-            handle_resource(Ref, Qry, Req2#req{pending = Ar});
         {{view, View}, _} ->
             handle_resource(Ref, Qry#qry{view = View}, Req2);
         {not_found, html} ->
@@ -145,34 +140,36 @@ handle_pong(R, Uid, Return) ->
     respond(302, R2).
 
 
--spec authorize(#req{}, #refX{}, #qry{}, json | html, auth_req())
+-spec authorize(#req{}, #refX{}, #qry{})
                -> {view, string()} 
-                      | allowed | allowed_pending | denied 
+                      | allowed | denied 
                       | site_not_found | not_found.
-authorize(Req, Ref, Qry, AType, Ar) ->
+authorize(Req, Ref, Qry) ->
     case mnesia:dirty_read(core_site, Ref#refX.site) of
         [_X] -> case Req#req.method of
                     'GET' -> 
-                        authorize_get(Ref, Qry, AType, Ar);
+                        authorize_get(Ref, Qry, Req);
                     'POST' -> 
-                        authorize_post(Ref, Qry, AType, Ar, Req)
+                        authorize_post(Ref, Qry, Req)
                 end;
         _ -> site_not_found
     end.
             
--spec authorize_get(#refX{}, #qry{}, json | html, auth_req()) 
+-spec authorize_get(#refX{}, #qry{}, #req{}) 
                    -> {view, string()} | allowed | denied | not_found.
 
 %% Specifically allow access to the json permissions. Only the permissions,
 %% query may be present.
-authorize_get(_Ref, #qry{permissions = [], _ = undefined}, html, _Ar) ->
+authorize_get(_Ref, #qry{permissions = [], _ = undefined}, 
+              #req{accept = html}) ->
     allowed;
 
 %% Authorize update requests, when the update is targeted towards a
 %% spreadsheet. Since we have no closed security object, we rely on
 %% 'run-time' checks.
 authorize_get(#refX{site = Site, path = Path}, 
-              #qry{updates = U, view = ?SHEETVIEW, paths = More}, json, Ar)
+              #qry{updates = U, view = ?SHEETVIEW, paths = More}, 
+              #req{accept = json, auth_req = Ar})
   when U /= undefined ->
     case auth_srv2:check_particular_view(Site, Path, Ar, ?SHEETVIEW) of
         {view, ?SHEETVIEW} ->
@@ -192,7 +189,8 @@ authorize_get(#refX{site = Site, path = Path},
 %% for additional sources is made against the security object created
 %% at a 'view-save-time'. 
 authorize_get(#refX{site = Site, path = Path}, 
-              #qry{updates = U, view = View, paths = More}, json, Ar) 
+              #qry{updates = U, view = View, paths = More},
+              #req{accept = json, auth_req = Ar}) 
   when U /= undefined, View /= undefined -> 
     case auth_srv2:check_particular_view(Site, Path, Ar, View) of
         {view, View} ->
@@ -210,7 +208,8 @@ authorize_get(#refX{site = Site, path = Path},
 %% Access to secondary data sources, described by some initial view
 %% declared herein as 'via'.
 authorize_get(#refX{site = Site, path = Path}, 
-              #qry{view = View, via = Via}, json, Ar)
+              #qry{view = View, via = Via}, 
+              #req{accept = json, auth_req = Ar})
   when View /= undefined, View /= ?SHEETVIEW, Via /= undefined ->
     Base = string:tokens(Via, "/"),
     case auth_srv2:check_particular_view(Site, Base, Ar, View) of
@@ -227,41 +226,45 @@ authorize_get(#refX{site = Site, path = Path},
 
 %% Authorize access to the DEFAULT page. Notice that no query
 %% parameters have been set.
-authorize_get(#refX{site = Site, path = Path}, #qry{_ = undefined}, html, Ar) ->
+authorize_get(#refX{site = Site, path = Path}, 
+              #qry{_ = undefined}, 
+              #req{accept = html, auth_req = Ar}) ->
     auth_srv2:check_get_view(Site, Path, Ar);
 
 %% Authorize access to the challenger view.
-authorize_get(#refX{site = Site, path = Path}, #qry{challenger=[]}, html, Ar) ->
+authorize_get(#refX{site = Site, path = Path}, 
+              #qry{challenger=[]}, 
+              #req{accept = html, auth_req =  Ar}) ->
     auth_srv2:check_get_challenger(Site, Path, Ar);
 
 %% Authorize access to one particular view.
-authorize_get(#refX{site = Site, path = Path}, #qry{view = View}, _Any, Ar) 
+authorize_get(#refX{site = Site, path = Path}, 
+              #qry{view = View}, 
+              #req{auth_req = Ar}) 
   when View /= undefined -> 
     auth_srv2:check_particular_view(Site, Path, Ar, View);
 
 %% As a last resort, we will authorize a GET request to a location
 %% from which we have a view.
-authorize_get(#refX{site = Site, path = Path}, _Qry, _Any, Ar) ->
-    case auth_srv2:get_any_view(Site, Path, Ar) of
+authorize_get(#refX{site = Site, path = Path}, _Qry, Req) ->
+    case auth_srv2:get_any_view(Site, Path, Req#req.auth_req) of
         {view, _} -> allowed;
         _Else -> denied
     end.
 
--spec authorize_post(#refX{}, #qry{}, json | html, auth_req(), #req{}) 
+-spec authorize_post(#refX{}, #qry{}, #req{}) 
                     -> {view, string()} | 
-                           allowed | allowed_pending | 
-                           denied | not_found.
+                           allowed | denied | not_found.
 
 %% Allow logins to occur.
-authorize_post(#refX{path = ["_user", "login"]}, _Qry, json, _Ar, _Req) ->
+authorize_post(#refX{path = ["_user", "login"]}, _Qry, #req{accept = json}) ->
     allowed;
 
 %% Authorize posts against non spreadsheet views. The transaction
 %% attempted is validated against the views security model.
-authorize_post(Ref=#refX{site = Site, path = Path}, 
-               #qry{view = View}, _Any, Ar, Req)
+authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Req)
   when View /= undefined ->
-    case auth_srv2:check_particular_view(Site, Path, Ar, View) of
+    case auth_srv2:check_particular_view(Site, Path, Req#req.auth_req, View) of
         {view, View} ->
             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
             case hn_security:validate_trans(Sec, Ref, Req#req.body) of
@@ -273,9 +276,10 @@ authorize_post(Ref=#refX{site = Site, path = Path},
 
 %% Allow a post to occur, if the user has access to a spreadsheet on the target.
 %% the actual operation may need further validation, so flag as 'allowed_pending'.
-authorize_post(#refX{site = Site, path = Path}, _Qry, _Any, Ar, _Req) ->
-    case auth_srv2:check_particular_view(Site, Path, Ar, ?SHEETVIEW) of
-        {view, ?SHEETVIEW} -> allowed_pending;
+authorize_post(#refX{site = Site, path = Path}, _Qry, Req) ->
+    case auth_srv2:check_particular_view(
+           Site, Path, Req#req.auth_req, ?SHEETVIEW) of
+        {view, ?SHEETVIEW} -> allowed;
         _ -> denied
     end.
 
@@ -399,68 +403,68 @@ ipost(_Ref, #qry{mark = []},
     json(Req, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "before"}], pending = Pending})
+      Req=#req{body=[{"insert", "before"}], auth_req = Ar})
   when O == row orelse O == column ->
-    ok = hn_db_api:insert(Ref, Pending),
+    ok = hn_db_api:insert(Ref, Ar),
     json(Req, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "after"}], pending = Pending})
+      Req=#req{body=[{"insert", "after"}], auth_req = Ar})
   when O == row orelse O == column ->
-    ok = hn_db_api:insert(make_after(Ref), Pending),
+    ok = hn_db_api:insert(make_after(Ref), Ar),
     json(Req, "success");
 
 %% by default cells and ranges displace vertically
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "before"}], pending = Pending})
+      Req=#req{body=[{"insert", "before"}], auth_req = Ar})
   when O == cell orelse O == range ->
-    ok = hn_db_api:insert(Ref, vertical, Pending),
+    ok = hn_db_api:insert(Ref, vertical, Ar),
     json(Req, "success");
 
 %% by default cells and ranges displace vertically
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Req=#req{body=[{"insert", "after"}], pending = Pending})
+      Req=#req{body=[{"insert", "after"}], auth_req = Ar})
   when O == cell orelse O == range ->
-    ok = hn_db_api:insert(make_after(Ref), Pending),
+    ok = hn_db_api:insert(make_after(Ref), Ar),
     json(Req, "success");
 
 %% but you can specify the displacement explicitly
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Req=#req{body=[{"insert", "before"}, {"displacement", D}],
-               pending = Pending})
+               auth_req = Ar})
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
-    ok = hn_db_api:insert(Ref, list_to_existing_atom(D), Pending),
+    ok = hn_db_api:insert(Ref, list_to_existing_atom(D), Ar),
     json(Req, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Req=#req{body=[{"insert", "after"}, {"displacement", D}],
-               pending = Pending})
+               auth_req = Ar})
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
     RefX2 = make_after(Ref),
-    ok = hn_db_api:insert(RefX2, list_to_existing_atom(D), Pending),
+    ok = hn_db_api:insert(RefX2, list_to_existing_atom(D), Ar),
     json(Req, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Req=#req{body=[{"delete", "all"}],
-               pending = Pending}) 
+               auth_req = Ar}) 
   when O == page ->
-    ok = hn_db_api:delete(Ref, Pending),
+    ok = hn_db_api:delete(Ref, Ar),
     json(Req, "success");
 
 ipost(Ref, _Qry, 
       Req=#req{body=[{"delete", "all"}],
-               pending = Pending}) ->
-    ok = hn_db_api:delete(Ref, Pending),
+               auth_req = Ar}) ->
+    ok = hn_db_api:delete(Ref, Ar),
     json(Req, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Req=#req{body=[{"delete", Direction}],
-               pending = Pending})
+               auth_req = Ar})
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
-    ok = hn_db_api:delete(Ref, Direction, Pending),
+    ok = hn_db_api:delete(Ref, Direction, Ar),
     json(Req, "success");
 
 ipost(Ref=#refX{obj = {range, _}}, _Qry,
@@ -491,42 +495,45 @@ ipost(#refX{site = Site, path=["_user"]}, _Qry,
 
 ipost(#refX{site = S, path = P}, _Qry, 
       Req=#req{body = [{"set", {struct, [{"list", {array, Array}}]}}], 
-               pending = Pending,
+               auth_req = Ar,
                user = User}) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     {Lasts, Refs} = fix_up(Array, S, P),
     ok = hn_db_api:write_last(Lasts),
-    ok = hn_db_api:write_attributes(Refs, Pending),
+    ok = hn_db_api:write_attributes(Refs, Ar),
     json(Req, "success");
 
 ipost(#refX{site = S, path = P, obj = O} = Ref, _Qry, 
       Req=#req{body = [{"set", {struct, Attr}}], 
-               pending = Pending,
+               auth_req = Ar,
                user = User}) ->
     Type = element(1, O),
     ok = status_srv:update_status(User, S, P, "edited page"),
     case Attr of
         %% TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
-            post_range_values(Ref, Vals, Pending);
+            post_range_values(Ref, Vals, Ar);
 
         %% if posting a formula to a row or column, append
         [{"formula", Val}] when Type == column; Type == row ->
             ok = hn_db_api:write_last([{Ref, Val}]);
 
         _Else ->
-            ok = hn_db_api:write_attributes([{Ref, Attr}], Pending)
+            ok = hn_db_api:write_attributes([{Ref, Attr}], Ar)
     end,
     json(Req, "success");
 
-ipost(Ref, _Qry, Req=#req{body = [{"clear", What}]}) 
+ipost(Ref, _Qry, 
+      Req=#req{body = [{"clear", What}],
+               auth_req = Ar}) 
   when What == "contents"; What == "style"; What == "all" ->
-    ok = hn_db_api:clear(Ref, list_to_atom(What)),
+    ok = hn_db_api:clear(Ref, list_to_atom(What), Ar),
     json(Req, "success");
 
 ipost(#refX{site=Site, path=Path} = Ref, _Qry,
       Req=#req{body = [{"saveview", {struct, [{"name", Name}, {"tpl", Form},
                                               {"overwrite", OverWrite}]}}], 
+               auth_req = AuthReq,
                user = User}) ->
     TplPath = [viewroot(Site), "/" , Name, ".tpl"],
     ok      = filelib:ensure_dir([viewroot(Site), "/" , Name]),
@@ -535,7 +542,6 @@ ipost(#refX{site=Site, path=Path} = Ref, _Qry,
         true ->
             json(Req, "error");
         false ->
-            AuthReq  = {hn_users:name(User), hn_users:groups(User)},
             AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
             ok       = save_view(Site, Name, Form, AuthReq, Ref),
             ok       = auth_srv2:add_view(Site, Path, AuthSpec, Name),
@@ -791,21 +797,21 @@ from(Key, List) ->
     {value, {Key, Value}} = lists:keysearch(Key, 1, List),
     Value.
 
-post_range_values(Ref, Values, Pending) ->
+post_range_values(Ref, Values, Ar) ->
     F = fun({array, Vals}, Acc) -> 
-                post_column_values(Ref, Vals, Pending, Acc), Acc+1 
+                post_column_values(Ref, Vals, Ar, Acc), Acc+1 
         end,
     lists:foldl(F, 0, Values).
 
-post_column_values(Ref, Values, Pending, Offset) ->
+post_column_values(Ref, Values, Ar, Offset) ->
     #refX{obj={range,{X1, Y1, _X2, _Y2}}} = Ref,
-    F =  fun("", Acc)  -> Acc+1;
-            (Val, Acc) -> 
-                 NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
-                 ok = hn_db_api:write_attributes([{NRef, [{"formula", Val}]}], 
-                                                 Pending),
-                 Acc+1 
-         end,
+    F = fun("", Acc)  -> Acc+1;
+           (Val, Acc) -> 
+                NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
+                ok = hn_db_api:write_attributes([{NRef, [{"formula", Val}]}], 
+                                                Ar),
+                Acc+1 
+        end,
     lists:foldl(F, 0, Values).
 
 remoting_request(Req=#req{mochi=Mochi}, Site, Paths, Time) ->
@@ -976,8 +982,10 @@ process_request(Mochi) ->
 
 -spec process_cookies(string(), #req{}) -> #req{}. 
 process_cookies(Site, R) ->
-    R2 = get_user(Site, R),
-    get_uid(Site, R2).
+    R2 = #req{user = User} = get_user(Site, R),
+    R3 = R2#req{auth_req = {hn_users:name(User), 
+                            hn_users:groups(User)}},
+    get_uid(Site, R3).
 
 -spec get_user(string(), #req{}) -> #req{}. 
 get_user(Site, R=#req{mochi = Mochi}) ->
