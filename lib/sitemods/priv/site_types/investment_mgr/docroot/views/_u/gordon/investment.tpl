@@ -1,22 +1,26 @@
 <style type="text/css">
-body {font: 12px Arial, "Helvetica Neue", sans-serif;}
+th {text-align: center;}
+input {width: 80px}
+body {font: 10px Arial, "Helvetica Neue", sans-serif;}
 </style>
 <div class='droppable'><div data-binding-from='B2' class='hn' data-type='text'></div>
 <table>
-<tbody><tr>
-<td></td>
-<td><div class='hn' data-type='text' data-binding-from='C4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='D4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='E4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='F4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='G4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='H4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='I4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='J4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='K4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='L4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='M4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='N4'></div></td>
+<tbody>
+<tr>
+<colgroup span='1' width='150px'></colgroup>
+<th></th>
+<th><div class='hn' data-type='text' data-binding-from='C4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='D4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='E4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='F4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='G4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='H4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='I4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='J4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='K4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='L4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='M4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='N4'></div></th>
 </tr>
 <tr>
 <td><div class='hn' data-type='text' data-binding-from='B5'></div></td>
@@ -52,19 +56,20 @@ body {font: 12px Arial, "Helvetica Neue", sans-serif;}
 
 <table>
 <tbody><tr>
-<td></td>
-<td><div class='hn' data-type='text' data-binding-from='C4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='D4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='E4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='F4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='G4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='H4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='I4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='J4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='K4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='L4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='M4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='N4'></div></td>
+<colgroup span='1' width='150px'></colgroup>
+<th></th>
+<th><div class='hn' data-type='text' data-binding-from='C4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='D4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='E4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='F4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='G4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='H4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='I4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='J4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='K4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='L4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='M4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='N4'></div></th>
 </tr>
 <tr>
 <td><div class='hn' data-type='text' data-binding-from='B8'></div></td>
@@ -100,19 +105,20 @@ body {font: 12px Arial, "Helvetica Neue", sans-serif;}
 
 <table>
 <tbody><tr>
-<td></td>
-<td><div class='hn' data-type='text' data-binding-from='C4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='D4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='E4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='F4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='G4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='H4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='I4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='J4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='K4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='L4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='M4'></div></td>
-<td><div class='hn' data-type='text' data-binding-from='N4'></div></td>
+<colgroup span='1' width='150px'></colgroup>
+<th></th>
+<th><div class='hn' data-type='text' data-binding-from='C4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='D4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='E4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='F4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='G4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='H4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='I4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='J4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='K4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='L4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='M4'></div></th>
+<th><div class='hn' data-type='text' data-binding-from='N4'></div></th>
 </tr>
 <tr>
 <td><div class='hn' data-type='text' data-binding-from='B11'></div></td>
