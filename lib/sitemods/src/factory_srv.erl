@@ -199,6 +199,8 @@ provision(CurrentSite, Port, Row, State) ->
     List = hn_db_api:read_attributes(RefX, ["formula"]),
 
     {Type, Email, SubDomain} = parse(List),
+    io:format("Type is ~p Email is ~p SubDomain is ~p~n",
+              [Type, Email, SubDomain]),
     SubDomain2 = ustring:pr(ustring:to_lower(ustring:new(SubDomain))),
     Type2 = normalise(Type),
     Password = tiny_util:get_password(),
@@ -206,9 +208,11 @@ provision(CurrentSite, Port, Row, State) ->
     RefX1 = RefX#refX{obj = {cell, {4, Row}}},
     RefX2 = RefX#refX{obj = {cell, {5, Row}}},
 
-    Template = code:priv_dir(sitemods) ++ "/" ++ Type2,
+    Template = code:priv_dir(sitemods) ++ "/site_types/" ++ Type2,
 
     DoesSiteTemplateExist = filelib:is_dir(Template),
+    io:format("Template is ~p DoesSiteTemplateExist is ~p~n",
+              [Template, DoesSiteTemplateExist]),
 
     case DoesSiteTemplateExist of
         false ->

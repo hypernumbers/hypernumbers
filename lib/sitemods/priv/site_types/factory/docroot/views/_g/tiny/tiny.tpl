@@ -1,44 +1,44 @@
 <div id='ventris'>
 
-  <link href='/templates/tiny/default.css' rel='stylesheet' type='text/css'></link>
+  <link type='text/css' rel='stylesheet' href='/templates/tiny/default.css'></link>
 
   <div id='outer'>
     
-    <div data-binding-from='B2' class='hn header' data-type='text'></div>
+    <div data-type='text' class='hn header' data-binding-from='B2'></div>
     
     <div id='contentwrapper'>
       <div id='primarycontent'>
  
         
-        <form data-type='form' class='hn'>
+        <form class='hn' data-type='form'>
 
-        <div data-binding-from='B3' class='hn' data-type='text'></div>
+        <div data-type='text' class='hn' data-binding-from='B3'></div>
           
-       <div data-binding-from='B7' class='hn header' data-type='text'></div>
+       <div data-type='text' class='hn header' data-binding-from='B7'></div>
           
-          <div data-binding-to='/request_site/A:A' data-binding-from='/B12:B19' class='hn' data-type='radio'></div>
+          <div data-type='radio' class='hn' data-binding-from='/B12:B33' data-binding-to='/request_site/A:A'></div>
           
-    <div data-binding-from='B8' class='hn header' data-type='text'></div>
+    <div data-type='text' class='hn header' data-binding-from='B8'></div>
                                 
-    <div data-binding-to='/request_site/B:B' data-type='input' class='hn'></div>
+    <div class='hn' data-type='input' data-binding-to='/request_site/B:B'></div>
           
-    <div data-binding-from='B9' class='hn header' data-type='text'></div>
+    <div data-type='text' class='hn header' data-binding-from='B9'></div>
 
-         <div data-binding-to='/request_site/C:C' data-type='input' class='hn'></div>
+         <div class='hn' data-type='input' data-binding-to='/request_site/C:C'></div>
 
-          <input type='submit' value='Create Your Site' class='submit'></input>
+          <input type='submit' class='submit' value='Create Your Site'></input>
         </form>
 
       </div>
       
       
       <div id='secondarycontent'>
-        <div data-binding-from='D-1:D-3' class='hn' data-type='text'></div></div>
+        <div data-type='text' class='hn' data-binding-from='D-1:D-3'></div></div>
     </div>
     
     
     <div id='footer'>  
-      <div data-binding-from='B4' class='hn' data-type='text'></div>
+      <div data-type='text' class='hn' data-binding-from='B4'></div>
     </div>
     
   </div>
