@@ -137,7 +137,7 @@ listen_dirty_queue(Site, Table, Q) ->
     end,
     Q2 = merge_latest(Q, Table),
     QNext = case hn_workq:next(Q2) of
-                {empty, _, Q3} ->
+                {empty, Q3} ->
                     %% shouldn't happen
                     Q3;
                 {DirtyCellIdx, Ar, Q3} ->
