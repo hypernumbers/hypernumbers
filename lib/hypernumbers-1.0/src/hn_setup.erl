@@ -147,7 +147,7 @@ launch_site(Site) ->
 -spec resave_views() -> ok.
 resave_views() ->
 
-    ViewsPath = "/../../var/sites/*/docroot/views/*/*/*.tpl",
+    ViewsPath = "/../../var/sites/*/docroot/views/*/*/*.meta",
 
     [ resave_view(X)
       || X <- filelib:wildcard(code:lib_dir(hypernumbers) ++ ViewsPath) ],
@@ -156,8 +156,16 @@ resave_views() ->
 
 -spec resave_view(string()) -> ok.
 resave_view(Path) ->
-    ok.
+    
+    [FileName, User, Type, "views", "docroot", Site | _ ]
+        = lists:reverse(string:tokens(Path, "/")),
 
+    [Domain, Port] = string:tokens(Site, "&"),
+    NSite          = "http://"++Domain++":"++Port,
+
+    ViewName     = [Type, "/", User, "/", filename:basename(FileName, ".meta")],
+    {ok, [Data]} = file:consult(Path),
+    ok           = hn_mochi:save_view(NSite, ViewName, Data).
 
 -spec create_site(string(), atom()) -> ok.
 create_site(Site, Type)->

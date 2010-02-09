@@ -13,7 +13,8 @@
           style_to_css/2,
           docroot/1,
           page_attributes/2,
-          get_json_post/1 % Used for mochilog replay rewrites
+          get_json_post/1, % Used for mochilog replay rewrites
+          save_view/3
          ]).
 
 -define(SHEETVIEW, "_g/core/spreadsheet").
@@ -25,7 +26,7 @@ handle(MochiReq) ->
     Req = process_request(MochiReq),
     Qry = process_query(Req),
     case catch handle_(Ref, Req, Qry) of
-        ok -> ok; 
+        ok   -> ok; 
         Else -> '500'(Req, Else)
     end.
 
@@ -41,7 +42,7 @@ handle_(#refX{path=["_pong"]}, Req, #qry{uid=Uid, return=Return})
 
 handle_(Ref, Req, Qry) ->
     case filename:extension((Req#req.mochi):get(path)) of
-        [] -> authorize_resource(Req, Ref, Qry);
+        []  -> authorize_resource(Req, Ref, Qry);
         Ext -> Root = docroot(Ref#refX.site),
                handle_static(Ext, Root, Req#req.mochi)
     end.
@@ -132,11 +133,11 @@ handle_ping(R=#req{mochi = Mochi}, Uid, Return) ->
 
 -spec handle_pong(#req{}, string(), string()) -> ok. 
 handle_pong(R, Uid, Return) ->
-    Opts = [{path, "/"}, {max_age, ?TWO_YEARS}],
-    Cookie = mochiweb_cookies:cookie("uid", Uid, Opts),
+    Opts     = [{path, "/"}, {max_age, ?TWO_YEARS}],
+    Cookie   = mochiweb_cookies:cookie("uid", Uid, Opts),
     Original = mochiweb_util:unquote(Return),
     Redirect = {"Location", Original},
-    R2 = R#req{headers = [Redirect, Cookie | R#req.headers]},
+    R2       = R#req{headers = [Redirect, Cookie | R#req.headers]},
     respond(302, R2).
 
 
@@ -550,7 +551,6 @@ ipost(#refX{site=Site, path=Path} = Ref, _Qry,
             AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
             ok       = save_view(Site, Name, Form, AuthReq, Ref),
             ok       = auth_srv2:add_view(Site, Path, AuthSpec, Name),
-            ok       = file:write_file(TplPath, Form),
             json(Req, "success")
     end;
 
@@ -933,10 +933,19 @@ pages_to_json(X, Dict) ->
 -spec save_view(string(), string(), string(), auth_req(), #refX{}) -> ok.
 %%
 save_view(Site, ViewName, ViewContent, AuthReq, Ref) ->
-    Sec     = hn_security:make(ViewContent, Ref, AuthReq),
-    {ok, F} = file:open([viewroot(Site), "/" , ViewName, ".sec"], [write]),
-    ok      = io:format(F, "~p.", [Sec]),
-    ok      = file:close(F).
+    Data = [{ref, Ref}, {authreq, AuthReq}, {content, ViewContent}],
+    Path = [viewroot(Site), "/" , ViewName, ".meta"],
+    ok = file:write_file(Path ,io_lib:fwrite("~p.\n",[Data])),
+    ok = save_view(Site, ViewName, Data).
+
+-spec save_view(string(), string(), list()) -> ok.
+%%
+save_view(Site, ViewName,
+          [{ref, Ref}, {authreq, AuthReq}, {content, Content}]) ->    
+    Sec  = hn_security:make(Content, Ref, AuthReq),
+    Path = [viewroot(Site), "/" , ViewName],
+    ok   = file:write_file([Path , ".tpl"], Content),
+    ok   = file:write_file([Path , ".sec"], io_lib:fwrite("~p.\n",[Sec])).
 
 sync_exit() ->
     exit("exit from hn_mochi:handle_req impossible page versions").
