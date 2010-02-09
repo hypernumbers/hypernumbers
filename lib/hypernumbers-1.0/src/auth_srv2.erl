@@ -266,19 +266,9 @@ add_view1(Tree, Path, UAndGs, V) ->
           end,
     alter_tree(Tree, Path, Fun).
 
-%% Set default allows to change a champion or challenger.  The new
-%% candidate MUST already exist, unless we're nullifying a
-%% champion/challenger
-set_default(Tree, Path, [], Type) ->
-    Fun = fun(C) -> set_default2(Type, [], C) end,
-    alter_tree(Tree, Path, Fun);
+%% Set default allows to change a champion or challenger.
 set_default(Tree, Path, V, Type) ->
-    Fun = fun(C=#control{views = Views}) ->  
-                  case gb_trees:lookup(V, Views) of
-                      none -> C; 
-                      _ -> set_default2(Type, V, C)
-                  end
-          end,
+    Fun = fun(C) -> set_default2(Type, V, C) end,
     alter_tree(Tree, Path, Fun).
 
 set_default2(champion, V, C) -> C#control{champion = V};
