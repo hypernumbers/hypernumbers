@@ -211,34 +211,35 @@ bodystr(undefined) ->
 bodystr({upload, File}) ->
     "UPLOAD "++File;
 bodystr(Body) ->
-    binary_to_list(Body).
+    io_lib:format("~p",[Body]).
+%binary_to_list(Body).
 
 print(short, Post, Id) ->
-    Time = proplists:get_value(time, Post),
-    FullPath = proplists:get_value(path, Post),
-    Body = proplists:get_value(body, Post),
-    User = proplists:get_value(user, Post),
-    Uid = proplists:get_value(uid, Post),
-    Date = dh_date:format("j/m/y, g:ia", Time),
+    Time       = proplists:get_value(time, Post),
+    FullPath   = proplists:get_value(path, Post),
+    Body       = proplists:get_value(body, Post),
+    User       = proplists:get_value(user, Post),
+    Uid        = proplists:get_value(uid, Post),
+    Date       = dh_date:format("j/m/y, g:ia", Time),
     [Path | _] = string:tokens(FullPath, "?"),
     io:format("~6B  ~-18s  ~-10s  ~-16s  ~-20s  ~-35s~n",
               [Id, Date, User, Uid, Path, bodystr(Body)]);
 
 print(post, Post, Id) ->
-    FullPath = proplists:get_value(path, Post),
-    Body = proplists:get_value(body, Post),
+    FullPath   = proplists:get_value(path, Post),
+    Body       = proplists:get_value(body, Post),
     [Path | _] = string:tokens(FullPath, "?"),
     io:format("P: ~6B  ~-26s  ~-35s~n", [Id, Path, bodystr(Body)]);
 
 print(long, Post, Id) ->
-    Time = proplists:get_value(time, Post),
-    Site = proplists:get_value(site, Post),
-    Path = proplists:get_value(path, Post),
-    Method = proplists:get_value(method, Post),
-    Body = proplists:get_value(body, Post),
-    User = proplists:get_value(user, Post),
-    Uid = proplists:get_value(uid, Post),
-    Peer = proplists:get_value(peer, Post),
+    Time    = proplists:get_value(time, Post),
+    Site    = proplists:get_value(site, Post),
+    Path    = proplists:get_value(path, Post),
+    Method  = proplists:get_value(method, Post),
+    Body    = proplists:get_value(body, Post),
+    User    = proplists:get_value(user, Post),
+    Uid     = proplists:get_value(uid, Post),
+    Peer    = proplists:get_value(peer, Post),
     Referer = proplists:get_value(referer, Post),
     Browser = proplists:get_value(browser, Post),
 
