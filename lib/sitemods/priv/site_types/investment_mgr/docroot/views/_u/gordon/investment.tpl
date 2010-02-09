@@ -1,4 +1,4 @@
-<style type="text/css">
+<style type='text/css'>
 th {text-align: center;}
 input {width: 80px}
 body {font: 10px Arial, "Helvetica Neue", sans-serif;}
@@ -7,8 +7,8 @@ body {font: 10px Arial, "Helvetica Neue", sans-serif;}
 <table>
 <tbody>
 <tr>
-<colgroup span='1' width='150px'></colgroup>
-<th></th>
+</tr></tbody><colgroup width='150px' span='1'></colgroup>
+<tbody><tr><th></th>
 <th><div class='hn' data-type='text' data-binding-from='C4'></div></th>
 <th><div class='hn' data-type='text' data-binding-from='D4'></div></th>
 <th><div class='hn' data-type='text' data-binding-from='E4'></div></th>
@@ -24,7 +24,7 @@ body {font: 10px Arial, "Helvetica Neue", sans-serif;}
 </tr>
 <tr>
 <td><div class='hn' data-type='text' data-binding-from='B5'></div></td>
-<td><div data-binding-to='D5' class='hn' data-type='input' data-binding-from='C5'></div></td>
+<td><div data-binding-to='C5' class='hn' data-type='input' data-binding-from='C5'></div></td>
 <td><div data-binding-to='D5' class='hn' data-type='input' data-binding-from='D5'></div></td>
 <td><div data-binding-to='E5' class='hn' data-type='input' data-binding-from='E5'></div></td>
 <td><div data-binding-to='F5' class='hn' data-type='input' data-binding-from='F5'></div></td>
@@ -39,7 +39,7 @@ body {font: 10px Arial, "Helvetica Neue", sans-serif;}
 </tr>
 <tr>
 <td><div class='hn' data-type='text' data-binding-from='B6'></div></td>
-<td><div data-binding-to='D6' class='hn' data-type='input' data-binding-from='C6'></div></td>
+<td><div data-binding-to='C6' class='hn' data-type='input' data-binding-from='C6'></div></td>
 <td><div data-binding-to='D6' class='hn' data-type='input' data-binding-from='D6'></div></td>
 <td><div data-binding-to='E6' class='hn' data-type='input' data-binding-from='E6'></div></td>
 <td><div data-binding-to='F6' class='hn' data-type='input' data-binding-from='F6'></div></td>
@@ -56,8 +56,8 @@ body {font: 10px Arial, "Helvetica Neue", sans-serif;}
 
 <table>
 <tbody><tr>
-<colgroup span='1' width='150px'></colgroup>
-<th></th>
+</tr></tbody><colgroup width='150px' span='1'></colgroup>
+<tbody><tr><th></th>
 <th><div class='hn' data-type='text' data-binding-from='C4'></div></th>
 <th><div class='hn' data-type='text' data-binding-from='D4'></div></th>
 <th><div class='hn' data-type='text' data-binding-from='E4'></div></th>
@@ -73,7 +73,7 @@ body {font: 10px Arial, "Helvetica Neue", sans-serif;}
 </tr>
 <tr>
 <td><div class='hn' data-type='text' data-binding-from='B8'></div></td>
-<td><div data-binding-to='D8' class='hn' data-type='input' data-binding-from='C8'></div></td>
+<td><div data-binding-to='C8' class='hn' data-type='input' data-binding-from='C8'></div></td>
 <td><div data-binding-to='D8' class='hn' data-type='input' data-binding-from='D8'></div></td>
 <td><div data-binding-to='E8' class='hn' data-type='input' data-binding-from='E8'></div></td>
 <td><div data-binding-to='F8' class='hn' data-type='input' data-binding-from='F8'></div></td>
@@ -88,7 +88,7 @@ body {font: 10px Arial, "Helvetica Neue", sans-serif;}
 </tr>
 <tr>
 <td><div class='hn' data-type='text' data-binding-from='B9'></div></td>
-<td><div data-binding-to='D9' class='hn' data-type='input' data-binding-from='C9'></div></td>
+<td><div data-binding-to='C9' class='hn' data-type='input' data-binding-from='C9'></div></td>
 <td><div data-binding-to='D9' class='hn' data-type='input' data-binding-from='D9'></div></td>
 <td><div data-binding-to='E9' class='hn' data-type='input' data-binding-from='E9'></div></td>
 <td><div data-binding-to='F9' class='hn' data-type='input' data-binding-from='F9'></div></td>
@@ -105,8 +105,8 @@ body {font: 10px Arial, "Helvetica Neue", sans-serif;}
 
 <table>
 <tbody><tr>
-<colgroup span='1' width='150px'></colgroup>
-<th></th>
+</tr></tbody><colgroup width='150px' span='1'></colgroup>
+<tbody><tr><th></th>
 <th><div class='hn' data-type='text' data-binding-from='C4'></div></th>
 <th><div class='hn' data-type='text' data-binding-from='D4'></div></th>
 <th><div class='hn' data-type='text' data-binding-from='E4'></div></th>
@@ -122,7 +122,7 @@ body {font: 10px Arial, "Helvetica Neue", sans-serif;}
 </tr>
 <tr>
 <td><div class='hn' data-type='text' data-binding-from='B11'></div></td>
-<td><div data-binding-to='D11' class='hn' data-type='input' data-binding-from='C11'></div></td>
+<td><div data-binding-to='C11' class='hn' data-type='input' data-binding-from='C11'></div></td>
 <td><div data-binding-to='D11' class='hn' data-type='input' data-binding-from='D11'></div></td>
 <td><div data-binding-to='E11' class='hn' data-type='input' data-binding-from='E11'></div></td>
 <td><div data-binding-to='F11' class='hn' data-type='input' data-binding-from='F11'></div></td>
@@ -137,7 +137,7 @@ body {font: 10px Arial, "Helvetica Neue", sans-serif;}
 </tr>
 <tr>
 <td><div class='hn' data-type='text' data-binding-from='B12'></div></td>
-<td><div data-binding-to='D12' class='hn' data-type='input' data-binding-from='C12'></div></td>
+<td><div data-binding-to='C12' class='hn' data-type='input' data-binding-from='C12'></div></td>
 <td><div data-binding-to='D12' class='hn' data-type='input' data-binding-from='D12'></div></td>
 <td><div data-binding-to='E12' class='hn' data-type='input' data-binding-from='E12'></div></td>
 <td><div data-binding-to='F12' class='hn' data-type='input' data-binding-from='F12'></div></td>
