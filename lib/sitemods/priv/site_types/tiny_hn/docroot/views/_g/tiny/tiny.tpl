@@ -9,13 +9,14 @@
     <div id='contentwrapper'>
       <div id='primarycontent'>
  
-        <div data-binding-from='B3' class='hn' data-type='text'></div>
+        <h2 style='color: rgb(255, 93, 0);'>Build the Web Applications you want <i>(no programming required)</i></h2>
+        
         
         <form data-type='form' class='hn'>
           
-          <h2>Pick a site</h2>
+          <h2>1. Pick a Site Type</h2>
           
-          <div data-binding-to='/request_site/A:A' data-type='radio' class='hn'>
+          <div data-binding-from='/B8:B10' data-binding-to='/request_site/A:A' data-type='radio' class='hn'>
 
             <div style='overflow: auto;'>
 
@@ -40,18 +41,18 @@
             </div>
           </div>
           
-          <h2>Enter your email</h2>
+          <h2>2. Enter your email</h2>
           
           <div data-binding-to='/request_site/B:B' data-type='input' class='hn'></div>
           
-          <input type='submit' value='Create Your Site' class='submit'></input>
+          <input type='submit' value='3. Create Your Site' class='submit'></input>
         </form>
 
       </div>
       
       
       <div id='secondarycontent'>
-        <div data-binding-from='D-1:D-3' class='hn' data-type='text'></div></div>
+        <div data-binding-from='/D7:D13' class='hn' data-type='text'></div></div>
     </div>
     
     

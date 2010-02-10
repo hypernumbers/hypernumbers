@@ -5,6 +5,10 @@ body {
     font       : 12px Arial,"Helvetica Neue", sans-serif;
 }
 
+
+h2 { margin: 0px; }
+form h2 { margin:15px 0px 5px 0px; }
+
 .clear { 
     overflow   : auto; 
     position   : relative;     
@@ -20,6 +24,11 @@ body {
 #header .header { 
     margin : 6px 6px 0px 6px;
     float  : left;
+}
+
+input { 
+    position :relative; 
+    top      : 3px; 
 }
 
 #header p {
