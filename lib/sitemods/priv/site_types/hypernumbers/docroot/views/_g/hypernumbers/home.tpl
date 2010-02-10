@@ -49,7 +49,7 @@
 
           <div id='news'>
             <div data-type='text' class='hn' data-binding-from='/B-1:D-3'>
-              <div class='row'>
+              <div class='tpl'>
                 <div class='rowheader'>
                   <span data-offset='1'></span>, <span data-offset='2'></span>
                 </div>
