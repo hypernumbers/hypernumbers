@@ -3,19 +3,29 @@
   [
    % Hosts to bind Mochiweb to
    {hosts,
-    [{{127,0,0,1}, 9000},
-     {{127,0,0,1}, 9001},
-     {{127,0,0,1}, 9002}
-    ]},
+    [{{127,0,0,1}, 9000}]},
    %{pingto, "http://hypernumbers.com"},
    {dets_dir, "var/dets"},
    {bootstrapped,
-    [{"http://127.0.0.1:9000", hypernumbers, []},
-     {"http://127.0.0.1:9001", tiny_hn,
-      [{init_args, [{host, "localhost"}, {port, 9002},
-                    {self, "http://127.0.0.1:9001"}]}]}
+    [{"http://127.0.0.1:9000", factory,
+      [{init_args, [{host, "localhost"},
+                    {port, 9000},
+                    {self, "http://127.0.0.1:9000"},
+                    {type, hypernumbers_factory}]}]}
+     % {"http://127.0.0.1:9001", factory,
+     % [{init_args, [{host, "localhost"},
+     %               {port, 9001},
+     %               {self, "http://127.0.0.1:9001"},
+     %               {type, revorama}]}]}
+     %      {"http://127.0.0.1:9001", agenda, []},
+     %      {"http://127.0.0.1:9002", nightout, []},
+     %      {"http://127.0.0.1:9003", scratchpad, []},
+     %      {"http://127.0.0.1:9004", hookup, []}
+     %       [{init_args, [{host, "localhost"}, {port, 9001},
+     %                     {self, "http://127.0.0.1:9001"}]}]}
+     %      {"http://127.0.0.1:9004", pirate, []}
     ]},
-      
+   
    % Mail Setup
    {mailserver,   "smtp.gmail.com"},
    {mailuser,     "team@hypernumbers.com"},
