@@ -8,15 +8,8 @@
     <div id="inner">
       
 	  <div class="clear">
-        <div id="header" class="droppable">
-          
-	      <div data-binding-from="/A1" 
-               class="hn header" 
-               data-type="text"></div>
-	      
-	      <div id="menu" class="droppable">
-	      </div>
-	    
+        <div id="header" class="droppable">          
+	      <div id="menu" class="droppable"></div>
         </div>
       </div>
       

@@ -1,8 +1,26 @@
-#ventris { 
+body { 
     margin     : 0px;
     padding    : 0px;
     background : #F9F9F9;
     font       : 12px Arial,"Helvetica Neue", sans-serif;
+}
+
+table { 
+    padding:5px;
+    width:100%; 
+}
+
+td { 
+    padding: 2px; 
+}
+
+.submit { 
+    margin-top:10px;
+}
+
+input { 
+    position :relative; 
+    top      : 3px; 
 }
 
 #ventris .clear { 
@@ -12,9 +30,7 @@
 }
 
 #ventris #header {
-    font       : bold 22px Arial,"Helvetica Neue", sans-serif;
-    color      : #FFF;
-    min-height : 50px;
+    padding : 7px;
 }
 
 #ventris #header .header { 
@@ -133,19 +149,10 @@
 }
 
 #ventris label span { 
-    font-weight: bold;
     display: block;
 }
 
 #ventris textarea {
     width:80%;
     height:100px;
-}
-
-#ventris table { 
-    padding: 10px
-}
-
-#ventris td { 
- padding-right: 8px;
 }
