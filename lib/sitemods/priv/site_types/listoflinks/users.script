@@ -12,6 +12,6 @@
 
 %% (At the moment nothing is done with e-mail
 {{user, '$user'},
- {group, ["admin", "tiny_poll"]},
+ {group, ["dev"]},
  {email, '$email'},
  {password, '$password'}}.
