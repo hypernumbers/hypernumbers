@@ -5,7 +5,7 @@
   <div id='outer'>
     
     <div id='contentwrapper'>
-      <div id='primarycontent'>
+      <div id='primarycontent' class='droppable'>
  
         <div data-type='text' class='hn' data-binding-from='/admin/B3'></div>
         
@@ -15,12 +15,12 @@
         <div data-binding-from='/admin/B10' class='hn' data-type='text'></div></div>
       
       
-      <div id='secondarycontent'>
+      <div id='secondarycontent' class='droppable'>
       </div>
     </div>
     
     
-    <div id='footer'>  
+    <div id='footer' class='droppable'>  
       
     </div>
     
