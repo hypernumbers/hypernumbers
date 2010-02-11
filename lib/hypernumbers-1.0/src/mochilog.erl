@@ -241,6 +241,7 @@ print(long, Post, Id) ->
     Uid     = proplists:get_value(uid, Post),
     Peer    = proplists:get_value(peer, Post),
     Referer = proplists:get_value(referer, Post),
+    Accept  = proplists:get_value(accept, Post),
     Browser = proplists:get_value(browser, Post),
 
     Msg = "~nId: ~p ~s Request on ~s~n"
@@ -248,11 +249,12 @@ print(long, Post, Id) ->
         "Url:        ~s~n"
         "User-Agent: ~s~n"
         "Referrer:   ~s~n"
+        "Accept:     ~s~n"
         "Body:       ~s~n~n",
     
     io:format(Msg,[Id, Method, dh_date:format("m.d.y, g:ia", Time), 
                    User, Uid, Peer, Site++Path, Browser, Referer, 
-                   bodystr(Body)]).
+                   Accept, bodystr(Body)]).
 
 filter([], _Post, _Id) ->
     true;
