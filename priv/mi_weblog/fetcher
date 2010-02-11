@@ -79,4 +79,4 @@ relative_date(Offset) ->
     format_date(calendar:gregorian_days_to_date(Day - Offset)).
     
 format_date({Y, M, D}) ->
-    lists:flatten(io_lib:format("~b-~b-~b", [Y, M, D])).
+    lists:flatten(io_lib:format("~b-~b-~b", [D, M, Y])).
