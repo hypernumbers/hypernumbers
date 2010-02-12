@@ -16,7 +16,10 @@ start_link() ->
 %% @doc  Supervisor call back
 init([]) ->
     ChildList = [ make_child_spec(X)
-                  || X<-bootstrap_sites(), X =/= no_supervisor],    
+                  || X<-bootstrap_sites(), X =/= no_supervisor],
+
+    io:format("~p~n",[ChildList]),
+    
     {ok,{{one_for_one,60,1}, ChildList}}.
 
 add_site(Site, Type, Args) ->
@@ -33,23 +36,23 @@ bootstrap_sites() ->
         _Else       -> []
     end.
 
-bootstrap_site(S, T, O) ->
+bootstrap_site(Site, Type, Opts) ->
     
-    ok = case mnesia:transaction(fun() -> mnesia:read(core_site, S) end) of
-             {atomic, []} -> hn_setup:site(S, T, O);
+    ok = case mnesia:transaction(fun() -> mnesia:read(core_site, Site) end) of
+             {atomic, []} -> hn_setup:site(Site, Type, Opts);
              _Else        -> ok
          end,
 
-    case list_to_atom(atom_to_list(T)++"_srv") of
+    case list_to_atom(atom_to_list(Type)++"_srv") of
         hypernumbers_srv ->
             no_supervisor;
         App ->
             case catch App:module_info() of
                 {'EXIT', _ } -> no_supervisor;
                 _Mod         ->
-                    case proplists:get_value(init_args, O) of
-                        undefined -> {S, App, []};
-                        Args      -> {S, App, Args}
+                    case proplists:get_value(init_args, Opts) of
+                        undefined -> {Site, Type, []};
+                        Args      -> {Site, Type, Args}
                     end
             end
     end.
