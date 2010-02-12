@@ -28,7 +28,8 @@
 -export([
          make/3,
          validate_get/3,
-         validate_trans/3
+         validate_trans/3,
+         abs_path/2
         ]).
 
 -include_lib("eunit/include/eunit.hrl").
@@ -219,22 +220,34 @@ just_path(Url) ->
 drop_last([_]) -> []; 
 drop_last([X | Rest]) -> [X | drop_last(Rest)].
 
--spec abs_path([string()], string()) -> string(). 
-abs_path(Path, [$. | _T] = Path2)  -> make_abs2(Path, Path2);
-abs_path(_Path, [$/ | _T] = Path2) -> Path2;
-abs_path(Path, Path2)              -> hn_util:list_to_path(Path) ++ Path2.
+-spec abs_path([string()], string()) -> string().
+abs_path(_, [$/ | _] = Path2) -> Path2;
+abs_path(Path, Path2) -> 
+    Path2Toks = string:tokens(Path2, "/"),
+    PathR = lists:reverse(Path),
+    "/" ++ string:join(abs_path2(PathR, Path2Toks), "/").
 
-make_abs2(Path, Path2) ->
-    R = lists:reverse(Path),
-    P3 = string:tokens(Path2, "/"),
-    {P4, [Ref]} = lists:split(length(P3) - 1, P3),
-    NewPath = make_abs3(R, P4),
-    NewPath ++ Ref.
-
-make_abs3(Path, [])                -> hn_util:list_to_path(lists:reverse(Path));
-make_abs3(Path, ["." | T2])        -> make_abs3(Path, T2);
-make_abs3([_H1 | T1], [".." | T2]) -> make_abs3(T1, T2);
-make_abs3(Path, [H2 | T2])         -> make_abs3([H2 | Path], T2).
+abs_path2(P1, P2) ->
+    abs_path2(P1, P2, queue:new()).
+abs_path2([], [], Q) ->
+    queue:to_list(Q);
+abs_path2(Left, ["." | RestR], Q) ->
+    abs_path2(Left, RestR, Q);
+abs_path2(Left, [".." | RestR], Q) ->
+    case {queue:is_empty(Q), Left} of
+        {false, _} -> abs_path2(Left, RestR, queue:drop_r(Q));
+        {true, []} -> abs_path2([".."], RestR, Q); 
+        {true, [".."|_]} -> abs_path2([".." | Left], RestR, Q);
+        {true, [_|RestL]} -> abs_path2(RestL, RestR, Q)
+    end;
+abs_path2([], [X | RestR], Q) ->
+    abs_path2([], RestR, queue:in(X, Q));
+abs_path2([".." | RestL], [_ | RestR], Q) ->
+    abs_path2(RestL, RestR, Q);
+abs_path2([".." | _], [], _Q) ->
+    "";
+abs_path2([X | RestL], Right, Q) ->
+    abs_path2(RestL, Right, queue:in_r(X, Q)).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -244,12 +257,14 @@ make_abs3(Path, [H2 | T2])         -> make_abs3([H2 | Path], T2).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 abspath_test_() ->
-    Base = ["blah", "bloh", "bleh"],
-    [?_assertEqual("/blah/bloh/bleh/d1", abs_path(Base, "d1")),
-     ?_assertEqual("/blah/bloh/bleh/d1", abs_path(Base, "./d1")),
-     ?_assertEqual("/blah/bloh/d1", abs_path(Base, "../d1")),
-     ?_assertEqual("/d1", abs_path(Base, "../bleh/../.././../././blah//../d1")),
-     ?_assertEqual("/already/absolute", abs_path(Base, "/already/absolute"))
+    Base = ["first", "second", "third"],
+    [?_assertEqual("/already/absolute", abs_path(Base, "/already/absolute")),
+     ?_assertEqual("/first/second/third/d1", abs_path(Base, "d1")),
+     ?_assertEqual("/first/second/third/d1", abs_path(Base, "./d1")),
+     ?_assertEqual("/first/second/d1", abs_path(Base, "../d1")),
+     ?_assertEqual("/d1", 
+                   abs_path(Base, "../third/../../ok/.././../././first//../d1")),
+     ?_assertEqual("/first/second/d1", abs_path(Base, "../something/../d1"))
     ].
 
 just_path_test_() ->
