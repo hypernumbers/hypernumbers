@@ -33,12 +33,12 @@ start() ->
 
 %% @doc Logs individual requests
 -spec log(#req{}, #refX{}) -> ok.
-log(Req=#req{mochi = Mochi, user = User}, Ref) ->
+log(Req=#req{mochi = Mochi, user = User, raw_body = Body}, Ref) ->
     Post = [{time, erlang:now()},
             {site, Ref#refX.site},
             {path, Mochi:get(raw_path)},
             {method, Mochi:get(method)},
-            {body, Mochi:recv_body()},
+            {body, Body},
             {user, hn_users:name(User)},
             {uid, Req#req.uid},
             {peer, Mochi:get_header_value("x-forwarded-for")},

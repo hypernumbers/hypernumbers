@@ -86,7 +86,7 @@ handle_resource(Ref, Qry,
         "multipart/form-data" ++ _Rest ->
             {Data, File} = hn_file_upload:handle_upload(Mochi, Ref, User),
             Name = filename:basename(File),
-            Req2 = Req#req{body = {upload, Name}},
+            Req2 = Req#req{raw_body = {upload, Name}},
             mochilog:log(Req2, Ref),
             json(Req, Data);
 
@@ -984,14 +984,17 @@ process_query_([{Param, Value} | Rest], Qry) ->
 -spec process_request(any()) -> #req{}.
 process_request(Mochi) ->
     Method = Mochi:get(method),
-    Body = if Method == 'POST' -> 
-                   {ok, Post} = get_json_post(Mochi:recv_body()),
-                   Post;
-              true -> undefined
-           end,
+    {RawBody, Body}  = if Method == 'POST' -> 
+                               RB = Mochi:recv_body(),
+                               {ok, B} = get_json_post(RB),
+                               {RB, B};
+                          true -> 
+                               {undefined, undefined}
+                       end,
     #req{mochi = Mochi, 
          accept = accept_type(Mochi),
          method = Method,
+         raw_body = RawBody,
          body = Body}.
 
 -spec process_cookies(string(), #req{}) -> #req{}. 
