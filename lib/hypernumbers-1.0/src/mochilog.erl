@@ -33,12 +33,12 @@ start() ->
 
 %% @doc Logs individual requests
 -spec log(#req{}, #refX{}) -> ok.
-log(Req=#req{mochi = Mochi, user = User, body = Body}, Ref) ->
+log(Req=#req{mochi = Mochi, user = User}, Ref) ->
     Post = [{time, erlang:now()},
             {site, Ref#refX.site},
             {path, Mochi:get(raw_path)},
             {method, Mochi:get(method)},
-            {body, Body},
+            {body, Mochi:recv_body()},
             {user, hn_users:name(User)},
             {uid, Req#req.uid},
             {peer, Mochi:get_header_value("x-forwarded-for")},
@@ -120,7 +120,7 @@ mi_entry(Post, _) ->
     S = case Body of
             {upload, F} -> F;
             _-> case io_lib:printable_list(btol(Body)) of
-                    true  -> btol(Body);
+                   true  -> btol(Body);
                     false -> ""
                 end
         end,
