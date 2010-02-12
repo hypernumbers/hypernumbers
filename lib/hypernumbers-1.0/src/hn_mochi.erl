@@ -42,15 +42,29 @@ handle_(#refX{path=["_pong"]}, Req, #qry{uid=Uid, return=Return})
 
 handle_(Ref, Req, Qry) ->
     case filename:extension((Req#req.mochi):get(path)) of
-        []  -> authorize_resource(Req, Ref, Qry);
+        []  -> check_resource_exists(Req, Ref, Qry);
         Ext -> Root = docroot(Ref#refX.site),
                handle_static(Ext, Root, Req#req.mochi)
     end.
 
+-spec check_resource_exists(#req{}, #refX{}, #qry{}) -> no_return(). 
+check_resource_exists(Req, Ref, Qry) ->
+    case mnesia:dirty_read(core_site, Ref#refX.site) of
+        [_] -> 
+            authorize_resource(Req, Ref, Qry);
+        _ ->
+            text_html(Req, "The web site you seek<br/>"
+                      "cannot be located, but<br/>"
+                      "countless more exist.")
+    end.
+            
 -spec authorize_resource(#req{}, #refX{}, #qry{}) -> no_return(). 
 authorize_resource(Req, Ref, Qry) -> 
-    Req2    = process_cookies(Ref#refX.site, Req),
-    AuthRet = authorize(Req2, Ref, Qry),
+    Req2 = process_cookies(Ref#refX.site, Req),
+    AuthRet = case Req2#req.method of
+                  'GET' -> authorize_get(Ref, Qry, Req2);
+                  'POST' -> authorize_post(Ref, Qry, Req2)
+              end,
     case {AuthRet, Req2#req.accept} of
         {allowed, _} ->
             handle_resource(Ref, Qry, Req2);
@@ -64,10 +78,6 @@ authorize_resource(Req, Ref, Qry) ->
                        [viewroot(Ref#refX.site), "/_g/core/login.html"]);
         {not_found, json} ->
             respond(404, Req2);
-        {site_not_found, _} ->
-            text_html(Req2, "The web site you seek "
-                      "cannot be located, but "
-                      "countless more exist.");
         _NoPermission ->
             respond(401, Req2)
     end.
@@ -141,21 +151,6 @@ handle_pong(R, Uid, Return) ->
     respond(302, R2).
 
 
--spec authorize(#req{}, #refX{}, #qry{})
-               -> {view, string()} 
-                      | allowed | denied 
-                      | site_not_found | not_found.
-authorize(Req, Ref, Qry) ->
-    case mnesia:dirty_read(core_site, Ref#refX.site) of
-        [_X] -> case Req#req.method of
-                    'GET' -> 
-                        authorize_get(Ref, Qry, Req);
-                    'POST' -> 
-                        authorize_post(Ref, Qry, Req)
-                end;
-        _ -> site_not_found
-    end.
-            
 -spec authorize_get(#refX{}, #qry{}, #req{}) 
                    -> {view, string()} | allowed | denied | not_found.
 
