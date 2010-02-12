@@ -1,4 +1,3 @@
-%%% @author Dale Harvey <dale@hypernumbers.com>
 %%% @copyright Hypernumbers Ltd.
 %%% @TODO write a proper module description
 -module(dirty_srv).
@@ -13,7 +12,7 @@
          listen_dirty_queue/3,
          code_change/3]).
 
--export([start/1, stop/0, listen/2]).
+-export([ start/1, stop/0, stop/1, listen/2 ]).
 
 -include("handy_macros.hrl").
 -include("hypernumbers.hrl").
@@ -24,7 +23,6 @@
 -type listener() :: {pid(), string()}.
 -record(state, {table = undefined :: atom(), 
                 children = [] :: [listener()] }).
-
 
 %%%
 %%% API
@@ -38,6 +36,11 @@ start(Site) ->
 -spec stop() -> ok. 
 stop() ->
     [ok = gen_server:call(D, stop) || D <- dirty_tbls()],
+    ok.
+
+-spec stop(string()) -> ok. 
+stop(Site) ->
+    [ok = gen_server:call(D, {stop, Site}) || D <- dirty_tbls()],
     ok.
 
 %% @spec start_link(Arg) -> StartLink
@@ -89,6 +92,13 @@ handle_call({start, Site},  _From, State) ->
             end,
     NState = State#state{children = [Child | State#state.children]},
     {reply, ok, NState};
+
+%% @doc  subscribe to table events from mnesia
+handle_call({stop, Site},  _From, State) ->
+    F = fun({_Pid, Site2}) -> Site == Site2 end,
+    {Delete, Rest} = lists:partition(F, State#state.children),
+    [ exit(Pid, stopping) || {Pid, _Table} <- Delete ],
+    {reply, ok, State#state{children = Rest}};
 
 handle_call(stop,  _From, State) ->
     [ exit(Pid, stopping) ||

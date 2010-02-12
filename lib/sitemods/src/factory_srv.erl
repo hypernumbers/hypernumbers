@@ -13,14 +13,14 @@
 -include("spriki.hrl").
 
 %% API
--export([start_link/1]).
+-export([start_link/2]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
 %% export for internal spawn only
--export([tick/0, tock/0]).
+-export([tick/1, tock/1]).
 
 -define(SERVER, ?MODULE). 
 -define(CLOCKTICK, 2000).
@@ -39,8 +39,9 @@
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
-start_link(Args) ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, Args, []).
+start_link(Site, Args) ->
+    SrvName = list_to_atom(fmt("~s_~p", [hn_util:parse_site(Site), ?MODULE])),
+    gen_server:start_link({local, SrvName}, ?MODULE, [Args], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -59,9 +60,7 @@ start_link(Args) ->
 %%--------------------------------------------------------------------
 init(Args) ->
     NewState = parse_args(Args),
-
-    _Pid = spawn_link(?MODULE, tick, []),
-
+    _Pid     = spawn_link(?MODULE, tick, [self()]),
     {ok, NewState}.
 
 %%--------------------------------------------------------------------
@@ -93,14 +92,15 @@ handle_call(_Request, _From, State) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_cast(tock, State) ->
-    ok = handle_tock(State),
-    _Pid = spawn_link(?MODULE, tick, []),
+    ok   = handle_tock(State),
+    _Pid = spawn_link(?MODULE, tick, [self()]),
     {noreply, State};
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
 handle_tock([])      -> ok;
 handle_tock([H | T]) ->
+
     SiteName = "http://" ++ H#state.site ++ ":" ++ H#state.port,
     RefX1 = #refX{site = SiteName,
                   path = ?PATH,
@@ -172,18 +172,19 @@ code_change(_OldVsn, State, _Extra) ->
 %%% API
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tock() ->
-    gen_server:cast(?MODULE, tock).
+tock(Server) ->
+    gen_server:cast(Server, tock).
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
 
-tick() -> 
+tick(Server) -> 
     timer:sleep(?CLOCKTICK),
-    factory_srv:tock().
+    factory_srv:tock(Server).
 
-parse_args(Args) -> parse_a1(Args, []).
+parse_args(Args) ->
+    parse_a1(Args, []).
 
 parse_a1([], Acc)      -> Acc;
 parse_a1([H | T], Acc) ->

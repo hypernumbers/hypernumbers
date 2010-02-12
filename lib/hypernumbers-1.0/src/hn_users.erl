@@ -146,6 +146,7 @@ login(Site, Name, Pass, Remember) ->
 verify_token(_Site, undefined) ->
     {error, no_token};
 verify_token(Site, Token) ->
+    
     [Expires, User, Hash] = string:tokens(Token, ":"),
     
     case {is_expired(Expires), gen_hash(User, Expires), Hash} of

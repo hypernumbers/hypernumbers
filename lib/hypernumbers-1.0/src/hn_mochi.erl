@@ -49,7 +49,7 @@ handle_(Ref, Req, Qry) ->
 
 -spec authorize_resource(#req{}, #refX{}, #qry{}) -> no_return(). 
 authorize_resource(Req, Ref, Qry) -> 
-    Req2 = process_cookies(Ref#refX.site, Req),
+    Req2    = process_cookies(Ref#refX.site, Req),
     AuthRet = authorize(Req2, Ref, Qry),
     case {AuthRet, Req2#req.accept} of
         {allowed, _} ->

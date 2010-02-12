@@ -5,7 +5,7 @@
 -export([
          startup/0,
          site/3,
-         delete_site/1,
+         delete_site/1, 
          update/0, update/1,
          update/3,
          add_user/2,
@@ -50,9 +50,10 @@ delete_site(Site) ->
         ++ hn_util:parse_site(Site) ++ "/",
 
     auth_srv2:clear_all_perms_DEBUG(Site),
+    
     [ {atomic, ok}  = mnesia:delete_table(hn_db_wu:trans(Site, Table))
       || {Table, _F, _T, _I} <- tables()],
-
+    
     ok = hn_util:delete_directory(Dest),
     ok = mnesia:dirty_delete(core_site, Site).
 

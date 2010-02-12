@@ -29,7 +29,11 @@
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
+%% start_link([Site|Args]) ->
+%%     io:format("~p ~p~n",[Site, Args]),
+%%     supervisor:start_link({local, ?SERVER}, ?MODULE, Args).
 start_link(Args) ->
+    io:format("~p~n",[Args]),
     supervisor:start_link({local, ?SERVER}, ?MODULE, Args).
 
 %%%===================================================================
@@ -51,6 +55,8 @@ start_link(Args) ->
 %%--------------------------------------------------------------------
 init(Args) ->
 
+    io:format("~p~n",[Args]),
+
     RestartStrategy = one_for_one,
     MaxRestarts = 1000,
     MaxSecondsBetweenRestarts = 3600,
@@ -61,7 +67,7 @@ init(Args) ->
     Shutdown = 2000,
     Type = worker,
 
-    Factory_Srv = {factory_srv, {factory_srv, start_link, [Args]},
+    Factory_Srv = {factory_srv, {factory_srv, start_link, Args},
               Restart, Shutdown, Type, [factory_srv]},
 
     {ok, {SupFlags, [Factory_Srv]}}.
