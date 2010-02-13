@@ -24,8 +24,6 @@ init([]) ->
                  permanent, 2000, worker, [dirty_subscriber]},
     Status    = {status_srv, {status_srv, start_link, []},
                  permanent, 2000, worker, [status_srv]},
-    Auth      = {auth_srv, {auth_srv, start_link, []},
-                 permanent, 2000, worker, [auth_srv]},
     Auth2      = {auth_srv2, {auth_srv2, start_link, []},
                   permanent, 2000, worker, [auth_srv2]},
 
@@ -34,6 +32,6 @@ init([]) ->
                                Dirty_Sup,
                                Dirty_Sub,
                                Status,
-                               Auth, Auth2
+                               Auth2
                              ]}}.
 

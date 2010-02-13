@@ -120,10 +120,11 @@ parse_url_for_grab(URL) ->
     {Prefix, code:lib_dir(hypernumbers) ++ "/../../var/" ++ "grab/"
         ++ Site ++ "&" ++ Port ++ "/"}.
 
-restore_auth_srv(Dir, Site) ->
-    File = Dir ++ Site ++ "/auth_srv/auth_srv.dump",
-    {ok, [Tree]} = file:consult(File),
-    auth_srv:restore("http://" ++ Site, Tree).
+restore_auth_srv(_Dir, _Site) ->
+    throw(uses_old_authsrv).
+    %% File = Dir ++ Site ++ "/auth_srv/auth_srv.dump",
+    %% {ok, [Tree]} = file:consult(File),
+    %% auth_srv:restore("http://" ++ Site, Tree).
 
 restore_views(Dir, Site) ->
     From = Dir ++ Site ++ "/views/",
@@ -139,13 +140,14 @@ restore_mnesia(Dir) ->
     hn_db_admin:restore(Dir, "mnesia.backup").
 
 backup_auth_srv(_Timestamp, [], _Type)                       -> ok;
-backup_auth_srv(Timestamp, ["http://" ++ H = Url | T], Type) ->
-    [Site, Port] = string:tokens(H, ":"),
-    Prefix = code:lib_dir(hypernumbers) ++ "/../../var/",
-    To = Prefix ++ "backup/" ++ Type ++ "/" ++ Timestamp ++ "/"
-        ++ Site ++ "&" ++ Port ++ "/auth_srv/auth_srv.dump",
-    ok = auth_srv:backup(Url, To),
-    backup_auth_srv(Timestamp, T, Type).
+backup_auth_srv(_Timestamp, ["http://" ++ _H = _Url | _T], _Type) ->
+    throw(uses_old_authsrv).
+    %% [Site, Port] = string:tokens(H, ":"),
+    %% Prefix = code:lib_dir(hypernumbers) ++ "/../../var/",
+    %% To = Prefix ++ "backup/" ++ Type ++ "/" ++ Timestamp ++ "/"
+    %%     ++ Site ++ "&" ++ Port ++ "/auth_srv/auth_srv.dump",
+    %% ok = auth_srv:backup(Url, To),
+    %% backup_auth_srv(Timestamp, T, Type).
 
 grab_pages(URL, Dir) ->
     RefX = hn_util:url_to_refX(URL),
