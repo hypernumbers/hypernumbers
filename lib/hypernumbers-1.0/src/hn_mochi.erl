@@ -746,7 +746,8 @@ docroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:parse_site(Site)++"/docroot".
 viewroot(Site) ->
-    docroot(Site) ++ "/views".
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:parse_site(Site)++"/views".
 tmpdir() ->
     code:lib_dir(hypernumbers) ++ "/../../var/tmp/".              
 

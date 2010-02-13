@@ -18,8 +18,6 @@ init([]) ->
     ChildList = [ make_child_spec(X)
                   || X<-bootstrap_sites(), X =/= no_supervisor],
 
-    io:format("~p~n",[ChildList]),
-    
     {ok,{{one_for_one,60,1}, ChildList}}.
 
 add_site(Site, Type, Args) ->

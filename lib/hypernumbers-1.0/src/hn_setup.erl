@@ -37,7 +37,8 @@ startup() ->
 -spec site(string(), atom(), [{atom(), any()}]) -> ok.
 site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
-    All = [templates, json, permissions, script, user_permissions, users],
+    All = [corefiles, sitefiles, json, permissions,
+           script, user_permissions, users],
     ok  = create_site(Site, Type),
     ok  = update(Site, Type, Opts, All).
 
@@ -60,7 +61,7 @@ delete_site(Site) ->
 %% Update all existing sites with default options
 -spec update() -> ok. 
 update() ->
-    update([], [templates]).
+    update([], [corefiles]).
 
 
 -spec update(list()) -> ok. 
@@ -104,10 +105,13 @@ add_user(Site, User) ->
 
 
 -spec setup(string(), atom(), list(), atom()) -> ok.
-setup(Site, Type, _Opts, templates) ->
+setup(Site, _Type, _Opts, corefiles) ->
     ok = filelib:ensure_dir(sitedir(Site)),
     % first copy over the standard type
-    ok = hn_util:recursive_copy(coreinstalldir(), sitedir(Site)),
+    ok = hn_util:recursive_copy(coreinstalldir(), sitedir(Site));
+setup(Site, Type, _Opts, sitefiles) ->
+    ok = filelib:ensure_dir(sitedir(Site)),
+    % first copy over the standard type
     ok = hn_util:recursive_copy(moddir(Type), sitedir(Site));
 setup(Site, Type, _Opts, json) ->
     ok = import_json(Site, moddir(Type));
