@@ -7,7 +7,26 @@
 
 -module(hn_db_admin).
 
--define(CACHEABLE_TABLES, ["local_objs", "local_cell_link", "item"]).
+-define(CACHEABLE_TABLES, [
+                           "dirty_inc_hn_create",
+                           "dirty_notify_back_in",
+                           "dirty_notify_out",
+                           "dirty_notify_back_out",
+                           "item",
+                           "local_objs",
+                           "local_cell_link",
+                           "relation",
+                           "hn_user",
+                           "remote_objs",
+                           "remote_cell_link",
+                           "incoming_hn",
+                           "outgoing_hn",
+                           "styles",
+                           "style_counters",
+                           "page_vsn",
+                           "page_history"
+                          ],
+
 
 -export([
          create_table/6,
