@@ -25,8 +25,7 @@
                            "style_counters",
                            "page_vsn",
                            "page_history"
-                          ],
-
+                          ]).
 
 -export([
          create_table/6,
