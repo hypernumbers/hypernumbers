@@ -25,6 +25,7 @@
          set_champion/3,
          set_challenger/3,
          remove_views/4,
+         delete_site/1,
          get_as_json/2,
          dump_script/1
         ]).
@@ -107,8 +108,13 @@ get_as_json(Site, Path) ->
 dump_script(Site) ->
     gen_server:call(?MODULE, {dump_script, Site}).
 
+delete_site(Site) ->
+    gen_server:call(?MODULE, {delete_site, Site}).
+
 clear_all_perms_DEBUG(Site) ->
     gen_server:call(?MODULE, {clear_all_perms, Site}).
+
+
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -169,6 +175,8 @@ handle_call(Request, _From, State) ->
                 {Site, remove_views1(tree(Site, Tr), P, Vs), true};
             {get_as_json, Site, P} ->
                 {Site, get_as_json1(tree(Site, Tr), P), false};
+            {delete_site, Site} ->
+                {Site, delete};
             {clear_all_perms, Site} ->
                 {Site, gb_trees:empty(), true};
             {dump_script, Site} ->
@@ -179,7 +187,9 @@ handle_call(Request, _From, State) ->
             {Site2, Return2, true} ->
                 {ok, save_trees(File, Site2, Return2, Tr)};
             {_Site2, Return2, false} ->
-                {Return2, Tr}
+                {Return2, Tr};
+            {Site2, delete} ->
+                {ok, del_site_tree(File, Site2, Tr)}
         end,
     {reply, Reply, State#state{trees = NewTr}}.
 
@@ -407,6 +417,12 @@ save_trees(File, Site, NewTree, Trees) ->
     ok = dets:insert(File, {?KEY, NewTrees}),
     NewTrees.
 
+-spec del_site_tree(string(), string(), gb_tree()) -> gb_tree().
+del_site_tree(File, Site, Trees) ->
+    NewTrees = gb_trees:delete_any(Site, Trees),
+    ok = dets:insert(File, {?KEY, NewTrees}),
+    NewTrees.
+                                            
 -spec alter_tree(gb_tree(), 
                  [string()], 
                  fun((#control{}) -> #control{})) -> gb_tree().
