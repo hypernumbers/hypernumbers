@@ -10,7 +10,7 @@
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
 start(_Type, _Args) ->
-    ensure_dirs(),
+    ok = ensure_dirs(),
     ok = init_tables(),
     ok = load_muin_modules(),
     ok = mochilog:start(),
@@ -28,7 +28,7 @@ ensure_dirs() ->
     Dirs = [application:get_env(hypernumbers, dets_dir),
             application:get_env(mnesia, dir),
             application:get_env(sasl, error_logger_mf_dir)],
-    [filelib:ensure_dir(D++"/") || {ok, D} <- Dirs],
+    [ok = filelib:ensure_dir(D++"/") || {ok, D} <- Dirs],
     ok.
 
 % these need to be loaded for exported_function() to work
@@ -38,7 +38,7 @@ load_muin_modules() ->
     ok.
 
 init_tables() -> 
-    ensure_schema(),
+    ok = ensure_schema(),
     Storage = disc_only_copies,
 
     %% Core system tables -- required to operate system
@@ -57,7 +57,7 @@ ensure_schema() ->
     end.
 
 build_schema() ->
-    application:stop(mnesia),
+    ok = application:stop(mnesia),
     ok = mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
     ok = application:start(mnesia).
@@ -68,14 +68,14 @@ build_schema() ->
 %% domain name on the ip address, wtf?
 start_mochiweb() ->
     {ok, Hs} = application:get_env(hypernumbers, hosts),
-    [start_instance(H) || H <- Hs],
+    [ok = start_instance(H) || H <- Hs],
     ok.
 
 start_instance({IP, Port}) ->
     StrIp = inet_parse:ntoa(IP),
     Opts = [{port, Port}, 
             {ip,   StrIp},
-            {name, StrIp ++ integer_to_list(Port)},
+            {name, StrIp ++ "&" ++ integer_to_list(Port)},
             {loop, {hn_mochi, handle}}],
     {ok, _Pid} = mochiweb_http:start(Opts),
     ok.

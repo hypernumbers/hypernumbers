@@ -9,41 +9,61 @@
 -include("hypernumbers.hrl").
 
 %% gen_server callbacks
--export([start_link/0, init/1, handle_call/3, handle_cast/2, 
+-export([start_link/1, init/1, handle_call/3, handle_cast/2, 
     handle_info/2, terminate/2, code_change/3]).
 
 -export([ notify_change/5, notify_delete/5, notify_style/4, notify_error/5, 
           request_update/4, notify_refresh/2, timestamp/0 ]).
 
-start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+%%
+%% Gen Server API
+%%
+
+start_link(Name) ->
+    gen_server:start_link({local, Name}, ?MODULE, [], []).
 
 init([]) ->
     {ok, {[], []}}.
+
+%%
+%% Handle messages
+%%
+
+handle_call(_Req, _From, State) -> {reply,invalid_message, State}.
 
 %% @doc  Handle incoming update mesage
 handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
     Packet   = {msg, Site, Path, Msg, timestamp()},
     NUpdates = [Packet | Updates], 
     {noreply, send_to_waiting(NUpdates, Waiting)};
-
 %% @doc  Handle incoming request for updates
 handle_cast({fetch, Site, Path, Time, Pid}, {Updates, Waiting}) ->
     NWaiting = [{Site, Path, Time, Pid} | Waiting], 
     {noreply, send_queued(Updates, NWaiting)};
-
 handle_cast(_Msg, State) ->
     ?ERROR("Invalid Cast in remoting_reg ~p ",[_Msg]),
     {noreply, State}.
 
+handle_info(_Info, State)       -> {noreply, State}.
+
+terminate(_Reason, _State)      -> ok.
+
+code_change(_Old, State, _E)    -> {ok, State}.
+
+%%
+%% API Calls
+%%
+
 request_update(Site, Path, Time, Pid) ->
-    gen_server:cast(remoting_reg, {fetch, Site, Path, Time, Pid}).
+    Id = hn_util:site_to_name(Site, "_reg"),
+    gen_server:cast(Id, {fetch, Site, Path, Time, Pid}).
 
 %% @doc  Notify server of full page refresh
 notify_refresh(Site, Path) ->
     Msg = {struct, [{"type", "refresh"},
                     {"path", hn_util:list_to_path(Path)}]},
-    gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
+    Id = hn_util:site_to_name(Site, "_reg"),
+    gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of change to a cell
 notify_change(Site, Path, {RefType, _} = R, Name, Value) ->
@@ -52,7 +72,8 @@ notify_change(Site, Path, {RefType, _} = R, Name, Value) ->
                     {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_str(R)}, 
                     {"name", Name2}, {"value", Val2}]},
-    gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
+    Id = hn_util:site_to_name(Site, "_reg"),
+    gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 notify_delete(Site, Path, {RefType, _} = R, Name, Value) ->
     {Name2, Val2} = hn_util:jsonify_val({Name, Value}), 
@@ -60,15 +81,16 @@ notify_delete(Site, Path, {RefType, _} = R, Name, Value) ->
                     {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_str(R)}, 
                     {"name", Name2}, {"value", Val2}]},
-    gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
-
+    Id = hn_util:site_to_name(Site, "_reg"),
+    gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of a new style
 notify_style(Site, Path, Index, Style) ->
     {Key, CSS} = hn_mochi:style_to_css(Index, Style),
     Msg = {struct, [{"path", hn_util:list_to_path(Path)},
                     {"type", "style"}, {"index", Key}, {"css", CSS}]},
-    gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
+    Id = hn_util:site_to_name(Site, "_reg"),
+    gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of an error to a cell
 notify_error(Site, Path, Ref, error_in_formula, Value) ->
@@ -76,7 +98,12 @@ notify_error(Site, Path, Ref, error_in_formula, Value) ->
                     {"ref", hn_util:obj_to_str(Ref)}, 
                     {"original", Value},
                     {"path", hn_util:list_to_path(Path)}]},
-    gen_server:cast(remoting_reg, {msg, Site, Path, Msg}). 
+    Id = hn_util:site_to_name(Site, "_reg"),
+    gen_server:cast(Id, {msg, Site, Path, Msg}). 
+
+%%
+%% Internal Functions
+%%
 
 %% @doc  Send an update to the comet server to forward to client
 send_to_server(Server, Time, Msgs) ->
@@ -133,11 +160,10 @@ expire_updates(Old) ->
           end,
     lists:filter(F, Old).
 
-handle_call(_Req, _From, State) -> {reply,invalid_message, State}.
-handle_info(_Info, State)       -> {noreply, State}.
-terminate(_Reason, _State)      -> ok.
-code_change(_Old, State, _E)    -> {ok, State}.
 
+%%
+%% Tests
+%%
 
 -include_lib("eunit/include/eunit.hrl").
 -define(SITE, "http://example.org:9000").

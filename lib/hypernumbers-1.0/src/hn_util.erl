@@ -14,7 +14,8 @@
 -export([
          esc_regex/1,     
          recursive_copy/2,
-
+         site_to_name/2,
+         
          email/4, email/5,
 
          % HyperNumbers Utils
@@ -58,6 +59,12 @@
          js_to_utf8/1
         ]).
 
+
+%% used to turn sites into atoms for process names, etc
+-spec site_to_name(list(), list()) -> list().
+site_to_name(Site, PostFix) when is_list(Site) andalso is_list(PostFix) ->
+    "http://" ++ S = Site,
+    list_to_atom([case X of $: -> $&; X -> X end || X <- S ++ PostFix]).
 
 %% Escape the replacement part of the regular expression
 %% so no spurious replacements

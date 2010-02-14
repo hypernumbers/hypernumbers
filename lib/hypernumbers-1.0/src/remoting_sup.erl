@@ -14,6 +14,9 @@
 
 -export([ start_link/0, init/1 ]).
 
+%% export so that other modules can make child specs
+-export([ make_child_spec/1 ]).
+
 -define(SERVER, ?MODULE).
 
 start_link() ->
@@ -21,7 +24,13 @@ start_link() ->
 
 init([]) ->
 
-    {ok,{{one_for_one,60,1}, [
-        {remoting_reg, {remoting_reg, start_link,[]}, 
-            permanent, 2000, worker, [remoting_reg]}
-    ]}}.
+    Sites = hn_setup:get_sites(),
+    ChildSpecs = [make_child_spec(X) || X <- Sites],
+    {ok,{{one_for_one,60,1}, ChildSpecs}}.
+
+
+make_child_spec(Site) ->
+    Id = hn_util:site_to_name(Site, "_reg"),
+    {Id, {remoting_reg, start_link, [Id]}, 
+     permanent, 2000, worker, [remoting_reg]}.
+     

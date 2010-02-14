@@ -40,8 +40,11 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     All = [corefiles, sitefiles, json, permissions,
            script, user_permissions, users],
     ok  = create_site(Site, Type),
-    ok  = update(Site, Type, Opts, All).
-
+    ok  = update(Site, Type, Opts, All),
+    % now start things up...
+    RegChildSpec = remoting_sup:make_child_spec(Site),
+    {ok, _Pid1} = supervisor:start_child(remoting_sup, RegChildSpec),
+    ok.
 
 %% Delete a site
 %% TODO : stop any supervisors if they are running
@@ -50,7 +53,8 @@ delete_site(Site) ->
     Dest = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:parse_site(Site) ++ "/",
 
-    auth_srv2:clear_all_perms_DEBUG(Site),
+    ok = auth_srv2:clear_all_perms_DEBUG(Site),
+    ok = dirty_srv:stop(Site),
     
     [ {atomic, ok}  = mnesia:delete_table(hn_db_wu:trans(Site, Table))
       || {Table, _F, _T, _I} <- tables()],
@@ -148,7 +152,6 @@ sitedir(Site) ->
 launch_site(Site) ->
     ok = dirty_srv:start(Site).
 
-
 -spec resave_views() -> ok.
 resave_views() ->
 
@@ -182,7 +185,7 @@ create_site(Site, Type)->
      || {N,F,T,I} <- tables()],
     Trans = fun() ->
                     ok = mnesia:write(#core_site{site = Site, type = Type}),
-                    launch_site(Site)
+                    ok = launch_site(Site)
             end,
     {atomic, ok} = mnesia:transaction(Trans),
     ok.

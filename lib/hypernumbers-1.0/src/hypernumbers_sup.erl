@@ -24,14 +24,14 @@ init([]) ->
                  permanent, 2000, worker, [dirty_subscriber]},
     Status    = {status_srv, {status_srv, start_link, []},
                  permanent, 2000, worker, [status_srv]},
-    Auth2      = {auth_srv2, {auth_srv2, start_link, []},
-                  permanent, 2000, worker, [auth_srv2]},
-
-    {ok,{{one_for_one,60,1}, [ Random,
-                               Remote, 
-                               Dirty_Sup,
-                               Dirty_Sub,
-                               Status,
-                               Auth2
-                             ]}}.
+    Auth2     = {auth_srv2, {auth_srv2, start_link, []},
+                 permanent, 2000, worker, [auth_srv2]},
+    
+    {ok,{{one_for_one, 60, 1}, [ Random,
+                                 Remote, 
+                                 Dirty_Sup,
+                                 Dirty_Sub,
+                                 Status,
+                                 Auth2
+                                ]}}.
 
