@@ -819,7 +819,7 @@ p,h1,h2,h3,h4,h5 {
  background: #CCCCFF;
  border:     2px solid black;
  opacity:    0.2;
- z-index:    8000;
+ z-index:    99999 ;
  overflow:   visible;
 }
 
@@ -884,12 +884,6 @@ p,h1,h2,h3,h4,h5 {
  background: transparent;
  width:      1px;
  border:     0px;
-}
-
-#current { 
- position:   absolute;
- background: #FFF;
- z-index:    900;
 }
 
 #axiscontextmenucol ul, #axiscontextmenurow ul, #gridcontextmenu ul {
@@ -993,7 +987,7 @@ p,h1,h2,h3,h4,h5 {
  position:   absolute;
  background: transparent;
  border:     1px solid blue;
- z-index:    8001;
+ z-index:    100000;
 }
 
 /******************************************************************************/
