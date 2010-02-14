@@ -315,11 +315,14 @@ iget(#refX{site = Site, path = Path}, page,
 iget(#refX{site = S}, page, #qry{status = []}, Req) -> 
     json(Req, status_srv:get_status(S));
 
-iget(#refX{site = S}=Ref, page, #qry{rawview = View}, #req{mochi = Mochi}=Req)
+iget(#refX{site = S}=Ref, page, #qry{rawview = View}, Req)
   when is_list(View) ->
     case is_view(View) of
-        true  -> Mochi:serve_file(View++".tpl", viewroot(S), nocache());
-        false ->'404'(Ref, Req)
+        true -> 
+            Tpl = [viewroot(S), "/" , View],
+            serve_file(200, Req, Tpl);
+        false -> 
+            '404'(Ref, Req)
     end,
     ok;
 
@@ -1096,10 +1099,10 @@ serve_html(Req, File) ->
 serve_html(Status, Req=#req{user = User}, File) ->
     F = fun() -> hn_util:compile_html(File, get_lang(User)) end,
     Response = cache(File, File++"."++get_lang(User), F),
-    serve_html_file(Status, Req, Response),
+    serve_file(Status, Req, Response),
     ok.
 
-serve_html_file(Status, #req{mochi = Mochi, headers = Headers}, File) ->
+serve_file(Status, #req{mochi = Mochi, headers = Headers}, File) ->
     case file:open(File, [raw, binary]) of
         {ok, IoDevice} ->
             Mochi:respond({Status, 
