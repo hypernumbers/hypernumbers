@@ -30,7 +30,7 @@ mem_csv() ->
 log(String) ->
     File= case os:type() of
 	      {win32,nt} -> exit('erk, not on windows...');
-	      _          -> "../../logs/memory.log"
+	      _          -> "../logs/memory.csv"
 	  end,
     _Return=filelib:ensure_dir(File),
     
