@@ -271,7 +271,7 @@ p,h1,h2,h3,h4,h5 {
  border-color: #DDD #AAA #AAA #DDD;  
  padding:      1px 0px; 
  background: #f8f7f6;       
- z-index:      99999;
+ z-index:      9999999;
 }
 
 #hnmenu ul ul { 
@@ -337,7 +337,7 @@ p,h1,h2,h3,h4,h5 {
     position:   absolute;
     height:     16px;
     width:      16px;
-    background: url(../img/arrow.png);
+    background: url(/hypernumbers/right.png);
     top:        3px;
     right:      0px;
 }
@@ -703,7 +703,7 @@ p,h1,h2,h3,h4,h5 {
   top:auto;
   display:none;
   padding:0px 0px;
-  z-index:100000;
+  z-index:10000000;
 }
 
 #toolbar #formats { 

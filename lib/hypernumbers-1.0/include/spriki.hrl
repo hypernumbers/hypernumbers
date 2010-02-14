@@ -302,5 +302,6 @@
                uid,
                users,
                via,
+               rawview,
                view
              }).

@@ -315,6 +315,14 @@ iget(#refX{site = Site, path = Path}, page,
 iget(#refX{site = S}, page, #qry{status = []}, Req) -> 
     json(Req, status_srv:get_status(S));
 
+iget(#refX{site = S}=Ref, page, #qry{rawview = View}, #req{mochi = Mochi}=Req)
+  when is_list(View) ->
+    case is_view(View) of
+        true  -> Mochi:serve_file(View++".tpl", viewroot(S), nocache());
+        false ->'404'(Ref, Req)
+    end,
+    ok;
+
 iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Req) ->
     json2(Req, auth_srv2:get_as_json(S, P));
 
@@ -1127,3 +1135,11 @@ nocache() ->
     [{"Cache-Control","no-store, no-cache, must-revalidate"},
      {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
      {"Pragma",       "no-cache"}].
+
+
+is_view(View) ->
+    [Pre, User, Name] = string:tokens(View, "/"),
+    (Pre == "_u" orelse Pre == "_g")
+        andalso hn_util:is_alpha(User)
+        andalso hn_util:is_alpha(Name).
+    
