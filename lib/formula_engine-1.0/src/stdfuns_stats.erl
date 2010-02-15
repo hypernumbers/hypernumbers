@@ -347,10 +347,11 @@ linest1(_, _) ->
 
 max(Args) ->
     col(Args,
-        [eval_funs, flatten, {cast, str, num, ?ERRVAL_VAL},
-         {cast, bool, num}, fetch_name, fetch_ref,
-         flatten, {ignore, blank}, {ignore, str}, {ignore, bool}],
-        [return_errors, {all, fun is_number/1}],
+        [eval_funs, flatten, fetch_ref, fetch_name, 
+         {cast, str, num, ?ERRVAL_VAL},
+         {cast, bool, num},
+         {ignore, blank}, {ignore, str}, {ignore, bool}],
+        [return_errors],
         fun max_/1).
 
 max_(Nums) ->
@@ -358,10 +359,11 @@ max_(Nums) ->
 
 min(Args) ->
     col(Args,
-        [eval_funs, flatten, {cast, str, num, ?ERRVAL_VAL},
-         {cast, bool, num}, fetch_name, fetch_ref,
-         flatten, {ignore, blank}, {ignore, str}, {ignore, bool}],
-        [return_errors, {all, fun is_number/1}],
+        [eval_funs, flatten, fetch_ref, fetch_name, 
+         {cast, str, num, ?ERRVAL_VAL},
+         {cast, bool, num},
+         {ignore, blank}, {ignore, str}, {ignore, bool}],
+        [return_errors],
         fun min_/1).
 
 min_(Nums) ->
