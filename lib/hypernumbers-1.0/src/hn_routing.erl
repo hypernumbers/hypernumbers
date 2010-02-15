@@ -35,7 +35,8 @@ start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 -spec set_server(atom() | string(), integer()) -> ok. 
-set_server(Server, Weight) ->
+set_server(Server, Weight) when 
+      is_integer(Weight), Weight >= 0 ->
     gen_server:call(?MODULE, {set_server, Server, Weight}).
 
 delete_server(Server) ->
