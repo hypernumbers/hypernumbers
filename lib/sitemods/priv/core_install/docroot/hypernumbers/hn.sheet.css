@@ -823,12 +823,20 @@ p,h1,h2,h3,h4,h5 {
  overflow:   visible;
 }
 
-#copied { 
+#copied, #highlightto, #highlightfrom { 
  display:  none;
  position: absolute;
  border:   2px solid orange;
  z-index:  1000;
  overflow: visible;
+}
+
+#highlightfrom {
+ border:   2px solid green;
+}
+
+#highlightto {
+ border:   2px solid purple;
 }
 
 #dragfill { 
