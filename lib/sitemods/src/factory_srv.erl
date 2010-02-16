@@ -176,7 +176,6 @@ provision(CurrentSite, Port, Row, State) ->
 
             case application:get_env(hypernumbers, environment) of
                 {ok, development} ->
-                    io:format("Email is ~p~n", [Email]),
                     io:format("~p",[Msg]);
                 {ok, production}  ->
                     hn_util:email(Email,
