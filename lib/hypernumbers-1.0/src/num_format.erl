@@ -45,7 +45,7 @@ get_markdown() ->
 get_general() ->
     Src = "fun(X) -> "++
         "    if"++
-        "      not(is_number(X)) -> {auto, X};"++
+        "      not(is_number(X)) -> {auto, markdown:conv(X)};"++
         "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++ 
         "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
         "     end "++
