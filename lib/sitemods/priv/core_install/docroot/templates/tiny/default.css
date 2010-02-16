@@ -134,7 +134,7 @@ textarea {
     height:100px;
 }
 
-.submit {
+#create .submit {
     margin:20px 0px;
     padding:10px;
     font       : bold 18px Arial,"Helvetica Neue", sans-serif;
@@ -147,9 +147,9 @@ textarea {
 }
 
 .error { 
-    background:#CC0000;
-    color:white;
-    padding:7px 15px;
-    font-size: 12px;
-    margin: 5px 0px;
+    background : #CC0000;
+    color      : white;
+    padding    : 7px 15px;
+    font-size  : 12px;
+    margin     : 5px 0px;
 }

@@ -318,8 +318,8 @@ iget(#refX{site = S}, page, #qry{status = []}, Req) ->
 iget(#refX{site = S}=Ref, page, #qry{rawview = View}, Req)
   when is_list(View) ->
     case is_view(View) of
-        true -> 
-            Tpl = [viewroot(S), "/" , View],
+        true ->
+            Tpl = [viewroot(S), "/" , View, ".tpl"],
             serve_file(200, Req, Tpl);
         false -> 
             '404'(Ref, Req)
