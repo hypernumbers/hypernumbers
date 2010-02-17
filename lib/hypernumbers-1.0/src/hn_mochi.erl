@@ -317,6 +317,9 @@ iget(#refX{site = S}, page, #qry{status = []}, Req) ->
 
 iget(#refX{site = S}=Ref, page, #qry{rawview = View}, Req)
   when is_list(View) ->
+
+    io:format("~p ~p ~n", [View, is_view(View)]),
+    
     case is_view(View) of
         true ->
             Tpl = [viewroot(S), "/" , View, ".tpl"],
@@ -1141,8 +1144,8 @@ nocache() ->
 
 
 is_view(View) ->
-    [Pre, User, Name] = string:tokens(View, "/"),
-    (Pre == "_u" orelse Pre == "_g")
-        andalso hn_util:is_alpha(User)
-        andalso hn_util:is_alpha(Name).
+    [Pre, _User, _Name] = string:tokens(View, "/"),
+    (Pre == "_u" orelse Pre == "_g").
+% andalso hn_util:is_alpha(User)
+% andalso hn_util:is_alpha(Name).
     
