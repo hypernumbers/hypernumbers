@@ -827,7 +827,7 @@ p,h1,h2,h3,h4,h5 {
  display:  none;
  position: absolute;
  border:   2px solid orange;
- z-index:  1000;
+ z-index:    99998 ;
  overflow: visible;
 }
 
