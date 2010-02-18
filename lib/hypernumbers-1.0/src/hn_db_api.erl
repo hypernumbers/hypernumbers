@@ -1158,7 +1158,7 @@ cut_n_paste(From, To, Ar) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   ok = copy_n_paste2(From, To, Ar),
-                  ok = hn_db_wu:clear_cells(From, all)
+                  ok = clear(From, all, Ar)
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("cut n paste").
@@ -1257,9 +1257,13 @@ drag_n_drop(From, To, Ar)
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   case is_valid_d_n_d(From, To) of
-                      {ok, single_cell, Incr} -> copy_cell(From, To, Incr, Ar);
                       {ok, 'onto self', _Incr} -> ok;
-                      {ok, cell_to_range, Incr} -> copy2(From, To, Incr, Ar)
+                      {ok, single_cell, Incr} -> 
+                          copy_cell(From, To, Incr, Ar),
+                          hn_db_wu:mark_children_dirty(To, Ar);  
+                      {ok, cell_to_range, Incr} -> 
+                          copy2(From, To, Incr, Ar),
+                          hn_db_wu:mark_children_dirty(range_start(To), Ar)
                   end
           end,
     ok = mnesia:activity(transaction, Fun),
@@ -1312,14 +1316,13 @@ write_attributes1(RefX, List, Ar)
     ok = hn_db_wu:mark_children_dirty(RefX, Ar).
 
 -spec copy_cell(#refX{}, #refX{}, 
-                false | horizontal | vertical, 
-                auth_req()) 
+                false | horizontal | vertical,
+                auth_req())
                -> ok.
 copy_cell(From = #refX{site = Site, path = Path}, To, Incr, Ar) ->
     case auth_srv2:get_any_view(Site, Path, Ar) of
         {view, _} ->
-            hn_db_wu:copy_cell(From, To, Incr),
-            hn_db_wu:mark_children_dirty(To, Ar);
+            hn_db_wu:copy_cell(From, To, Incr);
         _ ->
             throw(auth_error)
     end.
@@ -1406,23 +1409,28 @@ extract_kvs1([{_R, KV} | T], Acc) -> extract_kvs1(T, [KV | Acc]).
 
 %% this clause copies whole pages
 copy_n_paste2(#refX{site = Site, obj = {page, "/"}} = From, 
-              #refX{site = Site, path = NewPath, obj = {page, "/"}},
+              #refX{site = Site, path = NewPath, obj = {page, "/"}} = To,
               Ar) ->
     Cells = hn_db_wu:get_cells(From),
-    Fun = fun(X) ->
-                  ok = copy_cell(X, X#refX{path = NewPath}, false, Ar)
-          end,
-    [Fun(X) || X <- Cells],
-    ok;
+    [ok = copy_cell(X, X#refX{path = NewPath}, false, Ar) || X <- Cells],
+    hn_db_wu:mark_children_dirty(To, Ar);
 %% this clause copies bits of pages
 copy_n_paste2(From, To, Ar) ->
     case is_valid_c_n_p(From, To) of
-        {ok, single_cell}    -> copy_cell(From, To, false, Ar);
         {ok, 'onto self'}    -> ok;
-        {ok, cell_to_range}  -> copy2(From, To, false, Ar);
-        {ok, range_to_cell}  -> To2 = cell_to_range(To),
-                                copy3(From, To2, false, Ar);
-        {ok, range_to_range} -> copy3(From, To, false, Ar)
+        {ok, single_cell}    -> 
+            ok = copy_cell(From, To, false, Ar),
+            hn_db_wu:mark_children_dirty(To, Ar);
+        {ok, cell_to_range} -> 
+            copy2(From, To, false, Ar),
+            hn_db_wu:mark_children_dirty(range_start(To), Ar);
+        {ok, range_to_cell} -> 
+            To2 = cell_to_range(To),
+            copy3(From, To2, false, Ar),
+            hn_db_wu:mark_children_dirty(To2, Ar);
+        {ok, range_to_range} -> 
+            copy3(From, To, false, Ar),
+            hn_db_wu:mark_children_dirty(range_start(To), Ar)
     end.
 
 cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
@@ -1462,9 +1470,8 @@ is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 
 %% cell to range
 copy2(From, To, Incr, Ar) when is_record(From, refX), is_record(To, refX) ->
-    %%#refX{site = Site} = To,
     List = hn_util:range_to_list(To),
-    lists:map(fun(X) -> copy_cell(From, X, Incr, Ar) end, List),
+    [copy_cell(From, X, Incr, Ar) || X <- List],
     ok.
 
 %% range to range
@@ -1565,3 +1572,6 @@ is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {cell, _}}) ->
     {ok, range_to_cell};
 is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
     {ok, range_to_range}.
+
+range_start(R=#refX{obj = {range, {SX, SY, _EX, _EY}}}) ->
+    R#refX{obj = {cell, {SX, SY}}}.
