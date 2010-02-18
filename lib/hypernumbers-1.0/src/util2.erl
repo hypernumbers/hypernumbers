@@ -54,7 +54,7 @@ get_timestamp()->
 bake_biccie() ->
     % This is the code that generates a cookie in Yaws-1.70
     % nicked from the module yaws_session_server.erl
-    N = gen_server:call(random_srv,{random, int, 16#ffffffffffffffff}),
+    N = crypto:rand_uniform(1, 16#ffffffffffffffff),
     atom_to_list(node()) ++ [$-|integer_to_list(N)].
 
 chop(Path)->

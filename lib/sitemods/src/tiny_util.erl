@@ -49,9 +49,9 @@ get_tiny_site2([{_, S1, S2} | T]) -> case S2 of
                                      end.
 
 get_password() -> 
-    N1 = gen_server:call(random_srv, {random, int, ?NO_OF_WORDS}),
-    N2 = gen_server:call(random_srv, {random, int, ?NO_OF_WORDS}),
-    N3 = gen_server:call(random_srv, {random, int, 99}),
+    N1 = crypto:rand_uniform(1, ?NO_OF_WORDS),
+    N2 = crypto:rand_uniform(1, ?NO_OF_WORDS),
+    N3 = crypto:rand_uniform(1, 99),
     {value, {N1, W1}} = lists:keysearch(N1, 1, ?WORDS),
     {value, {N2, W2}} = lists:keysearch(N2, 1, ?WORDS),
     W1 ++ "!" ++ W2 ++ integer_to_list(N3).

@@ -14,8 +14,6 @@ start_link() ->
 %% @spec init([]) -> {ok,Children}
 %% @doc  Supervisor call back
 init([]) ->
-    Random    = {random_srv, {random_srv, start_link, []},
-                 permanent, 2000, worker, [random_srv]},
     Remote    = {remoting_sup, {remoting_sup, start_link, []},
                  permanent, 2000, supervisor, [start]},
     Dirty_Sup = {dirty_sup, {dirty_sup, start_link, []},
@@ -27,8 +25,7 @@ init([]) ->
     Auth2     = {auth_srv2, {auth_srv2, start_link, []},
                  permanent, 2000, worker, [auth_srv2]},
     
-    {ok,{{one_for_one, 60, 1}, [ Random,
-                                 Remote, 
+    {ok,{{one_for_one, 60, 1}, [ Remote, 
                                  Dirty_Sup,
                                  Dirty_Sub,
                                  Status,
