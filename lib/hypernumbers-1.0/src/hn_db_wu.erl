@@ -1934,7 +1934,7 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
         end,
     Tbl = trans(Site, relation),
     Idxs = lists:flatten([F(C) || R <- Refs, C <- get_cells(R)]),
-    Q = insert_dirty_queue(Idxs, Tbl, -1, hn_workq:new(Ar)),
+    Q = insert_work_queue(Idxs, Tbl, 0, hn_workq:new(Ar)),
     Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
     
@@ -1942,41 +1942,50 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
 mark_children_dirty(#refX{site = Site} = RefX, Ar) ->
     Tbl = trans(Site, relation),
     Children = get_local_children_idxs(RefX),
-    Q = insert_dirty_queue(Children, Tbl, -1, hn_workq:new(Ar)),
+    Q = insert_work_queue(Children, Tbl, 0, hn_workq:new(Ar)),
     case hn_workq:is_empty(Q) of
         true -> ok;
         false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
                  ok = mnesia:write(trans(Site, dirty_queue), Entry, write)
     end.
 
-%% We pass down a minimum priority to retain the invariant that
-%% children *always* have a higher priority than their parent.
-%%
-%% NOTE: Invariant violations might be precluded by transactional
-%% operations.
--spec insert_dirty_queue([cellidx()], 
+%% Recursively walk child relation, adding entries into the work
+%% queue.  The reflow parameter is used inconjunction with the method
+%% used to flow priorities from trees connected bottom up. This allows
+%% us to maintain the invariant where children are calculated after
+%% parents.  This algorithm could naively visit the same children
+%% multiple times, if there is no unique path from N1 ~~> N2. An
+%% attempt is made to stop walking a bad path asap.
+%% see:needs_elem(...).
+-spec insert_work_queue([cellidx()], 
                          atom(), 
                          integer(), 
                          hn_workq:work_queue())
                         -> hn_workq:work_queue(). 
-insert_dirty_queue([], _Tbl, _MinPri, Q) ->
+insert_work_queue([], _Tbl, _Reflow, Q) ->
     Q;
-insert_dirty_queue([Idx|Rest], Tbl, MinPri, Q) ->
-    case mnesia:read(Tbl, Idx) of
-        [R] ->
-            Priority = case R#relation.priority of
-                           P when P =< MinPri -> MinPri + 1;
-                           P -> P
-                       end,
-            Children = ordsets:to_list(R#relation.children),
-            Q2 = insert_dirty_queue(Children, Tbl, Priority, Q);
-        _ ->
-            Priority = 0,
-            Q2 = Q
-    end,
-    Q3 = hn_workq:add(Idx, Priority, Q2),
-    insert_dirty_queue(Rest, Tbl, MinPri, Q3).
-
+insert_work_queue([Idx|Rest], Tbl, Reflow, Q) ->
+    Qnext = 
+        case mnesia:read(Tbl, Idx) of
+            [R] -> {RF, P} = case R#relation.priority of
+                                 X when is_tuple(X) -> X;
+                                 X -> {0, X}
+                             end,
+                   LocalReflow = RF + Reflow,
+                   Priority = P + LocalReflow,
+                   case hn_workq:needs_elem(Idx, Priority, Q) of
+                       true ->
+                           Children = ordsets:to_list(R#relation.children),
+                           Q2 = insert_work_queue(Children, 
+                                                  Tbl, 
+                                                  LocalReflow,
+                                                  Q),
+                           hn_workq:add(Idx, Priority, Q2);
+                       false -> Q
+                   end;
+            _ -> Q
+        end,
+    insert_work_queue(Rest, Tbl, Reflow, Qnext).
 
 %% @spec mark_notify_out_dirty(Parent::#refX{}, Change)  -> ok
 %% Change = {new_value, Value, DepTree} | {insert, Obj, Disp} | {delete, Obj, Disp}
@@ -2720,7 +2729,7 @@ fl([H | T], A, B)                             -> fl(T, A, [H | B]).
 
 -spec delete_parent_links(#refX{}) -> ok.
 delete_parent_links(RefX) ->
-    ok = set_local_parents(RefX, []),
+    ok = set_local_relations(RefX, []),
     ok = delete_remote_parents(RefX).
 
 get_remote_parents(List) -> get_r_p(List, []).
@@ -2740,13 +2749,13 @@ delete_remote_parents(#refX{site = Site} = Child) ->
     Match = #remote_cell_link{child = Child, type = incoming, _ = '_'}, 
     Table = trans(Site, remote_cell_link),
     Parents = mnesia:match_object(Table, Match, read),
-    %% unregister the hypernumbers
-    delete_recs(Site, Parents),
-    Fun = fun(#remote_cell_link{parent = P, child = C}) ->
-                  unregister_inc_hn(P, C)
-          end,
-    [ok = Fun(X) || X <- Parents],
-    ok.
+     %% unregister the hypernumbers
+     delete_recs(Site, Parents),
+     Fun = fun(#remote_cell_link{parent = P, child = C}) ->
+                   unregister_inc_hn(P, C)
+           end,
+     [ok = Fun(X) || X <- Parents],
+     ok.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Local Relations 
@@ -2756,7 +2765,7 @@ delete_remote_parents(#refX{site = Site} = Child) ->
 get_local_children(#refX{site = Site} = X) ->
     ChildIdxs = get_local_children_idxs(X),
     [local_idx_to_refX(Site, C) || C <- ChildIdxs].
-    
+
 -spec get_local_children_idxs(#refX{}) -> [cellidx()]. 
 get_local_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
     case read_local_item_index(Ref) of
@@ -2776,47 +2785,74 @@ get_local_children_idxs(#refX{obj = {Type, _}} = Ref)
     lists:flatten([get_local_children_idxs(X) || X <- Cells]).
 
 
--spec delete_local_relation(cellidx()) -> ok.
+-spec delete_local_relation(#refX{}) -> ok.
 delete_local_relation(#refX{site = Site} = Cell) ->
-    Tbl = trans(Site, relation),
-    CellIdx = get_local_item_index(Cell),
-    case mnesia:read(Tbl, CellIdx, write) of
-        [R] ->
-            [del_local_child(P, CellIdx, Tbl) || P <- R#relation.parents],
-            ok = mnesia:delete(Tbl, CellIdx, write);
-        _ ->
-            ok
+    case read_local_item_index(Cell) of
+        false -> ok;
+        CellIdx ->
+            Tbl = trans(Site, relation),
+            case mnesia:read(Tbl, CellIdx, write) of
+                [R] ->
+                    [del_local_child(P, CellIdx, Tbl) || 
+                        P <- R#relation.parents],
+                    ok = mnesia:delete(Tbl, CellIdx, write);
+                _ -> ok
+            end
     end.
 
 -spec del_local_child(cellidx(), cellidx(), atom()) -> ok.
-del_local_child(CellIdx, Child, Tbl) ->
-    case mnesia:read(Tbl, CellIdx, write) of
-        [R] ->
-            Children = ordsets:del_element(Child, R#relation.children),
-            R2 = R#relation{children = Children},
-            mnesia:write(Tbl, R2, write);
-        _ ->
-            ok
-    end.
-                  
--spec set_local_parents(#refX{}, [#refX{}]) -> ok.
-set_local_parents(#refX{site = Site} = Cell, Parents) ->
+ del_local_child(CellIdx, Child, Tbl) ->
+     case mnesia:read(Tbl, CellIdx, write) of
+         [R] ->
+             Children = ordsets:del_element(Child, R#relation.children),
+             R2 = R#relation{children = Children},
+             mnesia:write(Tbl, R2, write);
+         _ ->
+             ok
+     end.
+
+-spec set_local_relations(#refX{}, [#refX{}]) -> ok.
+set_local_relations(#refX{site = Site} = Cell, Parents) ->
     Tbl = trans(Site, relation),
     CellIdx = get_local_item_index(Cell),
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R; 
               [] -> #relation{cellidx = CellIdx}
           end,
+    Rel2 = set_local_parents(Tbl, Rel, Parents),
+    [connect_child_tree(C, Tbl, Rel2#relation.priority)
+     || C <- Rel2#relation.children],
+    mnesia:write(Tbl, Rel2, write).
+
+-spec set_local_parents(atom(), #relation{}, [#refX{}]) -> #relation{}. 
+set_local_parents(Tbl, 
+                  Rel = #relation{cellidx = CellIdx, 
+                                  parents = CurParents},
+                  Parents) ->
     ParentIdxs = ordsets:from_list([get_local_item_index(P) || P <- Parents]),
-    LostParents = ordsets:subtract(Rel#relation.parents, ParentIdxs),
+    LostParents = ordsets:subtract(CurParents, ParentIdxs),
     [del_local_child(P, CellIdx, Tbl) || P <- LostParents],
     Priorities = [add_local_child(P, CellIdx, Tbl) || P <- ParentIdxs],
-    Priority = lists:sum(Priorities) + 2,
-    ok = mnesia:write(Tbl, 
-                      Rel#relation{parents = ParentIdxs,
-                                   priority = Priority},
-                      write).
+    Priority = lists:sum(Priorities) + 1,
+    Rel#relation{parents = ParentIdxs,
+                 priority = Priority}.
 
+-spec connect_child_tree(integer(), atom(), integer()) -> ok. 
+ connect_child_tree(ChildIdx, Tbl, Reflow) ->
+     case mnesia:read(Tbl, ChildIdx, write) of
+         [#relation{priority = {OldReflow, P}}=R] ->
+             %% Already adding some reflow.
+             R2 = R#relation{priority = {Reflow + OldReflow, P}},
+             mnesia:write(Tbl, R2, write);
+         [#relation{priority = P}=R] when P > 0 ->
+             %% Need to add reflow.
+             R2 = R#relation{priority = {Reflow, P}},
+             mnesia:write(Tbl, R2, write);
+         _ ->
+             ok
+     end.
+
+ %% Adds a new child to a parent, and returns that parents priority.            
 -spec add_local_child(cellidx(), cellidx(), atom()) -> integer().
 add_local_child(CellIdx, Child, Tbl) ->
     Rel = case mnesia:read(Tbl, CellIdx, write) of
@@ -2825,9 +2861,11 @@ add_local_child(CellIdx, Child, Tbl) ->
           end,
     Children = ordsets:add_element(Child, Rel#relation.children),
     ok = mnesia:write(Tbl, Rel#relation{children = Children}, write),
-    Rel#relation.priority.
-
-
+    case Rel#relation.priority of
+        {_, P} -> P; 
+        P -> P
+    end.
+    
 get_content_attrs(List) -> get_content_attrs(List, []).
 
 get_content_attrs([], Acc)      -> Acc;
@@ -3308,7 +3346,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     Set(RefX, {"__dependency-tree", DepTree}),
 
     %% Write local parents
-    set_local_parents(RefX, NewLocPs),
+    set_local_relations(RefX, NewLocPs),
 
     %% now do the remote parents
     %% this is a bit messier - if a cell is being updated to change a

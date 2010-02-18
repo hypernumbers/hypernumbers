@@ -9,6 +9,7 @@
 
 -export([new/1, new/2,
          add/3,
+         needs_elem/3,
          next/1,
          id/1,
          is_empty/1,
@@ -41,6 +42,17 @@ add(Elem, Priority, {Map, _, Ts, Ar}) ->
     Item = {Priority, Elem},
     Map2 = dict:store(Elem, Item, Map),
     {Map2, nil, Ts, Ar}.
+
+%% Needs element determines if the proposed candidate and
+%% priority needs to be added to the dictionary:
+%% If elem is not in dictionary, then yes;
+%% Otherwise, only if the new priority is higher.
+-spec needs_elem(any(), integer(), work_queue()) -> true | false.
+needs_elem(Elem, NewPri, {Map, _, _ , _}) -> 
+    case dict:find(Elem, Map) of
+        {ok, {P, _}} when P >= NewPri -> false;
+        _ -> true
+    end.
 
 -spec next(work_queue()) 
           -> {empty, work_queue()} | {any(), nil | auth_req(), work_queue()}.
@@ -80,6 +92,7 @@ merge_fun(_Key, _V1, V2) ->
 unit_test_() ->
     [fun test_simple/0,
      fun test_add/0,
+     fun test_needs_elem/0,
      fun test_merge/0,
      fun test_merge_multi/0].
 
@@ -105,6 +118,16 @@ test_add() ->
     {gamma, nil, Q6} = ?MODULE:next(Q5),
     {beta,  nil, Q7} = ?MODULE:next(Q6),
     {empty, _Q} = ?MODULE:next(Q7).
+
+-spec test_needs_elem() -> no_return().
+test_needs_elem() -> 
+    Q0 = ?MODULE:new(nil),
+    true = ?MODULE:needs_elem(alpha, 10, Q0),
+    Q1 = ?MODULE:add(alpha, 10, Q0),
+    false = ?MODULE:needs_elem(alpha, 9, Q1),
+    false = ?MODULE:needs_elem(alpha, 10, Q1),
+    true = ?MODULE:needs_elem(alpha, 11, Q1),
+    true = ?MODULE:needs_elem(zeta, 20, Q1).
 
 -spec test_merge() -> no_return().
 test_merge() ->
