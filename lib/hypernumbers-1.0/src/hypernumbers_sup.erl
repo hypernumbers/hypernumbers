@@ -1,6 +1,5 @@
-%%% @author Dale Harvey <dale@hypernumbers.com>
-%%% @copyright Hypernumbers Ltd.
-%%% @TODO better documentation - what this supervisor is used for, etc, etc
+%% Top level hypernumbers app supervisor.
+
 -module(hypernumbers_sup).
 -behaviour(supervisor).
 
@@ -18,8 +17,6 @@ init([]) ->
                  permanent, 2000, supervisor, [start]},
     Dirty_Sup = {dirty_sup, {dirty_sup, start_link, []},
                  permanent, 2000, supervisor, [start]},
-    Dirty_Sub = {dirty_subscriber, {dirty_subscriber, start_link, []},
-                 permanent, 2000, worker, [dirty_subscriber]},
     Status    = {status_srv, {status_srv, start_link, []},
                  permanent, 2000, worker, [status_srv]},
     Auth2     = {auth_srv2, {auth_srv2, start_link, []},
@@ -27,7 +24,6 @@ init([]) ->
     
     {ok,{{one_for_one, 60, 1}, [ Remote, 
                                  Dirty_Sup,
-                                 Dirty_Sub,
                                  Status,
                                  Auth2
                                 ]}}.
