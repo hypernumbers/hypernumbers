@@ -23,8 +23,9 @@
 %% Function: start_link() -> {ok,Pid} | ignore | {error,Error}
 %% Description: Starts the supervisor bridge
 %%--------------------------------------------------------------------
+-spec start_link(string(), atom()) -> {ok,pid()} | ignore | {error,any()}.
 start_link(Site, Type) ->
-    Id = hn_util:site_to_name(Site, "_dirty"),
+    Id = hn_util:site_to_name(Site, atom_to_list(Type)),
     supervisor_bridge:start_link({local, Id}, ?MODULE, [Site, Type]).
 
 %%====================================================================
