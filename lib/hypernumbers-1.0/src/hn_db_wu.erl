@@ -1967,22 +1967,18 @@ insert_work_queue([], _Tbl, _Reflow, Q) ->
 insert_work_queue([Idx|Rest], Tbl, Reflow, Q) ->
     Qnext = 
         case mnesia:read(Tbl, Idx) of
-            [R] -> {RF, P} = case R#relation.priority of
-                                 X when is_tuple(X) -> X;
-                                 X -> {0, X}
-                             end,
-                   LocalReflow = RF + Reflow,
-                   Priority = P + LocalReflow,
-                   case hn_workq:needs_elem(Idx, Priority, Q) of
-                       true ->
-                           Children = ordsets:to_list(R#relation.children),
-                           Q2 = insert_work_queue(Children, 
-                                                  Tbl, 
-                                                  LocalReflow,
-                                                  Q),
-                           hn_workq:add(Idx, Priority, Q2);
-                       false -> Q
-                   end;
+            [R] -> 
+                Priority = Reflow + R#relation.priority,
+                case hn_workq:needs_elem(Idx, Priority, Q) of
+                    true ->
+                        Children = ordsets:to_list(R#relation.children),
+                        Q2 = insert_work_queue(Children, 
+                                               Tbl, 
+                                               Priority,
+                                               Q),
+                        hn_workq:add(Idx, Priority, Q2);
+                    false -> Q
+                end;
             _ -> Q
         end,
     insert_work_queue(Rest, Tbl, Reflow, Qnext).
@@ -2820,8 +2816,8 @@ set_local_relations(#refX{site = Site} = Cell, Parents) ->
               [] -> #relation{cellidx = CellIdx}
           end,
     Rel2 = set_local_parents(Tbl, Rel, Parents),
-    [connect_child_tree(C, Tbl, Rel2#relation.priority)
-     || C <- Rel2#relation.children],
+    %% [connect_child_tree(C, Tbl, Rel2#relation.priority)
+    %%  || C <- Rel2#relation.children],
     mnesia:write(Tbl, Rel2, write).
 
 -spec set_local_parents(atom(), #relation{}, [#refX{}]) -> #relation{}. 
