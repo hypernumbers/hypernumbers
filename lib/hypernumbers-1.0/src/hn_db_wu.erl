@@ -2816,8 +2816,6 @@ set_local_relations(#refX{site = Site} = Cell, Parents) ->
               [] -> #relation{cellidx = CellIdx}
           end,
     Rel2 = set_local_parents(Tbl, Rel, Parents),
-    %% [connect_child_tree(C, Tbl, Rel2#relation.priority)
-    %%  || C <- Rel2#relation.children],
     mnesia:write(Tbl, Rel2, write).
 
 -spec set_local_parents(atom(), #relation{}, [#refX{}]) -> #relation{}. 
@@ -2833,21 +2831,6 @@ set_local_parents(Tbl,
     Rel#relation{parents = ParentIdxs,
                  priority = Priority}.
 
--spec connect_child_tree(integer(), atom(), integer()) -> ok. 
- connect_child_tree(ChildIdx, Tbl, Reflow) ->
-     case mnesia:read(Tbl, ChildIdx, write) of
-         [#relation{priority = {OldReflow, P}}=R] ->
-             %% Already adding some reflow.
-             R2 = R#relation{priority = {Reflow + OldReflow, P}},
-             mnesia:write(Tbl, R2, write);
-         [#relation{priority = P}=R] when P > 0 ->
-             %% Need to add reflow.
-             R2 = R#relation{priority = {Reflow, P}},
-             mnesia:write(Tbl, R2, write);
-         _ ->
-             ok
-     end.
-
  %% Adds a new child to a parent, and returns that parents priority.            
 -spec add_local_child(cellidx(), cellidx(), atom()) -> integer().
 add_local_child(CellIdx, Child, Tbl) ->
@@ -2857,11 +2840,8 @@ add_local_child(CellIdx, Child, Tbl) ->
           end,
     Children = ordsets:add_element(Child, Rel#relation.children),
     ok = mnesia:write(Tbl, Rel#relation{children = Children}, write),
-    case Rel#relation.priority of
-        {_, P} -> P; 
-        P -> P
-    end.
-    
+    Rel#relation.priority.
+
 get_content_attrs(List) -> get_content_attrs(List, []).
 
 get_content_attrs([], Acc)      -> Acc;
