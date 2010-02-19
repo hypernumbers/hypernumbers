@@ -1,4 +1,4 @@
-%% Top level hypernumbers app supervisor.
+%% Top level Hypernumbers app supervisor.
 
 -module(hypernumbers_sup).
 -behaviour(supervisor).
@@ -13,18 +13,17 @@ start_link() ->
 %% @spec init([]) -> {ok,Children}
 %% @doc  Supervisor call back
 init([]) ->
-    Remote    = {remoting_sup, {remoting_sup, start_link, []},
-                 permanent, 2000, supervisor, [start]},
-    Dirty_Sup = {dirty_sup, {dirty_sup, start_link, []},
-                 permanent, 2000, supervisor, [start]},
-    Status    = {status_srv, {status_srv, start_link, []},
-                 permanent, 2000, worker, [status_srv]},
-    Auth2     = {auth_srv2, {auth_srv2, start_link, []},
-                 permanent, 2000, worker, [auth_srv2]},
+    Status = {status_srv, {status_srv, start_link, []},
+              permanent, 2000, worker, [status_srv]},
+
+    Auth = {auth_srv2, {auth_srv2, start_link, []},
+            permanent, 2000, worker, [auth_srv2]},
     
-    {ok,{{one_for_one, 60, 1}, [ Remote, 
-                                 Dirty_Sup,
-                                 Status,
-                                 Auth2
+    SiteMaster = {sitemaster_sup, {sitemaster_sup, start_link, []},
+                  permanent, infinity, supervisor, [sitemaster_sup]},
+    
+    {ok,{{one_for_one, 60, 1}, [ Status,
+                                 Auth,
+                                 SiteMaster
                                 ]}}.
 

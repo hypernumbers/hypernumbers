@@ -3,7 +3,6 @@
 -module(hn_setup).
 
 -export([
-         startup/0,
          site/3,
          delete_site/1, 
          update/0, update/1,
@@ -16,22 +15,8 @@
 -include("spriki.hrl").
 
 -spec get_sites() -> list().
-get_sites() ->
-    Fun = fun() ->
-                  mnesia:all_keys(core_site)
-          end,
-    mnesia:activity(transaction, Fun).
-
-%% Startup current sites. 
--spec startup() -> ok. 
-startup() ->
-    F = fun(#core_site{site = Site}, _Acc) ->
-                ok = launch_site(Site)
-        end,
-    Trans = fun() -> mnesia:foldl(F, nil, core_site) end,
-    {atomic, _} = mnesia:transaction(Trans),
-    ok.
-
+get_sites() -> 
+    mnesia:activity(transaction, fun mnesia:all_keys/1, [core_site]).
 
 %% Setup a new site from scratch
 -spec site(string(), atom(), [{atom(), any()}]) -> ok.
@@ -41,9 +26,7 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
            script, user_permissions, users],
     ok  = create_site(Site, Type),
     ok  = update(Site, Type, Opts, All),
-    % now start things up...
-    RegChildSpec = remoting_sup:make_child_spec(Site),
-    {ok, _Pid1} = supervisor:start_child(remoting_sup, RegChildSpec),
+    {ok,_} = sitemaster_sup:add_site(Site),
     ok.
 
 %% Delete a site
@@ -147,11 +130,6 @@ sitedir(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:parse_site(Site) ++ "/".
 
-
--spec launch_site(string()) -> ok. 
-launch_site(Site) ->
-    ok = dirty_srv:start(Site).
-
 -spec resave_views() -> ok.
 resave_views() ->
 
@@ -177,15 +155,14 @@ resave_view(Path) ->
 
 -spec create_site(string(), atom()) -> ok.
 create_site(Site, Type)->
-%% Seems sensible to keep this restricted
-%% to disc_copies for now
+    %% Seems sensible to keep this restricted
+    %% to disc_copies for now
     Storage = disc_copies,
     [ok = hn_db_admin:create_table(hn_db_wu:trans(Site, N),
                                    N, F, Storage, T, I)
      || {N,F,T,I} <- tables()],
     Trans = fun() ->
-                    ok = mnesia:write(#core_site{site = Site, type = Type}),
-                    ok = launch_site(Site)
+                    ok = mnesia:write(#core_site{site = Site, type = Type})
             end,
     {atomic, ok} = mnesia:transaction(Trans),
     ok.

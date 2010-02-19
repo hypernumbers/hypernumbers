@@ -16,7 +16,6 @@ start(_Type, _Args) ->
     ok = mochilog:start(),
     {ok, Pid} = hypernumbers_sup:start_link(),
     ok = start_mochiweb(),
-    ok = hn_setup:startup(),
     {ok, Pid}.
 
 %% @spec stop(State) -> ok
@@ -66,6 +65,7 @@ build_schema() ->
 %% @doc  Start mochiweb http servers
 %% @todo this server will accept a connection to any
 %% domain name on the ip address, wtf?
+%% TODO: MOVE ME TO SUPERVISOR.
 start_mochiweb() ->
     {ok, Hs} = application:get_env(hypernumbers, hosts),
     [ok = start_instance(H) || H <- Hs],
