@@ -159,8 +159,6 @@ can_write(Site, P, AR) ->
 -spec bind(list(), #refX{}, auth_req(), #binding{}) -> #binding{}. 
 bind([], _R, _AR, B) ->
     B;
-bind([{[], [], "class", _} | T], R, AR, B) ->
-    bind(T, R, AR, B);
 bind([{[], [], "data-type", Ty} | T], R, AR, B) -> 
     bind(T, R, AR, B#binding{type = Ty});
 bind([{[], [], "data-binding-from", F} | T], R, AR, B) -> 
@@ -172,7 +170,9 @@ bind([{[], [], "data-binding-to", To} | T], R, AR, B) ->
     case can_write(R#refX.site, abs_path(R#refX.path, To), AR) of
         true -> bind(T, R, AR, B#binding{to = To});
         false -> throw({permission_denied, To})
-    end.
+    end;
+bind([{[], [], _, _} | T], R, AR, B) ->
+    bind(T, R, AR, B).
 
 -spec parse_bindings([formstart | formend | #binding{}], 
                      #refX{}, 
@@ -315,8 +315,8 @@ test1(RefX) ->
         ++ "<div id='inner'>"
         ++ "<div class='clear'>"
         ++ "<div id='header'>"
-        ++ "<div data-binding-from='/A1' class='hn header' data-type='text'>"
-        ++ "</div>"
+        ++ "<div data-binding-from='/A1' foo='bar' class='hn header' data-type='text'>"
+        ++ "text</div>"
         ++ "<div id='menu'>"
         ++ "</div>"
         ++ "</div>"
