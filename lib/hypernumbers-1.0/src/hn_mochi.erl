@@ -318,8 +318,6 @@ iget(#refX{site = S}, page, #qry{status = []}, Req) ->
 iget(#refX{site = S}=Ref, page, #qry{rawview = View}, Req)
   when is_list(View) ->
 
-    io:format("~p ~p ~n", [View, is_view(View)]),
-    
     case is_view(View) of
         true ->
             Tpl = [viewroot(S), "/" , View, ".tpl"],
