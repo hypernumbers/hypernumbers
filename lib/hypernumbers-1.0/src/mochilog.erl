@@ -14,6 +14,8 @@
 -export([log/2, start/0, stop/0, replay/2, replay/3, clear/0, repair/1,
          browse/1, browse/2, browse_marks/1, info/2 ]).
 
+-export([ upload_file/3 ]).
+
 -export([stream_log/4]).
 
 %% @spec start() -> ok
@@ -359,9 +361,11 @@ in_path(Path1, Path2, true) ->
     startswith(Path2, Path1).
 
 upload_file(Url, Path, Field) ->
+    upload_file(Url, Path, filename:basename(Path), Field).
+
+upload_file(Url, Path, Name, Field) ->
     
     Boundary          = "frontier",
-    [_Usr, _Dt, Name] = re:split(filename:basename(Path),"__",[{return,list}]),
     {ok, File} = file:read_file(Path),
     
     Data = ["--"++Boundary,

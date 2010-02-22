@@ -22,12 +22,14 @@
 
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
-    Ref = hn_util:parse_url(get_real_uri(MochiReq)),
-    Req = process_request(MochiReq),
-    Qry = process_query(Req),
-    case catch handle_(Ref, Req, Qry) of
-        ok   -> ok; 
-        Else -> '500'(Req, Else)
+    try 
+        Ref = hn_util:parse_url(get_real_uri(MochiReq)),
+        Req = process_request(MochiReq),
+        Qry = process_query(Req),
+        handle_(Ref, Req, Qry)
+    catch
+        exit:normal -> exit(normal); 
+        Else        -> '500'(MochiReq, Else) 
     end.
 
 -spec handle_(#refX{}, #req{}, #qry{}) -> ok. 
@@ -91,6 +93,9 @@ handle_resource(Ref, Qry,
                 Req=#req{method = 'POST', mochi = Mochi, user = User}) ->
     {value, {'Content-Type', Ct}} =
         mochiweb_headers:lookup('Content-Type', Mochi:get(headers)),
+
+    io:format("hello~n",[]),
+    
     case Ct of
         %% Uploads
         "multipart/form-data" ++ _Rest ->
