@@ -365,7 +365,7 @@ upload_file(Url, Path, Field) ->
 
 upload_file(Url, Path, Name, Field) ->
     
-    Boundary          = "frontier",
+    Boundary   = "frontier",
     {ok, File} = file:read_file(Path),
     
     Data = ["--"++Boundary,

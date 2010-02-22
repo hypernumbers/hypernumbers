@@ -94,8 +94,6 @@ handle_resource(Ref, Qry,
     {value, {'Content-Type', Ct}} =
         mochiweb_headers:lookup('Content-Type', Mochi:get(headers)),
 
-    io:format("hello~n",[]),
-    
     case Ct of
         %% Uploads
         "multipart/form-data" ++ _Rest ->
