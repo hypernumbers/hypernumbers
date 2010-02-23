@@ -25,11 +25,6 @@ MOCHI_DIR="lib/mochiweb"
 mkdir -p var 
 [ -f $CONFIG ] || cp priv/sys.config.default $CONFIG 
 
-if [ priv/sys.config.default -nt $CONFIG ] 
-then 
-    echo -e "\n***WARNING*** Default Config File has been updated\n"
-fi
-
 function build
 {
     if [ $# -lt 1 ] 
