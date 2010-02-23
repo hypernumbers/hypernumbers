@@ -41,15 +41,19 @@ init([Site]) ->
               supervisor, 
               [dirty_sup]},
 
-             %% Remoting
              {remoting_reg, 
               {remoting_reg, start_link, [Site]},
               permanent, 
               2000, 
               worker, 
-              [remoting_reg]}
+              [remoting_reg]},
 
-             %% AuthSrv
+             {auth_srv2, 
+              {auth_srv2, start_link, [Site]},
+              permanent, 
+              2000, 
+              worker, 
+              [auth_srv2]}
 
            ]
          }}.

@@ -16,14 +16,10 @@ init([]) ->
     Status = {status_srv, {status_srv, start_link, []},
               permanent, 2000, worker, [status_srv]},
 
-    Auth = {auth_srv2, {auth_srv2, start_link, []},
-            permanent, 2000, worker, [auth_srv2]},
-    
     SiteMaster = {sitemaster_sup, {sitemaster_sup, start_link, []},
                   permanent, infinity, supervisor, [sitemaster_sup]},
     
     {ok,{{one_for_one, 60, 1}, [ Status,
-                                 Auth,
                                  SiteMaster
                                 ]}}.
 

@@ -25,8 +25,8 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     All = [corefiles, sitefiles, json, permissions,
            script, user_permissions, users],
     ok  = create_site(Site, Type),
-    ok  = update(Site, Type, Opts, All),
     {ok,_} = sitemaster_sup:add_site(Site),
+    ok  = update(Site, Type, Opts, All),
     ok.
 
 %% Delete a site

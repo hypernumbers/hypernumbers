@@ -13,7 +13,7 @@
 -define(SPACE, 32).
 
 %% API 
--export([start_link/0]).
+-export([start_link/1]).
 
 -export([
          check_get_view/3,
@@ -45,7 +45,9 @@
 -define(SPREADSHEET, "_global/spreadsheet").
 -define(EMPTY_TREE, {0,nil}).
 
--record(state, {trees = [], file = []}).
+-record(state, {site :: string(),
+                table :: string(),
+                trees :: gb_tree()}).
 
 %%%===================================================================
 %%% API
@@ -58,61 +60,75 @@
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
-start_link() ->
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+-spec start_link(string()) -> {ok, pid()} | ignore | {error, any()}.
+start_link(Site) ->
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:start_link({local, Id}, ?MODULE, [Site], []).
 
 -spec check_get_view(string(), [string()], auth_req()) 
                     -> {view, string()} | not_found | denied.
 check_get_view(Site, Path, AuthReq) -> 
-    gen_server:call(?MODULE, {check_get_view, Site, Path, AuthReq}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, {check_get_view, Path, AuthReq}).
 
 -spec check_get_challenger(string(), [string()], auth_req()) 
                           -> {view, string()} | not_found | denied.
 check_get_challenger(Site, Path, AuthReq) -> 
-    gen_server:call(?MODULE, {check_get_challenger, Site, Path, AuthReq}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, {check_get_challenger, Path, AuthReq}).
 
 -spec check_particular_view(string(), [string()], auth_req(), string())
                            -> {view, string()} | not_found | denied.
 check_particular_view(Site, Path, AuthReq, View) ->
-    gen_server:call(?MODULE, {check_particular_view, Site, Path,
-                              AuthReq, View}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, {check_particular_view, Path, AuthReq, View}).
 
 -spec get_any_view(string(), [string()], auth_req()) 
                   -> {view, string()} | not_found | denied.
 get_any_view(Site, Path, AuthReq) ->
-    gen_server:call(?MODULE, {get_any_view, Site, Path, AuthReq}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, {get_any_view, Path, AuthReq}).
 
 -spec get_views(string(), [string()], auth_req()) -> [string()]. 
 get_views(Site, Path, AuthReq) ->
-    gen_server:call(?MODULE, {get_views, Site, Path, AuthReq}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, {get_views, Path, AuthReq}).
 
 -spec add_view(string(), [string()], auth_spec(), string()) -> ok.
 add_view(Site, Path, AuthSpec, View) ->
-    gen_server:call(?MODULE, {add_view, Site, Path, AuthSpec, View}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, {add_view, Path, AuthSpec, View}).
 
 -spec set_champion(string(), [string()], string()) -> ok. 
 set_champion(Site, Path, View) ->
-    gen_server:call(?MODULE, {set_champion, Site, Path, View}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, {set_champion, Path, View}).
 
 -spec set_challenger(string(), [string()], string()) -> ok. 
 set_challenger(Site, Path, View) ->
-    gen_server:call(?MODULE, {set_challenger, Site, Path, View}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, {set_challenger, Path, View}).
 
 -spec remove_views(string(), [string()], auth_spec(), [string()]) -> ok. 
 remove_views(Site, Path, AuthSpec, Views) ->
-    gen_server:call(?MODULE, {rem_views, Site, Path, AuthSpec, Views}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, {rem_views, Path, AuthSpec, Views}).
 
 get_as_json(Site, Path) ->
-    gen_server:call(?MODULE, {get_as_json, Site, Path}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, {get_as_json, Path}).
 
 dump_script(Site) ->
-    gen_server:call(?MODULE, {dump_script, Site}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, dump_script).
 
 delete_site(Site) ->
-    gen_server:call(?MODULE, {delete_site, Site}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, delete_site).
 
 clear_all_perms_DEBUG(Site) ->
-    gen_server:call(?MODULE, {clear_all_perms, Site}).
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, clear_all_perms).
 
 
 
@@ -131,10 +147,13 @@ clear_all_perms_DEBUG(Site) ->
 %%                     {stop, Reason}
 %% @end
 %%--------------------------------------------------------------------
-init([]) ->
+init([Site]) ->
+    Table = hn_util:parse_site(Site),
     {ok, Dir} = application:get_env(hypernumbers, dets_dir),
-    Trees = load_trees(Dir, ?TABLE),
-    {ok, #state{trees = Trees, file = ?TABLE}}.
+    Trees = load_trees(Dir, Table),
+    {ok, #state{site = Site,
+                table = Table,
+                trees = Trees}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -151,45 +170,45 @@ init([]) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_call(Request, _From, State) ->
-    #state{trees = Tr, file = File} = State,
+    #state{trees = Tr, table = Table, site = Site} = State,
     Return1 =
         case Request of
-            {check_get_view, Site, P, AR} ->
+            {check_get_view, P, AR} ->
                 {Site, check_get_view1(tree(Site, Tr), P, AR, champion), false};
-            {check_get_challenger, Site, P, AR} ->
+            {check_get_challenger, P, AR} ->
                 {Site, check_get_view1(tree(Site, Tr), P, AR, challenger),
                  false};
-            {check_particular_view, Site, P, AR, V} ->
+            {check_particular_view, P, AR, V} ->
                 {Site, check_particular_view1(tree(Site, Tr), P, AR, V), false};
-            {get_views, Site, P, AR} ->
+            {get_views, P, AR} ->
                 {Site, get_views1(tree(Site, Tr), P, AR), false};
-            {get_any_view, Site, P, AR} ->
+            {get_any_view, P, AR} ->
                 {Site, check_get_view1(tree(Site, Tr), P, AR, any), false};
-            {add_view, Site, Pg, AS, V} ->
+            {add_view, Pg, AS, V} ->
                 {Site, add_view1(tree(Site, Tr), Pg, AS, V), true};
-            {set_champion, Site, Pg, Df} ->
+            {set_champion, Pg, Df} ->
                 {Site, set_default(tree(Site, Tr), Pg, Df, champion), true};
-            {set_challenger, Site, Pg, Df} ->
+            {set_challenger, Pg, Df} ->
                 {Site, set_default(tree(Site, Tr), Pg, Df, challenger), true};
-            {rem_views, Site, P, Vs} ->
+            {rem_views, P, Vs} ->
                 {Site, remove_views1(tree(Site, Tr), P, Vs), true};
-            {get_as_json, Site, P} ->
+            {get_as_json, P} ->
                 {Site, get_as_json1(tree(Site, Tr), P), false};
-            {delete_site, Site} ->
+            delete_site ->
                 {Site, delete};
-            {clear_all_perms, Site} ->
+            clear_all_perms ->
                 {Site, gb_trees:empty(), true};
-            {dump_script, Site} ->
+            dump_script ->
                 {Site, dump_script1(tree(Site, Tr)), false}
             end,
     {Reply, NewTr} =
         case Return1 of
             {Site2, Return2, true} ->
-                {ok, save_trees(File, Site2, Return2, Tr)};
+                {ok, save_trees(Table, Site2, Return2, Tr)};
             {_Site2, Return2, false} ->
                 {Return2, Tr};
             {Site2, delete} ->
-                {ok, del_site_tree(File, Site2, Tr)}
+                {ok, del_site_tree(Table, Site2, Tr)}
         end,
     {reply, Reply, State#state{trees = NewTr}}.
 
@@ -412,15 +431,15 @@ load_trees(Dir, Table) ->
     end.
 
 -spec save_trees(string(), string(), gb_tree(), gb_tree()) -> gb_tree(). 
-save_trees(File, Site, NewTree, Trees) ->
+save_trees(Table, Site, NewTree, Trees) ->
     NewTrees = gb_trees:enter(Site, NewTree, Trees),
-    ok = dets:insert(File, {?KEY, NewTrees}),
+    ok = dets:insert(Table, {?KEY, NewTrees}),
     NewTrees.
 
 -spec del_site_tree(string(), string(), gb_tree()) -> gb_tree().
-del_site_tree(File, Site, Trees) ->
+del_site_tree(Table, Site, Trees) ->
     NewTrees = gb_trees:delete_any(Site, Trees),
-    ok = dets:insert(File, {?KEY, NewTrees}),
+    ok = dets:insert(Table, {?KEY, NewTrees}),
     NewTrees.
                                             
 -spec alter_tree(gb_tree(), 
