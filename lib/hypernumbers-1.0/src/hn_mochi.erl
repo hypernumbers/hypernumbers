@@ -51,13 +51,12 @@ handle_(Ref, Req, Qry) ->
 
 -spec check_resource_exists(#req{}, #refX{}, #qry{}) -> no_return(). 
 check_resource_exists(Req, Ref, Qry) ->
-    case mnesia:dirty_read(core_site, Ref#refX.site) of
-        [_] -> 
-            authorize_resource(Req, Ref, Qry);
-        _ ->
-            text_html(Req, "The web site you seek<br/>"
-                      "cannot be located, but<br/>"
-                      "countless more exist.")
+    case hn_setup:site_exists(Ref#refX.site) of
+        true -> authorize_resource(Req, Ref, Qry);
+        false -> text_html(Req, 
+                           "The web site you seek<br/>"
+                           "cannot be located, but<br/>"
+                           "countless more exist.")
     end.
             
 -spec authorize_resource(#req{}, #refX{}, #qry{}) -> no_return(). 

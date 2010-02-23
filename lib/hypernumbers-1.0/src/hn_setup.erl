@@ -6,6 +6,7 @@
          update/0, update/1,
          update/3,
          add_user/2,
+         site_exists/1,
          get_sites/0,
          get_site_type/1,
          resave_views/0
@@ -84,6 +85,14 @@ add_user(Site, User) ->
             ok
     end.
 
+%% Quick and dirty test to see if a site exists
+-spec site_exists(string()) -> true | false.
+site_exists(Site) ->
+    case mnesia:dirty_read(core_site, Site) of
+        [_] -> true; 
+        [] -> false
+    end.
+    
 -spec get_sites() -> list().
 get_sites() -> 
     mnesia:activity(transaction, fun mnesia:all_keys/1, [core_site]).

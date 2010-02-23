@@ -26,7 +26,8 @@ export(Dest) ->
 %% Sites are expected in leading protocol form.
 export(Dest, Sites) ->
     filelib:ensure_dir([Dest,"/"]),
-    [ok = export_site(Dest, S) || S <- Sites],
+    [ok = export_site(Dest, S) || S <- Sites,
+                                  hn_setup:site_exists(S)],
     ok.
 export_site(Dest, Site) ->
     SiteDest = filename:join(Dest, hn_util:site_to_fs(Site)),
