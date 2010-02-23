@@ -819,7 +819,7 @@ p,h1,h2,h3,h4,h5 {
  background: #CCCCFF;
  border:     2px solid black;
  opacity:    0.2;
- z-index:    99999 ;
+ z-index:    99999;
  overflow:   visible;
 }
 
@@ -869,7 +869,7 @@ p,h1,h2,h3,h4,h5 {
 
 #input { 
     font     : 11px Arial,"Helvetica Neue", sans-serif;
-    z-index  : 100000;
+    z-index  : 10000000;
     height   : 18px;
     width    : 78px;
     border   : 1px solid blue;
