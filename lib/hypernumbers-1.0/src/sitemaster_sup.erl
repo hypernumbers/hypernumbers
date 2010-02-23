@@ -22,7 +22,11 @@ start_link() ->
 -spec add_site(string()) -> {ok, pid()}.
 add_site(Site) ->
     ChildSpec = gen_child_spec(Site),
-    supervisor:start_child(?MODULE, ChildSpec).
+    case supervisor:start_child(?MODULE, ChildSpec) of
+        {ok,_} -> ok; 
+        {error, {already_started, _}} -> ok;
+        Else -> Else
+    end.                                           
 
 %%====================================================================
 %% Supervisor callbacks

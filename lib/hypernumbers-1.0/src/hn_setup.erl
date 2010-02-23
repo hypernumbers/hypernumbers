@@ -19,10 +19,9 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
     All = [corefiles, sitefiles, json, permissions,
            script, user_permissions, users],
-    ok  = create_site(Site, Type),
-    {ok,_} = sitemaster_sup:add_site(Site),
-    ok  = update(Site, Type, Opts, All),
-    ok.
+    ok = create_site(Site, Type),
+    ok = sitemaster_sup:add_site(Site),
+    ok = update(Site, Type, Opts, All).
 
 %% Delete a site
 %% TODO : stop any supervisors if they are running
