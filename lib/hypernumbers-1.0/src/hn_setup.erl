@@ -239,8 +239,10 @@ is_term(_)          -> true.
 
 run_users({{user,Usr}, {group,Grp}, {email,_Mail}, {password,Pass}},
           Site, Opts) ->
-    ok = hn_users:create(Site, resolve_user(Usr, Opts),
-                         Grp,  resolve_password(Pass, Opts)).
+    case {resolve_user(Usr, Opts), resolve_password(Pass, Opts)} of
+        {U, P} when U == undefined; P == undefined -> ok;
+        {U, P} -> ok = hn_users:create(Site, U, Grp,  P)
+    end.
 
 resolve_user('$user', Opts) ->
     case pget(user, Opts, undefined) of
