@@ -19,7 +19,6 @@ ifdef debug
 endif
 
 EBIN_DIR := ../ebin
-TEST_DIR := ../_test
 EMULATOR := beam
 
 ERL_SOURCES := $(wildcard *.erl)

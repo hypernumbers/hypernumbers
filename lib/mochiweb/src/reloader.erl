@@ -121,10 +121,3 @@ reload(Module) ->
 
 stamp() ->
     erlang:localtime().
-
-%%
-%% Tests
-%%
--include_lib("eunit/include/eunit.hrl").
--ifdef(TEST).
--endif.

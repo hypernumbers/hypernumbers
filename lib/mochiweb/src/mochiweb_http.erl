@@ -8,10 +8,8 @@
 -export([start/0, start/1, stop/0, stop/1]).
 -export([loop/2, default_body/1]).
 -export([after_response/2, reentry/1]).
--export([parse_range_request/1, range_skip_length/2]).
 
--define(REQUEST_RECV_TIMEOUT, 300000).   % timeout waiting for request line
--define(HEADERS_RECV_TIMEOUT, 30000). % timeout waiting for headers
+-define(IDLE_TIMEOUT, 30000).
 
 -define(MAX_HEADERS, 1000).
 -define(DEFAULTS, [{name, ?MODULE},
@@ -101,21 +99,16 @@ loop(Socket, Body) ->
     request(Socket, Body).
 
 request(Socket, Body) ->
-    case gen_tcp:recv(Socket, 0, ?REQUEST_RECV_TIMEOUT) of
+    case gen_tcp:recv(Socket, 0, ?IDLE_TIMEOUT) of
         {ok, {http_request, Method, Path, Version}} ->
             headers(Socket, {Method, Path, Version}, [], Body, 0);
         {error, {http_error, "\r\n"}} ->
             request(Socket, Body);
         {error, {http_error, "\n"}} ->
             request(Socket, Body);
-        {error, closed} ->
-            gen_tcp:close(Socket),
-            exit(normal);
-        {error, timeout} ->
-            gen_tcp:close(Socket),
-            exit(normal);
         _Other ->
-            handle_invalid_request(Socket)
+            gen_tcp:close(Socket),
+            exit(normal)
     end.
 
 reentry(Body) ->
@@ -126,9 +119,13 @@ reentry(Body) ->
 headers(Socket, Request, Headers, _Body, ?MAX_HEADERS) ->
     %% Too many headers sent, bad request.
     inet:setopts(Socket, [{packet, raw}]),
-    handle_invalid_request(Socket, Request, Headers);
+    Req = mochiweb:new_request({Socket, Request,
+                                lists:reverse(Headers)}),
+    Req:respond({400, [], []}),
+    gen_tcp:close(Socket),
+    exit(normal);
 headers(Socket, Request, Headers, Body, HeaderCount) ->
-    case gen_tcp:recv(Socket, 0, ?HEADERS_RECV_TIMEOUT) of
+    case gen_tcp:recv(Socket, 0, ?IDLE_TIMEOUT) of
         {ok, http_eoh} ->
             inet:setopts(Socket, [{packet, raw}]),
             Req = mochiweb:new_request({Socket, Request,
@@ -138,23 +135,10 @@ headers(Socket, Request, Headers, Body, HeaderCount) ->
         {ok, {http_header, _, Name, _, Value}} ->
             headers(Socket, Request, [{Name, Value} | Headers], Body,
                     1 + HeaderCount);
-        {error, closed} ->
-            gen_tcp:close(Socket),
-            exit(normal);
         _Other ->
-            handle_invalid_request(Socket, Request, Headers)
+            gen_tcp:close(Socket),
+            exit(normal)
     end.
-
-handle_invalid_request(Socket) ->
-    handle_invalid_request(Socket, {'GET', {abs_path, "/"}, {0,9}}, []).
-
-handle_invalid_request(Socket, Request, RevHeaders) ->
-    inet:setopts(Socket, [{packet, raw}]),
-    Req = mochiweb:new_request({Socket, Request,
-                                lists:reverse(RevHeaders)}),
-    Req:respond({400, [], []}),
-    gen_tcp:close(Socket),
-    exit(normal).
 
 after_response(Body, Req) ->
     Socket = Req:get(socket),
@@ -166,115 +150,3 @@ after_response(Body, Req) ->
             Req:cleanup(),
             ?MODULE:loop(Socket, Body)
     end.
-
-parse_range_request("bytes=0-") ->
-    undefined;
-parse_range_request(RawRange) when is_list(RawRange) ->
-    try
-        "bytes=" ++ RangeString = RawRange,
-        Ranges = string:tokens(RangeString, ","),
-        lists:map(fun ("-" ++ V)  ->
-                          {none, list_to_integer(V)};
-                      (R) ->
-                          case string:tokens(R, "-") of
-                              [S1, S2] ->
-                                  {list_to_integer(S1), list_to_integer(S2)};
-                              [S] ->
-                                  {list_to_integer(S), none}
-                          end
-                  end,
-                  Ranges)
-    catch
-        _:_ ->
-            fail
-    end.
-
-range_skip_length(Spec, Size) ->
-    case Spec of
-        {none, R} when R =< Size, R >= 0 ->
-            {Size - R, R};
-        {none, _OutOfRange} ->
-            {0, Size};
-        {R, none} when R >= 0, R < Size ->
-            {R, Size - R};
-        {_OutOfRange, none} ->
-            invalid_range;
-        {Start, End} when 0 =< Start, Start =< End, End < Size ->
-            {Start, End - Start + 1};
-        {_OutOfRange, _End} ->
-            invalid_range
-    end.
-
-%%
-%% Tests
-%%
--include_lib("eunit/include/eunit.hrl").
--ifdef(TEST).
-
-range_test() ->
-    %% valid, single ranges
-    ?assertEqual([{20, 30}], parse_range_request("bytes=20-30")),
-    ?assertEqual([{20, none}], parse_range_request("bytes=20-")),
-    ?assertEqual([{none, 20}], parse_range_request("bytes=-20")),
-
-    %% trivial single range
-    ?assertEqual(undefined, parse_range_request("bytes=0-")),
-
-    %% invalid, single ranges
-    ?assertEqual(fail, parse_range_request("")),
-    ?assertEqual(fail, parse_range_request("garbage")),
-    ?assertEqual(fail, parse_range_request("bytes=-20-30")),
-
-    %% valid, multiple range
-    ?assertEqual(
-       [{20, 30}, {50, 100}, {110, 200}],
-       parse_range_request("bytes=20-30,50-100,110-200")),
-    ?assertEqual(
-       [{20, none}, {50, 100}, {none, 200}],
-       parse_range_request("bytes=20-,50-100,-200")),
-
-    %% no ranges
-    ?assertEqual([], parse_range_request("bytes=")),
-    ok.
-
-range_skip_length_test() ->
-    Body = <<"012345678901234567890123456789012345678901234567890123456789">>,
-    BodySize = byte_size(Body), %% 60
-    BodySize = 60,
-
-    %% these values assume BodySize =:= 60
-    ?assertEqual({1,9}, range_skip_length({1,9}, BodySize)), %% 1-9
-    ?assertEqual({10,10}, range_skip_length({10,19}, BodySize)), %% 10-19
-    ?assertEqual({40, 20}, range_skip_length({none, 20}, BodySize)), %% -20
-    ?assertEqual({30, 30}, range_skip_length({30, none}, BodySize)), %% 30-
-
-    %% valid edge cases for range_skip_length
-    ?assertEqual({BodySize, 0}, range_skip_length({none, 0}, BodySize)),
-    ?assertEqual({0, BodySize}, range_skip_length({none, BodySize}, BodySize)),
-    ?assertEqual({0, BodySize}, range_skip_length({0, none}, BodySize)),
-    BodySizeLess1 = BodySize - 1,
-    ?assertEqual({BodySizeLess1, 1},
-                 range_skip_length({BodySize - 1, none}, BodySize)),
-
-    %% out of range, return whole thing
-    ?assertEqual({0, BodySize},
-                 range_skip_length({none, BodySize + 1}, BodySize)),
-    ?assertEqual({0, BodySize},
-                 range_skip_length({none, -1}, BodySize)),
-
-    %% invalid ranges
-    ?assertEqual(invalid_range,
-                 range_skip_length({-1, 30}, BodySize)),
-    ?assertEqual(invalid_range,
-                 range_skip_length({0, BodySize + 1}, BodySize)),
-    ?assertEqual(invalid_range,
-                 range_skip_length({-1, BodySize + 1}, BodySize)),
-    ?assertEqual(invalid_range,
-                 range_skip_length({BodySize, 40}, BodySize)),
-    ?assertEqual(invalid_range,
-                 range_skip_length({-1, none}, BodySize)),
-    ?assertEqual(invalid_range,
-                 range_skip_length({BodySize, none}, BodySize)),
-    ok.
-
--endif.
