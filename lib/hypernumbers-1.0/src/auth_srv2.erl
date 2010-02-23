@@ -115,22 +115,27 @@ remove_views(Site, Path, AuthSpec, Views) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {rem_views, Path, AuthSpec, Views}).
 
+-spec get_as_json(string(), [string()]) -> any(). 
 get_as_json(Site, Path) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {get_as_json, Path}).
 
+-spec delete_site(string()) -> ok. 
 delete_site(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, delete_site).
 
+-spec clear_all_perms_DEBUG(string()) -> ok. 
 clear_all_perms_DEBUG(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, clear_all_perms).
 
+-spec dump_script(string()) -> iodata().
 dump_script(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, dump_script).
 
+-spec load_script(string(), [any()]) -> ok. 
 load_script(Site, Terms) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {load_script, Terms}).
@@ -603,7 +608,7 @@ exec_script_terms([{challenger, C}|Rest], Tree) ->
     Tree2 = set_default(Tree, ?lget(path, C), ?lget(view, C), challenger),
     exec_script_terms(Rest, Tree2).
 
--spec dump_script(gb_tree()) -> [any()]. 
+-spec dump_script1(gb_tree()) -> iodata().
 dump_script1(Tree) ->
     Iter = gb_trees:iterator(Tree),
     List = lists:flatten(dump_tree(gb_trees:next(Iter), [])),
