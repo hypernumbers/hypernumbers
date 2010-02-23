@@ -245,18 +245,12 @@ run_users({{user,Usr}, {group,Grp}, {email,_Mail}, {password,Pass}},
     end.
 
 resolve_user('$user', Opts) ->
-    case pget(user, Opts, undefined) of
-        undefined -> throw(no_user);
-        U         -> U
-    end;
+    pget(user, Opts, undefined);
 resolve_user(User, _Opts) ->
     User.
 
 resolve_password('$password', Opts) ->
-    case pget(password, Opts, undefined) of
-        undefined -> throw(no_pass);
-        P         -> P
-    end;
+    pget(password, Opts, undefined);
 resolve_password(Password, _Opts) ->
     Password.
 
