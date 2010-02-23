@@ -129,9 +129,14 @@ rec_copy1(From, To, File) ->
 %% Delete a directory (and all its children)
 -spec delete_directory(string()) -> ok.
 delete_directory(From) ->
-    {ok, Files} = file:list_dir(From),
-    [ok = delete_dir(filename:join(From, File)) || File <- Files],
-    ok = file:del_dir(From).
+    case file:list_dir(From) of
+        {ok, Files} -> 
+            file:list_dir(From),
+            [ok = delete_dir(filename:join(From, File)) || File <- Files],
+            ok = file:del_dir(From);
+        _Else ->
+            ok
+    end.
 
 delete_dir(File) ->
     case filelib:is_dir(File) of

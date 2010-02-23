@@ -4,7 +4,8 @@
 
 %% API
 -export([start_link/0,
-         add_site/1]).
+         add_site/1,
+         delete_site/1]).
 
 %% Supervisor callbacks
 -export([init/1]).
@@ -19,15 +20,20 @@
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
--spec add_site(string()) -> {ok, pid()}.
+-spec add_site(string()) -> ok.
 add_site(Site) ->
     ChildSpec = gen_child_spec(Site),
     case supervisor:start_child(?MODULE, ChildSpec) of
         {ok,_} -> ok; 
         {error, {already_started, _}} -> ok;
         Else -> Else
-    end.                                           
+    end.                             
 
+-spec delete_site(string()) -> ok. 
+delete_site(Site) -> 
+    supervisor:terminate_child(?MODULE, Site),
+    ok = supervisor:delete_child(?MODULE, Site).
+    
 %%====================================================================
 %% Supervisor callbacks
 %%====================================================================

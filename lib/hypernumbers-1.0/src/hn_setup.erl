@@ -25,20 +25,19 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     ok = update(Site, Type, Opts, All).
 
 %% Delete a site
-%% TODO : stop any supervisors if they are running
 -spec delete_site(string()) -> ok.
 delete_site(Site) ->
     Dest = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site) ++ "/",
-
-    ok = auth_srv2:clear_all_perms_DEBUG(Site),
-    ok = dirty_srv:stop(Site),
-    
+    ok = hn_util:delete_directory(Dest),
+    ok = auth_srv2:delete_site(Site),
+    ok = sitemaster_sup:delete_site(Site),
+    ok = mnesia:activity(transaction, 
+                         fun mnesia:delete/3, 
+                         [core_site, Site, write]),
     [ {atomic, ok}  = mnesia:delete_table(hn_db_wu:trans(Site, Table))
       || {Table, _F, _T, _I} <- tables()],
-    
-    ok = hn_util:delete_directory(Dest),
-    ok = mnesia:dirty_delete(core_site, Site).
+    ok.
 
 %% Update all existing sites with default options
 -spec update() -> ok. 
