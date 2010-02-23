@@ -56,7 +56,7 @@ bootstrap_site(Site, Type, Opts) ->
     end.
 
 server_id(Site, Type) ->
-    list_to_atom(fmt("~s_~p", [hn_util:parse_site(Site), Type])).
+    list_to_atom(fmt("~s_~p", [hn_util:site_to_fs(Site), Type])).
 
 make_child_spec({Site, Type, Args}) ->
     Srv = list_to_atom(atom_to_list(Type)++"_srv"),

@@ -63,76 +63,76 @@
 %%--------------------------------------------------------------------
 -spec start_link(string()) -> {ok, pid()} | ignore | {error, any()}.
 start_link(Site) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:start_link({local, Id}, ?MODULE, [Site], []).
 
 -spec check_get_view(string(), [string()], auth_req()) 
                     -> {view, string()} | not_found | denied.
 check_get_view(Site, Path, AuthReq) -> 
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {check_get_view, Path, AuthReq}).
 
 -spec check_get_challenger(string(), [string()], auth_req()) 
                           -> {view, string()} | not_found | denied.
 check_get_challenger(Site, Path, AuthReq) -> 
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {check_get_challenger, Path, AuthReq}).
 
 -spec check_particular_view(string(), [string()], auth_req(), string())
                            -> {view, string()} | not_found | denied.
 check_particular_view(Site, Path, AuthReq, View) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {check_particular_view, Path, AuthReq, View}).
 
 -spec get_any_view(string(), [string()], auth_req()) 
                   -> {view, string()} | not_found | denied.
 get_any_view(Site, Path, AuthReq) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {get_any_view, Path, AuthReq}).
 
 -spec get_views(string(), [string()], auth_req()) -> [string()]. 
 get_views(Site, Path, AuthReq) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {get_views, Path, AuthReq}).
 
 -spec add_view(string(), [string()], auth_spec(), string()) -> ok.
 add_view(Site, Path, AuthSpec, View) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {add_view, Path, AuthSpec, View}).
 
 -spec set_champion(string(), [string()], string()) -> ok. 
 set_champion(Site, Path, View) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {set_champion, Path, View}).
 
 -spec set_challenger(string(), [string()], string()) -> ok. 
 set_challenger(Site, Path, View) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {set_challenger, Path, View}).
 
 -spec remove_views(string(), [string()], auth_spec(), [string()]) -> ok. 
 remove_views(Site, Path, AuthSpec, Views) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {rem_views, Path, AuthSpec, Views}).
 
 get_as_json(Site, Path) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {get_as_json, Path}).
 
 delete_site(Site) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, delete_site).
 
 clear_all_perms_DEBUG(Site) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, clear_all_perms).
 
 dump_script(Site) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, dump_script).
 
 load_script(Site, Terms) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {load_script, Terms}).
 
 %%%===================================================================
@@ -151,7 +151,7 @@ load_script(Site, Terms) ->
 %% @end
 %%--------------------------------------------------------------------
 init([Site]) ->
-    Table = hn_util:parse_site(Site),
+    Table = hn_util:site_to_fs(Site),
     {ok, Dir} = application:get_env(hypernumbers, dets_dir),
     Trees = load_trees(Dir, Table),
     {ok, #state{site = Site,

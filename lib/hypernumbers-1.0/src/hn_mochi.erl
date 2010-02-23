@@ -759,10 +759,10 @@ add_ref(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
 
 docroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:parse_site(Site)++"/docroot".
+        ++ hn_util:site_to_fs(Site)++"/docroot".
 viewroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:parse_site(Site)++"/views".
+        ++ hn_util:site_to_fs(Site)++"/views".
 tmpdir() ->
     code:lib_dir(hypernumbers) ++ "/../../var/tmp/".              
 

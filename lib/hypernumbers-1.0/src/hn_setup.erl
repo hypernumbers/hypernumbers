@@ -34,7 +34,7 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
 -spec delete_site(string()) -> ok.
 delete_site(Site) ->
     Dest = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:parse_site(Site) ++ "/",
+        ++ hn_util:site_to_fs(Site) ++ "/",
 
     ok = auth_srv2:clear_all_perms_DEBUG(Site),
     ok = dirty_srv:stop(Site),
@@ -128,7 +128,7 @@ moddir(Type) ->
 -spec sitedir(atom()) -> string(). 
 sitedir(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:parse_site(Site) ++ "/".
+        ++ hn_util:site_to_fs(Site) ++ "/".
 
 -spec resave_views() -> ok.
 resave_views() ->
@@ -315,7 +315,7 @@ add_u(Site, User, {import, P}) ->
     FileName = re:replace(hn_util:path_to_json_path(P2), "^path.",
                           "template.", [{return, list}]),
     Dest = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:parse_site(Site) ++ "/data/",
+        ++ hn_util:site_to_fs(Site) ++ "/data/",
     Url = Site ++ hn_util:list_to_path(Path),
     ok = hn_import:json_file(Url, Dest ++ FileName).
 

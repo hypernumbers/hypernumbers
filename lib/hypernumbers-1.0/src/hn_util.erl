@@ -14,7 +14,9 @@
 -export([
          esc_regex/1,     
          recursive_copy/2,
-         site_to_name/2,
+
+         site_to_atom/2,
+         site_to_fs/1,
          
          email/4, email/5,
 
@@ -42,7 +44,6 @@
          parse_ref/1,
          parse_attr/1,
          parse_attr/2,
-         parse_site/1,
          
          % List Utils
          is_alpha/1,
@@ -61,10 +62,14 @@
 
 
 %% used to turn sites into atoms for process names, etc
--spec site_to_name(list(), list()) -> list().
-site_to_name(Site, PostFix) when is_list(Site) andalso is_list(PostFix) ->
+-spec site_to_atom(list(), list()) -> atom().
+site_to_atom(Site, PostFix) when is_list(Site) andalso is_list(PostFix) ->
     "http://" ++ S = Site,
     list_to_atom([case X of $: -> $&; X -> X end || X <- S ++ PostFix]).
+
+site_to_fs("http://"++Site) ->
+    [case S of $: -> $&; S  -> S end 
+     || S <- Site].
 
 %% Escape the replacement part of the regular expression
 %% so no spurious replacements
@@ -326,10 +331,6 @@ post(Url, Data, Format) ->
     {ok, {{_V, _Status,_R},_H,Body}} =
         http:request(post,{Url,[],Format,Data},[],[]),
     Body.
-
-parse_site("http://"++Site) ->
-    [case S of $: -> $&; S  -> S end 
-     || S <- Site].
 
 parse_url("http://"++Url) ->
     {Host, Path, NUrl} = prs(Url),

@@ -25,7 +25,7 @@
 %%--------------------------------------------------------------------
 -spec start_link(string(), atom()) -> {ok,pid()} | ignore | {error,any()}.
 start_link(Site, Type) ->
-    Id = hn_util:site_to_name(Site, atom_to_list(Type)),
+    Id = hn_util:site_to_atom(Site, atom_to_list(Type)),
     supervisor_bridge:start_link({local, Id}, ?MODULE, [Site, Type]).
 
 %%====================================================================

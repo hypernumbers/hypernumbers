@@ -20,7 +20,7 @@
 %%
 
 start_link(Site) ->
-    Id = hn_util:site_to_name(Site, "_remoting"),
+    Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:start_link({local, Id}, ?MODULE, [], []).
 
 init([]) ->
@@ -56,14 +56,14 @@ code_change(_Old, State, _E)    -> {ok, State}.
 %%
 
 request_update(Site, Path, Time, Pid) ->
-    Id = hn_util:site_to_name(Site, "_remoting"),
+    Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {fetch, Site, Path, Time, Pid}).
 
 %% @doc  Notify server of full page refresh
 notify_refresh(Site, Path) ->
     Msg = {struct, [{"type", "refresh"},
                     {"path", hn_util:list_to_path(Path)}]},
-    Id = hn_util:site_to_name(Site, "_remoting"),
+    Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of change to a cell
@@ -73,7 +73,7 @@ notify_change(Site, Path, {RefType, _} = R, Name, Value) ->
                     {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_str(R)}, 
                     {"name", Name2}, {"value", Val2}]},
-    Id = hn_util:site_to_name(Site, "_remoting"),
+    Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 notify_delete(Site, Path, {RefType, _} = R, Name, Value) ->
@@ -82,7 +82,7 @@ notify_delete(Site, Path, {RefType, _} = R, Name, Value) ->
                     {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_str(R)}, 
                     {"name", Name2}, {"value", Val2}]},
-    Id = hn_util:site_to_name(Site, "_remoting"),
+    Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of a new style
@@ -90,7 +90,7 @@ notify_style(Site, Path, Index, Style) ->
     {Key, CSS} = hn_mochi:style_to_css(Index, Style),
     Msg = {struct, [{"path", hn_util:list_to_path(Path)},
                     {"type", "style"}, {"index", Key}, {"css", CSS}]},
-    Id = hn_util:site_to_name(Site, "_remoting"),
+    Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of an error to a cell
@@ -99,7 +99,7 @@ notify_error(Site, Path, Ref, error_in_formula, Value) ->
                     {"ref", hn_util:obj_to_str(Ref)}, 
                     {"original", Value},
                     {"path", hn_util:list_to_path(Path)}]},
-    Id = hn_util:site_to_name(Site, "_remoting"),
+    Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 %%

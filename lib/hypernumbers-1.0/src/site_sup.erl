@@ -16,7 +16,7 @@
 %% Description: Starts the supervisor
 %%--------------------------------------------------------------------
 start_link(Site) ->
-    Id = hn_util:site_to_name(Site, "_sup"),
+    Id = hn_util:site_to_atom(Site, "_sup"),
     supervisor:start_link({local, Id}, ?MODULE, [Site]).
 
 %%====================================================================

@@ -22,7 +22,7 @@
 
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 start_link(Site, Args) ->
-    SrvName = list_to_atom(fmt("~s_~p", [hn_util:parse_site(Site), ?MODULE])),
+    SrvName = list_to_atom(fmt("~s_~p", [hn_util:site_to_fs(Site), ?MODULE])),
     gen_server:start_link({local, SrvName}, ?MODULE, [Args], []).
 
 %% @spec init(Args) -> {ok, State} |
