@@ -27,7 +27,8 @@
          remove_views/4,
          delete_site/1,
          get_as_json/2,
-         dump_script/1
+         dump_script/1,
+         load_script/2
         ]).
 
 -export([
@@ -118,10 +119,6 @@ get_as_json(Site, Path) ->
     Id = hn_util:site_to_name(Site, "_auth"),
     gen_server:call(Id, {get_as_json, Path}).
 
-dump_script(Site) ->
-    Id = hn_util:site_to_name(Site, "_auth"),
-    gen_server:call(Id, dump_script).
-
 delete_site(Site) ->
     Id = hn_util:site_to_name(Site, "_auth"),
     gen_server:call(Id, delete_site).
@@ -130,7 +127,13 @@ clear_all_perms_DEBUG(Site) ->
     Id = hn_util:site_to_name(Site, "_auth"),
     gen_server:call(Id, clear_all_perms).
 
+dump_script(Site) ->
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, dump_script).
 
+load_script(Site, Terms) ->
+    Id = hn_util:site_to_name(Site, "_auth"),
+    gen_server:call(Id, {load_script, Terms}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -199,7 +202,9 @@ handle_call(Request, _From, State) ->
             clear_all_perms ->
                 {Site, gb_trees:empty(), true};
             dump_script ->
-                {Site, dump_script1(tree(Site, Tr)), false}
+                {Site, dump_script1(tree(Site, Tr)), false};
+            {load_script, Terms} ->
+                {Site, load_script1(Terms), true}
             end,
     {Reply, NewTr} =
         case Return1 of
@@ -580,17 +585,36 @@ view_to_json({V, View, Iter}) ->
     [S | view_to_json(gb_trees:next(Iter))].
 
 
+-spec load_script1(list()) -> gb_tree().
+load_script1(Terms) ->
+    Tree = gb_trees:empty(),
+    exec_script_terms(Terms, Tree).
+
+-define(lget(Key, List), (element(2, lists:keyfind(Key, 1, List)))).
+exec_script_terms([], Tree) ->
+    Tree;
+exec_script_terms([{add_view, C}|Rest], Tree) ->
+    Tree2 = add_view1(Tree, ?lget(path, C), ?lget(perms, C), ?lget(view, C)),
+    exec_script_terms(Rest, Tree2);
+exec_script_terms([{champion, C}|Rest], Tree) ->
+    Tree2 = set_default(Tree, ?lget(path, C), ?lget(view, C), champion),
+    exec_script_terms(Rest, Tree2);
+exec_script_terms([{challenger, C}|Rest], Tree) ->
+    Tree2 = set_default(Tree, ?lget(path, C), ?lget(view, C), challenger),
+    exec_script_terms(Rest, Tree2).
+
 -spec dump_script(gb_tree()) -> [any()]. 
 dump_script1(Tree) ->
     Iter = gb_trees:iterator(Tree),
     List = lists:flatten(dump_tree(gb_trees:next(Iter), [])),
-    to_script(List, []).
+    make_script_terms(List, []).
 
-to_script([], Acc)      -> FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
-                           lists:flatten([FirstLine | lists:reverse(Acc)]);
-to_script([H | T], Acc) ->
+make_script_terms([], Acc) -> 
+    FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
+    lists:flatten([FirstLine | lists:reverse(Acc)]);
+make_script_terms([H | T], Acc) ->
     NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
-    to_script(T, [NewAcc | Acc]).
+    make_script_terms(T, [NewAcc | Acc]).
 
 dump_tree(none, _Path) -> [];
 dump_tree({{seg, S}, Tree2, Iter}, Path) ->
@@ -963,30 +987,40 @@ testD8() ->
     Ret = get_views1(Tree4, P3, {"dale", []}),
     ?assertEqual(["global_stuff", "i/love/spreadsheets"], lists:sort(Ret)).
 
+
+%% Test dump / restore
 testE1() ->
-    P = [],
-    Tree = add_view1(gb_trees:empty(), P, 
-                     [{user, "gordon"}, {group, "admin"}],
-                     "*"),
-    Tree1 = add_view1(Tree, P, [{user, "gordon"}, {group, "admin"}],
-                      "blah"),
-    Tree2 = add_view1(Tree1, P, [{user, "gordon"}, {group, "admin"}],
-                      "blerg"),
-    Ret = get_views1(Tree2, P, {"Fail", ["admin"]}),
-    ?assertEqual(["blerg", "blah", "*"], Ret).
+    Tree = gb_trees:empty(),
+    Iter1 = gb_trees:iterator(Tree),
+    Terms = lists:flatten(dump_tree(gb_trees:next(Iter1), [])),
+    %% now see if round trips work.
+    Tree = load_script1(Terms),
+    Iter2 = gb_trees:iterator(Tree),
+    Terms = lists:flatten(dump_tree(gb_trees:next(Iter2), [])).
 
+%% Test dump / restore, on complex input
 testE2() ->
-    P = [],
-    Tree = add_view1(gb_trees:empty(), P, 
-                     [{user, "gordon"}, {group, "admin"}], "*"),
-    Tree1 = add_view1(Tree, P, [{user, "gordon"}, {group, "admin"}],
-                      "blah"),
-    Tree2 = add_view1(Tree1, P, [{user, "gordon"}, {group, "admin"}],
-                      "blerg"),
-    Ret = check_particular_view1(Tree2, P, {"Fail", ["admin"]},
-                          "random chops, tonto"),
-    ?assertEqual({view, "random chops, tonto"}, Ret).
+    %% To comapre trees, we have to tweak the insertion order,
+    %% or this test can easily fail due to different balancing.
+    P1 = ["[**]"],
+    P2 = ["hip", "[*]"],
+    P3 = ["hip", "hop"],
+    Tree1 = add_view1(gb_trees:empty(), P1, 
+                      [{user, "gordon"}, {group, "admin"}],
+                      "a view"),
+    Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
+                      "banjo"),
+    Tree3 = add_view1(Tree2, P3, [{user, "gordon"}, {group, "admin"}],
+                      "bingo"),
+    FinalTree = set_default(Tree3, P1, "a view", champion),
 
+    % Test starts here 
+    Iter1 = gb_trees:iterator(FinalTree),
+    Terms = lists:flatten(dump_tree(gb_trees:next(Iter1), [])),
+    %% now see if round trips work.
+    FinalTree = load_script1(Terms),
+    Iter2 = gb_trees:iterator(FinalTree),
+    Terms = lists:flatten(dump_tree(gb_trees:next(Iter2), [])).
 
 unit_test_() -> 
     SeriesA = [fun testA1/1,
@@ -1013,12 +1047,12 @@ unit_test_() ->
                fun testD7/0,
                fun testD8/0 ],
 
-    _SeriesE = [fun testE1/0,
+    SeriesE = [fun testE1/0,
                fun testE2/0],
 
     [{with, [], SeriesA},
      {with, ["some", "longer", "path"], SeriesA},
      SeriesC,
-     SeriesD
-     %%SeriesE
+     SeriesD,
+     SeriesE
     ].
