@@ -169,7 +169,7 @@ create_site(Site, Type)->
     %% to disc_copies for now
     Storage = disc_copies,
     [ok = hn_db_admin:create_table(hn_db_wu:trans(Site, N),
-                                   N, F, Storage, T, I)
+                                   N, F, Storage, T, true, I)
      || {N,F,T,I} <- tables()],
     Trans = fun() ->
                     mnesia:write(#core_site{site = Site, type = Type})

@@ -28,7 +28,7 @@
                           ]).
 
 -export([
-         create_table/6,
+         create_table/7,
          into_mem/1,
          outof_mem/1,
          backup/3,
@@ -59,12 +59,14 @@ backup(Tables, Dir, Name) ->
                    any(),
                    disc_only_copies | disc_copies | ram_copies,
                    set | bag | ordered_set,
+                   true | false,
                    [atom()]) -> ok. 
-create_table(TblName, Rec, Fields, Storage, Type, Indicies) ->
+create_table(TblName, Rec, Fields, Storage, Type, Local, Indicies) ->
     R = mnesia:create_table(TblName, [{record_name, Rec},
                                       {attributes, Fields},
                                       {Storage, [node()]},
                                       {type, Type},
+                                      {local_content, Local},
                                       {index, Indicies}]),
     case R of 
         {atomic, ok}                   -> ok;
