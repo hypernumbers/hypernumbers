@@ -17,6 +17,7 @@
 
          site_to_atom/2,
          site_to_fs/1,
+         site_from_fs/1,
          
          email/4, email/5,
 
@@ -70,6 +71,10 @@ site_to_atom(Site, PostFix) when is_list(Site) andalso is_list(PostFix) ->
 site_to_fs("http://"++Site) ->
     [case S of $: -> $&; S  -> S end 
      || S <- Site].
+
+site_from_fs(Site) ->
+    "http://" ++ [case S of $& -> $:; S  -> S end 
+                  || S <- Site].
 
 %% Escape the replacement part of the regular expression
 %% so no spurious replacements
