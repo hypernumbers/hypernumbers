@@ -1,5 +1,3 @@
-%%% It is expected that all system, and module support tables are
-%%% inplace prior to calling functions in this module.
 -module(hn_setup).
 
 -export([
@@ -9,14 +7,11 @@
          update/3,
          add_user/2,
          get_sites/0,
+         get_site_type/1,
          resave_views/0
         ]).
 
 -include("spriki.hrl").
-
--spec get_sites() -> list().
-get_sites() -> 
-    mnesia:activity(transaction, fun mnesia:all_keys/1, [core_site]).
 
 %% Setup a new site from scratch
 -spec site(string(), atom(), [{atom(), any()}]) -> ok.
@@ -69,7 +64,7 @@ update(Opaque, Opts) ->
 
 -spec update(string(), list(), list()) -> ok.
 update(Site, Opaque, Opts) ->
-    update(Site, get_type_by_site(Site), Opaque, Opts).
+    update(Site, get_site_type(Site), Opaque, Opts).
 
 
 -spec update(string(), atom(), list(), list()) -> ok.
@@ -78,7 +73,7 @@ update(Site, Type, Opaque, Opts) ->
     ok.
 
 
--spec add_user(#refX{}, #hn_user{}) -> ok.
+-spec add_user(string(), #hn_user{}) -> ok.
 add_user(Site, User) ->
     Script = [sitedir(Site),"/","user.permissions.script"],
     case filelib:is_file(Script) of
@@ -90,6 +85,14 @@ add_user(Site, User) ->
             ok
     end.
 
+-spec get_sites() -> list().
+get_sites() -> 
+    mnesia:activity(transaction, fun mnesia:all_keys/1, [core_site]).
+
+-spec get_site_type(string()) -> atom().
+get_site_type(Site) ->
+    [#core_site{type=Type}] = mnesia:dirty_read(core_site, Site),
+    Type.
 
 -spec setup(string(), atom(), list(), atom()) -> ok.
 setup(Site, _Type, _Opts, corefiles) ->
@@ -125,7 +128,7 @@ coreinstalldir() ->
 moddir(Type) ->
     code:priv_dir(sitemods) ++ "/site_types/" ++ atom_to_list(Type).
 
--spec sitedir(atom()) -> string(). 
+-spec sitedir(string()) -> string(). 
 sitedir(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site) ++ "/".
@@ -162,7 +165,7 @@ create_site(Site, Type)->
                                    N, F, Storage, T, I)
      || {N,F,T,I} <- tables()],
     Trans = fun() ->
-                    ok = mnesia:write(#core_site{site = Site, type = Type})
+                    mnesia:write(#core_site{site = Site, type = Type})
             end,
     {atomic, ok} = mnesia:transaction(Trans),
     ok.
@@ -318,8 +321,3 @@ add_u(Site, User, {import, P}) ->
         ++ hn_util:site_to_fs(Site) ++ "/data/",
     Url = Site ++ hn_util:list_to_path(Path),
     ok = hn_import:json_file(Url, Dest ++ FileName).
-
--spec get_type_by_site(list()) -> atom().
-get_type_by_site(Site) ->
-    [#core_site{type=Type}] = mnesia:dirty_read(core_site, Site),
-    Type.

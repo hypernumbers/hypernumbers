@@ -2071,7 +2071,7 @@ read_page_structure(#refX{site = Site, obj = {page, "/"}}) ->
     filter_pages(Items, dh_tree:new()).
 
 read_pages(#refX{site = Site, obj = {page, "/"}}) ->
-    mnesia:dirty_all_keys(trans(Site, local_objs)).
+    mnesia:all_keys(trans(Site, local_objs)).
 
 filter_pages([], Tree) ->
     Tree;

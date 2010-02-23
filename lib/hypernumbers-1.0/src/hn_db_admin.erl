@@ -43,7 +43,6 @@ restore(Dir, Name) ->
 
 -spec backup(list(), list(), list()) -> ok.
 backup(Tables, Dir, Name) ->
-
     ChP = {name, Name},
     ChPDef = {min, Tables},
 
@@ -51,7 +50,7 @@ backup(Tables, Dir, Name) ->
     {ok, ChPName, _} = mnesia:activate_checkpoint([ChP, ChPDef]),
 
     % do the backup
-    ok = mnesia:backup_checkpoint(Name, Dir ++ Name, []),
+    ok = mnesia:backup_checkpoint(Name, filename:join(Dir, Name), []),
 
     % delete the checkpoint    
     ok = mnesia:deactivate_checkpoint(ChPName).    
@@ -92,4 +91,6 @@ chg_copy_type(Site, Port, Table, Mode) ->
                                         ++ Port ++ "&"
                                         ++ Table),
     mnesia:change_table_copy_type(ActualTable, node(), Mode).
+
+
 

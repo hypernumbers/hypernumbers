@@ -307,16 +307,10 @@ write_style_IMPORT(RefX, Style)
 %% @doc reads pages
 %% @todo fix up api
 read_page_structure(RefX) when is_record(RefX, refX) ->
-    Fun = fun() ->
-                  hn_db_wu:read_page_structure(RefX)
-          end,
-    mnesia:activity(transaction, Fun).
+    mnesia:activity(transaction, fun hn_db_wu:read_page_structure/1, [RefX]).
 
 read_pages(RefX) when is_record(RefX, refX) ->
-    Fun = fun() ->
-                  hn_db_wu:read_pages(RefX)
-          end,
-    mnesia:activity(transaction, Fun).    
+    mnesia:activity(transaction, fun hn_db_wu:read_pages/1, [RefX]).    
 
 %% @spec initialise_remote_page_vsn(Site, Version) -> ok
 %% @doc intialises the page version for a 'newly discovered' remote page.
