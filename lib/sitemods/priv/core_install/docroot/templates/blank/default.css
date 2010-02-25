@@ -6,7 +6,7 @@ body {
     margin : 0px;
 }
 
-p { margin: 0px 0px 8px 0px; }
+p { margin: 0px 0px 10px 0px; }
 
 #hnbody { height:100%; }
 
@@ -24,7 +24,7 @@ p { margin: 0px 0px 8px 0px; }
     height : 100%;
 }
 
-#hnbody p { 
+#hnbody form p, #hnbody table p { 
     margin: 0px;
 }
 
