@@ -1,0 +1,31 @@
+@import url(/templates/blank/default.css);
+
+#hnbody { 
+    width:100%;
+    padding:0px;
+    background:#EEE;
+}
+
+#hnbody #col-header { padding:5px; }
+
+#hnbody #col-wrapper { 
+    background:#FFF;
+    border:1px solid #999;
+    width: 740px;
+    margin:0px auto;
+}
+
+#hnbody #col-content { 
+    padding:10px;
+    width:490px;
+    float:left;
+    margin-right:20px;
+}
+
+#hnbody #col-side { 
+    width: 180px;
+    padding:10px;
+    float:right;
+    margin-right:10px;
+}
+
