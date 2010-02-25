@@ -156,6 +156,13 @@ is_num_or_date(X) ->
     OldSecs = calendar:time_to_seconds(T),
     #datetime{date= calendar:gregorian_days_to_date(OldDays - Days),
               time = calendar:seconds_to_time(OldSecs - Secs)};
+
+'-'([{datetime, D1, T1}, {datetime, D2, T2}]) ->
+    S1 = calendar:datetime_to_gregorian_seconds({D1, T1}),
+    S2 = calendar:datetime_to_gregorian_seconds({D2, T2}),
+    {DiffDate, _} = calendar:gregorian_seconds_to_datetime(S1 - S2),
+    calendar:date_to_gregorian_days(DiffDate);
+
 '-'([V1, V2]) ->
     case col([V1, V2],
              [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
