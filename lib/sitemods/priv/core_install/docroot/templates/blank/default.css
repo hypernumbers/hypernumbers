@@ -1,3 +1,12 @@
+html,body { 
+    height   : 100%;
+}
+body { 
+    padding:0px;
+    margin : 0px;
+}
+
+
 #hnbody { height:100%; }
 
 #hnbody { 
@@ -18,7 +27,7 @@
     margin: 0px;
 }
 
-#hnbody input[type=text], textarea { 
+#hnbody input[type=text], #hnbody textarea { 
     margin-top:2px;
     margin-bottom: 10px;
     border-width:1px;
@@ -40,7 +49,8 @@
 }
 
 #hnbody textarea { 
-    width: 300px;
+    width: 350px;
+    height: 150px;
 }
 
 #hnbody form.hn { 
