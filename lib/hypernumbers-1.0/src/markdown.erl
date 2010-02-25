@@ -908,7 +908,6 @@ l1([$] | T], A1, A2)       -> l1(T, [], [{{inline, close}, "]"}, l2(A1) | A2]);
 %% that 'character' doesn't exist so isn't in the lexer but appears in the parser
 l1([?SPACE | T], A1, A2)   -> l1(T, [], [{{ws, sp}, " "}, l2(A1) | A2]);
 l1([?TAB | T], A1, A2)     -> l1(T, [], [{{ws, tab}, "\t"}, l2(A1) | A2]);
-l1([?NBSP | T], A1, A2)    -> l1(T, [], [{{ws, sp}, "&nbsp"}, l2(A1) | A2]);
 l1([?CR, ?LF | T], A1, A2) -> l1(T, [], [{{lf, crlf}, [?CR , ?LF]}, l2(A1) | A2]);
 l1([?LF | T], A1, A2)      -> l1(T, [], [{{lf, lf}, [?LF]}, l2(A1) | A2]);
 %% this final clause accumulates line fragments
@@ -1145,7 +1144,6 @@ htmlchars1([$` | T], A)              -> {T2, NewA} = code(T),
                                         htmlchars1(T2, [NewA | A]);
 htmlchars1([$& | T], A)              -> htmlchars1(T, ["&amp;" | A]);
 htmlchars1([$< | T], A)              -> htmlchars1(T, ["&lt;" | A]);
-htmlchars1([?NBSP | T], A)           -> htmlchars1(T, ["&nbsp;" | A]);
 htmlchars1([?TAB | T], A)            -> htmlchars1(T, ["    " | A]);
 htmlchars1([none | T], A)            -> htmlchars1(T, A);
 htmlchars1([H | T], A)               -> htmlchars1(T, [H | A]).
