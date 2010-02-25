@@ -31,7 +31,7 @@
 /*     margin:5px; */
 /* } */
 
-#hnbody input[type=text]:focus, textarea:focus { 
+#hnbody input[type=text]:focus,#hnbody textarea:focus { 
     background:#F9F9F9;
 }
     
