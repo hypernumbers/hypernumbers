@@ -5,7 +5,7 @@ html,body {
     overflow : hidden;
     height   : 100%;
 }
-body, input {  
+body {  
     margin : 0px;
     font   : 11px Arial,"Helvetica Neue", sans-serif;
 }

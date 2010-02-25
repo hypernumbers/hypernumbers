@@ -58,7 +58,7 @@ body {
 }
 
 #hnbody .droppable {
-    margin: 5px 0px;
+    padding: 10px 0px;
 }
 
 #hnbody .hn { 
