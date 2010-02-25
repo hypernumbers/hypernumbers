@@ -94,6 +94,7 @@
          children = ordsets:new() :: ordsets:ordset(cellidx()),
          parents = ordsets:new()  :: ordsets:ordset(cellidx()),
          priority = 0             :: integer() | {integer(), integer()}}).
+%% priority can be taken out  in next refactor ^^^^ 
          
 -record(outgoing_hn,
         {
@@ -288,7 +289,6 @@
 
 
 %% HN Mochi Query Parameters. Leave as undefined.
-
 -record(qry, { challenger,
                mark,
                pages,

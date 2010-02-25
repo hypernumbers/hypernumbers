@@ -522,14 +522,14 @@
          get_cells/1,
          mark_children_dirty/2,
          mark_these_dirty/2,
-         mark_dirty/2,
-         mark_notify_out_dirty/2,            
-         mark_notify_out_dirty/3,      
+         %% mark_dirty/2,
+         %% mark_notify_out_dirty/2,            
+         %% mark_notify_out_dirty/3,      
          update_inc_hn/5,
          does_remote_link_exist/3,
          write_remote_link/3,
-         register_out_hn/4,
-         unregister_out_hn/2,
+         %% register_out_hn/4,
+         %% unregister_out_hn/2,
          verify_biccie_in/3,
          verify_biccie_out/3,
          incr_remote_page_vsn/3,
@@ -786,15 +786,15 @@ read_page_vsn(Site, RefX) when is_record(RefX, refX) ->
 %% @spec register_out_hn(Parent::#refX{}, Child::#refX{}, Proxy, Biccie) -> ok
 %% @doc register_hypernumber registers a new hypernumber.
 %% This function is *ONLY* called on the parent (or out) side of the relationship
-register_out_hn(Parent, Child, Proxy, Biccie)
-  when is_record(Parent, refX), is_record(Child, refX)->
-    #refX{site = ParentSite} = Parent,
-    #refX{site = ChildSite} = Child,
-    Hn = #outgoing_hn{site_and_parent = {ParentSite, Parent},
-                      biccie          = Biccie,
-                      child_site      = ChildSite,
-                      child_proxy     = Proxy},
-    mnesia:write(trans(ParentSite, outgoing_hn), Hn, write).
+%% register_out_hn(Parent, Child, Proxy, Biccie)
+%%   when is_record(Parent, refX), is_record(Child, refX)->
+%%     #refX{site = ParentSite} = Parent,
+%%     #refX{site = ChildSite} = Child,
+%%     Hn = #outgoing_hn{site_and_parent = {ParentSite, Parent},
+%%                       biccie          = Biccie,
+%%                       child_site      = ChildSite,
+%%                       child_proxy     = Proxy},
+%%     mnesia:write(trans(ParentSite, outgoing_hn), Hn, write).
 
 %% @spec does_remote_link_exist(Parent::#refX{}, Child::#refX{}, Type) -> 
 %% [true | false]
@@ -1934,7 +1934,7 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
         end,
     Tbl = trans(Site, relation),
     Idxs = lists:flatten([F(C) || R <- Refs, C <- get_cells(R)]),
-    Q = insert_work_queue(Idxs, Tbl, 0, hn_workq:new(Ar)),
+    Q = insert_work_queue(Idxs, Tbl, 1, hn_workq:new(Ar)),
     Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
     
@@ -1942,7 +1942,7 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
 mark_children_dirty(#refX{site = Site} = RefX, Ar) ->
     Tbl = trans(Site, relation),
     Children = get_local_children_idxs(RefX),
-    Q = insert_work_queue(Children, Tbl, 0, hn_workq:new(Ar)),
+    Q = insert_work_queue(Children, Tbl, 1, hn_workq:new(Ar)),
     case hn_workq:is_empty(Q) of
         true -> ok;
         false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
@@ -1950,38 +1950,36 @@ mark_children_dirty(#refX{site = Site} = RefX, Ar) ->
     end.
 
 %% Recursively walk child relation, adding entries into the work
-%% queue.  The reflow parameter is used inconjunction with the method
-%% used to flow priorities from trees connected bottom up. This allows
-%% us to maintain the invariant where children are calculated after
-%% parents.  This algorithm could naively visit the same children
-%% multiple times, if there is no unique path from N1 ~~> N2. An
-%% attempt is made to stop walking a bad path asap.
+%% queue.  We maintain an invariant that children must have a higher
+%% priority than their parents, forcing them to be calculated after
+%% their parent(s). This algorithm could naively visit the same
+%% children multiple times, if there is no unique path from N1 ~~>
+%% N2. An attempt is made to stop walking a bad path asap.
 %% see:needs_elem(...).
 -spec insert_work_queue([cellidx()], 
                          atom(), 
                          integer(), 
                          hn_workq:work_queue())
                         -> hn_workq:work_queue(). 
-insert_work_queue([], _Tbl, _Reflow, Q) ->
+insert_work_queue([], _Tbl, _Priority, Q) ->
     Q;
-insert_work_queue([Idx|Rest], Tbl, Reflow, Q) ->
+insert_work_queue([Idx|Rest], Tbl, Priority, Q) ->
     Qnext = 
         case mnesia:read(Tbl, Idx) of
             [R] -> 
-                Priority = Reflow + R#relation.priority,
                 case hn_workq:needs_elem(Idx, Priority, Q) of
                     true ->
                         Children = ordsets:to_list(R#relation.children),
                         Q2 = insert_work_queue(Children, 
                                                Tbl, 
-                                               Priority,
+                                               Priority + 1,
                                                Q),
                         hn_workq:add(Idx, Priority, Q2);
                     false -> Q
                 end;
             _ -> Q
         end,
-    insert_work_queue(Rest, Tbl, Reflow, Qnext).
+    insert_work_queue(Rest, Tbl, Priority, Qnext).
 
 %% @spec mark_notify_out_dirty(Parent::#refX{}, Change)  -> ok
 %% Change = {new_value, Value, DepTree} | {insert, Obj, Disp} | {delete, Obj, Disp}
@@ -1991,8 +1989,8 @@ insert_work_queue([Idx|Rest], Tbl, Reflow, Q) ->
 %% Updates called with this function and not 
 %% <code>mark_notify_out_dirty/3</code> are marked with the default delay
 %% (defined in spriki.hrl)
-mark_notify_out_dirty(Parent, Change) when is_record(Parent, refX) ->
-    mark_notify_out_dirty(Parent, Change, ?DELAY).
+%% mark_notify_out_dirty(Parent, Change) when is_record(Parent, refX) ->
+%%     mark_notify_out_dirty(Parent, Change, ?DELAY).
 
 %% @spec mark_notify_out_dirty(Parent::#refX{}, Change, Delay)  -> ok
 %% Change = {new_value, Value, DepTree} | {insert, Obj, Disp} | {delete, Obj, Disp}
@@ -2001,36 +1999,36 @@ mark_notify_out_dirty(Parent, Change) when is_record(Parent, refX) ->
 %% @doc marks a cell as dirty so that its remote children can be updated
 %% Delay is a time in milliseconds that this message should be delayed
 %% @todo this contains a transaction, WTF?
-mark_notify_out_dirty(#refX{site = Site} = P, {Type, _, _} = Change, Delay) ->
-    %% read the outgoing hypernumbers
-    %% one for each site where the Parent is used in a hypernumber
-    List = read_outgoing_hns(Site, P),
-    %% now we need to get a list of all the actual children and the page versions
-    %% of their pages
-    Fun2 =
-        fun(X) ->
-                #outgoing_hn{child_site = ChildSite} = X,
-                Head = get_head(ChildSite, P, Type),
-                Table = trans(Site, remote_cell_link),
-                Children = mnesia:select(Table, [{Head , [], ['$_']}], read),
-                ReturnList = get_pages_and_vsns(Site, Children),
-                {X, ReturnList}
-        end,
-    ChildrenList = lists:map(Fun2, List),
+%% mark_notify_out_dirty(#refX{site = Site} = P, {Type, _, _} = Change, Delay) ->
+%%     %% read the outgoing hypernumbers
+%%     %% one for each site where the Parent is used in a hypernumber
+%%     List = read_outgoing_hns(Site, P),
+%%     %% now we need to get a list of all the actual children and the page versions
+%%     %% of their pages
+%%     Fun2 =
+%%         fun(X) ->
+%%                 #outgoing_hn{child_site = ChildSite} = X,
+%%                 Head = get_head(ChildSite, P, Type),
+%%                 Table = trans(Site, remote_cell_link),
+%%                 Children = mnesia:select(Table, [{Head , [], ['$_']}], read),
+%%                 ReturnList = get_pages_and_vsns(Site, Children),
+%%                 {X, ReturnList}
+%%         end,
+%%     ChildrenList = lists:map(Fun2, List),
 
-    %% always write the dirty outgoing hypernumber
-    PVsn = read_page_vsn(Site, P),
-    ParentPage = P#refX{obj = {page, "/"}},
-    ParentUrl = hn_util:refX_to_url(ParentPage),
-    case List of
-        [] -> ok;
-        _  -> Rec = #dirty_notify_out{parent = P, change = Change,
-                                      outgoing = ChildrenList,
-                                      parent_vsn = {version, ParentUrl, PVsn},
-                                      delay = Delay},
-              Tbl = trans(Site, element(1,Rec)),
-              mnesia:write(Tbl, Rec, write)
-    end.
+%%     %% always write the dirty outgoing hypernumber
+%%     PVsn = read_page_vsn(Site, P),
+%%     ParentPage = P#refX{obj = {page, "/"}},
+%%     ParentUrl = hn_util:refX_to_url(ParentPage),
+%%     case List of
+%%         [] -> ok;
+%%         _  -> Rec = #dirty_notify_out{parent = P, change = Change,
+%%                                       outgoing = ChildrenList,
+%%                                       parent_vsn = {version, ParentUrl, PVsn},
+%%                                       delay = Delay},
+%%               Tbl = trans(Site, element(1,Rec)),
+%%               mnesia:write(Tbl, Rec, write)
+%%     end.
 
 %% @spec unregister_out_hn(Parent::#refX{}, Child::#refX{}) -> ok
 %% @doc unregisters an outgoing hypernumber - if it is the last reference
@@ -2040,28 +2038,28 @@ mark_notify_out_dirty(#refX{site = Site} = P, {Type, _, _} = Change, Delay) ->
 %% @todo this required a full table scan for an unregister
 %% will get veeeerrry expensive if you have 100,000 children tracking a
 %% number!
-unregister_out_hn(P, C)
-  when is_record(P, refX), is_record(C, refX) ->
-    #refX{site = ParentSite} = P,
-    #refX{site = ChildSite} = C,
-    %% first up delete the remote cell link
-    Head = #remote_cell_link{parent = P, child = C, type = outgoing, _ = '_'},
-    Table = trans(ParentSite, remote_cell_link),
-    [RemCellRec] = mnesia:select(Table, [{Head, [], ['$_']}], write),
-    ok = mnesia:delete_object(Table, RemCellRec, write),
-    %% now see if any other remote cell references match this site...
-    %% - if none do, delete the hypernumber from outgoing_hn
-    %% - if some do, do nothing...
-    H3 = #refX{site = ChildSite, _ = '_'},
-    H4 = #remote_cell_link{parent = P, child = H3, type = outgoing, _ = '_'},
-    case mnesia:select(Table, [{H4, [], ['$_']}], read) of
-        []  -> H6 = #outgoing_hn{site_and_parent = {ParentSite, P},
-                                 child_site = ChildSite, _ = '_'},
-               Table2 = trans(ParentSite, outgoing_hn),
-               [Rec] = mnesia:select(Table2, [{H6, [], ['$_']}], read),
-               mnesia:delete_object(Table2, Rec, write);
-        _   -> ok
-    end.
+%% unregister_out_hn(P, C)
+%%   when is_record(P, refX), is_record(C, refX) ->
+%%     #refX{site = ParentSite} = P,
+%%     #refX{site = ChildSite} = C,
+%%     %% first up delete the remote cell link
+%%     Head = #remote_cell_link{parent = P, child = C, type = outgoing, _ = '_'},
+%%     Table = trans(ParentSite, remote_cell_link),
+%%     [RemCellRec] = mnesia:select(Table, [{Head, [], ['$_']}], write),
+%%     ok = mnesia:delete_object(Table, RemCellRec, write),
+%%     %% now see if any other remote cell references match this site...
+%%     %% - if none do, delete the hypernumber from outgoing_hn
+%%     %% - if some do, do nothing...
+%%     H3 = #refX{site = ChildSite, _ = '_'},
+%%     H4 = #remote_cell_link{parent = P, child = H3, type = outgoing, _ = '_'},
+%%     case mnesia:select(Table, [{H4, [], ['$_']}], read) of
+%%         []  -> H6 = #outgoing_hn{site_and_parent = {ParentSite, P},
+%%                                  child_site = ChildSite, _ = '_'},
+%%                Table2 = trans(ParentSite, outgoing_hn),
+%%                [Rec] = mnesia:select(Table2, [{H6, [], ['$_']}], read),
+%%                mnesia:delete_object(Table2, Rec, write);
+%%         _   -> ok
+%%     end.
 
 %% @spec read_page_structure(Ref) -> dh_tree()
 %% @doc read the populated pages under the specified path
@@ -2202,22 +2200,22 @@ read_local_item_index(#refX{site = S, path = P, obj = Obj}) ->
         _   -> false
     end.
 
-get_head(Site, Parent, Type) when ((Type == insert) orelse (Type == delete)) ->
-    H1 = ms_util:make_ms(refX, [{site, Site}, {obj, {cell, {'_', '_'}}}]),
-    H2 = Parent#refX{obj = {cell, {'_', '_'}}},
-    #remote_cell_link{parent = H2, child = H1, _ = '_'};
-get_head(Site, Parent, Type) when (Type == new_value) ->
-    H1 = ms_util:make_ms(refX, [{site, Site}]), 
-    #remote_cell_link{parent = Parent, child = H1, _ = '_'}.
+%% get_head(Site, Parent, Type) when ((Type == insert) orelse (Type == delete)) ->
+%%     H1 = ms_util:make_ms(refX, [{site, Site}, {obj, {cell, {'_', '_'}}}]),
+%%     H2 = Parent#refX{obj = {cell, {'_', '_'}}},
+%%     #remote_cell_link{parent = H2, child = H1, _ = '_'};
+%% get_head(Site, Parent, Type) when (Type == new_value) ->
+%%     H1 = ms_util:make_ms(refX, [{site, Site}]), 
+%%     #remote_cell_link{parent = Parent, child = H1, _ = '_'}.
 
-get_pages_and_vsns(Site, List) ->
-    Fun = fun(#remote_cell_link{child = C}) ->
-                  Page = C#refX{obj = {page, "/"}},
-                  Vsn = read_page_vsn(Site, Page), 
-                  Page2 = hn_util:refX_to_url(Page),
-                  #version{page = Page2, version = Vsn}
-          end,
-    hslists:uniq(lists:map(Fun, List)).
+%% get_pages_and_vsns(Site, List) ->
+%%     Fun = fun(#remote_cell_link{child = C}) ->
+%%                   Page = C#refX{obj = {page, "/"}},
+%%                   Vsn = read_page_vsn(Site, Page), 
+%%                   Page2 = hn_util:refX_to_url(Page),
+%%                   #version{page = Page2, version = Vsn}
+%%           end,
+%%     hslists:uniq(lists:map(Fun, List)).
 
 %% just takes a tokenised formula and swaps the Old Url for the New Url anywhere
 %% that it is used in a hypernumber, ie looks for 'HN(OldUrl'
@@ -2260,48 +2258,48 @@ write_attr3(#refX{site = Site} = RefX, {Key, Val}) ->
             ok = tell_front_end(RefX, {Key, Val}, change)
     end.
 
-update_rem_parents(Child, OldParents, NewParents) when is_record(Child, refX) ->
-    {Del, Write} = split_parents(OldParents, NewParents),
-    %% first delete all the records on the delete list
-    %% and unregister them (probably should be done in a gen server!)
-    [ok = delete_remote_parents(X) || X <- Del],
-    %% now write all the records on the write list
-    [ok = write_remote_link(X, Child, incoming) || X <- Write],
-    ok.
+%% update_rem_parents(Child, OldParents, NewParents) when is_record(Child, refX) ->
+%%     {Del, Write} = split_parents(OldParents, NewParents),
+%%     %% first delete all the records on the delete list
+%%     %% and unregister them (probably should be done in a gen server!)
+%%     [ok = delete_remote_parents(X) || X <- Del],
+%%     %% now write all the records on the write list
+%%     [ok = write_remote_link(X, Child, incoming) || X <- Write],
+%%     ok.
 
 %% This function is called on a local cell to inform all remote cells that it
 %% used to reference as hypernumbers to no longer do so.
-unregister_inc_hn(Parent, Child)
-  when is_record(Parent, refX), is_record(Child, refX) ->
+%% unregister_inc_hn(Parent, Child)
+%%   when is_record(Parent, refX), is_record(Child, refX) ->
 
-    #refX{site = ChildSite} = Child,
-    Head = #incoming_hn{site_and_parent = {ChildSite, Parent}, _ = '_'},
-    Table = trans(ChildSite, incoming_hn),
-    case mnesia:select(Table, [{Head, [], ['$_']}], read) of
-        [Hn] ->
-            #incoming_hn{biccie = Biccie} = Hn,
-            Head3 = #remote_cell_link{parent =  Parent, type = incoming, _ = '_'},
-            Table2 = trans(ChildSite, remote_cell_link),
-            ok = case mnesia:select(Table2, [{Head3, [], ['$_']}], read) of
-                     [] -> ok = mnesia:delete({Table, {ChildSite, Parent}});
-                     _  -> ok % HN is still in use
-                 end,
-            PPage = Parent#refX{obj = {page, "/"}},
-            CPage = Child#refX{obj = {page, "/"}},
-            PUrl = hn_util:refX_to_url(PPage),
-            CUrl = hn_util:refX_to_url(CPage),
-            PV = hn_db_wu:read_page_vsn(ChildSite, Parent),
-            CV = hn_db_wu:read_page_vsn(ChildSite, Child),
-            PVsn = #version{page = PUrl, version = PV},
-            CVsn = #version{page = CUrl, version = CV},
-            Rec = #dirty_notify_back_in{parent = Parent, child = Child,
-                                        change = "unregister",
-                                        biccie = Biccie, parent_vsn = PVsn,
-                                        child_vsn = CVsn},
-            mark_dirty(ChildSite, Rec);
-        _  ->
-            ok
-    end.
+%%     #refX{site = ChildSite} = Child,
+%%     Head = #incoming_hn{site_and_parent = {ChildSite, Parent}, _ = '_'},
+%%     Table = trans(ChildSite, incoming_hn),
+%%     case mnesia:select(Table, [{Head, [], ['$_']}], read) of
+%%         [Hn] ->
+%%             #incoming_hn{biccie = Biccie} = Hn,
+%%             Head3 = #remote_cell_link{parent =  Parent, type = incoming, _ = '_'},
+%%             Table2 = trans(ChildSite, remote_cell_link),
+%%             ok = case mnesia:select(Table2, [{Head3, [], ['$_']}], read) of
+%%                      [] -> ok = mnesia:delete({Table, {ChildSite, Parent}});
+%%                      _  -> ok % HN is still in use
+%%                  end,
+%%             PPage = Parent#refX{obj = {page, "/"}},
+%%             CPage = Child#refX{obj = {page, "/"}},
+%%             PUrl = hn_util:refX_to_url(PPage),
+%%             CUrl = hn_util:refX_to_url(CPage),
+%%             PV = hn_db_wu:read_page_vsn(ChildSite, Parent),
+%%             CV = hn_db_wu:read_page_vsn(ChildSite, Child),
+%%             PVsn = #version{page = PUrl, version = PV},
+%%             CVsn = #version{page = CUrl, version = CV},
+%%             Rec = #dirty_notify_back_in{parent = Parent, child = Child,
+%%                                         change = "unregister",
+%%                                         biccie = Biccie, parent_vsn = PVsn,
+%%                                         child_vsn = CVsn},
+%%             mark_dirty(ChildSite, Rec);
+%%         _  ->
+%%             ok
+%%     end.
 
 get_refs_below2(_RefX, _MinX, _MaxX, _Y) ->
     throw(get_refs_below2),
@@ -2725,8 +2723,8 @@ fl([H | T], A, B)                             -> fl(T, A, [H | B]).
 
 -spec delete_parent_links(#refX{}) -> ok.
 delete_parent_links(RefX) ->
-    ok = set_local_relations(RefX, []),
-    ok = delete_remote_parents(RefX).
+    ok = set_local_relations(RefX, []).
+    %%ok = delete_remote_parents(RefX).
 
 get_remote_parents(List) -> get_r_p(List, []).
 
@@ -2741,17 +2739,17 @@ get_r_c([], Acc) -> Acc;
 get_r_c([#remote_cell_link{child = C} | T], Acc) ->
     get_r_c(T, [C | Acc]).
 
-delete_remote_parents(#refX{site = Site} = Child) ->
-    Match = #remote_cell_link{child = Child, type = incoming, _ = '_'}, 
-    Table = trans(Site, remote_cell_link),
-    Parents = mnesia:match_object(Table, Match, read),
-     %% unregister the hypernumbers
-     delete_recs(Site, Parents),
-     Fun = fun(#remote_cell_link{parent = P, child = C}) ->
-                   unregister_inc_hn(P, C)
-           end,
-     [ok = Fun(X) || X <- Parents],
-     ok.
+%% delete_remote_parents(#refX{site = Site} = Child) ->
+%%     Match = #remote_cell_link{child = Child, type = incoming, _ = '_'}, 
+%%     Table = trans(Site, remote_cell_link),
+%%     Parents = mnesia:match_object(Table, Match, read),
+%%      %% unregister the hypernumbers
+%%      delete_recs(Site, Parents),
+%%      Fun = fun(#remote_cell_link{parent = P, child = C}) ->
+%%                    unregister_inc_hn(P, C)
+%%            end,
+%%      [ok = Fun(X) || X <- Parents],
+%%      ok.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Local Relations 
@@ -2826,12 +2824,10 @@ set_local_parents(Tbl,
     ParentIdxs = ordsets:from_list([get_local_item_index(P) || P <- Parents]),
     LostParents = ordsets:subtract(CurParents, ParentIdxs),
     [del_local_child(P, CellIdx, Tbl) || P <- LostParents],
-    Priorities = [add_local_child(P, CellIdx, Tbl) || P <- ParentIdxs],
-    Priority = lists:sum(Priorities) + 1,
-    Rel#relation{parents = ParentIdxs,
-                 priority = Priority}.
+    [ok = add_local_child(P, CellIdx, Tbl) || P <- ParentIdxs],
+    Rel#relation{parents = ParentIdxs}.
 
- %% Adds a new child to a parent, and returns that parents priority.            
+ %% Adds a new child to a parent.
 -spec add_local_child(cellidx(), cellidx(), atom()) -> integer().
 add_local_child(CellIdx, Child, Tbl) ->
     Rel = case mnesia:read(Tbl, CellIdx, write) of
@@ -2839,8 +2835,7 @@ add_local_child(CellIdx, Child, Tbl) ->
               [] -> #relation{cellidx = CellIdx}
           end,
     Children = ordsets:add_element(Child, Rel#relation.children),
-    ok = mnesia:write(Tbl, Rel#relation{children = Children}, write),
-    Rel#relation.priority.
+    mnesia:write(Tbl, Rel#relation{children = Children}, write).
 
 get_content_attrs(List) -> get_content_attrs(List, []).
 
@@ -3305,7 +3300,7 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     %% * reads the old set of remote links:
     %%   - writes any remote links that aren't already there
     %%   - deletes any remote links that are no longer there
-    {NewLocPs, NewRemotePs} = split_local_remote(Parents),
+    {NewLocPs, _NewRemotePs} = split_local_remote(Parents),
 
     %% write the formula
     ok = write_attr3(RefX, {"formula", Formula}), 
@@ -3329,31 +3324,31 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
     %% formula I don't want to first delete the old link (and trigger
     %% an UNREGISTRATION of the hypernumbers) and then REWRITE the
     %% same remote link and trigger a REGISTRATION so I first read the links
-    OldRemotePs = read_remote_parents(RefX, incoming),
-    ok = update_rem_parents(RefX, OldRemotePs, NewRemotePs),
+    %OldRemotePs = read_remote_parents(RefX, incoming),
+    %ok = update_rem_parents(RefX, OldRemotePs, NewRemotePs),
 
     %% We need to know the calculcated value
-    [{_RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"], read),
+    %%[{_RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"], read),
 
     %% mark this cell as a possible dirty hypernumber
-    mark_notify_out_dirty(RefX, {new_value, RawValue, DepTree}),
+    %mark_notify_out_dirty(RefX, {new_value, RawValue, DepTree}),
     ok.
 
-split_parents(Old, New) -> split_parents1(lists:sort(Old),
-                                          lists:sort(New), {[],[]}).
+%% split_parents(Old, New) -> split_parents1(lists:sort(Old),
+%%                                           lists:sort(New), {[],[]}).
 
-%% if we have run out of OldParents stick the rest of the News on the Write Acc
-split_parents1([], New, {D, W}) ->
-    {D, lists:merge([New, W])};
-%% if NewParents have run out stick the rest of the Olds on the Delete Acc
-split_parents1(Old, [], {D, W}) ->
-    {lists:merge([Old, D]), W};
-%% if the same record appears in Old and New neither delete nor write
-split_parents1([H | T1], [H | T2], Acc) ->
-    split_parents1(T1, T2, Acc);
-%% for every unique old record - delete it
-split_parents1([H | T], New, {D, W}) ->
-    split_parents1(T, New, {[H | D], W}).
+%% %% if we have run out of OldParents stick the rest of the News on the Write Acc
+%% split_parents1([], New, {D, W}) ->
+%%     {D, lists:merge([New, W])};
+%% %% if NewParents have run out stick the rest of the Olds on the Delete Acc
+%% split_parents1(Old, [], {D, W}) ->
+%%     {lists:merge([Old, D]), W};
+%% %% if the same record appears in Old and New neither delete nor write
+%% split_parents1([H | T1], [H | T2], Acc) ->
+%%     split_parents1(T1, T2, Acc);
+%% %% for every unique old record - delete it
+%% split_parents1([H | T], New, {D, W}) ->
+%%     split_parents1(T, New, {[H | D], W}).
 
 split_local_remote(List) -> split_local_remote1(List, {[], []}).
 
