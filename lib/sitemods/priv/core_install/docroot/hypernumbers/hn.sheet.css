@@ -225,6 +225,9 @@ p { margin: 0px 0px 8px 0px; }
 #pagebar div:hover {
 	color: #334bf9;
 }
+#newpage { 
+    width:270px;
+}
 #pdclose {
     color : red;
 }
