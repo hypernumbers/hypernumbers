@@ -1611,9 +1611,16 @@ table, tr, td { margin:0px; padding: 0px; border:0px; }
     display: none;
 }
 
+.dragging .droppable {
+    background:#FAFF68 !important;
+}
+
 .droppable { 
     min-height: 20px;
-    padding:5px;
+}
+
+form.droppable { 
+    padding: 0px 5px;
 }
 
 #viewexists span {
@@ -1625,4 +1632,9 @@ table, tr, td { margin:0px; padding: 0px; border:0px; }
 
 #viewexists #overwrite {
     margin-right: 150px;
+}
+
+.help { 
+    background: #FFBBC3 url(/img/help.png) no-repeat 5px 5px;
+    padding: 5px 5px 5px 25px;
 }

@@ -1,3 +1,5 @@
+#hnbody { height:100%; }
+
 #hnbody { 
     width       : 90%;
     margin      : 0px auto;
@@ -6,17 +8,17 @@
     font : 12px verdana, Arial, sans-serif;
 }
 
-table {  
+#hnbody table {  
     border-collapse: collapse;
     width  : 100%;
     height : 100%;
 }
 
-p { 
+#hnbody p { 
     margin: 0px;
 }
 
-input[type=text], textarea { 
+#hnbody input[type=text], textarea { 
     margin-top:2px;
     margin-bottom: 10px;
     border-width:1px;
@@ -25,36 +27,47 @@ input[type=text], textarea {
     padding: 2px;
 }
 
-input[type=text]:focus, textarea:focus { 
+/* #hnbody form .droppable {  */
+/*     margin:5px; */
+/* } */
+
+#hnbody input[type=text]:focus, textarea:focus { 
     background:#F9F9F9;
 }
     
-input[type=text] {
+#hnbody input[type=text] {
     width: 200px;
 }
 
-textarea { 
+#hnbody textarea { 
     width: 300px;
 }
 
-.hn { 
-    position:relative;
+#hnbody form.hn { 
+    padding-right:20px;
+}
+
+#hnbody .droppable {
     margin: 5px 0px;
 }
 
-form .hn { 
+#hnbody .hn { 
+    position:relative;
+}
+
+#hnbody form .hn { 
     margin: 0px;
 }
 
-form.hn { 
+#hnbody form.hn { 
     margin: 20px;
 }
 
-input[type=submit] { 
+#hnbody input[type=submit] { 
     padding: 4px 8px;
 }
 
-.inputrequired { 
+#hnbody .inputrequired { 
     background:red;
     color:white;
     font-size:11px;
@@ -66,6 +79,17 @@ input[type=submit] {
     left: 150px;
 }
 
-.error input, .error textarea, .error input:focus, .error textarea:focus {
+#hnbody .error input,#hnbody .error textarea,
+#hnbody .error input:focus,#hnbody .error textarea:focus {
     background:#FDAAAA;
 }
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.clearfix {display: inline-block;} 
