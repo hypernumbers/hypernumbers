@@ -37,6 +37,11 @@ p { margin: 0px 0px 10px 0px; }
     padding: 2px;
 }
 
+#hnbody input[type=checkbox], #hnbody input[type=radio] {
+    position:relative;
+    top:3px;
+}
+
 /* #hnbody form .droppable {  */
 /*     margin:5px; */
 /* } */
