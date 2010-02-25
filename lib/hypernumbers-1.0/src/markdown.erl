@@ -41,12 +41,12 @@
 %%%   - horizontal rules
 %%% the parser then does its magic interpolating the references as appropriate
 conv(String) -> Lex = lex(String),
-                % io:format("Lex is ~p~n", [Lex]),
+                %io:format("Lex is ~p~n", [Lex]),
                 UntypedLines = make_lines(Lex),
-                % io:format("UntypedLines are ~p~n", [UntypedLines]),
+                %io:format("UntypedLines are ~p~n", [UntypedLines]),
                 {TypedLines, Refs} = type_lines(UntypedLines),
-                % io:format("TypedLines are ~p~nRefs is ~p~n",
-                %         [TypedLines, Refs]),
+                %io:format("TypedLines are ~p~nRefs is ~p~n",
+                %%         [TypedLines, Refs]),
                 parse(TypedLines, Refs).
                 
 conv_file(FileIn, FileOut) ->
@@ -81,6 +81,10 @@ write(File, Text) ->
 %%% Parse the lines interpolating the references as appropriate
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% SPECIAL HYPERNUMBERS PARSE - dont markdown a single normal line
+% parse([{normal, P} | []], []) -> make_str(P, []);
+%% COMMENTED OUT FOR GITHUB RELEASE
 parse(TypedLines, Refs) ->
     string:strip(p1(TypedLines, Refs, 0, []), both, $\n).
 
@@ -545,10 +549,6 @@ is_block_tag("ol")         -> true;
 is_block_tag("p")          -> true;
 is_block_tag("pre")        -> true;
 is_block_tag("table")      -> true;
-is_block_tag("tbody")      -> true;
-is_block_tag("thead")      -> true;
-is_block_tag("tr")         -> true;
-is_block_tag("td")         -> true;
 is_block_tag("ul")         -> true;
 is_block_tag(_Other)       -> false.
 
@@ -1202,4 +1202,11 @@ interpolate3([H | T], D, Tag1, Tag2, X, Acc) ->
 %%%
 %%%-------------------------------------------------------------------
 
-% -include("markdown_tests.erl").
+%% we use a (very slightly) patched version which does no mark down if the input
+%% consists of a single line of text, so all the tests are written to be at
+%% least two lines just to stop all the unit tests breaking when we patch
+%% the code for our implementation
+%% Gordon Guthrie
+%% (our patch is the first commented out clause of the function parse/1)
+
+-include("markdown_tests").
