@@ -1239,7 +1239,7 @@ p { margin: 0px 0px 8px 0px; }
 
 #preview {  
     position:absolute;
-    top:74px;
+    top:91px;
     bottom: 25px;
     width:100%;
     overflow:auto;
@@ -1584,7 +1584,7 @@ table, tr, td { margin:0px; padding: 0px; border:0px; }
 
 #viewbuildertoolbar { 
     background    : #FFB329;
-    height        : 72px;
+    height        : 89px;
     overflow      : hidden;
     border-bottom : 1px solid #999;
     border-top    : 1px solid #ddd;
