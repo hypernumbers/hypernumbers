@@ -508,33 +508,35 @@ ipost(#refX{site = Site, path=["_user"]}, _Qry,
     ok = hn_users:update(Site, User, "language", Lang),
     json(Req, "success");
 
-ipost(#refX{site = S, path = P}, _Qry, 
+ipost(#refX{site = S, path = P}, Qry, 
       Req=#req{body = [{"set", {struct, [{"list", {array, Array}}]}}], 
-               auth_req = Ar,
+               auth_req = PosterAr,
                user = User}) ->
+    ViewAr = get_view_ar(Qry#qry.view, S, PosterAr),
     ok = status_srv:update_status(User, S, P, "edited page"),
     {Lasts, Refs} = fix_up(Array, S, P),
-    ok = hn_db_api:write_last(Lasts, Ar),
-    ok = hn_db_api:write_attributes(Refs, Ar),
+    ok = hn_db_api:write_last(Lasts, PosterAr, ViewAr),
+    ok = hn_db_api:write_attributes(Refs, PosterAr, ViewAr),
     json(Req, "success");
 
-ipost(#refX{site = S, path = P, obj = O} = Ref, _Qry, 
+ipost(#refX{site = S, path = P, obj = O} = Ref, Qry, 
       Req=#req{body = [{"set", {struct, Attr}}], 
-               auth_req = Ar,
+               auth_req = PosterAr,
                user = User}) ->
     Type = element(1, O),
+    ViewAr = get_view_ar(Qry#qry.view, S, PosterAr),
     ok = status_srv:update_status(User, S, P, "edited page"),
     case Attr of
         %% TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
-            post_range_values(Ref, Vals, Ar);
+            post_range_values(Ref, Vals, PosterAr, ViewAr);
 
         %% if posting a formula to a row or column, append
         [{"formula", Val}] when Type == column; Type == row ->
-            ok = hn_db_api:write_last([{Ref, Val}], Ar);
+            ok = hn_db_api:write_last([{Ref, Val}], PosterAr, ViewAr);
 
         _Else ->
-            ok = hn_db_api:write_attributes([{Ref, Attr}], Ar)
+            ok = hn_db_api:write_attributes([{Ref, Attr}], PosterAr, ViewAr)
     end,
     json(Req, "success");
 
@@ -714,7 +716,14 @@ ipost(Ref, Qry, Req) ->
 %%% Helpers
 %%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+
+get_view_ar(undefined, _Site, Poster) -> Poster; 
+get_view_ar("_g/core/spreadsheet", _Site, Poster) -> Poster;
+get_view_ar(View, Site, _Poster) ->
+    {ok, [Meta]} = file:consult([viewroot(Site), "/", View, ".meta"]),
+    proplists:get_value(authreq, Meta).
+
+
 %% Some clients dont send ip in the host header
 get_real_uri(Req) ->
     Host = case Req:get_header_value("HN-Host") of
@@ -812,19 +821,19 @@ from(Key, List) ->
     {value, {Key, Value}} = lists:keysearch(Key, 1, List),
     Value.
 
-post_range_values(Ref, Values, Ar) ->
+post_range_values(Ref, Values, PAr, VAr) ->
     F = fun({array, Vals}, Acc) -> 
-                post_column_values(Ref, Vals, Ar, Acc), Acc+1 
+                post_column_values(Ref, Vals, PAr, VAr, Acc), Acc+1 
         end,
     lists:foldl(F, 0, Values).
 
-post_column_values(Ref, Values, Ar, Offset) ->
+post_column_values(Ref, Values, PAr, VAr, Offset) ->
     #refX{obj={range,{X1, Y1, _X2, _Y2}}} = Ref,
     F = fun("", Acc)  -> Acc+1;
            (Val, Acc) -> 
                 NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
                 ok = hn_db_api:write_attributes([{NRef, [{"formula", Val}]}], 
-                                                Ar),
+                                                PAr, VAr),
                 Acc+1 
         end,
     lists:foldl(F, 0, Values).

@@ -97,8 +97,8 @@
 
 -export([
          write_attributes/1,
-         write_attributes/2,
-         write_last/2,
+         write_attributes/3,
+         write_last/3,
          read_last/1,
          % write_permission/2,
          write_style_IMPORT/2,
@@ -710,10 +710,10 @@ notify_back_create(Site, Record)
 %% </ul>
 
 write_attributes(List) ->
-    write_attributes(List, nil).
-write_attributes(List, Ar) ->
+    write_attributes(List, nil, nil).
+write_attributes(List, PAr, VAr) ->
     Fun = fun() ->
-                  [ok = write_attributes1(RefX, L, Ar) 
+                  [ok = write_attributes1(RefX, L, PAr, VAr) 
                    || {RefX, L} <- List],
                   ok
           end,
@@ -749,8 +749,8 @@ write_attributes(List, Ar) ->
 %% write_last uses a match on the first element to enforce the fact that
 %% all refs are on the same page - this won't work with an empty list, so
 %% write a special clause for that case....
-write_last([], _Ar) -> ok;
-write_last(List, Ar) when is_list(List) ->
+write_last([], _PAr, _VAr) -> ok;
+write_last(List, PAr, VAr) when is_list(List) ->
     % all the refX's in the list must have the same site/path/object type
     % so get those from the head of the list and enforce it by matching down
     % --> at FORCE ME!
@@ -784,8 +784,8 @@ write_last(List, Ar) when is_list(List) ->
                                       column -> {cell, {IdxX, PosY}}
                                   end,
                             RefX2 = #refX{site = S1, path = P1, obj = Obj},
-                            hn_db_wu:write_attr(RefX2, {"formula", Val}, Ar),
-                            hn_db_wu:mark_children_dirty(RefX2, Ar)
+                            hn_db_wu:write_attr(RefX2, {"formula", Val}, PAr),
+                            hn_db_wu:mark_children_dirty(RefX2, VAr)
                     end,
                 [Fun1(X) || X <- List]
 
@@ -1304,11 +1304,11 @@ biggest(List, Type) ->
           end,
     lists:foldl(Fun, StartAcc, List).
 
-write_attributes1(RefX, List, Ar) 
+write_attributes1(RefX, List, PAr, VAr) 
   when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),
-    [hn_db_wu:write_attr(RefX, X, Ar) || X <- List],
-    ok = hn_db_wu:mark_children_dirty(RefX, Ar).
+    [hn_db_wu:write_attr(RefX, X, PAr) || X <- List],
+    ok = hn_db_wu:mark_children_dirty(RefX, VAr).
 
 -spec copy_cell(#refX{}, #refX{}, 
                 false | horizontal | vertical,
