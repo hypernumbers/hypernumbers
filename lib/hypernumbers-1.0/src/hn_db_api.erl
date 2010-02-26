@@ -98,7 +98,7 @@
 -export([
          write_attributes/1,
          write_attributes/2,
-         write_last/1,
+         write_last/2,
          read_last/1,
          % write_permission/2,
          write_style_IMPORT/2,
@@ -749,8 +749,8 @@ write_attributes(List, Ar) ->
 %% write_last uses a match on the first element to enforce the fact that
 %% all refs are on the same page - this won't work with an empty list, so
 %% write a special clause for that case....
-write_last([]) -> ok;
-write_last(List) when is_list(List) ->
+write_last([], _Ar) -> ok;
+write_last(List, Ar) when is_list(List) ->
     % all the refX's in the list must have the same site/path/object type
     % so get those from the head of the list and enforce it by matching down
     % --> at FORCE ME!
@@ -784,7 +784,8 @@ write_last(List) when is_list(List) ->
                                       column -> {cell, {IdxX, PosY}}
                                   end,
                             RefX2 = #refX{site = S1, path = P1, obj = Obj},
-                            hn_db_wu:write_attr(RefX2, {"formula", Val})
+                            hn_db_wu:write_attr(RefX2, {"formula", Val}, Ar),
+                            hn_db_wu:mark_children_dirty(RefX2, Ar)
                     end,
                 [Fun1(X) || X <- List]
 

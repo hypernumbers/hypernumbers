@@ -514,7 +514,7 @@ ipost(#refX{site = S, path = P}, _Qry,
                user = User}) ->
     ok = status_srv:update_status(User, S, P, "edited page"),
     {Lasts, Refs} = fix_up(Array, S, P),
-    ok = hn_db_api:write_last(Lasts),
+    ok = hn_db_api:write_last(Lasts, Ar),
     ok = hn_db_api:write_attributes(Refs, Ar),
     json(Req, "success");
 
@@ -531,7 +531,7 @@ ipost(#refX{site = S, path = P, obj = O} = Ref, _Qry,
 
         %% if posting a formula to a row or column, append
         [{"formula", Val}] when Type == column; Type == row ->
-            ok = hn_db_api:write_last([{Ref, Val}]);
+            ok = hn_db_api:write_last([{Ref, Val}], Ar);
 
         _Else ->
             ok = hn_db_api:write_attributes([{Ref, Attr}], Ar)
