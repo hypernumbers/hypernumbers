@@ -248,6 +248,7 @@ p { margin: 0px 0px 8px 0px; }
 }
 
 #hn #menuwrap { 
+    background: #FFF;
     overflow:auto;
 }
 
@@ -447,6 +448,7 @@ p { margin: 0px 0px 8px 0px; }
 	    CELLS
 ******************************************************************************/
 #spreadsheet { 
+    background: #FFF;
     position : relative;
 }
 
