@@ -1,0 +1,4 @@
+{["/","/poll/"],
+ [[{binding,"input",[],"/poll/C:C"},
+   {binding,"radio","/poll/D3:D4","/poll/B:B"},
+   {binding,"select","/poll/C3:C5","/poll/A:A"}]]}.

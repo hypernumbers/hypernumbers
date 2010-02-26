@@ -28,6 +28,10 @@ p { margin: 0px 0px 10px 0px; }
     margin: 0px;
 }
 
+#hnbody select, #hnbody .radio { 
+    margin-bottom: 10px;
+}
+
 #hnbody input[type=text], #hnbody textarea { 
     margin-top:2px;
     margin-bottom: 10px;

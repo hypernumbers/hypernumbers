@@ -186,7 +186,7 @@ provision(CurrentSite, Port, Row, State) ->
             S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site "
                 "at:~n~n ~s~n~nTo make changes to the site follow the "
                 "instructions on the main page"
-                "~n~nYour Username:     ~s     Your Password:"
+                "~n~nYour Username:     ~s     ~nYour Password:"
                 "     ~s~n~nThanks for signing up, "
                 "hope you enjoy your tiny site!~n~n"
                 "When you've finished customising your site don't forget "
