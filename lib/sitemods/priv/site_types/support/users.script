@@ -1,0 +1,5 @@
+%%-*-erlang-*-
+{{user, '$user'},
+ {group, ["admin", "tiny_poll"]},
+ {email, '$email'},
+ {password, '$password'}}.

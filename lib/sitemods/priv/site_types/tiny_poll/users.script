@@ -1,17 +1,5 @@
 %%-*-erlang-*-
-%% This script allows for the creation of new users
-%% The basic form is:
-%% ({user, "the user name",
-%%   {email, "user@example.com"},
-%%   {groups, ["a group", "another group"]},
-%%   {password, "a password"}}.
-%% There are 3 programmatic expressions:
-%% {user, '$user'}
-%% {email, '$email'}
-%% {password, '$password'}
-
-%% (At the moment nothing is done with e-mail
 {{user, '$user'},
- {group, ["admin", "tiny_poll"]},
+ {group, ["admin"]},
  {email, '$email'},
  {password, '$password'}}.

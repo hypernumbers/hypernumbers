@@ -20,16 +20,17 @@
 %-export([backup, move, delete, etc...]).
 
 %% Exports a site as a sitemod that can be loaded by a factory
--spec export_as_sitemod(list(), list()) -> ok.
+-spec export_as_sitemod(atom(), list()) -> ok.
 export_as_sitemod(NewType, Site) ->
     
     SiteType = join([code:lib_dir(sitemods), "priv", "site_types"]),
     OldType  = hn_setup:get_site_type(Site),
-    
+
     % TODO, this might be ok, but need support for exporting
-    % and importing users
-    file:copy(join([SiteType, OldType, "users.script"]),
-              join([SiteType, NewType, "users.script"])),
+    % and importing users (dont copy if the same file)
+    (OldType =/= NewType) andalso
+        file:copy(join([SiteType, OldType, "users.script"]),
+                  join([SiteType, NewType, "users.script"])),
     
     ok = export_site(join([SiteType, NewType]), Site),
     ok = hn_util:recursive_copy(join([SiteType, NewType,"etf"]),
