@@ -1049,13 +1049,13 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp, Ar) ->
     
     % now notify all parents and children of all cells on
     % this page
-    PageRef = RefX#refX{obj = {page, "/"}},
+    % PageRef = RefX#refX{obj = {page, "/"}},
     
     % OK all our local stuff is sorted, now lets deal with the remote
     % children
-    Change = {insert, Obj, Disp},
+    % Change = {insert, Obj, Disp},
     % set the delay to zero
-    ok = hn_db_wu:mark_notify_out_dirty(PageRef, Change, 0),
+    % ok = hn_db_wu:mark_notify_out_dirty(PageRef, Change, 0),
     
     %% Status = lists:flatten([Status1, Status2]),
 
