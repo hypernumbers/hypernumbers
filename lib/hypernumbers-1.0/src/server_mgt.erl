@@ -13,11 +13,35 @@
 -include("spriki.hrl").
 
 -export([export/1, export/2,
-         import/1, import/2]).
+         import/1, import/2,
+         export_as_sitemod/2 ]).
 
 %% Auxillary functions.
 %-export([backup, move, delete, etc...]).
 
+%% Exports a site as a sitemod that can be loaded by a factory
+-spec export_as_sitemod(list(), list()) -> ok.
+export_as_sitemod(NewType, Site) ->
+    
+    SiteType = join([code:lib_dir(sitemods), "priv", "site_types"]),
+    OldType  = hn_setup:get_site_type(Site),
+    
+    % TODO, this might be ok, but need support for exporting
+    % and importing users
+    file:copy(join([SiteType, OldType, "users.script"]),
+              join([SiteType, NewType, "users.script"])),
+    
+    ok = export_site(join([SiteType, NewType]), Site),
+    ok = hn_util:recursive_copy(join([SiteType, NewType,"etf"]),
+                                join([SiteType, NewType, "data"])),
+    
+    % Delete backup things
+    [ file:delete( join([SiteType, NewType,  File]) )
+      || File <- ["type", "mnesia.backup"] ],
+    [ hn_util:delete_directory( join([SiteType, NewType, Dir]) )
+      || Dir <- [["etf"], ["views", "_g", "core"]] ],
+    ok. 
+    
 %% Export sites to the given directory.
 export(Dest) ->
     Sites = hn_setup:get_sites(),
@@ -25,22 +49,21 @@ export(Dest) ->
 %% Export the provided subset of sites to the destination directory.
 %% Sites are expected in leading protocol form.
 export(Dest, Sites) ->
-    filelib:ensure_dir([Dest,"/"]),
-    [ok = export_site(Dest, S) || S <- Sites,
-                                  hn_setup:site_exists(S)],
+    [ ok = export_site(join([Dest, hn_util:site_to_fs(S)]), S)
+      || S <- Sites, hn_setup:site_exists(S)],
     ok.
+
 export_site(Dest, Site) ->
-    SiteDest = filename:join(Dest, hn_util:site_to_fs(Site)),
-    filelib:ensure_dir([SiteDest,"/"]),
-    ok = dump_type(Site, SiteDest),
-    ok = dump_etf(Site, SiteDest),
-    ok = dump_mnesia(Site, SiteDest),
-    ok = dump_perms(Site, SiteDest),
-    ok = dump_views(Site, SiteDest).
+    filelib:ensure_dir([Dest,"/"]),
+    ok = dump_type(Site, Dest),
+    ok = dump_etf(Site, Dest),
+    ok = dump_mnesia(Site, Dest),
+    ok = dump_perms(Site, Dest),
+    ok = dump_views(Site, Dest).
 
 dump_type(Site, SiteDest) ->
     Type = hn_setup:get_site_type(Site),
-    {ok, F} = file:open(filename:join(SiteDest, "type"), [write]),
+    {ok, F} = file:open(join([SiteDest, "type"]), [write]),
     io:format(F, "~p.", [Type]),
     file:close(F).
 
@@ -50,8 +73,8 @@ dump_etf(Site, SiteDest) ->
     Ref = hn_util:parse_url(Site),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
     Paths = hn_db_api:read_pages(Ref),
-    Pages = [Encoder(hn_mochi:page_attributes(Ref#refX{path = P}, anonymous)) || 
-                P <- Paths],
+    Pages = [Encoder(hn_mochi:page_attributes(Ref#refX{path = P}, anonymous))
+             || P <- Paths],
     [ok = file:write_file(
             filename:join(EtfDest, hn_util:path_to_json_path(Path)), 
             io_lib:format("~s", [lists:flatten(Page)])) || 
@@ -70,9 +93,9 @@ dump_perms(Site, SiteDest) ->
                          Perms).
 
 dump_views(Site, SiteDest) -> 
-    ViewDest = filename:join(SiteDest, "views"),
-    SiteFs = hn_util:site_to_fs(Site),
-    Source = filename:join(["var", "sites", SiteFs, "views"]),
+    ViewDest = join([SiteDest, "views"]),
+    SiteFs   = hn_util:site_to_fs(Site),
+    Source   = join(["var", "sites", SiteFs, "views"]),
     hn_util:recursive_copy(Source, ViewDest).
 
 
@@ -89,39 +112,41 @@ import(Src, Sites) ->
     [ok = import_site(Src, S) || S <- Sites],
     ok.
 import_site(Src, Site) ->
-    SiteSrc = filename:join(Src, hn_util:site_to_fs(Site)),
-    Type = load_type(SiteSrc),
+    SiteSrc = join([Src, hn_util:site_to_fs(Site)]),
+    Type    = load_type(SiteSrc),
     ok = hn_setup:site(Site, Type, []),
     ok = load_etf(Site, SiteSrc),
     ok = load_views(Site, SiteSrc),
     ok = load_perms(Site, SiteSrc).
 
 load_type(SiteSrc) ->
-    {ok, [Type]} = file:consult(filename:join(SiteSrc, "type")),
+    {ok, [Type]} = file:consult(join([SiteSrc, "type"])),
     Type.
 
 load_etf(Site, SiteSrc) ->
-    EtfSrc = filename:join(SiteSrc, "etf"),
-    Jsons = filelib:wildcard("path.*.json", EtfSrc),
-    Paths = [hn_util:list_to_path(
-               string:tokens(
-                 filename:basename(P, ".json"), 
-                 "."
-                )) || "path."++P <- Jsons],
-    [ok = hn_import:json_file(Site++Path, filename:join(EtfSrc, Json)) ||
+    EtfSrc = join([SiteSrc, "etf"]),
+    Jsons  = filelib:wildcard("path.*.json", EtfSrc),
+    Paths  = [hn_util:list_to_path(
+                string:tokens(
+                  filename:basename(P, ".json"), 
+                  "."
+                 )) || "path."++P <- Jsons],
+    [ok = hn_import:json_file(Site++Path, join([EtfSrc, Json])) ||
         {Json, Path} <- lists:zip(Jsons, Paths)],
     ok.
         
 load_views(Site, SiteSrc) ->
     SiteFs = hn_util:site_to_fs(Site),
-    Source = filename:join(SiteSrc, "views"),
-    Dest = filename:join(["var", "sites", SiteFs, "views"]),
+    Source = join([SiteSrc, "views"]),
+    Dest   = join(["var", "sites", SiteFs, "views"]),
     hn_util:recursive_copy(Source, Dest).
 
 load_perms(Site, SiteSrc) ->
     {ok, Perms} = file:consult(filename:join(SiteSrc, "permissions.script")),
     auth_srv2:load_script(Site, Perms).
 
+join(FileName) ->
+    filename:join(FileName).
 %% -spec grab_as_site_type(list(), list()) -> ok.
 %% grab_as_site_type(URL, SiteType) ->
 %%     {GrabPrefix, GrabDir} = parse_url_for_grab(URL),
