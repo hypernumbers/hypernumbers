@@ -719,9 +719,14 @@ ipost(Ref, Qry, Req) ->
 
 get_view_ar(undefined, _Site, Poster) -> Poster; 
 get_view_ar("_g/core/spreadsheet", _Site, Poster) -> Poster;
-get_view_ar(View, Site, _Poster) ->
-    {ok, [Meta]} = file:consult([viewroot(Site), "/", View, ".meta"]),
-    proplists:get_value(authreq, Meta).
+get_view_ar(_View, _Site, _Poster) ->
+    %%
+    %%
+    %% DIRTY HACK!!!!
+    %%
+    %% {ok, [Meta]} = file:consult([viewroot(Site), "/", View, ".meta"]),
+    %% proplists:get_value(authreq, Meta).
+    nil.
 
 
 %% Some clients dont send ip in the host header
