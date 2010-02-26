@@ -38,7 +38,7 @@ export_as_sitemod(NewType, Site) ->
     % Delete backup things
     [ file:delete( join([SiteType, NewType,  File]) )
       || File <- ["type", "mnesia.backup"] ],
-    [ hn_util:delete_directory( join([SiteType, NewType, Dir]) )
+    [ hn_util:delete_directory( join([SiteType, NewType, join(Dir)]) )
       || Dir <- [["etf"], ["views", "_g", "core"]] ],
     ok. 
     
