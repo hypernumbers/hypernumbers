@@ -3,15 +3,14 @@
 -module(hn_users).
 
 -export([
-         create/3,
-         create/4,
+         create/3, create/4, create/5, create_raw/5,
          delete/2,
          add_groups/3,
          remove_groups/3,
          login/4,
+         dump_script/1,
          exists/2,
          gen_authtoken/2,
-         get_access_level/2,
          verify_token/2,
          update/4,
          get/2,
@@ -54,11 +53,24 @@ delete_all_users_DEBUG(Site) ->
     mnesia:clear_table(hn_db_wu:trans(Site, hn_user)).
 
 create(Site, Name, Pass) ->
-    create_user_exec(Site, #hn_user{name = Name, password = p(Pass)}).
-
+    create(Site, Name, [], Pass, dict:new()).
 create(Site, Name, Groups, Pass) ->
-    create_user_exec(Site, #hn_user{name = Name, password = p(Pass),
-                                    groups = Groups}).
+    create(Site, Name, Groups, Pass, dict:new()).
+create(Site, Name, Groups, Pass, Data) ->
+    create_raw(Site, Name, Groups, p(Pass), Data).
+
+create_raw(Site, Name, Groups, Pass, Data) ->
+    Rec = #hn_user{name = Name, 
+                   password = Pass,
+                   groups = Groups,
+                   data = Data},
+    Fun = fun() ->
+                  mnesia:write(hn_db_wu:trans(Site, hn_user), Rec, write) 
+          end,
+    case mnesia:transaction(Fun) of
+        {aborted, Reason} -> {error, Reason};
+        {atomic, ok}      -> ok = hn_setup:add_user(Site, Rec)
+    end.
 
 add_gr(Site, Name, Groups) ->
     {ok, #hn_user{groups = G} = User} = read(Site, Name),
@@ -77,6 +89,19 @@ remove_gr(Site, Name, Groups) ->
 
 remove_groups(Site, Name, Groups) ->
     mnesia:activity(transaction, fun remove_gr/3, [Site, Name, Groups]).
+
+-spec dump_script(string()) -> iodata(). 
+dump_script(Site) ->
+    Fun = fun(#hn_user{name = N, password = P, groups = G, 
+                       data = D, created = C}, Acc) ->
+                  Rec = [{name, N}, {password, P}, {groups, G},
+                         {data, D}, {created, C}],
+                  Print = io_lib:format("~p.~n", [Rec]),
+                  [Print | Acc]
+          end,
+    Tbl = hn_db_wu:trans(Site, hn_user),
+    Listing = mnesia:activity(transaction, fun mnesia:foldl/3, [Fun, [], Tbl]),
+    lists:flatten(Listing).
 
 delete_tr(Site, Name) ->
     {ok, User} = read(Site, Name),
@@ -182,15 +207,6 @@ gen_authtoken(#hn_user{name=Name}, Remember) ->
     Expires = expires(Remember),
     ?FORMAT("~s:~s:~s",[Expires, Name, gen_hash(Name, Expires)]).
 
-create_user_exec(Site, Rec) ->
-    Fun = fun() ->
-                  mnesia:write(hn_db_wu:trans(Site, hn_user), Rec, write) 
-          end,
-    case mnesia:transaction(Fun) of
-        {aborted, Reason} -> {error, Reason};
-        {atomic, ok}      -> ok = hn_setup:add_user(Site, Rec)
-    end.
-
 p(Pass) ->
     binary_to_list(crypto:md5(Pass)).
 
@@ -200,64 +216,3 @@ unix_timestamp(Now) ->
     calendar:datetime_to_gregorian_seconds( 
       calendar:now_to_universal_time(Now)) -
         calendar:datetime_to_gregorian_seconds({{1970,1,1},{0,0,0}}).
-
-%User   = {user,"username"},
-%Group  = {group,"groupname", [Users]}
-%Groups = [Groups]
-
-%% Given a user find the most elevated permission
-%% granted to that user
-get_access_level(Usr, #refX{site = Site, path = Path}) ->
-
-    User = case Usr of
-               anonymous -> anonymous;
-               _Else     -> Usr#hn_user.name
-           end,
-    
-    Default = case Path of ["u",User|_] -> write; _ -> no_access end,
-
-    SiteRef = #refX{site=Site, path=[]},
-    {ok, Groups}     = hn_db_api:read_inherited_value(SiteRef, "__groups", []),
-    {ok, Perms}      = hn_db_api:read_inherited_list(SiteRef, "__permissions"),
-    {ok, UserGroups} = get_usergroups(User, Groups, []),    
-    {ok, Levels}     = get_perms(User, UserGroups, Perms, [Default]),
-
-    F = fun(X,Y) -> pindex(X) > pindex(Y) end,
-    [ H | _Rest] = lists:sort(F, Levels),
-    {ok, H}.
-
-%% Get the list of groups a user is in
-get_usergroups(_User, [], Acc) ->
-    {ok, Acc};
-get_usergroups(User, [{Name, Members} | Rest], Acc) ->
-    case lists:member(User, Members) of 
-        true  -> get_usergroups(User, Rest, [Name | Acc]);
-        false -> get_usergroups(User, Rest, Acc)
-    end.
-
-%% get all permissions relating to a user or a group the user is in
-get_perms(_Name, _Groups, [], Acc) ->
-    {ok, Acc};
-get_perms(Name, Groups, [{user, Name, Access} | Rest], Acc) ->
-    get_perms(Name, Groups, Rest, [Access | Acc]);
-get_perms(Name, Groups, [{user, anonymous, Access} | Rest], Acc) ->
-    get_perms(Name, Groups, Rest, [Access | Acc]);
-get_perms(Name, Groups, [{user, logged_in, Access} | Rest], Acc) 
-  when Name /= anonymous ->
-    get_perms(Name, Groups, Rest, [Access | Acc]);
-get_perms(User, Groups, [{group, Name, Access} | Rest], Acc) ->
-    case lists:member(Name, Groups) of 
-        true  -> get_perms(User, Groups, Rest, [Access | Acc]);
-        false -> get_perms(User, Groups, Rest, Acc)
-    end;
-get_perms(Name, Groups, [_H | Rest], Acc) ->
-    get_perms(Name, Groups, Rest, Acc).
-
-%% Rank permission atoms in order of precedence
-pindex(no_access)           -> 0;
-pindex({protected_read,_X}) -> 1;
-pindex({protected_write,_X})-> 2;
-pindex(read)                -> 3;
-pindex(write)               -> 4;
-pindex(admin)               -> 5.
-
