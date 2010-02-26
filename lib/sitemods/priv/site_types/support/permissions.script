@@ -1,0 +1,58 @@
+%%-*-erlang-*-
+{add_view,[{path,[]},
+           {perms,[{group,"admin"},{group,"dev"}]},
+           {view,"_g/core/spreadsheet"}]}.
+{add_view,[{path,[]},
+           {perms,[{user,"dale"},{user,"gordon"},{group,"dev"},everyone]},
+           {view,"_u/dale/home"}]}.
+{champion,[{path,[]},{view,"_u/dale/home"}]}.
+{add_view,[{path,["**"]},
+           {perms,[{group,"admin"}]},
+           {view,"_g/core/spreadsheet"}]}.
+{add_view,[{path,["[**]"]},
+           {perms,[{group,"dev"}]},
+           {view,"_g/core/spreadsheet"}]}.
+{champion,[{path,["[**]"]},{view,"_g/core/spreadsheet"}]}.
+{add_view,[{path,["replies"]},
+           {perms,[{group,"admin"},everyone]},
+           {view,"_g/core/spreadsheet"}]}.
+{add_view,[{path,["u","dale"]},
+           {perms,[{user,"dale"}]},
+           {view,"_g/hypernumbers/userhome"}]}.
+{champion,[{path,["u","dale"]},{view,"_g/hypernumbers/userhome"}]}.
+{add_view,[{path,["u","dale","[**]"]},
+           {perms,[{user,"dale"}]},
+           {view,"_g/core/spreadsheet"}]}.
+{champion,[{path,["u","dale","[**]"]},{view,"_g/core/spreadsheet"}]}.
+{add_view,[{path,["u","gordon"]},
+           {perms,[{user,"gordon"}]},
+           {view,"_g/hypernumbers/userhome"}]}.
+{champion,[{path,["u","gordon"]},{view,"_g/hypernumbers/userhome"}]}.
+{add_view,[{path,["u","gordon","[**]"]},
+           {perms,[{user,"gordon"}]},
+           {view,"_g/core/spreadsheet"}]}.
+{champion,[{path,["u","gordon","[**]"]},{view,"_g/core/spreadsheet"}]}.
+{add_view,[{path,["u","stevie"]},
+           {perms,[{user,"stevie"}]},
+           {view,"_g/hypernumbers/userhome"}]}.
+{champion,[{path,["u","stevie"]},{view,"_g/hypernumbers/userhome"}]}.
+{add_view,[{path,["u","stevie","[**]"]},
+           {perms,[{user,"stevie"}]},
+           {view,"_g/core/spreadsheet"}]}.
+{champion,[{path,["u","stevie","[**]"]},{view,"_g/core/spreadsheet"}]}.
+{add_view,[{path,["u","tom"]},
+           {perms,[{user,"tom"}]},
+           {view,"_g/hypernumbers/userhome"}]}.
+{champion,[{path,["u","tom"]},{view,"_g/hypernumbers/userhome"}]}.
+{add_view,[{path,["u","tom","[**]"]},
+           {perms,[{user,"tom"}]},
+           {view,"_g/core/spreadsheet"}]}.
+{champion,[{path,["u","tom","[**]"]},{view,"_g/core/spreadsheet"}]}.
+{add_view,[{path,["u","user"]},
+           {perms,[{user,"user"}]},
+           {view,"_g/hypernumbers/userhome"}]}.
+{champion,[{path,["u","user"]},{view,"_g/hypernumbers/userhome"}]}.
+{add_view,[{path,["u","user","[**]"]},
+           {perms,[{user,"user"}]},
+           {view,"_g/core/spreadsheet"}]}.
+{champion,[{path,["u","user","[**]"]},{view,"_g/core/spreadsheet"}]}.
