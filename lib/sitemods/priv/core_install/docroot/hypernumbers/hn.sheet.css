@@ -850,7 +850,7 @@ p { margin: 0px 0px 8px 0px; }
  display:  none;
  position: absolute;
  border:   1px dashed #000;
- z-index:  1000;
+ z-index:    99998 ;
  overflow: visible;
 }
 
