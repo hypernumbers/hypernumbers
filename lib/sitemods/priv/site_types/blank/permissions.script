@@ -11,14 +11,14 @@
   {view, "_g/core/spreadsheet"}
  ]}.
 
-%% {add_view, 
-%%  [{path, ["[**]"]},
-%%   {perms, [{group, "admin"}]},
-%%   {view, "_g/core/spreadsheet"}
-%%  ]}.
+{add_view, 
+ [{path, ["[**]"]},
+  {perms, [{group, "admin"}]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
 
-%% {champion,
-%%  [{path, ["[**]"]},
-%%   {view, "_g/core/spreadsheet"}
-%%  ]}.
+{champion,
+ [{path, ["[**]"]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
 
