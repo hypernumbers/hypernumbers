@@ -6,7 +6,9 @@ body {
     margin : 0px;
 }
 
-p { margin: 0px 0px 10px 0px; }
+#hnbody p { margin: 0px 0px 10px 0px; }
+
+#hnbody table { margin: 0px 0px 10px 0px; }
 
 #hnbody { height:100%; }
 
