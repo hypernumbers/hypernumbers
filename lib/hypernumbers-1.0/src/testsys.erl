@@ -63,7 +63,7 @@ gen_test(Template, Fixture) ->
     {struct, HeadRow} = ?pget("1", Cells),
     {struct, A1} = ?pget("1", HeadRow),
 
-    Count = case ?pget("value", A1) of
+    Count = case ?pget("rawvalue", A1) of
                 "NOTESTS" -> 0;
                 Range ->                    
                     {range, {_,X1,_,X2}} = hn_util:parse_attr(Range),
