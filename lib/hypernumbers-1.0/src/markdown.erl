@@ -10,6 +10,7 @@
 -module(markdown).
 
 -export([conv/1,
+         conv_utf8/1,
          conv_file/2]).
 
 -import(lists, [flatten/1, reverse/1]).
@@ -48,6 +49,12 @@ conv(String) -> Lex = lex(String),
                 % io:format("TypedLines are ~p~nRefs is ~p~n",
                 %         [TypedLines, Refs]),
                 parse(TypedLines, Refs).
+
+-spec conv_utf8(list()) -> list().
+conv_utf8(Utf8) ->
+    Str = xmerl_ucs:from_utf8(Utf8),
+    Res = conv(Str),
+    xmerl_ucs:to_utf8(Res).    
                 
 conv_file(FileIn, FileOut) ->
     case file:open(FileIn, [read]) of
@@ -760,9 +767,9 @@ make_tag_str({{{tag, Type}, Tag}, _}) ->
 
 esc_tag(String) -> esc_t1(String, []).
 
-esc_t1([], Acc)        -> lists:reverse(Acc);
-esc_t1([160 | T], Acc) -> esc_t1(T, [32 | Acc]); % non-breaking space to space
-esc_t1([H | T], Acc)   -> esc_t1(T, [H | Acc]).
+esc_t1([], Acc)          -> lists:reverse(Acc);
+esc_t1([?NBSP | T], Acc) -> esc_t1(T, [?SPACE | Acc]); % non-breaking space to space
+esc_t1([H | T], Acc)     -> esc_t1(T, [H | Acc]).
                   
 %% if it is a list we need to discard the initial white space...
 make_list_str([{{ws, _}, _} | T] = List) ->
@@ -920,7 +927,7 @@ l1([$] | T], A1, A2)       -> l1(T, [], [{{inline, close}, "]"}, l2(A1) | A2]);
 %% that 'character' doesn't exist so isn't in the lexer but appears in the parser
 l1([?SPACE | T], A1, A2)   -> l1(T, [], [{{ws, sp}, " "}, l2(A1) | A2]);
 l1([?TAB | T], A1, A2)     -> l1(T, [], [{{ws, tab}, "\t"}, l2(A1) | A2]);
-% l1([?NBSP | T], A1, A2)    -> l1(T, [], [{{ws, sp}, "&nbsp"}, l2(A1) | A2]);
+l1([?NBSP | T], A1, A2)    -> l1(T, [], [{{ws, sp}, "&nbsp"}, l2(A1) | A2]);
 l1([?CR, ?LF | T], A1, A2) -> l1(T, [], [{{lf, crlf}, [?CR , ?LF]}, l2(A1) | A2]);
 l1([?LF | T], A1, A2)      -> l1(T, [], [{{lf, lf}, [?LF]}, l2(A1) | A2]);
 %% this final clause accumulates line fragments
@@ -1162,7 +1169,7 @@ htmlchars1([$` | T], A)              -> {T2, NewA} = code(T),
                                         htmlchars1(T2, [NewA | A]);
 htmlchars1([$& | T], A)              -> htmlchars1(T, ["&amp;" | A]);
 htmlchars1([$< | T], A)              -> htmlchars1(T, ["&lt;" | A]);
-% htmlchars1([?NBSP | T], A)           -> htmlchars1(T, ["&nbsp;" | A]);
+htmlchars1([?NBSP | T], A)           -> htmlchars1(T, ["&nbsp;" | A]);
 htmlchars1([?TAB | T], A)            -> htmlchars1(T, ["    " | A]);
 htmlchars1([none | T], A)            -> htmlchars1(T, A);
 htmlchars1([H | T], A)               -> htmlchars1(T, [H | A]).

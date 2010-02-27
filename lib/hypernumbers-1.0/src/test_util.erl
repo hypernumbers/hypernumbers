@@ -270,7 +270,7 @@ conv_for_no_reason(E) ->
                 _Other2 ->
                     case tconv:to_num(E) of
                         N when is_number(N) -> N;
-                        {error, nan}        -> markdown:conv(E)
+                        {error, nan}        -> markdown:conv_utf8(E)
                     end
             end
     end.

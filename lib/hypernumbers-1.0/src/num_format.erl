@@ -34,7 +34,7 @@ make_src(A)                 -> make_src2([A]).
 get_markdown() ->
     Src = "fun(X) -> "++
         "    if"++
-        "      "++?is_str++"     -> {auto, markdown:conv(X)};"++
+        "      "++?is_str++"     -> {auto, markdown:conv_utf8(X)};"++
         "      not(is_number(X)) -> {auto, X};"++
         "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++ 
         "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
@@ -45,7 +45,7 @@ get_markdown() ->
 get_general() ->
     Src = "fun(X) -> "++
         "    if"++
-        "      "++?is_str++"     -> {auto, markdown:conv(X)};"++
+        "      "++?is_str++"     -> {auto, markdown:conv_utf8(X)};"++
         "      not(is_number(X)) -> {auto, X};"++
         "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++ 
         "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
