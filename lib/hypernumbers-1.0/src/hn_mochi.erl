@@ -835,8 +835,7 @@ post_range_values(Ref, Values, PAr, VAr) ->
 
 post_column_values(Ref, Values, PAr, VAr, Offset) ->
     #refX{obj={range,{X1, Y1, _X2, _Y2}}} = Ref,
-    F = fun("", Acc)  -> Acc+1;
-           (Val, Acc) -> 
+    F = fun(Val, Acc) -> 
                 NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
                 ok = hn_db_api:write_attributes([{NRef, [{"formula", Val}]}], 
                                                 PAr, VAr),
