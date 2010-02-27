@@ -9,7 +9,7 @@ server {
 	      auth_basic            "Restricted";
 	      auth_basic_user_file  /etc/nginx/conf/.htpasswd;
 	      autoindex on;
-	      root   /home/hypernumbers/dev.hypernumbers.com;
+	      root   /home/hypernumbers/www/dev.hypernumbers.com;
         }
 
 
