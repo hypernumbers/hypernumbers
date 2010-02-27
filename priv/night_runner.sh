@@ -9,7 +9,8 @@ WEBROOT=www/dev.hypernumbers.com
 TESTDIR=hn_test_stage
 LASTRUN=$HOME/$WEBROOT/tests/last_run/
 
-ERL_CALL=/usr/local/lib/erlang/lib/erl_interface-3.6.1/bin/erl_call 
+## Really need to get rid of this
+ERL_CALL=/usr/local/lib/erlang/lib/erl_interface-3.6.4/bin/erl_call 
 COOKIE=abc
 TARGET=arrian@$(hostname)
 
