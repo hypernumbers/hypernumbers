@@ -1,9 +1,5 @@
 @import url(/templates/blank/default.css);
 
-body { 
-    background:#EEE;
-}
-
 #hnbody { 
     width:100%;
     padding:0px;
@@ -14,7 +10,6 @@ body {
 
 #hnbody #col-wrapper { 
     background:#FFF;
-    border:1px solid #999;
     width: 740px;
     margin:0px auto;
 }
