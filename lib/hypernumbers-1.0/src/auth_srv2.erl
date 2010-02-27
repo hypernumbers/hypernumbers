@@ -157,7 +157,8 @@ load_script(Site, Terms) ->
 %%--------------------------------------------------------------------
 init([Site]) ->
     Table = hn_util:site_to_fs(Site),
-    {ok, Dir} = application:get_env(hypernumbers, dets_dir),
+    Dir = filename:join([code:lib_dir(hypernumbers), "..", "..",
+                         "var", "dets"]),
     Trees = load_trees(Dir, Table),
     {ok, #state{site = Site,
                 table = Table,
@@ -259,8 +260,8 @@ handle_info(_Info, State) ->
 %% @spec terminate(Reason, State) -> void()
 %% @end
 %%--------------------------------------------------------------------
-terminate(_Reason, _State) ->
-    ok.
+terminate(_Reason, #state{table = Tbl}) ->
+    dets:close(Tbl).
 
 %%--------------------------------------------------------------------
 %% @private
@@ -432,6 +433,7 @@ tree(Site, Trees) ->
 
 -spec load_trees(string(), string()) -> gb_tree().
 load_trees(Dir, Table) ->
+    filelib:ensure_dir([Dir,"/"]),
     {ok, _} = dets:open_file(Table, [{file, filename:join(Dir,Table)}]),
     %% if the value of auth_tree is an empty list,
     %% create an empty tree and fire it in..

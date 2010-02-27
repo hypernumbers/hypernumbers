@@ -53,9 +53,8 @@ init([Site, Type]) ->
 %% about to terminate. It should be the opposite of Module:init/1 and stop
 %% the subsystem and do any necessary cleaning up.The return value is ignored.
 %%--------------------------------------------------------------------
-terminate(Reason, #state{table = T, pid = P}) ->
-    mnesia:unsubscribe({table, T, simple}),
-    exit(P, Reason).
+terminate(_Reason, #state{table = T}) ->
+    mnesia:unsubscribe({table, T, simple}).
 
 %%====================================================================
 %% Internal functions
