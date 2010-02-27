@@ -6,7 +6,7 @@ sites() -> ["http://127.0.0.1:9000"].
 actions() ->
     Url  = "http://127.0.0.1:9000/copynpaste/",
     Type = "application/json",
+    Accept = [{"Accept", "application/json"}],
     Data = "{\"copy\":{\"src\":\"http://127.0.0.1:9000/copynpaste/F4:F9\"}}",
-    http:request(post,{Url++"G5:G5", [{"Accept", "application/json"}],
-                       Type, Data}, [], []),
+    http:request(post,{Url++"G5:G5", Accept, Type, Data}, [], []),
     ok.

@@ -21,8 +21,7 @@
 {incl_mods, [hn_db_api, 
              hn_db_wu,
              hn_mochi,
-             horiz_api,
-             dirty_srv]}.
+             dirty_sup]}.
 
 %% Directories, including subdirectories, to include.
 %{incl_dirs_r, Dirs}

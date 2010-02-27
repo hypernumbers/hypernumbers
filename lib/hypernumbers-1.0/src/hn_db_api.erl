@@ -1254,11 +1254,9 @@ drag_n_drop(From, To, Ar)
                   case is_valid_d_n_d(From, To) of
                       {ok, 'onto self', _Incr} -> ok;
                       {ok, single_cell, Incr} -> 
-                          copy_cell(From, To, Incr, Ar),
-                          hn_db_wu:mark_children_dirty(To, Ar);  
+                          copy_cell(From, To, Incr, Ar);
                       {ok, cell_to_range, Incr} -> 
-                          copy2(From, To, Incr, Ar),
-                          hn_db_wu:mark_children_dirty(range_start(To), Ar)
+                          copy2(From, To, Incr, Ar)
                   end
           end,
     ok = mnesia:activity(transaction, Fun),
@@ -1317,7 +1315,8 @@ write_attributes1(RefX, List, PAr, VAr)
 copy_cell(From = #refX{site = Site, path = Path}, To, Incr, Ar) ->
     case auth_srv2:get_any_view(Site, Path, Ar) of
         {view, _} ->
-            hn_db_wu:copy_cell(From, To, Incr);
+            hn_db_wu:copy_cell(From, To, Incr),
+            hn_db_wu:mark_children_dirty(To, Ar);
         _ ->
             throw(auth_error)
     end.
@@ -1404,28 +1403,25 @@ extract_kvs1([{_R, KV} | T], Acc) -> extract_kvs1(T, [KV | Acc]).
 
 %% this clause copies whole pages
 copy_n_paste2(#refX{site = Site, obj = {page, "/"}} = From, 
-              #refX{site = Site, path = NewPath, obj = {page, "/"}} = To,
+              #refX{site = Site, path = NewPath, obj = {page, "/"}},
               Ar) ->
     Cells = hn_db_wu:get_cells(From),
-    [ok = copy_cell(X, X#refX{path = NewPath}, false, Ar) || X <- Cells],
-    hn_db_wu:mark_children_dirty(To, Ar);
+    [ok = copy_cell(X, X#refX{path = NewPath}, false, Ar) 
+     || X <- Cells],
+    ok;
 %% this clause copies bits of pages
 copy_n_paste2(From, To, Ar) ->
     case is_valid_c_n_p(From, To) of
         {ok, 'onto self'}    -> ok;
         {ok, single_cell}    -> 
-            ok = copy_cell(From, To, false, Ar),
-            hn_db_wu:mark_children_dirty(To, Ar);
+            ok = copy_cell(From, To, false, Ar);
         {ok, cell_to_range} -> 
-            copy2(From, To, false, Ar),
-            hn_db_wu:mark_children_dirty(range_start(To), Ar);
+            copy2(From, To, false, Ar);
         {ok, range_to_cell} -> 
             To2 = cell_to_range(To),
-            copy3(From, To2, false, Ar),
-            hn_db_wu:mark_children_dirty(To2, Ar);
+            copy3(From, To2, false, Ar);
         {ok, range_to_range} -> 
-            copy3(From, To, false, Ar),
-            hn_db_wu:mark_children_dirty(range_start(To), Ar)
+            copy3(From, To, false, Ar)
     end.
 
 cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
@@ -1464,7 +1460,8 @@ is_valid_d_n_d(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
 is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 
 %% cell to range
-copy2(From, To, Incr, Ar) when is_record(From, refX), is_record(To, refX) ->
+copy2(From, To, Incr, Ar) 
+  when is_record(From, refX), is_record(To, refX) ->
     List = hn_util:range_to_list(To),
     [copy_cell(From, X, Incr, Ar) || X <- List],
     ok.
@@ -1476,7 +1473,7 @@ copy3(From, To, Incr, Ar)
     TileList = get_tiles(From, To),
     copy3a(From, TileList, Incr, Ar).
 
-copy3a(_From, [], _Incr, _Ar) -> ok;
+copy3a(_From, [], _Incr, _Ar)   -> ok;
 copy3a(From, [H | T], Incr, Ar) -> 
     FromRange = hn_util:range_to_list(From),
     ToRange = hn_util:range_to_list(H),
@@ -1568,5 +1565,3 @@ is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {cell, _}}) ->
 is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
     {ok, range_to_range}.
 
-range_start(R=#refX{obj = {range, {SX, SY, _EX, _EY}}}) ->
-    R#refX{obj = {cell, {SX, SY}}}.

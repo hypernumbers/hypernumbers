@@ -29,8 +29,8 @@ sys(Suites) ->
     %% Setup Options
     SOpt = if Suites == [] -> [];
               true         -> [{suite, [S++"_SUITE" || S <- Suites]}] end,
-    Opts = [ {dir, [filename:absname(?SYSTEST_DIR)]}, 
-             {cover, filename:absname(?COVER_FILE)} ],
+    Opts = [ {dir, [filename:absname(?SYSTEST_DIR)]}
+             ],
 
     do_test(SOpt ++ Opts),
     
@@ -59,5 +59,7 @@ do_test(Opts) ->
     filelib:ensure_dir(filename:absname(?LOG_DIR)++"/"),
     DefaultOps = [{logdir, filename:absname(?LOG_DIR)}],
     ct:run_test(
-      lists:ukeymerge(
-        1, lists:keysort(1, Opts), lists:keysort(1, DefaultOps))).
+      lists:ukeymerge(1, 
+                      lists:keysort(1, Opts), 
+                      lists:keysort(1, DefaultOps))),
+    ok.

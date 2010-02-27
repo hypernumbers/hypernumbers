@@ -481,7 +481,8 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
      ok = hn_db_api:delete(Ref, Direction, Ar),
      json(Req, "success");
 
- ipost(Ref=#refX{obj = {range, _}}, _Qry,
+ ipost(Ref, 
+       _Qry,
        Req=#req{body=[{"copy", {struct, [{"src", Src}]}}],
                 auth_req = Ar}) ->
      ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, Ar),
