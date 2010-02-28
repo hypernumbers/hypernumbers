@@ -1,7 +1,7 @@
 server
 {
-    listen        80;
-    server_name   factory.hypernumbers.com;
+    listen        80 default;
+    server_name   factory.hypernumbers.com *.factory.hypernumbers.com;
  
     location / {
         proxy_pass              http://127.0.0.1:9090;
