@@ -211,14 +211,14 @@ make_float2(List)->
 hnget(Path, Cell) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Cell),
     Ref = hn_util:parse_url(Url),
-    Body = case hn_db_api:read_attributes(Ref,["value"]) of
-               [{_Ref, {"value", Val}}] when is_atom(Val) ->
+    Body = case hn_db_api:read_attributes(Ref,["rawvalue"]) of
+               [{_Ref, {"rawvalue", Val}}] when is_atom(Val) ->
                    atom_to_list(Val);
-	            [{_Ref, {"value", {datetime, D, T}}}] ->
+	            [{_Ref, {"rawvalue", {datetime, D, T}}}] ->
                    dh_date:format("Y/m/d H:i:s",{D,T});
-               [{_Ref, {"value", {errval, Val}}}] ->
+               [{_Ref, {"rawvalue", {errval, Val}}}] ->
                    atom_to_list(Val);
-               [{_Ref, {"value", Val}}] ->
+               [{_Ref, {"rawvalue", Val}}] ->
                    Val;
                _Else ->
                    ""
@@ -280,7 +280,7 @@ conv_for_no_reason(E) ->
                 _Other2 ->
                     case tconv:to_num(E) of
                         N when is_number(N) -> N;
-                        {error, nan}        -> markdown:conv_utf8(E)
+                        {error, nan}        -> E
                     end
             end
     end.
