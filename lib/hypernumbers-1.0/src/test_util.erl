@@ -208,13 +208,23 @@ make_float2(List)->
     end.
 
 -define(HNSERVER, "http://127.0.0.1:9000").
-
-hnget(Path, Ref) ->
-    Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
-    Type = "application/json",
-    {ok, {{_V, _Code, _R}, _H, Body}}
-        = http:request(get, {Url, [{"Accept", Type}]}, [], []),
-    string:strip(Body, both, $").
+hnget(Path, Cell) ->
+    Url = string:to_lower(?HNSERVER ++ Path ++ Cell),
+    Ref = hn_util:parse_url(Url),
+    Body = case hn_db_api:read_attributes(Ref,["value"]) of
+               [{_Ref, {"value", Val}}] when is_atom(Val) ->
+                   atom_to_list(Val);
+	            [{_Ref, {"value", {datetime, D, T}}}] ->
+                   dh_date:format("Y/m/d H:i:s",{D,T});
+               [{_Ref, {"value", {errval, Val}}}] ->
+                   atom_to_list(Val);
+               [{_Ref, {"value", Val}}] ->
+                   Val;
+               _Else ->
+                   ""
+           end,
+    if is_list(Body) -> string:strip(Body, both, $");
+       true            -> Body end.
   
 hnpost(Path, Ref, Postdata) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),

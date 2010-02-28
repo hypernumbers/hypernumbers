@@ -38,8 +38,7 @@ init_per_suite(Config) ->
     Config.
 
 reset_perms(Site) ->
-    View = "_global/spreadsheet",
-    auth_srv2:clear_all_perms_DEBUG(Site),
+    View = "_g/core/spreadsheet",
     auth_srv2:add_view(Site, [], [everyone], View),
     auth_srv2:add_view(Site, ["[**]"], [everyone], View),
     auth_srv2:set_champion(Site, [], View),
