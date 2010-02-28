@@ -20,6 +20,7 @@
 -define(SHEETVIEW, "_g/core/spreadsheet").
 -define(TWO_YEARS, 63113852).
 
+
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
     try 
@@ -28,11 +29,17 @@ handle(MochiReq) ->
         Qry = process_query(Req),
         handle_(Ref, Req, Qry)
     catch
+        ok          -> ok;
         exit:normal -> exit(normal); 
         Else        -> '500'(MochiReq, Else) 
     end.
 
 -spec handle_(#refX{}, #req{}, #qry{}) -> ok. 
+
+handle_(#refX{site="http://www."++Site}, R=#req{mochi=Mochi}, _Qry) ->
+    Redir = "http://" ++ strip80(Site) ++ Mochi:get(raw_path),
+    Redirect = {"Location", Redir},
+    respond(301, R#req{headers = [Redirect | R#req.headers]});
 
 handle_(#refX{path=["_ping"]}, Req, #qry{uid=Uid, return=Return}) 
   when Return /= undefined, Uid /= undefined ->
@@ -137,7 +144,9 @@ handle_ping(R=#req{mochi = Mochi}, Uid, Return) ->
                  %% precedence. So we tell the 'pinger' to use this
                  %% with a PONG request.
                  #refX{site = OrigSite} = hn_util:parse_url(Original),
-                 Redir = OrigSite++"/_pong/?uid="++OwnUid++"&return="++Return,
+                 Redir = strip80(OrigSite) ++ 
+                     "/_pong/?uid="++OwnUid ++
+                     "&return="++Return,
                  Redirect = {"Location", Redir},
                  R#req{headers = [Redirect | R#req.headers]}
          end,
@@ -729,6 +738,10 @@ get_view_ar(_View, _Site, _Poster) ->
     %% proplists:get_value(authreq, Meta).
     nil.
 
+strip80(S) -> strip80(S, []). 
+strip80([], Acc) -> lists:reverse(Acc);
+strip80(":80"++_, Acc) -> lists:reverse(Acc);
+strip80([H|T], Acc) -> strip80(T, [H|Acc]).
 
 %% Some clients dont send ip in the host header
 get_real_uri(Req) ->
