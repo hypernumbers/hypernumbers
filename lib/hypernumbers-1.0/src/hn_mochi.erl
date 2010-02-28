@@ -1070,7 +1070,7 @@ get_uid(Site, R=#req{mochi = Mochi}) ->
                     R2;
                 {ok, PingTo} ->
                     Current = 
-                        Site ++ 
+                        strip80(Site) ++ 
                         mochiweb_util:quote_plus(Mochi:get(raw_path)),
                     Redir = PingTo++"/_ping/?uid="++Uid++"&return="++Current,
                     Redirect = {"Location", Redir},
