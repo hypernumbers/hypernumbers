@@ -24,7 +24,7 @@
          add_view/4,
          set_champion/3,
          set_challenger/3,
-         remove_views/4,
+         remove_views/3,
          delete_site/1,
          get_as_json/2,
          dump_script/1,
@@ -110,10 +110,10 @@ set_challenger(Site, Path, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {set_challenger, Path, View}).
 
--spec remove_views(string(), [string()], auth_spec(), [string()]) -> ok. 
-remove_views(Site, Path, AuthSpec, Views) ->
+-spec remove_views(string(), [string()], [string()]) -> ok. 
+remove_views(Site, Path, Views) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {rem_views, Path, AuthSpec, Views}).
+    gen_server:call(Id, {rem_views, Path, Views}).
 
 -spec get_as_json(string(), [string()]) -> any(). 
 get_as_json(Site, Path) ->
