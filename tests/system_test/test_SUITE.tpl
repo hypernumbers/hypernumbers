@@ -11,17 +11,23 @@
 init_per_suite(Config) ->
     Target = ~p,
     Test = ~p,
-    InitSite = fun(S) ->
-                       reset_perms(S, Test),
-                       hn_db_api:wait_for_dirty(S)
-               end,
-    [InitSite(S) || S <- sites()],
-    inets:start(http, [{profile, systest}]),
-    testsys:restore(Target, Test, systest),
-    [hn_db_api:wait_for_dirty(S) || S <- sites()], 
-    actions(),
-    [hn_db_api:wait_for_dirty(S) || S <- sites()], 
-    Config.
+    case lists:member(Test, skipped()) of
+        true  -> {skip, "Skipping"};
+        false -> InitSite = fun(S) ->
+                                    reset_perms(S, Test),
+                                    hn_db_api:wait_for_dirty(S)
+                            end,
+                 [InitSite(S) || S <- sites()],
+                 inets:start(http, [{profile, systest}]),
+                 testsys:restore(Target, Test, systest),
+                 [hn_db_api:wait_for_dirty(S) || S <- sites()], 
+                 actions(),
+                 [hn_db_api:wait_for_dirty(S) || S <- sites()], 
+                 Config
+    end.
+
+skipped() ->
+    ["hn_create", "hn_structural"].
 
 reset_perms(Site, Test) ->
     View = "_g/core/spreadsheet",
