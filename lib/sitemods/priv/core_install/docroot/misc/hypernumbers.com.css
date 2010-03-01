@@ -1,36 +1,36 @@
-* { 
+#hnbody * { 
     margin: 0px; 
     padding:0px; 
 }
-body { 
+#hnbody body { 
     font   : 13px Arial,"Helvetica Neue", sans-serif; 
 }
-h1, h2, h3, h4, h5, p { 
+#hnbody h1, #hnbody h2, #hnbody h3, #hnbody h4, #hnbody h5, #hnbody p { 
     margin: 0px 0px 8px 0px; 
 }
-p:last-child, h1:last-child, h3:last-child { 
+#hnbody p:last-child, #hnbody h1:last-child, #hnbody h3:last-child { 
     margin:0px; 
 }
-#news h3 { 
+#hnbody #news h3 { 
     font-weight : normal; 
     font-size   : 13px; 
 }
-#wrapper { 
+#hnbody #wrapper { 
     width:860px; 
     margin:0px auto; 
 }
-#header { 
+#hnbody #header { 
     position :relative; 
     height   :50px; 
     margin   :10px 0px 10px 0px; 
     width    :100%; 
 }
-#logo { 
+#hnbody #logo { 
     width: 430px; 
     float:left; 
     height:50px; 
 }
-#navigation { 
+#hnbody #navigation { 
     text-align      :right; 
     width           : 430px; 
     float           :right; 
@@ -39,79 +39,79 @@ p:last-child, h1:last-child, h3:last-child {
     bottom          : 0px; 
     right           :0px;
 }
-#navigation li { 
+#hnbody #navigation li { 
     display:inline;  
 }
-#navigation li a { 
+#hnbody #navigation li a { 
     font-size       :16px; 
     text-decoration :none; 
     margin          :0px 10px; 
     color           :#333; 
 }
-#navigation li a:hover {
+#hnbody #navigation li a:hover {
     text-decoration:underline; 
 }
-#footer { 
+#hnbody #footer { 
     -moz-border-radius    :5px; 
     -webkit-border-radius :5px; 
     border                :1px solid #999; 
     width                 :100%; 
     margin                :10px 0px; 
 }
-#footer ul { 
+#hnbody #footer ul { 
     list-style-type:none; 
 }
-#footer .section { 
+#hnbody #footer .section { 
     width  :190px; 
     float  :left; 
     margin : 20px 10px 0px 10px; 
 }
-#footer em { 
+#hnbody #footer em { 
     font-style:normal; 
     color:darkorange; 
     font-weight:bold; 
 } 
-#footer a { 
+#hnbody #footer a { 
     font-style:normal; 
     color:#666; 
     text-decoration:none; 
 } 
-#footer a:hover { 
+#hnbody #footer a:hover { 
     color:#333; 
     text-decoration:underline; 
 } 
-#copy { 
+#hnbody #copy { 
     margin : 0px 20px 20px 10px; 
     color  : #AAA; 
 } 
-#content { 
+#hnbody #content { 
     -moz-border-radius    : 5px; 
     -webkit-border-radius : 5px; 
     width                 : 100%;
     margin                : 10px 0px;
 }
-#main { 
+#hnbody #main { 
     width   : 500px; 
     padding : 10px; 
     float   : left; 
 }
-#side { 
+#hnbody #side { 
     width : 300px; 
     float : right; 
     color : #333; 
 }
-#news { 
+#hnbody #news { 
     background            : #333; 
     color                 : white; 
     padding               : 8px; 
     -moz-border-radius    : 5px;
     -webkit-border-radius : 5px;
 }
-#buttons { 
+#hnbody #buttons { 
     margin: 20px 0px; 
 }
 
-#buttons a { 
+#hnbody #buttons a { 
     text-shadow           : -1px -1px 2px #777777;
     border                : 1px solid #A66600;
     padding               : 8px;
@@ -125,7 +125,7 @@ p:last-child, h1:last-child, h3:last-child {
     color                 : #ffffff; 
 } 
 
-.clearfix:after {
+#hnbody .clearfix:after {
     content    : ".";
     display    : block;
     height     : 0;
@@ -133,6 +133,6 @@ p:last-child, h1:last-child, h3:last-child {
     visibility : hidden;
 }
 
-.clearfix { 
+#hnbody .clearfix { 
     display: inline-block;
 }  /* for IE/Mac */
