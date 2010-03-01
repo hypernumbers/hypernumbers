@@ -1,0 +1,138 @@
+* { 
+    margin: 0px; 
+    padding:0px; 
+}
+body { 
+    font   : 13px Arial,"Helvetica Neue", sans-serif; 
+}
+h1, h2, h3, h4, h5, p { 
+    margin: 0px 0px 8px 0px; 
+}
+p:last-child, h1:last-child, h3:last-child { 
+    margin:0px; 
+}
+#news h3 { 
+    font-weight : normal; 
+    font-size   : 13px; 
+}
+#wrapper { 
+    width:860px; 
+    margin:0px auto; 
+}
+#header { 
+    position :relative; 
+    height   :50px; 
+    margin   :10px 0px 10px 0px; 
+    width    :100%; 
+}
+#logo { 
+    width: 430px; 
+    float:left; 
+    height:50px; 
+}
+#navigation { 
+    text-align      :right; 
+    width           : 430px; 
+    float           :right; 
+    list-style-type :none; 
+    position        :absolute; 
+    bottom          : 0px; 
+    right           :0px;
+}
+#navigation li { 
+    display:inline;  
+}
+#navigation li a { 
+    font-size       :16px; 
+    text-decoration :none; 
+    margin          :0px 10px; 
+    color           :#333; 
+}
+#navigation li a:hover {
+    text-decoration:underline; 
+}
+#footer { 
+    -moz-border-radius    :5px; 
+    -webkit-border-radius :5px; 
+    border                :1px solid #999; 
+    width                 :100%; 
+    margin                :10px 0px; 
+}
+#footer ul { 
+    list-style-type:none; 
+}
+#footer .section { 
+    width  :190px; 
+    float  :left; 
+    margin : 20px 10px 0px 10px; 
+}
+#footer em { 
+    font-style:normal; 
+    color:darkorange; 
+    font-weight:bold; 
+} 
+#footer a { 
+    font-style:normal; 
+    color:#666; 
+    text-decoration:none; 
+} 
+#footer a:hover { 
+    color:#333; 
+    text-decoration:underline; 
+} 
+#copy { 
+    margin : 0px 20px 20px 10px; 
+    color  : #AAA; 
+} 
+#content { 
+    -moz-border-radius    : 5px; 
+    -webkit-border-radius : 5px; 
+    width                 : 100%;
+    margin                : 10px 0px;
+}
+#main { 
+    width   : 500px; 
+    padding : 10px; 
+    float   : left; 
+}
+#side { 
+    width : 300px; 
+    float : right; 
+    color : #333; 
+}
+#news { 
+    background            : #333; 
+    color                 : white; 
+    padding               : 8px; 
+    -moz-border-radius    : 5px;
+    -webkit-border-radius : 5px;
+}
+#buttons { 
+    margin: 20px 0px; 
+}
+
+#buttons a { 
+    text-shadow           : -1px -1px 2px #777777;
+    border                : 1px solid #A66600;
+    padding               : 8px;
+    font-weight           : bold;
+    font-size             : 16px;
+    margin                : 5px;
+    text-decoration       : none;
+    -moz-border-radius    : 10px;
+    -webkit-border-radius : 10px;
+    background            : #FF9E02;
+    color                 : #ffffff; 
+} 
+
+.clearfix:after {
+    content    : ".";
+    display    : block;
+    height     : 0;
+    clear      : both;
+    visibility : hidden;
+}
+
+.clearfix { 
+    display: inline-block;
+}  /* for IE/Mac */
