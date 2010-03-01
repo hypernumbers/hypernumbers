@@ -1,7 +1,7 @@
 server
 {
     listen        80;
-    server_name   alpha.hypernumbers.com;
+    server_name   alpha.hypernumbers.com *.alpha.hypernumbers.com;
     #root	      /Users/tom/code/hypernumbers/code;
 
     location / {
