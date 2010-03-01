@@ -95,25 +95,19 @@ handle_resource(Ref, Qry, Req=#req{method = 'GET'}) ->
     ObjType = element(1, Ref#refX.obj),
     iget(Ref, ObjType, Qry, Req);
 
-handle_resource(Ref, Qry, 
-                Req=#req{method = 'POST', mochi = Mochi, user = User}) ->
-    {value, {'Content-Type', Ct}} =
-        mochiweb_headers:lookup('Content-Type', Mochi:get(headers)),
+handle_resource(Ref, 
+                _Qry, 
+                Req=#req{method='POST', body=multipart, mochi=Mochi, user=User}) ->
+    {Data, File} = hn_file_upload:handle_upload(Mochi, Ref, User),
+    Name = filename:basename(File),
+    Req2 = Req#req{raw_body = {upload, Name}},
+    mochilog:log(Req2, Ref),
+    json(Req2, Data);
 
-    case Ct of
-        %% Uploads
-        "multipart/form-data" ++ _Rest ->
-            {Data, File} = hn_file_upload:handle_upload(Mochi, Ref, User),
-            Name = filename:basename(File),
-            Req2 = Req#req{raw_body = {upload, Name}},
-            mochilog:log(Req2, Ref),
-            json(Req, Data);
+handle_resource(Ref, Qry, Req=#req{method = 'POST'}) ->
+    mochilog:log(Req, Ref),
+    ipost(Ref, Qry, Req).
 
-        %% Normal Post Requests
-        _Else ->
-            mochilog:log(Req, Ref),
-            ipost(Ref, Qry, Req)
-    end.
 
 -spec handle_static(string(), iolist(), any()) -> any(). 
 handle_static(".tpl", Root, Mochi) ->
@@ -259,9 +253,7 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Req) ->
         _Else -> denied
     end.
 
--spec authorize_post(#refX{}, #qry{}, #req{}) 
-                    -> {view, string()} | 
-                           allowed | denied | not_found.
+-spec authorize_post(#refX{}, #qry{}, #req{}) -> allowed | denied.
 
 %% Allow logins to occur.
 authorize_post(#refX{path = ["_user", "login"]}, _Qry, #req{accept = json}) ->
@@ -1020,17 +1012,21 @@ process_query_([{Param, Value} | Rest], Qry) ->
 
 -spec process_request(any()) -> #req{}.
 process_request(Mochi) ->
-    Method = Mochi:get(method),
-    {RawBody, Body}  = if Method == 'POST' -> 
-                               RB = Mochi:recv_body(),
-                               {ok, B} = get_json_post(RB),
-                               {RB, B};
-                          true -> 
-                               {undefined, undefined}
-                       end,
+    {RawBody, Body} = 
+        case Mochi:get(method) of
+            'GET'  -> {undefined, undefined};
+            'POST' -> {_,{_,T}} = mochiweb_headers:lookup('Content-Type', 
+                                                          Mochi:get(headers)),
+                      case lists:prefix("multipart/form-data", T) of
+                          true  -> {undefined, multipart};
+                          false -> RB = Mochi:recv_body(),
+                                   {ok, B} = get_json_post(RB),
+                                   {RB, B}
+                      end
+        end,
     #req{mochi = Mochi, 
          accept = accept_type(Mochi),
-         method = Method,
+         method = Mochi:get(method),
          raw_body = RawBody,
          body = Body}.
 

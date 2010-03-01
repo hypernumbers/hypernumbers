@@ -1,7 +1,7 @@
 -record(req, { accept,
-               body,
-               raw_body,
-               headers = [], %% These are 'response' headers.
+               body         :: multipart | list(),
+               raw_body     :: {upload, string()} | binary(),
+               headers = [] :: list(), %% These are 'response' headers.
                method,
                mochi,
                auth_req,
