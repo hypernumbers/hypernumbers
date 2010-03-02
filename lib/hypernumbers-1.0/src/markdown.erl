@@ -1248,5 +1248,4 @@ make_img_tag(Url, Acc, Title) ->
 %%% Unit Tests
 %%%
 %%%-------------------------------------------------------------------
-
-%% -include("markdown_tests.erl").
+-include("markdown_tests").

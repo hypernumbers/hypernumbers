@@ -34,6 +34,7 @@ start() ->
     Inc_list = [{i, Dir ++ "lib/gettext/include"},
                 {i, Dir ++ "lib/read_excel-1.0/include"},
                 {i, Dir ++ "lib/hypernumbers-1.0/include"},
+                {i, Dir ++ "lib/hypernumbers-1.0/src"},
                 {i, Dir ++ "lib/sitemods/include"},
                 {i, code:lib_dir(xmerl)++"/include"}],
 
