@@ -8,7 +8,7 @@
 
 Nonterminals
 
-Formula E Uminus Uplus List Funcall Args
+Formula E Uminus Uplus Funcall Args
 ArrayLiteral ArrayRow ArrayRows Array
 .
 
@@ -77,8 +77,6 @@ E -> bool '(' ')' : lit('$1').
 E -> Funcall : '$1'.
 
 %%% ref lists
-E -> List : '$1'.
-List -> '(' Args ')' : arglist('$2').
 
 %%% constants / literals
 
@@ -163,8 +161,6 @@ op(Arg1, Op, Arg2)     -> [Op, Arg1, Arg2]. % used by helpers.
 
 %% token + list of args -> function call for AST.
 func(Tuple, Args) -> [func_name(Tuple)] ++ Args.
-
-arglist(Args) -> {list, Args}.
 
 %% Convert representation of array in AST into Erlang's native list-of-lists.
 to_native_list(Ary) ->
