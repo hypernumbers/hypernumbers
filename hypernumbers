@@ -12,7 +12,6 @@ BOOTFILE=ebin/hypernumbers
 SSLBOOT=ebin/start_ssl
 CONFIG=var/sys.config
 
-
 RUN_SSL='-ssl_dist_opt server_certfile "priv/keys/servercert.pem"
 -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" 
 -ssl_dist_opt keyfile "priv/keys/key.pem" 
@@ -57,6 +56,7 @@ function build
     echo "==============================="
     echo "       Compiling Compiler      "
     echo "==============================="
+    mkdir -p ebin
     erlc -o ebin src/compile_code.erl
     echo "==============================="
     echo "      Generating ms_util       "
