@@ -116,7 +116,7 @@ notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
                      {"stamp",      0}]}, % TODO: Add a proper value
     Actions = lists:flatten(mochijson:encode(Vars)),
 
-    case http:request(post, {PUrl, [], "application/json", Actions}, [], []) of
+    case httpc:request(post, {PUrl, [], "application/json", Actions}, [], []) of
         {ok, {{_V, 200, _R}, _H, Json}} ->
             {struct, [{"value",           Value},
                       {"dependency-tree", DepTree},

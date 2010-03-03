@@ -18,7 +18,7 @@ init_per_suite(Config) ->
                                     hn_db_api:wait_for_dirty(S)
                             end,
                  [InitSite(S) || S <- sites()],
-                 inets:start(http, [{profile, systest}]),
+                 inets:start(httpc, [{profile, systest}]),
                  testsys:restore(Target, Test, systest),
                  [hn_db_api:wait_for_dirty(S) || S <- sites()], 
                  actions(),
@@ -35,7 +35,7 @@ reset_perms(Site, Test) ->
     auth_srv2:set_champion(Site, [Test], View).
 
 end_per_suite(_Config) ->
-    inets:stop(http, systest).
+    inets:stop(httpc, systest).
 
 init_per_testcase(_TestCase, Config) -> Config.
 end_per_testcase(_TestCase, _Config) -> ok.

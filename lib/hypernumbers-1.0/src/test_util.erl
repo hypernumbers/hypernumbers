@@ -229,7 +229,7 @@ hnget(Path, Cell) ->
 hnpost(Path, Ref, Postdata) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
     Postreq = "{\"formula\":\"" ++ Postdata ++ "\"}",
-    Return = http:request(post,
+    Return = httpc:request(post,
                           {Url, [{"Accept", "application/json"}],
                            "application/json", Postreq},
                           [{timeout, 5000}],

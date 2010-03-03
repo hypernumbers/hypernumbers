@@ -8,7 +8,7 @@ actions() ->
     Type = "application/json",
     Accept = [{"Accept", "application/json"}],
     Data = "{\"insert\":\"before\"}",
-    http:request(post,{Url++"8:8", Accept, Type, Data}, [], []),
-    http:request(post,{Url++"10:11", Accept, Type, Data}, [], []),
+    httpc:request(post,{Url++"8:8", Accept, Type, Data}, [], []),
+    httpc:request(post,{Url++"10:11", Accept, Type, Data}, [], []),
     ok.
 
