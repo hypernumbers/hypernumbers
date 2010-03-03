@@ -9,13 +9,11 @@
 
 -module(markdown).
 
--export([conv/1,
-         conv_utf8/1,
-         conv_file/2]).
+-export([ conv/1,
+          conv_utf8/1,
+          conv_file/2 ]).
 
--import(lists, [flatten/1, reverse/1]).
-
--include_lib("eunit/include/eunit.hrl").
+-import(lists, [ flatten/1, reverse/1 ]).
 
 -define(SPACE, 32).
 -define(TAB,    9).
@@ -41,14 +39,15 @@
 %%%   - code blocks
 %%%   - horizontal rules
 %%% the parser then does its magic interpolating the references as appropriate
-conv(String) -> Lex = lex(String),
-                % io:format("Lex is ~p~n", [Lex]),
-                UntypedLines = make_lines(Lex),
-                % io:format("UntypedLines are ~p~n", [UntypedLines]),
-                {TypedLines, Refs} = type_lines(UntypedLines),
-                % io:format("TypedLines are ~p~nRefs is ~p~n",
-                %         [TypedLines, Refs]),
-                parse(TypedLines, Refs).
+conv(String) ->
+    Lex = lex(String),
+    % io:format("Lex is ~p~n", [Lex]),
+    UntypedLines = make_lines(Lex),
+    % io:format("UntypedLines are ~p~n", [UntypedLines]),
+    {TypedLines, Refs} = type_lines(UntypedLines),
+    % io:format("TypedLines are ~p~nRefs is ~p~n",
+    %         [TypedLines, Refs]),
+    parse(TypedLines, Refs).
 
 -spec conv_utf8(list()) -> list().
 conv_utf8(Utf8) ->
@@ -1145,7 +1144,7 @@ htmlchars1([], Acc) -> flatten(reverse(Acc));
 %% tags are just wheeched out unescaped
 htmlchars1([{tags, Tag} | T], Acc)   -> htmlchars1(T, [Tag | Acc]);
 %% line ends are pushed to a space..
-htmlchars1([?CR, ?LF | T], Acc)      -> htmlchars1(T, ["\r\n" | Acc]);
+htmlchars1([?CR, ?LF | T], Acc)      -> htmlchars1(T, ["\n" | Acc]);
 htmlchars1([?LF | T], Acc)           -> htmlchars1(T, ["\n" | Acc]);
 htmlchars1([?CR | T], Acc)           -> htmlchars1(T, ["\r" | Acc]);
 %% emphasis is a bit strange - must be preceeded by or followed by
@@ -1248,4 +1247,5 @@ make_img_tag(Url, Acc, Title) ->
 %%% Unit Tests
 %%%
 %%%-------------------------------------------------------------------
--include("markdown_tests").
+
+-include("markdown_tests.hrl").
