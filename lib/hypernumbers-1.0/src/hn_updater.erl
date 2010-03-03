@@ -42,7 +42,8 @@ restart() -> init:restart().
 -spec unload_deleted(dict(), dict()) -> ok. 
 unload_deleted(OnDisk, Loaded) ->
     [begin code:purge(M), 
-           code:delete(M)
+           code:delete(M),
+           io:format("!> ~s~n", [M]) 
      end || {M,_} <- dict:to_list(Loaded),
             not(dict:is_key(M, OnDisk))],
     ok.
@@ -52,7 +53,8 @@ unload_deleted(OnDisk, Loaded) ->
 load_new(OnDisk, Loaded) ->
     [ begin 
           code:purge(M), %% just in case
-          {module,M} = code:load_abs(Path) 
+          {module,M} = code:load_abs(strip_beam(Path)),
+          io:format("*> ~s~n", [M]) 
       end || {M,Path} <- dict:to_list(OnDisk), 
              not(dict:is_key(M, Loaded))],
     ok.
@@ -60,17 +62,18 @@ load_new(OnDisk, Loaded) ->
 %% Reload the code in memory that has changed on disk.
 -spec reload_current(dict()) -> ok. 
 reload_current(Loaded) ->
-    Reloaded = [{module, Mod} = reload_module(Mod) 
-                || {Mod,Path} <- dict:to_list(Loaded),
-                   needs_reload(Mod, Path)],
-    [code_change_otp(Mod) || {module, Mod} <- Reloaded,
+    Reloaded = [reload_module(Mod) || {Mod,Path} <- dict:to_list(Loaded),
+                                      needs_reload(Mod, Path)],
+    [code_change_otp(Mod) || Mod <- Reloaded,
                              is_genserver(Mod)],
     ok.
 
--spec reload_module(M) -> {module, M} when is_subtype(M, atom()). 
+-spec reload_module(M) -> M when is_subtype(M, atom()). 
 reload_module(Mod) ->
     code:purge(Mod),
-    {module, Mod} = code:load_file(Mod).
+    {module, Mod} = code:load_file(Mod),
+    io:format("=> ~s~n", [Mod]),
+    Mod.    
 
 -spec code_change_otp(atom()) -> any(). 
 code_change_otp(Mod) ->
@@ -93,7 +96,7 @@ needs_reload(Mod, Path) ->
 -spec on_disk(string()) -> dict().
 on_disk(Root) ->
     dict:from_list([ {list_to_atom(filename:basename(F, ".beam")), 
-                      strip_beam(filename:absname(F, Root))}
+                      filename:absname(F, Root)}
                      || F <- filelib:wildcard("ebin/*.beam") ++ 
                              filelib:wildcard("lib/*/ebin/*.beam")]).
 
