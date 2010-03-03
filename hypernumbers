@@ -3,6 +3,7 @@
 cd `dirname $0`
 ROOT=`pwd`
 
+
 NODE=arrian
 HOST=$(hostname)
 COOKIE=abc
