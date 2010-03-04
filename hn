@@ -24,7 +24,6 @@ main(Args) ->
             [ "build" ]        -> build();
             [ "start" ]        -> start();
             [ "stop" |  Node ]  -> stop(Node);
-            [ "ping" |  Node ]  -> ping(Node);            
             [ "reload" | Node ] -> reload(Node)
         end
     catch
@@ -33,7 +32,9 @@ main(Args) ->
     end.
 
 build() ->
-    
+
+    ensure_config(),
+
     {ok, Root} = file:get_cwd(),
 
     io:format("Compiling Dependancies ...~n"),
@@ -53,11 +54,6 @@ build() ->
     
     compile:file("src/compile_code.erl", [{outdir, "ebin"}]),
     
-    %os:cmd("erlc -o hypernumbers-1.0/ebin +debug_info "
-    %       "-I hypernumbers-1.0/include priv/ms_util/make_ms_util.erl"),
-    %os:cmd("erl -pa hypernumbers-1.0/ebin -noshell "
-    %       "-s make_ms_util make -s init stop"),
-    %os:cmd("mv ms_util2.erl hypernumbers-1.0/src"),
     compile:file("priv/ms_util/make_ms_util.erl",
                  [{outdir, "lib/hypernumbers-1.0/ebin"}, debug_info,
                   {i, "lib/hypernumbers-1.0/include"}]),
@@ -69,7 +65,6 @@ build() ->
     
     file:set_cwd(Root++"/ebin"),
     compile_code:start(),
-    % os:cmd("erl -pa ebin -noshell -s compile_code -s init stop"),
     file:set_cwd(Root),
 
     case net_adm:ping(conf_lname()) of
@@ -79,10 +74,7 @@ build() ->
 
 start() ->
     
-    case has_config() of
-        false -> copy_default_config();
-        true  -> ok
-    end,
+    ensure_config(),
 
     Cmd = "erl -name "++atol(conf_lname())++" -setcookie "++atol(cookie())++" "
         "-config var/sys.config -boot ebin/hypernumbers -detached "
@@ -102,9 +94,11 @@ reload(Args) ->
     io:format("Reloading on ~p:~n", [lname(Args)]),
     ok = rpc:call(lname(Args), hn_updater, do, [reload]).
 
-ping(Args) ->
-    io:format("~p~n",[net_adm:ping(lname(Args))]).
-    
+ensure_config() ->    
+    case has_config() of
+        false -> copy_default_config();
+        true  -> ok
+    end.    
 
 has_config() ->
     filelib:is_file(config_file()).
