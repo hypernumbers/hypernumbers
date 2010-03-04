@@ -10,7 +10,7 @@ main([]) ->
 
 main(Args) ->
     
-    os:cmd("/usr/local/lib/erlang/erts-5.7.4/bin/epmd -daemon"),
+    os:cmd("/usr/local/bin/epmd -daemon"),
     % Because ssl sucks(I cant set -name on the escript args)
     Name = list_to_atom("ctrl@" ++ net_adm:localhost()),
     {ok, _} = net_kernel:start([Name, longnames]),
