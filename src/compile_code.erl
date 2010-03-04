@@ -24,8 +24,6 @@ start() ->
     
     Dir = get_root(),
     
-    io:fwrite("~nStarting the compilation~n~n", []),
-
     % Add ebins for everything in /lib/ (eugh)
     [ code:add_pathz(X ++ "/ebin")
       || X <- filelib:wildcard(Dir++"/lib/*") ],
@@ -155,10 +153,11 @@ get_rel_file() ->
     Rel  = make_rel_file("hypernumbers", "1.0", Apps),
     ok   = file:write_file("hypernumbers.rel", fmt("~p.", [Rel])),
     ok   = systools:make_script("hypernumbers",
-                                [local,{path,["../lib/*/ebin","."]}]).
+                                [local,{path,["../lib/*/ebin","."]}]),
+    ok.
 
 get_ssl_rel_file() ->
-    Rel = make_rel_file("START SSL", "1.0", [kernel, stdlib, ssl]),
+    Rel = make_rel_file("START SSL", "1.0", [kernel, stdlib, inets, ssl]),
     ok  = file:write_file("start_ssl.rel", fmt("~p.", [Rel])),
     ok  = systools:make_script("start_ssl", [local]).
 

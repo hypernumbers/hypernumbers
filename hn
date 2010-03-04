@@ -1,0 +1,164 @@
+#!/usr/bin/env escript
+%% -*- erlang -*-
+%%! -boot ebin/start_ssl -proto_dist inet_ssl -ssl_dist_opt server_certfile "priv/keys/servercert.pem" -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" -ssl_dist_opt keyfile "priv/keys/key.pem"
+
+cookie() ->
+    abc.
+
+main([]) ->
+    usage();
+
+main(Args) ->
+    
+    os:cmd("/usr/local/lib/erlang/erts-5.7.4/bin/epmd -daemon"),
+    % Because ssl sucks(I cant set -name on the escript args)
+    Name = list_to_atom("ctrl@" ++ net_adm:localhost()),
+    {ok, _} = net_kernel:start([Name, longnames]),
+    
+    % cd into own directory
+    ok = file:set_cwd(filename:dirname(escript:script_name())),
+  
+    try 
+        case Args of
+            [ "build" ]        -> build();
+            [ "start" ]        -> start();
+            [ "stop" |  Node ]  -> stop(Node);
+            [ "ping" |  Node ]  -> ping(Node);            
+            [ "reload" | Node ] -> reload(Node)
+        end
+    catch
+        throw:Error ->
+            io:format("Error running script:~n  ~p",[Error])
+    end.
+
+build() ->
+    
+    {ok, Root} = file:get_cwd(),
+
+    io:format("Compiling Dependancies ...~n"),
+    file:set_cwd("lib/mochiweb"), os:cmd("make"), file:set_cwd(Root),
+    file:set_cwd("lib/gettext"),  os:cmd("make"), file:set_cwd(Root),
+    file:set_cwd("lib/starling"), os:cmd("rake"), file:set_cwd(Root),
+
+    io:format("Compiling Fancy Erlang ...~n"),
+    os:cmd("lib/formula_engine-1.0/priv/generate.escript"),
+    
+    filelib:ensure_dir("ebin"),
+    compile:file("src/compile_code.erl", [{outdir, "ebin"}]),
+    
+    os:cmd("erlc -o hypernumbers-1.0/ebin +debug_info "
+           "-I hypernumbers-1.0/include priv/ms_util/make_ms_util.erl"),
+    os:cmd("erl -pa hypernumbers-1.0/ebin -noshell "
+           "-s make_ms_util make -s init stop"),
+    os:cmd("mv ms_util2.erl hypernumbers-1.0/src"),
+    
+    % compile:file("priv/ms_util/make_ms_util.erl",
+    %              [{outdir, "hypernumbers-1.0/ebin"}, debug_info,
+    %               {i, "hypernumbers-1.0/include"}]),
+    % code:add_path("hypernumbers-1.0/ebin"),
+    % make_ms_util:make(),
+    % file:copy_file("ms_util2.erl", "hypernumbers-1.0/src/ms_util2.erl"),
+
+    io:format("Compiling Normal Erlang ...~n"),
+    file:set_cwd("ebin"),
+    compile_code:start(),
+    % os:cmd("erl -pa ebin -noshell -s compile_code -s init stop"),
+    
+    ok = file:set_cwd(Root),
+
+    case net_adm:ping(conf_lname()) of
+        pong  -> reload([]);
+        _Else -> ok
+    end.
+
+start() ->
+    
+    case has_config() of
+        false -> copy_default_config();
+        true  -> ok
+    end,
+
+    Cmd = "erl -name "++atol(conf_lname())++" -setcookie "++atol(cookie())++" "
+        "-config var/sys.config -boot ebin/hypernumbers -detached "
+        "-env ERL_MAX_ETS_TABLES 18000 "++ssl(),
+
+    case os:cmd(Cmd) of
+        []   -> ok;
+        Else ->
+            io:format("Something happened ~p",[Else]),
+            ok
+    end.
+
+stop(Node) ->
+    ok = rpc:call(lname(Node), init, stop, []).
+
+reload(Args) ->
+    io:format("Reloading on ~p:~n", [lname(Args)]),
+    ok = rpc:call(lname(Args), hn_updater, do, [reload]).
+
+ping(Args) ->
+    io:format("~p~n",[net_adm:ping(lname(Args))]).
+    
+
+has_config() ->
+    filelib:is_file(config_file()).
+
+read_config(Key) ->    
+    {ok, [Config]}         = file:consult(config_file()),
+    {hypernumbers, HNConf} = lists:keyfind(hypernumbers, 1, Config),
+    {Key, Val}             = lists:keyfind(Key, 1, HNConf),
+    Val.
+
+config_file() ->
+    [root(), "/var/", "sys.config"].
+    %% ok.
+
+%% If node is specified in command, pick that up, if
+%% no, pick up from local.node file, if that doesnt exist
+%% create a default one called arrian
+copy_default_config() ->
+    ok = filelib:ensure_dir([root(), "/var/"]),
+    {ok, _Bytes} =
+        file:copy([root(), "/priv/", "sys.config.default"], config_file()),
+    ok.
+
+lname([]) ->
+    conf_lname();
+lname([Name]) ->
+    list_to_atom(Name).
+
+conf_lname() ->
+    nodeatom(read_config(nodename)).
+
+nodeatom(Name) ->
+    Host     = string:strip(os:cmd("hostname"), both, $\n),
+    LongName = io_lib:format("~s@~s", [Name, Host]),    
+    ltoa(lists:flatten(LongName)).
+
+ltoa(L) ->
+    list_to_atom(L).
+atol(A) ->
+    atom_to_list(A).
+
+root() ->
+    {ok, Root} = file:get_cwd(),
+    Root.
+    
+usage() ->
+    Usage = "Commands are~n"
+        "  start -production -detached~n"
+        "  stop  ~n"
+        "  stop  -node remote@host.com~n"
+        "  reload ~n"
+        "  reload -node arrian@localhost~n"
+        "  debug ~n"
+        "  debug -node arrian@localhost~n",
+    io:format(Usage),
+    halt(1).
+
+ssl() ->
+    "-ssl_dist_opt server_certfile \"priv/keys/servercert.pem\" "
+        "-ssl_dist_opt client_certfile \"priv/keys/clientcert.pem\" "
+        "-ssl_dist_opt keyfile \"priv/keys/key.pem\" " 
+        "-proto_dist inet_ssl".
+   

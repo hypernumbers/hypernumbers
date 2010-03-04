@@ -1,0 +1,23 @@
+#!/bin/bash
+
+COOKIE=abc
+CONFIG=var/sys.config
+SSLBOOT=ebin/start_ssl
+
+RUN_SSL='-ssl_dist_opt server_certfile "priv/keys/servercert.pem"
+-ssl_dist_opt client_certfile "priv/keys/clientcert.pem" 
+-ssl_dist_opt keyfile "priv/keys/key.pem" 
+-proto_dist inet_ssl'
+
+NODE=hndev@$(hostname)
+if [ "$1" != "" ]
+then
+    NODE=$1
+fi
+
+erl -name debug-$(date +%s) \
+    -boot $SSLBOOT \
+    -hidden \
+    $RUN_SSL \
+    -setcookie $COOKIE \
+    -remsh $NODE
