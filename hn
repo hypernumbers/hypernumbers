@@ -150,7 +150,7 @@ usage() ->
         "  stop  ~n"
         "  stop remote@host.com~n"
         "  reload ~n"
-        "  reload arrian@localhost~n",
+        "  reload remote@host.com~n",
     io:format(Usage),
     halt(1).
 
