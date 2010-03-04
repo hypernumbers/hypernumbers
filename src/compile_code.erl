@@ -1,5 +1,5 @@
 -module(compile_code).
--export([start/0]).
+-export([start/0, quick/0]).
 
 %% Compile will generate warnings for all files
 %% unless included here
@@ -21,7 +21,13 @@
          "/lib/sitemods/"]).
 
 start() ->
-    
+    build_standard(),
+    build_release().
+
+quick() ->
+    build_standard().
+
+build_standard() ->
     Dir = get_root(),
     
     % Add ebins for everything in /lib/ (eugh)
@@ -46,9 +52,13 @@ start() ->
     
     Dirs = lists:flatten(lists:map(Fun, ?DIRS)),
 
-    compile_funcs(Dirs, Inc_list),
+    compile_funcs(Dirs, Inc_list).
+
+
+build_release() ->
     get_rel_file(),
     get_ssl_rel_file().
+
 
 get_root() ->
 

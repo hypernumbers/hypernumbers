@@ -9,7 +9,6 @@ main([]) ->
     usage();
 
 main(Args) ->
-
     os:cmd("/usr/local/bin/epmd -daemon"),
     %% Because ssl sucks(I cant set -name on the escript args)
     Name = list_to_atom("ctrl@" ++ net_adm:localhost()),
@@ -19,17 +18,19 @@ main(Args) ->
     %% cd into own directory
     ok = file:set_cwd(filename:dirname(escript:script_name())),
 
-    try Args of
-        [ "build" ]         -> build();
-        [ "start" ]         -> start();
-        [ "stop" |  Node ]  -> stop(Node);
-        [ "reload" | Node ] -> reload(Node);
-        _BadCommand         -> usage()
-    catch
-        throw:Error ->
+    try dispatch(Args) 
+    catch throw:Error ->
             io:format("Error running script:~n  ~p",[Error])
     end.
 
+dispatch(["build"])         -> build();
+dispatch(["quick"])         -> build_quick();
+dispatch(["clean"])         -> clean();
+dispatch(["start"])         -> start();
+dispatch(["stop" | Node])   -> stop(Node);
+dispatch(["reload" | Node]) -> reload(Node);
+dispatch(_BadCommand)       -> usage().
+    
 build() ->
 
     ensure_config(),
@@ -60,15 +61,24 @@ build() ->
     {ok, _Bytes} =
         file:copy("ms_util2.erl", "lib/hypernumbers-1.0/src/ms_util2.erl"),
     ok = file:delete("ms_util2.erl"),
-    
+
     file:set_cwd(Root++"/ebin"),
     compile_code:start(),
     file:set_cwd(Root),
+    notify_changed().
 
-    case net_adm:ping(conf_lname()) of
-        pong  -> reload([]);
-        _Else -> ok
-    end.
+build_quick() ->
+    {ok, Root} = file:get_cwd(),
+    file:set_cwd(Root++"/ebin"),
+    compile_code:quick(),
+    file:set_cwd(Root),
+    notify_changed().
+
+clean() ->
+    Files = filelib:wildcard("lib/*/ebin/*.beam") ++ 
+        filelib:wildcard("ebin/*.beam"),
+    [file:delete(F) || F <- Files],
+    ok.
 
 start() ->
     
@@ -91,6 +101,12 @@ stop(Node) ->
 reload(Args) ->
     io:format("Reloading on ~p:~n", [lname(Args)]),
     ok = rpc:call(lname(Args), hn_updater, do, [reload]).
+
+notify_changed() ->
+    case net_adm:ping(conf_lname()) of
+        pong  -> reload([]);
+        _Else -> ok
+    end.
 
 ensure_config() ->    
     case has_config() of
