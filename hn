@@ -36,6 +36,7 @@ build() ->
     {ok, Root} = file:get_cwd(),
 
     io:format("Compiling Dependancies ...~n"),
+    filelib:ensure_dir("lib/mochiweb/ebin/"),
     file:set_cwd("lib/mochiweb"), os:cmd("make"), file:set_cwd(Root),
     file:set_cwd("lib/gettext"),  os:cmd("make"), file:set_cwd(Root),
     file:set_cwd("lib/starling"), os:cmd("rake"), file:set_cwd(Root),
@@ -43,7 +44,7 @@ build() ->
     io:format("Compiling Fancy Erlang ...~n"),
     os:cmd("lib/formula_engine-1.0/priv/generate.escript"),
     
-    filelib:ensure_dir("ebin"),
+    filelib:ensure_dir("ebin/"),
     compile:file("src/compile_code.erl", [{outdir, "ebin"}]),
     
     os:cmd("erlc -o hypernumbers-1.0/ebin +debug_info "
@@ -60,11 +61,10 @@ build() ->
     % file:copy_file("ms_util2.erl", "hypernumbers-1.0/src/ms_util2.erl"),
 
     io:format("Compiling Normal Erlang ...~n"),
-    file:set_cwd("ebin"),
+    file:set_cwd(Root++"/ebin"),
     compile_code:start(),
     % os:cmd("erl -pa ebin -noshell -s compile_code -s init stop"),
-    
-    ok = file:set_cwd(Root),
+    file:set_cwd(Root),
 
     case net_adm:ping(conf_lname()) of
         pong  -> reload([]);
