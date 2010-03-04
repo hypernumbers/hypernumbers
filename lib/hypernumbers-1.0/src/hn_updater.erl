@@ -88,7 +88,7 @@ code_change_otp(Mod) ->
     [F(P) || P <- erlang:processes(), is_running(P, Mod)],
     code:purge(Mod).
                  
--spec needs_reload(atom(), string()) -> true | false. 
+-spec needs_reload(atom(), string()) -> boolean().
 needs_reload(Mod, Path) ->
     CurrV = mod_version(Mod),
     case beam_lib:version(Path) of
@@ -109,12 +109,21 @@ loaded(Root) ->
                            is_list(Path),
                            lists:prefix(Root, Path)]).
 
+-spec run_test(atom()) -> ok. 
+run_test(M) ->
+    Attrs = M:module_info(exports),
+    case lists:member({test,0}, Attrs) of
+        true -> M:test();
+        false -> ok
+    end,
+    ok.
+
 -spec mod_version(atom()) -> integer(). 
 mod_version(M) ->
     Attrs = M:module_info(attributes),
     hd(proplists:get_value(vsn, Attrs, [undefined])).
 
--spec is_genserver(atom()) -> true | false. 
+-spec is_genserver(atom()) -> boolean().
 is_genserver(M) ->
     Attrs = M:module_info(attributes),
     case proplists:get_value(behaviour, Attrs) of
@@ -122,7 +131,7 @@ is_genserver(M) ->
         _Else        -> false
     end.
 
--spec is_running(pid(), atom()) -> true | false. 
+-spec is_running(pid(), atom()) -> boolean().
 is_running(Pid, M) ->
     case erlang:process_info(Pid, dictionary) of
         {dictionary, D} ->

@@ -33,7 +33,7 @@ new(AuthReq, Ts) -> {dict:new(), nil, Ts, AuthReq}.
 -spec id(work_queue()) -> integer() | now().
 id({_, _, Ts, _}) -> Ts.
 
--spec is_empty(work_queue()) -> true | false.
+-spec is_empty(work_queue()) -> boolean().
 is_empty({Map, _, _, _}) -> 
    dict:size(Map) == 0.
    
@@ -47,7 +47,7 @@ add(Elem, Priority, {Map, _, Ts, Ar}) ->
 %% priority needs to be added to the dictionary:
 %% If elem is not in dictionary, then yes;
 %% Otherwise, only if the new priority is higher.
--spec needs_elem(any(), integer(), work_queue()) -> true | false.
+-spec needs_elem(any(), integer(), work_queue()) -> boolean().
 needs_elem(Elem, NewPri, {Map, _, _ , _}) -> 
     case dict:find(Elem, Map) of
         {ok, {P, _}} when P >= NewPri -> false;
