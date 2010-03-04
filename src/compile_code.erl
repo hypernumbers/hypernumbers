@@ -45,7 +45,7 @@ start() ->
           end,
     
     Dirs = lists:flatten(lists:map(Fun, ?DIRS)),
-    
+
     compile_funcs(Dirs, Inc_list),
     get_rel_file(),
     get_ssl_rel_file().
@@ -132,11 +132,17 @@ uptodate(File, Dir) ->
 
 %% given an application name, return its version (based on reading its .app)
 -spec get_vsn(atom()) -> string().
-get_vsn(Module) ->
-    AppFile = [code:lib_dir(Module), "/ebin/", atom_to_list(Module), ".app"],
-    {ok, [{application, _App, Attrs}]} = file:consult(AppFile),
-    {vsn, Vsn} = lists:keyfind(vsn, 1, Attrs),
+get_vsn(App) ->
+    load(App),
+    {ok, Vsn} = application:get_key(App, vsn),
     Vsn.
+
+load(App) ->
+    case application:load(App) of
+        ok                           -> ok;             
+        {error, {already_loaded, _}} -> ok;
+        E                            -> erlang:exit(E)
+    end.
 
 %% build the release description
 -spec make_rel_file(string(), string(), list()) -> tuple().

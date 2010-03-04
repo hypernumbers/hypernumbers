@@ -36,31 +36,36 @@ build() ->
     {ok, Root} = file:get_cwd(),
 
     io:format("Compiling Dependancies ...~n"),
+
     filelib:ensure_dir("lib/mochiweb/ebin/"),
+    filelib:ensure_dir("lib/hypernumbers-1.0/ebin/"),
+    filelib:ensure_dir("ebin/"),
+
+
     file:set_cwd("lib/mochiweb"), os:cmd("make"), file:set_cwd(Root),
     file:set_cwd("lib/gettext"),  os:cmd("make"), file:set_cwd(Root),
     file:set_cwd("lib/starling"), os:cmd("rake"), file:set_cwd(Root),
 
-    io:format("Compiling Fancy Erlang ...~n"),
-    os:cmd("lib/formula_engine-1.0/priv/generate.escript"),
+    file:set_cwd("lib/formula_engine-1.0/priv/"),
+    os:cmd("./generate.escript"),
+    file:set_cwd(Root),
     
-    filelib:ensure_dir("ebin/"),
     compile:file("src/compile_code.erl", [{outdir, "ebin"}]),
     
-    os:cmd("erlc -o hypernumbers-1.0/ebin +debug_info "
-           "-I hypernumbers-1.0/include priv/ms_util/make_ms_util.erl"),
-    os:cmd("erl -pa hypernumbers-1.0/ebin -noshell "
-           "-s make_ms_util make -s init stop"),
-    os:cmd("mv ms_util2.erl hypernumbers-1.0/src"),
+    %os:cmd("erlc -o hypernumbers-1.0/ebin +debug_info "
+    %       "-I hypernumbers-1.0/include priv/ms_util/make_ms_util.erl"),
+    %os:cmd("erl -pa hypernumbers-1.0/ebin -noshell "
+    %       "-s make_ms_util make -s init stop"),
+    %os:cmd("mv ms_util2.erl hypernumbers-1.0/src"),
+    compile:file("priv/ms_util/make_ms_util.erl",
+                 [{outdir, "lib/hypernumbers-1.0/ebin"}, debug_info,
+                  {i, "lib/hypernumbers-1.0/include"}]),
+    code:add_path("lib/hypernumbers-1.0/ebin"),
+    make_ms_util:make(),
+    {ok, _Bytes} =
+        file:copy("ms_util2.erl", "lib/hypernumbers-1.0/src/ms_util2.erl"),
+    ok = file:delete("ms_util2.erl"),
     
-    % compile:file("priv/ms_util/make_ms_util.erl",
-    %              [{outdir, "hypernumbers-1.0/ebin"}, debug_info,
-    %               {i, "hypernumbers-1.0/include"}]),
-    % code:add_path("hypernumbers-1.0/ebin"),
-    % make_ms_util:make(),
-    % file:copy_file("ms_util2.erl", "hypernumbers-1.0/src/ms_util2.erl"),
-
-    io:format("Compiling Normal Erlang ...~n"),
     file:set_cwd(Root++"/ebin"),
     compile_code:start(),
     % os:cmd("erl -pa ebin -noshell -s compile_code -s init stop"),
