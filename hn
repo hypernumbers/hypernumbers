@@ -9,24 +9,23 @@ main([]) ->
     usage();
 
 main(Args) ->
-    
+
     os:cmd("/usr/local/bin/epmd -daemon"),
-    % Because ssl sucks(I cant set -name on the escript args)
+    %% Because ssl sucks(I cant set -name on the escript args)
     Name = list_to_atom("ctrl@" ++ net_adm:localhost()),
     {ok, _} = net_kernel:start([Name, longnames]),
     auth:set_cookie(cookie()),
-    
-    % cd into own directory
+
+    %% cd into own directory
     ok = file:set_cwd(filename:dirname(escript:script_name())),
-  
-    try 
-        case Args of
-            [ "build" ]        -> build();
-            [ "start" ]        -> start();
-            [ "stop" |  Node ]  -> stop(Node);
-            [ "ping" |  Node ]  -> ping(Node);            
-            [ "reload" | Node ] -> reload(Node)
-        end
+
+    try Args of
+        [ "build" ]         -> build();
+        [ "start" ]         -> start();
+        [ "stop" |  Node ]  -> stop(Node);
+        [ "ping" |  Node ]  -> ping(Node);            
+        [ "reload" | Node ] -> reload(Node);
+        _BadCommand         -> usage()
     catch
         throw:Error ->
             io:format("Error running script:~n  ~p",[Error])
@@ -41,7 +40,6 @@ build() ->
     filelib:ensure_dir("lib/mochiweb/ebin/"),
     filelib:ensure_dir("lib/hypernumbers-1.0/ebin/"),
     filelib:ensure_dir("ebin/"),
-
 
     file:set_cwd("lib/mochiweb"), os:cmd("make"), file:set_cwd(Root),
     file:set_cwd("lib/gettext"),  os:cmd("make"), file:set_cwd(Root),
@@ -105,7 +103,6 @@ reload(Args) ->
 ping(Args) ->
     io:format("~p~n",[net_adm:ping(lname(Args))]).
     
-
 has_config() ->
     filelib:is_file(config_file()).
 
