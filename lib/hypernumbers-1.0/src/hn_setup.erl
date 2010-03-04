@@ -85,7 +85,7 @@ add_user(Site, User) ->
     end.
 
 %% Quick and dirty test to see if a site exists
--spec site_exists(string()) -> true | false.
+-spec site_exists(string()) -> boolean().
 site_exists(Site) ->
     case mnesia:dirty_read(core_site, Site) of
         [_] -> true; 
