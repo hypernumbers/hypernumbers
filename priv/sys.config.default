@@ -1,6 +1,9 @@
 %% -*- erlang -*-
 [{hypernumbers, 
   [
+   {nodename, hndev},
+   {environment, development},
+   
    % Hosts to bind Mochiweb to
    {hosts,
     [{{127,0,0,1}, 9000},

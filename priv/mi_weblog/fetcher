@@ -59,7 +59,6 @@ server_loop(FileName, FD) ->
 
 init() ->
     os:cmd(?EPMD), 
-    ok = application:start(inets),
     Host = net_adm:localhost(),
     Name = list_to_atom("mi_fetcher@" ++ Host),
     {ok, _} = net_kernel:start([Name, longnames]),
