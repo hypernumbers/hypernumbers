@@ -146,13 +146,11 @@ root() ->
     
 usage() ->
     Usage = "Commands are~n"
-        "  start -production -detached~n"
+        "  start ~n"
         "  stop  ~n"
-        "  stop  -node remote@host.com~n"
+        "  stop remote@host.com~n"
         "  reload ~n"
-        "  reload -node arrian@localhost~n"
-        "  debug ~n"
-        "  debug -node arrian@localhost~n",
+        "  reload arrian@localhost~n",
     io:format(Usage),
     halt(1).
 
