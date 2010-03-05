@@ -13,6 +13,10 @@ start_link() ->
 %% @spec init([]) -> {ok,Children}
 %% @doc  Supervisor call back
 init([]) ->
+
+    Shell = {hn_shell_srv, {hn_shell_srv, start_link, []},
+             permanent, 2000, worker, [hn_shell_srv]},
+    
     Status = {status_srv, {status_srv, start_link, []},
               permanent, 2000, worker, [status_srv]},
 
@@ -20,6 +24,7 @@ init([]) ->
                   permanent, infinity, supervisor, [sitemaster_sup]},
     
     {ok,{{one_for_one, 60, 1}, [ Status,
-                                 SiteMaster
+                                 SiteMaster,
+                                 Shell
                                 ]}}.
 
