@@ -17,7 +17,7 @@ fi
 
 erl -name debug-$(date +%s) \
     -boot $SSLBOOT \
-    -hidden \
     $RUN_SSL \
     -setcookie $COOKIE \
-    -remsh $NODE
+    -remsh $NODE \
+    -eval "rpc:call('$NODE', hn_shell_srv, connect, [])"
