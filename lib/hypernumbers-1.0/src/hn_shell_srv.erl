@@ -42,6 +42,8 @@ handle_call(disconnect, {From, _Tag}, #state{clients=Clients}=State) ->
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
+handle_info({'EXIT', _Pid, normal}, State) ->    
+    {noreply, State};
 handle_info({trace, _Pid,call, {_M, _F, [Format, Args]}}, State) ->    
     [ io:format(Client#client.leader, Format, Args)
       || Client <- State#state.clients, Client#client.notify == true ],
