@@ -17,7 +17,7 @@ safe() ->
 %% Full hot-swap code reload.
 -spec reload() -> ok. 
 reload() ->
-    Root = root(),
+    Root   = root(),
     OnDisk = on_disk(Root),
     ok     = unload_deleted(OnDisk, loaded(Root)),
     ok     = load_new(OnDisk, loaded(Root)),
@@ -49,18 +49,20 @@ unload_deleted(OnDisk, Loaded) ->
     ok.
 
 %% Load code which is on disk, but not yet in memory.
--spec load_new(dict(), dict()) -> ok. 
+-spec load_new(dict(), dict()) -> ok.
 load_new(OnDisk, Loaded) ->
     [ begin 
           code:purge(M), %% just in case
           {module,M} = code:load_abs(strip_beam(Path)),
-          io:format("*> ~s~n", [M]) 
+          io:format("*> ~s~n", [M]),
+          run_test(M)
       end || {M,Path} <- dict:to_list(OnDisk), 
              not(dict:is_key(M, Loaded))],
     ok.
+
     
 %% Reload the code in memory that has changed on disk.
--spec reload_current(dict()) -> ok. 
+-spec reload_current(dict()) -> ok.
 reload_current(Loaded) ->
     Reloaded = [reload_module(Mod) || {Mod,Path} <- dict:to_list(Loaded),
                                       needs_reload(Mod, Path)],
@@ -73,6 +75,7 @@ reload_module(Mod) ->
     code:purge(Mod),
     {module, Mod} = code:load_file(Mod),
     io:format("=> ~s~n", [Mod]),
+    run_test(Mod),
     Mod.    
 
 -spec code_change_otp(atom()) -> any(). 
@@ -85,7 +88,7 @@ code_change_otp(Mod) ->
     [F(P) || P <- erlang:processes(), is_running(P, Mod)],
     code:purge(Mod).
                  
--spec needs_reload(atom(), string()) -> true | false. 
+-spec needs_reload(atom(), string()) -> boolean().
 needs_reload(Mod, Path) ->
     CurrV = mod_version(Mod),
     case beam_lib:version(Path) of
@@ -106,12 +109,25 @@ loaded(Root) ->
                            is_list(Path),
                            lists:prefix(Root, Path)]).
 
+-spec run_test(atom()) -> ok. 
+run_test(M) ->
+    Attrs = M:module_info(exports),
+    case lists:member({test,0}, Attrs) of
+        true -> 
+            case application:get_env(hypernumbers, environment) of
+                {ok, development} -> M:test();
+                false -> ok
+            end;
+        false -> ok
+    end,
+    ok.
+
 -spec mod_version(atom()) -> integer(). 
 mod_version(M) ->
     Attrs = M:module_info(attributes),
     hd(proplists:get_value(vsn, Attrs, [undefined])).
 
--spec is_genserver(atom()) -> true | false. 
+-spec is_genserver(atom()) -> boolean().
 is_genserver(M) ->
     Attrs = M:module_info(attributes),
     case proplists:get_value(behaviour, Attrs) of
@@ -119,7 +135,7 @@ is_genserver(M) ->
         _Else        -> false
     end.
 
--spec is_running(pid(), atom()) -> true | false. 
+-spec is_running(pid(), atom()) -> boolean().
 is_running(Pid, M) ->
     case erlang:process_info(Pid, dictionary) of
         {dictionary, D} ->

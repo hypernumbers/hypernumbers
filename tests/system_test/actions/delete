@@ -7,5 +7,5 @@ actions() ->
     Url  = "http://127.0.0.1:9000/delete/",
     Type = "application/json",
     Data = "{\"delete\":\"all\"}",
-    http:request(post,{Url, [{"Accept", "application/json"}], Type, Data}, [], []),
+    httpc:request(post,{Url, [{"Accept", "application/json"}], Type, Data}, [], []),
     ok.

@@ -379,7 +379,7 @@ upload_file(Url, Path, Name, Field) ->
     Post = string:join(Data, "\r\n") ++ "\r\n",
     Type = "multipart/form-data; boundary="++Boundary,
     
-    http:request(post,{Url, [], Type, Post}, [], []).
+    httpc:request(post,{Url, [], Type, Post}, [], []).
 
 
 repost(Logname, Post, New) ->
@@ -403,7 +403,7 @@ repost_('POST', _Body, _Name, Post, New) ->
     Body = rewrite_command(New#refX.site, proplists:get_value(body, Post)),
     Url  = New#refX.site ++ proplists:get_value(path, Post),
     Headers = [{"Accept", "application/json"}],
-    http:request(post,{Url, Headers, "application/json", Body}, [], []),
+    httpc:request(post,{Url, Headers, "application/json", Body}, [], []),
     ok;
 repost_(_, _Body, _Name, _Post, _New) ->
     ok.

@@ -8,17 +8,17 @@ actions() ->
     Type = "application/json",
 
     %% Delete row 2
-    {ok, _} = http:request(post, {LocalUrl++"2:2", [{"Accept", Type}], Type,
+    {ok, _} = httpc:request(post, {LocalUrl++"2:2", [{"Accept", Type}], Type,
                                   "{\"delete\":\"all\"}"},
                            [], [], systest),
 
     %% Delete row number 13. 
-    {ok, _} = http:request(post, {LocalUrl++"13:13", [{"Accept", Type}], Type,
+    {ok, _} = httpc:request(post, {LocalUrl++"13:13", [{"Accept", Type}], Type,
                                   "{\"delete\":\"all\"}"},
                            [], [], systest),
 
     %% Delete column F
-    {ok, _} = http:request(post, {LocalUrl++"F:F", [{"Accept", Type}], Type,
+    {ok, _} = httpc:request(post, {LocalUrl++"F:F", [{"Accept", Type}], Type,
                                   "{\"delete\":\"all\"}"},
                            [], [], systest),
     ok.
