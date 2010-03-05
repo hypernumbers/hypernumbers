@@ -207,7 +207,7 @@ is_older(File1, File2) ->
 
 generate_po(Url) ->
     delete_gen_html(),
-    {ok,{{_V,_Status,_R},_H,Body}} = http:request(get,{Url++"?attr",[]},[],[]),
+    {ok,{{_V,_Status,_R},_H,Body}} = httpc:request(get,{Url++"?attr",[]},[],[]),
     generate_po1(Body).
 
 generate_po1(Body) ->
@@ -339,7 +339,7 @@ in_range({range,{X1,Y1,X2,Y2}}, {cell,{X,Y}}) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 post(Url, Data, Format) ->
     {ok, {{_V, _Status,_R},_H,Body}} =
-        http:request(post,{Url,[],Format,Data},[],[]),
+        httpc:request(post,{Url,[],Format,Data},[],[]),
     Body.
 
 parse_url("http://"++Url) ->

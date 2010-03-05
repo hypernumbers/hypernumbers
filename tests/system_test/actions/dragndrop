@@ -10,8 +10,12 @@ actions() ->
     Data1 = "{\"drag\":{\"range\":\"E4:E7\"}}",
     Data2 = "{\"drag\":{\"range\":\"F4:F7\"}}",
     Data3 = "{\"drag\":{\"range\":\"G4:G7\"}}",
-    http:request(post,{Url++"E3", Accept, Type, Data1}, [], []),
-    http:request(post,{Url++"F3", Accept, Type, Data2}, [], []),
-    http:request(post,{Url++"G3", Accept, Type, Data3}, [], []),
+    Data4 = "{\"drag\":{\"range\":\"H4:H12\"}}",
+    Data5 = "{\"drag\":{\"range\":\"I3:I12\"}}",
+    httpc:request(post,{Url++"E3", Accept, Type, Data1}, [], []),
+    httpc:request(post,{Url++"F3", Accept, Type, Data2}, [], []),
+    httpc:request(post,{Url++"G3", Accept, Type, Data3}, [], []),
+    httpc:request(post,{Url++"H3", Accept, Type, Data4}, [], []),
+    httpc:request(post,{Url++"H3", Accept, Type, Data5}, [], []),
     ok.
 

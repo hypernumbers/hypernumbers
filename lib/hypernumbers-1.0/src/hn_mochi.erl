@@ -20,6 +20,7 @@
 -define(SHEETVIEW, "_g/core/spreadsheet").
 -define(TWO_YEARS, 63113852).
 
+-include("util.hrl").
 
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
@@ -721,14 +722,9 @@ ipost(Ref, Qry, Req) ->
 
 get_view_ar(undefined, _Site, Poster) -> Poster; 
 get_view_ar("_g/core/spreadsheet", _Site, Poster) -> Poster;
-get_view_ar(_View, _Site, _Poster) ->
-    %%
-    %%
-    %% DIRTY HACK!!!!
-    %%
-    %% {ok, [Meta]} = file:consult([viewroot(Site), "/", View, ".meta"]),
-    %% proplists:get_value(authreq, Meta).
-    nil.
+get_view_ar(View, Site, Poster) ->
+    {ok, [Meta]} = file:consult([viewroot(Site), "/", View, ".meta"]),
+    proplists:get_value(authreq, Meta).
 
 strip80(S) -> strip80(S, []). 
 strip80([], Acc) -> lists:reverse(Acc);

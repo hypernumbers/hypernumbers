@@ -2,7 +2,13 @@ server
 {
     listen        80 default;
     server_name   factory.hypernumbers.com *.factory.hypernumbers.com;
- 
+    error_page    502 503 504 /maintenance.html;
+
+    location = /maintenance.html {
+        internal;
+        root /home/hypernumbers/www/factory.hypernumbers.com/priv/nginx/error_pages;
+    }
+
     location / {
         proxy_pass              http://127.0.0.1:9090;
         proxy_set_header        X-Forwarded-For      $proxy_add_x_forwarded_for;
