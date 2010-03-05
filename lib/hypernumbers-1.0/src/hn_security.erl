@@ -283,20 +283,22 @@ just_path_test_() ->
     ].
 
 trans_all_perms_test_() -> 
-    Site = "http://unit_test:1234",
-    auth_srv2:clear_all_perms_DEBUG(Site),
-    auth_srv2:add_view(Site, [], [everyone], "_g/core/spreadsheet"),
-    auth_srv2:add_view(Site, ["[**]"], [everyone], "_g/core/spreadsheet"),
-    auth_srv2:set_champion(Site, [], "_g/core/spreadsheet"),
-    auth_srv2:set_champion(Site, ["[**]"], "_g/core/spreadsheet"),
+    Site = "http://example.com:1234",
+    Setup = fun() -> 
+                    auth_srv2:start_link(Site),
+                    auth_srv2:add_view(Site, [], [everyone], "_g/core/spreadsheet"),
+                    auth_srv2:add_view(Site, ["[**]"], [everyone], "_g/core/spreadsheet"),
+                    auth_srv2:set_champion(Site, [], "_g/core/spreadsheet"),
+                    auth_srv2:set_champion(Site, ["[**]"], "_g/core/spreadsheet"),
+                    #refX{site = Site, path = ["u","testuser","blah"]}
+            end,
+    Cleanup = fun(_) -> auth_srv2:stop(Site) end,
+    {setup, Setup, Cleanup, {with, [fun test1/1,
+                                     fun test2/1,
+                                     fun test3/1,
+                                     fun test4/1,
+                                     fun test5/1]}}.
 
-    RefX = #refX{site = Site,
-                 path = ["u","testuser","blah"]},
-    {with, RefX, [fun test1/1,
-                  fun test2/1,
-                  fun test3/1,
-                  fun test4/1,
-                  fun test5/1]}.
 test1(RefX) ->
     Json = [{"set",
              {struct,[{"list",

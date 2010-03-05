@@ -110,6 +110,7 @@ loaded(Root) ->
                            lists:prefix(Root, Path)]).
 
 -spec run_test(atom()) -> ok. 
+run_test(excel_util) -> ok;
 run_test(odf_criteria) -> ok;
 run_test(M) ->
     Attrs = M:module_info(exports),
