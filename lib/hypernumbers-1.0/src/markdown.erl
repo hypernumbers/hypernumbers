@@ -1,7 +1,7 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Gordon Guthrie
-%%% @docws,
+%%% @doc,
 %%%
 %%% @end
 %%% Created : 10 Sep 2009 by gordonguthrie@backawinner.gg
@@ -9,18 +9,27 @@
 
 -module(markdown).
 
--export([ conv/1,
-          conv_utf8/1,
-          conv_file/2 ]).
+-export([conv/1,
+         conv_utf8/1,
+         conv_file/2]).
 
--import(lists, [ flatten/1, reverse/1 ]).
+-export([debug/0]).
+
+-import(lists, [flatten/1, reverse/1]).
+
+-include_lib("eunit/include/eunit.hrl").
 
 -define(SPACE, 32).
 -define(TAB,    9).
 -define(LF,    10).
 -define(CR,    13).
 -define(NBSP, 160).
-    
+-define(AMP, $&, $a, $m, $p, $;).
+-define(COPY, $&, $c, $o, $p, $y, $;).
+
+debug() ->
+    conv("<form action=\"https://checkout.google.com/api/checkout/v2/\ncheckoutForm/Merchant/960226209420618\" id=\"BB_BuyButtonForm\"\nmethod=\"post\" name=\"BB_BuyButtonForm\" target=\"_top\">\n<input name=\"item_name_1\" type=\"hidden\" value=\"Premium\nHypernumbers Account\"/><input name=\"item_description_1\" \ntype=\"hidden\" value=\"Premium Hypernumbers Account\"/>\n<input name=\"item_quantity_1\" type=\"hidden\" value=\"1\"/>\n<input name=\"item_price_1\" type=\"hidden\" value=\"90.0\"/>\n<input name=\"item_currency_1\" type=\"hidden\" value=\"GBP\"/>\n<input name=\"_charset_\" type=\"hidden\" value=\"utf-8\"/>\n<input alt=\"\" src=\"https://checkout.google.com/buttons/buy.gif?\nmerchant_id=960226209420618&amp;w=117&amp;h=48&amp;style=white&amp;\nvariant=text&amp;loc=en_US\" type=\"image\"/>\n</form>").
+
 %%% the lexer first lexes the input
 %%% make_lines does 2 passes:
 %%% * it chops the lexed strings into lines which it represents as a
@@ -39,15 +48,14 @@
 %%%   - code blocks
 %%%   - horizontal rules
 %%% the parser then does its magic interpolating the references as appropriate
-conv(String) ->
-    Lex = lex(String),
-    % io:format("Lex is ~p~n", [Lex]),
-    UntypedLines = make_lines(Lex),
-    % io:format("UntypedLines are ~p~n", [UntypedLines]),
-    {TypedLines, Refs} = type_lines(UntypedLines),
-    % io:format("TypedLines are ~p~nRefs is ~p~n",
-    %         [TypedLines, Refs]),
-    parse(TypedLines, Refs).
+conv(String) -> Lex = lex(String),
+                % io:format("Lex is ~p~n", [Lex]),
+                UntypedLines = make_lines(Lex),
+                % io:format("UntypedLines are ~p~n", [UntypedLines]),
+                {TypedLines, Refs} = type_lines(UntypedLines),
+                % io:format("TypedLines are ~p~nRefs is ~p~n",
+                %          [TypedLines, Refs]),
+                parse(TypedLines, Refs).
 
 -spec conv_utf8(list()) -> list().
 conv_utf8(Utf8) ->
@@ -100,13 +108,21 @@ p1([], _R, _I, Acc)    -> flatten(reverse(Acc));
 %% Tags have the highest precedence...
 p1([{tag, Tag} | T], R, I, Acc) ->
     case T of
+        []                -> p1([], R, I, 
+                                [make_tag_str(Tag) | Acc]);
         [{blank, _} | T2] -> p1(T2, R, I, 
                                 [make_tag_str(Tag) | Acc]);
         _Other            -> p1(T, R, I, 
-                                [pad(I) ++ "<p>" ++ make_tag_str(Tag) ++
-                                 "</p>" | Acc])
+                                [pad(I) ++ make_tag_str(Tag) | Acc])
     end;
 
+p1([{blocktag, {{{tag, open}, Type}, Tg} = _Tag} | T], R, I, Acc) ->
+    {Block, Rest} = grab_for_blockhtml(T, Type, []),
+    % io:format("Block is ~p~n", [Block]),
+    %% add the line end back in for testing
+    Str = lists:flatten([Tg , "\n" | Block]),
+    p1(Rest, R, I, [Str | Acc]);
+    
 %% blank lines/linefeeds are gobbled down
 p1([{Type, _} | T], R, I, Acc)
   when Type == blank orelse Type == linefeed ->
@@ -228,6 +244,24 @@ p1([{h2_or_hr, _} | T], R, I, Acc) ->
 %% Now start pulling out inline refs etc, etc
 p1([{inlineref, _P} | T], R, I, Acc) ->
     p1(T, R, I, Acc).
+
+grab_for_blockhtml([], Type, Acc) ->
+    % io:format("In 1~n"),
+    {lists:reverse(["</" ++ Type ++ ">" | Acc]), []};
+grab_for_blockhtml([{blocktag, {{{tag, close}, Type}, Tg}}
+                    | T], Type,  Acc) ->
+    % io:format("in 2~n"),
+    {lists:reverse([Tg | Acc]), T};
+grab_for_blockhtml([{tag, {{{tag, self_closing}, _Ty}, Tg}}
+                    | T], Type, Acc) ->
+    %% add the line end back in for testing
+    % io:format("in 3~n"),
+    grab_for_blockhtml(T, Type, [Tg | Acc]);
+grab_for_blockhtml([H | T], Type, Acc) ->
+    % io:format("in 4 H is ~p~n", [H]),
+    {_Type, Content} = H,
+    Str = make_plain_str(Content),
+    grab_for_blockhtml(T, Type, [Str | Acc]).
 
 grab_empties([{linefeed, _} | T]) -> grab_empties(T);
 grab_empties([{blank, _} | T])    -> grab_empties(T);
@@ -495,12 +529,12 @@ t_l1([[{{md, star}, _} | _T1] = H | T], A1, A2) ->
 
 %% Block level tags - these are look ahead they must be
 %% on a single line (ie directly followed by a lf and nothing else
-t_l1([[{{{tag, _Type}, Tag}, _} = H | T1] = List | T], A1, A2) ->
+t_l1([[{{{tag, _Type}, Tag}, _ } = H | T1] = List | T], A1, A2) ->
     case is_blank(T1) of
         false -> t_l1(T, A1, [{normal , List} | A2]);
         true  -> case is_block_tag(Tag) of
-                     true  -> t_l1(T, A1, [{tag , H} | A2]);
-                     false -> t_l1(T, A1, [{normal , List} | A2])
+                     true  -> t_l1(T, A1, [{blocktag , H} | A2]);
+                     false -> t_l1(T, A1, [{tag, H} | A2])
                  end
     end;
 
@@ -662,8 +696,6 @@ type_atx(List) ->
                         {h5, A};
                     ((Sz == 6) andalso (R == [{{lf, lf}, "\n"}])) ->
                         {h5, A};
-                    ((Sz == 6) andalso (R == [{{lf, cr}, "\n"}])) ->
-                        {h5, A};
                     ((Sz == 6) andalso (R == [{{lf, crlf}, "\r\n"}])) ->
                         {h5, A};
                     ((Sz == 6) andalso (R =/= [])) ->
@@ -759,12 +791,7 @@ gt(String, Len) ->
     end.
 
 %% make a tag into a string
-make_tag_str({{{tag, Type}, Tag}, _}) ->
-    case Type of
-        open         -> "<"  ++ Tag ++ ">";
-        close        -> "</" ++ Tag ++ ">";
-        self_closing -> "<"  ++ Tag ++ " />;"
-    end.
+make_tag_str({{{tag, _Type}, _Tag}, B}) -> B.
 
 esc_tag(String) -> esc_t1(String, []).
 
@@ -931,7 +958,7 @@ l1([?TAB | T], A1, A2)     -> l1(T, [], [{{ws, tab}, "\t"}, l2(A1) | A2]);
 l1([?NBSP | T], A1, A2)    -> l1(T, [], [{{ws, sp}, "&nbsp"}, l2(A1) | A2]);
 l1([?CR, ?LF | T], A1, A2) -> l1(T, [], [{{lf, crlf}, [?CR , ?LF]}, l2(A1) | A2]);
 l1([?LF | T], A1, A2)      -> l1(T, [], [{{lf, lf}, [?LF]}, l2(A1) | A2]);
-l1([?CR | T], A1, A2)      -> l1(T, [], [{{lf, cr}, [?CR]}, l2(A1) | A2]);
+%% l1([?CR | T], A1, A2)      -> l1(T, [], [{{lf, cr}, [?CR]}, l2(A1) | A2]);
 %% this final clause accumulates line fragments
 l1([H|T], A1, A2)          -> l1(T, [H |A1] , A2).
 
@@ -951,13 +978,15 @@ openingdiv(String) ->
 
 % dumps out a list if it is not an opening div
 openingdiv1([], Acc)         -> {flatten([{{punc, bra}, "<"}
-                                         | lex(reverse(Acc))]), []};  
+                                          | lex(reverse(Acc))]), []};  
 openingdiv1([$/,$>| T], Acc) -> Acc2 = flatten(reverse(Acc)),
-                                Tag = string:to_lower(Acc2),
-                                {{{{{tag, self_closing}, Tag}, "<"
-                                   ++ Acc2 ++ ">"}, Acc2}, T};
+                                Acc3 = string:to_lower(Acc2),
+                                [Tag | _T] = string:tokens(Acc3, " "),
+                                {{{{tag, self_closing}, Tag}, "<"
+                                  ++ Acc2 ++ "/>"}, T};
 openingdiv1([$>| T], Acc)    -> Acc2 = flatten(reverse(Acc)),
-                                Tag = string:to_lower(Acc2),
+                                Acc3 = string:to_lower(Acc2),
+                                [Tag | _T] = string:tokens(Acc3, " "),
                                 {{{{tag, open}, Tag}, "<"
                                   ++ Acc2 ++ ">"}, T};
 openingdiv1([H|T], Acc)      -> openingdiv1(T, [H | Acc]).
@@ -967,8 +996,9 @@ closingdiv([], Acc)     -> {flatten([{{punc, bra}, "<"},
                                      {{punc, fslash}, "/"}
                                      | lex(reverse(Acc))]), []};  
 closingdiv([$>| T], Acc) -> Acc2 = flatten(reverse(Acc)),
-                            Tag = string:to_lower(Acc2),
-                            {{{{tag, close}, Tag}, "<"
+                            Acc3 = string:to_lower(Acc2),
+                            [Tag | _T] = string:tokens(Acc3, " "),
+                            {{{{tag, close}, Tag}, "</"
                               ++ Acc2 ++ ">"}, T};
 closingdiv([H|T], Acc)   -> closingdiv(T, [H | Acc]).
 
@@ -1183,6 +1213,8 @@ htmlchars1([$`, $` | T], A)          -> {T2, NewA} = dblcode(T),
                                         htmlchars1(T2, [NewA | A]);
 htmlchars1([$` | T], A)              -> {T2, NewA} = code(T),
                                         htmlchars1(T2, [NewA | A]);
+htmlchars1([?COPY | T], A)           -> htmlchars1(T, ["&copy;" | A]);
+htmlchars1([?AMP | T], A)            -> htmlchars1(T, ["&amp;" | A]);
 htmlchars1([$& | T], A)              -> htmlchars1(T, ["&amp;" | A]);
 htmlchars1([$< | T], A)              -> htmlchars1(T, ["&lt;" | A]);
 htmlchars1([?NBSP | T], A)           -> htmlchars1(T, ["&nbsp;" | A]);
@@ -1248,4 +1280,4 @@ make_img_tag(Url, Acc, Title) ->
 %%%
 %%%-------------------------------------------------------------------
 
--include("markdown_tests.hrl").
+-include("markdown_tests.erl").
