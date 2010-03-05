@@ -110,13 +110,14 @@ loaded(Root) ->
                            lists:prefix(Root, Path)]).
 
 -spec run_test(atom()) -> ok. 
+run_test(odf_criteria) -> ok;
 run_test(M) ->
     Attrs = M:module_info(exports),
     case lists:member({test,0}, Attrs) of
         true -> 
             case application:get_env(hypernumbers, environment) of
                 {ok, development} -> M:test();
-                false -> ok
+                _ -> ok
             end;
         false -> ok
     end,
