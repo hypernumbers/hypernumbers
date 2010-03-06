@@ -1,3 +1,4 @@
+
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers.com
@@ -1747,7 +1748,7 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
     case Output of
         {formula, Formula} ->
             NewFormula = offset_formula(Formula, {(TX - FX), (TY - FY)}),
-            ok = write_attr(To, {"formula", NewFormula});
+           ok = write_attr(To, {"formula", NewFormula});
         [{Type, V},  _A, _F] ->
             V2 = case Incr of
                      false  ->
@@ -1764,9 +1765,11 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
                                  NewV = V + diff(FX, FY, TX, TY, Incr),
                                  tconv:to_s(NewV);
                              datetime ->
-                                 {datetime, {Y, M, D}, T} = V,
-                                 D2 = D + diff(FX, FY, TX, TY, Incr),
-                                 dh_date:format("d/m/Y", {{Y, M, D2}, T});
+                                 {datetime, {Y, M , D}, T} = V,
+                                 Date = calendar:date_to_gregorian_days(Y, M, D),
+                                 Date2 = Date + diff(FX, FY, TX, TY, Incr),
+                                 NewD = calendar:gregorian_days_to_date(Date2),
+                                 dh_date:format("d/m/Y", {NewD, T});
                              _ ->
                                  tconv:to_s(V)
                          end
@@ -3248,7 +3251,6 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
         [] -> ok = write_attr(RefX, {"text-align", Align});
         _  -> ok
     end,
-    %%?INFO("~p",[read_attrs(RefX, ["text-align"], read)]),
     %% write out the format (if any)
     case Format of
         {"format", "null"} -> ok;
