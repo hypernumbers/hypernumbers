@@ -13,7 +13,7 @@
 -define(SPACE, 32).
 
 %% API 
--export([start_link/1]).
+-export([start_link/1, stop/1]).
 
 -export([
          check_get_view/3,
@@ -65,6 +65,10 @@
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:start_link({local, Id}, ?MODULE, [Site], []).
+
+stop(Site) ->
+    Id = hn_util:site_to_atom(Site, "auth"),
+    gen_server:cast(Id, stop).
 
 -spec check_get_view(string(), [string()], auth_req()) 
                     -> {view, string()} | not_found | denied.
@@ -178,48 +182,51 @@ init([Site]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+handle_call(stop, _From, State) ->
+    {stop, normal, State};
+
 handle_call(Request, _From, State) ->
     #state{trees = Tr, table = Table, site = Site} = State,
     Return1 =
         case Request of
             {check_get_view, P, AR} ->
-                {Site, check_get_view1(tree(Site, Tr), P, AR, champion), false};
+                {check_get_view1(tree(Site, Tr), P, AR, champion), false};
             {check_get_challenger, P, AR} ->
-                {Site, check_get_view1(tree(Site, Tr), P, AR, challenger),
+                {check_get_view1(tree(Site, Tr), P, AR, challenger),
                  false};
             {check_particular_view, P, AR, V} ->
-                {Site, check_particular_view1(tree(Site, Tr), P, AR, V), false};
+                {check_particular_view1(tree(Site, Tr), P, AR, V), false};
             {get_views, P, AR} ->
-                {Site, get_views1(tree(Site, Tr), P, AR), false};
+                {get_views1(tree(Site, Tr), P, AR), false};
             {get_any_view, P, AR} ->
-                {Site, check_get_view1(tree(Site, Tr), P, AR, any), false};
+                {check_get_view1(tree(Site, Tr), P, AR, any), false};
             {add_view, Pg, AS, V} ->
-                {Site, add_view1(tree(Site, Tr), Pg, AS, V), true};
+                {add_view1(tree(Site, Tr), Pg, AS, V), true};
             {set_champion, Pg, Df} ->
-                {Site, set_default(tree(Site, Tr), Pg, Df, champion), true};
+                {set_default(tree(Site, Tr), Pg, Df, champion), true};
             {set_challenger, Pg, Df} ->
-                {Site, set_default(tree(Site, Tr), Pg, Df, challenger), true};
+                {set_default(tree(Site, Tr), Pg, Df, challenger), true};
             {rem_views, P, Vs} ->
-                {Site, remove_views1(tree(Site, Tr), P, Vs), true};
+                {remove_views1(tree(Site, Tr), P, Vs), true};
             {get_as_json, P} ->
-                {Site, get_as_json1(tree(Site, Tr), P), false};
+                {get_as_json1(tree(Site, Tr), P), false};
             delete_site ->
-                {Site, delete};
+                {delete};
             clear_all_perms ->
-                {Site, gb_trees:empty(), true};
+                {gb_trees:empty(), true};
             dump_script ->
-                {Site, dump_script1(tree(Site, Tr)), false};
+                {dump_script1(tree(Site, Tr)), false};
             {load_script, Terms} ->
-                {Site, load_script1(Terms), true}
+                {load_script1(Terms), true}
             end,
     {Reply, NewTr} =
         case Return1 of
-            {Site2, Return2, true} ->
-                {ok, save_trees(Table, Site2, Return2, Tr)};
-            {_Site2, Return2, false} ->
+            {Return2, true} ->
+                {ok, save_trees(Table, Site, Return2, Tr)};
+            {Return2, false} ->
                 {Return2, Tr};
-            {Site2, delete} ->
-                {ok, del_site_tree(Table, Site2, Tr)}
+            {delete} ->
+                {ok, del_site_tree(Table, Site, Tr)}
         end,
     {reply, Reply, State#state{trees = NewTr}}.
 
