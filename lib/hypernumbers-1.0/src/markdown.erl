@@ -1280,4 +1280,4 @@ make_img_tag(Url, Acc, Title) ->
 %%%
 %%%-------------------------------------------------------------------
 
--include("markdown_tests.erl").
+-include("markdown_tests.hrl").
