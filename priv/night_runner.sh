@@ -3,26 +3,21 @@
 DATE=`date +%Y-%m-%d.%T`
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-export HOME=/home/hypernumbers
-REPO=http://svn.hypernumbers.com/hypernumbers/code/trunk
+export HOME=/home/dale
+REPO=git@github.com:hypernumbers/hypernumbers.git
 WEBROOT=www/dev.hypernumbers.com
 TESTDIR=hn_test_stage
 LASTRUN=$HOME/$WEBROOT/tests/last_run/
 
-## Really need to get rid of this
-ERL_CALL=/usr/local/lib/erlang/lib/erl_interface-3.6.4/bin/erl_call 
-COOKIE=abc
-TARGET=arrian@$(hostname)
-
 cd $HOME
 
-svn co $REPO $HOME/$TESTDIR
+git clone $REPO $HOME/$TESTDIR
 
 cd $TESTDIR
 
 ## Compile, and run Hypernumbers
-./hypernumbers build
-./hypernumbers start -detached
+./hn build
+./hn start
 ## run detached.
 
 ## Generate Excel Tests
@@ -32,36 +27,28 @@ ruby regen_tests.rb 2x
 cd ../../
 
 ## Generate System Tests
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a "testsys generate")
+echo $(./hn call 'testsys:generate().')
 
 ## Run tests
+echo $(./hn call 'test:excel("1a").')
+echo $(./hn call 'test:excel("1b").')
+echo $(./hn call 'test:excel("1c").')
+echo $(./hn call 'test:excel("1d").')
+echo $(./hn call 'test:excel("1e").')
 
-# Examples...
-#$ERL_CALL -name $TARGET -c $COOKIE -a "test all"
-#$ERL_CALL -name $TARGET -c $COOKIE -a "test excel"
-#$ERL_CALL -name $TARGET -c $COOKIE -a "test sys"
+echo $(./hn call 'test:excel("2a").')
+echo $(./hn call 'test:excel("2b").')
+echo $(./hn call 'test:excel("2c").')
+echo $(./hn call 'test:excel("2d").')
+echo $(./hn call 'test:excel("2e").')
 
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1a"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1b"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1c"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1d"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1e"]')
-#$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["1f"]'
-
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2a"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2b"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2c"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2d"]')
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2e"]')
-#$ERL_CALL -name $TARGET -c $COOKIE -a 'test excel ["2f"]'
-
-echo $($ERL_CALL -name $TARGET -c $COOKIE -a 'test sys')
+echo $(./hn call 'test:sys().')
 
 ## Cleanup.
-./hypernumbers stop
+./hn stop
 
 rm -rf $LASTRUN
-mkdir $LASTRUN
+mkdir -p $LASTRUN
 
 cd priv/test_visualiser
 #ruby visualise_tests.rb

@@ -1,0 +1,51 @@
+#!/usr/bin/env escript
+%% -*- erlang -*-
+
+main([User, Repo, File | Args]) ->
+    
+    application:start(inets),
+    application:start(ssl),
+    
+    ToSave = "./script.sh",
+    
+    {struct, [{"commits", {array, [{struct, Recent}|_Rest]}}]}
+        = github_commits("json", User, Repo),
+    {value, {"tree", Tree}} = lists:keysearch("tree", 1, Recent),
+    
+    {struct, [{"blob", {struct, Data}}]}
+        = github_blob(User, Repo, Tree, File),
+    {value, {"data", Script}} = lists:keysearch("data", 1, Data),
+
+    
+    Cmd = ToSave ++ " " ++ string:join(Args, " "),
+    
+    file:write_file(ToSave, Script),
+    os:cmd("chmod +x "++ToSave),
+    io:format("~p~n",[os:cmd(Cmd)]),
+    file:delete(ToSave),
+    
+    ok.
+
+github_url() ->
+    "https://github.com/api/v2/".
+
+github_commits(Type, User, Repo) ->
+    github_commits(Type, User, Repo, "master").
+github_commits(Type, User, Repo, Tree) ->
+    json_req([github_url(),Type,"/commits/list/",User,"/",Repo,"/",Tree]).
+
+github_blob(User, Repo, Tree, Path) ->
+    json_req([github_url(),"json", "/blob/show/",User,"/",Repo,"/",Tree, Path]).
+
+
+httpc_post(Url, Data) ->
+    Post   = string:join( [ Key++"="++Val || {Key, Val} <- Data ], "&" ),
+    Method = "application/x-www-form-urlencoded",
+    httpc:request(post, {Url, [], Method, Post}, [], []). 
+
+
+json_req(Url) ->
+    Data = [{"login", "hypernumbers"},
+            {"token", "bc918304327d921b6ff330bab64292fd"}],    
+    {ok, {_Status, _Headers, Body}} = httpc_post(lists:flatten(Url), Data),
+    mochijson:decode(Body).

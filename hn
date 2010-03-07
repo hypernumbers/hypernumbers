@@ -29,6 +29,7 @@ dispatch(["clean"])         -> clean();
 dispatch(["start"])         -> start();
 dispatch(["stop" | Node])   -> stop(Node);
 dispatch(["reload" | Node]) -> reload(Node);
+dispatch(["call" | Args])   -> call(Args);
 dispatch(_BadCommand)       -> usage().
     
 build() ->
@@ -101,6 +102,17 @@ stop(Node) ->
 reload(Args) ->
     io:format("Reloading on ~p:~n", [lname(Args)]),
     ok = rpc:call(lname(Args), hn_updater, do, [reload]).
+
+call([Fun]) ->
+    call([lname([]), Fun]);
+call([Node, Fun]) ->
+    {ok, Tokens, _End} = erl_scan:string(Fun),
+    {ok, Expr}         = erl_parse:parse_exprs(Tokens),
+    %% Bit ugly
+    [{call, 1, {remote, 1, {atom, 1, M}, {atom, 1, F}}, Args}] = Expr,
+    A = [ Val || {_Type, _I, Val} <- Args],
+    
+    io:format("~p~n",[rpc:call(Node, M, F, A)]).
 
 notify_changed() ->
     case net_adm:ping(conf_lname()) of
