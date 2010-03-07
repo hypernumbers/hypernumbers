@@ -1,4 +1,4 @@
-#!/usr/local/lib/erlang/erts-5.7.4/bin/escript
+#!/usr/bin/env escript
 %% -*- erlang -*-
 %%! -boot start_ssl -proto_dist inet_ssl -ssl_dist_opt server_certfile "/home/hypernumbers/www/alpha.hypernumbers.com/priv/keys/servercert.pem" -ssl_dist_opt client_certfile "/home/hypernumbers/www/alpha.hypernumbers.com/priv/keys/clientcert.pem" -ssl_dist_opt keyfile "/home/hypernumbers/www/alpha.hypernumbers.com/priv/keys/key.pem"
 
