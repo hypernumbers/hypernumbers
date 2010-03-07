@@ -5,7 +5,7 @@
 
 a img { border: 0px; }
 
-#hnbody table { width:100% }
+#hnbody #pricing table { width:100% }
 #hnbody ul { list-style-type:none;  }
 
 #hnbody { 
@@ -116,19 +116,19 @@ a img { border: 0px; }
     -webkit-border-radius : 5px;
 }
 
-/* #hnbody #main a {  */
-/*     text-shadow           : -1px -1px 2px #777777; */
-/*     border                : 1px solid #A66600; */
-/*     padding               : 8px; */
-/*     font-weight           : bold; */
-/*     font-size             : 16px; */
-/*     margin                : 5px 5px 5px 5px; */
-/*     text-decoration       : none; */
-/*     -moz-border-radius    : 10px; */
-/*     -webkit-border-radius : 10px; */
-/*     background            : #FF9E02; */
-/*     color                 : #ffffff;  */
-/* }  */
+#hnbody #main a, #hnbody #pricing a {
+    text-shadow           : -1px -1px 2px #777777;
+    border                : 1px solid #A66600;
+    padding               : 8px;
+    font-weight           : bold;
+    font-size             : 16px;
+    margin                : 5px 5px 5px 5px;
+    text-decoration       : none;
+    -moz-border-radius    : 10px;
+    -webkit-border-radius : 10px;
+    background            : #FF9E02;
+    color                 : #ffffff;
+}
 
 #hnbody .clearfix:after {
     content    : ".";
