@@ -4,9 +4,9 @@
 
 -mode(compile).
 
--define(COOKIE, 'abc').
+-define(COOKIE, 'completelysecure').
 -define(OUTDIR, "/home/hypernumbers/fetcher_logs/").
--define(EPMD, "/usr/local/lib/erlang/erts-5.7.4/bin/epmd -daemon").
+-define(EPMD, "/usr/local/bin/epmd -daemon").
 
 main([Target]) ->
     main([Target, "1", "."]);
