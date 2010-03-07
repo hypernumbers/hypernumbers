@@ -15,7 +15,6 @@ main([User, Repo, File | Args]) ->
     {struct, [{"blob", {struct, Data}}]}
         = github_blob(User, Repo, Tree, File),
     {value, {"data", Script}} = lists:keysearch("data", 1, Data),
-
     
     Cmd = ToSave ++ " " ++ string:join(Args, " "),
     

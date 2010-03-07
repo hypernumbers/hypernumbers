@@ -3,7 +3,7 @@
 DATE=`date +%Y-%m-%d.%T`
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-export HOME=/home/dale
+export HOME=/home/hypernumbers
 REPO=git@github.com:hypernumbers/hypernumbers.git
 WEBROOT=www/dev.hypernumbers.com
 TESTDIR=hn_test_stage
