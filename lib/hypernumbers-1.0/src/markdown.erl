@@ -13,8 +13,6 @@
          conv_utf8/1,
          conv_file/2]).
 
--export([debug/0]).
-
 -import(lists, [flatten/1, reverse/1]).
 
 -include_lib("eunit/include/eunit.hrl").
@@ -148,7 +146,7 @@ p1([{blockquote, P}, {h2_or_hr, _} | T], R, I, Acc) ->
 p1([{{codeblock, P}, _}, {h2_or_hr, _} | T], R, I, Acc) ->
     p1(T, R, I,  [pad(I) ++ "<h2>" ++ make_str(snip(P), R)
                         ++ "</h2>\n\n" | Acc]); 
---
+
 %% but a setext with no lookbehind is just rendered as a normal line,
 %% so change its type and rethrow it
 p1([{setext_h1, P} | T], R, I, Acc) ->
