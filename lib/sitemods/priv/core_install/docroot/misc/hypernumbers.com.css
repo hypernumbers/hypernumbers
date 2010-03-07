@@ -5,6 +5,9 @@
 
 a img { border: 0px; }
 
+#hnbody table { width:100% }
+#hnbody ul { list-style-type:none;  }
+
 #hnbody { 
     font   : 13px Arial,"Helvetica Neue", sans-serif; 
 }
