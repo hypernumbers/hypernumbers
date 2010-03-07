@@ -159,12 +159,16 @@ root() ->
     Root.
     
 usage() ->
-    Usage = "Commands are~n"
+    Usage = "Commands to run hypernumbers are:~n"
         "  start ~n"
         "  stop  ~n"
         "  stop remote@host.com~n"
         "  reload ~n"
-        "  reload remote@host.com~n",
+        "  reload remote@host.com~n"
+        "~nCommands to build hypernumbers are:~n"
+        "  build ~n"
+        "  quick ~n"
+        "  clean ~n",
     io:format(Usage),
     halt(1).
 
