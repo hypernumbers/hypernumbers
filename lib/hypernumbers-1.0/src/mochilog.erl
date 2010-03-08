@@ -327,6 +327,9 @@ run_log(Name, Fun, Filter) ->
 
 walk(F, Cont, N) ->
     case wrap_log_reader:chunk(Cont) of
+        {error, E} ->
+            error_logger:error_message("Chunk error at N=~d: ~p~n", [E]),
+            throw(E);
         {NCont, eof} ->
             {ok, NCont};
         {NCont, Terms} ->
