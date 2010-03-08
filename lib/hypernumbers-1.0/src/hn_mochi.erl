@@ -722,7 +722,7 @@ ipost(Ref, Qry, Req) ->
 
 get_view_ar(undefined, _Site, Poster) -> Poster; 
 get_view_ar("_g/core/spreadsheet", _Site, Poster) -> Poster;
-get_view_ar(View, Site, Poster) ->
+get_view_ar(View, Site, _Poster) ->
     {ok, [Meta]} = file:consult([viewroot(Site), "/", View, ".meta"]),
     proplists:get_value(authreq, Meta).
 
@@ -921,10 +921,13 @@ f_up1([{struct, [{"ref", Ref}, {"formula", F}]} | T], S, P, A1, A2) ->
     end.
 
 accept_type(Req) ->
-    Accept = Req:get_header_value('Accept'),
-    case re:run(Accept, "application/json") of
-        {match, _} -> json;
-        nomatch -> html
+    case Req:get_header_value('Accept') of
+        undefined -> html; %cheapskate googlebots don't set accept header
+        Accept    ->
+            case re:run(Accept, "application/json") of
+                {match, _} -> json;
+                nomatch -> html
+            end
     end.
 
 build_tpl(Site, Tpl) ->
