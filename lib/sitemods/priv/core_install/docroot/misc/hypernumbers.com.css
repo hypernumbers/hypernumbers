@@ -104,7 +104,8 @@ a img { border: 0px; }
     float   : left; 
 }
 #hnbody #side { 
-    width : 300px; 
+    width : 280px;
+    padding:10px;
     float : right; 
     color : #333; 
 }
