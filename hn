@@ -26,7 +26,7 @@ main(Args) ->
 dispatch(["build"])         -> build();
 dispatch(["quick"])         -> build_quick();
 dispatch(["clean"])         -> clean();
-dispatch(["start"])         -> start();
+dispatch(["start" | Args])  -> start(Args);
 dispatch(["stop" | Node])   -> stop(Node);
 dispatch(["reload" | Node]) -> reload(Node);
 dispatch(["call" | Args])   -> call(Args);
@@ -81,13 +81,13 @@ clean() ->
     [file:delete(F) || F <- Files],
     ok.
 
-start() ->
-    
+start(Extra) ->
     ensure_config(),
 
     Cmd = "erl -name "++atol(conf_lname())++" -setcookie "++atol(cookie())++" "
         "-config var/sys.config -boot ebin/hypernumbers -detached "
-        "-env ERL_MAX_ETS_TABLES 18000 "++ssl(),
+        "-env ERL_MAX_ETS_TABLES 18000 "
+        ++ ssl() ++ parse_extra_args(Extra),
 
     case os:cmd(Cmd) of
         []   -> ok;
@@ -125,6 +125,18 @@ ensure_config() ->
         false -> copy_default_config();
         true  -> ok
     end.    
+
+parse_extra_args(Args) ->
+    parse_extra_args(Args, []).
+parse_extra_args([], Acc) ->
+    lists:flatten(string:join(lists:reverse(Acc), " "));
+parse_extra_args([Key, Value | Rest], Acc) ->
+    Setting = ["-", Key, " ", Value],
+    parse_extra_args(Rest, [Setting | Acc]);
+parse_extra_args(_, Acc) ->
+    %% todo, add support for 3-val env settings
+    parse_extra_args([], Acc).
+
 
 has_config() ->
     filelib:is_file(config_file()).
@@ -172,7 +184,7 @@ root() ->
     
 usage() ->
     Usage = "Commands to run hypernumbers are:~n"
-        "  start ~n"
+        "  start [erl_args] ~n"
         "  stop  ~n"
         "  stop remote@host.com~n"
         "  reload ~n"
