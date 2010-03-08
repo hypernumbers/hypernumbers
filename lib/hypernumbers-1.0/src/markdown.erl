@@ -13,8 +13,6 @@
          conv_utf8/1,
          conv_file/2]).
 
--export([debug/0]).
-
 -import(lists, [flatten/1, reverse/1]).
 
 -include_lib("eunit/include/eunit.hrl").
@@ -26,9 +24,6 @@
 -define(NBSP, 160).
 -define(AMP, $&, $a, $m, $p, $;).
 -define(COPY, $&, $c, $o, $p, $y, $;).
-
-debug() ->
-    conv("<form action=\"https://checkout.google.com/api/checkout/v2/\ncheckoutForm/Merchant/960226209420618\" id=\"BB_BuyButtonForm\"\nmethod=\"post\" name=\"BB_BuyButtonForm\" target=\"_top\">\n<input name=\"item_name_1\" type=\"hidden\" value=\"Premium\nHypernumbers Account\"/><input name=\"item_description_1\" \ntype=\"hidden\" value=\"Premium Hypernumbers Account\"/>\n<input name=\"item_quantity_1\" type=\"hidden\" value=\"1\"/>\n<input name=\"item_price_1\" type=\"hidden\" value=\"90.0\"/>\n<input name=\"item_currency_1\" type=\"hidden\" value=\"GBP\"/>\n<input name=\"_charset_\" type=\"hidden\" value=\"utf-8\"/>\n<input alt=\"\" src=\"https://checkout.google.com/buttons/buy.gif?\nmerchant_id=960226209420618&amp;w=117&amp;h=48&amp;style=white&amp;\nvariant=text&amp;loc=en_US\" type=\"image\"/>\n</form>").
 
 %%% the lexer first lexes the input
 %%% make_lines does 2 passes:
@@ -1280,4 +1275,4 @@ make_img_tag(Url, Acc, Title) ->
 %%%
 %%%-------------------------------------------------------------------
 
--include("markdown_tests.erl").
+-include("markdown_tests.hrl").

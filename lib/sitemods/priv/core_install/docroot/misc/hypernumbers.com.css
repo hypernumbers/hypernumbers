@@ -1,9 +1,22 @@
+body { 
+    padding:0px;
+    margin:0px;
+}
+
 #hnbody * { 
     margin: 0px; 
     padding:0px; 
 }
 
 a img { border: 0px; }
+
+#hnbody #news a { 
+    color:white;
+    font-weight:bold;
+}
+
+#hnbody #pricing table { width:100% }
+#hnbody ul { list-style-type:none;  }
 
 #hnbody { 
     font   : 13px Arial,"Helvetica Neue", sans-serif; 
@@ -101,7 +114,8 @@ a img { border: 0px; }
     float   : left; 
 }
 #hnbody #side { 
-    width : 300px; 
+    width : 280px;
+    padding:10px;
     float : right; 
     color : #333; 
 }
@@ -113,19 +127,34 @@ a img { border: 0px; }
     -webkit-border-radius : 5px;
 }
 
-/* #hnbody #main a {  */
-/*     text-shadow           : -1px -1px 2px #777777; */
-/*     border                : 1px solid #A66600; */
-/*     padding               : 8px; */
-/*     font-weight           : bold; */
-/*     font-size             : 16px; */
-/*     margin                : 5px 5px 5px 5px; */
-/*     text-decoration       : none; */
-/*     -moz-border-radius    : 10px; */
-/*     -webkit-border-radius : 10px; */
-/*     background            : #FF9E02; */
-/*     color                 : #ffffff;  */
-/* }  */
+#hnbody #buttons { 
+    text-align:center;
+}
+
+#hnbody #pricing {
+    margin-bottom: 20px;
+}
+
+#hnbody #map {
+    width:425px;
+    margin:20px auto;
+    border:3px solid #666;
+}
+
+#hnbody #buttons a, #hnbody #pricing a {
+    text-shadow           : -1px -1px 2px #777777;
+    border                : 1px solid #A66600;
+    padding               : 8px;
+    font-weight           : bold;
+    font-size             : 16px;
+    margin                : 5px 5px 5px 5px;
+    text-decoration       : none;
+    line-height:40px;
+    -moz-border-radius    : 10px;
+    -webkit-border-radius : 10px;
+    background            : #FF9E02;
+    color                 : #ffffff;
+}
 
 #hnbody .clearfix:after {
     content    : ".";
