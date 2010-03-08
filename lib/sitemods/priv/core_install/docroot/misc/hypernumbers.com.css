@@ -10,6 +10,11 @@ body {
 
 a img { border: 0px; }
 
+#hnbody #news a { 
+    color:white;
+    font-weight:bold;
+}
+
 #hnbody #pricing table { width:100% }
 #hnbody ul { list-style-type:none;  }
 
