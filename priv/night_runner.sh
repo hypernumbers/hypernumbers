@@ -17,7 +17,7 @@ cd $TESTDIR
 
 ## Compile, and run Hypernumbers
 ./hn build
-./hn start
+./hn start connect_all false
 ## run detached.
 
 ## Generate Excel Tests
