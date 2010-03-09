@@ -13,7 +13,7 @@ cd $HOME
 
 git clone $REPO $HOME/$TESTDIR
 
-cd $TESTDIR
+cd $HOME/$TESTDIR
 
 ## Compile, and run Hypernumbers
 ./hn build
@@ -24,7 +24,7 @@ cd $TESTDIR
 cd priv/testserver
 ruby regen_tests.rb 1x
 ruby regen_tests.rb 2x
-cd ../../
+cd $HOME/$TESTDIR
 
 ## Generate System Tests
 echo $(./hn call 'testsys:generate().')
@@ -49,10 +49,6 @@ echo $(./hn call 'test:sys().')
 
 rm -rf $LASTRUN
 mkdir -p $LASTRUN
-
-cd priv/test_visualiser
-#ruby visualise_tests.rb
-cd ../..
 
 cp -r var/tests/* $LASTRUN
 cp var/tests/index.html $HOME/$WEBROOT/tests/$DATE.html
