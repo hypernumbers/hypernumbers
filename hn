@@ -38,7 +38,7 @@ build() ->
 
     {ok, Root} = file:get_cwd(),
 
-    io:format("Compiling Dependancies ...~n"),
+    io:format("Compiling Dependencies ...~n"),
 
     filelib:ensure_dir("lib/mochiweb/ebin/"),
     filelib:ensure_dir("lib/hypernumbers-1.0/ebin/"),
