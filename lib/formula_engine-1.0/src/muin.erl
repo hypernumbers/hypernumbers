@@ -414,12 +414,13 @@ do_cell(RelPath, Rowidx, Colidx) ->
     Path = muin_util:walk_path(?mpath, RelPath),
     IsCircRef = (Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath),
     ?IF(IsCircRef, ?ERR_CIRCREF),
-    case auth_srv2:get_any_view(?msite, Path, ?mar) of
-        {view, _} ->
-            FetchFun = ?L(get_cell_info(?msite, Path, Colidx, Rowidx)),
-            get_value_and_link(FetchFun);
-        _Else ->
-            ?ERR_AUTH
+    FetchFun = ?L(get_cell_info(?msite, Path, Colidx, Rowidx)),
+    case ?mar of
+        nil -> get_value_and_link(FetchFun);
+       _Else -> case auth_srv2:get_any_view(?msite, Path, ?mar) of
+                    {view, _} -> get_value_and_link(FetchFun);                    
+                    _Else -> ?ERR_AUTH
+                end
     end.
 
 %% @doc Calls supplied fun to get a cell's value and dependence information,
