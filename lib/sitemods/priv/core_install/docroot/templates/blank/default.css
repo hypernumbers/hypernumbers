@@ -1,17 +1,24 @@
 html,body { 
     height   : 100%;
 }
+
 body { 
     padding:0px;
     margin : 0px;
 }
-a img { 
+
+#hnbody a img { 
     border:0px; 
 }
 
 #hnbody p, #hnbody h1, #hnbody h2, #hnbody h3 { 
     margin: 0px 0px 10px 0px; 
 }
+
+#hnbody h4 { 
+    margin: 0px;
+}
+
 
 #hnbody { 
     width       : 90%;
@@ -28,6 +35,11 @@ a img {
     border-collapse: collapse;
     width  : 100%;
     height : 100%;
+}
+
+#hnbody td {  
+    vertical-align:top;
+    padding:5px;
 }
 
 #hnbody form p, #hnbody table p { 
@@ -119,4 +131,5 @@ a img {
 }
 
 .clearfix {
-    display: inline-block;} 
+    display: inline-block;
+} 
