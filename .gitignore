@@ -2,7 +2,7 @@
 *.#*
 *.beam
 *.dump
-*.~
+*~
 .DS_Store
 TAGS
 tags
