@@ -30,6 +30,7 @@
 -define(my, get(y)).
 -define(mpath, get(path)).
 -define(msite, get(site)).
+-define(mar, get(auth_req)).
 -define(array_context, get(array_context)).
 
 -define(error_in_formula, {error, error_in_formula}).
@@ -53,13 +54,15 @@ run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
 %% @doc Runs compiled formula.
 run_code(Pcode, #muin_rti{site=Site, path=Path,
                           col=Col,   row=Row,
-                          array_context=AryCtx}) ->
+                          array_context=AryCtx,
+                          auth_req=AuthReq}) ->
 
     %% Populate the process dictionary.
     map(fun({K,V}) -> put(K, V) end,
         [{site, Site}, {path, Path}, {x, Col}, {y, Row}, 
          {array_context, AryCtx},
-         {retvals, {[], [], []}}, {recompile, false}]),
+         {retvals, {[], [], []}}, {recompile, false},
+         {auth_req, AuthReq}]),
     
     Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
     Result = eval_formula(Fcode),
@@ -411,8 +414,13 @@ do_cell(RelPath, Rowidx, Colidx) ->
     Path = muin_util:walk_path(?mpath, RelPath),
     IsCircRef = (Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath),
     ?IF(IsCircRef, ?ERR_CIRCREF),
-    FetchFun = ?L(get_cell_info(?msite, Path, Colidx, Rowidx)),
-    get_value_and_link(FetchFun).
+    case auth_srv2:get_any_view(?msite, Path, ?mar) of
+        {view, _} ->
+            FetchFun = ?L(get_cell_info(?msite, Path, Colidx, Rowidx)),
+            get_value_and_link(FetchFun);
+        _Else ->
+            ?ERR_AUTH
+    end.
 
 %% @doc Calls supplied fun to get a cell's value and dependence information,
 %% saves the dependencies (linking it to current cell), and returns

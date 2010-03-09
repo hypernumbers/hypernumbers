@@ -2170,16 +2170,18 @@ local_idx_to_refX(S, Idx) ->
 
 %% @doc Make a #muin_rti record out of a ref record and a flag that specifies 
 %% whether to run formula in an array context.
-refX_to_rti(#refX{site = S, path = P, obj = {cell, {C, R}}}, AC)
+refX_to_rti(#refX{site = S, path = P, obj = {cell, {C, R}}}, AR, AC)
   when is_boolean(AC) ->
     #muin_rti{site = S, path = P, 
               col = C, row = R, 
-              array_context = AC};
-refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AC)
+              array_context = AC,
+              auth_req = AR};
+refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
   when is_boolean(AC) ->
     #muin_rti{site = S, path = P, 
               col = C, row = R, 
-              array_context = AC}.
+              array_context = AC,
+              auth_req = AR}.
 
 get_local_idxs(Site, Match) ->
     Table = trans(Site, local_objs),
@@ -3201,10 +3203,9 @@ write_attr2(RefX, {"formula", Val}, Ar) ->
         [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
     end.
 
-%%{muin_rti,"http://127.0.0.1:9000", ["e_operator_add","add"],22,22,false}
 
 write_formula1(RefX, Fla, Val, Ar) ->
-    Rti = refX_to_rti(RefX, false),
+    Rti = refX_to_rti(RefX, Ar, false),
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
@@ -3216,24 +3217,13 @@ write_formula1(RefX, Fla, Val, Ar) ->
             #refX{site = Site, path = Path, obj = R} = RefX,
             ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
-            Res2 = case Ar of 
-                       nil -> Res; 
-                       Ar ->
-                           Vs = [auth_srv2:get_any_view(PSite, PPath, Ar)
-                                 || {"local", {PSite, PPath, _,_}} <- Parents],
-                           All = lists:all(fun({view, _}) -> true; 
-                                              (_)         -> false end,
-                                           Vs),
-                           if All  -> Res; 
-                              true -> {errval, '#AUTH!'} end
-                   end,
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
             %% Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
             ok = write_attr3(RefX, {"__ast", Pcode}),
             ok = write_attr3(RefX, {"__recompile", Recompile}),
             %% write the default text align for the result
-            ok = write_default_alignment(RefX, Res2),
-            write_cell(RefX, Res2, Val, Parxml, Deptree)
+            ok = write_default_alignment(RefX, Res),
+            write_cell(RefX, Res, Val, Parxml, Deptree)
     end.
 
 write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->

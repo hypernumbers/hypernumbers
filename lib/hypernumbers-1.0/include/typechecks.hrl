@@ -47,7 +47,8 @@
         X == ?ERRVAL_NULL orelse X == ?ERRVAL_DIV orelse
         X == ?ERRVAL_VAL  orelse X == ?ERRVAL_REF orelse
         X == ?ERRVAL_NAME orelse X == ?ERRVAL_NUM orelse
-        X == ?ERRVAL_NA   orelse X == ?ERRVAL_CIRCREF).
+        X == ?ERRVAL_NA   orelse X == ?ERRVAL_CIRCREF orelse
+        X == ?ERRVAL_AUTH).
 
 -define(is_operator(X),
         X == '+'; X == '*'; X == '/'; X == '-'; X == '^';

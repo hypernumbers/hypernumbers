@@ -71,6 +71,7 @@ die_on_errval(Vs) ->
                (?ERRVAL_NUM)     -> ?ERR_NUM;
                (?ERRVAL_NA)      -> ?ERR_NA;
                (?ERRVAL_CIRCREF) -> ?ERR_CIRCREF;
+               (?ERRVAL_AUTH)    -> ?ERR_AUTH;
                (_)               -> nothing
             end,
             Vs),

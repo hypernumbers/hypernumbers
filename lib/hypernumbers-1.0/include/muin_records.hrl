@@ -4,7 +4,8 @@
 %% Runtime information: describes the context in which to run a formula.
 -record(muin_rti, {
           site, path, col, row,   % target cell
-          array_context = false   % array formula?
+          array_context = false,  % array formula?
+          auth_req = nil
          }).
 
 
