@@ -90,7 +90,7 @@ dump_mnesia(Site, SiteDest) ->
 
 dump_users(Site, SiteDest) ->
     Users = hn_users:dump_script(Site),
-    ok = file:write_file(filename:join(SiteDest, "users.script"), Users).
+    ok = file:write_file(filename:join(SiteDest, "users.dump"), Users).
 
 dump_perms(Site, SiteDest) ->
     Perms = auth_srv2:dump_script(Site),
@@ -143,7 +143,7 @@ load_etf(Site, SiteSrc) ->
 
 -define(pget(Key, List), (proplists:get_value(Key, List))).
 load_users(Site, SiteSrc) ->
-    {ok, Users} = file:consult(filename:join(SiteSrc, "users.script")),
+    {ok, Users} = file:consult(filename:join(SiteSrc, "users.dump")),
     [ok = hn_users:create_raw(Site, 
                     ?pget(name, U), ?pget(groups, U),
                     ?pget(password, U), ?pget(data, U)) 
