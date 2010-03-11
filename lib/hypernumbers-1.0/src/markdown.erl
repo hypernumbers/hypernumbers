@@ -17,6 +17,8 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+-include("hypernumbers.hrl").
+
 -define(SPACE, 32).
 -define(TAB,    9).
 -define(LF,    10).
@@ -111,9 +113,8 @@ p1([{tag, Tag} | T], R, I, Acc) ->
                                 [pad(I) ++ make_tag_str(Tag) | Acc])
     end;
 
-p1([{blocktag, {{{tag, open}, Type}, Tg} = _Tag} | T], R, I, Acc) ->
+p1([{blocktag, [{{{tag, open}, Type}, Tg}] = _Tag} | T], R, I, Acc) ->
     {Block, Rest} = grab_for_blockhtml(T, Type, []),
-    % io:format("Block is ~p~n", [Block]),
     %% add the line end back in for testing
     Str = lists:flatten([Tg , "\n" | Block]),
     p1(Rest, R, I, [Str | Acc]);
@@ -241,19 +242,15 @@ p1([{inlineref, _P} | T], R, I, Acc) ->
     p1(T, R, I, Acc).
 
 grab_for_blockhtml([], Type, Acc) ->
-    % io:format("In 1~n"),
     {lists:reverse(["</" ++ Type ++ ">" | Acc]), []};
-grab_for_blockhtml([{blocktag, {{{tag, close}, Type}, Tg}}
+grab_for_blockhtml([{blocktag, [{{{tag, close}, Type}, Tg}]}
                     | T], Type,  Acc) ->
-    % io:format("in 2~n"),
     {lists:reverse([Tg | Acc]), T};
 grab_for_blockhtml([{tag, {{{tag, self_closing}, _Ty}, Tg}}
                     | T], Type, Acc) ->
     %% add the line end back in for testing
-    % io:format("in 3~n"),
     grab_for_blockhtml(T, Type, [Tg | Acc]);
 grab_for_blockhtml([H | T], Type, Acc) ->
-    % io:format("in 4 H is ~p~n", [H]),
     {_Type, Content} = H,
     Str = make_plain_str(Content),
     grab_for_blockhtml(T, Type, [Str | Acc]).
@@ -528,7 +525,7 @@ t_l1([[{{{tag, _Type}, Tag}, _ } = H | T1] = List | T], A1, A2) ->
     case is_blank(T1) of
         false -> t_l1(T, A1, [{normal , List} | A2]);
         true  -> case is_block_tag(Tag) of
-                     true  -> t_l1(T, A1, [{blocktag , H} | A2]);
+                     true  -> t_l1(T, A1, [{blocktag , [H]} | A2]);
                      false -> t_l1(T, A1, [{tag, H} | A2])
                  end
     end;
