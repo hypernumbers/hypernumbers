@@ -90,7 +90,7 @@ dump_mnesia(Site, SiteDest) ->
 
 dump_users(Site, SiteDest) ->
     Users = hn_users:dump_script(Site),
-    ok = file:write_file(filename:join(SiteDest, "users.script"), Users).
+    ok = file:write_file(filename:join(SiteDest, "users.export"), Users).
 
 dump_perms(Site, SiteDest) ->
     Perms = auth_srv2:dump_script(Site),
