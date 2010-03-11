@@ -125,10 +125,12 @@ chown hypernumbers:hypernumbers /hn
 #|  |   |   |    |___ |  \ | \| |__| |  | |__] |___ |  \ ___] 
 ##################################################
 
-su hypernumbers
+if [ ! -d "/hn/hypernumbers" ]; then
 cd /hn
-git clone git@github.com:hypernumbers/hypernumbers.git
-exit
+su hypernumbers -c 'git clone git@github.com:hypernumbers/hypernumbers.git'
+fi
+cd /hn/hypernumbers
+su hypernumbers -c './hn build'
 
 rm -Rf /etc/nginx/*
 cp -r /hn/hypernumbers/priv/nginx/* /etc/nginx
