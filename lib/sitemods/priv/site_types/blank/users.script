@@ -11,23 +11,7 @@
 %% {password, '$password'}
 
 %% (At the moment nothing is done with e-mail
-{{user, "gordon"},
- {group, ["user", "dev", "admin", "hypernumbers"]},
- {email, "gordon@hypernumbers.com"},
- {password, "go!live"}}.
-{{user, "dale"},
- {group, ["user", "dev", "admin", "hypernumbers"]},
- {email, "dale@hypernumbers.com"},
- {password, "the!bhoys"}}.
-{{user, "stevie"},
- {group, ["user", "dev", "admin", "hypernumbers"]},
- {email, "stephen@hypernumbers.com"},
- {password, "celt!67"}}.
-{{user, "tom"},
- {group, ["user", "dev", "admin", "hypernumbers"]},
- {email, "tom@hypernumbers.com"},
- {password, "o!canada"}}.
-{{user, "user"},
- {group, ["user"]},
- {email, "team@hypernumbers.com"},
- {password, "secure!ya!bas"}}.
+{{user, '$user'},
+ {group, ["dev"]},
+ {email, '$email'},
+ {password, '$password'}}.
