@@ -1,6 +1,6 @@
 server
 {
-    listen        80 default;
+    listen        80;
     server_name   alpha.hypernumbers.com *.alpha.hypernumbers.com;
     error_page    502 503 504 /maintenance.html;
 
