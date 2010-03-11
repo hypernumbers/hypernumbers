@@ -3,6 +3,7 @@
 -behaviour(gen_server).
 
 -include("spriki.hrl").
+-include("hypernumbers.hrl").
 
 %% API
 -export([start_link/2]).
@@ -78,7 +79,7 @@ handle_tock([H | T]) ->
                          ok;
                      Else ->
                          Msg = lists:flatten(io_lib:format("~p",[Else])),
-                         Ref = RefX1#refX{obj = {cell, {3, MaxF+1}}},
+                         Ref = RefX1#refX{obj = {cell, {4, MaxF+1}}},
                          ok = hn_db_api:write_attributes(
                                 [{Ref, [{"formula", Msg}]}])
                  end
@@ -124,8 +125,6 @@ provision(CurrentSite, Port, Row, State) ->
     List = hn_db_api:read_attributes(RefX, ["formula"]),
 
     {Type, Email, SubDomain} = parse(List),
-    io:format("Type is ~p Email is ~p SubDomain is ~p~n",
-              [Type, Email, SubDomain]),
     SubDomain2 = ustring:pr(ustring:to_lower(ustring:new(SubDomain))),
     Type2 = normalise(Type),
     Password = tiny_util:get_password(),
@@ -134,10 +133,7 @@ provision(CurrentSite, Port, Row, State) ->
     RefX2 = RefX#refX{obj = {cell, {5, Row}}},
 
     Template = code:priv_dir(sitemods) ++ "/site_types/" ++ Type2,
-
     DoesSiteTemplateExist = filelib:is_dir(Template),
-    io:format("Template is ~p DoesSiteTemplateExist is ~p~n",
-              [Template, DoesSiteTemplateExist]),
 
     case DoesSiteTemplateExist of
         false ->
@@ -163,7 +159,7 @@ provision(CurrentSite, Port, Row, State) ->
                                 {password, Password},
                                 {subdomain, Sub }
                                ]),
-
+            
             S = "Hi ~s~n~nWelcome to hypernumbers, we have set up your site "
                 "at:~n~n ~s~n~nTo make changes to the site follow the "
                 "instructions on the main page"
@@ -173,10 +169,10 @@ provision(CurrentSite, Port, Row, State) ->
                 "The hypernumbers team",
 
             Msg = fmt(S, [User, EmailNewSite, User, Password]),
-
+                        
             case application:get_env(hypernumbers, environment) of
                 {ok, development} ->
-                    io:format("~p",[Msg]);
+                    ?INFO("~p",[Msg]);
                 {ok, production}  ->
                     hn_util:email(Email,
                                   "\"Hypernumbers Team\""
@@ -184,7 +180,7 @@ provision(CurrentSite, Port, Row, State) ->
                                   "Your new Hypernumbers site is live!", Msg)
             end
     end,
-
+    
     ok = hn_db_api:write_attributes([
                                      {RefX1, [{"formula", Sub}]},
                                      {RefX2, [{"formula", Password}]}

@@ -13,6 +13,7 @@
         ]).
 
 -include("spriki.hrl").
+-include("hypernumbers.hrl").
 
 %% Setup a new site from scratch
 -spec site(string(), atom(), [{atom(), any()}]) -> ok.
@@ -110,6 +111,8 @@ setup(Site, Type, _Opts, sitefiles) ->
     ok = filelib:ensure_dir(sitedir(Site)),
     % first copy over the standard type
     ok = hn_util:recursive_copy(moddir(Type), sitedir(Site));
+setup(Site, _Type, _Opts, batch) ->
+    ok = batch_import(Site);
 setup(Site, Type, _Opts, json) ->
     ok = import_json(Site, moddir(Type));
 setup(Site, _Type, _Opts, permissions) ->
@@ -200,6 +203,20 @@ tables() ->
       ?TBL(page_vsn,              set,    	   []),         
       ?TBL(page_history,          bag,    	   []) ].
 
+
+%% Import files on a batch basis
+batch_import(Site) ->
+    Files = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:site_to_fs(Site) ++ "/import/*.csv",
+    OverWild    = filelib:wildcard(Files ++ ".overwrite"),
+    AppendWild  = filelib:wildcard(Files ++ ".append"),
+    OverFiles   = lists:filter(fun is_path/1, OverWild),
+    AppendFiles = lists:filter(fun is_path/1, AppendWild),
+    [ ok = hn_import:csv_file(Site ++ create_path_from_name(X), X) || X <- OverFiles],
+    [ ok = hn_import:csv_file(Site ++ create_path_from_name(X), X) || X <- AppendFiles],
+    
+    io:format("OverFiles is ~p~nAppendFiles is ~p~n", [OverFiles, AppendFiles]),
+    ok.
 
 %% Import a set of json files into the live spreadsheet
 import_json(Site, Dir) ->

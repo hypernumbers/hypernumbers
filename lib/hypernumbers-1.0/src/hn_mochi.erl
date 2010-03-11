@@ -2,6 +2,7 @@
 %%% @doc Handle Hypernumbers HTTP requests
 -module(hn_mochi).
 
+-include("hypernumbers.hrl").
 -include("spriki.hrl").
 
 -include_lib("kernel/include/file.hrl").
@@ -410,7 +411,7 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
                 {ok, Token} ->
                     [{"response","success"},{"token",Token}]
             end,
-     json(Req, {struct, Resp});
+    json(Req, {struct, Resp});
 
  %% the purpose of this message is to mark the mochilog so we don't 
  %% need to do nothing with anything...

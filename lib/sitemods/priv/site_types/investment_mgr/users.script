@@ -1,36 +1,7 @@
+
 %%-*-erlang-*-
 %% (At the moment nothing is done with e-mail
-{{user, "gordon"},
- {group, ["user", "dev", "admin", "hypernumbers"]},
- {email, "gordon@hypernumbers.com"},
- {password, "go!live"}}.
-
-{{user, "zemanta"},
- {group, ["user"]},
- {email, "zemanta@zemanta.com"},
- {password, "password"}}.
-
-{{user, "hypernumbers"},
- {group, ["user"]},
- {email, "hypernumbers@hypernumbers.com"},
- {password, "password"}}.
-
-{{user, "kublax"},
- {group, ["user"]},
- {email, "kublax@kublax.com"},
- {password, "password"}}.
-
-{{user, "rentmineonline"},
- {group, ["user"]},
- {email, "rentmineonline@rentmineonline.com"},
- {password, "password"}}.
-
-{{user, "tablefinder"},
- {group, ["user"]},
- {email, "tablefinder@tablefinder.com"},
- {password, "password"}}.
-
-{{user, "buildersite"},
- {group, ["user"]},
- {email, "buildersite@buildersite.com"},
- {password, "password"}}.
+{{user, '$user'},
+ {group, ["dev"]},
+ {email, '$email'},
+ {password, '$password'}}.
