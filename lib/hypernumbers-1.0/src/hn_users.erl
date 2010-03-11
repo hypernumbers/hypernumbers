@@ -165,6 +165,7 @@ login(Site, Name, Pass, Remember) ->
     case mnesia:transaction(F) of
         {atomic, []}      -> {error,invalid_user};
         {atomic, [NUser]} -> Token = gen_authtoken(NUser, Remember),
+                             ?INFO("Token is ~p~n", [Token]),
                              {ok, Token}
     end.
 
@@ -205,7 +206,7 @@ expires("false") ->
     
 gen_authtoken(#hn_user{name=Name}, Remember) ->
     Expires = expires(Remember),
-    ?FORMAT("~s:~s:~s",[Expires, Name, gen_hash(Name, Expires)]).
+    ?FORMAT("~s:~ts:~s",[Expires, Name, gen_hash(Name, Expires)]).
 
 p(Pass) ->
     binary_to_list(crypto:md5(Pass)).
