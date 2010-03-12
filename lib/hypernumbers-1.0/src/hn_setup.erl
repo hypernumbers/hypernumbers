@@ -9,7 +9,8 @@
          site_exists/1,
          get_sites/0,
          get_site_type/1,
-         resave_views/0
+         resave_views/0,
+         create_site_tables/2
         ]).
 
 -include("spriki.hrl").
@@ -21,7 +22,7 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
     All = [corefiles, sitefiles, json, permissions,
            script, user_permissions, users],
-    ok = create_site(Site, Type),
+    ok = create_site_tables(Site, Type),
     ok = sitemaster_sup:add_site(Site),
     ok = update(Site, Type, Opts, All).
 
@@ -166,8 +167,8 @@ resave_view(Path) ->
     {ok, [Data]} = file:consult(Path),
     ok           = hn_mochi:save_view(NSite, ViewName, Data).
 
--spec create_site(string(), atom()) -> ok.
-create_site(Site, Type)->
+-spec create_site_tables(string(), atom()) -> ok.
+create_site_tables(Site, Type)->
     %% Seems sensible to keep this restricted
     %% to disc_copies for now
     Storage = disc_copies,

@@ -119,7 +119,7 @@ import(Src, Sites) ->
 import_site(Src, Site) ->
     SiteSrc = join([Src, hn_util:site_to_fs(Site)]),
     Type    = load_type(SiteSrc),
-    ok = hn_setup:site(Site, Type, []),
+    ok = hn_setup:create_site_tables(Site, Type),
     ok = load_etf(Site, SiteSrc),
     ok = load_users(Site, SiteSrc),
     ok = load_views(Site, SiteSrc),
