@@ -1,0 +1,4 @@
+%%-*-erlang-*-
+{add_view,[{path,[]},
+           {perms,[{group,"dev"},everyone]},
+           {view,"_g/core/spreadsheet"}]}.
