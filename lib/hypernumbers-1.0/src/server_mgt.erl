@@ -16,29 +16,26 @@
          import/1, import/2,
          export_as_sitemod/2 ]).
 
-%% Auxillary functions.
-%-export([backup, move, delete, etc...]).
 
 %% Exports a site as a sitemod that can be loaded by a factory
 -spec export_as_sitemod(atom(), list()) -> ok.
 export_as_sitemod(NewType, Site) ->
-    SiteType = join([code:lib_dir(sitemods), "priv", "site_types"]),
+    SiteTypes = join([code:lib_dir(sitemods), "priv", "site_types"]),
     OldType  = hn_setup:get_site_type(Site),
 
-    % TODO, this might be ok, but need support for exporting
-    % and importing users (dont copy if the same file)
+    %% TODO. This is not a users.script for for a sitemod.
     (OldType =/= NewType) andalso
-        file:copy(join([SiteType, OldType, "users.script"]),
-                  join([SiteType, NewType, "users.script"])),
+        file:copy(join([SiteTypes, OldType, "users.export"]),
+                  join([SiteTypes, NewType, "users.export"])),
     
-    ok = export_site(join([SiteType, NewType]), Site),
-    ok = hn_util:recursive_copy(join([SiteType, NewType,"etf"]),
-                                join([SiteType, NewType, "data"])),
+    ok = export_site(join([SiteTypes, NewType]), Site),
+    ok = hn_util:recursive_copy(join([SiteTypes, NewType,"etf"]),
+                                join([SiteTypes, NewType, "data"])),
     
     % Delete backup things
-    [ file:delete( join([SiteType, NewType,  File]) )
+    [ file:delete( join([SiteTypes, NewType,  File]) )
       || File <- ["type", "mnesia.backup"] ],
-    [ hn_util:delete_directory( join([SiteType, NewType, join(Dir)]) )
+    [ hn_util:delete_directory( join([SiteTypes, NewType, join(Dir)]) )
       || Dir <- [["etf"], ["views", "_g", "core"]] ],
     ok. 
     
@@ -143,7 +140,7 @@ load_etf(Site, SiteSrc) ->
 
 -define(pget(Key, List), (proplists:get_value(Key, List))).
 load_users(Site, SiteSrc) ->
-    {ok, Users} = file:consult(filename:join(SiteSrc, "users.script")),
+    {ok, Users} = file:consult(filename:join(SiteSrc, "users.export")),
     [ok = hn_users:create_raw(Site, 
                     ?pget(name, U), ?pget(groups, U),
                     ?pget(password, U), ?pget(data, U)) 
