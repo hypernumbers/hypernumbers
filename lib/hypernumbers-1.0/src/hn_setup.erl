@@ -1,7 +1,7 @@
 -module(hn_setup).
 
 -export([
-         site/3,
+         site/3, site/4,
          delete_site/1, 
          update/0, update/1,
          update/3,
@@ -10,7 +10,8 @@
          get_sites/0,
          get_site_type/1,
          resave_views/0,
-         create_site_tables/2
+         create_path_from_name/1,
+         is_path/1
         ]).
 
 -include("spriki.hrl").
@@ -19,12 +20,16 @@
 %% Setup a new site from scratch
 -spec site(string(), atom(), [{atom(), any()}]) -> ok.
 site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
+    error_logger:info_msg("wtf: ~n", []),
+    site(Site, Type, Opts, [corefiles, sitefiles, json, permissions,
+                            script, user_permissions, users]).
+
+-spec site(string(), atom(), [{atom(), any()}], [atom()]) -> ok.
+site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
     error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
-    All = [corefiles, sitefiles, json, permissions,
-           script, user_permissions, users],
     ok = create_site_tables(Site, Type),
     ok = sitemaster_sup:add_site(Site),
-    ok = update(Site, Type, Opts, All).
+    ok = update(Site, Type, Opts, ToLoad).
 
 %% Delete a site
 -spec delete_site(string()) -> ok.

@@ -90,7 +90,7 @@ dump_mnesia(Site, SiteDest) ->
 
 dump_users(Site, SiteDest) ->
     Users = hn_users:dump_script(Site),
-    ok = file:write_file(filename:join(SiteDest, "users.script"), Users).
+    ok = file:write_file(filename:join(SiteDest, "users.export"), Users).
 
 dump_perms(Site, SiteDest) ->
     Perms = auth_srv2:dump_script(Site),
@@ -119,7 +119,7 @@ import(Src, Sites) ->
 import_site(Src, Site) ->
     SiteSrc = join([Src, hn_util:site_to_fs(Site)]),
     Type    = load_type(SiteSrc),
-    ok = hn_setup:create_site_tables(Site, Type),
+    ok = hn_setup:site(Site, Type, [], [corefiles, sitefiles]),
     ok = load_etf(Site, SiteSrc),
     ok = load_users(Site, SiteSrc),
     ok = load_views(Site, SiteSrc),
@@ -129,16 +129,11 @@ load_type(SiteSrc) ->
     {ok, [Type]} = file:consult(join([SiteSrc, "type"])),
     Type.
 
-load_etf(Site, SiteSrc) ->
-    EtfSrc = join([SiteSrc, "etf"]),
-    Jsons  = filelib:wildcard("path.*.json", EtfSrc),
-    Paths  = [hn_util:list_to_path(
-                string:tokens(
-                  filename:basename(P, ".json"), 
-                  "."
-                 )) || "path."++P <- Jsons],
-    [ok = hn_import:json_file(Site++Path, join([EtfSrc, Json])) ||
-        {Json, Path} <- lists:zip(Jsons, Paths)],
+load_etf(Site, SiteSrc) ->    
+    Files = filelib:wildcard(join([SiteSrc, "etf"])++"/*.json"),
+    [ ok = hn_import:json_file(Site ++ hn_setup:create_path_from_name(Json),
+                               Json)
+      || Json <- Files, hn_setup:is_path(Json) ],    
     ok.
 
 -define(pget(Key, List), (proplists:get_value(Key, List))).
@@ -162,4 +157,3 @@ load_perms(Site, SiteSrc) ->
 
 join(FileName) ->
     filename:join(FileName).
-

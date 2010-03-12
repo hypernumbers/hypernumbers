@@ -10,12 +10,12 @@
      {{127,0,0,1}, 9001},
      {{127,0,0,1}, 9002}
     ]},
-   %{pingto, "http://hypernumbers.com"},
+   {pingto, "http://hypernumbers.com"},
    {bootstrapped,
-    [{"http://127.0.0.1:9000", hypernumbers, []},
-     {"http://127.0.0.1:9001", factory,
+    [{"http://localhost:9000", hypernumbers, []},
+     {"http://localhost:9001", factory,
       [{init_args, [{host, "localhost"}, {port, 9002},
-                    {self, "http://127.0.0.1:9001"}]}]}
+                    {self, "http://localhost:9001"}]}]}
     ]},
       
    % Mail Setup
