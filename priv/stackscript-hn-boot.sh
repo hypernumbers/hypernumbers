@@ -126,8 +126,8 @@ chown hypernumbers:hypernumbers /hn
 ##################################################
 
 if [ ! -d "/hn/hypernumbers" ]; then
-cd /hn
-su hypernumbers -c 'git clone git@github.com:hypernumbers/hypernumbers.git'
+    cd /hn
+    su hypernumbers -c 'git clone git@github.com:hypernumbers/hypernumbers.git'
 fi
 cd /hn/hypernumbers
 su hypernumbers -c './hn build'
