@@ -125,6 +125,9 @@ chown hypernumbers:hypernumbers /hn
 #|  |   |   |    |___ |  \ | \| |__| |  | |__] |___ |  \ ___] 
 ##################################################
 
+su hypernumbers -c 'mkdir -p /hn/dev-www'
+su hypernumbers -c 'mkdir -p /hn/files-www'
+
 if [ ! -d "/hn/hypernumbers" ]; then
     cd /hn
     su hypernumbers -c 'git clone git@github.com:hypernumbers/hypernumbers.git'
