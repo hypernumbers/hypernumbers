@@ -6,16 +6,17 @@
    
    % Hosts to bind Mochiweb to
    {hosts,
-    [{{127,0,0,1}, 9000},
-     {{127,0,0,1}, 9001},
-     {{127,0,0,1}, 9002}
+    [{{127,0,0,1}, 9000}, % dev port
+     {{127,0,0,1}, 9090},
+     {{127,0,0,1}, 9091},
+     {{127,0,0,1}, 9092}
     ]},
    {pingto, "http://hypernumbers.com"},
    {bootstrapped,
     [{"http://localhost:9000", hypernumbers, []},
-     {"http://localhost:9001", factory,
-      [{init_args, [{host, "localhost"}, {port, 9002},
-                    {self, "http://localhost:9001"}]}]}
+     {"http://fn.localhost:9000", factory,
+      [{init_args, [{host, "fn.localhost"}, {port, 9000},
+                    {self, "http://fn.localhost:9000"}]}]}
     ]},
       
    % Mail Setup
