@@ -100,7 +100,7 @@ chown -R gordon:gordon /home/gordon
 
 useradd -m -s /bin/bash -G admin dale
 mkdir -p /home/dale/.ssh
-echo ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEApG1/IGLNu9/vwpVD230blggPE8dDV3DtEVf7vRzvI21pB1c2XHGPcNcR7fkqpqdPBMAB94wmJ+4QwWxTOHF3h7vencrfZNOe6US+C3eytgBAunl5MwW4+qXm8TBRWZ0MGqVafvMs8FX6wiwlPaeD5uWwxBtTBj99G6ZULxKEg7tujBEMnPSQQxhUWKmqvo+amp5s/jVXHMHXz1f36azsuvI/as4zVV4kCombfgHPG987pJGnq//mnNCGKcWRscGhNjvAR4C4hT4MW/c0nKmTRSGEN5sdYlnd2rQ3gBaMJb0WyCUFmX9fE5grImxfYsw6gUtJAAiQMtoMoGw5veOGxw== dale@arandomurl.com > /home/dale/.ssh/authorized_keys
+echo ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5zBO8Gp4vUv9ShxQ2zAah21n4F1iAYG0Fif2RVs6LcY7NeKL3khQbN1WQLLmCcLOmvwlMbQFDW2f79oupWPUFBWXTl2H8bqHxhu1C5H+2poAq00i/8XUuK/rhZGiktjpBUAaSxMRSkHqlXy/bWFrD0XCJGBPAiHY40pLSkGHaQAKC6JhKgLjFOMyNZihj0C68zpbq+WHKbAyuAg700N/ZJpdh/etk/vSMJEmtsvja04NVLQztHyAPYbKfEeAzrfevvTF3AYnhDJ6pOvsVlIHTAHb/zkSZ3e2clmuXPraET3JluhvGXF2HnfbUQdc+1q+g9eODcELS9KUWi3sYQ8cfQ== > /home/dale/.ssh/authorized_keys
 chown -R dale:dale /home/dale
 
 useradd -m -s /bin/bash -G admin tom

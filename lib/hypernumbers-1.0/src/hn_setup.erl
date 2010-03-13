@@ -49,7 +49,7 @@ delete_site(Site) ->
 %% Update all existing sites with default options
 -spec update() -> ok. 
 update() ->
-    update([], [corefiles]).
+    update([], [corefiles, sitefiles]).
 
 
 -spec update(list()) -> ok. 
