@@ -21,7 +21,8 @@ main(Args) ->
     try dispatch(Args) 
     catch throw:Error ->
             io:format("Error running script:~n  ~p",[Error])
-    end.
+    end,
+    net_kernel:stop().
 
 dispatch(["build"])         -> build();
 dispatch(["quick"])         -> build_quick();
