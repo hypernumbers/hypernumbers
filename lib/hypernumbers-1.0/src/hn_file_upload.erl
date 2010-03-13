@@ -119,7 +119,7 @@ defaultize(M) ->
 
 
 test_import(File) ->
-    test_import(File, hn_util:parse_url("http://127.0.0.1:9000/")).
+    test_import(File, hn_util:parse_url("http://localhost:9000/")).
 
 test_import(File, Ref) ->
     Path = code:lib_dir(hypernumbers)++"/../../tests/excel_files/"

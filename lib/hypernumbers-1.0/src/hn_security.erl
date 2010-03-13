@@ -15,11 +15,11 @@
 %%                             {"formula","Field 3"}]},
 %%                    {struct,[{"ref","/u/gordon/blah/D:D"},
 %%                             {"formula","Field 4"}]}]
-%% Ref is {refX,"http://127.0.0.1:9000",["u","gordon","blah"],{page,"/"},[]}
+%% Ref is {refX,"http://localhost:9000",["u","gordon","blah"],{page,"/"},[]}
 %%
 %% this is how a cell posts
 %% in ipost Array is [{struct,[{"ref","/u/gordon/blah/D:D"},{"formula","Test"}]}]
-%% Ref is {refX,"http://127.0.0.1:9000",["u","gordon","blah"],{page,"/"},[]}
+%% Ref is {refX,"http://localhost:9000",["u","gordon","blah"],{page,"/"},[]}
 
 %%%-------------------------------------------------------------------
 -module(hn_security).

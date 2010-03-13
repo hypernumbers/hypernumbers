@@ -69,7 +69,7 @@
 
 %% @hidden
 delete() ->
-    _Site1 = "http://127.0.0.1:9000",
+    _Site1 = "http://localhost:9000",
     Path = ["delete"],
     _Path2 = ["another", "path"],
     
@@ -133,7 +133,7 @@ delete() ->
 
 %% @hidden
 a() ->
-    Site1 = "http://127.0.0.1:9000",
+    Site1 = "http://localhost:9000",
     Site2 = "http://il_ballo.dev:9000",
     Site3 = "http://expenses.vixo.dev:9000",
     Path = ["a"],
@@ -196,7 +196,7 @@ dirty4() ->
    
     % first up a cell on the parent page
     Path = ["dirty1"],
-    %Site = "http://127.0.0.1:9000",
+    %Site = "http://localhost:9000",
 
     insert_delete(FunName, Path, {cell, {1, 2}}, vertical).
                  
@@ -216,42 +216,42 @@ dirty2() ->
 
     Path = [FunName],
     %Path2 = [FunName, "data"],
-    %Site = "http://127.0.0.1:9000",
+    %Site = "http://localhost:9000",
     Site2 = "http://il_ballo.dev:9000",
     
     io:format("Clearing the cells...~n"),
     
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A1?hypernumber\")", {1, 1}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A2?hypernumber\")", {1, 2}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A3?hypernumber\")", {1, 3}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A4?hypernumber\")", {1, 4}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A5?hypernumber\")", {1, 5}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A6?hypernumber\")", {1, 6}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A7?hypernumber\")", {1, 7}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A8?hypernumber\")", {1, 8}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A9?hypernumber\")", {1, 9}, []),
-    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A10?hypernumber\")", {1, 10}, []).
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A11?hypernumber\")", {1, 11}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A12?hypernumber\")", {1, 12}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A13?hypernumber\")", {1, 13}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A14?hypernumber\")", {1, 14}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A15?hypernumber\")", {1, 15}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A16?hypernumber\")", {1, 16}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A17?hypernumber\")", {1, 17}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A18?hypernumber\")", {1, 18}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A19?hypernumber\")", {1, 19}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A20?hypernumber\")", {1, 20}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A21?hypernumber\")", {1, 21}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A22?hypernumber\")", {1, 22}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A23?hypernumber\")", {1, 23}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A24?hypernumber\")", {1, 24}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A25?hypernumber\")", {1, 25}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A26?hypernumber\")", {1, 26}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A27?hypernumber\")", {1, 27}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A28?hypernumber\")", {1, 28}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A29?hypernumber\")", {1, 29}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A30?hypernumber\")", {1, 30}, []),
-%    write_value(Site2, Path, "=hn(\"http://127.0.0.1:9000/dirty1/A31?hypernumber\")", {1, 31}, []).
+    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A1?hypernumber\")", {1, 1}, []),
+    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A2?hypernumber\")", {1, 2}, []),
+    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A3?hypernumber\")", {1, 3}, []),
+    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A4?hypernumber\")", {1, 4}, []),
+    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A5?hypernumber\")", {1, 5}, []),
+    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A6?hypernumber\")", {1, 6}, []),
+    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A7?hypernumber\")", {1, 7}, []),
+    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A8?hypernumber\")", {1, 8}, []),
+    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A9?hypernumber\")", {1, 9}, []),
+    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A10?hypernumber\")", {1, 10}, []).
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A11?hypernumber\")", {1, 11}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A12?hypernumber\")", {1, 12}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A13?hypernumber\")", {1, 13}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A14?hypernumber\")", {1, 14}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A15?hypernumber\")", {1, 15}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A16?hypernumber\")", {1, 16}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A17?hypernumber\")", {1, 17}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A18?hypernumber\")", {1, 18}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A19?hypernumber\")", {1, 19}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A20?hypernumber\")", {1, 20}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A21?hypernumber\")", {1, 21}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A22?hypernumber\")", {1, 22}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A23?hypernumber\")", {1, 23}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A24?hypernumber\")", {1, 24}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A25?hypernumber\")", {1, 25}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A26?hypernumber\")", {1, 26}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A27?hypernumber\")", {1, 27}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A28?hypernumber\")", {1, 28}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A29?hypernumber\")", {1, 29}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A30?hypernumber\")", {1, 30}, []),
+%    write_value(Site2, Path, "=hn(\"http://localhost:9000/dirty1/A31?hypernumber\")", {1, 31}, []).
 
 %% @hidden
 dirty1() ->
@@ -260,7 +260,7 @@ dirty1() ->
 
     Path = [FunName],
     %Path2 = [FunName, "data"],
-    %Site = "http://127.0.0.1:9000",
+    %Site = "http://localhost:9000",
     %Site2 = "http://il_ballo.dev:9000",
     
     io:format("Clearing the cells...~n"),
@@ -315,7 +315,7 @@ clear_DEBUG2() ->
 
     Path = [FunName],
     Path2 = [FunName, "data"],
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     Site2 = "http://il_ballo.dev:9000",
     
     io:format("Clearing the cells...~n"),
@@ -355,9 +355,9 @@ clear_DEBUG2() ->
 
     write_value(Path, "yyy", {1, 9}, []),
     write_value(Path, "<-- 2 remote children", {2, 9}, []),
-    write_value(Site2, Path2, "=hn(\"http://127.0.0.1:9000/clear/A9?hypernumber\")",
+    write_value(Site2, Path2, "=hn(\"http://localhost:9000/clear/A9?hypernumber\")",
                 {1, 9}, []),
-    write_value(Site2, Path2, "=hn(\"http://127.0.0.1:9000/clear/A9?hypernumber\")",
+    write_value(Site2, Path2, "=hn(\"http://localhost:9000/clear/A9?hypernumber\")",
                 {2, 9}, []),
      
     colour(Path, {1, 4}, "orange"),
@@ -375,7 +375,7 @@ clear_DEBUG2() ->
 
 %% @hidden
 clear_TEST() ->
-    % Site = "http://127.0.0.1:9000",
+    % Site = "http://localhost:9000",
     Path = ["test"],
 
     write_data("http://il_ballo.dev:9000",["data"]),
@@ -430,7 +430,7 @@ delete_cell_contents_DEBUG(Site, Path) ->
 
 %% @hidden
 delete_cell_contents_DEBUG(Path) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     io:format("In delete_cell_contents_DEBUG Path is ~p~n", [Path]),
     delete_cell_contents_DEBUG(Site, Path).
 
@@ -441,7 +441,7 @@ clear_cells_DEBUG(Site, Path) ->
 
 %% @hidden
 clear_cells_DEBUG(Path) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     clear_cells_DEBUG(Site, Path).
 
 %% @hidden
@@ -848,32 +848,32 @@ read_styles_DEBUG2(X) ->
     mnesia:activity(transaction, Fun).
 
 %% test_delete(Path, Target) ->
-%%     Site = "http://127.0.0.1:9000",
+%%     Site = "http://localhost:9000",
 %%     Ref = #refX{site = Site, path = Path, obj = Target},
 %%     hn_db_api:delete(Ref).
 
 test_delete(Path, Target, Type) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     Ref = #refX{site = Site, path = Path, obj= Target},
     hn_db_api:delete(Ref, Type).
 
 %% test_insert(Path, Target) ->
-%%     Site = "http://127.0.0.1:9000",
+%%     Site = "http://localhost:9000",
 %%     Ref = #refX{site = Site, path = Path, obj = Target},
 %%     hn_db_api:insert(Ref).
 
 test_insert(Path, Target, Type) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     Ref = #refX{site = Site, path = Path, obj= Target},
     hn_db_api:insert(Ref, Type).
 
 insert_delete(Fun, Path, Target, Type) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     Ref = #refX{site = Site, path = Path, obj= Target},
     erlang:apply(hn_db_api, list_to_atom(Fun), [Ref, Type]).
 
 cut_n_drag_n_copy_n_drop_n_paste(Fun, Path, From, To) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     From1 = #refX{site =  Site, path = Path, obj = From},
     To1   = #refX{site =  Site, path = Path, obj = To},
     erlang:apply(hn_db_api, list_to_atom(Fun), [From1, To1]).
@@ -886,7 +886,7 @@ write_value(Site, Path, Value, {X, Y}, Attributes) ->
 
 %% just write to the default
 write_value(Path, Value, {X, Y}, Attributes) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     write_value(Site, Path, Value, {X, Y}, Attributes).
 
 write_attr_DEBUG(_RefX, []) -> ok;
@@ -903,7 +903,7 @@ write_attr_DEBUG(RefX, [Attr | T]) ->
     write_attr_DEBUG(RefX, T).
 
 colour(Path, {X, Y}, Colour) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     RefX = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
     Val = {"background-color", Colour},
     Fun = fun() ->
@@ -912,7 +912,7 @@ colour(Path, {X, Y}, Colour) ->
     mnesia:activity(transaction, Fun).
 
 make_high(Path, X) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     RefX = #refX{site = Site, path = Path, obj = {row, {X, X}}},
     Val = {height, 30},
     Fun = fun() ->
@@ -921,7 +921,7 @@ make_high(Path, X) ->
     mnesia:activity(transaction, Fun).
 
 make_thin(Path, X) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     RefX = #refX{site = Site, path = Path, obj = {column, {X, X}}},
     Val = {"width", 30},
     Fun = fun() ->
@@ -930,7 +930,7 @@ make_thin(Path, X) ->
     mnesia:activity(transaction, Fun).
 
 make_thick(Path, X) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     RefX = #refX{site = Site, path = Path, obj = {column, {X, X}}},
     Val = {"width", 200},
     Fun = fun() ->
@@ -939,7 +939,7 @@ make_thick(Path, X) ->
     mnesia:activity(transaction, Fun).
 
 write_data(Path) ->
-    Site = "http://127.0.0.1:9000",
+    Site = "http://localhost:9000",
     write_data(Site, Path).
 
 write_data(Site, Path) ->
