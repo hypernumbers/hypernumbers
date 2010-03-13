@@ -1,10 +1,10 @@
 %% -*- mode: erlang -*-
 
 %% Targeted Sites
-sites() -> ["http://127.0.0.1:9000"].
+sites() -> ["http://localhost:9000"].
 
 actions() ->
-    Url  = "http://127.0.0.1:9000/dragndrop/",
+    Url  = "http://localhost:9000/dragndrop/",
     Type = "application/json",
     Accept = [{"Accept", "application/json"}],
     Data1 = "{\"drag\":{\"range\":\"E4:E7\"}}",

@@ -56,6 +56,7 @@ excel(T, S) ->
 
 
 do_test(Opts) ->
+    application:unset_env(hypernumbers, pingto),
     filelib:ensure_dir(filename:absname(?LOG_DIR)++"/"),
     DefaultOps = [{logdir, filename:absname(?LOG_DIR)}],
     ct:run_test(
