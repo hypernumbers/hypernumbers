@@ -4,7 +4,7 @@
   {perms,[{group,"dev"},everyone]},
   {view,"_g/core/spreadsheet"}]}.
 
-{set_champion,
+{champion,
  [{path,[]},
   {view,"_g/core/spreadsheet"}]}.
 
