@@ -29,6 +29,10 @@ body {
     font        : 12px verdana, Arial, sans-serif;
 }
 
+#hnbody h2 { 
+    font : bold 16px Arial, sans-serif;
+}
+
 #hnbody table {  
     margin: 0px 0px 10px 0px; 
     width:100%; 
@@ -39,12 +43,17 @@ body {
 
 #hnbody td {  
     vertical-align:top;
-    padding:5px;
+    padding:10px;
 }
 
 #hnbody form p, #hnbody table p { 
     margin: 0px;
 }
+
+#hnbody form[data-submitted=true] p { 
+    margin-bottom: 10px;
+}
+
 
 #hnbody select, #hnbody .radio { 
     margin-bottom: 10px;
@@ -83,10 +92,6 @@ body {
 
 #hnbody form.hn { 
     padding-right:20px;
-}
-
-#hnbody .droppable {
-    padding: 10px 0px;
 }
 
 #hnbody .hn { 

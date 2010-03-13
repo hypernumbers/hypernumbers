@@ -1650,3 +1650,7 @@ form.droppable {
     background: #FFBBC3 url(/img/help.png) no-repeat 5px 5px;
     padding: 5px 5px 5px 25px;
 }
+
+#hnbody .droppable {
+    padding: 10px 0px;
+}
