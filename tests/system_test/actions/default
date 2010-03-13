@@ -1,7 +1,7 @@
 %% -*- mode: erlang -*-
 
 %% Targeted Sites
-sites() -> ["http://127.0.0.1:9000"].
+sites() -> ["http://localhost:9000"].
 
 actions() ->
     ok.

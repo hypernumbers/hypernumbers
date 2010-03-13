@@ -25,7 +25,7 @@ server {
     server_name  download.hypernumbers.com;
     
     location / {
-        root /home/hypernumbers/www/files;
+        root /hn/files-www;
     }
 }
 
@@ -39,6 +39,6 @@ server {
 	      auth_basic            "Restricted";
 	      auth_basic_user_file  /etc/nginx/conf/.htpasswd;
 	      autoindex on;
-	      root   /home/hypernumbers/www/dev.hypernumbers.com;
+	      root   /hn/dev-www;
         }
     }

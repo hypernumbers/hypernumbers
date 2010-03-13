@@ -1,10 +1,10 @@
 %% -*- mode: erlang -*-
 
 %% Targeted Sites
-sites() -> ["http://127.0.0.1:9000", "http://localhost:9000"].
+sites() -> ["http://localhost:9000", "http://localhost:9000"].
 
 actions() ->
-    LocalUrl = "http://127.0.0.1:9000/hn_create/",
+    LocalUrl = "http://localhost:9000/hn_create/",
     RemUrl  = "http://localhost:9000/hn_create/",
     Type = "application/json",
 
