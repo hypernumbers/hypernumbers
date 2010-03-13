@@ -3,31 +3,30 @@
 DATE=`date +%Y-%m-%d.%T`
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-export HOME=/home/hypernumbers
 REPO=git@github.com:hypernumbers/hypernumbers.git
-WEBROOT=www/dev.hypernumbers.com
-TESTDIR=hn_test_stage
-LASTRUN=$HOME/$WEBROOT/tests/last_run/
+HNTOP=/hn
+WEBROOT=/hn/dev-www
+TESTDIR=/hn/test-hypernumbers
+LASTRUN=$WEBROOT/last_run
 
-cd $HOME
-
-git clone $REPO $HOME/$TESTDIR
-
-cd $HOME/$TESTDIR
+cd $HNTOP
+git clone $REPO $TESTDIR
 
 ## Compile, and run Hypernumbers
+cd $TESTDIR
 ./hn build
-./hn start connect_all false
-## run detached.
+sed -i '/{127,0,0,1}, 9090}/d' var/sys.config
+./hn start
 
 ## Generate Excel Tests
-cd priv/testserver
+cd $TESTDIR/priv/testserver
 ruby regen_tests.rb 1x
 ruby regen_tests.rb 2x
-cd $HOME/$TESTDIR
+cd $TESTDIR
 
 ## Generate System Tests
 echo $(./hn call 'testsys:generate().')
+echo $(./hn call 'test:sys().')
 
 ## Run tests
 echo $(./hn call 'test:excel("1a").')
@@ -42,15 +41,13 @@ echo $(./hn call 'test:excel("2c").')
 echo $(./hn call 'test:excel("2d").')
 echo $(./hn call 'test:excel("2e").')
 
-echo $(./hn call 'test:sys().')
-
 ## Cleanup.
 ./hn stop
 
 rm -rf $LASTRUN
 mkdir -p $LASTRUN
 
-cp -r var/tests/* $LASTRUN
-cp var/tests/index.html $HOME/$WEBROOT/tests/$DATE.html
+cp -r $TESTDIR/var/tests/* $LASTRUN
+cp $TESTDIR/var/tests/index.html $WEBROOT/$DATE.html
 
-rm -rf $HOME/$TESTDIR
+rm -Rf $TESTDIR
