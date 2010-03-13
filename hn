@@ -11,8 +11,8 @@ main([]) ->
 main(Args) ->
     os:cmd("/usr/local/bin/epmd -daemon"),
     %% Because ssl sucks(I cant set -name on the escript args)
-    Name = list_to_atom("ctrl@" ++ net_adm:localhost()),
-    {ok, _} = net_kernel:start([Name, longnames]),
+
+    {ok, _} = net_kernel:start([ctrl_node(), longnames]),
     auth:set_cookie(cookie()),
 
     %% cd into own directory
@@ -181,7 +181,13 @@ atol(A) ->
 root() ->
     {ok, Root} = file:get_cwd(),
     Root.
-    
+
+ctrl_node() ->
+    Fmt = "~2.10.0B-~2.10.0B-~2.10.0B",
+    {_, {H,M,S}} = calendar:universal_time(),
+    Date = io_lib:format(Fmt, [H,M,S]),
+    list_to_atom(lists:flatten(["ctrl-", Date, "@", net_adm:localhost()])).
+            
 usage() ->
     Usage = "Commands to run hypernumbers are:~n"
         "  start [erl_args] ~n"
@@ -201,4 +207,3 @@ ssl() ->
         "-ssl_dist_opt client_certfile \"priv/keys/clientcert.pem\" "
         "-ssl_dist_opt keyfile \"priv/keys/key.pem\" " 
         "-proto_dist inet_ssl".
-   
