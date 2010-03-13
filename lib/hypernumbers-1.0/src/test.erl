@@ -43,7 +43,7 @@ excel() ->
     excel("1"),
     excel("2").
 excel(TName) ->
-    WC = filename:absname(?TEST_DIR)++"/excel_import_"++TName++"*",
+    WC = filename:absname(?TEST_DIR)++"/excel_import_"++TName++"*_test",
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
     do_test(Opts).
