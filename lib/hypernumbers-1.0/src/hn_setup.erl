@@ -20,12 +20,15 @@
 %% Setup a new site from scratch
 -spec site(string(), atom(), [{atom(), any()}]) -> ok.
 site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
-    error_logger:info_msg("wtf: ~n", []),
     site(Site, Type, Opts, [corefiles, sitefiles, json, permissions,
                             script, user_permissions, users]).
 
 -spec site(string(), atom(), [{atom(), any()}], [atom()]) -> ok.
 site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
+    
+    hn_setup:site_exists(Site) andalso
+        throw({site_exists, Site}),
+    
     error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
     ok = create_site_tables(Site, Type),
     ok = sitemaster_sup:add_site(Site),
@@ -49,7 +52,7 @@ delete_site(Site) ->
 %% Update all existing sites with default options
 -spec update() -> ok. 
 update() ->
-    update([], [corefiles, sitefiles]).
+    update([], [corefiles]).
 
 
 -spec update(list()) -> ok. 
@@ -96,7 +99,7 @@ add_user(Site, User) ->
 site_exists(Site) ->
     case mnesia:dirty_read(core_site, Site) of
         [_] -> true; 
-        [] -> false
+        []  -> false
     end.
     
 -spec get_sites() -> list().
