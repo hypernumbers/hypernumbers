@@ -3363,11 +3363,11 @@ write_rawvalue(RefX, Value) when is_record(RefX, refX) ->
 
 process_format(RefX, Format, Value) when is_record(RefX, refX) ->
     {erlang, {_Type, Output}} = format:get_src(Format),
-    %% I *still* hate American spelling
+    % I *still* hate American spelling
     {ok, {Color, V}} = format:run_format(Value, Output),
-    %% first write the formatted value
+    % first write the formatted value
     ok = write_attr3(RefX, {"value", V}),
-    %% now write the overwrite colour that comes from the format
+    % now write the overwrite colour that comes from the format
     ok = write_attr3(RefX, {"overwrite-color", atom_to_list(Color)}).
 
 get_item_list(Type, RefX, Key, Acc) ->
