@@ -404,13 +404,15 @@ a img {
     width      : 80px;
     height     : 20px;
     text-align : center;
+    background : #FFFFFF;
 }
 
 #formula {
     position    : absolute;
     display     : block;
     width: 100%;
-    top:2px;
+    top:0px;
+    height:100%;
     margin-left: 110px;
     border      : 0px;
     text-indent : 4px;
