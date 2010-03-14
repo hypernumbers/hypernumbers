@@ -33,10 +33,6 @@
   {perms, [everyone]},
   {view, "_g/core/login"}
  ]}.
-{champion,
- [{path, ["public"]},
-  {view, "_g/core/login"}
- ]}.
 
 {add_view, 
  [{path, ["contact"]},
@@ -45,7 +41,7 @@
  ]}.
 {add_view, 
  [{path, ["contact"]},
-  {perms, [{group, "dev"}]},
+  {perms, [{group, "admin"}]},
   {view, "_g/core/spreadsheet"}
  ]}.
 {champion,

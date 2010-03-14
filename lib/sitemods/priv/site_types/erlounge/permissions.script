@@ -1,9 +1,6 @@
 %%-*-erlang-*-
-{add_view,[{path,[]},{perms,[{group,"dev"}]},{view,"_g/core/spreadsheet"}]}.
+{add_view,[{path,[]},{perms,[{group,"admin"}]},{view,"_g/core/spreadsheet"}]}.
 {add_view,[{path,[]},
-           {perms,[{user,"gordon"},{group,"dev"}]},
+           {perms,[everyone]},
            {view,"_u/gordon/erlounge"}]}.
-{add_view,[{path,[]},
-           {perms,[{user,"gordon"},{group,"dev"},everyone]},
-           {view,"_u/gordon/home"}]}.
 {champion,[{path,[]},{view,"_u/gordon/erlounge"}]}.

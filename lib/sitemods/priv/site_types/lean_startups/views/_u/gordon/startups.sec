@@ -1,0 +1,4 @@
+{["/"],
+ [[{binding,"select","/D6:D10","/D:D"},
+   {binding,"checkbox","/C12","/C:C"},
+   {binding,"input",[],"/B:B"}]]}.

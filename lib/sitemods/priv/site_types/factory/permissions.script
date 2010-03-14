@@ -32,7 +32,3 @@
   {perms, [everyone]},
   {view, "_g/core/login"}
  ]}.
-{champion,
- [{path, ["public"]},
-  {view, "_g/core/login"}
- ]}.

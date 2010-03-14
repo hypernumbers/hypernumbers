@@ -2,6 +2,6 @@
 %%-*-erlang-*-
 %% (At the moment nothing is done with e-mail
 {{user, '$user'},
- {group, ["dev"]},
+ {group, ["admin"]},
  {email, '$email'},
  {password, '$password'}}.

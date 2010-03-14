@@ -63,3 +63,13 @@
  [{path, ["_user", "login"]},
   {view, "_g/core/login"}
  ]}.
+
+{add_view, 
+ [{path, ["_admin"]},
+  {perms, [{group, "admin"}]},
+  {view, "_g/core/admin"}
+ ]}.
+{champion,
+ [{path, ["_admin"]},
+  {view, "_g/core/admin"}
+ ]}.

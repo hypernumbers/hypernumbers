@@ -1,7 +1,7 @@
 %%-*-erlang-*-
 {add_view,
  [{path,[]},
-  {perms,[{group,"dev"},everyone]},
+  {perms,[everyone]},
   {view,"_g/core/spreadsheet"}]}.
 
 {champion,
