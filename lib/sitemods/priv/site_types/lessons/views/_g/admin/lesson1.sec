@@ -1,5 +1,0 @@
-{[[]],
- [[{binding,"checkbox","D13","C13"}],
-  [{binding,"radio","D12:F12","C12"}],
-  [{binding,"select","D11:F11","C11"}],
-  [{binding,"input","C9","B9"}]]}.
