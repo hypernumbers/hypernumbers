@@ -223,8 +223,6 @@ batch_import(Site) ->
     AppendFiles = lists:filter(fun is_path/1, AppendWild),
     [ ok = hn_import:csv_file(Site ++ create_path_from_name(X), X) || X <- OverFiles],
     [ ok = hn_import:csv_file(Site ++ create_path_from_name(X), X) || X <- AppendFiles],
-    
-    io:format("OverFiles is ~p~nAppendFiles is ~p~n", [OverFiles, AppendFiles]),
     ok.
 
 %% Import a set of json files into the live spreadsheet

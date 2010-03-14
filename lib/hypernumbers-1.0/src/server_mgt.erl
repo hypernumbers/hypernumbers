@@ -11,6 +11,7 @@
 -module(server_mgt).
 
 -include("spriki.hrl").
+-include("hypernumbers.hrl").
 
 -export([export/1, export/2,
          import/1, import/2,
@@ -94,12 +95,11 @@ dump_perms(Site, SiteDest) ->
     ok = file:write_file(filename:join(SiteDest, "permissions.script"), 
                          Perms).
 
-dump_views(Site, SiteDest) -> 
+dump_views(Site, SiteDest) ->
     ViewDest = join([SiteDest, "views"]),
     SiteFs   = hn_util:site_to_fs(Site),
     Source   = join(["var", "sites", SiteFs, "views"]),
     hn_util:recursive_copy(Source, ViewDest).
-
 
 %% Import all sites found in the given directory.
 import(Src) ->
@@ -154,3 +154,4 @@ load_perms(Site, SiteSrc) ->
 
 join(FileName) ->
     filename:join(FileName).
+
