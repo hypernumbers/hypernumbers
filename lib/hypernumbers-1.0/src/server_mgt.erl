@@ -113,7 +113,7 @@ import(Src) ->
 import(Src, Sites) ->
     [ok = import_site(Src, S) || S <- Sites],
     ok.
-import_site(Src, Site) ->
+import_site(Src, Site) ->       
     SiteSrc = join([Src, hn_util:site_to_fs(Site)]),
     Type    = load_type(SiteSrc),
     ok = hn_setup:site(Site, Type, [], [corefiles, sitefiles]),
