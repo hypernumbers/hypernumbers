@@ -7,7 +7,7 @@
 -define(HTTPS,     $h,$t,$t,$p,$s).
 -define(SLASH,     47).
 
--define(SALT,      "salt").
+-define(SALT,      "happyguineapigs").
 
 -define(DELAY,     0). % time delay (millisecs) for some dirty updates 
 
