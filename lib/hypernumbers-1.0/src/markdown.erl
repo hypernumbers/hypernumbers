@@ -49,14 +49,13 @@ conv(String) -> Lex = lex(String),
                 % io:format("UntypedLines are ~p~n", [UntypedLines]),
                 {TypedLines, Refs} = type_lines(UntypedLines),
                 % io:format("TypedLines are ~p~nRefs is ~p~n",
-                %          [TypedLines, Refs]),
+                %           [TypedLines, Refs]),
                 parse(TypedLines, Refs).
 
 -spec conv_utf8(list()) -> list().
 conv_utf8(Utf8) ->
     Str = xmerl_ucs:from_utf8(Utf8),
     Res = conv(Str),
-    io:format("Res is ~p~n", [Res]),
     xmerl_ucs:to_utf8(Res).    
                 
 conv_file(FileIn, FileOut) ->
@@ -105,17 +104,16 @@ p1([], _R, _I, Acc)    -> flatten(reverse(Acc));
 p1([{tag, Tag} | T], R, I, Acc) ->
     case T of
         []                -> p1([], R, I, 
-                                [make_tag_str(Tag) | Acc]);
+                                ["</p>", make_tag_str(Tag, R), "<p>" | Acc]);
         [{blank, _} | T2] -> p1(T2, R, I, 
-                                [make_tag_str(Tag) | Acc]);
+                                [make_tag_str(Tag, R) | Acc]);
         _Other            -> p1(T, R, I, 
-                                [pad(I) ++ make_tag_str(Tag) | Acc])
+                                [pad(I) ++ make_tag_str(Tag, R) | Acc])
     end;
 
 p1([{blocktag, [{{{tag, open}, Type}, Tg}] = _Tag} | T], R, I, Acc) ->
     {Block, Rest} = grab_for_blockhtml(T, Type, []),
-    %% add the line end back in for testing
-    Str = lists:flatten([Tg , "\n" | Block]),
+    Str = lists:flatten([Tg, "\n" | Block]),
     p1(Rest, R, I, [Str | Acc]);
     
 %% blank lines/linefeeds are gobbled down
@@ -245,9 +243,12 @@ grab_for_blockhtml([], Type, Acc) ->
 grab_for_blockhtml([{blocktag, [{{{tag, close}, Type}, Tg}]}
                     | T], Type,  Acc) ->
     {lists:reverse([Tg | Acc]), T};
+grab_for_blockhtml([{blocktag, [{{{tag, _}, GrabType}, Tg}]}
+                    | T], Type,  Acc) when GrabType =/= Type ->
+    % blocktags grabbed in a blocktag need a line ending pushed
+    grab_for_blockhtml(T, Type, ["\n", Tg | Acc]);
 grab_for_blockhtml([{tag, {{{tag, self_closing}, _Ty}, Tg}}
                     | T], Type, Acc) ->
-    %% add the line end back in for testing
     grab_for_blockhtml(T, Type, [Tg | Acc]);
 grab_for_blockhtml([H | T], Type, Acc) ->
     {_Type, Content} = H,
@@ -525,7 +526,7 @@ t_l1([[{{{tag, _Type}, Tag}, _ } = H | T1] = List | T], A1, A2) ->
         false -> t_l1(T, A1, [{normal , List} | A2]);
         true  -> case is_block_tag(Tag) of
                      true  -> t_l1(T, A1, [{blocktag , [H]} | A2]);
-                     false -> t_l1(T, A1, [{tag, H} | A2])
+                     false -> t_l1(T, A1, [{tag, [H | T1]} | A2])
                  end
     end;
 
@@ -782,7 +783,13 @@ gt(String, Len) ->
     end.
 
 %% make a tag into a string
-make_tag_str({{{tag, _Type}, _Tag}, B}) -> B.
+make_tag_str(L, R) -> make_tag1(L, R, []).
+
+make_tag1([], _R, Acc) -> lists:reverse(Acc);
+make_tag1([{{{tag, _Type}, _Tag}, B} | T], R, Acc) ->
+    make_tag1(T, R, [B | Acc]);
+make_tag1([H | T], R, Acc) ->
+    make_tag1(T, R, [make_str([H], R) | Acc]).
 
 esc_tag(String) -> esc_t1(String, []).
 
@@ -1031,9 +1038,9 @@ get_email_addie(String) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 make_plain_str(List) -> m_plain(List, []).
 
-m_plain([], Acc)                       -> flatten(reverse(Acc));
-m_plain([{{ws, none}, none} | T], Acc) -> m_plain(T, [" " | Acc]);
-m_plain([{_, Str} | T], Acc)           -> m_plain(T, [Str | Acc]).
+m_plain([], Acc)                           -> flatten(reverse(Acc));
+m_plain([{{ws, none}, none} | T], Acc)     -> m_plain(T, [" " | Acc]);
+m_plain([{_, Str} | T], Acc)               -> m_plain(T, [Str | Acc]).
 
 make_esc_str(List, Refs) -> m_esc(List, Refs, []).
 
