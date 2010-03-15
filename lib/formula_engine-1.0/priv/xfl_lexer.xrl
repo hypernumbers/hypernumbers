@@ -12,8 +12,8 @@ Definitions.
 %%% booleans, strings, error constants.
 
 INT = ([0-9]+)
-FLOATDEC = (([0-9]+)?\.[0-9]+)
-FLOATSCI = (([0-9]+)?\.[0-9]+((E|e))(\+|\-)?[0-9]+)
+FLOATDEC = (([0-9]+)?(\.)?[0-9]+)
+FLOATSCI = (([0-9]+)?(\.)?[0-9]+((E|e))(\+|\-)?[0-9]+)
 
 TRUE = ((T|t)(R|r)(U|u)(E|e))
 FALSE = ((F|f)(A|a)(L|l)(S|s)(E|e))
@@ -22,7 +22,7 @@ BOOL = ({TRUE}|{FALSE})
 STR = (\"[^"]*\")
 %%" % erlang-mode fix
 
-ERRVAL = \#NULL\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A
+ERRVAL = \#NULL\!|\#AUTH!\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A
 
 %%% References: cell references (A1 & RC), range references (finite, column, row;
 %%% both styles), name references.
@@ -117,9 +117,9 @@ WHITESPACE = ([\000-\s]*)
 Rules.
 
 %% Basic data types.
-{INT}      : {token, {int, TokenLine, tconv:to_i(TokenChars)}}.
 {FLOATDEC} : {token, {float, TokenLine, make_float(TokenChars)}}.
 {FLOATSCI} : {token, {float, TokenLine, make_float(TokenChars)}}.
+{INT}      : {token, {int, TokenLine, tconv:to_i(TokenChars)}}.
 {BOOL}     : {token, {bool, TokenLine, string:to_upper(TokenChars) == "TRUE"}}.
 {STR}      : {token, {str, TokenLine, hslists:mid(TokenChars)}}.
 {ERRVAL}   : {token, {errval, TokenLine, list_to_atom(TokenChars)}}.
@@ -417,12 +417,19 @@ is_alpha([Char]) ->
 %% normalization step.  That then gets thrown away and only the float
 %% makes it into the final AST.
 
+make_float(TokenChars) when hd(TokenChars) == $. ->
+    FloatAsStr = [$0 | TokenChars],
+    {tconv:to_f(FloatAsStr), FloatAsStr};
 make_float(TokenChars) ->
-    FloatAsStr = case string:substr(TokenChars, 1, 1) of
-                     "." -> string:concat("0", TokenChars);
-                     _   -> TokenChars
+    FloatAsStr = case lists:member($., TokenChars) of
+                     true -> TokenChars;
+                     false -> add_decimal(TokenChars)
                  end,
     {tconv:to_f(FloatAsStr), FloatAsStr}.
+
+add_decimal([]) -> ".0";
+add_decimal([E | Tail]) when E == $e; E == $E -> ".0e" ++ Tail;
+add_decimal([X | Tail]) -> [X | add_decimal(Tail)]. 
 
 
 %% Return the smaller of two numbers.
