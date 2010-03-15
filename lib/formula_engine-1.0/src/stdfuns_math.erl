@@ -132,14 +132,13 @@ is_num_or_date(X) ->
         [return_errors, {all, fun is_num_or_date/1}],
         fun '+_'/1).
 
-'+_'([{datetime, D, T}, V2]) when is_number(V2) ->
-    '+_'([V2, {datetime, D, T}]);
-
-'+_'([V1, {datetime, Date, Time}]) when is_number(V1) ->
+'+_'([DT, V2]) when is_record(DT, datetime) ->
+    '+_'([V2, DT]);
+'+_'([V1, #datetime{date=Date, time=Time}]) when is_number(V1) ->
     NewTime = calendar:datetime_to_gregorian_seconds({Date, Time})
-        + (V1 * 86400),
+        + erlang:round(V1 * 86400),
     {NDate, NTime} = calendar:gregorian_seconds_to_datetime(NewTime),
-    {datetime, NDate, NTime};
+    #datetime{date=NDate, time=NTime};
 
 '+_'([Num1, Num2]) ->
     case Num1 + Num2 of
@@ -149,15 +148,10 @@ is_num_or_date(X) ->
 
 %% note that there is an operation =date - number
 %% but no = number - date
-'-'([{datetime, D, T}, V2]) when is_number(V2) -> 
-    Days = erlang:trunc(V2),
-    Secs = V2 - Days,
-    OldDays = calendar:date_to_gregorian_days(D),
-    OldSecs = calendar:time_to_seconds(T),
-    #datetime{date= calendar:gregorian_days_to_date(OldDays - Days),
-              time = calendar:seconds_to_time(OldSecs - Secs)};
+'-'([DT, V2]) when is_record(DT, datetime), is_number(V2) -> 
+    '+_'([-V2, DT]);
 
-'-'([{datetime, D1, T1}, {datetime, D2, T2}]) ->
+'-'([#datetime{date=D1, time=T1}, #datetime{date=D2, time=T2}]) ->
     S1 = calendar:datetime_to_gregorian_seconds({D1, T1}),
     S2 = calendar:datetime_to_gregorian_seconds({D2, T2}),
     {DiffDate, _} = calendar:gregorian_seconds_to_datetime(S1 - S2),
