@@ -18,7 +18,8 @@
 -include("spriki.hrl").
 
 -define(FILEDIR, "/../../tests/excel_files/").
--define(EXCEL_IMPORT_FLOAT_PRECISION, 9).
+-define(EXCEL_IMPORT_MAX_ABS_ERROR, (1.0e-9)).
+-define(EXCEL_IMPORT_MAX_REL_ERROR, (1.0e-5)).
 -define(DEFAULT,1000000).
 
 %% @doc Convert row and column pair to A1-style ref
@@ -73,12 +74,17 @@ read_from_excel_data(Cells, Ranges, {Sheet, Row, Col})->
         _ -> not_found
     end.
 
-float_cmp(0.0, 0.0, _Digit) ->
+-spec float_cmp(float(), float(), any()) -> boolean().
+float_cmp(F1, F2, _Digit) when abs(F1 - F2) < ?EXCEL_IMPORT_MAX_ABS_ERROR ->
     true;
-float_cmp(F1, 0.0, _Digit) ->
-    (F1 < ?EXCEL_IMPORT_FLOAT_PRECISION);
 float_cmp(F1, F2, _Digit) ->
-    (erlang:abs((F1 - F2)/ F1) < ?EXCEL_IMPORT_FLOAT_PRECISION).
+    RelError = if (abs(F1) > abs(F2)) ->
+                       abs((F1 - F2) / F1);
+                  true ->
+                       abs((F1 - F2) / F2)
+               end,
+    (RelError =< ?EXCEL_IMPORT_MAX_REL_ERROR).
+
 
 excel_equal(X, X) ->
     true;

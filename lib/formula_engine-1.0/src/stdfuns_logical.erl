@@ -24,7 +24,7 @@
 '=1'(N1, N2) when is_integer(N1), is_integer(N2) ->
     N1 == N2; 
 '=1'(N1, N2) when is_number(N1), is_number(N2) ->
-    test_util:float_cmp(float(N1), float(N2), 10); %% FIXME: Precision.
+    test_util:float_cmp(float(N1), float(N2), 10);
 %% numbers & blanks
 '=1'(blank, N) when N == 0                      -> true;
 '=1'(N, blank) when N == 0                      -> true;
