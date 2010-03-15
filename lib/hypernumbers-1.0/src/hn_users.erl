@@ -165,20 +165,18 @@ login(Site, Name, Pass, Remember) ->
     case mnesia:transaction(F) of
         {atomic, []}      -> {error,invalid_user};
         {atomic, [NUser]} -> Token = gen_authtoken(NUser, Remember),
-                             ?INFO("Token is ~p~n", [Token]),
                              {ok, Token}
     end.
 
 verify_token(_Site, undefined) ->
     {error, no_token};
 verify_token(Site, Token) ->
-    
-    [Expires, User, Hash] = string:tokens(Token, ":"),
-    
-    case {is_expired(Expires), gen_hash(User, Expires), Hash} of
+    [Expires, User, Hash] = string:tokens(mochiweb_util:unquote(Token), ":"),
+    User2 = xmerl_ucs:to_utf8(unescapeUnicode(User)),
+    case {is_expired(Expires), gen_hash(User2, Expires), Hash} of
         {true,_,_}  -> {error, invalid_token};
         {false,X,X} ->
-            case read(Site, User) of
+            case read(Site, User2) of
                 {ok, Usr}        -> {ok, Usr};
                 {error, no_user} -> {error, invalid_user}
             end;
@@ -217,3 +215,11 @@ unix_timestamp(Now) ->
     calendar:datetime_to_gregorian_seconds( 
       calendar:now_to_universal_time(Now)) -
         calendar:datetime_to_gregorian_seconds({{1970,1,1},{0,0,0}}).
+
+unescapeUnicode(List) -> unesc_1(List, []).
+
+unesc_1([], Acc) -> lists:reverse(Acc);
+unesc_1([$%, $u, A, B, C, D | T], Acc) -> 
+         {ok, [N], []} = io_lib:fread("~16u", [A, B, C, D]),
+         unesc_1(T, [N | Acc]);
+unesc_1([H | T], Acc) -> unesc_1(T, [H | Acc]).
