@@ -245,13 +245,13 @@ fv_([Rate, Nper, Pmt, Pv, Type]) when Type /= 1, Type /= 0 ->
 fv_([Rate, Nper, Pmt, Pv, _Type]) when Rate == 0 ->
     (-1 * Pv) + (-1 * Pmt) * Nper;
 %% Payments at the end of a period
-fv_([Rate, Nper, Pmt, Pv, Type]) when Type == 0 ->
+fv_([Rate, Nper, Pmt, Pv, 0]) ->
     I = (Rate + 1),
     I_n = math:pow(I, Nper),
     GeoSum = (1 - I_n) / (1 - I),
     (-1 * Pv) * I_n + (-1 * Pmt) * GeoSum;
 %% Payments at the beginning of a period
-fv_([Rate, Nper, Pmt, Pv, Type]) when Type == 1 ->
+fv_([Rate, Nper, Pmt, Pv, 1]) ->
     I = (Rate + 1),
     I_n = math:pow(I, Nper),
     GeoSum = (1 - I_n * I) / (1 - I),

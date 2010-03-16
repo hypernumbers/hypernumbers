@@ -12,8 +12,8 @@ Definitions.
 %%% booleans, strings, error constants.
 
 INT = ([0-9]+)
-FLOATDEC = (([0-9]+)?(\.)?[0-9]+)
-FLOATSCI = (([0-9]+)?(\.)?[0-9]+((E|e))(\+|\-)?[0-9]+)
+FLOATDEC = (([0-9]+)?\.[0-9]+)
+FLOATSCI = (([0-9]+)?(\.)?[0-9]+(E|e)(\+|\-)?[0-9]+)
 
 TRUE = ((T|t)(R|r)(U|u)(E|e))
 FALSE = ((F|f)(A|a)(L|l)(S|s)(E|e))
