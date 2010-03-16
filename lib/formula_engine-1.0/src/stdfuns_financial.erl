@@ -240,15 +240,23 @@ fv(Args = [_, _, _, _, _]) ->
         [return_errors, {all, fun is_number/1}],
         fun fv_/1).
 
-fv_([Rate, Nper, Pmt, Pv, Type]) when Type =/= 1, Type =/= 0 ->
+fv_([Rate, Nper, Pmt, Pv, Type]) when Type /= 1, Type /= 0 ->
     fv_([Rate, Nper, Pmt, Pv, 1]);
-fv_([0, Nper, Pmt, Pv, _Type]) ->
-    -1 * (Pv + Pmt * Nper);
-fv_([Rate, Nper, Pmt, Pv, Type]) ->
-    Tmp = math:pow(1+Rate, Nper),
-    (Pmt * (1+Rate*Type) * (1-Tmp)/Rate) - Pv * Tmp.
+fv_([Rate, Nper, Pmt, Pv, _Type]) when Rate == 0 ->
+    (-1 * Pv) + (-1 * Pmt) * Nper;
+%% Payments at the end of a period
+fv_([Rate, Nper, Pmt, Pv, Type]) when Type == 0 ->
+    I = (Rate + 1),
+    I_n = math:pow(I, Nper),
+    GeoSum = (1 - I_n) / (1 - I),
+    (-1 * Pv) * I_n + (-1 * Pmt) * GeoSum;
+%% Payments at the beginning of a period
+fv_([Rate, Nper, Pmt, Pv, Type]) when Type == 1 ->
+    I = (Rate + 1),
+    I_n = math:pow(I, Nper),
+    GeoSum = (1 - I_n * I) / (1 - I),
+    (-1 * Pv) * I_n + (-1 * Pmt) * (GeoSum - 1).
 
-           
 pmt([A, B, C, D]) -> pmt([A, B, C, D, 0]);
 pmt([A, B, C])    -> pmt([A, B, C, 0, 0]);
 pmt(Args = [_, _, _, _, _]) ->
