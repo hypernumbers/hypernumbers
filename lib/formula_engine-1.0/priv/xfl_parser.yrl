@@ -8,7 +8,8 @@
 
 Nonterminals
 
-Formula E Uminus Uplus List Funcall Args
+Formula E Uminus Uplus List 
+Funcall Args Argument
 ArrayLiteral ArrayRow ArrayRows Array
 .
 
@@ -77,7 +78,6 @@ E -> bool '(' ')' : lit('$1').
 E -> Funcall : '$1'.
 
 %%% ref lists
-E -> List : '$1'.
 List -> '(' Args ')' : arglist('$2').
 
 %%% constants / literals
@@ -102,10 +102,13 @@ Funcall -> cellref '(' ')'       : [func_name('$1')].
 Funcall -> cellref '(' Args ')'  : func('$1', '$3').
 
 %% eugh, wrong way to do undefined args
-Args -> E                    : ['$1'].
-Args -> E ',' ',' Args       : ['$1'] ++ [undef] ++ '$4'.
-Args -> E ',' ',' ',' Args   : ['$1'] ++ [undef, undef] ++ '$5'.
-Args -> E ',' Args           : ['$1'] ++ '$3'.
+Argument -> E : '$1'.
+Argument -> List : '$1'.
+
+Args -> Argument                    : ['$1'].
+Args -> Argument ',' ',' Args       : ['$1'] ++ [undef] ++ '$4'.
+Args -> Argument ',' ',' ',' Args   : ['$1'] ++ [undef, undef] ++ '$5'.
+Args -> Argument ',' Args           : ['$1'] ++ '$3'.
 
 
 %%% arrays ( = lists of rows, which are lists of values of allowed types)
