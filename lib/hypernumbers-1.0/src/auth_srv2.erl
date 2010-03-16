@@ -7,6 +7,7 @@
 -behaviour(gen_server).
 
 -include("auth2.hrl").
+-include("hypernumbers.hrl").
 
 -include_lib("eunit/include/eunit.hrl").
 
