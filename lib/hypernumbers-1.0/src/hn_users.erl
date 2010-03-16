@@ -156,7 +156,6 @@ update(Site, User, Key, Val) when is_record(User, hn_user) ->
     mnesia:activity(transaction, fun update_tr/4, [Site, User, Key, Val]).
 
 login(Site, Name, Pass, Remember) ->
-
     User = #hn_user{name=Name, password=p(Pass), _='_'},
     F = fun() ->
                 mnesia:match_object(hn_db_wu:trans(Site, hn_user), User, read)
@@ -171,8 +170,8 @@ login(Site, Name, Pass, Remember) ->
 verify_token(_Site, undefined) ->
     {error, no_token};
 verify_token(Site, Token) ->
-    [Expires, User, Hash] = string:tokens(mochiweb_util:unquote(Token), ":"),
-    User2 = xmerl_ucs:to_utf8(unescapeUnicode(User)),
+    [Expires, User, Hash] = string:tokens(Token, ":"),
+    User2 = xmerl_ucs:to_utf8(unescapeUnicode(mochiweb_util:unquote(User))),
     case {is_expired(Expires), gen_hash(User2, Expires), Hash} of
         {true,_,_}  -> {error, invalid_token};
         {false,X,X} ->
