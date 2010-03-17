@@ -10,9 +10,10 @@
          topup_zone/1,
          set_server/2, set_server/3,
          delete_server/1,
-         %%pick_server/0,
          %% Diagostic Functions
-         server_diagnostics/0]).
+         server_diagnostics/0,
+         zone_diagnostics/0
+        ]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -104,6 +105,12 @@ delete_server(Server) ->
 server_diagnostics() ->
     S = gen_server:call({global, ?MODULE}, server_diagnostics),
     io:format("~s", [S]).
+
+-spec zone_diagnostics() -> ok.
+zone_diagnostics() ->
+    S = gen_server:call({global, ?MODULE}, zone_diagnostics),
+    io:format("~s", [S]).
+    
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -254,7 +261,23 @@ handle_call(server_diagnostics, _From, S=#state{routing=R}) ->
     Reply = lists:flatten([Title | Stats]),
     {reply, Reply, S};
 
-
+handle_call(zone_diagnostics, _From, S) ->
+    Format = "Zone: ~s~n"
+        "   Names like: '~p'~n"
+        "   Pool  size: ~b~n"
+        "   Ideal size: ~b~n"
+        "   Min   size: ~b~n"
+        "-------------------------~n",
+    F = fun(Z) ->
+                io_lib:format(Format, [Z#zone.name, 
+                                       (Z#zone.generator)(), 
+                                       gb_trees:size(Z#zone.available),
+                                       Z#zone.ideal_size, 
+                                       Z#zone.min_size])
+        end,
+    Reply = lists:flatten([F(Z) || Z <- all_zones()]),
+    {reply, Reply, S};
+    
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
@@ -336,10 +359,21 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Database Helpers
 %%%===================================================================
 
+-spec all_servers() -> [#server{}]. 
 all_servers() ->
     F = fun() ->
                 mnesia:select(
                   core_hns_server, 
+                  ets:fun2ms(fun(X) -> X end),
+                  read)
+        end,
+    mnesia:activity(async_dirty, F).
+
+-spec all_zones() -> [#zone{}]. 
+all_zones() ->
+    F = fun() ->
+                mnesia:select(
+                  core_hns_zone, 
                   ets:fun2ms(fun(X) -> X end),
                   read)
         end,
