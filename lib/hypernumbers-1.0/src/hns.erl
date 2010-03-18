@@ -19,6 +19,9 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
+-define(API_KEY, 
+        "C7ozR9fh4apHmfEwkWS7FrItSHDqGq9J3UTxm9JQrEEHnka3qA7wSHJYJM1kHVfs").
+
 -include_lib("stdlib/include/ms_transform.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
@@ -26,13 +29,15 @@
 
 %%% Database Tables
 -record(zone, { name :: string(),
+                linode_id :: integer(),
                 min_size :: integer(),
                 ideal_size :: integer(),
                 available :: gb_tree(),
                 generator }).
 
 -record(record, { name :: string(),
-                  address :: string()}).
+                  address :: string(),
+                  linode_id :: integer()}).
 
 -record(server, { address = [] :: string(),
                   weight = 0 :: integer(),
@@ -173,10 +178,11 @@ handle_call({create_zone, Zone, MinSize, IdealSize, Generator}, _From, S) ->
         [_] -> 
             {reply, already_exists, S};
         _ ->
-            Available = allocate_names(IdealSize, S#state.routing, 
-                                       Generator, 
-                                       gb_trees:empty()),
+            ZoneId = zone_id_LINODE(Zone),
+            Available = allocate_names(IdealSize, S#state.routing,
+                                       Generator, ZoneId, gb_trees:empty()),
             Entry = #zone{name = Zone,
+                          linode_id = ZoneId,
                           min_size = MinSize,
                           ideal_size = IdealSize,
                           available = Available,
@@ -189,9 +195,9 @@ handle_call({create_zone, Zone, MinSize, IdealSize, Generator}, _From, S) ->
 handle_call({delete_zone, Zone}, _From, S) ->
     case mnesia:activity(async_dirty, fun mnesia:read/2,
                          [core_hns_zone, Zone]) of
-        [#zone{available = A}] ->
-            %% Deallocated names in pool.
-            deallocate_names(gb_trees:values(A)),
+        [#zone{available = A, linode_id=ZoneId}] ->
+            %% Deallocated names in pool. Leave existing sites alone
+            deallocate_names(gb_trees:values(A), ZoneId),
             ok = mnesia:activity(async_dirty, fun mnesia:delete/3,
                                  [core_hns_zone, Zone, write]);
         _ ->
@@ -209,8 +215,8 @@ handle_call({request_name, ZName}, _From, S) ->
                       0 -> 
                           name_underflow;
                       _ -> 
-                          {Name, Address, Z2} = get_name(Z),
-                          Rec = #record{name=Name, address=Address},
+                          {Name, Address, Id, Z2} = get_name(Z),
+                          Rec = #record{name=Name, address=Address, linode_id=Id},
                           F = fun() ->
                                       ok = mnesia:write(core_hns_zone, 
                                                         Z2, 
@@ -264,6 +270,7 @@ handle_call(server_diagnostics, _From, S=#state{routing=R}) ->
 handle_call(zone_diagnostics, _From, S) ->
     Format = "Zone: ~s~n"
         "   Names like: '~p'~n"
+        "   Linode Id : ~b~n"
         "   Pool  size: ~b~n"
         "   Ideal size: ~b~n"
         "   Min   size: ~b~n"
@@ -271,6 +278,7 @@ handle_call(zone_diagnostics, _From, S) ->
     F = fun(Z) ->
                 io_lib:format(Format, [Z#zone.name, 
                                        (Z#zone.generator)(), 
+                                       Z#zone.linode_id,
                                        gb_trees:size(Z#zone.available),
                                        Z#zone.ideal_size, 
                                        Z#zone.min_size])
@@ -295,13 +303,14 @@ handle_call(_Request, _From, State) ->
 handle_cast({topup_zone, ZName}, State) ->
     case mnesia:activity(async_dirty, fun mnesia:read/2, 
                          [core_hns_zone, ZName]) of
-        [Z=#zone{available=Avail, ideal_size=Ideal, generator=Gen}] ->
-            case gb_trees:size(Avail) of 
+        [Z=#zone{ideal_size=Ideal}] ->
+            case gb_trees:size(Z#zone.available) of 
                 S when S < Ideal ->
                     Avail2 = allocate_names(Ideal - S, 
                                             State#state.routing, 
-                                            Gen, 
-                                            Avail),
+                                            Z#zone.generator,
+                                            Z#zone.linode_id,
+                                            Z#zone.available),
                     Z2 = Z#zone{available=Avail2},
                     mnesia:activity(async_dirty, fun mnesia:write/3,
                                     [core_hns_zone, Z2, write]);
@@ -384,9 +393,9 @@ all_zones() ->
 %%%===================================================================
 
 %% Assumes available is non-empty.
--spec get_name(#zone{}) -> {string(), string(), #zone{}}.
+-spec get_name(#zone{}) -> {string(), string(), integer(), #zone{}}.
 get_name(Z=#zone{name=ZName, available=Available, min_size=Min}) ->
-    {Name, Address, Available2} = 
+    {Name, {Address, ResourceId}, Available2} = 
         case gb_trees:size(Available) of
             N when N =< Min -> 
                 spawn(?MODULE, topup_zone, [ZName]),
@@ -394,31 +403,33 @@ get_name(Z=#zone{name=ZName, available=Available, min_size=Min}) ->
             _ -> 
                 gb_trees:take_smallest(Available)
         end,
-    {Name, Address, Z#zone{available = Available2}}.
+    {Name, Address, ResourceId, Z#zone{available = Available2}}.
 
--spec allocate_names(integer(), #routing{}, generator(), gb_tree()) 
+-spec allocate_names(integer(), #routing{}, generator(), integer(), gb_tree())
                     -> gb_tree().
-allocate_names(0, _Routing, _Generator, Pool) -> 
+allocate_names(X, _Routing, _Generator, _ZoneId, Pool) when X =< 0 -> 
     Pool;
-allocate_names(N, Routing, Generator, Pool) ->
-    Pool2 = allocate_name(Routing, Generator, Pool),
-    allocate_names(N-1, Routing, Generator, Pool2).
+allocate_names(N, Routing, Generator, ZoneId, Pool) ->
+    Pool2 = allocate_name(Routing, Generator, ZoneId, Pool),
+    allocate_names(N-1, Routing, Generator, ZoneId, Pool2).
 
--spec allocate_name(#routing{}, generator(), gb_tree()) -> gb_tree().
-allocate_name(Routing, Generator, Pool) ->
+-spec allocate_name(#routing{}, generator(), integer(), gb_tree()) 
+                   -> gb_tree().
+allocate_name(Routing, Generator, ZoneId, Pool) ->
     Name = Generator(),
     case name_exists(Name) of
         true  -> 
             Pool;
         false -> 
             Address = pick_server(Routing),
-            ok = create_dns_entry_LINODE(Name, Address),
-            gb_trees:enter(Name, Address, Pool)
+            ResourceID = create_dns_entry_LINODE(Name, Address, ZoneId),
+            gb_trees:enter(Name, {Address, ResourceID}, Pool)
     end.
 
--spec deallocate_names([string()]) -> ok. 
-deallocate_names(Names) ->
-    [ok = delete_dns_entry_LINODE(N) || N <- Names],
+-spec deallocate_names([{string(), integer()}], integer()) -> ok. 
+deallocate_names(Ns, ZoneId) ->
+    [delete_dns_entry_LINODE(ResourceID, ZoneId) 
+     || {_Addr, ResourceID} <- Ns],
     ok.
 
 -spec name_exists(string()) -> boolean(). 
@@ -429,13 +440,52 @@ name_exists(Name) ->
         _Else -> false
     end.
 
-create_dns_entry_LINODE(Name, Address) ->
-    error_logger:info_msg("DNS create: ~p -> ~p~n", [Name, Address]),
-    ok.
+-spec zone_id_LINODE(string()) -> integer().
+zone_id_LINODE(Zone) ->
+    Struct = linode_api([{"api_action", "domain.list"}]),
+    {array, Domains} = get_data(Struct),
+    seek_zone_id(Domains, Zone).
 
-delete_dns_entry_LINODE(Site) ->
-    error_logger:info_msg("DNS delete: ~p -> ~p~n", [Site]),
-    ok.
+-spec create_dns_entry_LINODE(string(), string(), integer()) -> integer(). 
+create_dns_entry_LINODE(Name, Address, ZoneId) ->
+    ZoneIdStr = integer_to_list(ZoneId),
+    Struct = linode_api([{"api_action", "domain.resource.create"},
+                        {"DomainID", ZoneIdStr},
+                        {"Type", "A"},
+                        {"Name", Name},
+                        {"Target", Address}]),
+    {struct,[{"ResourceID",ResourceID}]} = get_data(Struct),
+    ResourceID.
+    
+
+-spec delete_dns_entry_LINODE(integer(), integer()) -> any(). 
+delete_dns_entry_LINODE(ZoneId, ResourceId) ->
+    ZoneIdStr = integer_to_list(ZoneId),
+    ResourceIdStr = integer_to_list(ResourceId),
+    linode_api([{"api_action", "domain.resource.delete"},
+                {"DomainID", ZoneIdStr},
+                {"ResourceID", ResourceIdStr}]).
+
+get_data({struct,Attrs}) ->
+    proplists:get_value("DATA", Attrs).
+
+-spec seek_zone_id([{struct, list()}], string()) -> integer(). 
+seek_zone_id([], _Zone) ->
+    throw("Cannot find zone id");
+seek_zone_id([{struct, Attrs} | Rest], Zone) ->
+    case proplists:get_value("DOMAIN", Attrs) of
+        Zone  -> proplists:get_value("DOMAINID",  Attrs);
+        _Else -> seek_zone_id(Rest, Zone)
+    end.
+    
+-spec linode_api([{string(), string()}]) -> {struct, any()}.
+linode_api(Cmds0) ->
+    Cmds = [{"api_key", ?API_KEY} | Cmds0],
+    Qry = [$?|lists:flatten(string:join([[K,"=",V] || {K,V} <- Cmds], "&"))],
+    Url = "https://api.linode.com/" ++ Qry,
+    Hdrs = [{"Host", "api.linode.com"}, {"Accept", "application/json"}],
+    {ok,{{"HTTP/1.1",200,"OK"},_, Json}} = httpc:request(get, {Url, Hdrs}, [], []),
+    mochijson:decode(Json).
 
 %%%===================================================================
 %%% Server selection 
