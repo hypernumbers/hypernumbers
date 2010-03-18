@@ -1,3 +1,4 @@
+
 /******************************************************************************
    TAG STYLES
 ******************************************************************************/
@@ -23,9 +24,28 @@ p {
 a img { 
     border: 0px; 
 }
+td { 
+    vertical-align:top;
+}
+hr { 
+    margin-top:0px;
+}
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
+.redbutton { 
+    cursor:pointer;
+    background:red;
+    color:white;
+    font-weight:bold;
+    border:0px;
+    padding:2px;
+    -moz-border-radius:3px;
+}
+.redbutton:hover {
+    background:darkred;
+}
+
 .warning { 
  color     : red;
  font-size : 10px;
@@ -41,7 +61,7 @@ a img {
     width      : 100%;
     height     : 100%;
     background : black;
-    opacity    : 0.5;
+    opacity    : 0.7;
     z-index    : 999999;
 }
 #loading {  
@@ -231,7 +251,8 @@ a img {
 	color: #334bf9;
 }
 #newpage { 
-    width:270px;
+
+
 }
 #pdclose {
     color : red;
@@ -1656,3 +1677,96 @@ form.droppable {
 #hnbody .droppable {
     padding: 10px 0px;
 }
+
+#ctrlpanel { 
+    background  : #EBEAEB;
+    display     : none;
+    z-index     : 9999999;
+    position    : absolute;
+    top         : 50%;
+    left        : 50%;
+    height      : 400px;
+    width       : 600px;
+    margin-left : -300px;
+    margin-top  : -201px;
+	border      : 2px solid #111;
+    -moz-border-radius:3px;
+
+}
+
+#ctrltabs { 
+    background:#333;
+    border-bottom:1px solid #666;
+    margin: 0px 0px 0px 0px;
+    padding:0px;
+    padding-top:5px;
+    height:22px;
+    position:relative;
+}
+
+#ctrltabs li { 
+    display:inline;
+    line-height:20px;
+}
+
+#ctrltabs li a.selected { 
+    color:#111;
+    background:#EEE;
+    border-bottom:2px solid #EBEAEB;
+}
+
+#ctrltabs li a { 
+    position:relative;
+    top:1px;
+    cursor:pointer;
+    background:#CCC;
+    border:1px solid #666;
+    border-bottom:2px solid #666;
+    -moz-border-radius-topleft:3px;
+    -moz-border-radius-topright:3px;
+    padding:3px 10px;
+    margin-left:7px;
+    font-weight:bold;
+    color:#555;
+}
+
+#ctrlclose { 
+    color:red; 
+    position:absolute; 
+    top:3px;
+    right:5px;
+    z-index:99;
+}
+
+#myspreadsheets { 
+    padding: 10px 20px 20px 20px;
+}
+
+#finder {
+    margin:0px auto 0px auto;
+    border:1px inset #666;
+    border-bottom-width:0px;
+}
+
+#newpageform { 
+    text-align:right; 
+    background:#CCC; 
+    padding:2px;
+    border:1px inset #666; 
+    border-width:0px 1px 1px 1px;
+}
+
+#myspreadsheets td { padding:5px; line-height:18px; font-size: 12px; }
+
+#myspreadsheets .content { 
+    width:270px; 
+} 
+
+#myspreadsheets .label { 
+    text-align:right; 
+    width:120px; 
+    color:#555; 
+    font-style:italic; 
+} 
+
+#doupload { cursor:pointer; }

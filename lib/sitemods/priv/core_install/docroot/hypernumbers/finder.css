@@ -1,11 +1,6 @@
 #finder {
-    position   : absolute;
-   	display    : none;
-    left       : 0px;
-    z-index    : 2000000;
     background : white;
-	border     : 2px solid #a9a9a9;
-    width      : 400px; 
+    width      : 100%; 
 }
 
 #finder .panewrapper {
