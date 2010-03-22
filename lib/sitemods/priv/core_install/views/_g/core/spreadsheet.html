@@ -423,6 +423,9 @@
         <li class="disabled paste"><a name="pastelink">
             Paste <strong>Links</strong></a></li>
         <li class="seperator"></li>
+        <!-- <li><a name="mergecells"> -->
+        <!--     Merge Cells</a></li>         -->
+        <!-- <li class="seperator"></li> -->
         <li><a name="deletecols">
             Delete Column(s)</a></li>
         <li><a name="deleterows">
@@ -547,20 +550,29 @@
 
       <ul id="ctrltabs">
         <li><a data-tab="myspreadsheets">My Spreadsheets</a></li>
-        <!-- <li><a data-tab="users">Users</a></li> -->
+        <li><a data-tab="users">Users</a></li>
       </ul>
       
       <div id="ctrltabdivs">
 
+        <div id="users">
+          
+          <h3>Create New User</h3>
+          <form id="newusers">
+            <table>
+              <tr><td class="label">name:</td>
+                <td><input type="text" id="newusername" /></td></tr>
+              <tr><td class="label">password:</td>
+                <td><input type="password" id="newuserpass" /></td></tr>
+              <tr><td>&nbsp;</td>
+                <td><input type="submit" value="Add User" id="donewuser" /></td></tr>
+            </table>
+          </form>
+          <div id="newuserfeedback"></div>
+        </div>
+
         <div id="myspreadsheets">
-
-          <!-- <table> -->
-          <!--   <tr><td class="label">Create New Page:</td> -->
-          <!--     <td> -->
-          <!--       </td> -->
-          <!--   </tr> -->
-          <!-- </table> -->
-
+          
           <div id="finder">
             <div class="panewrapper"><div class="pane"></div></div>
           </div>

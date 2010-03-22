@@ -28,22 +28,31 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 rpc(Site, Fn, Args) when is_list(Args) ->
     case Fn of
-        add_view       -> [Site, Path, AuthSpec, View] = Args,
-                          auth_srv2:add_view(Site, Path, AuthSpec, View);
-        remove_views   -> [Site, Path, AuthSpec, View] = Args,
-                          auth_srv2:add_view(Site, Path, AuthSpec, View);
-        set_champion   -> [Site, Path, View] = Args,
-                          auth_srv2:set_champion(Site, Path, View);
-        set_challenger -> [Site, Path, View] = Args,
-                          auth_srv2:set_champion(Site, Path, View);
-        create         -> [Site, Name, Groups, Password] = Args,
-                          hn_users:create(Site, Name, Groups, Password);
-        delete         -> [Site, Name] = Args,
-                          hn_users:delete(Site, Name);
-        add_groups     -> [Site, Name, Groups] = Args,
-                          hn_users:add_groups(Site, Name, Groups);
-        remove_groups  -> [Site, Name, Groups] = Args,
-                          hn_users:remove_groups(Site, Name, Groups)
+        add_view ->
+            [Site, Path, AuthSpec, View] = Args,
+            auth_srv2:add_view(Site, Path, AuthSpec, View);
+        remove_views ->
+            [Site, Path, AuthSpec, View] = Args,
+            auth_srv2:add_view(Site, Path, AuthSpec, View);
+        set_champion ->
+            [Site, Path, View] = Args,
+            auth_srv2:set_champion(Site, Path, View);
+        set_challenger ->
+            [Site, Path, View] = Args,
+            auth_srv2:set_champion(Site, Path, View);
+        "add_user" ->
+            {"user", Name} = lists:keyfind("user", 1, Args),
+            {"pass", Pass} = lists:keyfind("pass", 1, Args),
+            hn_users:create(Site, Name, [], Pass);        
+        delete ->
+            [Site, Name] = Args,
+            hn_users:delete(Site, Name);
+        add_groups ->
+            [Site, Name, Groups] = Args,
+            hn_users:add_groups(Site, Name, Groups);
+        remove_groups ->
+            [Site, Name, Groups] = Args,
+            hn_users:remove_groups(Site, Name, Groups)
     end.
         
 

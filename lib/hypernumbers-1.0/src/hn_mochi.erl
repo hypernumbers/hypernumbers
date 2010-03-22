@@ -262,6 +262,14 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Req) ->
 authorize_post(#refX{path = ["_user", "login"]}, _Qry, #req{accept = json}) ->
     allowed;
 
+authorize_post(#refX{path = ["_admin"]}, _Qry, #req{accept = json}=Req) ->
+    {_User, Groups} = Req#req.auth_req,
+    error_logger:info_msg("test~p~n",[Groups]),
+    case lists:member("admin", Groups) of
+        true  -> allowed;
+        false -> denied
+    end;
+
 %% Authorize posts against non spreadsheet views. The transaction
 %% attempted is validated against the views security model.
 authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Req)
@@ -710,6 +718,15 @@ ipost(Ref, _Qry,
     [Fun(X) || X <- CVsn],
     S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
     json(Req, S);
+
+ipost(#refX{site = Site, path = _P}, Qry, Req=#req{body = [{"admin", Json}]}) ->
+    {struct,[{Fun, {struct, Args}}]} = Json,
+    case hn_web_admin:rpc(Site, Fun, Args) of
+        ok ->
+            json(Req, {struct, [{"result", "success"}]});
+        {error, Reason} ->
+            json(Req, {struct, [{"result", "error"}, {"reason", Reason}]})
+    end; 
 
 ipost(Ref, Qry, Req) ->
     error_logger:error_msg("404~n-~p~n-~p~n",[Ref, Qry]),
