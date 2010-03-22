@@ -1548,7 +1548,7 @@ hr {
     top: 2px;
     padding:1px;
     color:red;
-    z-index: 9999999;
+    z-index: 999999;
 }
 
 #viewtabs {
