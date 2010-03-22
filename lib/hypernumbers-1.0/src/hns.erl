@@ -4,15 +4,10 @@
 
 %% API
 -export([start_link/0,
-         create_zone/4,
-         delete_zone/1,
-         request_name/1,
-         topup_zone/1,
-         set_server/2, set_server/3,
-         delete_server/1,
-         %% Diagostic Functions
-         server_diagnostics/0,
-         zone_diagnostics/0
+         create_zone/4, delete_zone/1, purge_zone/1, topup_zone/1,
+         link_resource/1, unlink_resource/2,
+         set_resource/2, set_resource/3, delete_resource/1,
+         resource_diagnostics/0, zone_diagnostics/0
         ]).
 
 %% gen_server callbacks
@@ -28,24 +23,25 @@
 -type generator() :: fun(() -> string()). 
 
 %%% Database Tables
--record(zone, { name :: string(),
-                linode_id :: integer(),
+-record(zone, { label :: string(),
                 min_size :: integer(),
                 ideal_size :: integer(),
-                available :: gb_tree(),
-                generator }).
+                pool :: gb_tree(),
+                generator :: generator(),
+                zone_id :: integer() }).
 
--record(record, { name :: string(),
-                  address :: string(),
-                  linode_id :: integer()}).
+-record(record, { label, %:: {string(), string()}
+                  address, %:: string(),
+                  %% Following two used for linode.
+                  zone_id, %:: integer(),
+                  resource_id}). %integer()}).
 
--record(server, { address = [] :: string(),
-                  weight = 0 :: integer(),
-                  alias = [] :: string()}).
+-record(resource, { address = [] :: string(),
+                    weight = 0 :: integer(),
+                    alias = [] :: string() }).
 
 %%% Internal State
--record(routing, {table = [],
-                  upper_limit = 0}).
+-record(routing, { table = [], upper_limit = 0}).
 
 -record(state, {routing = #routing{}}).
 
@@ -64,53 +60,84 @@ start_link() ->
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
 -define(TRIES, 5).
--spec request_name(string()) -> name_underflow | no_zone | {ok,string()}.
-request_name(Zone) ->
-    Msg = {request_name, Zone},
-    do_request_name(?TRIES, Msg).
-do_request_name(0, _Msg) ->
-    name_underflow;
-do_request_name(Tries, Msg) ->
+%% Returns a name be mapped to one of the available resources, by
+%% means of weighted-random draw.
+-spec link_resource(string()) -> underflow | no_zone | {ok,string()}.
+link_resource(Zone) ->
+    Msg = {link_resource, Zone},
+    do_link_resource(?TRIES, Msg).
+do_link_resource(0, _Msg) ->
+    underflow;
+do_link_resource(Tries, Msg) ->
     case gen_server:call({global, ?MODULE}, Msg) of
         no_zone -> no_zone;
-        name_underflow ->  do_request_name(Tries-1, Msg);
+        underflow ->  do_link_resource(Tries-1, Msg);
         Name -> {ok, Name}
     end.    
 
+-spec unlink_resource(string(), string()) -> ok.
+unlink_resource(Zone, Name) ->
+    gen_server:call({global, ?MODULE}, {unlink_resource, Zone, Name}).
+                             
+%% Create a zone responsible for the dispensation of mappings from
+%% names to resources, backed by DNS. Since requests for new mappings
+%% are non-linear, and DNS propegation is not instant, these mappings
+%% are buffred in pools. Minsize is a lower watermark which should
+%% trigger a pool topup to the IdealSize. The Generator function
+%% should yield a distribution of names suitable for the size of the
+%% target domain, as otherwise buffer underflows shall occur. The
+%% Generator need not have memory, and as such, uniquness is not a
+%% hard but a soft condition. (duplicates are disgarded).
 -spec create_zone(string(), integer(), integer(), generator()) -> ok. 
 create_zone(Zone, MinSize, IdealSize, Generator) when 
       MinSize > 0, IdealSize > 0 ->
     true = MinSize =< IdealSize,
     Msg = {create_zone, Zone, MinSize, IdealSize, Generator},
-    gen_server:call({global, ?MODULE}, Msg).
+    gen_server:call({global, ?MODULE}, Msg, infinity).
 
+%% Delete the current zone, and unlink any pooled resource mappings
 -spec delete_zone(string()) -> ok. 
 delete_zone(Zone) ->
-    gen_server:call({global, ?MODULE}, {delete_zone, Zone}).
+    gen_server:call({global, ?MODULE}, {delete_zone, Zone}, infinity).
 
+%% CAUTION!!! Purging will __UNRECOVERABLY REMOVE__ all resource mappings
+%% associated with this zone.
+-spec purge_zone(string()) -> ok.
+purge_zone(Zone) ->
+    delete_zone(Zone),
+    gen_server:call({global, ?MODULE}, {purge, Zone}, infinity).
+
+%% Tops up the zone's pooled resource mappings to the ideal size. This
+%% should usually only be called internally.
 -spec topup_zone(string()) -> ok.
 topup_zone(Zone) ->
     gen_server:cast({global, ?MODULE}, {topup_zone, Zone}).
 
-%% Use this to add, or adjust the weighting of physical servers in the
-%% cluster.
--spec set_server(string(), integer()) -> ok. 
-set_server(Server, Weight) ->
-    set_server(Server, Weight, []).
--spec set_server(string(), integer(), string()) -> ok. 
-set_server(Server, Weight, Alias) when 
+%% Adds, (or adjusts existing) resources to system. A resource is
+%% describe by an address (here IP); a weighetd importance, with
+%% respect to all other resources; and optionally a human-readable
+%% alias.
+-spec set_resource(string(), integer()) -> ok. 
+set_resource(Resource, Weight) ->
+    set_resource(Resource, Weight, []).
+-spec set_resource(string(), integer(), string()) -> ok. 
+set_resource(Resource, Weight, Alias) when 
       is_integer(Weight), Weight >= 0 ->
-    gen_server:call({global, ?MODULE}, {set_server, Server, Weight, Alias}).
+    gen_server:call({global, ?MODULE}, {set_resource, Resource, Weight, Alias}).
 
--spec delete_server(atom() | string()) -> ok | not_found.
-delete_server(Server) ->
-    gen_server:call({global, ?MODULE}, {delete_server, Server}).
+%% Removes a resource from future consideration for
+%% mappings.TODO:Should pre-mapped names to this resource be pruned???
+-spec delete_resource(string()) -> ok | not_found.
+delete_resource(Resource) ->
+    gen_server:call({global, ?MODULE}, {delete_resource, Resource}).
 
--spec server_diagnostics() -> ok.
-server_diagnostics() ->
-    S = gen_server:call({global, ?MODULE}, server_diagnostics),
+%% Useful for listing active resources, and testing random distribution.
+-spec resource_diagnostics() -> ok.
+resource_diagnostics() ->
+    S = gen_server:call({global, ?MODULE}, resource_diagnostics),
     io:format("~s", [S]).
 
+%% Prints infomation in existing zones. 
 -spec zone_diagnostics() -> ok.
 zone_diagnostics() ->
     S = gen_server:call({global, ?MODULE}, zone_diagnostics),
@@ -133,9 +160,9 @@ zone_diagnostics() ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
-    ok = hn_db_admin:create_table(core_hns_server, 
-                                  server, 
-                                  record_info(fields, server),
+    ok = hn_db_admin:create_table(core_hns_resource, 
+                                  resource, 
+                                  record_info(fields, resource),
                                   disc_copies,
                                   set,
                                   false,
@@ -154,7 +181,7 @@ init([]) ->
                                   set,
                                   false,
                                   []),
-    Routing = build_routing(all_servers()),
+    Routing = build_routing(all_resources()),
     {ok, #state{routing = Routing}}.
 
 %%--------------------------------------------------------------------
@@ -179,13 +206,13 @@ handle_call({create_zone, Zone, MinSize, IdealSize, Generator}, _From, S) ->
             {reply, already_exists, S};
         _ ->
             ZoneId = zone_id_LINODE(Zone),
-            Available = allocate_names(IdealSize, S#state.routing,
-                                       Generator, ZoneId, gb_trees:empty()),
-            Entry = #zone{name = Zone,
-                          linode_id = ZoneId,
+            Pool = allocate_names(IdealSize, S#state.routing,
+                                  Generator, ZoneId, gb_trees:empty()),
+            Entry = #zone{label = Zone,
+                          zone_id = ZoneId,
                           min_size = MinSize,
                           ideal_size = IdealSize,
-                          available = Available,
+                          pool = Pool,
                           generator = Generator},
             ok = mnesia:activity(async_dirty, fun mnesia:write/3,
                                  [core_hns_zone, Entry, write]),
@@ -195,28 +222,43 @@ handle_call({create_zone, Zone, MinSize, IdealSize, Generator}, _From, S) ->
 handle_call({delete_zone, Zone}, _From, S) ->
     case mnesia:activity(async_dirty, fun mnesia:read/2,
                          [core_hns_zone, Zone]) of
-        [#zone{available = A, linode_id=ZoneId}] ->
-            %% Deallocated names in pool. Leave existing sites alone
-            deallocate_names(gb_trees:values(A), ZoneId),
+        [#zone{pool = A, zone_id=ZoneId}] ->
+            %% Deallocated mappings in pool. 
+            [delete_dns_LINODE(ZoneId, Rid) || {_,Rid} <- gb_trees:values(A)],
             ok = mnesia:activity(async_dirty, fun mnesia:delete/3,
                                  [core_hns_zone, Zone, write]);
-        _ ->
-            ok
-    end,
+        _ -> ok end,
     {reply, ok, S};
 
-handle_call({request_name, ZName}, _From, S) ->
+handle_call({purge, Zone}, _From, S) ->
+    MS = ets:fun2ms(fun(#record{label = {Z, _}}=R) 
+                          when Zone == Z -> R 
+                    end),
+    DelF = fun() ->
+                   Recs = mnesia:select(core_hns_record, MS, write),
+                   [mnesia:delete_object(core_hns_record, R, write) || R <- Recs],
+                   Recs
+           end,
+    Recs = mnesia:activity(async_dirty, DelF),
+    [delete_dns_LINODE(ZID, RID) || #record{zone_id = ZID, 
+                                            resource_id = RID} <- Recs],
+    {reply, ok, S};
+
+handle_call({link_resource, ZName}, _From, S) ->
     Val = mnesia:activity(async_dirty, 
                           fun mnesia:read/2,
                           [core_hns_zone, ZName]),
     Ret = case Val of 
               [Z] ->
-                  case gb_trees:size(Z#zone.available) of
+                  case gb_trees:size(Z#zone.pool) of
                       0 -> 
-                          name_underflow;
+                          underflow;
                       _ -> 
-                          {Name, Address, Id, Z2} = get_name(Z),
-                          Rec = #record{name=Name, address=Address, linode_id=Id},
+                          {Name, Address, RId, Z2} = get_mapping(Z),
+                          Rec = #record{label = {Z#zone.label, Name}, 
+                                        address = Address, 
+                                        zone_id = Z#zone.zone_id,
+                                        resource_id = RId},
                           F = fun() ->
                                       ok = mnesia:write(core_hns_zone, 
                                                         Z2, 
@@ -226,33 +268,48 @@ handle_call({request_name, ZName}, _From, S) ->
                                                         write)
                               end,
                           ok = mnesia:activity(async_dirty, F),
-                          Name
+                          Name ++ "." ++ Z#zone.label
                   end;
               _ ->
                   no_zone
           end,
     {reply, Ret, S};
 
-handle_call({set_server, Address, Weight, Alias}, _From, S) ->
-    Entry = #server{address=Address, weight=Weight, alias=Alias},
+handle_call({unlink_resource, Zone, Name}, _From, S) ->
+    Val = mnesia:activity(async_dirty,
+                          fun mnesia:read/2,
+                          [core_hns_record, {Zone, Name}]),
+    case Val of 
+        [#record{zone_id = ZID, resource_id = RID}] -> 
+            delete_dns_LINODE(ZID, RID),
+            mnesia:activity(async_dirty,
+                            fun mnesia:delete/3,
+                            [core_hns_record, Name, write]);
+        _ ->
+            ok
+    end,
+    {reply, ok, S};
+
+handle_call({set_resource, Address, Weight, Alias}, _From, S) ->
+    Entry = #resource{address=Address, weight=Weight, alias=Alias},
     ok = mnesia:activity(async_dirty, 
                          fun mnesia:write/3, 
-                         [core_hns_server, Entry, write]),
-    Routing = build_routing(all_servers()),
+                         [core_hns_resource, Entry, write]),
+    Routing = build_routing(all_resources()),
     {reply, ok, S#state{routing = Routing}};
 
-handle_call({delete_server, Address}, _From, S) ->
+handle_call({delete_resource, Address}, _From, S) ->
     ok = mnesia:activity(async_dirty,
                          fun mnesia:delete/3, 
-                         [core_hns_server, Address, write]),
-    Routing = build_routing(all_servers()),
+                         [core_hns_resource, Address, write]),
+    Routing = build_routing(all_resources()),
     {reply, ok, S#state{routing = Routing}};
 
-handle_call(server_diagnostics, _From, S=#state{routing=R}) ->
+handle_call(resource_diagnostics, _From, S=#state{routing=R}) ->
     Runs = 50000,
     Results = repeat_select(Runs, R, dict:new()),
     Format = "Name: ~-20s Wgt: ~5b Expect: ~5.3f Actual: ~5.3f~n",
-    F = fun(#server{address=Address, weight=Weight, alias=Alias}, Acc) ->
+    F = fun(#resource{address=Address, weight=Weight, alias=Alias}, Acc) ->
                 Expected = Weight / R#routing.upper_limit,
                 Actual = case dict:find(Address, Results) of
                              {ok, V} -> V / Runs; 
@@ -262,7 +319,7 @@ handle_call(server_diagnostics, _From, S=#state{routing=R}) ->
                 L = io_lib:format(Format, [Name, Weight, Expected, Actual]),
                 [L | Acc]
         end,
-    Stats = lists:foldl(F, [], all_servers()),
+    Stats = lists:foldl(F, [], all_resources()),
     Title = io_lib:format("After ~b runs:~n---~n", [Runs]),
     Reply = lists:flatten([Title | Stats]),
     {reply, Reply, S};
@@ -276,16 +333,17 @@ handle_call(zone_diagnostics, _From, S) ->
         "   Min   size: ~b~n"
         "-------------------------~n",
     F = fun(Z) ->
-                io_lib:format(Format, [Z#zone.name, 
-                                       (Z#zone.generator)(), 
-                                       Z#zone.linode_id,
-                                       gb_trees:size(Z#zone.available),
-                                       Z#zone.ideal_size, 
-                                       Z#zone.min_size])
+                io_lib:format(
+                  Format, [ Z#zone.label, 
+                            (Z#zone.generator)() ++ "." ++ Z#zone.label,
+                            Z#zone.zone_id,
+                            gb_trees:size(Z#zone.pool),
+                            Z#zone.ideal_size, 
+                            Z#zone.min_size ])
         end,
     Reply = lists:flatten([F(Z) || Z <- all_zones()]),
     {reply, Reply, S};
-    
+
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
@@ -304,14 +362,14 @@ handle_cast({topup_zone, ZName}, State) ->
     case mnesia:activity(async_dirty, fun mnesia:read/2, 
                          [core_hns_zone, ZName]) of
         [Z=#zone{ideal_size=Ideal}] ->
-            case gb_trees:size(Z#zone.available) of 
+            case gb_trees:size(Z#zone.pool) of 
                 S when S < Ideal ->
-                    Avail2 = allocate_names(Ideal - S, 
+                    Pool2 = allocate_names(Ideal - S, 
                                             State#state.routing, 
                                             Z#zone.generator,
-                                            Z#zone.linode_id,
-                                            Z#zone.available),
-                    Z2 = Z#zone{available=Avail2},
+                                            Z#zone.zone_id,
+                                            Z#zone.pool),
+                    Z2 = Z#zone{pool=Pool2},
                     mnesia:activity(async_dirty, fun mnesia:write/3,
                                     [core_hns_zone, Z2, write]);
                 _ ->
@@ -368,11 +426,11 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Database Helpers
 %%%===================================================================
 
--spec all_servers() -> [#server{}]. 
-all_servers() ->
+-spec all_resources() -> [#resource{}]. 
+all_resources() ->
     F = fun() ->
                 mnesia:select(
-                  core_hns_server, 
+                  core_hns_resource, 
                   ets:fun2ms(fun(X) -> X end),
                   read)
         end,
@@ -392,18 +450,18 @@ all_zones() ->
 %%% Name Allocation
 %%%===================================================================
 
-%% Assumes available is non-empty.
--spec get_name(#zone{}) -> {string(), string(), integer(), #zone{}}.
-get_name(Z=#zone{name=ZName, available=Available, min_size=Min}) ->
-    {Name, {Address, ResourceId}, Available2} = 
-        case gb_trees:size(Available) of
+%% Assumes pool is non-empty.
+-spec get_mapping(#zone{}) -> {string(), string(), integer(), #zone{}}.
+get_mapping(Z=#zone{label=Zone, pool=Pool, min_size=Min}) ->
+    {Name, {Address, ResourceId}, Pool2} = 
+        case gb_trees:size(Pool) of
             N when N =< Min -> 
-                spawn(?MODULE, topup_zone, [ZName]),
-                gb_trees:take_smallest(Available);
+                spawn(?MODULE, topup_zone, [Zone]),
+                gb_trees:take_smallest(Pool);
             _ -> 
-                gb_trees:take_smallest(Available)
+                gb_trees:take_smallest(Pool)
         end,
-    {Name, Address, ResourceId, Z#zone{available = Available2}}.
+    {Name, Address, ResourceId, Z#zone{pool = Pool2}}.
 
 -spec allocate_names(integer(), #routing{}, generator(), integer(), gb_tree())
                     -> gb_tree().
@@ -421,16 +479,10 @@ allocate_name(Routing, Generator, ZoneId, Pool) ->
         true  -> 
             Pool;
         false -> 
-            Address = pick_server(Routing),
-            ResourceID = create_dns_entry_LINODE(Name, Address, ZoneId),
+            Address = pick_resource(Routing),
+            ResourceID = create_dns_LINODE(Name, Address, ZoneId),
             gb_trees:enter(Name, {Address, ResourceID}, Pool)
     end.
-
--spec deallocate_names([{string(), integer()}], integer()) -> ok. 
-deallocate_names(Ns, ZoneId) ->
-    [delete_dns_entry_LINODE(ResourceID, ZoneId) 
-     || {_Addr, ResourceID} <- Ns],
-    ok.
 
 -spec name_exists(string()) -> boolean(). 
 name_exists(Name) ->
@@ -446,8 +498,8 @@ zone_id_LINODE(Zone) ->
     {array, Domains} = get_data(Struct),
     seek_zone_id(Domains, Zone).
 
--spec create_dns_entry_LINODE(string(), string(), integer()) -> integer(). 
-create_dns_entry_LINODE(Name, Address, ZoneId) ->
+-spec create_dns_LINODE(string(), string(), integer()) -> integer(). 
+create_dns_LINODE(Name, Address, ZoneId) ->
     ZoneIdStr = integer_to_list(ZoneId),
     Struct = linode_api([{"api_action", "domain.resource.create"},
                         {"DomainID", ZoneIdStr},
@@ -458,8 +510,8 @@ create_dns_entry_LINODE(Name, Address, ZoneId) ->
     ResourceID.
     
 
--spec delete_dns_entry_LINODE(integer(), integer()) -> any(). 
-delete_dns_entry_LINODE(ZoneId, ResourceId) ->
+-spec delete_dns_LINODE(integer(), integer()) -> any(). 
+delete_dns_LINODE(ZoneId, ResourceId) ->
     ZoneIdStr = integer_to_list(ZoneId),
     ResourceIdStr = integer_to_list(ResourceId),
     linode_api([{"api_action", "domain.resource.delete"},
@@ -488,26 +540,26 @@ linode_api(Cmds0) ->
     mochijson:decode(Json).
 
 %%%===================================================================
-%%% Server selection 
+%%% Resource selection 
 %%%===================================================================
 
--spec pick_server(#routing{}) -> string().
-pick_server(#routing{table = Tbl, upper_limit = Limit}) ->
+-spec pick_resource(#routing{}) -> string().
+pick_resource(#routing{table = Tbl, upper_limit = Limit}) ->
     Val = crypto:rand_uniform(0, Limit),
-    do_pick_server(Tbl, Val).
+    do_pick_resource(Tbl, Val).
 
-do_pick_server([], _) -> throw(no_servers);
-do_pick_server([{Range, Server} | _], Val) when Val < Range -> Server;
-do_pick_server([_ | Rest], Val) -> do_pick_server(Rest, Val).
+do_pick_resource([], _) -> throw(no_resources);
+do_pick_resource([{Range, Resource} | _], Val) when Val < Range -> Resource;
+do_pick_resource([_ | Rest], Val) -> do_pick_resource(Rest, Val).
 
--spec build_routing([#server{}]) -> #routing{}. 
-build_routing(Servers) ->
-    {Tbl, Upper} = lists:foldl(fun build_routing/2, {[], 0}, Servers),
+-spec build_routing([#resource{}]) -> #routing{}. 
+build_routing(Resources) ->
+    {Tbl, Upper} = lists:foldl(fun build_routing/2, {[], 0}, Resources),
     #routing{upper_limit = Upper,
              table = lists:reverse(Tbl)}.
 
--spec build_routing(#server{}, X) -> X when is_subtype(X, {list(), integer()}).
-build_routing(#server{address=Key, weight=Val}, {Tbl, Count}) ->
+-spec build_routing(#resource{}, X) -> X when is_subtype(X, {list(), integer()}).
+build_routing(#resource{address=Key, weight=Val}, {Tbl, Count}) ->
     Count2 = Count + Val,
     Tbl2 = [{Count2, Key} | Tbl],
     {Tbl2, Count2}.
@@ -515,20 +567,20 @@ build_routing(#server{address=Key, weight=Val}, {Tbl, Count}) ->
 repeat_select(0, _, Results) ->
     Results;
 repeat_select(N, S, Results) ->
-    Srv = pick_server(S),
+    Srv = pick_resource(S),
     Results2 = dict:update_counter(Srv, 1, Results),
     repeat_select(N-1, S, Results2).    
 
 simple_test_() ->
-    Servers = [#server{address = "alpha", weight = 5},
-               #server{address = "beta", weight = 0},
-               #server{address = "gamma", weight = 0}],
-    R = build_routing(Servers),
-    ?_assertEqual("alpha", pick_server(R)).
+    Resources = [#resource{address = "alpha", weight = 5},
+               #resource{address = "beta", weight = 0},
+               #resource{address = "gamma", weight = 0}],
+    R = build_routing(Resources),
+    ?_assertEqual("alpha", pick_resource(R)).
 
 count_test_() ->
-    Servers = [#server{address = "alpha", weight = 5},
-               #server{address = "beta", weight = 20},
-               #server{address = "gamma", weight = 5}],
-    R = build_routing(Servers),
+    Resources = [#resource{address = "alpha", weight = 5},
+               #resource{address = "beta", weight = 20},
+               #resource{address = "gamma", weight = 5}],
+    R = build_routing(Resources),
     ?_assertEqual(30, R#routing.upper_limit).
