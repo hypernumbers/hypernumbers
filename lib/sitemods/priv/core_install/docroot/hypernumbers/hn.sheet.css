@@ -1548,7 +1548,7 @@ hr {
     top: 2px;
     padding:1px;
     color:red;
-    z-index: 9999999;
+    z-index: 999999;
 }
 
 #viewtabs {
@@ -1756,13 +1756,13 @@ form.droppable {
     border-width:0px 1px 1px 1px;
 }
 
-#myspreadsheets td { padding:5px; line-height:18px; font-size: 12px; }
+#ctrltabdivs td { padding:5px; line-height:18px; font-size: 12px; }
 
-#myspreadsheets .content { 
+#ctrltabdivs .content { 
     width:270px; 
 } 
 
-#myspreadsheets .label { 
+#ctrltabdivs .label { 
     text-align:right; 
     width:120px; 
     color:#555; 
@@ -1770,3 +1770,6 @@ form.droppable {
 } 
 
 #doupload { cursor:pointer; }
+
+
+#users { width:300px; margin:100px auto; }
