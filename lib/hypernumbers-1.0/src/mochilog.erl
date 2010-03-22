@@ -34,15 +34,15 @@ start() ->
     end.
 
 %% @doc Logs individual requests
--spec log(#req{}, #refX{}) -> ok.
-log(Req=#req{mochi = Mochi, user = User, raw_body = Body}, Ref) ->
+-spec log(#env{}, #refX{}) -> ok.
+log(Env=#env{mochi = Mochi, user = User, raw_body = Body}, Ref) ->
     Post = [{time, erlang:now()},
             {site, Ref#refX.site},
             {path, Mochi:get(raw_path)},
             {method, Mochi:get(method)},
             {body, Body},
             {user, hn_users:name(User)},
-            {uid, Req#req.uid},
+            {uid, Env#env.uid},
             {peer, Mochi:get_header_value("x-forwarded-for")},
             {referer, Mochi:get_header_value("Referer")},
             {browser, Mochi:get_header_value("User-Agent")},
@@ -328,7 +328,6 @@ run_log(Name, Fun, Filter) ->
 walk(F, Cont, N) ->
     case wrap_log_reader:chunk(Cont) of
         {error, E} ->
-            error_logger:error_message("Chunk error at N=~d: ~p~n", [E]),
             throw(E);
         {NCont, eof} ->
             {ok, NCont};
