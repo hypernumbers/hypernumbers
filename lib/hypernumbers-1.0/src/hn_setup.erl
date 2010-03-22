@@ -10,7 +10,7 @@
          get_sites/0,
          get_site_type/1,
          resave_views/0,
-         create_path_from_name/1,
+         create_path_from_name/2,
          is_path/1
         ]).
 
@@ -217,19 +217,20 @@ tables() ->
 batch_import(Site) ->
     Files = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site) ++ "/import/*.csv",
-    OverWild    = filelib:wildcard(Files ++ ".overwrite"),
+    OverWild    = filelib:wildcard(Files ++ ".replace"),
     AppendWild  = filelib:wildcard(Files ++ ".append"),
     OverFiles   = lists:filter(fun is_path/1, OverWild),
     AppendFiles = lists:filter(fun is_path/1, AppendWild),
-    [ ok = hn_import:csv_file(Site ++ create_path_from_name(X), X) || X <- OverFiles],
-    [ ok = hn_import:csv_file(Site ++ create_path_from_name(X), X) || X <- AppendFiles],
+    [ ok = hn_import:csv_file(Site ++ create_path_from_name(X, ".csv.replace"), X) || X <- OverFiles],
+    [ ok = hn_import:csv_append(Site ++ create_path_from_name(X, ".csv.append"), X) || X <- AppendFiles],
     ok.
 
 %% Import a set of json files into the live spreadsheet
 import_json(Site, Dir) ->
     Files = filelib:wildcard(Dir++"/data/*.json"),
     JsonFiles = lists:filter(fun is_path/1, Files),
-    [ ok = hn_import:json_file(Site ++ create_path_from_name(Json), Json)
+    [ ok = hn_import:json_file(Site ++ create_path_from_name(Json, ".json"),
+                               Json)
       || Json <- JsonFiles],
     ok.
 
@@ -241,9 +242,9 @@ is_path(L) ->
         _Other        -> false
     end.
 
-create_path_from_name(Name) ->
+create_path_from_name(Name, FileType) ->
     [ "path" | Rest ]
-        = string:tokens(filename:basename(Name, ".json"), "."),
+        = string:tokens(filename:basename(Name, FileType), "."),
     hn_util:list_to_path(Rest).
 
 

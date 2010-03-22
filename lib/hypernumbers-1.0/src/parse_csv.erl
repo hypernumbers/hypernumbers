@@ -156,6 +156,10 @@ csv_test_() ->
      ?_assertEqual([{"1A","\"1B\""}], parse(<<"\"1A\",\"\"\"1B\"\"\"">>)),
      % Quoted element with embedded LF
      ?_assertEqual([{"1A","1\nB"}], parse(<<"\"1A\",\"1\nB\"">>)),
+     % Quoted element with embedded quotes (1)
+     ?_assertEqual([{"1A","\"B"}], parse(<<"\"1A\",\"",$","B\"">>)), %"
+     % Quoted element with embedded quotes (2)
+     ?_assertEqual([{"1A","blah\"B"}], parse(<<"\"1A\",\"blah\"",$","B\"">>)), %"
      % Missing 2nd quote
      ?_assertThrow({ecsv_exception,unclosed_quote},
                    parse(<<"\"1A\",\"2B">>)), %">>)), % fixing indenting

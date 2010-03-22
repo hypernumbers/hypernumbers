@@ -128,7 +128,7 @@ load_type(SiteSrc) ->
 
 load_etf(Site, SiteSrc) ->    
     Files = filelib:wildcard(join([SiteSrc, "etf"])++"/*.json"),
-    [ ok = hn_import:json_file(Site ++ hn_setup:create_path_from_name(Json),
+    [ ok = hn_import:json_file(Site ++ hn_setup:create_path_from_name(Json, ".json"),
                                Json)
       || Json <- Files, hn_setup:is_path(Json) ],    
     ok.
