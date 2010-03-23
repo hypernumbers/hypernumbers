@@ -34,7 +34,7 @@
 
 -include_lib("eunit/include/eunit.hrl").
 -include("spriki.hrl").
--include("auth2.hrl").
+-include("auth.hrl").
 -include("security.hrl").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

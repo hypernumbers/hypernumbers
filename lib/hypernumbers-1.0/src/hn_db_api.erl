@@ -93,7 +93,7 @@
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
--include("auth2.hrl").
+-include("auth.hrl").
 
 -export([
          write_attributes/1,

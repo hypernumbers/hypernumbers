@@ -588,7 +588,7 @@
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
--include("auth2.hrl").
+-include("auth.hrl").
 
 -include_lib("stdlib/include/ms_transform.hrl").
 

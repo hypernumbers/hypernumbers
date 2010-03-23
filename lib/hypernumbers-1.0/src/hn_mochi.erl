@@ -7,7 +7,7 @@
 
 -include_lib("kernel/include/file.hrl").
 -include("gettext.hrl").
--include("auth2.hrl").
+-include("auth.hrl").
 -include("hn_mochi.hrl").
 
 -export([ handle/1,

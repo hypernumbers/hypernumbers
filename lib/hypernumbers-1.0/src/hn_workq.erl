@@ -16,7 +16,7 @@
          merge/2]).
 
 -include_lib("eunit/include/eunit.hrl").
--include("auth2.hrl").
+-include("auth.hrl").
 
 -type now() :: {integer(),integer(),integer()}.
 -type work_queue() :: {dict(), 
