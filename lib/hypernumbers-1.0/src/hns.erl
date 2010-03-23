@@ -4,7 +4,7 @@
 
 %% API
 -export([start_link/0,
-         create_zone/4, delete_zone/1, purge_zone/1, topup_zone/1,
+         create_zone/4, delete_zone/1, purge_zone/2, topup_zone/1,
          link_resource/1, unlink_resource/2,
          set_resource/2, set_resource/3, delete_resource/1,
          resource_diagnostics/0, zone_diagnostics/0
@@ -102,8 +102,8 @@ delete_zone(Zone) ->
 
 %% CAUTION!!! Purging will __UNRECOVERABLY REMOVE__ all resource mappings
 %% associated with this zone.
--spec purge_zone(string()) -> ok.
-purge_zone(Zone) ->
+-spec purge_zone(string(), atom()) -> ok.
+purge_zone(Zone, i_really_know_what_i_am_doing) ->
     delete_zone(Zone),
     gen_server:call({global, ?MODULE}, {purge, Zone}, infinity).
 
