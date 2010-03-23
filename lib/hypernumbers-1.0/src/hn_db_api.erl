@@ -105,8 +105,8 @@
          read_attributes/2,
          read/1,
          read_whole_page/1,
-         read_inherited_list/2,
-         read_inherited_value/3,
+         % read_inherited_list/2,  % don't think its used
+         % read_inherited_value/3, % don't think its used
          read_styles/1,
          read_page_structure/1,
          read_pages/1,
@@ -244,9 +244,9 @@ set_borders2(RefX, Where, Border, B_Style, B_Color) ->
                   B   = "border-" ++ Where ++ "-width",
                   B_S = "border-" ++ Where ++ "-style",
                   B_C = "border-" ++ Where ++ "-color",
-                  ok = hn_db_wu:write_attr(RefX, {B,   Border}),
-                  ok = hn_db_wu:write_attr(RefX, {B_S, B_Style}),
-                  ok = hn_db_wu:write_attr(RefX, {B_C, B_Color})
+                  ok = hn_db_wu:new_write_attr(RefX, {B,   Border}),
+                  ok = hn_db_wu:new_write_attr(RefX, {B_S, B_Style}),
+                  ok = hn_db_wu:new_write_attr(RefX, {B_C, B_Color})
           end,
     ok = mnesia:activity(transaction, Fun),
     ok = tell_front_end("set_borders2").
@@ -423,7 +423,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
     F = fun() ->
                 Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
                 case hn_db_wu:read_attrs(Cell, ["formula"], read) of
-                    [{C, KV}] -> hn_db_wu:write_attr(C, KV, Ar);
+                    [{C, KV}] -> hn_db_wu:new_write_attr(C, KV, Ar);
                     []        -> ok
                 end
         end,
@@ -448,7 +448,7 @@ handle_dirty(Site, Record) when is_record(Record, dirty_notify_in) ->
                     fun(X) ->
                             [{RefX, KV}] =
                                 hn_db_wu:read_attrs(X, ["formula"], write),
-                            hn_db_wu:write_attr(RefX, KV)
+                            hn_db_wu:new_write_attr(RefX, KV)
                     end,
                 [ok = Fun2(X)  || X <- Cells],
                 hn_db_wu:clear_dirty(Site, Record)
@@ -784,7 +784,7 @@ write_last(List, PAr, VAr) when is_list(List) ->
                                       column -> {cell, {IdxX, PosY}}
                                   end,
                             RefX2 = #refX{site = S1, path = P1, obj = Obj},
-                            hn_db_wu:write_attr(RefX2, {"formula", Val}, PAr),
+                            hn_db_wu:new_write_attr(RefX2, {"formula", Val}, PAr),
                             hn_db_wu:mark_children_dirty(RefX2, VAr)
                     end,
                 [Fun1(X) || X <- List]
@@ -815,18 +815,18 @@ read_last(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
 %% Attribute = string()
 %% @doc Scans the tree and returns a list of value stored against
 %%      Key 
-read_inherited_list(RefX, Key) when is_record(RefX, refX) ->
-    F = fun hn_db_wu:read_inherited_list/2,
-    mnesia:activity(transaction, F, [RefX, Key]).
+% read_inherited_list(RefX, Key) when is_record(RefX, refX) ->
+%     F = fun hn_db_wu:read_inherited_list/2,
+%     mnesia:activity(transaction, F, [RefX, Key]).
 
 %% @spec read_inherited_value(#refX{}, Attibute, Default) -> {#refX{}, Val}
 %% @doc  This function searches the tree for the first occurence of a value
 %%       stored at a given reference, if not found it returns the supplied
 %%       default value
 %%       
-read_inherited_value(RefX, Key, Default) when is_record(RefX, refX) ->
-    F = fun hn_db_wu:read_inherited/3,
-    mnesia:activity(transaction, F, [RefX, Key, Default]).
+% read_inherited_value(RefX, Key, Default) when is_record(RefX, refX) ->
+%     F = fun hn_db_wu:read_inherited/3,
+%     mnesia:activity(transaction, F, [RefX, Key, Default]).
 
 %% @spec read_attributes(#refX{}, AttrList) -> {#refX{}, Val}
 %% AttrList = [list()]
@@ -912,7 +912,7 @@ recalculate(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   Cells = hn_db_wu:read_attrs(RefX, ["formula"], write),
-                  [ok = hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
+                  [ok = hn_db_wu:new_write_attr(X, Y) || {X, Y} <- Cells]
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("recalculate").
@@ -932,7 +932,7 @@ reformat(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   Cells = hn_db_wu:read_attrs(RefX, ["format"], read),
-                  [ok = hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
+                  [ok = hn_db_wu:new_write_attr(X, Y) || {X, Y} <- Cells]
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("reformat").
@@ -1066,7 +1066,7 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp, Ar) ->
     %% Fun2 = fun(X) ->
     %%                case hn_db_wu:read_attrs(X, ["formula"], write) of
     %%                    [{X, {"formula", F}}] ->
-    %%                        hn_db_wu:write_attr(X, {"formula", F});
+    %%                        hn_db_wu:new_write_attr(X, {"formula", F});
     %%                    _  ->
     %%                        ok
     %%                end
@@ -1305,7 +1305,7 @@ biggest(List, Type) ->
 write_attributes1(RefX, List, PAr, VAr) 
   when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),
-    [hn_db_wu:write_attr(RefX, X, PAr) || X <- List],
+    [hn_db_wu:new_write_attr(RefX, X, PAr) || X <- List],
     ok = hn_db_wu:mark_children_dirty(RefX, VAr).
 
 -spec copy_cell(#refX{}, #refX{}, 

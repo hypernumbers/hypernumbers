@@ -489,14 +489,14 @@
 
 %% Cell Query Exports
 -export([
-         write_attr/2,
-         write_attr/3,       % tested
-         read_cells/2,       % tested
+         new_write_attr/2,
+         new_write_attr/3,
+         read_cells/2,
          read_cells_raw/2,
-         read_attrs/2,       % tested
-         read_attrs/3,       % tested
-         read_inherited/3,
-         read_inherited_list/2,
+         read_attrs/2,
+         read_attrs/3,
+         % read_inherited/3,      % not used
+         % read_inherited_list/2, % not used
          read_styles/1,
          read_incoming_hn/2,
          local_idx_to_refX/2,
@@ -580,6 +580,9 @@
 
 -define(lt, list_to_tuple).
 -define(lf, lists:flatten).
+
+% the format to use where there is no format
+-define(GENERAL, "General").
 
 -include("spriki.hrl").
 -include("handy_macros.hrl").
@@ -1072,7 +1075,7 @@ read_remote_children(Site, #refX{obj = {cell,_}} = Parent, Type)
     Links = mnesia:match_object(Table, Match, read),
     get_remote_children(Links).    
 
-%% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> ok
+%% @spec new_write_attr(RefX :: #refX{}, {Key, Value}) -> ok
 %% Key = atom()
 %% Value = term()
 %% @doc this function writes attributes to a cell or cells.
@@ -1094,10 +1097,107 @@ read_remote_children(Site, #refX{obj = {cell,_}} = Parent, Type)
 %% it will be magically managed as a style
 %% @end
 %% This clause deals with a formula
+new_write_attr(Ref, Attr) -> write_attr(Ref, Attr).
+
+%% write_attr is going to be rewritten piece at a time
+new_write_attr(#refX{site = S, path = P, obj = {cell, _} = O} = RefX, {"formula", _} = Attr, Ar) ->
+    Idx = get_local_item_index(RefX),
+    % first check that the formula is not part of a shared array
+    case read_attrs(RefX, ["__shared"], read) of
+        [_X] -> throw({error, cant_change_part_of_array});
+        []   -> new_write_attr2(S, P, O, Idx, Attr, Ar)
+    end;
+new_write_attr(#refX{site = S, path = P, obj = {cell, _} = O} = RefX,
+               {"format", Format} = Attr, _Ar) ->
+    Idx = get_local_item_index(RefX),
+    ok = new_write_attr3(S, P, O, Idx, Attr),
+    %% now reformat values (if they exist)
+    case read_attrs(RefX, ["rawvalue"], read) of
+        []                               -> ok;
+        [{RefX, {"rawvalue", RawValue}}] ->
+            ok = new_proc_format(S, P, O, Idx, Format, RawValue)
+    end;
+new_write_attr(#refX{site = S, path = P, obj = {cell, _} = O} = RefX, 
+           {"__dependency-tree", DTree}, _Ar) ->
+    Idx = get_local_item_index(RefX),
+    new_write_attr3(S, P, O, Idx, {"__dependency-tree", DTree});
+new_write_attr(#refX{site = S, path = P, obj = {cell, _} = O} = RefX,
+           {Key, Val} = Attr, _Ar) ->
+    Idx = get_local_item_index(RefX),
+    % NOTE the attribute 'overwrite-color' isn't in
+    % a magic style and shouldn't be
+    case ms_util2:is_in_record(magic_style, Key) of 
+        true  -> new_process_styles(S, P, O, Idx, Attr);
+        false -> new_write_attr3(S, P, O, Idx, {Key, Val})
+    end;
+new_write_attr(#refX{obj = {range, _}} = RefX, Attr, Ar) ->
+    List = hn_util:range_to_list(RefX),
+    [ok = new_write_attr(X, Attr, Ar) || X <- List],
+    ok;
+new_write_attr(#refX{site = S, path = P, obj = O} = RefX, Attr, _Ar) ->
+    Idx = get_local_item_index(RefX),
+    new_write_attr3(S, P, O, Idx, Attr).
+
+%% temporary
+new_write_attr(S, P, O, _Idx, Val) ->
+    RefX = #refX{site = S, path = P, obj = O},
+    write_attr(RefX, Val).
+
+new_write_attr2(Site, Path, Obj, Idx, {"formula", Val}, Ar) ->
+    case superparser:process(Val) of
+        {formula, Fla}      -> new_write_formula1(Site, Path, Obj, Idx,
+                                                  Fla, Val, Ar);
+        [NVal, Align, Frmt] -> new_write_formula2(Site, Path, Obj, Idx,
+                                                  Val, NVal, Align, Frmt)
+    end.
+
+new_write_formula1(Site, Path, Obj, Idx, Fla, Val, Ar) ->
+    Rti = make_rti(Site, Path, Obj, Ar, false),
+    case muin:run_formula(Fla, Rti) of
+        %% TODO : Get rid of this, muin should return {error, Reason}?
+        {ok, {_P, {error, error_in_formula}, _, _, _}} ->
+            ?ERROR("invalid return from muin:run_formula ~p",[Val]),
+            ok = remoting_reg:notify_error(Site, Path, Obj, error_in_formula,
+                                           Val);
+        {error, Error} ->
+            ok = remoting_reg:notify_error(Site, Path, Obj,  Error, Val);
+        {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
+            Parxml = map(fun muin_link_to_simplexml/1, Parents),
+            %% Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
+            ok = new_write_attr3(Site, Path, Obj, Idx, {"__ast", Pcode}),
+            ok = new_write_attr3(Site, Path, Obj, Idx, {"__recompile", Recompile}),
+            %% write the default text align for the result
+            ok = new_write_default_alignment(Site, Path, Obj, Idx, Res),
+            new_write_cell(Site, Path, Obj, Idx, Res, Val, Parxml, Deptree)
+    end.
+
+new_write_formula2(S, P, O, Idx, OrigVal,
+                   {Type, Value}, {"text-align", Align}, Format) ->
+%% now write out the actual cell
+    Formula = case Type of
+                  quote    -> [39 | Value];
+                  datetime -> OrigVal;
+                  float    -> OrigVal;
+                  int      -> OrigVal;
+                  _        -> hn_util:text(Value)
+              end,
+    ok = new_write_cell(S, P, O, Idx, Value, Formula, [], []),
+    %% only write the default alignment if there is no style on this cell
+    RefX = #refX{site = S, path = P, obj = O},
+    case read_attrs(RefX, ["style"], read) of
+        [] -> ok = new_write_attr(S, P, O, Idx, {"text-align", Align});
+        _  -> ok
+    end,
+    %% write out the format (if any)
+    case Format of
+        {"format", "null"} -> ok;
+        {"format", F}      -> new_write_attr(S, P, O, Idx, {"format", F})
+    end.
+                
 write_attr(Ref, Attr) ->
     write_attr(Ref, Attr, nil).
 write_attr(#refX{obj = {cell, _}} = RefX, {"formula", _} = Attr, Ar) ->
-    %% first check that the formula is not part of a shared array
+    % first check that the formula is not part of a shared array
     case read_attrs(RefX, ["__shared"], read) of
         [_X] -> throw({error, cant_change_part_of_array});
         []   -> write_attr2(RefX, Attr, Ar)
@@ -1198,12 +1298,12 @@ read_cells_raw(#refX{site = Site, obj = {page, _}} = RefX, Lock)
 %%       default value
 %%       
 %% @todo what are the ref types it supports? improve the documentation, etc, etc
-read_inherited_list(RefX, Key) when is_record(RefX, refX)  ->
-    Type = case RefX#refX.obj of
-               null -> page;
-               {T, _R} -> T
-           end,
-    get_item_list(Type, RefX, Key, []).
+% read_inherited_list(RefX, Key) when is_record(RefX, refX)  ->
+%     Type = case RefX#refX.obj of
+%                null -> page;
+%                {T, _R} -> T
+%            end,
+%     get_item_list(Type, RefX, Key, []).
 
 %% @spec read_inherited(#refX{}, Key, Default) -> {ok, Value}
 %% Key = atom()
@@ -2170,6 +2270,22 @@ local_idx_to_refX(S, Idx) ->
 
 %% @doc Make a #muin_rti record out of a ref record and a flag that specifies 
 %% whether to run formula in an array context.
+make_rti(S, P, {cell, {C, R}}, AR, AC)
+  when is_boolean(AC) ->
+    #muin_rti{site = S, path = P, 
+              col = C, row = R, 
+              array_context = AC,
+              auth_req = AR};
+make_rti(S, P, {range, {C, R, _, _}}, AR, AC)
+  when is_boolean(AC) ->
+    #muin_rti{site = S, path = P, 
+              col = C, row = R, 
+              array_context = AC,
+              auth_req = AR}.
+
+
+%% @doc Make a #muin_rti record out of a ref record and a flag that specifies 
+%% whether to run formula in an array context.
 refX_to_rti(#refX{site = S, path = P, obj = {cell, {C, R}}}, AR, AC)
   when is_boolean(AC) ->
     #muin_rti{site = S, path = P, 
@@ -2242,6 +2358,27 @@ rwf1([H | T], O, N, A) ->
 %% * if it does delete it and then write the record
 %% * if it don't then just write it.
 %% will write out any raw attribute
+new_write_attr3(Site, Path, Obj, Idx, {Key, Val}) ->
+    Match = #item{idx = Idx, key = Key, _ = '_'},
+    Rec   = Match#item{val = Val},
+    Table = trans(Site, item),
+
+    case mnesia:index_match_object(Table, Match, 1, read) of
+        [] ->
+            ok = mnesia:write(Table, Rec, write);
+        [OldRec] ->
+            ok = mnesia:delete_object(Table, OldRec, write),
+            ok = mnesia:write(Table, Rec, write)
+    end,
+
+    case Key of
+        "__" ++ _ ->
+            ok;
+        Key ->
+            RefX = #refX{site = Site, path = Path, obj = Obj},
+            ok = tell_front_end(RefX, {Key, Val}, change)
+    end.
+
 write_attr3(#refX{site = Site} = RefX, {Key, Val}) ->
     Idx = get_local_item_index(RefX),
     Match = #item{idx = Idx, key = Key, _ = '_'},
@@ -2810,6 +2947,16 @@ delete_local_relation(#refX{site = Site} = Cell) ->
              ok
      end.
 
+-spec new_set_local_relations(list(), list(), [#refX{}]) -> ok.
+new_set_local_relations(S, Idx, Parents) ->
+    Tbl = trans(S, relation),
+    Rel = case mnesia:read(Tbl, Idx, write) of
+              [R] -> R; 
+              [] -> #relation{cellidx = Idx}
+          end,
+    Rel2 = set_local_parents(Tbl, Rel, Parents),
+    mnesia:write(Tbl, Rel2, write).
+
 -spec set_local_relations(#refX{}, [#refX{}]) -> ok.
 set_local_relations(#refX{site = Site} = Cell, Parents) ->
     Tbl = trans(Site, relation),
@@ -2826,7 +2973,7 @@ set_local_parents(Tbl,
                   Rel = #relation{cellidx = CellIdx, 
                                   parents = CurParents},
                   Parents) ->
-    ParentIdxs = ordsets:from_list([get_local_item_index(P) || P <- Parents]),
+    ParentIdxs  = ordsets:from_list([get_local_item_index(P) || P <- Parents]),
     LostParents = ordsets:subtract(CurParents, ParentIdxs),
     [del_local_child(P, CellIdx, Tbl) || P <- LostParents],
     [ok = add_local_child(P, CellIdx, Tbl) || P <- ParentIdxs],
@@ -3249,6 +3396,21 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
 
 % if there is a style set for the cell don't write the default
 % alignment
+new_write_default_alignment(S, P, O, Idx, Res) ->
+    RefX = #refX{site = S, path = P, obj = O},
+    case read_attrs(RefX, ["style"], read) of
+        [] -> new_write_default_alignment1(S, P, O, Idx, Res);
+        _  -> ok
+    end.
+
+new_write_default_alignment1(S, P, O, Idx, Res) when is_number(Res) ->
+    new_write_attr(S, P, O, Idx, {"text-align" ,"right"});
+new_write_default_alignment1(S, P, O, Idx, Res) when is_list(Res) ->
+    new_write_attr(S, P, O, Idx, {"text-align" ,"left"});
+%% this clause matches for booleans, dates and errors
+new_write_default_alignment1(S, P, O, Idx, _Res)  ->
+    new_write_attr(S, P, O, Idx, {"text-align" ,"center"}).
+
 write_default_alignment(RefX, Res) ->
     case read_attrs(RefX, ["style"], read) of
         [] -> write_default_alignment1(RefX, Res);
@@ -3262,6 +3424,71 @@ write_default_alignment1(RefX, Res) when is_list(Res) ->
 %% this clause matches for booleans, dates and errors
 write_default_alignment1(RefX, _Res)  ->
     write_attr(RefX, {"text-align" ,"center"}).
+
+new_write_cell(Site, Path, Obj, Idx, Value, Formula, Parents, DepTree)  ->
+
+    %% This function writes a cell out with all the trimings
+    %% 
+    %% The term 'old' refers to the values of these attributes for this
+    %% cell before this function is called.
+    %% 
+    %% The term 'new' refers to those values passed in as parameters to 
+    %% this function,
+    %% 
+    %% The order of work is this:
+    %% * overwrite the new formula
+    %% * overwrite the new raw value of the cell
+    %%   - the write_rawvalue function calls the format and applies
+    %%     it to the rawvalue to calculate the value and overwrite colour.
+    %%     It overwrite the new values of the following attributes:
+    %%     & rawvalue
+    %%     & value
+    %%     & format
+    %%     & 'overwrite-color's
+    %% * overwrites the new values of these attributes:
+    %%   - parents
+    %%   - '__dependency-tree'
+    %% * reads the old set of local links:
+    %%   - writes any local links that aren't already there
+    %%   - deletes any local links that are no longer there
+    %% * reads the old set of remote links:
+    %%   - writes any remote links that aren't already there
+    %%   - deletes any remote links that are no longer there
+    {NewLocPs, _NewRemotePs} = split_local_remote(Parents),
+
+    %% write the formula
+    ok = new_write_attr3(Site, Path, Obj, Idx, {"formula", Formula}), 
+
+    %% now write the rawvalue, etc, etc
+    ok = new_write_rawvalue(Site, Path, Obj, Idx, Value),
+
+    %% overwrite the parents and '__dependency-tree'
+    Set = fun(X, {Key, []})  -> delete_if_attrs(X, Key);
+             (X, {Key, Val}) -> write_attr(X, {Key, Val})
+          end,
+
+    RefX = #refX{site = Site, path = Path, obj = Obj},
+    Set(RefX, {"parents",           {xml, Parents}}),
+    Set(RefX, {"__dependency-tree", DepTree}),
+
+    %% Write local parents
+    new_set_local_relations(Site, Idx, NewLocPs),
+
+    %% now do the remote parents
+    %% this is a bit messier - if a cell is being updated to change a
+    %% formula I don't want to first delete the old link (and strigger
+    %% an UNREGISTRATION of the hypernumbers) and then REWRITE the
+    %% same remote link and trigger a REGISTRATION so I first read the links
+    %OldRemotePs = read_remote_parents(RefX, incoming),
+    %ok = update_rem_parents(RefX, OldRemotePs, NewRemotePs),
+
+    %% We need to know the calculated value
+    %%[{_RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"], read),
+
+    %% mark this cell as a possible dirty hypernumber
+    %mark_notify_out_dirty(RefX, {new_value, RawValue, DepTree}),
+    ok.
+
 
 write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
 
@@ -3313,13 +3540,13 @@ write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
 
     %% now do the remote parents
     %% this is a bit messier - if a cell is being updated to change a
-    %% formula I don't want to first delete the old link (and trigger
+    %% formula I don't want to first delete the old link (and strigger
     %% an UNREGISTRATION of the hypernumbers) and then REWRITE the
     %% same remote link and trigger a REGISTRATION so I first read the links
     %OldRemotePs = read_remote_parents(RefX, incoming),
     %ok = update_rem_parents(RefX, OldRemotePs, NewRemotePs),
 
-    %% We need to know the calculcated value
+    %% We need to know the calculated value
     %%[{_RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"], read),
 
     %% mark this cell as a possible dirty hypernumber
@@ -3352,6 +3579,19 @@ split_local_remote1([{_, [{_, "remote"}], [Url]} | T], {A, B}) ->
     P2 = hn_util:url_to_refX(Url),
     split_local_remote1(T, {A, [P2 | B]}).
 
+new_write_rawvalue(S, P, O, Idx, Value) ->
+    %% first write the rawvalue
+    ok = new_write_attr3(S, P, O, Idx, {"rawvalue", Value}),
+    %% now get the format that is to be applied
+    %% run the format and then stick the value into
+    %% the database
+    RefX = #refX{site = S, path = P, obj = O},
+    case read_attrs(RefX, ["format"], read) of
+        []                      -> new_proc_format(S, P, O, Idx,
+                                                   ?GENERAL, Value);
+        [{RefX, {"format", F}}] -> new_proc_format(S, P, O, Idx, F, Value)
+    end.
+
 write_rawvalue(RefX, Value) when is_record(RefX, refX) ->
     %% first write the rawvalue
     ok = write_attr3(RefX, {"rawvalue", Value}),
@@ -3360,6 +3600,18 @@ write_rawvalue(RefX, Value) when is_record(RefX, refX) ->
     %% the database
     {ok, Format} = read_inherited(RefX, "format", "General"),
     process_format(RefX, Format, Value).
+
+new_proc_format(S, P, O, Idx, Format, Value) ->
+    {erlang, {_Type, Output}} = format:get_src(Format),
+    % I *still* hate American spelling
+    {ok, {Color, V}} = format:run_format(Value, Output),
+    % first write the formatted value
+    ok = new_write_attr3(S, P, O, Idx, {"value", V}),
+    % now write the overwrite colour that comes from the format
+    % I *still* hate American spelling
+    C = atom_to_list(Color),
+    % I *still* hate American spelling
+    ok = new_write_attr3(S, P, O, Idx, {"overwrite-color", C}).
 
 process_format(RefX, Format, Value) when is_record(RefX, refX) ->
     {erlang, {_Type, Output}} = format:get_src(Format),
@@ -3370,17 +3622,17 @@ process_format(RefX, Format, Value) when is_record(RefX, refX) ->
     % now write the overwrite colour that comes from the format
     ok = write_attr3(RefX, {"overwrite-color", atom_to_list(Color)}).
 
-get_item_list(Type, RefX, Key, Acc) ->
-    case traverse(Type, RefX, Key) of
-        {last, []}                    -> {ok, Acc};
-        {last, [#item{val = Val}]}    -> {ok,lists:append(Val, Acc)};
-        {NType, NewRefX, []}          -> get_item_list(NType, NewRefX, Key, Acc);
-        {NType, []}                   -> get_item_list(NType, RefX, Key, Acc);
-        {NType, NewRefX, [#item{val = Val}]} ->
-            get_item_list(NType, NewRefX, Key, lists:append(Val, Acc));
-        {NType,[#item{val = Val}]}     -> 
-            get_item_list(NType, RefX, Key, lists:append(Val, Acc))
-    end.
+% get_item_list(Type, RefX, Key, Acc) ->
+%     case traverse(Type, RefX, Key) of
+%         {last, []}                    -> {ok, Acc};
+%         {last, [#item{val = Val}]}    -> {ok,lists:append(Val, Acc)};
+%         {NType, NewRefX, []}          -> get_item_list(NType, NewRefX, Key, Acc);
+%         {NType, []}                   -> get_item_list(NType, RefX, Key, Acc);
+%         {NType, NewRefX, [#item{val = Val}]} ->
+%             get_item_list(NType, NewRefX, Key, lists:append(Val, Acc));
+%         {NType,[#item{val = Val}]}     -> 
+%             get_item_list(NType, RefX, Key, lists:append(Val, Acc))
+%     end.
 
 return_first(Type, RefX, Key) ->
     case traverse(Type, RefX, Key) of
@@ -3490,6 +3742,15 @@ delete_style_attr(#refX{site = S} = RefX, Key)  ->
     [CurrentStyle] = mnesia:index_match_object(Table, Match, 1, read),
     NewStyleIdx = get_style(RefX, CurrentStyle, Key, []),
     write_attr3(RefX, {"style", NewStyleIdx}).    
+
+%% this function is called when a new attribute is set for a style
+new_process_styles(S, P, O, Idx, {Name, Val}) ->
+    RefX = #refX{site = S, path = P, obj = O},
+    NewSIdx = case read_attrs(RefX, ["style"], read) of 
+                  []                        -> get_style(RefX, Name, Val);
+                  [{RefX2, {"style", Idx}}] -> get_style(RefX2, Idx, Name, Val) 
+              end,
+    new_write_attr3(S, P, O, Idx, {"style", NewSIdx}).    
 
 %% this function is called when a new attribute is set for a style
 process_styles(RefX, {Name, Val}) when is_record(RefX, refX) ->
