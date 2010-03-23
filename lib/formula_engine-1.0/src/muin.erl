@@ -421,7 +421,7 @@ do_cell(RelPath, Rowidx, Colidx) ->
     FetchFun = ?L(get_cell_info(?msite, Path, Colidx, Rowidx)),
     case ?mar of
         nil -> get_value_and_link(FetchFun);
-       _Else -> case auth_srv2:get_any_view(?msite, Path, ?mar) of
+       _Else -> case auth_srv:get_any_view(?msite, Path, ?mar) of
                     {view, _} -> get_value_and_link(FetchFun);                    
                     _Else -> ?ERR_AUTH
                 end

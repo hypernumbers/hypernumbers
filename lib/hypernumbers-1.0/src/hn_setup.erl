@@ -40,7 +40,7 @@ delete_site(Site) ->
     Dest = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site) ++ "/",
     ok = hn_util:delete_directory(Dest),
-    ok = auth_srv2:delete_site(Site),
+    ok = auth_srv:delete_site(Site),
     ok = sitemaster_sup:delete_site(Site),
     ok = mnesia:activity(transaction, 
                          fun mnesia:delete/3, 
@@ -280,11 +280,11 @@ resolve_password(Password, _Opts) ->
     Password.
 
 run_perms({add_view, C}, Site) ->
-    auth_srv2:add_view(Site, lget(path, C), lget(perms, C), lget(view, C));
+    auth_srv:add_view(Site, lget(path, C), lget(perms, C), lget(view, C));
 run_perms({champion, C}, Site) ->
-    auth_srv2:set_champion(Site, lget(path, C), lget(view, C));
+    auth_srv:set_champion(Site, lget(path, C), lget(view, C));
 run_perms({challenger, C}, Site) ->
-    auth_srv2:set_challenger(Site, lget(path, C), lget(view, C)).
+    auth_srv:set_challenger(Site, lget(path, C), lget(view, C)).
 
 run_script({Path, '$email'}, Site, Opts) ->
     run_script2(Path, Site, pget(email, Opts));
@@ -331,13 +331,13 @@ replace(_Key, _Val, Else) ->
 add_u(Site, User, {champion, C}) ->
     UserName = hn_users:name(User),
     Path     = replace('$user', UserName, lget(path, C)),
-    auth_srv2:set_champion(Site, Path, lget(view, C));
+    auth_srv:set_champion(Site, Path, lget(view, C));
 
 add_u(Site, User, {add_view, C}) -> 
     UserName = hn_users:name(User),
     Perms    = replace('$user', UserName, lget(perms, C)),
     Path     = replace('$user', UserName, lget(path, C)),
-    auth_srv2:add_view(Site, Path, Perms, lget(view, C));
+    auth_srv:add_view(Site, Path, Perms, lget(view, C));
 
 add_u(Site, User, {import, P}) ->
     UserName = hn_users:name(User),

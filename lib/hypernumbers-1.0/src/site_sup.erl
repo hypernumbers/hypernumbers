@@ -48,12 +48,12 @@ init([Site]) ->
               worker, 
               [remoting_reg]},
 
-             {auth_srv2, 
-              {auth_srv2, start_link, [Site]},
+             {auth_srv, 
+              {auth_srv, start_link, [Site]},
               permanent, 
               2000, 
               worker, 
-              [auth_srv2]}
+              [auth_srv]}
 
            ]
          }}.

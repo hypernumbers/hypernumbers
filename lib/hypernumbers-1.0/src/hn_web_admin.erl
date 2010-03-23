@@ -30,16 +30,16 @@ rpc(Site, Fn, Args) when is_list(Args) ->
     case Fn of
         add_view ->
             [Site, Path, AuthSpec, View] = Args,
-            auth_srv2:add_view(Site, Path, AuthSpec, View);
+            auth_srv:add_view(Site, Path, AuthSpec, View);
         remove_views ->
             [Site, Path, AuthSpec, View] = Args,
-            auth_srv2:add_view(Site, Path, AuthSpec, View);
+            auth_srv:add_view(Site, Path, AuthSpec, View);
         set_champion ->
             [Site, Path, View] = Args,
-            auth_srv2:set_champion(Site, Path, View);
+            auth_srv:set_champion(Site, Path, View);
         set_challenger ->
             [Site, Path, View] = Args,
-            auth_srv2:set_champion(Site, Path, View);
+            auth_srv:set_champion(Site, Path, View);
         "add_user" ->
             {"user", Name} = lists:keyfind("user", 1, Args),
             {"pass", Pass} = lists:keyfind("pass", 1, Args),

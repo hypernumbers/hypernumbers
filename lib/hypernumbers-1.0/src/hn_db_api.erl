@@ -1313,7 +1313,7 @@ write_attributes1(RefX, List, PAr, VAr)
                 auth_req())
                -> ok.
 copy_cell(From = #refX{site = Site, path = Path}, To, Incr, Ar) ->
-    case auth_srv2:get_any_view(Site, Path, Ar) of
+    case auth_srv:get_any_view(Site, Path, Ar) of
         {view, _} ->
             hn_db_wu:copy_cell(From, To, Incr),
             hn_db_wu:mark_children_dirty(To, Ar);

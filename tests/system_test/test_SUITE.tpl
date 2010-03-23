@@ -31,8 +31,8 @@ skipped() ->
 
 reset_perms(Site, Test) ->
     View = "_g/core/spreadsheet",
-    auth_srv2:add_view(Site, [Test], [everyone], View),
-    auth_srv2:set_champion(Site, [Test], View).
+    auth_srv:add_view(Site, [Test], [everyone], View),
+    auth_srv:set_champion(Site, [Test], View).
 
 end_per_suite(_Config) ->
     inets:stop(httpc, systest).

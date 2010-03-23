@@ -174,9 +174,9 @@ authorize_get(#refX{site = Site, path = Path},
               #qry{updates = U, view = ?SHEETVIEW, paths = More}, 
               #env{accept = json, auth_req = Ar})
   when U /= undefined ->
-    case auth_srv2:check_particular_view(Site, Path, Ar, ?SHEETVIEW) of
+    case auth_srv:check_particular_view(Site, Path, Ar, ?SHEETVIEW) of
         {view, ?SHEETVIEW} ->
-            MoreViews = [auth_srv2:get_any_view(Site, string:tokens(P, "/"), Ar) 
+            MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Ar) 
                          || P <- string:tokens(More, ",")],
             case lists:all(fun({view, _}) -> true; 
                               (_) -> false end, 
@@ -195,7 +195,7 @@ authorize_get(#refX{site = Site, path = Path},
               #qry{updates = U, view = View, paths = More},
               #env{accept = json, auth_req = Ar}) 
   when U /= undefined, View /= undefined -> 
-    case auth_srv2:check_particular_view(Site, Path, Ar, View) of
+    case auth_srv:check_particular_view(Site, Path, Ar, View) of
         {view, View} ->
             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
             Results = [hn_security:validate_get(Sec, Path, P) 
@@ -215,7 +215,7 @@ authorize_get(#refX{site = Site, path = Path},
               #env{accept = json, auth_req = Ar})
   when View /= undefined, View /= ?SHEETVIEW, Via /= undefined ->
     Base = string:tokens(Via, "/"),
-    case auth_srv2:check_particular_view(Site, Base, Ar, View) of
+    case auth_srv:check_particular_view(Site, Base, Ar, View) of
         {view, View} ->
             Target = hn_util:list_to_path(Path),
             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
@@ -232,25 +232,25 @@ authorize_get(#refX{site = Site, path = Path},
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{_ = undefined}, 
               #env{accept = html, auth_req = Ar}) ->
-    auth_srv2:check_get_view(Site, Path, Ar);
+    auth_srv:check_get_view(Site, Path, Ar);
 
 %% Authorize access to the challenger view.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{challenger=[]}, 
               #env{accept = html, auth_req =  Ar}) ->
-    auth_srv2:check_get_challenger(Site, Path, Ar);
+    auth_srv:check_get_challenger(Site, Path, Ar);
 
 %% Authorize access to one particular view.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{view = View}, 
               #env{auth_req = Ar}) 
   when View /= undefined -> 
-    auth_srv2:check_particular_view(Site, Path, Ar, View);
+    auth_srv:check_particular_view(Site, Path, Ar, View);
 
 %% As a last resort, we will authorize a GET request to a location
 %% from which we have a view.
 authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
-    case auth_srv2:get_any_view(Site, Path, Env#env.auth_req) of
+    case auth_srv:get_any_view(Site, Path, Env#env.auth_req) of
         {view, _} -> allowed;
         _Else -> denied
     end.
@@ -273,7 +273,7 @@ authorize_post(#refX{path = ["_admin"]}, _Qry, #env{accept = json}=Env) ->
 %% attempted is validated against the views security model.
 authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
   when View /= undefined ->
-    case auth_srv2:check_particular_view(Site, Path, Env#env.auth_req, View) of
+    case auth_srv:check_particular_view(Site, Path, Env#env.auth_req, View) of
         {view, View} ->
             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
             case hn_security:validate_trans(Sec, Ref, Env#env.body) of
@@ -286,7 +286,7 @@ authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
 %% Allow a post to occur, if the user has access to a spreadsheet on the target.
 %% the actual operation may need further validation, so flag as 'allowed_pending'.
 authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
-    case auth_srv2:check_particular_view(
+    case auth_srv:check_particular_view(
            Site, Path, Env#env.auth_req, ?SHEETVIEW) of
         {view, ?SHEETVIEW} -> allowed;
         _ -> denied
@@ -341,7 +341,7 @@ iget(#refX{site = S}=Ref, page, #qry{rawview = View}, Env)
     ok;
 
 iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
-    json2(Env, auth_srv2:get_as_json(S, P));
+    json2(Env, auth_srv:get_as_json(S, P));
 
 iget(#refX{site = S}, page, #qry{users= []}, Env) ->
     text_html(Env, hn_users:prettyprint_DEBUG(S));
@@ -572,7 +572,7 @@ ipost(#refX{site=Site, path=Path} = Ref, _Qry,
         false ->
             AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
             ok       = save_view(Site, Name, Form, AuthReq, Ref),
-            ok       = auth_srv2:add_view(Site, Path, AuthSpec, Name),
+            ok       = auth_srv:add_view(Site, Path, AuthSpec, Name),
             json(Env, "success")
     end;
 
@@ -890,7 +890,7 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
     Host   = {"host", S},
     Grps   = {"groups", {array, Groups}},
     Lang   = {"lang", get_lang(User)},
-    Views = {views, {array, auth_srv2:get_views(S, P, {Name, Groups})}},
+    Views = {views, {array, auth_srv:get_views(S, P, {Name, Groups})}},
     
     {struct, [Time, Usr, Host, Lang, Grps, Views
               | dict_to_struct(Dict)]}.

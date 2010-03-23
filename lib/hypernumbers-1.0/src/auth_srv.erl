@@ -2,7 +2,7 @@
 %% TODO: Add in support for changing perms on the fly.
 %% Add, Replace, etc. Will be motivated by admin panel design.
 
--module(auth_srv2).
+-module(auth_srv).
 
 -behaviour(gen_server).
 
@@ -41,9 +41,7 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--define(TABLE, "auth_srv2").
 -define(KEY, "auth_tree").
--define(INDEX, "hypernumbers/index").
 -define(SPREADSHEET, "_global/spreadsheet").
 -define(EMPTY_TREE, {0,nil}).
 

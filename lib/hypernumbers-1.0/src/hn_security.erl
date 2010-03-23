@@ -142,7 +142,7 @@ is_hn(List) ->
 -spec can_read(string(), string(), auth_req()) -> true | false.
 can_read(Site, P, AR) ->
     Path = string:tokens(just_path(P), "/"),
-    case auth_srv2:get_any_view(Site, Path, AR) of
+    case auth_srv:get_any_view(Site, Path, AR) of
         {view, _} -> true;
         _Else -> false
     end.
@@ -151,7 +151,7 @@ can_read(Site, P, AR) ->
 can_write(Site, P, AR) ->
     S = "_g/core/spreadsheet",
     Path = string:tokens(just_path(P), "/"),
-    case auth_srv2:check_particular_view(Site, Path, AR, S) of
+    case auth_srv:check_particular_view(Site, Path, AR, S) of
         {view, S} -> true; 
         _Else -> false
     end.
@@ -285,14 +285,14 @@ just_path_test_() ->
 trans_all_perms_test_() -> 
     Site = "http://example.com:1234",
     Setup = fun() -> 
-                    auth_srv2:start_link(Site),
-                    auth_srv2:add_view(Site, [], [everyone], "_g/core/spreadsheet"),
-                    auth_srv2:add_view(Site, ["[**]"], [everyone], "_g/core/spreadsheet"),
-                    auth_srv2:set_champion(Site, [], "_g/core/spreadsheet"),
-                    auth_srv2:set_champion(Site, ["[**]"], "_g/core/spreadsheet"),
+                    auth_srv:start_link(Site),
+                    auth_srv:add_view(Site, [], [everyone], "_g/core/spreadsheet"),
+                    auth_srv:add_view(Site, ["[**]"], [everyone], "_g/core/spreadsheet"),
+                    auth_srv:set_champion(Site, [], "_g/core/spreadsheet"),
+                    auth_srv:set_champion(Site, ["[**]"], "_g/core/spreadsheet"),
                     #refX{site = Site, path = ["u","testuser","blah"]}
             end,
-    Cleanup = fun(_) -> auth_srv2:stop(Site) end,
+    Cleanup = fun(_) -> auth_srv:stop(Site) end,
     {setup, Setup, Cleanup, {with, [fun test1/1,
                                      fun test2/1,
                                      fun test3/1,

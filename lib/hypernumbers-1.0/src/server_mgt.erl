@@ -91,7 +91,7 @@ dump_users(Site, SiteDest) ->
     ok = file:write_file(filename:join(SiteDest, "users.export"), Users).
 
 dump_perms(Site, SiteDest) ->
-    Perms = auth_srv2:dump_script(Site),
+    Perms = auth_srv:dump_script(Site),
     ok = file:write_file(filename:join(SiteDest, "permissions.script"), 
                          Perms).
 
@@ -150,7 +150,7 @@ load_views(Site, SiteSrc) ->
 
 load_perms(Site, SiteSrc) ->
     {ok, Perms} = file:consult(filename:join(SiteSrc, "permissions.script")),
-    auth_srv2:load_script(Site, Perms).
+    auth_srv:load_script(Site, Perms).
 
 join(FileName) ->
     filename:join(FileName).
