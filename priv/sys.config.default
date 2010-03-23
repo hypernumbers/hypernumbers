@@ -4,14 +4,28 @@
    {nodename, hndev},
    {environment, development},
    
-   % Hosts to bind Mochiweb to
+   %% Hosts to bind Mochiweb to. 9000 should be used for dev,
+   %% 9090-9092 reserved for production used, and should be turned off
+   %% for testing.
    {hosts,
-    [{{127,0,0,1}, 9000}, % dev port
+    [{{127,0,0,1}, 9000},
      {{127,0,0,1}, 9090},
      {{127,0,0,1}, 9091},
      {{127,0,0,1}, 9092}
     ]},
+
+   %% Services to start. These are configured by using a parameter of
+   %% 'true', note that in a development environment all services will
+   %% be started regardless.
+   {services, 
+    [{hns, false},
+     {passport, false}
+    ]}, 
+
+   %% Delete to turn-off centralized tracking.
    {pingto, "http://hypernumbers.com"},
+
+   %% Boot strapped site setup.
    {bootstrapped,
     [{"http://localhost:9000", hypernumbers, []},
      {"http://fn.localhost:9000", factory,
@@ -19,7 +33,7 @@
                     {self, "http://fn.localhost:9000"}]}]}
     ]},
       
-   % Mail Setup
+   %% Mail Setup
    {mailserver,   "smtp.gmail.com"},
    {mailuser,     "team@hypernumbers.com"},
    {mailpassword, "mick!ventris09"}
