@@ -160,21 +160,21 @@ zone_diagnostics() ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
-    ok = hn_db_admin:create_table(core_hns_resource, 
+    ok = hn_db_admin:create_table(service_hns_resource, 
                                   resource, 
                                   record_info(fields, resource),
                                   disc_copies,
                                   set,
                                   false,
                                   []),
-    ok = hn_db_admin:create_table(core_hns_zone,
+    ok = hn_db_admin:create_table(service_hns_zone,
                                   zone,
                                   record_info(fields, zone),
                                   disc_copies,
                                   set,
                                   false,
                                   []),
-    ok = hn_db_admin:create_table(core_hns_record,
+    ok = hn_db_admin:create_table(service_hns_record,
                                   record,
                                   record_info(fields, record),
                                   disc_copies,
@@ -201,7 +201,7 @@ init([]) ->
 
 handle_call({create_zone, Zone, MinSize, IdealSize, Generator}, _From, S) ->
     case mnesia:activity(async_dirty, fun mnesia:read/2, 
-                         [core_hns_zone, Zone]) of
+                         [service_hns_zone, Zone]) of
         [_] -> 
             {reply, already_exists, S};
         _ ->
@@ -215,18 +215,18 @@ handle_call({create_zone, Zone, MinSize, IdealSize, Generator}, _From, S) ->
                           pool = Pool,
                           generator = Generator},
             ok = mnesia:activity(async_dirty, fun mnesia:write/3,
-                                 [core_hns_zone, Entry, write]),
+                                 [service_hns_zone, Entry, write]),
             {reply, ok, S}
     end;
 
 handle_call({delete_zone, Zone}, _From, S) ->
     case mnesia:activity(async_dirty, fun mnesia:read/2,
-                         [core_hns_zone, Zone]) of
+                         [service_hns_zone, Zone]) of
         [#zone{pool = A, zone_id=ZoneId}] ->
             %% Deallocated mappings in pool. 
             [delete_dns_LINODE(ZoneId, Rid) || {_,Rid} <- gb_trees:values(A)],
             ok = mnesia:activity(async_dirty, fun mnesia:delete/3,
-                                 [core_hns_zone, Zone, write]);
+                                 [service_hns_zone, Zone, write]);
         _ -> ok end,
     {reply, ok, S};
 
@@ -235,8 +235,8 @@ handle_call({purge, Zone}, _From, S) ->
                           when Zone == Z -> R 
                     end),
     DelF = fun() ->
-                   Recs = mnesia:select(core_hns_record, MS, write),
-                   [mnesia:delete_object(core_hns_record, R, write) || R <- Recs],
+                   Recs = mnesia:select(service_hns_record, MS, write),
+                   [mnesia:delete_object(service_hns_record, R, write) || R <- Recs],
                    Recs
            end,
     Recs = mnesia:activity(async_dirty, DelF),
@@ -247,7 +247,7 @@ handle_call({purge, Zone}, _From, S) ->
 handle_call({link_resource, ZName}, _From, S) ->
     Val = mnesia:activity(async_dirty, 
                           fun mnesia:read/2,
-                          [core_hns_zone, ZName]),
+                          [service_hns_zone, ZName]),
     Ret = case Val of 
               [Z] ->
                   case gb_trees:size(Z#zone.pool) of
@@ -260,10 +260,10 @@ handle_call({link_resource, ZName}, _From, S) ->
                                         zone_id = Z#zone.zone_id,
                                         resource_id = RId},
                           F = fun() ->
-                                      ok = mnesia:write(core_hns_zone, 
+                                      ok = mnesia:write(service_hns_zone, 
                                                         Z2, 
                                                         write),
-                                      ok = mnesia:write(core_hns_record, 
+                                      ok = mnesia:write(service_hns_record, 
                                                         Rec, 
                                                         write)
                               end,
@@ -278,13 +278,13 @@ handle_call({link_resource, ZName}, _From, S) ->
 handle_call({unlink_resource, Zone, Name}, _From, S) ->
     Val = mnesia:activity(async_dirty,
                           fun mnesia:read/2,
-                          [core_hns_record, {Zone, Name}]),
+                          [service_hns_record, {Zone, Name}]),
     case Val of 
         [#record{zone_id = ZID, resource_id = RID}] -> 
             delete_dns_LINODE(ZID, RID),
             mnesia:activity(async_dirty,
                             fun mnesia:delete/3,
-                            [core_hns_record, Name, write]);
+                            [service_hns_record, Name, write]);
         _ ->
             ok
     end,
@@ -294,14 +294,14 @@ handle_call({set_resource, Address, Weight, Alias}, _From, S) ->
     Entry = #resource{address=Address, weight=Weight, alias=Alias},
     ok = mnesia:activity(async_dirty, 
                          fun mnesia:write/3, 
-                         [core_hns_resource, Entry, write]),
+                         [service_hns_resource, Entry, write]),
     Routing = build_routing(all_resources()),
     {reply, ok, S#state{routing = Routing}};
 
 handle_call({delete_resource, Address}, _From, S) ->
     ok = mnesia:activity(async_dirty,
                          fun mnesia:delete/3, 
-                         [core_hns_resource, Address, write]),
+                         [service_hns_resource, Address, write]),
     Routing = build_routing(all_resources()),
     {reply, ok, S#state{routing = Routing}};
 
@@ -360,7 +360,7 @@ handle_call(_Request, _From, State) ->
 %%--------------------------------------------------------------------
 handle_cast({topup_zone, ZName}, State) ->
     case mnesia:activity(async_dirty, fun mnesia:read/2, 
-                         [core_hns_zone, ZName]) of
+                         [service_hns_zone, ZName]) of
         [Z=#zone{ideal_size=Ideal}] ->
             case gb_trees:size(Z#zone.pool) of 
                 S when S < Ideal ->
@@ -371,7 +371,7 @@ handle_cast({topup_zone, ZName}, State) ->
                                             Z#zone.pool),
                     Z2 = Z#zone{pool=Pool2},
                     mnesia:activity(async_dirty, fun mnesia:write/3,
-                                    [core_hns_zone, Z2, write]);
+                                    [service_hns_zone, Z2, write]);
                 _ ->
                     ok
             end;
@@ -430,7 +430,7 @@ code_change(_OldVsn, State, _Extra) ->
 all_resources() ->
     F = fun() ->
                 mnesia:select(
-                  core_hns_resource, 
+                  service_hns_resource, 
                   ets:fun2ms(fun(X) -> X end),
                   read)
         end,
@@ -440,7 +440,7 @@ all_resources() ->
 all_zones() ->
     F = fun() ->
                 mnesia:select(
-                  core_hns_zone, 
+                  service_hns_zone, 
                   ets:fun2ms(fun(X) -> X end),
                   read)
         end,
@@ -487,7 +487,7 @@ allocate_name(Routing, Generator, ZoneId, Pool) ->
 -spec name_exists(string()) -> boolean(). 
 name_exists(Name) ->
     case mnesia:activity(async_dirty, fun mnesia:read/2,
-                         [core_hns_record, Name]) of
+                         [service_hns_record, Name]) of
         [_]   -> true; 
         _Else -> false
     end.
