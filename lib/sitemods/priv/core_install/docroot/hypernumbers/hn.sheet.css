@@ -903,7 +903,6 @@ hr {
 }
 
 #input { 
-    font     : 11px Arial,"Helvetica Neue", sans-serif;
     z-index  : 10000000;
     height   : 18px;
     width    : 78px;
@@ -914,7 +913,7 @@ hr {
 }
 
 #hidden_input {  
-    font:     11px Arial,"Helvetica Neue", sans-serif;
+    font:     12px Arial,"Helvetica Neue", sans-serif;
     position: absolute;
     top:      -1000000px;
     left:     0px;
