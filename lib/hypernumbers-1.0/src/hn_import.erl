@@ -16,7 +16,6 @@
         ]).
 
 csv_file(Url, FileName) ->
-    ?INFO("in csv_file URL is ~p~nFileName is ~p~n", [Url, FileName]),
 
     Ref = hn_util:parse_url(Url),
 
@@ -26,9 +25,9 @@ csv_file(Url, FileName) ->
 
     % first clear the page
     ok = hn_db_api:clear(Ref, all, nil),
-    
     % now write it 
-    hn_db_api:write_attributes(Refs).
+    [ok = hn_db_api:write_attributes([X]) || X <- Refs],
+    ok.
                 
 csv_append(Url, FileName) ->
 
