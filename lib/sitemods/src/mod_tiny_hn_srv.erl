@@ -1,5 +1,5 @@
 %%% @copyright (C) 2009 Hypernumbers Ltd
--module(tiny_hn_srv).
+-module(mod_tiny_hn_srv).
 -behaviour(gen_server).
 
 -include("spriki.hrl").
