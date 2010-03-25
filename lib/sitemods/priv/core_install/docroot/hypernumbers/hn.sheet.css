@@ -1755,7 +1755,7 @@ form.droppable {
     border-width:1px 1px 0px 1px;
 }
 
-#ctrltabdivs td { padding:5px; line-height:18px; font-size: 12px; }
+#ctrltabdivs td { padding:2px 5px; line-height:18px; font-size: 12px; }
 
 #ctrltabdivs .content { 
     width:270px; 
@@ -1763,7 +1763,7 @@ form.droppable {
 
 #ctrltabdivs .label { 
     text-align:right; 
-    width:120px; 
+    width:140px; 
     color:#555; 
     font-style:italic; 
 } 
@@ -1772,3 +1772,8 @@ form.droppable {
 
 
 #users { width:300px; margin:100px auto; }
+
+input[type=checkbox], input[type=radio] {
+    position:relative;
+    top:3px;
+}

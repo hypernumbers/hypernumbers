@@ -8,7 +8,7 @@
 -module(hn_web_admin).
 
 %% RPC Api
--export([rpc/3]).
+-export([rpc/4]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % __          __               _              %
@@ -26,7 +26,7 @@
 % hn_mochi                                    %
 %                                             %  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-rpc(Site, Fn, Args) when is_list(Args) ->
+rpc(User, Site, Fn, Args) when is_list(Args) ->
     case Fn of
         add_view ->
             [Site, Path, AuthSpec, View] = Args,
@@ -38,6 +38,8 @@ rpc(Site, Fn, Args) when is_list(Args) ->
             {"path", Path} = lists:keyfind("path", 1, Args),
             {"view", View} = lists:keyfind("view", 1, Args),
             NPath = string:tokens(Path, "/"),
+            Name = hn_users:name(User),
+            auth_srv2:add_view(Site, NPath, [{user, Name}], View),
             auth_srv2:set_champion(Site, NPath, View);
         "add_user" ->
             {"user", Name} = lists:keyfind("user", 1, Args),

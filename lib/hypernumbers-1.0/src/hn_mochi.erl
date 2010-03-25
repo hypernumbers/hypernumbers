@@ -728,9 +728,11 @@ ipost(Ref, _Qry,
     S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
     json(Env, S);
 
-ipost(#refX{site = Site, path = _P}, _Qry, Env=#env{body = [{"admin", Json}]}) ->
+ipost(#refX{site = Site, path = _P}, _Qry,
+      Env=#env{body = [{"admin", Json}], user = User}) ->
     {struct,[{Fun, {struct, Args}}]} = Json,
-    case hn_web_admin:rpc(Site, Fun, Args) of
+    
+    case hn_web_admin:rpc(User, Site, Fun, Args) of
         ok ->
             json(Env, {struct, [{"result", "success"}]});
         {error, Reason} ->
