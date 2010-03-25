@@ -1,5 +1,5 @@
 %%% @copyright (C) 2009 Hypernumbers Ltd
--module(tiny_hn_srv).
+-module(mod_hypernumbers_srv).
 -behaviour(gen_server).
 
 -include("spriki.hrl").
@@ -16,7 +16,7 @@
 
 -define(SERVER, ?MODULE). 
 -define(CLOCKTICK, 2000).
--define(PATH, ["request_site"]).
+-define(PATH, ["tiny", "request_site"]).
 
 -record(state, {site, port, args}).
 
@@ -30,7 +30,7 @@ start_link(Site, Args) ->
 %%                     ignore |
 %%                     {stop, Reason}
 init(Args) ->
-    
+
     %% Create sub domains if not created
     case catch mnesia:table_info(tiny_sub, all) of
         {'EXIT',{aborted,_Abort}} ->
@@ -42,7 +42,7 @@ init(Args) ->
     NewState = parse_args(Args),
 
     _Pid = spawn_link(?MODULE, tick, [self()]),
-    
+
     {ok, NewState}.
 
 %% @spec handle_call(Request, From, State) ->

@@ -93,7 +93,7 @@ start(Extra) ->
     case os:cmd(Cmd) of
         []   -> ok;
         Else ->
-            io:format("Something happened ~p",[Else]),
+            io:format("Hypernumbers failed to boot:~n~s~n",[Else]),
             ok
     end.
 

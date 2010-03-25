@@ -602,12 +602,12 @@
 get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
     #refX{site = Site, path = Path} = RefX,
 
-    Value = case hn_db_wu:read_attrs(RefX, ["rawvalue"], read) of
+    Value = case hn_db_wu:read_attrs(RefX, ["rawvalue"], write) of
                 []            -> blank;
                 [{_, {_, V}}] -> V
             end, 
 
-    DTree = case hn_db_wu:read_attrs(RefX, ["__dependency-tree"], read) of
+    DTree = case hn_db_wu:read_attrs(RefX, ["__dependency-tree"], write) of
                 [{_, {_, Tree}}] -> Tree;
                 []                     -> []
             end,
@@ -1098,14 +1098,14 @@ write_attr(Ref, Attr) ->
     write_attr(Ref, Attr, nil).
 write_attr(#refX{obj = {cell, _}} = RefX, {"formula", _} = Attr, Ar) ->
     %% first check that the formula is not part of a shared array
-    case read_attrs(RefX, ["__shared"], read) of
+    case read_attrs(RefX, ["__shared"], write) of
         [_X] -> throw({error, cant_change_part_of_array});
         []   -> write_attr2(RefX, Attr, Ar)
     end;
 write_attr(#refX{obj = {cell, _}} = RefX, {"format", Format} = Attr, _Ar) ->
     ok = write_attr3(RefX, Attr),
     %% now reformat values (if they exist)
-    case read_attrs(RefX, ["rawvalue"], read) of
+    case read_attrs(RefX, ["rawvalue"], write) of
         []                               -> ok;
         [{RefX, {"rawvalue", RawValue}}] ->
             ok = process_format(RefX, Format, RawValue)
@@ -2863,7 +2863,7 @@ get_content_attrs([H | T], Acc) ->
 
 shift_remote_links2(_Site, [], _To) -> ok;
 shift_remote_links2(Site, [H | T], To) ->
-    %% now read delete the old remote link
+    %% now delete the old remote link
     Table = trans(Site, remote_cell_link),
     NewLink = H#remote_cell_link{parent = To},
     ok = mnesia:delete_object(Table, H, write),
@@ -3189,7 +3189,7 @@ offset_formula(Formula, {XO, YO}) ->
     end.
 
 shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
-    case mnesia:wread({trans(Site, dirty_notify_in), From}) of
+    case mnesia:read(trans(Site, dirty_notify_in), From, write) of
         []        -> ok;
         [DirtyHn] -> DirtyHn2 = trans_back(DirtyHn),
                      NewDirty = DirtyHn2#dirty_notify_in{parent = To},
@@ -3237,7 +3237,7 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
               end,
     ok = write_cell(RefX, Value, Formula, [], []),
     %% only write the default alignment if there is no style on this cell
-    case read_attrs(RefX, ["style"], read) of
+    case read_attrs(RefX, ["style"], write) of
         [] -> ok = write_attr(RefX, {"text-align", Align});
         _  -> ok
     end,
@@ -3250,7 +3250,7 @@ write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
 % if there is a style set for the cell don't write the default
 % alignment
 write_default_alignment(RefX, Res) ->
-    case read_attrs(RefX, ["style"], read) of
+    case read_attrs(RefX, ["style"], write) of
         [] -> write_default_alignment1(RefX, Res);
         _  -> ok
     end.

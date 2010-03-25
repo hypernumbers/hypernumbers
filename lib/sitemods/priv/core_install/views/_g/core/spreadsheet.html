@@ -423,9 +423,9 @@
         <li class="disabled paste"><a name="pastelink">
             Paste <strong>Links</strong></a></li>
         <li class="seperator"></li>
-        <!-- <li><a name="mergecells"> -->
-        <!--     Merge Cells</a></li>         -->
-        <!-- <li class="seperator"></li> -->
+        <li><a name="mergecells">
+            Merge Cells</a></li>
+        <li class="seperator"></li>
         <li><a name="deletecols">
             Delete Column(s)</a></li>
         <li><a name="deleterows">
@@ -572,35 +572,57 @@
         </div>
 
         <div id="myspreadsheets">
-          
-          <div id="finder">
-            <div class="panewrapper"><div class="pane"></div></div>
-          </div>
+
           <form id="newpageform">
             <span class="currentpageselection"></span>
             <input type="text" id="newpage" value="" />
             <input type="submit" value="Create New Page" />
           </form>
+          
+          <div id="finder">
+            <div class="panewrapper"><div class="pane"></div></div>
+          </div>
 
           <table>
             <tr><td class="label">Current Selection:</td>
               <td class="content">
                 <strong><span class="currentpageselection"></span></strong>
               </td><td>
-                <input id="pdvisit" type="submit" value="Open" />
-                <input class="redbutton" id="ctrldelete" 
-                       type="submit" value="Delete" />
+                <input id="pdvisit" type="submit" value="Open Spreadsheet" />
               </td>
             </tr>
             <tr><td class="label">Import Spreadsheet:</td>
               <td class="content"> 
                 <input type="submit" id="doupload" value="Upload" /><br />
                 <div id="uploadresponce"> </div>
+              </td><td></td>
+            </tr>
+            <tr><td class="label">Default Page:</td>
+              <td class="content"> 
+                <select id="currentdefaultview">
+                  <option value="">Nothing (404)</option>
+                  <option value="_g/core/spreadsheet">Spreadsheet</option>
+                </select>
               </td><td>
+                <a href="" target="_blank" id="visitlink">Visit Page</a>
+              </td>
+            </tr> 
+ 
+            <!-- <tr><td class="label">Who can see this page:</td> -->
+            <!--   <td class="content"> -->
+            <!--     <input type="checkbox"> Everyone -->
+            <!--   </td><td> -->
+            <!--   </td> -->
+            <!-- </tr> -->
+
+            <tr><td class="label">Delete Page:</td>
+              <td class="content"> 
+                <input class="redbutton" id="ctrldelete" 
+                       type="submit" value="Delete" />
               </td>
             </tr>
-
-          </table>              
+          </table>
+              
         </div>
       </div>
     </div>

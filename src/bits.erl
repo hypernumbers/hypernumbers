@@ -5,7 +5,16 @@
 %%%            debugging module (hence the name!).
 %%% @private
 -module(bits).
--export([ init_memory_trace/0, mem_csv/0]).                
+-export([
+         init_memory_trace/0,
+         mem_csv/0,
+         basic_views/0]).                
+
+basic_views() ->
+    auth_srv2:add_view("http://localhost:9000", [], [everyone], "_g/core/spreadsheet"),
+    auth_srv2:set_champion("http://localhost:9000", [], "_g/core/spreadsheet"),
+    auth_srv2:add_view("http://localhost:9000", ["[**]"], [everyone], "_g/core/spreadsheet"),
+    auth_srv2:set_champion("http://localhost:9000", ["[**]"], "_g/core/spreadsheet").    
 
 init_memory_trace() ->
     File= case os:type() of
