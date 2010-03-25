@@ -263,7 +263,6 @@ authorize_post(#refX{path = ["_user", "login"]}, _Qry, #env{accept = json}) ->
 
 authorize_post(#refX{path = ["_admin"]}, _Qry, #env{accept = json}=Env) ->
     {_User, Groups} = Env#env.auth_req,
-    error_logger:info_msg("test~p~n",[Groups]),
     case lists:member("admin", Groups) of
         true  -> allowed;
         false -> denied
@@ -348,6 +347,17 @@ iget(#refX{site = S}, page, #qry{users= []}, Env) ->
 
 iget(Ref, page, #qry{pages = []}, Env=#env{accept = json}) ->
     json(Env, pages(Ref));
+
+iget(Ref, page, #qry{views = []}, Env=#env{accept = json}) ->
+
+    AllViews = filelib:wildcard(viewroot(Ref#refX.site)++"/*/*/*.tpl"),
+
+    Views = [ begin
+                  [Name, U, G | _Rest ] = lists:reverse(string:tokens(X, "/")),
+                  NewName = filename:basename(Name, ".tpl"),
+                  G ++ "/" ++ U ++ "/" ++ NewName
+              end || X <- AllViews ],
+    json(Env, {array, [ X || X<-Views, X=/="_g/core/built" ] });
 
 % List of template pages
 iget(Ref, page, #qry{templates = []}, Env) ->
@@ -718,9 +728,11 @@ ipost(Ref, _Qry,
     S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
     json(Env, S);
 
-ipost(#refX{site = Site, path = _P}, _Qry, Env=#env{body = [{"admin", Json}]}) ->
+ipost(#refX{site = Site, path = _P}, _Qry,
+      Env=#env{body = [{"admin", Json}], user = User}) ->
     {struct,[{Fun, {struct, Args}}]} = Json,
-    case hn_web_admin:rpc(Site, Fun, Args) of
+    
+    case hn_web_admin:rpc(User, Site, Fun, Args) of
         ok ->
             json(Env, {struct, [{"result", "success"}]});
         {error, Reason} ->

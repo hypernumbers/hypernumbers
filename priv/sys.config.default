@@ -27,7 +27,10 @@
 
    %% Boot strapped site setup.
    {bootstrapped,
-    [{"http://localhost:9000", hypernumbers, []},
+    [
+     {"http://localhost:9000", hypernumbers,
+      [{init_args, [{host, "localhost"}, {port, 9000},
+                    {self, "http://localhost:9000"}]}]},
      {"http://fn.localhost:9000", factory,
       [{init_args, [{host, "fn.localhost"}, {port, 9000},
                     {self, "http://fn.localhost:9000"}]}]}

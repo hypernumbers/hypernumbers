@@ -1,5 +1,5 @@
 %%% @copyright (C) 2010 Hypernumbers Ltd
--module(factory_srv).
+-module(mod_factory_srv).
 -behaviour(gen_server).
 
 -include("spriki.hrl").

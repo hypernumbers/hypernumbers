@@ -8,7 +8,7 @@
 -module(hn_web_admin).
 
 %% RPC Api
--export([rpc/3]).
+-export([rpc/4]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % __          __               _              %
@@ -26,20 +26,21 @@
 % hn_mochi                                    %
 %                                             %  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-rpc(Site, Fn, Args) when is_list(Args) ->
+rpc(User, Site, Fn, Args) when is_list(Args) ->
     case Fn of
         add_view ->
             [Site, Path, AuthSpec, View] = Args,
             auth_srv:add_view(Site, Path, AuthSpec, View);
         remove_views ->
             [Site, Path, AuthSpec, View] = Args,
-            auth_srv:add_view(Site, Path, AuthSpec, View);
-        set_champion ->
-            [Site, Path, View] = Args,
-            auth_srv:set_champion(Site, Path, View);
-        set_challenger ->
-            [Site, Path, View] = Args,
-            auth_srv:set_champion(Site, Path, View);
+            auth_srv2:add_view(Site, Path, AuthSpec, View);
+        "set_champion" ->
+            {"path", Path} = lists:keyfind("path", 1, Args),
+            {"view", View} = lists:keyfind("view", 1, Args),
+            NPath = string:tokens(Path, "/"),
+            Name = hn_users:name(User),
+            auth_srv2:add_view(Site, NPath, [{user, Name}], View),
+            auth_srv2:set_champion(Site, NPath, View);
         "add_user" ->
             {"user", Name} = lists:keyfind("user", 1, Args),
             {"pass", Pass} = lists:keyfind("pass", 1, Args),
