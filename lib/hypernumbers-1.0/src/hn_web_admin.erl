@@ -34,12 +34,11 @@ rpc(Site, Fn, Args) when is_list(Args) ->
         remove_views ->
             [Site, Path, AuthSpec, View] = Args,
             auth_srv2:add_view(Site, Path, AuthSpec, View);
-        set_champion ->
-            [Site, Path, View] = Args,
-            auth_srv2:set_champion(Site, Path, View);
-        set_challenger ->
-            [Site, Path, View] = Args,
-            auth_srv2:set_champion(Site, Path, View);
+        "set_champion" ->
+            {"path", Path} = lists:keyfind("path", 1, Args),
+            {"view", View} = lists:keyfind("view", 1, Args),
+            NPath = string:tokens(Path, "/"),
+            auth_srv2:set_champion(Site, NPath, View);
         "add_user" ->
             {"user", Name} = lists:keyfind("user", 1, Args),
             {"pass", Pass} = lists:keyfind("pass", 1, Args),

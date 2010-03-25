@@ -303,5 +303,6 @@
                users,
                via,
                rawview,
-               view
+               view,
+               views
              }).

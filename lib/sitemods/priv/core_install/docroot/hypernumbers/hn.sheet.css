@@ -1744,7 +1744,7 @@ form.droppable {
 #finder {
     margin:0px auto 0px auto;
     border:1px inset #666;
-    border-bottom-width:0px;
+    border-top-width:0px;
 }
 
 #newpageform { 
@@ -1752,7 +1752,7 @@ form.droppable {
     background:#CCC; 
     padding:2px;
     border:1px inset #666; 
-    border-width:0px 1px 1px 1px;
+    border-width:1px 1px 0px 1px;
 }
 
 #ctrltabdivs td { padding:5px; line-height:18px; font-size: 12px; }
