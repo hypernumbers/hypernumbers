@@ -28,8 +28,8 @@
 
 -record(invite, {hid, expiry}).
 
-
 -record(user, {hid,
+               email,
                passMD5,
                data = dict:new()}).
 
@@ -85,16 +85,17 @@ verify_stamp(Stamp) ->
 
 -spec authenticate(string(), string(), string()) 
                   -> {error, term()} | {ok, string()}.
-authenticate(Hid, Password, Remember) ->
-    Msg = {authenticate, Hid, Password},
+authenticate(Email, Password, Remember) ->
+    Msg = {authenticate, Email, Password},
     case gen_server:call({global, ?MODULE}, Msg, 10000) of
-        ok -> {ok, stamp(Hid, Remember)};
+        {ok,Hid} -> {ok, stamp(Hid, Remember)};
         Else -> Else
     end.
 
 -spec create_user(string(), string()) -> string().
-create_user(Hid, Password) ->
-    gen_server:call({global, ?MODULE}, {create_user, Hid, Password}).
+create_user(Email, Password) ->
+    Hid = create_hid(),
+    gen_server:call({global, ?MODULE}, {create_user, Hid, Email, Password}).
 
 -spec delete_user(string()) -> string().
 delete_user(Hid) ->
@@ -116,6 +117,13 @@ delete_user(Hid) ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
+    ok = hn_db_admin:create_table(service_passport_user, 
+                                  user, 
+                                  record_info(fields, user),
+                                  disc_copies,
+                                  set,
+                                  false,
+                                  [email]),
     {ok, #state{}}.
 
 %%--------------------------------------------------------------------
@@ -132,24 +140,23 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call({authenticate, Hid, Password}, _From, State) ->
+handle_call({authenticate, Email, Password}, _From, State) ->
     PassMD5 = crypto:md5_mac(server_key(), Password),
-    User = #user{hid=Hid, passMD5 = PassMD5, _='_'},
+    User = #user{email=Email, passMD5 = PassMD5, _='_'},
     F = fun() ->
                 mnesia:match_object(service_passport_user, User, read)
         end,
     Ret = case mnesia:transaction(F) of
-              {atomic, [_]} -> ok;
-              _Else         -> {error, invalid_user}
+              {atomic, [#user{hid=Hid}]} -> {ok, Hid};
+              _Else                      -> {error, invalid_user}
           end,
     {reply, Ret, State};
 
-handle_call({create, Hid, Password}, _From, State) ->
+handle_call({create, Hid, Email, Password}, _From, State) ->
     Rec = #user{ hid = Hid,
+                 email = Email,
                  passMD5 = crypto:md5_mac(server_key(), Password)},
-    Fun = fun() ->
-                  mnesia:write(service_passport_user, Rec, write)
-          end,
+    Fun = fun() -> mnesia:write(service_passport_user, Rec, write) end,
     Ret = mnesia:activity(transaction, Fun),
     {reply, Ret, State};
 
@@ -217,11 +224,16 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
+-spec create_hid() -> string().
+create_hid() ->
+    Bin = crypto:rand_bytes(16),
+    mochihex:to_hex(Bin).
+    
 -spec stamp(string(), string()) -> string(). 
-stamp(Name, Remember) ->
+stamp(Hid, Remember) ->
     Expiry = expires(Remember),
-    Hash = gen_hash(Name, Expiry),
-    ?FORMAT("~s:~ts:~s", [Expiry, Name, Hash]).
+    Hash = gen_hash(Hid, Expiry),
+    ?FORMAT("~s:~ts:~s", [Expiry, Hid, Hash]).
 
 -spec encrypt_term_hex(iolist(), term()) -> string(). 
 encrypt_term_hex(Key0, Term) ->
@@ -236,8 +248,8 @@ decrypt_term_hex(Key0, CipherH) ->
     erlang:binary_to_term(PlainT).
 
 -spec gen_hash(string(), string()) -> string(). 
-gen_hash(Name, Expiry) ->
-    mochihex:to_hex(crypto:md5_mac(server_token_key(), [Name, Expiry])).
+gen_hash(Hid, Expiry) ->
+    mochihex:to_hex(crypto:md5_mac(server_token_key(), [Hid, Expiry])).
 
 -spec is_expired(string()) -> boolean(). 
 is_expired("session") ->
