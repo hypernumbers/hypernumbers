@@ -1,3 +1,3 @@
 {["/","/poll/"],
- [[{binding,"input",[],"/poll/D:D"},{binding,"input",[],"/poll/C:C"}],
-  [{binding,"input",[],"/poll/B:B"},{binding,"input",[],"/poll/A:A"}]]}.
+ [[{binding,"textarea",[],"/poll/D:D"},{binding,"input",[],"/poll/C:C"}],
+  [{binding,"textarea",[],"/poll/B:B"},{binding,"input",[],"/poll/A:A"}]]}.
