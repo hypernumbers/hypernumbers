@@ -14,17 +14,11 @@ start_link() ->
 %% @doc  Supervisor call back
 init([]) ->
 
-    Shell = {hn_shell_srv, {hn_shell_srv, start_link, []},
-             permanent, 2000, worker, [hn_shell_srv]},
-    
     Status = {status_srv, {status_srv, start_link, []},
               permanent, 2000, worker, [status_srv]},
 
     SiteMaster = {sitemaster_sup, {sitemaster_sup, start_link, []},
                   permanent, infinity, supervisor, [sitemaster_sup]},
     
-    {ok,{{one_for_one, 60, 1}, [ Status,
-                                 SiteMaster,
-                                 Shell
-                                ]}}.
+    {ok,{{one_for_one, 60, 1}, [ Status, SiteMaster ]}}.
 
