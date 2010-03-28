@@ -72,7 +72,7 @@ check_resource_exists(Env, Ref, Qry) ->
 authorize_resource(Env, Ref, Qry) -> 
     Env2 = process_cookies(Ref#refX.site, Env),
     AuthRet = case Env2#env.method of
-                  'GET' -> authorize_get(Ref, Qry, Env2);
+                  'GET'  -> authorize_get(Ref, Qry, Env2);
                   'POST' -> authorize_post(Ref, Qry, Env2)
               end,
     case {AuthRet, Env2#env.accept} of
@@ -240,6 +240,7 @@ authorize_get(#refX{site = Site, path = Path},
               #env{accept = html, auth_req =  Ar}) ->
     auth_srv2:check_get_challenger(Site, Path, Ar);
 
+
 %% Authorize access to one particular view.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{view = View}, 
@@ -252,7 +253,7 @@ authorize_get(#refX{site = Site, path = Path},
 authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
     case auth_srv2:get_any_view(Site, Path, Env#env.auth_req) of
         {view, _} -> allowed;
-        _Else -> denied
+        _Else     -> denied
     end.
 
 -spec authorize_post(#refX{}, #qry{}, #env{}) -> allowed | denied.
@@ -402,7 +403,8 @@ iget(Ref, Type, _Qry, Env=#env{accept=json})
     json(Env, {struct, dict_to_struct(Dict)});
 
 iget(#refX{site = Site}, cell, _Qry, Env=#env{accept=html}) ->
-    serve_html(Env, [docroot(Site),"/_g/core/cell.html"]);
+    HTML = [viewroot(Site), "/", "_g/core/cell.html"],
+    serve_html(Env, HTML);
 
 iget(Ref, _Type, Qry, Env) ->
     error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Qry]),
@@ -750,7 +752,7 @@ ipost(Ref, Qry, Env) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 get_view_ar(undefined, _Site, Poster) -> Poster; 
-get_view_ar("_g/core/spreadsheet", _Site, Poster) -> Poster;
+get_view_ar(?SHEETVIEW, _Site, Poster) -> Poster;
 get_view_ar(View, Site, _Poster) ->
     {ok, [Meta]} = file:consult([viewroot(Site), "/", View, ".meta"]),
     proplists:get_value(authreq, Meta).
