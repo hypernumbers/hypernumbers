@@ -85,7 +85,7 @@ tock(Server) ->
 
 tick(Server) -> 
     timer:sleep(?CLOCKTICK),
-    tiny_hn_srv:tock(Server).
+    mod_hypernumbers_srv:tock(Server).
 
 handle_tock([])      -> ok;
 handle_tock([H | T]) ->
@@ -183,15 +183,16 @@ provision(CurrentSite, Port, Row, State) ->
                                 {subdomain, Sub }
                                ]),
             
-            S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site "
+            S = "Hi ~s~n~nWelcome to hypernumbers.com, "
+                "we have set up your tny hypernumbers site "
                 "at:~n~n ~s~n~nTo make changes to the site follow the "
                 "instructions on the main page"
                 "~n~nYour Username:     ~s     ~nYour Password:"
                 "     ~s~n~nThanks for signing up, "
-                "hope you enjoy your tiny site!~n~n"
+                "hope you enjoy your tiny hypernumbers site!~n~n"
                 "When you've finished customising your site don't forget "
                 "to email or twitter your friends!~n~n"
-                "The tiny.hn team",
+                "The hypernumbers team",
             
             Msg = fmt(S, [User, EmailNewSite, User, Password]),
             
@@ -199,8 +200,10 @@ provision(CurrentSite, Port, Row, State) ->
                 {ok, development} ->
                     io:format("~p",[Msg]);
                 {ok, production}  ->
-                    hn_util:email(Email, "\"tiny.hn Team\" <noreply@tiny.hn>",
-                                  "Your new tiny.hn site is live!", Msg)
+                    hn_util:email(Email, "\"hypernumbers Team\" "
+                                  "<noreply@hypernumbers.com>",
+                                  "Your new tiny hypernumbers site is live!",
+                                  Msg)
             end
     end,
 

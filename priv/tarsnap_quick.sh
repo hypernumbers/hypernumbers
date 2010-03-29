@@ -1,14 +1,11 @@
 #!/bin/bash
 
 DATE=`date +%Y-%m-%d.%T`
-HOME=$1
-SITE=$2
+SITE=$1
 
-cd $HOME
-
-echo "Starting tarsnap $DATE"
+cd /hn/tarsnap
 
 /usr/local/bin/tarsnap \
     --cachedir tarsnap-cache \
-    --keyfile www/$SITE/priv/tarsnap/$SITE.tarsnap.key \
-    -v -c -f $SITE-var-$DATE www/$SITE/var
+    --keyfile /hn/hypernumbers/priv/tarsnap/$SITE.tarsnap.key \
+    -v -c -f $SITE-var-$DATE /hn/hypernumbers/var

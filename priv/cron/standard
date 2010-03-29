@@ -1,0 +1,11 @@
+SHELL=/bin/bash
+PATH=$PATH:/usr/local/bin:/usr/bin:/usr/sbin:/bin
+ERL_LIBS=$ERL_LIBS:/hn/libs
+HOSTNAME=`/bin/hostname`
+
+55 2 * * * /hn/run_github_script hypernumbers hypernumbers /priv/tarsnap_quick.sh $HOSTNAME 2>&1 >> /hn/tarsnap.log </dev/null
+
+## Uncomment for tests
+#0 0 * * * /hn/run_github_script hypernumbers hypernumbers /priv/night_runner.sh 2>&1 >> /hn/night_runner.log </dev/null
+
+

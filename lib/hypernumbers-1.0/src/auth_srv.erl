@@ -23,6 +23,7 @@
          get_views/3,
          get_any_view/3,
          add_view/4,
+         set_view/4,
          set_champion/3,
          set_challenger/3,
          remove_views/3,
@@ -102,6 +103,12 @@ get_views(Site, Path, AuthReq) ->
 add_view(Site, Path, AuthSpec, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {add_view, Path, AuthSpec, View}).
+
+%% A non-additive way of setting views.
+-spec set_view(string(), [string()], auth_spec(), string()) -> ok.
+set_view(Site, Path, AuthSpec, View) ->
+    Id = hn_util:site_to_atom(Site, "_auth"),
+    gen_server:call(Id, {set_view, Path, AuthSpec, View}).    
 
 -spec set_champion(string(), [string()], string()) -> ok. 
 set_champion(Site, Path, View) ->
@@ -201,6 +208,8 @@ handle_call(Request, _From, State) ->
                 {check_get_view1(tree(Site, Tr), P, AR, any), false};
             {add_view, Pg, AS, V} ->
                 {add_view1(tree(Site, Tr), Pg, AS, V), true};
+            {set_view, Pg, AS, V} ->
+                {set_view1(tree(Site, Tr), Pg, AS, V), true};
             {set_champion, Pg, Df} ->
                 {set_default(tree(Site, Tr), Pg, Df, champion), true};
             {set_challenger, Pg, Df} ->
@@ -308,6 +317,15 @@ add_view1(Tree, Path, UAndGs, V) ->
                              {value, Val} -> Val end,
                   View2 = add_us_and_gps(View1, UAndGs),
                   NewViews = gb_trees:enter(V, View2, CurViews),
+                  C#control{views = NewViews}
+          end,
+    alter_tree(Tree, Path, Fun).
+
+set_view1(Tree, Path, UAndGs, V) ->
+    Fun = fun(C) ->
+                  CurViews = C#control.views,
+                  View = add_us_and_gps(#view{}, UAndGs),
+                  NewViews = gb_trees:enter(V, View, CurViews),
                   C#control{views = NewViews}
           end,
     alter_tree(Tree, Path, Fun).
@@ -772,6 +790,24 @@ testA8(P) ->
     %% no permission to see 'champion'... it's gone.
     ?assertEqual(not_found, Ret). 
 
+%% remove views by replacing
+testA9(P) ->
+    Tree1 = add_view1(gb_trees:empty(), P, 
+                      [{user, "gordon"}, {group, "admin"}],
+                      "a view"),
+    Tree2 = add_view1(Tree1, P, 
+                      [{user, "gordon"}, {group, "bleh"}],
+                      "another view"),
+    Tree3 = set_view1(Tree2, P,
+                      [{user, "usurper"}, {group, "god"}],
+                      "another view"),
+    Tree4 = set_default(Tree3, P, "another view", champion),
+    Ret1 = check_get_view1(Tree4, P, {"gordon", ["Fail"]}, champion),
+    Ret2 = check_get_view1(Tree4, P, {"usurper", ["Success"]}, champion),
+    ?assertEqual(denied, Ret1),
+    ?assertEqual({view, "another view"}, Ret2). 
+
+
 testA10(P) ->
     Tree = add_view1(gb_trees:empty(), P, 
                      [{user, "gordon"}, {group, "admin"}],
@@ -1043,6 +1079,7 @@ unit_test_() ->
                fun testA5/1,
                fun testA7/1,
                fun testA8/1,
+               fun testA9/1,
                fun testA10/1,
                fun testA12/1,
                fun testA14/1, 

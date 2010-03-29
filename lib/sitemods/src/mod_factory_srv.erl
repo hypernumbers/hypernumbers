@@ -106,7 +106,7 @@ tock(Server) ->
 
 tick(Server) -> 
     timer:sleep(?CLOCKTICK),
-    factory_srv:tock(Server).
+    ?MODULE:tock(Server).
 
 parse_args(Args) ->
     parse_a1(Args, []).

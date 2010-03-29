@@ -83,12 +83,16 @@ clean() ->
     ok.
 
 start(Extra) ->
+    
     ensure_config(),
-
-    Cmd = "erl -name "++atol(conf_lname())++" -setcookie "++atol(cookie())++" "
-        "-config var/sys.config -boot ebin/hypernumbers -detached "
+    
+    filelib:ensure_dir("var/runerl_log/"),
+    
+    Cmd = "run_erl -daemon /tmp/ var/runerl_log "
+        "\"erl -name "++atol(conf_lname())++" -setcookie "++atol(cookie())++" "
+        "-config var/sys.config -boot ebin/hypernumbers "
         "-env ERL_MAX_ETS_TABLES 18000 "
-        ++ ssl() ++ parse_extra_args(Extra),
+        ++ ssl() ++ parse_extra_args(Extra)++"\"",
 
     case os:cmd(Cmd) of
         []   -> ok;

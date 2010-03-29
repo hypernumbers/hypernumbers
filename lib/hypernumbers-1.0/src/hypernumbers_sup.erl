@@ -21,13 +21,6 @@ init([]) ->
 
     SiteMaster = {sitemaster_sup, {sitemaster_sup, start_link, []},
                   permanent, infinity, supervisor, [sitemaster_sup]},
-
-    Shell = {hn_shell_srv, {hn_shell_srv, start_link, []},
-             permanent, 2000, worker, [hn_shell_srv]},
-
-    {ok,{{one_for_one, 60, 1}, [ Service,
-                                 Status,
-                                 SiteMaster,
-                                 Shell
-                                ]}}.
+    
+    {ok,{{one_for_one, 60, 1}, [ Service, Status, SiteMaster ]}}.
 

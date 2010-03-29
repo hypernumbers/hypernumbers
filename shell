@@ -1,37 +1,38 @@
 #!/bin/bash
+to_erl /tmp/
 
-COOKIE=completelysecure
-CONFIG=var/sys.config
-SSLBOOT=ebin/start_ssl
+# COOKIE=completelysecure
+# CONFIG=var/sys.config
+# SSLBOOT=ebin/start_ssl
 
-RUN_SSL='-ssl_dist_opt server_certfile "priv/keys/servercert.pem"
--ssl_dist_opt client_certfile "priv/keys/clientcert.pem" 
--ssl_dist_opt keyfile "priv/keys/key.pem" 
--proto_dist inet_ssl'
+# RUN_SSL='-ssl_dist_opt server_certfile "priv/keys/servercert.pem"
+# -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" 
+# -ssl_dist_opt keyfile "priv/keys/key.pem" 
+# -proto_dist inet_ssl'
 
-NODE=hndev@$(hostname)
-case $# in
-    2) METHOD=$1 NODE=$2;;
-    1) if [ "$1" == "connect" ]
-        then METHOD="connect"
-        else NODE=$1
-       fi
-esac
+# NODE=hndev@$(hostname)
+# case $# in
+#     2) METHOD=$1 NODE=$2;;
+#     1) if [ "$1" == "connect" ]
+#         then METHOD="connect"
+#         else NODE=$1
+#        fi
+# esac
 
-if [ "$METHOD" == "connect" ]
-then
-    erl -name debug-$(date +%s) \
-        -boot $SSLBOOT \
-        $RUN_SSL \
-        -setcookie $COOKIE \
-        -connect_all false \
-        -eval "net_adm:ping('$NODE')"
-else
-    erl -name debug-$(date +%s) \
-        -boot $SSLBOOT \
-        $RUN_SSL \
-        -setcookie $COOKIE \
-        -remsh $NODE \
-        -eval "rpc:call('$NODE', hn_shell_srv, connect, [])"
-fi
+# if [ "$METHOD" == "connect" ]
+# then
+#     erl -name debug-$(date +%s) \
+#         -boot $SSLBOOT \
+#         $RUN_SSL \
+#         -setcookie $COOKIE \
+#         -connect_all false \
+#         -eval "net_adm:ping('$NODE')"
+# else
+#     erl -name debug-$(date +%s) \
+#         -boot $SSLBOOT \
+#         $RUN_SSL \
+#         -setcookie $COOKIE \
+#         -remsh $NODE \
+#         -eval "rpc:call('$NODE', hn_shell_srv, connect, [])"
+# fi
     
