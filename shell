@@ -1,5 +1,5 @@
 #!/bin/bash
-ssh localhost -tt to_erl /tmp/
+to_erl /tmp/
 
 # COOKIE=completelysecure
 # CONFIG=var/sys.config
