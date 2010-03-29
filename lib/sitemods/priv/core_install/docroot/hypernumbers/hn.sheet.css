@@ -903,6 +903,7 @@ hr {
 }
 
 #input { 
+    font:     12px Arial,"Helvetica Neue", sans-serif;
     z-index  : 10000000;
     height   : 18px;
     width    : 78px;
