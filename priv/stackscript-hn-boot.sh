@@ -16,8 +16,8 @@ echo ${HOSTNAME} > /etc/hostname
 
 sed -i 's/#deb/deb/g' /etc/apt/sources.list
 apt-get -y update
-apt-get -y install emacs22-nox
-apt-get -y install nginx libicu-dev rake git-core e2fslibs-dev
+apt-get -y install emacs22-nox ntp nginx libicu-dev \
+    rake git-core e2fslibs-dev
 /etc/init.d/nginx stop
 
 
@@ -127,6 +127,8 @@ chown hypernumbers:hypernumbers /hn
 
 su hypernumbers -c 'mkdir -p /hn/dev-www'
 su hypernumbers -c 'mkdir -p /hn/files-www'
+su hypernumbers -c 'mkdir -p /hn/libs/ebin'
+su hypernumbers -c 'mkdir -p /hn/tarsnap'
 
 if [ ! -d "/hn/hypernumbers" ]; then
     cd /hn
@@ -138,3 +140,11 @@ su hypernumbers -c './hn build'
 rm -Rf /etc/nginx/*
 cp -r /hn/hypernumbers/priv/nginx/* /etc/nginx
 /etc/init.d/nginx restart
+
+su hypernumbers -c '/usr/local/bin/tarsnap --fsck \
+    --cachedir /hn/tarsnap/tarsnap-cache \
+    --keyfile /hn/hypernumbers/priv/tarsnap/`hostname`.tarsnap.key'
+
+cp -p /hn/hypernumbers/priv/run_github_script /hn
+cp -p /hn/hypernumbers/lib/mochiweb/ebin/mochijson.beam /hn/libs/ebin
+crontab -u hypernumbers /hn/hypernumbers/priv/cron/standard
