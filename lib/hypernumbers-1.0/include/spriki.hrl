@@ -1,20 +1,4 @@
--define(HN_NAME,   "HyperNumbers").
-
--define(TIMEOUT,   1000).
--define(HTML_ROOT, "/html/").
-
--define(HTTP,      $h,$t,$t,$p).
--define(HTTPS,     $h,$t,$t,$p,$s).
--define(SLASH,     47).
-
 -define(SALT,      "happyguineapigs").
-
--define(DELAY,     0). % time delay (millisecs) for some dirty updates 
-
-%% Test Macros
--define(HN_URL1,   "http://localhost:9000").
--define(HN_URL2,   "http://127.0.0.1:9001").
-
 
 -type now() :: {integer(),integer(),integer()}.
 -type cellidx() :: pos_integer().
@@ -145,6 +129,9 @@
 % 
 % dirty_notify_out doens't contain a child_vsn record because that info
 % is wrapped up in the outgoing list...
+
+-define(DELAY,     0). % time delay (millisecs) for some dirty updates 
+
 -record(dirty_notify_out,
         {
           parent     = #refX{},

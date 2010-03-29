@@ -14,12 +14,12 @@
    {pingto, "http://hypernumbers.com"},
    {bootstrapped,
     [
-     {"http://localhost:9000", hypernumbers,
-      [{init_args, [{host, "localhost"}, {port, 9000},
-                    {self, "http://localhost:9000"}]}]},
-     {"http://fn.localhost:9000", factory,
-      [{init_args, [{host, "fn.localhost"}, {port, 9000},
-                    {self, "http://fn.localhost:9000"}]}]}
+     {"http://hypernumbers.dev:9000", hypernumbers,
+      [{init_args, [{host, "hypernumbers.dev"}, {port, 9000},
+                    {self, "http://hypernumbers.dev:9000"}]}]},
+     {"http://fn.hypernumbers.dev:9000", factory,
+      [{init_args, [{host, "fn.hypernumbers.dev"}, {port, 9000},
+                    {self, "http://fn.hypernumbers.dev:9000"}]}]}
     ]},
       
    % Mail Setup
