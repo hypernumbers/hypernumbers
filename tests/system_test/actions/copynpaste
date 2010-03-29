@@ -1,12 +1,12 @@
 %% -*- mode: erlang -*-
 
 %% Targeted Sites
-sites() -> ["http://localhost:9000"].
+sites() -> ["http://hypernumbers.dev:9000"].
 
 actions() ->
-    Url  = "http://localhost:9000/copynpaste/",
+    Url  = "http://hypernumbers.dev:9000/copynpaste/",
     Type = "application/json",
     Accept = [{"Accept", "application/json"}],
-    Data = "{\"copy\":{\"src\":\"http://localhost:9000/copynpaste/F4:F9\"}}",
+    Data = "{\"copy\":{\"src\":\"http://hypernumbers.dev:9000/copynpaste/F4:F9\"}}",
     httpc:request(post,{Url++"G5:G5", Accept, Type, Data}, [], []),
     ok.

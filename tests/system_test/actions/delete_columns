@@ -1,10 +1,10 @@
 %% -*- mode: erlang -*-
 
 %% Targeted Sites
-sites() -> ["http://localhost:9000"].
+sites() -> ["http://hypernumbers.dev:9000"].
 
 actions() ->
-    Url  = "http://localhost:9000/delete_columns/",
+    Url  = "http://hypernumbers.dev:9000/delete_columns/",
     Type = "application/json",
     Accept = [{"Accept", "application/json"}],
     Data = "{\"delete\":\"all\"}",
