@@ -27,10 +27,10 @@
 %%% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 init_per_suite(Config) ->
-    Site = "http://localhost:9000",
+    Site = "http://hypernumbers.dev:9000",
     reset_perms(Site),                  
     %% TODO : should be configurable
-    %Ref = #refX{site="http://localhost:9000", path=[]},
+    %Ref = #refX{site="http://hypernumbers.dev:9000", path=[]},
     %% TODO : ugh
     Ref = {refX, Site, [], undefined, []},
     hn_file_upload:test_import("<%= @basename %>", Ref),

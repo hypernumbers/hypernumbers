@@ -213,7 +213,7 @@ make_float2(List)->
       throw:_Term    -> "not float"
     end.
 
--define(HNSERVER, "http://localhost:9000").
+-define(HNSERVER, "http://hypernumbers.dev:9000").
 hnget(Path, Cell) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Cell),
     Ref = hn_util:parse_url(Url),
