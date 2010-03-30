@@ -130,9 +130,11 @@ su hypernumbers -c 'mkdir -p /hn/files-www'
 su hypernumbers -c 'mkdir -p /hn/libs/ebin'
 su hypernumbers -c 'mkdir -p /hn/tarsnap'
 
+cd /hn
 if [ ! -d "/hn/hypernumbers" ]; then
-    cd /hn
     su hypernumbers -c 'git clone git@github.com:hypernumbers/hypernumbers.git'
+else
+    su hypernumbers -c 'git pull'
 fi
 cd /hn/hypernumbers
 su hypernumbers -c './hn build'
