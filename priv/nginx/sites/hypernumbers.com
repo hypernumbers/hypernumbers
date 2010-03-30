@@ -37,7 +37,7 @@ server {
 
         location / {
 	      auth_basic            "Restricted";
-	      auth_basic_user_file  /etc/nginx/conf/.htpasswd;
+	      auth_basic_user_file  /etc/nginx/htpasswd;
 	      autoindex on;
 	      root   /hn/dev-www;
         }
