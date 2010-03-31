@@ -70,7 +70,7 @@ gen_test(Template, Fixture) ->
                     X2-X1+2
             end,
 
-    Ref = #refX{site="http://localhost:9000", path=[Name]},
+    Ref = #refX{site="http://hypernumbers.dev:9000", path=[Name]},
     Url = Ref#refX.site ++ hn_util:list_to_path(Ref#refX.path),
 
     Names = gen_names(Name, Count),

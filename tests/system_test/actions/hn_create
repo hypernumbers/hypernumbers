@@ -1,11 +1,11 @@
 %% -*- mode: erlang -*-
 
 %% Targeted Sites
-sites() -> ["http://localhost:9000", "http://localhost:9000"].
+sites() -> ["http://hypernumbers.dev:9000", "http://hypernumbers.dev:9000"].
 
 actions() ->
-    LocalUrl = "http://localhost:9000/hn_create/",
-    RemUrl  = "http://localhost:9000/hn_create/",
+    LocalUrl = "http://hypernumbers.dev:9000/hn_create/",
+    RemUrl  = "http://hypernumbers.dev:9000/hn_create/",
     Type = "application/json",
 
     %% Put Default values in to be READ from as input to INCOMMING hypernumbers.
@@ -27,16 +27,16 @@ actions() ->
                                   "{\"clear\":\"all\"}"},
                            [], [], systest),
     {ok, _} = httpc:request(post, {LocalUrl++"C7", [{"Accept", Type}], Type,
-                                  "{\"set\":{\"formula\":\"=HN(\\\"http://localhost:9000/hn_create/a1\\\")\"}}"},
+                                  "{\"set\":{\"formula\":\"=HN(\\\"http://hypernumbers.dev:9000/hn_create/a1\\\")\"}}"},
                            [], [], systest),
     {ok, _} = httpc:request(post, {LocalUrl++"C8", [{"Accept", Type}], Type,
-                                  "{\"set\":{\"formula\":\"=HN(\\\"http://localhost:9000/hn_create/a2\\\")\"}}"},
+                                  "{\"set\":{\"formula\":\"=HN(\\\"http://hypernumbers.dev:9000/hn_create/a2\\\")\"}}"},
                            [], [], systest),
     {ok, _} = httpc:request(post, {LocalUrl++"C9", [{"Accept", Type}], Type,
-                                  "{\"set\":{\"formula\":\"=HN(\\\"http://localhost:9000/hn_create/a3\\\")\"}}"},
+                                  "{\"set\":{\"formula\":\"=HN(\\\"http://hypernumbers.dev:9000/hn_create/a3\\\")\"}}"},
                            [], [], systest),
     {ok, _} = httpc:request(post, {LocalUrl++"C10", [{"Accept", Type}], Type,
-                                  "{\"set\":{\"formula\":\"=HN(\\\"http://localhost:9000/hn_create/a4\\\")\"}}"},
+                                  "{\"set\":{\"formula\":\"=HN(\\\"http://hypernumbers.dev:9000/hn_create/a4\\\")\"}}"},
                            [], [], systest).
 
 

@@ -1,10 +1,10 @@
 %% -*- mode: erlang -*-
 
 %% Targeted Sites
-sites() -> ["http://localhost:9000"].
+sites() -> ["http://hypernumbers.dev:9000"].
 
 actions() ->
-    LocalUrl = "http://localhost:9000/hn_structural/",
+    LocalUrl = "http://hypernumbers.dev:9000/hn_structural/",
     Type = "application/json",
 
     %% Delete row 2

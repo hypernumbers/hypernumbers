@@ -1,10 +1,10 @@
 %% -*- mode: erlang -*-
 
 %% Targeted Sites
-sites() -> ["http://localhost:9000"].
+sites() -> ["http://hypernumbers.dev:9000"].
 
 actions() ->
-    Url  = "http://localhost:9000/delete/",
+    Url  = "http://hypernumbers.dev:9000/delete/",
     Type = "application/json",
     Data = "{\"delete\":\"all\"}",
     httpc:request(post,{Url, [{"Accept", "application/json"}], Type, Data}, [], []),
