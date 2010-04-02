@@ -22,7 +22,7 @@ server {
 
 server {
     listen       80;
-    server_name  download.hypernumbers.com;
+    server_name  download.hypernumbers.com files.hypernumbers.com;
     
     location / {
         root /hn/files-www;

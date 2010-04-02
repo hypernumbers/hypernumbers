@@ -188,6 +188,25 @@ authorize_get(#refX{site = Site, path = Path},
             denied
     end;
 
+authorize_get(#refX{site = Site, path = Path}, 
+              #qry{updates = U, view = "_g/core/webpage", paths = More}, 
+              #env{accept = json, auth_req = Ar})
+  when U /= undefined ->
+    case auth_srv2:check_particular_view(Site, Path, Ar, "_g/core/webpage") of
+        {view, "_g/core/webpage"} ->
+            MoreViews = [auth_srv2:get_any_view(Site, string:tokens(P, "/"), Ar) 
+                         || P <- string:tokens(More, ",")],
+            case lists:all(fun({view, _}) -> true; 
+                              (_) -> false end, 
+                           MoreViews) of
+                true -> allowed;
+                _Else -> denied
+            end;       
+        _Else ->
+            denied
+    end;
+
+
 %% Update requets targeted towards a non-spreadsheet view. Validation
 %% for additional sources is made against the security object created
 %% at a 'view-save-time'. 
