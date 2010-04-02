@@ -19,7 +19,8 @@
    %% be started regardless.
    {services, 
     [{hns, false},
-     {passport, false}
+     {passport, false},
+     {factory, false}
     ]}, 
 
    %% Delete to turn-off centralized tracking.

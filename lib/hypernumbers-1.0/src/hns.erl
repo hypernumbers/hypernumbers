@@ -6,7 +6,7 @@
 -export([start_link/0,
          create_zone/4, delete_zone/1, purge_zone/2, topup_zone/1,
          link_resource/1, unlink_resource/2,
-         set_resource/2, set_resource/3, delete_resource/1,
+         set_resource/3, delete_resource/2,
          resource_diagnostics/0, zone_diagnostics/0
         ]).
 
@@ -21,6 +21,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -type generator() :: fun(() -> string()). 
+-type resource_addr() :: {string(), atom()}. %% (IP, Node).
 
 %%% Database Tables
 -record(zone, { label :: string(),
@@ -30,15 +31,14 @@
                 generator :: generator(),
                 zone_id :: integer() }).
 
--record(record, { label, %:: {string(), string()}
-                  address, %:: string(),
+-record(record, { label :: {string(), string()},
+                  address :: resource_addr(),
                   %% Following two used for linode.
-                  zone_id, %:: integer(),
-                  resource_id}). %integer()}).
+                  zone_id :: integer(),
+                  resource_id :: integer()}).
 
--record(resource, { address = [] :: string(),
-                    weight = 0 :: integer(),
-                    alias = [] :: string() }).
+-record(resource, { address = [] :: resource_addr(),
+                    weight = 0 :: integer() }).
 
 %%% Internal State
 -record(routing, { table = [], upper_limit = 0}).
@@ -114,22 +114,18 @@ topup_zone(Zone) ->
     gen_server:cast({global, ?MODULE}, {topup_zone, Zone}).
 
 %% Adds, (or adjusts existing) resources to system. A resource is
-%% describe by an address (here IP); a weighetd importance, with
-%% respect to all other resources; and optionally a human-readable
-%% alias.
--spec set_resource(string(), integer()) -> ok. 
-set_resource(Resource, Weight) ->
-    set_resource(Resource, Weight, []).
--spec set_resource(string(), integer(), string()) -> ok. 
-set_resource(Resource, Weight, Alias) when 
+%% describe by an address (IP, Node combination); and a weighted
+%% importance with respect to all other resources.
+-spec set_resource(string(), atom(), integer()) -> ok. 
+set_resource(IP, Node, Weight) when 
       is_integer(Weight), Weight >= 0 ->
-    gen_server:call({global, ?MODULE}, {set_resource, Resource, Weight, Alias}).
+    gen_server:call({global, ?MODULE}, {set_resource, {IP, Node}, Weight}).
 
 %% Removes a resource from future consideration for
 %% mappings.TODO:Should pre-mapped names to this resource be pruned???
--spec delete_resource(string()) -> ok | not_found.
-delete_resource(Resource) ->
-    gen_server:call({global, ?MODULE}, {delete_resource, Resource}).
+-spec delete_resource(string(), atom()) -> ok | not_found.
+delete_resource(IP, Node) ->
+    gen_server:call({global, ?MODULE}, {delete_resource, {IP, Node}}).
 
 %% Useful for listing active resources, and testing random distribution.
 -spec resource_diagnostics() -> ok.
@@ -255,8 +251,8 @@ handle_call({link_resource, ZName}, _From, S) ->
                           underflow;
                       _ -> 
                           {Name, Address, RId, Z2} = get_mapping(Z),
-                          Rec = #record{label = {Z#zone.label, Name}, 
-                                        address = Address, 
+                          Rec = #record{label = {Z#zone.label, Name},
+                                        address = Address,
                                         zone_id = Z#zone.zone_id,
                                         resource_id = RId},
                           F = fun() ->
@@ -290,8 +286,8 @@ handle_call({unlink_resource, Zone, Name}, _From, S) ->
     end,
     {reply, ok, S};
 
-handle_call({set_resource, Address, Weight, Alias}, _From, S) ->
-    Entry = #resource{address=Address, weight=Weight, alias=Alias},
+handle_call({set_resource, Address, Weight}, _From, S) ->
+    Entry = #resource{address=Address, weight=Weight},
     ok = mnesia:activity(async_dirty, 
                          fun mnesia:write/3, 
                          [service_hns_resource, Entry, write]),
@@ -309,13 +305,12 @@ handle_call(resource_diagnostics, _From, S=#state{routing=R}) ->
     Runs = 50000,
     Results = repeat_select(Runs, R, dict:new()),
     Format = "Name: ~-20s Wgt: ~5b Expect: ~5.3f Actual: ~5.3f~n",
-    F = fun(#resource{address=Address, weight=Weight, alias=Alias}, Acc) ->
+    F = fun(#resource{address=Address, weight=Weight}, Acc) ->
                 Expected = Weight / R#routing.upper_limit,
                 Actual = case dict:find(Address, Results) of
                              {ok, V} -> V / Runs; 
                              _       -> 0.0 end,
-                Name = if Alias == [] -> Address;
-                          true        -> [Alias, " ", Address] end,
+                Name = lists:flatten(io_lib:format("~p", [Address])),
                 L = io_lib:format(Format, [Name, Weight, Expected, Actual]),
                 [L | Acc]
         end,
@@ -451,7 +446,7 @@ all_zones() ->
 %%%===================================================================
 
 %% Assumes pool is non-empty.
--spec get_mapping(#zone{}) -> {string(), string(), integer(), #zone{}}.
+-spec get_mapping(#zone{}) -> {string(), resource_addr(), integer(), #zone{}}.
 get_mapping(Z=#zone{label=Zone, pool=Pool, min_size=Min}) ->
     {Name, {Address, ResourceId}, Pool2} = 
         case gb_trees:size(Pool) of
@@ -479,8 +474,8 @@ allocate_name(Routing, Generator, ZoneId, Pool) ->
         true  -> 
             Pool;
         false -> 
-            Address = pick_resource(Routing),
-            ResourceID = create_dns_LINODE(Name, Address, ZoneId),
+            Address={IP, _}  = pick_resource(Routing),
+            ResourceID = create_dns_LINODE(Name, IP, ZoneId),
             gb_trees:enter(Name, {Address, ResourceID}, Pool)
     end.
 
@@ -509,7 +504,6 @@ create_dns_LINODE(Name, Address, ZoneId) ->
     {struct,[{"ResourceID",ResourceID}]} = get_data(Struct),
     ResourceID.
     
-
 -spec delete_dns_LINODE(integer(), integer()) -> any(). 
 delete_dns_LINODE(ZoneId, ResourceId) ->
     ZoneIdStr = integer_to_list(ZoneId),
@@ -543,7 +537,7 @@ linode_api(Cmds0) ->
 %%% Resource selection 
 %%%===================================================================
 
--spec pick_resource(#routing{}) -> string().
+-spec pick_resource(#routing{}) -> resource_addr().
 pick_resource(#routing{table = Tbl, upper_limit = Limit}) ->
     Val = crypto:rand_uniform(0, Limit),
     do_pick_resource(Tbl, Val).
@@ -571,16 +565,24 @@ repeat_select(N, S, Results) ->
     Results2 = dict:update_counter(Srv, 1, Results),
     repeat_select(N-1, S, Results2).    
 
+-spec simple_test_() -> no_return(). 
 simple_test_() ->
-    Resources = [#resource{address = "alpha", weight = 5},
-               #resource{address = "beta", weight = 0},
-               #resource{address = "gamma", weight = 0}],
+    Resources = [#resource{address = {"127.0.0.1", alpha}, 
+                           weight = 5},
+                 #resource{address = {"10.10.10.10", beta},
+                           weight = 0},
+                 #resource{address = {"192.168.1.1", gamma}, 
+                           weight = 0}],
     R = build_routing(Resources),
-    ?_assertEqual("alpha", pick_resource(R)).
+    ?_assertEqual({"127.0.0.1",alpha}, pick_resource(R)).
 
+-spec count_test_() -> no_return(). 
 count_test_() ->
-    Resources = [#resource{address = "alpha", weight = 5},
-               #resource{address = "beta", weight = 20},
-               #resource{address = "gamma", weight = 5}],
+    Resources = [#resource{address = {"127.0.0.1", alpha}, 
+                           weight = 5},
+                 #resource{address = {"10.10.10.10", beta},
+                           weight = 20},
+                 #resource{address = {"192.168.1.1", gamma}, 
+                           weight = 5}],
     R = build_routing(Resources),
     ?_assertEqual(30, R#routing.upper_limit).
