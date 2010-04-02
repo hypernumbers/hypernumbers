@@ -140,8 +140,8 @@ fi
 cd /hn/hypernumbers
 su hypernumbers -c './hn build'
 
-rm -Rf /etc/nginx/*
-cp -r /hn/hypernumbers/priv/nginx/* /etc/nginx
+rm -Rf /etc/nginx
+ln -s /hn/hypernumbers/priv/nginx /etc/nginx
 /etc/init.d/nginx restart
 
 su hypernumbers -c '/usr/local/bin/tarsnap --fsck \
