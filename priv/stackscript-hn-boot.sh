@@ -144,6 +144,9 @@ rm -Rf /etc/nginx
 ln -s /hn/hypernumbers/priv/nginx /etc/nginx
 /etc/init.d/nginx restart
 
+chown -R hypernumbers:admin /hn/files-www
+chmod -R g+rwx /hn/files-www
+
 su hypernumbers -c '/usr/local/bin/tarsnap --fsck \
     --cachedir /hn/tarsnap/tarsnap-cache \
     --keyfile /hn/hypernumbers/priv/tarsnap/`hostname`.tarsnap.key'
