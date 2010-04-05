@@ -109,7 +109,7 @@ loaded(Root) ->
                            is_list(Path),
                            lists:prefix(Root, Path)]).
 
--spec run_test(atom()) -> ok. 
+-spec run_test(atom()) -> ok.
 run_test(excel_util) -> ok;
 run_test(odf_criteria) -> ok;
 run_test(M) ->

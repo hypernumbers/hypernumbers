@@ -16,7 +16,9 @@
 
 -define(API_KEY, 
         "C7ozR9fh4apHmfEwkWS7FrItSHDqGq9J3UTxm9JQrEEHnka3qA7wSHJYJM1kHVfs").
+-define(DEV_ZONE_ID, -1).
 
+-include("hypernumbers.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
@@ -59,10 +61,13 @@
 start_link() ->
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
+    
 -define(TRIES, 5).
 %% Returns a name be mapped to one of the available resources, by
 %% means of weighted-random draw.
--spec link_resource(string()) -> underflow | no_zone | {ok,string()}.
+-spec link_resource(string()) -> underflow | 
+                                 no_zone |
+                                 {ok,{string(), resource_addr()}}.
 link_resource(Zone) ->
     Msg = {link_resource, Zone},
     do_link_resource(?TRIES, Msg).
@@ -72,12 +77,12 @@ do_link_resource(Tries, Msg) ->
     case gen_server:call({global, ?MODULE}, Msg) of
         no_zone -> no_zone;
         underflow ->  do_link_resource(Tries-1, Msg);
-        Name -> {ok, Name}
+        R -> {ok, R}
     end.    
 
 -spec unlink_resource(string(), string()) -> ok.
-unlink_resource(Zone, Name) ->
-    gen_server:call({global, ?MODULE}, {unlink_resource, Zone, Name}).
+unlink_resource(ZoneL, Name) ->
+    gen_server:call({global, ?MODULE}, {unlink_resource, ZoneL, Name}).
                              
 %% Create a zone responsible for the dispensation of mappings from
 %% names to resources, backed by DNS. Since requests for new mappings
@@ -100,8 +105,8 @@ create_zone(Zone, MinSize, IdealSize, Generator) when
 delete_zone(Zone) ->
     gen_server:call({global, ?MODULE}, {delete_zone, Zone}, infinity).
 
-%% CAUTION!!! Purging will __UNRECOVERABLY REMOVE__ all resource mappings
-%% associated with this zone.
+%% _CAUTION_ Purging will _IRREVOCABLY REMOVE_ all resource mappings
+%% associated with this zone!
 -spec purge_zone(string(), atom()) -> ok.
 purge_zone(Zone, i_really_know_what_i_am_doing) ->
     delete_zone(Zone),
@@ -195,16 +200,16 @@ init([]) ->
 %% @end
 %%--------------------------------------------------------------------
 
-handle_call({create_zone, Zone, MinSize, IdealSize, Generator}, _From, S) ->
+handle_call({create_zone, ZoneL, MinSize, IdealSize, Generator}, _From, S) ->
     case mnesia:activity(async_dirty, fun mnesia:read/2, 
-                         [service_hns_zone, Zone]) of
+                         [service_hns_zone, ZoneL]) of
         [_] -> 
             {reply, already_exists, S};
         _ ->
-            ZoneId = zone_id_LINODE(Zone),
-            Pool = allocate_names(IdealSize, S#state.routing,
-                                  Generator, ZoneId, gb_trees:empty()),
-            Entry = #zone{label = Zone,
+            ZoneId = zone_id_LINODE(ZoneL),
+            Pool = allocate_names(IdealSize, S#state.routing, Generator, 
+                                  ZoneL, ZoneId, gb_trees:empty()),
+            Entry = #zone{label = ZoneL,
                           zone_id = ZoneId,
                           min_size = MinSize,
                           ideal_size = IdealSize,
@@ -215,20 +220,20 @@ handle_call({create_zone, Zone, MinSize, IdealSize, Generator}, _From, S) ->
             {reply, ok, S}
     end;
 
-handle_call({delete_zone, Zone}, _From, S) ->
+handle_call({delete_zone, ZoneL}, _From, S) ->
     case mnesia:activity(async_dirty, fun mnesia:read/2,
-                         [service_hns_zone, Zone]) of
+                         [service_hns_zone, ZoneL]) of
         [#zone{pool = A, zone_id=ZoneId}] ->
             %% Deallocated mappings in pool. 
             [delete_dns_LINODE(ZoneId, Rid) || {_,Rid} <- gb_trees:values(A)],
             ok = mnesia:activity(async_dirty, fun mnesia:delete/3,
-                                 [service_hns_zone, Zone, write]);
+                                 [service_hns_zone, ZoneL, write]);
         _ -> ok end,
     {reply, ok, S};
 
-handle_call({purge, Zone}, _From, S) ->
+handle_call({purge, ZoneL}, _From, S) ->
     MS = ets:fun2ms(fun(#record{label = {Z, _}}=R) 
-                          when Zone == Z -> R 
+                          when ZoneL == Z -> R 
                     end),
     DelF = fun() ->
                    Recs = mnesia:select(service_hns_record, MS, write),
@@ -240,10 +245,10 @@ handle_call({purge, Zone}, _From, S) ->
                                             resource_id = RID} <- Recs],
     {reply, ok, S};
 
-handle_call({link_resource, ZName}, _From, S) ->
+handle_call({link_resource, ZoneL}, _From, S) ->
     Val = mnesia:activity(async_dirty, 
                           fun mnesia:read/2,
-                          [service_hns_zone, ZName]),
+                          [service_hns_zone, ZoneL]),
     Ret = case Val of 
               [Z] ->
                   case gb_trees:size(Z#zone.pool) of
@@ -251,9 +256,9 @@ handle_call({link_resource, ZName}, _From, S) ->
                           underflow;
                       _ -> 
                           {Name, Address, RId, Z2} = get_mapping(Z),
-                          Rec = #record{label = {Z#zone.label, Name},
+                          Rec = #record{label = {Z2#zone.label, Name},
                                         address = Address,
-                                        zone_id = Z#zone.zone_id,
+                                        zone_id = Z2#zone.zone_id,
                                         resource_id = RId},
                           F = fun() ->
                                       ok = mnesia:write(service_hns_zone, 
@@ -264,17 +269,17 @@ handle_call({link_resource, ZName}, _From, S) ->
                                                         write)
                               end,
                           ok = mnesia:activity(async_dirty, F),
-                          Name ++ "." ++ Z#zone.label
+                          {Name ++ "." ++ Z2#zone.label, Address}
                   end;
               _ ->
                   no_zone
           end,
     {reply, Ret, S};
 
-handle_call({unlink_resource, Zone, Name}, _From, S) ->
+handle_call({unlink_resource, ZoneL, Name}, _From, S) ->
     Val = mnesia:activity(async_dirty,
                           fun mnesia:read/2,
-                          [service_hns_record, {Zone, Name}]),
+                          [service_hns_record, {ZoneL, Name}]),
     case Val of 
         [#record{zone_id = ZID, resource_id = RID}] -> 
             delete_dns_LINODE(ZID, RID),
@@ -360,10 +365,11 @@ handle_cast({topup_zone, ZName}, State) ->
             case gb_trees:size(Z#zone.pool) of 
                 S when S < Ideal ->
                     Pool2 = allocate_names(Ideal - S, 
-                                            State#state.routing, 
-                                            Z#zone.generator,
-                                            Z#zone.zone_id,
-                                            Z#zone.pool),
+                                           State#state.routing, 
+                                           Z#zone.generator,
+                                           Z#zone.label,
+                                           Z#zone.zone_id,
+                                           Z#zone.pool),
                     Z2 = Z#zone{pool=Pool2},
                     mnesia:activity(async_dirty, fun mnesia:write/3,
                                     [service_hns_zone, Z2, write]);
@@ -458,19 +464,21 @@ get_mapping(Z=#zone{label=Zone, pool=Pool, min_size=Min}) ->
         end,
     {Name, Address, ResourceId, Z#zone{pool = Pool2}}.
 
--spec allocate_names(integer(), #routing{}, generator(), integer(), gb_tree())
+-spec allocate_names(integer(), #routing{}, generator(), 
+                     string(), integer(), gb_tree())
                     -> gb_tree().
-allocate_names(X, _Routing, _Generator, _ZoneId, Pool) when X =< 0 -> 
+allocate_names(X, _Routing, _Generator, _ZoneL, _ZoneId, Pool) when X =< 0 -> 
     Pool;
-allocate_names(N, Routing, Generator, ZoneId, Pool) ->
-    Pool2 = allocate_name(Routing, Generator, ZoneId, Pool),
-    allocate_names(N-1, Routing, Generator, ZoneId, Pool2).
+allocate_names(N, Routing, Generator, ZoneL, ZoneId, Pool) ->
+    Pool2 = allocate_name(Routing, Generator, ZoneL, ZoneId, Pool),
+    allocate_names(N-1, Routing, Generator, ZoneL, ZoneId, Pool2).
 
--spec allocate_name(#routing{}, generator(), integer(), gb_tree()) 
+-spec allocate_name(#routing{}, generator(), string(), 
+                    integer(), gb_tree())
                    -> gb_tree().
-allocate_name(Routing, Generator, ZoneId, Pool) ->
+allocate_name(Routing, Generator, ZoneL, ZoneId, Pool) ->
     Name = Generator(),
-    case name_exists(Name) of
+    case record_exists({ZoneL, Name}) of
         true  -> 
             Pool;
         false -> 
@@ -479,21 +487,24 @@ allocate_name(Routing, Generator, ZoneId, Pool) ->
             gb_trees:enter(Name, {Address, ResourceID}, Pool)
     end.
 
--spec name_exists(string()) -> boolean(). 
-name_exists(Name) ->
+-spec record_exists({string(), string()}) -> boolean(). 
+record_exists(Key) ->
     case mnesia:activity(async_dirty, fun mnesia:read/2,
-                         [service_hns_record, Name]) of
+                         [service_hns_record, Key]) of
         [_]   -> true; 
         _Else -> false
     end.
 
 -spec zone_id_LINODE(string()) -> integer().
+zone_id_LINODE(?DEV_ZONE) -> ?DEV_ZONE_ID;
 zone_id_LINODE(Zone) ->
     Struct = linode_api([{"api_action", "domain.list"}]),
     {array, Domains} = get_data(Struct),
     seek_zone_id(Domains, Zone).
 
 -spec create_dns_LINODE(string(), string(), integer()) -> integer(). 
+create_dns_LINODE(_Name, _Address, ?DEV_ZONE_ID) -> 
+    crypto:rand_uniform(0, 1000);
 create_dns_LINODE(Name, Address, ZoneId) ->
     ZoneIdStr = integer_to_list(ZoneId),
     Struct = linode_api([{"api_action", "domain.resource.create"},
@@ -505,6 +516,7 @@ create_dns_LINODE(Name, Address, ZoneId) ->
     ResourceID.
     
 -spec delete_dns_LINODE(integer(), integer()) -> any(). 
+delete_dns_LINODE(?DEV_ZONE_ID, _Reason) -> ok;
 delete_dns_LINODE(ZoneId, ResourceId) ->
     ZoneIdStr = integer_to_list(ZoneId),
     ResourceIdStr = integer_to_list(ResourceId),

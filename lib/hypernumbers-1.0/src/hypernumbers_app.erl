@@ -5,6 +5,7 @@
 
 -export([start/2, stop/1]).
 
+-include("hypernumbers.hrl").
 -include("spriki.hrl").
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
@@ -13,8 +14,12 @@ start(_Type, _Args) ->
     ok = ensure_dirs(),
     ok = init_tables(),
     ok = load_muin_modules(),
-    ok = mochilog:start(),
     {ok, Pid} = hypernumbers_sup:start_link(),
+    ok = case application:get_env(hypernumbers, environment) of
+             {ok,development} -> dev_tasks();
+             _                -> ok
+         end,
+    ok = mochilog:start(),
     ok = start_mochiweb(),
     {ok, Pid}.
 
@@ -63,15 +68,12 @@ build_schema() ->
 
 %% @spec start_mochiweb() -> ok
 %% @doc  Start mochiweb http servers
-%% @todo this server will accept a connection to any
-%% domain name on the ip address, wtf?
-%% TODO: MOVE ME TO SUPERVISOR.
 start_mochiweb() ->
     {ok, Hs} = application:get_env(hypernumbers, hosts),
-    [ok = start_instance(H) || H <- Hs],
+    [ok = start_mochi_instance(H) || H <- Hs],
     ok.
 
-start_instance({IP, Port}) ->
+start_mochi_instance({IP, Port}) ->
     StrIp = inet_parse:ntoa(IP),
     Opts = [{port, Port}, 
             {ip,   StrIp},
@@ -80,3 +82,11 @@ start_instance({IP, Port}) ->
     {ok, _Pid} = mochiweb_http:start(Opts),
     ok.
 
+dev_tasks() ->
+    create_dev_zone().
+
+create_dev_zone() ->
+    Gen = fun() -> [crypto:rand_uniform($a, $z+1)] end,
+    ok = hns:set_resource("127.0.0.1", node(), 1),
+    hns:create_zone(?DEV_ZONE, 1, 26, Gen),
+    ok.

@@ -30,13 +30,13 @@ start_link() ->
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
 -spec provision_site(string(), string(), atom()) -> any(). 
-provision_site(_Zone, _Email, _SiteType) ->
-    throw(undefined).
-    %%gen_server:call({global, ?MODULE}, {provision, Zone, Email, SiteType}).
+provision_site(Zone, Email, SiteType) ->
+    gen_server:call({global, ?MODULE}, {provision, Zone, Email, SiteType}).
 
 -spec provision_site(string(), string(), atom(), string()) -> any(). 
 provision_site(_Zone, _Email, _SiteType, _CustomUrl) ->
-    throw(undefined).
+    throw(undefined),
+    ok.
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -70,8 +70,13 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call({provision, _Zone, _Email, _SiteType}, _From, State) ->
-    {reply, ok, State};
+handle_call({provision, Zone, Email, Type}, _From, State) ->
+    Hid = passport:get_or_create_user(Email),
+    {ok, {Host, {_Ip, Node}}} = hns:link_resource(Zone),
+    Site = lists:flatten(["http://", Host, ":80"]),
+    %ok = rpc:call(Node, hn_setup, site, [Site, Type, [{user, Hid}]]),
+    %%send_email()
+    {reply, {Site, Hid}, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,

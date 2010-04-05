@@ -14,7 +14,8 @@
           stamp_invite/3, 
           verify_stamp/1,
           authenticate/3,
-          create_user/2,
+          get_or_create_user/1,
+          create_user/3,
           delete_user/1
         ]).
 
@@ -22,15 +23,18 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--include_lib("eunit/include/eunit.hrl").
 -include("hypernumbers.hrl").
 -include("date.hrl").
+-include_lib("stdlib/include/ms_transform.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 -record(invite, {hid, expiry}).
 
 -record(user, {hid,
                email,
-               passMD5,
+               passMD5 = nil,
+               created_on = calendar:universal_time(),
+               lastlogin_on = nil,
                data = dict:new()}).
 
 -record(state, {}).
@@ -92,9 +96,12 @@ authenticate(Email, Password, Remember) ->
         Else -> Else
     end.
 
--spec create_user(string(), string()) -> string().
-create_user(Email, Password) ->
-    Hid = create_hid(),
+-spec get_or_create_user(string()) -> string().
+get_or_create_user(Email) -> 
+    gen_server:call({global, ?MODULE}, {get_or_create_user, Email}).
+    
+-spec create_user(string(), string(), string()) -> string().
+create_user(Hid, Email, Password) ->
     gen_server:call({global, ?MODULE}, {create_user, Hid, Email, Password}).
 
 -spec delete_user(string()) -> string().
@@ -146,25 +153,40 @@ handle_call({authenticate, Email, Password}, _From, State) ->
     F = fun() ->
                 mnesia:match_object(service_passport_user, User, read)
         end,
-    Ret = case mnesia:transaction(F) of
-              {atomic, [#user{hid=Hid}]} -> {ok, Hid};
-              _Else                      -> {error, invalid_user}
+    Ret = case mnesia:activity(async_dirty, F) of
+              [#user{hid=Hid}] -> {ok, Hid};
+              _Else            -> {error, invalid_user}
           end,
     {reply, Ret, State};
+
+handle_call({get_or_create_user, Email}, _From, State) ->
+    Ms = ets:fun2ms(fun(#user{email=E, hid=H}) when E == Email -> H end),
+    T = fun() ->
+                case mnesia:select(service_passport_user, Ms, write) of
+                    [H] -> 
+                        H;
+                    _ -> 
+                        User = #user{hid = create_hid(), email = Email},
+                        mnesia:write(service_passport_user, User, write),
+                        User#user.hid
+                end
+        end,
+    Hid = mnesia:activity(async_dirty, T),
+    {reply, Hid, State};
 
 handle_call({create, Hid, Email, Password}, _From, State) ->
     Rec = #user{ hid = Hid,
                  email = Email,
                  passMD5 = crypto:md5_mac(server_key(), Password)},
     Fun = fun() -> mnesia:write(service_passport_user, Rec, write) end,
-    Ret = mnesia:activity(transaction, Fun),
+    Ret = mnesia:activity(async_dirty, Fun),
     {reply, Ret, State};
 
 handle_call({delete, Hid}, _From, State) ->
-    Ret = mnesia:activity(transaction, fun mnesia:delete/3, 
+    Ret = mnesia:activity(async_dirty, fun mnesia:delete/3, 
                           [service_passport_user, Hid, write]),
     {reply, Ret, State};    
-    
+
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
