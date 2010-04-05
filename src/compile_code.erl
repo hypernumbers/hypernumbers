@@ -165,7 +165,7 @@ make_rel_file(App, Version, Deps) ->
 get_rel_file() ->
     Apps = [kernel, stdlib, inets, crypto, sasl, mnesia, ssl, gettext,
             sgte, read_excel, starling, formula_engine, mochiweb,
-            hypernumbers, sitemods],
+            hypernumbers],
     Rel  = make_rel_file("hypernumbers", "1.0", Apps),
     ok   = file:write_file("hypernumbers.rel", fmt("~p.", [Rel])),
     ok   = systools:make_script("hypernumbers",
