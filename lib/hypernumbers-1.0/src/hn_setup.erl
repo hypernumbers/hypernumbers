@@ -141,11 +141,11 @@ setup(Site, _Type, _Opts, user_permissions) ->
 
 -spec coreinstalldir() -> string().
 coreinstalldir() ->
-    code:priv_dir(sitemods) ++ "/core_install".
+    code:priv_dir(hypernumbers) ++ "/core_install".
 
 -spec moddir(atom()) -> string(). 
 moddir(Type) ->
-    code:priv_dir(sitemods) ++ "/site_types/" ++ atom_to_list(Type).
+    code:priv_dir(hypernumbers) ++ "/site_types/" ++ atom_to_list(Type).
 
 -spec sitedir(string()) -> string(). 
 sitedir(Site) ->
