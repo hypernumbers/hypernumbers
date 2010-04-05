@@ -8,7 +8,7 @@ html,body {
 }
 body {  
     margin : 0px;
-    font   : 11px Arial,"Helvetica Neue", sans-serif;
+    font   : 12px Arial,"Helvetica Neue", sans-serif;
 }
 table {  
     width  : 100%;
@@ -314,6 +314,7 @@ hr {
 #hnmenu a {
  position:   relative;
  display:    block; 
+ font-size: 11px;
  background: #FFFFFF;
  cursor:     pointer; 
  padding:    4px 10px; 
