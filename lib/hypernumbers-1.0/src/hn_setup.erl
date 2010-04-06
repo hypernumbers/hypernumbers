@@ -3,13 +3,10 @@
 -export([
          site/3, site/4,
          delete_site/1, 
-         update/0, update/1,
-         update/3,
-         add_user/2,
+         update/0, update/1, update/3,
          site_exists/1,
          get_sites/0,
          get_site_type/1,
-         resave_views/0,
          create_path_from_name/2,
          is_path/1
         ]).
@@ -20,21 +17,20 @@
 %% Setup a new site from scratch
 -spec site(string(), atom(), [{atom(), any()}]) -> ok.
 site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
-    site(Site, Type, Opts, [corefiles, sitefiles, json, permissions,
-                            script, user_permissions, users]).
+    site(Site, Type, Opts, [corefiles, sitefiles, json, groups, 
+                            permissions, script]).
 
 -spec site(string(), atom(), [{atom(), any()}], [atom()]) -> ok.
 site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
-    
     hn_setup:site_exists(Site) andalso
         throw({site_exists, Site}),
-    
     error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
     ok = create_site_tables(Site, Type),
     ok = sitemaster_sup:add_site(Site),
     ok = update(Site, Type, Opts, ToLoad).
 
 %% Delete a site
+%% Todo: Does not currently remove DNS entries.
 -spec delete_site(string()) -> ok.
 delete_site(Site) ->
     Dest = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
@@ -53,7 +49,6 @@ delete_site(Site) ->
 -spec update() -> ok. 
 update() ->
     update([], [corefiles]).
-
 
 -spec update(list()) -> ok. 
 update(Opts) ->
@@ -80,19 +75,6 @@ update(Site, Opaque, Opts) ->
 update(Site, Type, Opaque, Opts) ->
     [ ok = setup(Site, Type, Opaque, X) || X <- Opts ],
     ok.
-
-
--spec add_user(string(), #hn_user{}) -> ok.
-add_user(Site, User) ->
-    Script = [sitedir(Site),"/","user.permissions.script"],
-    case filelib:is_file(Script) of
-        true  ->
-            {ok, Terms} = file:consult(Script),
-            [ add_u(Site, User, Term) || Term <- Terms, is_term(Term)],
-            ok;
-        false ->
-            ok
-    end.
 
 %% Quick and dirty test to see if a site exists
 -spec site_exists(string()) -> boolean().
@@ -124,56 +106,34 @@ setup(Site, _Type, _Opts, batch) ->
     ok = batch_import(Site);
 setup(Site, Type, _Opts, json) ->
     ok = import_json(Site, moddir(Type));
+setup(Site, _Type, Opts, groups) ->
+    {ok, Terms} = file:consult([sitedir(Site),"/","groups.script"]),
+    Terms2 = [group_transform(T, Opts) || T <- Terms],
+    ok = hn_groups:load_script(Site, Terms2);
 setup(Site, _Type, _Opts, permissions) ->
-    Fun = fun(T) -> run_perms(T, Site) end,
-    ok  = run([sitedir(Site),"/","permissions.script"], Fun);
+    {ok, Terms} = file:consult([sitedir(Site),"/","permissions.script"]),
+    ok = auth_srv:load_script(Site, Terms);
 setup(Site, _Type, Opts, script) ->
-    Fun = fun(T) -> run_script(T, Site, Opts) end, 
-    ok = run([sitedir(Site),"/","setup.script"], Fun);
-setup(Site, _Type, Opts, users) ->
-    Fun = fun(T) -> run_users(T, Site, Opts) end,
-    ok  = run([sitedir(Site),"/","users.script"], Fun);
-setup(Site, _Type, _Opts, user_permissions) ->    
-    Users = mnesia:dirty_match_object(hn_db_wu:trans(Site, hn_user),
-                                      #hn_user{_='_'}),
-                 [ add_user(Site, User) || User <- Users],
+    {ok, Terms} = file:consult([sitedir(Site),"/","setup.script"]),
+    [ok = run_script(T, Site, Opts) || T <- Terms],
     ok.
 
--spec coreinstalldir() -> string().
-coreinstalldir() ->
-    code:priv_dir(hypernumbers) ++ "/core_install".
+%% -spec resave_views() -> ok.
+%% resave_views() ->
+%%     ViewsPath = "/../../var/sites/*/docroot/views/*/*/*.meta",
+%%     [ resave_view(X)
+%%       || X <- filelib:wildcard(code:lib_dir(hypernumbers) ++ ViewsPath) ],
+%%     ok.
 
--spec moddir(atom()) -> string(). 
-moddir(Type) ->
-    code:priv_dir(hypernumbers) ++ "/site_types/" ++ atom_to_list(Type).
-
--spec sitedir(string()) -> string(). 
-sitedir(Site) ->
-    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:site_to_fs(Site) ++ "/".
-
--spec resave_views() -> ok.
-resave_views() ->
-
-    ViewsPath = "/../../var/sites/*/docroot/views/*/*/*.meta",
-
-    [ resave_view(X)
-      || X <- filelib:wildcard(code:lib_dir(hypernumbers) ++ ViewsPath) ],
-
-    ok.
-
--spec resave_view(string()) -> ok.
-resave_view(Path) ->
-    
-    [FileName, User, Type, "views", "docroot", Site | _ ]
-        = lists:reverse(string:tokens(Path, "/")),
-
-    [Domain, Port] = string:tokens(Site, "&"),
-    NSite          = "http://"++Domain++":"++Port,
-
-    ViewName     = [Type, "/", User, "/", filename:basename(FileName, ".meta")],
-    {ok, [Data]} = file:consult(Path),
-    ok           = hn_mochi:save_view(NSite, ViewName, Data).
+%% -spec resave_view(string()) -> ok.
+%% resave_view(Path) ->
+%%     [FileName, User, Type, "views", "docroot", Site | _ ]
+%%         = lists:reverse(string:tokens(Path, "/")),
+%%     [Domain, Port] = string:tokens(Site, "&"),
+%%     NSite          = "http://"++Domain++":"++Port,
+%%     ViewName     = [Type, "/", User, "/", filename:basename(FileName, ".meta")],
+%%     {ok, [Data]} = file:consult(Path),
+%%     ok           = hn_mochi:save_view(NSite, ViewName, Data).
 
 -spec create_site_tables(string(), atom()) -> ok.
 create_site_tables(Site, Type)->
@@ -202,7 +162,7 @@ tables() ->
       ?TBL(local_objs,            bag,    	   [obj,idx]), 
       ?TBL(local_cell_link,       bag,    	   [childidx]), 
       ?TBL(relation,              set,    	   []),
-      ?TBL(hn_user,               set,    	   []),         
+      ?TBL(group,                 set,    	   []),         
       ?TBL(remote_objs,           set,    	   []),         
       ?TBL(remote_cell_link,      bag,    	   []),         
       ?TBL(incoming_hn,           set,    	   []),         
@@ -247,105 +207,81 @@ create_path_from_name(Name, FileType) ->
         = string:tokens(filename:basename(Name, FileType), "."),
     hn_util:list_to_path(Rest).
 
+-spec group_transform(tuple(), [tuple()]) -> [tuple()].
+group_transform({add_member, '$creator'}, Opts) -> {add_member, pget(creator, Opts)};
+group_transform(X, _Opts) -> X.
 
-run(Script, Fun) ->
-    case filelib:is_file(Script) of
-        true  ->
-            {ok, Terms} = file:consult(Script),
-            [ok = Fun(Term) || Term<-Terms, is_term(Term)],
-            ok;
-        false ->
-            ok
-    end.
-
-is_term([37 | _T1]) -> false;
-is_term("\n")       -> false;
-is_term(_)          -> true.
-
-run_users({{user,Usr}, {group,Grp}, {email,_Mail}, {password,Pass}},
-          Site, Opts) ->
-    case {resolve_user(Usr, Opts), resolve_password(Pass, Opts)} of
-        {U, P} when U == undefined; P == undefined -> ok;
-        {U, P} -> ok = hn_users:create(Site, U, Grp,  P)
-    end.
-
-resolve_user('$user', Opts) ->
-    pget(user, Opts, undefined);
-resolve_user(User, _Opts) ->
-    User.
-
-resolve_password('$password', Opts) ->
-    pget(password, Opts, undefined);
-resolve_password(Password, _Opts) ->
-    Password.
-
-run_perms({add_view, C}, Site) ->
-    auth_srv:add_view(Site, lget(path, C), lget(perms, C), lget(view, C));
-run_perms({champion, C}, Site) ->
-    auth_srv:set_champion(Site, lget(path, C), lget(view, C));
-run_perms({challenger, C}, Site) ->
-    auth_srv:set_challenger(Site, lget(path, C), lget(view, C)).
-
+-spec run_script(tuple(), string(), [tuple()]) -> ok. 
 run_script({Path, '$email'}, Site, Opts) ->
-    run_script2(Path, Site, pget(email, Opts));
-run_script({Path, '$user'}, Site, Opts) ->
-    run_script2(Path, Site, pget(user, Opts));
+    write_cell(Path, Site, pget(email, Opts));
+run_script({Path, '$name'}, Site, Opts) ->
+    write_cell(Path, Site, pget(name, Opts));
 run_script({Path, '$site'}, Site, _Opts) ->
-    run_script2(Path, Site, Site);
+    write_cell(Path, Site, Site);
 run_script({Path, '$subdomain'}, Site, Opts) ->
-    run_script2(Path, Site, pget(subdomain, Opts));
+    write_cell(Path, Site, pget(subdomain, Opts));
 run_script({Path, '$expiry'}, Site, _Opts) ->
     {Date, _Time} = calendar:now_to_datetime(now()),
     NewDays = calendar:date_to_gregorian_days(Date) + 31,
     NewDate = calendar:gregorian_days_to_date(NewDays),
     Expr = "This site will expire on "
         ++ dh_date:format("D d M Y", {NewDate, {0, 0, 0}}),
-    run_script2(Path, Site, Expr);
+    write_cell(Path, Site, Expr);
 run_script({Path, '$password'}, Site, Opts) ->
-    run_script2(Path, Site, pget(password, Opts));
+    write_cell(Path, Site, pget(password, Opts));
 run_script({Path, Expr}, Site, _Opts) ->
-    run_script2(Path, Site, Expr).
+    write_cell(Path, Site, Expr).
 
-run_script2(Path, Site, Expr) ->
+write_cell(Path, Site, Expr) ->
     RefX = hn_util:parse_url(Site++Path), 
     hn_db_api:write_attributes([{RefX, [{"formula", Expr}]}]).
 
+%% replace(Key, Val, Key) ->
+%%     Val;
+%% replace(Key, Val, Rep) when is_list(Rep) ->
+%%     [ replace(Key, Val, X) || X <- Rep ];
+%% replace(Key, Val, Rep) when is_tuple(Rep) ->
+%%     list_to_tuple( replace(Key, Val, tuple_to_list(Rep) ));
+%% replace(_Key, _Val, Else) ->
+%%     Else.
+
+%% add_u(Site, User, {champion, C}) ->
+%%     UserName = hn_users:name(User),
+%%     Path     = replace('$user', UserName, pget(path, C)),
+%%     auth_srv:set_champion(Site, Path, pget(view, C));
+
+%% add_u(Site, User, {add_view, C}) -> 
+%%     UserName = hn_users:name(User),
+%%     Perms    = replace('$user', UserName, pget(perms, C)),
+%%     Path     = replace('$user', UserName, pget(path, C)),
+%%     auth_srv:add_view(Site, Path, Perms, pget(view, C));
+
+%% add_u(Site, User, {import, P}) ->
+%%     UserName = hn_users:name(User),
+%%     P2 = replace('$user', "$user", pget(path, P)),
+%%     Path = replace('$user', UserName, pget(path, P)),
+%%     FileName = re:replace(hn_util:path_to_json_path(P2), "^path.",
+%%                           "template.", [{return, list}]),
+%%     Dest = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+%%         ++ hn_util:site_to_fs(Site) ++ "/data/",
+%%     Url = Site ++ hn_util:list_to_path(Path),
+%%     ok = hn_import:json_file(Url, Dest ++ FileName).
+
+
+-spec coreinstalldir() -> string().
+coreinstalldir() ->
+    code:priv_dir(hypernumbers) ++ "/core_install".
+
+-spec moddir(atom()) -> string(). 
+moddir(Type) ->
+    code:priv_dir(hypernumbers) ++ "/site_types/" ++ atom_to_list(Type).
+
+-spec sitedir(string()) -> string(). 
+sitedir(Site) ->
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:site_to_fs(Site) ++ "/".
 
 pget(Key, List) ->
     pget(Key, List, "").
 pget(Key, List, Default) ->
     proplists:get_value(Key, List, Default).
-
-lget(Key, List) ->
-    element(2, lists:keyfind(Key, 1, List)).
-
-replace(Key, Val, Key) ->
-    Val;
-replace(Key, Val, Rep) when is_list(Rep) ->
-    [ replace(Key, Val, X) || X <- Rep ];
-replace(Key, Val, Rep) when is_tuple(Rep) ->
-    list_to_tuple( replace(Key, Val, tuple_to_list(Rep) ));
-replace(_Key, _Val, Else) ->
-    Else.
-
-add_u(Site, User, {champion, C}) ->
-    UserName = hn_users:name(User),
-    Path     = replace('$user', UserName, lget(path, C)),
-    auth_srv:set_champion(Site, Path, lget(view, C));
-
-add_u(Site, User, {add_view, C}) -> 
-    UserName = hn_users:name(User),
-    Perms    = replace('$user', UserName, lget(perms, C)),
-    Path     = replace('$user', UserName, lget(path, C)),
-    auth_srv:add_view(Site, Path, Perms, lget(view, C));
-
-add_u(Site, User, {import, P}) ->
-    UserName = hn_users:name(User),
-    P2 = replace('$user', "$user", lget(path, P)),
-    Path = replace('$user', UserName, lget(path, P)),
-    FileName = re:replace(hn_util:path_to_json_path(P2), "^path.",
-                          "template.", [{return, list}]),
-    Dest = code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:site_to_fs(Site) ++ "/data/",
-    Url = Site ++ hn_util:list_to_path(Path),
-    ok = hn_import:json_file(Url, Dest ++ FileName).

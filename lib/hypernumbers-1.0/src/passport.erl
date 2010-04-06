@@ -14,6 +14,7 @@
           stamp_invite/3, 
           verify_stamp/1,
           authenticate/3,
+          uid_to_email/1,
           get_or_create_user/1,
           create_user/3,
           delete_user/1
@@ -24,13 +25,14 @@
          terminate/2, code_change/3]).
 
 -include("hypernumbers.hrl").
+-include("auth.hrl").
 -include("date.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
--record(invite, {hid, expiry}).
+-record(invite, {uid, expiry}).
 
--record(user, {hid,
+-record(user, {uid,
                email,
                passMD5 = nil,
                created_on = calendar:universal_time(),
@@ -61,7 +63,7 @@ generate_invite(Site, Path0, User, Days) ->
     Decorator = "USER_DECORATOR",
     Path = ["_invite", Decorator | Path0],
     HalfKey = [Site, Path],
-    Invite = #invite{hid = User, expiry = expire_days_from_now(Days)},
+    Invite = #invite{uid = User, expiry = expire_days_from_now(Days)},
     InviteEnc = encrypt_term_hex(HalfKey, Invite),
     lists:concat(["http://", Site, hn_util:list_to_path(Path),
                   "?tag=", InviteEnc]).
@@ -70,8 +72,8 @@ stamp_invite(Site, Path, InviteEnc) ->
     HalfKey = [Site, Path],
     Now = calendar:universal_time(),
     case decrypt_term_hex(HalfKey, InviteEnc) of
-        #invite{expiry=E, hid=Hid} when E < Now ->
-            {ok, stamp(Hid, "true")};
+        #invite{expiry=E, uid=Uid} when E < Now ->
+            {ok, stamp(Uid, "true")};
         _Else ->
             {error, expired}
     end.
@@ -92,21 +94,25 @@ verify_stamp(Stamp) ->
 authenticate(Email, Password, Remember) ->
     Msg = {authenticate, Email, Password},
     case gen_server:call({global, ?MODULE}, Msg, 10000) of
-        {ok,Hid} -> {ok, stamp(Hid, Remember)};
+        {ok,Uid} -> {ok, stamp(Uid, Remember)};
         Else -> Else
     end.
+
+-spec uid_to_email(uid()) -> string().
+uid_to_email(Uid) -> 
+    gen_server:call({global, ?MODULE}, {uid_to_email, Uid}).
 
 -spec get_or_create_user(string()) -> string().
 get_or_create_user(Email) -> 
     gen_server:call({global, ?MODULE}, {get_or_create_user, Email}).
     
 -spec create_user(string(), string(), string()) -> string().
-create_user(Hid, Email, Password) ->
-    gen_server:call({global, ?MODULE}, {create_user, Hid, Email, Password}).
+create_user(Uid, Email, Password) ->
+    gen_server:call({global, ?MODULE}, {create_user, Uid, Email, Password}).
 
 -spec delete_user(string()) -> string().
-delete_user(Hid) ->
-    gen_server:call({global, ?MODULE}, {delete_user, Hid}).
+delete_user(Uid) ->
+    gen_server:call({global, ?MODULE}, {delete_user, Uid}).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -154,37 +160,45 @@ handle_call({authenticate, Email, Password}, _From, State) ->
                 mnesia:match_object(service_passport_user, User, read)
         end,
     Ret = case mnesia:activity(async_dirty, F) of
-              [#user{hid=Hid}] -> {ok, Hid};
+              [#user{uid=Uid}] -> {ok, Uid};
               _Else            -> {error, invalid_user}
           end,
     {reply, Ret, State};
 
+handle_call({uid_to_email, Uid}, _From, State) ->
+    Ret = case mnesia:activity(async_dirty, fun mnesia:read/3, 
+                               [service_passport_user, Uid, read]) of
+              [U] -> {ok, U#user.email}; 
+              _   -> {error, invalid_user}
+          end,
+    {reply, Ret, State};
+
 handle_call({get_or_create_user, Email}, _From, State) ->
-    Ms = ets:fun2ms(fun(#user{email=E, hid=H}) when E == Email -> H end),
+    Ms = ets:fun2ms(fun(#user{email=E, uid=U}) when E == Email -> U end),
     T = fun() ->
                 case mnesia:select(service_passport_user, Ms, write) of
                     [H] -> 
                         H;
                     _ -> 
-                        User = #user{hid = create_hid(), email = Email},
+                        User = #user{uid = create_uid(), email = Email},
                         mnesia:write(service_passport_user, User, write),
-                        User#user.hid
+                        User#user.uid
                 end
         end,
-    Hid = mnesia:activity(async_dirty, T),
-    {reply, Hid, State};
+    Uid = mnesia:activity(async_dirty, T),
+    {reply, Uid, State};
 
-handle_call({create, Hid, Email, Password}, _From, State) ->
-    Rec = #user{ hid = Hid,
+handle_call({create, Uid, Email, Password}, _From, State) ->
+    Rec = #user{ uid = Uid,
                  email = Email,
                  passMD5 = crypto:md5_mac(server_key(), Password)},
     Fun = fun() -> mnesia:write(service_passport_user, Rec, write) end,
     Ret = mnesia:activity(async_dirty, Fun),
     {reply, Ret, State};
 
-handle_call({delete, Hid}, _From, State) ->
+handle_call({delete, Uid}, _From, State) ->
     Ret = mnesia:activity(async_dirty, fun mnesia:delete/3, 
-                          [service_passport_user, Hid, write]),
+                          [service_passport_user, Uid, write]),
     {reply, Ret, State};    
 
 handle_call(_Request, _From, State) ->
@@ -246,16 +260,16 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
--spec create_hid() -> string().
-create_hid() ->
+-spec create_uid() -> uid().
+create_uid() ->
     Bin = crypto:rand_bytes(16),
     mochihex:to_hex(Bin).
     
--spec stamp(string(), string()) -> string(). 
-stamp(Hid, Remember) ->
+-spec stamp(uid(), string()) -> string(). 
+stamp(Uid, Remember) ->
     Expiry = expires(Remember),
-    Hash = gen_hash(Hid, Expiry),
-    ?FORMAT("~s:~ts:~s", [Expiry, Hid, Hash]).
+    Hash = gen_hash(Uid, Expiry),
+    ?FORMAT("~s:~ts:~s", [Expiry, Uid, Hash]).
 
 -spec encrypt_term_hex(iolist(), term()) -> string(). 
 encrypt_term_hex(Key0, Term) ->
@@ -270,8 +284,8 @@ decrypt_term_hex(Key0, CipherH) ->
     erlang:binary_to_term(PlainT).
 
 -spec gen_hash(string(), string()) -> string(). 
-gen_hash(Hid, Expiry) ->
-    mochihex:to_hex(crypto:md5_mac(server_token_key(), [Hid, Expiry])).
+gen_hash(Uid, Expiry) ->
+    mochihex:to_hex(crypto:md5_mac(server_token_key(), [Uid, Expiry])).
 
 -spec is_expired(string()) -> boolean(). 
 is_expired("session") ->

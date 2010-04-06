@@ -166,6 +166,10 @@
           timestamp = now()
          }).
 
+-record(group,
+        {name = [],
+         members = gb_sets:empty()}).
+         
 -record(hn_user,
         {
           name        = [],
