@@ -6,7 +6,7 @@
   {view, "_g/core/spreadsheet"}
  ]}.
 
-{champion,
+{set_champion,
  [{path, []},
   {view, "_g/core/spreadsheet"}
  ]}.
@@ -17,7 +17,7 @@
   {view, "_g/core/spreadsheet"}
  ]}.
 
-{champion,
+{set_champion,
  [{path, ["[**]"]},
   {view, "_g/core/spreadsheet"}
  ]}.

@@ -6,7 +6,7 @@
   {perms, [{user, '$user'}]},
   {view, "_g/tiny_poll/admin"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["admin"]},
   {view, "_g/tiny_poll/admin"}
  ]}.

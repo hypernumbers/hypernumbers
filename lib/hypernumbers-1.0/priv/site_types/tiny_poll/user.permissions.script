@@ -1,3 +1,4 @@
+
 %%-*-erlang-*-
 
 %% Home page
@@ -11,7 +12,7 @@
   {perms, [{user, '$user'}]},
   {view, "_g/core/spreadsheet"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["admin"]},
   {view, "_g/tiny_poll/admin"}
  ]}.

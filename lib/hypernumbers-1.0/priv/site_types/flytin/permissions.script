@@ -3,7 +3,7 @@
 {add_view,[{path,[]},
            {perms,[everyone]},
            {view,"_u/dale/poll"}]}.
-{champion,[{path,[]},{view,"_u/dale/poll"}]}.
+{set_champion,[{path,[]},{view,"_u/dale/poll"}]}.
 {add_view,[{path,["poll"]},{perms,[{group,"admin"}]},
            {view,"_g/core/spreadsheet"}]}.
-{champion,[{path,["poll"]},{view,"_g/core/spreadsheet"}]}.
+{set_champion,[{path,["poll"]},{view,"_g/core/spreadsheet"}]}.

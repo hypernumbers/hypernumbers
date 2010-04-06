@@ -6,7 +6,7 @@
   {perms, [everyone]},
   {view, "_g/tiny_poll/home"}
  ]}.
-{champion,
+{set_champion,
  [{path, []},
   {view, "_g/tiny_poll/home"}
  ]}.
@@ -16,7 +16,7 @@
   {perms, [everyone]},
   {view, "_g/core/login"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["_user", "login"]},
   {view, "_g/core/login"}
  ]}.

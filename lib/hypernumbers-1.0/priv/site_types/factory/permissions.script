@@ -12,7 +12,7 @@
   {perms, [{group, "admin"}]},
   {view, "_g/core/spreadsheet"}
  ]}.
-{champion,
+{set_champion,
  [{path, []},
   {view, "_g/tiny/tiny"}
  ]}.
@@ -22,7 +22,7 @@
   {perms, [{group, "admin"}]},
   {view, "_g/core/spreadsheet"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["request_site"]},
   {view, "_g/core/spreadsheet"}
  ]}.

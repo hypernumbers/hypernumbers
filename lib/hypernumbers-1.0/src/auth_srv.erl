@@ -1,17 +1,11 @@
-%%% @copyright (C) 2009, Hypernumbers Ltd
-%% TODO: Add in support for changing perms on the fly.
-%% Add, Replace, etc. Will be motivated by admin panel design.
+%%% @copyright (C) 2009, Hypernumbers Ltd.
 
 -module(auth_srv).
 
 -behaviour(gen_server).
 
 -include("auth.hrl").
--include("hypernumbers.hrl").
-
 -include_lib("eunit/include/eunit.hrl").
-
--define(SPACE, 32).
 
 %% API 
 -export([start_link/1, stop/1]).
@@ -42,9 +36,18 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
+-define(SPACE, 32).
 -define(KEY, "auth_tree").
 -define(SPREADSHEET, "_global/spreadsheet").
 -define(EMPTY_TREE, {0,nil}).
+
+-record(control, {champion = [] :: string(),
+                  challenger = [] :: string(),
+                  views = gb_trees:empty()}).
+
+-record(view, {everyone = false :: true | false,
+               users = gb_sets:empty() :: gb_set(),
+               groups = gb_sets:empty() :: gb_set() }).
 
 -record(state, {site :: string(),
                 table :: string(),
@@ -411,7 +414,7 @@ get_view(#control{challenger = V}=C, User, Groups, challenger) when V /= [] ->
 get_particular_view(C, User, Groups, V) ->
     %% we don't know this actually exists
     case gb_trees:lookup(V, C#control.views) of
-        none -> denied;
+        none -> not_found;
         {value, View} -> 
             case get_role_view([{V,View}], User, Groups) of
                 none -> denied;
@@ -627,14 +630,14 @@ exec_script_terms([], Tree) ->
 exec_script_terms([{add_view, C}|Rest], Tree) ->
     Tree2 = add_view1(Tree, ?lget(path, C), ?lget(perms, C), ?lget(view, C)),
     exec_script_terms(Rest, Tree2);
-exec_script_terms([{champion, C}|Rest], Tree) ->
+exec_script_terms([{set_champion, C}|Rest], Tree) ->
     Tree2 = set_default(Tree, ?lget(path, C), ?lget(view, C), champion),
     exec_script_terms(Rest, Tree2);
-exec_script_terms([{challenger, C}|Rest], Tree) ->
+exec_script_terms([{set_challenger, C}|Rest], Tree) ->
     Tree2 = set_default(Tree, ?lget(path, C), ?lget(view, C), challenger),
     exec_script_terms(Rest, Tree2).
 
--spec dump_script1(gb_tree()) -> iodata().
+-spec dump_script1(gb_tree()) -> [any()].
 dump_script1(Tree) ->
     Iter = gb_trees:iterator(Tree),
     List = lists:flatten(dump_tree(gb_trees:next(Iter), [])),
@@ -660,13 +663,13 @@ dump_control(C, Path) ->
     Views = dump_views(gb_trees:to_list(C#control.views), Path),
     Champion = case C#control.champion of
                    [] -> [];
-                   Chmp -> {champion, [{path, Path},
-                                       {view, Chmp}]}
+                   Chmp -> {set_champion, [{path, Path},
+                                           {view, Chmp}]}
                end,
     Challenger = case C#control.challenger of
                      [] -> [];
-                     Chal -> {challenger, [{path, Path},
-                                           {view, Chal}]}
+                     Chal -> {set_challenger, [{path, Path},
+                                               {view, Chal}]}
                  end,
     [Views, Champion, Challenger].
 

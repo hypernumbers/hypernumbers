@@ -3,8 +3,8 @@
 {add_view,[{path,[]},
            {perms,[{user,"gordon"},{group,"dev"},everyone]},
            {view,"_u/gordon/chess"}]}.
-{champion,[{path,[]},{view,"_u/gordon/chess"}]}.
+{set_champion,[{path,[]},{view,"_u/gordon/chess"}]}.
 {add_view,[{path,["poll"]},
            {perms,[{group,"admin"}]},
            {view,"_g/core/spreadsheet"}]}.
-{champion,[{path,["poll"]},{view,"_g/core/spreadsheet"}]}.
+{set_champion,[{path,["poll"]},{view,"_g/core/spreadsheet"}]}.

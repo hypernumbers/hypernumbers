@@ -3,4 +3,4 @@
 {add_view,[{path,[]},
            {perms,[{user,"gordon"},{group,"dev"}]},
            {view,"_u/gordon/startups"}]}.
-{champion,[{path,[]},{view,"_u/gordon/startups"}]}.
+{set_champion,[{path,[]},{view,"_u/gordon/startups"}]}.

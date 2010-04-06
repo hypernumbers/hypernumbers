@@ -5,19 +5,19 @@
 {add_view, [{path,[]},
             {perms,[everyone]},
             {view,"_g/core/spreadsheet"}]}.
-{champion, [{path,[]},
+{set_champion, [{path,[]},
             {view,"_g/admin/home"}]}.
 
 {add_view, [{path,["[**]"]},
             {perms,[everyone]},
             {view,"_g/core/spreadsheet"}]}.
-{champion, [{path,["[**]"]},
+{set_champion, [{path,["[**]"]},
             {view,"_g/core/spreadsheet"}]}.
 
 {add_view, [{path,["about_us"]},
             {perms,[everyone]},
             {view,"_g/admin/about_us"}]}.
-{champion, [{path,["about_us"]},
+{set_champion, [{path,["about_us"]},
             {view,"_g/admin/about_us"}]}.
 
 {add_view, [{path,["acquisition"]},
@@ -26,47 +26,47 @@
 {add_view, [{path,["acquisition"]},
             {perms,[everyone]},
             {view,"_g/admin/acquisition_view"}]}.
-{champion, [{path,["acquisition"]},
+{set_champion, [{path,["acquisition"]},
             {view,"_g/admin/acquisition_view"}]}.
 
 {add_view, [{path,["activation"]},
             {perms,[everyone]},
             {view,"_g/admin/activation_view"}]}.
-{champion, [{path,["activation"]},
+{set_champion, [{path,["activation"]},
             {view,"_g/admin/activation_view"}]}.
 
 {add_view, [{path,["faq"]},
             {perms,[everyone]},
             {view,"_g/admin/faq"}]}.
-{champion, [{path,["faq"]},
+{set_champion, [{path,["faq"]},
             {view,"_g/admin/faq"}]}.
 
 {add_view, [{path,["help"]},
             {perms,[everyone]},
             {view,"_g/admin/help"}]}.
-{champion, [{path,["help"]},
+{set_champion, [{path,["help"]},
             {view,"_g/admin/help"}]}.
 
 {add_view, [{path,["referral"]},
             {perms,[everyone]},
             {view,"_g/admin/referral_view"}]}.
-{champion, [{path,["referral"]},
+{set_champion, [{path,["referral"]},
             {view,"_g/admin/referral_view"}]}.
 
 {add_view, [{path,["retention"]},
             {perms,[everyone]},
             {view,"_g/admin/retention_view"}]}.
-{champion, [{path,["retention"]},
+{set_champion, [{path,["retention"]},
             {view,"_g/admin/retention_view"}]}.
 
 {add_view, [{path,["revenue"]},
             {perms,[everyone]},
             {view,"_g/admin/revenue_view"}]}.
-{champion, [{path,["revenue"]},
+{set_champion, [{path,["revenue"]},
             {view,"_g/admin/revenue_view"}]}.
 
 {add_view, [{path, ["_user", "login"]},
             {perms, [everyone]},
             {view, "_g/core/login"}]}.
-{champion, [{path, ["_user", "login"]},
+{set_champion, [{path, ["_user", "login"]},
             {view, "_g/core/login"}]}.

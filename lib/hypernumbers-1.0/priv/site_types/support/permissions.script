@@ -5,8 +5,8 @@
 {add_view,[{path,[]},
            {perms,[everyone]},
            {view,"_u/dale/home"}]}.
-{champion,[{path,[]},{view,"_u/dale/home"}]}.
+{set_champion,[{path,[]},{view,"_u/dale/home"}]}.
 {add_view,[{path,["replies"]},
            {perms,[{group, "admin"}]},
            {view,"_g/core/spreadsheet"}]}.
-{champion,[{path,["replies"]},{view,"_g/core/spreadsheet"}]}.
+{set_champion,[{path,["replies"]},{view,"_g/core/spreadsheet"}]}.

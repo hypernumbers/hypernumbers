@@ -19,7 +19,7 @@
   {perms, [everyone]},
   {view, "_g/hypernumbers/home"}
  ]}.
-{champion,
+{set_champion,
  [{path, []},
   {view, "_g/hypernumbers/home"}
  ]}.
@@ -29,7 +29,7 @@
   {perms, [everyone]},
   {view, "_g/hypernumbers/about"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["about"]},
   {view, "_g/hypernumbers/about"}
  ]}.
@@ -39,7 +39,7 @@
   {perms, [everyone]},
   {view, "_g/hypernumbers/team"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["team"]},
   {view, "_g/hypernumbers/team"}
  ]}.
@@ -49,7 +49,7 @@
   {perms, [everyone]},
   {view, "_g/core/readonly"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["public"]},
   {view, "_g/core/readonly"}
  ]}.
@@ -59,7 +59,7 @@
   {perms, [everyone]},
   {view, "_g/core/login"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["_user", "login"]},
   {view, "_g/core/login"}
  ]}.
@@ -69,7 +69,7 @@
   {perms, [{group, "admin"}]},
   {view, "_g/core/admin"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["_admin"]},
   {view, "_g/core/admin"}
  ]}.

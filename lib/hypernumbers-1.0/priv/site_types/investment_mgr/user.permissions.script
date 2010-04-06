@@ -11,7 +11,7 @@
   {path, ["u", '$user']},
   {view, "_u/gordon/investment"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["u", '$user']},
   {view, "_u/gordon/investment"}
  ]}.

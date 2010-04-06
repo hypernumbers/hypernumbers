@@ -16,7 +16,7 @@
   {path, ["u", '$user']},
   {view, "_g/admin/angel_list"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["u", '$user']},
   {view, "_g/admin/angel_list"}
  ]}.
@@ -29,7 +29,7 @@
   {path, ["u", '$user', "[**]"]},
   {view, "_g/core/spreadsheet"}
  ]}.
-{champion, 
+{set_champion, 
  [{path, ["u", '$user', "[**]"]},
   {view, "_g/core/spreadsheet"}
  ]}.

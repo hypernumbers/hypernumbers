@@ -6,7 +6,7 @@
   {path, ["u", '$user']},
   {view, "_g/hypernumbers/userhome"}
  ]}.
-{champion,
+{set_champion,
  [{path, ["u", '$user']},
   {view, "_g/hypernumbers/userhome"}
  ]}.
@@ -19,7 +19,7 @@
   {path, ["u", '$user', "[**]"]},
   {view, "_g/core/spreadsheet"}
  ]}.
-{champion, 
+{set_champion, 
  [{path, ["u", '$user', "[**]"]},
   {view, "_g/core/spreadsheet"}
  ]}.
