@@ -6,7 +6,7 @@
 -export([start_link/0,
          create_zone/4, delete_zone/1, purge_zone/2, topup_zone/1,
          link_resource/1, unlink_resource/2,
-         set_resource/3, delete_resource/2,
+         set_resource/4, delete_resource/3,
          resource_diagnostics/0, zone_diagnostics/0
         ]).
 
@@ -23,7 +23,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -type generator() :: fun(() -> string()). 
--type resource_addr() :: {string(), atom()}. %% (IP, Node).
+-type resource_addr() :: {string(), integer(), atom()}. %% (IP, Port, Node).
 
 %%% Database Tables
 -record(zone, { label :: string(),
@@ -121,16 +121,17 @@ topup_zone(Zone) ->
 %% Adds, (or adjusts existing) resources to system. A resource is
 %% describe by an address (IP, Node combination); and a weighted
 %% importance with respect to all other resources.
--spec set_resource(string(), atom(), integer()) -> ok. 
-set_resource(IP, Node, Weight) when 
+-spec set_resource(string(), integer(), atom(), integer()) -> ok. 
+set_resource(IP, Port, Node, Weight) when 
       is_integer(Weight), Weight >= 0 ->
-    gen_server:call({global, ?MODULE}, {set_resource, {IP, Node}, Weight}).
+    gen_server:call({global, ?MODULE}, 
+                    {set_resource, {IP, Port, Node}, Weight}).
 
 %% Removes a resource from future consideration for
 %% mappings.TODO:Should pre-mapped names to this resource be pruned???
--spec delete_resource(string(), atom()) -> ok | not_found.
-delete_resource(IP, Node) ->
-    gen_server:call({global, ?MODULE}, {delete_resource, {IP, Node}}).
+-spec delete_resource(string(), integer(), atom()) -> ok | not_found.
+delete_resource(IP, Port, Node) ->
+    gen_server:call({global, ?MODULE}, {delete_resource, {IP, Port, Node}}).
 
 %% Useful for listing active resources, and testing random distribution.
 -spec resource_diagnostics() -> ok.
@@ -482,7 +483,7 @@ allocate_name(Routing, Generator, ZoneL, ZoneId, Pool) ->
         true  -> 
             Pool;
         false -> 
-            Address={IP, _}  = pick_resource(Routing),
+            Address={IP, _Port, _Node} = pick_resource(Routing),
             ResourceID = create_dns_LINODE(Name, IP, ZoneId),
             gb_trees:enter(Name, {Address, ResourceID}, Pool)
     end.
@@ -579,22 +580,22 @@ repeat_select(N, S, Results) ->
 
 -spec simple_test_() -> no_return(). 
 simple_test_() ->
-    Resources = [#resource{address = {"127.0.0.1", alpha}, 
+    Resources = [#resource{address = {"127.0.0.1", 80, alpha}, 
                            weight = 5},
-                 #resource{address = {"10.10.10.10", beta},
+                 #resource{address = {"10.10.10.10", 80, beta},
                            weight = 0},
-                 #resource{address = {"192.168.1.1", gamma}, 
+                 #resource{address = {"192.168.1.1", 80, gamma}, 
                            weight = 0}],
     R = build_routing(Resources),
-    ?_assertEqual({"127.0.0.1",alpha}, pick_resource(R)).
+    ?_assertEqual({"127.0.0.1",80,alpha}, pick_resource(R)).
 
 -spec count_test_() -> no_return(). 
 count_test_() ->
-    Resources = [#resource{address = {"127.0.0.1", alpha}, 
+    Resources = [#resource{address = {"127.0.0.1", 80, alpha}, 
                            weight = 5},
-                 #resource{address = {"10.10.10.10", beta},
+                 #resource{address = {"10.10.10.10", 80, beta},
                            weight = 20},
-                 #resource{address = {"192.168.1.1", gamma}, 
+                 #resource{address = {"192.168.1.1", 80, gamma}, 
                            weight = 5}],
     R = build_routing(Resources),
     ?_assertEqual(30, R#routing.upper_limit).

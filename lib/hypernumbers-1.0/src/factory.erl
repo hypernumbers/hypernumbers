@@ -15,6 +15,8 @@
 
 -record(state, {}).
 
+-compile(export_all).
+
 %%%===================================================================
 %%% API
 %%%===================================================================
@@ -30,7 +32,8 @@ start_link() ->
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
 -spec provision_site(string(), string(), atom()) -> any(). 
-provision_site(Zone, Email, SiteType) ->
+provision_site(Zone, Email0, SiteType) ->
+    Email = string:to_lower(Email0),
     gen_server:call({global, ?MODULE}, {provision, Zone, Email, SiteType}).
 
 -spec provision_site(string(), string(), atom(), string()) -> any(). 
@@ -71,10 +74,14 @@ init([]) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_call({provision, Zone, Email, Type}, _From, State) ->
+    {ok, {Host, {_Ip, Port, Node}}} = hns:link_resource(Zone),
     Hid = passport:get_or_create_user(Email),
-    {ok, {Host, {_Ip, Node}}} = hns:link_resource(Zone),
-    Site = lists:flatten(["http://", Host, ":80"]),
-    %ok = rpc:call(Node, hn_setup, site, [Site, Type, [{user, Hid}]]),
+    Name = extract_name_from_email(Email),
+    Site = lists:flatten(io_lib:format("http://~s:~b", [Host,Port])),
+    ok = rpc:call(Node, hn_setup, site, 
+                  [Site, Type, [{user, Hid},
+                                {email, Email},
+                                {name, Name}]]),
     %%send_email()
     {reply, {Site, Hid}, State};
 
@@ -136,3 +143,11 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
+
+extract_name_from_email(Email) ->
+    LocalPart = lists:takewhile(fun(X) -> X /= $@ end, Email),
+    Parts = string:tokens(LocalPart, "."),
+    [Name | _Rest] =  string:tokens(LocalPart, "."),
+    capitalize_name(Name).
+    
+capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].

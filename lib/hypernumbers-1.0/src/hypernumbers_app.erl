@@ -87,6 +87,6 @@ dev_tasks() ->
 
 create_dev_zone() ->
     Gen = fun() -> [crypto:rand_uniform($a, $z+1)] end,
-    ok = hns:set_resource("127.0.0.1", node(), 1),
+    ok = hns:set_resource("127.0.0.1", 9000, node(), 1),
     hns:create_zone(?DEV_ZONE, 1, 26, Gen),
     ok.
