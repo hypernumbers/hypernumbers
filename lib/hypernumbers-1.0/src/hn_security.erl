@@ -284,15 +284,36 @@ just_path_test_() ->
 
 trans_all_perms_test_() -> 
     Site = "http://example.com:1234",
-    Setup = fun() -> 
+    Setup = fun() ->
+                    hn_db_admin:create_table(hn_db_wu:trans(Site, group),
+                                             group,
+                                             record_info(fields, group),
+                                             ram_copies, 
+                                             set, 
+                                             true, 
+                                             []),
+                    hn_groups:create_group(Site, "admin"),
+                    hn_groups:create_group(Site, "user"),
+                    hn_groups:create_group(Site, "nobody"),
+                    hn_groups:set_users(Site, "admin", ["god", "sysop"]),
+                    hn_groups:set_users(Site, "user", ["alice", "bob", "eve"]),
+
                     auth_srv:start_link(Site),
                     auth_srv:add_view(Site, [], [everyone], "_g/core/spreadsheet"),
                     auth_srv:add_view(Site, ["[**]"], [everyone], "_g/core/spreadsheet"),
                     auth_srv:set_champion(Site, [], "_g/core/spreadsheet"),
                     auth_srv:set_champion(Site, ["[**]"], "_g/core/spreadsheet"),
+
                     #refX{site = Site, path = ["u","testuser","blah"]}
             end,
-    Cleanup = fun(_) -> auth_srv:stop(Site) end,
+    Cleanup = fun(_) ->
+                      auth_srv:stop(Site),
+                      hn_groups:delete_group(Site, "admin"),
+                      hn_groups:delete_group(Site, "user"),
+                      hn_groups:delete_group(Site, "nobody"),
+                      Tbl = hn_db_wu:trans(Site, group),
+                      {atomic, ok} = mnesia:delete_table(Tbl)
+              end,
     {setup, Setup, Cleanup, {with, [fun test1/1,
                                      fun test2/1,
                                      fun test3/1,
@@ -370,7 +391,7 @@ test1(RefX) ->
         ++ "</div>"
         ++ "</div>"
         ++ "</div>",
-    Security = make(Form, RefX, {"testuser", []}),
+    Security = make(Form, RefX, "alice"),
     ?assert(validate_trans(Security, RefX, Json)).
     
 test2(RefX) ->
@@ -405,7 +426,7 @@ test2(RefX) ->
         ++ "</div>"
         ++ "</div>"
         ++ "</div>",
-    Security = make(Form, RefX, {"testuser", []}),
+    Security = make(Form, RefX, "alice"),
     ?assert(validate_trans(Security, RefX, Json)).
 
 %% Same path, but column target vs accepted cell target.
@@ -440,7 +461,7 @@ test3(RefX) ->
         ++ "</div>"
         ++ "</div>"
         ++ "</div>",
-    Security = make(Form, RefX, {"testuser", []}),
+    Security = make(Form, RefX, "alice"),
     ?assertNot(validate_trans(Security, RefX, Json)).
 
 test4(RefX) ->
@@ -474,7 +495,7 @@ test4(RefX) ->
         ++ "</div>"
         ++ "</div>"
         ++ "</div>",
-    Security = make(Form, RefX, {"testuser", []}),
+    Security = make(Form, RefX, "alice"),
     ?assertNot(validate_trans(Security, RefX, Json)).
 
 %% tests an absolute and a relative path binding
@@ -517,5 +538,5 @@ test5(RefX) ->
         "</div>"
         "</div>"
         "</div>",
-    Security = make(Form, RefX, {"testuser", []}),
+    Security = make(Form, RefX, "alice"),
     ?assert(validate_trans(Security, RefX, Json)).
