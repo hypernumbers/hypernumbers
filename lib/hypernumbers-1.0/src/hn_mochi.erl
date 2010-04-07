@@ -360,7 +360,7 @@ iget(#refX{site = S}=Ref, page, #qry{rawview = View}, Env)
     ok;
 
 iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
-    json2(Env, auth_srv2:get_as_json(S, P));
+    json(Env, auth_srv2:get_as_json(S, P));
 
 iget(#refX{site = S}, page, #qry{users= []}, Env) ->
     text_html(Env, hn_users:prettyprint_DEBUG(S));
@@ -910,6 +910,7 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
     end.
 
 page_attributes(#refX{site = S, path = P} = Ref, User) ->
+
     Name = hn_users:name(User),
     Groups = hn_users:groups(User),
     %% now build the struct
@@ -921,11 +922,13 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
     Time   = {"time", remoting_reg:timestamp()},
     Usr    = {"user", Name},
     Host   = {"host", S},
+    Perms  = {"permissions", auth_srv2:get_as_json(S, P)},
     Grps   = {"groups", {array, Groups}},
     Lang   = {"lang", get_lang(User)},
+    
     Views = {views, {array, auth_srv2:get_views(S, P, {Name, Groups})}},
     
-    {struct, [Time, Usr, Host, Lang, Grps, Views
+    {struct, [Time, Usr, Host, Lang, Grps, Views, Perms
               | dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
@@ -1158,13 +1161,13 @@ json(#env{mochi = Mochi, headers = Headers}, Data) ->
            }),
     ok.
 
--spec json2(#env{}, any()) -> any(). 
-json2(#env{mochi = Mochi, headers = Headers}, Data) ->
-    Mochi:ok({"application/json",
-              Headers ++ nocache(),
-              (mochijson2:encoder([{utf8, true}]))(Data)
-             }),
-    ok.
+%% -spec json2(#env{}, any()) -> any(). 
+%% json2(#env{mochi = Mochi, headers = Headers}, Data) ->
+%%     Mochi:ok({"application/json",
+%%               Headers ++ nocache(),
+%%               (mochijson2:encoder([{utf8, true}]))(Data)
+%%              }),
+%%     ok.
 
 -spec serve_html(#env{}, iolist()) -> any().
 serve_html(Env, File) ->
