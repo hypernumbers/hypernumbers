@@ -220,12 +220,15 @@ run_script({Path, '$creator'}, Site, Opts) ->
     write_cell(Path, Site, pget(name, Opts));
 run_script({Path, '$site'}, Site, _Opts) ->
     write_cell(Path, Site, Site);
-run_script({Path, '$expiry'}, Site, _Opts) ->
-    {Date, _Time} = calendar:now_to_datetime(now()),
-    NewDays = calendar:date_to_gregorian_days(Date) + 31,
-    NewDate = calendar:gregorian_days_to_date(NewDays),
-    Expr = "This site will expire on "
-        ++ dh_date:format("D d M Y", {NewDate, {0, 0, 0}}),
+%% run_script({Path, '$expiry'}, Site, _Opts) ->
+%%     {Date, _Time} = calendar:now_to_datetime(now()),
+%%     NewDays = calendar:date_to_gregorian_days(Date) + 31,
+%%     NewDate = calendar:gregorian_days_to_date(NewDays),
+%%     Expr = "This site will expire on "
+%%         ++ dh_date:format("D d M Y", {NewDate, {0, 0, 0}}),
+%%     write_cell(Path, Site, Expr);
+run_script({Path, Var}, Site, _Opts) when is_atom(Var) ->
+    Expr = lists:flatten(io_lib:format("no binding for '~s'", [Var])),
     write_cell(Path, Site, Expr);
 run_script({Path, Expr}, Site, _Opts) ->
     write_cell(Path, Site, Expr).
@@ -237,14 +240,13 @@ write_cell(Path, Site, Expr) ->
 
 substitute(Var, Val, Var) ->
     Val;
-substitute(_Var, _Val, Str) when is_list(Str) andalso 
-                               Str /= [] andalso 
-                               is_integer(hd(Str)) ->
-    Str;
-substitute(Var, Val, Terms) when is_list(Terms) ->
+substitute(Var, Val, Terms) when is_list(Terms) andalso 
+                                 not(is_integer(hd(Terms))) ->
     [substitute(Var, Val, T) || T <- Terms];
 substitute(Var, Val, Term) when is_tuple(Term) ->
-    list_to_tuple(substitute(Var, Val, tuple_to_list(Term))).
+    list_to_tuple(substitute(Var, Val, tuple_to_list(Term)));
+substitute(_Var, _Val, Term) ->
+    Term.
 
 %% add_u(Site, User, {champion, C}) ->
 %%     UserName = hn_users:name(User),
