@@ -1,5 +1,0 @@
-%%-*-erlang-*-
-{{user, '$user'},
- {group, ["admin"]},
- {email, '$email'},
- {password, '$password'}}.
