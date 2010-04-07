@@ -519,16 +519,16 @@ get_as_json1(Tree, Path) ->
 
 ctl_to_json(C) ->
     ViewIter = gb_trees:iterator(C#control.views),
-    Views = {struct, view_to_json(gb_trees:next(ViewIter))},
-    {struct, [{champion, ?LB(C#control.champion)},
-              {challenger, ?LB(C#control.challenger)},
-              {views, Views}]}.
+    Views = {struct, view_to_json(gb_trees:next(ViewIter))},    
+    {struct, [{"champion", C#control.champion},
+              {"challenger", {array, C#control.challenger}},
+              {"views", Views}]}.
 
 view_to_json(none) -> [];
 view_to_json({V, View, Iter}) ->
-    Groups = [?LB(G) || G <- gb_sets:to_list(View#view.groups)],
-    S = {?LB(V), {struct, [{everyone, View#view.everyone},
-                           {groups, Groups}]}},
+    Groups = [G || G <- gb_sets:to_list(View#view.groups)],
+    S = {V, {struct, [{"everyone", View#view.everyone},
+                           {"groups", {array, Groups}}]}},
     [S | view_to_json(gb_trees:next(Iter))].
 
 

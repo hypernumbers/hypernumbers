@@ -362,7 +362,7 @@ iget(#refX{site = S}=Ref, page, #qry{rawview = View}, Env)
     ok;
 
 iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
-    json2(Env, auth_srv:get_as_json(S, P));
+    json(Env, auth_srv:get_as_json(S, P));
 
 iget(Ref, page, #qry{pages = []}, Env=#env{accept = json}) ->
     json(Env, pages(Ref));
@@ -905,7 +905,7 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
                                 {"timeout", "true"}]})
     end.
 
-page_attributes(#refX{site = S} = Ref, Uid) ->
+page_attributes(#refX{site = S, path = P} = Ref, Uid) ->
     {ok,Name} = passport:uid_to_email(Uid),
     %% now build the struct
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
@@ -916,10 +916,11 @@ page_attributes(#refX{site = S} = Ref, Uid) ->
     Time   = {"time", remoting_reg:timestamp()},
     Usr    = {"user", Name},
     Host   = {"host", S},
+    Perms  = {"permissions", auth_srv:get_as_json(S, P)},
+    Grps   = {"groups", {array, []}},
     Lang   = {"lang", get_lang(Uid)},
-    Views  = {"views", {array, []}},
-    Groups = {"groups", {array, []}},
-    {struct, [Time, Usr, Host, Lang, Groups, Views | dict_to_struct(Dict)]}.
+    {struct, [Time, Usr, Host, Lang, Grps, Perms
+              | dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};
@@ -1150,13 +1151,13 @@ json(#env{mochi = Mochi, headers = Headers}, Data) ->
            }),
     ok.
 
--spec json2(#env{}, any()) -> any(). 
-json2(#env{mochi = Mochi, headers = Headers}, Data) ->
-    Mochi:ok({"application/json",
-              Headers ++ nocache(),
-              (mochijson2:encoder([{utf8, true}]))(Data)
-             }),
-    ok.
+%% -spec json2(#env{}, any()) -> any(). 
+%% json2(#env{mochi = Mochi, headers = Headers}, Data) ->
+%%     Mochi:ok({"application/json",
+%%               Headers ++ nocache(),
+%%               (mochijson2:encoder([{utf8, true}]))(Data)
+%%              }),
+%%     ok.
 
 -spec serve_html(#env{}, iolist()) -> any().
 serve_html(Env, File) ->

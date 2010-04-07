@@ -6,8 +6,9 @@ html,body {
     overflow : hidden;
     height   : 100%;
 }
-body {  
+html, body {  
     margin : 0px;
+    padding: 0px;
     font   : 12px Arial,"Helvetica Neue", sans-serif;
 }
 table {  
@@ -138,26 +139,30 @@ hr {
 ******************************************************************************/
 #navigation {  
     float    : right;
-    position : relative;
-    top      : 5px;
+    position : absolute;
+    top      : -1px;
+    right:0px;
     margin   : 0px;
     padding  : 0px;
 }
-#navigation li { 
-    font    : 11px Arial,"Helvetica Neue", sans-serif;
+#navigation li img { 
+    position:relative;
+    top:3px;
+}
+#navigation li {
     float   : left;
     margin  : 0px 5px;
-    padding : 3px 13px 3px 13px;
     color   : #999;
     display : none;
 }
 #navigation a { 
     color           : orange;
-    text-decoration : underline;
+    text-decoration : none;
     cursor          : pointer;
 }
 #languages { 
     background : url(down.png) no-repeat right 1px;
+    display:none;
     cursor     : pointer;
     padding    : 2px 16px 2px 2px;
     margin     : -3px 5px 0px 0px;
@@ -207,9 +212,10 @@ hr {
 /* Page Menu
 /******************************************************************************/
 #pagemenu {
-    position         : relative;
+    position:relative;
+    height:25px;
     padding-left     : 10px;
-	background-color : #ebeaeb;
+	background-color : white;
 }
 #pdpanes {     
     overflow-x : scroll;
@@ -231,19 +237,7 @@ hr {
 	background-image : url(/img/page_edit.png);
 	visibility       : hidden;
 }
-#pagebar a {
-	display        : inline-block;
-    cursor         : pointer;
-	vertical-align : middle;
-	padding-top    : 5px;
-	padding-bottom : 5px;
-	color          : #004b97;
-	font-weight    : bold;
-	text-overflow  : ellipsis;
-	overflow       : hidden;
-	white-space    : nowrap;
-	font-size      : 1.1em;
-}
+
 #pagebar div.current {
 	text-decoration : underline;
 }
@@ -265,6 +259,7 @@ hr {
 /* FILE MENU STYLES
 /*****************************************************************************/
 #hnmenu { 
+    display: none;
     list-style-type: none;
     margin: 0px;
     padding: 0px;
@@ -390,14 +385,16 @@ hr {
     float  : left;
     height : 26px;
 }
-#hn #hnheader h1 a { 
-    font            : normal 16px serif;
-    color           : #FFF;
-    text-decoration : none;
+#homebutton { 
     display         : block;
-    margin          : 6px 0px 0px 10px;
+    margin-top      : 5px;
+    width           : 100px;
+    font            : normal 16px serif;
+    color           : #000;
+    text-decoration : none;
+    cursor          : pointer;
 }
-#hn #hnheader h1 a span { 
+#homebutton span { 
     font            : bold 16px sans-serif;
     text-decoration : underline;
     color           : orange;
@@ -485,7 +482,7 @@ hr {
     position   : absolute;
     width      : 100%;
     top        : 0px;
-    bottom     : 20px;
+    bottom     : 0px;
     background : #DDDDDD;
 }
 
@@ -496,23 +493,23 @@ hr {
 
 #tabs {
     position :absolute;
-    bottom   : 5px;
-    left     : 21px; 
+    bottom   : 2px;
+    left     : 141px; 
 }
 
 #tabs a { 
-    font-size       : 10px;
     margin          : 0px 5px;
     padding         : 2px 4px;
     text-decoration : none; 
-    border          : 1px solid #999;
-    border-top      : 0px;
-    background      : #DDD;
+    border          : 1px solid #DDD;
+    border-bottom      : 0px;
+    background      : #EEE;
     color           : #004B97;
+    -moz-border-radius-topleft:2px;
+    -moz-border-radius-topright:2px;
 }
 
 #tabs a.current {
-    font-weight: bold;
 } 
 
 #test { 
@@ -1778,4 +1775,27 @@ form.droppable {
 input[type=checkbox], input[type=radio] {
     position:relative;
     top:3px;
+}
+
+#welcome { 
+    padding:30px;
+}
+
+#welcome h3 { 
+    margin: 20px; 0px;
+}
+
+
+#welcome a { 
+    cursor:pointer;
+    text-decoration:underline;
+}
+
+#typepanel { 
+    padding:6px;
+    position:absolute; 
+    right:0px;
+}
+#typepanel a { 
+    text-decoration:none; 
 }
