@@ -44,7 +44,7 @@ create_group(Site, GroupN) ->
 -spec delete_group(string(), string()) -> ok. 
 delete_group(Site, GroupN) ->
     Tbl = hn_db_wu:trans(Site, group),
-    mnesia:activity(transaction, fun mnesia:delete/2, [Tbl, GroupN]).
+    mnesia:activity(transaction, fun mnesia:delete/3, [Tbl,GroupN,write]).
 
 -spec add_user(string(), string(), uid()) -> ok | no_group. 
 add_user(Site, GroupN, Uid) ->
