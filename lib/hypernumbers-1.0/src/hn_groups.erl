@@ -4,11 +4,29 @@
 
 -export([create_group/2, delete_group/2,
          add_user/3, rem_user/3, set_users/3,
+         is_member/3,
          load_script/2]).
 
 -include("spriki.hrl").
 -include("auth.hrl").
+-include_lib("stdlib/include/ms_transform.hrl").
 
+-spec is_member(uid(), string(), [string()]) -> boolean().
+is_member(Uid, Site, Groups) ->
+    Tbl = hn_db_wu:trans(Site, group),
+    is_member1(Groups, Tbl, Uid).
+is_member1([], _Tbl, _Uid) -> false;
+is_member1([GroupN|Rest], Tbl, Uid) ->
+    case mnesia:dirty_read(Tbl, GroupN) of
+        [G] -> 
+            case gb_sets:is_member(Uid, G#group.members) of
+                true  -> true; 
+                false -> is_member1(Rest, Tbl, Uid)
+            end;
+        _ ->
+            is_member1(Rest, Tbl, Uid)
+    end.
+        
 -spec create_group(string(), string()) -> ok. 
 create_group(Site, GroupN) ->
     Tbl = hn_db_wu:trans(Site, group),

@@ -417,7 +417,7 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
     Str.
 
 
--spec handle_dirty_cell(string(), cellidx(), nil | auth_req()) -> ok. 
+-spec handle_dirty_cell(string(), cellidx(), nil | uid()) -> ok. 
 handle_dirty_cell(Site, Idx, Ar) ->
     ok = init_front_end_notify(),  
     F = fun() ->
@@ -978,7 +978,7 @@ insert(#refX{obj = {R, _}} = RefX, Disp, Ar)
 %% per insert/2.
 %% This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
--spec delete(#refX{}, nil | auth_req()) -> ok.
+-spec delete(#refX{}, nil | uid()) -> ok.
 delete(#refX{obj = {R, _}} = RefX, Ar) when R == column orelse R == row ->
     Disp = case R of
                row    -> vertical;
@@ -1310,7 +1310,7 @@ write_attributes1(RefX, List, PAr, VAr)
 
 -spec copy_cell(#refX{}, #refX{}, 
                 false | horizontal | vertical,
-                auth_req())
+                uid())
                -> ok.
 copy_cell(From = #refX{site = Site, path = Path}, To, Incr, Ar) ->
     case auth_srv:get_any_view(Site, Path, Ar) of

@@ -15,7 +15,6 @@
          check_particular_view/4,
          check_get_challenger/3,
          get_views/3,
-         get_any_view/3,
          add_view/4,
          set_view/4,
          set_champion/3,
@@ -28,8 +27,7 @@
         ]).
 
 -export([
-         clear_all_perms_DEBUG/1,
-         demo_DEBUG/0
+         clear_all_perms_DEBUG/1
         ]).
 
 %% gen_server callbacks
@@ -43,15 +41,14 @@
 
 -record(control, {champion = [] :: string(),
                   challenger = [] :: string(),
-                  views = gb_trees:empty()}).
+                  views = gb_trees:empty() }).
 
 -record(view, {everyone = false :: true | false,
-               users = gb_sets:empty() :: gb_set(),
                groups = gb_sets:empty() :: gb_set() }).
 
 -record(state, {site :: string(),
                 table :: string(),
-                trees :: gb_tree()}).
+                trees :: gb_tree() }).
 
 %%%===================================================================
 %%% API
@@ -73,34 +70,28 @@ stop(Site) ->
     Id = hn_util:site_to_atom(Site, "auth"),
     gen_server:cast(Id, stop).
 
--spec check_get_view(string(), [string()], auth_req()) 
+-spec check_get_view(string(), [string()], uid()) 
                     -> {view, string()} | not_found | denied.
-check_get_view(Site, Path, AuthReq) -> 
+check_get_view(Site, Path, Uid) -> 
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {check_get_view, Path, AuthReq}).
+    gen_server:call(Id, {check_get_view, Path, Uid}).
 
--spec check_get_challenger(string(), [string()], auth_req()) 
+-spec check_get_challenger(string(), [string()], uid()) 
                           -> {view, string()} | not_found | denied.
-check_get_challenger(Site, Path, AuthReq) -> 
+check_get_challenger(Site, Path, Uid) -> 
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {check_get_challenger, Path, AuthReq}).
+    gen_server:call(Id, {check_get_challenger, Path, Uid}).
 
--spec check_particular_view(string(), [string()], auth_req(), string())
+-spec check_particular_view(string(), [string()], uid(), string())
                            -> {view, string()} | not_found | denied.
-check_particular_view(Site, Path, AuthReq, View) ->
+check_particular_view(Site, Path, Uid, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {check_particular_view, Path, AuthReq, View}).
+    gen_server:call(Id, {check_particular_view, Path, Uid, View}).
 
--spec get_any_view(string(), [string()], auth_req()) 
-                  -> {view, string()} | not_found | denied.
-get_any_view(Site, Path, AuthReq) ->
+-spec get_views(string(), [string()], uid()) -> [string()]. 
+get_views(Site, Path, Uid) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {get_any_view, Path, AuthReq}).
-
--spec get_views(string(), [string()], auth_req()) -> [string()]. 
-get_views(Site, Path, AuthReq) ->
-    Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {get_views, Path, AuthReq}).
+    gen_server:call(Id, {get_views, Path, Uid}).
 
 -spec add_view(string(), [string()], auth_spec(), string()) -> ok.
 add_view(Site, Path, AuthSpec, View) ->
@@ -198,35 +189,33 @@ handle_call(Request, _From, State) ->
     #state{trees = Tr, table = Table, site = Site} = State,
     Return1 =
         case Request of
-            {check_get_view, P, AR} ->
-                {check_get_view1(tree(Site, Tr), P, AR, champion), false};
-            {check_get_challenger, P, AR} ->
-                {check_get_view1(tree(Site, Tr), P, AR, challenger),
+            {check_get_view, P, U} ->
+                {check_get_view1(Site, Tr, P, U, champion), false};
+            {check_get_challenger, P, U} ->
+                {check_get_view1(Site, Tr, P, U, challenger),
                  false};
-            {check_particular_view, P, AR, V} ->
-                {check_particular_view1(tree(Site, Tr), P, AR, V), false};
-            {get_views, P, AR} ->
-                {get_views1(tree(Site, Tr), P, AR), false};
-            {get_any_view, P, AR} ->
-                {check_get_view1(tree(Site, Tr), P, AR, any), false};
+            {check_particular_view, P, U, V} ->
+                {check_particular_view1(Site, Tr, P, U, V), false};
+            {get_views, P, U} ->
+                {get_views1(Site, Tr, P, U), false};
             {add_view, Pg, AS, V} ->
-                {add_view1(tree(Site, Tr), Pg, AS, V), true};
+                {add_view1(Tr, Pg, AS, V), true};
             {set_view, Pg, AS, V} ->
-                {set_view1(tree(Site, Tr), Pg, AS, V), true};
+                {set_view1(Tr, Pg, AS, V), true};
             {set_champion, Pg, Df} ->
-                {set_default(tree(Site, Tr), Pg, Df, champion), true};
+                {set_default(Tr, Pg, Df, champion), true};
             {set_challenger, Pg, Df} ->
-                {set_default(tree(Site, Tr), Pg, Df, challenger), true};
+                {set_default(Tr, Pg, Df, challenger), true};
             {rem_views, P, Vs} ->
-                {remove_views1(tree(Site, Tr), P, Vs), true};
+                {remove_views1(Tr, P, Vs), true};
             {get_as_json, P} ->
-                {get_as_json1(tree(Site, Tr), P), false};
+                {get_as_json1(Tr, P), false};
             delete_site ->
                 {delete};
             clear_all_perms ->
                 {gb_trees:empty(), true};
             dump_script ->
-                {dump_script1(tree(Site, Tr)), false};
+                {dump_script1(Tr), false};
             {load_script, Terms} ->
                 {load_script1(Terms), true}
             end,
@@ -296,38 +285,37 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-check_get_view1(Tree, Path, {User, Groups}, Type) ->
-    Fun = fun(C) -> get_view(C, User, Groups, Type) end,
+check_get_view1(Site, Tree, Path, Uid, Type) ->
+    Fun = fun(C) -> get_view(C, Site, Uid, Type) end,
     run_ctl(Tree, Path, Fun).
 
-check_particular_view1(Tree, Path, {User, Groups}, Type) ->
-    Fun = fun(C) -> get_particular_view(C, User, Groups, Type) end,
+check_particular_view1(Site, Tree, Path, Uid, Type) ->
+    Fun = fun(C) -> get_particular_view(C, Site, Uid, Type) end,
     run_ctl(Tree, Path, Fun).
 
-get_views1(Tree, Path, {User, Groups}) ->
+get_views1(Site, Tree, Path, Uid) ->
     Fun = fun(#control{views = Views}) ->
                   KVs = gb_trees:to_list(Views),
-                  [K || {K,_}=X <- KVs, 
-                        get_role_view([X], User, Groups) /= none]
+                  [K || {K,V} <- KVs, can_view(Site, Uid, V)]
           end,
     run_ctl(Tree, Path, Fun).
 
-add_view1(Tree, Path, UAndGs, V) ->
+add_view1(Tree, Path, AuthSpec, V) ->
     Fun = fun(C) ->
                   CurViews = C#control.views,
                   View1 = case gb_trees:lookup(V, CurViews) of
                              none -> #view{};
                              {value, Val} -> Val end,
-                  View2 = add_us_and_gps(View1, UAndGs),
+                  View2 = apply_authspec(View1, AuthSpec),
                   NewViews = gb_trees:enter(V, View2, CurViews),
                   C#control{views = NewViews}
           end,
     alter_tree(Tree, Path, Fun).
 
-set_view1(Tree, Path, UAndGs, V) ->
+set_view1(Tree, Path, AuthSpec, V) ->
     Fun = fun(C) ->
                   CurViews = C#control.views,
-                  View = add_us_and_gps(#view{}, UAndGs),
+                  View = apply_authspec(#view{}, AuthSpec),
                   NewViews = gb_trees:enter(V, View, CurViews),
                   C#control{views = NewViews}
           end,
@@ -348,111 +336,59 @@ remove_views1(Tree, Path, DelViews) ->
                                        end,
                                        C#control.views,
                                        DelViews),
-                  rem_champion(
-                    DelViews, C#control.champion, 
-                    rem_challenger(
-                      DelViews, C#control.challenger,
-                      C#control{views = Views2}
-                     ))
+                  C#control{views = Views2}
           end,
     alter_tree(Tree, Path, Fun).
 
-rem_champion([], _Champ, C) -> C; 
-rem_champion([Champ | _Vs], Champ, C) -> C#control{champion = []};
-rem_champion([_V | Vs], Champ, C) -> rem_champion(Vs, Champ, C).
-
-rem_challenger([], _Chal, C) -> C; 
-rem_challenger([Chal | _Vs], Chal, C) -> C#control{challenger = []};
-rem_challenger([_V | Vs], Chal, C) -> rem_challenger(Vs, Chal, C).
-
-add_us_and_gps(V, []) -> V;
-add_us_and_gps(V, [everyone | Rest]) ->
+-spec apply_authspec(#view{}, auth_spec()) -> #view{}. 
+apply_authspec(V, []) -> V;
+apply_authspec(V, [everyone | Rest]) ->
     V2 = V#view{everyone = true},
-    add_us_and_gps(V2, Rest);
-add_us_and_gps(V, [{user, User} | Rest]) ->
-    V2 = V#view{users = gb_sets:add(User, V#view.users)},
-    add_us_and_gps(V2, Rest);
-add_us_and_gps(V, [{group, Group} | Rest]) ->
+    apply_authspec(V2, Rest);
+apply_authspec(V, [Group | Rest]) ->
     V2 = V#view{groups = gb_sets:add(Group, V#view.groups)},
-    add_us_and_gps(V2, Rest).
+    apply_authspec(V2, Rest).
 
 %% When called with type 'champion' or 'challenger' the requested type
 %% of view is returned providing the necessary credentials are met.
 %% For requests of type 'any', the first view which can be satisifed by
 %% the user's credentials will be returned.
--spec get_view(#control{}, 
-               string(), [string()],
-               champion | challenger | any)
+-spec get_view(#control{}, string(), uid(), champion | challenger)
               -> {view, string()} | not_found | denied.
-get_view(#control{views = ?EMPTY_TREE}, _U, _G, _T) ->
+get_view(#control{views = ?EMPTY_TREE}, _S, _U, _T) ->
     not_found;
-get_view(C, User, Groups, any) ->
-    KVs = gb_trees:to_list(C#control.views),
-    case get_role_view(KVs, User, Groups) of 
-        none -> denied; 
-        V -> {view, V}
-    end;
-get_view(#control{champion = [], challenger = []}, _U, _G, _T) ->
+get_view(#control{champion = [], challenger = []}, _S, _U, _T) ->
     not_found;
-get_view(#control{champion = V}=C, User, Groups, champion) ->
+get_view(#control{champion = V}=C, Site, Uid, champion) ->
     View = gb_trees:get(V, C#control.views),
-    case get_role_view([{V,View}], User, Groups) of
-        V -> {view, V}; 
-        _ -> denied
+    case can_view(Site, Uid, View) of
+        true -> {view, V};
+        false -> denied
     end;
-get_view(#control{challenger = V}=C, User, Groups, challenger) when V /= [] ->
+get_view(#control{challenger = V}=C, Site, Uid, challenger) when V /= [] ->
     View = gb_trees:get(V, C#control.views),
-    case get_role_view([{V,View}], User, Groups) of
-        V -> {view, V}; 
-        _ -> denied
+    case can_view(Site, Uid, View) of
+        true -> {view, V};
+        false -> denied
     end.
 
--spec get_particular_view(#control{}, 
-                          string(), [string()],
-                          string())
+-spec get_particular_view(#control{}, string(), uid(), string())
                          -> {view, string()} | not_found | denied.
-get_particular_view(C, User, Groups, V) ->
-    %% we don't know this actually exists
+get_particular_view(C, Site, Uid, V) ->
     case gb_trees:lookup(V, C#control.views) of
         none -> not_found;
         {value, View} -> 
-            case get_role_view([{V,View}], User, Groups) of
-                none -> denied;
-                V -> {view, V}
+            case can_view(Site, Uid, View) of
+                true -> {view, V};
+                false -> denied
             end
     end.
 
--spec get_role_view([{string(), #view{}}], string(), [string()]) 
-                   -> none | string().
-get_role_view(KVs, User, Groups) ->
-    case get_user_view(KVs, User) of
-        none -> get_group_view(KVs, Groups);
-        V -> V
-    end.
-
-get_user_view([], _User) -> none; 
-get_user_view([{V, #view{everyone = true}} | _Rest], _User) ->
-    V;
-get_user_view([{V, #view{users = Users}} | Rest], User) ->
-    case gb_sets:is_member(User, Users) of
-        true  -> V; 
-        false -> get_user_view(Rest, User)
-    end. 
-
-get_group_view([], _CheckGroups) -> none;
-get_group_view([{V, #view{groups = Groups}} | Rest], CheckGroups) ->
-    F = fun(G) -> gb_sets:is_member(G, Groups) end,
-    case lists:any(F, CheckGroups) of
-        true -> V;
-        false -> get_group_view(Rest, CheckGroups)
-    end.
-
-tree(Site, Trees) -> 
-    case gb_trees:lookup(Site, Trees) of
-        none -> gb_trees:empty();
-        {value, V} -> V
-    end.
-
+-spec can_view(string(), uid(), #view{}) -> boolean().
+can_view(_Site, _Uid, #view{everyone = true}) -> 
+    true; 
+can_view(Site, Uid, #view{groups = Groups}) -> 
+    hn_groups:is_member(Uid, Site, Groups).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Tree Manipulations
@@ -574,10 +510,8 @@ add_to_views({V, NewView}, Views) ->
             gb_trees:insert(V, NewView, Views);
         {value, CurView} ->
             Everyone = CurView#view.everyone,
-            Users = gb_sets:union(CurView#view.users, NewView#view.users),
             Groups = gb_sets:union(CurView#view.groups, NewView#view.groups),
             Merged = #view{everyone = Everyone,
-                           users = Users,
                            groups = Groups},
             gb_trees:enter(V, Merged, Views)
     end.
@@ -611,10 +545,8 @@ ctl_to_json(C) ->
 
 view_to_json(none) -> [];
 view_to_json({V, View, Iter}) ->
-    Users = [?LB(U) || U <- gb_sets:to_list(View#view.users)],
     Groups = [?LB(G) || G <- gb_sets:to_list(View#view.groups)],
     S = {?LB(V), {struct, [{everyone, View#view.everyone},
-                           {users, Users},
                            {groups, Groups}]}},
     [S | view_to_json(gb_trees:next(Iter))].
 
@@ -675,52 +607,15 @@ dump_control(C, Path) ->
 
 dump_views([], _) -> [];
 dump_views([{V, View} | Rest], Path) ->
-    Users = [{user, U} || U <- gb_sets:to_list(View#view.users)],
     Groups = [{group, G} || G <- gb_sets:to_list(View#view.groups)],
-    Perms = Users ++ Groups ++ case View#view.everyone of
-                                   true -> [everyone];
-                                   false -> []
-                               end,
+    Perms = Groups ++ case View#view.everyone of
+                          true -> [everyone];
+                          false -> []
+                      end,
     AddView = {add_view, [{path, Path},
                           {perms, Perms},
                           {view, V}]},
     [AddView | dump_views(Rest, Path)].
-
-
-%%%===================================================================
-%%% Demo to show off how the permissions are stored...
-%%%===================================================================
-demo_DEBUG() ->
-    P1 = ["hip"],
-    P2 = ["hip", "[*]"],
-    P3 = ["dont", "stop"],
-    Tree1 = add_view1(gb_trees:empty(), P1, [{user, "gordon"}, {group, "admin"}],
-                                  "a view"),
-    Tree2 = add_view1(Tree1, P1, [{user, "betty"}, {group, "admin"}],
-                                  "another view"),
-    Tree3 = add_view1(Tree2, P1, [{group, "himbos"}],
-                                  "a third view"),
-    Tree4 = add_view1(Tree3, P1, [{user, "jamie"}, {user, "annie"}],
-                                  "a fourth view"),
-    Tree4a = set_default(Tree4, P1, "another view", champion),
-    Tree4b = set_default(Tree4a, P1, "a view", challenger),
-    Tree5 = add_view1(Tree4b, P2, [{group, "admin"}],
-                                  "*"),
-    Tree6 = add_view1(Tree5, P2, [{user, "gordon"}, {group, "admin"}],
-                                  "_g/blah"),
-    Tree7 = add_view1(Tree6, P2, [{user, "gordon"}, {group, "admin"}],
-                                  "_u/stevie/bleh"),
-    Tree8 = add_view1(Tree7, P2, [{user, "gordon"}, {group, "admin"}],
-                                  "whatever"),
-    Tree9 = add_view1(Tree8, P3, [{user, "stevie"}],
-                                  "a view"),
-    Tree10 = add_view1(Tree9, P3, [{user, "dale"}],
-                                   "another view"),
-    Tree11 = add_view1(Tree10, P3, [{group, "user"}, {group, "admin"}],
-                                   "yeah, yeah!"),
-    Tree12 = add_view1(Tree11, P3, [{group, "admin"}],
-                                   "*"),
-    dump_script1(Tree12).
 
 %%%===================================================================
 %% %%% EUnit Tests
@@ -729,75 +624,69 @@ demo_DEBUG() ->
 
 %% check the empty path
 %% check_get_view (general)
-testA1(P) ->
-    Ret = check_get_view1(gb_trees:empty(), P, {"gordon", ["Group"]}, champion),
+testA1({S, P}) ->
+    Ret = check_get_view1(S, gb_trees:empty(), P, {"gordon", ["Group"]}, champion),
     ?assertEqual(not_found, Ret).
 
 %% add views
-testA2(P) ->
-    UGs = [{user, "gordon"}, {group, "admin"}],
-    Tree1 = add_view1(gb_trees:empty(), P, UGs, "a view"),
-    Tree2 = add_view1(Tree1, P, UGs, "another view"),
+testA2({S, P}) ->
+    AuthSpec = ["admin"],
+    Tree1 = add_view1(gb_trees:empty(), P, AuthSpec, "a view"),
+    Tree2 = add_view1(Tree1, P, AuthSpec, "another view"),
     Tree3 = set_default(Tree2, P, "a view", champion),
-    Ret = check_get_view1(Tree3, P, {"User", ["Fail"]}, champion),
+    Ret = check_get_view1(S, Tree3, P, {"User", ["Fail"]}, champion),
     ?assertEqual(denied, Ret).
 
 %% Users and groups
-testA3(P) ->
-    UGs = [{user, "gordon"}, {group, "admin"}],
-    Tree1 = add_view1(gb_trees:empty(), P, UGs, "a view"),
-    Tree2 = add_view1(Tree1, P, UGs, "another view"),
+testA3({S, P}) ->
+    AuthSpec = ["admin"],
+    Tree1 = add_view1(gb_trees:empty(), P, AuthSpec, "a view"),
+    Tree2 = add_view1(Tree1, P, AuthSpec, "another view"),
     Tree3 = set_default(Tree2, P, "a view", champion),
-    Ret = check_get_view1(Tree3, P, {"gordon", ["Fail"]}, champion),
+    Ret = check_get_view1(S, Tree3, P, {"gordon", ["Fail"]}, champion),
     ?assertEqual({view, "a view"}, Ret).
 
 %% Test everyone
-testA4(P) ->
-    UGs = [{user, "gordon"}, {group, "admin"}, everyone],
-    Tree1 = add_view1(gb_trees:empty(), P, UGs, "my view"),
+testA4({S, P}) ->
+    AuthSpec = ["admin", everyone],
+    Tree1 = add_view1(gb_trees:empty(), P, AuthSpec, "my view"),
     Tree2 = set_default(Tree1, P, "my view", champion),
-    Ret = check_particular_view1(Tree2, P, {"nowhereman", []}, "my view"),
+    Ret = check_particular_view1(S, Tree2, P, {"nowhereman", []}, "my view"),
     ?assertEqual({view, "my view"}, Ret).
 
 %% Get any view
-testA5(P) ->
-    UGs = [{user, "gordon"}, {group, "admin"}],
-    Tree1 = add_view1(gb_trees:empty(), P, UGs, "my view"),
+testA5({S, P}) ->
+    AuthSpec = ["admin"],
+    Tree1 = add_view1(gb_trees:empty(), P, AuthSpec, "my view"),
     Tree2 = set_default(Tree1, P, "my view", champion),
-    Ret = check_get_view1(Tree2, P, {"gordon", []}, any),
+    Ret = check_get_view1(S, Tree2, P, {"gordon", []}, any),
     ?assertEqual({view, "my view"}, Ret).
 
-testA7(P) ->
-    Tree = add_view1(gb_trees:empty(), P, 
-                     [{user, "gordon"}, {group, "admin"}],
-                     "a view"),
-    Tree1 = add_view1(Tree, P, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "another view"),
+testA7({S, P}) ->
+    Tree = add_view1(gb_trees:empty(), P, ["admin"], "a view"),
+    Tree1 = add_view1(Tree, P, ["admin"], "another view"),
     Tree2 = set_default(Tree1, P, "a view", champion),
     Tree3 = set_default(Tree2, P, "another view", champion),
-    Ret = check_get_view1(Tree3, P, {"Fail", ["admin"]}, champion),
+    Ret = check_get_view1(S, Tree3, P, {"Fail", ["admin"]}, champion),
     ?assertEqual({view, "another view"}, Ret).
 
 %% remove views
-testA8(P) ->
+testA8({S, P}) ->
     Tree1 = add_view1(gb_trees:empty(), P, 
-                      [{user, "gordon"}, {group, "admin"}],
+                      ["admin"],
                       "a view"),
     Tree2 = add_view1(Tree1, P, 
                       [{user, "gordon"}, {group, "bleh"}],
                       "another view"),
     Tree3 = set_default(Tree2, P, "another view", champion),
     Tree4 = remove_views1(Tree3, P, ["another view"]),
-    Ret = check_get_view1(Tree4, P, {"gordon", ["Fail"]}, champion),
+    Ret = check_get_view1(S, Tree4, P, {"gordon", ["Fail"]}, champion),
     %% no permission to see 'champion'... it's gone.
     ?assertEqual(not_found, Ret). 
 
 %% remove views by replacing
-testA9(P) ->
-    Tree1 = add_view1(gb_trees:empty(), P, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
+testA9({S, P}) ->
+    Tree1 = add_view1(gb_trees:empty(), P, ["admin"], "a view"),
     Tree2 = add_view1(Tree1, P, 
                       [{user, "gordon"}, {group, "bleh"}],
                       "another view"),
@@ -805,230 +694,163 @@ testA9(P) ->
                       [{user, "usurper"}, {group, "god"}],
                       "another view"),
     Tree4 = set_default(Tree3, P, "another view", champion),
-    Ret1 = check_get_view1(Tree4, P, {"gordon", ["Fail"]}, champion),
-    Ret2 = check_get_view1(Tree4, P, {"usurper", ["Success"]}, champion),
+    Ret1 = check_get_view1(S, Tree4, P, {"gordon", ["Fail"]}, champion),
+    Ret2 = check_get_view1(S, Tree4, P, {"usurper", ["Success"]}, champion),
     ?assertEqual(denied, Ret1),
     ?assertEqual({view, "another view"}, Ret2). 
 
 
-testA10(P) ->
-    Tree = add_view1(gb_trees:empty(), P, 
-                     [{user, "gordon"}, {group, "admin"}],
-                     "some view"),
-    Tree1 = add_view1(Tree, P, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree2 = add_view1(Tree1, P, 
-                      [{user, "gordon"}, {group, "bleh"}],
+testA10({S, P}) ->
+    Tree = add_view1(gb_trees:empty(), P, ["admin"], "some view"),
+    Tree1 = add_view1(Tree, P, ["admin"], "a view"),
+    Tree2 = add_view1(Tree1, P, [{user, "gordon"}, {group, "bleh"}], 
                       "another view"),
     Tree3 = remove_views1(Tree2, P, ["some view", "a view"]),
     Tree4 = set_default(Tree3, P, "another view", champion),
-    Ret = check_get_view1(Tree4, P, {"gordon", ["Fail"]}, champion),
+    Ret = check_get_view1(S, Tree4, P, {"gordon", ["Fail"]}, champion),
     ?assertEqual({view, "another view"}, Ret).
 
 %% get the challenger
-testA12(P) ->
-    Tree1 = add_view1(gb_trees:empty(), P, [{user, "gordon"}, {group, "admin"}],
+testA12({S, P}) ->
+    Tree1 = add_view1(gb_trees:empty(), P, ["admin"],
                       "a view"),
     Tree2 = set_default(Tree1, P, "a view", challenger),
-    Ret = check_get_view1(Tree2, P, {"Fail", ["admin"]}, challenger),
+    Ret = check_get_view1(S, Tree2, P, {"Fail", ["admin"]}, challenger),
     ?assertEqual({view, "a view"}, Ret).
 
 %% get all views available to a user
-testA14(P) ->
-    Tree1 = add_view1(gb_trees:empty(), P, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Ret = get_views1(Tree1, P, {"Fail", ["admin"]}),
+testA14({S, P}) ->
+    Tree1 = add_view1(gb_trees:empty(), P, ["admin"], "a view"),
+    Ret = get_views1(S, Tree1, P, {"Fail", ["admin"]}),
     ?assertEqual(["a view"], Ret).
 
 %% get all views available to a user
-testA15(P) ->
-    Tree1 = add_view1(gb_trees:empty(), P, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree2 = add_view1(Tree1, P, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
-    Ret = get_views1(Tree2, P, {"Fail", ["admin"]}),
+testA15({S, P}) ->
+    Tree1 = add_view1(gb_trees:empty(), P, ["admin"], "a view"),
+    Tree2 = add_view1(Tree1, P, ["admin"], "a fourth view"),
+    Ret = get_views1(S, Tree2, P, {"Fail", ["admin"]}),
     ?assertEqual(["a fourth view", "a view"], lists:sort(Ret)).
 
 %% check a particular view
-testA16(P) ->
-    Tree1 = add_view1(gb_trees:empty(), P, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree2 = add_view1(Tree1, P, [{user, "gordon"}, {group, "admin"}],
-                      "another view"),
-    Tree3 = add_view1(Tree2, P, [{user, "gordon"}, {group, "admin"}],
-                      "a third view"),
-    Tree4 = add_view1(Tree3, P, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
-    Ret = check_particular_view1(Tree4, P, {"Fail", ["admin"]},
+testA16({S, P}) ->
+    Tree1 = add_view1(gb_trees:empty(), P, ["admin"], "a view"),
+    Tree2 = add_view1(Tree1, P, ["admin"], "another view"),
+    Tree3 = add_view1(Tree2, P, ["admin"], "a third view"),
+    Tree4 = add_view1(Tree3, P, ["admin"], "a fourth view"),
+    Ret = check_particular_view1(S, Tree4, P, {"Fail", ["admin"]},
                           "a third view"),
     ?assertEqual(Ret, {view, "a third view"}).
 
-testC() ->
+testC(S) ->
     P1 = ["hip"],
     P2 = ["hip", "hop"],
     P3 = ["dont", "stop"],
-    Tree1 = add_view1(gb_trees:empty(), P1, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree2 = add_view1(Tree1, P1, [{user, "gordon"}, {group, "admin"}],
-                      "another view"),
-    Tree3 = add_view1(Tree2, P1, [{user, "gordon"}, {group, "admin"}],
-                      "a third view"),
-    Tree4 = add_view1(Tree3, P1, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
-    Tree5 = add_view1(Tree4, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree6 = add_view1(Tree5, P2, [{user, "gordon"}, {group, "admin"}],
-                      "another view"),
-    Tree7 = add_view1(Tree6, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a third view"),
-    Tree8 = add_view1(Tree7, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
-    Tree9 = add_view1(Tree8, P3, [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree10 = add_view1(Tree9, P3, [{user, "gordon"}, {group, "admin"}],
-                       "another view"),
-    Tree11 = add_view1(Tree10, P3, [{user, "gordon"}, {group, "admin"}],
-                       "a third view"),
-    Tree12 = add_view1(Tree11, P3, [{user, "gordon"}, {group, "admin"}],
-                       "a fourth view"),
-    Ret = check_particular_view1(Tree12, P2, {"Fail", ["admin"]},
+    Tree1 = add_view1(gb_trees:empty(), P1, ["admin"], "a view"),
+    Tree2 = add_view1(Tree1, P1, ["admin"], "another view"),
+    Tree3 = add_view1(Tree2, P1, ["admin"], "a third view"),
+    Tree4 = add_view1(Tree3, P1, ["admin"], "a fourth view"),
+    Tree5 = add_view1(Tree4, P2, ["admin"], "a view"),
+    Tree6 = add_view1(Tree5, P2, ["admin"], "another view"),
+    Tree7 = add_view1(Tree6, P2, ["admin"], "a third view"),
+    Tree8 = add_view1(Tree7, P2, ["admin"], "a fourth view"),
+    Tree9 = add_view1(Tree8, P3, ["admin"], "a view"),
+    Tree10 = add_view1(Tree9, P3, ["admin"], "another view"),
+    Tree11 = add_view1(Tree10, P3, ["admin"], "a third view"),
+    Tree12 = add_view1(Tree11, P3, ["admin"], "a fourth view"),
+    Ret = check_particular_view1(S, Tree12, P2, {"Fail", ["admin"]},
                           "a third view"),
     ?assertEqual({view, "a third view"}, Ret).
 
 %% test wild cards
-testD1() ->
+testD1(S) ->
     P1 = ["hip", "hop"],
     P2 = ["[**]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
-                      "another view"),
-    Tree3 = add_view1(Tree2, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a third view"),
-    Tree4 = add_view1(Tree3, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
+    Tree1 = add_view1(gb_trees:empty(), P2, ["admin"], "a view"),
+    Tree2 = add_view1(Tree1, P2, ["admin"], "another view"),
+    Tree3 = add_view1(Tree2, P2, ["admin"], "a third view"),
+    Tree4 = add_view1(Tree3, P2, ["admin"], "a fourth view"),
     Tree5 = set_default(Tree4, P2, "another view", champion),
-    Ret = check_get_view1(Tree5, P1, {"Fail", ["admin"]}, champion),
+    Ret = check_get_view1(S, Tree5, P1, {"Fail", ["admin"]}, champion),
     ?assertEqual({view, "another view"}, Ret).
 
-testD2() ->
+testD2(S) ->
     P1 = ["hip", "hop"],
     P2 = ["hip", "[*]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
-                      "another view"),
-    Tree3 = add_view1(Tree2, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a third view"),
-    Tree4 = add_view1(Tree3, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
+    Tree1 = add_view1(gb_trees:empty(), P2, ["admin"], "a view"),
+    Tree2 = add_view1(Tree1, P2, ["admin"], "another view"),
+    Tree3 = add_view1(Tree2, P2, ["admin"], "a third view"),
+    Tree4 = add_view1(Tree3, P2, ["admin"], "a fourth view"),
     Tree5 = set_default(Tree4, P2, "another view", champion),
-    Ret = check_get_view1(Tree5, P1, {"Fail", ["admin"]}, champion),
+    Ret = check_get_view1(S, Tree5, P1, {"Fail", ["admin"]}, champion),
     ?assertEqual({view, "another view"}, Ret).
 
-testD3() ->
+testD3(S) ->
     P1 = ["hip", "hop"],
     P2 = ["[*]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
-                      "another view"),
-    Tree3 = add_view1(Tree2, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a third view"),
-    Tree4 = add_view1(Tree3, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
-    Ret = check_get_view1(Tree4, P1, {"Fail", ["admin"]}, champion),
+    Tree1 = add_view1(gb_trees:empty(), P2, ["admin"], "a view"),
+    Tree2 = add_view1(Tree1, P2, ["admin"], "another view"),
+    Tree3 = add_view1(Tree2, P2, ["admin"], "a third view"),
+    Tree4 = add_view1(Tree3, P2, ["admin"], "a fourth view"),
+    Ret = check_get_view1(S, Tree4, P1, {"Fail", ["admin"]}, champion),
     ?assertEqual(not_found, Ret).
 
 % specific overrides the general
-testD4() ->
+testD4(S) ->
     P1 = ["hip", "hop"],
     P2 = ["[**]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
-                      "another view"),
-    Tree3 = add_view1(Tree2, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a third view"),
-    Tree4 = add_view1(Tree3, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
-    Tree4 = add_view1(Tree3, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
-    Tree5 = add_view1(Tree4, P1, [{user, "gordon"}, {group, "admin"}],
-                      "blurgh"),
+    Tree1 = add_view1(gb_trees:empty(), P2, ["admin"], "a view"),
+    Tree2 = add_view1(Tree1, P2, ["admin"], "another view"),
+    Tree3 = add_view1(Tree2, P2, ["admin"], "a third view"),
+    Tree4 = add_view1(Tree3, P2, ["admin"], "a fourth view"),
+    Tree4 = add_view1(Tree3, P2, ["admin"], "a fourth view"),
+    Tree5 = add_view1(Tree4, P1, ["admin"], "blurgh"),
     Tree6 = set_default(Tree5, P1, "blurgh", champion),
-    Ret = check_get_view1(Tree6, P1, {"Fail", ["admin"]}, champion),
+    Ret = check_get_view1(S, Tree6, P1, {"Fail", ["admin"]}, champion),
     ?assertEqual({view, "blurgh"}, Ret).
 
-testD5() ->
+testD5(S) ->
     P1 = ["hip", "hop"],
     P2 = ["hip", "[*]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
-                      "another view"),
-    Tree3 = add_view1(Tree2, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a third view"),
-    Tree4 = add_view1(Tree3, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
-    Tree4 = add_view1(Tree3, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
-    Tree5 = add_view1(Tree4, P1, [{user, "gordon"}, {group, "admin"}],
-                      "blurgh"),
+    Tree1 = add_view1(gb_trees:empty(), P2, ["admin"], "a view"),
+    Tree2 = add_view1(Tree1, P2, ["admin"], "another view"),
+    Tree3 = add_view1(Tree2, P2, ["admin"], "a third view"),
+    Tree4 = add_view1(Tree3, P2, ["admin"], "a fourth view"),
+    Tree4 = add_view1(Tree3, P2, ["admin"], "a fourth view"),
+    Tree5 = add_view1(Tree4, P1, ["admin"], "blurgh"),
     Tree6 = set_default(Tree5, P1, "blurgh", champion),
-    Ret = check_get_view1(Tree6, P1, {"Fail", ["admin"]}, champion),
+    Ret = check_get_view1(S, Tree6, P1, {"Fail", ["admin"]}, champion),
     ?assertEqual({view, "blurgh"}, Ret).
 
-testD6() ->
+testD6(S) ->
     P1 = ["hip", "hop"],
     P2 = ["hip", "[*]"],
     P3 = ["hip", "[**]"],
     P4 = ["[**]"],
-    Tree1 = add_view1(gb_trees:empty(), P2, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
-                      "another view"),
-    Tree3 = add_view1(Tree2, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a third view"),
-    Tree4 = add_view1(Tree3, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
-    Tree4 = add_view1(Tree3, P2, [{user, "gordon"}, {group, "admin"}],
-                      "a fourth view"),
-    Tree5 = add_view1(Tree4, P1, [{user, "gordon"}, {group, "admin"}],
-                      "blurgh"),
-    Tree6 = add_view1(Tree5, P3, [{user, "gordon"}, {group, "admin"}],
-                      "boodle"),
-    Tree7 = add_view1(Tree6, P4, [{user, "gordon"}, {group, "admin"}],
-                      "banjo"),
+    Tree1 = add_view1(gb_trees:empty(), P2, ["admin"], "a view"),
+    Tree2 = add_view1(Tree1, P2, ["admin"], "another view"),
+    Tree3 = add_view1(Tree2, P2, ["admin"], "a third view"),
+    Tree4 = add_view1(Tree3, P2, ["admin"], "a fourth view"),
+    Tree4 = add_view1(Tree3, P2, ["admin"], "a fourth view"),
+    Tree5 = add_view1(Tree4, P1, ["admin"], "blurgh"),
+    Tree6 = add_view1(Tree5, P3, ["admin"], "boodle"),
+    Tree7 = add_view1(Tree6, P4, ["admin"], "banjo"),
     Tree8 = set_default(Tree7, P1, "blurgh", champion),
-    Ret = check_get_view1(Tree8, P1, {"Fail", ["admin"]}, champion),
+    Ret = check_get_view1(S, Tree8, P1, {"Fail", ["admin"]}, champion),
     ?assertEqual({view, "blurgh"}, Ret).
 
-testD7() ->
+testD7(S) ->
     P1 = ["[**]"],
     P2 = ["u", "dale", "sheet"],
     Tree1 = add_view1(gb_trees:empty(), P1, [{user, "dale"}], 
                       "i/love/spreadsheets"),
     Tree2 = add_view1(Tree1, P2, [{user, "dale"}], "other view"),
-    Ret = check_particular_view1(Tree2, P2, {"dale", []}, 
+    Ret = check_particular_view1(S, Tree2, P2, {"dale", []}, 
                                  "i/love/spreadsheets"),
     ?assertEqual({view, "i/love/spreadsheets"}, Ret).
 
 
 %% Test multiple wild cards
-testD8() ->
+testD8(S) ->
     P1 = ["[**]"],
     P2 = ["u", "dale", "sheet", "[**]"],
     P3 = ["u", "dale", "sheet", "new"],
@@ -1036,12 +858,12 @@ testD8() ->
     Tree2 = add_view1(Tree1, P2, [{user, "dale"}], "i/love/spreadsheets"),
     Tree3 = set_default(Tree2, P1, "global_stuff", champion),
     Tree4 = set_default(Tree3, P2, "i/love/spreadsheets", champion),
-    Ret = get_views1(Tree4, P3, {"dale", []}),
+    Ret = get_views1(S, Tree4, P3, {"dale", []}),
     ?assertEqual(["global_stuff", "i/love/spreadsheets"], lists:sort(Ret)).
 
 
 %% Test dump / restore
-testE1() ->
+testE1(_S) ->
     Tree = gb_trees:empty(),
     Iter1 = gb_trees:iterator(Tree),
     Terms = lists:flatten(dump_tree(gb_trees:next(Iter1), [])),
@@ -1051,19 +873,15 @@ testE1() ->
     Terms = lists:flatten(dump_tree(gb_trees:next(Iter2), [])).
 
 %% Test dump / restore, on complex input
-testE2() ->
+testE2(_S) ->
     %% To comapre trees, we have to tweak the insertion order,
     %% or this test can easily fail due to different balancing.
     P1 = ["[**]"],
     P2 = ["hip", "[*]"],
     P3 = ["hip", "hop"],
-    Tree1 = add_view1(gb_trees:empty(), P1, 
-                      [{user, "gordon"}, {group, "admin"}],
-                      "a view"),
-    Tree2 = add_view1(Tree1, P2, [{user, "gordon"}, {group, "admin"}],
-                      "banjo"),
-    Tree3 = add_view1(Tree2, P3, [{user, "gordon"}, {group, "admin"}],
-                      "bingo"),
+    Tree1 = add_view1(gb_trees:empty(), P1, ["admin"], "a view"),
+    Tree2 = add_view1(Tree1, P2, ["admin"], "banjo"),
+    Tree3 = add_view1(Tree2, P3, ["admin"], "bingo"),
     FinalTree = set_default(Tree3, P1, "a view", champion),
 
     % Test starts here 
@@ -1089,23 +907,23 @@ unit_test_() ->
                fun testA15/1,
                fun testA16/1],
 
-    SeriesC = [fun testC/0], 
+    SeriesC = [fun testC/1], 
 
-    SeriesD = [fun testD1/0,
-               fun testD2/0,
-               fun testD3/0,
-               fun testD4/0,
-               fun testD5/0,
-               fun testD6/0,
-               fun testD7/0,
-               fun testD8/0 ],
+    SeriesD = [fun testD1/1,
+               fun testD2/1,
+               fun testD3/1,
+               fun testD4/1,
+               fun testD5/1,
+               fun testD6/1,
+               fun testD7/1,
+               fun testD8/1 ],
 
-    SeriesE = [fun testE1/0,
-               fun testE2/0],
+    SeriesE = [fun testE1/1,
+               fun testE2/1],
 
-    [{with, [], SeriesA},
-     {with, ["some", "longer", "path"], SeriesA},
-     SeriesC,
-     SeriesD,
+    [{with, {"testsite", []}, SeriesA},
+     {with, {"testsite", ["some", "longer", "path"]}, SeriesA},
+     {with, "testsite", SeriesC},
+     {with, "testsite", SeriesD},
      SeriesE
     ].

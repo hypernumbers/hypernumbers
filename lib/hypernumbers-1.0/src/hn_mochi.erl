@@ -1008,7 +1008,7 @@ pages_to_json(X, Dict) ->
         false -> {struct, [{"name", X}]}
     end.
 
--spec save_view(string(), string(), string(), auth_req(), #refX{}) -> ok.
+-spec save_view(string(), string(), string(), uid(), #refX{}) -> ok.
 %%
 save_view(Site, ViewName, ViewContent, AuthReq, Ref) ->
     Data = [{ref, Ref}, {authreq, AuthReq}, {content, ViewContent}],

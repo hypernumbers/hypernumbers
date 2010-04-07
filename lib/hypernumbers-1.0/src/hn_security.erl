@@ -106,7 +106,7 @@ make_candidate_(#refX{path=Base}, Trans) ->
 %% Construct Security Objects
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec make(string(), #refX{}, auth_req()) -> security().
+-spec make(string(), #refX{}, uid()) -> security().
 make(Form, Ref, Auth) ->
     % tpls aren't always well formed XML, but
     % wrapping them in a '<div></div>' pair makes 'em so
@@ -139,7 +139,7 @@ is_hn(List) ->
         _Tuple -> true
     end.
 
--spec can_read(string(), string(), auth_req()) -> true | false.
+-spec can_read(string(), string(), uid()) -> true | false.
 can_read(Site, P, AR) ->
     Path = string:tokens(just_path(P), "/"),
     case auth_srv:get_any_view(Site, Path, AR) of
@@ -147,7 +147,7 @@ can_read(Site, P, AR) ->
         _Else -> false
     end.
 
--spec can_write(string(), string(), auth_req()) -> true | false. 
+-spec can_write(string(), string(), uid()) -> true | false. 
 can_write(Site, P, AR) ->
     S = "_g/core/spreadsheet",
     Path = string:tokens(just_path(P), "/"),
@@ -156,7 +156,7 @@ can_write(Site, P, AR) ->
         _Else -> false
     end.
 
--spec bind(list(), #refX{}, auth_req(), #binding{}) -> #binding{}. 
+-spec bind(list(), #refX{}, uid(), #binding{}) -> #binding{}. 
 bind([], _R, _AR, B) ->
     B;
 bind([{[], [], "data-type", Ty} | T], R, AR, B) -> 
@@ -176,7 +176,7 @@ bind([{[], [], _, _} | T], R, AR, B) ->
 
 -spec parse_bindings([formstart | formend | #binding{}], 
                      #refX{}, 
-                     auth_req()) 
+                     uid()) 
                     -> security().
 
 parse_bindings(List, #refX{site=Site, path=Path}, AR) ->

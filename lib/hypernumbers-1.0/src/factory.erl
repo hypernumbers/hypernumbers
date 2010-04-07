@@ -146,7 +146,6 @@ code_change(_OldVsn, State, _Extra) ->
 
 extract_name_from_email(Email) ->
     LocalPart = lists:takewhile(fun(X) -> X /= $@ end, Email),
-    Parts = string:tokens(LocalPart, "."),
     [Name | _Rest] =  string:tokens(LocalPart, "."),
     capitalize_name(Name).
     

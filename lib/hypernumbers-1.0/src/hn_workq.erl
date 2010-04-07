@@ -22,12 +22,12 @@
 -type work_queue() :: {dict(), 
                        nil | [{pos_integer(), any()}], 
                        integer() | now(),
-                       nil | auth_req()}.
+                       nil | uid()}.
 
--spec new(nil | auth_req()) -> work_queue().
+-spec new(nil | uid()) -> work_queue().
 new(AuthReq) -> {dict:new(), nil, erlang:now(), AuthReq}.
 
--spec new(nil | auth_req(), integer()) -> work_queue().
+-spec new(nil | uid(), integer()) -> work_queue().
 new(AuthReq, Ts) -> {dict:new(), nil, Ts, AuthReq}. 
 
 -spec id(work_queue()) -> integer() | now().
@@ -38,10 +38,10 @@ is_empty({Map, _, _, _}) ->
    dict:size(Map) == 0.
    
 -spec add(any(), integer(), work_queue()) -> work_queue(). 
-add(Elem, Priority, {Map, _, Ts, Ar}) ->
+add(Elem, Priority, {Map, _, Ts, U}) ->
     Item = {Priority, Elem},
     Map2 = dict:store(Elem, Item, Map),
-    {Map2, nil, Ts, Ar}.
+    {Map2, nil, Ts, U}.
 
 %% Needs element determines if the proposed candidate and
 %% priority needs to be added to the dictionary:
@@ -55,15 +55,15 @@ needs_elem(Elem, NewPri, {Map, _, _ , _}) ->
     end.
 
 -spec next(work_queue()) 
-          -> {empty, work_queue()} | {any(), nil | auth_req(), work_queue()}.
-next({Map, nil, Ts, Ar}) ->
+          -> {empty, work_queue()} | {any(), nil | uid(), work_queue()}.
+next({Map, nil, Ts, U}) ->
     Vs = [V || {_K, V} <- dict:to_list(Map)],
-    next({Map, lists:usort(Vs), Ts, Ar});
+    next({Map, lists:usort(Vs), Ts, U});
 next({_Map, [], _, _}=WQ) ->
     {empty, WQ};
-next({Map, [{_Priority, Elem} | Rest], Ts, Ar}) ->
+next({Map, [{_Priority, Elem} | Rest], Ts, U}) ->
     Map2 = dict:erase(Elem, Map),
-    {Elem, Ar, {Map2, Rest, Ts, Ar}}.
+    {Elem, U, {Map2, Rest, Ts, U}}.
 
 %% Merge the right heap into the left heap. When duplicate items with
 %% different priorities are encountered, the highest priority is
@@ -75,9 +75,9 @@ merge(Q, []) ->
 merge(Q, [QR|Qs]) ->
     Q2 = merge(Q, QR),
     merge(Q2, Qs);
-merge({LMap, _, _, _}, {RMap, _, RTs, RAr}) ->
+merge({LMap, _, _, _}, {RMap, _, RTs, RU}) ->
     Map2 = dict:merge(fun merge_fun/3, LMap, RMap),
-    {Map2, nil, RTs, RAr}.
+    {Map2, nil, RTs, RU}.
 
 merge_fun(_Key, {P1, _}=V1, {P2, _}) when P1 >= P2 ->
     V1;

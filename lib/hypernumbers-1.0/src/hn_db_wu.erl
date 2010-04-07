@@ -1928,7 +1928,7 @@ mark_dirty(Site, Record)
     Tbl = trans(Site, element(1,Record)),
     mnesia:write(Tbl, Record, write).
 
--spec mark_these_dirty([#refX{}], nil | auth_req()) -> ok.
+-spec mark_these_dirty([#refX{}], nil | uid()) -> ok.
 mark_these_dirty([], _) -> ok;
 mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
     F = fun(C) -> case read_local_item_index(C) of
@@ -1941,7 +1941,7 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
     Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
     
--spec mark_children_dirty(#refX{}, nil | auth_req()) -> ok. 
+-spec mark_children_dirty(#refX{}, nil | uid()) -> ok. 
 mark_children_dirty(#refX{site = Site} = RefX, Ar) ->
     Tbl = trans(Site, relation),
     Children = get_local_children_idxs(RefX),
