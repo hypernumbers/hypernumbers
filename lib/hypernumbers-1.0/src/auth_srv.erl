@@ -16,6 +16,7 @@
          check_particular_view/4,
          check_get_challenger/3,
          get_views/3,
+         get_any_view/3,
          add_view/4,
          set_view/4,
          set_champion/3,
@@ -87,6 +88,14 @@ check_get_challenger(Site, Path, Uid) ->
 check_particular_view(Site, Path, Uid, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {check_particular_view, Path, Uid, View}).
+
+-spec get_any_view(string(), [string()], uid()) -> {view, string()} | denied.
+get_any_view(Site, Path, Uid) ->
+    Id = hn_util:site_to_atom(Site, "_auth"),
+    case gen_server:call(Id, {get_views, Path, Uid}) of
+        [V|_] -> {view, V}; 
+        _     -> denied
+    end.
 
 -spec get_views(string(), [string()], uid()) -> [string()]. 
 get_views(Site, Path, Uid) ->
@@ -647,6 +656,14 @@ testA4({S, P}) ->
     Ret = check_particular_view1(S, Tree2, P, anonymous, "my view"),
     ?assertEqual({view, "my view"}, Ret).
 
+%% Get any view
+testA5({S, P}) ->
+    AuthSpec = ["admin"],
+    Tree1 = add_view1(gb_trees:empty(), P, AuthSpec, "my view"),
+    Tree2 = set_default(Tree1, P, "my view", champion),
+    Ret = get_views1(S, Tree2, P, "god"),
+	?assert(length(Ret) > 0).
+
 %% Change the champion
 testA7({S, P}) ->
     Tree = add_view1(gb_trees:empty(), P, ["user"], "a view"),
@@ -894,6 +911,7 @@ unit_test_() ->
                fun testA2/1,
                fun testA3/1,
                fun testA4/1,
+               fun testA5/1,
                fun testA7/1,
                fun testA8/1,
                fun testA9/1,

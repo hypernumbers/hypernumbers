@@ -107,18 +107,18 @@ make_candidate_(#refX{path=Base}, Trans) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec make(string(), #refX{}, uid()) -> security().
-make(Form, Ref, Auth) ->
+make(Form, Ref, Uid) ->
     % tpls aren't always well formed XML, but
     % wrapping them in a '<div></div>' pair makes 'em so
     Form2 = "<div>" ++ Form ++ "</div>",
-    State = {Ref, Auth, []},
+    State = {Ref, Uid, []},
     Opts = [{event_fun, fun process/3},
             {event_state, State}],
     case xmerl_sax_parser:stream(Form2, Opts) of 
         {_ErrTag, Reason} ->
             throw(Reason);
         {ok, {_, _, List}, _} ->
-            parse_bindings(lists:reverse(List), Ref, Auth)
+            parse_bindings(lists:reverse(List), Ref, Uid)
     end.
 
 process({startElement, [], "div", {[], "div"}, List}, _Y, {Ref, AR, Acc}) ->

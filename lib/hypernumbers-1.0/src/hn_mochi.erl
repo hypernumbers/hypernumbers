@@ -267,15 +267,15 @@ authorize_get(#refX{site = Site, path = Path},
               #qry{view = View}, 
               #env{uid = Uid}) 
   when View /= undefined -> 
-    auth_srv:check_particular_view(Site, Path, Uid, View).
+    auth_srv:check_particular_view(Site, Path, Uid, View);
 
 %% As a last resort, we will authorize a GET request to a location
 %% from which we have a view.
-%% authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
-%%     case auth_srv:get_any_view(Site, Path, Env#env.Uid) of
-%%         {view, _} -> allowed;
-%%         _Else     -> denied
-%%     end.
+authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
+    case auth_srv:get_any_view(Site, Path, Env#env.uid) of
+        {view, _} -> allowed;
+        _Else     -> denied
+    end.
 
 -spec authorize_post(#refX{}, #qry{}, #env{}) -> allowed | denied.
 
