@@ -95,9 +95,10 @@ load_script(Site, Terms) ->
     [ok = exec_script_term(T, Site) || T <- Terms],
     ok.
 
-exec_script_term({create_group, GroupN}, Site) ->
-    create_group(Site, GroupN);
-exec_script_term({add_user, GroupN, Uid}, Site) ->
-    add_user(Site, GroupN, Uid);
-exec_script_term({set_users, GroupN, Users}, Site) ->
-    set_users(Site, GroupN, Users).
+-define(lget(Key, List), (element(2, lists:keyfind(Key, 1, List)))).
+exec_script_term({create_group, T}, Site) ->
+    create_group(Site, ?lget(name, T));
+exec_script_term({add_user, T}, Site) ->
+    add_user(Site, ?lget(group, T), ?lget(uid, T));
+exec_script_term({set_users, T}, Site) ->
+    set_users(Site, ?lget(group, T), ?lget(uids, T)).

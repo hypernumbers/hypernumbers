@@ -835,7 +835,7 @@ testD6(S) ->
     Tree6 = add_view1(Tree5, P3, ["admin"], "boodle"),
     Tree7 = add_view1(Tree6, P4, ["admin"], "banjo"),
     Tree8 = set_default(Tree7, P1, "blurgh", champion),
-    Ret = check_get_view1(S, Tree8, P1, {"Fail", ["admin"]}, champion),
+    Ret = check_get_view1(S, Tree8, P1, ["admin"], champion),
     ?assertEqual({view, "blurgh"}, Ret).
 
 testD7(S) ->

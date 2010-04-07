@@ -75,15 +75,15 @@ init([]) ->
 %%--------------------------------------------------------------------
 handle_call({provision, Zone, Email, Type}, _From, State) ->
     {ok, {Host, {_Ip, Port, Node}}} = hns:link_resource(Zone),
-    Hid = passport:get_or_create_user(Email),
+    Uid = passport:get_or_create_user(Email),
     Name = extract_name_from_email(Email),
     Site = lists:flatten(io_lib:format("http://~s:~b", [Host,Port])),
     ok = rpc:call(Node, hn_setup, site, 
-                  [Site, Type, [{user, Hid},
+                  [Site, Type, [{creator, Uid},
                                 {email, Email},
                                 {name, Name}]]),
     %%send_email()
-    {reply, {Site, Hid}, State};
+    {reply, {Site, Uid}, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,

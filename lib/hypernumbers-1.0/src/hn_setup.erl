@@ -208,18 +208,18 @@ create_path_from_name(Name, FileType) ->
     hn_util:list_to_path(Rest).
 
 -spec group_transform(tuple(), [tuple()]) -> [tuple()].
-group_transform({add_member, '$creator'}, Opts) -> {add_member, pget(creator, Opts)};
-group_transform(X, _Opts) -> X.
+group_transform({add_user, Terms}, Opts) -> 
+    {add_user, substitute('$creator', pget(creator, Opts), Terms)};
+group_transform(X, _Opts) -> 
+    X.
 
 -spec run_script(tuple(), string(), [tuple()]) -> ok. 
 run_script({Path, '$email'}, Site, Opts) ->
     write_cell(Path, Site, pget(email, Opts));
-run_script({Path, '$name'}, Site, Opts) ->
+run_script({Path, '$creator'}, Site, Opts) ->
     write_cell(Path, Site, pget(name, Opts));
 run_script({Path, '$site'}, Site, _Opts) ->
     write_cell(Path, Site, Site);
-run_script({Path, '$subdomain'}, Site, Opts) ->
-    write_cell(Path, Site, pget(subdomain, Opts));
 run_script({Path, '$expiry'}, Site, _Opts) ->
     {Date, _Time} = calendar:now_to_datetime(now()),
     NewDays = calendar:date_to_gregorian_days(Date) + 31,
@@ -227,8 +227,6 @@ run_script({Path, '$expiry'}, Site, _Opts) ->
     Expr = "This site will expire on "
         ++ dh_date:format("D d M Y", {NewDate, {0, 0, 0}}),
     write_cell(Path, Site, Expr);
-run_script({Path, '$password'}, Site, Opts) ->
-    write_cell(Path, Site, pget(password, Opts));
 run_script({Path, Expr}, Site, _Opts) ->
     write_cell(Path, Site, Expr).
 
@@ -236,14 +234,17 @@ write_cell(Path, Site, Expr) ->
     RefX = hn_util:parse_url(Site++Path), 
     hn_db_api:write_attributes([{RefX, [{"formula", Expr}]}]).
 
-%% replace(Key, Val, Key) ->
-%%     Val;
-%% replace(Key, Val, Rep) when is_list(Rep) ->
-%%     [ replace(Key, Val, X) || X <- Rep ];
-%% replace(Key, Val, Rep) when is_tuple(Rep) ->
-%%     list_to_tuple( replace(Key, Val, tuple_to_list(Rep) ));
-%% replace(_Key, _Val, Else) ->
-%%     Else.
+
+substitute(Var, Val, Var) ->
+    Val;
+substitute(_Var, _Val, Str) when is_list(Str) andalso 
+                               Str /= [] andalso 
+                               is_integer(hd(Str)) ->
+    Str;
+substitute(Var, Val, Terms) when is_list(Terms) ->
+    [substitute(Var, Val, T) || T <- Terms];
+substitute(Var, Val, Term) when is_tuple(Term) ->
+    list_to_tuple(substitute(Var, Val, tuple_to_list(Term))).
 
 %% add_u(Site, User, {champion, C}) ->
 %%     UserName = hn_users:name(User),
@@ -266,7 +267,6 @@ write_cell(Path, Site, Expr) ->
 %%         ++ hn_util:site_to_fs(Site) ++ "/data/",
 %%     Url = Site ++ hn_util:list_to_path(Path),
 %%     ok = hn_import:json_file(Url, Dest ++ FileName).
-
 
 -spec coreinstalldir() -> string().
 coreinstalldir() ->
