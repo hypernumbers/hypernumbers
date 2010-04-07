@@ -36,7 +36,7 @@ provision_site(Zone, Email0, SiteType) ->
     Email = string:to_lower(Email0),
     gen_server:call({global, ?MODULE}, {provision, Zone, Email, SiteType}).
 
--spec provision_site(string(), string(), atom(), string()) -> any(). 
+-spec provision_site(string(), string(), atom(), string()) -> no_return().
 provision_site(_Zone, _Email, _SiteType, _CustomUrl) ->
     throw(undefined),
     ok.

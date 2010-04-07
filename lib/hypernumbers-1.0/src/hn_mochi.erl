@@ -43,13 +43,13 @@ handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
-handle_(#refX{path=["_ping"]}, Env, #qry{uid=Uid, return=Return}) 
-  when Return /= undefined, Uid /= undefined ->
-    handle_ping(Env, Uid, Return);
+handle_(#refX{path=["_ping"]}, Env, #qry{spoor=Spoor, return=Return}) 
+  when Return /= undefined, Spoor /= undefined ->
+    handle_ping(Env, Spoor, Return);
 
-handle_(#refX{path=["_pong"]}, Env, #qry{uid=Uid, return=Return}) 
-  when Return /= undefined, Uid /= undefined ->
-    handle_pong(Env, Uid, Return);
+handle_(#refX{path=["_pong"]}, Env, #qry{spoor=Spoor, return=Return}) 
+  when Return /= undefined, Spoor /= undefined ->
+    handle_pong(Env, Spoor, Return);
 
 handle_(Ref, Env, Qry) ->
     case filename:extension((Env#env.mochi):get(path)) of
@@ -99,8 +99,8 @@ handle_resource(Ref, Qry, Env=#env{method = 'GET'}) ->
 
 handle_resource(Ref, _Qry, 
                 Env=#env{method='POST', body=multipart,
-                         mochi=Mochi, user=User}) ->
-    {Data, File} = hn_file_upload:handle_upload(Mochi, Ref, User),
+                         mochi=Mochi, uid=Uid}) ->
+    {Data, File} = hn_file_upload:handle_upload(Mochi, Ref, Uid),
     Name = filename:basename(File),
     Env2 = Env#env{raw_body = {upload, Name}},
     mochilog:log(Env2, Ref),
@@ -126,22 +126,22 @@ handle_static(X, Root, Mochi)
     ok.
 
 -spec handle_ping(#env{}, string(), string()) -> ok. 
-handle_ping(E=#env{mochi = Mochi}, Uid, Return) ->
+handle_ping(E=#env{mochi = Mochi}, Spoor, Return) ->
     Opts = [{path, "/"}, {max_age, ?TWO_YEARS}],
     Original = mochiweb_util:unquote(Return),
-    R2 = case Mochi:get_cookie_value("uid") of
+    R2 = case Mochi:get_cookie_value("spoor") of
              undefined ->
                  %% Use the given cookie, simply resume.
                  Redirect = {"Location", Original},
-                 Cookie = mochiweb_cookies:cookie("uid", Uid, Opts),
+                 Cookie = mochiweb_cookies:cookie("spoor", Spoor, Opts),
                  E#env{headers = [Redirect, Cookie | E#env.headers]};
-             OwnUid ->
+             OwnSpoor ->
                  %% Have own cookie already! This must take
                  %% precedence. So we tell the 'pinger' to use this
                  %% with a PONG request.
                  #refX{site = OrigSite} = hn_util:parse_url(Original),
                  Redir = strip80(OrigSite) ++ 
-                     "/_pong/?uid="++OwnUid ++
+                     "/_pong/?spoor="++OwnSpoor ++
                      "&return="++Return,
                  Redirect = {"Location", Redir},
                  E#env{headers = [Redirect | E#env.headers]}
@@ -149,9 +149,9 @@ handle_ping(E=#env{mochi = Mochi}, Uid, Return) ->
     respond(302, R2).
 
 -spec handle_pong(#env{}, string(), string()) -> ok. 
-handle_pong(E, Uid, Return) ->
+handle_pong(E, Spoor, Return) ->
     Opts     = [{path, "/"}, {max_age, ?TWO_YEARS}],
-    Cookie   = mochiweb_cookies:cookie("uid", Uid, Opts),
+    Cookie   = mochiweb_cookies:cookie("spoor", Spoor, Opts),
     Original = mochiweb_util:unquote(Return),
     Redirect = {"Location", Original},
     E2       = E#env{headers = [Redirect, Cookie | E#env.headers]},
@@ -163,7 +163,9 @@ handle_pong(E, Uid, Return) ->
 
 %% Specifically allow access to the json permissions. Only the permissions,
 %% query may be present.
-authorize_get(_Ref, #qry{permissions = [], _ = undefined}, 
+%% TODO: Only admins should be able to do this...
+authorize_get(_Ref, 
+              #qry{permissions = [], _ = undefined}, 
               #env{accept = html}) ->
     allowed;
 
@@ -172,11 +174,11 @@ authorize_get(_Ref, #qry{permissions = [], _ = undefined},
 %% 'run-time' checks.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{updates = U, view = ?SHEETVIEW, paths = More}, 
-              #env{accept = json, auth_req = Ar})
+              #env{accept = json, uid = Uid})
   when U /= undefined ->
-    case auth_srv:check_particular_view(Site, Path, Ar, ?SHEETVIEW) of
+    case auth_srv:check_particular_view(Site, Path, Uid, ?SHEETVIEW) of
         {view, ?SHEETVIEW} ->
-            MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Ar) 
+            MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Uid) 
                          || P <- string:tokens(More, ",")],
             case lists:all(fun({view, _}) -> true; 
                               (_) -> false end, 
@@ -190,11 +192,11 @@ authorize_get(#refX{site = Site, path = Path},
 
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{updates = U, view = "_g/core/webpage", paths = More}, 
-              #env{accept = json, auth_req = Ar})
+              #env{accept = json, uid = Uid})
   when U /= undefined ->
-    case auth_srv2:check_particular_view(Site, Path, Ar, "_g/core/webpage") of
+    case auth_srv2:check_particular_view(Site, Path, Uid, "_g/core/webpage") of
         {view, "_g/core/webpage"} ->
-            MoreViews = [auth_srv2:get_any_view(Site, string:tokens(P, "/"), Ar) 
+            MoreViews = [auth_srv2:get_any_view(Site, string:tokens(P, "/"), Uid) 
                          || P <- string:tokens(More, ",")],
             case lists:all(fun({view, _}) -> true; 
                               (_) -> false end, 
@@ -212,9 +214,9 @@ authorize_get(#refX{site = Site, path = Path},
 %% at a 'view-save-time'. 
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{updates = U, view = View, paths = More},
-              #env{accept = json, auth_req = Ar}) 
+              #env{accept = json, uid = Uid}) 
   when U /= undefined, View /= undefined -> 
-    case auth_srv:check_particular_view(Site, Path, Ar, View) of
+    case auth_srv:check_particular_view(Site, Path, Uid, View) of
         {view, View} ->
             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
             Results = [hn_security:validate_get(Sec, Path, P) 
@@ -231,10 +233,10 @@ authorize_get(#refX{site = Site, path = Path},
 %% declared herein as 'via'.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{view = View, via = Via}, 
-              #env{accept = json, auth_req = Ar})
+              #env{accept = json, uid = Uid})
   when View /= undefined, View /= ?SHEETVIEW, Via /= undefined ->
     Base = string:tokens(Via, "/"),
-    case auth_srv:check_particular_view(Site, Base, Ar, View) of
+    case auth_srv:check_particular_view(Site, Base, Uid, View) of
         {view, View} ->
             Target = hn_util:list_to_path(Path),
             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
@@ -250,30 +252,30 @@ authorize_get(#refX{site = Site, path = Path},
 %% parameters have been set.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{_ = undefined}, 
-              #env{accept = html, auth_req = Ar}) ->
-    auth_srv:check_get_view(Site, Path, Ar);
+              #env{accept = html, uid = Uid}) ->
+    auth_srv:check_get_view(Site, Path, Uid);
 
 %% Authorize access to the challenger view.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{challenger=[]}, 
-              #env{accept = html, auth_req =  Ar}) ->
-    auth_srv:check_get_challenger(Site, Path, Ar);
+              #env{accept = html, uid = Uid}) ->
+    auth_srv:check_get_challenger(Site, Path, Uid);
 
 
 %% Authorize access to one particular view.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{view = View}, 
-              #env{auth_req = Ar}) 
+              #env{uid = Uid}) 
   when View /= undefined -> 
-    auth_srv:check_particular_view(Site, Path, Ar, View);
+    auth_srv:check_particular_view(Site, Path, Uid, View).
 
 %% As a last resort, we will authorize a GET request to a location
 %% from which we have a view.
-authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
-    case auth_srv:get_any_view(Site, Path, Env#env.auth_req) of
-        {view, _} -> allowed;
-        _Else     -> denied
-    end.
+%% authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
+%%     case auth_srv:get_any_view(Site, Path, Env#env.Uid) of
+%%         {view, _} -> allowed;
+%%         _Else     -> denied
+%%     end.
 
 -spec authorize_post(#refX{}, #qry{}, #env{}) -> allowed | denied.
 
@@ -282,7 +284,7 @@ authorize_post(#refX{path = ["_user", "login"]}, _Qry, #env{accept = json}) ->
     allowed;
 
 authorize_post(#refX{path = ["_admin"]}, _Qry, #env{accept = json}=Env) ->
-    {_User, Groups} = Env#env.auth_req,
+    {_Uid, Groups} = Env#env.uid,
     case lists:member("admin", Groups) of
         true  -> allowed;
         false -> denied
@@ -292,7 +294,7 @@ authorize_post(#refX{path = ["_admin"]}, _Qry, #env{accept = json}=Env) ->
 %% attempted is validated against the views security model.
 authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
   when View /= undefined ->
-    case auth_srv:check_particular_view(Site, Path, Env#env.auth_req, View) of
+    case auth_srv:check_particular_view(Site, Path, Env#env.uid, View) of
         {view, View} ->
             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
             case hn_security:validate_trans(Sec, Ref, Env#env.body) of
@@ -306,7 +308,7 @@ authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
 %% the actual operation may need further validation, so flag as 'allowed_pending'.
 authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
     case auth_srv:check_particular_view(
-           Site, Path, Env#env.auth_req, ?SHEETVIEW) of
+           Site, Path, Env#env.uid, ?SHEETVIEW) of
         {view, ?SHEETVIEW} -> allowed;
         _ -> denied
     end.
@@ -326,7 +328,7 @@ iget(#refX{site = Site}, page, #qry{view = FName, template = []}, Env)
     serve_html(Env, [viewroot(Site), "/", FName, ".tpl"]);    
 
 iget(Ref=#refX{site = Site}, page, #qry{view = FName}, Env=#env{accept = html})
-    when FName /= undefined ->
+  when FName /= undefined ->
     Tpl  = [viewroot(Site), "/", FName, ".tpl"],
     Html = [viewroot(Site), "/", FName, ".html"],
     ok = case should_regen(Tpl, Html) of
@@ -362,9 +364,6 @@ iget(#refX{site = S}=Ref, page, #qry{rawview = View}, Env)
 iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
     json2(Env, auth_srv:get_as_json(S, P));
 
-iget(#refX{site = S}, page, #qry{users= []}, Env) ->
-    text_html(Env, hn_users:prettyprint_DEBUG(S));
-
 iget(Ref, page, #qry{pages = []}, Env=#env{accept = json}) ->
     json(Env, pages(Ref));
 
@@ -379,7 +378,7 @@ iget(Ref, page, #qry{views = []}, Env=#env{accept = json}) ->
               end || X <- AllViews ],
     json(Env, {array, [ X || X<-Views, X=/="_g/core/built" ] });
 
-% List of template pages
+                                                % List of template pages
 iget(Ref, page, #qry{templates = []}, Env) ->
     Fun = fun(X) ->
                   [F | _T] = lists:reverse(string:tokens(X, "/")),
@@ -389,27 +388,27 @@ iget(Ref, page, #qry{templates = []}, Env) ->
                   end
           end,
     Files = lists:dropwhile(Fun,
-              filelib:wildcard(docroot(Ref#refX.site)++"/templates/*")),
+                            filelib:wildcard(docroot(Ref#refX.site)++"/templates/*")),
     File = [filename:basename(X) || X <- Files], 
     json(Env, {array, File});
 
-iget(Ref, page, _Qry, Env=#env{accept = json, user = User}) ->
-    json(Env, page_attributes(Ref, User));
+iget(Ref, page, _Qry, Env=#env{accept = json, uid = Uid}) ->
+    json(Env, page_attributes(Ref, Uid));
 
 iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
-               [{_Ref, {"value", Val}}] when is_atom(Val) ->
-                   atom_to_list(Val);
-	            [{_Ref, {"value", {datetime, D, T}}}] ->
-                   dh_date:format("Y/m/d H:i:s",{D,T});
-               [{_Ref, {"value", {errval, Val}}}] ->
-                   atom_to_list(Val);
-               [{_Ref, {"value", Val}}] ->
-                   Val;
-               _Else ->
-                   error_logger:error_msg("unmatched ~p~n", [_Else]),
-                   ""
-           end,
+            [{_Ref, {"value", Val}}] when is_atom(Val) ->
+                atom_to_list(Val);
+            [{_Ref, {"value", {datetime, D, T}}}] ->
+                dh_date:format("Y/m/d H:i:s",{D,T});
+            [{_Ref, {"value", {errval, Val}}}] ->
+                atom_to_list(Val);
+            [{_Ref, {"value", Val}}] ->
+                Val;
+            _Else ->
+                error_logger:error_msg("unmatched ~p~n", [_Else]),
+                ""
+        end,
     json(Env, V);
 
 iget(Ref, Type, _Qry, Env=#env{accept=json})
@@ -434,12 +433,11 @@ iget(Ref, _Type, Qry, Env) ->
 
 ipost(Ref=#refX{site = S, path = P}, _Qry, 
       Env=#env{body = [{"drag", {_, [{"range", Rng}]}}],
-               auth_req = Ar,
-               user = User}) ->
-    ok = status_srv:update_status(User, S, P, "edited page"),
+               uid = Uid}) ->
+    ok = status_srv:update_status(Uid, S, P, "edited page"),
     hn_db_api:drag_n_drop(Ref, 
                           Ref#refX{obj = hn_util:parse_attr(range,Rng)},
-                          Ar),
+                          Uid),
     json(Env, "success");
 
 ipost(#refX{site = Site, path=["_user","login"]}, _Qry, Env) ->
@@ -459,74 +457,74 @@ ipost(_Ref, #qry{mark = []},
     json(Env, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Env=#env{body=[{"insert", "before"}], auth_req = Ar})
+      Env=#env{body=[{"insert", "before"}], uid = Uid})
   when O == row orelse O == column ->
-    ok = hn_db_api:insert(Ref, Ar),
+    ok = hn_db_api:insert(Ref, Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Env=#env{body=[{"insert", "after"}], auth_req = Ar})
+      Env=#env{body=[{"insert", "after"}], uid = Uid})
   when O == row orelse O == column ->
-    ok = hn_db_api:insert(make_after(Ref), Ar),
+    ok = hn_db_api:insert(make_after(Ref), Uid),
     json(Env, "success");
 
 %% by default cells and ranges displace vertically
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Env=#env{body=[{"insert", "before"}], auth_req = Ar})
+      Env=#env{body=[{"insert", "before"}], uid = Uid})
   when O == cell orelse O == range ->
-    ok = hn_db_api:insert(Ref, vertical, Ar),
+    ok = hn_db_api:insert(Ref, vertical, Uid),
     json(Env, "success");
 
 %% by default cells and ranges displace vertically
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Env=#env{body=[{"insert", "after"}], auth_req = Ar})
+      Env=#env{body=[{"insert", "after"}], uid = Uid})
   when O == cell orelse O == range ->
-    ok = hn_db_api:insert(make_after(Ref), Ar),
+    ok = hn_db_api:insert(make_after(Ref), Uid),
     json(Env, "success");
 
 %% but you can specify the displacement explicitly
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Env=#env{body=[{"insert", "before"}, {"displacement", D}],
-               auth_req = Ar})
+               uid = Uid})
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
-    ok = hn_db_api:insert(Ref, list_to_existing_atom(D), Ar),
+    ok = hn_db_api:insert(Ref, list_to_existing_atom(D), Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Env=#env{body=[{"insert", "after"}, {"displacement", D}],
-               auth_req = Ar})
+               uid = Uid})
   when O == cell orelse O == range,
        D == "horizontal" orelse D == "vertical" ->
     RefX2 = make_after(Ref),
-    ok = hn_db_api:insert(RefX2, list_to_existing_atom(D), Ar),
+    ok = hn_db_api:insert(RefX2, list_to_existing_atom(D), Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Env=#env{body=[{"delete", "all"}], auth_req = Ar}) 
+      Env=#env{body=[{"delete", "all"}], uid = Uid}) 
   when O == page ->
-    ok = hn_db_api:delete(Ref, Ar),
+    ok = hn_db_api:delete(Ref, Uid),
     json(Env, "success");
 
 ipost(Ref, _Qry, 
       Env=#env{body=[{"delete", "all"}],
-               auth_req = Ar}) ->
-    ok = hn_db_api:delete(Ref, Ar),
+               uid = Uid}) ->
+    ok = hn_db_api:delete(Ref, Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Env=#env{body=[{"delete", Direction}],
-               auth_req = Ar})
+               uid = Uid})
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
-    ok = hn_db_api:delete(Ref, Direction, Ar),
+    ok = hn_db_api:delete(Ref, Direction, Uid),
     json(Env, "success");
 
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copy", {struct, [{"src", Src}]}}],
-               auth_req = Ar}) ->
-    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, Ar),
+               uid = Uid}) ->
+    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {range, _}} = Ref, _Qry, 
@@ -540,60 +538,58 @@ ipost(#refX{obj = {range, _}} = Ref, _Qry,
 
 ipost(_Ref, _Qry,
       Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
-               user = anonymous}) ->
+               uid = anonymous}) ->
     S = {struct, [{"error", "cant set language for anonymous users"}]},
     json(Env, S);
 
-ipost(#refX{site = Site, path=["_user"]}, _Qry, 
-      Env=#env{body = [{"set", {struct, [{"language", Lang}]}}], 
-               user = User}) ->
-    ok = hn_users:update(Site, User, "language", Lang),
-    json(Env, "success");
+ipost(#refX{site = _Site, path=["_user"]}, _Qry, 
+      _Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
+               uid = _Uid}) ->
+    throw("can't set language right now");
+    %% ok = hn_users:update(Site, Uid, "language", Lang),
+    %% json(Env, "success");
 
 ipost(#refX{site = S, path = P}, Qry, 
       Env=#env{body = [{"set", {struct, [{"list", {array, Array}}]}}], 
-               auth_req = PosterAr,
-               user = User}) ->
-    ViewAr = get_view_ar(Qry#qry.view, S, PosterAr),
-    ok = status_srv:update_status(User, S, P, "edited page"),
+               uid = PosterUid}) ->
+    ViewUid = view_creator_uid(Qry#qry.view, S, PosterUid),
+    ok = status_srv:update_status(PosterUid, S, P, "edited page"),
     {Lasts, Refs} = fix_up(Array, S, P),
-    ok = hn_db_api:write_last(Lasts, PosterAr, ViewAr),
-    ok = hn_db_api:write_attributes(Refs, PosterAr, ViewAr),
+    ok = hn_db_api:write_last(Lasts, PosterUid, ViewUid),
+    ok = hn_db_api:write_attributes(Refs, PosterUid, ViewUid),
     json(Env, "success");
 
 ipost(#refX{site = S, path = P, obj = O} = Ref, Qry, 
       Env=#env{body = [{"set", {struct, Attr}}], 
-               auth_req = PosterAr,
-               user = User}) ->
+               uid = PosterUid}) ->
     Type = element(1, O),
-    ViewAr = get_view_ar(Qry#qry.view, S, PosterAr),
-    ok = status_srv:update_status(User, S, P, "edited page"),
+    ViewUid = view_creator_uid(Qry#qry.view, S, PosterUid),
+    ok = status_srv:update_status(PosterUid, S, P, "edited page"),
     case Attr of
         %% TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
-            post_range_values(Ref, Vals, PosterAr, ViewAr);
+            post_range_values(Ref, Vals, PosterUid, ViewUid);
 
         %% if posting a formula to a row or column, append
         [{"formula", Val}] when Type == column; Type == row ->
-            ok = hn_db_api:write_last([{Ref, Val}], PosterAr, ViewAr);
+            ok = hn_db_api:write_last([{Ref, Val}], PosterUid, ViewUid);
 
         _Else ->
-            ok = hn_db_api:write_attributes([{Ref, Attr}], PosterAr, ViewAr)
+            ok = hn_db_api:write_attributes([{Ref, Attr}], PosterUid, ViewUid)
     end,
     json(Env, "success");
 
 ipost(Ref, _Qry, 
       Env=#env{body = [{"clear", What}],
-               auth_req = Ar}) 
+               uid = Uid}) 
   when What == "contents"; What == "style"; What == "all" ->
-    ok = hn_db_api:clear(Ref, list_to_atom(What), Ar),
+    ok = hn_db_api:clear(Ref, list_to_atom(What), Uid),
     json(Env, "success");
 
 ipost(#refX{site=Site, path=Path} = Ref, _Qry,
       Env=#env{body = [{"saveview", {struct, [{"name", Name}, {"tpl", Form},
                                               {"overwrite", OverWrite}]}}], 
-               auth_req = AuthReq,
-               user = User}) ->
+               uid = Uid}) ->
     TplPath = [viewroot(Site), "/" , Name, ".tpl"],
     ok      = filelib:ensure_dir([viewroot(Site), "/" , Name]),
 
@@ -601,8 +597,8 @@ ipost(#refX{site=Site, path=Path} = Ref, _Qry,
         true ->
             json(Env, "error");
         false ->
-            AuthSpec = [{user, hn_users:name(User)}, {group, "dev"}],
-            ok       = save_view(Site, Name, Form, AuthReq, Ref),
+            AuthSpec = ["user"],
+            ok       = save_view(Site, Name, Form, Uid, Ref),
             ok       = auth_srv:add_view(Site, Path, AuthSpec, Name),
             json(Env, "success")
     end;
@@ -750,10 +746,10 @@ ipost(Ref, _Qry,
     json(Env, S);
 
 ipost(#refX{site = Site, path = _P}, _Qry,
-      Env=#env{body = [{"admin", Json}], user = User}) ->
+      Env=#env{body = [{"admin", Json}], uid = Uid}) ->
     {struct,[{Fun, {struct, Args}}]} = Json,
     
-    case hn_web_admin:rpc(User, Site, Fun, Args) of
+    case hn_web_admin:rpc(Uid, Site, Fun, Args) of
         ok ->
             json(Env, {struct, [{"result", "success"}]});
         {error, Reason} ->
@@ -770,9 +766,9 @@ ipost(Ref, Qry, Env) ->
 %%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-get_view_ar(undefined, _Site, Poster) -> Poster; 
-get_view_ar(?SHEETVIEW, _Site, Poster) -> Poster;
-get_view_ar(View, Site, _Poster) ->
+view_creator_uid(undefined, _Site, Poster) -> Poster; 
+view_creator_uid(?SHEETVIEW, _Site, Poster) -> Poster;
+view_creator_uid(View, Site, _Poster) ->
     {ok, [Meta]} = file:consult([viewroot(Site), "/", View, ".meta"]),
     proplists:get_value(authreq, Meta).
 
@@ -909,9 +905,8 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
                                 {"timeout", "true"}]})
     end.
 
-page_attributes(#refX{site = S, path = P} = Ref, User) ->
-    Name = hn_users:name(User),
-    Groups = hn_users:groups(User),
+page_attributes(#refX{site = S} = Ref, Uid) ->
+    {ok,Name} = passport:uid_to_email(Uid),
     %% now build the struct
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
@@ -921,12 +916,10 @@ page_attributes(#refX{site = S, path = P} = Ref, User) ->
     Time   = {"time", remoting_reg:timestamp()},
     Usr    = {"user", Name},
     Host   = {"host", S},
-    Grps   = {"groups", {array, Groups}},
-    Lang   = {"lang", get_lang(User)},
-    Views = {views, {array, auth_srv:get_views(S, P, {Name, Groups})}},
-    
-    {struct, [Time, Usr, Host, Lang, Grps, Views
-              | dict_to_struct(Dict)]}.
+    Lang   = {"lang", get_lang(Uid)},
+    Views  = {"views", {array, []}},
+    Groups = {"groups", {array, []}},
+    {struct, [Time, Usr, Host, Lang, Groups, Views | dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};
@@ -1010,8 +1003,8 @@ pages_to_json(X, Dict) ->
 
 -spec save_view(string(), string(), string(), uid(), #refX{}) -> ok.
 %%
-save_view(Site, ViewName, ViewContent, AuthReq, Ref) ->
-    Data = [{ref, Ref}, {authreq, AuthReq}, {content, ViewContent}],
+save_view(Site, ViewName, ViewContent, Uid, Ref) ->
+    Data = [{ref, Ref}, {authreq, Uid}, {content, ViewContent}],
     Path = [viewroot(Site), "/" , ViewName, ".meta"],
     ok = file:write_file(Path ,io_lib:fwrite("~p.\n",[Data])),
     ok = save_view(Site, ViewName, Data).
@@ -1019,8 +1012,8 @@ save_view(Site, ViewName, ViewContent, AuthReq, Ref) ->
 -spec save_view(string(), string(), list()) -> ok.
 %%
 save_view(Site, ViewName,
-          [{ref, Ref}, {authreq, AuthReq}, {content, Content}]) ->    
-    Sec  = hn_security:make(Content, Ref, AuthReq),
+          [{ref, Ref}, {authreq, Uid}, {content, Content}]) ->    
+    Sec  = hn_security:make(Content, Ref, Uid),
     Path = [viewroot(Site), "/" , ViewName],
     ok   = file:write_file([Path , ".tpl"], Content),
     ok   = file:write_file([Path , ".sec"], io_lib:fwrite("~p.\n",[Sec])).
@@ -1080,35 +1073,34 @@ process_environment(Mochi) ->
          body = Body}.
 
 -spec process_cookies(string(), #env{}) -> #env{}. 
-process_cookies(Site, R) ->
-    R2 = #env{user = User} = get_user(Site, R),
-    R3 = R2#env{auth_req = {hn_users:name(User), 
-                            hn_users:groups(User)}},
-    get_uid(Site, R3).
+process_cookies(Site, E) ->
+    E2 = get_user(Site, E),
+    get_spoor(Site, E2).
 
 -spec get_user(string(), #env{}) -> #env{}. 
-get_user(Site, E=#env{mochi = Mochi}) ->
-    Auth = Mochi:get_cookie_value("auth"),
-    case hn_users:verify_token(Site, Auth) of
-        {ok, User}        -> E#env{user = User};
-        {error, no_token} -> E#env{user = anonymous};
-        {error, _Reason}  ->
-            %% authtoken was invalid (probably did a clean_start() while
-            %% logged in, kill the cookie
-            Opts = [{path, "/"}, {max_age, 0}],
-            Cookie = mochiweb_cookies:cookie("auth", "expired", Opts),
-            E#env{user = anonymous, 
-                  headers = [Cookie | E#env.headers]}
-    end.
+get_user(_Site, E=#env{mochi = _Mochi}) ->
+    E#env{uid = anonymous}.
+    %% Auth = Mochi:get_cookie_value("auth"),
+    %% case hn_users:verify_token(Site, Auth) of
+    %%     {ok, User}        -> E#env{user = User};
+    %%     {error, no_token} -> E#env{user = anonymous};
+    %%     {error, _Reason}  ->
+    %%         %% authtoken was invalid (probably did a clean_start() while
+    %%         %% logged in, kill the cookie
+    %%         Opts = [{path, "/"}, {max_age, 0}],
+    %%         Cookie = mochiweb_cookies:cookie("auth", "expired", Opts),
+    %%         E#env{user = anonymous, 
+    %%               headers = [Cookie | E#env.headers]}
+    %% end.
 
--spec get_uid(string(), #env{}) -> #env{}.
-get_uid(Site, E=#env{mochi = Mochi}) ->
-    case Mochi:get_cookie_value("uid") of
+-spec get_spoor(string(), #env{}) -> #env{}.
+get_spoor(Site, E=#env{mochi = Mochi}) ->
+    case Mochi:get_cookie_value("spoor") of
         undefined ->
-            Uid = mochihex:to_hex(crypto:rand_bytes(8)),
+            Spoor = mochihex:to_hex(crypto:rand_bytes(8)),
             Opts = [{path, "/"}, {max_age, ?TWO_YEARS}],
-            Cookie = mochiweb_cookies:cookie("uid", Uid, Opts),
-            R2 = E#env{uid = Uid, headers = [Cookie | E#env.headers]},
+            Cookie = mochiweb_cookies:cookie("spoor", Spoor, Opts),
+            R2 = E#env{spoor = Spoor, headers = [Cookie | E#env.headers]},
             case application:get_env(hypernumbers, pingto) of
                 {ok, Site} ->
                     %% No ping pong today
@@ -1117,15 +1109,15 @@ get_uid(Site, E=#env{mochi = Mochi}) ->
                     Current = 
                         strip80(Site) ++ 
                         mochiweb_util:quote_plus(Mochi:get(raw_path)),
-                    Redir = PingTo++"/_ping/?uid="++Uid++"&return="++Current,
+                    Redir = PingTo++"/_ping/?spoor="++Spoor++"&return="++Current,
                     Redirect = {"Location", Redir},
                     respond(302, R2#env{headers = [Redirect | R2#env.headers]}),
                     throw(ok);
                 _Else ->
                     R2
             end;
-        Uid ->
-            E#env{uid = Uid}
+        Spoor ->
+            E#env{spoor = Spoor}
     end.
 
 
@@ -1171,9 +1163,9 @@ serve_html(Env, File) ->
     serve_html(200, Env, File).
 
 -spec serve_html(integer(), #env{}, iolist()) -> any(). 
-serve_html(Status, Env=#env{user = User}, File) ->
-    F = fun() -> hn_util:compile_html(File, get_lang(User)) end,
-    Response = cache(File, File++"."++get_lang(User), F),
+serve_html(Status, Env=#env{uid = Uid}, File) ->
+    F = fun() -> hn_util:compile_html(File, get_lang(Uid)) end,
+    Response = cache(File, File++"."++get_lang(Uid), F),
     serve_file(Status, Env, Response),
     ok.
 

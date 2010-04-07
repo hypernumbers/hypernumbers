@@ -33,11 +33,11 @@
                 generator :: generator(),
                 zone_id :: integer() }).
 
--record(record, { label :: {string(), string()},
-                  address :: resource_addr(),
+-record(record, { name, % :: {string(), string()},
+                  address,% :: resource_addr(),
                   %% Following two used for linode.
-                  zone_id :: integer(),
-                  resource_id :: integer()}).
+                  zone_id,% :: integer(),
+                  resource_id }).% :: integer()}).
 
 -record(resource, { address = [] :: resource_addr(),
                     weight = 0 :: integer() }).
@@ -233,7 +233,7 @@ handle_call({delete_zone, ZoneL}, _From, S) ->
     {reply, ok, S};
 
 handle_call({purge, ZoneL}, _From, S) ->
-    MS = ets:fun2ms(fun(#record{label = {Z, _}}=R) 
+    MS = ets:fun2ms(fun(#record{name = {Z, _}}=R) 
                           when ZoneL == Z -> R 
                     end),
     DelF = fun() ->
@@ -257,7 +257,7 @@ handle_call({link_resource, ZoneL}, _From, S) ->
                           underflow;
                       _ -> 
                           {Name, Address, RId, Z2} = get_mapping(Z),
-                          Rec = #record{label = {Z2#zone.label, Name},
+                          Rec = #record{name = {Z2#zone.label, Name},
                                         address = Address,
                                         zone_id = Z2#zone.zone_id,
                                         resource_id = RId},

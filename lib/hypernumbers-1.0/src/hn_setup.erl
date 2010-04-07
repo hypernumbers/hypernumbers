@@ -216,7 +216,7 @@ group_transform(X, _Opts) ->
 -spec run_script(tuple(), string(), [tuple()]) -> ok. 
 run_script({Path, '$email'}, Site, Opts) ->
     write_cell(Path, Site, pget(email, Opts));
-run_script({Path, '$creator'}, Site, Opts) ->
+run_script({Path, '$name'}, Site, Opts) ->
     write_cell(Path, Site, pget(name, Opts));
 run_script({Path, '$site'}, Site, _Opts) ->
     write_cell(Path, Site, Site);

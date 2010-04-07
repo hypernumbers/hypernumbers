@@ -19,6 +19,6 @@
 %% Note that the expressions end in a full stop '.'
 %%
 
-{"/admin/C4", '$user'}.
+{"/admin/C4", '$name'}.
 {"/admin/C5", '$site'}.
 {"/admin/C6", '$expiry'}.

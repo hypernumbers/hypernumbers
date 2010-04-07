@@ -98,7 +98,8 @@ authenticate(Email, Password, Remember) ->
         Else -> Else
     end.
 
--spec uid_to_email(uid()) -> string().
+-spec uid_to_email(uid()) -> {ok,anonymous | string()} | {error, invalid_uid}.
+uid_to_email(anonymous) -> {ok,anonymous};
 uid_to_email(Uid) -> 
     gen_server:call({global, ?MODULE}, {uid_to_email, Uid}).
 
@@ -107,11 +108,11 @@ get_or_create_user(Email) ->
     gen_server:call({global, ?MODULE}, {get_or_create_user, Email}).
     
 -spec create_user(string(), string(), string()) -> string().
-create_user(Uid, Email, Password) ->
+create_user(Uid, Email, Password) when is_list(Uid) ->
     gen_server:call({global, ?MODULE}, {create_user, Uid, Email, Password}).
 
 -spec delete_user(string()) -> string().
-delete_user(Uid) ->
+delete_user(Uid) when is_list(Uid) ->
     gen_server:call({global, ?MODULE}, {delete_user, Uid}).
 
 %%%===================================================================
@@ -161,7 +162,7 @@ handle_call({authenticate, Email, Password}, _From, State) ->
         end,
     Ret = case mnesia:activity(async_dirty, F) of
               [#user{uid=Uid}] -> {ok, Uid};
-              _Else            -> {error, invalid_user}
+              _Else            -> {error, invalid_uid}
           end,
     {reply, Ret, State};
 
@@ -169,7 +170,7 @@ handle_call({uid_to_email, Uid}, _From, State) ->
     Ret = case mnesia:activity(async_dirty, fun mnesia:read/3, 
                                [service_passport_user, Uid, read]) of
               [U] -> {ok, U#user.email}; 
-              _   -> {error, invalid_user}
+              _   -> {error, invalid_uid}
           end,
     {reply, Ret, State};
 

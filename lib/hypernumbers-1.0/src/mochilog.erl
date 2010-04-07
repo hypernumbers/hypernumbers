@@ -35,14 +35,14 @@ start() ->
 
 %% @doc Logs individual requests
 -spec log(#env{}, #refX{}) -> ok.
-log(Env=#env{mochi = Mochi, user = User, raw_body = Body}, Ref) ->
+log(Env=#env{mochi = Mochi, uid = Uid, raw_body = Body}, Ref) ->
     Post = [{time, erlang:now()},
             {site, Ref#refX.site},
             {path, Mochi:get(raw_path)},
             {method, Mochi:get(method)},
             {body, Body},
-            {user, hn_users:name(User)},
-            {uid, Env#env.uid},
+            {user, Uid},
+            {spoor, Env#env.spoor},
             {peer, Mochi:get_header_value("x-forwarded-for")},
             {referer, Mochi:get_header_value("Referer")},
             {browser, Mochi:get_header_value("User-Agent")},
@@ -113,8 +113,8 @@ mi_entry(Post, _) ->
     Path = proplists:get_value(path, Post),
     Mthd = proplists:get_value(method, Post),
     Peer = proplists:get_value(peer, Post),
-    Usr = proplists:get_value(user, Post),
     Uid = proplists:get_value(uid, Post),
+    Spoor = proplists:get_value(spoor, Post),
     Rfr = proplists:get_value(referer, Post),
     UA = proplists:get_value(browser, Post),
     Accept = proplists:get_value(accept, Post),
@@ -126,10 +126,10 @@ mi_entry(Post, _) ->
                     false -> ""
                 end
         end,
-
+    Email = passport:uid_to_email(Uid),
     Format = "~p,~p,~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
     io_lib:format(Format, [Date, Site, Path, S, atol(Mthd),
-                           Peer, Usr, Uid, Rfr, UA, Accept]).
+                           Peer, Email, Spoor, Rfr, UA, Accept]).
 
 
 -spec replay(string(), string()) -> ok.

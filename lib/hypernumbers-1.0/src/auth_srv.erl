@@ -20,7 +20,6 @@
          set_champion/3,
          set_challenger/3,
          remove_views/3,
-         delete_site/1,
          get_as_json/2,
          dump_script/1,
          load_script/2
@@ -48,7 +47,7 @@
 
 -record(state, {site :: string(),
                 table :: string(),
-                trees :: gb_tree() }).
+                tree :: gb_tree() }).
 
 %%%===================================================================
 %%% API
@@ -124,11 +123,6 @@ get_as_json(Site, Path) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {get_as_json, Path}).
 
--spec delete_site(string()) -> ok. 
-delete_site(Site) ->
-    Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, delete_site).
-
 -spec clear_all_perms_DEBUG(string()) -> ok. 
 clear_all_perms_DEBUG(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
@@ -163,10 +157,10 @@ init([Site]) ->
     Table = hn_util:site_to_fs(Site),
     Dir = filename:join([code:lib_dir(hypernumbers), "..", "..",
                          "var", "dets"]),
-    Trees = load_trees(Dir, Table),
+    Tree = load_tree(Dir, Table),
     {ok, #state{site = Site,
                 table = Table,
-                trees = Trees}}.
+                tree = Tree}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -186,49 +180,43 @@ handle_call(stop, _From, State) ->
     {stop, normal, State};
 
 handle_call(Request, _From, State) ->
-    #state{trees = Tr, table = Table, site = Site} = State,
-    Return1 =
-        case Request of
-            {check_get_view, P, U} ->
-                {check_get_view1(Site, Tr, P, U, champion), false};
-            {check_get_challenger, P, U} ->
-                {check_get_view1(Site, Tr, P, U, challenger),
-                 false};
-            {check_particular_view, P, U, V} ->
-                {check_particular_view1(Site, Tr, P, U, V), false};
-            {get_views, P, U} ->
-                {get_views1(Site, Tr, P, U), false};
-            {add_view, Pg, AS, V} ->
-                {add_view1(Tr, Pg, AS, V), true};
-            {set_view, Pg, AS, V} ->
-                {set_view1(Tr, Pg, AS, V), true};
-            {set_champion, Pg, Df} ->
-                {set_default(Tr, Pg, Df, champion), true};
-            {set_challenger, Pg, Df} ->
-                {set_default(Tr, Pg, Df, challenger), true};
-            {rem_views, P, Vs} ->
-                {remove_views1(Tr, P, Vs), true};
-            {get_as_json, P} ->
-                {get_as_json1(Tr, P), false};
-            delete_site ->
-                {delete};
-            clear_all_perms ->
-                {gb_trees:empty(), true};
-            dump_script ->
-                {dump_script1(Tr), false};
-            {load_script, Terms} ->
-                {load_script1(Terms), true}
-            end,
-    {Reply, NewTr} =
-        case Return1 of
-            {Return2, true} ->
-                {ok, save_trees(Table, Site, Return2, Tr)};
-            {Return2, false} ->
-                {Return2, Tr};
-            {delete} ->
-                {ok, del_site_tree(Table, Site, Tr)}
-        end,
-    {reply, Reply, State#state{trees = NewTr}}.
+    #state{tree = Tr, table = Table, site = Site} = State,
+    Return1 = case Request of
+                  {check_get_view, P, U} ->
+                      {check_get_view1(Site, Tr, P, U, champion), false};
+                  {check_get_challenger, P, U} ->
+                      {check_get_view1(Site, Tr, P, U, challenger),
+                       false};
+                  {check_particular_view, P, U, V} ->
+                      {check_particular_view1(Site, Tr, P, U, V), false};
+                  {get_views, P, U} ->
+                      {get_views1(Site, Tr, P, U), false};
+                  {add_view, Pg, AS, V} ->
+                      {add_view1(Tr, Pg, AS, V), true};
+                  {set_view, Pg, AS, V} ->
+                      {set_view1(Tr, Pg, AS, V), true};
+                  {set_champion, Pg, Df} ->
+                      {set_default(Tr, Pg, Df, champion), true};
+                  {set_challenger, Pg, Df} ->
+                      {set_default(Tr, Pg, Df, challenger), true};
+                  {rem_views, P, Vs} ->
+                      {remove_views1(Tr, P, Vs), true};
+                  {get_as_json, P} ->
+                      {get_as_json1(Tr, P), false};
+                  clear_all_perms ->
+                      {gb_trees:empty(), true};
+                  dump_script ->
+                      {dump_script1(Tr), false};
+                  {load_script, Terms} ->
+                      {load_script1(Terms), true}
+              end,
+    case Return1 of
+        {NewTree, true} ->
+            ok = save_tree(Table, NewTree),
+            {reply, ok, State#state{tree = NewTree}};
+        {Reply, _} ->
+            {reply, Reply, State}
+    end.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -394,8 +382,8 @@ can_view(Site, Uid, #view{groups = Groups}) ->
 %% Tree Manipulations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec load_trees(string(), string()) -> gb_tree().
-load_trees(Dir, Table) ->
+-spec load_tree(string(), string()) -> gb_tree().
+load_tree(Dir, Table) ->
     filelib:ensure_dir([Dir,"/"]),
     {ok, _} = dets:open_file(Table, [{file, filename:join(Dir,Table)}]),
     %% if the value of auth_tree is an empty list,
@@ -405,18 +393,11 @@ load_trees(Dir, Table) ->
         [{?KEY, Val}] -> Val
     end.
 
--spec save_trees(string(), string(), gb_tree(), gb_tree()) -> gb_tree(). 
-save_trees(Table, Site, NewTree, Trees) ->
-    NewTrees = gb_trees:enter(Site, NewTree, Trees),
-    ok = dets:insert(Table, {?KEY, NewTrees}),
-    NewTrees.
+%% Todo: This really shouldn't be Dets.
+-spec save_tree(string(), gb_tree()) -> ok.
+save_tree(Table, NewTree) ->
+    ok = dets:insert(Table, {?KEY, NewTree}).
 
--spec del_site_tree(string(), string(), gb_tree()) -> gb_tree().
-del_site_tree(Table, Site, Trees) ->
-    NewTrees = gb_trees:delete_any(Site, Trees),
-    ok = dets:insert(Table, {?KEY, NewTrees}),
-    NewTrees.
-                                            
 -spec alter_tree(gb_tree(), 
                  [string()], 
                  fun((#control{}) -> #control{})) -> gb_tree().

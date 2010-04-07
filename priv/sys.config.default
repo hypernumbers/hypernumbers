@@ -24,7 +24,7 @@
     ]}, 
 
    %% Delete to turn-off centralized tracking.
-   {pingto, "http://hypernumbers.com"},
+   %{pingto, "http://hypernumbers.com"},
 
    %% Mail Setup
    {mailserver,   "smtp.gmail.com"},
