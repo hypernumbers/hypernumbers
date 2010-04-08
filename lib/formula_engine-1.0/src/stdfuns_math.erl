@@ -78,7 +78,6 @@
          mround/1,
          odd/1,
          trunc/1,
-         fixed/1,
 
          %% Special numbers
          pi/1,
@@ -607,32 +606,6 @@ trunc([V1]) ->
 trunc([V1, V2]) ->
     [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
     rounddown1(Num, erlang:round(NumDigits)).
-
-%% Fixed is a bit of a mess
-fixed([Num]) ->
-    fixed([Num, 2, false]);
-fixed([Num, Decimals]) ->
-    fixed([Num, Decimals, false]);
-fixed([N1, N2, N3]) ->
-    Num = col([N1], [first_array, fetch_name,{cast,num}],
-              [return_errors, {all, fun is_number/1}]),
-    Dec = col([N2], [first_array, fetch_name,{cast,num}],
-              [return_errors, {all, fun is_number/1}]),
-    Com = col([N3], [first_array, fetch_name,{cast,bool}],
-              [return_errors, {all, fun is_atom/1}]),
-    muin_util:run_or_err([Num, Dec, Com], fun fixed_/1).
-
-fixed_([Num, Dec, Com]) ->
-    
-    RoundedNum = stdfuns_math:round([Num, Dec]) * 1.0,
-    Str = ?COND(Dec > 0,
-                hd(io_lib:format("~." ++ tconv:to_l(Dec) ++ "f", [RoundedNum])),
-                tconv:to_l(erlang:trunc(RoundedNum))),
-
-    case Com of
-        true  -> Str;
-        false -> tconv:to_num(Str)
-    end.
 
 %%% Special numbers ~~~~~
 

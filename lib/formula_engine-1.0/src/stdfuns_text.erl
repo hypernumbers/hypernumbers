@@ -23,14 +23,15 @@
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
--include("hypernumbers.hrl").
+
+-import(tconv, [to_i/1, to_l/1, to_s/1]).
 
 -import(muin_collect, [col/3, col/2, col/4]).
 
 %% Excel 2004 API.
 -export([value/1, t/1, replace/1, search/1, '&'/1, char/1, clean/1,
          concatenate/1,
-         exact/1, find/1, left/1, len/1, lower/1, mid/1, proper/1,
+         exact/1, find/1, fixed/1, left/1, len/1, lower/1, mid/1, proper/1,
          rept/1, right/1, substitute/1, text/1, trim/1, upper/1]).
 
 %% Default set of rules for text
@@ -138,6 +139,38 @@ clean_([Str]) ->
                           andalso X =/= 10 andalso X =/= 8
             end,
     filter(Clean, Str).
+
+%% Fixed is a bit of a mess
+fixed([Num]) ->
+    fixed([Num, 2, false]);
+fixed([Num, Decimals]) ->
+    fixed([Num, Decimals, false]);
+fixed([N1, N2, N3]) ->
+    Num = col([N1], [first_array, fetch_name,{cast,num}],
+              [return_errors, {all, fun is_number/1}]),
+    Dec = col([N2], [first_array, fetch_name,{cast,num}],
+              [return_errors, {all, fun is_number/1}]),
+    Com = col([N3], [first_array, fetch_name,{cast,bool}],
+              [return_errors, {all, fun is_atom/1}]),
+    muin_util:run_or_err([Num, Dec, Com], fun fixed_/1).
+
+fixed_([Num, Dec, Com]) ->
+    
+    RoundedNum = stdfuns_math:round([Num, Dec]) * 1.0,
+    Str = ?COND(Dec > 0,
+                hd(io_lib:format("~." ++ to_l(Dec) ++ "f", [RoundedNum])),
+                to_l(erlang:trunc(RoundedNum))),
+
+    case Com of
+        true ->
+            Str;
+        false ->
+            [Int | Decs]=string:tokens(Str,"."),
+            case Decs of
+                [] -> commify(Int);
+                _  -> commify(Int) ++ "."++hd(Decs)
+            end
+    end.
 
 lower([Str]) ->
     NewStr=?string(Str,?default_str_rules),
@@ -318,6 +351,14 @@ trim_([S]) ->
 %%% ----------------- %%%
 %%% Private functions %%%
 %%% ----------------- %%%
+
+%% Takes an integer (as list), and gives it back formatted with commas.
+commify(IntAsStr) when is_list(IntAsStr) ->
+  commify(lists:reverse(IntAsStr), $,, []).
+commify([A, B, C, D | T], P, Acc) ->
+  commify([D|T], P, [P, C, B, A|Acc]);
+commify(L, _, Acc) ->
+  lists:reverse(L) ++ Acc.
 
 %% turns an Excel type wildcard into a regexp
 wild_to_rgx(Str) -> wild_to_rgx(Str,[]).
