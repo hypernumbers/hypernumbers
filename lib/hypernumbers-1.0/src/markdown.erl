@@ -13,6 +13,8 @@
          conv_utf8/1,
          conv_file/2]).
 
+% -export([debug/0]).
+
 -import(lists, [flatten/1, reverse/1]).
 
 -include_lib("eunit/include/eunit.hrl").
@@ -24,6 +26,10 @@
 -define(NBSP, 160).
 -define(AMP, $&, $a, $m, $p, $;).
 -define(COPY, $&, $c, $o, $p, $y, $;).
+
+% debug() ->
+%     Str = "<table id=\"blah\"><tr><td>Text</td><td><img src=\"http://imgur.com/VmdEL.png\"></td></tr></table>",
+%     conv(Str).
 
 %%% the lexer first lexes the input
 %%% make_lines does 2 passes:
@@ -111,10 +117,10 @@ p1([{tag, Tag} | T], R, I, Acc) ->
                                 [pad(I) ++ make_tag_str(Tag, R) | Acc])
     end;
 
-p1([{blocktag, [{{{tag, open}, Type}, Tg}] = _Tag} | T], R, I, Acc) ->
-    {Block, Rest} = grab_for_blockhtml(T, Type, []),
-    Str = lists:flatten([Tg, "\n" | Block]),
-    p1(Rest, R, I, [Str | Acc]);
+% p1([{blocktag, [{{{tag, open}, Type}, Tg}] = _Tag} | T], R, I, Acc) ->
+%     {Block, Rest} = grab_for_blockhtml(T, Type, []),
+%     Str = lists:flatten([Tg, "\n" | Block]),
+%     p1(Rest, R, I, [Str | Acc]);
     
 %% blank lines/linefeeds are gobbled down
 p1([{Type, _} | T], R, I, Acc)
@@ -133,16 +139,16 @@ p1([{normal, P}, {setext_h1, _} | T], R, I, Acc) ->
     p1(T, R, I,  [pad(I) ++ "<h1>" ++ make_str(snip(P), R)
                         ++ "</h1>\n\n" | Acc]); 
 p1([{blockquote, P}, {setext_h1, _} | T], R, I, Acc) ->
-    p1(T, R, I,  [pad(I) ++ "<h1>" ++ make_str(snip(P), R)
+    p1(T, R, I,  [pad(I) ++ "<h1>" ++ make_str_no_tags(snip(P), R)
                         ++ "</h1>\n\n" | Acc]); 
 p1([{{codeblock, P}, _}, {setext_h1, _} | T], R, I, Acc) ->
-    p1(T, R, I,  [pad(I) ++ "<h1>" ++ make_str(snip(P), R)
+    p1(T, R, I,  [pad(I) ++ "<h1>" ++ make_str_no_tags(snip(P), R)
                         ++ "</h1>\n\n" | Acc]); 
 p1([{blockquote, P}, {h2_or_hr, _} | T], R, I, Acc) ->
-    p1(T, R, I,  [pad(I) ++ "<h2>" ++ make_str(snip(P), R)
+    p1(T, R, I,  [pad(I) ++ "<h2>" ++ make_str_no_tags(snip(P), R)
                         ++ "</h2>\n\n" | Acc]); 
 p1([{{codeblock, P}, _}, {h2_or_hr, _} | T], R, I, Acc) ->
-    p1(T, R, I,  [pad(I) ++ "<h2>" ++ make_str(snip(P), R)
+    p1(T, R, I,  [pad(I) ++ "<h2>" ++ make_str_no_tags(snip(P), R)
                         ++ "</h2>\n\n" | Acc]); 
 
 %% but a setext with no lookbehind is just rendered as a normal line,
@@ -165,7 +171,7 @@ p1([{blockquote, P1}, {normal, P2} | T], R, I, Acc) ->
 %% blockquote
 p1([{blockquote, P} | T], R, I, Acc) ->
     [{{md, gt}, _} | T1] = P,
-    T2 = string:strip(make_str(T1, R)),
+    T2 = string:strip(make_str_no_tags(T1, R)),
     p1(T, R, I,
        ["\n<blockquote>\n" ++ pad(I + 1) ++ "<p>" ++ T2 ++ "</p>\n</blockquote>" | Acc]);
     
@@ -220,7 +226,7 @@ p1([{{codeblock, P1}, S1}, {{codeblock, P2}, S2} | T], R, I, Acc) ->
     p1([{{codeblock, merge(P1, pad(I), P2)}, S1 ++ S2} | T], R, I, Acc);
 p1([{{codeblock, P}, _} | T], R, I, Acc) ->
     Rest = grab_empties(T),
-    p1(Rest, R, I,  ["<pre><code>" ++ make_str(snip(P), R)
+    p1(Rest, R, I,  ["<pre><code>" ++ make_str_no_tags(snip(P), R)
                      ++ "\n</code></pre>\n\n" | Acc]);
 
 %% horizontal rules
@@ -238,22 +244,22 @@ p1([{h2_or_hr, _} | T], R, I, Acc) ->
 p1([{inlineref, _P} | T], R, I, Acc) ->
     p1(T, R, I, Acc).
 
-grab_for_blockhtml([], Type, Acc) ->
-    {lists:reverse(["</" ++ Type ++ ">" | Acc]), []};
-grab_for_blockhtml([{blocktag, [{{{tag, close}, Type}, Tg}]}
-                    | T], Type,  Acc) ->
-    {lists:reverse([Tg | Acc]), T};
-grab_for_blockhtml([{blocktag, [{{{tag, _}, GrabType}, Tg}]}
-                    | T], Type,  Acc) when GrabType =/= Type ->
-    % blocktags grabbed in a blocktag need a line ending pushed
-    grab_for_blockhtml(T, Type, ["\n", Tg | Acc]);
-grab_for_blockhtml([{tag, {{{tag, self_closing}, _Ty}, Tg}}
-                    | T], Type, Acc) ->
-    grab_for_blockhtml(T, Type, [Tg | Acc]);
-grab_for_blockhtml([H | T], Type, Acc) ->
-    {_Type, Content} = H,
-    Str = make_plain_str(Content),
-    grab_for_blockhtml(T, Type, [Str | Acc]).
+% grab_for_blockhtml([], Type, Acc) ->
+%     {lists:reverse(["</" ++ Type ++ ">" | Acc]), []};
+% grab_for_blockhtml([{blocktag, [{{{tag, close}, Type}, Tg}]}
+%                     | T], Type,  Acc) ->
+%     {lists:reverse([Tg | Acc]), T};
+% grab_for_blockhtml([{blocktag, [{{{tag, _}, GrabType}, Tg}]}
+%                     | T], Type,  Acc) when GrabType =/= Type ->
+%     % blocktags grabbed in a blocktag need a line ending pushed
+%     grab_for_blockhtml(T, Type, ["\n", Tg | Acc]);
+% grab_for_blockhtml([{tag, {{{tag, self_closing}, _Ty}, Tg}}
+%                     | T], Type, Acc) ->
+%     grab_for_blockhtml(T, Type, [Tg | Acc]);
+% grab_for_blockhtml([H | T], Type, Acc) ->
+%     {_Type, Content} = H,
+%     Str = make_plain_str(Content),
+%     grab_for_blockhtml(T, Type, [Str | Acc]).
 
 grab_empties([{linefeed, _} | T]) -> grab_empties(T);
 grab_empties([{blank, _} | T])    -> grab_empties(T);
@@ -519,16 +525,16 @@ t_l1([[{{md, underscore}, _} | _T1] = H | T], A1, A2) ->
 t_l1([[{{md, star}, _} | _T1] = H | T], A1, A2) ->
     t_l1(T, A1, [type_star(H) | A2]);
 
-%% Block level tags - these are look ahead they must be
-%% on a single line (ie directly followed by a lf and nothing else
-t_l1([[{{{tag, _Type}, Tag}, _ } = H | T1] = List | T], A1, A2) ->
-    case is_blank(T1) of
-        false -> t_l1(T, A1, [{normal , List} | A2]);
-        true  -> case is_block_tag(Tag) of
-                     true  -> t_l1(T, A1, [{blocktag , [H]} | A2]);
-                     false -> t_l1(T, A1, [{tag, [H | T1]} | A2])
-                 end
-    end;
+% %% Block level tags - these are look ahead they must be
+% %% on a single line (ie directly followed by a lf and nothing else
+% t_l1([[{{{tag, _Type}, Tag}, _ } = H | T1] = List | T], A1, A2) ->
+%     case is_blank(T1) of
+%         false -> t_l1(T, A1, [{normal , List} | A2]);
+%         true  -> case is_block_tag(Tag) of
+%                      true  -> t_l1(T, A1, [{blocktag , [H]} | A2]);
+%                      false -> t_l1(T, A1, [{tag, [H | T1]} | A2])
+%                  end
+%     end;
 
 %% types a blank line or a code block
 t_l1([[{{lf, _}, _}| []]  = H | T], A1, A2) ->
@@ -558,40 +564,40 @@ strip_l1(List)                -> List.
 %% Loads of type rules...
 %%
 
-is_blank([])                  -> true;
-is_blank([{{lf, _}, _} | []]) -> true;
-is_blank([{{ws, _}, _} | T])  -> is_blank(T);
-is_blank(_List)               -> false.
+% is_blank([])                  -> true;
+% is_blank([{{lf, _}, _} | []]) -> true;
+% is_blank([{{ws, _}, _} | T])  -> is_blank(T);
+% is_blank(_List)               -> false.
 
-is_block_tag("address")    -> true;
-is_block_tag("blockquote") -> true;
-is_block_tag("center")     -> true;
-is_block_tag("dir")        -> true;
-is_block_tag("div")        -> true;
-is_block_tag("dl")         -> true;
-is_block_tag("fieldset")   -> true;
-is_block_tag("form")       -> true;
-is_block_tag("h1")         -> true;
-is_block_tag("h2")         -> true;
-is_block_tag("h3")         -> true;
-is_block_tag("h4")         -> true;
-is_block_tag("h5")         -> true;
-is_block_tag("h6")         -> true;
-is_block_tag("hr")         -> true;
-is_block_tag("isindex")    -> true;
-is_block_tag("menu")       -> true;
-is_block_tag("noframes")   -> true;
-is_block_tag("noscript")   -> true;
-is_block_tag("ol")         -> true;
-is_block_tag("p")          -> true;
-is_block_tag("pre")        -> true;
-is_block_tag("table")      -> true;
-is_block_tag("thead")      -> true;
-is_block_tag("tbody")      -> true;
-is_block_tag("tr")         -> true;
-is_block_tag("td")         -> true;
-is_block_tag("ul")         -> true;
-is_block_tag(_Other)       -> false.
+% is_block_tag("address")    -> true;
+% is_block_tag("blockquote") -> true;
+% is_block_tag("center")     -> true;
+% is_block_tag("dir")        -> true;
+% is_block_tag("div")        -> true;
+% is_block_tag("dl")         -> true;
+% is_block_tag("fieldset")   -> true;
+% is_block_tag("form")       -> true;
+% is_block_tag("h1")         -> true;
+% is_block_tag("h2")         -> true;
+% is_block_tag("h3")         -> true;
+% is_block_tag("h4")         -> true;
+% is_block_tag("h5")         -> true;
+% is_block_tag("h6")         -> true;
+% is_block_tag("hr")         -> true;
+% is_block_tag("isindex")    -> true;
+% is_block_tag("menu")       -> true;
+% is_block_tag("noframes")   -> true;
+% is_block_tag("noscript")   -> true;
+% is_block_tag("ol")         -> true;
+% is_block_tag("p")          -> true;
+% is_block_tag("pre")        -> true;
+% is_block_tag("table")      -> true;
+% is_block_tag("thead")      -> true;
+% is_block_tag("tbody")      -> true;
+% is_block_tag("tr")         -> true;
+% is_block_tag("td")         -> true;
+% is_block_tag("ul")         -> true;
+% is_block_tag(_Other)       -> false.
 
 type_underscore(List) ->
     case type_underscore1(trim_right(List)) of
@@ -791,11 +797,11 @@ make_tag1([{{{tag, _Type}, _Tag}, B} | T], R, Acc) ->
 make_tag1([H | T], R, Acc) ->
     make_tag1(T, R, [make_str([H], R) | Acc]).
 
-esc_tag(String) -> esc_t1(String, []).
+% esc_tag(String) -> esc_t1(String, []).
 
-esc_t1([], Acc)          -> lists:reverse(Acc);
-esc_t1([?NBSP | T], Acc) -> esc_t1(T, [?SPACE | Acc]); % non-breaking space to space
-esc_t1([H | T], Acc)     -> esc_t1(T, [H | Acc]).
+% esc_t1([], Acc)          -> lists:reverse(Acc);
+% esc_t1([?NBSP | T], Acc) -> esc_t1(T, [?SPACE | Acc]); % non-breaking space to space
+% esc_t1([H | T], Acc)     -> esc_t1(T, [H | Acc]).
                   
 %% if it is a list we need to discard the initial white space...
 make_list_str([{{ws, _}, _} | T] = List) ->
@@ -1052,21 +1058,23 @@ m_esc([{tags, Tag} | T], R, A) -> m_esc(T, R, [{tags, Tag} | A]);
 m_esc([H | T], R, A)           -> m_esc(T, R, [make_str([H], R) | A]).
 
     
-make_str(List, Refs) -> m_str1(List, Refs, []).
+make_str(List, Refs) -> m_str1(List, Refs, true, []).
 
-m_str1([], _R, A) ->
+make_str_no_tags(List, Refs) -> m_str1(List, Refs, false, []).
+
+m_str1([], _R, _AllowTags, A) ->
     Flat = flatten(reverse(A)),
     htmlchars(Flat);
-m_str1([{{punc, bang}, B}, {{inline, open}, O} | T], R, A) ->
+m_str1([{{punc, bang}, B}, {{inline, open}, O} | T], R, AllowTags, A) ->
     case get_inline(T, R, [], img) of
         {Rest, {Url, Title, Acc}} -> Tag = [make_img_tag(Url, Acc, Title)],
-                                     m_str1(Rest, R, [Tag | A]);
-        {Rest, Tag}               -> m_str1(Rest, R, [Tag, O, B | A])
+                                     m_str1(Rest, R, AllowTags, [Tag | A]);
+        {Rest, Tag}               -> m_str1(Rest, R, AllowTags, [Tag, O, B | A])
     end;
 %% escape inline open's...
-m_str1([{{punc, bslash}, _}, {{inline, open}, O} | T], R, A) ->
-    m_str1(T, R, [O | A]);
-m_str1([{{inline, open}, O} | T], R, A) ->
+m_str1([{{punc, bslash}, _}, {{inline, open}, O} | T], AllowTags, R, A) ->
+    m_str1(T, R, AllowTags, [O | A]);
+m_str1([{{inline, open}, O} | T], R, AllowTags, A) ->
     case get_inline(T, R, [], url) of
         {Rest, {Url, Title, Acc}} ->
             Tit = case Title of
@@ -1076,27 +1084,31 @@ m_str1([{{inline, open}, O} | T], R, A) ->
             Tag = [{tags, "<a href=\"" ++ Url ++ "\""
                     ++ Tit ++ ">"}, Acc,
                    {tags, "</a>"} | []],
-            m_str1(Rest, R, [Tag | A]);
+            m_str1(Rest, R, AllowTags, [Tag | A]);
         {Rest, Tag} ->
-            m_str1(Rest, R, [Tag, O | A])
+            m_str1(Rest, R, AllowTags, [Tag, O | A])
     end;
-m_str1([{email, Addie} | T], R, A) ->
-    m_str1(T, R, [{tags, "\" />"}, Addie, {tags, "<a href=\"mailto:"}| A]);
-m_str1([{url, Url} | T], R, A) ->
-    m_str1(T, R, [ {tags, "</a>"}, Url, {tags, "\">"}, Url,
-                   {tags, "<a href=\""} | A]);
-m_str1([{tags, _} = Tag | T], R, A) ->
-    m_str1(T, R, [Tag | A]);
-m_str1([{{{tag, Type}, Tag}, _} | T], R, A) ->
-    Tag2 = esc_tag(Tag),
-    TagStr = case Type of
-                 open         -> {tags, "&lt;"  ++ Tag2 ++ "&gt;"};
-                 close        -> {tags, "&lt;/" ++ Tag2 ++ "&gt;"};
-                 self_closing -> {tags, "&lt;"  ++ Tag2 ++ " /&gt;"}
-             end,
-    m_str1(T, R, [TagStr | A]);
-m_str1([{_, Orig} | T], R, A)  ->
-    m_str1(T, R, [Orig | A]).
+m_str1([{email, Addie} | T], AllowTags, R, A) ->
+    m_str1(T, R, AllowTags, [{tags, "\" />"}, Addie,
+                             {tags, "<a href=\"mailto:"}| A]);
+m_str1([{url, Url} | T], R, AllowTags, A) ->
+    m_str1(T, R, AllowTags, [{tags, "</a>"}, Url, {tags, "\">"}, Url,
+                             {tags, "<a href=\""} | A]);
+m_str1([{tags, _} = Tag | T], R, AllowTags, A) ->
+    m_str1(T, R, AllowTags, [Tag | A]);
+m_str1([{{{tag, _Type}, _Tag}, Content} | T], R, true, A) ->
+    %     Tag2 = esc_tag(Tag),
+    %     TagStr = case Type of
+    %                  open         -> {tags, "&lt;"  ++ Tag2 ++ "&gt;"};
+    %                  close        -> {tags, "&lt;/" ++ Tag2 ++ "&gt;"};
+    %                  self_closing -> {tags, "&lt;"  ++ Tag2 ++ " /&gt;"}
+    %              end,
+    %    m_str1(T, R, [TagStr | A]);
+    m_str1(T, R, true, [{tags, Content} | A]);
+m_str1([{{{tag, _Type}, _Tag}, Content} | T], R, false, A) ->
+    m_str1(T, R, false, [Content | A]);
+m_str1([{_, Orig} | T], R, AllowTags, A)  ->
+    m_str1(T, R, AllowTags, [Orig | A]).
 
 % if the inline doesn't terminate its not an inline...
 get_inline([], _R, A, _) ->

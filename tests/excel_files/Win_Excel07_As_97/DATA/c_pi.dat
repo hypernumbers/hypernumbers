@@ -1,1 +1,1 @@
-[["Sheet1", [2, [1, {:formula=>"pi", :format=>"General", :value=>"pi", :text=>"pi"}], [2, {:formula=>"=PI()", :format=>"General", :value=>3.14159265358979, :text=>"3.141593"}]]], ["Sheet2", [1], [2]], ["Sheet3", [1], [2]]]
+[["Sheet1", [2, [1, {:format=>"General", :value=>"pi", :formula=>"pi", :text=>"pi"}], [2, {:format=>"General", :value=>3.14159265358979, :formula=>"=PI()", :text=>"3.141593"}]]], ["Sheet2", [1], [2]], ["Sheet3", [1], [2]]]
