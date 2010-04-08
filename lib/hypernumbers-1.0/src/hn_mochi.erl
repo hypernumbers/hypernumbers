@@ -167,6 +167,10 @@ authorize_get(_Ref,
               #env{accept = html}) ->
     allowed;
 
+authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html}) 
+  when X == "_invite"; X == "_mynewsite"; X == "_signup" ->
+    allowed;
+
 %% Authorize update requests, when the update is targeted towards a
 %% spreadsheet. Since we have no closed security object, we rely on
 %% 'run-time' checks.
@@ -259,7 +263,6 @@ authorize_get(#refX{site = Site, path = Path},
               #env{accept = html, uid = Uid}) ->
     auth_srv:check_get_challenger(Site, Path, Uid);
 
-
 %% Authorize access to one particular view.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{view = View}, 
@@ -320,6 +323,22 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
 
 iget(Ref=#refX{path=["_user", "login"]}, page, _Qry, Env) ->
     iget(Ref, page, #qry{view = "_g/core/login"}, Env);
+
+iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
+     #qry{hypertag=HT}, 
+     Env) when X == "_invite"; X == "_mynewsite"; X == "_signup" ->
+    case passport:open_hypertag(Site, Path, HT) of
+        {ok, Uid, _Data, Stamp, Age} ->
+            Cookie = hn_net_util:cookie("auth", Stamp, Age),
+            Target = strip80(Site) ++ hn_util:list_to_path(Rest),
+            Redirect = {"Location", Target},
+            Headers = [Cookie, Redirect | Env#env.headers],
+            respond(302, Env#env{uid = Uid, headers = Headers}),
+            throw(ok);
+        {error, E} ->
+            %% handle graceufully, what about time outs?
+            throw(E)
+    end;
 
 iget(#refX{site = Site}, page, #qry{view = FName, template = []}, Env) 
   when FName /= undefined -> 
@@ -1098,21 +1117,21 @@ get_spoor(Site, E=#env{mochi = Mochi}) ->
         undefined ->
             Spoor = mochihex:to_hex(crypto:rand_bytes(8)),
             Cookie = hn_net_util:cookie("spoor", Spoor, ?TWO_YEARS),
-            R2 = E#env{spoor = Spoor, headers = [Cookie | E#env.headers]},
+            E2 = E#env{spoor = Spoor, headers = [Cookie | E#env.headers]},
             case application:get_env(hypernumbers, pingto) of
                 {ok, Site} ->
                     %% No ping pong today
-                    R2;
+                    E2;
                 {ok, PingTo} ->
                     Current = 
                         strip80(Site) ++ 
                         mochiweb_util:quote_plus(Mochi:get(raw_path)),
                     Redir = PingTo++"/_ping/?spoor="++Spoor++"&return="++Current,
                     Redirect = {"Location", Redir},
-                    respond(302, R2#env{headers = [Redirect | R2#env.headers]}),
+                    respond(302, E2#env{headers = [Redirect | E2#env.headers]}),
                     throw(ok);
                 _Else ->
-                    R2
+                    E2
             end;
         Spoor ->
             E#env{spoor = Spoor}

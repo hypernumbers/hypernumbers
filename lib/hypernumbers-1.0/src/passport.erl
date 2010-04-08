@@ -15,6 +15,7 @@
           authenticate/3,
           inspect_stamp/1,
           uid_to_email/1,
+          email_to_uid/1,
           get_or_create_user/1,
           create_user/3,
           delete_user/1
@@ -64,8 +65,7 @@ create_hypertag(Site, Path, Uid, Data, Age) ->
     HalfKey = [Site, Path],
     HT = #hypertag{uid = Uid, expiry = gen_expiry(Age), data = Data},
     HTEnc = encrypt_term_hex(HalfKey, HT),
-    lists:concat(["http://", Site, hn_util:list_to_path(Path),
-                  "?hypertag=", HTEnc]).
+    lists:concat([Site, hn_util:list_to_path(Path), "?hypertag=", HTEnc]).
 
 -spec open_hypertag(string(), [string()], string()) 
                    -> {ok, uid(), any(), string(), integer()} |
@@ -112,6 +112,10 @@ inspect_stamp(Stamp) ->
 uid_to_email(anonymous) -> {ok,anonymous};
 uid_to_email(Uid) -> 
     gen_server:call({global, ?MODULE}, {uid_to_email, Uid}).
+
+-spec email_to_uid(string()) -> {ok, string()} | {error, invalid_email}.
+email_to_uid(Email) -> 
+    gen_server:call({global, ?MODULE}, {email_to_uid, Email}).
 
 -spec get_or_create_user(string()) -> string().
 get_or_create_user(Email) -> 
@@ -181,6 +185,14 @@ handle_call({uid_to_email, Uid}, _From, State) ->
                                [service_passport_user, Uid, read]) of
               [U] -> {ok, U#user.email}; 
               _   -> {error, invalid_uid}
+          end,
+    {reply, Ret, State};
+
+handle_call({email_to_uid, Email}, _From, State) ->
+    Ret = case mnesia:activity(async_dirty, fun mnesia:index_read/3, 
+                               [service_passport_user, Email, #user.email]) of
+              [U] -> {ok, U#user.uid}; 
+              _   -> {error, invalid_email}
           end,
     {reply, Ret, State};
 

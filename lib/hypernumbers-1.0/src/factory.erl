@@ -82,8 +82,9 @@ handle_call({provision, Zone, Email, Type}, _From, State) ->
                   [Site, Type, [{creator, Uid},
                                 {email, Email},
                                 {name, Name}]]),
-    %%send_email()
-    {reply, {Site, Uid}, State};
+    HT = passport:create_hypertag(Site, ["_invite", Name, "some", "page"], 
+                                  Uid, [], never),
+    {reply, {Site, Uid, HT}, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
