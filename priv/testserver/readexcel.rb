@@ -9,6 +9,10 @@ require "win32ole"
 load "gen_util.rb"
 include GenUtil
 
+def is_date?(s)
+    (s =~ /\d\d\d\d\/\d\d\/\d\d\s\d\d:\d\d:\d\d/) == 0
+end
+
 def do_file(xlsfile)
 
   WIN32OLE.codepage = WIN32OLE::CP_UTF8
@@ -31,11 +35,15 @@ def do_file(xlsfile)
    rowdata = [rowidx]
       (firstcol..sheet.UsedRange.Columns.Count+1).each do |colidx|
         cell = sheet.Cells(rowidx, colidx)
-        if cell.Value != nil && cell.Formula != ""
-	        puts "value is #{cell.Value} for row #{rowidx} and col #{colidx}"
+          if cell.Value != nil && cell.Formula != ""
           celldata = [colidx, {}]
           celldata[1][:text] = cell.Text # value as it is displayed
-          celldata[1][:value] = cell.Value # real value underneath
+          if (is_date?(cell.Value)) 
+             celldata[1][:value] = cell.Value
+             # puts "this is the date #{cell.Value} #{is_date?(cell.Value)}"
+          else   
+             celldata[1][:value] = cell.Value2
+          end
           celldata[1][:formula] = cell.Formula
           celldata[1][:format] = cell.NumberFormat
           rowdata << celldata
