@@ -54,7 +54,7 @@ notify(Record) when is_record(Record, dirty_notify_out) ->
                                     {"stamp",      0}
                                    ]},
                    Actions = lists:flatten(mochijson:encode(Vars)),
-                   hn_util:post(Server, Actions, "application/json"),
+                   hn_net_util:post(Server, Actions, "application/json"),
                    ok
            end,
     [ok = Fun2(X) || X <- Outgoing],
@@ -84,7 +84,7 @@ notify_back(Record) when is_record(Record, dirty_notify_back_in) ->
     Actions = lists:flatten(mochijson:encode(Vars)),
 
     %% not very robust! -- NEED to check for "success" and timetamp
-    hn_util:post(PUrl, Actions, "application/json"),
+    hn_net_util:post(PUrl, Actions, "application/json"),
     ok.
 
 %% @spec notify_back_create(Record::#dirty_inc_hn_create{}) -> ok

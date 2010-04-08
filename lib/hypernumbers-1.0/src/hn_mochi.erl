@@ -283,9 +283,9 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
 authorize_post(#refX{path = ["_user", "login"]}, _Qry, #env{accept = json}) ->
     allowed;
 
-authorize_post(#refX{path = ["_admin"]}, _Qry, #env{accept = json}=Env) ->
-    {_Uid, Groups} = Env#env.uid,
-    case lists:member("admin", Groups) of
+authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry, 
+               #env{accept = json, uid = Uid}) ->
+    case hn_groups:is_member(Uid, Site, ["admin"]) of
         true  -> allowed;
         false -> denied
     end;
@@ -440,15 +440,18 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
                           Uid),
     json(Env, "success");
 
-ipost(#refX{site = Site, path=["_user","login"]}, _Qry, Env) ->
-     [{"email", Email},{"pass", Pass},{"remember", Rem}] = Env#env.body,
-     Resp = case hn_users:login(Site, Email, Pass, Rem) of
-                {error, invalid_user} -> 
-                    [{"response","error"}];
-                {ok, Token} ->
-                    [{"response","success"},{"token",Token}]
-            end,
-    json(Env, {struct, Resp});
+ipost(#refX{path=["_user","login"]}, _Qry, E) ->
+     [{"email", Email},{"pass", Pass},{"remember", Rem}] = E#env.body,
+     {E2, Resp} = case passport:authenticate(Email, Pass, Rem=="true") of
+                      {error, invalid_uid} -> 
+                          {E, "error"};
+                      {ok, Uid, Stamp, Age} ->
+                          Cookie = hn_net_util:cookie("auth", Stamp, Age),
+                          {E#env{uid = Uid,
+                                 headers = [Cookie | E#env.headers]},
+                           "success"}
+                  end,
+    json(E2, {struct, [{"response", Resp}]});
 
 %% the purpose of this message is to mark the mochilog so we don't 
 %% need to do nothing with anything...
@@ -1075,24 +1078,22 @@ process_environment(Mochi) ->
 
 -spec process_cookies(string(), #env{}) -> #env{}. 
 process_cookies(Site, E) ->
-    E2 = get_user(Site, E),
+    E2 = get_user(E),
     get_spoor(Site, E2).
 
--spec get_user(string(), #env{}) -> #env{}. 
-get_user(_Site, E=#env{mochi = _Mochi}) ->
-    E#env{uid = anonymous}.
-    %% Auth = Mochi:get_cookie_value("auth"),
-    %% case hn_users:verify_token(Site, Auth) of
-    %%     {ok, User}        -> E#env{user = User};
-    %%     {error, no_token} -> E#env{user = anonymous};
-    %%     {error, _Reason}  ->
-    %%         %% authtoken was invalid (probably did a clean_start() while
-    %%         %% logged in, kill the cookie
-    %%         Opts = [{path, "/"}, {max_age, 0}],
-    %%         Cookie = mochiweb_cookies:cookie("auth", "expired", Opts),
-    %%         E#env{user = anonymous, 
-    %%               headers = [Cookie | E#env.headers]}
-    %% end.
+-spec get_user(#env{}) -> #env{}. 
+get_user(E=#env{mochi = Mochi}) ->
+    Auth = Mochi:get_cookie_value("auth"),
+    case passport:inspect_stamp(Auth) of
+        {ok, Uid} -> E#env{uid = Uid};
+        {error, no_stamp} -> E#env{uid = anonymous};
+        {error, _Reason} ->
+            %% authtoken was invalid (probably did a clean_start() while
+            %% logged in, kill the cookie
+            Cookie = hn_net_util:cookie("auth", "killitwithfire", 0),
+            E#env{uid = anonymous, 
+                  headers = [Cookie | E#env.headers]}
+    end.
 
 -spec get_spoor(string(), #env{}) -> #env{}.
 get_spoor(Site, E=#env{mochi = Mochi}) ->

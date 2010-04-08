@@ -12,8 +12,8 @@
 -export([ start_link/0,
           generate_invite/3,
           stamp_invite/3, 
-          verify_stamp/1,
           authenticate/3,
+          inspect_stamp/1,
           uid_to_email/1,
           get_or_create_user/1,
           create_user/3,
@@ -29,6 +29,8 @@
 -include("date.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
 -include_lib("eunit/include/eunit.hrl").
+
+-define(WEEK_S, 604800).
 
 -record(invite, {uid, expiry}).
 
@@ -63,7 +65,7 @@ generate_invite(Site, Path0, User, Days) ->
     Decorator = "USER_DECORATOR",
     Path = ["_invite", Decorator | Path0],
     HalfKey = [Site, Path],
-    Invite = #invite{uid = User, expiry = expire_days_from_now(Days)},
+    Invite = #invite{uid = User, expiry = 0},
     InviteEnc = encrypt_term_hex(HalfKey, Invite),
     lists:concat(["http://", Site, hn_util:list_to_path(Path),
                   "?tag=", InviteEnc]).
@@ -73,30 +75,45 @@ stamp_invite(Site, Path, InviteEnc) ->
     Now = calendar:universal_time(),
     case decrypt_term_hex(HalfKey, InviteEnc) of
         #invite{expiry=E, uid=Uid} when E < Now ->
-            {ok, stamp(Uid, "true")};
+            {ok, stamp(Uid, ?WEEK_S)};
         _Else ->
             {error, expired}
     end.
 
--spec verify_stamp(atom() | string()) -> boolean(). 
-verify_stamp(undefined) ->
-    false;
-verify_stamp(Stamp) ->
-    [Expiry, User, Hash] = string:tokens(Stamp, ":"),
-    User2 = xmerl_ucs:to_utf8(unescapeUnicode(mochiweb_util:unquote(User))),
-    case {is_expired(Expiry), gen_hash(User2, Expiry), Hash} of
-        {true,_,_}  -> false;
-        {false,X,X} -> true
-    end.
-
--spec authenticate(string(), string(), string()) 
-                  -> {error, term()} | {ok, string()}.
+-spec authenticate(string(), string(), boolean()) 
+                  -> {error, term()} | 
+                     {ok, uid(), string(), integer() | session}.
 authenticate(Email, Password, Remember) ->
     Msg = {authenticate, Email, Password},
     case gen_server:call({global, ?MODULE}, Msg, 10000) of
-        {ok,Uid} -> {ok, stamp(Uid, Remember)};
-        Else -> Else
+        {ok, Uid} -> 
+            Age = case Remember of 
+                         true -> ?WEEK_S;
+                         false -> session
+                     end,
+            Stamp = stamp(Uid, Age),
+            {ok, Uid, Stamp, Age};
+        Else -> 
+            Else
     end.
+
+-spec inspect_stamp(string()) -> {ok, uid()} | {error, term()}. 
+inspect_stamp(undefined) ->
+    {error, no_stamp};
+inspect_stamp(Stamp) ->
+    [Expiry, Uid, Hash] = string:tokens(Stamp, ":"),
+    case {is_expired(Expiry), gen_hash(Uid, Expiry), Hash} of
+        {false,X,X} -> {ok, Uid};
+        {true,_,_}  -> {error, bad_stamp}
+    end.
+
+-spec is_expired(string()) -> boolean(). 
+is_expired("session") -> false;
+is_expired(Expiry) ->
+    Exps = list_to_integer(Expiry),
+    Now = calendar:datetime_to_gregorian_seconds(
+            calendar:universal_time()),
+    Exps =< Now.
 
 -spec uid_to_email(uid()) -> {ok,anonymous | string()} | {error, invalid_uid}.
 uid_to_email(anonymous) -> {ok,anonymous};
@@ -265,12 +282,23 @@ code_change(_OldVsn, State, _Extra) ->
 create_uid() ->
     Bin = crypto:rand_bytes(16),
     mochihex:to_hex(Bin).
-    
--spec stamp(uid(), string()) -> string(). 
-stamp(Uid, Remember) ->
-    Expiry = expires(Remember),
+
+-spec stamp(uid(), integer() | session) -> string().
+stamp(Uid, Age) ->
+    Expiry = gen_expiry(Age),
     Hash = gen_hash(Uid, Expiry),
     ?FORMAT("~s:~ts:~s", [Expiry, Uid, Hash]).
+
+-spec gen_expiry(integer() | session) -> string().
+gen_expiry(session) -> "session";
+gen_expiry(Age) -> 
+    integer_to_list(
+      calendar:datetime_to_gregorian_seconds(
+        calendar:universal_time()) + Age).
+
+-spec gen_hash(string(), string()) -> string(). 
+gen_hash(Uid, Expiry) ->
+    mochihex:to_hex(crypto:md5_mac(server_token_key(), [Uid, Expiry])).
 
 -spec encrypt_term_hex(iolist(), term()) -> string(). 
 encrypt_term_hex(Key0, Term) ->
@@ -283,28 +311,6 @@ decrypt_term_hex(Key0, CipherH) ->
     CipherT = mochihex:to_bin(CipherH),
     PlainT = decrypt_bin(Key0, CipherT),
     erlang:binary_to_term(PlainT).
-
--spec gen_hash(string(), string()) -> string(). 
-gen_hash(Uid, Expiry) ->
-    mochihex:to_hex(crypto:md5_mac(server_token_key(), [Uid, Expiry])).
-
--spec is_expired(string()) -> boolean(). 
-is_expired("session") ->
-    false;
-is_expired(TimeS) ->
-    list_to_integer(TimeS) < unix_timestamp().
-
--spec expires(string()) -> string(). 
-expires("true")  -> 
-    integer_to_list(unix_timestamp() + 2678400);
-expires("false") -> 
-    "session".
-
--spec expire_days_from_now(integer()) -> datetime(). 
-expire_days_from_now(Days) ->
-    NowS = calendar:datetime_to_gregorian_seconds(calendar:universal_time()),
-    ExpS = NowS + Days * 86400,
-    calendar:gregorian_seconds_to_datetime(ExpS).
 
 -spec encrypt_bin(iolist(), binary()) -> binary(). 
 encrypt_bin(Key0, PlainT0) ->
@@ -324,22 +330,6 @@ extend(Bin) ->
     Len = size(Bin),
     Pad = 16 - ((Len+2) rem 16),
     <<Len:16, Bin/binary, 0:Pad/unit:8>>.
-
-unix_timestamp() ->
-    unix_timestamp(erlang:now()).
-unix_timestamp(Now) ->
-    calendar:datetime_to_gregorian_seconds( 
-      calendar:now_to_universal_time(Now)) -
-        calendar:datetime_to_gregorian_seconds({{1970,1,1},{0,0,0}}).
-
-unescapeUnicode(List) -> unesc_1(List, []).
-
-unesc_1([], Acc) -> lists:reverse(Acc);
-unesc_1([$%, $u, A, B, C, D | T], Acc) -> 
-         {ok, [N], []} = io_lib:fread("~16u", [A, B, C, D]),
-         unesc_1(T, [N | Acc]);
-unesc_1([H | T], Acc) -> unesc_1(T, [H | Acc]).
-
 
 %% We use a fixed initilization vector, therefore unique keys should
 %% be used per recipient, and message type (varying the plaintext is

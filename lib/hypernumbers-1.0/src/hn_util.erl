@@ -19,8 +19,6 @@
          site_to_fs/1,
          site_from_fs/1,
          
-         email/4, email/5,
-
          % HyperNumbers Utils
          delete_directory/1,
          compile_html/2,
@@ -40,7 +38,6 @@
          path_to_json_path/1,
 
          % HTTP Utils
-         post/3,
          parse_url/1,
          parse_ref/1,
          parse_attr/1,
@@ -332,16 +329,6 @@ obj_to_str({range,{X1,Y1,X2,Y2}}) -> tconv:to_b26(X1)++text(Y1)++":"++
 in_range({range,{X1,Y1,X2,Y2}}, {cell,{X,Y}}) ->
     Y >= Y1 andalso Y =< Y2 andalso X >= X1 andalso X =< X2.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                                                                          %%%
-%%% Http Utils                                                               %%%
-%%%                                                                          %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-post(Url, Data, Format) ->
-    {ok, {{_V, _Status,_R},_H,Body}} =
-        httpc:request(post,{Url,[],Format,Data},[],[]),
-    Body.
-
 parse_url("http://"++Url) ->
     {Host, Path, NUrl} = prs(Url),
     case lists:last(NUrl) of
@@ -459,58 +446,6 @@ type_reference(Cell) ->
             end;
         _ ->
             range
-    end.
-
-email(To, From, Subject, Msg) ->
-    {ok, Server}   = application:get_env(hypernumbers, mailserver),
-    {ok, Password} = application:get_env(hypernumbers, mailpassword),
-    {ok, User}     = application:get_env(hypernumbers, mailuser),
-    email([{server, Server}, {user, User}, {password, Password}],
-          To, From, Subject, Msg).
-        
-email(Details, To, From, Subject, Msg) ->
-
-    Server = proplists:get_value(server, Details),    
-    User   = proplists:get_value(user, Details),
-    Pass   = proplists:get_value(password, Details),
-    
-    {ok, Socket} = ssl:connect(Server, 465, [{active, false}], 1000),
-    
-    recv(Socket),
-    send(Socket, "HELO localhost"),
-    send(Socket, "AUTH LOGIN"),
-    send(Socket, binary_to_list(base64:encode(User))),
-    send(Socket, binary_to_list(base64:encode(Pass))),
-    send(Socket, "MAIL FROM:<"++parse_email_address(From)++">"),
-    send(Socket, "RCPT TO:<"++parse_email_address(To)++">"),
-    send(Socket, "DATA"),
-    send_no_receive(Socket, "From: "++From),
-    send_no_receive(Socket, "To: "++To),
-    send_no_receive(Socket, "Date: "++dh_date:format("r")),
-    send_no_receive(Socket, "Subject: "++Subject),
-    send_no_receive(Socket, ""),
-    send_no_receive(Socket, Msg),
-    send_no_receive(Socket, ""),
-    send(Socket, "."),
-    send(Socket, "QUIT"),
-    ssl:close(Socket).
-
-parse_email_address(Address) ->
-    lists:last(string:tokens(Address, "<>")).
-
-send_no_receive(Socket, Data) ->
-    io:format("SEND: ~p~n", [Data]),
-    ssl:send(Socket, Data ++ "\r\n").
-
-send(Socket, Data) ->
-    io:format("SEND: ~p~n", [Data]),
-    ssl:send(Socket, Data ++ "\r\n"),
-    recv(Socket).
-
-recv(Socket) ->
-    case ssl:recv(Socket, 0, 100000) of
-        {ok, Return}    -> io:format("RECV: ~p~n", [Return]);
-        {error, Reason} -> io:format("ERROR: ~p~n", [Reason])
     end.
 
 pget(Key, List) ->
