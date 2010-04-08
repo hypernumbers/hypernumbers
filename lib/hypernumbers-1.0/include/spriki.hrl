@@ -281,18 +281,19 @@
 
 %% HN Mochi Query Parameters. Leave as undefined.
 -record(qry, { challenger,
+               hypertag,
                mark,
                pages,
                paths,
                permissions,
+               rawview,
                return,
+               spoor,
                status,
                template,
                templates,
                updates,
-               spoor,
                via,
-               rawview,
                view,
                views
              }).

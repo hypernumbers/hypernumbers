@@ -10,8 +10,8 @@
 
 %% API
 -export([ start_link/0,
-          generate_invite/3,
-          stamp_invite/3, 
+          create_hypertag/5,
+          open_hypertag/3, 
           authenticate/3,
           inspect_stamp/1,
           uid_to_email/1,
@@ -31,8 +31,9 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -define(WEEK_S, 604800).
+-define(DAY_S, 86400).
 
--record(invite, {uid, expiry}).
+-record(hypertag, {uid, expiry, data}).
 
 -record(user, {uid,
                email,
@@ -57,27 +58,28 @@
 start_link() ->
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
--spec generate_invite(string(), [string()], string()) -> string(). 
-generate_invite(Site, Path, User) ->
-    generate_invite(Site, Path, User, 7).
--spec generate_invite(string(), [string()], string(), integer()) -> string().
-generate_invite(Site, Path0, User, Days) ->
-    Decorator = "USER_DECORATOR",
-    Path = ["_invite", Decorator | Path0],
+-spec create_hypertag(string(), [string()], uid(), any(), integer() | never)
+                     -> string().
+create_hypertag(Site, Path, Uid, Data, Age) ->
     HalfKey = [Site, Path],
-    Invite = #invite{uid = User, expiry = 0},
-    InviteEnc = encrypt_term_hex(HalfKey, Invite),
+    HT = #hypertag{uid = Uid, expiry = gen_expiry(Age), data = Data},
+    HTEnc = encrypt_term_hex(HalfKey, HT),
     lists:concat(["http://", Site, hn_util:list_to_path(Path),
-                  "?tag=", InviteEnc]).
+                  "?hypertag=", HTEnc]).
 
-stamp_invite(Site, Path, InviteEnc) ->
+-spec open_hypertag(string(), [string()], string()) 
+                   -> {ok, uid(), any(), string(), integer()} |
+                      {error, any()}.
+open_hypertag(Site, Path, HTEnc) ->
     HalfKey = [Site, Path],
-    Now = calendar:universal_time(),
-    case decrypt_term_hex(HalfKey, InviteEnc) of
-        #invite{expiry=E, uid=Uid} when E < Now ->
-            {ok, stamp(Uid, ?WEEK_S)};
+    case decrypt_term_hex(HalfKey, HTEnc) of
+        #hypertag{expiry=E, uid=U, data=D} ->
+            case is_expired(E) of
+                false -> {ok, U, D, stamp(U, ?WEEK_S), ?WEEK_S};
+                true -> {error, expired}
+            end;
         _Else ->
-            {error, expired}
+            {error, bad_invite}
     end.
 
 -spec authenticate(string(), string(), boolean()) 
@@ -91,8 +93,7 @@ authenticate(Email, Password, Remember) ->
                          true -> ?WEEK_S;
                          false -> session
                   end,
-            Stamp = stamp(Uid, Age),
-            {ok, Uid, Stamp, Age};
+            {ok, Uid, stamp(Uid, Age), Age};
         Else -> 
             Else
     end.
@@ -106,14 +107,6 @@ inspect_stamp(Stamp) ->
         {false,X,X} -> {ok, Uid};
         {true,_,_}  -> {error, bad_stamp}
     end.
-
--spec is_expired(string()) -> boolean(). 
-is_expired("session") -> false;
-is_expired(Expiry) ->
-    Exps = list_to_integer(Expiry),
-    Now = calendar:datetime_to_gregorian_seconds(
-            calendar:universal_time()),
-    Exps =< Now.
 
 -spec uid_to_email(uid()) -> {ok, anonymous | string()} | {error, invalid_uid}.
 uid_to_email(anonymous) -> {ok,anonymous};
@@ -290,12 +283,22 @@ stamp(Uid, Age) ->
     Hash = gen_hash(Uid, Expiry),
     ?FORMAT("~s|~ts|~s", [Expiry, Uid, Hash]).
 
--spec gen_expiry(integer() | session) -> string().
+-spec gen_expiry(integer() | session | never) -> string().
+gen_expiry(never) -> "never";
 gen_expiry(session) -> "session";
 gen_expiry(Age) -> 
     integer_to_list(
       calendar:datetime_to_gregorian_seconds(
         calendar:universal_time()) + Age).
+
+-spec is_expired(string()) -> boolean(). 
+is_expired("never") -> false;
+is_expired("session") -> false;
+is_expired(Expiry) ->
+    Exps = list_to_integer(Expiry),
+    Now = calendar:datetime_to_gregorian_seconds(
+            calendar:universal_time()),
+    Exps =< Now.
 
 -spec gen_hash(string(), string()) -> string(). 
 gen_hash(Uid, Expiry) ->
@@ -353,10 +356,21 @@ server_token_key() ->
 %%% Tests
 %%%
 unit_test_() ->
-    [fun test_encryption/0].
-
+    [fun test_encryption/0,
+     fun test_hypertag/0].
+    
 -spec test_encryption() -> no_return().
 test_encryption() ->
     K = "silly",
     Msg = {"I think therefore I am", {1337, speak}, [["..."]]},
     ?assertEqual(Msg, decrypt_term_hex(K, encrypt_term_hex(K, Msg))).
+
+-spec test_hypertag() -> no_return().
+test_hypertag() -> 
+    Site = "http://example.com:1234",
+    Path = ["_invite", "alice", "secret", "page"],
+    "http://"++Url = create_hypertag(Site, Path, "alice", {"123"}, never),
+    {_, "?hypertag="++HyperTag} = httpd_util:split_path(Url),
+    {ok, U, D, _Stamp, _Age} = open_hypertag(Site, Path, HyperTag),
+    ?assertEqual("alice", U),
+    ?assertEqual({"123"}, D).
