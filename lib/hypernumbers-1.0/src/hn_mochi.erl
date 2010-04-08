@@ -127,13 +127,12 @@ handle_static(X, Root, Mochi)
 
 -spec handle_ping(#env{}, string(), string()) -> ok. 
 handle_ping(E=#env{mochi = Mochi}, Spoor, Return) ->
-    Opts = [{path, "/"}, {max_age, ?TWO_YEARS}],
     Original = mochiweb_util:unquote(Return),
     R2 = case Mochi:get_cookie_value("spoor") of
              undefined ->
                  %% Use the given cookie, simply resume.
                  Redirect = {"Location", Original},
-                 Cookie = mochiweb_cookies:cookie("spoor", Spoor, Opts),
+                 Cookie = hn_net_util:cookie("spoor", Spoor, ?TWO_YEARS),
                  E#env{headers = [Redirect, Cookie | E#env.headers]};
              OwnSpoor ->
                  %% Have own cookie already! This must take
@@ -150,8 +149,7 @@ handle_ping(E=#env{mochi = Mochi}, Spoor, Return) ->
 
 -spec handle_pong(#env{}, string(), string()) -> ok. 
 handle_pong(E, Spoor, Return) ->
-    Opts     = [{path, "/"}, {max_age, ?TWO_YEARS}],
-    Cookie   = mochiweb_cookies:cookie("spoor", Spoor, Opts),
+    Cookie   = hn_net_util:cookie("spoor", Spoor, ?TWO_YEARS),
     Original = mochiweb_util:unquote(Return),
     Redirect = {"Location", Original},
     E2       = E#env{headers = [Redirect, Cookie | E#env.headers]},
@@ -1091,8 +1089,7 @@ get_user(E=#env{mochi = Mochi}) ->
             %% authtoken was invalid (probably did a clean_start() while
             %% logged in, kill the cookie
             Cookie = hn_net_util:cookie("auth", "killitwithfire", 0),
-            E#env{uid = anonymous, 
-                  headers = [Cookie | E#env.headers]}
+            E#env{uid = anonymous, headers = [Cookie | E#env.headers]}
     end.
 
 -spec get_spoor(string(), #env{}) -> #env{}.
@@ -1100,8 +1097,7 @@ get_spoor(Site, E=#env{mochi = Mochi}) ->
     case Mochi:get_cookie_value("spoor") of
         undefined ->
             Spoor = mochihex:to_hex(crypto:rand_bytes(8)),
-            Opts = [{path, "/"}, {max_age, ?TWO_YEARS}],
-            Cookie = mochiweb_cookies:cookie("spoor", Spoor, Opts),
+            Cookie = hn_net_util:cookie("spoor", Spoor, ?TWO_YEARS),
             R2 = E#env{spoor = Spoor, headers = [Cookie | E#env.headers]},
             case application:get_env(hypernumbers, pingto) of
                 {ok, Site} ->
@@ -1184,11 +1180,12 @@ serve_file(Status, #env{mochi = Mochi, headers = Headers}, File) ->
 
 get_lang(anonymous) ->
     "en_gb";
-get_lang(User) ->
-    case hn_users:get(User, "language") of
-        {ok, Lang} -> Lang;
-        undefined  -> "en_gb"
-    end.
+get_lang(_User) ->
+    "en_gb".
+    %% case hn_users:get(User, "language") of
+    %%     {ok, Lang} -> Lang;
+    %%     undefined  -> "en_gb"
+    %% end.
 
 cache(Source, CachedNm, Generator) ->
     Cached = tmpdir() ++ "/" ++ mochihex:to_hex(erlang:md5(CachedNm)),

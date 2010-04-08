@@ -90,7 +90,7 @@ authenticate(Email, Password, Remember) ->
             Age = case Remember of 
                          true -> ?WEEK_S;
                          false -> session
-                     end,
+                  end,
             Stamp = stamp(Uid, Age),
             {ok, Uid, Stamp, Age};
         Else -> 
@@ -101,7 +101,7 @@ authenticate(Email, Password, Remember) ->
 inspect_stamp(undefined) ->
     {error, no_stamp};
 inspect_stamp(Stamp) ->
-    [Expiry, Uid, Hash] = string:tokens(Stamp, ":"),
+    [Expiry, Uid, Hash] = string:tokens(Stamp, "|"),
     case {is_expired(Expiry), gen_hash(Uid, Expiry), Hash} of
         {false,X,X} -> {ok, Uid};
         {true,_,_}  -> {error, bad_stamp}
@@ -115,7 +115,7 @@ is_expired(Expiry) ->
             calendar:universal_time()),
     Exps =< Now.
 
--spec uid_to_email(uid()) -> {ok,anonymous | string()} | {error, invalid_uid}.
+-spec uid_to_email(uid()) -> {ok, anonymous | string()} | {error, invalid_uid}.
 uid_to_email(anonymous) -> {ok,anonymous};
 uid_to_email(Uid) -> 
     gen_server:call({global, ?MODULE}, {uid_to_email, Uid}).
@@ -198,7 +198,8 @@ handle_call({get_or_create_user, Email}, _From, State) ->
                     [H] -> 
                         H;
                     _ -> 
-                        User = #user{uid = create_uid(), email = Email},
+                        User = #user{uid = create_uid(), email = Email,
+                                     passMD5 = crypto:md5_mac(server_key(), "123")},
                         mnesia:write(service_passport_user, User, write),
                         User#user.uid
                 end
@@ -287,7 +288,7 @@ create_uid() ->
 stamp(Uid, Age) ->
     Expiry = gen_expiry(Age),
     Hash = gen_hash(Uid, Expiry),
-    ?FORMAT("~s:~ts:~s", [Expiry, Uid, Hash]).
+    ?FORMAT("~s|~ts|~s", [Expiry, Uid, Hash]).
 
 -spec gen_expiry(integer() | session) -> string().
 gen_expiry(session) -> "session";
