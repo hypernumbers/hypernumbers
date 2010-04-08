@@ -194,9 +194,9 @@ authorize_get(#refX{site = Site, path = Path},
               #qry{updates = U, view = "_g/core/webpage", paths = More}, 
               #env{accept = json, uid = Uid})
   when U /= undefined ->
-    case auth_srv2:check_particular_view(Site, Path, Uid, "_g/core/webpage") of
+    case auth_srv:check_particular_view(Site, Path, Uid, "_g/core/webpage") of
         {view, "_g/core/webpage"} ->
-            MoreViews = [auth_srv2:get_any_view(Site, string:tokens(P, "/"), Uid) 
+            MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Uid) 
                          || P <- string:tokens(More, ",")],
             case lists:all(fun({view, _}) -> true; 
                               (_) -> false end, 
@@ -291,7 +291,7 @@ authorize_post(#refX{path = ["_admin"]}, _Qry, #env{accept = json}=Env) ->
     end;
 
 %% Authorize posts against non spreadsheet views. The transaction
-%% attempted is validated against the views security model.
+%% attempted is validated against the view's security model.
 authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
   when View /= undefined ->
     case auth_srv:check_particular_view(Site, Path, Env#env.uid, View) of
