@@ -238,7 +238,8 @@ call_fun(Fun, Args, [Module | Rest]) ->
 get_modules() ->
     [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date,
      stdfuns_financial, stdfuns_info, stdfuns_lookup_ref,
-     stdfuns_eng, stdfuns_logical, stdfuns_text, stdfuns_db, hnfuns_graphs].
+     stdfuns_eng, stdfuns_logical, stdfuns_text, stdfuns_db,
+     hnfuns_graphs, hnfuns_web].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% Intersect current cell with a range.
