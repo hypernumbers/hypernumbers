@@ -113,8 +113,12 @@ setup(Site, _Type, _Opts, permissions) ->
     {ok, Terms} = file:consult([sitedir(Site),"/","permissions.script"]),
     ok = auth_srv:load_script(Site, Terms);
 setup(Site, _Type, Opts, script) ->
-    {ok, Terms} = file:consult([sitedir(Site),"/","setup.script"]),
-    [ok = run_script(T, Site, Opts) || T <- Terms],
+    case file:consult([sitedir(Site),"/","setup.script"]) of
+        {ok, Terms} -> 
+            [ok = run_script(T, Site, Opts) || T <- Terms];
+        _ ->
+            ok
+    end,
     ok.
 
 %% -spec resave_views() -> ok.
