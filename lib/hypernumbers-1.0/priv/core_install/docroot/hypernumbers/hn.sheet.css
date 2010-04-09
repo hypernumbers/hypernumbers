@@ -507,9 +507,12 @@ hr {
     color           : #004B97;
     -moz-border-radius-topleft:2px;
     -moz-border-radius-topright:2px;
+    opacity:0.5;
+
 }
 
 #tabs a.current {
+        opacity:1;
 } 
 
 #test { 
@@ -1778,13 +1781,12 @@ input[type=checkbox], input[type=radio] {
 }
 
 #welcome { 
-    padding:30px;
+    padding:20px;
 }
 
-#welcome h3 { 
+#welcome div { 
     margin: 20px; 0px;
 }
-
 
 #welcome a { 
     cursor:pointer;
