@@ -486,11 +486,6 @@ hr {
     background : #DDDDDD;
 }
 
-#viewbuilder { 
-    position: absolute;
-    background: white;
-}
-
 #tabs {
     position :absolute;
     bottom   : 2px;
@@ -1198,7 +1193,9 @@ hr {
 /* VIEW BUILDER STYLES
 /*****************************************************************************/
 #viewbuilder {
-    top:-92px;
+    position: absolute;
+    background: white;
+    top:-46px;
     bottom:0px;
     border-left:4px solid #555;
 }
@@ -1557,7 +1554,7 @@ hr {
 #viewtabs a {
     -moz-border-radius : 3px 3px 0px 0px;
     padding: 3px 6px;
-    margin:4px 5px 0px 5px;
+    margin:4px 5px -1px 5px;
     background:#DDD;
     font-size: 11px;
     font-weight: normal;
