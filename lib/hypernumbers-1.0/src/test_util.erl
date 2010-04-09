@@ -228,9 +228,10 @@ hnget(Path, Cell) ->
                    Val;
                _Else ->
                    ""
-           end,
-    if is_list(Body) -> string:strip(Body, both, $");
-       true            -> Body end.
+           end.
+%     if is_list(Body) -> string:strip(Body, both, $");
+%        true            -> Body
+% end.
   
 hnpost(Path, Ref, Postdata) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
