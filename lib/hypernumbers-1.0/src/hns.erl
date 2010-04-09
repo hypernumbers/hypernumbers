@@ -10,6 +10,9 @@
          resource_diagnostics/0, zone_diagnostics/0
         ]).
 
+%% Generators
+-export([tiny_gen/0]).
+
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
@@ -93,13 +96,13 @@ unlink_resource(ZoneL, Name) ->
                              
 %% Create a zone responsible for the dispensation of mappings from
 %% names to resources, backed by DNS. Since requests for new mappings
-%% are non-linear, and DNS propegation is not instant, these mappings
+%% are non-linear, and DNS propagation is not instant, these mappings
 %% are buffred in pools. Minsize is a lower watermark which should
 %% trigger a pool topup to the IdealSize. The Generator function
 %% should yield a distribution of names suitable for the size of the
 %% target domain, as otherwise buffer underflows shall occur. The
-%% Generator need not have memory, and as such, uniquness is not a
-%% hard but a soft condition. (duplicates are disgarded).
+%% Generator need not have memory, and as such, uniqueness is not a
+%% hard but a soft condition. (duplicates are discarded).
 -spec create_zone(string(), integer(), integer(), generator()) -> ok. 
 create_zone(Zone, MinSize, IdealSize, Generator) when 
       MinSize > 0, IdealSize > 0 ->
@@ -151,7 +154,16 @@ resource_diagnostics() ->
 zone_diagnostics() ->
     S = gen_server:call({global, ?MODULE}, zone_diagnostics),
     io:format("~s", [S]).
-    
+
+%%%===================================================================
+%%% Generator Functions
+%%%===================================================================
+
+-spec tiny_gen() -> string(). 
+tiny_gen() ->
+    Lets = [crypto:rand_uniform($a, $z+1) || _ <- lists:seq(1,2)],
+    Nums = [crypto:rand_uniform($0, $9+1) || _ <- lists:seq(1,2)],
+    Lets ++ Nums.
 
 %%%===================================================================
 %%% gen_server callbacks
