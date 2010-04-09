@@ -23,6 +23,7 @@
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
+-include("hypernumbers.hrl").
 
 -import(tconv, [to_i/1, to_l/1, to_s/1]).
 
@@ -184,7 +185,9 @@ proper(Args) ->
 proper_([[]]) ->
     [];
 proper_([Str]) ->
-    make_proper(Str).
+    Ret = make_proper(Str),
+    ?INFO("Str is ~p Ret is ~p~n", [Str, Ret]),
+    Ret.
 
 make_proper([$",H|Rest]) ->
     make_proper(Rest, [hd(string:to_upper([H])), $"]);
