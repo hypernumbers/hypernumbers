@@ -1,16 +1,14 @@
-%%-*-erlang-*-
-%% this is a permissions script for creating a new site
-%%
+%%-*-erlang-*- this is a permissions script for creating a new site
 
 {add_view, 
  [{path, []},
-  {perms, [{group, "dev"}]},
+  {perms, ["admin"]},
   {view, "_g/core/spreadsheet"}
  ]}.
 
 {add_view, 
  [{path, ["[**]"]},
-  {perms, [{group, "dev"}]},
+  {perms, ["admin"]},
   {view, "_g/core/spreadsheet"}
  ]}.
 
@@ -66,10 +64,36 @@
 
 {add_view, 
  [{path, ["_admin"]},
-  {perms, [{group, "admin"}]},
+  {perms, ["admin"]},
   {view, "_g/core/admin"}
  ]}.
 {set_champion,
  [{path, ["_admin"]},
   {view, "_g/core/admin"}
  ]}.
+
+%% User permissions
+
+{add_view, 
+ [{perms, ["admin"]},
+  {path, ["home"]},
+  {view, "_g/hypernumbers/userhome"}
+ ]}.
+{set_champion,
+ [{path, ["home"]},
+  {view, "_g/hypernumbers/userhome"}
+ ]}.
+
+{import,
+ [{path, ["home"]}]}.
+
+{add_view, 
+ [{perms, ["admin"]},
+  {path, ["home", "[**]"]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
+{set_champion, 
+ [{path, ["home", "[**]"]},
+  {view, "_g/core/spreadsheet"}
+ ]}.
+

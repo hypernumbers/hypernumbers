@@ -3,7 +3,7 @@
 %% Home page
 {add_view, 
  [{path, ["admin"]},
-  {perms, [{user, '$user'}]},
+  {perms, ["admin"]},
   {view, "_g/tiny_poll/admin"}
  ]}.
 {set_champion,
@@ -13,12 +13,12 @@
 
 {add_view, 
  [{path, []},
-  {perms, [{user, '$user'}]},
+  {perms, ["admin"]},
   {view, "_g/core/spreadsheet"}
  ]}.
 
 {add_view, 
  [{path, ["admin"]},
-  {perms, [{user, '$user'}]},
+  {perms, ["admin"]},
   {view, "_g/core/spreadsheet"}
  ]}.

@@ -2,7 +2,7 @@
 %% Home page
 
 {add_view, 
- [{perms, [{user, '$user'}]},
+ [{perms, ["admin"]},
   {path, ["u", '$user']},
   {view, "_g/hypernumbers/userhome"}
  ]}.
@@ -15,7 +15,7 @@
  [{path, ["u", '$user']}]}.
 
 {add_view, 
- [{perms, [{user, '$user'}]},
+ [{perms, ["admin"]},
   {path, ["u", '$user', "[**]"]},
   {view, "_g/core/spreadsheet"}
  ]}.

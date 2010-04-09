@@ -23,17 +23,17 @@
 
 %% Home page
 {add_view, 
- [{path, ["admin"]},
+ [{path, ["home"]},
   {perms, ["admin"]},
   {view, "_g/tiny_poll/admin"}
  ]}.
 {add_view, 
- [{path, ["admin"]},
+ [{path, ["home"]},
   {perms, ["admin"]},
   {view, "_g/core/spreadsheet"}
  ]}.
 {set_champion,
- [{path, ["admin"]},
+ [{path, ["home"]},
   {view, "_g/tiny_poll/admin"}
  ]}.
 
