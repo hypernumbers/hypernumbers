@@ -5,7 +5,7 @@
 %% API
 -export([start_link/0,
          create_zone/4, delete_zone/1, purge_zone/2, topup_zone/1,
-         link_resource/1, unlink_resource/2,
+         link_resource/1, unlink_resource/2, link_resource_manual/5,
          set_resource/4, delete_resource/3,
          resource_diagnostics/0, zone_diagnostics/0
         ]).
@@ -80,6 +80,13 @@ do_link_resource(Tries, Msg) ->
         R -> {ok, R}
     end.    
 
+-spec link_resource_manual(string(), string(), string(), integer(), atom())
+                          -> {ok, {string(), resource_addr()}}.
+link_resource_manual(Zone, Name, Ip, Port, Node) -> 
+    Msg = {link_resource_manual, Zone, Name, Ip, Port, Node},
+    Ret = gen_server:call({global, ?MODULE}, Msg),
+    {ok, Ret}.
+    
 -spec unlink_resource(string(), string()) -> ok.
 unlink_resource(ZoneL, Name) ->
     gen_server:call({global, ?MODULE}, {unlink_resource, ZoneL, Name}).
@@ -277,6 +284,18 @@ handle_call({link_resource, ZoneL}, _From, S) ->
           end,
     {reply, Ret, S};
 
+handle_call({link_resource_manual, ZoneL, Name, Ip, Port, Node}, _From, S) ->
+    ZoneId = zone_id_LINODE(ZoneL),
+    ResourceID = create_dns_LINODE(Name, Ip, ZoneId),
+    Address = {Ip, Port, Node},
+    Rec = #record{name = {ZoneL, Name},
+                  address = Address,
+                  zone_id = ZoneId,
+                  resource_id = ResourceID},
+    F = fun() -> ok = mnesia:write(service_hns_record, Rec, write) end,
+    ok = mnesia:activity(async_dirty, F),
+    {reply, {Name ++ "." ++ ZoneL, Address}, S};
+
 handle_call({unlink_resource, ZoneL, Name}, _From, S) ->
     Val = mnesia:activity(async_dirty,
                           fun mnesia:read/2,
@@ -286,7 +305,7 @@ handle_call({unlink_resource, ZoneL, Name}, _From, S) ->
             delete_dns_LINODE(ZID, RID),
             mnesia:activity(async_dirty,
                             fun mnesia:delete/3,
-                            [service_hns_record, Name, write]);
+                            [service_hns_record, {ZoneL, Name}, write]);
         _ ->
             ok
     end,
