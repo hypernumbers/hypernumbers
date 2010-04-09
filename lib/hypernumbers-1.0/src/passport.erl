@@ -363,7 +363,7 @@ decrypt_bin(Key0, CipherT) when is_binary(CipherT) ->
     <<Len:16, PlainT:Len/binary, _/binary>> = PlainT0,
     PlainT.
 
-%% Extend binary to a multiple of 128 bits.    
+%% Extend binary to a multiple of 128 bits.
 -spec extend(binary()) -> binary().
 extend(Bin) ->
     Len = size(Bin),
