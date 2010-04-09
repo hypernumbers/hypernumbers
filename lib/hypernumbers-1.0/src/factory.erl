@@ -15,8 +15,6 @@
 
 -record(state, {}).
 
--compile(export_all).
-
 %%%===================================================================
 %%% API
 %%%===================================================================
@@ -34,10 +32,29 @@ start_link() ->
 -spec provision_site(string(), string(), atom()) -> any(). 
 provision_site(Zone, Email0, SiteType) ->
     Email = string:to_lower(Email0),
-    gen_server:call({global, ?MODULE}, {provision, Zone, Email, SiteType}).
+    case valid_email(Email) of
+        true -> 
+            Call = {provision, Zone, Email, SiteType},
+            case gen_server:call({global, ?MODULE}, Call) of
+                {Site, Uid, Name, HT} ->
+                    EmailBody = new_site_email(Name, Site, Email),
+                    case application:get_env(hypernumbers, environment) of
+                        {ok, development} ->
+                            io:format("Email Body:~n~s~n--END EMAIL~n",[EmailBody]);
+                        {ok, production}  ->
+                            hn_net_util:email(Email, "\"tiny.hn Team\" <noreply@tiny.hn>",
+                                              "Your new tiny.hn site is live!", EmailBody)
+                    end,
+                    {Site, Uid, Name, HT};
+                _Else  ->
+                    {error, bad_provision}
+            end;
+        false ->
+            {error, invalid_email}
+    end.
 
 -spec provision_site(string(), string(), atom(), string()) -> no_return().
-provision_site(_Zone, _Email, _SiteType, _CustomUrl) ->
+provision_site(_Zone, _Email0, _SiteType, _CustomHost) ->
     throw(undefined),
     ok.
 
@@ -84,7 +101,7 @@ handle_call({provision, Zone, Email, Type}, _From, State) ->
                                 {name, Name}]]),
     HT = passport:create_hypertag(Site, ["_invite", Name, "some", "page"], 
                                   Uid, [], never),
-    {reply, {Site, Uid, HT}, State};
+    {reply, {Site, Uid, Name, HT}, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -151,3 +168,25 @@ extract_name_from_email(Email) ->
     capitalize_name(Name).
     
 capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].
+
+new_site_email(Name, Site, Email) ->
+    S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site "
+        "at:~n~n ~s~n~nTo make changes to the site follow the "
+        "instructions on the main page"
+        "~n~nYour Username:     ~s     ~nYour Password:"
+        "     ~s~n~nThanks for signing up, "
+        "hope you enjoy your tiny site!~n~n"
+        "~n~n The tiny.hn team",
+    lists:flatten(io_lib:format(S, [Name, Site, Email, "you don't have one"])).
+
+-spec valid_email(string()) -> boolean(). 
+valid_email(Email) ->
+    EMail_regex = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+"
+        ++ "(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
+        ++ "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+"
+        ++ "(?:[a-zA-Z]{2}|com|org|net|gov|mil"
+        ++ "|biz|info|mobi|name|aero|jobs|museum)", %" for syntax highighting
+    case re:run(Email, EMail_regex) of
+        nomatch    -> false;
+        {match, _} -> true
+    end.

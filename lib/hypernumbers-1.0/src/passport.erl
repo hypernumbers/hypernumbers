@@ -14,6 +14,7 @@
           open_hypertag/3, 
           authenticate/3,
           inspect_stamp/1,
+          set_password/2,
           uid_to_email/1,
           email_to_uid/1,
           get_or_create_user/1,
@@ -98,6 +99,11 @@ authenticate(Email, Password, Remember) ->
             Else
     end.
 
+-spec set_password(uid(), string()) -> ok | {error, invalid_uid}.
+set_password(Uid, Password) ->
+    Msg = {set_password, Uid, Password},
+    gen_server:call({global, ?MODULE}, Msg).
+
 -spec inspect_stamp(string()) -> {ok, uid()} | {error, term()}. 
 inspect_stamp(undefined) ->
     {error, no_stamp};
@@ -176,8 +182,24 @@ handle_call({authenticate, Email, Password}, _From, State) ->
         end,
     Ret = case mnesia:activity(async_dirty, F) of
               [#user{uid=Uid}] -> {ok, Uid};
-              _Else            -> {error, invalid_uid}
+              _Else            -> {error, authentication_failed}
           end,
+    {reply, Ret, State};
+
+handle_call({set_password, Uid, Password}, _From, State) ->
+    PassMD5 = crypto:md5_mac(server_key(), Password),
+    T = fun() ->
+                case mnesia:read(service_passport_user, Uid, write) of
+                    [U] -> 
+                        mnesia:write(service_passport_user, 
+                                     U#user{passMD5 = PassMD5}, 
+                                     write),
+                        ok;
+                    _ ->
+                        {error, invalid_uid}
+                end
+        end,
+    Ret = mnesia:activity(async_dirty, T),
     {reply, Ret, State};
 
 handle_call({uid_to_email, Uid}, _From, State) ->

@@ -460,7 +460,7 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
 ipost(#refX{path=["_user","login"]}, _Qry, E) ->
      [{"email", Email},{"pass", Pass},{"remember", Rem}] = E#env.body,
      {E2, Resp} = case passport:authenticate(Email, Pass, Rem=="true") of
-                      {error, invalid_uid} -> 
+                      {error, authentication_failed} -> 
                           {E, "error"};
                       {ok, Uid, Stamp, Age} ->
                           Cookie = hn_net_util:cookie("auth", Stamp, Age),
