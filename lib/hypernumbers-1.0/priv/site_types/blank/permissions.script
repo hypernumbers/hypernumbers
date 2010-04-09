@@ -2,7 +2,7 @@
 
 {add_view, 
  [{path, []},
-  {perms, [{group, "admin"}]},
+  {perms, ["admin"]},
   {view, "_g/core/spreadsheet"}
  ]}.
 
@@ -13,7 +13,7 @@
 
 {add_view, 
  [{path, ["[**]"]},
-  {perms, [{group, "admin"}]},
+  {perms, ["admin"]},
   {view, "_g/core/spreadsheet"}
  ]}.
 

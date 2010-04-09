@@ -84,9 +84,6 @@
   {view, "_g/hypernumbers/userhome"}
  ]}.
 
-{import,
- [{path, ["home"]}]}.
-
 {add_view, 
  [{perms, ["admin"]},
   {path, ["home", "[**]"]},
