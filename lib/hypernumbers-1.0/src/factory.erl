@@ -40,7 +40,7 @@ provision_site(Zone, Email0, SiteType) ->
                     EmailBody = new_site_email(Name, Site, Email),
                     case application:get_env(hypernumbers, environment) of
                         {ok, development} ->
-                            io:format("Email Body:~n~s~n--END EMAIL~n",[EmailBody]);
+                            io:format("Email Body:~n~s~n--END EMAIL--~n",[EmailBody]);
                         {ok, production}  ->
                             hn_net_util:email(Email, "\"tiny.hn Team\" <noreply@tiny.hn>",
                                               "Your new tiny.hn site is live!", EmailBody)
