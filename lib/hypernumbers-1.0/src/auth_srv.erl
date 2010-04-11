@@ -550,7 +550,7 @@ view_to_json(none) -> [];
 view_to_json({V, View, Iter}) ->
     Groups = [G || G <- gb_sets:to_list(View#view.groups)],
     S = {V, {struct, [{"everyone", View#view.everyone},
-                           {"groups", {array, Groups}}]}},
+                      {"groups", {array, Groups}}]}},
     [S | view_to_json(gb_trees:next(Iter))].
 
 

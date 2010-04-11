@@ -1,26 +1,3 @@
 %%-*-erlang-*-
 %% Home page
 
-{add_view, 
- [{perms, ["admin"]},
-  {path, ["u", '$user']},
-  {view, "_g/hypernumbers/userhome"}
- ]}.
-{set_champion,
- [{path, ["u", '$user']},
-  {view, "_g/hypernumbers/userhome"}
- ]}.
-
-{import,
- [{path, ["u", '$user']}]}.
-
-{add_view, 
- [{perms, ["admin"]},
-  {path, ["u", '$user', "[**]"]},
-  {view, "_g/core/spreadsheet"}
- ]}.
-{set_champion, 
- [{path, ["u", '$user', "[**]"]},
-  {view, "_g/core/spreadsheet"}
- ]}.
-

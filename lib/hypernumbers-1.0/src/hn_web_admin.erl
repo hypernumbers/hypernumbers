@@ -38,9 +38,9 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
             {"path", Path} = lists:keyfind("path", 1, Args),
             {"view", View} = lists:keyfind("view", 1, Args),
             NPath = string:tokens(Path, "/"),
-            Name = hn_users:name(User),
-            auth_srv2:add_view(Site, NPath, [{user, Name}], View),
-            auth_srv2:set_champion(Site, NPath, View);
+            %% TODO : shouldnt hardcode 
+            auth_srv:add_view(Site, NPath, ["admin"], View),
+            auth_srv:set_champion(Site, NPath, View);
         "add_user" ->
             {"user", Name} = lists:keyfind("user", 1, Args),
             {"pass", Pass} = lists:keyfind("pass", 1, Args),

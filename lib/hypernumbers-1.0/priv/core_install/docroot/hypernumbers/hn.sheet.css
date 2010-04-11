@@ -230,9 +230,6 @@ hr {
 #pagemenu .crumb {
 	background-image : url(/hypernumbers/right.png);
 }
-#pagemenu .leaf {
-	background-image : ""
-}
 #pagemenu .open {
 	background-image : url(/img/page_edit.png);
 	visibility       : hidden;
@@ -303,7 +300,7 @@ hr {
 
 #hnmenu ul ul { 
  left: 100%; 
- top:  0; 
+ top:  0px; 
 } 
 
 #hnmenu a {
@@ -402,7 +399,7 @@ hr {
 #hn #hnheader .beta { 
     float  : left; 
     color  : white; 
-    margin : 2px; 2px;
+    margin : 2px;
 }
 #hn #hnheader .beta a { 
     color           : red; 
@@ -410,7 +407,7 @@ hr {
     font-weight     : bold;
 }
 #formulabar {
-    overflow:none;
+    overflow:hidden;
     position:relative;
     height: 18px;
     line-height:18px;
@@ -912,7 +909,7 @@ hr {
 #hidden_input {  
     font:     12px Arial,"Helvetica Neue", sans-serif;
     position: absolute;
-    top:      -1000000px;
+    top:      -10000px;
     left:     0px;
 }
 
@@ -1093,7 +1090,7 @@ hr {
 }
 #wmd-preview {
 	max-height       : 150px;
-	overflow-x       : none;
+	overflow-x       : hidden;
 	overflow         : auto;
 	text-align       : left;
 	background-color : #dee7ff;
@@ -1206,7 +1203,7 @@ hr {
 #mainviewbuilder {
     position:relative;
     height:100%;
-    overflow:none;
+    overflow:hidden;
     display:none;
 }
 
@@ -1565,9 +1562,9 @@ hr {
     color:#666;
 }
 
-#add .table { background-image: url(/hypernumbers/table.png) }
-#add .form { background-image: url(/hypernumbers/application_form.png) }
-#add .text { background-image: url(/hypernumbers/textfield.png) }
+#add .table { background-image: url(/hypernumbers/table.png); }
+#add .form { background-image: url(/hypernumbers/application_form.png); }
+#add .text { background-image: url(/hypernumbers/textfield.png); }
 /* #add .form { background-image: url(/hypernumbers/application_form.png) } */
 /* #add .form { background-image: url(/hypernumbers/application_form.png) } */
 /* #add .form { background-image: url(/hypernumbers/application_form.png) } */
@@ -1782,7 +1779,7 @@ input[type=checkbox], input[type=radio] {
 }
 
 #welcome div { 
-    margin: 20px; 0px;
+    margin: 20px 0px;
 }
 
 #welcome a { 

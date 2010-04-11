@@ -75,6 +75,7 @@ authorize_resource(Env, Ref, Qry) ->
                   'GET'  -> authorize_get(Ref, Qry, Env2);
                   'POST' -> authorize_post(Ref, Qry, Env2)
               end,
+    
     case {AuthRet, Env2#env.accept} of
         {allowed, _} ->
             handle_resource(Ref, Qry, Env2);
@@ -168,7 +169,7 @@ authorize_get(_Ref,
     allowed;
 
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html}) 
-  when X == "_invite"; X == "_mynewsite"; X == "_signup" ->
+  when X == "_invite"; X == "_mynewsite"; X == "_signup"; X == "_hooks" ->
     allowed;
 
 %% Authorize update requests, when the update is targeted towards a
@@ -192,6 +193,7 @@ authorize_get(#refX{site = Site, path = Path},
             denied
     end;
 
+%% TODO : Broken
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{updates = U, view = "_g/core/webpage", paths = More}, 
               #env{accept = json, uid = Uid})
@@ -282,6 +284,9 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
 
 %% Allow logins to occur.
 authorize_post(#refX{path = ["_user", "login"]}, _Qry, #env{accept = json}) ->
+    allowed;
+
+authorize_post(#refX{site=_, path=["_hooks"]}, _Qry, #env{accept=json}) ->
     allowed;
 
 authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry, 
@@ -768,6 +773,8 @@ ipost(Ref, _Qry,
 ipost(#refX{site = Site, path = _P}, _Qry,
       Env=#env{body = [{"admin", Json}], uid = Uid}) ->
     {struct,[{Fun, {struct, Args}}]} = Json,
+
+    io:format("~p~n", [Env]),
     
     case hn_web_admin:rpc(Uid, Site, Fun, Args) of
         ok ->
@@ -775,6 +782,10 @@ ipost(#refX{site = Site, path = _P}, _Qry,
         {error, Reason} ->
             json(Env, {struct, [{"result", "error"}, {"reason", Reason}]})
     end; 
+
+ipost(#refX{site=Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->    
+    io:format("~p~n", [Body]),
+    json(Env, {struct, [{"result", "success"}]});
 
 ipost(Ref, Qry, Env) ->
     error_logger:error_msg("404~n-~p~n-~p~n",[Ref, Qry]),
