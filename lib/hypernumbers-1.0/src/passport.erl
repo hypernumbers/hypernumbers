@@ -123,15 +123,15 @@ uid_to_email(Uid) ->
 email_to_uid(Email) -> 
     gen_server:call({global, ?MODULE}, {email_to_uid, Email}).
 
--spec get_or_create_user(string()) -> string().
+-spec get_or_create_user(string()) -> {ok, new | existing, string()}.
 get_or_create_user(Email) -> 
     gen_server:call({global, ?MODULE}, {get_or_create_user, Email}).
     
--spec create_user(string(), string(), string()) -> string().
+-spec create_user(string(), string(), string()) -> ok.
 create_user(Uid, Email, Password) when is_list(Uid) ->
     gen_server:call({global, ?MODULE}, {create_user, Uid, Email, Password}).
 
--spec delete_user(string()) -> string().
+-spec delete_user(string()) -> ok.
 delete_user(Uid) when is_list(Uid) ->
     gen_server:call({global, ?MODULE}, {delete_user, Uid}).
 
@@ -222,19 +222,18 @@ handle_call({get_or_create_user, Email}, _From, State) ->
     Ms = ets:fun2ms(fun(#user{email=E, uid=U}) when E == Email -> U end),
     T = fun() ->
                 case mnesia:select(service_passport_user, Ms, write) of
-                    [H] -> 
-                        H;
+                    [U] -> 
+                        {ok, existing, U};
                     _ -> 
-                        User = #user{uid = create_uid(), email = Email,
-                                     passMD5 = crypto:md5_mac(server_key(), "123")},
+                        User = #user{uid = create_uid(), email = Email},
                         mnesia:write(service_passport_user, User, write),
-                        User#user.uid
+                        {ok, new, User#user.uid}
                 end
         end,
-    Uid = mnesia:activity(async_dirty, T),
-    {reply, Uid, State};
+    Ret = mnesia:activity(async_dirty, T),
+    {reply, Ret, State};
 
-handle_call({create, Uid, Email, Password}, _From, State) ->
+handle_call({create_user, Uid, Email, Password}, _From, State) ->
     Rec = #user{ uid = Uid,
                  email = Email,
                  passMD5 = crypto:md5_mac(server_key(), Password)},
@@ -242,7 +241,7 @@ handle_call({create, Uid, Email, Password}, _From, State) ->
     Ret = mnesia:activity(async_dirty, Fun),
     {reply, Ret, State};
 
-handle_call({delete, Uid}, _From, State) ->
+handle_call({delete_user, Uid}, _From, State) ->
     Ret = mnesia:activity(async_dirty, fun mnesia:delete/3, 
                           [service_passport_user, Uid, write]),
     {reply, Ret, State};    

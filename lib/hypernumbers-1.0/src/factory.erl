@@ -13,6 +13,8 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
+-include("auth.hrl").
+
 -record(state, {}).
 
 %%%===================================================================
@@ -36,24 +38,17 @@ provision_site(Zone, Email0, SiteType) ->
         true -> 
             Call = {provision, Zone, Email, SiteType},
             case gen_server:call({global, ?MODULE}, Call) of
-                {Site, Uid, Name, HT} ->
-                    EmailBody = new_site_email(Name, Site, Email),
-                    case application:get_env(hypernumbers, environment) of
-                        {ok, development} ->
-                            io:format("Email Body:~n~s~n--END EMAIL--~n",[EmailBody]);
-                        {ok, production}  ->
-                            hn_net_util:email(Email, "\"tiny.hn Team\" <noreply@tiny.hn>",
-                                              "Your new tiny.hn site is live!", EmailBody)
-                    end,
-                    {Site, Uid, Name, HT};
-                _Else  ->
+                {ok, New_Existing, Site, Uid, Name} ->
+                    post_provision(New_Existing, Site, Uid, Name, Email);
+                _Else ->
                     {error, bad_provision}
             end;
         false ->
             {error, invalid_email}
     end.
 
--spec provision_site(string(), string(), atom(), string()) -> no_return().
+%% This will be needed for 'non-generated' zone deployments: ie. 'uses.hn'.
+    -spec provision_site(string(), string(), atom(), string()) -> no_return().
 provision_site(_Zone, _Email0, _SiteType, _CustomHost) ->
     throw(undefined),
     ok.
@@ -92,16 +87,14 @@ init([]) ->
 %%--------------------------------------------------------------------
 handle_call({provision, Zone, Email, Type}, _From, State) ->
     {ok, {Host, {_Ip, Port, Node}}} = hns:link_resource(Zone),
-    Uid = passport:get_or_create_user(Email),
+    {ok, NE, Uid} = passport:get_or_create_user(Email),
     Name = extract_name_from_email(Email),
     Site = lists:flatten(io_lib:format("http://~s:~b", [Host,Port])),
     ok = rpc:call(Node, hn_setup, site, 
                   [Site, Type, [{creator, Uid},
                                 {email, Email},
                                 {name, Name}]]),
-    HT = passport:create_hypertag(Site, ["_invite", Name, "some", "page"], 
-                                  Uid, [], never),
-    {reply, {Site, Uid, Name, HT}, State};
+    {reply, {ok, NE, Site, Uid, Name}, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -162,6 +155,33 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
+-spec post_provision(new | existing, string(), uid(), string(), string())
+                    -> string(). 
+
+%% User does not have any existing sites, log them into their new site
+%% directly.
+post_provision(new, Site, Uid, Name, Email) ->
+    EmailBody = first_site_email(Site, Name, Email),
+    send_email(Email, EmailBody),
+    passport:create_hypertag(Site, ["_mynewsite", Name, "some", "page"], 
+                             Uid, [], never);
+
+%% User already exists, so redirect them to their new site and let
+%% them login normally.
+post_provision(existing, Site, _Uid, Name, Email) ->
+    EmailBody = additional_site_email(Site, Name, Email),
+    send_email(Email, EmailBody),
+    lists:flatten(Site, hn_util:list_to_path(["some", "page"])).
+
+send_email(To, EmailBody) ->
+    case application:get_env(hypernumbers, environment) of
+        {ok, development} ->
+            io:format("Email Body:~n~s~n--END EMAIL--~n",[EmailBody]);
+        {ok, production}  ->
+            hn_net_util:email(To, "\"tiny.hn Team\" <noreply@tiny.hn>",
+                              "Your new tiny.hn site is live!", EmailBody)
+    end.    
+
 extract_name_from_email(Email) ->
     LocalPart = lists:takewhile(fun(X) -> X /= $@ end, Email),
     [Name | _Rest] =  string:tokens(LocalPart, "."),
@@ -169,7 +189,17 @@ extract_name_from_email(Email) ->
     
 capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].
 
-new_site_email(Name, Site, Email) ->
+first_site_email(Site, Name, Email) ->
+    S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site "
+        "at:~n~n ~s~n~nTo make changes to the site follow the "
+        "instructions on the main page"
+        "~n~nYour Username:     ~s     ~nYour Password:"
+        "     ~s~n~nThanks for signing up, "
+        "hope you enjoy your tiny site!~n~n"
+        "~n~n The tiny.hn team",
+    lists:flatten(io_lib:format(S, [Name, Site, Email, "you don't have one"])).
+
+additional_site_email(Site, Name, Email) ->
     S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site "
         "at:~n~n ~s~n~nTo make changes to the site follow the "
         "instructions on the main page"
