@@ -45,7 +45,7 @@
                   views = gb_trees:empty() }).
 
 -record(view, {everyone = false :: true | false,
-               groups = gb_sets:empty() :: gb_set() }).
+               groups = ordsets:new() :: list() }).
 
 -record(state, {site :: string(),
                 table :: string(),
@@ -356,7 +356,7 @@ apply_authspec(V, [everyone | Rest]) ->
     V2 = V#view{everyone = true},
     apply_authspec(V2, Rest);
 apply_authspec(V, [Group | Rest]) ->
-    V2 = V#view{groups = gb_sets:add(Group, V#view.groups)},
+    V2 = V#view{groups = ordsets:add_element(Group, V#view.groups)},
     apply_authspec(V2, Rest).
 
 %% When called with type 'champion' or 'challenger' the requested type
@@ -398,7 +398,7 @@ get_particular_view(C, Site, Uid, V) ->
 can_view(_Site, _Uid, #view{everyone = true}) -> 
     true; 
 can_view(Site, Uid, #view{groups = Groups}) -> 
-    hn_groups:is_member(Uid, Site, gb_sets:to_list(Groups)).
+    hn_groups:is_member(Uid, Site, ordsets:to_list(Groups)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Tree Manipulations
@@ -513,7 +513,7 @@ add_to_views({V, NewView}, Views) ->
             gb_trees:insert(V, NewView, Views);
         {value, CurView} ->
             Everyone = CurView#view.everyone,
-            Groups = gb_sets:union(CurView#view.groups, NewView#view.groups),
+            Groups = ordsets:union(CurView#view.groups, NewView#view.groups),
             Merged = #view{everyone = Everyone,
                            groups = Groups},
             gb_trees:enter(V, Merged, Views)
@@ -548,7 +548,7 @@ ctl_to_json(C) ->
 
 view_to_json(none) -> [];
 view_to_json({V, View, Iter}) ->
-    Groups = [G || G <- gb_sets:to_list(View#view.groups)],
+    Groups = [G || G <- ordsets:to_list(View#view.groups)],
     S = {V, {struct, [{"everyone", View#view.everyone},
                       {"groups", {array, Groups}}]}},
     [S | view_to_json(gb_trees:next(Iter))].
@@ -610,7 +610,7 @@ dump_control(C, Path) ->
 
 dump_views([], _) -> [];
 dump_views([{V, View} | Rest], Path) ->
-    Groups = gb_sets:to_list(View#view.groups),
+    Groups = ordsets:to_list(View#view.groups),
     Perms = Groups ++ case View#view.everyone of
                           true -> [everyone];
                           false -> []
