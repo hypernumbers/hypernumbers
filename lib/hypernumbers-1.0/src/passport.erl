@@ -96,7 +96,10 @@ authenticate(Email, Password, Remember) ->
             Else
     end.
 
--spec set_password(uid(), string()) -> ok | {error, invalid_uid}.
+-spec set_password(uid(), string()) 
+                  -> ok | 
+                     {error, invalid_uid} | 
+                     {error, invalidated }.
 set_password(Uid, Password) ->
     Msg = {set_password, Uid, Password},
     gen_server:call({global, ?MODULE}, Msg).
@@ -195,6 +198,8 @@ handle_call({set_password, Uid, Password}, _From, State) ->
     PassMD5 = crypto:md5_mac(server_key(), Password),
     T = fun() ->
                 case mnesia:read(service_passport_user, Uid, write) of
+                    [U] when not U#user.validated ->
+                        {error, invalidated};
                     [U] -> 
                         mnesia:write(service_passport_user, 
                                      U#user{passMD5 = PassMD5}, 
