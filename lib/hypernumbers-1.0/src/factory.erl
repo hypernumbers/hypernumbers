@@ -40,7 +40,7 @@ provision_site(Zone, Email, SiteType) ->
             Call = {provision, Zone, Email, SiteType},
             case gen_server:call({global, ?MODULE}, Call) of
                 {ok, New_Existing, Site, Uid, Name} ->
-                    post_provision(New_Existing, Site, Name, Email),
+                    post_provision(New_Existing, Site, Uid, Name, Email),
                     {ok, New_Existing, Site, Uid, Name};
                 _Else ->
                     {error, bad_provision}
@@ -157,19 +157,19 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
--spec post_provision(new | existing, string(), string(), string())
+-spec post_provision(new | existing, string(), uid(), string(), string())
                     -> string(). 
 
 %% User does not have any existing sites, log them into their new site
 %% directly.
-post_provision(new, Site, Name, Email) ->
-    EmailBody = first_site_email(Site, Name, Email),
+post_provision(new, Site, Uid, Name, Email) ->
+    EmailBody = first_site_email(Site, Uid, Name),
     send_email(Email, EmailBody);
 
 %% User already exists, so redirect them to their new site and let
 %% them login normally.
-post_provision(existing, Site, Name, Email) ->
-    EmailBody = additional_site_email(Site, Name, Email),
+post_provision(existing, Site, _Uid, Name, Email) ->
+    EmailBody = additional_site_email(Site, Name),
     send_email(Email, EmailBody).
 
 send_email(To, EmailBody) ->
@@ -177,8 +177,8 @@ send_email(To, EmailBody) ->
         {ok, development} ->
             io:format("Email Body:~n~s~n--END EMAIL--~n",[EmailBody]);
         {ok, production}  ->
-            hn_net_util:email(To, "\"tiny.hn Team\" <noreply@tiny.hn>",
-                              "Your new tiny.hn site is live!", EmailBody)
+            hn_net_util:email(To, "\"Hypernumbers Team\" <noreply@tiny.hn>",
+                              "Your new site is live!", EmailBody)
     end.    
 
 extract_name_from_email(Email) ->
@@ -188,25 +188,26 @@ extract_name_from_email(Email) ->
     
 capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].
 
-first_site_email(Site, Name, Email) ->
-    S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site "
-        "at:~n~n ~s~n~nTo make changes to the site follow the "
-        "instructions on the main page"
-        "~n~nYour Username:     ~s     ~nYour Password:"
-        "     ~s~n~nThanks for signing up, "
-        "hope you enjoy your tiny site!~n~n"
-        "~n~n The tiny.hn team",
-    lists:flatten(io_lib:format(S, [Name, Site, Email, "you don't have one"])).
+first_site_email(Site, Uid, Name) ->
+    Path = ["_validate", Name, "home"],
+    Data = [{emailed, true}],
+    HT = passport:create_hypertag(Site, Path, Uid, Data, never),
+    lists:flatten(
+      ["Hi ", Name, "\n\n",
+       "We hope you've had a chance to "
+       "test-drive your new site:\n\n ", Site, ".\n\n"
+       "We do need one more thing! Please click the following "
+       "link to validate your site, it only takes a moment and you "
+       "can setup your password.\n\n",
+       "Just click: <a href='",HT,"'>here</a>\n\n"
+       "The Hypernumbers team."]).
 
-additional_site_email(Site, Name, Email) ->
-    S = "Hi ~s~n~nWelcome to tiny.hn, we have set up your site "
-        "at:~n~n ~s~n~nTo make changes to the site follow the "
-        "instructions on the main page"
-        "~n~nYour Username:     ~s     ~nYour Password:"
-        "     ~s~n~nThanks for signing up, "
-        "hope you enjoy your tiny site!~n~n"
-        "~n~n The tiny.hn team",
-    lists:flatten(io_lib:format(S, [Name, Site, Email, "you don't have one"])).
+additional_site_email(Site, Name) ->
+    lists:flatten(
+      ["Hi ", Name, ",\n\n", 
+       "We've built another site for you. It's located at:\n\n ",
+       Site, "\n\n",
+       "The Hypernumbers team."]).
 
 -spec valid_email(string()) -> boolean(). 
 valid_email(Email) ->

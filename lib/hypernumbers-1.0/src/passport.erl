@@ -2,12 +2,6 @@
 
 -behaviour(gen_server).
 
-%%% Notes:
-%%%
-%%% Services like facebook, twitter etc which we may use to
-%%% externalize authentication will have their own tables. This way users
-%%% don't have to be transformed when new authentication methods are added.
-
 %% API
 -export([ start_link/0,
           create_hypertag/5,
@@ -17,6 +11,8 @@
           set_password/2,
           uid_to_email/1,
           email_to_uid/1,
+          validate_uid/1,
+          is_valid_uid/1,
           get_or_create_user/1,
           create_user/3,
           delete_user/1
@@ -40,6 +36,7 @@
 -record(user, {uid,
                email,
                passMD5 = nil,
+               validated = false,
                created_on = calendar:universal_time(),
                lastlogin_on = nil,
                data = dict:new()}).
@@ -122,6 +119,14 @@ uid_to_email(Uid) ->
 -spec email_to_uid(string()) -> {ok, string()} | {error, invalid_email}.
 email_to_uid(Email) -> 
     gen_server:call({global, ?MODULE}, {email_to_uid, Email}).
+
+-spec validate_uid(uid()) -> ok | {error, invalid_uid}. 
+validate_uid(Uid) ->
+    gen_server:call({global, ?MODULE}, {validate_uid, Uid}).
+
+-spec is_valid_uid(uid()) -> {ok, boolean} | {error, invalid_uid}.
+is_valid_uid(Uid) ->
+    gen_server:call({global, ?MODULE}, {is_valid_uid, Uid}).
 
 -spec get_or_create_user(string()) -> {ok, new | existing, string()}.
 get_or_create_user(Email) -> 
@@ -215,6 +220,28 @@ handle_call({email_to_uid, Email}, _From, State) ->
                                [service_passport_user, Email, #user.email]) of
               [U] -> {ok, U#user.uid}; 
               _   -> {error, invalid_email}
+          end,
+    {reply, Ret, State};
+
+handle_call({validate_uid, Uid}, _From, State) ->
+    F = fun() ->
+                case mnesia:read(service_passport_user, Uid, write) of
+                    [U] -> 
+                        mnesia:write(service_passport_user,
+                                     U#user{validated = true},
+                                     write);
+                    _ ->
+                        {error, invalid_uid}
+                end
+        end,
+    Ret = mnesia:activity(async_dirty, F),
+    {reply, Ret, State};
+
+handle_call({is_valid_uid, Uid}, _From, State) ->
+    Ret = case mnesia:activity(async_dirty, fun mnesia:read/3, 
+                               [service_passport_user, Uid, read]) of
+              [U] -> {ok, U#user.validated}; 
+              _   -> {error, invalid_uid}
           end,
     {reply, Ret, State};
 

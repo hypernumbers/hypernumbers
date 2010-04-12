@@ -169,7 +169,10 @@ authorize_get(_Ref,
     allowed;
 
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html}) 
-  when X == "_invite"; X == "_mynewsite"; X == "_signup"; X == "_hooks" ->
+  when X == "_invite"; 
+       X == "_mynewsite"; 
+       X == "_validate";
+       X == "_hooks" ->
     allowed;
 
 %% Authorize update requests, when the update is targeted towards a
@@ -331,7 +334,7 @@ iget(Ref=#refX{path=["_user", "login"]}, page, _Qry, Env) ->
 
 iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
      #qry{hypertag=HT}, 
-     Env) when X == "_invite"; X == "_mynewsite"; X == "_signup" ->
+     Env) when X == "_invite"; X == "_mynewsite" ->
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Data, Stamp, Age} ->
             Cookie = hn_net_util:cookie("auth", Stamp, Age),
@@ -343,6 +346,25 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
         {error, E} ->
             %% handle graceufully, what about time outs?
             throw(E)
+    end;
+
+iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
+     #qry{hypertag=HT}, 
+     Env) when X == "_validate" ->
+    case passport:open_hypertag(Site, Path, HT) of
+        {ok, Uid, Data, Stamp, Age} ->
+            case proplists:get_value(emailed, Data) of
+                true -> 
+                    ok = passport:validate_uid(Uid),
+                    Cookie = hn_net_util:cookie("auth", Stamp, Age),
+                    Target = strip80(Site) ++ hn_util:list_to_path(Rest),
+                    Redirect = {"Location", Target},
+                    Headers = [Cookie, Redirect | Env#env.headers],
+                    respond(302, Env#env{uid = Uid, headers = Headers}),
+                    throw(ok);                    
+                _Else -> 
+                    throw(bad_validation)
+            end
     end;
 
 iget(#refX{site = Site}, page, #qry{view = FName, template = []}, Env) 
@@ -782,7 +804,7 @@ ipost(#refX{site = Site, path = _P}, _Qry,
         {error, Reason} ->
             json(Env, {struct, [{"result", "error"}, {"reason", Reason}]})
     end; 
-
+    
 ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
     [{"signup",{struct,[{"email",Email0}]}}] = Body,
     Email = string:to_lower(Email0),
