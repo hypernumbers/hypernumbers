@@ -169,8 +169,7 @@ authorize_get(_Ref,
     allowed;
 
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html}) 
-  when X == "_invite"; X == "_mynew
-site"; X == "_signup"; X == "_hooks" ->
+  when X == "_invite"; X == "_mynewsite"; X == "_signup"; X == "_hooks" ->
     allowed;
 
 %% Authorize update requests, when the update is targeted towards a
@@ -784,9 +783,28 @@ ipost(#refX{site = Site, path = _P}, _Qry,
             json(Env, {struct, [{"result", "error"}, {"reason", Reason}]})
     end; 
 
-ipost(#refX{site=Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
-    io:format("~p~n", [Body]),
-    json(Env, {struct, [{"result", "success"}]});
+ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
+    [{"signup",{struct,[{"email",Email0}]}}] = Body,
+    Email = string:to_lower(Email0),
+    Zone = case application:get_env(hypernumbers, environment) of
+               {ok, development} -> "hypernumbers.dev";
+               {ok, production}  -> "tiny.hn"
+           end,
+    Type = demo,
+    case factory:provision_site(Zone, Email, Type) of
+        {ok, new, Site, Uid, Name} ->
+            Opaque = [],
+            Expiry = never,
+            passport:create_hypertag(Site, ["_mynewsite", Name, "some", "page"], 
+                                     Uid, Opaque, Expiry),
+            json(Env, {struct, [{"result", "success"}]});
+        {ok, existing, _Site, _Uid, _Name} ->
+            %% needs a redirect.
+            ok;
+        {error, _Reason} ->
+            %% Reason is bad_email, or bad_provision
+            json(Env, {struct, [{"result", "error"}, {"reason", "stuff broke"}]})
+    end;
 
 ipost(Ref, Qry, Env) ->
     error_logger:error_msg("404~n-~p~n-~p~n",[Ref, Qry]),

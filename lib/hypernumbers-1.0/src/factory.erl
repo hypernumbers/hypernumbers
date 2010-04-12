@@ -32,7 +32,8 @@ start_link() ->
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
 -spec provision_site(string(), string(), atom()) 
-                    -> {ok, new | existing, string(), uid(), string()}.
+                    -> {ok, new | existing, string(), uid(), string()} | 
+                       {error, bad_provision | invalid_email}.
 provision_site(Zone, Email, SiteType) ->
     case valid_email(Email) of
         true -> 
