@@ -12,6 +12,9 @@
 -define(COVER_FILE, "tests/cover.spec").
 -define(COVER_DATA, "tests/cover.data").
 
+init() ->
+    catch hn_setup:site("http://hypernumbers.dev:9000", blank, []).
+        
 
 all() -> excel(), sys().
 
@@ -19,6 +22,7 @@ all() -> excel(), sys().
 sys() ->
     sys([]).
 sys(Suites) ->
+    init(),
     %% Copy source files
     SrcDir = code:lib_dir(hypernumbers)++"/src/",
     EbinDir = code:lib_dir(hypernumbers)++"/ebin/",
@@ -43,11 +47,13 @@ excel() ->
     excel("1"),
     excel("2").
 excel(TName) ->
+    init(),
     WC = filename:absname(?TEST_DIR)++"/excel_import_"++TName++"*_test",
     Tests = filelib:wildcard(WC),
     Opts = [ {dir, Tests} ],
     do_test(Opts).
 excel(T, S) ->
+    init(),
     Test = filename:absname(?TEST_DIR)++"/excel_import_"++T++"_test",
     Suite = S ++ "_SUITE",
     Opts = [ {dir, [Test]},
