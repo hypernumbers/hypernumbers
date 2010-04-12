@@ -31,15 +31,16 @@
 start_link() ->
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
--spec provision_site(string(), string(), atom()) -> any(). 
-provision_site(Zone, Email0, SiteType) ->
-    Email = string:to_lower(Email0),
+-spec provision_site(string(), string(), atom()) 
+                    -> {ok, new | existing, string(), uid(), string()}.
+provision_site(Zone, Email, SiteType) ->
     case valid_email(Email) of
         true -> 
             Call = {provision, Zone, Email, SiteType},
             case gen_server:call({global, ?MODULE}, Call) of
                 {ok, New_Existing, Site, Uid, Name} ->
-                    post_provision(New_Existing, Site, Uid, Name, Email);
+                    post_provision(New_Existing, Site, Name, Email),
+                    {ok, New_Existing, Site, Uid, Name};
                 _Else ->
                     {error, bad_provision}
             end;
@@ -155,23 +156,20 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
--spec post_provision(new | existing, string(), uid(), string(), string())
+-spec post_provision(new | existing, string(), string(), string())
                     -> string(). 
 
 %% User does not have any existing sites, log them into their new site
 %% directly.
-post_provision(new, Site, Uid, Name, Email) ->
+post_provision(new, Site, Name, Email) ->
     EmailBody = first_site_email(Site, Name, Email),
-    send_email(Email, EmailBody),
-    passport:create_hypertag(Site, ["_mynewsite", Name, "some", "page"], 
-                             Uid, [], never);
+    send_email(Email, EmailBody);
 
 %% User already exists, so redirect them to their new site and let
 %% them login normally.
-post_provision(existing, Site, _Uid, Name, Email) ->
+post_provision(existing, Site, Name, Email) ->
     EmailBody = additional_site_email(Site, Name, Email),
-    send_email(Email, EmailBody),
-    lists:flatten(Site, hn_util:list_to_path(["some", "page"])).
+    send_email(Email, EmailBody).
 
 send_email(To, EmailBody) ->
     case application:get_env(hypernumbers, environment) of

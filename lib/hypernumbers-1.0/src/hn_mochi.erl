@@ -169,7 +169,8 @@ authorize_get(_Ref,
     allowed;
 
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html}) 
-  when X == "_invite"; X == "_mynewsite"; X == "_signup"; X == "_hooks" ->
+  when X == "_invite"; X == "_mynew
+site"; X == "_signup"; X == "_hooks" ->
     allowed;
 
 %% Authorize update requests, when the update is targeted towards a
@@ -783,7 +784,7 @@ ipost(#refX{site = Site, path = _P}, _Qry,
             json(Env, {struct, [{"result", "error"}, {"reason", Reason}]})
     end; 
 
-ipost(#refX{site=Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->    
+ipost(#refX{site=Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
     io:format("~p~n", [Body]),
     json(Env, {struct, [{"result", "success"}]});
 
