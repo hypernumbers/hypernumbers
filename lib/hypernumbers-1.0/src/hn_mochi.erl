@@ -783,9 +783,21 @@ ipost(#refX{site = Site, path = _P}, _Qry,
             json(Env, {struct, [{"result", "error"}, {"reason", Reason}]})
     end; 
 
-ipost(#refX{site=Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->    
-    io:format("~p~n", [Body]),
-    json(Env, {struct, [{"result", "success"}]});
+ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
+    
+    [{"signup",{struct,[{"email",Email}]}}] = Body,
+
+    Zone = case application:get_env(hypernumbers, environment) of
+               {ok, development} -> "hypernumbers.dev";
+               {ok, production}  -> "tiny.hn"
+           end,
+
+    %% case factory:provision_site(Zone, Email, demo) of
+    %%     {error, Reason} -> json(Env, {struct, [{"result", "error"}]});
+    %%     {error, Reason} -> json(Env, {struct, [{"result", "error"}]})
+    %% end.
+            
+    json(Env, {struct, [{"result", "error"}, {"reason", "stuff broke"}]});
 
 ipost(Ref, Qry, Env) ->
     error_logger:error_msg("404~n-~p~n-~p~n",[Ref, Qry]),
