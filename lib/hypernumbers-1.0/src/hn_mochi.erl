@@ -802,8 +802,6 @@ ipost(#refX{site = Site, path = _P}, _Qry,
       Env=#env{body = [{"admin", Json}], uid = Uid}) ->
     {struct,[{Fun, {struct, Args}}]} = Json,
 
-    io:format("~p~n", [Env]),
-    
     case hn_web_admin:rpc(Uid, Site, Fun, Args) of
         ok ->
             json(Env, {struct, [{"result", "success"}]});
