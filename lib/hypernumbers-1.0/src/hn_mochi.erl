@@ -835,7 +835,7 @@ ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
                           "Sorry, the email provided was invalid, "
                               "please try again.";
                       bad_provision ->
-                          "Sorry there was an unknown error, please"
+                          "Sorry there was an unknown error, please "
                               "try again."
                   end,
             json(Env, {struct, [{"result", "error"}, {"reason", Str}]})
