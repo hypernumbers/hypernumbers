@@ -17,8 +17,7 @@ main(Args) ->
 
     %% cd into own directory
     ok = file:set_cwd(filename:dirname(escript:script_name())),
-
-    try dispatch(Args) 
+    try dispatch(Args)
     catch throw:Error ->
             io:format("Error running script:~n  ~p",[Error])
     end,
@@ -71,6 +70,7 @@ build() ->
 
 build_quick() ->
     {ok, Root} = file:get_cwd(),
+    ensure_config(),
     file:set_cwd(Root++"/ebin"),
     compile_code:quick(),
     file:set_cwd(Root),
@@ -146,7 +146,7 @@ parse_extra_args(_, Acc) ->
 has_config() ->
     filelib:is_file(config_file()).
 
-read_config(Key) ->    
+read_config(Key) ->
     {ok, [Config]}         = file:consult(config_file()),
     {hypernumbers, HNConf} = lists:keyfind(hypernumbers, 1, Config),
     {Key, Val}             = lists:keyfind(Key, 1, HNConf),
