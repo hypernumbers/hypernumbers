@@ -18,19 +18,21 @@
 
 %% @doc Handles a file upload request from a user. Imports the file etc and
 %% returns response data to be sent back to the client.
-handle_upload(Mochi, Ref, User) ->
+handle_upload(Mochi, Ref, Uid) ->
 
-    {ok, File, Name} = stream_to_file(Mochi, Ref, User),
+    {ok, UserName} = passport:uid_to_email(Uid),
+    
+    {ok, File, Name} = stream_to_file(Mochi, Ref, UserName),
     NRef = Ref#refX{path = Ref#refX.path ++ [make_name(Name)]},
     
     try
-        import(File, hn_users:name(User), NRef, Name),
+        import(File, UserName, NRef, Name),
         { {struct, [{"location", hn_util:list_to_path(NRef#refX.path)}]},
           File}
     catch
         _Type:Reason ->
             ?ERROR("Error Importing ~p ~n User:~p~n Reason:~p~n Stack:~p~n",
-                   [File, hn_users:name(User), Reason,
+                   [File, UserName, Reason,
                     erlang:get_stacktrace()]),
             { {struct, [{"error", "error reading sheet"}]},
               undefined}
@@ -241,8 +243,8 @@ make_name(Name) ->
     Basename = filename:basename(Name, ".xls"),
     re:replace(Basename,"\s","_",[{return,list}, global]).
 
-stream_to_file(Mochi, Ref, User) ->
-    Stamp    = hn_users:name(User) ++ dh_date:format("__Y_m_d_h_i_s"),
+stream_to_file(Mochi, Ref, UserName) ->
+    Stamp    = UserName ++ dh_date:format("__Y_m_d_h_i_s"),
     Rec      = #file_upload_state{filename=Stamp, ref=Ref},
     CallBack = fun(N) -> file_upload_callback(N, Rec) end,
     {_, _, State} = mochiweb_multipart:parse_multipart_request(Mochi, CallBack),
