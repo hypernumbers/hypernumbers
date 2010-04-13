@@ -1795,3 +1795,54 @@ input[type=checkbox], input[type=radio] {
 #typepanel a { 
     text-decoration:none; 
 }
+
+.button { 
+    -moz-border-radius:3px 3px 3px 3px;
+    background:-moz-linear-gradient(center top , #F9F9F9, #E3E3E3) repeat scroll 0 0 transparent;
+    border:1px solid #BBBBBB;
+    color:#000000;
+    margin:0 8px 0 0;
+    outline:medium none;
+    padding:3px 6px;
+    text-align:center;
+    vertical-align:middle;
+    white-space:nowrap;
+}
+
+.input { 
+    border:1px solid #BBBBBB;
+    color:#000000;
+    padding:4px 6px;
+}
+
+.button:hover { 
+    cursor:pointer;
+    border:1px solid #939393 !important;
+}
+
+.livenav a { 
+    text-decoration:none;
+    color:#333;
+    margin-left:20px;
+}
+
+.livenav a:hover { 
+    text-decoration:underline;
+}
+
+#signupfeedback {
+    padding:5px;
+}
+
+#signupfeedback img {
+    position:relative;
+    top:3px;
+}
+
+#signupfeedback.error { 
+    color:red;   
+}
+
+#signupform {
+    padding-left:15px;
+}

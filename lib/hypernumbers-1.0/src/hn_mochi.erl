@@ -33,7 +33,13 @@ handle(MochiReq) ->
     catch
         ok          -> ok;
         exit:normal -> exit(normal); 
-        Else        -> '500'(MochiReq, Else) 
+        Type:What   ->
+            Report = ["web request failed",
+                      {path, MochiReq:get(path)},
+                      {type, Type}, {what, What},
+                      {trace, erlang:get_stacktrace()}],
+            error_logger:error_report(Report),
+            '500'(MochiReq) 
     end.
 
 -spec handle_(#refX{}, #env{}, #qry{}) -> ok. 
@@ -817,15 +823,22 @@ ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
         {ok, new, Site, Uid, Name} ->
             Opaque = [],
             Expiry = never,
-            passport:create_hypertag(Site, ["_mynewsite", Name, "some", "page"], 
-                                     Uid, Opaque, Expiry),
-            json(Env, {struct, [{"result", "success"}]});
-        {ok, existing, _Site, _Uid, _Name} ->
-            %% needs a redirect.
-            ok;
-        {error, _Reason} ->
-            %% Reason is bad_email, or bad_provision
-            json(Env, {struct, [{"result", "error"}, {"reason", "stuff broke"}]})
+            Url = passport:create_hypertag(Site, ["_mynewsite", Name, "home"], 
+                                           Uid, Opaque, Expiry),
+            json(Env, {struct, [{"result", "success"}, {"url", Url}]});
+        {ok, existing, Site, _Uid, _Name} ->
+            json(Env, {struct, [{"result", "success"}, {"url", Site}]});
+        {error, Reason} ->
+            Str = case Reason of
+                      %bad_email ->
+                      invalid_email ->
+                          "Sorry, the email provided was invalid, "
+                              "please try again.";
+                      bac_provision ->
+                          "Sorry there was an unknown error, please"
+                              "try again."
+                  end,
+            json(Env, {struct, [{"result", "error"}, {"reason", Str}]})
     end;
 
 ipost(Ref, Qry, Env) ->
@@ -1199,8 +1212,7 @@ get_spoor(Site, E=#env{mochi = Mochi}) ->
 '404'(#refX{site = Site}, Env) ->
     serve_html(404, Env, [viewroot(Site), "/_g/core/login.html"]).
 
-'500'(Env, Error) ->
-    error_logger:error_msg("~p~n~p~n", [Error, erlang:get_stacktrace()]),
+'500'(Env) ->
     respond(500, Env).
 
 respond(Code, #env{mochi = Mochi, headers = Headers}) ->
