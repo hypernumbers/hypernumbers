@@ -5,7 +5,7 @@
 -export([create_group/2, delete_group/2,
          add_user/3, rem_user/3, set_users/3,
          is_member/3,
-         load_script/2]).
+         dump_script/1, load_script/2]).
 
 -include("spriki.hrl").
 -include("auth.hrl").
@@ -90,7 +90,27 @@ set_users(Site, GroupN, Users) ->
                 end
         end,
     mnesia:activity(transaction, F).
-    
+
+-spec dump_script(string()) -> string(). 
+dump_script(Site) ->
+    Tbl = hn_db_wu:trans(Site, group),
+    Terms = mnesia:activity(transaction, fun mnesia:foldl/3, 
+                            [fun dump_term/2, [], Tbl]),
+    make_script_terms(Terms, []).
+
+dump_term(#group{name=N, members=M}, Acc) ->
+    Users = [{add_user, [{uid, U}, {group, N}]} 
+             || U <- gb_sets:to_list(M)],
+    [{create_group, [{name, N}]} | Users ++ Acc].
+
+make_script_terms([], Acc) -> 
+    FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
+    lists:flatten([FirstLine | lists:reverse(Acc)]);
+make_script_terms([H | T], Acc) ->
+    NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
+    make_script_terms(T, [NewAcc | Acc]).
+
+-spec load_script(string(), [term()]) -> ok. 
 load_script(Site, Terms) ->
     [ok = exec_script_term(T, Site) || T <- Terms],
     ok.

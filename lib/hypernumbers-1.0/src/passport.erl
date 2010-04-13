@@ -14,8 +14,9 @@
           validate_uid/1,
           is_valid_uid/1,
           get_or_create_user/1,
-          create_user/3,
-          delete_user/1
+          delete_user/1,
+          dump_script/0,
+          load_script/1
         ]).
 
 %% gen_server callbacks
@@ -108,10 +109,14 @@ set_password(Uid, Password) ->
 inspect_stamp(undefined) ->
     {error, no_stamp};
 inspect_stamp(Stamp) ->
-    [Expiry, Uid, Hash] = string:tokens(Stamp, "|"),
-    case {is_expired(Expiry), gen_hash(Uid, Expiry), Hash} of
-        {false,X,X} -> {ok, Uid};
-        {true,_,_}  -> {error, bad_stamp}
+    case string:tokens(Stamp, "|") of
+        [Expiry, Uid, Hash] ->
+            case {is_expired(Expiry), gen_hash(Uid, Expiry), Hash} of
+                {false,X,X} -> {ok, Uid};
+                {true,_,_}  -> {error, bad_stamp}
+            end;
+        _Else ->
+            {error, bad_stamp}
     end.
 
 -spec uid_to_email(uid()) -> {ok, anonymous | string()} | {error, invalid_uid}.
@@ -135,13 +140,30 @@ is_valid_uid(Uid) ->
 get_or_create_user(Email) -> 
     gen_server:call({global, ?MODULE}, {get_or_create_user, Email}).
     
--spec create_user(string(), string(), string()) -> ok.
-create_user(Uid, Email, Password) when is_list(Uid) ->
-    gen_server:call({global, ?MODULE}, {create_user, Uid, Email, Password}).
+%% -spec create_user(string(), string(), string()) -> ok.
+%% create_user(Uid, Email, Password) when is_list(Uid) ->
+%%     gen_server:call({global, ?MODULE}, {create_user, Uid, Email, Password}).
 
 -spec delete_user(string()) -> ok.
 delete_user(Uid) when is_list(Uid) ->
     gen_server:call({global, ?MODULE}, {delete_user, Uid}).
+
+-spec load_script(list()) -> ok.
+load_script(Terms) ->
+    ok = gen_server:call({global, ?MODULE}, {load_script, Terms}).
+
+-spec dump_script() -> string().
+dump_script() ->
+    {ok, Terms} = gen_server:call({global, ?MODULE}, dump_script),
+    make_script_terms(Terms, []).
+    
+make_script_terms([], Acc) -> 
+    FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
+    lists:flatten([FirstLine | lists:reverse(Acc)]);
+make_script_terms([H | T], Acc) ->
+    NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
+    make_script_terms(T, [NewAcc | Acc]).
+                         
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -265,18 +287,27 @@ handle_call({get_or_create_user, Email}, _From, State) ->
     Ret = mnesia:activity(async_dirty, T),
     {reply, Ret, State};
 
-handle_call({create_user, Uid, Email, Password}, _From, State) ->
-    Rec = #user{ uid = Uid,
-                 email = Email,
-                 passMD5 = crypto:md5_mac(server_key(), Password)},
-    Fun = fun() -> mnesia:write(service_passport_user, Rec, write) end,
-    Ret = mnesia:activity(async_dirty, Fun),
-    {reply, Ret, State};
+%% handle_call({create_user, Uid, Email, Password}, _From, State) ->
+%%     Rec = #user{ uid = Uid,
+%%                  email = Email,
+%%                  passMD5 = crypto:md5_mac(server_key(), Password)},
+%%     Fun = fun() -> mnesia:write(service_passport_user, Rec, write) end,
+%%     Ret = mnesia:activity(async_dirty, Fun),
+%%     {reply, Ret, State};
 
 handle_call({delete_user, Uid}, _From, State) ->
     Ret = mnesia:activity(async_dirty, fun mnesia:delete/3, 
                           [service_passport_user, Uid, write]),
     {reply, Ret, State};    
+
+handle_call({load_script, Terms}, _From, State) ->
+    [ok = exec_script_term(T) || T <- Terms],
+    {reply, ok, State};
+
+handle_call(dump_script, _From, State) ->
+    Terms = mnesia:activity(async_dirty, fun mnesia:foldl/3, 
+                            [fun dump_term/2, [], service_passport_user]),
+    {reply, {ok, Terms}, State};
 
 handle_call(_Request, _From, State) ->
     Reply = ok,
@@ -364,6 +395,29 @@ is_expired(Expiry) ->
     Now = calendar:datetime_to_gregorian_seconds(
             calendar:universal_time()),
     Exps =< Now.
+
+-spec dump_term(#user{}, list()) -> list(). 
+dump_term(U, Acc) ->
+    [{add_user, [{uid, U#user.uid},
+                 {email, U#user.email},
+                 {pass, U#user.passMD5},
+                 {validated, U#user.validated},
+                 {created, U#user.created_on},
+                 {lastlogin, U#user.lastlogin_on},
+                 {data, U#user.data}]} | Acc].
+
+-define(lget(Key, List), (element(2, lists:keyfind(Key, 1, List)))).
+exec_script_term({add_user, T}) ->
+    U = #user{uid = ?lget(uid, T),
+              email = ?lget(email, T),
+              passMD5 = ?lget(pass, T),
+              validated = ?lget(validated, T),
+              created_on = ?lget(created, T),
+              lastlogin_on = ?lget(lastlogin, T),
+              data = ?lget(data, T)},
+    true = U#user.uid /= false,
+    mnesia:activity(async_dirty, fun mnesia:write/3, 
+                    [service_passport_user, U, write]).
 
 -spec gen_hash(string(), string()) -> string(). 
 gen_hash(Uid, Expiry) ->

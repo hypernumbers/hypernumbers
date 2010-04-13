@@ -15,19 +15,22 @@
 -include("hypernumbers.hrl").
 
 %% Setup a new site from scratch
--spec site(string(), atom(), [{atom(), any()}]) -> ok.
+-spec site(string(), atom(), [{atom(), any()}]) -> ok | exists.
 site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     site(Site, Type, Opts, [corefiles, sitefiles, json, groups, 
                             permissions, script]).
 
--spec site(string(), atom(), [{atom(), any()}], [atom()]) -> ok.
+-spec site(string(), atom(), [{atom(), any()}], [atom()]) -> ok | exists.
 site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
-    hn_setup:site_exists(Site) andalso
-        throw({site_exists, Site}),
-    error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
-    ok = create_site_tables(Site, Type),
-    ok = sitemaster_sup:add_site(Site),
-    ok = update(Site, Type, Opts, ToLoad).
+    case hn_setup:site_exists(Site) of
+        true -> 
+            exists;
+        false ->
+            error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
+            ok = create_site_tables(Site, Type),
+            ok = sitemaster_sup:add_site(Site),
+            ok = update(Site, Type, Opts, ToLoad)
+    end.
 
 %% Delete a site
 %% Todo: Does not currently remove DNS entries.

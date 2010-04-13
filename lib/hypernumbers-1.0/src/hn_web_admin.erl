@@ -26,7 +26,7 @@
 % hn_mochi                                    %
 %                                             %  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-rpc(User, Site, Fn, Args) when is_list(Args) ->
+rpc(_User, Site, Fn, Args) when is_list(Args) ->
     case Fn of
         add_view ->
             [Site, Path, AuthSpec, View] = Args,
