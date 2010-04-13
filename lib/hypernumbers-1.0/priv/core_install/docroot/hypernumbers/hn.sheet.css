@@ -1846,3 +1846,7 @@ input[type=checkbox], input[type=radio] {
 #signupform {
     padding-left:15px;
 }
+
+#borders { 
+    display:none;
+}
