@@ -109,10 +109,14 @@ set_password(Uid, Password) ->
 inspect_stamp(undefined) ->
     {error, no_stamp};
 inspect_stamp(Stamp) ->
-    [Expiry, Uid, Hash] = string:tokens(Stamp, "|"),
-    case {is_expired(Expiry), gen_hash(Uid, Expiry), Hash} of
-        {false,X,X} -> {ok, Uid};
-        {true,_,_}  -> {error, bad_stamp}
+    case string:tokens(Stamp, "|") of
+        [Expiry, Uid, Hash] ->
+            case {is_expired(Expiry), gen_hash(Uid, Expiry), Hash} of
+                {false,X,X} -> {ok, Uid};
+                {true,_,_}  -> {error, bad_stamp}
+            end;
+        _Else ->
+            {error, bad_stamp}
     end.
 
 -spec uid_to_email(uid()) -> {ok, anonymous | string()} | {error, invalid_uid}.
