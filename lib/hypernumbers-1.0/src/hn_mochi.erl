@@ -126,7 +126,7 @@ handle_static(".tpl", Root, Mochi) ->
     Mochi:serve_file(RelPath, Root, nocache()),
     ok;
 handle_static(X, Root, Mochi)
-  when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; 
+  when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; X == ".txt";
        X == ".ico"; X == ".json"; X == ".gif"; X == ".html" ->
     "/"++RelPath = Mochi:get(path),
     Mochi:serve_file(RelPath, Root),
