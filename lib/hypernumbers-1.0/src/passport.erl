@@ -140,10 +140,6 @@ is_valid_uid(Uid) ->
 get_or_create_user(Email) -> 
     gen_server:call({global, ?MODULE}, {get_or_create_user, Email}).
     
-%% -spec create_user(string(), string(), string()) -> ok.
-%% create_user(Uid, Email, Password) when is_list(Uid) ->
-%%     gen_server:call({global, ?MODULE}, {create_user, Uid, Email, Password}).
-
 -spec delete_user(string()) -> ok.
 delete_user(Uid) when is_list(Uid) ->
     gen_server:call({global, ?MODULE}, {delete_user, Uid}).
@@ -286,14 +282,6 @@ handle_call({get_or_create_user, Email}, _From, State) ->
         end,
     Ret = mnesia:activity(async_dirty, T),
     {reply, Ret, State};
-
-%% handle_call({create_user, Uid, Email, Password}, _From, State) ->
-%%     Rec = #user{ uid = Uid,
-%%                  email = Email,
-%%                  passMD5 = crypto:md5_mac(server_key(), Password)},
-%%     Fun = fun() -> mnesia:write(service_passport_user, Rec, write) end,
-%%     Ret = mnesia:activity(async_dirty, Fun),
-%%     {reply, Ret, State};
 
 handle_call({delete_user, Uid}, _From, State) ->
     Ret = mnesia:activity(async_dirty, fun mnesia:delete/3, 

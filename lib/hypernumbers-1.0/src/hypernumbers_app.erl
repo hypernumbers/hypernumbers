@@ -83,10 +83,17 @@ start_mochi_instance({IP, Port}) ->
     ok.
 
 dev_tasks() ->
-    create_dev_zone().
+    create_dev_zone(),
+    local_hypernumbers().
 
 create_dev_zone() ->
     Gen = fun() -> [crypto:rand_uniform($a, $z+1)] end,
     ok = hns:set_resource("127.0.0.1", 9000, node(), 1),
     hns:create_zone(?DEV_ZONE, 1, 26, Gen),
     ok.
+
+local_hypernumbers() ->
+    {ok, _, Uid} = passport:get_or_create_user("test@hypernumbers.com"),
+    hn_setup:site("http://hypernumbers.dev:9000", blank, [{creator, Uid}]),
+    passport:validate_uid(Uid),
+    passport:set_password(Uid, "secure").
