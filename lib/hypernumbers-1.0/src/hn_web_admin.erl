@@ -28,12 +28,25 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 rpc(_User, Site, Fn, Args) when is_list(Args) ->
     case Fn of
-        add_view ->
-            [Site, Path, AuthSpec, View] = Args,
-            auth_srv:add_view(Site, Path, AuthSpec, View);
+        
+        "set_view" ->
+            
+            Path            = kfind("path", Args),
+            View            = kfind("view", Args),
+            {array, Groups} = kfind("groups", Args),
+            
+            AuthSpec = case kfind("everyone", Args) of
+                           true  -> [everyone | Groups];
+                           false -> Groups
+                       end,
+            
+            NPath = string:tokens(Path, "/"),
+            auth_srv:set_view(Site, NPath, AuthSpec, View);
+        
         remove_views ->
             [Site, Path, AuthSpec, View] = Args,
             auth_srv2:add_view(Site, Path, AuthSpec, View);
+        
         "set_champion" ->
             {"path", Path} = lists:keyfind("path", 1, Args),
             {"view", View} = lists:keyfind("view", 1, Args),
@@ -55,5 +68,9 @@ rpc(_User, Site, Fn, Args) when is_list(Args) ->
             [Site, Name, Groups] = Args,
             hn_users:remove_groups(Site, Name, Groups)
     end.
-        
 
+
+-spec kfind(string(), list()) -> any().
+kfind(Key, List) ->
+    {Key, Val} = lists:keyfind(Key, 1, List),
+    Val.
