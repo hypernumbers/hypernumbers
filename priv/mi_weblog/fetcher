@@ -5,7 +5,7 @@
 -mode(compile).
 
 -define(COOKIE, 'completelysecure').
--define(OUTDIR, "/home/hypernumbers/fetcher_logs/").
+-define(OUTDIR, "/hn/Dropbox/Logs").
 -define(EPMD, "/usr/local/bin/epmd -daemon").
 
 main([Target]) ->
