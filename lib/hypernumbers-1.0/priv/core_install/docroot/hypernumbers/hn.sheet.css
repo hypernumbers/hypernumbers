@@ -1740,7 +1740,6 @@ form.droppable {
 #finder {
     margin:0px auto 0px auto;
     border:1px inset #666;
-    border-top-width:0px;
 }
 
 #newpageform { 

@@ -361,7 +361,7 @@
          
         </div>
 
-        <input type="button" value="close" class="btn" 
+        <input type="button" value="close" class="button" 
                id="closeviewbtn" />
         
         <div id="viewbuilderintro">
@@ -481,19 +481,6 @@
       </div>  
     </div>
     
-    <div class="mdialog" id="mark">
-      <h2>$txt:{Feedback / Report Bug}$</h2>
-      <p>$txt:{Oops, did something break?}$</p>
-      <p>You can report bugs, ask for features, or give us your opinion<br />
-        and feedback here. If you would like a reply, please leave an<br />
-        email address.</p>
-      <p>$txt:{You can also get us at}$ <strong>team@hypernumbers.com</strong></p>
-      <textarea id="feedback"></textarea>
-      <br /><br />
-      <input class="mclose" type="submit" value="Cancel" />
-      <input type="submit" class="action" id="submitmark" value="Submit Comment" />
-    </div>
-
     <div class="mdialog" id="rte_editor">
 	  <div id="wmd-editor" class="wmd-panel">
 	    <div id="wmd-button-bar"></div>
@@ -513,51 +500,64 @@
 
     <div id="ctrlpanel">
 
-      <input type="button" value="close" id="ctrlclose" />
+      <input type="button" value="close" class="button" id="ctrlclose" />
 
       <ul id="ctrltabs">
         <li><a data-tab="welcome">Home</a></li>
         <li><a data-tab="myspreadsheets">My Workspace</a></li>
-        <li><a data-tab="users">Users</a></li>
       </ul>
       
       <div id="ctrltabdivs">
 
         <div id="welcome">
-          <div><h3>Build a webpage</h3>
-            <!-- <p>Build a </p> -->
-            <!-- url: <input type="text" /><br /> -->
-            <!-- <input type="button" value="Build" /> -->
+
+          <div>
+            <h3>Build a webpage</h3>
+            Enter the path of the page: <input type="text" /><br />
+            <input type="button" value="Build" class="button" />
           </div>
+
+          <div>
+            <h3>Create a Spreadsheet</h3>
+            Enter the path of the spreadsheet: <input type="text" /><br />
+            <input type="button" value="Build" class="button" />
+          </div>
+
+          <div>
+            <h3>Build a Form</h3>
+            Enter the path of the spreadsheet: <input type="text" /> <br />
+            The name of the form: <input type="text" /><br />
+            <input type="button" value="Build" class="button" />
+          </div>
+
           <!-- <div> -->
           <!--   <h3><a>Create a Spreadsheet</a></h3> -->
           <!-- </div> -->
           <!-- <h3><a>Make A Form</a></h3> -->
         </div>
 
-        <div id="users">
-          
-          <h3>Create New User</h3>
-          <form id="newusers">
-            <table>
-              <tr><td class="label">name:</td>
-                <td><input type="text" id="newusername" /></td></tr>
-              <tr><td class="label">password:</td>
-                <td><input type="password" id="newuserpass" /></td></tr>
-              <tr><td>&nbsp;</td>
-                <td><input type="submit" value="Add User" id="donewuser" /></td></tr>
-            </table>
-          </form>
-          <div id="newuserfeedback"></div>
-        </div>
+        <!-- <div id="users">           -->
+        <!--   <h3>Create New User</h3> -->
+        <!--   <form id="newusers"> -->
+        <!--     <table> -->
+        <!--       <tr><td class="label">name:</td> -->
+        <!--         <td><input type="text" id="newusername" /></td></tr> -->
+        <!--       <tr><td class="label">password:</td> -->
+        <!--         <td><input type="password" id="newuserpass" /></td></tr> -->
+        <!--       <tr><td>&nbsp;</td> -->
+        <!--         <td><input type="submit" value="Add User" id="donewuser" /></td></tr> -->
+        <!--     </table> -->
+        <!--   </form> -->
+        <!--   <div id="newuserfeedback"></div> -->
+        <!-- </div> -->
 
         <div id="myspreadsheets">
 
-          <form id="newpageform">
-            <span class="currentpageselection"></span>
-            <input type="text" id="newpage" value="" />
-            <input type="submit" value="Create New Page" />
-          </form>
+          <!-- <form id="newpageform"> -->
+          <!--   <span class="currentpageselection"></span> -->
+          <!--   <input type="text" id="newpage" value="" /> -->
+          <!--   <input type="submit" value="Create New Page" /> -->
+          <!-- </form> -->
           
           <div id="finder">
             <div class="panewrapper"><div class="pane"></div></div>
