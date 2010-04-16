@@ -1742,13 +1742,13 @@ form.droppable {
     border:1px inset #666;
 }
 
-#newpageform { 
-    text-align:right; 
-    background:#CCC; 
-    padding:2px;
-    border:1px inset #666; 
-    border-width:1px 1px 0px 1px;
-}
+/* #newpageform {  */
+/*     text-align:right;  */
+/*     background:#CCC;  */
+/*     padding:2px; */
+/*     border:1px inset #666;  */
+/*     border-width:1px 1px 0px 1px; */
+/* } */
 
 #ctrltabdivs td { padding:2px 5px; line-height:18px; font-size: 12px; }
 

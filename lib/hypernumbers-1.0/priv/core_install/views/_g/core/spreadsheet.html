@@ -495,7 +495,7 @@
     <div id="cover"></div>
 
     <div id="loading">
-      loading data...
+      <img src="/img/loading2.gif" /> loading data...
     </div>
 
     <div id="ctrlpanel">
@@ -510,30 +510,31 @@
       <div id="ctrltabdivs">
 
         <div id="welcome">
-
+          
           <div>
-            <h3>Build a webpage</h3>
-            Enter the path of the page: <input type="text" /><br />
-            <input type="button" value="Build" class="button" />
+            <h3>Publish a Webpage</h3>
+            <form id="newwebpageform">
+              Enter Path: <input type="text" id="newwebpage" value="" />
+              <br /><input type="submit" value="Go" class="button" />
+            </form>
           </div>
-
+          
           <div>
-            <h3>Create a Spreadsheet</h3>
-            Enter the path of the spreadsheet: <input type="text" /><br />
-            <input type="button" value="Build" class="button" />
+            <h3>Work on a Spreadsheet</h3>
+            <form id="newpageform">
+              Enter Path: <input type="text" id="newpage" value="" />
+              <br /><input type="submit" value="Go" class="button" />
+            </form>            
           </div>
-
+          
           <div>
-            <h3>Build a Form</h3>
-            Enter the path of the spreadsheet: <input type="text" /> <br />
-            The name of the form: <input type="text" /><br />
-            <input type="button" value="Build" class="button" />
+            <h3>Build a Form (experimental)</h3>
+            <form id="newformform">              
+              Enter Path: <input type="text" id="newformpath" /> <br />
+              Enter Name: <input type="text" id="newformname" /><br />
+              <input type="submit" value="Go" class="button" />
+            </form>
           </div>
-
-          <!-- <div> -->
-          <!--   <h3><a>Create a Spreadsheet</a></h3> -->
-          <!-- </div> -->
-          <!-- <h3><a>Make A Form</a></h3> -->
         </div>
 
         <!-- <div id="users">           -->
