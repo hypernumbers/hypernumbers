@@ -177,7 +177,7 @@ send_email(To, EmailBody) ->
         {ok, development} ->
             io:format("Email Body:~n~s~n--END EMAIL--~n",[EmailBody]);
         {ok, production}  ->
-            hn_net_util:email(To, "\"Hypernumbers Team\" <noreply@tiny.hn>",
+            hn_net_util:email(To, "\"Hypernumbers Team\" <noreply@hypernumbers.com>",
                               "Your new site is live!", EmailBody)
     end.    
 
@@ -195,11 +195,12 @@ first_site_email(Site, Uid, Name) ->
     lists:flatten(
       ["Hi ", Name, "\n\n",
        "We hope you've had a chance to "
-       "test-drive your new site:\n\n ", Site, ".\n\n"
-       "We do need one more thing! Please click the following "
-       "link to validate your site, it only takes a moment and you "
-       "can setup your password.\n\n",
-       "Just click: <a href='",HT,"'>here</a>\n\n"
+       "test-drive your new site:\n\n ", Site, "\n\n"
+       "We just need one more thing. Please click the following "
+       "link to validate your site, this only takes a moment and allows "
+       "you to set your password.\n\n",
+       "Just click or paste the following into your browser:\n\n",
+       HT,"\n\n"
        "The Hypernumbers team."]).
 
 additional_site_email(Site, Name) ->

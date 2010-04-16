@@ -24,11 +24,11 @@
     ]}, 
 
    %% Delete to turn-off centralized tracking.
-   %{pingto, "http://hypernumbers.com"},
+   {pingto, "http://hypernumbers.com"},
 
    %% Mail Setup
    {mailserver,   "smtp.gmail.com"},
-   {mailuser,     "team@hypernumbers.com"},
+   {mailuser,     "noreply@hypernumbers.com"},
    {mailpassword, "mick!ventris09"}
   ]},
  

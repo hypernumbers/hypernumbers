@@ -6,17 +6,9 @@
          email/4, email/5,
          post/3]).
 
--include("date.hrl").
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Cookies
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% -spec expire_days_from_now(integer()) -> integer().
-%% expire_days_from_now(Days) ->
-%%     NowS = calendar:datetime_to_gregorian_seconds(calendar:universal_time()),
-%%     ExpS = NowS + Days * 86400.
 
 -spec cookie(string(), string(), integer() | session) -> string(). 
 cookie(Name, Value, Age) ->
@@ -42,7 +34,7 @@ email(Details, To, From, Subject, Msg) ->
     User   = proplists:get_value(user, Details),
     Pass   = proplists:get_value(password, Details),
     
-    {ok, Socket} = ssl:connect(Server, 465, [{active, false}], 1000),
+    {ok, Socket} = ssl:connect(Server, 465, [{active, false}], 2000),
     
     recv(Socket),
     send(Socket, "HELO localhost"),
