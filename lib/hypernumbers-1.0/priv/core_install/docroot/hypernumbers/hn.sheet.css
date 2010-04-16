@@ -1740,16 +1740,15 @@ form.droppable {
 #finder {
     margin:0px auto 0px auto;
     border:1px inset #666;
-    border-top-width:0px;
 }
 
-#newpageform { 
-    text-align:right; 
-    background:#CCC; 
-    padding:2px;
-    border:1px inset #666; 
-    border-width:1px 1px 0px 1px;
-}
+/* #newpageform {  */
+/*     text-align:right;  */
+/*     background:#CCC;  */
+/*     padding:2px; */
+/*     border:1px inset #666;  */
+/*     border-width:1px 1px 0px 1px; */
+/* } */
 
 #ctrltabdivs td { padding:2px 5px; line-height:18px; font-size: 12px; }
 
@@ -1849,4 +1848,18 @@ input[type=checkbox], input[type=radio] {
 
 #borders { 
     display:none;
+}
+
+#editspreadsheet {
+    position:absolute;
+    top:0px;
+    right:0px;
+    padding:5px;
+    margin-right:10px;
+    background:red;
+}
+
+#editspreadsheet a { 
+    color:white;
+    font-weight:bold;
 }
