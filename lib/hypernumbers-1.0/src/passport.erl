@@ -4,7 +4,7 @@
 
 %% API
 -export([ start_link/0,
-          create_hypertag/5,
+          create_hypertag/6,
           open_hypertag/3, 
           authenticate/3,
           inspect_stamp/1,
@@ -32,7 +32,7 @@
 -define(WEEK_S, 604800).
 -define(DAY_S, 86400).
 
--record(hypertag, {uid, expiry, data}).
+-record(hypertag, {uid, email, expiry, data}).
 
 -record(user, {uid,
                email,
@@ -58,23 +58,30 @@
 start_link() ->
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
--spec create_hypertag(string(), [string()], uid(), any(), integer() | never)
+-spec create_hypertag(string(), 
+                      [string()], 
+                      uid(), string(), 
+                      any(), 
+                      integer() | never)
                      -> string().
-create_hypertag(Site, Path, Uid, Data, Age) ->
+create_hypertag(Site, Path, Uid, Email, Data, Age) ->
     HalfKey = [Site, Path],
-    HT = #hypertag{uid = Uid, expiry = gen_expiry(Age), data = Data},
+    HT = #hypertag{uid = Uid, 
+                   email = Email, 
+                   expiry = gen_expiry(Age), 
+                   data = Data},
     HTEnc = encrypt_term_hex(HalfKey, HT),
     lists:concat([Site, hn_util:list_to_path(Path), "?hypertag=", HTEnc]).
 
 -spec open_hypertag(string(), [string()], string()) 
-                   -> {ok, uid(), any(), string(), integer()} |
+                   -> {ok, uid(), string(), any(), string(), integer()} |
                       {error, any()}.
 open_hypertag(Site, Path, HTEnc) ->
     HalfKey = [Site, Path],
     case decrypt_term_hex(HalfKey, HTEnc) of
-        #hypertag{expiry=E, uid=U, data=D} ->
+        #hypertag{expiry=E, uid=U, email=M, data=D} ->
             case is_expired(E) of
-                false -> {ok, U, D, stamp(U, ?WEEK_S), ?WEEK_S};
+                false -> {ok, U, M, D, stamp(U, M, ?WEEK_S), ?WEEK_S};
                 true -> {error, expired}
             end;
         _Else ->
@@ -92,7 +99,7 @@ authenticate(Email, Password, Remember) ->
                          true -> ?WEEK_S;
                          false -> session
                   end,
-            {ok, Uid, stamp(Uid, Age), Age};
+            {ok, Uid, stamp(Uid, Email, Age), Age};
         Else -> 
             Else
     end.
@@ -110,8 +117,11 @@ inspect_stamp(undefined) ->
     {error, no_stamp};
 inspect_stamp(Stamp) ->
     case string:tokens(Stamp, "|") of
-        [Expiry, Uid, Hash] ->
-            case {is_expired(Expiry), gen_hash(Uid, Expiry), Hash} of
+        [Expiry, Uid, Email, Hash] ->
+            EscEmail = escape_email(Email),
+            case {is_expired(Expiry), 
+                  gen_hash([Expiry, Uid, EscEmail]), 
+                  Hash} of
                 {false,X,X} -> {ok, Uid};
                 {true,_,_}  -> {error, bad_stamp}
             end;
@@ -361,11 +371,17 @@ create_uid() ->
     Bin = crypto:rand_bytes(16),
     mochihex:to_hex(Bin).
 
--spec stamp(uid(), integer() | session) -> string().
-stamp(Uid, Age) ->
+-spec stamp(uid(), string(), integer() | session) -> string().
+stamp(Uid, Email, Age) ->
     Expiry = gen_expiry(Age),
-    Hash = gen_hash(Uid, Expiry),
-    ?FORMAT("~s|~ts|~s", [Expiry, Uid, Hash]).
+    EscEmail = escape_email(Email),
+    Hash = gen_hash([Expiry, Uid, EscEmail]),
+    ?FORMAT("~s|~s|~s|~s", [Expiry, Uid, EscEmail, Hash]).
+
+-spec escape_email(string()) -> string(). 
+escape_email(Email) ->
+    [case S of $@ -> $!; S  -> S end 
+     || S <- Email].
 
 -spec gen_expiry(integer() | session | never) -> string().
 gen_expiry(never) -> "never";
@@ -407,9 +423,9 @@ exec_script_term({add_user, T}) ->
     mnesia:activity(async_dirty, fun mnesia:write/3, 
                     [service_passport_user, U, write]).
 
--spec gen_hash(string(), string()) -> string(). 
-gen_hash(Uid, Expiry) ->
-    mochihex:to_hex(crypto:md5_mac(server_token_key(), [Uid, Expiry])).
+-spec gen_hash([string()]) -> string(). 
+gen_hash(Input) ->
+    mochihex:to_hex(crypto:md5_mac(server_token_key(), Input)).
 
 -spec encrypt_term_hex(iolist(), term()) -> string(). 
 encrypt_term_hex(Key0, Term) ->
@@ -477,8 +493,11 @@ test_encryption() ->
 test_hypertag() -> 
     Site = "http://example.com:1234",
     Path = ["_invite", "alice", "secret", "page"],
-    "http://"++Url = create_hypertag(Site, Path, "alice", {"123"}, never),
+    Email = "alice@example.com",
+    "http://"++Url = create_hypertag(Site, Path, 
+                                     "alice", Email, 
+                                     {"123"}, never),
     {_, "?hypertag="++HyperTag} = httpd_util:split_path(Url),
-    {ok, U, D, _Stamp, _Age} = open_hypertag(Site, Path, HyperTag),
+    {ok, U, Email, D, _Stamp, _Age} = open_hypertag(Site, Path, HyperTag),
     ?assertEqual("alice", U),
     ?assertEqual({"123"}, D).

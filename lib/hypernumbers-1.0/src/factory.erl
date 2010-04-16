@@ -163,7 +163,7 @@ code_change(_OldVsn, State, _Extra) ->
 %% User does not have any existing sites, log them into their new site
 %% directly.
 post_provision(new, Site, Uid, Name, Email) ->
-    EmailBody = first_site_email(Site, Uid, Name),
+    EmailBody = first_site_email(Site, Uid, Name, Email),
     send_email(Email, EmailBody);
 
 %% User already exists, so redirect them to their new site and let
@@ -188,10 +188,10 @@ extract_name_from_email(Email) ->
     
 capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].
 
-first_site_email(Site, Uid, Name) ->
+first_site_email(Site, Uid, Email, Name) ->
     Path = ["_validate", Name, "home"],
     Data = [{emailed, true}],
-    HT = passport:create_hypertag(Site, Path, Uid, Data, never),
+    HT = passport:create_hypertag(Site, Path, Uid, Email, Data, never),
     lists:flatten(
       ["Hi ", Name, "\n\n",
        "We hope you've had a chance to "

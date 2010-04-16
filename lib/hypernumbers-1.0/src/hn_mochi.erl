@@ -342,7 +342,7 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
      #qry{hypertag=HT}, 
      Env) when X == "_invite"; X == "_mynewsite" ->
     case passport:open_hypertag(Site, Path, HT) of
-        {ok, Uid, _Data, Stamp, Age} ->
+        {ok, Uid, _Email, _Data, Stamp, Age} ->
             Cookie = hn_net_util:cookie("auth", Stamp, Age),
             Target = strip80(Site) ++ hn_util:list_to_path(Rest),
             Redirect = {"Location", Target},
@@ -358,7 +358,7 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
      #qry{hypertag=HT}, 
      Env) when X == "_validate" ->
     case passport:open_hypertag(Site, Path, HT) of
-        {ok, Uid, Data, Stamp, Age} ->
+        {ok, Uid, _Email, Data, Stamp, Age} ->
             case proplists:get_value(emailed, Data) of
                 true -> 
                     ok = passport:validate_uid(Uid),
@@ -822,7 +822,7 @@ ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
             Opaque = [],
             Expiry = never,
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
-                                           Uid, Opaque, Expiry),
+                                           Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
         {ok, existing, Site, _Uid, _Name} ->
             json(Env, {struct, [{"result", "success"}, {"url", Site}]});
