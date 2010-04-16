@@ -40,7 +40,7 @@ provision_site(Zone, Email, SiteType) ->
             Call = {provision, Zone, Email, SiteType},
             case gen_server:call({global, ?MODULE}, Call) of
                 {ok, New_Existing, Site, Uid, Name} ->
-                    post_provision(New_Existing, Site, Uid, Name, Email),
+                    post_provision(New_Existing, Site, Uid, Email, Name),
                     {ok, New_Existing, Site, Uid, Name};
                 _Else ->
                     {error, bad_provision}
@@ -162,8 +162,8 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% User does not have any existing sites, log them into their new site
 %% directly.
-post_provision(new, Site, Uid, Name, Email) ->
-    EmailBody = first_site_email(Site, Uid, Name, Email),
+post_provision(new, Site, Uid, Email, Name) ->
+    EmailBody = first_site_email(Site, Uid, Email, Name),
     send_email(Email, EmailBody);
 
 %% User already exists, so redirect them to their new site and let
