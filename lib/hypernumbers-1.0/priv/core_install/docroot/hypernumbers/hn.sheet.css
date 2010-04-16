@@ -1849,3 +1849,17 @@ input[type=checkbox], input[type=radio] {
 #borders { 
     display:none;
 }
+
+#editspreadsheet {
+    position:absolute;
+    top:0px;
+    right:0px;
+    padding:5px;
+    margin-right:10px;
+    background:red;
+}
+
+#editspreadsheet a { 
+    color:white;
+    font-weight:bold;
+}

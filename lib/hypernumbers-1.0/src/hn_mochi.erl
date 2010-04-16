@@ -821,7 +821,7 @@ ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
         {ok, new, Site, Uid, Name} ->
             Opaque = [],
             Expiry = never,
-            Url = passport:create_hypertag(Site, ["_mynewsite", Name, "home"], 
+            Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
         {ok, existing, Site, _Uid, _Name} ->
