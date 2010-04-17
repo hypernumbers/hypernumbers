@@ -1773,7 +1773,7 @@ input[type=checkbox], input[type=radio] {
     top:3px;
 }
 
-#welcome { 
+#welcome, #forms { 
     padding:20px;
 }
 
