@@ -383,16 +383,24 @@ hr {
     height : 26px;
 }
 #homebutton { 
+    background: url(/img/application.png) no-repeat left center;
+    padding-left:18px;
+    opacity         : 0.3;
     display         : block;
-    margin-top      : 5px;
-    width           : 100px;
-    font            : normal 16px serif;
+    margin-top      : 6px;
+    width           : 140px;
+    font            : normal 16px georgia,garamond, serif;
     color           : #000;
     text-decoration : none;
     cursor          : pointer;
 }
+#homebutton:hover { 
+    opacity:1;
+}
+
 #homebutton span { 
-    font            : bold 16px sans-serif;
+    line-height:18px;
+    font            : bold 14px sans-serif;
     text-decoration : underline;
     color           : orange;
 }
@@ -426,10 +434,10 @@ hr {
 #formula {
     position    : absolute;
     display     : block;
-    width: 100%;
-    top:0px;
-    height:100%;
-    margin-left: 110px;
+    width       : 100%;
+    top         : 0px;
+    height      : 100%;
+    margin-left : 110px;
     border      : 0px;
     text-indent : 4px;
     background  : #FFF;
@@ -486,10 +494,11 @@ hr {
 #tabs {
     position :absolute;
     bottom   : 2px;
-    left     : 141px; 
+    left     : 147px; 
 }
 
 #tabs a { 
+    font-size:11px;
     margin          : 0px 5px;
     padding         : 2px 4px;
     text-decoration : none; 
@@ -914,12 +923,13 @@ hr {
 }
 
 #paste { 
- position:   absolute;
- top:        0px;
- left:       0px;
- background: transparent;
- width:      1px;
- border:     0px;
+    /* display    : none; */
+    position   : absolute;
+    top        : 0px;
+    left       : 0px;
+    background : transparent;
+    width      : 1px;
+    border     : 0px;
 }
 
 #axiscontextmenucol ul, #axiscontextmenurow ul, #gridcontextmenu ul {
@@ -1728,8 +1738,9 @@ form.droppable {
 #ctrlclose { 
     color:red; 
     position:absolute; 
-    top:3px;
-    right:5px;
+    padding:0px;
+    top:4px;
+    right:4px;
     z-index:99;
 }
 
@@ -1774,11 +1785,16 @@ input[type=checkbox], input[type=radio] {
 }
 
 #welcome, #forms { 
-    padding:20px;
+    padding:50px 60px;
+}
+
+#welcome p { 
+    color:#666;
+    margin-top:5px;
 }
 
 #welcome div { 
-    margin: 20px 0px;
+    margin-bottom: 40px;
 }
 
 #welcome a { 

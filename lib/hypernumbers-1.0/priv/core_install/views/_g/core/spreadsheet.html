@@ -121,8 +121,12 @@
         </li>
         
       </ul>
-
-      <div id="typepanel">ctrl</div>
+      
+      <div id="typepanel">
+        <div id="webpagectrl">
+          <a target="_blank">[ preview ]</a>
+        </div>
+      </div>
             
     </div>
     
@@ -504,8 +508,8 @@
 
       <ul id="ctrltabs">
         <li><a data-tab="welcome">Home</a></li>
-        <li><a data-tab="myspreadsheets">My Workspace</a></li>
-        <li><a data-tab="forms">Forms(Experimental)</a></li>
+        <li><a data-tab="myspreadsheets">Dashboard</a></li>
+        <li><a data-tab="forms">Forms</a></li>
       </ul>
       
       <div id="ctrltabdivs">
@@ -514,17 +518,24 @@
           
           <div>
             <h3>Publish a Webpage</h3>
+            <p>Designing a webpage couldn't be easier, lay your page out
+              inside a spreadsheet and its done! click the preview 
+              link to see how it looks.</p>
             <form id="newwebpageform">
-              Enter Path: <input type="text" id="newwebpage" value="" />
-              <br /><input type="submit" value="Go" class="button" />
+              Path: <input type="text" id="newwebpage" value="" />
+              <input type="submit" value="Build My Webpage" 
+                     class="button" />
             </form>
           </div>
-          
           <div>
-            <h3>Work on a Spreadsheet</h3>
+            <h3>Create a Spreadsheet</h3>
             <form id="newpageform">
-              Enter Path: <input type="text" id="newpage" value="" />
-              <br /><input type="submit" value="Go" class="button" />
+              <p>Enter a name for your spreadsheet and start editing, 
+                you can see your other spreadsheets and edit settings
+                in the "Dashboard" tab</p>
+              Name : <input type="text" id="newpage" value="" />
+              <input type="submit" value="Create Spreadsheet" 
+                     class="button" />
             </form>            
           </div>
         </div>
