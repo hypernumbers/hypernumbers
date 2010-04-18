@@ -79,36 +79,30 @@ cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun) ->
 write_col_row(_NRef, [], _Styles)   -> ok;
 write_col_row(NRef, Attrs, _Styles) ->
     ok = hn_db_api:write_attributes([{NRef, Attrs}]).    
-
+             
 write_cells(NRef, Attrs, Styles) ->
 
-    case lists:keyfind("formula", 1, Attrs) of
-        false           -> ok;
-        {"formula", F1} ->
-            ok = hn_db_api:write_attributes([{NRef, [{"formula", F1}]}])
-    end,
-
-    case lists:keyfind("format", 1, Attrs) of
-        false          -> ok;
-        {"format", F2} ->
-            ok = hn_db_api:write_attributes([{NRef, [{"format", F2}]}])
-    end,
-
+    ok = write_attr("merge", Attrs, NRef),
+    ok = write_attr("formula", Attrs, NRef),
+    ok = write_attr("format", Attrs, NRef),
+        
     case lists:keyfind("style", 1, Attrs) of
-        {_, SIdx} -> Idx = integer_to_list(SIdx),
-                     {Idx, Style} = lists:keyfind(Idx, 1, Styles),
-                     ok = hn_db_api:write_style_IMPORT(NRef, Style);
-        false     -> ok
-    end,
-    ok.
+        {_, SIdx} ->
+            Idx = integer_to_list(SIdx),
+            {Idx, Style} = lists:keyfind(Idx, 1, Styles),
+            ok = hn_db_api:write_style_IMPORT(NRef, Style);
+        false     ->
+            ok
+    end.
 
 ltoi(X) ->        
     list_to_integer(X).
-    
-% tos(X) when is_atom(X)    -> atom_to_list(X);
-% tos(X) when is_integer(X) -> integer_to_list(X);
-% tos(X) when is_float(X)   -> float_to_list(X);
-% tos(X) -> X.
+
+write_attr(Attr, List, Ref) ->
+    case lists:keyfind(Attr, 1, List) of
+        false       -> ok;
+        {Attr, Val} -> hn_db_api:write_attributes([{Ref, [{Attr, Val}]}])
+    end.
 
 make_style_rec({Idx, Style}) ->
     L = string:tokens(Style, ";"),
