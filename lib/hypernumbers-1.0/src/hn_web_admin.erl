@@ -26,7 +26,7 @@
 % hn_mochi                                    %
 %                                             %  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-rpc(_User, Site, Fn, Args) when is_list(Args) ->
+rpc(User, Site, Fn, Args) when is_list(Args) ->
     case Fn of
         
         "set_view" ->
@@ -43,9 +43,12 @@ rpc(_User, Site, Fn, Args) when is_list(Args) ->
             NPath = string:tokens(Path, "/"),
             auth_srv:set_view(Site, NPath, AuthSpec, View);
         
-        remove_views ->
-            [Site, Path, AuthSpec, View] = Args,
-            auth_srv2:add_view(Site, Path, AuthSpec, View);
+        "set_password" ->
+            Password = kfind("password", Args),
+            case passport:set_password(User, Password) of
+                ok               -> ok;
+                {error, _Reason} -> {error, "Error Setting Password"}
+            end;
         
         "set_champion" ->
             {"path", Path} = lists:keyfind("path", 1, Args),

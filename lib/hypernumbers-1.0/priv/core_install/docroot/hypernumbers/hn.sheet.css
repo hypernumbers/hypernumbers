@@ -1784,13 +1784,16 @@ input[type=checkbox], input[type=radio] {
     top:3px;
 }
 
-#welcome, #forms { 
+#welcome, #forms, #settings { 
     padding:50px 60px;
+}
+
+#welcome h3, #settings h3 { 
+    margin-bottom:5px;
 }
 
 #welcome p { 
     color:#666;
-    margin-top:5px;
 }
 
 #welcome div { 
@@ -1878,4 +1881,26 @@ input[type=checkbox], input[type=radio] {
 #editspreadsheet a { 
     color:white;
     font-weight:bold;
+}
+
+#settingsfeedback { 
+    height:50px;
+}
+
+#settingsfeedback .error { 
+    color:white; 
+    font-weight:bold;
+    padding:5px;
+    background:red;
+}
+
+#settingsfeedback .success { 
+    color:white; 
+    font-weight:bold;
+    padding:5px;
+    background:green;
+}
+
+#settings { 
+    padding:30px 60px;
 }
