@@ -16,14 +16,22 @@ table {
     height : 100%;
 }
 h1,h2,h3,h4,h5 {  
-    margin : 0px 0px 0px 0px;
+    margin : 0px 0px 8px 0px;
 }
-
 p { 
     margin: 0px 0px 8px 0px; 
 }
+ul { 
+    margin:0px 20px 0px 0px;
+}
+li { 
+    margin-left:20px;
+}
 a img { 
     border: 0px; 
+}
+a { 
+    color: inherit;
 }
 td { 
     vertical-align:top;
@@ -956,6 +964,10 @@ hr {
  z-index:    9999999;
 }
 
+#axiscontextmenucol li, #axiscontextmenurow li, #gridcontextmenu li {
+    margin-left: 0px;
+}
+
 #axiscontextmenucol a, #axiscontextmenurow a, #gridcontextmenu a {
  display: block;
  position:relative;
@@ -1712,6 +1724,7 @@ form.droppable {
 #ctrltabs li { 
     display:inline;
     line-height:20px;
+    margin-left:5px;
 }
 
 #ctrltabs li a.selected { 
@@ -1752,14 +1765,6 @@ form.droppable {
     margin:0px auto 0px auto;
     border:1px inset #666;
 }
-
-/* #newpageform {  */
-/*     text-align:right;  */
-/*     background:#CCC;  */
-/*     padding:2px; */
-/*     border:1px inset #666;  */
-/*     border-width:1px 1px 0px 1px; */
-/* } */
 
 #ctrltabdivs td { padding:2px 5px; line-height:18px; font-size: 12px; }
 
@@ -1811,6 +1816,7 @@ input[type=checkbox], input[type=radio] {
     right:0px;
 }
 #typepanel a { 
+    color:blue;
     text-decoration:none; 
 }
 
@@ -1840,7 +1846,6 @@ input[type=checkbox], input[type=radio] {
 
 .livenav a { 
     text-decoration:none;
-    color:#333;
     margin-left:20px;
 }
 
