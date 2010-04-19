@@ -113,7 +113,7 @@ mi_entry(Post, _) ->
     Path = proplists:get_value(path, Post),
     Mthd = proplists:get_value(method, Post),
     Peer = proplists:get_value(peer, Post),
-    Uid = proplists:get_value(uid, Post),
+    Uid = proplists:get_value(user, Post),
     Spoor = proplists:get_value(spoor, Post),
     Rfr = proplists:get_value(referer, Post),
     UA = proplists:get_value(browser, Post),
@@ -126,7 +126,7 @@ mi_entry(Post, _) ->
                     false -> ""
                 end
         end,
-    Email = passport:uid_to_email(Uid),
+    {ok, Email} = passport:uid_to_email(Uid),
     Format = "~p,~p,~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
     io_lib:format(Format, [Date, Site, Path, S, atol(Mthd),
                            Peer, Email, Spoor, Rfr, UA, Accept]).
@@ -220,18 +220,18 @@ print(short, Post, Id) ->
     Time       = proplists:get_value(time, Post),
     FullPath   = proplists:get_value(path, Post),
     Body       = proplists:get_value(body, Post),
-    User       = proplists:get_value(user, Post),
-    Uid        = proplists:get_value(uid, Post),
+    Uid        = proplists:get_value(user, Post),
     Date       = dh_date:format("j/m/y, g:ia", Time),
     [Path | _] = string:tokens(FullPath, "?"),
-    io:format("~6B  ~-18s  ~-10s  ~-16s  ~-20s  ~-35s~n",
-              [Id, Date, User, Uid, Path, bodystr(Body)]);
+    {ok, Email} = passport:uid_to_email(Uid),
+    io:format("~6B ~-17s ~-16s ~-20s ~-35s~n",
+              [Id, Date, Email, Path, bodystr(Body)]);
 
 print(post, Post, Id) ->
     FullPath   = proplists:get_value(path, Post),
     Body       = proplists:get_value(body, Post),
     [Path | _] = string:tokens(FullPath, "?"),
-    io:format("P: ~6B  ~-26s  ~-35s~n", [Id, Path, bodystr(Body)]);
+    io:format("P: ~6B ~-26s ~-35s~n", [Id, Path, bodystr(Body)]);
 
 print(long, Post, Id) ->
     Time    = proplists:get_value(time, Post),
@@ -239,15 +239,15 @@ print(long, Post, Id) ->
     Path    = proplists:get_value(path, Post),
     Method  = proplists:get_value(method, Post),
     Body    = proplists:get_value(body, Post),
-    User    = proplists:get_value(user, Post),
-    Uid     = proplists:get_value(uid, Post),
+    Uid     = proplists:get_value(user, Post),
     Peer    = proplists:get_value(peer, Post),
     Referer = proplists:get_value(referer, Post),
     Accept  = proplists:get_value(accept, Post),
     Browser = proplists:get_value(browser, Post),
+    {ok, Email} = passport:uid_to_email(Uid),
 
     Msg = "~nId: ~p ~s Request on ~s~n"
-        "User:       ~s (~s) (~s)~n"
+        "Email:      ~s~n"
         "Url:        ~s~n"
         "User-Agent: ~s~n"
         "Referrer:   ~s~n"
@@ -255,7 +255,7 @@ print(long, Post, Id) ->
         "Body:       ~s~n~n",
     
     io:format(Msg,[Id, Method, dh_date:format("m.d.y, g:ia", Time), 
-                   User, Uid, Peer, Site++Path, Browser, Referer, 
+                   Email, Peer, Site++Path, Browser, Referer, 
                    Accept, bodystr(Body)]).
 
 filter([], _Post, _Id) ->

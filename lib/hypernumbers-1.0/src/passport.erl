@@ -130,7 +130,7 @@ inspect_stamp(Stamp) ->
     end.
 
 -spec uid_to_email(uid()) -> {ok, anonymous | string()} | {error, invalid_uid}.
-uid_to_email(anonymous) -> {ok,anonymous};
+uid_to_email(anonymous) -> {ok, anonymous};
 uid_to_email(Uid) -> 
     gen_server:call({global, ?MODULE}, {uid_to_email, Uid}).
 
