@@ -15,6 +15,7 @@
 -export([make_src/1,
          get_general/0,
          get_markdown/0,
+         get_plain/0,
          verify/1,
          esc/1,
          make_cond/1,
@@ -52,6 +53,18 @@ get_general() ->
         "     end "++
         "end.", 
     {number,Src}.
+
+get_plain() ->
+    Src = "fun(X) -> "++
+        "    if"++
+        "      "++?is_str++"     -> {auto, X};"++
+        "      not(is_number(X)) -> {auto, X};"++
+        "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++ 
+        "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
+        "     end "++
+        "end.", 
+    {number,Src}.
+
 
 verify(A) when is_list(A) ->
     B=lists:flatten(A),
