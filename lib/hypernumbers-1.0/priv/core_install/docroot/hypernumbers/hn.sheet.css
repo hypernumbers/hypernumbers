@@ -6,31 +6,6 @@ html,body {
     overflow : hidden;
     height   : 100%;
 }
-html, body {  
-    margin : 0px;
-    padding: 0px;
-    font   : 12px Arial,"Helvetica Neue", sans-serif;
-}
-table {  
-    width  : 100%;
-    height : 100%;
-}
-h1,h2,h3,h4,h5 {  
-    margin : 0px 0px 0px 0px;
-}
-
-p { 
-    margin: 0px 0px 8px 0px; 
-}
-a img { 
-    border: 0px; 
-}
-td { 
-    vertical-align:top;
-}
-hr { 
-    margin-top:0px;
-}
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
@@ -930,6 +905,7 @@ hr {
     background : transparent;
     width      : 1px;
     border     : 0px;
+    outline    : none;
 }
 
 #axiscontextmenucol ul, #axiscontextmenurow ul, #gridcontextmenu ul {
@@ -954,6 +930,10 @@ hr {
  border:     1px outset #666;
  background: #FFF;
  z-index:    9999999;
+}
+
+#axiscontextmenucol li, #axiscontextmenurow li, #gridcontextmenu li {
+    margin-left: 0px;
 }
 
 #axiscontextmenucol a, #axiscontextmenurow a, #gridcontextmenu a {
@@ -1712,6 +1692,7 @@ form.droppable {
 #ctrltabs li { 
     display:inline;
     line-height:20px;
+    margin-left:5px;
 }
 
 #ctrltabs li a.selected { 
@@ -1752,14 +1733,6 @@ form.droppable {
     margin:0px auto 0px auto;
     border:1px inset #666;
 }
-
-/* #newpageform {  */
-/*     text-align:right;  */
-/*     background:#CCC;  */
-/*     padding:2px; */
-/*     border:1px inset #666;  */
-/*     border-width:1px 1px 0px 1px; */
-/* } */
 
 #ctrltabdivs td { padding:2px 5px; line-height:18px; font-size: 12px; }
 
@@ -1811,6 +1784,7 @@ input[type=checkbox], input[type=radio] {
     right:0px;
 }
 #typepanel a { 
+    color:blue;Track Your Contacts, Leads, and Deals. Always Be Prepared.
     text-decoration:none; 
 }
 
@@ -1840,7 +1814,6 @@ input[type=checkbox], input[type=radio] {
 
 .livenav a { 
     text-decoration:none;
-    color:#333;
     margin-left:20px;
 }
 
