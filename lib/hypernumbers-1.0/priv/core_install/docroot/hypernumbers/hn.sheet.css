@@ -1,10 +1,13 @@
-
 /******************************************************************************
    TAG STYLES
 ******************************************************************************/
 html,body { 
     overflow : hidden;
     height   : 100%;
+}
+
+a { 
+    color:blue;
 }
 /******************************************************************************
 	GLOBAL STYLES
@@ -113,6 +116,7 @@ html,body {
 	TOP NAVIGATION STYLES
 ******************************************************************************/
 #navigation {  
+    font-size: 11px;
     float    : right;
     position : absolute;
     top      : -1px;
@@ -468,7 +472,7 @@ html,body {
 
 #tabs {
     position :absolute;
-    bottom   : 2px;
+    bottom   : -1px;
     left     : 147px; 
 }
 
@@ -681,6 +685,7 @@ html,body {
 
 
 #toolbar {
+    font : 11px sans-serif;
  background:    #eee;
  height:        26px;
  overflow:      hidden;
@@ -880,7 +885,6 @@ html,body {
 }
 
 #input { 
-    font:     12px Arial,"Helvetica Neue", sans-serif;
     z-index  : 10000000;
     height   : 18px;
     width    : 78px;
@@ -891,7 +895,6 @@ html,body {
 }
 
 #hidden_input {  
-    font:     12px Arial,"Helvetica Neue", sans-serif;
     position: absolute;
     top:      -10000px;
     left:     0px;
@@ -925,6 +928,7 @@ html,body {
 #axiscontextmenucol, #axiscontextmenurow, #gridcontextmenu { 
  position:   absolute;
  display:    none;
+ font-size:11px;
  width:      140px;
  padding:    3px 2px;
  border:     1px outset #666;
@@ -1033,6 +1037,9 @@ html,body {
 #funlist { 
     background : #EEE; 
     border     : 1px solid #666;
+}
+#funlist li { 
+    margin-left:0px;
 }
 #funlist a { 
     display : block;
@@ -1703,7 +1710,7 @@ form.droppable {
 
 #ctrltabs li a { 
     position:relative;
-    top:1px;
+    top:-2px;
     cursor:pointer;
     background:#CCC;
     border:1px solid #666;
@@ -1712,6 +1719,7 @@ form.droppable {
     -moz-border-radius-topright:3px;
     padding:3px 10px;
     margin-left:7px;
+    font-size:11px;
     font-weight:bold;
     color:#555;
 }
@@ -1730,6 +1738,7 @@ form.droppable {
 }
 
 #finder {
+    font-size:11px;
     margin:0px auto 0px auto;
     border:1px inset #666;
 }
@@ -1758,19 +1767,20 @@ input[type=checkbox], input[type=radio] {
 }
 
 #welcome, #forms, #settings { 
-    padding:50px 60px;
+    padding:30px 50px;
 }
 
-#welcome h3, #settings h3 { 
+#welcome h4, #settings h4 { 
     margin-bottom:5px;
 }
 
 #welcome p { 
     color:#666;
+    margin-bottom:5px;
 }
 
 #welcome div { 
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
 #welcome a { 
@@ -1779,18 +1789,23 @@ input[type=checkbox], input[type=radio] {
 }
 
 #typepanel { 
-    padding:6px;
+    font-size:12px;
+    padding:3px;
     position:absolute; 
     right:0px;
 }
 #typepanel a { 
-    color:blue;Track Your Contacts, Leads, and Deals. Always Be Prepared.
+    color:blue;
     text-decoration:none; 
 }
 
 .button { 
+    -webkit-border-radius:3px 3px 3px 3px;    
     -moz-border-radius:3px 3px 3px 3px;
-    background:-moz-linear-gradient(center top , #F9F9F9, #E3E3E3) repeat scroll 0 0 transparent;
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
+                                 to(#E3E3E3));
+    background: -moz-linear-gradient(center top , #F9F9F9, 
+                                     #E3E3E3) repeat scroll 0 0 transparent;
     border:1px solid #BBBBBB;
     color:#000000;
     margin:0 8px 0 0;
@@ -1815,6 +1830,7 @@ input[type=checkbox], input[type=radio] {
 .livenav a { 
     text-decoration:none;
     margin-left:20px;
+    font-size:16px;
 }
 
 .livenav a:hover { 
@@ -1852,6 +1868,7 @@ input[type=checkbox], input[type=radio] {
 }
 
 #editspreadsheet a { 
+    font-size:11px;
     color:white;
     font-weight:bold;
 }
@@ -1875,5 +1892,7 @@ input[type=checkbox], input[type=radio] {
 }
 
 #settings { 
-    padding:30px 60px;
+    padding:10px 60px;
 }
+
+.beta {display:none;}

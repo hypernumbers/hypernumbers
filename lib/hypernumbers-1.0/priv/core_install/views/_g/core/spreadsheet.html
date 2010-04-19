@@ -4,8 +4,8 @@
   <head>
     <meta charset="utf-8" />
     <title>Hypernumbers</title>
-    <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />	
     <link rel="stylesheet" href="/hypernumbers/hn.style.css" />	
+    <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />	
     <link rel="stylesheet" href="/hypernumbers/finder.css" />	
   </head>
   
@@ -139,16 +139,6 @@
           <a id="fstyle_sans-serif">$txt:{Normal}$</a>
           <a id="fstyle_serif">$txt:{Serif}$</a>
           <a id="fstyle_monospace">$txt:{Monospace}$</a>
-        </div>
-      </div>
-      
-      <div class="expand fonts">
-        <span>11px</span>
-        <div id="sizes">
-          <a id="size_8">8px</a>
-          <a id="size_11">11px</a>
-          <a id="size_16">16px</a>
-          <a id="size_20">20px</a>
         </div>
       </div>
       
@@ -371,7 +361,7 @@
         
         <div id="viewbuilderintro">
           <div id="newview">
-            <h2>Create a new View</h2>
+            <h4>Create a new View</h4>
             <div id="newviewfeedback" class="warning"></div>
             <table cellspacing="10">
               <tr><td><strong>Current Path<strong></td>
@@ -475,14 +465,18 @@
       </div>
       <div id="selectedfun">
         <h3 id="funname"></h3>
-        <h4>$txt:{Description}$</h4> <p id="fundesc"></p>
-        <h4>$txt:{Usage}$</h4>       <p id="funusage"></p>
-        <h4>$txt:{Examples}$</h4>    <p id="funexamples"></p>
-        <p>$txt:{Please use the}$ 
-          <a href="http://office.microsoft.com/en-us/excel/CH062528191033.aspx" 
-             target="_blank">$txt:{Microsoft Help}$</a> 
-          $txt:{until we implement help properly}$.</p>
+        <!-- <h5>$txt:{Description}$</h5> <p id="fundesc"></p> -->
+        <!-- <h5>$txt:{Usage}$</h5>       <p id="funusage"></p> -->
+        <!-- <h5>$txt:{Examples}$</h5>    <p id="funexamples"></p> -->
+        <!-- <p>$txt:{Please use the}$  -->
+        <!--   <a href="http://office.microsoft.com/en-us/excel/CH062528191033.aspx"  -->
+        <!--      target="_blank">$txt:{Microsoft Help}$</a>  -->
+        <!--   $txt:{until we implement help properly}$.</p> -->
         <input type="submit" value="Enter Formula" id="enterformula" />
+        <br />
+        <a href="http://support.hypernumbers.com/" target="_blank">
+          support
+        </a>
       </div>  
     </div>
     
@@ -508,10 +502,10 @@
       <input type="button" value="close" class="button" id="ctrlclose" />
 
       <ul id="ctrltabs">
-        <li><a data-tab="welcome">Home</a></li>
-        <li><a data-tab="myspreadsheets">Dashboard</a></li>
-        <li><a data-tab="forms">Forms</a></li>
+        <li><a data-tab="welcome">Getting Started</a></li>
+        <li><a data-tab="myspreadsheets">My Workspace</a></li>
         <li><a data-tab="settings">My Settings</a></li>
+        <li><a data-tab="forms" class="beta">Forms</a></li>
       </ul>
       
       <div id="ctrltabdivs">
@@ -519,23 +513,24 @@
         <div id="welcome">
           
           <div>
-            <h3>Create a new Webpage</h3>
+            <h4>Create a new Webpage</h4>
             <p>Designing a webpage couldn't be easier, lay your page out
-              inside a spreadsheet and its done! click the preview 
-              link to see how it looks.</p>
+              inside a spreadsheet and its done!</p>
             <form id="newwebpageform">
-              Path: <input type="text" id="newwebpage" value="" />
+              <small>Enter the path of your page for example: /about/</small><br />
+              <input type="text" id="newwebpage" value="" />
               <input type="submit" value="Build My Webpage" 
                      class="button" />
             </form>
           </div>
           <div>
-            <h3>Create a new Spreadsheet</h3>
+            <h4>Create a new Spreadsheet</h4>
             <form id="newpageform">
               <p>Enter a name for your spreadsheet and start editing, 
                 you can see your other spreadsheets and edit settings
-                in the "Dashboard" tab</p>
-              Name : <input type="text" id="newpage" value="" />
+                in the "My Workspace" tab</p>
+              <small>Enter the name of your spreadsheet</small><br /
+              <input type="text" id="newpage" value="" />
               <input type="submit" value="Create Spreadsheet" 
                      class="button" />
             </form>            
@@ -558,7 +553,7 @@
           <div id="settingsfeedback"> </div>
 
           <div>
-            <h3>Set Password</h3>
+            <h4>Set Password</h4>
             <form id="passwordform">
               <input type="password" id="passwordval" />
               <input type="submit" value="Set Password" class="button" />
