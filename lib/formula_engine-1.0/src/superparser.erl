@@ -1,5 +1,6 @@
 %%% @doc Pre-processes incoming data.
 %%% @author hasan@hypernumbers.com
+%%% @copyright 2008 Hypernumbers Ltd
 %%% @private
 
 -module(superparser).
@@ -13,6 +14,10 @@ process([$- | Tl] = L) when Tl =/= [] ->
     {formula, super_util:upcase(L)};
 process([39 | Tl]) -> % singly quoted string
     [{quote, Tl},{"text-align", "left"},{"format", "null"}];
+% pass html through plain and unformatted
+% COMMENTED OUT - WAITING FOR MARKDOWN DIALOG BOX TO BE REJIGGED
+%% process([$< | Tl] = L) when Tl =/= [] ->
+%%    [{string, L}, {"text-align", "left"}, {"format", "plain"}];
 process(Input) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
