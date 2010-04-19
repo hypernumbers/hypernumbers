@@ -46,10 +46,7 @@ server_loop(FileName, FD) ->
             server_loop(FileName, FD);
 
         {_, log_finished} ->
-            ok = file:close(FD),
-            Latest = [?OUTDIR, "latest"],
-            file:delete(Latest),
-            ok = file:make_symlink(FileName, Latest)
+            ok = file:close(FD)
 
     after 20000 ->
             io:format(standard_error, "Lost connection to server~n", []),
