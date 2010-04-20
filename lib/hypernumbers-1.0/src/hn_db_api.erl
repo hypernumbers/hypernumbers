@@ -1047,7 +1047,7 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp, Ar) ->
         _ ->
             ok
     end,
-    
+
     % now notify all parents and children of all cells on
     % this page
     % PageRef = RefX#refX{obj = {page, "/"}},
