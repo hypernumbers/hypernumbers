@@ -158,7 +158,7 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 
 -spec post_provision(new | existing, string(), uid(), string(), string())
-                    -> string(). 
+                    -> ok.
 
 %% User does not have any existing sites, log them into their new site
 %% directly.
@@ -168,7 +168,7 @@ post_provision(new, Site, Uid, Email, Name) ->
 
 %% User already exists, so redirect them to their new site and let
 %% them login normally.
-post_provision(existing, Site, _Uid, Name, Email) ->
+post_provision(existing, Site, _Uid, Email, Name) ->
     EmailBody = additional_site_email(Site, Name),
     send_email(Email, EmailBody).
 
@@ -177,8 +177,12 @@ send_email(To, EmailBody) ->
         {ok, development} ->
             io:format("Email Body:~n~s~n--END EMAIL--~n",[EmailBody]);
         {ok, production}  ->
-            hn_net_util:email(To, "\"Hypernumbers Team\" <noreply@hypernumbers.com>",
-                              "Your new site is live!", EmailBody)
+            spawn(hn_net_util, email, 
+                  [To, 
+                   "\"Hypernumbers Team\" <noreply@hypernumbers.com>",
+                   "Your new site is live!", 
+                   EmailBody]),
+            ok
     end.    
 
 extract_name_from_email(Email) ->
