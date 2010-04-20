@@ -199,7 +199,8 @@ first_site_email(Site, Uid, Email, Name) ->
     lists:flatten(
       ["Hi ", Name, "\n\n",
        "We hope you've had a chance to "
-       "test-drive your new site:\n\n ", Site, "\n\n"
+       "test-drive your new site:\n\n ", 
+       hn_util:strip80(Site), "\n\n"
        "We just need one more thing. Please click the following "
        "link to validate your site, this only takes a moment and allows "
        "you to set your password.\n\n",
@@ -211,7 +212,7 @@ additional_site_email(Site, Name) ->
     lists:flatten(
       ["Hi ", Name, ",\n\n", 
        "We've built another site for you. It's located at:\n\n ",
-       Site, "\n\n",
+       hn_util:strip80(Site), "\n\n",
        "The Hypernumbers team."]).
 
 -spec valid_email(string()) -> boolean(). 

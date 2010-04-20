@@ -28,6 +28,7 @@
          jsonify_val/1,
          is_older/2,
 
+         strip80/1,
          refX_to_url/1,
          index_to_url/1,
          obj_to_str/1,
@@ -309,6 +310,12 @@ refX_to_url(#refX{site = Site, path = Path, obj = {page, "/"}}) ->
             
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
     lists:append([Site, list_to_path(Path),tconv:to_b26(X), text(Y)]).
+
+-spec strip80(string()) -> string(). 
+strip80(S) -> strip80(S, []). 
+strip80([], Acc) -> lists:reverse(Acc);
+strip80(":80"++_, Acc) -> lists:reverse(Acc);
+strip80([H|T], Acc) -> strip80(T, [H|Acc]).
 
 list_to_path([])   -> "/";
 list_to_path(Path) -> "/" ++ string:join(Path, "/") ++ "/".

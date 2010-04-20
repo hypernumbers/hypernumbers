@@ -45,7 +45,7 @@ handle(MochiReq) ->
 -spec handle_(#refX{}, #env{}, #qry{}) -> ok. 
 
 handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
-    Redir = "http://" ++ strip80(Site) ++ Mochi:get(raw_path),
+    Redir = "http://" ++ hn_util:strip80(Site) ++ Mochi:get(raw_path),
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
@@ -146,7 +146,7 @@ handle_ping(E=#env{mochi = Mochi}, Spoor, Return) ->
                  %% precedence. So we tell the 'pinger' to use this
                  %% with a PONG request.
                  #refX{site = OrigSite} = hn_util:parse_url(Original),
-                 Redir = strip80(OrigSite) ++ 
+                 Redir = hn_util:strip80(OrigSite) ++ 
                      "/_pong/?spoor="++OwnSpoor ++
                      "&return="++Return,
                  Redirect = {"Location", Redir},
@@ -344,7 +344,7 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Email, _Data, Stamp, Age} ->
             Cookie = hn_net_util:cookie("auth", Stamp, Age),
-            Target = strip80(Site) ++ hn_util:list_to_path(Rest),
+            Target = hn_util:strip80(Site) ++ hn_util:list_to_path(Rest),
             Redirect = {"Location", Target},
             Headers = [Cookie, Redirect | Env#env.headers],
             respond(302, Env#env{uid = Uid, headers = Headers}),
@@ -363,7 +363,7 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
                 true -> 
                     ok = passport:validate_uid(Uid),
                     Cookie = hn_net_util:cookie("auth", Stamp, Age),
-                    Target = strip80(Site) ++ hn_util:list_to_path(Rest),
+                    Target = hn_util:strip80(Site) ++ hn_util:list_to_path(Rest),
                     Redirect = {"Location", Target},
                     Headers = [Cookie, Redirect | Env#env.headers],
                     respond(302, Env#env{uid = Uid, headers = Headers}),
@@ -855,11 +855,6 @@ view_creator_uid(View, Site, _Poster) ->
     {ok, [Meta]} = file:consult([viewroot(Site), "/", View, ".meta"]),
     proplists:get_value(authreq, Meta).
 
-strip80(S) -> strip80(S, []). 
-strip80([], Acc) -> lists:reverse(Acc);
-strip80(":80"++_, Acc) -> lists:reverse(Acc);
-strip80([H|T], Acc) -> strip80(T, [H|Acc]).
-
 %% Some clients dont send ip in the host header
 get_real_uri(Env) ->
     Host = case Env:get_header_value("HN-Host") of
@@ -1187,7 +1182,7 @@ get_spoor(Site, E=#env{mochi = Mochi}) ->
                     E2;
                 {ok, PingTo} ->
                     Current = 
-                        strip80(Site) ++ 
+                        hn_util:strip80(Site) ++ 
                         mochiweb_util:quote_plus(Mochi:get(raw_path)),
                     Redir = PingTo++"/_ping/?spoor="++Spoor++"&return="++Current,
                     Redirect = {"Location", Redir},
