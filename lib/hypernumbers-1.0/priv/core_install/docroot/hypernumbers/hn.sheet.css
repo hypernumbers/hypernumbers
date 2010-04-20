@@ -401,6 +401,7 @@ a {
 }
 
 #name {
+    font-size  : 10px;
     border     : 0px;
     display    : block;
     float      : left;
@@ -1863,7 +1864,7 @@ input[type=checkbox], input[type=radio] {
     top:0px;
     right:0px;
     padding:5px;
-    margin-right:10px;
+    margin-right:20px;
     background:red;
     display:none;
 }
