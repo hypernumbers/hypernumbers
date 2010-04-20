@@ -1865,6 +1865,7 @@ input[type=checkbox], input[type=radio] {
     padding:5px;
     margin-right:10px;
     background:red;
+    display:none;
 }
 
 #editspreadsheet a { 
