@@ -14,7 +14,7 @@
           validate_uid/1,
           is_valid_uid/1,
           get_or_create_user/1,
-          delete_user/1,
+          delete_uid/1,
           dump_script/0,
           load_script/1
         ]).
@@ -150,9 +150,9 @@ is_valid_uid(Uid) ->
 get_or_create_user(Email) -> 
     gen_server:call({global, ?MODULE}, {get_or_create_user, Email}).
     
--spec delete_user(string()) -> ok.
-delete_user(Uid) when is_list(Uid) ->
-    gen_server:call({global, ?MODULE}, {delete_user, Uid}).
+-spec delete_uid(string()) -> ok.
+delete_uid(Uid) when is_list(Uid) ->
+    gen_server:call({global, ?MODULE}, {delete_uid, Uid}).
 
 -spec load_script(list()) -> ok.
 load_script(Terms) ->
@@ -293,7 +293,7 @@ handle_call({get_or_create_user, Email}, _From, State) ->
     Ret = mnesia:activity(async_dirty, T),
     {reply, Ret, State};
 
-handle_call({delete_user, Uid}, _From, State) ->
+handle_call({delete_uid, Uid}, _From, State) ->
     Ret = mnesia:activity(async_dirty, fun mnesia:delete/3, 
                           [service_passport_user, Uid, write]),
     {reply, Ret, State};    
