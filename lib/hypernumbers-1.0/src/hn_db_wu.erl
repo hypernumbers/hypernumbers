@@ -1,4 +1,3 @@
-
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers.com
@@ -699,7 +698,6 @@ shift_children(Child, OldParent, NewParent)
 %% <code>undefined</code>
 initialise_remote_page_vsn(Site, RefX, Version)
   when is_record(RefX, refX) ->
-    %% io:format("in initialise_remote_page_vsn~n"),
     Page = RefX#refX{obj = {page, "/"}},
     Record = #page_vsn{site_and_pg = {Site, Page}, version = Version},
     mnesia:write(trans(Site, page_vsn), Record, write).
@@ -713,7 +711,6 @@ initialise_remote_page_vsn(Site, RefX, Version)
 %% Incrementation of page versions for local pages should be done with 
 %% {@link get_new_local_page_vsn/2}
 incr_remote_page_vsn(Site, #version{version = "undefined"} = V, Payload) ->
-    %% io:format("in incr_remote_page_vsn~n"),
     #version{page = Page} = V,
     PageX = hn_util:url_to_refX(Page),
     Record = #page_vsn{site_and_pg = {Site, PageX}, version = 1},
@@ -1414,7 +1411,7 @@ shift_cells1(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% @doc deletes any col objects completely covered by the #refX{}
 delete_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}) ->
     H = #local_objs{path = P, obj = {column, {'$1', '$2'}}, _ = '_'},
-    C = [{'or', {'>=', '$1', X1}, {'>=', '$2', X2}}],
+    C = [{'and', {'>=', '$1', X1}, {'=<', '$2', X2}}],
     B = ['$_'],
     M = [{H, C, B}],
     Table = trans(S, local_objs),
@@ -1424,8 +1421,8 @@ delete_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}) ->
 -spec delete_row_objs(#refX{}) -> ok.
 %% @doc deletes any row objects completely covered by the #refX{}
 delete_row_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}) ->
-    H = trans(S, #local_objs{path = P, obj = {row, {'$1', '$2'}}, _ = '_'}),
-    C = [{'or', {'>=', '$1', Y1}, {'>=', '$2', Y2}}],
+    H = #local_objs{path = P, obj = {row, {'$1', '$2'}}, _ = '_'},
+    C = [{'and', {'>=', '$1', Y1}, {'=<', '$2', Y2}}],
     B = ['$_'],
     M = [{H, C, B}],
     Table = trans(S, local_objs),
@@ -1486,7 +1483,7 @@ shift_row_objs1(Shift, Change, Type) ->
              end,
     New = Shift#local_objs{obj = {row, {X1 + Offset, X2 + Offset}}},
     ok = delete_recs(S, [Shift]),
-    ok = mnesia:write(trans(S, local_objs),  New, write).
+    ok = mnesia:write(trans(S, local_objs), New, write).
 
 %% @spec read_styles(#refX{}) -> [Style]
 %% Style = #styles{}
@@ -1631,12 +1628,13 @@ delete_cells(#refX{site = S} = DelX) ->
     Cells = get_cells(DelX),
     case Cells of
         [] -> [];
-        _ -> 
+        _  -> 
             %% update the children that point to the cell that is being deleted
-            %% by rewriting the formulae of all the children cells replacing the 
-            %% reference to this cell with #ref!
+            %% by rewriting the formulae of all the children cells replacing
+            %% the reference to this cell with #ref!
             LocalChildren = [get_local_children(C) || C <- Cells],
             LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
+            
             %% sometimes a cell will have local children that are 
             %% also in the delete zone these need to be removed 
             %% before we do anything else...
@@ -1932,8 +1930,9 @@ mark_dirty(Site, Record)
 mark_these_dirty([], _) -> ok;
 mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
     F = fun(C) -> case read_local_item_index(C) of
-                    false -> []; 
-                    Idx -> Idx end
+                      false -> []; 
+                      Idx -> Idx
+                  end
         end,
     Tbl = trans(Site, relation),
     Idxs = lists:flatten([F(C) || R <- Refs, C <- get_cells(R)]),
@@ -2890,8 +2889,6 @@ deref1(Child, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Acc) ->
                  {deref, "#REF!"} -> {deref, Prefix ++ "#REF!"};
                  {recalc, Str}    -> {recalc, Prefix ++ Str};
                  {formula, Str}   -> {formula, Prefix ++ Str}
-                                     %% O              -> io:format("O is ~p~n", [O]),
-                                     %%                   Prefix ++ O
              end,
     deref1(Child, T, DeRefX, [NewTok | Acc]);
 deref1(Child, [{cellref, _, #cellref{path = Path, text = Text}}=H | T], 
@@ -3031,7 +3028,6 @@ intersect(XX1, YY1, X1, Y1, X2, Y2) ->
 
 %% rewrite/5
 rewrite(X1O, X2O, {range, _}, Text, left)   ->
-    %% io:format("in rewrite (1) Text is ~p~n", [Text]),
     {XD1, _X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1O, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, (X2 - (X2O - X1O + 1)), 0, YD2, Y2, 0),
@@ -3043,7 +3039,6 @@ rewrite(X1O, X2O, {column, _}, Text, left)   ->
     {recalc, S};
 
 rewrite(Y1O, Y2O, {range, _}, Text, top)   ->
-    %% io:format("in rewrite (3) Text is ~p~n", [Text]),
     {XD1, X1, YD1, _Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1O, 0) ++ ":" ++
         make_cell(XD2, X2, 0, YD2, (Y2 - (Y2O - Y1O + 1)), 0),
@@ -3067,7 +3062,6 @@ rewrite(XO, {column, _}, Text, right)  ->
     {recalc, S};
 
 rewrite(XO, {range, _}, Text, middle_column)  ->
-    %% io:format("in rewrite (7) Text is ~p~n", [Text]),
     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, (X2 - XO), 0, YD2, Y2, 0),
@@ -3079,7 +3073,6 @@ rewrite(XO, {column, _}, Text, middle)  ->
     {recalc, S};
 
 rewrite(YO, {range, _}, Text, bottom) ->
-    %% io:format("in rewrite (9) Text is ~p~n", [Text]),
     {XD1, X1, YD1, Y1, XD2, X2, YD2, _Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, X2, 0, YD2, (YO - 1), 0),
@@ -3091,7 +3084,6 @@ rewrite(YO, {row, _}, Text, bottom) ->
     {recalc, S};
 
 rewrite(YO, {range, _}, Text, middle_row) ->
-    %% io:format("in rewrite (11) Text is ~p~n", [Text]),
     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, X2, 0, YD2, (Y2 - YO), 0),
@@ -3715,7 +3707,7 @@ deref_overlap_TEST() ->
 test_ov({Text, Cell, DelX, Return}) ->
     Return1 = deref_overlap(Text, DelX, Cell),
     case Return of
-        Return1 -> ok; % io:format("P ~p~n", [Text]);
+        Return1 -> ok; 
         _       -> io:format("Fail: ~p : ~p : ~p : ~p - ~p~n",
                              [Text, Cell, DelX, Return, Return1])
     end.
