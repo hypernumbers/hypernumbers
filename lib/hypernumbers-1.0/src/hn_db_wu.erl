@@ -1513,7 +1513,7 @@ read_styles(#refX{site = Site} = RefX) when is_record(RefX, refX) ->
     mnesia:select(Table, [{Match, Cond, Body}]).
 
 %% @spec clear_cells(#refX{}) -> ok
-%% @doc deletes the contents (formula/value) and the formats and attributes
+%% @doc deletes the contents (formula/value) and the formats
 %% of a cell (but doesn't delete the cell itself).
 %% 
 %% The reference can refer to a:
@@ -1538,6 +1538,8 @@ clear_cells(RefX) when is_record(RefX, refX) ->
 %% <li><code>contents</code> - deletes the formula/value but not the style attributes
 %% or formats (or the cell itself)</li>
 %% <li><code>style</code> - deletes the style of the cell AND THE FORMAT</li>
+%% If >code>Type = {'attributes', List}</code> it clears all the attributes
+%% in the list
 %% <li><code>all</code> - deletes the contents, formats, styles 
 %% and attributes (but not the cell itself)</li>
 %% </ul>
@@ -1550,9 +1552,16 @@ clear_cells(RefX) when is_record(RefX, refX) ->
 %% <li>page</li>
 %% </ul>
 clear_cells(RefX, all) when is_record(RefX, refX)->
-    ok = clear_cells(RefX, style),
-    ok = clear_cells(RefX, contents);
+    ok = clear_cells1(RefX, style),
+    ok = clear_cells1(RefX, contents, inclusive);
+clear_cells(RefX, contents) when is_record(RefX, refX) ->
+    ok = clear_cells1(RefX, contents, exclusive);
 clear_cells(RefX, style) when is_record(RefX, refX) ->
+    ok = clear_cells1(RefX, contents, exclusive);
+clear_cells(RefX, {attributes, List}) when is_record(RefX, refX) ->
+    ok = clear_cells1(RefX, {attributes, List}).
+
+clear_cells1(RefX, style) when is_record(RefX, refX) ->
     List = read_attrs(RefX, ["style"], write),
     [delete_attrs(X, Key) || {X, {Key, _Val}} <- List],
     List2 = read_attrs(RefX, write),
@@ -1560,7 +1569,17 @@ clear_cells(RefX, style) when is_record(RefX, refX) ->
     % now read and rewrite the rawvalue to display the format changes
     [ok = write_rawvalue(X, V) || {X, {_K, V}} <- get_rawvalues(List2)],    
     ok;
-clear_cells(RefX, contents) when is_record(RefX, refX) ->
+clear_cells1(RefX, {attribute, AttrList}) ->
+    case read_attrs(RefX, write) of
+        []    -> ok;
+        List1 -> List2 = get_attrs(List1, AttrList),
+                 [delete_attrs(X, Key) || {X, {Key, _Val}} <- List2],
+                 ok
+    end.
+
+%% an exclusive clear only clears the hypernumbers attributes on the cells
+%% an inclusive clear clears all attributes on the cells
+clear_cells1(RefX, contents, Type) when is_record(RefX, refX) ->
     %% first up clear the list
     case read_attrs(RefX, write) of
         [] -> ok;
@@ -1569,7 +1588,10 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
             %% now delete the links to the cells
             [ok = delete_parent_links(X) || X <- List2],
             %% finally delete all the attributes
-            List3 = get_content_attrs(List1),
+            List3 = case Type of
+                        exclusive -> get_content_attrs(List1);
+                        inclusive -> List1
+                    end,
             [delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
             ok
     end.
@@ -2841,6 +2863,16 @@ add_local_child(CellIdx, Child, Tbl) ->
     Children = ordsets:add_element(Child, Rel#relation.children),
     mnesia:write(Tbl, Rel#relation{children = Children}, write).
 
+get_attrs(List, AttrList) -> get_attrs1(List, AttrList, []).
+
+get_attrs1([], _AttrList, Acc) -> Acc;
+get_attrs1([{_, {K, _V}} = H | T], AttrList, Acc) ->
+    NewAcc = case lists:member(K, AttrList) of
+                 true  -> [H | Acc];
+                 false -> Acc
+             end,
+    get_attrs1(T, AttrList, NewAcc).
+                      
 get_content_attrs(List) -> get_content_attrs(List, []).
 
 get_content_attrs([], Acc)      -> Acc;
