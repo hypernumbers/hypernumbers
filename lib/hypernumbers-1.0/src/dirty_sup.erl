@@ -108,7 +108,9 @@ merge_latest(Q, Table) ->
 -spec fill_queue(hn_workq:work_queue(), atom()) -> hn_workq:work_queue(). 
 fill_queue(Q, Table) ->
     Id = hn_workq:id(Q),
-    M = ets:fun2ms(fun(#dirty_queue{id = T, queue = NQ}) when T > Id -> NQ end),
+    M = ets:fun2ms(fun(#dirty_queue{id = T, queue = NQ}) 
+                         when T > Id -> NQ 
+                   end),
     F = fun() -> mnesia:select(Table, M, read) end,
     {atomic, Qs} = mnesia:transaction(F),
     hn_workq:merge(Q, Qs).
@@ -125,65 +127,3 @@ clear_dirty_queue(Q, Table) ->
         end,
     {atomic, ok} = mnesia:transaction(F),
     ok.
-
-
-%%%
-%%%  Code from the old dirty_srv. Kept for reference.
-%%%
-
-%% listen(Site, Table) ->
-%%     case mnesia:activity(transaction, fun read_table/2, [Site, Table]) of
-%%         ok ->
-%%             %mnesia_recover:allow_garb(),
-%%             %mnesia_recover:start_garb(),
-%%             ok;
-%%         no_dirty_cells ->
-%%             receive _X ->
-%%                     mnesia:unsubscribe({table, Table, simple})
-%%             end
-%%     end,
-%%     ?MODULE:listen(Site, Table).
-
-%% -spec read_table(string(), atom()) -> ok.
-%% read_table(Site, Table) ->
-%%     case mnesia:first(Table) of
-%%         '$end_of_table' ->
-%%             mnesia:subscribe({table, Table, simple}),
-%%             no_dirty_cells;
-%%         Id ->
-%%             %% Eugh, shouldnt hangle missing cells
-%%             case mnesia:read(Table, Id, write) of
-%%                 [Rec] ->
-%%                     ok = mnesia:delete(Table, Id, write),
-%%                     proc_dirty(Rec, Site);
-%%                 _ ->
-%%                     ok
-%%             end
-%%     end.
-
-%% proc_dirty(Rec, Site) when is_record(Rec, dirty_inc_hn_create) ->
-%%     hn_db_api:notify_back_create(Site, Rec);
-%% proc_dirty(Rec, Site) when is_record(Rec, dirty_notify_in) ->
-%%     hn_db_api:handle_dirty(Site, Rec);
-%% proc_dirty(Rec, Site) when is_record(Rec, dirty_notify_out) ->
-%%     #dirty_notify_out{delay = D} = Rec,
-%%     ok = timer:sleep(D),
-%%     hn_db_api:handle_dirty(Site, Rec);
-%% proc_dirty(Rec, Site) when is_record(Rec, dirty_notify_back_in) ->
-%%     hn_db_api:handle_dirty(Site, Rec);
-%% proc_dirty(Rec, Site) when is_record(Rec, dirty_notify_back_out) ->
-%%     hn_db_api:handle_dirty(Site, Rec).
-
-
-%% report_error(Pid, Reason, State) ->
-%%     Table = proplists:get_value(Pid, State#state.children, undefined),
-%%     {ok, Id} = mnesia:activity(transaction, fun delete_first/1, [Table]),
-    
-%%     ?ERROR(" Process ~p died in ~p ~p ~n Error: ~p~n Stacktrace: ~p",
-%%            [Pid, Table, Id, Reason, erlang:get_stacktrace()]),
-%%     ok.
-    
-%% delete_first(Table) ->
-%%     Id = mnesia:first(Table),
-%%     ok = mnesia:delete(Table, Id, write),
-%%     {ok, Id}.

@@ -328,7 +328,6 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
         _ -> denied
     end.
 
-
 -spec iget(#refX{}, 
            page | cell | row | column | range,
            #qry{},
@@ -437,8 +436,9 @@ iget(Ref, page, #qry{templates = []}, Env) ->
                       _          -> false
                   end
           end,
-    Files = lists:dropwhile(Fun,
-                            filelib:wildcard(docroot(Ref#refX.site)++"/templates/*")),
+    Files = lists:dropwhile(
+              Fun,
+              filelib:wildcard(docroot(Ref#refX.site)++"/templates/*")),
     File = [filename:basename(X) || X <- Files], 
     json(Env, {array, File});
 
@@ -1097,6 +1097,12 @@ save_view(Site, ViewName,
     ok   = file:write_file([Path , ".tpl"], Content),
     ok   = file:write_file([Path , ".sec"], io_lib:fwrite("~p.\n",[Sec])).
 
+is_view(View) ->
+    [Pre, _User, _Name] = string:tokens(View, "/"),
+    (Pre == "_u" orelse Pre == "_g").
+% andalso hn_util:is_alpha(User)
+% andalso hn_util:is_alpha(Name).
+
 sync_exit() ->
     exit("exit from hn_mochi:handle_req impossible page versions").
     
@@ -1184,9 +1190,11 @@ get_spoor(Site, E=#env{mochi = Mochi}) ->
                     Current = 
                         hn_util:strip80(Site) ++ 
                         mochiweb_util:quote_plus(Mochi:get(raw_path)),
-                    Redir = PingTo++"/_ping/?spoor="++Spoor++"&return="++Current,
+                    Redir = PingTo++"/_ping/?spoor="++Spoor++
+                        "&return="++Current,
                     Redirect = {"Location", Redir},
-                    respond(302, E2#env{headers = [Redirect | E2#env.headers]}),
+                    E3 = E2#env{headers = [Redirect | E2#env.headers]},
+                    respond(302, E3),
                     throw(ok);
                 _Else ->
                     E2
@@ -1280,11 +1288,3 @@ nocache() ->
     [{"Cache-Control","no-store, no-cache, must-revalidate"},
      {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
      {"Pragma",       "no-cache"}].
-
-
-is_view(View) ->
-    [Pre, _User, _Name] = string:tokens(View, "/"),
-    (Pre == "_u" orelse Pre == "_g").
-% andalso hn_util:is_alpha(User)
-% andalso hn_util:is_alpha(Name).
-    
