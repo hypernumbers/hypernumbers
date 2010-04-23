@@ -239,7 +239,7 @@ get_modules() ->
     [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date,
      stdfuns_financial, stdfuns_info, stdfuns_lookup_ref,
      stdfuns_eng, stdfuns_logical, stdfuns_text, stdfuns_db,
-     hnfuns_graphs, hnfuns_web].
+     hnfuns_graphs, hnfuns_web, hnfuns_integration].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% Intersect current cell with a range.
