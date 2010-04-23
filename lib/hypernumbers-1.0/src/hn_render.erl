@@ -15,67 +15,73 @@
 -type rows() :: [intpair()].
 -type textdata() :: string() | [textdata()].
 
+-record(rec, {maxwidth = 0,
+              colwidths = [],
+              styles = []}).
+                 
 -spec page(#refX{}) -> [textdata()].
 page(Ref) ->
     Data = lists:sort(fun order_objs/2, hn_db_api:read_whole_page(Ref)),
     Cells = coalesce([{{X,Y},P} || {#refX{obj={cell,{X,Y}}},P} <- Data]),
     RowHs = [{R, H} || {#refX{obj={row,{R,R}}},{"height",H}} <- Data],
     ColWs = [{C, W} || {#refX{obj={column,{C,C}}},{"width",W}} <- Data],
-    {CellsHtml, TotalWidth} = layout(Cells, ColWs, RowHs),
+    Styles = [],
+    {CellsHtml, TotalWidth} = layout(Cells, ColWs, RowHs, Styles),
     wrap(CellsHtml, TotalWidth).
 
--spec layout(cells(), cols(), rows()) -> {[textdata()], integer()}.
-layout(Cells, CWs, RHs) ->
+-spec layout(cells(), cols(), rows(), list())
+            -> {[textdata()], integer()}.
+layout(Cells, CWs, RHs, Styles) ->
     Col = 1,
     Row = 1,
     PX = 0,
     PY = 0,
     {H,RHs2} = row_height(Row, RHs),
-    Opaque = {CWs, 0},
-    layout(Cells, Col, Row, PX, PY, H, CWs, RHs2, Opaque, []).
+    Rec = #rec{colwidths=CWs, styles=Styles},
+    layout(Cells, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
 
 -spec layout(cells(), 
              integer(), integer(), integer(), integer(), integer(), 
-             cols(), rows(), {cols(),integer()}, [textdata()])
+             cols(), rows(), #rec{}, [textdata()])
             -> {[textdata()],integer()}.
                     
 %% End of input
-layout([], _Col, _Row, PX, _PY, _H, _CWs, _RHs, {_,MaxW}, Acc) ->
-    TotalWidth = max(MaxW, PX),
+layout([], _Col, _Row, PX, _PY, _H, _CWs, _RHs, Rec, Acc) ->
+    TotalWidth = max(PX, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth};
 
 %% Output the next cell value in the current row.
-layout([{{C,R}, L}|T], C, R, PX, PY, H, CWs, RHs, Opaque, Acc) ->
-    Value = proplists:get_value("value", L, undefined),
+layout([{{C,R}, L}|T], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+    Value = pget("value", L),
+    Css = read_css(pget("style", L), Rec#rec.styles),
     {W,CWs2} = col_width(C,CWs),
-    case proplists:get_value("merge", L, undefined) of
+    case pget("merge", L) of
         undefined ->
-            Acc2 = [draw(Value, PX, PY, W, H) | Acc],
+            Acc2 = [draw(Value, Css, PX, PY, W, H) | Acc],
             PX2 = PX + W,
-            layout(T, C+1, R, PX2, PY, H, CWs2, RHs, Opaque, Acc2);
+            layout(T, C+1, R, PX2, PY, H, CWs2, RHs, Rec, Acc2);
         {struct, [{"right", Right}, {"down", Down}]} ->
             MW = width_across(C+1, C+Right, CWs2, W),
             MH = height_below(R+1, R+Down, RHs, H),
-            Acc2 = [draw(Value, PX, PY, MW, MH) | Acc],
+            Acc2 = [draw(Value, Css, PX, PY, MW, MH) | Acc],
             PX2 = PX + MW,
             T2 = expunge(T, {C,C+Right,R,R+Down}),
-            layout(T2, C+Right+1, R, PX2, PY, H, CWs2, RHs, Opaque, Acc2)
+            layout(T2, C+Right+1, R, PX2, PY, H, CWs2, RHs, Rec, Acc2)
     end;
 
 %% No cell for this column, but still haven't changed rows.
-layout(Lst=[{{_,R},_}|_], C, R, PX, PY, H, CWs, RHs, Opaque, Acc) ->
+layout(Lst=[{{_,R},_}|_], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     {W,CWs2} = col_width(C,CWs),
-    layout(Lst, C+1, R, PX+W, PY, H, CWs2, RHs, Opaque, Acc);
+    layout(Lst, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
 
 %% Wind back, and advance to the next row.
-layout(Lst, _Col, Row, PX, PY, H, _CWs, RHs, {CWs,MaxW}, Acc) ->
+layout(Lst, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
     PX2 = 0,
     PY2 = PY + H,
     Row2 = Row + 1,
-
     {H2,RHs2} = row_height(Row2, RHs),
-    Opaque = {CWs, max(MaxW, PX)},
-    layout(Lst, 1, Row2, PX2, PY2, H2, CWs, RHs2, Opaque, Acc).
+    Rec2 = Rec#rec{maxwidth = max(Rec#rec.maxwidth, PX)},
+    layout(Lst, 1, Row2, PX2, PY2, H2, Rec#rec.colwidths, RHs2, Rec2, Acc).
 
 -spec expunge(cells(), {integer(), integer(), integer(), integer()}) 
              -> cells().
@@ -119,15 +125,16 @@ max(X,Y) when X < Y -> Y;
 max(X,_)            -> X.
 
 -spec draw(undefined | string(), 
+           textdata(),
            integer(), integer(), integer(), integer())
           -> textdata().
-draw(undefined, _X, _Y, _W, _H) ->
+draw(undefined, _Css, _X, _Y, _W, _H) ->
     "";
-draw(Value, X, Y, W, H) ->
+draw(Value, Css, X, Y, W, H) ->
     Style = io_lib:format(
               "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx'",
               [X, Y, W, H]),
-    ["<div ",Style,">", Value, "</div>"].
+    ["<div ",Style," ",Css,">", Value, "</div>"].
 
 -spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean(). 
 order_objs({RA,_}, {RB,_}) ->
@@ -158,6 +165,12 @@ coalesce([{NewC, _}|_]=Lst, C, PropAcc, Acc) ->
                _  -> [{C, PropAcc} | Acc] 
            end,
     coalesce(Lst, NewC, [], Acc2).
+
+-spec read_css(undefined | tuple(), list()) -> textdata().
+read_css(undefined, _Styles) -> "";
+read_css({"style", _N}, _Styles) -> "".
+    
+pget(K,L) -> proplists:get_value(K,L,undefined).
 
 %% Temporary Function
 wrap(Cells, TotalWidth) -> 
