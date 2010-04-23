@@ -4,14 +4,18 @@
 
 -export([page/1]).
 
--compile(export_all).
-
 -include("spriki.hrl").
 
 -define(DEFAULT_WIDTH, 80).
 -define(DEFAULT_HEIGHT, 20).
 
+-type intpair() :: {integer(), integer()}.
+-type cells() :: [{intpair(), list(tuple())}].
+-type cols() :: [intpair()].
+-type rows() :: [intpair()].
+-type textdata() :: string() | [textdata()].
 
+-spec page(#refX{}) -> [textdata()].
 page(Ref) ->
     Data = lists:sort(fun order_objs/2, hn_db_api:read_whole_page(Ref)),
     Cells = coalesce([{{X,Y},P} || {#refX{obj={cell,{X,Y}}},P} <- Data]),
@@ -20,6 +24,7 @@ page(Ref) ->
     {CellsHtml, TotalWidth} = layout(Cells, ColWs, RowHs),
     wrap(CellsHtml, TotalWidth).
 
+-spec layout(cells(), cols(), rows()) -> {[textdata()], integer()}.
 layout(Cells, CWs, RHs) ->
     Col = 1,
     Row = 1,
@@ -29,6 +34,11 @@ layout(Cells, CWs, RHs) ->
     Opaque = {CWs, 0},
     layout(Cells, Col, Row, PX, PY, H, CWs, RHs2, Opaque, []).
 
+-spec layout(cells(), 
+             integer(), integer(), integer(), integer(), integer(), 
+             cols(), rows(), {cols(),integer()}, [textdata()])
+            -> {[textdata()],integer()}.
+                    
 %% End of input
 layout([], _Col, _Row, PX, _PY, _H, _CWs, _RHs, {_,MaxW}, Acc) ->
     TotalWidth = max(MaxW, PX),
@@ -67,6 +77,8 @@ layout(Lst, _Col, Row, PX, PY, H, _CWs, RHs, {CWs,MaxW}, Acc) ->
     Opaque = {CWs, max(MaxW, PX)},
     layout(Lst, 1, Row2, PX2, PY2, H2, CWs, RHs2, Opaque, Acc).
 
+-spec expunge(cells(), {integer(), integer(), integer(), integer()}) 
+             -> cells().
 expunge([], _Rng) -> 
     []; 
 %% At a row past range, halt.
@@ -81,12 +93,16 @@ expunge([{{C,R},_}|Tail], Rng={RC1,RC2,RR1,RR2}) when
 expunge([Cell | Tail], Rng) ->
     [Cell | expunge(Tail, Rng)].
 
+-spec width_across(integer(), integer(), cols(), integer()) 
+                  -> integer(). 
 width_across(C, Stop, _CWs, Acc) when C > Stop ->
     Acc;
 width_across(C, Stop, CWs, Acc) ->
     {W, CWs2} = col_width(C, CWs),
     width_across(C+1, Stop, CWs2, W + Acc).
 
+-spec height_below(integer(), integer(), rows(), integer())
+                   -> integer().
 height_below(R, Stop, _RHs, Acc) when R > Stop ->
     Acc;
 height_below(R, Stop, RHs, Acc) ->
@@ -102,6 +118,9 @@ col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
 max(X,Y) when X < Y -> Y; 
 max(X,_)            -> X.
 
+-spec draw(undefined | string(), 
+           integer(), integer(), integer(), integer())
+          -> textdata().
 draw(undefined, _X, _Y, _W, _H) ->
     "";
 draw(Value, X, Y, W, H) ->
@@ -110,6 +129,7 @@ draw(Value, X, Y, W, H) ->
               [X, Y, W, H]),
     ["<div ",Style,">", Value, "</div>"].
 
+-spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean(). 
 order_objs({RA,_}, {RB,_}) ->
     {_, {XA, YA}} = RA#refX.obj,
     {_, {XB, YB}} = RB#refX.obj,
@@ -117,6 +137,7 @@ order_objs({RA,_}, {RB,_}) ->
        true     -> XA =< XB
     end.
 
+-spec coalesce([{intpair(), tuple()}]) -> cells().
 coalesce([])             -> []; 
 coalesce([{C, _}|_]=Lst) -> coalesce(Lst, C, [], []).
 
