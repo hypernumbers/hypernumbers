@@ -395,6 +395,10 @@ iget(#refX{site = Site, path = Path}, page,
     Paths = [Path | [ string:tokens(X, "/") || X<-string:tokens(More, ",")]],
     remoting_request(Env, Site, Paths, Time);
 
+iget(Ref, page, #qry{renderer=[]}, Env) ->
+    Html = hn_render:page(Ref),
+    text_html(Env, Html);
+
 iget(#refX{site = S}, page, #qry{status = []}, Env) -> 
     json(Env, status_srv:get_status(S));
 
@@ -427,7 +431,7 @@ iget(Ref, page, #qry{views = []}, Env=#env{accept = json}) ->
               end || X <- AllViews ],
     json(Env, {array, [ X || X<-Views, X=/="_g/core/built" ] });
 
-                                                % List of template pages
+%% List of template pages
 iget(Ref, page, #qry{templates = []}, Env) ->
     Fun = fun(X) ->
                   [F | _T] = lists:reverse(string:tokens(X, "/")),

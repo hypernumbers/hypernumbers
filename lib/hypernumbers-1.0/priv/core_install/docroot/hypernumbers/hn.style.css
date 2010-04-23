@@ -48,3 +48,16 @@ td {
 hr { 
     margin-top:0px;
 }
+
+div#outer {
+    margin: 0px auto;
+}
+div#outer div#inner {
+    position: relative;
+}
+div#outer div#inner div {
+    position: absolute;
+    text-align: right;
+    overflow: hidden;
+}
+    
