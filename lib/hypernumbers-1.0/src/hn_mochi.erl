@@ -574,7 +574,7 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
                uid = Uid})
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
-    ok = hn_db_api:delete(Ref, Direction, Uid),
+    ok = hn_db_api:delete(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
 ipost(Ref, 

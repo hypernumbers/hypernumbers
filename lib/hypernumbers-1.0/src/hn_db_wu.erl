@@ -2327,52 +2327,49 @@ write_attr3(#refX{site = Site} = RefX, {Key, Val}) ->
 %%             ok
 %%     end.
 
-get_refs_below2(_RefX, _MinX, _MaxX, _Y) ->
-    throw(get_refs_below2),
-    [].
-    %% #refX{site = S, path = P} = RefX,
-    %% Obj = {cell, {'$1', '$2'}},
-    %% Head = #local_objs{path = P, obj = Obj, _ ='_'},
-    %% Cond = case MinX of
-    %%            MaxX -> [{'and', {'>', '$2', Y}, {'==', '$1', MinX}}];
-    %%            _    -> [{'and', {'>', '$2', Y}, {'>', '$1', MinX},
-    %%                      {'=<', '$1', MaxX}}]
-    %%        end,
-    %% Body = ['$_'],
-    %% Idxs = get_local_idxs(S, {Head, Cond, Body}),
-    %% RefXs1 = local_objs_to_refXs(S, Idxs),
-    %% RefXs2 = get_local_links_refs(S, RefXs1),
-    %% RefXs = lists:merge([RefXs1, RefXs2]),
-    %% hslists:uniq(RefXs).    
+get_refs_below2(RefX, MinX, MaxX, Y) ->
+    #refX{site = S, path = P} = RefX,
+    Obj = {cell, {'$1', '$2'}},
+    Head = #local_objs{path = P, obj = Obj, _ ='_'},
+    Cond = case MinX of
+               MaxX -> [{'and', {'>', '$2', Y}, {'==', '$1', MinX}}];
+               _    -> [{'and', {'>', '$2', Y}, {'>', '$1', MinX},
+                         {'=<', '$1', MaxX}}]
+           end,
+    Body = ['$_'],
+    Idxs = get_local_idxs(S, {Head, Cond, Body}),
+    RefXs1 = local_objs_to_refXs(S, Idxs),
+    RefXs2 = get_local_links_refs(S, RefXs1),
+    RefXs = lists:merge([RefXs1, RefXs2]),
+    hslists:uniq(RefXs).    
 
-get_refs_right2(_RefX, _X, _MinY, _MaxY) ->
-    throw(get_refs_below2),
-    [].
-%%     #refX{site = S, path = P} = RefX,
-%%     Obj = {cell, {'$1', '$2'}},
-%%     Head = #local_objs{path = P, obj = Obj, _ = '_'},
-%%     Cond = case MinY of
-%%                MaxY -> [{'and', {'>', '$1', X}, {'==', '$2', MinY}}];
-%%                _    -> [{'and', {'>', '$1', X}, {'>', '$2', MinY},
-%%                          {'=<', '$2', MaxY}}]
-%%            end,
-%%     Body = ['$_'],
-%%     Idxs = get_local_idxs(S, {Head, Cond, Body}),
-%%     RefXs1 = local_objs_to_refXs(S, Idxs),
-%%     RefXs2 = get_local_links_refs(S, RefXs1),
-%%     RefXs = lists:merge([RefXs1, RefXs2]),
-%%     hslists:uniq(RefXs).
+get_refs_right2(RefX, X, MinY, MaxY) ->
+    #refX{site = S, path = P} = RefX,
+    Obj = {cell, {'$1', '$2'}},
+    Head = #local_objs{path = P, obj = Obj, _ = '_'},
+    Cond = case MinY of
+               MaxY -> [{'and', {'>', '$1', X}, {'==', '$2', MinY}}];
+               _    -> [{'and', {'>', '$1', X}, {'>', '$2', MinY},
+                         {'=<', '$2', MaxY}}]
+           end,
+    Body = ['$_'],
+    Idxs = get_local_idxs(S, {Head, Cond, Body}),
+    RefXs1 = local_objs_to_refXs(S, Idxs),
+    RefXs2 = get_local_links_refs(S, RefXs1),
+    RefXs = lists:merge([RefXs1, RefXs2]),
+    hslists:uniq(RefXs).
 
-%% get_local_links_refs(Site, {Head, Cond, Body}) ->
-%%     Head2 = trans(Site, Head),
-%%     Table = trans(Site, local_cell_link),
-%%     Return = trans_back(mnesia:select(Table, [{Head2, Cond, Body}])),
-%%     %% now tidy them up, get the relevant refX's and dedup them all...
-%%     Fun = fun(#local_cell_link{parentidx = P}, Acc) ->
-%%                   [local_idx_to_refX(Site, P) | Acc]
-%%           end,
-%%     Return1 = lists:foldl(Fun, [], Return),
-%%     hslists:uniq(Return1).
+% erk local relations have changed :(
+get_local_links_refs(Site, {Head, Cond, Body}) ->
+    Head2 = trans(Site, Head),
+    Table = trans(Site, local_cell_link),
+    Return = trans_back(mnesia:select(Table, [{Head2, Cond, Body}])),
+    % now tidy them up, get the relevant refX's and dedup them all...
+    Fun = fun(#local_cell_link{parentidx = P}, Acc) ->
+                  [local_idx_to_refX(Site, P) | Acc]
+          end,
+    Return1 = lists:foldl(Fun, [], Return),
+    hslists:uniq(Return1).
 
 make_page_match(Site, RefX, RecordName) ->
     #refX{site = S, path = P} = RefX,

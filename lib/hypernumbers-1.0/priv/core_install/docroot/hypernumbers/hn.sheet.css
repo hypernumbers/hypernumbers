@@ -947,11 +947,17 @@ a {
  position:   absolute;
  display:    none;
  font-size:11px;
- width:      140px;
  padding:    3px 2px;
  border:     1px outset #666;
  background: #FFF;
  z-index:    9999999;
+}
+#axiscontextmenucol, #axiscontextmenurow { 
+ width:      120px;
+}
+
+#gridcontextmenu { 
+ width:      160px;
 }
 
 #axiscontextmenucol li, #axiscontextmenurow li, #gridcontextmenu li {
