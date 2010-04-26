@@ -24,7 +24,7 @@ server {
     ## Same as default.conf, but special case for hypernumbers.com
     
     listen       80;
-    server_name  stephen.hypernumbers.com
+    server_name  stephen.hypernumbers.com;
     error_page   502 503 504 /maintenance.html;
 
     location = /maintenance.html {
