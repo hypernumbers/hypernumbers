@@ -495,16 +495,17 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
     json(Env, "success");
 
 ipost(#refX{path=["_user","login"]}, _Qry, E) ->
-     [{"email", Email},{"pass", Pass},{"remember", Rem}] = E#env.body,
-     {E2, Resp} = case passport:authenticate(Email, Pass, Rem=="true") of
-                      {error, authentication_failed} -> 
-                          {E, "error"};
-                      {ok, Uid, Stamp, Age} ->
-                          Cookie = hn_net_util:cookie("auth", Stamp, Age),
-                          {E#env{uid = Uid,
-                                 headers = [Cookie | E#env.headers]},
-                           "success"}
-                  end,
+    [{"email", Email0},{"pass", Pass},{"remember", Rem}] = E#env.body,
+    Email = string:to_lower(Email0),
+    {E2, Resp} = case passport:authenticate(Email, Pass, Rem=="true") of
+                     {error, authentication_failed} -> 
+                         {E, "error"};
+                     {ok, Uid, Stamp, Age} ->
+                         Cookie = hn_net_util:cookie("auth", Stamp, Age),
+                         {E#env{uid = Uid,
+                                headers = [Cookie | E#env.headers]},
+                          "success"}
+                 end,
     json(E2, {struct, [{"response", Resp}]});
 
 %% the purpose of this message is to mark the mochilog so we don't 
