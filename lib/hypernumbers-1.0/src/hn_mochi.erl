@@ -11,6 +11,7 @@
 -include("hn_mochi.hrl").
 
 -export([ handle/1,
+          styles_to_css/2,
           style_to_css/2,
           docroot/1,
           page_attributes/2,
@@ -939,7 +940,7 @@ style_to_css({styles, _Ref, X, Rec}) ->
 
 style_to_css(X, Rec) ->
     Num = ms_util2:no_of_fields(magic_style),
-    {itol(X), style_att(Num + 1, Rec, [])}.
+    {X, style_att(Num + 1, Rec, [])}.
 
 style_att(1, _Rec, Acc) ->
     lists:flatten(Acc);

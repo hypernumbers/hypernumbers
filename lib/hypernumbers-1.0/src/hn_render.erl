@@ -17,7 +17,7 @@
 
 -record(rec, {maxwidth = 0,
               colwidths = [],
-              styles = []}).
+              palette = []}).
                  
 -spec page(#refX{}) -> [textdata()].
 page(Ref) ->
@@ -25,19 +25,23 @@ page(Ref) ->
     Cells = coalesce([{{X,Y},P} || {#refX{obj={cell,{X,Y}}},P} <- Data]),
     RowHs = [{R, H} || {#refX{obj={row,{R,R}}},{"height",H}} <- Data],
     ColWs = [{C, W} || {#refX{obj={column,{C,C}}},{"width",W}} <- Data],
-    Styles = [],
-    {CellsHtml, TotalWidth} = layout(Cells, ColWs, RowHs, Styles),
+    Palette = array:from_orddict
+                (lists:sort
+                   (hn_mochi:styles_to_css
+                      (hn_db_api:read_styles(Ref), 
+                       []
+                      ))),
+    {CellsHtml, TotalWidth} = layout(Cells, ColWs, RowHs, Palette),
     wrap(CellsHtml, TotalWidth).
 
--spec layout(cells(), cols(), rows(), list())
-            -> {[textdata()], integer()}.
-layout(Cells, CWs, RHs, Styles) ->
+-spec layout(cells(), cols(), rows(), array()) -> {[textdata()], integer()}.
+layout(Cells, CWs, RHs, Palette) ->
     Col = 1,
     Row = 1,
     PX = 0,
     PY = 0,
     {H,RHs2} = row_height(Row, RHs),
-    Rec = #rec{colwidths=CWs, styles=Styles},
+    Rec = #rec{colwidths=CWs, palette=Palette},
     layout(Cells, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
 
 -spec layout(cells(), 
@@ -53,7 +57,7 @@ layout([], _Col, _Row, PX, _PY, _H, _CWs, _RHs, Rec, Acc) ->
 %% Output the next cell value in the current row.
 layout([{{C,R}, L}|T], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     Value = pget("value", L),
-    Css = read_css(pget("style", L), Rec#rec.styles),
+    Css = read_css(pget("style", L), Rec#rec.palette),
     {W,CWs2} = col_width(C,CWs),
     case pget("merge", L) of
         undefined ->
@@ -128,13 +132,13 @@ max(X,_)            -> X.
            textdata(),
            integer(), integer(), integer(), integer())
           -> textdata().
-draw(undefined, _Css, _X, _Y, _W, _H) ->
-    "";
+draw(undefined, "", _X, _Y, _W, _H) -> "";
+draw(undefined, Css, X, Y, W, H) -> draw("", Css, X, Y, W, H);
 draw(Value, Css, X, Y, W, H) ->
     Style = io_lib:format(
-              "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx'",
-              [X, Y, W, H]),
-    ["<div ",Style," ",Css,">", Value, "</div>"].
+              "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s'",
+              [X, Y, W, H, Css]),
+    ["<div ",Style,">", Value, "</div>"].
 
 -spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean(). 
 order_objs({RA,_}, {RB,_}) ->
@@ -166,9 +170,9 @@ coalesce([{NewC, _}|_]=Lst, C, PropAcc, Acc) ->
            end,
     coalesce(Lst, NewC, [], Acc2).
 
--spec read_css(undefined | tuple(), list()) -> textdata().
-read_css(undefined, _Styles) -> "";
-read_css({"style", _N}, _Styles) -> "".
+-spec read_css(undefined | integer(), array()) -> string(). 
+read_css(undefined, _Palette) -> "";
+read_css(Idx, Palette) -> array:get(Idx, Palette).
     
 pget(K,L) -> proplists:get_value(K,L,undefined).
 
