@@ -133,6 +133,7 @@ max(X,_)            -> X.
            integer(), integer(), integer(), integer())
           -> textdata().
 draw(undefined, "", _X, _Y, _W, _H) -> "";
+draw(undefined, "text-align:right;", _X, _Y, _W, _H) -> "";
 draw(undefined, Css, X, Y, W, H) -> draw("", Css, X, Y, W, H);
 draw(Value, Css, X, Y, W, H) ->
     Style = io_lib:format(
