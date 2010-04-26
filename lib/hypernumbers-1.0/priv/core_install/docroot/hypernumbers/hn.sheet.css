@@ -796,6 +796,23 @@ a {
   border: 1px solid #666;
 }
 
+#toolbar a.combocolor {
+ float:   left;
+ cursor:  pointer;
+ border:  1px solid #AAAAAA;
+ margin:  1px;
+ display: block;
+ height:  16px;
+ width:   16px;
+ font:    16px sans-serif;
+ font-weight: bold;
+ text-align: center;
+}
+
+#toolbar a.combocolor:hover {
+  border: 1px solid #666;
+}
+
 #left-head      { background-position: -2px -63px; }
 #border-head    { background-position: -68px -85px; }
 #bgcolor-head   { background-position: -68px -63px; }
@@ -930,11 +947,17 @@ a {
  position:   absolute;
  display:    none;
  font-size:11px;
- width:      140px;
  padding:    3px 2px;
  border:     1px outset #666;
  background: #FFF;
  z-index:    9999999;
+}
+#axiscontextmenucol, #axiscontextmenurow { 
+ width:      120px;
+}
+
+#gridcontextmenu { 
+ width:      160px;
 }
 
 #axiscontextmenucol li, #axiscontextmenurow li, #gridcontextmenu li {
