@@ -100,7 +100,6 @@
          write_attributes/3,
          write_last/3,
          read_last/1,
-         % write_permission/2,
          write_style_IMPORT/2,
          read_attributes/2,
          read/1,
@@ -110,7 +109,6 @@
          read_styles/1,
          read_page_structure/1,
          read_pages/1,
-         % update_style/2,
          recalculate/1,
          reformat/1,
          drag_n_drop/3,
@@ -122,8 +120,6 @@
          delete/2,
          delete/3,
          clear/3,
-         % delete_permission/1,
-         % delete_style/1,
          notify_back_create/2,
          read_incoming_hn/2,
          write_remote_link/3,
@@ -670,7 +666,7 @@ read_incoming_hn(P, C) when is_record(P, refX), is_record(C, refX) ->
 %% @doc sets up a hypernumbers
 %% @todo expand the paradigm to include ranges, columns, rows references and 
 %% queries as things that be remote parents.
-%% @TODO handle verions
+%% @TODO handle versions
 notify_back_create(Site, Record)
   when is_record(Record, dirty_inc_hn_create) ->
 
@@ -1084,7 +1080,7 @@ do_delete(delete, RefX) ->
     hn_db_wu:delete_cells(RefX).
 
 %% @spec clear(#refX{}, Type) -> ok
-%% Type = [contents | style | all]
+%% Type = [contents | style | all | {attributes, List}]
 %% @doc clears the contents of the cell or range
 %% (but doesn't delete the cell or range itself).
 %% 
@@ -1094,7 +1090,9 @@ do_delete(delete, RefX) ->
 %% <li>values</li>
 %% </ul>
 %% If <code>Type = 'style'</code> it clears the style.
-%% If <code>Type = 'all'</code> it clears both style and content.
+%% If >code>Type = {'attributes', List}</code> it clears all the attributes
+%% in the list
+%% If <code>Type = 'all'</code> it clears style, content and all attributes.
 %% It doesn't clear other/user-defined attributes of the cell or range
 %%
 %% The <code>refX{}</code> can be to a:

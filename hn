@@ -9,6 +9,11 @@ main([]) ->
     usage();
 
 main(Args) ->
+    %% Prevent starting as root.
+    case os:getenv("USER") of
+        "root" -> exit("Don't run me as root!");
+        _      -> ok end,
+
     os:cmd("/usr/local/bin/epmd -daemon"),
     %% Because ssl sucks(I cant set -name on the escript args)
 

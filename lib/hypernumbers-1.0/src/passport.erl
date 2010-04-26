@@ -117,8 +117,7 @@ inspect_stamp(undefined) ->
     {error, no_stamp};
 inspect_stamp(Stamp) ->
     case string:tokens(Stamp, "|") of
-        [Expiry, Uid, Email, Hash] ->
-            EscEmail = escape_email(Email),
+        [Expiry, Uid, EscEmail, Hash] ->
             case {is_expired(Expiry), 
                   gen_hash([Expiry, Uid, EscEmail]), 
                   Hash} of

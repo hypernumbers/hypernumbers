@@ -129,7 +129,7 @@ topup_zone(Zone) ->
     gen_server:cast({global, ?MODULE}, {topup_zone, Zone}).
 
 %% Adds, (or adjusts existing) resources to system. A resource is
-%% describe by an address (IP, Node combination); and a weighted
+%% describe by an address (IP, Port, Node combination); and a weighted
 %% importance with respect to all other resources.
 -spec set_resource(string(), integer(), atom(), integer()) -> ok. 
 set_resource(IP, Port, Node, Weight) when 

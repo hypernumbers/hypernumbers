@@ -287,6 +287,7 @@
                paths,
                permissions,
                rawview,
+               renderer,
                return,
                spoor,
                status,

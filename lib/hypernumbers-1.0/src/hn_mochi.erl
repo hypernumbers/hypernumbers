@@ -11,6 +11,7 @@
 -include("hn_mochi.hrl").
 
 -export([ handle/1,
+          styles_to_css/2,
           style_to_css/2,
           docroot/1,
           page_attributes/2,
@@ -328,7 +329,6 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
         _ -> denied
     end.
 
-
 -spec iget(#refX{}, 
            page | cell | row | column | range,
            #qry{},
@@ -396,6 +396,10 @@ iget(#refX{site = Site, path = Path}, page,
     Paths = [Path | [ string:tokens(X, "/") || X<-string:tokens(More, ",")]],
     remoting_request(Env, Site, Paths, Time);
 
+iget(Ref, page, #qry{renderer=[]}, Env) ->
+    Html = hn_render:page(Ref),
+    text_html(Env, Html);
+
 iget(#refX{site = S}, page, #qry{status = []}, Env) -> 
     json(Env, status_srv:get_status(S));
 
@@ -428,7 +432,7 @@ iget(Ref, page, #qry{views = []}, Env=#env{accept = json}) ->
               end || X <- AllViews ],
     json(Env, {array, [ X || X<-Views, X=/="_g/core/built" ] });
 
-                                                % List of template pages
+%% List of template pages
 iget(Ref, page, #qry{templates = []}, Env) ->
     Fun = fun(X) ->
                   [F | _T] = lists:reverse(string:tokens(X, "/")),
@@ -437,8 +441,9 @@ iget(Ref, page, #qry{templates = []}, Env) ->
                       _          -> false
                   end
           end,
-    Files = lists:dropwhile(Fun,
-                            filelib:wildcard(docroot(Ref#refX.site)++"/templates/*")),
+    Files = lists:dropwhile(
+              Fun,
+              filelib:wildcard(docroot(Ref#refX.site)++"/templates/*")),
     File = [filename:basename(X) || X <- Files], 
     json(Env, {array, File});
 
@@ -491,16 +496,17 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
     json(Env, "success");
 
 ipost(#refX{path=["_user","login"]}, _Qry, E) ->
-     [{"email", Email},{"pass", Pass},{"remember", Rem}] = E#env.body,
-     {E2, Resp} = case passport:authenticate(Email, Pass, Rem=="true") of
-                      {error, authentication_failed} -> 
-                          {E, "error"};
-                      {ok, Uid, Stamp, Age} ->
-                          Cookie = hn_net_util:cookie("auth", Stamp, Age),
-                          {E#env{uid = Uid,
-                                 headers = [Cookie | E#env.headers]},
-                           "success"}
-                  end,
+    [{"email", Email0},{"pass", Pass},{"remember", Rem}] = E#env.body,
+    Email = string:to_lower(Email0),
+    {E2, Resp} = case passport:authenticate(Email, Pass, Rem=="true") of
+                     {error, authentication_failed} -> 
+                         {E, "error"};
+                     {ok, Uid, Stamp, Age} ->
+                         Cookie = hn_net_util:cookie("auth", Stamp, Age),
+                         {E#env{uid = Uid,
+                                headers = [Cookie | E#env.headers]},
+                          "success"}
+                 end,
     json(E2, {struct, [{"response", Resp}]});
 
 %% the purpose of this message is to mark the mochilog so we don't 
@@ -570,7 +576,7 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
                uid = Uid})
   when O == cell orelse O == range,
        Direction == "horizontal" orelse Direction == "vertical" ->
-    ok = hn_db_api:delete(Ref, Direction, Uid),
+    ok = hn_db_api:delete(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
 ipost(Ref, 
@@ -934,7 +940,7 @@ style_to_css({styles, _Ref, X, Rec}) ->
 
 style_to_css(X, Rec) ->
     Num = ms_util2:no_of_fields(magic_style),
-    {itol(X), style_att(Num + 1, Rec, [])}.
+    {X, style_att(Num + 1, Rec, [])}.
 
 style_att(1, _Rec, Acc) ->
     lists:flatten(Acc);
@@ -1097,6 +1103,12 @@ save_view(Site, ViewName,
     ok   = file:write_file([Path , ".tpl"], Content),
     ok   = file:write_file([Path , ".sec"], io_lib:fwrite("~p.\n",[Sec])).
 
+is_view(View) ->
+    [Pre, _User, _Name] = string:tokens(View, "/"),
+    (Pre == "_u" orelse Pre == "_g").
+% andalso hn_util:is_alpha(User)
+% andalso hn_util:is_alpha(Name).
+
 sync_exit() ->
     exit("exit from hn_mochi:handle_req impossible page versions").
     
@@ -1184,9 +1196,11 @@ get_spoor(Site, E=#env{mochi = Mochi}) ->
                     Current = 
                         hn_util:strip80(Site) ++ 
                         mochiweb_util:quote_plus(Mochi:get(raw_path)),
-                    Redir = PingTo++"/_ping/?spoor="++Spoor++"&return="++Current,
+                    Redir = PingTo++"/_ping/?spoor="++Spoor++
+                        "&return="++Current,
                     Redirect = {"Location", Redir},
-                    respond(302, E2#env{headers = [Redirect | E2#env.headers]}),
+                    E3 = E2#env{headers = [Redirect | E2#env.headers]},
+                    respond(302, E3),
                     throw(ok);
                 _Else ->
                     E2
@@ -1280,11 +1294,3 @@ nocache() ->
     [{"Cache-Control","no-store, no-cache, must-revalidate"},
      {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
      {"Pragma",       "no-cache"}].
-
-
-is_view(View) ->
-    [Pre, _User, _Name] = string:tokens(View, "/"),
-    (Pre == "_u" orelse Pre == "_g").
-% andalso hn_util:is_alpha(User)
-% andalso hn_util:is_alpha(Name).
-    
