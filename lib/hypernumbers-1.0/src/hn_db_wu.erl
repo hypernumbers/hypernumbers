@@ -608,7 +608,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
 
     DTree = case hn_db_wu:read_attrs(RefX, ["__dependency-tree"], write) of
                 [{_, {_, Tree}}] -> Tree;
-                []                     -> []
+                []               -> []
             end,
 
     Val = case Value of
@@ -1197,7 +1197,7 @@ read_cells_raw(#refX{site = Site, obj = {page, _}} = RefX, Lock)
 %% @todo what are the ref types it supports? improve the documentation, etc, etc
 read_inherited_list(RefX, Key) when is_record(RefX, refX)  ->
     Type = case RefX#refX.obj of
-               null -> page;
+               null    -> page;
                {T, _R} -> T
            end,
     get_item_list(Type, RefX, Key, []).
@@ -1370,7 +1370,7 @@ shift_cells(From, Type, Disp, Rewritten)
                           %% deleted border either way, recalc is needed
                           ok = write_attr3(ChildRef, {"formula", F2}),
                           case St of
-                              clean  -> Acc;
+                              clean -> Acc;
                               dirty -> [ChildRef | Acc]
                           end
                   end,
@@ -1952,7 +1952,7 @@ mark_these_dirty([], _) -> ok;
 mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
     F = fun(C) -> case read_local_item_index(C) of
                       false -> []; 
-                      Idx -> Idx
+                      Idx   -> Idx
                   end
         end,
     Tbl = trans(Site, relation),
@@ -1970,10 +1970,12 @@ mark_children_dirty(#refX{site = Site, obj = {cell, _}} = RefX, Ar) ->
     Children = get_local_children_idxs(RefX),
     Q = insert_work_queue(Children, Tbl, 1, hn_workq:new(Ar)),
     case hn_workq:is_empty(Q) of
-        true -> ok;
+        true  -> ok;
         false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
                  ok = mnesia:write(trans(Site, dirty_queue), Entry, write)
-    end.
+    end;
+mark_children_dirty(#refX{obj = {column, _}}, _) -> ok;
+mark_children_dirty(#refX{obj = {row, _}}, _)    -> ok.
 
 %% Recursively walk child relation, adding entries into the work
 %% queue.  We maintain an invariant that children must have a higher
@@ -2485,7 +2487,7 @@ make_row(true,  Y) -> [$$] ++ tconv:to_s(Y).
 
 
 diff( FX, _FY,  TX, _TY, horizontal) -> TX - FX;
-diff(_FX,  FY, _TX,  TY, vertical) -> TY - FY.
+diff(_FX,  FY, _TX,  TY, vertical)   -> TY - FY.
 
 %% make formula creates a new formula, but also returns a status.
 %% Status can be [clean | dirty]
@@ -2882,7 +2884,7 @@ set_local_relations(#refX{site = Site} = Cell, Parents) ->
     CellIdx = get_local_item_index(Cell),
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R; 
-              [] -> #relation{cellidx = CellIdx}
+              []  -> #relation{cellidx = CellIdx}
           end,
     Rel2 = set_local_parents(Tbl, Rel, Parents),
     mnesia:write(Tbl, Rel2, write).
@@ -2903,7 +2905,7 @@ set_local_parents(Tbl,
 add_local_child(CellIdx, Child, Tbl) ->
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R;
-              [] -> #relation{cellidx = CellIdx}
+              []  -> #relation{cellidx = CellIdx}
           end,
     Children = ordsets:add_element(Child, Rel#relation.children),
     mnesia:write(Tbl, Rel#relation{children = Children}, write).
@@ -2924,17 +2926,17 @@ get_content_attrs([], Acc)      -> Acc;
 get_content_attrs([H | T], Acc) ->
     {_, {Key, _V}} = H,
     case Key of
-        "formula"             -> get_content_attrs(T, [H | Acc]);
-        "rawvalue"            -> get_content_attrs(T, [H | Acc]);
-        "value"               -> get_content_attrs(T, [H | Acc]);
-        "overwrite-color"     -> get_content_attrs(T, [H | Acc]);
-        "__ast"               -> get_content_attrs(T, [H | Acc]);
-        "__recompile"         -> get_content_attrs(T, [H | Acc]);
-        "__shared"            -> get_content_attrs(T, [H | Acc]);
-        "__area"              -> get_content_attrs(T, [H | Acc]);
-        "__dependency-tree"   -> get_content_attrs(T, [H | Acc]);
-        "parents"             -> get_content_attrs(T, [H | Acc]);
-        _                     -> get_content_attrs(T, Acc)
+        "formula"           -> get_content_attrs(T, [H | Acc]);
+        "rawvalue"          -> get_content_attrs(T, [H | Acc]);
+        "value"             -> get_content_attrs(T, [H | Acc]);
+        "overwrite-color"   -> get_content_attrs(T, [H | Acc]);
+        "__ast"             -> get_content_attrs(T, [H | Acc]);
+        "__recompile"       -> get_content_attrs(T, [H | Acc]);
+        "__shared"          -> get_content_attrs(T, [H | Acc]);
+        "__area"            -> get_content_attrs(T, [H | Acc]);
+        "__dependency-tree" -> get_content_attrs(T, [H | Acc]);
+        "parents"           -> get_content_attrs(T, [H | Acc]);
+        _                   -> get_content_attrs(T, Acc)
     end.
 
 shift_remote_links2(_Site, [], _To) -> ok;
@@ -3521,18 +3523,18 @@ muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
 match_ref(#refX{site = S} = RefX, Key) ->
     case read_local_item_index(RefX) of
         false -> [];
-        Idx -> Table = trans(S, item),
-               %% this function is only used in traverse to 
-               %% recursively find the value of an attribute
-               %% so it gets a read lock only..
-               case mnesia:read(Table, Idx, read) of
-                   []   -> [];
-                   Recs -> IdxNo = ms_util2:get_index(item, key) + 1,
-                           case lists:keysearch(Key, IdxNo, Recs) of
-                               false           -> [];
-                               {value, Return} -> [Return]
-                           end
-               end
+        Idx   -> Table = trans(S, item),
+                 % this function is only used in traverse to 
+                 % recursively find the value of an attribute
+                 % so it gets a read lock only..
+                 case mnesia:read(Table, Idx, read) of
+                     []   -> [];
+                     Recs -> IdxNo = ms_util2:get_index(item, key) + 1,
+                             case lists:keysearch(Key, IdxNo, Recs) of
+                                 false           -> [];
+                                 {value, Return} -> [Return]
+                             end
+                 end
     end.
 
 make_or(Attrs, PlcHoldr)  -> make_clause(Attrs, PlcHoldr, 'or').
@@ -3631,7 +3633,6 @@ tell_front_end1(_Key, Tuple) ->
 
 make_tuple(Style, Counter, Index, Val) -> 
     make_tuple1(Style, Counter, Index, Val, []). 
-
 make_tuple1(S, 0, _I, _V, Acc) -> list_to_tuple([S|Acc]); 
 make_tuple1(S, I, I, V, Acc )  -> make_tuple1(S, I -1 , I, V, [V | Acc]); 
 make_tuple1(S, C, I, V, Acc)   -> make_tuple1(S, C - 1, I, V, [[] | Acc]).
