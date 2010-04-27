@@ -68,8 +68,6 @@
           &nbsp;
         </li>  
       </ul>
-
-
     </div>
     
     <div id="menuwrap">
@@ -247,19 +245,31 @@
       </div>
       
       <a class="separator" id="bordersep"></a>          
-      <!-- <div title="Set Background Colours" class="expand">
+
+      <div title="Set Background Colours" class="colormenu">
         <span><a id="bgcolor-head" class="icon"></a></span>
-        <div id="bgcolors"></div>
+        <div id="bgcolors" class="hiddenmenu">
+          <div class="innercolor">
+            <form data-style="background-color" data-command="forecolor">
+              <input id="bgcolor" />
+              <input type="submit" value="Use Color" class="button" />
+            </form>
+          </div>
+        </div>
       </div>
       
-      <div title="Set Font Colour" class="expand" id="font_colour">
+      <div title="Set Font Colour" class="colormenu">
         <span><a id="fontcolor-head" class="icon"></a></span>
-        <div id="fontcolors"></div>
-      </div> -->
-      <div title="Set Colours" class="expand" id="combo_colour">
-        <span><a id="bgcolor-head" class="icon"></a></span>
-        <div id="combocolors"></div>
+        <div id="forecolors" class="hiddenmenu">
+          <div class="innercolor">
+            <form data-style="color" data-command="backcolor">
+              <input id="forecolor" />
+              <input type="submit" value="Use Color" class="button" />
+            </form>
+            </div>
+        </div>
       </div>
+
     </div>
     
     <div id="formulabar">
@@ -459,8 +469,6 @@
             Copy<span class="desc">Ctrl+C</span></a></li>
         <li class="disabled paste"><a name="paste">
             Paste <span class="desc">Ctrl+V</span></a></li>
-        <li class="disabled paste"><a name="pastelink">
-            Paste <strong>Links</strong></a></li>
         <li class="seperator"></li>
         <li><a name="mergecells">
             <span id="mergetext">Merge</span> Cells</a></li>
@@ -528,16 +536,6 @@
       </div>  
     </div>
     
-    <div class="mdialog" id="rte_editor">
-	  <div id="wmd-editor" class="wmd-panel">
-	    <div id="wmd-button-bar"></div>
-	    <textarea id="wmd-input"></textarea>
-	  </div>
-	  <div id="wmd-preview" class="wmd-panel"></div>
-      <input class="mclose" type="submit" value="Cancel" />
-      <input type="button" class="action" id="rte_submit" value="Insert" />
-    </div>
-
     <div id="overlay"></div>
     <div id="cover"></div>
 
@@ -705,6 +703,8 @@
   <script src="/hypernumbers/hn.callbacks.js"></script>q
   <script src="/hypernumbers/hn.selection.js"></script>
   <script src="/hypernumbers/hn.logger.js"></script>
+
+  <script src="/jscolor/jscolor.js"></script>
 
   <script src="/guibuilder/hn.render.js"></script>
   <script src="/hypernumbers/hn.builder.js"></script>
