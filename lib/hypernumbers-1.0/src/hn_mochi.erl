@@ -309,14 +309,11 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
      Env) when X == "_invite"; X == "_mynewsite" ->
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Email, _Data, Stamp, Age} ->
-            Cookie = hn_net_util:cookie("auth", Stamp, Age),
-            Target = hn_util:strip80(Site) ++ hn_util:list_to_path(Rest),
-            Redirect = {"Location", Target},
-            Headers = [Cookie, Redirect | Env#env.headers],
-            respond(302, Env#env{uid = Uid, headers = Headers}),
-            throw(ok);
+            Return = hn_util:strip80(Site) 
+                ++ hn_util:list_to_path(Rest),
+            post_login(Site, Uid, Stamp, Age, Env, Return);
         {error, E} ->
-            %% handle graceufully, what about time outs?
+            %% fu@#ity-bye!
             throw(E)
     end;
 
@@ -328,12 +325,9 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
             case proplists:get_value(emailed, Data) of
                 true -> 
                     ok = passport:validate_uid(Uid),
-                    Cookie = hn_net_util:cookie("auth", Stamp, Age),
-                    Target = hn_util:strip80(Site) ++ hn_util:list_to_path(Rest),
-                    Redirect = {"Location", Target},
-                    Headers = [Cookie, Redirect | Env#env.headers],
-                    respond(302, Env#env{uid = Uid, headers = Headers}),
-                    throw(ok);                    
+                    Return = hn_util:strip80(Site) 
+                        ++ hn_util:list_to_path(Rest),
+                    post_login(Site, Uid, Stamp, Age, Env, Return);
                 _Else -> 
                     throw(bad_validation)
             end
@@ -461,19 +455,16 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
                           Uid),
     json(Env, "success");
 
-ipost(#refX{path=["_user","login"]}, _Qry, E) ->
+ipost(#refX{site=Site, path=["_user","login"]}, _Qry, E) ->
     [{"email", Email0},{"pass", Pass},{"remember", Rem}] = E#env.body,
     Email = string:to_lower(Email0),
-    {E2, Resp} = case passport:authenticate(Email, Pass, Rem=="true") of
-                     {error, authentication_failed} -> 
-                         {E, "error"};
-                     {ok, Uid, Stamp, Age} ->
-                         Cookie = hn_net_util:cookie("auth", Stamp, Age),
-                         {E#env{uid = Uid,
-                                headers = [Cookie | E#env.headers]},
-                          "success"}
-                 end,
-    json(E2, {struct, [{"response", Resp}]});
+    case passport:authenticate(Email, Pass, Rem=="true") of
+        {error, authentication_failed} -> 
+            json(E, {struct, [{"response", "error"}]});
+        {ok, Uid, Stamp, Age} ->
+            Return = hn_util:strip80(Site),
+            post_login(Site, Uid, Stamp, Age, E, Return)
+    end;
 
 %% the purpose of this message is to mark the mochilog so we don't 
 %% need to do nothing with anything...
@@ -572,7 +563,7 @@ ipost(#refX{obj = {range, _}} = Ref, _Qry,
 
 ipost(_Ref, _Qry,
       Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
-               uid = anonymous}) ->
+               uid = "anonymous"}) ->
     S = {struct, [{"error", "cant set language for anonymous users"}]},
     json(Env, S);
 
@@ -1138,45 +1129,71 @@ process_environment(Mochi) ->
          raw_body = RawBody,
          body = Body}.
 
--spec process_user(string(), #env{}) -> #env{}. 
+-spec process_user(string(), #env{}) -> #env{} | no_return(). 
 process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
     case passport:inspect_stamp(Auth) of
-        {ok, Uid} -> E#env{uid = Uid};
+        {ok, Uid} ->
+            E#env{uid = Uid};
         {error, no_stamp} -> 
-            send_sync("ping", Site, E),
-            E#env{uid = anonymous};
+            E2 = E#env{uid = "anonymous"},
+            Return = cur_url(Site, E2),
+            case try_sync(["seek"], Site, E2, Return) of
+                on_sync -> E2;
+                {redir, E3} -> respond(302, E3), throw(ok)
+            end;
         {error, _Reason} ->
             Cookie = hn_net_util:kill_cookie("auth"),
-            E2 = E#env{uid = anything, 
+            E2 = E#env{uid = "anonymous",
                        headers = [Cookie | E#env.headers]},
-            send_sync("reset", Site, E2),
-            E2
+            Return = cur_url(Site, E2),
+            case try_sync(["tell", Cookie], Site, E2, Return) of
+                on_sync -> E2;
+                {redir, E3} -> respond(302, E3), throw(ok)
+            end
     end.
 
--spec send_sync(string(), string(), #env{}) -> no_return() | ok.
-send_sync(Cmd, Site, E=#env{mochi = Mochi}) ->
+-spec cur_url(string(), #env{}) -> string(). 
+cur_url(Site, #env{mochi=Mochi}) ->
+    hn_util:strip80(Site) ++ 
+        mochiweb_util:quote_plus(Mochi:get(raw_path)).
+
+-spec try_sync([string()], string(), #env{}, string()) 
+               -> {redir, #env{}} | on_sync.
+try_sync(Cmd0, Site, E, Return) ->
     case application:get_env(hypernumbers, sync_url) of
         {ok, SUrl} when SUrl /= Site ->
-            CurUrl = 
-                hn_util:strip80(Site) ++ 
-                mochiweb_util:quote_plus(Mochi:get(raw_path)),
-            Redir = SUrl++"/_sync/"++Cmd++"/?return="++CurUrl,
+            Cmd = string:join(Cmd0, "/"),
+            Redir = SUrl++"_sync"++Cmd++"/?return="++Return,
             Redirect = {"Location", Redir},
             E2 = E#env{headers = [Redirect | E#env.headers]},
-            respond(302, E2),
-            throw(ok);
+            {redir, E2};
         _Else ->
-            ok
+            on_sync
     end.
 
-process_sync(["reset"], E, Return) ->
-    Cookie = hn_net_util:kill_cookie("auth"),
+-spec post_login(string(), uid(), string(), integer() | string(),
+                 #env{}, string()) 
+                -> no_return(). 
+post_login(Site, Uid, Stamp, Age, Env, Return) ->
+    Cookie = hn_net_util:cookie("auth", Stamp, Age),
+    Env2 = Env#env{uid = Uid, headers = [Cookie | Env#env.headers]},
+    Env3 = case try_sync(["tell", Stamp], Site, Env2, Return) of
+               on_sync ->
+                   Redirect = {"Location", Return},
+                   Env2#env{headers = [Redirect | Env2#env.headers]};
+               {redir, RetEnv} ->
+                   RetEnv
+           end,
+    ok = respond(302, Env3),
+    throw(ok).
+
+process_sync(["tell", Stamp], E, Return) ->
+    Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Original = mochiweb_util:unquote(Return),
     Redirect = {"Location", Original},
     E#env{headers = [Cookie, Redirect | E#env.headers]};
-
-process_sync(["ping"], E=#env{mochi=Mochi}, Return) ->
+process_sync(["seek"], E=#env{mochi=Mochi}, Return) ->
     Stamp = case Mochi:get_cookie_value("auth") of
         undefined -> passport:temp_stamp();
         S         -> S end,
@@ -1184,15 +1201,10 @@ process_sync(["ping"], E=#env{mochi=Mochi}, Return) ->
     Original = mochiweb_util:unquote(Return),
     #refX{site = OrigSite} = hn_util:parse_url(Original),
     Redir = hn_util:strip80(OrigSite) ++ 
-        "/_sync/pong/"++Stamp++"/?return="++Return,
+        "/_sync/tell/"++Stamp++"/?return="++Return,
     Redirect = {"Location", Redir},
-    E#env{headers = [Cookie, Redirect | E#env.headers]};
-
-process_sync(["pong", Stamp], E, Return) ->
-    Cookie   = hn_net_util:cookie("auth", Stamp, "never"),
-    Original = mochiweb_util:unquote(Return),
-    Redirect = {"Location", Original},
     E#env{headers = [Cookie, Redirect | E#env.headers]}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
@@ -1252,7 +1264,7 @@ serve_file(Status, #env{mochi = Mochi, headers = Headers}, File) ->
             Mochi:not_found(Headers)
     end.
 
-get_lang(anonymous) ->
+get_lang("anonymous") ->
     "en_gb";
 get_lang(_User) ->
     "en_gb".

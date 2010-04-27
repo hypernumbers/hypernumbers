@@ -135,9 +135,9 @@ set_password(Uid, Password) ->
     Msg = {set_password, Uid, Password},
     gen_server:call({global, ?MODULE}, Msg).
 
--spec uid_to_email(uid()) -> {ok, anonymous | string()} |
+-spec uid_to_email(uid()) -> {ok, string()} |
                              {error, invalid_uid}.
-uid_to_email(anonymous) -> {ok, anonymous};
+uid_to_email("anonymous") -> {ok, "anonymous"};
 uid_to_email(Uid) -> 
     gen_server:call({global, ?MODULE}, {uid_to_email, Uid}).
 

@@ -35,7 +35,7 @@ start() ->
 
 %% @doc Logs individual requests
 -spec log(#env{}, #refX{}) -> ok.
-log(Env=#env{mochi = Mochi, uid = Uid, raw_body = Body}, Ref) ->
+log(#env{mochi = Mochi, uid = Uid, raw_body = Body}, Ref) ->
     Post = [{time, erlang:now()},
             {site, Ref#refX.site},
             {path, Mochi:get(raw_path)},
