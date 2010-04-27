@@ -8,6 +8,7 @@
           open_hypertag/3, 
           authenticate/3,
           inspect_stamp/1,
+          temp_stamp/0,
           set_password/2,
           uid_to_email/1,
           email_to_uid/1,
@@ -45,24 +46,14 @@
 -record(state, {}).
 
 %%%===================================================================
-%%% API
+%%% Local API
 %%%===================================================================
-
-%%--------------------------------------------------------------------
-%% @doc
-%% Starts the server
-%%
-%% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
-%% @end
-%%--------------------------------------------------------------------
-start_link() ->
-    gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
 -spec create_hypertag(string(), 
                       [string()], 
                       uid(), string(), 
                       any(), 
-                      integer() | never)
+                      integer() | string())
                      -> string().
 create_hypertag(Site, Path, Uid, Email, Data, Age) ->
     HalfKey = [Site, Path],
@@ -88,29 +79,8 @@ open_hypertag(Site, Path, HTEnc) ->
             {error, bad_invite}
     end.
 
--spec authenticate(string(), string(), boolean()) 
-                  -> {error, term()} | 
-                     {ok, uid(), string(), integer() | session}.
-authenticate(Email, Password, Remember) ->
-    Msg = {authenticate, Email, Password},
-    case gen_server:call({global, ?MODULE}, Msg, 10000) of
-        {ok, Uid} -> 
-            Age = case Remember of 
-                         true -> ?WEEK_S;
-                         false -> session
-                  end,
-            {ok, Uid, stamp(Uid, Email, Age), Age};
-        Else -> 
-            Else
-    end.
-
--spec set_password(uid(), string()) 
-                  -> ok | 
-                     {error, invalid_uid} | 
-                     {error, invalidated }.
-set_password(Uid, Password) ->
-    Msg = {set_password, Uid, Password},
-    gen_server:call({global, ?MODULE}, Msg).
+-spec temp_stamp() -> string().
+temp_stamp() -> stamp([$_|create_uid()], "anonymous", "never").
 
 -spec inspect_stamp(string()) -> {ok, uid()} | {error, term()}. 
 inspect_stamp(undefined) ->
@@ -128,7 +98,45 @@ inspect_stamp(Stamp) ->
             {error, bad_stamp}
     end.
 
--spec uid_to_email(uid()) -> {ok, anonymous | string()} | {error, invalid_uid}.
+%%%===================================================================
+%%% Global API
+%%%===================================================================
+
+%%--------------------------------------------------------------------
+%% @doc
+%% Starts the server
+%%
+%% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
+%% @end
+%%--------------------------------------------------------------------
+start_link() ->
+    gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
+
+-spec authenticate(string(), string(), boolean()) 
+                  -> {error, term()} | 
+                     {ok, uid(), string(), integer() | string()}.
+authenticate(Email, Password, Remember) ->
+    Msg = {authenticate, Email, Password},
+    case gen_server:call({global, ?MODULE}, Msg, 10000) of
+        {ok, Uid} -> 
+            Age = case Remember of 
+                         true -> ?WEEK_S;
+                         false -> "session"
+                  end,
+            {ok, Uid, stamp(Uid, Email, Age), Age};
+        Else -> 
+            Else
+    end.
+
+-spec set_password(uid(), string()) -> ok | 
+                                       {error, invalid_uid} | 
+                                       {error, invalidated }.
+set_password(Uid, Password) ->
+    Msg = {set_password, Uid, Password},
+    gen_server:call({global, ?MODULE}, Msg).
+
+-spec uid_to_email(uid()) -> {ok, anonymous | string()} |
+                             {error, invalid_uid}.
 uid_to_email(anonymous) -> {ok, anonymous};
 uid_to_email(Uid) -> 
     gen_server:call({global, ?MODULE}, {uid_to_email, Uid}).
@@ -161,14 +169,6 @@ load_script(Terms) ->
 dump_script() ->
     {ok, Terms} = gen_server:call({global, ?MODULE}, dump_script),
     make_script_terms(Terms, []).
-    
-make_script_terms([], Acc) -> 
-    FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
-    lists:flatten([FirstLine | lists:reverse(Acc)]);
-make_script_terms([H | T], Acc) ->
-    NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
-    make_script_terms(T, [NewAcc | Acc]).
-                         
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -370,7 +370,7 @@ create_uid() ->
     Bin = crypto:rand_bytes(16),
     mochihex:to_hex(Bin).
 
--spec stamp(uid(), string(), integer() | session) -> string().
+-spec stamp(uid(), string(), integer() | string()) -> string().
 stamp(Uid, Email, Age) ->
     Expiry = gen_expiry(Age),
     EscEmail = escape_email(Email),
@@ -382,9 +382,8 @@ escape_email(Email) ->
     [case S of $@ -> $!; S  -> S end 
      || S <- Email].
 
--spec gen_expiry(integer() | session | never) -> string().
-gen_expiry(never) -> "never";
-gen_expiry(session) -> "session";
+-spec gen_expiry(integer() | string()) -> string().
+gen_expiry(X) when X == "session"; X == "never" -> X;
 gen_expiry(Age) -> 
     integer_to_list(
       calendar:datetime_to_gregorian_seconds(
@@ -464,7 +463,8 @@ extend(Bin) ->
 %% should not be used to send the same plaintext twice.
 ivector() ->
     %% How I generated this.
-    %% X = crypto:rand_uniform(round(math:pow(2,128)), round(math:pow(2,129)-1)).
+    %% X = crypto:rand_uniform(round(math:pow(2,128)), 
+    %%                         round(math:pow(2,129)-1)),
     %% <<X:128>>.
     <<40,209,138,36,199,163,227,165,108,23,129,49,160,221,218,226>>.
 
@@ -474,6 +474,13 @@ server_key() ->
 
 server_token_key() ->
     <<"!Raibeart Bruis%">>.    
+
+make_script_terms([], Acc) -> 
+    FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
+    lists:flatten([FirstLine | lists:reverse(Acc)]);
+make_script_terms([H | T], Acc) ->
+    NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
+    make_script_terms(T, [NewAcc | Acc]).
 
 %%% 
 %%% Tests
@@ -495,7 +502,7 @@ test_hypertag() ->
     Email = "alice@example.com",
     "http://"++Url = create_hypertag(Site, Path, 
                                      "alice", Email, 
-                                     {"123"}, never),
+                                     {"123"}, "never"),
     {_, "?hypertag="++HyperTag} = httpd_util:split_path(Url),
     {ok, U, Email, D, _Stamp, _Age} = open_hypertag(Site, Path, HyperTag),
     ?assertEqual("alice", U),

@@ -195,7 +195,7 @@ capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].
 first_site_email(Site, Uid, Email, Name) ->
     Path = ["_validate", Name],
     Data = [{emailed, true}],
-    HT = passport:create_hypertag(Site, Path, Uid, Email, Data, never),
+    HT = passport:create_hypertag(Site, Path, Uid, Email, Data, "never"),
     lists:flatten(
       ["Hi ", Name, "\n\n",
        "We hope you've had a chance to "

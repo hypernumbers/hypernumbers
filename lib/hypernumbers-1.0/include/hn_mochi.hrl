@@ -5,6 +5,5 @@
                headers = [] :: list(), %% These are 'response' headers.
                method,
                mochi,
-               uid,
-               spoor
+               uid
              }).

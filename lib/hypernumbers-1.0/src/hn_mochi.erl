@@ -20,7 +20,6 @@
          ]).
 
 -define(SHEETVIEW, "_g/core/spreadsheet").
--define(TWO_YEARS, 63113852).
 
 -include("util.hrl").
 
@@ -50,13 +49,10 @@ handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
-handle_(#refX{path=["_ping"]}, Env, #qry{spoor=Spoor, return=Return}) 
-  when Return /= undefined, Spoor /= undefined ->
-    handle_ping(Env, Spoor, Return);
-
-handle_(#refX{path=["_pong"]}, Env, #qry{spoor=Spoor, return=Return}) 
-  when Return /= undefined, Spoor /= undefined ->
-    handle_pong(Env, Spoor, Return);
+handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=Return}) 
+  when Return /= undefined ->
+    Env2 = process_sync(Cmd, Env, Return),
+    respond(302, Env2);
 
 handle_(Ref, Env, Qry) ->
     case filename:extension((Env#env.mochi):get(path)) of
@@ -77,7 +73,7 @@ check_resource_exists(Env, Ref, Qry) ->
             
 -spec authorize_resource(#env{}, #refX{}, #qry{}) -> no_return(). 
 authorize_resource(Env, Ref, Qry) -> 
-    Env2 = process_cookies(Ref#refX.site, Env),
+    Env2 = process_user(Ref#refX.site, Env),
     AuthRet = case Env2#env.method of
                   'GET'  -> authorize_get(Ref, Qry, Env2);
                   'POST' -> authorize_post(Ref, Qry, Env2)
@@ -132,37 +128,6 @@ handle_static(X, Root, Mochi)
     "/"++RelPath = Mochi:get(path),
     Mochi:serve_file(RelPath, Root),
     ok.
-
--spec handle_ping(#env{}, string(), string()) -> ok. 
-handle_ping(E=#env{mochi = Mochi}, Spoor, Return) ->
-    Original = mochiweb_util:unquote(Return),
-    R2 = case Mochi:get_cookie_value("spoor") of
-             undefined ->
-                 %% Use the given cookie, simply resume.
-                 Redirect = {"Location", Original},
-                 Cookie = hn_net_util:cookie("spoor", Spoor, ?TWO_YEARS),
-                 E#env{headers = [Redirect, Cookie | E#env.headers]};
-             OwnSpoor ->
-                 %% Have own cookie already! This must take
-                 %% precedence. So we tell the 'pinger' to use this
-                 %% with a PONG request.
-                 #refX{site = OrigSite} = hn_util:parse_url(Original),
-                 Redir = hn_util:strip80(OrigSite) ++ 
-                     "/_pong/?spoor="++OwnSpoor ++
-                     "&return="++Return,
-                 Redirect = {"Location", Redir},
-                 E#env{headers = [Redirect | E#env.headers]}
-         end,
-    respond(302, R2).
-
--spec handle_pong(#env{}, string(), string()) -> ok. 
-handle_pong(E, Spoor, Return) ->
-    Cookie   = hn_net_util:cookie("spoor", Spoor, ?TWO_YEARS),
-    Original = mochiweb_util:unquote(Return),
-    Redirect = {"Location", Original},
-    E2       = E#env{headers = [Redirect, Cookie | E#env.headers]},
-    respond(302, E2).
-
 
 -spec authorize_get(#refX{}, #qry{}, #env{}) 
                    -> {view, string()} | allowed | denied | not_found.
@@ -320,8 +285,9 @@ authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
         _ -> denied
     end;
 
-%% Allow a post to occur, if the user has access to a spreadsheet on the target.
-%% the actual operation may need further validation, so flag as 'allowed_pending'.
+%% Allow a post to occur, if the user has access to a spreadsheet on
+%% the target.  the actual operation may need further validation, so
+%% flag as 'allowed_pending'.
 authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
     case auth_srv:check_particular_view(
            Site, Path, Env#env.uid, ?SHEETVIEW) of
@@ -835,7 +801,7 @@ ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
     case factory:provision_site(Zone, Email, Type) of
         {ok, new, Site, Uid, Name} ->
             Opaque = [],
-            Expiry = never,
+            Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
@@ -1172,52 +1138,61 @@ process_environment(Mochi) ->
          raw_body = RawBody,
          body = Body}.
 
--spec process_cookies(string(), #env{}) -> #env{}. 
-process_cookies(Site, E) ->
-    E2 = get_user(E),
-    get_spoor(Site, E2).
-
--spec get_user(#env{}) -> #env{}. 
-get_user(E=#env{mochi = Mochi}) ->
+-spec process_user(string(), #env{}) -> #env{}. 
+process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
     case passport:inspect_stamp(Auth) of
         {ok, Uid} -> E#env{uid = Uid};
-        {error, no_stamp} -> E#env{uid = anonymous};
+        {error, no_stamp} -> 
+            send_sync("ping", Site, E),
+            E#env{uid = anonymous};
         {error, _Reason} ->
-            %% authtoken was invalid (probably did a clean_start() while
-            %% logged in, kill the cookie
-            Cookie = hn_net_util:cookie("auth", "killitwithfire", 0),
-            E#env{uid = anonymous, headers = [Cookie | E#env.headers]}
+            Cookie = hn_net_util:kill_cookie("auth"),
+            E2 = E#env{uid = anything, 
+                       headers = [Cookie | E#env.headers]},
+            send_sync("reset", Site, E2),
+            E2
     end.
 
--spec get_spoor(string(), #env{}) -> #env{}.
-get_spoor(Site, E=#env{mochi = Mochi}) ->
-    case Mochi:get_cookie_value("spoor") of
-        undefined ->
-            Spoor = mochihex:to_hex(crypto:rand_bytes(8)),
-            Cookie = hn_net_util:cookie("spoor", Spoor, ?TWO_YEARS),
-            E2 = E#env{spoor = Spoor, headers = [Cookie | E#env.headers]},
-            case application:get_env(hypernumbers, pingto) of
-                {ok, Site} ->
-                    %% No ping pong today
-                    E2;
-                {ok, PingTo} ->
-                    Current = 
-                        hn_util:strip80(Site) ++ 
-                        mochiweb_util:quote_plus(Mochi:get(raw_path)),
-                    Redir = PingTo++"/_ping/?spoor="++Spoor++
-                        "&return="++Current,
-                    Redirect = {"Location", Redir},
-                    E3 = E2#env{headers = [Redirect | E2#env.headers]},
-                    respond(302, E3),
-                    throw(ok);
-                _Else ->
-                    E2
-            end;
-        Spoor ->
-            E#env{spoor = Spoor}
+-spec send_sync(string(), string(), #env{}) -> no_return() | ok.
+send_sync(Cmd, Site, E=#env{mochi = Mochi}) ->
+    case application:get_env(hypernumbers, sync_url) of
+        {ok, SUrl} when SUrl /= Site ->
+            CurUrl = 
+                hn_util:strip80(Site) ++ 
+                mochiweb_util:quote_plus(Mochi:get(raw_path)),
+            Redir = SUrl++"/_sync/"++Cmd++"/?return="++CurUrl,
+            Redirect = {"Location", Redir},
+            E2 = E#env{headers = [Redirect | E#env.headers]},
+            respond(302, E2),
+            throw(ok);
+        _Else ->
+            ok
     end.
 
+process_sync(["reset"], E, Return) ->
+    Cookie = hn_net_util:kill_cookie("auth"),
+    Original = mochiweb_util:unquote(Return),
+    Redirect = {"Location", Original},
+    E#env{headers = [Cookie, Redirect | E#env.headers]};
+
+process_sync(["ping"], E=#env{mochi=Mochi}, Return) ->
+    Stamp = case Mochi:get_cookie_value("auth") of
+        undefined -> passport:temp_stamp();
+        S         -> S end,
+    Cookie = hn_net_util:cookie("auth", Stamp, "never"),
+    Original = mochiweb_util:unquote(Return),
+    #refX{site = OrigSite} = hn_util:parse_url(Original),
+    Redir = hn_util:strip80(OrigSite) ++ 
+        "/_sync/pong/"++Stamp++"/?return="++Return,
+    Redirect = {"Location", Redir},
+    E#env{headers = [Cookie, Redirect | E#env.headers]};
+
+process_sync(["pong", Stamp], E, Return) ->
+    Cookie   = hn_net_util:cookie("auth", Stamp, "never"),
+    Original = mochiweb_util:unquote(Return),
+    Redirect = {"Location", Original},
+    E#env{headers = [Cookie, Redirect | E#env.headers]}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%

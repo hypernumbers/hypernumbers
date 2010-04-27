@@ -2,20 +2,28 @@
 
 -module(hn_net_util).
 
--export([cookie/3,
+-export([cookie/3, 
+         kill_cookie/1,
          email/4, email/5,
          post/3]).
+
+%% Two years is forever on the internet.
+-define(TWO_YEARS, 63113852).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Cookies
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec cookie(string(), string(), integer() | session) -> string(). 
-cookie(Name, Value, Age) ->
-    Opts = [{path, "/"}] ++ if Age == session -> [];
-                               true -> [{max_age, Age}]
-                            end,
-    mochiweb_cookies:cookie(Name, Value, Opts).
+-spec cookie(string(), string(), integer() | string()) -> string().
+cookie(N, V, "session") -> cookie_(N, V, []);
+cookie(N, V, "never") -> cookie_(N, V, [{max_age, ?TWO_YEARS}]);
+cookie(N, V, Age) -> cookie_(N, V, [{max_age, Age}]).
+
+cookie_(Name, Value, Opts) ->
+    mochiweb_cookies:cookie(Name, Value, [{path, "/"}] ++ Opts).
+
+-spec kill_cookie(string()) -> string().
+kill_cookie(N) -> cookie(N, "killitwithfire", 0).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Email 
