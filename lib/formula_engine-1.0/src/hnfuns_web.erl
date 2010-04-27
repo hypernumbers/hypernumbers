@@ -11,7 +11,8 @@
 -export([
          button/1,
          radio/1,
-         select/1
+         select/1,
+         form/1
         ]).
 
 -include("typechecks.hrl").
@@ -27,8 +28,19 @@
 %%
 %% Exported functions
 %%
-button(Title) ->
-    [Title2] = ?string(Title, ?default_str_rules),
+form(Items) ->
+    [Items2] = ?string([Items], ?default_str_rules),
+    form1(Items2, []).
+
+form1([], [_H | T]) ->
+    F = "<form>",
+    B = "<br /><br /><input type=\"button\" value=\"submit\" /></form>",
+    lists:flatten([F, lists:reverse(T) | B]);
+form1([H | T], Acc) ->
+    form1(T, ["<br /><br />", H | Acc]).
+
+button([Title]) ->
+    [Title2] = ?string([Title], ?default_str_rules),
     "<input type=\"submit\" value=\"" ++ Title2 ++ "\">".
 
 radio(Options) -> radio1(Options, []).
