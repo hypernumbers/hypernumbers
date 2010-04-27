@@ -1304,7 +1304,10 @@ write_attributes1(RefX, List, PAr, VAr)
   when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),
     [hn_db_wu:write_attr(RefX, X, PAr) || X <- List],
-    ok = hn_db_wu:mark_children_dirty(RefX, VAr).
+    case lists:keymember("formula", 1, List) of
+       true  -> ok = hn_db_wu:mark_children_dirty(RefX, VAr);
+       false -> ok
+    end.
 
 -spec copy_cell(#refX{}, #refX{}, 
                 false | horizontal | vertical,

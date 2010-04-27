@@ -1973,9 +1973,7 @@ mark_children_dirty(#refX{site = Site, obj = {cell, _}} = RefX, Ar) ->
         true  -> ok;
         false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
                  ok = mnesia:write(trans(Site, dirty_queue), Entry, write)
-    end;
-mark_children_dirty(#refX{obj = {column, _}}, _) -> ok;
-mark_children_dirty(#refX{obj = {row, _}}, _)    -> ok.
+    end.
 
 %% Recursively walk child relation, adding entries into the work
 %% queue.  We maintain an invariant that children must have a higher
