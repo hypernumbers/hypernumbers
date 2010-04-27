@@ -1954,3 +1954,13 @@ input[type=checkbox], input[type=radio] {
 }
 
 .beta {display:none;}
+
+
+.sans-serif { font-family: sans-serif; }
+.serif      { font-family: serif; }
+.monospace  { font-family: monospace; }
+.arial      { font-family: Helvetica, Arial, serif; }
+.georgia    { font-family: georgia, serif; }
+.garamond   { font-family: garamond, serif; }
+.trebuchet  { font-family: trebuchet ms, sans-serif; }
+.tahoma     { font-family: tahoma, sans-serif; }
