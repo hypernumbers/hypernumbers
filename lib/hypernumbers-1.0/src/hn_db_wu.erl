@@ -1351,7 +1351,6 @@ shift_cells(From, Type, Disp, Rewritten)
                    {delete, vertical} ->
                        get_refs_below(From)
                end,
-
     case RefXList of
         [] -> [];
         _  ->
@@ -1553,11 +1552,11 @@ clear_cells(RefX) when is_record(RefX, refX) ->
 %% </ul>
 clear_cells(RefX, all) when is_record(RefX, refX)->
     ok = clear_cells1(RefX, style),
-    ok = clear_cells1(RefX, contents, inclusive);
+    ok = clear_cells2(RefX, contents, inclusive);
 clear_cells(RefX, contents) when is_record(RefX, refX) ->
-    ok = clear_cells1(RefX, contents, exclusive);
+    ok = clear_cells2(RefX, contents, exclusive);
 clear_cells(RefX, style) when is_record(RefX, refX) ->
-    ok = clear_cells1(RefX, contents, exclusive);
+    ok = clear_cells2(RefX, contents, exclusive);
 clear_cells(RefX, {attributes, List}) when is_record(RefX, refX) ->
     ok = clear_cells1(RefX, {attributes, List}).
 
@@ -1579,7 +1578,7 @@ clear_cells1(RefX, {attribute, AttrList}) ->
 
 %% an exclusive clear only clears the hypernumbers attributes on the cells
 %% an inclusive clear clears all attributes on the cells
-clear_cells1(RefX, contents, Type) when is_record(RefX, refX) ->
+clear_cells2(RefX, contents, Type) when is_record(RefX, refX) ->
     %% first up clear the list
     case read_attrs(RefX, write) of
         [] -> ok;
@@ -1962,8 +1961,11 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
     Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
     
--spec mark_children_dirty(#refX{}, nil | uid()) -> ok. 
-mark_children_dirty(#refX{site = Site} = RefX, Ar) ->
+-spec mark_children_dirty(#refX{}, nil | uid()) -> ok.
+mark_children_dirty(#refX{obj = {range, _}} = RefX, Ar) ->
+    [ok = mark_children_dirty(X, Ar) || X <- hn_util:range_to_list(RefX)],
+    ok;
+mark_children_dirty(#refX{site = Site, obj = {cell, _}} = RefX, Ar) ->
     Tbl = trans(Site, relation),
     Children = get_local_children_idxs(RefX),
     Q = insert_work_queue(Children, Tbl, 1, hn_workq:new(Ar)),
@@ -2333,13 +2335,13 @@ get_refs_below2(RefX, MinX, MaxX, Y) ->
     Head = #local_objs{path = P, obj = Obj, _ ='_'},
     Cond = case MinX of
                MaxX -> [{'and', {'>', '$2', Y}, {'==', '$1', MinX}}];
-               _    -> [{'and', {'>', '$2', Y}, {'>', '$1', MinX},
+               _    -> [{'and', {'>', '$2', Y}, {'>=', '$1', MinX},
                          {'=<', '$1', MaxX}}]
            end,
     Body = ['$_'],
     Idxs = get_local_idxs(S, {Head, Cond, Body}),
     RefXs1 = local_objs_to_refXs(S, Idxs),
-    RefXs2 = get_local_links_refs(S, RefXs1),
+    RefXs2 = lists:flatten([get_local_parents(R) || R <- RefXs1]),
     RefXs = lists:merge([RefXs1, RefXs2]),
     hslists:uniq(RefXs).    
 
@@ -2349,27 +2351,26 @@ get_refs_right2(RefX, X, MinY, MaxY) ->
     Head = #local_objs{path = P, obj = Obj, _ = '_'},
     Cond = case MinY of
                MaxY -> [{'and', {'>', '$1', X}, {'==', '$2', MinY}}];
-               _    -> [{'and', {'>', '$1', X}, {'>', '$2', MinY},
+               _    -> [{'and', {'>', '$1', X}, {'>=', '$2', MinY},
                          {'=<', '$2', MaxY}}]
            end,
     Body = ['$_'],
     Idxs = get_local_idxs(S, {Head, Cond, Body}),
     RefXs1 = local_objs_to_refXs(S, Idxs),
-    RefXs2 = get_local_links_refs(S, RefXs1),
+    RefXs2 = lists:flatten([get_local_parents(R) || R <- RefXs1]),
     RefXs = lists:merge([RefXs1, RefXs2]),
     hslists:uniq(RefXs).
 
-% erk local relations have changed :(
-get_local_links_refs(Site, {Head, Cond, Body}) ->
-    Head2 = trans(Site, Head),
-    Table = trans(Site, local_cell_link),
-    Return = trans_back(mnesia:select(Table, [{Head2, Cond, Body}])),
-    % now tidy them up, get the relevant refX's and dedup them all...
-    Fun = fun(#local_cell_link{parentidx = P}, Acc) ->
-                  [local_idx_to_refX(Site, P) | Acc]
-          end,
-    Return1 = lists:foldl(Fun, [], Return),
-    hslists:uniq(Return1).
+% get_local_links_refs(Site, {Head, Cond, Body}) ->
+%     Head2 = trans(Site, Head),
+%     Table = trans(Site, local_cell_link),
+%     Return = trans_back(mnesia:select(Table, [{Head2, Cond, Body}])),
+%     % now tidy them up, get the relevant refX's and dedup them all...
+%     Fun = fun(#local_cell_link{parentidx = P}, Acc) ->
+%                   [local_idx_to_refX(Site, P) | Acc]
+%           end,
+%     Return1 = lists:foldl(Fun, [], Return),
+%     hslists:uniq(Return1).
 
 make_page_match(Site, RefX, RecordName) ->
     #refX{site = S, path = P} = RefX,
@@ -2604,7 +2605,8 @@ offset_with_ranges(Toks, Cell, From, Offset) ->
 
 offset_with_ranges1([], _Cell, _From, _Offset, Acc) ->
     lists:reverse(Acc);
-offset_with_ranges1([{rangeref, LineNo, #rangeref{path = Path, text = Text}=H} | T],
+offset_with_ranges1([{rangeref, LineNo,
+                      #rangeref{path = Path, text = Text}=H} | T],
                     Cell, #refX{path = FromPath} = From, Offset, Acc) ->
     #refX{path = CPath} = Cell,
     PathCompare = muin_util:walk_path(CPath, Path),
@@ -2625,8 +2627,10 @@ offset_with_ranges1([{rangeref, LineNo, #rangeref{path = Path, text = Text}=H} |
               end,
     NewAcc = {rangeref, LineNo, H#rangeref{text = NewText}},
     offset_with_ranges1(T, Cell, From, Offset, [NewAcc | Acc]);
-offset_with_ranges1([{cellref, LineNo, C=#cellref{path = Path, text = Text}}=H | T],
-                    Cell, #refX{path = FromPath} = From, {XO, YO}=Offset, Acc) ->
+offset_with_ranges1([{cellref, LineNo,
+                      C=#cellref{path = Path, text = Text}}=H | T],
+                    Cell, #refX{path = FromPath} = From,
+                    {XO, YO}=Offset, Acc) ->
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
         {column,{Left,_Right}} when X < Left ->
@@ -2652,6 +2656,7 @@ offset_with_ranges1([{cellref, LineNo, C=#cellref{path = Path, text = Text}}=H |
 offset_with_ranges1([H | T], Cell, From, Offset, Acc) ->
     offset_with_ranges1(T, Cell, From, Offset, [H | Acc]).
 
+%% handle cells
 make_new_range(Prefix, Cell1, Cell2, 
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
@@ -2667,7 +2672,6 @@ make_new_range(Prefix, Cell1, Cell2,
             _      -> Cell2
         end,
     Prefix ++ NC1 ++ ":" ++ NC2;
-
 %% handle rows
 make_new_range(Prefix, Cell1, Cell2, 
                {X1D, X1, Y1D, Y1},
@@ -2679,7 +2683,7 @@ make_new_range(Prefix, Cell1, Cell2,
     NC2 = if Top =< Y2 -> make_cell(X2D, X2, 0, Y2D, Y2, YOffset); 
              true      -> Cell2 end,
     Prefix ++ NC1 ++ ":" ++ NC2;
-
+%% handle columns
 make_new_range(Prefix, Cell1, Cell2, 
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
@@ -2689,6 +2693,36 @@ make_new_range(Prefix, Cell1, Cell2,
              true       -> Cell1 end,
     NC2 = if Left =< X2 -> make_cell(X2D, X2, XOffset, Y2D, Y2, 0); 
              true       -> Cell2 end,
+    Prefix ++ NC1 ++ ":" ++ NC2;
+%% handle ranges (horizontal rewrite)
+make_new_range(Prefix, Cell1, Cell2, 
+               {X1D, X1, Y1D, Y1},
+               {X2D, X2, Y2D, Y2},
+               #refX{obj = {range, {_XA, YA, _XB, YB}}}, 
+               {XOffset, 0}) ->
+    if
+        (YA =< Y1 andalso YB >= Y2) ->
+            NC1 = make_cell(X1D, X1, XOffset, Y1D, Y1, 0),
+            NC2 = make_cell(X2D, X2, XOffset, Y2D, Y2, 0);
+        (YA >  Y1 orelse  YB <  Y2) ->
+            NC1 = Cell1,
+            NC2 = Cell2
+    end,
+    Prefix ++ NC1 ++ ":" ++ NC2;
+%% handle ranges (horizontal rewrite)
+make_new_range(Prefix, Cell1, Cell2, 
+               {X1D, X1, Y1D, Y1},
+               {X2D, X2, Y2D, Y2},
+               #refX{obj = {range, {XA, _YA, XB, _YB}}}, 
+               {0, YOffset}) ->
+    if
+        (XA =< X1 andalso XB >= X2) ->
+            NC1 = make_cell(X1D, X1, 0, Y1D, Y1, YOffset),
+            NC2 = make_cell(X2D, X2, 0, Y2D, Y2, YOffset);
+        (XA >  X1 orelse  XB <  X2) ->
+            NC1 = Cell1,
+            NC2 = Cell2
+    end,
     Prefix ++ NC1 ++ ":" ++ NC2.
 
 offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
@@ -2777,30 +2811,44 @@ get_r_c([#remote_cell_link{child = C} | T], Acc) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Local Relations 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-spec get_local_parents(#refX{}) -> [#refX{}].
+get_local_parents(#refX{site = Site} = X) ->
+    ParentIdxs = get_local_rel_idxs(X, parents),
+    [local_idx_to_refX(Site, C) || C <- ParentIdxs].
 
 -spec get_local_children(#refX{}) -> [#refX{}].
 get_local_children(#refX{site = Site} = X) ->
-    ChildIdxs = get_local_children_idxs(X),
+    ChildIdxs = get_local_rel_idxs(X, children),
     [local_idx_to_refX(Site, C) || C <- ChildIdxs].
 
 -spec get_local_children_idxs(#refX{}) -> [cellidx()]. 
 get_local_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
+    get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, children).
+
+% -spec get_local_parent_idxs(#refX{}) -> [cellidx()]. 
+% get_local_parent_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
+%     get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, parents).
+
+-spec get_local_rel_idxs(#refX{}, relation) -> [cellidx()]. 
+get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, Relation) ->
     case read_local_item_index(Ref) of
         false -> 
             [];
         Idx -> 
             Table = trans(Site, relation),
             case mnesia:read(Table, Idx, read) of
-                [R] -> R#relation.children;
+                [R] -> case Relation of
+                           children -> R#relation.children;
+                           parents  -> R#relation.parents
+                       end;
                 _   -> []
             end
     end;
-get_local_children_idxs(#refX{obj = {Type, _}} = Ref) 
+get_local_rel_idxs(#refX{obj = {Type, _}} = Ref, Relation) 
   when (Type == row) orelse (Type == column) orelse 
        (Type == range) orelse (Type == page) ->
     Cells = get_cells(Ref),
-    lists:flatten([get_local_children_idxs(X) || X <- Cells]).
-
+    lists:flatten([get_local_rel_idxs(X, Relation) || X <- Cells]).
 
 -spec delete_local_relation(#refX{}) -> ok.
 delete_local_relation(#refX{site = Site} = Cell) ->
@@ -2818,7 +2866,7 @@ delete_local_relation(#refX{site = Site} = Cell) ->
     end.
 
 -spec del_local_child(cellidx(), cellidx(), atom()) -> ok.
- del_local_child(CellIdx, Child, Tbl) ->
+del_local_child(CellIdx, Child, Tbl) ->
      case mnesia:read(Tbl, CellIdx, write) of
          [R] ->
              Children = ordsets:del_element(Child, R#relation.children),
@@ -3189,7 +3237,7 @@ offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
         {ok, Toks}    -> NewToks = offset_with_ranges(Toks, Cell, From, Offset),
                          make_formula(NewToks);
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
-                                   "formula is offset_fm_w_rng but "++
+                                   "formula in offset_fm_w_rng but "++
                                    "you do~n-~p~n", [Formula]),
                          {[], "=" ++ Formula}
     end;
@@ -3204,7 +3252,7 @@ offset_formula(Formula, {XO, YO}) ->
                          {_St, NewFormula} = make_formula(NewToks),
                          NewFormula;
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
-                                   "formula is offset_formula but "++
+                                   "formula in offset_formula but "++
                                    "you do~n-~p~n", [Formula]),
                          "=" ++ Formula
     end.

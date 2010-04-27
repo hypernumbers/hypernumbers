@@ -577,6 +577,15 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
     ok = hn_db_api:delete(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
+ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+      Env=#env{body=[{"insert", Direction}],
+               uid = Uid})
+  when O == cell orelse O == range,
+       Direction == "horizontal" orelse Direction == "vertical" ->
+    ok = hn_db_api:insert(Ref, list_to_atom(Direction), Uid),
+    json(Env, "success");
+
+
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copy", {struct, [{"src", Src}]}}],
