@@ -1965,6 +1965,9 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
 mark_children_dirty(#refX{obj = {range, _}} = RefX, Ar) ->
     [ok = mark_children_dirty(X, Ar) || X <- hn_util:range_to_list(RefX)],
     ok;
+mark_children_dirty(#refX{obj = {page, _}} = RefX, Ar) ->
+    [ok = mark_children_dirty(X, Ar) || X <- get_cells(RefX)],
+    ok;
 mark_children_dirty(#refX{site = Site, obj = {cell, _}} = RefX, Ar) ->
     Tbl = trans(Site, relation),
     Children = get_local_children_idxs(RefX),
