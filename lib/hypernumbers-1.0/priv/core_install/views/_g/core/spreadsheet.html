@@ -6,7 +6,7 @@
     <title>Hypernumbers</title>
     <link rel="stylesheet" href="/hypernumbers/hn.style.css" />	
     <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />	
-    <link rel="stylesheet" href="/hypernumbers/finder.css" />	
+    <link rel="stylesheet" href="/hypernumbers/finder.css" />
   </head>
   
   <body id="hn" data-view="_g/core/spreadsheet">
@@ -132,13 +132,47 @@
     </div>
     
     <div id="toolbar">
+
+      <div class="expand fonts" id="fontsizewrap">
+        <span id="fontsize">$txt:{Size}$</span>
+        <div id="fontsizelist">
+          <h1><a data-command="heading" data-param="<h1>"
+                 data-style="font-size" data-value="220%">header 1</a></h1>
+          <h2><a data-command="heading" data-param="<h2>"
+                 data-style="font-size" data-value="180%">header 2</a></h2>
+          <h3><a data-command="heading" data-param="<h3>"
+                 data-style="font-size" data-value="160%">header 3</a></h3>
+          <h4><a data-command="heading" data-param="<h4>"
+                 data-style="font-size" data-value="140%">header 4</a></h4>
+          <h5><a data-command="heading" data-param="<h5>"
+                 data-style="font-size" data-value="100%">header 5</a></h5>
+          <h6><a data-command="heading" data-param="<h6>"
+                 data-style="font-size" data-value="90%">header 6</a></h6>
+        </div>
+      </div>
       
       <div class="expand fonts">
         <span id="font">$txt:{Font}$</span>
         <div id="ffamily">
-          <a id="fstyle_sans-serif">$txt:{Normal}$</a>
-          <a id="fstyle_serif">$txt:{Serif}$</a>
-          <a id="fstyle_monospace">$txt:{Monospace}$</a>
+          <a data-command="FontName" data-param="sans-serif" class="sans-serif"
+             data-style="font-family">$txt:{Normal}$</a>
+          <a data-command="FontName" data-param="serif" class="serif"
+             data-style="font-family">$txt:{Serif}$</a>
+          <a data-command="FontName" data-param="monospace" class="monospace"
+             data-style="font-family">$txt:{Monospace}$</a>
+          <a data-command="FontName" 
+             data-param="Helvetica, Arial, serif" class="arial"
+             data-style="font-family">$txt:{Arial}$</a>
+          <a data-command="FontName" class="georgia" 
+             data-style="font-family">$txt:{Georgia}$</a>
+          <a data-command="FontName" 
+             data-param="garamond, serif" class="garamond"
+             data-style="font-family">$txt:{Garamond}$</a>
+          <a data-command="FontName" data-param="trebuchet ms, sans-serif" 
+             class="trebuchet" data-style="font-family">
+            $txt:{Trebuchet MS}$</a>
+          <a data-command="FontName" data-param="tahoma, sans-serif" 
+             class="tahoma" data-style="font-family">$txt:{Tahoma}$</a>
         </div>
       </div>
       
@@ -168,7 +202,6 @@
           <a id="fmt_11">03/02/2009 <span class="desc">($txt:{date}$)</span></a>
           <a id="fmt_12">14:49:00 <span class="desc">($txt:{time}$)</span></a>
           <a id="fmt_13">03/02/2009 14:49:00 <span class="desc">($txt:{datetime}$)</span></a>
-          <a id="fmt_14">Markdown <span class="desc">($txt:{rich text}$)</span></a>
         </div>
       </div>
       
@@ -183,14 +216,21 @@
         </div>
       </div>
       <a class="separator"></a>
-      <!-- <a title="Bold" id="bold" class="toolbar-item"></a> -->
-      <!-- <a title="Italic" id="italic" class="toolbar-item"></a> -->
-      <!-- <a title="Strikethough" id="strike" class="toolbar-item"></a> -->
-      <a title="Text Formatting" class="toolbar-item" id="rtebtn"></a>
-      <a class="separator"></a>
-      
-      <a title="Word Wrap" id="wordwrap" class="toolbar-item"></a>
 
+      <a title="Bold" id="bold" class="toolbar-item"
+         data-command="bold"
+         data-style="font-weight" data-value="bold" data-toggle="normal"></a>
+
+      <a title="Italic" id="italic" class="toolbar-item" 
+         data-command="italic"
+         data-style="font-style" data-value="italic" data-toggle="normal"></a>
+      <a title="Strikethough" id="strike" class="toolbar-item"
+         data-command="strikethrough"
+         data-style="text-decoration" data-value="line-through" 
+         data-toggle="none"></a>
+      <!-- <a title="Text Formatting" class="toolbar-item" id="rtebtn"></a> -->
+      <!-- <a class="separator"></a> -->
+      
       <!-- <a class="separator"></a>       -->
       <div class="expand" id="borders">
         <span><a title="Set Borders" id="border-head" class="icon"></a></span>
@@ -226,7 +266,9 @@
       <span id="name"></span>
       <input type="button" id="functionsbtn" 
              value="f(x)" title="functions help" />
-      <textarea id="formula"></textarea>
+      <div id="formulawrapper">
+        <div id="formula" contentEditable="true"></div>
+      </div>
     </div>
 
     <div id="spreadsheet">
@@ -245,7 +287,7 @@
         <div id="innergrid"><div id="test">
             <div id="scroller">
               <div id="dragged"></div>
-              <textarea id="input"></textarea>
+              <div id="input"><div id="editor"></div></div>
               <div id="selection"> <div id="dragger"></div> </div>
               <div id="current"></div>
               <div id="copied"></div>
@@ -404,9 +446,6 @@
       
     </div>
     
-    <span id="hnpaste" style="display:none;width:250px; position:absolute;top:-7px;right:15px;"></span>
-    <span id="pathpaste" style="top:-7px;right:15px;display:none;"></span>
-
     <span id="hidden_input"></span>
     <textarea id="paste"></textarea>
 
@@ -508,7 +547,7 @@
 
     <div id="ctrlpanel">
 
-      <input type="button" value="close" class="button" id="ctrlclose" />
+      <input type="button" value="x" class="button" id="ctrlclose" />
 
       <ul id="ctrltabs">
         <li><a data-tab="welcome">Getting Started</a></li>
@@ -655,7 +694,6 @@
   <script src="/hypernumbers/hn.js"></script>
   <script src="/hypernumbers/hn.util.js"></script>
   <script src="/hypernumbers/hn.hashurl.js"></script>
-  <script src="/hypernumbers/jquery.filemenu.js"></script>
   <script src="/hypernumbers/hn.data.js"></script>
   <script src="/hypernumbers/hn.ui.js"></script>
   <script src="/hypernumbers/hn.sheet.js"></script>
@@ -667,8 +705,6 @@
   <script src="/hypernumbers/hn.callbacks.js"></script>q
   <script src="/hypernumbers/hn.selection.js"></script>
   <script src="/hypernumbers/hn.logger.js"></script>
-  <script src="/wmd/showdown.js"></script>
-  <script src="/wmd/wmd.js"></script>
 
   <script src="/guibuilder/hn.render.js"></script>
   <script src="/hypernumbers/hn.builder.js"></script>
