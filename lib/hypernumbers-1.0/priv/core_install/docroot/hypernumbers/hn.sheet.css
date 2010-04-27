@@ -696,6 +696,7 @@ a {
 
 
 #toolbar {
+    background: #EEE;
     background: -moz-linear-gradient(center top , #F9F9F9, #E3E3E3) repeat scroll 0 0 transparent;
     background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), to(#E3E3E3));
     font : 11px sans-serif;
@@ -1858,6 +1859,7 @@ input[type=checkbox], input[type=radio] {
 }
 
 .button { 
+    background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;    
     -moz-border-radius:3px 3px 3px 3px;
     background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
@@ -1974,7 +1976,7 @@ input[type=checkbox], input[type=radio] {
 } 
 
 #bgcolor, #forecolor { 
-    width        : 122px;
+    width        : 120px;
     padding      : 3px;
     margin-right : 10px;
     border       : 1px solid #999;
