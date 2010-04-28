@@ -13,7 +13,7 @@
          conv_utf8/1,
          conv_file/2]).
 
-% -export([debug/0]).
+-export([debug/0]).
 
 -import(lists, [flatten/1, reverse/1]).
 
@@ -27,9 +27,9 @@
 -define(AMP, $&, $a, $m, $p, $;).
 -define(COPY, $&, $c, $o, $p, $y, $;).
 
-% debug() ->
-%     Str = "<table id=\"blah\"><tr><td>Text</td><td><img src=\"http://imgur.com/VmdEL.png\"></td></tr></table>",
-%     conv(Str).
+debug() ->
+    Str = "<iframe align=\"center\" src=\"http://www.flickr.com/slideShow/index.gne?group_id=&user_id=69845378@N00&set_id=&text=\" frameBorder=\"0\" width=\"500\" height=\"500\" scrolling=\"no\"></iframe><br/><small>Created with <a href=\"http://www.admarket.se\" title=\"Admarket.se\">Admarket's</a> <a href=\"http://flickrslidr.com\" title=\"flickrSLiDR\">flickrSLiDR</a>.</small>",
+    conv(Str).
 
 %%% the lexer first lexes the input
 %%% make_lines does 2 passes:
@@ -49,7 +49,8 @@
 %%%   - code blocks
 %%%   - horizontal rules
 %%% the parser then does its magic interpolating the references as appropriate
-conv(String) -> Lex = lex(String),
+conv(String) -> % io:format("about to lex...~n"),
+                Lex = lex(String),
                 % io:format("Lex is ~p~n", [Lex]),
                 UntypedLines = make_lines(Lex),
                 % io:format("UntypedLines are ~p~n", [UntypedLines]),
@@ -906,7 +907,8 @@ snip(List) -> List2 = reverse(List),
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-lex(String) -> merge_ws(l1(String, [], [])).
+lex(String) -> L1 = l1(String, [], []),
+               merge_ws(L1).
 
 merge_ws(List) -> m_ws1(List, []).
 
@@ -974,7 +976,7 @@ openingdiv(String) ->
     case get_url(String) of
         {{url, URL}, R1} -> {{url, URL}, R1};
         not_url          ->
-            case get_email_addie(String) of
+             case get_email_addie(String) of
                 {{email, EM}, R2} -> {{email, EM}, R2};
                 not_email         -> openingdiv1(String, [])
             end
@@ -1029,14 +1031,18 @@ get_email_addie(String) ->
         nomatch                -> not_email;
         {match, [{N, _} | _T]} ->
             {Possible, [$> | T]} = lists:split(N, String),
-            EMail_regex = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+"
-                ++ "(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
-                ++ "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+"
-                ++ "(?:[a-zA-Z]{2}|com|org|net|gov|mil"
-                ++ "|biz|info|mobi|name|aero|jobs|museum)",
-            case re:run(Possible, EMail_regex) of
-                nomatch    -> not_email;
-                {match, _} -> {{email, Possible}, T}
+            case string:tokens(Possible, "@") of
+                [Name, Site] ->
+                    Name_regex = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+"
+                        ++ "(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*",
+                    Site_regex = "(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+"
+                        ++ "(?:[a-zA-Z]{2}|com|org|net|gov|mil"
+                        ++ "|biz|info|mobi|name|aero|jobs|museum)",
+                    case {re:run(Name, Name_regex), re:run(Site, Site_regex)} of
+                        {{match, _}, {match, _}} -> {{email, Possible}, T};
+                        _                        -> not_email
+                    end;
+                _Other -> not_email
             end
     end.
 
