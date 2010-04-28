@@ -82,7 +82,7 @@ open_hypertag(Site, Path, HTEnc) ->
 -spec temp_stamp() -> string().
 temp_stamp() -> stamp([$_|create_uid()], "anonymous", "never").
 
--spec inspect_stamp(string()) -> {ok, uid()} | {error, term()}. 
+-spec inspect_stamp(string()) -> {ok,uid(),string()} | {error,term()}. 
 inspect_stamp(undefined) ->
     {error, no_stamp};
 inspect_stamp(Stamp) ->
@@ -91,7 +91,7 @@ inspect_stamp(Stamp) ->
             case {is_expired(Expiry), 
                   gen_hash([Expiry, Uid, EscEmail]), 
                   Hash} of
-                {false,X,X} -> {ok, Uid};
+                {false,X,X} -> {ok, Uid, unescape_email(EscEmail)};
                 {true,_,_}  -> {error, bad_stamp}
             end;
         _Else ->
@@ -382,6 +382,11 @@ stamp(Uid, Email, Age) ->
 escape_email(Email) ->
     [case S of $@ -> $!; S  -> S end 
      || S <- Email].
+
+-spec unescape_email(string()) -> string(). 
+unescape_email(EscEmail) ->
+    [case S of $! -> $@; S  -> S end 
+     || S <- EscEmail].
 
 -spec gen_expiry(integer() | string()) -> string().
 gen_expiry(X) when X == "session"; X == "never" -> X;

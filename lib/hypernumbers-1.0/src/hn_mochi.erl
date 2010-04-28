@@ -408,8 +408,8 @@ iget(Ref, page, #qry{templates = []}, Env) ->
     File = [filename:basename(X) || X <- Files], 
     json(Env, {array, File});
 
-iget(Ref, page, _Qry, Env=#env{accept = json, uid = Uid}) ->
-    json(Env, page_attributes(Ref, Uid));
+iget(Ref, page, _Qry, Env=#env{accept = json}) ->
+    json(Env, page_attributes(Ref, Env));
 
 iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
@@ -562,11 +562,11 @@ ipost(#refX{obj = {range, _}} = Ref, _Qry,
     ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
     json(Env, "success");
 
-ipost(_Ref, _Qry,
-      Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
-               uid = "anonymous"}) ->
-    S = {struct, [{"error", "cant set language for anonymous users"}]},
-    json(Env, S);
+%% ipost(_Ref, _Qry,
+%%       Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
+%%                uid = "anonymous"}) ->
+%%     S = {struct, [{"error", "cant set language for anonymous users"}]},
+%%     json(Env, S);
 
 ipost(#refX{site = _Site, path=["_user"]}, _Qry, 
       _Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
@@ -956,20 +956,19 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
                                 {"timeout", "true"}]})
     end.
 
-page_attributes(#refX{site = S, path = P} = Ref, Uid) ->
-    {ok,Name} = passport:uid_to_email(Uid),
-    %% now build the struct
+-spec page_attributes(#refX{}, #env{}) -> {struct, list()}.
+page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
     Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
     NTree  = add_styles(Styles, Tree),
     Dict   = to_dict(hn_db_api:read_whole_page(Ref), NTree),
     Time   = {"time", remoting_reg:timestamp()},
-    Usr    = {"user", Name},
+    Usr    = {"user", Env#env.email},
     Host   = {"host", S},
     Perms  = {"permissions", auth_srv:get_as_json(S, P)},
     Grps   = {"groups", {array, []}},
-    Lang   = {"lang", get_lang(Uid)},
+    Lang   = {"lang", get_lang(Env#env.uid)},
     {struct, [Time, Usr, Host, Lang, Grps, Perms
               | dict_to_struct(Dict)]}.
 
@@ -1134,16 +1133,15 @@ process_environment(Mochi) ->
 process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
     try passport:inspect_stamp(Auth) of
-        {ok, Uid} ->
-            E#env{uid = Uid};
+        {ok, Uid, Email} ->
+            E#env{uid = Uid, email = Email};
         {error, no_stamp} -> 
             Return = cur_url(Site, E),
             case try_sync(["seek"], Site, E, Return) of
                 on_sync -> 
                     Stamp = passport:temp_stamp(),
                     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
-                    E#env{uid = "anonymous", 
-                          headers = [Cookie | E#env.headers]};
+                    E#env{headers = [Cookie | E#env.headers]};
                 {redir, E2} -> 
                     respond(302, E2), throw(ok)
             end;
@@ -1155,8 +1153,7 @@ process_user(Site, E=#env{mochi = Mochi}) ->
 
 cleanup(Site, E) ->
     Cookie = hn_net_util:kill_cookie("auth"),
-    E2 = E#env{uid = "anonymous",
-               headers = [Cookie | E#env.headers]},
+    E2 = E#env{headers = [Cookie | E#env.headers]},
     Return = cur_url(Site, E2),
     case try_sync(["reset"], Site, E2, Return) of
         on_sync -> E2;
