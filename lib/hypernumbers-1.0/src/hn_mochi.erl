@@ -1137,15 +1137,19 @@ process_user(Site, E=#env{mochi = Mochi}) ->
         {ok, Uid} ->
             E#env{uid = Uid};
         {error, no_stamp} -> 
-            E2 = E#env{uid = "anonymous"},
-            Return = cur_url(Site, E2),
-            case try_sync(["seek"], Site, E2, Return) of
-                on_sync -> E2;
-                {redir, E3} -> respond(302, E3), throw(ok)
+            Return = cur_url(Site, E),
+            case try_sync(["seek"], Site, E, Return) of
+                on_sync -> 
+                    Stamp = passport:temp_stamp(),
+                    Cookie = hn_net_util:cookie("auth", Stamp, "never"),
+                    E#env{uid = "anonymous", 
+                          headers = [Cookie | E#env.headers]};
+                {redir, E2} -> 
+                    respond(302, E2), throw(ok)
             end;
-        {error, _Reason} -> cleanup(Site, E)
+        {error, _Reason} -> 
+            cleanup(Site, E)
     catch error:_ -> 
-            %% log it.
             cleanup(Site, E)
     end.
 
