@@ -1,4 +1,3 @@
-
 %%%-------------------------------------------------------------------
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 %%% @copyright (C) 2009, hypernumbers.com
@@ -46,7 +45,7 @@ get_markdown() ->
 get_general() ->
     Src = "fun(X) -> "++
         "    if"++
-        "      "++?is_str++"     -> {auto, markdown:conv_utf8(X)};"++
+        "      "++?is_str++"     -> {auto, X};"++
         "      not(is_number(X)) -> {auto, X};"++
         "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++ 
         "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
