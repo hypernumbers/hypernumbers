@@ -146,7 +146,8 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
   when X == "_invite"; 
        X == "_mynewsite"; 
        X == "_validate";
-       X == "_hooks" ->
+       X == "_hooks";
+       X == "_logout" ->
     allowed;
 
 %% Authorize update requests when the update is targeted towards a
@@ -259,11 +260,10 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
 
 -spec authorize_post(#refX{}, #qry{}, #env{}) -> allowed | denied.
 
-%% Allow logins to occur.
-authorize_post(#refX{path = ["_user", "login"]}, _Qry, #env{accept = json}) ->
-    allowed;
-
-authorize_post(#refX{site=_, path=["_hooks"]}, _Qry, #env{accept=json}) ->
+%% Allow special posts to occur
+authorize_post(#refX{path = [X]}, _Qry, #env{accept = json}) 
+when X == "_login";
+     X == "_hooks" -> 
     allowed;
 
 authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry, 
@@ -303,7 +303,7 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
            #env{}) 
           -> any(). 
 
-iget(Ref=#refX{path=["_user", "login"]}, page, _Qry, Env) ->
+iget(Ref=#refX{path=["_login"]}, page, _Qry, Env) ->
     iget(Ref, page, #qry{view = "_g/core/login"}, Env);
 
 iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
@@ -464,7 +464,7 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
                           Uid),
     json(Env, "success");
 
-ipost(#refX{site=Site, path=["_user","login"]}, _Qry, E) ->
+ipost(#refX{site=Site, path=["_login"]}, _Qry, E) ->
     [{"email", Email0},{"pass", Pass},{"remember", Rem}] = E#env.body,
     Email = string:to_lower(Email0),
     case passport:authenticate(Email, Pass, Rem=="true") of
