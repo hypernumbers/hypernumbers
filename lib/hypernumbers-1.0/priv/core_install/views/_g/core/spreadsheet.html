@@ -208,9 +208,12 @@
       <div class="expand">
         <span><a id="left-head" class="icon"></a></span>
         <div id="aligntext">
-          <a title="Left align" id="align_left" class="toolbar-item"></a>
-          <a title="Center align" id="align_center" class="toolbar-item"></a>
-          <a title="Right align" id="align_right" class="toolbar-item"></a>
+          <a title="Left align" id="align_left" class="toolbar-item"
+             data-style="text-align" data-value="left"></a>
+          <a title="Center align" id="align_center" class="toolbar-item"
+             data-style="text-align" data-value="center"></a>
+          <a title="Right align" id="align_right" class="toolbar-item"
+             data-style="text-align" data-value="right"></a>
         </div>
       </div>
       <a class="separator"></a>
@@ -250,7 +253,8 @@
         <span><a id="bgcolor-head" class="icon"></a></span>
         <div id="bgcolors" class="hiddenmenu">
           <div class="innercolor">
-            <form data-style="background-color" data-command="forecolor">
+            <form data-style="background-color" data-command="forecolor"
+                  data-toggle="color">
               <input id="bgcolor" />
               <input type="submit" value="Use Color" class="button" />
             </form>
@@ -262,7 +266,8 @@
         <span><a id="fontcolor-head" class="icon"></a></span>
         <div id="forecolors" class="hiddenmenu">
           <div class="innercolor">
-            <form data-style="color" data-command="backcolor">
+            <form data-style="color" data-command="backcolor" 
+                  data-toggle="background-color">
               <input id="forecolor" />
               <input type="submit" value="Use Color" class="button" />
             </form>
