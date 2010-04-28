@@ -78,6 +78,9 @@ a {
     float : left;
     color : red;
 }
+.cancel { 
+    color : red;
+}
 .action {  
     float : right;
     color : green;
@@ -856,7 +859,7 @@ a {
 #wordwrap      { background-position: -138px -82px; }
 
 #markbtn { background-position: -138px -59px; }
-#rtebtn  { background-position: -161px -104px; }
+#insertimage  { background-position: -161px -104px; }
 #guibuilder  { background-position: -138px -104px; }
 
 #feedback {  
@@ -1752,8 +1755,7 @@ input[type=checkbox], input[type=radio] {
     background: -moz-linear-gradient(center top , #F9F9F9, 
                                      #E3E3E3) repeat scroll 0 0 transparent;
     border:1px solid #BBBBBB;
-    color:#000000;
-    margin:0 8px 0 0;
+    margin:0 0px 0 0;
     outline:medium none;
     padding:3px 6px;
     text-align:center;
@@ -1899,4 +1901,8 @@ input[type=checkbox], input[type=radio] {
     margin-right : 10px;
     border       : 1px solid #999;
     margin-top   : 115px;
+}
+
+#insertimageinput { 
+    width:200px;
 }

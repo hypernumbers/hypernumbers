@@ -229,7 +229,7 @@
          data-command="strikethrough"
          data-style="text-decoration" data-value="line-through" 
          data-toggle="none"></a>
-      <!-- <a title="Text Formatting" class="toolbar-item" id="rtebtn"></a> -->
+      <a title="Insert Image" class="toolbar-item" id="insertimage"></a>
       <!-- <a class="separator"></a> -->
       
       <!-- <a class="separator"></a>       -->
@@ -509,6 +509,18 @@
     </div>
 
     <!-- DIALOG BOXES -->
+    
+    <div id="insertimagedialog" class="mdialog">
+      <span>Enter the URL of the image:</span>
+      <form id="imageform"> 
+        <input type="text" id="insertimageinput">
+        <div style="margin-top:4px;">
+          <input type="submit" class="button action" value="Insert Image"  />
+          <input type="button" class="button cancel" value="Cancel" />
+        </div>
+      </form>
+    </div>
+
 
     <div id="error" class="mdialog">
       <h2>$txt:{Oops}$</h2>
