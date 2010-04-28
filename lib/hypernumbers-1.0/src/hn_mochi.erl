@@ -52,7 +52,8 @@ handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
 handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=Return}) 
   when Return /= undefined ->
     Env2 = process_sync(Cmd, Env, Return),
-    respond(302, Env2);
+    respond(302, Env2),
+    throw(ok);
 
 handle_(Ref, Env, Qry) ->
     case filename:extension((Env#env.mochi):get(path)) of
@@ -1132,7 +1133,7 @@ process_environment(Mochi) ->
 -spec process_user(string(), #env{}) -> #env{} | no_return(). 
 process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
-    case passport:inspect_stamp(Auth) of
+    try passport:inspect_stamp(Auth) of
         {ok, Uid} ->
             E#env{uid = Uid};
         {error, no_stamp} -> 
@@ -1142,16 +1143,22 @@ process_user(Site, E=#env{mochi = Mochi}) ->
                 on_sync -> E2;
                 {redir, E3} -> respond(302, E3), throw(ok)
             end;
-        {error, _Reason} ->
-            Cookie = hn_net_util:kill_cookie("auth"),
-            E2 = E#env{uid = "anonymous",
-                       headers = [Cookie | E#env.headers]},
-            Return = cur_url(Site, E2),
-            case try_sync(["tell", Cookie], Site, E2, Return) of
-                on_sync -> E2;
-                {redir, E3} -> respond(302, E3), throw(ok)
-            end
+        {error, _Reason} -> cleanup(Site, E)
+    catch error:_ -> 
+            %% log it.
+            cleanup(Site, E)
     end.
+
+cleanup(Site, E) ->
+    Cookie = hn_net_util:kill_cookie("auth"),
+    E2 = E#env{uid = "anonymous",
+               headers = [Cookie | E#env.headers]},
+    Return = cur_url(Site, E2),
+    case try_sync(["reset"], Site, E2, Return) of
+        on_sync -> E2;
+        {redir, E3} -> respond(302, E3), throw(ok)
+    end.   
+
 
 -spec cur_url(string(), #env{}) -> string(). 
 cur_url(Site, #env{mochi=Mochi}) ->
@@ -1164,7 +1171,7 @@ try_sync(Cmd0, Site, E, Return) ->
     case application:get_env(hypernumbers, sync_url) of
         {ok, SUrl} when SUrl /= Site ->
             Cmd = string:join(Cmd0, "/"),
-            Redir = SUrl++"_sync"++Cmd++"/?return="++Return,
+            Redir = SUrl++"/_sync/"++Cmd++"/?return="++Return,
             Redirect = {"Location", Redir},
             E2 = E#env{headers = [Redirect | E#env.headers]},
             {redir, E2};
@@ -1178,7 +1185,8 @@ try_sync(Cmd0, Site, E, Return) ->
 post_login(Site, Uid, Stamp, Age, Env, Return) ->
     Cookie = hn_net_util:cookie("auth", Stamp, Age),
     Env2 = Env#env{uid = Uid, headers = [Cookie | Env#env.headers]},
-    Env3 = case try_sync(["tell", Stamp], Site, Env2, Return) of
+    QStamp = mochiweb_util:quote_plus(Stamp),
+    Env3 = case try_sync(["tell", QStamp], Site, Env2, Return) of
                on_sync ->
                    Redirect = {"Location", Return},
                    Env2#env{headers = [Redirect | Env2#env.headers]};
@@ -1188,7 +1196,8 @@ post_login(Site, Uid, Stamp, Age, Env, Return) ->
     ok = respond(302, Env3),
     throw(ok).
 
-process_sync(["tell", Stamp], E, Return) ->
+process_sync(["tell", QStamp], E, Return) ->
+    Stamp = mochiweb_util:unquote(QStamp),
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Original = mochiweb_util:unquote(Return),
     Redirect = {"Location", Original},
@@ -1200,9 +1209,15 @@ process_sync(["seek"], E=#env{mochi=Mochi}, Return) ->
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Original = mochiweb_util:unquote(Return),
     #refX{site = OrigSite} = hn_util:parse_url(Original),
+    QStamp = mochiweb_util:quote_plus(Stamp),
     Redir = hn_util:strip80(OrigSite) ++ 
-        "/_sync/tell/"++Stamp++"/?return="++Return,
+        "/_sync/tell/"++QStamp++"/?return="++Return,
     Redirect = {"Location", Redir},
+    E#env{headers = [Cookie, Redirect | E#env.headers]};
+process_sync(["reset"], E, Return) ->
+    Cookie = hn_net_util:kill_cookie("auth"),
+    Original = mochiweb_util:unquote(Return),
+    Redirect = {"Location", Original},
     E#env{headers = [Cookie, Redirect | E#env.headers]}.
 
 

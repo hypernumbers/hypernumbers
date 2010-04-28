@@ -87,7 +87,7 @@ inspect_stamp(undefined) ->
     {error, no_stamp};
 inspect_stamp(Stamp) ->
     case string:tokens(Stamp, "|") of
-        [Expiry, Uid, EscEmail, Hash] ->
+        [EscEmail, Uid, Expiry, Hash] ->
             case {is_expired(Expiry), 
                   gen_hash([Expiry, Uid, EscEmail]), 
                   Hash} of
@@ -135,9 +135,10 @@ set_password(Uid, Password) ->
     Msg = {set_password, Uid, Password},
     gen_server:call({global, ?MODULE}, Msg).
 
+%% Anonymous users have a _ symbol before their uid.
 -spec uid_to_email(uid()) -> {ok, string()} |
                              {error, invalid_uid}.
-uid_to_email("anonymous") -> {ok, "anonymous"};
+uid_to_email([$_|_]) -> {ok, "anonymous"};
 uid_to_email(Uid) -> 
     gen_server:call({global, ?MODULE}, {uid_to_email, Uid}).
 
@@ -375,7 +376,7 @@ stamp(Uid, Email, Age) ->
     Expiry = gen_expiry(Age),
     EscEmail = escape_email(Email),
     Hash = gen_hash([Expiry, Uid, EscEmail]),
-    ?FORMAT("~s|~s|~s|~s", [Expiry, Uid, EscEmail, Hash]).
+    ?FORMAT("~s|~s|~s|~s", [EscEmail, Uid, Expiry, Hash]).
 
 -spec escape_email(string()) -> string(). 
 escape_email(Email) ->
