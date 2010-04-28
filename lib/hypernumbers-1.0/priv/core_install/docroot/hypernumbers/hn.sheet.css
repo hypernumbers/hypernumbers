@@ -1804,20 +1804,53 @@ input[type=checkbox], input[type=radio] {
 }
 
 #editspreadsheet {
-    position:absolute;
-    top:0px;
+    position:fixed;
+    font-size:10px;
+    bottom:0px;
     right:0px;
-    padding:5px;
+    padding:1px 1px 4px 1px;
     margin-right:20px;
-    background:red;
+    background:#EEE;
     display:none;
+    border:1px solid #AAA;
+    border-bottom-width:0px;
+    text-align:center;
 }
 
-#editspreadsheet a { 
-    font-size:11px;
-    color:white;
-    font-weight:bold;
+#editlogin {
+    float:right;
+    display:block;
+    color:blue;
+    margin:8px 3px;
 }
+
+#powered { 
+    text-align:center;
+    width:100px;
+    float:left;
+}
+#powered a {
+    text-decoration:none;
+    text-align:center;
+}
+
+.hyper { 
+    color:black;
+    font:13px georgia,garamond,serif;
+    text-decoration:none;
+}
+
+.numbers { 
+    color:darkorange;
+    font:12px sans-serif;
+    font-weight:bold;
+    text-decoration:underline;
+}
+/* #editspreadsheet a {  */
+/*     font-size:11px; */
+/*     color:white; */
+/*     font-weight:bold; */
+/* } */
 
 #settingsfeedback { 
     height:50px;
