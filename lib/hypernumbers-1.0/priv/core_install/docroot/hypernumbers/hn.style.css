@@ -52,10 +52,10 @@ hr {
 div#outer {
     margin: 0px auto;
 }
-div#outer div#inner {
+div.hn_inner {
     position: relative;
 }
-div#outer div#inner div {
+div.hn_inner > div {
     position: absolute;
     text-align: right;
     overflow: hidden;

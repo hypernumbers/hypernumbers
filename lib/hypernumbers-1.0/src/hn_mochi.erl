@@ -372,8 +372,9 @@ iget(#refX{site = Site, path = Path}, page,
     remoting_request(Env, Site, Paths, Time);
 
 iget(Ref, page, #qry{renderer=[]}, Env) ->
-    Html = hn_render:page(Ref),
-    text_html(Env, Html);
+    {Html, Width} = hn_render:content(Ref),
+    Page = hn_render:wrap_page(Html, Width),
+    text_html(Env, Page);
 
 iget(#refX{site = S}, page, #qry{status = []}, Env) -> 
     json(Env, status_srv:get_status(S));
@@ -600,7 +601,7 @@ ipost(#refX{site = S, path = P}, Qry,
     ok = hn_db_api:write_attributes(Refs, PosterUid, ViewUid),
     json(Env, "success");
 
-ipost(#refX{site = S, path = P, obj = O} = Ref, Qry, 
+ipost(Ref=#refX{site = S, path = P, obj = O} = Ref, Qry, 
       Env=#env{body = [{"set", {struct, Attr}}], 
                uid = PosterUid}) ->
     Type = element(1, O),
@@ -977,7 +978,7 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Tree   = dh_tree:create(Init),
     Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
     NTree  = add_styles(Styles, Tree),
-    Dict   = to_dict(hn_db_api:read_whole_page(Ref), NTree),
+    Dict   = to_dict(hn_db_api:read_ref(Ref), NTree),
     Time   = {"time", remoting_reg:timestamp()},
     Usr    = {"user", Env#env.email},
     Host   = {"host", S},

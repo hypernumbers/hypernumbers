@@ -500,6 +500,7 @@
          read_incoming_hn/2,
          local_idx_to_refX/2,
          read_whole_page/1,
+         read_range/1,
          find_incoming_hn/2,
          read_outgoing_hns/2,
          clear_cells/1,
@@ -1135,6 +1136,22 @@ read_whole_page(#refX{site = S, path = P, obj = {page, "/"}}) ->
     Return = make_refXs(S, List, [], read),
     drop_private(Return).
 
+read_range(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
+    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
+                          when MP == P,
+                               X1 =< MX, MX =< X2, 
+                               Y1 =< MY, MY =< Y2 -> LO; 
+                       (LO=#local_objs{path=MP, obj={column,{MX,MX}}})
+                          when MP == P,
+                               X1 =< MX, MX =< X2 -> LO;
+                       (LO=#local_objs{path=MP, obj={row,{MY,MY}}}) 
+                          when MP == P,
+                               Y1 =< MY, MY =< Y2 -> LO
+                    end),
+    List = mnesia:select(trans(S, local_objs), MS),
+    Return = make_refXs(S, List, [], read),
+    drop_private(Return).
+    
 -spec read_cells(#refX{}, write | read) -> [{#refX{}, {any(), any()}}].
 %% Key = atom()
 %% Value = term()

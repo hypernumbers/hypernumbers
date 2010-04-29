@@ -169,7 +169,9 @@ index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
                 false ->
                     #rangeref{tl = {{offset, X1}, {offset, Y1}},
                               br = {{offset, X2}, {offset, Y2}}}
-                        = area_util:to_relative(Area, get(x), get(y)),
+                        = area_util:to_relative(Area, 
+                                                muin:context_setting(col),
+                                                muin:context_setting(row)),
 
                     case {Y, X} of
                         {0, 0} -> 

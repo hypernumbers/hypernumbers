@@ -103,7 +103,7 @@
          write_style_IMPORT/2,
          read_attributes/2,
          read/1,
-         read_whole_page/1,
+         read_ref/1,
          read_inherited_list/2,
          read_inherited_value/3,
          read_styles/1,
@@ -842,17 +842,12 @@ read_attributes(RefX, AttrList) when is_record(RefX, refX), is_list(AttrList) ->
     Fun = fun hn_db_wu:read_attrs/3,
     mnesia:activity(transaction, Fun, [RefX, AttrList, read]).
 
-%% @spec read_whole_page(#refX{}) -> [{#refX{}, {Key, Value}}]
-%% Key = atom()
-%% Value = term()
-%% @doc read takes a page refererence and returns all the attributes under that
-%% refernce including column, row, page, permission and user attributes
-%% 
-%% The <code>refX{}</code> must only be a page refX
-read_whole_page(#refX{obj = {page, "/"}} = RefX) ->
-    Fun = fun() ->    
-              hn_db_wu:read_whole_page(RefX)
-          end,
+-spec read_ref(#refX{}) -> [{#refX{}, tuple()}].
+read_ref(#refX{obj = {page, "/"}} = RefX) ->
+    Fun = fun() -> hn_db_wu:read_whole_page(RefX) end,
+    mnesia:activity(transaction, Fun);
+read_ref(#refX{obj = {range, _}} = RefX) ->
+    Fun = fun() -> hn_db_wu:read_range(RefX) end,
     mnesia:activity(transaction, Fun).
 
 %% @spec read(#refX{}) -> [{#refX{}, {Key, Value}}]
@@ -1304,6 +1299,7 @@ write_attributes1(RefX, List, PAr, VAr)
   when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),
     [hn_db_wu:write_attr(RefX, X, PAr) || X <- List],
+    %% ok = hn_db_wu:mark_children_dirty(RefX, VAr).
     case lists:keymember("formula", 1, List) of
        true  -> ok = hn_db_wu:mark_children_dirty(RefX, VAr);
        false -> ok
