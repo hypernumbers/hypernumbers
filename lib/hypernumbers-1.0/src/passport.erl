@@ -138,6 +138,9 @@ set_password(Uid, Password) ->
 %% Anonymous users have a _ symbol before their uid.
 -spec uid_to_email(uid()) -> {ok, string()} |
                              {error, invalid_uid}.
+
+%% Temporarily put back in to make logs works.
+uid_to_email("anonymous") -> {ok, "anonymous"};
 uid_to_email([$_|_]) -> {ok, "anonymous"};
 uid_to_email(Uid) -> 
     gen_server:call({global, ?MODULE}, {uid_to_email, Uid}).
