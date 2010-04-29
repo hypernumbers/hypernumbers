@@ -141,6 +141,7 @@ authorize_get(_Ref,
               #env{accept = html}) ->
     allowed;
 
+%% Authorize access to 'special' commands.
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html}) 
   when X == "_invite"; 
        X == "_mynewsite"; 
@@ -148,7 +149,7 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
        X == "_hooks" ->
     allowed;
 
-%% Authorize update requests, when the update is targeted towards a
+%% Authorize update requests when the update is targeted towards a
 %% spreadsheet. Since we have no closed security object, we rely on
 %% 'run-time' checks.
 authorize_get(#refX{site = Site, path = Path}, 
@@ -169,64 +170,64 @@ authorize_get(#refX{site = Site, path = Path},
             denied
     end;
 
-%% TODO : Broken
-authorize_get(#refX{site = Site, path = Path}, 
-              #qry{updates = U, view = "_g/core/webpage", paths = More}, 
-              #env{accept = json, uid = Uid})
-  when U /= undefined ->
-    case auth_srv:check_particular_view(Site, Path, Uid, "_g/core/webpage") of
-        {view, "_g/core/webpage"} ->
-            MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Uid) 
-                         || P <- string:tokens(More, ",")],
-            case lists:all(fun({view, _}) -> true; 
-                              (_) -> false end, 
-                           MoreViews) of
-                true -> allowed;
-                _Else -> denied
-            end;       
-        _Else ->
-            denied
-    end;
+%% %% TODO : Broken
+%% authorize_get(#refX{site = Site, path = Path}, 
+%%               #qry{updates = U, view = "_g/core/webpage", paths = More}, 
+%%               #env{accept = json, uid = Uid})
+%%   when U /= undefined ->
+%%     case auth_srv:check_particular_view(Site, Path, Uid, "_g/core/webpage") of
+%%         {view, "_g/core/webpage"} ->
+%%             MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Uid) 
+%%                          || P <- string:tokens(More, ",")],
+%%             case lists:all(fun({view, _}) -> true; 
+%%                               (_) -> false end, 
+%%                            MoreViews) of
+%%                 true -> allowed;
+%%                 _Else -> denied
+%%             end;       
+%%         _Else ->
+%%             denied
+%%     end;
 
 
-%% Update requets targeted towards a non-spreadsheet view. Validation
-%% for additional sources is made against the security object created
-%% at a 'view-save-time'. 
-authorize_get(#refX{site = Site, path = Path}, 
-              #qry{updates = U, view = View, paths = More},
-              #env{accept = json, uid = Uid}) 
-  when U /= undefined, View /= undefined -> 
-    case auth_srv:check_particular_view(Site, Path, Uid, View) of
-        {view, View} ->
-            {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
-            Results = [hn_security:validate_get(Sec, Path, P) 
-                       || P <- string:tokens(More, ",")],
-            case lists:all(fun(X) -> X end, Results) of 
-                true -> allowed;
-                false -> denied
-            end;
-        _Else ->
-            denied
-    end;
+%% %% Update requets targeted towards a non-spreadsheet view. Validation
+%% %% for additional sources is made against the security object created
+%% %% at a 'view-save-time'. 
+%% authorize_get(#refX{site = Site, path = Path}, 
+%%               #qry{updates = U, view = View, paths = More},
+%%               #env{accept = json, uid = Uid}) 
+%%   when U /= undefined, View /= undefined -> 
+%%     case auth_srv:check_particular_view(Site, Path, Uid, View) of
+%%         {view, View} ->
+%%             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
+%%             Results = [hn_security:validate_get(Sec, Path, P) 
+%%                        || P <- string:tokens(More, ",")],
+%%             case lists:all(fun(X) -> X end, Results) of 
+%%                 true -> allowed;
+%%                 false -> denied
+%%             end;
+%%         _Else ->
+%%             denied
+%%     end;
 
-%% Access to secondary data sources, described by some initial view
-%% declared herein as 'via'.
-authorize_get(#refX{site = Site, path = Path}, 
-              #qry{view = View, via = Via}, 
-              #env{accept = json, uid = Uid})
-  when View /= undefined, View /= ?SHEETVIEW, Via /= undefined ->
-    Base = string:tokens(Via, "/"),
-    case auth_srv:check_particular_view(Site, Base, Uid, View) of
-        {view, View} ->
-            Target = hn_util:list_to_path(Path),
-            {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
-            case hn_security:validate_get(Sec, Base, Target) of
-                true -> allowed; 
-                false -> denied
-            end;
-        _Else ->
-            denied
-    end;
+%% %% Access to secondary data sources, described by some initial view
+%% %% declared herein as 'via'.
+%% authorize_get(#refX{site = Site, path = Path}, 
+%%               #qry{view = View, via = Via}, 
+%%               #env{accept = json, uid = Uid})
+%%   when View /= undefined, View /= ?SHEETVIEW, Via /= undefined ->
+%%     Base = string:tokens(Via, "/"),
+%%     case auth_srv:check_particular_view(Site, Base, Uid, View) of
+%%         {view, View} ->
+%%             Target = hn_util:list_to_path(Path),
+%%             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
+%%             case hn_security:validate_get(Sec, Base, Target) of
+%%                 true -> allowed; 
+%%                 false -> denied
+%%             end;
+%%         _Else ->
+%%             denied
+%%     end;
 
 %% Authorize access to the DEFAULT page. Notice that no query
 %% parameters have been set.
