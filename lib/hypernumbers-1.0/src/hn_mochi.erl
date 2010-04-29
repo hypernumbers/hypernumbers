@@ -49,9 +49,9 @@ handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
-handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=Return}) 
-  when Return /= undefined ->
-    Env2 = process_sync(Cmd, Env, Return),
+handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=QReturn}) 
+  when QReturn /= undefined ->
+    Env2 = process_sync(Cmd, Env, QReturn),
     respond(302, Env2),
     throw(ok);
 
@@ -306,6 +306,12 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
 iget(Ref=#refX{path=["_login"]}, page, _Qry, Env) ->
     iget(Ref, page, #qry{view = "_g/core/login"}, Env);
 
+iget(#refX{site=Site, path=["_logout"]}, page, 
+     #qry{return=QReturn}, 
+     Env) when QReturn /= undefined ->
+    Return = mochiweb_util:unquote(QReturn),
+    cleanup(Site, Return, Env);
+    
 iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
      #qry{hypertag=HT}, 
      Env) when X == "_invite"; X == "_mynewsite" ->
@@ -1157,27 +1163,28 @@ process_user(Site, E=#env{mochi = Mochi}) ->
                     throw(ok)
             end;
         {error, _Reason} -> 
-            cleanup(Site, E)
+            cleanup(Site, cur_url(Site, E), E)
     catch error:_ -> 
-            cleanup(Site, E)
+            cleanup(Site, cur_url(Site, E), E)
     end.
 
-cleanup(Site, E) ->
+%% Clears out auth cookie on currend and main server.
+-spec cleanup(string(), string(), #env{}) -> no_return().
+cleanup(Site, Return, E) ->
     Cookie = hn_net_util:kill_cookie("auth"),
     E2 = E#env{headers = [Cookie | E#env.headers]},
-    Return = cur_url(Site, E2),
-    case try_sync(["reset"], Site, Return) of
-        on_sync -> E2;
-        {redir, Redir} -> 
-            E3 = E2#env{headers = [{"location",Redir}|E2#env.headers]},
-            respond(302, E3), 
-            throw(ok)
-    end.   
+    Redir = case try_sync(["reset"], Site, Return) of
+                on_sync -> Return;
+                {redir, R} -> R
+            end,
+    E3 = E2#env{headers = [{"location",Redir}|E2#env.headers]},
+    respond(302, E3), 
+    throw(ok).
 
+%% Returns teh url representing the current location.
 -spec cur_url(string(), #env{}) -> string(). 
 cur_url(Site, #env{mochi=Mochi}) ->
-    hn_util:strip80(Site) ++ 
-        mochiweb_util:quote_plus(Mochi:get(raw_path)).
+    hn_util:strip80(Site) ++ Mochi:get(raw_path).
 
 -spec try_sync([string()], string(), string()) 
                -> {redir, string()} | on_sync.
@@ -1185,7 +1192,8 @@ try_sync(Cmd0, Site, Return) ->
     case application:get_env(hypernumbers, sync_url) of
         {ok, SUrl} when SUrl /= Site ->
             Cmd = string:join(Cmd0, "/"),
-            Redir = SUrl++"/_sync/"++Cmd++"/?return="++Return,
+            QReturn = mochiweb_util:quote_plus(Return),
+            Redir = SUrl++"/_sync/"++Cmd++"/?return="++QReturn,
             {redir, Redir};
         _Else ->
             on_sync
@@ -1203,28 +1211,28 @@ post_login(Site, Uid, Stamp, Age, Env, Return) ->
                {redir, R} -> R end,
     {Env2, Redir}.
 
-process_sync(["tell", QStamp], E, Return) ->
+process_sync(["tell", QStamp], E, QReturn) ->
     Stamp = mochiweb_util:unquote(QStamp),
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
-    Original = mochiweb_util:unquote(Return),
-    Redirect = {"Location", Original},
+    Return = mochiweb_util:unquote(QReturn),
+    Redirect = {"Location", Return},
     E#env{headers = [Cookie, Redirect | E#env.headers]};
-process_sync(["seek"], E=#env{mochi=Mochi}, Return) ->
+process_sync(["seek"], E=#env{mochi=Mochi}, QReturn) ->
     Stamp = case Mochi:get_cookie_value("auth") of
         undefined -> passport:temp_stamp();
         S         -> S end,
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
-    Original = mochiweb_util:unquote(Return),
-    #refX{site = OrigSite} = hn_util:parse_url(Original),
+    Return = mochiweb_util:unquote(QReturn),
+    #refX{site = OrigSite} = hn_util:parse_url(Return),
     QStamp = mochiweb_util:quote_plus(Stamp),
     Redir = hn_util:strip80(OrigSite) ++ 
-        "/_sync/tell/"++QStamp++"/?return="++Return,
+        "/_sync/tell/"++QStamp++"/?return="++QReturn,
     Redirect = {"Location", Redir},
     E#env{headers = [Cookie, Redirect | E#env.headers]};
-process_sync(["reset"], E, Return) ->
+process_sync(["reset"], E, QReturn) ->
     Cookie = hn_net_util:kill_cookie("auth"),
-    Original = mochiweb_util:unquote(Return),
-    Redirect = {"Location", Original},
+    Return = mochiweb_util:unquote(QReturn),
+    Redirect = {"Location", Return},
     E#env{headers = [Cookie, Redirect | E#env.headers]}.
 
 
