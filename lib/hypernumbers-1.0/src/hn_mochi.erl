@@ -52,7 +52,7 @@ handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
 handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=QReturn}) 
   when QReturn /= undefined ->
     Env2 = process_sync(Cmd, Env, QReturn),
-    respond(302, Env2),
+    respond(303, Env2),
     throw(ok);
 
 handle_(Ref, Env, Qry) ->
@@ -321,7 +321,7 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
                 ++ hn_util:list_to_path(Rest),
             {Env2, Redir} = post_login(Site, Uid, Stamp, Age, Env, Return),
             Env3 = Env2#env{headers=[{"location",Redir}|Env2#env.headers]},
-            respond(302, Env3),
+            respond(303, Env3),
             throw(ok);
         {error, E} ->
             %% fu@#ity-bye!
@@ -341,7 +341,7 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
                     {Env2, Redir} = 
                         post_login(Site, Uid, Stamp, Age, Env, Return),
                     Headers = [{"location",Redir}|Env2#env.headers],
-                    respond(302, Env2#env{headers = Headers}),
+                    respond(303, Env2#env{headers = Headers}),
                     throw(ok);
                 _Else -> 
                     throw(bad_validation)
@@ -1159,7 +1159,7 @@ process_user(Site, E=#env{mochi = Mochi}) ->
                     E#env{headers = [Cookie | E#env.headers]};
                 {redir, Redir} -> 
                     E2 = E#env{headers = [{"location",Redir}|E#env.headers]},
-                    respond(302, E2), 
+                    respond(303, E2), 
                     throw(ok)
             end;
         {error, _Reason} -> 
@@ -1178,7 +1178,7 @@ cleanup(Site, Return, E) ->
                 {redir, R} -> R
             end,
     E3 = E2#env{headers = [{"location",Redir}|E2#env.headers]},
-    respond(302, E3), 
+    respond(303, E3), 
     throw(ok).
 
 %% Returns teh url representing the current location.
