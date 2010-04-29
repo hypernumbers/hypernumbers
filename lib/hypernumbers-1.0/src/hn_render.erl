@@ -35,14 +35,15 @@ content(Ref) ->
                       (hn_db_api:read_styles(Ref), 
                        []
                       ))),
-    layout(Cells, ColWs, RowHs, Palette).
+    layout(Ref, Cells, ColWs, RowHs, Palette).
 
--spec layout(cells(), cols(), rows(), array()) -> {[textdata()], integer()}.
-layout([], _CWs, _RHs, _Palette) -> [];
-layout(Cells, CWs, RHs, Palette) ->
-    {{Col,Row}, _} = hd(Cells),
+-spec layout(#refX{}, cells(), cols(), rows(), array()) 
+            -> {[textdata()], integer()}.
+layout(Ref, Cells, CWs, RHs, Palette) ->
     PX = 0,
     PY = 0,
+    Col = startcol(Ref),
+    Row = startrow(Ref),
     {H,RHs2} = row_height(Row, RHs),
     Rec = #rec{colwidths=CWs, palette=Palette, startcol=Col},
     layout(Cells, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
@@ -179,6 +180,14 @@ coalesce([{NewC, _}|_]=Lst, C, PropAcc, Acc) ->
 -spec read_css(undefined | integer(), array()) -> string(). 
 read_css(undefined, _Palette) -> "";
 read_css(Idx, Palette) -> array:get(Idx, Palette).
+
+-spec startcol(#refX{}) -> integer(). 
+startcol(#refX{obj={range,{X,_,_,_}}}) -> X;
+startcol(_)                            -> 1.
+
+-spec startrow(#refX{}) -> integer(). 
+startrow(#refX{obj={range,{_,Y,_,_}}}) -> Y;
+startrow(_)                            -> 1.
     
 pget(K,L) -> proplists:get_value(K,L,undefined).
 
