@@ -3,7 +3,7 @@
   
   <head>
     <meta charset="utf-8" />
-    <title>Hypernumbers</title>
+    <title>Hypernumbers - the easiest way to get your business online</title>
     <link rel="stylesheet" href="/hypernumbers/hn.style.css" />	
     <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />	
     <link rel="stylesheet" href="/hypernumbers/finder.css" />
@@ -27,7 +27,7 @@
 
       <ul id="navigation">
         <!-- Shown to non logged in users -->
-        <li id="anonymous"><a href="/_user/login/">$txt:{Login}$</a></li>  
+        <li id="anonymous"><a href="/_login/">$txt:{Login}$</a></li>  
         <!-- Shown to logged in users -->
         <li id="loggedin">
 
@@ -275,6 +275,19 @@
         </div>
       </div>
 
+      <!-- combo colours -->
+
+      <a class="separator" id="bordersep"></a>          
+      <div title="Set Background Colour" class="expand" id="combo_colourbg">
+        <span><a id="bgcolor-head" class="icon"></a></span>
+      <div id="combocolorsbg"></div>
+      </div>
+      <div title="Set Text Colour" class="expand" id="combo_colourtxt">
+        <span><a id="fontcolor-head" class="icon"></a></span>
+      <div id="combocolorstxt"></div>
+      </div>
+      <!-- end of combo colours -->
+      
     </div>
     
     <div id="formulabar">
@@ -513,7 +526,7 @@
     <div id="insertimagedialog" class="mdialog">
       <span>Enter the URL of the image:</span>
       <form id="imageform"> 
-        <input type="text" id="insertimageinput">
+        <input type="text" id="insertimageinput" value="http://">
         <div style="margin-top:4px;">
           <input type="submit" class="button action" value="Insert Image"  />
           <input type="button" class="button cancel" value="Cancel" />

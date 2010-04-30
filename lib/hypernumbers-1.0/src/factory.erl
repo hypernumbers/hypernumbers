@@ -195,24 +195,28 @@ capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].
 first_site_email(Site, Uid, Email, Name) ->
     Path = ["_validate", Name],
     Data = [{emailed, true}],
-    HT = passport:create_hypertag(Site, Path, Uid, Email, Data, never),
+    HT = passport:create_hypertag(Site, Path, Uid, Email, Data, "never"),
     lists:flatten(
-      ["Hi ", Name, "\n\n",
-       "We hope you've had a chance to "
-       "test-drive your new site:\n\n ", 
+      ["Hi ", Name, ",\n\n",
+       "We hope you're having a fun time "
+       "building your new site:\n\n ", 
        hn_util:strip80(Site), "\n\n"
        "We just need one more thing. Please click the following "
-       "link to validate your site, this only takes a moment and allows "
+       "link to validate your site, it only takes a moment and allows "
        "you to set your password.\n\n",
-       "Just click or paste the following into your browser:\n\n",
+       "Click or paste the following into your browser:\n\n",
        HT,"\n\n"
+       "Cheers,\n\n"
        "The Hypernumbers team."]).
 
 additional_site_email(Site, Name) ->
     lists:flatten(
       ["Hi ", Name, ",\n\n", 
-       "We've built another site for you. It's located at:\n\n ",
+       "Cool, we're glad you want another site! "
+       "We've built it for you, and it's located here:\n\n ",
        hn_util:strip80(Site), "\n\n",
+       "Just use your existing account to login.\n\n"
+       "Cheers,\n\n"
        "The Hypernumbers team."]).
 
 -spec valid_email(string()) -> boolean(). 

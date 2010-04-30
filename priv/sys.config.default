@@ -2,7 +2,7 @@
 [{hypernumbers, 
   [
    {nodename, hndev},
-   {environment, development},
+   {environment, development}, % development | production
    
    %% Hosts to bind Mochiweb to. 9000 should be used for dev,
    %% 9090-9092 reserved for production used, and should be turned off
@@ -23,8 +23,11 @@
      {factory, false}
     ]}, 
 
-   %% Delete to turn-off centralized tracking.
-   {pingto, "http://hypernumbers.com"},
+   %% Url to synchronize cookies against.
+   {sync_url, "http://hypernumbers.com"},
+
+   %% Used to connect to the global grid.
+   {super_peers, ['hnlive@hypernumbers.com']},
 
    %% Mail Setup
    {mailserver,   "smtp.gmail.com"},

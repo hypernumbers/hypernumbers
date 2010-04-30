@@ -17,7 +17,7 @@ start(_Type, _Args) ->
     {ok, Pid} = hypernumbers_sup:start_link(),
     ok = case application:get_env(hypernumbers, environment) of
              {ok,development} -> dev_tasks();
-             _                -> ok
+             {ok,production}  -> production_tasks()
          end,
     ok = mochilog:start(),
     ok = start_mochiweb(),
@@ -97,3 +97,15 @@ local_hypernumbers() ->
     hn_setup:site("http://hypernumbers.dev:9000", blank, [{creator, Uid}]),
     passport:validate_uid(Uid),
     passport:set_password(Uid, "secure").
+
+production_tasks() ->
+    connect_peers().
+
+connect_peers() ->
+    case application:get_env(hypernumbers, super_peers) of
+        {ok, [H|_Tail]} ->
+            net_adm:ping(H),
+            ok;
+        _Else ->
+            ok
+    end.

@@ -12,9 +12,11 @@
          button/1,
          radio/1,
          select/1,
-         form/1
+         form/1,
+         include/1
         ]).
 
+-include("spriki.hrl").
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
@@ -62,4 +64,27 @@ select1([H | T], Acc) ->
     H2 = ?string(H, ?default_str_rules),
     NewAcc = ["<option>" ++ H2 ++ "</option>" | Acc],
     select1(T, NewAcc).
-    
+
+
+include([CellRef]) when ?is_cellref(CellRef) ->
+    #cellref{col={offset, X}, row={offset, Y}, path=Path} = CellRef,
+    RelRan = #rangeref{type=finite,
+                       path=Path,
+                       tl = {{offset, X}, {offset, Y}},
+                       br = {{offset, X}, {offset, Y}}},
+    include([RelRan]);
+include([RelRan]) when ?is_rangeref(RelRan) ->
+    %% DIRTY HACK. This forces muin to setup dependencies, and checks
+    %% for circ errors.
+    _Ret = muin:fetch(RelRan),
+
+    AbsRan = area_util:to_absolute(RelRan, 
+                                   muin:context_setting(col),
+                                   muin:context_setting(row)),
+    #rangeref{path=RelPath, tl = {X1,Y1}, br = {X2,Y2}} = AbsRan,
+    Site = muin:context_setting(site),
+    Path = muin_util:walk_path(muin:context_setting(path), RelPath),
+    Obj = {range, {X1, Y1, X2, Y2}},
+    Ref = #refX{site = Site, path = Path, obj = Obj},
+    {Html, Width} = hn_render:content(Ref),
+    lists:flatten(hn_render:wrap_region(Html, Width)).

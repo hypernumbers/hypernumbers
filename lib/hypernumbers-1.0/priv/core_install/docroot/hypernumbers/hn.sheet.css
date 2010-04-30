@@ -804,30 +804,38 @@ a {
 }
 
 #toolbar a.color {
- float:   left;
- cursor:  pointer;
- border:  1px solid #AAAAAA;
- margin:  2px;
- display: block;
- height:  10px;
- width:   10px;
+ float:       left;
+ cursor:      pointer;
+ border:      1px solid #AAAAAA;
+ margin:      2px;
+ display:     block;
+ height:      10px;
+ width:       10px;
 }
 
 #toolbar a.color:hover {
   border: 1px solid #666;
 }
 
-#toolbar a.combocolor {
+#toolbar a.combocolor, a.primocombocolor {
  float:   left;
  cursor:  pointer;
  border:  1px solid #AAAAAA;
  margin:  1px;
  display: block;
- height:  16px;
- width:   16px;
- font:    16px sans-serif;
- font-weight: bold;
+ height:  14px;
+ font-weight: bold !IMPORTANT;
+}
+
+#toolbar a.combocolor {
+ width:      20px;                                          
+ font:       11px sans-serif monospaced;
  text-align: center;
+} 
+#toolbar a.primocombocolor {
+ width:      160px;
+ font:       11px monospaced;
+ text-align: left;
 }
 
 #toolbar a.combocolor:hover {

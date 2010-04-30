@@ -20,7 +20,6 @@
          ]).
 
 -define(SHEETVIEW, "_g/core/spreadsheet").
--define(TWO_YEARS, 63113852).
 
 -include("util.hrl").
 
@@ -50,13 +49,11 @@ handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
-handle_(#refX{path=["_ping"]}, Env, #qry{spoor=Spoor, return=Return}) 
-  when Return /= undefined, Spoor /= undefined ->
-    handle_ping(Env, Spoor, Return);
-
-handle_(#refX{path=["_pong"]}, Env, #qry{spoor=Spoor, return=Return}) 
-  when Return /= undefined, Spoor /= undefined ->
-    handle_pong(Env, Spoor, Return);
+handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=QReturn}) 
+  when QReturn /= undefined ->
+    Env2 = process_sync(Cmd, Env, QReturn),
+    respond(303, Env2),
+    throw(ok);
 
 handle_(Ref, Env, Qry) ->
     case filename:extension((Env#env.mochi):get(path)) of
@@ -77,7 +74,7 @@ check_resource_exists(Env, Ref, Qry) ->
             
 -spec authorize_resource(#env{}, #refX{}, #qry{}) -> no_return(). 
 authorize_resource(Env, Ref, Qry) -> 
-    Env2 = process_cookies(Ref#refX.site, Env),
+    Env2 = process_user(Ref#refX.site, Env),
     AuthRet = case Env2#env.method of
                   'GET'  -> authorize_get(Ref, Qry, Env2);
                   'POST' -> authorize_post(Ref, Qry, Env2)
@@ -133,37 +130,6 @@ handle_static(X, Root, Mochi)
     Mochi:serve_file(RelPath, Root),
     ok.
 
--spec handle_ping(#env{}, string(), string()) -> ok. 
-handle_ping(E=#env{mochi = Mochi}, Spoor, Return) ->
-    Original = mochiweb_util:unquote(Return),
-    R2 = case Mochi:get_cookie_value("spoor") of
-             undefined ->
-                 %% Use the given cookie, simply resume.
-                 Redirect = {"Location", Original},
-                 Cookie = hn_net_util:cookie("spoor", Spoor, ?TWO_YEARS),
-                 E#env{headers = [Redirect, Cookie | E#env.headers]};
-             OwnSpoor ->
-                 %% Have own cookie already! This must take
-                 %% precedence. So we tell the 'pinger' to use this
-                 %% with a PONG request.
-                 #refX{site = OrigSite} = hn_util:parse_url(Original),
-                 Redir = hn_util:strip80(OrigSite) ++ 
-                     "/_pong/?spoor="++OwnSpoor ++
-                     "&return="++Return,
-                 Redirect = {"Location", Redir},
-                 E#env{headers = [Redirect | E#env.headers]}
-         end,
-    respond(302, R2).
-
--spec handle_pong(#env{}, string(), string()) -> ok. 
-handle_pong(E, Spoor, Return) ->
-    Cookie   = hn_net_util:cookie("spoor", Spoor, ?TWO_YEARS),
-    Original = mochiweb_util:unquote(Return),
-    Redirect = {"Location", Original},
-    E2       = E#env{headers = [Redirect, Cookie | E#env.headers]},
-    respond(302, E2).
-
-
 -spec authorize_get(#refX{}, #qry{}, #env{}) 
                    -> {view, string()} | allowed | denied | not_found.
 
@@ -175,14 +141,16 @@ authorize_get(_Ref,
               #env{accept = html}) ->
     allowed;
 
+%% Authorize access to 'special' commands.
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html}) 
   when X == "_invite"; 
        X == "_mynewsite"; 
        X == "_validate";
-       X == "_hooks" ->
+       X == "_hooks";
+       X == "_logout" ->
     allowed;
 
-%% Authorize update requests, when the update is targeted towards a
+%% Authorize update requests when the update is targeted towards a
 %% spreadsheet. Since we have no closed security object, we rely on
 %% 'run-time' checks.
 authorize_get(#refX{site = Site, path = Path}, 
@@ -203,64 +171,64 @@ authorize_get(#refX{site = Site, path = Path},
             denied
     end;
 
-%% TODO : Broken
-authorize_get(#refX{site = Site, path = Path}, 
-              #qry{updates = U, view = "_g/core/webpage", paths = More}, 
-              #env{accept = json, uid = Uid})
-  when U /= undefined ->
-    case auth_srv:check_particular_view(Site, Path, Uid, "_g/core/webpage") of
-        {view, "_g/core/webpage"} ->
-            MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Uid) 
-                         || P <- string:tokens(More, ",")],
-            case lists:all(fun({view, _}) -> true; 
-                              (_) -> false end, 
-                           MoreViews) of
-                true -> allowed;
-                _Else -> denied
-            end;       
-        _Else ->
-            denied
-    end;
+%% %% TODO : Broken
+%% authorize_get(#refX{site = Site, path = Path}, 
+%%               #qry{updates = U, view = "_g/core/webpage", paths = More}, 
+%%               #env{accept = json, uid = Uid})
+%%   when U /= undefined ->
+%%     case auth_srv:check_particular_view(Site, Path, Uid, "_g/core/webpage") of
+%%         {view, "_g/core/webpage"} ->
+%%             MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Uid) 
+%%                          || P <- string:tokens(More, ",")],
+%%             case lists:all(fun({view, _}) -> true; 
+%%                               (_) -> false end, 
+%%                            MoreViews) of
+%%                 true -> allowed;
+%%                 _Else -> denied
+%%             end;       
+%%         _Else ->
+%%             denied
+%%     end;
 
 
-%% Update requets targeted towards a non-spreadsheet view. Validation
-%% for additional sources is made against the security object created
-%% at a 'view-save-time'. 
-authorize_get(#refX{site = Site, path = Path}, 
-              #qry{updates = U, view = View, paths = More},
-              #env{accept = json, uid = Uid}) 
-  when U /= undefined, View /= undefined -> 
-    case auth_srv:check_particular_view(Site, Path, Uid, View) of
-        {view, View} ->
-            {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
-            Results = [hn_security:validate_get(Sec, Path, P) 
-                       || P <- string:tokens(More, ",")],
-            case lists:all(fun(X) -> X end, Results) of 
-                true -> allowed;
-                false -> denied
-            end;
-        _Else ->
-            denied
-    end;
+%% %% Update requets targeted towards a non-spreadsheet view. Validation
+%% %% for additional sources is made against the security object created
+%% %% at a 'view-save-time'. 
+%% authorize_get(#refX{site = Site, path = Path}, 
+%%               #qry{updates = U, view = View, paths = More},
+%%               #env{accept = json, uid = Uid}) 
+%%   when U /= undefined, View /= undefined -> 
+%%     case auth_srv:check_particular_view(Site, Path, Uid, View) of
+%%         {view, View} ->
+%%             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
+%%             Results = [hn_security:validate_get(Sec, Path, P) 
+%%                        || P <- string:tokens(More, ",")],
+%%             case lists:all(fun(X) -> X end, Results) of 
+%%                 true -> allowed;
+%%                 false -> denied
+%%             end;
+%%         _Else ->
+%%             denied
+%%     end;
 
-%% Access to secondary data sources, described by some initial view
-%% declared herein as 'via'.
-authorize_get(#refX{site = Site, path = Path}, 
-              #qry{view = View, via = Via}, 
-              #env{accept = json, uid = Uid})
-  when View /= undefined, View /= ?SHEETVIEW, Via /= undefined ->
-    Base = string:tokens(Via, "/"),
-    case auth_srv:check_particular_view(Site, Base, Uid, View) of
-        {view, View} ->
-            Target = hn_util:list_to_path(Path),
-            {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
-            case hn_security:validate_get(Sec, Base, Target) of
-                true -> allowed; 
-                false -> denied
-            end;
-        _Else ->
-            denied
-    end;
+%% %% Access to secondary data sources, described by some initial view
+%% %% declared herein as 'via'.
+%% authorize_get(#refX{site = Site, path = Path}, 
+%%               #qry{view = View, via = Via}, 
+%%               #env{accept = json, uid = Uid})
+%%   when View /= undefined, View /= ?SHEETVIEW, Via /= undefined ->
+%%     Base = string:tokens(Via, "/"),
+%%     case auth_srv:check_particular_view(Site, Base, Uid, View) of
+%%         {view, View} ->
+%%             Target = hn_util:list_to_path(Path),
+%%             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
+%%             case hn_security:validate_get(Sec, Base, Target) of
+%%                 true -> allowed; 
+%%                 false -> denied
+%%             end;
+%%         _Else ->
+%%             denied
+%%     end;
 
 %% Authorize access to the DEFAULT page. Notice that no query
 %% parameters have been set.
@@ -292,11 +260,10 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
 
 -spec authorize_post(#refX{}, #qry{}, #env{}) -> allowed | denied.
 
-%% Allow logins to occur.
-authorize_post(#refX{path = ["_user", "login"]}, _Qry, #env{accept = json}) ->
-    allowed;
-
-authorize_post(#refX{site=_, path=["_hooks"]}, _Qry, #env{accept=json}) ->
+%% Allow special posts to occur
+authorize_post(#refX{path = [X]}, _Qry, #env{accept = json}) 
+when X == "_login";
+     X == "_hooks" -> 
     allowed;
 
 authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry, 
@@ -320,8 +287,9 @@ authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
         _ -> denied
     end;
 
-%% Allow a post to occur, if the user has access to a spreadsheet on the target.
-%% the actual operation may need further validation, so flag as 'allowed_pending'.
+%% Allow a post to occur, if the user has access to a spreadsheet on
+%% the target.  the actual operation may need further validation, so
+%% flag as 'allowed_pending'.
 authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
     case auth_srv:check_particular_view(
            Site, Path, Env#env.uid, ?SHEETVIEW) of
@@ -335,22 +303,28 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
            #env{}) 
           -> any(). 
 
-iget(Ref=#refX{path=["_user", "login"]}, page, _Qry, Env) ->
+iget(Ref=#refX{path=["_login"]}, page, _Qry, Env) ->
     iget(Ref, page, #qry{view = "_g/core/login"}, Env);
 
+iget(#refX{site=Site, path=["_logout"]}, page, 
+     #qry{return=QReturn}, 
+     Env) when QReturn /= undefined ->
+    Return = mochiweb_util:unquote(QReturn),
+    cleanup(Site, Return, Env);
+    
 iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
      #qry{hypertag=HT}, 
      Env) when X == "_invite"; X == "_mynewsite" ->
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Email, _Data, Stamp, Age} ->
-            Cookie = hn_net_util:cookie("auth", Stamp, Age),
-            Target = hn_util:strip80(Site) ++ hn_util:list_to_path(Rest),
-            Redirect = {"Location", Target},
-            Headers = [Cookie, Redirect | Env#env.headers],
-            respond(302, Env#env{uid = Uid, headers = Headers}),
+            Return = hn_util:strip80(Site) 
+                ++ hn_util:list_to_path(Rest),
+            {Env2, Redir} = post_login(Site, Uid, Stamp, Age, Env, Return),
+            Env3 = Env2#env{headers=[{"location",Redir}|Env2#env.headers]},
+            respond(303, Env3),
             throw(ok);
         {error, E} ->
-            %% handle graceufully, what about time outs?
+            %% fu@#ity-bye!
             throw(E)
     end;
 
@@ -362,12 +336,13 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
             case proplists:get_value(emailed, Data) of
                 true -> 
                     ok = passport:validate_uid(Uid),
-                    Cookie = hn_net_util:cookie("auth", Stamp, Age),
-                    Target = hn_util:strip80(Site) ++ hn_util:list_to_path(Rest),
-                    Redirect = {"Location", Target},
-                    Headers = [Cookie, Redirect | Env#env.headers],
-                    respond(302, Env#env{uid = Uid, headers = Headers}),
-                    throw(ok);                    
+                    Return = hn_util:strip80(Site) 
+                        ++ hn_util:list_to_path(Rest),
+                    {Env2, Redir} = 
+                        post_login(Site, Uid, Stamp, Age, Env, Return),
+                    Headers = [{"location",Redir}|Env2#env.headers],
+                    respond(303, Env2#env{headers = Headers}),
+                    throw(ok);
                 _Else -> 
                     throw(bad_validation)
             end
@@ -397,8 +372,9 @@ iget(#refX{site = Site, path = Path}, page,
     remoting_request(Env, Site, Paths, Time);
 
 iget(Ref, page, #qry{renderer=[]}, Env) ->
-    Html = hn_render:page(Ref),
-    text_html(Env, Html);
+    {Html, Width} = hn_render:content(Ref),
+    Page = hn_render:wrap_page(Html, Width),
+    text_html(Env, Page);
 
 iget(#refX{site = S}, page, #qry{status = []}, Env) -> 
     json(Env, status_srv:get_status(S));
@@ -447,8 +423,8 @@ iget(Ref, page, #qry{templates = []}, Env) ->
     File = [filename:basename(X) || X <- Files], 
     json(Env, {array, File});
 
-iget(Ref, page, _Qry, Env=#env{accept = json, uid = Uid}) ->
-    json(Env, page_attributes(Ref, Uid));
+iget(Ref, page, _Qry, Env=#env{accept = json}) ->
+    json(Env, page_attributes(Ref, Env));
 
 iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
     V = case hn_db_api:read_attributes(Ref,["value"]) of
@@ -495,19 +471,17 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
                           Uid),
     json(Env, "success");
 
-ipost(#refX{path=["_user","login"]}, _Qry, E) ->
+ipost(#refX{site=Site, path=["_login"]}, _Qry, E) ->
     [{"email", Email0},{"pass", Pass},{"remember", Rem}] = E#env.body,
     Email = string:to_lower(Email0),
-    {E2, Resp} = case passport:authenticate(Email, Pass, Rem=="true") of
-                     {error, authentication_failed} -> 
-                         {E, "error"};
-                     {ok, Uid, Stamp, Age} ->
-                         Cookie = hn_net_util:cookie("auth", Stamp, Age),
-                         {E#env{uid = Uid,
-                                headers = [Cookie | E#env.headers]},
-                          "success"}
-                 end,
-    json(E2, {struct, [{"response", Resp}]});
+    case passport:authenticate(Email, Pass, Rem=="true") of
+        {error, authentication_failed} -> 
+            json(E, {struct, [{"response", "error"}]});
+        {ok, Uid, Stamp, Age} ->
+            Return = hn_util:strip80(Site),
+            {E2, Redir} = post_login(Site, Uid, Stamp, Age, E, Return),
+            json(E2, {struct, [{"redirect", Redir}]})
+    end;
 
 %% the purpose of this message is to mark the mochilog so we don't 
 %% need to do nothing with anything...
@@ -604,11 +578,11 @@ ipost(#refX{obj = {range, _}} = Ref, _Qry,
     ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
     json(Env, "success");
 
-ipost(_Ref, _Qry,
-      Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
-               uid = anonymous}) ->
-    S = {struct, [{"error", "cant set language for anonymous users"}]},
-    json(Env, S);
+%% ipost(_Ref, _Qry,
+%%       Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
+%%                uid = "anonymous"}) ->
+%%     S = {struct, [{"error", "cant set language for anonymous users"}]},
+%%     json(Env, S);
 
 ipost(#refX{site = _Site, path=["_user"]}, _Qry, 
       _Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
@@ -627,7 +601,7 @@ ipost(#refX{site = S, path = P}, Qry,
     ok = hn_db_api:write_attributes(Refs, PosterUid, ViewUid),
     json(Env, "success");
 
-ipost(#refX{site = S, path = P, obj = O} = Ref, Qry, 
+ipost(Ref=#refX{site = S, path = P, obj = O} = Ref, Qry, 
       Env=#env{body = [{"set", {struct, Attr}}], 
                uid = PosterUid}) ->
     Type = element(1, O),
@@ -835,7 +809,7 @@ ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
     case factory:provision_site(Zone, Email, Type) of
         {ok, new, Site, Uid, Name} ->
             Opaque = [],
-            Expiry = never,
+            Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
@@ -998,20 +972,19 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
                                 {"timeout", "true"}]})
     end.
 
-page_attributes(#refX{site = S, path = P} = Ref, Uid) ->
-    {ok,Name} = passport:uid_to_email(Uid),
-    %% now build the struct
+-spec page_attributes(#refX{}, #env{}) -> {struct, list()}.
+page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
     Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
     NTree  = add_styles(Styles, Tree),
-    Dict   = to_dict(hn_db_api:read_whole_page(Ref), NTree),
+    Dict   = to_dict(hn_db_api:read_ref(Ref), NTree),
     Time   = {"time", remoting_reg:timestamp()},
-    Usr    = {"user", Name},
+    Usr    = {"user", Env#env.email},
     Host   = {"host", S},
     Perms  = {"permissions", auth_srv:get_as_json(S, P)},
     Grps   = {"groups", {array, []}},
-    Lang   = {"lang", get_lang(Uid)},
+    Lang   = {"lang", get_lang(Env#env.uid)},
     {struct, [Time, Usr, Host, Lang, Grps, Perms
               | dict_to_struct(Dict)]}.
 
@@ -1172,51 +1145,96 @@ process_environment(Mochi) ->
          raw_body = RawBody,
          body = Body}.
 
--spec process_cookies(string(), #env{}) -> #env{}. 
-process_cookies(Site, E) ->
-    E2 = get_user(E),
-    get_spoor(Site, E2).
-
--spec get_user(#env{}) -> #env{}. 
-get_user(E=#env{mochi = Mochi}) ->
+-spec process_user(string(), #env{}) -> #env{} | no_return(). 
+process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
-    case passport:inspect_stamp(Auth) of
-        {ok, Uid} -> E#env{uid = Uid};
-        {error, no_stamp} -> E#env{uid = anonymous};
-        {error, _Reason} ->
-            %% authtoken was invalid (probably did a clean_start() while
-            %% logged in, kill the cookie
-            Cookie = hn_net_util:cookie("auth", "killitwithfire", 0),
-            E#env{uid = anonymous, headers = [Cookie | E#env.headers]}
+    try passport:inspect_stamp(Auth) of
+        {ok, Uid, Email} ->
+            E#env{uid = Uid, email = Email};
+        {error, no_stamp} -> 
+            Return = cur_url(Site, E),
+            case try_sync(["seek"], Site, Return) of
+                on_sync -> 
+                    Stamp = passport:temp_stamp(),
+                    Cookie = hn_net_util:cookie("auth", Stamp, "never"),
+                    E#env{headers = [Cookie | E#env.headers]};
+                {redir, Redir} -> 
+                    E2 = E#env{headers = [{"location",Redir}|E#env.headers]},
+                    respond(303, E2), 
+                    throw(ok)
+            end;
+        {error, _Reason} -> 
+            cleanup(Site, cur_url(Site, E), E)
+    catch error:_ -> 
+            cleanup(Site, cur_url(Site, E), E)
     end.
 
--spec get_spoor(string(), #env{}) -> #env{}.
-get_spoor(Site, E=#env{mochi = Mochi}) ->
-    case Mochi:get_cookie_value("spoor") of
-        undefined ->
-            Spoor = mochihex:to_hex(crypto:rand_bytes(8)),
-            Cookie = hn_net_util:cookie("spoor", Spoor, ?TWO_YEARS),
-            E2 = E#env{spoor = Spoor, headers = [Cookie | E#env.headers]},
-            case application:get_env(hypernumbers, pingto) of
-                {ok, Site} ->
-                    %% No ping pong today
-                    E2;
-                {ok, PingTo} ->
-                    Current = 
-                        hn_util:strip80(Site) ++ 
-                        mochiweb_util:quote_plus(Mochi:get(raw_path)),
-                    Redir = PingTo++"/_ping/?spoor="++Spoor++
-                        "&return="++Current,
-                    Redirect = {"Location", Redir},
-                    E3 = E2#env{headers = [Redirect | E2#env.headers]},
-                    respond(302, E3),
-                    throw(ok);
-                _Else ->
-                    E2
-            end;
-        Spoor ->
-            E#env{spoor = Spoor}
+%% Clears out auth cookie on currend and main server.
+-spec cleanup(string(), string(), #env{}) -> no_return().
+cleanup(Site, Return, E) ->
+    Cookie = hn_net_util:kill_cookie("auth"),
+    E2 = E#env{headers = [Cookie | E#env.headers]},
+    Redir = case try_sync(["reset"], Site, Return) of
+                on_sync -> Return;
+                {redir, R} -> R
+            end,
+    E3 = E2#env{headers = [{"location",Redir}|E2#env.headers]},
+    respond(303, E3), 
+    throw(ok).
+
+%% Returns teh url representing the current location.
+-spec cur_url(string(), #env{}) -> string(). 
+cur_url(Site, #env{mochi=Mochi}) ->
+    hn_util:strip80(Site) ++ Mochi:get(raw_path).
+
+-spec try_sync([string()], string(), string()) 
+               -> {redir, string()} | on_sync.
+try_sync(Cmd0, Site, Return) ->
+    case application:get_env(hypernumbers, sync_url) of
+        {ok, SUrl} when SUrl /= Site ->
+            Cmd = string:join(Cmd0, "/"),
+            QReturn = mochiweb_util:quote_plus(Return),
+            Redir = SUrl++"/_sync/"++Cmd++"/?return="++QReturn,
+            {redir, Redir};
+        _Else ->
+            on_sync
     end.
+
+-spec post_login(string(), uid(), string(), integer() | string(),
+                 #env{}, string()) 
+                -> {#env{}, string()}.
+post_login(Site, Uid, Stamp, Age, Env, Return) ->
+    Cookie = hn_net_util:cookie("auth", Stamp, Age),
+    Env2 = Env#env{uid = Uid, headers = [Cookie | Env#env.headers]},
+    QStamp = mochiweb_util:quote_plus(Stamp),
+    Redir = case try_sync(["tell", QStamp], Site, Return) of
+               on_sync -> Return;
+               {redir, R} -> R end,
+    {Env2, Redir}.
+
+process_sync(["tell", QStamp], E, QReturn) ->
+    Stamp = mochiweb_util:unquote(QStamp),
+    Cookie = hn_net_util:cookie("auth", Stamp, "never"),
+    Return = mochiweb_util:unquote(QReturn),
+    Redirect = {"Location", Return},
+    E#env{headers = [Cookie, Redirect | E#env.headers]};
+process_sync(["seek"], E=#env{mochi=Mochi}, QReturn) ->
+    Stamp = case Mochi:get_cookie_value("auth") of
+        undefined -> passport:temp_stamp();
+        S         -> S end,
+    Cookie = hn_net_util:cookie("auth", Stamp, "never"),
+    Return = mochiweb_util:unquote(QReturn),
+    #refX{site = OrigSite} = hn_util:parse_url(Return),
+    QStamp = mochiweb_util:quote_plus(Stamp),
+    Redir = hn_util:strip80(OrigSite) ++ 
+        "/_sync/tell/"++QStamp++"/?return="++QReturn,
+    Redirect = {"Location", Redir},
+    E#env{headers = [Cookie, Redirect | E#env.headers]};
+process_sync(["reset"], E, QReturn) ->
+    Cookie = hn_net_util:kill_cookie("auth"),
+    Return = mochiweb_util:unquote(QReturn),
+    Redirect = {"Location", Return},
+    E#env{headers = [Cookie, Redirect | E#env.headers]}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1277,7 +1295,7 @@ serve_file(Status, #env{mochi = Mochi, headers = Headers}, File) ->
             Mochi:not_found(Headers)
     end.
 
-get_lang(anonymous) ->
+get_lang("anonymous") ->
     "en_gb";
 get_lang(_User) ->
     "en_gb".

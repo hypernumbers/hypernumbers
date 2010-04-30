@@ -209,7 +209,8 @@ funcall(Fname, Args0) ->
              median, replace, rows, sumif,
              odd, int, degrees, radians, proper, index, var, steyx,
              small, skew, large, sumproduct, daverage, dcount, isref,
-             irr, even],
+             irr, even,
+             include],
     
     Args = case member(Fname, Funs) of
                true  -> Args0;

@@ -2,7 +2,8 @@
 %%% @doc Handle Hypernumbers HTTP requests
 -module(hn_render).
 
--export([page/1]).
+-export([content/1, 
+         wrap_page/2, wrap_region/2]).
 
 -include("spriki.hrl").
 
@@ -17,11 +18,14 @@
 
 -record(rec, {maxwidth = 0,
               colwidths = [],
-              palette = []}).
+              palette = [],
+              startcol}).
                  
--spec page(#refX{}) -> [textdata()].
-page(Ref) ->
-    Data = lists:sort(fun order_objs/2, hn_db_api:read_whole_page(Ref)),
+%% Returns a tuple containing the rendered html for the area covered
+%% by the given Ref, along with the width of said html.
+-spec content(#refX{}) -> {[textdata()], integer()}.
+content(Ref) ->
+    Data = lists:sort(fun order_objs/2, hn_db_api:read_ref(Ref)),
     Cells = coalesce([{{X,Y},P} || {#refX{obj={cell,{X,Y}}},P} <- Data]),
     RowHs = [{R, H} || {#refX{obj={row,{R,R}}},{"height",H}} <- Data],
     ColWs = [{C, W} || {#refX{obj={column,{C,C}}},{"width",W}} <- Data],
@@ -31,17 +35,17 @@ page(Ref) ->
                       (hn_db_api:read_styles(Ref), 
                        []
                       ))),
-    {CellsHtml, TotalWidth} = layout(Cells, ColWs, RowHs, Palette),
-    wrap(CellsHtml, TotalWidth).
+    layout(Ref, Cells, ColWs, RowHs, Palette).
 
--spec layout(cells(), cols(), rows(), array()) -> {[textdata()], integer()}.
-layout(Cells, CWs, RHs, Palette) ->
-    Col = 1,
-    Row = 1,
+-spec layout(#refX{}, cells(), cols(), rows(), array()) 
+            -> {[textdata()], integer()}.
+layout(Ref, Cells, CWs, RHs, Palette) ->
     PX = 0,
     PY = 0,
+    Col = startcol(Ref),
+    Row = startrow(Ref),
     {H,RHs2} = row_height(Row, RHs),
-    Rec = #rec{colwidths=CWs, palette=Palette},
+    Rec = #rec{colwidths=CWs, palette=Palette, startcol=Col},
     layout(Cells, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
 
 -spec layout(cells(), 
@@ -82,10 +86,12 @@ layout(Lst=[{{_,R},_}|_], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
 layout(Lst, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
     PX2 = 0,
     PY2 = PY + H,
+    Col2 = Rec#rec.startcol,
     Row2 = Row + 1,
     {H2,RHs2} = row_height(Row2, RHs),
     Rec2 = Rec#rec{maxwidth = max(Rec#rec.maxwidth, PX)},
-    layout(Lst, 1, Row2, PX2, PY2, H2, Rec#rec.colwidths, RHs2, Rec2, Acc).
+    layout(Lst, Col2, Row2, PX2, PY2, H2, 
+           Rec#rec.colwidths, RHs2, Rec2, Acc).
 
 -spec expunge(cells(), {integer(), integer(), integer(), integer()}) 
              -> cells().
@@ -174,15 +180,22 @@ coalesce([{NewC, _}|_]=Lst, C, PropAcc, Acc) ->
 -spec read_css(undefined | integer(), array()) -> string(). 
 read_css(undefined, _Palette) -> "";
 read_css(Idx, Palette) -> array:get(Idx, Palette).
+
+-spec startcol(#refX{}) -> integer(). 
+startcol(#refX{obj={range,{X,_,_,_}}}) -> X;
+startcol(_)                            -> 1.
+
+-spec startrow(#refX{}) -> integer(). 
+startrow(#refX{obj={range,{_,Y,_,_}}}) -> Y;
+startrow(_)                            -> 1.
     
 pget(K,L) -> proplists:get_value(K,L,undefined).
 
-%% Temporary Function
-wrap(Cells, TotalWidth) -> 
+-spec wrap_page([textdata()], integer()) -> [textdata()]. 
+wrap_page(Content, TotalWidth) -> 
     OuterStyle = io_lib:format("style='width:~bpx'", [TotalWidth]),
     ["<!DOCTYPE html>
 <html lang='en'>
-
          <head>
          <meta charset='utf-8' />
          <title>Hypernumbers</title>
@@ -196,7 +209,7 @@ wrap(Cells, TotalWidth) ->
          <span id='hidden_input'></span>
 
          <div id='outer' ", OuterStyle, ">
-         <div id='inner'>", Cells, "</div>
+         <div id='inner' class='hn_inner'>", Content, "</div>
          </div>
 
          </body>",
@@ -208,3 +221,10 @@ wrap(Cells, TotalWidth) ->
      %% <script src='/hypernumbers/hn.data.js'></script>
      %% <script src='/hypernumbers/hn.renderpage.js'></script>
      "</html>"].
+
+-spec wrap_region([textdata()], integer()) -> [textdata()]. 
+wrap_region(Content, Width) -> 
+    OuterStyle = io_lib:format("style='width:~bpx'", [Width]),
+    ["<div class='hn_inner' ", OuterStyle, ">",
+     Content,
+     "</div>"].

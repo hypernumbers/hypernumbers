@@ -1,2 +1,2 @@
--type uid() :: anonymous | string().
+-type uid() :: string().
 -type auth_spec() :: [everyone | string()].
