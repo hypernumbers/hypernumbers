@@ -172,8 +172,10 @@ get_sel(List) -> lists:flatten(["<select name=\"item_selection_1\">",
 %% Hypernumbers Page Id is 336874434418
 facebook_like([PageId]) ->
     P = ?string(PageId, ?default_str_rules),
-    "<iframe src=\"http://www.facebook.com/plugins/likebox.php?profile_id="
-        ++ P ++ "&amp;width=292&amp;connections=10&amp;stream=true&amp;header=true\" scrolling=\"no\" frameborder=\"0\" allowTransparency=\"true\" style=\"border:none; overflow:hidden; width:292px; height:px\"></iframe>".
+    Ret = "<iframe src=\"http://www.facebook.com/plugins/likebox.php?id="
+        ++ P ++ "&amp;width=292&amp;connections=10&amp;stream=true&amp;header=true\" scrolling=\"no\" frameborder=\"0\" allowTransparency=\"true\" style=\"border:none; overflow:hidden; width:292px; height:200px\"></iframe>",
+    io:format("Ret is ~p~n", [Ret]),
+    Ret.
 
 facebook_share([])       -> fb_share1("box_count", "");
 facebook_share([0])      -> fb_share1("box_count", "");
