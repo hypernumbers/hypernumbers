@@ -233,7 +233,6 @@
       <a title="Insert Link" class="toolbar-item" id="insertlink"></a>
       <!-- <a class="separator"></a> -->
       
-      <!-- <a class="separator"></a>       -->
       <div class="expand" id="borders">
         <span><a title="Set Borders" id="border-head" class="icon"></a></span>
         <div id="borders">
@@ -247,50 +246,29 @@
           <a id="border_bottom" class="toolbar-item"></a>
         </div>
       </div>
-      
-      <a class="separator" id="bordersep"></a>          
 
-      <div title="Set Background Colours" class="colormenu">
+      <a class="separator"></a>          
+
+      <div title="Set Colours" class="colormenu" id="combo_colourbg">
         <span><a id="bgcolor-head" class="icon"></a></span>
-        <div id="bgcolors" class="hiddenmenu">
-          <div class="innercolor">
-            <form data-style="background-color" data-command="forecolor"
-                  data-toggle="color">
-              <input id="bgcolor" />
-              <input type="submit" value="Use Color" class="button" />
-            </form>
-          </div>
-        </div>
-      </div>
-      
-      <div title="Set Font Colour" class="colormenu">
-        <span><a id="fontcolor-head" class="icon"></a></span>
-        <div id="forecolors" class="hiddenmenu">
-          <div class="innercolor">
-            <form data-style="color" data-command="backcolor" 
-                  data-toggle="background-color">
-              <input id="forecolor" />
-              <input type="submit" value="Use Color" class="button" />
-            </form>
-            </div>
+        <div class="hiddenmenu">
+
+          <div id="combocolorsbg"></div>
+
+          <form data-style="color" data-command="backcolor">
+            <input id="forecolor" value="Pick Text Color" /> 
+            <input type="submit" class="button" value="Set Text Color" />
+          </form>
+
+          <form data-style="background-color" data-command="backcolor">
+            <input id="bgcolor" value="Pick Text Color" /> 
+            <input type="submit" class="button" value="Set Background Color" />
+          </form>
         </div>
       </div>
 
-      <!-- combo colours -->
-
-      <a class="separator" id="bordersep"></a>          
-      <div title="Set Background Colour" class="expand" id="combo_colourbg">
-        <span><a id="bgcolor-head" class="icon"></a></span>
-      <div id="combocolorsbg"></div>
-      </div>
-      <div title="Set Text Colour" class="expand" id="combo_colourtxt">
-        <span><a id="fontcolor-head" class="icon"></a></span>
-      <div id="combocolorstxt"></div>
-      </div>
-      <!-- end of combo colours -->
       <a title="Format Painter" class="toolbar-item" id="paintformat"></a>
 
-      
     </div>
     
     <div id="formulabar">
@@ -733,7 +711,7 @@
   <script src="/hypernumbers/hn.layout.pane.js"></script>
   <script src="/hypernumbers/finder.js"></script>
   <script src="/hypernumbers/hn.toolbar.js"></script>
-  <script src="/hypernumbers/hn.callbacks.js"></script>q
+  <script src="/hypernumbers/hn.callbacks.js"></script>
   <script src="/hypernumbers/hn.selection.js"></script>
   <script src="/hypernumbers/hn.logger.js"></script>
 

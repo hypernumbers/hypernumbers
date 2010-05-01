@@ -710,13 +710,13 @@ a {
 }
 
 #toolbar .expand, #toolbar .colormenu { 
- background: url(down.png) no-repeat right 2px;
- cursor:     pointer;
- padding:    3px 16px 1px 3px;
- margin:     2px;
- height:     16px;
- border:     1px solid transparent;
- float:      left;
+    background: url(down.png) no-repeat right 2px;
+    cursor:     pointer;
+    padding:    3px 16px 1px 3px;
+    margin:     2px;
+    height:     16px;
+    border:     1px solid transparent;
+    float:      left;
 }
 
 .fonts a { 
@@ -818,29 +818,22 @@ a {
   border: 1px solid #666;
 }
 
-#toolbar a.combocolor, a.primocombocolor {
- float:   left;
- cursor:  pointer;
- border:  1px solid #AAAAAA;
- margin:  1px;
- display: block;
- height:  14px;
- font-weight: bold !IMPORTANT;
+#combocolorsbg a { 
+    display:block;
+    width:20px;
+    overflow:hidden;
+    text-align:center;
+    border:2px solid transparent;
+    margin:1px;
+    padding:2px;
+    
+}
+#combocolorsbg a.title { 
+    width:100px;
 }
 
-#toolbar a.combocolor {
- width:      20px;                                          
- font:       11px sans-serif monospaced;
- text-align: center;
-} 
-#toolbar a.primocombocolor {
- width:      160px;
- font:       11px monospaced;
- text-align: left;
-}
-
-#toolbar a.combocolor:hover {
-  border: 1px solid #666;
+#combocolorsbg a:hover { 
+    font-weight:bold;
 }
 
 #left-head      { background-position: -2px -63px; }
@@ -1903,12 +1896,16 @@ input[type=checkbox], input[type=radio] {
     height   : 145px; 
 } 
 
-#bgcolor, #forecolor { 
-    width        : 120px;
+
+#combo_colourbg .button { 
+    width:168px;
+}
+
+#bgcolor, #forecolor {
+    width        : 50px;
     padding      : 3px;
-    margin-right : 10px;
+    margin       : 4px;
     border       : 1px solid #999;
-    margin-top   : 115px;
 }
 
 #insertimageinput { 
