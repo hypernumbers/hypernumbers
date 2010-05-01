@@ -725,7 +725,7 @@ a {
 }
 
 .fonts a:hover { 
- background: #DDD;
+    background: -moz-linear-gradient(center top , #EEE, #BBB) repeat scroll 0 0 transparent;
 }
 
 #toolbar .expand > div, #toolbar .colormenu > div { 
@@ -743,7 +743,8 @@ a {
   font: 10px Arial,"Helvetica Neue", sans-serif;
  }
 
-#fontsizelist a * { 
+#fontsizelist h1, #fontsizelist h2, #fontsizelist h3,
+#fontsizelist h4, #fontsizelist h5, #fontsizelist h6 { 
     margin:0px;
  }
 
@@ -1684,8 +1685,12 @@ form.droppable {
     position:absolute; 
     padding:0px;
     top:2px;
-    right:-4px;
+    right:4px;
     z-index:99;
+}
+
+#ctrlclose:hover { 
+    border:1px solid #666;
 }
 
 #myspreadsheets { 
