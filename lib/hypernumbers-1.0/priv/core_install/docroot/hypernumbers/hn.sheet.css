@@ -1908,6 +1908,6 @@ input[type=checkbox], input[type=radio] {
     border       : 1px solid #999;
 }
 
-#insertimageinput { 
+#insertimageinput, #insertlinkinput { 
     width:200px;
 }
