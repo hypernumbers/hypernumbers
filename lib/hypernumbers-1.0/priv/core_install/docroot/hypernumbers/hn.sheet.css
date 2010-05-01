@@ -867,16 +867,11 @@ a {
 
 #wordwrap      { background-position: -138px -82px; }
 
-#markbtn { background-position: -138px -59px; }
 #insertimage  { background-position: -161px -104px; }
 #guibuilder  { background-position: -138px -104px; }
 
-#feedback {  
- width:  430px; 
- height: 200px;   
- font:   10px sans-serif; background:#EEE; 
- border: 1px solid #AAA; 
-}
+#paintformat  { background-position: -161px -83px; }
+#insertlink  { background-position:  -138px -104px; }
 
 #selection { 
  display:    none;
