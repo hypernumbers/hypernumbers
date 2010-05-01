@@ -48,7 +48,7 @@ a {
     top        : 10px;
     left       : 10px;
     background : white;
-    z-index    : 9999999;
+    z-index  : 10000002;
     padding    : 10px;
     font-size  : 16px;
 }
