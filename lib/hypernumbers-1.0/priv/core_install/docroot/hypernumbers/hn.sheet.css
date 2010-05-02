@@ -751,12 +751,11 @@ a {
 
 #toolbar .expand:hover, #toolbar .colormenu:hover, 
 #toolbar .expand.active, #toolbar .colormenu.active, 
-#toolbar a.toolbar-item:hover {
+#toolbar a.toolbar-item:hover, #toolbar a.toolbar-item.active {
   -moz-border-radius:3px;
   -webkit-border-radius:3px;
  border:           1px solid #CCC;
- background-color: transparent;
-}
+ background-color: transparent;}
 
 
 
@@ -876,7 +875,7 @@ a {
  overflow:   visible;
 }
 
-#copied, #highlightto, #highlightfrom { 
+#copied, #highlightpainter { 
  display:  none;
  position: absolute;
  border:   2px solid orange;
@@ -884,12 +883,8 @@ a {
  overflow: visible;
 }
 
-#highlightfrom {
+#highlightpainter {
  border:   2px solid green;
-}
-
-#highlightto {
- border:   2px solid purple;
 }
 
 #dragfill { 
