@@ -57,7 +57,6 @@ div.hn_inner {
 }
 div.hn_inner > div {
     position: absolute;
-    text-align: right;
     overflow: hidden;
 }
     
