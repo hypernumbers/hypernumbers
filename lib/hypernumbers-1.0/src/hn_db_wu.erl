@@ -519,7 +519,7 @@
          shift_inc_hns/2,
          copy_cell/3,
          copy_attrs/3,
-         copy_style/2,
+         copy_style/3,
          get_cells/1,
          mark_children_dirty/2,
          mark_these_dirty/2,
@@ -1861,7 +1861,7 @@ copy_attrs(#refX{obj = {cell, _}} = From,
 %% this clause is for 'on page' copies where both From and To are on
 %% the same page - just the index is copied
 copy_style(#refX{site = S, path = P, obj = {cell, _}} = From, 
-           #refX{site = S, path = P, obj = {Type, _}} = To)
+           #refX{site = S, path = P, obj = {Type, _}} = To, Ar)
   when Type == cell orelse Type == range ->
     [{_, {"style", Idx}}] = read_attrs(From, ["style"], read),
     List = case Type of
@@ -1869,25 +1869,28 @@ copy_style(#refX{site = S, path = P, obj = {cell, _}} = From,
                range -> hn_util:range_to_list(To)
            end,
     Fun = fun(X) ->
-                  write_attr(X, {"style", Idx})
+                  write_attr(X, {"style", Idx}, Ar)
           end,
     [ok = Fun(X) || X <- List],
     ok;
 %% this clause is for copying styles across different pages
 copy_style(#refX{obj = {cell, _}} = From, 
-           #refX{obj = {Type, _}} = To)
+           #refX{obj = {Type, _}} = To, Ar)
   when Type == cell orelse Type == range ->
-    [{styles, _, _Idx, MagicStyle}] = read_styles(From),
-    List = case Type of
-               cell  -> [To];
-               range -> hn_util:range_to_list(To)
-           end,
-    Fun = fun(X) ->
-                  Idx = write_style(X, MagicStyle),
-                  write_attr(X, {"style", Idx})
-          end,
-    [ok = Fun(X) || X <- List],
-    ok.    
+    case read_styles(From) of
+        [] -> ok;
+        [{styles, _, _Idx, MagicStyle}] ->
+            List = case Type of
+                       cell  -> [To];
+                       range -> hn_util:range_to_list(To)
+                   end,
+            Fun = fun(X) ->
+                          Idx = write_style(X, MagicStyle),
+                          write_attr(X, {"style", Idx}, Ar)
+                  end,
+            [ok = Fun(X) || X <- List],
+            ok
+    end.
 
 %% @spec read_incoming_hn(Site, Parent) -> #incoming_hn{} | []
 %% Parent = [#refX{}]
