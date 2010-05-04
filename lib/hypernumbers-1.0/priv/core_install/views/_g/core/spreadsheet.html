@@ -515,9 +515,16 @@
     </div>
 
     <div id="insertlinkdialog" class="mdialog">
-      <span>Enter the URL of the link:</span>
+      <!-- <span>Enter the URL of the link:</span> -->
       <form id="linkform"> 
-        <input type="text" id="insertlinkinput" value="http://">
+        <table>
+          <tr><td>Text:</td><td>
+              <input type="text" id="insertlinktext" value="">
+          </td></tr>
+          <tr><td>Url:</td><td>
+              <input type="text" id="insertlinkinput" value="http://">
+          </td></tr>
+        </table>
         <div style="margin-top:4px;">
           <input type="submit" class="button action" value="Insert Link"  />
           <input type="button" class="button cancel" value="Cancel" />
