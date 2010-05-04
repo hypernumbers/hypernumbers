@@ -53,12 +53,7 @@
           idx
          }).
 
--record(item,
-        {
-          idx,
-          key,
-          val
-         }).
+-record(item, {idx, attrs, privs}).
 
 -record(local_cell_link, % link 2 cells on the same sheet together
         {

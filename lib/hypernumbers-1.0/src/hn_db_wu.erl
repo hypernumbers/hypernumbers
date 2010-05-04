@@ -488,18 +488,11 @@
 
 %% Cell Query Exports
 -export([
-         write_attr/2,
-         write_attr/3,       % tested
-         read_cells/2,       % tested
-         read_cells_raw/2,
-         read_attrs/2,       % tested
-         read_attrs/3,       % tested
-         read_inherited/3,
-         read_inherited_list/2,
+         apply_attrs/2,
+         apply_attrs/3,
          read_styles/1,
          local_idx_to_refX/2,
-         read_whole_page/1,
-         read_range/1,
+         read_ref/1,
          clear_cells/1,
          clear_cells/2,
          delete_page/1,
@@ -511,7 +504,7 @@
          delete_row_objs/1,
          delete_col_objs/1,
          get_local_children/1,
-         shift_children/3,
+         %%shift_children/3,
          copy_cell/3,
          copy_attrs/3,
          copy_style/3,
@@ -600,39 +593,40 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
 write_style_IMPORT(RefX, Style)
   when is_record(RefX, refX), is_record(Style, magic_style) ->
     NewIndex = write_style(RefX, Style),
-    write_attr3(RefX, {"style", NewIndex}),
+    apply_attrs(RefX, [{"style", NewIndex}]),
     ok.
 
-%% @spec shift_children(Children, OldParent::#refX{}, NewParent::#refX{}) -> ok
-%% Children = [ [#refX{}] | #refX{} ]
-%% @doc shift_children is called when a message comes in from a remote parent
-%% saying that that parent has moved. The children of that remote hypernumber
-%% then have their formulae rewritten to refer to the new location of the parent
-%% OldParent and NewParent are the respective parents and must be cell references
-%%% Children can either be a cell reference or a list of cell references
-shift_children(List, OldParent, NewParent)
-  when is_list(List), is_record(OldParent, refX), is_record(NewParent, refX) ->
-    [ok = shift_children(X, OldParent, NewParent) || X <- List],
-    ok;
-shift_children(Child, OldParent, NewParent)
-  when is_record(Child, refX), is_record(OldParent, refX),
-       is_record(NewParent, refX) ->
-    OUrl = hn_util:refX_to_url(OldParent) ++ "?hypernumber",
-    NUrl = hn_util:refX_to_url(NewParent) ++ "?hypernumber",
-    %% first read the child formula
-    %% but strip off the leading '=' sign
-    [{Child, {"formula", [$= | Formula]}}] = read_attrs(Child, ["formula"], write),
-    %% just spoofing the lexing which is why we pass in the cell {1, 1}
-    NewFormula = case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
-                     {ok, Toks}    -> rewrite_hn_formula(Toks, OUrl, NUrl);
-                     _Syntax_Error -> io:format("Not sure how you get an "++
-                                                "invalid formula is "++
-                                                "shift_children but "++
-                                                "you do~n-~p~n", [Formula]),
+%% %% @spec shift_children(Children, OldParent::#refX{},
+%% %% NewParent::#refX{}) -> ok Children = [ [#refX{}] | #refX{} ] @doc
+%% %% shift_children is called when a message comes in from a remote
+%% %% parent saying that that parent has moved. The children of that
+%% %% remote hypernumber then have their formulae rewritten to refer to
+%% %% the new location of the parent OldParent and NewParent are the
+%% %% respective parents and must be cell references % Children can
+%% %% either be a cell reference or a list of cell references
+%% shift_children(List, OldParent, NewParent)
+%%   when is_list(List), is_record(OldParent, refX), is_record(NewParent, refX) ->
+%%     [ok = shift_children(X, OldParent, NewParent) || X <- List],
+%%     ok;
+%% shift_children(Child, OldParent, NewParent)
+%%   when is_record(Child, refX), is_record(OldParent, refX),
+%%        is_record(NewParent, refX) ->
+%%     OUrl = hn_util:refX_to_url(OldParent) ++ "?hypernumber",
+%%     NUrl = hn_util:refX_to_url(NewParent) ++ "?hypernumber",
+%%     %% first read the child formula
+%%     %% but strip off the leading '=' sign
+%%     [{Child, {"formula", [$= | Formula]}}] = read_attrs(Child, ["formula"], write),
+%%     %% %% just spoofing the lexing which is why we pass in the cell {1, 1}
+%%     %% NewFormula = case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
+%%     %%                  {ok, Toks}    -> rewrite_hn_formula(Toks, OUrl, NUrl);
+%%     %%                  _Syntax_Error -> io:format("Not sure how you get an "++
+%%     %%                                             "invalid formula is "++
+%%     %%                                             "shift_children but "++
+%%     %%                                             "you do~n-~p~n", [Formula]),
 
-                                      Formula
-                 end,
-    write_attr(Child, {"formula", NewFormula}).
+%%     %%                                   Formula
+%%     %%              end,
+%%     apply_attrs(Child, [{"formula", NewFormula}]).
 
 %% @doc takes a reference and expands it to *populated* cell references.
 %% The reference can be any of:
@@ -740,7 +734,7 @@ get_refs_right(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
 %% and get the last row/column at the same time...
 get_last_refs(#refX{site = S, path = P}) ->
     RefX2 = #refX{site = S, path = P, obj = {page, "/"}},
-    Cells = read_cells(RefX2, read),
+    Cells = read_ref(RefX2),
     Fun = fun({R, V}, {MaxRefX, MaxRefY}) ->
                   {NewX, NewY} =
                       case V of
@@ -784,51 +778,91 @@ get_last_refs(#refX{site = S, path = P}) ->
 %% it will be magically managed as a style
 %% @end
 %% This clause deals with a formula
-write_attr(Ref, Attr) ->
-    write_attr(Ref, Attr, nil).
-write_attr(#refX{obj = {cell, _}} = RefX, {"formula", _} = Attr, Ar) ->
-    %% first check that the formula is not part of a shared array
-    case read_attrs(RefX, ["__shared"], write) of
-        [_X] -> throw({error, cant_change_part_of_array});
-        []   -> write_attr2(RefX, Attr, Ar)
-    end;
-write_attr(#refX{obj = {cell, _}} = RefX, {"format", Format} = Attr, _Ar) ->
-    ok = write_attr3(RefX, Attr),
-    %% now reformat values (if they exist)
-    case read_attrs(RefX, ["rawvalue"], write) of
-        []                               -> ok;
-        [{RefX, {"rawvalue", RawValue}}] ->
-            ok = process_format(RefX, Format, RawValue)
-    end;
-write_attr(#refX{obj = {cell, _}} = RefX, 
-           {"__dependency-tree", DTree}, _Ar) ->
-    write_attr3(RefX, {"__dependency-tree", DTree});
-write_attr(#refX{obj = {cell, _}} = RefX, {Key, Val} = Attr, _Ar) ->
-    %% NOTE the attribute 'overwrite-color' isn't in a magic style and shouldn't be
-    case ms_util2:is_in_record(magic_style, Key) of 
-        true  -> process_styles(RefX, Attr);
-        false -> write_attr3(RefX, {Key, Val})
-    end;
-write_attr(#refX{obj = {range, _}} = RefX, Attr, Ar) ->
-    List = hn_util:range_to_list(RefX),
-    [ok = write_attr(X, Attr, Ar) || X <- List],
-    ok;
-%% for the rest just write 'em out
-write_attr(RefX, {Key, Val}, _Ar) when is_record(RefX, refX) ->
-    write_attr3(RefX, {Key, Val}).
 
-%% @spec read_whole_page(#refX{}) -> [{#refX{}, {Key, Value}}]
-%% Key = atom()
-%% Value = term()
-%% @doc reads all the attributes of a cell or cells
-%%
-%% The reference can refer to a page only
-read_whole_page(#refX{site = S, path = P, obj = {page, "/"}}) ->
-    List = mnesia:read(trans(S, local_objs), P, read),
-    Return = make_refXs(S, List, [], read),
-    drop_private(Return).
+-spec apply_attrs(#refX{}, [{string(), term()}]) -> ok. 
+apply_attrs(Ref, Attrs) ->
+    apply_attrs(Ref, Attrs, nil).
 
-read_range(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
+-spec apply_attrs(#refX{}, [{string(), term()}], auth_req()) -> ok.
+apply_attrs(Ref, As, Ar) ->
+    Attrs = orddict:new(),
+    Privs = orddict:new(),
+    {Attrs2, Privs2} = process_attrs(As, Ref, Ar, Attrs, Privs),
+    merge_attrs(Ref, Attrs2, Privs2).
+
+-spec process_attrs([{string(), term()}], #refX{}, auth_req(),
+                    orddict:orddict(), orddict:orddict()) 
+                   -> {orddict:orddict(), orddict:orddict()}. 
+process_attrs([], _Ref, _Ar, Attrs, Privs) ->
+    {Attrs, Privs};
+process_attrs([{"formula",Val}|Rest], Ref, Ar, Attrs, Privs) ->
+    {Attrs2, Priv2} =
+        case superparser:process(Val) of
+            {formula, Fla} -> 
+                write_formula1(Ref, Fla, Val, Ar, Attrs, Privs);
+            [_NVal, _Align, _Frmt] -> 
+                {Attrs, Privs}
+                %%write_formula2(Ref, Val, NVal, Align, Frmt, Attrs, Privs)
+        end,
+    process_attrs(Rest, Ref, Ar, Attrs2, Priv2);
+process_attrs([{"format",Val}|Rest], Ref, Ar, Attrs, Privs) ->
+    %% Need to handle this properly.  process the raw value.
+    Attrs2 = orddict:store("format", Val, Attrs),
+    process_attrs(Rest, Ref, Ar, Attrs2, Privs);
+process_attrs([{K=["__"|_],Val}|Rest], Ref, Ar, Attrs, Privs) ->
+    Privs2 = orddict:store(K, Val, Privs),
+    process_attrs(Rest, Ref, Ar, Attrs, Privs2);    
+process_attrs([A={Key, Val}|Rest], Ref, Ar, Attrs, Privs) ->
+    {Key2, Val2} = case ms_util2:is_in_record(magic_style, Key) of 
+                       true  -> process_style(Ref, A);
+                       false -> A
+                   end,
+    Attrs2 = orddict:store(Key2, Val2, Attrs),
+    process_attrs(Rest, Ref, Ar, Attrs2, Privs).
+    
+-spec merge_attrs(#refX{}, orddict:ordict(), orddict:ordict()) -> ok. 
+merge_attrs(Ref=#refX{site = Site}, Attrs, Privs) ->
+    Table = trans(Site, item), 
+    Idx = get_local_item_index(Ref),
+    Rec2 = case mnesia:read(Table, Idx, write) of
+               [Rec] ->
+                   Attrs2 = orddict:merge(fun merge_left/3,
+                                          Attrs,
+                                          Rec#item.attrs),
+                   Privs2 = orddict:merge(fun merge_left/3,
+                                          Privs,
+                                          Rec#item.privs),
+                   Rec#item{attrs = Attrs2, privs = Privs2};
+               [] ->
+                   #item{idx = Idx, attrs = Attrs, privs = Privs}
+           end,
+    mnesia:write(Table, Rec2, write).
+
+merge_left(_Key, V1, _V2) -> V1.
+
+%% write_attr(#refX{obj = {range, _}} = RefX, Attr, Ar) ->
+%%     List = hn_util:range_to_list(RefX),
+%%     [ok = write_attr(X, Attr, Ar) || X <- List],
+%%     ok;
+%% %% for the rest just write 'em out
+%% write_attr(RefX, {Key, Val}, _Ar) when is_record(RefX, refX) ->
+%%     write_attr3(RefX, {Key, Val}).
+
+read_ref(Ref) ->
+    read_ref(Ref, all, read).
+read_ref(Ref, Field) ->
+    read_ref(Ref, Field, read).
+
+%% Read/Write lock is passed into read_attrs.
+-spec read_ref(#refX{}, all | string(), read | write) 
+              -> [{#refX{}, [{string(), term()}]}].
+read_ref(#refX{site = S, path = P, obj = {page, "/"}}, 
+         Field, Lock) ->
+    MS = ets:fun2ms(fun(LO=#local_objs{path=MP}) when MP == P -> LO end),
+    List = mnesia:select(trans(S, local_objs), MS),
+    read_attrs(S, List, Field, Lock);
+read_ref(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}},
+         Field, Lock) ->
     MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
                           when MP == P,
                                X1 =< MX, MX =< X2, 
@@ -836,65 +870,43 @@ read_range(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
                        (LO=#local_objs{path=MP, obj={column,{MX,MX}}})
                           when MP == P,
                                X1 =< MX, MX =< X2 -> LO;
-                       (LO=#local_objs{path=MP, obj={row,{MY,MY}}}) 
+                       (LO=#local_objs{path=MP, obj={row,{MY,MY}}})
                           when MP == P,
                                Y1 =< MY, MY =< Y2 -> LO
                     end),
     List = mnesia:select(trans(S, local_objs), MS),
-    Return = make_refXs(S, List, [], read),
-    drop_private(Return).
-    
--spec read_cells(#refX{}, write | read) -> [{#refX{}, {any(), any()}}].
-%% Key = atom()
-%% Value = term()
-%% @doc reads all the attributes of a cell or cells
-%%
-%% The reference can refer to a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-read_cells(Ref, Lock) when (Lock == write orelse Lock == read) ->
-    List = read_cells_raw(Ref, Lock),
-    drop_private(List).
+    read_attrs(S, List, Field, Lock);
+read_ref(#refX{site = S, path = P, obj = {cell, {X,Y}}},
+         Field, Lock) ->
+    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}})
+                          when MP == P, MX == X, MY == Y -> LO
+                    end),
+    List = mnesia:select(trans(S, local_objs), MS),
+    read_attrs(S, List, Field, Lock).
 
--spec read_cells_raw(#refX{}, write | read) -> [{#refX{}, {any(), any()}}].
-%% Key = atom()
-%% Value = term()
-%% @doc reads all the attributes of a cell or cells
-%% 
-%% This is a raw read because it returns *ALL* the attributes
-%% The reference can refer to a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-read_cells_raw(#refX{site = S, path = P, obj = {cell, _} = O}, Lock) 
-  when (Lock == write orelse Lock == read) ->
-    H = #local_objs{path = P, obj = O, _ = '_'},
-    read_attrs1(S, {H, [], ['$_']}, [], Lock);
-read_cells_raw(#refX{site = Site, obj = {range, _}} = RefX, Lock)
-  when (Lock == write orelse Lock == read) ->
-    Match = make_range_match_ref(RefX),
-    read_attrs1(Site, Match, [], Lock);
-read_cells_raw(#refX{site = Site, obj = {column, _}} = RefX, Lock)
-  when (Lock == write orelse Lock == read) ->
-    Match = make_col_match_ref(RefX),
-    read_attrs1(Site, Match, [], Lock);
-read_cells_raw(#refX{site = Site, obj = {row, _}} = RefX, Lock)
-  when (Lock == write orelse Lock == read) ->
-    Match = make_row_match_ref(RefX),
-    read_attrs1(Site, Match, [], Lock);
-read_cells_raw(#refX{site = Site, obj = {page, _}} = RefX, Lock)
-  when (Lock == write orelse Lock == read) ->
-    Match = make_page_match_ref(RefX),
-    read_attrs1(Site, Match, [], Lock).
+-spec read_attrs(string(), [#local_objs{}], all|string(), read|write) 
+                -> [{#refX{}, [{string(), term()}]}]. 
+read_attrs(S, LocObjs, Field, Lock) ->
+    Tbl = trans(S, item),
+    read_attrs_(LocObjs, S, Tbl, Field, Lock, []).
+read_attrs_([], _S, _Tbl, _Field, _Lock, Acc) ->
+    lists:reverse(Acc);
+read_attrs_([#local_objs{path=P, obj=O, idx=I}|Tail],
+            S, Tbl, Field, Lock, Acc) ->
+    case mnesia:read(Tbl, I, Lock) of
+        [#item{attrs=Attrs}] ->
+            Ref = #refX{site=S, path=P, obj=O},
+            Ret = if Field == all -> orddict:to_list(Attrs);
+                     true         -> case orddict:find(Field, Attrs) of
+                                         {ok, V} -> [V];
+                                         _       -> []
+                                     end
+                  end,
+            Acc2 = [{Ref, Ret}|Acc],
+            read_attrs_(Tail, S, Tbl, Field, Lock, Acc2);
+        [] ->
+            read_attrs_(Tail, S, Tbl, Field, Lock, Acc)
+    end.
 
 %% @spec read_inherited_list(#refX{}, Key) -> {ok, Value}
 %% Key = atom()
@@ -903,13 +915,13 @@ read_cells_raw(#refX{site = Site, obj = {page, _}} = RefX, Lock)
 %%       stored at a given reference, if not found it returns the supplied
 %%       default value
 %%       
-%% @todo what are the ref types it supports? improve the documentation, etc, etc
-read_inherited_list(RefX, Key) when is_record(RefX, refX)  ->
-    Type = case RefX#refX.obj of
-               null    -> page;
-               {T, _R} -> T
-           end,
-    get_item_list(Type, RefX, Key, []).
+%% %% @todo what are the ref types it supports? improve the documentation, etc, etc
+%% read_inherited_list(RefX, Key) when is_record(RefX, refX)  ->
+%%     Type = case RefX#refX.obj of
+%%                null    -> page;
+%%                {T, _R} -> T
+%%            end,
+%%     get_item_list(Type, RefX, Key, []).
 
 %% @spec read_inherited(#refX{}, Key, Default) -> {ok, Value}
 %% Key = atom()
@@ -917,123 +929,16 @@ read_inherited_list(RefX, Key) when is_record(RefX, refX)  ->
 %% Default = term()
 %% @doc  This function searches the tree for the occurences of a key
 %%       and returns a list of them
-read_inherited(RefX, Key, Default) when is_record(RefX, refX)  ->
-    Type = case RefX#refX.obj of
-               null    -> page;
-               {T, _R} -> T
-           end,
-    case return_first(Type, RefX, Key) of
-        {ok, Value} -> {ok, Value};
-        nomatch     -> {ok, Default}
-    end.
+%% read_inherited(RefX, Key, Default) when is_record(RefX, refX)  ->
+%%     Type = case RefX#refX.obj of
+%%                null    -> page;
+%%                {T, _R} -> T
+%%            end,
+%%     case return_first(Type, RefX, Key) of
+%%         {ok, Value} -> {ok, Value};
+%%         nomatch     -> {ok, Default}
+%%     end.
 
-%% @spec read_attrs(#refX{}, Lock) -> [{#refX{}, {Key, Value}}]
-%% Key = atom()
-%% Value = term()
-%% @doc reads all the attributes for a reference.
-%% The reference can refer to a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-read_attrs(RefX, Lock) 
-  when is_record(RefX, refX), 
-       (Lock == write orelse Lock == read) ->
-    read_attrs(RefX, [], Lock).
-
-%% @spec read_attrs(#refX{}, AttrsList, Lock) -> [{#refX{}, {Key, Value}}]
-%% AttrsList = [Key]
-%% Key = atom()
-%% Value = term()
-%% @end
-%% @doc reads the attributes specified in the AttrsList for a reference.
-%% If the attribute list is blank returns all the attributes
-%% The reference can refer to a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-read_attrs(#refX{obj = {cell, _}} = RefX, Attrs, Lock) 
-  when is_list(Attrs), 
-       (Lock == write orelse Lock == read) ->    
-    #refX{site = S, path = P, obj= Obj} = RefX,
-    H = #local_objs{path  = P, obj = Obj, _ = '_'},
-    read_attrs1(S, {H, [], ['$_']}, Attrs, Lock);
-read_attrs(#refX{site = Site, obj = {range, _}} = RefX, Attrs, Lock)
-  when is_list(Attrs), 
-       (Lock == write orelse Lock == read) ->
-    Match = make_range_match_ref(RefX),
-    read_attrs1(Site, Match, Attrs, Lock);
-read_attrs(#refX{site = Site, obj = {column, _}} = RefX, Attrs, Lock)
-  when is_list(Attrs), 
-       (Lock == write orelse Lock == read) ->
-    Match = make_col_match_ref(RefX),
-    read_attrs1(Site, Match, Attrs, Lock);
-read_attrs(#refX{site = Site, obj = {row, _}} = RefX, Attrs, Lock)
-  when is_list(Attrs), 
-       (Lock == write orelse Lock == read) ->
-    Match = make_row_match_ref(RefX),
-    read_attrs1(Site, Match, Attrs, Lock);
-read_attrs(#refX{site = S, obj = {page, _}} = RefX, Attrs, Lock)
-  when is_list(Attrs), 
-       (Lock == write orelse Lock == read) ->
-    Match = make_page_match_ref(RefX),
-    read_attrs1(S, Match, Attrs, Lock).
-
-read_attrs1(Site, Match, AttrList, Lock) ->
-    Table = trans(Site, local_objs),
-    List = mnesia:select(Table, [Match], read),
-    make_refXs(Site, List, AttrList, Lock).
-
-%% A/B performance testing for a page read
-make_refXs(Site, LocalObjs, Attrs, Lock) ->  
-    make_refXs1A(Site, LocalObjs, Attrs, Lock, []).
-%% make_refXs(Site, LocalObjs, Attrs, Local) -> 
-%%    make_refXs1B(Site, LocalObjs, Attrs, Lock).
-
-make_refXs1A(Site, [], _AttrList, _Lock, Acc) ->
-    case Acc of
-        []     -> [];
-        _Other -> make_refXs2A(Site, lists:flatten(Acc), [])
-    end;
-%% if the attributes list is blank get them all
-make_refXs1A(Site, [H | T], [], Lock, Acc) ->
-    #local_objs{idx = Idx} = H,
-    Table = trans(Site, item),
-    Recs = mnesia:read(Table, Idx, Lock),
-    make_refXs1A(Site, T, [], Lock, [{H, Recs} | Acc]);
-make_refXs1A(Site, [H | T], AttrList, Lock, Acc) ->
-    #local_objs{idx = Idx} = H,
-    Table = trans(Site, item),
-    Recs = mnesia:read(Table, Idx, Lock),
-    Fun = fun(#item{key = K}) ->
-                  lists:member(K, AttrList) 
-          end,
-    Attrs = lists:filter(Fun, Recs),
-    NewAcc = case Attrs of
-                 [] -> Acc;
-                 _  -> [{H, Attrs} | Acc]
-             end,
-    make_refXs1A(Site, T, AttrList, Lock, NewAcc).
-
-make_refXs2A(_Site, [], Acc) -> lists:flatten(Acc);
-make_refXs2A(Site, [{LocalObj, Attrs} | T], Acc) ->
-    NewAcc = make_refXs3A(Site, LocalObj, Attrs, []),
-    make_refXs2A(Site, T, [NewAcc | Acc]).
-
-make_refXs3A(_Site, _LocalObj, [], Acc) -> Acc;
-make_refXs3A(Site, #local_objs{path = P, obj = O} = LocalObj, [H | T], Acc) ->
-    #item{key = K, val = V} = H,
-    NewAcc = {#refX{site = Site, path = P, obj = O}, {K,V}},
-    make_refXs3A(Site, LocalObj, T, [NewAcc | Acc]).
-
--spec shift_cells(#refX{}, any(), any(), any()) -> [#refX{}].
 %% Status = list()
 %% @doc shift_cells takes a range, row or column and shifts it by the offset.
 %% The list of cells that are passed in as Rewritten are not to be rewritten
@@ -1072,12 +977,12 @@ shift_cells(From, Type, Disp, Rewritten)
             ChildCells2 = hslists:uniq(ChildCells),
             DedupedChildren = lists:subtract(ChildCells2, Rewritten),
             Formulas = [F || X <- DedupedChildren,
-                             F <- read_attrs(X, ["formula"], write)],
+                             F <- read_ref(X, "formula", write)],
             Fun = fun({ChildRef, {"formula", F1}}, Acc) ->
                           {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XO, YO}),
                           %% this is the wrong test, if a link crosses the
                           %% deleted border either way, recalc is needed
-                          ok = write_attr3(ChildRef, {"formula", F2}),
+                          ok = apply_attrs(ChildRef, [{"formula", F2}]),
                           case St of
                               clean -> Acc;
                               dirty -> [ChildRef | Acc]
@@ -1207,7 +1112,7 @@ read_styles(#refX{site = Site, obj = {page, _}} = RefX) ->
     mnesia:read(Table, RefX, read);
 read_styles(#refX{site = Site} = RefX) when is_record(RefX, refX) ->
     %% first get the style records to get the indexes
-    CellList = read_attrs(RefX, ["style"], read),
+    CellList = read_ref(RefX, "style", read),
     IndexList = hslists:uniq(extract_values(CellList)),
     %% RefX is a cell/column/row/range ref - make it a page ref
     Ref2 = RefX#refX{obj = {page, "/"}},
@@ -1267,15 +1172,15 @@ clear_cells(RefX, {attributes, List}) when is_record(RefX, refX) ->
     ok = clear_cells1(RefX, {attributes, List}).
 
 clear_cells1(RefX, style) when is_record(RefX, refX) ->
-    List = read_attrs(RefX, ["style"], write),
+    List = read_ref(RefX, "style", write),
     [delete_attrs(X, Key) || {X, {Key, _Val}} <- List],
-    List2 = read_attrs(RefX, write),
+    List2 = read_ref(RefX, all, write),
     [ok = delete_attrs(X, Key) || {X, {Key, _Val}} <- get_formats(List2)],
     % now read and rewrite the rawvalue to display the format changes
     [ok = write_rawvalue(X, V) || {X, {_K, V}} <- get_rawvalues(List2)],    
     ok;
 clear_cells1(RefX, {attributes, AttrList}) ->
-    case read_attrs(RefX, write) of
+    case read_ref(RefX, all, write) of
         []    -> ok;
         List1 -> List2 = get_attrs(List1, AttrList),
                  [delete_attrs(X, Key) || {X, {Key, _Val}} <- List2],
@@ -1369,11 +1274,11 @@ delete_cells(#refX{site = S} = DelX) ->
 
             Fun = fun({ChildRef, {"formula", F1}}) ->
                           {_Status, NewFormula} = deref(ChildRef, F1, DelX),
-                          ok = write_attr(ChildRef, {"formula", NewFormula}),
+                          ok = apply_attrs(ChildRef, [{"formula", NewFormula}]),
                           ChildRef
                   end,
             DirtyChildren = [Fun(F) || X <- LocalChildren3,
-                                       F <- read_attrs(X, ["formula"], write)],
+                                       F <- read_ref(X, "formula", write)],
 
             %% fix relations table.
             [ok = delete_local_relation(X) || X <- Cells],
@@ -1473,7 +1378,7 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
     case Output of
         {formula, Formula} ->
             NewFormula = offset_formula(Formula, {(TX - FX), (TY - FY)}),
-           ok = write_attr(To, {"formula", NewFormula});
+           ok = apply_attrs(To, [{"formula", NewFormula}]);
         [{Type, V},  _A, _F] ->
             V2 = case Incr of
                      false  ->
@@ -1499,7 +1404,7 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
                                  tconv:to_s(V)
                          end
                  end,
-            ok = write_attr(To, {"formula", V2});
+            ok = apply_attrs(To, [{"formula", V2}]);
         []  ->
             ok = clear_cells(To, all)
     end,
@@ -1523,19 +1428,19 @@ copy_attrs(_From, _To, []) -> ok;
 copy_attrs(#refX{path = P, obj = {cell, _}} = From, 
            #refX{path = P, obj = {cell, _}} = To, ["style" | T]) ->
     [{From, {"style", Value}}] = read_attrs(From, ["style"], read),
-    ok = write_attr(To, {"style", Value}),
+    ok = apply_attrs(To, [{"style", Value}]),
     copy_attrs(From, To, T);
 %% this clause deals with copying attributes between different pages
 copy_attrs(#refX{obj = {cell, _}} = From, 
            #refX{obj = {cell, _}} = To, ["style" | T]) ->
     [{styles, _, _Idx, MagicStyle}] = read_styles(From),
     Idx = write_style(To, MagicStyle),
-    ok = write_attr(To, {"style", Idx}),
+    ok = apply_attrs(To, [{"style", Idx}]),
     copy_attrs(From, To, T);
 copy_attrs(#refX{obj = {cell, _}} = From, 
            #refX{obj = {cell, _}} = To, [H | T]) ->
     [{From, {Key, Value}}] = read_attrs(From, [H], read),
-    ok = write_attr(To, {Key, Value}),
+    ok = apply_attrs(To, [{Key, Value}]),
     copy_attrs(From, To, T);
 copy_attrs(#refX{obj = {cell, _}} = From, 
            #refX{obj = {range, _}} = To, Attrs) ->
@@ -1558,7 +1463,7 @@ copy_style(#refX{site = S, path = P, obj = {cell, _}} = From,
                range -> hn_util:range_to_list(To)
            end,
     Fun = fun(X) ->
-                  write_attr(X, {"style", Idx}, Ar)
+                  apply_attrs(X, [{"style", Idx}], Ar)
           end,
     [ok = Fun(X) || X <- List],
     ok;
@@ -1575,7 +1480,7 @@ copy_style(#refX{obj = {cell, _}} = From,
                    end,
             Fun = fun(X) ->
                           Idx = write_style(X, MagicStyle),
-                          write_attr(X, {"style", Idx}, Ar)
+                          apply_attrs(X, [{"style", Idx}], Ar)
                   end,
             [ok = Fun(X) || X <- List],
             ok
@@ -1864,107 +1769,6 @@ read_local_item_index(#refX{site = S, path = P, obj = Obj}) ->
         [R] -> R#local_objs.idx;
         _   -> false
     end.
-
-%% get_head(Site, Parent, Type) when ((Type == insert) orelse (Type == delete)) ->
-%%     H1 = ms_util:make_ms(refX, [{site, Site}, {obj, {cell, {'_', '_'}}}]),
-%%     H2 = Parent#refX{obj = {cell, {'_', '_'}}},
-%%     #remote_cell_link{parent = H2, child = H1, _ = '_'};
-%% get_head(Site, Parent, Type) when (Type == new_value) ->
-%%     H1 = ms_util:make_ms(refX, [{site, Site}]), 
-%%     #remote_cell_link{parent = Parent, child = H1, _ = '_'}.
-
-%% get_pages_and_vsns(Site, List) ->
-%%     Fun = fun(#remote_cell_link{child = C}) ->
-%%                   Page = C#refX{obj = {page, "/"}},
-%%                   Vsn = read_page_vsn(Site, Page), 
-%%                   Page2 = hn_util:refX_to_url(Page),
-%%                   #version{page = Page2, version = Vsn}
-%%           end,
-%%     hslists:uniq(lists:map(Fun, List)).
-
-%% just takes a tokenised formula and swaps the Old Url for the New Url anywhere
-%% that it is used in a hypernumber, ie looks for 'HN(OldUrl'
-rewrite_hn_formula(Toks, OUrl, NUrl) -> rwf1(Toks, OUrl, NUrl, []).
-
-%% just swap out the old URL for the new one...
-rwf1([], _O, _N, {_St, Acc}) -> 
-    make_formula(lists:reverse(Acc));
-rwf1([{name, _, "HN"},{'{',_},{str,_,O}|T], O, N, A) -> 
-    rwf1(T, O, N, [{str,N},{'{'},{name,"HN"}|A]);
-rwf1([H | T], O, N, A) -> 
-    rwf1(T, O, N, [H | A]).      
-
-
-%% REMEMBER this is a BAG table and not a set table so writes
-%% do not delete!
-%% Therefore check if a record with this key and this object index 
-%% already exists:
-%% * if it does delete it and then write the record
-%% * if it don't then just write it.
-%% will write out any raw attribute
-write_attr3(#refX{site = Site} = RefX, {Key, Val}) ->
-    Idx = get_local_item_index(RefX),
-    Match = #item{idx = Idx, key = Key, _ = '_'},
-    Rec   = Match#item{val = Val},
-    Table = trans(Site, item),
-
-    case mnesia:index_match_object(Table, Match, 1, read) of
-        [] ->
-            ok = mnesia:write(Table, Rec, write);
-        [OldRec] ->
-            ok = mnesia:delete_object(Table, OldRec, write),
-            ok = mnesia:write(Table, Rec, write)
-    end,
-
-    case Key of
-        "__" ++ _ ->
-            ok;
-        Key ->
-            ok = tell_front_end(RefX, {Key, Val}, change)
-    end.
-
-%% update_rem_parents(Child, OldParents, NewParents) when is_record(Child, refX) ->
-%%     {Del, Write} = split_parents(OldParents, NewParents),
-%%     %% first delete all the records on the delete list
-%%     %% and unregister them (probably should be done in a gen server!)
-%%     [ok = delete_remote_parents(X) || X <- Del],
-%%     %% now write all the records on the write list
-%%     [ok = write_remote_link(X, Child, incoming) || X <- Write],
-%%     ok.
-
-%% This function is called on a local cell to inform all remote cells that it
-%% used to reference as hypernumbers to no longer do so.
-%% unregister_inc_hn(Parent, Child)
-%%   when is_record(Parent, refX), is_record(Child, refX) ->
-
-%%     #refX{site = ChildSite} = Child,
-%%     Head = #incoming_hn{site_and_parent = {ChildSite, Parent}, _ = '_'},
-%%     Table = trans(ChildSite, incoming_hn),
-%%     case mnesia:select(Table, [{Head, [], ['$_']}], read) of
-%%         [Hn] ->
-%%             #incoming_hn{biccie = Biccie} = Hn,
-%%             Head3 = #remote_cell_link{parent =  Parent, type = incoming, _ = '_'},
-%%             Table2 = trans(ChildSite, remote_cell_link),
-%%             ok = case mnesia:select(Table2, [{Head3, [], ['$_']}], read) of
-%%                      [] -> ok = mnesia:delete({Table, {ChildSite, Parent}});
-%%                      _  -> ok % HN is still in use
-%%                  end,
-%%             PPage = Parent#refX{obj = {page, "/"}},
-%%             CPage = Child#refX{obj = {page, "/"}},
-%%             PUrl = hn_util:refX_to_url(PPage),
-%%             CUrl = hn_util:refX_to_url(CPage),
-%%             PV = hn_db_wu:read_page_vsn(ChildSite, Parent),
-%%             CV = hn_db_wu:read_page_vsn(ChildSite, Child),
-%%             PVsn = #version{page = PUrl, version = PV},
-%%             CVsn = #version{page = CUrl, version = CV},
-%%             Rec = #dirty_notify_back_in{parent = Parent, child = Child,
-%%                                         change = "unregister",
-%%                                         biccie = Biccie, parent_vsn = PVsn,
-%%                                         child_vsn = CVsn},
-%%             mark_dirty(ChildSite, Rec);
-%%         _  ->
-%%             ok
-%%     end.
 
 get_refs_below2(RefX, MinX, MaxX, Y) ->
     #refX{site = S, path = P} = RefX,
@@ -2853,134 +2657,69 @@ shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
                      ok = mnesia:write(trans(Site, NewDirty))
     end.
 
-write_attr2(RefX, {"formula", Val}, Ar) ->
-    case superparser:process(Val) of
-        {formula, Fla}      -> write_formula1(RefX, Fla, Val, Ar);
-        [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
-    end.
-
-
-write_formula1(RefX, Fla, Val, Ar) ->
-    Rti = refX_to_rti(RefX, Ar, false),
+write_formula1(Ref, Fla, Val, Ar, Attrs, Privs) ->
+    Rti = refX_to_rti(Ref, Ar, false),
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
             ?ERROR("invalid return from muin:run_formula ~p",[Val]),
-            #refX{site = Site, path = Path, obj = R} = RefX,
-            ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
-                                           Val);
+            #refX{site = Site, path = Path, obj = R} = Ref,
+            ok = remoting_reg:notify_error(Site,Path,R,error_in_formula,Val),
+            throw(error_in_formula);
         {error, Error} ->
-            #refX{site = Site, path = Path, obj = R} = RefX,
-            ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);
+            #refX{site = Site, path = Path, obj = R} = Ref,
+            ok = remoting_reg:notify_error(Site, Path, R,  Error, Val),
+            throw(Error);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
-            %% Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
-            ok = write_attr3(RefX, {"__ast", Pcode}),
-            ok = write_attr3(RefX, {"__recompile", Recompile}),
-            %% write the default text align for the result
-            ok = write_default_alignment(RefX, Res),
-            write_cell(RefX, Res, Val, Parxml, Deptree)
+            {NewLocPs, _NewRemotePs} = split_local_remote(Parents),
+            ok = set_local_relations(Ref, NewLocPs),
+            Attrs2 = orddict:store("parents", {xml, Parxml}, Attrs),
+            Attrs3 = orddict:store("rawvalue", Res, Attrs2),
+            Attrs4 = orddict:store("formula", Val, Attrs3),
+            Privs2 = orddict:store("__ast", Pcode, Privs),
+            Privs3 = orddict:store("__recompile", Recompile, Privs2),
+            Privs4 = orddict:store("__dependency-tree", Deptree, Privs3),
+            {Attrs4, Privs4}
     end.
 
-write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format) ->
-    %% now write out the actual cell
-    Formula = case Type of
-                  quote    -> [39 | Value];
-                  datetime -> OrigVal;
-                  float    -> OrigVal;
-                  int      -> OrigVal;
-                  _        -> hn_util:text(Value)
-              end,
-    ok = write_cell(RefX, Value, Formula, [], []),
-    %% only write the default alignment if there is no style on this cell
-    case read_attrs(RefX, ["style"], write) of
-        [] -> ok = write_attr(RefX, {"text-align", Align});
-        _  -> ok
-    end,
-    %% write out the format (if any)
-    case Format of
-        {"format", "null"} -> ok;
-        {"format", F}      -> write_attr(RefX, {"format", F})
-    end.
+%% write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format,
+%%                Attrs, Privs) ->
+%%     %% now write out the actual cell
+%%     Formula = case Type of
+%%                   quote    -> [39 | Value];
+%%                   datetime -> OrigVal;
+%%                   float    -> OrigVal;
+%%                   int      -> OrigVal;
+%%                   _        -> hn_util:text(Value)
+%%               end,
+%%     ok = write_cell(RefX, Value, Formula, [], []),
+%%     %% only write the default alignment if there is no style on this cell
+%%     case read_attrs(RefX, ["style"], write) of
+%%         [] -> ok = write_attr(RefX, {"text-align", Align});
+%%         _  -> ok
+%%     end,
+%%     %% write out the format (if any)
+%%     case Format of
+%%         {"format", "null"} -> ok;
+%%         {"format", F}      -> write_attr(RefX, {"format", F})
+%%     end.
 
-% if there is a style set for the cell don't write the default
-% alignment
-write_default_alignment(RefX, Res) ->
-    case read_attrs(RefX, ["style"], write) of
-        [] -> write_default_alignment1(RefX, Res);
-        _  -> ok
-    end.
+%% % if there is a style set for the cell don't write the default
+%% % alignment
+%% write_default_alignment(RefX, Res) ->
+%%     case read_attrs(RefX, ["style"], write) of
+%%         [] -> write_default_alignment1(RefX, Res);
+%%         _  -> ok
+%%     end.
 
-write_default_alignment1(RefX, Res) when is_number(Res) ->
-    write_attr(RefX, {"text-align" ,"right"});
-write_default_alignment1(RefX, Res) when is_list(Res) ->
-    write_attr(RefX, {"text-align" ,"left"});
-%% this clause matches for booleans, dates and errors
-write_default_alignment1(RefX, _Res)  ->
-    write_attr(RefX, {"text-align" ,"center"}).
-
-write_cell(RefX, Value, Formula, Parents, DepTree) when is_record(RefX, refX) ->
-
-    %% This function writes a cell out with all the trimings
-    %% 
-    %% The term 'old' refers to the values of these attributes for this
-    %% cell before this function is called.
-    %% 
-    %% The term 'new' refers to those values passed in as parameters to 
-    %% this function,
-    %% 
-    %% The order of work is this:
-    %% * overwrite the new formula
-    %% * overwrite the new raw value of the cell
-    %%   - the write_rawvalue function calls the format and applies
-    %%     it to the rawvalue to calculate the value and overwrite colour.
-    %%     It overwrite the new values of the following attributes:
-    %%     & rawvalue
-    %%     & value
-    %%     & format
-    %%     & 'overwrite-color's
-    %% * overwrites the new values of these attributes:
-    %%   - parents
-    %%   - '__dependency-tree'
-    %% * reads the old set of local links:
-    %%   - writes any local links that aren't already there
-    %%   - deletes any local links that are no longer there
-    %% * reads the old set of remote links:
-    %%   - writes any remote links that aren't already there
-    %%   - deletes any remote links that are no longer there
-    {NewLocPs, _NewRemotePs} = split_local_remote(Parents),
-
-    %% write the formula
-    ok = write_attr3(RefX, {"formula", Formula}), 
-
-    %% now write the rawvalue, etc, etc
-    ok = write_rawvalue(RefX, Value),
-
-    %% overwrite the parents and '__dependency-tree'
-    Set = fun(X, {Key, []})  -> delete_if_attrs(X, Key);
-             (X, {Key, Val}) -> write_attr(X, {Key, Val})
-          end,
-
-    Set(RefX, {"parents",           {xml, Parents}}),
-    Set(RefX, {"__dependency-tree", DepTree}),
-
-    %% Write local parents
-    set_local_relations(RefX, NewLocPs),
-
-    %% now do the remote parents
-    %% this is a bit messier - if a cell is being updated to change a
-    %% formula I don't want to first delete the old link (and trigger
-    %% an UNREGISTRATION of the hypernumbers) and then REWRITE the
-    %% same remote link and trigger a REGISTRATION so I first read the links
-    %OldRemotePs = read_remote_parents(RefX, incoming),
-    %ok = update_rem_parents(RefX, OldRemotePs, NewRemotePs),
-
-    %% We need to know the calculcated value
-    %%[{_RefX, {"rawvalue", RawValue}}] = read_attrs(RefX, ["rawvalue"], read),
-
-    %% mark this cell as a possible dirty hypernumber
-    %mark_notify_out_dirty(RefX, {new_value, RawValue, DepTree}),
-    ok.
+%% write_default_alignment1(RefX, Res) when is_number(Res) ->
+%%     write_attr(RefX, {"text-align" ,"right"});
+%% write_default_alignment1(RefX, Res) when is_list(Res) ->
+%%     write_attr(RefX, {"text-align" ,"left"});
+%% %% this clause matches for booleans, dates and errors
+%% write_default_alignment1(RefX, _Res)  ->
+%%     write_attr(RefX, {"text-align" ,"center"}).
 
 %% split_parents(Old, New) -> split_parents1(lists:sort(Old),
 %%                                           lists:sort(New), {[],[]}).
@@ -3008,23 +2747,14 @@ split_local_remote1([{_, [{_, "remote"}], [Url]} | T], {A, B}) ->
     P2 = hn_util:url_to_refX(Url),
     split_local_remote1(T, {A, [P2 | B]}).
 
-write_rawvalue(RefX, Value) when is_record(RefX, refX) ->
-    %% first write the rawvalue
-    ok = write_attr3(RefX, {"rawvalue", Value}),
-    %% now get the format that is to be applied
-    %% run the format and then stick the value into
-    %% the database
-    {ok, Format} = read_inherited(RefX, "format", "General"),
-    process_format(RefX, Format, Value).
-
-process_format(RefX, Format, Value) when is_record(RefX, refX) ->
-    {erlang, {_Type, Output}} = format:get_src(Format),
-    % I *still* hate American spelling
-    {ok, {Color, V}} = format:run_format(Value, Output),
-    % first write the formatted value
-    ok = write_attr3(RefX, {"value", V}),
-    % now write the overwrite colour that comes from the format
-    ok = write_attr3(RefX, {"overwrite-color", atom_to_list(Color)}).
+%% process_format(RefX, Format, Value) when is_record(RefX, refX) ->
+%%     {erlang, {_Type, Output}} = format:get_src(Format),
+%%     % I *still* hate American spelling
+%%     {ok, {Color, V}} = format:run_format(Value, Output),
+%%     % first write the formatted value
+%%     ok = write_attr3(RefX, {"value", V}),
+%%     % now write the overwrite colour that comes from the format
+%%     ok = write_attr3(RefX, {"overwrite-color", atom_to_list(Color)}).
 
 get_item_list(Type, RefX, Key, Acc) ->
     case traverse(Type, RefX, Key) of
@@ -3136,24 +2866,26 @@ make_clause([], _, Op, Acc)      ->
 make_clause([H | T], PH, Op, A)  -> 
     make_clause(T, PH, Op, [{'==', PH, H} | A]).
 
-delete_style_attr(#refX{site = S} = RefX, Key)  ->
-    %% this function works by overwriting the set style attribute in the
-    %% current style record with []
-    [{RefX, {"style", Idx}}] = read_attrs(RefX, ["style"], write),
-    PageRefX = RefX#refX{obj = {page, "/"}},
-    Match = #styles{refX = PageRefX, index = Idx, _ = '_'},
-    Table = trans(S, styles),
-    [CurrentStyle] = mnesia:index_match_object(Table, Match, 1, read),
-    NewStyleIdx = get_style(RefX, CurrentStyle, Key, []),
-    write_attr3(RefX, {"style", NewStyleIdx}).    
+%% delete_style_attr(#refX{site = S} = RefX, Key)  ->
+%%     %% this function works by overwriting the set style attribute in the
+%%     %% current style record with []
+%%     [{RefX, {"style", Idx}}] = read_attrs(RefX, ["style"], write),
+%%     PageRefX = RefX#refX{obj = {page, "/"}},
+%%     Match = #styles{refX = PageRefX, index = Idx, _ = '_'},
+%%     Table = trans(S, styles),
+%%     [CurrentStyle] = mnesia:index_match_object(Table, Match, 1, read),
+%%     NewStyleIdx = get_style(RefX, CurrentStyle, Key, []),
+%%     write_attr3(RefX, {"style", NewStyleIdx}).
+
 
 %% this function is called when a new attribute is set for a style
-process_styles(RefX, {Name, Val}) when is_record(RefX, refX) ->
+-spec process_style(#refX{}, {string(), term()}) -> {string(), term()}.
+process_style(RefX, {Name, Val}) ->
     NewSIdx = case read_attrs(RefX, ["style"], read) of 
-                  []                       -> get_style(RefX, Name, Val);
+                  []                        -> get_style(RefX, Name, Val);
                   [{RefX2, {"style", Idx}}] -> get_style(RefX2, Idx, Name, Val) 
               end,
-    write_attr3(RefX, {"style", NewSIdx}).    
+    {"style", NewSIdx}.
 
 get_style(RefX, Name, Val) ->
     NoOfFields = ms_util2:no_of_fields(magic_style), 
@@ -3221,16 +2953,6 @@ make_tuple(Style, Counter, Index, Val) ->
 make_tuple1(S, 0, _I, _V, Acc) -> list_to_tuple([S|Acc]); 
 make_tuple1(S, I, I, V, Acc )  -> make_tuple1(S, I -1 , I, V, [V | Acc]); 
 make_tuple1(S, C, I, V, Acc)   -> make_tuple1(S, C - 1, I, V, [[] | Acc]).
-
-drop_private(List) -> drop_private(List, []).
-
-drop_private([], Acc) -> Acc;
-drop_private([H | T], Acc) ->
-    {_, {Name, _}} = H,
-    case Name of
-        "__"++_ -> drop_private(T, Acc);
-        _       -> drop_private(T, [H | Acc])
-    end.
 
 extract_values(List) -> extract_values1(List, []).
 
