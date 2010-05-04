@@ -114,7 +114,7 @@
          drag_n_drop/3,
          copy_n_paste/3,
          cut_n_paste/3,
-         copy_style/2,
+         copy_style/3,
          insert/2,
          insert/3,
          delete/2,
@@ -1260,15 +1260,17 @@ drag_n_drop(From, To, Ar)
 %%      From can only be a cell ref but To can be either a cell or range
 %%      ref
 %% @end
+copy_style(#refX{obj = {range, {X, Y, _, _}}} = From, To, Ar) ->
+                  copy_style(From#refX{obj = {cell, {X, Y}}}, To, Ar);
 copy_style(#refX{obj = {cell, _}} = From, 
-           #refX{obj = {Type, _}} = To)
+           #refX{obj = {Type, _}} = To, Ar)
   when Type == cell orelse Type == range ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  hn_db_wu:copy_style(From, To)
+                  hn_db_wu:copy_style(From, To, Ar)
           end,
     ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("drag n drop").
+    ok = tell_front_end("copy style").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
