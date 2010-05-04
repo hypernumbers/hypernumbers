@@ -497,12 +497,9 @@
          read_inherited/3,
          read_inherited_list/2,
          read_styles/1,
-         read_incoming_hn/2,
          local_idx_to_refX/2,
          read_whole_page/1,
          read_range/1,
-         find_incoming_hn/2,
-         read_outgoing_hns/2,
          clear_cells/1,
          clear_cells/2,
          delete_page/1,
@@ -515,28 +512,12 @@
          delete_col_objs/1,
          get_local_children/1,
          shift_children/3,
-         shift_remote_links/4,
-         shift_inc_hns/2,
          copy_cell/3,
          copy_attrs/3,
          copy_style/3,
          get_cells/1,
          mark_children_dirty/2,
          mark_these_dirty/2,
-         %% mark_dirty/2,
-         %% mark_notify_out_dirty/2,            
-         %% mark_notify_out_dirty/3,      
-         update_inc_hn/5,
-         does_remote_link_exist/3,
-         write_remote_link/3,
-         %% register_out_hn/4,
-         %% unregister_out_hn/2,
-         verify_biccie_in/3,
-         verify_biccie_out/3,
-         incr_remote_page_vsn/3,
-         get_new_local_page_vsn/2,
-         read_page_vsn/2,
-         initialise_remote_page_vsn/3, 
          read_page_structure/1,
          read_pages/1,
          get_cell_for_muin/1,
@@ -553,13 +534,6 @@
 %% Structural Query Exports
 -export([
          get_last_refs/1
-        ]).
-
-%% These functions are exposed for the dirty_srv to use
--export([
-         read_remote_parents/2,
-         read_remote_children/2,
-         read_remote_children/3
         ]).
 
 -export([
@@ -629,38 +603,6 @@ write_style_IMPORT(RefX, Style)
     write_attr3(RefX, {"style", NewIndex}),
     ok.
 
-%% @spec shift_remote_links(Type1, OldRef::#refX{}, 
-%% NewRef::#refX{}, Type1)  -> ok
-%% Type1 = [parent | child]
-%% Type2 = [incoming | outgoing]
-%% @doc shifts remote links from the Old Reference to the New Reference. 
-%% Both References must be a cell reference.
-shift_remote_links(Type1, From, To, Type2)
-  when is_record(From, refX), is_record(To, refX),
-       ((Type1 == parent) orelse (Type1 == child)),
-       ((Type2 == incoming) orelse (Type2 == outgoing)) ->
-    #refX{site = Site} = From,
-    Head = ms_util:make_ms(remote_cell_link, [{Type1, From}, {type, Type2}]),
-    Match = {Head, [], ['$_']},
-    Recs = mnesia:select(trans(Site, remote_cell_link), [Match], write),
-    LinkedCells = Recs,
-    shift_remote_links2(Site, LinkedCells, To).
-
-%% @spec shift_inc_hns(Refs, NewParent::#refX{}) -> ok
-%% Regs = [#refX{}] | #refX{}
-%% @doc shifts an incoming hypernumber to the New Parent.
-%% NewParent must be a reference to a cell.
-shift_inc_hns(List, NewParent)
-  when is_list(List), is_record(NewParent, refX) ->
-    [ok = shift_inc_hns(X, NewParent) || X <- List],
-    ok;
-shift_inc_hns(#incoming_hn{site_and_parent = SP} = Inc_Hn, NewParent)
-  when is_record(Inc_Hn, incoming_hn), is_record(NewParent, refX) ->
-    {Site, _OldP} = SP,
-    NewRec = Inc_Hn#incoming_hn{site_and_parent = {Site, NewParent}},
-    ok = mnesia:delete_object(trans(Site, incoming_hn), Inc_Hn, write),
-    ok = mnesia:write(trans(Site, incoming_hn), NewRec, write).
-
 %% @spec shift_children(Children, OldParent::#refX{}, NewParent::#refX{}) -> ok
 %% Children = [ [#refX{}] | #refX{} ]
 %% @doc shift_children is called when a message comes in from a remote parent
@@ -691,205 +633,6 @@ shift_children(Child, OldParent, NewParent)
                                       Formula
                  end,
     write_attr(Child, {"formula", NewFormula}).
-
-%% @spec initialise_remote_page_vsn(Site, Page::#refX{}, Version) -> ok
-%% @doc intialises the page version for a 'newly discovered' remote page.
-%% This function is only called the first time that a remote pages makes a
-%% request and the function {@link read_page_vsn_raw/2} returns 
-%% <code>undefined</code>
-initialise_remote_page_vsn(Site, RefX, Version)
-  when is_record(RefX, refX) ->
-    Page = RefX#refX{obj = {page, "/"}},
-    Record = #page_vsn{site_and_pg = {Site, Page}, version = Version},
-    mnesia:write(trans(Site, page_vsn), Record, write).
-
-%% @spec incr_remote_page_vsn(Site, Version::#version{}, Payload) -> 
-%% [ok | {error, unsynched}]
-%% NewVersion = integer()
-%% @doc increments the local storage of a page version number for a page on
-%% a remote site if the new increment is one above the old one. If the increment
-%% is greater than 1 returns an error which should trigger a resynch.
-%% Incrementation of page versions for local pages should be done with 
-%% {@link get_new_local_page_vsn/2}
-incr_remote_page_vsn(Site, #version{version = "undefined"} = V, Payload) ->
-    #version{page = Page} = V,
-    PageX = hn_util:url_to_refX(Page),
-    Record = #page_vsn{site_and_pg = {Site, PageX}, version = 1},
-    ok = mnesia:write(trans(Site, page_vsn), Record, write),
-                                                % now write a history record
-    {Type, Ref, Displacement} = json_util:json_to_payload(Payload),
-    ActionRefX = PageX#refX{obj = Ref},
-    Record2 = #page_history{site_and_pg = {Site, PageX}, 
-                            action = {Type, Displacement},
-                            action_refX = ActionRefX, 
-                            version = 1},
-    ok = mnesia:write(trans(Site, page_history), Record2, write),
-    synched;
-incr_remote_page_vsn(Site, Version, Payload) when is_record(Version, version) ->
-    #version{page = Page, version = NewVsn} = Version,
-    PageX = hn_util:url_to_refX(Page),
-    OldVsn = read_page_vsn(Site, PageX),
-    case OldVsn + 1 of
-        NewVsn -> Record = #page_vsn{site_and_pg = {Site, PageX}, version = NewVsn},
-                  ok = mnesia:write(trans(Site, page_vsn), Record, write),
-                  {Type, Ref, Displacement} = json_util:json_to_payload(Payload),
-                  ActionRefX = PageX#refX{obj = Ref},
-                  Record2 = #page_history{site_and_pg = {Site, PageX},
-                                          action = {Type, Displacement},
-                                          action_refX = ActionRefX, version = NewVsn},
-                  ok = mnesia:write(trans(Site, page_history), Record2, write),
-                  synched;
-        _      -> unsynched
-    end.
-
-%% @spec(get_new_local_page_vsn(RefX :: #refX{}, Action) -> NewVsn
-%% NewVsn = integer()
-%% @doc writes an action to the page version table and gets the new
-%% version number of the page for a page on the current server - doesn't affect
-%% the page version information for pages on other servers which must be increased
-%% using (@link incr_remote_page_vsn/3}.
-%% RefX can be a cell, range, column, row or page reference. 
-%% (the page_vns tables hold the page version for both local and remote sites)
-get_new_local_page_vsn(#refX{site = Site} = RefX, Action) ->
-
-    PageRefX = RefX#refX{obj = {page, "/"}},
-    %% first read the current page version number, increment it and overwrite it
-    NewVsn = case mnesia:read(trans(Site, page_vsn), {Site, PageRefX}) of
-                 []                       -> 1;
-                 [#page_vsn{version = N}] -> N + 1
-             end,
-    Record1 = #page_vsn{site_and_pg = {Site, PageRefX}, version = NewVsn},
-    ok = mnesia:write(trans(Site, page_vsn), Record1, write),
-    %% now write the history table
-    Record2 = #page_history{site_and_pg = {Site, PageRefX},
-                            action = Action,
-                            action_refX = RefX, version = NewVsn},
-    ok = mnesia:write(trans(Site, page_history), Record2, write),
-    NewVsn.
-
-%% @spec read_page_vsn(Site, RefX::#refX{}) -> Vsn
-%% Vsn = integer()
-%% @doc gets the current page number of a page. 
-%% The variable Site is the protocol, domain name and port of the current site
-%% (eg "http://sub.dom.tld:1234")
-%% RefX is a reference to an object on the same Site and can be a cell, range,
-%% column, row or page reference. 
-%% (the page_vns tables hold the page version for both local and remote sites)
-read_page_vsn(Site, RefX) when is_record(RefX, refX) ->
-    PageRefX = RefX#refX{obj = {page, "/"}},
-    case mnesia:read({trans(Site, page_vsn), {Site, PageRefX}}) of
-        []                       -> "undefined";
-        [#page_vsn{version = N}] -> N
-    end.
-
-%% @spec register_out_hn(Parent::#refX{}, Child::#refX{}, Proxy, Biccie) -> ok
-%% @doc register_hypernumber registers a new hypernumber.
-%% This function is *ONLY* called on the parent (or out) side of the relationship
-%% register_out_hn(Parent, Child, Proxy, Biccie)
-%%   when is_record(Parent, refX), is_record(Child, refX)->
-%%     #refX{site = ParentSite} = Parent,
-%%     #refX{site = ChildSite} = Child,
-%%     Hn = #outgoing_hn{site_and_parent = {ParentSite, Parent},
-%%                       biccie          = Biccie,
-%%                       child_site      = ChildSite,
-%%                       child_proxy     = Proxy},
-%%     mnesia:write(trans(ParentSite, outgoing_hn), Hn, write).
-
-%% @spec does_remote_link_exist(Parent::#refX{}, Child::#refX{}, Type) -> 
-%% [true | false]
-%% Type = [incoming | outgoing]
-%% @doc does_remote_link_exists checks if a remote link already exists
-does_remote_link_exist(Parent, Child, Type)
-  when is_record(Parent, refX), is_record(Child, refX),
-       (Type =:= incoming orelse Type =:= outgoing) ->
-    #refX{site = Site} = case Type of
-                             incoming -> Child;
-                             outgoing -> Parent
-                         end,
-    Head = #remote_cell_link{parent = Parent, child = Child, 
-                             type = Type, _ = '_'},
-    Match = [{Head, [], ['$_']}],
-    case mnesia:select(trans(Site, remote_cell_link), Match, read) of
-        []     -> false;
-        [_Rec] -> true
-    end.
-
-%% @spec verify_biccie_out(Parent::#refX{}, Child::#refX{}, Biccie) -> [true | false]
-%% @doc verifies if a biccie provided for an outgoing hyperlink is valid. It strips out
-%% the Child site from the Child <code>#refX{}</code>.
-verify_biccie_out(Parent, Child, Biccie)
-  when is_record(Parent, refX), is_record(Child, refX) ->
-    #refX{site = ParentSite} = Parent,
-    #refX{site = ChildSite} = Child,
-    Match = #outgoing_hn{site_and_parent = {ParentSite, Parent},
-                         child_site = ChildSite, _ = '_'},
-    %% because it is an outgoing hypernumber the site for the table is the parent site...
-    Table = trans(ParentSite, outgoing_hn),
-    [Hn] = mnesia:match_object(Table, Match, read),
-    #outgoing_hn{biccie = Biccie2} = Hn,
-    case Biccie of
-        Biccie2 -> true;
-        _       ->
-            _PUrl = hn_util:refX_to_url(Parent),
-            _CUrl = hn_util:refX_to_url(Child),
-            false
-    end.
-
-%% @spec verify_biccie_in(Site, Parent::#refX{}, Biccie) -> [true | false]
-%% @doc verifies if a biccie provided for an incoming hyperlink is valid. 
-%% Site is the local site. It strips out
-%% the child site from the Child <code>#refX{}</code>.
-verify_biccie_in(Site, Parent, Biccie) when is_record(Parent, refX) ->
-    Match = #incoming_hn{site_and_parent = {Site, Parent}, _ = '_'},
-    Table = trans(Site, incoming_hn),
-    List = mnesia:match_object(Table, Match, read),
-    case List of
-        []   -> false;
-        [Hn] -> #incoming_hn{biccie = Biccie2} = Hn,
-                case Biccie of
-                    Biccie2 -> true;
-                    _       -> false
-                end
-    end.
-
-%% @spec write_remote_link(Parent::#refX{}, Child::#refX{}, Type) -> ok
-%% @doc writes a remote link between the parent and the child.
-%% Both parent and child references must be to a cell. The parent is on the
-%% remote site and the child is on the local site
-write_remote_link(P, C, Type)
-  when is_record(P, refX), is_record(C, refX),
-       (Type =:= incoming orelse Type =:= outgoing)->
-    Rec = #remote_cell_link{parent = P, child = C, type = Type},
-    #refX{site = Site} = case Type of
-                             incoming -> C;
-                             outgoing -> P
-                         end,
-    mnesia:write(trans(Site, remote_cell_link), Rec, write).
-
-%% @spec update_inc_hn(Parent::#refX{}, Child::#refX{}, Val, 
-%% DepTree, Biccie) -> ok
-%% DepTree = list()
-%% @doc update_inc_hn will try and update the incoming hypernumber with
-%% a new value.
-%% Both Parent and Child must be cell references
-%% This function also triggers the child cells as dirty so they recalculate
-
-update_inc_hn(Parent, Child, Val, DepTree, Biccie)
-  when is_record(Parent, refX), is_record(Child, refX) ->
-    Val2 = if is_list(Val) ->
-                   case superparser:process(Val) of
-                       {formula, {_Type, V}}       -> V;
-                       [{_Type, V}, _Align, _Frmt] -> V
-                   end;
-              true ->
-                   Val
-           end,
-    ChildSite = Child#refX.site,
-    Rec1 = #incoming_hn{site_and_parent = {ChildSite, Parent}, value = Val2,
-                        'dependency-tree' = DepTree, biccie = Biccie},
-    ok = mnesia:write(trans(ChildSite, incoming_hn), Rec1, write),
-    Rec2 = #dirty_notify_in{parent = Parent},
-    ok = mark_dirty(ChildSite, Rec2).
 
 %% @doc takes a reference and expands it to *populated* cell references.
 %% The reference can be any of:
@@ -1018,57 +761,6 @@ get_last_refs(#refX{site = S, path = P}) ->
           end,
     Zero = #refX{site = S, path = P, obj = {cell, {0, 0}}},
     lists:foldl(Fun, {Zero, Zero}, Cells).
-
-%% @spec read_remote_parents(Ref, type) -> [#refX{}]
-%% Ref = #refX{} | [#refX{}]
-%% @doc this returns the remote parents of a reference.
-%% 
-%% The reference can be either a single <code>#refX{}</code> or a list
-%% of them. (rows, columns, ranges and pages are disallowed either way).
-%% 
-%% This fn is called read_remote_parents:
-%% <ul>
-%% <li>if the type is <code>incoming</code> and the reference is to a remote cell it 
-%% returns all the parents of that remote cell on this site</li>
-%% <li>if the type is <code>outgoing</code> and the reference is to a remote cell it
-%% returns all the parents of the local cell on the remote server</li>
-%% </ul>
-read_remote_parents(List, Type) when is_list(List) ->
-    Return = [read_remote_parents(X, Type) || X <- List],
-    lists:flatten(Return);
-read_remote_parents(#refX{site = Site, obj = {cell, _}} = Child, Type)
-  when Type =:= incoming; Type =:= outgoing ->
-    Match = #remote_cell_link{child = Child, type = Type, _ = '_'},
-    Table = trans(Site, remote_cell_link),
-    Links = mnesia:match_object(Table, Match, read),
-    get_remote_parents(Links).
-
-%% @spec read_remote_children(Ref, Type) -> [#refX{}]
-%% Ref = #refX{} | [#refX{}]
-%% @doc this returns the remote children of a reference.
-%% 
-%% The reference can be either a single <code>#refX{}</code> be to a cell or a list
-%% of them. (rows, columns, ranges and pages are disallowed either way).
-%% 
-%% This fn is called read_remote_children:
-%% <ul>
-%% <li>if the type is <code>incoming</code> and the reference is to a remote cell it 
-%% returns all the children of that remote cell</li>
-%% <li>if the type is <code>outgoing</code> and the reference is to a local cell it
-%% returns all the children of the local cell on the remote server</li>
-%% </ul>
-read_remote_children(List, Type) when is_list(List) ->
-    Return = [read_remote_children(X, Type) || X <- List],
-    lists:flatten(Return);
-read_remote_children(#refX{site = Site, obj = {cell, _}} = Parent, Type) ->
-    read_remote_children(Site, Parent, Type).
-
-read_remote_children(Site, #refX{obj = {cell,_}} = Parent, Type)
-  when Type =:= incoming; Type =:= outgoing ->
-    Match = #remote_cell_link{parent = Parent, type = Type, _ = '_'},
-    Table = trans(Site, remote_cell_link),
-    Links = mnesia:match_object(Table, Match, read),
-    get_remote_children(Links).    
 
 %% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> ok
 %% Key = atom()
@@ -1418,10 +1110,7 @@ shift_cells(From, Type, Disp, Rewritten)
     end.
 
 shift_cells1(From, To) when is_record(From, refX), is_record(To, refX) ->
-    ok = shift_dirty_notify_ins(From, To),
-    ok = shift_remote_links(parent, From, To, outgoing),
-    ok = shift_remote_links(child, From, To, incoming),
-    ok.
+    ok = shift_dirty_notify_ins(From, To).
 
 -spec delete_col_objs(#refX{}) -> ok.
 %% @doc deletes any col objects completely covered by the #refX{}
@@ -1602,7 +1291,7 @@ clear_cells2(RefX, contents, Type) when is_record(RefX, refX) ->
         List1 ->
             List2 = get_cells(RefX),
             %% now delete the links to the cells
-            [ok = delete_parent_links(X) || X <- List2],
+            [ok = set_local_relations(X, []) || X <- List2],
             %% finally delete all the attributes
             List3 = case Type of
                         exclusive -> get_content_attrs(List1);
@@ -1891,81 +1580,6 @@ copy_style(#refX{obj = {cell, _}} = From,
             [ok = Fun(X) || X <- List],
             ok
     end.
-
-%% @spec read_incoming_hn(Site, Parent) -> #incoming_hn{} | []
-%% Parent = [#refX{}]
-%% @doc reads an incoming hypernumber from the reference to the parent cell
-%% The reference can be either a single <code>#refX{}</code> be to a cell, page
-%% or a list of them. (rows, columns and ranges are disallowed).
-%% @todo extend the hypernumbers paradigm to include registering with a range,
-%% column, row or query, etc, etc
-read_incoming_hn(Site, Args) ->
-    read_incoming_hn2(Site, Args).
-
-read_incoming_hn2(Site, List) when is_list(List) ->
-    Return = [read_incoming_hn2(Site, X) || X <- List], 
-    lists:flatten(Return);
-read_incoming_hn2(Site, #refX{obj = {page, _}} = RefX) ->
-    MatchRef = make_page_match(Site, RefX, incoming_hn),
-    read_incoming_hn3(Site, MatchRef);
-read_incoming_hn2(Site, #refX{obj = {cell, _}} = Parent)
-  when is_record(Parent, refX) ->
-    Head = #incoming_hn{site_and_parent = {Site, Parent}, _ = '_'},
-    read_incoming_hn3(Site, Head).
-
-read_incoming_hn3(Site, Head) ->
-    Table = trans(Site, incoming_hn),
-    mnesia:select(Table, [{Head, [], ['$_']}], write).
-
-%% @spec find_incoming_hn(Site, Parent) -> #incoming_hn{} | []
-%% Parent = [#refX{}]
-%% @doc finds an incoming hypernumber from a reference to one of its children
-%% The reference can be either a single <code>#refX{}</code> be to a cell, a page
-%%  or a list of them. (rows, columns and ranges are disallowed either way).
-%% @todo extend the hypernumbers paradigm to include registering with a range,
-%% column, row or query, etc, etc
-find_incoming_hn(Site, List) when is_list(List) ->
-    Return = [find_incoming_hn(Site, X) || X <- List], 
-    lists:flatten(Return);
-find_incoming_hn(Site, RefX) when is_record(RefX, refX) ->
-    %% first expand the list to cells
-    List = get_cells(RefX),
-    %% now get all the remote cell links with a reference as a child...
-    Parents = read_remote_parents(List, incoming),
-    read_incoming_hn(Site, Parents).
-
-%% @spec read_outgoing_hns(Site, Parent) -> [#outgoing_hn{}]
-%% Parent = #refX{} | [#refX{}]
-%% @doc reads the details of all outgoing hypernumbers from a particular cell.
-%% The reference can be either a single <code>#refX{}</code> be to a cell, a page
-%% or a list containing either
-%% of them. (rows, columns and ranges are disallowed either way).
-%% @todo extend the hypernumbers paradigm to include registering with a range,
-%% column, row or query, etc, etc
-read_outgoing_hns(Site, List) when is_list(List) ->
-    Return = [read_outgoing_hns(Site, X) || X <- List], 
-    lists:flatten(Return);
-read_outgoing_hns(Site, #refX{obj = {page, _}} = RefX) ->
-    MatchRef = make_page_match(Site, RefX, outgoing_hn),
-    Table = trans(Site, outgoing_hn),
-    mnesia:select(Table, [{MatchRef, [], ['$_']}]);
-read_outgoing_hns(Site, #refX{obj = {cell, _}} = Parent)
-  when is_record(Parent, refX) ->
-    MatchRef = #outgoing_hn{site_and_parent = {Site, Parent}, _ = '_'},
-    Table = trans(Site, outgoing_hn),
-    mnesia:select(Table, [{MatchRef, [], ['$_']}]).
-
-
-%% @spec mark_dirty(Site, Record) -> ok
-%% Record = #dirty_notify_back_in{} | #dirty_notify_in{}
-%% @doc writes a record to the appropriate dirty table
-mark_dirty(Site, Record)
-  when (is_record(Record, dirty_notify_back_in)
-        orelse is_record(Record, dirty_notify_in)
-        orelse is_record(Record, dirty_notify_back_out)
-        orelse is_record(Record, dirty_inc_hn_create)) ->
-    Tbl = trans(Site, element(1,Record)),
-    mnesia:write(Tbl, Record, write).
 
 -spec mark_these_dirty([#refX{}], nil | uid()) -> ok.
 mark_these_dirty([], _) -> ok;
@@ -2395,12 +2009,6 @@ get_refs_right2(RefX, X, MinY, MaxY) ->
 %     Return1 = lists:foldl(Fun, [], Return),
 %     hslists:uniq(Return1).
 
-make_page_match(Site, RefX, RecordName) ->
-    #refX{site = S, path = P} = RefX,
-    Match  = ms_util:make_ms(refX, [{site, S}, {path, P},
-                                    {obj, {cell, {'$1', '$2'}}}]),
-    ms_util:make_ms(RecordName, [{site_and_parent, {Site, Match}}]).
-
 make_range_match_ref(RefX) ->
     #refX{path = P, obj = Range} = RefX,
     {range, {X1, Y1, X2, Y2}} = Range,
@@ -2800,37 +2408,6 @@ fl([{_, {"__ast", _}} | T], A, B)             -> fl(T, A, B);
 fl([{_, {"formula", V}}| T], A, B)            -> fl(T, [V | A], B);
 fl([H | T], A, B)                             -> fl(T, A, [H | B]).
 
-
--spec delete_parent_links(#refX{}) -> ok.
-delete_parent_links(RefX) ->
-    ok = set_local_relations(RefX, []).
-    %%ok = delete_remote_parents(RefX).
-
-get_remote_parents(List) -> get_r_p(List, []).
-
-get_r_p([], Acc) -> Acc;
-get_r_p([#remote_cell_link{parent = P} | T], Acc) ->
-    get_r_p(T, [P | Acc]).
-
-get_remote_children(List) -> get_r_c(List, []).
-
-get_r_c([], Acc) -> Acc;
-
-get_r_c([#remote_cell_link{child = C} | T], Acc) ->
-    get_r_c(T, [C | Acc]).
-
-%% delete_remote_parents(#refX{site = Site} = Child) ->
-%%     Match = #remote_cell_link{child = Child, type = incoming, _ = '_'}, 
-%%     Table = trans(Site, remote_cell_link),
-%%     Parents = mnesia:match_object(Table, Match, read),
-%%      %% unregister the hypernumbers
-%%      delete_recs(Site, Parents),
-%%      Fun = fun(#remote_cell_link{parent = P, child = C}) ->
-%%                    unregister_inc_hn(P, C)
-%%            end,
-%%      [ok = Fun(X) || X <- Parents],
-%%      ok.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Local Relations 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2959,15 +2536,6 @@ get_content_attrs([H | T], Acc) ->
         "parents"           -> get_content_attrs(T, [H | Acc]);
         _                   -> get_content_attrs(T, Acc)
     end.
-
-shift_remote_links2(_Site, [], _To) -> ok;
-shift_remote_links2(Site, [H | T], To) ->
-    %% now delete the old remote link
-    Table = trans(Site, remote_cell_link),
-    NewLink = H#remote_cell_link{parent = To},
-    ok = mnesia:delete_object(Table, H, write),
-    ok = mnesia:write(Table, NewLink, write),
-    shift_remote_links2(Site, T, To).
 
 %% dereferences a formula
 deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
