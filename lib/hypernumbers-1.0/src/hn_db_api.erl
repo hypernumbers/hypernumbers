@@ -1014,7 +1014,6 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp, Ar) ->
     ok = init_front_end_notify(),
     % if the Type is delete we first delete the original cells
     R = {insert, atom_to_list(Disp)},
-    _NewVsn = hn_db_wu:get_new_local_page_vsn(RefX, R),
     % when the move type is DELETE the cells that are moved
     % DO NOT include the cells described by the reference
     % but when the move type is INSERT the cells that are

@@ -1274,7 +1274,7 @@ clear_cells1(RefX, style) when is_record(RefX, refX) ->
     % now read and rewrite the rawvalue to display the format changes
     [ok = write_rawvalue(X, V) || {X, {_K, V}} <- get_rawvalues(List2)],    
     ok;
-clear_cells1(RefX, {attribute, AttrList}) ->
+clear_cells1(RefX, {attributes, AttrList}) ->
     case read_attrs(RefX, write) of
         []    -> ok;
         List1 -> List2 = get_attrs(List1, AttrList),
@@ -2425,11 +2425,7 @@ get_local_children(#refX{site = Site} = X) ->
 get_local_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
     get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, children).
 
-% -spec get_local_parent_idxs(#refX{}) -> [cellidx()]. 
-% get_local_parent_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
-%     get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, parents).
-
--spec get_local_rel_idxs(#refX{}, relation) -> [cellidx()]. 
+-spec get_local_rel_idxs(#refX{}, children|parents) -> [cellidx()]. 
 get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, Relation) ->
     case read_local_item_index(Ref) of
         false -> 
@@ -2499,7 +2495,7 @@ set_local_parents(Tbl,
     Rel#relation{parents = ParentIdxs}.
 
  %% Adds a new child to a parent.
--spec add_local_child(cellidx(), cellidx(), atom()) -> integer().
+-spec add_local_child(cellidx(), cellidx(), atom()) -> ok.
 add_local_child(CellIdx, Child, Tbl) ->
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R;
