@@ -13,7 +13,6 @@
 
 -export([make_src/1,
          get_general/0,
-         get_markdown/0,
          get_plain/0,
          verify/1,
          esc/1,
@@ -30,17 +29,6 @@ make_src(A)                 -> make_src2([A]).
         "(( is_list(X) andalso X=/=[] andalso (not(is_atom(hd(X)))) )
         orelse
         ( is_tuple(X) andalso element(1, X) == ustring))").
-
-get_markdown() ->
-    Src = "fun(X) -> "++
-        "    if"++
-        "      "++?is_str++"     -> {auto, markdown:conv_utf8(X)};"++
-        "      not(is_number(X)) -> {auto, X};"++
-        "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++ 
-        "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
-        "     end "++
-        "end.", 
-    {number,Src}.    
 
 get_general() ->
     Src = "fun(X) -> "++
