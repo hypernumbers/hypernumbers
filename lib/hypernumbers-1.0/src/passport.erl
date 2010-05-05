@@ -14,8 +14,9 @@
           email_to_uid/1,
           validate_uid/1,
           is_valid_uid/1,
-          get_or_create_user/1,
+          get_or_create_user/1, get_or_create_user/2,
           delete_uid/1,
+          create_uid/0,
           dump_script/0,
           load_script/1
         ]).
@@ -159,11 +160,21 @@ is_valid_uid(Uid) ->
 
 -spec get_or_create_user(string()) -> {ok, new | existing, string()}.
 get_or_create_user(Email) -> 
-    gen_server:call({global, ?MODULE}, {get_or_create_user, Email}).
+    SuggestedUid = create_uid(),
+    gen_server:call({global, ?MODULE}, {get_or_create_user, Email, SuggestedUid}).
+
+-spec get_or_create_user(string(), uid()) -> {ok, new | existing, string()}.
+get_or_create_user(Email, SuggestedUid) -> 
+    gen_server:call({global, ?MODULE}, {get_or_create_user, Email, SuggestedUid}).
     
 -spec delete_uid(string()) -> ok.
 delete_uid(Uid) when is_list(Uid) ->
     gen_server:call({global, ?MODULE}, {delete_uid, Uid}).
+
+-spec create_uid() -> uid().
+create_uid() ->
+    Bin = crypto:rand_bytes(16),
+    mochihex:to_hex(Bin).
 
 -spec load_script(list()) -> ok.
 load_script(Terms) ->
@@ -281,14 +292,16 @@ handle_call({is_valid_uid, Uid}, _From, State) ->
           end,
     {reply, Ret, State};
 
-handle_call({get_or_create_user, Email}, _From, State) ->
-    Ms = ets:fun2ms(fun(#user{email=E, uid=U}) when E == Email -> U end),
+handle_call({get_or_create_user, Email, SuggestedUid}, _From, State) ->
+    Ms = ets:fun2ms(fun(#user{email=E, uid=U}) 
+                          when E == Email -> U
+                    end),
     T = fun() ->
                 case mnesia:select(service_passport_user, Ms, write) of
                     [U] -> 
                         {ok, existing, U};
-                    _ -> 
-                        User = #user{uid = create_uid(), email = Email},
+                    _ ->
+                        User = #user{uid = SuggestedUid, email = Email},
                         mnesia:write(service_passport_user, User, write),
                         {ok, new, User#user.uid}
                 end
@@ -368,11 +381,6 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-
--spec create_uid() -> uid().
-create_uid() ->
-    Bin = crypto:rand_bytes(16),
-    mochihex:to_hex(Bin).
 
 -spec stamp(uid(), string(), integer() | string()) -> string().
 stamp(Uid, Email, Age) ->

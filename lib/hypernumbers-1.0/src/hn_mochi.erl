@@ -805,7 +805,8 @@ ipost(#refX{site = Site, path = _P}, _Qry,
             json(Env, {struct, [{"result", "error"}, {"reason", Reason}]})
     end; 
     
-ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
+ipost(#refX{site=_Site, path=["_hooks"]}, 
+      _Qry, Env=#env{body=Body, uid=PrevUid}) ->
     [{"signup",{struct,[{"email",Email0}]}}] = Body,
     Email = string:to_lower(Email0),
     Zone = case application:get_env(hypernumbers, environment) of
@@ -813,7 +814,7 @@ ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
                {ok, production}  -> "tiny.hn"
            end,
     Type = demo,
-    case factory:provision_site(Zone, Email, Type) of
+    case factory:provision_site(Zone, Email, Type, PrevUid) of
         {ok, new, Site, Uid, Name} ->
             Opaque = [],
             Expiry = "never",
