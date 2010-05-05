@@ -159,7 +159,7 @@ create_site_tables(Site, Type)->
 -define(TBL(N, T, I), {N, record_info(fields, N), T, I}).
 tables() ->
     [ ?TBL(dirty_queue,           ordered_set, []),
-      ?TBL(attr,                  set,    	   []),
+      ?TBL(item,                  set,    	   []),
       ?TBL(local_objs,            bag,    	   [obj,idx]), 
       ?TBL(local_cell_link,       bag,    	   [childidx]), 
       ?TBL(relation,              set,    	   []),

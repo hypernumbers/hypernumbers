@@ -102,7 +102,6 @@
          read_last/1,
          write_style_IMPORT/2,
          read_attributes/2,
-         read/1,
          read_ref/1,
          read_inherited_list/2,
          read_inherited_value/3,
@@ -842,31 +841,9 @@ read_attributes(RefX, AttrList) when is_record(RefX, refX), is_list(AttrList) ->
     Fun = fun hn_db_wu:read_attrs/3,
     mnesia:activity(transaction, Fun, [RefX, AttrList, read]).
 
--spec read_ref(#refX{}) -> [{#refX{}, tuple()}].
-read_ref(#refX{obj = {page, "/"}} = RefX) ->
-    Fun = fun() -> hn_db_wu:read_whole_page(RefX) end,
-    mnesia:activity(transaction, Fun);
-read_ref(#refX{obj = {range, _}} = RefX) ->
-    Fun = fun() -> hn_db_wu:read_range(RefX) end,
-    mnesia:activity(transaction, Fun).
-
-%% @spec read(#refX{}) -> [{#refX{}, {Key, Value}}]
-%% Key = atom()
-%% Value = term()
-%% @doc read takes a refererence and returns the cell attributes.
-%% 
-%% The <code>refX{}</code> can be one of a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-read(RefX) when is_record(RefX, refX) ->
-    Fun = fun() ->
-                  hn_db_wu:read_cells(RefX, read)
-          end,
+-spec read_ref(#refX{}) -> [{#refX{}, {string(), term()}}].
+read_ref(RefX) ->
+    Fun = fun() -> hn_db_wu:read_ref(RefX) end,
     mnesia:activity(transaction, Fun).
 
 %% @spec read_styles(#refX{}) -> [Style]
@@ -1013,7 +990,7 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp, Ar) ->
 
     ok = init_front_end_notify(),
     % if the Type is delete we first delete the original cells
-    R = {insert, atom_to_list(Disp)},
+    _R = {insert, atom_to_list(Disp)},
     % when the move type is DELETE the cells that are moved
     % DO NOT include the cells described by the reference
     % but when the move type is INSERT the cells that are

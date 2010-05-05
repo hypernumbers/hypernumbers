@@ -492,12 +492,12 @@
          apply_attrs/3,
          read_styles/1,
          local_idx_to_refX/2,
-         read_ref/1,
-         clear_cells/1,
-         clear_cells/2,
-         delete_page/1,
-         delete_cells/1,
-         delete_attrs/2,
+         read_ref/1, read_ref/2, read_ref/3,
+         %clear_cells/1,
+         %clear_cells/2,
+         %delete_page/1,
+         %delete_cells/1,
+         %delete_attrs/2,
          shift_cells/4,
          shift_row_objs/2,
          shift_col_objs/2,
@@ -505,10 +505,9 @@
          delete_col_objs/1,
          get_local_children/1,
          %%shift_children/3,
-         copy_cell/3,
-         copy_attrs/3,
-         copy_style/3,
-         get_cells/1,
+         %% copy_cell/3,
+         %% copy_attrs/3,
+         %% copy_style/3,
          mark_children_dirty/2,
          mark_these_dirty/2,
          read_page_structure/1,
@@ -539,11 +538,6 @@
 
 -define(to_xml_str, simplexml:to_xml_string).
 -define(to_refX, hn_util:refX_from_index).
-
-%% bit of tidying up for later on
-
--define(AND, andalso).
--define(OR, orelse).
 
 -define(lt, list_to_tuple).
 -define(lf, lists:flatten).
@@ -627,43 +621,6 @@ write_style_IMPORT(RefX, Style)
 %%     %%                                   Formula
 %%     %%              end,
 %%     apply_attrs(Child, [{"formula", NewFormula}]).
-
-%% @doc takes a reference and expands it to *populated* cell references.
-%% The reference can be any of:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>row</li>
-%% <li>column</li>
-%% <li>page</li>
-%% </ul>
-%% and the return is a list of cell references
-%%
-%% If you want to expand a range to a list of cell references 
-%% irrespective of wether or not they are populated then use
-%% hn_util:range_to_list(refX{})
--spec get_cells(#refX{}) -> [#refX{}]. 
-get_cells(#refX{obj = {cell, _}} = RefX) -> [RefX];
-get_cells(#refX{site = S, obj = {range, _}} = RefX) ->
-    MatchRef = make_range_match_ref(RefX),
-    get_cells1(S, MatchRef);
-get_cells(#refX{site = S, obj = {row, _}} = RefX) ->
-    MatchRef = make_row_match_ref(RefX),
-    get_cells1(S, MatchRef);
-get_cells(#refX{site = S, obj = {column, _}} = RefX) ->
-    MatchRef = make_col_match_ref(RefX),
-    get_cells1(S, MatchRef);
-get_cells(#refX{site = S, obj = {page, _}} = RefX) ->
-    MatchRef = make_page_match_ref(RefX),
-    get_cells1(S, MatchRef).
-
-get_cells1(Site, MatchRef) ->
-    Table = trans(Site, local_objs),
-    List = mnesia:select(Table, [MatchRef]),
-    Fun = fun(#local_objs{path = Path, obj = Obj}) ->
-                  #refX{site = Site, path = Path, obj = Obj}
-          end,
-    [Fun(X) || X <- List].
 
 %% @spec get_refs_below(#refX{}) -> [#refX{}]
 %% @doc gets all the refs equal to or below a given reference as well as
@@ -848,21 +805,24 @@ merge_left(_Key, V1, _V2) -> V1.
 %% write_attr(RefX, {Key, Val}, _Ar) when is_record(RefX, refX) ->
 %%     write_attr3(RefX, {Key, Val}).
 
+expand_ref(#refX{site=S}=Ref) ->
+    [lobj_to_ref(S, LO) || LO <- read_objs(Ref)].
+
 read_ref(Ref) ->
     read_ref(Ref, all, read).
 read_ref(Ref, Field) ->
     read_ref(Ref, Field, read).
 
-%% Read/Write lock is passed into read_attrs.
 -spec read_ref(#refX{}, all | string(), read | write) 
               -> [{#refX{}, [{string(), term()}]}].
-read_ref(#refX{site = S, path = P, obj = {page, "/"}}, 
-         Field, Lock) ->
+read_ref(#refX{site=S}=Ref, Field, Lock) ->
+    read_attrs(S, read_objs(Ref), Field, Lock).
+
+-spec read_objs(#refX{}) -> [#local_objs{}]. 
+read_objs(#refX{site = S, path = P, obj = {page, "/"}}) ->
     MS = ets:fun2ms(fun(LO=#local_objs{path=MP}) when MP == P -> LO end),
-    List = mnesia:select(trans(S, local_objs), MS),
-    read_attrs(S, List, Field, Lock);
-read_ref(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}},
-         Field, Lock) ->
+    mnesia:select(trans(S, local_objs), MS);
+read_objs(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
     MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
                           when MP == P,
                                X1 =< MX, MX =< X2, 
@@ -874,28 +834,24 @@ read_ref(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}},
                           when MP == P,
                                Y1 =< MY, MY =< Y2 -> LO
                     end),
-    List = mnesia:select(trans(S, local_objs), MS),
-    read_attrs(S, List, Field, Lock);
-read_ref(#refX{site = S, path = P, obj = {cell, {X,Y}}},
-         Field, Lock) ->
+    mnesia:select(trans(S, local_objs), MS);
+read_objs(#refX{site = S, path = P, obj = {cell, {X,Y}}}) ->
     MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}})
                           when MP == P, MX == X, MY == Y -> LO
                     end),
-    List = mnesia:select(trans(S, local_objs), MS),
-    read_attrs(S, List, Field, Lock).
+    mnesia:select(trans(S, local_objs), MS).
 
--spec read_attrs(string(), [#local_objs{}], all|string(), read|write) 
+-spec read_attrs(string(), [#local_objs{}], all|string(), read|write)
                 -> [{#refX{}, [{string(), term()}]}]. 
 read_attrs(S, LocObjs, Field, Lock) ->
     Tbl = trans(S, item),
     read_attrs_(LocObjs, S, Tbl, Field, Lock, []).
 read_attrs_([], _S, _Tbl, _Field, _Lock, Acc) ->
     lists:reverse(Acc);
-read_attrs_([#local_objs{path=P, obj=O, idx=I}|Tail],
-            S, Tbl, Field, Lock, Acc) ->
-    case mnesia:read(Tbl, I, Lock) of
+read_attrs_([LO|Tail], S, Tbl, Field, Lock, Acc) ->
+    case mnesia:read(Tbl, LO#local_objs.idx, Lock) of
         [#item{attrs=Attrs}] ->
-            Ref = #refX{site=S, path=P, obj=O},
+            Ref = lobj_to_ref(S, LO),
             Ret = if Field == all -> orddict:to_list(Attrs);
                      true         -> case orddict:find(Field, Attrs) of
                                          {ok, V} -> [V];
@@ -908,6 +864,10 @@ read_attrs_([#local_objs{path=P, obj=O, idx=I}|Tail],
             read_attrs_(Tail, S, Tbl, Field, Lock, Acc)
     end.
 
+-spec lobj_to_ref(string(), #local_objs{}) -> #refX{}.
+lobj_to_ref(Site, #local_objs{path=P, obj=O}) ->
+    #refX{site=Site, path=P, obj=O}.
+                        
 %% @spec read_inherited_list(#refX{}, Key) -> {ok, Value}
 %% Key = atom()
 %% Value = term()
@@ -1135,9 +1095,9 @@ read_styles(#refX{site = Site} = RefX) when is_record(RefX, refX) ->
 %% <li>page</li>
 %% </ul>
 %%  
-%% The same as clear_cells(RefX, contents).
-clear_cells(RefX) when is_record(RefX, refX) ->
-    clear_cells(RefX, contents).
+%% %% The same as clear_cells(RefX, contents).
+%% clear_cells(RefX) when is_record(RefX, refX) ->
+%%     clear_cells(RefX, contents).
 
 %% @spec clear_cells(#refX{}, Type) -> ok 
 %% Type = [contents | style | all]
@@ -1161,50 +1121,51 @@ clear_cells(RefX) when is_record(RefX, refX) ->
 %% <li>row</li>
 %% <li>page</li>
 %% </ul>
-clear_cells(RefX, all) when is_record(RefX, refX)->
-    ok = clear_cells1(RefX, style),
-    ok = clear_cells2(RefX, contents, inclusive);
-clear_cells(RefX, contents) when is_record(RefX, refX) ->
-    ok = clear_cells2(RefX, contents, exclusive);
-clear_cells(RefX, style) when is_record(RefX, refX) ->
-    ok = clear_cells2(RefX, contents, exclusive);
-clear_cells(RefX, {attributes, List}) when is_record(RefX, refX) ->
-    ok = clear_cells1(RefX, {attributes, List}).
+%% clear_cells(RefX, all) when is_record(RefX, refX)->
+%%     ok = clear_cells1(RefX, style),
+%%     ok = clear_cells2(RefX, contents, inclusive);
+%% clear_cells(RefX, contents) when is_record(RefX, refX) ->
+%%     ok = clear_cells2(RefX, contents, exclusive);
+%% clear_cells(RefX, style) when is_record(RefX, refX) ->
+%%     ok = clear_cells2(RefX, contents, exclusive);
+%% clear_cells(RefX, {attributes, List}) when is_record(RefX, refX) ->
+%%     ok = clear_cells1(RefX, {attributes, List}).
 
-clear_cells1(RefX, style) when is_record(RefX, refX) ->
-    List = read_ref(RefX, "style", write),
-    [delete_attrs(X, Key) || {X, {Key, _Val}} <- List],
-    List2 = read_ref(RefX, all, write),
-    [ok = delete_attrs(X, Key) || {X, {Key, _Val}} <- get_formats(List2)],
-    % now read and rewrite the rawvalue to display the format changes
-    [ok = write_rawvalue(X, V) || {X, {_K, V}} <- get_rawvalues(List2)],    
+clear_cells1(_RefX, style) ->
+    %% List = read_ref(RefX, "style", write),
+    %% [delete_attrs(X, Key) || {X, {Key, _Val}} <- List],
+    %% List2 = read_ref(RefX, all, write),
+    %% [ok = delete_attrs(X, Key) || {X, {Key, _Val}} <- get_formats(List2)],
+    %% % now read and rewrite the rawvalue to display the format changes
+    %% [ok = write_rawvalue(X, V) || {X, {_K, V}} <- get_rawvalues(List2)],    
     ok;
-clear_cells1(RefX, {attributes, AttrList}) ->
-    case read_ref(RefX, all, write) of
-        []    -> ok;
-        List1 -> List2 = get_attrs(List1, AttrList),
-                 [delete_attrs(X, Key) || {X, {Key, _Val}} <- List2],
-                 ok
-    end.
+clear_cells1(_RefX, {attributes, _AttrList}) ->
+    %% case read_ref(RefX, all, write) of
+    %%     []    -> ok;
+    %%     List1 -> List2 = get_attrs(List1, AttrList),
+    %%              [delete_attrs(X, Key) || {X, {Key, _Val}} <- List2],
+    %%              ok
+    %% end.
+    ok.
 
-%% an exclusive clear only clears the hypernumbers attributes on the cells
-%% an inclusive clear clears all attributes on the cells
-clear_cells2(RefX, contents, Type) when is_record(RefX, refX) ->
-    %% first up clear the list
-    case read_attrs(RefX, write) of
-        [] -> ok;
-        List1 ->
-            List2 = get_cells(RefX),
-            %% now delete the links to the cells
-            [ok = set_local_relations(X, []) || X <- List2],
-            %% finally delete all the attributes
-            List3 = case Type of
-                        exclusive -> get_content_attrs(List1);
-                        inclusive -> List1
-                    end,
-            [delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
-            ok
-    end.
+%% %% an exclusive clear only clears the hypernumbers attributes on the cells
+%% %% an inclusive clear clears all attributes on the cells
+%% clear_cells2(RefX, contents, Type) when is_record(RefX, refX) ->
+%%     %% first up clear the list
+%%     case read_ref(RefX, all, write) of
+%%         [] -> ok;
+%%         List1 ->
+%%             List2 = expand_ref(RefX),
+%%             %% now delete the links to the cells
+%%             [ok = set_local_relations(X, []) || X <- List2],
+%%             %% finally delete all the attributes
+%%             List3 = case Type of
+%%                         exclusive -> get_content_attrs(List1);
+%%                         inclusive -> List1
+%%                     end,
+%%             [delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
+%%             ok
+%%     end.
 
 get_rawvalues(List) -> get_rv1(List, []).
 
@@ -1218,28 +1179,28 @@ get_f1([], Acc)                            -> Acc;
 get_f1([{_, {"format", _V}} = H | T], Acc) -> get_f1(T, [H | Acc]);
 get_f1([_H | T], Acc)                      -> get_f1(T, Acc).
 
-%% @spec delete_page(RefX) -> Status
-%% @doc takes a reference to a page, does delete_cells,
-%% Then reads any existing local_objs and deletes any
-%% row / column ones, along with any attributes set on them
-%% Returns a list of dereferenced cells thatneed to be set dirty to recalculate
-delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
+%% %% @spec delete_page(RefX) -> Status
+%% %% @doc takes a reference to a page, does delete_cells,
+%% %% Then reads any existing local_objs and deletes any
+%% %% row / column ones, along with any attributes set on them
+%% %% Returns a list of dereferenced cells thatneed to be set dirty to recalculate
+%% delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
 
-    Dirty = delete_cells(RefX),
+%%     Dirty = delete_cells(RefX),
 
-    F = fun(#local_objs{obj = {X, _Y}, idx = Id} = Obj)
-              when X == column; X == row ->
-                ok = mnesia:delete(trans(Site, item), Id, write),
-                mnesia:delete_object(trans(Site, local_objs), Obj, write);
-           (_Else) ->
-                ok
-        end,
+%%     F = fun(#local_objs{obj = {X, _Y}, idx = Id} = Obj)
+%%               when X == column; X == row ->
+%%                 ok = mnesia:delete(trans(Site, item), Id, write),
+%%                 mnesia:delete_object(trans(Site, local_objs), Obj, write);
+%%            (_Else) ->
+%%                 ok
+%%         end,
 
-    Match = #local_objs{path = Path, _ = '_'},
-    Objs  = mnesia:index_match_object(trans(Site, local_objs), Match, 1, read),
+%%     Match = #local_objs{path = Path, _ = '_'},
+%%     Objs  = mnesia:index_match_object(trans(Site, local_objs), Match, 1, read),
 
-    [ ok = F(X) || X <- Objs ],
-    Dirty.
+%%     [ ok = F(X) || X <- Objs ],
+%%     Dirty.
 
 %% @doc takes a reference to a
 %% <ul>
@@ -1255,65 +1216,65 @@ delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
 %% @todo this is ineffiecient because it reads and then deletes each
 %% record individually - if remoting_reg supported a {delete refX all}
 %% type message it could be speeded up
--spec delete_cells(#refX{}) -> [#refX{}].
-delete_cells(#refX{site = S} = DelX) ->
-    Cells = get_cells(DelX),
-    case Cells of
-        [] -> [];
-        _  -> 
-            %% update the children that point to the cell that is being deleted
-            %% by rewriting the formulae of all the children cells replacing
-            %% the reference to this cell with #ref!
-            LocalChildren = [get_local_children(C) || C <- Cells],
-            LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
+%% -spec delete_cells(#refX{}) -> [#refX{}].
+%% delete_cells(#refX{site = S} = DelX) ->
+%%     Cells = expand_ref(DelX),
+%%     case Cells of
+%%         [] -> [];
+%%         _  -> 
+%%             %% update the children that point to the cell that is being deleted
+%%             %% by rewriting the formulae of all the children cells replacing
+%%             %% the reference to this cell with #ref!
+%%             LocalChildren = [get_local_children(C) || C <- Cells],
+%%             LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
             
-            %% sometimes a cell will have local children that are 
-            %% also in the delete zone these need to be removed 
-            %% before we do anything else...
-            LocalChildren3 = lists:subtract(LocalChildren2, Cells),
+%%             %% sometimes a cell will have local children that are 
+%%             %% also in the delete zone these need to be removed 
+%%             %% before we do anything else...
+%%             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
 
-            Fun = fun({ChildRef, {"formula", F1}}) ->
-                          {_Status, NewFormula} = deref(ChildRef, F1, DelX),
-                          ok = apply_attrs(ChildRef, [{"formula", NewFormula}]),
-                          ChildRef
-                  end,
-            DirtyChildren = [Fun(F) || X <- LocalChildren3,
-                                       F <- read_ref(X, "formula", write)],
+%%             Fun = fun({ChildRef, {"formula", F1}}) ->
+%%                           {_Status, NewFormula} = deref(ChildRef, F1, DelX),
+%%                           ok = apply_attrs(ChildRef, [{"formula", NewFormula}]),
+%%                           ChildRef
+%%                   end,
+%%             DirtyChildren = [Fun(F) || X <- LocalChildren3,
+%%                                        F <- read_ref(X, "formula", write)],
 
-            %% fix relations table.
-            [ok = delete_local_relation(X) || X <- Cells],
+%%             %% fix relations table.
+%%             [ok = delete_local_relation(X) || X <- Cells],
 
-            %% get the index of all items to be deleted
-            H1 = #local_objs{path = '$1', obj = '$2', _ = '_'},
-            C1 = make_del_cond(Cells),
-            Table1 = trans(S, local_objs),
-            Recs = mnesia:select(Table1, [{H1, C1, ['$_']}], write),
-            Fun4 = fun(X) ->
-                           #local_objs{idx = Idx} = X,
-                           Idx
-                   end,
-            IdxList = [Fun4(X) || X <- Recs],
+%%             %% get the index of all items to be deleted
+%%             H1 = #local_objs{path = '$1', obj = '$2', _ = '_'},
+%%             C1 = make_del_cond(Cells),
+%%             Table1 = trans(S, local_objs),
+%%             Recs = mnesia:select(Table1, [{H1, C1, ['$_']}], write),
+%%             Fun4 = fun(X) ->
+%%                            #local_objs{idx = Idx} = X,
+%%                            Idx
+%%                    end,
+%%             IdxList = [Fun4(X) || X <- Recs],
             
-            %% delete all items with that index
-            Tb2 = trans(S, item),
-            Fun5 = 
-                fun(X) -> 
-                        L = mnesia:read(Tb2, X, write),
-                        %% you need to notify the front end 
-                        %% before you delete the object...
-                        RefX = local_idx_to_refX(S, X),
-                        [ok = tell_front_end(RefX, {K, V}, delete) ||
-                            #item{key = K, val = V} <- L],
-                        [ok = mnesia:delete_object(Tb2, XX, write) || XX <- L],
-                        ok
-                end,
+%%             %% delete all items with that index
+%%             Tb2 = trans(S, item),
+%%             Fun5 = 
+%%                 fun(X) -> 
+%%                         L = mnesia:read(Tb2, X, write),
+%%                         %% you need to notify the front end 
+%%                         %% before you delete the object...
+%%                         RefX = local_idx_to_refX(S, X),
+%%                         [ok = tell_front_end(RefX, {K, V}, delete) ||
+%%                             #item{key = K, val = V} <- L],
+%%                         [ok = mnesia:delete_object(Tb2, XX, write) || XX <- L],
+%%                         ok
+%%                 end,
 
-            [ok = Fun5(X) || X <- IdxList],
-            %% finally delete the index records themselves
-            [ ok = mnesia:delete_object(trans(S, local_objs), X, write)
-              || X <- Recs],
-            DirtyChildren
-    end.
+%%             [ok = Fun5(X) || X <- IdxList],
+%%             %% finally delete the index records themselves
+%%             [ ok = mnesia:delete_object(trans(S, local_objs), X, write)
+%%               || X <- Recs],
+%%             DirtyChildren
+%%     end.
 
 make_del_cond([]) ->
     exit("make_del_cond can't take an empty list");
@@ -1328,92 +1289,92 @@ make_del_cond1([#refX{path = P, obj = O} | T], Acc) ->
     make_del_cond1(T, [{'and', {'=:=', '$1', {const, P}},
                         {'=:=', '$2', {const, O}}} | Acc]).
 
-%% @spec delete_attrs(RefX :: #refX{}, Key) -> ok
-%% Key = atom()
-%% @doc deletes a named attribute from a
-%% cell or cells (but doesn't delete the cells themselves)
-delete_attrs(#refX{site = S} = RefX, Key) ->
-    case ms_util2:is_in_record(magic_style, Key) of 
-        true  -> delete_style_attr(RefX, Key);
-        false -> Idx = read_local_item_index(RefX),
-                 H = #item{idx = Idx, key = Key, _ = '_'},
-                 M = [{H, [], ['$_']}],
-                 Table = trans(S, item), 
-                 [#item{val = Val} = Rec] = mnesia:select(Table, M),
-                 ok = mnesia:delete_object(Table, Rec, write),
-                 ok = tell_front_end(RefX, {Key, Val}, delete)
-    end.
+%% %% @spec delete_attrs(RefX :: #refX{}, Key) -> ok
+%% %% Key = atom()
+%% %% @doc deletes a named attribute from a
+%% %% cell or cells (but doesn't delete the cells themselves)
+%% delete_attrs(#refX{site = S} = RefX, Key) ->
+%%     case ms_util2:is_in_record(magic_style, Key) of 
+%%         true  -> delete_style_attr(RefX, Key);
+%%         false -> Idx = read_local_item_index(RefX),
+%%                  H = #item{idx = Idx, key = Key, _ = '_'},
+%%                  M = [{H, [], ['$_']}],
+%%                  Table = trans(S, item), 
+%%                  [#item{val = Val} = Rec] = mnesia:select(Table, M),
+%%                  ok = mnesia:delete_object(Table, Rec, write),
+%%                  ok = tell_front_end(RefX, {Key, Val}, delete)
+%%     end.
 
-%% @spec delete_if_attrs(RefX :: #refX{}, Key) -> ok
-%% Key = atom()
-%% @doc deletes a named attribute from a
-%% cell or cells if it exists (but doesn't delete the cells themselve)
-%% ONLY USE THIS FOR ATTRIBUTES THAT MIGHT EXIST OTHERWISE USE delete_attrs
-delete_if_attrs(#refX{site = S} = RefX, Key) ->
-    case ms_util2:is_in_record(magic_style, Key) of 
-        true  -> delete_style_attr(RefX, Key);
-        false ->
-            Idx = read_local_item_index(RefX),
-            H = #item{idx = Idx, key = Key, _ = '_'},
-            Tb = trans(S, item),
-            case mnesia:select(Tb, [{H, [], ['$_']}]) of
-                []                   -> ok;
-                [#item{val = V} = R] -> ok = mnesia:delete_object(Tb, R, write),
-                                        ok = tell_front_end(RefX, {Key, V}, delete)
-            end
-    end.
+%% %% @spec delete_if_attrs(RefX :: #refX{}, Key) -> ok
+%% %% Key = atom()
+%% %% @doc deletes a named attribute from a
+%% %% cell or cells if it exists (but doesn't delete the cells themselve)
+%% %% ONLY USE THIS FOR ATTRIBUTES THAT MIGHT EXIST OTHERWISE USE delete_attrs
+%% delete_if_attrs(#refX{site = S} = RefX, Key) ->
+%%     case ms_util2:is_in_record(magic_style, Key) of 
+%%         true  -> delete_style_attr(RefX, Key);
+%%         false ->
+%%             Idx = read_local_item_index(RefX),
+%%             H = #item{idx = Idx, key = Key, _ = '_'},
+%%             Tb = trans(S, item),
+%%             case mnesia:select(Tb, [{H, [], ['$_']}]) of
+%%                 []                   -> ok;
+%%                 [#item{val = V} = R] -> ok = mnesia:delete_object(Tb, R, write),
+%%                                         ok = tell_front_end(RefX, {Key, V}, delete)
+%%             end
+%%     end.
 
-%% @doc copys cells from a reference to a reference
--spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
-copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
-  when is_record(From, refX), is_record(To, refX) ->
-    FromList = read_cells_raw(From, read),
-    {Contents, FilteredList} = filter_for_drag_n_drop(FromList),
-    Output = case Contents of
-                 [Contents2] -> superparser:process(Contents2);
-                 []          -> ""
-             end,
-    #refX{obj = {cell, {FX, FY}}} = From,
-    #refX{obj = {cell, {TX, TY}}} = To,
-    case Output of
-        {formula, Formula} ->
-            NewFormula = offset_formula(Formula, {(TX - FX), (TY - FY)}),
-           ok = apply_attrs(To, [{"formula", NewFormula}]);
-        [{Type, V},  _A, _F] ->
-            V2 = case Incr of
-                     false  ->
-                         case Type of
-                             datetime ->
-                                 {datetime, D, T} = V,
-                                 dh_date:format("d/m/Y", {D, T});
-                             _ ->
-                                 tconv:to_s(V)
-                         end;
-                     _Other -> %% Other can be a range of different values...
-                         case Type of
-                             int      ->
-                                 NewV = V + diff(FX, FY, TX, TY, Incr),
-                                 tconv:to_s(NewV);
-                             datetime ->
-                                 {datetime, {Y, M , D}, T} = V,
-                                 Date = calendar:date_to_gregorian_days(Y, M, D),
-                                 Date2 = Date + diff(FX, FY, TX, TY, Incr),
-                                 NewD = calendar:gregorian_days_to_date(Date2),
-                                 dh_date:format("d/m/Y", {NewD, T});
-                             _ ->
-                                 tconv:to_s(V)
-                         end
-                 end,
-            ok = apply_attrs(To, [{"formula", V2}]);
-        []  ->
-            ok = clear_cells(To, all)
-    end,
-    %% You want to copy the attributes AFTER setting the value
-    %% because setting a value sets the default alignment and format
-    %% and if the source cell has been reformatted after the data was entered
-    %% you want to carry that forward.
-    AttrList = get_attr_keys(FilteredList),
-    ok = copy_attrs(From, To, AttrList).
+%% %% @doc copys cells from a reference to a reference
+%% -spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
+%% copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
+%%   when is_record(From, refX), is_record(To, refX) ->
+%%     FromList = read_ref(From),
+%%     {Contents, FilteredList} = filter_for_drag_n_drop(FromList),
+%%     Output = case Contents of
+%%                  [Contents2] -> superparser:process(Contents2);
+%%                  []          -> ""
+%%              end,
+%%     #refX{obj = {cell, {FX, FY}}} = From,
+%%     #refX{obj = {cell, {TX, TY}}} = To,
+%%     case Output of
+%%         {formula, Formula} ->
+%%             NewFormula = offset_formula(Formula, {(TX - FX), (TY - FY)}),
+%%            ok = apply_attrs(To, [{"formula", NewFormula}]);
+%%         [{Type, V},  _A, _F] ->
+%%             V2 = case Incr of
+%%                      false  ->
+%%                          case Type of
+%%                              datetime ->
+%%                                  {datetime, D, T} = V,
+%%                                  dh_date:format("d/m/Y", {D, T});
+%%                              _ ->
+%%                                  tconv:to_s(V)
+%%                          end;
+%%                      _Other -> %% Other can be a range of different values...
+%%                          case Type of
+%%                              int      ->
+%%                                  NewV = V + diff(FX, FY, TX, TY, Incr),
+%%                                  tconv:to_s(NewV);
+%%                              datetime ->
+%%                                  {datetime, {Y, M , D}, T} = V,
+%%                                  Date = calendar:date_to_gregorian_days(Y, M, D),
+%%                                  Date2 = Date + diff(FX, FY, TX, TY, Incr),
+%%                                  NewD = calendar:gregorian_days_to_date(Date2),
+%%                                  dh_date:format("d/m/Y", {NewD, T});
+%%                              _ ->
+%%                                  tconv:to_s(V)
+%%                          end
+%%                  end,
+%%             ok = apply_attrs(To, [{"formula", V2}]);
+%%         []  ->
+%%             ok = clear_cells(To, all)
+%%     end,
+%%     %% You want to copy the attributes AFTER setting the value
+%%     %% because setting a value sets the default alignment and format
+%%     %% and if the source cell has been reformatted after the data was entered
+%%     %% you want to carry that forward.
+%%     AttrList = get_attr_keys(FilteredList),
+%%     ok = copy_attrs(From, To, AttrList).
 
 
 %% @spec copy_attrs(From :: #refX{}, To :: #refX{}, AttrList) -> ok
@@ -1427,7 +1388,7 @@ copy_attrs(_From, _To, []) -> ok;
 %% this clause deals with a copy attrs on the same page
 copy_attrs(#refX{path = P, obj = {cell, _}} = From, 
            #refX{path = P, obj = {cell, _}} = To, ["style" | T]) ->
-    [{From, {"style", Value}}] = read_attrs(From, ["style"], read),
+    [{From, {"style", Value}}] = read_ref(From, "style", read),
     ok = apply_attrs(To, [{"style", Value}]),
     copy_attrs(From, To, T);
 %% this clause deals with copying attributes between different pages
@@ -1439,7 +1400,7 @@ copy_attrs(#refX{obj = {cell, _}} = From,
     copy_attrs(From, To, T);
 copy_attrs(#refX{obj = {cell, _}} = From, 
            #refX{obj = {cell, _}} = To, [H | T]) ->
-    [{From, {Key, Value}}] = read_attrs(From, [H], read),
+    [{From, {Key, Value}}] = read_ref(From, [H], read),
     ok = apply_attrs(To, [{Key, Value}]),
     copy_attrs(From, To, T);
 copy_attrs(#refX{obj = {cell, _}} = From, 
@@ -1457,7 +1418,7 @@ copy_attrs(#refX{obj = {cell, _}} = From,
 copy_style(#refX{site = S, path = P, obj = {cell, _}} = From, 
            #refX{site = S, path = P, obj = {Type, _}} = To, Ar)
   when Type == cell orelse Type == range ->
-    [{_, {"style", Idx}}] = read_attrs(From, ["style"], read),
+    [{_, {"style", Idx}}] = read_ref(From, "style", read),
     List = case Type of
                cell  -> [To];
                range -> hn_util:range_to_list(To)
@@ -1495,19 +1456,13 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
                   end
         end,
     Tbl = trans(Site, relation),
-    Idxs = lists:flatten([F(C) || R <- Refs, C <- get_cells(R)]),
+    Idxs = lists:flatten([F(C) || R <- Refs, C <- expand_ref(R)]),
     Q = insert_work_queue(Idxs, Tbl, 1, hn_workq:new(Ar)),
     Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
     
 -spec mark_children_dirty(#refX{}, nil | uid()) -> ok.
-mark_children_dirty(#refX{obj = {range, _}} = RefX, Ar) ->
-    [ok = mark_children_dirty(X, Ar) || X <- hn_util:range_to_list(RefX)],
-    ok;
-mark_children_dirty(#refX{obj = {page, _}} = RefX, Ar) ->
-    [ok = mark_children_dirty(X, Ar) || X <- get_cells(RefX)],
-    ok;
-mark_children_dirty(#refX{site = Site, obj = {cell, _}} = RefX, Ar) ->
+mark_children_dirty(#refX{site = Site}=RefX, Ar) ->
     Tbl = trans(Site, relation),
     Children = get_local_children_idxs(RefX),
     Q = insert_work_queue(Children, Tbl, 1, hn_workq:new(Ar)),
@@ -1812,63 +1767,6 @@ get_refs_right2(RefX, X, MinY, MaxY) ->
 %           end,
 %     Return1 = lists:foldl(Fun, [], Return),
 %     hslists:uniq(Return1).
-
-make_range_match_ref(RefX) ->
-    #refX{path = P, obj = Range} = RefX,
-    {range, {X1, Y1, X2, Y2}} = Range,
-    {MinX, MaxX} = if
-                       X1 >= X2 -> {X2, X1};
-                       X1 <  X2 -> {X1, X2}
-                   end,
-    {MinY, MaxY} = if
-                       Y1 >= Y2 -> {Y2, Y1};
-                       Y1 <  Y2 -> {Y1, Y2}
-                   end,
-    Obj = {cell, {'$1', '$2'}},
-    Match = #local_objs{path = P, obj = Obj, _ = '_'},
-    %% build a conditional for selecting cells
-    %% also need to build a cond for the attributes
-    Cond = [{'and', {'>=', '$1', MinX }, {'=<', '$1', MaxX},
-             {'>=', '$2', MinY}, {'=<', '$2', MaxY}}],
-    Body = ['$_'],
-    {Match, Cond, Body}.
-
-make_col_match_ref(RefX) ->
-    #refX{path = P, obj = Col} = RefX,
-    {column, {X1, X2}} = Col,
-    {MinX, MaxX} = if
-                       X1 >= X2 -> {X2, X1};
-                       X1 <  X2 -> {X1, X2}
-                   end,
-    Obj = {cell, {'$1', '_'}},
-    Match = #local_objs{path = P, obj = Obj, _ = '_'},
-    %% build a conditional for selecting cells
-    %% also need to build a cond for the attributes
-    Cond = [{'>=', '$1', MinX }, {'=<', '$1', MaxX}],
-    Body = ['$_'],
-    {Match, Cond, Body}.
-
-make_row_match_ref(RefX) ->
-    #refX{path = P, obj = Row} = RefX,
-    {row, {Y1, Y2}} = Row,
-    {MinY, MaxY} = if
-                       Y1 >= Y2 -> {Y2, Y1};
-                       Y1 <  Y2 -> {Y1, Y2}
-                   end,
-    Obj = {cell, {'_', '$1'}},
-    Match = #local_objs{path = P, obj = Obj, _ = '_'},
-
-    %% build a conditional for selecting cells
-    %% also need to build a cond for the attributes
-    Cond = [{'>=', '$1', MinY }, {'=<', '$1', MaxY}],
-    Body = ['$_'],
-    {Match, Cond, Body}.
-
-make_page_match_ref(RefX) ->
-    #refX{path = P} = RefX,
-    Obj = {cell, {'_', '_'}},
-    H = #local_objs{path = P, obj = Obj, _ = '_'},
-    {H, [], ['$_']}.
 
 get_attr_keys(List)  -> get_attr_keys(List, []).
 
@@ -2247,7 +2145,7 @@ get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, Relation) ->
 get_local_rel_idxs(#refX{obj = {Type, _}} = Ref, Relation) 
   when (Type == row) orelse (Type == column) orelse 
        (Type == range) orelse (Type == page) ->
-    Cells = get_cells(Ref),
+    Cells = expand_ref(Ref),
     lists:flatten([get_local_rel_idxs(X, Relation) || X <- Cells]).
 
 -spec delete_local_relation(#refX{}) -> ok.
@@ -2756,27 +2654,27 @@ split_local_remote1([{_, [{_, "remote"}], [Url]} | T], {A, B}) ->
 %%     % now write the overwrite colour that comes from the format
 %%     ok = write_attr3(RefX, {"overwrite-color", atom_to_list(Color)}).
 
-get_item_list(Type, RefX, Key, Acc) ->
-    case traverse(Type, RefX, Key) of
-        {last, []}                    -> {ok, Acc};
-        {last, [#item{val = Val}]}    -> {ok,lists:append(Val, Acc)};
-        {NType, NewRefX, []}          -> get_item_list(NType, NewRefX, Key, Acc);
-        {NType, []}                   -> get_item_list(NType, RefX, Key, Acc);
-        {NType, NewRefX, [#item{val = Val}]} ->
-            get_item_list(NType, NewRefX, Key, lists:append(Val, Acc));
-        {NType,[#item{val = Val}]}     -> 
-            get_item_list(NType, RefX, Key, lists:append(Val, Acc))
-    end.
+%% get_item_list(Type, RefX, Key, Acc) ->
+%%     case traverse(Type, RefX, Key) of
+%%         {last, []}                    -> {ok, Acc};
+%%         {last, [#item{val = Val}]}    -> {ok,lists:append(Val, Acc)};
+%%         {NType, NewRefX, []}          -> get_item_list(NType, NewRefX, Key, Acc);
+%%         {NType, []}                   -> get_item_list(NType, RefX, Key, Acc);
+%%         {NType, NewRefX, [#item{val = Val}]} ->
+%%             get_item_list(NType, NewRefX, Key, lists:append(Val, Acc));
+%%         {NType,[#item{val = Val}]}     -> 
+%%             get_item_list(NType, RefX, Key, lists:append(Val, Acc))
+%%     end.
 
-return_first(Type, RefX, Key) ->
-    case traverse(Type, RefX, Key) of
-        {last, []}                           -> nomatch;
-        {last, [#item{val = Val}]}           -> {ok, Val};
-        {NType, []}                          -> return_first(NType, RefX, Key);
-        {NType, NRefX, []}                   -> return_first(NType, NRefX, Key);
-        {_NType, _NRefX, [#item{val = Val}]} -> {ok, Val};
-        {_NType, [#item{val = Val}]}         -> {ok, Val}
-    end.
+%% return_first(Type, RefX, Key) ->
+%%     case traverse(Type, RefX, Key) of
+%%         {last, []}                           -> nomatch;
+%%         {last, [#item{val = Val}]}           -> {ok, Val};
+%%         {NType, []}                          -> return_first(NType, RefX, Key);
+%%         {NType, NRefX, []}                   -> return_first(NType, NRefX, Key);
+%%         {_NType, _NRefX, [#item{val = Val}]} -> {ok, Val};
+%%         {_NType, [#item{val = Val}]}         -> {ok, Val}
+%%     end.
 
 traverse(cell, #refX{obj = {cell, _}} = RefX, Key) ->
     {range, match_ref(RefX, Key)};
@@ -2810,7 +2708,7 @@ traverse(page, RefX, Key) ->
 get_ranges(#refX{site = S, path = P, obj = {page, "/"}}, Key) ->
     Head = #local_objs{path = P, obj = {range, '_'}, idx = '$1'},
     List1 = mnesia:select(trans(S, local_objs), [{Head, [], ['$_']}]),
-    List2 = [read_attrs(X, Key, read) || X <- List1],
+    List2 = [read_ref(X, Key, read) || X <- List1],
     %% now sort the results
     %% now convert the list of local_objs into refX's
     Fun1 = fun({#local_objs{path = Path, obj = Obj, idx = Idx}, _KV}) ->
@@ -2881,7 +2779,7 @@ make_clause([H | T], PH, Op, A)  ->
 %% this function is called when a new attribute is set for a style
 -spec process_style(#refX{}, {string(), term()}) -> {string(), term()}.
 process_style(RefX, {Name, Val}) ->
-    NewSIdx = case read_attrs(RefX, ["style"], read) of 
+    NewSIdx = case read_ref(RefX, "style", read) of 
                   []                        -> get_style(RefX, Name, Val);
                   [{RefX2, {"style", Idx}}] -> get_style(RefX2, Idx, Name, Val) 
               end,
@@ -2996,7 +2894,7 @@ deref_overlap_TEST() ->
             %% delete range slices left
             {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 2, 9}}, {recalc, "A2:B4"}},
             %% delete range slices top
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 7, 2}}, {recalc, "B1:D2"}},
+            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 7, 2}}, {recalc, "B1:Dl2"}},
             %% delete range slices bottom
             {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 4, 5, 9}}, {recalc, "B2:D3"}},
             %% delete range slices right
