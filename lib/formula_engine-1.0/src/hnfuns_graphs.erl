@@ -27,7 +27,6 @@
 %% Exported functions
 %%
 
-%% Variable 'O' is 'Orientation'
 linegraph([Data]) ->
     [Alignment] = ?ROW,
     lg1(Data, Alignment, {{scale, auto}, [], []});
@@ -39,6 +38,36 @@ linegraph([Data, O, Min, Max, XAxis]) ->
     lg1(Data, O, {{Min, Max}, XAxis, []});
 linegraph([Data, O, Min, Max, XAxis, Cols]) ->
     lg1(Data, O, {{Min, Max}, XAxis, Cols}).
+
+lg1(Data, Orientation, {Scale, Axes, Colours}) ->
+    Orientation2 = cast_orientation(Orientation),
+    case has_error([Orientation2]) of
+        {true, Error} -> Error;
+        false         -> lg2(Data, Orientation2, Scale, Axes, Colours)
+    end.
+
+lg2(Data, Orientation, Scale, Axes, Colours) ->
+    {Data2, _NoOfRows, _NoOfCols} = extract(Data, Orientation),
+    Data3 = [cast_data(X) || X <- Data2],
+    % check for errors and then fix the reversed lists problems
+    Colours2 = get_colours(Colours),
+    {Min, Max} = get_scale(Scale, Data3),
+    XAxis2 = get_axes(Axes),
+    case has_error([Data3, Colours2, Min, Max, XAxis2]) of
+        {true, Error} -> Error;
+        false         -> lg2(rev(Data3), {Min, Max}, XAxis2, Colours2)
+    end.
+
+lg2(Data, {Min, Max}, XAxis, Colours) ->
+    "<img src='http://chart.apis.google.com/chart?chs=350x150&amp;chd="
+        ++ "t:" ++ conv_data(Data) ++ "&amp;cht=lc&amp;"
+        ++ "chds="++ tconv:to_s(Min) ++ "," ++ tconv:to_s(Max)
+        ++ "&amp;chxt="
+        ++ conv_x_axis(XAxis)
+        ++ "1:|" ++ tconv:to_s(Min) ++ "|" ++ tconv:to_s(Max)
+        ++ conv_colours(Colours)
+        ++ "' />".
+
 
 piechart([Data])                  -> pie1(Data, [], []);
 piechart([Data, Titles])          -> pie1(Data, Titles, []);
@@ -93,35 +122,6 @@ pie2(Data, Titles, Colours) ->
         ++ Titles1
         ++ Colours1.
 
-lg1(Data, Orientation, {Scale, Axes, Colours}) ->
-    Orientation2 = cast_orientation(Orientation),
-    case has_error([Orientation2]) of
-        {true, Error} -> Error;
-        false         -> lg2(Data, Orientation2, Scale, Axes, Colours)
-    end.
-
-lg2(Data, Orientation, Scale, Axes, Colours) ->
-    {Data2, _NoOfRows, _NoOfCols} = extract(Data, Orientation),
-    Data3 = [cast_data(X) || X <- Data2],
-    % check for errors and then fix the reversed lists problems
-    Colours2 = get_colours(Colours),
-    {Min, Max} = get_scale(Scale, Data3),
-    XAxis2 = get_axes(Axes),
-    case has_error([Data3, Colours2, Min, Max, XAxis2]) of
-        {true, Error} -> Error;
-        false         -> lg2(rev(Data3), {Min, Max}, XAxis2, Colours2)
-    end.
-
-lg2(Data, {Min, Max}, XAxis, Colours) ->
-   "![graph](http://chart.apis.google.com/chart?chs=350x150&amp;chd="
-        ++ "t:" ++ conv_data(Data) ++ "&amp;cht=lc&amp;"
-        ++ "chds="++ tconv:to_s(Min) ++ "," ++ tconv:to_s(Max)
-        ++ "&amp;chxt="
-        ++ conv_x_axis(XAxis)
-        ++ "1:|" ++ tconv:to_s(Min) ++ "|" ++ tconv:to_s(Max)
-        ++ conv_colours(Colours)
-        ++ ")".
-
 cast_data(Data) ->
     col([Data],
                 [eval_funs,
@@ -152,14 +152,18 @@ cast_orientation(O) ->
          {cast, str, bool, ?ERRVAL_VAL}],
         [return_errors, {all, fun is_boolean/1}]).
 
-conv_colours([[]])      -> [];
-conv_colours(Colours) -> "&amp;chco=" ++ make_colours(Colours).
+conv_colours([[]])    ->
+    [];
+conv_colours(Colours) ->
+    "&amp;chco=" ++ make_colours(Colours).
 
-conv_x_axis([])    -> "y&amp;chxl=";
-conv_x_axis(XAxis) -> "x,y&amp;chxl=0:|"
-                          ++ string:join(XAxis, "|") ++ "|". 
+conv_x_axis([]) ->
+    "y&amp;chxl=";
+conv_x_axis(XAxis) ->
+    "x,y&amp;chxl=0:|" ++ string:join(XAxis, "|") ++ "|". 
 
-conv_data(Data) -> conv_d1(Data, []).
+conv_data(Data) ->
+    conv_d1(Data, []).
 
 conv_d1([], Acc)      -> string:join(lists:reverse(Acc), "|");
 conv_d1([H | T], Acc) -> conv_d1(T, [make_data(H) | Acc]).
