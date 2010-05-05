@@ -563,14 +563,14 @@
 get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
     #refX{site = Site, path = Path} = RefX,
 
-    Value = case hn_db_wu:read_attrs(RefX, ["rawvalue"], write) of
-                []            -> blank;
-                [{_, {_, V}}] -> V
+    Value = case read_ref(RefX, "rawvalue") of
+                []              -> blank;
+                [{_, [{_, V}]}] -> V
             end, 
 
-    DTree = case hn_db_wu:read_attrs(RefX, ["__dependency-tree"], write) of
-                [{_, {_, Tree}}] -> Tree;
-                []               -> []
+    DTree = case read_ref(RefX, "__dependency-tree") of
+                [{_, [{_, Tree}]}] -> Tree;
+                []                 -> []
             end,
 
     Val = case Value of
@@ -742,43 +742,33 @@ apply_attrs(Ref, Attrs) ->
 
 -spec apply_attrs(#refX{}, [{string(), term()}], auth_req()) -> ok.
 apply_attrs(Ref, As, Ar) ->
-    Attrs = orddict:new(),
-    Privs = orddict:new(),
-    {Attrs2, Privs2} = process_attrs(As, Ref, Ar, Attrs, Privs),
-    merge_attrs(Ref, Attrs2, Privs2).
+    io:format("Applying ~p to ~p~n", [As, Ref]),
+    Attrs2 = process_attrs(As, Ref, Ar, orddict:new()),
+    merge_attrs(Ref, Attrs2).
 
 -spec process_attrs([{string(), term()}], #refX{}, auth_req(),
-                    orddict:orddict(), orddict:orddict()) 
-                   -> {orddict:orddict(), orddict:orddict()}. 
-process_attrs([], _Ref, _Ar, Attrs, Privs) ->
-    {Attrs, Privs};
-process_attrs([{"formula",Val}|Rest], Ref, Ar, Attrs, Privs) ->
-    {Attrs2, Priv2} =
+                    orddict:orddict()) -> orddict:orddict().
+process_attrs([], _Ref, _Ar, Attrs) ->
+    Attrs;
+process_attrs([{"formula",Val}|Rest], Ref, Ar, Attrs) ->
+    Attrs2 = 
         case superparser:process(Val) of
             {formula, Fla} -> 
-                write_formula1(Ref, Fla, Val, Ar, Attrs, Privs);
-            [_NVal, _Align, _Frmt] -> 
-                {Attrs, Privs}
-                %%write_formula2(Ref, Val, NVal, Align, Frmt, Attrs, Privs)
+                write_formula1(Ref, Fla, Val, Ar, Attrs);
+            [NVal, Align, Frmt] -> 
+                write_formula2(Ref, Val, NVal, Align, Frmt, Attrs)
         end,
-    process_attrs(Rest, Ref, Ar, Attrs2, Priv2);
-process_attrs([{"format",Val}|Rest], Ref, Ar, Attrs, Privs) ->
-    %% Need to handle this properly.  process the raw value.
-    Attrs2 = orddict:store("format", Val, Attrs),
-    process_attrs(Rest, Ref, Ar, Attrs2, Privs);
-process_attrs([{K=["__"|_],Val}|Rest], Ref, Ar, Attrs, Privs) ->
-    Privs2 = orddict:store(K, Val, Privs),
-    process_attrs(Rest, Ref, Ar, Attrs, Privs2);    
-process_attrs([A={Key, Val}|Rest], Ref, Ar, Attrs, Privs) ->
+    process_attrs(Rest, Ref, Ar, Attrs2);
+process_attrs([A={Key,_}|Rest], Ref, Ar, Attrs) ->
     {Key2, Val2} = case ms_util2:is_in_record(magic_style, Key) of 
                        true  -> process_style(Ref, A);
                        false -> A
                    end,
     Attrs2 = orddict:store(Key2, Val2, Attrs),
-    process_attrs(Rest, Ref, Ar, Attrs2, Privs).
+    process_attrs(Rest, Ref, Ar, Attrs2).
     
--spec merge_attrs(#refX{}, orddict:ordict(), orddict:ordict()) -> ok. 
-merge_attrs(Ref=#refX{site = Site}, Attrs, Privs) ->
+-spec merge_attrs(#refX{}, orddict:ordict()) -> ok. 
+merge_attrs(Ref=#refX{site = Site}, Attrs) ->
     Table = trans(Site, item), 
     Idx = get_local_item_index(Ref),
     Rec2 = case mnesia:read(Table, Idx, write) of
@@ -786,12 +776,9 @@ merge_attrs(Ref=#refX{site = Site}, Attrs, Privs) ->
                    Attrs2 = orddict:merge(fun merge_left/3,
                                           Attrs,
                                           Rec#item.attrs),
-                   Privs2 = orddict:merge(fun merge_left/3,
-                                          Privs,
-                                          Rec#item.privs),
-                   Rec#item{attrs = Attrs2, privs = Privs2};
+                   Rec#item{attrs = Attrs2};
                [] ->
-                   #item{idx = Idx, attrs = Attrs, privs = Privs}
+                   #item{idx = Idx, attrs = Attrs}
            end,
     mnesia:write(Table, Rec2, write).
 
@@ -816,7 +803,9 @@ read_ref(Ref, Field) ->
 -spec read_ref(#refX{}, all | string(), read | write) 
               -> [{#refX{}, [{string(), term()}]}].
 read_ref(#refX{site=S}=Ref, Field, Lock) ->
-    read_attrs(S, read_objs(Ref), Field, Lock).
+    Ret = read_attrs(S, read_objs(Ref), Field, Lock),
+    io:format("Ret: ~p~n", [Ret]),
+    Ret.
 
 -spec read_objs(#refX{}) -> [#local_objs{}]. 
 read_objs(#refX{site = S, path = P, obj = {page, "/"}}) ->
@@ -849,20 +838,19 @@ read_attrs(S, LocObjs, Field, Lock) ->
 read_attrs_([], _S, _Tbl, _Field, _Lock, Acc) ->
     lists:reverse(Acc);
 read_attrs_([LO|Tail], S, Tbl, Field, Lock, Acc) ->
-    case mnesia:read(Tbl, LO#local_objs.idx, Lock) of
-        [#item{attrs=Attrs}] ->
-            Ref = lobj_to_ref(S, LO),
-            Ret = if Field == all -> orddict:to_list(Attrs);
-                     true         -> case orddict:find(Field, Attrs) of
-                                         {ok, V} -> [V];
-                                         _       -> []
-                                     end
-                  end,
-            Acc2 = [{Ref, Ret}|Acc],
-            read_attrs_(Tail, S, Tbl, Field, Lock, Acc2);
-        [] ->
-            read_attrs_(Tail, S, Tbl, Field, Lock, Acc)
-    end.
+    Acc2 = case mnesia:read(Tbl, LO#local_objs.idx, Lock) of
+               [#item{attrs=Attrs}] ->
+                   Ret = if Field == all -> orddict:to_list(Attrs);
+                            true         -> case orddict:find(Field, Attrs) of
+                                                {ok, V} -> [{Field, V}];
+                                                _       -> [] end end,
+                   if Ret /= [] -> Ref = lobj_to_ref(S, LO),
+                                   [{Ref, Ret}|Acc];
+                      true      -> Acc end;
+               [] -> Acc
+           end,
+    read_attrs_(Tail, S, Tbl, Field, Lock, Acc2).
+
 
 -spec lobj_to_ref(string(), #local_objs{}) -> #refX{}.
 lobj_to_ref(Site, #local_objs{path=P, obj=O}) ->
@@ -2555,53 +2543,53 @@ shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
                      ok = mnesia:write(trans(Site, NewDirty))
     end.
 
-write_formula1(Ref, Fla, Val, Ar, Attrs, Privs) ->
+write_formula1(Ref, Fla, Formula, Ar, Attrs) ->
     Rti = refX_to_rti(Ref, Ar, false),
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-            ?ERROR("invalid return from muin:run_formula ~p",[Val]),
+            ?ERROR("invalid return from muin:run_formula ~p",[Formula]),
             #refX{site = Site, path = Path, obj = R} = Ref,
-            ok = remoting_reg:notify_error(Site,Path,R,error_in_formula,Val),
+            ok = remoting_reg:notify_error(Site,Path,R,error_in_formula,Formula),
             throw(error_in_formula);
         {error, Error} ->
             #refX{site = Site, path = Path, obj = R} = Ref,
-            ok = remoting_reg:notify_error(Site, Path, R,  Error, Val),
+            ok = remoting_reg:notify_error(Site, Path, R,  Error, Formula),
             throw(Error);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
-            {NewLocPs, _NewRemotePs} = split_local_remote(Parents),
+            {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
             ok = set_local_relations(Ref, NewLocPs),
-            Attrs2 = orddict:store("parents", {xml, Parxml}, Attrs),
-            Attrs3 = orddict:store("rawvalue", Res, Attrs2),
-            Attrs4 = orddict:store("formula", Val, Attrs3),
-            Privs2 = orddict:store("__ast", Pcode, Privs),
-            Privs3 = orddict:store("__recompile", Recompile, Privs2),
-            Privs4 = orddict:store("__dependency-tree", Deptree, Privs3),
-            {Attrs4, Privs4}
+            Attrs2 = orddict:store("value", Res, Attrs),
+            Attrs3 = orddict:store("parents", {xml, Parxml}, Attrs2),
+            Attrs4 = orddict:store("rawvalue", Res, Attrs3),
+            Attrs5 = orddict:store("formula", Formula, Attrs4),
+            Attrs6 = orddict:store("__ast", Pcode, Attrs5),
+            Attrs7 = orddict:store("__recompile", Recompile, Attrs6),
+            orddict:store("__dependency-tree", Deptree, Attrs7)
     end.
 
-%% write_formula2(RefX, OrigVal, {Type, Value}, {"text-align", Align}, Format,
-%%                Attrs, Privs) ->
-%%     %% now write out the actual cell
-%%     Formula = case Type of
-%%                   quote    -> [39 | Value];
-%%                   datetime -> OrigVal;
-%%                   float    -> OrigVal;
-%%                   int      -> OrigVal;
-%%                   _        -> hn_util:text(Value)
-%%               end,
-%%     ok = write_cell(RefX, Value, Formula, [], []),
-%%     %% only write the default alignment if there is no style on this cell
-%%     case read_attrs(RefX, ["style"], write) of
-%%         [] -> ok = write_attr(RefX, {"text-align", Align});
-%%         _  -> ok
-%%     end,
-%%     %% write out the format (if any)
-%%     case Format of
-%%         {"format", "null"} -> ok;
-%%         {"format", F}      -> write_attr(RefX, {"format", F})
-%%     end.
+write_formula2(Ref, OrigVal, {Type, Val},
+               {"text-align", _Align}, 
+               {"format", Format}, Attrs) ->
+    Formula = case Type of
+                  quote    -> [$' | Val];
+                  datetime -> OrigVal;
+                  float    -> OrigVal;
+                  int      -> OrigVal;
+                  _        -> hn_util:text(Val) end,
+    Parxml = map(fun muin_link_to_simplexml/1, []),
+    {NewLocPs, _NewRemotePs} = split_local_remote([]),
+    ok = set_local_relations(Ref, NewLocPs),
+    Attrs2 = orddict:store("__dependency-tree", [], Attrs),
+    Attrs3 = orddict:store("value", Val, Attrs2),
+    Attrs4 = orddict:store("parents", {xml, Parxml}, Attrs3),
+    Attrs5 = orddict:store("rawvalue", Val, Attrs4),
+    Attrs6 = orddict:store("formula", Formula, Attrs5),
+    case Format of
+        "null" -> Attrs6;
+        _      -> orddict:store("format", Format, Attrs6)
+    end.
 
 %% % if there is a style set for the cell don't write the default
 %% % alignment

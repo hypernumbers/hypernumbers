@@ -239,9 +239,7 @@ delete_gen_html() ->
     Dir = code:lib_dir(hypernumbers)++"/priv/docroot/hypernumbers/",
     [file:delete(X) || X <- filelib:wildcard(Dir++"*.html.*")].
 
-jsonify_val({"__permissions", _})           -> {"__permissions", "bleh"};
-jsonify_val({"__groups", _})                -> {"__groups", "bleh"};
-jsonify_val({"__dependency-tree", _})       -> {"__dependency-tree", "bleh"};
+jsonify_val({[$_,$_|_]=K, _})       -> {K, "bleh"};
 jsonify_val({"parents", _})                 -> {"parents", "bleh"};    
 jsonify_val({Name, {errval, Error}})        -> {Name, atom_to_list(Error)};
 jsonify_val({Name, {datetime, {1,1,1}=Date, Time}}) ->
@@ -252,7 +250,9 @@ jsonify_val({"value", true})                -> {"value", "true"};
 jsonify_val({"value", false})               -> {"value", "false"};
 %% TODO: fix names
 jsonify_val({Name, {namedexpr, _Path, Nm}}) -> {Name, Nm};
-jsonify_val(Else)                           -> Else.
+jsonify_val(Else)                           -> 
+    io:format("Else is ~p~n", [Else]),
+    Else.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

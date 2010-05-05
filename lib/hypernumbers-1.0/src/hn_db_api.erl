@@ -417,8 +417,9 @@ handle_dirty_cell(Site, Idx, Ar) ->
     ok = init_front_end_notify(),  
     F = fun() ->
                 Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
-                case hn_db_wu:read_attrs(Cell, ["formula"], read) of
-                    [{C, KV}] -> hn_db_wu:write_attr(C, KV, Ar);
+                case hn_db_wu:read_ref(Cell, "formula", write) of
+                    [{Cell, Attrs}] -> 
+                        hn_db_wu:apply_attrs(Cell, Attrs, Ar);
                     []        -> ok
                 end
         end,
@@ -1276,8 +1277,7 @@ biggest(List, Type) ->
 write_attributes1(RefX, List, PAr, VAr) 
   when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),
-    [hn_db_wu:write_attr(RefX, X, PAr) || X <- List],
-    %% ok = hn_db_wu:mark_children_dirty(RefX, VAr).
+    hn_db_wu:apply_attrs(RefX, List, PAr),
     case lists:keymember("formula", 1, List) of
        true  -> ok = hn_db_wu:mark_children_dirty(RefX, VAr);
        false -> ok

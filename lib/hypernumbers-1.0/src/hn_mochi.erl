@@ -883,12 +883,20 @@ add_styles([ {Name, CSS} | T], Tree) ->
 
 to_dict([], JSON) ->
     JSON;
-to_dict([ {Ref, Val} | T], JSON) ->
-    to_dict(T, add_ref(Ref, hn_util:jsonify_val(Val), JSON)).
+to_dict([{Ref, KVs} | T], JSON) ->
+    JSON2 = add_ref(Ref, KVs, JSON),
+    to_dict(T, JSON2).
 
-add_ref(#refX{ obj = {page,"/"}}, {Name, Val}, JSON) ->
+add_ref(_Ref, [], JSON) ->
+    JSON;
+add_ref(Ref, [KV|Tail], JSON) ->
+    io:format("Adding ~p:~p~n", [Ref, KV]),
+    JSON2 = add_ref1(Ref, hn_util:jsonify_val(KV), JSON),
+    add_ref(Ref, Tail, JSON2).
+
+add_ref1(#refX{ obj = {page,"/"}}, {Name, Val}, JSON) ->
     dh_tree:set(["page", Name], Val, JSON);
-add_ref(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
+add_ref1(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 
