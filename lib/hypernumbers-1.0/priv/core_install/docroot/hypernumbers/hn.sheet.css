@@ -1801,20 +1801,6 @@ input[type=checkbox], input[type=radio] {
     display:none;
 }
 
-#editspreadsheet {
-    position:fixed;
-    font-size:10px;
-    bottom:0px;
-    right:0px;
-    padding:1px 1px 4px 1px;
-    margin-right:20px;
-    background:#EEE;
-    display:none;
-    border:1px solid #AAA;
-    border-bottom-width:0px;
-    text-align:center;
-}
-
 #editlogin {
     float:right;
     display:block;
