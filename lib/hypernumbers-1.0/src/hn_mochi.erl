@@ -569,6 +569,13 @@ ipost(Ref,
     ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, Uid),
     json(Env, "success");
 
+ipost(Ref, 
+      _Qry,
+      Env=#env{body=[{"copystyle", {struct, [{"src", Src}]}}],
+               uid = Uid}) ->
+    ok = hn_db_api:copy_style(hn_util:parse_url(Src), Ref, Uid),
+    json(Env, "success");
+
 ipost(#refX{obj = {range, _}} = Ref, _Qry, 
       Env=#env{body=[{"borders", {struct, Attrs}}]}) ->
     Where = from("where", Attrs),

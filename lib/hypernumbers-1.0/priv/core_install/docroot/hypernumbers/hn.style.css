@@ -49,6 +49,25 @@ hr {
     margin-top:0px;
 }
 
+body { 
+    overflow-y:scroll;
+    overflow-x:scroll;
+}
+
+#editspreadsheet {
+    position:absolute;
+    font-size:10px;
+    bottom:16px;
+    right:10px;
+    padding:1px 1px 4px 1px;
+    margin-right:20px;
+    background:#EEE;
+    display:none;
+    border:1px solid #AAA;
+    border-bottom-width:0px;
+    text-align:center;
+}
+
 div#outer {
     margin: 0px auto;
 }
