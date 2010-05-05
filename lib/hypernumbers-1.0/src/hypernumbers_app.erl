@@ -83,6 +83,8 @@ start_mochi_instance({IP, Port}) ->
     ok.
 
 dev_tasks() ->
+    application:set_env(hypernumbers, sync_url, 
+                        "http://hypernumbers.dev:9000"),
     create_dev_zone(),
     local_hypernumbers().
 
