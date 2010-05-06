@@ -1585,7 +1585,7 @@ clear_cells1(RefX, style) when is_record(RefX, refX) ->
     % now read and rewrite the rawvalue to display the format changes
     [ok = write_rawvalue(X, V) || {X, {_K, V}} <- get_rawvalues(List2)],    
     ok;
-clear_cells1(RefX, {attribute, AttrList}) ->
+clear_cells1(RefX, {attributes, AttrList}) ->
     case read_attrs(RefX, write) of
         []    -> ok;
         List1 -> List2 = get_attrs(List1, AttrList),
@@ -3301,16 +3301,11 @@ write_formula1(RefX, Fla, Val, Ar) ->
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-            ?ERROR("invalid return from muin:run_formula ~p",[Val]),
-            #refX{site = Site, path = Path, obj = R} = RefX,
-            ok = remoting_reg:notify_error(Site, Path, R, error_in_formula,
-                                           Val);
-        {error, Error} ->
-            #refX{site = Site, path = Path, obj = R} = RefX,
-            ok = remoting_reg:notify_error(Site, Path, R,  Error, Val);
+            write_cell(RefX, {errval, '#ERROR!'}, Val, [], []);
+        {error, _Error} ->
+            write_cell(RefX, {errval, '#ERROR!'}, Val, [], []);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
-            %% Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
             ok = write_attr3(RefX, {"__ast", Pcode}),
             ok = write_attr3(RefX, {"__recompile", Recompile}),
             %% write the default text align for the result

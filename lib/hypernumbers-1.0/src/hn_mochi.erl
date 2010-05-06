@@ -628,11 +628,13 @@ ipost(Ref=#refX{site = S, path = P, obj = O} = Ref, Qry,
     end,
     json(Env, "success");
 
-ipost(Ref, _Qry, 
-      Env=#env{body = [{"clear", What}],
-               uid = Uid}) 
+ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) 
   when What == "contents"; What == "style"; What == "all" ->
     ok = hn_db_api:clear(Ref, list_to_atom(What), Uid),
+    json(Env, "success");
+
+ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
+    ok = hn_db_api:clear(Ref, {attributes, [What]}, Uid),
     json(Env, "success");
 
 ipost(#refX{site=Site, path=Path} = Ref, _Qry,
