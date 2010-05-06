@@ -3290,8 +3290,6 @@ shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
     end.
 
 write_attr2(RefX, {"formula", Val}, Ar) ->
-    ?ERROR("invalid return from muin:run_formula ~p",["wtf"]),
-    io:format("hello? ~n", []),
     case superparser:process(Val) of
         {formula, Fla}      -> write_formula1(RefX, Fla, Val, Ar);
         [NVal, Align, Frmt] -> write_formula2(RefX, Val, NVal, Align, Frmt)
