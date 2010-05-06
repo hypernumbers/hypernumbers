@@ -541,6 +541,7 @@
 
 -define(lt, list_to_tuple).
 -define(lf, lists:flatten).
+-define(dict, orddict:orddict()).
 
 -include("spriki.hrl").
 -include("handy_macros.hrl").
@@ -737,75 +738,79 @@ get_last_refs(#refX{site = S, path = P}) ->
 %% This clause deals with a formula
 
 -spec apply_attrs(#refX{}, [{string(), term()}]) -> ok. 
-apply_attrs(Ref, Attrs) ->
-    apply_attrs(Ref, Attrs, nil).
+apply_attrs(Ref, NewAttrs) ->
+    apply_attrs(Ref, NewAttrs, nil).
 
 -spec apply_attrs(#refX{}, [{string(), term()}], auth_req()) -> ok.
-apply_attrs(Ref, As, Ar) ->
-    io:format("Applying ~p to ~p~n", [As, Ref]),
-    Attrs2 = process_attrs(As, Ref, Ar, orddict:new()),
-    merge_attrs(Ref, Attrs2).
+apply_attrs(#refX{site=Site}=Ref, NewAttrs, AReq) ->
+    io:format("Applying ~p to ~p~n", [NewAttrs, Ref]),
+    Table = trans(Site, item), 
+    Idx = get_local_item_index(Ref),
+    Attrs = case mnesia:read(Table, Idx, write) of
+                [#item{attrs=A}] -> A;
+                _                -> orddict:new()
+            end,
+    Attrs2 = process_attrs(NewAttrs, Ref, AReq, Attrs),
+    Attrs3 = post_process(Ref, Attrs2),
+    Item = #item{idx = Idx, attrs = Attrs3},
+    mnesia:write(Table, Item, write).
 
--spec process_attrs([{string(), term()}], #refX{}, auth_req(),
-                    orddict:orddict()) -> orddict:orddict().
-process_attrs([], _Ref, _Ar, Attrs) ->
+-spec process_attrs([{string(), term()}], #refX{}, auth_req(), ?dict) 
+                   -> ?dict.
+process_attrs([], _Ref, _AReq, Attrs) ->
     Attrs;
-process_attrs([{"formula",Val}|Rest], Ref, Ar, Attrs) ->
+process_attrs([{"formula",Val}|Rest], Ref, AReq, Attrs) ->
     Attrs2 = 
         case superparser:process(Val) of
             {formula, Fla} -> 
-                write_formula1(Ref, Fla, Val, Ar, Attrs);
+                write_formula1(Ref, Fla, Val, AReq, Attrs);
             [NVal, Align, Frmt] -> 
                 write_formula2(Ref, Val, NVal, Align, Frmt, Attrs)
         end,
-    process_attrs(Rest, Ref, Ar, Attrs2);
-process_attrs([A={Key,_}|Rest], Ref, Ar, Attrs) ->
-    {Key2, Val2} = case ms_util2:is_in_record(magic_style, Key) of 
-                       true  -> process_style(Ref, A);
-                       false -> A
-                   end,
-    Attrs2 = orddict:store(Key2, Val2, Attrs),
-    process_attrs(Rest, Ref, Ar, Attrs2).
+    process_attrs(Rest, Ref, AReq, Attrs2);
+process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
+    Attrs2  = case ms_util2:is_in_record(magic_style, Key) of 
+                  true  -> apply_style(Ref, A, Attrs);
+                  false -> orddict:store(Key, Val, Attrs)
+              end,
+    process_attrs(Rest, Ref, AReq, Attrs2).
+
+%% Last chance to apply any default styles and formats. 
+-spec post_process(#refX{}, ?dict) -> ?dict. 
+post_process(Ref, Attrs) ->
+    Attrs2 = post_process_styles(Ref, Attrs),
+    post_process_format(Ref, Attrs2).
     
--spec merge_attrs(#refX{}, orddict:ordict()) -> ok. 
-merge_attrs(Ref=#refX{site = Site}, Attrs) ->
-    Table = trans(Site, item), 
-    Idx = get_local_item_index(Ref),
-    Rec2 = case mnesia:read(Table, Idx, write) of
-               [Rec] ->
-                   Attrs2 = orddict:merge(fun merge_left/3,
-                                          Attrs,
-                                          Rec#item.attrs),
-                   Rec#item{attrs = Attrs2};
-               [] ->
-                   #item{idx = Idx, attrs = Attrs}
-           end,
-    mnesia:write(Table, Rec2, write).
+post_process_styles(Ref, Attrs) -> 
+    case orddict:find("style", Attrs) of
+        {ok, _} -> Attrs;
+        _       ->
+            case orddict:find("__default-align", Attrs) of
+                {ok, Align} -> apply_style(Ref,{"text-align",Align},Attrs);
+                _           -> Attrs
+            end
+    end.
 
-merge_left(_Key, V1, _V2) -> V1.
+post_process_format(_Ref, Attrs) ->
+    Attrs.
+    %% {erlang, {_Type, Output}} = format:get_src(Format),
+    %% % I *still* hate American spelling
+    %% {ok, {Color, V}} = format:run_format(Value, Output),
+    %% % first write the formatted value
+    %% ok = write_attr3(RefX, {"value", V}),
+    %% % now write the overwrite colour that comes from the format
+    %% ok = write_attr3(RefX, {"overwrite-color", atom_to_list(Color)}).
 
-%% write_attr(#refX{obj = {range, _}} = RefX, Attr, Ar) ->
-%%     List = hn_util:range_to_list(RefX),
-%%     [ok = write_attr(X, Attr, Ar) || X <- List],
-%%     ok;
-%% %% for the rest just write 'em out
-%% write_attr(RefX, {Key, Val}, _Ar) when is_record(RefX, refX) ->
-%%     write_attr3(RefX, {Key, Val}).
-
-expand_ref(#refX{site=S}=Ref) ->
+expand_ref(#refX{site=S}=Ref) -> 
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref)].
 
-read_ref(Ref) ->
-    read_ref(Ref, all, read).
-read_ref(Ref, Field) ->
-    read_ref(Ref, Field, read).
+read_ref(Ref) -> read_ref(Ref, all, read).
+read_ref(Ref, Field) -> read_ref(Ref, Field, read).
 
 -spec read_ref(#refX{}, all | string(), read | write) 
               -> [{#refX{}, [{string(), term()}]}].
 read_ref(#refX{site=S}=Ref, Field, Lock) ->
-    Ret = read_attrs(S, read_objs(Ref), Field, Lock),
-    io:format("Ret: ~p~n", [Ret]),
-    Ret.
+    read_attrs(S, read_objs(Ref), Field, Lock).
 
 -spec read_objs(#refX{}) -> [#local_objs{}]. 
 read_objs(#refX{site = S, path = P, obj = {page, "/"}}) ->
@@ -825,9 +830,10 @@ read_objs(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
                     end),
     mnesia:select(trans(S, local_objs), MS);
 read_objs(#refX{site = S, path = P, obj = {cell, {X,Y}}}) ->
-    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}})
-                          when MP == P, MX == X, MY == Y -> LO
-                    end),
+    MS = ets:fun2ms(
+           fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}})
+                 when MP == P, MX == X, MY == Y -> LO
+           end),
     mnesia:select(trans(S, local_objs), MS).
 
 -spec read_attrs(string(), [#local_objs{}], all|string(), read|write)
@@ -840,17 +846,19 @@ read_attrs_([], _S, _Tbl, _Field, _Lock, Acc) ->
 read_attrs_([LO|Tail], S, Tbl, Field, Lock, Acc) ->
     Acc2 = case mnesia:read(Tbl, LO#local_objs.idx, Lock) of
                [#item{attrs=Attrs}] ->
-                   Ret = if Field == all -> orddict:to_list(Attrs);
-                            true         -> case orddict:find(Field, Attrs) of
-                                                {ok, V} -> [{Field, V}];
-                                                _       -> [] end end,
-                   if Ret /= [] -> Ref = lobj_to_ref(S, LO),
-                                   [{Ref, Ret}|Acc];
-                      true      -> Acc end;
+                   case read_attrs_field(Field, Attrs) of
+                       []  -> Acc;
+                       Ret -> [{lobj_to_ref(S, LO), Ret} | Acc]
+                   end;
                [] -> Acc
            end,
     read_attrs_(Tail, S, Tbl, Field, Lock, Acc2).
 
+read_attrs_field(all, Attrs)   -> orddict:to_list(Attrs);
+read_attrs_field(Field, Attrs) -> case orddict:find(Field, Attrs) of
+                                      {ok, V} ->  [{Field, V}];
+                                      _       ->  []
+                                  end.
 
 -spec lobj_to_ref(string(), #local_objs{}) -> #refX{}.
 lobj_to_ref(Site, #local_objs{path=P, obj=O}) ->
@@ -1404,7 +1412,7 @@ copy_attrs(#refX{obj = {cell, _}} = From,
 %% this clause is for 'on page' copies where both From and To are on
 %% the same page - just the index is copied
 copy_style(#refX{site = S, path = P, obj = {cell, _}} = From, 
-           #refX{site = S, path = P, obj = {Type, _}} = To, Ar)
+           #refX{site = S, path = P, obj = {Type, _}} = To, AReq)
   when Type == cell orelse Type == range ->
     [{_, {"style", Idx}}] = read_ref(From, "style", read),
     List = case Type of
@@ -1412,13 +1420,13 @@ copy_style(#refX{site = S, path = P, obj = {cell, _}} = From,
                range -> hn_util:range_to_list(To)
            end,
     Fun = fun(X) ->
-                  apply_attrs(X, [{"style", Idx}], Ar)
+                  apply_attrs(X, [{"style", Idx}], AReq)
           end,
     [ok = Fun(X) || X <- List],
     ok;
 %% this clause is for copying styles across different pages
 copy_style(#refX{obj = {cell, _}} = From, 
-           #refX{obj = {Type, _}} = To, Ar)
+           #refX{obj = {Type, _}} = To, AReq)
   when Type == cell orelse Type == range ->
     case read_styles(From) of
         [] -> ok;
@@ -1429,7 +1437,7 @@ copy_style(#refX{obj = {cell, _}} = From,
                    end,
             Fun = fun(X) ->
                           Idx = write_style(X, MagicStyle),
-                          apply_attrs(X, [{"style", Idx}], Ar)
+                          apply_attrs(X, [{"style", Idx}], AReq)
                   end,
             [ok = Fun(X) || X <- List],
             ok
@@ -1437,7 +1445,7 @@ copy_style(#refX{obj = {cell, _}} = From,
 
 -spec mark_these_dirty([#refX{}], nil | uid()) -> ok.
 mark_these_dirty([], _) -> ok;
-mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
+mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
     F = fun(C) -> case read_local_item_index(C) of
                       false -> []; 
                       Idx   -> Idx
@@ -1445,15 +1453,15 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], Ar) ->
         end,
     Tbl = trans(Site, relation),
     Idxs = lists:flatten([F(C) || R <- Refs, C <- expand_ref(R)]),
-    Q = insert_work_queue(Idxs, Tbl, 1, hn_workq:new(Ar)),
+    Q = insert_work_queue(Idxs, Tbl, 1, hn_workq:new(AReq)),
     Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
     
 -spec mark_children_dirty(#refX{}, nil | uid()) -> ok.
-mark_children_dirty(#refX{site = Site}=RefX, Ar) ->
+mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
     Tbl = trans(Site, relation),
     Children = get_local_children_idxs(RefX),
-    Q = insert_work_queue(Children, Tbl, 1, hn_workq:new(Ar)),
+    Q = insert_work_queue(Children, Tbl, 1, hn_workq:new(AReq)),
     case hn_workq:is_empty(Q) of
         true  -> ok;
         false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
@@ -2543,8 +2551,8 @@ shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
                      ok = mnesia:write(trans(Site, NewDirty))
     end.
 
-write_formula1(Ref, Fla, Formula, Ar, Attrs) ->
-    Rti = refX_to_rti(Ref, Ar, false),
+write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
+    Rti = refX_to_rti(Ref, AReq, false),
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
@@ -2560,13 +2568,19 @@ write_formula1(Ref, Fla, Formula, Ar, Attrs) ->
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
             {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
             ok = set_local_relations(Ref, NewLocPs),
-            add_attributes(Attrs, [{"value", Res},
-                                   {"parents", {xml, Parxml}},
-                                   {"rawvalue", Res},
+            Align = default_align(Res),
+            add_attributes(Attrs, [{"parents", {xml, Parxml}},
                                    {"formula", Formula},
+                                   {"value", Res},
+                                   {"rawvalue", Res},
                                    {"__ast", Pcode},
+                                   {"__default-alignment", Align},
                                    {"__recompile", Recompile}])
     end.
+
+default_align(Res) when is_number(Res) -> "right";
+default_align(Res) when is_list(Res)   -> "left";
+default_align(_Res)                    -> "center".
 
 write_formula2(Ref, OrigVal, {Type, Val},
                {"text-align", Align}, 
@@ -2590,22 +2604,6 @@ write_formula2(Ref, OrigVal, {Type, Val},
         "null" -> Attrs2;
         _      -> orddict:store("format", Format, Attrs2)
     end.
-
-%% % if there is a style set for the cell don't write the default
-%% % alignment
-%% write_default_alignment(RefX, Res) ->
-%%     case read_attrs(RefX, ["style"], write) of
-%%         [] -> write_default_alignment1(RefX, Res);
-%%         _  -> ok
-%%     end.
-
-%% write_default_alignment1(RefX, Res) when is_number(Res) ->
-%%     write_attr(RefX, {"text-align" ,"right"});
-%% write_default_alignment1(RefX, Res) when is_list(Res) ->
-%%     write_attr(RefX, {"text-align" ,"left"});
-%% %% this clause matches for booleans, dates and errors
-%% write_default_alignment1(RefX, _Res)  ->
-%%     write_attr(RefX, {"text-align" ,"center"}).
 
 %% split_parents(Old, New) -> split_parents1(lists:sort(Old),
 %%                                           lists:sort(New), {[],[]}).
@@ -2632,15 +2630,6 @@ split_local_remote1([{_, [{_, "local"}], [Url]} | T], {A, B})  ->
 split_local_remote1([{_, [{_, "remote"}], [Url]} | T], {A, B}) ->
     P2 = hn_util:url_to_refX(Url),
     split_local_remote1(T, {A, [P2 | B]}).
-
-%% process_format(RefX, Format, Value) when is_record(RefX, refX) ->
-%%     {erlang, {_Type, Output}} = format:get_src(Format),
-%%     % I *still* hate American spelling
-%%     {ok, {Color, V}} = format:run_format(Value, Output),
-%%     % first write the formatted value
-%%     ok = write_attr3(RefX, {"value", V}),
-%%     % now write the overwrite colour that comes from the format
-%%     ok = write_attr3(RefX, {"overwrite-color", atom_to_list(Color)}).
 
 %% get_item_list(Type, RefX, Key, Acc) ->
 %%     case traverse(Type, RefX, Key) of
@@ -2770,23 +2759,22 @@ make_clause([H | T], PH, Op, A)  ->
 
 
 %% this function is called when a new attribute is set for a style
--spec process_style(#refX{}, {string(), term()}) -> {string(), term()}.
-process_style(RefX, {Name, Val}) ->
-    NewSIdx = case read_ref(RefX, "style", read) of 
-                  []                        -> get_style(RefX, Name, Val);
-                  [{RefX2, {"style", Idx}}] -> get_style(RefX2, Idx, Name, Val) 
+-spec apply_style(#refX{}, {string(), term()}, ?dict) -> ?dict.
+apply_style(Ref, {Name, Val}, Attrs) ->
+    NewSIdx = case orddict:find("style", Attrs) of
+                  {ok, {"style", Idx}} -> edit_style(Ref, Idx, Name, Val);
+                  _                    -> new_style(Ref, Name, Val)
               end,
-    {"style", NewSIdx}.
+    orddict:store("style", NewSIdx, Attrs).
 
-get_style(RefX, Name, Val) ->
+new_style(Ref, Name, Val) ->
     NoOfFields = ms_util2:no_of_fields(magic_style), 
     Index = ms_util2:get_index(magic_style, Name), 
     Style = make_tuple(magic_style, NoOfFields, Index, Val), 
     %% Now write the style 
-    write_style(RefX, Style). 
+    write_style(Ref, Style). 
 
-%% edits a style
-get_style(#refX{site = Site} = RefX, StIdx, Name, Val) ->
+edit_style(#refX{site = Site} = RefX, StIdx, Name, Val) ->
     PageRefX = RefX#refX{obj = {page, "/"}},
     Match = #styles{refX = PageRefX, index = StIdx, _ = '_'},
     Table = trans(Site, styles),

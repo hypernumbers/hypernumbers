@@ -1274,6 +1274,10 @@ biggest(List, Type) ->
           end,
     lists:foldl(Fun, StartAcc, List).
 
+write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
+    List = hn_util:range_to_list(Ref),
+    [ok = write_attributes1(X, AttrList, PAr, VAr) || X <- List],
+    ok;
 write_attributes1(RefX, List, PAr, VAr) 
   when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),

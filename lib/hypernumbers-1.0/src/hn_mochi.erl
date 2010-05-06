@@ -893,7 +893,7 @@ to_dict([{Ref, KVs} | T], JSON) ->
 add_ref(_Ref, [], JSON) ->
     JSON;
 add_ref(Ref, [KV|Tail], JSON) ->
-    io:format("Adding ~p:~p~n", [Ref, KV]),
+    %%io:format("Adding ~p:~p~n", [Ref, KV]),
     JSON2 = add_ref1(Ref, hn_util:jsonify_val(KV), JSON),
     add_ref(Ref, Tail, JSON2).
 
