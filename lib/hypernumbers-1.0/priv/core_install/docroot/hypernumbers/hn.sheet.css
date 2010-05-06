@@ -746,7 +746,7 @@ a {
     top             : auto;
     display         : none;
     padding         : 0px 0px;
-    z-index         : 10000000;
+    z-index     : 10000002;
 }
 
 #toolbar #formats { 
