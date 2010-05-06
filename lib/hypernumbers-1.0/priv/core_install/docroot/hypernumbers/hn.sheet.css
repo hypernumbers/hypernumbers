@@ -396,7 +396,7 @@ a {
     font-weight     : bold;
 }
 #formulabar {
-    overflow:hidden;
+    /* overflow:hidden; */
     position:relative;
     height: 18px;
     line-height:18px;
@@ -415,20 +415,30 @@ a {
 
 #formulawrapper {
     position    : absolute;
+    left        : 0px;
+    right       : 0px;
     display     : block;
-    width       : 100%;
     top         : 0px;
-    height      : 100%;
+    height      : 18px;
     margin-left : 110px;
     border      : 0px;
-    text-indent : 4px;
     background  : #FFF;
+    max-height  : 100px;
+    cursor      : text;    
+    overflow-y  : auto;
+    overflow-x  : hidden;
+    /* z-index     : 9999999; */
+    z-index     : 10000001;
+    padding-left:4px;
+}
+
+#formulawrapper.active { 
+    height:auto;
+    border:1px solid #666;
 }
 
 #formula { 
-    width:100%;
-    height:100%;
-    cursor:text;
+    outline:none;
 }
 
 #functionsbtn { 
