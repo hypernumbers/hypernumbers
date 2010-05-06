@@ -1585,7 +1585,7 @@ clear_cells1(RefX, style) when is_record(RefX, refX) ->
     % now read and rewrite the rawvalue to display the format changes
     [ok = write_rawvalue(X, V) || {X, {_K, V}} <- get_rawvalues(List2)],    
     ok;
-clear_cells1(RefX, {attribute, AttrList}) ->
+clear_cells1(RefX, {attributes, AttrList}) ->
     case read_attrs(RefX, write) of
         []    -> ok;
         List1 -> List2 = get_attrs(List1, AttrList),
