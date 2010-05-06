@@ -69,12 +69,12 @@ layout([{{C,R}, L}|T], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
             PX2 = PX + W,
             layout(T, C+1, R, PX2, PY, H, CWs2, RHs, Rec, Acc2);
         {struct, [{"right", Right}, {"down", Down}]} ->
-            MW = width_across(C+1, C+Right, CWs2, W),
+            {MW,CWs3} = width_across(C+1, C+Right, CWs2, W),
             MH = height_below(R+1, R+Down, RHs, H),
             Acc2 = [draw(Value, Css, PX, PY, MW, MH) | Acc],
             PX2 = PX + MW,
             T2 = expunge(T, {C,C+Right,R,R+Down}),
-            layout(T2, C+Right+1, R, PX2, PY, H, CWs2, RHs, Rec, Acc2)
+            layout(T2, C+Right+1, R, PX2, PY, H, CWs3, RHs, Rec, Acc2)
     end;
 
 %% No cell for this column, but still haven't changed rows.
@@ -111,8 +111,8 @@ expunge([Cell | Tail], Rng) ->
 
 -spec width_across(integer(), integer(), cols(), integer()) 
                   -> integer(). 
-width_across(C, Stop, _CWs, Acc) when C > Stop ->
-    Acc;
+width_across(C, Stop, CWs, Acc) when C > Stop ->
+    {Acc, CWs};
 width_across(C, Stop, CWs, Acc) ->
     {W, CWs2} = col_width(C, CWs),
     width_across(C+1, Stop, CWs2, W + Acc).

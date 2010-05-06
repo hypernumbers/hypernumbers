@@ -628,11 +628,13 @@ ipost(Ref=#refX{site = S, path = P, obj = O} = Ref, Qry,
     end,
     json(Env, "success");
 
-ipost(Ref, _Qry, 
-      Env=#env{body = [{"clear", What}],
-               uid = Uid}) 
+ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) 
   when What == "contents"; What == "style"; What == "all" ->
     ok = hn_db_api:clear(Ref, list_to_atom(What), Uid),
+    json(Env, "success");
+
+ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
+    ok = hn_db_api:clear(Ref, {attributes, [What]}, Uid),
     json(Env, "success");
 
 ipost(#refX{site=Site, path=Path} = Ref, _Qry,
@@ -805,7 +807,8 @@ ipost(#refX{site = Site, path = _P}, _Qry,
             json(Env, {struct, [{"result", "error"}, {"reason", Reason}]})
     end; 
     
-ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
+ipost(#refX{site=_Site, path=["_hooks"]}, 
+      _Qry, Env=#env{body=Body, uid=PrevUid}) ->
     [{"signup",{struct,[{"email",Email0}]}}] = Body,
     Email = string:to_lower(Email0),
     Zone = case application:get_env(hypernumbers, environment) of
@@ -813,7 +816,7 @@ ipost(#refX{site=_Site, path=["_hooks"]}, _Qry, Env=#env{body=Body}) ->
                {ok, production}  -> "tiny.hn"
            end,
     Type = demo,
-    case factory:provision_site(Zone, Email, Type) of
+    case factory:provision_site(Zone, Email, Type, PrevUid) of
         {ok, new, Site, Uid, Name} ->
             Opaque = [],
             Expiry = "never",
