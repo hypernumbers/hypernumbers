@@ -2560,17 +2560,16 @@ write_formula1(Ref, Fla, Formula, Ar, Attrs) ->
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
             {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
             ok = set_local_relations(Ref, NewLocPs),
-            Attrs2 = orddict:store("value", Res, Attrs),
-            Attrs3 = orddict:store("parents", {xml, Parxml}, Attrs2),
-            Attrs4 = orddict:store("rawvalue", Res, Attrs3),
-            Attrs5 = orddict:store("formula", Formula, Attrs4),
-            Attrs6 = orddict:store("__ast", Pcode, Attrs5),
-            Attrs7 = orddict:store("__recompile", Recompile, Attrs6),
-            orddict:store("__dependency-tree", Deptree, Attrs7)
+            add_attributes(Attrs, [{"value", Res},
+                                   {"parents", {xml, Parxml}},
+                                   {"rawvalue", Res},
+                                   {"formula", Formula},
+                                   {"__ast", Pcode},
+                                   {"__recompile", Recompile}])
     end.
 
 write_formula2(Ref, OrigVal, {Type, Val},
-               {"text-align", _Align}, 
+               {"text-align", Align}, 
                {"format", Format}, Attrs) ->
     Formula = case Type of
                   quote    -> [$' | Val];
@@ -2581,14 +2580,15 @@ write_formula2(Ref, OrigVal, {Type, Val},
     Parxml = map(fun muin_link_to_simplexml/1, []),
     {NewLocPs, _NewRemotePs} = split_local_remote([]),
     ok = set_local_relations(Ref, NewLocPs),
-    Attrs2 = orddict:store("__dependency-tree", [], Attrs),
-    Attrs3 = orddict:store("value", Val, Attrs2),
-    Attrs4 = orddict:store("parents", {xml, Parxml}, Attrs3),
-    Attrs5 = orddict:store("rawvalue", Val, Attrs4),
-    Attrs6 = orddict:store("formula", Formula, Attrs5),
+    Attrs2 = add_attributes(Attrs, [{"__dependency-tree", []},
+                                    {"__default-align", Align},
+                                    {"value", Val},
+                                    {"parents", {xml, Parxml}},
+                                    {"rawvalue", Val},
+                                    {"formula", Formula}]),
     case Format of
-        "null" -> Attrs6;
-        _      -> orddict:store("format", Format, Attrs6)
+        "null" -> Attrs2;
+        _      -> orddict:store("format", Format, Attrs2)
     end.
 
 %% % if there is a style set for the cell don't write the default
@@ -2663,6 +2663,11 @@ split_local_remote1([{_, [{_, "remote"}], [Url]} | T], {A, B}) ->
 %%         {_NType, _NRefX, [#item{val = Val}]} -> {ok, Val};
 %%         {_NType, [#item{val = Val}]}         -> {ok, Val}
 %%     end.
+
+add_attributes(D, []) -> D;
+add_attributes(D, [{Key, Val}|T]) ->
+    D2 = orddict:store(Key, Val, D),
+    add_attributes(D2, T).
 
 traverse(cell, #refX{obj = {cell, _}} = RefX, Key) ->
     {range, match_ref(RefX, Key)};

@@ -250,9 +250,7 @@ jsonify_val({"value", true})                -> {"value", "true"};
 jsonify_val({"value", false})               -> {"value", "false"};
 %% TODO: fix names
 jsonify_val({Name, {namedexpr, _Path, Nm}}) -> {Name, Nm};
-jsonify_val(Else)                           -> 
-    io:format("Else is ~p~n", [Else]),
-    Else.
+jsonify_val(Else)                           -> Else.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

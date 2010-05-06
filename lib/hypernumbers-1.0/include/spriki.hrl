@@ -20,8 +20,7 @@
         {
           site        = [],
           path        = [],
-          obj         = null,
-          auth        = []
+          obj         = null
          }).
 
 -record(status,
@@ -284,7 +283,6 @@
                rawview,
                renderer,
                return,
-               spoor,
                status,
                template,
                templates,
