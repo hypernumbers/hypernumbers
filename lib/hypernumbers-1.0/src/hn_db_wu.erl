@@ -743,7 +743,6 @@ apply_attrs(Ref, NewAttrs) ->
 
 -spec apply_attrs(#refX{}, [{string(), term()}], auth_req()) -> ok.
 apply_attrs(#refX{site=Site}=Ref, NewAttrs, AReq) ->
-    io:format("Applying ~p to ~p~n", [NewAttrs, Ref]),
     Table = trans(Site, item), 
     Idx = get_local_item_index(Ref),
     Attrs = case mnesia:read(Table, Idx, write) of
@@ -2764,8 +2763,8 @@ make_clause([H | T], PH, Op, A)  ->
 -spec apply_style(#refX{}, {string(), term()}, ?dict) -> ?dict.
 apply_style(Ref, {Name, Val}, Attrs) ->
     NewSIdx = case orddict:find("style", Attrs) of
-                  {ok, {"style", Idx}} -> edit_style(Ref, Idx, Name, Val);
-                  _                    -> new_style(Ref, Name, Val)
+                  {ok, Idx} -> edit_style(Ref, Idx, Name, Val);
+                  _         -> new_style(Ref, Name, Val)
               end,
     orddict:store("style", NewSIdx, Attrs).
 
