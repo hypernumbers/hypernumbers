@@ -779,7 +779,10 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
 -spec post_process(#refX{}, ?dict) -> ?dict. 
 post_process(Ref, Attrs) ->
     Attrs2 = post_process_styles(Ref, Attrs),
-    post_process_format(Ref, Attrs2).
+    case orddict:find("rawvalue", Attrs2) of
+        {ok, Raw} -> post_process_format(Ref, Raw, Attrs2);
+        _         -> Attrs2
+    end.                       
     
 post_process_styles(Ref, Attrs) -> 
     case orddict:find("style", Attrs) of
@@ -791,15 +794,16 @@ post_process_styles(Ref, Attrs) ->
             end
     end.
 
-post_process_format(_Ref, Attrs) ->
-    Attrs.
-    %% {erlang, {_Type, Output}} = format:get_src(Format),
-    %% % I *still* hate American spelling
-    %% {ok, {Color, V}} = format:run_format(Value, Output),
-    %% % first write the formatted value
-    %% ok = write_attr3(RefX, {"value", V}),
-    %% % now write the overwrite colour that comes from the format
-    %% ok = write_attr3(RefX, {"overwrite-color", atom_to_list(Color)}).
+post_process_format(Ref, Raw, Attrs) ->
+    Format = case orddict:find("format", Attrs) of
+                 {ok, F} -> F;
+                 _       -> "General"
+             end,
+    {erlang, {_Type, Output}} = format:get_src(Format),
+    % Y'all hear, this is how America does color. I tell you what.
+    {ok, {Color, Value}} = format:run_format(Raw, Output),
+    add_attributes(Attrs, [{"value", Value},
+                           {"overwrite-color", atom_to_list(Color)}]).
 
 expand_ref(#refX{site=S}=Ref) -> 
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref)].
@@ -2571,7 +2575,6 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             Align = default_align(Res),
             add_attributes(Attrs, [{"parents", {xml, Parxml}},
                                    {"formula", Formula},
-                                   {"value", Res},
                                    {"rawvalue", Res},
                                    {"__ast", Pcode},
                                    {"__default-alignment", Align},
@@ -2596,7 +2599,6 @@ write_formula2(Ref, OrigVal, {Type, Val},
     ok = set_local_relations(Ref, NewLocPs),
     Attrs2 = add_attributes(Attrs, [{"__dependency-tree", []},
                                     {"__default-align", Align},
-                                    {"value", Val},
                                     {"parents", {xml, Parxml}},
                                     {"rawvalue", Val},
                                     {"formula", Formula}]),

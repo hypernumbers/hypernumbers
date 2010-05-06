@@ -11,7 +11,7 @@
 -define(DEFAULT_HEIGHT, 20).
 
 -type intpair() :: {integer(), integer()}.
--type cells() :: [{intpair(), list(tuple())}].
+-type cells() :: [{intpair(), [tuple()]}].
 -type cols() :: [intpair()].
 -type rows() :: [intpair()].
 -type textdata() :: string() | [textdata()].
@@ -26,9 +26,10 @@
 -spec content(#refX{}) -> {[textdata()], integer()}.
 content(Ref) ->
     Data = lists:sort(fun order_objs/2, hn_db_api:read_ref(Ref)),
-    Cells = coalesce([{{X,Y},P} || {#refX{obj={cell,{X,Y}}},P} <- Data]),
-    RowHs = [{R, H} || {#refX{obj={row,{R,R}}},{"height",H}} <- Data],
-    ColWs = [{C, W} || {#refX{obj={column,{C,C}}},{"width",W}} <- Data],
+    io:format("Data: ~p~n", [Data]),
+    Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
+    RowHs = [{R, H} || {#refX{obj={row,{R,R}}},[{"height",H}]} <- Data],
+    ColWs = [{C, W} || {#refX{obj={column,{C,C}}},[{"width",W}]} <- Data],
     Palette = array:from_orddict
                 (lists:sort
                    (hn_mochi:styles_to_css
@@ -154,28 +155,6 @@ order_objs({RA,_}, {RB,_}) ->
     if YA /= YB -> YA < YB;
        true     -> XA =< XB
     end.
-
--spec coalesce([{intpair(), tuple()}]) -> cells().
-coalesce([])             -> []; 
-coalesce([{C, _}|_]=Lst) -> coalesce(Lst, C, [], []).
-
-coalesce([], C, PropAcc, Acc) ->
-    Acc2 = case PropAcc of [] -> Acc;
-               _  -> [{C, PropAcc} | Acc] 
-           end,
-    lists:reverse(Acc2);
-coalesce([{C, {K,_}=Prop}|Tail], C, PropAcc, Acc) 
-  when K == "value"; 
-       K == "style";
-       K == "merge" ->
-    coalesce(Tail, C, [Prop|PropAcc], Acc);
-coalesce([{C, _Prop}|Tail], C, PropAcc, Acc) ->
-    coalesce(Tail, C, PropAcc, Acc);
-coalesce([{NewC, _}|_]=Lst, C, PropAcc, Acc) ->
-    Acc2 = case PropAcc of [] -> Acc;
-               _  -> [{C, PropAcc} | Acc] 
-           end,
-    coalesce(Lst, NewC, [], Acc2).
 
 -spec read_css(undefined | integer(), array()) -> string(). 
 read_css(undefined, _Palette) -> "";
