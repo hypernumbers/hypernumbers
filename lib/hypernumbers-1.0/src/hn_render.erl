@@ -26,7 +26,6 @@
 -spec content(#refX{}) -> {[textdata()], integer()}.
 content(Ref) ->
     Data = lists:sort(fun order_objs/2, hn_db_api:read_ref(Ref)),
-    io:format("Data: ~p~n", [Data]),
     Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
     RowHs = [{R, H} || {#refX{obj={row,{R,R}}},[{"height",H}]} <- Data],
     ColWs = [{C, W} || {#refX{obj={column,{C,C}}},[{"width",W}]} <- Data],

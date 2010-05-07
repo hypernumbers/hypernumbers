@@ -496,7 +496,7 @@
          clear_cells/1,
          clear_cells/2,
          %delete_page/1,
-         %delete_cells/1,
+         delete_cells/1,
          %delete_attrs/2,
          shift_cells/4,
          shift_row_objs/2,
@@ -525,7 +525,7 @@
 
 %% Structural Query Exports
 -export([
-         get_last_refs/1
+         %%get_last_refs/1
         ]).
 
 -export([
@@ -563,24 +563,21 @@
 %%      not be used for any other purpose
 get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
     #refX{site = Site, path = Path} = RefX,
-
-    Value = case read_ref(RefX, "rawvalue") of
-                []              -> blank;
-                [{_, [{_, V}]}] -> V
-            end, 
-
-    DTree = case read_ref(RefX, "__dependency-tree") of
-                [{_, [{_, Tree}]}] -> Tree;
-                []                 -> []
+    Attrs = read_ref(RefX),
+    Value = case orddict:find("rawvalue", Attrs) of
+                {ok, {datetime, _, [N]}} -> 
+                    muin_date:from_gregorian_seconds(N);
+                {ok, V} -> 
+                    V;
+                _ -> 
+                    blank
             end,
-
-    Val = case Value of
-              {datetime, _, [N]} -> muin_date:from_gregorian_seconds(N);
-              Else               -> Else %% Strip other type tags.
-          end,
-
+    DTree = case orddict:find("__dependency-tree", Attrs) of
+                {ok, D} -> D;
+                _       -> []
+            end,
     Dep = DTree ++ [{"local", get_local_item_index(RefX)}],
-    {Val, Dep, [], [{"local", {Site, Path, XX, YY}}]}.
+    {Value, Dep, [], [{"local", {Site, Path, XX, YY}}]}.
 
 %% @hidden
 %% @doc write_style_IMPORT is a wrapper for the internal function write_style
@@ -690,29 +687,29 @@ get_refs_right(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
 %% </ul>
 %% @TODO this may have a race condition if two people try
 %% and get the last row/column at the same time...
-get_last_refs(#refX{site = S, path = P}) ->
-    RefX2 = #refX{site = S, path = P, obj = {page, "/"}},
-    Cells = read_ref(RefX2),
-    Fun = fun({R, V}, {MaxRefX, MaxRefY}) ->
-                  {NewX, NewY} =
-                      case V of
-                          {"formula", _} ->
-                              #refX{obj = {cell, {X, Y}}} = R,
-                              #refX{obj = {cell, {MaxX, _}}} = MaxRefX,
-                              #refX{obj = {cell, {_, MaxY}}} = MaxRefY,
-                              NX = ?COND(MaxX > X, MaxX, X),
-                              NY = ?COND(MaxY > Y, MaxY, Y),
-                              {NX, NY};
-                          _ ->
-                              #refX{obj = {cell, {MaxX, _}}} = MaxRefX,
-                              #refX{obj = {cell, {_, MaxY}}} = MaxRefY,
-                              {MaxX, MaxY}
-                      end,
-                  {#refX{site = S, path = P, obj = {cell, {NewX, 0}}},
-                   #refX{site = S, path = P, obj = {cell, {0, NewY}}}}
-          end,
-    Zero = #refX{site = S, path = P, obj = {cell, {0, 0}}},
-    lists:foldl(Fun, {Zero, Zero}, Cells).
+%% get_last_refs(#refX{site = S, path = P}) ->
+%%     RefX2 = #refX{site = S, path = P, obj = {page, "/"}},
+%%     Cells = read_ref(RefX2),
+%%     Fun = fun({R, V}, {MaxRefX, MaxRefY}) ->
+%%                   {NewX, NewY} =
+%%                       case V of
+%%                           {"formula", _} ->
+%%                               #refX{obj = {cell, {X, Y}}} = R,
+%%                               #refX{obj = {cell, {MaxX, _}}} = MaxRefX,
+%%                               #refX{obj = {cell, {_, MaxY}}} = MaxRefY,
+%%                               NX = ?COND(MaxX > X, MaxX, X),
+%%                               NY = ?COND(MaxY > Y, MaxY, Y),
+%%                               {NX, NY};
+%%                           _ ->
+%%                               #refX{obj = {cell, {MaxX, _}}} = MaxRefX,
+%%                               #refX{obj = {cell, {_, MaxY}}} = MaxRefY,
+%%                               {MaxX, MaxY}
+%%                       end,
+%%                   {#refX{site = S, path = P, obj = {cell, {NewX, 0}}},
+%%                    #refX{site = S, path = P, obj = {cell, {0, NewY}}}}
+%%           end,
+%%     Zero = #refX{site = S, path = P, obj = {cell, {0, 0}}},
+%%     lists:foldl(Fun, {Zero, Zero}, Cells).
 
 %% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> ok
 %% Key = atom()
@@ -828,6 +825,18 @@ read_attrs_field(Field, Attrs) -> case orddict:find(Field, Attrs) of
 lobj_to_ref(Site, #local_objs{path=P, obj=O}) ->
     #refX{site=Site, path=P, obj=O}.
 
+-spec expunge_refs(string(), [#refX{}]) -> ok. 
+expunge_refs(S, Refs) ->
+    ItemT = trans(S, item),
+    ObjT = trans(S, local_objs),
+    [begin
+         mnesia:delete(ItemT, Idx, write),
+         mnesia:delete_object(ObjT, LO, write)
+     end || Ref <- Refs,
+            Objs <- read_objs(Ref),
+            #local_objs{idx=Idx}=LO <- Objs],
+    ok.
+
 -spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ok.
 apply_to_attrs(#refX{site=Site}=Ref, Op) ->
     Table = trans(Site, item), 
@@ -846,7 +855,7 @@ apply_to_attrs(#refX{site=Site}=Ref, Op) ->
 post_process(Ref, Attrs) ->
     Attrs2 = post_process_styles(Ref, Attrs),
     case orddict:find("rawvalue", Attrs2) of
-        {ok, Raw} -> post_process_format(Ref, Raw, Attrs2);
+        {ok, Raw} -> post_process_format(Raw, Attrs2);
         _         -> Attrs2
     end.                       
     
@@ -860,7 +869,7 @@ post_process_styles(Ref, Attrs) ->
             end
     end.
 
-post_process_format(Ref, Raw, Attrs) ->
+post_process_format(Raw, Attrs) ->
     Format = case orddict:find("format", Attrs) of
                  {ok, F} -> F;
                  _       -> "General"
@@ -1113,25 +1122,12 @@ clear_cells(Ref, contents) ->
          end,
     [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], ok.
 
-get_rawvalues(List) -> get_rv1(List, []).
-
-get_rv1([], Acc)                              -> Acc;
-get_rv1([{_, {"rawvalue", _V}} = H | T], Acc) -> get_rv1(T, [H | Acc]);
-get_rv1([_H | T], Acc)                        -> get_rv1(T, Acc).
-
-get_formats(List) -> get_f1(List, []).
-
-get_f1([], Acc)                            -> Acc;
-get_f1([{_, {"format", _V}} = H | T], Acc) -> get_f1(T, [H | Acc]);
-get_f1([_H | T], Acc)                      -> get_f1(T, Acc).
-
-%% %% @spec delete_page(RefX) -> Status
-%% %% @doc takes a reference to a page, does delete_cells,
-%% %% Then reads any existing local_objs and deletes any
-%% %% row / column ones, along with any attributes set on them
-%% %% Returns a list of dereferenced cells thatneed to be set dirty to recalculate
+%% @spec delete_page(RefX) -> Status
+%% @doc takes a reference to a page, does delete_cells,
+%% Then reads any existing local_objs and deletes any
+%% row / column ones, along with any attributes set on them
+%% Returns a list of dereferenced cells thatneed to be set dirty to recalculate
 %% delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
-
 %%     Dirty = delete_cells(RefX),
 
 %%     F = fun(#local_objs{obj = {X, _Y}, idx = Id} = Obj)
@@ -1162,113 +1158,45 @@ get_f1([_H | T], Acc)                      -> get_f1(T, Acc).
 %% @todo this is ineffiecient because it reads and then deletes each
 %% record individually - if remoting_reg supported a {delete refX all}
 %% type message it could be speeded up
-%% -spec delete_cells(#refX{}) -> [#refX{}].
-%% delete_cells(#refX{site = S} = DelX) ->
-%%     Cells = expand_ref(DelX),
-%%     case Cells of
-%%         [] -> [];
-%%         _  -> 
-%%             %% update the children that point to the cell that is being deleted
-%%             %% by rewriting the formulae of all the children cells replacing
-%%             %% the reference to this cell with #ref!
-%%             LocalChildren = [get_local_children(C) || C <- Cells],
-%%             LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
+-spec delete_cells(#refX{}) -> [#refX{}].
+delete_cells(#refX{site = S} = DelX) ->
+    Cells = expand_ref(DelX),
+    case Cells of
+        [] -> [];
+        _  -> 
+            %% update the children that point to the cell that is
+            %% being deleted by rewriting the formulae of all the
+            %% children cells replacing the reference to this cell
+            %% with #ref!
+            LocalChildren = [get_local_children(C) || C <- Cells],
+            LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
             
-%%             %% sometimes a cell will have local children that are 
-%%             %% also in the delete zone these need to be removed 
-%%             %% before we do anything else...
-%%             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
-
-%%             Fun = fun({ChildRef, {"formula", F1}}) ->
-%%                           {_Status, NewFormula} = deref(ChildRef, F1, DelX),
-%%                           ok = write_attrs(ChildRef, [{"formula", NewFormula}]),
-%%                           ChildRef
-%%                   end,
-%%             DirtyChildren = [Fun(F) || X <- LocalChildren3,
-%%                                        F <- read_ref(X, "formula", write)],
-
-%%             %% fix relations table.
-%%             [ok = delete_local_relation(X) || X <- Cells],
-
-%%             %% get the index of all items to be deleted
-%%             H1 = #local_objs{path = '$1', obj = '$2', _ = '_'},
-%%             C1 = make_del_cond(Cells),
-%%             Table1 = trans(S, local_objs),
-%%             Recs = mnesia:select(Table1, [{H1, C1, ['$_']}], write),
-%%             Fun4 = fun(X) ->
-%%                            #local_objs{idx = Idx} = X,
-%%                            Idx
-%%                    end,
-%%             IdxList = [Fun4(X) || X <- Recs],
+            %% sometimes a cell will have local children that are also
+            %% in the delete zone these need to be removed before we
+            %% do anything else...
+            LocalChildren3 = lists:subtract(LocalChildren2, Cells),
             
-%%             %% delete all items with that index
-%%             Tb2 = trans(S, item),
-%%             Fun5 = 
-%%                 fun(X) -> 
-%%                         L = mnesia:read(Tb2, X, write),
-%%                         %% you need to notify the front end 
-%%                         %% before you delete the object...
-%%                         RefX = local_idx_to_refX(S, X),
-%%                         [ok = tell_front_end(RefX, {K, V}, delete) ||
-%%                             #item{key = K, val = V} <- L],
-%%                         [ok = mnesia:delete_object(Tb2, XX, write) || XX <- L],
-%%                         ok
-%%                 end,
+            %% Rewrite formulas
+            [rewrite_ref(X, DelX) || X <- LocalChildren3],
 
-%%             [ok = Fun5(X) || X <- IdxList],
-%%             %% finally delete the index records themselves
-%%             [ ok = mnesia:delete_object(trans(S, local_objs), X, write)
-%%               || X <- Recs],
-%%             DirtyChildren
-%%     end.
+            %% fix relations table.
+            [ok = delete_local_relation(X) || X <- Cells],
 
-make_del_cond([]) ->
-    exit("make_del_cond can't take an empty list");
-make_del_cond(List) ->
-    make_del_cond1(List, []).
+            %% Delete the cells (and their indicices)
+            expunge_refs(S, Cells),
+            LocalChildren3
+    end.
 
-make_del_cond1([], Acc) when length(Acc) == 1 ->
-    Acc;
-make_del_cond1([], Acc) ->
-    [list_to_tuple(lists:flatten(['or', Acc]))];
-make_del_cond1([#refX{path = P, obj = O} | T], Acc) ->
-    make_del_cond1(T, [{'and', {'=:=', '$1', {const, P}},
-                        {'=:=', '$2', {const, O}}} | Acc]).
-
-%% %% @spec delete_attrs(RefX :: #refX{}, Key) -> ok
-%% %% Key = atom()
-%% %% @doc deletes a named attribute from a
-%% %% cell or cells (but doesn't delete the cells themselves)
-%% delete_attrs(#refX{site = S} = RefX, Key) ->
-%%     case ms_util2:is_in_record(magic_style, Key) of 
-%%         true  -> delete_style_attr(RefX, Key);
-%%         false -> Idx = read_local_item_index(RefX),
-%%                  H = #item{idx = Idx, key = Key, _ = '_'},
-%%                  M = [{H, [], ['$_']}],
-%%                  Table = trans(S, item), 
-%%                  [#item{val = Val} = Rec] = mnesia:select(Table, M),
-%%                  ok = mnesia:delete_object(Table, Rec, write),
-%%                  ok = tell_front_end(RefX, {Key, Val}, delete)
-%%     end.
-
-%% %% @spec delete_if_attrs(RefX :: #refX{}, Key) -> ok
-%% %% Key = atom()
-%% %% @doc deletes a named attribute from a
-%% %% cell or cells if it exists (but doesn't delete the cells themselve)
-%% %% ONLY USE THIS FOR ATTRIBUTES THAT MIGHT EXIST OTHERWISE USE delete_attrs
-%% delete_if_attrs(#refX{site = S} = RefX, Key) ->
-%%     case ms_util2:is_in_record(magic_style, Key) of 
-%%         true  -> delete_style_attr(RefX, Key);
-%%         false ->
-%%             Idx = read_local_item_index(RefX),
-%%             H = #item{idx = Idx, key = Key, _ = '_'},
-%%             Tb = trans(S, item),
-%%             case mnesia:select(Tb, [{H, [], ['$_']}]) of
-%%                 []                   -> ok;
-%%                 [#item{val = V} = R] -> ok = mnesia:delete_object(Tb, R, write),
-%%                                         ok = tell_front_end(RefX, {Key, V}, delete)
-%%             end
-%%     end.
+-spec rewrite_ref(#refX{}, #refX{}) -> ok. 
+rewrite_ref(Ref, DelRef) ->
+    Op = fun(Attrs) -> 
+                 F1 = case orddict:find("formula", Attrs) of
+                          {ok, V} -> V;
+                          _        -> "" end,
+                 {_Status, F2} = deref(Ref, F1, DelRef),
+                 orddict:store("formula", F2, Attrs)
+         end,
+    apply_to_attrs(Ref, Op).
 
 %% %% @doc copys cells from a reference to a reference
 %% -spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
