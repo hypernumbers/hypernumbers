@@ -746,7 +746,7 @@ a {
     top             : auto;
     display         : none;
     padding         : 0px 0px;
-    z-index         : 10000000;
+    z-index     : 10000002;
 }
 
 #toolbar #formats { 
@@ -984,7 +984,7 @@ a {
  padding:    3px 2px;
  border:     1px outset #666;
  background: #FFF;
- z-index:    9999999;
+    z-index     : 10000002;
 }
 #axiscontextmenucol, #axiscontextmenurow { 
  width:      120px;
