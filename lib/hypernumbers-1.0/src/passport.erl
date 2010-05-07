@@ -241,7 +241,7 @@ handle_call({set_password, Uid, Password}, _From, State) ->
     T = fun() ->
                 case mnesia:read(service_passport_user, Uid, write) of
                     [U] when not U#user.validated ->
-                        {error, invalidated};
+                        {error, not_validated};
                     [U] -> 
                         mnesia:write(service_passport_user, 
                                      U#user{passMD5 = PassMD5}, 

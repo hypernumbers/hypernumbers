@@ -110,7 +110,7 @@ expunge([Cell | Tail], Rng) ->
     [Cell | expunge(Tail, Rng)].
 
 -spec width_across(integer(), integer(), cols(), integer()) 
-                  -> integer(). 
+                  -> {integer(), cols()}. 
 width_across(C, Stop, CWs, Acc) when C > Stop ->
     {Acc, CWs};
 width_across(C, Stop, CWs, Acc) ->
