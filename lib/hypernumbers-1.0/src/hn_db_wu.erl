@@ -488,13 +488,13 @@
 
 %% Cell Query Exports
 -export([
-         apply_attrs/2,
-         apply_attrs/3,
+         write_attrs/2,
+         write_attrs/3,
          read_styles/1,
          local_idx_to_refX/2,
          read_ref/1, read_ref/2, read_ref/3,
-         %clear_cells/1,
-         %clear_cells/2,
+         clear_cells/1,
+         clear_cells/2,
          %delete_page/1,
          %delete_cells/1,
          %delete_attrs/2,
@@ -588,7 +588,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
 write_style_IMPORT(RefX, Style)
   when is_record(RefX, refX), is_record(Style, magic_style) ->
     NewIndex = write_style(RefX, Style),
-    apply_attrs(RefX, [{"style", NewIndex}]),
+    write_attrs(RefX, [{"style", NewIndex}]),
     ok.
 
 %% %% @spec shift_children(Children, OldParent::#refX{},
@@ -621,7 +621,7 @@ write_style_IMPORT(RefX, Style)
 
 %%     %%                                   Formula
 %%     %%              end,
-%%     apply_attrs(Child, [{"formula", NewFormula}]).
+%%     write_attrs(Child, [{"formula", NewFormula}]).
 
 %% @spec get_refs_below(#refX{}) -> [#refX{}]
 %% @doc gets all the refs equal to or below a given reference as well as
@@ -737,22 +737,13 @@ get_last_refs(#refX{site = S, path = P}) ->
 %% @end
 %% This clause deals with a formula
 
--spec apply_attrs(#refX{}, [{string(), term()}]) -> ok. 
-apply_attrs(Ref, NewAttrs) ->
-    apply_attrs(Ref, NewAttrs, nil).
+-spec write_attrs(#refX{}, [{string(), term()}]) -> ok. 
+write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
 
--spec apply_attrs(#refX{}, [{string(), term()}], auth_req()) -> ok.
-apply_attrs(#refX{site=Site}=Ref, NewAttrs, AReq) ->
-    Table = trans(Site, item), 
-    Idx = get_local_item_index(Ref),
-    Attrs = case mnesia:read(Table, Idx, write) of
-                [#item{attrs=A}] -> A;
-                _                -> orddict:new()
-            end,
-    Attrs2 = process_attrs(NewAttrs, Ref, AReq, Attrs),
-    Attrs3 = post_process(Ref, Attrs2),
-    Item = #item{idx = Idx, attrs = Attrs3},
-    mnesia:write(Table, Item, write).
+-spec write_attrs(#refX{}, [{string(), term()}], auth_req()) -> ok.
+write_attrs(Ref, NewAs, AReq) ->
+    Op = fun(Attrs) -> process_attrs(NewAs, Ref, AReq, Attrs) end,
+    apply_to_attrs(Ref, Op).
 
 -spec process_attrs([{string(), term()}], #refX{}, auth_req(), ?dict) 
                    -> ?dict.
@@ -773,36 +764,6 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
                   false -> orddict:store(Key, Val, Attrs)
               end,
     process_attrs(Rest, Ref, AReq, Attrs2).
-
-%% Last chance to apply any default styles and formats. 
--spec post_process(#refX{}, ?dict) -> ?dict. 
-post_process(Ref, Attrs) ->
-    Attrs2 = post_process_styles(Ref, Attrs),
-    case orddict:find("rawvalue", Attrs2) of
-        {ok, Raw} -> post_process_format(Ref, Raw, Attrs2);
-        _         -> Attrs2
-    end.                       
-    
-post_process_styles(Ref, Attrs) -> 
-    case orddict:find("style", Attrs) of
-        {ok, _} -> Attrs;
-        _       ->
-            case orddict:find("__default-align", Attrs) of
-                {ok, Align} -> apply_style(Ref,{"text-align",Align},Attrs);
-                _           -> Attrs
-            end
-    end.
-
-post_process_format(Ref, Raw, Attrs) ->
-    Format = case orddict:find("format", Attrs) of
-                 {ok, F} -> F;
-                 _       -> "General"
-             end,
-    {erlang, {_Type, Output}} = format:get_src(Format),
-    % Y'all hear, this is how America does color. I tell you what.
-    {ok, {Color, Value}} = format:run_format(Raw, Output),
-    add_attributes(Attrs, [{"value", Value},
-                           {"overwrite-color", atom_to_list(Color)}]).
 
 expand_ref(#refX{site=S}=Ref) -> 
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref)].
@@ -866,6 +827,49 @@ read_attrs_field(Field, Attrs) -> case orddict:find(Field, Attrs) of
 -spec lobj_to_ref(string(), #local_objs{}) -> #refX{}.
 lobj_to_ref(Site, #local_objs{path=P, obj=O}) ->
     #refX{site=Site, path=P, obj=O}.
+
+-spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ok.
+apply_to_attrs(#refX{site=Site}=Ref, Op) ->
+    Table = trans(Site, item), 
+    Idx = get_local_item_index(Ref),
+    Attrs = case mnesia:read(Table, Idx, write) of
+                [#item{attrs=A}] -> A;
+                _                -> orddict:new()
+            end,
+    Attrs2 = Op(Attrs),
+    Attrs3 = post_process(Ref, Attrs2),
+    Item = #item{idx = Idx, attrs = Attrs3},
+    mnesia:write(Table, Item, write).
+
+%% Last chance to apply any default styles and formats. 
+-spec post_process(#refX{}, ?dict) -> ?dict. 
+post_process(Ref, Attrs) ->
+    Attrs2 = post_process_styles(Ref, Attrs),
+    case orddict:find("rawvalue", Attrs2) of
+        {ok, Raw} -> post_process_format(Ref, Raw, Attrs2);
+        _         -> Attrs2
+    end.                       
+    
+post_process_styles(Ref, Attrs) -> 
+    case orddict:find("style", Attrs) of
+        {ok, _} -> Attrs;
+        _       ->
+            case orddict:find("__default-align", Attrs) of
+                {ok, Align} -> apply_style(Ref,{"text-align",Align},Attrs);
+                _           -> Attrs
+            end
+    end.
+
+post_process_format(Ref, Raw, Attrs) ->
+    Format = case orddict:find("format", Attrs) of
+                 {ok, F} -> F;
+                 _       -> "General"
+             end,
+    {erlang, {_Type, Output}} = format:get_src(Format),
+    % Y'all hear, this is how America does color. I tell you what.
+    {ok, {Color, Value}} = format:run_format(Raw, Output),
+    add_attributes(Attrs, [{"value", Value},
+                           {"overwrite-color", atom_to_list(Color)}]).
                         
 %% @spec read_inherited_list(#refX{}, Key) -> {ok, Value}
 %% Key = atom()
@@ -941,7 +945,7 @@ shift_cells(From, Type, Disp, Rewritten)
                           {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XO, YO}),
                           %% this is the wrong test, if a link crosses the
                           %% deleted border either way, recalc is needed
-                          ok = apply_attrs(ChildRef, [{"formula", F2}]),
+                          ok = write_attrs(ChildRef, [{"formula", F2}]),
                           case St of
                               clean -> Acc;
                               dirty -> [ChildRef | Acc]
@@ -1069,7 +1073,7 @@ shift_row_objs1(Shift, Change, Type) ->
 read_styles(#refX{site = Site, obj = {page, _}} = RefX) ->
     Table = trans(Site, styles),
     mnesia:read(Table, RefX, read);
-read_styles(#refX{site = Site} = RefX) when is_record(RefX, refX) ->
+read_styles(#refX{site = Site} = RefX) ->
     %% first get the style records to get the indexes
     CellList = read_ref(RefX, "style", read),
     IndexList = hslists:uniq(extract_values(CellList)),
@@ -1081,90 +1085,33 @@ read_styles(#refX{site = Site} = RefX) when is_record(RefX, refX) ->
     Table = trans(Site, styles),
     mnesia:select(Table, [{Match, Cond, Body}]).
 
-%% @spec clear_cells(#refX{}) -> ok
+
 %% @doc deletes the contents (formula/value) and the formats
 %% of a cell (but doesn't delete the cell itself).
-%% 
-%% The reference can refer to a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-%%  
-%% %% The same as clear_cells(RefX, contents).
-%% clear_cells(RefX) when is_record(RefX, refX) ->
-%%     clear_cells(RefX, contents).
+-spec clear_cells(#refX{}) -> ok.
+clear_cells(RefX) -> clear_cells(RefX, contents).
 
-%% @spec clear_cells(#refX{}, Type) -> ok 
-%% Type = [contents | style | all]
-%% @doc clears a cell or cells
-%% 
-%% The behaviour depends on the value of type
-%% <ul>
-%% <li><code>contents</code> - deletes the formula/value but not the style attributes
-%% or formats (or the cell itself)</li>
-%% <li><code>style</code> - deletes the style of the cell AND THE FORMAT</li>
-%% If >code>Type = {'attributes', List}</code> it clears all the attributes
-%% in the list
-%% <li><code>all</code> - deletes the contents, formats, styles 
-%% and attributes (but not the cell itself)</li>
-%% </ul>
-%% The reference can refer to a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-%% clear_cells(RefX, all) when is_record(RefX, refX)->
-%%     ok = clear_cells1(RefX, style),
-%%     ok = clear_cells2(RefX, contents, inclusive);
-%% clear_cells(RefX, contents) when is_record(RefX, refX) ->
-%%     ok = clear_cells2(RefX, contents, exclusive);
-%% clear_cells(RefX, style) when is_record(RefX, refX) ->
-%%     ok = clear_cells2(RefX, contents, exclusive);
-%% clear_cells(RefX, {attributes, List}) when is_record(RefX, refX) ->
-%%     ok = clear_cells1(RefX, {attributes, List}).
-
-clear_cells1(_RefX, style) ->
-    %% List = read_ref(RefX, "style", write),
-    %% [delete_attrs(X, Key) || {X, {Key, _Val}} <- List],
-    %% List2 = read_ref(RefX, all, write),
-    %% [ok = delete_attrs(X, Key) || {X, {Key, _Val}} <- get_formats(List2)],
-    %% % now read and rewrite the rawvalue to display the format changes
-    %% [ok = write_rawvalue(X, V) || {X, {_K, V}} <- get_rawvalues(List2)],    
-    ok;
-clear_cells1(_RefX, {attributes, _AttrList}) ->
-    %% case read_ref(RefX, all, write) of
-    %%     []    -> ok;
-    %%     List1 -> List2 = get_attrs(List1, AttrList),
-    %%              [delete_attrs(X, Key) || {X, {Key, _Val}} <- List2],
-    %%              ok
-    %% end.
-    ok.
-
-%% %% an exclusive clear only clears the hypernumbers attributes on the cells
-%% %% an inclusive clear clears all attributes on the cells
-%% clear_cells2(RefX, contents, Type) when is_record(RefX, refX) ->
-%%     %% first up clear the list
-%%     case read_ref(RefX, all, write) of
-%%         [] -> ok;
-%%         List1 ->
-%%             List2 = expand_ref(RefX),
-%%             %% now delete the links to the cells
-%%             [ok = set_local_relations(X, []) || X <- List2],
-%%             %% finally delete all the attributes
-%%             List3 = case Type of
-%%                         exclusive -> get_content_attrs(List1);
-%%                         inclusive -> List1
-%%                     end,
-%%             [delete_attrs(X, Key) || {X, {Key, _Val}} <- List3],
-%%             ok
-%%     end.
+-spec clear_cells(#refX{}, all | style | contents) -> ok. 
+clear_cells(Ref, all) ->
+    Op = fun(_) -> orddict:new() end,
+    [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], ok;
+clear_cells(Ref, style) ->
+    Op = fun(Attrs) -> orddict:erase("style", Attrs) end,
+    [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], ok;
+clear_cells(Ref, contents) ->
+    Op = fun(Attrs) ->
+                 del_attributes(Attrs, ["formula",
+                                        "rawvalue",          
+                                        "value",             
+                                        "overwrite-color",
+                                        "__ast",             
+                                        "__recompile",       
+                                        "__shared",          
+                                        "__area",            
+                                        "__dependency-tree",
+                                        "parents"])           
+         end,
+    [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], ok.
 
 get_rawvalues(List) -> get_rv1(List, []).
 
@@ -1234,7 +1181,7 @@ get_f1([_H | T], Acc)                      -> get_f1(T, Acc).
 
 %%             Fun = fun({ChildRef, {"formula", F1}}) ->
 %%                           {_Status, NewFormula} = deref(ChildRef, F1, DelX),
-%%                           ok = apply_attrs(ChildRef, [{"formula", NewFormula}]),
+%%                           ok = write_attrs(ChildRef, [{"formula", NewFormula}]),
 %%                           ChildRef
 %%                   end,
 %%             DirtyChildren = [Fun(F) || X <- LocalChildren3,
@@ -1338,7 +1285,7 @@ make_del_cond1([#refX{path = P, obj = O} | T], Acc) ->
 %%     case Output of
 %%         {formula, Formula} ->
 %%             NewFormula = offset_formula(Formula, {(TX - FX), (TY - FY)}),
-%%            ok = apply_attrs(To, [{"formula", NewFormula}]);
+%%            ok = write_attrs(To, [{"formula", NewFormula}]);
 %%         [{Type, V},  _A, _F] ->
 %%             V2 = case Incr of
 %%                      false  ->
@@ -1364,7 +1311,7 @@ make_del_cond1([#refX{path = P, obj = O} | T], Acc) ->
 %%                                  tconv:to_s(V)
 %%                          end
 %%                  end,
-%%             ok = apply_attrs(To, [{"formula", V2}]);
+%%             ok = write_attrs(To, [{"formula", V2}]);
 %%         []  ->
 %%             ok = clear_cells(To, all)
 %%     end,
@@ -1388,19 +1335,19 @@ copy_attrs(_From, _To, []) -> ok;
 copy_attrs(#refX{path = P, obj = {cell, _}} = From, 
            #refX{path = P, obj = {cell, _}} = To, ["style" | T]) ->
     [{From, {"style", Value}}] = read_ref(From, "style", read),
-    ok = apply_attrs(To, [{"style", Value}]),
+    ok = write_attrs(To, [{"style", Value}]),
     copy_attrs(From, To, T);
 %% this clause deals with copying attributes between different pages
 copy_attrs(#refX{obj = {cell, _}} = From, 
            #refX{obj = {cell, _}} = To, ["style" | T]) ->
     [{styles, _, _Idx, MagicStyle}] = read_styles(From),
     Idx = write_style(To, MagicStyle),
-    ok = apply_attrs(To, [{"style", Idx}]),
+    ok = write_attrs(To, [{"style", Idx}]),
     copy_attrs(From, To, T);
 copy_attrs(#refX{obj = {cell, _}} = From, 
            #refX{obj = {cell, _}} = To, [H | T]) ->
     [{From, {Key, Value}}] = read_ref(From, [H], read),
-    ok = apply_attrs(To, [{Key, Value}]),
+    ok = write_attrs(To, [{Key, Value}]),
     copy_attrs(From, To, T);
 copy_attrs(#refX{obj = {cell, _}} = From, 
            #refX{obj = {range, _}} = To, Attrs) ->
@@ -1423,7 +1370,7 @@ copy_style(#refX{site = S, path = P, obj = {cell, _}} = From,
                range -> hn_util:range_to_list(To)
            end,
     Fun = fun(X) ->
-                  apply_attrs(X, [{"style", Idx}], AReq)
+                  write_attrs(X, [{"style", Idx}], AReq)
           end,
     [ok = Fun(X) || X <- List],
     ok;
@@ -1440,7 +1387,7 @@ copy_style(#refX{obj = {cell, _}} = From,
                    end,
             Fun = fun(X) ->
                           Idx = write_style(X, MagicStyle),
-                          apply_attrs(X, [{"style", Idx}], AReq)
+                          write_attrs(X, [{"style", Idx}], AReq)
                   end,
             [ok = Fun(X) || X <- List],
             ok
@@ -2123,8 +2070,7 @@ get_local_children(#refX{site = Site} = X) ->
     [local_idx_to_refX(Site, C) || C <- ChildIdxs].
 
 -spec get_local_children_idxs(#refX{}) -> [cellidx()]. 
-get_local_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
-    get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, children).
+get_local_children_idxs(Ref) -> get_local_rel_idxs(Ref, children).
 
 -spec get_local_rel_idxs(#refX{}, children|parents) -> [cellidx()]. 
 get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, Relation) ->
@@ -2214,25 +2160,6 @@ get_attrs1([{_, {K, _V}} = H | T], AttrList, Acc) ->
                  false -> Acc
              end,
     get_attrs1(T, AttrList, NewAcc).
-                      
-get_content_attrs(List) -> get_content_attrs(List, []).
-
-get_content_attrs([], Acc)      -> Acc;
-get_content_attrs([H | T], Acc) ->
-    {_, {Key, _V}} = H,
-    case Key of
-        "formula"           -> get_content_attrs(T, [H | Acc]);
-        "rawvalue"          -> get_content_attrs(T, [H | Acc]);
-        "value"             -> get_content_attrs(T, [H | Acc]);
-        "overwrite-color"   -> get_content_attrs(T, [H | Acc]);
-        "__ast"             -> get_content_attrs(T, [H | Acc]);
-        "__recompile"       -> get_content_attrs(T, [H | Acc]);
-        "__shared"          -> get_content_attrs(T, [H | Acc]);
-        "__area"            -> get_content_attrs(T, [H | Acc]);
-        "__dependency-tree" -> get_content_attrs(T, [H | Acc]);
-        "parents"           -> get_content_attrs(T, [H | Acc]);
-        _                   -> get_content_attrs(T, Acc)
-    end.
 
 %% dereferences a formula
 deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
@@ -2379,7 +2306,7 @@ intersect(XX1, Type, X1, zero, X2, inf)
 intersect(XX1, YY1, X1, Y1, X2, Y2) ->    
     if
         %% check for cell/range intersections
-        (XX1 >= X1),   (XX1 =< X2), (YY1 >= Y1),  (YY1 =< Y2) -> in;
+        (xx1 >= X1),   (XX1 =< X2), (YY1 >= Y1),  (YY1 =< Y2) -> in;
         %% order matters - first check for rows that are included
         (XX1 >= X1),   (XX1 =< X2), (zero == Y1), (inf == Y2) -> in;
         (zero == X1),  (inf == X2), (YY1 >= Y1),  (YY1 =< Y2) -> in;
@@ -2658,6 +2585,11 @@ add_attributes(D, []) -> D;
 add_attributes(D, [{Key, Val}|T]) ->
     D2 = orddict:store(Key, Val, D),
     add_attributes(D2, T).
+
+del_attributes(D, []) -> D; 
+del_attributes(D, [Key|T]) ->
+    D2 = orddict:erase(Key, D),
+    del_attributes(D2, T).
 
 traverse(cell, #refX{obj = {cell, _}} = RefX, Key) ->
     {range, match_ref(RefX, Key)};

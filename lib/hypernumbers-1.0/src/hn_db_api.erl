@@ -419,7 +419,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
                 Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
                 case hn_db_wu:read_ref(Cell, "formula", write) of
                     [{Cell, Attrs}] -> 
-                        hn_db_wu:apply_attrs(Cell, Attrs, Ar);
+                        hn_db_wu:write_attrs(Cell, Attrs, Ar);
                     []        -> ok
                 end
         end,
@@ -1281,7 +1281,7 @@ write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
 write_attributes1(RefX, List, PAr, VAr) 
   when is_record(RefX, refX), is_list(List) ->
     ok = init_front_end_notify(),
-    hn_db_wu:apply_attrs(RefX, List, PAr),
+    hn_db_wu:write_attrs(RefX, List, PAr),
     case lists:keymember("formula", 1, List) of
        true  -> ok = hn_db_wu:mark_children_dirty(RefX, VAr);
        false -> ok
