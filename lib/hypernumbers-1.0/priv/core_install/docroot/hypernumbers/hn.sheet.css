@@ -933,6 +933,7 @@ a {
     position : absolute;
     overflow : hidden;
     display  : none;
+    padding: 1px 0px 1px 0px;
 }
 
 #editor { 
