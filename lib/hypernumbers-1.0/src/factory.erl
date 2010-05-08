@@ -31,13 +31,21 @@
 start_link() ->
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
--spec provision_site(string(), string(), atom()) 
+provision_site(Zone, Email, SiteType) ->
+    Uid = passport:create_uid(),
+    provision_site_(Zone, Email, SiteType, Uid).
+provision_site(Zone, Email, SiteType, [$_|Uid]) ->
+    provision_site_(Zone, Email, SiteType, Uid);
+provision_site(Zone, Email, SiteType, Uid) ->
+    provision_site_(Zone, Email, SiteType, Uid).
+
+-spec provision_site(string(), string(), atom(), uid()) 
                     -> {ok, new | existing, string(), uid(), string()} | 
                        {error, bad_provision | invalid_email}.
-provision_site(Zone, Email, SiteType) ->
+provision_site_(Zone, Email, SiteType, Uid) ->
     case valid_email(Email) of
         true -> 
-            Call = {provision, Zone, Email, SiteType},
+            Call = {provision, Zone, Email, SiteType, Uid},
             case gen_server:call({global, ?MODULE}, Call) of
                 {ok, New_Existing, Site, Uid, Name} ->
                     post_provision(New_Existing, Site, Uid, Email, Name),
@@ -49,11 +57,11 @@ provision_site(Zone, Email, SiteType) ->
             {error, invalid_email}
     end.
 
-%% This will be needed for 'non-generated' zone deployments: ie. 'uses.hn'.
-    -spec provision_site(string(), string(), atom(), string()) -> no_return().
-provision_site(_Zone, _Email0, _SiteType, _CustomHost) ->
-    throw(undefined),
-    ok.
+%% %% This will be needed for 'non-generated' zone deployments: ie. 'uses.hn'.
+%%     -spec provision_site(string(), string(), atom(), string()) -> no_return().
+%% provision_site(_Zone, _Email0, _SiteType, _CustomHost) ->
+%%     throw(undefined),
+%%     ok.
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -87,9 +95,9 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call({provision, Zone, Email, Type}, _From, State) ->
+handle_call({provision, Zone, Email, Type, Uid}, _From, State) ->
     {ok, {Host, {_Ip, Port, Node}}} = hns:link_resource(Zone),
-    {ok, NE, Uid} = passport:get_or_create_user(Email),
+    {ok, NE, Uid} = passport:get_or_create_user(Email, Uid),
     Name = extract_name_from_email(Email),
     Site = lists:flatten(io_lib:format("http://~s:~b", [Host,Port])),
     ok = rpc:call(Node, hn_setup, site, 
