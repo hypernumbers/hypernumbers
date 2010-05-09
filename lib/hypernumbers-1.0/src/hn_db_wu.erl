@@ -492,12 +492,10 @@
          write_attrs/3,
          read_styles/1,
          local_idx_to_refX/2,
-         read_ref/1, read_ref/2, read_ref/3,
+         read_ref/1, read_ref/2, read_ref_field/3,
          clear_cells/1,
          clear_cells/2,
-         %delete_page/1,
          delete_cells/1,
-         %delete_attrs/2,
          shift_cells/4,
          shift_row_objs/2,
          shift_col_objs/2,
@@ -505,9 +503,8 @@
          delete_col_objs/1,
          get_local_children/1,
          %%shift_children/3,
-         %% copy_cell/3,
-         %% copy_attrs/3,
-         %% copy_style/3,
+         copy_cell/3,
+         copy_style/3,
          mark_children_dirty/2,
          mark_these_dirty/2,
          read_page_structure/1,
@@ -563,7 +560,10 @@
 %%      not be used for any other purpose
 get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
     #refX{site = Site, path = Path} = RefX,
-    Attrs = read_ref(RefX),
+    Attrs = case read_ref(RefX) of
+                [{_, A}] -> A;
+                _        -> orddict:new()
+            end,
     Value = case orddict:find("rawvalue", Attrs) of
                 {ok, {datetime, _, [N]}} -> 
                     muin_date:from_gregorian_seconds(N);
@@ -765,17 +765,42 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
 expand_ref(#refX{site=S}=Ref) -> 
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref)].
 
-read_ref(Ref) -> read_ref(Ref, all, read).
-read_ref(Ref, Field) -> read_ref(Ref, Field, read).
+read_ref(Ref) -> read_ref(Ref, read).
+-spec read_ref(#refX{}, read | write) -> [{#refX{}, ?dict}].
+read_ref(#refX{site=S}=Ref, Lock) ->
+    read_attrs(S, read_objs(Ref), Lock).
 
--spec read_ref(#refX{}, all | string(), read | write) 
-              -> [{#refX{}, [{string(), term()}]}].
-read_ref(#refX{site=S}=Ref, Field, Lock) ->
-    read_attrs(S, read_objs(Ref), Field, Lock).
+-spec read_ref_field(#refX{}, string(), read|write) 
+                    -> [{#refX{}, term()}].
+read_ref_field(Ref, Field, Lock) ->
+    Cells = read_ref(Ref, Lock),
+    extract_field(Cells, Field, []).
+    
+-spec extract_field([{#refX{}, ?dict}], string(), [{#refX{}, term()}])
+                   -> [{#refX{}, term()}].
+extract_field([], _F, Acc) ->
+    lists:reverse(Acc);
+extract_field([{Ref, Attrs}|T], Field, Acc) ->
+    Acc2 = case orddict:find(Field, Attrs) of
+               {ok, V} -> [{Ref, V}|Acc]; 
+               _       -> Acc end,
+    extract_field(T, Field, Acc2).    
 
 -spec read_objs(#refX{}) -> [#local_objs{}]. 
 read_objs(#refX{site = S, path = P, obj = {page, "/"}}) ->
     MS = ets:fun2ms(fun(LO=#local_objs{path=MP}) when MP == P -> LO end),
+    mnesia:select(trans(S, local_objs), MS);
+read_objs(#refX{site = S, path = P, obj = {column, {X1,X2}}}) ->
+    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,_MY}}}) 
+                          when MP == P,
+                               X1 =< MX, MX =< X2 -> LO
+                    end),
+    mnesia:select(trans(S, local_objs), MS);
+read_objs(#refX{site = S, path = P, obj = {row, {R1,R2}}}) ->
+    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{_MX,MY}}}) 
+                          when MP == P,
+                               R1 =< MY, MY =< R2 -> LO
+                    end),
     mnesia:select(trans(S, local_objs), MS);
 read_objs(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
     MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
@@ -797,29 +822,18 @@ read_objs(#refX{site = S, path = P, obj = {cell, {X,Y}}}) ->
            end),
     mnesia:select(trans(S, local_objs), MS).
 
--spec read_attrs(string(), [#local_objs{}], all|string(), read|write)
-                -> [{#refX{}, [{string(), term()}]}]. 
-read_attrs(S, LocObjs, Field, Lock) ->
+-spec read_attrs(string(), [#local_objs{}], read|write)
+                -> [{#refX{}, ?dict}].
+read_attrs(S, LocObjs, Lock) ->
     Tbl = trans(S, item),
-    read_attrs_(LocObjs, S, Tbl, Field, Lock, []).
-read_attrs_([], _S, _Tbl, _Field, _Lock, Acc) ->
+    read_attrs_(LocObjs, S, Tbl, Lock, []).
+read_attrs_([], _S, _Tbl, _Lock, Acc) ->
     lists:reverse(Acc);
-read_attrs_([LO|Tail], S, Tbl, Field, Lock, Acc) ->
+read_attrs_([LO|Tail], S, Tbl, Lock, Acc) ->
     Acc2 = case mnesia:read(Tbl, LO#local_objs.idx, Lock) of
-               [#item{attrs=Attrs}] ->
-                   case read_attrs_field(Field, Attrs) of
-                       []  -> Acc;
-                       Ret -> [{lobj_to_ref(S, LO), Ret} | Acc]
-                   end;
-               [] -> Acc
-           end,
-    read_attrs_(Tail, S, Tbl, Field, Lock, Acc2).
-
-read_attrs_field(all, Attrs)   -> orddict:to_list(Attrs);
-read_attrs_field(Field, Attrs) -> case orddict:find(Field, Attrs) of
-                                      {ok, V} ->  [{Field, V}];
-                                      _       ->  []
-                                  end.
+               [#item{attrs=Attrs}] -> [{lobj_to_ref(S, LO), Attrs} | Acc];
+               []                   -> Acc end,
+    read_attrs_(Tail, S, Tbl, Lock, Acc2).
 
 -spec lobj_to_ref(string(), #local_objs{}) -> #refX{}.
 lobj_to_ref(Site, #local_objs{path=P, obj=O}) ->
@@ -833,8 +847,7 @@ expunge_refs(S, Refs) ->
          mnesia:delete(ItemT, Idx, write),
          mnesia:delete_object(ObjT, LO, write)
      end || Ref <- Refs,
-            Objs <- read_objs(Ref),
-            #local_objs{idx=Idx}=LO <- Objs],
+            #local_objs{idx=Idx}=LO <- read_objs(Ref)],
     ok.
 
 -spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ok.
@@ -940,8 +953,6 @@ shift_cells(From, Type, Disp, Rewritten)
     case RefXList of
         [] -> [];
         _  ->
-            [ok = shift_cells1(X, offset(X, {XO, YO})) || X <- RefXList],
-
             %% now rewrite the formula of all the child cells
             %%  - get the formulae
             %%  - rewrite the formulae and save the cells
@@ -949,8 +960,8 @@ shift_cells(From, Type, Disp, Rewritten)
             ChildCells2 = hslists:uniq(ChildCells),
             DedupedChildren = lists:subtract(ChildCells2, Rewritten),
             Formulas = [F || X <- DedupedChildren,
-                             F <- read_ref(X, "formula", write)],
-            Fun = fun({ChildRef, {"formula", F1}}, Acc) ->
+                             F <- read_ref_field(X, "formula", write)],
+            Fun = fun({ChildRef, F1}, Acc) ->
                           {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XO, YO}),
                           %% this is the wrong test, if a link crosses the
                           %% deleted border either way, recalc is needed
@@ -961,7 +972,7 @@ shift_cells(From, Type, Disp, Rewritten)
                           end
                   end,
             DirtyChildren = lists:foldl(Fun, [], Formulas),
-            
+
             %% now shift the actual cells
             %% - first up adjust the local_objs table 
             %%   - read all the cell indices
@@ -985,9 +996,6 @@ shift_cells(From, Type, Disp, Rewritten)
              || X <- NewCells],
             DirtyChildren
     end.
-
-shift_cells1(From, To) when is_record(From, refX), is_record(To, refX) ->
-    ok = shift_dirty_notify_ins(From, To).
 
 -spec delete_col_objs(#refX{}) -> ok.
 %% @doc deletes any col objects completely covered by the #refX{}
@@ -1084,8 +1092,8 @@ read_styles(#refX{site = Site, obj = {page, _}} = RefX) ->
     mnesia:read(Table, RefX, read);
 read_styles(#refX{site = Site} = RefX) ->
     %% first get the style records to get the indexes
-    CellList = read_ref(RefX, "style", read),
-    IndexList = hslists:uniq(extract_values(CellList)),
+    Cells = read_ref_field(RefX, "style", read),
+    IndexList = hslists:uniq([V || {_, V} <- Cells]),
     %% RefX is a cell/column/row/range ref - make it a page ref
     Ref2 = RefX#refX{obj = {page, "/"}},
     Match = #styles{refX = Ref2, index =  '$1', _ = '_'},
@@ -1093,7 +1101,6 @@ read_styles(#refX{site = Site} = RefX) ->
     Body = ['$_'],
     Table = trans(Site, styles),
     mnesia:select(Table, [{Match, Cond, Body}]).
-
 
 %% @doc deletes the contents (formula/value) and the formats
 %% of a cell (but doesn't delete the cell itself).
@@ -1121,28 +1128,6 @@ clear_cells(Ref, contents) ->
                                         "parents"])           
          end,
     [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], ok.
-
-%% @spec delete_page(RefX) -> Status
-%% @doc takes a reference to a page, does delete_cells,
-%% Then reads any existing local_objs and deletes any
-%% row / column ones, along with any attributes set on them
-%% Returns a list of dereferenced cells thatneed to be set dirty to recalculate
-%% delete_page(#refX{site=Site, path=Path, obj = {page, "/"}} = RefX) ->
-%%     Dirty = delete_cells(RefX),
-
-%%     F = fun(#local_objs{obj = {X, _Y}, idx = Id} = Obj)
-%%               when X == column; X == row ->
-%%                 ok = mnesia:delete(trans(Site, item), Id, write),
-%%                 mnesia:delete_object(trans(Site, local_objs), Obj, write);
-%%            (_Else) ->
-%%                 ok
-%%         end,
-
-%%     Match = #local_objs{path = Path, _ = '_'},
-%%     Objs  = mnesia:index_match_object(trans(Site, local_objs), Match, 1, read),
-
-%%     [ ok = F(X) || X <- Objs ],
-%%     Dirty.
 
 %% @doc takes a reference to a
 %% <ul>
@@ -1200,87 +1185,46 @@ rewrite_ref(Ref, DelRef) ->
 
 %% %% @doc copys cells from a reference to a reference
 %% -spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
-%% copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
-%%   when is_record(From, refX), is_record(To, refX) ->
-%%     FromList = read_ref(From),
-%%     {Contents, FilteredList} = filter_for_drag_n_drop(FromList),
-%%     Output = case Contents of
-%%                  [Contents2] -> superparser:process(Contents2);
-%%                  []          -> ""
-%%              end,
-%%     #refX{obj = {cell, {FX, FY}}} = From,
-%%     #refX{obj = {cell, {TX, TY}}} = To,
-%%     case Output of
-%%         {formula, Formula} ->
-%%             NewFormula = offset_formula(Formula, {(TX - FX), (TY - FY)}),
-%%            ok = write_attrs(To, [{"formula", NewFormula}]);
-%%         [{Type, V},  _A, _F] ->
-%%             V2 = case Incr of
-%%                      false  ->
-%%                          case Type of
-%%                              datetime ->
-%%                                  {datetime, D, T} = V,
-%%                                  dh_date:format("d/m/Y", {D, T});
-%%                              _ ->
-%%                                  tconv:to_s(V)
-%%                          end;
-%%                      _Other -> %% Other can be a range of different values...
-%%                          case Type of
-%%                              int      ->
-%%                                  NewV = V + diff(FX, FY, TX, TY, Incr),
-%%                                  tconv:to_s(NewV);
-%%                              datetime ->
-%%                                  {datetime, {Y, M , D}, T} = V,
-%%                                  Date = calendar:date_to_gregorian_days(Y, M, D),
-%%                                  Date2 = Date + diff(FX, FY, TX, TY, Incr),
-%%                                  NewD = calendar:gregorian_days_to_date(Date2),
-%%                                  dh_date:format("d/m/Y", {NewD, T});
-%%                              _ ->
-%%                                  tconv:to_s(V)
-%%                          end
-%%                  end,
-%%             ok = write_attrs(To, [{"formula", V2}]);
-%%         []  ->
-%%             ok = clear_cells(To, all)
-%%     end,
-%%     %% You want to copy the attributes AFTER setting the value
-%%     %% because setting a value sets the default alignment and format
-%%     %% and if the source cell has been reformatted after the data was entered
-%%     %% you want to carry that forward.
-%%     AttrList = get_attr_keys(FilteredList),
-%%     ok = copy_attrs(From, To, AttrList).
-
-
-%% @spec copy_attrs(From :: #refX{}, To :: #refX{}, AttrList) -> ok
-%% AttrList = [atom()]
-%% @doc copies all the attributes of a cell to a new cell or cells.
-%% All the listed attributes are copied from the From #refX{} to
-%% the To refX{}. 
-%% The From #refX{} must be a cell reference, but the To #refX{} can be either
-%% a cell or a range
-copy_attrs(_From, _To, []) -> ok;
-%% this clause deals with a copy attrs on the same page
-copy_attrs(#refX{path = P, obj = {cell, _}} = From, 
-           #refX{path = P, obj = {cell, _}} = To, ["style" | T]) ->
-    [{From, {"style", Value}}] = read_ref(From, "style", read),
-    ok = write_attrs(To, [{"style", Value}]),
-    copy_attrs(From, To, T);
-%% this clause deals with copying attributes between different pages
-copy_attrs(#refX{obj = {cell, _}} = From, 
-           #refX{obj = {cell, _}} = To, ["style" | T]) ->
-    [{styles, _, _Idx, MagicStyle}] = read_styles(From),
-    Idx = write_style(To, MagicStyle),
-    ok = write_attrs(To, [{"style", Idx}]),
-    copy_attrs(From, To, T);
-copy_attrs(#refX{obj = {cell, _}} = From, 
-           #refX{obj = {cell, _}} = To, [H | T]) ->
-    [{From, {Key, Value}}] = read_ref(From, [H], read),
-    ok = write_attrs(To, [{Key, Value}]),
-    copy_attrs(From, To, T);
-copy_attrs(#refX{obj = {cell, _}} = From, 
-           #refX{obj = {range, _}} = To, Attrs) ->
-    List = hn_util:range_to_list(To),
-    [ok = copy_attrs(From, X, Attrs) || X <- List].
+copy_cell(#refX{obj = {cell, {FX,FY}}} = From, 
+          #refX{obj = {cell, {TX,TY}}} = To, 
+          Incr)
+  when is_record(From, refX), is_record(To, refX) ->
+    Formula = case read_ref_field(From, "formula", read) of
+                  [{_, V}] -> superparser:process(V); 
+                  _        -> ""
+              end,
+    F2 = case Formula of
+             {formula, F1} ->
+                 offset_formula(F1, {(TX - FX), (TY - FY)});
+             [{Type, F1},  _A, _F] ->
+                 case Incr of
+                     false  ->
+                         case Type of
+                             datetime ->
+                                 {datetime, D, T} = F1,
+                                 dh_date:format("d/m/Y", {D, T});
+                             _ ->
+                                 tconv:to_s(F1)
+                         end;
+                     _Other -> %% Other can be a range of different values...
+                         case Type of
+                             int      ->
+                                 NewV = F1 + diff(FX, FY, TX, TY, Incr),
+                                 tconv:to_s(NewV);
+                             datetime ->
+                                 {datetime, {Y, M , D}, T} = F1,
+                                 Date = calendar:date_to_gregorian_days(Y, M, D),
+                                 Date2 = Date + diff(FX, FY, TX, TY, Incr),
+                                 NewD = calendar:gregorian_days_to_date(Date2),
+                                 dh_date:format("d/m/Y", {NewD, T});
+                             _ ->
+                                 tconv:to_s(F1)
+                         end
+                 end;
+             _ -> 
+                 ""
+         end,
+    write_attrs(To, [{"formula", F2}]).
 
 %% @spec(From::refX{}, To::refX{}) -> ok
 %% @doc Copies the style applied to From and attaches it to To.
@@ -1290,21 +1234,24 @@ copy_attrs(#refX{obj = {cell, _}} = From,
 %% this clause is for 'on page' copies where both From and To are on
 %% the same page - just the index is copied
 copy_style(#refX{site = S, path = P, obj = {cell, _}} = From, 
-           #refX{site = S, path = P, obj = {Type, _}} = To, AReq)
+           #refX{site = S, path = P, obj = {Type, _}} = To, 
+           _AReq)
   when Type == cell orelse Type == range ->
-    [{_, {"style", Idx}}] = read_ref(From, "style", read),
-    List = case Type of
-               cell  -> [To];
-               range -> hn_util:range_to_list(To)
-           end,
-    Fun = fun(X) ->
-                  write_attrs(X, [{"style", Idx}], AReq)
-          end,
-    [ok = Fun(X) || X <- List],
-    ok;
+    case read_ref_field(From, "style", read) of
+        [{_, Idx}] ->
+            List = case Type of
+                       cell  -> [To];
+                       range -> hn_util:range_to_list(To)
+                   end,
+            Op = fun(Attrs) -> orddict:store("style", Idx, Attrs) end,
+            [ok = apply_to_attrs(X, Op) || X <- List],
+            ok;
+        _ ->
+            ok
+    end;
 %% this clause is for copying styles across different pages
 copy_style(#refX{obj = {cell, _}} = From, 
-           #refX{obj = {Type, _}} = To, AReq)
+           #refX{obj = {Type, _}} = To, _AReq)
   when Type == cell orelse Type == range ->
     case read_styles(From) of
         [] -> ok;
@@ -1315,7 +1262,9 @@ copy_style(#refX{obj = {cell, _}} = From,
                    end,
             Fun = fun(X) ->
                           Idx = write_style(X, MagicStyle),
-                          write_attrs(X, [{"style", Idx}], AReq)
+                          fun(Attrs) -> 
+                                  orddict:store("style", Idx, Attrs) 
+                          end
                   end,
             [ok = Fun(X) || X <- List],
             ok
@@ -1642,10 +1591,10 @@ get_refs_right2(RefX, X, MinY, MaxY) ->
 %     Return1 = lists:foldl(Fun, [], Return),
 %     hslists:uniq(Return1).
 
-get_attr_keys(List)  -> get_attr_keys(List, []).
+%% get_attr_keys(List)  -> get_attr_keys(List, []).
 
-get_attr_keys([], Acc)                       -> Acc;
-get_attr_keys([{_RefX, {Key, _V}} | T], Acc) -> get_attr_keys(T, [Key | Acc]).
+%% get_attr_keys([], Acc)                       -> Acc;
+%% get_attr_keys([{_RefX, {Key, _V}} | T], Acc) -> get_attr_keys(T, [Key | Acc]).
 
 %% make_cell makes a cell with dollars and stuff based on the offset
 make_cell(false, X, XOffset, false, Y, YOffset) ->
@@ -1932,9 +1881,6 @@ make_new_range(Prefix, Cell1, Cell2,
     end,
     Prefix ++ NC1 ++ ":" ++ NC2.
 
-offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
-    RefX#refX{obj = {cell, {X + XO, Y + YO}}}.
-
 %% used in copy'n'paste, drag'n'drops etc...
 d_n_d_c_n_p_offset(Toks, XOffset, YOffset) ->
     d_n_d_c_n_p_offset1(Toks, XOffset, YOffset, []).
@@ -1973,17 +1919,6 @@ d_n_d_c_n_p_offset1([{rangeref, LineNo, #rangeref{text = Text}=H} | T], XOffset,
 d_n_d_c_n_p_offset1([H | T], XOffset, YOffset, Acc) ->
     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [H | Acc]).
 
-filter_for_drag_n_drop(List) -> fl(List, [], []).
-
-fl([], A, B)                                  -> {A, B};
-fl([{_, {"value", _}}  | T], A, B)            -> fl(T, A, B);
-fl([{_, {"rawvalue", _}}| T], A, B)           -> fl(T, A, B);
-fl([{_, {"parents", _}} | T], A, B)           -> fl(T, A, B);
-fl([{_, {"__dependency-tree", _}}| T], A, B)  -> fl(T, A, B);
-fl([{_, {"__ast", _}} | T], A, B)             -> fl(T, A, B);
-fl([{_, {"formula", V}}| T], A, B)            -> fl(T, [V | A], B);
-fl([H | T], A, B)                             -> fl(T, A, [H | B]).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Local Relations 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2018,8 +1953,8 @@ get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, Relation) ->
 get_local_rel_idxs(#refX{obj = {Type, _}} = Ref, Relation) 
   when (Type == row) orelse (Type == column) orelse 
        (Type == range) orelse (Type == page) ->
-    Cells = expand_ref(Ref),
-    lists:flatten([get_local_rel_idxs(X, Relation) || X <- Cells]).
+    lists:flatten([get_local_rel_idxs(X, Relation)
+                   || X=#refX{obj={cell,_}} <- expand_ref(Ref)]).
 
 -spec delete_local_relation(#refX{}) -> ok.
 delete_local_relation(#refX{site = Site} = Cell) ->
@@ -2079,15 +2014,15 @@ add_local_child(CellIdx, Child, Tbl) ->
     Children = ordsets:add_element(Child, Rel#relation.children),
     mnesia:write(Tbl, Rel#relation{children = Children}, write).
 
-get_attrs(List, AttrList) -> get_attrs1(List, AttrList, []).
+%% get_attrs(List, AttrList) -> get_attrs1(List, AttrList, []).
 
-get_attrs1([], _AttrList, Acc) -> Acc;
-get_attrs1([{_, {K, _V}} = H | T], AttrList, Acc) ->
-    NewAcc = case lists:member(K, AttrList) of
-                 true  -> [H | Acc];
-                 false -> Acc
-             end,
-    get_attrs1(T, AttrList, NewAcc).
+%% get_attrs1([], _AttrList, Acc) -> Acc;
+%% get_attrs1([{_, {K, _V}} = H | T], AttrList, Acc) ->
+%%     NewAcc = case lists:member(K, AttrList) of
+%%                  true  -> [H | Acc];
+%%                  false -> Acc
+%%              end,
+%%     get_attrs1(T, AttrList, NewAcc).
 
 %% dereferences a formula
 deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
@@ -2400,15 +2335,6 @@ offset_formula(Formula, {XO, YO}) ->
                          "=" ++ Formula
     end.
 
-shift_dirty_notify_ins(#refX{site = Site} = From, To) ->
-    case mnesia:read(trans(Site, dirty_notify_in), From, write) of
-        []        -> ok;
-        [DirtyHn] -> DirtyHn2 = trans_back(DirtyHn),
-                     NewDirty = DirtyHn2#dirty_notify_in{parent = To},
-                     ok = mnesia:delete_object(trans(Site, DirtyHn)),
-                     ok = mnesia:write(trans(Site, NewDirty))
-    end.
-
 write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     Rti = refX_to_rti(Ref, AReq, false),
     case muin:run_formula(Fla, Rti) of
@@ -2431,7 +2357,8 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
                                    {"formula", Formula},
                                    {"rawvalue", Res},
                                    {"__ast", Pcode},
-                                   {"__default-alignment", Align},
+                                   {"__dependency-tree", Deptree},
+                                   {"__default-align", Align},
                                    {"__recompile", Recompile}])
     end.
 
@@ -2519,54 +2446,54 @@ del_attributes(D, [Key|T]) ->
     D2 = orddict:erase(Key, D),
     del_attributes(D2, T).
 
-traverse(cell, #refX{obj = {cell, _}} = RefX, Key) ->
-    {range, match_ref(RefX, Key)};
-traverse(range, #refX{obj = {range, _}} = RefX, Key) ->
-    {page, match_ref(RefX, Key)};
-traverse(range, #refX{obj = {cell, _}} = RefX, Key) ->
-    V = case get_ranges(RefX#refX{obj = {page, "/"}}, Key) of
-            []   -> [];
-            List -> case filter_range(List, RefX) of
-                        nomatch -> [];
-                        Val     -> [Val]
-                    end
-        end,
-    {row_col, V};
-traverse(row_col, #refX{obj = {cell, {_X, Y}}} = RefX, Key) ->
-    {column, match_ref(RefX#refX{obj = {row, {Y, Y}}}, Key)};
-traverse(row, #refX{obj = {row, _}} = RefX, Key) ->
-    {page, match_ref(RefX, Key)};
-traverse(row, #refX{obj = {cell, {_X, Y}}} = RefX, Key) ->
-    {page, match_ref(RefX#refX{obj = {row, {Y, Y}}}, Key)};
-traverse(column, #refX{obj = {column, _}} = RefX, Key) ->
-    {page, match_ref(RefX, Key)};
-traverse(column, #refX{obj = {cell, {X, _Y}}} = RefX, Key) ->
-    {page, match_ref(RefX#refX{obj= {column, {X, X}}}, Key)};
-traverse(page, #refX{path=[]} = RefX, Key) ->
-    {last, match_ref(RefX#refX{obj = {page,"/"}}, Key)};
-traverse(page, RefX, Key) ->
-    NewPath = hslists:init(RefX#refX.path),
-    {page, RefX#refX{path = NewPath}, match_ref(RefX#refX{obj = {page, "/"}}, Key)}.
+%% traverse(cell, #refX{obj = {cell, _}} = RefX, Key) ->
+%%     {range, match_ref(RefX, Key)};
+%% traverse(range, #refX{obj = {range, _}} = RefX, Key) ->
+%%     {page, match_ref(RefX, Key)};
+%% traverse(range, #refX{obj = {cell, _}} = RefX, Key) ->
+%%     V = case get_ranges(RefX#refX{obj = {page, "/"}}, Key) of
+%%             []   -> [];
+%%             List -> case filter_range(List, RefX) of
+%%                         nomatch -> [];
+%%                         Val     -> [Val]
+%%                     end
+%%         end,
+%%     {row_col, V};
+%% traverse(row_col, #refX{obj = {cell, {_X, Y}}} = RefX, Key) ->
+%%     {column, match_ref(RefX#refX{obj = {row, {Y, Y}}}, Key)};
+%% traverse(row, #refX{obj = {row, _}} = RefX, Key) ->
+%%     {page, match_ref(RefX, Key)};
+%% traverse(row, #refX{obj = {cell, {_X, Y}}} = RefX, Key) ->
+%%     {page, match_ref(RefX#refX{obj = {row, {Y, Y}}}, Key)};
+%% traverse(column, #refX{obj = {column, _}} = RefX, Key) ->
+%%     {page, match_ref(RefX, Key)};
+%% traverse(column, #refX{obj = {cell, {X, _Y}}} = RefX, Key) ->
+%%     {page, match_ref(RefX#refX{obj= {column, {X, X}}}, Key)};
+%% traverse(page, #refX{path=[]} = RefX, Key) ->
+%%     {last, match_ref(RefX#refX{obj = {page,"/"}}, Key)};
+%% traverse(page, RefX, Key) ->
+%%     NewPath = hslists:init(RefX#refX.path),
+%%     {page, RefX#refX{path = NewPath}, match_ref(RefX#refX{obj = {page, "/"}}, Key)}.
 
-get_ranges(#refX{site = S, path = P, obj = {page, "/"}}, Key) ->
-    Head = #local_objs{path = P, obj = {range, '_'}, idx = '$1'},
-    List1 = mnesia:select(trans(S, local_objs), [{Head, [], ['$_']}]),
-    List2 = [read_ref(X, Key, read) || X <- List1],
-    %% now sort the results
-    %% now convert the list of local_objs into refX's
-    Fun1 = fun({#local_objs{path = Path, obj = Obj, idx = Idx}, _KV}) ->
-                   {#refX{site = S, path = Path, obj = Obj}, Idx}
-           end,
-    List3 = lists:keysort(2, lists:map(Fun1, List2)),
-    Fun2 = fun(X, _Y) -> X end,
-    [Fun2(X, Y) || {X, Y} <- List3].
+%% get_ranges(#refX{site = S, path = P, obj = {page, "/"}}, Key) ->
+%%     Head = #local_objs{path = P, obj = {range, '_'}, idx = '$1'},
+%%     List1 = mnesia:select(trans(S, local_objs), [{Head, [], ['$_']}]),
+%%     List2 = [read_ref(X, Key, read) || X <- List1],
+%%     %% now sort the results
+%%     %% now convert the list of local_objs into refX's
+%%     Fun1 = fun({#local_objs{path = Path, obj = Obj, idx = Idx}, _KV}) ->
+%%                    {#refX{site = S, path = Path, obj = Obj}, Idx}
+%%            end,
+%%     List3 = lists:keysort(2, lists:map(Fun1, List2)),
+%%     Fun2 = fun(X, _Y) -> X end,
+%%     [Fun2(X, Y) || {X, Y} <- List3].
 
-filter_range([], _Cell)     -> nomatch;
-filter_range([H | T], Cell) ->
-    case hn_util:in_range(H#refX.obj, Cell#refX.obj) of
-        true -> H;
-        _    -> filter_range(T, Cell)
-    end.
+%% filter_range([], _Cell)     -> nomatch;
+%% filter_range([H | T], Cell) ->
+%%     case hn_util:in_range(H#refX.obj, Cell#refX.obj) of
+%%         true -> H;
+%%         _    -> filter_range(T, Cell)
+%%     end.
 
 %% @doc Convert Parents and DependencyTree tuples as returned by 
 %% Muin into SimpleXML.
@@ -2574,24 +2501,24 @@ muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
     Url = hn_util:index_to_url({index, S, P, X1, Y1}),
     {url, [{type, Type}], [Url]}.
 
-%% @doc Get the value of a named attribute, if it doesn't exist for address
-%% check parent (cell -> range -> row -> column -> page -> root -> default)
-match_ref(#refX{site = S} = RefX, Key) ->
-    case read_local_item_index(RefX) of
-        false -> [];
-        Idx   -> Table = trans(S, item),
-                 % this function is only used in traverse to 
-                 % recursively find the value of an attribute
-                 % so it gets a read lock only..
-                 case mnesia:read(Table, Idx, read) of
-                     []   -> [];
-                     Recs -> IdxNo = ms_util2:get_index(item, key) + 1,
-                             case lists:keysearch(Key, IdxNo, Recs) of
-                                 false           -> [];
-                                 {value, Return} -> [Return]
-                             end
-                 end
-    end.
+%% %% @doc Get the value of a named attribute, if it doesn't exist for address
+%% %% check parent (cell -> range -> row -> column -> page -> root -> default)
+%% match_ref(#refX{site = S} = RefX, Key) ->
+%%     case read_local_item_index(RefX) of
+%%         false -> [];
+%%         Idx   -> Table = trans(S, item),
+%%                  % this function is only used in traverse to 
+%%                  % recursively find the value of an attribute
+%%                  % so it gets a read lock only..
+%%                  case mnesia:read(Table, Idx, read) of
+%%                      []   -> [];
+%%                      Recs -> IdxNo = ms_util2:get_index(item, key) + 1,
+%%                              case lists:keysearch(Key, IdxNo, Recs) of
+%%                                  false           -> [];
+%%                                  {value, Return} -> [Return]
+%%                              end
+%%                  end
+%%     end.
 
 make_or(Attrs, PlcHoldr)  -> make_clause(Attrs, PlcHoldr, 'or').
 %%make_and(Attrs, PlcHoldr) -> make_clause(Attrs, PlcHoldr, 'and').
@@ -2693,12 +2620,6 @@ make_tuple(Style, Counter, Index, Val) ->
 make_tuple1(S, 0, _I, _V, Acc) -> list_to_tuple([S|Acc]); 
 make_tuple1(S, I, I, V, Acc )  -> make_tuple1(S, I -1 , I, V, [V | Acc]); 
 make_tuple1(S, C, I, V, Acc)   -> make_tuple1(S, C - 1, I, V, [[] | Acc]).
-
-extract_values(List) -> extract_values1(List, []).
-
-extract_values1([], Acc)                  -> Acc;
-extract_values1([{_R, {_K, V}}| T], Acc)  -> extract_values1(T, [V | Acc]).
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                              %

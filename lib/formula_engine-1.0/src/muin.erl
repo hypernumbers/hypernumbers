@@ -454,3 +454,4 @@ toidx({col, Offset})       -> ?mx + Offset.
 get_cell_info(S, P, Col, Row) ->
     RefX = #refX{site=string:to_lower(S), path=P, obj={cell, {Col,Row}}},
     hn_db_wu:get_cell_for_muin(RefX).
+

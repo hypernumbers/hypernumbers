@@ -101,7 +101,7 @@
          write_last/3,
          read_last/1,
          write_style_IMPORT/2,
-         read_attributes/2,
+         read_attribute/2,
          read_ref/1,
          read_inherited_list/2,
          read_inherited_value/3,
@@ -415,15 +415,16 @@ register_hn_from_web(Parent, Child, Proxy, Biccie)
 -spec handle_dirty_cell(string(), cellidx(), nil | uid()) -> ok. 
 handle_dirty_cell(Site, Idx, Ar) ->
     ok = init_front_end_notify(),  
-    F = fun() ->
+    Fun = fun() ->
                 Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
-                case hn_db_wu:read_ref(Cell, "formula", write) of
-                    [{Cell, Attrs}] -> 
-                        hn_db_wu:write_attrs(Cell, Attrs, Ar);
-                    []        -> ok
+                case hn_db_wu:read_ref_field(Cell, "formula", write) of
+                    [{Cell, F}] -> 
+                        hn_db_wu:write_attrs(Cell, [{"formula", F}], Ar);
+                    _ ->
+                        ok
                 end
         end,
-    {atomic, ok} = mnesia:transaction(F),
+    {atomic, ok} = mnesia:transaction(Fun),
     ok = tell_front_end("handle dirty").
 
 
@@ -824,25 +825,12 @@ read_inherited_value(RefX, Key, Default) when is_record(RefX, refX) ->
     F = fun hn_db_wu:read_inherited/3,
     mnesia:activity(transaction, F, [RefX, Key, Default]).
 
-%% @spec read_attributes(#refX{}, AttrList) -> {#refX{}, Val}
-%% AttrList = [list()]
-%% Val = term()
-%% @doc Given a reference and the name of an attribute, returns the reference
-%% and the value of that attribute.
-%% 
-%% The reference can point to a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-read_attributes(RefX, AttrList) when is_record(RefX, refX), is_list(AttrList) ->
-    Fun = fun hn_db_wu:read_attrs/3,
-    mnesia:activity(transaction, Fun, [RefX, AttrList, read]).
+-spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
+read_attribute(RefX, Field) when is_record(RefX, refX) ->
+    Fun = fun() -> hn_db_wu:read_ref_field(RefX, Field, read) end,
+    mnesia:activity(transaction, Fun).
 
--spec read_ref(#refX{}) -> [{#refX{}, {string(), term()}}].
+-spec read_ref(#refX{}) -> [{#refX{}, [{string(), term()}]}].
 read_ref(RefX) ->
     Fun = fun() -> hn_db_wu:read_ref(RefX) end,
     mnesia:activity(transaction, Fun).
@@ -957,7 +945,7 @@ delete(#refX{obj = {R, _}} = RefX, Ar) when R == column orelse R == row ->
 delete(#refX{obj = {page, _}} = RefX, Ar) ->
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
-                   Dirty = hn_db_wu:delete_page(RefX),
+                   Dirty = hn_db_wu:delete_cells(RefX),
                    hn_db_wu:mark_these_dirty(Dirty, Ar)
            end,
     mnesia:activity(transaction, Fun1),
