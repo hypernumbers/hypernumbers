@@ -48,10 +48,23 @@ td {
 hr { 
     margin-top:0px;
 }
-
 body { 
     overflow-y:scroll;
     overflow-x:scroll;
+}
+
+.hntext { 
+    width:100%;
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+}
+.hninput {
+    width:100%;
+    height:100%;
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
 }
 
 #editspreadsheet {
@@ -79,3 +92,24 @@ div.hn_inner > div {
     overflow: hidden;
 }
     
+input[type=submit].hninput { 
+    background:#EEE;
+    -webkit-border-radius:3px 3px 3px 3px;    
+    -moz-border-radius:3px 3px 3px 3px;
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
+                                 to(#E3E3E3));
+    background: -moz-linear-gradient(center top , #F9F9F9, 
+                                     #E3E3E3) repeat scroll 0 0 transparent;
+    border:1px solid #BBBBBB;
+    margin:0 0px 0 0;
+    outline:medium none;
+    padding:3px 6px;
+    text-align:center;
+    /* vertical-align:middle; */
+    white-space:nowrap;
+}
+
+input[type=submit].hninput:hover { 
+    cursor:pointer;
+    border:1px solid #939393 !important;
+}
