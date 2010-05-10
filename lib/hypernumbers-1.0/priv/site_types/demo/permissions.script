@@ -1,20 +1,17 @@
 %%-*-erlang-*-
-{add_view,
- [{path,[]},
-  {perms,["admin"]},
-  {view,"_g/core/spreadsheet"}]}.
-
-{add_view,
- [{path,["[**]"]},
-  {perms,["admin"]},
-  {view,"_g/core/spreadsheet"}]}.
-
-{add_view,
- [{path,[]},
-  {perms,[everyone]},
-  {view,"_g/core/webpage"}]}.
-
-{set_champion,
- [{path,[]},
-  {view,"_g/core/webpage"}]}.
-
+{add_view,[{path,[]},{perms,["admin"]},{view,"_g/core/spreadsheet"}]}.
+{add_view,[{path,[]},{perms,[everyone]},{view,"_g/core/webpage"}]}.
+{set_champion,[{path,[]},{view,"_g/core/webpage"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"_g/core/spreadsheet"}]}.
+{add_view,[{path,["about"]},
+           {perms,["admin",everyone]},
+           {view,"_g/core/webpage"}]}.
+{set_champion,[{path,["about"]},{view,"_g/core/webpage"}]}.
+{add_view,[{path,["contact"]},
+           {perms,["admin",everyone]},
+           {view,"_g/core/webpage"}]}.
+{set_champion,[{path,["contact"]},{view,"_g/core/webpage"}]}.
+{add_view,[{path,["help"]},
+           {perms,["admin",everyone]},
+           {view,"_g/core/webpage"}]}.
+{set_champion,[{path,["help"]},{view,"_g/core/webpage"}]}.
