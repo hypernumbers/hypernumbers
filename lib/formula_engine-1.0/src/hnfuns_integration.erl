@@ -9,15 +9,15 @@
 -module(hnfuns_integration).
 
 -export([
-         facebook_share/1,
-         facebook_like/1,
-         twitter_button/1,
-         twitter_profile/1,
-         twitter_search/1,
-         twitter_list/1,
-         google_buy_now/1,
-         google_buy_now_list/1,
-         youtube_channel/1
+         'facebook.share'/1,
+         'facebook.like'/1,
+         'twitter.button'/1,
+         'twitter.profile'/1,
+         'twitter.search'/1,
+         'twitter.list'/1,
+         'google.buynow'/1,
+         'google.buynowlist'/1,
+         'youtube.channel'/1
         ]).
 
 -include("typechecks.hrl").
@@ -62,16 +62,16 @@
 %%
 
 %% Hypernumbers Channel Name is hypernumbers
-youtube_channel([ChannelName]) ->
+'youtube.channel'([ChannelName]) ->
     C = ?string(ChannelName, ?default_str_rules),
     "<script src=\"http://www.gmodules.com/ig/ifr?url=http://www.google.com/ig/modules/youtube.xml&up_channel=" ++ C ++ "&synd=open&w=320&h=390&title=&border=%23ffffff%7C3px%2C1px+solid+%23999999&output=js\"></script>".
 
 %% Hypernumbers merchant ID is 960226209420618 
-google_buy_now([Merchant, Cur, ItemName, ItemDesc, Price]) ->
+'google.buynow'([Merchant, Cur, ItemName, ItemDesc, Price]) ->
     google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, 1, "white");
-google_buy_now([Merchant, Cur, ItemName, ItemDesc, Price, Quantity]) ->
+'google.buynow'([Merchant, Cur, ItemName, ItemDesc, Price, Quantity]) ->
     google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, "white");
-google_buy_now([Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg]) ->
+'google.buynow'([Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg]) ->
     google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg).
 
 google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg) ->
@@ -104,7 +104,7 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
         ++"</form>".
 
 %% Hypernumbers Merchant ID is 960226209420618 
-google_buy_now_list([Merchant, Currency, Type, Bg | Rest]) ->
+'google.buynowlist'([Merchant, Currency, Type, Bg | Rest]) ->
     M = ?string(Merchant, ?default_str_rules),
     C = ?string(Currency, ?default_str_rules),
     Bg1 = string:to_lower(?string(Bg, ?default_str_rules)),
@@ -170,21 +170,21 @@ get_sel(List) -> lists:flatten(["<select name=\"item_selection_1\">",
                                 "</select>"]).
 
 %% Hypernumbers Page Id is 336874434418
-facebook_like([PageId]) ->
+'facebook.like'([PageId]) ->
     P = ?string(PageId, ?default_str_rules),
     Ret = "<iframe src=\"http://www.facebook.com/plugins/likebox.php?id="
         ++ P ++ "&amp;width=292&amp;connections=10&amp;stream=true&amp;header=true\" scrolling=\"no\" frameborder=\"0\" allowTransparency=\"true\" style=\"border:none; overflow:hidden; width:292px; height:200px\"></iframe>",
     io:format("Ret is ~p~n", [Ret]),
     Ret.
 
-facebook_share([])       -> fb_share1("box_count", "");
-facebook_share([0])      -> fb_share1("box_count", "");
-facebook_share([1])      -> fb_share1("button_count", "");
-facebook_share([2])      -> fb_share1("button", "");
-facebook_share([3])      -> fb_share1("icon_count", "");
-facebook_share([N, URL]) -> Str = ?string(URL, ?default_str_rules),
+'facebook.share'([])       -> fb_share1("box_count", "");
+'facebook.share'([0])      -> fb_share1("box_count", "");
+'facebook.share'([1])      -> fb_share1("button_count", "");
+'facebook.share'([2])      -> fb_share1("button", "");
+'facebook.share'([3])      -> fb_share1("icon_count", "");
+'facebook.share'([N, URL]) -> Str = ?string(URL, ?default_str_rules),
                             fb_share(N, Str);
-facebook_share(_Other)   -> ?ERRVAL_VAL.
+'facebook.share'(_Other)   -> ?ERRVAL_VAL.
 
 fb_share(0, URL) -> fb_share1("box_count",
                                       "share_url=\"" ++ URL ++ "\"");
@@ -201,13 +201,13 @@ fb_share1(Button, URL) ->
     "<a name=\"fb_share\" type=\"" ++ Button ++ "\" "  ++ URL++ " href=\"http://www.facebook.com/sharer.php\">Share</a><script src=\"http://static.ak.fbcdn.net/connect.php/js/FB.Share\" type=\"text/javascript\"></script>".
 
 %% Hypernumbers Twitter UserName is hypernumbers
-twitter_button([UserName]) ->
+'twitter.button'([UserName]) ->
     Str = ?string(UserName, ?default_str_rules),
     tw_b1(0, "a", Str);
-twitter_button([UserName, Type]) ->
+'twitter.button'([UserName, Type]) ->
     Str = ?string(UserName, ?default_str_rules),
     tw_b1(Type, "a", Str);
-twitter_button([UserName, N, Colour]) ->
+'twitter.button'([UserName, N, Colour]) ->
     Str = ?string(UserName, ?default_str_rules),
     tw_b(N, Colour, Str).
 
@@ -224,7 +224,7 @@ tw_b1(4, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++
 tw_b1(5, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++ "\"><img src=\"http://twitter-badges.s3.amazonaws.com/t_mini-" ++ Colour ++ ".png\" alt=\"Follow " ++ UserName ++ " on Twitter\"/></a>";
 tw_b1(_, _, _) -> ?ERRVAL_VAL.
 
-twitter_profile([UserName]) ->
+'twitter.profile'([UserName]) ->
     U = ?string(UserName, ?default_str_rules),
     "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
         ++ "<script>"
@@ -260,7 +260,7 @@ twitter_profile([UserName]) ->
 
 %% the bug here is that the jquery script that runs the window doesn't find
 %% the global object 'TWTR' which presumably is created by the first script
-twitter_search([]) ->
+'twitter.search'([]) ->
     %S = ?string(SearchTerm, ?default_str_rules),
     "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
         ++ "<script>"
@@ -296,7 +296,7 @@ twitter_search([]) ->
         ++ "}).render().start();"
         ++ "</script>".
 
-twitter_list([]) ->
+'twitter.list'([]) ->
     "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
         ++ "<script>"
         ++ "new TWTR.Widget({"
