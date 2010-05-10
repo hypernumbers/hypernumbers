@@ -9,6 +9,8 @@
 -module(hnfuns_web).
 
 -export([
+         input/1,
+         textarea/1,
          button/1,
          radio/1,
          select/1,
@@ -41,25 +43,41 @@ form1([], [_H | T]) ->
 form1([H | T], Acc) ->
     form1(T, ["<br /><br />", H | Acc]).
 
+input(_) ->
+    "<input type='input' class='hntext' data-name='default' />".
+
+textarea(_) ->
+    "<textarea class='hninput' data-name='default'></textarea>".
+
+button([]) ->
+    button([[]]);    
 button([Title]) ->
-    [Title2] = ?string([Title], ?default_str_rules),
-    "<input type=\"submit\" value=\"" ++ Title2 ++ "\">".
+    Val = case ?string([Title], ?default_str_rules) of
+              [[]]     -> "";
+              [Title2] -> " value='" ++ Title2 ++ "'"
+          end,    
+    "<input type='submit' class='hninput' " ++ Val
+        ++ " data-form-name='default' \">".
 
-radio(Options) -> radio1(Options, []).
+radio(Options) ->
+    radio1(Options, []).
 
-radio1([], Acc)      -> lists:flatten(lists:reverse(Acc));
+radio1([], Acc) ->
+    lists:flatten(lists:reverse(Acc));
 radio1([H | T], Acc) ->
     H2 = ?string(H, ?default_str_rules),
-    NewAcc = ["<p>" ++ H2
-              ++ "<input type=\"radio\" name = \""
-              ++ H2 ++ "\" value=\""
-              ++ H2 ++ "\">" ++ "</p>" | Acc],
+    NewAcc = [ H2
+               ++ "<input type='radio' name = '"
+               ++ H2 ++ "' value='"
+               ++ H2 ++ "'>" | Acc],
     radio1(T, NewAcc).
     
 
-select(Options) -> select1(Options, ["<select>"]).
+select(Options) ->
+    select1(Options, ["<select class=\"hninput\">"]).
 
-select1([], Acc)      -> lists:flatten(lists:reverse(["</select>" | Acc]));
+select1([], Acc)      ->
+    lists:flatten(lists:reverse(["</select>" | Acc]));
 select1([H | T], Acc) ->
     H2 = ?string(H, ?default_str_rules),
     NewAcc = ["<option>" ++ H2 ++ "</option>" | Acc],
