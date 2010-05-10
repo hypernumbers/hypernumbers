@@ -44,135 +44,20 @@
           idx
          }).
 
--record(remote_objs,
-        {
-          site,
-          path,
-          obj,
-          idx
-         }).
-
 -record(item, {idx, attrs}).
-
--record(local_cell_link, % link 2 cells on the same sheet together
-        {
-          parentidx,
-          childidx
-         }).
-
--record(remote_cell_link,         % link a hypernumber with a cell,
-        {                         % is used to link both incoming and outgoing
-          parent      = #refX{}, % hypernumbers
-          child       = #refX{},
-          type        = null      % incoming or outgoing
-         }).
 
 -record(relation,
         {cellidx                  :: cellidx(),
          children = ordsets:new() :: ordsets:ordset(cellidx()),
-         parents = ordsets:new()  :: ordsets:ordset(cellidx()),
-         priority = 0             :: integer() | {integer(), integer()}}).
-%% priority can be taken out  in next refactor ^^^^ 
-         
--record(outgoing_hn,
-        {
-          site_and_parent,
-          child_site   = [],
-          child_proxy  = [],
-          biccie       = []       % a shared token
-         }).
-
--record(incoming_hn,
-        {
-          site_and_parent,
-          value,
-          'dependency-tree' = [], % cells use in this numbers calculation
-          biccie            = []    % a shared token
-         }).
+         parents = ordsets:new()  :: ordsets:ordset(cellidx())}).
 
 -record(dirty_queue,
         {id = now(),
          queue}).
 
--record(dirty_inc_hn_create,
-        {
-          parent     = #refX{},
-          child      = #refX{},
-          parent_vsn = #version{},
-          child_vsn  = #version{},
-          timestamp  = now()
-         }).
-
--record(dirty_notify_in,
-        {
-          parent            = #refX{},
-          timestamp         = now()
-         }).
-
-% dirty_notify_out contains a snap shot of the value, the 
-% dependency tree and the outgoing_hn record because it is 
-% asynchronous - needs to know what they were when it was marked dirty
-% because if there has been a delete/insert the original may have been
-% rewitten by the time the dirty processing is to be done. The 
-% protocol/retry between 2 servers has to handle the
-% race conditions etc, etc...
-% By default dirty_notify_out events are delayed - this smooths
-% out the syncronisation process. Events that are 'important' like
-% inserting or deleting cells set their delay to zero and slip
-% ahead of the cohort of other changes that are sent
-% 
-% dirty_notify_out doens't contain a child_vsn record because that info
-% is wrapped up in the outgoing list...
-
--define(DELAY,     0). % time delay (millisecs) for some dirty updates 
-
--record(dirty_notify_out,
-        {
-          parent     = #refX{},
-          change     = [],
-          outgoing   = [],
-          parent_vsn = #version{},
-          delay      = ?DELAY,
-          timestamp  = now()
-         }).
-
-% By default dirty_notify_back_in events are delayed - this smooths
-% out the syncronisation process. Events that are 'important' like
-% inserting or deleting cells set their delay to zero and slip
-% ahead of the cohort of other changes that are sent
--record(dirty_notify_back_in,
-        {
-          parent     = #refX{},
-          child      = #refX{},
-          change     = [],
-          biccie     = [],
-          child_vsn  = #version{},
-          parent_vsn = #version{},
-          delay      = ?DELAY,
-          timestamp  = now()
-         }).
-
--record(dirty_notify_back_out,
-        {
-          parent    = #refX{},
-          child     = #refX{},
-          change    = [],
-          timestamp = now()
-         }).
-
 -record(group,
         {name = [],
          members = gb_sets:empty()}).
-         
--record(hn_user,
-        {
-          name        = [],
-          password    = [],
-          authtoken   = null,
-          created     = calendar:local_time(),
-          data        = dict:new(),
-          groups      = []
-         }).
 
 -record(template,
         {

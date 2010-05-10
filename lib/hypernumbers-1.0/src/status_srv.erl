@@ -200,7 +200,7 @@ purge(#user{name = N, details = D}) ->
     NewU = #user{name = N, details = NewD},
     case NewD of
         [] -> {NewU, {struct, []}};
-        _  -> {NewU, [{get_name(N), {struct, extract(NewD)}}]}
+        _  -> {NewU, [{(N), {struct, extract(NewD)}}]}
     end.
   
 purge_details(D) -> purge_d1(D, []).
@@ -230,9 +230,6 @@ extract1([#details{path = P, change = Ch, timestamp = Ts} | T], Acc) ->
     Acc2 = {P2, {struct, [{Ch, Msg}]}},
     extract1(T, [Acc2 | Acc]).
     
-get_name(anonymous)             -> "anonymous";
-get_name(#hn_user{name = Name}) -> Name.
-
 get_msg(Ts) ->
     Now = calendar:now_to_universal_time(now()),
     Diff = ?diff(Ts, Now),
