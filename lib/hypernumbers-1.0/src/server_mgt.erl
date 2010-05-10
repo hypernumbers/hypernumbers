@@ -12,33 +12,32 @@
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
+-include("hn_mochi.hrl").
 
 -export([export/1, export/2,
-         import/1, import/2 ]).
-         %export_as_sitemod/2 ]).
+         import/1, import/2,
+         export_as_sitetype/2 ]).
 
+%% Exports a site as a sitemod that can be loaded by a factory
+-spec export_as_sitetype(list(), atom()) -> ok.
+export_as_sitetype(Site, NewType) ->
+    SiteTypes = join([code:priv_dir(hypernumbers), "site_types"]),
+    Dest = join([SiteTypes, NewType]),
+    ok = export_site(Dest, Site),
+    ok = hn_util:recursive_copy(join([Dest,"etf"]), join([Dest, "data"])),
 
-%% %% Exports a site as a sitemod that can be loaded by a factory
-%% -spec export_as_sitemod(atom(), list()) -> ok.
-%% export_as_sitemod(NewType, Site) ->
-%%     SiteTypes = join([code:priv_dir(hypernumbers), "site_types"]),
-%%     OldType  = hn_setup:get_site_type(Site),
+    %% Rename files
+    file:rename(join([Dest, "groups.export"]), 
+                join([Dest, "groups.script"])),
+    file:rename(join([Dest, "permissions.export"]), 
+                join([Dest, "permissions.script"])),
 
-%%     %% TODO. This is not a users.script for for a sitemod.
-%%     (OldType =/= NewType) andalso
-%%         file:copy(join([SiteTypes, OldType, "users.export"]),
-%%                   join([SiteTypes, NewType, "users.export"])),
-    
-%%     ok = export_site(join([SiteTypes, NewType]), Site),
-%%     ok = hn_util:recursive_copy(join([SiteTypes, NewType,"etf"]),
-%%                                 join([SiteTypes, NewType, "data"])),
-    
-%%     % Delete backup things
-%%     [ file:delete( join([SiteTypes, NewType,  File]) )
-%%       || File <- ["type", "mnesia.backup"] ],
-%%     [ hn_util:delete_directory( join([SiteTypes, NewType, join(Dir)]) )
-%%       || Dir <- [["etf"], ["views", "_g", "core"]] ],
-%%     ok.
+                                                % Delete backup-centric artifacts.
+    [ file:delete( join([SiteTypes, NewType,  File]) )
+      || File <- ["type", "mnesia.backup"] ],
+    [ hn_util:delete_directory( join([SiteTypes, NewType, join(Dir)]) )
+      || Dir <- [["etf"], ["views", "_g", "core"]] ],
+    ok.
     
 %% Export sites to the given directory.
 export(Dest) ->
@@ -81,7 +80,7 @@ dump_etf(Site, SiteDest) ->
     Ref = hn_util:parse_url(Site),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
     Paths = hn_db_api:read_pages(Ref),
-    Pages = [Encoder(hn_mochi:page_attributes(Ref#refX{path = P}, anonymous))
+    Pages = [Encoder(hn_mochi:page_attributes(Ref#refX{path = P}, #env{}))
              || P <- Paths],
     [ok = file:write_file(
             filename:join(EtfDest, hn_util:path_to_json_path(Path)), 
