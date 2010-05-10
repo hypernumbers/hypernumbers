@@ -217,14 +217,14 @@ make_float2(List)->
 hnget(Path, Cell) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Cell),
     Ref = hn_util:parse_url(Url),
-    case hn_db_api:read_attributes(Ref,["rawvalue"]) of
-        [{_Ref, {"rawvalue", Val}}] when is_atom(Val) ->
+    case hn_db_api:read_attribute(Ref,"rawvalue") of
+        [{_Ref, Val}] when is_atom(Val) ->
             atom_to_list(Val);
-        [{_Ref, {"rawvalue", {datetime, D, T}}}] ->
+        [{_Ref, {datetime, D, T}}] ->
             dh_date:format("Y/m/d H:i:s",{D,T});
-        [{_Ref, {"rawvalue", {errval, Val}}}] ->
+        [{_Ref, {errval, Val}}] ->
             atom_to_list(Val);
-        [{_Ref, {"rawvalue", Val}}] ->
+        [{_Ref, Val}] ->
             Val;
         _Else ->
             ""

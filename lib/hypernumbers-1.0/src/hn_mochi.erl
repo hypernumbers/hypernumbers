@@ -427,14 +427,14 @@ iget(Ref, page, _Qry, Env=#env{accept = json}) ->
     json(Env, page_attributes(Ref, Env));
 
 iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
-    V = case hn_db_api:read_attributes(Ref,["value"]) of
-            [{_Ref, {"value", Val}}] when is_atom(Val) ->
+    V = case hn_db_api:read_attribute(Ref,"value") of
+            [{_Ref, Val}] when is_atom(Val) ->
                 atom_to_list(Val);
-            [{_Ref, {"value", {datetime, D, T}}}] ->
+            [{_Ref, {datetime, D, T}}] ->
                 dh_date:format("Y/m/d H:i:s",{D,T});
-            [{_Ref, {"value", {errval, Val}}}] ->
+            [{_Ref, {errval, Val}}] ->
                 atom_to_list(Val);
-            [{_Ref, {"value", Val}}] ->
+            [{_Ref, Val}] ->
                 Val;
             _Else ->
                 error_logger:error_msg("unmatched ~p~n", [_Else]),

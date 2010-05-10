@@ -50,14 +50,14 @@ cell([V1, V2]) ->
     cell1(InfoType, RefX).
 
 cell1("formula", RefX) ->
-    Attr = hn_db_api:read_attributes(RefX, ["formula"]),
-    case Attr of
-        [{_, {"formula", F}}] ->
+    Ret = hn_db_api:read_attribute(RefX, "formula"),
+    case Ret of
+        [{_, F}] ->
             case string:substr(F, 1, 1) of
                 "=" -> string:substr(F, 2); % drop the equals sign "="
                 _   -> F
             end;
-        [] ->
+        _ ->
             ""
     end;
 cell1("address", RefX) ->
@@ -70,8 +70,8 @@ cell1("row", RefX) ->
     {cell, {_Col, Row}} = RefX#refX.obj,
     Row;
 cell1("contents", RefX) ->
-    Attr = hn_db_api:read_attributes(RefX, ["value"]),
-    [{_, {"value", V}}] = Attr,
+    Ret = hn_db_api:read_attribute(RefX, "value"),
+    [{_, V}] = Ret,
     case V of
         blank -> 0;
         Else  -> Else
