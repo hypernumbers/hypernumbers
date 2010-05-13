@@ -30,9 +30,9 @@
    {super_peers, ['hnlive@hypernumbers.com']},
 
    %% Mail Setup
-   {mailserver,   "smtp.gmail.com"},
-   {mailuser,     "noreply@hypernumbers.com"},
-   {mailpassword, "mick!ventris09"}
+   {mailserver,   "smtp.sendgrid.net"},
+   {mailuser,     "service@hypernumbers.com"},
+   {mailpassword, "sell#something$$"}
   ]},
  
 %% Mnesia Config

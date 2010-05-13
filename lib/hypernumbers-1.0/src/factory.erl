@@ -42,10 +42,10 @@ provision_site(Zone, Email, SiteType, Uid) ->
 -spec provision_site(string(), string(), atom(), uid()) 
                     -> {ok, new | existing, string(), uid(), string()} | 
                        {error, bad_provision | invalid_email}.
-provision_site_(Zone, Email, SiteType, Uid) ->
+provision_site_(Zone, Email, SiteType, SuggestedUid) ->
     case valid_email(Email) of
         true -> 
-            Call = {provision, Zone, Email, SiteType, Uid},
+            Call = {provision, Zone, Email, SiteType, SuggestedUid},
             case gen_server:call({global, ?MODULE}, Call) of
                 {ok, New_Existing, Site, Uid, Name} ->
                     post_provision(New_Existing, Site, Uid, Email, Name),
@@ -95,9 +95,9 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call({provision, Zone, Email, Type, Uid}, _From, State) ->
+handle_call({provision, Zone, Email, Type, SuggestedUid}, _From, State) ->
     {ok, {Host, {_Ip, Port, Node}}} = hns:link_resource(Zone),
-    {ok, NE, Uid} = passport:get_or_create_user(Email, Uid),
+    {ok, NE, Uid} = passport:get_or_create_user(Email, SuggestedUid),
     Name = extract_name_from_email(Email),
     Site = lists:flatten(io_lib:format("http://~s:~b", [Host,Port])),
     ok = rpc:call(Node, hn_setup, site, 

@@ -16,6 +16,7 @@ git clone $REPO $TESTDIR
 cd $TESTDIR
 ./hn build
 sed -i '/{127,0,0,1}, 9090}/d' var/sys.config
+sed -i '/{127,0,0,1}, 9091}/d' var/sys.config
 ./hn start
 
 ## Generate Excel Tests

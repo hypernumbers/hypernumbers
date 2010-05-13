@@ -142,10 +142,15 @@ draw(undefined, "", _X, _Y, _W, _H) -> "";
 draw(undefined, "text-align:right;", _X, _Y, _W, _H) -> "";
 draw(undefined, Css, X, Y, W, H) -> draw("", Css, X, Y, W, H);
 draw(Value, Css, X, Y, W, H) ->
+    % Tom wants to fix this up :(
+    Val = case Value of
+              {errval, ErrVal} -> atom_to_list(ErrVal);
+              _                -> Value
+          end,
     Style = io_lib:format(
               "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s'",
               [X, Y, W, H, Css]),
-    ["<div ",Style,">", Value, "</div>"].
+    ["<div ",Style,">", Val, "</div>"].
 
 -spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean(). 
 order_objs({RA,_}, {RB,_}) ->

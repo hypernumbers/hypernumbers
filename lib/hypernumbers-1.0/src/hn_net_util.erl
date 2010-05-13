@@ -42,7 +42,7 @@ email(Details, To, From, Subject, Msg) ->
     User   = proplists:get_value(user, Details),
     Pass   = proplists:get_value(password, Details),
     
-    {ok, Socket} = ssl:connect(Server, 465, [{active, false}], 2000),
+    {ok, Socket} = ssl:connect(Server, 465, [{active, false}], 3000),
     
     recv(Socket),
     send(Socket, "HELO localhost"),
