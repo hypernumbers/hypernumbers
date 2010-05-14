@@ -33,7 +33,6 @@ start_loop(FileName) ->
             server_loop(FileName, FD);
         {_, {log_error, Reason}} ->
             io:format("Server: ~p~n", [Reason]),
-            ok
     after 5000 ->
             io:format("Error starting~n")
     end.
@@ -48,7 +47,7 @@ server_loop(FileName, FD) ->
         {_, log_finished} ->
             ok = file:close(FD)
 
-    after 20000 ->
+    after 200000 ->
             io:format(standard_error, "Lost connection to server~n", []),
             ok = file:close(FD),
             ok = file:delete([?OUTDIR, FileName])
