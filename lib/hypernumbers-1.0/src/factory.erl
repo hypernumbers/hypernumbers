@@ -194,8 +194,7 @@ send_email(To, EmailBody) ->
     end.    
 
 extract_name_from_email(Email) ->
-    LocalPart = lists:takewhile(fun(X) -> X /= $@ end, Email),
-    [Name | _Rest] =  string:tokens(LocalPart, "."),
+    [Name | _Rest] =  string:tokens(Email, ".+@"),
     capitalize_name(Name).
     
 capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].
