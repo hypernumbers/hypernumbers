@@ -97,7 +97,8 @@ stream_log(Name, StartD, EndD, Remote) ->
 
 do_stream(Remote, Filter, Terms) ->
     Messages = [handle_term(Filter, T, 0, fun mi_entry/2) || T <- Terms],
-    Remote ! {self(), {log_chunk, Messages}},
+    Messages2 = [M || M <- Messages, is_list(M)],
+    Remote ! {self(), {log_chunk, Messages2}},
     receive 
         {Remote, log_continue_stream} ->
             ok

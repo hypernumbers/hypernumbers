@@ -41,7 +41,7 @@ start_loop(FileName) ->
 server_loop(FileName, FD) ->
     receive
         {From, {log_chunk, Chunk}} ->
-            [file:write(FD, X) || X <- Chunk],
+            [ok = file:write(FD, X) || X <- Chunk],
             From ! {self(), log_continue_stream},
             server_loop(FileName, FD);
 
@@ -51,7 +51,7 @@ server_loop(FileName, FD) ->
     after 20000 ->
             io:format(standard_error, "Lost connection to server~n", []),
             ok = file:close(FD),
-            ok = file:delete(FileName)
+            ok = file:delete([?OUTDIR, FileName])
     end.
 
 init() ->
