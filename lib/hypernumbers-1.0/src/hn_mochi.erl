@@ -471,14 +471,17 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
                           Uid),
     json(Env, "success");
 
-ipost(#refX{site=Site, path=["_login"]}, _Qry, E) ->
+ipost(#refX{site=Site, path=["_login"]}, Qry, E) ->
     [{"email", Email0},{"pass", Pass},{"remember", Rem}] = E#env.body,
     Email = string:to_lower(Email0),
     case passport:authenticate(Email, Pass, Rem=="true") of
         {error, authentication_failed} -> 
             json(E, {struct, [{"response", "error"}]});
         {ok, Uid, Stamp, Age} ->
-            Return = hn_util:strip80(Site),
+            Return = case Qry#qry.return of
+                         R when R /= undefined -> mochiweb_util:unquote(R);
+                         _Else -> hn_util:strip80(Site)
+                     end,
             {E2, Redir} = post_login(Site, Uid, Stamp, Age, E, Return),
             json(E2, {struct, [{"redirect", Redir}]})
     end;
