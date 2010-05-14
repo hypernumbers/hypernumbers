@@ -35,13 +35,14 @@ start() ->
 
 %% @doc Logs individual requests
 -spec log(#env{}, #refX{}) -> ok.
-log(#env{mochi = Mochi, uid = Uid, raw_body = Body}, Ref) ->
+log(#env{mochi=Mochi, uid=Uid, raw_body=Body, email=Email}, Ref) ->
     Post = [{time, erlang:now()},
             {site, Ref#refX.site},
             {path, Mochi:get(raw_path)},
             {method, Mochi:get(method)},
             {body, Body},
             {user, Uid},
+            {email, Email},
             {peer, Mochi:get_header_value("x-forwarded-for")},
             {referer, Mochi:get_header_value("Referer")},
             {browser, Mochi:get_header_value("User-Agent")},
