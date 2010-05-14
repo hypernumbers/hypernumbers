@@ -32,7 +32,7 @@ start_loop(FileName) ->
                                  [write, delayed_write, raw]),
             server_loop(FileName, FD);
         {_, {log_error, Reason}} ->
-            io:format("Server: ~p~n", [Reason]),
+            io:format("Server: ~p~n", [Reason])
     after 5000 ->
             io:format("Error starting~n")
     end.
