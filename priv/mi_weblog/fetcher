@@ -33,7 +33,7 @@ start_loop(FileName) ->
             server_loop(FileName, FD);
         {_, {log_error, Reason}} ->
             io:format("Server: ~p~n", [Reason])
-    after 5000 ->
+    after 25000 ->
             io:format("Error starting~n")
     end.
 
