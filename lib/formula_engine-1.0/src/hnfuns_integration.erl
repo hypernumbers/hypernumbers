@@ -11,6 +11,7 @@
 -export([
          'facebook.share'/1,
          'facebook.like'/1,
+         'facebook.likebox'/1,
          'twitter.button'/1,
          'twitter.profile'/1,
          'twitter.search'/1,
@@ -55,8 +56,6 @@
          "XAF", "XCD", "XOF", "XPF", "YER", "ZAR", "ZMK", "ZWL"
         ]).
 
--define(VALID_BACKGROUNDS, ["white", "colored", "coloured"]).
-
 %%
 %% Exported functions
 %%
@@ -68,9 +67,9 @@
 
 %% Hypernumbers merchant ID is 960226209420618 
 'google.buynow'([Merchant, Cur, ItemName, ItemDesc, Price]) ->
-    google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, 1, "white");
+    google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, 1, 0);
 'google.buynow'([Merchant, Cur, ItemName, ItemDesc, Price, Quantity]) ->
-    google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, "white");
+    google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, 0);
 'google.buynow'([Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg]) ->
     google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg).
 
@@ -80,10 +79,12 @@ google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg) ->
     Bg1 = string:to_lower(?string(Bg, ?default_str_rules)),
     case lists:member(string:to_upper(C), ?VALID_ISO_CURRENCIES) of
         false -> ?ERRVAL_VAL;
-        true  -> case lists:member(Bg1, ?VALID_BACKGROUNDS) of
-                     false -> ?ERRVAL_VAL;
-                     true  -> google_buy_n2(M, C, ItemName, ItemDesc,
-                                            Price, Quantity, Bg1)
+        true  -> case Bg1 of
+                     0 -> google_buy_n2(M, C, ItemName, ItemDesc,
+                                            Price, Quantity, "white");
+                     1 -> google_buy_n2(M, C, ItemName, ItemDesc,
+                                            Price, Quantity, "colored");
+                     _ -> ?ERRVAL_VAL
                  end
     end.
 
@@ -110,9 +111,10 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
     Bg1 = string:to_lower(?string(Bg, ?default_str_rules)),
     case lists:member(string:to_upper(C), ?VALID_ISO_CURRENCIES) of
         false -> ?ERRVAL_VAL;
-        true  -> case lists:member(Bg1, ?VALID_BACKGROUNDS) of
-                     false -> ?ERRVAL_VAL;
-                     true  -> google_buy_l2(M, C, Type, Bg1, Rest)
+        true  -> case Bg1  of
+                     0  -> google_buy_l2(M, C, Type, "white", Rest);
+                     1  -> google_buy_l2(M, C, Type, "colored", Rest);
+                     _  -> ?ERRVAL_VAL
                  end
     end.
 
@@ -169,8 +171,37 @@ get_sel(List) -> lists:flatten(["<select name=\"item_selection_1\">",
                                 lists:reverse(List),
                                 "</select>"]).
 
+'facebook.like'([URL]) ->
+    fb_like(URL, 0, 0);
+'facebook.like'([URL, Layout]) ->
+    fb_like(URL, Layout, 0);
+'facebook.like'([URL, Layout, Faces]) ->
+    fb_like(URL, Layout, Faces).
+
+fb_like(URL, Layout, Faces) ->
+    U = ?string(URL, ?default_str_rules),
+    L = ?string(Layout, ?default_str_rules),
+    F = ?string(Faces, ?default_str_rules),
+    case valid(L, F) of
+        false -> ?ERRVAL_VAL;
+        {L1, F1}  ->
+            "<iframe src=\"http://www.facebook.com/plugins/like.php?href="
+                ++ U
+                ++"&amp;layout="
+                ++ L1
+                ++"standard&amp;show_faces="
+                ++ F1
+                ++ "&amp;width=450&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80\" scrolling=\"no\" frameborder=\"0\" style=\"border:none; overflow:hidden; width:450px; height:80px;\" allowTransparency=\"true\"></iframe>"
+    end.
+
+valid("0", "0") -> {"standard",     "true"};
+valid("1", "0") -> {"button_count", "true"};
+valid("0", "1") -> {"standard",     "false"};
+valid("1", "1") -> {"button_count", "false"};
+valid(_, _) -> false.    
+    
 %% Hypernumbers Page Id is 336874434418
-'facebook.like'([PageId]) ->
+'facebook.likebox'([PageId]) ->
     P = ?string(PageId, ?default_str_rules),
     Ret = "<iframe src=\"http://www.facebook.com/plugins/likebox.php?id="
         ++ P ++ "&amp;width=292&amp;connections=10&amp;stream=true&amp;header=true\" scrolling=\"no\" frameborder=\"0\" allowTransparency=\"true\" style=\"border:none; overflow:hidden; width:292px; height:200px\"></iframe>",
