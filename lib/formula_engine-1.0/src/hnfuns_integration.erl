@@ -8,16 +8,21 @@
 %%%-------------------------------------------------------------------
 -module(hnfuns_integration).
 
+% working functions
 -export([
          'facebook.share'/1,
+         'twitter.button'/1,
+         'google.buynowlist'/1,
+         'google.buynow'/1
+        ]).
+
+%% not working functions
+-export([
          'facebook.like'/1,
          'facebook.likebox'/1,
-         'twitter.button'/1,
          'twitter.profile'/1,
          'twitter.search'/1,
          'twitter.list'/1,
-         'google.buynow'/1,
-         'google.buynowlist'/1,
          'youtube.channel'/1
         ]).
 
@@ -110,10 +115,11 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
     C = ?string(Currency, ?default_str_rules),
     Bg1 = string:to_lower(?string(Bg, ?default_str_rules)),
     case lists:member(string:to_upper(C), ?VALID_ISO_CURRENCIES) of
-        false -> ?ERRVAL_VAL;
+        false -> io:format("no currency~n"),
+                 ?ERRVAL_VAL;
         true  -> case Bg1  of
-                     0  -> google_buy_l2(M, C, Type, "white", Rest);
-                     1  -> google_buy_l2(M, C, Type, "colored", Rest);
+                     "0"  -> google_buy_l2(M, C, Type, "white", Rest);
+                     "1"  -> google_buy_l2(M, C, Type, "colored", Rest);
                      _  -> ?ERRVAL_VAL
                  end
     end.
