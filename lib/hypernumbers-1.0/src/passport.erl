@@ -391,13 +391,19 @@ stamp(Uid, Email, Age) ->
 
 -spec escape_email(string()) -> string(). 
 escape_email(Email) ->
-    [case S of $@ -> $!; S  -> S end 
-     || S <- Email].
+    [case S of 
+         $@ -> $!;
+         $+ -> $#;
+         S  -> S 
+     end || S <- Email].
 
 -spec unescape_email(string()) -> string(). 
 unescape_email(EscEmail) ->
-    [case S of $! -> $@; S  -> S end 
-     || S <- EscEmail].
+    [case S of 
+         $! -> $@;
+         $# -> $+;
+         S  -> S 
+     end || S <- EscEmail].
 
 -spec gen_expiry(integer() | string()) -> string().
 gen_expiry(X) when X == "session"; X == "never" -> X;
