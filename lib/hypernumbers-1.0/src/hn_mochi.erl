@@ -314,7 +314,7 @@ iget(#refX{site=Site, path=["_logout"]}, page,
     
 iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
      #qry{hypertag=HT}, 
-     Env) when X == "_invite"; X == "_mynewsite" ->
+     Env) when X == "_mynewsite" ->
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Email, _Data, Stamp, Age} ->
             Return = hn_util:strip80(Site) 
@@ -330,7 +330,7 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
 
 iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
      #qry{hypertag=HT}, 
-     Env) when X == "_validate" ->
+     Env) when X == "_invite"; X == "_validate" ->
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Email, Data, Stamp, Age} ->
             case proplists:get_value(emailed, Data) of

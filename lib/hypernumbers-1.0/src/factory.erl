@@ -145,7 +145,7 @@ existing_user_site_email(Site, Name) ->
        "The Hypernumbers team."]).
 
 new_user_invite_email(Site, Uid, Email, Name) ->
-    Path = ["_validate", Name],
+    Path = ["_invite", Name],
     Data = [{emailed, true}],
     HT = passport:create_hypertag(Site, Path, Uid, Email, Data, "never"),
     lists:flatten(
