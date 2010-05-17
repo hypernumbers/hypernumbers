@@ -834,7 +834,7 @@ ipost(#refX{site=_Site, path=["_hooks"]},
                       invalid_email ->
                           "Sorry, the email provided was invalid, "
                               "please try again.";
-                      bad_provision ->
+                      _ ->
                           "Sorry there was an unknown error, please "
                               "try again."
                   end,
