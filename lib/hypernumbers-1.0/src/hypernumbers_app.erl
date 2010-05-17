@@ -101,13 +101,4 @@ local_hypernumbers() ->
     passport:set_password(Uid, "secure").
 
 production_tasks() ->
-    connect_peers().
-
-connect_peers() ->
-    case application:get_env(hypernumbers, super_peers) of
-        {ok, [H|_Tail]} ->
-            net_adm:ping(H),
-            ok;
-        _Else ->
-            ok
-    end.
+    net_adm:world().
