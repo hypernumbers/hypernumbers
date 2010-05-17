@@ -101,4 +101,5 @@ local_hypernumbers() ->
     passport:set_password(Uid, "secure").
 
 production_tasks() ->
-    net_adm:world().
+    net_adm:world(),
+    ok.
