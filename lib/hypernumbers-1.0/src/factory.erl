@@ -9,14 +9,17 @@
 
 -include("auth.hrl").
 
-
 provision_site(Zone, Email, SiteType) ->
-    Uid = passport:create_uid(),
-    provision_site_(Zone, Email, SiteType, Uid).
-provision_site(Zone, Email, SiteType, [$_|Uid]) ->
-    provision_site_(Zone, Email, SiteType, Uid);
-provision_site(Zone, Email, SiteType, Uid) ->
-    provision_site_(Zone, Email, SiteType, Uid).
+    SuggestedUid = passport:create_uid(),
+    provision_site(Zone, Email, SiteType, SuggestedUid).
+
+%% Extract existing uid from anonymous users, otherwise, generate a
+%% fresh uid. 
+provision_site(Zone, Email, SiteType, [$_|SuggestedUid]) ->
+    provision_site_(Zone, Email, SiteType, SuggestedUid);
+provision_site(Zone, Email, SiteType, _) ->
+    SuggestedUid = passport:create_uid(),
+    provision_site_(Zone, Email, SiteType, SuggestedUid).
 
 -spec provision_site(string(), string(), atom(), uid()) 
                     -> {ok, new | existing, string(), uid(), string()} | 
