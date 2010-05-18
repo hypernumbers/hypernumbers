@@ -293,17 +293,24 @@ handle_call({is_valid_uid, Uid}, _From, State) ->
     {reply, Ret, State};
 
 handle_call({get_or_create_user, Email, SuggestedUid}, _From, State) ->
-    Ms = ets:fun2ms(fun(#user{email=E, uid=U}) 
-                          when E == Email -> U
-                    end),
+    Ms = ets:fun2ms(fun(#user{email=E, uid=U}) when E == Email -> U end),
     T = fun() ->
                 case mnesia:select(service_passport_user, Ms, write) of
                     [U] -> 
                         {ok, existing, U};
                     _ ->
-                        User = #user{uid = SuggestedUid, email = Email},
-                        mnesia:write(service_passport_user, User, write),
-                        {ok, new, User#user.uid}
+                        case mnesia:read(service_passport_user, SuggestedUid) 
+                        of
+                            [] ->
+                                User = #user{uid = SuggestedUid, 
+                                             email = Email},
+                                mnesia:write(service_passport_user, 
+                                             User, 
+                                             write),
+                                {ok, new, User#user.uid};
+                            _ ->
+                                {error, cannot_replace_existing_id}
+                        end
                 end
         end,
     Ret = mnesia:activity(async_dirty, T),

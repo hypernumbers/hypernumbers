@@ -8,7 +8,7 @@
 -include("spriki.hrl").
 
 -define(DEFAULT_WIDTH, 80).
--define(DEFAULT_HEIGHT, 20).
+-define(DEFAULT_HEIGHT, 22).
 
 -type intpair() :: {integer(), integer()}.
 -type cells() :: [{intpair(), list(tuple())}].
@@ -139,7 +139,6 @@ max(X,_)            -> X.
            integer(), integer(), integer(), integer())
           -> textdata().
 draw(undefined, "", _X, _Y, _W, _H) -> "";
-draw(undefined, "text-align:right;", _X, _Y, _W, _H) -> "";
 draw(undefined, Css, X, Y, W, H) -> draw("", Css, X, Y, W, H);
 draw(Value, Css, X, Y, W, H) ->
     % Tom wants to fix this up :(
@@ -209,7 +208,7 @@ wrap_page(Content, TotalWidth) ->
          <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
          </head>
 
-         <body data-view='_g/core/webpage' style='overflow:auto;'>
+         <body data-view='_g/core/webpage'>
 
          <span id='hidden_input'></span>
 
@@ -217,15 +216,26 @@ wrap_page(Content, TotalWidth) ->
          <div id='inner' class='hn_inner'>", Content, "</div>
          </div>
 
-         </body>",
+    <div id='editspreadsheet'>
+      <div id='powered'>
+        powered by <br />
+        <a href='http://hypernumbers.com'>
+          <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
+        </a>
+      </div>
+      <a href='?view=_g/core/spreadsheet' id='editlogin'>login</a>
+    </div>
 
-     %% <script src='/hypernumbers/json2.js'></script>
-     %% <script src='/hypernumbers/hn.js'></script>
-     %% <script src='/hypernumbers/hn.util.js'></script>
-     %% <script src='/hypernumbers/hn.sheet.js'></script>
-     %% <script src='/hypernumbers/hn.data.js'></script>
-     %% <script src='/hypernumbers/hn.renderpage.js'></script>
-     "</html>"].
+  </body>
+  
+  <script src='/hypernumbers/json2.js'></script>
+  <script src='/hypernumbers/hn.js'></script>
+  <script src='/hypernumbers/hn.util.js'></script>
+  <script src='/hypernumbers/hn.sheet.js'></script>
+  <script src='/hypernumbers/hn.data.js'></script>
+
+  <script src='/hypernumbers/hn.renderpage.js'></script>
+  </html>"].
 
 -spec wrap_region([textdata()], integer()) -> [textdata()]. 
 wrap_region(Content, Width) -> 

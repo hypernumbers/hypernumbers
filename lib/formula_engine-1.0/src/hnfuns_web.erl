@@ -50,14 +50,17 @@ textarea(_) ->
     "<textarea class='hninput' data-name='default'></textarea>".
 
 button([]) ->
-    button([[]]);    
+    button([""]);
 button([Title]) ->
+    button([Title, ""]);
+button([Title, Content]) ->
     Val = case ?string([Title], ?default_str_rules) of
               [[]]     -> "";
               [Title2] -> " value='" ++ Title2 ++ "'"
           end,    
     "<input type='submit' class='hninput' " ++ Val
-        ++ " data-form-name='default' \">".
+        ++ " data-form-name='default' data-response='"
+        ++ Content ++ "' \">".
 
 radio(Options) ->
     radio1(Options, []).
