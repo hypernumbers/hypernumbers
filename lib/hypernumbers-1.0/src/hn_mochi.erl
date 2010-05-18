@@ -75,7 +75,8 @@ check_resource_exists(Env, Ref, Qry) ->
 authorize_resource(Env, Ref, Qry) -> 
     Env2 = process_user(Ref#refX.site, Env),
     AuthRet = case Env2#env.method of
-                  'GET'  -> authorize_get(Ref, Qry, Env2);
+                  Req when Req == 'GET'; Req == 'HEAD'  ->
+                      authorize_get(Ref, Qry, Env2);
                   'POST' -> authorize_post(Ref, Qry, Env2)
               end,
     
@@ -1052,6 +1053,7 @@ process_environment(Mochi) ->
     {RawBody, Body} = 
         case Mochi:get(method) of
             'GET'  -> {undefined, undefined};
+            'HEAD' -> {undefined, undefined};
             'POST' -> {_,{_,T}} = mochiweb_headers:lookup('Content-Type', 
                                                           Mochi:get(headers)),
                       case lists:prefix("multipart/form-data", T) of
