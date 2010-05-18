@@ -7,6 +7,7 @@
          create_zone/4, delete_zone/1, purge_zone/2, topup_zone/1,
          link_resource/1, unlink_resource/2, link_resource_manual/5,
          set_resource/4, delete_resource/3,
+         lookup_node/2,
          resource_diagnostics/0, zone_diagnostics/0
         ]).
 
@@ -142,6 +143,11 @@ set_resource(IP, Port, Node, Weight) when
 -spec delete_resource(string(), integer(), atom()) -> ok | not_found.
 delete_resource(IP, Port, Node) ->
     gen_server:call({global, ?MODULE}, {delete_resource, {IP, Port, Node}}).
+
+%% Returns the node resource attached to site in zone.
+-spec lookup_node(string(), string()) -> no_record | {ok, atom()}.
+lookup_node(Zone, Site) ->
+    gen_server:call({global, ?MODULE}, {lookup_node, Zone, Site}).
 
 %% Useful for listing active resources, and testing random distribution.
 -spec resource_diagnostics() -> ok.
@@ -337,6 +343,16 @@ handle_call({delete_resource, Address}, _From, S) ->
                          [service_hns_resource, Address, write]),
     Routing = build_routing(all_resources()),
     {reply, ok, S#state{routing = Routing}};
+
+handle_call({lookup_node, ZoneL, Name}, _From, S) ->
+    Rec = mnesia:activity(async_dirty,
+                          fun mnesia:read/2,
+                          [service_hns_record, {ZoneL, Name}]),
+    Reply = case Rec of 
+                [#record{address={_, _, Node}}] -> {ok, Node};
+                _ -> no_record
+            end,
+    {reply, Reply, S};
 
 handle_call(resource_diagnostics, _From, S=#state{routing=R}) ->
     Runs = 50000,

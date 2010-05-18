@@ -19,15 +19,11 @@
    %% be started regardless.
    {services, 
     [{hns, false},
-     {passport, false},
-     {factory, false}
+     {passport, false}
     ]}, 
 
    %% Url to synchronize cookies against.
    {sync_url, "http://hypernumbers.com"},
-
-   %% Used to connect to the global grid.
-   {super_peers, ['hnlive@hypernumbers.com']},
 
    %% Mail Setup
    {mailserver,   "smtp.sendgrid.net"},
