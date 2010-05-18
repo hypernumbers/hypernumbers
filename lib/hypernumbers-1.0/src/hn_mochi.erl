@@ -15,8 +15,7 @@
           style_to_css/2,
           docroot/1,
           page_attributes/2,
-          get_json_post/1, % Used for mochilog replay rewrites
-          save_view/3
+          get_json_post/1 % Used for mochilog replay rewrites
          ]).
 
 -define(SHEETVIEW, "_g/core/spreadsheet").
@@ -118,11 +117,6 @@ handle_resource(Ref, Qry, Env=#env{method = 'POST'}) ->
 
 
 -spec handle_static(string(), iolist(), any()) -> any(). 
-handle_static(".tpl", Root, Mochi) ->
-    %% Don't cache templates
-    "/"++RelPath = Mochi:get(path),
-    Mochi:serve_file(RelPath, Root, nocache()),
-    ok;
 handle_static(X, Root, Mochi)
   when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; X == ".txt";
        X == ".ico"; X == ".json"; X == ".gif"; X == ".html"; X == ".pdf" ->
@@ -348,18 +342,14 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
             end
     end;
 
-iget(#refX{site = Site}, page, #qry{view = FName, template = []}, Env) 
-  when FName /= undefined -> 
-    serve_html(Env, [viewroot(Site), "/", FName, ".tpl"]);    
+iget(Ref, page, #qry{view = "_g/core/webpage"}, Env=#env{accept = html}) ->
+    {Html, Width} = hn_render:content(Ref),
+    Page = hn_render:wrap_page(Html, Width),
+    text_html(Env, Page);
 
 iget(Ref=#refX{site = Site}, page, #qry{view = FName}, Env=#env{accept = html})
   when FName /= undefined ->
-    Tpl  = [viewroot(Site), "/", FName, ".tpl"],
     Html = [viewroot(Site), "/", FName, ".html"],
-    ok = case should_regen(Tpl, Html) of
-             true -> ok = build_tpl(Site, FName);
-             _    -> ok
-         end,
     case filelib:is_file(Html) of
         true  -> serve_html(Env, Html);
         false -> '404'(Ref, Env)
@@ -379,49 +369,11 @@ iget(Ref, page, #qry{renderer=[]}, Env) ->
 iget(#refX{site = S}, page, #qry{status = []}, Env) -> 
     json(Env, status_srv:get_status(S));
 
-iget(#refX{site = S}=Ref, page, #qry{rawview = View}, Env)
-  when is_list(View) ->
-
-    case is_view(View) of
-        true ->
-            Tpl = [viewroot(S), "/" , View, ".tpl"],
-            serve_file(200, Env, Tpl);
-        false -> 
-            '404'(Ref, Env)
-    end,
-    ok;
-
 iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
     json(Env, auth_srv:get_as_json(S, P));
 
 iget(Ref, page, #qry{pages = []}, Env=#env{accept = json}) ->
     json(Env, pages(Ref));
-
-iget(Ref, page, #qry{views = []}, Env=#env{accept = json}) ->
-
-    AllViews = filelib:wildcard(viewroot(Ref#refX.site)++"/*/*/*.tpl"),
-
-    Views = [ begin
-                  [Name, U, G | _Rest ] = lists:reverse(string:tokens(X, "/")),
-                  NewName = filename:basename(Name, ".tpl"),
-                  G ++ "/" ++ U ++ "/" ++ NewName
-              end || X <- AllViews ],
-    json(Env, {array, [ X || X<-Views, X=/="_g/core/built" ] });
-
-%% List of template pages
-iget(Ref, page, #qry{templates = []}, Env) ->
-    Fun = fun(X) ->
-                  [F | _T] = lists:reverse(string:tokens(X, "/")),
-                  case F of
-                      [$. | _T1] -> true;
-                      _          -> false
-                  end
-          end,
-    Files = lists:dropwhile(
-              Fun,
-              filelib:wildcard(docroot(Ref#refX.site)++"/templates/*")),
-    File = [filename:basename(X) || X <- Files], 
-    json(Env, {array, File});
 
 iget(Ref, page, _Qry, Env=#env{accept = json}) ->
     json(Env, page_attributes(Ref, Env));
@@ -639,23 +591,6 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid})
 ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
     ok = hn_db_api:clear(Ref, {attributes, [What]}, Uid),
     json(Env, "success");
-
-ipost(#refX{site=Site, path=Path} = Ref, _Qry,
-      Env=#env{body = [{"saveview", {struct, [{"name", Name}, {"tpl", Form},
-                                              {"overwrite", OverWrite}]}}], 
-               uid = Uid}) ->
-    TplPath = [viewroot(Site), "/" , Name, ".tpl"],
-    ok      = filelib:ensure_dir([viewroot(Site), "/" , Name]),
-
-    case (OverWrite == false) andalso filelib:is_file(TplPath) of
-        true ->
-            json(Env, "error");
-        false ->
-            AuthSpec = ["user"],
-            ok       = save_view(Site, Name, Form, Uid, Ref),
-            ok       = auth_srv:add_view(Site, Path, AuthSpec, Name),
-            json(Env, "success")
-    end;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -1053,17 +988,6 @@ accept_type(Env) ->
             end
     end.
 
-build_tpl(Site, Tpl) ->
-    
-    {ok, Master} = file:read_file([viewroot(Site), "/_g/core/built.tpl"]),
-    {ok, Gen}    = file:read_file([viewroot(Site), "/", Tpl, ".tpl"]),
-    
-    New1 = re:replace(Master, "%BODY%", hn_util:esc_regex(Gen),
-                     [{return, list}]),
-    New2 = re:replace(New1, "%VIEW%", Tpl, [{return, list}]),
-
-    file:write_file([viewroot(Site), "/", Tpl, ".html"], New2).
-    
 pages_to_json(Dict) ->
     F = fun(X) -> pages_to_json(X, dict:fetch(X, Dict)) end,
     case is_dict(Dict) of 
@@ -1081,37 +1005,9 @@ pages_to_json(X, Dict) ->
         false -> {struct, [{"name", X}]}
     end.
 
--spec save_view(string(), string(), string(), uid(), #refX{}) -> ok.
-%%
-save_view(Site, ViewName, ViewContent, Uid, Ref) ->
-    Data = [{ref, Ref}, {authreq, Uid}, {content, ViewContent}],
-    Path = [viewroot(Site), "/" , ViewName, ".meta"],
-    ok = file:write_file(Path ,io_lib:fwrite("~p.\n",[Data])),
-    ok = save_view(Site, ViewName, Data).
-
--spec save_view(string(), string(), list()) -> ok.
-%%
-save_view(Site, ViewName,
-          [{ref, Ref}, {authreq, Uid}, {content, Content}]) ->    
-    Sec  = hn_security:make(Content, Ref, Uid),
-    Path = [viewroot(Site), "/" , ViewName],
-    ok   = file:write_file([Path , ".tpl"], Content),
-    ok   = file:write_file([Path , ".sec"], io_lib:fwrite("~p.\n",[Sec])).
-
-is_view(View) ->
-    [Pre, _User, _Name] = string:tokens(View, "/"),
-    (Pre == "_u" orelse Pre == "_g").
-% andalso hn_util:is_alpha(User)
-% andalso hn_util:is_alpha(Name).
-
 sync_exit() ->
     exit("exit from hn_mochi:handle_req impossible page versions").
     
-should_regen(Tpl, Html) ->
-    filelib:is_file(Tpl)
-        andalso ( not(filelib:is_file(Html)) orelse
-                  hn_util:is_older(Html, Tpl) ). 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
 %%% Input Processors
