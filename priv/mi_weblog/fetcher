@@ -32,26 +32,25 @@ start_loop(FileName) ->
                                  [write, delayed_write, raw]),
             server_loop(FileName, FD);
         {_, {log_error, Reason}} ->
-            io:format("Server: ~p~n", [Reason]),
-            ok
-    after 5000 ->
+            io:format("Server: ~p~n", [Reason])
+    after 25000 ->
             io:format("Error starting~n")
     end.
 
 server_loop(FileName, FD) ->
     receive
         {From, {log_chunk, Chunk}} ->
-            [file:write(FD, X) || X <- Chunk],
+            [ok = file:write(FD, X) || X <- Chunk],
             From ! {self(), log_continue_stream},
             server_loop(FileName, FD);
 
         {_, log_finished} ->
             ok = file:close(FD)
 
-    after 20000 ->
+    after 200000 ->
             io:format(standard_error, "Lost connection to server~n", []),
             ok = file:close(FD),
-            ok = file:delete(FileName)
+            ok = file:delete([?OUTDIR, FileName])
     end.
 
 init() ->
