@@ -22,7 +22,7 @@ provision_site(Zone, Email, SiteType, _) ->
     provision_site_(Zone, Email, SiteType, SuggestedUid).
 
 -spec provision_site(string(), string(), atom(), uid()) 
-                    -> {ok, new | existing, string(), uid(), string()} | 
+                    -> {ok, new | existing, string(), atom(), uid(), string()} | 
                        {error, invalid_email}.
 provision_site_(Zone, Email, Type, SuggestedUid) ->
     case valid_email(Email) of
@@ -38,7 +38,7 @@ provision_site_(Zone, Email, Type, SuggestedUid) ->
                                         {email, Email},
                                         {name, Name}]]),
             post_provision(NE, Site, Uid, Email, Name),
-            {ok, NE, Site, Uid, Name}
+            {ok, NE, Site, Node, Uid, Name}
     end.
 
 -spec create_invite(string(), string(), string()) -> ok.

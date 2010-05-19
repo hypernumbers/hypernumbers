@@ -3,7 +3,7 @@
 -module(hn_render).
 
 -export([content/1, 
-         wrap_page/2, wrap_region/2]).
+         wrap_page/3, wrap_region/3]).
 
 -include("spriki.hrl").
 
@@ -17,13 +17,14 @@
 -type textdata() :: string() | [textdata()].
 
 -record(rec, {maxwidth = 0,
+              lastmax_merge_h = 0,
               colwidths = [],
               palette = [],
               startcol}).
                  
 %% Returns a tuple containing the rendered html for the area covered
 %% by the given Ref, along with the width of said html.
--spec content(#refX{}) -> {[textdata()], integer()}.
+-spec content(#refX{}) -> {[textdata()], integer(), integer()}.
 content(Ref) ->
     Data = lists:sort(fun order_objs/2, hn_db_api:read_ref(Ref)),
     Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
@@ -38,7 +39,7 @@ content(Ref) ->
     layout(Ref, Cells, ColWs, RowHs, Palette).
 
 -spec layout(#refX{}, cells(), cols(), rows(), array()) 
-            -> {[textdata()], integer()}.
+            -> {[textdata()], integer(), integer()}.
 layout(Ref, Cells, CWs, RHs, Palette) ->
     PX = 0,
     PY = 0,
@@ -51,12 +52,13 @@ layout(Ref, Cells, CWs, RHs, Palette) ->
 -spec layout(cells(), 
              integer(), integer(), integer(), integer(), integer(), 
              cols(), rows(), #rec{}, [textdata()])
-            -> {[textdata()],integer()}.
+            -> {[textdata()],integer(), integer()}.
                     
 %% End of input
-layout([], _Col, _Row, PX, _PY, _H, _CWs, _RHs, Rec, Acc) ->
+layout([], _Col, _Row, PX, PY, H, _CWs, _RHs, Rec, Acc) ->
+    TotalHeight = PY + max(H, Rec#rec.lastmax_merge_h),
     TotalWidth = max(PX, Rec#rec.maxwidth),
-    {lists:reverse(Acc), TotalWidth};
+    {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 %% Output the next cell value in the current row.
 layout([{{C,R}, L}|T], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
@@ -66,15 +68,15 @@ layout([{{C,R}, L}|T], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     case pget("merge", L) of
         undefined ->
             Acc2 = [draw(Value, Css, PX, PY, W, H) | Acc],
-            PX2 = PX + W,
-            layout(T, C+1, R, PX2, PY, H, CWs2, RHs, Rec, Acc2);
+            layout(T, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc2);
         {struct, [{"right", Right}, {"down", Down}]} ->
             {MW,CWs3} = width_across(C+1, C+Right, CWs2, W),
             MH = height_below(R+1, R+Down, RHs, H),
+            Rec2 = Rec#rec{lastmax_merge_h = 
+                               max(Rec#rec.lastmax_merge_h, MH)},
             Acc2 = [draw(Value, Css, PX, PY, MW, MH) | Acc],
-            PX2 = PX + MW,
             T2 = expunge(T, {C,C+Right,R,R+Down}),
-            layout(T2, C+Right+1, R, PX2, PY, H, CWs3, RHs, Rec, Acc2)
+            layout(T2, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
     end;
 
 %% No cell for this column, but still haven't changed rows.
@@ -89,7 +91,8 @@ layout(Lst, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
     Col2 = Rec#rec.startcol,
     Row2 = Row + 1,
     {H2,RHs2} = row_height(Row2, RHs),
-    Rec2 = Rec#rec{maxwidth = max(Rec#rec.maxwidth, PX)},
+    Rec2 = Rec#rec{maxwidth = max(Rec#rec.maxwidth, PX), 
+                   lastmax_merge_h = 0},
     layout(Lst, Col2, Row2, PX2, PY2, H2, 
            Rec#rec.colwidths, RHs2, Rec2, Acc).
 
@@ -144,6 +147,7 @@ draw(Value, Css, X, Y, W, H) ->
     % Tom wants to fix this up :(
     Val = case Value of
               {errval, ErrVal} -> atom_to_list(ErrVal);
+              A when is_atom(A) -> atom_to_list(A);
               _                -> Value
           end,
     Style = io_lib:format(
@@ -173,9 +177,10 @@ startrow(_)                            -> 1.
     
 pget(K,L) -> proplists:get_value(K,L,undefined).
 
--spec wrap_page([textdata()], integer()) -> [textdata()]. 
-wrap_page(Content, TotalWidth) -> 
-    OuterStyle = io_lib:format("style='width:~bpx'", [TotalWidth]),
+-spec wrap_page([textdata()], integer(), integer()) -> [textdata()]. 
+wrap_page(Content, TotalWidth, TotalHeight) -> 
+    OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
+                               [TotalWidth, TotalHeight]),
     ["<!DOCTYPE html>
 <html lang='en'>
          <head>
@@ -201,7 +206,7 @@ wrap_page(Content, TotalWidth) ->
           <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
         </a>
       </div>
-      <a href='?view=_g/core/spreadsheet' id='editlogin'>login</a>
+      <a href='?view=_g/core/spreadsheet' id='editlogin' title='edit / login'>login</a>
     </div>
 
   </body>
@@ -215,9 +220,10 @@ wrap_page(Content, TotalWidth) ->
   <script src='/hypernumbers/hn.renderpage.js'></script>
   </html>"].
 
--spec wrap_region([textdata()], integer()) -> [textdata()]. 
-wrap_region(Content, Width) -> 
-    OuterStyle = io_lib:format("style='width:~bpx'", [Width]),
+-spec wrap_region([textdata()], integer(), integer()) -> [textdata()]. 
+wrap_region(Content, Width, Height) -> 
+    OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
+                               [Width, Height]),
     ["<div class='hn_inner' ", OuterStyle, ">",
      Content,
      "</div>"].

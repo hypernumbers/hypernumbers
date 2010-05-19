@@ -49,8 +49,7 @@ hr {
     margin-top:0px;
 }
 body { 
-    overflow-y:scroll;
-    overflow-x:scroll;
+    overflow:auto;
 }
 
 .hntext { 
@@ -70,16 +69,30 @@ body {
 #editspreadsheet {
     position:absolute;
     font-size:10px;
-    bottom:16px;
+    top:0px;
     right:10px;
+    width:130px;
     padding:1px 1px 4px 1px;
     margin-right:20px;
     background:#EEE;
     display:none;
     border:1px solid #AAA;
-    border-bottom-width:0px;
     text-align:center;
+    -moz-border-radius: 0px 0px 4px 4px;
+    -webkit-border-radius:0px 0px 4px 4px;
+    border-top-width:0px;
+    opacity:0.4;
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
+                                 to(#E3E3E3));
+    background: -moz-linear-gradient(center top , #F9F9F9, 
+                                     #E3E3E3) repeat scroll 0 0 transparent;
+
 }
+
+#editspreadsheet:hover { 
+    opacity:1;
+}
+
 
 div#outer {
     margin: 0px auto;
@@ -140,4 +153,16 @@ input[type=submit].hninput:hover {
 #closedialog { 
     font-weight:bold;
     margin-top:10px;
+}
+
+#editlogin {
+    background:url(/img/layout_edit.png) no-repeat;
+    text-indent:-99999px;
+    width:20px;
+    height:20px;
+    outline:none;
+    float:right;
+    display:block;
+    color:blue;
+    margin:8px 3px;
 }

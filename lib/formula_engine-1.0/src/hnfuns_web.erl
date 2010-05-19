@@ -15,7 +15,8 @@
          radio/1,
          select/1,
          form/1,
-         include/1
+         include/1,
+         'google.map'/1
         ]).
 
 -include("spriki.hrl").
@@ -29,9 +30,32 @@
 -define(default_str_rules, [first_array, cast_numbers, cast_bools,
                             cast_blanks, cast_dates ]).
 
+-define(GMAPS_API_KEY, "ABQIAAAAvc75-UC7iUxZiJTb2GNV8hSNAg2NXpz7d4v"
+        ++ "U2BZLLU-LGXynmRSNgEhU9IYj0BQ8iFQIcqjqZV4qRQ").
+
 %%
 %% Exported functions
 %%
+'google.map'([]) ->
+    'google.map'([0]);
+'google.map'([Long]) ->
+    'google.map'([Long, 0]);
+'google.map'([Long, Lat]) ->
+    'google.map'([Long, Lat, 10]);
+'google.map'([Long, Lat, Zoom]) ->
+    col([Long, Lat, Zoom], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun googlemap/1).
+
+googlemap([Lat, Long, Zoom]) ->
+    NLat  = muin_util:cast(Lat, str),
+    NLong = muin_util:cast(Long, str),
+    NZoom = muin_util:cast(Zoom, str),
+    "<iframe width='100%' height='100%' frameborder='0' scrolling='no' "
+        ++ "marginheight='0' marginwidth='0' src='http://maps.google.com"
+        ++ "/?ie=UTF8&amp;ll=" ++ NLat ++ "," ++ NLong
+        ++ "&amp;z=" ++ NZoom ++ "&amp;output=embed'></iframe>".
+
 form(Items) ->
     [Items2] = ?string([Items], ?default_str_rules),
     form1(Items2, []).

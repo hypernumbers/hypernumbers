@@ -788,7 +788,6 @@ expunge_refs(S, Refs) ->
     ItemT = trans(S, item),
     ObjT = trans(S, local_objs),
     [begin
-         tell_front_end_delete(Ref),
          mnesia:delete(ItemT, Idx, write),
          mnesia:delete_object(ObjT, LO, write)
      end || Ref <- Refs,
@@ -2470,8 +2469,6 @@ tell_front_end_style(Ref, NewIndex, Style) ->
 tell_front_end_change(Ref, Attrs) ->
     Tuple = {change, Ref, Attrs},
     tell_front_end1(Tuple).
-tell_front_end_delete(Ref) ->
-    tell_front_end1({delete, Ref}).
 
 tell_front_end1(Tuple) ->
     List = get('front_end_notify'),

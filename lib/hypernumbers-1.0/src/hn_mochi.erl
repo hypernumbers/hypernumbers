@@ -75,7 +75,8 @@ check_resource_exists(Env, Ref, Qry) ->
 authorize_resource(Env, Ref, Qry) -> 
     Env2 = process_user(Ref#refX.site, Env),
     AuthRet = case Env2#env.method of
-                  'GET'  -> authorize_get(Ref, Qry, Env2);
+                  Req when Req == 'GET'; Req == 'HEAD'  ->
+                      authorize_get(Ref, Qry, Env2);
                   'POST' -> authorize_post(Ref, Qry, Env2)
               end,
     
@@ -343,8 +344,8 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
     end;
 
 iget(Ref, page, #qry{view = "_g/core/webpage"}, Env=#env{accept = html}) ->
-    {Html, Width} = hn_render:content(Ref),
-    Page = hn_render:wrap_page(Html, Width),
+    {Html, Width, Height} = hn_render:content(Ref),
+    Page = hn_render:wrap_page(Html, Width, Height),
     text_html(Env, Page);
 
 iget(Ref=#refX{site = Site}, page, #qry{view = FName}, Env=#env{accept = html})
@@ -362,8 +363,8 @@ iget(#refX{site = Site, path = Path}, page,
     remoting_request(Env, Site, Paths, Time);
 
 iget(Ref, page, #qry{renderer=[]}, Env) ->
-    {Html, Width} = hn_render:content(Ref),
-    Page = hn_render:wrap_page(Html, Width),
+    {Html, Width, Height} = hn_render:content(Ref),
+    Page = hn_render:wrap_page(Html, Width, Height),
     text_html(Env, Page);
 
 iget(#refX{site = S}, page, #qry{status = []}, Env) -> 
@@ -403,6 +404,12 @@ iget(Ref, Type, _Qry, Env=#env{accept=json})
     Dict = to_dict(hn_db_api:read_attributes(Ref,[]), Tree),
     json(Env, {struct, dict_to_struct(Dict)});
 
+%% Format requests without trailing slash
+iget(#refX{path=Path, obj={name, Name}}, name, _Qry, Env=#env{accept=html}) ->
+    NPath = hn_util:list_to_path([Name | Path]), 
+    E2 = Env#env{headers = [{"location", NPath}|Env#env.headers]},
+    respond(303, E2);
+    
 iget(#refX{site = Site}, cell, _Qry, Env=#env{accept=html}) ->
     HTML = [viewroot(Site), "/", "_g/core/cell.html"],
     serve_html(Env, HTML);
@@ -744,8 +751,8 @@ ipost(#refX{site = Site, path = _P}, _Qry,
         {error, Reason} ->
             json(Env, {struct, [{"result", "error"}, {"reason", Reason}]})
     end; 
-    
-ipost(#refX{site=_Site, path=["_hooks"]}, 
+
+ipost(#refX{site=RootSite, path=["_hooks"]}, 
       _Qry, Env=#env{body=Body, uid=PrevUid}) ->
     [{"signup",{struct,[{"email",Email0}]}}] = Body,
     Email = string:to_lower(Email0),
@@ -755,13 +762,15 @@ ipost(#refX{site=_Site, path=["_hooks"]},
            end,
     Type = demo,
     case factory:provision_site(Zone, Email, Type, PrevUid) of
-        {ok, new, Site, Uid, Name} ->
+        {ok, new, Site, Node, Uid, Name} ->
+            log_signup(RootSite, Site, Node, Uid, Email),
             Opaque = [],
             Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
-        {ok, existing, Site, _Uid, _Name} ->
+        {ok, existing, Site, Node, Uid, _Name} ->
+            log_signup(RootSite, Site, Node, Uid, Email),
             json(Env, {struct, [{"result", "success"}, {"url", Site}]});
         {error, Reason} ->
             Str = case Reason of
@@ -785,6 +794,16 @@ ipost(Ref, Qry, Env) ->
 %%% Helpers
 %%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+-spec log_signup(string(), string(), atom(), uid(), string()) -> ok.
+log_signup(Site, NewSite, Node, Uid, Email) ->
+    Lasts = [ {hn_util:url_to_refX(Site ++ "/_sites/" ++ Ref), Val}
+              || {Ref, Val} <- [{"A:A", Email},
+                                {"B:B", NewSite},
+                                {"C:C", Uid},
+                                {"D:D", dh_date:format("Y/m/d G:i:s")},
+                                {"E:E", atom_to_list(Node)} ] ],
+    hn_db_api:write_last(Lasts, "", "").
 
 view_creator_uid(undefined, _Site, Poster) -> Poster; 
 view_creator_uid(?SHEETVIEW, _Site, Poster) -> Poster;
@@ -1046,6 +1065,7 @@ process_environment(Mochi) ->
     {RawBody, Body} = 
         case Mochi:get(method) of
             'GET'  -> {undefined, undefined};
+            'HEAD' -> {undefined, undefined};
             'POST' -> {_,{_,T}} = mochiweb_headers:lookup('Content-Type', 
                                                           Mochi:get(headers)),
                       case lists:prefix("multipart/form-data", T) of
