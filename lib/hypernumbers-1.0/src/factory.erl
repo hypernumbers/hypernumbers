@@ -41,6 +41,7 @@ provision_site_(Zone, Email, Type, SuggestedUid) ->
             {ok, NE, Site, Uid, Name}
     end.
 
+-spec create_invite(string(), string(), string()) -> ok.
 create_invite(Site, Email, Group) ->
     case valid_email(Email) of
         false ->
