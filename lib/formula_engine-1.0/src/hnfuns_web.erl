@@ -131,5 +131,5 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
     Path = muin_util:walk_path(muin:context_setting(path), RelPath),
     Obj = {range, {X1, Y1, X2, Y2}},
     Ref = #refX{site = Site, path = Path, obj = Obj},
-    {Html, Width} = hn_render:content(Ref),
-    lists:flatten(hn_render:wrap_region(Html, Width)).
+    {Html, Width, Height} = hn_render:content(Ref),
+    lists:flatten(hn_render:wrap_region(Html, Width, Height)).
