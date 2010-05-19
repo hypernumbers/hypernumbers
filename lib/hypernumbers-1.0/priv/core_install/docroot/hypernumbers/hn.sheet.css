@@ -430,14 +430,17 @@ a {
     /* z-index     : 9999999; */
     z-index     : 10000001;
     padding-left:4px;
+    outline:none;
 }
 
 #formulawrapper.active { 
     height:auto;
     border:1px solid #666;
+
 }
 
 #formula { 
+    min-height:18px;
     outline:none;
 }
 
