@@ -762,15 +762,15 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
            end,
     Type = demo,
     case factory:provision_site(Zone, Email, Type, PrevUid) of
-        {ok, new, Site, Uid, Name} ->
-            log_signup(RootSite, Email, Uid, Site),
+        {ok, new, Site, Node, Uid, Name} ->
+            log_signup(RootSite, Site, Node, Uid, Email),
             Opaque = [],
             Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
-        {ok, existing, Site, Uid, _Name} ->
-            log_signup(RootSite, Email, Uid, Site),
+        {ok, existing, Site, Node, Uid, _Name} ->
+            log_signup(RootSite, Site, Node, Uid, Email),
             json(Env, {struct, [{"result", "success"}, {"url", Site}]});
         {error, Reason} ->
             Str = case Reason of
@@ -795,16 +795,15 @@ ipost(Ref, Qry, Env) ->
 %%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-log_signup(Site, Email, Uid, NewSite) ->
-    
+-spec log_signup(string(), string(), atom(), uid(), string()) -> ok.
+log_signup(Site, NewSite, Node, Uid, Email) ->
     Lasts = [ {hn_util:url_to_refX(Site ++ "/_sites/" ++ Ref), Val}
               || {Ref, Val} <- [{"A:A", Email},
                                 {"B:B", NewSite},
                                 {"C:C", Uid},
-                                {"D:D", dh_date:format("Y/m/d G:i:s")}] ],
-    
+                                {"D:D", dh_date:format("Y/m/d G:i:s")},
+                                {"E:E", atom_to_list(Node)} ] ],
     hn_db_api:write_last(Lasts, "", "").
-
 
 view_creator_uid(undefined, _Site, Poster) -> Poster; 
 view_creator_uid(?SHEETVIEW, _Site, Poster) -> Poster;
