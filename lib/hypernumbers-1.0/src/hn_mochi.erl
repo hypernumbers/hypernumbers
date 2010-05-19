@@ -404,6 +404,12 @@ iget(Ref, Type, _Qry, Env=#env{accept=json})
     Dict = to_dict(hn_db_api:read_attributes(Ref,[]), Tree),
     json(Env, {struct, dict_to_struct(Dict)});
 
+%% Format requests without trailing slash
+iget(#refX{path=Path, obj={name, Name}}, name, _Qry, Env=#env{accept=html}) ->
+    NPath = hn_util:list_to_path([Name | Path]), 
+    E2 = Env#env{headers = [{"location", NPath}|Env#env.headers]},
+    respond(303, E2);
+    
 iget(#refX{site = Site}, cell, _Qry, Env=#env{accept=html}) ->
     HTML = [viewroot(Site), "/", "_g/core/cell.html"],
     serve_html(Env, HTML);
