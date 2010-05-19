@@ -1328,13 +1328,6 @@ input[type=checkbox], input[type=radio] {
     display:none;
 }
 
-#editlogin {
-    float:right;
-    display:block;
-    color:blue;
-    margin:8px 3px;
-}
-
 #powered { 
     text-align:center;
     width:100px;

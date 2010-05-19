@@ -75,7 +75,8 @@ check_resource_exists(Env, Ref, Qry) ->
 authorize_resource(Env, Ref, Qry) -> 
     Env2 = process_user(Ref#refX.site, Env),
     AuthRet = case Env2#env.method of
-                  'GET'  -> authorize_get(Ref, Qry, Env2);
+                  Req when Req == 'GET'; Req == 'HEAD'  ->
+                      authorize_get(Ref, Qry, Env2);
                   'POST' -> authorize_post(Ref, Qry, Env2)
               end,
     
@@ -744,8 +745,8 @@ ipost(#refX{site = Site, path = _P}, _Qry,
         {error, Reason} ->
             json(Env, {struct, [{"result", "error"}, {"reason", Reason}]})
     end; 
-    
-ipost(#refX{site=_Site, path=["_hooks"]}, 
+
+ipost(#refX{site=RootSite, path=["_hooks"]}, 
       _Qry, Env=#env{body=Body, uid=PrevUid}) ->
     [{"signup",{struct,[{"email",Email0}]}}] = Body,
     Email = string:to_lower(Email0),
@@ -756,12 +757,14 @@ ipost(#refX{site=_Site, path=["_hooks"]},
     Type = demo,
     case factory:provision_site(Zone, Email, Type, PrevUid) of
         {ok, new, Site, Uid, Name} ->
+            log_signup(RootSite, Email, Uid, Site),
             Opaque = [],
             Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
-        {ok, existing, Site, _Uid, _Name} ->
+        {ok, existing, Site, Uid, _Name} ->
+            log_signup(RootSite, Email, Uid, Site),
             json(Env, {struct, [{"result", "success"}, {"url", Site}]});
         {error, Reason} ->
             Str = case Reason of
@@ -785,6 +788,17 @@ ipost(Ref, Qry, Env) ->
 %%% Helpers
 %%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+log_signup(Site, Email, Uid, NewSite) ->
+    
+    Lasts = [ {hn_util:url_to_refX(Site ++ "/_sites/" ++ Ref), Val}
+              || {Ref, Val} <- [{"A:A", Email},
+                                {"B:B", NewSite},
+                                {"C:C", Uid},
+                                {"D:D", dh_date:format("Y/m/d G:i:s")}] ],
+    
+    hn_db_api:write_last(Lasts, "", "").
+
 
 view_creator_uid(undefined, _Site, Poster) -> Poster; 
 view_creator_uid(?SHEETVIEW, _Site, Poster) -> Poster;
@@ -1039,6 +1053,7 @@ process_environment(Mochi) ->
     {RawBody, Body} = 
         case Mochi:get(method) of
             'GET'  -> {undefined, undefined};
+            'HEAD' -> {undefined, undefined};
             'POST' -> {_,{_,T}} = mochiweb_headers:lookup('Content-Type', 
                                                           Mochi:get(headers)),
                       case lists:prefix("multipart/form-data", T) of

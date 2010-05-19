@@ -224,7 +224,7 @@ wrap_page(Content, TotalWidth) ->
           <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
         </a>
       </div>
-      <a href='?view=_g/core/spreadsheet' id='editlogin'>login</a>
+      <a href='?view=_g/core/spreadsheet' id='editlogin' title='edit / login'>login</a>
     </div>
 
   </body>
