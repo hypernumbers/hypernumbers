@@ -144,6 +144,7 @@ draw(Value, Css, X, Y, W, H) ->
     % Tom wants to fix this up :(
     Val = case Value of
               {errval, ErrVal} -> atom_to_list(ErrVal);
+              A when is_atom(A) -> atom_to_list(A);
               _                -> Value
           end,
     Style = io_lib:format(
@@ -201,7 +202,7 @@ wrap_page(Content, TotalWidth) ->
           <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
         </a>
       </div>
-      <a href='?view=_g/core/spreadsheet' id='editlogin'>login</a>
+      <a href='?view=_g/core/spreadsheet' id='editlogin' title='edit / login'>login</a>
     </div>
 
   </body>

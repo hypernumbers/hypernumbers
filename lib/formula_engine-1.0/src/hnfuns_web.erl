@@ -15,7 +15,8 @@
          radio/1,
          select/1,
          form/1,
-         include/1
+         include/1,
+         'google.map'/1
         ]).
 
 -include("spriki.hrl").
@@ -29,9 +30,22 @@
 -define(default_str_rules, [first_array, cast_numbers, cast_bools,
                             cast_blanks, cast_dates ]).
 
+-define(GMAPS_API_KEY, "ABQIAAAAvc75-UC7iUxZiJTb2GNV8hSNAg2NXpz7d4v"
+        ++ "U2BZLLU-LGXynmRSNgEhU9IYj0BQ8iFQIcqjqZV4qRQ").
+
 %%
 %% Exported functions
 %%
+'google.map'([]) ->
+    'google.map'([0]);
+'google.map'([Long]) ->
+    'google.map'([Long, 0]);
+'google.map'([_Long, _Lat]) ->
+    "<iframe width='100%' height='100%' frameborder='0' scrolling='no' "
+        ++ "marginheight='0' marginwidth='0' src='http://maps.google.com"
+        ++ "/?ie=UTF8&amp;ll=43.707594,-61.083984&amp;spn=25.89694,61.875"
+        ++ "&amp;z=4&amp;output=embed'></iframe>".
+
 form(Items) ->
     [Items2] = ?string([Items], ?default_str_rules),
     form1(Items2, []).
