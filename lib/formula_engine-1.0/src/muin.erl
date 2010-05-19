@@ -419,14 +419,19 @@ userdef_call(Fname, Args) ->
 do_cell(RelPath, Rowidx, Colidx) ->
     Path = muin_util:walk_path(?mpath, RelPath),
     IsCircRef = (Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath),
-    ?IF(IsCircRef, ?ERR_CIRCREF),
-    FetchFun = ?L(get_cell_info(?msite, Path, Colidx, Rowidx)),
-    case ?mar of
-        nil -> get_value_and_link(FetchFun);
-       _Else -> case auth_srv:get_any_view(?msite, Path, ?mar) of
-                    {view, _} -> get_value_and_link(FetchFun);                    
-                    _Else -> ?ERR_AUTH
-                end
+
+    case IsCircRef of
+        true ->
+            ?ERRVAL_CIRCREF;
+        false ->
+            FetchFun = ?L(get_cell_info(?msite, Path, Colidx, Rowidx)),
+            case ?mar of
+                nil -> get_value_and_link(FetchFun);
+                _Else -> case auth_srv:get_any_view(?msite, Path, ?mar) of
+                             {view, _} -> get_value_and_link(FetchFun);
+                             _Else -> ?ERR_AUTH
+                         end
+            end
     end.
 
 %% @doc Calls supplied fun to get a cell's value and dependence information,
@@ -438,7 +443,7 @@ get_value_and_link(FetchFun) ->
     Idx = hn_db_wu:get_local_item_index(RefX),
     case member({"local", Idx}, RefTree) of
         true ->
-            ?ERR_CIRCREF;
+            ?ERRVAL_CIRCREF;
         false ->
             {RefTree0, Errs0, Refs0} = get(retvals),
             NewRefTree = hslists:uniq(lists:append([RefTree0, RefTree])),
