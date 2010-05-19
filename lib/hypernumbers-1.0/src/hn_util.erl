@@ -25,6 +25,7 @@
          delete_gen_html/0,
          generate_po/1,
          %generate_po_CHEATING/1,
+         jsonify_attrs/1,
          jsonify_val/1,
          is_older/2,
 
@@ -238,6 +239,10 @@ po_val(Files, Id, {Col, {struct, Cell}}) ->
 delete_gen_html() ->
     Dir = code:lib_dir(hypernumbers)++"/priv/docroot/hypernumbers/",
     [file:delete(X) || X <- filelib:wildcard(Dir++"*.html.*")].
+
+
+jsonify_attrs(Attrs) ->
+    [jsonify_val(A) || A <- Attrs].
 
 jsonify_val({[$_,$_|_]=K, _})       -> {K, "bleh"};
 jsonify_val({"parents", _})                 -> {"parents", "bleh"};    

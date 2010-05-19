@@ -788,6 +788,7 @@ expunge_refs(S, Refs) ->
     ItemT = trans(S, item),
     ObjT = trans(S, local_objs),
     [begin
+         tell_front_end_delete(Ref),
          mnesia:delete(ItemT, Idx, write),
          mnesia:delete_object(ObjT, LO, write)
      end || Ref <- Refs,
@@ -805,6 +806,7 @@ apply_to_attrs(#refX{site=Site}=Ref, Op) ->
     Attrs2 = Op(Attrs),
     Attrs3 = post_process(Ref, Attrs2),
     Item = #item{idx = Idx, attrs = Attrs3},
+    tell_front_end_change(Ref, Attrs3),
     mnesia:write(Table, Item, write).
 
 %% Last chance to apply any default styles and formats. 
@@ -2456,26 +2458,22 @@ write_style2(#refX{site = Site} = RefX, Style) ->
     %% Ref is a cell reference - a page reference is needed
     Ref2 = RefX#refX{obj = {page, "/"}},
     NewIndex = mnesia:dirty_update_counter(trans(Site, style_counters), Ref2, 1), 
-    ok = tell_front_end(Ref2, NewIndex, Style),
+    ok = tell_front_end_style(Ref2, NewIndex, Style),
     Rec = #styles{refX = Ref2, index = NewIndex, magic_style = Style},
     ok = mnesia:write(trans(Site, styles), Rec, write),
     NewIndex. 
 
--spec tell_front_end(#refX{}, {any(), any()}, insert | delete | change) -> ok.
-%% Type = [change | delete]
-%% @doc calls the remoting server and tells is that something has changed
-%% names like '__name' are not notified to front-end
-tell_front_end(RefX, {Key, Val}, Type) when is_record(RefX, refX) ->
-    Ref = {RefX, Key}, 
-    Tuple = {Ref, Val, Type},
-    tell_front_end1(Ref, Tuple);
-tell_front_end(#refX{site=Site, path=Path}, Index, Style)
-  when is_record(Style, magic_style) ->
-    Key = {Site, Path},
-    Tuple = {Key, Index, Style},
-    tell_front_end1(Key, Tuple).
 
-tell_front_end1(_Key, Tuple) ->
+tell_front_end_style(Ref, NewIndex, Style) ->
+    Tuple = {style, Ref, NewIndex, Style},
+    tell_front_end1(Tuple).
+tell_front_end_change(Ref, Attrs) ->
+    Tuple = {change, Ref, Attrs},
+    tell_front_end1(Tuple).
+tell_front_end_delete(Ref) ->
+    tell_front_end1({delete, Ref}).
+
+tell_front_end1(Tuple) ->
     List = get('front_end_notify'),
     put('front_end_notify', [Tuple | List]),
     ok.

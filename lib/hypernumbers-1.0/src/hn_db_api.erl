@@ -351,6 +351,7 @@ write_attributes(List) ->
     write_attributes(List, nil, nil).
 write_attributes(List, PAr, VAr) ->
     Fun = fun() ->
+                  ok = init_front_end_notify(),
                   [ok = write_attributes1(RefX, L, PAr, VAr) 
                    || {RefX, L} <- List],
                   ok
@@ -909,7 +910,6 @@ write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
     ok;
 write_attributes1(RefX, List, PAr, VAr) 
   when is_record(RefX, refX), is_list(List) ->
-    ok = init_front_end_notify(),
     hn_db_wu:write_attrs(RefX, List, PAr),
     case lists:keymember("formula", 1, List) of
        true  -> ok = hn_db_wu:mark_children_dirty(RefX, VAr);
@@ -938,15 +938,12 @@ tell_front_end("move", RefX) ->
 
 tell_front_end(_FnName) ->
     List = lists:reverse(get('front_end_notify')),
-    Fun = fun({{Key, "__"++_V}, _A, _B}) when is_record(Key, refX) -> ok;
-             ({{Key, V}, A, change}) when is_record(Key, refX) -> 
-                  #refX{site = S1, path = P1, obj = Rf} = Key,
-                  remoting_reg:notify_change(S1, P1, Rf, V, A);
-             ({{Key, V}, A, delete}) when is_record(Key, refX) -> 
-                  #refX{site = S1, path = P1, obj = Rf} = Key,
-                  remoting_reg:notify_delete(S1, P1, Rf, V, A);             
-             ({{S, P}, A, B}) ->
-                  remoting_reg:notify_style(S, P, A, B)
+    Fun = fun({change, #refX{site=S, path=P, obj=O}, Attrs}) ->
+                  remoting_reg:notify_change(S, P, O, Attrs);
+             ({delete, #refX{site=S, path=P, obj=O}}) ->
+                  remoting_reg:notify_delete(S, P, O);
+             ({style, #refX{site=S, path=P}, Idx, Style}) ->
+                  remoting_reg:notify_style(S, P, Idx, Style)
           end,
     [ok = Fun(X) || X <- List],
     ok.

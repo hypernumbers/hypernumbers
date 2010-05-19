@@ -12,7 +12,7 @@
 -export([start_link/1, init/1, handle_call/3, handle_cast/2, 
     handle_info/2, terminate/2, code_change/3]).
 
--export([ notify_change/5, notify_delete/5, notify_style/4, notify_error/5, 
+-export([ notify_change/4, notify_delete/3, notify_style/4, notify_error/5, 
           request_update/4, notify_refresh/2, timestamp/0 ]).
 
 %%
@@ -67,21 +67,19 @@ notify_refresh(Site, Path) ->
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of change to a cell
-notify_change(Site, Path, {RefType, _} = R, Name, Value) ->
-    {Name2, Val2} = hn_util:jsonify_val({Name, Value}), 
+notify_change(Site, Path, {RefType, _} = R, Attrs) ->
+    Attrs2 = hn_util:jsonify_attrs(Attrs),
     Msg = {struct, [{"type", "change"}, {"reftype", RefType},
                     {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_str(R)}, 
-                    {"name", Name2}, {"value", Val2}]},
+                    {"attrs", {struct, Attrs2}}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
-notify_delete(Site, Path, {RefType, _} = R, Name, Value) ->
-    {Name2, Val2} = hn_util:jsonify_val({Name, Value}), 
+notify_delete(Site, Path, {RefType, _} = R) ->
     Msg = {struct, [{"type", "delete"}, {"reftype", RefType},
                     {"path", hn_util:list_to_path(Path)},
-                    {"ref", hn_util:obj_to_str(R)}, 
-                    {"name", Name2}, {"value", Val2}]},
+                    {"ref", hn_util:obj_to_str(R)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
@@ -170,9 +168,9 @@ expire_updates(Old) ->
 -define(SITE, "http://example.org:9000").
 
 run_changes() ->
-    notify_change(?SITE, [], {cell, {1,1}}, "value", 99),
-    notify_change(?SITE, ["test"], {cell, {1,1}}, "value", 88),
-    notify_change(?SITE, [], {cell, {1,1}}, "value", 77).
+    notify_change(?SITE, [], {cell, {1,1}}, [{"value", 99}]),
+    notify_change(?SITE, ["test"], {cell, {1,1}}, [{"value", 88}]),
+    notify_change(?SITE, [], {cell, {1,1}}, [{"value", 77}]).
 
 get_changes(Path, Time) ->
     request_update(?SITE, Path, Time, self()),    
