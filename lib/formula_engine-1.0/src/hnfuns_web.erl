@@ -40,11 +40,21 @@
     'google.map'([0]);
 'google.map'([Long]) ->
     'google.map'([Long, 0]);
-'google.map'([_Long, _Lat]) ->
+'google.map'([Long, Lat]) ->
+    'google.map'([Long, Lat, 10]);
+'google.map'([Long, Lat, Zoom]) ->
+    col([Long, Lat, Zoom], [eval_funs, area_first, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun googlemap/1).
+
+googlemap([Lat, Long, Zoom]) ->
+    NLat  = muin_util:cast(Lat, str),
+    NLong = muin_util:cast(Long, str),
+    NZoom = muin_util:cast(Zoom, str),
     "<iframe width='100%' height='100%' frameborder='0' scrolling='no' "
         ++ "marginheight='0' marginwidth='0' src='http://maps.google.com"
-        ++ "/?ie=UTF8&amp;ll=43.707594,-61.083984&amp;spn=25.89694,61.875"
-        ++ "&amp;z=4&amp;output=embed'></iframe>".
+        ++ "/?ie=UTF8&amp;ll=" ++ NLat ++ "," ++ NLong
+        ++ "&amp;z=" ++ NZoom ++ "&amp;output=embed'></iframe>".
 
 form(Items) ->
     [Items2] = ?string([Items], ?default_str_rules),
