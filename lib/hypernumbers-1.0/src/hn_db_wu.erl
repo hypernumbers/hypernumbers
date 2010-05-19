@@ -880,10 +880,7 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
   when (Type == insert orelse Type == delete) andalso 
        (Disp == vertical orelse Disp == horizontal) ->
     {XO, YO} = hn_util:get_offset(Type, Disp, Obj),
-    RefXSel = case Type of
-                  insert -> insert_shift(From, -1, Disp);
-                  delete -> insert_shift(From, 0, Disp)
-              end,
+    RefXSel = insert_shift(From, Disp),
     ObjsList = read_objs(RefXSel),
     case ObjsList of
         [] -> [];
@@ -1415,19 +1412,19 @@ delete_recs1(Site, Rec) ->
     Table = trans(Site, element(1, Rec)),
     mnesia:delete_object(Table, Rec, write).
 
-insert_shift(#refX{obj = {cell, {_X, Y}}} = RefX, Off, vertical) ->
-    RefX#refX{obj = {row, {Y+Off, infinity}}};
-insert_shift(#refX{obj = {cell, {X, _Y}}} = RefX, Off, horizontal) ->
-    RefX#refX{obj = {column, {X+Off, infinity}}};
-insert_shift(#refX{obj = {range, {_X1, Y1, _X2, _Y2}}} = RefX, Off, vertical) ->
-    RefX#refX{obj = {row, {Y1+Off, infinity}}};
-insert_shift(#refX{obj = {range, {X1, _Y1, _X2, _Y2}}} = RefX, Off, horizontal) ->
-    RefX#refX{obj = {column, {X1+Off, infinity}}};
-insert_shift(#refX{obj = {row, {Y1, _Y2}}} = RefX, Off, vertical) ->
-    RefX#refX{obj = {row, {Y1+Off, infinity}}};
-insert_shift(#refX{obj = {column, {X1, _X2}}} = RefX, Off, horizontal) ->
-    RefX#refX{obj = {column, {X1+Off, infinity}}};
-insert_shift(RefX, _Off, _Disp) -> RefX.
+insert_shift(#refX{obj = {cell, {_X, Y}}} = RefX, vertical) ->
+    RefX#refX{obj = {row, {Y, infinity}}};
+insert_shift(#refX{obj = {cell, {X, _Y}}} = RefX, horizontal) ->
+    RefX#refX{obj = {column, {X, infinity}}};
+insert_shift(#refX{obj = {range, {X1, Y1, X2, _Y2}}} = RefX, vertical) ->
+    RefX#refX{obj = {range, {X1, Y1, X2, infinity}}};
+insert_shift(#refX{obj = {range, {X1, Y1, _X2, Y2}}} = RefX, horizontal) ->
+    RefX#refX{obj = {range, {X1, Y1, infinity, Y2}}};
+insert_shift(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
+    RefX#refX{obj = {row, {Y1, infinity}}};
+insert_shift(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
+    RefX#refX{obj = {column, {X1, infinity}}};
+insert_shift(RefX, _Disp) -> RefX.
 
 local_idx_to_refX(S, Idx) ->
     case mnesia:index_read(trans(S, local_objs), Idx, idx) of
