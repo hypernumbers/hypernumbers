@@ -6,6 +6,7 @@
          wrap_page/3, wrap_region/3]).
 
 -include("spriki.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 -define(DEFAULT_WIDTH, 80).
 -define(DEFAULT_HEIGHT, 22).
@@ -17,7 +18,7 @@
 -type textdata() :: string() | [textdata()].
 
 -record(rec, {maxwidth = 0,
-              lastmax_merge_h = 0,
+              maxmerge_height = 0,
               colwidths = [],
               palette = [],
               startcol}).
@@ -56,7 +57,7 @@ layout(Ref, Cells, CWs, RHs, Palette) ->
                     
 %% End of input
 layout([], _Col, _Row, PX, PY, H, _CWs, _RHs, Rec, Acc) ->
-    TotalHeight = PY + max(H, Rec#rec.lastmax_merge_h),
+    TotalHeight = max(PY + H, Rec#rec.maxmerge_height),
     TotalWidth = max(PX, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth, TotalHeight};
 
@@ -72,8 +73,8 @@ layout([{{C,R}, L}|T], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
         {struct, [{"right", Right}, {"down", Down}]} ->
             {MW,CWs3} = width_across(C+1, C+Right, CWs2, W),
             MH = height_below(R+1, R+Down, RHs, H),
-            Rec2 = Rec#rec{lastmax_merge_h = 
-                               max(Rec#rec.lastmax_merge_h, MH)},
+            Rec2 = Rec#rec{maxmerge_height =
+                               max(Rec#rec.maxmerge_height, MH + PY)},
             Acc2 = [draw(Value, Css, PX, PY, MW, MH) | Acc],
             T2 = expunge(T, {C,C+Right,R,R+Down}),
             layout(T2, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
@@ -91,8 +92,7 @@ layout(Lst, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
     Col2 = Rec#rec.startcol,
     Row2 = Row + 1,
     {H2,RHs2} = row_height(Row2, RHs),
-    Rec2 = Rec#rec{maxwidth = max(Rec#rec.maxwidth, PX), 
-                   lastmax_merge_h = 0},
+    Rec2 = Rec#rec{maxwidth = max(Rec#rec.maxwidth, PX)},
     layout(Lst, Col2, Row2, PX2, PY2, H2, 
            Rec#rec.colwidths, RHs2, Rec2, Acc).
 
@@ -249,3 +249,78 @@ wrap_region(Content, Width, Height) ->
     ["<div class='hn_inner' ", OuterStyle, ">",
      Content,
      "</div>"].
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Tests
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+simple_test() ->
+    Ref = #refX{site="http://hypernumbers.dev:9000",
+                path=["web"],
+                obj={page,"/"}},
+    Cells = [{{1,1},[{"style",1},{"value","1"}]},
+             {{7,1},[{"style",1},{"value","2"}]},
+             {{7,2},[{"style",1},{"value","3"}]}],
+    ColWs = [],
+    RowHs = [],
+    Palette = array:new(),
+    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    ?_assertEqual({560, 44}, {W, H}).
+
+col_rows_test_() ->
+    Ref = #refX{site="http://hypernumbers.dev:9000",
+                path=["web"],
+                obj={page,"/"}},
+    Cells = [{{1,1},[{"style",1},{"value","1"}]},
+             {{7,1},[{"style",1},{"value","2"}]},
+             {{7,2},[{"style",1},{"value","3"}]},
+             {{5,3},[{"style",1},{"value","4"}]}],
+    ColWs = [{6, 30}, {7, 150}],
+    RowHs = [{1, 40}, {3, 10}],
+    Palette = array:new(),
+    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    ?_assertEqual({580, 72}, {W, H}).
+
+merged_col_test_() ->
+    Ref = #refX{site="http://hypernumbers.dev:9000",
+                path=["web"],
+                obj={page,"/"}},
+    Cells = [{{1,1}, 
+              [{"merge",{struct,[{"right",3},{"down",0}]}},
+               {"style",1},{"value","1"}]},
+             {{7,1},
+              [{"value","rightmost"},
+               {"merge",{struct,[{"right",1},{"down",0}]}},
+               {"style",1}]},
+             {{1,2},[{"style",1},{"value","0"}]},
+             {{7,2},[{"style",1},{"value","3"}]},
+             {{4,3},
+              [{"merge",{struct,[{"right",1},{"down",0}]}}]}],
+    ColWs = [],
+    RowHs = [],
+    Palette = array:new(),
+    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    ?_assertEqual({640, 66}, {W, H}).
+
+merged_row_test_() ->
+    Ref = #refX{site="http://hypernumbers.dev:9000",
+                path=["web"],
+                obj={page,"/"}},
+    Cells = [{{1,1},[{"value","1"},{"style",1}]},
+             {{6,1},
+              [{"value","goes to 15"},
+               {"style",1},
+               {"merge",{struct,[{"right",0},{"down",14}]}}]},
+             {{1,2},[{"merge",{struct,[{"right",0},{"down",3}]}}]},
+             {{1,9},[{"value","last row (9)"},{"style",2}]}],
+    ColWs = [],
+    RowHs = [],
+    Palette = array:new(),
+    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    ?_assertEqual({480, 330}, {W, H}).
+
+
+
+
+
