@@ -344,8 +344,8 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
     end;
 
 iget(Ref, page, #qry{view = "_g/core/webpage"}, Env=#env{accept = html}) ->
-    {Html, Width} = hn_render:content(Ref),
-    Page = hn_render:wrap_page(Html, Width),
+    {Html, Width, Height} = hn_render:content(Ref),
+    Page = hn_render:wrap_page(Html, Width, Height),
     text_html(Env, Page);
 
 iget(Ref=#refX{site = Site}, page, #qry{view = FName}, Env=#env{accept = html})
@@ -363,8 +363,8 @@ iget(#refX{site = Site, path = Path}, page,
     remoting_request(Env, Site, Paths, Time);
 
 iget(Ref, page, #qry{renderer=[]}, Env) ->
-    {Html, Width} = hn_render:content(Ref),
-    Page = hn_render:wrap_page(Html, Width),
+    {Html, Width, Height} = hn_render:content(Ref),
+    Page = hn_render:wrap_page(Html, Width, Height),
     text_html(Env, Page);
 
 iget(#refX{site = S}, page, #qry{status = []}, Env) -> 
