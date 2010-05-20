@@ -4,6 +4,13 @@
 -compile(export_all).
 -include("ct.hrl").
 
+-record(refX,
+        {
+          site        = [],
+          path        = [],
+          obj         = null
+         }).
+
 -define(print_error_or_return(Res, Testcase),
         case Res of
             true ->
@@ -29,10 +36,7 @@
 init_per_suite(Config) ->
     Site = "http://hypernumbers.dev:9000",
     reset_perms(Site),                  
-    %% TODO : should be configurable
-    %Ref = #refX{site="http://hypernumbers.dev:9000", path=[]},
-    %% TODO : ugh
-    Ref = {refX, Site, [], undefined, []},
+    Ref = #refX{site=Site, path=[]},
     hn_file_upload:test_import("<%= @basename %>", Ref),
     hn_db_api:wait_for_dirty(Site),
     Config.
