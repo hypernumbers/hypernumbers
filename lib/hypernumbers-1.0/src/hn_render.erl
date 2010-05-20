@@ -3,9 +3,10 @@
 -module(hn_render).
 
 -export([content/1, 
-         wrap_page/2, wrap_region/2]).
+         wrap_page/3, wrap_region/3]).
 
 -include("spriki.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 -define(DEFAULT_WIDTH, 80).
 -define(DEFAULT_HEIGHT, 22).
@@ -17,13 +18,14 @@
 -type textdata() :: string() | [textdata()].
 
 -record(rec, {maxwidth = 0,
+              maxmerge_height = 0,
               colwidths = [],
               palette = [],
               startcol}).
                  
 %% Returns a tuple containing the rendered html for the area covered
 %% by the given Ref, along with the width of said html.
--spec content(#refX{}) -> {[textdata()], integer()}.
+-spec content(#refX{}) -> {[textdata()], integer(), integer()}.
 content(Ref) ->
     Data = lists:sort(fun order_objs/2, hn_db_api:read_ref(Ref)),
     Cells = coalesce([{{X,Y},P} || {#refX{obj={cell,{X,Y}}},P} <- Data]),
@@ -38,7 +40,7 @@ content(Ref) ->
     layout(Ref, Cells, ColWs, RowHs, Palette).
 
 -spec layout(#refX{}, cells(), cols(), rows(), array()) 
-            -> {[textdata()], integer()}.
+            -> {[textdata()], integer(), integer()}.
 layout(Ref, Cells, CWs, RHs, Palette) ->
     PX = 0,
     PY = 0,
@@ -51,12 +53,13 @@ layout(Ref, Cells, CWs, RHs, Palette) ->
 -spec layout(cells(), 
              integer(), integer(), integer(), integer(), integer(), 
              cols(), rows(), #rec{}, [textdata()])
-            -> {[textdata()],integer()}.
+            -> {[textdata()],integer(), integer()}.
                     
 %% End of input
-layout([], _Col, _Row, PX, _PY, _H, _CWs, _RHs, Rec, Acc) ->
+layout([], _Col, _Row, PX, PY, H, _CWs, _RHs, Rec, Acc) ->
+    TotalHeight = max(PY + H, Rec#rec.maxmerge_height),
     TotalWidth = max(PX, Rec#rec.maxwidth),
-    {lists:reverse(Acc), TotalWidth};
+    {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 %% Output the next cell value in the current row.
 layout([{{C,R}, L}|T], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
@@ -66,15 +69,15 @@ layout([{{C,R}, L}|T], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     case pget("merge", L) of
         undefined ->
             Acc2 = [draw(Value, Css, PX, PY, W, H) | Acc],
-            PX2 = PX + W,
-            layout(T, C+1, R, PX2, PY, H, CWs2, RHs, Rec, Acc2);
+            layout(T, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc2);
         {struct, [{"right", Right}, {"down", Down}]} ->
             {MW,CWs3} = width_across(C+1, C+Right, CWs2, W),
             MH = height_below(R+1, R+Down, RHs, H),
+            Rec2 = Rec#rec{maxmerge_height =
+                               max(Rec#rec.maxmerge_height, MH + PY)},
             Acc2 = [draw(Value, Css, PX, PY, MW, MH) | Acc],
-            PX2 = PX + MW,
             T2 = expunge(T, {C,C+Right,R,R+Down}),
-            layout(T2, C+Right+1, R, PX2, PY, H, CWs3, RHs, Rec, Acc2)
+            layout(T2, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
     end;
 
 %% No cell for this column, but still haven't changed rows.
@@ -196,9 +199,10 @@ startrow(_)                            -> 1.
     
 pget(K,L) -> proplists:get_value(K,L,undefined).
 
--spec wrap_page([textdata()], integer()) -> [textdata()]. 
-wrap_page(Content, TotalWidth) -> 
-    OuterStyle = io_lib:format("style='width:~bpx'", [TotalWidth]),
+-spec wrap_page([textdata()], integer(), integer()) -> [textdata()]. 
+wrap_page(Content, TotalWidth, TotalHeight) -> 
+    OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
+                               [TotalWidth, TotalHeight]),
     ["<!DOCTYPE html>
 <html lang='en'>
          <head>
@@ -238,9 +242,85 @@ wrap_page(Content, TotalWidth) ->
   <script src='/hypernumbers/hn.renderpage.js'></script>
   </html>"].
 
--spec wrap_region([textdata()], integer()) -> [textdata()]. 
-wrap_region(Content, Width) -> 
-    OuterStyle = io_lib:format("style='width:~bpx'", [Width]),
+-spec wrap_region([textdata()], integer(), integer()) -> [textdata()]. 
+wrap_region(Content, Width, Height) -> 
+    OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
+                               [Width, Height]),
     ["<div class='hn_inner' ", OuterStyle, ">",
      Content,
      "</div>"].
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Tests
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+simple_test() ->
+    Ref = #refX{site="http://hypernumbers.dev:9000",
+                path=["web"],
+                obj={page,"/"}},
+    Cells = [{{1,1},[{"style",1},{"value","1"}]},
+             {{7,1},[{"style",1},{"value","2"}]},
+             {{7,2},[{"style",1},{"value","3"}]}],
+    ColWs = [],
+    RowHs = [],
+    Palette = array:new(),
+    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    ?_assertEqual({560, 44}, {W, H}).
+
+col_rows_test_() ->
+    Ref = #refX{site="http://hypernumbers.dev:9000",
+                path=["web"],
+                obj={page,"/"}},
+    Cells = [{{1,1},[{"style",1},{"value","1"}]},
+             {{7,1},[{"style",1},{"value","2"}]},
+             {{7,2},[{"style",1},{"value","3"}]},
+             {{5,3},[{"style",1},{"value","4"}]}],
+    ColWs = [{6, 30}, {7, 150}],
+    RowHs = [{1, 40}, {3, 10}],
+    Palette = array:new(),
+    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    ?_assertEqual({580, 72}, {W, H}).
+
+merged_col_test_() ->
+    Ref = #refX{site="http://hypernumbers.dev:9000",
+                path=["web"],
+                obj={page,"/"}},
+    Cells = [{{1,1}, 
+              [{"merge",{struct,[{"right",3},{"down",0}]}},
+               {"style",1},{"value","1"}]},
+             {{7,1},
+              [{"value","rightmost"},
+               {"merge",{struct,[{"right",1},{"down",0}]}},
+               {"style",1}]},
+             {{1,2},[{"style",1},{"value","0"}]},
+             {{7,2},[{"style",1},{"value","3"}]},
+             {{4,3},
+              [{"merge",{struct,[{"right",1},{"down",0}]}}]}],
+    ColWs = [],
+    RowHs = [],
+    Palette = array:new(),
+    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    ?_assertEqual({640, 66}, {W, H}).
+
+merged_row_test_() ->
+    Ref = #refX{site="http://hypernumbers.dev:9000",
+                path=["web"],
+                obj={page,"/"}},
+    Cells = [{{1,1},[{"value","1"},{"style",1}]},
+             {{6,1},
+              [{"value","goes to 15"},
+               {"style",1},
+               {"merge",{struct,[{"right",0},{"down",14}]}}]},
+             {{1,2},[{"merge",{struct,[{"right",0},{"down",3}]}}]},
+             {{1,9},[{"value","last row (9)"},{"style",2}]}],
+    ColWs = [],
+    RowHs = [],
+    Palette = array:new(),
+    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    ?_assertEqual({480, 330}, {W, H}).
+
+
+
+
+
