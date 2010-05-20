@@ -21,6 +21,12 @@ init([]) ->
 
     SiteMaster = {sitemaster_sup, {sitemaster_sup, start_link, []},
                   permanent, infinity, supervisor, [sitemaster_sup]},
-    
-    {ok,{{one_for_one, 60, 1}, [ Service, Status, SiteMaster ]}}.
 
+    Mochi = {mochi_srv, {hn_mochi, start, []},
+             permanent, 3000, worker, dynamic},
+
+    {ok,{{one_for_one, 60, 1}, [ Service, 
+                                 Status, 
+                                 SiteMaster,
+                                 Mochi
+                               ]}}.
