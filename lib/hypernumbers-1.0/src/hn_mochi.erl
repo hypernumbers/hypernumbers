@@ -405,15 +405,12 @@ iget(Ref, Type, _Qry, Env=#env{accept=json})
     json(Env, {struct, dict_to_struct(Dict)});
 
 %% Format requests without trailing slash
-iget(#refX{path=Path, obj={name, Name}}, name, _Qry, Env=#env{accept=html}) ->
-    NPath = hn_util:list_to_path([Name | Path]), 
+iget(_Ref, Type, _Qry, Env=#env{accept=html, mochi=Mochi})
+  when Type =:= cell; Type =:= name ->
+    NPath = Mochi:get(path) ++ "/", 
     E2 = Env#env{headers = [{"location", NPath}|Env#env.headers]},
     respond(303, E2);
     
-iget(#refX{site = Site}, cell, _Qry, Env=#env{accept=html}) ->
-    HTML = [viewroot(Site), "/", "_g/core/cell.html"],
-    serve_html(Env, HTML);
-
 iget(Ref, _Type, Qry, Env) ->
     error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Qry]),
     '404'(Ref, Env).
