@@ -163,10 +163,19 @@ expire_updates(Old) ->
 %%
 %% Tests
 %%
-
 -include_lib("eunit/include/eunit.hrl").
--define(SITE, "http://example.org:9000").
+-define(SITE, "http://example.com:1234").
 
+unit_test_() ->
+    %% linked pid will die when test ends
+    Setup = fun() -> ?MODULE:start_link(?SITE) end,
+    Cleanup = fun(_) -> ok end,
+    {setup, Setup, Cleanup,
+     [fun test_basic_update/0,
+      fun test_multiple_update/0,
+      fun test_basic_waiting/0,
+      fun test_multiple_waiting/0]}.
+    
 run_changes() ->
     notify_change(?SITE, [], {cell, {1,1}}, [{"value", 99}]),
     notify_change(?SITE, ["test"], {cell, {1,1}}, [{"value", 88}]),
@@ -181,25 +190,25 @@ get_changes(Path, Time) ->
         1000 -> {null, []}
     end.
 
-basic_update_test() ->
+test_basic_update() ->
     Time = timestamp(),
     run_changes(),
     {_, Msgs} = get_changes([[]], Time),
     ?assertEqual(2, length(Msgs)).
 
-multiple_update_test() ->
+test_multiple_update() ->
     Time = timestamp(),
     run_changes(),
     {_, Msgs} = get_changes([[], ["test"]], Time),
     ?assertEqual(3, length(Msgs)). 
 
-basic_waiting_test() ->
+test_basic_waiting() ->
     spawn( fun() -> timer:sleep(100), run_changes() end ), 
     {Time, Changes1} = get_changes([[]], timestamp()),
     {_, Changes2} = get_changes([[]], Time),
     ?assertEqual(2, length(Changes1) + length(Changes2)).
 
-multiple_waiting_test() ->
+test_multiple_waiting() ->
     spawn( fun() -> timer:sleep(100), run_changes() end ), 
     {Time, Changes1} = get_changes([[], ["test"]], timestamp()),
     {_, Changes2} = get_changes([[], ["test"]], Time),
