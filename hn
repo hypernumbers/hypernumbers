@@ -34,10 +34,11 @@ dispatch(["build"]) -> build(),
 dispatch(["quick"]) -> build_quick(),
                        remote_do(hotswap);
 
-dispatch(["migrate"]) -> build(),
+dispatch(["migrate"]) -> clean(),
+                         build(),
                          remote_do(migrate);
 
-dispatch(["clean"]) -> remote_do(clean);
+dispatch(["clean"]) -> clean();
 
 dispatch(["start" | Args]) -> start(Args);
 dispatch(["stop" | Node]) -> stop(Node);
@@ -86,6 +87,12 @@ build_quick() ->
     file:set_cwd(Root++"/ebin"),
     compile_code:quick(),
     file:set_cwd(Root).
+
+clean() ->
+    Files = filelib:wildcard("lib/*/ebin/*.beam") ++ 
+        filelib:wildcard("ebin/*.beam"),
+    [file:delete(F) || F <- Files],
+    ok.
 
 start(Extra) ->
     

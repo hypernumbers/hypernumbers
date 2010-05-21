@@ -2,19 +2,12 @@
 
 -export([do/1, migrate/1]).
 
-do(clean)   -> clean();
 do(refresh) -> refresh();
 do(hotswap) -> refresh(), hotswap();
 do(restart) -> refresh(), hotswap(), restart();
 do(migrate) -> migrate();
 do(Other)   -> io:format("I don't know how to '~s'", [Other]).
 
-%% Removes all beam files.
-clean() ->
-    Files = filelib:wildcard("lib/*/ebin/*.beam") ++ 
-        filelib:wildcard("ebin/*.beam"),
-    [file:delete(F) || F <- Files],
-    ok.
 
 %% Updates which cannot crash the system.
 -spec refresh() -> ok. 
