@@ -8,7 +8,7 @@
 %%% Created : 18 Dec 2009 by Gordon Guthrie gordon@hypernumbers.com
 %%%
 %%%-------------------------------------------------------------------
--module(server_mgt).
+-module(hn_archive).
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
@@ -57,7 +57,6 @@ export_services(Dest) ->
 
 export_site(Dest, Site) ->
     filelib:ensure_dir([Dest,"/"]),
-    ok = dump_type(Site, Dest),
     ok = dump_etf(Site, Dest),
     ok = dump_mnesia(Site, Dest),
     ok = dump_groups(Site, Dest),
@@ -67,12 +66,6 @@ export_site(Dest, Site) ->
 dump_users(Dest) ->
     Users = passport:dump_script(),
     ok = file:write_file(filename:join(Dest, "users.export"), Users).
-    
-dump_type(Site, SiteDest) ->
-    Type = hn_setup:get_site_type(Site),
-    {ok, F} = file:open(join([SiteDest, "type"]), [write]),
-    io:format(F, "~p.", [Type]),
-    file:close(F).
 
 dump_etf(Site, SiteDest) -> 
     EtfDest = filename:join(SiteDest, "etf"),
@@ -133,8 +126,7 @@ import_services(ServSrc) ->
 
 import_site(Src, Site) ->       
     SiteSrc = join([Src, hn_util:site_to_fs(Site)]),
-    Type    = load_type(SiteSrc),
-    hn_setup:site(Site, Type, [], [corefiles, sitefiles]),
+    hn_setup:site(Site, blank, [], [corefiles, sitefiles]),
     ok = load_etf(Site, SiteSrc),
     ok = load_groups(Site, SiteSrc),
     ok = load_views(Site, SiteSrc),
@@ -143,10 +135,6 @@ import_site(Src, Site) ->
 load_users(Src) ->
     {ok, UserTs} = file:consult(filename:join(Src, "users.export")),
     ok = passport:load_script(UserTs).
-
-load_type(SiteSrc) ->
-    {ok, [Type]} = file:consult(join([SiteSrc, "type"])),
-    Type.
 
 load_etf(Site, SiteSrc) ->    
     Files = filelib:wildcard(join([SiteSrc, "etf"])++"/*.json"),
