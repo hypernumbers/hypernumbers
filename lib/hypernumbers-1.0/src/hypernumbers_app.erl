@@ -20,7 +20,6 @@ start(_Type, _Args) ->
              {ok,production}  -> production_tasks()
          end,
     ok = mochilog:start(),
-    ok = start_mochiweb(),
     {ok, Pid}.
 
 %% @spec stop(State) -> ok
@@ -65,22 +64,6 @@ build_schema() ->
     ok = mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
     ok = application:start(mnesia).
-
-%% @spec start_mochiweb() -> ok
-%% @doc  Start mochiweb http servers
-start_mochiweb() ->
-    {ok, Hs} = application:get_env(hypernumbers, hosts),
-    [ok = start_mochi_instance(H) || H <- Hs],
-    ok.
-
-start_mochi_instance({IP, Port}) ->
-    StrIp = inet_parse:ntoa(IP),
-    Opts = [{port, Port}, 
-            {ip,   StrIp},
-            {name, StrIp ++ "&" ++ integer_to_list(Port)},
-            {loop, {hn_mochi, handle}}],
-    {ok, _Pid} = mochiweb_http:start(Opts),
-    ok.
 
 dev_tasks() ->
     application:set_env(hypernumbers, sync_url, 

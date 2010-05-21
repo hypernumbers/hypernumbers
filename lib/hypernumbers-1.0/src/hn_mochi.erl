@@ -10,6 +10,8 @@
 -include("auth.hrl").
 -include("hn_mochi.hrl").
 
+-export([ start/0]).
+
 -export([ handle/1,
           styles_to_css/2,
           style_to_css/2,
@@ -21,6 +23,18 @@
 -define(SHEETVIEW, "_g/core/spreadsheet").
 
 -include("util.hrl").
+
+
+-spec start() -> {ok, pid()}. 
+start() ->
+    {ok, {Ip, Port}} = application:get_env(hypernumbers, mochi_bind),
+    StrIp = inet_parse:ntoa(Ip),
+    Opts = [{port, Port}, 
+            {ip, StrIp},
+            {name, ?MODULE},
+            {loop, {hn_mochi, handle}}],
+    mochiweb_http:start(Opts).
+
 
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
