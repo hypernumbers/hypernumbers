@@ -110,7 +110,6 @@ code_change_otp(Mod) ->
 -spec needs_reload(atom(), string()) -> boolean().
 needs_reload(Mod, Path) ->
     CurrV = mod_version(Mod),
-    io:format("~p : ~p : ~p~n", [Mod, Path, CurrV]),
     case beam_lib:version(Path) of
         {ok, {Mod, [CurrV]}} -> false;
         _Else                -> true
