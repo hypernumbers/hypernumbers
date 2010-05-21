@@ -28,18 +28,22 @@ main(Args) ->
     end,
     net_kernel:stop().
 
-dispatch(["build"]) -> build(), 
-                       remote_do(hotswap);
+dispatch(["build"]) -> 
+    build(), 
+    remote_do(hotswap);
 
-dispatch(["quick"]) -> build_quick(),
-                       remote_do(hotswap);
+dispatch(["quick"]) -> 
+    build_quick(),
+    remote_do(hotswap);
 
-dispatch(["migrate"]) -> clean(),
-                         build(),
-                         remote_do(migrate);
+dispatch(["migrate"]) -> 
+    %% Force any unloaded modules to be loaded, BEFORE any compilation.
+    remote_do(hotswap),
+    clean(),
+    build(),
+    remote_do(migrate);
 
 dispatch(["clean"]) -> clean();
-
 dispatch(["start" | Args]) -> start(Args);
 dispatch(["stop" | Node]) -> stop(Node);
 dispatch(["call" | Args]) -> call(Args);
