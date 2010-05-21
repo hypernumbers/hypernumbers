@@ -848,9 +848,13 @@ post_process_format(Raw, Attrs) ->
              end,
     {erlang, {_Type, Output}} = format:get_src(Format),
     % Y'all hear, this is how America does color. I tell you what.
-    {ok, {Color, Value}} = format:run_format(Raw, Output),
-    add_attributes(Attrs, [{"value", Value},
-                           {"overwrite-color", atom_to_list(Color)}]).
+    case format:run_format(Raw, Output) of
+        {ok, {Color, Value}} ->
+            add_attributes(Attrs, [{"value", Value},
+                                   {"overwrite-color", atom_to_list(Color)}]);
+        _Else ->
+            Attrs
+    end.
                         
 %% @spec read_inherited_list(#refX{}, Key) -> {ok, Value}
 %% Key = atom()
