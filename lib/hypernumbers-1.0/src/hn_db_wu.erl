@@ -707,12 +707,12 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
     process_attrs(Rest, Ref, AReq, Attrs2).
 
 expand_ref(#refX{site=S}=Ref) -> 
-    [lobj_to_ref(S, LO) || LO <- read_objs(Ref)].
+    [lobj_to_ref(S, LO) || LO <- objs_inside_ref(Ref)].
 
 read_ref(Ref) -> read_ref(Ref, read).
 -spec read_ref(#refX{}, read | write) -> [{#refX{}, ?dict}].
 read_ref(#refX{site=S}=Ref, Lock) ->
-    read_attrs(S, read_objs(Ref), Lock).
+    read_attrs(S, objs_inside_ref(Ref), Lock).
 
 -spec read_ref_field(#refX{}, string(), read|write) 
                     -> [{#refX{}, term()}].
@@ -730,36 +730,50 @@ extract_field([{Ref, Attrs}|T], Field, Acc) ->
                _       -> Acc end,
     extract_field(T, Field, Acc2).    
 
--spec read_objs(#refX{}) -> [#local_objs{}]. 
-read_objs(#refX{site = S, path = P, obj = {page, "/"}}) ->
+-spec objs_inside_ref(#refX{}) -> [#local_objs{}]. 
+objs_inside_ref(#refX{site = S, path = P, obj = {page, "/"}}) ->
     MS = ets:fun2ms(fun(LO=#local_objs{path=MP}) when MP == P -> LO end),
     mnesia:select(trans(S, local_objs), MS);
-read_objs(#refX{site = S, path = P, obj = {column, {X1,X2}}}) ->
+objs_inside_ref(#refX{site = S, path = P, obj = {column, {X1,X2}}}) ->
     MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,_MY}}}) 
                           when MP == P,
                                X1 =< MX, MX =< X2 -> LO
                     end),
     mnesia:select(trans(S, local_objs), MS);
-read_objs(#refX{site = S, path = P, obj = {row, {R1,R2}}}) ->
+objs_inside_ref(#refX{site = S, path = P, obj = {row, {R1,R2}}}) ->
     MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{_MX,MY}}}) 
                           when MP == P,
                                R1 =< MY, MY =< R2 -> LO
                     end),
     mnesia:select(trans(S, local_objs), MS);
-read_objs(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
+objs_inside_ref(#refX{site = S, path = P, obj = {range, {0,Y1,infinity,Y2}}}) ->
     MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
                           when MP == P,
-                               X1 =< MX, MX =< X2, 
-                               Y1 =< MY, MY =< Y2 -> LO; 
-                       (LO=#local_objs{path=MP, obj={column,{MX,MX}}})
-                          when MP == P,
-                               X1 =< MX, MX =< X2 -> LO;
+                               0 =< MX, MX =< infinity, 
+                               Y1 =< MY, MY =< Y2 -> LO;
                        (LO=#local_objs{path=MP, obj={row,{MY,MY}}})
                           when MP == P,
                                Y1 =< MY, MY =< Y2 -> LO
                     end),
     mnesia:select(trans(S, local_objs), MS);
-read_objs(#refX{site = S, path = P, obj = {cell, {X,Y}}}) ->
+objs_inside_ref(#refX{site = S, path = P, obj = {range, {X1,0,X2,infinity}}}) ->
+    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
+                          when MP == P,
+                               X1 =< MX, MX =< X2, 
+                               0 =< MY, MY =< infinity -> LO; 
+                       (LO=#local_objs{path=MP, obj={column,{MX,MX}}})
+                          when MP == P,
+                               X1 =< MX, MX =< X2 -> LO
+                    end),
+    mnesia:select(trans(S, local_objs), MS);
+objs_inside_ref(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
+    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
+                          when MP == P,
+                               X1 =< MX, MX =< X2, 
+                               Y1 =< MY, MY =< Y2 -> LO
+                    end),
+    mnesia:select(trans(S, local_objs), MS);
+objs_inside_ref(#refX{site = S, path = P, obj = {cell, {X,Y}}}) ->
     MS = ets:fun2ms(
            fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}})
                  when MP == P, MX == X, MY == Y -> LO
@@ -791,7 +805,7 @@ expunge_refs(S, Refs) ->
          mnesia:delete(ItemT, Idx, write),
          mnesia:delete_object(ObjT, LO, write)
      end || Ref <- Refs,
-            #local_objs{idx=Idx}=LO <- read_objs(Ref)],
+            #local_objs{idx=Idx}=LO <- objs_inside_ref(Ref)],
     ok.
 
 -spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ok.
@@ -880,12 +894,11 @@ post_process_format(Raw, Attrs) ->
 shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
   when (Type == insert orelse Type == delete) andalso 
        (Disp == vertical orelse Disp == horizontal) ->
-    {XO, YO} = hn_util:get_offset(Type, Disp, Obj),
-    RefXSel = insert_shift(From, Disp),
-    ObjsList = read_objs(RefXSel),
-    case ObjsList of
+    {XOff, YOff} = hn_util:get_offset(Type, Disp, Obj),
+    RefXSel = shift_pattern(From, Disp),
+    case objs_inside_ref(RefXSel) of
         [] -> [];
-        _  ->
+        ObjsList ->
             %% %% Rewrite the formulas of all the child cells
             RefXList = [lobj_to_ref(Site, O) || O <- ObjsList],
             ChildCells = lists:flatten([get_local_children(X) || X <- RefXList]),
@@ -894,10 +907,8 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             Formulas = [F || X <- DedupedChildren,
                              F <- read_ref_field(X, "formula", write)],
             Fun = fun({ChildRef, F1}, Acc) ->
-                          {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XO, YO}),
-                          Op = fun(Attrs) ->
-                                       orddict:store("formula", F2, Attrs)
-                               end,
+                          {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
+                          Op = fun(Attrs) -> orddict:store("formula", F2, Attrs) end,
                           ok = apply_to_attrs(ChildRef, Op),
                           case St of
                               clean -> Acc;
@@ -908,15 +919,24 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             
             %% Rewrite the local_objs entries by applying the shift offset.
             ObjTable = trans(Site, local_objs),
-            Rewrite = fun(#local_objs{obj = {cell, {X, Y}}}=LO1) ->
-                              O2 = {cell, {X + XO, Y + YO}},
-                              LO2 = LO1#local_objs{obj = O2},
-                              mnesia:delete_object(ObjTable, LO1, write),
-                              mnesia:write(ObjTable, LO2, write)
-                      end,
-            [Rewrite(O) || O <- ObjsList],
+            [begin 
+                 mnesia:delete_object(ObjTable, LO, write),
+                 mnesia:write(ObjTable, shift_obj(LO, XOff, YOff), write)
+             end || LO <- ObjsList],
             DirtyChildren
     end.
+
+shift_obj(#local_objs{obj = {cell, {X, Y}}}=LO, XOff, YOff) ->
+    O2 = {cell, {X + XOff, Y + YOff}},
+    LO#local_objs{obj = O2};
+shift_obj(#local_objs{obj = {column, {X1, X2}}}=LO, XOff, _YOff) ->
+    O2 = {column, {X1 + XOff, X2 + XOff}},
+    LO#local_objs{obj = O2};
+shift_obj(#local_objs{obj = {row, {Y1, Y2}}}=LO, _XOff, YOff) ->
+    O2 = {row, {Y1 + YOff, Y2 + YOff}},
+    LO#local_objs{obj = O2};
+shift_obj(LO, _, _) -> LO. 
+
 
 -spec delete_col_objs(#refX{}) -> ok.
 %% @doc deletes any col objects completely covered by the #refX{}
@@ -1066,10 +1086,9 @@ clear_cells(Ref, contents) ->
 %% type message it could be speeded up
 -spec delete_cells(#refX{}) -> [#refX{}].
 delete_cells(#refX{site = S} = DelX) ->
-    Cells = expand_ref(DelX),
-    case Cells of
+    case expand_ref(DelX) of
         [] -> [];
-        _  -> 
+        Cells  ->
             %% update the children that point to the cell that is
             %% being deleted by rewriting the formulae of all the
             %% children cells replacing the reference to this cell
@@ -1413,19 +1432,19 @@ delete_recs1(Site, Rec) ->
     Table = trans(Site, element(1, Rec)),
     mnesia:delete_object(Table, Rec, write).
 
-insert_shift(#refX{obj = {cell, {_X, Y}}} = RefX, vertical) ->
+shift_pattern(#refX{obj = {cell, {_X, Y}}} = RefX, vertical) ->
     RefX#refX{obj = {row, {Y, infinity}}};
-insert_shift(#refX{obj = {cell, {X, _Y}}} = RefX, horizontal) ->
+shift_pattern(#refX{obj = {cell, {X, _Y}}} = RefX, horizontal) ->
     RefX#refX{obj = {column, {X, infinity}}};
-insert_shift(#refX{obj = {range, {X1, Y1, X2, _Y2}}} = RefX, vertical) ->
+shift_pattern(#refX{obj = {range, {X1, Y1, X2, _Y2}}} = RefX, vertical) ->
     RefX#refX{obj = {range, {X1, Y1, X2, infinity}}};
-insert_shift(#refX{obj = {range, {X1, Y1, _X2, Y2}}} = RefX, horizontal) ->
+shift_pattern(#refX{obj = {range, {X1, Y1, _X2, Y2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1, Y1, infinity, Y2}}};
-insert_shift(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
+shift_pattern(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
     RefX#refX{obj = {row, {Y1, infinity}}};
-insert_shift(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
+shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
     RefX#refX{obj = {column, {X1, infinity}}};
-insert_shift(RefX, _Disp) -> RefX.
+shift_pattern(RefX, _Disp) -> RefX.
 
 local_idx_to_refX(S, Idx) ->
     case mnesia:index_read(trans(S, local_objs), Idx, idx) of
