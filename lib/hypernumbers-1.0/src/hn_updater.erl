@@ -1,22 +1,22 @@
 -module(hn_updater).
 
--export([do/1]).
+-export([do/1, migrate/1]).
 
-do(safe)        -> safe();
-do(reload)      -> safe(), reload();
-do(restart)     -> safe(), reload(), restart();
-do(everything)  -> safe(), reload(), restart();
-do(Other)       -> io:format("I don't know how to do '~s'", [Other]).
+do(refresh) -> refresh();
+do(hotswap) -> refresh(), hotswap();
+do(restart) -> refresh(), hotswap(), restart();
+do(migrate) -> migrate();
+do(Other)   -> io:format("I don't know how to '~s'", [Other]).
 
 
 %% Updates which cannot crash the system.
--spec safe() -> ok. 
-safe() -> 
+-spec refresh() -> ok. 
+refresh() -> 
     ok = hn_setup:update().
 
-%% Full hot-swap code reload.
--spec reload() -> ok. 
-reload() ->
+%% Hot-Swaps in the latest code beams.
+-spec hotswap() -> ok. 
+hotswap() ->
     Root   = root(),
     OnDisk = on_disk(Root),
     ok     = unload_deleted(OnDisk, loaded(Root)),
@@ -26,7 +26,26 @@ reload() ->
 -spec restart() -> ok.
 restart() -> init:restart().
 
+-spec migrate() -> ok. 
+migrate() ->
+    Secs = calendar:datetime_to_gregorian_seconds(calendar:universal_time()),
+    migrate(integer_to_list(Secs)).
 
+-spec migrate(string()) -> ok. 
+migrate(SecsS) ->
+    ok = hypernumbers_sup:suspend_mochi(),
+    Dest = "migrate_" ++ SecsS,
+    Sites = hn_setup:get_sites(),
+    hn_archive:export(Dest, Sites),
+    [ok = hn_setup:delete_site(S) || S <- Sites],
+
+    %% Only now, can we reload the new code.
+    do(hotswap),
+
+    %% Don't use specific imports, this way we can resume if interrupted.
+    hn_archive:import(Dest),
+    ok = hypernumbers_sup:resume_mochi().
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  ______          __                                ___             
 %% /\__  _\        /\ \__                            /\_ \            
@@ -91,9 +110,10 @@ code_change_otp(Mod) ->
 -spec needs_reload(atom(), string()) -> boolean().
 needs_reload(Mod, Path) ->
     CurrV = mod_version(Mod),
+    io:format("~p : ~p : ~p~n", [Mod, Path, CurrV]),
     case beam_lib:version(Path) of
         {ok, {Mod, [CurrV]}} -> false;
-        _Else              -> true
+        _Else                -> true
     end.
 
 -spec on_disk(string()) -> dict().

@@ -8,6 +8,7 @@ TAGS
 tags
 var
 ebin
+migrate_*
 lib/*/ebin/*.erl
 lib/hypernumbers*/src/ms_util2.erl
 

@@ -86,7 +86,7 @@ site_exists(Site) ->
         []  -> false
     end.
     
--spec get_sites() -> list().
+-spec get_sites() -> [string()].
 get_sites() -> 
     mnesia:activity(transaction, fun mnesia:all_keys/1, [core_site]).
 
