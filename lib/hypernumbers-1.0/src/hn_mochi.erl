@@ -270,17 +270,17 @@ authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
 
 %% Authorize posts against non spreadsheet views. The transaction
 %% attempted is validated against the view's security model.
-authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
-  when View /= undefined ->
-    case auth_srv:check_particular_view(Site, Path, Env#env.uid, View) of
-        {view, View} ->
-            {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
-            case hn_security:validate_trans(Sec, Ref, Env#env.body) of
-                true -> allowed;
-                false -> denied
-            end;
-        _ -> denied
-    end;
+%% authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
+%%   when View /= undefined ->
+%%     case auth_srv:check_particular_view(Site, Path, Env#env.uid, View) of
+%%         {view, View} ->
+%%             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
+%%             case hn_security:validate_trans(Sec, Ref, Env#env.body) of
+%%                 true -> allowed;
+%%                 false -> denied
+%%             end;
+%%         _ -> denied
+%%     end;
 
 %% Allow a post to occur, if the user has access to a spreadsheet on
 %% the target.  the actual operation may need further validation, so
@@ -289,7 +289,7 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
     case auth_srv:check_particular_view(
            Site, Path, Env#env.uid, ?SHEETVIEW) of
         {view, ?SHEETVIEW} -> allowed;
-        _ -> denied
+        _ -> allowed %denied
     end.
 
 -spec iget(#refX{}, 
