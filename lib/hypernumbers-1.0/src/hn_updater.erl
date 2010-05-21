@@ -1,13 +1,20 @@
 -module(hn_updater).
 
--export([do/1]).
+-export([do/1, migrate/1]).
 
+do(clean)   -> clean();
 do(refresh) -> refresh();
 do(hotswap) -> refresh(), hotswap();
 do(restart) -> refresh(), hotswap(), restart();
 do(migrate) -> migrate();
 do(Other)   -> io:format("I don't know how to '~s'", [Other]).
 
+%% Removes all beam files.
+clean() ->
+    Files = filelib:wildcard("lib/*/ebin/*.beam") ++ 
+        filelib:wildcard("ebin/*.beam"),
+    [file:delete(F) || F <- Files],
+    ok.
 
 %% Updates which cannot crash the system.
 -spec refresh() -> ok. 
@@ -26,15 +33,25 @@ hotswap() ->
 -spec restart() -> ok.
 restart() -> init:restart().
 
+-spec migrate() -> ok. 
 migrate() ->
-    ok = hypernumbers_sup:suspend_mochi(),
     Secs = calendar:datetime_to_gregorian_seconds(calendar:universal_time()),
-    Dest = "migrate_" ++ integer_to_list(Secs),
+    migrate(integer_to_list(Secs)).
+
+-spec migrate(string()) -> ok. 
+migrate(SecsS) ->
+    ok = hypernumbers_sup:suspend_mochi(),
+    Dest = "migrate_" ++ SecsS,
     Sites = hn_setup:get_sites(),
     hn_archive:export(Dest, Sites),
     [ok = hn_setup:delete_site(S) || S <- Sites],
+
+    %% Only now, can we reload the new code.
+    do(clean),
     do(hotswap),
-    hn_archive:import(Dest, Sites),
+
+    %% Don't use specific imports, this way we can resume if interrupted.
+    hn_archive:import(Dest),
     ok = hypernumbers_sup:resume_mochi().
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
