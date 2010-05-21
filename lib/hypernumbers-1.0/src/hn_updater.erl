@@ -40,7 +40,6 @@ migrate(SecsS) ->
     [ok = hn_setup:delete_site(S) || S <- Sites],
 
     %% Only now, can we reload the new code.
-    do(clean),
     do(hotswap),
 
     %% Don't use specific imports, this way we can resume if interrupted.
@@ -113,7 +112,7 @@ needs_reload(Mod, Path) ->
     CurrV = mod_version(Mod),
     case beam_lib:version(Path) of
         {ok, {Mod, [CurrV]}} -> false;
-        _Else              -> true
+        _Else                -> true
     end.
 
 -spec on_disk(string()) -> dict().
