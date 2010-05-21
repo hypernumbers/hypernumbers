@@ -2,21 +2,21 @@
 
 -export([do/1]).
 
-do(safe)        -> safe();
-do(reload)      -> safe(), reload();
-do(restart)     -> safe(), reload(), restart();
-do(everything)  -> safe(), reload(), restart();
-do(Other)       -> io:format("I don't know how to do '~s'", [Other]).
+do(refresh) -> refresh();
+do(hotswap) -> refresh(), hotswap();
+do(restart) -> refresh(), hotswap(), restart();
+do(migrate) -> migrate();
+do(Other)   -> io:format("I don't know how to '~s'", [Other]).
 
 
 %% Updates which cannot crash the system.
--spec safe() -> ok. 
-safe() -> 
+-spec refresh() -> ok. 
+refresh() -> 
     ok = hn_setup:update().
 
-%% Full hot-swap code reload.
--spec reload() -> ok. 
-reload() ->
+%% Hot-Swaps in the latest code beams.
+-spec hotswap() -> ok. 
+hotswap() ->
     Root   = root(),
     OnDisk = on_disk(Root),
     ok     = unload_deleted(OnDisk, loaded(Root)),
@@ -26,7 +26,17 @@ reload() ->
 -spec restart() -> ok.
 restart() -> init:restart().
 
-
+migrate() ->
+    ok = hypernumbers_sup:suspend_mochi(),
+    Secs = calendar:datetime_to_gregorian_seconds(calendar:universal_time()),
+    Dest = "migrate_" ++ integer_to_list(Secs),
+    Sites = hn_setup:get_sites(),
+    hn_archive:export(Dest, Sites),
+    [ok = hn_setup:delete_site(S) || S <- Sites],
+    do(hotswap),
+    hn_archive:import(Dest, Sites),
+    ok = hypernumbers_sup:resume_mochi().
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  ______          __                                ___             
 %% /\__  _\        /\ \__                            /\_ \            
