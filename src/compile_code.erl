@@ -17,8 +17,8 @@
          "/lib/hypernumbers-1.0/",
          "/lib/formula_engine-1.0/",
          "/lib/introspection-1.0/",
-         "/lib/read_excel-1.0/",
-         "/lib/sitemods/"]).
+         "/lib/read_excel-1.0/"
+        ]).
 
 start() ->
     build_standard(),
@@ -39,7 +39,6 @@ build_standard() ->
                 {i, Dir ++ "lib/read_excel-1.0/include"},
                 {i, Dir ++ "lib/hypernumbers-1.0/include"},
                 {i, Dir ++ "lib/hypernumbers-1.0/src"},
-                {i, Dir ++ "lib/sitemods/include"},
                 {i, code:lib_dir(xmerl)++"/include"}],
 
     % List of {ErlangFile, OutputDirectory} tuples.
