@@ -846,13 +846,17 @@ post_process_format(Raw, Attrs) ->
                  {ok, F} -> F;
                  _       -> "General"
              end,
-    {erlang, {_Type, Output}} = format:get_src(Format),
-    % Y'all hear, this is how America does color. I tell you what.
-    case format:run_format(Raw, Output) of
-        {ok, {Color, Value}} ->
-            add_attributes(Attrs, [{"value", Value},
-                                   {"overwrite-color", atom_to_list(Color)}]);
-        _Else ->
+    case format:get_src(Format) of
+        {erlang, {_Type, Output}} ->
+            %% Y'all hear, this is how America does color. I tell you what.
+            case format:run_format(Raw, Output) of
+                {ok, {Color, Value}} ->
+                    add_attributes(Attrs, [{"value", Value},
+                                           {"overwrite-color", atom_to_list(Color)}]);
+                _ ->
+                    Attrs
+            end;
+        _ ->
             Attrs
     end.
                         
