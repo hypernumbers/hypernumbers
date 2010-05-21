@@ -111,8 +111,8 @@ code_change_otp(Mod) ->
 needs_reload(Mod, Path) ->
     CurrV = mod_version(Mod),
     case beam_lib:version(Path) of
-        {ok, {Mod, [CurrV]}} -> false;
-        _Else                -> true
+        {ok, {Mod, [NewV]}} when NewV /= CurrV -> true;
+        _Else                                  -> false
     end.
 
 -spec on_disk(string()) -> dict().
