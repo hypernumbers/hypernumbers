@@ -4,15 +4,10 @@
    {nodename, hndev},
    {environment, development}, % development | production
    
-   %% Hosts to bind Mochiweb to. 9000 should be used for dev,
+   %% Host to bind Mochiweb to. 9000 should be used for dev,
    %% 9090-9092 reserved for production used, and should be turned off
    %% for testing.
-   {hosts,
-    [{{127,0,0,1}, 9000},
-     {{127,0,0,1}, 9090},
-     {{127,0,0,1}, 9091},
-     {{127,0,0,1}, 9092}
-    ]},
+   {mochi_bind, {{127,0,0,1}, 9000}},
 
    %% Services to start. These are configured by using a parameter of
    %% 'true', note that in a development environment all services will

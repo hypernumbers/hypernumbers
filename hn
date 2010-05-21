@@ -28,14 +28,22 @@ main(Args) ->
     end,
     net_kernel:stop().
 
-dispatch(["build"])         -> build();
-dispatch(["quick"])         -> build_quick();
-dispatch(["clean"])         -> clean();
-dispatch(["start" | Args])  -> start(Args);
-dispatch(["stop" | Node])   -> stop(Node);
-dispatch(["reload" | Node]) -> reload(Node);
-dispatch(["call" | Args])   -> call(Args);
-dispatch(_BadCommand)       -> usage().
+dispatch(["build"]) -> build(), 
+                       remote_do(hotswap);
+
+dispatch(["quick"]) -> build_quick(),
+                       remote_do(hotswap);
+
+dispatch(["migrate"]) -> build(),
+                         remote_do(migrate);
+
+dispatch(["clean"]) -> clean();
+
+dispatch(["start" | Args]) -> start(Args);
+dispatch(["stop" | Node]) -> stop(Node);
+dispatch(["call" | Args]) -> call(Args);
+dispatch(["do", Cmd | Node]) -> remote_do(Cmd, Node);
+dispatch(_BadCommand) -> usage().
     
 build() ->
 
@@ -70,16 +78,14 @@ build() ->
 
     file:set_cwd(Root++"/ebin"),
     compile_code:start(),
-    file:set_cwd(Root),
-    notify_changed().
+    file:set_cwd(Root).
 
 build_quick() ->
     {ok, Root} = file:get_cwd(),
     ensure_config(),
     file:set_cwd(Root++"/ebin"),
     compile_code:quick(),
-    file:set_cwd(Root),
-    notify_changed().
+    file:set_cwd(Root).
 
 clean() ->
     Files = filelib:wildcard("lib/*/ebin/*.beam") ++ 
@@ -97,6 +103,7 @@ start(Extra) ->
         "\"erl -name "++atol(conf_lname())++" -setcookie "++atol(cookie())++" "
         "-config var/sys.config -boot ebin/hypernumbers "
         "-env ERL_MAX_ETS_TABLES 18000 "
+        "+K true +A8 "
         ++ ssl() ++ parse_extra_args(Extra)++"\"",
 
     case os:cmd(Cmd) of
@@ -109,10 +116,6 @@ start(Extra) ->
 stop(Node) ->
     ok = rpc:call(lname(Node), init, stop, []).
 
-reload(Args) ->
-    io:format("Reloading on ~p:~n", [lname(Args)]),
-    ok = rpc:call(lname(Args), hn_updater, do, [reload]).
-
 call([Fun]) ->
     call([lname([]), Fun]);
 call([Node, Fun]) ->
@@ -124,10 +127,17 @@ call([Node, Fun]) ->
     
     io:format("~p~n",[rpc:call(Node, M, F, A)]).
 
-notify_changed() ->
-    case net_adm:ping(conf_lname()) of
-        pong  -> reload([]);
-        _Else -> ok
+remote_do(Cmd) ->
+    remote_do(Cmd, conf_lname()).
+remote_do(Cmd, []) ->
+    remote_do(Cmd, conf_lname());
+remote_do(Cmd, Node) ->
+    case net_adm:ping(Node) of
+        pong  -> 
+             io:format("Send ~s => ~s~n", [Cmd, Node]),
+             ok = rpc:call(Node, hn_updater, do, [Cmd]);
+        _Else -> 
+            ok
     end.
 
 ensure_config() ->    
@@ -200,14 +210,13 @@ ctrl_node() ->
             
 usage() ->
     Usage = "Commands to run hypernumbers are:~n"
-        "  start [erl_args] ~n"
-        "  stop  ~n"
-        "  stop remote@host.com~n"
-        "  reload ~n"
-        "  reload remote@host.com~n"
+        "  start [erl_args]~n"
+        "  stop [remote@host.com]~n"
+        "  do refresh|hotswap|restart|migrate [remote@host.com]~n"
         "~nCommands to build hypernumbers are:~n"
         "  build ~n"
         "  quick ~n"
+        "  migrate ~n",
         "  clean ~n",
     io:format(Usage),
     halt(1).

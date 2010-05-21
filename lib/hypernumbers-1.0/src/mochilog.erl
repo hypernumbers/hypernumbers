@@ -115,6 +115,7 @@ mi_entry(Post, _) ->
     Mthd = proplists:get_value(method, Post),
     Peer = proplists:get_value(peer, Post),
     Uid = proplists:get_value(user, Post),
+    Email = proplists:get_value(email, Post),
     Rfr = proplists:get_value(referer, Post),
     UA = proplists:get_value(browser, Post),
     Accept = proplists:get_value(accept, Post),
@@ -126,10 +127,6 @@ mi_entry(Post, _) ->
                     false -> ""
                 end
         end,
-    Email = case passport:uid_to_email(Uid) of
-                {ok, E} -> E;
-                _       -> "unknown"
-            end,
     Format = "~p,~p,~p,~p,~p,~p,~p,~p,~p,~p,~p~n",
     io_lib:format(Format, [Date, Site, Path, S, atol(Mthd),
                            Peer, Email, Uid, Rfr, UA, Accept]).
