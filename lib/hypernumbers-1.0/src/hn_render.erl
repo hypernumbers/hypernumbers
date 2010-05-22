@@ -29,8 +29,10 @@
 content(Ref) ->
     Data = lists:sort(fun order_objs/2, hn_db_api:read_ref(Ref)),
     Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
-    RowHs = [{R, H} || {#refX{obj={row,{R,R}}},[{"height",H}]} <- Data],
-    ColWs = [{C, W} || {#refX{obj={column,{C,C}}},[{"width",W}]} <- Data],
+    RowHs = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)} 
+             || {#refX{obj={row,{R,R}}},RPs} <- Data],
+    ColWs = [{C, pget("width", CPs, ?DEFAULT_WIDTH)} 
+             || {#refX{obj={column,{C,C}}},CPs} <- Data],
     Palette = array:from_orddict
                 (lists:sort
                    (hn_mochi:styles_to_css
@@ -179,6 +181,8 @@ startrow(_)                            -> 1.
     
 pget(K,L) -> proplists:get_value(K,L,undefined).
 
+pget(K,L,D) -> proplists:get_value(K,L,D).
+
 -spec wrap_page([textdata()], integer(), integer()) -> [textdata()]. 
 wrap_page(Content, TotalWidth, TotalHeight) -> 
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
@@ -299,8 +303,3 @@ merged_row_test_() ->
     Palette = array:new(),
     {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({480, 330}, {W, H}).
-
-
-
-
-
