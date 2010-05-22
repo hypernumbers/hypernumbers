@@ -98,13 +98,10 @@
 -export([
          write_attributes/1,
          write_attributes/3,
-         write_last/3,
-         read_last/1,
+         append_row/3,
          write_style_IMPORT/2,
          read_attribute/2,
          read_ref/1,
-         read_inherited_list/2,
-         read_inherited_value/3,
          read_styles/1,
          read_page_structure/1,
          read_pages/1,
@@ -385,87 +382,27 @@ write_attributes(List, PAr, VAr) ->
 %% 'formula' attributes
 %% Formulae can be inserted into row or column using <code>rc</code> notation
 %%@end
-%% write_last uses a match on the first element to enforce the fact that
-%% all refs are on the same page - this won't work with an empty list, so
-%% write a special clause for that case....
-write_last([], _PAr, _VAr) -> ok;
-write_last(List, PAr, VAr) when is_list(List) ->
-    % all the refX's in the list must have the same site/path/object type
-    % so get those from the head of the list and enforce it by matching down
-    % --> at FORCE ME!
-    [{#refX{site = S, path = P, obj = O} = RefX, _} | _T] = List,
-    Fun =
+
+append_row([], _PAr, _VAr) -> ok;
+append_row(List, PAr, VAr) when is_list(List) ->
+    %% all the refX's in the list must have the same site/path/object type
+    {RefX=#refX{site = S, path = P},_} = hd(List),
+    Trans =
         fun() ->
                 ok = init_front_end_notify(),
-                {LastColumnRefX, LastRowRefX} = hn_db_wu:get_last_refs(RefX),
-                #refX{obj = {cell, {LastCol, _}}} = LastColumnRefX,
-                #refX{obj = {cell, {_, LastRow}}} = LastRowRefX,
-                % Add 1 to because we are adding data 'as the last row'
-                % (or column) ie one more than the current last row/column
-                % NOTE a column reference appends to the 'LAST ROW' not the
-                % 'last column' (think about it!)
-                {Type, {PosX, PosY}} = case O of
-                                  {row, _}    -> Y = LastCol + 1, 
-                                                 {row, {Y, Y}};
-                                  {column, _} -> X = LastRow + 1,
-                                                 {column, {X, X}}
-                              end,
-
-                % now convert the column or row references to cell references
-                Fun1 =
-                    fun({#refX{site = S1, path = P1, obj = {Type1, {IdxX, IdxY}}}, Val})  ->
-                            % FORCE ME to match (see above)
-                            S = S1,
-                            P = P1,
-                            Type = Type1,
-                            Obj = case Type1 of
-                                      row    -> {cell, {PosX, IdxY}};
-                                      column -> {cell, {IdxX, PosY}}
-                                  end,
-                            RefX2 = #refX{site = S1, path = P1, obj = Obj},
-                            hn_db_wu:write_attr(RefX2, {"formula", Val}, PAr),
+                Row = hn_db_wu:get_last_row(RefX) + 1,
+                F = fun(X, Val) ->
+                            Obj = {cell, {X, Row}},
+                            RefX2 = #refX{site = S, path = P, obj = Obj},
+                            hn_db_wu:write_attrs(RefX2, [{"formula", Val}], PAr),
                             hn_db_wu:mark_children_dirty(RefX2, VAr)
                     end,
-                [Fun1(X) || X <- List]
-
+                [F(X,V) || {#refX{site=S1, path=P1, obj={column,{X,X}}}, V} 
+                               <- List, S == S1, P == P1]
         end,
-    mnesia:activity(transaction, Fun),
+    mnesia:activity(transaction, Trans),
     ok = tell_front_end("write last"),
-    ok.
-
-%% @spec read_last(RefX) -> ok
-%% @doc takes a list of references and appends either a column or row at the end of them
-%% 
-%% The reference must be either a:
-%% <ul>
-%% <li>column</li>
-%% <li>row</li>
-%% </ul>
-read_last(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
-
-    Fun = fun() ->
-                  Values = hn_db_wu:read_attrs(RefX, ["formula"], write),
-                  biggest(Values, R)
-          end,
-
-    mnesia:activity(transaction, Fun).
-
-%% @spec read_inherited_list(#refX{}, Attribute) -> {#refX{}, Val}
-%% Attribute = string()
-%% @doc Scans the tree and returns a list of value stored against
-%%      Key 
-read_inherited_list(RefX, Key) when is_record(RefX, refX) ->
-    F = fun hn_db_wu:read_inherited_list/2,
-    mnesia:activity(transaction, F, [RefX, Key]).
-
-%% @spec read_inherited_value(#refX{}, Attibute, Default) -> {#refX{}, Val}
-%% @doc  This function searches the tree for the first occurence of a value
-%%       stored at a given reference, if not found it returns the supplied
-%%       default value
-%%       
-read_inherited_value(RefX, Key, Default) when is_record(RefX, refX) ->
-    F = fun hn_db_wu:read_inherited/3,
-    mnesia:activity(transaction, F, [RefX, Key, Default]).
+    ok.    
 
 -spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
 read_attribute(RefX, Field) when is_record(RefX, refX) ->
@@ -884,25 +821,6 @@ copy_style(#refX{obj = {cell, _}} = From,
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-biggest(List, Type) ->
-    StartAcc = #refX{obj = {cell, {0, 0}}},
-    Fun = fun({Ref, _V}, Acc) ->
-       
-                  #refX{obj = {cell, {X1, Y1}}} = Ref,
-                  #refX{obj = {cell, {X2, Y2}}} = Acc,
-       
-                  case Type of
-                      column -> if
-                                    Y1 >  Y2 -> Ref;
-                                    Y1 =< Y2 -> Acc
-                                end;
-                      row    -> if
-                                    X1 >  X2 -> Ref; 
-                                    X1 =< X2 -> Acc
-                                end
-                  end
-          end,
-    lists:foldl(Fun, StartAcc, List).
 
 write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
     List = hn_util:range_to_list(Ref),
