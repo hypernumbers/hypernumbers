@@ -2233,14 +2233,9 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-            ?ERROR("invalid return from muin:run_formula ~p",[Formula]),
-            #refX{site = Site, path = Path, obj = R} = Ref,
-            ok = remoting_reg:notify_error(Site,Path,R,error_in_formula,Formula),
-            Attrs;
+            write_error(Attrs, Formula, error_in_formula);
         {error, Error} ->
-            #refX{site = Site, path = Path, obj = R} = Ref,
-            ok = remoting_reg:notify_error(Site, Path, R,  Error, Formula),
-            Attrs;
+            write_error(Attrs, Formula, Error);        
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
             Parxml = map(fun muin_link_to_simplexml/1, Parents),
             {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
@@ -2254,6 +2249,14 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
                                    {"__default-align", Align},
                                    {"__recompile", Recompile}])
     end.
+
+write_error(Attrs, Formula, _Error) ->
+    add_attributes(Attrs, [{"parents", []},
+                           {"formula", Formula},
+                           {"rawvalue", {errval, '#ERROR!'}},
+                           {"__ast", []},
+                           {"__dependency-tree", []}]).
+    
 
 default_align(Res) when is_number(Res) -> "right";
 default_align(Res) when is_list(Res)   -> "left";
