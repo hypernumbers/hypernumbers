@@ -577,7 +577,7 @@ ipost(#refX{site = S, path = P}, Qry,
     ViewUid = view_creator_uid(Qry#qry.view, S, PosterUid),
     ok = status_srv:update_status(PosterUid, S, P, "edited page"),
     {Lasts, Refs} = fix_up(Array, S, P),
-    ok = hn_db_api:write_last(Lasts, PosterUid, ViewUid),
+    ok = hn_db_api:append_row(Lasts, PosterUid, ViewUid),
     ok = hn_db_api:write_attributes(Refs, PosterUid, ViewUid),
     json(Env, "success");
 
@@ -594,7 +594,7 @@ ipost(Ref=#refX{site = S, path = P, obj = O} = Ref, Qry,
 
         %% if posting a formula to a row or column, append
         [{"formula", Val}] when Type == column; Type == row ->
-            ok = hn_db_api:write_last([{Ref, Val}], PosterUid, ViewUid);
+            ok = hn_db_api:append_row([{Ref, Val}], PosterUid, ViewUid);
 
         _Else ->
             ok = hn_db_api:write_attributes([{Ref, Attr}], PosterUid, ViewUid)
@@ -808,13 +808,13 @@ ipost(Ref, Qry, Env) ->
 
 -spec log_signup(string(), string(), atom(), uid(), string()) -> ok.
 log_signup(Site, NewSite, Node, Uid, Email) ->
-    Lasts = [ {hn_util:url_to_refX(Site ++ "/_sites/" ++ Ref), Val}
+    Row = [ {hn_util:url_to_refX(Site ++ "/_sites/" ++ Ref), Val}
               || {Ref, Val} <- [{"A:A", Email},
                                 {"B:B", NewSite},
                                 {"C:C", Uid},
                                 {"D:D", dh_date:format("Y/m/d G:i:s")},
                                 {"E:E", atom_to_list(Node)} ] ],
-    hn_db_api:write_last(Lasts, "", "").
+    hn_db_api:append_row(Row, nil, nil).
 
 view_creator_uid(undefined, _Site, Poster) -> Poster; 
 view_creator_uid(?SHEETVIEW, _Site, Poster) -> Poster;

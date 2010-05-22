@@ -59,8 +59,8 @@ layout(Ref, Cells, CWs, RHs, Palette) ->
                     
 %% End of input
 layout([], _Col, _Row, PX, PY, H, _CWs, _RHs, Rec, Acc) ->
-    TotalHeight = max(PY + H, Rec#rec.maxmerge_height),
-    TotalWidth = max(PX, Rec#rec.maxwidth),
+    TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
+    TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 %% Output the next cell value in the current row.
@@ -76,7 +76,7 @@ layout([{{C,R}, L}|T], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
             {MW,CWs3} = width_across(C+1, C+Right, CWs2, W),
             MH = height_below(R+1, R+Down, RHs, H),
             Rec2 = Rec#rec{maxmerge_height =
-                               max(Rec#rec.maxmerge_height, MH + PY)},
+                               erlang:max(Rec#rec.maxmerge_height, MH + PY)},
             Acc2 = [draw(Value, Css, PX, PY, MW, MH) | Acc],
             T2 = expunge(T, {C,C+Right,R,R+Down}),
             layout(T2, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
@@ -94,7 +94,7 @@ layout(Lst, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
     Col2 = Rec#rec.startcol,
     Row2 = Row + 1,
     {H2,RHs2} = row_height(Row2, RHs),
-    Rec2 = Rec#rec{maxwidth = max(Rec#rec.maxwidth, PX)},
+    Rec2 = Rec#rec{maxwidth = erlang:max(Rec#rec.maxwidth, PX)},
     layout(Lst, Col2, Row2, PX2, PY2, H2, 
            Rec#rec.colwidths, RHs2, Rec2, Acc).
 
@@ -135,9 +135,6 @@ row_height(_, T)          -> {?DEFAULT_HEIGHT, T}.
 
 col_width(X, [{X, W}|T]) -> {W, T};
 col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
-
-max(X,Y) when X < Y -> Y; 
-max(X,_)            -> X.
 
 -spec draw(undefined | string(), 
            textdata(),

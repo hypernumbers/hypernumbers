@@ -522,7 +522,8 @@
 
 %% Structural Query Exports
 -export([
-         %%get_last_refs/1
+         get_last_row/1,
+         get_last_col/1
         ]).
 
 -export([
@@ -588,72 +589,17 @@ write_style_IMPORT(RefX, Style)
     write_attrs(RefX, [{"style", NewIndex}]),
     ok.
 
-%% %% @spec shift_children(Children, OldParent::#refX{},
-%% %% NewParent::#refX{}) -> ok Children = [ [#refX{}] | #refX{} ] @doc
-%% %% shift_children is called when a message comes in from a remote
-%% %% parent saying that that parent has moved. The children of that
-%% %% remote hypernumber then have their formulae rewritten to refer to
-%% %% the new location of the parent OldParent and NewParent are the
-%% %% respective parents and must be cell references % Children can
-%% %% either be a cell reference or a list of cell references
-%% shift_children(List, OldParent, NewParent)
-%%   when is_list(List), is_record(OldParent, refX), is_record(NewParent, refX) ->
-%%     [ok = shift_children(X, OldParent, NewParent) || X <- List],
-%%     ok;
-%% shift_children(Child, OldParent, NewParent)
-%%   when is_record(Child, refX), is_record(OldParent, refX),
-%%        is_record(NewParent, refX) ->
-%%     OUrl = hn_util:refX_to_url(OldParent) ++ "?hypernumber",
-%%     NUrl = hn_util:refX_to_url(NewParent) ++ "?hypernumber",
-%%     %% first read the child formula
-%%     %% but strip off the leading '=' sign
-%%     [{Child, {"formula", [$= | Formula]}}] = read_attrs(Child, ["formula"], write),
-%%     %% %% just spoofing the lexing which is why we pass in the cell {1, 1}
-%%     %% NewFormula = case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
-%%     %%                  {ok, Toks}    -> rewrite_hn_formula(Toks, OUrl, NUrl);
-%%     %%                  _Syntax_Error -> io:format("Not sure how you get an "++
-%%     %%                                             "invalid formula is "++
-%%     %%                                             "shift_children but "++
-%%     %%                                             "you do~n-~p~n", [Formula]),
+-spec get_last_row(#refX{}) -> integer(). 
+get_last_row(#refX{site=S, path=P}) -> 
+    SelX = #refX{site=S, path=P, obj={page, "/"}},
+    lists:max([0 | [Y || #local_objs{obj={cell,{_,Y}}} 
+                             <- objs_inside_ref(SelX)]]).
 
-%%     %%                                   Formula
-%%     %%              end,
-%%     write_attrs(Child, [{"formula", NewFormula}]).
-
-%% @spec get_last_refs(#refX{}) -> {LastColumnRef, LastRowRef}
-%% LastColumnRef = #refX{}
-%% LastColumnRef = #refX{}
-%% @doc takes a reference and gets the value of the last populated row
-%% 
-%% The refX{} can refer to a:
-%% <ul>
-%% <li>page</li>
-%% </ul>
-%% @TODO this may have a race condition if two people try
-%% and get the last row/column at the same time...
-%% get_last_refs(#refX{site = S, path = P}) ->
-%%     RefX2 = #refX{site = S, path = P, obj = {page, "/"}},
-%%     Cells = read_ref(RefX2),
-%%     Fun = fun({R, V}, {MaxRefX, MaxRefY}) ->
-%%                   {NewX, NewY} =
-%%                       case V of
-%%                           {"formula", _} ->
-%%                               #refX{obj = {cell, {X, Y}}} = R,
-%%                               #refX{obj = {cell, {MaxX, _}}} = MaxRefX,
-%%                               #refX{obj = {cell, {_, MaxY}}} = MaxRefY,
-%%                               NX = ?COND(MaxX > X, MaxX, X),
-%%                               NY = ?COND(MaxY > Y, MaxY, Y),
-%%                               {NX, NY};
-%%                           _ ->
-%%                               #refX{obj = {cell, {MaxX, _}}} = MaxRefX,
-%%                               #refX{obj = {cell, {_, MaxY}}} = MaxRefY,
-%%                               {MaxX, MaxY}
-%%                       end,
-%%                   {#refX{site = S, path = P, obj = {cell, {NewX, 0}}},
-%%                    #refX{site = S, path = P, obj = {cell, {0, NewY}}}}
-%%           end,
-%%     Zero = #refX{site = S, path = P, obj = {cell, {0, 0}}},
-%%     lists:foldl(Fun, {Zero, Zero}, Cells).
+-spec get_last_col(#refX{}) -> integer(). 
+get_last_col(#refX{site=S, path=P}) -> 
+    SelX = #refX{site=S, path=P, obj={page, "/"}},
+    lists:max([0 | [X || #local_objs{obj={cell,{X,_}}} 
+                             <- objs_inside_ref(SelX)]]).
 
 %% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> ok
 %% Key = atom()
@@ -859,37 +805,6 @@ post_process_format(Raw, Attrs) ->
         _ ->
             Attrs
     end.
-                        
-%% @spec read_inherited_list(#refX{}, Key) -> {ok, Value}
-%% Key = atom()
-%% Value = term()
-%% @doc  This function searches the tree for the first occurence of a value
-%%       stored at a given reference, if not found it returns the supplied
-%%       default value
-%%       
-%% %% @todo what are the ref types it supports? improve the documentation, etc, etc
-%% read_inherited_list(RefX, Key) when is_record(RefX, refX)  ->
-%%     Type = case RefX#refX.obj of
-%%                null    -> page;
-%%                {T, _R} -> T
-%%            end,
-%%     get_item_list(Type, RefX, Key, []).
-
-%% @spec read_inherited(#refX{}, Key, Default) -> {ok, Value}
-%% Key = atom()
-%% Value = term()
-%% Default = term()
-%% @doc  This function searches the tree for the occurences of a key
-%%       and returns a list of them
-%% read_inherited(RefX, Key, Default) when is_record(RefX, refX)  ->
-%%     Type = case RefX#refX.obj of
-%%                null    -> page;
-%%                {T, _R} -> T
-%%            end,
-%%     case return_first(Type, RefX, Key) of
-%%         {ok, Value} -> {ok, Value};
-%%         nomatch     -> {ok, Default}
-%%     end.
 
 %% Status = list()
 %% @doc shift_cells takes a range, row or column and shifts it by the offset.
