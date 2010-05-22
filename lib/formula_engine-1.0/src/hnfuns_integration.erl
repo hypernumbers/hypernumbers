@@ -85,10 +85,10 @@ google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg) ->
     case lists:member(string:to_upper(C), ?VALID_ISO_CURRENCIES) of
         false -> ?ERRVAL_VAL;
         true  -> case Bg1 of
-                     0 -> google_buy_n2(M, C, ItemName, ItemDesc,
-                                            Price, Quantity, "white");
-                     1 -> google_buy_n2(M, C, ItemName, ItemDesc,
-                                            Price, Quantity, "colored");
+                     "0" -> google_buy_n2(M, C, ItemName, ItemDesc,
+                                          Price, Quantity, "white");
+                     "1" -> google_buy_n2(M, C, ItemName, ItemDesc,
+                                          Price, Quantity, "colored");
                      _ -> ?ERRVAL_VAL
                  end
     end.
