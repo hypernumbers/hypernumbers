@@ -774,14 +774,14 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
     Type = demo,
     case factory:provision_site(Zone, Email, Type, PrevUid) of
         {ok, new, Site, Node, Uid, Name} ->
-            log_signup(RootSite, Site, Node, Uid, Email),
+            %log_signup(RootSite, Site, Node, Uid, Email),
             Opaque = [],
             Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
         {ok, existing, Site, Node, Uid, _Name} ->
-            log_signup(RootSite, Site, Node, Uid, Email),
+            %log_signup(RootSite, Site, Node, Uid, Email),
             json(Env, {struct, [{"result", "success"}, {"url", Site}]});
         {error, Reason} ->
             Str = case Reason of
