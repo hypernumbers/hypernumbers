@@ -93,7 +93,7 @@ a {
     background         : white;
     min-width          : 200px;
     border             : 1px solid #666;
-    z-index            : 999999;
+    z-index            : 10000003;
     -moz-border-radius : 3px 3px 3px 3px;
 }
 .dialog h2 {
