@@ -205,7 +205,7 @@ browse(Name) ->
     browse(Name, default_filter()).
 
 browse(Name, Filter) ->
-    F = fun(Post, Id) -> print(short, Post, Id) end,
+    F = fun(Post, Id) -> print(long, Post, Id) end,
     run_log(Name, F, make_filter(Filter)).
 
 bodystr(undefined) ->
@@ -223,7 +223,9 @@ print(short, Post, Id) ->
     Uid        = proplists:get_value(user, Post),
     Date       = dh_date:format("j/m/y, g:ia", Time),
     [Path | _] = string:tokens(FullPath, "?"),
-    {ok, Email} = passport:uid_to_email(Uid),
+    Email = case passport:uid_to_email(Uid) of
+                      {ok, Tmp} -> Tmp;
+                      _ -> "invalid" end,
     io:format("~6B ~-17s ~-16s ~-20s ~-35s~n",
               [Id, Date, Email, Path, bodystr(Body)]);
 
@@ -244,10 +246,13 @@ print(long, Post, Id) ->
     Referer = proplists:get_value(referer, Post),
     Accept  = proplists:get_value(accept, Post),
     Browser = proplists:get_value(browser, Post),
-    {ok, Email} = passport:uid_to_email(Uid),
+    Email = case passport:uid_to_email(Uid) of
+                      {ok, Tmp} -> Tmp;
+                      _ -> "invalid" end,
 
     Msg = "~nId: ~p ~s Request on ~s~n"
         "Email:      ~s~n"
+        "Ip:         ~p~n"
         "Url:        ~s~n"
         "User-Agent: ~s~n"
         "Referrer:   ~s~n"
