@@ -702,7 +702,7 @@ expunge_refs(S, Refs) ->
          mnesia:delete(ItemT, Idx, write),
          mnesia:delete_object(ObjT, LO, write)
      end || Ref <- Refs,
-            #local_objs{idx=Idx}=LO <- read_objs(Ref, inside)],
+            #local_objs{idx=Idx}=LO <- read_objs(Ref, direct)],
     ok.
 
 -spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ok.
@@ -2225,13 +2225,18 @@ make_tuple1(S, I, I, V, Acc )  -> make_tuple1(S, I -1 , I, V, [V | Acc]);
 make_tuple1(S, C, I, V, Acc)   -> make_tuple1(S, C - 1, I, V, [[] | Acc]).
 
 
--spec read_objs(#refX{}, inside | intersect) -> [#local_objs{}]. 
+-spec read_objs(#refX{}, inside | intersect | direct) -> [#local_objs{}]. 
 read_objs(#refX{site=Site}=Ref, inside) ->
     MS = objs_inside_ref(Ref),
     mnesia:select(trans(Site, local_objs), MS);
 read_objs(#refX{site=Site}=Ref, intersect) ->
     MS = objs_intersect_ref(Ref),
-    mnesia:select(trans(Site, local_objs), MS).
+    mnesia:select(trans(Site, local_objs), MS);
+read_objs(#refX{site=Site, path=P, obj = O}, direct) ->
+    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj=MO}) 
+                          when MP == P, MO == O -> LO
+                    end),
+    mnesia:select(trans(Site, local_objs), MS).                            
 
 objs_inside_ref(#refX{path = P, obj = {page, "/"}}) ->
     ets:fun2ms(fun(LO=#local_objs{path=MP}) when MP == P -> LO end);
@@ -2288,7 +2293,9 @@ objs_intersect_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
                           Y1 =< MY, MY =< Y2 -> LO;
                   (LO=#local_objs{path=MP, obj={column, {MX,MX}}})
                      when MP == P,
-                          X1 =< MX, MX =< X2 -> LO
+                          X1 =< MX, MX =< X2 -> LO;
+                  (LO=#local_objs{path=MP, obj={page, _}}) 
+                     when MP == P -> LO
                end);
 objs_intersect_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
     ets:fun2ms(
@@ -2297,13 +2304,17 @@ objs_intersect_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
          (LO=#local_objs{path=MP, obj={column,{MX,MX}}}) 
             when MP == P, MX == X -> LO; 
          (LO=#local_objs{path=MP, obj={row,{MY,MY}}}) 
-            when MP == P, MY == Y -> LO
+            when MP == P, MY == Y -> LO;
+         (LO=#local_objs{path=MP, obj={page, _}}) 
+            when MP == P -> LO
       end);
 objs_intersect_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
     ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,_MY}}}) 
                      when MP == P,
                           X1 =< MX, MX =< X2 -> LO;
                   (LO=#local_objs{path=MP, obj={row,_}})
+                     when MP == P -> LO;
+                  (LO=#local_objs{path=MP, obj={page, _}}) 
                      when MP == P -> LO
                end);
 objs_intersect_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
@@ -2311,7 +2322,9 @@ objs_intersect_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
                      when MP == P,
                           R1 =< MY, MY =< R2 -> LO;
                   (LO=#local_objs{path=MP, obj={column, _}})
-                     when MP == P-> LO
+                     when MP == P-> LO;
+                  (LO=#local_objs{path=MP, obj={page, _}}) 
+                     when MP == P -> LO
                end).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
