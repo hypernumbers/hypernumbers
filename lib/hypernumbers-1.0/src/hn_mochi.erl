@@ -963,7 +963,7 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Tree   = dh_tree:create(Init),
     Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
     NTree  = add_styles(Styles, Tree),
-    Dict   = to_dict(hn_db_api:read_ref(Ref), NTree),
+    Dict   = to_dict(hn_db_api:read_intersect_ref(Ref), NTree),
     Time   = {"time", remoting_reg:timestamp()},
     Usr    = {"user", Env#env.email},
     Host   = {"host", S},

@@ -492,7 +492,7 @@
          write_attrs/3,
          read_styles/1,
          local_idx_to_refX/2,
-         read_ref/1, read_ref/2, read_ref_field/3,
+         read_ref/2, read_ref/3, read_ref_field/3,
          clear_cells/1,
          clear_cells/2,
          delete_cells/1,
@@ -561,7 +561,7 @@
 %%      not be used for any other purpose
 get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
     #refX{site = Site, path = Path} = RefX,
-    Attrs = case read_ref(RefX) of
+    Attrs = case read_ref(RefX, inside) of
                 [{_, A}] -> A;
                 _        -> orddict:new()
             end,
@@ -593,13 +593,13 @@ write_style_IMPORT(RefX, Style)
 get_last_row(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
     lists:max([0 | [Y || #local_objs{obj={cell,{_,Y}}} 
-                             <- objs_inside_ref(SelX)]]).
+                             <- read_objs(SelX, inside)]]).
 
 -spec get_last_col(#refX{}) -> integer(). 
 get_last_col(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
     lists:max([0 | [X || #local_objs{obj={cell,{X,_}}} 
-                             <- objs_inside_ref(SelX)]]).
+                             <- read_objs(SelX, inside)]]).
 
 %% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> ok
 %% Key = atom()
@@ -653,17 +653,18 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
     process_attrs(Rest, Ref, AReq, Attrs2).
 
 expand_ref(#refX{site=S}=Ref) -> 
-    [lobj_to_ref(S, LO) || LO <- objs_inside_ref(Ref)].
+    [lobj_to_ref(S, LO) || LO <- read_objs(Ref, inside)].
 
-read_ref(Ref) -> read_ref(Ref, read).
--spec read_ref(#refX{}, read | write) -> [{#refX{}, ?dict}].
-read_ref(#refX{site=S}=Ref, Lock) ->
-    read_attrs(S, objs_inside_ref(Ref), Lock).
+read_ref(Ref, Relation) -> read_ref(Ref, Relation, read).
+-spec read_ref(#refX{}, inside | intersect, read | write) 
+              -> [{#refX{}, ?dict}].
+read_ref(#refX{site=S}=Ref, Relation, Lock) ->
+    read_attrs(S, read_objs(Ref, Relation), Lock).
 
 -spec read_ref_field(#refX{}, string(), read|write) 
                     -> [{#refX{}, term()}].
 read_ref_field(Ref, Field, Lock) ->
-    Cells = read_ref(Ref, Lock),
+    Cells = read_ref(Ref, inside, Lock),
     extract_field(Cells, Field, []).
     
 -spec extract_field([{#refX{}, ?dict}], string(), [{#refX{}, term()}])
@@ -675,56 +676,6 @@ extract_field([{Ref, Attrs}|T], Field, Acc) ->
                {ok, V} -> [{Ref, V}|Acc]; 
                _       -> Acc end,
     extract_field(T, Field, Acc2).    
-
--spec objs_inside_ref(#refX{}) -> [#local_objs{}]. 
-objs_inside_ref(#refX{site = S, path = P, obj = {page, "/"}}) ->
-    MS = ets:fun2ms(fun(LO=#local_objs{path=MP}) when MP == P -> LO end),
-    mnesia:select(trans(S, local_objs), MS);
-objs_inside_ref(#refX{site = S, path = P, obj = {column, {X1,X2}}}) ->
-    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,_MY}}}) 
-                          when MP == P,
-                               X1 =< MX, MX =< X2 -> LO
-                    end),
-    mnesia:select(trans(S, local_objs), MS);
-objs_inside_ref(#refX{site = S, path = P, obj = {row, {R1,R2}}}) ->
-    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{_MX,MY}}}) 
-                          when MP == P,
-                               R1 =< MY, MY =< R2 -> LO
-                    end),
-    mnesia:select(trans(S, local_objs), MS);
-objs_inside_ref(#refX{site = S, path = P, obj = {range, {0,Y1,infinity,Y2}}}) ->
-    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
-                          when MP == P,
-                               0 =< MX, MX =< infinity, 
-                               Y1 =< MY, MY =< Y2 -> LO;
-                       (LO=#local_objs{path=MP, obj={row,{MY,MY}}})
-                          when MP == P,
-                               Y1 =< MY, MY =< Y2 -> LO
-                    end),
-    mnesia:select(trans(S, local_objs), MS);
-objs_inside_ref(#refX{site = S, path = P, obj = {range, {X1,0,X2,infinity}}}) ->
-    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
-                          when MP == P,
-                               X1 =< MX, MX =< X2, 
-                               0 =< MY, MY =< infinity -> LO; 
-                       (LO=#local_objs{path=MP, obj={column,{MX,MX}}})
-                          when MP == P,
-                               X1 =< MX, MX =< X2 -> LO
-                    end),
-    mnesia:select(trans(S, local_objs), MS);
-objs_inside_ref(#refX{site = S, path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
-    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
-                          when MP == P,
-                               X1 =< MX, MX =< X2, 
-                               Y1 =< MY, MY =< Y2 -> LO
-                    end),
-    mnesia:select(trans(S, local_objs), MS);
-objs_inside_ref(#refX{site = S, path = P, obj = {cell, {X,Y}}}) ->
-    MS = ets:fun2ms(
-           fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}})
-                 when MP == P, MX == X, MY == Y -> LO
-           end),
-    mnesia:select(trans(S, local_objs), MS).
 
 -spec read_attrs(string(), [#local_objs{}], read|write)
                 -> [{#refX{}, ?dict}].
@@ -751,7 +702,7 @@ expunge_refs(S, Refs) ->
          mnesia:delete(ItemT, Idx, write),
          mnesia:delete_object(ObjT, LO, write)
      end || Ref <- Refs,
-            #local_objs{idx=Idx}=LO <- objs_inside_ref(Ref)],
+            #local_objs{idx=Idx}=LO <- read_objs(Ref, inside)],
     ok.
 
 -spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ok.
@@ -819,7 +770,7 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
        (Disp == vertical orelse Disp == horizontal) ->
     {XOff, YOff} = hn_util:get_offset(Type, Disp, Obj),
     RefXSel = shift_pattern(From, Disp),
-    case objs_inside_ref(RefXSel) of
+    case read_objs(RefXSel, inside) of
         [] -> [];
         ObjsList ->
             %% %% Rewrite the formulas of all the child cells
@@ -991,1089 +942,1016 @@ clear_cells(Ref, contents) ->
                                         "__dependency-tree",
                                         "parents"])           
          end,
-    [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], ok.
-
-%% @doc takes a reference to a
-%% <ul>
-%% <li>page</li>
-%% <li>row</li>
-%% <li>column</li>
-%% <li>range</li>
-%% <li>cell</li>
-%% </ul>
-%% and then deletes all the cells including their indices in local_objs
-%% and makes all cells that are their children throw a #ref! error
-%% and deletes the links there the old cell was the child of another cell
-%% @todo this is ineffiecient because it reads and then deletes each
-%% record individually - if remoting_reg supported a {delete refX all}
-%% type message it could be speeded up
--spec delete_cells(#refX{}) -> [#refX{}].
-delete_cells(#refX{site = S} = DelX) ->
-    case expand_ref(DelX) of
-        [] -> [];
-        Cells  ->
-            %% update the children that point to the cell that is
-            %% being deleted by rewriting the formulae of all the
-            %% children cells replacing the reference to this cell
-            %% with #ref!
-            LocalChildren = [get_local_children(C) || C <- Cells],
-            LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
-            
-            %% sometimes a cell will have local children that are also
-            %% in the delete zone these need to be removed before we
-            %% do anything else...
-            LocalChildren3 = lists:subtract(LocalChildren2, Cells),
-            
-            %% Rewrite formulas
-            [deref_formula(X, DelX) || X <- LocalChildren3],
-
-            %% fix relations table.
-            [ok = delete_local_relation(X) || X <- Cells],
-
-            %% Delete the cells (and their indicices)
-            expunge_refs(S, Cells),
-            LocalChildren3
-    end.
-
--spec deref_formula(#refX{}, #refX{}) -> ok. 
-deref_formula(Ref, DelRef) ->
-    Op = fun(Attrs) -> 
-                 case orddict:find("formula", Attrs) of
-                     {ok, F1} -> 
-                         {_Status, F2} = deref(Ref, F1, DelRef),
-                         orddict:store("formula", F2, Attrs);
-                     _ ->
-                         Attrs
-                 end
+    [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], 
+    ok;
+clear_cells(Ref, {attributes, DelAttrs}) ->
+    Op = fun(Attrs) ->
+                 del_attributes(Attrs, DelAttrs)
          end,
-    apply_to_attrs(Ref, Op).
-
-%% %% @doc copys cells from a reference to a reference
-%% -spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
-copy_cell(#refX{obj = {cell, {FX,FY}}} = From, 
-          #refX{obj = {cell, {TX,TY}}} = To, 
-          Incr)
-  when is_record(From, refX), is_record(To, refX) ->
-    Formula = case read_ref_field(From, "formula", read) of
-                  [{_, V}] -> superparser:process(V); 
-                  _        -> ""
-              end,
-    F2 = case Formula of
-             {formula, F1} ->
-                 offset_formula(F1, {(TX - FX), (TY - FY)});
-             [{Type, F1},  _A, _F] ->
-                 case Incr of
-                     false  ->
-                         case Type of
-                             datetime ->
-                                 {datetime, D, T} = F1,
-                                 dh_date:format("d/m/Y", {D, T});
-                             _ ->
-                                 tconv:to_s(F1)
-                         end;
-                     _Other -> %% Other can be a range of different values...
-                         case Type of
-                             int      ->
-                                 NewV = F1 + diff(FX, FY, TX, TY, Incr),
-                                 tconv:to_s(NewV);
-                             datetime ->
-                                 {datetime, {Y, M , D}, T} = F1,
-                                 Date = calendar:date_to_gregorian_days(Y, M, D),
-                                 Date2 = Date + diff(FX, FY, TX, TY, Incr),
-                                 NewD = calendar:gregorian_days_to_date(Date2),
-                                 dh_date:format("d/m/Y", {NewD, T});
-                             _ ->
-                                 tconv:to_s(F1)
-                         end
-                 end;
-             _ -> 
-                 ""
-         end,
-    write_attrs(To, [{"formula", F2}]).
-
-%% @spec(From::refX{}, To::refX{}) -> ok
-%% @doc Copies the style applied to From and attaches it to To.
-%%      From can only be a cell ref but To can be either a cell or range
-%%      ref
-%% @end
-%% this clause is for 'on page' copies where both From and To are on
-%% the same page - just the index is copied
-copy_style(#refX{site = S, path = P, obj = {cell, _}} = From, 
-           #refX{site = S, path = P, obj = {Type, _}} = To, 
-           _AReq)
-  when Type == cell orelse Type == range ->
-    case read_ref_field(From, "style", read) of
-        [{_, Idx}] ->
-            List = case Type of
-                       cell  -> [To];
-                       range -> hn_util:range_to_list(To)
-                   end,
-            Op = fun(Attrs) -> orddict:store("style", Idx, Attrs) end,
-            [ok = apply_to_attrs(X, Op) || X <- List],
-            ok;
-        _ ->
-            ok
-    end;
-%% this clause is for copying styles across different pages
-copy_style(#refX{obj = {cell, _}} = From, 
-           #refX{obj = {Type, _}} = To, _AReq)
-  when Type == cell orelse Type == range ->
-    case read_styles(From) of
-        [] -> ok;
-        [{styles, _, _Idx, MagicStyle}] ->
-            List = case Type of
-                       cell  -> [To];
-                       range -> hn_util:range_to_list(To)
-                   end,
-            Fun = fun(X) ->
-                          Idx = write_style(X, MagicStyle),
-                          fun(Attrs) -> 
-                                  orddict:store("style", Idx, Attrs) 
-                          end
-                  end,
-            [ok = Fun(X) || X <- List],
-            ok
-    end.
-
--spec mark_these_dirty([#refX{}], nil | uid()) -> ok.
-mark_these_dirty([], _) -> ok;
-mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
-    F = fun(C) -> case read_local_item_index(C) of
-                      false -> []; 
-                      Idx   -> Idx
-                  end
-        end,
-    Tbl = trans(Site, relation),
-    Idxs = lists:flatten([F(C) || R <- Refs, C <- expand_ref(R)]),
-    Q = insert_work_queue(Idxs, Tbl, 1, hn_workq:new(AReq)),
-    Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
-    ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
-    
--spec mark_children_dirty(#refX{}, nil | uid()) -> ok.
-mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
-    Tbl = trans(Site, relation),
-    Children = get_local_children_idxs(RefX),
-    Q = insert_work_queue(Children, Tbl, 1, hn_workq:new(AReq)),
-    case hn_workq:is_empty(Q) of
-        true  -> ok;
-        false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
-                 ok = mnesia:write(trans(Site, dirty_queue), Entry, write)
-    end.
-
-%% Recursively walk child relation, adding entries into the work
-%% queue.  We maintain an invariant that children must have a higher
-%% priority than their parents, forcing them to be calculated after
-%% their parent(s). This algorithm could naively visit the same
-%% children multiple times, if there is no unique path from N1 ~~>
-%% N2. An attempt is made to stop walking a bad path asap.
-%% see:needs_elem(...).
--spec insert_work_queue([cellidx()], 
-                         atom(), 
-                         integer(), 
-                         hn_workq:work_queue())
-                        -> hn_workq:work_queue(). 
-insert_work_queue([], _Tbl, _Priority, Q) ->
-    Q;
-insert_work_queue([Idx|Rest], Tbl, Priority, Q) ->
-    Qnext = 
-        case mnesia:read(Tbl, Idx) of
-            [R] -> 
-                case hn_workq:needs_elem(Idx, Priority, Q) of
-                    true ->
-                        Children = ordsets:to_list(R#relation.children),
-                        Q2 = insert_work_queue(Children, 
-                                               Tbl, 
-                                               Priority + 1,
-                                               Q),
-                        hn_workq:add(Idx, Priority, Q2);
-                    false -> Q
-                end;
-            _ -> Q
-        end,
-    insert_work_queue(Rest, Tbl, Priority, Qnext).
-
-%% @spec mark_notify_out_dirty(Parent::#refX{}, Change)  -> ok
-%% Change = {new_value, Value, DepTree} | {insert, Obj, Disp} | {delete, Obj, Disp}
-%% DepTree = list()
-%% Delay = integer()
-%% @doc marks a cell as dirty so that its remote children can be updated.
-%% Updates called with this function and not 
-%% <code>mark_notify_out_dirty/3</code> are marked with the default delay
-%% (defined in spriki.hrl)
-%% mark_notify_out_dirty(Parent, Change) when is_record(Parent, refX) ->
-%%     mark_notify_out_dirty(Parent, Change, ?DELAY).
-
-%% @spec mark_notify_out_dirty(Parent::#refX{}, Change, Delay)  -> ok
-%% Change = {new_value, Value, DepTree} | {insert, Obj, Disp} | {delete, Obj, Disp}
-%% DepTree = list()
-%% Delay = integer()
-%% @doc marks a cell as dirty so that its remote children can be updated
-%% Delay is a time in milliseconds that this message should be delayed
-%% @todo this contains a transaction, WTF?
-%% mark_notify_out_dirty(#refX{site = Site} = P, {Type, _, _} = Change, Delay) ->
-%%     %% read the outgoing hypernumbers
-%%     %% one for each site where the Parent is used in a hypernumber
-%%     List = read_outgoing_hns(Site, P),
-%%     %% now we need to get a list of all the actual children and the page versions
-%%     %% of their pages
-%%     Fun2 =
-%%         fun(X) ->
-%%                 #outgoing_hn{child_site = ChildSite} = X,
-%%                 Head = get_head(ChildSite, P, Type),
-%%                 Table = trans(Site, remote_cell_link),
-%%                 Children = mnesia:select(Table, [{Head , [], ['$_']}], read),
-%%                 ReturnList = get_pages_and_vsns(Site, Children),
-%%                 {X, ReturnList}
-%%         end,
-%%     ChildrenList = lists:map(Fun2, List),
-
-%%     %% always write the dirty outgoing hypernumber
-%%     PVsn = read_page_vsn(Site, P),
-%%     ParentPage = P#refX{obj = {page, "/"}},
-%%     ParentUrl = hn_util:refX_to_url(ParentPage),
-%%     case List of
-%%         [] -> ok;
-%%         _  -> Rec = #dirty_notify_out{parent = P, change = Change,
-%%                                       outgoing = ChildrenList,
-%%                                       parent_vsn = {version, ParentUrl, PVsn},
-%%                                       delay = Delay},
-%%               Tbl = trans(Site, element(1,Rec)),
-%%               mnesia:write(Tbl, Rec, write)
-%%     end.
-
-%% @spec unregister_out_hn(Parent::#refX{}, Child::#refX{}) -> ok
-%% @doc unregisters an outgoing hypernumber - if it is the last reference
-%% to an outgoing hypernumber deletes the hypernumber as well
-%% Both parent and child references must point to a cell. This function is
-%% *ONLY* to be used on the parent (or out) side of the hypernumber
-%% @todo this required a full table scan for an unregister
-%% will get veeeerrry expensive if you have 100,000 children tracking a
-%% number!
-%% unregister_out_hn(P, C)
-%%   when is_record(P, refX), is_record(C, refX) ->
-%%     #refX{site = ParentSite} = P,
-%%     #refX{site = ChildSite} = C,
-%%     %% first up delete the remote cell link
-%%     Head = #remote_cell_link{parent = P, child = C, type = outgoing, _ = '_'},
-%%     Table = trans(ParentSite, remote_cell_link),
-%%     [RemCellRec] = mnesia:select(Table, [{Head, [], ['$_']}], write),
-%%     ok = mnesia:delete_object(Table, RemCellRec, write),
-%%     %% now see if any other remote cell references match this site...
-%%     %% - if none do, delete the hypernumber from outgoing_hn
-%%     %% - if some do, do nothing...
-%%     H3 = #refX{site = ChildSite, _ = '_'},
-%%     H4 = #remote_cell_link{parent = P, child = H3, type = outgoing, _ = '_'},
-%%     case mnesia:select(Table, [{H4, [], ['$_']}], read) of
-%%         []  -> H6 = #outgoing_hn{site_and_parent = {ParentSite, P},
-%%                                  child_site = ChildSite, _ = '_'},
-%%                Table2 = trans(ParentSite, outgoing_hn),
-%%                [Rec] = mnesia:select(Table2, [{H6, [], ['$_']}], read),
-%%                mnesia:delete_object(Table2, Rec, write);
-%%         _   -> ok
-%%     end.
-
-%% @spec read_page_structure(Ref) -> dh_tree()
-%% @doc read the populated pages under the specified path
-%% @todo fix up api
-read_page_structure(#refX{site = Site, obj = {page, "/"}}) ->
-    Items = mnesia:dirty_all_keys(trans(Site, local_objs)),
-    filter_pages(Items, dh_tree:new()).
-
-read_pages(#refX{site = Site, obj = {page, "/"}}) ->
-    mnesia:all_keys(trans(Site, local_objs)).
-
-filter_pages([], Tree) ->
-    Tree;
-filter_pages([Path | T], Tree) ->
-    filter_pages(T, dh_tree:add(Path, Tree)).
-
--spec get_local_item_index(#refX{}) -> pos_integer().
-%% @doc get_local_item_index get_item_index gets the index of an object 
-%% AND CREATES IT IF IT DOESN'T EXIST
-get_local_item_index(#refX{site = S, path = P, obj = O} = RefX) ->
-    case read_local_item_index(RefX) of
-        false -> Idx = util2:get_timestamp(),
-                 Rec = #local_objs{path = P, obj = O, idx = Idx},
-                 ok = mnesia:write(trans(S, local_objs), Rec, write),
-                 Idx;
-        Idx   -> Idx        
-    end.
-
-%% converts a tablename into the site-specific tablename
-trans(Site, TableName) when is_atom(TableName) ->
-    Prefix = get_prefix(Site),
-    list_to_atom(Prefix ++ "&" ++ atom_to_list(TableName));
-trans(Site, Record) when is_tuple(Record) -> 
-    NRec = trans(Site, element(1, Record)),
-    setelement(1, Record, NRec).
-
-
-%%% splits a tablename into the site and record
-split_trans(List) when is_list(List)->
-    Fun = fun(X, Acc) ->
-                  [split_trans(X) | Acc]
-          end,
-    lists:foldl(Fun, [], List);
-split_trans(Record) when is_tuple(Record) ->
-    OldName = element(1, Record),
-    OldName2 = atom_to_list(OldName),
-    [Site, Port, NewName] = string:tokens(OldName2, "&"),
-    NewName2 = list_to_atom(NewName),
-    {"http://" ++ Site ++ ":" ++ Port, NewName2, Record}.
-
-trans_back([]) -> [];
-trans_back(List) when is_list(List) ->
-    Fun = fun(X, Acc) ->
-                  [trans_back(X) | Acc]
-          end,
-    lists:foldl(Fun, [], List);
-trans_back(Atom) when is_atom(Atom) ->
-    [_Site, _Port, NewName] = string:tokens(atom_to_list(Atom), "&"),
-    list_to_atom(NewName);
-trans_back(Record) when is_tuple(Record)-> 
-    OldName = element(1, Record),
-    OldName2 = atom_to_list(OldName),
-    [_Site, _Port, NewName] = string:tokens(OldName2, "&"),
-    setelement(1, Record, list_to_atom(NewName)).
-
-get_prefix(R) when is_record(R, refX) ->
-    get_prefix(R#refX.site);
-get_prefix("http://"++Site) ->
-    [case S of $: -> $&; S  -> S end 
-     || S <- Site].
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                                                                          %%%
-%%% Internal funtions                                                        %%%
-%%%                                                                          %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-delete_recs(Site, List) when is_list(List) ->
-    [ok = delete_recs1(Site, X) || X <- List],
+    [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], 
     ok.
 
-delete_recs1(Site, Rec) ->
-    Table = trans(Site, element(1, Rec)),
-    mnesia:delete_object(Table, Rec, write).
+ %% @doc takes a reference to a
+ %% <ul>
+ %% <li>page</li>
+ %% <li>row</li>
+ %% <li>column</li>
+ %% <li>range</li>
+ %% <li>cell</li>
+ %% </ul>
+ %% and then deletes all the cells including their indices in local_objs
+ %% and makes all cells that are their children throw a #ref! error
+ %% and deletes the links there the old cell was the child of another cell
+ %% @todo this is ineffiecient because it reads and then deletes each
+ %% record individually - if remoting_reg supported a {delete refX all}
+ %% type message it could be speeded up
+ -spec delete_cells(#refX{}) -> [#refX{}].
+ delete_cells(#refX{site = S} = DelX) ->
+     case expand_ref(DelX) of
+         [] -> [];
+         Cells  ->
+             %% update the children that point to the cell that is
+             %% being deleted by rewriting the formulae of all the
+             %% children cells replacing the reference to this cell
+             %% with #ref!
+             LocalChildren = [get_local_children(C) || C <- Cells],
+             LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
 
-shift_pattern(#refX{obj = {cell, {_X, Y}}} = RefX, vertical) ->
-    RefX#refX{obj = {row, {Y, infinity}}};
-shift_pattern(#refX{obj = {cell, {X, _Y}}} = RefX, horizontal) ->
-    RefX#refX{obj = {column, {X, infinity}}};
-shift_pattern(#refX{obj = {range, {X1, Y1, X2, _Y2}}} = RefX, vertical) ->
-    RefX#refX{obj = {range, {X1, Y1, X2, infinity}}};
-shift_pattern(#refX{obj = {range, {X1, Y1, _X2, Y2}}} = RefX, horizontal) ->
-    RefX#refX{obj = {range, {X1, Y1, infinity, Y2}}};
-shift_pattern(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
-    RefX#refX{obj = {row, {Y1, infinity}}};
-shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
-    RefX#refX{obj = {column, {X1, infinity}}};
-shift_pattern(RefX, _Disp) -> RefX.
+             %% sometimes a cell will have local children that are also
+             %% in the delete zone these need to be removed before we
+             %% do anything else...
+             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
 
-local_idx_to_refX(S, Idx) ->
-    case mnesia:index_read(trans(S, local_objs), Idx, idx) of
-        [Rec] -> #local_objs{path = P, obj = O} = Rec,
-                 #refX{site = S, path = P, obj = O};
-        []    -> {error, id_not_found, Idx}
-    end.
+             %% Rewrite formulas
+             [deref_formula(X, DelX) || X <- LocalChildren3],
 
-%% @doc Make a #muin_rti record out of a ref record and a flag that specifies 
-%% whether to run formula in an array context.
-refX_to_rti(#refX{site = S, path = P, obj = {cell, {C, R}}}, AR, AC)
-  when is_boolean(AC) ->
-    #muin_rti{site = S, path = P, 
-              col = C, row = R, 
-              array_context = AC,
-              auth_req = AR};
-refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
-  when is_boolean(AC) ->
-    #muin_rti{site = S, path = P, 
-              col = C, row = R, 
-              array_context = AC,
-              auth_req = AR}.
+             %% fix relations table.
+             [ok = delete_local_relation(X) || X <- Cells],
 
-%% read_item_index reads the index of an object AND RETURNS 'false'
-%% IF IT DOESN'T EXIST
--spec read_local_item_index(#refX{}) -> pos_integer() | false. 
-read_local_item_index(#refX{site = S, path = P, obj = Obj}) ->
-    Table = trans(S, local_objs),
-    MS = ets:fun2ms(fun(#local_objs{path=MP, obj=MObj, idx=I}) when 
-                              MP == P, MObj == Obj -> I
-                    end),
-    case mnesia:select(Table, MS, read) of
-        [I] -> I;
-        _   -> false
-    end.
+             %% Delete the cells (and their indicices)
+             expunge_refs(S, Cells),
+             LocalChildren3
+     end.
 
-%% make_cell makes a cell with dollars and stuff based on the offset
-make_cell(false, X, XOffset, false, Y, YOffset) ->
-    tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset);
-make_cell(true, X, XOffset, false, Y, YOffset) ->
-    [$$] ++ tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset);
-make_cell(false, X, XOffset, true, Y, YOffset) ->
-    tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y + YOffset);
-make_cell(true, X, XOffset, true, Y, YOffset)  -> 
-    [$$] ++ tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y + YOffset).
-
-%% drag'n'drop_cell drags and drops a cell ignoring offsets
-%% if the row/column part is fixed with a dollar
-drag_n_drop_cell(false, X, XOffset, false, Y, YOffset) ->
-    if
-        (X + XOffset) <  1 orelse  (Y + YOffset) <  1 -> "#REF!";
-        (X + XOffset) >= 1 andalso (Y + YOffset) >= 1 ->
-            tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset)
-    end;
-drag_n_drop_cell(true, X, _XOffset, false, Y, YOffset) ->
-    if
-        X <  1 orelse ( Y + YOffset) <  1 -> "#REF!";
-        X >= 1 andalso (Y + YOffset) >= 1 ->
-            [$$] ++ tconv:to_b26(X) ++ tconv:to_s(Y + YOffset)
-    end;
-drag_n_drop_cell(false, X, XOffset, true, Y, _YOffset) ->
-    if
-        (X + XOffset) <  1 orelse  Y <  1 -> "#REF!";
-        (X + XOffset) >= 1 andalso Y >= 1 ->
-            tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y)
-    end;
-drag_n_drop_cell(true, X, _XOffset, true, Y, _YOffset)  -> 
-    if
-        X <  1 orelse  Y <  1 -> "#REF!";
-        X >= 1 andalso Y >= 1 ->
-            [$$] ++ tconv:to_b26(X) ++ [$$] ++ tconv:to_s(Y)
-    end.
-
-make_col(false, X) -> tconv:to_b26(X);
-make_col(true,  X) -> [$$] ++ X.
-
-make_row(false, Y) -> tconv:to_s(Y);
-make_row(true,  Y) -> [$$] ++ tconv:to_s(Y).
-
-
-diff( FX, _FY,  TX, _TY, horizontal) -> TX - FX;
-diff(_FX,  FY, _TX,  TY, vertical)   -> TY - FY.
-
-%% make formula creates a new formula, but also returns a status.
-%% Status can be [clean | dirty]
-%% Formulae that return dirty should be marked dirty at recalc
-%% time as they will not recalc to the real value
-%% The function 'INDIRECT' is an example of such a function
-make_formula(Toks) ->
-    mk_f(Toks, {clean, []}).
-
-%% this function needs to be extended...
-mk_f([], {St, A}) -> 
-    {St, "="++lists:flatten(lists:reverse(A))};
-
-mk_f([{errval, _, '#REF!'} | T], {St, A}) -> 
-    mk_f(T, {St, ["#REF!" | A]});
-
-mk_f([{deref, _, Text} | T], {St, A}) -> 
-    mk_f(T, {St, [Text | A]});
-
-%% special infering of division
-mk_f([{cellref, _, C1}, {cellref, _, C2} | T], {St, A}) -> 
-    mk_f(T, {St, [C2#cellref.text, "/", C1#cellref.text | A]});
-
-mk_f([{int, _, I}, {cellref,_,C} | T], {St, A}) -> 
-    mk_f(T, {St, [C#cellref.text, "/", integer_to_list(I) | A]});
-
-mk_f([{float, _, {F, _}}, {cellref,_,C} | T], {St, A}) -> 
-    mk_f(T, {St, [C#cellref.text, "/", float_to_list(F) | A]});
-
-mk_f([{')',_}, {cellref,_,C} | T], {St, A}) ->
-    mk_f(T, {St, [C#cellref.text, "/", ")" | A]});
-
-%% order matters - now detecting 'root' cells
-mk_f([{cellref, _, #cellref{path="/", text=Text}} | T], {St, A}) -> 
-    mk_f(T, {St, ["/" ++ Text | A]});
-
-mk_f([{cellref, _, C} | T], {St, A}) ->
-    mk_f(T, {St, [C#cellref.text | A]});
-
-mk_f([{rangeref, _, R} | T], {St, A}) ->
-    mk_f(T, {St, [R#rangeref.text | A]});
-
-mk_f([{namedexpr, _, N} | T], {St, A}) ->
-    mk_f(T, {St, [N#namedexpr.path ++ N#namedexpr.text | A]});
-
-mk_f([{bool, _, H} | T], {St, A}) ->
-    mk_f(T, {St, [atom_to_list(H) | A]});
-
-mk_f([{atom, _, H} | T], {St, A}) ->
-    mk_f(T, {St, [atom_to_list(H) | A]});
-
-mk_f([{int, _, I} | T], {St, A}) ->
-    mk_f(T, {St, [integer_to_list(I) | A]});
-
-mk_f([{float, _, {F, _OrigStr}} | T], {St, A}) ->
-    mk_f(T, {St, [float_to_list(F) | A]});
-
-mk_f([{formula, _, S} | T], {St, A}) ->
-    mk_f(T, {St, [S | A]});
-
-mk_f([{str, _, S} | T], {St, A}) ->
-    mk_f(T, {St, [$", S, $" | A]});
-
-mk_f([{recalc, _, S} | T], {_St, A}) ->
-    mk_f(T, {dirty, [S | A]});
-
-mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["INDIRECT" | A]});
-
-mk_f([{name, _, "SUM"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["SUM" | A]});
-
-mk_f([{name, _, "CELL"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["CELL" | A]});
-
-mk_f([{name, _, S} | T], {St, A}) ->
-    mk_f(T, {St, [S | A]});
-
-mk_f([{H, _} | T], {St, A}) ->
-    mk_f(T, {St, [atom_to_list(H) | A]}).
-
-parse_cell(Cell) ->
-    {XDollar, Rest} = is_fixed(Cell),
-    Fun = fun(XX) ->
-                  if XX < 97  -> false;
-                     XX > 122 -> false;
-                     true     -> true
+ -spec deref_formula(#refX{}, #refX{}) -> ok. 
+ deref_formula(Ref, DelRef) ->
+     Op = fun(Attrs) -> 
+                  case orddict:find("formula", Attrs) of
+                      {ok, F1} -> 
+                          {_Status, F2} = deref(Ref, F1, DelRef),
+                          orddict:store("formula", F2, Attrs);
+                      _ ->
+                          Attrs
                   end
           end,
-    {XBits, YBits} = lists:partition(Fun,string:to_lower(Rest)),
-    {YDollar, Y} = is_fixed(YBits),
-    {XDollar, tconv:to_i(XBits), YDollar, list_to_integer(Y)}.
+     apply_to_attrs(Ref, Op).
 
-parse_range(Range) ->
-    [Cell1, Cell2] = string:tokens(Range, ":"),
-    {XD1, X1, YD1, Y1} = parse_cell(Cell1),
-    {XD2, X2, YD2, Y2} = parse_cell(Cell2),
-    {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2}.
+ %% %% @doc copys cells from a reference to a reference
+ %% -spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
+ copy_cell(#refX{obj = {cell, {FX,FY}}} = From, 
+           #refX{obj = {cell, {TX,TY}}} = To, 
+           Incr)
+   when is_record(From, refX), is_record(To, refX) ->
+     Formula = case read_ref_field(From, "formula", read) of
+                   [{_, V}] -> superparser:process(V); 
+                   _        -> ""
+               end,
+     F2 = case Formula of
+              {formula, F1} ->
+                  offset_formula(F1, {(TX - FX), (TY - FY)});
+              [{Type, F1},  _A, _F] ->
+                  case Incr of
+                      false  ->
+                          case Type of
+                              datetime ->
+                                  {datetime, D, T} = F1,
+                                  dh_date:format("d/m/Y", {D, T});
+                              _ ->
+                                  tconv:to_s(F1)
+                          end;
+                      _Other -> %% Other can be a range of different values...
+                          case Type of
+                              int      ->
+                                  NewV = F1 + diff(FX, FY, TX, TY, Incr),
+                                  tconv:to_s(NewV);
+                              datetime ->
+                                  {datetime, {Y, M , D}, T} = F1,
+                                  Date = calendar:date_to_gregorian_days(Y, M, D),
+                                  Date2 = Date + diff(FX, FY, TX, TY, Incr),
+                                  NewD = calendar:gregorian_days_to_date(Date2),
+                                  dh_date:format("d/m/Y", {NewD, T});
+                              _ ->
+                                  tconv:to_s(F1)
+                          end
+                  end;
+              _ -> 
+                  ""
+          end,
+     write_attrs(To, [{"formula", F2}]).
 
-parse_cols(Cols) ->
-    [Col1, Col2] = string:tokens(Cols, ":"),
-    {XD1, R1} = is_fixed(Col1),
-    {XD2, R2} = is_fixed(Col2),
-    {XD1, tconv:to_i(R1), XD2, tconv:to_i(R2)}.
-
-parse_rows(Rows) ->
-    [Row1, Row2] = string:tokens(Rows, ":"),
-    {YD1, R1} = is_fixed(Row1),
-    {YD2, R2} = is_fixed(Row2),
-    {YD1, list_to_integer(R1), YD2, list_to_integer(R2)}.
-
-is_fixed([$$|Rest]) -> {true, Rest};
-is_fixed(List)      -> {false, List}.
-
-offset_with_ranges(Toks, Cell, From, Offset) ->
-    offset_with_ranges1(Toks, Cell, From, Offset, []).
-
-offset_with_ranges1([], _Cell, _From, _Offset, Acc) ->
-    lists:reverse(Acc);
-offset_with_ranges1([{rangeref, LineNo,
-                      #rangeref{path = Path, text = Text}=H} | T],
-                    Cell, #refX{path = FromPath} = From, Offset, Acc) ->
-    #refX{path = CPath} = Cell,
-    PathCompare = muin_util:walk_path(CPath, Path),
-    Range = muin_util:just_ref(Text),
-    Prefix = case muin_util:just_path(Text) of
-                 "/"     -> "";
-                 Other   -> Other
-             end,
-    [Cell1|[Cell2]] = string:tokens(Range, ":"),
-    {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
-    {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
-    NewText = case PathCompare of
-                  FromPath -> make_new_range(Prefix, Cell1, Cell2,
-                                             {X1D, X1, Y1D, Y1},
-                                             {X2D, X2, Y2D, Y2},
-                                             From, Offset);
-                  _        -> Text
-              end,
-    NewAcc = {rangeref, LineNo, H#rangeref{text = NewText}},
-    offset_with_ranges1(T, Cell, From, Offset, [NewAcc | Acc]);
-offset_with_ranges1([{cellref, LineNo,
-                      C=#cellref{path = Path, text = Text}}=H | T],
-                    Cell, #refX{path = FromPath} = From,
-                    {XO, YO}=Offset, Acc) ->
-    {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
-    case From#refX.obj of
-        {column,{Left,_Right}} when X < Left ->
-            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
-        {row,{Top,_Bottom}} when Y < Top ->
-            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
-        _Else ->
-            #refX{path = CPath} = Cell,
-            Prefix = case muin_util:just_path(Text) of
-                         "/"   -> "";
-                         Other -> Other
-                     end,
-
-            PathCompare = muin_util:walk_path(CPath, Path),
-            NewCell =
-                case PathCompare of
-                    FromPath -> make_cell(XDollar, X, XO, YDollar, Y, YO);
-                    _        -> Text
-                end,
-            NewAcc = {cellref, LineNo, C#cellref{text = Prefix ++ NewCell}},    
-            offset_with_ranges1(T, Cell, From, {XO, YO}, [NewAcc | Acc])
-    end;
-offset_with_ranges1([H | T], Cell, From, Offset, Acc) ->
-    offset_with_ranges1(T, Cell, From, Offset, [H | Acc]).
-
-%% handle cells
-make_new_range(Prefix, Cell1, Cell2, 
-               {X1D, X1, Y1D, Y1},
-               {X2D, X2, Y2D, Y2},
-               #refX{obj = {cell, {X, Y}}} = _From, {XO, YO}) ->
-    NC1 =
-        case {X1, Y1} of
-            {X, Y} -> make_cell(X1D, X1, XO, Y1D, Y1, YO);
-            _      -> Cell1
-        end,
-    NC2 =
-        case {X2, Y2} of
-            {X, Y} -> make_cell(X2D, X2, XO, Y2D, Y2, YO);
-            _      -> Cell2
-        end,
-    Prefix ++ NC1 ++ ":" ++ NC2;
-%% handle rows
-make_new_range(Prefix, Cell1, Cell2, 
-               {X1D, X1, Y1D, Y1},
-               {X2D, X2, Y2D, Y2},
-               #refX{obj = {row, {Top, _Bottom}}}, 
-               {0=_XOffset, YOffset}) ->
-    NC1 = if Top =< Y1 -> make_cell(X1D, X1, 0, Y1D, Y1, YOffset);
-             true      -> Cell1 end,
-    NC2 = if Top =< Y2 -> make_cell(X2D, X2, 0, Y2D, Y2, YOffset); 
-             true      -> Cell2 end,
-    Prefix ++ NC1 ++ ":" ++ NC2;
-%% handle columns
-make_new_range(Prefix, Cell1, Cell2, 
-               {X1D, X1, Y1D, Y1},
-               {X2D, X2, Y2D, Y2},
-               #refX{obj = {column, {Left, _Right}}}, 
-               {XOffset, 0=_YOffset}) ->
-    NC1 = if Left =< X1 -> make_cell(X1D, X1, XOffset, Y1D, Y1, 0);
-             true       -> Cell1 end,
-    NC2 = if Left =< X2 -> make_cell(X2D, X2, XOffset, Y2D, Y2, 0); 
-             true       -> Cell2 end,
-    Prefix ++ NC1 ++ ":" ++ NC2;
-%% handle ranges (horizontal rewrite)
-make_new_range(Prefix, Cell1, Cell2, 
-               {X1D, X1, Y1D, Y1},
-               {X2D, X2, Y2D, Y2},
-               #refX{obj = {range, {_XA, YA, _XB, YB}}}, 
-               {XOffset, 0}) ->
-    if
-        (YA =< Y1 andalso YB >= Y2) ->
-            NC1 = make_cell(X1D, X1, XOffset, Y1D, Y1, 0),
-            NC2 = make_cell(X2D, X2, XOffset, Y2D, Y2, 0);
-        (YA >  Y1 orelse  YB <  Y2) ->
-            NC1 = Cell1,
-            NC2 = Cell2
-    end,
-    Prefix ++ NC1 ++ ":" ++ NC2;
-%% handle ranges (horizontal rewrite)
-make_new_range(Prefix, Cell1, Cell2, 
-               {X1D, X1, Y1D, Y1},
-               {X2D, X2, Y2D, Y2},
-               #refX{obj = {range, {XA, _YA, XB, _YB}}}, 
-               {0, YOffset}) ->
-    if
-        (XA =< X1 andalso XB >= X2) ->
-            NC1 = make_cell(X1D, X1, 0, Y1D, Y1, YOffset),
-            NC2 = make_cell(X2D, X2, 0, Y2D, Y2, YOffset);
-        (XA >  X1 orelse  XB <  X2) ->
-            NC1 = Cell1,
-            NC2 = Cell2
-    end,
-    Prefix ++ NC1 ++ ":" ++ NC2.
-
-%% used in copy'n'paste, drag'n'drops etc...
-d_n_d_c_n_p_offset(Toks, XOffset, YOffset) ->
-    d_n_d_c_n_p_offset1(Toks, XOffset, YOffset, []).
-
-d_n_d_c_n_p_offset1([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
-d_n_d_c_n_p_offset1([{cellref, LineNo, #cellref{text = Text}= H} | T], 
-                    XOffset, YOffset, Acc) ->
-    Cell = muin_util:just_ref(Text),
-    Prefix = case muin_util:just_path(Text) of
-                 "/"   -> "";
-                 Other -> Other
-             end,
-    {XDollar, X, YDollar, Y} = parse_cell(Cell),
-    NewCell = drag_n_drop_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
-    NewRef = {cellref, LineNo, H#cellref{text = Prefix ++ NewCell}},
-    d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewRef | Acc]);
-d_n_d_c_n_p_offset1([{rangeref, LineNo, #rangeref{text = Text}=H} | T], XOffset, YOffset, Acc) ->
-    Range = muin_util:just_ref(Text),
-    Pf = case muin_util:just_path(Text) of
-             "/"   -> "";
-             Other -> Other
-         end,
-    [Cell1 | [Cell2]] = string:tokens(Range, ":"),
-    {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
-    {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
-    NC1 = drag_n_drop_cell(X1D, X1, XOffset, Y1D, Y1, YOffset),
-    NC2 = drag_n_drop_cell(X2D, X2, XOffset, Y2D, Y2, YOffset),
-    NewText = if
-                  NC1 ==  "#REF!" orelse  NC2 ==  "#REF!" ->
-                      "#REF!";
-                  NC1 =/= "#REF!" andalso NC2 =/= "#REF!" ->
-                      Pf ++ NC1 ++ ":" ++ NC2
-              end,
-    NewR = {rangeref, LineNo, H#rangeref{text = NewText}},
-    d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewR | Acc]);
-d_n_d_c_n_p_offset1([H | T], XOffset, YOffset, Acc) ->
-    d_n_d_c_n_p_offset1(T, XOffset, YOffset, [H | Acc]).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Local Relations 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% -spec get_local_parents(#refX{}) -> [#refX{}].
-%% get_local_parents(#refX{site = Site} = X) ->
-%%     ParentIdxs = get_local_rel_idxs(X, parents),
-%%     [local_idx_to_refX(Site, C) || C <- ParentIdxs].
-
--spec get_local_children(#refX{}) -> [#refX{}].
-get_local_children(#refX{site = Site} = X) ->
-    ChildIdxs = get_local_rel_idxs(X, children),
-    [local_idx_to_refX(Site, C) || C <- ChildIdxs].
-
--spec get_local_children_idxs(#refX{}) -> [cellidx()]. 
-get_local_children_idxs(Ref) -> get_local_rel_idxs(Ref, children).
-
--spec get_local_rel_idxs(#refX{}, children|parents) -> [cellidx()]. 
-get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, Relation) ->
-    case read_local_item_index(Ref) of
-        false -> 
-            [];
-        Idx -> 
-            Table = trans(Site, relation),
-            case mnesia:read(Table, Idx, read) of
-                [R] -> case Relation of
-                           children -> R#relation.children;
-                           parents  -> R#relation.parents
-                       end;
-                _   -> []
-            end
-    end;
-get_local_rel_idxs(#refX{obj = {Type, _}} = Ref, Relation) 
-  when (Type == row) orelse (Type == column) orelse 
-       (Type == range) orelse (Type == page) ->
-    lists:flatten([get_local_rel_idxs(X, Relation)
-                   || X=#refX{obj={cell,_}} <- expand_ref(Ref)]).
-
--spec delete_local_relation(#refX{}) -> ok.
-delete_local_relation(#refX{site = Site} = Cell) ->
-    case read_local_item_index(Cell) of
-        false -> ok;
-        CellIdx ->
-            Tbl = trans(Site, relation),
-            case mnesia:read(Tbl, CellIdx, write) of
-                [R] ->
-                    [del_local_child(P, CellIdx, Tbl) || 
-                        P <- R#relation.parents],
-                    ok = mnesia:delete(Tbl, CellIdx, write);
-                _ -> ok
-            end
-    end.
-
--spec del_local_child(cellidx(), cellidx(), atom()) -> ok.
-del_local_child(CellIdx, Child, Tbl) ->
-     case mnesia:read(Tbl, CellIdx, write) of
-         [R] ->
-             Children = ordsets:del_element(Child, R#relation.children),
-             R2 = R#relation{children = Children},
-             mnesia:write(Tbl, R2, write);
+ %% @spec(From::refX{}, To::refX{}) -> ok
+ %% @doc Copies the style applied to From and attaches it to To.
+ %%      From can only be a cell ref but To can be either a cell or range
+ %%      ref
+ %% @end
+ %% this clause is for 'on page' copies where both From and To are on
+ %% the same page - just the index is copied
+ copy_style(#refX{site = S, path = P, obj = {cell, _}} = From, 
+            #refX{site = S, path = P, obj = {Type, _}} = To, 
+            _AReq)
+   when Type == cell orelse Type == range ->
+     case read_ref_field(From, "style", read) of
+         [{_, Idx}] ->
+             List = case Type of
+                        cell  -> [To];
+                        range -> hn_util:range_to_list(To)
+                    end,
+             Op = fun(Attrs) -> orddict:store("style", Idx, Attrs) end,
+             [ok = apply_to_attrs(X, Op) || X <- List],
+             ok;
          _ ->
+             ok
+     end;
+ %% this clause is for copying styles across different pages
+ copy_style(#refX{obj = {cell, _}} = From, 
+            #refX{obj = {Type, _}} = To, _AReq)
+   when Type == cell orelse Type == range ->
+     case read_styles(From) of
+         [] -> ok;
+         [{styles, _, _Idx, MagicStyle}] ->
+             List = case Type of
+                        cell  -> [To];
+                        range -> hn_util:range_to_list(To)
+                    end,
+             Fun = fun(X) ->
+                           Idx = write_style(X, MagicStyle),
+                           fun(Attrs) -> 
+                                   orddict:store("style", Idx, Attrs) 
+                           end
+                   end,
+             [ok = Fun(X) || X <- List],
              ok
      end.
 
--spec set_local_relations(#refX{}, [#refX{}]) -> ok.
-set_local_relations(#refX{site = Site} = Cell, Parents) ->
-    Tbl = trans(Site, relation),
-    CellIdx = get_local_item_index(Cell),
-    Rel = case mnesia:read(Tbl, CellIdx, write) of
-              [R] -> R; 
-              []  -> #relation{cellidx = CellIdx}
-          end,
-    Rel2 = set_local_parents(Tbl, Rel, Parents),
-    mnesia:write(Tbl, Rel2, write).
+ -spec mark_these_dirty([#refX{}], nil | uid()) -> ok.
+ mark_these_dirty([], _) -> ok;
+ mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
+     F = fun(C) -> case read_local_item_index(C) of
+                       false -> []; 
+                       Idx   -> Idx
+                   end
+         end,
+     Tbl = trans(Site, relation),
+     Idxs = lists:flatten([F(C) || R <- Refs, C <- expand_ref(R)]),
+     Q = insert_work_queue(Idxs, Tbl, 1, hn_workq:new(AReq)),
+     Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
+     ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
 
--spec set_local_parents(atom(), #relation{}, [#refX{}]) -> #relation{}. 
-set_local_parents(Tbl, 
-                  Rel = #relation{cellidx = CellIdx, 
-                                  parents = CurParents},
-                  Parents) ->
-    ParentIdxs = ordsets:from_list([get_local_item_index(P) || P <- Parents]),
-    LostParents = ordsets:subtract(CurParents, ParentIdxs),
-    [del_local_child(P, CellIdx, Tbl) || P <- LostParents],
-    [ok = add_local_child(P, CellIdx, Tbl) || P <- ParentIdxs],
-    Rel#relation{parents = ParentIdxs}.
+ -spec mark_children_dirty(#refX{}, nil | uid()) -> ok.
+ mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
+     Tbl = trans(Site, relation),
+     Children = get_local_children_idxs(RefX),
+     Q = insert_work_queue(Children, Tbl, 1, hn_workq:new(AReq)),
+     case hn_workq:is_empty(Q) of
+         true  -> ok;
+         false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
+                  ok = mnesia:write(trans(Site, dirty_queue), Entry, write)
+     end.
 
- %% Adds a new child to a parent.
--spec add_local_child(cellidx(), cellidx(), atom()) -> ok.
-add_local_child(CellIdx, Child, Tbl) ->
-    Rel = case mnesia:read(Tbl, CellIdx, write) of
-              [R] -> R;
-              []  -> #relation{cellidx = CellIdx}
-          end,
-    Children = ordsets:add_element(Child, Rel#relation.children),
-    mnesia:write(Tbl, Rel#relation{children = Children}, write).
-
-%% get_attrs(List, AttrList) -> get_attrs1(List, AttrList, []).
-
-%% get_attrs1([], _AttrList, Acc) -> Acc;
-%% get_attrs1([{_, {K, _V}} = H | T], AttrList, Acc) ->
-%%     NewAcc = case lists:member(K, AttrList) of
-%%                  true  -> [H | Acc];
-%%                  false -> Acc
-%%              end,
-%%     get_attrs1(T, AttrList, NewAcc).
-
-%% dereferences a formula
-deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
-    {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
-    NewToks = deref1(Child, Toks, DeRefX, []),
-    make_formula(NewToks).
-
-deref1(_Child, [], _DeRefX, Acc) -> lists:reverse(Acc);
-deref1(Child, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Acc) ->
-    %% only deref the range if it is completely obliterated by the deletion
-    #refX{obj = Obj1} = DeRefX,
-    Range = muin_util:just_ref(Text),
-    Prefix = case muin_util:just_path(Text) of
-                 "/" -> [];
-                 Pre -> Pre
-             end,
-    Obj2 = hn_util:parse_ref(Range),
-    NewTok = case deref_overlap(Range, Obj1, Obj2) of
-                 {deref, "#REF!"} -> {deref, Prefix ++ "#REF!"};
-                 {recalc, Str}    -> {recalc, Prefix ++ Str};
-                 {formula, Str}   -> {formula, Prefix ++ Str}
-             end,
-    deref1(Child, T, DeRefX, [NewTok | Acc]);
-deref1(Child, [{cellref, _, #cellref{path = Path, text = Text}}=H | T], 
-       DeRefX, Acc) ->
-    NewTok = deref2(Child, H, Text, Path, DeRefX),
-    deref1(Child, T, DeRefX, [NewTok | Acc]);
-deref1(Child, [H | T], DeRefX, Acc) ->
-    deref1(Child, T, DeRefX, [H | Acc]).
-
-%% sometimes Text has a prepended slash
-deref2(Child, H, [$/|Text], Path, DeRefX) ->
-    Deref2 = deref2(Child, H, Text, Path, DeRefX),
-    case Deref2 of
-        H              -> H;
-        {deref,   Str} -> {deref,   "/" ++ Str};
-        {recalc,  Str} -> {recalc,  "/" ++ Str};
-        {formula, Str} -> {formula, "/" ++ Str}
-    end;
-%% special case for ambiguous parsing of division
-%% this matches on cases like =a1/b3
-deref2(_Child, _H, Text, "/", DeRefX) ->
-    #refX{obj = Obj1} = DeRefX,
-    Obj2 = hn_util:parse_ref(Text),
-    deref_overlap(Text, Obj1, Obj2);
-deref2(Child, H, Text, Path, DeRefX) ->
-    #refX{path = CPath} = Child,
-    #refX{path = DPath, obj = Obj1} = DeRefX,
-    PathCompare = muin_util:walk_path(CPath, Path),
-    case PathCompare of
-        DPath -> case Path of
-                     "./" -> {deref, "#REF!"};
-                     _P   -> S1 = muin_util:just_path(Text),
-                             S2 = muin_util:just_ref(Text),
-                             Obj2 = hn_util:parse_ref(S2),
-                             case deref_overlap(S2, Obj1, Obj2) of
-                                 {deref, "#REF!"} -> {deref, S1 ++ "#REF!"};
-                                 O                -> S1 ++ O
-                             end
+ %% Recursively walk child relation, adding entries into the work
+ %% queue.  We maintain an invariant that children must have a higher
+ %% priority than their parents, forcing them to be calculated after
+ %% their parent(s). This algorithm could naively visit the same
+ %% children multiple times, if there is no unique path from N1 ~~>
+ %% N2. An attempt is made to stop walking a bad path asap.
+ %% see:needs_elem(...).
+ -spec insert_work_queue([cellidx()], 
+                          atom(), 
+                          integer(), 
+                          hn_workq:work_queue())
+                         -> hn_workq:work_queue(). 
+ insert_work_queue([], _Tbl, _Priority, Q) ->
+     Q;
+ insert_work_queue([Idx|Rest], Tbl, Priority, Q) ->
+     Qnext = 
+         case mnesia:read(Tbl, Idx) of
+             [R] -> 
+                 case hn_workq:needs_elem(Idx, Priority, Q) of
+                     true ->
+                         Children = ordsets:to_list(R#relation.children),
+                         Q2 = insert_work_queue(Children, 
+                                                Tbl, 
+                                                Priority + 1,
+                                                Q),
+                         hn_workq:add(Idx, Priority, Q2);
+                     false -> Q
                  end;
-        _Else -> H
-    end.
+             _ -> Q
+         end,
+     insert_work_queue(Rest, Tbl, Priority, Qnext).
 
-%% if Obj1 completely subsumes Obj2 then the reference to Obj2 should 
-%% be dereferenced (return 'deref')
-%% %% if Obj1 partially subsumes Obj2 then the reference to Obj2 should
-%% be rewitten (return 'rewrite')
-%% if there is partial or no overlap then return 'unchanged'
-deref_overlap(Text, Obj1, Obj2) ->
-    %% the first thing we do is check each corner of Objs2 to see if it is inside
-    %% Obj1. Depending on the pattern of corners we rewrite the formula
-    %% - if all 4 corners are in the delete area the range must be dereferenced
-    %% - if 2 corners are in the delete area the formula must be rewritten
-    %% - if 1 corner is in the delete are the range must be deferenced
-    %%   because there is no way to rewrite it...
-    %% - (if 3 corners are in the delete area then the laws of Euclidean
-    %%   geometry have broken down and the end times are probably upon us
-    %%   so I would flee for my life sinner!)
-    %% 
-    %% BUT if all 4 corners are outside the delete area we need to check again:
-    %% - if the delete area is wholy inside the range then the range must be deferenced
-    %% - if the delete area transpierces the range then the range must be rewritten
-    {X1,  Y1,   X2,  Y2}  = expand(Obj1),
-    {XX1, YY1,  XX2, YY2} = expand(Obj2),
-    IntTL = intersect(XX1, YY1, X1, Y1, X2, Y2),
-    IntBL = intersect(XX1, YY2, X1, Y1, X2, Y2),
-    IntTR = intersect(XX2, YY1, X1, Y1, X2, Y2),
-    IntBR = intersect(XX2, YY2, X1, Y1, X2, Y2),
-    case {IntTL, IntBL, IntTR, IntBR} of
-        %% all included - deref!
-        {in,  in,  in,  in}  -> {deref, "#REF!"};
-        %% none included you need to recheck in case the delete area
-        %% is contained in, or transects the target area
-        {out, out, out, out} -> recheck_overlay(Text, Obj1, Obj2);
-        %% one corner included - deref!
-        {in,  out, out, out} -> {deref, "#REF!"};
-        {out, in,  out, out} -> {deref, "#REF!"};
-        {out, out, in,  out} -> {deref, "#REF!"};
-        {out, out, out, in}  -> {deref, "#REF!"};
-        %% two corners included rewrite
-        {in,  in,  out, out} -> rewrite(X1, X2, Obj2, Text, left); %% left del
-        {out, out, in,  in}  -> rewrite(X1, Obj2, Text, right);
-        {in,  out, in,  out} -> rewrite(Y1, Y2, Obj2, Text, top);  %% top del
-        {out, in,  out, in}  -> rewrite(Y1, Obj2, Text, bottom);
-        %% transects are column/row intersects
-        {transect, transect, out, out} -> rewrite(X1, X2, Obj2, Text, left); %% left del
-        {out, out, transect, transect} -> rewrite(X1, Obj2, Text, right);
-        {transect, out, transect, out} -> rewrite(Y1, Y2, Obj2, Text, top);  %% top del
-        {out, transect, out, transect} -> rewrite(Y1, Obj2, Text, bottom);
-        {transect, transect, transect, transect} -> {deref, "#REF!"}
-    end.
+ %% @spec read_page_structure(Ref) -> dh_tree()
+ %% @doc read the populated pages under the specified path
+ %% @todo fix up api
+ read_page_structure(#refX{site = Site, obj = {page, "/"}}) ->
+     Items = mnesia:dirty_all_keys(trans(Site, local_objs)),
+     filter_pages(Items, dh_tree:new()).
 
-%% this first clause catches rows/columns where the deleting object is a cell/range
-%% in none of these cases does the formula dereference...
-intersect(A1, A2, X1, Y1, X2, Y2)
-  when (is_atom(A1) orelse is_atom(A2)) andalso
-       (is_integer(X1) andalso is_integer(Y1)
-        andalso is_integer(X2) andalso is_integer(Y2)) -> out;
-%% cols/rows never dereference
-intersect(A1, Y1, X1, A2, X2, A3)
-  when (is_atom(A1) andalso is_atom(A2) andalso is_atom(A3))
-       andalso (is_integer(Y1) andalso is_integer(X1) andalso is_integer(X2)) -> out;
-%% rows/cols never deference
-intersect(X1, A1, A2, Y1, A3, Y2)
-  when (is_atom(A1) andalso is_atom(A2) andalso is_atom(A3))
-       andalso (is_integer(X1) andalso is_integer(Y1) andalso is_integer(Y2)) -> out;
-%% page deletes always dereference
-intersect(_XX1, _YY1, zero, zero, inf, inf) ->
-    out;
-%% this is a row-row comparison
-intersect(Type, YY1, zero, Y1, inf, Y2)
-  when ((Type == zero) orelse (Type == inf)) ->
-    if
-        (YY1 >= Y1), (YY1 =< Y2) -> transect;
-        true                     -> out
-    end;
-%% this is a col-col comparison
-intersect(XX1, Type, X1, zero, X2, inf)
-  when ((Type == zero) orelse (Type == inf)) ->
-    if
-        (XX1 >= X1), (XX1 =< X2) -> transect;
-        true                     -> out
-    end;
-intersect(XX1, YY1, X1, Y1, X2, Y2) ->    
-    if
-        %% check for cell/range intersections
-        (xx1 >= X1),   (XX1 =< X2), (YY1 >= Y1),  (YY1 =< Y2) -> in;
-        %% order matters - first check for rows that are included
-        (XX1 >= X1),   (XX1 =< X2), (zero == Y1), (inf == Y2) -> in;
-        (zero == X1),  (inf == X2), (YY1 >= Y1),  (YY1 =< Y2) -> in;
-        %% now check for partial intersections
-        (XX1 == zero), (YY1 >= Y1), (YY1 =< Y2)               -> in;
-        (XX1 == inf),  (YY1 >= Y1), (YY1 =< Y2)               -> in;
-        (YY1 == zero), (XX1 >= X1), (XX1 =< X2)               -> in;
-        (YY1 == inf),  (XX1 >= X1), (XX1 =< X2)               -> in;
-        true                                                  -> out
-    end.         
+ read_pages(#refX{site = Site, obj = {page, "/"}}) ->
+     mnesia:all_keys(trans(Site, local_objs)).
 
-%% rewrite/5
-rewrite(X1O, X2O, {range, _}, Text, left)   ->
-    {XD1, _X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
-    S = make_cell(XD1, X1O, 0, YD1, Y1, 0) ++ ":" ++
-        make_cell(XD2, (X2 - (X2O - X1O + 1)), 0, YD2, Y2, 0),
-    {recalc, S};
+ filter_pages([], Tree) ->
+     Tree;
+ filter_pages([Path | T], Tree) ->
+     filter_pages(T, dh_tree:add(Path, Tree)).
 
-rewrite(X1O, X2O, {column, _}, Text, left)   ->
-    {XD1, _X1, XD2, X2} = parse_cols(Text),
-    S = make_col(XD1, X1O) ++ ":" ++ make_col(XD2, (X2 - (X2O - X1O + 1))),
-    {recalc, S};
+ -spec get_local_item_index(#refX{}) -> pos_integer().
+ %% @doc get_local_item_index get_item_index gets the index of an object 
+ %% AND CREATES IT IF IT DOESN'T EXIST
+ get_local_item_index(#refX{site = S, path = P, obj = O} = RefX) ->
+     case read_local_item_index(RefX) of
+         false -> Idx = util2:get_timestamp(),
+                  Rec = #local_objs{path = P, obj = O, idx = Idx},
+                  ok = mnesia:write(trans(S, local_objs), Rec, write),
+                  Idx;
+         Idx   -> Idx        
+     end.
 
-rewrite(Y1O, Y2O, {range, _}, Text, top)   ->
-    {XD1, X1, YD1, _Y1, XD2, X2, YD2, Y2} = parse_range(Text),
-    S = make_cell(XD1, X1, 0, YD1, Y1O, 0) ++ ":" ++
-        make_cell(XD2, X2, 0, YD2, (Y2 - (Y2O - Y1O + 1)), 0),
-    {recalc, S};
+ %% converts a tablename into the site-specific tablename
+ trans(Site, TableName) when is_atom(TableName) ->
+     Prefix = get_prefix(Site),
+     list_to_atom(Prefix ++ "&" ++ atom_to_list(TableName));
+ trans(Site, Record) when is_tuple(Record) -> 
+     NRec = trans(Site, element(1, Record)),
+     setelement(1, Record, NRec).
 
-rewrite(Y1O, Y2O, {row, _}, Text, top)   ->
-    {YD1, _Y1, YD2, Y2} = parse_rows(Text),
-    S = make_row(YD1, Y1O) ++ ":" ++ make_row(YD2, (Y2 - (Y2O - Y1O + 1))),
-    {recalc, S}.
 
-%% rewrite/4
-rewrite(XO, {range, _}, Text, right)  ->
-    {XD1, X1, YD1, Y1, XD2, _X2, YD2, Y2} = parse_range(Text),
-    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
-        make_cell(XD2, (XO - 1), 0, YD2, Y2, 0),
-    {recalc, S};
+ %%% splits a tablename into the site and record
+ split_trans(List) when is_list(List)->
+     Fun = fun(X, Acc) ->
+                   [split_trans(X) | Acc]
+           end,
+     lists:foldl(Fun, [], List);
+ split_trans(Record) when is_tuple(Record) ->
+     OldName = element(1, Record),
+     OldName2 = atom_to_list(OldName),
+     [Site, Port, NewName] = string:tokens(OldName2, "&"),
+     NewName2 = list_to_atom(NewName),
+     {"http://" ++ Site ++ ":" ++ Port, NewName2, Record}.
 
-rewrite(XO, {column, _}, Text, right)  ->
-    {XD1, X1, XD2, _X2} = parse_cols(Text),
-    S = make_col(XD1, X1) ++ ":" ++ make_col(XD2, (XO - 1)),
-    {recalc, S};
+ trans_back([]) -> [];
+ trans_back(List) when is_list(List) ->
+     Fun = fun(X, Acc) ->
+                   [trans_back(X) | Acc]
+           end,
+     lists:foldl(Fun, [], List);
+ trans_back(Atom) when is_atom(Atom) ->
+     [_Site, _Port, NewName] = string:tokens(atom_to_list(Atom), "&"),
+     list_to_atom(NewName);
+ trans_back(Record) when is_tuple(Record)-> 
+     OldName = element(1, Record),
+     OldName2 = atom_to_list(OldName),
+     [_Site, _Port, NewName] = string:tokens(OldName2, "&"),
+     setelement(1, Record, list_to_atom(NewName)).
 
-rewrite(XO, {range, _}, Text, middle_column)  ->
-    {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
-    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
-        make_cell(XD2, (X2 - XO), 0, YD2, Y2, 0),
-    {recalc, S};
+ get_prefix(R) when is_record(R, refX) ->
+     get_prefix(R#refX.site);
+ get_prefix("http://"++Site) ->
+     [case S of $: -> $&; S  -> S end 
+      || S <- Site].
 
-rewrite(XO, {column, _}, Text, middle)  ->
-    {XD1, X1, XD2, X2} = parse_cols(Text),
-    S = make_col(XD1, X1) ++ ":" ++ make_col(XD2, (X2 - XO)),
-    {recalc, S};
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ %%%                                                                          %%%
+ %%% Internal funtions                                                        %%%
+ %%%                                                                          %%%
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ delete_recs(Site, List) when is_list(List) ->
+     [ok = delete_recs1(Site, X) || X <- List],
+     ok.
 
-rewrite(YO, {range, _}, Text, bottom) ->
-    {XD1, X1, YD1, Y1, XD2, X2, YD2, _Y2} = parse_range(Text),
-    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
-        make_cell(XD2, X2, 0, YD2, (YO - 1), 0),
-    {recalc, S};
+ delete_recs1(Site, Rec) ->
+     Table = trans(Site, element(1, Rec)),
+     mnesia:delete_object(Table, Rec, write).
 
-rewrite(YO, {row, _}, Text, bottom) ->
-    {YD1, Y1, YD2, _Y2} = parse_rows(Text),
-    S = make_row(YD1, Y1) ++ ":" ++ make_row(YD2, (YO - 1)),
-    {recalc, S};
+ shift_pattern(#refX{obj = {cell, {_X, Y}}} = RefX, vertical) ->
+     RefX#refX{obj = {row, {Y, infinity}}};
+ shift_pattern(#refX{obj = {cell, {X, _Y}}} = RefX, horizontal) ->
+     RefX#refX{obj = {column, {X, infinity}}};
+ shift_pattern(#refX{obj = {range, {X1, Y1, X2, _Y2}}} = RefX, vertical) ->
+     RefX#refX{obj = {range, {X1, Y1, X2, infinity}}};
+ shift_pattern(#refX{obj = {range, {X1, Y1, _X2, Y2}}} = RefX, horizontal) ->
+     RefX#refX{obj = {range, {X1, Y1, infinity, Y2}}};
+ shift_pattern(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
+     RefX#refX{obj = {row, {Y1, infinity}}};
+ shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
+     RefX#refX{obj = {column, {X1, infinity}}};
+ shift_pattern(RefX, _Disp) -> RefX.
 
-rewrite(YO, {range, _}, Text, middle_row) ->
-    {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
-    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
-        make_cell(XD2, X2, 0, YD2, (Y2 - YO), 0),
-    {recalc, S};
+ local_idx_to_refX(S, Idx) ->
+     case mnesia:index_read(trans(S, local_objs), Idx, idx) of
+         [Rec] -> #local_objs{path = P, obj = O} = Rec,
+                  #refX{site = S, path = P, obj = O};
+         []    -> {error, id_not_found, Idx}
+     end.
 
-rewrite(YO, {row, _}, Text, middle) ->
-    {YD1, Y1, YD2, Y2} = parse_rows(Text),
-    S = make_row(YD1, Y1) ++ ":" ++ make_row(YD2, (Y2 - YO)),
-    {recalc, S}.
+ %% @doc Make a #muin_rti record out of a ref record and a flag that specifies 
+ %% whether to run formula in an array context.
+ refX_to_rti(#refX{site = S, path = P, obj = {cell, {C, R}}}, AR, AC)
+   when is_boolean(AC) ->
+     #muin_rti{site = S, path = P, 
+               col = C, row = R, 
+               array_context = AC,
+               auth_req = AR};
+ refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
+   when is_boolean(AC) ->
+     #muin_rti{site = S, path = P, 
+               col = C, row = R, 
+               array_context = AC,
+               auth_req = AR}.
 
-%% page deletes always derefence
-recheck_overlay(_Text, {page, "/"}, _Target) -> {deref, "#REF!"};
-%% cell targets that have matched so far ain't gonna
-recheck_overlay(Text, _DelX, {cell, _}) -> {formula, Text};
-%% cell deletes that haven't matched a row or column so far ain't gonna
-recheck_overlay(Text, {cell, _}, {Type, _})
-  when ((Type == row) orelse (Type == column)) -> {formula, Text};
-%% cols/rows cols/range comparisons always fail
-recheck_overlay(Text, {Type, _}, {column, _})
-  when ((Type == row) orelse (Type == range)) -> {formula, Text};
-%% rows/cols comparisons always fail
-recheck_overlay(Text, {Type, _}, {row, _})
-  when ((Type == column) orelse (Type == range)) -> {formula, Text};
-%% check a row/row
-recheck_overlay(Text, {row, {X1, X2}}, {row, {XX1, XX2}} = Tgt) ->
-    if
-        (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2) ->
+ %% read_item_index reads the index of an object AND RETURNS 'false'
+ %% IF IT DOESN'T EXIST
+ -spec read_local_item_index(#refX{}) -> pos_integer() | false. 
+ read_local_item_index(#refX{site = S, path = P, obj = Obj}) ->
+     Table = trans(S, local_objs),
+     MS = ets:fun2ms(fun(#local_objs{path=MP, obj=MObj, idx=I}) when 
+                               MP == P, MObj == Obj -> I
+                     end),
+     case mnesia:select(Table, MS, read) of
+         [I] -> I;
+         _   -> false
+     end.
+
+ %% make_cell makes a cell with dollars and stuff based on the offset
+ make_cell(false, X, XOffset, false, Y, YOffset) ->
+     tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset);
+ make_cell(true, X, XOffset, false, Y, YOffset) ->
+     [$$] ++ tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset);
+ make_cell(false, X, XOffset, true, Y, YOffset) ->
+     tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y + YOffset);
+ make_cell(true, X, XOffset, true, Y, YOffset)  -> 
+     [$$] ++ tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y + YOffset).
+
+ %% drag'n'drop_cell drags and drops a cell ignoring offsets
+ %% if the row/column part is fixed with a dollar
+ drag_n_drop_cell(false, X, XOffset, false, Y, YOffset) ->
+     if
+         (X + XOffset) <  1 orelse  (Y + YOffset) <  1 -> "#REF!";
+         (X + XOffset) >= 1 andalso (Y + YOffset) >= 1 ->
+             tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset)
+     end;
+ drag_n_drop_cell(true, X, _XOffset, false, Y, YOffset) ->
+     if
+         X <  1 orelse ( Y + YOffset) <  1 -> "#REF!";
+         X >= 1 andalso (Y + YOffset) >= 1 ->
+             [$$] ++ tconv:to_b26(X) ++ tconv:to_s(Y + YOffset)
+     end;
+ drag_n_drop_cell(false, X, XOffset, true, Y, _YOffset) ->
+     if
+         (X + XOffset) <  1 orelse  Y <  1 -> "#REF!";
+         (X + XOffset) >= 1 andalso Y >= 1 ->
+             tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y)
+     end;
+ drag_n_drop_cell(true, X, _XOffset, true, Y, _YOffset)  -> 
+     if
+         X <  1 orelse  Y <  1 -> "#REF!";
+         X >= 1 andalso Y >= 1 ->
+             [$$] ++ tconv:to_b26(X) ++ [$$] ++ tconv:to_s(Y)
+     end.
+
+ make_col(false, X) -> tconv:to_b26(X);
+ make_col(true,  X) -> [$$] ++ X.
+
+ make_row(false, Y) -> tconv:to_s(Y);
+ make_row(true,  Y) -> [$$] ++ tconv:to_s(Y).
+
+
+ diff( FX, _FY,  TX, _TY, horizontal) -> TX - FX;
+ diff(_FX,  FY, _TX,  TY, vertical)   -> TY - FY.
+
+ %% make formula creates a new formula, but also returns a status.
+ %% Status can be [clean | dirty]
+ %% Formulae that return dirty should be marked dirty at recalc
+ %% time as they will not recalc to the real value
+ %% The function 'INDIRECT' is an example of such a function
+ make_formula(Toks) ->
+     mk_f(Toks, {clean, []}).
+
+ %% this function needs to be extended...
+ mk_f([], {St, A}) -> 
+     {St, "="++lists:flatten(lists:reverse(A))};
+
+ mk_f([{errval, _, '#REF!'} | T], {St, A}) -> 
+     mk_f(T, {St, ["#REF!" | A]});
+
+ mk_f([{deref, _, Text} | T], {St, A}) -> 
+     mk_f(T, {St, [Text | A]});
+
+ %% special infering of division
+ mk_f([{cellref, _, C1}, {cellref, _, C2} | T], {St, A}) -> 
+     mk_f(T, {St, [C2#cellref.text, "/", C1#cellref.text | A]});
+
+ mk_f([{int, _, I}, {cellref,_,C} | T], {St, A}) -> 
+     mk_f(T, {St, [C#cellref.text, "/", integer_to_list(I) | A]});
+
+ mk_f([{float, _, {F, _}}, {cellref,_,C} | T], {St, A}) -> 
+     mk_f(T, {St, [C#cellref.text, "/", float_to_list(F) | A]});
+
+ mk_f([{')',_}, {cellref,_,C} | T], {St, A}) ->
+     mk_f(T, {St, [C#cellref.text, "/", ")" | A]});
+
+ %% order matters - now detecting 'root' cells
+ mk_f([{cellref, _, #cellref{path="/", text=Text}} | T], {St, A}) -> 
+     mk_f(T, {St, ["/" ++ Text | A]});
+
+ mk_f([{cellref, _, C} | T], {St, A}) ->
+     mk_f(T, {St, [C#cellref.text | A]});
+
+ mk_f([{rangeref, _, R} | T], {St, A}) ->
+     mk_f(T, {St, [R#rangeref.text | A]});
+
+ mk_f([{namedexpr, _, N} | T], {St, A}) ->
+     mk_f(T, {St, [N#namedexpr.path ++ N#namedexpr.text | A]});
+
+ mk_f([{bool, _, H} | T], {St, A}) ->
+     mk_f(T, {St, [atom_to_list(H) | A]});
+
+ mk_f([{atom, _, H} | T], {St, A}) ->
+     mk_f(T, {St, [atom_to_list(H) | A]});
+
+ mk_f([{int, _, I} | T], {St, A}) ->
+     mk_f(T, {St, [integer_to_list(I) | A]});
+
+ mk_f([{float, _, {F, _OrigStr}} | T], {St, A}) ->
+     mk_f(T, {St, [float_to_list(F) | A]});
+
+ mk_f([{formula, _, S} | T], {St, A}) ->
+     mk_f(T, {St, [S | A]});
+
+ mk_f([{str, _, S} | T], {St, A}) ->
+     mk_f(T, {St, [$", S, $" | A]});
+
+ mk_f([{recalc, _, S} | T], {_St, A}) ->
+     mk_f(T, {dirty, [S | A]});
+
+ mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
+     mk_f(T, {dirty, ["INDIRECT" | A]});
+
+ mk_f([{name, _, "SUM"} | T], {_St, A}) ->
+     mk_f(T, {dirty, ["SUM" | A]});
+
+ mk_f([{name, _, "CELL"} | T], {_St, A}) ->
+     mk_f(T, {dirty, ["CELL" | A]});
+
+ mk_f([{name, _, S} | T], {St, A}) ->
+     mk_f(T, {St, [S | A]});
+
+ mk_f([{H, _} | T], {St, A}) ->
+     mk_f(T, {St, [atom_to_list(H) | A]}).
+
+ parse_cell(Cell) ->
+     {XDollar, Rest} = is_fixed(Cell),
+     Fun = fun(XX) ->
+                   if XX < 97  -> false;
+                      XX > 122 -> false;
+                      true     -> true
+                   end
+           end,
+     {XBits, YBits} = lists:partition(Fun,string:to_lower(Rest)),
+     {YDollar, Y} = is_fixed(YBits),
+     {XDollar, tconv:to_i(XBits), YDollar, list_to_integer(Y)}.
+
+ parse_range(Range) ->
+     [Cell1, Cell2] = string:tokens(Range, ":"),
+     {XD1, X1, YD1, Y1} = parse_cell(Cell1),
+     {XD2, X2, YD2, Y2} = parse_cell(Cell2),
+     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2}.
+
+ parse_cols(Cols) ->
+     [Col1, Col2] = string:tokens(Cols, ":"),
+     {XD1, R1} = is_fixed(Col1),
+     {XD2, R2} = is_fixed(Col2),
+     {XD1, tconv:to_i(R1), XD2, tconv:to_i(R2)}.
+
+ parse_rows(Rows) ->
+     [Row1, Row2] = string:tokens(Rows, ":"),
+     {YD1, R1} = is_fixed(Row1),
+     {YD2, R2} = is_fixed(Row2),
+     {YD1, list_to_integer(R1), YD2, list_to_integer(R2)}.
+
+ is_fixed([$$|Rest]) -> {true, Rest};
+ is_fixed(List)      -> {false, List}.
+
+ offset_with_ranges(Toks, Cell, From, Offset) ->
+     offset_with_ranges1(Toks, Cell, From, Offset, []).
+
+ offset_with_ranges1([], _Cell, _From, _Offset, Acc) ->
+     lists:reverse(Acc);
+ offset_with_ranges1([{rangeref, LineNo,
+                       #rangeref{path = Path, text = Text}=H} | T],
+                     Cell, #refX{path = FromPath} = From, Offset, Acc) ->
+     #refX{path = CPath} = Cell,
+     PathCompare = muin_util:walk_path(CPath, Path),
+     Range = muin_util:just_ref(Text),
+     Prefix = case muin_util:just_path(Text) of
+                  "/"     -> "";
+                  Other   -> Other
+              end,
+     [Cell1|[Cell2]] = string:tokens(Range, ":"),
+     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
+     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
+     NewText = case PathCompare of
+                   FromPath -> make_new_range(Prefix, Cell1, Cell2,
+                                              {X1D, X1, Y1D, Y1},
+                                              {X2D, X2, Y2D, Y2},
+                                              From, Offset);
+                   _        -> Text
+               end,
+     NewAcc = {rangeref, LineNo, H#rangeref{text = NewText}},
+     offset_with_ranges1(T, Cell, From, Offset, [NewAcc | Acc]);
+ offset_with_ranges1([{cellref, LineNo,
+                       C=#cellref{path = Path, text = Text}}=H | T],
+                     Cell, #refX{path = FromPath} = From,
+                     {XO, YO}=Offset, Acc) ->
+     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
+     case From#refX.obj of
+         {column,{Left,_Right}} when X < Left ->
+             offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
+         {row,{Top,_Bottom}} when Y < Top ->
+             offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
+         _Else ->
+             #refX{path = CPath} = Cell,
+             Prefix = case muin_util:just_path(Text) of
+                          "/"   -> "";
+                          Other -> Other
+                      end,
+
+             PathCompare = muin_util:walk_path(CPath, Path),
+             NewCell =
+                 case PathCompare of
+                     FromPath -> make_cell(XDollar, X, XO, YDollar, Y, YO);
+                     _        -> Text
+                 end,
+             NewAcc = {cellref, LineNo, C#cellref{text = Prefix ++ NewCell}},    
+             offset_with_ranges1(T, Cell, From, {XO, YO}, [NewAcc | Acc])
+     end;
+ offset_with_ranges1([H | T], Cell, From, Offset, Acc) ->
+     offset_with_ranges1(T, Cell, From, Offset, [H | Acc]).
+
+ %% handle cells
+ make_new_range(Prefix, Cell1, Cell2, 
+                {X1D, X1, Y1D, Y1},
+                {X2D, X2, Y2D, Y2},
+                #refX{obj = {cell, {X, Y}}} = _From, {XO, YO}) ->
+     NC1 =
+         case {X1, Y1} of
+             {X, Y} -> make_cell(X1D, X1, XO, Y1D, Y1, YO);
+             _      -> Cell1
+         end,
+     NC2 =
+         case {X2, Y2} of
+             {X, Y} -> make_cell(X2D, X2, XO, Y2D, Y2, YO);
+             _      -> Cell2
+         end,
+     Prefix ++ NC1 ++ ":" ++ NC2;
+ %% handle rows
+ make_new_range(Prefix, Cell1, Cell2, 
+                {X1D, X1, Y1D, Y1},
+                {X2D, X2, Y2D, Y2},
+                #refX{obj = {row, {Top, _Bottom}}}, 
+                {0=_XOffset, YOffset}) ->
+     NC1 = if Top =< Y1 -> make_cell(X1D, X1, 0, Y1D, Y1, YOffset);
+              true      -> Cell1 end,
+     NC2 = if Top =< Y2 -> make_cell(X2D, X2, 0, Y2D, Y2, YOffset); 
+              true      -> Cell2 end,
+     Prefix ++ NC1 ++ ":" ++ NC2;
+ %% handle columns
+ make_new_range(Prefix, Cell1, Cell2, 
+                {X1D, X1, Y1D, Y1},
+                {X2D, X2, Y2D, Y2},
+                #refX{obj = {column, {Left, _Right}}}, 
+                {XOffset, 0=_YOffset}) ->
+     NC1 = if Left =< X1 -> make_cell(X1D, X1, XOffset, Y1D, Y1, 0);
+              true       -> Cell1 end,
+     NC2 = if Left =< X2 -> make_cell(X2D, X2, XOffset, Y2D, Y2, 0); 
+              true       -> Cell2 end,
+     Prefix ++ NC1 ++ ":" ++ NC2;
+ %% handle ranges (horizontal rewrite)
+ make_new_range(Prefix, Cell1, Cell2, 
+                {X1D, X1, Y1D, Y1},
+                {X2D, X2, Y2D, Y2},
+                #refX{obj = {range, {_XA, YA, _XB, YB}}}, 
+                {XOffset, 0}) ->
+     if
+         (YA =< Y1 andalso YB >= Y2) ->
+             NC1 = make_cell(X1D, X1, XOffset, Y1D, Y1, 0),
+             NC2 = make_cell(X2D, X2, XOffset, Y2D, Y2, 0);
+         (YA >  Y1 orelse  YB <  Y2) ->
+             NC1 = Cell1,
+             NC2 = Cell2
+     end,
+     Prefix ++ NC1 ++ ":" ++ NC2;
+ %% handle ranges (horizontal rewrite)
+ make_new_range(Prefix, Cell1, Cell2, 
+                {X1D, X1, Y1D, Y1},
+                {X2D, X2, Y2D, Y2},
+                #refX{obj = {range, {XA, _YA, XB, _YB}}}, 
+                {0, YOffset}) ->
+     if
+         (XA =< X1 andalso XB >= X2) ->
+             NC1 = make_cell(X1D, X1, 0, Y1D, Y1, YOffset),
+             NC2 = make_cell(X2D, X2, 0, Y2D, Y2, YOffset);
+         (XA >  X1 orelse  XB <  X2) ->
+             NC1 = Cell1,
+             NC2 = Cell2
+     end,
+     Prefix ++ NC1 ++ ":" ++ NC2.
+
+ %% used in copy'n'paste, drag'n'drops etc...
+ d_n_d_c_n_p_offset(Toks, XOffset, YOffset) ->
+     d_n_d_c_n_p_offset1(Toks, XOffset, YOffset, []).
+
+ d_n_d_c_n_p_offset1([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
+ d_n_d_c_n_p_offset1([{cellref, LineNo, #cellref{text = Text}= H} | T], 
+                     XOffset, YOffset, Acc) ->
+     Cell = muin_util:just_ref(Text),
+     Prefix = case muin_util:just_path(Text) of
+                  "/"   -> "";
+                  Other -> Other
+              end,
+     {XDollar, X, YDollar, Y} = parse_cell(Cell),
+     NewCell = drag_n_drop_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
+     NewRef = {cellref, LineNo, H#cellref{text = Prefix ++ NewCell}},
+     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewRef | Acc]);
+ d_n_d_c_n_p_offset1([{rangeref, LineNo, #rangeref{text = Text}=H} | T], XOffset, YOffset, Acc) ->
+     Range = muin_util:just_ref(Text),
+     Pf = case muin_util:just_path(Text) of
+              "/"   -> "";
+              Other -> Other
+          end,
+     [Cell1 | [Cell2]] = string:tokens(Range, ":"),
+     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
+     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
+     NC1 = drag_n_drop_cell(X1D, X1, XOffset, Y1D, Y1, YOffset),
+     NC2 = drag_n_drop_cell(X2D, X2, XOffset, Y2D, Y2, YOffset),
+     NewText = if
+                   NC1 ==  "#REF!" orelse  NC2 ==  "#REF!" ->
+                       "#REF!";
+                   NC1 =/= "#REF!" andalso NC2 =/= "#REF!" ->
+                       Pf ++ NC1 ++ ":" ++ NC2
+               end,
+     NewR = {rangeref, LineNo, H#rangeref{text = NewText}},
+     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewR | Acc]);
+ d_n_d_c_n_p_offset1([H | T], XOffset, YOffset, Acc) ->
+     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [H | Acc]).
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ %%% Local Relations 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ %% -spec get_local_parents(#refX{}) -> [#refX{}].
+ %% get_local_parents(#refX{site = Site} = X) ->
+ %%     ParentIdxs = get_local_rel_idxs(X, parents),
+ %%     [local_idx_to_refX(Site, C) || C <- ParentIdxs].
+
+ -spec get_local_children(#refX{}) -> [#refX{}].
+ get_local_children(#refX{site = Site} = X) ->
+     ChildIdxs = get_local_rel_idxs(X, children),
+     [local_idx_to_refX(Site, C) || C <- ChildIdxs].
+
+ -spec get_local_children_idxs(#refX{}) -> [cellidx()]. 
+ get_local_children_idxs(Ref) -> get_local_rel_idxs(Ref, children).
+
+ -spec get_local_rel_idxs(#refX{}, children|parents) -> [cellidx()]. 
+ get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, Relation) ->
+     case read_local_item_index(Ref) of
+         false -> 
+             [];
+         Idx -> 
+             Table = trans(Site, relation),
+             case mnesia:read(Table, Idx, read) of
+                 [R] -> case Relation of
+                            children -> R#relation.children;
+                            parents  -> R#relation.parents
+                        end;
+                 _   -> []
+             end
+     end;
+ get_local_rel_idxs(#refX{obj = {Type, _}} = Ref, Relation) 
+   when (Type == row) orelse (Type == column) orelse 
+        (Type == range) orelse (Type == page) ->
+     lists:flatten([get_local_rel_idxs(X, Relation)
+                    || X=#refX{obj={cell,_}} <- expand_ref(Ref)]).
+
+ -spec delete_local_relation(#refX{}) -> ok.
+ delete_local_relation(#refX{site = Site} = Cell) ->
+     case read_local_item_index(Cell) of
+         false -> ok;
+         CellIdx ->
+             Tbl = trans(Site, relation),
+             case mnesia:read(Tbl, CellIdx, write) of
+                 [R] ->
+                     [del_local_child(P, CellIdx, Tbl) || 
+                         P <- R#relation.parents],
+                     ok = mnesia:delete(Tbl, CellIdx, write);
+                 _ -> ok
+             end
+     end.
+
+ -spec del_local_child(cellidx(), cellidx(), atom()) -> ok.
+ del_local_child(CellIdx, Child, Tbl) ->
+      case mnesia:read(Tbl, CellIdx, write) of
+          [R] ->
+              Children = ordsets:del_element(Child, R#relation.children),
+              R2 = R#relation{children = Children},
+              mnesia:write(Tbl, R2, write);
+          _ ->
+              ok
+      end.
+
+ -spec set_local_relations(#refX{}, [#refX{}]) -> ok.
+ set_local_relations(#refX{site = Site} = Cell, Parents) ->
+     Tbl = trans(Site, relation),
+     CellIdx = get_local_item_index(Cell),
+     Rel = case mnesia:read(Tbl, CellIdx, write) of
+               [R] -> R; 
+               []  -> #relation{cellidx = CellIdx}
+           end,
+     Rel2 = set_local_parents(Tbl, Rel, Parents),
+     mnesia:write(Tbl, Rel2, write).
+
+ -spec set_local_parents(atom(), #relation{}, [#refX{}]) -> #relation{}. 
+ set_local_parents(Tbl, 
+                   Rel = #relation{cellidx = CellIdx, 
+                                   parents = CurParents},
+                   Parents) ->
+     ParentIdxs = ordsets:from_list([get_local_item_index(P) || P <- Parents]),
+     LostParents = ordsets:subtract(CurParents, ParentIdxs),
+     [del_local_child(P, CellIdx, Tbl) || P <- LostParents],
+     [ok = add_local_child(P, CellIdx, Tbl) || P <- ParentIdxs],
+     Rel#relation{parents = ParentIdxs}.
+
+  %% Adds a new child to a parent.
+ -spec add_local_child(cellidx(), cellidx(), atom()) -> ok.
+ add_local_child(CellIdx, Child, Tbl) ->
+     Rel = case mnesia:read(Tbl, CellIdx, write) of
+               [R] -> R;
+               []  -> #relation{cellidx = CellIdx}
+           end,
+     Children = ordsets:add_element(Child, Rel#relation.children),
+     mnesia:write(Tbl, Rel#relation{children = Children}, write).
+
+ %% get_attrs(List, AttrList) -> get_attrs1(List, AttrList, []).
+
+ %% get_attrs1([], _AttrList, Acc) -> Acc;
+ %% get_attrs1([{_, {K, _V}} = H | T], AttrList, Acc) ->
+ %%     NewAcc = case lists:member(K, AttrList) of
+ %%                  true  -> [H | Acc];
+ %%                  false -> Acc
+ %%              end,
+ %%     get_attrs1(T, AttrList, NewAcc).
+
+ %% dereferences a formula
+ deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
+     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
+     NewToks = deref1(Child, Toks, DeRefX, []),
+     make_formula(NewToks).
+
+ deref1(_Child, [], _DeRefX, Acc) -> lists:reverse(Acc);
+ deref1(Child, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Acc) ->
+     %% only deref the range if it is completely obliterated by the deletion
+     #refX{obj = Obj1} = DeRefX,
+     Range = muin_util:just_ref(Text),
+     Prefix = case muin_util:just_path(Text) of
+                  "/" -> [];
+                  Pre -> Pre
+              end,
+     Obj2 = hn_util:parse_ref(Range),
+     NewTok = case deref_overlap(Range, Obj1, Obj2) of
+                  {deref, "#REF!"} -> {deref, Prefix ++ "#REF!"};
+                  {recalc, Str}    -> {recalc, Prefix ++ Str};
+                  {formula, Str}   -> {formula, Prefix ++ Str}
+              end,
+     deref1(Child, T, DeRefX, [NewTok | Acc]);
+ deref1(Child, [{cellref, _, #cellref{path = Path, text = Text}}=H | T], 
+        DeRefX, Acc) ->
+     NewTok = deref2(Child, H, Text, Path, DeRefX),
+     deref1(Child, T, DeRefX, [NewTok | Acc]);
+ deref1(Child, [H | T], DeRefX, Acc) ->
+     deref1(Child, T, DeRefX, [H | Acc]).
+
+ %% sometimes Text has a prepended slash
+ deref2(Child, H, [$/|Text], Path, DeRefX) ->
+     Deref2 = deref2(Child, H, Text, Path, DeRefX),
+     case Deref2 of
+         H              -> H;
+         {deref,   Str} -> {deref,   "/" ++ Str};
+         {recalc,  Str} -> {recalc,  "/" ++ Str};
+         {formula, Str} -> {formula, "/" ++ Str}
+     end;
+ %% special case for ambiguous parsing of division
+ %% this matches on cases like =a1/b3
+ deref2(_Child, _H, Text, "/", DeRefX) ->
+     #refX{obj = Obj1} = DeRefX,
+     Obj2 = hn_util:parse_ref(Text),
+     deref_overlap(Text, Obj1, Obj2);
+ deref2(Child, H, Text, Path, DeRefX) ->
+     #refX{path = CPath} = Child,
+     #refX{path = DPath, obj = Obj1} = DeRefX,
+     PathCompare = muin_util:walk_path(CPath, Path),
+     case PathCompare of
+         DPath -> case Path of
+                      "./" -> {deref, "#REF!"};
+                      _P   -> S1 = muin_util:just_path(Text),
+                              S2 = muin_util:just_ref(Text),
+                              Obj2 = hn_util:parse_ref(S2),
+                              case deref_overlap(S2, Obj1, Obj2) of
+                                  {deref, "#REF!"} -> {deref, S1 ++ "#REF!"};
+                                  O                -> S1 ++ O
+                              end
+                  end;
+         _Else -> H
+     end.
+
+ %% if Obj1 completely subsumes Obj2 then the reference to Obj2 should 
+ %% be dereferenced (return 'deref')
+ %% %% if Obj1 partially subsumes Obj2 then the reference to Obj2 should
+ %% be rewitten (return 'rewrite')
+ %% if there is partial or no overlap then return 'unchanged'
+ deref_overlap(Text, Obj1, Obj2) ->
+     %% the first thing we do is check each corner of Objs2 to see if it is inside
+     %% Obj1. Depending on the pattern of corners we rewrite the formula
+     %% - if all 4 corners are in the delete area the range must be dereferenced
+     %% - if 2 corners are in the delete area the formula must be rewritten
+     %% - if 1 corner is in the delete are the range must be deferenced
+     %%   because there is no way to rewrite it...
+     %% - (if 3 corners are in the delete area then the laws of Euclidean
+     %%   geometry have broken down and the end times are probably upon us
+     %%   so I would flee for my life sinner!)
+     %% 
+     %% BUT if all 4 corners are outside the delete area we need to check again:
+     %% - if the delete area is wholy inside the range then the range must be deferenced
+     %% - if the delete area transpierces the range then the range must be rewritten
+     {X1,  Y1,   X2,  Y2}  = expand(Obj1),
+     {XX1, YY1,  XX2, YY2} = expand(Obj2),
+     IntTL = intersect(XX1, YY1, X1, Y1, X2, Y2),
+     IntBL = intersect(XX1, YY2, X1, Y1, X2, Y2),
+     IntTR = intersect(XX2, YY1, X1, Y1, X2, Y2),
+     IntBR = intersect(XX2, YY2, X1, Y1, X2, Y2),
+     case {IntTL, IntBL, IntTR, IntBR} of
+         %% all included - deref!
+         {in,  in,  in,  in}  -> {deref, "#REF!"};
+         %% none included you need to recheck in case the delete area
+         %% is contained in, or transects the target area
+         {out, out, out, out} -> recheck_overlay(Text, Obj1, Obj2);
+         %% one corner included - deref!
+         {in,  out, out, out} -> {deref, "#REF!"};
+         {out, in,  out, out} -> {deref, "#REF!"};
+         {out, out, in,  out} -> {deref, "#REF!"};
+         {out, out, out, in}  -> {deref, "#REF!"};
+         %% two corners included rewrite
+         {in,  in,  out, out} -> rewrite(X1, X2, Obj2, Text, left); %% left del
+         {out, out, in,  in}  -> rewrite(X1, Obj2, Text, right);
+         {in,  out, in,  out} -> rewrite(Y1, Y2, Obj2, Text, top);  %% top del
+         {out, in,  out, in}  -> rewrite(Y1, Obj2, Text, bottom);
+         %% transects are column/row intersects
+         {transect, transect, out, out} -> rewrite(X1, X2, Obj2, Text, left); %% left del
+         {out, out, transect, transect} -> rewrite(X1, Obj2, Text, right);
+         {transect, out, transect, out} -> rewrite(Y1, Y2, Obj2, Text, top);  %% top del
+         {out, transect, out, transect} -> rewrite(Y1, Obj2, Text, bottom);
+         {transect, transect, transect, transect} -> {deref, "#REF!"}
+     end.
+
+ %% this first clause catches rows/columns where the deleting object is a cell/range
+ %% in none of these cases does the formula dereference...
+ intersect(A1, A2, X1, Y1, X2, Y2)
+   when (is_atom(A1) orelse is_atom(A2)) andalso
+        (is_integer(X1) andalso is_integer(Y1)
+         andalso is_integer(X2) andalso is_integer(Y2)) -> out;
+ %% cols/rows never dereference
+ intersect(A1, Y1, X1, A2, X2, A3)
+   when (is_atom(A1) andalso is_atom(A2) andalso is_atom(A3))
+        andalso (is_integer(Y1) andalso is_integer(X1) andalso is_integer(X2)) -> out;
+ %% rows/cols never deference
+ intersect(X1, A1, A2, Y1, A3, Y2)
+   when (is_atom(A1) andalso is_atom(A2) andalso is_atom(A3))
+        andalso (is_integer(X1) andalso is_integer(Y1) andalso is_integer(Y2)) -> out;
+ %% page deletes always dereference
+ intersect(_XX1, _YY1, zero, zero, inf, inf) ->
+     out;
+ %% this is a row-row comparison
+ intersect(Type, YY1, zero, Y1, inf, Y2)
+   when ((Type == zero) orelse (Type == inf)) ->
+     if
+         (YY1 >= Y1), (YY1 =< Y2) -> transect;
+         true                     -> out
+     end;
+ %% this is a col-col comparison
+ intersect(XX1, Type, X1, zero, X2, inf)
+   when ((Type == zero) orelse (Type == inf)) ->
+     if
+         (XX1 >= X1), (XX1 =< X2) -> transect;
+         true                     -> out
+     end;
+ intersect(XX1, YY1, X1, Y1, X2, Y2) ->    
+     if
+         %% check for cell/range intersections
+         (xx1 >= X1),   (XX1 =< X2), (YY1 >= Y1),  (YY1 =< Y2) -> in;
+         %% order matters - first check for rows that are included
+         (XX1 >= X1),   (XX1 =< X2), (zero == Y1), (inf == Y2) -> in;
+         (zero == X1),  (inf == X2), (YY1 >= Y1),  (YY1 =< Y2) -> in;
+         %% now check for partial intersections
+         (XX1 == zero), (YY1 >= Y1), (YY1 =< Y2)               -> in;
+         (XX1 == inf),  (YY1 >= Y1), (YY1 =< Y2)               -> in;
+         (YY1 == zero), (XX1 >= X1), (XX1 =< X2)               -> in;
+         (YY1 == inf),  (XX1 >= X1), (XX1 =< X2)               -> in;
+         true                                                  -> out
+     end.         
+
+ %% rewrite/5
+ rewrite(X1O, X2O, {range, _}, Text, left)   ->
+     {XD1, _X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
+     S = make_cell(XD1, X1O, 0, YD1, Y1, 0) ++ ":" ++
+         make_cell(XD2, (X2 - (X2O - X1O + 1)), 0, YD2, Y2, 0),
+     {recalc, S};
+
+ rewrite(X1O, X2O, {column, _}, Text, left)   ->
+     {XD1, _X1, XD2, X2} = parse_cols(Text),
+     S = make_col(XD1, X1O) ++ ":" ++ make_col(XD2, (X2 - (X2O - X1O + 1))),
+     {recalc, S};
+
+ rewrite(Y1O, Y2O, {range, _}, Text, top)   ->
+     {XD1, X1, YD1, _Y1, XD2, X2, YD2, Y2} = parse_range(Text),
+     S = make_cell(XD1, X1, 0, YD1, Y1O, 0) ++ ":" ++
+         make_cell(XD2, X2, 0, YD2, (Y2 - (Y2O - Y1O + 1)), 0),
+     {recalc, S};
+
+ rewrite(Y1O, Y2O, {row, _}, Text, top)   ->
+     {YD1, _Y1, YD2, Y2} = parse_rows(Text),
+     S = make_row(YD1, Y1O) ++ ":" ++ make_row(YD2, (Y2 - (Y2O - Y1O + 1))),
+     {recalc, S}.
+
+ %% rewrite/4
+ rewrite(XO, {range, _}, Text, right)  ->
+     {XD1, X1, YD1, Y1, XD2, _X2, YD2, Y2} = parse_range(Text),
+     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
+         make_cell(XD2, (XO - 1), 0, YD2, Y2, 0),
+     {recalc, S};
+
+ rewrite(XO, {column, _}, Text, right)  ->
+     {XD1, X1, XD2, _X2} = parse_cols(Text),
+     S = make_col(XD1, X1) ++ ":" ++ make_col(XD2, (XO - 1)),
+     {recalc, S};
+
+ rewrite(XO, {range, _}, Text, middle_column)  ->
+     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
+     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
+         make_cell(XD2, (X2 - XO), 0, YD2, Y2, 0),
+     {recalc, S};
+
+ rewrite(XO, {column, _}, Text, middle)  ->
+     {XD1, X1, XD2, X2} = parse_cols(Text),
+     S = make_col(XD1, X1) ++ ":" ++ make_col(XD2, (X2 - XO)),
+     {recalc, S};
+
+ rewrite(YO, {range, _}, Text, bottom) ->
+     {XD1, X1, YD1, Y1, XD2, X2, YD2, _Y2} = parse_range(Text),
+     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
+         make_cell(XD2, X2, 0, YD2, (YO - 1), 0),
+     {recalc, S};
+
+ rewrite(YO, {row, _}, Text, bottom) ->
+     {YD1, Y1, YD2, _Y2} = parse_rows(Text),
+     S = make_row(YD1, Y1) ++ ":" ++ make_row(YD2, (YO - 1)),
+     {recalc, S};
+
+ rewrite(YO, {range, _}, Text, middle_row) ->
+     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
+     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
+         make_cell(XD2, X2, 0, YD2, (Y2 - YO), 0),
+     {recalc, S};
+
+ rewrite(YO, {row, _}, Text, middle) ->
+     {YD1, Y1, YD2, Y2} = parse_rows(Text),
+     S = make_row(YD1, Y1) ++ ":" ++ make_row(YD2, (Y2 - YO)),
+     {recalc, S}.
+
+ %% page deletes always derefence
+ recheck_overlay(_Text, {page, "/"}, _Target) -> {deref, "#REF!"};
+ %% cell targets that have matched so far ain't gonna
+ recheck_overlay(Text, _DelX, {cell, _}) -> {formula, Text};
+ %% cell deletes that haven't matched a row or column so far ain't gonna
+ recheck_overlay(Text, {cell, _}, {Type, _})
+   when ((Type == row) orelse (Type == column)) -> {formula, Text};
+ %% cols/rows cols/range comparisons always fail
+ recheck_overlay(Text, {Type, _}, {column, _})
+   when ((Type == row) orelse (Type == range)) -> {formula, Text};
+ %% rows/cols comparisons always fail
+ recheck_overlay(Text, {Type, _}, {row, _})
+   when ((Type == column) orelse (Type == range)) -> {formula, Text};
+ %% check a row/row
+ recheck_overlay(Text, {row, {X1, X2}}, {row, {XX1, XX2}} = Tgt) ->
+     if
+         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2) ->
             rewrite((X2 - X1 + 1), Tgt, Text, middle);
         true ->
             {formula, Text}
@@ -2257,79 +2135,11 @@ del_attributes(D, [Key|T]) ->
     D2 = orddict:erase(Key, D),
     del_attributes(D2, T).
 
-%% traverse(cell, #refX{obj = {cell, _}} = RefX, Key) ->
-%%     {range, match_ref(RefX, Key)};
-%% traverse(range, #refX{obj = {range, _}} = RefX, Key) ->
-%%     {page, match_ref(RefX, Key)};
-%% traverse(range, #refX{obj = {cell, _}} = RefX, Key) ->
-%%     V = case get_ranges(RefX#refX{obj = {page, "/"}}, Key) of
-%%             []   -> [];
-%%             List -> case filter_range(List, RefX) of
-%%                         nomatch -> [];
-%%                         Val     -> [Val]
-%%                     end
-%%         end,
-%%     {row_col, V};
-%% traverse(row_col, #refX{obj = {cell, {_X, Y}}} = RefX, Key) ->
-%%     {column, match_ref(RefX#refX{obj = {row, {Y, Y}}}, Key)};
-%% traverse(row, #refX{obj = {row, _}} = RefX, Key) ->
-%%     {page, match_ref(RefX, Key)};
-%% traverse(row, #refX{obj = {cell, {_X, Y}}} = RefX, Key) ->
-%%     {page, match_ref(RefX#refX{obj = {row, {Y, Y}}}, Key)};
-%% traverse(column, #refX{obj = {column, _}} = RefX, Key) ->
-%%     {page, match_ref(RefX, Key)};
-%% traverse(column, #refX{obj = {cell, {X, _Y}}} = RefX, Key) ->
-%%     {page, match_ref(RefX#refX{obj= {column, {X, X}}}, Key)};
-%% traverse(page, #refX{path=[]} = RefX, Key) ->
-%%     {last, match_ref(RefX#refX{obj = {page,"/"}}, Key)};
-%% traverse(page, RefX, Key) ->
-%%     NewPath = hslists:init(RefX#refX.path),
-%%     {page, RefX#refX{path = NewPath}, match_ref(RefX#refX{obj = {page, "/"}}, Key)}.
-
-%% get_ranges(#refX{site = S, path = P, obj = {page, "/"}}, Key) ->
-%%     Head = #local_objs{path = P, obj = {range, '_'}, idx = '$1'},
-%%     List1 = mnesia:select(trans(S, local_objs), [{Head, [], ['$_']}]),
-%%     List2 = [read_ref(X, Key, read) || X <- List1],
-%%     %% now sort the results
-%%     %% now convert the list of local_objs into refX's
-%%     Fun1 = fun({#local_objs{path = Path, obj = Obj, idx = Idx}, _KV}) ->
-%%                    {#refX{site = S, path = Path, obj = Obj}, Idx}
-%%            end,
-%%     List3 = lists:keysort(2, lists:map(Fun1, List2)),
-%%     Fun2 = fun(X, _Y) -> X end,
-%%     [Fun2(X, Y) || {X, Y} <- List3].
-
-%% filter_range([], _Cell)     -> nomatch;
-%% filter_range([H | T], Cell) ->
-%%     case hn_util:in_range(H#refX.obj, Cell#refX.obj) of
-%%         true -> H;
-%%         _    -> filter_range(T, Cell)
-%%     end.
-
 %% @doc Convert Parents and DependencyTree tuples as returned by 
 %% Muin into SimpleXML.
 muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
     Url = hn_util:index_to_url({index, S, P, X1, Y1}),
     {url, [{type, Type}], [Url]}.
-
-%% %% @doc Get the value of a named attribute, if it doesn't exist for address
-%% %% check parent (cell -> range -> row -> column -> page -> root -> default)
-%% match_ref(#refX{site = S} = RefX, Key) ->
-%%     case read_local_item_index(RefX) of
-%%         false -> [];
-%%         Idx   -> Table = trans(S, item),
-%%                  % this function is only used in traverse to 
-%%                  % recursively find the value of an attribute
-%%                  % so it gets a read lock only..
-%%                  case mnesia:read(Table, Idx, read) of
-%%                      []   -> [];
-%%                      Recs -> IdxNo = ms_util2:get_index(item, key) + 1,
-%%                              case lists:keysearch(Key, IdxNo, Recs) of
-%%                                  false           -> [];
-%%                                  {value, Return} -> [Return]
-%%                              end
-%%                  end
-%%     end.
 
 make_or(Attrs, PlcHoldr)  -> make_clause(Attrs, PlcHoldr, 'or').
 %%make_and(Attrs, PlcHoldr) -> make_clause(Attrs, PlcHoldr, 'and').
@@ -2344,18 +2154,6 @@ make_clause([], _, Op, Acc)      ->
     end;
 make_clause([H | T], PH, Op, A)  -> 
     make_clause(T, PH, Op, [{'==', PH, H} | A]).
-
-%% delete_style_attr(#refX{site = S} = RefX, Key)  ->
-%%     %% this function works by overwriting the set style attribute in the
-%%     %% current style record with []
-%%     [{RefX, {"style", Idx}}] = read_attrs(RefX, ["style"], write),
-%%     PageRefX = RefX#refX{obj = {page, "/"}},
-%%     Match = #styles{refX = PageRefX, index = Idx, _ = '_'},
-%%     Table = trans(S, styles),
-%%     [CurrentStyle] = mnesia:index_match_object(Table, Match, 1, read),
-%%     NewStyleIdx = get_style(RefX, CurrentStyle, Key, []),
-%%     write_attr3(RefX, {"style", NewStyleIdx}).
-
 
 %% this function is called when a new attribute is set for a style
 -spec apply_style(#refX{}, {string(), term()}, ?dict) -> ?dict.
@@ -2425,6 +2223,96 @@ make_tuple(Style, Counter, Index, Val) ->
 make_tuple1(S, 0, _I, _V, Acc) -> list_to_tuple([S|Acc]); 
 make_tuple1(S, I, I, V, Acc )  -> make_tuple1(S, I -1 , I, V, [V | Acc]); 
 make_tuple1(S, C, I, V, Acc)   -> make_tuple1(S, C - 1, I, V, [[] | Acc]).
+
+
+-spec read_objs(#refX{}, inside | intersect) -> [#local_objs{}]. 
+read_objs(#refX{site=Site}=Ref, inside) ->
+    MS = objs_inside_ref(Ref),
+    mnesia:select(trans(Site, local_objs), MS);
+read_objs(#refX{site=Site}=Ref, intersect) ->
+    MS = objs_intersect_ref(Ref),
+    mnesia:select(trans(Site, local_objs), MS).
+
+objs_inside_ref(#refX{path = P, obj = {page, "/"}}) ->
+    ets:fun2ms(fun(LO=#local_objs{path=MP}) when MP == P -> LO end);
+objs_inside_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
+    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,_MY}}}) 
+                     when MP == P,
+                          X1 =< MX, MX =< X2 -> LO
+               end);
+objs_inside_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
+    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{_MX,MY}}}) 
+                     when MP == P,
+                          R1 =< MY, MY =< R2 -> LO
+               end);
+objs_inside_ref(#refX{path = P, obj = {range, {0,Y1,infinity,Y2}}}) ->
+    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
+                     when MP == P,
+                          0 =< MX, MX =< infinity, 
+                          Y1 =< MY, MY =< Y2 -> LO;
+                  (LO=#local_objs{path=MP, obj={row,{MY,MY}}})
+                     when MP == P,
+                          Y1 =< MY, MY =< Y2 -> LO
+               end);
+objs_inside_ref(#refX{path = P, obj = {range, {X1,0,X2,infinity}}}) ->
+    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
+                     when MP == P,
+                          X1 =< MX, MX =< X2, 
+                          0 =< MY, MY =< infinity -> LO; 
+                  (LO=#local_objs{path=MP, obj={column,{MX,MX}}})
+                     when MP == P,
+                          X1 =< MX, MX =< X2 -> LO
+               end);
+objs_inside_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
+    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
+                     when MP == P,
+                          X1 =< MX, MX =< X2, 
+                          Y1 =< MY, MY =< Y2 -> LO
+               end);
+objs_inside_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
+    ets:fun2ms(
+      fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}})
+            when MP == P, MX == X, MY == Y -> LO
+      end).
+
+%% Note that this is most useful when given cells, or ranges. 
+objs_intersect_ref(#refX{path = P, obj = {page, "/"}}) ->
+    ets:fun2ms(fun(LO=#local_objs{path=MP}) when MP == P -> LO end);
+objs_intersect_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
+    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
+                     when MP == P,
+                          X1 =< MX, MX =< X2,
+                          Y1 =< MY, MY =< Y2 -> LO;
+                  (LO=#local_objs{path=MP, obj={row,{MY,MY}}})
+                     when MP == P,
+                          Y1 =< MY, MY =< Y2 -> LO;
+                  (LO=#local_objs{path=MP, obj={column, {MX,MX}}})
+                     when MP == P,
+                          X1 =< MX, MX =< X2 -> LO
+               end);
+objs_intersect_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
+    ets:fun2ms(
+      fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}})
+            when MP == P, MX == X, MY == Y -> LO;
+         (LO=#local_objs{path=MP, obj={column,{MX,MX}}}) 
+            when MP == P, MX == X -> LO; 
+         (LO=#local_objs{path=MP, obj={row,{MY,MY}}}) 
+            when MP == P, MY == Y -> LO
+      end);
+objs_intersect_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
+    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,_MY}}}) 
+                     when MP == P,
+                          X1 =< MX, MX =< X2 -> LO;
+                  (LO=#local_objs{path=MP, obj={row,_}})
+                     when MP == P -> LO
+               end);
+objs_intersect_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
+    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{_MX,MY}}}) 
+                     when MP == P,
+                          R1 =< MY, MY =< R2 -> LO;
+                  (LO=#local_objs{path=MP, obj={column, _}})
+                     when MP == P-> LO
+               end).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                              %
