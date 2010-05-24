@@ -513,43 +513,12 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp, Ar) ->
 
     case Obj of
         {row,    _} ->
-            ok = hn_db_wu:delete_row_objs(RefX),
             ok = hn_db_wu:shift_row_objs(RefX, Type);
         {column, _} ->
-            ok = hn_db_wu:delete_col_objs(RefX),
             ok = hn_db_wu:shift_col_objs(RefX, Type);
         _ ->
             ok
     end,
-
-    % now notify all parents and children of all cells on
-    % this page
-    % PageRef = RefX#refX{obj = {page, "/"}},
-    
-    % OK all our local stuff is sorted, now lets deal with the remote
-    % children
-    % Change = {insert, Obj, Disp},
-    % set the delay to zero
-    % ok = hn_db_wu:mark_notify_out_dirty(PageRef, Change, 0),
-    
-    %% Status = lists:flatten([Status1, Status2]),
-
-    %% % finally deal with any cells returned from delete_cells that
-    %% % are dirty - these need to be recalculated now that the link/local_objs
-    %% % tables have been transformed
-    %% Fun2 = fun(X) ->
-    %%                case hn_db_wu:read_attrs(X, ["formula"], write) of
-    %%                    [{X, {"formula", F}}] ->
-    %%                        hn_db_wu:write_attr(X, {"formula", F});
-    %%                    _  ->
-    %%                        ok
-    %%                end
-    %%        end,
-    %% [ok = Fun2(X) || {dirty, X} <- Status],
-    % Jobs a good'un, now for the remote parents
-    % io:format("in hn_db_api:move do something with Parents...~n"),
-    %%_Parents =  hn_db_wu:find_incoming_hn(Site, PageRef),
-    %io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
     ok.
 
 do_delete(insert, _RefX) ->

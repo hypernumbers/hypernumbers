@@ -499,8 +499,6 @@
          shift_cells/4,
          shift_row_objs/2,
          shift_col_objs/2,
-         delete_row_objs/1,
-         delete_col_objs/1,
          get_local_children/1,
          %%shift_children/3,
          copy_cell/3,
@@ -810,29 +808,6 @@ shift_obj(#local_objs{obj = {row, {Y1, Y2}}}=LO, _XOff, YOff) ->
     O2 = {row, {Y1 + YOff, Y2 + YOff}},
     LO#local_objs{obj = O2};
 shift_obj(LO, _, _) -> LO. 
-
-
--spec delete_col_objs(#refX{}) -> ok.
-%% @doc deletes any col objects completely covered by the #refX{}
-delete_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}) ->
-    H = #local_objs{path = P, obj = {column, {'$1', '$2'}}, _ = '_'},
-    C = [{'and', {'>=', '$1', X1}, {'=<', '$2', X2}}],
-    B = ['$_'],
-    M = [{H, C, B}],
-    Table = trans(S, local_objs),
-    Recs = mnesia:select(Table, M, write),
-    ok = delete_recs(S, Recs).
-
--spec delete_row_objs(#refX{}) -> ok.
-%% @doc deletes any row objects completely covered by the #refX{}
-delete_row_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}) ->
-    H = #local_objs{path = P, obj = {row, {'$1', '$2'}}, _ = '_'},
-    C = [{'and', {'>=', '$1', Y1}, {'=<', '$2', Y2}}],
-    B = ['$_'],
-    M = [{H, C, B}],
-    Table = trans(S, local_objs),
-    Recs = mnesia:select(Table, M, write),
-    ok = delete_recs(S, Recs).
 
 -spec shift_col_objs(#refX{}, insert | delete) -> ok.
 %% @doc shift_cols shifts cols left or right
