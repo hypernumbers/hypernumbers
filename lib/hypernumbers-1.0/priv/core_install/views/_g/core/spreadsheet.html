@@ -70,59 +70,7 @@
       </ul>
     </div>
     
-    <div id="menuwrap">
-      <ul id="hnmenu">              
-        <li><a id="edit">$txt:{Edit}$</a>
-          <ul style="width:140px;">
-        	<li><a name="copy">$txt:{Copy}$
-                <span class="desc">Ctrl+C</span></a></li>
-        	<li class="disabled paste"><a name="paste">$txt:{Paste}$
-                <span class="desc">Ctrl+V</span></a></li>
-        	<li class="disabled paste"><a name="pastestyle">$txt:{Paste}$
-                <strong>$txt:{Style}$</strong></a></li>
-        	<li class="disabled paste"><a name="pastevalue">$txt:{Paste}$ 
-                <strong>$txt:{Contents}$</strong></a></li>
-            <li class="disabled paste"><a name="pastelink">$txt:{Paste}$
-                <strong>$txt:{Links}$</strong></a></li>
-            <li class="seperator"></li>
-            <li><a>$txt:{Clear}$</a>
-              <ul style="width:140px;">
-                <li><a name="clearboth">$txt:{Clear}$
-                    <strong>$txt:{All}$</strong></a></li> 
-        	    <li><a name="clearformat">$txt:{Clear}$
-                    <strong>$txt:{Styles}$</strong></a></li>
-        	    <li><a name="clearcontent">$txt:{Clear}$ 
-                    <strong>$txt:{Contents}$</strong></a></li>
-              </ul>
-            </li>
-            <li class="seperator"></li>
-            <li>
-              <div class="input">
-                <input type="checkbox" id="copyformula" />
-              </div>
-              <a name="copyFormula">$txt:{Copy Formulas}$</a>
-            </li>
-          </ul>
-        </li>
-        
-        <li><a>$txt:{Insert}$</a>
-          <ul>
-        	<li><a name="insertrowsbefore">$txt:{Rows}$</a></li>
-        	<li><a name="insertcolsbefore">$txt:{Columns}$</a></li>
-            <li class="seperator"></li>
-            <li><a name="functions">$txt:{Function...}$</a></li>
-          </ul>
-        </li>
-
-        <li><a>$txt:{Edit My WebPages}$</a>
-          <ul id="existingviews">
-        	<li><a name="newview">$txt:{Create New View}$</a></li>
-            <li class="seperator"></li>
-          </ul>
-        </li>
-        
-      </ul>
-      
+    <div id="menuwrap">      
       <div id="typepanel">
         <div id="webpagectrl">
           <a target="_blank">[ preview ]</a>
@@ -411,17 +359,11 @@
         </div>
       </form>
     </div>
-
-    <div id="error" class="mdialog">
-      <h2>$txt:{Oops}$</h2>
-      <p>There was an error in your formula</p>
-      <form id="errorform" action="#"> 
-        <input type="submit" class="action" value="Ok"  />
-      </form>
-    </div>
     
     <div id="functions" class="dialog">
       <h2>$txt:{Functions}$</h2>
+      <a id="funsclose">x</a>
+
       <div id="funwrapper">
         <select id="catlist"></select>
         <div id="funlist"></div>
@@ -452,7 +394,7 @@
 
     <div id="ctrlpanel">
 
-      <input type="button" value="x" class="button" id="ctrlclose" />
+      <a id="ctrlclose">x</a>
 
       <ul id="ctrltabs">
         <li><a data-tab="welcome">Getting Started</a></li>

@@ -172,3 +172,7 @@ input[type=submit].hninput:hover {
     color:blue;
     margin:8px 3px;
 }
+
+#welcome { 
+    padding:20px;
+}

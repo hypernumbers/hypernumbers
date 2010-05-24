@@ -5,34 +5,9 @@ html,body {
     overflow : hidden;
     height   : 100%;
 }
-
-a { 
-    color:blue;
-}
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
-.redbutton { 
-    cursor:pointer;
-    background:red;
-    color:white;
-    font-weight:bold;
-    border:0px;
-    padding:2px;
-    -moz-border-radius:3px;
-}
-.redbutton:hover {
-    background:darkred;
-}
-
-.warning { 
- color     : red;
- font-size : 10px;
-}
-.note { 
-    color     : grey;
-    font-size : 10px;
-}
 #cover { 
     position   : fixed;
     top        : 0px;
@@ -48,47 +23,38 @@ a {
     top        : 10px;
     left       : 10px;
     background : white;
-    z-index  : 10000002;
+    z-index    : 10000002;
     padding    : 10px;
     font-size  : 16px;
-}
-.red {  
-    color : red;
-}
-.dialoglink {
-    cursor : pointer;
 }
 /******************************************************************************
 	DIALOG STYLES
 ******************************************************************************/
-.mdialog { 
+#insertimagedialog, #insertlinkdialog {
     position   : absolute;
     top        : 50%;
     left       : 50%;
     display    : none;
     background : white;
     border     : 5px solid #666;
-    z-index  : 10000002;
+    z-index    : 10000002;
     padding    : 8px;
 }
-.mdialog h2 { 
-    margin:0px;
-}
-.mclose {  
-    float : left;
-    color : red;
-}
-.cancel { 
-    color : red;
-}
-.action {  
-    float : right;
-    color : green;
-}
-.dialog { 
+/* .mclose {   */
+/*     float : left; */
+/*     color : red; */
+/* } */
+/* .cancel {  */
+/*     color : red; */
+/* } */
+/* .action {   */
+/*     float : right; */
+/*     color : green; */
+/* } */
+#functions {
     display            : none;
     position           : absolute;
-    top                : 50px; 
+    top                : 50px;
     left               : 50px;
     background         : white;
     min-width          : 200px;
@@ -96,16 +62,16 @@ a {
     z-index            : 10000003;
     -moz-border-radius : 3px 3px 3px 3px;
 }
-.dialog h2 {
+#functions h2 {
     display            : block;
     margin             : 0px;
     font               : bold 10px sans-serif;
     padding            : 4px;
-    border-bottom      : 1px solid #66AA00;
-    background         : orange;
+    background         : #333;
+    color              : #EEE;
     -moz-border-radius : 3px 3px 0px 0px;
 }
-.dialog .close {
+#functions .close {
     cursor              : pointer;
     position            : absolute;
     top                 : 5px;
@@ -190,168 +156,12 @@ a {
 #languages .flag.it    { background-position: -122px -179px; }
 #languages .flag.br    { background-position: -142px -179px; }
 #languages .flag.en_us { background-position: -162px -179px; }
-/******************************************************************************
-/* Page Menu
-/******************************************************************************/
-#pagemenu {
-    position:relative;
-    height:35px;
-    padding-left     : 10px;
-	background-color : white;
-}
-#pdpanes {     
-    overflow-x : scroll;
-}
-#pagemenu .crumb, #pagemenu .open, #pagemenu .leaf {
-	display           : inline-block;
-	width             : 16px;
-	height            : 16px;
-	vertical-align    : middle;
-	background-repeat : no-repeat;
-}
-#pagemenu .crumb {
-	background-image : url(/hypernumbers/right.png);
-}
-#pagemenu .open {
-	background-image : url(/img/page_edit.png);
-	visibility       : hidden;
-}
-
-#pagebar div.current {
-	text-decoration : underline;
-}
-#pagebar div:hover {
-	color: #334bf9;
-}
-#newpage { 
-
-
-}
-#pdclose {
-    color : red;
-}
-#pdpanel {
-    padding          : 3px;
-    background-color : #DDDDDD;
-}
 /*****************************************************************************
 /* FILE MENU STYLES
 /*****************************************************************************/
-#hnmenu { 
-    display: none;
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-    height: 22px;
-    background: #FFFFFF;
-    float: left;
-}
-
 #hn #menuwrap { 
     background: #FFF;
     overflow:auto;
-}
-
-#hnmenu .desc { 
- font-size: 10px; 
- position:absolute; 
- color:grey;
- right:4px; 
- top:4px;
-}
-
-#hnmenu li { 
- float:      left; 
-}    
-
-#hnmenu li li {
- float:    none; 
- display:  block; 
- position: relative;
-}
-
-#hnmenu ul { 
- display:      none; 
- position:     absolute;  
- border:       1px solid; 
- border-color: #DDD #AAA #AAA #DDD;  
- padding:      1px 0px; 
- background: #f8f7f6;       
- z-index:      9999999;
-}
-
-#hnmenu ul ul { 
- left: 100%; 
- top:  0px; 
-} 
-
-#hnmenu a {
- position:   relative;
- display:    block; 
- font-size: 11px;
- background: #FFFFFF;
- cursor:     pointer; 
- padding:    4px 10px; 
- z-index:    100;
- color:      #000;
- text-decoration: none;
-}
-
-#hnmenu ul a { 
- background: #f8f7f6;       
- padding:    3px 20px 3px 20px; 
- z-index:    200;
-}
-
-#hnmenu .hover { 
- background: #ffc47e; 
-}  
-
-#hnmenu .disabled a.hover { 
- background: #f8f7f6;       
-}  
-
-#hnmenu .disabled a { 
- color: #AAA; 
-}  
-
-#hnmenu li.seperator { 
-    height:     0px; 
-    border-top: 1px solid #CCC; 
-    margin:     3px 0px;      
-}
-
-#hnmenu div.input {
-    position: relative;
-    padding:  0px;
-    width:    16px;
-    height:   16px;
-    float:    left;
-    z-index:  500;
-}
-
-#hnmenu .icon {
-    background-repeat: no-repeat;
-    background-position:3px 3px; 
-}
-
-#hnmenu .arrow {
- display:      none;
-}
-
-#hnmenu ul li .arrow { 
-    display:    block;
-    position:   absolute;
-    height:     16px;
-    width:      16px;
-    background: url(/hypernumbers/right.png);
-    top:        3px;
-    right:      0px;
-}
-
-#permissions {
-    float  : right;
-    margin : 5px;
 }
 /******************************************************************************
 	LAYOUT STYLES
@@ -373,6 +183,7 @@ a {
     width           : 140px;
     font            : normal 16px georgia,garamond, serif;
     color           : #000;
+    margin-left     : 10px;
     text-decoration : none;
     cursor          : pointer;
 }
@@ -385,18 +196,7 @@ a {
     text-decoration : underline;
     color           : orange;
 }
-#hn #hnheader .beta { 
-    float  : left; 
-    color  : white; 
-    margin : 2px;
-}
-#hn #hnheader .beta a { 
-    color           : red; 
-    text-decoration : none; 
-    font-weight     : bold;
-}
 #formulabar {
-    /* overflow:hidden; */
     position:relative;
     height: 18px;
     line-height:18px;
@@ -427,7 +227,6 @@ a {
     cursor      : text;    
     overflow-y  : auto;
     overflow-x  : hidden;
-    /* z-index     : 9999999; */
     z-index     : 10000001;
     padding-left:4px;
     outline:none;
@@ -460,13 +259,13 @@ a {
     outline        :none;
 }
 
-#functionsbtn:hover { 
- background: #DDD;
- border:     1px solid #888;
- border-top: 0px;
- border-bottom: 0px;
+/* #functionsbtn:hover {  */
+/*  background: #DDD; */
+/*  border:     1px solid #888; */
+/*  border-top: 0px; */
+/*  border-bottom: 0px; */
 
-}
+/* } */
 
 #corner {
  height:        19px;
@@ -498,6 +297,11 @@ a {
     left     : 147px; 
 }
 
+#pagemenu { 
+    position:relative; 
+    height:35px;
+}
+
 #tabs a { 
     font-size:10px;
     margin          : 0px 5px;
@@ -510,7 +314,6 @@ a {
     -moz-border-radius-topleft:2px;
     -moz-border-radius-topright:2px;
     opacity:0.5;
-
 }
 
 #tabs a.current {
@@ -696,10 +499,6 @@ a {
 /******************************************************************************
 		TOOLBAR
 ******************************************************************************/
-#toolbar.disabled * { 
-    opacity: 0.7; 
-}
-
 #toolbar a { 
     color:black;
 }
@@ -869,13 +668,8 @@ a {
 #border_top      { background-position: -88px -105px; }
 #border_right    { background-position: -110px -105px; }
 #border_bottom   { background-position: -110px -61px; }
-
 #wordwrap      { background-position: -138px -82px; }
-
 #insertimage  { background-position: -161px -104px; }
-#guibuilder  { background-position: -138px -104px; }
-
-#paintformat  { background-position: -161px -83px; }
 #insertlink  { background-position:  -138px -104px; }
 
 #selection { 
@@ -955,7 +749,6 @@ a {
 }
 
 #paste { 
-    /* display    : none; */
     position   : absolute;
     top        : 0px;
     left       : 0px;
@@ -1050,23 +843,6 @@ a {
  position:absolute;
 }
 
-#hnpaste { 
- display:none; 
-}
-
-#pathpaste, #hnpaste { 
- position:   absolute;
- background: #EEE;
- border:     1px solid #AAA;
- font:       9px Arial, sans-serif;
- height:     12px;
-}
-
-#pathpaste {  
- width:    160px; 
- overflow: hidden; 
-}
-
 #overlay { 
  background: transparent;
  position:   fixed;
@@ -1078,10 +854,10 @@ a {
  display:    none;
 }
 #current { 
- position:   absolute;
- background: transparent;
- border:     1px solid blue;
- z-index:    100000;
+    position:   absolute;
+    background: transparent;
+    border:     1px solid blue;
+    z-index:    100000;
 }
 
 /******************************************************************************/
@@ -1189,7 +965,8 @@ a {
     color:#555;
 }
 
-#ctrlclose { 
+#ctrlclose, #funsclose { 
+    cursor:pointer;
     color:white; 
     font-weight:bold;
     font-size:14px;
@@ -1197,13 +974,13 @@ a {
     border:1px solid transparent;
     position:absolute; 
     padding:0px;
-    top:2px;
-    right:4px;
+    top:-3px;
+    right:5px;
     z-index:99;
 }
 
-#ctrlclose:hover { 
-    border:1px solid #666;
+#ctrlclose:hover,#funsclose:hover { 
+    color:#CCC; 
 }
 
 #myspreadsheets { 
@@ -1233,19 +1010,6 @@ a {
 
 
 #users { width:300px; margin:100px auto; }
-
-input[type=checkbox], input[type=radio] {
-    position:relative;
-    top:3px;
-}
-
-#welcome, #forms, #settings { 
-    padding:30px 50px;
-}
-
-#welcome h4, #settings h4 { 
-    margin-bottom:5px;
-}
 
 #welcome p { 
     color:#666;
@@ -1285,7 +1049,6 @@ input[type=checkbox], input[type=radio] {
     outline:medium none;
     padding:3px 6px;
     text-align:center;
-    /* vertical-align:middle; */
     white-space:nowrap;
 }
 
@@ -1298,16 +1061,6 @@ input[type=checkbox], input[type=radio] {
 .button:hover { 
     cursor:pointer;
     border:1px solid #939393 !important;
-}
-
-.livenav a { 
-    text-decoration:none;
-    margin-left:20px;
-    font-size:16px;
-}
-
-.livenav a:hover { 
-    text-decoration:underline;
 }
 
 #signupfeedback {
@@ -1353,11 +1106,6 @@ input[type=checkbox], input[type=radio] {
     font-weight:bold;
     text-decoration:underline;
 }
-/* #editspreadsheet a {  */
-/*     font-size:11px; */
-/*     color:white; */
-/*     font-weight:bold; */
-/* } */
 
 #settingsfeedback { 
     height:50px;
@@ -1383,7 +1131,6 @@ input[type=checkbox], input[type=radio] {
 
 .beta {display:none;}
 
-
 .sans-serif { font-family: sans-serif; }
 .serif      { font-family: serif; }
 .monospace  { font-family: monospace; }
@@ -1399,7 +1146,6 @@ input[type=checkbox], input[type=radio] {
     width    : 230px; 
     height   : 145px; 
 } 
-
 
 #combo_colourbg .button { 
     width:168px;
