@@ -101,12 +101,11 @@
          append_row/3,
          write_style_IMPORT/2,
          read_attribute/2,
-         read_ref/1,
+         read_inside_ref/1,
+         read_intersect_ref/1,
          read_styles/1,
          read_page_structure/1,
          read_pages/1,
-         recalculate/1,
-         reformat/1,
          drag_n_drop/3,
          copy_n_paste/3,
          cut_n_paste/3,
@@ -118,8 +117,6 @@
          clear/3,
          handle_dirty_cell/3,
          set_borders/5,
-         initialise_remote_page_vsn/2,
-         resync/2,
          write_formula_to_range/2,
          wait_for_dirty/1
         ]).
@@ -295,27 +292,6 @@ read_page_structure(RefX) when is_record(RefX, refX) ->
 read_pages(RefX) when is_record(RefX, refX) ->
     mnesia:activity(transaction, fun hn_db_wu:read_pages/1, [RefX]).    
 
-%% @spec initialise_remote_page_vsn(Site, Version) -> ok
-%% @doc intialises the page version for a 'newly discovered' remote page.
-%% This function is only called the first time that a remote pages makes a
-%% request and the function {@link read_page_vsn_raw/2} returns 
-%% <code>undefined</code>
-initialise_remote_page_vsn(Site, Version) when is_record(Version, version) ->
-    #version{page = Page, version = V} = Version,
-    RefX = hn_util:url_to_refX(Page),
-    Fun = fun() ->
-                  ok = hn_db_wu:initialise_remote_page_vsn(Site, RefX, V)
-          end,
-    mnesia:activity(transaction, Fun).
-
-%% @spec resync(Site, List) -> ok
-%% @doc triggers a resync of the current site to the remote pages.
-%% This function is called when version numbers are out of sync between local 
-%% and remote pages and forces a resynch
-%% @TODO write me, ya bas!
-resync(_Site, #version{page = _Page, version = _Vsn}) ->
-    ok.
-
 -spec handle_dirty_cell(string(), cellidx(), nil | uid()) -> ok. 
 handle_dirty_cell(Site, Idx, Ar) ->
     ok = init_front_end_notify(),  
@@ -409,9 +385,14 @@ read_attribute(RefX, Field) when is_record(RefX, refX) ->
     Fun = fun() -> hn_db_wu:read_ref_field(RefX, Field, read) end,
     mnesia:activity(transaction, Fun).
 
--spec read_ref(#refX{}) -> [{#refX{}, [{string(), term()}]}].
-read_ref(RefX) ->
-    Fun = fun() -> hn_db_wu:read_ref(RefX) end,
+-spec read_inside_ref(#refX{}) -> [{#refX{}, [{string(), term()}]}].
+read_inside_ref(RefX) ->
+    Fun = fun() -> hn_db_wu:read_ref(RefX, inside) end,
+    mnesia:activity(transaction, Fun).
+
+-spec read_intersect_ref(#refX{}) -> [{#refX{}, [{string(), term()}]}].
+read_intersect_ref(RefX) ->
+    Fun = fun() -> hn_db_wu:read_ref(RefX, intersect) end,
     mnesia:activity(transaction, Fun).
 
 %% @spec read_styles(#refX{}) -> [Style]
@@ -428,50 +409,8 @@ read_ref(RefX) ->
 %% <li>page</li>
 %% </ul>
 read_styles(RefX) when is_record(RefX, refX) ->
-    Fun = fun() ->
-                  hn_db_wu:read_styles(RefX)
-          end,
+    Fun = fun() -> hn_db_wu:read_styles(RefX) end,
     mnesia:activity(transaction, Fun).
-
-%% @spec recalculate(#refX{}) -> ok
-%% @doc recalculates the cells refered to (and all cells that depend on them)
-%% 
-%% The <code>refX{}</code> can be to a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-recalculate(RefX) when is_record(RefX, refX) ->
-    Fun = fun() ->
-                  ok = init_front_end_notify(),
-                  Cells = hn_db_wu:read_attrs(RefX, ["formula"], write),
-                  [ok = hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
-          end,
-    mnesia:activity(transaction, Fun),
-    ok = tell_front_end("recalculate").
-
-%% @spec reformat(#refX{}) -> ok
-%% @doc reformats the all cells refered to
-%% 
-%% The <code>refX{}</code> can be to a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-% <li>page</li>
-%% </ul>
-reformat(RefX) when is_record(RefX, refX) ->
-    Fun = fun() ->
-                  ok = init_front_end_notify(),
-                  Cells = hn_db_wu:read_attrs(RefX, ["format"], read),
-                  [ok = hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
-          end,
-    mnesia:activity(transaction, Fun),
-    ok = tell_front_end("reformat").
 
 %% @spec insert(RefX::#refX{}) -> ok
 %% @doc inserts a single column or a row
@@ -574,43 +513,12 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp, Ar) ->
 
     case Obj of
         {row,    _} ->
-            ok = hn_db_wu:delete_row_objs(RefX),
             ok = hn_db_wu:shift_row_objs(RefX, Type);
         {column, _} ->
-            ok = hn_db_wu:delete_col_objs(RefX),
             ok = hn_db_wu:shift_col_objs(RefX, Type);
         _ ->
             ok
     end,
-
-    % now notify all parents and children of all cells on
-    % this page
-    % PageRef = RefX#refX{obj = {page, "/"}},
-    
-    % OK all our local stuff is sorted, now lets deal with the remote
-    % children
-    % Change = {insert, Obj, Disp},
-    % set the delay to zero
-    % ok = hn_db_wu:mark_notify_out_dirty(PageRef, Change, 0),
-    
-    %% Status = lists:flatten([Status1, Status2]),
-
-    %% % finally deal with any cells returned from delete_cells that
-    %% % are dirty - these need to be recalculated now that the link/local_objs
-    %% % tables have been transformed
-    %% Fun2 = fun(X) ->
-    %%                case hn_db_wu:read_attrs(X, ["formula"], write) of
-    %%                    [{X, {"formula", F}}] ->
-    %%                        hn_db_wu:write_attr(X, {"formula", F});
-    %%                    _  ->
-    %%                        ok
-    %%                end
-    %%        end,
-    %% [ok = Fun2(X) || {dirty, X} <- Status],
-    % Jobs a good'un, now for the remote parents
-    % io:format("in hn_db_api:move do something with Parents...~n"),
-    %%_Parents =  hn_db_wu:find_incoming_hn(Site, PageRef),
-    %io:format("in hn_db_api:move Parents are ~p~n", [Parents]),
     ok.
 
 do_delete(insert, _RefX) ->

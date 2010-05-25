@@ -27,7 +27,7 @@
 %% by the given Ref, along with the width of said html.
 -spec content(#refX{}) -> {[textdata()], integer(), integer()}.
 content(Ref) ->
-    Data = lists:sort(fun order_objs/2, hn_db_api:read_ref(Ref)),
+    Data = lists:sort(fun order_objs/2, hn_db_api:read_intersect_ref(Ref)),
     Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
     RowHs = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)} 
              || {#refX{obj={row,{R,R}}},RPs} <- Data],

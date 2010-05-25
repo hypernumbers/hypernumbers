@@ -164,9 +164,7 @@ tables() ->
       ?TBL(relation,              set,    	   []),
       ?TBL(group,                 set,    	   []),         
       ?TBL(styles,                bag,    	   []),         
-      ?TBL(style_counters,        set,    	   []),         
-      ?TBL(page_vsn,              set,    	   []),         
-      ?TBL(page_history,          bag,    	   []) ].
+      ?TBL(style_counters,        set,    	   [])].
 
 
 %% Import files on a batch basis
