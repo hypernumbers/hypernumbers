@@ -40,7 +40,7 @@ linegraph([Data, O, Min, Max, XAxis, Cols]) ->
 
 lg1(Data, Orientation, {Scale, Axes, Colours}) ->
     Orientation2 = cast_orientation(Orientation),
-    case has_error([Orientation2]) of
+    case has_error([Data, Orientation2, Scale, Axes, Colours]) of
         {true, Error} -> Error;
         false         -> lg2(Data, Orientation2, Scale, Axes, Colours)
     end.
