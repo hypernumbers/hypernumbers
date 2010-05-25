@@ -1368,6 +1368,13 @@ offset_with_ranges1([{cellref, LineNo,
                     {XO, YO}=Offset, Acc) ->
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
+        %% If ever we apply two offsets at once, do it in two steps.
+        {range, {Left, Top, _Right, Bottom}}
+          when (YO == 0) and ((Left > X) or (Top > Y) or (Y > Bottom)) ->
+            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
+        {range, {Left, Top, Right, _Bottom}}
+          when (XO == 0) and ((Left > X) or (X > Right) or (Top > Y)) ->
+            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
         {column,{Left,_Right}} when X < Left ->
             offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
         {row,{Top,_Bottom}} when Y < Top ->
