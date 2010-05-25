@@ -488,19 +488,14 @@
 
 %% Cell Query Exports
 -export([
-         write_attrs/2,
-         write_attrs/3,
+         write_attrs/2, write_attrs/3,
          read_styles/1,
          local_idx_to_refX/2,
          read_ref/2, read_ref/3, read_ref_field/3,
-         clear_cells/1,
-         clear_cells/2,
+         clear_cells/1, clear_cells/2,
          delete_cells/1,
          shift_cells/4,
-         shift_row_objs/2,
-         shift_col_objs/2,
          get_local_children/1,
-         %%shift_children/3,
          copy_cell/3,
          copy_style/3,
          mark_children_dirty/2,
@@ -755,14 +750,7 @@ post_process_format(Raw, Attrs) ->
             Attrs
     end.
 
-%% Status = list()
-%% @doc shift_cells takes a range, row or column and shifts it by the offset.
-%% The list of cells that are passed in as Rewritten are not to be rewritten
-%% here
-%% <em>NOTE</em> this function doesn't pass any messages on to parents or
-%% children on other websites - that is done in the API layer by calling
-%% {@link hn_db_wu:mark_dirty/1} with <code>dirty_notify_out</code> and 
-%% <code>dirty_notify_back_in</code> records as appropriate
+
 shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
   when (Type == insert orelse Type == delete) andalso 
        (Disp == vertical orelse Disp == horizontal) ->
@@ -808,62 +796,6 @@ shift_obj(#local_objs{obj = {row, {Y1, Y2}}}=LO, _XOff, YOff) ->
     O2 = {row, {Y1 + YOff, Y2 + YOff}},
     LO#local_objs{obj = O2};
 shift_obj(LO, _, _) -> LO. 
-
--spec shift_col_objs(#refX{}, insert | delete) -> ok.
-%% @doc shift_cols shifts cols left or right
-shift_col_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}} = Change,
-               Type)
-  when ((Type == insert) orelse (Type == delete)) ->
-    XX = case Type of
-             insert -> X2;
-             delete -> X1
-         end,
-    H = trans(S, #local_objs{path = P, obj = {column, {'$1', '$2'}}, _ = '_'}),
-    C = [{'or', {'>=', '$1', XX}, {'>=', '$2', XX}}],
-    B = ['$_'],
-    M = [{H, C, B}],
-    Table = trans(S, local_objs),
-    Recs = mnesia:select(Table, M, write),
-    [ok = shift_col_objs1(X, Change, Type) || X <- Recs],
-    ok.
-
-shift_col_objs1(Shift, Change, Type) ->
-    #local_objs{obj = {column, {Y1, Y2}}} = Shift,
-    #refX{site = S, path = _P, obj = {column, {YY1, YY2}}} = Change,
-    Offset = case Type of
-                 insert -> YY2 - YY1 + 1;
-                 delete -> -(YY2 - YY1 + 1)             end,
-    New = Shift#local_objs{obj = {column, {Y1 + Offset, Y2 + Offset}}},
-    ok = delete_recs(S, [Shift]),
-    ok = mnesia:write(trans(S, local_objs), New, write).
-
--spec shift_row_objs(#refX{}, insert | delete) -> ok.
-%% @doc shift_rows shifts rows up or down
-shift_row_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}} = Change, Type)
-  when ((Type == insert) orelse (Type == delete)) ->
-    YY = case Type of
-             insert -> Y2;
-             delete -> Y1
-         end,
-    H = #local_objs{path = P, obj = {row, {'$1', '$2'}}, _ = '_'},
-    C = [{'or', {'>=', '$1', YY}, {'>=', '$2', YY}}],
-    B = ['$_'],
-    M = [{H, C, B}],
-    Table = trans(S, local_objs),
-    Recs = mnesia:select(Table, M, write),
-    [ok = shift_row_objs1(X, Change, Type) || X <- Recs],
-    ok.
-
-shift_row_objs1(Shift, Change, Type) ->
-    #local_objs{obj = {row, {X1, X2}}} = Shift,
-    #refX{site = S, obj = {row, {XX1, XX2}}} = Change,
-    Offset = case Type of
-                 insert -> XX2 - XX1 + 1;
-                 delete -> -(XX2 - XX1 + 1)
-             end,
-    New = Shift#local_objs{obj = {row, {X1 + Offset, X2 + Offset}}},
-    ok = delete_recs(S, [Shift]),
-    ok = mnesia:write(trans(S, local_objs), New, write).
 
 %% @spec read_styles(#refX{}) -> [Style]
 %% Style = #styles{}
@@ -1195,32 +1127,18 @@ get_prefix("http://"++Site) ->
     [case S of $: -> $&; S  -> S end 
      || S <- Site].
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                                                                          %%%
-%%% Internal funtions                                                        %%%
-%%%                                                                          %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-delete_recs(Site, List) when is_list(List) ->
-    [ok = delete_recs1(Site, X) || X <- List],
-    ok.
-
-delete_recs1(Site, Rec) ->
-    Table = trans(Site, element(1, Rec)),
-    mnesia:delete_object(Table, Rec, write).
-
-shift_pattern(#refX{obj = {cell, {_X, Y}}} = RefX, vertical) ->
-    RefX#refX{obj = {row, {Y, infinity}}};
-shift_pattern(#refX{obj = {cell, {X, _Y}}} = RefX, horizontal) ->
-    RefX#refX{obj = {column, {X, infinity}}};
+shift_pattern(#refX{obj = {cell, {X, Y}}} = RefX, vertical) ->
+    RefX#refX{obj = {range, {X, Y, X, infinity}}};
+shift_pattern(#refX{obj = {cell, {X, Y}}} = RefX, horizontal) ->
+    RefX#refX{obj = {range, {X, Y, infinity, Y}}};
 shift_pattern(#refX{obj = {range, {X1, Y1, X2, _Y2}}} = RefX, vertical) ->
     RefX#refX{obj = {range, {X1, Y1, X2, infinity}}};
 shift_pattern(#refX{obj = {range, {X1, Y1, _X2, Y2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1, Y1, infinity, Y2}}};
 shift_pattern(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
-    RefX#refX{obj = {row, {Y1, infinity}}};
+    RefX#refX{obj = {range, {0, Y1, infinity, infinity}}};
 shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
-    RefX#refX{obj = {column, {X1, infinity}}};
-shift_pattern(RefX, _Disp) -> RefX.
+    RefX#refX{obj = {range, {X1, 0, infinity, infinity}}}.
 
 local_idx_to_refX(S, Idx) ->
     case mnesia:index_read(trans(S, local_objs), Idx, idx) of
@@ -1450,6 +1368,13 @@ offset_with_ranges1([{cellref, LineNo,
                     {XO, YO}=Offset, Acc) ->
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
+        %% If ever we apply two offsets at once, do it in two steps.
+        {range, {Left, Top, _Right, Bottom}}
+          when (YO == 0) and ((Left > X) or (Top > Y) or (Y > Bottom)) ->
+            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
+        {range, {Left, Top, Right, _Bottom}}
+          when (XO == 0) and ((Left > X) or (X > Right) or (Top > Y)) ->
+            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
         {column,{Left,_Right}} when X < Left ->
             offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
         {row,{Top,_Bottom}} when Y < Top ->
@@ -2052,22 +1977,6 @@ write_formula2(Ref, OrigVal, {Type, Val},
         _      -> orddict:store("format", Format, Attrs2)
     end.
 
-%% split_parents(Old, New) -> split_parents1(lists:sort(Old),
-%%                                           lists:sort(New), {[],[]}).
-
-%% %% if we have run out of OldParents stick the rest of the News on the Write Acc
-%% split_parents1([], New, {D, W}) ->
-%%     {D, lists:merge([New, W])};
-%% %% if NewParents have run out stick the rest of the Olds on the Delete Acc
-%% split_parents1(Old, [], {D, W}) ->
-%%     {lists:merge([Old, D]), W};
-%% %% if the same record appears in Old and New neither delete nor write
-%% split_parents1([H | T1], [H | T2], Acc) ->
-%%     split_parents1(T1, T2, Acc);
-%% %% for every unique old record - delete it
-%% split_parents1([H | T], New, {D, W}) ->
-%%     split_parents1(T, New, {[H | D], W}).
-
 split_local_remote(List) -> split_local_remote1(List, {[], []}).
 
 split_local_remote1([], Acc) -> Acc;
@@ -2077,28 +1986,6 @@ split_local_remote1([{_, [{_, "local"}], [Url]} | T], {A, B})  ->
 split_local_remote1([{_, [{_, "remote"}], [Url]} | T], {A, B}) ->
     P2 = hn_util:url_to_refX(Url),
     split_local_remote1(T, {A, [P2 | B]}).
-
-%% get_item_list(Type, RefX, Key, Acc) ->
-%%     case traverse(Type, RefX, Key) of
-%%         {last, []}                    -> {ok, Acc};
-%%         {last, [#item{val = Val}]}    -> {ok,lists:append(Val, Acc)};
-%%         {NType, NewRefX, []}          -> get_item_list(NType, NewRefX, Key, Acc);
-%%         {NType, []}                   -> get_item_list(NType, RefX, Key, Acc);
-%%         {NType, NewRefX, [#item{val = Val}]} ->
-%%             get_item_list(NType, NewRefX, Key, lists:append(Val, Acc));
-%%         {NType,[#item{val = Val}]}     -> 
-%%             get_item_list(NType, RefX, Key, lists:append(Val, Acc))
-%%     end.
-
-%% return_first(Type, RefX, Key) ->
-%%     case traverse(Type, RefX, Key) of
-%%         {last, []}                           -> nomatch;
-%%         {last, [#item{val = Val}]}           -> {ok, Val};
-%%         {NType, []}                          -> return_first(NType, RefX, Key);
-%%         {NType, NRefX, []}                   -> return_first(NType, NRefX, Key);
-%%         {_NType, _NRefX, [#item{val = Val}]} -> {ok, Val};
-%%         {_NType, [#item{val = Val}]}         -> {ok, Val}
-%%     end.
 
 add_attributes(D, []) -> D;
 add_attributes(D, [{Key, Val}|T]) ->
