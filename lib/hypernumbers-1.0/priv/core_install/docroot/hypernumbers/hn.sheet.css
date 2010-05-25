@@ -71,16 +71,6 @@ html,body {
     color              : #EEE;
     -moz-border-radius : 3px 3px 0px 0px;
 }
-#functions .close {
-    cursor              : pointer;
-    position            : absolute;
-    top                 : 5px;
-    right               : 5px;
-    height              : 11px;
-    width               : 11px;
-    background-image    : url(sprite.png);
-    background-position : -49px -3px;
-}
 /******************************************************************************
 	TOP NAVIGATION STYLES
 ******************************************************************************/
