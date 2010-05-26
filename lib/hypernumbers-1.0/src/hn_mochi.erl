@@ -376,11 +376,6 @@ iget(#refX{site = Site, path = Path}, page,
     Paths = [Path | [ string:tokens(X, "/") || X<-string:tokens(More, ",")]],
     remoting_request(Env, Site, Paths, Time);
 
-iget(Ref, page, #qry{renderer=[]}, Env) ->
-    {Html, Width, Height} = hn_render:content(Ref),
-    Page = hn_render:wrap_page(Html, Width, Height),
-    text_html(Env, Page);
-
 iget(#refX{site = S}, page, #qry{status = []}, Env) -> 
     json(Env, status_srv:get_status(S));
 

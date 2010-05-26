@@ -122,7 +122,6 @@
                paths,
                permissions,
                rawview,
-               renderer,
                return,
                status,
                template,
