@@ -71,8 +71,7 @@ handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=QReturn})
 handle_(Ref, Env, Qry) ->
     case filename:extension((Env#env.mochi):get(path)) of
         []  -> check_resource_exists(Env, Ref, Qry);
-        Ext -> Root = docroot(Ref#refX.site),
-               handle_static(Ext, Root, Env#env.mochi)
+        Ext -> handle_static(Ext, Ref#refX.site, Env)
     end.
 
 -spec check_resource_exists(#env{}, #refX{}, #qry{}) -> no_return(). 
@@ -132,12 +131,16 @@ handle_resource(Ref, Qry, Env=#env{method = 'POST'}) ->
 
 
 -spec handle_static(string(), iolist(), any()) -> any(). 
-handle_static(X, Root, Mochi)
+handle_static(X, Site, Env)
   when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; X == ".txt";
        X == ".ico"; X == ".json"; X == ".gif"; X == ".html"; X == ".pdf" ->
+    Mochi = Env#env.mochi,
     "/"++RelPath = Mochi:get(path),
+    Root = docroot(Site),
     Mochi:serve_file(RelPath, Root),
-    ok.
+    ok;
+handle_static(_X, Site, Env) ->
+    serve_html(404, Env, [viewroot(Site), "/_g/core/404.html"]).
 
 -spec authorize_get(#refX{}, #qry{}, #env{}) 
                    -> {view, string()} | allowed | denied | not_found.

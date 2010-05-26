@@ -493,7 +493,7 @@ move(RefX, Type, Disp, Ar)
     ok = mnesia:activity(transaction, fun move_tr/4, [RefX, Type, Disp, Ar]),
     ok = tell_front_end("move", RefX).
 
-move_tr(#refX{obj = Obj} = RefX, Type, Disp, Ar) ->
+move_tr(RefX, Type, Disp, Ar) ->
 
     ok = init_front_end_notify(),
     % if the Type is delete we first delete the original cells
@@ -509,17 +509,7 @@ move_tr(#refX{obj = Obj} = RefX, Type, Disp, Ar) ->
     ReWr = do_delete(Type, RefX),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
     hn_db_wu:mark_these_dirty(ReWr, Ar),
-    hn_db_wu:mark_these_dirty(MoreDirty, Ar),
-
-    case Obj of
-        {row,    _} ->
-            ok = hn_db_wu:shift_row_objs(RefX, Type);
-        {column, _} ->
-            ok = hn_db_wu:shift_col_objs(RefX, Type);
-        _ ->
-            ok
-    end,
-    ok.
+    hn_db_wu:mark_these_dirty(MoreDirty, Ar).        
 
 do_delete(insert, _RefX) ->
     [];
@@ -750,6 +740,7 @@ copy_cell(From = #refX{site = Site, path = Path}, To, Incr, Ar) ->
     case auth_srv:get_any_view(Site, Path, Ar) of
         {view, _} ->
             hn_db_wu:copy_cell(From, To, Incr),
+            
             hn_db_wu:mark_children_dirty(To, Ar);
         _ ->
             throw(auth_error)
@@ -774,15 +765,15 @@ tell_front_end(_FnName) ->
     [ok = Fun(X) || X <- List],
     ok.
 
-%% this clause copies whole pages
-copy_n_paste2(#refX{site = Site, obj = {page, "/"}} = From, 
-              #refX{site = Site, path = NewPath, obj = {page, "/"}},
-              Ar) ->
-    Cells = hn_db_wu:get_cells(From),
-    [ok = copy_cell(X, X#refX{path = NewPath}, false, Ar) 
-     || X <- Cells],
-    ok;
-%% this clause copies bits of pages
+%% %% this clause copies whole pages
+%% copy_n_paste2(#refX{site = Site, obj = {page, "/"}} = From, 
+%%               #refX{site = Site, path = NewPath, obj = {page, "/"}},
+%%               Ar) ->
+%%     Cells = hn_db_wu:get_cells(From),
+%%     [ok = copy_cell(X, X#refX{path = NewPath}, false, Ar) 
+%%      || X <- Cells],
+%%     ok;
+%% %% this clause copies bits of pages
 copy_n_paste2(From, To, Ar) ->
     case is_valid_c_n_p(From, To) of
         {ok, 'onto self'}    -> ok;
