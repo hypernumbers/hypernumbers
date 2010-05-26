@@ -13,7 +13,7 @@
 -export([ start/0]).
 
 -export([ handle/1,
-          styles_to_css/2,
+          extract_styles/1,
           style_to_css/1,
           docroot/1,
           page_attributes/2,
@@ -899,10 +899,14 @@ dict_to_struct(X, Dict) ->
         false -> {X, Dict}
     end.
 
-styles_to_css([], Acc) ->
-    Acc;
-styles_to_css([H | T], Acc) ->
-    styles_to_css(T, [style_to_css(H) | Acc]).
+-spec extract_styles([{#refX{}, [tuple()]}]) -> #style{}. 
+extract_styles([]) -> [];
+extract_styles(Data) ->
+    {Ref, _} = hd(Data),
+    Idxs = [I || {_, Attrs} <- Data,
+                 I <- [proplists:get_value("style", Attrs)],
+                 I /= undefined],
+    [style_to_css(S) || S <- hn_db_api:read_styles(Ref, Idxs)].
 
 style_to_css(#style{magic_style = Style, idx = I}) ->
     Num = ms_util2:no_of_fields(magic_style),
@@ -957,11 +961,12 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
 
 -spec page_attributes(#refX{}, #env{}) -> {struct, list()}.
 page_attributes(#refX{site = S, path = P} = Ref, Env) ->
+    Content = hn_db_api:read_intersect_ref(Ref),
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
-    Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
+    Styles = extract_styles(Content),
     NTree  = add_styles(Styles, Tree),
-    Dict   = to_dict(hn_db_api:read_intersect_ref(Ref), NTree),
+    Dict   = to_dict(Content, NTree),
     Time   = {"time", remoting_reg:timestamp()},
     Usr    = {"user", Env#env.email},
     Host   = {"host", S},

@@ -102,7 +102,7 @@
          read_attribute/2,
          read_inside_ref/1,
          read_intersect_ref/1,
-         read_styles/1,
+         read_styles/2,
          read_page_structure/1,
          read_pages/1,
          copy_n_paste/3,
@@ -393,21 +393,10 @@ read_intersect_ref(RefX) ->
     Fun = fun() -> hn_db_wu:read_ref(RefX, intersect) end,
     mnesia:activity(transaction, Fun).
 
-%% @spec read_styles(#refX{}) -> [Style]
-%% Style = #styles{}
 %% @doc read_style gets the list of styles that pertain to a particular 
-%% reference.
-%% 
-%% The <code>#refX{}</code> can point to a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-read_styles(RefX) when is_record(RefX, refX) ->
-    Fun = fun() -> hn_db_wu:read_styles(RefX) end,
+-spec read_styles(#refX{}, [integer()]) -> #style{}. 
+read_styles(RefX, Idxs) when is_record(RefX, refX) ->
+    Fun = fun() -> hn_db_wu:read_styles(RefX, Idxs) end,
     mnesia:activity(transaction, Fun).
 
 %% @spec insert(RefX::#refX{}) -> ok

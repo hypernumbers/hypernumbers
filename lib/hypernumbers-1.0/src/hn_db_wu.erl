@@ -32,7 +32,7 @@
 %% Cell Query Exports
 -export([
          write_attrs/2, write_attrs/3,
-         read_styles/1,
+         read_styles/2,
          local_idx_to_refX/2,
          read_ref/2, read_ref/3, read_ref_field/3,
          clear_cells/1, clear_cells/2,
@@ -326,21 +326,9 @@ shift_obj(#local_obj{obj = {row, {Y1, Y2}}}=LO, _XOff, YOff) ->
     LO#local_obj{obj = O2};
 shift_obj(LO, _, _) -> LO. 
 
-%% @spec read_styles(#refX{}) -> [Style]
-%% Style = #style{}
-%% @doc returns a list of styles associated with a reference
-%% 
-%% The refX{} can refer to any of a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-read_styles(#refX{site = Site} = RefX) ->
+-spec read_styles(#refX{}, [integer()]) -> #style{}. 
+read_styles(#refX{site = Site}, Idxs) ->
     Table = trans(Site, style),
-    Idxs = hslists:uniq([I || {_, I} <- read_ref_field(RefX, "style", read)]),
     [S || I <- Idxs,
           S <- mnesia:index_read(Table, I, #style.idx)].
 
