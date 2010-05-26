@@ -14,7 +14,7 @@
 
 -export([ handle/1,
           styles_to_css/2,
-          style_to_css/2,
+          style_to_css/1,
           docroot/1,
           page_attributes/2,
           get_json_post/1 % Used for mochilog replay rewrites
@@ -534,7 +534,6 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
     ok = hn_db_api:insert(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
-
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copy", {struct, [{"src", Src}]}}],
@@ -546,7 +545,14 @@ ipost(Ref,
       _Qry,
       Env=#env{body=[{"copystyle", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
-    ok = hn_db_api:copy_style(hn_util:parse_url(Src), Ref, Uid),
+    ok = hn_db_api:copy_n_paste_style(hn_util:parse_url(Src), Ref, Uid),
+    json(Env, "success");
+
+ipost(Ref, 
+      _Qry,
+      Env=#env{body=[{"copyvalue", {struct, [{"src", Src}]}}],
+               uid = Uid}) ->
+    ok = hn_db_api:copy_n_paste_value(hn_util:parse_url(Src), Ref, Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {range, _}} = Ref, _Qry, 
@@ -903,12 +909,9 @@ styles_to_css([], Acc) ->
 styles_to_css([H | T], Acc) ->
     styles_to_css(T, [style_to_css(H) | Acc]).
 
-style_to_css({styles, _Ref, X, Rec}) ->
-    style_to_css(X, Rec).
-
-style_to_css(X, Rec) ->
+style_to_css(#style{magic_style = Style, idx = I}) ->
     Num = ms_util2:no_of_fields(magic_style),
-    {X, style_att(Num + 1, Rec, [])}.
+    {I, style_att(Num + 1, Style, [])}.
 
 style_att(1, _Rec, Acc) ->
     lists:flatten(Acc);

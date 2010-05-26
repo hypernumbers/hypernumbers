@@ -158,13 +158,12 @@ create_site_tables(Site, Type)->
 
 -define(TBL(N, T, I), {N, record_info(fields, N), T, I}).
 tables() ->
-    [ ?TBL(dirty_queue,           ordered_set, []),
-      ?TBL(item,                  set,    	   []),
-      ?TBL(local_objs,            bag,    	   [obj,idx]), 
-      ?TBL(relation,              set,    	   []),
-      ?TBL(group,                 set,    	   []),         
-      ?TBL(styles,                bag,    	   []),         
-      ?TBL(style_counters,        set,    	   [])].
+    [ ?TBL(dirty_queue, ordered_set, []),
+      ?TBL(item,        set,    	 []),
+      ?TBL(local_obj,   bag,    	 [obj,idx]), 
+      ?TBL(relation,    set,    	 []),
+      ?TBL(group,       set,    	 []),         
+      ?TBL(style,       set,    	 [idx])].
 
 
 %% Import files on a batch basis

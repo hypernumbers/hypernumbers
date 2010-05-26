@@ -18,10 +18,6 @@
 
 jsonify(List) when is_list(List) ->
     {array, [jsonify(X) || X <- List]};
-jsonify(#version{page = Page, version= Vsn}) ->
-    {struct, [{"subtype", "version"},
-              {"page",    Page},
-              {"vsn",     Vsn}]};
 jsonify(#help{name = N, warning = W, arity = A, category = C, text = T, notes = N2}) ->
     {struct, [{"name",     N},
               {"warning",  W},

@@ -20,7 +20,7 @@
 -record(rec, {maxwidth = 0,
               maxmerge_height = 0,
               colwidths = [],
-              palette = [],
+              palette,
               startcol}).
                  
 %% Returns a tuple containing the rendered html for the area covered
@@ -33,7 +33,7 @@ content(Ref) ->
              || {#refX{obj={row,{R,R}}},RPs} <- Data],
     ColWs = [{C, pget("width", CPs, ?DEFAULT_WIDTH)} 
              || {#refX{obj={column,{C,C}}},CPs} <- Data],
-    Palette = array:from_orddict
+    Palette = gb_trees:from_orddict
                 (lists:sort
                    (hn_mochi:styles_to_css
                       (hn_db_api:read_styles(Ref), 
@@ -41,7 +41,7 @@ content(Ref) ->
                       ))),
     layout(Ref, Cells, ColWs, RowHs, Palette).
 
--spec layout(#refX{}, cells(), cols(), rows(), array()) 
+-spec layout(#refX{}, cells(), cols(), rows(), gb_tree()) 
             -> {[textdata()], integer(), integer()}.
 layout(Ref, Cells, CWs, RHs, Palette) ->
     PX = 0,
@@ -164,9 +164,12 @@ order_objs({RA,_}, {RB,_}) ->
        true     -> XA =< XB
     end.
 
--spec read_css(undefined | integer(), array()) -> string(). 
+-spec read_css(undefined | integer(), gb_tree()) -> string(). 
 read_css(undefined, _Palette) -> "";
-read_css(Idx, Palette) -> array:get(Idx, Palette).
+read_css(Idx, Palette) -> case gb_trees:lookup(Idx, Palette) of
+                              none -> "";
+                              {value, V} -> V
+                          end.            
 
 -spec startcol(#refX{}) -> integer(). 
 startcol(#refX{obj={range,{X,_,_,_}}}) -> X;
@@ -245,7 +248,7 @@ simple_test() ->
              {{7,2},[{"style",1},{"value","3"}]}],
     ColWs = [],
     RowHs = [],
-    Palette = array:new(),
+    Palette = gb_trees:empty(),
     {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({560, 44}, {W, H}).
 
@@ -259,7 +262,7 @@ col_rows_test_() ->
              {{5,3},[{"style",1},{"value","4"}]}],
     ColWs = [{6, 30}, {7, 150}],
     RowHs = [{1, 40}, {3, 10}],
-    Palette = array:new(),
+    Palette = gb_trees:empty(),
     {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({580, 72}, {W, H}).
 
@@ -280,7 +283,7 @@ merged_col_test_() ->
               [{"merge",{struct,[{"right",1},{"down",0}]}}]}],
     ColWs = [],
     RowHs = [],
-    Palette = array:new(),
+    Palette = gb_trees:empty(),
     {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({640, 66}, {W, H}).
 
@@ -297,6 +300,6 @@ merged_row_test_() ->
              {{1,9},[{"value","last row (9)"},{"style",2}]}],
     ColWs = [],
     RowHs = [],
-    Palette = array:new(),
+    Palette = gb_trees:empty(),
     {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({480, 330}, {W, H}).

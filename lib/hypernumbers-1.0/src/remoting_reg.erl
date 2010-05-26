@@ -12,7 +12,7 @@
 -export([start_link/1, init/1, handle_call/3, handle_cast/2, 
     handle_info/2, terminate/2, code_change/3]).
 
--export([ notify_change/4, notify_delete/3, notify_style/4, notify_error/5, 
+-export([ notify_change/4, notify_delete/3, notify_style/3, notify_error/5, 
           request_update/4, notify_refresh/2, timestamp/0 ]).
 
 %%
@@ -84,8 +84,8 @@ notify_delete(Site, Path, {RefType, _} = R) ->
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of a new style
-notify_style(Site, Path, Index, Style) ->
-    {Key, CSS} = hn_mochi:style_to_css(Index, Style),
+notify_style(Site, Path, Style) ->
+    {Key, CSS} = hn_mochi:style_to_css(Style),
     Msg = {struct, [{"path", hn_util:list_to_path(Path)},
                     {"type", "style"}, {"index", Key}, {"css", CSS}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),

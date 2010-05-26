@@ -31,13 +31,7 @@
           refs        = []
          }).
 
--record(version,
-        {
-          page,
-          version
-        }).
-
--record(local_objs,
+-record(local_obj,
         {
           path,
           obj,
@@ -104,18 +98,10 @@
           'white-space'         = []
          }).        
 
--record(styles,
+-record(style,
         {
-          refX        = #refX{},
-          index       = 0,
-          magic_style = #magic_style{}
-         }).
-
-%% this builds the counters for the style table
--record(style_counters,
-        {
-          refX = #refX{},
-          integer
+          magic_style = #magic_style{},
+          idx
          }).
 
 -record(help,
@@ -127,36 +113,6 @@
           text,
           notes= []
          }).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                  %
-% These are the new version of records             %
-%                                                  %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% this record holds the version of a page
--record(page_vsn,
-        {
-          site_and_pg,
-          version
-         }).
-
-%% this record holds the page history for a page
--record(page_history,
-        {
-          site_and_pg,
-          action,
-          action_refX = #refX{},
-          version
-         }).
-
-%% this builds the counters for the page versions
--record(page_vsn_counters,
-        {
-          page,
-          integer
-         }).
-
 
 %% HN Mochi Query Parameters. Leave as undefined.
 -record(qry, { challenger,

@@ -96,8 +96,7 @@
 -include("auth.hrl").
 
 -export([
-         write_attributes/1,
-         write_attributes/3,
+         write_attributes/1, write_attributes/3,
          append_row/3,
          write_style_IMPORT/2,
          read_attribute/2,
@@ -106,14 +105,13 @@
          read_styles/1,
          read_page_structure/1,
          read_pages/1,
-         drag_n_drop/3,
          copy_n_paste/3,
+%         copy_n_paste_style/3,
+ %        copy_n_paste_value/3,
+         drag_n_drop/3,
          cut_n_paste/3,
-         copy_style/3,
-         insert/2,
-         insert/3,
-         delete/2,
-         delete/3,
+         insert/2, insert/3,
+         delete/2, delete/3,
          clear/3,
          handle_dirty_cell/3,
          set_borders/5,
@@ -494,7 +492,6 @@ move(RefX, Type, Disp, Ar)
     ok = tell_front_end("move", RefX).
 
 move_tr(RefX, Type, Disp, Ar) ->
-
     ok = init_front_end_notify(),
     % if the Type is delete we first delete the original cells
     _R = {insert, atom_to_list(Disp)},
@@ -505,7 +502,6 @@ move_tr(RefX, Type, Disp, Ar) ->
     % To make this work we shift the RefX up 1, left 1 
     % before getting the cells to shift for INSERT
     % if this is a delete - we need to actually delete the cells
-
     ReWr = do_delete(Type, RefX),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
     hn_db_wu:mark_these_dirty(ReWr, Ar),
@@ -702,17 +698,6 @@ drag_n_drop(From, To, Ar)
 %%      From can only be a cell ref but To can be either a cell or range
 %%      ref
 %% @end
-copy_style(#refX{obj = {range, {X, Y, _, _}}} = From, To, Ar) ->
-                  copy_style(From#refX{obj = {cell, {X, Y}}}, To, Ar);
-copy_style(#refX{obj = {cell, _}} = From, 
-           #refX{obj = {Type, _}} = To, Ar)
-  when Type == cell orelse Type == range ->
-    Fun = fun() ->
-                  ok = init_front_end_notify(),
-                  hn_db_wu:copy_style(From, To, Ar)
-          end,
-    ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("copy style").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
@@ -759,8 +744,8 @@ tell_front_end(_FnName) ->
                   remoting_reg:notify_change(S, P, O, Attrs);
              ({delete, #refX{site=S, path=P, obj=O}}) ->
                   remoting_reg:notify_delete(S, P, O);
-             ({style, #refX{site=S, path=P}, Idx, Style}) ->
-                  remoting_reg:notify_style(S, P, Idx, Style)
+             ({style, #refX{site=S, path=P}, Style}) ->
+                  remoting_reg:notify_style(S, P, Style)
           end,
     [ok = Fun(X) || X <- List],
     ok.
