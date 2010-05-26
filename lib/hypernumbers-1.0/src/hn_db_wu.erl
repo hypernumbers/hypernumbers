@@ -413,7 +413,9 @@ deref_formula(Ref, DelRef) ->
     Op = fun(Attrs) -> 
                  case orddict:find("formula", Attrs) of
                      {ok, F1} -> 
-                         {_Status, F2} = deref(Ref, F1, DelRef),
+                         {Status, F2} = deref(Ref, F1, DelRef),
+                         %% TODO if the status is dirty force a recalculation
+                         %% (for Tom McNulty)
                          orddict:store("formula", F2, Attrs);
                      _ ->
                          Attrs
@@ -738,14 +740,14 @@ make_formula(Toks) ->
     mk_f(Toks, {clean, []}).
 
 %% this function needs to be extended...
-mk_f([], {St, A}) -> 
+mk_f([], {St, A}) ->
     {St, "="++lists:flatten(lists:reverse(A))};
 
 mk_f([{errval, _, '#REF!'} | T], {St, A}) -> 
     mk_f(T, {St, ["#REF!" | A]});
 
-mk_f([{deref, _, Text} | T], {St, A}) -> 
-    mk_f(T, {St, [Text | A]});
+mk_f([{deref, Text} | T], {_St, A}) ->
+    mk_f(T, {dirty, [Text | A]});
 
 %% special infering of division
 mk_f([{cellref, _, C1}, {cellref, _, C2} | T], {St, A}) -> 
@@ -791,7 +793,7 @@ mk_f([{formula, _, S} | T], {St, A}) ->
 mk_f([{str, _, S} | T], {St, A}) ->
     mk_f(T, {St, [$", S, $" | A]});
 
-mk_f([{recalc, _, S} | T], {_St, A}) ->
+mk_f([{recalc, S} | T], {_St, A}) ->
     mk_f(T, {dirty, [S | A]});
 
 mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
