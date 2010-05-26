@@ -532,25 +532,24 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
     ok = hn_db_api:insert(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
+%% These three cases could be collapsed into one...
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copy", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
-    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, Uid),
+    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, all, Uid),
     json(Env, "success");
-
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copystyle", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
-    ok = hn_db_api:copy_n_paste_style(hn_util:parse_url(Src), Ref, Uid),
+    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, style, Uid),
     json(Env, "success");
-
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copyvalue", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
-    ok = hn_db_api:copy_n_paste_value(hn_util:parse_url(Src), Ref, Uid),
+    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, value, Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {range, _}} = Ref, _Qry, 

@@ -39,7 +39,7 @@
          delete_cells/1,
          shift_cells/4,
          get_local_children/1,
-         copy_cell/3,
+         copy_cell/4,
          mark_children_dirty/2,
          mark_these_dirty/2,
          read_page_structure/1,
@@ -227,6 +227,10 @@ expunge_refs(S, Refs) ->
             #local_obj{idx=Idx}=LO <- read_objs(Ref, direct)],
     ok.
 
+%% Apply to attrs does the actual work of modifying a target ref. The
+%% behaviour of the modification is determined by the passed in 'Op'
+%% function. Upon completion of 'Op' the post_process function is
+%% applied, which sets formats and styles as necessary.
 -spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ok.
 apply_to_attrs(#refX{site=Site}=Ref, Op) ->
     Table = trans(Site, item), 
@@ -413,7 +417,7 @@ deref_formula(Ref, DelRef) ->
     Op = fun(Attrs) -> 
                  case orddict:find("formula", Attrs) of
                      {ok, F1} -> 
-                         {Status, F2} = deref(Ref, F1, DelRef),
+                         {_Status, F2} = deref(Ref, F1, DelRef),
                          %% TODO if the status is dirty force a recalculation
                          %% (for Tom McNulty)
                          orddict:store("formula", F2, Attrs);
@@ -424,90 +428,65 @@ deref_formula(Ref, DelRef) ->
     apply_to_attrs(Ref, Op).
 
 %% %% @doc copys cells from a reference to a reference
-%% -spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
+-spec copy_cell(#refX{}, #refX{}, 
+                false | horizontal | vertical,
+                all | style | value) -> ok.
+copy_cell(From=#refX{obj={cell, _}}, 
+          To=#refX{obj={cell, _}},
+          _, value) ->
+    [{_, SourceAttrs}] = read_ref(From, inside, read),
+    Op = fun(Attrs) -> copy_attributes(SourceAttrs, Attrs, ["value",
+                                                            "rawvalue",
+                                                            "formula"]) 
+         end,
+    apply_to_attrs(To, Op);
+copy_cell(From=#refX{obj={cell, _}}, 
+          To=#refX{obj={cell, _}},
+          _, style) ->
+    [{_, SourceAttrs}] = read_ref(From, inside, read),
+    Op = fun(Attrs) -> copy_attributes(SourceAttrs, Attrs, ["style"]) end,
+    apply_to_attrs(To, Op);
 copy_cell(#refX{obj = {cell, {FX,FY}}} = From, 
           #refX{obj = {cell, {TX,TY}}} = To, 
-          Incr) ->
-    Formula = case read_ref_field(From, "formula", read) of
-                  [{_, V}] -> superparser:process(V); 
-                  _        -> ""
-              end,
-    F2 = case Formula of
-             {formula, F1} ->
-                 offset_formula(F1, {(TX - FX), (TY - FY)});
-             [{Type, F1},  _A, _F] ->
-                 case Incr of
-                     false  ->
-                         case Type of
-                             datetime ->
-                                 {datetime, D, T} = F1,
-                                 dh_date:format("d/m/Y", {D, T});
-                             _ ->
-                                 tconv:to_s(F1)
-                         end;
-                     _Other -> %% Other can be a range of different values...
-                         case Type of
-                             int      ->
-                                 NewV = F1 + diff(FX, FY, TX, TY, Incr),
-                                 tconv:to_s(NewV);
-                             datetime ->
-                                 {datetime, {Y, M , D}, T} = F1,
-                                 Date = calendar:date_to_gregorian_days(Y, M, D),
-                                 Date2 = Date + diff(FX, FY, TX, TY, Incr),
-                                 NewD = calendar:gregorian_days_to_date(Date2),
-                                 dh_date:format("d/m/Y", {NewD, T});
-                             _ ->
-                                 tconv:to_s(F1)
-                         end
-                 end;
-             _ -> 
-                 ""
-         end,
-    write_attrs(To, [{"formula", F2}]).
-
-%% %% @spec(From::refX{}, To::refX{}) -> ok
-%% %% @doc Copies the style applied to From and attaches it to To.
-%% %%      From can only be a cell ref but To can be either a cell or range
-%% %%      ref
-%% %% @end
-%% %% this clause is for 'on page' copies where both From and To are on
-%% %% the same page - just the index is copied
-%% copy_style(#refX{site = S, path = P, obj = {cell, _}} = From, 
-%%            #refX{site = S, path = P, obj = {Type, _}} = To, 
-%%            _AReq)
-%%   when Type == cell orelse Type == range ->
-%%     case read_ref_field(From, "style", read) of
-%%         [{_, Idx}] ->
-%%             List = case Type of
-%%                        cell  -> [To];
-%%                        range -> hn_util:range_to_list(To)
-%%                    end,
-%%             Op = fun(Attrs) -> orddict:store("style", Idx, Attrs) end,
-%%             [ok = apply_to_attrs(X, Op) || X <- List],
-%%             ok;
-%%         _ ->
-%%             ok
-%%     end;
-%% %% this clause is for copying styles across different pages
-%% copy_style(#refX{obj = {cell, _}} = From, 
-%%            #refX{obj = {Type, _}} = To, _AReq)
-%%   when Type == cell orelse Type == range ->
-%%     case read_styles(From) of
-%%         [] -> ok;
-%%         [{styles, _, _Idx, MagicStyle}] ->
-%%             List = case Type of
-%%                        cell  -> [To];
-%%                        range -> hn_util:range_to_list(To)
-%%                    end,
-%%             Fun = fun(X) ->
-%%                           Idx = write_style(X, MagicStyle),
-%%                           fun(Attrs) -> 
-%%                                   orddict:store("style", Idx, Attrs) 
-%%                           end
-%%                   end,
-%%             [ok = Fun(X) || X <- List],
-%%             ok
-%%     end.
+          Incr, all) ->
+    [{_, Attrs}] = read_ref(From, inside, read),
+    Formula = case orddict:find("formula", Attrs) of
+                  {ok, V} -> superparser:process(V); 
+                  _       -> "" end,
+    Formula2 = 
+        case Formula of
+            {formula, F1} ->
+                offset_formula(F1, {(TX - FX), (TY - FY)});
+            [{Type, F1},  _A, _F] ->
+                case Incr of
+                    false  ->
+                        case Type of
+                            datetime ->
+                                {datetime, D, T} = F1,
+                                dh_date:format("d/m/Y", {D, T});
+                            _ ->
+                                tconv:to_s(F1)
+                        end;
+                    _Other -> %% Other can be a range of different values...
+                        case Type of
+                            int      ->
+                                NewV = F1 + diff(FX, FY, TX, TY, Incr),
+                                tconv:to_s(NewV);
+                            datetime ->
+                                {datetime, {Y, M , D}, T} = F1,
+                                Date = calendar:date_to_gregorian_days(Y, M, D),
+                                Date2 = Date + diff(FX, FY, TX, TY, Incr),
+                                NewD = calendar:gregorian_days_to_date(Date2),
+                                dh_date:format("d/m/Y", {NewD, T});
+                            _ ->
+                                tconv:to_s(F1)
+                        end
+                end;
+            _ -> 
+                ""
+        end,
+    Attrs2 = orddict:store("formula", Formula2, Attrs),
+    write_attrs(To, Attrs2).
 
 -spec mark_these_dirty([#refX{}], nil | uid()) -> ok.
 mark_these_dirty([], _) -> ok;
@@ -1506,6 +1485,13 @@ del_attributes(D, [Key|T]) ->
     D2 = orddict:erase(Key, D),
     del_attributes(D2, T).
 
+copy_attributes(_SD, TD, []) -> TD;
+copy_attributes(SD, TD, [Key|T]) ->
+    case orddict:find(Key, SD) of
+        {ok, V} -> copy_attributes(SD, orddict:store(Key, V, TD), T);
+        _ -> copy_attributes(SD, TD, T)
+    end.
+                 
 %% @doc Convert Parents and DependencyTree tuples as returned by 
 %% Muin into SimpleXML.
 muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
