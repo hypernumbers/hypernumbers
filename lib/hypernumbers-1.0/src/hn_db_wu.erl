@@ -27,477 +27,19 @@
 %%% change - the transaction management is applied in the module 
 %%% {@link hn_db_api} and is documented there.
 %%% 
-%%% <h3>Functional Categories</h3>
-%%% 
-%%% These functions fall into 3 types:
-%%% <ul>
-%%% <li>structural queries that returns #refs{}</li>
-%%% <li>cell queries that operate on cells</li>
-%%% <li>dirty management</li>
-%%% </ul>
-%%%  
-%%% <h4>Structural Queries</h4>
-%%% 
-%%% Structural queries have the following characteristics:
-%%% <ul>
-%%% <li>they are all 'read' queries - they do not impact the
-%%% structure of the database</li>
-%%% <li>they all have the word ref in their function name</li>
-%%% </ul>
-%%% 
-%%% The all return lists of #refX{}'s
-%%% 
-%%% <h4>Cell Queries</h4>
-%%% 
-%%% Cell queries come in 4 distinct flavours:
-%%% <ul>
-%%% <li>create/write</li>
-%%% <li>read</li>
-%%% <li>update</li>
-%%% <li>delete</li>
-%%% </ul>
-%%% 
-%%% The reads return lists of tuples containing #refX{} and 
-%%% {Key, Value} pairs.
-%%% 
-%%% The others return ok
-%%% 
-%%% <h4>Dirty Management</h4>
-%%% 
-%%% A thing can be set dirty by call a function with a name like 
-%%% <code>mark something dirty</code> and when a dirty thing has been
-%%% processed it is cleared with a function like 
-%%% <code>clear dirty something</code>.
-%%% 
-%%% (NB: not all functions with the word 'clear' in them pertain to dirty 
-%%% management)
-%%% 
-%%% <h2>Under The Hood</h2>
-%%% 
-%%% This section looks at how all this stuff is implemented 
-%%% 'under the hood'. The key reason for this is that 
-%%% otherwise it is hard to understand how difficult things
-%%% like inserting rows and columns are implemented.
-%%% 
-%%% This will look at two things:
-%%% <ul>
-%%% <li>attributes</li>
-%%% <li>tables</li>
-%%% </ul>
-%%% These will particularly look at how data that contains
-%%% information about the relationship between cells is
-%%% stored.
-%%% 
-%%% <h3>Attributes</h3>
-%%% 
-%%% There are a number of attributes about a cell that are of
-%%% considerable interest:<p />
-%%% <img src="./attributes.png" />
-%%% 
-%%% Information is entered into a cell by way of a 
-%%% <code>formula</code>. That <code>formula</code> can be in
-%%% a 'shared formula' context (which will result in it
-%%% having <code>__area</code> and <code>__shared</code>
-%%% attributes).
-%%% 
-%%% By default a cell has a <code>format</code> and a 
-%%% <code>style</code> attributes. (There will also be
-%%% <code>permissions</code> attributes later on...)
-%%% 
-%%% The <code>formula</code>, <code>format</code> and
-%%% <code>style</code> attributes are all used to calculate
-%%% the remaining attributes <code>value</code>, 
-%%% <code>rawvalue</code>, <code>overwrite-color</code> 
-%%% and <code>__recompile</code>.
-%%% 
-%%% (Attributes starting with '__' are private in that they
-%%% are never exposed to the front-end - they are server-side
-%%% only.)
-%%% 
-%%% They key point is that if a cell is moved, any formula
-%%% of <i>a child</i> of that cell needs to be be rewritten,
-%%% which means that the <code>__ast</code>, 
-%%% <code>parents</code> and <code>__dependency-tree</code>
-%%% attributes need to be rewritten.
-%%% 
-%%% Then <i>in turn</i> the <code>formula</code> attributes
-%%% of all the <i>grand-children</i> of the original cell 
-%%% need to rewrite and so on and so forth.
-%%%
-%%% <h3>Tables</h3>
-%%%
-%%% The tables that information is stored in is shown below:<p />
-%%% <img src="./tables.png" />
-%%%
-%%% Each of the following tables will now be discussed in some detail:
-%%% <ol>
-%%% <li>item and local_objs and remote_objs (FIX ME)</li>
-%%% <li>local_cell_link</li>
-%%% <li>remote_cell_link</li>
-%%% <li>incomingn_hn</li>
-%%% <li>outgoing_hn</li>
-%%% <li>dirty_cell</li>
-%%% <li>dirty_notify_out</li>
-%%% <li>dirty_notify_in</li>
-%%% <li>dirty_inc_hn_create</li>
-%%% <li>dirty_notify_back_in</li>
-%%% <li>dirty_notify_back_out</li>
-%%% </ol>
-%%% 
-%%% <h4>1 item</h4>
-%%% 
-%%% contains all the atributes of the cell plus attributes of columns, rows, pages
-%%% etc, etc - including stuff not documented here like permissions
-%%% 
-%%% <h4>2 local_cell_link</h4>
-%%% 
-%%% contains parent-child pig's ear links of cells stored in item
-%%% 
-%%% <h4>3 remote_cell_link</h4>
-%%% 
-%%% contains parent-child links that connect cells stored in item 
-%%% <i>for this site</i> to cells on other sites. Becaause this physical 
-%%% server can support many sites that 'remote' cell may be on this 
-%%% machine - as a consequence the links are tagged with incoming/outgoing 
-%%% types
-%%% 
-%%% <h4>4 incoming_hn</h4>
-%%% 
-%%% there is an entry in this table for each remote cell that is referenced
-%%% by a cell on this site. It holds the current value of that remote cell
-%%% and all the connection information required to authenticate updates
-%%% to that cell
-%%% 
-%%% <h4>5 outgoing_hn</h4>
-%%% 
-%%% there is an entry in this table for each cell that is referenced by a
-%%% remote site. It holds the connection information required to successfully
-%%% update the remote sites
-%%% 
-%%% <h4>6 dirty_cell</h4>
-%%% 
-%%% contains a reference to a cell whose parents (local or remote) are dirty
-%%% 
-%%% <h4>7 dirty_notify_out</h4>
-%%% 
-%%% contains a reference to every <code>outgoing_hn</code> whose value has 
-%%% changed and the new value. This is necesseary because notifying the remote
-%%% cell of changes is a asychronous affair and the 'parent cell' needs to be able
-%%% be operated on (deleted, moved, updated, etc, etc) while the notification of
-%%% remote servers is ongoing
-%%% 
-%%% <h4>8 dirty_notify_in</h4>
-%%% 
-%%% contains a list of <code>incomging_hn</code>'s whose value has
-%%% been changed by a notify message. The dirty_srv uses this to identify cells 
-%%% marked as dirty
-%%% 
-%%% <h4>9 dirty_inc_hn_create</h4>
-%%% 
-%%% when a new hypernumber is to be created a entry is made to this table and the
-%%% dirty_srv sets up the hypernumber and triggers dirty_notify_back_in when it
-%%% is complete
-%%% 
-%%% <h4>10 dirty_notify_back_in</h4>
-%%% 
-%%% certain actions on a child hypernumber need to be notified back to the
-%%% parent, for instance:
-%%% <ul>
-%%% <li>formula using a hypernumber has been deleted</li>
-%%% <li>a new formula using an existing hypernumber has been created (ie
-%%% the remote cell has new parents)</li>
-%%% <li>a child has been moved by an insert or delete command</li>
-%%% </ul>
-%%% 
-%%% <h4>11 dirty_notify_back_out</h4>
-%%% 
-%%% when a notification back is received from the child server the change
-%%% is written to this table to be implemented
-%%% 
-%%% <h3>Structure Of Dirty Tables</h3>
-%%% 
-%%% The dirty_cell table lives in a world of its own and is not shown below, 
-%%% but the relationship of the rest of the  dirty tables to each 
-%%% other is shown below:<p />
-%%% <img src="./update_cycles.png" />
-%%% 
-%%% <h2>Corner Cases</h2>
-%%% 
-%%% This section will now describe what happens under a complete set of
-%%% corner cases which are listed below:
-%%% <ol>
-%%% <li>delete a stand-alone value</li>
-%%% <li>delete a value in a cell that is referenced by another
-%%% local cell</li>
-%%% <li>delete a value in a cell that is referenced by another
-%%% remote cell (or cells)</li>
-%%% <li>delete a value that references another local cell</li>
-%%% <li>delete a value that references a remote cell</li>
-%%% <li>create a new value</li>
-%%% <li>create a new formula referencing local cells</li>
-%%% <li>create a new formula referencing a new hypernumber 
-%%% (a remote cell not referenced by any other cell on its site></li>
-%%% <li>create a new formula referencing an existing hypernumber 
-%%% (a remote cell already referenced by another cell on its site></li>
-%%% <li>change a value when the cell is referenced by another
-%%% local cell</li>
-%%% <li>change a value when the cell is referenced by another
-%%% remote cell (or cells) (it is a hypernumber)</li>
-%%% <li>move a cell that onlyhas a value</li>
-%%% <li>move a cell that references another local cell</li>
-%%% <li>move a cell that is referenced by another local cell</li>
-%%% <li>move a cell that is referenced by a remote cell</li>
-%%% <li>move a cell that references a remote cell</li>
-%%% <li>copy a cell from one place to another</li>
-%%% <li>delete a shared formula</li>
-%%% <li>create a shared formula with:
-%%%   <ul>
-%%%   <li>local parents</li>
-%%%   <li>remote parents</li>
-%%%   <li>local children</li>
-%%%   <li>remote children</li>
-%%%   </ul>
-%%% </li>
-%%% </ol>
-%%%  
-%%% The actual implementation of the 'high-level' function MUST handle
-%%% all of these edge cases (as well as the composite cases (ie changing
-%%% a cell that is referenced by a local cell, a remote cell and whose formula
-%%% uses local and remote cells, etc, etc...).
-%%%  
-%%% In addition the high-level actions (insert a column, delete a column etc)
-%%% should handle structual attributes like column widths and stuff correctly
-%%%  
-%%% <h4>1 Delete A Stand-Alone Value</h4>
-%%% 
-%%% If the cell is not shared (ie has an <code>__shared</code> attribute
-%%% then the following attributes are deleted:
-%%% <code><ul>
-%%% <li>formula</li>
-%%% <li>__ast</li>
-%%% <li>value</li>
-%%% <li>rawvalue</li>
-%%% <li>__recompile</li>
-%%% </ul></code>
-%%% 
-%%% <h4>2 Delete A Value In A Cell That Is Referenced By Another
-%%% Local Cell</h4>
-%%% 
-%%% As per <i>Delete A Stand-Alone Value</i> except that a record is 
-%%% written to <code>dirty_cell</code>for each local child of the cell.
-%%% The dirty server then tells the dirty cells to recalculate themselves
-%%% 
-%%% <h4>3 Delete A Value In A Cell That Is Referenced By Another
-%%% Remote Cell (Or Cells)</h4>
-%%% 
-%%% As per <i>Delete A Stand-Alone Value</i> except that a record is 
-%%% written to <code>dirty_notify_out</code> referencing the original
-%%% cell (and not the remote children). This triggers a hypernumbers
-%%% notification message to the remote server.
-%%% 
-%%% The remote server gets the notification message and updates the table
-%%% <code>incoming_hn</code>. It then writes a <code>dirty_notify_in</code>
-%%% record. The dirty server uses this message to write a 
-%%% <code>dirty_cell</code> message for each cell that uses the changed hypernumber
-%%% 
-%%% <h4>4 Delete A Value That References Another Local Cell</h4>
-%%% 
-%%% The cell is deleted as per <i>1 Delete A Stand-Alone Value</i> and then
-%%% the relevant record in <code>local_cell_link</code> is deleted.
-%%% 
-%%% <h4>5 Delete A Value That References A Remote Cell</h4>
-%%% 
-%%% The cell is deleted as per <i>1 Delete A Stand-Alone Value</i> and then
-%%% the relevant record in <code>remote_cell_link</code> is deleted and the
-%%% appropriate message is written to <code>dirty_notify_back_in</code>.
-%%% 
-%%% The remote server gets the notify_back message and uses this to delete
-%%% the record from its <code>remote_cell_link</code> table. If it is the last
-%%% reference to the a particular entry in <code>outgoing_hn</code> table then
-%%% that entry is also deleted.
-%%% 
-%%% <h4>6 Create A New Value</h4>
-%%% 
-%%% <ul>
-%%% <li>a record is written to item</li>
-%%% <li>if the cell has local children a record is written to 
-%%% <code>dirty_cell</code> for each of them</li>
-%%% <li>if the cell has a remote child a record is written to 
-%%% <code>dirty_notify_out</code></li>
-%%% </ul>
-%%% 
-%%% The dirty_srv gets notified of each write and instructs the dirty
-%%% children to recalculate themselves.
-%%% 
-%%% <h4>7 Create A New Formula Referencing Local Cells</h4>
-%%% 
-%%% As per <i>Create A New Value</i> except a new <code>local_cell_link
-%%% </code> record is also written.
-%%% 
-%%% <h4>8 Create A New Formula Referencing A New Hypernumber</h4>
-%%%
-%%% <ul>
-%%% <li>a record is written to <code>item</code></li>
-%%% <li>if the cell has a local child a record is written to 
-%%% <code>dirty_cell</code></li>
-%%% <li>if the cell has a remote child a record is written to 
-%%% <code>dirty_notify_out</code></li>
-%%% <li>a new <code>remote_cell_link</code> of type <code>incoming</code> 
-%%% is written</li>
-%%% <li>the formula looks up the value of the hypernumber - there isn't
-%%% one so it gets the value 'blank' back and a 
-%%% <code>dirty_inc_hn_create</code> record is written. When the 
-%%% dirty server has got the remote hypernumber it will writes its 
-%%% value to the table <code>incoming_hn</code> and create a record
-%%% in <code>dirty_notify_in</code></li>
-%%% </ul>
-%%% 
-%%% The dirty_srv gets notified of each write and instructs the dirty
-%%% children to recalculate themselves.
-%%% 
-%%% <h4>9 Create A New Formula Referencing An Existing Hypernumber</h4>
-%%% 
-%%% <ul>
-%%% <li>a record is written to <code>item</code></li>
-%%% <li>if the cell has a local child a record is written to 
-%%% <code>dirty_cell</code></li>
-%%% <li>if the cell has a remote child a record is written to 
-%%% <code>dirty_notify_out</code></li>
-%%% <li>a new <code>remote_cell_link</code> of type <code>incoming</code> 
-%%% is written</li>
-%%% <li>the formula looks up the value of the hypernumber - gets it - writes
-%%% a <code>dirty_notify_back_in</code> record to notify the remote site that
-%%% a new cell is using a particular hypernumber</li>
-%%% </ul>
-%%% 
-%%% <h4>10 Change A Value When The Cell Is Referenced By Another
-%%% Local Cell</h4>
-%%% 
-%%% Same as <i>6 Create A New Value</i>
-%%% 
-%%% <h4>11 Change A Value When The Cell Is Referenced By Another
-%%% Remote Cell (Or Cells)</h4>
-%%%
-%%% Same as <i>6 Create A New Value</i>
-%%%  
-%%% <h4>12 Move A Cell That Only Has A Value</h4>
-%%% 
-%%% Same as <i>1 Delete A Stand-Alone Value</i> followed by
-%%% <i>6 Create A New Value</i>
-%%% 
-%%% <h4>13 Move A Cell That References Another Local Cell</h4>
-%%% 
-%%% Same as <i>2 Delete A Value In A Cell That Is Referenced By Another
-%%% Local Cell</i> followed by <i>6 Create A New Value</i>
-%%% 
-%%% <h4>14 Move A Cell That Is Referenced By Another Local Cell</h4>
-%%% 
-%%% <ul>
-%%% <li>all the attributes (normal and user-defined) as well as permissions
-%%% are copied from the old position which is then deleted...</li>
-%%% <li>all <code>local_cell_links</code> where the moving cell is the child are 
-%%% rewritten</li>
-%%% <li>any cell that references the original has the <code>formula</code> and 
-%%% is then marked as dirty (forcing it it rewrite itself). <em>This could be 
-%%% done better by some sort of 'mark __dependency-tree dirty' 
-%%% algorithm...</em></li>
-%%% </ul>
-%%% 
-%%% <h4>15 Move A Cell That Is Referenced By A Remote Cell</h4>
-%%% 
-%%% <ul>
-%%% <li>all the attributes (normal and user-defined) as well as permissions
-%%% are copied from the old position which is then deleted...</li>
-%%% <li>all <code>remote_cell_links</code> where the moving cell is the child are 
-%%% rewritten</li>
-%%% <li>a message is written to <code>dirty_notify_out</code> stating that
-%%% the child has moved. The remote server processes this message and writes a 
-%%% <code>dirty_notify_in</code> record. On processing the 
-%%% <code>dirty_notify_in</code> record the dirty cell rewrites the formula
-%%% on all the children of the changed cell and rewrites them triggering an 
-%%% update of the dependency trees of all their children. (see <i>14 Move A Cell 
-%%% That Is Referenced By Another Local Cell</i> for a caveat on this algorithm!</li>
-%%% </ul>
-%%% 
-%%% <h4>16 Move A Cell That References A Remote Cell</h4>
-%%% 
-%%% <ul>
-%%% <li>all the attributes (normal and user-defined) as well as permissions
-%%% are copied from the old position which is then deleted...</li>
-%%% <li>all <code>remote_cell_links</code> where the moving cell is the child are 
-%%% rewritten</li>
-%%% <li>a message is written to <code>dirty_notify_back_in</code> table. When the
-%%% dirty server processes this it sends a message to the parent, which write a
-%%% record to the <code>dirty_notify_back_out</code> table. On processing this record 
-%%% remote server edits its <code>remote_cell_link</code> table.</li>
-%%% </ul>
-%%%
-%%% <h4>17 Copy A Cell From One Place To Another</h4>
-%%%  
-%%% The attributes of the old cell are read and possibly the formula is rewritten
-%%% (if it is a drag and drop or copy and paste and stuff) and the new formula
-%%% is written to the new cell. This is just like a normal cell write.
-%%%  
-%%% <h4>18 Delete A Shared Formula</h4>
-%%% 
-%%% A shared formula delete is like a delete of all cells in a shared formula and
-%%% is treated the same way.
-%%% 
-%%% <h4>19 Create A Shared Formula With All The Trimings</h4>
-%%% 
-%%% A shared formula create is the same a the creation of all the cells in the
-%%% share formula (<em>with some malarky about array values that I don't understand 
-%%% yet!</em>)
-%%% 
-%%% @TODO we need to add 'tell_front_end' messages for when we do stuff
-%%%       like add new children to cells /delete existing children from cells 
-%%%       so that the front-ends can update themselves...
-%%%       parents/childre
-%%% @TODO we use atoms for keys in {key, value} pairs of attributes
-%%%       which is then used in atom_to_list for checking if they are private.
-%%%       This is a memory leak! See also hn_yaws.erl
-%%% @TODO there is the port bodge function - need to handle port correctly
-%%% @TODO when a new style is written for a page it should notify the
-%%%       viewing pages to update themselves or the style stuff won't work...
-%%% @TODO the registration of a new hypernumber is not robust (what if the remote
-%%%       server is not available at registration time? there is no retry 
-%%%       function, etc etc)
-%%% @TODO the whole 'dirty names' stuff needs to be added to the cycles described 
-%%%       above so that when the value of a name changes the various functions 
-%%%       using it recalculcate
-%%% @TODO understand the whole shared formula stuff...
-%%% @TODO there is no effective page versioning which is critical...
-%%% @TODO read_remote_children/read_remote_parents both take either a 
-%%%       <code>#refX{}</code> or a list of <code>#refX{}</code>'s
-%%%       should probably extend this metaphor...
-%%% @TODO the page version/sync code for page updates is a bit broken...
-%%%       when we insert/delete on a page that has hypernumber children
-%%%       on multiple pages on another site we only send ONE message to
-%%%       that site with a child page reference. So only the page version
-%%%       number of ONE of the child pages is checked before the update is
-%%%       made - may need to rewrite versioning...
-%%% @TODO the formula rewriting for insert/delete is icredibly inefficient
-%%%       would be fixed by moving to using ranges in the local_link table
-%%% @TODO REWRITE THE DOCUMENTATION TO TAKE INTO ACCOUNT ALL THE CHANGES!
-%%% @TODO Remove the catch()'s around the superlexer for transformed formulae
-%%%       only in there to provide a logging framework for diagnosis...
-%%% @end
-%%% Created : 24 Jan 2009 by gordon@hypernumbers.com
-%%%-------------------------------------------------------------------
 -module(hn_db_wu).
 
 %% Cell Query Exports
 -export([
          write_attrs/2, write_attrs/3,
-         read_styles/1,
+         read_styles/2,
          local_idx_to_refX/2,
          read_ref/2, read_ref/3, read_ref_field/3,
          clear_cells/1, clear_cells/2,
          delete_cells/1,
          shift_cells/4,
          get_local_children/1,
-         copy_cell/3,
-         copy_style/3,
+         copy_cell/4,
          mark_children_dirty/2,
          mark_these_dirty/2,
          read_page_structure/1,
@@ -520,7 +62,8 @@
         ]).
 
 -export([
-         write_style_IMPORT/2
+         write_style_IMPORT/2,
+         read_styles_IMPORT/1
         ]).
 
 -export([
@@ -576,22 +119,25 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
 %% @hidden
 %% @doc write_style_IMPORT is a wrapper for the internal function write_style
 %% which should never be used except in file import
-write_style_IMPORT(RefX, Style)
-  when is_record(RefX, refX), is_record(Style, magic_style) ->
-    NewIndex = write_style(RefX, Style),
-    write_attrs(RefX, [{"style", NewIndex}]),
-    ok.
+write_style_IMPORT(#refX{site=Site}, Style) ->
+    Tbl = trans(Site, style),
+    ok = mnesia:write(Tbl, Style, write).
+
+read_styles_IMPORT(#refX{site=Site}) ->
+    Tbl = trans(Site, style),
+    MS = ets:fun2ms(fun(X) -> X end),
+    mnesia:select(Tbl, MS, read).
 
 -spec get_last_row(#refX{}) -> integer(). 
 get_last_row(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    lists:max([0 | [Y || #local_objs{obj={cell,{_,Y}}} 
+    lists:max([0 | [Y || #local_obj{obj={cell,{_,Y}}} 
                              <- read_objs(SelX, inside)]]).
 
 -spec get_last_col(#refX{}) -> integer(). 
 get_last_col(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    lists:max([0 | [X || #local_objs{obj={cell,{X,_}}} 
+    lists:max([0 | [X || #local_obj{obj={cell,{X,_}}} 
                              <- read_objs(SelX, inside)]]).
 
 %% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> ok
@@ -670,7 +216,7 @@ extract_field([{Ref, Attrs}|T], Field, Acc) ->
                _       -> Acc end,
     extract_field(T, Field, Acc2).    
 
--spec read_attrs(string(), [#local_objs{}], read|write)
+-spec read_attrs(string(), [#local_obj{}], read|write)
                 -> [{#refX{}, ?dict}].
 read_attrs(S, LocObjs, Lock) ->
     Tbl = trans(S, item),
@@ -678,26 +224,30 @@ read_attrs(S, LocObjs, Lock) ->
 read_attrs_([], _S, _Tbl, _Lock, Acc) ->
     lists:reverse(Acc);
 read_attrs_([LO|Tail], S, Tbl, Lock, Acc) ->
-    Acc2 = case mnesia:read(Tbl, LO#local_objs.idx, Lock) of
+    Acc2 = case mnesia:read(Tbl, LO#local_obj.idx, Lock) of
                [#item{attrs=Attrs}] -> [{lobj_to_ref(S, LO), Attrs} | Acc];
                []                   -> Acc end,
     read_attrs_(Tail, S, Tbl, Lock, Acc2).
 
--spec lobj_to_ref(string(), #local_objs{}) -> #refX{}.
-lobj_to_ref(Site, #local_objs{path=P, obj=O}) ->
+-spec lobj_to_ref(string(), #local_obj{}) -> #refX{}.
+lobj_to_ref(Site, #local_obj{path=P, obj=O}) ->
     #refX{site=Site, path=P, obj=O}.
 
 -spec expunge_refs(string(), [#refX{}]) -> ok. 
 expunge_refs(S, Refs) ->
     ItemT = trans(S, item),
-    ObjT = trans(S, local_objs),
+    ObjT = trans(S, local_obj),
     [begin
          mnesia:delete(ItemT, Idx, write),
          mnesia:delete_object(ObjT, LO, write)
      end || Ref <- Refs,
-            #local_objs{idx=Idx}=LO <- read_objs(Ref, direct)],
+            #local_obj{idx=Idx}=LO <- read_objs(Ref, direct)],
     ok.
 
+%% Apply to attrs does the actual work of modifying a target ref. The
+%% behaviour of the modification is determined by the passed in 'Op'
+%% function. Upon completion of 'Op' the post_process function is
+%% applied, which sets formats and styles as necessary.
 -spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ok.
 apply_to_attrs(#refX{site=Site}=Ref, Op) ->
     Table = trans(Site, item), 
@@ -777,8 +327,8 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
                   end,
             DirtyChildren = lists:foldl(Fun, [], Formulas),
             
-            %% Rewrite the local_objs entries by applying the shift offset.
-            ObjTable = trans(Site, local_objs),
+            %% Rewrite the local_obj entries by applying the shift offset.
+            ObjTable = trans(Site, local_obj),
             [begin 
                  mnesia:delete_object(ObjTable, LO, write),
                  mnesia:write(ObjTable, shift_obj(LO, XOff, YOff), write)
@@ -786,43 +336,22 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             DirtyChildren
     end.
 
-shift_obj(#local_objs{obj = {cell, {X, Y}}}=LO, XOff, YOff) ->
+shift_obj(#local_obj{obj = {cell, {X, Y}}}=LO, XOff, YOff) ->
     O2 = {cell, {X + XOff, Y + YOff}},
-    LO#local_objs{obj = O2};
-shift_obj(#local_objs{obj = {column, {X1, X2}}}=LO, XOff, _YOff) ->
+    LO#local_obj{obj = O2};
+shift_obj(#local_obj{obj = {column, {X1, X2}}}=LO, XOff, _YOff) ->
     O2 = {column, {X1 + XOff, X2 + XOff}},
-    LO#local_objs{obj = O2};
-shift_obj(#local_objs{obj = {row, {Y1, Y2}}}=LO, _XOff, YOff) ->
+    LO#local_obj{obj = O2};
+shift_obj(#local_obj{obj = {row, {Y1, Y2}}}=LO, _XOff, YOff) ->
     O2 = {row, {Y1 + YOff, Y2 + YOff}},
-    LO#local_objs{obj = O2};
+    LO#local_obj{obj = O2};
 shift_obj(LO, _, _) -> LO. 
 
-%% @spec read_styles(#refX{}) -> [Style]
-%% Style = #styles{}
-%% @doc returns a list of styles associated with a reference
-%% 
-%% The refX{} can refer to any of a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-read_styles(#refX{site = Site, obj = {page, _}} = RefX) ->
-    Table = trans(Site, styles),
-    mnesia:read(Table, RefX, read);
-read_styles(#refX{site = Site} = RefX) ->
-    %% first get the style records to get the indexes
-    Cells = read_ref_field(RefX, "style", read),
-    IndexList = hslists:uniq([V || {_, V} <- Cells]),
-    %% RefX is a cell/column/row/range ref - make it a page ref
-    Ref2 = RefX#refX{obj = {page, "/"}},
-    Match = #styles{refX = Ref2, index =  '$1', _ = '_'},
-    Cond = make_or(IndexList, '$1'),
-    Body = ['$_'],
-    Table = trans(Site, styles),
-    mnesia:select(Table, [{Match, Cond, Body}]).
+-spec read_styles(#refX{}, [integer()]) -> #style{}. 
+read_styles(#refX{site = Site}, Idxs) ->
+    Table = trans(Site, style),
+    [S || I <- Idxs,
+          S <- mnesia:index_read(Table, I, #style.idx)].
 
 %% @doc deletes the contents (formula/value) and the formats
 %% of a cell (but doesn't delete the cell itself).
@@ -866,7 +395,7 @@ clear_cells(Ref, {attributes, DelAttrs}) ->
 %% <li>range</li>
 %% <li>cell</li>
 %% </ul>
-%% and then deletes all the cells including their indices in local_objs
+%% and then deletes all the cells including their indices in local_obj
 %% and makes all cells that are their children throw a #ref! error
 %% and deletes the links there the old cell was the child of another cell
 %% @todo this is ineffiecient because it reads and then deletes each
@@ -905,7 +434,7 @@ deref_formula(Ref, DelRef) ->
     Op = fun(Attrs) -> 
                  case orddict:find("formula", Attrs) of
                      {ok, F1} -> 
-                         {Status, F2} = deref(Ref, F1, DelRef),
+                         {_Status, F2} = deref(Ref, F1, DelRef),
                          %% TODO if the status is dirty force a recalculation
                          %% (for Tom McNulty)
                          orddict:store("formula", F2, Attrs);
@@ -916,91 +445,65 @@ deref_formula(Ref, DelRef) ->
     apply_to_attrs(Ref, Op).
 
 %% %% @doc copys cells from a reference to a reference
-%% -spec copy_cell(#refX{}, #refX{}, false | horizontal | vertical) -> ok.
+-spec copy_cell(#refX{}, #refX{}, 
+                false | horizontal | vertical,
+                all | style | value) -> ok.
+copy_cell(From=#refX{obj={cell, _}}, 
+          To=#refX{obj={cell, _}},
+          _, value) ->
+    [{_, SourceAttrs}] = read_ref(From, inside, read),
+    Op = fun(Attrs) -> copy_attributes(SourceAttrs, Attrs, ["value",
+                                                            "rawvalue",
+                                                            "formula"]) 
+         end,
+    apply_to_attrs(To, Op);
+copy_cell(From=#refX{obj={cell, _}}, 
+          To=#refX{obj={cell, _}},
+          _, style) ->
+    [{_, SourceAttrs}] = read_ref(From, inside, read),
+    Op = fun(Attrs) -> copy_attributes(SourceAttrs, Attrs, ["style"]) end,
+    apply_to_attrs(To, Op);
 copy_cell(#refX{obj = {cell, {FX,FY}}} = From, 
           #refX{obj = {cell, {TX,TY}}} = To, 
-          Incr)
-  when is_record(From, refX), is_record(To, refX) ->
-    Formula = case read_ref_field(From, "formula", read) of
-                  [{_, V}] -> superparser:process(V); 
-                  _        -> ""
-              end,
-    F2 = case Formula of
-             {formula, F1} ->
-                 offset_formula(F1, {(TX - FX), (TY - FY)});
-             [{Type, F1},  _A, _F] ->
-                 case Incr of
-                     false  ->
-                         case Type of
-                             datetime ->
-                                 {datetime, D, T} = F1,
-                                 dh_date:format("d/m/Y", {D, T});
-                             _ ->
-                                 tconv:to_s(F1)
-                         end;
-                     _Other -> %% Other can be a range of different values...
-                         case Type of
-                             int      ->
-                                 NewV = F1 + diff(FX, FY, TX, TY, Incr),
-                                 tconv:to_s(NewV);
-                             datetime ->
-                                 {datetime, {Y, M , D}, T} = F1,
-                                 Date = calendar:date_to_gregorian_days(Y, M, D),
-                                 Date2 = Date + diff(FX, FY, TX, TY, Incr),
-                                 NewD = calendar:gregorian_days_to_date(Date2),
-                                 dh_date:format("d/m/Y", {NewD, T});
-                             _ ->
-                                 tconv:to_s(F1)
-                         end
-                 end;
-             _ -> 
-                 ""
-         end,
-    write_attrs(To, [{"formula", F2}]).
-
-%% @spec(From::refX{}, To::refX{}) -> ok
-%% @doc Copies the style applied to From and attaches it to To.
-%%      From can only be a cell ref but To can be either a cell or range
-%%      ref
-%% @end
-%% this clause is for 'on page' copies where both From and To are on
-%% the same page - just the index is copied
-copy_style(#refX{site = S, path = P, obj = {cell, _}} = From, 
-           #refX{site = S, path = P, obj = {Type, _}} = To, 
-           _AReq)
-  when Type == cell orelse Type == range ->
-    case read_ref_field(From, "style", read) of
-        [{_, Idx}] ->
-            List = case Type of
-                       cell  -> [To];
-                       range -> hn_util:range_to_list(To)
-                   end,
-            Op = fun(Attrs) -> orddict:store("style", Idx, Attrs) end,
-            [ok = apply_to_attrs(X, Op) || X <- List],
-            ok;
-        _ ->
-            ok
-    end;
-%% this clause is for copying styles across different pages
-copy_style(#refX{obj = {cell, _}} = From, 
-           #refX{obj = {Type, _}} = To, _AReq)
-  when Type == cell orelse Type == range ->
-    case read_styles(From) of
-        [] -> ok;
-        [{styles, _, _Idx, MagicStyle}] ->
-            List = case Type of
-                       cell  -> [To];
-                       range -> hn_util:range_to_list(To)
-                   end,
-            Fun = fun(X) ->
-                          Idx = write_style(X, MagicStyle),
-                          fun(Attrs) -> 
-                                  orddict:store("style", Idx, Attrs) 
-                          end
-                  end,
-            [ok = Fun(X) || X <- List],
-            ok
-    end.
+          Incr, all) ->
+    [{_, Attrs}] = read_ref(From, inside, read),
+    Formula = case orddict:find("formula", Attrs) of
+                  {ok, V} -> superparser:process(V); 
+                  _       -> "" end,
+    Formula2 = 
+        case Formula of
+            {formula, F1} ->
+                offset_formula(F1, {(TX - FX), (TY - FY)});
+            [{Type, F1},  _A, _F] ->
+                case Incr of
+                    false  ->
+                        case Type of
+                            datetime ->
+                                {datetime, D, T} = F1,
+                                dh_date:format("d/m/Y", {D, T});
+                            _ ->
+                                tconv:to_s(F1)
+                        end;
+                    _Other -> %% Other can be a range of different values...
+                        case Type of
+                            int      ->
+                                NewV = F1 + diff(FX, FY, TX, TY, Incr),
+                                tconv:to_s(NewV);
+                            datetime ->
+                                {datetime, {Y, M , D}, T} = F1,
+                                Date = calendar:date_to_gregorian_days(Y, M, D),
+                                Date2 = Date + diff(FX, FY, TX, TY, Incr),
+                                NewD = calendar:gregorian_days_to_date(Date2),
+                                dh_date:format("d/m/Y", {NewD, T});
+                            _ ->
+                                tconv:to_s(F1)
+                        end
+                end;
+            _ -> 
+                ""
+        end,
+    Attrs2 = orddict:store("formula", Formula2, Attrs),
+    write_attrs(To, Attrs2).
 
 -spec mark_these_dirty([#refX{}], nil | uid()) -> ok.
 mark_these_dirty([], _) -> ok;
@@ -1063,11 +566,11 @@ insert_work_queue([Idx|Rest], Tbl, Priority, Q) ->
 %% @doc read the populated pages under the specified path
 %% @todo fix up api
 read_page_structure(#refX{site = Site, obj = {page, "/"}}) ->
-    Items = mnesia:dirty_all_keys(trans(Site, local_objs)),
+    Items = mnesia:dirty_all_keys(trans(Site, local_obj)),
     filter_pages(Items, dh_tree:new()).
 
 read_pages(#refX{site = Site, obj = {page, "/"}}) ->
-    mnesia:all_keys(trans(Site, local_objs)).
+    mnesia:all_keys(trans(Site, local_obj)).
 
 filter_pages([], Tree) ->
     Tree;
@@ -1080,8 +583,8 @@ filter_pages([Path | T], Tree) ->
 get_local_item_index(#refX{site = S, path = P, obj = O} = RefX) ->
     case read_local_item_index(RefX) of
         false -> Idx = util2:get_timestamp(),
-                 Rec = #local_objs{path = P, obj = O, idx = Idx},
-                 ok = mnesia:write(trans(S, local_objs), Rec, write),
+                 Rec = #local_obj{path = P, obj = O, idx = Idx},
+                 ok = mnesia:write(trans(S, local_obj), Rec, write),
                  Idx;
         Idx   -> Idx        
     end.
@@ -1143,8 +646,8 @@ shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1, 0, infinity, infinity}}}.
 
 local_idx_to_refX(S, Idx) ->
-    case mnesia:index_read(trans(S, local_objs), Idx, idx) of
-        [Rec] -> #local_objs{path = P, obj = O} = Rec,
+    case mnesia:index_read(trans(S, local_obj), Idx, idx) of
+        [Rec] -> #local_obj{path = P, obj = O} = Rec,
                  #refX{site = S, path = P, obj = O};
         []    -> {error, id_not_found, Idx}
     end.
@@ -1168,8 +671,8 @@ refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
 %% IF IT DOESN'T EXIST
 -spec read_local_item_index(#refX{}) -> pos_integer() | false. 
 read_local_item_index(#refX{site = S, path = P, obj = Obj}) ->
-    Table = trans(S, local_objs),
-    MS = ets:fun2ms(fun(#local_objs{path=MP, obj=MObj, idx=I}) when 
+    Table = trans(S, local_obj),
+    MS = ets:fun2ms(fun(#local_obj{path=MP, obj=MObj, idx=I}) when 
                               MP == P, MObj == Obj -> I
                     end),
     case mnesia:select(Table, MS, read) of
@@ -1999,80 +1502,66 @@ del_attributes(D, [Key|T]) ->
     D2 = orddict:erase(Key, D),
     del_attributes(D2, T).
 
+copy_attributes(_SD, TD, []) -> TD;
+copy_attributes(SD, TD, [Key|T]) ->
+    case orddict:find(Key, SD) of
+        {ok, V} -> copy_attributes(SD, orddict:store(Key, V, TD), T);
+        _ -> copy_attributes(SD, TD, T)
+    end.
+                 
 %% @doc Convert Parents and DependencyTree tuples as returned by 
 %% Muin into SimpleXML.
 muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
     Url = hn_util:index_to_url({index, S, P, X1, Y1}),
     {url, [{type, Type}], [Url]}.
 
-make_or(Attrs, PlcHoldr)  -> make_clause(Attrs, PlcHoldr, 'or').
-%%make_and(Attrs, PlcHoldr) -> make_clause(Attrs, PlcHoldr, 'and').
-
-make_clause(Attrs, PlcHoldr, Op) -> make_clause(Attrs, PlcHoldr, Op, []).
-
-make_clause([], _, Op, Acc)      -> 
-    case length(Acc) of
-        0 -> [];   % no attributes get everything
-        1 ->  Acc; % 1 attribute - no Op statement
-        _ -> [list_to_tuple(lists:flatten([Op, Acc]))]
-    end;
-make_clause([H | T], PH, Op, A)  -> 
-    make_clause(T, PH, Op, [{'==', PH, H} | A]).
-
 %% this function is called when a new attribute is set for a style
 -spec apply_style(#refX{}, {string(), term()}, ?dict) -> ?dict.
 apply_style(Ref, {Name, Val}, Attrs) ->
     NewSIdx = case orddict:find("style", Attrs) of
-                  {ok, Idx} -> edit_style(Ref, Idx, Name, Val);
-                  _         -> new_style(Ref, Name, Val)
+                  {ok, Idx} -> based_style(Ref, Idx, Name, Val);
+                  _         -> fresh_style(Ref, Name, Val)
               end,
     orddict:store("style", NewSIdx, Attrs).
 
-new_style(Ref, Name, Val) ->
-    NoOfFields = ms_util2:no_of_fields(magic_style), 
-    Index = ms_util2:get_index(magic_style, Name), 
-    Style = make_tuple(magic_style, NoOfFields, Index, Val), 
-    %% Now write the style 
-    write_style(Ref, Style). 
+-spec fresh_style(#refX{}, atom(), any()) -> integer(). 
+fresh_style(#refX{site=Site}=Ref, Name, Val) ->
+    FieldNo = ms_util2:get_index(magic_style, Name),
+    Tbl = trans(Site, style),
+    MStyle = setelement(FieldNo + 1, #magic_style{}, Val),
+    store_style(Ref, Tbl, MStyle).
 
-edit_style(#refX{site = Site} = RefX, StIdx, Name, Val) ->
-    PageRefX = RefX#refX{obj = {page, "/"}},
-    Match = #styles{refX = PageRefX, index = StIdx, _ = '_'},
-    Table = trans(Site, styles),
-    Return = mnesia:index_match_object(Table, Match, 1, read),
-    [#styles{magic_style = CurrentStyle}] = Return, 
-    Index = ms_util2:get_index(magic_style, Name), 
-    Style2 = tuple_to_list(CurrentStyle), 
-    {Start, [_H | End]} = lists:split(Index, Style2), 
-    NewStyle = list_to_tuple(lists:append([Start, [Val], End])), 
-    write_style(RefX, NewStyle). 
+-spec based_style(#refX{}, integer(), atom(), any()) -> integer().
+based_style(#refX{site=Site}=Ref, BaseIdx, Name, Val) ->
+    Tbl = trans(Site, style),
+    case mnesia:index_read(Tbl, BaseIdx, #style.idx) of
+        [#style{magic_style = MStyle1}] ->
+            FieldNo = ms_util2:get_index(magic_style, Name),
+            MStyle2 = setelement(FieldNo + 1, MStyle1, Val),
+            store_style(Ref, Tbl, MStyle2);
+        _ ->
+            BaseIdx %% <- strange..
+    end.
 
-%% write_style will write a style if it doesn't exist and then 
-%% return an index pointing to it 
-%% If the style already exists it just returns the index 
-write_style(#refX{site = Site} = RefX, Style) ->
-    %% Ref is a cell ref, need a page ref
-    Ref2 = RefX#refX{obj = {page, "/"}},
-    Match = #styles{refX = Ref2, magic_style = Style, _ = '_'},
-    Table = trans(Site, styles),
-    case mnesia:index_match_object(Table, Match, 1, read) of 
-        []                          -> write_style2(RefX, Style); 
-        [#styles{index = NewIndex}] -> NewIndex
-    end. 
+-spec store_style(#refX{}, atom(), #magic_style{}) -> integer(). 
+store_style(Ref, Tbl, MStyle) ->
+    case mnesia:read(Tbl, MStyle, read) of
+        [#style{idx = I}] -> 
+            I; 
+        _ ->
+            I = util2:get_timestamp(),
+            StyleRec = #style{magic_style = MStyle, idx = I},
+            ok = tell_front_end_style(Ref, StyleRec),
+            ok = mnesia:write(Tbl, StyleRec, write),
+            I
+    end.    
 
-write_style2(#refX{site = Site} = RefX, Style) ->
-    %% Ref is a cell reference - a page reference is needed
-    Ref2 = RefX#refX{obj = {page, "/"}},
-    NewIndex = mnesia:dirty_update_counter(trans(Site, style_counters), Ref2, 1), 
-    ok = tell_front_end_style(Ref2, NewIndex, Style),
-    Rec = #styles{refX = Ref2, index = NewIndex, magic_style = Style},
-    ok = mnesia:write(trans(Site, styles), Rec, write),
-    NewIndex. 
-
-
-tell_front_end_style(Ref, NewIndex, Style) ->
-    Tuple = {style, Ref, NewIndex, Style},
+-spec tell_front_end_style(#refX{}, #style{}) -> ok. 
+tell_front_end_style(Ref, Style) ->
+    Tuple = {style, Ref, Style},
     tell_front_end1(Tuple).
+
+-spec tell_front_end_change(#refX{}, ?dict) -> ok. 
 tell_front_end_change(Ref, Attrs) ->
     Tuple = {change, Ref, Attrs},
     tell_front_end1(Tuple).
@@ -2082,112 +1571,105 @@ tell_front_end1(Tuple) ->
     put('front_end_notify', [Tuple | List]),
     ok.
 
-make_tuple(Style, Counter, Index, Val) -> 
-    make_tuple1(Style, Counter, Index, Val, []). 
-make_tuple1(S, 0, _I, _V, Acc) -> list_to_tuple([S|Acc]); 
-make_tuple1(S, I, I, V, Acc )  -> make_tuple1(S, I -1 , I, V, [V | Acc]); 
-make_tuple1(S, C, I, V, Acc)   -> make_tuple1(S, C - 1, I, V, [[] | Acc]).
-
-
--spec read_objs(#refX{}, inside | intersect | direct) -> [#local_objs{}]. 
+-spec read_objs(#refX{}, inside | intersect | direct) -> [#local_obj{}]. 
 read_objs(#refX{site=Site}=Ref, inside) ->
     MS = objs_inside_ref(Ref),
-    mnesia:select(trans(Site, local_objs), MS);
+    mnesia:select(trans(Site, local_obj), MS);
 read_objs(#refX{site=Site}=Ref, intersect) ->
     MS = objs_intersect_ref(Ref),
-    mnesia:select(trans(Site, local_objs), MS);
+    mnesia:select(trans(Site, local_obj), MS);
 read_objs(#refX{site=Site, path=P, obj = O}, direct) ->
-    MS = ets:fun2ms(fun(LO=#local_objs{path=MP, obj=MO}) 
+    MS = ets:fun2ms(fun(LO=#local_obj{path=MP, obj=MO}) 
                           when MP == P, MO == O -> LO
                     end),
-    mnesia:select(trans(Site, local_objs), MS).                            
+    mnesia:select(trans(Site, local_obj), MS).                            
 
 objs_inside_ref(#refX{path = P, obj = {page, "/"}}) ->
-    ets:fun2ms(fun(LO=#local_objs{path=MP}) when MP == P -> LO end);
+    ets:fun2ms(fun(LO=#local_obj{path=MP}) when MP == P -> LO end);
 objs_inside_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
-    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,_MY}}}) 
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
                      when MP == P,
                           X1 =< MX, MX =< X2 -> LO
                end);
 objs_inside_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
-    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{_MX,MY}}}) 
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
                      when MP == P,
                           R1 =< MY, MY =< R2 -> LO
                end);
 objs_inside_ref(#refX{path = P, obj = {range, {0,Y1,infinity,Y2}}}) ->
-    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}}) 
                      when MP == P,
                           0 =< MX, MX =< infinity, 
                           Y1 =< MY, MY =< Y2 -> LO;
-                  (LO=#local_objs{path=MP, obj={row,{MY,MY}}})
+                  (LO=#local_obj{path=MP, obj={row,{MY,MY}}})
                      when MP == P,
                           Y1 =< MY, MY =< Y2 -> LO
                end);
 objs_inside_ref(#refX{path = P, obj = {range, {X1,0,X2,infinity}}}) ->
-    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}}) 
                      when MP == P,
                           X1 =< MX, MX =< X2, 
                           0 =< MY, MY =< infinity -> LO; 
-                  (LO=#local_objs{path=MP, obj={column,{MX,MX}}})
+                  (LO=#local_obj{path=MP, obj={column,{MX,MX}}})
                      when MP == P,
                           X1 =< MX, MX =< X2 -> LO
                end);
 objs_inside_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
-    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}}) 
                      when MP == P,
                           X1 =< MX, MX =< X2, 
                           Y1 =< MY, MY =< Y2 -> LO
                end);
 objs_inside_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
     ets:fun2ms(
-      fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}})
+      fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}})
             when MP == P, MX == X, MY == Y -> LO
       end).
 
 %% Note that this is most useful when given cells, or ranges. 
 objs_intersect_ref(#refX{path = P, obj = {page, "/"}}) ->
-    ets:fun2ms(fun(LO=#local_objs{path=MP}) when MP == P -> LO end);
+    ets:fun2ms(fun(LO=#local_obj{path=MP}) when MP == P -> LO end);
 objs_intersect_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
-    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}}) 
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}}) 
                      when MP == P,
                           X1 =< MX, MX =< X2,
                           Y1 =< MY, MY =< Y2 -> LO;
-                  (LO=#local_objs{path=MP, obj={row,{MY,MY}}})
+                  (LO=#local_obj{path=MP, obj={row,{MY,MY}}})
                      when MP == P,
                           Y1 =< MY, MY =< Y2 -> LO;
-                  (LO=#local_objs{path=MP, obj={column, {MX,MX}}})
+                  (LO=#local_obj{path=MP, obj={column, {MX,MX}}})
                      when MP == P,
                           X1 =< MX, MX =< X2 -> LO;
-                  (LO=#local_objs{path=MP, obj={page, _}}) 
+                  (LO=#local_obj{path=MP, obj={page, _}}) 
                      when MP == P -> LO
                end);
 objs_intersect_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
     ets:fun2ms(
-      fun(LO=#local_objs{path=MP, obj={cell,{MX,MY}}})
+      fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}})
             when MP == P, MX == X, MY == Y -> LO;
-         (LO=#local_objs{path=MP, obj={column,{MX,MX}}}) 
+         (LO=#local_obj{path=MP, obj={column,{MX,MX}}}) 
             when MP == P, MX == X -> LO; 
-         (LO=#local_objs{path=MP, obj={row,{MY,MY}}}) 
+         (LO=#local_obj{path=MP, obj={row,{MY,MY}}}) 
             when MP == P, MY == Y -> LO;
-         (LO=#local_objs{path=MP, obj={page, _}}) 
+         (LO=#local_obj{path=MP, obj={page, _}}) 
             when MP == P -> LO
       end);
 objs_intersect_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
-    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{MX,_MY}}}) 
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
                      when MP == P,
                           X1 =< MX, MX =< X2 -> LO;
-                  (LO=#local_objs{path=MP, obj={row,_}})
+                  (LO=#local_obj{path=MP, obj={row,_}})
                      when MP == P -> LO;
-                  (LO=#local_objs{path=MP, obj={page, _}}) 
+                  (LO=#local_obj{path=MP, obj={page, _}}) 
                      when MP == P -> LO
                end);
 objs_intersect_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
-    ets:fun2ms(fun(LO=#local_objs{path=MP, obj={cell,{_MX,MY}}}) 
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
                      when MP == P,
                           R1 =< MY, MY =< R2 -> LO;
-                  (LO=#local_objs{path=MP, obj={column, _}})
+                  (LO=#local_obj{path=MP, obj={column, _}})
                      when MP == P-> LO;
-                  (LO=#local_objs{path=MP, obj={page, _}}) 
+                  (LO=#local_obj{path=MP, obj={page, _}}) 
                      when MP == P -> LO
                end).
 

@@ -41,88 +41,92 @@ csv_append(Url, FileName) ->
     ok.
     
 json_file(Url, FileName) -> 
-
-    % first read the file
-    {ok, JsonTxt}    = file:read_file(FileName),
-
+    {ok, JsonTxt} = file:read_file(FileName),
     Ref = hn_util:parse_url(Url),
 
-    % second unpack the json
-    {struct, Json}   = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
-    {struct, Styles} = ?pget("styles", Json),
-    {struct, Cells}  = ?pget("cell", Json),
-    {struct, Rows}   = ?pget("row", Json),
-    {struct, Cols}   = ?pget("column", Json),
+    {struct, Json} = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
+    {struct, StyleStrs} = ?pget("styles", Json),
+    {struct, Cells} = ?pget("cell", Json),
+    {struct, Rows} = ?pget("row", Json),
+    {struct, Cols} = ?pget("column", Json),
 
-    StyleRecs = [make_style_rec(X) || X <- Styles],
+    Styles = hn_db_api:read_styles_IMPORT(Ref),
+    ImportStyles = [make_style_rec(X) || X <- StyleStrs],
+    {ImportStyles2, RewriteT} = rewrite_styles(Styles, ImportStyles),
+    hn_db_api:write_styles_IMPORT(Ref, ImportStyles2),
 
-    % now clear the page
     ok = hn_db_api:clear(Ref, all, nil),
-
-    % finally write out the data
-    [ rows(Ref, X, StyleRecs, row,    fun write_col_row/3) || X <- Rows],
-    [ rows(Ref, X, StyleRecs, column, fun write_col_row/3) || X <- Cols],
-        
-    [ rows(Ref, X, StyleRecs, cell,   fun write_cells/3) || X <- Cells],
-
+    [ rows(Ref, X, RewriteT, row,    fun write_col_row/3) || X <- Rows],
+    [ rows(Ref, X, RewriteT, column, fun write_col_row/3) || X <- Cols],
+    [ rows(Ref, X, RewriteT, cell,   fun write_cells/3) || X <- Cells],
     ok.
 
-rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun) ->
-    [ cells(Ref, Row, X, Styles, Type, Fun) || X <- Cells],
+rows(Ref, {Row, {struct, Cells}}, RewriteT, Type, Fun) ->
+    [ cells(Ref, Row, X, RewriteT, Type, Fun) || X <- Cells],
     ok.
 
-cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun) ->
+cells(Ref, Row, {Col, {struct, Attrs}}, RewriteT, Type, Fun) ->
     NRef = Ref#refX{ obj={Type, {ltoi(Col), ltoi(Row)}}},
-    Fun(NRef, Attrs, Styles),
+    Fun(NRef, RewriteT, Attrs),
     ok.
 
-write_col_row(_NRef, [], _Styles)   -> ok;
-write_col_row(NRef, Attrs, _Styles) ->
+write_col_row(_NRef, _, [])   -> ok;
+write_col_row(NRef, _, Attrs) ->
     ok = hn_db_api:write_attributes([{NRef, Attrs}]).    
              
-write_cells(NRef, Attrs, Styles) ->
-
-    ok = write_attr("merge", Attrs, NRef),
-    ok = write_attr("formula", Attrs, NRef),
-    ok = write_attr("format", Attrs, NRef),
-        
-    case lists:keyfind("style", 1, Attrs) of
-        {_, SIdx} ->
-            Idx = integer_to_list(SIdx),
-            {Idx, Style} = lists:keyfind(Idx, 1, Styles),
-            ok = hn_db_api:write_style_IMPORT(NRef, Style);
-        false     ->
-            ok
+write_cells(Ref, RewriteT, Attrs) ->
+    Attrs2 = copy_attrs(Attrs, [], RewriteT, ["merge",
+                                              "formula",
+                                              "style",
+                                              "format"]),
+    hn_db_api:write_attributes([{Ref, Attrs2}]).
+    
+copy_attrs(_Source, Dest, _RT, []) -> Dest;
+copy_attrs(Source, Dest, RT, ["style"=Key|T]) ->
+    case proplists:get_value(Key, Source, undefined) of
+        undefined -> copy_attrs(Source, Dest, RT, T);
+        Idx -> case gb_trees:lookup(Idx, RT) of
+                   {value, NIdx} ->
+                       copy_attrs(Source, [{Key,NIdx}|Dest], RT, T);
+                   _ -> 
+                       copy_attrs(Source, [{Key,Idx}|Dest], RT, T)
+               end
+    end;
+copy_attrs(Source, Dest, RT, [Key|T]) ->
+    case proplists:get_value(Key, Source, undefined) of
+        undefined -> copy_attrs(Source, Dest, RT, T);
+        V -> copy_attrs(Source, [{Key,V}|Dest], RT, T)
     end.
-
+            
 ltoi(X) ->        
     list_to_integer(X).
 
-write_attr(Attr, List, Ref) ->
-    case lists:keyfind(Attr, 1, List) of
-        false       -> ok;
-        {Attr, Val} -> hn_db_api:write_attributes([{Ref, [{Attr, Val}]}])
-    end.
-
-make_style_rec({Idx, Style}) ->
+rewrite_styles(Styles, ImportStyles) ->
+    StyleTree = gb_trees:from_orddict(
+                  lists:sort([{MS,Idx} || #style{magic_style = MS, 
+                                                 idx = Idx} <- Styles])),
+    RewriteF = fun(#style{magic_style=MS, idx=OldIdx}, RT) ->
+                       NewIdx = case gb_trees:lookup(MS, StyleTree) of
+                                    {value, NI} -> NI;
+                                    _ -> util2:get_timestamp()
+                                end,
+                       gb_trees:insert(OldIdx, NewIdx, RT)
+               end,
+    RewriteT = lists:foldl(RewriteF, gb_trees:empty(), ImportStyles),
+    ImportStyles2 = [S#style{idx = gb_trees:get(OldIdx, RewriteT)} 
+                     || S=#style{idx=OldIdx} <- ImportStyles],
+    {ImportStyles2, RewriteT}.
+    
+-spec make_style_rec({string(), string()}) -> #style{}. 
+make_style_rec({IdxS, Style}) ->
     L = string:tokens(Style, ";"),
-    F = fun(X, Acc) ->
+    F = fun(X, MS) ->
                 [Key, Val] = string:tokens(X, ":"),
-                [{ms_util2:get_index(magic_style, Key), Val} | Acc]      
+                Pos = ms_util2:get_index(magic_style, Key) + 1,
+                setelement(Pos, MS, Val)
         end,
-    
-    Rec = lists:foldl(F, [], L),
-    F2 = fun(X, R) ->
-                 case ?pget(X, R) of
-                     undefined -> [];
-                     Else      -> Else
-                 end
-         end,
-
-    NoOfFields = ms_util2:no_of_fields(magic_style),
-    Rec2 = [ F2(X, Rec) || X <- lists:seq(1, NoOfFields)],
-    
-    {Idx, list_to_tuple([magic_style| Rec2])}.
+    Idx = list_to_integer(IdxS),
+    #style{magic_style = lists:foldl(F, #magic_style{}, L), idx = Idx}.
 
 make_append_refs(List, Ref) -> make_a1(List, Ref, []).
 

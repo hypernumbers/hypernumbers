@@ -13,8 +13,8 @@
 -export([ start/0]).
 
 -export([ handle/1,
-          styles_to_css/2,
-          style_to_css/2,
+          extract_styles/1,
+          style_to_css/1,
           docroot/1,
           page_attributes/2,
           get_json_post/1 % Used for mochilog replay rewrites
@@ -379,11 +379,6 @@ iget(#refX{site = Site, path = Path}, page,
     Paths = [Path | [ string:tokens(X, "/") || X<-string:tokens(More, ",")]],
     remoting_request(Env, Site, Paths, Time);
 
-iget(Ref, page, #qry{renderer=[]}, Env) ->
-    {Html, Width, Height} = hn_render:content(Ref),
-    Page = hn_render:wrap_page(Html, Width, Height),
-    text_html(Env, Page);
-
 iget(#refX{site = S}, page, #qry{status = []}, Env) -> 
     json(Env, status_srv:get_status(S));
 
@@ -537,19 +532,24 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
     ok = hn_db_api:insert(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
-
+%% These three cases could be collapsed into one...
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copy", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
-    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, Uid),
+    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, all, Uid),
     json(Env, "success");
-
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copystyle", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
-    ok = hn_db_api:copy_style(hn_util:parse_url(Src), Ref, Uid),
+    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, style, Uid),
+    json(Env, "success");
+ipost(Ref, 
+      _Qry,
+      Env=#env{body=[{"copyvalue", {struct, [{"src", Src}]}}],
+               uid = Uid}) ->
+    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, value, Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {range, _}} = Ref, _Qry, 
@@ -901,17 +901,18 @@ dict_to_struct(X, Dict) ->
         false -> {X, Dict}
     end.
 
-styles_to_css([], Acc) ->
-    Acc;
-styles_to_css([H | T], Acc) ->
-    styles_to_css(T, [style_to_css(H) | Acc]).
+-spec extract_styles([{#refX{}, [tuple()]}]) -> #style{}. 
+extract_styles([]) -> [];
+extract_styles(Data) ->
+    {Ref, _} = hd(Data),
+    Idxs = [I || {_, Attrs} <- Data,
+                 I <- [proplists:get_value("style", Attrs)],
+                 I /= undefined],
+    [style_to_css(S) || S <- hn_db_api:read_styles(Ref, Idxs)].
 
-style_to_css({styles, _Ref, X, Rec}) ->
-    style_to_css(X, Rec).
-
-style_to_css(X, Rec) ->
+style_to_css(#style{magic_style = Style, idx = I}) ->
     Num = ms_util2:no_of_fields(magic_style),
-    {X, style_att(Num + 1, Rec, [])}.
+    {I, style_att(Num + 1, Style, [])}.
 
 style_att(1, _Rec, Acc) ->
     lists:flatten(Acc);
@@ -962,11 +963,12 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
 
 -spec page_attributes(#refX{}, #env{}) -> {struct, list()}.
 page_attributes(#refX{site = S, path = P} = Ref, Env) ->
+    Content = hn_db_api:read_intersect_ref(Ref),
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
-    Styles = styles_to_css(hn_db_api:read_styles(Ref), []),
+    Styles = extract_styles(Content),
     NTree  = add_styles(Styles, Tree),
-    Dict   = to_dict(hn_db_api:read_intersect_ref(Ref), NTree),
+    Dict   = to_dict(Content, NTree),
     Time   = {"time", remoting_reg:timestamp()},
     Usr    = {"user", Env#env.email},
     Host   = {"host", S},

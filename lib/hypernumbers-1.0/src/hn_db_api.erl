@@ -96,24 +96,19 @@
 -include("auth.hrl").
 
 -export([
-         write_attributes/1,
-         write_attributes/3,
+         write_attributes/1, write_attributes/3,
          append_row/3,
-         write_style_IMPORT/2,
          read_attribute/2,
          read_inside_ref/1,
          read_intersect_ref/1,
-         read_styles/1,
+         read_styles/2,
          read_page_structure/1,
          read_pages/1,
+         copy_n_paste/4,
          drag_n_drop/3,
-         copy_n_paste/3,
          cut_n_paste/3,
-         copy_style/3,
-         insert/2,
-         insert/3,
-         delete/2,
-         delete/3,
+         insert/2, insert/3,
+         delete/2, delete/3,
          clear/3,
          handle_dirty_cell/3,
          set_borders/5,
@@ -121,12 +116,37 @@
          wait_for_dirty/1
         ]).
 
+-export([
+         write_styles_IMPORT/2,
+         read_styles_IMPORT/1
+        ]).
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+
+%% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
+%% @doc write_style will write a style record
+%% It is intended to be used in the FILE IMPORT process only 
+%% - normally the respresentation of styles in the magic style record
+%% is designed to be hidden from the API
+%% (that's for why it is a 'magic' style n'est pas?)
+write_styles_IMPORT(RefX, Styles) when is_record(RefX, refX) ->
+    Fun = fun() ->
+                  ok = init_front_end_notify(),
+                  [ok = hn_db_wu:write_style_IMPORT(RefX, S) || S <- Styles],
+                  ok
+          end,
+    ok = mnesia:activity(transaction, Fun),
+    ok = tell_front_end("write_style_IMPORT").
+
+read_styles_IMPORT(RefX) when is_record(RefX, refX) ->
+    Fun = fun() -> hn_db_wu:read_styles_IMPORT(RefX) end, 
+    mnesia:activity(transaction, Fun).
+
 -spec set_borders(#refX{}, any(), any(), any(), any()) -> ok.
 %% @doc  takes a range reference and sets the borders for the range according
 %% to the borders parameter passed in
@@ -267,22 +287,7 @@ write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
 %    Coords = muin_util:expand_cellrange(TlRow, BrRow, TlCol, BrCol), 
 %    foreach(SetCell, Coords). 
 
-%% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
-%% @doc write_style will write a style record
-%% It is intended to be used in the FILE IMPORT process only 
-%% - normally the respresentation of styles in the magic style record
-%% is designed to be hidden from the API
-%% (that's for why it is a 'magic' style n'est pas?)
-write_style_IMPORT(RefX, Style)
-  when is_record(RefX, refX) andalso is_record(Style, magic_style) ->
 
-    Fun = fun() ->
-                  ok = init_front_end_notify(),
-                  ok = hn_db_wu:write_style_IMPORT(RefX, Style)
-          end,
-    
-    ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("write_style_IMPORT").
 
 %% @doc reads pages
 %% @todo fix up api
@@ -320,6 +325,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
 %% <li>a range</li>
 %% </ul>
 
+-spec write_attributes([{#refX{}, [tuple()]}]) -> ok. 
 write_attributes(List) ->
     write_attributes(List, nil, nil).
 write_attributes(List, PAr, VAr) ->
@@ -395,21 +401,10 @@ read_intersect_ref(RefX) ->
     Fun = fun() -> hn_db_wu:read_ref(RefX, intersect) end,
     mnesia:activity(transaction, Fun).
 
-%% @spec read_styles(#refX{}) -> [Style]
-%% Style = #styles{}
 %% @doc read_style gets the list of styles that pertain to a particular 
-%% reference.
-%% 
-%% The <code>#refX{}</code> can point to a:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% <li>column</li>
-%% <li>row</li>
-%% <li>page</li>
-%% </ul>
-read_styles(RefX) when is_record(RefX, refX) ->
-    Fun = fun() -> hn_db_wu:read_styles(RefX) end,
+-spec read_styles(#refX{}, [integer()]) -> #style{}. 
+read_styles(RefX, Idxs) when is_record(RefX, refX) ->
+    Fun = fun() -> hn_db_wu:read_styles(RefX, Idxs) end,
     mnesia:activity(transaction, Fun).
 
 %% @spec insert(RefX::#refX{}) -> ok
@@ -494,7 +489,6 @@ move(RefX, Type, Disp, Ar)
     ok = tell_front_end("move", RefX).
 
 move_tr(RefX, Type, Disp, Ar) ->
-
     ok = init_front_end_notify(),
     % if the Type is delete we first delete the original cells
     _R = {insert, atom_to_list(Disp)},
@@ -505,7 +499,6 @@ move_tr(RefX, Type, Disp, Ar) ->
     % To make this work we shift the RefX up 1, left 1 
     % before getting the cells to shift for INSERT
     % if this is a delete - we need to actually delete the cells
-
     ReWr = do_delete(Type, RefX),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
     hn_db_wu:mark_these_dirty(ReWr, Ar),
@@ -587,13 +580,12 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
 cut_n_paste(From, To, Ar) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  ok = copy_n_paste2(From, To, Ar),
+                  ok = copy_n_paste2(From, To, all, Ar),
                   ok = clear(From, all, Ar)
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("cut n paste").
 
-%% @spec copy_n_paste(From :: #refX{}, To :: #refX{}) -> ok
 %% @doc copies the formula and formats from a cell or range and 
 %% pastes them to the destination.
 %% 
@@ -609,10 +601,11 @@ cut_n_paste(From, To, Ar) when is_record(From, refX), is_record(To, refX) ->
 %%
 %% Also whole pages can be copy_n_pasted by making both From and To 
 %% page refX's
-copy_n_paste(From, To, Ar) when is_record(From, refX), is_record(To, refX) ->
+-spec copy_n_paste(#refX{}, #refX{}, all | style | value, nil | uid()) -> ok. 
+copy_n_paste(From, To, What, Ar) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  ok = copy_n_paste2(From, To, Ar)
+                  ok = copy_n_paste2(From, To, What, Ar)
           end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("copy n paste").
@@ -689,9 +682,9 @@ drag_n_drop(From, To, Ar)
                   case is_valid_d_n_d(From, To) of
                       {ok, 'onto self', _Incr} -> ok;
                       {ok, single_cell, Incr} -> 
-                          copy_cell(From, To, Incr, Ar);
+                          copy_cell(From, To, Incr, all, Ar);
                       {ok, cell_to_range, Incr} -> 
-                          copy2(From, To, Incr, Ar)
+                          copy2(From, To, Incr, all, Ar)
                   end
           end,
     ok = mnesia:activity(transaction, Fun),
@@ -702,17 +695,6 @@ drag_n_drop(From, To, Ar)
 %%      From can only be a cell ref but To can be either a cell or range
 %%      ref
 %% @end
-copy_style(#refX{obj = {range, {X, Y, _, _}}} = From, To, Ar) ->
-                  copy_style(From#refX{obj = {cell, {X, Y}}}, To, Ar);
-copy_style(#refX{obj = {cell, _}} = From, 
-           #refX{obj = {Type, _}} = To, Ar)
-  when Type == cell orelse Type == range ->
-    Fun = fun() ->
-                  ok = init_front_end_notify(),
-                  hn_db_wu:copy_style(From, To, Ar)
-          end,
-    ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("copy style").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
@@ -734,13 +716,13 @@ write_attributes1(RefX, List, PAr, VAr)
 
 -spec copy_cell(#refX{}, #refX{}, 
                 false | horizontal | vertical,
+                all | style | value,
                 uid())
                -> ok.
-copy_cell(From = #refX{site = Site, path = Path}, To, Incr, Ar) ->
+copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
     case auth_srv:get_any_view(Site, Path, Ar) of
         {view, _} ->
-            hn_db_wu:copy_cell(From, To, Incr),
-            
+            hn_db_wu:copy_cell(From, To, Incr, What),
             hn_db_wu:mark_children_dirty(To, Ar);
         _ ->
             throw(auth_error)
@@ -759,8 +741,8 @@ tell_front_end(_FnName) ->
                   remoting_reg:notify_change(S, P, O, Attrs);
              ({delete, #refX{site=S, path=P, obj=O}}) ->
                   remoting_reg:notify_delete(S, P, O);
-             ({style, #refX{site=S, path=P}, Idx, Style}) ->
-                  remoting_reg:notify_style(S, P, Idx, Style)
+             ({style, #refX{site=S, path=P}, Style}) ->
+                  remoting_reg:notify_style(S, P, Style)
           end,
     [ok = Fun(X) || X <- List],
     ok.
@@ -774,18 +756,18 @@ tell_front_end(_FnName) ->
 %%      || X <- Cells],
 %%     ok;
 %% %% this clause copies bits of pages
-copy_n_paste2(From, To, Ar) ->
+copy_n_paste2(From, To, What, Ar) ->
     case is_valid_c_n_p(From, To) of
         {ok, 'onto self'}    -> ok;
         {ok, single_cell}    -> 
-            ok = copy_cell(From, To, false, Ar);
+            ok = copy_cell(From, To, false, What, Ar);
         {ok, cell_to_range} -> 
-            copy2(From, To, false, Ar);
+            copy2(From, To, false, What, Ar);
         {ok, range_to_cell} -> 
             To2 = cell_to_range(To),
-            copy3(From, To2, false, Ar);
+            copy3(From, To2, false, What, Ar);
         {ok, range_to_range} -> 
-            copy3(From, To, false, Ar)
+            copy3(From, To, false, What, Ar)
     end.
 
 cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
@@ -824,30 +806,30 @@ is_valid_d_n_d(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
 is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 
 %% cell to range
-copy2(From, To, Incr, Ar) 
+copy2(From, To, Incr, What, Ar) 
   when is_record(From, refX), is_record(To, refX) ->
     List = hn_util:range_to_list(To),
-    [copy_cell(From, X, Incr, Ar) || X <- List],
+    [copy_cell(From, X, Incr, What, Ar) || X <- List],
     ok.
 
 %% range to range
-copy3(From, To, Incr, Ar) 
+copy3(From, To, Incr, What, Ar) 
   when is_record(From, refX), is_record(To, refX) ->
     % range to range copies are 'tiled'
     TileList = get_tiles(From, To),
-    copy3a(From, TileList, Incr, Ar).
+    copy3a(From, TileList, Incr, What, Ar).
 
-copy3a(_From, [], _Incr, _Ar)   -> ok;
-copy3a(From, [H | T], Incr, Ar) -> 
+copy3a(_From, [], _Incr, _What, _Ar)   -> ok;
+copy3a(From, [H | T], Incr, What, Ar) -> 
     FromRange = hn_util:range_to_list(From),
     ToRange = hn_util:range_to_list(H),
-    ok = copy3b(FromRange, ToRange, Incr, Ar),
-    copy3a(From, T, Incr, Ar).
+    ok = copy3b(FromRange, ToRange, Incr, What, Ar),
+    copy3a(From, T, Incr, What, Ar).
 
-copy3b([], [], _Incr, _Ar)             -> ok;
-copy3b([FH | FT], [TH | TT], Incr, Ar) ->
-    ok = copy_cell(FH, TH, Incr, Ar),
-    copy3b(FT, TT, Incr, Ar).
+copy3b([], [], _Incr, _What, _Ar)             -> ok;
+copy3b([FH | FT], [TH | TT], Incr, What, Ar) ->
+    ok = copy_cell(FH, TH, Incr, What, Ar),
+    copy3b(FT, TT, Incr, What, Ar).
 
 get_tiles(#refX{obj = {range, {X1F, Y1F, X2F, Y2F}}},
           #refX{obj = {range, {X1T, Y1T, X2T, Y2T}}} = To) ->
