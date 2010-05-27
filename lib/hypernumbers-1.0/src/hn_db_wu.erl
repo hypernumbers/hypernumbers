@@ -451,6 +451,7 @@ deref_formula(Ref, DelRef) ->
 copy_cell(From=#refX{obj={cell, _}}, 
           To=#refX{obj={cell, _}},
           _, value) ->
+    io:format("I am a: ~p~n", [read_ref(From, inside, read)]),
     [{_, SourceAttrs}] = read_ref(From, inside, read),
     Op = fun(Attrs) -> copy_attributes(SourceAttrs, Attrs, ["value",
                                                             "rawvalue",
@@ -460,13 +461,19 @@ copy_cell(From=#refX{obj={cell, _}},
 copy_cell(From=#refX{obj={cell, _}}, 
           To=#refX{obj={cell, _}},
           _, style) ->
-    [{_, SourceAttrs}] = read_ref(From, inside, read),
+    SourceAttrs = case read_ref(From, inside, read) of
+                      [{_, As}] -> As;
+                      _         -> []
+                  end,
     Op = fun(Attrs) -> copy_attributes(SourceAttrs, Attrs, ["style"]) end,
     apply_to_attrs(To, Op);
 copy_cell(#refX{obj = {cell, {FX,FY}}} = From, 
           #refX{obj = {cell, {TX,TY}}} = To, 
           Incr, all) ->
-    [{_, Attrs}] = read_ref(From, inside, read),
+    Attrs = case read_ref(From, inside, read) of
+                [{_, As}] -> As;
+                _         -> []
+            end,
     Formula = case orddict:find("formula", Attrs) of
                   {ok, V} -> superparser:process(V); 
                   _       -> "" end,
