@@ -98,7 +98,6 @@
 -export([
          write_attributes/1, write_attributes/3,
          append_row/3,
-         write_style_IMPORT/2,
          read_attribute/2,
          read_inside_ref/1,
          read_intersect_ref/1,
@@ -117,12 +116,37 @@
          wait_for_dirty/1
         ]).
 
+-export([
+         write_styles_IMPORT/2,
+         read_styles_IMPORT/1
+        ]).
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
+
+%% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
+%% @doc write_style will write a style record
+%% It is intended to be used in the FILE IMPORT process only 
+%% - normally the respresentation of styles in the magic style record
+%% is designed to be hidden from the API
+%% (that's for why it is a 'magic' style n'est pas?)
+write_styles_IMPORT(RefX, Styles) when is_record(RefX, refX) ->
+    Fun = fun() ->
+                  ok = init_front_end_notify(),
+                  [ok = hn_db_wu:write_style_IMPORT(RefX, S) || S <- Styles],
+                  ok
+          end,
+    ok = mnesia:activity(transaction, Fun),
+    ok = tell_front_end("write_style_IMPORT").
+
+read_styles_IMPORT(RefX) when is_record(RefX, refX) ->
+    Fun = fun() -> hn_db_wu:read_styles_IMPORT(RefX) end, 
+    mnesia:activity(transaction, Fun).
+
 -spec set_borders(#refX{}, any(), any(), any(), any()) -> ok.
 %% @doc  takes a range reference and sets the borders for the range according
 %% to the borders parameter passed in
@@ -263,22 +287,7 @@ write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
 %    Coords = muin_util:expand_cellrange(TlRow, BrRow, TlCol, BrCol), 
 %    foreach(SetCell, Coords). 
 
-%% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
-%% @doc write_style will write a style record
-%% It is intended to be used in the FILE IMPORT process only 
-%% - normally the respresentation of styles in the magic style record
-%% is designed to be hidden from the API
-%% (that's for why it is a 'magic' style n'est pas?)
-write_style_IMPORT(RefX, Style)
-  when is_record(RefX, refX) andalso is_record(Style, magic_style) ->
 
-    Fun = fun() ->
-                  ok = init_front_end_notify(),
-                  ok = hn_db_wu:write_style_IMPORT(RefX, Style)
-          end,
-    
-    ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("write_style_IMPORT").
 
 %% @doc reads pages
 %% @todo fix up api
@@ -316,6 +325,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
 %% <li>a range</li>
 %% </ul>
 
+-spec write_attributes([{#refX{}, [tuple()]}]) -> ok. 
 write_attributes(List) ->
     write_attributes(List, nil, nil).
 write_attributes(List, PAr, VAr) ->

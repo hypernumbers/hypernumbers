@@ -62,6 +62,11 @@
         ]).
 
 -export([
+         write_style_IMPORT/2,
+         read_styles_IMPORT/1
+        ]).
+
+-export([
          deref_overlap_TEST/0
         ]).
 
@@ -110,6 +115,18 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
             end,
     Dep = DTree ++ [{"local", get_local_item_index(RefX)}],
     {Value, Dep, [], [{"local", {Site, Path, XX, YY}}]}.
+
+%% @hidden
+%% @doc write_style_IMPORT is a wrapper for the internal function write_style
+%% which should never be used except in file import
+write_style_IMPORT(#refX{site=Site}, Style) ->
+    Tbl = trans(Site, style),
+    ok = mnesia:write(Tbl, Style, write).
+
+read_styles_IMPORT(#refX{site=Site}) ->
+    Tbl = trans(Site, style),
+    MS = ets:fun2ms(fun(X) -> X end),
+    mnesia:select(Tbl, MS, read).
 
 -spec get_last_row(#refX{}) -> integer(). 
 get_last_row(#refX{site=S, path=P}) -> 
