@@ -451,8 +451,10 @@ deref_formula(Ref, DelRef) ->
 copy_cell(From=#refX{obj={cell, _}}, 
           To=#refX{obj={cell, _}},
           _, value) ->
-    io:format("I am a: ~p~n", [read_ref(From, inside, read)]),
-    [{_, SourceAttrs}] = read_ref(From, inside, read),
+    SourceAttrs = case read_ref(From, inside, read) of
+                      [{_, As}] -> As;
+                      _         -> []
+                  end,
     Op = fun(Attrs) -> copy_attributes(SourceAttrs, Attrs, ["value",
                                                             "rawvalue",
                                                             "formula"]) 
@@ -509,8 +511,9 @@ copy_cell(#refX{obj = {cell, {FX,FY}}} = From,
             _ -> 
                 ""
         end,
-    Attrs2 = orddict:store("formula", Formula2, Attrs),
-    write_attrs(To, Attrs2).
+    Attrs2 = copy_attributes(Attrs, orddict:new(), ["style"]),
+    Attrs3 = orddict:store("formula", Formula2, Attrs2),
+    write_attrs(To, Attrs3).
 
 -spec mark_these_dirty([#refX{}], nil | uid()) -> ok.
 mark_these_dirty([], _) -> ok;

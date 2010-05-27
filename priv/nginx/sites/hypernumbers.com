@@ -21,7 +21,7 @@ server {
 }
 
 server {
-    ## Same as default.conf, but special case for hypernumbers.com
+    ## Same as default.conf, but special case for stephen.
     
     listen       80;
     server_name  stephen.hypernumbers.com;

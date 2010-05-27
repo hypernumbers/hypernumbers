@@ -78,7 +78,8 @@ write_css(Ref, {{{sheet, Sheet}, {row_index, R}, {col_index, C}}, [CSS]}) ->
     Name = excel_util:esc_tab_name(Sheet),
     Obj = {cell, {C + 1, R + 1}},
     NRef = Ref#refX{path = Ref#refX.path ++ [Name], obj = Obj},
-    hn_db_api:write_style_IMPORT(NRef, defaultize(CSS)).
+    Style = #style{magic_style = defaultize(CSS), idx = util2:get_timestamp()},
+    hn_db_api:write_styles_IMPORT(NRef, [Style]).
 
 %% Excel's default borders are
 %% * no type of border
