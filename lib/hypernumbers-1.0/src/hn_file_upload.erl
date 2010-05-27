@@ -136,7 +136,7 @@ import(File, User, Ref, Name) ->
 
     [ write_data(Ref, X) || X <- Literals ],
     [ write_data(Ref, X) || X <- Formulas ],
-    [ write_css(Ref, X) || X <- CSS ],
+    %%[ write_css(Ref, X) || X <- CSS ],
 
     ok = write_warnings_page(Ref, Sheets, User, Name, Warnings).
 
