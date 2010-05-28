@@ -142,10 +142,11 @@ import(File, User, Ref, Name) ->
 
 
 write_warnings_page(Ref, Sheets, User, Name, Warnings) ->
-    
-    % write parent page information
-    SNames = lists:map(fun({_X, [Sheet]}) -> Sheet end, Sheets),
-    
+
+    hn_db_api:write_attributes([{Ref#refX{obj = {column, {2, 2}}},
+                                 [{width, 400}]}]),
+
+    % write parent page information    
     HeaderSt = [{"font-weight", "bold"},
                 {"font-size", "16px"}, {"color", "#E36C0A"}],
     WarningSt = [{"font-weight", "bold"},
@@ -164,13 +165,15 @@ write_warnings_page(Ref, Sheets, User, Name, Warnings) ->
                   "a renamed sheet have been rewritten to take this into "
                   "account.)", 2, 6, []),
     write_to_cell(Ref, "Imported Pages", 2, 8, HeaderSt),
-    
+
     Root = hn_util:list_to_path(Ref#refX.path),
-    F = fun(X, Int) ->
-                write_to_cell(Ref, Root++X, 2, Int, []),
+    F = fun({_X, [Sheet]}, Int) ->
+                SheetPath = Root++Sheet++"/",
+                Url       = "<a href='"++SheetPath++"'>"++SheetPath++"</a>",
+                write_to_cell(Ref, Url, 2, Int, []),
                 Int + 1
         end,
-    Index = lists:foldl(F, 9, SNames),
+    Index = lists:foldl(F, 9, Sheets),
     
     write_to_cell(Ref, "Warnings", 2, Index + 1, HeaderSt),
     write_to_cell(Ref, "(remember this is an early BETA product!)",
