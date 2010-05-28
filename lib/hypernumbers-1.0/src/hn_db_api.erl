@@ -118,6 +118,7 @@
 
 -export([
          write_styles_IMPORT/2,
+         write_magic_style_IMPORT/2,
          read_styles_IMPORT/1
         ]).
 
@@ -142,6 +143,15 @@ write_styles_IMPORT(RefX, Styles) when is_record(RefX, refX) ->
           end,
     ok = mnesia:activity(transaction, Fun),
     ok = tell_front_end("write_style_IMPORT").
+
+write_magic_style_IMPORT(RefX, MStyle) when is_record(RefX, refX) ->
+        Fun = fun() ->
+                  ok = init_front_end_notify(),
+                  hn_db_wu:write_magic_style_IMPORT(RefX, MStyle) 
+          end,
+    Idx = mnesia:activity(transaction, Fun),
+    ok = tell_front_end("write_style_IMPORT"),
+    Idx.
 
 read_styles_IMPORT(RefX) when is_record(RefX, refX) ->
     Fun = fun() -> hn_db_wu:read_styles_IMPORT(RefX) end, 
