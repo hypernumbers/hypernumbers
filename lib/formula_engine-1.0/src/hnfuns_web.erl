@@ -1,23 +1,14 @@
-%%%-------------------------------------------------------------------
-%%% @author    Gordon Guthrie <gordon@hypernumbers.com>
-%%% @copyright (C) 2010 Hypernumbers Ltd
-%%% @doc       provides dummy web controls for demo purposes
-%%%
-%%% @end
-%%% Created :  9th April 2010 by Gordon Guthrie 
-%%%-------------------------------------------------------------------
+%%% @copyright 2010 Hypernumbers Ltd
+%%% @doc Web Spreadsheet functions
 -module(hnfuns_web).
 
--export([
-         input/1,
-         textarea/1,
-         button/1,
-         radio/1,
-         select/1,
-         form/1,
-         include/1,
-         'google.map'/1
-        ]).
+-export([ input/1,
+          textarea/1,
+          button/1,
+          radio/1,
+          select/1,
+          include/1,
+          'google.map'/1 ]).
 
 -include("spriki.hrl").
 -include("typechecks.hrl").
@@ -30,85 +21,99 @@
 -define(default_str_rules, [first_array, cast_numbers, cast_bools,
                             cast_blanks, cast_dates ]).
 
--define(GMAPS_API_KEY, "ABQIAAAAvc75-UC7iUxZiJTb2GNV8hSNAg2NXpz7d4v"
-        ++ "U2BZLLU-LGXynmRSNgEhU9IYj0BQ8iFQIcqjqZV4qRQ").
+-type html() :: string().
+-type zoom() :: 1..20.
 
+%% Safe functions (after typecheck)
 %%
-%% Exported functions
-%%
-'google.map'([]) ->
-    'google.map'([0]);
-'google.map'([Long]) ->
-    'google.map'([Long, 0]);
-'google.map'([Long, Lat]) ->
-    'google.map'([Long, Lat, 10]);
-'google.map'([Long, Lat, Zoom]) ->
-    col([Long, Lat, Zoom], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun googlemap/1).
 
-googlemap([Lat, Long, Zoom]) ->
-    NLat  = muin_util:cast(Lat, str),
-    NLong = muin_util:cast(Long, str),
-    NZoom = muin_util:cast(Zoom, str),
+-spec input_(string()) -> html().
+input_(Label) ->
+    lists:flatten("<input type='input' class='hntext' data-name='default' "
+                  ++ "data-label='"++Label++"' />").
+
+-spec textarea_(string()) -> html().
+textarea_(Label) ->
+    lists:flatten("<textarea class='hntext' data-name='default' "
+                  ++ "data-label='"++Label++"'></textarea>").
+
+-spec 'google.map_'(number(), number(), zoom()) -> html().
+'google.map_'(Lat, Long, Zoom) ->
     "<iframe width='100%' height='100%' frameborder='0' scrolling='no' "
         ++ "marginheight='0' marginwidth='0' src='http://maps.google.com"
-        ++ "/?ie=UTF8&amp;ll=" ++ NLat ++ "," ++ NLong
-        ++ "&amp;z=" ++ NZoom ++ "&amp;output=embed'></iframe>".
+        ++ "/?ie=UTF8&amp;ll=" ++ cast(Lat, str) ++ "," ++ cast(Long, str)
+        ++ "&amp;z=" ++ cast(Zoom, str) ++ "&amp;output=embed'></iframe>".
 
-form(Items) ->
-    [Items2] = ?string([Items], ?default_str_rules),
-    form1(Items2, []).
-
-form1([], [_H | T]) ->
-    F = "<form>",
-    B = "<br /><br /><input type=\"button\" value=\"submit\" /></form>",
-    lists:flatten([F, lists:reverse(T) | B]);
-form1([H | T], Acc) ->
-    form1(T, ["<br /><br />", H | Acc]).
-
-input(_) ->
-    "<input type='input' class='hntext' data-name='default' />".
-
-textarea(_) ->
-    "<textarea class='hninput' data-name='default'></textarea>".
-
-button([]) ->
-    button([""]);
-button([Title]) ->
-    button([Title, ""]);
-button([Title, Content]) ->
-    Val = case ?string([Title], ?default_str_rules) of
-              [[]]     -> "";
-              [Title2] -> " value='" ++ Title2 ++ "'"
-          end,    
-    "<input type='submit' class='hninput' " ++ Val
+-spec button_(string(), string()) -> html().
+button_(Value, Response) -> 
+    "<input type='submit' class='hninput' value='" ++ Value ++ "'"
         ++ " data-form-name='default' data-response='"
-        ++ Content ++ "' \">".
+        ++ Response ++ "' \">".
 
-radio(Options) ->
-    radio1(Options, []).
+-spec select_(string(), [string()]) -> html().
+select_(Label, Options) ->
+    Opts = [ "<option>" ++ Option ++ "</option>" || Option <- Options ],
+    lists:flatten("<select class='hninput' data-name='default' data-label='"
+                  ++ Label ++ "' >" ++ Opts ++ "</select>").
 
-radio1([], Acc) ->
-    lists:flatten(lists:reverse(Acc));
-radio1([H | T], Acc) ->
-    H2 = ?string(H, ?default_str_rules),
-    NewAcc = [ H2
-               ++ "<input type='radio' name = '"
-               ++ H2 ++ "' value='"
-               ++ H2 ++ "'>" | Acc],
-    radio1(T, NewAcc).
-    
+-spec radio_(string(), [string()]) -> html().
+radio_(Label, Options) ->
+    Opts = [ "<input type='radio' value='"++ Option ++ "' /> " ++ Option
+             ++ "<br />" || Option <- Options ],
+    lists:flatten("<div class='hninput' data-name='default' data-label='"
+                  ++ Label ++ "' >" ++ Opts ++ "</div>").
 
-select(Options) ->
-    select1(Options, ["<select class=\"hninput\">"]).
+%% Type checking and default values
+%%
 
-select1([], Acc)      ->
-    lists:flatten(lists:reverse(["</select>" | Acc]));
-select1([H | T], Acc) ->
-    H2 = ?string(H, ?default_str_rules),
-    NewAcc = ["<option>" ++ H2 ++ "</option>" | Acc],
-    select1(T, NewAcc).
+'google.map'([])          -> 'google.map'([0]);
+'google.map'([Long])      -> 'google.map'([Long, 0]);
+'google.map'([Long, Lat]) -> 'google.map'([Long, Lat, 10]);
+'google.map'([Long, Lat, Zoom]) ->
+    col([Long, Lat, Zoom], [eval_funs, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun([NLong, NLat, NZoom]) ->
+                'google.map_'(NLong, NLat, NZoom)
+        end).
+
+input([])   -> input([""]);
+input([V1]) ->
+    Label = col([V1], [first_array, fetch, {cast,str}],
+                [return_errors, {all, fun muin_collect:is_string/1}]),
+    muin_util:run_or_err([Label], fun input_/1).
+
+textarea([])   -> textarea([""]);
+textarea([V1]) ->
+    Label = col([V1], [first_array, fetch, {cast,str}],
+                [return_errors, {all, fun muin_collect:is_string/1}]),
+    muin_util:run_or_err([Label], fun textarea_/1).
+
+button([])      -> button(["Submit Form"]);
+button([Title]) -> button([Title, "Thanks for completing our form."]);
+button([Title, Response]) ->
+    col([Title, Response], [first_array, fetch, {cast,str}],
+        [return_errors, {all, fun muin_collect:is_string/1}],
+        fun([NTitle, NResponse]) -> button_(NTitle, NResponse) end).
+
+
+select([])      -> select([""]);
+select([Label]) -> select([Label, ["option 1", "option 2"]]);
+select([V1, V2]) ->
+    [Label] = col([V1], [first_array, fetch, {cast,str}],
+                [return_errors, {all, fun muin_collect:is_string/1}]),
+    Opts = col(V2, [fetch, flatten, {cast,str}],
+                [return_errors, {all, fun muin_collect:is_string/1}]),
+
+    muin_util:apply([Label, Opts], fun select_/2).
+
+radio([])      -> radio([""]);
+radio([Label]) -> radio([Label, ["option 1", "option 2"]]);
+radio([V1, V2]) ->
+    [Label] = col([V1], [first_array, fetch, {cast,str}],
+                [return_errors, {all, fun muin_collect:is_string/1}]),
+    Opts = col(V2, [fetch, flatten, {cast,str}],
+                [return_errors, {all, fun muin_collect:is_string/1}]),
+    muin_util:apply([Label, Opts], fun radio_/2).
 
 
 include([CellRef]) when ?is_cellref(CellRef) ->
