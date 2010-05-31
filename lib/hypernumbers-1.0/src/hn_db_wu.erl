@@ -1452,10 +1452,10 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
         {error, Error} ->
             write_error_attrs(Attrs, Formula, Error);        
         {ok, {Pcode, Res={form, _}, Deptree, Parents, Recompile}} ->
-            io:format("Got a form~n", []),
+            %io:format("Got a form~n", []),
             write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Deptree, Parents, Recompile);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
-            io:format("Res is ~p~n", [Res]),
+            %io:format("Res is ~p~n", [Res]),
             write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Deptree, Parents, Recompile)
     end.
 
