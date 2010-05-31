@@ -89,7 +89,7 @@ authorize_resource(Env, Ref, Qry) ->
                       authorize_get(Ref, Qry, Env2);
                   'POST' -> authorize_post(Ref, Qry, Env2)
               end,
-    
+
     case {AuthRet, Env2#env.accept} of
         {allowed, _} ->
             handle_resource(Ref, Qry, Env2);
@@ -253,11 +253,12 @@ authorize_get(#refX{site = Site, path = Path},
     auth_srv:check_get_challenger(Site, Path, Uid);
 
 %% Authorize access to one particular view.
-authorize_get(#refX{site = Site, path = Path}, 
+authorize_get(#refX{site = _Site, path = _Path}, 
               #qry{view = View}, 
-              #env{uid = Uid}) 
-  when View /= undefined -> 
-    auth_srv:check_particular_view(Site, Path, Uid, View);
+              #env{uid = _Uid}) 
+  when View /= undefined ->
+    allowed; % TODO: tmp disable, will add again
+    %auth_srv:check_particular_view(Site, Path, Uid, View);
 
 %% As a last resort, we will authorize a GET request to a location
 %% from which we have a view.
