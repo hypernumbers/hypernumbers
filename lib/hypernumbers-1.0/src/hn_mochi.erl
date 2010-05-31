@@ -582,7 +582,8 @@ ipost(#refX{path = P} = Ref, _Qry,
     OldLabels = hn_db_api:read_attribute(Results#refX{obj={row, {1,1}}},
                                          "rawvalue"),
     
-    Values = lists:reverse(lists:foldl(fun generate_labels/2, [], Array)),
+    Values = [ {"submitted", dh_date:format("Y/m/d h:i:s")} |
+               lists:reverse(lists:foldl(fun generate_labels/2, [], Array)) ],
     
     {NewLabels, NVals} =
         allocate_values(Values, OldLabels, Results, get_last_col(OldLabels)),
