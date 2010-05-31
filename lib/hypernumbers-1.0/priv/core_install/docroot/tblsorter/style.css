@@ -37,3 +37,23 @@ table.tablesorter thead tr .headerSortDown {
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
 background-color: #8dbdd8;
 }
+
+#table, #table table { margin:0px; padding:0px;}
+
+#tablelogo {     
+    font            : normal 16px georgia,garamond, serif;
+    color           : #000;
+    text-decoration : none;
+}
+
+#tablelogo span { 
+    font            : bold 14px sans-serif;
+    text-decoration : underline;
+    color           : orange;
+}
+
+small { 
+    color:#999;
+}
+
+/* tbody { height: 500px; overflow:scroll; } */
