@@ -594,18 +594,11 @@ ipost(#refX{path = P} = Ref, _Qry,
     
     json(Env, "success");
 
-ipost(Ref=#refX{obj = O} = Ref, _Qry, 
-      Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
-    Type = element(1, O),
+ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
     case Attr of
         %% TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
             post_range_values(Ref, Vals, Uid, Uid);
-
-        %% if posting a formula to a row or column, append
-        [{"formula", Val}] when Type == column; Type == row ->
-            ok = hn_db_api:append_row([{Ref, Val}], Uid, Uid);
-
         _Else ->
             ok = hn_db_api:write_attributes([{Ref, Attr}], Uid, Uid)
     end,
