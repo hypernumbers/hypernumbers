@@ -313,9 +313,6 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
            #env{}) 
           -> any(). 
 
-iget(Ref=#refX{path=["_login"]}, page, _Qry, Env) ->
-    iget(Ref, page, #qry{view = "_g/core/login"}, Env);
-
 iget(#refX{site=Site, path=["_logout"]}, page, 
      #qry{return=QReturn}, 
      Env) when QReturn /= undefined ->

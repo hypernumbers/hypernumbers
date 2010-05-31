@@ -365,7 +365,11 @@ clear_cells(RefX) -> clear_cells(RefX, contents).
 -spec clear_cells(#refX{}, all | style | contents) -> ok. 
 clear_cells(Ref, all) ->
     Op = fun(_) -> orddict:new() end,
-    [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], ok;
+    [begin 
+         ok = apply_to_attrs(X, Op),
+         set_local_relations(X, [])
+     end || X <- expand_ref(Ref)], 
+    ok;
 clear_cells(Ref, style) ->
     Op = fun(Attrs) -> orddict:erase("style", Attrs) end,
     [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], ok;
@@ -382,7 +386,10 @@ clear_cells(Ref, contents) ->
                                         "__dependency-tree",
                                         "parents"])           
          end,
-    [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], 
+    [begin 
+         ok = apply_to_attrs(X, Op),
+         set_local_relations(X, [])
+     end || X <- expand_ref(Ref)], 
     ok;
 clear_cells(Ref, {attributes, DelAttrs}) ->
     Op = fun(Attrs) ->
@@ -1118,16 +1125,6 @@ add_local_child(CellIdx, Child, Tbl) ->
           end,
     Children = ordsets:add_element(Child, Rel#relation.children),
     mnesia:write(Tbl, Rel#relation{children = Children}, write).
-
-%% get_attrs(List, AttrList) -> get_attrs1(List, AttrList, []).
-
-%% get_attrs1([], _AttrList, Acc) -> Acc;
-%% get_attrs1([{_, {K, _V}} = H | T], AttrList, Acc) ->
-%%     NewAcc = case lists:member(K, AttrList) of
-%%                  true  -> [H | Acc];
-%%                  false -> Acc
-%%              end,
-%%     get_attrs1(T, AttrList, NewAcc).
 
 %% dereferences a formula
 deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
