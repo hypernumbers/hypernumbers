@@ -58,8 +58,10 @@ select_(Label, Options) ->
 
 -spec radio_(string(), [string()]) -> html().
 radio_(Label, Options) ->
-    Opts = [ "<input type='radio' value='"++ Option ++ "' /> " ++ Option
-             ++ "<br />" || Option <- Options ],
+    Name = "tmp_" ++ create_name(),
+    Opts = [ "<div class='radio'><label><input type='radio' value='" ++
+             Opt ++ "' name='" ++ Name ++ "'/>" ++ Opt ++ "</label></div>"
+             || Opt <- Options ],
     lists:flatten("<div class='hninput' data-name='default' data-label='"
                   ++ Label ++ "' >" ++ Opts ++ "</div>").
 
@@ -138,3 +140,8 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
     Ref = #refX{site = Site, path = Path, obj = Obj},
     {Html, Width, Height} = hn_render:content(Ref),
     lists:flatten(hn_render:wrap_region(Html, Width, Height)).
+
+
+create_name() ->
+    Bin = crypto:rand_bytes(8),
+    mochihex:to_hex(Bin).

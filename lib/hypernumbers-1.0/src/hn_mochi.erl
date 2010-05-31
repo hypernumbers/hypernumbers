@@ -253,12 +253,11 @@ authorize_get(#refX{site = Site, path = Path},
     auth_srv:check_get_challenger(Site, Path, Uid);
 
 %% Authorize access to one particular view.
-authorize_get(#refX{site = _Site, path = _Path}, 
+authorize_get(#refX{site = Site, path = Path}, 
               #qry{view = View}, 
-              #env{uid = _Uid}) 
+              #env{uid = Uid}) 
   when View /= undefined ->
-    allowed; % TODO: tmp disable, will add again
-    %auth_srv:check_particular_view(Site, Path, Uid, View);
+    auth_srv:check_particular_view(Site, Path, Uid, View);
 
 %% As a last resort, we will authorize a GET request to a location
 %% from which we have a view.
