@@ -102,7 +102,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
                 [{_, A}] -> A;
                 _        -> orddict:new()
             end,
-    Value = case orddict:find("rawvalue", Attrs) of
+    Value = case orddict:find("__rawvalue", Attrs) of
                 {ok, {datetime, _, [N]}} -> 
                     muin_date:from_gregorian_seconds(N);
                 {ok, V} -> 
@@ -270,7 +270,7 @@ apply_to_attrs(#refX{site=Site}=Ref, Op) ->
 -spec post_process(#refX{}, ?dict) -> ?dict. 
 post_process(Ref, Attrs) ->
     Attrs2 = post_process_styles(Ref, Attrs),
-    case orddict:find("rawvalue", Attrs2) of
+    case orddict:find("__rawvalue", Attrs2) of
         {ok, Raw} -> post_process_format(Raw, Attrs2);
         _         -> Attrs2
     end.                       
@@ -294,8 +294,15 @@ post_process_format(Raw, Attrs) ->
         {erlang, {_Type, Output}} ->
             %% Y'all hear, this is how America does color. I tell you what.
             case format:run_format(Raw, Output) of
-                {ok, {Color, Value}} ->
-                    add_attributes(Attrs, [{"value", Value},
+                {ok, {Color, Val1}} ->
+                    Val2  = case Val1 of
+                                {errval, ErrVal} -> atom_to_list(ErrVal);
+                                A when is_atom(A) -> atom_to_list(A);
+                                I when is_integer(I) -> integer_to_list(I);
+                                Fl when is_float(Fl) -> float_to_list(Fl);
+                                _                -> Val1
+                            end,
+                    add_attributes(Attrs, [{"value", Val2},
                                            {"overwrite-color", atom_to_list(Color)}]);
                 _ ->
                     Attrs
@@ -303,7 +310,6 @@ post_process_format(Raw, Attrs) ->
         _ ->
             Attrs
     end.
-
 
 shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
   when (Type == insert orelse Type == delete) andalso 
@@ -376,15 +382,15 @@ clear_cells(Ref, style) ->
 clear_cells(Ref, contents) ->
     Op = fun(Attrs) ->
                  del_attributes(Attrs, ["formula",
-                                        "rawvalue",          
                                         "value",             
                                         "overwrite-color",
+                                        "parents"
+                                        "__rawvalue",          
                                         "__ast",             
                                         "__recompile",       
                                         "__shared",          
                                         "__area",            
-                                        "__dependency-tree",
-                                        "parents"])           
+                                        "__dependency-tree"])
          end,
     [begin 
          ok = apply_to_attrs(X, Op),
@@ -467,8 +473,8 @@ copy_cell(From=#refX{obj={cell, _}},
                       _         -> []
                   end,
     Op = fun(Attrs) -> copy_attributes(SourceAttrs, Attrs, ["value",
-                                                            "rawvalue",
-                                                            "formula"]) 
+                                                            "formula",
+                                                            "__rawvalue"]) 
          end,
     apply_to_attrs(To, Op);
 copy_cell(From=#refX{obj={cell, _}}, 
@@ -522,7 +528,7 @@ copy_cell(#refX{obj = {cell, {FX,FY}}} = From,
             _ -> 
                 ""
         end,
-    Attrs2 = copy_attributes(Attrs, orddict:new(), ["style"]),
+    Attrs2 = copy_attributes(Attrs, orddict:new(), ["merged, style"]),
     Attrs3 = orddict:store("formula", Formula2, Attrs2),
     write_attrs(To, Attrs3).
 
@@ -1442,30 +1448,36 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-            write_error(Attrs, Formula, error_in_formula);
+            write_error_attrs(Attrs, Formula, error_in_formula);
         {error, Error} ->
-            write_error(Attrs, Formula, Error);        
+            write_error_attrs(Attrs, Formula, Error);        
+        {ok, {Pcode, Res={form, _}, Deptree, Parents, Recompile}} ->
+            io:format("Got a form~n", []),
+            write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Deptree, Parents, Recompile);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
-            Parxml = map(fun muin_link_to_simplexml/1, Parents),
-            {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
-            ok = set_local_relations(Ref, NewLocPs),
-            Align = default_align(Res),
-            add_attributes(Attrs, [{"parents", {xml, Parxml}},
-                                   {"formula", Formula},
-                                   {"rawvalue", Res},
-                                   {"__ast", Pcode},
-                                   {"__dependency-tree", Deptree},
-                                   {"__default-align", Align},
-                                   {"__recompile", Recompile}])
+            io:format("Res is ~p~n", [Res]),
+            write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Deptree, Parents, Recompile)
     end.
 
-write_error(Attrs, Formula, _Error) ->
+write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Deptree, Parents, Recompile) ->
+    Parxml = map(fun muin_link_to_simplexml/1, Parents),
+    {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
+    ok = set_local_relations(Ref, NewLocPs),
+    Align = default_align(Res),
+    add_attributes(Attrs, [{"parents", {xml, Parxml}},
+                           {"formula", Formula},
+                           {"__rawvalue", Res},
+                           {"__ast", Pcode},
+                           {"__dependency-tree", Deptree},
+                           {"__default-align", Align},
+                           {"__recompile", Recompile}]).
+
+write_error_attrs(Attrs, Formula, _Error) ->
     add_attributes(Attrs, [{"parents", []},
                            {"formula", Formula},
-                           {"rawvalue", {errval, '#ERROR!'}},
+                           {"__rawvalue", {errval, '#ERROR!'}},
                            {"__ast", []},
                            {"__dependency-tree", []}]).
-
 
 default_align(Res) when is_number(Res) -> "right";
 default_align(Res) when is_list(Res)   -> "left";
@@ -1485,8 +1497,8 @@ write_formula2(Ref, OrigVal, {Type, Val},
     ok = set_local_relations(Ref, NewLocPs),
     Attrs2 = add_attributes(Attrs, [{"__dependency-tree", []},
                                     {"__default-align", Align},
+                                    {"__rawvalue", Val},
                                     {"parents", {xml, Parxml}},
-                                    {"rawvalue", Val},
                                     {"formula", Formula}]),
     case Format of
         "null" -> Attrs2;
