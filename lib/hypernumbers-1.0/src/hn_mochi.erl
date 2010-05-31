@@ -10,7 +10,7 @@
 -include("auth.hrl").
 -include("hn_mochi.hrl").
 
--export([ start/0]).
+-export([ start/0 ]).
 
 -export([ handle/1,
           extract_styles/1,
@@ -21,9 +21,6 @@
          ]).
 
 -define(SHEETVIEW, "_g/core/spreadsheet").
-
--include("util.hrl").
-
 
 -spec start() -> {ok, pid()}. 
 start() ->
@@ -92,7 +89,7 @@ authorize_resource(Env, Ref, Qry) ->
                       authorize_get(Ref, Qry, Env2);
                   'POST' -> authorize_post(Ref, Qry, Env2)
               end,
-    
+
     case {AuthRet, Env2#env.accept} of
         {allowed, _} ->
             handle_resource(Ref, Qry, Env2);
@@ -256,11 +253,12 @@ authorize_get(#refX{site = Site, path = Path},
     auth_srv:check_get_challenger(Site, Path, Uid);
 
 %% Authorize access to one particular view.
-authorize_get(#refX{site = Site, path = Path}, 
+authorize_get(#refX{site = _Site, path = _Path}, 
               #qry{view = View}, 
-              #env{uid = Uid}) 
-  when View /= undefined -> 
-    auth_srv:check_particular_view(Site, Path, Uid, View);
+              #env{uid = _Uid}) 
+  when View /= undefined ->
+    allowed; % TODO: tmp disable, will add again
+    %auth_srv:check_particular_view(Site, Path, Uid, View);
 
 %% As a last resort, we will authorize a GET request to a location
 %% from which we have a view.
@@ -571,33 +569,36 @@ ipost(#refX{site = _Site, path=["_user"]}, _Qry,
     %% ok = hn_users:update(Site, Uid, "language", Lang),
     %% json(Env, "success");
 
-ipost(#refX{site = S, path = P}, Qry, 
+ipost(#refX{path = P} = Ref, _Qry, 
       Env=#env{body = [{"set", {struct, [{"list", {array, Array}}]}}], 
                uid = PosterUid}) ->
-    ViewUid = view_creator_uid(Qry#qry.view, S, PosterUid),
-    ok = status_srv:update_status(PosterUid, S, P, "edited page"),
-    {Lasts, Refs} = fix_up(Array, S, P),
-    ok = hn_db_api:append_row(Lasts, PosterUid, ViewUid),
-    ok = hn_db_api:write_attributes(Refs, PosterUid, ViewUid),
+    
+    % Page to store results (TODO: make settable)
+    Results = Ref#refX{path = P ++ ["replies"]},
+
+    % Labels from the results page
+    OldLabels = hn_db_api:read_attribute(Results#refX{obj={row, {1,1}}},
+                                         "rawvalue"),
+    
+    Values = [ {"submitted", dh_date:format("Y/m/d h:i:s")} |
+               lists:reverse(lists:foldl(fun generate_labels/2, [], Array)) ],
+    
+    {NewLabels, NVals} =
+        allocate_values(Values, OldLabels, Results, get_last_col(OldLabels)),
+    
+    NLbls = [ {Lref, [{"formula", Val}]} || {Lref, Val} <- NewLabels ],
+    ok = hn_db_api:write_attributes(NLbls, PosterUid, PosterUid),
+    ok = hn_db_api:append_row(NVals, PosterUid, PosterUid),
+    
     json(Env, "success");
 
-ipost(Ref=#refX{site = S, path = P, obj = O} = Ref, Qry, 
-      Env=#env{body = [{"set", {struct, Attr}}], 
-               uid = PosterUid}) ->
-    Type = element(1, O),
-    ViewUid = view_creator_uid(Qry#qry.view, S, PosterUid),
-    ok = status_srv:update_status(PosterUid, S, P, "edited page"),
+ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
     case Attr of
         %% TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
-            post_range_values(Ref, Vals, PosterUid, ViewUid);
-
-        %% if posting a formula to a row or column, append
-        [{"formula", Val}] when Type == column; Type == row ->
-            ok = hn_db_api:append_row([{Ref, Val}], PosterUid, ViewUid);
-
+            post_range_values(Ref, Vals, Uid, Uid);
         _Else ->
-            ok = hn_db_api:write_attributes([{Ref, Attr}], PosterUid, ViewUid)
+            ok = hn_db_api:write_attributes([{Ref, Attr}], Uid, Uid)
     end,
     json(Env, "success");
 
@@ -805,6 +806,52 @@ ipost(Ref, Qry, Env) ->
 %%% Helpers
 %%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_last_col(Labels) ->
+    case [X || {#refX{obj = {cell, {X, _}}}, _Val} <- Labels] of
+        []   -> 0;
+        List -> lists:max(List)
+    end.
+
+allocate({Label, Value}, {Labels, Index, Ref, NLabels, Refs}) ->
+    case lists:keyfind(Label, 2, Labels) of
+        {#refX{obj = {cell, {X, _Y}}} = RefX, Label} ->
+            % Label already exists
+            {Labels, Index, Ref, NLabels,
+             [{RefX#refX{obj = {column, {X, X}}}, Value} | Refs]};
+        false  ->
+            % Write new label
+            X = Index + 1,
+            {Labels, X, Ref,
+             [{Ref#refX{obj = {cell, {X, 1}}}, Label} | NLabels],
+             [{Ref#refX{obj = {column,  {X, X}}}, Value} | Refs]}
+    end.
+
+allocate_values(Values, Labels, Ref, Index) ->
+    {_Labels, _Index, _Ref, NLabels, Refs} =
+        lists:foldl(fun allocate/2, {Labels, Index, Ref, [], []}, Values),
+    {NLabels, Refs}.
+
+generate_labels({struct,[{"label", []}, {"formula", Formula}]}, List) ->
+    [{uniqify("default", List), Formula} | List];
+generate_labels({struct,[{"label", Label}, {"formula", Formula}]}, List) ->
+    [{uniqify(Label, List), Formula} | List].
+
+-spec uniqify(string(), list()) -> string().
+uniqify(Label, List) ->
+    case lists:keyfind(Label, 1, List) of
+        {Label, _Value} -> uniqify(Label, List, 2);
+        false           -> Label
+    end.
+
+-spec uniqify(string(), list(), integer()) -> string().
+uniqify(Label, List, Index) ->
+    NLabel = Label ++ " " ++ integer_to_list(Index),
+    case lists:keyfind(NLabel, 1, List) of
+        {NLabel, _Value} -> uniqify(Label, List, Index+1);
+        false            -> NLabel
+    end.                                               
+
+
 
 -spec log_signup(string(), string(), atom(), uid(), string()) -> ok.
 log_signup(Site, NewSite, Node, Uid, Email) ->
@@ -815,12 +862,6 @@ log_signup(Site, NewSite, Node, Uid, Email) ->
                                 {"D:D", dh_date:format("Y/m/d G:i:s")},
                                 {"E:E", atom_to_list(Node)} ] ],
     hn_db_api:append_row(Row, nil, nil).
-
-view_creator_uid(undefined, _Site, Poster) -> Poster; 
-view_creator_uid(?SHEETVIEW, _Site, Poster) -> Poster;
-view_creator_uid(View, Site, _Poster) ->
-    {ok, [Meta]} = file:consult([viewroot(Site), "/", View, ".meta"]),
-    proplists:get_value(authreq, Meta).
 
 %% Some clients dont send ip in the host header
 get_real_uri(Env) ->
@@ -992,30 +1033,6 @@ pages(#refX{} = RefX) ->
     Dict = hn_db_api:read_page_structure(RefX),
     Tmp  = pages_to_json(dh_tree:add(RefX#refX.path, Dict)),    
     {struct, [{"name", "home"}, {"children", {array, Tmp}}]}.
-
-fix_up(List, S, P) ->
-    f_up1(List, S, P, [], []).
-
-f_up1([], _S, _P, A1, A2) ->
-    {A1, lists:flatten(A2)};
-f_up1([{struct, [{"ref", R}, {"formula", {array, L}}]} | T], S, P, A1, A2) ->
-    [Attr | RPath] = lists:reverse(string:tokens(R, "/")),
-    Obj            = hn_util:parse_attr(Attr),
-    Path           = lists:reverse(RPath),
-    RefX           = #refX{site = S, path = Path, obj = Obj},
-    L2             = [[{"formula", X}] || X <- L],
-    NewAcc         = lists:zip(hn_util:range_to_list(RefX), lists:reverse(L2)),
-    f_up1(T, S, P, A1, [NewAcc | A2]);
-f_up1([{struct, [{"ref", Ref}, {"formula", F}]} | T], S, P, A1, A2) ->
-    [Attr | RPath] = lists:reverse(string:tokens(Ref, "/")),
-    Obj            = hn_util:parse_attr(Attr),
-    Path           = lists:reverse(RPath),
-    RefX           = #refX{site = S, path = Path, obj = Obj},
-    case Obj of
-        {column, _} -> f_up1(T, S, P, [{RefX, F} | A1], A2);
-        {row, _}    -> f_up1(T, S, P, [{RefX, F} | A1], A2);
-        {cell, _}   -> f_up1(T, S, P, A1, [{RefX, [{"formula", F}]} | A2])
-    end.
 
 accept_type(Env) ->
     case Env:get_header_value('Accept') of
