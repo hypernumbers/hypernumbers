@@ -528,7 +528,7 @@ copy_cell(#refX{obj = {cell, {FX,FY}}} = From,
             _ -> 
                 ""
         end,
-    Attrs2 = copy_attributes(Attrs, orddict:new(), ["merged, style"]),
+    Attrs2 = copy_attributes(Attrs, orddict:new(), ["merge", "style"]),
     Attrs3 = orddict:store("formula", Formula2, Attrs2),
     write_attrs(To, Attrs3).
 

@@ -156,11 +156,11 @@ html,body {
 /******************************************************************************
 	LAYOUT STYLES
 ******************************************************************************/
-#hn #hnheader { 
+#hnheader { 
     background : #000;
     height     : 32px;
 }
-#hn #hnheader h1 { 
+#hnheader h1 { 
     float  : left;
     height : 26px;
 }
