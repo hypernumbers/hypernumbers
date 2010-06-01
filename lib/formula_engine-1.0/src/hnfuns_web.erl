@@ -44,11 +44,14 @@ textarea_(Label) ->
         ++ "/?ie=UTF8&amp;ll=" ++ cast(Lat, str) ++ "," ++ cast(Long, str)
         ++ "&amp;z=" ++ cast(Zoom, str) ++ "&amp;output=embed'></iframe>".
 
--spec button_(string(), string()) -> html().
-button_(Value, Response) -> 
-    "<input type='submit' class='hninput' value='" ++ Value ++ "'"
-        ++ " data-form-name='default' data-response='"
-        ++ Response ++ "' \">".
+-spec button_(string(), string(), string()) -> html().
+button_(Value, Response, ResultsPath) ->
+    Origin = hn_util:list_to_path(muin:context_setting(path)),
+    lists:flatten("<input type='submit' class='hninput' value='"++Value++"'"
+                  ++ " data-results='" ++ ResultsPath ++ "'"
+                  ++ " data-origin='" ++ Origin ++ "'"
+                  ++ " data-form-name='default' data-response='"
+                  ++ Response ++ "' \">").
 
 -spec select_(string(), [string()]) -> html().
 select_(Label, Options) ->
@@ -92,10 +95,13 @@ textarea([V1]) ->
 
 button([])      -> button(["Submit Form"]);
 button([Title]) -> button([Title, "Thanks for completing our form."]);
-button([Title, Response]) ->
-    col([Title, Response], [first_array, fetch, {cast,str}],
+button([Title, Response]) -> button([Title, Response, "./replies/"]);
+button([Title, Response, Results]) ->
+    col([Title, Response, Results], [first_array, fetch, {cast,str}],
         [return_errors, {all, fun muin_collect:is_string/1}],
-        fun([NTitle, NResponse]) -> button_(NTitle, NResponse) end).
+        fun([NTitle, NResponse, NResult]) ->
+                button_(NTitle, NResponse, NResult)
+        end).
 
 
 select([])      -> select([""]);

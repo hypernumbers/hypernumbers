@@ -568,12 +568,14 @@ ipost(#refX{site = _Site, path=["_user"]}, _Qry,
     %% ok = hn_users:update(Site, Uid, "language", Lang),
     %% json(Env, "success");
 
-ipost(#refX{path = P} = Ref, _Qry, 
-      Env=#env{body = [{"set", {struct, [{"list", {array, Array}}]}}], 
-               uid = PosterUid}) ->
+ipost(#refX{path = P} = Ref, _Qry,
+      Env=#env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
     
-    % Page to store results (TODO: make settable)
-    Results = Ref#refX{path = P ++ ["replies"]},
+    [{"results", ResultsPath}, {"values", {array, Array}}] = Vals,
+
+    Results = Ref#refX{
+                path = string:tokens(hn_security:abs_path(P, ResultsPath), "/")
+               },
 
     % Labels from the results page
     OldLabels = hn_db_api:read_attribute(Results#refX{obj={row, {1,1}}},
