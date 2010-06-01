@@ -421,7 +421,7 @@ clear_cells(Ref, {attributes, DelAttrs}) ->
 -spec delete_cells(#refX{}) -> [#refX{}].
 delete_cells(#refX{site = S} = DelX) ->
     case expand_ref(DelX) of
-        [] -> [];
+        []     -> [];
         Cells  ->
             %% update the children that point to the cell that is
             %% being deleted by rewriting the formulae of all the
@@ -441,8 +441,13 @@ delete_cells(#refX{site = S} = DelX) ->
             %% fix relations table.
             [ok = delete_local_relation(X) || X <- Cells],
 
-            %% Delete the cells (and their indicices)
-            expunge_refs(S, Cells),
+            %% Delete the rows or columns and cells (and their indicices)
+            NewDel = case DelX of
+                         #refX{obj = {column, _}} -> lists:merge(DelX,Cells);
+                         #refX{obj = {row, _}}    -> lists:merge(DelX,Cells);
+                         _                        -> DelX
+                     end,
+            expunge_refs(S, NewDel),
             LocalChildren3
     end.
 
