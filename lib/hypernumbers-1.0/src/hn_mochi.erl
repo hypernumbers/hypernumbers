@@ -49,7 +49,7 @@ handle(MochiReq) ->
                       {type, Type}, {what, What},
                       {trace, erlang:get_stacktrace()}],
             error_logger:error_report(Report),
-            '500'(MochiReq) 
+            '500'(process_environment(MochiReq)) 
     end.
 
 -spec handle_(#refX{}, #env{}, #qry{}) -> ok. 
