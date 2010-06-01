@@ -105,21 +105,20 @@ button([Title, Response, Results]) ->
 
 
 select([])      -> select([""]);
-select([Label]) -> select([Label, ["option 1", "option 2"]]);
+select([Label]) -> select([Label, {array, [["option 1", "option 2"]]}]);
 select([V1, V2]) ->
     [Label] = col([V1], [first_array, fetch, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
-    Opts = col(V2, [fetch, flatten, {cast,str}],
+    Opts = col([V2], [fetch, flatten, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
-
     muin_util:apply([Label, Opts], fun select_/2).
 
 radio([])      -> radio([""]);
-radio([Label]) -> radio([Label, ["option 1", "option 2"]]);
+radio([Label]) -> radio([Label, {array, [["option 1", "option 2"]]}]);
 radio([V1, V2]) ->
     [Label] = col([V1], [first_array, fetch, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
-    Opts = col(V2, [fetch, flatten, {cast,str}],
+    Opts = col([V2], [fetch, flatten, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:apply([Label, Opts], fun radio_/2).
 
