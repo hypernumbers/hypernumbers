@@ -384,7 +384,7 @@ clear_cells(Ref, contents) ->
                  del_attributes(Attrs, ["formula",
                                         "value",             
                                         "overwrite-color",
-                                        "parents"
+                                        "parents",
                                         "__rawvalue",          
                                         "__ast",             
                                         "__recompile",       
