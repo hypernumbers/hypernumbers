@@ -662,6 +662,14 @@ html,body {
 #insertimage  { background-position: -161px -104px; }
 #insertlink  { background-position:  -138px -104px; }
 
+#forminput  { background-position:  -205px -82px; }
+#formtextarea  { background-position:  -205px -61px; }
+#formselect  { background-position: -183px -104px; }
+#formradio  { background-position:  -161px -61px; }
+#formbutton  { background-position: -183px -82px; }
+
+#mergecells  { background-position:  -183px -61px; }
+
 #selection { 
  display:    none;
  position:   absolute;
