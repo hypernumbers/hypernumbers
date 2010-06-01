@@ -253,12 +253,11 @@ authorize_get(#refX{site = Site, path = Path},
     auth_srv:check_get_challenger(Site, Path, Uid);
 
 %% Authorize access to one particular view.
-authorize_get(#refX{site = _Site, path = _Path}, 
+authorize_get(#refX{site = Site, path = Path}, 
               #qry{view = View}, 
-              #env{uid = _Uid}) 
+              #env{uid = Uid}) 
   when View /= undefined ->
-    allowed; % TODO: tmp disable, will add again
-    %auth_srv:check_particular_view(Site, Path, Uid, View);
+    auth_srv:check_particular_view(Site, Path, Uid, View);
 
 %% As a last resort, we will authorize a GET request to a location
 %% from which we have a view.
@@ -569,12 +568,14 @@ ipost(#refX{site = _Site, path=["_user"]}, _Qry,
     %% ok = hn_users:update(Site, Uid, "language", Lang),
     %% json(Env, "success");
 
-ipost(#refX{path = P} = Ref, _Qry, 
-      Env=#env{body = [{"set", {struct, [{"list", {array, Array}}]}}], 
-               uid = PosterUid}) ->
+ipost(#refX{path = P} = Ref, _Qry,
+      Env=#env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
     
-    % Page to store results (TODO: make settable)
-    Results = Ref#refX{path = P ++ ["replies"]},
+    [{"results", ResultsPath}, {"values", {array, Array}}] = Vals,
+
+    Results = Ref#refX{
+                path = string:tokens(hn_security:abs_path(P, ResultsPath), "/")
+               },
 
     % Labels from the results page
     OldLabels = hn_db_api:read_attribute(Results#refX{obj={row, {1,1}}},

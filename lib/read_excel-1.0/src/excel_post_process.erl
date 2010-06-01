@@ -380,6 +380,8 @@ set_formats(CellRef, XFIndex, Tables) ->
             {valid, valid}       -> get_css(PCSSList,['vertical-align',
                                                       'text-align']); % parent is child
             {use_parent, ignore} -> get_css(CSSList, ['vertical-align',
+                                                      'text-align']);
+            {ignore, ignore}     -> get_css(CSSList, ['vertical-align',
                                                       'text-align'])
         end,
     % Attribute 4 BORDER
@@ -429,6 +431,13 @@ set_formats(CellRef, XFIndex, Tables) ->
                                       'border-left-style', 'border-right-style',
                                       'border-top-style',  'border-bottom-style']),
                 C = get_colours(ColoursList,Tables),
+                lists:merge([S, C]);
+            {ignore, ignore} ->
+                S = get_css(CSSList, ['border-left-width', 'border-right-width',
+                                      'border-top-width',  'border-bottom-width',
+                                      'border-left-style', 'border-right-style',
+                                      'border-top-style',  'border-bottom-style']),
+                C = get_colours(ColoursList,Tables),
                 lists:merge([S, C])
         end,
 
@@ -456,6 +465,10 @@ set_formats(CellRef, XFIndex, Tables) ->
                 [{_, [{colour,Col}]}] = C2,
                 {'background-color', [Col]};
             {use_parent, ignore} ->
+                C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
+                [{_, [{colour,Col}]}] = C2,
+                {'background-color', [Col]};
+            {ignore, ignore} ->
                 C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
                 [{_, [{colour,Col}]}] = C2,
                 {'background-color', [Col]}
