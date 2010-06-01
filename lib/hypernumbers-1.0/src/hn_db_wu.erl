@@ -442,12 +442,7 @@ delete_cells(#refX{site = S} = DelX) ->
             [ok = delete_local_relation(X) || X <- Cells],
 
             %% Delete the rows or columns and cells (and their indicices)
-            NewDel = case DelX of
-                         #refX{obj = {column, _}} -> lists:merge(DelX,Cells);
-                         #refX{obj = {row, _}}    -> lists:merge(DelX,Cells);
-                         _                        -> DelX
-                     end,
-            expunge_refs(S, NewDel),
+            expunge_refs(S, lists:merge(DelX, Cells)),
             LocalChildren3
     end.
 
