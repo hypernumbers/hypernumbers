@@ -133,19 +133,27 @@ include([CellRef]) when ?is_cellref(CellRef) ->
 include([RelRan]) when ?is_rangeref(RelRan) ->
     %% DIRTY HACK. This forces muin to setup dependencies, and checks
     %% for circ errors.
-    _Ret = muin:fetch(RelRan),
+    Ret = muin:fetch(RelRan),
+    case has_circref(Ret) of
+        true  -> {errval, '#CIRCREF'};
+        false ->
+            AbsRan = area_util:to_absolute(RelRan, 
+                                           muin:context_setting(col),
+                                           muin:context_setting(row)),
+            #rangeref{path=RelPath, tl = {X1,Y1}, br = {X2,Y2}} = AbsRan,
+            Site = muin:context_setting(site),
+            Path = muin_util:walk_path(muin:context_setting(path), RelPath),
+            Obj = {range, {X1, Y1, X2, Y2}},
+            Ref = #refX{site = Site, path = Path, obj = Obj},
+            {Html, Width, Height} = hn_render:content(Ref),
+            lists:flatten(hn_render:wrap_region(Html, Width, Height))
+    end.
 
-    AbsRan = area_util:to_absolute(RelRan, 
-                                   muin:context_setting(col),
-                                   muin:context_setting(row)),
-    #rangeref{path=RelPath, tl = {X1,Y1}, br = {X2,Y2}} = AbsRan,
-    Site = muin:context_setting(site),
-    Path = muin_util:walk_path(muin:context_setting(path), RelPath),
-    Obj = {range, {X1, Y1, X2, Y2}},
-    Ref = #refX{site = Site, path = Path, obj = Obj},
-    {Html, Width, Height} = hn_render:content(Ref),
-    lists:flatten(hn_render:wrap_region(Html, Width, Height)).
+has_circref({range, List}) -> has_c1(List).
 
+has_c1([])                                -> false;
+has_c1([[{errval, '#CIRCREF!'} , _] | _T]) -> true;
+has_c1([_H | T])                          -> has_c1(T).
 
 create_name() ->
     Bin = crypto:rand_bytes(8),
