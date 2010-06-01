@@ -107,7 +107,8 @@
 -record(form, {key, % one form element per unit ref
                id, % {path, transaction, label}
                kind,
-               restrictions = none}).
+               restrictions = none,
+               attrs = []}).
                 
 -record(help,
         {

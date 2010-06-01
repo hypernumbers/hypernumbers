@@ -10,6 +10,7 @@
 -include("muin_records.hrl").
 
 -include_lib("kernel/include/file.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 -export([
          esc_regex/1,     
@@ -57,7 +58,12 @@
 
          % general utilities
          get_offset/3,
-         js_to_utf8/1
+         js_to_utf8/1,
+
+         % Path Utilities
+         abs_path/2,
+         just_path/1,
+         drop_last/1
         ]).
 
 
@@ -431,6 +437,88 @@ js_to_utf8({array, Val})  -> {array,  lists:map(fun js_to_utf8/1, Val)};
 js_to_utf8({Key, Val})    -> {xmerl_ucs:to_utf8(Key), js_to_utf8(Val)};
 js_to_utf8(X) when is_integer(X); is_float(X); is_atom(X) -> X;
 js_to_utf8(X)             -> xmerl_ucs:to_utf8(X).
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                          %%%
+%%% Path Utilities                                                           %%%
+%%%                                                                          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+-spec just_path(string()) -> string().
+just_path([]) -> [];
+just_path(Url) ->
+    case lists:last(Url) of
+        $/ -> Url;
+        _Or ->
+            Lead = if hd(Url) == $/ -> "/";
+                      true -> [] end,
+            Lead ++ case string:tokens(Url, "/") of
+                        [] -> [];
+                        [_S] -> [];
+                        L -> string:join(drop_last(L), "/") ++ "/"
+                    end
+    end.
+
+-spec drop_last(list()) -> list().
+drop_last([_]) -> []; 
+drop_last([X | Rest]) -> [X | drop_last(Rest)].
+
+-spec abs_path([string()], string()) -> string().
+abs_path(_, [$/ | _] = Path2) -> Path2;
+abs_path(Path, Path2) -> 
+    Path2Toks = string:tokens(Path2, "/"),
+    PathR = lists:reverse(Path),
+    "/" ++ string:join(abs_path2(PathR, Path2Toks), "/").
+
+abs_path2(P1, P2) ->
+    abs_path2(P1, P2, queue:new()).
+abs_path2([], [], Q) ->
+    queue:to_list(Q);
+abs_path2(Left, ["." | RestR], Q) ->
+    abs_path2(Left, RestR, Q);
+abs_path2(Left, [".." | RestR], Q) ->
+    case {queue:is_empty(Q), Left} of
+        {false, _} -> abs_path2(Left, RestR, queue:drop_r(Q));
+        {true, []} -> abs_path2([".."], RestR, Q); 
+        {true, [".."|_]} -> abs_path2([".." | Left], RestR, Q);
+        {true, [_|RestL]} -> abs_path2(RestL, RestR, Q)
+    end;
+abs_path2([], [X | RestR], Q) ->
+    abs_path2([], RestR, queue:in(X, Q));
+abs_path2([".." | RestL], [_ | RestR], Q) ->
+    abs_path2(RestL, RestR, Q);
+abs_path2([".." | _], [], _Q) ->
+    "";
+abs_path2([X | RestL], Right, Q) ->
+    abs_path2(RestL, Right, queue:in_r(X, Q)).
+
+abspath_test_() ->
+    Base = ["first", "second", "third"],
+    [?_assertEqual("/already/absolute", abs_path(Base, "/already/absolute")),
+     ?_assertEqual("/first/second/third/d1", abs_path(Base, "d1")),
+     ?_assertEqual("/first/second/third/d1", abs_path(Base, "./d1")),
+     ?_assertEqual("/first/second/d1", abs_path(Base, "../d1")),
+     ?_assertEqual("/d1", 
+                   abs_path(Base, "../third/../../ok/.././../././first//../d1")),
+     ?_assertEqual("/first/second/d1", abs_path(Base, "../something/../d1"))
+    ].
+
+just_path_test_() ->
+    [?_assertEqual("", just_path("")),
+     ?_assertEqual("/", just_path("/")),
+     ?_assertEqual("/", just_path("/blah")),
+     ?_assertEqual("", just_path("..")),
+     ?_assertEqual("../", just_path("../")),
+     ?_assertEqual("../", just_path("../A1")),
+     ?_assertEqual("./", just_path("./A1")),
+     ?_assertEqual("", just_path("blah")),
+     ?_assertEqual("/", just_path("/blah")),
+     ?_assertEqual("/blah/", just_path("/blah/")),
+     ?_assertEqual("/blah/", just_path("/blah/A:A")),
+     ?_assertEqual("/blah/more/path/", just_path("/blah/more/path/A:A"))
+    ].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
