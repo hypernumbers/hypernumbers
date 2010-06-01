@@ -21,16 +21,21 @@
 -define(default_str_rules, [first_array, cast_numbers, cast_bools,
                             cast_blanks, cast_dates ]).
 
+-type trans() :: common | string().
 -type html() :: string().
 -type zoom() :: 1..20.
 
 %% Safe functions (after typecheck)
 %%
-
--spec input_(string()) -> html().
-input_(Label) ->
-    lists:flatten("<input type='input' class='hntext' data-name='default' "
-                  ++ "data-label='"++Label++"' />").
+-spec input_(string(), string(), trans()) -> {#form{}, html()}.
+input_(Label) -> input_(Label, "", common).
+input_(Label, Default) -> input_(Label, Default, common).
+input_([Label], Default, Trans) ->
+    Form = #form{id = {Trans, Label}, kind = input},
+    Html = lists:flatten("<input type='input' class='hntext' " ++
+                             "data-name='default' " ++
+                             "data-label='"++Label++"' />"),
+    {rawform, Form, Html}.
 
 -spec textarea_(string()) -> html().
 textarea_(Label) ->

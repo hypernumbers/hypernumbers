@@ -163,7 +163,8 @@ tables() ->
       ?TBL(local_obj,   bag,    	 [obj,idx]), 
       ?TBL(relation,    set,    	 []),
       ?TBL(group,       set,    	 []),         
-      ?TBL(style,       set,    	 [idx])].
+      ?TBL(style,       set,    	 [idx]),
+      ?TBL(form,        set,         [id])].
 
 
 %% Import files on a batch basis
