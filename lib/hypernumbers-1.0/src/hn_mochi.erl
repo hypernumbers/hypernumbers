@@ -572,9 +572,9 @@ ipost(Ref=#refX{path = P} = Ref, _Qry,
       Env=#env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
 
     [{"results", ResultsPath}, {"values", {array, Array}}] = Vals,
-    Transaction = common,
-    Expected = hn_db_api:matching_forms(Ref, Transaction),
-        
+
+    %% Transaction = common,
+    %% Expected = hn_db_api:matching_forms(Ref, Transaction),
     %% io:format("~nForms: ~p~n", [hn_db_api:matching_forms(Ref, Transaction)]),
     %% io:format("Vals: ~p~n", [Array]),
     %% io:format("Valid?: ~p~n", [hn_security:validate(Expected, Array)]),

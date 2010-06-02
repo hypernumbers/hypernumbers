@@ -8,7 +8,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 validate(Expected0, Submitted0) ->
-    Expected = lists:sort(fun sort_expected/2, Expected0),
+    Expected = lists:keysort(#form.id, Expected0),
     Submitted = lists:keysort(1, [{pget("label",L), pget("formula",L)} 
                                   || {struct, L} <- Submitted0]),
     run_validate(Expected, Submitted).
@@ -28,9 +28,6 @@ run_validate([E=#form{id={_,_,L}}|LT], [{L,Val}|RT]) ->
 run_validate(_, _) ->
     false.
                     
-sort_expected(#form{id={_,_,LA}}, #form{id={_,_,LB}}) ->
-    LA =< LB.
-
 pget(K,L) -> proplists:get_value(K,L,undefined).
 
 
@@ -85,4 +82,38 @@ fake_name_test() ->
                       attrs = []}],
     Submitted = [{struct,[{"label","one"},{"formula","a"}]},
                  {struct,[{"label","haha"},{"formula","b"}]}],
+    ?assertNot(validate(Expected, Submitted)).
+
+basic_select_radio_test() ->
+    Expected = [#form{key=1, id = {[],common,"one"}, 
+                      kind = select, 
+                      restrictions = ["green", "blue"], 
+                      attrs = []},
+                #form{key=2, id = {[],common,"two"}, 
+                      kind = radio, 
+                      restrictions = ["red"],
+                      attrs = []},
+                #form{key=3, id = {[],common,""},
+                      kind = button,
+                      restrictions = none,
+                      attrs = []}],
+    Submitted = [{struct,[{"label","one"},{"formula","blue"}]},
+                 {struct,[{"label","two"},{"formula","red"}]}],
+    ?assert(validate(Expected, Submitted)).
+
+basic_select_bad_val_test() ->
+    Expected = [#form{key=1, id = {[],common,"one"}, 
+                      kind = select, 
+                      restrictions = ["green", "blue"], 
+                      attrs = []},
+                #form{key=2, id = {[],common,"two"}, 
+                      kind = input, 
+                      restrictions = ["red"],
+                      attrs = []},
+                #form{key=3, id = {[],common,""},
+                      kind = button,
+                      restrictions = none,
+                      attrs = []}],
+    Submitted = [{struct,[{"label","one"},{"formula","blue"}]},
+                 {struct,[{"label","two"},{"formula","IndianRed"}]}],
     ?assertNot(validate(Expected, Submitted)).
