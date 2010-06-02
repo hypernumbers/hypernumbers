@@ -63,6 +63,7 @@
 %% @end
 %%--------------------------------------------------------------------
 start_link() ->
+    global:unregister_name(?MODULE),
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
     
