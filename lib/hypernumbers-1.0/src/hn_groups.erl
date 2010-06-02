@@ -1,9 +1,12 @@
 %%% @copyright (C) 2010, Hypernumbers Ltd.
+%%% Note: The admin grouped is treated specially, and is expected to be there.
+%%% it must always be created, and never deleted.
 
 -module(hn_groups).
 
 -export([create_group/2, delete_group/2,
          add_user/3, rem_user/3, set_users/3,
+         any_admin/1,
          is_member/3,
          dump_script/1, load_script/2]).
 
@@ -42,6 +45,8 @@ create_group(Site, GroupN) ->
     mnesia:activity(transaction, F).
 
 -spec delete_group(string(), string()) -> ok. 
+delete_group(_Site, "admin") ->
+    throw("You must not delete the admin group");
 delete_group(Site, GroupN) ->
     Tbl = hn_db_wu:trans(Site, group),
     mnesia:activity(transaction, fun mnesia:delete/3, [Tbl,GroupN,write]).
@@ -90,6 +95,22 @@ set_users(Site, GroupN, Users) ->
                 end
         end,
     mnesia:activity(transaction, F).
+
+-spec any_admin(string()) -> no_admin | string().
+any_admin(Site) ->
+    Tbl = hn_db_wu:trans(Site, group),
+    F = fun() ->
+                case mnesia:read(Tbl, "admin", read) of
+                    [#group{members = M}] ->
+                        case gb_sets:is_empty(M) of
+                            false -> gb_sets:smallest(M);
+                            true  -> no_admin
+                        end;
+                    _ ->
+                        no_group
+                end
+        end,
+    mnesia:activity(transaction, F).                       
 
 -spec dump_script(string()) -> string(). 
 dump_script(Site) ->
