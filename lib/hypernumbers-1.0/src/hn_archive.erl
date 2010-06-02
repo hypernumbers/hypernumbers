@@ -32,9 +32,7 @@ export_as_sitetype(Site, NewType) ->
     file:rename(join([Dest, "permissions.export"]), 
                 join([Dest, "permissions.script"])),
 
-                                                % Delete backup-centric artifacts.
-    [ file:delete( join([SiteTypes, NewType,  File]) )
-      || File <- ["type", "mnesia.backup"] ],
+    %% Delete backup-centric artifacts.
     [ hn_util:delete_directory( join([SiteTypes, NewType, join(Dir)]) )
       || Dir <- [["etf"], ["views", "_g", "core"]] ],
     ok.
@@ -58,7 +56,6 @@ export_services(Dest) ->
 export_site(Dest, Site) ->
     filelib:ensure_dir([Dest,"/"]),
     ok = dump_etf(Site, Dest),
-    ok = dump_mnesia(Site, Dest),
     ok = dump_groups(Site, Dest),
     ok = dump_perms(Site, Dest),
     ok = dump_views(Site, Dest).
@@ -80,12 +77,6 @@ dump_etf(Site, SiteDest) ->
             io_lib:format("~s", [lists:flatten(Page)])) || 
         {Path, Page} <- lists:zip(Paths, Pages)],
     ok.
-
-dump_mnesia(Site, SiteDest) -> 
-    SiteFs = hn_util:site_to_fs(Site),
-    Tables = [T || T <- mnesia:system_info(tables),
-                   lists:prefix(SiteFs, atom_to_list(T))],
-    ok = hn_db_admin:backup(Tables, SiteDest, "mnesia.backup").
 
 dump_groups(Site, SiteDest) ->
     Groups = hn_groups:dump_script(Site),
