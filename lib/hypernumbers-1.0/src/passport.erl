@@ -111,6 +111,7 @@ inspect_stamp(Stamp) ->
 %% @end
 %%--------------------------------------------------------------------
 start_link() ->
+    global:unregister_name(?MODULE),
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
 -spec authenticate(string(), string(), boolean()) 
@@ -172,6 +173,7 @@ delete_uid(Uid) when is_list(Uid) ->
     gen_server:call({global, ?MODULE}, {delete_uid, Uid}).
 
 -spec create_uid() -> uid().
+
 create_uid() ->
     Bin = crypto:rand_bytes(16),
     mochihex:to_hex(Bin).

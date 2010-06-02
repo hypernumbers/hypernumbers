@@ -326,11 +326,8 @@ casts(Val, Type, [die_on_err | Rules]) ->
 casts(Val, Type, [fetch_refs | Rules]) when ?is_namedexpr(Val) ->
     casts(?ERRVAL_NAME, Type, Rules);
 casts(Ref, Type, [fetch_refs | Rules]) when ?is_cellref(Ref) ->
-    io:format("~p ~n", [muin:fetch(Ref)]), 
     casts(muin:fetch(Ref), Type, Rules);
 casts([Fun | Args], Type, [fetch_refs | Rules]) when ?is_fn(Fun) ->
-    io:format("evalling ~p ~p~n", [Fun, Args]),
-    io:format("~p ~n", [muin:eval([Fun | Args])]), 
     casts(muin:eval([Fun | Args]), Type, Rules);
 casts(Val, Type, [fetch_refs | Rules])  ->
     casts(Val, Type, Rules);
@@ -380,9 +377,7 @@ remove_errors(Xs) ->
                        _          -> true
                    end
            end,
-    Return = lists:filter(Fun, Xs),
-    io:format("in remove_errors~n-Xs is ~p~n-Return is ~p~n", [Xs, Return]),
-    Return.
+    lists:filter(Fun, Xs).
 
 %% @doc Replaces array objects with values they contain.
 flatten_arrays([Hd|Tl]) ->
