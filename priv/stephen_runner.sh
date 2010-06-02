@@ -5,6 +5,6 @@ DIR=/hn/stephen
 
 cd $DIR
 git pull
-./hn build
+./hn migrate
 
 
