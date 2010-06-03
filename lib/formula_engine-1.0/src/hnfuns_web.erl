@@ -29,7 +29,7 @@
 
 -spec input_(string()) -> html().
 input_(Label) ->
-    lists:flatten("<input type='input' class='hntext' data-name='default' "
+    lists:flatten("<input type='input' class='hninput' data-name='default' "
                   ++ "data-label='"++Label++"' />").
 
 -spec textarea_(string()) -> html().

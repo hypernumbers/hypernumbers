@@ -902,6 +902,8 @@ to_dict([{Ref, KVs} | T], JSON) ->
 
 add_ref(_Ref, [], JSON) ->
     JSON;
+add_ref(Ref, [{"__"++_Hidden, _}|Tail], JSON) ->
+    add_ref(Ref, Tail, JSON);
 add_ref(Ref, [KV|Tail], JSON) ->
     JSON2 = add_ref1(Ref, hn_util:jsonify_val(KV), JSON),
     add_ref(Ref, Tail, JSON2).
@@ -1014,8 +1016,7 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Perms  = {"permissions", auth_srv:get_as_json(S, P)},
     Grps   = {"groups", {array, []}},
     Lang   = {"lang", get_lang(Env#env.uid)},
-    {struct, [Time, Usr, Host, Lang, Grps, Perms
-              | dict_to_struct(Dict)]}.
+    {struct, [Time, Usr, Host, Lang, Grps, Perms | dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};
