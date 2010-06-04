@@ -12,6 +12,8 @@
 -include_lib("kernel/include/file.hrl").
 
 -export([
+         transform_site/1, transform_perms/1,
+         
          esc_regex/1,     
          recursive_copy/2,
 
@@ -460,3 +462,42 @@ type_reference(Cell) ->
 
 pget(Key, List) ->
     proplists:get_value(Key, List, undefined).
+
+
+transform_site(Dest) ->
+    MigrateDir = code:lib_dir(hypernumbers) ++ "/../../"++Dest++"/",
+    Sites      = filelib:wildcard(MigrateDir ++ "*"),
+    [ transform_perms(Site) || Site <- Sites ],
+    ok.
+
+
+transform_perms(Path) ->
+
+    file:copy(Path ++ "/permissions.export",
+              Path ++ "/permissions.export.bak"),
+
+    {ok, Terms} = file:consult(Path ++ "/permissions.export"),
+
+    NTerms = [ tmptr(Term) || Term <- Terms ],
+    Perms    = make_script_terms(NTerms,[]),
+
+    ok = file:write_file(Path ++ "/permissions.export", Perms).
+    
+tmptr({add_view,[{path,[]}, {perms,Path}, {view,"_g/core/spreadsheet"}]}) ->
+    tmptr({add_view,[{path,[]}, {perms,Path}, {view,"spreadsheet"}]});
+tmptr({add_view,[{path,[]}, {perms,Path}, {view,"_g/core/webpage"}]}) ->
+    {add_view,[{path,[]}, {perms,Path}, {view,"webpage"}]};
+tmptr({set_champion,[{path,[]},{view,"_g/core/spreadsheet"}]}) ->
+    {set_champion,[{path,[]},{view,"spreadsheet"}]};
+tmptr({set_champion,[{path,[]},{view,"_g/core/webpage"}]}) ->
+    {set_champion,[{path,[]},{view,"webpage"}]};
+tmptr(Tmp) ->
+    Tmp.
+
+make_script_terms([], Acc) -> 
+    FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
+    lists:flatten([FirstLine | lists:reverse(Acc)]);
+make_script_terms([H | T], Acc) ->
+    NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
+    make_script_terms(T, [NewAcc | Acc]).
+

@@ -43,6 +43,7 @@ dispatch(["migrate"]) ->
     build(),
     remote_do(migrate);
 
+dispatch(["plainbuild"]) -> build();
 dispatch(["clean"]) -> clean();
 dispatch(["start" | Args]) -> start(Args);
 dispatch(["stop" | Node]) -> stop(Node);

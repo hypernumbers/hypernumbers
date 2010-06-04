@@ -1,24 +1,20 @@
 %%-*-erlang-*-
 
-{add_view, 
- [{path, []},
-  {perms, ["admin"]},
-  {view, "_g/core/spreadsheet"}
- ]}.
+%% the new system requires all pages to exist on all paths
+{add_view, [{path, []}, {perms, ["admin"]}, {view, "spreadsheet"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "spreadsheet"} ]}.
+{add_view, [{path, []}, {perms, ["admin"]}, {view, "webpage"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "webpage"} ]}.
+{add_view, [{path, []},       {perms, ["admin"]}, {view, "table"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "table"} ]}.
 
 {set_champion,
  [{path, []},
-  {view, "_g/core/spreadsheet"}
- ]}.
-
-{add_view, 
- [{path, ["[**]"]},
-  {perms, ["admin"]},
-  {view, "_g/core/spreadsheet"}
+  {view, "spreadsheet"}
  ]}.
 
 {set_champion,
  [{path, ["[**]"]},
-  {view, "_g/core/spreadsheet"}
+  {view, "spreadsheet"}
  ]}.
 
