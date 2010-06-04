@@ -20,7 +20,7 @@
           get_json_post/1 % Used for mochilog replay rewrites
          ]).
 
--define(SHEETVIEW, "_g/core/spreadsheet").
+-define(SHEETVIEW, "spreadsheet").
 
 -spec start() -> {ok, pid()}. 
 start() ->
@@ -354,7 +354,7 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
             end
     end;
 
-iget(Ref, page, #qry{view = "_g/core/webpage"}, Env=#env{accept = html}) ->
+iget(Ref, page, #qry{view = "webpage"}, Env=#env{accept = html}) ->
     {Html, Width, Height} = hn_render:content(Ref),
     Page = hn_render:wrap_page(Html, Width, Height),
     text_html(Env, Page);

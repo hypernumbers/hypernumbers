@@ -194,7 +194,7 @@ wrap_page(Content, TotalWidth, TotalHeight) ->
          <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
          </head>
 
-         <body data-view='_g/core/webpage'>
+         <body data-view='webpage'>
 
          <span id='hidden_input'></span>
 
@@ -209,7 +209,7 @@ wrap_page(Content, TotalWidth, TotalHeight) ->
           <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
         </a>
       </div>
-      <a href='?view=_g/core/spreadsheet' id='editlogin' title='edit / login'>login</a>
+      <a href='?view=spreadsheet' id='editlogin' title='edit / login'>login</a>
     </div>
 
   </body>

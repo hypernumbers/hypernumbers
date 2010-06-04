@@ -149,7 +149,7 @@ can_read(Site, P, AR) ->
 
 -spec can_write(string(), string(), uid()) -> true | false. 
 can_write(Site, P, AR) ->
-    S = "_g/core/spreadsheet",
+    S = "spreadsheet",
     Path = string:tokens(just_path(P), "/"),
     case auth_srv:check_particular_view(Site, Path, AR, S) of
         {view, S} -> true; 
@@ -299,10 +299,10 @@ trans_all_perms_test_() ->
                     hn_groups:set_users(Site, "user", ["alice", "bob", "eve"]),
 
                     auth_srv:start_link(Site),
-                    auth_srv:add_view(Site, [], [everyone], "_g/core/spreadsheet"),
-                    auth_srv:add_view(Site, ["[**]"], [everyone], "_g/core/spreadsheet"),
-                    auth_srv:set_champion(Site, [], "_g/core/spreadsheet"),
-                    auth_srv:set_champion(Site, ["[**]"], "_g/core/spreadsheet"),
+                    auth_srv:add_view(Site, [], [everyone], "spreadsheet"),
+                    auth_srv:add_view(Site, ["[**]"], [everyone], "spreadsheet"),
+                    auth_srv:set_champion(Site, [], "spreadsheet"),
+                    auth_srv:set_champion(Site, ["[**]"], "spreadsheet"),
 
                     #refX{site = Site, path = ["u","testuser","blah"]}
             end,
