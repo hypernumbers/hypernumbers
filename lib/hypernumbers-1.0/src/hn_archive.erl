@@ -32,7 +32,7 @@ export_as_sitetype(Site, NewType) ->
     file:rename(join([Dest, "permissions.export"]), 
                 join([Dest, "permissions.script"])),
 
-                                                % Delete backup-centric artifacts.
+    % Delete backup-centric artifacts.
     [ file:delete( join([SiteTypes, NewType,  File]) )
       || File <- ["type", "mnesia.backup"] ],
     [ hn_util:delete_directory( join([SiteTypes, NewType, join(Dir)]) )

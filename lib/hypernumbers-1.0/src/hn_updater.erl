@@ -1,6 +1,6 @@
 -module(hn_updater).
 
--export([do/1, migrate/1]).
+-export([do/1, migrate/0, migrate/1]).
 
 do(refresh) -> refresh();
 do(hotswap) -> refresh(), hotswap();
@@ -29,23 +29,41 @@ restart() -> init:restart().
 -spec migrate() -> ok. 
 migrate() ->
     Secs = calendar:datetime_to_gregorian_seconds(calendar:universal_time()),
-    migrate(integer_to_list(Secs)).
+    do_migrate(integer_to_list(Secs)).
 
--spec migrate(string()) -> ok. 
-migrate(SecsS) ->
-    ok = hypernumbers_sup:suspend_mochi(),
+-spec migrate(fun()) -> ok. 
+migrate(Fun) ->
+    Secs = calendar:datetime_to_gregorian_seconds(calendar:universal_time()),
+    do_migrate(integer_to_list(Secs), Fun).
+
+-spec do_migrate(string(), fun()) -> ok.
+do_migrate(SecsS, Fun) ->
     Dest = "migrate_" ++ SecsS,
+    premigrate(Dest),
+    ok = Fun(Dest),
+    postmigrate(Dest).
+
+-spec do_migrate(string()) -> ok.    
+do_migrate(SecsS) ->
+    Dest = "migrate_" ++ SecsS,
+    premigrate(Dest),
+    postmigrate(Dest).
+    
+postmigrate(Dest) ->
+    % Don't use specific imports, this way we can resume if interrupted.
+    hn_archive:import(Dest),
+    ok = hypernumbers_sup:resume_mochi().
+
+premigrate(Dest) ->
+    ok = hypernumbers_sup:suspend_mochi(),
     Sites = hn_setup:get_sites(),
     hn_archive:export(Dest, Sites),
     [ok = hn_setup:delete_site(S) || S <- Sites],
 
-    %% Only now, can we reload the new code.
-    do(hotswap),
-
-    %% Don't use specific imports, this way we can resume if interrupted.
-    hn_archive:import(Dest),
-    ok = hypernumbers_sup:resume_mochi().
+    % Only now, can we reload the new code.
+    do(hotswap).
     
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%  ______          __                                ___             
 %% /\__  _\        /\ \__                            /\_ \            
