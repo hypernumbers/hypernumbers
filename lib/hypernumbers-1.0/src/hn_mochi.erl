@@ -97,10 +97,10 @@ authorize_resource(Env, Ref, Qry) ->
             handle_resource(Ref, Qry#qry{view = View}, Env2);
         {not_found, html} ->
             serve_html(404, Env2, 
-                       [viewroot(Ref#refX.site), "/_g/core/404.html"]);
+                       [viewroot(Ref#refX.site), "/404.html"]);
         {denied, html} ->
             serve_html(401, Env2,
-                       [viewroot(Ref#refX.site), "/_g/core/login.html"]);
+                       [viewroot(Ref#refX.site), "/login.html"]);
         {not_found, json} ->
             respond(404, Env2);
         _NoPermission ->
@@ -137,7 +137,7 @@ handle_static(X, Site, Env)
     Mochi:serve_file(RelPath, Root),
     ok;
 handle_static(_X, Site, Env) ->
-    serve_html(404, Env, [viewroot(Site), "/_g/core/404.html"]).
+    serve_html(404, Env, [viewroot(Site), "/404.html"]).
 
 -spec authorize_get(#refX{}, #qry{}, #env{}) 
                    -> {view, string()} | allowed | denied | not_found.
@@ -1212,7 +1212,7 @@ process_sync(["reset"], E, QReturn) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 '404'(#refX{site = Site}, Env) ->
-    serve_html(404, Env, [viewroot(Site), "/_g/core/login.html"]).
+    serve_html(404, Env, [viewroot(Site), "/login.html"]).
 
 '500'(Env) ->
     respond(500, Env).
