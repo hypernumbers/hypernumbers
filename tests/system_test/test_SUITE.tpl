@@ -30,7 +30,7 @@ skipped() ->
     ["hn_create", "hn_structural"].
 
 reset_perms(Site, Test) ->
-    View = "_g/core/spreadsheet",
+    View = "spreadsheet",
     auth_srv:add_view(Site, [Test], [everyone], View),
     auth_srv:set_champion(Site, [Test], View).
 
