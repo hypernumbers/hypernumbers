@@ -32,7 +32,7 @@
             <a id="currentLanguage">
               <span class="flag $txt:{en_gb}$">&nbsp;</span>
             </a>
-            <div id="lang">
+            <div id="lang" class="expandinner">
               <a name="en_gb"><span class="flag en_gb">&nbsp;</span>
                 $txt:{English}$</a>
               <a name="fr"><span class="flag fr">&nbsp;</span>
@@ -60,22 +60,14 @@
           &nbsp;
         </li>  
       </ul>
-    </div>
-    
-    <div id="menuwrap">      
-      <div id="typepanel">
-        <div id="webpagectrl">
-          <a target="_blank">[ preview ]</a>
-        </div>
-      </div>
-            
-    </div>
+           
+    </div>    
     
     <div id="toolbar">
 
       <div class="expand fonts" id="fontsizewrap">
         <span id="fontsize">$txt:{Size}$</span>
-        <div id="fontsizelist">
+        <div id="fontsizelist" class="expandinner">
           <h1><a data-command="heading" data-param="<h1>"
                  data-style="font-size" data-value="220%">header 1</a></h1>
           <h2><a data-command="heading" data-param="<h2>"
@@ -93,7 +85,7 @@
       
       <div class="expand fonts">
         <span id="font">$txt:{Font}$</span>
-        <div id="ffamily">
+        <div id="ffamily" class="expandinner">
           <a data-command="FontName" data-param="sans-serif" class="sans-serif"
              data-style="font-family">$txt:{Normal}$</a>
           <a data-command="FontName" data-param="serif" class="serif"
@@ -120,7 +112,7 @@
       
       <div class="expand fonts">
         <span id="format">$txt:{Format}$</span>
-        <div id="formats">
+        <div id="formats" class="expandinner">
           <a id="fmt_0">$txt:{Plain}$</a>
           <hr />
           <a id="fmt_1">100 <span class="desc">($txt:{rounded}$)</span></a>
@@ -150,7 +142,7 @@
       
       <div class="expand">
         <span><a id="left-head" class="icon"></a></span>
-        <div id="aligntext">
+        <div id="aligntext" class="expandinner">
           <a title="Left align" id="align_left" class="toolbar-item"
              data-style="text-align" data-value="left"></a>
           <a title="Center align" id="align_center" class="toolbar-item"
@@ -178,7 +170,7 @@
       
       <div class="expand" id="borders">
         <span><a title="Set Borders" id="border-head" class="icon"></a></span>
-        <div id="borders">
+        <div id="borders" class="expandinner">
           <a id="border_surround" class="toolbar-item"></a>
           <a id="border_inside" class="toolbar-item"></a>
           <a id="border_none" class="toolbar-item"></a>
@@ -194,7 +186,7 @@
 
       <div title="Set Colours" class="colormenu" id="combo_colourbg">
         <span><a id="bgcolor-head" class="icon"></a></span>
-        <div class="hiddenmenu">
+        <div class="hiddenmenu expandinner">
 
           <div id="combocolorsbg"></div>
 
@@ -223,6 +215,47 @@
       <a title="Add Radio Butttons" class="toolbar-item" id="formradio"
          data-input="radio" data-default="'default label', {1,2,3}"></a>
       <a title="Add Submit Button" class="toolbar-item" id="formbutton"></a>
+
+      
+      <div id="typepanel">
+        <div class="expand">
+          <span>View As</span>
+          <div id="viewas" class="expandinner">
+            <table cellspacing="0">
+              <tr>
+                <td><small>default</small></td>
+                <td class="publicoption"><small>public</small></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="defaultpage" 
+                           value="_g/core/spreadsheet" /></td>
+                <td class="publicoption">
+                  <input type="checkbox" data-value="_g/core/spreadsheet"
+                         id="publicspreadsheet" /></td>
+                <td class="viewlink">
+                  <a id="viewspreadsheet">Spreadsheet</a></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="defaultpage" 
+                           value="_g/core/webpage" /></td>
+                <td class="publicoption">
+                  <input type="checkbox" data-value="_g/core/webpage"
+                         id="publicwebpage" /></td>
+                <td class="viewlink"><a id="viewwebpage">Web Page</a></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="defaultpage" 
+                           value="table" /></td>
+                <td class="publicoption">
+                  <input type="checkbox" data-value="table" 
+                         id="publictable" /></td>
+                <td class="viewlink"><a id="viewtable">Table View</a></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
 
     </div>
     
@@ -465,28 +498,28 @@
                 <div id="uploadresponce"> </div>
               </td><td></td>
             </tr>
-            <tr><td class="label">Default Page:</td>
-              <td class="content"> 
-                <select id="currentdefaultview">
-                  <option value="">Nothing (404)</option>
-                  <option value="_g/core/spreadsheet">Spreadsheet</option>
-                  <option value="_g/core/webpage">WebPage</option>
-                  <option value="table">TableView</option>
-                </select>
-              </td><td>
-                <a href="" target="_blank" id="visitlink">Visit Page</a>
-              </td>
-            </tr> 
+            <!-- <tr><td class="label">Default Page:</td> -->
+            <!--   <td class="content">  -->
+            <!--     <select id="currentdefaultview"> -->
+            <!--       <option value="">Nothing (404)</option> -->
+            <!--       <option value="_g/core/spreadsheet">Spreadsheet</option> -->
+            <!--       <option value="_g/core/webpage">WebPage</option> -->
+            <!--       <option value="table">TableView</option> -->
+            <!--     </select> -->
+            <!--   </td><td> -->
+            <!--     <a href="" target="_blank" id="visitlink">Visit Page</a> -->
+            <!--   </td> -->
+            <!-- </tr>  -->
  
-            <tr><td class="label">Who can see this page:</td>
-              <td class="content">
-                <label>
-                  <input type="checkbox" id="everyoneview"> Public 
-                </label>
-                (<span id="viewgroups"></span>)
-              </td><td>
-              </td>
-            </tr>
+            <!-- <tr><td class="label">Who can see this page:</td> -->
+            <!--   <td class="content"> -->
+            <!--     <label> -->
+            <!--       <input type="checkbox" id="everyoneview"> Public  -->
+            <!--     </label> -->
+            <!--     (<span id="viewgroups"></span>) -->
+            <!--   </td><td> -->
+            <!--   </td> -->
+            <!-- </tr> -->
 
             <tr><td class="label">Delete Page:</td>
               <td class="content"> 

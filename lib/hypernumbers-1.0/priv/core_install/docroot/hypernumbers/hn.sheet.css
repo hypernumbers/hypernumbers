@@ -146,13 +146,6 @@ html,body {
 #languages .flag.it    { background-position: -122px -179px; }
 #languages .flag.br    { background-position: -142px -179px; }
 #languages .flag.en_us { background-position: -162px -179px; }
-/*****************************************************************************
-/* FILE MENU STYLES
-/*****************************************************************************/
-#hn #menuwrap { 
-    background: #FFF;
-    overflow:auto;
-}
 /******************************************************************************
 	LAYOUT STYLES
 ******************************************************************************/
@@ -511,7 +504,7 @@ html,body {
     border-top:    1px solid #ddd;
 }
 
-#toolbar .expand, #toolbar .colormenu { 
+.expand, .colormenu { 
     background: url(down.png) no-repeat right 2px;
     cursor:     pointer;
     padding:    3px 16px 1px 3px;
@@ -530,7 +523,7 @@ html,body {
     background: -moz-linear-gradient(center top , #EEE, #BBB) repeat scroll 0 0 transparent;
 }
 
-#toolbar .expand > div, #toolbar .colormenu > div { 
+.expandinner {
     background      : white;
     -moz-box-shadow : 2px 2px 4px #AAA;
     border          : 1px solid #999;
@@ -538,10 +531,10 @@ html,body {
     top             : auto;
     display         : none;
     padding         : 0px 0px;
-    z-index     : 10000002;
+    z-index     : 10000005;
 }
 
-#toolbar #formats { 
+#formats { 
   font: 10px Arial,"Helvetica Neue", sans-serif;
  }
 
@@ -551,9 +544,9 @@ html,body {
  }
 
 
-#toolbar .expand:hover, #toolbar .colormenu:hover, 
-#toolbar .expand.active, #toolbar .colormenu.active, 
-#toolbar a.toolbar-item:hover, #toolbar a.toolbar-item.active {
+.expand:hover, .colormenu:hover, 
+.expand.active, .colormenu.active, 
+.toolbar-item:hover, .toolbar-item.active {
   -moz-border-radius:3px;
   -webkit-border-radius:3px;
  border:           1px solid #CCC;
@@ -561,7 +554,7 @@ html,body {
 
 
 
-#toolbar a.separator {
+.separator {
  cursor:       default;
  margin:       3px;
  padding:      0px;
@@ -1023,11 +1016,30 @@ html,body {
     text-decoration:underline;
 }
 
-#typepanel { 
-    font-size:12px;
-    padding:3px;
-    position:absolute; 
+#viewas a:hover {
+    text-decoration:underline;
+}
+#viewas td { padding:2px; text-align:center; }
+    
+.publicoption { 
+    background:#EEE;
+}
+
+#viewas { 
+    padding:0px 5px;
     right:0px;
+}
+
+#viewas .viewlink { 
+    padding:4px;
+    text-align:left;
+}
+
+#typepanel { 
+    position:absolute; 
+    top:36px;
+    right:0px;
+    
 }
 #typepanel a { 
     color:blue;
@@ -1138,7 +1150,7 @@ html,body {
 .trebuchet  { font-family: trebuchet ms, sans-serif; }
 .tahoma     { font-family: tahoma, sans-serif; }
 
-.colormenu .innercolor { 
+.innercolor { 
     position : relative; 
     padding  : 5px 0px 0px 7px; 
     width    : 230px; 
