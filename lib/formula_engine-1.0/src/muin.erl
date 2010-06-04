@@ -51,7 +51,7 @@ test_formula(Fla, Rti) ->
 %% @doc Runs formula given as a string.
 run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
     case compile(Fla, {Col, Row}) of
-        {ok, Ecode}       -> muin:run_code(Ecode, Rti);
+        {ok, Ecode}       -> run_code(Ecode, Rti);
         ?error_in_formula -> ?error_in_formula
     end.
 

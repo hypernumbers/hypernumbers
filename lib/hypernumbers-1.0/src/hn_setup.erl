@@ -160,7 +160,7 @@ create_site_tables(Site, Type)->
 tables() ->
     [ ?TBL(dirty_queue, ordered_set, []),
       ?TBL(item,        set,    	 []),
-      ?TBL(local_obj,   bag,    	 [obj,idx]), 
+      ?TBL(local_obj,   set,    	 [obj,path]), 
       ?TBL(relation,    set,    	 []),
       ?TBL(group,       set,    	 []),         
       ?TBL(style,       set,    	 [idx])].

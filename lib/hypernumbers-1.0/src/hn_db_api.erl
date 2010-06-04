@@ -319,7 +319,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
                         ok
                 end
         end,
-    {atomic, ok} = mnesia:transaction(Fun),
+    ok = mnesia:activity(transaction, Fun),
     ok = tell_front_end("handle dirty").
 
 %% @spec write_attributes(RefX :: #refX{}, List) -> ok  
@@ -716,8 +716,7 @@ write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
     List = hn_util:range_to_list(Ref),
     [ok = write_attributes1(X, AttrList, PAr, VAr) || X <- List],
     ok;
-write_attributes1(RefX, List, PAr, VAr) 
-  when is_record(RefX, refX), is_list(List) ->
+write_attributes1(RefX, List, PAr, VAr) ->
     hn_db_wu:write_attrs(RefX, List, PAr),
     case lists:keymember("formula", 1, List) of
        true  -> ok = hn_db_wu:mark_children_dirty(RefX, VAr);

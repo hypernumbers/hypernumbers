@@ -33,9 +33,9 @@
 
 -record(local_obj,
         {
+          idx,
           path,
-          obj,
-          idx
+          obj
          }).
 
 -record(item, {idx, attrs}).
