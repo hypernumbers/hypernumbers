@@ -161,12 +161,13 @@ html,body {
 #homebutton { 
     display         : block;
     padding-top     : 9px;
-    width           : 140px;
+    width           : 115px;
     font            : normal 16px georgia,garamond, serif;
     color           : #000;
-    margin-left     : 10px;
+    margin-left     : 5px;
     text-decoration : none;
     cursor          : pointer;
+    float:left;
 }
 
 #homebutton span { 
@@ -273,7 +274,7 @@ html,body {
 #tabs {
     position :absolute;
     bottom   : -3px;
-    left     : 127px; 
+    left     : 207px; 
 }
 
 #pagemenu { 
@@ -298,6 +299,20 @@ html,body {
 #tabs a.current {
         opacity:1;
 } 
+
+#hometab { 
+    color:orange;
+    text-decoration:none;
+    position:relative;
+    top:13px;
+    font-size:11px;
+    padding:4px 4px 4px 20px;
+    background: url(/hypernumbers/document.png) no-repeat 2px center;
+}
+
+#hometab:hover { 
+    text-decoration:underline;
+}
 
 #test { 
     position : relative;
@@ -1166,10 +1181,6 @@ html,body {
 
 #insertimageinput, #insertlinkinput { 
     width:200px;
-}
-
-#hometab { 
-    opacity:1 !important;
 }
 
 #funname { 
