@@ -158,9 +158,6 @@ html,body {
     height : 26px;
 }
 #homebutton { 
-    background      : url(/img/application.png) no-repeat left 11px;
-    padding-left    : 18px;
-    opacity         : 0.3;
     display         : block;
     padding-top     : 9px;
     width           : 140px;
@@ -169,9 +166,6 @@ html,body {
     margin-left     : 10px;
     text-decoration : none;
     cursor          : pointer;
-}
-#homebutton:hover { 
-    opacity:1;
 }
 
 #homebutton span { 
@@ -277,7 +271,7 @@ html,body {
 #tabs {
     position :absolute;
     bottom   : -3px;
-    left     : 147px; 
+    left     : 127px; 
 }
 
 #pagemenu { 
@@ -1170,4 +1164,8 @@ html,body {
 
 #insertimageinput, #insertlinkinput { 
     width:200px;
+}
+
+#hometab { 
+    opacity:1 !important;
 }
