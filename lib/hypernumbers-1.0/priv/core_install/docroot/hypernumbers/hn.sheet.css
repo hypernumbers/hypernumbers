@@ -61,11 +61,12 @@ html,body {
     border             : 1px solid #666;
     z-index            : 10000003;
     -moz-border-radius : 3px 3px 3px 3px;
+    -moz-box-shadow : 2px 2px 4px #AAA;
 }
 #functions h2 {
     display            : block;
     margin             : 0px;
-    font               : bold 10px sans-serif;
+    font               : bold 12px sans-serif;
     padding            : 4px;
     background         : #333;
     color              : #EEE;
@@ -197,7 +198,7 @@ html,body {
     display     : block;
     top         : 0px;
     height      : 18px;
-    margin-left : 110px;
+    margin-left : 77px;
     border      : 0px;
     background  : #FFF;
     max-height  : 100px;
@@ -221,18 +222,19 @@ html,body {
 }
 
 #functionsbtn { 
-    font           : 10px sans-serif;
-    background     : #EAEAEA;
-    color          : #333333;
+    font           : 11px sans-serif;
+    background     : #F5F5F5;
+    color          : blue;
+    text-decoration: underline;
     border         : 1px solid #BBB;
     border-top     : 0px;
     border-bottom  : 0px;
     display        : block;
     line-height    : 18px;
     height         : 18px;
-    padding-bottom : 2px;
-    width          : 30px;
-    float          : left; 
+    padding        : 0px 5px 2px 5px;
+    float          : left;
+    cursor         : pointer;
     outline        :none;
 }
 
@@ -1168,4 +1170,20 @@ html,body {
 
 #hometab { 
     opacity:1 !important;
+}
+
+#funname { 
+    line-height:100%;
+}
+
+#subtext { 
+    position:absolute; 
+    bottom:0px; 
+    font-size:90%; 
+    color:#999; 
+    line-height:120%; 
+} 
+#subtext a { 
+    color:blue; 
+    text-decoration:underline; 
 }

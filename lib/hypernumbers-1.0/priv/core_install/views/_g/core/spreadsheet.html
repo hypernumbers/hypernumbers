@@ -221,7 +221,7 @@
       
       <div id="typepanel">
         <div class="expand">
-          <span>View As</span>
+          <span><em>Views</em></span>
           <div id="viewas" class="expandinner">
             <table cellspacing="0">
               <tr>
@@ -262,9 +262,7 @@
     </div>
     
     <div id="formulabar">
-      <span id="name"></span>
-      <input type="button" id="functionsbtn" 
-             value="f(x)" title="functions help" />
+      <a id="functionsbtn" title="functions help">function list</a>
       <div id="formulawrapper">
         <div id="formula" contentEditable="true"></div>
       </div>
@@ -412,11 +410,15 @@
         <!--   <a href="http://office.microsoft.com/en-us/excel/CH062528191033.aspx"  -->
         <!--      target="_blank">$txt:{Microsoft Help}$</a>  -->
         <!--   $txt:{until we implement help properly}$.</p> -->
-        <input type="submit" value="Enter Formula" id="enterformula" />
+        <!-- <input type="submit" value="Enter Formula" id="enterformula" /> -->
         <br />
-        <a href="http://support.hypernumbers.com/" target="_blank">
-          support
-        </a>
+
+        <p id="subtext">
+          If you need help with anything else, please check our 
+          <a href="http://support.hypernumbers.com/" target="_blank">
+            support site</a>
+        </p>
+
       </div>  
     </div>
     
