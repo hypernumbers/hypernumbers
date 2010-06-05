@@ -41,7 +41,7 @@ init_per_testcase(_TestCase, Config) -> Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
 get_val(Ref) ->
-    case hn_db_api:read_attribute(Ref#refX{site=~p},"rawvalue") of
+    case hn_db_api:read_attribute(Ref#refX{site=~p},"__rawvalue") of
         [{_Ref, Val}] -> Val; 
         _Else        -> "" 
     end.
