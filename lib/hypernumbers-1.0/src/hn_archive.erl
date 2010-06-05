@@ -69,14 +69,15 @@ dump_etf(Site, SiteDest) ->
     filelib:ensure_dir([EtfDest,"/"]),  
     Ref = hn_util:parse_url(Site),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
-    Paths = hn_db_api:read_pages(Ref),
-    Pages = [Encoder(hn_mochi:page_attributes(Ref#refX{path = P}, #env{}))
-             || P <- Paths],
-    [ok = file:write_file(
-            filename:join(EtfDest, hn_util:path_to_json_path(Path)), 
-            io_lib:format("~s", [lists:flatten(Page)])) || 
-        {Path, Page} <- lists:zip(Paths, Pages)],
+    [ok = dump_page(EtfDest, Encoder, Ref, Path) 
+     || Path <- hn_db_api:read_pages(Ref)],
     ok.
+
+dump_page(EtfDest, Encoder, Ref, Path) ->
+    FileName = filename:join(EtfDest, hn_util:path_to_json_path(Path)),
+    Page = Encoder(hn_mochi:page_attributes(Ref#refX{path = Path}, #env{})),
+    Data = io_lib:format("~s", [lists:flatten(Page)]),
+    file:write_file(FileName, Data).
 
 dump_groups(Site, SiteDest) ->
     Groups = hn_groups:dump_script(Site),
