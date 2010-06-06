@@ -599,7 +599,7 @@ read_page_structure(#refX{site = Site}) ->
 
 read_pages(#refX{site = Site}) ->
     MS = ets:fun2ms(fun(#local_obj{path=P}) -> P end),
-    mnesia:select(trans(Site, local_obj), MS, read).
+    lists:usort(mnesia:select(trans(Site, local_obj), MS, read)).
     
 filter_pages([], Tree) ->
     Tree;
