@@ -195,6 +195,14 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
               end,
     process_attrs(Rest, Ref, AReq, Attrs2).
 
+expand_to_rows_or_cols(#refX{obj={_, {I, J}}}=Ref) ->
+    expand_to_2(Ref, I, J, []).
+
+expand_to_2(#refX{obj={Type, _}}=Ref, I, I, Acc) ->
+    [Ref#refX{obj={Type, {I, I}}} | Acc];
+expand_to_2(#refX{obj={Type, _}}=Ref, I, J, Acc) ->
+    expand_to_2(Ref, I+1, J, [Ref#refX{obj={Type, {I, I}}} | Acc]).
+
 expand_ref(#refX{site=S}=Ref) -> 
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref, inside)].
 
@@ -421,7 +429,11 @@ clear_cells(Ref, {attributes, DelAttrs}) ->
 -spec delete_cells(#refX{}) -> [#refX{}].
 delete_cells(#refX{site = S} = DelX) ->
     case expand_ref(DelX) of
-        []     -> [];
+        %% there may be no cells to delete, but there may be rows or
+        %% columns widths to delete...
+        []     ->
+            expunge_refs(S, expand_to_rows_or_cols(DelX)),
+            [];
         Cells  ->
             %% update the children that point to the cell that is
             %% being deleted by rewriting the formulae of all the
@@ -442,7 +454,7 @@ delete_cells(#refX{site = S} = DelX) ->
             [ok = delete_local_relation(X) || X <- Cells],
 
             %% Delete the rows or columns and cells (and their indicices)
-            expunge_refs(S, lists:append([DelX], Cells)),
+            expunge_refs(S, lists:append(expand_to_rows_or_cols(DelX), Cells)),
             LocalChildren3
     end.
 
