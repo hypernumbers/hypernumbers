@@ -135,15 +135,23 @@ read_styles_IMPORT(#refX{site=Site}) ->
 -spec get_last_row(#refX{}) -> integer(). 
 get_last_row(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    lists:max([0 | [Y || #local_obj{obj={cell,{_,Y}}} 
-                             <- read_objs(SelX, inside)]]).
+    lists:max([0 | [Y || LO=#local_obj{obj={cell,{_,Y}}} 
+                   <- read_objs(SelX, inside), has_content(S, LO)]]).
 
 -spec get_last_col(#refX{}) -> integer(). 
 get_last_col(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    lists:max([0 | [X || #local_obj{obj={cell,{X,_}}} 
-                             <- read_objs(SelX, inside)]]).
+    lists:max([0 | [X || LO=#local_obj{obj={cell,{X,_}}} 
+                   <- read_objs(SelX, inside), has_content(S, LO)]]).
 
+-spec has_content(string(), #local_obj{}) -> boolean().
+has_content(S, LO) ->
+    case extract_field(read_attrs(S, [LO], read), "formula", []) of
+        [] -> false; 
+        [{_, []}] -> false; 
+        _ -> true
+    end.
+    
 %% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> ok
 %% Key = atom()
 %% Value = term()
@@ -195,8 +203,9 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
               end,
     process_attrs(Rest, Ref, AReq, Attrs2).
 
-expand_to_rows_or_cols(#refX{obj={_, {I, J}}}=Ref) ->
-    expand_to_2(Ref, I, J, []).
+expand_to_rows_or_cols(#refX{obj={RC, {I, J}}}=Ref) when RC == row; RC == column ->
+    expand_to_2(Ref, I, J, []);
+expand_to_rows_or_cols(_) -> [].
 
 expand_to_2(#refX{obj={Type, _}}=Ref, I, I, Acc) ->
     [Ref#refX{obj={Type, {I, I}}} | Acc];
