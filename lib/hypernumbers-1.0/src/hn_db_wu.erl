@@ -121,7 +121,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
 
 write_style_IMPORT(#refX{site=Site}, Style) ->
     Tbl = trans(Site, style),
-    ok = mnesia:write(Tbl, Style, write).
+    mnesia:write(Tbl, Style, write).
 
 -spec write_magic_style_IMPORT(#refX{}, #magic_style{}) -> integer(). 
 write_magic_style_IMPORT(Ref=#refX{site=Site}, MagicStyle) ->
@@ -136,15 +136,38 @@ read_styles_IMPORT(#refX{site=Site}) ->
 -spec get_last_row(#refX{}) -> integer(). 
 get_last_row(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    lists:max([0 | [Y || #local_obj{obj={cell,{_,Y}}} 
-                             <- read_objs(SelX, inside)]]).
+    Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end, 
+                       [{Y, LO} || LO=#local_obj{obj={cell,{_,Y}}}
+                                       <- read_objs(SelX, inside)]),
+    largest_content(Desc, S).
 
 -spec get_last_col(#refX{}) -> integer(). 
 get_last_col(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    lists:max([0 | [X || #local_obj{obj={cell,{X,_}}} 
-                             <- read_objs(SelX, inside)]]).
+    Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end, 
+                       [{X, LO} || LO=#local_obj{obj={cell,{X,_}}} 
+                                       <- read_objs(SelX, inside)]),
+    largest_content(Desc, S).
 
+%% Working from the bottom of the form to the top, find the first
+%% local object which has content, and return its corrosponding
+%% ROW/COL
+-spec largest_content([{integer(), #local_obj{}}], string()) -> integer(). 
+largest_content([], _S) -> 0;
+largest_content([{K, LO} | T], S) ->
+    case has_content(S, LO) of
+        true -> K; 
+        false -> largest_content(T, S)
+    end.
+
+-spec has_content(string(), #local_obj{}) -> boolean().
+has_content(S, LO) ->
+    case extract_field(read_attrs(S, [LO], read), "formula", []) of
+        [] -> false; 
+        [{_, []}] -> false; 
+        _ -> true
+    end.
+    
 %% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> ok
 %% Key = atom()
 %% Value = term()
@@ -195,6 +218,15 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
                   false -> orddict:store(Key, Val, Attrs)
               end,
     process_attrs(Rest, Ref, AReq, Attrs2).
+
+expand_to_rows_or_cols(#refX{obj={RC, {I, J}}}=Ref) when RC == row; RC == column ->
+    expand_to_2(Ref, I, J, []);
+expand_to_rows_or_cols(_) -> [].
+
+expand_to_2(#refX{obj={Type, _}}=Ref, I, I, Acc) ->
+    [Ref#refX{obj={Type, {I, I}}} | Acc];
+expand_to_2(#refX{obj={Type, _}}=Ref, I, J, Acc) ->
+    expand_to_2(Ref, I+1, J, [Ref#refX{obj={Type, {I, I}}} | Acc]).
 
 expand_ref(#refX{site=S}=Ref) -> 
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref, inside)].
@@ -425,7 +457,11 @@ content_attrs() ->
 -spec delete_cells(#refX{}) -> [#refX{}].
 delete_cells(#refX{site = S} = DelX) ->
     case expand_ref(DelX) of
-        []     -> [];
+        %% there may be no cells to delete, but there may be rows or
+        %% columns widths to delete...
+        []     ->
+            expunge_refs(S, expand_to_rows_or_cols(DelX)),
+            [];
         Cells  ->
             %% update the children that point to the cell that is
             %% being deleted by rewriting the formulae of all the
@@ -446,7 +482,7 @@ delete_cells(#refX{site = S} = DelX) ->
             [ok = delete_local_relation(X) || X <- Cells],
 
             %% Delete the rows or columns and cells (and their indicices)
-            expunge_refs(S, lists:append([DelX], Cells)),
+            expunge_refs(S, lists:append(expand_to_rows_or_cols(DelX), Cells)),
             LocalChildren3
     end.
 
@@ -548,7 +584,7 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
     Idxs = lists:flatten([F(C) || R <- Refs, C <- expand_ref(R)]),
     Q = insert_work_queue(Idxs, Tbl, 1, hn_workq:new(AReq)),
     Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
-    ok = mnesia:write(trans(Site, dirty_queue), Entry, write).
+    mnesia:write(trans(Site, dirty_queue), Entry, write).
 
 -spec mark_children_dirty(#refX{}, nil | uid()) -> ok.
 mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
@@ -558,7 +594,7 @@ mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
     case hn_workq:is_empty(Q) of
         true  -> ok;
         false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
-                 ok = mnesia:write(trans(Site, dirty_queue), Entry, write)
+                 mnesia:write(trans(Site, dirty_queue), Entry, write)
     end.
 
 %% Recursively walk child relation, adding entries into the work
@@ -596,13 +632,15 @@ insert_work_queue([Idx|Rest], Tbl, Priority, Q) ->
 %% @spec read_page_structure(Ref) -> dh_tree()
 %% @doc read the populated pages under the specified path
 %% @todo fix up api
-read_page_structure(#refX{site = Site, obj = {page, "/"}}) ->
-    Items = mnesia:dirty_all_keys(trans(Site, local_obj)),
+read_page_structure(#refX{site = Site}) ->
+    MS = ets:fun2ms(fun(#local_obj{path=P}) -> P end),
+    Items = mnesia:dirty_select(trans(Site, local_obj), MS),
     filter_pages(Items, dh_tree:new()).
 
-read_pages(#refX{site = Site, obj = {page, "/"}}) ->
-    mnesia:all_keys(trans(Site, local_obj)).
-
+read_pages(#refX{site = Site}) ->
+    MS = ets:fun2ms(fun(#local_obj{path=P}) -> P end),
+    lists:usort(mnesia:select(trans(Site, local_obj), MS, read)).
+    
 filter_pages([], Tree) ->
     Tree;
 filter_pages([Path | T], Tree) ->
@@ -677,7 +715,7 @@ shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1, 0, infinity, infinity}}}.
 
 local_idx_to_refX(S, Idx) ->
-    case mnesia:index_read(trans(S, local_obj), Idx, idx) of
+    case mnesia:read(trans(S, local_obj), Idx, read) of
         [Rec] -> #local_obj{path = P, obj = O} = Rec,
                  #refX{site = S, path = P, obj = O};
         []    -> {error, id_not_found, Idx}
@@ -703,9 +741,7 @@ refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
 -spec read_local_item_index(#refX{}) -> pos_integer() | false. 
 read_local_item_index(#refX{site = S, path = P, obj = Obj}) ->
     Table = trans(S, local_obj),
-    MS = ets:fun2ms(fun(#local_obj{path=MP, obj=MObj, idx=I}) when 
-                              MP == P, MObj == Obj -> I
-                    end),
+    MS = [{#local_obj{path=P, obj=Obj, idx = '$1', _='_'}, [], ['$1']}],
     case mnesia:select(Table, MS, read) of
         [I] -> I;
         _   -> false
@@ -1627,13 +1663,11 @@ read_objs(#refX{site=Site}=Ref, intersect) ->
     MS = objs_intersect_ref(Ref),
     mnesia:select(trans(Site, local_obj), MS);
 read_objs(#refX{site=Site, path=P, obj = O}, direct) ->
-    MS = ets:fun2ms(fun(LO=#local_obj{path=MP, obj=MO}) 
-                          when MP == P, MO == O -> LO
-                    end),
+    MS = [{#local_obj{path=P, obj = O, _='_'}, [], ['$_']}],
     mnesia:select(trans(Site, local_obj), MS).                            
 
 objs_inside_ref(#refX{path = P, obj = {page, "/"}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP}) when MP == P -> LO end);
+    [{#local_obj{path = P, _='_'}, [], ['$_']}];
 objs_inside_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
     ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
                      when MP == P,
@@ -1668,15 +1702,12 @@ objs_inside_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
                           X1 =< MX, MX =< X2, 
                           Y1 =< MY, MY =< Y2 -> LO
                end);
-objs_inside_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
-    ets:fun2ms(
-      fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}})
-            when MP == P, MX == X, MY == Y -> LO
-      end).
+objs_inside_ref(#refX{path = P, obj = O = {cell, _}}) ->
+    [{#local_obj{path = P, obj = O, _='_'}, [], ['$_']}].
 
 %% Note that this is most useful when given cells, or ranges. 
 objs_intersect_ref(#refX{path = P, obj = {page, "/"}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP}) when MP == P -> LO end);
+    [{#local_obj{path=P, _='_'}, [], ['$_']}];
 objs_intersect_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
     ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}}) 
                      when MP == P,

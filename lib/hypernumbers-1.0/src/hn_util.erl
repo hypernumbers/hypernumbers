@@ -13,6 +13,9 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
+         transform_site/1, transform_perms/1,
+         add_views/0,
+         
          esc_regex/1,     
          recursive_copy/2,
 
@@ -548,3 +551,53 @@ type_reference(Cell) ->
 
 pget(Key, List) ->
     proplists:get_value(Key, List, undefined).
+
+
+transform_site(Dest) ->
+    MigrateDir = code:lib_dir(hypernumbers) ++ "/../../"++Dest++"/",
+    Sites      = filelib:wildcard(MigrateDir ++ "*"),
+    io:format("what the hell x~p~n",[Sites]),
+    [ transform_perms(Site) || Site <- Sites ],
+    ok.
+
+
+transform_perms(Path) ->
+    
+    file:copy(Path ++ "/permissions.export",
+              Path ++ "/permissions.export.bak"),
+
+    {ok, Terms} = file:consult(Path ++ "/permissions.export"),
+
+    NTerms = [ tmptr(Term) || Term <- Terms ],
+    Perms    = make_script_terms(NTerms,[]),
+
+    ok = file:write_file(Path ++ "/permissions.export", Perms).
+    
+tmptr({add_view,[{path,Path}, {perms, Perms},
+                 {view,"_g/core/spreadsheet"}]}) ->
+    tmptr({add_view,[{path,Path}, {perms, Perms}, {view,"spreadsheet"}]});
+tmptr({add_view,[{path,Path}, {perms, Perms}, {view,"_g/core/webpage"}]}) ->
+    {add_view,[{path,Path}, {perms, Perms}, {view,"webpage"}]};
+tmptr({set_champion,[{path,Path},{view,"_g/core/spreadsheet"}]}) ->
+    {set_champion,[{path,Path},{view,"spreadsheet"}]};
+tmptr({set_champion,[{path,Path},{view,"_g/core/webpage"}]}) ->
+    {set_champion,[{path,Path},{view,"webpage"}]};
+tmptr(Tmp) ->
+    Tmp.
+
+make_script_terms([], Acc) -> 
+    FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
+    lists:flatten([FirstLine | lists:reverse(Acc)]);
+make_script_terms([H | T], Acc) ->
+    NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
+    make_script_terms(T, [NewAcc | Acc]).
+
+add_views() ->
+    [ begin
+          auth_srv:add_view(Site, [], ["admin"], "table"),
+          auth_srv:add_view(Site, ["[**]"], ["admin"], "table"),
+          auth_srv:add_view(Site, [], ["admin"], "webpage"),
+          auth_srv:add_view(Site, ["[**]"], ["admin"], "webpage")
+      end || Site <- hn_setup:get_sites()].
+
+    

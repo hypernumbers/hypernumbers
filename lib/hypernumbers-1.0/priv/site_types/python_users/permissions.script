@@ -1,6 +1,0 @@
-%%-*-erlang-*-
-{add_view,[{path,[]},{perms,[{group,"admin"}]},{view,"_g/core/spreadsheet"}]}.
-{add_view,[{path,[]},
-           {perms,[everyone]},
-           {view,"_u/gordon/python"}]}.
-{set_champion,[{path,[]},{view,"_u/gordon/python"}]}.

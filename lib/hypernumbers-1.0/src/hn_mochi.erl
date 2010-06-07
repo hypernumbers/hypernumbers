@@ -20,7 +20,7 @@
           get_json_post/1 % Used for mochilog replay rewrites
          ]).
 
--define(SHEETVIEW, "_g/core/spreadsheet").
+-define(SHEETVIEW, "spreadsheet").
 
 -spec start() -> {ok, pid()}. 
 start() ->
@@ -97,10 +97,10 @@ authorize_resource(Env, Ref, Qry) ->
             handle_resource(Ref, Qry#qry{view = View}, Env2);
         {not_found, html} ->
             serve_html(404, Env2, 
-                       [viewroot(Ref#refX.site), "/_g/core/404.html"]);
+                       [viewroot(Ref#refX.site), "/404.html"]);
         {denied, html} ->
             serve_html(401, Env2,
-                       [viewroot(Ref#refX.site), "/_g/core/login.html"]);
+                       [viewroot(Ref#refX.site), "/login.html"]);
         {not_found, json} ->
             respond(404, Env2);
         _NoPermission ->
@@ -137,7 +137,7 @@ handle_static(X, Site, Env)
     Mochi:serve_file(RelPath, Root),
     ok;
 handle_static(_X, Site, Env) ->
-    serve_html(404, Env, [viewroot(Site), "/_g/core/404.html"]).
+    serve_html(404, Env, [viewroot(Site), "/404.html"]).
 
 -spec authorize_get(#refX{}, #qry{}, #env{}) 
                    -> {view, string()} | allowed | denied | not_found.
@@ -354,7 +354,7 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
             end
     end;
 
-iget(Ref, page, #qry{view = "_g/core/webpage"}, Env=#env{accept = html}) ->
+iget(Ref, page, #qry{view = "webpage"}, Env=#env{accept = html}) ->
     {Html, Width, Height} = hn_render:content(Ref),
     Page = hn_render:wrap_page(Html, Width, Height),
     text_html(Env, Page);
@@ -585,7 +585,7 @@ ipost(Ref=#refX{path = P} = Ref, _Qry,
 
     % Labels from the results page
     OldLabels = hn_db_api:read_attribute(Results#refX{obj={row, {1,1}}},
-                                         "rawvalue"),
+                                         "__rawvalue"),
     
     Values = [ {"submitted", dh_date:format("Y/m/d h:i:s")} |
                lists:reverse(lists:foldl(fun generate_labels/2, [], Array)) ],
@@ -908,6 +908,8 @@ to_dict([{Ref, KVs} | T], JSON) ->
 
 add_ref(_Ref, [], JSON) ->
     JSON;
+add_ref(Ref, [{"__"++_Hidden, _}|Tail], JSON) ->
+    add_ref(Ref, Tail, JSON);
 add_ref(Ref, [KV|Tail], JSON) ->
     JSON2 = add_ref1(Ref, hn_util:jsonify_val(KV), JSON),
     add_ref(Ref, Tail, JSON2).
@@ -1020,8 +1022,7 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Perms  = {"permissions", auth_srv:get_as_json(S, P)},
     Grps   = {"groups", {array, []}},
     Lang   = {"lang", get_lang(Env#env.uid)},
-    {struct, [Time, Usr, Host, Lang, Grps, Perms
-              | dict_to_struct(Dict)]}.
+    {struct, [Time, Usr, Host, Lang, Grps, Perms | dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};
@@ -1217,7 +1218,7 @@ process_sync(["reset"], E, QReturn) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 '404'(#refX{site = Site}, Env) ->
-    serve_html(404, Env, [viewroot(Site), "/_g/core/login.html"]).
+    serve_html(404, Env, [viewroot(Site), "/login.html"]).
 
 '500'(Env) ->
     respond(500, Env).

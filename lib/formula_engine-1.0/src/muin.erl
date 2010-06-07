@@ -51,7 +51,7 @@ test_formula(Fla, Rti) ->
 %% @doc Runs formula given as a string.
 run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
     case compile(Fla, {Col, Row}) of
-        {ok, Ecode}       -> muin:run_code(Ecode, Rti);
+        {ok, Ecode}       -> run_code(Ecode, Rti);
         ?error_in_formula -> ?error_in_formula
     end.
 
@@ -217,9 +217,7 @@ funcall(Fname, Args0) ->
                false -> [eval(X) || X <- prefetch_references(Args0)]
            end,
     
-    Modules = get_modules(),
-
-    
+    Modules = get_modules(),    
     
     case call_fun(Fname, Args, Modules) of
         {error, not_found} -> userdef_call(Fname, Args);

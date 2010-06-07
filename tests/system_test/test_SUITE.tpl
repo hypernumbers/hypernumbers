@@ -30,7 +30,7 @@ skipped() ->
     ["hn_create", "hn_structural"].
 
 reset_perms(Site, Test) ->
-    View = "_g/core/spreadsheet",
+    View = "spreadsheet",
     auth_srv:add_view(Site, [Test], [everyone], View),
     auth_srv:set_champion(Site, [Test], View).
 
@@ -41,7 +41,7 @@ init_per_testcase(_TestCase, Config) -> Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
 get_val(Ref) ->
-    case hn_db_api:read_attribute(Ref#refX{site=~p},"rawvalue") of
+    case hn_db_api:read_attribute(Ref#refX{site=~p},"__rawvalue") of
         [{_Ref, Val}] -> Val; 
         _Else        -> "" 
     end.

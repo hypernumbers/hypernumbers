@@ -61,11 +61,12 @@ html,body {
     border             : 1px solid #666;
     z-index            : 10000003;
     -moz-border-radius : 3px 3px 3px 3px;
+    -moz-box-shadow : 2px 2px 4px #AAA;
 }
 #functions h2 {
     display            : block;
     margin             : 0px;
-    font               : bold 10px sans-serif;
+    font               : bold 12px sans-serif;
     padding            : 4px;
     background         : #333;
     color              : #EEE;
@@ -146,13 +147,6 @@ html,body {
 #languages .flag.it    { background-position: -122px -179px; }
 #languages .flag.br    { background-position: -142px -179px; }
 #languages .flag.en_us { background-position: -162px -179px; }
-/*****************************************************************************
-/* FILE MENU STYLES
-/*****************************************************************************/
-#hn #menuwrap { 
-    background: #FFF;
-    overflow:auto;
-}
 /******************************************************************************
 	LAYOUT STYLES
 ******************************************************************************/
@@ -165,20 +159,15 @@ html,body {
     height : 26px;
 }
 #homebutton { 
-    background      : url(/img/application.png) no-repeat left 11px;
-    padding-left    : 18px;
-    opacity         : 0.3;
     display         : block;
     padding-top     : 9px;
-    width           : 140px;
+    width           : 115px;
     font            : normal 16px georgia,garamond, serif;
     color           : #000;
-    margin-left     : 10px;
+    margin-left     : 5px;
     text-decoration : none;
     cursor          : pointer;
-}
-#homebutton:hover { 
-    opacity:1;
+    float:left;
 }
 
 #homebutton span { 
@@ -210,7 +199,7 @@ html,body {
     display     : block;
     top         : 0px;
     height      : 18px;
-    margin-left : 110px;
+    margin-left : 77px;
     border      : 0px;
     background  : #FFF;
     max-height  : 100px;
@@ -234,18 +223,19 @@ html,body {
 }
 
 #functionsbtn { 
-    font           : 10px sans-serif;
-    background     : #EAEAEA;
-    color          : #333333;
+    font           : 11px sans-serif;
+    background     : #F5F5F5;
+    color          : blue;
+    text-decoration: underline;
     border         : 1px solid #BBB;
     border-top     : 0px;
     border-bottom  : 0px;
     display        : block;
     line-height    : 18px;
     height         : 18px;
-    padding-bottom : 2px;
-    width          : 30px;
-    float          : left; 
+    padding        : 0px 5px 2px 5px;
+    float          : left;
+    cursor         : pointer;
     outline        :none;
 }
 
@@ -284,7 +274,7 @@ html,body {
 #tabs {
     position :absolute;
     bottom   : -3px;
-    left     : 147px; 
+    left     : 207px; 
 }
 
 #pagemenu { 
@@ -309,6 +299,20 @@ html,body {
 #tabs a.current {
         opacity:1;
 } 
+
+#hometab { 
+    color:orange;
+    text-decoration:none;
+    position:relative;
+    top:13px;
+    font-size:11px;
+    padding:4px 4px 4px 20px;
+    background: url(/hypernumbers/document.png) no-repeat 2px center;
+}
+
+#hometab:hover { 
+    text-decoration:underline;
+}
 
 #test { 
     position : relative;
@@ -511,7 +515,7 @@ html,body {
     border-top:    1px solid #ddd;
 }
 
-#toolbar .expand, #toolbar .colormenu { 
+.expand, .colormenu { 
     background: url(down.png) no-repeat right 2px;
     cursor:     pointer;
     padding:    3px 16px 1px 3px;
@@ -530,7 +534,7 @@ html,body {
     background: -moz-linear-gradient(center top , #EEE, #BBB) repeat scroll 0 0 transparent;
 }
 
-#toolbar .expand > div, #toolbar .colormenu > div { 
+.expandinner {
     background      : white;
     -moz-box-shadow : 2px 2px 4px #AAA;
     border          : 1px solid #999;
@@ -538,10 +542,10 @@ html,body {
     top             : auto;
     display         : none;
     padding         : 0px 0px;
-    z-index     : 10000002;
+    z-index     : 10000005;
 }
 
-#toolbar #formats { 
+#formats { 
   font: 10px Arial,"Helvetica Neue", sans-serif;
  }
 
@@ -551,9 +555,9 @@ html,body {
  }
 
 
-#toolbar .expand:hover, #toolbar .colormenu:hover, 
-#toolbar .expand.active, #toolbar .colormenu.active, 
-#toolbar a.toolbar-item:hover, #toolbar a.toolbar-item.active {
+.expand:hover, .colormenu:hover, 
+.expand.active, .colormenu.active, 
+.toolbar-item:hover, .toolbar-item.active {
   -moz-border-radius:3px;
   -webkit-border-radius:3px;
  border:           1px solid #CCC;
@@ -561,7 +565,7 @@ html,body {
 
 
 
-#toolbar a.separator {
+.separator {
  cursor:       default;
  margin:       3px;
  padding:      0px;
@@ -1023,11 +1027,30 @@ html,body {
     text-decoration:underline;
 }
 
-#typepanel { 
-    font-size:12px;
-    padding:3px;
-    position:absolute; 
+#viewas a:hover {
+    text-decoration:underline;
+}
+#viewas td { padding:2px; text-align:center; }
+    
+.publicoption { 
+    background:#EEE;
+}
+
+#viewas { 
+    padding:0px 5px;
     right:0px;
+}
+
+#viewas .viewlink { 
+    padding:4px;
+    text-align:left;
+}
+
+#typepanel { 
+    position:absolute; 
+    top:36px;
+    right:0px;
+    
 }
 #typepanel a { 
     color:blue;
@@ -1138,7 +1161,7 @@ html,body {
 .trebuchet  { font-family: trebuchet ms, sans-serif; }
 .tahoma     { font-family: tahoma, sans-serif; }
 
-.colormenu .innercolor { 
+.innercolor { 
     position : relative; 
     padding  : 5px 0px 0px 7px; 
     width    : 230px; 
@@ -1158,4 +1181,20 @@ html,body {
 
 #insertimageinput, #insertlinkinput { 
     width:200px;
+}
+
+#funname { 
+    line-height:100%;
+}
+
+#subtext { 
+    position:absolute; 
+    bottom:0px; 
+    font-size:90%; 
+    color:#999; 
+    line-height:120%; 
+} 
+#subtext a { 
+    color:blue; 
+    text-decoration:underline; 
 }
