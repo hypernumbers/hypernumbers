@@ -135,14 +135,26 @@ read_styles_IMPORT(#refX{site=Site}) ->
 -spec get_last_row(#refX{}) -> integer(). 
 get_last_row(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    lists:max([0 | [Y || LO=#local_obj{obj={cell,{_,Y}}} 
-                   <- read_objs(SelX, inside), has_content(S, LO)]]).
+    Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end, 
+                       [{Y, LO} || LO=#local_obj{obj={cell,{_,Y}}}
+                                       <- read_objs(SelX, inside)]),
+    largest_content(Desc, S).
 
 -spec get_last_col(#refX{}) -> integer(). 
 get_last_col(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    lists:max([0 | [X || LO=#local_obj{obj={cell,{X,_}}} 
-                   <- read_objs(SelX, inside), has_content(S, LO)]]).
+    Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end, 
+                       [{X, LO} || LO=#local_obj{obj={cell,{X,_}}} 
+                                       <- read_objs(SelX, inside)]),
+    largest_content(Desc, S).
+
+-spec largest_content([{integer(), #local_obj{}}], string()) -> integer(). 
+largest_content([], _S) -> 0;
+largest_content([{K, LO} | T], S) ->
+    case has_content(S, LO) of
+        true -> K; 
+        false -> largest_content(T, S)
+    end.
 
 -spec has_content(string(), #local_obj{}) -> boolean().
 has_content(S, LO) ->
