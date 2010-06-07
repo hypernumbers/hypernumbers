@@ -558,10 +558,11 @@ html,body {
 .expand:hover, .colormenu:hover, 
 .expand.active, .colormenu.active, 
 .toolbar-item:hover, .toolbar-item.active {
-  -moz-border-radius:3px;
-  -webkit-border-radius:3px;
- border:           1px solid #CCC;
- background-color: transparent;}
+    -moz-border-radius:3px;
+    -webkit-border-radius:3px;
+    border:           1px solid #CCC;
+    background-color: transparent;
+}
 
 
 
@@ -597,7 +598,7 @@ html,body {
  width:      16px;
 }
 
-#toolbar a.toolbar-item {
+a.toolbar-item {
  background-image: url(sprite.png);
  float:   left;
  cursor:  pointer;

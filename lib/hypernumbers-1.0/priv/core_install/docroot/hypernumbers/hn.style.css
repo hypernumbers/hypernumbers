@@ -58,6 +58,7 @@ body {
 }
 
 .hntext, iframe { 
+    min-height:62px;
     height:100%;
     width:100%;
     box-sizing:border-box;
@@ -65,7 +66,9 @@ body {
     -webkit-box-sizing:border-box;
 }
 .hninput {
+    font-size:inherit;
     width:100%;
+    padding:2px;
     box-sizing:border-box;
     -moz-box-sizing:border-box;
     -webkit-box-sizing:border-box;
