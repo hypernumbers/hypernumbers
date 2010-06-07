@@ -579,7 +579,7 @@ ipost(#refX{path = P} = Ref, _Qry,
 
     % Labels from the results page
     OldLabels = hn_db_api:read_attribute(Results#refX{obj={row, {1,1}}},
-                                         "rawvalue"),
+                                         "__rawvalue"),
     
     Values = [ {"submitted", dh_date:format("Y/m/d h:i:s")} |
                lists:reverse(lists:foldl(fun generate_labels/2, [], Array)) ],
