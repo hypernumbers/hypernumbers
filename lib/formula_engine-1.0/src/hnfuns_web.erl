@@ -8,6 +8,7 @@
           radio/1,
           select/1,
           include/1,
+          table/1,
           'google.map'/1 ]).
 
 -include("spriki.hrl").
@@ -68,8 +69,21 @@ radio_(Label, Options) ->
     lists:flatten("<div class='hninput' data-name='default' data-label='"
                   ++ Label ++ "' >" ++ Opts ++ "</div>").
 
+table_({range, Range}) ->
+
+    F = fun(blank) -> "";
+           (Else)  -> cast(Else, str)
+        end,
+    
+    Rows = [ ["<tr>", [ ["<td>", F(Cell),"</td>"] || Cell <- Row ],"</tr>"]
+              || Row <- Range ],
+    
+    "<table>" ++ lists:flatten(Rows) ++ "</table>".
+
 %% Type checking and default values
 %%
+table([Ref]) ->
+    table_(Ref).
 
 'google.map'([])          -> 'google.map'([0]);
 'google.map'([Long])      -> 'google.map'([Long, 0]);
