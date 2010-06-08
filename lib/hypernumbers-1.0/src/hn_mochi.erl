@@ -573,11 +573,12 @@ ipost(Ref=#refX{path = P} = Ref, _Qry,
 
     [{"results", ResultsPath}, {"values", {array, Array}}] = Vals,
 
-    %% Transaction = common,
-    %% Expected = hn_db_api:matching_forms(Ref, Transaction),
+    Transaction = common,
+    Expected = hn_db_api:matching_forms(Ref, Transaction),
     %% io:format("~nForms: ~p~n", [hn_db_api:matching_forms(Ref, Transaction)]),
     %% io:format("Vals: ~p~n", [Array]),
     %% io:format("Valid?: ~p~n", [hn_security:validate(Expected, Array)]),
+    true = hn_security:validate(Expected, Array),
    
     Results = Ref#refX{
                 path = string:tokens(hn_util:abs_path(P, ResultsPath), "/")

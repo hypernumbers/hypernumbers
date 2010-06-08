@@ -1577,9 +1577,7 @@ copy_attributes(SD, TD, [Key|T]) ->
 
 -spec matching_forms(#refX{}, common | string()) -> [#form{}].
 matching_forms(#refX{site=Site, path=Path}, Trans) -> 
-    MS = ets:fun2ms(fun(F=#form{id = {MP, MTrans, _}}) 
-                          when MP == Path, MTrans == Trans -> F
-                    end),
+    MS = [{#form{id = {Path, Trans, '_'}, _='_'}, [], ['$_']}],
     mnesia:select(trans(Site, form), MS).
 
 -spec attach_form(#refX{}, #form{}) -> ok. 
