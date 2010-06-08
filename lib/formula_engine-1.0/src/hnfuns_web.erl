@@ -30,7 +30,7 @@
 %%
 -spec input_([string()], string(), trans()) -> {rawform, #form{}, html()}.
 input_(Label) -> input_(Label, "", common).
-input_(Label, Default) -> input_(Label, Default, common).
+%input_(Label, Default) -> input_(Label, Default, common).
 input_([Label], _Default, Trans) ->
     Form = #form{id = {Trans, Label}, kind = input},
     Html = lists:flatten("<input type='input' class='hntext' " ++
@@ -40,7 +40,7 @@ input_([Label], _Default, Trans) ->
 
 -spec textarea_([string()], string(), trans()) -> {rawform, #form{}, html()}.
 textarea_(Label) -> textarea_(Label, "", common).
-textarea_(Label, Default) -> textarea_(Label, Default, common).
+%textarea_(Label, Default) -> textarea_(Label, Default, common).
 textarea_([Label], _Default, Trans) ->
     Form = #form{id = {Trans, Label}, kind = textarea},
     Html = lists:flatten("<textarea class='hntext' data-name='default' "
