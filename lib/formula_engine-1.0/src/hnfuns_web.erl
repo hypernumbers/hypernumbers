@@ -69,16 +69,25 @@ radio_(Label, Options) ->
     lists:flatten("<div class='hninput' data-name='default' data-label='"
                   ++ Label ++ "' >" ++ Opts ++ "</div>").
 
-table_({range, Range}) ->
+table_({range, [ THead | Range]}) ->
 
+    Id = "tbl_"++create_name(),
     F = fun(blank) -> "";
            (Else)  -> cast(Else, str)
         end,
+
+    Head = ["<thead><tr>",
+            [["<th>", F(X),"</th>"] || X <- THead ],
+            "</tr></thead>"],
     
     Rows = [ ["<tr>", [ ["<td>", F(Cell),"</td>"] || Cell <- Row ],"</tr>"]
               || Row <- Range ],
     
-    "<table>" ++ lists:flatten(Rows) ++ "</table>".
+    Script = ["<script type='text/javascript'>$(\"#", Id,
+              "\").tablesorter();</script>"],
+    
+    lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
+                   "</table>", Script]).
 
 %% Type checking and default values
 %%

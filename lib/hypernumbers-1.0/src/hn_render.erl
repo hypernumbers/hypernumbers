@@ -190,8 +190,11 @@ wrap_page(Content, TotalWidth, TotalHeight) ->
          <meta charset='utf-8' />
          <title>Hypernumbers</title>
          <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />	
-         <link rel='stylesheet' href='/hypernumbers/hn.style.css' />	
+         <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
+         <link rel='stylesheet' href='/tblsorter/style.css' />	
+
          <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
+         <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
          </head>
 
          <body data-view='webpage'>
