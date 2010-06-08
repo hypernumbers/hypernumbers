@@ -102,18 +102,23 @@ clean() ->
 start(Extra) ->
     
     ensure_config(),
+    Node = atol(conf_lname()),
+    PipeDir = "/tmp/" ++ Node ++ "/",
     
     filelib:ensure_dir("var/runerl_log/"),
+    filelib:ensure_dir(PipeDir),
     
-    Cmd = "run_erl -daemon /tmp/ var/runerl_log "
-        "\"erl -name "++atol(conf_lname())++" -setcookie "++atol(cookie())++" "
+    Cmd = "run_erl -daemon "++PipeDir ++ " var/runerl_log "
+        "\"erl -name "++Node++" -setcookie "++atol(cookie())++" "
         "-config var/sys.config -boot ebin/hypernumbers "
         "-env ERL_MAX_ETS_TABLES 18000 "
         "+K true +A8 "
         ++ ssl() ++ parse_extra_args(Extra)++"\"",
 
     case os:cmd(Cmd) of
-        []   -> ok;
+        []   -> 
+            ok,
+            make_shell(Node);
         Else ->
             io:format("Hypernumbers failed to boot:~n~s~n",[Else]),
             ok
@@ -121,6 +126,11 @@ start(Extra) ->
 
 stop(Node) ->
     ok = rpc:call(lname(Node), init, stop, []).
+
+make_shell(NodeName) ->
+    Shell = io_lib:format("#!/bin/bash~nto_erl /tmp/~s/~n", [NodeName]),
+    file:write_file("shell", Shell),
+    os:cmd("chmod +x shell").
 
 call([Fun]) ->
     call([lname([]), Fun]);
