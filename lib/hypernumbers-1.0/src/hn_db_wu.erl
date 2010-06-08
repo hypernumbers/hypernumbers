@@ -135,15 +135,38 @@ read_styles_IMPORT(#refX{site=Site}) ->
 -spec get_last_row(#refX{}) -> integer(). 
 get_last_row(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    lists:max([0 | [Y || #local_obj{obj={cell,{_,Y}}} 
-                             <- read_objs(SelX, inside)]]).
+    Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end, 
+                       [{Y, LO} || LO=#local_obj{obj={cell,{_,Y}}}
+                                       <- read_objs(SelX, inside)]),
+    largest_content(Desc, S).
 
 -spec get_last_col(#refX{}) -> integer(). 
 get_last_col(#refX{site=S, path=P}) -> 
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    lists:max([0 | [X || #local_obj{obj={cell,{X,_}}} 
-                             <- read_objs(SelX, inside)]]).
+    Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end, 
+                       [{X, LO} || LO=#local_obj{obj={cell,{X,_}}} 
+                                       <- read_objs(SelX, inside)]),
+    largest_content(Desc, S).
 
+%% Working from the bottom of the form to the top, find the first
+%% local object which has content, and return its corrosponding
+%% ROW/COL
+-spec largest_content([{integer(), #local_obj{}}], string()) -> integer(). 
+largest_content([], _S) -> 0;
+largest_content([{K, LO} | T], S) ->
+    case has_content(S, LO) of
+        true -> K; 
+        false -> largest_content(T, S)
+    end.
+
+-spec has_content(string(), #local_obj{}) -> boolean().
+has_content(S, LO) ->
+    case extract_field(read_attrs(S, [LO], read), "formula", []) of
+        [] -> false; 
+        [{_, []}] -> false; 
+        _ -> true
+    end.
+    
 %% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> ok
 %% Key = atom()
 %% Value = term()
@@ -195,8 +218,9 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
               end,
     process_attrs(Rest, Ref, AReq, Attrs2).
 
-expand_to_rows_or_cols(#refX{obj={_, {I, J}}}=Ref) ->
-    expand_to_2(Ref, I, J, []).
+expand_to_rows_or_cols(#refX{obj={RC, {I, J}}}=Ref) when RC == row; RC == column ->
+    expand_to_2(Ref, I, J, []);
+expand_to_rows_or_cols(_) -> [].
 
 expand_to_2(#refX{obj={Type, _}}=Ref, I, I, Acc) ->
     [Ref#refX{obj={Type, {I, I}}} | Acc];
