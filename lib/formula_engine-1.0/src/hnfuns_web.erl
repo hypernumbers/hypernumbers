@@ -8,6 +8,7 @@
           radio/1,
           select/1,
           include/1,
+          table/1,
           'google.map'/1 ]).
 
 -include("spriki.hrl").
@@ -94,8 +95,30 @@ radio_(Label, Options) ->
                              "</div>"),
     {rawform, Form, Html}.
 
+table_({range, [ THead | Range]}) ->
+
+    Id = "tbl_"++create_name(),
+    F = fun(blank) -> "";
+           (Else)  -> cast(Else, str)
+        end,
+
+    Head = ["<thead><tr>",
+            [["<th>", F(X),"</th>"] || X <- THead ],
+            "</tr></thead>"],
+    
+    Rows = [ ["<tr>", [ ["<td>", F(Cell),"</td>"] || Cell <- Row ],"</tr>"]
+              || Row <- Range ],
+    
+    Script = ["<script type='text/javascript'>$(\"#", Id,
+              "\").tablesorter();</script>"],
+    
+    lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
+                   "</table>", Script]).
+
 %% Type checking and default values
 %%
+table([Ref]) ->
+    table_(Ref).
 
 'google.map'([])          -> 'google.map'([0]);
 'google.map'([Long])      -> 'google.map'([Long, 0]);
