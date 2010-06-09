@@ -32,17 +32,39 @@
                  "go <a href=\"http://example.com\">here</a>"}]).
 
 run() ->
+
+    % Replace with call to hypernumbers.com/dev/funs/
+    Path = [code:priv_dir(hypernumbers), "/", "funs.json"],
+    {ok, Bin} = file:read_file(Path),
+
+    {struct, Json} = mochijson:decode(Bin),
+    {"cell", {struct, Rows}} = lists:keyfind("cell", 1, Json),
+    
+    Val = fun(I, Attr) ->
+                  {I, {struct, NAttr1}} = lists:keyfind(I, 1, Attr),
+                  {"value", Val} = lists:keyfind("value", 1, NAttr1),
+                  Val
+          end,
+    
+    NJson = [ begin
+                  {_Row, {struct, Row}} = Cell,                  
+                  [Val("1", Row), Val("2", Row), Val("3", Row)]
+              end || Cell <- Rows ],
+
+    write(NJson, "en_gb"),
+    
+    ok.
     %% first do the English Fns
-    Json = [json_util:jsonify(X) || X <- ?WORKING_FNS],
-    Json2 = mochijson:encode({array, Json}),
-    write(Json2, "en_gb"),
-    %% now do Johnny Foreigner
-    do_jf("fr", "french",     ?french_fns),
-    do_jf("de", "german",     ?german_fns),
-    do_jf("it", "italian",    ?italian_fns),
-    do_jf("pt", "portuguese", ?portuguese_fns),
-    do_jf("es", "spanish",    ?spanish_fns),
-    do_jf("ru", "russian",    ?russian_fns).
+    %% Json = [json_util:jsonify(X) || X <- ?WORKING_FNS],
+    %% Json2 = mochijson:encode({array, Json}),
+    %% write(Json2, "en_gb"),
+    %% %% now do Johnny Foreigner
+    %% do_jf("fr", "french",     ?french_fns),
+    %% do_jf("de", "german",     ?german_fns),
+    %% do_jf("it", "italian",    ?italian_fns),
+    %% do_jf("pt", "portuguese", ?portuguese_fns),
+    %% do_jf("es", "spanish",    ?spanish_fns),
+    %% do_jf("ru", "russian",    ?russian_fns).
 
 
 do_jf(Code, _Lang, Fns) ->
@@ -74,10 +96,10 @@ do_jf(Code, _Lang, Fns) ->
       Code).
 
 
-write(Str, Lang) ->
-    File = "lib/hypernumbers-1.0/priv/docroot/hypernumbers/"++
-        "fns_" ++ Lang ++ ".json",
-    {ok, Id} = file:open(File, [write]),
-    io:fwrite(Id, "~s~n", [Str]),
-    file:close(Id).
+write(Json, Lang) ->
+
+    File = [code:priv_dir(hypernumbers), "/core_install/docroot/hypernumbers/",
+            "funs_", Lang, ".json"],
     
+    file:write_file(lists:flatten(File), io_lib:format("~p~n",[Json])).
+        

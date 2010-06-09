@@ -904,8 +904,9 @@ a.toolbar-item {
 }
 #selectedfun { 
     float      : right;
-    width      : 180px;
+    width      : 175px;
     margin-top : 15px;
+    margin-right:5px;
 }
 #selectedfun p { 
     margin : 0px 0px 10px 0px; 
