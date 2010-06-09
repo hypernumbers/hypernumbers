@@ -409,7 +409,7 @@ clear_cells(Ref, all) ->
     do_clear_cells(Ref, ["style" | content_attrs()]);
 clear_cells(Ref, style) ->
     do_clear_cells(Ref, ["style"]);
-clear_cells(Ref, {attrs, DelAttrs}) ->
+clear_cells(Ref, {attributes, DelAttrs}) ->
     do_clear_cells(Ref, DelAttrs).    
 
 do_clear_cells(Ref, DelAttrs) ->
