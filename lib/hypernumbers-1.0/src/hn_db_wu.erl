@@ -33,6 +33,7 @@
 -export([
          write_attrs/2, write_attrs/3,
          read_styles/2,
+         matching_forms/2,
          local_idx_to_refX/2,
          read_ref/2, read_ref/3, read_ref_field/3,
          clear_cells/1, clear_cells/2,
@@ -275,7 +276,8 @@ expunge_refs(S, Refs) ->
     ObjT = trans(S, local_obj),
     [begin
          mnesia:delete(ItemT, Idx, write),
-         mnesia:delete_object(ObjT, LO, write)
+         mnesia:delete_object(ObjT, LO, write),
+         unattach_form(Ref, Idx)
      end || Ref <- Refs,
             #local_obj{idx=Idx}=LO <- read_objs(Ref, direct)],
     ok.
@@ -332,7 +334,7 @@ post_process_format(Raw, Attrs) ->
                                 A when is_atom(A) -> atom_to_list(A);
                                 I when is_integer(I) -> integer_to_list(I);
                                 Fl when is_float(Fl) -> float_to_list(Fl);
-                                _                -> Val1
+                                _ -> Val1
                             end,
                     add_attributes(Attrs, [{"value", Val2},
                                            {"overwrite-color", atom_to_list(Color)}]);
@@ -401,40 +403,42 @@ read_styles(#refX{site = Site}, Idxs) ->
 clear_cells(RefX) -> clear_cells(RefX, contents).
 
 -spec clear_cells(#refX{}, all | style | contents) -> ok. 
-clear_cells(Ref, all) ->
-    Op = fun(_) -> orddict:new() end,
-    [begin 
-         ok = apply_to_attrs(X, Op),
-         set_local_relations(X, [])
-     end || X <- expand_ref(Ref)], 
-    ok;
-clear_cells(Ref, style) ->
-    Op = fun(Attrs) -> orddict:erase("style", Attrs) end,
-    [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], ok;
 clear_cells(Ref, contents) ->
-    Op = fun(Attrs) ->
-                 del_attributes(Attrs, ["formula",
-                                        "value",             
-                                        "overwrite-color",
-                                        "parents",
-                                        "__rawvalue",          
-                                        "__ast",             
-                                        "__recompile",       
-                                        "__shared",          
-                                        "__area",            
-                                        "__dependency-tree"])
-         end,
-    [begin 
-         ok = apply_to_attrs(X, Op),
-         set_local_relations(X, [])
-     end || X <- expand_ref(Ref)], 
-    ok;
+    do_clear_cells(Ref, content_attrs());
+clear_cells(Ref, all) ->
+    do_clear_cells(Ref, ["style" | content_attrs()]);
+clear_cells(Ref, style) ->
+    do_clear_cells(Ref, ["style"]);
 clear_cells(Ref, {attributes, DelAttrs}) ->
-    Op = fun(Attrs) ->
-                 del_attributes(Attrs, DelAttrs)
+    do_clear_cells(Ref, DelAttrs).    
+
+do_clear_cells(Ref, DelAttrs) ->
+    Op = fun(RX) ->
+                 fun(Attrs) ->
+                         case lists:keymember("formula", 1, Attrs) of
+                             true -> 
+                                 set_local_relations(RX, []),
+                                 unattach_form(RX, read_local_item_index(RX));
+                             false -> ok
+                         end,
+                         del_attributes(Attrs, DelAttrs)
+                 end
          end,
-    [ok = apply_to_attrs(X, Op) || X <- expand_ref(Ref)], 
+    [ok = apply_to_attrs(X, Op(X)) || X <- expand_ref(Ref)], 
     ok.
+
+content_attrs() ->
+    ["formula",
+     "value",             
+     "overwrite-color",
+     "parents",
+     "__rawvalue",          
+     "__ast",             
+     "__recompile",       
+     "__shared",          
+     "__area",            
+     "__dependency-tree"].
+
 
 %% @doc takes a reference to a
 %% <ul>
@@ -1487,12 +1491,15 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             write_error_attrs(Attrs, Formula, error_in_formula);
         {error, Error} ->
             write_error_attrs(Attrs, Formula, Error);        
-        {ok, {Pcode, Res={form, _}, Deptree, Parents, Recompile}} ->
-            %io:format("Got a form~n", []),
-            write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Deptree, Parents, Recompile);
+        {ok, {Pcode, {rawform, RawF, Html}, Deptree, Parents, Recompile}} ->
+            {Trans, Label} = RawF#form.id,
+            Form = RawF#form{id={Ref#refX.path, Trans, Label}}, 
+            ok = attach_form(Ref, Form),
+            write_formula_attrs(Attrs, Ref, Formula, Pcode, Html, 
+                                Deptree, Parents, Recompile);
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
-            %io:format("Res is ~p~n", [Res]),
-            write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Deptree, Parents, Recompile)
+            write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, 
+                                Deptree, Parents, Recompile)
     end.
 
 write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Deptree, Parents, Recompile) ->
@@ -1567,6 +1574,22 @@ copy_attributes(SD, TD, [Key|T]) ->
         {ok, V} -> copy_attributes(SD, orddict:store(Key, V, TD), T);
         _ -> copy_attributes(SD, TD, T)
     end.
+
+-spec matching_forms(#refX{}, common | string()) -> [#form{}].
+matching_forms(#refX{site=Site, path=Path}, Trans) -> 
+    MS = [{#form{id = {Path, Trans, '_'}, _='_'}, [], ['$_']}],
+    mnesia:select(trans(Site, form), MS).
+
+-spec attach_form(#refX{}, #form{}) -> ok. 
+attach_form(Ref=#refX{site=Site}, Form) ->
+    Tbl = trans(Site, form),
+    Idx = get_local_item_index(Ref),
+    mnesia:write(Tbl, Form#form{key = Idx}, write).
+
+-spec unattach_form(#refX{}, cellidx()) -> ok. 
+unattach_form(#refX{site=Site}, Key) ->
+    Tbl = trans(Site, form),
+    mnesia:delete(Tbl, Key, write).
                  
 %% @doc Convert Parents and DependencyTree tuples as returned by 
 %% Muin into SimpleXML.

@@ -104,6 +104,7 @@
          read_styles/2,
          read_page_structure/1,
          read_pages/1,
+         matching_forms/2,
          copy_n_paste/4,
          drag_n_drop/3,
          cut_n_paste/3,
@@ -306,6 +307,12 @@ read_page_structure(RefX) when is_record(RefX, refX) ->
 
 read_pages(RefX) when is_record(RefX, refX) ->
     mnesia:activity(transaction, fun hn_db_wu:read_pages/1, [RefX]).    
+
+-spec matching_forms(#refX{}, common | string()) -> [#form{}]. 
+matching_forms(RefX, Transaction) ->
+    mnesia:activity(transaction, 
+                    fun hn_db_wu:matching_forms/2, 
+                    [RefX, Transaction]).
 
 -spec handle_dirty_cell(string(), cellidx(), nil | uid()) -> ok. 
 handle_dirty_cell(Site, Idx, Ar) ->

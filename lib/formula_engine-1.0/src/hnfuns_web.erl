@@ -22,21 +22,30 @@
 -define(default_str_rules, [first_array, cast_numbers, cast_bools,
                             cast_blanks, cast_dates ]).
 
+-type trans() :: common | string().
 -type html() :: string().
 -type zoom() :: 1..20.
 
 %% Safe functions (after typecheck)
 %%
+-spec input_([string()], string(), trans()) -> {rawform, #form{}, html()}.
+input_(Label) -> input_(Label, "", common).
+%input_(Label, Default) -> input_(Label, Default, common).
+input_([Label], _Default, Trans) ->
+    Form = #form{id = {Trans, Label}, kind = input},
+    Html = lists:flatten("<input type='input' class='hntext' " ++
+                             "data-name='default' " ++
+                             "data-label='"++Label++"' />"),
+    {rawform, Form, Html}.
 
--spec input_(string()) -> html().
-input_(Label) ->
-    lists:flatten("<input type='input' class='hninput' data-name='default' "
-                  ++ "data-label='"++Label++"' />").
-
--spec textarea_(string()) -> html().
-textarea_(Label) ->
-    lists:flatten("<textarea class='hntext' data-name='default' "
-                  ++ "data-label='"++Label++"'></textarea>").
+-spec textarea_([string()], string(), trans()) -> {rawform, #form{}, html()}.
+textarea_(Label) -> textarea_(Label, "", common).
+%textarea_(Label, Default) -> textarea_(Label, Default, common).
+textarea_([Label], _Default, Trans) ->
+    Form = #form{id = {Trans, Label}, kind = textarea},
+    Html = lists:flatten("<textarea class='hntext' data-name='default' "
+                         ++ "data-label='"++Label++"'></textarea>"),
+    {rawform, Form, Html}.
 
 -spec 'google.map_'(number(), number(), zoom()) -> html().
 'google.map_'(Lat, Long, Zoom) ->
@@ -45,29 +54,46 @@ textarea_(Label) ->
         ++ "/?ie=UTF8&amp;ll=" ++ cast(Lat, str) ++ "," ++ cast(Long, str)
         ++ "&amp;z=" ++ cast(Zoom, str) ++ "&amp;output=embed'></iframe>".
 
--spec button_(string(), string(), string()) -> html().
+-spec button_(string(), string(), string()) -> {rawform, #form{}, html()}.
 button_(Value, Response, ResultsPath) ->
+    Trans = common,
     Origin = hn_util:list_to_path(muin:context_setting(path)),
-    lists:flatten("<input type='submit' class='hninput' value='"++Value++"'"
+    Form = #form{id = {Trans, "_"}, 
+                 kind = button, 
+                 attrs = [{"dest", Origin}]},
+    Html = lists:flatten("<input type='submit' class='hninput' value='"++Value++"'"
                   ++ " data-results='" ++ ResultsPath ++ "'"
                   ++ " data-origin='" ++ Origin ++ "'"
                   ++ " data-form-name='default' data-response='"
-                  ++ Response ++ "' \">").
+                         ++ Response ++ "' \">"),
+    {rawform, Form, Html}.
 
--spec select_(string(), [string()]) -> html().
+-spec select_(string(), [string()]) -> {rawform, #form{}, html()}.
 select_(Label, Options) ->
+    Trans = common,
+    Form = #form{id = {Trans, Label},
+                 kind = select,
+                 restrictions = Options},
     Opts = [ "<option>" ++ Option ++ "</option>" || Option <- Options ],
-    lists:flatten("<select class='hninput' data-name='default' data-label='"
-                  ++ Label ++ "' >" ++ Opts ++ "</select>").
+    Html = lists:flatten("<select class='hninput' data-name='default' "++
+                             "data-label='" ++ Label ++ "' >" ++ Opts ++ 
+                             "</select>"),
+    {rawform, Form, Html}.
 
--spec radio_(string(), [string()]) -> html().
+-spec radio_(string(), [string()]) -> {rawform, #form{}, html()}.
 radio_(Label, Options) ->
+    Trans = common,
     Name = "tmp_" ++ create_name(),
+    Form = #form{id = {Trans, Label},
+                 kind = radio,
+                 restrictions = Options},
     Opts = [ "<div class='radio'><label><input type='radio' value='" ++
              Opt ++ "' name='" ++ Name ++ "'/>" ++ Opt ++ "</label></div>"
              || Opt <- Options ],
-    lists:flatten("<div class='hninput' data-name='default' data-label='"
-                  ++ Label ++ "' >" ++ Opts ++ "</div>").
+    Html = lists:flatten("<div class='hninput' data-name='default' "++
+                             "data-label='" ++ Label ++ "' >" ++ Opts ++ 
+                             "</div>"),
+    {rawform, Form, Html}.
 
 table_({range, [ THead | Range]}) ->
 
