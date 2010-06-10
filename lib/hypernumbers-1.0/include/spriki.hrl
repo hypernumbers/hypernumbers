@@ -47,7 +47,8 @@
 
 -record(dirty_queue,
         {id = now(),
-         queue}).
+         dirty = [],
+         auth_req}).
 
 -record(group,
         {name = [],

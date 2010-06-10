@@ -314,20 +314,30 @@ matching_forms(RefX, Transaction) ->
                     fun hn_db_wu:matching_forms/2, 
                     [RefX, Transaction]).
 
--spec handle_dirty_cell(string(), cellidx(), nil | uid()) -> ok. 
+-spec handle_dirty_cell(string(), cellidx(), nil | uid()) -> boolean().
 handle_dirty_cell(Site, Idx, Ar) ->
     ok = init_front_end_notify(),  
     Fun = fun() ->
-                Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
-                case hn_db_wu:read_ref_field(Cell, "formula", write) of
-                    [{Cell, F}] -> 
-                        hn_db_wu:write_attrs(Cell, [{"formula", F}], Ar);
+                  Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
+                  Attrs = case hn_db_wu:read_ref(Cell, inside, write) of
+                              [{_, A}] -> A;
+                              _ -> orddict:new()
+                          end,
+                  case orddict:find("formula", Attrs) of
+                      {ok, F} ->
+                          Attrs2 = hn_db_wu:write_attrs(Cell, 
+                                                        [{"formula", F}], 
+                                                        Ar),
+                          RV1 = orddict:find("__rawvalue", Attrs),
+                          RV2 = orddict:find("__rawvalue", Attrs2),
+                          RV1 == RV2;
                     _ ->
-                        ok
+                          false
                 end
         end,
-    ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("handle dirty").
+    Fixed = mnesia:activity(transaction, Fun),
+    ok = tell_front_end("handle dirty"),
+    Fixed.
 
 %% @spec write_attributes(RefX :: #refX{}, List) -> ok  
 %% List = [{Key, Value}]
@@ -394,7 +404,7 @@ append_row(List, PAr, VAr) when is_list(List) ->
                             Obj = {cell, {X, Row}},
                             RefX2 = #refX{site = S, path = P, obj = Obj},
                             hn_db_wu:write_attrs(RefX2, [{"formula", Val}], PAr),
-                            hn_db_wu:mark_children_dirty(RefX2, VAr)
+                            mark_children_dirty(RefX2, VAr)
                     end,
                 [F(X,V) || {#refX{site=S1, path=P1, obj={column,{X,X}}}, V} 
                                <- List, S == S1, P == P1]
@@ -476,7 +486,7 @@ delete(#refX{obj = {page, _}} = RefX, Ar) ->
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
                    Dirty = hn_db_wu:delete_cells(RefX),
-                   hn_db_wu:mark_these_dirty(Dirty, Ar)
+                   mark_these_dirty(Dirty, Ar)
            end,
     mnesia:activity(transaction, Fun1),
     ok = tell_front_end("delete").
@@ -518,8 +528,8 @@ move_tr(RefX, Type, Disp, Ar) ->
     % if this is a delete - we need to actually delete the cells
     ReWr = do_delete(Type, RefX),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
-    hn_db_wu:mark_these_dirty(ReWr, Ar),
-    hn_db_wu:mark_these_dirty(MoreDirty, Ar).        
+    mark_these_dirty(ReWr, Ar),
+    mark_these_dirty(MoreDirty, Ar).        
 
 do_delete(insert, _RefX) ->
     [];
@@ -555,7 +565,7 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
         fun() ->
                 ok = init_front_end_notify(),
                 hn_db_wu:clear_cells(RefX, Type),
-                hn_db_wu:mark_children_dirty(RefX, Ar)
+                mark_children_dirty(RefX, Ar)
         end,
     mnesia:activity(transaction, Fun),
     ok = tell_front_end("clear").
@@ -726,7 +736,7 @@ write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
 write_attributes1(RefX, List, PAr, VAr) ->
     hn_db_wu:write_attrs(RefX, List, PAr),
     case lists:keymember("formula", 1, List) of
-       true  -> ok = hn_db_wu:mark_children_dirty(RefX, VAr);
+       true  -> ok = mark_children_dirty(RefX, VAr);
        false -> ok
     end.
 
@@ -739,10 +749,30 @@ copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
     case auth_srv:get_any_view(Site, Path, Ar) of
         {view, _} ->
             hn_db_wu:copy_cell(From, To, Incr, What),
-            hn_db_wu:mark_children_dirty(To, Ar);
+            mark_children_dirty(To, Ar);
         _ ->
             throw(auth_error)
     end.
+
+-spec mark_these_dirty([#refX{}], nil | uid()) -> ok.
+mark_these_dirty([], _) -> ok;
+mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
+    F = fun(C) -> case hn_db_wu:read_local_item_index(C) of
+                      false -> []; 
+                      Idx   -> Idx
+                  end
+        end,
+    Idxs = lists:flatten([F(C) || R <- Refs, C <- hn_db_wu:expand_ref(R)]),
+    Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
+    dirty_sup:enqueue_work(Site, dirty_queue, Entry),
+    ok.
+
+-spec mark_children_dirty(#refX{}, nil | uid()) -> ok.
+mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
+    Children = hn_db_wu:get_local_children_idxs(RefX),
+    Entry = #dirty_queue{dirty = Children, auth_req = AReq},
+    dirty_sup:enqueue_work(Site, dirty_queue, Entry),
+    ok.
 
 init_front_end_notify() ->
     _Return = put('front_end_notify', []),

@@ -35,14 +35,15 @@
          read_styles/2,
          matching_forms/2,
          local_idx_to_refX/2,
+         read_local_item_index/1,
          read_ref/2, read_ref/3, read_ref_field/3,
+         expand_ref/1,
          clear_cells/1, clear_cells/2,
          delete_cells/1,
          shift_cells/4,
          get_local_children/1,
+         get_local_children_idxs/1,
          copy_cell/4,
-         mark_children_dirty/2,
-         mark_these_dirty/2,
          read_page_structure/1,
          read_pages/1,
          get_cell_for_muin/1,
@@ -191,10 +192,10 @@ has_content(S, LO) ->
 %% @end
 %% This clause deals with a formula
 
--spec write_attrs(#refX{}, [{string(), term()}]) -> ok. 
+-spec write_attrs(#refX{}, [{string(), term()}]) -> ?dict.
 write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
 
--spec write_attrs(#refX{}, [{string(), term()}], auth_req()) -> ok.
+-spec write_attrs(#refX{}, [{string(), term()}], auth_req()) -> ?dict.
 write_attrs(Ref, NewAs, AReq) ->
     Op = fun(Attrs) -> process_attrs(NewAs, Ref, AReq, Attrs) end,
     apply_to_attrs(Ref, Op).
@@ -286,7 +287,7 @@ expunge_refs(S, Refs) ->
 %% behaviour of the modification is determined by the passed in 'Op'
 %% function. Upon completion of 'Op' the post_process function is
 %% applied, which sets formats and styles as necessary.
--spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ok.
+-spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ?dict.
 apply_to_attrs(#refX{site=Site}=Ref, Op) ->
     Table = trans(Site, item), 
     Idx = get_local_item_index(Ref),
@@ -298,7 +299,8 @@ apply_to_attrs(#refX{site=Site}=Ref, Op) ->
     Attrs3 = post_process(Ref, Attrs2),
     Item = #item{idx = Idx, attrs = Attrs3},
     tell_front_end_change(Ref, Attrs3),
-    mnesia:write(Table, Item, write).
+    mnesia:write(Table, Item, write),
+    Attrs3.
 
 %% Last chance to apply any default styles and formats. 
 -spec post_process(#refX{}, ?dict) -> ?dict. 
@@ -424,7 +426,7 @@ do_clear_cells(Ref, DelAttrs) ->
                          del_attributes(Attrs, DelAttrs)
                  end
          end,
-    [ok = apply_to_attrs(X, Op(X)) || X <- expand_ref(Ref)], 
+    [apply_to_attrs(X, Op(X)) || X <- expand_ref(Ref)], 
     ok.
 
 content_attrs() ->
@@ -436,7 +438,8 @@ content_attrs() ->
      "__ast",             
      "__recompile",       
      "__shared",          
-     "__area",            
+     "__area",           
+     "__default-align",
      "__dependency-tree"].
 
 
@@ -571,63 +574,6 @@ copy_cell(#refX{obj = {cell, {FX,FY}}} = From,
     Attrs2 = copy_attributes(Attrs, orddict:new(), ["merge", "style"]),
     Attrs3 = orddict:store("formula", Formula2, Attrs2),
     write_attrs(To, Attrs3).
-
--spec mark_these_dirty([#refX{}], nil | uid()) -> ok.
-mark_these_dirty([], _) -> ok;
-mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
-    F = fun(C) -> case read_local_item_index(C) of
-                      false -> []; 
-                      Idx   -> Idx
-                  end
-        end,
-    Tbl = trans(Site, relation),
-    Idxs = lists:flatten([F(C) || R <- Refs, C <- expand_ref(R)]),
-    Q = insert_work_queue(Idxs, Tbl, 1, hn_workq:new(AReq)),
-    Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
-    mnesia:write(trans(Site, dirty_queue), Entry, write).
-
--spec mark_children_dirty(#refX{}, nil | uid()) -> ok.
-mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
-    Tbl = trans(Site, relation),
-    Children = get_local_children_idxs(RefX),
-    Q = insert_work_queue(Children, Tbl, 1, hn_workq:new(AReq)),
-    case hn_workq:is_empty(Q) of
-        true  -> ok;
-        false -> Entry = #dirty_queue{id = hn_workq:id(Q), queue = Q},
-                 mnesia:write(trans(Site, dirty_queue), Entry, write)
-    end.
-
-%% Recursively walk child relation, adding entries into the work
-%% queue.  We maintain an invariant that children must have a higher
-%% priority than their parents, forcing them to be calculated after
-%% their parent(s). This algorithm could naively visit the same
-%% children multiple times, if there is no unique path from N1 ~~>
-%% N2. An attempt is made to stop walking a bad path asap.
-%% see:needs_elem(...).
--spec insert_work_queue([cellidx()], 
-                        atom(), 
-                        integer(), 
-                        hn_workq:work_queue())
-                       -> hn_workq:work_queue(). 
-insert_work_queue([], _Tbl, _Priority, Q) ->
-    Q;
-insert_work_queue([Idx|Rest], Tbl, Priority, Q) ->
-    Qnext = 
-        case mnesia:read(Tbl, Idx) of
-            [R] -> 
-                case hn_workq:needs_elem(Idx, Priority, Q) of
-                    true ->
-                        Children = ordsets:to_list(R#relation.children),
-                        Q2 = insert_work_queue(Children, 
-                                               Tbl, 
-                                               Priority + 1,
-                                               Q),
-                        hn_workq:add(Idx, Priority, Q2);
-                    false -> Q
-                end;
-            _ -> Q
-        end,
-    insert_work_queue(Rest, Tbl, Priority, Qnext).
 
 %% @spec read_page_structure(Ref) -> dh_tree()
 %% @doc read the populated pages under the specified path
