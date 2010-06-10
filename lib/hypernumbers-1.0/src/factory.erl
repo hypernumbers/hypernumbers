@@ -4,7 +4,7 @@
 
 %% API
 -export([provision_site/3, provision_site/4,
-         create_invite/3
+         create_invite/3, create_invite/4
         ]).
 
 -include("auth.hrl").
