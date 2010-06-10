@@ -41,14 +41,21 @@ provision_site_(Zone, Email, Type, SuggestedUid) ->
             {ok, NE, Site, Node, Uid, Name}
     end.
 
+%% Used when the node name can be recovered from hns. See
+%% create_invite/4
 -spec create_invite(string(), string(), string()) -> ok.
 create_invite(Site, Email, Group) ->
+    {Zone, SName} = extract_zone(Site),
+    {ok, Node} = hns:lookup_node(Zone, SName),
+    create_invite(Node, Site, Email, Group).
+
+%% Create invite when the node 
+-spec create_invite(node(), string(), string(), string()) -> ok.
+create_invite(Node, Site, Email, Group) ->    
     case valid_email(Email) of
         false ->
             {error, invalid_email};
         true ->
-            {Zone, SName} = extract_zone(Site),
-            {ok, Node} = hns:lookup_node(Zone, SName),
             {ok, NE, Uid} = passport:get_or_create_user(Email),
             UName = extract_name_from_email(Email),
             ok = rpc:call(Node, hn_groups, add_user,
@@ -61,8 +68,6 @@ create_invite(Site, Email, Group) ->
 %% provision_site(_Zone, _Email0, _SiteType, _CustomHost) ->
 %%     throw(undefined),
 %%     ok.
-
-
 
 -spec valid_email(string()) -> boolean(). 
 valid_email(Email) ->
