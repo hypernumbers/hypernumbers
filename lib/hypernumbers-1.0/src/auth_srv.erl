@@ -4,7 +4,6 @@
 
 -behaviour(gen_server).
 
--include("auth.hrl").
 -include("spriki.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
@@ -39,6 +38,10 @@
 -define(KEY, "auth_tree").
 -define(SPREADSHEET, "_global/spreadsheet").
 -define(EMPTY_TREE, {0,nil}).
+
+-type uid() :: string().
+-type auth_req() :: nil | uid().
+-type auth_spec() :: [everyone | string()].
 
 -record(control, {champion = [] :: string(),
                   challenger = [] :: string(),

@@ -84,7 +84,6 @@
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
--include("auth.hrl").
 
 -include_lib("stdlib/include/ms_transform.hrl").
 
@@ -195,12 +194,12 @@ has_content(S, LO) ->
 -spec write_attrs(#refX{}, [{string(), term()}]) -> ?dict.
 write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
 
--spec write_attrs(#refX{}, [{string(), term()}], auth_req()) -> ?dict.
+-spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_req()) -> ?dict.
 write_attrs(Ref, NewAs, AReq) ->
     Op = fun(Attrs) -> process_attrs(NewAs, Ref, AReq, Attrs) end,
     apply_to_attrs(Ref, Op).
 
--spec process_attrs([{string(), term()}], #refX{}, auth_req(), ?dict) 
+-spec process_attrs([{string(), term()}], #refX{}, auth_srv:auth_req(), ?dict) 
                    -> ?dict.
 process_attrs([], _Ref, _AReq, Attrs) ->
     Attrs;
@@ -311,6 +310,7 @@ post_process(Ref, Attrs) ->
         _         -> Attrs2
     end.                       
     
+-spec post_process_styles(#refX{}, ?dict) -> ?dict.
 post_process_styles(Ref, Attrs) -> 
     case orddict:find("style", Attrs) of
         {ok, _} -> Attrs;
@@ -365,7 +365,7 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             Fun = fun({ChildRef, F1}, Acc) ->
                           {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
                           Op = fun(Attrs) -> orddict:store("formula", F2, Attrs) end,
-                          ok = apply_to_attrs(ChildRef, Op),
+                          apply_to_attrs(ChildRef, Op),
                           case St of
                               clean -> Acc;
                               dirty -> [ChildRef | Acc]
@@ -393,7 +393,7 @@ shift_obj(#local_obj{obj = {row, {Y1, Y2}}}=LO, _XOff, YOff) ->
     LO#local_obj{obj = O2};
 shift_obj(LO, _, _) -> LO. 
 
--spec read_styles(#refX{}, [integer()]) -> #style{}. 
+-spec read_styles(#refX{}, [cellidx()]) -> [#style{}].
 read_styles(#refX{site = Site}, Idxs) ->
     Table = trans(Site, style),
     [S || I <- Idxs,
@@ -408,9 +408,9 @@ clear_cells(RefX) -> clear_cells(RefX, contents).
 clear_cells(Ref, contents) ->
     do_clear_cells(Ref, content_attrs());
 clear_cells(Ref, all) ->
-    do_clear_cells(Ref, ["style" | content_attrs()]);
+    do_clear_cells(Ref, ["style", "merge" | content_attrs()]);
 clear_cells(Ref, style) ->
-    do_clear_cells(Ref, ["style"]);
+    do_clear_cells(Ref, ["style", "merge"]);
 clear_cells(Ref, {attributes, DelAttrs}) ->
     do_clear_cells(Ref, DelAttrs).    
 
@@ -489,7 +489,7 @@ delete_cells(#refX{site = S} = DelX) ->
             LocalChildren3
     end.
 
--spec deref_formula(#refX{}, #refX{}) -> ok. 
+-spec deref_formula(#refX{}, #refX{}) -> ok.
 deref_formula(Ref, DelRef) ->
     Op = fun(Attrs) -> 
                  case orddict:find("formula", Attrs) of
@@ -502,7 +502,8 @@ deref_formula(Ref, DelRef) ->
                          Attrs
                  end
          end,
-    apply_to_attrs(Ref, Op).
+    apply_to_attrs(Ref, Op),
+    ok.
 
 %% %% @doc copys cells from a reference to a reference
 -spec copy_cell(#refX{}, #refX{}, 
@@ -519,7 +520,8 @@ copy_cell(From=#refX{obj={cell, _}},
                                                             "formula",
                                                             "__rawvalue"]) 
          end,
-    apply_to_attrs(To, Op);
+    apply_to_attrs(To, Op),
+    ok;
 copy_cell(From=#refX{obj={cell, _}}, 
           To=#refX{obj={cell, _}},
           _, style) ->
@@ -528,7 +530,8 @@ copy_cell(From=#refX{obj={cell, _}},
                       _         -> []
                   end,
     Op = fun(Attrs) -> copy_attributes(SourceAttrs, Attrs, ["style"]) end,
-    apply_to_attrs(To, Op);
+    apply_to_attrs(To, Op),
+    ok;
 copy_cell(#refX{obj = {cell, {FX,FY}}} = From, 
           #refX{obj = {cell, {TX,TY}}} = To, 
           Incr, all) ->
@@ -573,7 +576,8 @@ copy_cell(#refX{obj = {cell, {FX,FY}}} = From,
         end,
     Attrs2 = copy_attributes(Attrs, orddict:new(), ["merge", "style"]),
     Attrs3 = orddict:store("formula", Formula2, Attrs2),
-    write_attrs(To, Attrs3).
+    write_attrs(To, Attrs3),
+    ok.
 
 %% @spec read_page_structure(Ref) -> dh_tree()
 %% @doc read the populated pages under the specified path
@@ -1033,31 +1037,25 @@ d_n_d_c_n_p_offset1([H | T], XOffset, YOffset, Acc) ->
 
 -spec get_local_children(#refX{}) -> [#refX{}].
 get_local_children(#refX{site = Site} = X) ->
-    ChildIdxs = get_local_rel_idxs(X, children),
+    ChildIdxs = get_local_children_idxs(X),
     [local_idx_to_refX(Site, C) || C <- ChildIdxs].
 
 -spec get_local_children_idxs(#refX{}) -> [cellidx()]. 
-get_local_children_idxs(Ref) -> get_local_rel_idxs(Ref, children).
-
--spec get_local_rel_idxs(#refX{}, children|parents) -> [cellidx()]. 
-get_local_rel_idxs(#refX{site = Site, obj = {cell, _}} = Ref, Relation) ->
+get_local_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
     case read_local_item_index(Ref) of
         false -> 
             [];
         Idx -> 
             Table = trans(Site, relation),
             case mnesia:read(Table, Idx, read) of
-                [R] -> case Relation of
-                           children -> R#relation.children;
-                           parents  -> R#relation.parents
-                       end;
+                [R] -> R#relation.children;
                 _   -> []
             end
     end;
-get_local_rel_idxs(#refX{obj = {Type, _}} = Ref, Relation) 
+get_local_children_idxs(#refX{obj = {Type, _}} = Ref) 
   when (Type == row) orelse (Type == column) orelse 
        (Type == range) orelse (Type == page) ->
-    lists:flatten([get_local_rel_idxs(X, Relation)
+    lists:flatten([get_local_children_idxs(X) 
                    || X=#refX{obj={cell,_}} <- expand_ref(Ref)]).
 
 -spec delete_local_relation(#refX{}) -> ok.
@@ -1552,14 +1550,14 @@ apply_style(Ref, {Name, Val}, Attrs) ->
               end,
     orddict:store("style", NewSIdx, Attrs).
 
--spec fresh_style(#refX{}, atom(), any()) -> integer(). 
+-spec fresh_style(#refX{}, string(), any()) -> integer(). 
 fresh_style(#refX{site=Site}=Ref, Name, Val) ->
     FieldNo = ms_util2:get_index(magic_style, Name),
     Tbl = trans(Site, style),
     MStyle = setelement(FieldNo + 1, #magic_style{}, Val),
     store_style(Ref, Tbl, MStyle).
 
--spec based_style(#refX{}, integer(), atom(), any()) -> integer().
+-spec based_style(#refX{}, integer(), string(), any()) -> integer().
 based_style(#refX{site=Site}=Ref, BaseIdx, Name, Val) ->
     Tbl = trans(Site, style),
     case mnesia:index_read(Tbl, BaseIdx, #style.idx) of

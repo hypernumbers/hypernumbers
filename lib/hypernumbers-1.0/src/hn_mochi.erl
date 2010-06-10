@@ -7,7 +7,6 @@
 
 -include_lib("kernel/include/file.hrl").
 -include("gettext.hrl").
--include("auth.hrl").
 -include("hn_mochi.hrl").
 
 -export([ start/0 ]).
@@ -861,7 +860,7 @@ uniqify(Label, List, Index) ->
 
 
 
--spec log_signup(string(), string(), atom(), uid(), string()) -> ok.
+-spec log_signup(string(), string(), atom(), auth_srv:uid(), string()) -> ok.
 log_signup(Site, NewSite, Node, Uid, Email) ->
     Row = [ {hn_util:url_to_refX(Site ++ "/_sites/" ++ Ref), Val}
               || {Ref, Val} <- [{"A:A", Email},
@@ -1175,7 +1174,7 @@ try_sync(Cmd0, Site, Return) ->
             on_sync
     end.
 
--spec post_login(string(), uid(), string(), integer() | string(),
+-spec post_login(string(), auth_srv:uid(), string(), integer() | string(),
                  #env{}, string()) 
                 -> {#env{}, string()}.
 post_login(Site, Uid, Stamp, Age, Env, Return) ->

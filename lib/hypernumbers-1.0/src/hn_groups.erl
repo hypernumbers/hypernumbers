@@ -11,10 +11,10 @@
          dump_script/1, load_script/2]).
 
 -include("spriki.hrl").
--include("auth.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
 
--spec is_member(uid(), string(), [string()]) -> boolean().
+-spec is_member(auth_srv:uid(), string(), [string()]) 
+               -> boolean().
 is_member(Uid, Site, Groups) ->
     Tbl = hn_db_wu:trans(Site, group),
     is_member1(Groups, Tbl, Uid).
@@ -45,13 +45,11 @@ create_group(Site, GroupN) ->
     mnesia:activity(transaction, F).
 
 -spec delete_group(string(), string()) -> ok. 
-delete_group(_Site, "admin") ->
-    throw("You must not delete the admin group");
 delete_group(Site, GroupN) ->
     Tbl = hn_db_wu:trans(Site, group),
     mnesia:activity(transaction, fun mnesia:delete/3, [Tbl,GroupN,write]).
 
--spec add_user(string(), string(), uid()) -> ok | no_group. 
+-spec add_user(string(), string(), auth_srv:uid()) -> ok | no_group. 
 add_user(Site, GroupN, Uid) ->
     Tbl = hn_db_wu:trans(Site, group),
     F = fun() ->
@@ -66,7 +64,7 @@ add_user(Site, GroupN, Uid) ->
         end,
     mnesia:activity(transaction, F).
 
--spec rem_user(string(), string(), uid()) -> ok | no_group. 
+-spec rem_user(string(), string(), auth_srv:uid()) -> ok | no_group. 
 rem_user(Site, GroupN, Uid) ->
     Tbl = hn_db_wu:trans(Site, group),
     F = fun() ->
@@ -81,7 +79,7 @@ rem_user(Site, GroupN, Uid) ->
         end,
     mnesia:activity(transaction, F).
 
--spec set_users(string(), string(), [uid()]) -> ok | no_group.
+-spec set_users(string(), string(), [auth_srv:uid()]) -> ok | no_group.
 set_users(Site, GroupN, Users) ->
     Tbl = hn_db_wu:trans(Site, group),
     F = fun() ->

@@ -7,8 +7,6 @@
          create_invite/3, create_invite/4
         ]).
 
--include("auth.hrl").
-
 provision_site(Zone, Email, SiteType) ->
     SuggestedUid = passport:create_uid(),
     provision_site(Zone, Email, SiteType, SuggestedUid).
@@ -21,8 +19,8 @@ provision_site(Zone, Email, SiteType, _) ->
     SuggestedUid = passport:create_uid(),
     provision_site_(Zone, Email, SiteType, SuggestedUid).
 
--spec provision_site(string(), string(), atom(), uid()) 
-                    -> {ok, new | existing, string(), atom(), uid(), string()} | 
+-spec provision_site(string(), string(), atom(), auth_srv:uid()) 
+                    -> {ok, new | existing, string(), atom(), auth_srv:uid(), string()} | 
                        {error, invalid_email}.
 provision_site_(Zone, Email, Type, SuggestedUid) ->
     case valid_email(Email) of
@@ -81,7 +79,7 @@ valid_email(Email) ->
         {match, _} -> true
     end.
 
--spec post_provision(new | existing, string(), uid(), string(), string())
+-spec post_provision(new | existing, string(), auth_srv:uid(), string(), string())
                     -> ok.
 %% User does not have any existing sites, log them into their new site
 %% directly.
@@ -92,7 +90,7 @@ post_provision(NE, Site, Uid, Email, Name) ->
                 end,
     send_email(Email, EmailBody).
 
--spec post_invite(new | existing, string(), uid(), string(), string())
+-spec post_invite(new | existing, string(), auth_srv:uid(), string(), string())
                  -> ok.
 post_invite(NE, Site, Uid, Email, Name) ->
     EmailBody = case NE of

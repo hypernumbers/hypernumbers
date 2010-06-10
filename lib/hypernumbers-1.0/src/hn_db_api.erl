@@ -93,7 +93,6 @@
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
--include("auth.hrl").
 
 -export([
          write_attributes/1, write_attributes/3,
@@ -314,7 +313,7 @@ matching_forms(RefX, Transaction) ->
                     fun hn_db_wu:matching_forms/2, 
                     [RefX, Transaction]).
 
--spec handle_dirty_cell(string(), cellidx(), nil | uid()) -> boolean().
+-spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_req()) -> boolean().
 handle_dirty_cell(Site, Idx, Ar) ->
     ok = init_front_end_notify(),  
     Fun = fun() ->
@@ -475,7 +474,7 @@ insert(#refX{obj = {R, _}} = RefX, Disp, Ar)
 %% per insert/2.
 %% This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
--spec delete(#refX{}, nil | uid()) -> ok.
+-spec delete(#refX{}, auth_srv:auth_req()) -> ok.
 delete(#refX{obj = {R, _}} = RefX, Ar) when R == column orelse R == row ->
     Disp = case R of
                row    -> vertical;
@@ -628,7 +627,7 @@ cut_n_paste(From, To, Ar) when is_record(From, refX), is_record(To, refX) ->
 %%
 %% Also whole pages can be copy_n_pasted by making both From and To 
 %% page refX's
--spec copy_n_paste(#refX{}, #refX{}, all | style | value, nil | uid()) -> ok. 
+-spec copy_n_paste(#refX{}, #refX{}, all | style | value, auth_srv:auth_req()) -> ok. 
 copy_n_paste(From, To, What, Ar) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
@@ -743,7 +742,7 @@ write_attributes1(RefX, List, PAr, VAr) ->
 -spec copy_cell(#refX{}, #refX{}, 
                 false | horizontal | vertical,
                 all | style | value,
-                uid())
+                auth_srv:uid())
                -> ok.
 copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
     case auth_srv:get_any_view(Site, Path, Ar) of
@@ -754,7 +753,7 @@ copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
             throw(auth_error)
     end.
 
--spec mark_these_dirty([#refX{}], nil | uid()) -> ok.
+-spec mark_these_dirty([#refX{}], auth_srv:auth_req()) -> ok.
 mark_these_dirty([], _) -> ok;
 mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
     F = fun(C) -> case hn_db_wu:read_local_item_index(C) of
@@ -767,7 +766,7 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
     dirty_sup:enqueue_work(Site, dirty_queue, Entry),
     ok.
 
--spec mark_children_dirty(#refX{}, nil | uid()) -> ok.
+-spec mark_children_dirty(#refX{}, auth_srv:auth_req()) -> ok.
 mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
     Children = hn_db_wu:get_local_children_idxs(RefX),
     Entry = #dirty_queue{dirty = Children, auth_req = AReq},
