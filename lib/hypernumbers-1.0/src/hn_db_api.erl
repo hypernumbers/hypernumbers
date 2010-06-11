@@ -763,15 +763,13 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
         end,
     Idxs = lists:flatten([F(C) || R <- Refs, C <- hn_db_wu:expand_ref(R)]),
     Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
-    dirty_sup:enqueue_work(Site, dirty_queue, Entry),
-    ok.
+    mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write).
 
 -spec mark_children_dirty(#refX{}, auth_srv:auth_req()) -> ok.
 mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
     Children = hn_db_wu:get_local_children_idxs(RefX),
     Entry = #dirty_queue{dirty = Children, auth_req = AReq},
-    dirty_sup:enqueue_work(Site, dirty_queue, Entry),
-    ok.
+    mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write).
 
 init_front_end_notify() ->
     _Return = put('front_end_notify', []),
