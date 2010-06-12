@@ -33,7 +33,7 @@ input_(Label) -> input_(Label, "", common).
 %input_(Label, Default) -> input_(Label, Default, common).
 input_([Label], _Default, Trans) ->
     Form = #form{id = {Trans, Label}, kind = input},
-    Html = lists:flatten("<input type='input' class='hntext' " ++
+    Html = lists:flatten("<input type='input' class='hninput' " ++
                              "data-name='default' " ++
                              "data-label='"++Label++"' />"),
     {rawform, Form, Html}.
