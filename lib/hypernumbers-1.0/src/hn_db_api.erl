@@ -443,13 +443,13 @@ delete(#refX{obj = {R, _}} = RefX, Ar) when R == column orelse R == row ->
                column -> horizontal
            end,
     move(RefX, delete, Disp, Ar);
-delete(#refX{site=Site, obj = {page, _}} = RefX, Ar) ->
+delete(#refX{obj = {page, _}} = RefX, Ar) ->
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
                    Dirty = hn_db_wu:delete_cells(RefX),
                    mark_these_dirty(Dirty, Ar)
            end,
-    write_activity(Site, Fun1, "delete").
+    write_activity(RefX, Fun1, "delete").
 
 %% @doc deletes a reference.
 %% 

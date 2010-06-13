@@ -40,9 +40,7 @@ read_only_activity(Site, Activity) ->
 write_activity(Site, Activity) ->
     Id = hn_util:site_to_atom(Site, "dbsrv"),
     Id ! {self(), write_activity, Activity},
-    receive
-        {dbsrv_reply, Reply} -> Reply
-    end.
+    ok.
 
 %%====================================================================
 %% supervisor_bridge callbacks
@@ -114,9 +112,8 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
             From ! {dbsrv_reply, Reply},
             check_messages(Site, Since, QTbl, WorkPlan, Graph);
         
-        {From, write_activity, Activity} ->
-            Reply = Activity(),
-            From ! {dbsrv_reply, Reply},
+        {_From, write_activity, Activity} ->
+            Activity(),
             case load_dirty_since(Since, QTbl) of
                 {_, []} ->
                     {Since, WorkPlan};
