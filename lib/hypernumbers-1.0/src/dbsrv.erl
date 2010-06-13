@@ -1,10 +1,12 @@
--module(dirty_sup).
+-module(dbsrv).
 
 -behaviour(supervisor_bridge).
 
 %% API
--export([start_link/2,
-        listen_dirty_queue/5]).
+-export([start_link/1,
+         read_only_activity/2,
+         write_activity/2,
+         dbsrv/5]).
 
 %% supervisor_bridge callbacks
 -export([init/1, terminate/2]).
@@ -23,10 +25,24 @@
 %% Function: start_link() -> {ok,Pid} | ignore | {error,Error}
 %% Description: Starts the supervisor bridge
 %%--------------------------------------------------------------------
--spec start_link(string(), atom()) -> {ok,pid()} | ignore | {error,any()}.
-start_link(Site, Type) ->
-    Id = hn_util:site_to_atom(Site, atom_to_list(Type)),
-    supervisor_bridge:start_link({local, Id}, ?MODULE, [Site, Type]).
+-spec start_link(string()) -> {ok,pid()} | ignore | {error,any()}.
+start_link(Site) ->
+    Id = hn_util:site_to_atom(Site, "dbsrv_sup"),
+    supervisor_bridge:start_link({local, Id}, ?MODULE, [Site]).
+
+read_only_activity(Site, Activity) ->
+    Id = hn_util:site_to_atom(Site, "dbsrv"),
+    Id ! {self(), read_only_activity, Activity},
+    receive
+        {dbsrv_reply, Reply} -> Reply
+    end.
+
+write_activity(Site, Activity) ->
+    Id = hn_util:site_to_atom(Site, "dbsrv"),
+    Id ! {self(), write_activity, Activity},
+    receive
+        {dbsrv_reply, Reply} -> Reply
+    end.
 
 %%====================================================================
 %% supervisor_bridge callbacks
@@ -40,10 +56,11 @@ start_link(Site, Type) ->
 %% synchronized start-up procedure, this function does not return until
 %% Module:init/1 has returned. 
 %%--------------------------------------------------------------------
-init([Site, Type]) ->
-    Table = hn_db_wu:trans(Site, Type),
-    Pid = spawn_link(fun() -> listen_dirty_queue_init(Site, Table) end),
-    {ok, Pid, #state{table = Table, pid = Pid}}.
+init([Site]) ->
+    QTbl = hn_db_wu:trans(Site, dirty_queue),
+    Pid = spawn_link(fun() -> dbsrv_init(Site, QTbl) end),
+    register(hn_util:site_to_atom(Site, "dbsrv"), Pid),
+    {ok, Pid, #state{table = QTbl, pid = Pid}}.
 
 %%--------------------------------------------------------------------
 %% Func: terminate(Reason, State) -> void()
@@ -51,53 +68,56 @@ init([Site, Type]) ->
 %% about to terminate. It should be the opposite of Module:init/1 and stop
 %% the subsystem and do any necessary cleaning up.The return value is ignored.
 %%--------------------------------------------------------------------
-terminate(_Reason, #state{table = T}) ->
-    mnesia:unsubscribe({table, T, simple}).
+terminate(_Reason, #state{table = _T}) ->
+    ok.
 
 %%====================================================================
 %% Internal functions
 %%====================================================================
 
--spec listen_dirty_queue_init(string(), atom()) -> no_return(). 
-listen_dirty_queue_init(Site, QTbl) ->
-    mnesia:subscribe({table, QTbl, simple}),
-    {Since, Dirty} = load_since(0, QTbl),
+-spec dbsrv_init(string(), atom()) -> no_return(). 
+dbsrv_init(Site, QTbl) ->
+    {Since, Dirty} = load_dirty_since(0, QTbl),
     Graph = new_graph(),
     WorkPlan = build_workplan(Site, Dirty, Graph),
-    listen_dirty_queue(Site, QTbl, Since, WorkPlan, Graph).
+    dbsrv(Site, QTbl, Since, WorkPlan, Graph).
 
--spec listen_dirty_queue(string(), atom(), term(), [cellidx()], digraph()) 
+-spec dbsrv(string(), atom(), term(), [cellidx()], digraph()) 
                         -> no_return().
-listen_dirty_queue(Site, QTbl, Since, WorkPlan, Graph) ->
-    Graph2 = case WorkPlan of
-                [] -> 
-                     ok = clear_dirty_queue(Since, QTbl), 
-                     digraph:delete(Graph),
-                     new_graph();
-                _ -> 
-                    Graph
-            end,
-    {Since2, WorkPlan2} = check_new(Site, Since, QTbl, WorkPlan, Graph2),
+dbsrv(Site, QTbl, Since, WorkPlan, Graph0) ->
+    Graph = cleanup(WorkPlan, Since, QTbl, Graph0),
+    {Since2, WorkPlan2} = check_messages(Site, Since, QTbl, WorkPlan, Graph),
     WorkPlan3 = case WorkPlan2 of 
                     [Cell | Rest] ->
-                        execute_plan([Cell], Site, Graph2),
+                        execute_plan([Cell], Site, Graph),
                         Rest;
                     _ ->
                         WorkPlan2
                 end,
-    ?MODULE:listen_dirty_queue(Site, QTbl, Since2, WorkPlan3, Graph2).
+    ?MODULE:dbsrv(Site, QTbl, Since2, WorkPlan3, Graph).
 
+-spec cleanup([cellidx()], term(), atom(), digraph()) -> digraph().
+cleanup([], Since, QTbl, Graph) -> 
+    ok = clear_dirty_queue(Since, QTbl), 
+    digraph:delete(Graph),
+    new_graph();
+cleanup(_, _, _, Graph) -> Graph.
 
 %% Checks if new work is waiting to be processed. 
--spec check_new(string(), term(), atom(), [cellidx()], digraph()) 
+-spec check_messages(string(), term(), atom(), [cellidx()], digraph()) 
                -> {term(), [cellidx()]}.
-check_new(Site, Since, QTbl, WorkPlan, Graph) ->
-    Wait = case WorkPlan of 
-               [] -> infinity;
-               _  -> 0 end,
+check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
+    Wait = case WorkPlan of [] -> infinity; _ -> 0 end,
     receive 
-        {mnesia_table_event, {write, _, _}} ->
-            case load_since(Since, QTbl) of
+        {From, read_only_activity, Activity} -> 
+            Reply = Activity(),
+            From ! {dbsrv_reply, Reply},
+            check_messages(Site, Since, QTbl, WorkPlan, Graph);
+        
+        {From, write_activity, Activity} ->
+            Reply = Activity(),
+            From ! {dbsrv_reply, Reply},
+            case load_dirty_since(Since, QTbl) of
                 {_, []} ->
                     {Since, WorkPlan};
                 {Since2, Dirty} ->
@@ -105,14 +125,14 @@ check_new(Site, Since, QTbl, WorkPlan, Graph) ->
                     {Since2, WorkPlan2}
             end;
         _Other ->
-            check_new(Site, Since, QTbl, WorkPlan, Graph)
+            check_messages(Site, Since, QTbl, WorkPlan, Graph)
     after Wait ->
             {Since, WorkPlan}
     end.    
 
 %% Loads new dirty information into the recalc graph.
--spec load_since(term(), atom()) -> {term(), [cellidx()]}.
-load_since(Since, QTbl) ->
+-spec load_dirty_since(term(), atom()) -> {term(), [cellidx()]}.
+load_dirty_since(Since, QTbl) ->
     M = ets:fun2ms(fun(#dirty_queue{id = T, dirty = D}) 
                          when Since < T -> {T, D}
                    end),
@@ -126,21 +146,11 @@ load_since(Since, QTbl) ->
             {Since2, DirtyL}
     end.
 
-%% Clears out process work from the dirty_queue table.
--spec clear_dirty_queue(term(), atom()) -> ok.
-clear_dirty_queue(Since, QTbl) ->
-    M = ets:fun2ms(fun(#dirty_queue{id = T}) when T =< Since -> T end), 
-    F = fun() ->
-                Keys = mnesia:select(QTbl, M, write),
-                [mnesia:delete(QTbl, K, write) || K <- Keys],
-                ok
-        end,
-    mnesia:activity(transaction, F).
-
 -spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()]. 
 build_workplan(Site, Dirty, Graph) ->
     RTbl = hn_db_wu:trans(Site, relation),
-    update_recalc_graph(Dirty, RTbl, Graph),
+    ok = mnesia:activity(transaction, fun update_recalc_graph/3, 
+                         [Dirty, RTbl, Graph]),
     digraph_utils:topsort(Graph).        
 
 %% Recursively walk child relation, adding entries into the work
@@ -152,7 +162,7 @@ update_recalc_graph([Idx|Rest], RTbl, Graph) when is_atom(RTbl) ->
     case digraph:vertex(Graph, Idx) of
         false ->
             digraph:add_vertex(Graph, Idx),
-            case mnesia:dirty_read(RTbl, Idx) of
+            case mnesia:read(RTbl, Idx, read) of
                 [R] ->
                     Children = ordsets:to_list(R#relation.children),
                     update_recalc_graph(Children, RTbl, Graph),
@@ -194,6 +204,17 @@ prune_path([V|Rest], Graph) ->
             ok
     end,
     prune_path(Rest, Graph).
+
+%% Clears out process work from the dirty_queue table.
+-spec clear_dirty_queue(term(), atom()) -> ok.
+clear_dirty_queue(Since, QTbl) ->
+    M = ets:fun2ms(fun(#dirty_queue{id = T}) when T =< Since -> T end), 
+    F = fun() ->
+                Keys = mnesia:select(QTbl, M, write),
+                [mnesia:delete(QTbl, K, write) || K <- Keys],
+                ok
+        end,
+    mnesia:activity(transaction, F).
 
 -spec new_graph() -> digraph(). 
 new_graph() -> digraph:new([private]).

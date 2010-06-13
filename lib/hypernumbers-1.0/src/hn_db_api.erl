@@ -111,7 +111,7 @@
          delete/2, delete/3,
          clear/3,
          handle_dirty_cell/3,
-         set_borders/5,
+         %%set_borders/5,
          write_formula_to_range/2,
          wait_for_dirty/1
         ]).
@@ -121,7 +121,6 @@
          write_magic_style_IMPORT/2,
          read_styles_IMPORT/1
         ]).
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
@@ -135,140 +134,129 @@
 %% - normally the respresentation of styles in the magic style record
 %% is designed to be hidden from the API
 %% (that's for why it is a 'magic' style n'est pas?)
-write_styles_IMPORT(RefX, Styles) when is_record(RefX, refX) ->
+write_styles_IMPORT(RefX, Styles) 
+  when is_record(RefX, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   [ok = hn_db_wu:write_style_IMPORT(RefX, S) || S <- Styles],
                   ok
           end,
-    ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("write_style_IMPORT").
+    write_activity(RefX, Fun, "write_style_IMPORT").
 
-write_magic_style_IMPORT(RefX, MStyle) when is_record(RefX, refX) ->
-        Fun = fun() ->
+write_magic_style_IMPORT(RefX, MStyle) 
+  when is_record(RefX, refX) ->
+    Fun = fun() ->
                   ok = init_front_end_notify(),
                   hn_db_wu:write_magic_style_IMPORT(RefX, MStyle) 
           end,
-    Idx = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("write_style_IMPORT"),
-    Idx.
+    write_activity(RefX, Fun, "write_style_IMPORT").
 
 read_styles_IMPORT(RefX) when is_record(RefX, refX) ->
     Fun = fun() -> hn_db_wu:read_styles_IMPORT(RefX) end, 
-    mnesia:activity(transaction, Fun).
+    read_activity(RefX, Fun).
 
--spec set_borders(#refX{}, any(), any(), any(), any()) -> ok.
-%% @doc  takes a range reference and sets the borders for the range according
-%% to the borders parameter passed in
-%% The borders attribute can be one of:
-%% <ul>
-%% <li>surround</li>
-%% <li>inside</li>
-%% <li>none</li>
-%% <li>call</li>
-%% <li>left</li>
-%% <li>top</li>
-%% <li>right</li>
-%% <li>bottom</li>
-%% </ul>
-%% all borders except 'none' set the border in a postive fashion - they
-%% don't toggle. So if a particular cell has a left border set then setting
-%% its border 'left' means it will *still* have its left border set
-%% by contrast 'none' tears all borders down.
-%% Border_Color is a colour expressed as a hex string of format "#FF0000"
-%% Border_Style can be one of
-set_borders(#refX{obj = {range, _}} = RefX, "none",_Border, 
-            _Border_Style, _Border_Color) ->
-    ok = set_borders2(RefX, "left",   [], [], []),
-    ok = set_borders2(RefX, "right",  [], [], []),
-    ok = set_borders2(RefX, "top",    [], [], []),
-    ok = set_borders2(RefX, "bottom", [], [], []),
-    ok;
+%% -spec set_borders(#refX{}, any(), any(), any(), any()) -> ok.
+%% %% @doc  takes a range reference and sets the borders for the range according
+%% %% to the borders parameter passed in
+%% %% The borders attribute can be one of:
+%% %% <ul>
+%% %% <li>surround</li>
+%% %% <li>inside</li>
+%% %% <li>none</li>
+%% %% <li>call</li>
+%% %% <li>left</li>
+%% %% <li>top</li>
+%% %% <li>right</li>
+%% %% <li>bottom</li>
+%% %% </ul>
+%% %% all borders except 'none' set the border in a postive fashion - they
+%% %% don't toggle. So if a particular cell has a left border set then setting
+%% %% its border 'left' means it will *still* have its left border set
+%% %% by contrast 'none' tears all borders down.
+%% %% Border_Color is a colour expressed as a hex string of format "#FF0000"
+%% %% Border_Style can be one of
+%% set_borders(#refX{obj = {range, _}} = RefX, "none",_Border, 
+%%             _Border_Style, _Border_Color) ->
+%%     ok = set_borders2(RefX, "left",   [], [], []),
+%%     ok = set_borders2(RefX, "right",  [], [], []),
+%%     ok = set_borders2(RefX, "top",    [], [], []),
+%%     ok = set_borders2(RefX, "bottom", [], [], []),
+%%     ok;
 
-set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, Where, 
-            Border, B_Style, B_Color) 
-  when Where == "left" 
-       orelse Where == "right" 
-       orelse Where == "top" 
-       orelse Where == "bottom" ->
-    NewObj = case Where of
-                 "left"   -> {range, {X1, Y1, X1, Y2}};
-                 "right"  -> {range, {X2, Y1, X2, Y2}};
-                 "top"    -> {range, {X1, Y1, X2, Y1}};
-                 "bottom" -> {range, {X1, Y2, X1, Y2}}
-             end,
-    NewRefX = RefX#refX{obj = NewObj},
-    ok = set_borders2(NewRefX, Where, Border, B_Style, B_Color);
+%% set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, Where, 
+%%             Border, B_Style, B_Color) 
+%%   when Where == "left" 
+%%        orelse Where == "right" 
+%%        orelse Where == "top" 
+%%        orelse Where == "bottom" ->
+%%     NewObj = case Where of
+%%                  "left"   -> {range, {X1, Y1, X1, Y2}};
+%%                  "right"  -> {range, {X2, Y1, X2, Y2}};
+%%                  "top"    -> {range, {X1, Y1, X2, Y1}};
+%%                  "bottom" -> {range, {X1, Y2, X1, Y2}}
+%%              end,
+%%     NewRefX = RefX#refX{obj = NewObj},
+%%     ok = set_borders2(NewRefX, Where, Border, B_Style, B_Color);
  
-set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
-            Where, Border, B_Style, B_Color) 
-  when Where == "surround" ->
-    Top    = RefX#refX{obj = {range, {X1, Y1, X2, Y1}}},
-    Bottom = RefX#refX{obj = {range, {X1, Y2, X2, Y2}}},
-    Left   = RefX#refX{obj = {range, {X1, Y1, X1, Y2}}},
-    Right  = RefX#refX{obj = {range, {X2, Y1, X2, Y2}}},
-    ok = set_borders2(Top,    "top",    Border, B_Style, B_Color),
-    ok = set_borders2(Bottom, "bottom", Border, B_Style, B_Color),
-    ok = set_borders2(Left,   "left",   Border, B_Style, B_Color),
-    ok = set_borders2(Right,  "right",  Border, B_Style, B_Color),
-    ok;
+%% set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
+%%             Where, Border, B_Style, B_Color) 
+%%   when Where == "surround" ->
+%%     Top    = RefX#refX{obj = {range, {X1, Y1, X2, Y1}}},
+%%     Bottom = RefX#refX{obj = {range, {X1, Y2, X2, Y2}}},
+%%     Left   = RefX#refX{obj = {range, {X1, Y1, X1, Y2}}},
+%%     Right  = RefX#refX{obj = {range, {X2, Y1, X2, Y2}}},
+%%     ok = set_borders2(Top,    "top",    Border, B_Style, B_Color),
+%%     ok = set_borders2(Bottom, "bottom", Border, B_Style, B_Color),
+%%     ok = set_borders2(Left,   "left",   Border, B_Style, B_Color),
+%%     ok = set_borders2(Right,  "right",  Border, B_Style, B_Color),
+%%     ok;
 
-set_borders(#refX{obj = {range, _}} = RefX, Where, Border, B_Style, B_Color)
-  when Where == "all" ->
-    ok = set_borders2(RefX, "top",    Border, B_Style, B_Color),
-    ok = set_borders2(RefX, "bottom", Border, B_Style, B_Color),
-    ok = set_borders2(RefX, "left",   Border, B_Style, B_Color),
-    ok = set_borders2(RefX, "right",  Border, B_Style, B_Color),
-    ok;
+%% set_borders(#refX{obj = {range, _}} = RefX, Where, Border, B_Style, B_Color)
+%%   when Where == "all" ->
+%%     ok = set_borders2(RefX, "top",    Border, B_Style, B_Color),
+%%     ok = set_borders2(RefX, "bottom", Border, B_Style, B_Color),
+%%     ok = set_borders2(RefX, "left",   Border, B_Style, B_Color),
+%%     ok = set_borders2(RefX, "right",  Border, B_Style, B_Color),
+%%     ok;
 
-%% there are a number of different function heads for 'inside'
-%% 'inside' on a cell does nothing
-set_borders(#refX{obj = {range, {X1, Y1, X1, Y1}}} = _RefX, 
-            Where, _Border, _B_Style, _B_Color) 
-  when Where == "inside" ->
-    ok;
-%% 'inside' a single column
-set_borders(#refX{obj = {range, {X1, Y1, X1, Y2}}} = RefX, 
-            Where, Border, B_Style, B_Color) 
-  when Where == "inside" ->
-    NewRefX = RefX#refX{obj = {range, {X1, Y1 + 1, X1, Y2}}},
-    ok = set_borders2(NewRefX, "top", Border, B_Style, B_Color);
-%% 'inside' a single row
-set_borders(#refX{obj = {range, {X1, Y1, X2, Y1}}} = RefX, 
-            Where, Border, B_Style, B_Color) 
-  when Where == "inside" ->
-    NewRefX = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y1}}},
-    ok = set_borders2(NewRefX, "left", Border, B_Style, B_Color);
-%% proper 'inside'
-set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
-            Where, Border, B_Style, B_Color) 
-  when Where == "inside" ->
-    NewRefX1 = RefX#refX{obj = {range, {X1, Y1 + 1, X2, Y2}}},
-    ok = set_borders2(NewRefX1, "top", Border, B_Style, B_Color),
-    NewRefX2 = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y2}}},
-    ok = set_borders2(NewRefX2, "left", Border, B_Style, B_Color).
+%% %% there are a number of different function heads for 'inside'
+%% %% 'inside' on a cell does nothing
+%% set_borders(#refX{obj = {range, {X1, Y1, X1, Y1}}} = _RefX, 
+%%             Where, _Border, _B_Style, _B_Color) 
+%%   when Where == "inside" ->
+%%     ok;
+%% %% 'inside' a single column
+%% set_borders(#refX{obj = {range, {X1, Y1, X1, Y2}}} = RefX, 
+%%             Where, Border, B_Style, B_Color) 
+%%   when Where == "inside" ->
+%%     NewRefX = RefX#refX{obj = {range, {X1, Y1 + 1, X1, Y2}}},
+%%     ok = set_borders2(NewRefX, "top", Border, B_Style, B_Color);
+%% %% 'inside' a single row
+%% set_borders(#refX{obj = {range, {X1, Y1, X2, Y1}}} = RefX, 
+%%             Where, Border, B_Style, B_Color) 
+%%   when Where == "inside" ->
+%%     NewRefX = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y1}}},
+%%     ok = set_borders2(NewRefX, "left", Border, B_Style, B_Color);
+%% %% proper 'inside'
+%% set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
+%%             Where, Border, B_Style, B_Color) 
+%%   when Where == "inside" ->
+%%     NewRefX1 = RefX#refX{obj = {range, {X1, Y1 + 1, X2, Y2}}},
+%%     ok = set_borders2(NewRefX1, "top", Border, B_Style, B_Color),
+%%     NewRefX2 = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y2}}},
+%%     ok = set_borders2(NewRefX2, "left", Border, B_Style, B_Color).
 
-set_borders2(RefX, Where, Border, B_Style, B_Color) ->
-    Fun = fun() ->
-                  ok = init_front_end_notify(),
-                  B   = "border-" ++ Where ++ "-width",
-                  B_S = "border-" ++ Where ++ "-style",
-                  B_C = "border-" ++ Where ++ "-color",
-                  ok = hn_db_wu:write_attr(RefX, {B,   Border}),
-                  ok = hn_db_wu:write_attr(RefX, {B_S, B_Style}),
-                  ok = hn_db_wu:write_attr(RefX, {B_C, B_Color})
-          end,
-    ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("set_borders2").
-
-wait_for_dirty(Site) ->
-    case mnesia:dirty_first(hn_db_wu:trans(Site, dirty_queue)) of
-        '$end_of_table' ->
-            ok;
-        _Index ->
-            timer:sleep(100),
-            wait_for_dirty(Site) 
-    end.
+%% set_borders2(RefX, Where, Border, B_Style, B_Color) ->
+%%     Fun = fun() ->
+%%                   ok = init_front_end_notify(),
+%%                   B   = "border-" ++ Where ++ "-width",
+%%                   B_S = "border-" ++ Where ++ "-style",
+%%                   B_C = "border-" ++ Where ++ "-color",
+%%                   ok = hn_db_wu:write_attr(RefX, {B,   Border}),
+%%                   ok = hn_db_wu:write_attr(RefX, {B_S, B_Style}),
+%%                   ok = hn_db_wu:write_attr(RefX, {B_C, B_Color})
+%%           end,
+%%     write_activity(RefX, Fun, "set_borders2").
 
 %% @todo write documentation for write_formula_to_range
 write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
@@ -302,41 +290,16 @@ write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
 %% @doc reads pages
 %% @todo fix up api
 read_page_structure(RefX) when is_record(RefX, refX) ->
-    mnesia:activity(transaction, fun hn_db_wu:read_page_structure/1, [RefX]).
+    read_activity(RefX, fun() -> hn_db_wu:read_page_structure(RefX) end).
 
 read_pages(RefX) when is_record(RefX, refX) ->
-    mnesia:activity(transaction, fun hn_db_wu:read_pages/1, [RefX]).    
+    read_activity(RefX, fun() -> hn_db_wu:read_pages(RefX) end).    
 
 -spec matching_forms(#refX{}, common | string()) -> [#form{}]. 
 matching_forms(RefX, Transaction) ->
-    mnesia:activity(transaction, 
-                    fun hn_db_wu:matching_forms/2, 
-                    [RefX, Transaction]).
-
--spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_req()) -> boolean().
-handle_dirty_cell(Site, Idx, Ar) ->
-    ok = init_front_end_notify(),  
-    Fun = fun() ->
-                  Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
-                  Attrs = case hn_db_wu:read_ref(Cell, inside, write) of
-                              [{_, A}] -> A;
-                              _ -> orddict:new()
-                          end,
-                  case orddict:find("formula", Attrs) of
-                      {ok, F} ->
-                          Attrs2 = hn_db_wu:write_attrs(Cell, 
-                                                        [{"formula", F}], 
-                                                        Ar),
-                          RV1 = orddict:find("__rawvalue", Attrs),
-                          RV2 = orddict:find("__rawvalue", Attrs2),
-                          RV1 == RV2;
-                    _ ->
-                          false
-                end
-        end,
-    Fixed = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("handle dirty"),
-    Fixed.
+    read_activity(RefX, fun() -> 
+                                hn_db_wu:matching_forms(RefX, Transaction) 
+                        end).
 
 %% @spec write_attributes(RefX :: #refX{}, List) -> ok  
 %% List = [{Key, Value}]
@@ -354,6 +317,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
 -spec write_attributes([{#refX{}, [tuple()]}]) -> ok. 
 write_attributes(List) ->
     write_attributes(List, nil, nil).
+write_attributes([], _PAr, _VAr) -> ok;
 write_attributes(List, PAr, VAr) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
@@ -361,8 +325,8 @@ write_attributes(List, PAr, VAr) ->
                    || {RefX, L} <- List],
                   ok
           end,
-    mnesia:activity(transaction, Fun),
-    ok = tell_front_end("write attributes").
+    {Ref, _} = hd(List),
+    write_activity(Ref, Fun, "write attributes").
 
 %% @spec write_last(List) -> ok
 %% List = [{#refX{}, Val}]
@@ -408,30 +372,28 @@ append_row(List, PAr, VAr) when is_list(List) ->
                 [F(X,V) || {#refX{site=S1, path=P1, obj={column,{X,X}}}, V} 
                                <- List, S == S1, P == P1]
         end,
-    mnesia:activity(transaction, Trans),
-    ok = tell_front_end("write last"),
-    ok.    
+    write_activity(S, Trans, "write last").
 
 -spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
 read_attribute(RefX, Field) when is_record(RefX, refX) ->
     Fun = fun() -> hn_db_wu:read_ref_field(RefX, Field, read) end,
-    mnesia:activity(transaction, Fun).
+    read_activity(RefX, Fun).
 
 -spec read_inside_ref(#refX{}) -> [{#refX{}, [{string(), term()}]}].
 read_inside_ref(RefX) ->
     Fun = fun() -> hn_db_wu:read_ref(RefX, inside) end,
-    mnesia:activity(transaction, Fun).
+    read_activity(RefX, Fun).
 
 -spec read_intersect_ref(#refX{}) -> [{#refX{}, [{string(), term()}]}].
 read_intersect_ref(RefX) ->
     Fun = fun() -> hn_db_wu:read_ref(RefX, intersect) end,
-    mnesia:activity(transaction, Fun).
+    read_activity(RefX, Fun).
 
 %% @doc read_style gets the list of styles that pertain to a particular 
 -spec read_styles(#refX{}, [integer()]) -> #style{}. 
 read_styles(RefX, Idxs) when is_record(RefX, refX) ->
     Fun = fun() -> hn_db_wu:read_styles(RefX, Idxs) end,
-    mnesia:activity(transaction, Fun).
+    read_activity(RefX, Fun).
 
 %% @spec insert(RefX::#refX{}) -> ok
 %% @doc inserts a single column or a row
@@ -481,14 +443,13 @@ delete(#refX{obj = {R, _}} = RefX, Ar) when R == column orelse R == row ->
                column -> horizontal
            end,
     move(RefX, delete, Disp, Ar);
-delete(#refX{obj = {page, _}} = RefX, Ar) ->
+delete(#refX{site=Site, obj = {page, _}} = RefX, Ar) ->
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
                    Dirty = hn_db_wu:delete_cells(RefX),
                    mark_these_dirty(Dirty, Ar)
            end,
-    mnesia:activity(transaction, Fun1),
-    ok = tell_front_end("delete").
+    write_activity(Site, Fun1, "delete").
 
 %% @doc deletes a reference.
 %% 
@@ -511,8 +472,8 @@ delete(#refX{obj = {R, _}} = RefX, Disp, Ar)
 move(RefX, Type, Disp, Ar)
   when (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
-    ok = mnesia:activity(transaction, fun move_tr/4, [RefX, Type, Disp, Ar]),
-    ok = tell_front_end("move", RefX).
+    Fun = fun() -> move_tr(RefX, Type, Disp, Ar) end,
+    write_activity(RefX, Fun, "move").
 
 move_tr(RefX, Type, Disp, Ar) ->
     ok = init_front_end_notify(),
@@ -566,8 +527,7 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
                 hn_db_wu:clear_cells(RefX, Type),
                 mark_children_dirty(RefX, Ar)
         end,
-    mnesia:activity(transaction, Fun),
-    ok = tell_front_end("clear").
+    write_activity(RefX, Fun, "clear").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
@@ -603,14 +563,14 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
 %% </ul> 
 %% 
 %% @todo cut'n'paste a page
-cut_n_paste(From, To, Ar) when is_record(From, refX), is_record(To, refX) ->
+cut_n_paste(From, To, Ar) when 
+      is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   ok = copy_n_paste2(From, To, all, Ar),
                   ok = clear(From, all, Ar)
           end,
-    mnesia:activity(transaction, Fun),
-    ok = tell_front_end("cut n paste").
+    write_activity(From, Fun, "cut n paste").
 
 %% @doc copies the formula and formats from a cell or range and 
 %% pastes them to the destination.
@@ -628,13 +588,13 @@ cut_n_paste(From, To, Ar) when is_record(From, refX), is_record(To, refX) ->
 %% Also whole pages can be copy_n_pasted by making both From and To 
 %% page refX's
 -spec copy_n_paste(#refX{}, #refX{}, all | style | value, auth_srv:auth_req()) -> ok. 
-copy_n_paste(From, To, What, Ar) when is_record(From, refX), is_record(To, refX) ->
+copy_n_paste(From, To, What, Ar) when 
+      is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   ok = copy_n_paste2(From, To, What, Ar)
           end,
-    mnesia:activity(transaction, Fun),
-    ok = tell_front_end("copy n paste").
+    write_activity(From, Fun, "copy n paste").
 
 %% @spec drag_n_drop(From :: #refX{}, To :: #refX{}) -> ok
 %% @doc takes the formula and formats from a cell and drag_n_drops 
@@ -713,8 +673,7 @@ drag_n_drop(From, To, Ar)
                           copy2(From, To, Incr, all, Ar)
                   end
           end,
-    ok = mnesia:activity(transaction, Fun),
-    ok = tell_front_end("drag n drop").
+    ok = write_activity(From, Fun, "drag n drop").
 
 %% @spec(From::refX{}, To::refX{}) -> ok
 %% @doc Copies the style applied to From and attaches it to To.
@@ -767,18 +726,47 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
 
 -spec mark_children_dirty(#refX{}, auth_srv:auth_req()) -> ok.
 mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
-    Children = hn_db_wu:get_local_children_idxs(RefX),
-    Entry = #dirty_queue{dirty = Children, auth_req = AReq},
-    mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write).
+    case hn_db_wu:get_local_children_idxs(RefX) of
+        [] -> 
+            ok;
+        Children ->
+            %% io:format("Mark ~p -> ~p~n", 
+            %%           [RefX, [hn_db_wu:local_idx_to_refX(Site, Idx) || Idx <- Children]]),
+            Entry = #dirty_queue{dirty = Children, auth_req = AReq},
+            mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write)
+    end.
+
+-spec read_activity(#refX{}, fun()) -> any().
+read_activity(#refX{site=Site}, Op) ->
+    Activity = fun() -> mnesia:activity(transaction, Op) end,
+    dbsrv:read_only_activity(Site, Activity).
+
+-spec write_activity(#refX{}, fun(), string()) -> any().
+write_activity(Ref=#refX{site=Site}, Op, FrontEnd) ->
+    Activity = fun() ->
+                       Ret = mnesia:activity(transaction, Op),
+                       tell_front_end(FrontEnd, Ref),
+                       Ret
+               end,
+    dbsrv:write_activity(Site, Activity).
+
+wait_for_dirty(Site) ->
+    timer:sleep(50),
+    case mnesia:dirty_first(hn_db_wu:trans(Site, dirty_queue)) of
+        '$end_of_table' ->
+            ok;
+        _Index ->
+            timer:sleep(100),
+            wait_for_dirty(Site) 
+    end.
 
 init_front_end_notify() ->
     _Return = put('front_end_notify', []),
     ok.
 
 tell_front_end("move", RefX) ->
-    remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path).
-
-tell_front_end(_FnName) ->
+    remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path);
+tell_front_end(_FnName, _refX) ->
     List = lists:reverse(get('front_end_notify')),
     Fun = fun({change, #refX{site=S, path=P, obj=O}, Attrs}) ->
                   remoting_reg:notify_change(S, P, O, Attrs);
@@ -790,18 +778,33 @@ tell_front_end(_FnName) ->
     [ok = Fun(X) || X <- List],
     ok.
 
-%% %% this clause copies whole pages
-%% copy_n_paste2(#refX{site = Site, obj = {page, "/"}} = From, 
-%%               #refX{site = Site, path = NewPath, obj = {page, "/"}},
-%%               Ar) ->
-%%     Cells = hn_db_wu:get_cells(From),
-%%     [ok = copy_cell(X, X#refX{path = NewPath}, false, Ar) 
-%%      || X <- Cells],
-%%     ok;
-%% %% this clause copies bits of pages
+-spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_req()) -> boolean().
+handle_dirty_cell(Site, Idx, Ar) ->
+    ok = init_front_end_notify(),  
+    Fun = fun() ->
+                  Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
+                  Attrs = case hn_db_wu:read_ref(Cell, inside, write) of
+                              [{_, A}] -> A;
+                              _ -> orddict:new()
+                          end,
+                  case orddict:find("formula", Attrs) of
+                      {ok, F} ->
+                          Attrs2 = hn_db_wu:write_attrs(Cell, 
+                                                        [{"formula", F}], 
+                                                        Ar),
+                          RV1 = orddict:find("__rawvalue", Attrs),
+                          RV2 = orddict:find("__rawvalue", Attrs2),
+                          RV1 == RV2;
+                    _ ->
+                          false
+                end
+        end,
+    Fixed = mnesia:activity(transaction, Fun),
+    tell_front_end("handle dirty", #refX{}),
+    Fixed.
+
 copy_n_paste2(From, To, What, Ar) ->
     case is_valid_c_n_p(From, To) of
-        {ok, 'onto self'}    -> ok;
         {ok, single_cell}    -> 
             ok = copy_cell(From, To, false, What, Ar);
         {ok, cell_to_range} -> 

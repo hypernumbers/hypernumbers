@@ -37,6 +37,7 @@
          local_idx_to_refX/2,
          read_local_item_index/1,
          read_ref/2, read_ref/3, read_ref_field/3,
+         %read_relation/1,
          expand_ref/1,
          clear_cells/1, clear_cells/2,
          delete_cells/1,
