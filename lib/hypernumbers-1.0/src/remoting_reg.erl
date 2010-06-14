@@ -122,7 +122,8 @@ send_queued(Updates, Waiting) ->
     Wait = case Match of 
                []   -> Waiting;
                List -> 
-                   send_to_server(Pid, timestamp(), [ Msg || {msg, _, _, Msg, _} <- List ]),
+                   send_to_server(Pid, timestamp(),
+                                  [ Msg || {msg, _, _, Msg, _} <- List ]),
                    OldWaiting
            end,
     {expire_updates(Updates), Wait}.
@@ -135,7 +136,9 @@ send_to_waiting(Updates, Waiting) ->
         
     F = case is_style(Msg) of
             true  -> fun(_) -> true end;
-            false -> fun({_Site, SrvPath, _Time, _Pid}) -> has_path(MsgPath, SrvPath) end
+            false -> fun({_Site, SrvPath, _Time, _Pid}) ->
+                             has_path(MsgPath, SrvPath)
+                     end
         end,              
     
     {Match, Rest} = lists:partition(F, Waiting),
