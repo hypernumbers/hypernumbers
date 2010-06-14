@@ -12,7 +12,7 @@
 -export([ start/0 ]).
 
 -export([ handle/1,
-          extract_styles/2,
+          extract_styles/1,
           style_to_css/1,
           docroot/1,
           page_attributes/2,
@@ -948,10 +948,10 @@ dict_to_struct(X, Dict) ->
         false -> {X, Dict}
     end.
 
--spec extract_styles(string(), list()) -> #style{}. 
-extract_styles(Site, Path) ->
+-spec extract_styles(string()) -> #style{}. 
+extract_styles(Site) ->
     [style_to_css(S) ||
-        S <- hn_db_api:read_styles_IMPORT(#refX{site=Site, path=Path}) ].
+        S <- hn_db_api:read_styles_IMPORT(#refX{site=Site}) ].
         
 %% -spec extract_styles([{#refX{}, [tuple()]}]) -> #style{}. 
 %% extract_styles([]) -> [];
@@ -1018,7 +1018,7 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Content = hn_db_api:read_intersect_ref(Ref),
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
-    Styles = extract_styles(S, P),
+    Styles = extract_styles(S),
     NTree  = add_styles(Styles, Tree),
     Dict   = to_dict(Content, NTree),
     Time   = {"time", remoting_reg:timestamp()},
