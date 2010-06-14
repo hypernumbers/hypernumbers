@@ -6,7 +6,6 @@
 
 -define(SERVER, ?MODULE).
 -include("spriki.hrl").
--include("hypernumbers.hrl").
 
 %% gen_server callbacks
 -export([start_link/1, init/1, handle_call/3, handle_cast/2, 
@@ -42,14 +41,12 @@ handle_cast({fetch, Site, Path, Time, Pid}, {Updates, Waiting}) ->
     NWaiting = [{Site, Path, Time, Pid} | Waiting], 
     {noreply, send_queued(Updates, NWaiting)};
 handle_cast(_Msg, State) ->
-    ?ERROR("Invalid Cast in remoting_reg ~p ",[_Msg]),
+    error_logger:error_msg("Invalid Cast in remoting_reg ~p", [_Msg]),
     {noreply, State}.
 
-handle_info(_Info, State)       -> {noreply, State}.
-
-terminate(_Reason, _State)      -> ok.
-
-code_change(_Old, State, _E)    -> {ok, State}.
+handle_info(_Info, State)    -> {noreply, State}.
+terminate(_Reason, _State)   -> ok.
+code_change(_Old, State, _E) -> {ok, State}.
 
 %%
 %% API Calls
@@ -112,21 +109,20 @@ send_to_server(Server, Time, Msgs) ->
 %% @doc  When a client requests data, send any message that are older
 %%       than the time the client reports (and on the same site)
 send_queued(Updates, Waiting) ->
-
-    [{Site, Path, Time, Pid} | OldWaiting ] = Waiting, 
     
-    F = fun({msg, Site1, Path1, _Msg, Time1}) -> 
-                Site1 == Site andalso lists:member(Path1, Path)
-                    andalso Time < Time1
-        end,
+    [{_Site, Path, Time, Pid} | OldWaiting ] = Waiting, 
 
+    F = fun({msg, _Site1, Path1, Msg, Time1}) ->
+                Time < Time1 
+                    andalso (is_style(Msg) orelse has_path(Path1, Path))
+        end,
+    
     {Match, _Else} = lists:partition(F, Updates), 
     
     Wait = case Match of 
                []   -> Waiting;
                List -> 
-                   Msgs = lists:map(fun({msg, _, _, X, _}) -> X end,List),
-                   send_to_server(Pid, timestamp(), Msgs),
+                   send_to_server(Pid, timestamp(), [ Msg || {msg, _, _, Msg, _} <- List ]),
                    OldWaiting
            end,
     {expire_updates(Updates), Wait}.
@@ -134,31 +130,35 @@ send_queued(Updates, Waiting) ->
 %% @doc  When an update is recieved, automatically send the update to 
 %%       any clients waiting on the same page
 send_to_waiting(Updates, Waiting) ->
-    [{msg, Site, Path, Msg, Time}  | _Rest ] = Updates,     
-    F = fun(Server) -> is_site(Site, Path, Server) end,
-    Send = fun({_S, _P, _T, Pid}) -> send_to_server(Pid, Time, [Msg]) end,
-    {Match, Rest} = lists:partition(F, Waiting), 
-    lists:map(Send, Match),    
+    
+    [{msg, _MsgSite, MsgPath, Msg, Time}  | _Rest ] = Updates,
+        
+    F = case is_style(Msg) of
+            true  -> fun(_) -> true end;
+            false -> fun({_Site, SrvPath, _Time, _Pid}) -> has_path(MsgPath, SrvPath) end
+        end,              
+    
+    {Match, Rest} = lists:partition(F, Waiting),
+    [ send_to_server(Pid, Time, [Msg]) || {_S, _P, _T, Pid} <- Match ],
     {expire_updates(Updates), Rest}.
 
-is_site(Site, Path, {Site, Path1, _Time, _Pid}) -> lists:member(Path, Path1);
-is_site(_Site, _Path, _Server)                  -> false.
 
+has_path(MsgPath, ClientPath) ->
+    lists:member(MsgPath, ClientPath).
+
+is_style({struct, List}) ->
+    {"type", "style"} == lists:keyfind("type", 1, List).
 
 timestamp() ->
     microsecs(erlang:now()).
 
 microsecs({MegaSecs,Secs,MicroSecs}) ->
-        (MegaSecs*1000000 + Secs)*1000000 + MicroSecs. 
+    (MegaSecs * 1000000 + Secs) * 1000000 + MicroSecs. 
 
 %% Expires any messages older than one minute
 expire_updates(Old) ->
-    Now = timestamp(),
-    F   = fun({msg, _Site, _Path, _Msg, Time}) -> 
-                  Time > (Now-60000000)
-          end,
-    lists:filter(F, Old).
-
+    MinuteAgo = timestamp()  - 60000000,
+    [ Msg || Msg = {msg, _Site, _Path, _Msg, Time} <- Old, Time > MinuteAgo].
 
 %%
 %% Tests
