@@ -261,7 +261,7 @@ start_mnesia_system_log(DebugLevel) ->
     set_mnesia_debug_level(DebugLevel),
     gen_server:call(?MODULE, {start_mnesia_system_log}).
 
-%% @spec start_table_loggging(Table, LogLevel) -> ok
+%% @spec start_table_logging(Table, LogLevel) -> ok
 %% @doc stars logging the table with the log level
 %% LogLevel is one of:
 %% <ul>

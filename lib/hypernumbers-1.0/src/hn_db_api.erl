@@ -363,32 +363,6 @@ write_attributes(List, PAr, VAr) ->
     {Ref, _} = hd(List),
     write_activity(Ref, Fun, "write attributes").
 
-%% @spec write_last(List) -> ok
-%% List = [{#refX{}, Val}]
-%% Val = [list() | float() | integer()]
-%% @doc takes a list of references and appends either a column or row at the end of them
-%% 
-%% All of the references must be either a:
-%% <ul>
-%% <li>column</li>
-%% <li>row</li>
-%% </ul>
-%% and they must also be on the same page.
-%% 
-%% If the List looks like:
-%%   <code>[{#refX{obj = {column, {2, 2}}, "=3"}, 
-%%   {refX{obj = {column, {4, 5}}, 0}]</code>
-%% then the value of highest written row will be got the the following cells 
-%% will be written:
-%% <ul>
-%% <li>{cell, {2, LastRow+1} with formula of "=3"</li>
-%% <li>{cell, {4, LastRow+1} with formula of 0</li>
-%% <li>{cell, {5, LastRow+1} with formula of 0</li>
-%% </ul>
-%% It will write the values to the last row/column as if they were
-%% 'formula' attributes
-%% Formulae can be inserted into row or column using <code>rc</code> notation
-%%@end
 
 append_row([], _PAr, _VAr) -> ok;
 append_row(List, PAr, VAr) when is_list(List) ->
@@ -430,15 +404,6 @@ read_styles(RefX, Idxs) when is_record(RefX, refX) ->
     Fun = fun() -> hn_db_wu:read_styles(RefX, Idxs) end,
     read_activity(RefX, Fun).
 
-%% @spec insert(RefX::#refX{}) -> ok
-%% @doc inserts a single column or a row
-%% 
-%% The <code>#refX{}</code> can be one of the following types:
-%% <ul>
-%% <li>row</li>
-%% <li>column</li>
-%% </ul>
-%% 
 %% @todo This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
 insert(#refX{obj = {column, _}} = RefX, Ar) ->
@@ -449,16 +414,6 @@ insert(#refX{obj = R} = RefX, Ar)
   when R == cell orelse R == range ->
     move(RefX, insert, vertical, Ar).
 
-%% @spec insert(RefX :: #refX{}, Type) -> ok 
-%% Type = [horizontal | vertical]
-%% @doc inserts a cell or range
-%% 
-%% The <code>#refX{}</code> can be one of the following types:
-%% <ul>
-%% <li>cell</li>
-%% <li>range</li>
-%% </ul>
-%% 
 %% The Type variable determines how the insert displaces the existing cases...
 insert(#refX{obj = {R, _}} = RefX, Disp, Ar)
   when is_record(RefX, refX), (R == cell orelse R == range),
@@ -531,8 +486,6 @@ do_delete(insert, _RefX) ->
 do_delete(delete, RefX) ->
     hn_db_wu:delete_cells(RefX).
 
-%% @spec clear(#refX{}, Type) -> ok
-%% Type = [contents | style | all | {attributes, List}]
 %% @doc clears the contents of the cell or range
 %% (but doesn't delete the cell or range itself).
 %% 
@@ -542,7 +495,7 @@ do_delete(delete, RefX) ->
 %% <li>values</li>
 %% </ul>
 %% If <code>Type = 'style'</code> it clears the style.
-%% If >code>Type = {'attributes', List}</code> it clears all the attributes
+%% If <code>Type = {'attributes', List}</code> it clears all the attributes
 %% in the list
 %% If <code>Type = 'all'</code> it clears style, content and all attributes.
 %% It doesn't clear other/user-defined attributes of the cell or range
@@ -570,7 +523,6 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% @spec cut_n_paste(From :: #refX{}, To :: #refX{}) -> ok
 %% @doc copies the formula and formats from a cell or range and 
 %% pastes them to the destination then deletes the original.
 %% 
@@ -631,7 +583,6 @@ copy_n_paste(From, To, What, Ar) when
           end,
     write_activity(From, Fun, "copy n paste").
 
-%% @spec drag_n_drop(From :: #refX{}, To :: #refX{}) -> ok
 %% @doc takes the formula and formats from a cell and drag_n_drops 
 %% them over a destination (the difference between drag'n'drop
 %% and copy/cut'n'paste is that drag'n'drop increments)

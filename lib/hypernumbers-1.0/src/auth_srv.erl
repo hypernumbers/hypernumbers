@@ -61,9 +61,6 @@
 %%--------------------------------------------------------------------
 %% @doc
 %% Starts the server
-%%
-%% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
-%% @end
 %%--------------------------------------------------------------------
 -spec start_link(string()) -> {ok, pid()} | ignore | {error, any()}.
 start_link(Site) ->
