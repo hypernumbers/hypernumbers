@@ -168,7 +168,6 @@ has_content(S, LO) ->
         _ -> true
     end.
     
-%% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> ok
 %% Key = atom()
 %% Value = term()
 %% @doc this function writes attributes to a cell or cells.
