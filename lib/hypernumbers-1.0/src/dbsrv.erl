@@ -31,10 +31,15 @@ start_link(Site) ->
     supervisor_bridge:start_link({local, Id}, ?MODULE, [Site]).
 
 read_only_activity(Site, Activity) ->
-    Id = hn_util:site_to_atom(Site, "dbsrv"),
-    Id ! {self(), read_only_activity, Activity},
-    receive
-        {dbsrv_reply, Reply} -> Reply
+    %% Fix for circular chain deadlock. eg. include() in a formula.
+    case mnesia:is_transaction() of
+        true -> Activity();
+        false -> 
+            Id = hn_util:site_to_atom(Site, "dbsrv"),
+            Id ! {self(), read_only_activity, Activity},
+            receive
+                {dbsrv_reply, Reply} -> Reply
+            end
     end.
 
 write_activity(Site, Activity) ->
