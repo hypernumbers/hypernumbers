@@ -128,6 +128,41 @@
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+wait_for_dirty(Site) ->
+    timer:sleep(50),
+    case mnesia:dirty_first(hn_db_wu:trans(Site, dirty_queue)) of
+        '$end_of_table' ->
+            ok;
+        _Index ->
+            timer:sleep(100),
+            wait_for_dirty(Site) 
+    end.
+
+-spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_req()) -> boolean().
+handle_dirty_cell(Site, Idx, Ar) ->
+    ok = init_front_end_notify(),  
+    Fun = fun() ->
+                  Cell = hn_db_wu:idx_to_ref(Site, Idx),
+                  Attrs = case hn_db_wu:read_ref(Cell, inside, write) of
+                              [{_, A}] -> A;
+                              _ -> orddict:new()
+                          end,
+                  case orddict:find("formula", Attrs) of
+                      {ok, F} ->
+                          Attrs2 = hn_db_wu:write_attrs(Cell, 
+                                                        [{"formula", F}], 
+                                                        Ar),
+                          RV1 = orddict:find("__rawvalue", Attrs),
+                          RV2 = orddict:find("__rawvalue", Attrs2),
+                          RV1 == RV2;
+                    _ ->
+                          false
+                end
+        end,
+    Fixed = mnesia:activity(transaction, Fun),
+    tell_front_end("handle dirty", #refX{}),
+    Fixed.
+
 %% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
 %% @doc write_style will write a style record
 %% It is intended to be used in the FILE IMPORT process only 
@@ -712,97 +747,6 @@ copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
             throw(auth_error)
     end.
 
--spec mark_these_dirty([#refX{}], auth_srv:auth_req()) -> ok.
-mark_these_dirty([], _) -> ok;
-mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
-    F = fun(C) -> case hn_db_wu:read_local_item_index(C) of
-                      false -> []; 
-                      Idx   -> Idx
-                  end
-        end,
-    Idxs = lists:flatten([F(C) || R <- Refs, C <- hn_db_wu:expand_ref(R)]),
-    Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
-    mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write).
-
--spec mark_children_dirty(#refX{}, auth_srv:auth_req()) -> ok.
-mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
-    case hn_db_wu:get_local_children_idxs(RefX) of
-        [] -> 
-            ok;
-        Children ->
-            %% io:format("Mark ~p -> ~p~n", 
-            %%           [RefX, [hn_db_wu:local_idx_to_refX(Site, Idx) || Idx <- Children]]),
-            Entry = #dirty_queue{dirty = Children, auth_req = AReq},
-            mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write)
-    end.
-
--spec read_activity(#refX{}, fun()) -> any().
-read_activity(#refX{site=Site}, Op) ->
-    Activity = fun() -> mnesia:activity(transaction, Op) end,
-    dbsrv:read_only_activity(Site, Activity).
-
--spec write_activity(#refX{}, fun(), string()) -> any().
-write_activity(Ref=#refX{site=Site}, Op, FrontEnd) ->
-    Activity = fun() ->
-                       Ret = mnesia:activity(transaction, Op),
-                       tell_front_end(FrontEnd, Ref),
-                       Ret
-               end,
-    dbsrv:write_activity(Site, Activity).
-
-wait_for_dirty(Site) ->
-    timer:sleep(50),
-    case mnesia:dirty_first(hn_db_wu:trans(Site, dirty_queue)) of
-        '$end_of_table' ->
-            ok;
-        _Index ->
-            timer:sleep(100),
-            wait_for_dirty(Site) 
-    end.
-
-init_front_end_notify() ->
-    _Return = put('front_end_notify', []),
-    ok.
-
-tell_front_end("move", RefX) ->
-    remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path);
-tell_front_end(_FnName, _refX) ->
-    List = lists:reverse(get('front_end_notify')),
-    Fun = fun({change, #refX{site=S, path=P, obj=O}, Attrs}) ->
-                  remoting_reg:notify_change(S, P, O, Attrs);
-             ({delete, #refX{site=S, path=P, obj=O}}) ->
-                  remoting_reg:notify_delete(S, P, O);
-             ({style, #refX{site=S, path=P}, Style}) ->
-                  remoting_reg:notify_style(S, P, Style)
-          end,
-    [ok = Fun(X) || X <- List],
-    ok.
-
--spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_req()) -> boolean().
-handle_dirty_cell(Site, Idx, Ar) ->
-    ok = init_front_end_notify(),  
-    Fun = fun() ->
-                  Cell = hn_db_wu:local_idx_to_refX(Site, Idx),
-                  Attrs = case hn_db_wu:read_ref(Cell, inside, write) of
-                              [{_, A}] -> A;
-                              _ -> orddict:new()
-                          end,
-                  case orddict:find("formula", Attrs) of
-                      {ok, F} ->
-                          Attrs2 = hn_db_wu:write_attrs(Cell, 
-                                                        [{"formula", F}], 
-                                                        Ar),
-                          RV1 = orddict:find("__rawvalue", Attrs),
-                          RV2 = orddict:find("__rawvalue", Attrs2),
-                          RV1 == RV2;
-                    _ ->
-                          false
-                end
-        end,
-    Fixed = mnesia:activity(transaction, Fun),
-    tell_front_end("handle dirty", #refX{}),
-    Fixed.
-
 copy_n_paste2(From, To, What, Ar) ->
     case is_valid_c_n_p(From, To) of
         {ok, single_cell}    -> 
@@ -957,3 +901,57 @@ is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {cell, _}}) ->
 is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
     {ok, range_to_range}.
 
+
+-spec read_activity(#refX{}, fun()) -> any().
+read_activity(#refX{site=Site}, Op) ->
+    Activity = fun() -> mnesia:activity(transaction, Op) end,
+    dbsrv:read_only_activity(Site, Activity).
+
+-spec write_activity(#refX{}, fun(), string()) -> any().
+write_activity(Ref=#refX{site=Site}, Op, FrontEnd) ->
+    Activity = fun() ->
+                       Ret = mnesia:activity(transaction, Op),
+                       tell_front_end(FrontEnd, Ref),
+                       Ret
+               end,
+    dbsrv:write_activity(Site, Activity).
+
+-spec mark_these_dirty([#refX{}], auth_srv:auth_req()) -> ok.
+mark_these_dirty([], _) -> ok;
+mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
+    F = fun(C) -> case hn_db_wu:ref_to_idx(C) of
+                      false -> []; 
+                      Idx   -> Idx
+                  end
+        end,
+    Idxs = lists:flatten([F(C) || R <- Refs, C <- hn_db_wu:expand_ref(R)]),
+    Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
+    mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write).
+
+-spec mark_children_dirty(#refX{}, auth_srv:auth_req()) -> ok.
+mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
+    case hn_db_wu:get_children_idxs(RefX) of
+        [] -> 
+            ok;
+        Children ->
+            Entry = #dirty_queue{dirty = Children, auth_req = AReq},
+            mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write)
+    end.
+
+init_front_end_notify() ->
+    _Return = put('front_end_notify', []),
+    ok.
+
+tell_front_end("move", RefX) ->
+    remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path);
+tell_front_end(_FnName, _refX) ->
+    List = lists:reverse(get('front_end_notify')),
+    Fun = fun({change, #refX{site=S, path=P, obj=O}, Attrs}) ->
+                  remoting_reg:notify_change(S, P, O, Attrs);
+             ({delete, #refX{site=S, path=P, obj=O}}) ->
+                  remoting_reg:notify_delete(S, P, O);
+             ({style, #refX{site=S, path=P}, Style}) ->
+                  remoting_reg:notify_style(S, P, Style)
+          end,
+    [ok = Fun(X) || X <- List],
+    ok.

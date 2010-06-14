@@ -66,7 +66,6 @@ gen_test(Template, Fixture) ->
     Count = case ?pget("value", A1) of
                 "NOTESTS" -> 0;
                 Range ->      
-                    io:format("Range: ~p~n", [Range]),
                     {_,X1,_,X2} = util2:parse_range(Range),
                     X2-X1+2
             end,

@@ -115,8 +115,8 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
         {_From, write_activity, Activity} ->
             Activity(),
             case load_dirty_since(Since, QTbl) of
-                {_, []} ->
-                    {Since, WorkPlan};
+                {Since2, []} ->
+                    {Since2, WorkPlan};
                 {Since2, Dirty} ->
                     WorkPlan2 = build_workplan(Site, Dirty, Graph),
                     {Since2, WorkPlan2}
@@ -185,6 +185,7 @@ execute_plan([C | T], Site, Graph) ->
                 true -> prune_path(digraph:out_neighbours(Graph, C), Graph);
                 false -> ok
             end,
+            digraph:del_vertex(Graph, C),
             execute_plan(T, Site, Graph)
     end.
           

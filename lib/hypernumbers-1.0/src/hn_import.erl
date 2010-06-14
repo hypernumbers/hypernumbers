@@ -72,7 +72,7 @@ cells(Ref, Row, {Col, {struct, Attrs}}, RewriteT, Type, Fun) ->
 
 write_col_row(_NRef, _, [])   -> ok;
 write_col_row(NRef, _, Attrs) ->
-    ok = hn_db_api:write_attributes([{NRef, Attrs}]).    
+    hn_db_api:write_attributes([{NRef, Attrs}]).    
              
 write_cells(Ref, RewriteT, Attrs) ->
     Attrs2 = copy_attrs(Attrs, [], RewriteT, ["merge",

@@ -31,24 +31,23 @@
 
 %% Cell Query Exports
 -export([
+         get_cell_for_muin/1,
          write_attrs/2, write_attrs/3,
          read_styles/2,
          matching_forms/2,
-         local_idx_to_refX/2,
-         read_local_item_index/1,
          read_ref/2, read_ref/3, read_ref_field/3,
-         %read_relation/1,
          expand_ref/1,
          clear_cells/1, clear_cells/2,
          delete_cells/1,
          shift_cells/4,
-         get_local_children/1,
-         get_local_children_idxs/1,
+         get_children/1,
+         get_children_idxs/1,
          copy_cell/4,
          read_page_structure/1,
          read_pages/1,
-         get_cell_for_muin/1,
-         get_local_item_index/1
+         idx_to_ref/2,
+         ref_to_idx/1,
+         ref_to_idx_create/1
         ]).
 
 %% Database transformation functions
@@ -116,7 +115,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
                 {ok, D} -> D;
                 _       -> []
             end,
-    Dep = DTree ++ [{"local", get_local_item_index(RefX)}],
+    Dep = DTree ++ [{"local", ref_to_idx_create(RefX)}],
     {Value, Dep, [], [{"local", {Site, Path, XX, YY}}]}.
 
 
@@ -290,7 +289,7 @@ expunge_refs(S, Refs) ->
 -spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ?dict.
 apply_to_attrs(#refX{site=Site}=Ref, Op) ->
     Table = trans(Site, item), 
-    Idx = get_local_item_index(Ref),
+    Idx = ref_to_idx_create(Ref),
     Attrs = case mnesia:read(Table, Idx, write) of
                 [#item{attrs=A}] -> A;
                 _                -> orddict:new()
@@ -358,7 +357,7 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
         ObjsList ->
             %% %% Rewrite the formulas of all the child cells
             RefXList = [lobj_to_ref(Site, O) || O <- ObjsList],
-            ChildCells = lists:flatten([get_local_children(X) || X <- RefXList]),
+            ChildCells = lists:flatten([get_children(X) || X <- RefXList]),
             ChildCells2 = hslists:uniq(ChildCells),
             DedupedChildren = lists:subtract(ChildCells2, Rewritten),
             Formulas = [F || X <- DedupedChildren,
@@ -420,8 +419,8 @@ do_clear_cells(Ref, DelAttrs) ->
                  fun(Attrs) ->
                          case lists:keymember("formula", 1, Attrs) of
                              true -> 
-                                 set_local_relations(RX, []),
-                                 unattach_form(RX, read_local_item_index(RX));
+                                 set_relations(RX, []),
+                                 unattach_form(RX, ref_to_idx(RX));
                              false -> ok
                          end,
                          del_attributes(Attrs, DelAttrs)
@@ -471,7 +470,7 @@ delete_cells(#refX{site = S} = DelX) ->
             %% being deleted by rewriting the formulae of all the
             %% children cells replacing the reference to this cell
             %% with #ref!
-            LocalChildren = [get_local_children(C) || C <- Cells],
+            LocalChildren = [get_children(C) || C <- Cells],
             LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
 
             %% sometimes a cell will have local children that are also
@@ -483,7 +482,7 @@ delete_cells(#refX{site = S} = DelX) ->
             [deref_formula(X, DelX) || X <- LocalChildren3],
 
             %% fix relations table.
-            [ok = delete_local_relation(X) || X <- Cells],
+            [ok = delete_relation(X) || X <- Cells],
 
             %% Delete the rows or columns and cells (and their indicices)
             expunge_refs(S, lists:append(expand_to_rows_or_cols(DelX), Cells)),
@@ -597,11 +596,11 @@ filter_pages([], Tree) ->
 filter_pages([Path | T], Tree) ->
     filter_pages(T, dh_tree:add(Path, Tree)).
 
--spec get_local_item_index(#refX{}) -> pos_integer().
-%% @doc get_local_item_index get_item_index gets the index of an object 
+-spec ref_to_idx_create(#refX{}) -> pos_integer().
+%% @doc ref_to_idx_create ref_to_idx_create gets the index of an object 
 %% AND CREATES IT IF IT DOESN'T EXIST
-get_local_item_index(#refX{site = S, path = P, obj = O} = RefX) ->
-    case read_local_item_index(RefX) of
+ref_to_idx_create(#refX{site = S, path = P, obj = O} = RefX) ->
+    case ref_to_idx(RefX) of
         false -> Idx = util2:get_timestamp(),
                  Rec = #local_obj{path = P, obj = O, idx = Idx},
                  ok = mnesia:write(trans(S, local_obj), Rec, write),
@@ -665,7 +664,7 @@ shift_pattern(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
 shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1, 0, infinity, infinity}}}.
 
-local_idx_to_refX(S, Idx) ->
+idx_to_ref(S, Idx) ->
     case mnesia:read(trans(S, local_obj), Idx, read) of
         [Rec] -> #local_obj{path = P, obj = O} = Rec,
                  #refX{site = S, path = P, obj = O};
@@ -687,10 +686,10 @@ refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
               array_context = AC,
               auth_req = AR}.
 
-%% read_item_index reads the index of an object AND RETURNS 'false'
+%% ref_to_idx reads the index of an object AND RETURNS 'false'
 %% IF IT DOESN'T EXIST
--spec read_local_item_index(#refX{}) -> pos_integer() | false. 
-read_local_item_index(#refX{site = S, path = P, obj = Obj}) ->
+-spec ref_to_idx(#refX{}) -> pos_integer() | false. 
+ref_to_idx(#refX{site = S, path = P, obj = Obj}) ->
     Table = trans(S, local_obj),
     MS = [{#local_obj{path=P, obj=Obj, idx = '$1', _='_'}, [], ['$1']}],
     case mnesia:select(Table, MS, read) of
@@ -1034,16 +1033,16 @@ d_n_d_c_n_p_offset1([H | T], XOffset, YOffset, Acc) ->
 %% -spec get_local_parents(#refX{}) -> [#refX{}].
 %% get_local_parents(#refX{site = Site} = X) ->
 %%     ParentIdxs = get_local_rel_idxs(X, parents),
-%%     [local_idx_to_refX(Site, C) || C <- ParentIdxs].
+%%     [idx_to_ref(Site, C) || C <- ParentIdxs].
 
--spec get_local_children(#refX{}) -> [#refX{}].
-get_local_children(#refX{site = Site} = X) ->
-    ChildIdxs = get_local_children_idxs(X),
-    [local_idx_to_refX(Site, C) || C <- ChildIdxs].
+-spec get_children(#refX{}) -> [#refX{}].
+get_children(#refX{site = Site} = X) ->
+    ChildIdxs = get_children_idxs(X),
+    [idx_to_ref(Site, C) || C <- ChildIdxs].
 
--spec get_local_children_idxs(#refX{}) -> [cellidx()]. 
-get_local_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
-    case read_local_item_index(Ref) of
+-spec get_children_idxs(#refX{}) -> [cellidx()]. 
+get_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
+    case ref_to_idx(Ref) of
         false -> 
             [];
         Idx -> 
@@ -1053,29 +1052,29 @@ get_local_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
                 _   -> []
             end
     end;
-get_local_children_idxs(#refX{obj = {Type, _}} = Ref) 
+get_children_idxs(#refX{obj = {Type, _}} = Ref) 
   when (Type == row) orelse (Type == column) orelse 
        (Type == range) orelse (Type == page) ->
-    lists:flatten([get_local_children_idxs(X) 
+    lists:flatten([get_children_idxs(X) 
                    || X=#refX{obj={cell,_}} <- expand_ref(Ref)]).
 
--spec delete_local_relation(#refX{}) -> ok.
-delete_local_relation(#refX{site = Site} = Cell) ->
-    case read_local_item_index(Cell) of
+-spec delete_relation(#refX{}) -> ok.
+delete_relation(#refX{site = Site} = Cell) ->
+    case ref_to_idx(Cell) of
         false -> ok;
         CellIdx ->
             Tbl = trans(Site, relation),
             case mnesia:read(Tbl, CellIdx, write) of
                 [R] ->
-                    [del_local_child(P, CellIdx, Tbl) || 
+                    [del_child(P, CellIdx, Tbl) || 
                         P <- R#relation.parents],
                     ok = mnesia:delete(Tbl, CellIdx, write);
                 _ -> ok
             end
     end.
 
--spec del_local_child(cellidx(), cellidx(), atom()) -> ok.
-del_local_child(CellIdx, Child, Tbl) ->
+-spec del_child(cellidx(), cellidx(), atom()) -> ok.
+del_child(CellIdx, Child, Tbl) ->
     case mnesia:read(Tbl, CellIdx, write) of
         [R] ->
             Children = ordsets:del_element(Child, R#relation.children),
@@ -1085,31 +1084,31 @@ del_local_child(CellIdx, Child, Tbl) ->
             ok
     end.
 
--spec set_local_relations(#refX{}, [#refX{}]) -> ok.
-set_local_relations(#refX{site = Site} = Cell, Parents) ->
+-spec set_relations(#refX{}, [#refX{}]) -> ok.
+set_relations(#refX{site = Site} = Cell, Parents) ->
     Tbl = trans(Site, relation),
-    CellIdx = get_local_item_index(Cell),
+    CellIdx = ref_to_idx_create(Cell),
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R; 
               []  -> #relation{cellidx = CellIdx}
           end,
-    Rel2 = set_local_parents(Tbl, Rel, Parents),
+    Rel2 = set_parents(Tbl, Rel, Parents),
     mnesia:write(Tbl, Rel2, write).
 
--spec set_local_parents(atom(), #relation{}, [#refX{}]) -> #relation{}. 
-set_local_parents(Tbl, 
+-spec set_parents(atom(), #relation{}, [#refX{}]) -> #relation{}. 
+set_parents(Tbl, 
                   Rel = #relation{cellidx = CellIdx, 
                                   parents = CurParents},
                   Parents) ->
-    ParentIdxs = ordsets:from_list([get_local_item_index(P) || P <- Parents]),
+    ParentIdxs = ordsets:from_list([ref_to_idx_create(P) || P <- Parents]),
     LostParents = ordsets:subtract(CurParents, ParentIdxs),
-    [del_local_child(P, CellIdx, Tbl) || P <- LostParents],
-    [ok = add_local_child(P, CellIdx, Tbl) || P <- ParentIdxs],
+    [del_child(P, CellIdx, Tbl) || P <- LostParents],
+    [ok = add_child(P, CellIdx, Tbl) || P <- ParentIdxs],
     Rel#relation{parents = ParentIdxs}.
 
 %% Adds a new child to a parent.
--spec add_local_child(cellidx(), cellidx(), atom()) -> ok.
-add_local_child(CellIdx, Child, Tbl) ->
+-spec add_child(cellidx(), cellidx(), atom()) -> ok.
+add_child(CellIdx, Child, Tbl) ->
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R;
               []  -> #relation{cellidx = CellIdx}
@@ -1450,7 +1449,7 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
 write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Deptree, Parents, Recompile) ->
     Parxml = map(fun muin_link_to_simplexml/1, Parents),
     {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
-    ok = set_local_relations(Ref, NewLocPs),
+    ok = set_relations(Ref, NewLocPs),
     Align = default_align(Res),
     add_attributes(Attrs, [{"parents", {xml, Parxml}},
                            {"formula", Formula},
@@ -1482,7 +1481,7 @@ write_formula2(Ref, OrigVal, {Type, Val},
                   _        -> hn_util:text(Val) end,
     Parxml = map(fun muin_link_to_simplexml/1, []),
     {NewLocPs, _NewRemotePs} = split_local_remote([]),
-    ok = set_local_relations(Ref, NewLocPs),
+    ok = set_relations(Ref, NewLocPs),
     Attrs2 = add_attributes(Attrs, [{"__dependency-tree", []},
                                     {"__default-align", Align},
                                     {"__rawvalue", Val},
@@ -1528,7 +1527,7 @@ matching_forms(#refX{site=Site, path=Path}, Trans) ->
 -spec attach_form(#refX{}, #form{}) -> ok. 
 attach_form(Ref=#refX{site=Site}, Form) ->
     Tbl = trans(Site, form),
-    Idx = get_local_item_index(Ref),
+    Idx = ref_to_idx_create(Ref),
     mnesia:write(Tbl, Form#form{key = Idx}, write).
 
 -spec unattach_form(#refX{}, cellidx()) -> ok. 
