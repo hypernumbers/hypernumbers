@@ -6,6 +6,7 @@
 -export([start_link/1,
          read_only_activity/2,
          write_activity/2,
+         is_busy/1,
          dbsrv/5]).
 
 %% supervisor_bridge callbacks
@@ -44,9 +45,16 @@ read_only_activity(Site, Activity) ->
 
 write_activity(Site, Activity) ->
     Id = hn_util:site_to_atom(Site, "dbsrv"),
-    Id ! {self(), write_activity, Activity},
+    Id ! {write_activity, Activity},
     ok.
 
+is_busy(Site) ->
+    Id = hn_util:site_to_atom(Site, "dbsrv"),
+    Id ! {self(), is_busy},
+    receive
+        {dbsrv_reply, Reply} -> Reply
+    end.
+    
 %%====================================================================
 %% supervisor_bridge callbacks
 %%====================================================================
@@ -117,7 +125,7 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
             From ! {dbsrv_reply, Reply},
             check_messages(Site, Since, QTbl, WorkPlan, Graph);
         
-        {_From, write_activity, Activity} ->
+        {write_activity, Activity} ->
             Activity(),
             case load_dirty_since(Since, QTbl) of
                 {Since2, []} ->
@@ -126,6 +134,11 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
                     WorkPlan2 = build_workplan(Site, Dirty, Graph),
                     {Since2, WorkPlan2}
             end;
+
+        {From, is_busy} ->
+            From ! {dbsrv_reply, WorkPlan /= []},
+            check_messages(Site, Since, QTbl, WorkPlan, Graph);
+
         _Other ->
             check_messages(Site, Since, QTbl, WorkPlan, Graph)
     after Wait ->
@@ -152,18 +165,20 @@ load_dirty_since(Since, QTbl) ->
 build_workplan(Site, Dirty, Graph) ->
     RTbl = hn_db_wu:trans(Site, relation),
     Trans = fun() ->
-                    Disturbed = [I || D <- Dirty, 
-                                      I <- check_interference(D, RTbl, Graph)],
-                    [digraph:del_vertex(Graph, I) || I <- Disturbed],
-                    update_recalc_graph(Disturbed ++ Dirty, RTbl, Graph)
+                    [begin
+                         digraph:add_vertex(Graph, D),
+                         digraph:add_edge(Graph, P, D)
+                     end || D <- Dirty, 
+                            P <- check_interference(D, RTbl, Graph)],
+                    update_recalc_graph(Dirty, RTbl, Graph)
             end,
     ok = mnesia:activity(transaction, Trans),
     digraph_utils:topsort(Graph).        
 
 %% When a formula is added, it is necessary to test whether or not
-%% it's parents are already present in the recalc tree. If so, these
-%% parents must be 're-added' to ensure the proper evaluation of their
-%% new child.
+%% it's parents are already present in the recalc tree. If so,
+%% dependency edges must be added from these parents to the new
+%% formula.
 -spec check_interference(cellidx(), atom(), digraph()) -> [cellidx()]. 
 check_interference(Cell, RTbl, Graph) ->
     case mnesia:read(RTbl, Cell, read) of

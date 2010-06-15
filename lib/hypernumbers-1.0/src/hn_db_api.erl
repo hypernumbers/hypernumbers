@@ -129,13 +129,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 wait_for_dirty(Site) ->
-    timer:sleep(50),
-    case mnesia:dirty_first(hn_db_wu:trans(Site, dirty_queue)) of
-        '$end_of_table' ->
-            ok;
-        _Index ->
+    case dbsrv:is_busy(Site) of
+        true ->
             timer:sleep(100),
-            wait_for_dirty(Site) 
+            wait_for_dirty(Site);
+        false ->
+            ok
     end.
 
 -spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_req()) -> boolean().
