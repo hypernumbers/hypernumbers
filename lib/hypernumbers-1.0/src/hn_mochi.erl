@@ -948,14 +948,19 @@ dict_to_struct(X, Dict) ->
         false -> {X, Dict}
     end.
 
--spec extract_styles([{#refX{}, [tuple()]}]) -> #style{}. 
-extract_styles([]) -> [];
-extract_styles(Data) ->
-    {Ref, _} = hd(Data),
-    Idxs = [I || {_, Attrs} <- Data,
-                 I <- [proplists:get_value("style", Attrs)],
-                 I /= undefined],
-    [style_to_css(S) || S <- hn_db_api:read_styles(Ref, Idxs)].
+-spec extract_styles(string()) -> #style{}. 
+extract_styles(Site) ->
+    [style_to_css(S) ||
+        S <- hn_db_api:read_styles_IMPORT(#refX{site=Site}) ].
+        
+%% -spec extract_styles([{#refX{}, [tuple()]}]) -> #style{}. 
+%% extract_styles([]) -> [];
+%% extract_styles(Data) ->
+%%     {Ref, _} = hd(Data),
+%%     Idxs = [I || {_, Attrs} <- Data,
+%%                  I <- [proplists:get_value("style", Attrs)],
+%%                  I /= undefined],
+%%     [style_to_css(S) || S <- hn_db_api:read_styles(Ref, Idxs)].
 
 style_to_css(#style{magic_style = Style, idx = I}) ->
     Num = ms_util2:no_of_fields(magic_style),
@@ -1013,7 +1018,7 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Content = hn_db_api:read_intersect_ref(Ref),
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
-    Styles = extract_styles(Content),
+    Styles = extract_styles(S),
     NTree  = add_styles(Styles, Tree),
     Dict   = to_dict(Content, NTree),
     Time   = {"time", remoting_reg:timestamp()},
