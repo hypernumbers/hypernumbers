@@ -159,9 +159,9 @@ handle_dirty_cell(Site, Idx, Ar) ->
                           false
                 end
         end,
-    Fixed = mnesia:activity(transaction, Fun),
+    _Fixed = mnesia:activity(transaction, Fun),
     tell_front_end("handle dirty", #refX{}),
-    Fixed.
+    false.
 
 %% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
 %% @doc write_style will write a style record
@@ -376,7 +376,7 @@ append_row(List, PAr, VAr) when is_list(List) ->
                             Obj = {cell, {X, Row}},
                             RefX2 = #refX{site = S, path = P, obj = Obj},
                             hn_db_wu:write_attrs(RefX2, [{"formula", Val}], PAr),
-                            mark_children_dirty(RefX2, VAr)
+                            mark_these_dirty([RefX2], VAr)
                     end,
                 [F(X,V) || {#refX{site=S1, path=P1, obj={column,{X,X}}}, V} 
                                <- List, S == S1, P == P1]
@@ -513,7 +513,7 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
         fun() ->
                 ok = init_front_end_notify(),
                 hn_db_wu:clear_cells(RefX, Type),
-                mark_children_dirty(RefX, Ar)
+                mark_these_dirty([RefX], Ar)
         end,
     write_activity(RefX, Fun, "clear").
 
@@ -680,7 +680,7 @@ write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
 write_attributes1(RefX, List, PAr, VAr) ->
     hn_db_wu:write_attrs(RefX, List, PAr),
     case lists:keymember("formula", 1, List) of
-       true  -> ok = mark_children_dirty(RefX, VAr);
+       true  -> ok = mark_these_dirty([RefX], VAr);
        false -> ok
     end.
 
@@ -693,7 +693,7 @@ copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
     case auth_srv:get_any_view(Site, Path, Ar) of
         {view, _} ->
             hn_db_wu:copy_cell(From, To, Incr, What),
-            mark_children_dirty(To, Ar);
+            mark_these_dirty([To], Ar);
         _ ->
             throw(auth_error)
     end.
@@ -878,16 +878,6 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
     Idxs = lists:flatten([F(C) || R <- Refs, C <- hn_db_wu:expand_ref(R)]),
     Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
     mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write).
-
--spec mark_children_dirty(#refX{}, auth_srv:auth_req()) -> ok.
-mark_children_dirty(#refX{site = Site}=RefX, AReq) ->
-    case hn_db_wu:get_children_idxs(RefX) of
-        [] -> 
-            ok;
-        Children ->
-            Entry = #dirty_queue{dirty = Children, auth_req = AReq},
-            mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write)
-    end.
 
 init_front_end_notify() ->
     _Return = put('front_end_notify', []),

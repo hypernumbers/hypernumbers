@@ -151,25 +151,44 @@ load_dirty_since(Since, QTbl) ->
 -spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()]. 
 build_workplan(Site, Dirty, Graph) ->
     RTbl = hn_db_wu:trans(Site, relation),
-    ok = mnesia:activity(transaction, fun update_recalc_graph/3, 
-                         [Dirty, RTbl, Graph]),
+    Trans = fun() ->
+                    Disturbed = [I || D <- Dirty, 
+                                      I <- check_interference(D, RTbl, Graph)],
+                    [digraph:del_vertex(Graph, I) || I <- Disturbed],
+                    update_recalc_graph(Disturbed ++ Dirty, RTbl, Graph)
+            end,
+    ok = mnesia:activity(transaction, Trans),
     digraph_utils:topsort(Graph).        
+
+%% When a formula is added, it is necessary to test whether or not
+%% it's parents are already present in the recalc tree. If so, these
+%% parents must be 're-added' to ensure the proper evaluation of their
+%% new child.
+-spec check_interference(cellidx(), atom(), digraph()) -> [cellidx()]. 
+check_interference(Cell, RTbl, Graph) ->
+    case mnesia:read(RTbl, Cell, read) of
+        [R] ->
+            Parents = ordsets:to_list(R#relation.parents),
+            [P || P <- Parents, false /= digraph:vertex(Graph, P)];
+        _ ->
+            []
+    end.
 
 %% Recursively walk child relation, adding entries into the work
 %% queue.
 -spec update_recalc_graph([cellidx()], atom(), digraph()) -> ok.
 update_recalc_graph([], _RTbl, _Graph) ->
     ok;
-update_recalc_graph([Idx|Rest], RTbl, Graph) when is_atom(RTbl) ->
+update_recalc_graph([Idx|Rest], RTbl, Graph) ->
     case digraph:vertex(Graph, Idx) of
         false ->
-            digraph:add_vertex(Graph, Idx),
             case mnesia:read(RTbl, Idx, read) of
                 [R] ->
+                    digraph:add_vertex(Graph, Idx),
                     Children = ordsets:to_list(R#relation.children),
                     update_recalc_graph(Children, RTbl, Graph),
                     [digraph:add_edge(Graph, Idx, C) || C <- Children];
-                _ -> 
+                _ ->
                     ok
             end;
         _ ->
