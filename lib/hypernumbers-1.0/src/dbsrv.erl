@@ -81,56 +81,40 @@ terminate(_Reason, #state{table = _T}) ->
 -spec dbsrv_init(string(), atom()) -> no_return(). 
 dbsrv_init(Site, QTbl) ->
     {Since, Dirty} = load_dirty_since(0, QTbl),
-    Graph = new_graph(),
-    WorkPlan = build_workplan(Site, Dirty, Graph),
+    {WorkPlan, Graph} = build_workplan(Site, Dirty),
     dbsrv(Site, QTbl, Since, WorkPlan, Graph).
 
 -spec dbsrv(string(), atom(), term(), [cellidx()], digraph()) 
                         -> no_return().
-dbsrv(Site, QTbl, Since, WorkPlan, Graph0) ->
-    Graph = cleanup(WorkPlan, Since, QTbl, Graph0),
-    {Since2, WorkPlan2} = check_messages(Site, Since, QTbl, WorkPlan, Graph),
-    WorkPlan3 = case WorkPlan2 of 
-                    [Cell | Rest] ->
-                        execute_plan([Cell], Site, Graph),
-                        Rest;
-                    _ ->
-                        WorkPlan2
-                end,
-    ?MODULE:dbsrv(Site, QTbl, Since2, WorkPlan3, Graph).
-
--spec cleanup([cellidx()], term(), atom(), digraph()) -> digraph().
-cleanup([], Since, QTbl, Graph) -> 
-    ok = clear_dirty_queue(Since, QTbl), 
+dbsrv(Site, QTbl, Since, WorkPlan, Graph) ->
+    execute_plan(WorkPlan, Site, Graph),
     digraph:delete(Graph),
-    new_graph();
-cleanup(_, _, _, Graph) -> Graph.
+    clear_dirty_queue(Since, QTbl),
+    {Since2, WorkPlan2, Graph2} = check_messages(Site, Since, QTbl),
+    ?MODULE:dbsrv(Site, QTbl, Since2, WorkPlan2, Graph2).
 
 %% Checks if new work is waiting to be processed. 
--spec check_messages(string(), term(), atom(), [cellidx()], digraph()) 
-               -> {term(), [cellidx()]}.
-check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
-    Wait = case WorkPlan of [] -> infinity; _ -> 0 end,
+-spec check_messages(string(), term(), atom()) 
+                    -> {term(), [cellidx()], digraph()}.
+check_messages(Site, Since, QTbl) ->
     receive 
         {From, read_only_activity, Activity} -> 
             Reply = Activity(),
             From ! {dbsrv_reply, Reply},
-            check_messages(Site, Since, QTbl, WorkPlan, Graph);
-        
+            check_messages(Site, Since, QTbl);
+
         {_From, write_activity, Activity} ->
             Activity(),
             case load_dirty_since(Since, QTbl) of
                 {Since2, []} ->
-                    {Since2, WorkPlan};
+                    check_messages(Site, Since2, QTbl);
                 {Since2, Dirty} ->
-                    WorkPlan2 = build_workplan(Site, Dirty, Graph),
-                    {Since2, WorkPlan2}
+                    {WorkPlan2, Graph2} = build_workplan(Site, Dirty),
+                    {Since2, WorkPlan2, Graph2}
             end;
         _Other ->
-            check_messages(Site, Since, QTbl, WorkPlan, Graph)
-    after Wait ->
-            {Since, WorkPlan}
-    end.    
+            check_messages(Site, Since, QTbl)
+    end.
 
 %% Loads new dirty information into the recalc graph.
 -spec load_dirty_since(term(), atom()) -> {term(), [cellidx()]}.
@@ -148,12 +132,13 @@ load_dirty_since(Since, QTbl) ->
             {Since2, DirtyL}
     end.
 
--spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()]. 
-build_workplan(Site, Dirty, Graph) ->
+-spec build_workplan(string(), [cellidx()]) -> {[cellidx()], digraph()}. 
+build_workplan(Site, Dirty) ->
     RTbl = hn_db_wu:trans(Site, relation),
+    Graph = new_graph(),
     ok = mnesia:activity(transaction, fun update_recalc_graph/3, 
                          [Dirty, RTbl, Graph]),
-    digraph_utils:topsort(Graph).        
+    {digraph_utils:topsort(Graph), Graph}.  
 
 %% Recursively walk child relation, adding entries into the work
 %% queue.
