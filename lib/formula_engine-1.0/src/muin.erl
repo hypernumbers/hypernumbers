@@ -194,23 +194,24 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
 funcall(Fname, Args0) ->
     
     % TODO, this should be taken out, no reason to strictly
-    % evaluate arguments
-    Funs = [ '+', '^^',
-             abs, acos, 'and', asin, asinh, atan, atan2, atanh, avedev,
-             average, averagea,
-             ceiling, char, choose, clean, column, columns, combin,
-             concatenate, cos, cosh, count, counta, countblank, countif,
-             tan, tanh,
-             sin, sinh,
-             thelifeuniverseandeverything,
-             'if', row,
-             cell, timevalue, npv, max, maxa, min, mina, syd,
-             sumsq, sum, stdevpa, stdevp, stdeva, stdev, product, mdeterm,
-             median, replace, rows, sumif,
-             odd, int, degrees, radians, proper, index, var, steyx,
-             small, skew, large, sumproduct, daverage, dcount, isref,
-             irr, even,
-             include],
+    % evaluate arguments -- hahaha
+    %% Funs = [ '+', '^^',
+    %%          abs, acos, 'and', asin, asinh, atan, atan2, atanh, avedev,
+    %%          average, averagea,
+    %%          ceiling, char, choose, clean, column, columns, combin,
+    %%          concatenate, cos, cosh, count, counta, countblank, countif,
+    %%          tan, tanh,
+    %%          sin, sinh,
+    %%          thelifeuniverseandeverything,
+    %%          'if', row,
+    %%          cell, timevalue, npv, max, maxa, min, mina, syd,
+    %%          sumsq, sum, stdevpa, stdevp, stdeva, stdev, product, mdeterm,
+    %%          median, replace, rows, sumif,
+    %%          odd, int, degrees, radians, proper, index, var, steyx,
+    %%          small, skew, large, sumproduct, daverage, dcount, isref,
+    %%          irr, even,
+    %%          include],
+    Funs = [],
     
     Args = case member(Fname, Funs) of
                true  -> Args0;
