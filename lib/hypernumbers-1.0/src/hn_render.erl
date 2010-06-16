@@ -27,7 +27,7 @@
 %% by the given Ref, along with the width of said html.
 -spec content(#refX{}) -> {[textdata()], integer(), integer()}.
 content(Ref) ->
-    Data = lists:sort(fun order_objs/2, hn_db_api:read_intersect_ref(Ref)),
+    Data = lists:sort(fun order_objs/2, read_data_without_page(Ref)),
     Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
     RowHs = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)} 
              || {#refX{obj={row,{R,R}}},RPs} <- Data],
@@ -37,6 +37,9 @@ content(Ref) ->
                 (lists:sort
                    (hn_mochi:extract_styles(Data))),
     layout(Ref, Cells, ColWs, RowHs, Palette).
+
+read_data_without_page(Ref) ->			    
+    [ {RefX, Val} || {RefX, Val} <- hn_db_api:read_intersect_ref(Ref), element(1, RefX#refX.obj) =/= page ].
 
 -spec layout(#refX{}, cells(), cols(), rows(), gb_tree()) 
             -> {[textdata()], integer(), integer()}.
