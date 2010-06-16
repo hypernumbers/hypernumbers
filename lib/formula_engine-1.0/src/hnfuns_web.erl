@@ -96,7 +96,7 @@ radio_(Label, Options) ->
                              "</div>"),
     {rawform, Form, Html}.
 
-table_({range, [ THead | Range]}) ->
+table_({range, [ THead | Range]}, Sort) ->
 
     Id = "tbl_"++create_name(),
     F = fun(blank) -> "";
@@ -111,7 +111,8 @@ table_({range, [ THead | Range]}) ->
               || Row <- Range ],
     
     Script = ["<script type='text/javascript'>$(\"#", Id,
-              "\").tablesorter();</script>"],
+              "\").tablesorter({sortList:[[", cast(Sort, str),
+              ",0]]});</script>"],
     
     lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
                    "</table>", Script]).
@@ -130,7 +131,10 @@ table_({range, [ THead | Range]}) ->
         fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
 table([Ref]) ->
-    table_(Ref).
+    table([Ref, 0]);
+table([Ref, Sort]) ->
+    table_(Ref, Sort).
+
 
 'google.map'([])          -> 'google.map'([0]);
 'google.map'([Long])      -> 'google.map'([Long, 0]);
