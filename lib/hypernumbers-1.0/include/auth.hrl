@@ -1,3 +1,0 @@
--type uid() :: string().
--type auth_req() :: [nil | uid()].
--type auth_spec() :: [everyone | string()].

@@ -34,12 +34,12 @@ start_link(Site) ->
 init([Site]) ->
 
     {ok, { {one_for_one,1,10},
-           [ {dirty_sup, 
-              {dirty_sup, start_link, [Site, dirty_queue]},
+           [ {dbsrv, 
+              {dbsrv, start_link, [Site]},
               permanent,
               infinity, 
               supervisor, 
-              [dirty_sup]},
+              [dbsrv]},
 
              {remoting_reg, 
               {remoting_reg, start_link, [Site]},

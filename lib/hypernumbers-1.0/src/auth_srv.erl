@@ -4,7 +4,6 @@
 
 -behaviour(gen_server).
 
--include("auth.hrl").
 -include("spriki.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
@@ -40,6 +39,10 @@
 -define(SPREADSHEET, "_global/spreadsheet").
 -define(EMPTY_TREE, {0,nil}).
 
+-type uid() :: string().
+-type auth_req() :: nil | uid().
+-type auth_spec() :: [everyone | string()].
+
 -record(control, {champion = [] :: string(),
                   challenger = [] :: string(),
                   views = gb_trees:empty() }).
@@ -58,9 +61,6 @@
 %%--------------------------------------------------------------------
 %% @doc
 %% Starts the server
-%%
-%% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
-%% @end
 %%--------------------------------------------------------------------
 -spec start_link(string()) -> {ok, pid()} | ignore | {error, any()}.
 start_link(Site) ->

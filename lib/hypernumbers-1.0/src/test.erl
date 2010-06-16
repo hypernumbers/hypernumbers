@@ -60,7 +60,6 @@ excel(T, S) ->
              {suite, [Suite]} ],
     do_test(Opts).
 
-
 do_test(Opts) ->
     application:unset_env(hypernumbers, sync_url),
     filelib:ensure_dir(filename:absname(?LOG_DIR)++"/"),

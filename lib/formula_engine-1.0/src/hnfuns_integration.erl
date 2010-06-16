@@ -21,7 +21,6 @@
          'facebook.like'/1,
          'facebook.likebox'/1,
          'twitter.profile'/1,
-         'twitter.search'/1,
          'twitter.list'/1,
          'youtube.channel'/1
         ]).
@@ -293,44 +292,6 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
         ++ "behavior: 'all'"
         ++ "}"
         ++ "}).render().setUser('" ++ U ++ "').start();"
-        ++ "</script>".
-
-%% the bug here is that the jquery script that runs the window doesn't find
-%% the global object 'TWTR' which presumably is created by the first script
-'twitter.search'([]) ->
-    %S = ?string(SearchTerm, ?default_str_rules),
-    "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
-        ++ "<script>"
-        ++ "new TWTR.Widget({"
-        ++ "version: 2,"
-        ++ "type: 'search',"
-        ++ "search: 'hypernumbers',"
-        ++ "interval: 6000,"
-        ++ "title: 'Excitement is in the air...',"
-        ++ "subject: 'OMG!',"
-        ++ "width: 250,"
-        ++ "height: 300,"
-        ++ "theme: {"
-        ++ "shell: {"
-        ++ "background: '#8ec1da',"
-        ++ "color: '#ffffff'"
-        ++ "},"
-        ++ "tweets: {"
-        ++ "background: '#ffffff',"
-        ++ "color: '#444444',"
-        ++ "links: '#1985b5'"
-        ++ "}"
-        ++ "},"
-        ++ "features: {"
-        ++ "scrollbar: false,"
-        ++ "loop: true,"
-        ++ "live: true,"
-        ++ "hashtags: true,"
-        ++ "timestamp: true,"
-        ++ "avatars: true,"
-        ++ "behavior: 'default'"
-        ++ "}"
-        ++ "}).render().start();"
         ++ "</script>".
 
 'twitter.list'([]) ->

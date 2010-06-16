@@ -35,7 +35,7 @@ content(Ref) ->
              || {#refX{obj={column,{C,C}}},CPs} <- Data],
     Palette = gb_trees:from_orddict
                 (lists:sort
-                   (hn_mochi:extract_styles(Data))),
+                   (hn_mochi:extract_styles(Ref#refX.site))),
     layout(Ref, Cells, ColWs, RowHs, Palette).
 
 read_data_without_page(Ref) ->			    

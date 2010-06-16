@@ -9,7 +9,8 @@
           select/1,
           include/1,
           table/1,
-          'google.map'/1 ]).
+          'google.map'/1,
+          'twitter.search'/1 ]).
 
 -include("spriki.hrl").
 -include("typechecks.hrl").
@@ -95,7 +96,7 @@ radio_(Label, Options) ->
                              "</div>"),
     {rawform, Form, Html}.
 
-table_({range, [ THead | Range]}) ->
+table_({range, [ THead | Range]}, Sort) ->
 
     Id = "tbl_"++create_name(),
     F = fun(blank) -> "";
@@ -110,15 +111,30 @@ table_({range, [ THead | Range]}) ->
               || Row <- Range ],
     
     Script = ["<script type='text/javascript'>$(\"#", Id,
-              "\").tablesorter();</script>"],
+              "\").tablesorter({sortList:[[", cast(Sort, str),
+              ",0]]});</script>"],
     
     lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
                    "</table>", Script]).
 
+'twitter.search_'(_Term, _Title) ->
+    "Todo".
+    
+
 %% Type checking and default values
 %%
+
+'twitter.search'([])          -> 'twitter.search'(["hello"]);
+'twitter.search'([Term])      -> 'twitter.search'([Term, "title"]);
+'twitter.search'([Term, Title]) ->
+    col([Term, Title], [eval_funs, fetch, {cast, str}], [return_errors],
+        fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
+
 table([Ref]) ->
-    table_(Ref).
+    table([Ref, 0]);
+table([Ref, Sort]) ->
+    table_(Ref, Sort).
+
 
 'google.map'([])          -> 'google.map'([0]);
 'google.map'([Long])      -> 'google.map'([Long, 0]);

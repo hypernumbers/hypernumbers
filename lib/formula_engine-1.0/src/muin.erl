@@ -438,7 +438,7 @@ do_cell(RelPath, Rowidx, Colidx) ->
 get_value_and_link(FetchFun) ->
     {Value, RefTree, Errs, Refs}  = FetchFun(),
     RefX = #refX{site = ?msite, path = ?mpath, obj = {cell, {?mx, ?my}}},
-    Idx = hn_db_wu:get_local_item_index(RefX),
+    Idx = hn_db_wu:ref_to_idx_create(RefX),
     case member({"local", Idx}, RefTree) of
         true ->
             ?ERRVAL_CIRCREF;

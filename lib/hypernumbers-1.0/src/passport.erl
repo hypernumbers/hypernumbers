@@ -26,7 +26,6 @@
          terminate/2, code_change/3]).
 
 -include("hypernumbers.hrl").
--include("auth.hrl").
 -include("date.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
 -include_lib("eunit/include/eunit.hrl").
@@ -52,7 +51,7 @@
 
 -spec create_hypertag(string(), 
                       [string()], 
-                      uid(), string(), 
+                      auth_srv:uid(), string(), 
                       any(), 
                       integer() | string())
                      -> string().
@@ -66,7 +65,7 @@ create_hypertag(Site, Path, Uid, Email, Data, Age) ->
     lists:concat([Site, hn_util:list_to_path(Path), "?hypertag=", HTEnc]).
 
 -spec open_hypertag(string(), [string()], string()) 
-                   -> {ok, uid(), string(), any(), string(), integer()} |
+                   -> {ok, auth_srv:uid(), string(), any(), string(), integer()} |
                       {error, any()}.
 open_hypertag(Site, Path, HTEnc) ->
     HalfKey = [Site, Path],
@@ -83,7 +82,7 @@ open_hypertag(Site, Path, HTEnc) ->
 -spec temp_stamp() -> string().
 temp_stamp() -> stamp([$_|create_uid()], "anonymous", "never").
 
--spec inspect_stamp(string()) -> {ok,uid(),string()} | {error,term()}. 
+-spec inspect_stamp(string()) -> {ok,auth_srv:uid(),string()} | {error,term()}. 
 inspect_stamp(undefined) ->
     {error, no_stamp};
 inspect_stamp(Stamp) ->
@@ -116,7 +115,7 @@ start_link() ->
 
 -spec authenticate(string(), string(), boolean()) 
                   -> {error, term()} | 
-                     {ok, uid(), string(), integer() | string()}.
+                     {ok, auth_srv:uid(), string(), integer() | string()}.
 authenticate(Email, Password, Remember) ->
     Msg = {authenticate, Email, Password},
     case gen_server:call({global, ?MODULE}, Msg, 10000) of
@@ -130,7 +129,7 @@ authenticate(Email, Password, Remember) ->
             Else
     end.
 
--spec set_password(uid(), string()) -> ok | 
+-spec set_password(auth_srv:uid(), string()) -> ok | 
                                        {error, invalid_uid} | 
                                        {error, invalidated }.
 set_password(Uid, Password) ->
@@ -138,7 +137,7 @@ set_password(Uid, Password) ->
     gen_server:call({global, ?MODULE}, Msg).
 
 %% Anonymous users have a _ symbol before their uid.
--spec uid_to_email(uid()) -> {ok, string()} |
+-spec uid_to_email(auth_srv:uid()) -> {ok, string()} |
                              {error, invalid_uid}.
 
 %% Temporarily put back in to make logs works.
@@ -151,11 +150,11 @@ uid_to_email(Uid) ->
 email_to_uid(Email) -> 
     gen_server:call({global, ?MODULE}, {email_to_uid, Email}).
 
--spec validate_uid(uid()) -> ok | {error, invalid_uid}. 
+-spec validate_uid(auth_srv:uid()) -> ok | {error, invalid_uid}. 
 validate_uid(Uid) ->
     gen_server:call({global, ?MODULE}, {validate_uid, Uid}).
 
--spec is_valid_uid(uid()) -> {ok, boolean} | {error, invalid_uid}.
+-spec is_valid_uid(auth_srv:uid()) -> {ok, boolean} | {error, invalid_uid}.
 is_valid_uid(Uid) ->
     gen_server:call({global, ?MODULE}, {is_valid_uid, Uid}).
 
@@ -164,7 +163,7 @@ get_or_create_user(Email) ->
     SuggestedUid = create_uid(),
     gen_server:call({global, ?MODULE}, {get_or_create_user, Email, SuggestedUid}).
 
--spec get_or_create_user(string(), uid()) -> {ok, new | existing, string()}.
+-spec get_or_create_user(string(), auth_srv:uid()) -> {ok, new | existing, string()}.
 get_or_create_user(Email, SuggestedUid) -> 
     gen_server:call({global, ?MODULE}, {get_or_create_user, Email, SuggestedUid}).
     
@@ -172,7 +171,7 @@ get_or_create_user(Email, SuggestedUid) ->
 delete_uid(Uid) when is_list(Uid) ->
     gen_server:call({global, ?MODULE}, {delete_uid, Uid}).
 
--spec create_uid() -> uid().
+-spec create_uid() -> auth_srv:uid().
 
 create_uid() ->
     Bin = crypto:rand_bytes(16),
@@ -391,7 +390,7 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
--spec stamp(uid(), string(), integer() | string()) -> string().
+-spec stamp(auth_srv:uid(), string(), integer() | string()) -> string().
 stamp(Uid, Email, Age) ->
     Expiry = gen_expiry(Age),
     EscEmail = escape_email(Email),
