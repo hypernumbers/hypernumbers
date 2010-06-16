@@ -211,7 +211,7 @@ funcall(Fname, Args0) ->
     %%          small, skew, large, sumproduct, daverage, dcount, isref,
     %%          irr, even,
     %%          include],
-    Funs = [],
+    Funs = [include],
     
     Args = case member(Fname, Funs) of
                true  -> Args0;
