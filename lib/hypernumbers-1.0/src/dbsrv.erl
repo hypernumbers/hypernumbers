@@ -173,7 +173,10 @@ build_workplan(Site, Dirty, Graph) ->
                     update_recalc_graph(Dirty, RTbl, Graph)
             end,
     ok = mnesia:activity(transaction, Trans),
-    digraph_utils:topsort(Graph).        
+    case digraph_utils:topsort(Graph) of
+        false -> eliminate_circ_ref(Site, Dirty, Graph);
+        Work -> Work
+    end.         
 
 %% When a formula is added, it is necessary to test whether or not
 %% it's parents are already present in the recalc tree. If so,
@@ -211,6 +214,20 @@ update_recalc_graph([Idx|Rest], RTbl, Graph) ->
     end,
     update_recalc_graph(Rest, RTbl, Graph).
 
+%% A circular reference involving the Site, and Graph has been
+%% detected. A non-empty subset of the given dirty cells are
+%% culprits. The procedure is to detect and remove the cycle from the
+%% graph, and rewrite the formula for any offending cells. A
+%% co-recursive call back to build_workplan is made to complete
+%% construction of the workplan.
+-spec eliminate_circ_ref(string(), [cellidx()], digraph()) -> [cellidx()]. 
+eliminate_circ_ref(Site, Dirty, Graph) ->
+    Cycle = lists:flatten(digraph_utils:cyclic_strong_components(Graph)),
+    [digraph:del_vertex(Graph, V) || V <- Cycle],
+    [hn_db_api:handle_circref_cell(Site, V, nil) || V <- Cycle, 
+                                                    lists:member(V, Dirty)],
+    build_workplan(Site, Dirty, Graph).
+    
 -spec execute_plan([cellidx()], string(), digraph()) -> ok.
 execute_plan([], _, _) ->
     ok;

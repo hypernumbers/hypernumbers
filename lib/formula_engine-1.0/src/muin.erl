@@ -49,6 +49,7 @@ test_formula(Fla, Rti) ->
     mnesia:activity(transaction, fun run_formula/2, [Fla, Rti]).
 
 %% @doc Runs formula given as a string.
+run_formula("#CIRCREF!", _) -> {error, '#CIRCREF!'};
 run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
     case compile(Fla, {Col, Row}) of
         {ok, Ecode}       -> run_code(Ecode, Rti);
@@ -65,13 +66,13 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
     map(fun({K,V}) -> put(K, V) end,
         [{site, Site}, {path, Path}, {x, Col}, {y, Row}, 
          {array_context, AryCtx},
-         {retvals, {[], [], []}}, {recompile, false},
+         {retvals, {[], []}}, {recompile, false},
          {auth_req, AuthReq}]),
     
     Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
     Result = eval_formula(Fcode),
-    {RefTree, _Errors, References} = get(retvals),
-    {ok, {Fcode, Result, RefTree, References, get(recompile)}}.
+    {_Errors, References} = get(retvals),
+    {ok, {Fcode, Result, References, get(recompile)}}.
 
 %% evaluates a formula rather than a piece of AST, i.e. will do implicit
 %% intersection, resolve a final cellref &c.
@@ -437,18 +438,12 @@ do_cell(RelPath, Rowidx, Colidx) ->
 %% saves the dependencies (linking it to current cell), and returns
 %% the value to the caller (to continue the evaluation of the formula).
 get_value_and_link(FetchFun) ->
-    {Value, RefTree, Errs, Refs}  = FetchFun(),
+    {Value, Errs, Refs}  = FetchFun(),
     RefX = #refX{site = ?msite, path = ?mpath, obj = {cell, {?mx, ?my}}},
-    Idx = hn_db_wu:ref_to_idx_create(RefX),
-    case member({"local", Idx}, RefTree) of
-        true ->
-            ?ERRVAL_CIRCREF;
-        false ->
-            {RefTree0, Errs0, Refs0} = get(retvals),
-            NewRefTree = hslists:uniq(lists:append([RefTree0, RefTree])),
-            put(retvals, {NewRefTree, Errs0 ++ Errs, Refs0 ++ Refs}),
-            Value
-    end.
+    hn_db_wu:ref_to_idx_create(RefX),
+    {Errs0, Refs0} = get(retvals),
+    put(retvals, {Errs0 ++ Errs, Refs0 ++ Refs}),
+    Value.
 
 %% Row or Col information --> index.
 toidx(N) when is_number(N) -> N;

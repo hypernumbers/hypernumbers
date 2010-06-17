@@ -94,7 +94,7 @@
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec get_cell_for_muin(#refX{}) -> {any(), any(), any(), any()}.
+-spec get_cell_for_muin(#refX{}) -> {any(), any(), any()}.
 %% @doc this function is called by muin during recalculation and should
 %%      not be used for any other purpose
 get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
@@ -111,13 +111,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
                 _ -> 
                     blank
             end,
-    DTree = case orddict:find("__dependency-tree", Attrs) of
-                {ok, D} -> D;
-                _       -> []
-            end,
-    Dep = DTree ++ [{"local", ref_to_idx_create(RefX)}],
-    {Value, Dep, [], [{"local", {Site, Path, XX, YY}}]}.
-
+    {Value, [], [{"local", {Site, Path, XX, YY}}]}.
 
 write_style_IMPORT(#refX{site=Site}, Style) ->
     Tbl = trans(Site, style),
@@ -432,15 +426,12 @@ content_attrs() ->
     ["formula",
      "value",             
      "overwrite-color",
-     "parents",
      "__rawvalue",          
      "__ast",             
      "__recompile",       
      "__shared",          
      "__area",           
-     "__default-align",
-     "__dependency-tree"].
-
+     "__default-align"]. 
 
 %% @doc takes a reference to a
 %% <ul>
@@ -1431,39 +1422,36 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
         {ok, {_P, {error, error_in_formula}, _, _, _}} ->
-            write_error_attrs(Attrs, Formula, error_in_formula);
+            write_error_attrs(Ref, Formula, error_in_formula);
         {error, Error} ->
-            write_error_attrs(Attrs, Formula, Error);        
-        {ok, {Pcode, {rawform, RawF, Html}, Deptree, Parents, Recompile}} ->
+            write_error_attrs(Ref, Formula, Error);        
+        {ok, {Pcode, {rawform, RawF, Html}, Parents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
             Form = RawF#form{id={Ref#refX.path, Trans, Label}}, 
             ok = attach_form(Ref, Form),
             write_formula_attrs(Attrs, Ref, Formula, Pcode, Html, 
-                                Deptree, Parents, Recompile);
-        {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
+                                Parents, Recompile);
+        {ok, {Pcode, Res, Parents, Recompile}} ->
             write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, 
-                                Deptree, Parents, Recompile)
+                                Parents, Recompile)
     end.
 
-write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Deptree, Parents, Recompile) ->
+write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Parents, Recompile) ->
     Parxml = map(fun muin_link_to_simplexml/1, Parents),
     {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
     ok = set_relations(Ref, NewLocPs),
     Align = default_align(Res),
-    add_attributes(Attrs, [{"parents", {xml, Parxml}},
-                           {"formula", Formula},
+    add_attributes(Attrs, [{"formula", Formula},
                            {"__rawvalue", Res},
                            {"__ast", Pcode},
-                           {"__dependency-tree", Deptree},
                            {"__default-align", Align},
                            {"__recompile", Recompile}]).
 
-write_error_attrs(Attrs, Formula, _Error) ->
-    add_attributes(Attrs, [{"parents", []},
-                           {"formula", Formula},
-                           {"__rawvalue", {errval, '#ERROR!'}},
-                           {"__ast", []},
-                           {"__dependency-tree", []}]).
+write_error_attrs(Ref, Formula, Error) ->
+    ok = set_relations(Ref, []),
+    add_attributes(orddict:new(), [{"formula", Formula},
+                                   {"__rawvalue", {errval, Error}},
+                                   {"__ast", []}]).
 
 default_align(Res) when is_number(Res) -> "right";
 default_align(Res) when is_list(Res)   -> "left";
@@ -1478,13 +1466,10 @@ write_formula2(Ref, OrigVal, {Type, Val},
                   float    -> OrigVal;
                   int      -> OrigVal;
                   _        -> hn_util:text(Val) end,
-    Parxml = map(fun muin_link_to_simplexml/1, []),
     {NewLocPs, _NewRemotePs} = split_local_remote([]),
     ok = set_relations(Ref, NewLocPs),
-    Attrs2 = add_attributes(Attrs, [{"__dependency-tree", []},
-                                    {"__default-align", Align},
+    Attrs2 = add_attributes(Attrs, [{"__default-align", Align},
                                     {"__rawvalue", Val},
-                                    {"parents", {xml, Parxml}},
                                     {"formula", Formula}]),
     case Format of
         "null" -> Attrs2;

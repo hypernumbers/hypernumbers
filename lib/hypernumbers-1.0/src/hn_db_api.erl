@@ -111,6 +111,7 @@
          delete/2, delete/3,
          clear/3,
          handle_dirty_cell/3,
+         handle_circref_cell/3,
          %%set_borders/5,
          write_formula_to_range/2,
          wait_for_dirty/1
@@ -162,6 +163,17 @@ handle_dirty_cell(Site, Idx, Ar) ->
     tell_front_end("handle dirty", #refX{}),
     false.
 
+-spec handle_circref_cell(string(), cellidx(), auth_srv:auth_req()) -> ok.
+handle_circref_cell(Site, Idx, Ar) ->
+    Fun = fun() ->
+                  Cell = hn_db_wu:idx_to_ref(Site, Idx),
+                  hn_db_wu:write_attrs(Cell, 
+                                       [{"formula", "=#CIRCREF!"}], 
+                                       Ar),
+                  ok
+          end,
+    mnesia:activity(transaction, Fun).
+    
 %% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
 %% @doc write_style will write a style record
 %% It is intended to be used in the FILE IMPORT process only 
