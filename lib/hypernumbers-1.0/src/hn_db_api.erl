@@ -143,25 +143,31 @@ handle_dirty_cell(Site, Idx, Ar) ->
     ok = init_front_end_notify(),  
     Fun = fun() ->
                   Cell = hn_db_wu:idx_to_ref(Site, Idx),
-                  Attrs = case hn_db_wu:read_ref(Cell, inside, write) of
+                  InitAttrs = case hn_db_wu:read_ref(Cell, inside, write) of
                               [{_, A}] -> A;
                               _ -> orddict:new()
                           end,
-                  case orddict:find("formula", Attrs) of
+                  case orddict:find("formula", InitAttrs) of
                       {ok, F} ->
-                          Attrs2 = hn_db_wu:write_attrs(Cell, 
-                                                        [{"formula", F}], 
-                                                        Ar),
-                          RV1 = orddict:find("__rawvalue", Attrs),
-                          RV2 = orddict:find("__rawvalue", Attrs2),
-                          RV1 == RV2;
-                    _ ->
+                          NewAttrs = hn_db_wu:write_attrs(Cell, 
+                                                          [{"formula", F}], 
+                                                          Ar,
+                                                          true),
+                          %% Check if value is fixed
+                          Final = not orddict:is_key("__initial", InitAttrs),
+                          RV1 = orddict:find("__rawvalue", InitAttrs),
+                          RV2 = orddict:find("__rawvalue", NewAttrs),
+                          case {Final, RV1, RV2} of
+                              {true, {ok, Raw}, {ok, Raw}} -> true;
+                              _                            -> false
+                          end;
+                      _ ->
                           false
-                end
-        end,
-    _Fixed = mnesia:activity(transaction, Fun),
+                  end
+          end,
+    Fixed = mnesia:activity(transaction, Fun),
     tell_front_end("handle dirty", #refX{}),
-    false.
+    Fixed.
 
 -spec handle_circref_cell(string(), cellidx(), auth_srv:auth_req()) -> ok.
 handle_circref_cell(Site, Idx, Ar) ->
@@ -169,7 +175,8 @@ handle_circref_cell(Site, Idx, Ar) ->
                   Cell = hn_db_wu:idx_to_ref(Site, Idx),
                   hn_db_wu:write_attrs(Cell, 
                                        [{"formula", "=#CIRCREF!"}], 
-                                       Ar),
+                                       Ar,
+                                       true),
                   ok
           end,
     mnesia:activity(transaction, Fun).
@@ -372,7 +379,7 @@ write_attributes(List, PAr, VAr) ->
                   ok
           end,
     {Ref, _} = hd(List),
-    write_activity(Ref, Fun, "write attributes").
+    write_activity(Ref, Fun, quiet).
 
 
 append_row([], _PAr, _VAr) -> ok;
@@ -386,7 +393,10 @@ append_row(List, PAr, VAr) when is_list(List) ->
                 F = fun(X, Val) ->
                             Obj = {cell, {X, Row}},
                             RefX2 = #refX{site = S, path = P, obj = Obj},
-                            hn_db_wu:write_attrs(RefX2, [{"formula", Val}], PAr),
+                            hn_db_wu:write_attrs(RefX2, 
+                                                 [{"formula", Val}], 
+                                                 PAr, 
+                                                 false),
                             mark_these_dirty([RefX2], VAr)
                     end,
                 [F(X,V) || {#refX{site=S1, path=P1, obj={column,{X,X}}}, V} 
@@ -690,7 +700,7 @@ write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
     [ok = write_attributes1(X, AttrList, PAr, VAr) || X <- List],
     ok;
 write_attributes1(RefX, List, PAr, VAr) ->
-    hn_db_wu:write_attrs(RefX, List, PAr),
+    hn_db_wu:write_attrs(RefX, List, PAr, false),
     case lists:keymember("formula", 1, List) of
        true  -> ok = mark_these_dirty([RefX], VAr);
        false -> ok
@@ -895,6 +905,8 @@ init_front_end_notify() ->
     _Return = put('front_end_notify', []),
     ok.
 
+tell_front_end(quiet, _RefX) ->
+    ok;
 tell_front_end("move", RefX) ->
     remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path);
 tell_front_end(_FnName, _refX) ->
