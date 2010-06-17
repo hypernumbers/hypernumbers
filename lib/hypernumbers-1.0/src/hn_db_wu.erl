@@ -32,7 +32,7 @@
 %% Cell Query Exports
 -export([
          get_cell_for_muin/1,
-         write_attrs/2, write_attrs/4,
+         write_attrs/2, write_attrs/3,
          read_styles/2,
          matching_forms/2,
          read_ref/2, read_ref/3, read_ref_field/3,
@@ -185,18 +185,12 @@ has_content(S, LO) ->
 %% This clause deals with a formula
 
 -spec write_attrs(#refX{}, [{string(), term()}]) -> ?dict.
-write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil, false).
+write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
 
--spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_req(), boolean()) 
+-spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_req()) 
                  -> ?dict.
-write_attrs(Ref, NewAs, AReq, Final) ->
-    Op = fun(Attrs) -> 
-                 Attrs2 = process_attrs(NewAs, Ref, AReq, Attrs),
-                 case Final of
-                     true -> orddict:erase("__initial", Attrs2);
-                     false -> orddict:store("__initial", t, Attrs2)
-                 end
-         end,
+write_attrs(Ref, NewAs, AReq) ->
+    Op = fun(Attrs) -> process_attrs(NewAs, Ref, AReq, Attrs) end,
     apply_to_attrs(Ref, Op).
 
 -spec process_attrs([{string(), term()}], #refX{}, auth_srv:auth_req(), ?dict) 
