@@ -237,6 +237,7 @@ execute_plan([C | T], Site, Graph) ->
             execute_plan(T, Site, Graph);
         _ ->
             hn_db_api:handle_dirty_cell(Site, C, nil),
+            digraph:del_vertex(Graph, C),
             execute_plan(T, Site, Graph)
     end.
 
