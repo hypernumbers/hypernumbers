@@ -380,7 +380,8 @@ append_row(List, PAr, VAr) when is_list(List) ->
                 [F(X,V) || {#refX{site=S1, path=P1, obj={column,{X,X}}}, V} 
                                <- List, S == S1, P == P1]
         end,
-    write_activity(S, Trans, "write last").
+    
+    write_activity(RefX, Trans, "write last").
 
 -spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
 read_attribute(RefX, Field) when is_record(RefX, refX) ->
