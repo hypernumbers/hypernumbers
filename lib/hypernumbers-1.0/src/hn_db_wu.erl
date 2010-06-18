@@ -1432,7 +1432,7 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             ok = attach_form(Ref, Form),
             write_formula_attrs(Attrs, Ref, Formula, Pcode, Html, 
                                 Parents, Recompile);
-        {ok, {Pcode, Res, Parents, Recompile}}=All ->
+        {ok, {Pcode, Res, Parents, Recompile}} ->
             write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, 
                                 Parents, Recompile)
     end.
