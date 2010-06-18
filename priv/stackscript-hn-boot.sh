@@ -103,12 +103,6 @@ mkdir -p /home/dale/.ssh
 echo ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5zBO8Gp4vUv9ShxQ2zAah21n4F1iAYG0Fif2RVs6LcY7NeKL3khQbN1WQLLmCcLOmvwlMbQFDW2f79oupWPUFBWXTl2H8bqHxhu1C5H+2poAq00i/8XUuK/rhZGiktjpBUAaSxMRSkHqlXy/bWFrD0XCJGBPAiHY40pLSkGHaQAKC6JhKgLjFOMyNZihj0C68zpbq+WHKbAyuAg700N/ZJpdh/etk/vSMJEmtsvja04NVLQztHyAPYbKfEeAzrfevvTF3AYnhDJ6pOvsVlIHTAHb/zkSZ3e2clmuXPraET3JluhvGXF2HnfbUQdc+1q+g9eODcELS9KUWi3sYQ8cfQ== > /home/dale/.ssh/authorized_keys
 chown -R dale:dale /home/dale
 
-useradd -m -s /bin/bash -G admin tom
-mkdir -p /home/tom/.ssh
-echo ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA4s3WhGFn5ChzM4ji/0rx3Q4/Btji5Ix3Hkg020W4mLQZklSNz7GrOVlRNuxDdW+wOB9Dgfw3+LXTcs9wRFwgACgO+9S1jAVSbDqLNfoVBQMeeubM1x9tsl8zzM+21A/edqQRltr4rN85VlKjBeUMGGsqOHhXCdIq12z/TI31npdm1Xs4lFAGpb6lYrBdjiHTOktdz7vTNEAdiUiljjbUQTIyZ74Or+z2O3Zgst9mQkfyqPVOuo0IEOzdBfrTYMIkjrP2l8QBmRk7FeSiTeCL86dTw+hhEjtWeG4x3KtgG6DBJAqGGJ/q8aHDWUB379zcQAnvR3mrld2ckJCj66dsWQ== tom@hypernumbers.com > /home/tom/.ssh/authorized_keys
-chown -R tom:tom /home/tom
-
-
 #_  _ _  _    ___  ____ ____ ___ _ ___ _ ____ _  _ 
 #|__| |\ |    |__] |__| |__/  |  |  |  | |  | |\ | 
 #|  | | \|    |    |  | |  \  |  |  |  | |__| | \| 
