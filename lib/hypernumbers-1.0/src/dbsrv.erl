@@ -165,12 +165,11 @@ load_dirty_since(Since, QTbl) ->
 build_workplan(Site, Dirty, Graph) ->
     RTbl = hn_db_wu:trans(Site, relation),
     Trans = fun() ->
-                    [begin
-                         digraph:add_vertex(Graph, D),
-                         digraph:add_edge(Graph, P, D)
-                     end || D <- Dirty, 
-                            P <- check_interference(D, RTbl, Graph)],
-                    update_recalc_graph(Dirty, RTbl, Graph)
+                    update_recalc_graph(Dirty, RTbl, Graph),
+                    [digraph:add_edge(Graph, P, D) 
+                     || D <- Dirty, 
+                        P <- check_interference(D, RTbl, Graph)],
+                    ok
             end,
     ok = mnesia:activity(transaction, Trans),
     case digraph_utils:topsort(Graph) of
