@@ -327,7 +327,7 @@ write_attributes(List, PAr, VAr) ->
                   ok
           end,
     {Ref, _} = hd(List),
-    write_activity(Ref, Fun, quiet).
+    write_activity(Ref, Fun, "quiet").
 
 
 append_row([], _PAr, _VAr) -> ok;
