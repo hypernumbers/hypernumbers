@@ -13,7 +13,8 @@
          'facebook.share'/1,
          'twitter.button'/1,
          'google.buynowlist'/1,
-         'google.buynow'/1
+         'google.buynow'/1,
+         'twitter.tweet'/1
         ]).
 
 %% not working functions
@@ -63,6 +64,17 @@
 %%
 %% Exported functions
 %%
+'twitter.tweet'([Message]) ->
+    tweet2(Message, "Tweet This");
+'twitter.tweet'([Message, Link]) ->
+    tweet2(Message, Link).
+
+tweet2(Message, Link) ->
+    Msg = ?string(Message, ?default_str_rules),
+    Link = ?string(Link, ?default_str_rules),
+    "<a href=\"http://twitter.com/home?status=" ++ Msg ++ "\">" ++ Link ++ "</a>".
+
+
 
 %% Hypernumbers Channel Name is hypernumbers
 'youtube.channel'([ChannelName]) ->
