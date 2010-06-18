@@ -1,0 +1,9 @@
+%%-*-erlang-*-
+{add_view,[{path,[]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,[]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,[]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,[]},{view,"spreadsheet"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["[**]"]},{view,"spreadsheet"}]}.

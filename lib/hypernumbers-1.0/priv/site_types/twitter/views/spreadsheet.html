@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    <meta charset="utf-8" />
+    <title>Hypernumbers - the easiest way to get your business online</title>
+    <link rel="stylesheet" href="/hypernumbers/hn.style.css" />	
+    <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />	
+    <link rel="stylesheet" href="/hypernumbers/finder.css" />
+    <link rel='stylesheet' href='/tblsorter/style.css' />	
+
+  </head>
+  
+  <body id="hn" data-view="spreadsheet">    
+  
+    <div id="pagemenu">
+
+      <a id="homebutton" data-href="home">
+        hyper<span>numbers</span>
+      </a>
+
+      <a id="hometab" href="#">create new</a>
+     
+      <div id="tabs"></div>
+
+      <ul id="navigation">
+        <!-- Shown to non logged in users -->
+        <li id="anonymous"><a href="/_login/">$txt:{Login}$</a></li>  
+        <!-- Shown to logged in users -->
+        <li id="loggedin">
+
+          <a href="http://hypernumbers.com/support/" target="_blank">
+            <img src="/img/help.png" />
+            I need help!</a>
+
+          <!-- Languages drop down -->
+          <div class="expand" id="languages">
+            <a id="currentLanguage">
+              <span class="flag $txt:{en_gb}$">&nbsp;</span>
+            </a>
+            <div id="lang" class="expandinner">
+              <a name="en_gb"><span class="flag en_gb">&nbsp;</span>
+                $txt:{English}$</a>
+              <a name="fr"><span class="flag fr">&nbsp;</span>
+                $txt:{French}$</a>
+              <a name="ru"><span class="flag ru">&nbsp;</span>
+                $txt:{Russian}$</a>
+              <a name="de"><span class="flag de">&nbsp;</span>
+                $txt:{German}$</a>
+              <a name="es"><span class="flag es">&nbsp;</span>
+                $txt:{Spanish}$</a>
+              <a name="br"><span class="flag br">&nbsp;</span>
+                $txt:{Portuguese}$</a>
+              <a name="it"><span class="flag it">&nbsp;</span>
+                $txt:{Italian}$</a>
+              <a name="pt"><span class="flag br">&nbsp;</span>
+                $txt:{Brazilian}$</a>
+              <a name="en_us"><span class="flag en_us">&nbsp;</span>
+                $txt:{United States}$</a>
+            </div>
+          </div>
+          &nbsp;|&nbsp;
+          <strong id="home"></strong>           
+          &nbsp;|&nbsp;
+          <a id="logout">$txt:{Log out}$</a>
+          &nbsp;
+        </li>  
+      </ul>
+           
+    </div>    
+    
+    <div id="toolbar">
+
+      <div class="expand fonts" id="fontsizewrap">
+        <span id="fontsize">$txt:{Size}$</span>
+        <div id="fontsizelist" class="expandinner">
+          <h1><a data-command="heading" data-param="<h1>"
+                 data-style="font-size" data-value="220%">header 1</a></h1>
+          <h2><a data-command="heading" data-param="<h2>"
+                 data-style="font-size" data-value="180%">header 2</a></h2>
+          <h3><a data-command="heading" data-param="<h3>"
+                 data-style="font-size" data-value="160%">header 3</a></h3>
+          <h4><a data-command="heading" data-param="<h4>"
+                 data-style="font-size" data-value="140%">header 4</a></h4>
+          <h5><a data-command="heading" data-param="<h5>"
+                 data-style="font-size" data-value="100%">header 5</a></h5>
+          <h6><a data-command="heading" data-param="<h6>"
+                 data-style="font-size" data-value="90%">header 6</a></h6>
+        </div>
+      </div>
+      
+      <div class="expand fonts">
+        <span id="font">$txt:{Font}$</span>
+        <div id="ffamily" class="expandinner">
+          <a data-command="FontName" data-param="sans-serif" class="sans-serif"
+             data-style="font-family">$txt:{Normal}$</a>
+          <a data-command="FontName" data-param="serif" class="serif"
+             data-style="font-family">$txt:{Serif}$</a>
+          <a data-command="FontName" data-param="monospace" class="monospace"
+             data-style="font-family">$txt:{Monospace}$</a>
+          <a data-command="FontName" 
+             data-param="Helvetica, Arial, serif" class="arial"
+             data-style="font-family">$txt:{Arial}$</a>
+          <a data-command="FontName" class="georgia" 
+             data-style="font-family">$txt:{Georgia}$</a>
+          <a data-command="FontName" 
+             data-param="garamond, serif" class="garamond"
+             data-style="font-family">$txt:{Garamond}$</a>
+          <a data-command="FontName" data-param="trebuchet ms, sans-serif" 
+             class="trebuchet" data-style="font-family">
+            $txt:{Trebuchet MS}$</a>
+          <a data-command="FontName" data-param="tahoma, sans-serif" 
+             class="tahoma" data-style="font-family">$txt:{Tahoma}$</a>
+        </div>
+      </div>
+      
+      <a class="separator"></a>
+      
+      <div class="expand fonts">
+        <span id="format">$txt:{Format}$</span>
+        <div id="formats" class="expandinner">
+          <a id="fmt_0">$txt:{Plain}$</a>
+          <hr />
+          <a id="fmt_1">100 <span class="desc">($txt:{rounded}$)</span></a>
+          <a id="fmt_2">100.00 <span class="desc">(2 $txt:{decimals}$)</span></a>
+          <a id="fmt_3">
+            <span class="red">100</span><span class="desc">($txt:{rounded}$)</span></a>
+          <hr />
+          <a id="fmt_4">(100) <span class="desc">($txt:{financial}$)</span></a>
+          <a id="fmt_5">(100.00) <span class="desc">($txt:{financial}$)</span></a>
+          <hr />
+          <a id="fmt_6">£100 <span class="desc">($txt:{currency}$)</span></a>
+          <a id="fmt_7">£100.00 <span class="desc">($txt:{currency}$)</span></a>
+          <a id="fmt_8"><span class="red">£100</span>
+            <span class="desc">($txt:{currency}$)</span></a>
+          <hr />
+          <a id="fmt_9">10% <span class="desc">($txt:{percentage}$)</span></a>
+          <a id="fmt_10">10.12% <span class="desc">($txt:{percentage}$)</span></a>
+          <hr />
+          <a id="fmt_11">03/02/2009 <span class="desc">($txt:{date}$)</span></a>
+          <a id="fmt_11a">03-Mar-09 <span class="desc">($txt:{date}$)</span></a>
+          <a id="fmt_11b">3-March-2009 <span class="desc">($txt:{date}$)</span></a>          <a id="fmt_12">14:49:00 <span class="desc">($txt:{time}$)</span></a>
+          <a id="fmt_13">03/02/2009 14:49:00 <span class="desc">($txt:{datetime}$)</span></a>
+        </div>
+      </div>
+      
+      <a class="separator"></a>
+      
+      <div class="expand">
+        <span><a id="left-head" class="icon"></a></span>
+        <div id="aligntext" class="expandinner">
+          <a title="Left align" id="align_left" class="toolbar-item"
+             data-style="text-align" data-value="left"></a>
+          <a title="Center align" id="align_center" class="toolbar-item"
+             data-style="text-align" data-value="center"></a>
+          <a title="Right align" id="align_right" class="toolbar-item"
+             data-style="text-align" data-value="right"></a>
+        </div>
+      </div>
+      <a class="separator"></a>
+
+      <a title="Bold" id="bold" class="toolbar-item"
+         data-command="bold"
+         data-style="font-weight" data-value="bold" data-toggle="normal"></a>
+
+      <a title="Italic" id="italic" class="toolbar-item" 
+         data-command="italic"
+         data-style="font-style" data-value="italic" data-toggle="normal"></a>
+      <a title="Strikethough" id="strike" class="toolbar-item"
+         data-command="strikethrough"
+         data-style="text-decoration" data-value="line-through" 
+         data-toggle="none"></a>
+      <a title="Insert Image" class="toolbar-item" id="insertimage"></a>
+      <a title="Insert Link" class="toolbar-item" id="insertlink"></a>
+      <!-- <a class="separator"></a> -->
+      
+      <div class="expand" id="borders">
+        <span><a title="Set Borders" id="border-head" class="icon"></a></span>
+        <div id="borders" class="expandinner">
+          <a id="border_surround" class="toolbar-item"></a>
+          <a id="border_inside" class="toolbar-item"></a>
+          <a id="border_none" class="toolbar-item"></a>
+          <a id="border_all" class="toolbar-item"></a><br />
+          <a id="border_left" class="toolbar-item"></a>
+          <a id="border_top" class="toolbar-item"></a>
+          <a id="border_right" class="toolbar-item"></a>
+          <a id="border_bottom" class="toolbar-item"></a>
+        </div>
+      </div>
+
+      <a class="separator"></a>          
+
+      <div title="Set Colours" class="colormenu" id="combo_colourbg">
+        <span><a id="bgcolor-head" class="icon"></a></span>
+        <div class="hiddenmenu expandinner">
+
+          <div id="combocolorsbg"></div>
+
+          <form data-style="color" data-command="backcolor">
+            <input id="forecolor" value="Pick Text Color" /> 
+            <input type="submit" class="button" value="Set Text Color" />
+          </form>
+
+          <form data-style="background-color" data-command="backcolor">
+            <input id="bgcolor" value="Pick Text Color" /> 
+            <input type="submit" class="button" value="Set Background Color" />
+          </form>
+        </div>
+      </div>
+
+      <a class="separator"></a>          
+      <a title="Merge Cells" class="toolbar-item" id="mergecells"></a>
+      <a class="separator"></a>          
+
+      <a title="Add Input Field" class="toolbar-item" id="forminput" 
+         data-input="input" data-default="'default label'"></a>
+      <a title="Add Textarea" class="toolbar-item" id="formtextarea"
+         data-input="textarea" data-default="'default label'"></a>
+      <a title="Add Select Box" class="toolbar-item" id="formselect"
+         data-input="select" data-default="'default label', {1,2,3}"></a>
+      <a title="Add Radio Butttons" class="toolbar-item" id="formradio"
+         data-input="radio" data-default="'default label', {1,2,3}"></a>
+      <a title="Add Submit Button" class="toolbar-item" id="formbutton"></a>
+
+      
+      <div id="typepanel">
+        <div class="expand">
+          <span><em>Views</em></span>
+          <div id="viewas" class="expandinner">
+            <table cellspacing="0">
+              <tr>
+                <td><small>default</small></td>
+                <td class="publicoption"><small>public</small></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="defaultpage" 
+                           value="spreadsheet" /></td>
+                <td class="publicoption">
+                  <input type="checkbox" data-value="spreadsheet"
+                         id="publicspreadsheet" /></td>
+                <td class="viewlink">
+                  <a id="viewspreadsheet">Spreadsheet</a></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="defaultpage" 
+                           value="webpage" /></td>
+                <td class="publicoption">
+                  <input type="checkbox" data-value="webpage"
+                         id="publicwebpage" /></td>
+                <td class="viewlink"><a id="viewwebpage">Web Page</a></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="defaultpage" 
+                           value="table" /></td>
+                <td class="publicoption">
+                  <input type="checkbox" data-value="table" 
+                         id="publictable" /></td>
+                <td class="viewlink"><a id="viewtable">Table View</a></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    
+    <div id="formulabar">
+      <a id="functionsbtn" title="functions help">function list</a>
+      <div id="formulawrapper">
+        <div id="formula" contentEditable="true"></div>
+      </div>
+    </div>
+
+    <div id="spreadsheet">
+      <div id="grid">
+
+        <div id="columnsout">
+          <div id="columns"></div>
+          <div id="csel"><div id="colselection">&nbsp;</div></div>
+        </div>
+        
+        <div id="rowsout">
+          <div id="rows"></div>
+          <div id="rsel"><div id="rowselection">&nbsp;</div></div>
+        </div>      
+        
+        <div id="innergrid"><div id="test">
+            <div id="scroller">
+              <div id="dragged"></div>
+              <div id="input"><div id="editor"></div></div>
+              <div id="selection"> <div id="dragger"></div> </div>
+              <div id="current"></div>
+              <div id="copied"></div>
+              <div id="highlightpainter"></div>
+              <div id="dragfill"></div>
+              <div id="panes"></div>
+            </div>
+        </div></div>
+        
+        <div id="scrollbar-right"><div id="scrollbar-right-inner">
+            <div id="up" data-type="button" data-direction="back"></div>
+            <div id="right-gutter" data-type="gutter">
+              <div id="right-bar" data-type="bar"></div>
+            </div>
+            <div id="down" data-type="button" data-direction="forward"></div>
+        </div></div>
+        
+        <div id="scrollbar-bottom"><div id="scrollbar-bottom-inner">
+            <div id="left" data-type="button" data-direction="back"></div>
+            <div id="bottom-gutter" data-type="gutter">
+              <div id="bottom-bar" data-type="bar"></div>
+            </div>
+            <div id="right" data-type="button" data-direction="forward"></div>
+        </div></div>
+
+        <div id="corner"> </div> 
+        
+      </div>
+    </div>
+    
+    <span id="hidden_input"></span>
+    <textarea id="paste"></textarea>
+
+    <div id="gridcontextmenu">
+      <ul>
+        <li><a name="clearboth">
+            $txt:{Clear}$ <strong>$txt:{All}$</strong></a></li> 
+        <!-- <li><a name="clearcontent"> -->
+        <!--     $txt:{Clear}$ <strong>$txt:{Contents}$</strong></a></li> -->
+        <li><a name="copy">
+            Copy<span class="desc">Ctrl+C</span></a></li>
+        <li class="disabled paste"><a name="paste">
+            Paste<span class="desc">Ctrl+V</span></a></li>
+        <li class="disabled paste"><a name="pastevalue">Paste Value</a></li>
+        <li class="disabled paste"><a name="pastestyle">Paste Style</a></li>
+        <li class="seperator"></li>
+        <li><a name="mergecells">
+            <span id="mergetext">Merge</span> Cells</a></li>
+        <li class="seperator"></li>
+        <li><a name="createform">Create Form</a></li>
+        <li class="seperator"></li>
+        <li><a name="insertright">Insert (shift right)</a></li>
+        <li><a name="insertdown">Insert (shift down)</a></li>
+        <li class="seperator"></li>
+        <li><a name="deleteleft">Delete (shift left)</a></li>
+        <li><a name="deleteup">Delete (shift up)</a></li>
+      </ul>
+    </div>
+
+    <div id="axiscontextmenucol">
+      <ul>
+        <li><a name="deletecols">$txt:{Delete Column(s)}$</a></li>
+        <li class="seperator"></li>
+        <li><a name="insertcolsbefore">$txt:{Insert Before}$</a></li>
+        <li><a name="insertcolsafter">$txt:{Insert After}$</a></li>
+      </ul>
+    </div>
+
+    <div id="axiscontextmenurow">
+      <ul>
+        <li><a name="deleterows">$txt:{Delete Row(s)}$</a></li>
+        <li class="seperator"></li>
+        <li><a name="insertrowsbefore">$txt:{Insert Before}$</a></li>
+        <li><a name="insertrowsafter">$txt:{Insert After}$</a></li>
+      </ul>
+    </div>
+
+    <!-- DIALOG BOXES -->
+    
+    <div id="insertimagedialog" class="mdialog">
+      <span>Enter the URL of the image:</span>
+      <form id="imageform"> 
+        <input type="text" id="insertimageinput" value="http://">
+        <div style="margin-top:4px;">
+          <input type="submit" class="button action" value="Insert Image"  />
+          <input type="button" class="button cancel" value="Cancel" />
+        </div>
+      </form>
+    </div>
+
+    <div id="insertlinkdialog" class="mdialog">
+      <!-- <span>Enter the URL of the link:</span> -->
+      <form id="linkform"> 
+        <table>
+          <tr><td>Text:</td><td>
+              <input type="text" id="insertlinktext" value="">
+          </td></tr>
+          <tr><td>Url:</td><td>
+              <input type="text" id="insertlinkinput" value="http://">
+          </td></tr>
+        </table>
+        <div style="margin-top:4px;">
+          <input type="submit" class="button action" value="Insert Link"  />
+          <input type="button" class="button cancel" value="Cancel" />
+        </div>
+      </form>
+    </div>
+    
+    <div id="functions" class="dialog">
+      <h2>$txt:{Functions}$</h2>
+      <a id="funsclose">x</a>
+
+      <div id="funwrapper">
+        <select id="catlist"></select>
+        <div id="funlist"></div>
+      </div>
+      <div id="selectedfun">
+        <h4 id="funname"></h4><br />
+        <p id="fundesc"></p>
+        <!-- <h5>$txt:{Usage}$</h5>       <p id="funusage"></p> -->
+        <!-- <h5>$txt:{Examples}$</h5>    <p id="funexamples"></p> -->
+        <!-- <p>$txt:{Please use the}$  -->
+        <!--   <a href="http://office.microsoft.com/en-us/excel/CH062528191033.aspx"  -->
+        <!--      target="_blank">$txt:{Microsoft Help}$</a>  -->
+        <!--   $txt:{until we implement help properly}$.</p> -->
+        <!-- <input type="submit" value="Enter Formula" id="enterformula" /> -->
+        <br />
+
+        <p id="subtext">
+          If you need help with anything else, please check our 
+          <a href="http://hypernumbers.com/support/" target="_blank">
+            support site</a>
+        </p>
+
+      </div>  
+    </div>
+    
+    <div id="overlay"></div>
+    <div id="cover"></div>
+
+    <div id="loading">
+      <img src="/img/loading2.gif" /> loading data...
+    </div>
+
+    <div id="ctrlpanel">
+
+      <a id="ctrlclose">x</a>
+
+      <ul id="ctrltabs">
+        <li><a data-tab="welcome">Getting Started</a></li>
+        <li><a data-tab="myspreadsheets">My Workspace</a></li>
+        <li><a data-tab="settings">My Settings</a></li>
+      </ul>
+      
+      <div id="ctrltabdivs">
+
+        <div id="welcome">
+          
+          <div>
+            <h4>Create a new Webpage</h4>
+            <p>Designing a webpage couldn't be easier, lay your page out
+              inside a spreadsheet and its done!</p>
+            <form id="newwebpageform">
+              <small>Enter the path of your page for example: <code>/about/</code> or <code>/contact_us/directions/</code></small><br />
+              <input type="text" id="newwebpage" value="" />
+              <input type="submit" value="Build My Webpage" 
+                     class="button" />
+            </form>
+          </div>
+          <div>
+            <h4>Create a new Spreadsheet</h4>
+            <form id="newpageform">
+              <p>Enter a name for your spreadsheet and start editing, 
+                you can see your other spreadsheets and edit settings
+                in the "My Workspace" tab</p>
+              <small>Enter the name of your spreadsheet for example <code>/accounts/2010/</code></small><br /
+              <input type="text" id="newpage" value="" />
+              <input type="submit" value="Create Spreadsheet" 
+                     class="button" />
+            </form>            
+          </div>
+        </div>
+
+        <div id="settings">
+
+          <div id="settingsfeedback"> </div>
+
+          <div>
+            <h4>Set Password</h4>
+            <form id="passwordform">
+              <input type="password" id="passwordval" />
+              <input type="submit" value="Set Password" class="button" />
+            </form>
+          </div>
+          
+        </div>
+
+        <div id="myspreadsheets">
+          
+          <div id="finder">
+            <div class="panewrapper"><div class="pane"></div></div>
+          </div>
+
+          <table>
+            <tr><td class="label">Current Selection:</td>
+              <td class="content">
+                <strong><span class="currentpageselection"></span></strong>
+              </td><td>
+                <input id="pdvisit" type="submit" value="Open Spreadsheet" />
+              </td>
+            </tr>
+            <tr><td class="label">Import Spreadsheet:</td>
+              <td class="content"> 
+                <input type="submit" id="doupload" value="Upload" /><br />
+                <div id="uploadresponce"> </div>
+              </td><td></td>
+            </tr>
+
+            <tr><td class="label">Delete Page:</td>
+              <td class="content"> 
+                <input class="redbutton" id="ctrldelete" 
+                       type="submit" value="Delete" />
+              </td>
+            </tr>
+          </table>
+              
+        </div>
+      </div>
+    </div>
+    
+  </body>
+  
+  <script src="/hypernumbers/jquery-1.4.2.min.js"></script>
+  <script src="/hypernumbers/jquery-ext.js"></script>
+  <script src="/hypernumbers/json2.js"> </script>
+  <script src="/hypernumbers/ajaxfileupload.js"></script>
+  <script src="/hypernumbers/hn.js"></script>
+  <script src="/hypernumbers/hn.util.js"></script>
+  <script src="/hypernumbers/hn.hashurl.js"></script>
+  <script src="/hypernumbers/hn.data.js"></script>
+  <script src="/hypernumbers/hn.ui.js"></script>
+  <script src="/hypernumbers/hn.sheet.js"></script>
+  <script src="/hypernumbers/hn.layout.js"></script>
+  <script src="/hypernumbers/hn.layout.panes.js"></script>
+  <script src="/hypernumbers/hn.layout.pane.js"></script>
+  <script src="/hypernumbers/finder.js"></script>
+  <script src="/hypernumbers/hn.toolbar.js"></script>
+  <script src="/hypernumbers/hn.callbacks.js"></script>
+  <script src="/hypernumbers/hn.selection.js"></script>
+  <script src="/hypernumbers/hn.logger.js"></script>
+  
+  <script src="/hypernumbers/jquery.tablesorter.min.js"></script>  
+  <script src="/jscolor/jscolor.js"></script>
+
+  <script src="/hypernumbers/hn.site.js"></script>  
+
+</html>

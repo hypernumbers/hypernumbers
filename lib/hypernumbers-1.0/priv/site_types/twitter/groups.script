@@ -1,0 +1,5 @@
+%%-*-erlang-*-
+{create_group,[{name,"guest"}]}.
+{create_group,[{name,"user"}]}.
+{create_group,[{name,"admin"}]}.
+{add_user,[{uid,"1061ebbbf6576c729c651890b0ff55e8"},{group,"admin"}]}.
