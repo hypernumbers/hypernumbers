@@ -94,8 +94,13 @@
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 
--export([
-         write_attributes/1, write_attributes/3,
+
+-export([write_styles_IMPORT/2,
+         write_magic_style_IMPORT/2,
+         read_styles_IMPORT/1
+        ]).
+
+-export([write_attributes/1, write_attributes/3,
          append_row/3,
          read_attribute/2,
          read_inside_ref/1,
@@ -110,18 +115,13 @@
          insert/2, insert/3,
          delete/2, delete/3,
          clear/3,
-         handle_dirty_cell/3,
-         handle_circref_cell/3,
          %%set_borders/5,
-         write_formula_to_range/2,
-         wait_for_dirty/1
+         write_formula_to_range/2
         ]).
 
--export([
-         write_styles_IMPORT/2,
-         write_magic_style_IMPORT/2,
-         read_styles_IMPORT/1
-        ]).
+-export([wait_for_dirty/1,
+         handle_dirty_cell/3,
+         handle_circref_cell/3]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
@@ -129,51 +129,6 @@
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-wait_for_dirty(Site) ->
-    case dbsrv:is_busy(Site) of
-        true ->
-            timer:sleep(100),
-            wait_for_dirty(Site);
-        false ->
-            ok
-    end.
-
--spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_req()) -> boolean().
-handle_dirty_cell(Site, Idx, Ar) ->
-    ok = init_front_end_notify(),  
-    Fun = fun() ->
-                  Cell = hn_db_wu:idx_to_ref(Site, Idx),
-                  Attrs = case hn_db_wu:read_ref(Cell, inside, write) of
-                              [{_, A}] -> A;
-                              _ -> orddict:new()
-                          end,
-                  case orddict:find("formula", Attrs) of
-                      {ok, F} ->
-                          Attrs2 = hn_db_wu:write_attrs(Cell, 
-                                                        [{"formula", F}], 
-                                                        Ar),
-                          RV1 = orddict:find("__rawvalue", Attrs),
-                          RV2 = orddict:find("__rawvalue", Attrs2),
-                          RV1 == RV2;
-                    _ ->
-                          false
-                end
-        end,
-    _Fixed = mnesia:activity(transaction, Fun),
-    tell_front_end("handle dirty", #refX{}),
-    false.
-
--spec handle_circref_cell(string(), cellidx(), auth_srv:auth_req()) -> ok.
-handle_circref_cell(Site, Idx, Ar) ->
-    Fun = fun() ->
-                  Cell = hn_db_wu:idx_to_ref(Site, Idx),
-                  hn_db_wu:write_attrs(Cell, 
-                                       [{"formula", "=#CIRCREF!"}], 
-                                       Ar),
-                  ok
-          end,
-    mnesia:activity(transaction, Fun).
-    
 %% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
 %% @doc write_style will write a style record
 %% It is intended to be used in the FILE IMPORT process only 
@@ -372,7 +327,7 @@ write_attributes(List, PAr, VAr) ->
                   ok
           end,
     {Ref, _} = hd(List),
-    write_activity(Ref, Fun, "write attributes").
+    write_activity(Ref, Fun, quiet).
 
 
 append_row([], _PAr, _VAr) -> ok;
@@ -386,7 +341,9 @@ append_row(List, PAr, VAr) when is_list(List) ->
                 F = fun(X, Val) ->
                             Obj = {cell, {X, Row}},
                             RefX2 = #refX{site = S, path = P, obj = Obj},
-                            hn_db_wu:write_attrs(RefX2, [{"formula", Val}], PAr),
+                            hn_db_wu:write_attrs(RefX2, 
+                                                 [{"formula", Val}], 
+                                                 PAr),
                             mark_these_dirty([RefX2], VAr)
                     end,
                 [F(X,V) || {#refX{site=S1, path=P1, obj={column,{X,X}}}, V} 
@@ -673,12 +630,52 @@ drag_n_drop(From, To, Ar)
           end,
     ok = write_activity(From, Fun, "drag n drop").
 
-%% @spec(From::refX{}, To::refX{}) -> ok
-%% @doc Copies the style applied to From and attaches it to To.
-%%      From can only be a cell ref but To can be either a cell or range
-%%      ref
-%% @end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Special Functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+-spec wait_for_dirty(string()) -> ok. 
+wait_for_dirty(Site) ->
+    case dbsrv:is_busy(Site) of
+        true ->
+            timer:sleep(100),
+            wait_for_dirty(Site);
+        false ->
+            ok
+    end.
+
+-spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_req()) -> ok.
+handle_dirty_cell(Site, Idx, Ar) ->
+    ok = init_front_end_notify(),  
+    Fun = fun() ->
+                  Cell = hn_db_wu:idx_to_ref(Site, Idx),
+                  Attrs = case hn_db_wu:read_ref(Cell, inside, write) of
+                              [{_, A}] -> A;
+                              _ -> orddict:new()
+                          end,
+                  case orddict:find("formula", Attrs) of
+                      {ok, F} ->
+                          NewAttrs = hn_db_wu:write_attrs(Cell, 
+                                                          [{"formula", F}], 
+                                                          Ar);
+                      _ ->
+                          ok
+                  end
+          end,
+    mnesia:activity(transaction, Fun),
+    tell_front_end("handle dirty", #refX{}).
+
+-spec handle_circref_cell(string(), cellidx(), auth_srv:auth_req()) -> ok.
+handle_circref_cell(Site, Idx, Ar) ->
+    Fun = fun() ->
+                  Cell = hn_db_wu:idx_to_ref(Site, Idx),
+                  hn_db_wu:write_attrs(Cell, 
+                                       [{"formula", "=#CIRCREF!"}], 
+                                       Ar),
+                  ok
+          end,
+    mnesia:activity(transaction, Fun).
+                      
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
 %% Internal Functions                                                         %%
@@ -870,7 +867,7 @@ read_activity(#refX{site=Site}, Op) ->
     Activity = fun() -> mnesia:activity(transaction, Op) end,
     dbsrv:read_only_activity(Site, Activity).
 
--spec write_activity(#refX{}, fun(), string()) -> any().
+-spec write_activity(#refX{}, fun(), string() | quiet) -> ok.
 write_activity(Ref=#refX{site=Site}, Op, FrontEnd) ->
     Activity = fun() ->
                        Ret = mnesia:activity(transaction, Op),
@@ -895,6 +892,8 @@ init_front_end_notify() ->
     _Return = put('front_end_notify', []),
     ok.
 
+tell_front_end(quiet, _RefX) ->
+    ok;
 tell_front_end("move", RefX) ->
     remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path);
 tell_front_end(_FnName, _refX) ->
@@ -908,3 +907,6 @@ tell_front_end(_FnName, _refX) ->
           end,
     [ok = Fun(X) || X <- List],
     ok.
+
+
+

@@ -236,28 +236,9 @@ execute_plan([C | T], Site, Graph) ->
         false ->
             execute_plan(T, Site, Graph);
         _ ->
-            Fixed = hn_db_api:handle_dirty_cell(Site, C, nil),
-            case Fixed of 
-                true -> prune_path(digraph:out_neighbours(Graph, C), Graph);
-                false -> ok
-            end,
-            digraph:del_vertex(Graph, C),
+            hn_db_api:handle_dirty_cell(Site, C, nil),
             execute_plan(T, Site, Graph)
     end.
-          
-prune_path([], _Graph) ->
-    ok;
-prune_path([V|Rest], Graph) ->
-    case digraph:in_degree(Graph, V) of
-        1 -> 
-            %% Vertex only has the fixed parent.
-            prune_path(digraph:out_neighbours(Graph, V), Graph),
-            digraph:del_vertex(Graph, V);
-        _ ->
-            %% Has other parents, halt walking path
-            ok
-    end,
-    prune_path(Rest, Graph).
 
 %% Clears out process work from the dirty_queue table.
 -spec clear_dirty_queue(term(), atom()) -> ok.

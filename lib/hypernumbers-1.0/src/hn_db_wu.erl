@@ -187,7 +187,8 @@ has_content(S, LO) ->
 -spec write_attrs(#refX{}, [{string(), term()}]) -> ?dict.
 write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
 
--spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_req()) -> ?dict.
+-spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_req()) 
+                 -> ?dict.
 write_attrs(Ref, NewAs, AReq) ->
     Op = fun(Attrs) -> process_attrs(NewAs, Ref, AReq, Attrs) end,
     apply_to_attrs(Ref, Op).
