@@ -149,7 +149,7 @@ draw(Value, Css, X, Y, W, H) ->
               A when is_atom(A) -> atom_to_list(A);
               I when is_integer(I) -> integer_to_list(I);
               F when is_float(F) -> float_to_list(F);
-              _                -> Value
+              _                  -> Value
           end,
     Style = io_lib:format(
               "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s'",
