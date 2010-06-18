@@ -1448,6 +1448,8 @@ write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Parents, Recompile) ->
                            {"__default-align", Align},
                            {"__recompile", Recompile}]).
 
+write_error_attrs(Ref, Formula, error_in_formula) ->
+    write_error_attrs(Ref, Formula, '#ERROR!');
 write_error_attrs(Ref, Formula, Error) ->
     ok = set_relations(Ref, []),
     add_attributes(orddict:new(), [{"formula", Formula},

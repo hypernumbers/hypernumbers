@@ -655,9 +655,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
                           end,
                   case orddict:find("formula", Attrs) of
                       {ok, F} ->
-                          NewAttrs = hn_db_wu:write_attrs(Cell, 
-                                                          [{"formula", F}], 
-                                                          Ar);
+                          hn_db_wu:write_attrs(Cell, [{"formula", F}], Ar);
                       _ ->
                           ok
                   end
