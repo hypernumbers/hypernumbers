@@ -79,10 +79,12 @@ html,body {
     font-size: 11px;
     float    : right;
     position : absolute;
-    top      : -1px;
-    right:0px;
+    top      : -2px;
+    background:white;
+    right:5px;
     margin   : 0px;
     padding  : 0px;
+    -moz-border-radius:5px;
 }
 #navigation li img { 
     position:relative;
@@ -278,6 +280,7 @@ html,body {
 }
 
 #pagemenu { 
+    background:white;
     position:relative; 
     height:35px;
 }

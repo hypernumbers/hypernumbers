@@ -9,6 +9,7 @@
           select/1,
           include/1,
           table/1,
+          background/1,
           'google.map'/1,
           'twitter.search'/1 ]).
 
@@ -119,7 +120,10 @@ table_({range, [ THead | Range]}, Sort) ->
 
 'twitter.search_'(_Term, _Title) ->
     "Todo".
-    
+
+background_(Url, Rest) ->
+    lists:flatten("<style type='text/css'>body{background:url("
+                  ++ Url ++ ") " ++ Rest ++ ";</style>").
 
 %% Type checking and default values
 %%
@@ -186,6 +190,12 @@ radio([V1, V2]) ->
     Opts = col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:apply([Label, Opts], fun radio_/2).
+
+background([Url]) -> background([Url, ""]);
+background([V1, V2]) ->
+    col([V1, V2], [first_array, fetch, {cast,str}],
+        [return_errors, {all, fun muin_collect:is_string/1}],
+        fun([Url, Extra]) -> background_(Url, Extra) end).
 
 
 include([CellRef]) when ?is_cellref(CellRef) ->
