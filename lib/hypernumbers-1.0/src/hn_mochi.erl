@@ -773,14 +773,14 @@ ipost(#refX{site = Site, path = _P}, _Qry,
 
 ipost(#refX{site=RootSite, path=["_hooks"]}, 
       _Qry, Env=#env{body=Body, uid=PrevUid}) ->
-    [{"signup",{struct,[{"email",Email0}]}}] = Body,
+    [{"signup",{struct,[{"email",Email0} , {"sitetype", SiteType}]}}] = Body,
+    SType = list_to_existing_atom(SiteType),
     Email = string:to_lower(Email0),
     Zone = case application:get_env(hypernumbers, environment) of
                {ok, development} -> "hypernumbers.dev";
                {ok, production}  -> "tiny.hn"
            end,
-    Type = demo,
-    case factory:provision_site(Zone, Email, Type, PrevUid) of
+    case factory:provision_site(Zone, Email, SType, PrevUid) of
         {ok, new, Site, Node, Uid, Name} ->
             log_signup(RootSite, Site, Node, Uid, Email),
             Opaque = [],
