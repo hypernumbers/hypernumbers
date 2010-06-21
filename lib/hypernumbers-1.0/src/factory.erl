@@ -128,18 +128,26 @@ new_user_site_email(Site, Uid, Email, Name) ->
     Path = ["_validate", Name],
     Data = [{emailed, true}],
     HT = passport:create_hypertag(Site, Path, Uid, Email, Data, "never"),
+    URL = hn_util:strip80(Site),
     lists:flatten(
       ["Hi ", Name, ",\n\n",
        "We hope you're having a fun time "
        "building your new site:\n\n ", 
-       hn_util:strip80(Site), "\n\n"
-       "We just need one more thing. Please click the following "
-       "link to validate your site, it only takes a moment and allows "
-       "you to set your password.\n\n",
-       "Click or paste the following into your browser:\n\n",
-       HT,"\n\n"
+       URL, "\n\n"
+       "Here's a few things to get your started:"
+       "- set your password ", URL ++ "#panel=settings\n"
+       "If you have any problems just tell us "
+       "and we will do our best to help "
+       "http://hypernumbers.com/support/\n"
        "Cheers,\n\n"
-       "The Hypernumbers team."]).
+       "The Hypernumbers team."
+       "\n\nPS This is your autologin URL. "
+       "It will work until you set your password. "
+       "Click or paste the following into your browser:\n\n",
+       HT,"\n\n",
+       "askswift.com, tiny.hn and uses.hn are all trading "
+       "names of hypernumbers.com"
+      ]).
 
 existing_user_site_email(Site, Name) ->
     lists:flatten(
@@ -149,7 +157,10 @@ existing_user_site_email(Site, Name) ->
        hn_util:strip80(Site), "\n\n",
        "Just use your existing account to login.\n\n"
        "Cheers,\n\n"
-       "The Hypernumbers team."]).
+       "The Hypernumbers team.\n\n"
+       "askswift.com, tiny.hn and uses.hn are all trading "
+       "names of hypernumbers.com"
+      ]).
 
 new_user_invite_email(Site, Uid, Email, Name) ->
     Path = ["_invite", Name],
@@ -158,10 +169,14 @@ new_user_invite_email(Site, Uid, Email, Name) ->
     lists:flatten(
       ["Hi ", Name, ",\n\n",
        "You have been invited to ", hn_util:strip80(Site), "\n\n",
+       "This URL will automatically log you in. "
        "Click or paste the following into your browser:\n\n",
        HT,"\n\n"
        "Cheers,\n\n"
-       "The Hypernumbers team."]).
+       "The Hypernumbers team.\n\n"
+       "askswift.com, tiny.hn and uses.hn are all trading "
+       "names of hypernumbers.com"
+      ]).
 
 existing_user_invite_email(Site, Name) ->
     lists:flatten(
@@ -169,4 +184,7 @@ existing_user_invite_email(Site, Name) ->
        "You have been invited to ", hn_util:strip80(Site), "\n\n",
        "You can use your existing account to login.\n\n"
        "Cheers,\n\n"
-       "The Hypernumbers team."]).    
+       "The Hypernumbers team.\n\n"
+       "askswift.com, tiny.hn and uses.hn are all trading "
+       "names of hypernumbers.com"
+      ]).    
