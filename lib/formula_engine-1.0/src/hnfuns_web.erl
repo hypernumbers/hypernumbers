@@ -11,7 +11,8 @@
           table/1,
           background/1,
           'google.map'/1,
-          'twitter.search'/1 ]).
+          'twitter.search'/1,
+          site/1]).
 
 -include("spriki.hrl").
 -include("typechecks.hrl").
@@ -127,6 +128,13 @@ background_(Url, Rest) ->
 
 %% Type checking and default values
 %%
+
+%% site just returns the site url
+site([]) ->
+    Site = get(site),
+    [Proto, Domain, _Port] = string:tokens(Site, ":"),
+    Proto ++ Domain.
+
 
 'twitter.search'([])          -> 'twitter.search'(["hello"]);
 'twitter.search'([Term])      -> 'twitter.search'([Term, "title"]);
