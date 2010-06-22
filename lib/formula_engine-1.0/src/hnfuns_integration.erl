@@ -189,9 +189,9 @@ get_sel(List) -> lists:flatten(["<select name=\"item_selection_1\">",
                                 "</select>"]).
 
 'facebook.like'([URL]) ->
-    fb_like(URL, 0, 0);
+    'facebook.like'([URL, 0]);
 'facebook.like'([URL, Layout]) ->
-    fb_like(URL, Layout, 0);
+    'facebook.like'([URL, Layout, 0]);
 'facebook.like'([URL, Layout, Faces]) ->
     fb_like(URL, Layout, Faces).
 
@@ -208,7 +208,7 @@ fb_like(URL, Layout, Faces) ->
                 ++ L1
                 ++"standard&amp;show_faces="
                 ++ F1
-                ++ "&amp;width=450&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80\" scrolling=\"no\" frameborder=\"0\" style=\"border:none; overflow:hidden; width:450px; height:80px;\" allowTransparency=\"true\"></iframe>"
+                ++ "&amp;width=450&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80\" scrolling=\"no\" frameborder=\"0\" style=\"border:none; overflow:hidden; height:80px;\" allowTransparency=\"true\"></iframe>"
     end.
 
 valid("0", "0") -> {"standard",     "true"};
