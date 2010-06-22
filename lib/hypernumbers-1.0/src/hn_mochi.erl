@@ -773,14 +773,14 @@ ipost(#refX{site = Site, path = _P}, _Qry,
 
 ipost(#refX{site=RootSite, path=["_hooks"]}, 
       _Qry, Env=#env{body=Body, uid=PrevUid}) ->
-    [{"signup",{struct,[{"email",Email0}]}}] = Body,
+    [{"signup",{struct,[{"email",Email0} , {"sitetype", SiteType}]}}] = Body,
+    SType = site_type_exists(SiteType),
     Email = string:to_lower(Email0),
     Zone = case application:get_env(hypernumbers, environment) of
                {ok, development} -> "hypernumbers.dev";
                {ok, production}  -> "tiny.hn"
            end,
-    Type = demo,
-    case factory:provision_site(Zone, Email, Type, PrevUid) of
+    case factory:provision_site(Zone, Email, SType, PrevUid) of
         {ok, new, Site, Node, Uid, Name} ->
             log_signup(RootSite, Site, Node, Uid, Email),
             Opaque = [],
@@ -1300,3 +1300,15 @@ nocache() ->
     [{"Cache-Control","no-store, no-cache, must-revalidate"},
      {"Expires",      "Thu, 01 Jan 1970 00:00:00 GMT"},
      {"Pragma",       "no-cache"}].
+
+%% function to prevent doing an uncheck list_to_atom...
+%% only converts lists if they are in the file system
+site_type_exists(Type) ->
+    Root = code:lib_dir(hypernumbers) ++ "/priv/site_types/*/",
+    Paths = filelib:wildcard(Root),
+    Rev = [lists:reverse(string:tokens(X, "/")) || X <- Paths],
+    Types = [X || [X | _Rest] <- Rev],
+    case lists:member(Type, Types) of
+        true  -> list_to_atom(Type);
+        false -> exit("invalid type being commissioned....")
+    end.
