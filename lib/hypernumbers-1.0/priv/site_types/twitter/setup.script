@@ -16,4 +16,4 @@
 %% Note that the expressions end in a full stop '.'
 %%
 
- {"/b1", '$name'}.
+ {"/b2", '$name'}.
