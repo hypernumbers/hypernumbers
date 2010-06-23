@@ -68,7 +68,7 @@ button_(Value, Response, ResultsPath) ->
                   ++ " data-results='" ++ ResultsPath ++ "'"
                   ++ " data-origin='" ++ Origin ++ "'"
                   ++ " data-form-name='default' data-response='"
-                         ++ Response ++ "' \">"),
+                         ++ Response ++ "' \"/>"),
     {rawform, Form, Html}.
 
 -spec select_(string(), [string()]) -> {rawform, #form{}, html()}.
