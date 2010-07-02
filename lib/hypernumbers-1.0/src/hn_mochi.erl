@@ -99,7 +99,7 @@ authorize_resource(Env, Ref, Qry) ->
                        [viewroot(Ref#refX.site), "/404.html"]);
         {denied, html} ->
             serve_html(401, Env2,
-                       [viewroot(Ref#refX.site), "/login.html"]);
+                       [viewroot(Ref#refX.site), "/401.html"]);
         {not_found, json} ->
             respond(404, Env2);
         _NoPermission ->

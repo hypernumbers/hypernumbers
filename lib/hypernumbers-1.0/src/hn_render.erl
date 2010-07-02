@@ -205,18 +205,37 @@ wrap_page(Content, TotalWidth, TotalHeight) ->
          <span id='hidden_input'></span>
 
          <div id='outer' ", OuterStyle, ">
-         <div id='inner' class='hn_inner'>", Content, "</div>
+          <div id='inner' class='hn_inner'>", Content, "</div>
          </div>
 
-    <div id='editspreadsheet'>
-      <div id='powered'>
-        powered by <br />
-        <a href='http://hypernumbers.com'>
-          <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
-        </a>
-      </div>
-      <a href='?view=spreadsheet' id='editlogin' title='edit / login'>login</a>
-    </div>
+<div id='editspreadsheet' class='ctrlbox'>
+
+ <div id='powered'>
+  <a href='http://hypernumbers.com'>
+   <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
+  </a>
+ </div>
+
+ <div id='editmenu' class='ctrlbox'>
+  <div id='editloggedin'>
+   <span id='uname'></span> | <a id='logout'>logout</a>
+   <ul>
+    <li><a href='?view=spreadsheet'>edit spreadsheet</a></li>
+   </ul>
+  </div>
+  <div id='editanon'>
+   <form action='' method='post' id='login'>
+    <div class='formrow'><label for='email'>Email Address</label>
+    <input type='text' id='email' /></div>
+    <div class='formrow'><label for='pass'>Password</label>
+    <input type='password' id='pass' /></div>
+    <div class='formrow'><input type='submit' id='submit' value='Log in' class='button' /><br /></div>
+   <div id='loginfeedback'></div>
+
+    or sign up at <a href='http://hypernumbers.com'>hypernumbers.com</a>
+   </form>
+  </div>
+ </div>
 
   </body>
   

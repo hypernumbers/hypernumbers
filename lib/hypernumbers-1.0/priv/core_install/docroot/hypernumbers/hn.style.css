@@ -19,6 +19,7 @@ table {
     height : 100%;
 }
 
+
 h1 { font-size: 220%; }
 h2 { font-size: 180%; }
 h3 { font-size: 160%; }
@@ -74,32 +75,67 @@ body {
     -webkit-box-sizing:border-box;
 }
 
+.ctrlbox { 
+    background:#EEE;
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
+                                 to(#E3E3E3));
+    background: -moz-linear-gradient(center top , #F9F9F9, 
+                                     #E3E3E3) repeat scroll 0 0 transparent;
+    -moz-border-radius: 0px 0px 4px 4px;
+    -webkit-border-radius:0px 0px 4px 4px;
+    border:1px solid #AAA;
+}
+
+    
 #editspreadsheet {
     position:fixed;
     font-size:10px;
     top:0px;
     right:10px;
-    width:130px;
-    padding:1px 1px 4px 1px;
+    /* width:130px; */
+    padding:3px;
     margin-right:20px;
-    background:#EEE;
     display:none;
-    border:1px solid #AAA;
     text-align:center;
-    -moz-border-radius: 0px 0px 4px 4px;
-    -webkit-border-radius:0px 0px 4px 4px;
     border-top-width:0px;
     opacity:0.4;
-    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
-                                 to(#E3E3E3));
-    background: -moz-linear-gradient(center top , #F9F9F9, 
-                                     #E3E3E3) repeat scroll 0 0 transparent;
-
 }
 
-#editspreadsheet:hover { 
-    opacity:1;x
+#editspreadsheet a { 
+    color:darkorange;
 }
+
+#editspreadsheet.active {
+    opacity:1;
+}
+
+#editspreadsheet ul { 
+    padding-left:15px;
+    margin:0px 0px 0px 0px;
+}
+
+#editmenu { 
+    text-align:left;
+    display:none;
+    padding:6px;
+    position:absolute;
+    left:-214px;
+    top:0px;
+    width:200px;
+    border-width:0px 1px 1px 1px;
+}
+
+#email, #pass { 
+    width:auto;
+}
+
+#editanon, #editloggedin { display:none; }
+
+.formrow { 
+    margin:5px 0px;
+}
+
+#loginfeedback { color:red; }
 
 div#outer {
     position:relative;
