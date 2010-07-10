@@ -317,13 +317,19 @@ iget(#refX{site=Site, path=["_logout"]}, page,
     Return = mochiweb_util:unquote(QReturn),
     cleanup(Site, Return, Env);
     
-iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
-     #qry{hypertag=HT}, 
-     Env) when X == "_mynewsite" ->
+iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
+  when X == "_mynewsite" ->
     case passport:open_hypertag(Site, Path, HT) of
-        {ok, Uid, _Email, _Data, Stamp, Age} ->
+        {ok, Uid, _Email, Data, Stamp, Age} ->
+            Param = case lists:keyfind(param, 1, Data) of
+                        false      -> "";
+                        {param, P} -> P
+                    end,
+            
             Return = hn_util:strip80(Site) 
-                ++ hn_util:list_to_path(Rest),
+                ++ hn_util:list_to_path(Rest)
+                ++ Param,
+            
             {Env2, Redir} = post_login(Site, Uid, Stamp, Age, Env, Return),
             Env3 = Env2#env{headers=[{"location",Redir}|Env2#env.headers]},
             respond(303, Env3),
@@ -341,8 +347,15 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
             case proplists:get_value(emailed, Data) of
                 true -> 
                     ok = passport:validate_uid(Uid),
+                    Param = case lists:keyfind(param, 1, Data) of
+                                false      -> "";
+                                {param, P} -> P
+                            end,
+                    
                     Return = hn_util:strip80(Site) 
-                        ++ hn_util:list_to_path(Rest),
+                        ++ hn_util:list_to_path(Rest)
+                        ++ Param,
+                                        
                     {Env2, Redir} = 
                         post_login(Site, Uid, Stamp, Age, Env, Return),
                     Headers = [{"location",Redir}|Env2#env.headers],
@@ -783,14 +796,15 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
     case factory:provision_site(Zone, Email, SType, PrevUid) of
         {ok, new, Site, Node, Uid, Name} ->
             log_signup(RootSite, Site, Node, Uid, Email),
-            Opaque = [],
+            Opaque = [{param, "?view=spreadsheet"}],
             Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
         {ok, existing, Site, Node, Uid, _Name} ->
             log_signup(RootSite, Site, Node, Uid, Email),
-            json(Env, {struct, [{"result", "success"}, {"url", Site}]});
+            json(Env, {struct, [{"result", "success"},
+                                {"url", Site ++ "?view=spreadsheet"}]});
         {error, Reason} ->
             Str = case Reason of
                       %bad_email ->
