@@ -12,6 +12,9 @@
           background/1,
           'google.map'/1,
           'twitter.search'/1,
+          anchor/1,
+          img/1,
+          html/1,
           site/1]).
 
 -include("spriki.hrl").
@@ -31,6 +34,9 @@
 
 %% Safe functions (after typecheck)
 %%
+html([Html]) ->
+    Html.
+
 -spec input_([string()], string(), trans()) -> {rawform, #form{}, html()}.
 input_(Label) -> input_(Label, "", common).
 %input_(Label, Default) -> input_(Label, Default, common).
@@ -126,6 +132,11 @@ background_(Url, Rest) ->
     lists:flatten("<style type='text/css'>body{background:url("
                   ++ Url ++ ") " ++ Rest ++ ";</style>").
 
+anchor_(Src, Text) ->
+    lists:flatten("<a href='" ++ Src ++ "'>" ++ Text ++ "</a>").
+img_(Src) ->
+    lists:flatten("<img src='" ++ Src ++ "' />").
+
 %% Type checking and default values
 %%
 
@@ -134,6 +145,14 @@ site([]) ->
     Site = get(site),
     [Proto, Domain, _Port] = string:tokens(Site, ":"),
     Proto ++ Domain.
+
+anchor([Src, Text]) ->
+    col([Src, Text], [eval_funs, fetch, {cast, str}], [return_errors],
+        fun([NSrc, NText]) -> anchor_(NSrc, NText) end).
+
+img([Src]) ->
+    col([Src], [eval_funs, fetch, {cast, str}], [return_errors],
+        fun([NSrc]) -> img_(NSrc) end).
 
 
 'twitter.search'([])          -> 'twitter.search'(["hello"]);
