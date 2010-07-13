@@ -43,8 +43,8 @@ input_(Label) -> input_(Label, "", common).
 input_([Label], _Default, Trans) ->
     Form = #form{id = {Trans, Label}, kind = input},
     Html = lists:flatten("<input type='input' class='hninput' " ++
-                             "data-name='default' " ++
-                             "data-label='"++Label++"' />"),
+                         "data-name='default' " ++
+                         "data-label='"++Label++"' />"),
     {rawform, Form, Html}.
 
 -spec textarea_([string()], string(), trans()) -> {rawform, #form{}, html()}.
@@ -71,9 +71,9 @@ button_(Value, Response, ResultsPath) ->
                  kind = button, 
                  attrs = [{"dest", Origin}]},
     Html = lists:flatten("<input type='submit' class='hninput' value='"++Value++"'"
-                  ++ " data-results='" ++ ResultsPath ++ "'"
-                  ++ " data-origin='" ++ Origin ++ "'"
-                  ++ " data-form-name='default' data-response='"
+                         ++ " data-results='" ++ ResultsPath ++ "'"
+                         ++ " data-origin='" ++ Origin ++ "'"
+                         ++ " data-form-name='default' data-response='"
                          ++ Response ++ "' />"),
     {rawform, Form, Html}.
 
@@ -85,8 +85,8 @@ select_(Label, Options) ->
                  restrictions = Options},
     Opts = [ "<option>" ++ Option ++ "</option>" || Option <- Options ],
     Html = lists:flatten("<select class='hninput' data-name='default' "++
-                             "data-label='" ++ Label ++ "' >" ++ Opts ++ 
-                             "</select>"),
+                         "data-label='" ++ Label ++ "' >" ++ Opts ++ 
+                         "</select>"),
     {rawform, Form, Html}.
 
 -spec radio_(string(), [string()]) -> {rawform, #form{}, html()}.
@@ -100,12 +100,12 @@ radio_(Label, Options) ->
              Opt ++ "' name='" ++ Name ++ "'/>" ++ Opt ++ "</label></div>"
              || Opt <- Options ],
     Html = lists:flatten("<div class='hninput' data-name='default' "++
-                             "data-label='" ++ Label ++ "' >" ++ Opts ++ 
-                             "</div>"),
+                         "data-label='" ++ Label ++ "' >" ++ Opts ++ 
+                         "</div>"),
     {rawform, Form, Html}.
 
 table_({range, [ THead | Range]}, Sort) ->
-
+    
     Id = "tbl_"++create_name(),
     F = fun(blank) -> "";
            (Else)  -> cast(Else, str)
@@ -116,7 +116,7 @@ table_({range, [ THead | Range]}, Sort) ->
             "</tr></thead>"],
     
     Rows = [ ["<tr>", [ ["<td>", F(Cell),"</td>"] || Cell <- Row ],"</tr>"]
-              || Row <- Range ],
+             || Row <- Range ],
     
     Script = ["<script type='text/javascript'>$(\"#", Id,
               "\").tablesorter({sortList:[[", cast(Sort, str),
