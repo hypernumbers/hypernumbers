@@ -211,9 +211,7 @@ wrap_page(Content, TotalWidth, TotalHeight) ->
 <div id='editspreadsheet' class='ctrlbox'>
 
  <div id='powered'>
-  <a href='http://hypernumbers.com'>
    <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
-  </a>
  </div>
 
  <div id='editmenu' class='ctrlbox'>
