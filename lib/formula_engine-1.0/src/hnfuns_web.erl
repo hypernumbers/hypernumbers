@@ -119,8 +119,8 @@ table_({range, [ THead | Range]}, Sort) ->
              || Row <- Range ],
     
     Script = ["<script type='text/javascript'>$(\"#", Id,
-              "\").tablesorter({headers: { 0: { sorter:'digit' }, sortList:[[", cast(Sort, str),
-              ",0]]});</script>"],
+              "\").tablesorter({headers: { 0: { sorter:'digit' }, sortList:[[",
+              cast(Sort, str), ",0]]});</script>"],
     
     lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
                    "</table>", Script]).
