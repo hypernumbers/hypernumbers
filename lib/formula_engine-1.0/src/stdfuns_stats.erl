@@ -489,16 +489,30 @@ quartile1(Nums, Q) ->
     nth(percentile1(Nums, Q * 0.25), Nums).
 
 rank([V1, V2]) ->
-    rank([V1, V2, 0]);
+    rank([V1, V2, 1]);
 rank([V1, V2, V3]) ->
     Num = ?number(V1, ?default_rules),
     Nums = ?numbers(?flatten_all(V2), ?default_rules),
     Order = ?bool(V3, ?default_rules_bools),
     rank1(Num, Nums, Order).
 rank1(N, Nums, true) ->
-    firstgte(sort(Nums), N);
+    Ranks = generate_rank(sort(Nums), 0, 0, 0, []),
+    case lists:keyfind(N, 1, Ranks) of
+        false     -> ?ERRVAL_NA;
+        {N, Rank} ->
+            Rank
+    end;
 rank1(N, Nums, false) ->
     (length(Nums) + 1) - rank1(N, Nums, true).
+
+generate_rank([], _, _, _, Acc) ->
+    lists:reverse(Acc);
+
+generate_rank([H|T], CurrentRank, Count, LastNumRanked, Acc)
+  when H =:= LastNumRanked ->
+    generate_rank(T, CurrentRank, Count+1, H, Acc);
+generate_rank([H|T], _CurrentRank, Count, _LastNumRanked, Acc) ->
+    generate_rank(T, Count+1, Count+1, H, [{H, Count+1} | Acc]).
 
 skew(Arg) ->    
     col(Arg,
@@ -712,6 +726,8 @@ weibull1(X, Beta, Alpha, false) ->
 %% Finds index of first element in L that's >= N.
 firstgte(L, N) ->
     firstgte(L, N, 1).
+firstgte([H|T], N, C) when H == N ->
+    firstgte(T, N, C);
 firstgte([H|T], N, C) when H < N ->
     firstgte(T, N, C + 1);
 firstgte([H|_T], N, C) when H >= N ->
