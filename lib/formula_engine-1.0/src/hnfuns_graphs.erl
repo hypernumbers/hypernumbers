@@ -11,7 +11,8 @@
 -export([
          linegraph/1,
          piechart/1,
-         histogram/1
+         histogram/1,
+         barchart/1
         ]).
 
 -define(ROW, [true]).
@@ -26,6 +27,51 @@
 %%
 %% Exported functions
 %%
+
+barchart([Data]) ->
+    bar(Data, 0, {{scale, auto}, [], []});
+barchart([Data, O])           ->
+    bar(Data, O, {{scale, auto}, [], []});
+barchart([Data, O, Min, Max]) ->
+    bar(Data, O, {{Min, Max}, [], []});
+barchart([Data, O, Min, Max, XAxis]) ->
+    bar(Data, O, {{Min, Max}, XAxis, []});
+barchart([Data, O, Min, Max, XAxis, Cols]) ->
+    bar(Data, O, {{Min, Max}, XAxis, Cols}).
+
+
+bar(Data, Orientation, {Scale, Axes, Colours}) ->
+    Orientation2 = cast_orientation(Orientation),
+    case has_error([Data, Orientation2, Scale, Axes, Colours]) of
+        {true, Error} -> Error;
+        false         -> bar2(Data, Orientation2, Scale, Axes, Colours)
+    end.
+
+bar2(Data, Orientation, Scale, Axes, Colours) ->
+    {Data2, _NoOfRows, _NoOfCols} = extract(Data, Orientation),
+    Data3 = [cast_data(X) || X <- Data2],
+    % check for errors and then fix the reversed lists problems
+    Colours2 = get_colours(Colours),
+    {Min, Max} = get_scale(Scale, Data3),
+    XAxis2 = get_axes(Axes),
+    case has_error([Data3, Colours2, Min, Max, XAxis2]) of
+        {true, Error} -> Error;
+        false         -> bar3(rev(Data3), {Min, Max}, XAxis2, Colours2)
+    end.
+
+bar3(Data, {Min, Max}, XAxis, Colours) ->
+    Ret = "<img src='http://chart.apis.google.com/chart?chs=350x150&amp;chd="
+        ++ "t:" ++ conv_data(Data) ++ "&amp;cht=bvs&amp;"
+        ++ "chds="++ tconv:to_s(Min) ++ "," ++ tconv:to_s(Max)
+        ++ "&amp;"
+        ++ "chxt=y&amp;"
+        ++ "chxt="
+        ++ conv_x_axis(XAxis)
+        ++ "1:|" ++ tconv:to_s(Min) ++ "|" ++ tconv:to_s(Max)
+        ++ conv_colours(Colours)
+        ++ "' />",
+    io:format("Ret is ~p~n", [Ret]),
+    Ret.
 
 linegraph([Data]) ->
     linegraph([Data, ?ROW]);
@@ -54,10 +100,10 @@ lg2(Data, Orientation, Scale, Axes, Colours) ->
     XAxis2 = get_axes(Axes),
     case has_error([Data3, Colours2, Min, Max, XAxis2]) of
         {true, Error} -> Error;
-        false         -> lg2(rev(Data3), {Min, Max}, XAxis2, Colours2)
+        false         -> lg3(rev(Data3), {Min, Max}, XAxis2, Colours2)
     end.
 
-lg2(Data, {Min, Max}, XAxis, Colours) ->
+lg3(Data, {Min, Max}, XAxis, Colours) ->
     "<img src='http://chart.apis.google.com/chart?chs=350x150&amp;chd="
         ++ "t:" ++ conv_data(Data) ++ "&amp;cht=lc&amp;"
         ++ "chds="++ tconv:to_s(Min) ++ "," ++ tconv:to_s(Max)
