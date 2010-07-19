@@ -446,9 +446,9 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
     json(Env, "success");
 
 ipost(#refX{site=Site, path=["_login"]}, Qry, E) ->
-    [{"email", Email0},{"pass", Pass},{"remember", Rem}] = E#env.body,
+    [{"email", Email0},{"pass", Pass}, {"remember", _Rem}] = E#env.body,
     Email = string:to_lower(Email0),
-    case passport:authenticate(Email, Pass, Rem=="true") of
+    case passport:authenticate(Email, Pass, true) of
         {error, authentication_failed} -> 
             json(E, {struct, [{"response", "error"}]});
         {ok, Uid, Stamp, Age} ->
