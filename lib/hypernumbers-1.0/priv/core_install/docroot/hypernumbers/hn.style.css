@@ -1,4 +1,4 @@
-/******************************************************************************
+se/******************************************************************************
    PAGE STYLES
    This is for content styles, global styles that apply to the rendered
    web pages and content inside the spreadsheet
@@ -86,6 +86,10 @@ body {
     border:1px solid #AAA;
 }
 
+#showhidecols { 
+    color: darkorange;
+    cursor: pointer;
+}
     
 #editspreadsheet {
     position:fixed;
@@ -181,6 +185,18 @@ input[type=submit].hninput:hover {
     height     : 100%;
     z-index    : 10000000;
 }
+/* for light cover drop the opacity */
+#lightcover { 
+    position   : fixed;
+    background : #000;
+    opacity    : 0.1;
+    filter: alpha (opacity=10);
+    top        : 0px;
+    left       : 0px;
+    width      : 100%;
+    height     : 100%;
+    z-index    : 10000000;
+}
 
 #dialog { 
     position    : fixed;
@@ -217,4 +233,42 @@ input[type=submit].hninput:hover {
 
 .radio input { 
     vertical-align:middle;
+}
+
+.configrow { 
+    text-align: right;
+}
+
+#dialogclose { 
+    cursor:pointer;
+    color:black; 
+    font-weight:bold;
+    font-size:14px;
+    background:#eeeeee;
+    border:1px solid black;
+    position:absolute; 
+    padding:0px 5px 0px 5px;
+    top:3px;
+    right:11px;
+    z-index:99;
+}
+
+.colhider { 
+   top: 6px;
+}
+
+label {
+    display: block;
+    padding-left: 15px;
+    text-indent: -15px;
+}
+.configrow input {
+    width: 13px;
+    height: 13px;
+    padding: 0;
+    margin:0;
+    vertical-align: bottom;
+    position: relative;
+    top: -1px;
+    *overflow: hidden;
 }

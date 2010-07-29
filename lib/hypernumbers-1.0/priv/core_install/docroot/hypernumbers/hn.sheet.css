@@ -8,7 +8,7 @@ html,body {
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
-#cover { 
+/* #cover { 
     position   : fixed;
     top        : 0px;
     left       : 0px;
@@ -17,7 +17,8 @@ html,body {
     background : black;
     opacity    : 0.7;
     z-index  : 10000001;
-}
+} */
+
 #loading {  
     position   : absolute;
     top        : 10px;
@@ -30,7 +31,7 @@ html,body {
 /******************************************************************************
 	DIALOG STYLES
 ******************************************************************************/
-#insertimagedialog, #insertlinkdialog {
+#insertimagedialog, #insertlinkdialog, #columnmanagerdialog {
     position   : absolute;
     top        : 50%;
     left       : 50%;
@@ -40,6 +41,7 @@ html,body {
     z-index    : 10000002;
     padding    : 8px;
 }
+
 /* .mclose {   */
 /*     float : left; */
 /*     color : red; */

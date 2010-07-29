@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang='en'>
   <head>
@@ -9,12 +10,24 @@
   </head>
   
   <body>
-    
+
+    <div id="overlay"></div>
+    <div id="lightcover"></div>
+
     <div style="padding:15px;">
-      <span id="path"></span> <small>(table view)</small>
+      <span id="path"></span>
+      <small>(table view)</small>
+      <span id="showhidecols">show/hide columns</span>
     </div>
     
     <div id='table'></div>
+
+    <!-- DIALOG BOXES -->
+    <div id="columnmanagerdialog" class="mdialog">
+    <h4>Column Manager&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h4>
+    <a id="dialogclose">x</a>
+    <span id="config"></span>
+    </div>
     
   <div id='editspreadsheet' class='ctrlbox'>
     
@@ -42,13 +55,14 @@
           </form>
         </div>
     </div>
-
+   
     <span id='hidden_input'></span>
-
+    
   </body>
 
   <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
   <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
+  <script src='/hypernumbers/jquery.columnmanager.min.js'></script>  
 
   <script src='/hypernumbers/json2.js'></script>
   <script src='/hypernumbers/hn.js'></script>
