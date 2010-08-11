@@ -284,16 +284,19 @@ authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
 %% Authorize posts against non spreadsheet views. The transaction
 %% attempted is validated against the view's security model.
 %% authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
-%%   when View /= undefined ->
-%%     case auth_srv:check_particular_view(Site, Path, Env#env.uid, View) of
-%%         {view, View} ->
-%%             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
-%%             case hn_security:validate_trans(Sec, Ref, Env#env.body) of
-%%                 true -> allowed;
-%%                 false -> denied
-%%             end;
-%%         _ -> denied
-%%     end;
+%%  when View /= undefined ->
+%%    io:format("in old commented out authorize_post...~n"),
+%%    case auth_srv:check_particular_view(Site, Path, Env#env.uid, View) of
+%%        {view, View} ->
+%%            io:format("got to here...~n"),
+%%            {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
+%%            case hn_security:validate_trans(Sec, Ref, Env#env.body) of
+%%                true  -> allowed;
+%%                false -> denied
+%%            end;
+%%        _ -> io:format("nae view, bombed out...~n"),
+%%             denied
+%%    end;
 
 %% Allow a post to occur, if the user has access to a spreadsheet on
 %% the target.  the actual operation may need further validation, so
@@ -302,7 +305,7 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
     case auth_srv:check_particular_view(
            Site, Path, Env#env.uid, ?SHEETVIEW) of
         {view, ?SHEETVIEW} -> allowed;
-        _ -> allowed %denied
+        _                  -> allowed %denied
     end.
 
 -spec iget(#refX{}, 
@@ -583,34 +586,40 @@ ipost(#refX{site = _Site, path=["_user"]}, _Qry,
 ipost(Ref=#refX{path = P} = Ref, _Qry,
       Env=#env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
 
-    [{"results", ResultsPath}, {"values", {array, Array}}] = Vals,
+    [{"results", ResPath}, {"values", {array, Array}}] = Vals,
 
-    %Transaction = common,
-    %Expected = hn_db_api:matching_forms(Ref, Transaction),
-    %% io:format("~nForms: ~p~n", [hn_db_api:matching_forms(Ref, Transaction)]),
-    %% io:format("Vals: ~p~n", [Array]),
-    %% io:format("Valid?: ~p~n", [hn_security:validate(Expected, Array)]),
-    %true = hn_security:validate(Expected, Array),
-   
-    Results = Ref#refX{
-                path = string:tokens(hn_util:abs_path(P, ResultsPath), "/")
-               },
-
-    % Labels from the results page
-    OldLabels = hn_db_api:read_attribute(Results#refX{obj={row, {1,1}}},
-                                         "__rawvalue"),
-    
-    Values = [ {"submitted", dh_date:format("Y/m/d h:i:s")} |
-               lists:reverse(lists:foldl(fun generate_labels/2, [], Array)) ],
-    
-    {NewLabels, NVals} =
-        allocate_values(Values, OldLabels, Results, get_last_col(OldLabels)),
-    
-    NLbls = [ {Lref, [{"formula", Val}]} || {Lref, Val} <- NewLabels ],
-    ok = hn_db_api:write_attributes(NLbls, PosterUid, PosterUid),
-    ok = hn_db_api:append_row(NVals, PosterUid, PosterUid),
-    
-    json(Env, "success");
+    Transaction = common,
+    Expected = hn_db_api:matching_forms(Ref, Transaction),
+    case hn_security:validate(Expected, Array) of
+        false ->
+            error_logger:error_msg("invalid form submission~n"
+                                   ++ "on:       ~p~n"
+                                   ++ "Expected: ~p~n"
+                                   ++ "Got:      ~p~n",
+                                   [Ref, Expected, Array]),
+            respond(403, Env);
+        true  ->
+            Res = Ref#refX{
+                    path = string:tokens(hn_util:abs_path(P, ResPath), "/")
+                   },
+            
+            % Labels from the results page
+            OldLabs = hn_db_api:read_attribute(Res#refX{obj={row, {1,1}}},
+                                               "__rawvalue"),
+            
+            Values = [ {"submitted", dh_date:format("Y/m/d h:i:s")} |
+                     lists:reverse(lists:foldl(fun generate_labels/2, [],
+                                               Array)) ],
+            
+            {NewLabels, NVals} =
+                allocate_values(Values, OldLabs, Res, get_last_col(OldLabs)),
+            
+            NLbls = [ {Lref, [{"formula", Val}]} || {Lref, Val} <- NewLabels ],
+            ok = hn_db_api:write_attributes(NLbls, PosterUid, PosterUid),
+            ok = hn_db_api:append_row(NVals, PosterUid, PosterUid),
+            
+            json(Env, "success")
+    end;
 
 ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
     case Attr of
