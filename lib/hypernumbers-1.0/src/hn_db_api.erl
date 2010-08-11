@@ -100,7 +100,8 @@
          read_styles_IMPORT/1
         ]).
 
--export([write_attributes/1, write_attributes/3,
+-export([write_attributes/1,
+         write_attributes/3,
          append_row/3,
          read_attribute/2,
          read_inside_ref/1,
