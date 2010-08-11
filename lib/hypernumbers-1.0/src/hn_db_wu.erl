@@ -144,7 +144,7 @@ get_last_col(#refX{site=S, path=P}) ->
     largest_content(Desc, S).
 
 %% Working from the bottom of the form to the top, find the first
-%% local object which has content, and return its corrosponding
+%% local object which has content, and return its corresponding
 %% ROW/COL
 -spec largest_content([{integer(), #local_obj{}}], string()) -> integer(). 
 largest_content([], _S) -> 0;
