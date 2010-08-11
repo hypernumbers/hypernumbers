@@ -72,7 +72,7 @@ button_(Value, Response, ResultsPath) ->
                  attrs = [{"dest", Origin}]},
     Html = lists:flatten("<input type='submit' class='hninput' value='"++Value++"'"
                          ++ " data-results='" ++ ResultsPath ++ "'"
-                         ++ " data-origin='" ++ Origin ++ "'"
+                         ++ " data-origin='" ++ Origin ++ "?view=webpage'"
                          ++ " data-form-name='default' data-response='"
                          ++ Response ++ "' />"),
     {rawform, Form, Html}.
@@ -96,9 +96,14 @@ radio_(Label, Options) ->
     Form = #form{id = {Trans, Label},
                  kind = radio,
                  restrictions = Options},
-    Opts = [ "<div class='radio'><label><input type='radio' value='" ++
-             Opt ++ "' name='" ++ Name ++ "'/>" ++ Opt ++ "</label></div>"
-             || Opt <- Options ],
+    [First | Rest] = Options,
+    FirstOpt = "<div class='radio'><label><input type='radio' value='" ++
+        First ++ "' name='" ++ Name ++ "' checked='checked'>"
+        ++ First ++ "</label></div>",
+    RestOpts = [ "<div class='radio'><label><input type='radio' value='" ++
+                 Opt ++ "' name='" ++ Name ++ "'/>" ++ Opt ++ "</label></div>"
+                 || Opt <- Rest],
+    Opts = [FirstOpt | RestOpts],
     Html = lists:flatten("<div class='hninput' data-name='default' "++
                          "data-label='" ++ Label ++ "' >" ++ Opts ++ 
                          "</div>"),
