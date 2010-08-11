@@ -8,7 +8,8 @@
 -export([
          init_memory_trace/0,
          mem_csv/0,
-         basic_views/0]).                
+         basic_views/0,
+        log/1]).                
 
 basic_views() ->
     auth_srv2:add_view("http://localhost:9000", [], [everyone], "_g/core/spreadsheet"),
@@ -34,13 +35,13 @@ mem_csv() ->
     Vals = [V || {_K, V} <- Mem],
     io:format("Mem is ~p~nVals is ~p~n", [Mem, Vals]),
     Secs = calendar:datetime_to_gregorian_seconds(erlang:localtime()),
-    log(stringify([Secs | Vals])).
+    File = "../logs/memory.csv",
+    log(stringify([Secs | Vals]), File).
 
 log(String) ->
-    File= case os:type() of
-	      {win32,nt} -> exit('erk, not on windows...');
-	      _          -> "../logs/memory.csv"
-	  end,
+    log(String, "../logs/dump.txt").
+
+log(String, File) ->
     _Return=filelib:ensure_dir(File),
     
     case file:open(File, [append]) of
