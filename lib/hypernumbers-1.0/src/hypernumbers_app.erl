@@ -13,20 +13,21 @@
 start(_Type, _Args) ->
     io:format("Hypernumbers Startup~n********************~nstarting up...~n"),
     ok = ensure_dirs(),
-    io:format("directories inited...~n"),
+    io:format("Hypernumbers Startup: directories inited...~n"),
     ok = init_tables(),
-    io:format("tables initiated...~n"),
+    io:format("Hypernumbers Startup: tables initiated...~n"),
     ok = load_muin_modules(),
-    io:format("muin moduules loaded...~n"),
+    io:format("Hypernumbers Startup: muin moduules loaded...~n"),
     {ok, Pid} = hypernumbers_sup:start_link(),
-    io:format("hypernumbers supervisors started...~n"),
+    io:format("Hypernumbers Startup: hypernumbers supervisors started...~n"),
     ok = case application:get_env(hypernumbers, environment) of
              {ok,development} -> dev_tasks();
              {ok,production}  -> production_tasks()
          end,
-    io:format("environment variables read...~n"),
+    io:format("Hypernumbers Startup: environment variables read...~n"),
     ok = mochilog:start(),
-    io:format("mochilog started...~n********************~nAll good!~n"),
+    io:format("Hypernumbers Startup: mochilog started...~n"),
+    io:format("Hypernumbers Startup: all good!, over and out~n"),
     {ok, Pid}.
 
 %% @spec stop(State) -> ok
