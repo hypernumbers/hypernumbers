@@ -155,7 +155,8 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
        X == "_mynewsite"; 
        X == "_validate";
        X == "_hooks";
-       X == "_logout" ->
+       X == "_logout";
+       X == "_forgotten_password" ->
     allowed;
 
 %% Authorize update requests when the update is targeted towards a
@@ -341,6 +342,10 @@ iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
             %% fu@#ity-bye!
             throw(E)
     end;
+
+iget(#refX{site=Site, path=[X | _Rest]}, page, _Qry,Env)
+  when X == "_forgotten_password" ->
+        serve_html(404, Env, [viewroot(Site), "/forgotten_password.html"]);
 
 iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
      #qry{hypertag=HT}, 
@@ -1184,7 +1189,7 @@ cleanup(Site, Return, E) ->
     respond(303, E3), 
     throw(ok).
 
-%% Returns teh url representing the current location.
+%% Returns the url representing the current location.
 -spec cur_url(string(), #env{}) -> string(). 
 cur_url(Site, #env{mochi=Mochi}) ->
     hn_util:strip80(Site) ++ Mochi:get(raw_path).

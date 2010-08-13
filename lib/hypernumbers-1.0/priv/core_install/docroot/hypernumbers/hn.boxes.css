@@ -1,0 +1,20 @@
+/**************************************************
+* Styles for 401/404 and forgotten password boxes *
+***************************************************/
+body { 
+       background:#DDD; 
+}
+
+#wrapper { 
+      background  : white;
+      top         : 50%;
+      left        : 50%;
+      margin-left : -155px;
+      margin-top  : -150px;
+      position    : absolute;
+      width       : 330px;
+      height      : 320px;
+      border      : 1px solid #999;
+      -moz-box-shadow: 2px 2px 5px #666;
+      -webkit-box-shadow: 2px 2px 5px #666;
+}
