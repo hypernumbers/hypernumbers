@@ -11,15 +11,22 @@
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
 start(_Type, _Args) ->
+    io:format("Hypernumbers Startup~n********************~nstarting up...~n"),
     ok = ensure_dirs(),
+    io:format("directories inited...~n"),
     ok = init_tables(),
+    io:format("tables initiated...~n"),
     ok = load_muin_modules(),
+    io:format("muin moduules loaded...~n"),
     {ok, Pid} = hypernumbers_sup:start_link(),
+    io:format("hypernumbers supervisors started...~n"),
     ok = case application:get_env(hypernumbers, environment) of
              {ok,development} -> dev_tasks();
              {ok,production}  -> production_tasks()
          end,
+    io:format("environment variables read...~n"),
     ok = mochilog:start(),
+    io:format("mochilog started...~n********************~nAll good!~n"),
     {ok, Pid}.
 
 %% @spec stop(State) -> ok

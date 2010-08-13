@@ -1,4 +1,4 @@
-tarsnap --list-archives --keyfile ./alpha.hypernumbers.com.tarsnap.key > output.txt
-tarsnap --list-archives --keyfile ./hypernumbers.com.tarsnap.key >> output.txt
-tarsnap --list-archives --keyfile ./tiny.hn.tarsnap.key >> output.txt
-tarsnap --list-archives --keyfile ./revorama.com.tarsnap.key >> output.txt
+tarsnap --list-archives --keyfile ./hypernumbers.com.tarsnap.key > output.txt
+tarsnap --list-archives --keyfile ./node2.hypernumbers.com.tarsnap.key >> output.txt
+tarsnap --list-archives --keyfile ./node3.hypernumbers.com.tarsnap.key >> output.txt
+tarsnap --list-archives --keyfile ./node4.hypernumbers.com.tarsnap.key >> output.txt
