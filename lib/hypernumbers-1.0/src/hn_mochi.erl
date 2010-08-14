@@ -272,7 +272,8 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
 %% Allow special posts to occur
 authorize_post(#refX{path = [X]}, _Qry, #env{accept = json}) 
 when X == "_login";
-     X == "_hooks" -> 
+     X == "_hooks";
+     X == "_fogotten_password"-> 
     allowed;
 
 authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry, 
@@ -289,14 +290,12 @@ authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
 %%    io:format("in old commented out authorize_post...~n"),
 %%    case auth_srv:check_particular_view(Site, Path, Env#env.uid, View) of
 %%        {view, View} ->
-%%            io:format("got to here...~n"),
 %%            {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
 %%            case hn_security:validate_trans(Sec, Ref, Env#env.body) of
 %%                true  -> allowed;
 %%                false -> denied
 %%            end;
-%%        _ -> io:format("nae view, bombed out...~n"),
-%%             denied
+%%        _ -> denied
 %%    end;
 
 %% Allow a post to occur, if the user has access to a spreadsheet on
@@ -452,6 +451,10 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
                           Ref#refX{obj = hn_util:parse_attr(range,Rng)},
                           Uid),
     json(Env, "success");
+
+ipost(#refX{site=Site, path=["_forgotten_password"]}=Ref, Qry, Env) ->
+    json(Env, {struct, [{"status", "success"}, {"response", "bonanza"}]});
+    %'404'(Ref, Env);
 
 ipost(#refX{site=Site, path=["_login"]}, Qry, E) ->
     [{"email", Email0},{"pass", Pass}, {"remember", _Rem}] = E#env.body,
@@ -1139,6 +1142,7 @@ process_environment(Mochi) ->
             'HEAD' -> {undefined, undefined};
             'POST' -> {_,{_,T}} = mochiweb_headers:lookup('Content-Type', 
                                                           Mochi:get(headers)),
+                      
                       case lists:prefix("multipart/form-data", T) of
                           true  -> {undefined, multipart};
                           false -> RB = Mochi:recv_body(),

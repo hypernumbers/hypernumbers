@@ -1100,7 +1100,7 @@ a.toolbar-item {
     top:3px;
 }
 
-#signupfeedback.error { 
+#signupfeedback.error, #resetmsg.error { 
     color:red;   
 }
 
