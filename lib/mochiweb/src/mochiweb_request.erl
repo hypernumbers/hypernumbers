@@ -8,7 +8,7 @@
 
 -include_lib("kernel/include/file.hrl").
 
--define(QUIP, "Any of you quaids got a smint?").
+-define(QUIP, "Heave awa lads I'm no deid yet!").
 -define(READ_SIZE, 8192).
 
 -export([get_header_value/1, get_primary_header_value/1, get/1, dump/0]).
