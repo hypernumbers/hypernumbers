@@ -96,8 +96,8 @@ send_email(To, EmailBody) ->
             io:format("Email Body:~n~s~n--END EMAIL--~n",[EmailBody]);
         {ok, production}  ->
             spawn(hn_net_util, email, 
-                  [To, 
-                   "\"Hypernumbers Team\" <noreply@hypernumbers.com>",
+                  [To,
+                   "\"Gordon Guthrie\" <gordon@hypernumbers.com>"
                    "Your new site is live!", 
                    EmailBody]),
             ok
@@ -125,7 +125,7 @@ new_user_site_email(Site, Uid, Email, Name) ->
        "and we will do our best to help "
        "http://hypernumbers.com/support/\n"
        "Cheers,\n\n"
-       "The Hypernumbers team."
+       "Gordon Guthrie~nCEO hypernumbers.com\n+44 7776 251669\n\n"
        "\n\nPS This is your autologin URL. "
        "It will work until you set your password. "
        "Click or paste the following into your browser:\n\n",
@@ -142,7 +142,7 @@ existing_user_site_email(Site, Name) ->
        hn_util:strip80(Site), "\n\n",
        "Just use your existing account to login.\n\n"
        "Cheers,\n\n"
-       "The Hypernumbers team.\n\n"
+       "Gordon Guthre\n\nCEO hypernumbers.com\n+44 7776 251669\n\n"
        "askswift.com, tiny.hn and uses.hn are all trading "
        "names of hypernumbers.com"
       ]).
@@ -158,7 +158,7 @@ new_user_invite_email(Site, Uid, Email, Name) ->
        "Click or paste the following into your browser:\n\n",
        HT,"\n\n"
        "Cheers,\n\n"
-       "The Hypernumbers team.\n\n"
+       "Gordon Guthrie\nCEO Hypernumbers.com\n+44 7776 251669\n\n"
        "askswift.com, tiny.hn and uses.hn are all trading "
        "names of hypernumbers.com"
       ]).
@@ -169,7 +169,7 @@ existing_user_invite_email(Site, Name) ->
        "You have been invited to ", hn_util:strip80(Site), "\n\n",
        "You can use your existing account to login.\n\n"
        "Cheers,\n\n"
-       "The Hypernumbers team.\n\n"
+       "Gordon Guthrie\nCEO hypernumbers.com\n+44 7776 251669\n\n"
        "askswift.com, tiny.hn and uses.hn are all trading "
        "names of hypernumbers.com"
       ]).    
