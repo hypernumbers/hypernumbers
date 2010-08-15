@@ -14,6 +14,7 @@
 
 -export([
          valid_email/1,
+         extract_name_from_email/1,
          capitalize_name/1,
          
          transform_site/1,
@@ -74,7 +75,7 @@
         ]).
 
 -spec extract_name_from_email(string()) -> string(). 
-extract_name_from_email(Email) ->
+ extract_name_from_email(Email) ->
     [Name | _Rest] =  string:tokens(Email, ".+@"),
     capitalize_name(Name).
 
