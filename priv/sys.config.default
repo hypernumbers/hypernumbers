@@ -4,23 +4,26 @@
    {nodename, hndev},
    {environment, development}, % development | production
    
-   %% Host to bind Mochiweb to. 9000 should be used for dev,
-   %% 9090-9092 reserved for production used, and should be turned off
-   %% for testing.
+   % Host to bind Mochiweb to. 9000 should be used for dev,
+   % 9090-9092 reserved for production used, and should be turned off
+   % for testing.
    {mochi_bind, {{127,0,0,1}, 9000}},
 
-   %% Services to start. These are configured by using a parameter of
-   %% 'true', note that in a development environment all services will
-   %% be started regardless.
+   % Services to start. These are configured by using a parameter of
+   % 'true', note that in a development environment all services will
+   % be started regardless.
    {services, 
     [{hns, false},
      {passport, false}
     ]}, 
 
-   %% Url to synchronize cookies against.
+   % Url to synchronize cookies against.
    {sync_url, "http://hypernumbers.com"},
 
-   %% Mail Setup
+   % URL for forgotten password
+   {reset_url, "http://hypernumbers.com/_forgotten_password/"},
+
+   % Mail Setup
    {mailserver,   "smtp.sendgrid.net"},
    {mailuser,     "service@hypernumbers.com"},
    {mailpassword, "sell#something$$"}
