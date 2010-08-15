@@ -3,8 +3,10 @@
 -module(factory).
 
 %% API
--export([provision_site/3, provision_site/4,
-         create_invite/3, create_invite/4
+-export([provision_site/3,
+         provision_site/4,
+         create_invite/3,
+         create_invite/4
         ]).
 
 provision_site(Zone, Email, SiteType) ->
@@ -29,7 +31,7 @@ provision_site_(Zone, Email, Type, SuggestedUid) ->
         true -> 
             {ok, {Host, {_Ip, Port, Node}}} = hns:link_resource(Zone),
             {ok, NE, Uid} = passport:get_or_create_user(Email, SuggestedUid),
-            Name = extract_name_from_email(Email),
+            Name = hn_util:extract_name_from_email(Email),
             Site = lists:flatten(io_lib:format("http://~s:~b", [Host,Port])),
             ok = rpc:call(Node, hn_setup, site, 
                           [Site, Type, [{creator, Uid},
@@ -55,7 +57,7 @@ create_invite(Node, Site, Email, Group) ->
             {error, invalid_email};
         true ->
             {ok, NE, Uid} = passport:get_or_create_user(Email),
-            UName = extract_name_from_email(Email),
+            UName = hn_util:extract_name_from_email(Email),
             ok = rpc:call(Node, hn_groups, add_user,
                           [Site, Group, Uid]),
             post_invite(NE, Site, Uid, Email, UName)
@@ -106,13 +108,7 @@ extract_zone("http://"++Site) ->
     {Name, [$.|ZoneP]} = lists:splitwith(fun(C) -> C /= $. end, Site),
     Zone = lists:takewhile(fun(C) -> C /= $: end, ZoneP),
     {Zone, Name}.
-
-extract_name_from_email(Email) ->
-    [Name | _Rest] =  string:tokens(Email, ".+@"),
-    capitalize_name(Name).
     
-capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].
-
 new_user_site_email(Site, Uid, Email, Name) ->
     Path = ["_validate", Name],
     Data = [{emailed, true}],
