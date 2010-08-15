@@ -13,7 +13,10 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
-         transform_site/1, transform_perms/1,
+         valid_email/1,
+         
+         transform_site/1,
+         transform_perms/1,
          add_views/0,
          
          esc_regex/1,     
@@ -69,6 +72,18 @@
          drop_last/1
         ]).
 
+
+-spec valid_email(string()) -> boolean(). 
+valid_email(Email) ->
+    EMail_regex = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+"
+        ++ "(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
+        ++ "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+"
+        ++ "(?:[a-zA-Z]{2}|com|org|net|gov|mil"
+        ++ "|biz|info|mobi|name|aero|jobs|museum)", %" for syntax highighting
+    case re:run(Email, EMail_regex) of
+        nomatch    -> false;
+        {match, _} -> true
+    end.
 
 %% used to turn sites into atoms for process names, etc
 -spec site_to_atom(list(), list()) -> atom().

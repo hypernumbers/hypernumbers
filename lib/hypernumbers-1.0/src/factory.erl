@@ -23,7 +23,7 @@ provision_site(Zone, Email, SiteType, _) ->
                     -> {ok, new | existing, string(), atom(), auth_srv:uid(), string()} | 
                        {error, invalid_email}.
 provision_site_(Zone, Email, Type, SuggestedUid) ->
-    case valid_email(Email) of
+    case hn_util:valid_email(Email) of
         false ->
             {error, invalid_email};
         true -> 
@@ -50,7 +50,7 @@ create_invite(Site, Email, Group) ->
 %% Create invite when the node 
 -spec create_invite(node(), string(), string(), string()) -> ok.
 create_invite(Node, Site, Email, Group) ->    
-    case valid_email(Email) of
+    case hn_util:valid_email(Email) of
         false ->
             {error, invalid_email};
         true ->
@@ -67,17 +67,6 @@ create_invite(Node, Site, Email, Group) ->
 %%     throw(undefined),
 %%     ok.
 
--spec valid_email(string()) -> boolean(). 
-valid_email(Email) ->
-    EMail_regex = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+"
-        ++ "(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
-        ++ "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+"
-        ++ "(?:[a-zA-Z]{2}|com|org|net|gov|mil"
-        ++ "|biz|info|mobi|name|aero|jobs|museum)", %" for syntax highighting
-    case re:run(Email, EMail_regex) of
-        nomatch    -> false;
-        {match, _} -> true
-    end.
 
 -spec post_provision(new | existing, string(), auth_srv:uid(), string(), string())
                     -> ok.
