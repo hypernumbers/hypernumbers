@@ -14,7 +14,9 @@
           email_to_uid/1,
           validate_uid/1,
           is_valid_uid/1,
-          get_or_create_user/1, get_or_create_user/2,
+          get_or_create_user/1,
+          get_or_create_user/2,
+          is_user/1,
           delete_uid/1,
           create_uid/0,
           dump_script/0,
@@ -166,7 +168,11 @@ get_or_create_user(Email) ->
 -spec get_or_create_user(string(), auth_srv:uid()) -> {ok, new | existing, string()}.
 get_or_create_user(Email, SuggestedUid) -> 
     gen_server:call({global, ?MODULE}, {get_or_create_user, Email, SuggestedUid}).
-    
+
+-spec is_user(string()) -> true | false.
+is_user(Email) -> 
+    gen_server:call({global, ?MODULE}, {is_user, Email}).
+
 -spec delete_uid(string()) -> ok.
 delete_uid(Uid) when is_list(Uid) ->
     gen_server:call({global, ?MODULE}, {delete_uid, Uid}).
@@ -312,6 +318,17 @@ handle_call({get_or_create_user, Email, SuggestedUid}, _From, State) ->
                             _ ->
                                 {error, cannot_replace_existing_id}
                         end
+                end
+        end,
+    Ret = mnesia:activity(async_dirty, T),
+    {reply, Ret, State};
+
+handle_call({is_user, Email}, _From, State) ->
+    Ms = ets:fun2ms(fun(#user{email=E, uid=U}) when E == Email -> U end),
+    T = fun() ->
+                case mnesia:select(service_passport_user, Ms, write) of
+                    [_U] -> true;
+                    _   -> false
                 end
         end,
     Ret = mnesia:activity(async_dirty, T),
