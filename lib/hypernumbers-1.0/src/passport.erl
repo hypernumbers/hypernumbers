@@ -1,6 +1,12 @@
+%%% copyright 2010 Hypernumbers Ltd
+%%% written by Tom McNulty
+
 -module(passport).
 
 -behaviour(gen_server).
+
+-define(D2GS, calendar:datetime_to_gregorian_seconds).
+-define(UT, calendar:universal_time).
 
 %% API
 -export([ start_link/0,
@@ -20,7 +26,9 @@
           delete_uid/1,
           create_uid/0,
           dump_script/0,
-          load_script/1
+          load_script/1,
+          issue_pwd_reset/2,
+          reset_pwd/3
         ]).
 
 %% gen_server callbacks
@@ -44,6 +52,10 @@
                created_on = calendar:universal_time(),
                lastlogin_on = nil,
                data = dict:new()}).
+
+-record(reset, {age = 0,
+                hash = "",
+                site = application:get_env(hypernumbers, norefer_url)}).
 
 -record(state, {}).
 
@@ -115,6 +127,20 @@ start_link() ->
     global:unregister_name(?MODULE),
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
+-spec reset_pwd(string(), string(), string())-> {success, string()}
+                                                    | {error, weak_password}
+                                                    | {error, invalid_reset}
+                                                    | {error, invalid_email}
+                                                    | {error, expired_reset}.
+reset_pwd(Email, Password, Hash) ->
+    Msg = {reset_pwd, Email, Password, Hash},
+    gen_server:call({global, ?MODULE}, Msg, 10000).
+    
+-spec issue_pwd_reset(string(), string()) -> ok.
+issue_pwd_reset(Email, Site) ->
+    Msg = {issue_pwd_reset, Email, Site},
+    ok = gen_server:call({global, ?MODULE}, Msg, 10000).
+
 -spec authenticate(string(), string(), boolean()) 
                   -> {error, term()} | 
                      {ok, auth_srv:uid(), string(), integer() | string()}.
@@ -133,7 +159,8 @@ authenticate(Email, Password, Remember) ->
 
 -spec set_password(auth_srv:uid(), string()) -> ok | 
                                        {error, invalid_uid} | 
-                                       {error, invalidated }.
+                                       {error, invalidated } |
+                                       {error, weak_password}.
 set_password(Uid, Password) ->
     Msg = {set_password, Uid, Password},
     gen_server:call({global, ?MODULE}, Msg).
@@ -163,11 +190,14 @@ is_valid_uid(Uid) ->
 -spec get_or_create_user(string()) -> {ok, new | existing, string()}.
 get_or_create_user(Email) -> 
     SuggestedUid = create_uid(),
-    gen_server:call({global, ?MODULE}, {get_or_create_user, Email, SuggestedUid}).
+    gen_server:call({global, ?MODULE}, {get_or_create_user,
+                                        Email, SuggestedUid}).
 
--spec get_or_create_user(string(), auth_srv:uid()) -> {ok, new | existing, string()}.
+-spec get_or_create_user(string(), auth_srv:uid()) ->
+    {ok, new | existing, string()}.
 get_or_create_user(Email, SuggestedUid) -> 
-    gen_server:call({global, ?MODULE}, {get_or_create_user, Email, SuggestedUid}).
+    gen_server:call({global, ?MODULE}, {get_or_create_user,
+                                        Email, SuggestedUid}).
 
 -spec is_user(string()) -> true | false.
 is_user(Email) -> 
@@ -231,6 +261,32 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
+handle_call({reset_pwd, Email, Password, Hash}, _From, State) ->
+    Ret = case acceptablepassword(Password) of
+              true  -> reset_p1(Email, Password, Hash);
+              false -> {error, weak_password}
+          end,
+    {reply, Ret, State};
+    
+handle_call({issue_pwd_reset, Email, Site}, _From, State) ->
+    T = fun() ->
+                [U] = mnesia:index_read(service_passport_user, Email,
+                                        #user.email),
+                Age = gen_expiry(?DAY_S),
+                % this hash is just checked against
+                Hash = mochihex:to_hex(crypto:rand_bytes(24)),
+                Reset = #reset{age = Age, hash = Hash, site = Site},
+                #user{data = Dict} = U,
+                NewDict = dict:store(reset, Reset, Dict),
+                ok = mnesia:write(service_passport_user,
+                             U#user{data = NewDict},
+                             write),
+                Hash
+        end,
+    Hash = mnesia:activity(async_dirty, T),
+    ok = emailer:send(reset, Email, Hash, Site),
+    {reply, ok, State};            
+        
 handle_call({authenticate, Email, Password}, _From, State) ->
     PassMD5 = crypto:md5_mac(server_key(), Password),
     User = #user{email=Email, passMD5 = PassMD5, _='_'},
@@ -244,23 +300,12 @@ handle_call({authenticate, Email, Password}, _From, State) ->
     {reply, Ret, State};
 
 handle_call({set_password, Uid, Password}, _From, State) ->
-    PassMD5 = crypto:md5_mac(server_key(), Password),
-    T = fun() ->
-                case mnesia:read(service_passport_user, Uid, write) of
-                    [U] when not U#user.validated ->
-                        {error, not_validated};
-                    [U] -> 
-                        mnesia:write(service_passport_user, 
-                                     U#user{passMD5 = PassMD5}, 
-                                     write),
-                        ok;
-                    _ ->
-                        {error, invalid_uid}
-                end
-        end,
-    Ret = mnesia:activity(async_dirty, T),
+    Ret = case acceptablepassword(Password) of
+              true  -> set_p1(Uid, Password);
+              false -> {error, weak_password}
+          end,
     {reply, Ret, State};
-
+                  
 handle_call({uid_to_email, Uid}, _From, State) ->
     Ret = case mnesia:activity(async_dirty, fun mnesia:read/3, 
                                [service_passport_user, Uid, read]) of
@@ -351,6 +396,61 @@ handle_call(dump_script, _From, State) ->
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
+
+%% fix from http://github.com/msantos/cerck
+acceptablepassword(Password) ->
+    if
+        (length(Password) < 8) -> false;
+        true                   -> true
+    end.
+
+reset_p1(Email, Pwd, Hash) ->
+    T = fun() ->
+                case mnesia:index_read(service_passport_user, Email,
+                                       #user.email) of
+                    []  -> {error, invalid_email};
+                    [U] -> #user{data = Dict} = U,
+                           case dict:find(reset, Dict) of
+                               error   -> {error, reset_not_issued};
+                               {ok, N} -> reset_p2(U, Pwd, Hash, N, Dict)
+                           end
+                end
+        end,
+    mnesia:activity(transaction, T).
+
+% test that the hashes are the same
+reset_p2(U, Password, Hash, Reset, Dict) ->
+    #reset{age = A, hash = H, site = S} = Reset,
+    Age2 = list_to_integer(A),
+    Now = ?D2GS(?UT()),
+    if
+        (Hash =/= H) -> {error, invalid_reset};
+        (Age2 < Now) -> {error, expired_reset};
+        true         -> PwdMD5 = crypto:md5_mac(server_key(), Password),
+                        D2 = dict:erase(reset, Dict),
+                        U2 = U#user{validated = true, passMD5 = PwdMD5,
+                                    data = D2},
+                        mnesia:write(service_passport_user, 
+                                     U2, write),
+                        {success, S}
+    end.
+
+set_p1(Uid, Password) ->
+    PassMD5 = crypto:md5_mac(server_key(), Password),
+    T = fun() ->
+                case mnesia:read(service_passport_user, Uid, write) of
+                    [U] when not U#user.validated ->
+                        {error, not_validated};
+                    [U] -> 
+                        mnesia:write(service_passport_user, 
+                                     U#user{passMD5 = PassMD5}, 
+                                     write),
+                        ok;
+                    _ ->
+                        {error, invalid_uid}
+                end
+        end,
+    mnesia:activity(async_dirty, T).
 
 %%--------------------------------------------------------------------
 %% @private

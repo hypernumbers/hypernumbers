@@ -89,7 +89,7 @@ local_hypernumbers() ->
     {ok, _, Uid} = passport:get_or_create_user("test@hypernumbers.com"),
     hn_setup:site("http://hypernumbers.dev:9000", blank, [{creator, Uid}]),
     passport:validate_uid(Uid),
-    passport:set_password(Uid, "secure").
+    passport:set_password(Uid, "i!am!secure").
 
 production_tasks() ->
     net_adm:world(),

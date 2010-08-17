@@ -9,6 +9,10 @@
 -include("gettext.hrl").
 -include("hn_mochi.hrl").
 
+-define(E, error_logger:error_msg).
+-define(SORT, lists:sort).
+-define(DAY_S, 86400). % a day's worth of seconds
+
 -export([ start/0 ]).
 
 -export([ handle/1,
@@ -47,7 +51,7 @@ handle(MochiReq) ->
                       {path, MochiReq:get(path)},
                       {type, Type}, {what, What},
                       {trace, erlang:get_stacktrace()}],
-            error_logger:error_report(Report),
+            ?E(Report),
             '500'(process_environment(MochiReq)) 
     end.
 
@@ -155,9 +159,16 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
        X == "_mynewsite"; 
        X == "_validate";
        X == "_hooks";
-       X == "_logout";
-       X == "_forgotten_password" ->
+       X == "_logout" ->
     allowed;
+
+%% Only some sites have a forgotten password box
+authorize_get(#refX{path = [X | _Vanity]}, _Qry, #env{accept = html}) 
+  when X == "_forgotten_password" ->
+    case passport_running() of
+        true  -> allowed;
+        false -> denied
+    end;
 
 %% Authorize update requests when the update is targeted towards a
 %% spreadsheet. Since we have no closed security object, we rely on
@@ -287,7 +298,6 @@ authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
 %% attempted is validated against the view's security model.
 %% authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
 %%  when View /= undefined ->
-%%    io:format("in old commented out authorize_post...~n"),
 %%    case auth_srv:check_particular_view(Site, Path, Env#env.uid, View) of
 %%        {view, View} ->
 %%            {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
@@ -342,10 +352,9 @@ iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
             throw(E)
     end;
 
-iget(#refX{site=Site, path=[X | _Rest]}, page, _Qry,Env)
+iget(#refX{site=Site, path=[X | _Vanity]}, page, _Qry, Env)
   when X == "_forgotten_password" ->
-        serve_html(404, Env, [viewroot(Site), "/forgotten_password.html"]);
-
+    serve_html(404, Env, [viewroot(Site), "/forgotten_password.html"]);
 iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
      #qry{hypertag=HT}, 
      Env) when X == "_invite"; X == "_validate" ->
@@ -415,7 +424,7 @@ iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
             [{_Ref, Val}] ->
                 Val;
             _Else ->
-                error_logger:error_msg("unmatched ~p~n", [_Else]),
+                ?E("unmatched ~p~n", [_Else]),
                 ""
         end,
     json(Env, V);
@@ -437,7 +446,7 @@ iget(_Ref, Type, _Qry, Env=#env{accept=html, mochi=Mochi})
     respond(303, E2);
     
 iget(Ref, _Type, Qry, Env) ->
-    error_logger:error_msg("404~n-~p~n-~p~n", [Ref, Qry]),
+    ?E("404~n-~p~n-~p~n", [Ref, Qry]),
     '404'(Ref, Env).
 
 
@@ -452,12 +461,25 @@ ipost(Ref=#refX{site = S, path = P}, _Qry,
                           Uid),
     json(Env, "success");
 
-ipost(#refX{site=Site, path=["_forgotten_password"]}=Ref, Qry, Env) ->
-    json(Env, {struct, [{"status", "success"}, {"response", "bonanza"}]});
-    %'404'(Ref, Env);
+ipost(#refX{site=_Site, path=["_forgotten_password"]}=Ref, _Qry, Env) ->
+    case passport_running() of
+        false -> '404'(Ref, Env);
+        true  ->
+            {S, R} = case ?SORT(Env#env.body) of
+                         [{"email", E1}] ->
+                             {ok, S1} = application:get_env(hypernumbers,
+                                                            norefer_url),
+                             request_pwd_reset(E1, S1);
+                         [{"email", E1}, {"site", S1}] ->
+                             request_pwd_reset(E1, S1);
+                         [{"email", E1}, {"hash", Hash}, {"newpwd", NPwd}] ->
+                             reset_password(E1, NPwd, Hash)
+                     end,
+            json(Env,{struct,[{"status",S}, {"response",R}]})
+    end;
 
 ipost(#refX{site=Site, path=["_login"]}, Qry, E) ->
-    [{"email", Email0},{"pass", Pass}, {"remember", _Rem}] = E#env.body,
+    [{"email", Email0},{"pass", Pass}, {"remember", _R}] = ?SORT(E#env.body),
     Email = string:to_lower(Email0),
     case passport:authenticate(Email, Pass, true) of
         {error, authentication_failed} -> 
@@ -600,11 +622,9 @@ ipost(Ref=#refX{path = P} = Ref, _Qry,
     Expected = hn_db_api:matching_forms(Ref, Transaction),
     case hn_security:validate(Expected, Array) of
         false ->
-            error_logger:error_msg("invalid form submission~n"
-                                   ++ "on:       ~p~n"
-                                   ++ "Expected: ~p~n"
-                                   ++ "Got:      ~p~n",
-                                   [Ref, Expected, Array]),
+            ?E("invalid form submission~n""on:       ~p~n"
+               ++ "Expected: ~p~nGot:      ~p~n",
+               [Ref, Expected, Array]),
             respond(403, Env);
         true  ->
             Res = Ref#refX{
@@ -653,9 +673,11 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%% Horizonal API = notify_back_create handler                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Ref, _Qry,
+ipost(Ref, _Qry,  
       Env=#env{body = [{"action", "notify_back_create"}|T]}) ->
 
+    %% WARNING this assumes that the list is provided in strict order - should
+    %% really sort the list before testing for "action"
     Biccie   = from("biccie",     T),
     Proxy    = from("proxy",      T),
     ChildUrl = from("child_url",  T),
@@ -836,7 +858,7 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
     end;
 
 ipost(Ref, Qry, Env) ->
-    error_logger:error_msg("404~n-~p~n-~p~n",[Ref, Qry]),
+    ?E("404~n-~p~n-~p~n",[Ref, Qry]),
     '404'(Ref, Env).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1343,4 +1365,56 @@ site_type_exists(Type) ->
     case lists:member(Type, Types) of
         true  -> list_to_atom(Type);
         false -> exit("invalid type being commissioned....")
+    end.
+
+passport_running() ->
+    {ok, Services} = application:get_env(hypernumbers, services),
+    case lists:keysearch(passport, 1, Services) of
+        {value, {passport, false}} -> false;
+        {value, {passport, true}}  -> true
+    end.
+
+request_pwd_reset(Email, Site) ->
+    case hn_util:valid_email(Email) of
+        false ->
+            ?E("invalid e-mail in forgotten password ~p~n",
+               [Email]),
+            {"failure", "you supplied an invalid e-mail"};
+        true ->
+            case passport:is_user(Email) of
+                false -> {"failure", Email ++ " is not a user"};
+                true  -> ok = passport:issue_pwd_reset(Email, Site),
+                         {"success", "Password reset sent. "
+                         ++ "Please check your e-mail"}
+            end
+    end.
+    
+reset_password(Email, Password, Hash) ->
+    case hn_util:valid_email(Email) of
+        false ->
+            ?E("invalid e-mail in forgotten password ~p~n",
+               [Email]),
+            {"failure", "you supplied an invalid e-mail"};
+        true ->
+            case passport:reset_pwd(Email, Password, Hash) of
+                {success, Success} ->
+                    HRef = "Password reset - <a href=\""++Success++"\">continue</a>",
+                    {"success", HRef};
+                {error, weak_password} ->
+                    {"failure", "that password was too weak, try again."};
+                {error, invalid_email} ->
+                    {"failure", "invalid e-mail address"};
+                {error, reset_not_issued} ->
+                    {"failure", "reset not issued"};
+                {error, invalid_reset} ->
+                    Report = ["invalid reset attempt", {email, Email},
+                              {hash, Hash}],
+                    ?E(Report),
+                    {"failure", "invalid attempt at resetting"};
+                {error, expired_reset} ->
+                    {ok, URL} = application:get_env(hypernumbers, reset_url),
+                    Msg = "<a href=\"" ++ URL ++"\">try again</a>",
+                    {"failure", "that reset has expired, "
+                     ++ Msg}
+            end
     end.
