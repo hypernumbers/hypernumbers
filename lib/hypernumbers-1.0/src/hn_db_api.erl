@@ -117,7 +117,8 @@
          delete/2, delete/3,
          clear/3,
          %%set_borders/5,
-         write_formula_to_range/2
+         write_formula_to_range/2,
+         force_recalc/1
         ]).
 
 -export([wait_for_dirty/1,
@@ -129,6 +130,16 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+force_recalc(Site) ->
+    RefX = #refX{site = Site, path = [], obj = {page, "/"}},
+    io:format("RefX is ~p~n", [RefX]),
+    Fun = fun() ->
+                  Pages = hn_db_wu:read_pages(RefX),
+                  [ok=mark_these_dirty([RefX#refX{path=X}], nil)||X<-Pages]
+          end,
+    mnesia:activity(transaction, Fun),
+    ok.
 
 %% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
 %% @doc write_style will write a style record
