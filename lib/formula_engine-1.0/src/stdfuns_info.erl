@@ -156,7 +156,10 @@ n([Num]) when is_number(Num) -> Num;
 n([true])                    -> 1;
 n([false])                   -> 0;
 n([{errval, X}])             -> {errval, X};
-n([{datetime, _Y, _D}=Date]) -> muin_util:cast(Date, date, num);
+n([{datetime, _Y, _D}=Date]) -> case muin_util:cast(Date, date, num) of
+                                    {error, _Err} -> ?ERR_VAL;
+                                    Else          -> Else
+                                end;
 n([X]) when ?is_array(X)     -> 1;
 n(_X)                        -> 0.
     

@@ -47,8 +47,11 @@ create(C) ->
             is_boolean(X) andalso X == C;
        (X) when X =:= C -> true;
        (X) when DoRegex == true ->
-            not (nomatch == re:run(muin_util:cast(X, str),
-                                   Match, [caseless, anchored]));
+            Cast = case muin_util:cast(X, str) of
+                       {error, _Err} -> ?ERR_VAL;
+                       Else          -> Else
+                   end,
+            not (nomatch == re:run(Cast, Match, [caseless, anchored]));
        (_) -> false
     end.
 
