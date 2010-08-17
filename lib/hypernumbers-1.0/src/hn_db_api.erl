@@ -133,7 +133,6 @@
 
 force_recalc(Site) ->
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
-    io:format("RefX is ~p~n", [RefX]),
     Fun = fun() ->
                   Pages = hn_db_wu:read_pages(RefX),
                   [ok=mark_these_dirty([RefX#refX{path=X}], nil)||X<-Pages]
