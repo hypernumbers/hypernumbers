@@ -9,15 +9,15 @@ do(migrate)  -> migrate();
 do(git_pull) -> git_pull(), refresh(), hotswap();
 do(Other)    -> io:format("I don't know how to '~s'", [Other]).
 
-%% Updates with don't need new data and can't crash the sysetm
+%% Updates with don't need new data and can't crash the system
 -spec git_pull() -> ok.
 git_pull() ->
     CWD = filename:absname(""),
     Dir = code:priv_dir(hypernumbers) ++ "/../../../",
     ok = file:set_cwd(Dir),
     _Ret = os:cmd("git pull"),
-    ok = file:set_cwd(Dir++"/ebin"),
-    compile:code:quick(),
+    ok = file:set_cwd(Dir ++ "/ebin"),
+    compile_code:quick(),
     ok = file:set_cwd(CWD).
     
 %% Updates which cannot crash the system.
