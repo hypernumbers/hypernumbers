@@ -97,7 +97,7 @@ send_email(To, EmailBody) ->
         {ok, production}  ->
             spawn(hn_net_util, email, 
                   [To,
-                   "\"Gordon Guthrie\" <gordon@hypernumbers.com>"
+                   "\"Gordon Guthrie\" <gordon@hypernumbers.com>",
                    "Your new site is live!", 
                    EmailBody]),
             ok
