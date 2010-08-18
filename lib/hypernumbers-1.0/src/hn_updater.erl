@@ -16,6 +16,8 @@ git_pull() ->
     Dir = code:priv_dir(hypernumbers) ++ "/../../../",
     ok = file:set_cwd(Dir),
     _Ret = os:cmd("git pull"),
+    ok = file:set_cwd(Dir++"/ebin"),
+    compile:code:quick(),
     ok = file:set_cwd(CWD).
     
 %% Updates which cannot crash the system.
