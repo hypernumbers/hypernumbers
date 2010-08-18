@@ -133,12 +133,15 @@
 
 force_recalc(Site) ->
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
-    Fun = fun() ->
-                  Pages = hn_db_wu:read_pages(RefX),
-                  [ok=mark_these_dirty([RefX#refX{path=X}], nil)||X<-Pages]
-          end,
-    mnesia:activity(transaction, Fun),
+    Pages = read_pages(RefX),
+    [ok = force_r1(RefX#refX{path=X}) || X <- Pages],
     ok.
+
+force_r1(RefX) ->
+    Fun = fun() ->
+                  mark_these_dirty([RefX], nil)
+           end,
+    write_activity(RefX, Fun, "recalc").
 
 %% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
 %% @doc write_style will write a style record
