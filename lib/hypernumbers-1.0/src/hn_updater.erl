@@ -2,13 +2,22 @@
 
 -export([do/1, migrate/0, migrate/1]).
 
-do(refresh) -> refresh();
-do(hotswap) -> refresh(), hotswap();
-do(restart) -> refresh(), hotswap(), restart();
-do(migrate) -> migrate();
-do(Other)   -> io:format("I don't know how to '~s'", [Other]).
+do(refresh)  -> refresh();
+do(hotswap)  -> refresh(), hotswap();
+do(restart)  -> refresh(), hotswap(), restart();
+do(migrate)  -> migrate();
+do(git_pull) -> git_pull(), refresh(), hotswap();
+do(Other)    -> io:format("I don't know how to '~s'", [Other]).
 
-
+%% Updates with don't need new data and can't crash the sysetm
+-spec git_pull() -> ok.
+git_pull() ->
+    CWD = filename:absname(""),
+    Dir = code:priv_dir(hypernumbers) ++ "/../../../",
+    ok = file:set_cwd(Dir),
+    _Ret = os:cmd("git pull"),
+    ok = file:set_cwd(CWD).
+    
 %% Updates which cannot crash the system.
 -spec refresh() -> ok. 
 refresh() -> 
