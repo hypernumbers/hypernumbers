@@ -1,5 +1,5 @@
 #! /bin/bash
-./hn do hn_update:git_pull hypernumbers.com
-./hn do hn_update:git_pull node2.hypernumbers.com
-./hn do hn_update:git_pull node3.hypernumbers.com
-./hn do hn_update:git_pull node4.hypernumbers.com
+./hn do git_pull hnlive@hypernumbers.com
+./hn do git_pull hnlive@node2.hypernumbers.com
+./hn do git_pull hnlive@node3.hypernumbers.com
+./hn do git_pull hnlive@node4.hypernumbers.com

@@ -143,10 +143,16 @@ call([Node, Fun]) ->
     
     io:format("~p~n",[rpc:call(Node, M, F, A)]).
 
+remote_do(Cmd) when is_list(Cmd) ->
+    remote_do(list_to_atom(Cmd));
 remote_do(Cmd) ->
     remote_do(Cmd, conf_lname()).
 remote_do(Cmd, []) ->
     remote_do(Cmd, conf_lname());
+remote_do(Cmd, Node) when is_list(Cmd) ->
+    remote_do(list_to_atom(Cmd), Node);
+remote_do(Cmd, [Node]) when is_list(Node) ->
+    remote_do(Cmd, list_to_atom(Node));
 remote_do(Cmd, Node) ->
     case net_adm:ping(Node) of
         pong  -> 
