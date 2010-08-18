@@ -272,3 +272,7 @@ label {
     top: -1px;
     *overflow: hidden;
 }
+
+#forgotten_pwd {
+    margin-left: 5px;
+}
