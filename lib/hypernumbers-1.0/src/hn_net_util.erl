@@ -2,9 +2,10 @@
 
 -module(hn_net_util).
 
--export([cookie/3, 
+-export([cookie/3,
          kill_cookie/1,
-         email/4, email/5,
+         email/4,
+         email/5,
          post/3]).
 
 %% Two years is forever on the internet.
