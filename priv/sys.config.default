@@ -1,4 +1,4 @@
-%% -*- erlang -*-
+cs %% -*- erlang -*-
 [{hypernumbers, 
   [
    {nodename, hndev},
@@ -27,7 +27,7 @@
    % Mail Setup
    {mailserver,   "smtp.sendgrid.net"},
    {mailuser,     "service@hypernumbers.com"},
-   {mailpassword, "sell#something$$"}
+   {mailpassword, "spell!hello!right"}
   ]},
  
 %% Mnesia Config
