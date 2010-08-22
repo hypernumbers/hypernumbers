@@ -1,4 +1,4 @@
-cs %% -*- erlang -*-
+%% -*- erlang -*-
 [{hypernumbers, 
   [
    {nodename, hndev},
