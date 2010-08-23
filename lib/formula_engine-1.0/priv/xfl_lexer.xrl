@@ -112,7 +112,7 @@ NAME_REF = ({MAYBE_URL_PREFIX}{NAME})
 %%% Whitespace:
 
 WHITESPACE = ([\000-\s]*)
-
+NONBREAKINGSPACE = ((\x{c2})(\x{a0}))
 
 Rules.
 
@@ -146,7 +146,8 @@ Rules.
 {NAME_REF}     : {token, name(TokenChars, TokenLine)}.
 
 %% Discard whitespace:
-{WHITESPACE} : skip_token.
+{WHITESPACE}       : skip_token.
+{NONBREAKINGSPACE} : skip_token.
 
 %% Punctuation & operators:
 
