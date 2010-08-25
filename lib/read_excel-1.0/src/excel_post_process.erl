@@ -29,6 +29,7 @@
 %%%                                                                     %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 post_process_tables(Tables) ->
+    io:format("post-processing tables...~n"),
     % Excel has a number of built in formats
     % excel_util:dump(Tables),
     ok = add_built_in_formats(Tables),
@@ -300,32 +301,35 @@ set_formats(CellRef, XFIndex, Tables) ->
     % We need to know the parent (or style) record for this record)
 
     {value, {type, Type}} = ?k(type, 1, XFList),
-    % It appears that sometimes a cell format can reference a style record directly!
+    % It appears that sometimes a cell format can reference a style
+    % record directly!
     % By definition in this case the cell format has no parent
 
-    PXFList = case Type of
-                  cell  ->
-                      % Look up the parent XF record
-                      {value, {parent_index, XFParentIndex}} =
-                          ?k(parent_index, 1, XFList),
-                      [{_PXF, PXFList2}] = ets:lookup(XFId, {index, XFParentIndex}),
-                      % the parent should be a style - check that it is so
-                      {value, {type, PType}} = ?k(type, 1, PXFList2),
-                      case PType of
-                          cell  -> exit("I don't think this should ever read a "++
-                                        "cell XF record");
-                          style -> ok
-                      end,
-                      PXFList2;
-                  style -> io:format("I don't think this should ever read "++
-                                     "a style XF record~n"),
-                           % Just return the XFList
-                           % ie kid on that the format is its own parent
-                           XFList
-              end,
-
+    PXFList =
+        case Type of
+            cell  ->
+                % Look up the parent XF record
+                {value, {parent_index, XFParentIndex}} =
+                    ?k(parent_index, 1, XFList),
+                [{_PXF, PXFList2}] = ets:lookup(XFId, {index, XFParentIndex}),
+                % the parent should be a style - check that it is so
+                {value, {type, PType}} = ?k(type, 1, PXFList2),
+                case PType of
+                    cell  -> exit("I don't think this should ever read a "++
+                                  "cell XF record");
+                    style -> ok
+                end,
+                PXFList2;
+            style -> io:format("I don't think this should ever read "++
+                               "a style XF record~n"),
+                     % Just return the XFList
+                     % ie kid on that the format is its own parent
+                     XFList
+        end,
+    
     % 
-    % What attributes apply are determined by the XF attributes so get them first
+    % What attributes apply are determined by the XF attributes
+    % so get them first
     % 
     {value, {attributes, AttrList}}  = ?k(attributes, 1, XFList),
     {value, {attributes, PAttrList}} = ?k(attributes, 1, PXFList),

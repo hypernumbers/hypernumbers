@@ -333,6 +333,11 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
                       {border_colour, Colours1},
                       {bg_colour, Colours2}]};
 
+parse_rec(?SST, [<<>> | _T], _Name, _Tbl) ->
+    {write, lacunae, [{identifier, "SST"},
+                      {source, excel_records.erl},
+                      {msg, "skipping string table with no strings..."}]};
+
 parse_rec(?SST, [H | T], _Name, Tbl) ->
     <<_Used:32/little-unsigned-integer,
      StringCount:32/little-unsigned-integer, Rest/binary>> = H,
