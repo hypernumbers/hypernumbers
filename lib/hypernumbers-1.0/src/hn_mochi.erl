@@ -129,7 +129,6 @@ handle_resource(Ref, Qry, Env=#env{method = 'POST'}) ->
     mochilog:log(Env, Ref),
     ipost(Ref, Qry, Env).
 
-
 -spec handle_static(string(), iolist(), any()) -> any(). 
 handle_static(X, Site, Env)
   when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; X == ".txt";
