@@ -2,10 +2,16 @@
 %%% @doc Functions to handle file uploads.
 -module(hn_file_upload).
 
--export([ handle_upload/3, test_import/2, test_import/1 ]).
+-export([ handle_upload/3]).
+
+-export([test_import/0,
+         test_import/2,
+         test_import/1 ]).
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
+
+-define(CHUNK, 1000).
 
 %% holds upload state for callback function in the hn_file_upload module.
 -record(file_upload_state, {
@@ -24,7 +30,7 @@ handle_upload(Mochi, Ref, Uid) ->
     
     {ok, File, Name} = stream_to_file(Mochi, Ref, UserName),
     NRef = Ref#refX{path = Ref#refX.path ++ [make_name(Name)]},
-    
+    % io:format("file uploaded...~n"),
     try
         import(File, UserName, NRef, Name),
         { {struct, [{"location", hn_util:list_to_path(NRef#refX.path)}]},
@@ -121,6 +127,10 @@ defaultize(M) ->
           end.    
 
 
+test_import() ->
+     test_import("Management Accounts Model v17", hn_util:parse_url("http://hypernumbers.dev:9000")).
+    %test_import("c_year", hn_util:parse_url("http://hypernumbers.dev:9000")).
+
 test_import(File) ->
     test_import(File, hn_util:parse_url("http://hypernumbers.dev:9000/")).
 
@@ -133,13 +143,24 @@ import(File, User, Ref, Name) ->
     
     {Cells, _Names, _Formats, CSS, Warnings, Sheets} = filefilters:read(excel, File),    
     {Literals, Formulas} = lists:foldl(fun split_sheets/2, {[], []}, Cells),
-
+    % io:format("There are ~p literals~nThere are ~p Formulae~n",
+    %          [erlang:length(Literals), erlang:length(Formulas)]),
     [ write_data(Ref, X) || X <- Literals ],
-    [ write_data(Ref, X) || X <- Formulas ],
+    % [ write_data(Ref, X) || X <- Formulas ],
+    % chunking gives the recalc engine the time to sort itself out...
+    ok = chunk_write(Ref, Formulas),
+    %io:format("going to write css~n"),
     [ write_css(Ref, X) || X <- CSS ],
-
+    %io:format("write out warnings...~n"),
     ok = write_warnings_page(Ref, Sheets, User, Name, Warnings).
 
+chunk_write(Refs, Items) -> chunk_w1(Refs, Items, 1).
+
+chunk_w1(_Ref, [], _N)      -> ok;
+chunk_w1(Ref, List, ?CHUNK) -> timer:sleep(5000),
+                               chunk_w1(Ref, List, 1);
+chunk_w1(Ref, [H | T], N)   -> ok = write_data(Ref, H),
+                               chunk_w1(Ref, T, N + 1).
 
 write_warnings_page(Ref, Sheets, User, Name, Warnings) ->
 
@@ -268,5 +289,4 @@ file_upload_callback(body_end, S) ->
     file:close(S#file_upload_state.file),
     fun(N) -> file_upload_callback(N, S) end;
 
-file_upload_callback(eof, State) ->
-    State.
+file_upload_callback(eof, State) -> State.
