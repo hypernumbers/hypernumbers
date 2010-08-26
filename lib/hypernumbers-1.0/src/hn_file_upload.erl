@@ -12,6 +12,7 @@
 -include("hypernumbers.hrl").
 
 -define(CHUNK, 1000).
+-define(SLEEP, 500).
 
 %% holds upload state for callback function in the hn_file_upload module.
 -record(file_upload_state, {
@@ -157,7 +158,7 @@ import(File, User, Ref, Name) ->
 chunk_write(Refs, Items) -> chunk_w1(Refs, Items, 1).
 
 chunk_w1(_Ref, [], _N)      -> ok;
-chunk_w1(Ref, List, ?CHUNK) -> timer:sleep(5000),
+chunk_w1(Ref, List, ?CHUNK) -> timer:sleep(?SLEEP),
                                chunk_w1(Ref, List, 1);
 chunk_w1(Ref, [H | T], N)   -> ok = write_data(Ref, H),
                                chunk_w1(Ref, T, N + 1).
