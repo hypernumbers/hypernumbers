@@ -5,14 +5,34 @@
 %%%            debugging module (hence the name!).
 %%% @private
 -module(bits).
+
 -export([
          scratch_delete_sites/1,
          init_memory_trace/0,
          mem_csv/0,
          basic_views/0,
-        log/1]).                
+         log/1,
+         load_inline/0
+        ]).                
 
-scratch_delete_site(hypernumbers) ->
+-record(refX,
+        {
+          site        = [],
+          path        = [],
+          obj         = null
+         }).
+
+load_inline() ->
+    RefX1 = #refX{site="http://hypernumbers.dev:9000",
+                 path = [],
+                 obj = {cell, {1, 1}}},
+    RefX2 = #refX{site="http://hypernumbers.dev:9000",
+                 path = [],
+                 obj = {cell, {1, 2}}},
+    hn_db_api:write_attributes([{RefX1, [{"inline", "input"}]}]),
+    hn_db_api:write_attributes([{RefX2, [{"inline", "input"}]}]).
+
+scratch_delete_sites(hypernumbers) ->
     Sites = [
              "http://ab22.tiny.hn:80",
              "http://ad01.tiny.hn:80",
@@ -172,7 +192,7 @@ scratch_delete_site(hypernumbers) ->
              "http://za39.tiny.hn:80"
             ],
     [ok = hn_setup:delete_site(X) || X <- Sites];
-scratch_delete_site(node2) ->
+scratch_delete_sites(node2) ->
     Sites = [
              "http://ab62.tiny.hn:80",
              "http://ae36.tiny.hn:80",
@@ -354,10 +374,10 @@ scratch_delete_site(node2) ->
              "http://ym98.tiny.hn:80",
              "http://yp79.tiny.hn:80",
              "http://yr96.tiny.hn:80",
-             "http://yt88.tiny.hn:80",
+             "http://yt88.tiny.hn:80"
             ],
     [ok = hn_setup:delete_site(X) || X <- Sites];
-scratch_delete_site(node3) ->
+scratch_delete_sites(node3) ->
     Sites = [
              "http://aa38.tiny.hn:80",
              "http://an91.tiny.hn:80",
@@ -548,7 +568,7 @@ scratch_delete_site(node3) ->
              "http://yt80.tiny.hn:80",
              "http://yu92.tiny.hn:80",
              "http://yy01.tiny.hn:80",
-             "http://za37.tiny.hn:80",
+             "http://za37.tiny.hn:80"
              ],
     [ok = hn_setup:delete_site(X) || X <- Sites].
 
