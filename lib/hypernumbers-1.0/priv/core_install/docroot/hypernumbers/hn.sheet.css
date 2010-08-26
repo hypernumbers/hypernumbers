@@ -49,10 +49,8 @@ html,body {
 /* .cancel {  */
 /*     color : red; */
 /* } */
-/* .action {   */
-/*     float : right; */
-/*     color : green; */
-/* } */
+
+
 #functions {
     display            : none;
     position           : absolute;
@@ -1022,6 +1020,10 @@ a.toolbar-item {
 
 #users { width:300px; margin:100px auto; }
 
+#welcome { 
+    padding:20px;
+}
+
 #welcome p { 
     color:#666;
     margin-bottom:5px;
@@ -1066,7 +1068,24 @@ a.toolbar-item {
     text-decoration:none; 
 }
 
-.button { 
+#tourpager {  
+    width:       150px;
+    text-align:  center;
+    padding-top: 4px;
+    float:       right;
+}
+
+.tournavigate {
+     float : right;
+     color : green;
+}
+
+#tourwrapper { 
+   padding: 10px 0px 0px 0px;
+   height:  300px;
+}
+
+.button, .tournavigate {  
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;    
     -moz-border-radius:3px 3px 3px 3px;
@@ -1159,6 +1178,11 @@ a.toolbar-item {
     padding:10px 60px;
 }
 
+#settings p { 
+    color:#666;
+    margin-bottom:5px;
+}
+
 .beta {display:none;}
 
 .sans-serif { font-family: sans-serif; }
@@ -1176,6 +1200,15 @@ a.toolbar-item {
     width    : 230px; 
     height   : 145px; 
 } 
+
+#tour { 
+   padding: 20px;
+}
+
+#tour p { 
+    color:#666;
+    margin-bottom:5px;
+}
 
 #combo_colourbg .button { 
     width:168px;
