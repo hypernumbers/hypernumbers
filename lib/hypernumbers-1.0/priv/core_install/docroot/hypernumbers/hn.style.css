@@ -273,7 +273,12 @@ label {
     margin-left: 5px;
 }
 
-.inlineform:hover { 
-    background-color: orange !important;
-    color: #ffffff; 
+.inlineform { 
+    background: url(/hypernumbers/sprite.png) -64px -1px;
+    z-index:    9999;
+    position:   absolute;
+    left:       0px;
+    top:        0px;
+    height:     3px;
+    width:      3px;
 }
