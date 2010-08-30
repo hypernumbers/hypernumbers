@@ -6,8 +6,35 @@
 %%% This code is 'public domain' (see original website)
 
 %% —
-%% Parse csv formated data (RFC-4180)
+%% Parse csv formated data (RFC-4180) in Erlang
 %% —
+
+%% Sez me by e-mail
+%% ----------------
+
+%% Gordon Guthrie to luke.krasnoff
+%% 8 Mar
+%% Hey Luke
+
+%% I wonder if you could e-mail me a copy of your CVS parsing code:
+%% http://ppolv.wordpress.com/2008/02/25/parsing-csv-in-erlang/
+
+%% It is a useful bit of code. Have you thought of throwing up on
+%% github/would you mind if we did?
+
+%% Cheers
+
+%% Gordon
+
+%% Sez Luke back
+%% -------------
+
+%% Hi Gordon,
+
+%% By all means put it on github.
+
+%% Cheers,
+%% Luke
 
 -module(parse_csv).
 -import(lists, [reverse/1]).
@@ -153,16 +180,21 @@ csv_test_() ->
      ?_assertEqual([{"1A","1B"}],
                    parse(<<"1A,1B">>)),
      % Nested quoted element
-     ?_assertEqual([{"1A","\"1B\""}], parse(<<"\"1A\",\"\"\"1B\"\"\"">>)),
+     ?_assertEqual([{"1A","\"1B\""}],
+                   parse(<<"\"1A\",\"\"\"1B\"\"\"">>)),
      % Quoted element with embedded LF
-     ?_assertEqual([{"1A","1\nB"}], parse(<<"\"1A\",\"1\nB\"">>)),
+     ?_assertEqual([{"1A","1\nB"}],
+                   parse(<<"\"1A\",\"1\nB\"">>)),
      % Quoted element with embedded quotes (1)
-     ?_assertEqual([{"1A","\"B"}], parse(<<"\"1A\",\"",$","B\"">>)), %"
+     ?_assertEqual([{"1A","\"B"}],
+                   parse(<<"\"1A\",","\"\"B\"">>)), 
      % Quoted element with embedded quotes (2)
-     ?_assertEqual([{"1A","blah\"B"}], parse(<<"\"1A\",\"blah\"",$","B\"">>)), %"
+     ?_assertEqual([{"1A","blah\"B"}],
+                   parse(<<"\"1A\",\"blah\"",$","B\"">>)), %"
      % Missing 2nd quote
      ?_assertThrow({ecsv_exception,unclosed_quote},
                    parse(<<"\"1A\",\"2B">>)), %">>)), % fixing indenting
      % Bad record size
-     ?_assertThrow({ecsv_exception,bad_record_size}, parse(<<"1A,1B,1C\n2A,2B\n">>))
+     ?_assertThrow({ecsv_exception,bad_record_size},
+                   parse(<<"1A,1B,1C\n2A,2B\n">>))
     ].
