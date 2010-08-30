@@ -2,7 +2,7 @@
 %%% @doc Handle Hypernumbers HTTP requests
 -module(hn_render).
 
--export([content/1, 
+-export([content/2, 
          wrap_page/3, wrap_region/3]).
 
 -include("spriki.hrl").
@@ -25,8 +25,8 @@
                  
 %% Returns a tuple containing the rendered html for the area covered
 %% by the given Ref, along with the width of said html.
--spec content(#refX{}) -> {[textdata()], integer(), integer()}.
-content(Ref) ->
+-spec content(#refX{}, atom()) -> {[textdata()], integer(), integer()}.
+content(Ref, Type) ->
     Data = lists:sort(fun order_objs/2, read_data_without_page(Ref)),
     Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
     RowHs = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)} 
@@ -36,66 +36,71 @@ content(Ref) ->
     Palette = gb_trees:from_orddict
                 (lists:sort
                    (hn_mochi:extract_styles(Ref#refX.site))),
-    layout(Ref, Cells, ColWs, RowHs, Palette).
+    layout(Ref, Type, Cells, ColWs, RowHs, Palette).
 
-read_data_without_page(Ref) ->			    
-    [ {RefX, Val} || {RefX, Val} <- hn_db_api:read_intersect_ref(Ref), element(1, RefX#refX.obj) =/= page ].
+read_data_without_page(Ref) ->
+    Refs = hn_db_api:read_intersect_ref(Ref),
+    [ {RefX, Val} || {RefX, Val} <- Refs, element(1, RefX#refX.obj) =/= page ].
 
--spec layout(#refX{}, cells(), cols(), rows(), gb_tree()) 
+-spec layout(#refX{}, atom(), cells(), cols(), rows(), gb_tree()) 
             -> {[textdata()], integer(), integer()}.
-layout(Ref, Cells, CWs, RHs, Palette) ->
+layout(Ref, Type, Cells, CWs, RHs, Palette) ->
     PX = 0,
     PY = 0,
     Col = startcol(Ref),
     Row = startrow(Ref),
     {H,RHs2} = row_height(Row, RHs),
     Rec = #rec{colwidths=CWs, palette=Palette, startcol=Col},
-    layout(Cells, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
+    layout(Cells, Type, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
 
--spec layout(cells(), 
+-spec layout(cells(), atom(),
              integer(), integer(), integer(), integer(), integer(), 
              cols(), rows(), #rec{}, [textdata()])
             -> {[textdata()],integer(), integer()}.
                     
 %% End of input
-layout([], _Col, _Row, PX, PY, H, _CWs, _RHs, Rec, Acc) ->
+layout([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec, Acc) ->
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
     TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 %% Output the next cell value in the current row.
-layout([{{C,R}, L}|T], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+layout([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     Value = pget("value", L),
+    Input = case Type of
+                inline  -> pget("input", L);
+                webpage -> "none"
+            end,
     Css = read_css(pget("style", L), Rec#rec.palette),
     {W,CWs2} = col_width(C,CWs),
     case pget("merge", L) of
         undefined ->
-            Acc2 = [draw(Value, Css, PX, PY, W, H) | Acc],
-            layout(T, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc2);
+            Acc2 = [draw(Value, Css, Input, C, R, PX, PY, W, H) | Acc],
+            layout(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc2);
         {struct, [{"right", Right}, {"down", Down}]} ->
             {MW,CWs3} = width_across(C+1, C+Right, CWs2, W),
             MH = height_below(R+1, R+Down, RHs, H),
             Rec2 = Rec#rec{maxmerge_height =
                                erlang:max(Rec#rec.maxmerge_height, MH + PY)},
-            Acc2 = [draw(Value, Css, PX, PY, MW, MH) | Acc],
+            Acc2 = [draw(Value, Css, Input, C, R, PX, PY, MW, MH) | Acc],
             T2 = expunge(T, {C,C+Right,R,R+Down}),
-            layout(T2, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
+            layout(T2, Type, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
     end;
 
 %% No cell for this column, but still haven't changed rows.
-layout(Lst=[{{_,R},_}|_], C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+layout(Lst=[{{_,R},_}|_], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     {W,CWs2} = col_width(C,CWs),
-    layout(Lst, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
+    layout(Lst, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
 
 %% Wind back, and advance to the next row.
-layout(Lst, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
+layout(Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
     PX2 = 0,
     PY2 = PY + H,
     Col2 = Rec#rec.startcol,
     Row2 = Row + 1,
     {H2,RHs2} = row_height(Row2, RHs),
     Rec2 = Rec#rec{maxwidth = erlang:max(Rec#rec.maxwidth, PX)},
-    layout(Lst, Col2, Row2, PX2, PY2, H2, 
+    layout(Lst, Type, Col2, Row2, PX2, PY2, H2, 
            Rec#rec.colwidths, RHs2, Rec2, Acc).
 
 -spec expunge(cells(), {integer(), integer(), integer(), integer()}) 
@@ -138,11 +143,13 @@ col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
 
 -spec draw(undefined | string(), 
            textdata(),
+           string(),
+           integer(), integer(),
            integer(), integer(), integer(), integer())
           -> textdata().
-draw(undefined, "", _X, _Y, _W, _H) -> "";
-draw(undefined, Css, X, Y, W, H) -> draw("", Css, X, Y, W, H);
-draw(Value, Css, X, Y, W, H) ->
+draw(undefined,"",Inp,_C,_R,_X,_Y,_W,_H)  when Inp =/= "inline" -> "";
+draw(undefined,Css,Inp,C,R,X,Y,W,H) -> draw("",Css, Inp,C,R,X,Y,W,H);
+draw(Value,Css,Inp,C,R,X,Y,W,H) ->
     % Tom wants to fix this up :(
     Val = case Value of
               {errval, ErrVal} -> atom_to_list(ErrVal);
@@ -151,10 +158,15 @@ draw(Value, Css, X, Y, W, H) ->
               F when is_float(F) -> float_to_list(F);
               _                  -> Value
           end,
+    Cell = tconv:to_b26(C) ++ integer_to_list(R),
+    ODiv = case Inp of
+               "inline" -> "<div class='inline' data-ref='"++Cell++"' ";
+               _        -> "<div  data-ref='"++Cell++"'"
+           end,
     Style = io_lib:format(
               "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s'",
               [X, Y, W, H, Css]),
-    ["<div ",Style,">", Val, "</div>"].
+    [ODiv,Style,">", Val, "</div>"].
 
 -spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean(). 
 order_objs({RA,_}, {RB,_}) ->
@@ -205,6 +217,7 @@ wrap_page(Content, TotalWidth, TotalHeight) ->
          <span id='hidden_input'></span>
 
          <div id='outer' ", OuterStyle, ">
+          <div id='clinput'></div>
           <div id='inner' class='hn_inner'>", Content, "</div>
          </div>
 
@@ -234,16 +247,15 @@ wrap_page(Content, TotalWidth, TotalHeight) ->
    </form>
   </div>
  </div>
-
-  </body>
-  
+</div>  
   <script src='/hypernumbers/json2.js'></script>
   <script src='/hypernumbers/hn.js'></script>
   <script src='/hypernumbers/hn.util.js'></script>
   <script src='/hypernumbers/hn.sheet.js'></script>
   <script src='/hypernumbers/hn.data.js'></script>
-
+  <script src='/hypernumbers/hn.callbacks.js'></script>
   <script src='/hypernumbers/hn.renderpage.js'></script>
+  </body>
   </html>"].
 
 -spec wrap_region([textdata()], integer(), integer()) -> [textdata()]. 
@@ -269,7 +281,7 @@ simple_test() ->
     ColWs = [],
     RowHs = [],
     Palette = gb_trees:empty(),
-    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    {_, W, H} = layout(Ref, webpage, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({560, 44}, {W, H}).
 
 col_rows_test_() ->
@@ -283,7 +295,7 @@ col_rows_test_() ->
     ColWs = [{6, 30}, {7, 150}],
     RowHs = [{1, 40}, {3, 10}],
     Palette = gb_trees:empty(),
-    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    {_, W, H} = layout(Ref, webpage, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({580, 72}, {W, H}).
 
 merged_col_test_() ->
@@ -304,7 +316,7 @@ merged_col_test_() ->
     ColWs = [],
     RowHs = [],
     Palette = gb_trees:empty(),
-    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    {_, W, H} = layout(Ref, webpage, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({640, 66}, {W, H}).
 
 merged_row_test_() ->
@@ -321,5 +333,5 @@ merged_row_test_() ->
     ColWs = [],
     RowHs = [],
     Palette = gb_trees:empty(),
-    {_, W, H} = layout(Ref, Cells, ColWs, RowHs, Palette),
+    {_, W, H} = layout(Ref, webpage, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({480, 330}, {W, H}).

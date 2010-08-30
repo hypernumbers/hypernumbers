@@ -382,7 +382,7 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
     end;
 
 iget(Ref, page, #qry{view = "webpage"}, Env=#env{accept = html}) ->
-    {Html, Width, Height} = hn_render:content(Ref),
+    {Html, Width, Height} = hn_render:content(Ref, inline),
     Page = hn_render:wrap_page(Html, Width, Height),
     text_html(Env, Page);
 
