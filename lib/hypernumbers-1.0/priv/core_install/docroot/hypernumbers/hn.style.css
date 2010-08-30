@@ -1,3 +1,4 @@
+
 /******************************************************************************
    PAGE STYLES
    This is for content styles, global styles that apply to the rendered
@@ -281,4 +282,24 @@ label {
     top:        0px;
     height:     3px;
     width:      3px;
+}
+
+.inline { 
+   -moz-border-radius: 4px 4px 4px 4px;
+   -webkit-border-radius: 4px 4px 4px 4px;
+   border: 1px solid #dddddd;
+}
+
+#clinput div { 
+   position: static;
+}
+
+#clinput div { 
+   background-color: white;
+   margin 1px 1px 1px 1px;
+   -moz-border-radius: 4px 4px 4px 4px;
+   -webkit-border-radius: 4px 4px 4px 4px;
+   -moz-box-sizing: content-box;
+   border: 1px solid orange;
+   outline: none;
 }
