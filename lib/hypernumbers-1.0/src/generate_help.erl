@@ -67,34 +67,33 @@ run() ->
     %% do_jf("ru", "russian",    ?russian_fns).
 
 
-do_jf(Code, _Lang, Fns) ->
-    %% Find entry in ?notes for this language.
-    {value, {Code, Notes}} = lists:keysearch(Code, 1, ?notes),
-    
-    Fun =
-        fun(#help{name = N} = Help) ->
-                NewH = case lists:keysearch(N, 2, Fns) of
-                           {value, {_, _, NewN}} -> 
-                               Help#help{name = NewN};
-                           false ->
-                               Help#help{notes = Notes}
-                       end,
-                json_util:jsonify(NewH)
-        end,
-    JsonStructs = [Fun(X) || X <- ?WORKING_FNS],
-    JsonStrings =
-        lists:foldr(fun(JsonStruct, Acc) ->
-                            JsonStr = lists:flatten((mochijson:encoder([{input_encoding, utf8}]))(JsonStruct)),
-                            [JsonStr|Acc]
-                    end,
-                    [],
-                    JsonStructs),
-    write(
-      string:concat(
-        string:concat("[", string:join(JsonStrings, ",")),
-        "]"),
-      Code).
-
+%%do_jf(Code, _Lang, Fns) ->
+%%    %% Find entry in ?notes for this language.
+%%    {value, {Code, Notes}} = lists:keysearch(Code, 1, ?notes),
+%%    
+%%    Fun =
+%%        fun(#help{name = N} = Help) ->
+%%                NewH = case lists:keysearch(N, 2, Fns) of
+%%                           {value, {_, _, NewN}} -> 
+%%                               Help#help{name = NewN};
+%%                           false ->
+%%                               Help#help{notes = Notes}
+%%                       end,
+%%                json_util:jsonify(NewH)
+%%        end,
+%%    JsonStructs = [Fun(X) || X <- ?WORKING_FNS],
+%%    JsonStrings =
+%%        lists:foldr(fun(JsonStruct, Acc) ->
+%%                            JsonStr = lists:flatten((mochijson:encoder([{input_encoding, utf8}]))(JsonStruct)),
+%%                            [JsonStr|Acc]
+%%                    end,
+%%                    [],
+%%                    JsonStructs),
+%%    write(
+%%      string:concat(
+%%        string:concat("[", string:join(JsonStrings, ",")),
+%%        "]"),
+%%      Code).
 
 write(Json, Lang) ->
 
