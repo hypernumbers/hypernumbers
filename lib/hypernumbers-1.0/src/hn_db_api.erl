@@ -19,7 +19,7 @@
 %%%            When the mnesia transaction returns the {@link hn_db_wu}
 %%%            functions will have loaded the process dictionary with
 %%%            the appropriate front end notifications which can then be
-%%%            forwared using the function 'tell_front_end'
+%%%            forwarded using the function 'tell_front_end'
 %%%            
 %%%            Obviously this only needs to be done on functions that generate
 %%%            notifications to the front-end (ie it is not required for any 
