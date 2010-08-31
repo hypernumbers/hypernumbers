@@ -1,5 +1,5 @@
 %%-*-erlang-*-
-%% this is a permissions script for creanting and adding users to groups.
+%% this is a permissions script for creating and adding users to groups.
 %%
 
 {create_group, [{name, "admin"}]}.
