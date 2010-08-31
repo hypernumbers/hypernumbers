@@ -2,12 +2,32 @@
 
 -type now() :: {integer(),integer(),integer()}.
 -type cellidx() :: pos_integer().
+-type generator() :: fun(() -> string()). 
+-type resource_addr() :: {string(), integer(), atom()}. %% (IP, Port, Node).
 
 %% Core Tables
 
 -record(core_site, {site = [] :: string(),
                     type :: atom()}).
 
+%% Zone Tables
+-record(zone, { label :: string(),
+                min_size :: integer(),
+                ideal_size :: integer(),
+                pool :: gb_tree(),
+                generator :: generator(),
+                zone_id :: integer() }).
+
+-record(record, { name, % :: {string(), string()},
+                  address,% :: resource_addr(),
+                  %% Following two used for linode.
+                  zone_id,% :: integer(),
+                  resource_id }).% :: integer()}).
+
+-record(resource, { address = [] :: resource_addr(),
+                    weight = 0 :: integer() }).
+
+%% Site Tables
 -record(index,
         {
           site,

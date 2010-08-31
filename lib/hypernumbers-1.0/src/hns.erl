@@ -23,28 +23,9 @@
 -define(DEV_ZONE_ID, -1).
 
 -include("hypernumbers.hrl").
+-include("spriki.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
 -include_lib("eunit/include/eunit.hrl").
-
--type generator() :: fun(() -> string()). 
--type resource_addr() :: {string(), integer(), atom()}. %% (IP, Port, Node).
-
-%%% Database Tables
--record(zone, { label :: string(),
-                min_size :: integer(),
-                ideal_size :: integer(),
-                pool :: gb_tree(),
-                generator :: generator(),
-                zone_id :: integer() }).
-
--record(record, { name, % :: {string(), string()},
-                  address,% :: resource_addr(),
-                  %% Following two used for linode.
-                  zone_id,% :: integer(),
-                  resource_id }).% :: integer()}).
-
--record(resource, { address = [] :: resource_addr(),
-                    weight = 0 :: integer() }).
 
 %%% Internal State
 -record(routing, { table = [], upper_limit = 0}).
@@ -66,7 +47,6 @@ start_link() ->
     global:unregister_name(?MODULE),
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
-    
 -define(TRIES, 5).
 %% Returns a name be mapped to one of the available resources, by
 %% means of weighted-random draw.
