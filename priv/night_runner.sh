@@ -27,6 +27,8 @@ cd $TESTDIR
 
 ## Generate System Tests
 echo $(./hn call 'testsys:generate().')
+
+# Run System Tests
 echo $(./hn call 'test:sys().')
 
 ## Run tests
@@ -41,6 +43,9 @@ echo $(./hn call 'test:excel("2b").')
 echo $(./hn call 'test:excel("2c").')
 echo $(./hn call 'test:excel("2d").')
 echo $(./hn call 'test:excel("2e").')
+
+# Run Security Tests
+#echo $(./hn call 'test:security()'.)
 
 ## Cleanup.
 ./hn stop

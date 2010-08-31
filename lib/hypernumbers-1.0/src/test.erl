@@ -2,7 +2,8 @@
 
 -export([all/0, 
          sys/0, sys/1, 
-         excel/0, excel/1, excel/2 ]).
+         excel/0, excel/1, excel/2 ,
+         security/0, security/1]).
 
 -define(LOG_DIR,     "var/tests/").
 -define(TEST_DIR,    "tests/").
@@ -16,8 +17,23 @@ init() ->
     catch hn_setup:site("http://hypernumbers.dev:9000", blank, []).
         
 
-all() -> excel(), sys().
+all() -> excel(), sys(), security().
 
+security() -> 
+    init(),
+    WC = filename:absname(?TEST_DIR)++"/security_test",
+    Tests = filelib:wildcard(WC),
+    Opts = [ {dir, Tests} ],
+    do_test(Opts).
+
+security(S) ->
+    init(),
+    WC = filename:absname(?TEST_DIR)++"/security_test",
+    Tests = filelib:wildcard(WC),
+    Suite = S ++ "_SUITE",
+    Opts = [ {dir, [Tests]},
+             {suite, [Suite]} ],
+    do_test(Opts).
 
 sys() ->
     sys([]).
