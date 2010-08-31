@@ -40,7 +40,6 @@
 -define(EMPTY_TREE, {0,nil}).
 
 -type uid() :: string().
--type auth_req() :: nil | uid().
 -type auth_spec() :: [everyone | string()].
 
 -record(control, {champion = [] :: string(),
