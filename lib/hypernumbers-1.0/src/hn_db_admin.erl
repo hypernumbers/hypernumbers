@@ -32,8 +32,34 @@
          into_mem/1,
          outof_mem/1,
          backup/3,
-         restore/2
+         restore/2,
+         dump_site_table/2,
+         dump_core_table/2
         ]).
+
+-spec dump_site_table(string(), string()) -> ok.
+%% just dumps a table to the shell
+dump_site_table(Site, Table) ->
+    Record = list_to_atom(Table),
+    Table2 = hn_db_wu:trans(Site, Record),
+    dump2(Table2, Record).
+
+-spec dump_core_table(string(), string()) -> ok.
+%% just dumps a table to the shell
+dump_core_table(Prefix, Record) ->
+    Table = list_to_atom(Prefix ++ Record),
+    dump2(Table, list_to_atom(Record)).
+
+dump2(Table, Record) ->
+    N = ms_util2:no_of_fields(Record),
+    Spec =  list_to_tuple([Record| lists:duplicate(N, '_')]),
+    Fun = fun() ->
+                  Ret = mnesia:match_object(Table, Spec, write),
+                  io:format("Dumping ~p~n~n~p~n", [Table, Ret]),
+                  ok
+          end,
+    mnesia:activity(async_dirty, Fun),
+    ok.
 
 -spec restore(list(), list()) -> ok.
 restore(Dir, Name) ->
