@@ -7,6 +7,8 @@
 {add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "webpage"} ]}.
 {add_view, [{path, []},       {perms, ["admin"]}, {view, "table"} ]}.
 {add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "table"} ]}.
+{add_view, [{path, []},       {perms, ["admin"]}, {view, "tablerow"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "tablerow"} ]}.
 
 {set_champion,
  [{path, []},

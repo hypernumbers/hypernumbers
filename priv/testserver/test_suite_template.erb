@@ -34,7 +34,7 @@
 %%% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 init_per_suite(Config) ->
-    Site = "http://hypernumbers.dev:9000",
+    Site = "http://tests.hypernumbers.dev:9000",
     reset_perms(Site),                  
     Ref = #refX{site=Site, path=[]},
     hn_file_upload:test_import("<%= @basename %>", Ref),
