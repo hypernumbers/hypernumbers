@@ -109,20 +109,28 @@ setup(Site, _Type, _Opts, batch) ->
 setup(Site, Type, _Opts, json) ->
     ok = import_json(Site, moddir(Type));
 setup(Site, _Type, Opts, groups) ->
-    {ok, Terms} = file:consult([sitedir(Site),"/","groups.script"]),
-    Terms2 = [group_transform(T, Opts) || T <- Terms],
-    ok = hn_groups:load_script(Site, Terms2);
+    case file:consult([sitedir(Site),"/","groups.script"]) of
+        {ok, Terms} -> Terms2 = [group_transform(T, Opts) || T <- Terms],
+                       ok = hn_groups:load_script(Site, Terms2);
+        % file doesn't exist is an OK error - it is a valid
+        % condition so don't crash - other file opening errors
+        % should fail
+        {error, enoent} -> ok
+    end;        
 setup(Site, _Type, _Opts, permissions) ->
-    {ok, Terms} = file:consult([sitedir(Site),"/","permissions.script"]),
-    ok = auth_srv:load_script(Site, Terms);
+    case file:consult([sitedir(Site),"/","permissions.script"]) of
+        {ok, Terms} -> ok = auth_srv:load_script(Site, Terms);
+        % file doesn't exist is an OK error - it is a valid
+        % condition so don't crash - other file opening errors
+        % should fail
+        {error, enoent} -> ok
+    end;
 setup(Site, _Type, Opts, script) ->
     case file:consult([sitedir(Site),"/","setup.script"]) of
-        {ok, Terms} -> 
-            [ok = run_script(T, Site, Opts) || T <- Terms];
-        _ ->
-            ok
-    end,
-    ok.
+        {ok, Terms} -> [ok = run_script(T, Site, Opts) || T <- Terms],
+                       ok;
+        {error, enoent} -> ok
+    end.
 
 %% -spec resave_views() -> ok.
 %% resave_views() ->
