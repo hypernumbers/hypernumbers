@@ -138,6 +138,24 @@ load_script(Site, Terms) ->
 exec_script_term({create_group, T}, Site) ->
     create_group(Site, ?lget(name, T));
 exec_script_term({add_user, T}, Site) ->
-    add_user(Site, ?lget(group, T), ?lget(uid, T));
+    UID = case lists:keyfind(uid, 1, T) of
+              false -> Email = ?lget(email, T),
+                       Pwd = ?lget(password, T),
+                       {ok, Status, UID2} = passport:get_or_create_user(Email),
+                       case Status of
+                           new      -> passport:validate_uid(UID2),
+                                       passport:set_password(UID2, Pwd);
+                           existing -> ok
+                       end,
+                       UID2;
+              _     -> ?lget(uid, T)
+          end,
+    add_user(Site, ?lget(group, T), UID);
 exec_script_term({set_users, T}, Site) ->
-    set_users(Site, ?lget(group, T), ?lget(uids, T)).
+    UIDS = case lists:keyfind(uids, 1, T) of
+               false -> Names = ?lget(emails, T),
+                        L = [passport:email_to_uid(X) || X <- Names],
+                        [X || {ok, X} <- L];
+               _     -> ?lget(uids, T)
+           end,
+    set_users(Site, ?lget(group, T), UIDS).
