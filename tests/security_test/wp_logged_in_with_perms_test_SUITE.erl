@@ -231,8 +231,8 @@ all() ->
 
 %ipost(#refX{obj = {range, _}} = Ref, _Qry, 
 %      Env=#env{body=[{"borders", {struct, Attrs}}]}) ->
-?test(wp_test18a, "/test1/A1", "{\"borders\":{\"top-border\":\"none\"}}", 200).
-?test(wp_test18b, "/test1/A1:b5", "{\"borders\":{\"top-border\":\"none\"}}", 200).
+?test(wp_test18a, "/test1/A1", "{\"borders\":{\"where\":\"top\",\"border\":\"none\",\"border_style\":\"thin\",\"border_color\":\"#ff0000\"}}", 200).
+?test(wp_test18b, "/test1/A1:b5", "{\"borders\":{\"where\":\"top\",\"border\":\"none\",\"border_style\":\"thin\",\"border_color\":\"#ff0000\"}}", 200).
 
 %ipost(#refX{site = _Site, path=["_user"]}, _Qry, 
 %      _Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
@@ -241,7 +241,7 @@ all() ->
 
 %ipost(Ref=#refX{path = P} = Ref, _Qry,
 %      Env=#env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
-?test(wp_test20, "/test1/", "{\"postform\":{\"bleh\":\"bloh\"}}", 200).
+?test(wp_test20, "/test1/", "{\"postform\":{\"results\":\"./replies/\",\"values\":[{\"label\":\"label1\",\"formula\":\"hey!\"}]}}", 403).
 
 %ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
 ?test(wp_test21, "/test1/", "{\"set\":{\"bleh\":\"bloh\"}}", 200).
@@ -263,7 +263,7 @@ all() ->
 
 %ipost(#refX{site = Site, path = _P}, _Qry,
 %      Env=#env{body = [{"admin", Json}], uid = Uid}) ->
-?test(wp_test24, "/test1/", "{\"admin\":\"json\"}", 200).
+?test(wp_test24, "/test1/", "{\"admin\": {\"set_champion\": {\"path\":\"/blah/\", \"view\":\"spreadsheet\"}}}", 200).
 
 %ipost(#refX{site=RootSite, path=["_hooks"]}, 
 %      _Qry, Env=#env{body=Body, uid=PrevUid}) ->

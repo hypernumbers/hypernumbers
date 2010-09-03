@@ -187,23 +187,23 @@ all() ->
 %      _Qry,
 %      Env=#env{body=[{"copy", {struct, [{"src", Src}]}}],
 %               uid = Uid}) ->
-?test(wp_test15, "/failpath/A1", "{\"copy\":{\"src\": \"b1\"}}", 401).
+?test(wp_test15, "/failpath/A1", "{\"copy\":{\"src\": \"http://tests.hypernumbers.dev:9000/test1/b1\"}}", 401).
 
 %ipost(Ref, 
 %      _Qry,
 %      Env=#env{body=[{"copystyle", {struct, [{"src", Src}]}}],
 %               uid = Uid}) ->
-?test(wp_test16, "/failpath/A1", "{\"copystyle\":{\"src\": \"b1\"}}", 401).
+?test(wp_test16, "/failpath/A1", "{\"copystyle\":{\"src\": \"http://tests.hypernumbers.dev:9000/test1/b1\"}}", 401).
 
 %ipost(Ref, 
 %      _Qry,
 %      Env=#env{body=[{"copyvalue", {struct, [{"src", Src}]}}],
 %               uid = Uid}) ->
-?test(wp_test17, "/failpath/A1", "{\"copyvalue\":{\"src\": \"b1\"}}", 401).
+?test(wp_test17, "/failpath/A1", "{\"copyvalue\":{\"src\": \"http://tests.hypernumbers.dev:9000/test1/b1\"}}", 401).
 
 %ipost(#refX{obj = {range, _}} = Ref, _Qry, 
 %      Env=#env{body=[{"borders", {struct, Attrs}}]}) ->
-?test(wp_test18, "/failpath/", "{\"borders\":{\"top-border\":\"none\"}}", 401).
+?test(wp_test18, "/failpath/", "{\"borders\":{\"where\":\"top\",\"border\":\"none\",\"border_style\":\"thin\",\"border_color\":\"#ff0000\"}}", 401).
 
 %ipost(#refX{site = _Site, path=["_user"]}, _Qry, 
 %      _Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
@@ -212,7 +212,7 @@ all() ->
 
 %ipost(Ref=#refX{path = P} = Ref, _Qry,
 %      Env=#env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
-?test(wp_test20, "/failpath/", "{\"postform\":{\"bleh\":\"bloh\"}}", 401).
+?test(wp_test20, "/failpath/", "{\"postform\":{\"results\":\"./replies/\",\"values\":[{\"label\":\"label1\",\"formula\":\"hey!\"}]}}", 401).
 
 %ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
 ?test(wp_test21, "/failpath/", "{\"set\":{\"bleh\":\"bloh\"}}", 401).
@@ -226,7 +226,7 @@ all() ->
 
 %ipost(#refX{site = Site, path = _P}, _Qry,
 %      Env=#env{body = [{"admin", Json}], uid = Uid}) ->
-?test(wp_test24, "/failpath/", "{\"admin\":\"json\"}", 401).
+?test(wp_test24, "/failpath/", "{\"admin\": {\"set_champion\": {\"path\":\"/blah/\", \"view\":\"spreadsheet\"}}}", 401).
 
 %ipost(#refX{site=RootSite, path=["_hooks"]}, 
 %      _Qry, Env=#env{body=Body, uid=PrevUid}) ->
