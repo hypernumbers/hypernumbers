@@ -391,7 +391,7 @@ read_styles(RefX, Idxs) when is_record(RefX, refX) ->
 %% and if it does it should fail...
 insert(#refX{obj = {column, _}} = RefX, Ar) ->
     move(RefX, insert, horizontal, Ar);
-insert(#refX{obj = {row, _}} = RefX, Ar)  ->
+insert(#refX{obj = {row, _}} = RefX, Ar) ->
     move(RefX, insert, vertical, Ar);
 insert(#refX{obj = R} = RefX, Ar) 
   when R == cell orelse R == range ->
@@ -410,6 +410,8 @@ insert(#refX{obj = {R, _}} = RefX, Disp, Ar)
 %% This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
 -spec delete(#refX{}, auth_srv:auth_req()) -> ok.
+delete(#refX{obj = {R, _}} = RefX, Ar) when R == cell orelse R == range ->
+    move(RefX, delete, vertical, Ar);
 delete(#refX{obj = {R, _}} = RefX, Ar) when R == column orelse R == row ->
     Disp = case R of
                row    -> vertical;
@@ -422,7 +424,7 @@ delete(#refX{obj = {page, _}} = RefX, Ar) ->
                    Dirty = hn_db_wu:delete_cells(RefX),
                    mark_these_dirty(Dirty, Ar)
            end,
-    write_activity(RefX, Fun1, "delete").
+    write_activity(RefX, Fun1, "refresh").
 
 %% @doc deletes a reference.
 %% 
@@ -721,7 +723,7 @@ copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
 
 copy_n_paste2(From, To, What, Ar) ->
     case is_valid_c_n_p(From, To) of
-        {ok, single_cell}    -> 
+        {ok, single_cell}    ->
             ok = copy_cell(From, To, false, What, Ar);
         {ok, cell_to_range} -> 
             copy2(From, To, false, What, Ar);
@@ -906,14 +908,14 @@ init_front_end_notify() ->
 
 tell_front_end(quiet, _RefX) ->
     ok;
-tell_front_end("move", RefX) ->
+tell_front_end(Type, RefX) when Type == "move" orelse Type == "refresh" ->
     remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path);
 tell_front_end(_FnName, _refX) ->
     List = lists:reverse(get('front_end_notify')),
     Fun = fun({change, #refX{site=S, path=P, obj=O}, Attrs}) ->
                   remoting_reg:notify_change(S, P, O, Attrs);
-             ({delete, #refX{site=S, path=P, obj=O}}) ->
-                  remoting_reg:notify_delete(S, P, O);
+             %% ({delete, #refX{site=S, path=P, obj=O}}) ->
+             %%     remoting_reg:notify_delete(S, P, O);
              ({style, #refX{site=S, path=P}, Style}) ->
                   remoting_reg:notify_style(S, P, Style)
           end,
