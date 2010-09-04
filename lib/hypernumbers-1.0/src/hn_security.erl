@@ -2,12 +2,15 @@
 %%% @doc Validate form posts. 
 -module(hn_security).
 
-%% API
--export([validate/2]).
+-export([
+         validate_form/2
+        ]).
+
+%% APIs-export([validate/2]).
 -include("spriki.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
-validate(Expected0, Submitted0) ->
+validate_form(Expected0, Submitted0) ->
     Expected = lists:keysort(#form.id, Expected0),
     Submitted = lists:keysort(1, [{pget("label",L), pget("formula",L)} 
                                   || {struct, L} <- Submitted0]),
@@ -47,7 +50,7 @@ basic_test() ->
                       attrs = []}],
     Submitted = [{struct,[{"label","one"},{"formula","a"}]},
                  {struct,[{"label","two"},{"formula","b"}]}],
-    ?assert(validate(Expected, Submitted)).
+    ?assert(validate_form(Expected, Submitted)).
 
 %% Submit too many values.
 too_much_test() ->
@@ -57,7 +60,7 @@ too_much_test() ->
                       attrs = []}],
     Submitted = [{struct,[{"label","one"},{"formula","1"}]},
                  {struct,[{"label","two"},{"formula","2"}]}],
-    ?assertNot(validate(Expected, Submitted)).
+    ?assertNot(validate_form(Expected, Submitted)).
 
 not_enough_test() ->
     Expected = [#form{key=1, id = {[],common,"one"}, 
@@ -69,7 +72,7 @@ not_enough_test() ->
                       restrictions = none, 
                       attrs = []}],
     Submitted = [{struct,[{"label","one"},{"formula","#"}]}],
-    ?assertNot(validate(Expected, Submitted)).
+    ?assertNot(validate_form(Expected, Submitted)).
 
 fake_name_test() ->
     Expected = [#form{key=1, id = {[],common,"one"}, 
@@ -82,7 +85,7 @@ fake_name_test() ->
                       attrs = []}],
     Submitted = [{struct,[{"label","one"},{"formula","a"}]},
                  {struct,[{"label","haha"},{"formula","b"}]}],
-    ?assertNot(validate(Expected, Submitted)).
+    ?assertNot(validate_form(Expected, Submitted)).
 
 basic_select_radio_test() ->
     Expected = [#form{key=1, id = {[],common,"one"}, 
@@ -99,7 +102,7 @@ basic_select_radio_test() ->
                       attrs = []}],
     Submitted = [{struct,[{"label","one"},{"formula","blue"}]},
                  {struct,[{"label","two"},{"formula","red"}]}],
-    ?assert(validate(Expected, Submitted)).
+    ?assert(validate_form(Expected, Submitted)).
 
 basic_select_bad_val_test() ->
     Expected = [#form{key=1, id = {[],common,"one"}, 
@@ -116,4 +119,4 @@ basic_select_bad_val_test() ->
                       attrs = []}],
     Submitted = [{struct,[{"label","one"},{"formula","blue"}]},
                  {struct,[{"label","two"},{"formula","IndianRed"}]}],
-    ?assertNot(validate(Expected, Submitted)).
+    ?assertNot(validate_form(Expected, Submitted)).

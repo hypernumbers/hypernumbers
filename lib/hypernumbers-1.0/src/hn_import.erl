@@ -78,7 +78,8 @@ write_cells(Ref, RewriteT, Attrs) ->
     Attrs2 = copy_attrs(Attrs, [], RewriteT, ["merge",
                                               "formula",
                                               "style",
-                                              "format"]),
+                                              "format",
+                                              "input"]),
     hn_db_api:write_attributes([{Ref, Attrs2}]).
     
 copy_attrs(_Source, Dest, _RT, []) -> Dest;

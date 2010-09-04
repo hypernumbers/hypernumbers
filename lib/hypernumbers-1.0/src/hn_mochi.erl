@@ -12,18 +12,23 @@
 -define(E, error_logger:error_msg).
 -define(SORT, lists:sort).
 -define(DAY_S, 86400). % a day's worth of seconds
+-define(check_pt_vw(A, B, C, D), auth_srv:check_particular_view(A, B, C, D)).
 
--export([ start/0 ]).
+-export([
+         start/0
+        ]).
 
--export([ handle/1,
-          extract_styles/1,
-          style_to_css/1,
-          docroot/1,
-          page_attributes/2,
-          get_json_post/1 % Used for mochilog replay rewrites
+-export([
+         handle/1,
+         extract_styles/1,
+         style_to_css/1,
+         docroot/1,
+         page_attributes/2,
+         get_json_post/1 % Used for mochilog replay rewrites
          ]).
 
 -define(SHEETVIEW, "spreadsheet").
+-define(WEBPAGE, "webpage").
 
 -spec start() -> {ok, pid()}. 
 start() ->
@@ -38,7 +43,7 @@ start() ->
 
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
-    try 
+    try
         Ref = hn_util:parse_url(get_real_uri(MochiReq)),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
@@ -90,9 +95,9 @@ authorize_resource(Env, Ref, Qry) ->
     AuthRet = case Env2#env.method of
                   Req when Req == 'GET'; Req == 'HEAD'  ->
                       authorize_get(Ref, Qry, Env2);
-                  'POST' -> authorize_post(Ref, Qry, Env2)
+                  'POST' ->
+                      authorize_post(Ref, Qry, Env2)
               end,
-
     case {AuthRet, Env2#env.accept} of
         {allowed, _} ->
             handle_resource(Ref, Qry, Env2);
@@ -101,11 +106,13 @@ authorize_resource(Env, Ref, Qry) ->
         {not_found, html} ->
             serve_html(404, Env2, 
                        [viewroot(Ref#refX.site), "/404.html"]);
+        {not_found, json} ->
+            respond(404, Env2);
         {denied, html} ->
             serve_html(401, Env2,
                        [viewroot(Ref#refX.site), "/401.html"]);
-        {not_found, json} ->
-            respond(404, Env2);
+        {denied, json} ->
+            respond(401, Env2);
         _NoPermission ->
             respond(401, Env2)
     end.
@@ -183,7 +190,7 @@ authorize_get(#refX{site = Site, path = Path},
             case lists:all(fun({view, _}) -> true; 
                               (_) -> false end, 
                            MoreViews) of
-                true -> allowed;
+                true  -> allowed;
                 _Else -> denied
             end;       
         _Else ->
@@ -277,13 +284,13 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
         _Else     -> denied
     end.
 
--spec authorize_post(#refX{}, #qry{}, #env{}) -> allowed | denied.
+-spec authorize_post(#refX{}, #qry{}, #env{}) -> allowed | denied | not_found.
 
 %% Allow special posts to occur
 authorize_post(#refX{path = [X]}, _Qry, #env{accept = json}) 
 when X == "_login";
      X == "_hooks";
-     X == "_fogotten_password"-> 
+     X == "_forgotten_password"-> 
     allowed;
 
 authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry, 
@@ -293,28 +300,25 @@ authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
         false -> denied
     end;
 
-%% Authorize posts against non spreadsheet views. The transaction
-%% attempted is validated against the view's security model.
-%% authorize_post(Ref=#refX{site = Site, path = Path}, #qry{view = View}, Env)
-%%  when View /= undefined ->
-%%    case auth_srv:check_particular_view(Site, Path, Env#env.uid, View) of
-%%        {view, View} ->
-%%            {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
-%%            case hn_security:validate_trans(Sec, Ref, Env#env.body) of
-%%                true  -> allowed;
-%%                false -> denied
-%%            end;
-%%        _ -> denied
-%%    end;
-
 %% Allow a post to occur, if the user has access to a spreadsheet on
-%% the target.  the actual operation may need further validation, so
-%% flag as 'allowed_pending'.
+%% the target. But it might be a post from a form or an inline
+%% update so you need to check for them too before allowing
+%% the post to continue...
 authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
-    case auth_srv:check_particular_view(
-           Site, Path, Env#env.uid, ?SHEETVIEW) of
+    case ?check_pt_vw(Site, Path, Env#env.uid, ?SHEETVIEW) of
         {view, ?SHEETVIEW} -> allowed;
-        _                  -> allowed %denied
+        not_found          -> not_found;
+        denied             -> case ?check_pt_vw(Site, Path,
+                                                Env#env.uid, ?WEBPAGE) of
+                                  denied            -> denied;
+                                  not_found         -> not_found;
+                                  {view, ?WEBPAGE} -> 
+                                      case Env#env.body of
+                                          [{"postform",   _}] -> allowed;
+                                          [{"postinline", _}] -> allowed;
+                                          _                   -> denied
+                                      end
+                              end
     end.
 
 -spec iget(#refX{}, 
@@ -521,23 +525,23 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Env=#env{body=[{"insert", "after"}], uid = Uid})
   when O == cell orelse O == range ->
-    ok = hn_db_api:insert(make_after(Ref), Uid),
+    ok = hn_db_api:insert(Ref, vertical, Uid),
     json(Env, "success");
 
 %% but you can specify the displacement explicitly
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Env=#env{body=[{"insert", "before"}, {"displacement", D}],
                uid = Uid})
-  when O == cell orelse O == range,
-       D == "horizontal" orelse D == "vertical" ->
+  when (O == cell orelse O == range),
+       (D == "horizontal" orelse D == "vertical") ->
     ok = hn_db_api:insert(Ref, list_to_existing_atom(D), Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Env=#env{body=[{"insert", "after"}, {"displacement", D}],
                uid = Uid})
-  when O == cell orelse O == range,
-       D == "horizontal" orelse D == "vertical" ->
+  when (O == cell orelse O == range),
+       (D == "horizontal" orelse D == "vertical") ->
     RefX2 = make_after(Ref),
     ok = hn_db_api:insert(RefX2, list_to_existing_atom(D), Uid),
     json(Env, "success");
@@ -557,16 +561,16 @@ ipost(Ref, _Qry,
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Env=#env{body=[{"delete", Direction}],
                uid = Uid})
-  when O == cell orelse O == range,
-       Direction == "horizontal" orelse Direction == "vertical" ->
+  when (O == cell orelse O == range),
+       (Direction == "horizontal" orelse Direction == "vertical") ->
     ok = hn_db_api:delete(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
       Env=#env{body=[{"insert", Direction}],
                uid = Uid})
-  when O == cell orelse O == range,
-       Direction == "horizontal" orelse Direction == "vertical" ->
+  when (O == cell orelse O == range),
+       (Direction == "horizontal" orelse Direction == "vertical") ->
     ok = hn_db_api:insert(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
@@ -590,8 +594,9 @@ ipost(Ref,
     ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, value, Uid),
     json(Env, "success");
 
-ipost(#refX{obj = {range, _}} = Ref, _Qry, 
-      Env=#env{body=[{"borders", {struct, Attrs}}]}) ->
+ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+      Env=#env{body=[{"borders", {struct, Attrs}}]})
+  when O == cell orelse O == range ->
     Where = from("where", Attrs),
     Border = from("border", Attrs),
     Border_Style = from("border_style", Attrs),
@@ -612,15 +617,24 @@ ipost(#refX{site = _Site, path=["_user"]}, _Qry,
     %% ok = hn_users:update(Site, Uid, "language", Lang),
     %% json(Env, "success");
 
+%% ipost for inline editable cells
+ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
+      Env=#env{body = [{"postinline", {struct, [{"formula", _}] = Attrs}}],
+                       uid = _PosterUid}) ->
+    case hn_db_api:read_attribute(Ref, "input") of
+        [{Ref, "inline"}] -> ok = hn_db_api:write_attributes([{Ref, Attrs}]),
+                             json(Env, "success");
+        _                 -> respond(403, Env)
+    end;
+    
 ipost(Ref=#refX{path = P} = Ref, _Qry,
       Env=#env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
-
     [{"results", ResPath}, {"values", {array, Array}}] = Vals,
-
     Transaction = common,
     Expected = hn_db_api:matching_forms(Ref, Transaction),
-    case hn_security:validate(Expected, Array) of
+    case hn_security:validate_form(Expected, Array) of
         false ->
+            io:format("dropping out - invalid form...~n"),
             ?E("invalid form submission~n""on:       ~p~n"
                ++ "Expected: ~p~nGot:      ~p~n",
                [Ref, Expected, Array]),
@@ -644,7 +658,7 @@ ipost(Ref=#refX{path = P} = Ref, _Qry,
             NLbls = [ {Lref, [{"formula", Val}]} || {Lref, Val} <- NewLabels ],
             ok = hn_db_api:write_attributes(NLbls, PosterUid, PosterUid),
             ok = hn_db_api:append_row(NVals, PosterUid, PosterUid),
-            
+
             json(Env, "success")
     end;
 
@@ -672,144 +686,144 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%% Horizonal API = notify_back_create handler                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Ref, _Qry,  
-      Env=#env{body = [{"action", "notify_back_create"}|T]}) ->
+%% ipost(Ref, _Qry,  
+%%       Env=#env{body = [{"action", "notify_back_create"}|T]}) ->
 
-    %% WARNING this assumes that the list is provided in strict order - should
-    %% really sort the list before testing for "action"
-    Biccie   = from("biccie",     T),
-    Proxy    = from("proxy",      T),
-    ChildUrl = from("child_url",  T),
-    PVsJson  = from("parent_vsn", T),
-    CVsJson  = from("child_vsn",  T),
-    Stamp    = from("stamp",      T),
+%%     %% WARNING this assumes that the list is provided in strict order - should
+%%     %% really sort the list before testing for "action"
+%%     Biccie   = from("biccie",     T),
+%%     Proxy    = from("proxy",      T),
+%%     ChildUrl = from("child_url",  T),
+%%     PVsJson  = from("parent_vsn", T),
+%%     CVsJson  = from("child_vsn",  T),
+%%     Stamp    = from("stamp",      T),
 
-    #refX{site = Site} = Ref,
-    ParentX = Ref,
-    _ParentUrl = hn_util:refX_to_url(ParentX),    
-    ChildX = hn_util:url_to_refX(ChildUrl),
+%%     #refX{site = Site} = Ref,
+%%     ParentX = Ref,
+%%     _ParentUrl = hn_util:refX_to_url(ParentX),    
+%%     ChildX = hn_util:url_to_refX(ChildUrl),
 
-    %% there is only 1 parent and 1 child for this action
-    PVsn = json_util:unjsonify(PVsJson),
-    CVsn = json_util:unjsonify(CVsJson),
-    %% #version{page = PP, version = PV} = PVsn,
-    %% #version{page = CP, version = CV} = CVsn,
-    Sync1 = hn_db_api:check_page_vsn(Site, PVsn),
-    Sync2 = hn_db_api:check_page_vsn(Site, CVsn),
-    case Sync1 of
-        synched         -> ok;
-        unsynched       -> hn_db_api:resync(Site, PVsn);
-        not_yet_synched -> ok % the child gets the version in this call...
-    end,
-    case Sync2 of
-        synched         -> ok;
-        unsynched       -> hn_db_api:resync(Site, CVsn);
-        not_yet_synched -> sync_exit()
-    end,
-    {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX, 
-                                                      Proxy, Biccie),
-    Return2 = lists:append([Return, [{"stamp", Stamp}]]),
-    json(Env, {struct, Return2});
+%%     %% there is only 1 parent and 1 child for this action
+%%     PVsn = json_util:unjsonify(PVsJson),
+%%     CVsn = json_util:unjsonify(CVsJson),
+%%     %% #version{page = PP, version = PV} = PVsn,
+%%     %% #version{page = CP, version = CV} = CVsn,
+%%     Sync1 = hn_db_api:check_page_vsn(Site, PVsn),
+%%     Sync2 = hn_db_api:check_page_vsn(Site, CVsn),
+%%     case Sync1 of
+%%         synched         -> ok;
+%%         unsynched       -> hn_db_api:resync(Site, PVsn);
+%%         not_yet_synched -> ok % the child gets the version in this call...
+%%     end,
+%%     case Sync2 of
+%%         synched         -> ok;
+%%         unsynched       -> hn_db_api:resync(Site, CVsn);
+%%         not_yet_synched -> sync_exit()
+%%     end,
+%%     {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX, 
+%%                                                       Proxy, Biccie),
+%%     Return2 = lists:append([Return, [{"stamp", Stamp}]]),
+%% json(Env, {struct, Return2});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Horizonal API = notify_back handler                                      %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Ref, _Qry,
-      Env=#env{body = [{"action", "notify_back"} |T] = _Json}) ->
-    Biccie    = from("biccie",     T),
-    ChildUrl  = from("child_url",  T),
-    ParentUrl = from("parent_url", T),
-    Type      = from("type",       T),
-    PVsJson   = from("parent_vsn", T),
-    CVsJson   = from("child_vsn",  T),
-    Stamp     = from("stamp",      T),
+%% ipost(Ref, _Qry,
+%%       Env=#env{body = [{"action", "notify_back"} |T] = _Json}) ->
+%%     Biccie    = from("biccie",     T),
+%%     ChildUrl  = from("child_url",  T),
+%%     ParentUrl = from("parent_url", T),
+%%     Type      = from("type",       T),
+%%     PVsJson   = from("parent_vsn", T),
+%%     CVsJson   = from("child_vsn",  T),
+%%     Stamp     = from("stamp",      T),
 
-    %% there is only 1 parent and 1 child here
-    PVsn = json_util:unjsonify(PVsJson),
-    CVsn = json_util:unjsonify(CVsJson),
-    %% #version{page = PP, version = PV} = PVsn,
-    %% #version{page = CP, version = CV} = CVsn,
-    ChildX = hn_util:url_to_refX(ChildUrl),
-    ParentX = hn_util:url_to_refX(ParentUrl),
-    #refX{site = Site} = Ref,
-    Sync1 = hn_db_api:check_page_vsn(Site, CVsn),
-    Sync2 = hn_db_api:check_page_vsn(Site, PVsn),
-    case Sync1 of
-        synched -> 
-            ok = hn_db_api:notify_back_from_web(ParentX, ChildX,
-                                                Biccie, Type);
-        unsynched -> 
-            hn_db_api:resync(Site, PVsn);
-        not_yet_synched -> 
-            ok = hn_db_api:initialise_remote_page_vsn(Site, PVsn)
-    end,
-    case Sync2 of
-        synched -> ok;
-        unsynched -> 
-            ok = hn_db_api:resync(Site, CVsn);
-        not_yet_synched -> 
-            ok = hn_db_api:initialise_remote_page_vsn(Site, CVsn)
-    end,
-    S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
-    json(Env, S);
+%%     %% there is only 1 parent and 1 child here
+%%     PVsn = json_util:unjsonify(PVsJson),
+%%     CVsn = json_util:unjsonify(CVsJson),
+%%     %% #version{page = PP, version = PV} = PVsn,
+%%     %% #version{page = CP, version = CV} = CVsn,
+%%     ChildX = hn_util:url_to_refX(ChildUrl),
+%%     ParentX = hn_util:url_to_refX(ParentUrl),
+%%     #refX{site = Site} = Ref,
+%%     Sync1 = hn_db_api:check_page_vsn(Site, CVsn),
+%%     Sync2 = hn_db_api:check_page_vsn(Site, PVsn),
+%%     case Sync1 of
+%%         synched -> 
+%%             ok = hn_db_api:notify_back_from_web(ParentX, ChildX,
+%%                                                 Biccie, Type);
+%%         unsynched -> 
+%%             hn_db_api:resync(Site, PVsn);
+%%         not_yet_synched -> 
+%%             ok = hn_db_api:initialise_remote_page_vsn(Site, PVsn)
+%%     end,
+%%     case Sync2 of
+%%         synched -> ok;
+%%         unsynched -> 
+%%             ok = hn_db_api:resync(Site, CVsn);
+%%         not_yet_synched -> 
+%%             ok = hn_db_api:initialise_remote_page_vsn(Site, CVsn)
+%%     end,
+%%     S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
+%%     json(Env, S);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Horizonal API = notify handler                                           %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ipost(Ref, _Qry, 
-      Env=#env{body = [{"action", "notify"} | T] = _Json}) ->
-    Biccie    = from("biccie",     T),
-    ParentUrl = from("parent_url", T),
-    Type      = from("type",       T),
-    Payload   = from("payload",    T),
-    PVsJson   = from("parent_vsn", T),
-    CVsJson   = from("child_vsn",  T),
-    Stamp     = from("stamp",      T),
+%% ipost(Ref, _Qry, 
+%%       Env=#env{body = [{"action", "notify"} | T] = _Json}) ->
+%%     Biccie    = from("biccie",     T),
+%%     ParentUrl = from("parent_url", T),
+%%     Type      = from("type",       T),
+%%     Payload   = from("payload",    T),
+%%     PVsJson   = from("parent_vsn", T),
+%%     CVsJson   = from("child_vsn",  T),
+%%     Stamp     = from("stamp",      T),
 
-    ParentX = hn_util:url_to_refX(ParentUrl),
-    ChildX = Ref,
-    _ChildUrl = hn_util:refX_to_url(ChildX),
+%%     ParentX = hn_util:url_to_refX(ParentUrl),
+%%     ChildX = Ref,
+%%     _ChildUrl = hn_util:refX_to_url(ChildX),
 
-    #refX{site = Site} = ChildX,
-    PVsn = json_util:unjsonify(PVsJson),
-    CVsn = json_util:unjsonify(CVsJson),
-    %%#version{page = PP, version = PV} = PVsn,
+%%     #refX{site = Site} = ChildX,
+%%     PVsn = json_util:unjsonify(PVsJson),
+%%     CVsn = json_util:unjsonify(CVsJson),
+%%     %%#version{page = PP, version = PV} = PVsn,
 
-    Sync1 = case Type of
-                "insert"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
-                "delete"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
-                "new_value" -> hn_db_api:check_page_vsn(Site, PVsn)
-            end,
-    %% there is one parent and it if is out of synch, then don't process it, ask for a
-    %% resynch
-    case Sync1 of
-        synched -> 
-            ok = hn_db_api:notify_from_web(ParentX, Ref, Type,
-                                           Payload, Biccie);
-        unsynched -> 
-            ok = hn_db_api:resync(Site, PVsn);
-        not_yet_synched -> 
-            sync_exit()
-    end,
-    %% there are 1 to many children and if they are out of synch ask for 
-    %% a resynch for each of them
-    Fun =
-        fun(X) ->
-                Sync2 = hn_db_api:check_page_vsn(Site, X),
-                %% #version{page = CP, version = CV} = X,
-                case Sync2 of
-                    synched         -> ok;
-                    unsynched       -> ok = hn_db_api:resync(Site, X);
-                    not_yet_synched -> sync_exit()
-                end
-        end,
-    [Fun(X) || X <- CVsn],
-    S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
-    json(Env, S);
+%%     Sync1 = case Type of
+%%                 "insert"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
+%%                 "delete"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
+%%                 "new_value" -> hn_db_api:check_page_vsn(Site, PVsn)
+%%             end,
+%%     %% there is one parent and it if is out of synch, then don't process it, ask for a
+%%     %% resynch
+%%     case Sync1 of
+%%         synched -> 
+%%             ok = hn_db_api:notify_from_web(ParentX, Ref, Type,
+%%                                            Payload, Biccie);
+%%         unsynched -> 
+%%             ok = hn_db_api:resync(Site, PVsn);
+%%         not_yet_synched -> 
+%%             sync_exit()
+%%     end,
+%%     %% there are 1 to many children and if they are out of synch ask for 
+%%     %% a resynch for each of them
+%%     Fun =
+%%         fun(X) ->
+%%                 Sync2 = hn_db_api:check_page_vsn(Site, X),
+%%                 %% #version{page = CP, version = CV} = X,
+%%                 case Sync2 of
+%%                     synched         -> ok;
+%%                     unsynched       -> ok = hn_db_api:resync(Site, X);
+%%                     not_yet_synched -> sync_exit()
+%%                 end
+%%         end,
+%%     [Fun(X) || X <- CVsn],
+%%     S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
+%%     json(Env, S);
 
 ipost(#refX{site = Site, path = _P}, _Qry,
       Env=#env{body = [{"admin", Json}], uid = Uid}) ->
@@ -1126,8 +1140,8 @@ pages_to_json(X, Dict) ->
         false -> {struct, [{"name", X}]}
     end.
 
-sync_exit() ->
-    exit("exit from hn_mochi:handle_req impossible page versions").
+%% sync_exit() ->
+%%     exit("exit from hn_mochi:handle_req impossible page versions").
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%

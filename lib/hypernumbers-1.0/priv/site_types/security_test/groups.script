@@ -1,0 +1,22 @@
+%%-*-erlang-*-
+%% this is a permissions script for creating and adding users to groups.
+%%
+
+{create_group, [{name, "admin"}]}.
+{create_group, [{name, "user"}]}.
+{create_group, [{name, "guest"}]}.
+{create_group, [{name, "test1"}]}.
+{create_group, [{name, "test2"}]}.
+
+% two syntaxes for this
+% use a uid for an existing user or use an email with a password
+% and it will create a user with that password
+% (kinda needed for testing)
+% {add_user, [{uid, "someUID"}, {group, "test1"}]}.
+{add_user, [{email, "test@hypernumbers.com"},
+            {group, "test1"},
+            {password, "i!am!secure"}]}.
+
+% ditto for set_users 2 syntaxs
+%{set_users, [{group, "test2"}, {uids, ["test@hypernumbers.com"]}]}.
+{set_users, [{group, "test2"}, {emails, ["test@hypernumbers.com"]}]}.

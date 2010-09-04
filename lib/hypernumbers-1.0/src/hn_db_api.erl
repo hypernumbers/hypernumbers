@@ -116,7 +116,7 @@
          insert/2, insert/3,
          delete/2, delete/3,
          clear/3,
-         %%set_borders/5,
+         set_borders/5,
          write_formula_to_range/2,
          force_recalc/1
         ]).
@@ -170,108 +170,114 @@ read_styles_IMPORT(RefX) when is_record(RefX, refX) ->
     Fun = fun() -> hn_db_wu:read_styles_IMPORT(RefX) end, 
     read_activity(RefX, Fun).
 
-%% -spec set_borders(#refX{}, any(), any(), any(), any()) -> ok.
-%% %% @doc  takes a range reference and sets the borders for the range according
-%% %% to the borders parameter passed in
-%% %% The borders attribute can be one of:
-%% %% <ul>
-%% %% <li>surround</li>
-%% %% <li>inside</li>
-%% %% <li>none</li>
-%% %% <li>call</li>
-%% %% <li>left</li>
-%% %% <li>top</li>
-%% %% <li>right</li>
-%% %% <li>bottom</li>
-%% %% </ul>
-%% %% all borders except 'none' set the border in a postive fashion - they
-%% %% don't toggle. So if a particular cell has a left border set then setting
-%% %% its border 'left' means it will *still* have its left border set
-%% %% by contrast 'none' tears all borders down.
-%% %% Border_Color is a colour expressed as a hex string of format "#FF0000"
-%% %% Border_Style can be one of
-%% set_borders(#refX{obj = {range, _}} = RefX, "none",_Border, 
-%%             _Border_Style, _Border_Color) ->
-%%     ok = set_borders2(RefX, "left",   [], [], []),
-%%     ok = set_borders2(RefX, "right",  [], [], []),
-%%     ok = set_borders2(RefX, "top",    [], [], []),
-%%     ok = set_borders2(RefX, "bottom", [], [], []),
-%%     ok;
+-spec set_borders(#refX{}, any(), any(), any(), any()) -> ok.
+%% @doc  takes a range or cell reference and sets the borders
+%% for the range according
+%% to the borders parameter passed in
+%% The borders attribute can be one of:
+%% <ul>
+%% <li>surround</li>
+%% <li>inside</li>
+%% <li>none</li>
+%% <li>call</li>
+%% <li>left</li>
+%% <li>top</li>
+%% <li>right</li>
+%% <li>bottom</li>
+%% </ul>
+%% all borders except 'none' set the border in a postive fashion - they
+%% don't toggle. So if a particular cell has a left border set then setting
+%% its border 'left' means it will *still* have its left border set
+%% by contrast 'none' tears all borders down.
+%% Border_Color is a colour expressed as a hex string of format "#FF0000"
+%% Border_Style can be one of
 
-%% set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, Where, 
-%%             Border, B_Style, B_Color) 
-%%   when Where == "left" 
-%%        orelse Where == "right" 
-%%        orelse Where == "top" 
-%%        orelse Where == "bottom" ->
-%%     NewObj = case Where of
-%%                  "left"   -> {range, {X1, Y1, X1, Y2}};
-%%                  "right"  -> {range, {X2, Y1, X2, Y2}};
-%%                  "top"    -> {range, {X1, Y1, X2, Y1}};
-%%                  "bottom" -> {range, {X1, Y2, X1, Y2}}
-%%              end,
-%%     NewRefX = RefX#refX{obj = NewObj},
-%%     ok = set_borders2(NewRefX, Where, Border, B_Style, B_Color);
- 
-%% set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
-%%             Where, Border, B_Style, B_Color) 
-%%   when Where == "surround" ->
-%%     Top    = RefX#refX{obj = {range, {X1, Y1, X2, Y1}}},
-%%     Bottom = RefX#refX{obj = {range, {X1, Y2, X2, Y2}}},
-%%     Left   = RefX#refX{obj = {range, {X1, Y1, X1, Y2}}},
-%%     Right  = RefX#refX{obj = {range, {X2, Y1, X2, Y2}}},
-%%     ok = set_borders2(Top,    "top",    Border, B_Style, B_Color),
-%%     ok = set_borders2(Bottom, "bottom", Border, B_Style, B_Color),
-%%     ok = set_borders2(Left,   "left",   Border, B_Style, B_Color),
-%%     ok = set_borders2(Right,  "right",  Border, B_Style, B_Color),
-%%     ok;
+%% for a cell just switch it to a range
+set_borders(#refX{obj = {cell, {X, Y}}} = RefX, Type, Border, Style, Color) ->
+    set_borders(RefX#refX{obj = {range, {X, Y, X, Y}}}, Type, Border, Style, Color);
+%% now proper set borders
+set_borders(#refX{obj = {range, _}} = RefX, "none",_Border, 
+            _Border_Style, _Border_Color) ->
+    ok = set_borders2(RefX, "left",   [], [], []),
+    ok = set_borders2(RefX, "right",  [], [], []),
+    ok = set_borders2(RefX, "top",    [], [], []),
+    ok = set_borders2(RefX, "bottom", [], [], []),
+    ok;
 
-%% set_borders(#refX{obj = {range, _}} = RefX, Where, Border, B_Style, B_Color)
-%%   when Where == "all" ->
-%%     ok = set_borders2(RefX, "top",    Border, B_Style, B_Color),
-%%     ok = set_borders2(RefX, "bottom", Border, B_Style, B_Color),
-%%     ok = set_borders2(RefX, "left",   Border, B_Style, B_Color),
-%%     ok = set_borders2(RefX, "right",  Border, B_Style, B_Color),
-%%     ok;
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, Where, 
+            Border, B_Style, B_Color) 
+  when Where == "left" 
+       orelse Where == "right" 
+       orelse Where == "top" 
+       orelse Where == "bottom" ->
+    NewObj = case Where of
+                 "left"   -> {range, {X1, Y1, X1, Y2}};
+                 "right"  -> {range, {X2, Y1, X2, Y2}};
+                 "top"    -> {range, {X1, Y1, X2, Y1}};
+                 "bottom" -> {range, {X1, Y2, X1, Y2}}
+             end,
+    NewRefX = RefX#refX{obj = NewObj},
+    ok = set_borders2(NewRefX, Where, Border, B_Style, B_Color);
 
-%% %% there are a number of different function heads for 'inside'
-%% %% 'inside' on a cell does nothing
-%% set_borders(#refX{obj = {range, {X1, Y1, X1, Y1}}} = _RefX, 
-%%             Where, _Border, _B_Style, _B_Color) 
-%%   when Where == "inside" ->
-%%     ok;
-%% %% 'inside' a single column
-%% set_borders(#refX{obj = {range, {X1, Y1, X1, Y2}}} = RefX, 
-%%             Where, Border, B_Style, B_Color) 
-%%   when Where == "inside" ->
-%%     NewRefX = RefX#refX{obj = {range, {X1, Y1 + 1, X1, Y2}}},
-%%     ok = set_borders2(NewRefX, "top", Border, B_Style, B_Color);
-%% %% 'inside' a single row
-%% set_borders(#refX{obj = {range, {X1, Y1, X2, Y1}}} = RefX, 
-%%             Where, Border, B_Style, B_Color) 
-%%   when Where == "inside" ->
-%%     NewRefX = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y1}}},
-%%     ok = set_borders2(NewRefX, "left", Border, B_Style, B_Color);
-%% %% proper 'inside'
-%% set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
-%%             Where, Border, B_Style, B_Color) 
-%%   when Where == "inside" ->
-%%     NewRefX1 = RefX#refX{obj = {range, {X1, Y1 + 1, X2, Y2}}},
-%%     ok = set_borders2(NewRefX1, "top", Border, B_Style, B_Color),
-%%     NewRefX2 = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y2}}},
-%%     ok = set_borders2(NewRefX2, "left", Border, B_Style, B_Color).
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
+            Where, Border, B_Style, B_Color) 
+  when Where == "surround" ->
+    Top    = RefX#refX{obj = {range, {X1, Y1, X2, Y1}}},
+    Bottom = RefX#refX{obj = {range, {X1, Y2, X2, Y2}}},
+    Left   = RefX#refX{obj = {range, {X1, Y1, X1, Y2}}},
+    Right  = RefX#refX{obj = {range, {X2, Y1, X2, Y2}}},
+    ok = set_borders2(Top,    "top",    Border, B_Style, B_Color),
+    ok = set_borders2(Bottom, "bottom", Border, B_Style, B_Color),
+    ok = set_borders2(Left,   "left",   Border, B_Style, B_Color),
+    ok = set_borders2(Right,  "right",  Border, B_Style, B_Color),
+    ok;
 
-%% set_borders2(RefX, Where, Border, B_Style, B_Color) ->
-%%     Fun = fun() ->
-%%                   ok = init_front_end_notify(),
-%%                   B   = "border-" ++ Where ++ "-width",
-%%                   B_S = "border-" ++ Where ++ "-style",
-%%                   B_C = "border-" ++ Where ++ "-color",
-%%                   ok = hn_db_wu:write_attr(RefX, {B,   Border}),
-%%                   ok = hn_db_wu:write_attr(RefX, {B_S, B_Style}),
-%%                   ok = hn_db_wu:write_attr(RefX, {B_C, B_Color})
-%%           end,
-%%     write_activity(RefX, Fun, "set_borders2").
+set_borders(#refX{obj = {range, _}} = RefX, Where, Border, B_Style, B_Color)
+  when Where == "all" ->
+    ok = set_borders2(RefX, "top",    Border, B_Style, B_Color),
+    ok = set_borders2(RefX, "bottom", Border, B_Style, B_Color),
+    ok = set_borders2(RefX, "left",   Border, B_Style, B_Color),
+    ok = set_borders2(RefX, "right",  Border, B_Style, B_Color),
+    ok;
+
+%% there are a number of different function heads for 'inside'
+%% 'inside' on a cell does nothing
+set_borders(#refX{obj = {range, {X1, Y1, X1, Y1}}} = _RefX, 
+            Where, _Border, _B_Style, _B_Color) 
+  when Where == "inside" ->
+    ok;
+%% 'inside' a single column
+set_borders(#refX{obj = {range, {X1, Y1, X1, Y2}}} = RefX, 
+            Where, Border, B_Style, B_Color) 
+  when Where == "inside" ->
+    NewRefX = RefX#refX{obj = {range, {X1, Y1 + 1, X1, Y2}}},
+    ok = set_borders2(NewRefX, "top", Border, B_Style, B_Color);
+%% 'inside' a single row
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y1}}} = RefX, 
+            Where, Border, B_Style, B_Color) 
+  when Where == "inside" ->
+    NewRefX = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y1}}},
+    ok = set_borders2(NewRefX, "left", Border, B_Style, B_Color);
+%% proper 'inside'
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
+            Where, Border, B_Style, B_Color) 
+  when Where == "inside" ->
+    NewRefX1 = RefX#refX{obj = {range, {X1, Y1 + 1, X2, Y2}}},
+    ok = set_borders2(NewRefX1, "top", Border, B_Style, B_Color),
+    NewRefX2 = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y2}}},
+    ok = set_borders2(NewRefX2, "left", Border, B_Style, B_Color).
+
+set_borders2(RefX, Where, Border, B_Style, B_Color) ->
+    Fun = fun() ->
+                  ok = init_front_end_notify(),
+                  B   = "border-" ++ Where ++ "-width",
+                  B_S = "border-" ++ Where ++ "-style",
+                  B_C = "border-" ++ Where ++ "-color",
+                  ok = hn_db_wu:write_attr(RefX, {B,   Border}),
+                  ok = hn_db_wu:write_attr(RefX, {B_S, B_Style}),
+                  ok = hn_db_wu:write_attr(RefX, {B_C, B_Color})
+          end,
+    write_activity(RefX, Fun, "set_borders2").
 
 %% @todo write documentation for write_formula_to_range
 write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->

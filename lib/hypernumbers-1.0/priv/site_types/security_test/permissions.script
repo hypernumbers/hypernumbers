@@ -1,0 +1,38 @@
+%%-*-erlang-*-
+
+%% the new system requires all pages to exist on all paths
+{add_view, [{path, []}, {perms, ["admin"]}, {view, "spreadsheet"}]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "spreadsheet"}]}.
+{add_view, [{path, []}, {perms, ["admin"]}, {view, "webpage"}]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "webpage"}]}.
+{add_view, [{path, []},       {perms, ["admin"]}, {view, "table"}]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin"]}, {view, "table"}]}.
+
+{set_champion,
+ [{path, []},
+  {view, "spreadsheet"}
+ ]}.
+
+{set_champion,
+ [{path, ["[**]"]},
+  {view, "spreadsheet"}
+ ]}.
+
+%% now add the testing pages with permissions
+{add_view, [{path, ["test1"]}, {perms, ["test1"]}, {view, "spreadsheet"}]}.
+{set_champion,
+ [{path, ["test1"]},
+  {view, "spreadsheet"}
+ ]}.
+
+{add_view, [{path, ["test2"]}, {perms, [everyone]}, {view, "webpage"}]}.
+{set_champion,
+ [{path, ["test2"]},
+  {view, "webpage"}
+ ]}.
+
+{add_view, [{path, ["test4"]}, {perms, [everyone]}, {view, "webpage"}]}.
+{set_champion,
+ [{path, ["test4"]},
+  {view, "webpage"}
+ ]}.
