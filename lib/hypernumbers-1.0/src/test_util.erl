@@ -213,7 +213,8 @@ make_float2(List)->
       throw:_Term    -> "not float"
     end.
 
--define(HNSERVER, "http://hypernumbers.dev:9000").
+-define(HNSERVER, "http://tests.hypernumbers.dev:9000").
+
 hnget(Path, Cell) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Cell),
     Ref = hn_util:parse_url(Url),
@@ -241,15 +242,17 @@ hnpost(Path, Ref, Postdata) ->
                            "application/json", Postreq},
                           [{timeout, 5000}],
                           []),
+    io:format("Return from hnpost of ~p~n", [Return]),
     handle_return(Return, Ref).
 
 handle_return({error, timeout}, _Ref) ->
     ok;
 handle_return({ok, {{_V, 200, _R}, _H, _Body}}, _Ref) ->
+    io:format("posting OK in test_util:hnget~n"),
     ok;
 handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
-    io:format("in test_util:handle_return HTTP POST error (~s)~n-code:~p~n-body:~p~n",
-	      [Ref, Code, Body]).
+    io:format("in test_util:handle_return HTTP POST error (~s)~n"
+              ++ "-code:~p~n-body:~p~n", [Ref, Code, Body]).
 
 cmp(A,A) ->
     true;
