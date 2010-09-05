@@ -29,7 +29,6 @@
 %%%                                                                     %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 post_process_tables(Tables) ->
-    io:format("post-processing tables...~n"),
     % Excel has a number of built in formats
     % excel_util:dump(Tables),
     ok = add_built_in_formats(Tables),
