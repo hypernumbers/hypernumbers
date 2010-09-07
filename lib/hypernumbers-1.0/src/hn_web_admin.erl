@@ -27,8 +27,7 @@
 %                                             %  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 rpc(User, Site, Fn, Args) when is_list(Args) ->
-    io:format("User is ~p~nSite is ~p~nFn is ~p~nArgs is ~p~n",
-              [User, Site, Fn, Args]),
+
     case Fn of
         
         "set_view" ->
