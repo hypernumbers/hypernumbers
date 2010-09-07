@@ -4,14 +4,29 @@
 
 -module(hn_groups).
 
--export([create_group/2, delete_group/2,
-         add_user/3, rem_user/3, set_users/3,
+-export([
+         get_all_groups/1,
+         create_group/2,
+         delete_group/2,
+         add_user/3,
+         rem_user/3,
+         set_users/3,
          any_admin/1,
          is_member/3,
-         dump_script/1, load_script/2]).
+         dump_script/1,
+         load_script/2
+        ]).
 
 -include("spriki.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
+
+-spec get_all_groups(string()) -> [string()].
+get_all_groups(Site) ->
+    Tbl = hn_db_wu:trans(Site, group),
+    Fun = fun() ->
+                  mnesia:all_keys(Tbl)
+          end,
+    mnesia:activity(transaction, Fun).
 
 -spec is_member(auth_srv:uid(), string(), [string()]) 
                -> boolean().
