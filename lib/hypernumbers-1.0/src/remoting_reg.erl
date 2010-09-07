@@ -128,9 +128,10 @@ send_queued(Updates, Waiting) ->
            end,
     {expire_updates(Updates), Wait}.
 
-%% @doc  When an update is received, automatically send the update to 
+%% @doc  When an update is recieved, automatically send the update to 
 %%       any clients waiting on the same page
 send_to_waiting(Updates, Waiting) ->
+    
     [{msg, _MsgSite, MsgPath, Msg, Time}  | _Rest ] = Updates,
         
     F = case is_style(Msg) of
