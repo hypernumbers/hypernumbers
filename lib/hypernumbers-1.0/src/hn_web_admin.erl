@@ -75,8 +75,7 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
             % now fire off the permissions stuff...
             [ok = auth_srv:add_view(Site, NPath, [Name], X) || X <- Views],
             % now tell the front end to update
-            ok = remoting_reg:notify_change(Site, NPath, {page,"/"},
-                                            [{"refresh", "page"}]),
+            ok = remoting_reg:notify_refresh(Site, NPath),
             ok
         %"remove_groups" ->
         %   [Site, Name, Groups] = Args,

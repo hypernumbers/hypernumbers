@@ -293,6 +293,14 @@ label {
                                      #E3E3E3) repeat scroll 0 0 transparent;
 }
 
+#addnewgroupbutton { 
+   left:    40px;
+}
+
+#newgroupfeedback { 
+   text-align: center;
+}
+
 #advperms {
    padding: 10px 10px 10px 10px;
    display: none;
