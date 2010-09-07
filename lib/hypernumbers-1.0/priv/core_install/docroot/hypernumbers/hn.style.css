@@ -85,6 +85,7 @@ body {
     -moz-border-radius: 0px 0px 4px 4px;
     -webkit-border-radius:0px 0px 4px 4px;
     border:1px solid #AAA;
+    z-index: 10000001;
 }
 
 #showhidecols { 
@@ -280,8 +281,44 @@ label {
     position:   absolute;
     left:       0px;
     top:        0px;
-    height:     3px;
-    width:      3px;
+    height:     5px;
+    width:      5px;
+}
+
+#newviewas, #ctrlpanel, #invitecolleagues { 
+   background: #EEE;
+   background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
+                                 to(#E3E3E3));
+   background: -moz-linear-gradient(center top , #F9F9F9, 
+                                     #E3E3E3) repeat scroll 0 0 transparent;
+}
+
+#advperms {
+   padding: 10px 10px 10px 10px;
+   display: none;
+   width:   190px;
+}
+
+#advperms td > p { 
+   line-height: 12px;
+   text-align: right;
+}
+
+#advperms input { 
+   position: relative;
+   top:      -3px;
+}
+
+#addgroups h3 { 
+   color: #666;
+   padding: 5px 0px 0px 0px;
+}
+
+#advgroups { 
+   font-size:  80%;
+   color:      #4444dd;
+   text-align: right;
+   display:    none;
 }
 
 .inline { 

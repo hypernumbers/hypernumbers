@@ -1,3 +1,4 @@
+
 %%% @copyright 2008 Hypernumbers Ltd
 %%% @doc Handle Hypernumbers HTTP requests
 -module(hn_mochi).
@@ -294,12 +295,12 @@ when X == "_login";
     allowed;
 
 authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry, 
-               #env{accept = json, uid = Uid}) ->
+               #env{accept = json, uid = Uid} = Env) ->
     case hn_groups:is_member(Uid, Site, ["admin"]) of
         true  -> allowed;
-        false -> denied
+        false -> authorize_admin(Site, Env#env.body, Uid)
     end;
-
+    
 %% Allow a post to occur, if the user has access to a spreadsheet on
 %% the target. But it might be a post from a form or an inline
 %% update so you need to check for them too before allowing
@@ -321,6 +322,17 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
                               end
     end.
 
+authorize_admin(Site, [{"admin", {_, [{"set_view", {_, List}}]}}], Uid) ->
+    case lists:keyfind("path", 1, List) of
+        false       -> denied;
+        {"path", P} -> P2 = string:tokens(P, "/"),
+                       case ?check_pt_vw(Site, P2, Uid,
+                                         ?SHEETVIEW) of
+                              allowed -> allowed;
+                              denied  -> denied
+                          end
+    end.
+
 -spec iget(#refX{}, 
            page | cell | row | column | range,
            #qry{},
@@ -332,7 +344,7 @@ iget(#refX{site=Site, path=["_logout"]}, page,
      Env) when QReturn /= undefined ->
     Return = mochiweb_util:unquote(QReturn),
     cleanup(Site, Return, Env);
-    
+
 iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
   when X == "_mynewsite" ->
     case passport:open_hypertag(Site, Path, HT) of
@@ -828,12 +840,11 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 ipost(#refX{site = Site, path = _P}, _Qry,
       Env=#env{body = [{"admin", Json}], uid = Uid}) ->
     {struct,[{Fun, {struct, Args}}]} = Json,
-
+    io:format("Fun is ~p Args is ~p~n", [Fun, Args]),
     case hn_web_admin:rpc(Uid, Site, Fun, Args) of
-        ok ->
-            json(Env, {struct, [{"result", "success"}]});
-        {error, Reason} ->
-            json(Env, {struct, [{"result", "error"}, {"reason", Reason}]})
+        ok              -> json(Env, {struct, [{"result", "success"}]});
+        {error, Reason} -> ?E("invalid _admin request ~p~n", [Reason]),
+                           respond(401, Env)
     end; 
 
 ipost(#refX{site=RootSite, path=["_hooks"]}, 
@@ -1091,9 +1102,10 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Usr    = {"user", Env#env.email},
     Host   = {"host", S},
     Perms  = {"permissions", auth_srv:get_as_json(S, P)},
-    Grps   = {"groups", {array, []}},
+    Grps   = {"groups", {array, hn_groups:get_all_groups(S)}},
+    Admin  = {"is_admin", hn_groups:is_member(Env#env.uid, S, ["admin"])},
     Lang   = {"lang", get_lang(Env#env.uid)},
-    {struct, [Time, Usr, Host, Lang, Grps, Perms | dict_to_struct(Dict)]}.
+    {struct, [Time, Usr, Host, Lang, Grps, Admin, Perms | dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};

@@ -208,7 +208,7 @@ html,body {
     cursor      : text;    
     overflow-y  : auto;
     overflow-x  : hidden;
-    z-index     : 10000001;
+    z-index     : 9999999;
     padding-left:4px;
     outline:none;
 }
@@ -921,9 +921,8 @@ a.toolbar-item {
 }
 
 #ctrlpanel { 
-    background  : #EBEAEB;
     display     : none;
-    z-index  : 10000002;
+    z-index     : 10000002;
     position    : absolute;
     top         : 50%;
     left        : 50%;
@@ -1024,7 +1023,7 @@ a.toolbar-item {
     padding:20px;
 }
 
-#welcome p { 
+#welcome, #settings, #advperms  p { 
     color:#666;
     margin-bottom:5px;
 }
@@ -1038,21 +1037,37 @@ a.toolbar-item {
     text-decoration:underline;
 }
 
-#viewas a:hover {
-    text-decoration:underline;
-}
-#viewas td { padding:2px; text-align:center; }
-    
-.publicoption { 
-    background:#EEE;
+#settings { 
+    padding: 10px 60px;
 }
 
-#viewas { 
+#viewas, #newviewas a:hover {
+    text-decoration:underline;
+}
+
+#viewas, #newviewas td { 
+    padding:    0px 2px 0px 2px;
+    text-align: center;
+}
+    
+.publicoption  { 
+    background: #FFF;
+}
+
+.publicoption  small { 
+    color: #000;
+}
+
+.defaultoption {  
+    border-right: 1px solid;
+}
+
+#viewas, #newviewas { 
     padding:0px 5px;
     right:0px;
 }
 
-#viewas .viewlink { 
+#viewas, #newviewas .viewlink { 
     padding:4px;
     text-align:left;
 }
@@ -1174,14 +1189,6 @@ a.toolbar-item {
     background:green;
 }
 
-#settings { 
-    padding:10px 60px;
-}
-
-#settings p { 
-    color:#666;
-    margin-bottom:5px;
-}
 
 .beta {display:none;}
 

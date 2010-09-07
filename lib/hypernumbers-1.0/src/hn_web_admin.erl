@@ -27,6 +27,8 @@
 %                                             %  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 rpc(User, Site, Fn, Args) when is_list(Args) ->
+    io:format("User is ~p~nSite is ~p~nFn is ~p~nArgs is ~p~n",
+              [User, Site, Fn, Args]),
     case Fn of
         
         "set_view" ->
@@ -57,19 +59,28 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
             %% TODO : shouldnt hardcode 
             auth_srv:add_view(Site, NPath, ["admin"], View),
             auth_srv:set_champion(Site, NPath, View);
-        "add_user" ->
-            {"user", Name} = lists:keyfind("user", 1, Args),
-            {"pass", Pass} = lists:keyfind("pass", 1, Args),
-            hn_users:create(Site, Name, [], Pass);        
-        delete ->
-            [Site, Name] = Args,
-            hn_users:delete(Site, Name);
-        add_groups ->
-            [Site, Name, Groups] = Args,
-            hn_users:add_groups(Site, Name, Groups);
-        remove_groups ->
-            [Site, Name, Groups] = Args,
-            hn_users:remove_groups(Site, Name, Groups)
+        %"add_user" ->
+        %    {"user", Name} = lists:keyfind("user", 1, Args),
+        %    {"pass", Pass} = lists:keyfind("pass", 1, Args),
+        %    hn_users:create(Site, Name, [], Pass);        
+        %"delete" ->
+        %    [Site, Name] = Args,
+        %    hn_users:delete(Site, Name);
+        "add_groups" ->
+            Path            = kfind("path", Args),
+            Name            = kfind("name", Args),
+            {array, Views}  = kfind("views", Args),
+            NPath = string:tokens(Path, "/"),
+            ok = hn_groups:create_group(Site, Name),
+            % now fire off the permissions stuff...
+            [ok = auth_srv:add_view(Site, NPath, [Name], X) || X <- Views],
+            % now tell the front end to update
+            ok = remoting_reg:notify_change(Site, NPath, {page,"/"},
+                                            [{"refresh", "page"}]),
+            ok
+        %"remove_groups" ->
+        %   [Site, Name, Groups] = Args,
+        %   hn_users:remove_groups(Site, Name, Groups)
     end.
 
 

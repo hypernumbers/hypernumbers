@@ -25,7 +25,27 @@
 
       <ul id="navigation">
 	<!-- Shown to non logged in users -->
-	<li id="anonymous"><a href="/_login/">$txt:{Login}$</a></li>  
+	<li id='anonymous'>
+        <div id='editspreadsheet'>
+    <div id='powered'>
+        <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
+    </div>
+    <div id='editmenu' class='ctrlbox'>
+        <div id='editanon'>
+          <form action='' method='post' id='login'>
+            <div class='formrow'><label for='email'>Email Address</label>
+              <input type='text' id='email' /></div>
+            <div class='formrow'><label for='pass'>Password</label>
+              <input type='password' id='pass' /></div>
+            <div class='formrow'><input type='submit' id='submit' value='Log in' class='button' /><span id='forgotten_pwd'></span><br /></div>
+            <div id='loginfeedback'></div>
+            
+            or sign up at <a href='http://hypernumbers.com'>hypernumbers.com</a>
+          </form>
+            </div>
+            </div>
+    </div>
+        </li>  
 	<!-- Shown to logged in users -->
 	<li id="loggedin">
 
@@ -75,17 +95,17 @@
 	<span id="fontsize">$txt:{Size}$</span>
 	<div id="fontsizelist" class="expandinner">
 	  <h1><a data-command="heading" data-param="<h1>"
-		data-style="font-size" data-value="220%">header 1</a></h1>
+		data-style="font-size" data-value="220%">Bigger</a></h1>
 	  <h2><a data-command="heading" data-param="<h2>"
-		data-style="font-size" data-value="180%">header 2</a></h2>
+		data-style="font-size" data-value="180%">Big</a></h2>
 	  <h3><a data-command="heading" data-param="<h3>"
-		data-style="font-size" data-value="160%">header 3</a></h3>
+		data-style="font-size" data-value="160%">Larger</a></h3>
 	  <h4><a data-command="heading" data-param="<h4>"
-		data-style="font-size" data-value="140%">header 4</a></h4>
+		data-style="font-size" data-value="140%">Large</a></h4>
 	  <h5><a data-command="heading" data-param="<h5>"
-		data-style="font-size" data-value="100%">header 5</a></h5>
+		data-style="font-size" data-value="100%">Normal</a></h5>
 	  <h6><a data-command="heading" data-param="<h6>"
-		data-style="font-size" data-value="90%">header 6</a></h6>
+		data-style="font-size" data-value="90%">Small</a></h6>
 	</div>
       </div>
       
@@ -224,9 +244,23 @@
 
       <a class="separator"></a>          
       <a title="Web Page Input" class="toolbar-item" id="inlineinput"></a>
-      
       <div id="typepanel">
-	<div class="expand">
+        <div class="expand">
+          <span><em>Invite Colleagues</em></span>
+          <div id="invitecolleagues" class="expandinner">
+              <h3>Invite User</h3>
+              <p>invite someone to stick their e-mail in here and do stuff with this page</p>
+            </div>
+          </div>
+        <div class="expand">
+          <span><em>Views</em></span>
+          <div id="newviewas" class="expandinner">
+            <div id="permstable"></div>
+            <div id="advperms"></div>
+            <div id="advgroups">advanced options</div>
+          </div>
+          </div>
+	<!--<div class="expand">
 	  <span><em>Views</em></span>
 	  <div id="viewas" class="expandinner">
 	    <table cellspacing="0">
@@ -262,7 +296,7 @@
 	      </tr>
 	    </table>
 	  </div>
-	</div>
+	</div>-->
       </div>
 
     </div>
@@ -451,7 +485,7 @@
 	<div id="welcome">
 	  
 	  <div>
-	    <h4>Create a new Webpage</h4>
+	    <h4>Create A New Webpage</h4>
 	    <p>Designing a webpage couldn't be easier, lay your page out
 	      inside a spreadsheet and its done!</p>
 	    <form id="newwebpageform">
@@ -462,7 +496,7 @@
 	    </form>
 	  </div>
 	  <div>
-	    <h4>Create a new Spreadsheet</h4>
+	    <h4>Create A New Spreadsheet</h4>
 	    <form id="newpageform">
 	      <p>Enter a name for your spreadsheet and start editing, 
 		you can see your other spreadsheets and edit settings
