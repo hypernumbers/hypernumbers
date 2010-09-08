@@ -53,11 +53,12 @@ handle(MochiReq) ->
         ok          -> ok;
         exit:normal -> exit(normal); 
         Type:What   ->
-            Report = ["web request failed",
-                      {path, MochiReq:get(path)},
-                      {type, Type}, {what, What},
-                      {trace, erlang:get_stacktrace()}],
-            ?E(Report),
+            Format = "web request failed~npath: ~p~ntype: ~p~nwhat:~p~n"
+                ++"trace:~p~n",
+            Msg    =          [{path, MochiReq:get(path)},
+                               {type, Type}, {what, What},
+                               {trace, erlang:get_stacktrace()}],
+            ?E(Format, Msg),
             '500'(process_environment(MochiReq)) 
     end.
 
