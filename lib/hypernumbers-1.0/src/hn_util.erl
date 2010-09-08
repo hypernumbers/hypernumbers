@@ -84,11 +84,17 @@ capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].
 
 -spec valid_email(string()) -> boolean(). 
 valid_email(Email) ->
-    EMail_regex = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+"
-        ++ "(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
-        ++ "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+"
-        ++ "(?:[a-zA-Z]{2}|com|org|net|gov|mil"
-        ++ "|biz|info|mobi|name|aero|jobs|museum)", %" for syntax highighting
+    EMail_regex = "^(?<name>([a-z0-9!#$%&'*+/=?^_`{|}~\\-]+)"
+        ++ "(\\.[a-z0-9!#\$%&'*+/=?^_`{|}~\\-]+)*)"
+        ++ "(@)(?<dom>([a-z0-9](([a-z0-9\\-\\.]*[a-z0-9]+)*))+)"
+        ++ "(?<tld>(\\.[a-zA-Z]{2})|\\.com|\\.org|\\.net|\\.gov|\\.mil"
+        ++ "|\\.biz|\\.info|\\.mobi|\\.name|\\.aero|\\.jobs|\\.museum)$",
+        %" for syntax highighting
+        % io:format("Name is ~p~nDom is ~p~nnTld is ~p~n",
+        %          [re:run(Email, EMail_regex, [{capture, [name]}]),
+        %           re:run(Email, EMail_regex, [{capture, [dom]}]),
+        %           re:run(Email, EMail_regex, [{capture, [tld]}])
+        %         ]),
     case re:run(Email, EMail_regex) of
         nomatch    -> false;
         {match, _} -> true
@@ -521,32 +527,6 @@ abs_path2([".." | _], [], _Q) ->
 abs_path2([X | RestL], Right, Q) ->
     abs_path2(RestL, Right, queue:in_r(X, Q)).
 
-abspath_test_() ->
-    Base = ["first", "second", "third"],
-    [?_assertEqual("/already/absolute", abs_path(Base, "/already/absolute")),
-     ?_assertEqual("/first/second/third/d1", abs_path(Base, "d1")),
-     ?_assertEqual("/first/second/third/d1", abs_path(Base, "./d1")),
-     ?_assertEqual("/first/second/d1", abs_path(Base, "../d1")),
-     ?_assertEqual("/d1", 
-                   abs_path(Base, "../third/../../ok/.././../././first//../d1")),
-     ?_assertEqual("/first/second/d1", abs_path(Base, "../something/../d1"))
-    ].
-
-just_path_test_() ->
-    [?_assertEqual("", just_path("")),
-     ?_assertEqual("/", just_path("/")),
-     ?_assertEqual("/", just_path("/blah")),
-     ?_assertEqual("", just_path("..")),
-     ?_assertEqual("../", just_path("../")),
-     ?_assertEqual("../", just_path("../A1")),
-     ?_assertEqual("./", just_path("./A1")),
-     ?_assertEqual("", just_path("blah")),
-     ?_assertEqual("/", just_path("/blah")),
-     ?_assertEqual("/blah/", just_path("/blah/")),
-     ?_assertEqual("/blah/", just_path("/blah/A:A")),
-     ?_assertEqual("/blah/more/path/", just_path("/blah/more/path/A:A"))
-    ].
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Internal Functions                                                       %%%
@@ -625,3 +605,68 @@ add_views() ->
       end || Site <- hn_setup:get_sites()].
 
     
+%%%
+%%% Unit Tests
+%%%
+
+valid_email_test_() ->
+    [
+     ?_assertEqual(true, valid_email("a@b.cc")),
+     ?_assertEqual(true, valid_email("a1@b.cc")),
+     ?_assertEqual(true, valid_email("d_a@b.cc")),
+     ?_assertEqual(true, valid_email("e+a@b.cc")),
+     ?_assertEqual(true, valid_email("x.a@b.cc")),
+     ?_assertEqual(true, valid_email("a@b.d.e.cc")),
+     ?_assertEqual(true, valid_email("a@b.com")),
+     ?_assertEqual(true, valid_email("a@b1.com")),
+     ?_assertEqual(true, valid_email("a@b.mil")),
+     ?_assertEqual(true, valid_email("a@b.aero")),
+     ?_assertEqual(true, valid_email("a@b.co.uk")),
+     ?_assertEqual(true, valid_email("aaaaa@bbbbb.cc")),
+     ?_assertEqual(true, valid_email("aa11aa22@bbbbb.cc")),
+     ?_assertEqual(true, valid_email("dddd_aa__dd__aa@bbbb.cc")),
+     ?_assertEqual(true, valid_email("eeee+aa++fff@bbbbb.cc")),
+     ?_assertEqual(true, valid_email("xx.aa.ddd@bbbb.cc")),
+     ?_assertEqual(true, valid_email("aaaaa@bbbb.dddd.eee.cc")),
+     ?_assertEqual(true, valid_email("aaaaa@bbbbbbb.com")),
+     ?_assertEqual(true, valid_email("aaaaa@b111bbbbbb11.com")),
+     ?_assertEqual(true, valid_email("aaaaa@b111-bb-bb--bb11.com")),
+     ?_assertEqual(true, valid_email("aaaaa@bbbbb.mil")),
+     ?_assertEqual(true, valid_email("aaaaa@bbbb.aero")),
+     ?_assertEqual(true, valid_email("aaaa@bbbbb.co.uk")),
+     ?_assertEqual(false, valid_email("a")),
+     ?_assertEqual(false, valid_email("a@b")),
+     ?_assertEqual(false, valid_email("aaaa")),
+     ?_assertEqual(false, valid_email("aaaa@bbbbb")),
+     ?_assertEqual(false, valid_email("a@b-.com")),
+     ?_assertEqual(false, valid_email("aaaa@bb'bbb.com")),
+     ?_assertEqual(false, valid_email("a@b.rhino"))
+    ].
+
+abspath_test_() ->
+    Base = ["first", "second", "third"],
+    [
+     ?_assertEqual("/already/absolute", abs_path(Base, "/already/absolute")),
+     ?_assertEqual("/first/second/third/d1", abs_path(Base, "d1")),
+     ?_assertEqual("/first/second/third/d1", abs_path(Base, "./d1")),
+     ?_assertEqual("/first/second/d1", abs_path(Base, "../d1")),
+     ?_assertEqual("/d1", 
+                   abs_path(Base, "../third/../../ok/.././../././first//../d1")),
+     ?_assertEqual("/first/second/d1", abs_path(Base, "../something/../d1"))
+    ].
+
+just_path_test_() ->
+    [
+     ?_assertEqual("", just_path("")),
+     ?_assertEqual("/", just_path("/")),
+     ?_assertEqual("/", just_path("/blah")),
+     ?_assertEqual("", just_path("..")),
+     ?_assertEqual("../", just_path("../")),
+     ?_assertEqual("../", just_path("../A1")),
+     ?_assertEqual("./", just_path("./A1")),
+     ?_assertEqual("", just_path("blah")),
+     ?_assertEqual("/", just_path("/blah")),
+     ?_assertEqual("/blah/", just_path("/blah/")),
+     ?_assertEqual("/blah/", just_path("/blah/A:A")),
+     ?_assertEqual("/blah/more/path/", just_path("/blah/more/path/A:A"))
+    ].
