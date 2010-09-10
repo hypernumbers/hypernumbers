@@ -371,13 +371,13 @@ get_view(#control{champion = [], challenger = []}, _S, _U, _T) ->
 get_view(#control{champion = V}=C, Site, Uid, champion) ->
     View = gb_trees:get(V, C#control.views),
     case can_view(Site, Uid, View) of
-        true -> {view, V};
+        true  -> {view, V};
         false -> denied
     end;
 get_view(#control{challenger = V}=C, Site, Uid, challenger) when V /= [] ->
     View = gb_trees:get(V, C#control.views),
     case can_view(Site, Uid, View) of
-        true -> {view, V};
+        true  -> {view, V};
         false -> denied
     end.
 
@@ -386,9 +386,9 @@ get_view(#control{challenger = V}=C, Site, Uid, challenger) when V /= [] ->
 get_particular_view(C, Site, Uid, V) ->
     case gb_trees:lookup(V, C#control.views) of
         none -> not_found;
-        {value, View} -> 
+        {value, View} ->
             case can_view(Site, Uid, View) of
-                true -> {view, V};
+                true  -> {view, V};
                 false -> denied
             end
     end.
