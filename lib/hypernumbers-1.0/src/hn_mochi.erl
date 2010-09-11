@@ -1457,7 +1457,7 @@ reset_password(Email, Password, Hash) ->
                 {error, reset_not_issued} ->
                     {"failure", "reset not issued"};
                 {error, invalid_reset} ->
-                    ?E("invalid reset attempt ~p ~p~n", [{email, EMail},
+                    ?E("invalid reset attempt ~p ~p~n", [{email, Email},
                                                         {hash, Hash}]),
                     {"failure", "invalid attempt at resetting"};
                 {error, expired_reset} ->
