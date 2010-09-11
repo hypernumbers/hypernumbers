@@ -35,7 +35,7 @@ email(To, CC, From, Subject, Msg) ->
     {ok, Password} = application:get_env(hypernumbers, mailpassword),
     {ok, User}     = application:get_env(hypernumbers, mailuser),
     email([{server, Server}, {user, User}, {password, Password}],
-          To, From, Subject, Msg).
+          To, CC, From, Subject, Msg).
         
 email(Details, To, CC, From, Subject, Msg) ->
 
