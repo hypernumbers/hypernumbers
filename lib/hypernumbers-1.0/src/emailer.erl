@@ -6,7 +6,7 @@
 
 -define(FROM, "\"Gordon Guthrie\" <gordon@hypernumbers.com>").
 -define(SIG, "Cheers\n\nGordon Guthrie\nCEO hypernumbers.com\n"
-        ++"+44 7776 251669\n@hypernumbers\n").
+        ++"+44 7776 251669\n@hypernumbers\n\n").
 
 -export([send/5]).
 
