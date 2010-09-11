@@ -17,8 +17,8 @@
 
 -spec cookie(string(), string(), integer() | string()) -> string().
 cookie(N, V, "session") -> cookie_(N, V, []);
-cookie(N, V, "never") -> cookie_(N, V, [{max_age, ?TWO_YEARS}]);
-cookie(N, V, Age) -> cookie_(N, V, [{max_age, Age}]).
+cookie(N, V, "never")   -> cookie_(N, V, [{max_age, ?TWO_YEARS}]);
+cookie(N, V, Age)       -> cookie_(N, V, [{max_age, Age}]).
 
 cookie_(Name, Value, Opts) ->
     mochiweb_cookies:cookie(Name, Value, [{path, "/"}] ++ Opts).
@@ -55,8 +55,8 @@ email(Details, To, CC, From, Subject, Msg) ->
     send(Socket, "DATA"),
     send_no_receive(Socket, "From: "++From),
     send_no_receive(Socket, "To: "++To),
-    if (CC =/= "") ->
-            send_no_receive(Socket, "Cc: "++CC)
+    if (CC =/= "") -> send_no_receive(Socket, "Cc: "++CC);
+       (CC == "") -> ok
     end,
     send_no_receive(Socket, "Date: "++dh_date:format("r")),
     send_no_receive(Socket, "Subject: "++Subject),
