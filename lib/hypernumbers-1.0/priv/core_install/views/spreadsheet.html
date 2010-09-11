@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   
@@ -245,20 +246,56 @@
       <a class="separator"></a>          
       <a title="Web Page Input" class="toolbar-item" id="inlineinput"></a>
       <div id="typepanel">
-        <div class="expand">
-          <span><em>Invite Colleagues</em></span>
-          <div id="invitecolleagues" class="expandinner">
-              <h3>Invite User</h3>
-              <p>invite someone to stick their e-mail in here and do stuff with this page</p>
-            </div>
-          </div>
-        <div class="expand">
+          <div class="expand">
           <span><em>Views</em></span>
           <div id="newviewas" class="expandinner">
-            <div id="permstable"></div>
-            <div id="advperms"></div>
-            <div id="advgroups">advanced options</div>
-          </div>
+            <div id="expandbackground">
+            <div id="permstable">
+              <div class="floatright">
+                <div id="addgroup">
+                  <span id="addgrouptext">add group</span><span id="addgroupicon"></span>
+                  </div>
+                  <div id="addgroupmenu"></div>
+                </div>
+                <div class="clear"></div>
+              <div id="permstablelayout"></div>
+              <div id="invite">
+                <hr />
+                <input id="invitecolleague" type="input" width="auto"/>
+                <input id="addcolleaguebutton" type="submit" class="button" value="invite" />
+                <p id="newcolleaguefeedback">&nbsp;</p>
+                </div>
+              <div class="clear"></div>
+              </div>
+              <div id="advperms">
+              <p>Give your new group a name, set some views for it and apply it to this page. You can then add users to the group.</p>
+              <input id="newgroup" type="input" width="auto" />
+            <div id="advpermstable"></div>
+            <input id="addnewgroupbutton" type="submit" class="button" value="Create Group" />
+            <p id="newgroupfeedback">&nbsp;</p>
+            </div>
+            <div id="advusers">
+              <p>Choose some groups for your new user. An invitation e-mail will be sent out with a message from you.</p>
+              <input id="emailforgroup" type="text" name="emailforgroup" />
+                <div class="floatleft">
+            <div id="advuserstable"></div>
+            </div>
+              <div class="floatleft">
+              <textarea id="newusermsg"></textarea>
+                </div>
+            <div class="clear">
+            <span><small>make this user an administrator (superuser) on the site</small></span><input id="administrator" type="checkbox" value="administrator" />
+            </div>
+            <input id="addnewuserbutton" type="submit" class="button" value="Create User" />
+            <p id=newuserfeedback>&nbsp;</p>
+            </div>
+            </div>
+            <div id="showbasicgroups">views</div>
+            <a class="miniseparator"></a>
+            <div id="showadvperms">groups</div>
+            <a class="miniseparator"></a>
+            <div id="showadvusers">users</div>
+            </div>
           </div>
 	<!--<div class="expand">
 	  <span><em>Views</em></span>
