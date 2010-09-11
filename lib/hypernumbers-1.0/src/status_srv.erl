@@ -11,7 +11,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, get_status/1, update_status/4]).
+-export([start_link/0, get_status/1, update_status/3]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -25,6 +25,7 @@
 -record(site, {site, time_purged = calendar:now_to_universal_time(now()), list}).
 -record(user, {name, details}).
 -record(details, {path, change, timestamp = calendar:now_to_universal_time(now())}).
+-record(jstree, {data, attr, state, children}).
 
 %%%===================================================================
 %%% API
@@ -72,17 +73,17 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call({get_status, Site}, _From, State) ->
-    {NewState, Struct} = case lists:keysearch(Site, 2, State) of
-                             false      -> {State, []};
+handle_call({get_status, Site}, _From, {Old, New}) ->
+    {NewState, Struct} = case lists:keysearch(Site, 2, Old) of
+                             false      -> {Old, []};
                              {value, R} -> #site{list = L} = R,
                                            {N, St} = transform_status(L),
                                            R2 = R#site{list = N},
-                                           L2 = lists:keyreplace(Site, 2, State, R2),
+                                           L2 = lists:keyreplace(Site, 2, Old, R2),
                                            {L2, St}
                          end,
     Reply = {struct, Struct},
-    {reply, Reply, NewState};    
+    {reply, Reply, {NewState, New}};    
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
@@ -98,15 +99,15 @@ handle_call(_Request, _From, State) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_cast({update, U, S, P, Ch}, []) ->
-    State = [make_first_record(U, S, P, Ch)],
+    State = {[make_first_record(U, S, P, Ch)], []},
     {noreply, State};
-handle_cast({update, U, S, P, Ch}, State) ->
-    NewState = case lists:keysearch(S, 2, State) of
-                   false      -> [make_first_record(U, S, P, Ch) | State];
-                   {value, L} -> NewSite = add_to_site(L, U, S, P, Ch, State),
-                                 lists:keyreplace(S, 2, State, NewSite)
+handle_cast({update, U, S, P, Ch}, {Old, New}) ->
+    NewState = case lists:keysearch(S, 2, Old) of
+                   false      -> [make_first_record(U, S, P, Ch) | Old];
+                   {value, L} -> NewSite = add_to_site(L, U, S, P, Ch, Old),
+                                 lists:keyreplace(S, 2, Old, NewSite)
                end,
-    {noreply, NewState};
+    {noreply, {NewState, New}};
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
@@ -151,8 +152,14 @@ code_change(_OldVsn, State, _Extra) ->
 get_status(Site) ->
     gen_server:call(status_srv, {get_status, Site}).
 
-update_status(User, Site, Path, Change) ->
-    gen_server:cast(status_srv, {update, User, Site, Path, Change}).
+update_status(User, RefX, Change) ->
+    #refX{site=Site,path=Path}=RefX,
+    User2 = case User of
+                undefined -> "anonymous2";
+                _         -> {ok,U2}=passport:uid_to_email(User),
+                             U2
+            end,
+    gen_server:cast(status_srv, {update, User2, Site, Path, Change}).
 
 %%%===================================================================
 %%% Internal functions
@@ -161,7 +168,9 @@ transform_status(List) -> transform_status(List, [], []).
 
 transform_status([], Acc1, Acc2)      -> {Acc1, Acc2};
 transform_status([H | T], Acc1, Acc2) ->
+    io:format("H is ~p~n", [H]),
     {NewU, NewH} = purge(H),
+    io:format("NewU is ~p~nNewH is ~p~n", [NewU, NewH]),
     NewAcc1 = case NewU of
                   [] -> Acc1;
                   _  -> [NewU | Acc1]
