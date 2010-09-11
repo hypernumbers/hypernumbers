@@ -1457,8 +1457,8 @@ reset_password(Email, Password, Hash) ->
                 {error, reset_not_issued} ->
                     {"failure", "reset not issued"};
                 {error, invalid_reset} ->
-                    ?E("invalid reset attempt ~p ~p~n", [{email, Email},
-                                                        {hash, Hash}]),
+                    ?E("invalid reset attempt~nemail: ~p~nhash:~p~n",
+                       [{email, Email}, {hash, Hash}]),
                     {"failure", "invalid attempt at resetting"};
                 {error, expired_reset} ->
                     {ok, URL} = application:get_env(hypernumbers, reset_url),
