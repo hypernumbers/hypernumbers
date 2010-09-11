@@ -545,7 +545,7 @@ html,body {
     top             : auto;
     display         : none;
     padding         : 0px 0px;
-    z-index     : 10000005;
+    z-index         : 10000005;
 }
 
 #formats { 
@@ -574,6 +574,17 @@ html,body {
  margin:       3px;
  padding:      0px;
  height:       18px;
+ float:        left;
+ width:        0px !important;
+ border-left:  1px solid #999;
+ border-right: 1px solid #FFF;
+}
+
+.miniseparator {
+ cursor:       default;
+ margin:       3px;
+ padding:      0px;
+ height:       8px;
  float:        left;
  width:        0px !important;
  border-left:  1px solid #999;
@@ -1023,7 +1034,7 @@ a.toolbar-item {
     padding:20px;
 }
 
-#welcome, #settings, #advperms  p { 
+#welcome, #settings p { 
     color:#666;
     margin-bottom:5px;
 }
@@ -1062,8 +1073,7 @@ a.toolbar-item {
     border-right: 1px solid;
 }
 
-#viewas, #newviewas { 
-    padding:0px 5px;
+#viewas, #newviewas, #invitecolleagues { 
     right:0px;
 }
 

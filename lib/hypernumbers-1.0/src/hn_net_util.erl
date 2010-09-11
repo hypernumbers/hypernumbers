@@ -4,8 +4,8 @@
 
 -export([cookie/3,
          kill_cookie/1,
-         email/4,
          email/5,
+         email/6,
          post/3]).
 
 %% Two years is forever on the internet.
@@ -30,14 +30,14 @@ kill_cookie(N) -> cookie(N, "killitwithfire", 0).
 %% Email 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-email(To, From, Subject, Msg) ->
+email(To, CC, From, Subject, Msg) ->
     {ok, Server}   = application:get_env(hypernumbers, mailserver),
     {ok, Password} = application:get_env(hypernumbers, mailpassword),
     {ok, User}     = application:get_env(hypernumbers, mailuser),
     email([{server, Server}, {user, User}, {password, Password}],
           To, From, Subject, Msg).
         
-email(Details, To, From, Subject, Msg) ->
+email(Details, To, CC, From, Subject, Msg) ->
 
     Server = proplists:get_value(server, Details),    
     User   = proplists:get_value(user, Details),
@@ -55,6 +55,9 @@ email(Details, To, From, Subject, Msg) ->
     send(Socket, "DATA"),
     send_no_receive(Socket, "From: "++From),
     send_no_receive(Socket, "To: "++To),
+    if (CC =/= "") ->
+            send_no_receive(Socket, "Cc: "++CC)
+    end,
     send_no_receive(Socket, "Date: "++dh_date:format("r")),
     send_no_receive(Socket, "Subject: "++Subject),
     send_no_receive(Socket, ""),

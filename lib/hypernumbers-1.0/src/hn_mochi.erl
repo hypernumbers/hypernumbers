@@ -53,10 +53,11 @@ handle(MochiReq) ->
         ok          -> ok;
         exit:normal -> exit(normal); 
         Type:What   ->
-            Format = "web request failed~npath: ~p~ntype: ~p~nwhat:~p~n"
-                ++"trace:~p~n",
+            Format = "web request failed~npath:  ~p~ntype:  ~p~nwhat:  ~p~n"
+                      ++"trace:~p~n",
             Msg    =          [{path, MochiReq:get(path)},
-                               {type, Type}, {what, What},
+                               {type, Type},
+                               {what, What},
                                {trace, erlang:get_stacktrace()}],
             ?E(Format, Msg),
             '500'(process_environment(MochiReq)) 
@@ -323,15 +324,21 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
                               end
     end.
 
-authorize_admin(Site, [{"admin", {_, [{"set_view", {_, List}}]}}], Uid) ->
-    case lists:keyfind("path", 1, List) of
-        false       -> denied;
-        {"path", P} -> P2 = string:tokens(P, "/"),
-                       case ?check_pt_vw(Site, P2, Uid,
-                                         ?SHEETVIEW) of
-                              allowed -> allowed;
-                              denied  -> denied
-                          end
+authorize_admin(Site, [{"admin", {_, [{Request, {_, List}}]}}], Uid)
+when (Request == "set_view")
+     orelse (Request == "set_champion")
+     orelse (Request == "invite_user") ->
+    case passport:uid_to_email(Uid) of
+        {ok, "anonymous"} -> denied;
+        _                 ->
+            case lists:keyfind("path", 1, List) of
+                false       -> denied;
+                {"path", P} -> P2 = string:tokens(P, "/"),
+                               case ?check_pt_vw(Site, P2, Uid, ?SHEETVIEW) of
+                                   {view, ?SHEETVIEW} -> allowed;
+                                   denied             -> denied
+                               end
+            end
     end.
 
 -spec iget(#refX{}, 
@@ -340,11 +347,10 @@ authorize_admin(Site, [{"admin", {_, [{"set_view", {_, List}}]}}], Uid) ->
            #env{}) 
           -> any(). 
 
-iget(#refX{site=Site, path=["_logout"]}, page, 
-     #qry{return=QReturn}, 
-     Env) when QReturn /= undefined ->
+iget(#refX{site=S, path=["_logout"]}, page, 
+     #qry{return=QReturn}, Env) when QReturn /= undefined ->
     Return = mochiweb_util:unquote(QReturn),
-    cleanup(Site, Return, Env);
+    cleanup(S, Return, Env);
 
 iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
   when X == "_mynewsite" ->
@@ -358,7 +364,7 @@ iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
             Return = hn_util:strip80(Site) 
                 ++ hn_util:list_to_path(Rest)
                 ++ Param,
-            
+
             {Env2, Redir} = post_login(Site, Uid, Stamp, Age, Env, Return),
             Env3 = Env2#env{headers=[{"location",Redir}|Env2#env.headers]},
             respond(303, Env3),
@@ -371,7 +377,7 @@ iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
 iget(#refX{site=Site, path=[X | _Vanity]}, page, _Qry, Env)
   when X == "_forgotten_password" ->
     serve_html(404, Env, [viewroot(Site), "/forgotten_password.html"]);
-iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page, 
+iget(#refX{site=Site, path=[X, _Vanity] = Path}, page, 
      #qry{hypertag=HT}, 
      Env) when X == "_invite"; X == "_validate" ->
     case passport:open_hypertag(Site, Path, HT) of
@@ -379,15 +385,11 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
             case proplists:get_value(emailed, Data) of
                 true -> 
                     ok = passport:validate_uid(Uid),
-                    Param = case lists:keyfind(param, 1, Data) of
+                    Redirect = case lists:keyfind(redirect, 1, Data) of
                                 false      -> "";
-                                {param, P} -> P
+                                {redirect, P} -> P
                             end,
-                    
-                    Return = hn_util:strip80(Site) 
-                        ++ hn_util:list_to_path(Rest)
-                        ++ Param,
-                                        
+                    Return = hn_util:strip80(Site)++Redirect,                                        
                     {Env2, Redir} = 
                         post_login(Site, Uid, Stamp, Age, Env, Return),
                     Headers = [{"location",Redir}|Env2#env.headers],
@@ -398,14 +400,18 @@ iget(#refX{site=Site, path=[X, _Vanity | Rest]=Path}, page,
             end
     end;
 
-iget(Ref, page, #qry{view = "webpage"}, Env=#env{accept = html}) ->
+iget(Ref, page, #qry{view="webpage"},
+     Env=#env{accept=html,uid=Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "view webpage"),
     {Html, Width, Height} = hn_render:content(Ref, inline),
     Page = hn_render:wrap_page(Html, Width, Height),
     text_html(Env, Page);
 
-iget(Ref=#refX{site = Site}, page, #qry{view = FName}, Env=#env{accept = html})
+iget(Ref=#refX{site=S}, page, #qry{view=FName},
+     Env=#env{accept=html, uid=Uid})
   when FName /= undefined ->
-    Html = [viewroot(Site), "/", FName, ".html"],
+    ok = status_srv:update_status(Uid, Ref, "viewed webpage"),
+    Html = [viewroot(S), "/", FName, ".html"],
     case filelib:is_file(Html) of
         true  -> serve_html(Env, Html);
         false -> '404'(Ref, Env)
@@ -468,16 +474,17 @@ iget(Ref, _Type, Qry, Env) ->
 
 -spec ipost(#refX{}, #qry{}, #env{}) -> any().
 
-ipost(Ref=#refX{site = S, path = P}, _Qry, 
-      Env=#env{body = [{"drag", {_, [{"range", Rng}]}}],
-               uid = Uid}) ->
-    ok = status_srv:update_status(Uid, S, P, "edited page"),
+ipost(Ref, _Qry, Env=#env{body = [{"drag", {_, [{"range", Rng}]}}],
+                          uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     hn_db_api:drag_n_drop(Ref, 
                           Ref#refX{obj = hn_util:parse_attr(range,Rng)},
                           Uid),
     json(Env, "success");
 
-ipost(#refX{site=_Site, path=["_forgotten_password"]}=Ref, _Qry, Env) ->
+ipost(Ref=#refX{path=["_forgotten_password"]}=Ref, _Qry,
+      Env=#env{uid=Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "forgot password"),
     case passport_running() of
         false -> '404'(Ref, Env);
         true  ->
@@ -494,7 +501,7 @@ ipost(#refX{site=_Site, path=["_forgotten_password"]}=Ref, _Qry, Env) ->
             json(Env,{struct,[{"status",S}, {"response",R}]})
     end;
 
-ipost(#refX{site=Site, path=["_login"]}, Qry, E) ->
+ipost(#refX{site=S, path=["_login"]}, Qry, E) ->
     [{"email", Email0},{"pass", Pass}, {"remember", _R}] = ?SORT(E#env.body),
     Email = string:to_lower(Email0),
     case passport:authenticate(Email, Pass, true) of
@@ -503,9 +510,9 @@ ipost(#refX{site=Site, path=["_login"]}, Qry, E) ->
         {ok, Uid, Stamp, Age} ->
             Return = case Qry#qry.return of
                          R when R /= undefined -> mochiweb_util:unquote(R);
-                         _Else -> hn_util:strip80(Site)
+                         _Else -> hn_util:strip80(S)
                      end,
-            {E2, Redir} = post_login(Site, Uid, Stamp, Age, E, Return),
+            {E2, Redir} = post_login(S, Uid, Stamp, Age, E, Return),
             json(E2, {struct, [{"redirect", Redir}]})
     end;
 
@@ -515,75 +522,83 @@ ipost(_Ref, #qry{mark = []},
       Env=#env{body = [{"set",{struct, [{"mark", _Msg}]}}]}) ->
     json(Env, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry, 
       Env=#env{body=[{"insert", "before"}], uid = Uid})
   when O == row orelse O == column ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:insert(Ref, Uid),
     json(Env, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry, 
       Env=#env{body=[{"insert", "after"}], uid = Uid})
   when O == row orelse O == column ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:insert(make_after(Ref), Uid),
     json(Env, "success");
 
 %% by default cells and ranges displace vertically
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry, 
       Env=#env{body=[{"insert", "before"}], uid = Uid})
   when O == cell orelse O == range ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:insert(Ref, vertical, Uid),
     json(Env, "success");
 
 %% by default cells and ranges displace vertically
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry, 
       Env=#env{body=[{"insert", "after"}], uid = Uid})
   when O == cell orelse O == range ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:insert(Ref, vertical, Uid),
     json(Env, "success");
 
 %% but you can specify the displacement explicitly
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry, 
       Env=#env{body=[{"insert", "before"}, {"displacement", D}],
                uid = Uid})
   when (O == cell orelse O == range),
        (D == "horizontal" orelse D == "vertical") ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:insert(Ref, list_to_existing_atom(D), Uid),
     json(Env, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry, 
       Env=#env{body=[{"insert", "after"}, {"displacement", D}],
                uid = Uid})
   when (O == cell orelse O == range),
        (D == "horizontal" orelse D == "vertical") ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     RefX2 = make_after(Ref),
     ok = hn_db_api:insert(RefX2, list_to_existing_atom(D), Uid),
     json(Env, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry, 
       Env=#env{body=[{"delete", "all"}], uid = Uid}) 
   when O == page ->
+    ok = status_srv:update_status(Uid, Ref, "deleted page"),
     ok = hn_db_api:delete(Ref, Uid),
     json(Env, "success");
 
-ipost(Ref, _Qry, 
-      Env=#env{body=[{"delete", "all"}],
-               uid = Uid}) ->
+ipost(Ref, _Qry, Env=#env{body=[{"delete", "all"}],uid=Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "deleted page"),
     ok = hn_db_api:delete(Ref, Uid),
     json(Env, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry, 
       Env=#env{body=[{"delete", Direction}],
                uid = Uid})
   when (O == cell orelse O == range),
        (Direction == "horizontal" orelse Direction == "vertical") ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:delete(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry, 
       Env=#env{body=[{"insert", Direction}],
                uid = Uid})
   when (O == cell orelse O == range),
        (Direction == "horizontal" orelse Direction == "vertical") ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:insert(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
@@ -592,28 +607,32 @@ ipost(Ref,
       _Qry,
       Env=#env{body=[{"copy", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, all, Uid),
     json(Env, "success");
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copystyle", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, style, Uid),
     json(Env, "success");
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copyvalue", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, value, Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
-      Env=#env{body=[{"borders", {struct, Attrs}}]})
+      Env=#env{body=[{"borders", {struct, Attrs}}], uid=Uid})
   when O == cell orelse O == range ->
     Where = from("where", Attrs),
     Border = from("border", Attrs),
     Border_Style = from("border_style", Attrs),
     Border_Color = from("border_color", Attrs),
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
     json(Env, "success");
 
@@ -623,9 +642,10 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
 %%     S = {struct, [{"error", "cant set language for anonymous users"}]},
 %%     json(Env, S);
 
-ipost(#refX{site = _Site, path=["_user"]}, _Qry, 
+ipost(Ref=#refX{path=["_user"]}, _Qry, 
       _Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
-               uid = _Uid}) ->
+               uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "changed language"),
     throw("can't set language right now");
     %% ok = hn_users:update(Site, Uid, "language", Lang),
     %% json(Env, "success");
@@ -633,7 +653,8 @@ ipost(#refX{site = _Site, path=["_user"]}, _Qry,
 %% ipost for inline editable cells
 ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
       Env=#env{body = [{"postinline", {struct, [{"formula", _}] = Attrs}}],
-                       uid = _PosterUid}) ->
+                       uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     case hn_db_api:read_attribute(Ref, "input") of
         [{Ref, "inline"}] -> ok = hn_db_api:write_attributes([{Ref, Attrs}]),
                              json(Env, "success");
@@ -643,11 +664,11 @@ ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
 ipost(Ref=#refX{path = P} = Ref, _Qry,
       Env=#env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
     [{"results", ResPath}, {"values", {array, Array}}] = Vals,
+    ok = status_srv:update_status(PosterUid, Ref, "edited page"),
     Transaction = common,
     Expected = hn_db_api:matching_forms(Ref, Transaction),
     case hn_security:validate_form(Expected, Array) of
         false ->
-            io:format("dropping out - invalid form...~n"),
             ?E("invalid form submission~n""on:       ~p~n"
                ++ "Expected: ~p~nGot:      ~p~n",
                [Ref, Expected, Array]),
@@ -676,6 +697,7 @@ ipost(Ref=#refX{path = P} = Ref, _Qry,
     end;
 
 ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     case Attr of
         %% TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
@@ -687,10 +709,12 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
 
 ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) 
   when What == "contents"; What == "style"; What == "all" ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:clear(Ref, list_to_atom(What), Uid),
     json(Env, "success");
 
 ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:clear(Ref, {attributes, [What]}, Uid),
     json(Env, "success");
 
@@ -841,7 +865,6 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 ipost(#refX{site = Site, path = _P}, _Qry,
       Env=#env{body = [{"admin", Json}], uid = Uid}) ->
     {struct,[{Fun, {struct, Args}}]} = Json,
-    io:format("Fun is ~p Args is ~p~n", [Fun, Args]),
     case hn_web_admin:rpc(Uid, Site, Fun, Args) of
         ok              -> json(Env, {struct, [{"result", "success"}]});
         {error, Reason} -> ?E("invalid _admin request ~p~n", [Reason]),
@@ -1106,7 +1129,8 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Grps   = {"groups", {array, hn_groups:get_all_groups(S)}},
     Admin  = {"is_admin", hn_groups:is_member(Env#env.uid, S, ["admin"])},
     Lang   = {"lang", get_lang(Env#env.uid)},
-    {struct, [Time, Usr, Host, Lang, Grps, Admin, Perms | dict_to_struct(Dict)]}.
+    {struct, [Time, Usr, Host, Lang, Grps, Admin, Perms |
+              dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};

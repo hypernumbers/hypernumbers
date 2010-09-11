@@ -1,4 +1,3 @@
-
 /******************************************************************************
    PAGE STYLES
    This is for content styles, global styles that apply to the rendered
@@ -139,6 +138,10 @@ body {
 
 .formrow { 
     margin:5px 0px;
+}
+
+#submit { 
+  width: 70px;
 }
 
 #loginfeedback { color:red; }
@@ -285,7 +288,7 @@ label {
     width:      5px;
 }
 
-#newviewas, #ctrlpanel, #invitecolleagues { 
+#expandbackground, #ctrlpanel { 
    background: #EEE;
    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
                                  to(#E3E3E3));
@@ -293,23 +296,95 @@ label {
                                      #E3E3E3) repeat scroll 0 0 transparent;
 }
 
+#expandbackground { 
+   padding:       9px 2px 0px 2px;
+   border-bottom: 1px solid #999999;
+}
+
 #addnewgroupbutton { 
    left:    40px;
 }
 
-#newgroupfeedback { 
+#newgroupfeedback, #newuserfeedback { 
    text-align: center;
 }
 
+#permstable { 
+   display: none;
+}
+
+#permstablelayout { 
+   margin: 0px 5px 3px 5px
+}
+
+#permstablelayout p { 
+   margin: 0px;
+}
+
+
+#invitecolleague { 
+   width: 115px;
+}
+
+.warning { 
+   font-size:  90%;
+   text-align: center;
+   font-style: italic
+}
+
+#emailforgroup { 
+   margin: 0px 0px 4px 0px;
+}
+
+#administrator { 
+   position: relative;
+   top:      3px;
+}
+
+#advusers { 
+  padding: 0px 3px 0px 10px;
+  display: none;
+  width:   300px;
+}
+
+#emailforgroup, #invitecolleague { 
+  font-size: 80%;
+}
+
+#addcolleaguebutton { 
+  font-size: 80%
+}
+
+#newcolleaguefeedback { 
+   margin: 0px;
+}
+
+#advusers input {
+   width:     282px;
+}
+
+#advusers p { 
+   margin-top:    5px;
+   margin-bottom: 0px;
+}
+
+#advusers span { 
+   padding: 10px 0px 0px 0px;
+}
+
 #advperms {
-   padding: 10px 10px 10px 10px;
+   padding: 0px 5px 0px 10px;
    display: none;
    width:   190px;
 }
 
+#advperms tr, td { 
+   height: auto;
+}
+
 #advperms td > p { 
-   line-height: 12px;
    text-align: right;
+   margin:     0px;
 }
 
 #advperms input { 
@@ -317,16 +392,81 @@ label {
    top:      -3px;
 }
 
+#advusers textarea { 
+   margin: 0px 3px 0px 5px;
+}
+
+#advperms, #advusers, #permstable p { 
+    color:#666;
+}
+
+#groups { 
+  float:   right;
+  width:   110px;
+  padding: 0px 10px 0px 0px; 
+}
+
+#groups option { 
+   font-size: 80%;
+   color:     #777777;
+}
+
+#addnewuserbutton { 
+   position: relative;
+   top:      10px;
+   left:     95px;
+   width:    auto !important;
+   margin:   0px 0px 5px 0px;
+}
+
+#addgroupmenu { 
+    position:        fixed;
+    padding:         2px 0px 2px 0px;
+    text-align:      right;
+    background:      #ffffff;
+    border-left:     1px solid #aaaaaa;
+    border-top:      1px solid #999999;
+    border-right:    1px solid #666666;
+    border-bottom:   1px solid #666666;
+    -moz-box-shadow: 2px 2px 4px #AAA;
+    display:         none;
+    z-index:         10000006;
+}
+
+#addgroupmenu div { 
+    padding:       0px 5px 0px 5px;
+    border-bottom: 1px solid #eee;
+}
+
+#addgrouptext { 
+    font-size: 80%;
+    color:     #666666;
+    position: relative;
+    top:      -3px;
+ }
+
+#addgroup span { 
+    position:  relative;
+    margin:    0px 2px 0px 0px;
+}
+
+#addgroupicon { 
+    background: url(/hypernumbers/sprite.png) -72px -1px;
+    height:     9px;
+    width:      9px;
+    padding:    0px 5px;
+}
+
 #addgroups h3 { 
    color: #666;
    padding: 5px 0px 0px 0px;
 }
 
-#advgroups { 
-   font-size:  80%;
-   color:      #4444dd;
-   text-align: right;
-   display:    none;
+#showadvperms, #showbasicgroups, #showadvusers { 
+   font-size: 80%;
+   color:     #4444dd;
+   float:     left;
+   padding:   0px 2px 0px 2px;
 }
 
 .inline { 
@@ -347,4 +487,16 @@ label {
    -moz-box-sizing: content-box;
    border: 1px solid orange;
    outline: none;
+}
+
+.floatleft { 
+   float: left;
+}
+
+.floatright { 
+   float: right;
+}
+
+.clear { 
+   clear: both;
 }
