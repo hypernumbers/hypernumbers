@@ -79,8 +79,8 @@ create_hypertag(Site, Path, Uid, Email, Data, Age) ->
     lists:concat([Site, hn_util:list_to_path(Path), "?hypertag=", HTEnc]).
 
 -spec open_hypertag(string(), [string()], string()) 
-                   -> {ok, auth_srv:uid(), string(), any(), string(), integer()} |
-                      {error, any()}.
+                   -> {ok, auth_srv:uid(), string(), any(), string(),
+                       integer()} | {error, any()}.
 open_hypertag(Site, Path, HTEnc) ->
     HalfKey = [Site, Path],
     case decrypt_term_hex(HalfKey, HTEnc) of
@@ -614,14 +614,14 @@ ivector() ->
     %% X = crypto:rand_uniform(round(math:pow(2,128)), 
     %%                         round(math:pow(2,129)-1)),
     %% <<X:128>>.
-    <<40,209,138,36,199,163,227,165,108,23,129,49,160,221,218,226>>.
+    <<121,155,254,177,79,133,224,14,193,76,204,153,223,222,231,143>>.
 
 %% These should be kept secret, and externalized for private installs.
 server_key() ->
-    <<"The road to Hades is paved with good intenti0ns">>.
+    <<"now I can ollie and I'm not so shite">>.
 
 server_token_key() ->
-    <<"!Raibeart Bruis%">>.    
+    <<"her suntan starts just above the collar">>.    
 
 make_script_terms([], Acc) -> 
     FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
