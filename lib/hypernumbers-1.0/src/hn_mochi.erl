@@ -1,4 +1,3 @@
-
 %%% @copyright 2008 Hypernumbers Ltd
 %%% @doc Handle Hypernumbers HTTP requests
 -module(hn_mochi).
@@ -9,6 +8,7 @@
 -include_lib("kernel/include/file.hrl").
 -include("gettext.hrl").
 -include("hn_mochi.hrl").
+-include("funs_en_gb.hrl").
 
 -define(E, error_logger:error_msg).
 -define(SORT, lists:sort).
@@ -163,11 +163,13 @@ authorize_get(_Ref,
     allowed;
 
 %% Authorize access to 'special' commands.
+%% TODO put permissions access on _invite and _logout
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html}) 
   when X == "_invite"; 
        X == "_mynewsite"; 
        X == "_validate";
        X == "_hooks";
+       X == "_site";
        X == "_logout" ->
     allowed;
 
@@ -346,6 +348,13 @@ when (Request == "set_view")
            #qry{},
            #env{}) 
           -> any(). 
+
+iget(#refX{site=S, path=["_site"]}, page, _Qry, Env) ->
+    Groups    = {"groups", {array, hn_groups:get_all_groups(S)}},
+    Templates = {"templates", {array, get_templates(S)}},
+    Funs      = {"functions", ?FNS_EN_GB},
+    Return    = {struct, [Groups, Funs, Templates]},
+    json(Env, Return);
 
 iget(#refX{site=S, path=["_logout"]}, page, 
      #qry{return=QReturn}, Env) when QReturn /= undefined ->
@@ -1021,6 +1030,9 @@ add_ref1(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 
+templateroot(Site) ->
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:site_to_fs(Site)++"/templates".    
 docroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/docroot".
@@ -1126,10 +1138,10 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Usr    = {"user", Env#env.email},
     Host   = {"host", S},
     Perms  = {"permissions", auth_srv:get_as_json(S, P)},
-    Grps   = {"groups", {array, hn_groups:get_all_groups(S)}},
+    Groups = {"groups", {array, hn_groups:get_all_groups(S)}},
     Admin  = {"is_admin", hn_groups:is_member(Env#env.uid, S, ["admin"])},
     Lang   = {"lang", get_lang(Env#env.uid)},
-    {struct, [Time, Usr, Host, Lang, Grps, Admin, Perms |
+    {struct, [Time, Usr, Host, Lang, Groups, Admin, Perms |
               dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
@@ -1467,3 +1479,10 @@ reset_password(Email, Password, Hash) ->
                      ++ Msg}
             end
     end.
+
+get_templates(Site) -> [strip_json(X) || X <- filelib:wildcard("*.json", templateroot(Site))].
+
+strip_json(File) ->
+    [F, "json"] = string:tokens(File, "."),
+    F.
+    
