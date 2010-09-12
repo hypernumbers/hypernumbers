@@ -236,22 +236,12 @@ input[type=submit].hninput:hover {
     vertical-align:middle;
 }
 
-.configrow { 
-    text-align: right;
+#columnsconfig { 
+  padding: 0px 5px 5px 5px;
 }
 
-#dialogclose { 
-    cursor:pointer;
-    color:black; 
-    font-weight:bold;
-    font-size:14px;
-    background:#eeeeee;
-    border:1px solid black;
-    position:absolute; 
-    padding:0px 5px 0px 5px;
-    top:3px;
-    right:11px;
-    z-index:99;
+.configrow {
+   text-align: right;
 }
 
 .colhider { 

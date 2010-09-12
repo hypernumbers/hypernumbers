@@ -31,7 +31,7 @@ html,body {
 /******************************************************************************
 	DIALOG STYLES
 ******************************************************************************/
-#insertimagedialog, #insertlinkdialog, #columnmanagerdialog {
+#insertimagedialog, #insertlinkdialog {
     position   : absolute;
     top        : 50%;
     left       : 50%;
@@ -50,8 +50,7 @@ html,body {
 /*     color : red; */
 /* } */
 
-
-#functions {
+#functions, #columnmanagerdialog {
     display            : none;
     position           : absolute;
     top                : 50px;
@@ -61,9 +60,9 @@ html,body {
     border             : 1px solid #666;
     z-index            : 10000003;
     -moz-border-radius : 3px 3px 3px 3px;
-    -moz-box-shadow : 2px 2px 4px #AAA;
+    -moz-box-shadow    : 2px 2px 4px #AAA;
 }
-#functions h2 {
+#functions h2, #columnmanagerdialog h2 {
     display            : block;
     margin             : 0px;
     font               : bold 12px sans-serif;
@@ -984,7 +983,7 @@ a.toolbar-item {
     color:#555;
 }
 
-#ctrlclose, #funsclose { 
+#ctrlclose, #funsclose, #dialogclose { 
     cursor:pointer;
     color:white; 
     font-weight:bold;
