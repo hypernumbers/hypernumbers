@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
   
@@ -13,35 +12,28 @@
   </head>
   
   <body id="hn" data-view="spreadsheet">    
-  
     <div id="pagemenu">
-
-      <a id="homebutton" data-href="home">
-	hyper<span>numbers</span>
-      </a>
-
-      <a id="hometab" href="#">create new</a>
-    
-      <div id="tabs"></div>
+    <div id="pagemarker"><div>pages:</div></div>
+    <div id="tabs"></div>
 
       <ul id="navigation">
 	<!-- Shown to non logged in users -->
-	<li id='anonymous'>
-        <div id='editspreadsheet'>
-    <div id='powered'>
-        <span class='hyper'>hyper</span><span class='numbers'>numbers</span>
+	<li id="anonymous">
+        <div id="editspreadsheet">
+    <div id="powered">
+        <span class="hyper">hyper</span><span class="numbers">numbers</span>
     </div>
-    <div id='editmenu' class='ctrlbox'>
-        <div id='editanon'>
-          <form action='' method='post' id='login'>
-            <div class='formrow'><label for='email'>Email Address</label>
-              <input type='text' id='email' /></div>
-            <div class='formrow'><label for='pass'>Password</label>
-              <input type='password' id='pass' /></div>
-            <div class='formrow'><input type='submit' id='submit' value='Log in' class='button' /><span id='forgotten_pwd'></span><br /></div>
-            <div id='loginfeedback'></div>
+    <div id="editmenu" class="ctrlbox">
+        <div id="editanon">
+          <form action="" method="post" id="login">
+            <div class="formrow"><label for="email">Email Address</label>
+              <input type="text" id="email" /></div>
+            <div class="formrow"><label for="pass">Password</label>
+              <input type="password" id="pass" /></div>
+            <div class="formrow"><input type="submit" id="submit" value="Log in" class="button" /><span id="forgotten_pwd"></span><br /></div>
+            <div id="loginfeedback"></div>
             
-            or sign up at <a href='http://hypernumbers.com'>hypernumbers.com</a>
+            or sign up at <a href="http://hypernumbers.com">hypernumbers.com</a>
           </form>
             </div>
             </div>
@@ -91,7 +83,15 @@
     </div>    
     
     <div id="toolbar">
-
+      <div class="expand site" id="sitemenu">
+        <span id="sitemenuwrap">Site</span>
+      <div id="sitemenulist" class="expandinner">
+      <a data-tab="sitenewpage">New Page</a>
+      <a data-tab="sitemypages">My Pages</a>
+      <a data-tab="sitesettings">Settings</a>
+      <!--<a data-tab="sitetour">Tour</a>-->
+        </div>
+        </div>
       <div class="expand fonts" id="fontsizewrap">
 	<span id="fontsize">$txt:{Size}$</span>
 	<div id="fontsizelist" class="expandinner">
@@ -511,15 +511,15 @@
       <a id="ctrlclose">x</a>
 
       <ul id="ctrltabs">
-	<li><a data-tab="welcome">Getting Started</a></li>
-	<li><a data-tab="myspreadsheets">My Workspace</a></li>
-	<li><a data-tab="settings">My Settings</a></li>
-	<!--<li><a data-tab="tour">Tour</a></li>-->
+	<li><a data-tab="sitenewpage">New Page</a></li>
+	<li><a data-tab="sitemypages">Pages</a></li>
+	<li><a data-tab="sitesettings">Settings</a></li>
+	<!--<li><a data-tab="sitetour">Tour</a></li>-->
       </ul>
       
       <div id="ctrltabdivs">
 
-	<div id="welcome">
+	<div id="sitenewpage">
 	  
 	  <div>
 	    <h4>Create A New Webpage</h4>
@@ -537,7 +537,7 @@
 	    <form id="newpageform">
 	      <p>Enter a name for your spreadsheet and start editing, 
 		you can see your other spreadsheets and edit settings
-		in the "My Workspace" tab</p>
+		in the "Pages" tab</p>
 	      <small>Enter the name of your spreadsheet for example <code>/accounts/2010/</code></small><br /
 	      <input type="text" id="newpage" value="" />
 	      <input type="submit" value="Create Spreadsheet" 
@@ -546,23 +546,7 @@
 	  </div>
 	</div>
 
-	<div id="settings">
-
-	  <div id="settingsfeedback"> </div>
-
-	  <div>
-	    <h4>Set Password</h4>
-	    <form id="passwordform">
-	      <input type="password" id="passwordval" />
-	      <input type="submit" value="Set Password" class="button" />
-	    <p>Passwords must be more than 8 characters and should
-	    include punctuation and numbers</p>
-	    </form>
-	  </div>
-	  
-	</div>
-
-	<div id="myspreadsheets">
+	<div id="sitemypages">
 	
 	  
 	  <div id="finder">
@@ -592,6 +576,22 @@
 	    </tr>
 	  </table>
 	      
+	</div>
+
+    	<div id="sitesettings">
+
+	  <div id="settingsfeedback"> </div>
+
+	  <div>
+	    <h4>Set Password</h4>
+	    <form id="passwordform">
+	      <input type="password" id="passwordval" />
+	      <input type="submit" value="Set Password" class="button" />
+	    <p>Passwords must be more than 8 characters and should
+	    include punctuation and numbers</p>
+	    </form>
+	  </div>
+	  
 	</div>
 
 	<div id="tour">

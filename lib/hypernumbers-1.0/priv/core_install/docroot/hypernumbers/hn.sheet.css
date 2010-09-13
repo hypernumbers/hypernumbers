@@ -159,23 +159,7 @@ html,body {
     float  : left;
     height : 26px;
 }
-#homebutton { 
-    display         : block;
-    padding-top     : 9px;
-    width           : 115px;
-    font            : normal 16px georgia,garamond, serif;
-    color           : #000;
-    margin-left     : 5px;
-    text-decoration : none;
-    cursor          : pointer;
-    float:left;
-}
 
-#homebutton span { 
-    font            : bold 14px sans-serif;
-    text-decoration : underline;
-    color           : orange;
-}
 #formulabar {
     position:relative;
     height: 18px;
@@ -273,9 +257,23 @@ html,body {
 }
 
 #tabs {
-    position :absolute;
+    position : absolute;
     bottom   : -3px;
-    left     : 207px; 
+    left     : 32px; 
+}
+
+#pagemarker { 
+    background:  white;
+    color:       #bbbbbb;
+    font-size:   10px;
+    position:    absolute;
+    bottom:      2px;
+    left:        3px;
+}
+
+#pagemarker div { 
+    position: static;
+    height:   13px;
 }
 
 #pagemenu { 
@@ -290,7 +288,7 @@ html,body {
     padding         : 0px 4px;
     text-decoration : none; 
     border          : 1px solid #DDD;
-    border-bottom      : 0px;
+    border-bottom   : 0px;
     background      : #EEE;
     color           : #004B97;
     -moz-border-radius-topleft:2px;
@@ -301,20 +299,6 @@ html,body {
 #tabs a.current {
         opacity:1;
 } 
-
-#hometab { 
-    color:orange;
-    text-decoration:none;
-    position:relative;
-    top:13px;
-    font-size:11px;
-    padding:4px 4px 4px 20px;
-    background: url(/hypernumbers/document.png) no-repeat 2px center;
-}
-
-#hometab:hover { 
-    text-decoration:underline;
-}
 
 #test { 
     position : relative;
@@ -527,12 +511,12 @@ html,body {
     float:      left;
 }
 
-.fonts a { 
+.fonts a, .site a { 
  display: block;
  padding: 2px 5px;
 }
 
-.fonts a:hover { 
+.fonts a:hover, .site a:hover { 
     background: -moz-linear-gradient(center top , #EEE, #BBB) repeat scroll 0 0 transparent;
 }
 
@@ -1001,7 +985,7 @@ a.toolbar-item {
     color:#CCC; 
 }
 
-#myspreadsheets { 
+#sitemypages { 
     padding: 10px 20px 20px 20px;
 }
 
@@ -1029,25 +1013,25 @@ a.toolbar-item {
 
 #users { width:300px; margin:100px auto; }
 
-#welcome { 
+#sitenewpage { 
     padding:20px;
 }
 
-#welcome, #settings p { 
+#sitenewpage, #sitesettings p { 
     color:#666;
     margin-bottom:5px;
 }
 
-#welcome div { 
+#sitenewpage div { 
     margin-bottom: 30px;
 }
 
-#welcome a { 
+#sitenewpage a { 
     cursor:pointer;
     text-decoration:underline;
 }
 
-#settings { 
+#sitesettings { 
     padding: 10px 60px;
 }
 
