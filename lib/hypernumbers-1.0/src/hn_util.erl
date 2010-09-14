@@ -560,7 +560,6 @@ pget(Key, List) ->
 transform_site(Dest) ->
     MigrateDir = code:lib_dir(hypernumbers) ++ "/../../"++Dest++"/",
     Sites      = filelib:wildcard(MigrateDir ++ "*"),
-    io:format("what the hell x~p~n",[Sites]),
     [ transform_perms(Site) || Site <- Sites ],
     ok.
 

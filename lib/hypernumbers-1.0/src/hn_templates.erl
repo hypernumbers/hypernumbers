@@ -51,7 +51,6 @@ load_template(#refX{site=S, path=P}=RefX, Name) ->
     TemplatesDir = hn_mochi:templateroot(S),
     URL = S ++ hn_util:list_to_path(P),
     File = TemplatesDir++"/"++Name++".json",
-    io:format("RefX is ~p~nName is ~p~nURL is ~p~nFile is ~p~n", [RefX, Name, URL, File]),
     ok = hn_import:json_file(URL, File).
 
 % %% @spec write_def(TemplateName,IsDynamic,RootURL,GUI) -> {ok,ok} | {error,Error}

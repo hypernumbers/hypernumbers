@@ -16,7 +16,6 @@ send(Type, To, CC, Site, Args) ->
     send1(Type, To, CC, Name, Site, URL, Args).
 
 send1(invalid_invite, To, CC, Name, Site, _URL, Args) ->
-    io:format("Args is ~p~n", [Args]),
     Person  = kfind(person,  Args),
     Details = kfind(details, Args),
     Reason  = kfind(reason,  Args),
@@ -29,7 +28,6 @@ send1(invalid_invite, To, CC, Name, Site, _URL, Args) ->
     ok = send_email(To, CC, ?FROM, Subject, EmailBody);
 
 send1(invite_new, To, CC, Name, _Site, _URL, Args) ->
-    io:format("Args is ~p~n", [Args]),
     Invitee  = kfind(invitee, Args),
     Msg      = kfind(msg, Args),
     Hypertag = kfind(hypertag, Args),
