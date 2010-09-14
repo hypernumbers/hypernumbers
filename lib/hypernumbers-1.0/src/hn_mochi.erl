@@ -27,8 +27,7 @@
          viewroot/1,
          docroot/1,
          page_attributes/2,
-         get_json_post/1, % Used for mochilog replay rewrites
-         twitter_signin/0
+         get_json_post/1 % Used for mochilog replay rewrites
          ]).
 
 -define(SHEETVIEW, "spreadsheet").
@@ -1169,6 +1168,7 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
 
 -spec page_attributes(#refX{}, #env{}) -> {struct, list()}.
 page_attributes(#refX{site = S, path = P} = Ref, Env) ->
+    #env{uid=UID} = Env,
     Content = hn_db_api:read_intersect_ref(Ref),
     Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
     Tree   = dh_tree:create(Init),
@@ -1178,8 +1178,9 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Time   = {"time", remoting_reg:timestamp()},
     Usr    = {"user", Env#env.email},
     Host   = {"host", S},
+    Views  = {"views", {array, auth_srv:get_views(S, P, UID)}},
     Perms  = {"permissions", auth_srv:get_as_json(S, P)},
-    {struct, [Time, Usr, Host, Perms | dict_to_struct(Dict)]}.
+    {struct, [Time, Usr, Host, Perms, Views | dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};
@@ -1522,6 +1523,4 @@ get_templates(Site) -> [strip_json(X) || X <- filelib:wildcard("*.json", templat
 strip_json(File) ->
     [F, "json"] = string:tokens(File, "."),
     F.
-    
-twitter_signin() ->
-    io:format("trying to sign-in with twitter~n").
+

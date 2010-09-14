@@ -229,10 +229,9 @@ wrap_page(Content, TotalWidth, TotalHeight) ->
 
  <div id='editmenu' class='ctrlbox'>
   <div id='editloggedin'>
-   <span id='uname'></span> | <a id='logout'>logout</a>
-   <ul>
-    <li><a href='?view=spreadsheet'>edit spreadsheet</a></li>
-   </ul>
+   <div id='uname'></div>
+  <div id='allowedviews'></div>
+  <a id='logout'>logout</a>
   </div>
   <div id='editanon'>
    <form action='' method='post' id='login'>
