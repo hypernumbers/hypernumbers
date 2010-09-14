@@ -33,6 +33,7 @@
 
 -define(SHEETVIEW, "spreadsheet").
 -define(WEBPAGE, "webpage").
+-define(WIKI, "wikipage").
 
 -spec start() -> {ok, pid()}. 
 start() ->
@@ -319,17 +320,32 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
     case ?check_pt_vw(Site, Path, Env#env.uid, ?SHEETVIEW) of
         {view, ?SHEETVIEW} -> allowed;
         not_found          -> not_found;
-        denied             -> case ?check_pt_vw(Site, Path,
-                                                Env#env.uid, ?WEBPAGE) of
-                                  denied            -> denied;
-                                  not_found         -> not_found;
-                                  {view, ?WEBPAGE} -> 
-                                      case Env#env.body of
-                                          [{"postform",   _}] -> allowed;
-                                          [{"postinline", _}] -> allowed;
-                                          _                   -> denied
-                                      end
-                              end
+        denied             -> authorize_p2(Site, Path, Env)
+    end.
+
+% WIKI's can take both 'postform' and 'postinline'
+authorize_p2(Site, Path, Env) ->
+    case ?check_pt_vw(Site, Path, Env#env.uid, ?WIKI) of
+        not_found        -> not_found;
+        {view, ?WIKI} -> 
+            case Env#env.body of
+                [{"postform",   _}] -> allowed;
+                [{"postinline", _}] -> allowed;
+                _                   -> denied
+                end;
+        denied           -> authorize_p3(Site, Path, Env)
+    end.
+
+% WEBPAGE's can only do 'postform'
+authorize_p3(Site, Path, Env) ->
+    case ?check_pt_vw(Site, Path, Env#env.uid, ?WEBPAGE) of
+        not_found        -> not_found;
+        {view, ?WEBPAGE} -> 
+            case Env#env.body of
+                [{"postform",   _}] -> allowed;
+                _                   -> denied
+                end;
+        denied           -> denied
     end.
 
 authorize_admin(Site, [{"admin", {_, [{Request, {_, List}}]}}], Uid)
@@ -419,10 +435,18 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
             end
     end;
 
+
+iget(Ref, page, #qry{view="wikipage"},
+     Env=#env{accept=html,uid=Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "view wiki page"),
+    {Html, Width, Height} = hn_render:content(Ref, wikipage),
+    Page = hn_render:wrap_page(Html, Width, Height),
+    text_html(Env, Page);
+
 iget(Ref, page, #qry{view="webpage"},
      Env=#env{accept=html,uid=Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "view webpage"),
-    {Html, Width, Height} = hn_render:content(Ref, inline),
+    {Html, Width, Height} = hn_render:content(Ref, webpage),
     Page = hn_render:wrap_page(Html, Width, Height),
     text_html(Env, Page);
 
@@ -1155,11 +1179,7 @@ page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     Usr    = {"user", Env#env.email},
     Host   = {"host", S},
     Perms  = {"permissions", auth_srv:get_as_json(S, P)},
-    Groups = {"groups", {array, hn_groups:get_all_groups(S)}},
-    Admin  = {"is_admin", hn_groups:is_member(Env#env.uid, S, ["admin"])},
-    Lang   = {"lang", get_lang(Env#env.uid)},
-    {struct, [Time, Usr, Host, Lang, Groups, Admin, Perms |
-              dict_to_struct(Dict)]}.
+    {struct, [Time, Usr, Host, Perms | dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {cell, {X - 1, Y - 1}}};

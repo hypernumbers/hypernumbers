@@ -68,8 +68,8 @@ layout([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec, Acc) ->
 layout([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     Value = pget("value", L),
     Input = case Type of
-                inline  -> pget("input", L);
-                webpage -> "none"
+                wikipage  -> pget("input", L);
+                webpage   -> "none"
             end,
     Css = read_css(pget("style", L), Rec#rec.palette),
     {W,CWs2} = col_width(C,CWs),
