@@ -519,32 +519,22 @@
       
       <div id="ctrltabdivs">
 
-	<div id="sitenewpage">
-	  
-	  <div>
-	    <h4>Create A New Webpage</h4>
-	    <p>Designing a webpage couldn't be easier, lay your page out
-	      inside a spreadsheet and its done!</p>
-	    <form id="newwebpageform">
-	      <small>Enter the path of your page for example: <code>/about/</code> or <code>/contact_us/directions/</code></small><br />
-	      <input type="text" id="newwebpage" value="" />
-	      <input type="submit" value="Build My Webpage" 
-		    class="button" />
-	    </form>
+      <div id="sitenewpage">
+        
+      <div>
+        <h4>Create A New Spreadsheet</h4>
+        <form id="newpageform">
+        <p>Enter a name for your spreadsheet and start editing, 
+        you can see your other spreadsheets and edit settings
+        in the "Pages" tab. You can create a new blank spreadsheet or use a template.</p>
+        <small>Enter the name of your spreadsheet for example <code>/accounts/2010/</code></small><br /
+        <input type="text" id="newpage" value="" />
+        <input type="submit" value="Create Spreadsheet" 
+        class="button" />
+      <div id="templates"></div>
+      </form>            
 	  </div>
-	  <div>
-	    <h4>Create A New Spreadsheet</h4>
-	    <form id="newpageform">
-	      <p>Enter a name for your spreadsheet and start editing, 
-		you can see your other spreadsheets and edit settings
-		in the "Pages" tab</p>
-	      <small>Enter the name of your spreadsheet for example <code>/accounts/2010/</code></small><br /
-	      <input type="text" id="newpage" value="" />
-	      <input type="submit" value="Create Spreadsheet" 
-		    class="button" />
-	    </form>            
-	  </div>
-	</div>
+      </div>
 
 	<div id="sitemypages">
 	
@@ -554,25 +544,41 @@
 	  </div>
 
 	  <table>
-	    <tr><td class="label">Current Selection:</td>
-	      <td class="content">
-		<strong><span class="currentpageselection"></span></strong>
-	      </td><td>
-		<input id="pdvisit" type="submit" value="Open Spreadsheet" />
-	      </td>
+	    <tr>
+          <td class="label">Current Page:</td>
+          <td class="content" colspan="2">
+            <strong><span id="currentpageselection"></span></strong>
+          </td>
+        </tr>
+        <tr>
+          <td class="label" width="27%">Open As Spreadsheet:</td>
+          <td width="17%">
+            <input id="pdvisit" type="submit" value="Open" />
+          </td>
+         <td></td>
+        </tr>
+        <tr>
+          <td class="label">Import Spreadsheet:</td>
+          <td class="content"> 
+            <input type="submit" id="doupload" value="Upload" /><br />
+          <div id="uploadresponce"> </div>
+          </td>
+          <td></td>
 	    </tr>
-	    <tr><td class="label">Import Spreadsheet:</td>
+	    <tr>
+          <td class="label">Delete Page:</td>
 	      <td class="content"> 
-		<input type="submit" id="doupload" value="Upload" /><br />
-		<div id="uploadresponce"> </div>
-	      </td><td></td>
-	    </tr>
-
-	    <tr><td class="label">Delete Page:</td>
-	      <td class="content"> 
-		<input class="redbutton" id="ctrldelete" 
-		      type="submit" value="Delete" />
-	      </td>
+            <input class="redbutton" id="ctrldelete" type="submit" value="Delete" />
+          </td>
+         <td></td>
+        </tr>
+	    <tr>
+          <td class="label">Save As Template:</td>
+          <td class="content"> 
+            <input class="redbutton" id="saveastemplate" type="submit" value="Save As.." />
+          </td>
+          <td><input id="templatename"><span id="saveasfeedback"><span></input>
+          </td>
 	    </tr>
 	  </table>
 	      

@@ -8,11 +8,26 @@
 -include("spriki.hrl").
 
 %% gen_server callbacks
--export([start_link/1, init/1, handle_call/3, handle_cast/2, 
-    handle_info/2, terminate/2, code_change/3]).
+-export([
+         start_link/1,
+         init/1,
+         handle_call/3,
+         handle_cast/2, 
+         handle_info/2,
+         terminate/2,
+         code_change/3
+        ]).
 
--export([ notify_change/4, notify_delete/3, notify_style/3, notify_error/5, 
-          request_update/4, notify_refresh/2, timestamp/0 ]).
+-export([
+         notify_site/1,
+         notify_change/4,
+         notify_delete/3,
+         notify_style/3,
+         notify_error/5, 
+         request_update/4,
+         notify_refresh/2,
+         timestamp/0
+        ]).
 
 %%
 %% Gen Server API
@@ -34,7 +49,7 @@ handle_call(_Req, _From, State) -> {reply,invalid_message, State}.
 %% @doc  Handle incoming update mesage
 handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
     Packet   = {msg, Site, Path, Msg, timestamp()},
-    NUpdates = [Packet | Updates], 
+    NUpdates = [Packet | Updates],
     {noreply, send_to_waiting(NUpdates, Waiting)};
 %% @doc  Handle incoming request for updates
 handle_cast({fetch, Site, Path, Time, Pid}, {Updates, Waiting}) ->
@@ -55,6 +70,12 @@ code_change(_Old, State, _E) -> {ok, State}.
 request_update(Site, Path, Time, Pid) ->
     Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {fetch, Site, Path, Time, Pid}).
+
+%% @doc Nofity server of site details refresh
+notify_site(Site) ->
+    Msg = {struct, [{"type", "site_refresh"}]},
+    Id = hn_util:site_to_atom(Site, "_remoting"),
+    gen_server:cast(Id, {msg, Site, ["/"], Msg}).    
 
 %% @doc  Notify server of full page refresh
 notify_refresh(Site, Path) ->
@@ -114,7 +135,7 @@ send_queued(Updates, Waiting) ->
 
     F = fun({msg, _Site1, Path1, Msg, Time1}) ->
                 Time < Time1 
-                    andalso (is_style(Msg) orelse has_path(Path1, Path))
+                    andalso (is_site(Msg) orelse has_path(Path1, Path))
         end,
     
     {Match, _Else} = lists:partition(F, Updates), 
@@ -134,7 +155,7 @@ send_to_waiting(Updates, Waiting) ->
     
     [{msg, _MsgSite, MsgPath, Msg, Time}  | _Rest ] = Updates,
         
-    F = case is_style(Msg) of
+    F = case is_site(Msg) of
             true  -> fun(_) -> true end;
             false -> fun({_Site, SrvPath, _Time, _Pid}) ->
                              has_path(MsgPath, SrvPath)
@@ -149,8 +170,12 @@ send_to_waiting(Updates, Waiting) ->
 has_path(MsgPath, ClientPath) ->
     lists:member(MsgPath, ClientPath).
 
-is_style({struct, List}) ->
-    {"type", "style"} == lists:keyfind("type", 1, List).
+is_site({struct, List}) ->
+    case lists:keysearch("type", 1, List) of
+        {value, {"type", "style"}}        -> true;
+        {value, {"type", "site_refresh"}} -> true;
+        _                                 -> false
+    end.
 
 timestamp() ->
     microsecs(erlang:now()).

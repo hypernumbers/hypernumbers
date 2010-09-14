@@ -23,9 +23,12 @@
          handle/1,
          extract_styles/1,
          style_to_css/1,
+         templateroot/1,
+         viewroot/1,
          docroot/1,
          page_attributes/2,
-         get_json_post/1 % Used for mochilog replay rewrites
+         get_json_post/1, % Used for mochilog replay rewrites
+         twitter_signin/0
          ]).
 
 -define(SHEETVIEW, "spreadsheet").
@@ -169,8 +172,11 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
        X == "_mynewsite"; 
        X == "_validate";
        X == "_hooks";
-       X == "_site";
        X == "_logout" ->
+    allowed;
+
+authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = json}) 
+  when X == "_site" ->
     allowed;
 
 %% Only some sites have a forgotten password box
@@ -329,7 +335,8 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
 authorize_admin(Site, [{"admin", {_, [{Request, {_, List}}]}}], Uid)
 when (Request == "set_view")
      orelse (Request == "set_champion")
-     orelse (Request == "invite_user") ->
+     orelse (Request == "invite_user")
+     orelse (Request == "save_template")->
     case passport:uid_to_email(Uid) of
         {ok, "anonymous"} -> denied;
         _                 ->
@@ -349,11 +356,14 @@ when (Request == "set_view")
            #env{}) 
           -> any(). 
 
-iget(#refX{site=S, path=["_site"]}, page, _Qry, Env) ->
+iget(#refX{site=S, path=["_site"]} = Ref, page, _Qry, Env) ->
     Groups    = {"groups", {array, hn_groups:get_all_groups(S)}},
     Templates = {"templates", {array, get_templates(S)}},
     Funs      = {"functions", ?FNS_EN_GB},
-    Return    = {struct, [Groups, Funs, Templates]},
+    Pages     = {"pages", pages(Ref#refX{path=[]})},
+    Admin     = {"is_admin", hn_groups:is_member(Env#env.uid, S, ["admin"])},
+    Lang      = {"lang", get_lang(Env#env.uid)},
+    Return    = {struct, [Groups, Funs, Templates, Pages, Admin, Lang]},
     json(Env, Return);
 
 iget(#refX{site=S, path=["_logout"]}, page, 
@@ -483,14 +493,6 @@ iget(Ref, _Type, Qry, Env) ->
 
 -spec ipost(#refX{}, #qry{}, #env{}) -> any().
 
-ipost(Ref, _Qry, Env=#env{body = [{"drag", {_, [{"range", Rng}]}}],
-                          uid = Uid}) ->
-    ok = status_srv:update_status(Uid, Ref, "edited page"),
-    hn_db_api:drag_n_drop(Ref, 
-                          Ref#refX{obj = hn_util:parse_attr(range,Rng)},
-                          Uid),
-    json(Env, "success");
-
 ipost(Ref=#refX{path=["_forgotten_password"]}=Ref, _Qry,
       Env=#env{uid=Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "forgot password"),
@@ -529,6 +531,21 @@ ipost(#refX{site=S, path=["_login"]}, Qry, E) ->
 %% need to do nothing with anything...
 ipost(_Ref, #qry{mark = []}, 
       Env=#env{body = [{"set",{struct, [{"mark", _Msg}]}}]}) ->
+    json(Env, "success");
+
+ipost(Ref, _Qry, Env=#env{body = [{"load_template", {_, [{"name", Name}]}}],
+                          uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "creatged page from template "++Name),
+    ok = hn_templates:load_template(Ref, Name),
+    json(Env, "success");
+
+
+ipost(Ref, _Qry, Env=#env{body = [{"drag", {_, [{"range", Rng}]}}],
+                          uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
+    ok = hn_db_api:drag_n_drop(Ref, 
+                          Ref#refX{obj = hn_util:parse_attr(range,Rng)},
+                          Uid),
     json(Env, "success");
 
 ipost(Ref=#refX{obj = {O, _}}, _Qry, 
@@ -1339,7 +1356,7 @@ process_sync(["reset"], E, QReturn) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 '404'(#refX{site = Site}, Env) ->
-    serve_html(404, Env, [viewroot(Site), "/login.html"]).
+    serve_html(404, Env, [viewroot(Site), "/404.html"]).
 
 '500'(Env) ->
     respond(500, Env).
@@ -1486,3 +1503,5 @@ strip_json(File) ->
     [F, "json"] = string:tokens(File, "."),
     F.
     
+twitter_signin() ->
+    io:format("trying to sign-in with twitter~n").

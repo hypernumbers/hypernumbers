@@ -11,32 +11,48 @@
 
 -module(hn_templates).
 
-%% -export([write_def/4,
-%%          get_next/3,
-%%          get_next2/3,
-%%          make_path/1,
-%%          get_templates/0]).
+-export([
+         save_template/2,
+         load_template/2
+         ]).
 
--import(format_util,
-        [clock_12/1,
-         pad_year/1,
-         pad_calendar/1,
-         get_short_day/1,
-         get_day/1,
-         get_short_month/1,
-         get_month/1,
-         get_last_two/1,
-         get_dayname/1,
-         get_short_dayname/1
-        ]).
+%% -import(format_util,
+%%         [clock_12/1,
+%%          pad_year/1,
+%%          pad_calendar/1,
+%%          get_short_day/1,
+%%          get_day/1,
+%%          get_short_month/1,
+%%          get_month/1,
+%%          get_last_two/1,
+%%          get_dayname/1,
+%%          get_short_dayname/1
+%%         ]).
 
 -include("spriki.hrl").
--include("handy_macros.hrl").
--include("hypernumbers.hrl").
+-include("hn_mochi.hrl").
 
 %%
 %% External API
 %%
+
+
+save_template(#refX{site = S}=RefX, Name)  ->
+    TemplatesDir = hn_mochi:templateroot(S),
+    Encoder = mochijson:encoder([{input_encoding, utf8}]),
+    FileName = filename:join(TemplatesDir, Name++".json"),
+    Page = Encoder(hn_mochi:page_attributes(RefX, #env{})),
+    Data = io_lib:format("~s", [lists:flatten(Page)]),
+    ok = filelib:ensure_dir(FileName),
+    ok = file:write_file(FileName, Data),
+    ok = remoting_reg:notify_site(S).
+
+load_template(#refX{site=S, path=P}=RefX, Name) ->
+    TemplatesDir = hn_mochi:templateroot(S),
+    URL = S ++ hn_util:list_to_path(P),
+    File = TemplatesDir++"/"++Name++".json",
+    io:format("RefX is ~p~nName is ~p~nURL is ~p~nFile is ~p~n", [RefX, Name, URL, File]),
+    ok = hn_import:json_file(URL, File).
 
 % %% @spec write_def(TemplateName,IsDynamic,RootURL,GUI) -> {ok,ok} | {error,Error}
 % %% @doc takes an incoming template and writes it to the database

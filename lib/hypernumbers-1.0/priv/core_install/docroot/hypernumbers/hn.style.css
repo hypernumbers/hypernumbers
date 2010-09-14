@@ -390,6 +390,13 @@ label {
     color:#666;
 }
 
+#templateslist { 
+  background-color: #ffffff;
+  font-size:        80%;
+  width:            183px;
+  color:            #555555;
+}
+
 #groups { 
   float:   right;
   width:   110px;

@@ -7,6 +7,8 @@
 
 -module(hn_web_admin).
 
+-include("spriki.hrl").
+-include("hn_mochi.hrl").
 %% RPC Api
 -export([rpc/4]).
 
@@ -29,7 +31,13 @@
 rpc(User, Site, Fn, Args) when is_list(Args) ->
 
     case Fn of
-        
+
+        "save_template" ->
+            Path  = kfind("path", Args),
+            Name  = kfind("name", Args),
+            NPath = string:tokens(Path, "/"),            
+            RefX  = #refX{site = Site, path = NPath, obj={page, "/"}},
+            hn_templates:save_template(RefX, Name);
         "set_view" ->
             Path            = kfind("path", Args),
             View            = kfind("view", Args),
