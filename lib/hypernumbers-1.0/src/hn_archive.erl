@@ -16,7 +16,7 @@
 
 -export([export/1, export/2,
          import/1, import/2,
-         export_as_sitetype/2 ]).
+         export_as_sitetype/2]).
 
 %% Exports a site as a sitemod that can be loaded by a factory
 -spec export_as_sitetype(list(), atom()) -> ok.
