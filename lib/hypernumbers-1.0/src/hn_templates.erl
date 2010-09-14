@@ -47,7 +47,7 @@ save_template(#refX{site = S}=RefX, Name)  ->
     ok = file:write_file(FileName, Data),
     ok = remoting_reg:notify_site(S).
 
-load_template(#refX{site=S, path=P}=RefX, Name) ->
+load_template(#refX{site=S, path=P}, Name) ->
     TemplatesDir = hn_mochi:templateroot(S),
     URL = S ++ hn_util:list_to_path(P),
     File = TemplatesDir++"/"++Name++".json",
