@@ -943,7 +943,7 @@ a.toolbar-item {
 }
 
 #ctrltabs li a { 
-    color:orange;
+    color:#999999;
     position:relative;
     top:-2px;
     cursor:pointer;
