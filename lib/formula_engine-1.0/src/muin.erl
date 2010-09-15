@@ -98,7 +98,18 @@ eval_formula(Fcode) ->
                 R when ?is_namedexpr(R) ->
                     ?ERRVAL_NAME;
                 Constant ->
-                    Constant
+                    try (mochijson:encoder([{input_encoding, utf8}]))(Constant)
+                    catch
+                        error: Err ->
+                            error_logger:error_msg("#MOCHIJSON!² error ~p~n-for ~p~n", [Err, Fcode]),
+                            '#MOCHIJSON!';
+                        exit: Err ->
+                            error_logger:error_msg("#MOCHIJSON! exit ~p~n-for ~p~n", [Err, Fcode]),
+                            '#MOCHIJSON!';
+                        throw: Err ->
+                            error_logger:error_msg("#MOCHIJSON! throw ~p~n-for ~p~n", [Err, Fcode]),
+                                  '#MOCHIJSON!'
+                    end
             end
     end.
 
