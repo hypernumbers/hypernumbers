@@ -253,6 +253,7 @@ wrap_page(Content, TotalWidth, TotalHeight) ->
   <script src='/hypernumbers/hn.sheet.js'></script>
   <script src='/hypernumbers/hn.data.js'></script>
   <script src='/hypernumbers/hn.callbacks.js'></script>
+  <script src='/hypernumbers/hn.sitedata.js'></script>
   <script src='/hypernumbers/hn.renderpage.js'></script>
   </body>
   </html>"].
