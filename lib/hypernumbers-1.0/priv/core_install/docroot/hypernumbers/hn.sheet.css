@@ -96,7 +96,7 @@ html,body {
     display : none;
 }
 #navigation a { 
-    color           : orange;
+    color           : darkorange;
     text-decoration : none;
     cursor          : pointer;
 }
@@ -287,10 +287,11 @@ html,body {
     margin          : 0px 5px;
     padding         : 0px 4px;
     text-decoration : none; 
-    border          : 1px solid #DDD;
+    /*font-weight     : bold;*/
+    border          : 1px solid #dddddd;
     border-bottom   : 0px;
-    background      : #EEE;
-    color           : #004B97;
+    background      : #f9f9f9;
+    color           : darkorange;
     -moz-border-radius-topleft:2px;
     -moz-border-radius-topright:2px;
     opacity:0.5;
@@ -557,17 +558,6 @@ html,body {
  margin:       3px;
  padding:      0px;
  height:       18px;
- float:        left;
- width:        0px !important;
- border-left:  1px solid #999;
- border-right: 1px solid #FFF;
-}
-
-.miniseparator {
- cursor:       default;
- margin:       3px;
- padding:      0px;
- height:       8px;
  float:        left;
  width:        0px !important;
  border-left:  1px solid #999;
@@ -946,16 +936,18 @@ a.toolbar-item {
 }
 
 #ctrltabs li a.selected { 
-    color:#111;
-    background:#EEE;
+    color:darkorange;
+    font-weight: bold;
+    background:#f9f9f9;
     border-bottom:2px solid #EBEAEB;
 }
 
 #ctrltabs li a { 
+    color:orange;
     position:relative;
     top:-2px;
     cursor:pointer;
-    background:#CCC;
+    background:#DDD;
     border:1px solid #666;
     border-bottom:2px solid #666;
     -moz-border-radius-topleft:3px;
@@ -964,7 +956,6 @@ a.toolbar-item {
     margin-left:7px;
     font-size:11px;
     font-weight:bold;
-    color:#555;
 }
 
 #ctrlclose, #funsclose, #dialogclose { 

@@ -470,10 +470,17 @@ label {
 }
 
 #showadvperms, #showbasicgroups, #showadvusers { 
-   font-size: 80%;
-   color:     #4444dd;
-   float:     left;
-   padding:   0px 2px 0px 2px;
+   font-size:   80%;
+   color:       darkorange;
+   float:       left;
+   padding:     0px 2px 0px 2px;
+   border          : 1px solid #dddddd;
+   border-top   : 0px;
+   background      : #f9f9f9;
+    -moz-border-radius-bottomleft:2px;
+    -moz-border-radius-bottomright:2px;
+   margin: 0px 2px 2px 2px;      
+
 }
 
 .inline { 
