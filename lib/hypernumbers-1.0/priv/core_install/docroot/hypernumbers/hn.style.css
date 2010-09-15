@@ -337,12 +337,22 @@ label {
   width:   300px;
 }
 
-#emailforgroup, #invitecolleague { 
+#emailforgroup { 
   font-size: 80%;
 }
 
+#invitecolleague { 
+    width: 200px
+}
+
 #addcolleaguebutton { 
-  font-size: 80%
+    background: orange;
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(gold), 
+                                 to(orange));
+    background: -moz-linear-gradient(center top , gold, 
+                                     orange) repeat scroll 0 0 transparent;
+    margin:    5px 0px 0px 25px;
+    width:      150px;
 }
 
 #newcolleaguefeedback { 
