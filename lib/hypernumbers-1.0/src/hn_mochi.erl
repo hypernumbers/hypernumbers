@@ -756,6 +756,12 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
     end,
     json(Env, "success");
 
+ipost(Ref, _Qry, Env=#env{body = [{"set", {array, Array}}], uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
+    List = [X || {struct, [X]} <- Array],
+    ok = hn_db_api:write_attributes([{Ref, List}], Uid, Uid),
+    json(Env, "success");
+
 ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) 
   when What == "contents"; What == "style"; What == "all" ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
