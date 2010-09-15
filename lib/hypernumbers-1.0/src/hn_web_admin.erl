@@ -69,7 +69,7 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
 
         "invite_user" -> add_user2(User, Site, Args, invite);
 
-        "add_user" -> add_user2(User, Site, Args, add);
+        "add_user"    -> add_user2(User, Site, Args, add);
 
         %"delete" ->
         %    [Site, Name] = Args,
@@ -84,7 +84,9 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
             % now fire off the permissions stuff...
             [ok = auth_srv:add_view(Site, NPath, [Name], X) || X <- Views],
             % now tell the front end to update
-            ok = remoting_reg:notify_refresh(Site, NPath)
+            % twice - both the site and page!
+            ok = remoting_reg:notify_refresh(Site, NPath),
+            ok = remoting_reg:notify_site(Site)
 
         % "remove_groups" ->
         %   [Site, Name, Groups] = Args,
