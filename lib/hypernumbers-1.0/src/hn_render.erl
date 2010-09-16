@@ -203,7 +203,7 @@ wrap_page(Content, TotalWidth, TotalHeight) ->
 <html lang='en'>
          <head>
          <meta charset='utf-8' />
-         <title>Hypernumbers</title>
+         <title>Hypernumbers - the web spreadsheet</title>
          <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />	
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
          <link rel='stylesheet' href='/tblsorter/style.css' />	
