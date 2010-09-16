@@ -1213,11 +1213,12 @@ a.toolbar-item {
 }
 
 #combo_colourbg .button { 
-    width:168px;
+                          font-size: 98%;
+                          width:168px;
 }
 
 #bgcolor, #forecolor {
-    width        : 50px;
+    width        : 60px;
     padding      : 3px;
     margin       : 4px;
     border       : 1px solid #999;
