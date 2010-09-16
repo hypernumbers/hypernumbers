@@ -283,18 +283,38 @@ delete_gen_html() ->
 jsonify_attrs(Attrs) ->
     [jsonify_val(A) || A <- Attrs].
 
-jsonify_val({[$_,$_|_]=K, _})       -> {K, "bleh"};
-jsonify_val({"parents", _})                 -> {"parents", "bleh"};    
-jsonify_val({Name, {errval, Error}})        -> {Name, atom_to_list(Error)};
+jsonify_val({[$_,$_|_]=K, _}) ->
+    {K, "bleh"};
+jsonify_val({"parents", _}) ->
+    {"parents", "bleh"};    
+jsonify_val({Name, {errval, Error}}) ->
+    {Name, atom_to_list(Error)};
 jsonify_val({Name, {datetime, {1,1,1}=Date, Time}}) ->
     {Name, dh_date:format("g:i A", {Date, Time})};
 jsonify_val({Name, {datetime, Date, Time}}) ->
     {Name, muin_date:to_rfc1123_string({datetime, Date, Time})};
-jsonify_val({"value", true})                -> {"value", "true"};
-jsonify_val({"value", false})               -> {"value", "false"};
+jsonify_val({"value", true}) ->
+    {"value", "true"};
+jsonify_val({"value", false}) ->
+    {"value", "false"};
 %% TODO: fix names
-jsonify_val({Name, {namedexpr, _Path, Nm}}) -> {Name, Nm};
-jsonify_val(Else)                           -> Else.
+jsonify_val({Name, {namedexpr, _Path, Nm}}) ->
+    {Name, Nm};
+jsonify_val({K, V}) ->
+    try (mochijson:encoder([{input_encoding, utf8}]))(V),
+                         {K, V}
+    catch
+        error: _Err ->
+            error_logger:error_msg("#MOCHIJSON! error ~p ~p~n", [K, V]),
+            {K, {errval, '#MOCHIJSON!'}};
+        exit: _Err ->
+            error_logger:error_msg("#MOCHIJSON! exit ~p ~p~n", [K, V]),
+            {K, {errval, '#MOCHIJSON!'}};
+        throw: _Err ->
+            error_logger:error_msg("#MOCHIJSON! throw ~p ~p~n", [K, V]),
+            {K, {errval, '#MOCHIJSON!'}}
+    end.
+                    
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
