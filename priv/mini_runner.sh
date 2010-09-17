@@ -2,6 +2,8 @@
 
 DATE=`date +%Y-%m-%d.%T`
 
+eval $(ssh-agent)
+
 REPO=git@github.com:hypernumbers/hypernumbers.git
 HNTOP=/Users/daleharvey/hypernumbers
 WEBROOT=/Users/daleharvey/hn_tests/dev-www
@@ -9,13 +11,13 @@ TESTDIR=/Users/daleharvey/hn_tests/test-hypernumbers
 LASTRUN=$WEBROOT/last_run
 
 cd $HNTOP
-git clone $REPO $TESTDIR
+/usr/local/git/bin/git clone $REPO $TESTDIR
 
 ## Compile, and run Hypernumbers
 cd $TESTDIR
 ./hn build
-sed -i '/{127,0,0,1}, 9090}/d' var/sys.config
-sed -i '/{127,0,0,1}, 9091}/d' var/sys.config
+/usr/bin/sed -i '/{127,0,0,1}, 9090}/d' var/sys.config
+/usr/bin/sed -i '/{127,0,0,1}, 9091}/d' var/sys.config
 ./hn start
 
 ## Generate Excel Tests
