@@ -1015,6 +1015,10 @@ a.toolbar-item {
     padding:20px;
 }
 
+#newpage { 
+           width: 179px;
+           }
+
 #sitenewpage, #sitesettings p { 
     color:#666;
     margin-bottom:5px;
