@@ -183,23 +183,22 @@ html,body {
     right       : 0px;
     display     : block;
     top         : 0px;
-    height      : 18px;
-    margin-left : 67px;
-    border      : 0px;
+    height      : auto;
+    margin-left : 78px;
+    border      : 1px;
     background  : #FFF;
     max-height  : 100px;
     cursor      : text;    
     overflow-y  : auto;
     overflow-x  : hidden;
     z-index     : 9999999;
-    padding-left:4px;
-    outline:none;
+    padding-left: 4px;
+    outline     : none;
 }
 
 #formulawrapper.active { 
     height:auto;
-    border:1px solid #666;
-
+    /*border:1px solid #666;*/
 }
 
 #formula { 
@@ -218,6 +217,7 @@ html,body {
     display        : block;
     line-height    : 18px;
     height         : 18px;
+    width          : 78px;
     padding        : 0px 5px 2px 5px;
     float          : left;
     cursor         : pointer;
