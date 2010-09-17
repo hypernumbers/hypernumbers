@@ -8,7 +8,7 @@
           radio/1,
           select/1,
           include/1,
-          table/1,
+          %table/1,
           background/1,
           'google.map'/1,
           'twitter.search'/1,
@@ -16,6 +16,8 @@
           img/1,
           html/1,
           site/1]).
+
+-export([fail/1]).
 
 -include("spriki.hrl").
 -include("typechecks.hrl").
@@ -31,6 +33,8 @@
 -type trans() :: common | string().
 -type html() :: string().
 -type zoom() :: 1..20.
+
+fail([_]) -> [forced_error, "should_wig"].
 
 %% Safe functions (after typecheck)
 %%
@@ -109,27 +113,6 @@ radio_(Label, Options) ->
                          "</div>"),
     {rawform, Form, Html}.
 
-table_({range, [ THead | Range]}, Sort) ->
-    
-    Id = "tbl_"++create_name(),
-    F = fun(blank) -> "";
-           (Else)  -> cast(Else, str)
-        end,
-
-    Head = ["<thead><tr>",
-            [["<th>", F(X),"</th>"] || X <- THead ],
-            "</tr></thead>"],
-    
-    Rows = [ ["<tr>", [ ["<td>", F(Cell),"</td>"] || Cell <- Row ],"</tr>"]
-             || Row <- Range ],
-    
-    Script = ["<script type='text/javascript'>$(\"#", Id,
-              "\").tablesorter({headers: { 1: { sorter:'digit' }}, sortList:[[",
-              cast(Sort, str), ",0]]});</script>"],
-    
-    lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
-                   "</table>", Script]).
-
 'twitter.search_'(_Term, _Title) ->
     "Todo".
 
@@ -170,7 +153,6 @@ table([Ref]) ->
     table([Ref, 0]);
 table([Ref, Sort]) ->
     table_(Ref, Sort).
-
 
 'google.map'([])          -> 'google.map'([0]);
 'google.map'([Long])      -> 'google.map'([Long, 0]);
@@ -265,3 +247,24 @@ has_c1([_H | T])                          -> has_c1(T).
 create_name() ->
     Bin = crypto:rand_bytes(8),
     mochihex:to_hex(Bin).
+
+table_({range, [ THead | Range]}, Sort) ->
+    
+    Id = "tbl_"++create_name(),
+    F = fun(blank) -> "";
+           (Else)  -> cast(Else, str)
+        end,
+
+    Head = ["<thead><tr>",
+            [["<th>", F(X),"</th>"] || X <- THead ],
+            "</tr></thead>"],
+    
+    Rows = [ ["<tr>", [ ["<td>", F(Cell),"</td>"] || Cell <- Row ],"</tr>"]
+             || Row <- Range ],
+    
+    Script = ["<script type='text/javascript'>$(\"#", Id,
+              "\").tablesorter({headers: { 1: { sorter:'digit' }}, sortList:[[",
+              cast(Sort, str), ",0]]});</script>"],
+    
+    lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
+                   "</table>", Script]).
