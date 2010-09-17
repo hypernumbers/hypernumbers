@@ -184,7 +184,7 @@ html,body {
     display     : block;
     top         : 0px;
     height      : 18px;
-    margin-left : 77px;
+    margin-left : 67px;
     border      : 0px;
     background  : #FFF;
     max-height  : 100px;
@@ -1218,10 +1218,11 @@ a.toolbar-item {
 }
 
 #bgcolor, #forecolor {
-    width        : 60px;
-    padding      : 3px;
-    margin       : 4px;
-    border       : 1px solid #999;
+                       width        : 65px;
+                       padding      : 3px;
+                       margin       : 4px;
+                       border       : 1px solid #999;
+                       font         : monospace;
 }
 
 #insertimageinput, #insertlinkinput { 
