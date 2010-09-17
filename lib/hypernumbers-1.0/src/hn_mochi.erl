@@ -709,7 +709,14 @@ ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
                              json(Env, "success");
         _                 -> respond(403, Env)
     end;
-    
+
+ipost(Ref=#refX{obj = {cell, _}}, _Qry,
+      Env=#env{body = [{"postinline", {struct, [{"clear","contents"}]}}],
+                       uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "edited page"),
+    ok = hn_db_api:clear(Ref, contents, Uid),
+    json(Env, "success");
+
 ipost(Ref=#refX{path = P} = Ref, _Qry,
       Env=#env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
     [{"results", ResPath}, {"values", {array, Array}}] = Vals,
