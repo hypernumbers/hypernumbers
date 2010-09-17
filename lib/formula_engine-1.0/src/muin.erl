@@ -72,7 +72,6 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
     Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
     Result = eval_formula(Fcode),
     {_Errors, References} = get(retvals),
-    io:format("Result is ~p _Errors is ~p~n", [Result, _Errors]),
     {ok, {Fcode, Result, References, get(recompile)}}.
 
 %% evaluates a formula rather than a piece of AST, i.e. will do implicit
@@ -98,8 +97,7 @@ eval_formula(Fcode) ->
                     catch throw:Err -> Err end;
                 R when ?is_namedexpr(R) ->
                     ?ERRVAL_NAME;
-                Constant -> io:format("Constant is ~p~n", [Constant]),
-                            Constant
+                Constant -> Constant
                     %% 
             end
     end.
