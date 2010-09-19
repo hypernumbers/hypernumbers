@@ -3,7 +3,7 @@
 -module(hn_render).
 
 -export([content/2, 
-         wrap_page/3, wrap_region/3]).
+         wrap_page/4, wrap_region/3]).
 
 -include("spriki.hrl").
 -include_lib("eunit/include/eunit.hrl").
@@ -25,7 +25,7 @@
                  
 %% Returns a tuple containing the rendered html for the area covered
 %% by the given Ref, along with the width of said html.
--spec content(#refX{}, atom()) -> {[textdata()], integer(), integer()}.
+-spec content(#refX{}, atom()) -> {{[textdata()], integer(), integer()}, string()}.
 content(Ref, Type) ->
     Data = lists:sort(fun order_objs/2, read_data_without_page(Ref)),
     Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
@@ -36,7 +36,9 @@ content(Ref, Type) ->
     Palette = gb_trees:from_orddict
                 (lists:sort
                    (hn_mochi:extract_styles(Ref#refX.site))),
-    layout(Ref, Type, Cells, ColWs, RowHs, Palette).
+        List = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, css),
+    CSS = ["<link rel='stylesheet' href='"++X++"' />'" || {_, X} <- List],
+    {layout(Ref, Type, Cells, ColWs, RowHs, Palette), CSS}.
 
 read_data_without_page(Ref) ->
     Refs = hn_db_api:read_intersect_ref(Ref),
@@ -195,8 +197,8 @@ pget(K,L) -> proplists:get_value(K,L,undefined).
 
 pget(K,L,D) -> proplists:get_value(K,L,D).
 
--spec wrap_page([textdata()], integer(), integer()) -> [textdata()]. 
-wrap_page(Content, TotalWidth, TotalHeight) -> 
+-spec wrap_page([textdata()], integer(), integer(), string()) -> [textdata()]. 
+wrap_page(Content, TotalWidth, TotalHeight, CSS) -> 
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
                                [TotalWidth, TotalHeight]),
     ["<!DOCTYPE html>
@@ -206,9 +208,9 @@ wrap_page(Content, TotalWidth, TotalHeight) ->
          <title>Hypernumbers - the web spreadsheet</title>
          <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />	
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
-         <link rel='stylesheet' href='/tblsorter/style.css' />	
-
-         <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
+         <link rel='stylesheet' href='/tblsorter/style.css' />"
+     ++CSS++
+"         <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
          <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
          </head>
 
