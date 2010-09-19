@@ -327,6 +327,7 @@ label {
 }
 
 #administrator { 
+   width:    10px;
    position: relative;
    top:      3px;
 }
@@ -335,10 +336,6 @@ label {
   padding: 0px 3px 0px 10px;
   display: none;
   width:   300px;
-}
-
-#emailforgroup { 
-  font-size: 80%;
 }
 
 #invitecolleague { 
@@ -360,7 +357,7 @@ label {
 }
 
 #advusers input {
-   width:     282px;
+   width:     288px;
 }
 
 #advusers p { 
@@ -393,7 +390,9 @@ label {
 }
 
 #advusers textarea { 
-   margin: 0px 3px 0px 5px;
+   height:   60px;
+   overflow: auto;
+   margin:   0px 3px 0px 5px;
 }
 
 #advperms, #advusers, #permstable p { 
@@ -407,10 +406,18 @@ label {
   color:            #555555;
 }
 
-#groups { 
-  float:   right;
-  width:   110px;
-  padding: 0px 10px 0px 0px; 
+#newusermsg { 
+  width: 170px;
+}
+
+#groups {
+  background-color: #fff;
+  float:            right;
+  width:            110px;
+  padding:          0px 10px 0px 0px; 
+  overflow:         auto;
+  scrollbar-base-color: #ddd;
+  scrollbar-arrow-color: #666;
 }
 
 #groups option { 

@@ -110,7 +110,7 @@
 	</div>
       </div>
       
-      <div class="expand fonts">
+      <div id="expandfontfaces" class="expand fonts">
 	<span id="font">$txt:{Font}$</span>
 	<div id="ffamily" class="expandinner">
 	  <a data-command="FontName" data-param="sans-serif" class="sans-serif"
@@ -137,7 +137,7 @@
       
       <a class="separator"></a>
       
-      <div class="expand fonts">
+      <div id="expandformats" class="expand fonts">
 	<span id="format">$txt:{Format}$</span>
 	<div id="formats" class="expandinner">
 	  <a id="fmt_0">$txt:{Plain}$</a>
@@ -167,7 +167,7 @@
       
       <a class="separator"></a>
       
-      <div class="expand">
+      <div id="expandbuttons" class="expand">
 	<span><a id="left-head" class="icon"></a></span>
 	<div id="aligntext" class="expandinner">
 	  <a title="Left align" id="align_left" class="toolbar-item"
@@ -246,7 +246,7 @@
       <a class="separator"></a>          
       <a title="Make Wiki Input" class="toolbar-item" id="inlineinput"></a>
       <div id="typepanel">
-          <div class="expand">
+          <div id="expandviews" class="expand">
           <span><em>Views</em></span>
           <div id="newviewas" class="expandinner">
             <div id="expandbackground">
@@ -284,7 +284,8 @@
               <textarea id="newusermsg"></textarea>
                 </div>
             <div class="clear">
-            <span><small>make this user an administrator (superuser) on the site</small></span><input id="administrator" type="checkbox" value="administrator" />
+              <small>make this user an administrator (superuser) on the site</small>
+              <input id="administrator" style='width:20px;' type="checkbox" value="administrator" />
             </div>
             <input id="addnewuserbutton" type="submit" class="button" value="Create User" />
             <p id=newuserfeedback>&nbsp;</p>
