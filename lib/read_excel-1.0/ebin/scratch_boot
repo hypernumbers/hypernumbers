@@ -1,4 +1,0 @@
-#!/bin/bash
-rm /opt/SVN/spriki/trunk/testroot/system_excel_test/excel_test_files/scratch/*log
-rm /opt/SVN/spriki/trunk/testroot/system_excel_test/excel_test_files/scratch/*.error
-erl -s scratch_boot boot -s toolbar start
