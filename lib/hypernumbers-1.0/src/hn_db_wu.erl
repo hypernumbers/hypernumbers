@@ -1430,9 +1430,9 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     Rti = refX_to_rti(Ref, AReq, false),
     case muin:run_formula(Fla, Rti) of
         %% TODO : Get rid of this, muin should return {error, Reason}?
-        {ok, {_P, {error, error_in_formula}, _, _}} ->
-            % log:log("error_in_formula "++Formula),
-            write_error_attrs(Ref, Formula, error_in_formula);
+        % {ok, {_P, {error, error_in_formula}, _, _}} ->
+        % log:log("error_in_formula "++Formula),
+        %    write_error_attrs(Ref, Formula, error_in_formula);
         {error, Error} ->
             % log:log("error "++Formula++" - "++io_lib:format("~p", [Error])),
             write_error_attrs(Ref, Formula, Error);        
