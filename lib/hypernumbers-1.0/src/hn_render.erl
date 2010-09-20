@@ -36,7 +36,7 @@ content(Ref, Type) ->
     Palette = gb_trees:from_orddict
                 (lists:sort
                    (hn_mochi:extract_styles(Ref#refX.site))),
-        List = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, css),
+        List = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, "css"),
     CSS = ["<link rel='stylesheet' href='"++X++"' />" || {_, X} <- List],
     {layout(Ref, Type, Cells, ColWs, RowHs, Palette), CSS}.
 
