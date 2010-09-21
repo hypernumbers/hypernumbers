@@ -347,6 +347,12 @@ authorize_p3(Site, Path, Env) ->
         denied           -> denied
     end.
 
+authorize_admin(_Site, [{"admin", {_, [{"set_password", _}]}}], Uid) ->
+    case passport:uid_to_email(Uid) of
+        {ok, "anonymous"} -> denied;
+        _                 -> allowed
+    end;
+
 authorize_admin(Site, [{"admin", {_, [{Request, {_, List}}]}}], Uid)
 when (Request == "set_view")
      orelse (Request == "set_champion")
@@ -930,7 +936,7 @@ ipost(#refX{site = Site, path = _P}, _Qry,
     case hn_web_admin:rpc(Uid, Site, Fun, Args) of
         ok              -> json(Env, {struct, [{"result", "success"}]});
         {error, Reason} -> ?E("invalid _admin request ~p~n", [Reason]),
-                           respond(401, Env)
+                           json(Env, {struct, [{"failure", Reason}]})
     end; 
 
 ipost(#refX{site=RootSite, path=["_hooks"]}, 
