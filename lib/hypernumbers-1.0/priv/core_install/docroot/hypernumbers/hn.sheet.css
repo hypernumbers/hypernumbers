@@ -1138,7 +1138,8 @@ a.toolbar-item {
 
 #powered { 
     text-align:center;
-    width:100px;
+    width:110px;
+    padding: 2px;
     float:left;
 }
 #powered a {

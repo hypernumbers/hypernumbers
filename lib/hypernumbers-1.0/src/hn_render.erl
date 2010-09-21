@@ -210,7 +210,8 @@ wrap_page(Content, TotalWidth, TotalHeight, CSS) ->
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
          <link rel='stylesheet' href='/tblsorter/style.css' />
 "     ++CSS++
-"         <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
+"         <!--<script src='/hypernumbers/jquery-1.4.2.min.js'></script>-->
+          <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
          <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
          </head>
 
