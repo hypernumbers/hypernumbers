@@ -131,7 +131,7 @@ new_user_site_email(Site, Uid, Email, Name) ->
        "It will work until you set your password. "
        "Click or paste the following into your browser:\n\n",
        HT,"\n\n",
-       "askswift.com, tiny.hn and uses.hn are all trading "
+       "tiny.hn and uses.hn are all trading "
        "names of hypernumbers.com"
       ]).
 
