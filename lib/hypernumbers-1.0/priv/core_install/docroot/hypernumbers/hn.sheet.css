@@ -75,15 +75,17 @@ html,body {
 	TOP NAVIGATION STYLES
 ******************************************************************************/
 #navigation {  
-    font-size: 11px;
-    float    : right;
-    position : absolute;
-    top      : -2px;
-    background:white;
-    right:5px;
-    margin   : 0px;
-    padding  : 0px;
-    -moz-border-radius:5px;
+    color      : white;
+    font-weight: bold;
+    font-size  : 10px;
+    float      : right;
+    position   : absolute;
+    top        : -2px;
+    right      :5px;
+    margin     : 0px;
+    padding    : 0px;
+    /*-moz-border-radius:5px;
+    background:white;*/
 }
 #navigation li img { 
     position:relative;
@@ -92,7 +94,7 @@ html,body {
 #navigation li {
     float   : left;
     margin  : 0px 5px;
-    color   : #999;
+    color   : #ffffff;
     display : none;
 }
 #navigation a { 
@@ -259,12 +261,12 @@ html,body {
 #tabs {
     position : absolute;
     bottom   : -3px;
-    left     : 32px; 
+    left     : 39px; 
 }
 
 #pagemarker { 
-    background:  white;
-    color:       #bbbbbb;
+    color:       white;
+    font-weight: bold;
     font-size:   10px;
     position:    absolute;
     bottom:      2px;
@@ -910,7 +912,7 @@ a.toolbar-item {
     position    : absolute;
     top         : 50%;
     left        : 50%;
-    height      : 400px;
+    height      : 460px;
     width       : 600px;
     margin-left : -300px;
     margin-top  : -201px;
@@ -1011,27 +1013,10 @@ a.toolbar-item {
     margin:100px auto;
 }
 
-#sitenewpage { 
-    padding:20px;
-}
 
 #newpage { 
            width: 179px;
            }
-
-#sitenewpage, #sitesettings p { 
-    color:#666;
-    margin-bottom:5px;
-}
-
-#sitenewpage div { 
-    margin-bottom: 30px;
-}
-
-#sitenewpage a { 
-    cursor:pointer;
-    text-decoration:underline;
-}
 
 #sitesettings { 
     padding: 10px 60px;
@@ -1087,19 +1072,23 @@ a.toolbar-item {
 
 .tournavigate {
      float : right;
-     color : green;
+     color : darkorange;
 }
 
 #tourwrapper { 
-   padding: 10px 0px 0px 0px;
-   height:  300px;
+   padding: 60px 20px 10px 60px;
+   height:  330px;
 }
 
-#doupload, #ctrldelete, #saveastemplate, #pdvisit { 
-    width: 80px
+#hn_tourfooter { 
+                 padding: 0px 20px 0px 0px;
 }
 
-.button, .tournavigate, #doupload, #ctrldelete, #saveastemplate, #pdvisit {  
+#doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet { 
+    width: 100px
+}
+
+.button, .tournavigate, #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet {  
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;    
     -moz-border-radius:3px 3px 3px 3px;

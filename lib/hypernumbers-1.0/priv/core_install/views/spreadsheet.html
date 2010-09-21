@@ -12,7 +12,7 @@
   </head>
   
   <body id="hn" data-view="spreadsheet">    
-    <div id="pagemenu">
+    <div id="pagemenu" style="background-color:#000;">
     <div id="pagemarker"><div>pages:</div></div>
     <div id="tabs"></div>
 
@@ -41,10 +41,10 @@
         </li>  
 	<!-- Shown to logged in users -->
 	<li id="loggedin">
-
+        <span>we <img src="/img/heart.png"> feedback gordon@hypernumbers.com +44 7776 25166</span>
 	  <a href="http://hypernumbers.com/support/" target="_blank">
 	    <img src="/img/help.png" />
-	    I need help!</a>
+	    need help?</a>
 
 	  <!-- Languages drop down -->
 	  <div class="expand" id="languages">
@@ -86,10 +86,9 @@
       <div class="expand site" id="sitemenu">
         <span id="sitemenuwrap">Site</span>
       <div id="sitemenulist" class="expandinner">
-      <a data-tab="sitenewpage">New Page</a>
       <a data-tab="sitemypages">My Pages</a>
       <a data-tab="sitesettings">Settings</a>
-      <!--<a data-tab="sitetour">Tour</a>-->
+      <a data-tab="sitetour">Tour</a>
         </div>
         </div>
       <div class="expand fonts" id="fontsizewrap">
@@ -510,44 +509,40 @@
       <a id="ctrlclose">x</a>
 
       <ul id="ctrltabs">
-	<li><a data-tab="sitenewpage">New Page</a></li>
 	<li><a data-tab="sitemypages">Pages</a></li>
 	<li><a data-tab="sitesettings">Settings</a></li>
-	<!--<li><a data-tab="sitetour">Tour</a></li>-->
+	<li><a data-tab="sitetour">Tour</a></li>
       </ul>
       
       <div id="ctrltabdivs">
 
-      <div id="sitenewpage">
-        
-      <div>
-        <h4>Create A New Spreadsheet</h4>
-        <form id="newpageform">
-        <p>Enter a name for your spreadsheet and start editing, 
-        you can see your other spreadsheets and edit settings
-        in the "Pages" tab. You can create a new blank spreadsheet or use a template.</p>
-        <small>Enter the name of your spreadsheet for example <code>/accounts/2010/</code></small><br /
-        <input type="text" id="newpage" value="" />
-        <input type="submit" value="Create Spreadsheet" 
-        class="button" />
-      <div id="templates"></div>
-      </form>            
-	  </div>
-      </div>
-
 	<div id="sitemypages">
 	
-	  
 	  <div id="finder">
 	    <div class="panewrapper"><div class="pane"></div></div>
 	  </div>
 
 	  <table>
-	    <tr>
+       <tr>
           <td class="label">Current Page:</td>
           <td class="content" colspan="2">
             <strong><span id="currentpageselection"></span></strong>
           </td>
+        </tr>
+       <tr>
+          <td></td>
+          <td></td>
+          <td><small>for example <code>/accounts/2010/</code></small></td>
+        </tr>
+          <td class="label" width="27%">Create New:</td>
+          <td width="17%">
+            <input id="newspreadsheet" type="submit" value="New" class="button" />
+          <div id="templates"></div>
+          </td>
+         <td>
+         <input type="text" id="newpage" value="" />
+        </td>
+        <tr>
         </tr>
         <tr>
           <td class="label" width="27%">Open As Spreadsheet:</td>
@@ -599,20 +594,32 @@
 	  
 	</div>
 
-	<div id="tour">
+	<div id="sitetour">
 	<div id="tourwrapper">
 	    <div class="tourpage">
-	      <h4>Getting Started!</h4>
-	      <p>bleh!</p>
+	      <h4>This Tour Will Show You How Hypernumbers Works</h4>
+          <p>There are a number of tutorial pages for you to get started. You can select them when you create a new page from the first tab in this dialog box. They are:</p>
+          <ul>
+            <li><span class="hn_em">consolidation</span> instead of emailing loads of copies of a spreadsheet around and then plucking the responses from your mail box</li>
+            <li><span class="hn_em">negotiating</span> for when you need to take colleagues, suppliers or partners through a process of agreeing a set of figures</li>
+            <li><span class="hn_em">wiki pages</span> allowing colleagues, suppliers or partners to update specific cells in your spreadsheet</li>
+            <li><span class="hn_em">web pages</span> one-click publishing your spreadsheets</li>
+            <li><span class="hn_em">graphs</span> making and publishing graphs</li>
+            <li><span class="hn_em">advanced web</span> some of our experimental web stuff</li>
+            </ul>
+          <p>
 	    </div>
 	    <div class="tourpage">
-	      <h4>Spreadsheets as Urls</h4>
-	      <p>Hoop!</p>
+	      <h4>Speak Your Mind</h4>
+	      <p>Hypernumbers is still an early product - we really value your feedback. We are delighted if there are things you like about our product but we really welcome any comments about problems you are having or bugs that you have found.</p>
+          <p>If you need any help or want to know anything just drop me an email at <em>gordon@hypernumbers.com</em> or give me a ring on <em>+44 7776 251669</em> - but remember we are based in Bonnie Scotland and our time zone is Greenwhich Mean Time/British Summer Time.
 	    </div>
 	</div>
+    <div id="hn_tourfooter">
 	<input type="submit" class="tournavigate" value="Next" id="tournext" />
 	<div id="tourpager"></div>
 	<input type="submit" class="tournavigate" value="Back" id="tourback" />
+    </div>
     </div>
     
   </body>

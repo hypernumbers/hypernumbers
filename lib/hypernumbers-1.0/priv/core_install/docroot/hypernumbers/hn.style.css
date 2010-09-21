@@ -59,6 +59,11 @@ body {
     position:relative;
 }
 
+.hn_em { 
+         font-weight: bold;
+         color: darkorange;
+}
+
 .hntext, iframe { 
     min-height:62px;
     height:100%;
@@ -412,7 +417,7 @@ label {
 #templateslist { 
   background-color: #ffffff;
   font-size:        80%;
-  width:            183px;
+  width:            100px;
   color:            #555555;
 }
 
