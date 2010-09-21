@@ -951,7 +951,7 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
     case factory:provision_site(Zone, Email, SType, PrevUid) of
         {ok, new, Site, Node, Uid, Name} ->
             log_signup(RootSite, Site, Node, Uid, Email),
-            Opaque = [{param, "?view=spreadsheet"}],
+            Opaque = [{param, "#tour"}],
             Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
