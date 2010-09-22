@@ -17,7 +17,7 @@ start(_Type, _Args) ->
     ok = init_tables(),
     io:format("Hypernumbers Startup: tables initiated...~n"),
     ok = load_muin_modules(),
-    io:format("Hypernumbers Startup: muin moduules loaded...~n"),
+    io:format("Hypernumbers Startup: muin modules loaded...~n"),
     {ok, Pid} = hypernumbers_sup:start_link(),
     io:format("Hypernumbers Startup: hypernumbers supervisors started...~n"),
     ok = case application:get_env(hypernumbers, environment) of
