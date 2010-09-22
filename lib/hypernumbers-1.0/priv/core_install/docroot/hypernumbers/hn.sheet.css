@@ -57,10 +57,12 @@ html,body {
     left               : 50px;
     background         : white;
     min-width          : 200px;
-    border             : 1px solid #666;
+    border             : 2px solid #999;
     z-index            : 10000003;
-    -moz-border-radius : 3px 3px 3px 3px;
+    -moz-border-radius : 4px 4px 4px 4px;
     -moz-box-shadow    : 2px 2px 4px #AAA;
+    -webkit-border-radius : 4px 4px 4px 4px;
+    -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
 #functions h2, #columnmanagerdialog h2 {
     display            : block;
@@ -69,13 +71,14 @@ html,body {
     padding            : 4px;
     background         : #333;
     color              : #EEE;
-    -moz-border-radius : 3px 3px 0px 0px;
+    -moz-border-radius : 4px 4px 0px 0px;
+    -webkit-border-radius : 4px 4px 0px 0px;
 }
 /******************************************************************************
 	TOP NAVIGATION STYLES
 ******************************************************************************/
 #navigation {  
-    color      : white;
+    color      : #ddd;
     font-weight: bold;
     font-size  : 10px;
     float      : right;
@@ -84,9 +87,8 @@ html,body {
     right      :5px;
     margin     : 0px;
     padding    : 0px;
-    /*-moz-border-radius:5px;
-    background:white;*/
 }
+
 #navigation li img { 
     position:relative;
     top:3px;
@@ -94,7 +96,7 @@ html,body {
 #navigation li {
     float   : left;
     margin  : 0px 5px;
-    color   : #ffffff;
+    color   : #ddd;
     display : none;
 }
 #navigation a { 
@@ -265,7 +267,7 @@ html,body {
 }
 
 #pagemarker { 
-    color:       white;
+    color:       #ddd;
     font-weight: bold;
     font-size:   10px;
     position:    absolute;
@@ -296,6 +298,8 @@ html,body {
     color           : darkorange;
     -moz-border-radius-topleft:2px;
     -moz-border-radius-topright:2px;
+    -webkit-border-radius-topleft:2px;
+    -webkit-border-radius-topright:2px;
     opacity:0.5;
 }
 
@@ -521,11 +525,15 @@ html,body {
 
 .fonts a:hover, .site a:hover { 
     background: -moz-linear-gradient(center top , #EEE, #BBB) repeat scroll 0 0 transparent;
+    background: -webkit-linear-gradient(linear, 0 40%, 0 70% from(#EEE), to()#BBB));
 }
 
 .expandinner {
     background      : white;
+    -moz-border-radius : 4px 4px 0px 0px;
     -moz-box-shadow : 2px 2px 4px #AAA;
+    -webkit-border-radius : 4px 4px 0px 0px;
+    -webkit-box-shadow : 2px 2px 4px #AAA;
     border          : 1px solid #999;
     position        : absolute;
     top             : auto;
@@ -663,6 +671,17 @@ a.toolbar-item {
 #formbutton  { background-position: -183px -82px; }
 
 #inlineinput { background-position: -205px -104px; }
+
+/* used in the tour */
+.inlineinput { 
+               background-position: -205px -104px; 
+               background-image: url(sprite.png);
+               padding: 2px;
+               margin:  2px;
+               height:  16px;
+               width:   16px;
+               display: inline-block;
+               }
 
 #mergecells  { background-position:  -183px -61px; }
 
@@ -860,30 +879,37 @@ a.toolbar-item {
 #functions {  
     width : 340px;
 }
+
 #funwrapper { 
     margin : 10px;
     width  : 140px; 
     float  : left;
 }
+
 #catlist { 
     width : 140px; 
 }
+
 #funlist { 
     background : #EEE; 
     border     : 1px solid #666;
 }
+
 #funlist li { 
     margin-left:0px;
 }
+
 #funlist a { 
     display : block;
     padding : 2px;
     margin  : 1px;
     cursor  : pointer;
 }
+
 #funlist a:hover { 
     background : #FFF;
 }
+
 #funlist { 
     height   : 220px;
     overflow : auto;
@@ -893,15 +919,18 @@ a.toolbar-item {
     margin          : 0px;
     padding         : 0px;
 }
+
 #selectedfun { 
     float      : right;
     width      : 175px;
     margin-top : 15px;
     margin-right:5px;
 }
+
 #selectedfun p { 
     margin : 0px 0px 10px 0px; 
 }
+
 #selectedfun h4 { 
     margin : 0px; 
 }
@@ -916,9 +945,9 @@ a.toolbar-item {
     width       : 600px;
     margin-left : -300px;
     margin-top  : -201px;
-	border      : 2px solid #111;
-    -moz-border-radius:3px;
-
+	border      : 2px solid #999;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
 }
 
 #ctrltabs { 
@@ -929,6 +958,8 @@ a.toolbar-item {
     padding-top:5px;
     height:20px;
     position:relative;
+    -moz-border-radius:4px 4px 0px 0px;
+    -webkit-border-radius:4px 4px 0px 0px;
 }
 
 #ctrltabs li { 
@@ -952,13 +983,31 @@ a.toolbar-item {
     background:#DDD;
     border:1px solid #666;
     border-bottom:2px solid #666;
-    -moz-border-radius-topleft:3px;
-    -moz-border-radius-topright:3px;
+    -moz-border-radius:5px 5px 0px 0px;
+    -webkit-border-radius:5px 5px 0px 0px;
     padding:3px 10px;
     margin-left:7px;
     font-size:11px;
     font-weight:bold;
 }
+
+#ctrltabdivs h4 { 
+    font-weight: bold;
+}
+
+#sitetour p { 
+              margin: 0 0 .5em 0
+} 
+
+#sitetour ul { 
+               margin: 0 0 .5em 0;
+}
+
+#sitetour li { 
+               margin-left: 0px;
+}
+
+
 
 #ctrlclose, #funsclose, #dialogclose { 
     cursor:pointer;
@@ -1022,11 +1071,11 @@ a.toolbar-item {
     padding: 10px 60px;
 }
 
-#viewas, #newviewas a:hover {
+#newviewas a:hover {
     text-decoration:underline;
 }
 
-#viewas, #newviewas td { 
+#newviewas td { 
     padding:    0px 2px 0px 2px;
     text-align: center;
 }
@@ -1043,11 +1092,13 @@ a.toolbar-item {
     border-right: 1px solid;
 }
 
-#viewas, #newviewas, #invitecolleagues { 
+#newviewas { 
+    -moz-border-radius:8px 0px 0px 8px;
+    -webkit-border-radius:8px 0px 0px 8px;
     right:0px;
 }
 
-#viewas, #newviewas .viewlink { 
+#newviewas .viewlink { 
     padding:4px;
     text-align:left;
 }
@@ -1072,7 +1123,8 @@ a.toolbar-item {
 
 .tournavigate {
      float : right;
-     color : darkorange;
+     color : orange;
+     font-weight: bold;
 }
 
 #tourwrapper { 

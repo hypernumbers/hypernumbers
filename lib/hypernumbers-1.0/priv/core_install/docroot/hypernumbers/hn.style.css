@@ -61,7 +61,7 @@ body {
 
 .hn_em { 
          font-weight: bold;
-         color: darkorange;
+         color: black;
 }
 
 .hntext, iframe { 
@@ -308,6 +308,8 @@ label {
 #expandbackground { 
    padding:       9px 2px 0px 2px;
    border-bottom: 1px solid #999999;
+    -moz-border-radius:8px 0px 0px 0px;
+    -webkit-border-radius:8px 0px 0px 0px;
 }
 
 #addnewgroupbutton { 
@@ -462,6 +464,7 @@ label {
     border-right:    1px solid #666666;
     border-bottom:   1px solid #666666;
     -moz-box-shadow: 2px 2px 4px #AAA;
+    -webkit-box-shadow: 2px 2px 4px #AAA;
     display:         none;
     z-index:         10000006;
 }
@@ -505,7 +508,9 @@ label {
    background      : #f9f9f9;
     -moz-border-radius-bottomleft:2px;
     -moz-border-radius-bottomright:2px;
-   margin: 0px 2px 2px 2px;      
+    -webkit-border-radius-bottomleft:2px;
+    -webkit-border-radius-bottomright:2px;
+   margin: 0px 0px 4px 4px;      
 
 }
 
