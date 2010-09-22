@@ -564,7 +564,7 @@ ipost(_Ref, #qry{mark = []},
 
 ipost(Ref, _Qry, Env=#env{body = [{"load_template", {_, [{"name", Name}]}}],
                           uid = Uid}) ->
-    ok = status_srv:update_status(Uid, Ref, "creatged page from template "++Name),
+    ok = status_srv:update_status(Uid, Ref, "created page from template "++Name),
     ok = hn_templates:load_template(Ref, Name),
     json(Env, "success");
 
@@ -758,7 +758,8 @@ ipost(Ref=#refX{path = P} = Ref, _Qry,
             json(Env, "success")
     end;
 
-ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
+ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid})
+  when Attr =/= [] ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     case Attr of
         %% TODO : Get Rid of this (for pasting a range of values)
@@ -769,7 +770,8 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
     end,
     json(Env, "success");
 
-ipost(Ref, _Qry, Env=#env{body = [{"set", {array, Array}}], uid = Uid}) ->
+ipost(Ref, _Qry, Env=#env{body = [{"set", {array, Array}}], uid = Uid})
+  when Array =/= [] ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     List = [X || {struct, [X]} <- Array],
     ok = hn_db_api:write_attributes([{Ref, List}], Uid, Uid),
