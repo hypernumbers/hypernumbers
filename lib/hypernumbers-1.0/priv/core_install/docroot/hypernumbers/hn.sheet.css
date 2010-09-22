@@ -187,12 +187,12 @@ html,body {
     right       : 0px;
     display     : block;
     top         : 0px;
-    height      : auto;
+    height      : 18px;
     margin-left : 78px;
     border      : 1px;
     background  : #FFF;
     max-height  : 100px;
-    cursor      : text;    
+    cursor      : text;
     overflow-y  : auto;
     overflow-x  : hidden;
     z-index     : 9999999;
@@ -202,7 +202,7 @@ html,body {
 
 #formulawrapper.active { 
     height:auto;
-    /*border:1px solid #666;*/
+    border:1px solid #666;
 }
 
 #formula { 
