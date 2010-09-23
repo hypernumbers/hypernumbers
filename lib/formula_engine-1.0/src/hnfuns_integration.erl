@@ -220,10 +220,8 @@ valid(_, _) -> false.
 %% Hypernumbers Page Id is 336874434418
 'facebook.likebox'([PageId]) ->
     P = ?string(PageId, ?default_str_rules),
-    Ret = "<iframe src=\"http://www.facebook.com/plugins/likebox.php?id="
-        ++ P ++ "&amp;width=292&amp;connections=10&amp;stream=true&amp;header=true\" scrolling=\"no\" frameborder=\"0\" allowTransparency=\"true\" style=\"border:none; overflow:hidden; width:292px; height:200px\"></iframe>",
-    io:format("Ret is ~p~n", [Ret]),
-    Ret.
+    "<iframe src=\"http://www.facebook.com/plugins/likebox.php?id="
+        ++ P ++ "&amp;width=292&amp;connections=10&amp;stream=true&amp;header=true\" scrolling=\"no\" frameborder=\"0\" allowTransparency=\"true\" style=\"border:none; overflow:hidden; width:292px; height:200px\"></iframe>".
 
 'facebook.share'([])       -> fb_share1("box_count", "");
 'facebook.share'([0])      -> fb_share1("box_count", "");

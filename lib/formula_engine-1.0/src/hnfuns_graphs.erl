@@ -60,7 +60,7 @@ bar2(Data, Orientation, Scale, Axes, Colours) ->
     end.
 
 bar3(Data, {Min, Max}, XAxis, Colours) ->
-    Ret = "<img src='http://chart.apis.google.com/chart?chs=350x150&amp;chd="
+    "<img src='http://chart.apis.google.com/chart?chs=350x150&amp;chd="
         ++ "t:" ++ conv_data(Data) ++ "&amp;cht=bvs&amp;"
         ++ "chds="++ tconv:to_s(Min) ++ "," ++ tconv:to_s(Max)
         ++ "&amp;"
@@ -69,9 +69,7 @@ bar3(Data, {Min, Max}, XAxis, Colours) ->
         ++ conv_x_axis(XAxis)
         ++ "1:|" ++ tconv:to_s(Min) ++ "|" ++ tconv:to_s(Max)
         ++ conv_colours(Colours)
-        ++ "' />",
-    io:format("Ret is ~p~n", [Ret]),
-    Ret.
+        ++ "' />".
 
 linegraph([Data]) ->
     linegraph([Data, ?ROW]);
