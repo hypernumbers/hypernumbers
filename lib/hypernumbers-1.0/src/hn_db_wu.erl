@@ -191,14 +191,17 @@ write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
                  -> ?dict.
 write_attrs(Ref, NewAs, AReq) ->
     Op = fun(Attrs) -> 
-                 Attrs2 = case orddict:is_key("__hasform", Attrs) of
-                              true ->
+                 Is_Formula = lists:keymember("formula", 1, NewAs),
+                 Has_Form = orddict:is_key("__hasform", Attrs),
+                 Attrs2 = case {Is_Formula, Has_Form} of
+                              {true, true} ->
                                   unattach_form(Ref, ref_to_idx(Ref)),
                                   orddict:erase("__hasform", Attrs);
-                               false ->
-                                  Attrs
+                               _  ->
+                                   Attrs
                           end,
-                 process_attrs(NewAs, Ref, AReq, Attrs2) end,
+                 process_attrs(NewAs, Ref, AReq, Attrs2)
+         end,
     apply_to_attrs(Ref, Op).
 
 -spec process_attrs([{string(), term()}], #refX{}, auth_srv:auth_req(), ?dict) 
