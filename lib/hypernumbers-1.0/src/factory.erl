@@ -126,7 +126,7 @@ new_user_site_email(Site, Uid, Email, Name) ->
        "and we will do our best to help "
        "http://hypernumbers.com/support/\n"
        "Cheers,\n\n"
-       "Gordon Guthrie~nCEO hypernumbers.com\n+44 7776 251669\n\n"
+       "Gordon Guthrie\nCEO hypernumbers.com\n+44 7776 251669\n\n"
        "\n\nPS This is your autologin URL. "
        "It will work until you set your password. "
        "Click or paste the following into your browser:\n\n",
