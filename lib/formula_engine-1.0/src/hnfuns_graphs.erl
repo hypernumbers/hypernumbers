@@ -32,11 +32,11 @@ barchart([Data]) ->
     bar(Data, 0, {{scale, auto}, [], []});
 barchart([Data, O])           ->
     bar(Data, O, {{scale, auto}, [], []});
-barchart([Data, O, Min, Max]) ->
-    bar(Data, O, {{Min, Max}, [], []});
-barchart([Data, O, Min, Max, XAxis]) ->
-    bar(Data, O, {{Min, Max}, XAxis, []});
-barchart([Data, O, Min, Max, XAxis, Cols]) ->
+barchart([Data, O, XAxis]) ->
+    bar(Data, O, {{scale, auto}, XAxis, []});
+barchart([Data, O, XAxis, Cols]) ->
+    bar(Data, O, {{scale, auto}, XAxis, Cols});
+barchart([Data, O, XAxis, Cols, Min, Max]) ->
     bar(Data, O, {{Min, Max}, XAxis, Cols}).
 
 
@@ -77,12 +77,13 @@ linegraph([Data]) ->
     linegraph([Data, ?ROW]);
 linegraph([Data, O])           ->
     lg1(Data, O, {{scale, auto}, [], []});
-linegraph([Data, O, Min, Max]) ->
-    lg1(Data, O, {{Min, Max}, [], []});
-linegraph([Data, O, Min, Max, XAxis]) ->
-    lg1(Data, O, {{Min, Max}, XAxis, []});
-linegraph([Data, O, Min, Max, XAxis, Cols]) ->
+linegraph([Data, O, XAxis]) ->
+    lg1(Data, O, {{scale, auto}, XAxis, []});
+linegraph([Data, O, XAxis, Cols]) ->
+    lg1(Data, O, {{scale, auto}, XAxis, Cols});
+linegraph([Data, O, XAxis, Cols, Min, Max]) ->
     lg1(Data, O, {{Min, Max}, XAxis, Cols}).
+
 
 lg1(Data, Orientation, {Scale, Axes, Colours}) ->
     Orientation2 = cast_orientation(Orientation),
