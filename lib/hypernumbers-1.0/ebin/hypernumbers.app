@@ -9,7 +9,7 @@
                     dbsrv,
                     hn_file_upload,
                     hslists,
-                    service_sup
+                    service_sup,
                     dh_date,
                     hn_groups,
                     hypernumbers_app,
