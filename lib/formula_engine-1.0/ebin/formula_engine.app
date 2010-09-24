@@ -8,7 +8,7 @@
             superparser,
             cond_lexer,
             muin_date,
-            stdfuns_eng,q
+            stdfuns_eng,
             super_util,
             cond_parser,
             muin_util,
