@@ -4,13 +4,15 @@
 	 {modules,      [
                      excel,
                      excel_tokens,
-                     read_excel.app,
+                     read_excel,
                      excel_post_process,
                      excel_util,
-                     read_excel,
+                     read_excel_sup
                      excel_records,
                      filefilters,
-                     read_excel_sup
+                     read_file_srv,
+                     excel_rev_comp,
+                     hn_warnings
                     ]},
 	 {registered,   [ ]},   
 	 {included_applications, []},   
