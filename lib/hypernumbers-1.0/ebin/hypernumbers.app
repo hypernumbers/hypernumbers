@@ -28,7 +28,6 @@
                     site_sup,
                     factory,
                     hn_render,
-                    make_ms_util,
                     status_srv,
                     format,
                     hns,

@@ -7,7 +7,7 @@
                      read_excel,
                      excel_post_process,
                      excel_util,
-                     read_excel_sup
+                     read_excel_sup,
                      excel_records,
                      filefilters,
                      read_file_srv,
