@@ -17,4 +17,4 @@
 	 {registered,   [ ]},   
 	 {included_applications, []},   
 	 {applications, [kernel, stdlib, crypto, inets, mnesia, ssl]},
-	 {mod,		{hypernumbers_app, [ ]}}]}.
+	 {mod,		{read_excel, [ ]}}]}.
