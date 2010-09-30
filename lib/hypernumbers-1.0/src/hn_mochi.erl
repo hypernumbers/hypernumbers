@@ -58,11 +58,19 @@ handle(MochiReq) ->
         Type:What   ->
             Format = "web request failed~npath:  ~p~ntype:  ~p~nwhat:  ~p~n"
                       ++"trace:~p~n",
-            Msg    =          [{path, MochiReq:get(path)},
-                               {type, Type},
-                               {what, What},
-                               {trace, erlang:get_stacktrace()}],
-            ?E(Format, Msg),
+            Path   = MochiReq:get(path), 
+            Msg    = [{path, Path},
+                      {type, Type},
+                      {what, What},
+                      {trace, erlang:get_stacktrace()}],
+            case What of
+                {badmatch, {error, enoent}} ->
+                    F1 = "dumping script kiddie (should be 404)~n~p~n",
+                    ?E(F1, process_environment(MochiReq)),
+                    log_path_errors(Path, Format, Msg);
+                _ ->
+                    ?E(Format, Msg)
+            end,
             '500'(process_environment(MochiReq)) 
     end.
 
@@ -1545,3 +1553,59 @@ strip_json(File) ->
     [F, "json"] = string:tokens(File, "."),
     F.
 
+%% catch script kiddie attempts and write them as info not error logs
+%% makes rb usable
+log_path_errors({path, Path}, Format, Msg) when
+Path == "/phpMyAdmin-2.6.0-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.0-pl2/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.0-pl3/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.0-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.0-rc2/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.1-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.1-pl2/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.1-pl3/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.2-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.2-beta1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.2-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.2/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.2-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.3/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.3-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.3-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4-pl2/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4-pl3/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4-pl4/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4/scripts/setup.php";
+Path == "/phpMyAdmin-2.7.0/scripts/setup.php";
+Path == "/phpMyAdmin-2.7.0-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.7.0-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.7.0-pl2/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0-beta1/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0-rc2/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0.1/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0.2/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0.3/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0.4/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.1-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.1/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.2/scripts/setup.php";
+Path == "/sqlmanager/scripts/setup.php";
+Path == "/mysqlmanager/scripts/setup.php";
+Path == "/p/m/a/scripts/setup.php";
+Path == "/PMA2005/scripts/setup.php";
+Path == "/pma2005/scripts/setup.php";
+Path == "/phpmanager/scripts/setup.php";
+Path == "/php-myadmin/scripts/setup.php";
+Path == "/phpmy-admin/scripts/setup.php";
+Path == "/webadmin/scripts/setup.php";
+Path == "/sqlweb/scripts/setup.php";
+Path == "/websql/scripts/setup.php"
+->
+        error_log:info_msg(Format, Msg);
+log_path_errors(_Path, Format, Msg) ->
+    error_logger:error_msg(Format, Msg).
