@@ -121,12 +121,12 @@ new_user_site_email(Site, Uid, Email, Name) ->
        "building your new site:\n\n ", 
        URL, "\n\n"
        "Here's a few things to get your started:"
-       "- set your password ", URL ++ "#panel=settings\n"
+       "- set your password ", URL ++ "#panel=settings\n\n"
        "If you have any problems just tell us "
        "and we will do our best to help "
-       "http://hypernumbers.com/support/\n"
+       "http://hypernumbers.com/support/\n\n"
        "Cheers,\n\n"
-       "Gordon Guthrie\nCEO hypernumbers.com\n+44 7776 251669\n\n"
+       "Gordon Guthrie\n\nCEO hypernumbers.com\n+44 7776 251669\n\n"
        "\n\nPS This is your autologin URL. "
        "It will work until you set your password. "
        "Click or paste the following into your browser:\n\n",
