@@ -1,9 +1,12 @@
 -module(hn_setup).
 
 -export([
-         site/3, site/4,
+         site/3,
+         site/4,
          delete_site/1, 
-         update/0, update/1, update/3,
+         update/0,
+         update/1,
+         update/3,
          site_exists/1,
          get_sites/0,
          get_site_type/1,
@@ -45,7 +48,11 @@ delete_site(Site) ->
                          [core_site, Site, write]),
     [ {atomic, ok}  = mnesia:delete_table(hn_db_wu:trans(Site, Table))
       || {Table, _F, _T, _I} <- tables()],
-    ok.
+    [_Proto, [$/, $/ | Domain], _URL] = string:tokens(Site, ":"),
+    [TLD, Dom | Subs] = lists:reverse(string:tokens(Domain, ".")),
+    ZoneL = Dom ++ "." ++ TLD,
+    Name = string:join(lists:reverse(Subs), "."),
+    ok = hns:unlink_resource(ZoneL, Name).
 
 %% Update all existing sites with default options
 -spec update() -> ok. 
