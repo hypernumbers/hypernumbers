@@ -1038,16 +1038,26 @@ a.toolbar-item {
 }
 
 #ctrltabdivs td { 
-    padding:     2px 5px; 
-    line-height: 18px; 
-    font-size:   12px; }
+                  vertical-align: middle;
+                  padding:     2px 5px; 
+                  line-height: 18px; 
+                  font-size:   12px; 
+                  }
+
+#ctrltabdivs #hnexemplar td { 
+                              line-height: 10px;
+                              }
+
+#ctrltabdivs #hnexemplar td small { 
+                                  padding: 2px 0px 0px 2px;
+                                  }
 
 #ctrltabdivs .content { 
     width:270px; 
 } 
 
 #ctrltabdivs .label {
-    vertical-align: middle;
+    /*vertical-align: middle;*/
     text-align:     right; 
     color:          #555; 
     font-style:     italic; 
