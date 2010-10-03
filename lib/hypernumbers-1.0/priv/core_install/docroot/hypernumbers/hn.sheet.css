@@ -525,7 +525,7 @@ html,body {
 
 .fonts a:hover, .site a:hover { 
     background: -moz-linear-gradient(center top , #EEE, #BBB) repeat scroll 0 0 transparent;
-    background: -webkit-linear-gradient(linear, 0 40%, 0 70% from(#EEE), to()#BBB));
+    background: -webkit-linear-gradient(linear, 0 40%, 0 70% from(#EEE), to(#BBB));
 }
 
 .expandinner {

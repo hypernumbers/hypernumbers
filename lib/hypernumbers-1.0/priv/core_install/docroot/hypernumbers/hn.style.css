@@ -280,7 +280,7 @@ label {
     vertical-align: bottom;
     position: relative;
     top: -1px;
-    *overflow: hidden;
+    overflow: hidden;
 }
 
 #forgotten_pwd {
@@ -526,7 +526,7 @@ label {
 
 #clinput div { 
    background-color: white;
-   margin 1px 1px 1px 1px;
+   margin: 1px 1px 1px 1px;
    -moz-border-radius: 4px 4px 4px 4px;
    -webkit-border-radius: 4px 4px 4px 4px;
    -moz-box-sizing: content-box;

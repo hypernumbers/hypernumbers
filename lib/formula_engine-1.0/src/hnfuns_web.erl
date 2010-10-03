@@ -117,7 +117,7 @@ radio_(Label, Options) ->
 
 background_(Url, Rest) ->
     lists:flatten("<style type='text/css'>body{background:url("
-                  ++ Url ++ ") " ++ Rest ++ ";</style>").
+                  ++ Url ++ ") " ++ Rest ++ "};</style>").
 
 anchor_(Src, Text) ->
     lists:flatten("<a href='" ++ Src ++ "'>" ++ Text ++ "</a>").
