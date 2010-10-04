@@ -35,10 +35,16 @@ content(Ref, Type) ->
              || {#refX{obj={column,{C,C}}},CPs} <- Data],
     Palette = gb_trees:from_orddict
                 (lists:sort
-                   (hn_mochi:extract_styles(Ref#refX.site))),
-        List = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, "css"),
-    CSS = ["<link rel='stylesheet' href='"++X++"' type='text/css' />" || {_, X} <- List],
-    {layout(Ref, Type, Cells, ColWs, RowHs, Palette), CSS}.
+                 (hn_mochi:extract_styles(Ref#refX.site))),
+    CSSList = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, "css"),
+    JSList = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, "js"),
+    TitleList = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, "title"),
+    CSS = ["<link rel='stylesheet' href='"++X++"' type='text/css' />" || {_, X} <- CSSList],
+    JS = ["<script src='"++X++"'></script>" || {_, X} <- JSList],
+    Title = ["<title>"++X++"</title>" || {_, X} <- TitleList],
+    Addons = #render{css=CSS, js=JS, title=Title},
+    io:format("Addons is ~p~n", [Addons]),
+    {layout(Ref, Type, Cells, ColWs, RowHs, Palette), Addons}.
 
 read_data_without_page(Ref) ->
     Refs = hn_db_api:read_intersect_ref(Ref),
@@ -198,20 +204,22 @@ pget(K,L) -> proplists:get_value(K,L,undefined).
 pget(K,L,D) -> proplists:get_value(K,L,D).
 
 -spec wrap_page([textdata()], integer(), integer(), string()) -> [textdata()]. 
-wrap_page(Content, TotalWidth, TotalHeight, CSS) -> 
+wrap_page(Content, TotalWidth, TotalHeight, Addons) -> 
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
                                [TotalWidth, TotalHeight]),
     ["<!DOCTYPE html>
 <html lang='en'>
          <head>
-         <meta charset='utf-8' />
+"     ++Addons#render.title++
+"        <meta charset='utf-8' />
          <title>Hypernumbers - the web spreadsheet</title>
          <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />	
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
          <link rel='stylesheet' href='/tblsorter/style.css' />
-"     ++CSS++
-"         <!--<script src='/hypernumbers/jquery-1.4.2.min.js'></script>-->
-          <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+"     ++Addons#render.css++
+"        <!--<script src='/hypernumbers/jquery-1.4.2.min.js'></script>-->
+"     ++Addons#render.js++
+"        <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
          <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
          </head>
 

@@ -27,6 +27,14 @@
 -record(resource, { address = [] :: resource_addr(),
                     weight = 0 :: integer() }).
 
+%% render addons
+-record(render,
+        {
+          css = [],
+          js = [],
+          title = []
+         }).
+
 %% Site Tables
 -record(index,
         {
