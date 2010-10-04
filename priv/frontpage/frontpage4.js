@@ -6,8 +6,8 @@ var Frontpage = function() {
     api.showStory = function(story) {
         $("#fp4_story_"+currentStory).hide();
         $("#fp4_story_"+story).show();
-        $("#fp4_menu_"+currentStory).css('background', 'url(./menu.png) no-repeat');
-        $("#fp4_menu_"+story).css('background', 'url(./activemenu.png) no-repeat');
+        $("#fp4_menu_"+currentStory).css('background', 'url(http://files.hypernumbers.com/redesign/menu.png) no-repeat');
+        $("#fp4_menu_"+story).css('background', 'url(http://files.hypernumbers.com/redesign/activemenu.png) no-repeat');
         currentStory = story;
     };
     
