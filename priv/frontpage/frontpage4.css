@@ -14,6 +14,15 @@
 .fp4_box2 
 { 
   height: 340px;
+  }
+
+.fp4_box2a 
+{ 
+  height: 430px;
+  }
+
+.fp4_box2 .fp4_box2a
+{ 
   color: black;
   background-color: white;
   /*background: -webkit-gradient(linear, 0 40%, 0 70%, from(#fffff9), to(#eeeee9));
@@ -31,7 +40,7 @@
   background: -webkit-gradient(linear, 0 40%, 0 70%, from(#FFF2A1), to(#FFEB8A));
   background: -moz-linear-gradient(center top , #FFF2A1, #FFEB8A) repeat scroll 0 0 transparent;
   border: 1px solid darkorange;
-  padding:13px 13px 17px 13px;    
+  padding:13px 13px 0px 13px;    
   -moz-border-radius: 7px 7px 7px 7px;
   -webkit-border-radius:7px 7px 7px 7px;
   }
@@ -299,7 +308,7 @@
 
 #signupemail 
 {
-  margin: 15px 0px 0px 70px;
+  margin: 0px 0px 0px 0px;
   }
 
 #signupform input 
@@ -312,7 +321,7 @@
 {
   font-weight: bold;
   color: darkorange;
-  margin: 0px 0px 0px 20px;
+  margin: 3px 0px 5px 5px;
   background-color: #FFF;
   background: -webkit-gradient(linear, 0 40%, 0 70%, from(#FFF), to(#EEE));
   background: -moz-linear-gradient(center top , #FFF, #EEE) repeat scroll 0 0 transparent;
@@ -337,14 +346,14 @@
 
 #signupdemoform input
 {
-  margin: 0px 0px 0px 300px;
+  margin: 0px 0px 0px 360px;
   color: white;
   font-size: 200%;
   font-weight: bold;
-  background-color: darkorange;
+  background-color: orange;
   background: -webkit-gradient(linear, 0 40%, 0 70%, from(orange), to(darkorange));
   background: -moz-linear-gradient(center top , orange, darkorange) repeat scroll 0 0 transparent;
-  border: 2px solid #bbb;
+  border: 1px solid #bbb;
   padding: 13px 13px 13px 13px;    
   -moz-border-radius: 7px 7px 7px 7px;
   -webkit-border-radius:7px 7px 7px 7px;
