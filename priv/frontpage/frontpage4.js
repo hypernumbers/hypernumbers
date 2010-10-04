@@ -4,10 +4,10 @@ var Frontpage = function() {
     currentStory = 1;
     
     api.showStory = function(story) {
-        $("#fp3_story_"+currentStory).hide();
-        $("#fp3_story_"+story).show();
-        $("#fp3_menu_"+currentStory).css('background', 'url(./menu.png) no-repeat');
-        $("#fp3_menu_"+story).css('background', 'url(./activemenu.png) no-repeat');
+        $("#fp4_story_"+currentStory).hide();
+        $("#fp4_story_"+story).show();
+        $("#fp4_menu_"+currentStory).css('background', 'url(./menu.png) no-repeat');
+        $("#fp4_menu_"+story).css('background', 'url(./activemenu.png) no-repeat');
         currentStory = story;
     };
     
@@ -17,7 +17,7 @@ var Frontpage = function() {
             api.showStory(menu);
             };
         
-        $("#fp3_menu").bind("click", click);            
+        $("#fp4_menu").bind("click", click);            
     };
 
     api.init();
