@@ -11,24 +11,24 @@
   -webkit-border-radius:12px 12px 12px 12px;
   }
 
-.fp4_box2 
+.fp4_box2b 
 { 
-  height: 340px;
+  height: 380px;
   }
 
 .fp4_box2a 
 { 
-  height: 430px;
+  height: 450px;
   }
 
-.fp4_box2, .fp4_box2a
+.fp4_box2, .fp4_box2a, .fp4_box2b
 { 
   color: black;
   background-color: white;
   /*background: -webkit-gradient(linear, 0 40%, 0 70%, from(#fffff9), to(#eeeee9));
      background: -moz-linear-gradient(center top , #fffff9, #eeeee9) repeat scroll 0 0 transparent;*/
   border: 1px solid gold;
-  padding:13px 13px 17px 13px;    
+  padding:13px 13px 0px 13px;    
   -moz-border-radius: 7px 7px 7px 7px;
   -webkit-border-radius:7px 7px 7px 7px;
   }
@@ -53,7 +53,7 @@
   background: -moz-linear-gradient(center top , #FFF, #F9f9f9) repeat scroll 0 0 transparent;
   border: 1px solid darkorange;
   padding:13px 13px 17px 13px;    
-  height: 305px;
+  height: 375px;
   -moz-border-radius: 7px 7px 7px 7px;
   -webkit-border-radius:7px 7px 7px 7px;
   }
@@ -67,8 +67,8 @@
      background: -moz-linear-gradient(center top , #FFF, #F9F9F9) repeat scroll 0 0 transparent;*/
   border: 1px solid darkorange;
   padding:13px 13px 17px 13px;    
-  height: 250px;
-  width: 110px;
+  height: 320px;
+  width: 170px;
   margin: 0px 2px;
   -moz-border-radius: 7px 7px 7px 7px;
   -webkit-border-radius:7px 7px 7px 7px;
@@ -83,8 +83,8 @@
   background: -moz-linear-gradient(center top , #FFF2A1, #FFEB8A) repeat scroll 0 0 transparent;
   border: 1px solid darkorange;
   padding:13px 13px 17px 13px;    
-  height: 250px;
-  width: 140px;
+  height: 320px;
+  width: 200px;
   margin: 0px 2px;
   -moz-border-radius: 7px 7px 7px 7px;
   -webkit-border-radius:7px 7px 7px 7px;
@@ -136,14 +136,14 @@
 
 .fp4_box5 div 
 { 
-  font: 11px/1.6 Verdana, Tahoma, sans-serif;
+  font: 18px/1.6 Verdana, Tahoma, sans-serif;
   text-align: center;
   padding: 0px 0px 13px 0px;
   }
 
 .fp4_box6 div 
 { 
-  font: 15px/1.5 Verdana, Tahoma, sans-serif;
+  font: 22px/1.5 Verdana, Tahoma, sans-serif;
   text-align: center;
   padding: 0px 0px 8px 0px;
   }
@@ -370,7 +370,7 @@
 .fp4_headline2 
 { 
   color: darkorange;
-  font: 14px/1.2 Verdana, Tahoma, sans-serif;
+  font: 24px/1.2 Verdana, Tahoma, sans-serif;
   font-weight: bold;
   }
 
@@ -382,9 +382,14 @@
 .fp4_leftbox2 
 { 
   width: 340px;
-  }
+}
 
-.fp4_leftbox, .fp4_leftbox2 
+.fp4_leftbox3 
+{
+    width: 420px;
+}
+
+.fp4_leftbox, .fp4_leftbox2, .fp4_leftbox3
 { 
   float: left;
   padding: 7px 3px 7px 3px;
@@ -413,7 +418,7 @@
   float:left;
   }
 
-.fp4_subhead 
+.fp4_subhead
 { 
   font: 18px/1.2 Verdana, Tahoma, sans-serif;
   margin: 0px 0px 8px 0px;
@@ -422,9 +427,9 @@
 
 .fp4_blurb 
 { 
-  font: 12px/1.2 Verdana, Tahoma, sans-serif;
+  font: 18px/1.2 Verdana, Tahoma, sans-serif;
   color: #666666;
-  padding: 5px 0px 0px 0px;
+  padding: 5px 0px 10px 0px;
   }
 
 .fp4_blurb2 
