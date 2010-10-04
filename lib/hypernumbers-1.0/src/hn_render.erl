@@ -43,7 +43,6 @@ content(Ref, Type) ->
     JS = ["<script src='"++X++"'></script>" || {_, X} <- JSList],
     Title = ["<title>"++X++"</title>" || {_, X} <- TitleList],
     Addons = #render{css=CSS, js=JS, title=Title},
-    io:format("Addons is ~p~n", [Addons]),
     {layout(Ref, Type, Cells, ColWs, RowHs, Palette), Addons}.
 
 read_data_without_page(Ref) ->
@@ -207,21 +206,21 @@ pget(K,L,D) -> proplists:get_value(K,L,D).
 wrap_page(Content, TotalWidth, TotalHeight, Addons) -> 
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
                                [TotalWidth, TotalHeight]),
+    Title = case Addons#render.title of
+                [] -> "<title>Hypernumbers - the web spreadsheet</title>";
+                T  -> T
+            end,
+
     ["<!DOCTYPE html>
 <html lang='en'>
          <head>
-"     ++Addons#render.title++
+"     ++Title++
 "        <meta charset='utf-8' />
-         <title>Hypernumbers - the web spreadsheet</title>
          <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />	
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
          <link rel='stylesheet' href='/tblsorter/style.css' />
 "     ++Addons#render.css++
-"        <!--<script src='/hypernumbers/jquery-1.4.2.min.js'></script>-->
-"     ++Addons#render.js++
-"        <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
-         <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
-         </head>
+"         </head>
 
          <body data-view='webpage'>
 
@@ -258,6 +257,10 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
   </div>
  </div>
 </div>  
+  <!--<script src='/hypernumbers/jquery-1.4.2.min.js'></script>-->
+ <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+"  ++Addons#render.js++
+"  <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
   <script src='/hypernumbers/json2.js'></script>
   <script src='/hypernumbers/hn.js'></script>
   <script src='/hypernumbers/hn.util.js'></script>
