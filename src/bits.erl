@@ -7,6 +7,7 @@
 -module(bits).
 
 -export([
+         delete_sites/1,
          dump_sites/0,
          init_memory_trace/0,
          mem_csv/0,
@@ -21,6 +22,19 @@
           path        = [],
           obj         = null
          }).
+
+delete_sites(File) ->
+    {ok, Dev} = file:open(File, read),
+    del_sites(Dev).
+
+del_sites(Dev) ->
+    case file:read_line(Dev) of
+        {ok, Site} -> Site2 = string:strip(Site, right, 10),
+                      io:format("Site is ~p~n", [Site2]),
+                      ok = hn_setup:delete_site(Site2),
+                      del_sites(Dev);
+        eof        -> ok
+    end.
 
 dump_sites() ->
     Fun = fun() -> mnesia:all_keys(core_site) end,
