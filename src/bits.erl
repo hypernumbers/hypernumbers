@@ -7,6 +7,7 @@
 -module(bits).
 
 -export([
+         dump_sites/0,
          init_memory_trace/0,
          mem_csv/0,
          basic_views/0,
@@ -20,6 +21,11 @@
           path        = [],
           obj         = null
          }).
+
+dump_sites() ->
+    Fun = fun() -> mnesia:all_keys(core_site) end,
+    List = mnesia:activity(transaction, Fun),
+    [log(X, "../var/logs/coresite.dump") || X <- List].
 
 load_inline() ->
     RefX1 = #refX{site="http://hypernumbers.dev:9000",
