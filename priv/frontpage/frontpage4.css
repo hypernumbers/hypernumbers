@@ -308,7 +308,10 @@
 
 #signupemail 
 {
+  font: 14px/1.2 Verdana, Tahoma, sans-serif;
   margin: 0px 0px 0px 0px;
+  color: #999;
+  font-style: italic;
   }
 
 #signupform input 
