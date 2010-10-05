@@ -11,4 +11,5 @@ HOSTNAME=`/bin/hostname`
 ## Uncomment for stephen
 #0 6 * * * /hn/run_github_script hypernumbers hypernumbers /priv/stephen_runner.sh 2>&1 >> /hn/stephen.log </dev/null
 
-
+## Uncomment for running the logs
+#55 1 * * * /hn/all_fetcher
