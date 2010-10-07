@@ -33,6 +33,7 @@
 -define(SHEETVIEW, "spreadsheet").
 -define(WEBPAGE, "webpage").
 -define(WIKI, "wikipage").
+-define(DEMO, "demopage").
 
 -spec start() -> {ok, pid()}. 
 start() ->
@@ -288,6 +289,10 @@ authorize_get(#refX{site = Site, path = Path},
               #env{accept = html, uid = Uid}) ->
     auth_srv:check_get_challenger(Site, Path, Uid);
 
+%% Always allows the demopage view
+authorize_get(_Ref, #qry{view = ?DEMO}, _Env) ->
+    allowed;
+    
 %% Authorize access to one particular view.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{view = View}, 
@@ -448,6 +453,8 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
             end
     end;
 
+iget(#refX{site=Site, path=Path}, page, #qry{view="demopage"}, Env) ->
+    text_html(Env, make_demo(Site, Path));
 
 iget(Ref, page, #qry{view="wikipage"},
      Env=#env{accept=html,uid=Uid}) ->
@@ -1553,6 +1560,35 @@ strip_json(File) ->
     [F, "json"] = string:tokens(File, "."),
     F.
 
+make_demo(Site, Path) ->
+    URL = Site ++ hn_util:list_to_path(Path),
+    "<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title>Hypernumbers Demo</title> 
+    <meta charset='utf-8'
+  </head>
+  <body height='100%'>
+   <div>This is the spreadsheet view</div>
+   <iframe id='hn_spreadsheet' width='100%' src='"++URL++"?view=spreadsheet'></iframe>
+   <table width='100%'>
+     <tr>
+       <td>
+         <div>This is the wiki view</div>
+         <iframe id='hn_wikipage' width='100%' src='"++URL++"?view=wikipage' /></iframe>
+       </td>
+       <td>
+         <div>This is the webpage view</div>
+         <iframe id='hn_webpage' width='100%' src='"++URL++"?view=webpage' /></iframe>
+       </td>
+     </tr>
+   </table>
+  </body>
+   <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+  <script src='/hypernumbers/hn.demopage.js'></script>
+ </html>".
+    
+
 %% catch script kiddie attempts and write them as info not error logs
 %% makes rb usable
 log_path_errors({path, Path}, Format, Msg) when
@@ -1609,3 +1645,4 @@ Path == "/websql/scripts/setup.php"
         error_log:info_msg(Format, Msg);
 log_path_errors(_Path, Format, Msg) ->
     error_logger:error_msg(Format, Msg).
+
