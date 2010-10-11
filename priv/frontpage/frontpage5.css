@@ -39,17 +39,26 @@ body
   background-color: #FEFEFE;
   background: -webkit-gradient(linear, 0 40%, 0 70%, from(#FFF), to(#EEE));
   background: -moz-linear-gradient(center top , #FFF, #EEE) repeat scroll 0 0 transparent;
-  height: 240px;
+  height: 270px;
+  padding: 0px 13px 0px 13px;    
   }
 
 .fp5_box2a 
 { 
-  height: 490px;
+  background: #fefefe;
+  height: 460px;
+  padding: 13px 0px 0px 0px;    
   }
 
 .fp5_box2b td
 { 
   text-align: center;
+  height:auto;
+}
+
+#fp5_tableimgs 
+{
+  height: 155px;
 }
 
 .fp5_box2b td div em
@@ -58,19 +67,25 @@ body
   font-size: 150%;
   position: relative;
   top: 7px;
-  color: #a89f5d;
+  color: #ff4a26;
  }
 
 .fp5_box2b td div
 { 
   font: 14px/1.2 Verdana, Tahoma, sans-serif;
-  color: #8c966f;
+  color: #777777;
+  font-weight: bold;
   }
 
-.fp5_box2
+.fp5_box2c
+{
+  height:  360px;
+}
+
+.fp5_box2, .fp5_box2c
 { 
   background: #fefefe;
-  height: 250px;
+  padding: 13px 13px 0px 13px;    
   }
 
 .fp5_box2, .fp5_box2b
@@ -79,13 +94,12 @@ body
   width: 852px;
   }
 
-.fp5_box2, .fp5_box2a, .fp5_box2b
+.fp5_box2, .fp5_box2a, .fp5_box2b, .fp5_box2c
 { 
   color: black;
   /*background: -webkit-gradient(linear, 0 40%, 0 70%, from(#fffff9), to(#eeeee9));
      background: -moz-linear-gradient(center top , #fffff9, #eeeee9) repeat scroll 0 0 transparent;*/
   border: 1px solid #e58735;
-  padding:13px 13px 0px 13px;    
   -moz-border-radius: 7px 7px 7px 7px;
   -webkit-border-radius:7px 7px 7px 7px;
   }
@@ -96,7 +110,7 @@ body
   background-color: #FFF2A1;
   background: -webkit-gradient(linear, 0 40%, 0 70%, from(#FFF2A1), to(#FFEB8A));
   background: -moz-linear-gradient(center top , #FFF2A1, #FFEB8A) repeat scroll 0 0 transparent;
-  border: 1px solid darkorange;
+  border: 1px solid #e58735;
   padding:13px 13px 0px 13px;    
   -moz-border-radius: 7px 7px 7px 7px;
   -webkit-border-radius:7px 7px 7px 7px;
@@ -108,7 +122,7 @@ body
   background-color: #FFF;
   background: -webkit-gradient(linear, 0 40%, 0 70%, from(#FFF), to(#F9f9f9));
   background: -moz-linear-gradient(center top , #FFF, #F9f9f9) repeat scroll 0 0 transparent;
-  border: 1px solid darkorange;
+  border: 1px solid #e58735;
   padding:13px 13px 17px 13px;    
   height: 375px;
   -moz-border-radius: 7px 7px 7px 7px;
@@ -122,7 +136,7 @@ body
   background-color: white;
   /*           background: -webkit-gradient(linear, 0 40%, 0 70%, from(#FFF), to(#F9F9F9));
      background: -moz-linear-gradient(center top , #FFF, #F9F9F9) repeat scroll 0 0 transparent;*/
-  border: 1px solid darkorange;
+  border: 1px solid #e58735;
   padding:13px 13px 17px 13px;    
   height: 320px;
   width: 170px;
@@ -138,7 +152,7 @@ body
   background-color: #FFF2A1;
   background: -webkit-gradient(linear, 0 40%, 0 70%, from(#FFF2A1), to(#FFEB8A));
   background: -moz-linear-gradient(center top , #FFF2A1, #FFEB8A) repeat scroll 0 0 transparent;
-  border: 1px solid darkorange;
+  border: 1px solid #e58735;
   padding:13px 13px 17px 13px;    
   height: 320px;
   width: 200px;
@@ -204,7 +218,7 @@ body
 
 .fp5_box6 .fp5_plan 
 { 
-  color: darkorange;
+  color: #e58735;
   font-weight: bold;
   }
 
@@ -297,7 +311,7 @@ body
 
 #fp5_inset #fp5_heart 
 { 
-  color: darkorange;
+  color: #e58735;
   font-weight: bold;
   }
 
@@ -317,7 +331,7 @@ body
 
 .fp5_link 
 { 
-  color: #a89f5d;
+  color: #e58735;
   text-decoration: none;
   }
 
@@ -348,8 +362,9 @@ body
 
 #fp5_learnmore 
 { 
+  font-weight: bold;
   font: 14px/1.2 Verdana, Tahoma, sans-serif;
-  color: #8c966f;
+  color: #66666;
   }
 
 #signupemail 
@@ -360,24 +375,27 @@ body
   font-style: italic;
   }
 
-#signupform input 
+#signupform .input 
 {
-  width: 200px;
-  font-size: 150%;
+  width: 180px;
   }
 
 #signupform .button 
 {
+  width: 200px;
+  font-size: 150%;
   font-weight: bold;
-  color: darkorange;
-  margin: 3px 0px 5px 5px;
-  background-color: #FFF;
-  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#FFF), to(#EEE));
-  background: -moz-linear-gradient(center top , #FFF, #EEE) repeat scroll 0 0 transparent;
+  color: #666;
+  margin: 7px 0px 0px 0px;
+  background-color: #ff9800;
+  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#ffc300), to(#ff9800));
+  background: -moz-linear-gradient(center top , #ffce00, #ff9800) repeat scroll 0 0 transparent;
   border: 1px solid #bbb;
   padding:7px 13px 7px 13px;    
   -moz-border-radius: 7px 7px 7px 7px;
   -webkit-border-radius:7px 7px 7px 7px;
+  -moz-box-shadow: 2px 2px 2px 2px #ddd;
+  -webkit-box-shadow: 2px 2px 2px 2px #ddd;
   }
 
 #signupdemofeedback 
@@ -400,8 +418,8 @@ body
   font-size: 200%;
   font-weight: bold;
   background-color: orange;
-  background: -webkit-gradient(linear, 0 40%, 0 70%, from(orange), to(darkorange));
-  background: -moz-linear-gradient(center top , orange, darkorange) repeat scroll 0 0 transparent;
+  background: -webkit-gradient(linear, 0 40%, 0 70%, from(orange), to(#e58735));
+  background: -moz-linear-gradient(center top , orange, #e58735) repeat scroll 0 0 transparent;
   border: 1px solid #bbb;
   padding: 13px 13px 13px 13px;    
   -moz-border-radius: 7px 7px 7px 7px;
@@ -410,7 +428,7 @@ body
 
 .fp5_headline 
 { 
-  color: darkorange;
+  color: #e58735;
   font: 18px/1.2 Verdana, Tahoma, sans-serif;
   font-weight: bold;
   padding: 0px 0px 3px 0px;
@@ -418,7 +436,7 @@ body
 
 .fp5_headline2 
 { 
-  color: darkorange;
+  color: #e58735;
   font: 24px/1.2 Verdana, Tahoma, sans-serif;
   font-weight: bold;
   }
@@ -459,12 +477,31 @@ body
   text-decoration: none;
   }
 
-.fp5_preview 
+.fp5_preview
+{
+    float: left;
+}
+
+.fp5_preview2
+{ 
+  float: right;
+  /*  height: 396px; width: 540px;*/
+  height: 451px;
+  width:  601px;
+  background-color: #bbbbbb;
+  }
+
+.fp5_preview2 iframe 
+{
+  border : 0px transparent;
+  outline: transparent none;
+}
+
+.fp5_preview
 { 
   height: 225px;
   width:  400px;
   background-color: #bbbbbb;
-  float:left;
   }
 
 .fp5_subhead
@@ -514,7 +551,7 @@ body
 #fp5_slogan 
 { 
   font: 9px Verdana, Tahoma, sans-serif;
-  color: darkorange;
+  color: #e58735;
   }
 
 #fp5_seedcamp 
@@ -538,32 +575,40 @@ body
 
 .fp5_superhead
 { 
-  font: 44px/1.05 Verdana, Tahoma, sans-serif;
-  color: #8c966f;
-  float:left;
-  width: 440px;
+  float: left;
+  font: 24px/1.2 Verdana, Tahoma, sans-serif;
+  font-weight: bold;
+  color: #e58735;
+  width: 265px;
+  text-align: center;
+  padding: 0px 3px 0px 0px;
+  margin: 140px 0px 30px 0px;
   }
 
 .fp5_superhead small
 { 
   font-size: 40%;
-  margin: 7px 0px 0px 130px;
+  margin: 0px 0px 0px 30px;
+}
+
+#signupdemoform 
+{
+  margin: 90px 0px 0px 0px;
 }
 
 #signupdemoform input
 { 
-  margin: 5px 0px 0px 100px;
+  font-size: 80%;
+  margin: 0px 0px 0px 4px;
   text-align: center;
-  background-color: ff9800;
-  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#ffce00), to(#ff9800));
-  background: -moz-linear-gradient(center top , #ffce00, #ff9800) repeat scroll 0 0 transparent;
+  background-color: #eee;
+/*  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#dddddd), to(#bbbbbb));
+  background: -moz-linear-gradient(center top , #dddddd, #bbbbbb) repeat scroll 0 0 transparent; */
   color: #333333;
   border: 1px solid #bbbbbb;
-  font: 36px Verdana, Tahoma, sans-serif;
   font-weight: bold;
-  padding: 10px 10px 10px 10px;    
-  -moz-border-radius: 12px 12px 12px 12px;
-  -webkit-border-radius:12px 12px 12px 12px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
   -moz-box-shadow: 2px 2px 2px 2px #eeeeee;
   -webkit-box-shadow: 2px 2px 2px 2px #eeeeee;
  }
