@@ -1566,25 +1566,31 @@ make_demo(Site, Path) ->
 <html lang='en'>
   <head>
     <title>Hypernumbers Demo</title> 
-    <meta charset='utf-8'
+    <meta charset='utf-8' >
+    <link rel='stylesheet' href='/hypernumbers/hn.style.css' />	
   </head>
-  <body height='100%'>
-   <div>This is the spreadsheet view</div>
-   <iframe id='hn_spreadsheet' width='100%' src='"++URL++"?view=spreadsheet'></iframe>
+  <body class='hn_demopage' height='100%'>
+   <div>This demo show how you can have different views of the same spreadsheet. This makes it possible to build robust multiuser systems. Enter data into the spreadsheet or wiki view to see these views in action.<br /><small>To breakout of thie demo and start using hypernumbers <a href='./#tour'>click here</a></small></div>
+   <div class='hn_demopadding'>
+   <iframe id='hn_spreadsheet' src='"++URL++"?view=spreadsheet'></iframe>
+   </div>
+   <div class='hn_demopadding'>  
    <table width='100%'>
      <tr>
        <td>
-         <div>This is the wiki view</div>
-         <iframe id='hn_wikipage' width='100%' src='"++URL++"?view=wikipage' /></iframe>
+         <div>This is the wiki view - it is used to provide locked down data entry - one page for each person or department.</div>
+         <iframe id='hn_wikipage' width='95%' src='"++URL++"?view=wikipage' /></iframe>
        </td>
        <td>
-         <div>This is the webpage view</div>
-         <iframe id='hn_webpage' width='100%' src='"++URL++"?view=webpage' /></iframe>
+         <div>This is the webpage view - it is used to give people read-only access to analysis or results that your spreadsheet provides.</div>
+         <iframe id='hn_webpage' width='95%' src='"++URL++"?view=webpage' /></iframe>
        </td>
      </tr>
    </table>
+   </div>
   </body>
-   <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+   <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
+  <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
   <script src='/hypernumbers/hn.demopage.js'></script>
  </html>".
     

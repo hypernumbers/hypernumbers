@@ -545,3 +545,26 @@ label {
 .clear { 
    clear: both;
 }
+
+.hn_demopage 
+{ 
+  background  : orange;
+  font        : 12px Verdana,Tahoma,sans-serif;
+  font-weight : bold;
+  }
+
+.hn_demopage iframe
+{ 
+  background: #fff;
+  }
+
+.hn_demopadding
+{ 
+  padding: 0px 7px 0px 7px;
+  }
+
+#hn_spreadsheet, #hn_wikipage, #hn_webpage 
+{ 
+  border: 4px solid #666;
+  margin: 2px;
+  }
