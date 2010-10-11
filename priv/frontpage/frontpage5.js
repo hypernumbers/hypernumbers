@@ -2,7 +2,7 @@ var Frontpage = function() {
 
     var onFocusFun = function(e) {
         $("#signupemail").val("");
-        $("#siognupemail").unbind(onFocusFun);
+        $("#signupemail").unbind();
     };
 
     $("#signupemail").focus(onFocusFun);
