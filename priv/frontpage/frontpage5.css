@@ -129,7 +129,17 @@ body
   -webkit-border-radius:7px 7px 7px 7px;
   }
 
-.fp5_box5 
+.fp5_box5 form
+{
+  margin: 0px 0px 0px 30px;
+}
+
+.fp5_box4 form
+{
+  margin: 0px 0px 0px 40px;
+}
+
+.fp5_box5
 { 
   float: left;
   color: black;
