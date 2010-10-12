@@ -1,3 +1,4 @@
+
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Interface to the formula engine/interpreter.
 
@@ -244,6 +245,10 @@ force_load(Modules) ->
     Fun = fun(Element, Flag) ->
                   case code:is_loaded(Element) of
                       false    -> code:load_file(Element),
+                                  ok = hn_net_util:email("gordon@hypernumbers.com", "",
+                                                         atom_to_list(node()),
+                                                         "Functions unloaded",
+                                                         "reloading..."),
                                   reloaded;
                       {file,_} -> Flag
                   end
