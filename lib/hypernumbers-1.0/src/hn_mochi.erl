@@ -89,15 +89,11 @@ handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=QReturn})
     throw(ok);
 
 handle_(Ref, Env, Qry) ->
-    case filename:extension((Env#env.mochi):get(path)) of
-        []  -> check_resource_exists(Env, Ref, Qry);
-        Ext -> handle_static(Ext, Ref#refX.site, Env)
-    end.
-
--spec check_resource_exists(#env{}, #refX{}, #qry{}) -> no_return(). 
-check_resource_exists(Env, Ref, Qry) ->
     case hn_setup:site_exists(Ref#refX.site) of
-        true -> authorize_resource(Env, Ref, Qry);
+        true  -> case filename:extension((Env#env.mochi):get(path)) of
+                     []  -> authorize_resource(Env, Ref, Qry);
+                     Ext -> handle_static(Ext, Ref#refX.site, Env)
+                 end;
         false -> text_html(Env, 
                            "The web site you seek<br/>"
                            "cannot be located, but<br/>"
@@ -533,7 +529,6 @@ iget(_Ref, Type, _Qry, Env=#env{accept=html, mochi=Mochi})
 iget(Ref, _Type, Qry, Env) ->
     ?E("404~n-~p~n-~p~n", [Ref, Qry]),
     '404'(Ref, Env).
-
 
 -spec ipost(#refX{}, #qry{}, #env{}) -> any().
 
