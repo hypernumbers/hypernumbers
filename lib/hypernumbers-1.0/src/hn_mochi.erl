@@ -102,6 +102,32 @@ handle_(Ref, Env, Qry) ->
             
 -spec authorize_resource(#env{}, #refX{}, #qry{}) -> no_return(). 
 authorize_resource(Env, Ref, Qry) -> 
+    case cluster_up() of
+        false -> text_html(Env, "There appears to be a network problem. Please try later");
+        true  -> authorize_r2(Env, Ref, Qry)
+    end.
+
+% this function will kinda be kooky in dev if you deregister your globals
+cluster_up() ->
+    Gs = global:registered_names(),
+    case {lists:member(passport, Gs), lists:member(hns, Gs)} of
+        {true, true} -> true;
+        _            -> F   = "Trying to reconnect for passport/hns ~p~n",
+                        Msg = dh_date:format("Y/m/d G:i:s"),
+                        error_logger:info_msg(F, [Msg]),
+                        case net_adm:ping('hnlive@hypernumbers.com') of
+                            pong -> ok = hn_net_util:email("gordon@hypernumbers.com", "",
+                                               atom_to_list(node()), "Disconnected Nodes",
+                                               "...reconnecting sucessfully!"),
+                                    true; % reconnected, yay!
+                            pang -> ok = hn_net_util:email("gordon@hypernumbers.com", "",
+                                               atom_to_list(node()), "Disconnected Nodes",
+                                               "...reconnection unsucessful"),
+                                    false % not reconnected, boo!
+                        end
+    end.             
+
+authorize_r2(Env, Ref, Qry) ->
     Env2 = process_user(Ref#refX.site, Env),
     AuthRet = case Env2#env.method of
                   Req when Req == 'GET'; Req == 'HEAD'  ->
@@ -1643,7 +1669,7 @@ Path == "/webadmin/scripts/setup.php";
 Path == "/sqlweb/scripts/setup.php";
 Path == "/websql/scripts/setup.php"
 ->
-        error_log:info_msg(Format, Msg);
+        error_logger:info_msg(Format, Msg);
 log_path_errors(_Path, Format, Msg) ->
     error_logger:error_msg(Format, Msg).
 
