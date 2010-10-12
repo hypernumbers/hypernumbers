@@ -67,7 +67,7 @@ handle(MochiReq) ->
             case What of
                 {badmatch, {error, enoent}} ->
                     F1 = "dumping script kiddie (should be 404)~n~p~n",
-                    ?E(F1, process_environment(MochiReq)),
+                    ?E(F1, [process_environment(MochiReq)]),
                     log_path_errors(Path, Format, Msg);
                 _ ->
                     ?E(Format, Msg)
