@@ -518,6 +518,7 @@ label {
    -moz-border-radius: 4px 4px 4px 4px;
    -webkit-border-radius: 4px 4px 4px 4px;
    border: 1px solid #dddddd;
+   padding: 0px 1px 0px 1px;
 }
 
 #clinput div { 
@@ -525,6 +526,7 @@ label {
 }
 
 #clinput div { 
+   padding: 0px 1px 0px 1px;
    background-color: white;
    margin: 1px 1px 1px 1px;
    -moz-border-radius: 4px 4px 4px 4px;

@@ -1,3 +1,4 @@
+
 %%% @copyright 2010 Hypernumbers Ltd
 %%% @doc Handle Hypernumbers HTTP requests
 -module(hn_render).
@@ -172,7 +173,7 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
            end,
     Style = io_lib:format(
               "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s'",
-              [X, Y, W, H, Css]),
+              [X, Y, W-4, H-2, Css]),
     [ODiv,Style,">", Val, "</div>"].
 
 -spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean(). 
@@ -257,7 +258,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
   </div>
  </div>
 </div>  
-  <!--<script src='/hypernumbers/jquery-1.4.2.min.js'></script>-->
+ <!--<script src='/hypernumbers/jquery-1.4.2.min.js'></script>-->
  <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
 "  ++Addons#render.js++
 "  <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
