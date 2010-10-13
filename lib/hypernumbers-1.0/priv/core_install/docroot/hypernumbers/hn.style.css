@@ -548,9 +548,8 @@ label {
 
 .hn_demopage 
 { 
-  background  : orange;
-  font        : 12px Verdana,Tahoma,sans-serif;
-  font-weight : bold;
+  background  : #f9f9f9;
+  font        : 14px Verdana,Tahoma,sans-serif;
   }
 
 .hn_demopage iframe
