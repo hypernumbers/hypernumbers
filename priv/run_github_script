@@ -45,6 +45,6 @@ httpc_post(Url, Data) ->
 
 json_req(Url) ->
     Data = [{"login", "hypernumbers"},
-            {"token", "bc918304327d921b6ff330bab64292fd"}],    
+            {"token", "cc4f638bd9bafb044509a3090dfc099d"}],    
     {ok, {_Status, _Headers, Body}} = httpc_post(lists:flatten(Url), Data),
     mochijson:decode(Body).
