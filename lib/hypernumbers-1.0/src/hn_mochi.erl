@@ -989,7 +989,7 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
     case factory:provision_site(Zone, Email, SType, PrevUid) of
         {ok, new, Site, Node, Uid, Name} ->
             log_signup(RootSite, Site, Node, Uid, Email),
-            Opaque = [{param, "#tour"}],
+            Opaque = [{param, "?view=demopage"}],
             Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
@@ -1071,7 +1071,8 @@ uniqify(Label, List, Index) ->
 log_signup(Site, NewSite, Node, Uid, Email) ->
     Row = [ {hn_util:url_to_refX(Site ++ "/_sites/" ++ Ref), Val}
               || {Ref, Val} <- [{"A:A", Email},
-                                {"B:B", NewSite},
+                                {"B:B", "<a href='"++NewSite++
+                                 "'>"++NewSite++"</a>"},
                                 {"C:C", Uid},
                                 {"D:D", dh_date:format("Y/m/d G:i:s")},
                                 {"E:E", atom_to_list(Node)} ] ],
