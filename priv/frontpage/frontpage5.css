@@ -28,8 +28,7 @@ body
   background: -moz-linear-gradient(center top , #222222, #000000) repeat scroll 0 0 transparent;
   color: white;
   border: 1px solid #222222;
-  font: 24px/1.7 Verdana, Tahoma, sans-serif;
-  padding: 5px 5px 5px 15px;    
+  padding: 5px 5px 5px 10px;    
   -moz-border-radius: 12px 12px 12px 12px;
   -webkit-border-radius:12px 12px 12px 12px;
   }
@@ -37,7 +36,7 @@ body
 .fp5_box2b 
 { 
   background-color: #FEFEFE;
-  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#FFF), to(#EEE));
+  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F4F4F4), to(#EEE));
   background: -moz-linear-gradient(center top , #FFF, #EEE) repeat scroll 0 0 transparent;
   height: 270px;
   padding: 0px 13px 0px 13px;    
@@ -119,9 +118,9 @@ body
 .fp5_box4 
 { 
   color: black;
-  background-color: #FFF;
-  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#FFF), to(#F9f9f9));
-  background: -moz-linear-gradient(center top , #FFF, #F9f9f9) repeat scroll 0 0 transparent;
+  background-color: #F1F1F1;
+  /*background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), to(#bbb));
+  background: -moz-linear-gradient(center top , #FFF, #F9f9f9) repeat scroll 0 0 transparent;*/
   border: 1px solid #e58735;
   padding:13px 13px 17px 13px;    
   height: 375px;
@@ -159,12 +158,13 @@ body
 { 
   float: left;
   color: black;
-  background-color: #FFF2A1;
-  background: -webkit-gradient(linear, 0 40%, 0 70%, from(#FFF2A1), to(#FFEB8A));
-  background: -moz-linear-gradient(center top , #FFF2A1, #FFEB8A) repeat scroll 0 0 transparent;
-  border: 1px solid #e58735;
+  background-color: white;
+  /*background-color: #FFF2A1;
+  background: -webkit-gradient(linear, 0 40%, 0 70%, from(yellow), to(darkorange));
+  background: -moz-linear-gradient(center top , #FFF2A1, #FFEB8A) repeat scroll 0 0 transparent;*/
+  border: 3px solid red;
   padding:13px 13px 17px 13px;    
-  height: 320px;
+  height: 316px;
   width: 200px;
   margin: 0px 2px;
   -moz-border-radius: 7px 7px 7px 7px;
@@ -228,7 +228,7 @@ body
 
 .fp5_box6 .fp5_plan 
 { 
-  color: #e58735;
+  color: black;
   font-weight: bold;
   }
 
@@ -314,10 +314,10 @@ body
   clear: both;
   }
 
-#fp5_inset 
+/*#fp5_inset 
 { 
   padding: 7px 0px 0px 0px;
-  }
+  }*/
 
 #fp5_inset #fp5_heart 
 { 
@@ -385,6 +385,11 @@ body
   font-style: italic;
   }
 
+#signupform
+{
+  margin: 20px;
+}
+
 #signupform .input 
 {
   width: 180px;
@@ -396,7 +401,7 @@ body
   font-size: 150%;
   font-weight: bold;
   color: #666;
-  margin: 7px 0px 0px 0px;
+  margin: 0px 0px 7px 0px;
   background-color: #ff9800;
   background: -webkit-gradient(linear, 0 40%, 0 70%, from(#ffc300), to(#ff9800));
   background: -moz-linear-gradient(center top , #ffce00, #ff9800) repeat scroll 0 0 transparent;
@@ -408,9 +413,12 @@ body
   -webkit-box-shadow: 2px 2px 2px 2px #ddd;
   }
 
-#signupdemofeedback 
+#signupdemofeedback,  #signupfeedback 
 { 
-  margin: 0px 0px 0px 100px;
+  margin: 0px 0px 0px 20px;
+  text-align: left;
+  color: red;
+  font-weight: bold;
   font: 11px/1.2 Verdana, Tahoma, sans-serif;
   }
 
@@ -498,6 +506,7 @@ body
   /*  height: 396px; width: 540px;*/
   height: 451px;
   width:  601px;
+  margin: 0px 10px 0px 0px;
   background-color: #bbbbbb;
   }
 
@@ -586,24 +595,24 @@ body
 .fp5_superhead
 { 
   float: left;
-  font: 24px/1.2 Verdana, Tahoma, sans-serif;
+  font: 20px/1.2 Verdana, Tahoma, sans-serif;
   font-weight: bold;
   color: #e58735;
-  width: 265px;
+  width: 250px;
   text-align: center;
   padding: 0px 3px 0px 0px;
-  margin: 140px 0px 30px 0px;
+  margin: 60px 0px 30px 7px;
   }
 
 .fp5_superhead small
 { 
   font-size: 40%;
-  margin: 0px 0px 0px 30px;
+  margin: 0px 0px 0px 25px;
 }
 
 #signupdemoform 
 {
-  margin: 90px 0px 0px 0px;
+  margin: 7px 0px 0px 0px;
 }
 
 #signupdemoform input
