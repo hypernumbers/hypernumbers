@@ -1592,7 +1592,7 @@ make_demo(Site, Path) ->
     <link rel='stylesheet' href='/hypernumbers/hn.style.css' />	
   </head>
   <body class='hn_demopage' height='100%'>
-   <div class='hn_demointro'>This demo show how you can have different views of the same spreadsheet. This makes it possible to build robust multiuser systems. Enter data into the spreadsheet or wiki view to see these views in action.<br /><small>To breakout of this demo and start using hypernumbers <a href='./#tour'>click here</a></small></div>
+   <div class='hn_demointro'>This demo shows how you can have different views of the same spreadsheet page. This makes it possible to build robust multiuser systems - by using different views for different people on different pages. Enter data into the spreadsheet or wiki view to see these views in action. Views are managed by the <em>Views</em> menu at the right-hand side of the spreadsheet menu bar.<br /><small>To breakout of this demo and start using hypernumbers <a href='./#tour'>click here</a></small></div>
    <div class='hn_demopadding'>
    <iframe id='hn_spreadsheet' src='"++URL++"?view=spreadsheet'></iframe>
    </div>
