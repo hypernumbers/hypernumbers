@@ -552,6 +552,7 @@ label {
 { 
   background  : #f9f9f9;
   font        : 14px Verdana,Tahoma,sans-serif;
+  font-style  : italic;
   }
 
 .hn_demopage iframe
@@ -566,7 +567,7 @@ label {
 
 .hn_demointro
 { 
-  padding: 10px;
+  padding: 5px 10px 0px 10px;
  }
 
 #hn_spreadsheet, #hn_wikipage, #hn_webpage 
