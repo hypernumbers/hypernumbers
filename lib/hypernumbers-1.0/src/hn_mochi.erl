@@ -997,7 +997,7 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
         {ok, existing, Site, Node, Uid, _Name} ->
             log_signup(RootSite, Site, Node, Uid, Email),
             json(Env, {struct, [{"result", "success"},
-                                {"url", Site ++ "?view=spreadsheet"}]});
+                                {"url", Site ++ "?view=demopage"}]});
         {error, Reason} ->
             Str = case Reason of
                       %bad_email ->
@@ -1611,8 +1611,8 @@ make_demo(Site, Path) ->
    </table>
    </div>
   </body>
-   <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
-  <!--<script src='/hypernumbers/jquery-1.4.2.min.js'></script>-->
+   <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
+  <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
   <script src='/hypernumbers/hn.demopage.js'></script>
  </html>".
     
