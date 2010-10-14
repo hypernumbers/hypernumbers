@@ -564,6 +564,11 @@ label {
   padding: 0px 7px 0px 7px;
   }
 
+.hn_demointro
+{ 
+  padding: 10px;
+ }
+
 #hn_spreadsheet, #hn_wikipage, #hn_webpage 
 { 
   border: 4px solid #666;
