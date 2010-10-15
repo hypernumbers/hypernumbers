@@ -1,4 +1,3 @@
-
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers.com
@@ -44,7 +43,7 @@ expand_zone() ->
                   [Zone] = mnesia:read(service_hns_zone, "tiny.hn"),
                   %io:format("Zone is ~p ~p~n",[Zone#zone.min_size, Zone#zone.ideal_size]),
                   NewZone = Zone#zone{min_size=250, ideal_size=500},
-                  &io:format("NewZone is ~p~n",[NewZone]),
+                  %io:format("NewZone is ~p~n",[NewZone]),
                   mnesia:write(service_hns_zone, NewZone, write)
           end,
     mnesia:activity(transaction, Fun).
