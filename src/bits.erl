@@ -1,3 +1,4 @@
+
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers.com
@@ -7,6 +8,7 @@
 -module(bits).
 
 -export([
+         expand_zone/0,
          delete_sites/1,
          dump_sites/0,
          init_memory_trace/0,
@@ -16,12 +18,36 @@
          load_inline/0
         ]).                
 
+
+-type now() :: {integer(),integer(),integer()}.
+-type cellidx() :: pos_integer().
+-type generator() :: fun(() -> string()). 
+-type resource_addr() :: {string(), integer(), atom()}. %% (IP, Port, Node).
+
+-record(zone, { label :: string(),
+                min_size :: integer(),
+                ideal_size :: integer(),
+                pool :: gb_tree(),
+                generator :: generator(),
+                zone_id :: integer() }).
+
 -record(refX,
         {
           site        = [],
           path        = [],
           obj         = null
          }).
+
+expand_zone() ->
+
+    Fun = fun() ->
+                  [Zone] = mnesia:read(service_hns_zone, "tiny.hn"),
+                  %io:format("Zone is ~p ~p~n",[Zone#zone.min_size, Zone#zone.ideal_size]),
+                  NewZone = Zone#zone{min_size=250, ideal_size=500},
+                  &io:format("NewZone is ~p~n",[NewZone]),
+                  mnesia:write(service_hns_zone, NewZone, write)
+          end,
+    mnesia:activity(transaction, Fun).
 
 delete_sites(File) ->
     {ok, Dev} = file:open(File, read),
@@ -31,7 +57,8 @@ del_sites(Dev) ->
     case file:read_line(Dev) of
         {ok, Site} -> Site2 = string:strip(Site, right, 10),
                       ok = hn_setup:delete_site(Site2),
-                      Msg = dh_date:format("d:M:Y (D) h:m:s") ++
+                      Msg = dh_date:format("d:M:Y (
+D) h:m:s") ++
                           " - deleting " ++ Site2, 
                       Log = "../var/logs/sitedeletion.log",
                       log(Msg, Log),
