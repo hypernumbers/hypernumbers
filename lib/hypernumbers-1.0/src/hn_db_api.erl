@@ -273,9 +273,9 @@ set_borders2(RefX, Where, Border, B_Style, B_Color) ->
                   B   = "border-" ++ Where ++ "-width",
                   B_S = "border-" ++ Where ++ "-style",
                   B_C = "border-" ++ Where ++ "-color",
-                  ok = hn_db_wu:write_attr(RefX, {B,   Border}),
-                  ok = hn_db_wu:write_attr(RefX, {B_S, B_Style}),
-                  ok = hn_db_wu:write_attr(RefX, {B_C, B_Color})
+                  ok = hn_db_wu:write_attrs(RefX, [{B,   Border}]),
+                  ok = hn_db_wu:write_attrs(RefX, [{B_S, B_Style}]),
+                  ok = hn_db_wu:write_attrs(RefX, [{B_C, B_Color}])
           end,
     write_activity(RefX, Fun, "set_borders2").
 
@@ -918,10 +918,10 @@ tell_front_end(Type, RefX) when Type == "move" orelse Type == "refresh" ->
     remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path);
 tell_front_end(_FnName, _refX) ->
     List = lists:reverse(get('front_end_notify')),
-    Fun = fun({change, #refX{site=S, path=P, obj=O}, Attrs}) ->
+    Fun = fun({change, #refX{site=S, path=P, obj={page, "/"}}, _Attrs}) ->
+                  remoting_reg:notify_refresh(S, P);                     
+              ({change, #refX{site=S, path=P, obj=O}, Attrs}) ->
                   remoting_reg:notify_change(S, P, O, Attrs);
-             %% ({delete, #refX{site=S, path=P, obj=O}}) ->
-             %%     remoting_reg:notify_delete(S, P, O);
              ({style, #refX{site=S, path=P}, Style}) ->
                   remoting_reg:notify_style(S, P, Style)
           end,

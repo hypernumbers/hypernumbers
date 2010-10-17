@@ -1,3 +1,4 @@
+
 /******************************************************************************
    PAGE STYLES
    This is for content styles, global styles that apply to the rendered
@@ -58,6 +59,11 @@ body {
     position:relative;
 }
 
+.hn_em { 
+         font-weight: bold;
+         color: black;
+}
+
 .hntext, iframe { 
     min-height:62px;
     height:100%;
@@ -97,13 +103,11 @@ body {
     font-size:10px;
     top:0px;
     right:10px;
-    /* width:130px; */
-    padding:3px;
     margin-right:20px;
     display:none;
     text-align:center;
     border-top-width:0px;
-    opacity:0.4;
+    opacity:0.8;
 }
 
 #editspreadsheet a { 
@@ -134,7 +138,13 @@ body {
     width:auto;
 }
 
-#editanon, #editloggedin { display:none; }
+#editanon { 
+            color:#999;
+}
+
+#editanon, #editloggedin { 
+                           display:none;
+}
 
 .formrow { 
     margin:5px 0px;
@@ -232,8 +242,17 @@ input[type=submit].hninput:hover {
     margin:8px 3px;
 }
 
+.radio { 
+         clear: both;
+}
+
+.radio label { 
+               float: left;
+               }
+
 .radio input { 
-    vertical-align:middle;
+               vertical-align:middle;
+               float: right;
 }
 
 #columnsconfig { 
@@ -261,7 +280,7 @@ label {
     vertical-align: bottom;
     position: relative;
     top: -1px;
-    *overflow: hidden;
+    overflow: hidden;
 }
 
 #forgotten_pwd {
@@ -289,6 +308,8 @@ label {
 #expandbackground { 
    padding:       9px 2px 0px 2px;
    border-bottom: 1px solid #999999;
+    -moz-border-radius:8px 0px 0px 0px;
+    -webkit-border-radius:8px 0px 0px 0px;
 }
 
 #addnewgroupbutton { 
@@ -375,7 +396,7 @@ label {
    width:   190px;
 }
 
-#advperms tr, td { 
+#advperms tr, #advperms td { 
    height: auto;
 }
 
@@ -402,7 +423,7 @@ label {
 #templateslist { 
   background-color: #ffffff;
   font-size:        80%;
-  width:            183px;
+  width:            100px;
   color:            #555555;
 }
 
@@ -443,6 +464,7 @@ label {
     border-right:    1px solid #666666;
     border-bottom:   1px solid #666666;
     -moz-box-shadow: 2px 2px 4px #AAA;
+    -webkit-box-shadow: 2px 2px 4px #AAA;
     display:         none;
     z-index:         10000006;
 }
@@ -486,7 +508,9 @@ label {
    background      : #f9f9f9;
     -moz-border-radius-bottomleft:2px;
     -moz-border-radius-bottomright:2px;
-   margin: 0px 2px 2px 2px;      
+    -webkit-border-radius-bottomleft:2px;
+    -webkit-border-radius-bottomright:2px;
+   margin: 0px 0px 4px 4px;      
 
 }
 
@@ -494,6 +518,7 @@ label {
    -moz-border-radius: 4px 4px 4px 4px;
    -webkit-border-radius: 4px 4px 4px 4px;
    border: 1px solid #dddddd;
+   padding: 0px 1px 0px 1px;
 }
 
 #clinput div { 
@@ -501,8 +526,9 @@ label {
 }
 
 #clinput div { 
+   padding: 0px 1px 0px 1px;
    background-color: white;
-   margin 1px 1px 1px 1px;
+   margin: 1px 1px 1px 1px;
    -moz-border-radius: 4px 4px 4px 4px;
    -webkit-border-radius: 4px 4px 4px 4px;
    -moz-box-sizing: content-box;
@@ -521,3 +547,31 @@ label {
 .clear { 
    clear: both;
 }
+
+.hn_demopage 
+{ 
+  background  : #f9f9f9;
+  font        : 14px Verdana,Tahoma,sans-serif;
+  font-style  : italic;
+  }
+
+.hn_demopage iframe
+{ 
+  background: #fff;
+  }
+
+.hn_demopadding
+{ 
+  padding: 0px 7px 0px 7px;
+  }
+
+.hn_demointro
+{ 
+  padding: 5px 10px 0px 10px;
+ }
+
+#hn_spreadsheet, #hn_wikipage, #hn_webpage 
+{ 
+  border: 4px solid #666;
+  margin: 2px;
+  }

@@ -101,12 +101,11 @@ radio_(Label, Options) ->
                  kind = radio,
                  restrictions = Options},
     [First | Rest] = Options,
-    FirstOpt = "<div class='radio'><label><input type='radio' value='" ++
-        First ++ "' name='" ++ Name ++ "' checked='checked'>"
-        ++ First ++ "</label></div>",
-    RestOpts = [ "<div class='radio'><label><input type='radio' value='" ++
-                 Opt ++ "' name='" ++ Name ++ "'/>" ++ Opt ++ "</label></div>"
-                 || Opt <- Rest],
+    ID1 = "id_"++create_name(),
+    FirstOpt = "<div class='radio'><label for='"++ID1++"'>"
+        ++ First ++ "</label><input id='"++ID1++"' type='radio' value='" ++
+        First ++ "' name='" ++ Name ++ "' checked='true' /></div>",
+    RestOpts = [ make_radio(Name, Opt) || Opt <- Rest],
     Opts = [FirstOpt | RestOpts],
     Html = lists:flatten("<div class='hninput' data-name='default' "++
                          "data-label='" ++ Label ++ "' >" ++ Opts ++ 
@@ -118,7 +117,7 @@ radio_(Label, Options) ->
 
 background_(Url, Rest) ->
     lists:flatten("<style type='text/css'>body{background:url("
-                  ++ Url ++ ") " ++ Rest ++ ";</style>").
+                  ++ Url ++ ") " ++ Rest ++ "};</style>").
 
 anchor_(Src, Text) ->
     lists:flatten("<a href='" ++ Src ++ "'>" ++ Text ++ "</a>").
@@ -268,3 +267,8 @@ table_({range, [ THead | Range]}, Sort) ->
     
     lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
                    "</table>", Script]).
+
+make_radio(Name, Opt) ->
+    ID = "id_"++create_name(),
+    "<div class='radio'><label for='"++ID++"'>" ++ Opt ++ "</label><input id='"++ID++
+        "' type='radio' value='" ++ Opt ++ "' name='" ++ Name ++ "' /></div>".

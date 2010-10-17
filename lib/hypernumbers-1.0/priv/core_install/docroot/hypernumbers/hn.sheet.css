@@ -57,10 +57,12 @@ html,body {
     left               : 50px;
     background         : white;
     min-width          : 200px;
-    border             : 1px solid #666;
+    border             : 2px solid #999;
     z-index            : 10000003;
-    -moz-border-radius : 3px 3px 3px 3px;
+    -moz-border-radius : 4px 4px 4px 4px;
     -moz-box-shadow    : 2px 2px 4px #AAA;
+    -webkit-border-radius : 4px 4px 4px 4px;
+    -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
 #functions h2, #columnmanagerdialog h2 {
     display            : block;
@@ -69,22 +71,24 @@ html,body {
     padding            : 4px;
     background         : #333;
     color              : #EEE;
-    -moz-border-radius : 3px 3px 0px 0px;
+    -moz-border-radius : 4px 4px 0px 0px;
+    -webkit-border-radius : 4px 4px 0px 0px;
 }
 /******************************************************************************
 	TOP NAVIGATION STYLES
 ******************************************************************************/
 #navigation {  
-    font-size: 11px;
-    float    : right;
-    position : absolute;
-    top      : -2px;
-    background:white;
-    right:5px;
-    margin   : 0px;
-    padding  : 0px;
-    -moz-border-radius:5px;
+    color      : #ddd;
+    font-weight: bold;
+    font-size  : 10px;
+    float      : right;
+    position   : absolute;
+    top        : -2px;
+    right      :5px;
+    margin     : 0px;
+    padding    : 0px;
 }
+
 #navigation li img { 
     position:relative;
     top:3px;
@@ -92,7 +96,7 @@ html,body {
 #navigation li {
     float   : left;
     margin  : 0px 5px;
-    color   : #999;
+    color   : #ddd;
     display : none;
 }
 #navigation a { 
@@ -183,12 +187,12 @@ html,body {
     right       : 0px;
     display     : block;
     top         : 0px;
-    height      : auto;
+    height      : 18px;
     margin-left : 78px;
     border      : 1px;
     background  : #FFF;
     max-height  : 100px;
-    cursor      : text;    
+    cursor      : text;
     overflow-y  : auto;
     overflow-x  : hidden;
     z-index     : 9999999;
@@ -198,7 +202,7 @@ html,body {
 
 #formulawrapper.active { 
     height:auto;
-    /*border:1px solid #666;*/
+    border:1px solid #666;
 }
 
 #formula { 
@@ -259,12 +263,12 @@ html,body {
 #tabs {
     position : absolute;
     bottom   : -3px;
-    left     : 32px; 
+    left     : 39px; 
 }
 
 #pagemarker { 
-    background:  white;
-    color:       #bbbbbb;
+    color:       #ddd;
+    font-weight: bold;
     font-size:   10px;
     position:    absolute;
     bottom:      2px;
@@ -294,6 +298,8 @@ html,body {
     color           : darkorange;
     -moz-border-radius-topleft:2px;
     -moz-border-radius-topright:2px;
+    -webkit-border-radius-topleft:2px;
+    -webkit-border-radius-topright:2px;
     opacity:0.5;
 }
 
@@ -519,11 +525,15 @@ html,body {
 
 .fonts a:hover, .site a:hover { 
     background: -moz-linear-gradient(center top , #EEE, #BBB) repeat scroll 0 0 transparent;
+    background: -webkit-linear-gradient(linear, 0 40%, 0 70% from(#EEE), to(#BBB));
 }
 
 .expandinner {
     background      : white;
+    -moz-border-radius : 4px 4px 0px 0px;
     -moz-box-shadow : 2px 2px 4px #AAA;
+    -webkit-border-radius : 4px 4px 0px 0px;
+    -webkit-box-shadow : 2px 2px 4px #AAA;
     border          : 1px solid #999;
     position        : absolute;
     top             : auto;
@@ -661,6 +671,17 @@ a.toolbar-item {
 #formbutton  { background-position: -183px -82px; }
 
 #inlineinput { background-position: -205px -104px; }
+
+/* used in the tour */
+.inlineinput { 
+               background-position: -205px -104px; 
+               background-image: url(sprite.png);
+               padding: 2px;
+               margin:  2px;
+               height:  16px;
+               width:   16px;
+               display: inline-block;
+               }
 
 #mergecells  { background-position:  -183px -61px; }
 
@@ -858,30 +879,37 @@ a.toolbar-item {
 #functions {  
     width : 340px;
 }
+
 #funwrapper { 
     margin : 10px;
     width  : 140px; 
     float  : left;
 }
+
 #catlist { 
     width : 140px; 
 }
+
 #funlist { 
     background : #EEE; 
     border     : 1px solid #666;
 }
+
 #funlist li { 
     margin-left:0px;
 }
+
 #funlist a { 
     display : block;
     padding : 2px;
     margin  : 1px;
     cursor  : pointer;
 }
+
 #funlist a:hover { 
     background : #FFF;
 }
+
 #funlist { 
     height   : 220px;
     overflow : auto;
@@ -891,15 +919,18 @@ a.toolbar-item {
     margin          : 0px;
     padding         : 0px;
 }
+
 #selectedfun { 
     float      : right;
     width      : 175px;
     margin-top : 15px;
     margin-right:5px;
 }
+
 #selectedfun p { 
     margin : 0px 0px 10px 0px; 
 }
+
 #selectedfun h4 { 
     margin : 0px; 
 }
@@ -910,13 +941,13 @@ a.toolbar-item {
     position    : absolute;
     top         : 50%;
     left        : 50%;
-    height      : 400px;
+    height      : 460px;
     width       : 600px;
     margin-left : -300px;
     margin-top  : -201px;
-	border      : 2px solid #111;
-    -moz-border-radius:3px;
-
+	border      : 2px solid #999;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
 }
 
 #ctrltabs { 
@@ -927,6 +958,8 @@ a.toolbar-item {
     padding-top:5px;
     height:20px;
     position:relative;
+    -moz-border-radius:4px 4px 0px 0px;
+    -webkit-border-radius:4px 4px 0px 0px;
 }
 
 #ctrltabs li { 
@@ -950,13 +983,31 @@ a.toolbar-item {
     background:#DDD;
     border:1px solid #666;
     border-bottom:2px solid #666;
-    -moz-border-radius-topleft:3px;
-    -moz-border-radius-topright:3px;
+    -moz-border-radius:5px 5px 0px 0px;
+    -webkit-border-radius:5px 5px 0px 0px;
     padding:3px 10px;
     margin-left:7px;
     font-size:11px;
     font-weight:bold;
 }
+
+#ctrltabdivs h4 { 
+    font-weight: bold;
+}
+
+#sitetour p { 
+              margin: 0 0 .5em 0
+} 
+
+#sitetour ul { 
+               margin: 0 0 .5em 0;
+}
+
+#sitetour li { 
+               margin-left: 0px;
+}
+
+
 
 #ctrlclose, #funsclose, #dialogclose { 
     cursor:pointer;
@@ -987,16 +1038,26 @@ a.toolbar-item {
 }
 
 #ctrltabdivs td { 
-    padding:     2px 5px; 
-    line-height: 18px; 
-    font-size:   12px; }
+                  vertical-align: middle;
+                  padding:     2px 5px; 
+                  line-height: 18px; 
+                  font-size:   12px; 
+                  }
+
+#ctrltabdivs #hnexemplar td { 
+                              line-height: 10px;
+                              }
+
+#ctrltabdivs #hnexemplar td small { 
+                                  padding: 2px 0px 0px 2px;
+                                  }
 
 #ctrltabdivs .content { 
     width:270px; 
 } 
 
 #ctrltabdivs .label {
-    vertical-align: middle;
+    /*vertical-align: middle;*/
     text-align:     right; 
     color:          #555; 
     font-style:     italic; 
@@ -1011,37 +1072,20 @@ a.toolbar-item {
     margin:100px auto;
 }
 
-#sitenewpage { 
-    padding:20px;
-}
 
 #newpage { 
            width: 179px;
            }
 
-#sitenewpage, #sitesettings p { 
-    color:#666;
-    margin-bottom:5px;
-}
-
-#sitenewpage div { 
-    margin-bottom: 30px;
-}
-
-#sitenewpage a { 
-    cursor:pointer;
-    text-decoration:underline;
-}
-
 #sitesettings { 
     padding: 10px 60px;
 }
 
-#viewas, #newviewas a:hover {
+#newviewas a:hover {
     text-decoration:underline;
 }
 
-#viewas, #newviewas td { 
+#newviewas td { 
     padding:    0px 2px 0px 2px;
     text-align: center;
 }
@@ -1058,11 +1102,13 @@ a.toolbar-item {
     border-right: 1px solid;
 }
 
-#viewas, #newviewas, #invitecolleagues { 
+#newviewas { 
+    -moz-border-radius:8px 0px 0px 8px;
+    -webkit-border-radius:8px 0px 0px 8px;
     right:0px;
 }
 
-#viewas, #newviewas .viewlink { 
+#newviewas .viewlink { 
     padding:4px;
     text-align:left;
 }
@@ -1087,19 +1133,24 @@ a.toolbar-item {
 
 .tournavigate {
      float : right;
-     color : green;
+     color : orange;
+     font-weight: bold;
 }
 
 #tourwrapper { 
-   padding: 10px 0px 0px 0px;
-   height:  300px;
+   padding: 60px 20px 10px 60px;
+   height:  330px;
 }
 
-#doupload, #ctrldelete, #saveastemplate, #pdvisit { 
-    width: 80px
+#hn_tourfooter { 
+                 padding: 0px 20px 0px 0px;
 }
 
-.button, .tournavigate, #doupload, #ctrldelete, #saveastemplate, #pdvisit {  
+#doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet { 
+    width: 100px
+}
+
+.button, .tournavigate, #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet {  
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;    
     -moz-border-radius:3px 3px 3px 3px;
@@ -1149,7 +1200,8 @@ a.toolbar-item {
 
 #powered { 
     text-align:center;
-    width:100px;
+    width:110px;
+    padding: 2px;
     float:left;
 }
 #powered a {
@@ -1218,7 +1270,7 @@ a.toolbar-item {
 
 #combo_colourbg .button { 
                           font-size: 98%;
-                          width:168px;
+                          width:     162px;
 }
 
 #bgcolor, #forecolor {

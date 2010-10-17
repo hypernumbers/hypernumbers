@@ -12,7 +12,7 @@
   </head>
   
   <body id="hn" data-view="spreadsheet">    
-    <div id="pagemenu">
+    <div id="pagemenu" style="background-color:#000;">
     <div id="pagemarker"><div>pages:</div></div>
     <div id="tabs"></div>
 
@@ -20,7 +20,7 @@
 	<!-- Shown to non logged in users -->
 	<li id="anonymous">
         <div id="editspreadsheet">
-    <div id="powered">
+    <div id="powered" class="ctrlbox">
         <span class="hyper">hyper</span><span class="numbers">numbers</span>
     </div>
     <div id="editmenu" class="ctrlbox">
@@ -41,10 +41,10 @@
         </li>  
 	<!-- Shown to logged in users -->
 	<li id="loggedin">
-
+        <span>we <img src="/img/heart.png"> feedback gordon@hypernumbers.com +44 7776 251669</span>
 	  <a href="http://hypernumbers.com/support/" target="_blank">
 	    <img src="/img/help.png" />
-	    I need help!</a>
+	    need help?</a>
 
 	  <!-- Languages drop down -->
 	  <div class="expand" id="languages">
@@ -86,10 +86,9 @@
       <div class="expand site" id="sitemenu">
         <span id="sitemenuwrap">Site</span>
       <div id="sitemenulist" class="expandinner">
-      <a data-tab="sitenewpage">New Page</a>
       <a data-tab="sitemypages">My Pages</a>
       <a data-tab="sitesettings">Settings</a>
-      <!--<a data-tab="sitetour">Tour</a>-->
+      <a data-tab="sitetour">Tour</a>
         </div>
         </div>
       <div class="expand fonts" id="fontsizewrap">
@@ -150,9 +149,9 @@
 	  <a id="fmt_4">(100) <span class="desc">($txt:{financial}$)</span></a>
 	  <a id="fmt_5">(100.00) <span class="desc">($txt:{financial}$)</span></a>
 	  <hr />
-	  <a id="fmt_6">£100 <span class="desc">($txt:{currency}$)</span></a>
-	  <a id="fmt_7">£100.00 <span class="desc">($txt:{currency}$)</span></a>
-	  <a id="fmt_8"><span class="red">£100</span>
+	  <a id="fmt_6">$$00 <span class="desc">($txt:{currency}$)</span></a>
+	  <a id="fmt_7">$100.00 <span class="desc">($txt:{currency}$)</span></a>
+	  <a id="fmt_8"><span class="red">$100</span>
 	    <span class="desc">($txt:{currency}$)</span></a>
 	  <hr />
 	  <a id="fmt_9">10% <span class="desc">($txt:{percentage}$)</span></a>
@@ -191,11 +190,11 @@
 	data-command="strikethrough"
 	data-style="text-decoration" data-value="line-through" 
 	data-toggle="none"></a>
-      <!-- <a title="Insert Image" class="toolbar-item" id="insertimage"></a> -->
-      <!-- <a title="Insert Link" class="toolbar-item" id="insertlink"></a> -->
-      <!-- <a class="separator"></a> -->
+      <a title="Insert Image" class="toolbar-item" id="insertimage"></a>
+      <a title="Insert Link" class="toolbar-item" id="insertlink"></a>
+      <a class="separator"></a>
       
-      <div class="expand" id="borders">
+      <!--<div class="expand" id="borders">
 	<span><a title="Set Borders" id="border-head" class="icon"></a></span>
 	<div id="borders" class="expandinner">
 	  <a id="border_surround" class="toolbar-item"></a>
@@ -209,7 +208,7 @@
 	</div>
       </div>
 
-      <a class="separator"></a>          
+      <a class="separator"></a>-->
 
       <div title="Set Colours" class="colormenu" id="combo_colourbg">
 	<span><a id="bgcolor-head" class="icon"></a></span>
@@ -510,66 +509,45 @@
       <a id="ctrlclose">x</a>
 
       <ul id="ctrltabs">
-	<li><a data-tab="sitenewpage">New Page</a></li>
 	<li><a data-tab="sitemypages">Pages</a></li>
 	<li><a data-tab="sitesettings">Settings</a></li>
-	<!--<li><a data-tab="sitetour">Tour</a></li>-->
+	<li><a data-tab="sitetour">Tour</a></li>
       </ul>
       
       <div id="ctrltabdivs">
 
-      <div id="sitenewpage">
-        
-      <div>
-        <h4>Create A New Spreadsheet</h4>
-        <form id="newpageform">
-        <p>Enter a name for your spreadsheet and start editing, 
-        you can see your other spreadsheets and edit settings
-        in the "Pages" tab. You can create a new blank spreadsheet or use a template.</p>
-        <small>Enter the name of your spreadsheet for example <code>/accounts/2010/</code></small><br /
-        <input type="text" id="newpage" value="" />
-        <input type="submit" value="Create Spreadsheet" 
-        class="button" />
-      <div id="templates"></div>
-      </form>            
-	  </div>
-      </div>
-
 	<div id="sitemypages">
 	
-	  
 	  <div id="finder">
 	    <div class="panewrapper"><div class="pane"></div></div>
 	  </div>
 
 	  <table>
-	    <tr>
-          <td class="label">Current Page:</td>
-          <td class="content" colspan="2">
-            <strong><span id="currentpageselection"></span></strong>
+       <tr id="hnexemplar">
+          <td></td>
+          <td></td>
+          <td><small>for example <code>/accounts/2010/</code></small></td>
+        </tr>
+        <tr><form id="newpageform">
+          <td class="label" width="27%">Create New:</td>
+          <td width="17%">
+            <input id="newspreadsheet" type="submit" value="New" class="button" />
           </td>
+         <td>
+         <input type="text" id="newpage" value="" />
+        </td></form>
+        </tr>
+        <tr>
+          <td></td>
+          <td><div id="templates"></div></td>
+          <td></td>
         </tr>
         <tr>
           <td class="label" width="27%">Open As Spreadsheet:</td>
           <td width="17%">
             <input id="pdvisit" type="submit" value="Open" />
           </td>
-         <td></td>
-        </tr>
-        <tr>
-          <td class="label">Import Spreadsheet:</td>
-          <td class="content"> 
-            <input type="submit" id="doupload" value="Upload"  /><br />
-          <div id="uploadresponce"> </div>
-          </td>
-          <td></td>
-	    </tr>
-	    <tr>
-          <td class="label">Delete Page:</td>
-	      <td class="content"> 
-            <input class="redbutton" id="ctrldelete" type="submit" value="Delete" />
-          </td>
-         <td></td>
+         <td><span id = "currentpageselection" class="currentpageselection"></span></td>
         </tr>
 	    <tr>
           <td class="label">Save As Template:</td>
@@ -579,6 +557,21 @@
           <td><input id="templatename" /><span id="saveasfeedback"><span>
           </td>
 	    </tr>
+        <tr>
+          <td class="label">Import Spreadsheet:</td>
+          <td class="content"> 
+            <input type="submit" id="doupload" value="Upload To"  /><br />
+          <div id="uploadresponce"> </div>
+          </td>
+          <td><span class="currentpageselection"></span></td>
+	    </tr>
+	    <tr>
+          <td class="label">Delete Page:</td>
+	      <td class="content"> 
+            <input class="redbutton" id="ctrldelete" type="submit" value="Delete" />
+          </td>
+         <td><span class="currentpageselection"></span></td>
+        </tr>
 	  </table>
 	      
 	</div>
@@ -599,25 +592,103 @@
 	  
 	</div>
 
-	<div id="tour">
+	<div id="sitetour">
 	<div id="tourwrapper">
 	    <div class="tourpage">
-	      <h4>Getting Started!</h4>
-	      <p>bleh!</p>
+	      <h4>A Quick Tour</h4>
+          <p>There are a number of <span class="hn_em">tutorial pages</span> for you to get started. You can select them when you create a new page from the first tab in this dialog box. They are:</p>
+          <ul>
+            <li><span class="hn_em">consolidation</span> - instead of emailing loads of copies of a spreadsheet around and then plucking the responses from your mail box</li>
+            <li><span class="hn_em">negotiating</span> - for when you need to take colleagues, suppliers or partners through a process of agreeing a set of figures</li>
+            <li><span class="hn_em">wikipage views</span> - allowing people to update specific cells only</li>
+            <li><span class="hn_em">webpage views</span> - one-click publishing your spreadsheets</li>
+            <li><span class="hn_em">forms and table views</span> - the one-click form builder and its data/li>
+            <li><span class="hn_em">graphs</span> - making and publishing graphs</li>
+            <li><span class="hn_em">advanced web</span> - some of our experimental web stuff</li>
+            </ul>
+            <p style="color:darkorange;font-weight:bold;">Add yourself as an administator on the views menu to make this website yours</p>
+          <p>There are also videos on <a href="http://hypernumbers.com/more/">hypernumbers</a> or click the <span class="hn_em">buttons</span> below.</p>
 	    </div>
 	    <div class="tourpage">
-	      <h4>Spreadsheets as Urls</h4>
-	      <p>Hoop!</p>
+	      <h4>Just A Normal Spreadsheet</h4>
+          <p>The Hypernumbers spreadsheet is pretty much a normal spreadsheet. It has:</p>
+          <ul><li>a set of Excel/Open Office compatible functions</li>
+          <li>Excel-compatible formats</li>
+          <li>formula dragging</li>
+          <li>cut'n'paste</li>
+          <li>column and row resizing - <span class="hn_em">use the right click menu</span></li>
+          <li>the normal keyboard short cuts</li>
+          </ul>
+          <p>There is not really a lot to learn about the basic stuff. There is some special stuff you will need to know to get the most out of Hypernumbers though - which is covered on the next page of the tour.</p>
+          </div>
+	    <div class="tourpage">
+	      <h4>Consolidating Spreadsheets</h4>
+          <p>Hypernumbers is heirarchical.</p>
+          <p>On the desktop you put <em>files</em> in <em>folders</em>. So <em>c: -> users -> johnsmith -> budgets -> 2010</em> might contain:</p>
+          <ul><li><em>costcentrebudget1.xls</em></li>
+          <li><em>costcentrebudget2.xls</em></li></ul>
+          <p>With Hypernumbers the directory structure and the spreadsheet are merged together:</p>
+          <ul><li><em>/budgets/2010/costcentrebudget1/</em></li>
+          <li><em>/budgets/2010/costcentrebudget2/</em></li></ul>
+          <p>But <em>/budgets/2010/</em> is also a spreadsheet and it can consolidate the budgets underneath it. See the template <span class="hn_em">consolidation</span> for more details.</p>
+          </div>
+	    <div class="tourpage">
+	      <h4>Understanding Views</h4>
+          <p>With Hypernumbers you can have 4 different views of each spreadsheet:</p>
+          <ul><li>a <span class="hn_em">spreadsheet view</span> - for people who need to <em>change</em> the structure of the spreadsheet</li>
+          <li>a <span class="hn_em">webpage view</span> - for people who need to <em>see</em> the contents of the spreadsheet</li>
+          <li>a <span class="hn_em">wikipage view</span> - for people who need to <em>input data</em> into a spreadsheet some else has built</li>
+          <li>a <span class="hn_em">table view</span> - for people who need to <em>sort</em> a spreadsheet</li></ul>
+          <p>You can explore views by using the <em>views</em> menu at the top right of the toolbar.</p>
+          <p>You can give different people different permissions to see different views of the same page - see <span class="hn_em">page 6</span> of the tour. The next page of this tour discusses the wikipage in more detail.</p>
+          </div>
+	    <div class="tourpage">
+	      <h4>The Wikipage View</h4>
+          <p>The wiki page view is just a webpage where some items can be edited.</p>
+          <p>To make a wiki page just build a normal spreadsheet and identify the cells that you want some one else to input data into.</p>
+          <p>Toggle wiki cells with the <em>wiki button</em><span class="inlineinput">&nbsp;</span>on the toolbar.</p>
+          <p>Wiki pages are designed to make <span class="hn_em">negotiating</span> and <span class="hn_em">agreeing</span> figures as easy as possible. Issue a spreadsheet with all the data you are trying to collect as wiki cells and un-wiki each line item as you agree it.</p>
+          <p>See the templates <span class="hn_em">negotiating</span> and <span class="hn_em">wiki pages</em> for details</p>
+          </div>
+	    <div class="tourpage">
+	      <h4>Users And Permissions</h4>
+          <p>There is one place to manage all users and their access to all your spreadsheets.</p>
+          <p>You can explore permissions by using the view menu at the top right of the toolbar. You will see little tabs for <em>users</em> and <em>groups</em>.</p>
+          <p>For <span class="hn_em">quick (and dirty) sharing</span> just set up the page as you want it, choose the default view and enter as e-mail address and click.</p>
+          <p>For <span class="hn_em">proper sharing</span> you need to do a little more work. First create a <em>group</em> like <em>accounts</em> or <em>staff</em>. Then add the email addresses of your people to that group. Finally add the group to the page views.<p>
+          <p><span class="hn_em">Note</span> quick'n'dirty works by doing all these three stages in one - it turns an email into a group (eg jenny@example.com becomes the group <em>jenny</em>) and adds the group to the page view. The problem comes when you have <em>jenny@example.com</em> and <em>jenny@hypernumbers.com</em>!</p>
+        </div>
+	    <div class="tourpage">
+	      <h4>Forms And Table Views</h4>
+          <p>Forms are a neat way to collect data into a table (or database) spreadsheet.</p>
+          <p>To make a form simply select some cells, and then use <em>Create Form</em> on the right-click menu.</p>
+          <p>Forms can be deployed on either webpages or wikipages.</p>
+          <p>When a user fills in a form the results are posted to <em>another page</em>. The input is a table spreadsheet and is ideally displayed as a table view.</p>
+          <p>For more details see the template <span class="hn_em">forms and tables</span>.</p>
+          </div>
+        <div class="tourpage">
+	      <h4>Fancy-Schmacy Web Stuff</h4>
+	      <p>We have some experimental fancy web stuff.</p>
+          <p>To play with it see the template <span class="hn_em">advanced web</span>.</p>
+	    </div>
+        <div class="tourpage">
+	      <h4>Talk To Me</h4>
+	      <p>Hypernumbers is still an early product - we really value your feedback. We are delighted if there are things you like about our product but we really welcome any comments about problems you are having or bugs that you have found.</p>
+          <p>If you need any help or want to know anything just drop me an email at <em>gordon@hypernumbers.com</em> or give me a ring on <em>+44 7776 251669</em> - but remember we are based in Bonnie Scotland and our time zone is Greenwhich Mean Time/British Summer Time.</p>
 	    </div>
 	</div>
+    <div id="hn_tourfooter">
 	<input type="submit" class="tournavigate" value="Next" id="tournext" />
 	<div id="tourpager"></div>
 	<input type="submit" class="tournavigate" value="Back" id="tourback" />
     </div>
-    
+    </div>
+    </div>
+    </div>
   </body>
   
-  <script src="/hypernumbers/jquery-1.4.2.min.js"></script>
+  <!--<script src="/hypernumbers/jquery-1.4.2.min.js"></script>-->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script src="/hypernumbers/jquery-ext.js"></script>
   <script src="/hypernumbers/json2.js"> </script>
   <script src="/hypernumbers/ajaxfileupload.js"></script>

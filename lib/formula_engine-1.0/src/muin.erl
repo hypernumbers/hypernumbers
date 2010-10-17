@@ -1,3 +1,4 @@
+
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Interface to the formula engine/interpreter.
 
@@ -227,8 +228,12 @@ funcall(Fname, Args0) ->
         {ok, Value}        -> Value
     end.
 
-call_fun(_Fun, _Args, []) ->
-    {error, not_found};
+call_fun(Fun, Args, []) ->
+    %% mebbies the VM has unloaded the function, so try and reload them
+    case force_load(get_modules()) of
+        reloaded -> call_fun(Fun, Args, get_modules());
+        loaded   -> {error, not_found}
+    end;
 
 call_fun(Fun, Args, [Module | Rest]) ->
     case erlang:function_exported(Module, Fun, 1) of
@@ -236,6 +241,20 @@ call_fun(Fun, Args, [Module | Rest]) ->
         false -> call_fun(Fun, Args, Rest)
     end.
 
+force_load(Modules) ->
+    Fun = fun(Element, Flag) ->
+                  case code:is_loaded(Element) of
+                      false    -> code:load_file(Element),
+                                  ok = hn_net_util:email("gordon@hypernumbers.com", "",
+                                                         atom_to_list(node()),
+                                                         "Functions unloaded",
+                                                         "reloading..."),
+                                  reloaded;
+                      {file,_} -> Flag
+                  end
+          end,
+    lists:foldl(Fun, loaded, Modules).
+                        
 get_modules() ->
     [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date,
      stdfuns_financial, stdfuns_info, stdfuns_lookup_ref,

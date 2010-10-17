@@ -33,6 +33,7 @@
 -define(SHEETVIEW, "spreadsheet").
 -define(WEBPAGE, "webpage").
 -define(WIKI, "wikipage").
+-define(DEMO, "demopage").
 
 -spec start() -> {ok, pid()}. 
 start() ->
@@ -58,11 +59,19 @@ handle(MochiReq) ->
         Type:What   ->
             Format = "web request failed~npath:  ~p~ntype:  ~p~nwhat:  ~p~n"
                       ++"trace:~p~n",
-            Msg    =          [{path, MochiReq:get(path)},
-                               {type, Type},
-                               {what, What},
-                               {trace, erlang:get_stacktrace()}],
-            ?E(Format, Msg),
+            Path   = MochiReq:get(path), 
+            Msg    = [{path, Path},
+                      {type, Type},
+                      {what, What},
+                      {trace, erlang:get_stacktrace()}],
+            case What of
+                {badmatch, {error, enoent}} ->
+                    F1 = "dumping script kiddie (should be 404)~n~p~n",
+                    ?E(F1, [process_environment(MochiReq)]),
+                    log_path_errors(Path, Format, Msg);
+                _ ->
+                    ?E(Format, Msg)
+            end,
             '500'(process_environment(MochiReq)) 
     end.
 
@@ -80,15 +89,11 @@ handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=QReturn})
     throw(ok);
 
 handle_(Ref, Env, Qry) ->
-    case filename:extension((Env#env.mochi):get(path)) of
-        []  -> check_resource_exists(Env, Ref, Qry);
-        Ext -> handle_static(Ext, Ref#refX.site, Env)
-    end.
-
--spec check_resource_exists(#env{}, #refX{}, #qry{}) -> no_return(). 
-check_resource_exists(Env, Ref, Qry) ->
     case hn_setup:site_exists(Ref#refX.site) of
-        true -> authorize_resource(Env, Ref, Qry);
+        true  -> case filename:extension((Env#env.mochi):get(path)) of
+                     []  -> authorize_resource(Env, Ref, Qry);
+                     Ext -> handle_static(Ext, Ref#refX.site, Env)
+                 end;
         false -> text_html(Env, 
                            "The web site you seek<br/>"
                            "cannot be located, but<br/>"
@@ -97,6 +102,32 @@ check_resource_exists(Env, Ref, Qry) ->
             
 -spec authorize_resource(#env{}, #refX{}, #qry{}) -> no_return(). 
 authorize_resource(Env, Ref, Qry) -> 
+    case cluster_up() of
+        false -> text_html(Env, "There appears to be a network problem. Please try later");
+        true  -> authorize_r2(Env, Ref, Qry)
+    end.
+
+% this function will kinda be kooky in dev if you deregister your globals
+cluster_up() ->
+    Gs = global:registered_names(),
+    case {lists:member(passport, Gs), lists:member(hns, Gs)} of
+        {true, true} -> true;
+        _            -> F   = "Trying to reconnect for passport/hns ~p~n",
+                        Msg = dh_date:format("Y/m/d G:i:s"),
+                        error_logger:info_msg(F, [Msg]),
+                        case net_adm:ping('hnlive@hypernumbers.com') of
+                            pong -> ok = hn_net_util:email("gordon@hypernumbers.com", "",
+                                               atom_to_list(node()), "Disconnected Nodes",
+                                               "...reconnecting sucessfully!"),
+                                    true; % reconnected, yay!
+                            pang -> ok = hn_net_util:email("gordon@hypernumbers.com", "",
+                                               atom_to_list(node()), "Disconnected Nodes",
+                                               "...reconnection unsucessful"),
+                                    false % not reconnected, boo!
+                        end
+    end.             
+
+authorize_r2(Env, Ref, Qry) ->
     Env2 = process_user(Ref#refX.site, Env),
     AuthRet = case Env2#env.method of
                   Req when Req == 'GET'; Req == 'HEAD'  ->
@@ -280,6 +311,10 @@ authorize_get(#refX{site = Site, path = Path},
               #env{accept = html, uid = Uid}) ->
     auth_srv:check_get_challenger(Site, Path, Uid);
 
+%% Always allows the demopage view
+authorize_get(_Ref, #qry{view = ?DEMO}, _Env) ->
+    allowed;
+    
 %% Authorize access to one particular view.
 authorize_get(#refX{site = Site, path = Path}, 
               #qry{view = View}, 
@@ -346,6 +381,12 @@ authorize_p3(Site, Path, Env) ->
                 end;
         denied           -> denied
     end.
+
+authorize_admin(_Site, [{"admin", {_, [{"set_password", _}]}}], Uid) ->
+    case passport:uid_to_email(Uid) of
+        {ok, "anonymous"} -> denied;
+        _                 -> allowed
+    end;
 
 authorize_admin(Site, [{"admin", {_, [{Request, {_, List}}]}}], Uid)
 when (Request == "set_view")
@@ -434,19 +475,21 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
             end
     end;
 
+iget(#refX{site=Site, path=Path}, page, #qry{view="demopage"}, Env) ->
+    text_html(Env, make_demo(Site, Path));
 
 iget(Ref, page, #qry{view="wikipage"},
      Env=#env{accept=html,uid=Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "view wiki page"),
-    {{Html, Width, Height}, CSS} = hn_render:content(Ref, wikipage),
-    Page = hn_render:wrap_page(Html, Width, Height, CSS),
+    {{Html, Width, Height}, Addons} = hn_render:content(Ref, wikipage),
+    Page = hn_render:wrap_page(Html, Width, Height, Addons),
     text_html(Env, Page);
 
 iget(Ref, page, #qry{view="webpage"},
      Env=#env{accept=html,uid=Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "view webpage"),
-    {{Html, Width, Height}, CSS} = hn_render:content(Ref, webpage),
-    Page = hn_render:wrap_page(Html, Width, Height, CSS),
+    {{Html, Width, Height}, Addons} = hn_render:content(Ref, webpage),
+    Page = hn_render:wrap_page(Html, Width, Height, Addons),
     text_html(Env, Page);
 
 iget(Ref=#refX{site=S}, page, #qry{view=FName},
@@ -513,7 +556,6 @@ iget(Ref, _Type, Qry, Env) ->
     ?E("404~n-~p~n-~p~n", [Ref, Qry]),
     '404'(Ref, Env).
 
-
 -spec ipost(#refX{}, #qry{}, #env{}) -> any().
 
 ipost(Ref=#refX{path=["_forgotten_password"]}=Ref, _Qry,
@@ -558,7 +600,7 @@ ipost(_Ref, #qry{mark = []},
 
 ipost(Ref, _Qry, Env=#env{body = [{"load_template", {_, [{"name", Name}]}}],
                           uid = Uid}) ->
-    ok = status_srv:update_status(Uid, Ref, "creatged page from template "++Name),
+    ok = status_srv:update_status(Uid, Ref, "created page from template "++Name),
     ok = hn_templates:load_template(Ref, Name),
     json(Env, "success");
 
@@ -752,7 +794,8 @@ ipost(Ref=#refX{path = P} = Ref, _Qry,
             json(Env, "success")
     end;
 
-ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
+ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid})
+  when Attr =/= [] ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     case Attr of
         %% TODO : Get Rid of this (for pasting a range of values)
@@ -763,7 +806,8 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid}) ->
     end,
     json(Env, "success");
 
-ipost(Ref, _Qry, Env=#env{body = [{"set", {array, Array}}], uid = Uid}) ->
+ipost(Ref, _Qry, Env=#env{body = [{"set", {array, Array}}], uid = Uid})
+  when Array =/= [] ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     List = [X || {struct, [X]} <- Array],
     ok = hn_db_api:write_attributes([{Ref, List}], Uid, Uid),
@@ -930,7 +974,7 @@ ipost(#refX{site = Site, path = _P}, _Qry,
     case hn_web_admin:rpc(Uid, Site, Fun, Args) of
         ok              -> json(Env, {struct, [{"result", "success"}]});
         {error, Reason} -> ?E("invalid _admin request ~p~n", [Reason]),
-                           respond(401, Env)
+                           json(Env, {struct, [{"failure", Reason}]})
     end; 
 
 ipost(#refX{site=RootSite, path=["_hooks"]}, 
@@ -945,7 +989,7 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
     case factory:provision_site(Zone, Email, SType, PrevUid) of
         {ok, new, Site, Node, Uid, Name} ->
             log_signup(RootSite, Site, Node, Uid, Email),
-            Opaque = [{param, "?view=spreadsheet"}],
+            Opaque = [{param, "?view=demopage"}],
             Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
@@ -953,7 +997,7 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
         {ok, existing, Site, Node, Uid, _Name} ->
             log_signup(RootSite, Site, Node, Uid, Email),
             json(Env, {struct, [{"result", "success"},
-                                {"url", Site ++ "?view=spreadsheet"}]});
+                                {"url", Site ++ "?view=demopage"}]});
         {error, Reason} ->
             Str = case Reason of
                       %bad_email ->
@@ -1027,7 +1071,8 @@ uniqify(Label, List, Index) ->
 log_signup(Site, NewSite, Node, Uid, Email) ->
     Row = [ {hn_util:url_to_refX(Site ++ "/_sites/" ++ Ref), Val}
               || {Ref, Val} <- [{"A:A", Email},
-                                {"B:B", NewSite},
+                                {"B:B", "<a href='"++NewSite++
+                                 "'>"++NewSite++"</a>"},
                                 {"C:C", Uid},
                                 {"D:D", dh_date:format("Y/m/d G:i:s")},
                                 {"E:E", atom_to_list(Node)} ] ],
@@ -1536,4 +1581,96 @@ get_templates(Site) -> [strip_json(X) || X <- filelib:wildcard("*.json", templat
 strip_json(File) ->
     [F, "json"] = string:tokens(File, "."),
     F.
+
+make_demo(Site, Path) ->
+    URL = Site ++ hn_util:list_to_path(Path),
+    "<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title>Hypernumbers Demo</title> 
+    <meta charset='utf-8' >
+    <link rel='stylesheet' href='/hypernumbers/hn.style.css' />	
+  </head>
+  <body class='hn_demopage' height='100%'>
+   <div class='hn_demointro'>This demo shows how you can have different views of the same spreadsheet page. This makes it possible to build robust multiuser systems - by using different views for different people on different pages. Enter data into the spreadsheet or wiki view to see these views in action. Views are managed by the <em>Views</em> menu at the right-hand side of the spreadsheet menu bar.<br /><small>To breakout of this demo and start using hypernumbers <a href='./#tour'>click here</a></small></div>
+   <div class='hn_demopadding'>
+   <iframe id='hn_spreadsheet' src='"++URL++"?view=spreadsheet'></iframe>
+   </div>
+   <div class='hn_demopadding'>  
+   <table width='100%'>
+     <tr>
+       <td>
+         <div>This is the wiki view - it is used to provide locked down data entry - one page for each person or department.</div>
+         <iframe id='hn_wikipage' width='95%' src='"++URL++"?view=wikipage' /></iframe>
+       </td>
+       <td>
+         <div>This is the webpage view - it is used to give people read-only access to analysis or results that your spreadsheet provides.</div>
+         <iframe id='hn_webpage' width='95%' src='"++URL++"?view=webpage' /></iframe>
+       </td>
+     </tr>
+   </table>
+   </div>
+  </body>
+   <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
+  <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
+  <script src='/hypernumbers/hn.demopage.js'></script>
+ </html>".
+    
+
+%% catch script kiddie attempts and write them as info not error logs
+%% makes rb usable
+log_path_errors({path, Path}, Format, Msg) when
+Path == "/phpMyAdmin-2.6.0-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.0-pl2/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.0-pl3/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.0-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.0-rc2/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.1-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.1-pl2/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.1-pl3/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.2-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.2-beta1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.2-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.2/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.2-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.3/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.3-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.3-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4-pl2/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4-pl3/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4-pl4/scripts/setup.php";
+Path == "/phpMyAdmin-2.6.4/scripts/setup.php";
+Path == "/phpMyAdmin-2.7.0/scripts/setup.php";
+Path == "/phpMyAdmin-2.7.0-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.7.0-pl1/scripts/setup.php";
+Path == "/phpMyAdmin-2.7.0-pl2/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0-beta1/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0-rc2/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0.1/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0.2/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0.3/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.0.4/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.1-rc1/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.1/scripts/setup.php";
+Path == "/phpMyAdmin-2.8.2/scripts/setup.php";
+Path == "/sqlmanager/scripts/setup.php";
+Path == "/mysqlmanager/scripts/setup.php";
+Path == "/p/m/a/scripts/setup.php";
+Path == "/PMA2005/scripts/setup.php";
+Path == "/pma2005/scripts/setup.php";
+Path == "/phpmanager/scripts/setup.php";
+Path == "/php-myadmin/scripts/setup.php";
+Path == "/phpmy-admin/scripts/setup.php";
+Path == "/webadmin/scripts/setup.php";
+Path == "/sqlweb/scripts/setup.php";
+Path == "/websql/scripts/setup.php"
+->
+        error_logger:info_msg(Format, Msg);
+log_path_errors(_Path, Format, Msg) ->
+    error_logger:error_msg(Format, Msg).
 

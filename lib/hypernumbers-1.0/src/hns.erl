@@ -4,11 +4,18 @@
 
 %% API
 -export([start_link/0,
-         create_zone/4, delete_zone/1, purge_zone/2, topup_zone/1,
-         link_resource/1, unlink_resource/2, link_resource_manual/5,
-         set_resource/4, delete_resource/3,
+         create_zone/4,
+         delete_zone/1,
+         purge_zone/2,
+         topup_zone/1,
+         link_resource/1,
+         unlink_resource/2,
+         link_resource_manual/5,
+         set_resource/4,
+         delete_resource/3,
          lookup_node/2,
-         resource_diagnostics/0, zone_diagnostics/0
+         resource_diagnostics/0,
+         zone_diagnostics/0
         ]).
 
 %% Generators

@@ -5,7 +5,7 @@
 -module(emailer).
 
 -define(FROM, "\"Gordon Guthrie\" <gordon@hypernumbers.com>").
--define(SIG, "Cheers\n\nGordon Guthrie\nCEO hypernumbers.com\n"
+-define(SIG, "Cheers\n\nGordon Guthrie\n\nCEO hypernumbers.com\n"
         ++"+44 7776 251669\n@hypernumbers\n\n").
 
 -export([send/5]).

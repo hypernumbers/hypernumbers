@@ -1,16 +1,22 @@
 %%-*-erlang-*-
-{add_view,[{path,[]},{perms,["admin"]},{view,"spreadsheet"}]}.
-{add_view,[{path,[]},{perms,["admin"]},{view,"table"}]}.
-{add_view,[{path,[]},{perms,["admin"]},{view,"webpage"}]}.
-{set_champion,[{path,[]},{view,"spreadsheet"}]}.
-{add_view,[{path,["replies"]},{perms,["admin"]},{view,"spreadsheet"}]}.
-{add_view,[{path,["replies"]},{perms,["admin"]},{view,"table"}]}.
-{add_view,[{path,["replies"]},{perms,["admin"]},{view,"webpage"}]}.
-{set_champion,[{path,["replies"]},{view,"spreadsheet"}]}.
-{add_view,[{path,["demo_feedback"]},{perms,["admin"]},{view,"spreadsheet"}]}.
-{add_view,[{path,["demo_feedback"]},{perms,["admin"]},{view,"table"}]}.
-{add_view,[{path,["demo_feedback"]},{perms,["admin"]},{view,"webpage"}]}.
-{set_champion,[{path,["demo_feedback"]},{view,"webpage"}]}.
-{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"spreadsheet"}]}.
-{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"table"}]}.
-{add_view,[{path,["[**]"]},{perms,["admin"]},{view,"webpage"}]}.
+
+%% the new system requires all pages to exist on all paths
+{add_view, [{path, []},       {perms, ["admin", everyone]}, {view, "spreadsheet"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin", everyone]}, {view, "spreadsheet"} ]}.
+{add_view, [{path, []},       {perms, ["admin", everyone]}, {view, "webpage"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin", everyone]}, {view, "webpage"} ]}.
+{add_view, [{path, []},       {perms, ["admin", everyone]}, {view, "table"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin", everyone]}, {view, "table"} ]}.
+{add_view, [{path, []},       {perms, ["admin", everyone]}, {view, "wikipage"} ]}.
+{add_view, [{path, ["[**]"]}, {perms, ["admin", everyone]}, {view, "wikipage"} ]}.
+
+{set_champion,
+ [{path, []},
+  {view, "spreadsheet"}
+ ]}.
+
+{set_champion,
+ [{path, ["[**]"]},
+  {view, "spreadsheet"}
+ ]}.
+
