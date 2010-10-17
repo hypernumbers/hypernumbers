@@ -178,7 +178,7 @@ build_workplan(Site, Dirty, Graph) ->
     end.         
 
 %% When a formula is added, it is necessary to test whether or not
-%% it's parents are already present in the recalc tree. If so,
+%% its parents are already present in the recalc tree. If so,
 %% dependency edges must be added from these parents to the new
 %% formula.
 -spec check_interference(cellidx(), atom(), digraph()) -> [cellidx()]. 
