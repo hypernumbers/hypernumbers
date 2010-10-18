@@ -208,7 +208,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
                                [TotalWidth, TotalHeight]),
     Title = case Addons#render.title of
-                [] -> "<title>Hypernumbers - the web spreadsheet</title>";
+                [] -> "<title>Hypernumbers - the team spreadsheet</title>";
                 T  -> T
             end,
 
@@ -258,8 +258,8 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
   </div>
  </div>
 </div>  
- <!--<script src='/hypernumbers/jquery-1.4.2.min.js'></script>-->
- <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+ <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
+ <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
 "  ++Addons#render.js++
 "  <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
   <script src='/hypernumbers/json2.js'></script>
