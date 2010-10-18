@@ -1,4 +1,3 @@
-
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Interface to the formula engine/interpreter.
 
@@ -34,7 +33,7 @@
 -define(mar, get(auth_req)).
 -define(array_context, get(array_context)).
 
--define(error_in_formula, {error, error_in_formula}).
+-define(error_in_formula, {errval, '#ERR_IN_FORMULA!'}).
 -define(syntax_error, {error, syntax_error}).
 
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -135,7 +134,7 @@ parse(Fla, {Col, Row}) ->
 eval(_Node = [Func|Args]) when ?is_fn(Func) ->
     case attempt(?MODULE, funcall, [Func, Args]) of
         {error, {errval, _}  = Err} -> Err;
-        {error, {aborted, _} = Err} -> exit(Err); % re-exit
+        {error, {aborted, _} = Err} -> exit(Err); % re-exit - this is an mnesia transaction!
         {error, _E}                 -> ?error_in_formula;
         {ok, {error, _E}}           -> ?error_in_formula; % in stdfuns
         {ok, V}                     -> V
