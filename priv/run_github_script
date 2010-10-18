@@ -1,8 +1,8 @@
-#!/usr/bin/env escript
+#!/usr/bin/env /usr/local/bin/escript
 %% -*- erlang -*-
 
 main([User, Repo, File | Args]) ->
-    
+
     application:start(inets),
     application:start(ssl),
     
@@ -11,7 +11,7 @@ main([User, Repo, File | Args]) ->
     {struct, [{"commits", {array, [{struct, Recent}|_Rest]}}]}
         = github_commits("json", User, Repo),
     {value, {"tree", Tree}} = lists:keysearch("tree", 1, Recent),
-    
+
     {struct, [{"blob", {struct, Data}}]}
         = github_blob(User, Repo, Tree, File),
     {value, {"data", Script}} = lists:keysearch("data", 1, Data),
