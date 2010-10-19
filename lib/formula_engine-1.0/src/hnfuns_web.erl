@@ -12,7 +12,7 @@
           background/1,
           'google.map'/1,
           'twitter.search'/1,
-          anchor/1,
+          link/1,
           img/1,
           html/1,
           site/1]).
@@ -119,7 +119,7 @@ background_(Url, Rest) ->
     lists:flatten("<style type='text/css'>body{background:url("
                   ++ Url ++ ") " ++ Rest ++ "};</style>").
 
-anchor_(Src, Text) ->
+link_(Src, Text) ->
     lists:flatten("<a href='" ++ Src ++ "'>" ++ Text ++ "</a>").
 img_(Src) ->
     lists:flatten("<img src='" ++ Src ++ "' />").
@@ -133,9 +133,9 @@ site([]) ->
     [Proto, Domain, _Port] = string:tokens(Site, ":"),
     Proto ++ Domain.
 
-anchor([Src, Text]) ->
+link([Src, Text]) ->
     col([Src, Text], [eval_funs, fetch, {cast, str}], [return_errors],
-        fun([NSrc, NText]) -> anchor_(NSrc, NText) end).
+        fun([NSrc, NText]) -> link_(NSrc, NText) end).
 
 img([Src]) ->
     col([Src], [eval_funs, fetch, {cast, str}], [return_errors],
@@ -233,7 +233,7 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
             Path = muin_util:walk_path(muin:context_setting(path), RelPath),
             Obj = {range, {X1, Y1, X2, Y2}},
             Ref = #refX{site = Site, path = Path, obj = Obj},
-            {Html, Width, Height} = hn_render:content(Ref),
+            {{Html, Width, Height}, _Addons} = hn_render:content(Ref),
             lists:flatten(hn_render:wrap_region(Html, Width, Height))
     end.
 
