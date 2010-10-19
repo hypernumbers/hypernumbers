@@ -3,8 +3,10 @@
 %%% @doc Handle Hypernumbers HTTP requests
 -module(hn_render).
 
--export([content/2, 
-         wrap_page/4, wrap_region/3]).
+-export([content/1,
+         content/2, 
+         wrap_page/4,
+         wrap_region/3]).
 
 -include("spriki.hrl").
 -include_lib("eunit/include/eunit.hrl").
@@ -23,7 +25,9 @@
               colwidths = [],
               palette,
               startcol}).
-                 
+
+content(Ref) -> content(Ref, webpage).
+
 %% Returns a tuple containing the rendered html for the area covered
 %% by the given Ref, along with the width of said html.
 -spec content(#refX{}, atom()) -> {{[textdata()], integer(), integer()}, string()}.
