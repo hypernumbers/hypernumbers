@@ -33,7 +33,7 @@
 -define(mar, get(auth_req)).
 -define(array_context, get(array_context)).
 
--define(error_in_formula, {errval, '#ERR_IN_FORMULA!'}).
+-define(error_in_formula, {errval, '#FORMULA!'}).
 -define(syntax_error, {error, syntax_error}).
 
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,7 +53,7 @@ run_formula("#CIRCREF!", _) -> {error, '#CIRCREF!'};
 run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
     case compile(Fla, {Col, Row}) of
         {ok, Ecode}       -> run_code(Ecode, Rti);
-        ?error_in_formula -> ?error_in_formula
+        ?error_in_formula -> {error, ?ERRVAL_FORM}
     end.
 
 %% @doc Runs compiled formula.
@@ -79,7 +79,7 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
 eval_formula(Fcode) ->
     case eval(Fcode) of
         ?error_in_formula ->
-            ?error_in_formula;
+            ?ERRVAL_FORM;
         Value ->
             case Value of
                 R when ?is_cellref(R) ->
@@ -97,8 +97,7 @@ eval_formula(Fcode) ->
                     catch throw:Err -> Err end;
                 R when ?is_namedexpr(R) ->
                     ?ERRVAL_NAME;
-                Constant -> Constant
-                    %% 
+                Val -> Val
             end
     end.
 
@@ -120,7 +119,6 @@ parse(Fla, {Col, Row}) ->
         {ok, Toks} ->
             case catch(xfl_parser:parse(Toks)) of
                 {ok, Ast} -> 
-                    %%io:format("Ast: ~p~n", [Ast]),
                     {ok, Ast};
                 _         -> ?syntax_error
             end;

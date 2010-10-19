@@ -1432,12 +1432,7 @@ offset_formula(Formula, {XO, YO}) ->
 write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     Rti = refX_to_rti(Ref, AReq, false),
     case muin:run_formula(Fla, Rti) of
-        %% TODO : Get rid of this, muin should return {error, Reason}?
-        % {ok, {_P, {error, error_in_formula}, _, _}} ->
-        % log:log("error_in_formula "++Formula),
-        %    write_error_attrs(Ref, Formula, error_in_formula);
-        {error, Error} ->
-            % log:log("error "++Formula++" - "++io_lib:format("~p", [Error])),
+        {error, {errval, Error}} ->
             write_error_attrs(Ref, Formula, Error);        
         {ok, {Pcode, {rawform, RawF, Html}, Parents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
@@ -1447,7 +1442,6 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Html, 
                                 Parents, Recompile);
         {ok, {Pcode, Res, Parents, Recompile}} ->
-            % log:log("normal "++Formula++" - "++io_lib:format("~p", [Res])),
             write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, 
                                 Parents, Recompile)
     end.
@@ -1463,8 +1457,6 @@ write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Parents, Recompile) ->
                            {"__default-align", Align},
                            {"__recompile", Recompile}]).
 
-write_error_attrs(Ref, Formula, error_in_formula) ->
-    write_error_attrs(Ref, Formula, '#ERROR!');
 write_error_attrs(Ref, Formula, Error) ->
     ok = set_relations(Ref, []),
     add_attributes(orddict:new(), [{"formula", Formula},

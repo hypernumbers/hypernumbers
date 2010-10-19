@@ -9,6 +9,7 @@
 -define(ERRVAL_NA,      {errval, '#N/A'}).
 -define(ERRVAL_CIRCREF, {errval, '#CIRCREF!'}).
 -define(ERRVAL_AUTH,    {errval, '#AUTH!'}).
+-define(ERRVAL_FORM,    {errval, '#ERROR!'}).
 
 %% Return an error.
 -define(ERR_NULL,    throw(?ERRVAL_NULL)).
