@@ -32,11 +32,11 @@ start_loop(FileName) ->
                                  [write, delayed_write, raw]),
             server_loop(FileName, FD);
         {_, {log_error, Reason}} ->
-            Msg = io_lib:format("Cos ~p~n", [Reasn]),
-            ok = net_util:email("gordon@hypernumbers.com", "", atom_to_list(Node()), "Fetcher failed!", Msg),
+            Msg = io_lib:format("Cos ~p~n", [Reason]),
+            ok = net_util:email("gordon@hypernumbers.com", "", atom_to_list(node()), "Fetcher failed!", Msg),
             io:format("Server: ~p~n", [Reason])
     after 25000 ->
-            ok = net_util:email("gordon@hypernumbers.com", "", atom_to_list(Node()), "Fetcher timed out!", "Erk!"),
+            ok = net_util:email("gordon@hypernumbers.com", "", atom_to_list(node()), "Fetcher timed out!", "Erk!"),
             io:format("Error starting~n")
     end.
 
