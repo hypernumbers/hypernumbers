@@ -14,6 +14,7 @@ main([Target, DaysAgo]) ->
     main([Target, DaysAgo, "."]);
 main([Target, NStr, PostlogDir]) ->
     init(),
+    io:format("running fetcher for ~p~n",[Target]),
     N = list_to_integer(NStr),
     TNode = list_to_atom(Target),
     StartDate = relative_date(N),
@@ -57,11 +58,12 @@ server_loop(FileName, FD) ->
     end.
 
 init() ->
+    % set up the path
+    true = code:add_pathz("/hn/hypernumbers/lib"),
     os:cmd(?EPMD), 
     Host = net_adm:localhost(),
     Name = list_to_atom("mi_fetcher@" ++ Host),
     {ok, _} = net_kernel:start([Name, longnames]),
-    io:format("in init for node ~p with ~p~n", [node(), init:script_id()]),
     true = auth:set_cookie(?COOKIE).
     
 % filename(Str) ->
