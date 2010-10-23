@@ -1201,11 +1201,19 @@ post_range_values(Ref, Values, PAr, VAr) ->
 
 post_column_values(Ref, Values, PAr, VAr, Offset) ->
     #refX{obj={range,{X1, Y1, _X2, _Y2}}} = Ref,
-    F = fun(Val, Acc) -> 
+    F = fun(Val, Acc) ->
+                % if you paste in a range with blank cells from excel you
+                % don't want values of "" stuck in because they count as not blank
+                % with countblank() so we skip them
+                % we don't do this in cell formulae though...
                 NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
-                ok = hn_db_api:write_attributes([{NRef, [{"formula", Val}]}], 
-                                                PAr, VAr),
-                Acc+1 
+                case Val of
+                    "" -> ok = hn_db_api:clear(NRef, contents, PAr),
+                          Acc+1;
+                    _  -> ok = hn_db_api:write_attributes([{NRef, [{"formula", Val}]}], 
+                                                          PAr, VAr),
+                          Acc+1
+                end
         end,
     lists:foldl(F, 0, Values).
 
