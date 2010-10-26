@@ -158,7 +158,8 @@ remote_do(Cmd, Node) ->
         pong  -> 
              io:format("Send ~s => ~s~n", [Cmd, Node]),
              ok = rpc:call(Node, hn_updater, do, [Cmd]);
-        _Else -> 
+        _Else ->
+            io:format("Failed to ping ~p~n", [Node]),
             ok
     end.
 
