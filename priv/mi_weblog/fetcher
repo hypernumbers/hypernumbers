@@ -59,7 +59,7 @@ server_loop(FileName, FD) ->
 
 init() ->
     % set up the path
-    true = code:add_pathz("/hn/hypernumbers/lib"),
+    true = code:add_pathz("/hn/hypernumbers/lib/hypernumbers-1.0/ebin"),
     os:cmd(?EPMD), 
     Host = net_adm:localhost(),
     Name = list_to_atom("mi_fetcher@" ++ Host),
