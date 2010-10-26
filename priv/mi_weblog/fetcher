@@ -33,15 +33,16 @@ start_loop(FileName) ->
                                  [write, delayed_write, raw]),
             server_loop(FileName, FD);
         {_, {log_error, Reason}} ->
-            Msg = io_lib:format("Cos ~p~n", [Reason]),
+            Msg = io_lib:format("Cos ~p for ~p~n", [Reason, FileName]),
             ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
                           ["gordon@hypernumbers.com", "", atom_to_list(node()),
                            "Fetcher failed!", Msg]),
             io:format("Server: ~p~n", [Reason])
     after 25000 ->
+            Msg = io_lib:format("For ~p~n", [FileName]),
             ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
                           ["gordon@hypernumbers.com", "", atom_to_list(node()),
-                           "Fetcher timed out!", "Erk!"]),
+                           "Fetcher timed out!", Msg]),
             io:format("Error starting~n")
     end.
 
