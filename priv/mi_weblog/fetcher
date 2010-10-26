@@ -37,7 +37,7 @@ start_loop(FileName) ->
             ok = hn_net_util:email("gordon@hypernumbers.com", "", atom_to_list(node()), "Fetcher failed!", Msg),
             io:format("Server: ~p~n", [Reason])
     after 25000 ->
-            ok = net_util:email("gordon@hypernumbers.com", "", atom_to_list(node()), "Fetcher timed out!", "Erk!"),
+            ok = hn_net_util:email("gordon@hypernumbers.com", "", atom_to_list(node()), "Fetcher timed out!", "Erk!"),
             io:format("Error starting~n")
     end.
 
