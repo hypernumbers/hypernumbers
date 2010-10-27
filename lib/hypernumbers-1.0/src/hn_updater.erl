@@ -91,7 +91,7 @@ premigrate(Dest) ->
 unload_deleted(OnDisk, Loaded) ->
     [begin code:purge(M), 
            code:delete(M),
-           io:format("!> ~s~n", [M]) 
+           io:format("purging and deleting> ~s~n", [M]) 
      end || {M,_} <- dict:to_list(Loaded),
             not(dict:is_key(M, OnDisk))],
     ok.
@@ -102,7 +102,7 @@ load_new(OnDisk, Loaded) ->
     [ begin 
           code:purge(M), %% just in case
           {module,M} = code:load_abs(strip_beam(Path)),
-          io:format("*> ~s~n", [M]),
+          io:format("loading> ~s~n", [M]),
           run_test(M)
       end || {M,Path} <- dict:to_list(OnDisk), 
              not(dict:is_key(M, Loaded))],
@@ -122,7 +122,7 @@ reload_current(Loaded) ->
 reload_module(Mod) ->
     code:purge(Mod),
     {module, Mod} = code:load_file(Mod),
-    io:format("=> ~s~n", [Mod]),
+    io:format("reloading> ~s~n", [Mod]),
     run_test(Mod),
     Mod.    
 
