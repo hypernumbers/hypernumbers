@@ -902,8 +902,25 @@ init_front_end_notify() ->
 
 tell_front_end(quiet, _RefX) ->
     ok;
-tell_front_end(Type, RefX) when Type == "move" orelse Type == "refresh" ->
-    remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path);
+tell_front_end(Type, #refX{path = P} = RefX) when Type == "move" orelse Type == "refresh" ->
+    Notifications = get('front_end_notify'),
+    % the move or refresh notifications are used when a page is changed radically - they
+    % tell the front end to request the whole page
+    % but if there is a formula on another page referring to a cell on a page with,
+    % say an insert or delete, then that page has its formulae rewritten/recalculated
+    % that page needs to get details notifications so we pull them out of the process
+    % dictionary and fire 'em off here...
+    Fun = fun(X) ->
+                  case X of
+                      {_, #refX{path = P}, _} -> false;
+                      _                       -> true
+                  end
+          end,
+    Extra = lists:filter(Fun, Notifications),
+    Notifications = put('front_end_notify', Extra),
+    remoting_reg:notify_refresh(RefX#refX.site, RefX#refX.path),
+    % now run the extra notifications
+    tell_front_end(extras, RefX);
 tell_front_end(_FnName, _refX) ->
     List = lists:reverse(get('front_end_notify')),
     Fun = fun({change, #refX{site=S, path=P, obj={page, "/"}}, _Attrs}) ->
