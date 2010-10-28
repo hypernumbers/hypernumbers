@@ -382,9 +382,7 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             Formulas = [F || X <- DedupedChildren,
                              F <- read_ref_field(X, "formula", write)],
             Fun = fun({ChildRef, F1}, Acc) ->
-                          io:format("ChildRef is ~p~n", [ChildRef]),
                           {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
-                          io:format("St is ~p F2 is ~p~n", [St, F2]),
                           Op = fun(Attrs) -> {St, orddict:store("formula", F2, Attrs)} end,
                           apply_to_attrs(ChildRef, Op),
                           % you need to switch the ref to an idx because later on
