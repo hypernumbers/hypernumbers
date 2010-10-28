@@ -86,7 +86,9 @@ notify_refresh(Site, Path) ->
 
 %% @doc  Notify server of change to a cell
 notify_change(Site, Path, {RefType, _} = R, Attrs) ->
-    Attrs2 = hn_util:jsonify_attrs(Attrs),
+    Fun = fun({"__"++_Hidden, _}) -> false; (_X) -> true end,
+    FilteredAttrs = lists:filter(Fun, Attrs),
+    Attrs2 = hn_util:jsonify_attrs(FilteredAttrs),
     Msg = {struct, [{"type", "change"}, {"reftype", RefType},
                     {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_str(R)}, 
