@@ -38,7 +38,7 @@
          read_ref/2, read_ref/3, read_ref_field/3,
          expand_ref/1,
          clear_cells/1, clear_cells/2,
-         delete_cells/1,
+         delete_cells/2,
          shift_cells/4,
          get_children/1,
          get_children_idxs/1,
@@ -70,7 +70,7 @@
         ]).
 
 -export([
-         deref_overlap_TEST/0
+         deref_overlap_test/3
         ]).
 
 -define(to_xml_str, simplexml:to_xml_string).
@@ -209,6 +209,7 @@ write_attrs(Ref, NewAs, AReq) ->
 process_attrs([], _Ref, _AReq, Attrs) ->
     Attrs;
 process_attrs([{"formula",Val}|Rest], Ref, AReq, Attrs) ->
+    % io:format("In process_attrs formula is ~p~n", [Val]),
     Attrs2 = 
         case superparser:process(Val) of
             {formula, Fla} -> 
@@ -316,7 +317,7 @@ post_process(Ref, Attrs) ->
     end.                       
     
 -spec post_process_styles(#refX{}, ?dict) -> ?dict.
-post_process_styles(Ref, Attrs) -> 
+post_process_styles(Ref, Attrs) ->
     case orddict:find("style", Attrs) of
         {ok, _} -> Attrs;
         _       ->
@@ -368,7 +369,9 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             Formulas = [F || X <- DedupedChildren,
                              F <- read_ref_field(X, "formula", write)],
             Fun = fun({ChildRef, F1}, Acc) ->
+                          % io:format("Childref is ~p~nF1 is ~p~n",[ChildRef, F1]),
                           {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
+                          % io:format("St is ~p~nF2 is ~p~n", [St, F2]),
                           Op = fun(Attrs) -> orddict:store("formula", F2, Attrs) end,
                           apply_to_attrs(ChildRef, Op),
                           case St of
@@ -459,8 +462,8 @@ content_attrs() ->
 %% @todo this is ineffiecient because it reads and then deletes each
 %% record individually - if remoting_reg supported a {delete refX all}
 %% type message it could be speeded up
--spec delete_cells(#refX{}) -> [#refX{}].
-delete_cells(#refX{site = S} = DelX) ->
+-spec delete_cells(#refX{}, atom()) -> [#refX{}].
+delete_cells(#refX{site = S} = DelX, Disp) ->
     case expand_ref(DelX) of
         %% there may be no cells to delete, but there may be rows or
         %% columns widths to delete...
@@ -481,7 +484,7 @@ delete_cells(#refX{site = S} = DelX) ->
             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
 
             %% Rewrite formulas
-            [deref_formula(X, DelX) || X <- LocalChildren3],
+            [deref_formula(X, DelX, Disp) || X <- LocalChildren3],
 
             %% fix relations table.
             [ok = delete_relation(X) || X <- Cells],
@@ -491,14 +494,16 @@ delete_cells(#refX{site = S} = DelX) ->
             LocalChildren3
     end.
 
--spec deref_formula(#refX{}, #refX{}) -> ok.
-deref_formula(Ref, DelRef) ->
+-spec deref_formula(#refX{}, #refX{}, atom()) -> ok.
+deref_formula(Ref, DelRef, Disp) ->
     Op = fun(Attrs) -> 
                  case orddict:find("formula", Attrs) of
-                     {ok, F1} -> 
-                         {_Status, F2} = deref(Ref, F1, DelRef),
-                         %% TODO if the status is dirty force a recalculation
-                         %% (for Tom McNulty)
+                     {ok, F1} ->
+                         {Status, F2} = deref(Ref, F1, DelRef, Disp),
+                         _Ret = case Status of
+                                   dirty -> [Ref];
+                                   clean -> []
+                               end,
                          orddict:store("formula", F2, Attrs);
                      _ ->
                          Attrs
@@ -752,10 +757,12 @@ diff(_FX,  FY, _TX,  TY, vertical)   -> TY - FY.
 %% time as they will not recalc to the real value
 %% The function 'INDIRECT' is an example of such a function
 make_formula(Toks) ->
+    % io:format("going into make_formula ~p~n", [Toks]),
     mk_f(Toks, {clean, []}).
 
 %% this function needs to be extended...
 mk_f([], {St, A}) ->
+    % io:format("returning from make_formula ~p ~p~n", [St, A]),
     {St, "="++lists:flatten(lists:reverse(A))};
 
 mk_f([{errval, _, '#REF!'} | T], {St, A}) -> 
@@ -1119,13 +1126,13 @@ add_child(CellIdx, Child, Tbl) ->
     mnesia:write(Tbl, Rel#relation{children = Children}, write).
 
 %% dereferences a formula
-deref(Child, [$=|Formula], DeRefX) when is_record(DeRefX, refX) ->
+deref(Child, [$=|Formula], DeRefX, Disp) when is_record(DeRefX, refX) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
-    NewToks = deref1(Child, Toks, DeRefX, []),
+    NewToks = deref1(Child, Toks, DeRefX, Disp, []),
     make_formula(NewToks).
 
-deref1(_Child, [], _DeRefX, Acc) -> lists:reverse(Acc);
-deref1(Child, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Acc) ->
+deref1(_Child, [], _DeRefX, _Disp, Acc) -> lists:reverse(Acc);
+deref1(Child, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Disp, Acc) ->
     %% only deref the range if it is completely obliterated by the deletion
     #refX{obj = Obj1} = DeRefX,
     Range = muin_util:just_ref(Text),
@@ -1133,23 +1140,22 @@ deref1(Child, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Acc) ->
                  "/" -> [];
                  Pre -> Pre
              end,
-    Obj2 = hn_util:parse_ref(Range),
-    NewTok = case deref_overlap(Range, Obj1, Obj2) of
+    NewTok = case deref_overlap(Range, Obj1, Disp) of
                  {deref, "#REF!"} -> {deref, Prefix ++ "#REF!"};
                  {recalc, Str}    -> {recalc, Prefix ++ Str};
                  {formula, Str}   -> {formula, Prefix ++ Str}
              end,
-    deref1(Child, T, DeRefX, [NewTok | Acc]);
+    deref1(Child, T, DeRefX, Disp, [NewTok | Acc]);
 deref1(Child, [{cellref, _, #cellref{path = Path, text = Text}}=H | T], 
-       DeRefX, Acc) ->
-    NewTok = deref2(Child, H, Text, Path, DeRefX),
-    deref1(Child, T, DeRefX, [NewTok | Acc]);
-deref1(Child, [H | T], DeRefX, Acc) ->
-    deref1(Child, T, DeRefX, [H | Acc]).
+       DeRefX, Disp, Acc) ->
+    NewTok = deref2(Child, H, Text, Path, DeRefX, Disp),
+    deref1(Child, T, DeRefX, Disp, [NewTok | Acc]);
+deref1(Child, [H | T], DeRefX, Disp, Acc) ->
+    deref1(Child, T, DeRefX, Disp, [H | Acc]).
 
 %% sometimes Text has a prepended slash
-deref2(Child, H, [$/|Text], Path, DeRefX) ->
-    Deref2 = deref2(Child, H, Text, Path, DeRefX),
+deref2(Child, H, [$/|Text], Path, DeRefX, Disp) ->
+    Deref2 = deref2(Child, H, Text, Path, DeRefX, Disp),
     case Deref2 of
         H              -> H;
         {deref,   Str} -> {deref,   "/" ++ Str};
@@ -1158,11 +1164,10 @@ deref2(Child, H, [$/|Text], Path, DeRefX) ->
     end;
 %% special case for ambiguous parsing of division
 %% this matches on cases like =a1/b3
-deref2(_Child, _H, Text, "/", DeRefX) ->
+deref2(_Child, _H, Text, "/", DeRefX, Disp) ->
     #refX{obj = Obj1} = DeRefX,
-    Obj2 = hn_util:parse_ref(Text),
-    deref_overlap(Text, Obj1, Obj2);
-deref2(Child, H, Text, Path, DeRefX) ->
+    deref_overlap(Text, Obj1, Disp);
+deref2(Child, H, Text, Path, DeRefX, Disp) ->
     #refX{path = CPath} = Child,
     #refX{path = DPath, obj = Obj1} = DeRefX,
     PathCompare = muin_util:walk_path(CPath, Path),
@@ -1171,8 +1176,7 @@ deref2(Child, H, Text, Path, DeRefX) ->
                      "./" -> {deref, "#REF!"};
                      _P   -> S1 = muin_util:just_path(Text),
                              S2 = muin_util:just_ref(Text),
-                             Obj2 = hn_util:parse_ref(S2),
-                             case deref_overlap(S2, Obj1, Obj2) of
+                             case deref_overlap(S2, Obj1, Disp) of
                                  {deref, "#REF!"} -> {deref, S1 ++ "#REF!"};
                                  O                -> S1 ++ O
                              end
@@ -1180,52 +1184,56 @@ deref2(Child, H, Text, Path, DeRefX) ->
         _Else -> H
     end.
 
-%% if Obj1 completely subsumes Obj2 then the reference to Obj2 should 
+
+%% if DelObj completely subsumes RewriteObj then the reference to RewriteObj should 
 %% be dereferenced (return 'deref')
-%% %% if Obj1 partially subsumes Obj2 then the reference to Obj2 should
+%% %% if DelObj partially subsumes RewriteObj then the reference to RewriteObj should
 %% be rewitten (return 'rewrite')
 %% if there is partial or no overlap then return 'unchanged'
-deref_overlap(Text, Obj1, Obj2) ->
-    %% the first thing we do is check each corner of Objs2 to see if it is inside
-    %% Obj1. Depending on the pattern of corners we rewrite the formula
-    %% - if all 4 corners are in the delete area the range must be dereferenced
-    %% - if 2 corners are in the delete area the formula must be rewritten
-    %% - if 1 corner is in the delete are the range must be deferenced
-    %%   because there is no way to rewrite it...
-    %% - (if 3 corners are in the delete area then the laws of Euclidean
-    %%   geometry have broken down and the end times are probably upon us
-    %%   so I would flee for my life sinner!)
-    %% 
-    %% BUT if all 4 corners are outside the delete area we need to check again:
-    %% - if the delete area is wholy inside the range then the range must be deferenced
-    %% - if the delete area transpierces the range then the range must be rewritten
-    {X1,  Y1,   X2,  Y2}  = expand(Obj1),
-    {XX1, YY1,  XX2, YY2} = expand(Obj2),
+deref_overlap(Text, DelObj, Disp) ->
+    RewriteObj = hn_util:parse_ref(Text),
+    % the first thing we do is check each corner of RewriteObj to see if it is inside
+    % DelObj. Depending on the pattern of corners we rewrite the formula
+    % - if all 4 corners are in the delete area the range must be dereferenced
+    % - if 2 corners are in the delete area the formula must be rewritten
+    % - if 1 corner is in the delete are the range must be forced to recalc
+    %   because there is no way to rewrite it...
+    % - (if 3 corners are in the delete area then the laws of Euclidean
+    %   geometry have broken down and the end times are probably upon us
+    %   so I would flee for my life sinner!)
+    % 
+    % BUT if all 4 corners are outside the delete area we need to check again:
+    % - if the delete area is wholy inside the range then the range must be deferenced
+    % - if the delete area transpierces the range then the range must be rewritten
+    {X1,  Y1,   X2,  Y2}  = expand(DelObj),
+    {XX1, YY1,  XX2, YY2} = expand(RewriteObj),
     IntTL = intersect(XX1, YY1, X1, Y1, X2, Y2),
     IntBL = intersect(XX1, YY2, X1, Y1, X2, Y2),
     IntTR = intersect(XX2, YY1, X1, Y1, X2, Y2),
     IntBR = intersect(XX2, YY2, X1, Y1, X2, Y2),
+    % io:format("Text is ~p DelObj is ~p~n", [Text, DelObj]),
+    % io:format("~p ~p ~p ~p~n", [IntTL, IntBL, IntTR, IntBR]),
     case {IntTL, IntBL, IntTR, IntBR} of
         %% all included - deref!
         {in,  in,  in,  in}  -> {deref, "#REF!"};
         %% none included you need to recheck in case the delete area
         %% is contained in, or transects the target area
-        {out, out, out, out} -> recheck_overlay(Text, Obj1, Obj2);
+        {out, out, out, out} -> recheck_overlay(Text, DelObj, RewriteObj, Disp);
         %% one corner included - deref!
-        {in,  out, out, out} -> {deref, "#REF!"};
-        {out, in,  out, out} -> {deref, "#REF!"};
-        {out, out, in,  out} -> {deref, "#REF!"};
-        {out, out, out, in}  -> {deref, "#REF!"};
+        {in,  out, out, out} -> {recalc, Text};
+        {out, in,  out, out} -> {recalc, Text};
+        {out, out, in,  out} -> {recalc, Text};
+        {out, out, out, in}  -> {recalc, Text};
         %% two corners included rewrite
-        {in,  in,  out, out} -> rewrite(X1, X2, Obj2, Text, left); %% left del
-        {out, out, in,  in}  -> rewrite(X1, Obj2, Text, right);
-        {in,  out, in,  out} -> rewrite(Y1, Y2, Obj2, Text, top);  %% top del
-        {out, in,  out, in}  -> rewrite(Y1, Obj2, Text, bottom);
+        {in,  in,  out, out} -> rewrite(X1, X2, RewriteObj, Text, left, Disp); %% left del
+        {out, out, in,  in}  -> rewrite(X1, X2, RewriteObj, Text, right, Disp);
+        {in,  out, in,  out} -> rewrite(Y1, Y2, RewriteObj, Text, top, Disp);  %% top del
+        {out, in,  out, in}  -> rewrite(Y1, Y2, RewriteObj, Text, bottom, Disp);
         %% transects are column/row intersects
-        {transect, transect, out, out} -> rewrite(X1, X2, Obj2, Text, left); %% left del
-        {out, out, transect, transect} -> rewrite(X1, Obj2, Text, right);
-        {transect, out, transect, out} -> rewrite(Y1, Y2, Obj2, Text, top);  %% top del
-        {out, transect, out, transect} -> rewrite(Y1, Obj2, Text, bottom);
+        {transect, transect, out, out} -> rewrite(X1, X2, RewriteObj, Text, left, Disp); %% left del
+        {out, out, transect, transect} -> rewrite(X1, RewriteObj, Text, right, Disp);
+        {transect, out, transect, out} -> rewrite(Y1, Y2, RewriteObj, Text, top, Disp);  %% top del
+        {out, transect, out, transect} -> rewrite(Y1, RewriteObj, Text, bottom, Disp);
         {transect, transect, transect, transect} -> {deref, "#REF!"}
     end.
 
@@ -1234,18 +1242,21 @@ deref_overlap(Text, Obj1, Obj2) ->
 intersect(A1, A2, X1, Y1, X2, Y2)
   when (is_atom(A1) orelse is_atom(A2)) andalso
        (is_integer(X1) andalso is_integer(Y1)
-        andalso is_integer(X2) andalso is_integer(Y2)) -> out;
+        andalso is_integer(X2) andalso is_integer(Y2)) ->
+    out;
 %% cols/rows never dereference
 intersect(A1, Y1, X1, A2, X2, A3)
   when (is_atom(A1) andalso is_atom(A2) andalso is_atom(A3))
-       andalso (is_integer(Y1) andalso is_integer(X1) andalso is_integer(X2)) -> out;
+       andalso (is_integer(Y1) andalso is_integer(X1) andalso is_integer(X2)) ->
+    out;
 %% rows/cols never deference
 intersect(X1, A1, A2, Y1, A3, Y2)
   when (is_atom(A1) andalso is_atom(A2) andalso is_atom(A3))
-       andalso (is_integer(X1) andalso is_integer(Y1) andalso is_integer(Y2)) -> out;
+       andalso (is_integer(X1) andalso is_integer(Y1) andalso is_integer(Y2)) ->
+    out;
 %% page deletes always dereference
 intersect(_XX1, _YY1, zero, zero, inf, inf) ->
-    out;
+ out;
 %% this is a row-row comparison
 intersect(Type, YY1, zero, Y1, inf, Y2)
   when ((Type == zero) orelse (Type == inf)) ->
@@ -1256,18 +1267,18 @@ intersect(Type, YY1, zero, Y1, inf, Y2)
 %% this is a col-col comparison
 intersect(XX1, Type, X1, zero, X2, inf)
   when ((Type == zero) orelse (Type == inf)) ->
-    if
+ if
         (XX1 >= X1), (XX1 =< X2) -> transect;
         true                     -> out
     end;
-intersect(XX1, YY1, X1, Y1, X2, Y2) ->    
+intersect(XX1, YY1, X1, Y1, X2, Y2) ->
     if
-        %% check for cell/range intersections
-        (xx1 >= X1),   (XX1 =< X2), (YY1 >= Y1),  (YY1 =< Y2) -> in;
-        %% order matters - first check for rows that are included
+        % check for cell/range intersections
+        (XX1 >= X1),   (XX1 =< X2), (YY1 >= Y1),  (YY1 =< Y2) -> in;
+        % order matters - first check for rows that are included
         (XX1 >= X1),   (XX1 =< X2), (zero == Y1), (inf == Y2) -> in;
         (zero == X1),  (inf == X2), (YY1 >= Y1),  (YY1 =< Y2) -> in;
-        %% now check for partial intersections
+        % now check for partial intersections
         (XX1 == zero), (YY1 >= Y1), (YY1 =< Y2)               -> in;
         (XX1 == inf),  (YY1 >= Y1), (YY1 =< Y2)               -> in;
         (YY1 == zero), (XX1 >= X1), (XX1 =< X2)               -> in;
@@ -1275,136 +1286,266 @@ intersect(XX1, YY1, X1, Y1, X2, Y2) ->
         true                                                  -> out
     end.         
 
-%% rewrite/5
-rewrite(X1O, X2O, {range, _}, Text, left)   ->
+%% rewrite/6
+rewrite(X1O, X2O, {range, _}, Text, left, horizontal)   -> % tested
     {XD1, _X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1O, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, (X2 - (X2O - X1O + 1)), 0, YD2, Y2, 0),
     {recalc, S};
 
-rewrite(X1O, X2O, {column, _}, Text, left)   ->
-    {XD1, _X1, XD2, X2} = parse_cols(Text),
-    S = make_col(XD1, X1O) ++ ":" ++ make_col(XD2, (X2 - (X2O - X1O + 1))),
+rewrite(_X1O, X2O, {range, _}, Text, left, vertical)   -> % tested
+    {XD1, _X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
+    S = make_cell(XD1, X2O + 1, 0, YD1, Y1, 0) ++ ":" ++
+        make_cell(XD2, X2, 0, YD2, Y2, 0),
     {recalc, S};
 
-rewrite(Y1O, Y2O, {range, _}, Text, top)   ->
+rewrite(Y1O, _Y2O, {range, _}, Text, bottom, _Disp) -> % tested
+    {XD1, X1, YD1, Y1, XD2, X2, YD2, _Y2} = parse_range(Text),
+    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
+        make_cell(XD2, X2, 0, YD2, (Y1O - 1), 0),
+    {recalc, S};
+
+rewrite(X1O, _X20, {range, _}, Text, right, horizontal) ->
+    {XD1, X1, YD1, Y1, XD2, _X2, YD2, Y2} = parse_range(Text),
+    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
+        make_cell(XD2, (X1O - 1), 0, YD2, Y2, 0),
+    {recalc, S};
+
+rewrite(X1O, _X20, {range, _}, Text, right, vertical) ->
+    {XD1, X1, YD1, Y1, XD2, _X2, YD2, Y2} = parse_range(Text),
+    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
+        make_cell(XD2, (X1O - 1), 0, YD2, Y2, 0),
+    {recalc, S};
+
+rewrite(Y1O, Y2O, {range, _}, Text, top, vertical) ->
     {XD1, X1, YD1, _Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1O, 0) ++ ":" ++
         make_cell(XD2, X2, 0, YD2, (Y2 - (Y2O - Y1O + 1)), 0),
     {recalc, S};
 
-rewrite(Y1O, Y2O, {row, _}, Text, top)   ->
+rewrite(_Y1O, Y2O, {range, _}, Text, top, horizontal) ->
+    {XD1, X1, YD1, _Y1, XD2, X2, YD2, Y2} = parse_range(Text),
+    S = make_cell(XD1, X1, 0, YD1, Y2O + 1, 0) ++ ":" ++
+        make_cell(XD2, X2, 0, YD2, Y2, 0),
+    {recalc, S};
+
+rewrite(Y1O, Y2O, {range, _}, Text, middle_row, vertical) ->
+    {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
+    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
+        make_cell(XD2, X2, 0, YD2, (Y2 - (Y2O - Y1O + 1)), 0),
+    {recalc, S};
+
+rewrite(X1O, X2O, {range, _}, Text, middle_column, horizontal)  ->
+    % io:format("In rewrite for middle_column~n"),
+    {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
+    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
+        make_cell(XD2, (X2 - (X2O - X1O + 1)), 0, YD2, Y2, 0),
+    {recalc, S};
+
+rewrite(X1O, X2O, {column, _}, Text, left, _Disp)   ->
+    {XD1, _X1, XD2, X2} = parse_cols(Text),
+    S = make_col(XD1, X1O) ++ ":" ++ make_col(XD2, (X2 - (X2O - X1O + 1))),
+    {recalc, S};
+
+rewrite(Y1O, Y2O, {row, _}, Text, top, _Disp)   ->
     {YD1, _Y1, YD2, Y2} = parse_rows(Text),
     S = make_row(YD1, Y1O) ++ ":" ++ make_row(YD2, (Y2 - (Y2O - Y1O + 1))),
     {recalc, S}.
 
-%% rewrite/4
-rewrite(XO, {range, _}, Text, right)  ->
-    {XD1, X1, YD1, Y1, XD2, _X2, YD2, Y2} = parse_range(Text),
-    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
-        make_cell(XD2, (XO - 1), 0, YD2, Y2, 0),
-    {recalc, S};
-
-rewrite(XO, {column, _}, Text, right)  ->
+%% rewrite/5
+rewrite(XO, {column, _}, Text, right, _Disp)  ->
     {XD1, X1, XD2, _X2} = parse_cols(Text),
     S = make_col(XD1, X1) ++ ":" ++ make_col(XD2, (XO - 1)),
     {recalc, S};
 
-rewrite(XO, {range, _}, Text, middle_column)  ->
-    {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
-    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
-        make_cell(XD2, (X2 - XO), 0, YD2, Y2, 0),
-    {recalc, S};
-
-rewrite(XO, {column, _}, Text, middle)  ->
+rewrite(XO, {column, _}, Text, middle, _Disp)  ->
     {XD1, X1, XD2, X2} = parse_cols(Text),
     S = make_col(XD1, X1) ++ ":" ++ make_col(XD2, (X2 - XO)),
     {recalc, S};
 
-rewrite(YO, {range, _}, Text, bottom) ->
-    {XD1, X1, YD1, Y1, XD2, X2, YD2, _Y2} = parse_range(Text),
-    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
-        make_cell(XD2, X2, 0, YD2, (YO - 1), 0),
-    {recalc, S};
-
-rewrite(YO, {row, _}, Text, bottom) ->
+rewrite(YO, {row, _}, Text, bottom, _Disp) ->
     {YD1, Y1, YD2, _Y2} = parse_rows(Text),
     S = make_row(YD1, Y1) ++ ":" ++ make_row(YD2, (YO - 1)),
     {recalc, S};
 
-rewrite(YO, {range, _}, Text, middle_row) ->
-    {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
-    S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
-        make_cell(XD2, X2, 0, YD2, (Y2 - YO), 0),
-    {recalc, S};
-
-rewrite(YO, {row, _}, Text, middle) ->
+rewrite(YO, {row, _}, Text, middle, _Disp) ->
     {YD1, Y1, YD2, Y2} = parse_rows(Text),
     S = make_row(YD1, Y1) ++ ":" ++ make_row(YD2, (Y2 - YO)),
     {recalc, S}.
 
 %% page deletes always derefence
-recheck_overlay(_Text, {page, "/"}, _Target) -> {deref, "#REF!"};
-%% cell targets that have matched so far ain't gonna
-recheck_overlay(Text, _DelX, {cell, _}) -> {formula, Text};
+recheck_overlay(_Text, {page, "/"}, _Target, _Disp) ->
+    % io:format("in recheck_overlay (1)~n"),
+    {deref, "#REF!"};
+%% cell targets that haven't matched so far ain't gonna
+recheck_overlay(Text, DelX, {cell, {X1, Y1}}, _Disp) ->
+    % io:format("in recheck_overlay (2)~n"),
+    {XX1, YY1, XX2, YY2} = expand(DelX),
+    recheck2(Text, X1, Y1, XX1, YY1, XX2, YY2);
 %% cell deletes that haven't matched a row or column so far ain't gonna
-recheck_overlay(Text, {cell, _}, {Type, _})
-  when ((Type == row) orelse (Type == column)) -> {formula, Text};
-%% cols/rows cols/range comparisons always fail
-recheck_overlay(Text, {Type, _}, {column, _})
-  when ((Type == row) orelse (Type == range)) -> {formula, Text};
+recheck_overlay(Text, {cell, _}, {Type, _}, _Disp)
+  when ((Type == row) orelse (Type == column)) ->
+    % io:format("in recheck_overlay (3)~n"),
+    {formula, Text};
+% different behaviours with a cell/range depending on if the range is
+% a single row or a single col range
+% single row
+recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX2, YY1}}, vertical) ->
+    % io:format("in recheck_overlay (4)~n"),
+    recheck2(Text, X1, Y1, XX1, YY1, XX2, YY1);
+% single row
+recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX2, YY1}}, horizontal) ->
+    % io:format("in recheck_overlay (5)~n"),
+    if
+        (XX1 < X1), (XX2 > X1), (YY1 == Y1) -> C1 = make_cell(false, XX1, 0, false, YY1, 0),
+                                               C2 = make_cell(false, XX2, -1, false, YY1,  0),
+                                               {recalc,  C1 ++ ":" ++ C2};
+        true                                -> {formula, Text}
+    end;
+% single col
+recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX1, YY2}}, vertical) ->
+    % io:format("in recheck_overlay (6)~n"),
+    if
+        (XX1 == X1), (YY1 < Y1), (YY2 > Y1) -> C1 = make_cell(false, XX1, 0, false, YY1, 0),
+                                               C2 = make_cell(false, XX1, 0, false, YY2,  -1),
+                                               {recalc,  C1 ++ ":" ++ C2};
+        true                                -> {formula, Text}
+    end;
+% single col
+recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX1, YY2}}, horizontal) ->
+    % io:format("in recheck_overlay (7)~n"),
+    recheck2(Text, X1, Y1, XX1, YY1, XX1, YY2);
+recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX2, YY2}}, _Disp) ->
+    % io:format("in recheck_overlay (8)~n"),
+    recheck2(Text, X1, Y1, XX1, YY1, XX2, YY2);
+% cols/rows cols/range comparisons always fail
+recheck_overlay(Text, {Type, _}, {column, _}, _Disp)
+  when ((Type == row) orelse (Type == range)) ->
+    % io:format("in recheck_overlay (9)~n"),
+    {formula, Text};
 %% rows/cols comparisons always fail
-recheck_overlay(Text, {Type, _}, {row, _})
-  when ((Type == column) orelse (Type == range)) -> {formula, Text};
+recheck_overlay(Text, {Type, _}, {row, _}, _Disp)
+  when ((Type == column) orelse (Type == range)) ->
+    % io:format("in recheck_overlay (10)~n"),
+    {formula, Text};
 %% check a row/row
-recheck_overlay(Text, {row, {X1, X2}}, {row, {XX1, XX2}} = Tgt) ->
+recheck_overlay(Text, {row, {X1, X2}}, {row, {XX1, XX2}} = Tgt, Disp) ->
+    % io:format("in recheck_overlay (11)~n"),
     if
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2) ->
-            rewrite((X2 - X1 + 1), Tgt, Text, middle);
+            rewrite((X2 - X1 + 1), Tgt, Text, middle, Disp);
         true ->
             {formula, Text}
     end;
 %% check a col/col
-recheck_overlay(Text, {column, {Y1, Y2}}, {column, {YY1, YY2}} = Tgt) ->
+recheck_overlay(Text, {column, {Y1, Y2}}, {column, {YY1, YY2}} = Tgt, Disp) ->
+    % io:format("in recheck_overlay (12)~n"),
     if
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
-            rewrite((Y2 - Y1 + 1), Tgt, Text, middle);
+            rewrite((Y2 - Y1 + 1), Tgt, Text, middle, Disp);
         true ->
             {formula, Text}
     end;
 %% check range/range
-recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}}) ->
+recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} = R, horizontal) ->
+    % io:format("in recheck_overlay (13)~n"),
     if
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2),
-        (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) -> {deref, "#REF!"};
+        (Y1 =< YY1), (Y2 >= YY1), (Y2 =< YY2) ->
+            rewrite(X1, X2, R, Text, middle_column, horizontal);
+        (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2),
+        (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY2) ->
+            rewrite(X1, X2, R, Text, middle_column, horizontal);                     
+        (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2),
+        (Y1 =< YY1), (Y2 >= YY1)                           ->
+            rewrite(X1, X2, R, Text, middle_column, horizontal);
+        ((X1 >= XX1) andalso (X1 =< XX2))
+        orelse ((X2 >= XX1) andalso  (X2 =< XX2))
+        orelse ((Y1 >= YY1) andalso (Y1 =< YY2))
+        orelse ((Y2 >= YY1) andalso (Y2 =< YY2)) -> {recalc, Text};
+        true                                               -> {formula, Text}
+    end;
+recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} = R, vertical) ->
+    % io:format("in recheck_overlay (14)~n"),
+    if
+        (X1 =< XX1), (X2 >= XX1), (X2 =< XX2),
+        (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
+        rewrite(Y1, Y2, R, Text, middle_row, vertical);
+        (X1 >= XX1), (X1 =< XX2), (X2 >= XX2),
+        (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
+        rewrite(Y1, Y2, R, Text, middle_row, vertical);                     
+        (X1 =< XX1), (X2 >= XX2),
+        (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
+        rewrite(Y1, Y2, R, Text, middle_row, vertical);
+        ((X1 >= XX1) andalso (X1 =< XX2))
+        orelse ((X2 >= XX1) andalso (X2 =< XX2))
+        orelse ((Y1 >= YY1) andalso (Y1 =< YY2))
+        orelse ((Y2 >= YY1) andalso (Y2 =< YY2)) -> {recalc, Text};
         true                                               -> {formula, Text}
     end;
 %% check range/column
-recheck_overlay(Text, {column, {X1, X2}}, {range, {XX1, _YY1, XX2, _YY2}} = Tgt) ->
+recheck_overlay(Text, {column, {range, {X1, zero, X2, inf}}},
+                {range, _} = Tgt, Disp) ->
+    % io:format("in recheck_overlay (15)~n"),
+    recheck_overlay(Text, {column, {X1, X2}}, Tgt, Disp);
+recheck_overlay(Text, {column, {X1, X2}},
+                {range, {XX1, _YY1, XX2, _YY2}} = Tgt, Disp) ->
+    % io:format("in recheck_overlay (16)~n"),
     if
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2) ->
-            rewrite((X2 - X1 + 1), Tgt, Text, middle_column);
+            rewrite(X1, X2, Tgt, Text, middle_column, Disp);
         true -> {formula, Text}
     end;
 %% check range/row
-recheck_overlay(Text, {row, {Y1, Y2}}, {range, {_XX1, YY1, _XX2, YY2}} = Tgt) ->
+recheck_overlay(Text, {row, {range, {zero, Y1, inf, Y2}}},
+                {range, _} = Tgt, Disp) ->
+    % io:format("in recheck_overlay (17)~n"),
+    recheck_overlay(Text, {row, {Y1, Y2}}, Tgt, Disp);
+recheck_overlay(Text, {row, {Y1, Y2}},
+                {range, {_XX1, YY1, _XX2, YY2}} = Tgt, Disp) ->
+    % io:format("in recheck_overlay (18)~n"),
     if
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
-            rewrite((Y2 - Y1 + 1), Tgt, Text, middle_row);
+            rewrite(Y1, Y2, Tgt, Text, middle_row, Disp);
         true -> {formula, Text}
     end.
 
-expand({cell, {X, Y}})            -> {X, Y, X, Y};
-expand({range, {X1, Y1, X2, Y2}}) -> {X1, Y1, X2, Y2};
-expand({column, {X1, X2}})        -> {X1, zero, X2, inf}; % short for infinity
-expand({row, {Y1, Y2}})           -> {zero, Y1, inf, Y2}; % short for infinity
-expand({page, "/"})               -> {zero, inf, zero, inf}.
+recheck2(Text, X1, Y1, XX1, YY1, XX2, YY2) ->
+    case {lteq(XX1, X1), gteq(XX2, X1), lteq(YY1, Y1), gteq(YY2, Y1)} of
+        {true, true, true, true} -> {recalc, Text};
+        _                        -> {formula, Text}
+    end.
+
+gteq(N, zero) when is_integer(N) -> true;
+gteq(zero, N) when is_integer(N) -> false;
+gteq(N, inf) when is_integer(N)  -> false;
+gteq(inf, N) when is_integer(N)  -> true;
+gteq(inf, inf) -> true;
+gteq(N1, N2) when is_integer(N1), is_integer(N2) -> (N1 >= N2).
+
+lteq(N, zero) when is_integer(N) -> false;
+lteq(zero, N) when is_integer(N) -> true;
+lteq(N, inf) when is_integer(N)  -> true;
+lteq(inf, N) when is_integer(N)  -> false;
+lteq(inf, inf) -> true;
+lteq(N1, N2) when is_integer(N1), is_integer(N2) -> (N1 =< N2).
+
+% I know, I know Tom's new double range has not been introduced everywhere...
+expand({cell, {X, Y}})                      -> {X, Y, X, Y};
+expand({range, {X1, Y1, X2, Y2}})           -> {X1, Y1, X2, Y2};
+expand({column, {range, {X1, Y1, X2, Y2}}}) -> {X1, Y1, X2, Y2};
+expand({row, {range, {X1, Y1, X2, Y2}}})    -> {X1, Y1, X2, Y2};
+expand({column, {X1, X2}})                  -> {X1, zero, X2, inf}; % short for infinity
+expand({row, {Y1, Y2}})                     -> {zero, Y1, inf, Y2}; % short for infinity
+expand({page, "/"})                         -> {zero, inf, zero, inf}.
 
 %% different to offset_formula because it truncates ranges
 offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
-    %% the xfl_lexer:lex takes a cell address to lex against
-    %% in this case {1, 1} is used because the results of this
-    %% are not actually going to be used here (ie {1, 1} is a dummy!)
+    % io:format("Cell is ~p~nFormula is ~p~nFrom is ~p~nOffset is ~p~n",
+    %          [Cell, Formula, From, Offset]),
+    % the xfl_lexer:lex takes a cell address to lex against
+    % in this case {1, 1} is used because the results of this
+    % are not actually going to be used here (ie {1, 1} is a dummy!)
     case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
         {ok, Toks}    -> NewToks = offset_with_ranges(Toks, Cell, From, Offset),
                          make_formula(NewToks);
@@ -1689,138 +1830,206 @@ objs_intersect_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
                end).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                                                              %
-%% Debugging interface                                                          %
-%%                                                                              %
+%%%                                                                          %%%
+%%% Testing interface                                                        %%%
+%%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-deref_overlap_TEST() ->
-    io:format("~n~n~n~n~n~n"),
-    Tests =[
-            %% cells match
-            {"A1",    {cell, {1, 1}},        {cell, {1, 1}},        {deref, "#REF!"}},
-            %% cells don't match
-            {"A1",    {cell, {2, 1}},        {cell, {1, 1}},        {formula, "A1"}},
-            %% cell in a range
-            {"A1",    {cell, {1, 1}},        {range, {1, 1, 2, 3}}, {deref, "#REF!"}},
-            %% cell not in a range
-            {"A1",    {cell, {4, 4}},        {range, {1, 1, 2, 3}}, {formula, "A1"}},
 
-            %% ranges match
-            {"A1:B2", {range, {1, 1, 2, 2}}, {range, {1, 1, 2, 2}}, {deref, "#REF!"}},
-            %% ranges don't overlap
-            {"A1:B2", {range, {1, 1, 2, 2}}, {range, {3, 3, 4, 4}}, {formula, "A1:B2"}},
-            %% target range inside delete range
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 5, 5}}, {deref, "#REF!"}},
-            %% delete range inside target range
-            {"B2:E5", {range, {2, 2, 5, 5}}, {range, {3, 3, 4, 4}}, {deref, "#REF!"}},
-            %% delete range clips top-left
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 2, 2}}, {deref, "#REF!"}},
-            %% delete range clips bottom-right
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {3, 3, 5, 5}}, {deref, "#REF!"}},
-            %% delete range clips top-right
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {4, 1, 5, 2}}, {deref, "#REF!"}},
-            %% delete range clips bottom-left
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 4, 2, 5}}, {deref, "#REF!"}},
-            %% delete range slices left
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 2, 9}}, {recalc, "A2:B4"}},
-            %% delete range slices top
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 1, 7, 2}}, {recalc, "B1:Dl2"}},
-            %% delete range slices bottom
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {1, 4, 5, 9}}, {recalc, "B2:D3"}},
-            %% delete range slices right
-            {"B2:D4", {range, {2, 2, 4, 4}}, {range, {4, 1, 5, 9}}, {recalc, "B2:C4"}},
+%% From the erl interpreter run csv:test() to run regression tests.
+%% See eunit for more information.
+-include_lib("eunit/include/eunit.hrl").
 
-            %% cell in a column
-            {"C5",    {cell, {3, 5}},        {column, {3, 4}},      {deref, "#REF!"}},
-            %% cell not in a column
-            {"C5",    {cell, {3, 5}},        {column, {6, 7}},      {formula, "C5"}},
-            %% range in a column (1)
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {3, 5}},      {deref, "#REF!"}},
-            %% range in a column (2)
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {2, 6}},      {deref, "#REF!"}},
-            %% delete columns slices left (1)
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {3, 3}},      {recalc, "C5:D8"}},
-            %% delete columns slices left (2)
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {2, 3}},      {recalc, "B5:C8"}},
-            %% delete columns slices right (1)
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {5, 5}},      {recalc, "C5:D8"}},
-            %% delete columns slices right (2)
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {5, 6}},      {recalc, "C5:D8"}},
-            %% delete column slices middle
-            {"C5:E8", {range, {3, 5, 5, 8}}, {column, {4, 4}},      {recalc, "C5:D8"}},
+deref_overlap_test_() ->
+    [
+     % cells match
+     ?_assertEqual({deref, "#REF!"}, deref_overlap_test("A1", "A1", horizontal)),
+     ?_assertEqual({deref, "#REF!"}, deref_overlap_test("A1", "A1", vertical)),
+     % cells don't match
+     ?_assertEqual({formula, "A1"}, deref_overlap_test("A1", "B1", horizontal)),
+     ?_assertEqual({formula, "A1"}, deref_overlap_test("A1", "B1", vertical)),
+     % cell in a range 1a
+     ?_assertEqual({recalc, "A1:B3"}, deref_overlap_test("A1:B3", "B2", horizontal)),
+     % cell in a range 1b
+     ?_assertEqual({recalc, "A1:B3"}, deref_overlap_test("A1:B3", "B2", vertical)),
+     % cell in a range 2a
+     ?_assertEqual({recalc, "A1:B3"}, deref_overlap_test("A1:B3", "B3", horizontal)),
+     % cell in a range 2b
+     ?_assertEqual({recalc, "A1:B3"}, deref_overlap_test("A1:B3", "B3", vertical)),
+     % cell in a range 3a (single column 1)
+     ?_assertEqual({recalc, "A1:A3"}, deref_overlap_test("A1:A3", "A2", horizontal)),
+     % cell in a range 3b (single column 1)
+     ?_assertEqual({recalc, "A1:A3"}, deref_overlap_test("A1:A3", "A2", horizontal)),
+     ?_assertEqual({recalc, "A1:A2"}, deref_overlap_test("A1:A3", "A2", vertical)),
+     % cell in a range 4 (single column 2)
+     ?_assertEqual({recalc, "A1:A2"}, deref_overlap_test("A1:A3", "A3", horizontal)),
+     ?_assertEqual({recalc, "A1:A2"}, deref_overlap_test("A1:A3", "A3", vertical)),
+     % cell in a range 5a (single row 1)
+     ?_assertEqual({recalc, "A1:B1"}, deref_overlap_test("A1:C1", "B1", horizontal)),
+     ?_assertEqual({recalc, "A1:C1"}, deref_overlap_test("A1:C1", "B1", vertical)),
+     % cell in a range 6 (single row 2)
+     ?_assertEqual({recalc, "A1:B1"}, deref_overlap_test("A1:C1", "C1", horizontal)),
+     ?_assertEqual({recalc, "A1:B1"}, deref_overlap_test("A1:C1", "C1", vertical)),
+     % cell not in a range
+     ?_assertEqual({formula, "A1:B3"}, deref_overlap_test("A1:B3", "D1", horizontal)),
+     ?_assertEqual({formula, "A1:B3"}, deref_overlap_test("A1:B3", "D1", vertical)),
+     
+     % ranges match
+     ?_assertEqual({deref, "#REF!"}, deref_overlap_test("A1:B2", "A1:B2", horizontal)),
+     ?_assertEqual({deref, "#REF!"}, deref_overlap_test("A1:B2", "A1:B2", vertical)),
+     % ranges don't overlap_test
+     ?_assertEqual({formula, "C3:D4"}, deref_overlap_test("C3:D4", "AA1:AB2", horizontal)),
+     ?_assertEqual({formula, "C3:D4"}, deref_overlap_test("C3:D4", "AA1:AB2", vertical)),
+     % delete range inside target range
+     ?_assertEqual({recalc, "B2:E5"}, deref_overlap_test("B2:E5", "C3:D4", horizontal)),
+     ?_assertEqual({recalc, "B2:E5"}, deref_overlap_test("B2:E5", "C3:D4", vertical)),
+     % delete range covers target range
+     ?_assertEqual({deref, "#REF!"}, deref_overlap_test("B2:D4", "A1:E5", horizontal)),
+     ?_assertEqual({deref, "#REF!"}, deref_overlap_test("B2:D4", "A1:E5", vertical)),
+     % delete range clips bottom-right
+     ?_assertEqual({recalc, "B2:D4"}, deref_overlap_test("B2:D4", "D4:F5", horizontal)),
+     ?_assertEqual({recalc, "B2:D4"}, deref_overlap_test("B2:D4", "D4:F5", vertical)),
+     % delete range clips top-left
+     ?_assertEqual({recalc, "B2:D4"}, deref_overlap_test("B2:D4", "A1:B2", horizontal)),
+     ?_assertEqual({recalc, "B2:D4"}, deref_overlap_test("B2:D4", "A1:B2", vertical)),
+     % delete range clips top-right
+     ?_assertEqual({recalc, "B2:D4"}, deref_overlap_test("B2:D4", "D4:E5", horizontal)),
+     ?_assertEqual({recalc, "B2:D4"}, deref_overlap_test("B2:D4", "D4:E5", vertical)),
+     % delete range clips bottom-left
+     ?_assertEqual({recalc, "B2:D4"}, deref_overlap_test("B2:D4", "A4:B5", horizontal)),
+     ?_assertEqual({recalc, "B2:D4"}, deref_overlap_test("B2:D4", "A4:B5", vertical)),
+     % delete range slices left
+     ?_assertEqual({recalc, "A2:B4"}, deref_overlap_test("C2:E4", "A1:C5", horizontal)),
+     ?_assertEqual({recalc, "D2:E4"}, deref_overlap_test("C2:E4", "A1:C5", vertical)),
+     ?_assertEqual({recalc, "A2:B4"}, deref_overlap_test("B2:D4", "A1:B5", horizontal)),
+     ?_assertEqual({recalc, "C2:D4"}, deref_overlap_test("B2:D4", "A1:B5", vertical)),
+     % delete range slices bottom
+     ?_assertEqual({recalc, "B3:D7"}, deref_overlap_test("B3:D10", "B8:D11", horizontal)),
+     ?_assertEqual({recalc, "B3:D7"}, deref_overlap_test("B3:D10", "B8:D11", vertical)),
+     ?_assertEqual({recalc, "B4:D7"}, deref_overlap_test("B4:D8", "B8:D10", horizontal)),
+     ?_assertEqual({recalc, "B4:D7"}, deref_overlap_test("B4:D8", "B8:D10", vertical)),
+     % delete range slices top
+     ?_assertEqual({recalc, "B5:D7"}, deref_overlap_test("B3:D7", "B1:D4", horizontal)),
+     ?_assertEqual({recalc, "B1:D3"}, deref_overlap_test("B3:D7", "B1:D4", vertical)),
+     ?_assertEqual({recalc, "B3:D4"}, deref_overlap_test("B2:D4", "B1:D2", horizontal)),
+     ?_assertEqual({recalc, "B1:D2"}, deref_overlap_test("B2:D4", "B1:D2", vertical)),
+     % delete range slices right
+     ?_assertEqual({recalc, "B2:C4"}, deref_overlap_test("B2:D4", "D1:F7", horizontal)),
+     ?_assertEqual({recalc, "B2:C4"}, deref_overlap_test("B2:D4", "D1:F7", vertical)),
+     ?_assertEqual({recalc, "B2:C4"}, deref_overlap_test("B2:F4", "D1:J7", horizontal)),
+     ?_assertEqual({recalc, "B2:C4"}, deref_overlap_test("B2:F4", "D1:J7", vertical)),
+     % vertical range slices middle - might be a fit, might punch out both side,
+     % might punch one side only - test for them all
+     ?_assertEqual({recalc, "A1:B3"}, deref_overlap_test("A1:C3", "B1:B3", horizontal)),
+     ?_assertEqual({recalc, "A1:C3"}, deref_overlap_test("A1:C3", "B1:B3", vertical)),
+     ?_assertEqual({recalc, "A2:B4"}, deref_overlap_test("A2:C4", "B1:B5", horizontal)),
+     ?_assertEqual({recalc, "A2:C4"}, deref_overlap_test("A2:C4", "B1:B5", vertical)),
+     ?_assertEqual({recalc, "A2:B4"}, deref_overlap_test("A2:C4", "B1:B4", horizontal)),
+     ?_assertEqual({recalc, "A2:C4"}, deref_overlap_test("A2:C4", "B1:B4", vertical)),
+     ?_assertEqual({recalc, "A2:B4"}, deref_overlap_test("A2:C4", "B4:B5", horizontal)),
+     ?_assertEqual({recalc, "A2:C4"}, deref_overlap_test("A2:C4", "B4:B5", vertical)),
+     % horizotal range slices middle
+     ?_assertEqual({recalc, "A1:C3"}, deref_overlap_test("A1:C3", "A2:C2", horizontal)),
+     ?_assertEqual({recalc, "A1:C2"}, deref_overlap_test("A1:C3", "A2:C2", vertical)),
+     ?_assertEqual({recalc, "C3:E7"}, deref_overlap_test("C3:E7", "A4:E5", horizontal)),
+     ?_assertEqual({recalc, "C3:E5"}, deref_overlap_test("C3:E7", "A4:E5", vertical)),
+     ?_assertEqual({recalc, "C3:E7"}, deref_overlap_test("C3:E7", "C4:F5", horizontal)),
+     ?_assertEqual({recalc, "C3:E5"}, deref_overlap_test("C3:E7", "C4:F5", vertical)),
+     ?_assertEqual({recalc, "C3:E7"}, deref_overlap_test("C3:E7", "A4:G5", horizontal)),
+     ?_assertEqual({recalc, "C3:E5"}, deref_overlap_test("C3:E7", "A4:G5", vertical)),
+     
+     % cell in a row
+     ?_assertEqual({deref, "#REF!"}, deref_overlap_test("C3", "3:3", vertical)),
+     % cell not in a row
+     ?_assertEqual({formula, "C5"}, deref_overlap_test("C5", "3:3", vertical)),
+     % range with row delete (1)
+     ?_assertEqual({recalc, "C2:D5"}, deref_overlap_test("C2:D6", "3:3", vertical)),
+     % range with row delete (2)
+     ?_assertEqual({recalc, "C2:D5"}, deref_overlap_test("C2:D6", "2:2", vertical)),
+     ?_assertEqual({recalc, "C1:D4"}, deref_overlap_test("C2:D6", "1:2", vertical)),
+     % range with row delete (3)
+     ?_assertEqual({recalc, "C2:D5"}, deref_overlap_test("C2:D6", "6:6", vertical)),
+     ?_assertEqual({recalc, "C2:D5"}, deref_overlap_test("C2:D6", "6:7", vertical)),
 
+     % cell in a column
+     ?_assertEqual({deref, "#REF!"}, deref_overlap_test("C3", "C:C", horizontal)),
+     % cell not in a column
+     ?_assertEqual({formula, "C5"}, deref_overlap_test("C5", "F:F", horizontal)),
+     % range with column delete (1)
+     ?_assertEqual({recalc, "C2:D6"}, deref_overlap_test("C2:E6", "D:D", horizontal)),
+     % range with column delete (2)
+     ?_assertEqual({recalc, "C2:D6"}, deref_overlap_test("C2:E6", "C:C", horizontal)),
+     ?_assertEqual({recalc, "B2:C6"}, deref_overlap_test("C2:E6", "B:C", horizontal)),
+     % range with column delete (3)
+     ?_assertEqual({recalc, "C2:D6"}, deref_overlap_test("C2:E6", "E:E", horizontal)),
+     ?_assertEqual({recalc, "C2:D6"}, deref_overlap_test("C2:E6", "E:F", horizontal))
+     
+     % cell in a row
+     % ?_assertEqual({deref, "#REF!"}, deref_overlap_test("C5", {cell, {3, 5}}, {row, {4, 6}})),
+   % cell not in a row
+     % ?_assertEqual({formula, "C5"}, deref_overlap_test("C5", {cell, {3, 5}}, {row, {6, 7}})),
+     % range in a row (1)
+     % ?_assertEqual({deref, "#REF!"}, deref_overlap_test("C5:D8", {range, {3, 5, 4, 8}}, {row, {5, 8}})),
+     % range in a row (2)
+     % ?_assertEqual({deref, "#REF!"}, deref_overlap_test("C5:D8", {range, {3, 5, 4, 8}}, {row, {4, 9}})),
+     % delete row slices top (1)
+     % ?_assertEqual({recalc, "C5:D7"}, deref_overlap_test("C5:D8", {range, {3, 5, 4, 8}}, {row, {5, 5}})),
+     % delete row slices top (2)
+     % ?_assertEqual({recalc, "C4:D6"}, deref_overlap_test("C5:D8", {range, {3, 5, 4, 8}}, {row, {4, 5}})),
+     % delete row slices bottom (1)
+     % ?_assertEqual({recalc, "C5:D7"}, deref_overlap_test("C5:D8", {range, {3, 5, 4, 8}}, {row, {8, 8}})),
+     % delete row slices bottom (2)
+     % ?_assertEqual({recalc, "C5:D7"}, deref_overlap_test("C5:D8", {range, {3, 5, 4, 8}}, {row, {8, 9}})),
+     % delete row slices middle
+     % ?_assertEqual({recalc, "C5:D6"}, deref_overlap_test("C5:D8", {range, {3, 5, 4, 8}}, {row, {6, 7}})),
+     
+     % columns can't be derefed by cell deletes
+     % ?_assertEqual({formula, "C:F"}, deref_overlap_test("C:F", {column, {3, 6}}, {cell, {2, 3}})),
+     % columns can't be derefed by range deletes
+     % ?_assertEqual({formula, "C:F"}, deref_overlap_test("C:F", {column, {3, 6}}, {range, {2, 3, 4, 5}})),
+     % columns can't be derefed by row deletes
+     % ?_assertEqual({formula, "C:F"}, deref_overlap_test("C:F", {column, {3, 6}}, {row, {2, 3}})),
+     % column inside a column delete (1)
+     % ?_assertEqual({deref, "#REF!"}, deref_overlap_test("C:F", {column, {3, 6}}, {column, {2, 7}})),
+     % column inside a column delete (2)
+     % ?_assertEqual({deref, "#REF!"}, deref_overlap_test("C:F", {column, {3, 6}}, {column, {3, 6}})),
+     % column not inside a column delete
+     % ?_assertEqual({formula, "C:F"}, deref_overlap_test("C:F", {column, {3, 6}}, {column, {8, 9}})),
+     % column delete slices left (1)
+     % ?_assertEqual({recalc, "C:E"}, deref_overlap_test("C:F", {column, {3, 6}}, {column, {3, 3}})),
+     % column delete slices left (2)
+     % ?_assertEqual({recalc, "B:C"}, deref_overlap_test("C:F", {column, {3, 6}}, {column, {2, 4}})),
+     % column delete slices right (1)
+     % ?_assertEqual({recalc, "C:E"}, deref_overlap_test("C:F", {column, {3, 6}}, {column, {6, 6}})),
+     % column delete slices right (2)
+     % ?_assertEqual({recalc, "C:D"}, deref_overlap_test("C:F", {column, {3, 6}}, {column, {5, 7}})),
+     % column delete slices middles
+     % ?_assertEqual({recalc, "C:E"}, deref_overlap_test("C:F", {column, {3, 6}}, {column, {5, 5}})),
+     
+     % rows can't be derefed by cell deletes
+     % ?_assertEqual({formula, "3:6"}, deref_overlap_test("3:6", {row, {3, 6}}, {cell, {2, 3}})),
+     % rows can't be derefed by range deletes
+     % ?_assertEqual({formula, "3:6"}, deref_overlap_test("3:6", {row, {3, 6}}, {range, {2, 3, 4, 5}})),
+     % rows can't be derefed by column deletes
+     % ?_assertEqual({formula, "3:6"}, deref_overlap_test("3:6", {row, {3, 6}}, {column, {2, 3}})),
+     % row inside a row delete (1)
+     % ?_assertEqual({deref, "#REF!"}, deref_overlap_test("3:6", {row, {3, 6}}, {row, {3, 6}})),
+     % row inside a row delete (2)
+     % ?_assertEqual({deref, "#REF!"}, deref_overlap_test("3:6", {row, {3, 6}}, {row, {2, 7}})),
+     % row not inside a row delete
+     % ?_assertEqual({formula, "3:6"}, deref_overlap_test("3:6", {row, {3, 6}}, {row, {8, 9}})),
+     % row slices top (1)
+     % ?_assertEqual({recalc, "3:5"}, deref_overlap_test("3:6", {row, {3, 6}}, {row, {3, 3}})),
+     % row slices top (2)
+     % ?_assertEqual({recalc, "2:4"}, deref_overlap_test("3:6", {row, {3, 6}}, {row, {2, 3}})),
+     % row slices bottom (1)
+     % ?_assertEqual({recalc, "3:5"}, deref_overlap_test("3:6", {row, {3, 6}}, {row, {6, 6}})),
+     % row slices bottom (2)
+     % ?_assertEqual({recalc, "3:5"}, deref_overlap_test("3:6", {row, {3, 6}}, {row, {6, 7}})),
+     % row slices middle
+     % ?_assertEqual({recalc, "3:5"}, deref_overlap_test("3:6", {row, {3, 6}}, {row, {4, 4}}))
+  ].
 
-            %% cell in a row
-            {"C5",    {cell, {3, 5}},        {row, {4, 6}},         {deref, "#REF!"}},
-            %% cell not in a row
-            {"C5",    {cell, {3, 5}},        {row, {6, 7}},         {formula, "C5"}},
-            %% range in a row (1)
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {5, 8}},         {deref, "#REF!"}},
-            %% range in a row (2)
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {4, 9}},         {deref, "#REF!"}},
-            %% delete row slices top (1)
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {5, 5}},         {recalc, "C5:D7"}},
-            %% delete row slices top (2)
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {4, 5}},         {recalc, "C4:D6"}},
-            %% delete row slices bottom (1)
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {8, 8}},         {recalc, "C5:D7"}},
-            %% delete row slices bottom (2)
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {8, 9}},         {recalc, "C5:D7"}},
-            %% delete row slices middle
-            {"C5:D8", {range, {3, 5, 4, 8}}, {row, {6, 7}},         {recalc, "C5:D6"}},
-
-            %% columns can't be derefed by cell deletes
-            {"C:F",   {column, {3, 6}},      {cell, {2, 3}},        {formula, "C:F"}},
-            %% columns can't be derefed by range deletes
-            {"C:F",   {column, {3, 6}},      {range, {2, 3, 4, 5}}, {formula, "C:F"}},
-            %% columns can't be derefed by row deletes
-            {"C:F",   {column, {3, 6}},      {row, {2, 3}},         {formula, "C:F"}},
-            %% column inside a column delete (1)
-            {"C:F",   {column, {3, 6}},      {column, {2, 7}},      {deref, "#REF!"}},
-            %% column inside a column delete (2)
-            {"C:F",   {column, {3, 6}},      {column, {3, 6}},      {deref, "#REF!"}},
-            %% column not inside a column delete
-            {"C:F",   {column, {3, 6}},      {column, {8, 9}},      {formula, "C:F"}},
-            %% column delete slices left (1)
-            {"C:F",   {column, {3, 6}},      {column, {3, 3}},      {recalc, "C:E"}},
-            %% column delete slices left (2)
-            {"C:F",   {column, {3, 6}},      {column, {2, 4}},      {recalc, "B:C"}},
-            %% column delete slices right (1)
-            {"C:F",   {column, {3, 6}},      {column, {6, 6}},      {recalc, "C:E"}},
-            %% column delete slices right (2)
-            {"C:F",   {column, {3, 6}},      {column, {5, 7}},      {recalc, "C:D"}},
-            %% column delete slices middles
-            {"C:F",   {column, {3, 6}},      {column, {5, 5}},      {recalc, "C:E"}},
-
-            %% rows can't be derefed by cell deletes
-            {"3:6",   {row, {3, 6}},         {cell, {2, 3}},        {formula, "3:6"}},
-            %% rows can't be derefed by range deletes
-            {"3:6",   {row, {3, 6}},         {range, {2, 3, 4, 5}}, {formula, "3:6"}},
-            %% rows can't be derefed by column deletes
-            {"3:6",   {row, {3, 6}},         {column, {2, 3}},      {formula, "3:6"}},
-            %% row inside a row delete (1)
-            {"3:6",   {row, {3, 6}},         {row, {3, 6}},         {deref, "#REF!"}},
-            %% row inside a row delete (2)
-            {"3:6",   {row, {3, 6}},         {row, {2, 7}},         {deref, "#REF!"}},
-            %% row not inside a row delete
-            {"3:6",   {row, {3, 6}},         {row, {8, 9}},         {formula, "3:6"}},
-            %% row slices top (1)
-            {"3:6",   {row, {3, 6}},         {row, {3, 3}},         {recalc, "3:5"}},
-            %% row slices top (2)
-            {"3:6",   {row, {3, 6}},         {row, {2, 3}},         {recalc, "2:4"}},
-            %% row slices bottom (1)
-            {"3:6",   {row, {3, 6}},         {row, {6, 6}},         {recalc, "3:5"}},
-            %% row slices bottom (2)
-            {"3:6",   {row, {3, 6}},         {row, {6, 7}},         {recalc, "3:5"}},
-            %% row slices middle
-            {"3:6",   {row, {3, 6}},         {row, {4, 4}},         {recalc, "3:5"}}
-           ],
-    [test_ov(X) || X <- Tests].
-
-test_ov({Text, Cell, DelX, Return}) ->
-    Return1 = deref_overlap(Text, DelX, Cell),
-    case Return of
-        Return1 -> ok; 
-        _       -> io:format("Fail: ~p : ~p : ~p : ~p - ~p~n",
-                             [Text, Cell, DelX, Return, Return1])
-    end.
+deref_overlap_test(Formula, Delete, Disp) ->
+    Obj = hn_util:parse_ref(Delete),
+    io:format("Obj is ~p Delete is ~p~n", [Obj, Delete]),
+    deref_overlap(Formula, Obj, Disp).

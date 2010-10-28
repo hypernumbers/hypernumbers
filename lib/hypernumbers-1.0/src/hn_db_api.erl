@@ -427,7 +427,8 @@ delete(#refX{obj = {R, _}} = RefX, Ar) when R == column orelse R == row ->
 delete(#refX{obj = {page, _}} = RefX, Ar) ->
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
-                   Dirty = hn_db_wu:delete_cells(RefX),
+                   % by default cells have a direction of deletion and it is horiz
+                   Dirty = hn_db_wu:delete_cells(RefX, horizontal),
                    mark_these_dirty(Dirty, Ar)
            end,
     write_activity(RefX, Fun1, "refresh").
@@ -467,15 +468,15 @@ move_tr(RefX, Type, Disp, Ar) ->
     % To make this work we shift the RefX up 1, left 1 
     % before getting the cells to shift for INSERT
     % if this is a delete - we need to actually delete the cells
-    ReWr = do_delete(Type, RefX),
+    ReWr = do_delete(Type, RefX, Disp),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
     mark_these_dirty(ReWr, Ar),
     mark_these_dirty(MoreDirty, Ar).        
 
-do_delete(insert, _RefX) ->
+do_delete(insert, _RefX, _Disp) ->
     [];
-do_delete(delete, RefX) ->
-    hn_db_wu:delete_cells(RefX).
+do_delete(delete, RefX, Disp) ->
+    hn_db_wu:delete_cells(RefX, Disp).
 
 %% @doc clears the contents of the cell or range
 %% (but doesn't delete the cell or range itself).

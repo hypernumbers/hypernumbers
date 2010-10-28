@@ -465,8 +465,12 @@ parse_ref(Ref) ->
                   page ->   "/";
                   cell ->   util2:strip_ref(undollar(Ref));
                   range ->  util2:parse_range(undollar(Ref));
-                  column -> element(1,util2:strip_ref(undollar(Ref)++"1"));
-                  row ->    element(2,util2:strip_ref("a"++undollar(Ref)))
+                  column -> [First, Last] = string:tokens(Ref, ":"),
+                            {range, {tconv:to_i(undollar(First)), zero,
+                                     tconv:to_i(undollar(Last)), inf}};
+                  row ->    [First, Last] = string:tokens(Ref, ":"),
+                            {range, {zero, tconv:to_i(undollar(First)),
+                                     inf, tconv:to_i(undollar(Last))}}
               end,
     {RefType, RefVal}.
 
@@ -556,21 +560,27 @@ type_reference("/") -> page;
 type_reference(Cell) ->
     case string:chr(Cell, $:) of
         0 ->
-            case hn_util:is_numeric(Cell) of
-                true  -> row;
-                false ->
-                    case hn_util:is_alpha(Cell) of
-                        true  -> column;
-                        false ->
-                            case re:run(Cell, ?RG_cell) of
-                                {match, _} -> cell;
-                                _  ->
-                                    throw({invalid_reference, Cell})
-                            end
-                    end
+            case re:run(Cell, ?RG_cell) of
+                {match, _} -> cell;
+                _  ->
+                    throw({invalid_reference, Cell})
             end;
         _ ->
-            range
+            case string:tokens(string:to_lower(Cell), ":") of
+                [First, Last] ->
+                    case {hn_util:is_numeric(First), hn_util:is_numeric(Last)} of
+                        {true, true}  -> row;
+                        _             ->
+                            case {hn_util:is_alpha(First), hn_util:is_alpha(Last)} of
+                                {true, true}  -> column;
+                                _             ->
+                                    case {type_reference(First), type_reference(Last)} of
+                                        {cell, cell} -> range;
+                                        _            -> throw({invalid_reference, Cell})
+                                    end
+                            end
+                    end
+            end
     end.
 
 pget(Key, List) ->
