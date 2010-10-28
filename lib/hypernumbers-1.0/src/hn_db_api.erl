@@ -139,7 +139,7 @@ force_recalc(Site) ->
 
 force_r1(RefX) ->
     Fun = fun() ->
-                  mark_these_dirty([RefX], nil)
+                  ok = hn_db_wu:mark_these_dirty([RefX], nil)
            end,
     write_activity(RefX, Fun, "recalc").
 
@@ -361,10 +361,10 @@ append_row(List, PAr, VAr) when is_list(List) ->
                 F = fun(X, Val) ->
                             Obj = {cell, {X, Row}},
                             RefX2 = #refX{site = S, path = P, obj = Obj},
-                            hn_db_wu:write_attrs(RefX2, 
+                            _Dict = hn_db_wu:write_attrs(RefX2, 
                                                  [{"formula", Val}], 
                                                  PAr),
-                            mark_these_dirty([RefX2], VAr)
+                            ok = hn_db_wu:mark_these_dirty([RefX2], VAr)
                     end,
                 [F(X,V) || {#refX{site=S1, path=P1, obj={column,{X,X}}}, V} 
                                <- List, S == S1, P == P1]
@@ -429,7 +429,7 @@ delete(#refX{obj = {page, _}} = RefX, Ar) ->
                    ok = init_front_end_notify(),
                    % by default cells have a direction of deletion and it is horiz
                    Dirty = hn_db_wu:delete_cells(RefX, horizontal),
-                   mark_these_dirty(Dirty, Ar)
+                   ok = hn_db_wu:mark_these_dirty(Dirty, Ar)
            end,
     write_activity(RefX, Fun1, "refresh").
 
@@ -470,8 +470,8 @@ move_tr(RefX, Type, Disp, Ar) ->
     % if this is a delete - we need to actually delete the cells
     ReWr = do_delete(Type, RefX, Disp),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
-    mark_these_dirty(ReWr, Ar),
-    mark_these_dirty(MoreDirty, Ar).        
+    ok = hn_db_wu:mark_these_dirty(ReWr, Ar),
+    ok = hn_db_wu:mark_these_dirty(MoreDirty, Ar).        
 
 do_delete(insert, _RefX, _Disp) ->
     [];
@@ -504,8 +504,8 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
     Fun =
         fun() ->
                 ok = init_front_end_notify(),
-                hn_db_wu:clear_cells(RefX, Type),
-                mark_these_dirty([RefX], Ar)
+                ok = hn_db_wu:clear_cells(RefX, Type),
+                ok = hn_db_wu:mark_these_dirty([RefX], Ar)
         end,
     write_activity(RefX, Fun, "clear").
 
@@ -678,7 +678,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
                           end,
                   case orddict:find("formula", Attrs) of
                       {ok, F} ->
-                          hn_db_wu:write_attrs(Cell, [{"formula", F}], Ar);
+                          _Dict = hn_db_wu:write_attrs(Cell, [{"formula", F}], Ar);
                       _ ->
                           ok
                   end
@@ -690,7 +690,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
 handle_circref_cell(Site, Idx, Ar) ->
     Fun = fun() ->
                   Cell = hn_db_wu:idx_to_ref(Site, Idx),
-                  hn_db_wu:write_attrs(Cell, 
+                  _Dict = hn_db_wu:write_attrs(Cell, 
                                        [{"formula", "=#CIRCREF!"}], 
                                        Ar),
                   ok
@@ -702,7 +702,6 @@ handle_circref_cell(Site, Idx, Ar) ->
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
     List = hn_util:range_to_list(Ref),
     [ok = write_attributes1(X, AttrList, PAr, VAr) || X <- List],
@@ -710,7 +709,7 @@ write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
 write_attributes1(RefX, List, PAr, VAr) ->
     hn_db_wu:write_attrs(RefX, List, PAr),
     case lists:keymember("formula", 1, List) of
-       true  -> ok = mark_these_dirty([RefX], VAr);
+       true  -> ok = hn_db_wu:mark_these_dirty([RefX], VAr);
        false -> ok
     end.
 
@@ -722,8 +721,8 @@ write_attributes1(RefX, List, PAr, VAr) ->
 copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
     case auth_srv:get_any_view(Site, Path, Ar) of
         {view, _} ->
-            hn_db_wu:copy_cell(From, To, Incr, What),
-            mark_these_dirty([To], Ar);
+            ok = hn_db_wu:copy_cell(From, To, Incr, What),
+            ok = hn_db_wu:mark_these_dirty([To], Ar);
         _ ->
             throw(auth_error)
     end.
@@ -896,18 +895,6 @@ write_activity(Ref=#refX{site=Site}, Op, FrontEnd) ->
                        Ret
                end,
     dbsrv:write_activity(Site, Activity).
-
--spec mark_these_dirty([#refX{}], auth_srv:auth_req()) -> ok.
-mark_these_dirty([], _) -> ok;
-mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
-    F = fun(C) -> case hn_db_wu:ref_to_idx(C) of
-                      false -> []; 
-                      Idx   -> Idx
-                  end
-        end,
-    Idxs = lists:flatten([F(C) || R <- Refs, C <- hn_db_wu:expand_ref(R)]),
-    Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
-    mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write).
 
 init_front_end_notify() ->
     _Return = put('front_end_notify', []),

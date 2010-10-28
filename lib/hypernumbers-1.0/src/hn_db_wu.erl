@@ -47,7 +47,8 @@
          read_pages/1,
          idx_to_ref/2,
          ref_to_idx/1,
-         ref_to_idx_create/1
+         ref_to_idx_create/1,
+         mark_these_dirty/2
         ]).
 
 %% Database transformation functions
@@ -93,6 +94,17 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-spec mark_these_dirty([#refX{}], auth_srv:auth_req()) -> ok.
+mark_these_dirty([], _) -> ok;
+mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
+    F = fun(C) -> case hn_db_wu:ref_to_idx(C) of
+                      false -> []; 
+                      Idx   -> Idx
+                  end
+        end,
+    Idxs = lists:flatten([F(C) || R <- Refs, C <- hn_db_wu:expand_ref(R)]),
+    Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
+    mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write).
 
 -spec get_cell_for_muin(#refX{}) -> {any(), any(), any()}.
 %% @doc this function is called by muin during recalculation and should
@@ -200,7 +212,7 @@ write_attrs(Ref, NewAs, AReq) ->
                                _  ->
                                    Attrs
                           end,
-                 process_attrs(NewAs, Ref, AReq, Attrs2)
+                 {clean, process_attrs(NewAs, Ref, AReq, Attrs2)}
          end,
     apply_to_attrs(Ref, Op).
 
@@ -209,7 +221,6 @@ write_attrs(Ref, NewAs, AReq) ->
 process_attrs([], _Ref, _AReq, Attrs) ->
     Attrs;
 process_attrs([{"formula",Val}|Rest], Ref, AReq, Attrs) ->
-    % io:format("In process_attrs formula is ~p~n", [Val]),
     Attrs2 = 
         case superparser:process(Val) of
             {formula, Fla} -> 
@@ -292,6 +303,8 @@ expunge_refs(S, Refs) ->
 %% behaviour of the modification is determined by the passed in 'Op'
 %% function. Upon completion of 'Op' the post_process function is
 %% applied, which sets formats and styles as necessary.
+%% the op function returns a tuple of {Status, Ref, Attrs} where
+%% Status is either 'clean' or 'dirty'
 -spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ?dict.
 apply_to_attrs(#refX{site=Site}=Ref, Op) ->
     Table = trans(Site, item), 
@@ -300,12 +313,12 @@ apply_to_attrs(#refX{site=Site}=Ref, Op) ->
                 [#item{attrs=A}] -> A;
                 _                -> orddict:new()
             end,
-    Attrs2 = Op(Attrs),
+    {Status, Attrs2} = Op(Attrs),
     Attrs3 = post_process(Ref, Attrs2),
     Item = #item{idx = Idx, attrs = Attrs3},
     tell_front_end_change(Ref, Attrs3),
     mnesia:write(Table, Item, write),
-    Attrs3.
+    {Status, Attrs3}.
 
 %% Last chance to apply any default styles and formats. 
 -spec post_process(#refX{}, ?dict) -> ?dict. 
@@ -369,14 +382,16 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             Formulas = [F || X <- DedupedChildren,
                              F <- read_ref_field(X, "formula", write)],
             Fun = fun({ChildRef, F1}, Acc) ->
-                          % io:format("Childref is ~p~nF1 is ~p~n",[ChildRef, F1]),
                           {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
-                          % io:format("St is ~p~nF2 is ~p~n", [St, F2]),
-                          Op = fun(Attrs) -> orddict:store("formula", F2, Attrs) end,
+                          Op = fun(Attrs) -> {St, orddict:store("formula", F2, Attrs)} end,
                           apply_to_attrs(ChildRef, Op),
+                          % you need to switch the ref to an idx because later on
+                          % you are going to move the cells and you need to know the ref
+                          % of the shifted cell
                           case St of
                               clean -> Acc;
-                              dirty -> [ChildRef | Acc]
+                              dirty -> #refX{site = S} = ChildRef,
+                                       [{S, ref_to_idx(ChildRef)} | Acc]
                           end
                   end,
             DirtyChildren = lists:foldl(Fun, [], Formulas),
@@ -387,7 +402,7 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
                  mnesia:delete_object(ObjTable, LO, write),
                  mnesia:write(ObjTable, shift_obj(LO, XOff, YOff), write)
              end || LO <- ObjsList],
-            DirtyChildren
+            [idx_to_ref(S, X) || {S, X} <- DirtyChildren]
     end.
 
 shift_obj(#local_obj{obj = {cell, {X, Y}}}=LO, XOff, YOff) ->
@@ -431,7 +446,7 @@ do_clear_cells(Ref, DelAttrs) ->
                                  unattach_form(RX, ref_to_idx(RX));
                              false -> ok
                          end,
-                         del_attributes(Attrs, DelAttrs)
+                         {clean, del_attributes(Attrs, DelAttrs)}
                  end
          end,
     [apply_to_attrs(X, Op(X)) || X <- expand_ref(Ref)], 
@@ -484,8 +499,11 @@ delete_cells(#refX{site = S} = DelX, Disp) ->
             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
 
             %% Rewrite formulas
-            [deref_formula(X, DelX, Disp) || X <- LocalChildren3],
-
+            Status = [deref_formula(X, DelX, Disp) || X <- LocalChildren3],
+            Fun = fun({dirty, _Ref}) -> true; ({clean, _Ref}) -> false end,
+            Dirty = [X || {dirty, X} <- lists:filter(Fun, Status)],
+            ok = mark_these_dirty(Dirty, nil),
+                    
             %% fix relations table.
             [ok = delete_relation(X) || X <- Cells],
 
@@ -500,17 +518,13 @@ deref_formula(Ref, DelRef, Disp) ->
                  case orddict:find("formula", Attrs) of
                      {ok, F1} ->
                          {Status, F2} = deref(Ref, F1, DelRef, Disp),
-                         _Ret = case Status of
-                                   dirty -> [Ref];
-                                   clean -> []
-                               end,
-                         orddict:store("formula", F2, Attrs);
+                         {Status, orddict:store("formula", F2, Attrs)};
                      _ ->
-                         Attrs
+                         {clean, Attrs}
                  end
          end,
-    apply_to_attrs(Ref, Op),
-    ok.
+    {Status, _} = apply_to_attrs(Ref, Op),
+    {Status, Ref}.
 
 %% %% @doc copys cells from a reference to a reference
 -spec copy_cell(#refX{}, #refX{}, 
@@ -523,9 +537,9 @@ copy_cell(From=#refX{obj={cell, _}},
                       [{_, As}] -> As;
                       _         -> []
                   end,
-    Op = fun(Attrs) -> copy_attributes(SourceAttrs, Attrs, ["value",
+    Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs, ["value",
                                                             "formula",
-                                                            "__rawvalue"]) 
+                                                            "__rawvalue"])} 
          end,
     apply_to_attrs(To, Op),
     ok;
@@ -536,7 +550,7 @@ copy_cell(From=#refX{obj={cell, _}},
                       [{_, As}] -> As;
                       _         -> []
                   end,
-    Op = fun(Attrs) -> copy_attributes(SourceAttrs, Attrs, ["style"]) end,
+    Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs, ["style"])} end,
     apply_to_attrs(To, Op),
     ok;
 copy_cell(#refX{obj = {cell, {FX,FY}}} = From, 
@@ -756,13 +770,11 @@ diff(_FX,  FY, _TX,  TY, vertical)   -> TY - FY.
 %% Formulae that return dirty should be marked dirty at recalc
 %% time as they will not recalc to the real value
 %% The function 'INDIRECT' is an example of such a function
-make_formula(Toks) ->
-    % io:format("going into make_formula ~p~n", [Toks]),
-    mk_f(Toks, {clean, []}).
+make_formula(Status, Toks) ->
+    mk_f(Toks, {Status, []}).
 
 %% this function needs to be extended...
 mk_f([], {St, A}) ->
-    % io:format("returning from make_formula ~p ~p~n", [St, A]),
     {St, "="++lists:flatten(lists:reverse(A))};
 
 mk_f([{errval, _, '#REF!'} | T], {St, A}) -> 
@@ -821,12 +833,6 @@ mk_f([{recalc, S} | T], {_St, A}) ->
 mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
     mk_f(T, {dirty, ["INDIRECT" | A]});
 
-mk_f([{name, _, "SUM"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["SUM" | A]});
-
-mk_f([{name, _, "CELL"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["CELL" | A]});
-
 mk_f([{name, _, S} | T], {St, A}) ->
     mk_f(T, {St, [S | A]});
 
@@ -867,13 +873,13 @@ is_fixed([$$|Rest]) -> {true, Rest};
 is_fixed(List)      -> {false, List}.
 
 offset_with_ranges(Toks, Cell, From, Offset) ->
-    offset_with_ranges1(Toks, Cell, From, Offset, []).
+    offset_with_ranges1(Toks, Cell, From, Offset, clean, []).
 
-offset_with_ranges1([], _Cell, _From, _Offset, Acc) ->
-    lists:reverse(Acc);
+offset_with_ranges1([], _Cell, _From, _Offset, Status, Acc) ->
+    {Status, lists:reverse(Acc)};
 offset_with_ranges1([{rangeref, LineNo,
                       #rangeref{path = Path, text = Text}=H} | T],
-                    Cell, #refX{path = FromPath} = From, Offset, Acc) ->
+                    Cell, #refX{path = FromPath} = From, Offset, Status, Acc) ->
     #refX{path = CPath} = Cell,
     PathCompare = muin_util:walk_path(CPath, Path),
     Range = muin_util:just_ref(Text),
@@ -884,32 +890,36 @@ offset_with_ranges1([{rangeref, LineNo,
     [Cell1|[Cell2]] = string:tokens(Range, ":"),
     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
-    NewText = case PathCompare of
+    {St, NewText} = case PathCompare of
                   FromPath -> make_new_range(Prefix, Cell1, Cell2,
                                              {X1D, X1, Y1D, Y1},
                                              {X2D, X2, Y2D, Y2},
                                              From, Offset);
-                  _        -> Text
+                  _        -> {clean, Text}
               end,
     NewAcc = {rangeref, LineNo, H#rangeref{text = NewText}},
-    offset_with_ranges1(T, Cell, From, Offset, [NewAcc | Acc]);
+    NewStatus = case St of
+                    dirty -> dirty;
+                    clean -> Status
+                end,
+    offset_with_ranges1(T, Cell, From, Offset, NewStatus, [NewAcc | Acc]);
 offset_with_ranges1([{cellref, LineNo,
                       C=#cellref{path = Path, text = Text}}=H | T],
                     Cell, #refX{path = FromPath} = From,
-                    {XO, YO}=Offset, Acc) ->
+                    {XO, YO}=Offset, Status, Acc) ->
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
         %% If ever we apply two offsets at once, do it in two steps.
         {range, {Left, Top, _Right, Bottom}}
           when (YO == 0) and ((Left > X) or (Top > Y) or (Y > Bottom)) ->
-            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
+            offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
         {range, {Left, Top, Right, _Bottom}}
           when (XO == 0) and ((Left > X) or (X > Right) or (Top > Y)) ->
-            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
+            offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
         {column,{Left,_Right}} when X < Left ->
-            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
+            offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
         {row,{Top,_Bottom}} when Y < Top ->
-            offset_with_ranges1(T, Cell, From, Offset, [H | Acc]);
+            offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
         _Else ->
             #refX{path = CPath} = Cell,
             Prefix = case muin_util:just_path(Text) of
@@ -923,80 +933,100 @@ offset_with_ranges1([{cellref, LineNo,
                     FromPath -> make_cell(XDollar, X, XO, YDollar, Y, YO);
                     _        -> Text
                 end,
-            NewAcc = {cellref, LineNo, C#cellref{text = Prefix ++ NewCell}},    
-            offset_with_ranges1(T, Cell, From, {XO, YO}, [NewAcc | Acc])
+            NewAcc = {cellref, LineNo, C#cellref{text = Prefix ++ NewCell}},
+            offset_with_ranges1(T, Cell, From, {XO, YO}, Status, [NewAcc | Acc])
     end;
-offset_with_ranges1([H | T], Cell, From, Offset, Acc) ->
-    offset_with_ranges1(T, Cell, From, Offset, [H | Acc]).
+offset_with_ranges1([H | T], Cell, From, Offset, Status, Acc) ->
+    offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]).
 
 %% handle cells
 make_new_range(Prefix, Cell1, Cell2, 
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
                #refX{obj = {cell, {X, Y}}} = _From, {XO, YO}) ->
-    NC1 =
+    {St1, NC1} =
         case {X1, Y1} of
-            {X, Y} -> make_cell(X1D, X1, XO, Y1D, Y1, YO);
-            _      -> Cell1
+            {X, Y} -> {dirty, make_cell(X1D, X1, XO, Y1D, Y1, YO)};
+            _      -> {clean, Cell1}
         end,
-    NC2 =
+    {St2, NC2} =
         case {X2, Y2} of
-            {X, Y} -> make_cell(X2D, X2, XO, Y2D, Y2, YO);
-            _      -> Cell2
+            {X, Y} -> {dirty, make_cell(X2D, X2, XO, Y2D, Y2, YO)};
+            _      -> {clean, Cell2}
         end,
-    Prefix ++ NC1 ++ ":" ++ NC2;
+    Ret = Prefix ++ NC1 ++ ":" ++ NC2,
+    case {St1, St2} of
+        {clean, clean} -> {clean, Ret};
+        _              -> {dirty, Ret}
+    end;
 %% handle rows
 make_new_range(Prefix, Cell1, Cell2, 
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
                #refX{obj = {row, {Top, _Bottom}}}, 
                {0=_XOffset, YOffset}) ->
-    NC1 = if Top =< Y1 -> make_cell(X1D, X1, 0, Y1D, Y1, YOffset);
-             true      -> Cell1 end,
-    NC2 = if Top =< Y2 -> make_cell(X2D, X2, 0, Y2D, Y2, YOffset); 
-             true      -> Cell2 end,
-    Prefix ++ NC1 ++ ":" ++ NC2;
+    {St1, NC1} = if Top =< Y1 -> {dirty, make_cell(X1D, X1, 0, Y1D, Y1, YOffset)};
+                    true      -> {clean, Cell1}
+                 end,
+    {St2, NC2} = if Top =< Y2 -> {dirty, make_cell(X2D, X2, 0, Y2D, Y2, YOffset)}; 
+                    true      -> {clean, Cell2}
+                 end,
+    Ret = Prefix ++ NC1 ++ ":" ++ NC2,
+    case {St1, St2} of
+        {clean, clean} -> {clean, Ret};
+        _              -> {dirty, Ret}
+    end;
 %% handle columns
 make_new_range(Prefix, Cell1, Cell2, 
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
                #refX{obj = {column, {Left, _Right}}}, 
                {XOffset, 0=_YOffset}) ->
-    NC1 = if Left =< X1 -> make_cell(X1D, X1, XOffset, Y1D, Y1, 0);
-             true       -> Cell1 end,
-    NC2 = if Left =< X2 -> make_cell(X2D, X2, XOffset, Y2D, Y2, 0); 
-             true       -> Cell2 end,
-    Prefix ++ NC1 ++ ":" ++ NC2;
+    {St1, NC1} = if Left =< X1 -> {dirty, make_cell(X1D, X1, XOffset, Y1D, Y1, 0)};
+                    true       -> {clean, Cell1}
+                 end,
+    {St2, NC2} = if Left =< X2 -> {dirty, make_cell(X2D, X2, XOffset, Y2D, Y2, 0)}; 
+                    true       -> {clean, Cell2}
+                 end,
+    Ret = Prefix ++ NC1 ++ ":" ++ NC2,
+    case {St1, St2} of
+        {clean, clean} -> {clean, Ret};
+        _              -> {dirty, Ret}
+    end;
 %% handle ranges (horizontal rewrite)
 make_new_range(Prefix, Cell1, Cell2, 
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
                #refX{obj = {range, {_XA, YA, _XB, YB}}}, 
                {XOffset, 0}) ->
-    if
-        (YA =< Y1 andalso YB >= Y2) ->
-            NC1 = make_cell(X1D, X1, XOffset, Y1D, Y1, 0),
-            NC2 = make_cell(X2D, X2, XOffset, Y2D, Y2, 0);
-        (YA >  Y1 orelse  YB <  Y2) ->
-            NC1 = Cell1,
-            NC2 = Cell2
+    Status = if
+                 (YA =< Y1 andalso YB >= Y2) ->
+                     NC1 = make_cell(X1D, X1, XOffset, Y1D, Y1, 0),
+                     NC2 = make_cell(X2D, X2, XOffset, Y2D, Y2, 0),
+                     dirty;
+                 (YA >  Y1 orelse  YB <  Y2) ->
+                     NC1 = Cell1,
+                     NC2 = Cell2,
+                     clean
     end,
-    Prefix ++ NC1 ++ ":" ++ NC2;
+    {Status, Prefix ++ NC1 ++ ":" ++ NC2};
 %% handle ranges (horizontal rewrite)
 make_new_range(Prefix, Cell1, Cell2, 
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
                #refX{obj = {range, {XA, _YA, XB, _YB}}}, 
                {0, YOffset}) ->
-    if
-        (XA =< X1 andalso XB >= X2) ->
-            NC1 = make_cell(X1D, X1, 0, Y1D, Y1, YOffset),
-            NC2 = make_cell(X2D, X2, 0, Y2D, Y2, YOffset);
-        (XA >  X1 orelse  XB <  X2) ->
-            NC1 = Cell1,
-            NC2 = Cell2
+    Status = if
+                 (XA =< X1 andalso XB >= X2) ->
+                     NC1 = make_cell(X1D, X1, 0, Y1D, Y1, YOffset),
+                     NC2 = make_cell(X2D, X2, 0, Y2D, Y2, YOffset),
+                     dirty;
+                 (XA >  X1 orelse  XB <  X2) ->
+                     NC1 = Cell1,
+                     NC2 = Cell2,
+                     clean
     end,
-    Prefix ++ NC1 ++ ":" ++ NC2.
+    {Status, Prefix ++ NC1 ++ ":" ++ NC2}.
 
 %% used in copy'n'paste, drag'n'drops etc...
 d_n_d_c_n_p_offset(Toks, XOffset, YOffset) ->
@@ -1129,7 +1159,7 @@ add_child(CellIdx, Child, Tbl) ->
 deref(Child, [$=|Formula], DeRefX, Disp) when is_record(DeRefX, refX) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     NewToks = deref1(Child, Toks, DeRefX, Disp, []),
-    make_formula(NewToks).
+    make_formula(clean, NewToks).
 
 deref1(_Child, [], _DeRefX, _Disp, Acc) -> lists:reverse(Acc);
 deref1(Child, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Disp, Acc) ->
@@ -1184,7 +1214,6 @@ deref2(Child, H, Text, Path, DeRefX, Disp) ->
         _Else -> H
     end.
 
-
 %% if DelObj completely subsumes RewriteObj then the reference to RewriteObj should 
 %% be dereferenced (return 'deref')
 %% %% if DelObj partially subsumes RewriteObj then the reference to RewriteObj should
@@ -1211,8 +1240,6 @@ deref_overlap(Text, DelObj, Disp) ->
     IntBL = intersect(XX1, YY2, X1, Y1, X2, Y2),
     IntTR = intersect(XX2, YY1, X1, Y1, X2, Y2),
     IntBR = intersect(XX2, YY2, X1, Y1, X2, Y2),
-    % io:format("Text is ~p DelObj is ~p~n", [Text, DelObj]),
-    % io:format("~p ~p ~p ~p~n", [IntTL, IntBL, IntTR, IntBR]),
     case {IntTL, IntBL, IntTR, IntBR} of
         %% all included - deref!
         {in,  in,  in,  in}  -> {deref, "#REF!"};
@@ -1336,7 +1363,6 @@ rewrite(Y1O, Y2O, {range, _}, Text, middle_row, vertical) ->
     {recalc, S};
 
 rewrite(X1O, X2O, {range, _}, Text, middle_column, horizontal)  ->
-    % io:format("In rewrite for middle_column~n"),
     {XD1, X1, YD1, Y1, XD2, X2, YD2, Y2} = parse_range(Text),
     S = make_cell(XD1, X1, 0, YD1, Y1, 0) ++ ":" ++
         make_cell(XD2, (X2 - (X2O - X1O + 1)), 0, YD2, Y2, 0),
@@ -1375,27 +1401,22 @@ rewrite(YO, {row, _}, Text, middle, _Disp) ->
 
 %% page deletes always derefence
 recheck_overlay(_Text, {page, "/"}, _Target, _Disp) ->
-    % io:format("in recheck_overlay (1)~n"),
     {deref, "#REF!"};
 %% cell targets that haven't matched so far ain't gonna
 recheck_overlay(Text, DelX, {cell, {X1, Y1}}, _Disp) ->
-    % io:format("in recheck_overlay (2)~n"),
     {XX1, YY1, XX2, YY2} = expand(DelX),
     recheck2(Text, X1, Y1, XX1, YY1, XX2, YY2);
 %% cell deletes that haven't matched a row or column so far ain't gonna
 recheck_overlay(Text, {cell, _}, {Type, _}, _Disp)
   when ((Type == row) orelse (Type == column)) ->
-    % io:format("in recheck_overlay (3)~n"),
     {formula, Text};
 % different behaviours with a cell/range depending on if the range is
 % a single row or a single col range
 % single row
 recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX2, YY1}}, vertical) ->
-    % io:format("in recheck_overlay (4)~n"),
     recheck2(Text, X1, Y1, XX1, YY1, XX2, YY1);
 % single row
 recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX2, YY1}}, horizontal) ->
-    % io:format("in recheck_overlay (5)~n"),
     if
         (XX1 < X1), (XX2 > X1), (YY1 == Y1) -> C1 = make_cell(false, XX1, 0, false, YY1, 0),
                                                C2 = make_cell(false, XX2, -1, false, YY1,  0),
@@ -1404,7 +1425,6 @@ recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX2, YY1}}, horizonta
     end;
 % single col
 recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX1, YY2}}, vertical) ->
-    % io:format("in recheck_overlay (6)~n"),
     if
         (XX1 == X1), (YY1 < Y1), (YY2 > Y1) -> C1 = make_cell(false, XX1, 0, false, YY1, 0),
                                                C2 = make_cell(false, XX1, 0, false, YY2,  -1),
@@ -1413,24 +1433,19 @@ recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX1, YY2}}, vertical)
     end;
 % single col
 recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX1, YY2}}, horizontal) ->
-    % io:format("in recheck_overlay (7)~n"),
     recheck2(Text, X1, Y1, XX1, YY1, XX1, YY2);
 recheck_overlay(Text, {cell, {X1, Y1}}, {range, {XX1, YY1, XX2, YY2}}, _Disp) ->
-    % io:format("in recheck_overlay (8)~n"),
     recheck2(Text, X1, Y1, XX1, YY1, XX2, YY2);
 % cols/rows cols/range comparisons always fail
 recheck_overlay(Text, {Type, _}, {column, _}, _Disp)
   when ((Type == row) orelse (Type == range)) ->
-    % io:format("in recheck_overlay (9)~n"),
     {formula, Text};
 %% rows/cols comparisons always fail
 recheck_overlay(Text, {Type, _}, {row, _}, _Disp)
   when ((Type == column) orelse (Type == range)) ->
-    % io:format("in recheck_overlay (10)~n"),
     {formula, Text};
 %% check a row/row
 recheck_overlay(Text, {row, {X1, X2}}, {row, {XX1, XX2}} = Tgt, Disp) ->
-    % io:format("in recheck_overlay (11)~n"),
     if
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2) ->
             rewrite((X2 - X1 + 1), Tgt, Text, middle, Disp);
@@ -1439,7 +1454,6 @@ recheck_overlay(Text, {row, {X1, X2}}, {row, {XX1, XX2}} = Tgt, Disp) ->
     end;
 %% check a col/col
 recheck_overlay(Text, {column, {Y1, Y2}}, {column, {YY1, YY2}} = Tgt, Disp) ->
-    % io:format("in recheck_overlay (12)~n"),
     if
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
             rewrite((Y2 - Y1 + 1), Tgt, Text, middle, Disp);
@@ -1448,7 +1462,6 @@ recheck_overlay(Text, {column, {Y1, Y2}}, {column, {YY1, YY2}} = Tgt, Disp) ->
     end;
 %% check range/range
 recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} = R, horizontal) ->
-    % io:format("in recheck_overlay (13)~n"),
     if
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2),
         (Y1 =< YY1), (Y2 >= YY1), (Y2 =< YY2) ->
@@ -1466,7 +1479,6 @@ recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} =
         true                                               -> {formula, Text}
     end;
 recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} = R, vertical) ->
-    % io:format("in recheck_overlay (14)~n"),
     if
         (X1 =< XX1), (X2 >= XX1), (X2 =< XX2),
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
@@ -1486,11 +1498,9 @@ recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} =
 %% check range/column
 recheck_overlay(Text, {column, {range, {X1, zero, X2, inf}}},
                 {range, _} = Tgt, Disp) ->
-    % io:format("in recheck_overlay (15)~n"),
     recheck_overlay(Text, {column, {X1, X2}}, Tgt, Disp);
 recheck_overlay(Text, {column, {X1, X2}},
                 {range, {XX1, _YY1, XX2, _YY2}} = Tgt, Disp) ->
-    % io:format("in recheck_overlay (16)~n"),
     if
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2) ->
             rewrite(X1, X2, Tgt, Text, middle_column, Disp);
@@ -1499,11 +1509,9 @@ recheck_overlay(Text, {column, {X1, X2}},
 %% check range/row
 recheck_overlay(Text, {row, {range, {zero, Y1, inf, Y2}}},
                 {range, _} = Tgt, Disp) ->
-    % io:format("in recheck_overlay (17)~n"),
     recheck_overlay(Text, {row, {Y1, Y2}}, Tgt, Disp);
 recheck_overlay(Text, {row, {Y1, Y2}},
                 {range, {_XX1, YY1, _XX2, YY2}} = Tgt, Disp) ->
-    % io:format("in recheck_overlay (18)~n"),
     if
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
             rewrite(Y1, Y2, Tgt, Text, middle_row, Disp);
@@ -1541,20 +1549,18 @@ expand({page, "/"})                         -> {zero, inf, zero, inf}.
 
 %% different to offset_formula because it truncates ranges
 offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
-    % io:format("Cell is ~p~nFormula is ~p~nFrom is ~p~nOffset is ~p~n",
-    %          [Cell, Formula, From, Offset]),
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
-        {ok, Toks}    -> NewToks = offset_with_ranges(Toks, Cell, From, Offset),
-                         make_formula(NewToks);
+        {ok, Toks}    -> {Status, NewToks} = offset_with_ranges(Toks, Cell, From, Offset),
+                         make_formula(Status, NewToks);
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
                                        "formula in offset_fm_w_rng but "++
                                        "you do~n-~p~n", [Formula]),
                          {[], "=" ++ Formula}
-    end;
-offset_fm_w_rng(_Cell, Value, _From, _Offset) -> Value.
+    end.
+% offset_fm_w_rng(_Cell, Value, _From, _Offset) -> Value.
 
 offset_formula(Formula, {XO, YO}) ->
     %% the xfl_lexer:lex takes a cell address to lex against
@@ -1562,7 +1568,7 @@ offset_formula(Formula, {XO, YO}) ->
     %% are not actually going to be used here (ie {1, 1} is a dummy!)
     case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
         {ok, Toks}    -> NewToks = d_n_d_c_n_p_offset(Toks, XO, YO),
-                         {_St, NewFormula} = make_formula(NewToks),
+                         {_St, NewFormula} = make_formula(clean, NewToks),
                          NewFormula;
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
                                        "formula in offset_formula but "++
