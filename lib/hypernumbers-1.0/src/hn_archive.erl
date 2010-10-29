@@ -97,7 +97,7 @@ dump_perms(Site, SiteDest) ->
 dump_views(Site, SiteDest) ->
     ViewDest = join([SiteDest, "views"]),
     SiteFs   = hn_util:site_to_fs(Site),
-    Source   = join(["var", "sites", SiteFs, "views"]),
+    Source   = join([code:priv_dir(hypernumbers), "../../../", "var", "sites", SiteFs, "views"]),
     hn_util:recursive_copy(Source, ViewDest).
 
 %% Import all sites found in the given directory.
