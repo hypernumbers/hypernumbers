@@ -55,10 +55,16 @@ export_services(Dest) ->
 
 export_site(Dest, Site) ->
     filelib:ensure_dir([Dest,"/"]),
+    io:format("about to dump the etf~n"),
     ok = dump_etf(Site, Dest),
+    io:format("about to dump groups~n"),
     ok = dump_groups(Site, Dest),
+    io:format("about to dump perms~n"),
     ok = dump_perms(Site, Dest),
-    ok = dump_views(Site, Dest).
+    io:format("about to dump views~n"),
+    ok = dump_views(Site, Dest),
+    io:format("export site completed~n"),
+    ok.
 
 dump_users(Dest) ->
     Users = passport:dump_script(),
