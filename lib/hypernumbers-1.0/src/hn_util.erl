@@ -134,7 +134,6 @@ esc_regex([Else | Rest], Acc) ->
 %% Recursively copy directories
 -spec recursive_copy(list(), list()) -> ok.                            
 recursive_copy(From, To) ->
-    io:format("In recursive copy from: ~p to: ~p~n", [From, To]),
     {ok, Files} = file:list_dir(From),
     [ok = rec_copy1(From, To, X) || X <- Files],
     ok.
