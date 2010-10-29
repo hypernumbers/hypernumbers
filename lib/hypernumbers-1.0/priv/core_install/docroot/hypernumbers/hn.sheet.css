@@ -300,7 +300,7 @@ html,body {
     -moz-border-radius-topright:2px;
     -webkit-border-radius-topleft:2px;
     -webkit-border-radius-topright:2px;
-    opacity:0.5;
+    opacity:0.85;
 }
 
 #tabs a.current {
