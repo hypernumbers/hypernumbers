@@ -2,22 +2,25 @@
 
 DATE=`date +%Y-%m-%d.%T`
 
-eval $(ssh-agent)
+eval $(ssh-agent -s)
 
 REPO=git@github.com:hypernumbers/hypernumbers.git
-HNTOP=/Users/daleharvey/hypernumbers
+HNTOP=/Users/daleharvey/hn_tests
 WEBROOT=/Users/daleharvey/hn_tests/dev-www
 TESTDIR=/Users/daleharvey/hn_tests/test-hypernumbers
 LASTRUN=$WEBROOT/last_run
 
 cd $HNTOP
+echo "directory changed to " $HNTOP
 /usr/local/git/bin/git clone $REPO $TESTDIR
 
 ## Compile, and run Hypernumbers
 cd $TESTDIR
+echo "directory changed to " $TESTDIR
+ls
 ./hn build
-/usr/bin/sed -i '/{127,0,0,1}, 9090}/d' var/sys.config
-/usr/bin/sed -i '/{127,0,0,1}, 9091}/d' var/sys.config
+#/usr/bin/sed -i '/{127,0,0,1}, 9090}/d' ./var/sys.config
+#/usr/bin/sed -i '/{127,0,0,1}, 9091}/d' ./qvar/sys.config
 ./hn start
 
 ## Generate Excel Tests
@@ -57,4 +60,7 @@ mkdir -p $LASTRUN
 cp -r $TESTDIR/var/tests/* $LASTRUN
 cp $TESTDIR/var/tests/index.html $WEBROOT/$DATE.html
 
-rm -Rf $TESTDIR
+#rm -rf $TESTDIR
+
+# clean up ssh agent
+kill $SSH_AGENT_PID
