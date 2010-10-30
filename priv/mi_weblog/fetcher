@@ -57,6 +57,7 @@ server_loop(FileName, FD) ->
             ok = file:close(FD)
 
     after 200000 ->
+            Msg = io_lib:format("For ~p~n", [FileName]),
             ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
                           ["gordon@hypernumbers.com", "", atom_to_list(node()),
                            "Fetcher timed out in server loop!", Msg]),
