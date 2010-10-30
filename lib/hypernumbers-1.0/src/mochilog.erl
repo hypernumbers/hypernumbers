@@ -80,6 +80,7 @@ repair(Name) ->
 stream_log(Name, StartD, EndD, Remote) ->
     Log = logfile(Name ++ "/post_log"),
     Filter = make_filter([{method, all}, {between, StartD, EndD}]),
+    io:format("streaming log ~p~n", [Log]),
     case filelib:is_file(Log++".siz") of 
         false ->
             Remote ! {self(), {log_error, no_such_log}};
