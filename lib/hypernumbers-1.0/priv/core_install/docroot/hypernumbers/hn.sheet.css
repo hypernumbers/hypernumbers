@@ -1222,24 +1222,23 @@ a.toolbar-item {
     text-decoration:underline;
 }
 
-#settingsfeedback { 
+.hn_settings_feedback { 
     height:50px;
 }
 
-#settingsfeedback .error { 
+#hn_pwd_feedback .error { 
     color:white; 
     font-weight:bold;
     padding:5px;
     background:red;
 }
 
-#settingsfeedback .success { 
+#hn_pwd_feedback .success { 
     color:white; 
     font-weight:bold;
     padding:5px;
     background:green;
 }
-
 
 .beta {display:none;}
 

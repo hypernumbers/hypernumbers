@@ -246,7 +246,14 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
   <div id='editloggedin'>
    <div id='uname'></div>
   <div id='allowedviews'></div>
-  <a id='logout'>logout</a>
+  <a id='hn_reset_pwd'>Change Password</a> | <a id='logout'>Logout</a>
+        <form id='hn_passwordform'>
+	      <input type='password' id='hn_passwordval'>
+        <input type='submit' value='Set Password' class='button'>
+        <p>Passwords must be more than 8 characters and should
+        include punctuation and numbers</p>
+        <div id='hn_pwd_feedback'></div>
+	    </form>
   </div>
   <div id='editanon'>
    <form action='' method='post' id='login'>
