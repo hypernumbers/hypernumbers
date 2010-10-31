@@ -34,6 +34,7 @@
 -define(WEBPAGE, "webpage").
 -define(WIKI, "wikipage").
 -define(DEMO, "demopage").
+-define(PREVIEW, "preview").
 
 -spec start() -> {ok, pid()}. 
 start() ->
@@ -311,8 +312,8 @@ authorize_get(#refX{site = Site, path = Path},
               #env{accept = html, uid = Uid}) ->
     auth_srv:check_get_challenger(Site, Path, Uid);
 
-%% Always allows the demopage view
-authorize_get(_Ref, #qry{view = ?DEMO}, _Env) ->
+%% Always allows the demopage and preview pages views
+authorize_get(_Ref, #qry{view = V}, _Env) when V == ?DEMO orelse V == ?PREVIEW ->
     allowed;
     
 %% Authorize access to one particular view.
@@ -475,8 +476,11 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
             end
     end;
 
-iget(#refX{site=Site, path=Path}, page, #qry{view="demopage"}, Env) ->
+iget(#refX{site=Site, path=Path}, page, #qry{view=?DEMO}, Env) ->
     text_html(Env, make_demo(Site, Path));
+
+iget(#refX{site=Site, path=Path}, page, #qry{view=?PREVIEW}, Env) ->
+    text_html(Env, make_preview(Site, Path));
 
 iget(Ref, page, #qry{view="wikipage"},
      Env=#env{accept=html,uid=Uid}) ->
@@ -1623,7 +1627,27 @@ make_demo(Site, Path) ->
   <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
   <script src='/hypernumbers/hn.demopage.js'></script>
  </html>".
-    
+
+make_preview(Site, Path) ->
+    URL = Site ++ hn_util:list_to_path(Path),
+    "<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <title>Hypernumbers Preview</title> 
+  <style type='text/css'>
+   html, body { margin:0; padding:0; height:100%}
+   iframe { display:block; width:95%; height:44%; border:1px solid; padding:3px;'}
+  </style>    <meta charset='utf-8' >
+    <link rel='stylesheet' href='/hypernumbers/hn.style.css' />	
+  </head>
+  <body class='hn_demopage'>
+   <div class='hn_demointro'>To breakout of this preview <a href='./?view=spreadsheet'>click here</a></div>
+     <iframe class='hn_preview' src='"++URL++"?view=spreadsheet'></iframe>
+     <iframe class='hn_preview' src='"++URL++"?view=webpage' /></iframe>
+  </body>
+   <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
+  <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
+ </html>".
 
 %% catch script kiddie attempts and write them as info not error logs
 %% makes rb usable

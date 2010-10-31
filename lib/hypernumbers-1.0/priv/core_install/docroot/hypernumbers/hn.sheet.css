@@ -1146,6 +1146,10 @@ a.toolbar-item {
                  padding: 0px 20px 0px 0px;
 }
 
+#hn_previewlink { 
+                  padding: 4px;
+                  }
+
 #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet { 
     width: 100px
 }

@@ -569,6 +569,11 @@ label {
    clear: both;
 }
 
+.hn_preview
+{ 
+  height: 44%;
+  }
+
 .hn_demopage 
 { 
   background  : #f9f9f9;
