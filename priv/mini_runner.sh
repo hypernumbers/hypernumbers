@@ -79,7 +79,7 @@ mkdir -p $LASTRUN
 cp -r $TESTDIR/var/tests/* $LASTRUN
 cp $TESTDIR/var/tests/index.html $WEBROOT/$DATE.html
 
-#rm -rf $TESTDIR
+rm -rf $TESTDIR
 
 # clean up ssh agent
 kill $SSH_AGENT_PID
