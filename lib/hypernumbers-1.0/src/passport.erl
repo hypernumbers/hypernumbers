@@ -399,9 +399,25 @@ handle_call(_Request, _From, State) ->
 
 %% fix from http://github.com/msantos/cerck
 acceptablepassword(Password) ->
-    if
-        (length(Password) < 8) -> false;
-        true                   -> true
+    case {(length(Password) > 8), has_nonalpha(Password)} of
+        {true, true} -> true;
+        _            -> false
+    end.
+
+has_nonalpha(String) ->
+    Fun = fun(X, Acc) ->
+                  case {Acc, is_alpha(X)} of
+                      {true, _}  -> true;
+                      {_, false} -> true;
+                      _          -> Acc
+                  end
+          end,
+    lists:foldl(Fun, false, string:to_lower(String)).
+
+is_alpha(N) ->
+    if N < 97  -> false;
+       N > 122 -> false;
+       true    -> true
     end.
 
 reset_p1(Email, Pwd, Hash) ->

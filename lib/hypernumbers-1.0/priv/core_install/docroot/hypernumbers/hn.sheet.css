@@ -300,7 +300,7 @@ html,body {
     -moz-border-radius-topright:2px;
     -webkit-border-radius-topleft:2px;
     -webkit-border-radius-topright:2px;
-    opacity:0.5;
+    opacity:0.85;
 }
 
 #tabs a.current {
@@ -1146,6 +1146,10 @@ a.toolbar-item {
                  padding: 0px 20px 0px 0px;
 }
 
+#hn_previewlink { 
+                  padding: 4px;
+                  }
+
 #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet { 
     width: 100px
 }
@@ -1222,24 +1226,23 @@ a.toolbar-item {
     text-decoration:underline;
 }
 
-#settingsfeedback { 
+.hn_settings_feedback { 
     height:50px;
 }
 
-#settingsfeedback .error { 
+#hn_pwd_feedback .error { 
     color:white; 
     font-weight:bold;
     padding:5px;
     background:red;
 }
 
-#settingsfeedback .success { 
+#hn_pwd_feedback .success { 
     color:white; 
     font-weight:bold;
     padding:5px;
     background:green;
 }
-
 
 .beta {display:none;}
 

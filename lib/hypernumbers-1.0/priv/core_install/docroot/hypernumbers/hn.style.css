@@ -96,7 +96,29 @@ body {
     color: darkorange;
     cursor: pointer;
 }
+
+#hn_passwordform 
+{ 
+  display: none;
+  }
+
+#hn_passwordform p, #hn_passwordform .button, #hn_passwordform div
+{ 
+  font: 9px/1.2 Verdana,Tahoma,sans-serif;
+  color: #777;
+ }
+
+#hn_passwordform p
+{
+  margin: 0;
+  }
     
+#hn_reset_pwd
+{ 
+  text-decoration: underline;
+  cursor: pointer;
+  }
+
 #editspreadsheet {
     position:fixed;
     font-size:10px;
@@ -546,6 +568,11 @@ label {
 .clear { 
    clear: both;
 }
+
+.hn_preview
+{ 
+  height: 44%;
+  }
 
 .hn_demopage 
 { 

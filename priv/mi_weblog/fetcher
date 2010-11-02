@@ -57,14 +57,16 @@ server_loop(FileName, FD) ->
             ok = file:close(FD)
 
     after 200000 ->
+            Msg = io_lib:format("For ~p~n", [FileName]),
+            ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
+                          ["gordon@hypernumbers.com", "", atom_to_list(node()),
+                           "Fetcher timed out in server loop!", Msg]),
             io:format(standard_error, "Lost connection to server~n", []),
             ok = file:close(FD),
             ok = file:delete([?OUTDIR, FileName])
     end.
 
 init() ->
-    % set up the path
-    true = code:add_pathz("/hn/hypernumbers/lib/hypernumbers-1.0/ebin"),
     os:cmd(?EPMD), 
     Host = net_adm:localhost(),
     Name = list_to_atom("mi_fetcher@" ++ Host),

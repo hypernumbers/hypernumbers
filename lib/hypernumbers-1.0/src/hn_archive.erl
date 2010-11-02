@@ -55,10 +55,16 @@ export_services(Dest) ->
 
 export_site(Dest, Site) ->
     filelib:ensure_dir([Dest,"/"]),
+    io:format("about to dump the etf~n"),
     ok = dump_etf(Site, Dest),
+    io:format("about to dump groups~n"),
     ok = dump_groups(Site, Dest),
+    io:format("about to dump perms~n"),
     ok = dump_perms(Site, Dest),
-    ok = dump_views(Site, Dest).
+    io:format("about to dump views~n"),
+    ok = dump_views(Site, Dest),
+    io:format("export site completed~n"),
+    ok.
 
 dump_users(Dest) ->
     Users = passport:dump_script(),
@@ -91,7 +97,7 @@ dump_perms(Site, SiteDest) ->
 dump_views(Site, SiteDest) ->
     ViewDest = join([SiteDest, "views"]),
     SiteFs   = hn_util:site_to_fs(Site),
-    Source   = join(["var", "sites", SiteFs, "views"]),
+    Source   = join([code:priv_dir(hypernumbers), "../../../", "var", "sites", SiteFs, "views"]),
     hn_util:recursive_copy(Source, ViewDest).
 
 %% Import all sites found in the given directory.
