@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo -e "Running Version 1.0 of mini-runner"
+
 DATE=`date +%Y-%m-%d.%T`
 
 eval $(ssh-agent -s)
@@ -11,64 +13,65 @@ TESTDIR=/Users/daleharvey/hn_tests/test-hypernumbers
 LASTRUN=$WEBROOT/last_run
 
 cd $HNTOP
-echo "\n\ndirectory changed to " $HNTOP "\n\n"
+echo -e "\n\ndirectory changed to " $HNTOP "\n\n"
 /usr/local/git/bin/git clone $REPO $TESTDIR
 
 ## Compile, and run Hypernumbers
 cd $TESTDIR
-echo "\n\ndirectory changed to " $TESTDIR "\n\n"
+echo -e "\n\ndirectory changed to " $TESTDIR "\n\n"
 
 ./hn build
-echo "\n\nmaking the starling driver executable\n\n"
+echo -e "\n\nmaking the starling driver executable\n\n"
 chmod +x lib/starling/ebin/starling_drv
+ls
 ./hn start
 
 ## Generate Excel Tests
 cd $TESTDIR/priv/testserver
 ruby regen_tests.rb 1x
-echo "\n\n"
+echo -e "\n\n"
 ruby regen_tests.rb 2x
 cd $TESTDIR
 
 ## Generate System Tests
-echo $(./hn call 'testsys:generate().')
-echo "\n\n"
-echo $(./hn call 'test:sys().')
-echo "\n\n"
+echo -e $(./hn call 'testsys:generate().')
+echo -e "\n\n"
+echo -e $(./hn call 'test:sys().')
+echo -e "\n\n"
 
 ## Run tests
-echo $(./hn call 'test:excel("1a").')
-echo "\n\n"
-echo $(./hn call 'test:excel("1b").')
-echo "\n\n"
-echo $(./hn call 'test:excel("1c").')
-echo "\n\n"
-echo $(./hn call 'test:excel("1d").')
-echo "\n\n"
-echo $(./hn call 'test:excel("1e").')
-echo "\n\n"
+echo -e $(./hn call 'test:excel("1a").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("1b").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("1c").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("1d").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("1e").')
+echo -e "\n\n"
 
-echo $(./hn call 'test:excel("2a").')
-echo "\n\n"
-echo $(./hn call 'test:excel("2b").')
-echo "\n\n"
-echo $(./hn call 'test:excel("2c").')
-echo "\n\n"
-echo $(./hn call 'test:excel("2d").')
-echo "\n\n"
-echo "\n\n"
-echo $(./hn call 'test:excel("2e").')
-echo "\n\n"
-echo $(./hn call 'test:excel("2f").')
-echo "\n\n"
-echo $(./hn call 'test:excel("2g").')
-echo "\n\n"
-echo $(./hn call 'test:excel("2x").')
-echo "\n\n"
-echo $(./hn call 'test:excel("2y").')
-echo "\n\n"
-echo $(./hn call 'test:excel("2z").')
-echo "\n\n"
+echo -e $(./hn call 'test:excel("2a").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("2b").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("2c").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("2d").')
+echo -e "\n\n"
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("2e").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("2f").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("2g").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("2x").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("2y").')
+echo -e "\n\n"
+echo -e $(./hn call 'test:excel("2z").')
+echo -e "\n\n"
 
 ## Cleanup.
 ./hn stop
@@ -79,7 +82,7 @@ mkdir -p $LASTRUN
 cp -r $TESTDIR/var/tests/* $LASTRUN
 cp $TESTDIR/var/tests/index.html $WEBROOT/$DATE.html
 
-rm -rf $TESTDIR
+#rm -rf $TESTDIR
 
 # clean up ssh agent
 kill $SSH_AGENT_PID
