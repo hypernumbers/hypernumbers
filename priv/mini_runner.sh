@@ -32,43 +32,43 @@ ruby regen_tests.rb 2x
 cd $TESTDIR
 
 ## Generate System Tests
-echo $(./hn call 'testsys:generate().')
+echo -e $(./hn call 'testsys:generate().')
 echo -e "\n\n"
-echo $(./hn call 'test:sys().')
+echo -e $(./hn call 'test:sys().')
 echo -e "\n\n"
 
 ## Run tests
-echo $(./hn call 'test:excel("1a").')
+echo -e $(./hn call 'test:excel("1a").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("1b").')
+echo -e $(./hn call 'test:excel("1b").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("1c").')
+echo -e $(./hn call 'test:excel("1c").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("1d").')
+echo -e $(./hn call 'test:excel("1d").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("1e").')
+echo -e $(./hn call 'test:excel("1e").')
 echo -e "\n\n"
 
-echo $(./hn call 'test:excel("2a").')
+echo -e $(./hn call 'test:excel("2a").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("2b").')
+echo -e $(./hn call 'test:excel("2b").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("2c").')
+echo -e $(./hn call 'test:excel("2c").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("2d").')
+echo -e $(./hn call 'test:excel("2d").')
 echo -e "\n\n"
 echo -e "\n\n"
-echo $(./hn call 'test:excel("2e").')
+echo -e $(./hn call 'test:excel("2e").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("2f").')
+echo -e $(./hn call 'test:excel("2f").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("2g").')
+echo -e $(./hn call 'test:excel("2g").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("2x").')
+echo -e $(./hn call 'test:excel("2x").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("2y").')
+echo -e $(./hn call 'test:excel("2y").')
 echo -e "\n\n"
-echo $(./hn call 'test:excel("2z").')
+echo -e $(./hn call 'test:excel("2z").')
 echo -e "\n\n"
 
 ## Cleanup.
