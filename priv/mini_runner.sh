@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo -e "Running Version 1.0 of mini-runner"
+
 DATE=`date +%Y-%m-%d.%T`
 
 eval $(ssh-agent -s)
