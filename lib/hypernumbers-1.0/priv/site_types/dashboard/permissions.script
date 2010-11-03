@@ -1,0 +1,27 @@
+%%-*-erlang-*-
+{add_view,[{path,[]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,[]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,[]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,[]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,[]},{view,"webpage"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin",everyone]},{view,"spreadsheet"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin",everyone]},{view,"table"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin",everyone]},{view,"webpage"}]}.
+{add_view,[{path,["[**]"]},{perms,["admin",everyone]},{view,"wikipage"}]}.
+{set_champion,[{path,["[**]"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["acquisition"]},{perms,["admin"]},{view,"spreadsheet"}]}.
+{add_view,[{path,["acquisition"]},{perms,["admin"]},{view,"table"}]}.
+{add_view,[{path,["acquisition"]},
+           {perms,["admin",everyone]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["acquisition"]},{view,"wikipage"}]}.
+{add_view,[{path,["activation"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["activation"]},{view,"wikipage"}]}.
+{add_view,[{path,["help"]},{perms,["admin"]},{view,"webpage"}]}.
+{set_champion,[{path,["help"]},{view,"webpage"}]}.
+{add_view,[{path,["referral"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["referral"]},{view,"wikipage"}]}.
+{add_view,[{path,["retention"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["retention"]},{view,"wikipage"}]}.
+{add_view,[{path,["revenue"]},{perms,["admin"]},{view,"wikipage"}]}.
+{set_champion,[{path,["revenue"]},{view,"wikipage"}]}.
