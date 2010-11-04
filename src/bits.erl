@@ -55,6 +55,7 @@ delete_sites(File) ->
 del_sites(Dev) ->
     case file:read_line(Dev) of
         {ok, Site} -> Site2 = string:strip(Site, right, 10),
+                      io:format("deleting site ~p~n", [Site2]),
                       ok = hn_setup:delete_site(Site2),
                       Msg = dh_date:format("d:M:Y (
 D) h:m:s") ++
