@@ -208,9 +208,11 @@ pget(K,L) -> proplists:get_value(K,L,undefined).
 pget(K,L,D) -> proplists:get_value(K,L,D).
 
 -spec wrap_page([textdata()], integer(), integer(), string()) -> [textdata()]. 
-wrap_page(Content, TotalWidth, TotalHeight, Addons) -> 
-    OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
-                               [TotalWidth, TotalHeight]),
+wrap_page(Content, TotalWidth, _TotalHeight, Addons) -> 
+    % OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
+    %                           [TotalWidth, TotalHeight]),
+    OuterStyle = io_lib:format("style='width:~bpx;'", 
+                               [TotalWidth]),
     Title = case Addons#render.title of
                 [] -> "<title>Hypernumbers - the team spreadsheet</title>";
                 T  -> T
