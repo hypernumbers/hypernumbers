@@ -387,7 +387,7 @@ body
 
 #signupform
 {
-  margin: 20px;
+  margin: 20px 20px 5px 20px;
 }
 
 #signupform .input 
@@ -632,3 +632,8 @@ body
   -webkit-box-shadow: 2px 2px 2px 2px #eeeeee;
  }
 
+#hn_more {
+    margin: 0px 0px 0px 30px;
+    text-align: center;
+    font-size: 80%;
+}
