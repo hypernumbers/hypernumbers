@@ -784,7 +784,7 @@ mk_f([{deref, Text} | T], {_St, A}) ->
     mk_f(T, {dirty, [Text | A]});
 
 %% special infering of division
-mk_f([{cellref, _, C1}, {cellref, _, C2} | T], {St, A}) -> 
+mk_f([{cellref, _, C1}, {cellref, _, C2} | T], {St, A}) ->
     mk_f(T, {St, [C2#cellref.text, "/", C1#cellref.text | A]});
 
 mk_f([{int, _, I}, {cellref,_,C} | T], {St, A}) -> 
@@ -797,7 +797,7 @@ mk_f([{')',_}, {cellref,_,C} | T], {St, A}) ->
     mk_f(T, {St, [C#cellref.text, "/", ")" | A]});
 
 %% order matters - now detecting 'root' cells
-mk_f([{cellref, _, #cellref{path="/", text=Text}} | T], {St, A}) -> 
+mk_f([{cellref, _, #cellref{path="/", text=Text}} | T], {St, A}) ->
     mk_f(T, {St, ["/" ++ Text | A]});
 
 mk_f([{cellref, _, C} | T], {St, A}) ->
@@ -903,6 +903,14 @@ offset_with_ranges1([{rangeref, LineNo,
                     clean -> Status
                 end,
     offset_with_ranges1(T, Cell, From, Offset, NewStatus, [NewAcc | Acc]);
+%% disambiguate division of a cell from the root path of a cell
+%% inject a new division operator
+%% ie =a1/b4 = 'a1 on this page' 'divided by' 'b4 on this page'
+offset_with_ranges1([{cellref, L, #cellref{path="/", text = [$/ | Rest]}=C} | T],
+                    Cell, Front, Offset, Status, Acc) ->
+    NewCell = {cellref, L, C#cellref{path = "./", text=Rest}},
+    NewH = {'/', 1},
+    offset_with_ranges1([NewH, NewCell | T], Cell, Front, Offset, Status, Acc);
 offset_with_ranges1([{cellref, LineNo,
                       C=#cellref{path = Path, text = Text}}=H | T],
                     Cell, #refX{path = FromPath} = From,
