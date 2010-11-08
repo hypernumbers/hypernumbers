@@ -996,17 +996,17 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
                {ok, production}  -> "tiny.hn"
            end,
     case factory:provision_site(Zone, Email, SType, PrevUid) of
-        {ok, new, Site, Node, Uid, Name} ->
+        {ok, new, Site, Node, Uid, Name, InitialView} ->
             log_signup(RootSite, Site, Node, Uid, Email),
-            Opaque = [{param, "?view=demopage"}],
+            Opaque = [{param, InitialView}],
             Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
-        {ok, existing, Site, Node, Uid, _Name} ->
+        {ok, existing, Site, Node, Uid, _Name, InitialView} ->
             log_signup(RootSite, Site, Node, Uid, Email),
             json(Env, {struct, [{"result", "success"},
-                                {"url", Site ++ "?view=demopage"}]});
+                                {"url", Site ++ InitialView}]});
         {error, Reason} ->
             Str = case Reason of
                       %bad_email ->

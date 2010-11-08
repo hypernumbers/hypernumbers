@@ -1,0 +1,12 @@
+%%-*-erlang-*-
+%% this file passes parameters back to be used on provisioning
+%% at the moment it only supports the initial view which can be one of
+%% {initial_view, ""}
+%% {initial_view, "?view=spreadsheet"}
+%% {initial_view, "?view=spreadsheet#tour"} plus other dialog box settings
+%% {initial_view, "?view=webpage"}
+%% {initial_view, "?view=wikipage"}
+%% {initial_view, "?view=demopage"}
+%% {initial_view, "view=webpreview"}
+%% {initial_view, "view=wikipreview"}
+{initial_view, "?view=demopage"}.

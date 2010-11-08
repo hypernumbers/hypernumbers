@@ -32,7 +32,8 @@ site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
             error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
             ok = create_site_tables(Site, Type),
             ok = sitemaster_sup:add_site(Site),
-            ok = update(Site, Type, Opts, ToLoad)
+            ok = update(Site, Type, Opts, ToLoad),
+            get_intial_params(Site)
     end.
 
 %% Delete a site
@@ -137,6 +138,12 @@ setup(Site, _Type, Opts, script) ->
         {ok, Terms} -> [ok = run_script(T, Site, Opts) || T <- Terms],
                        ok;
         {error, enoent} -> ok
+    end.
+
+get_intial_params(Site) ->
+    case file:consult([sitedir(Site), "/", "provision.script"]) of
+        {ok, [{initial_view, I}]} -> {initial_view, I};
+        {error, enoent}           -> {initial_view, []}
     end.
 
 %% -spec resave_views() -> ok.
