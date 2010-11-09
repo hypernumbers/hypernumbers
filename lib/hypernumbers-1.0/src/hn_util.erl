@@ -71,8 +71,86 @@
          % Path Utilities
          abs_path/2,
          just_path/1,
-         drop_last/1
+         drop_last/1,
+
+         % Formula utilities
+         make_formula/2
         ]).
+
+%% make formula creates a new formula, but also returns a status.
+%% Status can be [clean | dirty]
+%% Formulae that return dirty should be marked dirty at recalc
+%% time as they will not recalc to the real value
+%% The function 'INDIRECT' is an example of such a function
+make_formula(Status, Toks) ->
+    mk_f(Toks, {Status, []}).
+
+%% this function needs to be extended...
+mk_f([], {St, A}) ->
+    {St, "="++lists:flatten(lists:reverse(A))};
+
+mk_f([{errval, _, '#REF!'} | T], {St, A}) -> 
+    mk_f(T, {St, ["#REF!" | A]});
+
+mk_f([{deref, Text} | T], {_St, A}) ->
+    mk_f(T, {dirty, [Text | A]});
+
+%% special infering of division
+mk_f([{cellref, _, C1}, {cellref, _, C2} | T], {St, A}) ->
+    mk_f(T, {St, [C2#cellref.text, "/", C1#cellref.text | A]});
+
+mk_f([{int, _, I}, {cellref,_,C} | T], {St, A}) -> 
+    mk_f(T, {St, [C#cellref.text, "/", integer_to_list(I) | A]});
+
+mk_f([{float, _, {F, _}}, {cellref,_,C} | T], {St, A}) -> 
+    mk_f(T, {St, [C#cellref.text, "/", float_to_list(F) | A]});
+
+mk_f([{')',_}, {cellref,_,C} | T], {St, A}) ->
+    mk_f(T, {St, [C#cellref.text, "/", ")" | A]});
+
+%% order matters - now detecting 'root' cells
+mk_f([{cellref, _, #cellref{path="/", text=Text}} | T], {St, A}) ->
+    mk_f(T, {St, ["/" ++ Text | A]});
+
+mk_f([{cellref, _, C} | T], {St, A}) ->
+    mk_f(T, {St, [C#cellref.text | A]});
+
+mk_f([{rangeref, _, R} | T], {St, A}) ->
+    mk_f(T, {St, [R#rangeref.text | A]});
+
+mk_f([{namedexpr, _, N} | T], {St, A}) ->
+    mk_f(T, {St, [N#namedexpr.path ++ N#namedexpr.text | A]});
+
+mk_f([{bool, _, H} | T], {St, A}) ->
+    mk_f(T, {St, [atom_to_list(H) | A]});
+
+mk_f([{atom, _, H} | T], {St, A}) ->
+    mk_f(T, {St, [atom_to_list(H) | A]});
+
+mk_f([{int, _, I} | T], {St, A}) ->
+    mk_f(T, {St, [integer_to_list(I) | A]});
+
+mk_f([{float, _, {F, _OrigStr}} | T], {St, A}) ->
+    mk_f(T, {St, [float_to_list(F) | A]});
+
+mk_f([{formula, _, S} | T], {St, A}) ->
+    mk_f(T, {St, [S | A]});
+
+mk_f([{str, _, S} | T], {St, A}) ->
+    mk_f(T, {St, [$", S, $" | A]});
+
+mk_f([{recalc, S} | T], {_St, A}) ->
+    mk_f(T, {dirty, [S | A]});
+
+mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
+    mk_f(T, {dirty, ["INDIRECT" | A]});
+
+mk_f([{name, _, S} | T], {St, A}) ->
+    mk_f(T, {St, [S | A]});
+
+mk_f([{H, _} | T], {St, A}) ->
+    mk_f(T, {St, [atom_to_list(H) | A]}).
+
 
 -spec extract_name_from_email(string()) -> string(). 
  extract_name_from_email(Email) ->
