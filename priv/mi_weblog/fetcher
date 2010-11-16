@@ -26,7 +26,7 @@ main([Target, NStr, PostlogDir]) ->
 main(_) ->
     io:format("usage: fetcher target [day_ago=1] [postlog_dir=\".\"]~n", []).
 
-start_loop(_Filename, 0) ->
+start_loop(FileName, 0) ->
             Msg = io_lib:format("For ~p~n", [FileName]),
             ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
                           ["gordon@hypernumbers.com", "", atom_to_list(node()),
