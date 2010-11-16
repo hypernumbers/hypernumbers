@@ -1648,6 +1648,7 @@ make_preview(Type, Site, Path) ->
   <body class='hn_demopage'>
    <div class='hn_demointro'>To breakout of this preview <a href='./?view=spreadsheet'>click here</a></div>
      <iframe class='hn_preview' src='"++URL++"?view=spreadsheet'></iframe>
+     <br />
      <iframe class='hn_preview' src='"++URL++"?view="++Type++"page' /></iframe>
   </body>
    <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
