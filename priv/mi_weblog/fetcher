@@ -37,7 +37,12 @@ start_loop(FileName, N) ->
         {_, log_start} ->
             {ok, FD} = file:open([?OUTDIR, FileName], 
                                  [write, delayed_write, raw]),
-            server_loop(FileName, FD);
+            Ret = server_loop(FileName, FD),
+            Msg = io_lib:format("Fetcher succeeded for ~p~n", [FileName]),
+            ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
+                          ["gordon@hypernumbers.com", "", atom_to_list(node()),
+                           "Fetcher Succeeded!!", Msg]),
+            Ret;
         {_, {log_error, Reason}} ->
             Msg = io_lib:format("Cos ~p for ~p~n", [Reason, FileName]),
             ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
@@ -48,7 +53,7 @@ start_loop(FileName, N) ->
             Msg = io_lib:format("For ~p run number ~p~n", [FileName, N]),
             ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
                           ["gordon@hypernumbers.com", "", atom_to_list(node()),
-                           "Fetcher timed out!", Msg]),
+                           "Fetcher partially timed out!", Msg]),
             io:format("Error starting~n"),
             start_loop(FileName, N - 1)
     end.
