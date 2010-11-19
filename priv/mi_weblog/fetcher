@@ -17,22 +17,18 @@ main([Target, NStr, PostlogDir]) ->
     io:format("running fetcher for ~p~n",[Target]),
     N = list_to_integer(NStr),
     TNode = list_to_atom(Target),
+    Nodes = nodes(),
+    io:format("Node ~p is connected? ~p~n", [lists:member(TNode, Nodes]),
     StartDate = relative_date(N),
     EndDate = relative_date(N-1),
     _Ret = rpc:cast(TNode, mochilog, stream_log, 
                 [PostlogDir, StartDate, EndDate, self()]),
-    start_loop(Target ++ StartDate, 3);
+    start_loop(Target ++ StartDate);
 
 main(_) ->
     io:format("usage: fetcher target [day_ago=1] [postlog_dir=\".\"]~n", []).
 
-start_loop(FileName, 0) ->
-            Msg = io_lib:format("For ~p~n", [FileName]),
-            ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
-                          ["gordon@hypernumbers.com", "", atom_to_list(node()),
-                           "Fetcher timed out!", Msg]),
-            io:format("Error starting~n");    
-start_loop(FileName, N) ->
+start_loop(FileName) ->
     receive
         {_, log_start} ->
             {ok, FD} = file:open([?OUTDIR, FileName], 
@@ -56,7 +52,6 @@ start_loop(FileName, N) ->
                           ["gordon@hypernumbers.com", "", atom_to_list(node()),
                            "Fetcher partially timed out!", Msg]),
             io:format("Error starting~n"),
-            start_loop(FileName, N - 1)
     end.
 
 server_loop(FileName, FD) ->
