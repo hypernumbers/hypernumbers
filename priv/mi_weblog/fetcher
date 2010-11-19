@@ -23,6 +23,7 @@ main([Target, NStr, PostlogDir]) ->
     EndDate = relative_date(N-1),
     _Ret = rpc:cast(TNode, mochilog, stream_log, 
                 [PostlogDir, StartDate, EndDate, self()]),
+    io:format("Return from rpc:cast is ~p~n", [_Ret]),
     start_loop(Target ++ StartDate);
 
 main(_) ->
