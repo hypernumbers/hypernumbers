@@ -18,7 +18,7 @@ main([Target, NStr, PostlogDir]) ->
     N = list_to_integer(NStr),
     TNode = list_to_atom(Target),
     Nodes = nodes(),
-    io:format("Node ~p is connected? ~p~n", [lists:member(TNode, Nodes]),
+    io:format("Node ~p is connected? ~p~n", [lists:member(TNode, Nodes)]),
     StartDate = relative_date(N),
     EndDate = relative_date(N-1),
     _Ret = rpc:cast(TNode, mochilog, stream_log, 
