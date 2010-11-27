@@ -51,7 +51,7 @@ start_loop(FileName) ->
                                 [FileName, nodes()]),
             ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
                           ["gordon@hypernumbers.com", "", atom_to_list(node()),
-                           "Fetcher partially timed out!", Msg]),
+                           "Fetcher timed out!", Msg]),
             io:format("Error starting~n")
     end.
 
