@@ -537,9 +537,7 @@ copy_cell(From=#refX{obj={cell, _}},
                       [{_, As}] -> As;
                       _         -> []
                   end,
-    Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs, ["value",
-                                                            "formula",
-                                                            "__rawvalue"])} 
+    Op = fun(Attrs) -> {clean, copy_value(SourceAttrs, Attrs)} 
          end,
     apply_to_attrs(To, Op),
     ok;
@@ -1586,6 +1584,12 @@ del_attributes(D, []) -> D;
 del_attributes(D, [Key|T]) ->
     D2 = orddict:erase(Key, D),
     del_attributes(D2, T).
+
+copy_value(SD, TD) ->
+    case orddict:find("__rawvalue", SD) of
+        {ok, V} -> orddict:store("formula", V, TD);
+        _ -> TD
+    end.
 
 copy_attributes(_SD, TD, []) -> TD;
 copy_attributes(SD, TD, [Key|T]) ->
