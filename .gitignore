@@ -19,6 +19,12 @@ lib/git-svn-*
 ## Variable Config
 conf/sys.config
 
+## Dialyzer output
+priv/dialyzer/output.dialyzer.txt
+
+## Tarsnap checks
+priv/tarsnap/output.txt
+
 ## Documentation
 lib/formula_engine*/doc/*.html
 lib/hypernumbers*/doc/*.html
