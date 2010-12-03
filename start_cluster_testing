@@ -1,0 +1,8 @@
+#!/bin/bash
+erl -name testing@hypernumbers.dev \
+    -boot ebin/start_ssl \
+    -setcookie completelysecure \
+    -ssl_dist_opt server_certfile "priv/keys/servercert.pem" \
+    -ssl_dist_opt client_certfile "priv/keys/clientcert.pem" \
+    -ssl_dist_opt keyfile "priv/keys/key.pem" \
+    -proto_dist inet_ssl
