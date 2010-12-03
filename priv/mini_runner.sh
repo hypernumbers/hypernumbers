@@ -22,7 +22,7 @@ echo -e "\n\ndirectory changed to " $TESTDIR "\n\n"
 
 ./hn build
 echo -e "\n\nmaking the starling driver executable\n\n"
-chmod +x lib/starling/ebin/starling_drv
+chmod +x $HNTOP/lib/starling/ebin/starling_drv
 ls
 ./hn start
 
