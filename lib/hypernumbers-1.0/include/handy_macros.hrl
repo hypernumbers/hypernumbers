@@ -3,18 +3,10 @@
 %% solves some of your problems with match spec atoms of the form '$1' etc, etc
 -define(MS(X),list_to_atom("$"++integer_to_list(X))). %" fix highlighting),%
 
-%% Ternary if.
--define(COND(Test, TrueVal, FalseVal),
-        case (Test) of true -> TrueVal; false -> FalseVal end).
-
 %% Like cond, but lets you specify a pattern to match against (instead
 %% of matching against true).
 -define(ifmatch(X, Pat, Trueexpr, Falseexpr),
         case (X) of (Pat) -> Trueexpr; _ -> Falseexpr end).
-
-%% Shortcut for if.
--define(IF(Test, TrueVal),
-        ?COND(Test, TrueVal, nothing)).
 
 %% Simpler lists:keysearch(). Returns the associated value directly, no messing
 %% with pattern matching.

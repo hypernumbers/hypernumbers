@@ -69,7 +69,10 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
          {retvals, {[], []}}, {recompile, false},
          {auth_req, AuthReq}]),
     
-    Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
+    Fcode = case ?array_context of
+                true -> loopify(Pcode);
+                false -> Pcode
+            end,
     Result = eval_formula(Fcode),
     {_Errors, References} = get(retvals),
     {ok, {Fcode, Result, References, get(recompile)}}.
@@ -181,9 +184,10 @@ funcall(pair_up, [A, B]) when ?is_area(A) andalso ?is_area(B) ->
       A);
 funcall(pair_up, [A, V]) when ?is_area(A) andalso not(?is_area(V)) ->
     Ev = eval(V),
-    ?COND(?is_area(Ev),
-          funcall(pair_up, [A, Ev]),
-          area_util:apply_each(fun(X) -> [X, Ev] end, A));
+    case ?is_area(Ev) of
+        true  -> funcall(pair_up, [A, Ev]);
+        false -> area_util:apply_each(fun(X) -> [X, Ev] end, A)
+    end;
 funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
     funcall(pair_up, [A, V]);
 
@@ -385,9 +389,13 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
 %% TODO: Beef up.
 %% TODO: what's the real type of ':'? (vararg works for now).
 fntype(Fn) ->
-    ?COND(lists:member(Fn, [transpose, mmult, munit, frequency]), matrix,
-          ?COND(lists:member(Fn, [sum, count, ':']), vararg,
-                other)).
+    case lists:member(Fn, [transpose, mmult, munit, frequency]) of
+        true  -> matrix;
+        false -> case lists:member(Fn, [sum, count, ':']) of
+                     true  -> vararg;
+                     false -> other
+                 end
+    end.
 
 is_binop(X) ->
     lists:member(X, ['>', '<', '=', '>=', '<=', '<>', '+', '*', '-', '/', '^']).

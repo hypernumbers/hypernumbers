@@ -18,7 +18,10 @@
 %% @todo non-Excel 97 function - needs a test suite
 delta([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
-    ?COND(Num1 == Num2, 1, 0).
+    case (Num1 == Num2) of
+        true  -> 1;
+        false -> 0
+    end.
 
 gestep([V1]) ->
     gestep([V1, 0]);
@@ -29,5 +32,8 @@ gestep([V1, V2]) ->
                                        cast_blanks, cast_dates]),
     io:format("in gestep~n-V1 is ~p~n-V2 is ~p~n-Num is ~p~n-Step is ~p~n",
               [V1, V2, Num, Step]),
-    ?COND(Num >= Step, 1, 0).
-    
+    case (Num >= Step) of
+        true  -> 1;
+        false -> 0
+    end.
+

@@ -130,10 +130,12 @@
         Err when ?is_errval(Err) ->
             Err;
         [Cond] ->
-            muin:eval_formula(?COND(Cond, TrueExpr, FalseExpr))
+            F = case Cond of
+                    true  -> TrueExpr;
+                    false -> FalseExpr
+                end,
+            muin:eval_formula(F)
     end.
-
-
 
 %% @TODO write a test suite for iferror which is not an Excel 97 function
 iferror([Test, TrueExpr, FalseExpr]) ->

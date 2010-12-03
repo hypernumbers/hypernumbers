@@ -212,9 +212,10 @@ critbinom([V1, V2, V3]) ->
     critbinom1(Trials, Prob, Alpha, 0).
 critbinom1(Trials, Prob, Alpha, X) ->
     Val = binomdist1(X, Trials, Prob, true),
-    ?COND(Val >= Alpha,
-          X,
-          critbinom1(Trials, Prob, Alpha, X + 1)).
+    case (Val >= Alpha) of
+        true  -> X;
+        false -> critbinom1(Trials, Prob, Alpha, X + 1)
+    end.
 
 devsq(Vs) ->
     Flatvs = ?flatten_all(Vs),
@@ -354,7 +355,10 @@ max(Args) ->
         fun max_/1).
 
 max_(Nums) ->
-    ?COND(length(Nums) == 0, 0, lists:max(Nums)).
+    case (length(Nums) == 0) of
+        true  -> 0;
+        false -> lists:max(Nums)
+    end.
 
 min(Args) ->
     col(Args,
@@ -365,7 +369,10 @@ min(Args) ->
         fun min_/1).
 
 min_(Nums) ->
-    ?COND(length(Nums) == 0, 0, lists:min(Nums)).
+    case (length(Nums) == 0) of
+        true  -> 0;
+        false -> lists:min(Nums)
+    end.
 
 mina(Args) ->
     col(Args,
@@ -376,7 +383,10 @@ mina(Args) ->
         fun mina_/1).
 
 mina_(Nums) ->
-    ?COND(length(Nums) == 0, 0, lists:min(Nums)).
+    case (length(Nums) == 0) of
+        true  -> 0;
+        false -> lists:min(Nums)
+    end.
 
 maxa(Args) ->
     col(Args,
@@ -387,7 +397,10 @@ maxa(Args) ->
         fun maxa_/1).
 
 maxa_(Nums) ->
-    ?COND(length(Nums) == 0, 0, lists:max(Nums)).
+    case (length(Nums) == 0) of
+        true  -> 0;
+        false -> lists:max(Nums)
+    end.
 
 median(Args) ->
     col(Args,

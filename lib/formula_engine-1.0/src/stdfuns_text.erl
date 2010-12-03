@@ -158,10 +158,10 @@ fixed([N1, N2, N3]) ->
 fixed_([Num, Dec, Com]) ->
     
     RoundedNum = stdfuns_math:round([Num, Dec]) * 1.0,
-    Str = ?COND(Dec > 0,
-                hd(io_lib:format("~." ++ to_l(Dec) ++ "f", [RoundedNum])),
-                to_l(erlang:trunc(RoundedNum))),
-
+     Str = case (Dec > 0) of
+               true  -> hd(io_lib:format("~." ++ to_l(Dec) ++ "f", [RoundedNum]));
+               false -> to_l(erlang:trunc(RoundedNum))
+           end,
     case Com of
         true ->
             Str;

@@ -273,9 +273,16 @@ extract_coords(Ref, a1, {PivotCol, PivotRow}) ->
     Row = tconv:to_i(lists:nthtail(length(ColStr), Ref2)),
     IsColFixed = (hd(Ref) == $$),
     IsRowFixed = lists: member($$, tl(Ref)),
-    {?COND(IsColFixed, Col, {offset, Col - PivotCol}),
-     ?COND(IsRowFixed, Row, {offset, Row - PivotRow})}.
-             
+    NewCol = case IsColFixed of
+          true  -> Col;
+          false -> {offset, Col - PivotCol}
+     end,
+     NewRow = case IsRowFixed of
+          true  -> Row;
+          false -> {offset, Row - PivotRow}
+     end,
+     {NewCol, NewRow}.
+
 %% @doc Construct a range object from matched token text.
 
 finite_range(TokenChars, TokenLine, Kind) ->

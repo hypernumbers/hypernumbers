@@ -148,18 +148,21 @@ split_ssref(Ssref) ->
 
 %% Takes a same-site reference, returns path to the page it's on.
 just_path(Ssref) when is_list(Ssref) ->
-    MbR = lists:append([?COND(hd(Ssref) == $/,
-                        "/",
-                        ""),
-                  string:join(hslists:init(string:tokens(Ssref, "/")), "/"),
-                  "/"]),
+    H = case (hd(Ssref) == $/) of
+            true  -> "/";
+            false -> ""
+        end,
+    Str = string:join(hslists:init(string:tokens(Ssref, "/")), "/"),
+    MbR = lists:append([H, Str, "/"]),
 
     %% For Ssref like /a1.
-    ?COND(MbR == "//", "", MbR).
+    case (MbR == "//") of
+        true  -> "//";
+        false -> ""
+    end.
           
 just_ref(Ssref) ->
     lists:last(tokens(Ssref, "/")).
-
 
 %% Absolute path to location -> absolute path to another location.
 %% The first argument is a list of path components, the second is a string.
