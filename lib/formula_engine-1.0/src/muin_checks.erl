@@ -20,13 +20,13 @@ number(N) ->
     ?COND(is_number(N2), N2, ?ERR_VAL).
 
 number_rule(V, Rules) ->
-    ?COND(member(type(V), Rules), % if type of V is in the rules
+    ?COND(lists:member(type(V), Rules), % if type of V is in the rules
           cast(V, num),           % try to cast
           ?ERR_VAL).              % otherwise throw error
 
 numbers(L) ->
-    L2 = map(fun(X) -> cast(X, num) end, L),
-    Ok = all(fun(X) -> is_number(X) end, L2),
+    L2 = lists:map(fun(X) -> cast(X, num) end, L),
+    Ok = lists:all(fun(X) -> is_number(X) end, L2),
     ?COND(Ok, L2, ?ERR_VAL).
 
 int(N) ->
@@ -48,9 +48,9 @@ gte0(N) ->
     ?COND(N2 >= 0, N2, ?ERR_NUM).
 
 gte0s(Ns) ->
-    Ns2 = map(fun(X) -> cast(X, num) end,
+    Ns2 = lists:map(fun(X) -> cast(X, num) end,
               Ns),
-    Ok = all(fun(X) -> is_number(X) andalso X >= 0 end,
+    Ok = lists:all(fun(X) -> is_number(X) andalso X >= 0 end,
              Ns2),
     ?COND(Ok, Ns2, ?ERR_NUM).
 
@@ -63,7 +63,7 @@ gt0(N) ->
 
 %% Checks a list of values for errvals, the first one found is returned.
 die_on_errval(Vs) ->
-    foreach(fun(?ERRVAL_NULL)    -> ?ERR_NULL;
+    lists:foreach(fun(?ERRVAL_NULL)    -> ?ERR_NULL;
                (?ERRVAL_DIV)     -> ?ERR_DIV;
                (?ERRVAL_VAL)     -> ?ERR_VAL;
                (?ERRVAL_REF)     -> ?ERR_REF;
@@ -99,11 +99,11 @@ deck([H|T]) ->
 deck(Z) ->
     deck1(Z, [], []).
 deck1(Val, [], Acc) ->
-    append([Acc,[Val]]);
+    lists:append([Acc,[Val]]);
 deck1({matrix, _, L}, [H|T], Acc) ->
-    deck1(H, T, append([Acc, L]));
+    deck1(H, T, lists:append([Acc, L]));
 deck1(Val, [H|T], Acc) ->
-    deck1(H, T, append([Acc, [Val]])).
+    deck1(H, T, lists:append([Acc, [Val]])).
 
 type(V) when is_number(V) ->
     num;

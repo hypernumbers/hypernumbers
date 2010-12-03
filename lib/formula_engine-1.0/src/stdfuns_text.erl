@@ -139,7 +139,7 @@ clean_([Str]) ->
     Clean = fun(X) -> io_lib:printable_list([X])
                           andalso X =/= 10 andalso X =/= 8
             end,
-    filter(Clean, Str).
+    lists:filter(Clean, Str).
 
 %% Fixed is a bit of a mess
 fixed([Num]) ->

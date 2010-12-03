@@ -14,6 +14,7 @@
 
 %% exports for the AXA demo
 -export([
+         realtime/2,
          get_address/2,
          get_sex/1,
          split/2,
@@ -30,6 +31,9 @@
          davie/2]).
 
 -export([get_username/0]).
+
+realtime(A, B) ->
+    A + B.
 
 is_unique(Args) ->
     col(Args,

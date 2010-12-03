@@ -248,7 +248,7 @@ product(Vals) ->
         fun product1/1).
 
 product1(Nums) ->
-    foldl(fun(X, Acc) -> X * Acc end, 1, Nums).
+    lists:foldl(fun(X, Acc) -> X * Acc end, 1, Nums).
 
 %% @todo not an Excel 97 function - no test suite
 quotient([V1, V2]) ->
@@ -307,7 +307,7 @@ fact([V1]) ->
 fact1(0) ->
     1;
 fact1(Num) ->
-    foldl(fun(X, Acc) -> X * Acc end, 1, seq(1, Num)).
+    lists:foldl(fun(X, Acc) -> X * Acc end, 1, lists:seq(1, Num)).
 
 %% @todo not
 gcd(V) ->
@@ -417,11 +417,11 @@ mmult_(_) ->
 %% @todo not Excel 97 - no test suite
 multinomial(L) ->
     Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
-    Allok = all(fun(X) -> X >= 1 end, Nums),
+    Allok = lists:all(fun(X) -> X >= 1 end, Nums),
     ?COND(Allok, multinomial1(Nums), ?ERR_NUM).
 multinomial1(Nums) ->
     Nom = fact([sum(Nums)]),
-    Div = foldl(fun(X, Acc) ->
+    Div = lists:foldl(fun(X, Acc) ->
                         Acc * fact([X])
                 end,
                 1, Nums),
@@ -639,7 +639,7 @@ roman([V1, V2]) ->
     case X of
         X when X < 0 orelse X > 3999 -> ?ERRVAL_VAL;
         _Else ->
-            List = map(fun(C) -> [C] end, integer_to_list(X)),
+            List = lists:map(fun(C) -> [C] end, integer_to_list(X)),
             get_roman(List, Type)
     end.
     
@@ -857,7 +857,7 @@ seriessum([K, N, M, Coeffs]) ->
     Nums = ?flatten(Coeffs),
     seriessum1(K, N, M, Nums).
 seriessum1(K, N, M, As) ->
-    {Res, _} = foldl(fun(A, {Sum, I}) ->
+    {Res, _} = lists:foldl(fun(A, {Sum, I}) ->
                              {Sum + A * math:pow(K, N + M * I),
                               I + 1}
                      end,
@@ -937,10 +937,10 @@ sumx2my2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
 sumx2my2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_NA;
 sumx2my2_(Nums1, Nums2) ->
-    sum(map(fun({X, Y}) ->
+    sum(lists:map(fun({X, Y}) ->
                     (X * X) - (Y * Y)
             end,
-            zip(Nums1, Nums2))).
+            lists:zip(Nums1, Nums2))).
 
 sumx2py2([A1, A2]) ->
     Nums1 = col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
@@ -954,10 +954,10 @@ sumx2py2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
 sumx2py2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_NA;
 sumx2py2_(Nums1, Nums2) ->
-    sum(map(fun({X, Y}) ->
+    sum(lists:map(fun({X, Y}) ->
                     (X * X) + (Y * Y)
             end,
-            zip(Nums1, Nums2))).
+            lists:zip(Nums1, Nums2))).
 
 sumxmy2([A1, A2]) ->
     Nums1 = col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
@@ -971,10 +971,10 @@ sumxmy2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
 sumxmy2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_NA;
 sumxmy2_(Nums1, Nums2) ->
-    sum(map(fun({X, Y}) ->
+    sum(lists:map(fun({X, Y}) ->
                     math:pow(X - Y, 2)
             end,
-            zip(Nums1, Nums2))).
+            lists:zip(Nums1, Nums2))).
 
 %%% Trigonometry ~~~~~
 

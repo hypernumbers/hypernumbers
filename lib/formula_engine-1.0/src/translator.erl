@@ -14,8 +14,8 @@ do(Formula) ->
 
     Fun = fun(Frontend, NewFormula) ->
                   {ok, Tokens, _} = Frontend:string(NewFormula),
-                  flatmap(fun({_, YYtext}) -> YYtext end, Tokens)
+                  lists:flatmap(fun({_, YYtext}) -> YYtext end, Tokens)
           end,
     
-    R = foldl(Fun, [$=|Formula], Languages),
+    R = lists:foldl(Fun, [$=|Formula], Languages),
     tl(R). % Don't want the equals sign.

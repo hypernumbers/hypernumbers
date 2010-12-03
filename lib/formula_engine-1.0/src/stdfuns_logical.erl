@@ -106,7 +106,7 @@
     case col(Vs, Rules, [return_errors, {all, fun muin_collect:is_bool/1}]) of
         Err when ?is_errval(Err) -> Err;
         []                       -> ?ERRVAL_VAL;
-        Vals                     -> all(fun(X) -> X =/= false end, Vals)
+        Vals                     -> lists:all(fun(X) -> X =/= false end, Vals)
     end.
 
 'not'([V]) ->
@@ -119,7 +119,7 @@
 'or_'([]) ->
     ?ERRVAL_VAL;
 'or_'(Bools) ->
-    any(fun(X) -> X == true end, Bools).
+    lists:any(fun(X) -> X == true end, Bools).
 
 'if'([Test, TrueExpr]) ->
     'if'([Test, TrueExpr, false]);

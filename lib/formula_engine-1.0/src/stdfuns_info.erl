@@ -182,12 +182,12 @@ isblank([B]) when ?is_blank(B) ->
     true;
 isblank(Vs)      ->
     Flatvs = ?flatten_all(Vs),
-    all(fun muin_collect:is_blank/1, Flatvs).
+    lists:all(fun muin_collect:is_blank/1, Flatvs).
 
 
 %% @todo needs a test case written because it is not an Excel 97 function
 isnonblank(Vs) -> Flatvs = ?flatten_all(Vs),
-                  all(fun(X) -> not(muin_collect:is_blank(X)) end, Flatvs).
+                  lists:all(fun(X) -> not(muin_collect:is_blank(X)) end, Flatvs).
 
 
 info(["site"]) -> get(site);

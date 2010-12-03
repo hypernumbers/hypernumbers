@@ -63,7 +63,7 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
                           auth_req=AuthReq}) ->
 
     %% Populate the process dictionary.
-    map(fun({K,V}) -> put(K, V) end,
+    lists:map(fun({K,V}) -> put(K, V) end,
         [{site, Site}, {path, Path}, {x, Col}, {y, Row}, 
          {array_context, AryCtx},
          {retvals, {[], []}}, {recompile, false},
@@ -163,7 +163,7 @@ funcall(loop, [A, Fn]) when ?is_area(A) ->
               case Fn of
                   {Lst} when is_list(Lst) -> % fn spec is reversed
                       [Func|Revargs] = Lst,
-                      funcall(Func, [X|reverse(Revargs)]);
+                      funcall(Func, [X|lists:reverse(Revargs)]);
                   _ -> % spec is atom (should probably be done on length)
                       funcall(Fn, [X])
               end
@@ -212,7 +212,7 @@ funcall(Fname, Args0) ->
              include],
     %% Funs = [include, index],
     
-    Args = case member(Fname, Funs) of
+    Args = case lists:member(Fname, Funs) of
                true  -> Args0;
                false -> [eval(X) || X <- prefetch_references(Args0)]
            end,
@@ -298,13 +298,13 @@ implicit_intersection_finite(R) ->
             do_cell(R#rangeref.path, Y, X);
         {1, _H} -> % vertical vector
             CellCoords = muin_util:expand_cellrange(R),
-            case filter(fun({_X, Y}) -> Y == ?my end, CellCoords) of
+            case lists:filter(fun({_X, Y}) -> Y == ?my end, CellCoords) of
                 [{X, Y}] -> do_cell(R#rangeref.path, Y, X);
                 []       -> ?ERRVAL_VAL
             end;
         {_W, 1} -> % horizontal vector
             CellCoords = muin_util:expand_cellrange(R),
-            case filter(fun({X, _Y}) -> X == ?mx end, CellCoords) of
+            case lists:filter(fun({X, _Y}) -> X == ?mx end, CellCoords) of
                 [{X, Y}] -> do_cell(R#rangeref.path, Y, X);
                 []       -> ?ERRVAL_VAL
             end;
@@ -323,7 +323,7 @@ row(#cellref{row = Row}) -> Row.
 path(#cellref{path = Path}) -> Path.
     
 prefetch_references(L) ->
-    foldr(fun(R, Acc) when ?is_cellref(R); ?is_rangeref(R); ?is_namedexpr(R) ->
+    lists:foldr(fun(R, Acc) when ?is_cellref(R); ?is_rangeref(R); ?is_namedexpr(R) ->
                   [fetch(R)|Acc];
              (X, Acc) ->
                   [X|Acc]
@@ -345,13 +345,13 @@ fetch(#cellref{col = Col, row = Row, path = Path}) ->
     do_cell(Path, RowIndex, ColIndex);                       
 fetch(R) ->
     CellCoords = muin_util:expand_cellrange(R),
-    Rows = foldr(fun(CurrRow, Acc) -> % Curr row, result rows
-                         RowCoords = filter(fun({_, Y}) -> Y == CurrRow end, CellCoords),
-                         Row = map(fun({X, Y}) -> do_cell(R#rangeref.path, Y, X) end, RowCoords),
+    Rows = lists:foldr(fun(CurrRow, Acc) -> % Curr row, result rows
+                         RowCoords = lists:filter(fun({_, Y}) -> Y == CurrRow end, CellCoords),
+                         Row = lists:map(fun({X, Y}) -> do_cell(R#rangeref.path, Y, X) end, RowCoords),
                          [Row|Acc]
                  end,
                  [],
-                 seq(muin_util:tl_row(R), muin_util:br_row(R))),
+                 lists:seq(muin_util:tl_row(R), muin_util:br_row(R))),
     {range, Rows}. % still tagging to tell stdfuns where values came from.
 
 %% why are we passing in Url?
@@ -385,12 +385,12 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
 %% TODO: Beef up.
 %% TODO: what's the real type of ':'? (vararg works for now).
 fntype(Fn) ->
-    ?COND(member(Fn, [transpose, mmult, munit, frequency]), matrix,
-          ?COND(member(Fn, [sum, count, ':']), vararg,
+    ?COND(lists:member(Fn, [transpose, mmult, munit, frequency]), matrix,
+          ?COND(lists:member(Fn, [sum, count, ':']), vararg,
                 other)).
 
 is_binop(X) ->
-    member(X, ['>', '<', '=', '>=', '<=', '<>', '+', '*', '-', '/', '^']).
+    lists:member(X, ['>', '<', '=', '>=', '<=', '<>', '+', '*', '-', '/', '^']).
 
 loopify(Node = [loop|_]) -> Node;
 loopify(Node = [Fn|_]) when ?is_fn(Fn) ->
@@ -402,7 +402,7 @@ loopify(Node = [Fn|_]) when ?is_fn(Fn) ->
 loopify(Literal) -> Literal.
 
 loop_transform([Fn|Args]) when ?is_fn(Fn) ->
-    ArgsProcd = map(fun(X) -> loopify(X) end, Args),
+    ArgsProcd = lists:map(fun(X) -> loopify(X) end, Args),
     case is_binop(Fn) of
         true -> % operator -- no reversing.
             [A1|A2] = ArgsProcd,
@@ -413,7 +413,7 @@ loop_transform([Fn|Args]) when ?is_fn(Fn) ->
                     [loop] ++ ArgsProcd ++ [Fn];
                 _ -> % IF, CONCATENATE &c (NOT binops)
                     [Area|Rst] = ArgsProcd,
-                    [loop] ++ [Area] ++ [{[Fn|reverse(Rst)]}]
+                    [loop] ++ [Area] ++ [{[Fn | lists:reverse(Rst)]}]
                     % to wrap Area or not may depend on if it's node or literal?
                     % wrap in {} to prevent from being eval'd -- need a proper '
             end
