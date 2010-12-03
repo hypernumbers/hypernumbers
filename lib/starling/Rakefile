@@ -20,7 +20,7 @@ EI_LD_FLAGS = "-L#{`./findei.erl`.strip}/lib -lei -lerl_interface"
 task :default => [:app, :drv]
 
 task(:app) do
-  sh %{erlc -o #{BLD} #{ERL_FILES}} do |ok, res|
+  sh %{erlc +debug_info -o #{BLD} #{ERL_FILES}} do |ok, res|
     if !ok
       puts "erlc error, status = #{res.exitstatus}"
     end

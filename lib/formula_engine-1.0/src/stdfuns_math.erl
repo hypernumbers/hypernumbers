@@ -248,7 +248,7 @@ product(Vals) ->
         fun product1/1).
 
 product1(Nums) ->
-    foldl(fun(X, Acc) -> X * Acc end, 1, Nums).
+    lists:foldl(fun(X, Acc) -> X * Acc end, 1, Nums).
 
 %% @todo not an Excel 97 function - no test suite
 quotient([V1, V2]) ->
@@ -269,8 +269,14 @@ sqrt([V1]) ->
     math:sqrt(Num).
 
 power([TV1, TV2]) ->
-    V1 = ?COND(TV1 == 0.0, 0, TV1),
-    V2 = ?COND(TV2 == 0.0, 0, TV2),
+    V1 = case (TV1 == 0.0) of
+             true  -> 0;
+             false -> TV1
+         end,
+    V2 = case (TV2 == 0.0) of
+             true  -> 0;
+             false -> TV2
+         end,
     [Num] = ?numbers([V1], ?default_rules),
     [Pow] = ?numbers([V2], ?default_rules),
     ?ensure({V1, V2} =/= {blank, blank}, ?ERR_NUM),
@@ -307,7 +313,7 @@ fact([V1]) ->
 fact1(0) ->
     1;
 fact1(Num) ->
-    foldl(fun(X, Acc) -> X * Acc end, 1, seq(1, Num)).
+    lists:foldl(fun(X, Acc) -> X * Acc end, 1, lists:seq(1, Num)).
 
 %% @todo not
 gcd(V) ->
@@ -417,11 +423,14 @@ mmult_(_) ->
 %% @todo not Excel 97 - no test suite
 multinomial(L) ->
     Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
-    Allok = all(fun(X) -> X >= 1 end, Nums),
-    ?COND(Allok, multinomial1(Nums), ?ERR_NUM).
+    Allok = lists:all(fun(X) -> X >= 1 end, Nums),
+    case Allok of
+        true  -> multinomial1(Nums);
+        false -> ?ERR_NUM
+    end.
 multinomial1(Nums) ->
     Nom = fact([sum(Nums)]),
-    Div = foldl(fun(X, Acc) ->
+    Div = lists:foldl(fun(X, Acc) ->
                         Acc * fact([X])
                 end,
                 1, Nums),
@@ -441,7 +450,10 @@ log([V1, V2]) ->
     [Num, Base] = ?numbers([V1, V2], ?default_rules),
     ?ensure_positive(Num),
     ?ensure_positive(Base),
-    ?IF(Base == 1, ?ERR_DIV),
+    case (Base == 1) of
+        true  -> ?ERR_DIV;
+        false -> nothing
+    end,
     math:log(Num) / math:log(Base).
 
 log10([V1]) ->
@@ -497,15 +509,17 @@ roundup([V1, V2]) ->
     NumDigits2 = erlang:round(NumDigits),
     roundup1(Num, NumDigits2).
 roundup1(Num, 0) ->
-    ?COND(erlang:trunc(Num) == Num,
-          Num,
-          erlang:trunc(Num) + sign1(Num));
+    case (erlang:trunc(Num) == Num) of
+        true  -> Num;
+        false -> erlang:trunc(Num) + sign1(Num)
+    end;
 roundup1(Num, NumDigits) when NumDigits < 0 ->
     Pow = math:pow(10, erlang:abs(NumDigits)),
     Rounded = erlang:trunc(erlang:trunc(Num) / Pow) * Pow,
-    ?COND(erlang:abs(Num) > erlang:abs(Rounded),
-          Rounded + (sign1(Num) * Pow),
-          Rounded);
+    case (erlang:abs(Num) > erlang:abs(Rounded)) of
+        true  -> Rounded + (sign1(Num) * Pow);
+        false -> Rounded
+    end;
 roundup1(Num, NumDigits) ->
     Pow = math:pow(10, NumDigits),
     Rndup = fun(X) when erlang:round(X) < X, X >= 0 ->
@@ -578,9 +592,10 @@ int([V1]) ->
         fun int_/1).
 
 int_([Num]) ->
-    ?COND(erlang:round(Num) > Num,
-          erlang:round(Num) - 1,
-          erlang:round(Num)).
+    case (erlang:round(Num) > Num) of
+        true  -> erlang:round(Num) - 1;
+        false -> erlang:round(Num)
+    end.
 
 %% @todo not Excel 97 - no test suite
 mround([V1, V2]) ->
@@ -597,9 +612,10 @@ odd1([Num]) when Num == 0 ->
     1;
 odd1([Num]) ->
     E = even1([Num]),
-    ?COND(erlang:abs(E) - erlang:abs(Num) < 1,
-          E + sign1(Num),
-          E - sign1(Num)).
+    case (erlang:abs(E) - erlang:abs(Num) < 1) of
+        true  -> E + sign1(Num);
+        false -> E - sign1(Num)
+    end.
 
 trunc([V1]) ->
     ?int(V1, ?default_rules);
@@ -639,7 +655,7 @@ roman([V1, V2]) ->
     case X of
         X when X < 0 orelse X > 3999 -> ?ERRVAL_VAL;
         _Else ->
-            List = map(fun(C) -> [C] end, integer_to_list(X)),
+            List = lists:map(fun(C) -> [C] end, integer_to_list(X)),
             get_roman(List, Type)
     end.
     
@@ -857,7 +873,7 @@ seriessum([K, N, M, Coeffs]) ->
     Nums = ?flatten(Coeffs),
     seriessum1(K, N, M, Nums).
 seriessum1(K, N, M, As) ->
-    {Res, _} = foldl(fun(A, {Sum, I}) ->
+    {Res, _} = lists:foldl(fun(A, {Sum, I}) ->
                              {Sum + A * math:pow(K, N + M * I),
                               I + 1}
                      end,
@@ -937,10 +953,10 @@ sumx2my2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
 sumx2my2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_NA;
 sumx2my2_(Nums1, Nums2) ->
-    sum(map(fun({X, Y}) ->
+    sum(lists:map(fun({X, Y}) ->
                     (X * X) - (Y * Y)
             end,
-            zip(Nums1, Nums2))).
+            lists:zip(Nums1, Nums2))).
 
 sumx2py2([A1, A2]) ->
     Nums1 = col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
@@ -954,10 +970,10 @@ sumx2py2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
 sumx2py2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_NA;
 sumx2py2_(Nums1, Nums2) ->
-    sum(map(fun({X, Y}) ->
+    sum(lists:map(fun({X, Y}) ->
                     (X * X) + (Y * Y)
             end,
-            zip(Nums1, Nums2))).
+            lists:zip(Nums1, Nums2))).
 
 sumxmy2([A1, A2]) ->
     Nums1 = col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
@@ -971,10 +987,10 @@ sumxmy2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
 sumxmy2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_NA;
 sumxmy2_(Nums1, Nums2) ->
-    sum(map(fun({X, Y}) ->
+    sum(lists:map(fun({X, Y}) ->
                     math:pow(X - Y, 2)
             end,
-            zip(Nums1, Nums2))).
+            lists:zip(Nums1, Nums2))).
 
 %%% Trigonometry ~~~~~
 
@@ -1113,9 +1129,15 @@ intersect({{_,_}, {AX2,AY2}}, {{BX1, BY1}, {_, _}})
 
 intersect({{_,_}, {AX2,AY2}}, {{BX1, BY1}, {BX2,BY2}}) ->
     X1 = lists:min([AX2, BX1]),
-    X2 = ?COND( AX2 > BX2, BX2, AX2), 
+    X2 = case (AX2 > BX2) of
+             true  -> BX2;
+             false -> AX2
+         end,
     Y1 = lists:min([AY2, BY1]),
-    Y2 = ?COND( AY2 > BY2, BY2, AY2),
+    Y2 = case (AY2 > BY2) of
+             true  -> BY2;
+             false -> AY2
+         end,
     {{X1, Y1}, {X2, Y2}}.
 
 thelifeuniverseandeverything([]) ->

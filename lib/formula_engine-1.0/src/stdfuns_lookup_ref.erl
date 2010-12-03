@@ -19,7 +19,7 @@ choose([V|Vs]) ->
 choose([Idx], List) when Idx =< 0 orelse Idx > length(List) ->
     ?ERRVAL_VAL;
 choose([Idx], List) ->
-    case muin:eval(nth(Idx, List)) of
+    case muin:eval(lists:nth(Idx, List)) of
         % TODO: eugh
         {array,[Arr]} -> "{"++string:join([tconv:to_s(X)||X<-Arr], ",")++"}";
         {namedexpr, _, _} -> ?ERRVAL_NAME;
@@ -89,7 +89,10 @@ address_([Row, Col, AbsNum], [_IsA1], [_Page])
     ?ERRVAL_VAL;
 address_([Row, Col, AbsNum], [IsA1], [Page]) ->
     Addr = address1(tconv:to_s(Row), tconv:to_b26(Col), AbsNum, IsA1),
-    ?COND(Page == "", Addr, "../"++Page++"/"++Addr).
+    case (Page == "") of
+        true  -> Addr;
+        false -> "../"++Page++"/"++Addr
+    end.
 
 address1(Row, Col, 1, true)  -> "$" ++ Col ++ "$" ++ Row;
 address1(Row, Col, 2, true)  -> Col ++ "$" ++ Row; %"
@@ -208,8 +211,8 @@ match([V1, V2, V3]) ->
     end.
 match1(LookupVal, List, -1) ->
     %% List must be in descending order.
-    IsDesc = all(fun({X1, X2}) -> stdfuns_logical:'>'([X1, X2]) end,
-                 zip(hslists:init(List), tl(List))),
+    IsDesc = lists:all(fun({X1, X2}) -> stdfuns_logical:'>'([X1, X2]) end,
+                 lists:zip(hslists:init(List), tl(List))),
     ?ensure(IsDesc, ?ERR_NA),
     %% Find the smallest value that's >= to LookupVal.
     case find_first(fun(X) -> stdfuns_logical:'>='([X, LookupVal]) end, List) of
@@ -224,11 +227,11 @@ match1(LookupVal, List, 0) ->
     end;
 match1(LookupVal, List, 1) ->
     %% List must be in ascending order.
-    IsAsc = all(fun({X1, X2}) -> stdfuns_logical:'<'([X1, X2]) end,
-                zip(hslists:init(List), tl(List))),
+    IsAsc = lists:all(fun({X1, X2}) -> stdfuns_logical:'<'([X1, X2]) end,
+                lists:zip(hslists:init(List), tl(List))),
     ?ensure(IsAsc, ?ERR_NA),
     %% Find the largest value that's <= to LookupVal.
-    case find_first(fun(X) -> stdfuns_logical:'<='([X, LookupVal]) end, reverse(List)) of
+    case find_first(fun(X) -> stdfuns_logical:'<='([X, LookupVal]) end, lists:reverse(List)) of
         {ok, V} -> pos(V, List);
         false   -> ?ERR_NA
     end.
@@ -303,7 +306,7 @@ find(Value, Area, false) ->
 %% TODO: Searching for floats.
 non_exact_find(Value, L) ->
     Sorted = qsort(L),
-    case find_first(fun(X) -> stdfuns_logical:'<'([X, Value]) end, reverse(Sorted)) of
+    case find_first(fun(X) -> stdfuns_logical:'<'([X, Value]) end, lists:reverse(Sorted)) of
         {ok, PrevLargest} -> pos(PrevLargest, L);
         false             -> 0
     end.

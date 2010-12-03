@@ -17,17 +17,24 @@ number(N) when is_number(N) ->
     N;
 number(N) ->
     N2 = cast(N, num),
-    ?COND(is_number(N2), N2, ?ERR_VAL).
+    case is_number(N2) of
+        true  -> N2;
+        false -> ?ERR_VAL
+    end.
 
 number_rule(V, Rules) ->
-    ?COND(member(type(V), Rules), % if type of V is in the rules
-          cast(V, num),           % try to cast
-          ?ERR_VAL).              % otherwise throw error
+    case lists:member(type(V), Rules) of % if type of V is in the rules
+        true  -> cast(V, num);           % try to cast
+        false -> ?ERR_VAL                % otherwise throw error
+    end.
 
 numbers(L) ->
-    L2 = map(fun(X) -> cast(X, num) end, L),
-    Ok = all(fun(X) -> is_number(X) end, L2),
-    ?COND(Ok, L2, ?ERR_VAL).
+    L2 = lists:map(fun(X) -> cast(X, num) end, L),
+    Ok = lists:all(fun(X) -> is_number(X) end, L2),
+    case Ok of
+        true  -> L2;
+        false -> ?ERR_VAL
+    end.
 
 int(N) ->
     erlang:trunc(number(N)).
@@ -38,41 +45,53 @@ nonzero(N) when is_number(N) ->
     N;
 nonzero(N) ->
     N2 = cast(N, num),
-    ?COND(N2 =/= 0, N2, ?ERR_DIV).
+    case (N2 =/= 0) of
+        true  -> N2;
+        false -> ?ERR_DIV
+    end.
 
 %% Ensure number(s) are non-negative.
 gte0(N) when is_number(N) andalso N >= 0 ->
     N;
 gte0(N) ->
     N2 = cast(N, num),
-    ?COND(N2 >= 0, N2, ?ERR_NUM).
+    case (N2 >= 0) of
+        true  -> N2;
+        false -> ?ERR_NUM
+    end.
 
 gte0s(Ns) ->
-    Ns2 = map(fun(X) -> cast(X, num) end,
+    Ns2 = lists:map(fun(X) -> cast(X, num) end,
               Ns),
-    Ok = all(fun(X) -> is_number(X) andalso X >= 0 end,
+    Ok = lists:all(fun(X) -> is_number(X) andalso X >= 0 end,
              Ns2),
-    ?COND(Ok, Ns2, ?ERR_NUM).
+    case Ok of
+        true  -> Ns2;
+        false -> ?ERR_NUM
+    end.
 
 %% Ensure number(s) are positive.
 gt0(N) when is_number(N) andalso N > 0 ->
     N;
 gt0(N) ->
     N2 = cast(N, num),
-    ?COND(N2 > 0, N2, ?ERR_NUM).
-
+    case (N2 > 0) of
+        true  -> N2;
+        false ->?ERR_NUM
+    end.
+ 
 %% Checks a list of values for errvals, the first one found is returned.
 die_on_errval(Vs) ->
-    foreach(fun(?ERRVAL_NULL)    -> ?ERR_NULL;
-               (?ERRVAL_DIV)     -> ?ERR_DIV;
-               (?ERRVAL_VAL)     -> ?ERR_VAL;
-               (?ERRVAL_REF)     -> ?ERR_REF;
-               (?ERRVAL_NAME)    -> ?ERR_NAME;
-               (?ERRVAL_NUM)     -> ?ERR_NUM;
-               (?ERRVAL_NA)      -> ?ERR_NA;
-               (?ERRVAL_CIRCREF) -> ?ERR_CIRCREF;
-               (?ERRVAL_AUTH)    -> ?ERR_AUTH;
-               (_)               -> nothing
+    lists:foreach(fun(?ERRVAL_NULL) -> ?ERR_NULL;
+               (?ERRVAL_DIV)        -> ?ERR_DIV;
+               (?ERRVAL_VAL)        -> ?ERR_VAL;
+               (?ERRVAL_REF)        -> ?ERR_REF;
+               (?ERRVAL_NAME)       -> ?ERR_NAME;
+               (?ERRVAL_NUM)        -> ?ERR_NUM;
+               (?ERRVAL_NA)         -> ?ERR_NA;
+               (?ERRVAL_CIRCREF)    -> ?ERR_CIRCREF;
+               (?ERRVAL_AUTH)       -> ?ERR_AUTH;
+               (_)                  -> nothing
             end,
             Vs),
     Vs.
@@ -99,11 +118,11 @@ deck([H|T]) ->
 deck(Z) ->
     deck1(Z, [], []).
 deck1(Val, [], Acc) ->
-    append([Acc,[Val]]);
+    lists:append([Acc,[Val]]);
 deck1({matrix, _, L}, [H|T], Acc) ->
-    deck1(H, T, append([Acc, L]));
+    deck1(H, T, lists:append([Acc, L]));
 deck1(Val, [H|T], Acc) ->
-    deck1(H, T, append([Acc, [Val]])).
+    deck1(H, T, lists:append([Acc, [Val]])).
 
 type(V) when is_number(V) ->
     num;

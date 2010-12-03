@@ -94,7 +94,7 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
--spec mark_these_dirty([#refX{}], auth_srv:auth_req()) -> ok.
+-spec mark_these_dirty([#refX{}], auth_srv:auth_spec()) -> ok.
 mark_these_dirty([], _) -> ok;
 mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
     F = fun(C) -> case hn_db_wu:ref_to_idx(C) of
@@ -199,7 +199,7 @@ has_content(S, LO) ->
 -spec write_attrs(#refX{}, [{string(), term()}]) -> ?dict.
 write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
 
--spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_req()) 
+-spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_spec()) 
                  -> ?dict.
 write_attrs(Ref, NewAs, AReq) ->
     Op = fun(Attrs) -> 
@@ -216,16 +216,16 @@ write_attrs(Ref, NewAs, AReq) ->
          end,
     apply_to_attrs(Ref, Op).
 
--spec process_attrs([{string(), term()}], #refX{}, auth_srv:auth_req(), ?dict) 
+-spec process_attrs([{string(), term()}], #refX{}, auth_srv:auth_spec(), ?dict) 
                    -> ?dict.
 process_attrs([], _Ref, _AReq, Attrs) ->
     Attrs;
 process_attrs([{"formula",Val}|Rest], Ref, AReq, Attrs) ->
     Attrs2 = 
         case superparser:process(Val) of
-            {formula, Fla} -> 
+            {formula, Fla} ->
                 write_formula1(Ref, Fla, Val, AReq, Attrs);
-            [NVal, Align, Frmt] -> 
+            [NVal, Align, Frmt] ->
                 write_formula2(Ref, Val, NVal, Align, Frmt, Attrs)
         end,
     process_attrs(Rest, Ref, AReq, Attrs2);
@@ -537,9 +537,7 @@ copy_cell(From=#refX{obj={cell, _}},
                       [{_, As}] -> As;
                       _         -> []
                   end,
-    Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs, ["value",
-                                                            "formula",
-                                                            "__rawvalue"])} 
+    Op = fun(Attrs) -> {clean, copy_value(SourceAttrs, Attrs)} 
          end,
     apply_to_attrs(To, Op),
     ok;
@@ -765,80 +763,6 @@ make_row(true,  Y) -> [$$] ++ tconv:to_s(Y).
 diff( FX, _FY,  TX, _TY, horizontal) -> TX - FX;
 diff(_FX,  FY, _TX,  TY, vertical)   -> TY - FY.
 
-%% make formula creates a new formula, but also returns a status.
-%% Status can be [clean | dirty]
-%% Formulae that return dirty should be marked dirty at recalc
-%% time as they will not recalc to the real value
-%% The function 'INDIRECT' is an example of such a function
-make_formula(Status, Toks) ->
-    mk_f(Toks, {Status, []}).
-
-%% this function needs to be extended...
-mk_f([], {St, A}) ->
-    {St, "="++lists:flatten(lists:reverse(A))};
-
-mk_f([{errval, _, '#REF!'} | T], {St, A}) -> 
-    mk_f(T, {St, ["#REF!" | A]});
-
-mk_f([{deref, Text} | T], {_St, A}) ->
-    mk_f(T, {dirty, [Text | A]});
-
-%% special infering of division
-mk_f([{cellref, _, C1}, {cellref, _, C2} | T], {St, A}) -> 
-    mk_f(T, {St, [C2#cellref.text, "/", C1#cellref.text | A]});
-
-mk_f([{int, _, I}, {cellref,_,C} | T], {St, A}) -> 
-    mk_f(T, {St, [C#cellref.text, "/", integer_to_list(I) | A]});
-
-mk_f([{float, _, {F, _}}, {cellref,_,C} | T], {St, A}) -> 
-    mk_f(T, {St, [C#cellref.text, "/", float_to_list(F) | A]});
-
-mk_f([{')',_}, {cellref,_,C} | T], {St, A}) ->
-    mk_f(T, {St, [C#cellref.text, "/", ")" | A]});
-
-%% order matters - now detecting 'root' cells
-mk_f([{cellref, _, #cellref{path="/", text=Text}} | T], {St, A}) -> 
-    mk_f(T, {St, ["/" ++ Text | A]});
-
-mk_f([{cellref, _, C} | T], {St, A}) ->
-    mk_f(T, {St, [C#cellref.text | A]});
-
-mk_f([{rangeref, _, R} | T], {St, A}) ->
-    mk_f(T, {St, [R#rangeref.text | A]});
-
-mk_f([{namedexpr, _, N} | T], {St, A}) ->
-    mk_f(T, {St, [N#namedexpr.path ++ N#namedexpr.text | A]});
-
-mk_f([{bool, _, H} | T], {St, A}) ->
-    mk_f(T, {St, [atom_to_list(H) | A]});
-
-mk_f([{atom, _, H} | T], {St, A}) ->
-    mk_f(T, {St, [atom_to_list(H) | A]});
-
-mk_f([{int, _, I} | T], {St, A}) ->
-    mk_f(T, {St, [integer_to_list(I) | A]});
-
-mk_f([{float, _, {F, _OrigStr}} | T], {St, A}) ->
-    mk_f(T, {St, [float_to_list(F) | A]});
-
-mk_f([{formula, _, S} | T], {St, A}) ->
-    mk_f(T, {St, [S | A]});
-
-mk_f([{str, _, S} | T], {St, A}) ->
-    mk_f(T, {St, [$", S, $" | A]});
-
-mk_f([{recalc, S} | T], {_St, A}) ->
-    mk_f(T, {dirty, [S | A]});
-
-mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["INDIRECT" | A]});
-
-mk_f([{name, _, S} | T], {St, A}) ->
-    mk_f(T, {St, [S | A]});
-
-mk_f([{H, _} | T], {St, A}) ->
-    mk_f(T, {St, [atom_to_list(H) | A]}).
-
 parse_cell(Cell) ->
     {XDollar, Rest} = is_fixed(Cell),
     Fun = fun(XX) ->
@@ -883,10 +807,7 @@ offset_with_ranges1([{rangeref, LineNo,
     #refX{path = CPath} = Cell,
     PathCompare = muin_util:walk_path(CPath, Path),
     Range = muin_util:just_ref(Text),
-    Prefix = case muin_util:just_path(Text) of
-                 "/"     -> "";
-                 Other   -> Other
-             end,
+    Prefix = muin_util:just_path(Text),
     [Cell1|[Cell2]] = string:tokens(Range, ":"),
     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
@@ -926,7 +847,6 @@ offset_with_ranges1([{cellref, LineNo,
                          "/"   -> "";
                          Other -> Other
                      end,
-
             PathCompare = muin_util:walk_path(CPath, Path),
             NewCell =
                 case PathCompare of
@@ -1159,7 +1079,7 @@ add_child(CellIdx, Child, Tbl) ->
 deref(Child, [$=|Formula], DeRefX, Disp) when is_record(DeRefX, refX) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
     NewToks = deref1(Child, Toks, DeRefX, Disp, []),
-    make_formula(clean, NewToks).
+    hn_util:make_formula(clean, NewToks).
 
 deref1(_Child, [], _DeRefX, _Disp, Acc) -> lists:reverse(Acc);
 deref1(Child, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Disp, Acc) ->
@@ -1554,7 +1474,7 @@ offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
         {ok, Toks}    -> {Status, NewToks} = offset_with_ranges(Toks, Cell, From, Offset),
-                         make_formula(Status, NewToks);
+                         hn_util:make_formula(Status, NewToks);
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
                                        "formula in offset_fm_w_rng but "++
                                        "you do~n-~p~n", [Formula]),
@@ -1568,7 +1488,7 @@ offset_formula(Formula, {XO, YO}) ->
     %% are not actually going to be used here (ie {1, 1} is a dummy!)
     case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
         {ok, Toks}    -> NewToks = d_n_d_c_n_p_offset(Toks, XO, YO),
-                         {_St, NewFormula} = make_formula(clean, NewToks),
+                         {_St, NewFormula} = hn_util:make_formula(clean, NewToks),
                          NewFormula;
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
                                        "formula in offset_formula but "++
@@ -1594,7 +1514,7 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     end.
 
 write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Parents, Recompile) ->
-    Parxml = map(fun muin_link_to_simplexml/1, Parents),
+    Parxml = lists:map(fun muin_link_to_simplexml/1, Parents),
     {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
     ok = set_relations(Ref, NewLocPs),
     Align = default_align(Res),
@@ -1652,6 +1572,12 @@ del_attributes(D, []) -> D;
 del_attributes(D, [Key|T]) ->
     D2 = orddict:erase(Key, D),
     del_attributes(D2, T).
+
+copy_value(SD, TD) ->
+    case orddict:find("__rawvalue", SD) of
+        {ok, V} -> orddict:store("formula", V, TD);
+        _ -> TD
+    end.
 
 copy_attributes(_SD, TD, []) -> TD;
 copy_attributes(SD, TD, [Key|T]) ->

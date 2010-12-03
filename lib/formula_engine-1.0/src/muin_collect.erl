@@ -460,7 +460,7 @@ generic_collect(Vs, Rules, _PartitionFun, Targtype) ->
 
     %io:format("hello ~p ~p ~p ~n", [Vs, Rules, Targtype]),
     
-    Res = foldl(fun(cast_numbers, Acc) -> cast_numbers(Acc, Targtype);
+    Res = lists:foldl(fun(cast_numbers, Acc) -> cast_numbers(Acc, Targtype);
                    (cast_strings, Acc) -> cast_strings(Acc, Targtype);
                    (cast_bools, Acc)   -> cast_bools(Acc, Targtype);
                    (cast_dates, Acc)   -> cast_dates(Acc, Targtype);
@@ -507,7 +507,7 @@ ignore_blanks(Xs) ->
 
 %% Complement of lists:filter/2
 ignore(Fun, Xs) ->
-    filter(fun(X) -> not(Fun(X)) end, Xs).
+    lists:filter(fun(X) -> not(Fun(X)) end, Xs).
 
 %%% Casts ~~~~~
 
@@ -536,7 +536,7 @@ cast_strings_with_opt(Xs, Targtype, Action) ->
                       _          -> [X | Acc]
                   end  
           end,
-    reverse(foldl(Fun, [], Res)).
+    lists:reverse(lists:foldl(Fun, [], Res)).
 
 cast_numbers(Xs, Targtype) ->
     generic_cast(Xs, Targtype, fun erlang:is_number/1).
@@ -551,14 +551,14 @@ cast_blanks(Xs, Targtype) ->
     generic_cast(Xs, Targtype, fun is_blank/1).
 
 generic_cast(Xs, Targtype, Guardfun) ->
-    R = foldl(fun(X, Acc) ->
+    R = lists:foldl(fun(X, Acc) ->
                       case Guardfun(X) of
                           true  -> [cast(X, Targtype) | Acc];
                           false -> [X | Acc]
                       end
               end,
               [], Xs),
-    reverse(R).
+    lists:reverse(R).
 
 %%% Bans ~~~~~
 
@@ -578,7 +578,7 @@ ban_blanks(Xs) ->
     generic_ban(Xs, fun is_blank/1).
 
 generic_ban(Xs, Detectorf) ->
-    case any(Detectorf, Xs) of
+    case lists:any(Detectorf, Xs) of
         true  -> ?ERR_VAL; % For this to work properly, generic_collect needs to go value-by-value.
         false -> Xs
     end.

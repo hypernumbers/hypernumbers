@@ -116,7 +116,7 @@ avedev1([]) ->
     ?ERRVAL_NUM;
 avedev1(Nums) ->
     Avg = average(Nums),
-    Deviation = foldl(fun(X, Acc) -> Acc + erlang:abs(Avg - X) end, 0, Nums),
+    Deviation = lists:foldl(fun(X, Acc) -> Acc + erlang:abs(Avg - X) end, 0, Nums),
     Deviation / length(Nums).
 
 average(Args) ->
@@ -200,7 +200,7 @@ countif([A, Cr]) ->
 
     case odf_criteria:create(Crit) of
         {error, _Reason} -> 0;
-        Fun              -> length(filter(Fun, Vals))
+        Fun              -> length(lists:filter(Fun, Vals))
     end.    
 
 critbinom([V1, V2, V3]) ->
@@ -212,9 +212,10 @@ critbinom([V1, V2, V3]) ->
     critbinom1(Trials, Prob, Alpha, 0).
 critbinom1(Trials, Prob, Alpha, X) ->
     Val = binomdist1(X, Trials, Prob, true),
-    ?COND(Val >= Alpha,
-          X,
-          critbinom1(Trials, Prob, Alpha, X + 1)).
+    case (Val >= Alpha) of
+        true  -> X;
+        false -> critbinom1(Trials, Prob, Alpha, X + 1)
+    end.
 
 devsq(Vs) ->
     Flatvs = ?flatten_all(Vs),
@@ -252,12 +253,12 @@ forecast([_, _, _]) ->
 frequency([A, B]) when ?is_area(A) andalso ?is_area(B) ->
     {_, DataRows} = ?numbers(A, [cast_strings, cast_bools, ban_dates, cast_blanks]),
     {_, BinsRows} = ?numbers(B, [cast_strings, cast_bools, ban_dates, cast_blanks]),
-    Data = sort(flatten(DataRows)),
-    Bins = [hd(Data)-1] ++ sort(flatten(BinsRows)) ++ [last(Data)+1],
+    Data = lists:sort(lists:flatten(DataRows)),
+    Bins = [hd(Data)-1] ++ lists:sort(lists:flatten(BinsRows)) ++ [lists:last(Data)+1],
 
-    Boundaries = hslists:init(zip(Bins, hslists:drop(Bins, 1) ++ [0])),
-    R = reverse(foldl(fun({X, Y}, Acc) ->
-                              Count = length(filter(fun(Z) -> Z > X andalso Z =< Y end, Data)),
+    Boundaries = hslists:init(lists:zip(Bins, hslists:drop(Bins, 1) ++ [0])),
+    R = lists:reverse(lists:foldl(fun({X, Y}, Acc) ->
+                              Count = length(lists:filter(fun(Z) -> Z > X andalso Z =< Y end, Data)),
                               [Count|Acc]
                       end,
                       [],
@@ -270,14 +271,14 @@ geomean(Vs) ->
     Flatvs = ?flatten_all(Vs),
     Nums = ?numbers(Flatvs, [ignore_strings, ignore_bools,
                              ignore_dates, ignore_blanks]),
-    AnyZeros = any(fun(X) -> X == 0 end, Nums),
+    AnyZeros = lists:any(fun(X) -> X == 0 end, Nums),
     ?ensure(not(AnyZeros), ?ERR_NUM),
     math:pow(stdfuns_math:product(Nums), 1/erlang:length(Nums)).
 
 harmean(Vs) ->
     Flatvs = ?flatten_all(Vs),
     Nums = ?numbers(Flatvs, [ignore_strings, ignore_bools, ignore_dates, ignore_blanks]),
-    AnyZeros = any(fun(X) -> X == 0 end,
+    AnyZeros = lists:any(fun(X) -> X == 0 end,
                    Nums),
     ?ensure(not(AnyZeros), ?ERR_NUM),
     harmean1(Nums, 0, 0).
@@ -337,7 +338,7 @@ large([V1, V2]) ->
 large_(Arr, [N]) when N < 1; N > length(Arr) ->
     ?ERRVAL_NUM;
 large_(Nums, [N]) ->
-    nth(erlang:round(N), reverse(sort(Nums))).
+    lists:nth(erlang:round(N), lists:reverse(lists:sort(Nums))).
 
 %% TODO:
 linest(_) ->
@@ -354,7 +355,10 @@ max(Args) ->
         fun max_/1).
 
 max_(Nums) ->
-    ?COND(length(Nums) == 0, 0, lists:max(Nums)).
+    case (length(Nums) == 0) of
+        true  -> 0;
+        false -> lists:max(Nums)
+    end.
 
 min(Args) ->
     col(Args,
@@ -365,7 +369,10 @@ min(Args) ->
         fun min_/1).
 
 min_(Nums) ->
-    ?COND(length(Nums) == 0, 0, lists:min(Nums)).
+    case (length(Nums) == 0) of
+        true  -> 0;
+        false -> lists:min(Nums)
+    end.
 
 mina(Args) ->
     col(Args,
@@ -376,7 +383,10 @@ mina(Args) ->
         fun mina_/1).
 
 mina_(Nums) ->
-    ?COND(length(Nums) == 0, 0, lists:min(Nums)).
+    case (length(Nums) == 0) of
+        true  -> 0;
+        false -> lists:min(Nums)
+    end.
 
 maxa(Args) ->
     col(Args,
@@ -387,7 +397,10 @@ maxa(Args) ->
         fun maxa_/1).
 
 maxa_(Nums) ->
-    ?COND(length(Nums) == 0, 0, lists:max(Nums)).
+    case (length(Nums) == 0) of
+        true  -> 0;
+        false -> lists:max(Nums)
+    end.
 
 median(Args) ->
     col(Args,
@@ -445,7 +458,7 @@ percentile([V1, V2]) ->
     ?ensure((K >= 0) andalso (K =< 1), ?ERR_NUM),
     percentile1(Nums, K).
 percentile1(Nums, K) ->
-    L = map(fun(X) -> X / lists:sum(Nums) end,
+    L = lists:map(fun(X) -> X / lists:sum(Nums) end,
             cumulate(Nums)),
     firstgte(L, K).
 
@@ -486,7 +499,7 @@ quartile([V1, V2]) ->
     ?ensure((Q >= 0) and (Q =< 4), ?ERR_NUM),
     quartile1(Nums, Q).
 quartile1(Nums, Q) ->
-    nth(percentile1(Nums, Q * 0.25), Nums).
+    lists:nth(percentile1(Nums, Q * 0.25), Nums).
 
 rank([V1, V2]) ->
     rank([V1, V2, 1]);
@@ -496,7 +509,7 @@ rank([V1, V2, V3]) ->
     Order = ?bool(V3, ?default_rules_bools),
     rank1(Num, Nums, Order).
 rank1(N, Nums, true) ->
-    Ranks = generate_rank(sort(Nums), 0, 0, 0, []),
+    Ranks = generate_rank(lists:sort(Nums), 0, 0, 0, []),
     case lists:keyfind(N, 1, Ranks) of
         false     -> ?ERRVAL_NA;
         {N, Rank} ->
@@ -548,7 +561,7 @@ small([V1, V2]) ->
 small_(Arr, [N]) when N < 1; N > length(Arr) ->
     ?ERRVAL_NUM;
 small_(Nums, [N]) ->
-    nth(erlang:round(N), sort(Nums)).
+    lists:nth(erlang:round(N), lists:sort(Nums)).
 
 % Yup, Excel silently recognises both spelling variants
 standardise(L) -> standardize(L).
@@ -657,7 +670,7 @@ trimmean_(_Nums, [_Perc]) ->
 
 trimmean1(Nums, Percent) ->
     N = erlang:trunc(((Percent * length(Nums)) / 2)),
-    average1(sublist(sort(Nums), N + 1, length(Nums) - 2 * N)).
+    average1(lists:sublist(lists:sort(Nums), N + 1, length(Nums) - 2 * N)).
 
 var(V1) ->
     col(V1, [eval_funs, {cast, str, num}, {cast, bool, num},
@@ -738,7 +751,7 @@ firstgte([], _, _) ->
 %% Returns list in element at position n equals the sum of elements 1 to n in
 %% the original list.
 cumulate([Hd | Tl]) ->
-    reverse(foldl(fun(X, [H | T]) ->
+    lists:reverse(lists:foldl(fun(X, [H | T]) ->
                           [X + H, H | T]
                   end,
                   [Hd], Tl)).

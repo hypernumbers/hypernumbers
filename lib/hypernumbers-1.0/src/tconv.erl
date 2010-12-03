@@ -34,10 +34,11 @@ to_f(F) when is_float(F) -> F.
 
 %% String -> number.
 to_num(Str) when is_list(Str)   ->
-    try conv_to_int(Str)
+    Str2 = string:strip(Str),
+    try conv_to_int(Str2)
     catch
         exit : _ ->
-            try to_f(Str)
+            try to_f(Str2)
             catch
                 error:
                 _ -> {error, nan};

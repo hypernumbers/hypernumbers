@@ -172,10 +172,12 @@ arglist(Args) -> {list, Args}.
 %% Convert representation of array in AST into Erlang's native list-of-lists.
 to_native_list(Ary) ->
     RowLen = length(element(2, hd(Ary))),
-    Rectp = all(fun({row, Vals}) -> length(Vals) == RowLen end, Ary),
-    ?IF(not(Rectp), throw(invalid_array)),
-
-    {array, tl(foldl(fun(Row, Acc) ->
+    Rectp = lists:all(fun({row, Vals}) -> length(Vals) == RowLen end, Ary),
+    case not(Rectp) of
+        true  -> throw(invalid_array);
+        false -> nothing
+    end,
+    {array, tl(lists:foldl(fun(Row, Acc) ->
                              {row, Elts} = Row,
                              Acc ++ [Elts]
                      end,

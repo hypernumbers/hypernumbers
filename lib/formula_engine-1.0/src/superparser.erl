@@ -6,19 +6,48 @@
 -module(superparser).
 -export([process/1]).
 
-process([$= | Tl]) when Tl =/= [] ->
+process(List) -> process2(fixup(List)).
+
+% first swap - and $ if required
+process2([$-, $$ | Tl]) when Tl =/= [] ->
+    process([$$, $- | Tl]);
+process2([$= | Tl]) when Tl =/= [] ->
     {formula, super_util:upcase(Tl)};
-process([$+ | Tl] = L) when Tl =/= [] ->
-    {formula, super_util:upcase(L)};
-process([$- | Tl] = L) when Tl =/= [] ->
-    {formula, super_util:upcase(L)};
-process([39 | Tl]) -> % singly quoted string
+process2([$+ | Tl] = L) when Tl =/= [] ->
+    NewTl = fixup(Tl),
+    case tconv:to_num(NewTl) of
+        {error, nan} -> {formula, super_util:upcase(L)};
+        _            -> process3(NewTl)
+    end;
+process2([$- | Tl] = L) when Tl =/= [] ->
+    NewTl = fixup(Tl),
+    case tconv:to_num(NewTl) of
+        {error, nan} -> {formula, super_util:upcase(L)};
+        _            -> process3([$-|NewTl])
+    end;
+process2([$$, $- | Tl] = L) when Tl =/= [] ->
+    NewTl= fixup(Tl),
+    case tconv:to_num(NewTl) of
+        {error, nan} -> {formula, super_util:upcase(L)};
+        _            -> lists:keyreplace("format", 1, process2([$- | NewTl]),
+                                         {"format", "\"$\"###,0"}) %"}) syntax
+    end;
+process2([39 | Tl]) -> % singly quoted string
     [{quote, Tl},{"text-align", "left"},{"format", "null"}];
+process2([$$ | Tl] = L) ->
+    NewTl = fixup(Tl),
+    case tconv:to_num(NewTl) of
+        {error, nan} -> [{string, L}, {"text-align", "left"}, {"format", "null"}];
+        _            -> lists:keyreplace("format", 1, process(NewTl),
+                                         {"format", "\"$\"###,0"}) %"}) syntax
+    end;
 % pass html through plain and unformatted
-% COMMENTED OUT - WAITING FOR MARKDOWN DIALOG BOX TO BE REJIGGED
+% COMMENTED OUT - WAITING FOR MARKDOWN DIALOG BOX TO BEREJIGGED
 %% process([$< | Tl] = L) when Tl =/= [] ->
 %%    [{string, L}, {"text-align", "left"}, {"format", "plain"}];
-process(Input) ->
+process2(Input) -> process3(Input).
+
+process3(Input) ->
     % the xfl_lexer:lex takes a cell address to lex against
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
@@ -67,3 +96,15 @@ process(Input) ->
                          Other
             end
     end.
+
+%% fixup is going to strip the &nbsp; off both end of the string
+fixup(List) -> Ret = fixup3(lists:reverse(fixup2(string:strip(List)))),
+               Ret.
+
+fixup2([32 | Rest]) -> fixup2(Rest);
+fixup2([$&,$n,$b,$s,$p,$;|Rest]) -> fixup2(Rest);
+fixup2(List) -> List.
+
+fixup3([32 | Rest]) -> fixup2(Rest);
+fixup3([$;,$p,$s,$b,$n,$& | Rest]) -> fixup3(Rest);
+fixup3(List) -> lists:reverse(List).

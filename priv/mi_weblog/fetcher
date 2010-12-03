@@ -17,10 +17,13 @@ main([Target, NStr, PostlogDir]) ->
     io:format("running fetcher for ~p~n",[Target]),
     N = list_to_integer(NStr),
     TNode = list_to_atom(Target),
+    Nodes = nodes(),
+    io:format("Node ~p is connected? ~p~n", [TNode, lists:member(TNode, Nodes)]),
     StartDate = relative_date(N),
     EndDate = relative_date(N-1),
     _Ret = rpc:cast(TNode, mochilog, stream_log, 
                 [PostlogDir, StartDate, EndDate, self()]),
+    io:format("Return from rpc:cast is ~p~n", [_Ret]),
     start_loop(Target ++ StartDate);
 
 main(_) ->
@@ -31,7 +34,12 @@ start_loop(FileName) ->
         {_, log_start} ->
             {ok, FD} = file:open([?OUTDIR, FileName], 
                                  [write, delayed_write, raw]),
-            server_loop(FileName, FD);
+            Ret = server_loop(FileName, FD),
+            Msg = io_lib:format("Fetcher succeeded for ~p~n", [FileName]),
+            ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
+                          ["gordon@hypernumbers.com", "", atom_to_list(node()),
+                           "Fetcher Succeeded!!", Msg]),
+            Ret;
         {_, {log_error, Reason}} ->
             Msg = io_lib:format("Cos ~p for ~p~n", [Reason, FileName]),
             ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
@@ -39,7 +47,8 @@ start_loop(FileName) ->
                            "Fetcher failed!", Msg]),
             io:format("Server: ~p~n", [Reason])
     after 25000 ->
-            Msg = io_lib:format("For ~p~n", [FileName]),
+            Msg = io_lib:format("For ~p - nodes() is showing ~p~n",
+                                [FileName, nodes()]),
             ok = rpc:call('hnlive@hypernumbers.com', 'hn_net_util', email,
                           ["gordon@hypernumbers.com", "", atom_to_list(node()),
                            "Fetcher timed out!", Msg]),

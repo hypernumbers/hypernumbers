@@ -29,7 +29,7 @@ is_matrix({_Type, Rows} = Area) when ?is_area(Area) ->
 %%% @doc Check if all areas in the list have the same dimensions as A.
 are_congruent(A, As) when ?is_area(A), is_list(As) ->
     {W, H} = {width(A), height(A)},
-    all(fun(X) -> {W, H} == {width(X), height(X)} end, As);
+    lists:all(fun(X) -> {W, H} == {width(X), height(X)} end, As);
 %%% @doc Check if two areas have the same dimensions.
 are_congruent(A1, A2) when ?is_area(A1), ?is_area(A2) ->
     are_congruent(A1, [A2]).
@@ -39,8 +39,8 @@ are_congruent(A1, A2) when ?is_area(A1), ?is_area(A2) ->
 %% @doc Apply a function to each value in array/range.
 apply_each(Fun, A = {Tag, Rows}) when ?is_area(A) ->
     {Tag,
-     reverse(foldl(fun(Row, Acc) ->
-                           Newrow = map(Fun, Row),
+     lists:reverse(lists:foldl(fun(Row, Acc) ->
+                           Newrow = lists:map(Fun, Row),
                            [Newrow|Acc]
                    end,
                    [], Rows))}.
@@ -49,16 +49,18 @@ apply_each(Fun, A = {Tag, Rows}) when ?is_area(A) ->
 %% @doc Apply function to each value in array/range. The function gets
 %% element's position in addition to its value. ({Val, {Col, Row}}).
 apply_each_with_pos(Fun, A = {Tag, Rows}) when ?is_area(A) ->
-    {Tag,
-     reverse(foldl(fun({Row, RowIdx}, Acc) ->
-                           ValCoords = foldl(fun({V, I}, Acc2) ->
-                                                     [{V, {I, RowIdx}}|Acc2]
-                                             end,
-                                             [], reverse(zip(Row, seq(1, length(Row))))),
-                           Newrow = map(Fun, ValCoords),
-                           [Newrow|Acc]
-                   end,
-                   [], zip(Rows, seq(1, length(Rows)))))}.
+    Fun = fun({Row, RowIdx}, Acc) ->
+                  ValCoords =
+                      
+                      Fun2 = fun({V, I}, Acc2) ->
+                                     [{V, {I, RowIdx}}|Acc2]
+                             end,
+                  List = lists:reverse(lists:zip(Row, lists:seq(1, length(Row)))),
+                  lists:foldl(Fun2, [], List),
+                  Newrow = lists:map(Fun, ValCoords),
+                  [Newrow|Acc]
+          end,
+    {Tag, lists:reverse(lists:foldl(Fun, [], lists:zip(Rows, lists:seq(1, length(Rows)))))}.
 
 %% @spec to_list(Area :: area()) -> list()
 %% @doc Return area as a list with elements enumerated left-to-right top-down.
@@ -91,7 +93,7 @@ at(Col, Row, _Rows, W, H) when Col > W orelse Row > H ->
 at(Col, Row, _Rows, _W, _H) when Col < 1 orelse Row < 1 ->
     ?OUT_OF_RANGE;
 at(Col, Row, Rows, _W, _H) ->
-    {ok, nth(Col, nth(Row, Rows))}.
+    {ok, lists:nth(Col, lists:nth(Row, Rows))}.
 
 %% @spec make_array(Rows :: list()) -> array()
 %% @doc Create an array from a list of rows.
@@ -108,7 +110,7 @@ make_array(W, H) ->
 row(N, A = {Tag, Rows}) when ?is_area(A) andalso is_integer(N) ->
     H = height(A),
     if H < N -> ?OUT_OF_RANGE;
-       true  -> {Tag, [nth(N, Rows)]}
+       true  -> {Tag, [lists:nth(N, Rows)]}
     end.
 
 %% @spec col(N :: pos_integer(), A :: area()) -> area()
@@ -117,7 +119,7 @@ col(N, A = {Tag, Rows}) when ?is_area(A) andalso is_integer(N) ->
     W = width(A),
     if W < N -> ?OUT_OF_RANGE;
        true  ->
-            R = foldr(fun(X, Acc) -> [[nth(N, X)]|Acc] end, [], Rows),
+            R = lists:foldr(fun(X, Acc) -> [[lists:nth(N, X)]|Acc] end, [], Rows),
             {Tag, R}
     end.
 

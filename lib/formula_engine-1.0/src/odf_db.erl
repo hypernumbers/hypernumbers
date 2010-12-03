@@ -60,7 +60,7 @@ from_range({range, [Fields|DataRows]}) ->
         true -> ?ERR_VAL;
         false ->
             FieldsHash = [ ?hash(X) || X<-Fields ],
-            #odf_db{fm   = zip(Fields, FieldsHash),
+            #odf_db{fm   = lists:zip(Fields, FieldsHash),
                     recs = create_records(FieldsHash, DataRows)}
     end.
 
@@ -91,15 +91,15 @@ select([Record|T], Criteriaset, Acc) ->
 %%% @doc Returns data for a field from all records in a database in a list.
 
 db_field(Field, #odf_db{fm = Fm, recs = Recs}) when ?is_string(Field) ->
-    case keysearch(?hash(Field), 2, Fm) of
+    case lists:keysearch(?hash(Field), 2, Fm) of
         {value, {_Field, InternalField}} ->
-            map(fun(Rec) -> record_field(InternalField, Rec) end, Recs);
+            lists:map(fun(Rec) -> record_field(InternalField, Rec) end, Recs);
         false ->
             no_such_field %% TODO: hmmmm......
     end;
 db_field(FieldIdx, #odf_db{fm = Fm, recs = Recs}) when is_integer(FieldIdx) ->
     case FieldIdx > 0 andalso FieldIdx =< length(Fm) of
-        true  -> map(fun(Rec) -> record_field(FieldIdx, Rec) end, Recs);
+        true  -> lists:map(fun(Rec) -> record_field(FieldIdx, Rec) end, Recs);
         false -> no_such_field
     end.
 
@@ -111,9 +111,9 @@ db_field(FieldIdx, #odf_db{fm = Fm, recs = Recs}) when is_integer(FieldIdx) ->
 create_records(Fields, DataRows) ->
     create_records(Fields, DataRows, []).
 create_records(_Fields, [], Acc) ->
-    reverse(Acc);
+    lists:reverse(Acc);
 create_records(Fields, [Data|T], Acc) ->
-    create_records(Fields, T, [zip(Fields, Data)|Acc]).
+    create_records(Fields, T, [lists:zip(Fields, Data)|Acc]).
 
 %%% @doc Return a list of criteriasets. Each criteriaset is a fun that
 %%%      takes a db record and returns true if it matches, or false if
@@ -124,14 +124,14 @@ compile_criteriaset_descriptions(_FsHash, [], Acc) ->
 compile_criteriaset_descriptions(FsHash, [Csd|T], Acc) ->
     Reqs = compile_to_requirements(FsHash, Csd),
     Criteriaset = fun(Record) ->
-                          all(fun(Req) -> Req(Record) end, Reqs)
+                          lists:all(fun(Req) -> Req(Record) end, Reqs)
                   end,
     compile_criteriaset_descriptions(FsHash, T, [Criteriaset|Acc]).
 
 %%% @doc Compiles a criteriaset description to a criteriaset.
 
 compile_to_requirements(FsHash, Csd) ->
-    map(fun compile_to_requirement/1, zip(FsHash, Csd)).
+    lists:map(fun compile_to_requirement/1, lists:zip(FsHash, Csd)).
 
 %%% @doc Returns a fun that given a db record will return true if field F
 %%%      in the record satisfies the requirement.
@@ -143,7 +143,7 @@ compile_to_requirement({Field, ReqDesc}) ->
     fun(Record) -> Selector(record_field(Field, Record)) end.
 
 any_criteria_matches(Criteriaset, Record) ->
-    any(fun(Criteria) -> matches(Criteria, Record) end, Criteriaset).
+    lists:any(fun(Criteria) -> matches(Criteria, Record) end, Criteriaset).
 
 %%% @doc Check if a record matches some criteria.
 
@@ -153,13 +153,13 @@ matches(Criteria, Record) ->
 %%% @doc Return data for some field from a record.
 
 record_field(Field, Record) when ?is_string(Field) ->
-    case keysearch(Field, 1, Record) of
+    case lists:keysearch(Field, 1, Record) of
         {value, {_Tag, Value}} -> Value;
         false                   -> not_found % TODO: hmm... ?ERR_DIV?
     end;
 record_field(FieldIdx, Record) when is_integer(FieldIdx),
                                     FieldIdx < length(Record) ->
-    {_Tag, Value} = nth(FieldIdx, Record),
+    {_Tag, Value} = lists:nth(FieldIdx, Record),
     Value;
 record_field(_, _) ->
     ?ERR_VAL.

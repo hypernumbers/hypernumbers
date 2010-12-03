@@ -227,7 +227,7 @@ debang(Ssref) ->
 
 %%% @doc Check there are no string constants that are too large.
 no_strings_above_limit(Toks) ->
-    all(fun({str, _, Str}) ->
+    lists:all(fun({str, _, Str}) ->
                 case string:len(Str) of
                     Ok when Ok < ?STRING_SIZE_LIMIT -> true;
                     _Else                           -> false
@@ -267,15 +267,22 @@ extract_coords(Ref, rc, {PivotCol, PivotRow}) ->
             {ColCoord, RowCoord}
     end;
 extract_coords(Ref, a1, {PivotCol, PivotRow}) ->
-    Ref2 = re:replace(Ref, "\\$", "", [global,{return,list}]),
-    ColStr = takewhile(fun is_alpha/1, string:to_lower(Ref2)),
+    Ref2 = re:replace(Ref, "\\$", "", [global,{return,list}]), %"
+    ColStr = lists:takewhile(fun is_alpha/1, string:to_lower(Ref2)),
     Col = tconv:to_i(ColStr),
     Row = tconv:to_i(lists:nthtail(length(ColStr), Ref2)),
     IsColFixed = (hd(Ref) == $$),
-    IsRowFixed = member($$, tl(Ref)),
-    {?COND(IsColFixed, Col, {offset, Col - PivotCol}),
-     ?COND(IsRowFixed, Row, {offset, Row - PivotRow})}.
-             
+    IsRowFixed = lists: member($$, tl(Ref)),
+    NewCol = case IsColFixed of
+          true  -> Col;
+          false -> {offset, Col - PivotCol}
+     end,
+     NewRow = case IsRowFixed of
+          true  -> Row;
+          false -> {offset, Row - PivotRow}
+     end,
+     {NewCol, NewRow}.
+
 %% @doc Construct a range object from matched token text.
 
 finite_range(TokenChars, TokenLine, Kind) ->
@@ -407,8 +414,8 @@ split_range(Ref) ->
     {Path, LhsArg, RhsArg}.
 
 is_alpha(Char) when is_integer(Char) ->
-    (member(Char, seq($A, $Z)) orelse
-     member(Char, seq($a, $z)));
+    (lists:member(Char, lists:seq($A, $Z)) orelse
+     lists:member(Char, lists:seq($a, $z)));
 is_alpha([Char]) ->
     is_alpha(Char).
 

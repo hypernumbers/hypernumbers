@@ -1,45 +1,12 @@
 %%% Hasan Veldstra <hasan@hypernumbers.com>
 
-%% Import useful functions from lists.
--import(lists, [all/2,
-                any/2,
-                append/1,
-                append/2,
-                dropwhile/2,
-                filter/2,
-                flatten/1,
-                flatmap/2,
-                foldl/3,
-                foldr/3,
-                foreach/2,
-                keysearch/3,
-                last/1,
-                map/2,
-                member/2,
-                nth/2,
-                reverse/1,
-                seq/2,
-                sort/1,
-                sublist/2,
-                sublist/3,
-                takewhile/2,
-                zip/2]).
-
 %% solves some of your problems with match spec atoms of the form '$1' etc, etc
 -define(MS(X),list_to_atom("$"++integer_to_list(X))). %" fix highlighting),%
-
-%% Ternary if.
--define(COND(Test, TrueVal, FalseVal),
-        case (Test) of true -> TrueVal; false -> FalseVal end).
 
 %% Like cond, but lets you specify a pattern to match against (instead
 %% of matching against true).
 -define(ifmatch(X, Pat, Trueexpr, Falseexpr),
         case (X) of (Pat) -> Trueexpr; _ -> Falseexpr end).
-
-%% Shortcut for if.
--define(IF(Test, TrueVal),
-        ?COND(Test, TrueVal, nothing)).
 
 %% Simpler lists:keysearch(). Returns the associated value directly, no messing
 %% with pattern matching.

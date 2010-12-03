@@ -134,11 +134,11 @@ datedif1(Start, End, "YM") ->
             12 - (Startmo - Endmo)
     end;
 datedif1(Start, End, "YD") ->
-    foldl(fun(X, Acc) ->
+    lists:foldl(fun(X, Acc) ->
                   Acc + calendar:last_day_of_the_month(muin_date:year(Start), X)
           end,
           0,
-          seq(muin_date:month(Start), muin_date:month(End))).
+          lists:seq(muin_date:month(Start), muin_date:month(End))).
 
 datevalue([V1]) ->
     ?date(V1, [first_array, cast_strings, ban_bools, ban_blanks, ban_numbers]).
@@ -241,7 +241,7 @@ networkdays1(Start, End, Holidays) ->
                                    %% FIXME: Will break on #datetimes with 
                                    %% the same date
                                    %% but different time fields.
-                                   case member(X, Holidays) of
+                                   case lists:member(X, Holidays) of
                                        true -> Acc;
                                        false -> Acc + 1
                                    end

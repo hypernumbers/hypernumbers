@@ -33,12 +33,12 @@ provision_site_(Zone, Email, Type, SuggestedUid) ->
             {ok, NE, Uid} = passport:get_or_create_user(Email, SuggestedUid),
             Name = hn_util:extract_name_from_email(Email),
             Site = lists:flatten(io_lib:format("http://~s:~b", [Host,Port])),
-            ok = rpc:call(Node, hn_setup, site, 
-                          [Site, Type, [{creator, Uid},
-                                        {email, Email},
-                                        {name, Name}]]),
+            {initial_view, IView} = rpc:call(Node, hn_setup, site, 
+                                            [Site, Type, [{creator, Uid},
+                                                          {email, Email},
+                                                          {name, Name}]]),
             post_provision(NE, Site, Uid, Email, Name),
-            {ok, NE, Site, Node, Uid, Name}
+            {ok, NE, Site, Node, Uid, Name, IView}
     end.
 
 %% Used when the node name can be recovered from hns. See

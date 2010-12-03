@@ -45,7 +45,7 @@ run_or_err(Args, Fun) ->
     end.
 
 array_at({array, Rows}, R, C) ->
-    nth(C, nth(R, Rows)).
+    lists:nth(C, lists:nth(R, Rows)).
 
 get_type(X) when is_number(X)           -> num;
 get_type(X) when is_boolean(X)          -> bool;
@@ -148,18 +148,23 @@ split_ssref(Ssref) ->
 
 %% Takes a same-site reference, returns path to the page it's on.
 just_path(Ssref) when is_list(Ssref) ->
-    MbR = append([?COND(hd(Ssref) == $/,
-                        "/",
-                        ""),
-                  string:join(hslists:init(string:tokens(Ssref, "/")), "/"),
-                  "/"]),
-
-    %% For Ssref like /a1.
-    ?COND(MbR == "//", "/", MbR).
+    H = case (hd(Ssref) == $/) of
+            true  -> "/";
+            false -> ""
+        end,
+    Str = string:join(hslists:init(string:tokens(Ssref, "/")), "/"),
+    case {H, Str} of
+        {[], []} -> [];
+        _        -> MbR = lists:append([H, Str, "/"]),
+                    % For Ssref like /a1.
+                    case (MbR == "//") of
+                        true  -> "/";
+                        false -> MbR
+                    end
+    end.
           
 just_ref(Ssref) ->
-    last(tokens(Ssref, "/")).
-
+    lists:last(tokens(Ssref, "/")).
 
 %% Absolute path to location -> absolute path to another location.
 %% The first argument is a list of path components, the second is a string.
@@ -168,10 +173,10 @@ just_ref(Ssref) ->
 walk_path(_, Dest = [$/|_]) ->
     string:tokens(Dest, "/");
 walk_path(Currloc, Dest) ->
-    Newstk = foldl(fun(".",  Stk) -> Stk;
+    Newstk = lists:foldl(fun(".",  Stk) -> Stk;
                       ("..", []) ->  [];
                       ("..", Stk) -> hslists:init(Stk);
-                      (Word, Stk) -> append(Stk, [Word])
+                      (Word, Stk) -> lists:append(Stk, [Word])
                    end,
                    Currloc,
                    string:tokens(Dest, "/")),
@@ -179,13 +184,13 @@ walk_path(Currloc, Dest) ->
 
 expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->    
     %% Make a list of cells that make up this range.
-    Cells = map(fun(X) ->
-                        map(fun(Y) -> {X, Y} end,
-                            seq(StartRow, EndRow))
+    Cells = lists:map(fun(X) ->
+                        lists:map(fun(Y) -> {X, Y} end,
+                            lists:seq(StartRow, EndRow))
                 end,
-                seq(StartCol, EndCol)),
+                lists:seq(StartCol, EndCol)),
     %% Flatten Cells; can't use flatten/1 because there are strings in there.
-    foldl(fun(X, Acc) -> append([Acc, X]) end,
+    lists:foldl(fun(X, Acc) -> lists:append([Acc, X]) end,
           [], Cells).
 
 expand_cellrange(R) when ?is_rangeref(R) ->
@@ -274,8 +279,8 @@ normalize(N) when ?is_namedexpr(N) -> string:to_upper(N#namedexpr.text);
 normalize({F, OrigStr}) when is_float(F), ?is_string(OrigStr) -> string:to_lower(OrigStr);
 normalize(A) when ?is_array(A)     ->
     {array, Rows} = A,
-    RowsStr = foldr(fun(Row, Acc) ->
-                            Normalized = map(fun normalize/1, Row),
+    RowsStr = lists:foldr(fun(Row, Acc) ->
+                            Normalized = lists:map(fun normalize/1, Row),
                             Joined = string:join(Normalized, ", "),
                             [Joined|Acc]
                     end,

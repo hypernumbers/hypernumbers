@@ -34,7 +34,8 @@
 -define(WEBPAGE, "webpage").
 -define(WIKI, "wikipage").
 -define(DEMO, "demopage").
--define(PREVIEW, "preview").
+-define(WEBPREVIEW, "webpreview").
+-define(WIKIPREVIEW, "wikipreview").
 
 -spec start() -> {ok, pid()}. 
 start() ->
@@ -313,7 +314,8 @@ authorize_get(#refX{site = Site, path = Path},
     auth_srv:check_get_challenger(Site, Path, Uid);
 
 %% Always allows the demopage and preview pages views
-authorize_get(_Ref, #qry{view = V}, _Env) when V == ?DEMO orelse V == ?PREVIEW ->
+authorize_get(_Ref, #qry{view = V}, _Env)
+  when V == ?DEMO orelse V == ?WEBPREVIEW orelse V == ?WIKIPREVIEW ->
     allowed;
     
 %% Authorize access to one particular view.
@@ -479,8 +481,11 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
 iget(#refX{site=Site, path=Path}, page, #qry{view=?DEMO}, Env) ->
     text_html(Env, make_demo(Site, Path));
 
-iget(#refX{site=Site, path=Path}, page, #qry{view=?PREVIEW}, Env) ->
-    text_html(Env, make_preview(Site, Path));
+iget(#refX{site=Site, path=Path}, page, #qry{view=?WEBPREVIEW}, Env) ->
+    text_html(Env, make_preview("web", Site, Path));
+
+iget(#refX{site=Site, path=Path}, page, #qry{view=?WIKIPREVIEW}, Env) ->
+    text_html(Env, make_preview("wiki", Site, Path));
 
 iget(Ref, page, #qry{view="wikipage"},
      Env=#env{accept=html,uid=Uid}) ->
@@ -991,17 +996,17 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
                {ok, production}  -> "tiny.hn"
            end,
     case factory:provision_site(Zone, Email, SType, PrevUid) of
-        {ok, new, Site, Node, Uid, Name} ->
+        {ok, new, Site, Node, Uid, Name, InitialView} ->
             log_signup(RootSite, Site, Node, Uid, Email),
-            Opaque = [{param, "?view=demopage"}],
+            Opaque = [{param, InitialView}],
             Expiry = "never",
             Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
                                            Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
-        {ok, existing, Site, Node, Uid, _Name} ->
+        {ok, existing, Site, Node, Uid, _Name, InitialView} ->
             log_signup(RootSite, Site, Node, Uid, Email),
             json(Env, {struct, [{"result", "success"},
-                                {"url", Site ++ "?view=demopage"}]});
+                                {"url", Site ++ InitialView}]});
         {error, Reason} ->
             Str = case Reason of
                       %bad_email ->
@@ -1628,12 +1633,12 @@ make_demo(Site, Path) ->
   <script src='/hypernumbers/hn.demopage.js'></script>
  </html>".
 
-make_preview(Site, Path) ->
+make_preview(Type, Site, Path) ->
     URL = Site ++ hn_util:list_to_path(Path),
     "<!DOCTYPE html>
 <html lang='en'>
   <head>
-    <title>Hypernumbers Preview</title> 
+    <title>Hypernumbers " ++hn_util:capitalize_name(Type)++" Preview</title> 
   <style type='text/css'>
    html, body { margin:0; padding:0; height:100%}
    iframe { display:block; width:95%; height:44%; border:1px solid; padding:3px;'}
@@ -1643,7 +1648,8 @@ make_preview(Site, Path) ->
   <body class='hn_demopage'>
    <div class='hn_demointro'>To breakout of this preview <a href='./?view=spreadsheet'>click here</a></div>
      <iframe class='hn_preview' src='"++URL++"?view=spreadsheet'></iframe>
-     <iframe class='hn_preview' src='"++URL++"?view=webpage' /></iframe>
+     <br />
+     <iframe class='hn_preview' src='"++URL++"?view="++Type++"page' /></iframe>
   </body>
    <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
   <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
