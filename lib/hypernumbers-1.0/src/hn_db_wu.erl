@@ -382,11 +382,7 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             Formulas = [F || X <- DedupedChildren,
                              F <- read_ref_field(X, "formula", write)],
             Fun = fun({ChildRef, F1}, Acc) ->
-                          io:format("ChildRef is ~p~nF1 is ~p~nFrom is ~p~n" ++
-                                    "XOff is ~p~nYOff is ~p~n",
-                                    [ChildRef, F1, From, XOff, YOff]),
                           {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
-                          io:format("St is ~p~nF2 is ~p~n", [St, F2]),
                           Op = fun(Attrs) -> {St, orddict:store("formula", F2, Attrs)} end,
                           apply_to_attrs(ChildRef, Op),
                           % you need to switch the ref to an idx because later on
@@ -808,30 +804,19 @@ offset_with_ranges1([], _Cell, _From, _Offset, Status, Acc) ->
 offset_with_ranges1([{rangeref, LineNo,
                       #rangeref{path = Path, text = Text}=H} | T],
                     Cell, #refX{path = FromPath} = From, Offset, Status, Acc) ->
-    io:format("offset_with_ranges (1)~n"),
     #refX{path = CPath} = Cell,
     PathCompare = muin_util:walk_path(CPath, Path),
     Range = muin_util:just_ref(Text),
-    io:format("Text is ~p~nFromPath is ~p~n", [Text, FromPath]),
-    Prefix = case muin_util:just_path(Text) of
-                 "/"     -> "";
-                 Other   -> Other
-             end,
-    io:format("Prefix is ~p~n", [Prefix]),
     Prefix = muin_util:just_path(Text),
     [Cell1|[Cell2]] = string:tokens(Range, ":"),
     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
     {St, NewText} = case PathCompare of
-                  FromPath -> io:format("making new text~n"),
-                              io:format("Prefix is ~p Cell1 is ~p Cell2 is ~p~n",
-                                        [Prefix, Cell1, Cell2]),
-                              make_new_range(Prefix, Cell1, Cell2,
+                  FromPath -> make_new_range(Prefix, Cell1, Cell2,
                                              {X1D, X1, Y1D, Y1},
                                              {X2D, X2, Y2D, Y2},
                                              From, Offset);
-                  _        -> io:format("keeping old text~n"),
-                              {clean, Text}
+                  _        -> {clean, Text}
               end,
     NewAcc = {rangeref, LineNo, H#rangeref{text = NewText}},
     NewStatus = case St of
@@ -839,20 +824,10 @@ offset_with_ranges1([{rangeref, LineNo,
                     clean -> Status
                 end,
     offset_with_ranges1(T, Cell, From, Offset, NewStatus, [NewAcc | Acc]);
-%% disambiguate division of a cell from the root path of a cell
-%% inject a new division operator
-%% ie =a1/b4 = 'a1 on this page' 'divided by' 'b4 on this page'
-offset_with_ranges1([{cellref, L, #cellref{path="/", text = [$/ | Rest]}=C} | T],
-                    Cell, Front, Offset, Status, Acc) ->
-    io:format("offset_with_ranges (2)~n"),
-    NewCell = {cellref, L, C#cellref{path = "./", text=Rest}},
-    NewH = {'/', 1},
-    offset_with_ranges1([NewH, NewCell | T], Cell, Front, Offset, Status, Acc);
 offset_with_ranges1([{cellref, LineNo,
                       C=#cellref{path = Path, text = Text}}=H | T],
                     Cell, #refX{path = FromPath} = From,
                     {XO, YO}=Offset, Status, Acc) ->
-    io:format("offset_with_ranges (3)~n"),
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
         %% If ever we apply two offsets at once, do it in two steps.
@@ -872,7 +847,6 @@ offset_with_ranges1([{cellref, LineNo,
                          "/"   -> "";
                          Other -> Other
                      end,
-
             PathCompare = muin_util:walk_path(CPath, Path),
             NewCell =
                 case PathCompare of
@@ -883,7 +857,6 @@ offset_with_ranges1([{cellref, LineNo,
             offset_with_ranges1(T, Cell, From, {XO, YO}, Status, [NewAcc | Acc])
     end;
 offset_with_ranges1([H | T], Cell, From, Offset, Status, Acc) ->
-    io:format("offset_with_ranges (4)~n"),
     offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]).
 
 %% handle cells
@@ -1501,7 +1474,6 @@ offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
         {ok, Toks}    -> {Status, NewToks} = offset_with_ranges(Toks, Cell, From, Offset),
-                         io:format("Toks is ~p~nNewToks is ~p~n", [Toks, NewToks]),
                          hn_util:make_formula(Status, NewToks);
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
                                        "formula in offset_fm_w_rng but "++

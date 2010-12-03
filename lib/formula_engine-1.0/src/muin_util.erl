@@ -153,12 +153,14 @@ just_path(Ssref) when is_list(Ssref) ->
             false -> ""
         end,
     Str = string:join(hslists:init(string:tokens(Ssref, "/")), "/"),
-    MbR = lists:append([H, Str, "/"]),
-
-    %% For Ssref like /a1.
-    case (MbR == "//") of
-        true  -> "//";
-        false -> ""
+    case {H, Str} of
+        {[], []} -> [];
+        _        -> MbR = lists:append([H, Str, "/"]),
+                    % For Ssref like /a1.
+                    case (MbR == "//") of
+                        true  -> "/";
+                        false -> MbR
+                    end
     end.
           
 just_ref(Ssref) ->
