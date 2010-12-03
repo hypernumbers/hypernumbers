@@ -415,7 +415,7 @@ insert(#refX{obj = {R, _}} = RefX, Disp, Ar)
 %% per insert/2.
 %% This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
--spec delete(#refX{}, auth_srv:auth_req()) -> ok.
+-spec delete(#refX{}, auth_srv:auth_spec()) -> ok.
 delete(#refX{obj = {R, _}} = RefX, Ar) when R == cell orelse R == range ->
     move(RefX, delete, vertical, Ar);
 delete(#refX{obj = {R, _}} = RefX, Ar) when R == column orelse R == row ->
@@ -566,7 +566,7 @@ cut_n_paste(From, To, Ar) when
 %%
 %% Also whole pages can be copy_n_pasted by making both From and To 
 %% page refX's
--spec copy_n_paste(#refX{}, #refX{}, all | style | value, auth_srv:auth_req()) -> ok. 
+-spec copy_n_paste(#refX{}, #refX{}, all | style | value, auth_srv:auth_spec()) -> ok. 
 copy_n_paste(From, To, What, Ar) when 
       is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
@@ -667,7 +667,7 @@ wait_for_dirty(Site) ->
             ok
     end.
 
--spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_req()) -> ok.
+-spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_spec()) -> ok.
 handle_dirty_cell(Site, Idx, Ar) ->
     ok = init_front_end_notify(),  
     Fun = fun() ->
@@ -686,7 +686,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
     mnesia:activity(transaction, Fun),
     tell_front_end("handle dirty", #refX{}).
 
--spec handle_circref_cell(string(), cellidx(), auth_srv:auth_req()) -> ok.
+-spec handle_circref_cell(string(), cellidx(), auth_srv:auth_spec()) -> ok.
 handle_circref_cell(Site, Idx, Ar) ->
     Fun = fun() ->
                   Cell = hn_db_wu:idx_to_ref(Site, Idx),

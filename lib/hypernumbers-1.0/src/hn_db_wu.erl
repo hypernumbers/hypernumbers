@@ -94,7 +94,7 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
--spec mark_these_dirty([#refX{}], auth_srv:auth_req()) -> ok.
+-spec mark_these_dirty([#refX{}], auth_srv:auth_spec()) -> ok.
 mark_these_dirty([], _) -> ok;
 mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
     F = fun(C) -> case hn_db_wu:ref_to_idx(C) of
@@ -199,7 +199,7 @@ has_content(S, LO) ->
 -spec write_attrs(#refX{}, [{string(), term()}]) -> ?dict.
 write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
 
--spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_req()) 
+-spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_spec()) 
                  -> ?dict.
 write_attrs(Ref, NewAs, AReq) ->
     Op = fun(Attrs) -> 
@@ -216,7 +216,7 @@ write_attrs(Ref, NewAs, AReq) ->
          end,
     apply_to_attrs(Ref, Op).
 
--spec process_attrs([{string(), term()}], #refX{}, auth_srv:auth_req(), ?dict) 
+-spec process_attrs([{string(), term()}], #refX{}, auth_srv:auth_spec(), ?dict) 
                    -> ?dict.
 process_attrs([], _Ref, _AReq, Attrs) ->
     Attrs;
@@ -382,7 +382,11 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             Formulas = [F || X <- DedupedChildren,
                              F <- read_ref_field(X, "formula", write)],
             Fun = fun({ChildRef, F1}, Acc) ->
+                          io:format("ChildRef is ~p~nF1 is ~p~nFrom is ~p~n" ++
+                                    "XOff is ~p~nYOff is ~p~n",
+                                    [ChildRef, F1, From, XOff, YOff]),
                           {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
+                          io:format("St is ~p~nF2 is ~p~n", [St, F2]),
                           Op = fun(Attrs) -> {St, orddict:store("formula", F2, Attrs)} end,
                           apply_to_attrs(ChildRef, Op),
                           % you need to switch the ref to an idx because later on
@@ -804,22 +808,30 @@ offset_with_ranges1([], _Cell, _From, _Offset, Status, Acc) ->
 offset_with_ranges1([{rangeref, LineNo,
                       #rangeref{path = Path, text = Text}=H} | T],
                     Cell, #refX{path = FromPath} = From, Offset, Status, Acc) ->
+    io:format("offset_with_ranges (1)~n"),
     #refX{path = CPath} = Cell,
     PathCompare = muin_util:walk_path(CPath, Path),
     Range = muin_util:just_ref(Text),
+    io:format("Text is ~p~nFromPath is ~p~n", [Text, FromPath]),
     Prefix = case muin_util:just_path(Text) of
                  "/"     -> "";
                  Other   -> Other
              end,
+    io:format("Prefix is ~p~n", [Prefix]),
+    Prefix = muin_util:just_path(Text),
     [Cell1|[Cell2]] = string:tokens(Range, ":"),
     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
     {St, NewText} = case PathCompare of
-                  FromPath -> make_new_range(Prefix, Cell1, Cell2,
+                  FromPath -> io:format("making new text~n"),
+                              io:format("Prefix is ~p Cell1 is ~p Cell2 is ~p~n",
+                                        [Prefix, Cell1, Cell2]),
+                              make_new_range(Prefix, Cell1, Cell2,
                                              {X1D, X1, Y1D, Y1},
                                              {X2D, X2, Y2D, Y2},
                                              From, Offset);
-                  _        -> {clean, Text}
+                  _        -> io:format("keeping old text~n"),
+                              {clean, Text}
               end,
     NewAcc = {rangeref, LineNo, H#rangeref{text = NewText}},
     NewStatus = case St of
@@ -832,6 +844,7 @@ offset_with_ranges1([{rangeref, LineNo,
 %% ie =a1/b4 = 'a1 on this page' 'divided by' 'b4 on this page'
 offset_with_ranges1([{cellref, L, #cellref{path="/", text = [$/ | Rest]}=C} | T],
                     Cell, Front, Offset, Status, Acc) ->
+    io:format("offset_with_ranges (2)~n"),
     NewCell = {cellref, L, C#cellref{path = "./", text=Rest}},
     NewH = {'/', 1},
     offset_with_ranges1([NewH, NewCell | T], Cell, Front, Offset, Status, Acc);
@@ -839,6 +852,7 @@ offset_with_ranges1([{cellref, LineNo,
                       C=#cellref{path = Path, text = Text}}=H | T],
                     Cell, #refX{path = FromPath} = From,
                     {XO, YO}=Offset, Status, Acc) ->
+    io:format("offset_with_ranges (3)~n"),
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
         %% If ever we apply two offsets at once, do it in two steps.
@@ -869,6 +883,7 @@ offset_with_ranges1([{cellref, LineNo,
             offset_with_ranges1(T, Cell, From, {XO, YO}, Status, [NewAcc | Acc])
     end;
 offset_with_ranges1([H | T], Cell, From, Offset, Status, Acc) ->
+    io:format("offset_with_ranges (4)~n"),
     offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]).
 
 %% handle cells
@@ -1486,6 +1501,7 @@ offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
         {ok, Toks}    -> {Status, NewToks} = offset_with_ranges(Toks, Cell, From, Offset),
+                         io:format("Toks is ~p~nNewToks is ~p~n", [Toks, NewToks]),
                          hn_util:make_formula(Status, NewToks);
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
                                        "formula in offset_fm_w_rng but "++
@@ -1526,7 +1542,7 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     end.
 
 write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Parents, Recompile) ->
-    Parxml = map(fun muin_link_to_simplexml/1, Parents),
+    Parxml = lists:map(fun muin_link_to_simplexml/1, Parents),
     {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
     ok = set_relations(Ref, NewLocPs),
     Align = default_align(Res),
