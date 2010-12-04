@@ -19,7 +19,8 @@ main([User, Repo, File | Args]) ->
     Cmd = ToSave ++ " " ++ string:join(Args, " "),
     io:format("SCript file is ~p~n", [Script]),
     file:write_file(ToSave, Script),
-    os:cmd("chmod +x "++ToSave),
+    Ret = os:cmd("chmod +x "++ToSave),
+    io:format("Return from chmod +x is ~p~n", [Ret]),
     io:format("~p~n",[os:cmd(Cmd)]),
     file:delete(ToSave),
     

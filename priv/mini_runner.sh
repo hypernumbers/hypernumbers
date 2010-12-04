@@ -15,14 +15,17 @@ LASTRUN=$WEBROOT/last_run
 cd $HNTOP
 echo -e "\n\ndirectory changed to " $HNTOP "\n\n"
 /usr/local/git/bin/git clone $REPO $TESTDIR
+echo "return value from git clone " $?
 
 ## Compile, and run Hypernumbers
 cd $TESTDIR
 echo -e "\n\ndirectory changed to " $TESTDIR "\n\n"
 
 ./hn build
+echo "return value from hn build " $?
 echo -e "\n\nmaking the starling driver executable\n\n"
 chmod +x $TESTDIR/lib/starling/ebin/starling_drv
+echo "return value from chmod " $?
 ls
 ./hn start
 
