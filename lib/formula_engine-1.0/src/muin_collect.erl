@@ -337,7 +337,7 @@ casts(Val, Type, [fetch_refs_as_bool | Rules]) when ?is_namedexpr(Val) ->
     casts(?ERRVAL_NAME, Type, Rules);
 casts(Ref, Type, [fetch_refs_as_bool | Rules]) when ?is_cellref(Ref) ->
     Val = case muin:fetch(Ref) of
-              X when X == "0", X == false, X == "FALSE" -> false;
+              X when X == "0"; X == false; X == "FALSE" -> false;
               blank -> blank;
               _Else -> true
           end,
@@ -661,7 +661,7 @@ basic_test_() ->
                     pass([true, false, "1"], [{all, fun is_bool/1}])),
      
      ?_assertEqual( ?ERRVAL_DIV,
-                    pass([true, false, ?ERRVAL_DIV], [return_errors])),
+                    pass([true, false, ?ERRVAL_DIV], [return_errors]))
      
      
 %% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
@@ -669,5 +669,5 @@ basic_test_() ->
 %% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
 %% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
 %% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true])
-     ?_assert(1==1)
+%% ?_assert(1==1)
     ].
