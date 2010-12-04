@@ -312,14 +312,14 @@ col_index({offset, N}) -> ?mx + N.
 %% ColId is something like "A" or "$XYZ"
 a1_col_to_coord(ColId) ->
     case string:substr(ColId, 1, 1) of
-        "$" -> tconv:to_i(string:substr(ColId, 2));
+        "$" -> tconv:to_i(string:substr(ColId, 2)); %"
         _   -> {offset, tconv:to_i(ColId) - ?my}
     end.
 
 %% RowId is something like "1" or "$123"
 a1_row_to_coord(RowId) ->
-    case string:substr(RowId, 1, 1) of
-        "$" -> tconv:to_i(string:substr(RowId, 2));
+    case string:substr(RowId, 1, 1) of 
+        "$" -> tconv:to_i(string:substr(RowId, 2)); %"
         _   -> {offset, tconv:to_i(RowId) - ?mx}
     end.
 
@@ -438,29 +438,6 @@ make_float(TokenChars) ->
 add_decimal([]) -> ".0";
 add_decimal([E | Tail]) when E == $e; E == $E -> ".0e" ++ Tail;
 add_decimal([X | Tail]) -> [X | add_decimal(Tail)]. 
-
-
-%% Return the smaller of two numbers.
-
-min(X, X) -> X;
-min(X, Y) when X > Y -> Y;
-min(X, Y) when Y > X -> X.
-
-%% Return the larger of two numbers.
-
-max(X, X) -> X;
-max(X, Y) when X > Y -> X;
-max(X, Y) when Y > X -> Y.
-
-%% Try to convert a string to an integer.
-%% Not using tconv:to_i/1 because it will implicitly try b26-string -> integer
-%% conversion too, which isn't what I want here.
-
-to_i(Str) ->
-    case muin_util:attempt(fun() -> list_to_integer(Str) end) of
-        {ok, Num}  -> Num;
-        {error, X} -> {error, X}
-    end.
 
 %%% Tests:
 
