@@ -17,11 +17,11 @@ main([User, Repo, File | Args]) ->
     {value, {"data", Script}} = lists:keysearch("data", 1, Data),
     
     Cmd = ToSave ++ " " ++ string:join(Args, " "),
-    io:format("SCript file is ~p~n", [Script]),
     file:write_file(ToSave, Script),
-    Ret = os:cmd("chmod +x "++ToSave),
-    io:format("Return from chmod +x is ~p~n", [Ret]),
-    io:format("~p~n",[os:cmd(Cmd)]),
+    os:cmd("chmod +x "++ToSave),
+    Ret = os:cmd(Cmd);
+    Ret2 = re:replace(Ret, "\\\n", "~n/"); 	
+    io:format("~p~n",[]),
     file:delete(ToSave),
     
     ok.
