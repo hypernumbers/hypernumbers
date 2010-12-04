@@ -63,9 +63,15 @@ build() ->
     filelib:ensure_dir("lib/hypernumbers-1.0/ebin/"),
     filelib:ensure_dir("ebin/"),
 
-    file:set_cwd("lib/mochiweb"), os:cmd("make"), file:set_cwd(Root),
-    file:set_cwd("lib/gettext"),  os:cmd("make"), file:set_cwd(Root),
-    file:set_cwd("lib/starling"), os:cmd("rake"), file:set_cwd(Root),
+    file:set_cwd("lib/mochiweb"), 
+    os:cmd("make"),
+    file:set_cwd(Root),
+    file:set_cwd("lib/gettext"),
+    os:cmd("make"),
+    file:set_cwd(Root),
+    file:set_cwd("lib/starling"),
+    io:format(os:cmd("rake")),
+    file:set_cwd(Root),
 
     file:set_cwd("lib/formula_engine-1.0/priv/"),
     os:cmd("./generate.escript"),
