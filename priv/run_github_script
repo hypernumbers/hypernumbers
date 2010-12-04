@@ -17,7 +17,7 @@ main([User, Repo, File | Args]) ->
     {value, {"data", Script}} = lists:keysearch("data", 1, Data),
     
     Cmd = ToSave ++ " " ++ string:join(Args, " "),
-    
+    io:format("SCript file is ~p~n", [Script]),
     file:write_file(ToSave, Script),
     os:cmd("chmod +x "++ToSave),
     io:format("~p~n",[os:cmd(Cmd)]),
