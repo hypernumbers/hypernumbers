@@ -48,19 +48,18 @@ apply_each(Fun, A = {Tag, Rows}) when ?is_area(A) ->
 %% @spec apply_each_with_pos(Fun, A) -> area() Fun = function(), A = area()
 %% @doc Apply function to each value in array/range. The function gets
 %% element's position in addition to its value. ({Val, {Col, Row}}).
-apply_each_with_pos(Fun, A = {Tag, Rows}) when ?is_area(A) ->
-    Fun = fun({Row, RowIdx}, Acc) ->
-                  ValCoords =
-                      
-                      Fun2 = fun({V, I}, Acc2) ->
-                                     [{V, {I, RowIdx}}|Acc2]
-                             end,
-                  List = lists:reverse(lists:zip(Row, lists:seq(1, length(Row)))),
-                  lists:foldl(Fun2, [], List),
-                  Newrow = lists:map(Fun, ValCoords),
-                  [Newrow|Acc]
-          end,
-    {Tag, lists:reverse(lists:foldl(Fun, [], lists:zip(Rows, lists:seq(1, length(Rows)))))}.
+%% apply_each_with_pos(Fun, A = {Tag, Rows}) when ?is_area(A) ->
+%%     Fun = fun({Row, RowIdx}, Acc) ->
+%%                   ValCoords =                      
+%%                       Fun2 = fun({V, I}, Acc2) ->
+%%                                      [{V, {I, RowIdx}}|Acc2]
+%%                              end,
+%%                   List = lists:reverse(lists:zip(Row, lists:seq(1, length(Row)))),
+%%                   lists:foldl(Fun2, [], List),
+%%                   Newrow = lists:map(Fun, ValCoords),
+%%                   [Newrow|Acc]
+%%           end,
+%%     {Tag, lists:reverse(lists:foldl(Fun, [], lists:zip(Rows, lists:seq(1, length(Rows)))))}.
 
 %% @spec to_list(Area :: area()) -> list()
 %% @doc Return area as a list with elements enumerated left-to-right top-down.
