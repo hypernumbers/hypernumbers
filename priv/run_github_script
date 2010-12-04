@@ -20,7 +20,7 @@ main([User, Repo, File | Args]) ->
     file:write_file(ToSave, Script),
     os:cmd("chmod +x "++ToSave),
     Ret = os:cmd(Cmd),
-    Ret2 = re:replace(Ret, "\\\n", "~n/"), 	
+    Ret2 = re:replace(Ret, "\\\n", "~n/", [{return, list}]), 	
     io:format(Ret2),
     file:delete(ToSave),
     
