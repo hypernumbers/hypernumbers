@@ -19,9 +19,9 @@ main([User, Repo, File | Args]) ->
     Cmd = ToSave ++ " " ++ string:join(Args, " "),
     file:write_file(ToSave, Script),
     os:cmd("chmod +x "++ToSave),
-    Ret = os:cmd(Cmd);
-    Ret2 = re:replace(Ret, "\\\n", "~n/"); 	
-    io:format("~p~n",[]),
+    Ret = os:cmd(Cmd),
+    Ret2 = re:replace(Ret, "\\\n", "~n/"), 	
+    io:format(Ret2),
     file:delete(ToSave),
     
     ok.
