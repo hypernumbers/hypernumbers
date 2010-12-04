@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo -e "Running Version 1.0 of mini-runner"
+printf "Running Version 1.0 of mini-runner"
 
 DATE=`date +%Y-%m-%d.%T`
 
@@ -13,68 +13,65 @@ TESTDIR=/Users/daleharvey/hn_tests/test-hypernumbers
 LASTRUN=$WEBROOT/last_run
 
 cd $HNTOP
-echo -e "\n\ndirectory changed to " $HNTOP "\n\n"
-/usr/local/git/bin/git clone $REPO $TESTDIR
-echo "return value from git clone " $?
+printf "\n\ndirectory changed to " $HNTOP "\n\n"
+printf $(/usr/local/git/bin/git clone $REPO $TESTDIR)
 
 ## Compile, and run Hypernumbers
 cd $TESTDIR
-echo -e "\n\ndirectory changed to " $TESTDIR "\n\n"
+printf "\n\ndirectory changed to " $TESTDIR "\n\n"
 
-./hn build
-echo "return value from hn build " $?
-echo -e "\n\nmaking the starling driver executable\n\n"
-chmod +x $TESTDIR/lib/starling/ebin/starling_drv
-echo "return value from chmod " $?
-ls
-./hn start
+printf $(./hn build)
+printf "\n\nmaking the starling driver executable\n\n"
+printf $(chmod +x $TESTDIR/lib/starling/ebin/starling_drv)
+
+printf $(./hn start)
 
 ## Generate Excel Tests
 cd $TESTDIR/priv/testserver
 ruby regen_tests.rb 1x
-echo -e "\n\n"
+printf "\n\n"
 ruby regen_tests.rb 2x
 cd $TESTDIR
 
 ## Generate System Tests
-echo -e $(./hn call 'testsys:generate().')
-echo -e "\n\n"
-echo -e $(./hn call 'test:sys().')
-echo -e "\n\n"
+printf $(./hn call 'testsys:generate().')
+printf "\n\n"
+printf $(./hn call 'test:sys().')
+printf "\n\n"
 
 ## Run tests
-echo -e $(./hn call 'test:excel("1a").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("1b").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("1c").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("1d").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("1e").')
-echo -e "\n\n"
+printf $(./hn call 'test:excel("1a").')
+printf "\n\n"
+printf $(./hn call 'test:excel("1b").')
+printf "\n\n"
+printf $(./hn call 'test:excel("1c").')
+printf "\n\n"
+printf $(./hn call 'test:excel("1d").')
+printf "\n\n"
+printf $(./hn call 'test:excel("1e").')
+printf "\n\n"
 
-echo -e $(./hn call 'test:excel("2a").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("2b").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("2c").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("2d").')
-echo -e "\n\n"
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("2e").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("2f").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("2g").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("2x").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("2y").')
-echo -e "\n\n"
-echo -e $(./hn call 'test:excel("2z").')
-echo -e "\n\n"
+printf $(./hn call 'test:excel("2a").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2b").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2c").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2d").')
+printf "\n\n"
+printf "\n\n"
+printf $(./hn call 'test:excel("2e").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2f").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2g").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2x").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2y").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2z").')
+printf "\n\n"
 
 ## Cleanup.
 ./hn stop
