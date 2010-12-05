@@ -61,8 +61,7 @@ verify(A) when is_list(A) ->
                      true  -> {date,resolve_date(B)};
                      false -> verify_num(B)
                  end
-    end; % yes this is a clause end...
-verify(A) -> verify([A]). %% If 'A' is not a list make it so
+    end.
 
 esc({_Type,A}) -> {char,A}.
 
@@ -245,15 +244,12 @@ get_type([[{condition,_},{colour,_},{Type,_}]|T],Acc) -> get_type(T,[[Type]|Acc]
 get_type([[{condition,_},{Type,_}]|T],Acc)            -> get_type(T,[[Type]|Acc]);
 get_type([[{colour,_},{Type,_}]|T],Acc)               -> get_type(T,[[Type]|Acc]).
 
-verify_type([number]) -> number;
-verify_type([date])   -> date;
-verify_type([text])   -> text;
-verify_type(A)        -> case lists:merge(A) of
-                             [number] -> number;
-                             [date]   -> date;
-                             [text]   -> text;
-                             _        -> verify_listX(remove_semicolons(A))
-                         end.
+verify_type(A) -> case lists:merge(A) of
+                      [number] -> number;
+                      [date]   -> date;
+                      [text]   -> text;
+                      _        -> verify_listX(remove_semicolons(A))
+                  end.
 
 remove_semicolons(List) -> remove_semicolons(List,[]).
 
