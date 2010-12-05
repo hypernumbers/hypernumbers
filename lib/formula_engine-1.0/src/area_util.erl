@@ -9,11 +9,13 @@
 
 -module(area_util).
 -export([
+         is_matrix/1,
          apply_each/2,
          apply_each_with_pos/2 ,
          width/1,
          height/1,
          at/3,
+         make_array/1,
          make_array/2,
          to_list/1,
          col/2,
@@ -35,7 +37,7 @@
 is_matrix({_Type, Rows} = Area) when ?is_area(Area) ->
     Size = length(hd(Rows)),
     lists:all(fun(X) -> length(X) == Size end, Rows)
-        andalso length(Rows) == Size.
+         andalso length(Rows) == Size.
 
 %%% @doc Check if all areas in the list have the same dimensions as A.
 are_congruent(A, As) when ?is_area(A), is_list(As) ->
