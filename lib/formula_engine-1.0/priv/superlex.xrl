@@ -4,7 +4,7 @@
 Definitions.
 
 INT = ([0-9]+)
-ATOM = ([a-zA-Z][a-zA-Z0-9_\.]*)
+ATOM = ([a-zA-Z][a-zA-Z0-9_\.-]*)
 NAME = \@{ATOM}
 
 START_OF_SSREF = ((\/|\!)|(\.\.(\/|\!))+|\.(\/|\!))
