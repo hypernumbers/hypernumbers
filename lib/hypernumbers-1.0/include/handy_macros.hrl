@@ -37,7 +37,4 @@
 -define(pr(Ustr),
         ustring:pr(Ustr)).
 
-%% Silly hack for ifs.
--define(else, true).
-
 -define(DEFER(Expr), fun() -> Expr end).

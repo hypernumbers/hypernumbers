@@ -98,13 +98,13 @@ datedif1(Start, End, "Y") ->
     Maxyrs = Endyr - Startyr,
     if Endmo > Startmo ->
             Maxyrs;
-       Endmo == Startmo ->
+        Endmo == Startmo ->
             if Endday >= Startday ->
                     Maxyrs;
-               ?else ->
+                Endday < Startday ->
                     Maxyrs - 1
             end;
-       ?else ->
+        Endmo < Startmo ->
             Maxyrs - 1
     end;
 datedif1(Start, End, "M") ->
@@ -122,7 +122,7 @@ datedif1(Start, End, "MD") ->
     Endday = muin_date:day(End),
     if Endday >= Startday ->
             Endday - Startday;
-       ?else ->
+       Endday < Startday ->
             31 - (Startday - Endday)
     end;
 datedif1(Start, End, "YM") ->
@@ -130,7 +130,7 @@ datedif1(Start, End, "YM") ->
     Endmo = muin_date:month(End),
     if Endmo >= Startmo ->
             Endmo - Startmo;
-       ?else ->
+        Endmo < Startmo ->
             12 - (Startmo - Endmo)
     end;
 datedif1(Start, End, "YD") ->
