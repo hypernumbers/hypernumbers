@@ -25,9 +25,6 @@
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
 
-%-import(muin_util, [cast/2]).
-%-import(muin_collect, [ col/2, col/3, col/4 ]).
-
 -define(default_str_rules, [first_array, cast_numbers, cast_bools,
                             cast_blanks, cast_dates ]).
 
