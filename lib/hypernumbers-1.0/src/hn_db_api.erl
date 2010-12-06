@@ -103,7 +103,7 @@
 -export([write_attributes/1,
          write_attributes/3,
          append_row/3,
-         %%read_attribute/2,
+         read_attribute/2,
          read_inside_ref/1,
          read_intersect_ref/1,
          read_styles/2,
@@ -372,10 +372,10 @@ append_row(List, PAr, VAr) when is_list(List) ->
     
     write_activity(RefX, Trans, "write last").
 
-%% -spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
-%% read_attribute(RefX, Field) when is_record(RefX, refX) ->
-%%     Fun = fun() -> hn_db_wu:read_ref_field(RefX, Field, read) end,
-%%    read_activity(RefX, Fun).
+-spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
+read_attribute(RefX, Field) when is_record(RefX, refX) ->
+    Fun = fun() -> hn_db_wu:read_ref_field(RefX, Field, read) end,
+    read_activity(RefX, Fun).
 
 -spec read_inside_ref(#refX{}) -> [{#refX{}, [{string(), term()}]}].
 read_inside_ref(RefX) ->
