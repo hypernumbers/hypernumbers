@@ -13,7 +13,7 @@
 
 -include("muin_records.hrl").
 
--define(upcase(S),ustring:pr(ustring:to_upper(ustring:new(S)))).
+-define(up(S),ustring:pr(ustring:to_upper(ustring:new(S)))).
 
 -export([autoparse/1,
         upcase/1]).
@@ -221,6 +221,6 @@ get_datetime2({Y, M, D}, {H, Mn, S}) ->
 upcase1([Hd | Tl], Intermbuf, Res) when is_number(Hd) ->
     upcase1(Tl, Intermbuf ++ [Hd], Res);
 upcase1([{string, Val} | Tl], Intermbuf, Res) ->
-    upcase1(Tl, [], lists:append([Res, ?upcase(Intermbuf), Val]));
+    upcase1(Tl, [], lists:append([Res, ?up(Intermbuf), Val]));
 upcase1([], Intermbuf, Res) ->
-    lists:append([Res, ?upcase(Intermbuf)]).
+    lists:append([Res, ?up(Intermbuf)]).
