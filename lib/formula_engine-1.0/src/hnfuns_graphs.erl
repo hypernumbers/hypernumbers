@@ -21,9 +21,6 @@
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 
--import(muin_util, [cast/2]).
--import(muin_collect, [ col/2, col/3, col/4 ]).
-
 %%
 %% Exported functions
 %%
@@ -170,19 +167,19 @@ pie2(Data, Titles, Colours) ->
         ++ "' />".
 
 cast_data(Data) ->
-    col([Data],
-                [eval_funs,
-                 fetch, flatten,
-                 {cast, str, num, ?ERRVAL_VAL},
-                 {cast, bool, num},
-                 {cast, blank, num},
-                 {ignore, str},
-                 {ignore, blank}
-                ],
-                [return_errors, {all, fun is_number/1}]).
+    muin_util:col([Data],
+                  [eval_funs,
+                   fetch, flatten,
+                   {cast, str, num, ?ERRVAL_VAL},
+                   {cast, bool, num},
+                   {cast, blank, num},
+                   {ignore, str},
+                   {ignore, blank}
+                  ],
+                  [return_errors, {all, fun is_number/1}]).
 
 cast_titles(Titles) ->
-    col([Titles],
+    muin_util:col([Titles],
                   [eval_funs,
                    fetch, flatten,
                    {cast, bool, str},
@@ -192,12 +189,12 @@ cast_titles(Titles) ->
                   [return_errors]).
 
 cast_orientation(O) ->
-    col([O],
-        [eval_funs,
-         fetch,
-         {cast, num, bool, ?ERRVAL_VAL},
-         {cast, str, bool, ?ERRVAL_VAL}],
-        [return_errors, {all, fun is_boolean/1}]).
+    muin_util:col([O],
+                  [eval_funs,
+                   fetch,
+                   {cast, num, bool, ?ERRVAL_VAL},
+                   {cast, str, bool, ?ERRVAL_VAL}],
+                  [return_errors, {all, fun is_boolean/1}]).
 
 conv_colours([[]])    ->
     [];
@@ -218,23 +215,23 @@ conv_d1([H | T], Acc) ->
     conv_d1(T, [make_data(H) | Acc]).
 
 get_colours(Colours) ->
-    col([Colours],
-         [eval_funs,
-          {ignore, bool},
-          {ignore, num},
-          {ignore,date},
-          fetch, flatten],
-          [return_errors, {all, fun is_list/1}]).
+    muin_util:col([Colours],
+                  [eval_funs,
+                   {ignore, bool},
+                   {ignore, num},
+                   {ignore,date},
+                   fetch, flatten],
+                  [return_errors, {all, fun is_list/1}]).
 
 get_axes(XAxis)  ->
-    col([XAxis],
-        [eval_funs,
-         fetch, flatten,
-         {cast, num, str},
-         {cast, bool, str},
-         {cast, date, str},
-         {cast, blank, str}],
-        [return_errors]).
+    muin_util:col([XAxis],
+                  [eval_funs,
+                   fetch, flatten,
+                   {cast, num, str},
+                   {cast, bool, str},
+                   {cast, date, str},
+                   {cast, blank, str}],
+                  [return_errors]).
 
 get_scale({scale, auto}, [H | T]) when is_list(H) ->
     Min = tconv:to_s(stdfuns_stats:min(lists:merge([H | T]))),

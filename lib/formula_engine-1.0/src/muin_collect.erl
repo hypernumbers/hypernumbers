@@ -31,8 +31,6 @@
 -include("muin_records.hrl").
 -include("typechecks.hrl").
 
--import(muin_util, [cast/2]).
-
 col(Args, Rules, Passes, Fun) ->
     case col(Args, Rules, Passes) of
         Error when ?is_errval(Error) -> Error;
@@ -552,7 +550,7 @@ cast_blanks(Xs, Targtype) ->
 generic_cast(Xs, Targtype, Guardfun) ->
     R = lists:foldl(fun(X, Acc) ->
                       case Guardfun(X) of
-                          true  -> [cast(X, Targtype) | Acc];
+                          true  -> [muin_util:cast(X, Targtype) | Acc];
                           false -> [X | Acc]
                       end
               end,

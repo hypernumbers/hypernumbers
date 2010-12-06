@@ -9,13 +9,12 @@
 -module(muin_checks).
 -compile(export_all).
 
--import(muin_util, [cast/2]).
 -include("errvals.hrl").
 
 number(N) when is_number(N) ->
     N;
 number(N) ->
-    N2 = cast(N, num),
+    N2 = muin_util:cast(N, num),
     case is_number(N2) of
         true  -> N2;
         false -> ?ERR_VAL
@@ -23,12 +22,12 @@ number(N) ->
 
 number_rule(V, Rules) ->
     case lists:member(type(V), Rules) of % if type of V is in the rules
-        true  -> cast(V, num);           % try to cast
+        true  -> muin_util:cast(V, num);           % try to cast
         false -> ?ERR_VAL                % otherwise throw error
     end.
 
 numbers(L) ->
-    L2 = lists:map(fun(X) -> cast(X, num) end, L),
+    L2 = lists:map(fun(X) -> muin_util:cast(X, num) end, L),
     Ok = lists:all(fun(X) -> is_number(X) end, L2),
     case Ok of
         true  -> L2;
@@ -43,7 +42,7 @@ nonzero(0) ->
 nonzero(N) when is_number(N) ->
     N;
 nonzero(N) ->
-    N2 = cast(N, num),
+    N2 = muin_util:cast(N, num),
     case (N2 =/= 0) of
         true  -> N2;
         false -> ?ERR_DIV
@@ -53,14 +52,14 @@ nonzero(N) ->
 gte0(N) when is_number(N) andalso N >= 0 ->
     N;
 gte0(N) ->
-    N2 = cast(N, num),
+    N2 = muin_util:cast(N, num),
     case (N2 >= 0) of
         true  -> N2;
         false -> ?ERR_NUM
     end.
 
 gte0s(Ns) ->
-    Ns2 = lists:map(fun(X) -> cast(X, num) end,
+    Ns2 = lists:map(fun(X) -> muin_util:cast(X, num) end,
               Ns),
     Ok = lists:all(fun(X) -> is_number(X) andalso X >= 0 end,
              Ns2),
@@ -73,7 +72,7 @@ gte0s(Ns) ->
 gt0(N) when is_number(N) andalso N > 0 ->
     N;
 gt0(N) ->
-    N2 = cast(N, num),
+    N2 = muin_util:cast(N, num),
     case (N2 > 0) of
         true  -> N2;
         false ->?ERR_NUM
@@ -105,12 +104,12 @@ filter_numbers(Vs) ->
     [X || X <- Vs, is_number(X)].
 
 filter_numbers_all(Vs) ->
-    [cast(X, num) || X <- Vs, is_number(cast(X, num))].
+    [muin_util:cast(X, num) || X <- Vs, is_number(muin_util:cast(X, num))].
 
 
 %% List of values -> list of booleans or error if a value can't be cast.
 filter_bools_with_cast(Vs) ->
-    [cast(X, bool) || X <- Vs].
+    [muin_util:cast(X, bool) || X <- Vs].
 
 deck([H|T]) ->
     deck1(H, T, []);
