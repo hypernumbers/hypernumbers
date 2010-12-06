@@ -151,8 +151,6 @@ authorize_r2(Env, Ref, Qry) ->
             serve_html(401, Env2,
                        [viewroot(Ref#refX.site), "/401.html"]);
         {denied, json} ->
-            respond(401, Env2);
-        _NoPermission ->
             respond(401, Env2)
     end.
 
@@ -545,14 +543,14 @@ iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
         end,
     json(Env, V);
 
-iget(Ref, Type, _Qry, Env=#env{accept=json})
-  when Type == range;
-       Type == column;
-       Type == row ->
-    Init = [["cell"], ["column"], ["row"], ["page"]],
-    Tree = dh_tree:create(Init),
-    Dict = to_dict(hn_db_api:read_attributes(Ref,[]), Tree),
-    json(Env, {struct, dict_to_struct(Dict)});
+%% iget(Ref, Type, _Qry, Env=#env{accept=json})
+%%   when Type == range;
+%%        Type == column;
+%%        Type == row ->
+%%     Init = [["cell"], ["column"], ["row"], ["page"]],
+%%     Tree = dh_tree:create(Init),
+%%     Dict = to_dict(hn_db_api:read_attributes(Ref,[]), Tree),
+%%     json(Env, {struct, dict_to_struct(Dict)});
 
 %% Format requests without trailing slash
 iget(_Ref, Type, _Qry, Env=#env{accept=html, mochi=Mochi})
@@ -1007,16 +1005,8 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
             log_signup(RootSite, Site, Node, Uid, Email),
             json(Env, {struct, [{"result", "success"},
                                 {"url", Site ++ InitialView}]});
-        {error, Reason} ->
-            Str = case Reason of
-                      %bad_email ->
-                      invalid_email ->
-                          "Sorry, the email provided was invalid, "
-                              "please try again.";
-                      _ ->
-                          "Sorry there was an unknown error, please "
-                              "try again."
-                  end,
+        {error, invalid_email} ->
+            Str = "Sorry, the email provided was invalid, please try again.",
             json(Env, {struct, [{"result", "error"}, {"reason", Str}]})
     end;
 
