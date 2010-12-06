@@ -20,7 +20,7 @@ lib/git-svn-*
 conf/sys.config
 
 ## Dialyzer output
-priv/dialyzer/output.dialyzer.txt
+priv/dialyzer/output.dialyzer.*
 
 ## Tarsnap checks
 priv/tarsnap/output.txt
