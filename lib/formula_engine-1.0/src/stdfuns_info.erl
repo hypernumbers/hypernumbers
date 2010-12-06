@@ -25,7 +25,6 @@
 -export([rows/1,
          columns/1]).
 
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 -include("spriki.hrl").
 -include("muin_records.hrl").

@@ -17,7 +17,6 @@
 
 -module(stdfuns_math).
 
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 

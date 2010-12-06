@@ -18,7 +18,6 @@
 -compile(export_all).
 
 -include("spriki.hrl").
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
@@ -445,7 +444,7 @@ do_cell(RelPath, Rowidx, Colidx) ->
         true ->
             ?ERRVAL_CIRCREF;
         false ->
-            FetchFun = ?L(get_cell_info(?msite, Path, Colidx, Rowidx)),
+            FetchFun = fun() -> get_cell_info(?msite, Path, Colidx, Rowidx) end,
             case ?mar of
                 nil -> get_value_and_link(FetchFun);
                 _Else -> case auth_srv:get_any_view(?msite, Path, ?mar) of

@@ -6,7 +6,6 @@
 -include("spriki.hrl").
 -include("regexp.hrl").
 -include("hypernumbers.hrl").
--include("handy_macros.hrl").
 -include("muin_records.hrl").
 
 -include_lib("kernel/include/file.hrl").

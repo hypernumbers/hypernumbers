@@ -11,7 +11,6 @@
 
 -import(muin_util, [cast/2]).
 -include("errvals.hrl").
--include("handy_macros.hrl").
 
 number(N) when is_number(N) ->
     N;

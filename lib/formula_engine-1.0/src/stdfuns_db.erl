@@ -11,7 +11,6 @@
 
 -import(muin_collect, [ col/2, col/3, col/4 ]).
 
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 
 %% DbR = database range, Fld = field, CR = criteria range, A = action,

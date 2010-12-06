@@ -4,7 +4,6 @@
 
 -module(stdfuns_eng).
 
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 -import(muin_util, [conv/2, cast/2]).
 

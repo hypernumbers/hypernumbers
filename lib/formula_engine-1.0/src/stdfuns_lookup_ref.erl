@@ -8,7 +8,6 @@
 -import(muin_collect, [ col/2, col/3, col/4 ]).
 -compile(export_all).
 -include("typechecks.hrl").
--include("handy_macros.hrl").
 -include("muin_records.hrl").
 
 choose([V|Vs]) ->

@@ -27,7 +27,6 @@
 -import(muin_collect, [ collect/3, col/3, col/4 ]).
 
 -include("typechecks.hrl").
--include("handy_macros.hrl").
 -include("muin_records.hrl").
 
 %% FIXME: This is NOT the right thing to do.

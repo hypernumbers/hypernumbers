@@ -21,7 +21,6 @@
 -module(stdfuns_text).
 -compile(export_all).
 
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 -include("hypernumbers.hrl").
 
