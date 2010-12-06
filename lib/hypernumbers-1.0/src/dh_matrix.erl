@@ -2,15 +2,13 @@
 
 -export([ multiply/2 ]).
 
--import(lists, [nth/2]).
-
 multiply(M1, M2) -> 
     NRows = length(M1), 
     mmult(length(M2), NRows, NRows,[], M1, M2).
 
 sumprod(0, _, _, Sum, _, _) -> Sum;
 sumprod(I, C, R, Sum, M1, M2) -> 
-    NewSum = Sum + (nth(I, nth(R,M1)) * nth(C, nth(I,M2))),
+    NewSum = Sum + (lists:nth(I, lists:nth(R,M1)) * lists:nth(C, lists:nth(I,M2))),
     sumprod(I-1, C, R, NewSum, M1, M2).
 
 rowmult(_, 0, _, L, _, _) -> L;
