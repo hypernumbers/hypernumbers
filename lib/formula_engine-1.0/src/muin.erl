@@ -221,7 +221,6 @@ funcall(Fname, Args0) ->
     
     case call_fun(Fname, Args, Modules) of
         {error, not_found} -> userdef_call(Fname, Args);
-        {error, Other}     -> {error, Other};
         {ok, Value}        -> Value
     end.
 
