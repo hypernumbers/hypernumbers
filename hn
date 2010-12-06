@@ -53,6 +53,7 @@ dispatch(_BadCommand) -> usage().
     
 build() ->
 
+    io:format("This should be done in compile_code so it can be run from load_cluster~n~n"),
     ensure_config(),
 
     {ok, Root} = file:get_cwd(),
