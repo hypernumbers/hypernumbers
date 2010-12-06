@@ -167,34 +167,34 @@ pie2(Data, Titles, Colours) ->
         ++ "' />".
 
 cast_data(Data) ->
-    muin_util:col([Data],
-                  [eval_funs,
-                   fetch, flatten,
-                   {cast, str, num, ?ERRVAL_VAL},
-                   {cast, bool, num},
-                   {cast, blank, num},
-                   {ignore, str},
-                   {ignore, blank}
-                  ],
-                  [return_errors, {all, fun is_number/1}]).
+    muin_collect:col([Data],
+                     [eval_funs,
+                      fetch, flatten,
+                      {cast, str, num, ?ERRVAL_VAL},
+                      {cast, bool, num},
+                      {cast, blank, num},
+                      {ignore, str},
+                      {ignore, blank}
+                     ],
+                     [return_errors, {all, fun is_number/1}]).
 
 cast_titles(Titles) ->
-    muin_util:col([Titles],
-                  [eval_funs,
-                   fetch, flatten,
-                   {cast, bool, str},
-                   {cast, num, str},
-                   {cast, date, str},
-                   {cast, blank, str}],
-                  [return_errors]).
+    muin_collect:col([Titles],
+                     [eval_funs,
+                      fetch, flatten,
+                      {cast, bool, str},
+                      {cast, num, str},
+                      {cast, date, str},
+                      {cast, blank, str}],
+                     [return_errors]).
 
 cast_orientation(O) ->
-    muin_util:col([O],
-                  [eval_funs,
-                   fetch,
-                   {cast, num, bool, ?ERRVAL_VAL},
-                   {cast, str, bool, ?ERRVAL_VAL}],
-                  [return_errors, {all, fun is_boolean/1}]).
+    muin_collect:col([O],
+                     [eval_funs,
+                      fetch,
+                      {cast, num, bool, ?ERRVAL_VAL},
+                      {cast, str, bool, ?ERRVAL_VAL}],
+                     [return_errors, {all, fun is_boolean/1}]).
 
 conv_colours([[]])    ->
     [];
@@ -215,23 +215,23 @@ conv_d1([H | T], Acc) ->
     conv_d1(T, [make_data(H) | Acc]).
 
 get_colours(Colours) ->
-    muin_util:col([Colours],
-                  [eval_funs,
-                   {ignore, bool},
-                   {ignore, num},
-                   {ignore,date},
-                   fetch, flatten],
-                  [return_errors, {all, fun is_list/1}]).
+    muin_collect:col([Colours],
+                     [eval_funs,
+                      {ignore, bool},
+                      {ignore, num},
+                      {ignore,date},
+                      fetch, flatten],
+                     [return_errors, {all, fun is_list/1}]).
 
 get_axes(XAxis)  ->
-    muin_util:col([XAxis],
-                  [eval_funs,
-                   fetch, flatten,
-                   {cast, num, str},
-                   {cast, bool, str},
-                   {cast, date, str},
-                   {cast, blank, str}],
-                  [return_errors]).
+    muin_collect:col([XAxis],
+                     [eval_funs,
+                      fetch, flatten,
+                      {cast, num, str},
+                      {cast, bool, str},
+                      {cast, date, str},
+                      {cast, blank, str}],
+                     [return_errors]).
 
 get_scale({scale, auto}, [H | T]) when is_list(H) ->
     Min = tconv:to_s(stdfuns_stats:min(lists:merge([H | T]))),

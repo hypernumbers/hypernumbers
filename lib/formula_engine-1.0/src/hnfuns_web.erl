@@ -1,3 +1,4 @@
+
 %%% @copyright 2010 Hypernumbers Ltd
 %%% @doc Web Spreadsheet functions
 -module(hnfuns_web).
@@ -134,18 +135,18 @@ site([]) ->
     Proto ++ Domain.
 
 link([Src, Text]) ->
-    muin_util:col([Src, Text], [eval_funs, fetch, {cast, str}], [return_errors],
+    muin_collect:col([Src, Text], [eval_funs, fetch, {cast, str}], [return_errors],
         fun([NSrc, NText]) -> link_(NSrc, NText) end).
 
 img([Src]) ->
-    muin_util:col([Src], [eval_funs, fetch, {cast, str}], [return_errors],
+    muin_collect:col([Src], [eval_funs, fetch, {cast, str}], [return_errors],
         fun([NSrc]) -> img_(NSrc) end).
 
 
 'twitter.search'([])          -> 'twitter.search'(["hello"]);
 'twitter.search'([Term])      -> 'twitter.search'([Term, "title"]);
 'twitter.search'([Term, Title]) ->
-    muin_util:col([Term, Title], [eval_funs, fetch, {cast, str}], [return_errors],
+    muin_collect:col([Term, Title], [eval_funs, fetch, {cast, str}], [return_errors],
         fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
 %% commented out because it throws a mochijson error in some circumstances
@@ -158,7 +159,7 @@ img([Src]) ->
 'google.map'([Long])      -> 'google.map'([Long, 0]);
 'google.map'([Long, Lat]) -> 'google.map'([Long, Lat, 10]);
 'google.map'([Long, Lat, Zoom]) ->
-    muin_util:col([Long, Lat, Zoom], [eval_funs, fetch, {cast, num}],
+    muin_collect:col([Long, Lat, Zoom], [eval_funs, fetch, {cast, num}],
         [return_errors, {all, fun is_number/1}],
         fun([NLong, NLat, NZoom]) ->
                 'google.map_'(NLong, NLat, NZoom)
@@ -166,13 +167,13 @@ img([Src]) ->
 
 input([])   -> input([""]);
 input([V1]) ->
-    Label = muin_util:col([V1], [first_array, fetch, {cast,str}],
+    Label = muin_collect:col([V1], [first_array, fetch, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:run_or_err([Label], fun input_/1).
 
 textarea([])   -> textarea([""]);
 textarea([V1]) ->
-    Label = muin_util:col([V1], [first_array, fetch, {cast,str}],
+    Label = muin_collect:col([V1], [first_array, fetch, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:run_or_err([Label], fun textarea_/1).
 
@@ -180,7 +181,7 @@ button([])      -> button(["Submit Form"]);
 button([Title]) -> button([Title, "Thanks for completing our form."]);
 button([Title, Response]) -> button([Title, Response, "./replies/"]);
 button([Title, Response, Results]) ->
-    muin_util:col([Title, Response, Results], [first_array, fetch, {cast,str}],
+    muin_collect:col([Title, Response, Results], [first_array, fetch, {cast,str}],
         [return_errors, {all, fun muin_collect:is_string/1}],
         fun([NTitle, NResponse, NResult]) ->
                 button_(NTitle, NResponse, NResult)
@@ -190,24 +191,24 @@ button([Title, Response, Results]) ->
 select([])      -> select([""]);
 select([Label]) -> select([Label, {array, [["option 1", "option 2"]]}]);
 select([V1, V2]) ->
-    [Label] = muin_util:col([V1], [first_array, fetch, {cast,str}],
+    [Label] = muin_collect:col([V1], [first_array, fetch, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
-    Opts = muin_util:col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
+    Opts = muin_collect:col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:apply([Label, Opts], fun select_/2).
 
 radio([])      -> radio([""]);
 radio([Label]) -> radio([Label, {array, [["option 1", "option 2"]]}]);
 radio([V1, V2]) ->
-    [Label] = muin_util:col([V1], [first_array, fetch, {cast,str}],
+    [Label] = muin_collect:col([V1], [first_array, fetch, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
-    Opts = muin_util:col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
+    Opts = muin_collect:col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:apply([Label, Opts], fun radio_/2).
 
 background([Url]) -> background([Url, ""]);
 background([V1, V2]) ->
-    muin_util:col([V1, V2], [first_array, fetch, {cast,str}],
+    muin_collect:col([V1, V2], [first_array, fetch, {cast,str}],
         [return_errors, {all, fun muin_collect:is_string/1}],
         fun([Url, Extra]) -> background_(Url, Extra) end).
 
