@@ -60,7 +60,7 @@ apply_each(Fun, A = {Tag, Rows}) when ?is_area(A) ->
 %% @spec apply_each_with_pos(Fun, A) -> area() Fun = function(), A = area()
 %% @doc Apply function to each value in array/range. The function gets
 %% element's position in addition to its value. ({Val, {Col, Row}}).
- apply_each_with_pos(Fun, A = {Tag, Rows}) when ?is_area(A) ->
+apply_each_with_pos(Fun, A = {Tag, Rows}) when ?is_area(A) ->
      Fun = fun({Row, RowIdx}, Acc) ->
                    ValCoords =                      
                        Fun2 = fun({V, I}, Acc2) ->
