@@ -61,7 +61,8 @@ verify(A) when is_list(A) ->
                      true  -> {date,resolve_date(B)};
                      false -> verify_num(B)
                  end
-    end.
+    end;
+verify(A) -> verify([A]). % if it is not a list, make it so
 
 esc({_Type,A}) -> {char,A}.
 
