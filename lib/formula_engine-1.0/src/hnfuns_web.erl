@@ -1,4 +1,3 @@
-
 %%% @copyright 2010 Hypernumbers Ltd
 %%% @doc Web Spreadsheet functions
 -module(hnfuns_web).
