@@ -15,7 +15,8 @@
           link/1,
           img/1,
           html/1,
-          site/1]).
+          site/1,
+          'crumb.trail'/1]).
 
 -export([fail/1]).
 
@@ -30,6 +31,16 @@
 -type trans() :: common | string().
 -type html() :: string().
 -type zoom() :: 1..20.
+
+'crumb.trail'([]) ->
+    trail2(lists:reverse(get(path)), []).
+
+trail2([], Acc) -> lists:flatten(["<a href=\"/\">" ++ get(site) ++
+                                  "</a>" | Acc]);
+trail2([H | T] = L, Acc) ->
+    Path = "/" ++ string:join(lists:reverse(L), "/") ++ "/",
+    NewAcc = " -> <a href=\"" ++ Path ++ "\">" ++ H ++ "</a>",
+    trail2(T, [NewAcc | Acc]).
 
 fail([_]) -> [forced_error, "should_wig"].
 
