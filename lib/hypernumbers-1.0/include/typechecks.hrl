@@ -44,11 +44,12 @@
         element(1, X) == namedexpr).
 
 -define(is_errval(X),
-        X == ?ERRVAL_NULL orelse X == ?ERRVAL_DIV orelse
-        X == ?ERRVAL_VAL  orelse X == ?ERRVAL_REF orelse
-        X == ?ERRVAL_NAME orelse X == ?ERRVAL_NUM orelse
-        X == ?ERRVAL_NA   orelse X == ?ERRVAL_CIRCREF orelse
-        X == ?ERRVAL_AUTH).
+        X == ?ERRVAL_NULL  orelse X == ?ERRVAL_DIV     orelse
+        X == ?ERRVAL_VAL   orelse X == ?ERRVAL_REF     orelse
+        X == ?ERRVAL_NAME  orelse X == ?ERRVAL_NUM     orelse
+        X == ?ERRVAL_NA    orelse X == ?ERRVAL_CIRCREF orelse
+        X == ?ERRVAL_AUTH  orelse X == ?ERRVAL_FORM    orelse
+        X == ?ERRVAL_MOCHI). % THE MOCHI ERRVAL IS A BUG AND SHOULD BE REMOVED!
 
 -define(is_operator(X),
         X == '+'; X == '*'; X == '/'; X == '-'; X == '^';

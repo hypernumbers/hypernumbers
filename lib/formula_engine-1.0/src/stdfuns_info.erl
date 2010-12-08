@@ -79,14 +79,17 @@ cell1(_, _) ->
     ?ERR_VAL.
     
 
-errornum(?ERRVAL_NULL) -> 1;
-errornum(?ERRVAL_DIV)  -> 2;
-errornum(?ERRVAL_VAL)  -> 3;                                   
-errornum(?ERRVAL_REF)  -> 4;
-errornum(?ERRVAL_NAME) -> 5;
-errornum(?ERRVAL_NUM)  -> 6;
-errornum(?ERRVAL_NA)   -> 7.
-    
+errornum(?ERRVAL_NULL)    -> 1;
+errornum(?ERRVAL_DIV)     -> 2;
+errornum(?ERRVAL_VAL)     -> 3;                                   
+errornum(?ERRVAL_REF)     -> 4;
+errornum(?ERRVAL_NAME)    -> 5;
+errornum(?ERRVAL_NUM)     -> 6;
+errornum(?ERRVAL_NA)      -> 7;
+errornum(?ERRVAL_CIRCREF) -> 8;
+errornum(?ERRVAL_AUTH)    -> 9;
+errornum(?ERRVAL_FORM)    -> 10.
+%% THERE IS NO errornum FOR #MOCHIJSON! AS IT IS A BUG NOT A PROPER ERROR MESSAGE!
 
 'error.type'([X]) when ?is_errval(X)                  -> errornum(X);
 'error.type'([{array, [[X|_]|_]}]) when ?is_errval(X) -> errornum(X);
