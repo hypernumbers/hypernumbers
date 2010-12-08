@@ -20,13 +20,10 @@
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 
--import(muin_util, [cast/2]).
--import(muin_collect, [ col/2, col/3, col/4 ]).
-
 -define(GOOGOL, 1.0E100).
 
 -export([
-         %% Basics
+%% Basics
          '+'/1,
          '-'/1,
          '*'/1,
@@ -34,7 +31,7 @@
          '^^'/1,
          negate/1,
 
-         %% Arithmetic
+%% Arithmetic
          sum/1,
          product/1,
          quotient/1,
@@ -48,7 +45,7 @@
          lcm/1,
          mod/1,
 
-         %% Arrays and matrices
+%% Arrays and matrices
          transpose/1,
          mdeterm/1,
          munit/1,
@@ -56,16 +53,16 @@
          mmult/1,
          multinomial/1,
 
-         %% Logarithms
+%% Logarithms
          ln/1,
          log/1,
          log10/1,
 
-         %% Random numbers
+%% Random numbers
          rand/1,
          randbetween/1,
 
-         %% Rounding numbers
+%% Rounding numbers
          round/1,
          rounddown/1,
          roundup/1,
@@ -78,12 +75,12 @@
          odd/1,
          trunc/1,
 
-         %% Special numbers
+%% Special numbers
          pi/1,
          sqrtpi/1,
          roman/1,
 
-         %% Summation
+%% Summation
          seriessum/1,
          subtotal/1,
          sumif/1,
@@ -93,7 +90,7 @@
          sumproduct/1,
          sumsq/1,
 
-         %% Trigonometry
+%% Trigonometry
          sin/1,
          cos/1,
          tan/1,
@@ -125,11 +122,11 @@ is_num_or_date(X) ->
 
 %%% Operators ~~~~~
 '+'([V1, V2]) ->
-    col([V1, V2],
-        [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
-         {cast, bool, num}, {cast, blank, num}],
-        [return_errors, {all, fun is_num_or_date/1}],
-        fun '+_'/1).
+    muin:col([V1, V2],
+             [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
+              {cast, bool, num}, {cast, blank, num}],
+             [return_errors, {all, fun is_num_or_date/1}],
+             fun '+_'/1).
 
 '+_'([DT, V2]) when is_record(DT, datetime) ->
     '+_'([V2, DT]);
@@ -157,19 +154,19 @@ is_num_or_date(X) ->
     calendar:date_to_gregorian_days(DiffDate);
 
 '-'([V1, V2]) ->
-    case col([V1, V2],
-             [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
-              {cast, bool, num}, {cast, blank, num}],
-             [return_errors, {all, fun is_number/1}]) of
+    case muin:col([V1, V2],
+                  [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
+                   {cast, bool, num}, {cast, blank, num}],
+                  [return_errors, {all, fun is_number/1}]) of
         [Num1, Num2] -> Num1 - Num2;
         Other        -> Other
     end.
 
 '*'([V1, V2]) ->
-    case col([V1, V2],
-             [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
-              {cast, bool, num}, {cast, blank, num}],
-             [return_errors, {all, fun is_number/1}]) of
+    case muin:col([V1, V2],
+                  [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
+                   {cast, bool, num}, {cast, blank, num}],
+                  [return_errors, {all, fun is_number/1}]) of
         [Num1, Num2] ->
             case Num1 * Num2 of
                 X when X > ?GOOGOL -> ?ERRVAL_NUM;
@@ -179,10 +176,10 @@ is_num_or_date(X) ->
     end.
 
 '/'([V1, V2]) ->
-    case col([V1, V2],
-             [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
-              {cast, bool, num}, {cast, blank, num}],
-             [return_errors, {all, fun is_number/1}]) of
+    case muin:col([V1, V2],
+                  [eval_funs, fetch, area_first, {cast, str, num, ?ERRVAL_VAL},
+                   {cast, bool, num}, {cast, blank, num}],
+                  [return_errors, {all, fun is_number/1}]) of
         [_Num1, X] when X == 0 -> ?ERRVAL_DIV;
         [Num1, Num2]           -> Num1 / Num2;
         Other                  -> Other
@@ -193,24 +190,24 @@ is_num_or_date(X) ->
 
 
 '^^'([_, _]=Args) ->
-    col(Args, [eval_funs],
-        [return_errors, {all, fun(X) -> ?is_rangeref(X) end}],
-        fun '^^_'/1).
+    muin:col(Args, [eval_funs],
+             [return_errors, {all, fun(X) -> ?is_rangeref(X) end}],
+             fun '^^_'/1).
 
 '^^_'([V1, V2]) ->
-    
+
     #rangeref{ tl = {{offset,AX1},{offset,AY1}},
                br = {{offset,AX2},{offset,AY2}} } = V1,
-    
+
     #rangeref{ tl = {{offset,BX1},{offset,BY1}},
                br = {{offset,BX2},{offset,BY2}} } = V2,
 
     case intersect({{AX1,AY1}, {AX2,AY2}},
                    {{BX1,BY1}, {BX2,BY2}}) of
-        
+
         {error, no_intersect} ->
             ?ERRVAL_NULL;
-        
+
         {{X1, Y1}, {X2, Y2}} ->
             Path = hn_util:list_to_path(muin:context_setting(path)),
             #rangeref{ tl     = {{offset, X1},{offset, Y1}},
@@ -221,30 +218,31 @@ is_num_or_date(X) ->
     end.
 
 negate([V]) ->
-    col([V],
-        [first_array, cast_num],
-        [return_errors, {all, fun is_number/1}],
-        fun([X]) -> -X end).
+    muin:col([V],
+             [first_array, cast_num],
+             [return_errors, {all, fun is_number/1}],
+             fun([X]) -> -X end).
 
 %%% Arithmetic ~~~~~
 
 sum(Vs) ->
-    col(Vs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
-             {cast, bool, num}, fetch, flatten,
-             {ignore, blank}, {ignore, str}, {ignore, bool}],
-        [return_errors, {all, fun is_number/1}],
-        fun sum1/1).
-    
+    io:format("in sum with args of ~p~n", [Vs]),
+    muin:col(Vs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
+                  {cast, bool, num}, fetch, flatten,
+                  {ignore, blank}, {ignore, str}, {ignore, bool}],
+             [return_errors, {all, fun is_number/1}],
+             fun sum1/1).
+
 sum1(Nums) ->
     lists:sum(Nums).
 
 product(Vals) ->    
-    col(Vals,
-        [eval_funs, {cast, str, num, ?ERRVAL_VAL}, {cast, bool, num},
-         fetch, flatten, area_first, {ignore, blank}, {ignore, str},
-         {ignore, bool}],
-        [return_errors, {all, fun is_number/1}],
-        fun product1/1).
+    muin:col(Vals,
+             [eval_funs, {cast, str, num, ?ERRVAL_VAL}, {cast, bool, num},
+              fetch, flatten, area_first, {ignore, blank}, {ignore, str},
+              {ignore, bool}],
+             [return_errors, {all, fun is_number/1}],
+             fun product1/1).
 
 product1(Nums) ->
     lists:foldl(fun(X, Acc) -> X * Acc end, 1, Nums).
@@ -255,9 +253,9 @@ quotient([V1, V2]) ->
     ?MODULE:trunc('/'([Num, Divisor])).
 
 abs([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun abs_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun abs_/1).
 
 abs_([Num]) ->
     erlang:abs(Num).
@@ -323,7 +321,7 @@ gcd1(A,[])    -> A;
 gcd1(A,[0|T]) -> gcd1(A,T);
 gcd1(A,[B|T]) -> A2=gcd2(A,B),
                  gcd1(A2,T).
-    
+
 gcd2(A,0) -> A;
 gcd2(A,B) -> gcd2(B, A rem B).
 
@@ -357,9 +355,9 @@ transpose([A]) when ?is_area(A) ->
 mdeterm([A]) when is_number(A) ->
     A;
 mdeterm([A]) ->
-    col([A], [eval_funs, fetch, {ignore, bool}, {ignore, str}, {ignore, blank}],
-        [return_errors],
-        fun mdeterm_/1).
+    muin:col([A], [eval_funs, fetch, {ignore, bool}, {ignore, str}, {ignore, blank}],
+             [return_errors],
+             fun mdeterm_/1).
 
 mdeterm_([]) ->
     ?ERRVAL_VAL;
@@ -391,9 +389,9 @@ munit([V]) ->
                                   Empty).
 
 minverse(Args) ->
-    col(Args, [eval_funs, fetch, {ignore, bool}, {ignore, str},
-               {ignore, blank}], [return_errors],
-        fun minverse_/1).
+    muin:col(Args, [eval_funs, fetch, {ignore, bool}, {ignore, str},
+                    {ignore, blank}], [return_errors],
+             fun minverse_/1).
 minverse_([{_Type, _Rows}=Area]) when ?is_area(Area) -> 
     case area_util:is_matrix(Area) of
         false -> ?ERRVAL_VAL;
@@ -405,9 +403,9 @@ minverse_([]) ->
     ?ERRVAL_VAL.
 
 mmult(Args) ->
-    col(Args, [eval_funs, fetch, {ignore, bool}, {ignore, str},
-               {ignore, blank}], [return_errors],
-        fun mmult_/1).
+    muin:col(Args, [eval_funs, fetch, {ignore, bool}, {ignore, str},
+                    {ignore, blank}], [return_errors],
+             fun mmult_/1).
 
 mmult_([{_, R1}=L1, {_, R2}=L2]) when ?is_area(L1), ?is_area(L2) -> 
     case area_util:is_matrix(L1) andalso area_util:is_matrix(L2) of
@@ -430,9 +428,9 @@ multinomial(L) ->
 multinomial1(Nums) ->
     Nom = fact([sum(Nums)]),
     Div = lists:foldl(fun(X, Acc) ->
-                        Acc * fact([X])
-                end,
-                1, Nums),
+                              Acc * fact([X])
+                      end,
+                      1, Nums),
     Nom/Div.
 
 %%% Logarithms ~~~~~
@@ -531,10 +529,10 @@ roundup1(Num, NumDigits) ->
     Rndup(Num * Pow) / erlang:round(Pow).
 
 ceiling([_,_]=Args) ->
-    col(Args, [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun ceiling_/1).
-    
+    muin:col(Args, [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun ceiling_/1).
+
 ceiling_([Num, Multiple]) ->
     case (sign1(Num) == sign1(Multiple)
           orelse Num =:= 0
@@ -552,18 +550,18 @@ ceiling1(Num, Multiple) ->
 combin([V1, V2]) when V1 == 0 andalso V2 == 0 ->
     1;
 combin([_, _]=Args) ->
-    col(Args, [eval_funs, area_first, fetch, {cast, int}],
-        [return_errors, {all, fun is_integer/1}],
-        fun combin_/1).
+    muin:col(Args, [eval_funs, area_first, fetch, {cast, int}],
+             [return_errors, {all, fun is_integer/1}],
+             fun combin_/1).
 combin_([N, Chosen]) when N < 0 orelse Chosen < 0 orelse N < Chosen ->
     ?ERRVAL_NUM;
 combin_([N, Chosen]) ->
     fact1(N) div (fact1(Chosen) * fact1(N - Chosen)).
 
 even([V1]) ->
-    col([V1], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun even1/1).
+    muin:col([V1], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun even1/1).
 
 even1([Num]) when ?is_multiple(Num, 2) ->
     Num;
@@ -586,9 +584,9 @@ floor1(Num, Multiple) ->
     erlang:trunc(Num / Multiple) * Multiple.
 
 int([V1]) ->
-    col([V1], [eval_funs, area_first, fetchdb, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun int_/1).
+    muin:col([V1], [eval_funs, area_first, fetchdb, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun int_/1).
 
 int_([Num]) ->
     case (erlang:round(Num) > Num) of
@@ -603,9 +601,9 @@ mround([V1, V2]) ->
     roundup1(Num, Multiple).
 
 odd([V1]) ->
-    col([V1], [eval_funs, area_first, fetchdb, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun odd1/1).
+    muin:col([V1], [eval_funs, area_first, fetchdb, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun odd1/1).
 
 odd1([Num]) when Num == 0 ->
     1;
@@ -649,15 +647,15 @@ roman([X, false]) ->
 roman([V1, V2]) ->
     X = ?int(V1, [cast_strings, cast_bools, ban_dates, cast_blanks]),
     Type = ?int(V2, [cast_strings, cast_bools, ban_dates, cast_blanks]),
-    %% we need to build the roman numbers right to left so we have to
-    %% reverse the string representation of the number
+%% we need to build the roman numbers right to left so we have to
+%% reverse the string representation of the number
     case X of
         X when X < 0 orelse X > 3999 -> ?ERRVAL_VAL;
         _Else ->
             List = lists:map(fun(C) -> [C] end, integer_to_list(X)),
             get_roman(List, Type)
     end.
-    
+
 %% first deal with the single digit number
 get_roman(["0"],_) -> "";
 get_roman(["1"],_) -> "I";
@@ -685,7 +683,7 @@ get_roman(["9","6"],?CLASSIC) -> "XCVI";
 get_roman(["9","7"],?CLASSIC) -> "XCVII";
 get_roman(["9","8"],?CLASSIC) -> "XCVIII";
 get_roman(["9","9"],?CLASSIC) -> "XCIX";
-     
+
 %% Then the rest...
 get_roman(["4","5"],_) -> "VL";
 get_roman(["4","6"],_) -> "VLI";
@@ -812,7 +810,7 @@ get_roman(["9","9",First],Type)      -> "XM"   ++get_roman([First],Type);
 
 %% Now do all the other 3 digit numbers
 get_roman([Third,Second,First],Type) -> get_roman3([Third])
-					    ++get_roman([Second,First|[]],Type);
+                                            ++get_roman([Second,First|[]],Type);
 get_roman([Fourth|Rest],Type)        -> get_roman4([Fourth])++get_roman(Rest,Type).
 
 get_roman2(["0"]) -> "";
@@ -845,21 +843,21 @@ get_roman4(["3"]) -> "MMM".
 %%% Summation ~~~~~
 
 sumsq(Vs) ->
-    col(Vs,
-        [eval_funs, {cast, str, num, ?ERRVAL_VAL},
-         {cast, bool, num}, fetch, flatten,
-         {ignore, blank}, {ignore, str}, {ignore, bool}],
-        [return_errors, {all, fun is_number/1}],
-        fun sumsq_/1).
+    muin:col(Vs,
+             [eval_funs, {cast, str, num, ?ERRVAL_VAL},
+              {cast, bool, num}, fetch, flatten,
+              {ignore, blank}, {ignore, str}, {ignore, bool}],
+             [return_errors, {all, fun is_number/1}],
+             fun sumsq_/1).
 
 sumsq_(Nums) ->
     sum([X * X || X <- Nums]).
 
 sumproduct(Arrs) ->
-    NArrs = [col([X], [eval_funs, fetch, {convflat, str, ?ERRVAL_VAL},
-                       {convflat, bool, ?ERRVAL_VAL}, flatten,
-                       {conv, bool, 0}, {conv, blank, 0}, {conv, str, 0}],
-                 [return_errors, {all, fun is_number/1}]) || X <- Arrs],    
+    NArrs = [muin:col([X], [eval_funs, fetch, {convflat, str, ?ERRVAL_VAL},
+                            {convflat, bool, ?ERRVAL_VAL}, flatten,
+                            {conv, bool, 0}, {conv, blank, 0}, {conv, str, 0}],
+                      [return_errors, {all, fun is_number/1}]) || X <- Arrs],    
     muin_util:run(NArrs, fun sumproduct_/1).
 
 sumproduct_(Arrs) ->
@@ -873,18 +871,18 @@ seriessum([K, N, M, Coeffs]) ->
     seriessum1(K, N, M, Nums).
 seriessum1(K, N, M, As) ->
     {Res, _} = lists:foldl(fun(A, {Sum, I}) ->
-                             {Sum + A * math:pow(K, N + M * I),
-                              I + 1}
-                     end,
-                     {0, 0},
-                     As),
+                                   {Sum + A * math:pow(K, N + M * I),
+                                    I + 1}
+                           end,
+                           {0, 0},
+                           As),
     Res.
 
 %% TODO, needs do not strictly evaluate args, need
 %% to change all the callees to support refs first
 subtotal([Index, Arr]) ->
-    Ind = col([Index], [eval_funs, fetch, {cast, int}],
-              [return_errors, {all, fun is_integer/1}]),
+    Ind = muin:col([Index], [eval_funs, fetch, {cast, int}],
+                   [return_errors, {all, fun is_integer/1}]),
     muin_util:apply([Ind, Arr], fun subtotal_/2).    
 
 subtotal_([1], L)  -> stdfuns_stats:average([L]);
@@ -915,12 +913,12 @@ subtotal_(_, _) -> ?ERRVAL_VAL.
 sumif([L, Crit]) ->
     sumif([L, Crit, L]);
 sumif([V1, Cr, V2]) ->
-    
+
     Tmp = [eval_funs, fetch, flatten],
-    Val1   = col([V1], Tmp),
-    Val2   = col([V2], Tmp),
-    [Crit] = col([Cr], [eval_funs, fetch, flatten]),
-    
+    Val1   = muin:col([V1], Tmp),
+    Val2   = muin:col([V2], Tmp),
+    [Crit] = muin:col([Cr], [eval_funs, fetch, flatten]),
+
     case length(Val1) == length(Val2) of
         false ->
             ?ERRVAL_VAL;
@@ -936,16 +934,16 @@ sumif1([], [], _F, Sum) ->
 sumif1([H1|T1], [H2|T2], Fun, Acc) ->
     case Fun(H1) of
         true  ->
-            [Val] = col([H2], [{cast, num}, {conv, str, 0}]),
+            [Val] = muin:col([H2], [{cast, num}, {conv, str, 0}]),
             sumif1(T1, T2, Fun, stdfuns_math:'+'([Acc, Val]));
         false -> sumif1(T1, T2, Fun, Acc)
     end.
 
 sumx2my2([A1, A2]) ->
-    Nums1 = col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
-                [return_errors, {all, fun is_number/1}]),
-    Nums2 = col([A2], [eval_funs, fetch, flatten, {ignore, blank}],
-                [return_errors, {all, fun is_number/1}]),
+    Nums1 = muin:col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
+                     [return_errors, {all, fun is_number/1}]),
+    Nums2 = muin:col([A2], [eval_funs, fetch, flatten, {ignore, blank}],
+                     [return_errors, {all, fun is_number/1}]),
     muin_util:apply([Nums1, Nums2], fun sumx2my2_/2).
 sumx2my2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
     ?ERRVAL_VAL;
@@ -953,15 +951,15 @@ sumx2my2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_NA;
 sumx2my2_(Nums1, Nums2) ->
     sum(lists:map(fun({X, Y}) ->
-                    (X * X) - (Y * Y)
-            end,
-            lists:zip(Nums1, Nums2))).
+                          (X * X) - (Y * Y)
+                  end,
+                  lists:zip(Nums1, Nums2))).
 
 sumx2py2([A1, A2]) ->
-    Nums1 = col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
-                [return_errors, {all, fun is_number/1}]),
-    Nums2 = col([A2], [eval_funs, fetch, flatten, {ignore, blank}],
-                [return_errors, {all, fun is_number/1}]),
+    Nums1 = muin:col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
+                     [return_errors, {all, fun is_number/1}]),
+    Nums2 = muin:col([A2], [eval_funs, fetch, flatten, {ignore, blank}],
+                     [return_errors, {all, fun is_number/1}]),
     muin_util:apply([Nums1, Nums2], fun sumx2py2_/2).
 
 sumx2py2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
@@ -970,15 +968,15 @@ sumx2py2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_NA;
 sumx2py2_(Nums1, Nums2) ->
     sum(lists:map(fun({X, Y}) ->
-                    (X * X) + (Y * Y)
-            end,
-            lists:zip(Nums1, Nums2))).
+                          (X * X) + (Y * Y)
+                  end,
+                  lists:zip(Nums1, Nums2))).
 
 sumxmy2([A1, A2]) ->
-    Nums1 = col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
-                [return_errors, {all, fun is_number/1}]),
-    Nums2 = col([A2], [eval_funs, fetch, flatten, {ignore, blank}],
-                [return_errors, {all, fun is_number/1}]),
+    Nums1 = muin:col([A1], [eval_funs, fetch, flatten, {ignore, blank}],
+                     [return_errors, {all, fun is_number/1}]),
+    Nums2 = muin:col([A2], [eval_funs, fetch, flatten, {ignore, blank}],
+                     [return_errors, {all, fun is_number/1}]),
     muin_util:apply([Nums1, Nums2], fun sumxmy2_/2).
 
 sumxmy2_(Nums1, Nums2) when Nums1 == []; Nums2 == [] ->
@@ -987,55 +985,55 @@ sumxmy2_(Nums1, Nums2) when length(Nums1) =/= length(Nums2) ->
     ?ERRVAL_NA;
 sumxmy2_(Nums1, Nums2) ->
     sum(lists:map(fun({X, Y}) ->
-                    math:pow(X - Y, 2)
-            end,
-            lists:zip(Nums1, Nums2))).
+                          math:pow(X - Y, 2)
+                  end,
+                  lists:zip(Nums1, Nums2))).
 
 %%% Trigonometry ~~~~~
 
 sin([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun sin_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun sin_/1).
 sin_([Num]) ->
     math:sin(Num).
 
 cos([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun cos_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun cos_/1).
 cos_([Num]) -> 
     math:cos(Num).
 
 tan([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun tan_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun tan_/1).
 tan_([Num]) ->
     math:tan(Num).
 
 asin([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun asin_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun asin_/1).
 asin_([Num]) when Num > 1 orelse Num < -1 ->
     ?ERRVAL_NUM;
 asin_([Num]) ->
     math:asin(Num).
 
 acos([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun acos_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun acos_/1).
 acos_([Num]) when Num < -1 orelse Num > 1 ->
     ?ERRVAL_NUM;
 acos_([Num]) ->
     math:acos(Num).
 
 acosh([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun acosh_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun acosh_/1).
 acosh_([Num]) when Num < 1 ->
     ?ERRVAL_NUM;
 acosh_([Num]) ->
@@ -1043,76 +1041,76 @@ acosh_([Num]) ->
 
 
 atan([V]) ->
-    col([V], [eval_funs, first_array, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun atan_/1).
+    muin:col([V], [eval_funs, first_array, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun atan_/1).
 atan_([Num]) ->
     math:atan(Num).
 
 atan2([_, Y]) when ?is_rangeref(Y) ->
     ?ERRVAL_VAL;
 atan2([_, _]=Args) ->
-    col(Args, [eval_funs, first_array, fetch, {cast, num},
-               {conv, str, ?ERRVAL_VAL}],
-        [return_errors, {all, fun is_number/1}],
-        fun atan2_/1).
+    muin:col(Args, [eval_funs, first_array, fetch, {cast, num},
+                    {conv, str, ?ERRVAL_VAL}],
+             [return_errors, {all, fun is_number/1}],
+             fun atan2_/1).
 atan2_([X, Y]) when X == 0 andalso Y == 0 ->
     ?ERRVAL_DIV;
 atan2_([X, Y]) ->
     math:atan2(Y, X).
 
 atanh([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun atanh_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun atanh_/1).
 atanh_([Num]) when Num =< -1 orelse Num >= 1 ->
     ?ERRVAL_NUM;
 atanh_([Num]) ->
     math:atanh(Num).
 
 sinh([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun sinh_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun sinh_/1).
 sinh_([Num]) ->
     try   math:sinh(Num)
     catch error:_Err -> ?ERRVAL_NUM end.
 
 cosh([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun cosh_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun cosh_/1).
 cosh_([Num]) when Num >= 711 ->
     ?ERRVAL_NUM;
 cosh_([Num]) ->
     math:cosh(Num).
 
 tanh([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun tanh_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun tanh_/1).
 tanh_([Num]) ->
     math:tanh(Num).
 
 asinh([V]) ->
-    col([V], [eval_funs, area_first, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun asinh_/1).
+    muin:col([V], [eval_funs, area_first, fetch, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun asinh_/1).
 asinh_([Num]) ->
     math:asinh(Num).
 
 degrees([V]) ->
-    col([V], [eval_funs, area_first, fetchdb, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun degrees_/1).
+    muin:col([V], [eval_funs, area_first, fetchdb, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun degrees_/1).
 
 degrees_([Angle]) ->
     Angle / math:pi() * 180.
 
 radians([V]) ->
-    col([V], [eval_funs, area_first, fetchdb, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun radians_/1).
+    muin:col([V], [eval_funs, area_first, fetchdb, {cast, num}],
+             [return_errors, {all, fun is_number/1}],
+             fun radians_/1).
 
 radians_([Angle]) ->
     Angle * math:pi() / 180.
