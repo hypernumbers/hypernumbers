@@ -1499,13 +1499,17 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     Rti = refX_to_rti(Ref, AReq, false),
     case muin:run_formula(Fla, Rti) of
         {error, {errval, Error}} ->
-            write_error_attrs(Ref, Formula, Error);        
+            write_error_attrs(Ref, Formula, Error);
         {ok, {Pcode, {rawform, RawF, Html}, Parents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
             Form = RawF#form{id={Ref#refX.path, Trans, Label}}, 
             ok = attach_form(Ref, Form),
             Attrs2 = orddict:store("__hasform", t, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Html, 
+                                Parents, Recompile);
+        {ok, {Pcode, {html, {Preview, Height, Width}, Res}, Parents, Recompile}} ->
+            Attrs2 = orddict:store("preview", {Preview, Height, Width}, Attrs),
+            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
                                 Parents, Recompile);
         {ok, {Pcode, Res, Parents, Recompile}} ->
             write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, 
