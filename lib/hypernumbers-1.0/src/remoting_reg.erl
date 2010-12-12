@@ -22,6 +22,7 @@
          notify_site/1,
          notify_change/4,
          notify_delete/3,
+         notify_delete_attrs/4,
          notify_style/3,
          notify_error/5, 
          request_update/4,
@@ -89,15 +90,26 @@ notify_change(Site, Path, {RefType, _} = R, Attrs) ->
     Fun = fun({"__"++_Hidden, _}) -> false; (_X) -> true end,
     FilteredAttrs = lists:filter(Fun, Attrs),
     Attrs2 = hn_util:jsonify_attrs(FilteredAttrs),
-    Msg = {struct, [{"type", "change"}, {"reftype", RefType},
+    Msg = {struct, [{"type", "change"},
+                    {"reftype", RefType},
                     {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_str(R)}, 
                     {"attrs", {struct, Attrs2}}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
+notify_delete_attrs(Site, Path, {RefType, _} = R, Attrs) ->
+    Msg = {struct, [{"type", "delete_attrs"},
+                    {"reftype", RefType},
+                    {"path", hn_util:list_to_path(Path)},
+                    {"ref", hn_util:obj_to_str(R)},
+                    {"attrs", {struct, [{X, ""} || X <- Attrs]}}]},
+    Id = hn_util:site_to_atom(Site, "_remoting"),
+    gen_server:cast(Id, {msg, Site, Path, Msg}). 
+                    
 notify_delete(Site, Path, {RefType, _} = R) ->
-    Msg = {struct, [{"type", "delete"}, {"reftype", RefType},
+    Msg = {struct, [{"type", "delete"},
+                    {"reftype", RefType},
                     {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_str(R)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
@@ -107,13 +119,16 @@ notify_delete(Site, Path, {RefType, _} = R) ->
 notify_style(Site, Path, Style) ->
     {Key, CSS} = hn_mochi:style_to_css(Style),
     Msg = {struct, [{"path", hn_util:list_to_path(Path)},
-                    {"type", "style"}, {"index", Key}, {"css", CSS}]},
+                    {"type", "style"},
+                    {"index", Key},
+                    {"css", CSS}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
 %% @doc  Notify server of an error to a cell
 notify_error(Site, Path, Ref, error_in_formula, Value) ->
-    Msg = {struct, [{"type", "error"}, {"reftype", "cell"},
+    Msg = {struct, [{"type", "error"},
+                    {"reftype", "cell"},
                     {"ref", hn_util:obj_to_str(Ref)}, 
                     {"original", Value},
                     {"path", hn_util:list_to_path(Path)}]},

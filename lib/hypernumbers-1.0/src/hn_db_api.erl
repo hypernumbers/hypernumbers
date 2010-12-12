@@ -881,7 +881,6 @@ is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {cell, _}}) ->
 is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
     {ok, range_to_range}.
 
-
 -spec read_activity(#refX{}, fun()) -> any().
 read_activity(#refX{site=Site}, Op) ->
     Activity = fun() -> mnesia:activity(transaction, Op) end,
@@ -925,10 +924,12 @@ tell_front_end(_FnName, _refX) ->
     List = lists:reverse(get('front_end_notify')),
     Fun = fun({change, #refX{site=S, path=P, obj={page, "/"}}, _Attrs}) ->
                   remoting_reg:notify_refresh(S, P);                     
-              ({change, #refX{site=S, path=P, obj=O}, Attrs}) ->
+             ({change, #refX{site=S, path=P, obj=O}, Attrs}) ->
                   remoting_reg:notify_change(S, P, O, Attrs);
              ({style, #refX{site=S, path=P}, Style}) ->
-                  remoting_reg:notify_style(S, P, Style)
+                  remoting_reg:notify_style(S, P, Style);
+             ({delete_attrs, #refX{site=S, path=P, obj=O}, Attrs}) ->
+                  remoting_reg:notify_delete_attrs(S, P, O, Attrs)
           end,
     [ok = Fun(X) || X <- List],
     ok.
