@@ -3,10 +3,25 @@
 %%% @private
 -module(stdfuns_lookup_ref).
 
+-export([
+         address/1,
+         choose/1,
+         column/1,
+         index/1,
+         match/1,
+         row/1,
+         non_exact_find/2,
+         qsort/1,
+         transpose/1,
+         indirect/1,
+         vlookup/1,
+         hlookup/1,
+         find/3
+        ]).
+
 -import(muin_collect, [ collect/3 ]).
--export([address/1, choose/1, column/1, index/1, match/1, row/1]).
 -import(muin_collect, [ col/2, col/3, col/4 ]).
--compile(export_all).
+
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 
