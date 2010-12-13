@@ -470,7 +470,8 @@ do_clear_cells(Ref, DelAttrs) ->
 
 content_attrs() ->
     ["formula",
-     "value",             
+     "value",
+     "preview",
      "overwrite-color",
      "__rawvalue",          
      "__ast",             
