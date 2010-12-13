@@ -10,9 +10,19 @@
          expand_cellrange/4,
          walk_path/2,
          attempt/3,
-         attempt/1]).
-
--compile(export_all).
+         attempt/1,
+         apply/2,
+         run/2,
+         run_or_err/2,
+         expand_cellrange/1,
+         bounds_indexes/1,
+         tl_row/1,
+         br_row/1,
+         tl_col/1,
+         br_col/1,
+         normalize/1,
+         get_type/1
+        ]).
 
 -define(SECS_IN_DAY, 86400).
 
@@ -178,7 +188,7 @@ walk_path(Currloc, Dest) ->
                    string:tokens(Dest, "/")),
     Newstk.
 
-expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->    
+expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
     %% Make a list of cells that make up this range.
     Cells = lists:map(fun(X) ->
                         lists:map(fun(Y) -> {X, Y} end,
@@ -189,12 +199,13 @@ expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
     lists:foldl(fun(X, Acc) -> lists:append([Acc, X]) end,
           [], Cells).
 
+%% TODO test for rangeref type here!
 expand_cellrange(R) when ?is_rangeref(R) ->
     {{ColIndex1, RowIndex1}, {ColIndex2, RowIndex2}} = bounds_indexes(R),
     expand_cellrange(RowIndex1, RowIndex2, ColIndex1, ColIndex2).
 
 %% Return static column & row indexes for a range reference.
-bounds_indexes(R) when ?is_rangeref(R) ->
+bounds_indexes(#rangeref{type=finite} = R) ->
     {Col1, Row1} = R#rangeref.tl,
     {Col2, Row2} = R#rangeref.br,
     ColIndex1 = muin:col_index(Col1),
