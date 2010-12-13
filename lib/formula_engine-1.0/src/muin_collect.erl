@@ -17,6 +17,33 @@
 
 -module(muin_collect).
 
+-export([
+         col/4,
+         col/3,
+         collect/3,
+         collect/4,
+         ignor/2,
+         casts/3,
+         pick_first/1,
+         first_array/1,
+         ignore_numbers/1,
+         ignore_strings/1,
+         ignore_bools/1,
+         ignore_dates/1,
+         ignore_blanks/1,
+         ignore/2,
+         cast_strings_false/1,
+         cast_strings_zero/1,
+         cast_strings_or_ignore/1,
+         ban_numbers/1,
+         ban_strings/1,
+         ban_bools/1,
+         ban_dates/1,
+         ban_blanks/1,
+         generic_ban/2,
+         is_area/1
+        ]).
+
 -export([flatten_ranges/1,  flatten_arrays/1, flatten_areas/1,
          collect_numbers/2, collect_number/2,
          collect_strings/2, collect_string/2,
@@ -25,8 +52,6 @@
          remove_errors/1]).
 
 -export([is_string/1, is_date/1, is_blank/1]).
-
--compile(export_all). % For testing / to kill warnings.
 
 -include("muin_records.hrl").
 -include("typechecks.hrl").
