@@ -15,7 +15,8 @@
           link/1,
           img/1,
           html/1,
-          site/1]).
+          site/1,
+          'crumb.trail'/1]).
 
 -export([fail/1]).
 
@@ -24,15 +25,22 @@
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
 
--import(muin_util, [cast/2]).
--import(muin_collect, [ col/2, col/3, col/4 ]).
-
 -define(default_str_rules, [first_array, cast_numbers, cast_bools,
                             cast_blanks, cast_dates ]).
 
 -type trans() :: common | string().
 -type html() :: string().
 -type zoom() :: 1..20.
+
+'crumb.trail'([]) ->
+    trail2(lists:reverse(get(path)), []).
+
+trail2([], Acc) -> lists:flatten(["<a href=\"/\">" ++ get(site) ++
+                                  "</a>" | Acc]);
+trail2([H | T] = L, Acc) ->
+    Path = "/" ++ string:join(lists:reverse(L), "/") ++ "/",
+    NewAcc = " -> <a href=\"" ++ Path ++ "\">" ++ H ++ "</a>",
+    trail2(T, [NewAcc | Acc]).
 
 fail([_]) -> [forced_error, "should_wig"].
 
@@ -64,8 +72,8 @@ textarea_([Label], _Default, Trans) ->
 'google.map_'(Lat, Long, Zoom) ->
     "<iframe width='100%' height='100%' frameborder='0' scrolling='no' "
         ++ "marginheight='0' marginwidth='0' src='http://maps.google.com"
-        ++ "/?ie=UTF8&amp;ll=" ++ cast(Lat, str) ++ "," ++ cast(Long, str)
-        ++ "&amp;z=" ++ cast(Zoom, str) ++ "&amp;output=embed'></iframe>".
+        ++ "/?ie=UTF8&amp;ll=" ++ muin_util:cast(Lat, str) ++ "," ++ muin_util:cast(Long, str)
+        ++ "&amp;z=" ++ muin_util:cast(Zoom, str) ++ "&amp;output=embed'></iframe>".
 
 -spec button_(string(), string(), string()) -> {rawform, #form{}, html()}.
 button_(Value, Response, ResultsPath) ->
@@ -134,30 +142,31 @@ site([]) ->
     Proto ++ Domain.
 
 link([Src, Text]) ->
-    col([Src, Text], [eval_funs, fetch, {cast, str}], [return_errors],
+    muin_collect:col([Src, Text], [eval_funs, fetch, {cast, str}], [return_errors],
         fun([NSrc, NText]) -> link_(NSrc, NText) end).
 
 img([Src]) ->
-    col([Src], [eval_funs, fetch, {cast, str}], [return_errors],
+    muin_collect:col([Src], [eval_funs, fetch, {cast, str}], [return_errors],
         fun([NSrc]) -> img_(NSrc) end).
 
 
 'twitter.search'([])          -> 'twitter.search'(["hello"]);
 'twitter.search'([Term])      -> 'twitter.search'([Term, "title"]);
 'twitter.search'([Term, Title]) ->
-    col([Term, Title], [eval_funs, fetch, {cast, str}], [return_errors],
+    muin_collect:col([Term, Title], [eval_funs, fetch, {cast, str}], [return_errors],
         fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
-table([Ref]) ->
-    table([Ref, 0]);
-table([Ref, Sort]) ->
-    table_(Ref, Sort).
+%% commented out because it throws a mochijson error in some circumstances
+%% table([Ref]) ->
+%%     table([Ref, 0]);
+%% table([Ref, Sort]) ->
+%%     table_(Ref, Sort).
 
 'google.map'([])          -> 'google.map'([0]);
 'google.map'([Long])      -> 'google.map'([Long, 0]);
 'google.map'([Long, Lat]) -> 'google.map'([Long, Lat, 10]);
 'google.map'([Long, Lat, Zoom]) ->
-    col([Long, Lat, Zoom], [eval_funs, fetch, {cast, num}],
+    muin_collect:col([Long, Lat, Zoom], [eval_funs, fetch, {cast, num}],
         [return_errors, {all, fun is_number/1}],
         fun([NLong, NLat, NZoom]) ->
                 'google.map_'(NLong, NLat, NZoom)
@@ -165,13 +174,13 @@ table([Ref, Sort]) ->
 
 input([])   -> input([""]);
 input([V1]) ->
-    Label = col([V1], [first_array, fetch, {cast,str}],
+    Label = muin_collect:col([V1], [first_array, fetch, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:run_or_err([Label], fun input_/1).
 
 textarea([])   -> textarea([""]);
 textarea([V1]) ->
-    Label = col([V1], [first_array, fetch, {cast,str}],
+    Label = muin_collect:col([V1], [first_array, fetch, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:run_or_err([Label], fun textarea_/1).
 
@@ -179,7 +188,7 @@ button([])      -> button(["Submit Form"]);
 button([Title]) -> button([Title, "Thanks for completing our form."]);
 button([Title, Response]) -> button([Title, Response, "./replies/"]);
 button([Title, Response, Results]) ->
-    col([Title, Response, Results], [first_array, fetch, {cast,str}],
+    muin_collect:col([Title, Response, Results], [first_array, fetch, {cast,str}],
         [return_errors, {all, fun muin_collect:is_string/1}],
         fun([NTitle, NResponse, NResult]) ->
                 button_(NTitle, NResponse, NResult)
@@ -189,24 +198,24 @@ button([Title, Response, Results]) ->
 select([])      -> select([""]);
 select([Label]) -> select([Label, {array, [["option 1", "option 2"]]}]);
 select([V1, V2]) ->
-    [Label] = col([V1], [first_array, fetch, {cast,str}],
+    [Label] = muin_collect:col([V1], [first_array, fetch, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
-    Opts = col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
+    Opts = muin_collect:col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:apply([Label, Opts], fun select_/2).
 
 radio([])      -> radio([""]);
 radio([Label]) -> radio([Label, {array, [["option 1", "option 2"]]}]);
 radio([V1, V2]) ->
-    [Label] = col([V1], [first_array, fetch, {cast,str}],
+    [Label] = muin_collect:col([V1], [first_array, fetch, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
-    Opts = col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
+    Opts = muin_collect:col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     muin_util:apply([Label, Opts], fun radio_/2).
 
 background([Url]) -> background([Url, ""]);
 background([V1, V2]) ->
-    col([V1, V2], [first_array, fetch, {cast,str}],
+    muin_collect:col([V1, V2], [first_array, fetch, {cast,str}],
         [return_errors, {all, fun muin_collect:is_string/1}],
         fun([Url, Extra]) -> background_(Url, Extra) end).
 
@@ -247,26 +256,26 @@ create_name() ->
     Bin = crypto:rand_bytes(8),
     mochihex:to_hex(Bin).
 
-table_({range, [ THead | Range]}, Sort) ->
+%% table_({range, [ THead | Range]}, Sort) ->
     
-    Id = "tbl_"++create_name(),
-    F = fun(blank) -> "";
-           (Else)  -> cast(Else, str)
-        end,
+%%     Id = "tbl_"++create_name(),
+%%     F = fun(blank) -> "";
+%%            (Else)  -> muin_util:cast(Else, str)
+%%         end,
 
-    Head = ["<thead><tr>",
-            [["<th>", F(X),"</th>"] || X <- THead ],
-            "</tr></thead>"],
+%%     Head = ["<thead><tr>",
+%%             [["<th>", F(X),"</th>"] || X <- THead ],
+%%             "</tr></thead>"],
     
-    Rows = [ ["<tr>", [ ["<td>", F(Cell),"</td>"] || Cell <- Row ],"</tr>"]
-             || Row <- Range ],
+%%     Rows = [ ["<tr>", [ ["<td>", F(Cell),"</td>"] || Cell <- Row ],"</tr>"]
+%%              || Row <- Range ],
     
-    Script = ["<script type='text/javascript'>$(\"#", Id,
-              "\").tablesorter({headers: { 1: { sorter:'digit' }}, sortList:[[",
-              cast(Sort, str), ",0]]});</script>"],
+%%     Script = ["<script type='text/javascript'>$(\"#", Id,
+%%               "\").tablesorter({headers: { 1: { sorter:'digit' }}, sortList:[[",
+%%               muin_util:cast(Sort, str), ",0]]});</script>"],
     
-    lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
-                   "</table>", Script]).
+%%     lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
+%%                    "</table>", Script]).
 
 make_radio(Name, Opt) ->
     ID = "id_"++create_name(),

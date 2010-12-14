@@ -82,7 +82,6 @@
 -define(dict, orddict:orddict()).
 
 -include("spriki.hrl").
--include("handy_macros.hrl").
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
 
@@ -316,9 +315,26 @@ apply_to_attrs(#refX{site=Site}=Ref, Op) ->
     {Status, Attrs2} = Op(Attrs),
     Attrs3 = post_process(Ref, Attrs2),
     Item = #item{idx = Idx, attrs = Attrs3},
+    case deleted_attrs(Attrs, Attrs3) of
+        []   -> ok;
+        List -> tell_front_end_delete_attrs(Ref, List)
+    end,
     tell_front_end_change(Ref, Attrs3),
     mnesia:write(Table, Item, write),
     {Status, Attrs3}.
+
+deleted_attrs(Old, New) ->
+    OldKeys = lists:sort(orddict:fetch_keys(Old)),
+    NewKeys = lists:sort(orddict:fetch_keys(New)),
+    del_a1(OldKeys, NewKeys, []).
+
+del_a1([], _L, Acc)                 -> Acc;
+del_a1([[$_, $_ | _H] | T], L, Acc) -> del_a1(T, L, Acc);
+del_a1([H | T], L, Acc)             ->
+    case lists:member(H, L) of
+        true  -> del_a1(T, L, Acc);
+        false -> del_a1(T, L, [H | Acc])
+    end.
 
 %% Last chance to apply any default styles and formats. 
 -spec post_process(#refX{}, ?dict) -> ?dict. 
@@ -454,7 +470,8 @@ do_clear_cells(Ref, DelAttrs) ->
 
 content_attrs() ->
     ["formula",
-     "value",             
+     "value",
+     "preview",
      "overwrite-color",
      "__rawvalue",          
      "__ast",             
@@ -1500,7 +1517,7 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     Rti = refX_to_rti(Ref, AReq, false),
     case muin:run_formula(Fla, Rti) of
         {error, {errval, Error}} ->
-            write_error_attrs(Ref, Formula, Error);        
+            write_error_attrs(Ref, Formula, Error);
         {ok, {Pcode, {rawform, RawF, Html}, Parents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
             Form = RawF#form{id={Ref#refX.path, Trans, Label}}, 
@@ -1508,8 +1525,14 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             Attrs2 = orddict:store("__hasform", t, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Html, 
                                 Parents, Recompile);
+        {ok, {Pcode, {html, {Preview, Height, Width}, Res}, Parents, Recompile}} ->
+            Attrs2 = orddict:store("preview", {Preview, Height, Width}, Attrs),
+            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
+                                Parents, Recompile);
         {ok, {Pcode, Res, Parents, Recompile}} ->
-            write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, 
+            % there might have been a preview before - nuke it!
+            Attrs2 = orddict:erase("preview", Attrs),
+            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
                                 Parents, Recompile)
     end.
 
@@ -1548,9 +1571,13 @@ write_formula2(Ref, OrigVal, {Type, Val},
     Attrs2 = add_attributes(Attrs, [{"__default-align", Align},
                                     {"__rawvalue", Val},
                                     {"formula", Formula}]),
+    % there might have been a preview before - nuke it!
+    Attrs3 = orddict:erase("preview", Attrs2),
+    Attrs4 = orddict:erase("__ast", Attrs3),
+    Attrs5 = orddict:erase("__recompile", Attrs4),
     case Format of
-        "null" -> Attrs2;
-        _      -> orddict:store("format", Format, Attrs2)
+        "null" -> Attrs5;
+        _      -> orddict:store("format", Format, Attrs5)
     end.
 
 split_local_remote(List) -> split_local_remote1(List, {[], []}).
@@ -1648,6 +1675,11 @@ store_style(Ref, Tbl, MStyle) ->
             ok = mnesia:write(Tbl, StyleRec, write),
             I
     end.    
+
+-spec tell_front_end_delete_attrs(#refX{}, list()) -> ok. 
+tell_front_end_delete_attrs(Ref, Attrs) ->
+    Tuple = {delete_attrs, Ref, Attrs},
+    tell_front_end1(Tuple).
 
 -spec tell_front_end_style(#refX{}, #style{}) -> ok. 
 tell_front_end_style(Ref, Style) ->

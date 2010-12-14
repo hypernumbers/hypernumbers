@@ -19,9 +19,7 @@
 %%% @private
 
 -module(stdfuns_text).
--compile(export_all).
 
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 -include("hypernumbers.hrl").
 
@@ -30,10 +28,31 @@
 -import(muin_collect, [col/3, col/2, col/4]).
 
 %% Excel 2004 API.
--export([value/1, t/1, replace/1, search/1, '&'/1, char/1, clean/1,
+-export([
+         value/1,
+         t/1,
+         replace/1,
+         search/1,
+         '&'/1,
+         char/1,
+         clean/1,
          concatenate/1,
-         exact/1, find/1, fixed/1, left/1, len/1, lower/1, mid/1, proper/1,
-         rept/1, right/1, substitute/1, text/1, trim/1, upper/1]).
+         exact/1,
+         find/1,
+         fixed/1,
+         left/1,
+         len/1,
+         lower/1,
+         mid/1,
+         proper/1,
+         rept/1,
+         right/1,
+         substitute/1,
+         text/1,
+         trim/1,
+         upper/1,
+         code/1
+        ]).
 
 %% Default set of rules for text
 -define(default_num_rules, [first_array, cast_strings, cast_bools,

@@ -17,16 +17,16 @@
          run_format/2
         ]).
 
--import(format_util,
-        [clock_12/1,
-         pad_year/1,
-         pad_calendar/1,
-         get_short_day/1,
-         get_day/1,
-         get_short_month/1,
-         get_month/1,
-         get_last_two/1
-        ]).
+%% -import(format_util,
+%%         [clock_12/1,
+%%          pad_year/1,
+%%          pad_calendar/1,
+%%          get_short_day/1,
+%%          get_day/1,
+%%          get_short_month/1,
+%%          get_month/1,
+%%          get_last_two/1
+%%         ]).
 
 %% Run-time Interface
 %% The module format is called from within generated code only
@@ -492,23 +492,23 @@ has_AMPM([_H|T])            -> has_AMPM(T).
 
 execute(X,{year,two_digit},_) ->
     {{Year,_M,_D},_T}=X,
-    get_last_two(pad_year(integer_to_list(Year)));
+    format_util:get_last_two(format_util:pad_year(integer_to_list(Year)));
 execute(X,{year,four_digit},_) ->
     {{Year,_M,_D},_T}=X,
-    pad_year(integer_to_list(Year));
+    format_util:pad_year(integer_to_list(Year));
 execute(X,{mon,no_zero},_) ->
     {{_Y,Mon,_D},_T}=X,
     integer_to_list(Mon);
 execute(X,{mon,zero},_) ->
     {{_Y,Mon,_D},_Time}=X,
     MM=integer_to_list(Mon),
-    pad_calendar(MM);
+    format_util:pad_calendar(MM);
 execute(X,{mon,abbr},_) ->
     {{_Y,Month,_D},_T}=X,
-    get_short_month(Month);
+    format_util:get_short_month(Month);
 execute(X,{mon,full},_) ->
     {{_Y,Month,_D},_T}=X,
-    get_month(Month);
+    format_util:get_month(Month);
 execute(X,{min,elapsed},_) ->
     Secs=calendar:datetime_to_gregorian_seconds(X),
     integer_to_list(round(Secs/60));
@@ -518,25 +518,25 @@ execute(X,{day,no_zero},_) ->
 execute(X,{day,zero},_) ->
     {{_Y,_M,Day},_T}=X,
     DD=integer_to_list(Day),
-    pad_calendar(DD);
+    format_util:pad_calendar(DD);
 execute(X,{day,abbr},_) ->
     {{_Y,_M,Day},_T}=X,
-    get_short_day(Day);
+    format_util:get_short_day(Day);
 execute(X,{day,full},_) ->
     {{_Y,_M,Day},_T}=X,
-    get_day(Day);
+    format_util:get_day(Day);
 execute(X,{hour,no_zero},true) ->
     {_D,{Hour,_M,_S}}=X,
-    integer_to_list(clock_12(Hour));
+    integer_to_list(format_util:clock_12(Hour));
 execute(X,{hour,no_zero},false) ->
     {_D,{Hour,_M,_S}}=X,
     integer_to_list(Hour);
 execute(X,{hour,zero},true) ->
     {_D,{Hour,_M,_S}}=X,
-    pad_calendar(integer_to_list(clock_12(Hour)));
+    format_util:pad_calendar(integer_to_list(format_util:clock_12(Hour)));
 execute(X,{hour,zero},false) ->
     {_D,{Hour,_M,_S}}=X,
-    pad_calendar(integer_to_list(Hour));
+    format_util:pad_calendar(format_util:clock_12(Hour));
 execute(X,{hour,elapsed},_) ->
     Secs=calendar:datetime_to_gregorian_seconds(X),
     integer_to_list(round(Secs/3600));
@@ -546,13 +546,13 @@ execute(X,{min,no_zero},_) ->
 execute(X,{min,zero},_) ->
     {_D,{_H,Min,_S}}=X,
     MM=integer_to_list(Min),
-    pad_calendar(MM);
+    format_util:pad_calendar(MM);
 execute(X,{sec,no_zero},_) ->
     {_D,{_H,_M,Sec}}=X,
     integer_to_list(Sec);
 execute(X,{sec,zero},_) ->
     {_D,{_H,_M,Sec}}=X,
-    pad_calendar(integer_to_list(Sec));
+    format_util:pad_calendar(integer_to_list(Sec));
 execute(X,{sec,elapsed},_) ->
     Secs=calendar:datetime_to_gregorian_seconds(X),
     integer_to_list(round(Secs));

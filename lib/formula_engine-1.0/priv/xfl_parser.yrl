@@ -134,7 +134,6 @@ ArrayLiteral -> errval    : lit('$1').
 
 Erlang code.
 
--include("handy_macros.hrl").
 -include("muin_records.hrl").
 -include("typechecks.hrl").
 

@@ -24,10 +24,7 @@
          timevalue/1,
          time/1]).
 
--import(muin_collect, [ collect/3, col/3, col/4 ]).
-
 -include("typechecks.hrl").
--include("handy_macros.hrl").
 -include("muin_records.hrl").
 
 %% FIXME: This is NOT the right thing to do.
@@ -47,7 +44,7 @@ date(Args = [_, _, _]) ->
                 dateh([erlang:trunc(Y), Rnd(M), Rnd(D)])
         end,
 
-    case col(Args, [flatten_as_str, {cast, num}],
+    case muin_collect:col(Args, [flatten_as_str, {cast, num}],
              [return_errors, {all, fun is_number/1}]) of
         Err when ?is_errval(Err) -> Err;
         [Y, M, D] when Y < 1900  -> F(Y+1900, M, D);
@@ -98,13 +95,13 @@ datedif1(Start, End, "Y") ->
     Maxyrs = Endyr - Startyr,
     if Endmo > Startmo ->
             Maxyrs;
-       Endmo == Startmo ->
+        Endmo == Startmo ->
             if Endday >= Startday ->
                     Maxyrs;
-               ?else ->
+                Endday < Startday ->
                     Maxyrs - 1
             end;
-       ?else ->
+        Endmo < Startmo ->
             Maxyrs - 1
     end;
 datedif1(Start, End, "M") ->
@@ -122,7 +119,7 @@ datedif1(Start, End, "MD") ->
     Endday = muin_date:day(End),
     if Endday >= Startday ->
             Endday - Startday;
-       ?else ->
+       Endday < Startday ->
             31 - (Startday - Endday)
     end;
 datedif1(Start, End, "YM") ->
@@ -130,7 +127,7 @@ datedif1(Start, End, "YM") ->
     Endmo = muin_date:month(End),
     if Endmo >= Startmo ->
             Endmo - Startmo;
-       ?else ->
+        Endmo < Startmo ->
             12 - (Startmo - Endmo)
     end;
 datedif1(Start, End, "YD") ->
@@ -147,9 +144,9 @@ days360([Date1, Date2]) ->
     days360([Date1, Date2, true]);
 
 days360([PreDate1, PreDate2, PreMethod]) ->
-    Dates = col([PreDate1, PreDate2], [eval_funs, fetch, {cast, date}],
+    Dates = muin_collect:col([PreDate1, PreDate2], [eval_funs, fetch, {cast, date}],
                 [return_errors, {all, fun muin_collect:is_date/1}]),
-    Mth = col([PreMethod], [eval_funs, fetch, {cast, bool}],
+    Mth = muin_collect:col([PreMethod], [eval_funs, fetch, {cast, bool}],
               [return_errors, {all, fun is_boolean/1}]),
     muin_util:apply([Dates, Mth], fun days360_/2).    
 
@@ -176,7 +173,7 @@ day([Val]) ->
     muin_date:day(Date).
 
 month(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array, cast_blank,
          {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
@@ -260,13 +257,13 @@ weekday([V1]) ->
     weekday([V1, 1]);
 weekday([V1, V2]) ->
     
-    Dat = col([V1],
+    Dat = muin_collect:col([V1],
               [fetch_name, eval_funs, first_array,
                {cast, num, date, ?ERRVAL_NUM},
                {cast, date}],
               [return_errors, {all, fun muin_collect:is_date/1}]),
     
-    Ret = col([V2],
+    Ret = muin_collect:col([V2],
               [fetch_name, eval_funs, first_array, {cast, int}],
               [return_errors, {all, fun is_number/1}]),
     
@@ -316,7 +313,7 @@ weeknum1(Dt, Rettype) ->
                    #datetime{date = {muin_date:year(Dt), 12, 31}}).
 
 hour(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array,
          {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
@@ -326,7 +323,7 @@ hour_([Date]) ->
     muin_date:hour(Date).
 
 minute(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array,
          {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
@@ -336,7 +333,7 @@ minute_([Date]) ->
     muin_date:minute(Date).
 
 second(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array,
          {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
@@ -350,7 +347,7 @@ now([]) ->
     #datetime{date = Date, time = Time}.
 
 timevalue(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array, {cast, str, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
         fun timevalue_/1).
@@ -360,7 +357,7 @@ timevalue_([#datetime{time={H,M,S}}]) ->
     Secs / 86400.
 
 time(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array, {cast, int}],
         [return_errors, {all, fun is_number/1}],
         fun time_/1).

@@ -1,6 +1,11 @@
 %%% @private
 -module(userdef_rb).
--compile(export_all).
+
+-export([
+         stop/0,
+         test/2,
+         loop/1]
+        ).
 
 %% start() ->
 %%     spawn(fun() ->

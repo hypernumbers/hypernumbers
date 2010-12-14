@@ -5,13 +5,31 @@
 %%% NOTE: Computed criteria aren't supported yet (waiting on Muin refactoring).
 
 -module(stdfuns_db).
--export([daverage/1, dcount/1, dcounta/1, dget/1, dmax/1, dmin/1, dproduct/1,
-         dstdev/1, dstdevp/1, dsum/1, dvar/1, dvarp/1]).
--compile(export_all).
+
+-export([
+         daverage/1,
+         dcount/1,
+         dcounta/1,
+         dget/1,
+         dmax/1,
+         dmin/1,
+         dproduct/1,
+         dstdev/1,
+         dstdevp/1,
+         dsum/1,
+         dvar/1,
+         dvarp/1
+        ]).
+
+% exports for testing
+-export([
+         perf/0,
+         simple_criteria_test/0,
+         advanced_criteria_test/0
+        ]).
 
 -import(muin_collect, [ col/2, col/3, col/4 ]).
 
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 
 %% DbR = database range, Fld = field, CR = criteria range, A = action,

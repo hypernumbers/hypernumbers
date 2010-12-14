@@ -15,7 +15,76 @@
 %%%
 %%% TODO: Collectors for areas are very inefficient.
 
+%%% The available rules are:
+%%% * ignore_blanks
+%%% * ignore_strings
+%%% * ignore_errors
+%%% * {ignore, Type} where Type === num, bool, date, array
+%%%                                 error, blank, str, unknown_type
+%%% * eval_funs             evaluates a function (ie non-lazy eval)
+%%% * area_first            gets the top left value of an array or range
+%%% * first_array           gets the first element of an array
+%%% * first_array_as_bool   gets the top left of an array as
+%%%                         a false-specific boolean
+%%% * flatten_as_str        turns a range into a string
+%%% * flatten               turns a list, range or array into a flat list
+%%%                         NOTE a list APPEARS to be an internal state of
+%%%                         the collector and not a type in its own right
+%%% * {flatten, range}      flattens a range
+%%% * num_as_bool           casts an integer/float into
+%%%                         a false-specific boolean
+%%% * str_as_bool           casts true/TRUE/false/False or throws err
+%%% * ref_as_bool           presumes that a cellref has not been fetched,
+%%%                         then fetches it and casts it as bool
+%%% * fetch_ref             fetches a cellref or rangeref - that is to say
+%%%                         turns 'A1' into the value in 'A1'
+%%% * cast_def              NOT A REAL CAST - USED INTERNALLY
+%%% * {cast, Type}          casts all values to 'Type' (see ignore_type)
+%%% * {cast, From, To}      only casts some types to the the 'To' type
+%%% * {cast, From, To, Default} if the cast fails return the default
+%%% * cast_num
+%%% * cast_str
+%%% * fetch_name            fetches the value of a named object
+%%%                         (names ot properly implemented yet)
+%%% * name_as_bool          always fails
+%%% * fetch                 gets values of cell/range references
+%%% * fetchdb               fetch for database fns
+%%% * {conv, Type, Value}   converts objects of a particular type to a val
+%%% * {convflat, Type, Value} same as conv? WTF?
+
+%%% Passes are what happens after all the rules have been applied
+%%% * return_flat_errors    returns all the errors
+%%% * return_errors
+%%% * {all, Type}           checks that all the values are of the type
+
 -module(muin_collect).
+
+-export([
+         col/4,
+         col/3,
+         collect/3,
+         collect/4,
+         ignor/2,
+         casts/3,
+         pick_first/1,
+         first_array/1,
+         ignore_numbers/1,
+         ignore_strings/1,
+         ignore_bools/1,
+         ignore_dates/1,
+         ignore_blanks/1,
+         ignore/2,
+         cast_strings_false/1,
+         cast_strings_zero/1,
+         cast_strings_or_ignore/1,
+         ban_numbers/1,
+         ban_strings/1,
+         ban_bools/1,
+         ban_dates/1,
+         ban_blanks/1,
+         generic_ban/2,
+         is_area/1
+        ]).
 
 -export([flatten_ranges/1,  flatten_arrays/1, flatten_areas/1,
          collect_numbers/2, collect_number/2,
@@ -26,13 +95,8 @@
 
 -export([is_string/1, is_date/1, is_blank/1]).
 
--compile(export_all). % For testing / to kill warnings.
-
--include("handy_macros.hrl").
 -include("muin_records.hrl").
 -include("typechecks.hrl").
-
--import(muin_util, [cast/2]).
 
 col(Args, Rules, Passes, Fun) ->
     case col(Args, Rules, Passes) of
@@ -228,7 +292,6 @@ rl({convflat, Type, Value}, X) ->
         _Else -> X
     end;
 
-
 % No Rules for this element
 rl(_Rule, Value) ->
     Value.
@@ -337,7 +400,7 @@ casts(Val, Type, [fetch_refs_as_bool | Rules]) when ?is_namedexpr(Val) ->
     casts(?ERRVAL_NAME, Type, Rules);
 casts(Ref, Type, [fetch_refs_as_bool | Rules]) when ?is_cellref(Ref) ->
     Val = case muin:fetch(Ref) of
-              X when X == "0", X == false, X == "FALSE" -> false;
+              X when X == "0"; X == false; X == "FALSE" -> false;
               blank -> blank;
               _Else -> true
           end,
@@ -553,7 +616,7 @@ cast_blanks(Xs, Targtype) ->
 generic_cast(Xs, Targtype, Guardfun) ->
     R = lists:foldl(fun(X, Acc) ->
                       case Guardfun(X) of
-                          true  -> [cast(X, Targtype) | Acc];
+                          true  -> [muin_util:cast(X, Targtype) | Acc];
                           false -> [X | Acc]
                       end
               end,
@@ -661,7 +724,7 @@ basic_test_() ->
                     pass([true, false, "1"], [{all, fun is_bool/1}])),
      
      ?_assertEqual( ?ERRVAL_DIV,
-                    pass([true, false, ?ERRVAL_DIV], [return_errors])),
+                    pass([true, false, ?ERRVAL_DIV], [return_errors]))
      
      
 %% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
@@ -669,5 +732,5 @@ basic_test_() ->
 %% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
 %% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
 %% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true])
-     ?_assert(1==1)
+%% ?_assert(1==1)
     ].

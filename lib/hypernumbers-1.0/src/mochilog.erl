@@ -35,7 +35,14 @@ start() ->
 
 %% @doc Logs individual requests
 -spec log(#env{}, #refX{}) -> ok.
+log(#env{mochi=Mochi,uid=Uid,
+         raw_body= <<"{\"admin\":{\"set_password\":",_Rest/binary>>,email=Email}, Ref) ->
+    NewBody = <<"{\"admin\":{\"set_password\":{\"password\":\"***\"}}}">>,
+    log1(Mochi, Uid, NewBody, Email, Ref);
 log(#env{mochi=Mochi, uid=Uid, raw_body=Body, email=Email}, Ref) ->
+    log1(Mochi, Uid, Body, Email, Ref).
+
+log1(Mochi, Uid, Body, Email, Ref) ->
     Post = [{time, erlang:now()},
             {site, Ref#refX.site},
             {path, Mochi:get(raw_path)},

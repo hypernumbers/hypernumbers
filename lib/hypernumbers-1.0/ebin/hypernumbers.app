@@ -53,8 +53,7 @@
                     hn_util,
                     passport,
                     hn_db_api,
-                    hn_web_admin,
-                    remoting
+                    hn_web_admin
                    ]},
 	 {registered,   [ ]},   
 	 {included_applications, []},   

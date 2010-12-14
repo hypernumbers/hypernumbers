@@ -56,8 +56,8 @@ Stringcond -> notequals   : '$1' .
 
 
 Erlang code.
--include("handy_macros.hrl").
 %% Erlang code follows here
+-define(MS(X),list_to_atom("$"++integer_to_list(X))). %" fix highlighting),%
 make_clause({_,Cond},{integer,Value}) -> 
     {Cond,?MS(get(matchspec)),list_to_integer(Value)};
 make_clause({_,Cond},{string,Value}) -> 

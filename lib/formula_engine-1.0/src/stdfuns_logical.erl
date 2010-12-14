@@ -3,7 +3,6 @@
 %%% @private
 
 -module(stdfuns_logical).
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 
 -export(['='/1, '<>'/1, '<'/1, '>'/1, '<='/1, '>='/1]).

@@ -8,14 +8,26 @@
 %%%      {Tag, Width, Height, [ {Y, X, Term} ]}
 
 -module(area_util).
--export([apply_each/2, width/1, height/1, at/3, make_array/2, to_list/1,
-         col/2, row/2, are_congruent/2]).
--export([to_absolute/3, to_relative/3]).
+-export([
+         is_matrix/1,
+         apply_each/2,
+         apply_each_with_pos/2 ,
+         width/1,
+         height/1,
+         at/3,
+         make_array/1,
+         make_array/2,
+         to_list/1,
+         col/2,
+         row/2,
+         are_congruent/2
+        ]).
 
-%% vv -- needs to go.
--compile(export_all).
+-export([
+         to_absolute/3,
+         to_relative/3
+        ]).
 
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 
@@ -24,7 +36,7 @@
 is_matrix({_Type, Rows} = Area) when ?is_area(Area) ->
     Size = length(hd(Rows)),
     lists:all(fun(X) -> length(X) == Size end, Rows)
-        andalso length(Rows) == Size.
+         andalso length(Rows) == Size.
 
 %%% @doc Check if all areas in the list have the same dimensions as A.
 are_congruent(A, As) when ?is_area(A), is_list(As) ->
@@ -49,18 +61,17 @@ apply_each(Fun, A = {Tag, Rows}) when ?is_area(A) ->
 %% @doc Apply function to each value in array/range. The function gets
 %% element's position in addition to its value. ({Val, {Col, Row}}).
 apply_each_with_pos(Fun, A = {Tag, Rows}) when ?is_area(A) ->
-    Fun = fun({Row, RowIdx}, Acc) ->
-                  ValCoords =
-                      
-                      Fun2 = fun({V, I}, Acc2) ->
-                                     [{V, {I, RowIdx}}|Acc2]
-                             end,
-                  List = lists:reverse(lists:zip(Row, lists:seq(1, length(Row)))),
-                  lists:foldl(Fun2, [], List),
-                  Newrow = lists:map(Fun, ValCoords),
-                  [Newrow|Acc]
-          end,
-    {Tag, lists:reverse(lists:foldl(Fun, [], lists:zip(Rows, lists:seq(1, length(Rows)))))}.
+     Fun = fun({Row, RowIdx}, Acc) ->
+                   ValCoords =                      
+                       Fun2 = fun({V, I}, Acc2) ->
+                                      [{V, {I, RowIdx}}|Acc2]
+                              end,
+                   List = lists:reverse(lists:zip(Row, lists:seq(1, length(Row)))),
+                   lists:foldl(Fun2, [], List),
+                   Newrow = lists:map(Fun, ValCoords),
+                   [Newrow|Acc]
+           end,
+     {Tag, lists:reverse(lists:foldl(Fun, [], lists:zip(Rows, lists:seq(1, length(Rows)))))}.
 
 %% @spec to_list(Area :: area()) -> list()
 %% @doc Return area as a list with elements enumerated left-to-right top-down.

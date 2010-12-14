@@ -10,16 +10,22 @@
          expand_cellrange/4,
          walk_path/2,
          attempt/3,
-         attempt/1]).
-
--compile(export_all).
+         attempt/1,
+         apply/2,
+         run/2,
+         run_or_err/2,
+         expand_cellrange/1,
+         bounds_indexes/1,
+         tl_row/1,
+         br_row/1,
+         tl_col/1,
+         br_col/1,
+         normalize/1,
+         get_type/1
+        ]).
 
 -define(SECS_IN_DAY, 86400).
 
--import(string, [rchr/2, tokens/2]).
--import(tconv, [to_i/1, to_s/1, to_num/1]).
-
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 
@@ -90,7 +96,7 @@ cast(X, Type, int) ->
 cast(X, num, num)      -> X;
 cast(true, bool, num)  -> 1;
 cast(false, bool, num) -> 0;
-cast(X, str, num)      -> to_num(X);
+cast(X, str, num)      -> tconv:to_num(X);
 cast(X, date, num)     ->
     #datetime{date = D, time = T} = X,
     Days = calendar:date_to_gregorian_days(D) -
@@ -101,7 +107,7 @@ cast(_, blank, num)    -> 0;
 cast(_, _, num)        -> {error, nan};
 
 %% X -> string
-cast(X, num, str)      -> to_s(X);
+cast(X, num, str)      -> tconv:to_s(X);
 cast(X, str, str)      -> X;
 cast(true, bool, str)  -> "TRUE";  % STR!
 cast(false, bool, str) -> "FALSE"; % STR!
@@ -164,7 +170,7 @@ just_path(Ssref) when is_list(Ssref) ->
     end.
           
 just_ref(Ssref) ->
-    lists:last(tokens(Ssref, "/")).
+    lists:last(string:tokens(Ssref, "/")).
 
 %% Absolute path to location -> absolute path to another location.
 %% The first argument is a list of path components, the second is a string.
@@ -182,7 +188,7 @@ walk_path(Currloc, Dest) ->
                    string:tokens(Dest, "/")),
     Newstk.
 
-expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->    
+expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
     %% Make a list of cells that make up this range.
     Cells = lists:map(fun(X) ->
                         lists:map(fun(Y) -> {X, Y} end,
@@ -193,12 +199,13 @@ expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
     lists:foldl(fun(X, Acc) -> lists:append([Acc, X]) end,
           [], Cells).
 
+%% TODO test for rangeref type here!
 expand_cellrange(R) when ?is_rangeref(R) ->
     {{ColIndex1, RowIndex1}, {ColIndex2, RowIndex2}} = bounds_indexes(R),
     expand_cellrange(RowIndex1, RowIndex2, ColIndex1, ColIndex2).
 
 %% Return static column & row indexes for a range reference.
-bounds_indexes(R) when ?is_rangeref(R) ->
+bounds_indexes(#rangeref{type=finite} = R) ->
     {Col1, Row1} = R#rangeref.tl,
     {Col2, Row2} = R#rangeref.br,
     ColIndex1 = muin:col_index(Col1),
@@ -229,7 +236,9 @@ attempt(Mod, F, Args) ->
         Val -> {ok, Val}
     catch
         Error:Reason when Error =:= error orelse Error =:= throw ->
-            error_logger:error_msg({Error, Reason, erlang:get_stacktrace()}),
+            error_logger:error_msg("attempt to eval ~p/~p/~p failed~n- for ~p : ~p~n"
+                                   "-with stacktrace of ~p~n",
+                                   [Mod, F, Args, Error, Reason, erlang:get_stacktrace()]),
             {error, Reason}
     end.
 
@@ -238,7 +247,9 @@ attempt(Fun) when is_function(Fun) ->
         Val -> {ok, Val}
     catch
         Error:Reason when Error =:= error orelse Error =:= throw ->
-            error_logger:error_msg({Error, Reason, erlang:get_stacktrace()}),
+            error_logger:error_msg("attempt to eval a fun failed~n- for ~p : ~p~n"
+                                   "-with stacktrace of ~p~n",
+                                   [Error, Reason, erlang:get_stacktrace()]),
             {error, Reason}
     end.        
 

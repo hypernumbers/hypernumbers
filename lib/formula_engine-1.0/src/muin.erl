@@ -7,24 +7,30 @@
 
 -export([eval/1]).
 
--export([context_setting/1,
+-export([
+         context_setting/1,
          col_index/1,
          row_index/1,
          col/1,
          row/1,
          path/1,
-         get_modules/0 ]).
-
--compile(export_all).
+         get_modules/0,
+         test_formula/1,
+         funcall/2,
+         call_fun/3,
+         force_load/1,
+         prefetch_references/1,
+         fetch/1,
+         get_hypernumber/9,
+         userdef_call/2,
+         toidx/1,
+         eval_formula/1
+        ]).
 
 -include("spriki.hrl").
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
-
--import(tconv, [to_b26/1, to_i/1, to_i/2, to_s/1]).
--import(muin_util, [attempt/3]).
 
 -define(mx, get(x)).
 -define(my, get(y)).
@@ -86,7 +92,7 @@ eval_formula(Fcode) ->
         Value ->
             case Value of
                 R when ?is_cellref(R) ->
-                    case attempt(?MODULE, fetch, [R]) of
+                    case muin_util:attempt(?MODULE, fetch, [R]) of
                         {ok,    blank}              -> 0;
                         {error, {aborted, _} = Err} -> exit(Err);
                         {ok,    Other}              -> Other;
@@ -133,7 +139,7 @@ parse(Fla, {Col, Row}) ->
 %% when Mnesia is unrolling a transaction. When the '{aborted, {cyclic...'
 %% exit is caught it must be exited again...
 eval(_Node = [Func|Args]) when ?is_fn(Func) ->
-    case attempt(?MODULE, funcall, [Func, Args]) of
+    case muin_util:attempt(?MODULE, funcall, [Func, Args]) of
         {error, {errval, _}  = Err} -> Err;
         {error, {aborted, _} = Err} -> exit(Err); % re-exit - this is an mnesia transaction!
         {error, _E}                 -> ?error_in_formula;
@@ -175,7 +181,7 @@ funcall(loop, [A, Fn]) when ?is_area(A) ->
 
 funcall(pair_up, [A, B]) when ?is_area(A) andalso ?is_area(B) ->
     area_util:apply_each_with_pos(
-      fun({X, {C, R}}) ->
+      fun(X, {C, R}) ->
               case area_util:at(C, R, B) of
                   {ok, V}    -> [X, V];
                   {error, _} -> ?ERRVAL_NA
@@ -225,7 +231,6 @@ funcall(Fname, Args0) ->
     
     case call_fun(Fname, Args, Modules) of
         {error, not_found} -> userdef_call(Fname, Args);
-        {error, Other}     -> {error, Other};
         {ok, Value}        -> Value
     end.
 
@@ -260,7 +265,7 @@ get_modules() ->
     [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date,
      stdfuns_financial, stdfuns_info, stdfuns_lookup_ref,
      stdfuns_eng, stdfuns_logical, stdfuns_text, stdfuns_db,
-     hnfuns_graphs, hnfuns_web, hnfuns_integration].
+     hnfuns_graphs, hnfuns_web, hnfuns_integration, hnfuns_html].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% Intersect current cell with a range.
@@ -374,7 +379,7 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
         
         {Val, DepTree} ->
             F = fun({url, [{type, Type}], [Url2]}) ->
-                        {ok, Ref} = hn_util:parse_url(Url2),
+                        Ref = hn_util:parse_url(Url2),
                         #refX{site = S, path = P, obj = {cell, {X, Y}}} = Ref, 
                         {Type,{S, P, X, Y}}
                 end,
@@ -448,7 +453,7 @@ do_cell(RelPath, Rowidx, Colidx) ->
         true ->
             ?ERRVAL_CIRCREF;
         false ->
-            FetchFun = ?L(get_cell_info(?msite, Path, Colidx, Rowidx)),
+            FetchFun = fun() -> get_cell_info(?msite, Path, Colidx, Rowidx) end,
             case ?mar of
                 nil -> get_value_and_link(FetchFun);
                 _Else -> case auth_srv:get_any_view(?msite, Path, ?mar) of

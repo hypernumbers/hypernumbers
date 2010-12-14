@@ -37,7 +37,6 @@
 %% Luke
 
 -module(parse_csv).
--import(lists, [reverse/1]).
 -export([parse_file/3,parse_file/1,parse/3,parse/1]).
 
 -record(ecsv,{

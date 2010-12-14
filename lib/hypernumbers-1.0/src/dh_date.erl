@@ -46,7 +46,7 @@ format(Format, {_,_,_}=Now) ->
 format(Format, Date) ->
     format(Format, Date, []).
 
--spec parse(string()) -> datetime().
+-spec parse(string()) -> datetime() | {error, bad_date}.
 %% @doc parses the datetime from a string
 parse(Date) ->
     do_parse(Date, calendar:universal_time(),[]).

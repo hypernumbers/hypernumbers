@@ -40,7 +40,6 @@
 -module(odf_db).
 
 -export([from_range/1, criteria_from_range/1, select/2, db_field/2]).
--include("handy_macros.hrl").
 -include("typechecks.hrl").
 
 -record(odf_db, {

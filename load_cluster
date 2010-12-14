@@ -1,4 +1,5 @@
 #! /bin/bash
+echo "NOTE only does a partial build not a full one!"
 ./hn do git_pull hnlive@hypernumbers.com
 ./hn do git_pull hnlive@node2.hypernumbers.com
 ./hn do git_pull hnlive@node3.hypernumbers.com

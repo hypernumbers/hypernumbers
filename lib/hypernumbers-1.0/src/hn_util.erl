@@ -6,7 +6,6 @@
 -include("spriki.hrl").
 -include("regexp.hrl").
 -include("hypernumbers.hrl").
--include("handy_macros.hrl").
 -include("muin_records.hrl").
 
 -include_lib("kernel/include/file.hrl").
@@ -375,6 +374,8 @@ jsonify_val({"value", true}) ->
     {"value", "true"};
 jsonify_val({"value", false}) ->
     {"value", "false"};
+jsonify_val({"preview", {Text, Height, Width}}) ->
+    {"preview", {struct, [{"txt", Text}, {"h", Height}, {"w", Width}]}};
 %% TODO: fix names
 jsonify_val({Name, {namedexpr, _Path, Nm}}) ->
     {Name, Nm};
@@ -391,8 +392,7 @@ jsonify_val({K, V}) ->
         throw: _Err ->
             error_logger:error_msg("#MOCHIJSON! throw ~p ~p~n", [K, V]),
             {K, {errval, '#MOCHIJSON!'}}
-    end.
-                    
+    end.                
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
