@@ -399,7 +399,7 @@ bodge("-0")   -> "0";
 bodge(Number) -> Number.
 
 %% bodge for when a zero is returned that must be padded
-bodge2(0,FormatLen)                      -> "."++string:chars(?ASC_ZERO,FormatLen);
+bodge2("0",FormatLen)                      -> "."++string:chars(?ASC_ZERO,FormatLen);
 bodge2(Num,_FormatLen) when is_list(Num) -> "."++Num.
 
 %% takes a number represented as a string and adds in commas as thousand
@@ -420,13 +420,13 @@ get_pad(N,Char) when N  > 0 -> get_pad(N,Char,[]).
 get_pad(0,_Char,Acc) -> Acc;
 get_pad(N,Char,Acc)  -> get_pad(N-1,Char,[Char|Acc]).
 
-has(_Type,null) -> {ok,false};
-has(Type,Format) ->
+has(_Type, null) -> {ok,false};
+has(Type, Format) ->
     RegExp = case Type of
                  commas        -> ",";
-                 hashes        -> "#";
-                 questionmarks -> "\?";
-                 fractions     -> "/";
+                 % hashes        -> "#";  % not used at the mo
+                 % questionmarks -> "\?";
+                 % fractions     -> "/";
                  exponent      -> "[E|e]"
              end,
     Format2 = re:replace(Format, RegExp, "", [{return, list}, global]),
@@ -536,7 +536,7 @@ execute(X,{hour,zero},true) ->
     format_util:pad_calendar(integer_to_list(format_util:clock_12(Hour)));
 execute(X,{hour,zero},false) ->
     {_D,{Hour,_M,_S}}=X,
-    format_util:pad_calendar(format_util:clock_12(Hour));
+    format_util:pad_calendar(integer_to_list(format_util:clock_12(Hour)));
 execute(X,{hour,elapsed},_) ->
     Secs=calendar:datetime_to_gregorian_seconds(X),
     integer_to_list(round(Secs/3600));
