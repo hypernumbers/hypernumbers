@@ -17,8 +17,8 @@
          %% gte0s/1,
          %% gte0/1,
          %% gt0/1,
-         die_on_errval/1
-         %% ensure/2,
+         die_on_errval/1,
+         ensure/2
          %% filter_numbers/1,
          %% filter_numbers_all/1,
          %% filter_bools_with_cast/1,
@@ -111,11 +111,11 @@ die_on_errval(Vs) ->
             Vs),
     Vs.
 
-%% %% Lazy test.
-%% ensure(true, _Action) ->
-%%     ok;
-%% ensure(false, Action) ->
-%%     Action().
+%% Lazy test.
+ensure(true, _Action) ->
+     ok;
+ensure(false, Action) ->
+   Action().
 
 %% filter_numbers(Vs) ->
 %%     [X || X <- Vs, is_number(X)].

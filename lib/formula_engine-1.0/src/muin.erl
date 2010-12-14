@@ -23,7 +23,8 @@
          fetch/1,
          get_hypernumber/9,
          userdef_call/2,
-         toidx/1
+         toidx/1,
+         eval_formula/1
         ]).
 
 -include("spriki.hrl").
