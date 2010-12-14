@@ -40,7 +40,7 @@
          power/1,
          sign/1,
          exp/1,
-         fact/1,
+         fact/1, fact1/1,
          gcd/1,
          lcm/1,
          mod/1,

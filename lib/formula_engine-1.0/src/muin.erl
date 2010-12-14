@@ -24,7 +24,9 @@
          get_hypernumber/9,
          userdef_call/2,
          toidx/1,
-         eval_formula/1
+         eval_formula/1,
+         do_cell/3,
+         parse/2
         ]).
 
 -include("spriki.hrl").

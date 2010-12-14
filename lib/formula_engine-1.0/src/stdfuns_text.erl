@@ -51,7 +51,8 @@
          text/1,
          trim/1,
          upper/1,
-         code/1
+         code/1,
+         esc_rgx/1
         ]).
 
 %% Default set of rules for text

@@ -4,6 +4,7 @@
 -module(muin_util).
 -export([array_at/3,
          cast/2,
+         cast/3,
          split_ssref/1,
          just_path/1,
          just_ref/1,
