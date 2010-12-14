@@ -40,38 +40,38 @@ printf $(./hn call 'test:sys().')
 printf "\n\n"
 
 ## Run tests
-#printf $(./hn call 'test:excel("1a").')
-#printf "\n\n"
-#printf $(./hn call 'test:excel("1b").')
-#printf "\n\n"
-#printf $(./hn call 'test:excel("1c").')
-#printf "\n\n"
-#printf $(./hn call 'test:excel("1d").')
-#printf "\n\n"
-#printf $(./hn call 'test:excel("1e").')
-#printf "\n\n"
+printf $(./hn call 'test:excel("1a").')
+printf "\n\n"
+printf $(./hn call 'test:excel("1b").')
+printf "\n\n"
+printf $(./hn call 'test:excel("1c").')
+printf "\n\n"
+printf $(./hn call 'test:excel("1d").')
+printf "\n\n"
+printf $(./hn call 'test:excel("1e").')
+printf "\n\n"
 
 printf $(./hn call 'test:excel("2a").')
 printf "\n\n"
 printf $(./hn call 'test:excel("2b").')
 printf "\n\n"
-#printf $(./hn call 'test:excel("2c").')
-#printf "\n\n"
-#printf $(./hn call 'test:excel("2d").')
-#printf "\n\n"
-#printf "\n\n"
-#printf $(./hn call 'test:excel("2e").')
-#printf "\n\n"
-#printf $(./hn call 'test:excel("2f").')
-#printf "\n\n"
-#printf $(./hn call 'test:excel("2g").')
-#printf "\n\n"
-#printf $(./hn call 'test:excel("2x").')
-#printf "\n\n"
-#printf $(./hn call 'test:excel("2y").')
-#printf "\n\n"
-#printf $(./hn call 'test:excel("2z").')
-#printf "\n\n"
+printf $(./hn call 'test:excel("2c").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2d").')
+printf "\n\n"
+printf "\n\n"
+printf $(./hn call 'test:excel("2e").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2f").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2g").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2x").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2y").')
+printf "\n\n"
+printf $(./hn call 'test:excel("2z").')
+printf "\n\n"
 
 ## Cleanup.
 ./hn stop
