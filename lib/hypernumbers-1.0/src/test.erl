@@ -51,7 +51,7 @@ security(S) ->
 compile(File) ->
     case compile:file(File, []) of
         {ok, FileName} ->
-            io:frwite("OK: ~s~n", [File]),
+            io:fwrite("OK: ~s~n", [File]),
             code:delete(FileName),
             code:purge(FileName),
             code:load_file(FileName),
