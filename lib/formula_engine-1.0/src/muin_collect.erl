@@ -60,8 +60,9 @@
 -module(muin_collect).
 
 -export([
-         col/4,
+         col/2,
          col/3,
+         col/4,
          collect/3,
          collect/4,
          ignor/2,
