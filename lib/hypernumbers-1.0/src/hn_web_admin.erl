@@ -125,7 +125,7 @@ add_user2(User, Site, Args, Type) ->
                         {details, "become a member of the groups "++
                          format_list(G)},
                         {reason, " the email address is invalid"}],
-                 emailer:send(invalid_invite, I, "",Site, Dets);
+                 emailer:send(invalid_invite, I, "", Site, Dets);
         true ->
             {ok, NE, UID} = passport:get_or_create_user(E),
             % now add the users to the groups
