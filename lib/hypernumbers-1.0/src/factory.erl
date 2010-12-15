@@ -22,7 +22,7 @@ provision_site(Zone, Email, SiteType, _) ->
     provision_site_(Zone, Email, SiteType, SuggestedUid).
 
 -spec provision_site(string(), string(), atom(), auth_srv:uid()) 
-                    -> {ok, new | existing, string(), atom(),
+                    -> {ok , new | existing, string(), atom(),
                         auth_srv:uid(), string()} | {error, invalid_email}.
 provision_site_(Zone, Email, Type, SuggestedUid) ->
     case hn_util:valid_email(Email) of
