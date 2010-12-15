@@ -80,8 +80,7 @@ strip({string,A}) ->
 %%% Internal Functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-verify_num(A) when is_list(A) -> verify_num(A,[],0);
-verify_num(A)                 -> verify_num([A],[],0).
+verify_num(A) when is_list(A) -> verify_num(A,[],0).
 
 %% There can be 0 or 1 decimal point - any more and it's not valid...
 verify_num([],Acc,0)    -> {number,to_num(lists:reverse(Acc))};
@@ -198,8 +197,7 @@ is_text2([])          -> false;
 is_text2([{at,_}|_T]) -> true;
 is_text2([_H|T])      -> is_text2(T).
 
-is_date(A) when is_list(A) -> is_date2(A);
-is_date(A)                 -> is_date([A]).
+is_date(A) when is_list(A) -> is_date2(A).
 
 is_date2([])               -> false;
 is_date2([{year,_}|_T])    -> true;
