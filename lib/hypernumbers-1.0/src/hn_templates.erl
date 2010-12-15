@@ -36,7 +36,6 @@
 %% External API
 %%
 
-
 save_template(#refX{site = S}=RefX, Name)  ->
     TemplatesDir = hn_mochi:templateroot(S),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
