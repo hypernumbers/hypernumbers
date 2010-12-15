@@ -84,7 +84,8 @@
          ban_dates/1,
          ban_blanks/1,
          generic_ban/2,
-         is_area/1
+         is_area/1,
+         is_bool/1
         ]).
 
 -export([flatten_ranges/1,  flatten_arrays/1, flatten_areas/1,
