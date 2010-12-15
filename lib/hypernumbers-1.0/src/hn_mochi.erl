@@ -1158,7 +1158,7 @@ dict_to_struct(X, Dict) ->
         false -> {X, Dict}
     end.
 
--spec extract_styles(string()) -> #style{}. 
+-spec extract_styles(string()) -> [#style{}]. 
 extract_styles(Site) ->
     [style_to_css(S) ||
         S <- hn_db_api:read_styles_IMPORT(#refX{site=Site}) ].
@@ -1569,7 +1569,7 @@ reset_password(Email, Password, Hash) ->
                     {"failure", "that password was too weak, try again."};
                 {error, invalid_email} ->
                     {"failure", "invalid e-mail address"};
-                {error, reset_not_issued} ->
+                {error, reset_not_issued} -> % this is the one
                     {"failure", "reset not issued"};
                 {error, invalid_reset} ->
                     ?E("invalid reset attempt~nemail: ~p~nhash:~p~n",
