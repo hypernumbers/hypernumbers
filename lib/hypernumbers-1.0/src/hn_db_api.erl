@@ -273,9 +273,9 @@ set_borders2(RefX, Where, Border, B_Style, B_Color) ->
                   B   = "border-" ++ Where ++ "-width",
                   B_S = "border-" ++ Where ++ "-style",
                   B_C = "border-" ++ Where ++ "-color",
-                  ok = hn_db_wu:write_attrs(RefX, [{B,   Border}]),
-                  ok = hn_db_wu:write_attrs(RefX, [{B_S, B_Style}]),
-                  ok = hn_db_wu:write_attrs(RefX, [{B_C, B_Color}])
+                  _ = hn_db_wu:write_attrs(RefX, [{B,   Border}]),
+                  _ = hn_db_wu:write_attrs(RefX, [{B_S, B_Style}]),
+                  _ = hn_db_wu:write_attrs(RefX, [{B_C, B_Color}])
           end,
     write_activity(RefX, Fun, "set_borders2").
 
@@ -933,6 +933,3 @@ tell_front_end(_FnName, _refX) ->
           end,
     [ok = Fun(X) || X <- List],
     ok.
-
-
-
