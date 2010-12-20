@@ -1,0 +1,9 @@
+server {
+    listen       80;
+    server_name  learn-elisp-for-emacs.org;
+    
+    location / {
+        root /hn/files-www/learn-elisp-for-emacs/;
+    }
+}
+
