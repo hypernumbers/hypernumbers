@@ -190,17 +190,16 @@ walk_path(Currloc, Dest) ->
     Newstk.
 
 expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
-    %% Make a list of cells that make up this range.
+    % Make a list of cells that make up this range.
     Cells = lists:map(fun(X) ->
                         lists:map(fun(Y) -> {X, Y} end,
                             lists:seq(StartRow, EndRow))
                 end,
                 lists:seq(StartCol, EndCol)),
-    %% Flatten Cells; can't use flatten/1 because there are strings in there.
+    % Flatten Cells; can't use flatten/1 because there are strings in there.
     lists:foldl(fun(X, Acc) -> lists:append([Acc, X]) end,
           [], Cells).
 
-%% TODO test for rangeref type here!
 expand_cellrange(R) when ?is_rangeref(R) ->
     {{ColIndex1, RowIndex1}, {ColIndex2, RowIndex2}} = bounds_indexes(R),
     expand_cellrange(RowIndex1, RowIndex2, ColIndex1, ColIndex2).
