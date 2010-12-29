@@ -213,7 +213,7 @@ match([V1, V2]) ->
     match([V1, V2, 1]);
 match([V1, V2, V3]) ->
     MatchType = ?int(V3, [cast_strings, ban_bools, ban_dates, cast_blanks]),
-    ?ensure(MatchType =< 1 andalso MatchType >= -1, ?ERR_NA),
+    muin_checks:ensure(MatchType =< 1 andalso MatchType >= -1, ?ERR_NA),
 
     if ?is_area(V2) ->
             match1(V1, area_util:to_list(V2), MatchType);
@@ -227,7 +227,7 @@ match1(LookupVal, List, -1) ->
     %% List must be in descending order.
     IsDesc = lists:all(fun({X1, X2}) -> stdfuns_logical:'>'([X1, X2]) end,
                  lists:zip(hslists:init(List), tl(List))),
-    ?ensure(IsDesc, ?ERR_NA),
+    muin_checks:ensure(IsDesc, ?ERR_NA),
     %% Find the smallest value that's >= to LookupVal.
     case find_first(fun(X) -> stdfuns_logical:'>='([X, LookupVal]) end, List) of
         {ok, V} -> pos(V, List);
@@ -243,7 +243,7 @@ match1(LookupVal, List, 1) ->
     %% List must be in ascending order.
     IsAsc = lists:all(fun({X1, X2}) -> stdfuns_logical:'<'([X1, X2]) end,
                 lists:zip(hslists:init(List), tl(List))),
-    ?ensure(IsAsc, ?ERR_NA),
+    muin_checks:ensure(IsAsc, ?ERR_NA),
     %% Find the largest value that's <= to LookupVal.
     case find_first(fun(X) -> stdfuns_logical:'<='([X, LookupVal]) end, lists:reverse(List)) of
         {ok, V} -> pos(V, List);
@@ -261,9 +261,9 @@ vlookup([V, IA, I0, IB]) ->
         end,
     B = ?bool(IB, [cast_numbers, cast_dates, cast_blanks, ban_strings]),
     
-    ?ensure(?is_area(A), ?ERR_REF),
-    ?ensure(I =< area_util:width(A), ?ERR_REF),
-    ?ensure(I >= 1, ?ERR_VAL),
+    muin_checks:ensure(?is_area(A), ?ERR_REF),
+    muin_checks:ensure(I =< area_util:width(A), ?ERR_REF),
+    muin_checks:ensure(I >= 1, ?ERR_VAL),
 
     Row = area_util:col(1, A),
 
@@ -289,9 +289,9 @@ hlookup([V, IA, I0, B]) ->
            true             -> IA
         end,
     
-    ?ensure(?is_area(A), ?ERR_REF),
-    ?ensure(I =< area_util:height(A), ?ERR_REF),
-    ?ensure(I >= 1, ?ERR_VAL),
+    muin_checks:ensure(?is_area(A), ?ERR_REF),
+    muin_checks:ensure(I =< area_util:height(A), ?ERR_REF),
+    muin_checks:ensure(I >= 1, ?ERR_VAL),
 
     Row = area_util:row(1, A),
     case find(V, Row, B) of

@@ -249,7 +249,7 @@ product1(Nums) ->
 
 %% @todo not an Excel 97 function - no test suite
 quotient([V1, V2]) ->
-    [Num, Divisor] = ?numbers([V1, V2], ?default_rules),
+    [Num, Divisor] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
     ?MODULE:trunc('/'([Num, Divisor])).
 
 abs([V]) ->
@@ -261,8 +261,8 @@ abs_([Num]) ->
     erlang:abs(Num).
 
 sqrt([V1]) ->
-    Num = ?number(V1, ?default_rules),
-    ?ensure(Num >= 0, ?ERR_NUM),
+    Num = muin_col_DEPR:collect_number(V1, ?default_rules),
+    muin_checks:ensure(Num >= 0, ?ERR_NUM),
     math:sqrt(Num).
 
 power([TV1, TV2]) ->
@@ -274,24 +274,24 @@ power([TV1, TV2]) ->
              true  -> 0;
              false -> TV2
          end,
-    [Num] = ?numbers([V1], ?default_rules),
-    [Pow] = ?numbers([V2], ?default_rules),
-    ?ensure({V1, V2} =/= {blank, blank}, ?ERR_NUM),
-    ?ensure({V1, V2} =/= {false, false}, ?ERR_NUM),
-    ?ensure({V1, V2} =/= {false, blank}, ?ERR_NUM),
-    ?ensure({V1, V2} =/= {blank, false}, ?ERR_NUM),
-    ?ensure({V1, V2} =/= {false, 0}, ?ERR_NUM),
-    ?ensure({V1, V2} =/= {blank, 0}, ?ERR_NUM),
-    ?ensure({V1, V2} =/= {0, false}, ?ERR_NUM),
-    ?ensure({V1, V2} =/= {0, blank}, ?ERR_NUM),
-    ?ensure({V1, V2} =/= {0, 0}, ?ERR_NUM),
+    [Num] = muin_col_DEPR:collect_numbers([V1], ?default_rules),
+    [Pow] = muin_col_DEPR:collect_numbers([V2], ?default_rules),
+    muin_checks:ensure({V1, V2} =/= {blank, blank}, ?ERR_NUM),
+    muin_checks:ensure({V1, V2} =/= {false, false}, ?ERR_NUM),
+    muin_checks:ensure({V1, V2} =/= {false, blank}, ?ERR_NUM),
+    muin_checks:ensure({V1, V2} =/= {blank, false}, ?ERR_NUM),
+    muin_checks:ensure({V1, V2} =/= {false, 0}, ?ERR_NUM),
+    muin_checks:ensure({V1, V2} =/= {blank, 0}, ?ERR_NUM),
+    muin_checks:ensure({V1, V2} =/= {0, false}, ?ERR_NUM),
+    muin_checks:ensure({V1, V2} =/= {0, blank}, ?ERR_NUM),
+    muin_checks:ensure({V1, V2} =/= {0, 0}, ?ERR_NUM),
 
     % Dont throw formula errors when numbers are too large
     try   math:pow(Num, Pow)
     catch error:_Err -> ?ERR_NUM end.
 
 sign([V1]) ->
-    Num = ?number(V1, ?default_rules),
+    Num = muin_col_DEPR:collect_number(V1, ?default_rules),
     sign1(Num).
 
 sign1(0)            -> 0;
@@ -299,13 +299,13 @@ sign1(X) when X > 0 -> 1;
 sign1(X) when X < 0 -> -1.
 
 exp([V1]) ->
-    Num = ?number(V1, ?default_rules),
+    Num = muin_col_DEPR:collect_number(V1, ?default_rules),
     math:exp(Num).
 
 fact([V1]) ->
     Num = ?int(V1, ?default_rules),
-    ?ensure(Num =< 170, ?ERR_NUM),
-    ?ensure(Num >= 0, ?ERR_NUM),
+    muin_checks:ensure(Num =< 170, ?ERR_NUM),
+    muin_checks:ensure(Num >= 0, ?ERR_NUM),
     fact1(Num).
 fact1(0) ->
     1;
@@ -314,7 +314,7 @@ fact1(Num) ->
 
 %% @todo not
 gcd(V) ->
-    [A|T] = ?numbers(V, ?default_rules),
+    [A|T] = muin_col_DEPR:collect_numbers(V, ?default_rules),
     gcd1(A,T).
 
 gcd1(A,[])    -> A;
@@ -327,7 +327,7 @@ gcd2(A,B) -> gcd2(B, A rem B).
 
 
 lcm(V) ->
-    [A|T] = ?numbers(V, ?default_rules),
+    [A|T] = muin_col_DEPR:collect_numbers(V, ?default_rules),
     lcm1(A,T).
 
 lcm1(A,[])    ->
@@ -341,9 +341,9 @@ lcm1(A,[B|T]) ->
 %% Returns the remainder after number is divided by divisor. The result
 %% has the same sign as divisor.
 mod([V1, V2]) ->
-    [Num, Divisor] = ?numbers([V1, V2], ?default_rules),
-    ?ensure(Divisor =/= 0, ?ERR_DIV),
-    ?ensure(Divisor =/= 0.0, ?ERR_DIV),    
+    [Num, Divisor] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
+    muin_checks:ensure(Divisor =/= 0, ?ERR_DIV),
+    muin_checks:ensure(Divisor =/= 0.0, ?ERR_DIV),    
     Num - Divisor * int([Num/Divisor]).
 
 %%% Arrays and matrices ~~~~~
@@ -381,7 +381,7 @@ mdeterm1(_Rows, _W) ->
 
 %% @todo not Excel 97 function - no test suite
 munit([V]) ->
-    N = ?number(V, [cast_strings, cast_bools, ban_dates, ban_blanks]),
+    N = muin_col_DEPR:collect_number(V, [cast_strings, cast_bools, ban_dates, ban_blanks]),
     Empty = area_util:make_array(N, N),
     area_util:apply_each_with_pos(fun({_, {C, C}}) -> 1;
                                      ({_, _})      -> 0
@@ -419,7 +419,7 @@ mmult_(_) ->
 
 %% @todo not Excel 97 - no test suite
 multinomial(L) ->
-    Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
+    Nums = muin_checks:filter_numbers_all(muin_checks:die_on_errval(muin_checks:deck(L))),
     Allok = lists:all(fun(X) -> X >= 1 end, Nums),
     case Allok of
         true  -> multinomial1(Nums);
@@ -436,17 +436,17 @@ multinomial1(Nums) ->
 %%% Logarithms ~~~~~
 
 ln([V1]) ->
-    Num = ?number(V1, ?default_rules),
-    ?ensure(Num > 0, ?ERR_NUM),
+    Num = muin_col_DEPR:collect_number(V1, ?default_rules),
+    muin_checks:ensure(Num > 0, ?ERR_NUM),
     math:log(Num).
 
 log([V1]) ->
-    Num = ?number(V1, ?default_rules),
+    Num = muin_col_DEPR:collect_number(V1, ?default_rules),
     log([Num, 10]);
 log([V1, V2]) ->
-    [Num, Base] = ?numbers([V1, V2], ?default_rules),
-    ?ensure_positive(Num),
-    ?ensure_positive(Base),
+    [Num, Base] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
+    muin_checks:gt0(Num),
+    muin_checks:gt0(Base),
     case (Base == 1) of
         true  -> ?ERR_DIV;
         false -> nothing
@@ -454,7 +454,7 @@ log([V1, V2]) ->
     math:log(Num) / math:log(Base).
 
 log10([V1]) ->
-    Num = ?number(V1, ?default_rules),
+    Num = muin_col_DEPR:collect_number(V1, ?default_rules),
     log([Num, 10]).
 
 %%% Random numbers ~~~~~
@@ -470,13 +470,13 @@ rand1(<<Byte:8, Rest/binary>>, F, Exp) ->
     rand1(Rest, F2, Exp-1).
 
 randbetween([V1, V2]) ->
-    [First, Last] = ?numbers([V1, V2], ?default_rules),
+    [First, Last] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
     rand([]) * (Last - First) + First.
 
 %%% Rounding numbers ~~~~~
 
 round([V1, V2]) ->
-    [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
+    [Num, NumDigits] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
     NumDigits2 = erlang:round(NumDigits),
     round1(Num, NumDigits2).
 round1(Num, 0) ->
@@ -489,7 +489,7 @@ round1(Num, NumDigits) ->
     erlang:round(Num * Pow) / erlang:round(Pow).
 
 rounddown([V1, V2]) ->
-    [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
+    [Num, NumDigits] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
     NumDigits2 = erlang:round(NumDigits),
     rounddown1(Num, NumDigits2).
 rounddown1(Num, 0) ->
@@ -502,7 +502,7 @@ rounddown1(Num, NumDigits) when NumDigits > 0 ->
     erlang:trunc(Num * Pow) / Pow.
 
 roundup([V1, V2]) ->
-    [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
+    [Num, NumDigits] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
     NumDigits2 = erlang:round(NumDigits),
     roundup1(Num, NumDigits2).
 roundup1(Num, 0) ->
@@ -571,8 +571,8 @@ even1([Num]) when Num < 0 ->
     ceiling1(Num, -2).
 
 floor([V1, V2]) ->
-    [Num, Multiple] = ?numbers([V1, V2], ?default_rules),
-    ?ensure(sign1(Num) == sign1(Multiple)
+    [Num, Multiple] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
+    muin_checks:ensure(sign1(Num) == sign1(Multiple)
             orelse Num == 0 orelse Multiple == 0, ?ERR_NUM),
     floor1(Num, Multiple).
 
@@ -596,8 +596,8 @@ int_([Num]) ->
 
 %% @todo not Excel 97 - no test suite
 mround([V1, V2]) ->
-    [Num, Multiple] = ?numbers([V1, V2], ?default_rules),
-    ?ensure(sign1(Num) == sign1(Multiple), ?ERR_NUM),
+    [Num, Multiple] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
+    muin_checks:ensure(sign1(Num) == sign1(Multiple), ?ERR_NUM),
     roundup1(Num, Multiple).
 
 odd([V1]) ->
@@ -617,7 +617,7 @@ odd1([Num]) ->
 trunc([V1]) ->
     ?int(V1, ?default_rules);
 trunc([V1, V2]) ->
-    [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
+    [Num, NumDigits] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
     rounddown1(Num, erlang:round(NumDigits)).
 
 %%% Special numbers ~~~~~
@@ -626,8 +626,8 @@ pi([]) -> math:pi().
 
 %% @todo not Excel 97 - no test suite
 sqrtpi([V1]) ->
-    Num = ?number(V1, ?default_rules),
-    ?ensure(Num >= 0, ?ERR_NUM),
+    Num = muin_col_DEPR:collect_number(V1, ?default_rules),
+    muin_checks:ensure(Num >= 0, ?ERR_NUM),
     math:sqrt(Num * math:pi()).
 
 
@@ -865,9 +865,9 @@ sumproduct_(Arrs) ->
 
 %% @todo not Excel 97 - no test suite
 seriessum([K, N, M, Coeffs]) ->
-    ?ensure_numbers([K, N, M]),
-    ?ensure_numbers(?ensure_no_errvals(?flatten(Coeffs))),
-    Nums = ?flatten(Coeffs),
+    muin_checks:numbers([K, N, M]),
+    muin_checks:numbers(muin_checks:die_on_errval(muin_checks:deck(Coeffs))),
+    Nums = muin_checks:deck(Coeffs),
     seriessum1(K, N, M, Nums).
 seriessum1(K, N, M, As) ->
     {Res, _} = lists:foldl(fun(A, {Sum, I}) ->

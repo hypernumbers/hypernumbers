@@ -84,8 +84,8 @@ dateh([Y, M, D]) ->
 
 %% @TODO what is this function for? Not an Excel function - ask Hasan...
 datedif([V1, V2, V3]) ->
-    [Start, End] = ?dates([V1, V2], ?cast_all),
-    ?ensure(muin_date:gt(End, Start), ?ERR_NUM),
+    [Start, End] = muin_col_DEPR:collect_dates([V1, V2], ?cast_all),
+    muin_checks:ensure(muin_date:gt(End, Start), ?ERR_NUM),
     ?estring(V3),
     Unit = string:to_upper(?utf8l(V3)),
     datedif1(Start, End, Unit).
@@ -138,7 +138,7 @@ datedif1(Start, End, "YD") ->
           lists:seq(muin_date:month(Start), muin_date:month(End))).
 
 datevalue([V1]) ->
-    ?date(V1, [first_array, cast_strings, ban_bools, ban_blanks, ban_numbers]).
+    muin_col_DEPR:collect_date(V1, [first_array, cast_strings, ban_bools, ban_blanks, ban_numbers]).
 
 days360([Date1, Date2]) ->
     days360([Date1, Date2, true]);
@@ -168,7 +168,7 @@ days360(#datetime{date={Y1,M1,D1}}, #datetime{date={Y2,M2,D2}}, _Method) ->
 day([Val]) when is_number(Val) andalso Val < 0 ->
     ?ERRVAL_NUM;
 day([Val]) ->
-    Date = ?date(Val, [first_array, cast_strings, cast_bools,
+    Date = muin_col_DEPR:collect_date(Val, [first_array, cast_strings, cast_bools,
                        cast_blanks, cast_numbers]),
     muin_date:day(Date).
 
@@ -185,7 +185,7 @@ month_([Date]) ->
 year([Val]) when is_number(Val) andalso Val < 0 ->
     ?ERRVAL_NUM;
 year([Val]) ->
-    Date = ?date(Val, [first_array, cast_strings, cast_bools,
+    Date = muin_col_DEPR:collect_date(Val, [first_array, cast_strings, cast_bools,
                        cast_blanks, cast_numbers]),
     muin_date:year(Date).
 
@@ -193,7 +193,7 @@ year([Val]) ->
 %% @todo there is not test suite for this function because it is not an 
 %% Excel 97 one
 edate([V1, V2]) ->
-    Start = ?date(V1, ?cast_all),
+    Start = muin_col_DEPR:collect_date(V1, ?cast_all),
     Months = ?int(V2, ?cast_all),
     edate1(Start, Months).
 edate1(Start, Months) ->
@@ -205,7 +205,7 @@ edate1(Start, Months) ->
 %% @todo there is not test suite for this function because it is not an 
 %% Excel 97 one
 eomonth([V1, V2]) ->
-    Start = ?date(V1, ?cast_all),
+    Start = muin_col_DEPR:collect_date(V1, ?cast_all),
     Months = ?int(V2, ?cast_all),
     %% TODO: More error checks, see Excel.
     eomonth1(Start, Months).
@@ -223,10 +223,10 @@ eomonth1(Start, Months) ->
 networkdays([V1, V2]) ->
     networkdays([V1, V2, []]);
 networkdays([V1, V2, V3]) ->
-    [Start, End] = ?dates([V1, V2], ?cast_all),
+    [Start, End] = muin_col_DEPR:collect_dates([V1, V2], ?cast_all),
     Holidays = case V3 of
                    [] -> [];
-                   _  -> ?dates(V3, ?cast_all)
+                   _  -> muin_col_DEPR:collect_dates(V3, ?cast_all)
                end,
     networkdays1(Start, End, Holidays).
 networkdays1(Start, End, Holidays) ->
@@ -274,7 +274,7 @@ weekday([V1, V2]) ->
     end.
         
 %    io:format("hello?~n"),
-%    Dt = ?date(V1, ?cast_all),
+%    Dt = muin_col_DEPR:collect_date(V1, ?cast_all),
 %    Rettype = ?int(V2, ?cast_all),    
 %% io:format("Dt ~p", [Dt]),
 %% weekday1(Dt, Rettype).
@@ -296,9 +296,9 @@ weekday1(_Dt, _X) ->
 weeknum([V1]) ->
     weeknum([V1, 1]);
 weeknum([V1, V2]) ->
-    Dt = ?date(V1, ?cast_all),
+    Dt = muin_col_DEPR:collect_date(V1, ?cast_all),
     Rettype = ?int(V2, ?cast_all),
-    ?ensure(Rettype == 1 orelse Rettype == 2,
+    muin_checks:ensure(Rettype == 1 orelse Rettype == 2,
             ?ERR_NUM),
     weeknum1(Dt, Rettype).
 weeknum1(Dt, Rettype) ->

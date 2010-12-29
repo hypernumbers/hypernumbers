@@ -34,7 +34,7 @@
 %% TODO: Other info types.
 cell([V1, V2]) ->
     InfoType = muin:eval_formula(V1),
-    ?ensure(?is_string(InfoType), ?ERR_VAL),
+    muin_checks:ensure(?is_string(InfoType), ?ERR_VAL),
     R = case V2 of
             [indirect, _]                          -> muin:eval(V2);
             X when ?is_cellref(X)                  -> X;
@@ -114,9 +114,8 @@ iserror(_)                                       -> false.
 %% The number is truncated, so ISEVEN(2.5) is true.
 %% @todo needs a test case written because it is not an Excel 97 function
 iseven([V1]) ->
-    Num = ?number(V1, [cast_strings, cast_bools, cast_dates]),
+    Num = muin_col_DEPR:collect_number(V1, [cast_strings, cast_bools, cast_dates]),
     (trunc(Num) div 2) * 2 == trunc(Num).
-
 
 %% @todo needs a test case written because it is not an Excel 97 function
 isodd([Num]) -> not(iseven([Num])).
@@ -183,13 +182,13 @@ type(_)                      -> 0.
 isblank([B]) when ?is_blank(B) ->
     true;
 isblank(Vs)      ->
-    Flatvs = ?flatten_all(Vs),
+    Flatvs = muin_col_DEPR:flatten_areas(Vs),
     lists:all(fun muin_collect:is_blank/1, Flatvs).
 
 
 %% @todo needs a test case written because it is not an Excel 97 function
-isnonblank(Vs) -> Flatvs = ?flatten_all(Vs),
-                  lists:all(fun(X) -> not(muin_collect:is_blank(X)) end, Flatvs).
+isnonblank(Vs) -> Flatvs = muin_col_DEPR:flatten_areas(Vs),
+                  lists:all(fun(X) -> not(muin_col_DEPR:is_blank(X)) end, Flatvs).
 
 
 info(["site"]) -> get(site);
