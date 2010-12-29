@@ -190,7 +190,7 @@ countblank(Vs) ->
 
 countblank_([Err]) when ?is_errval(Err) -> Err;
 countblank_(Vals) ->
-    length([X || X <- Vals, muin_col_DEPR:is_blank(X)]).
+    length([X || X <- Vals, muin_collect:is_blank(X)]).
 
 countif([A, Cr]) ->
     

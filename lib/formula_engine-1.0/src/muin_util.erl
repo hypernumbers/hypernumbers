@@ -61,7 +61,7 @@ get_type(X) when ?is_array(X)           -> array;
 get_type(X) when ?is_errval(X)          -> error;
 get_type(blank)                         -> blank;
 get_type(X) ->
-    case muin_col_DEPR:is_string(X) of
+    case muin_collect:is_string(X) of
         true  -> str;
         false -> unknown_type
     end.

@@ -65,16 +65,25 @@
 -export([
          col/2,
          col/3,
-         col/4
+         col/4,
+         is_bool/1,
+         is_area/1,
+         is_string/1,
+         is_date/1,
+         is_blank/1
         ]).
 
 col(Args, Rules, Passes, Fun) ->
+    io:format("in muin_collect:col (1)~n-Args is ~p~n-Rules is ~p~n-Passes is ~p~n",
+              [Args, Rules, Passes]),
     case col(Args, Rules, Passes) of
         Error when ?is_errval(Error) -> Error;
         Else -> Fun(Else)
     end.
 
 col(Args, Rules, Passes) ->
+    io:format("in muin_collect:col (2)~n-Args is ~p~n-Rules is ~p~n-Passes is ~p~n",
+              [Args, Rules, Passes]),
     pass(col(Args, Rules), Passes).
 %    case lists:member(return_errors, Passes) of
 %        false -> pass(col(Args, Rules), Passes);
@@ -277,7 +286,6 @@ pass(Args, []) ->
     Args;
 
 pass(Args, [ return_flat_errors | Rules ]) ->
-    
     F = fun(X, _Acc) when ?is_errval(X) -> X;
            (_X, Acc) -> Acc
         end,
@@ -289,13 +297,12 @@ pass(Args, [ return_flat_errors | Rules ]) ->
 
 % if there are any errors in the parameters, return these
 pass(Args, [ return_errors | Rules ]) ->
-    
     F = fun(X, _Acc) when ?is_errval(X) -> X;
-           ({_,Rows}=X, Acc)  when ?is_area(X) ->
-                L = [[ Y || Y<-Z, muin_util:get_type(Y) == error ] || Z<-Rows ],
+           ({_, Rows} = X, Acc)  when ?is_area(X) ->
+                L = [[ Y || Y <- Z, muin_util:get_type(Y) == error ] || Z <- Rows ],
                 case lists:flatten(L) of
-                    []      -> Acc;
-                    [Err|_] -> Err
+                    []        -> Acc;
+                    [Err | _] -> Err
                 end;
            (_X, Acc) -> Acc
         end,
@@ -308,6 +315,8 @@ pass(Args, [ return_errors | Rules ]) ->
 % Typically a type check, checks that all elements return true
 % for F(X)
 pass(Args, [ {all, F} | Rules ]) ->
+    io:format("in pass (4) Args is ~p~n-F is ~p~n, Rules is ~p~n",
+              [Args, F, Rules]),
     case lists:all(F, Args) of
         true  -> pass(Args, Rules);
         false -> ?ERRVAL_VAL
@@ -320,6 +329,28 @@ pass(Args, [ {all, F} | Rules ]) ->
 is_bool(true)  -> true;
 is_bool(false) -> true;
 is_bool(_)     -> false.
+
+is_area(Area) when ?is_area(Area) ->
+    true;
+is_area(_Area) ->
+    false.
+
+is_string({ustr, Bin}) when is_binary(Bin) ->
+    true;
+is_string(L) when is_list(L) ->
+    io_lib:char_list(L);
+is_string(_) ->
+    false.
+
+is_date(X) when is_record(X, datetime) ->
+    true;
+is_date(_) ->
+    false.
+
+is_blank(blank) ->
+    true;
+is_blank(_) ->
+    false.
 
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

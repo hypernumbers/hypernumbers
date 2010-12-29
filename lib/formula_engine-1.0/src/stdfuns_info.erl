@@ -188,7 +188,7 @@ isblank(Vs)      ->
 
 %% @todo needs a test case written because it is not an Excel 97 function
 isnonblank(Vs) -> Flatvs = muin_col_DEPR:flatten_areas(Vs),
-                  lists:all(fun(X) -> not(muin_col_DEPR:is_blank(X)) end, Flatvs).
+                  lists:all(fun(X) -> not(muin_collect:is_blank(X)) end, Flatvs).
 
 
 info(["site"]) -> get(site);

@@ -28,8 +28,7 @@
          ban_bools/1,
          ban_dates/1,
          ban_blanks/1,
-         generic_ban/2,
-         is_area/1
+         generic_ban/2
         ]).
 
 -export([flatten_ranges/1,  flatten_arrays/1, flatten_areas/1,
@@ -39,7 +38,6 @@
          collect_dates/2,   collect_date/2,
          remove_errors/1]).
 
--export([is_string/1, is_date/1, is_blank/1]).
 
 %% Everything below this should be replaced
 %% (by ^)
@@ -182,7 +180,7 @@ collect_number(V, Rules) ->
 collect_strings(A, Rules) when ?is_area(A) ->
     area_util:apply_each(fun(X) -> collect_string(X, Rules) end, A);
 collect_strings(Vs, Rules) ->
-    generic_collect(Vs, Rules, fun is_string/1, str).
+    generic_collect(Vs, Rules, fun muin_collect:is_string/1, str).
 
 %% @doc Same as collect_strings but for one value.
 collect_string(V, Rules) ->
@@ -202,7 +200,7 @@ collect_bool(V, Rules) ->
 collect_dates(A, Rules) when ?is_area(A) ->
     area_util:apply_each(fun(X) -> collect_date(X, Rules) end, A);
 collect_dates(Vs, Rules) ->
-    generic_collect(Vs, Rules, fun is_date/1, date).
+    generic_collect(Vs, Rules, fun muin_collect:is_date/1, date).
 
 %% @doc Same as <code>collect_dates/2</code> but only for one value.
 collect_date(V, Rules) ->
@@ -254,13 +252,13 @@ ignore_numbers(Xs) ->
     ignore(fun erlang:is_number/1, Xs).
 
 ignore_strings(Xs) ->
-    ignore(fun is_string/1, Xs).
+    ignore(fun muin_collect:is_string/1, Xs).
 
 ignore_bools(Xs) ->
     ignore(fun erlang:is_boolean/1, Xs).
 
 ignore_dates(Xs) ->
-    ignore(fun is_date/1, Xs).
+    ignore(fun muin_collect:is_date/1, Xs).
 
 ignore_blanks(Xs) ->
     ignore(fun(X) -> X == blank end, Xs).
@@ -284,7 +282,7 @@ cast_strings_or_ignore(Xs) ->
              cast_strings_with_opt(Xs, num, ignore).
 
 cast_strings_with_opt(Xs, Targtype, Action) ->
-    Res = generic_cast(Xs, Targtype, fun is_string/1),
+    Res = generic_cast(Xs, Targtype, fun muin_collect:is_string/1),
     % Swap all {error, _} for Action if Action is a fun()
     % if action is the atom 'ignore' will return nothing
     Fun = fun(X, Acc) ->
@@ -305,10 +303,10 @@ cast_bools(Xs, Targtype) ->
     generic_cast(Xs, Targtype, fun erlang:is_boolean/1).
 
 cast_dates(Xs, Targtype) ->
-    generic_cast(Xs, Targtype, fun is_date/1).
+    generic_cast(Xs, Targtype, fun muin_collect:is_date/1).
 
 cast_blanks(Xs, Targtype) ->
-    generic_cast(Xs, Targtype, fun is_blank/1).
+    generic_cast(Xs, Targtype, fun muin_collect:is_blank/1).
 
 generic_cast(Xs, Targtype, Guardfun) ->
     R = lists:foldl(fun(X, Acc) ->
@@ -326,16 +324,16 @@ ban_numbers(Xs) ->
     generic_ban(Xs, fun erlang:is_number/1).
 
 ban_strings(Xs) ->
-    generic_ban(Xs, fun is_string/1).
+    generic_ban(Xs, fun muin_collect:is_string/1).
 
 ban_bools(Xs) ->
     generic_ban(Xs, fun erlang:is_boolean/1).
 
 ban_dates(Xs) ->
-    generic_ban(Xs, fun is_date/1).
+    generic_ban(Xs, fun muin_collect:is_date/1).
 
 ban_blanks(Xs) ->
-    generic_ban(Xs, fun is_blank/1).
+    generic_ban(Xs, fun muin_collect:is_blank/1).
 
 generic_ban(Xs, Detectorf) ->
     case lists:any(Detectorf, Xs) of
@@ -345,27 +343,27 @@ generic_ban(Xs, Detectorf) ->
 
 %%% Type checks ~~~~~
 
-is_area(Area) when ?is_area(Area) ->
-    true;
-is_area(_Area) ->
-    false.
+%% is_area(Area) when ?is_area(Area) ->
+%%     true;
+%% is_area(_Area) ->
+%%     false.
 
-is_string({ustr, Bin}) when is_binary(Bin) ->
-    true;
-is_string(L) when is_list(L) ->
-    io_lib:char_list(L);
-is_string(_) ->
-    false.
+%% is_string({ustr, Bin}) when is_binary(Bin) ->
+%%     true;
+%% is_string(L) when is_list(L) ->
+%%     io_lib:char_list(L);
+%% is_string(_) ->
+%%     false.
 
-is_date(X) when is_record(X, datetime) ->
-    true;
-is_date(_) ->
-    false.
+%% is_date(X) when is_record(X, datetime) ->
+%%     true;
+%% is_date(_) ->
+%%     false.
 
-is_blank(blank) ->
-    true;
-is_blank(_) ->
-    false.
+%% is_blank(blank) ->
+%%     true;
+%% is_blank(_) ->
+%%     false.
 
 %%% Generic flattener ~~~~~~~~~~
 
