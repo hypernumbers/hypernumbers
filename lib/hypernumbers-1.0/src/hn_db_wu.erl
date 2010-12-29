@@ -529,7 +529,7 @@ delete_cells(#refX{site = S} = DelX, Disp) ->
             LocalChildren3
     end.
 
--spec deref_formula(#refX{}, #refX{}, atom()) -> ok.
+-spec deref_formula(#refX{}, #refX{}, atom()) -> {clean | dirty, #refX{}}.
 deref_formula(Ref, DelRef, Disp) ->
     Op = fun(Attrs) -> 
                  case orddict:find("formula", Attrs) of

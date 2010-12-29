@@ -23,17 +23,18 @@ site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
     site(Site, Type, Opts, [corefiles, sitefiles, json, groups, 
                             permissions, script]).
 
--spec site(string(), atom(), [{atom(), any()}], [atom()]) -> ok | exists.
+-spec site(string(), atom(), [{atom(), any()}], [atom()]) ->
+    {error, site_exists} | {initial_view, string()} .
 site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
     case hn_setup:site_exists(Site) of
         true -> 
-            exists;
+            {error, site_exists};
         false ->
             error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
             ok = create_site_tables(Site, Type),
             ok = sitemaster_sup:add_site(Site),
             ok = update(Site, Type, Opts, ToLoad),
-            get_intial_params(Site)
+            get_initial_params(Site)
     end.
 
 %% Delete a site
@@ -47,7 +48,7 @@ delete_site(Site) ->
     ok = mnesia:activity(transaction, 
                          fun mnesia:delete/3, 
                          [core_site, Site, write]),
-    [ {atomic, ok}  = mnesia:delete_table(hn_db_wu:trans(Site, Table))
+    [ {atomic, ok} = mnesia:delete_table(hn_db_wu:trans(Site, Table))
       || {Table, _F, _T, _I} <- tables()],
     [_Proto, [$/, $/ | Domain], _URL] = string:tokens(Site, ":"),
     [TLD, Dom | Subs] = lists:reverse(string:tokens(Domain, ".")),
@@ -140,11 +141,11 @@ setup(Site, _Type, Opts, script) ->
         {error, enoent} -> ok
     end.
 
-get_intial_params(Site) ->
+get_initial_params(Site) ->
     case file:consult([sitedir(Site), "/", "provision.script"]) of
-        {ok, [{initial_view, I}]} -> {initial_view, I};
-        {error, enoent}           -> {initial_view, []}
-    end.
+         {ok, [{initial_view, I}]} -> {initial_view, I};
+         {error, enoent}           -> {initial_view, []}
+     end.
 
 %% -spec resave_views() -> ok.
 %% resave_views() ->
@@ -177,7 +178,6 @@ create_site_tables(Site, Type)->
     {atomic, ok} = mnesia:transaction(Trans),
     ok.
 
-
 -define(TBL(N, T, I), {N, record_info(fields, N), T, I}).
 tables() ->
     [ ?TBL(dirty_queue, set, []),
@@ -187,7 +187,6 @@ tables() ->
       ?TBL(group,       set, []),         
       ?TBL(style,       set, [idx]),
       ?TBL(form,        set, [id])].
-
 
 %% Import files on a batch basis
 batch_import(Site) ->

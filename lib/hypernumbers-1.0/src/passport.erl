@@ -127,11 +127,13 @@ start_link() ->
     global:unregister_name(?MODULE),
     gen_server:start_link({global, ?MODULE}, ?MODULE, [], []).
 
--spec reset_pwd(string(), string(), string())-> {success, string()}
-                                                    | {error, weak_password}
-                                                    | {error, invalid_reset}
-                                                    | {error, invalid_email}
-                                                    | {error, expired_reset}.
+-spec reset_pwd(string(), string(), string())->
+    {success, string()}
+        | {error, weak_password}
+        | {error, invalid_email}
+        | {error, reset_not_issued}
+        | {error, invalid_reset}
+        | {error, expired_reset}.
 reset_pwd(Email, Password, Hash) ->
     Msg = {reset_pwd, Email, Password, Hash},
     gen_server:call({global, ?MODULE}, Msg, 10000).

@@ -140,12 +140,12 @@ averagea(Args) ->
 
 binomdist([V1, V2, V3, V4]) ->
     [Succn, Trials] = ?ints([V1, V2], ?default_rules),
-    Succprob = ?number(V3, ?default_rules),
+    Succprob = muin_col_DEPR:collect_number(V3, ?default_rules),
     Cumul = ?bool(V4, ?default_rules_bools),
-    ?ensure(Succn =< Trials, ?ERR_NUM),
-    ?ensure(Succn >= 0, ?ERR_NUM),
-    ?ensure(Succprob >= 0, ?ERR_NUM),
-    ?ensure(Succprob =< 1, ?ERR_NUM),
+    muin_checks:ensure(Succn =< Trials, ?ERR_NUM),
+    muin_checks:ensure(Succn >= 0, ?ERR_NUM),
+    muin_checks:ensure(Succprob >= 0, ?ERR_NUM),
+    muin_checks:ensure(Succprob =< 1, ?ERR_NUM),
     binomdist1(Succn, Trials, trunc(Succprob * 100), Cumul).
 binomdist1(Ns, Nt, Ps, false) ->
     io:format("In binomddist1 (false) Ns is ~p Nt is ~p Ps is ~p~n",
@@ -204,11 +204,12 @@ countif([A, Cr]) ->
 
 critbinom([V1, V2, V3]) ->
     Trials = ?int(V1, ?default_rules),
-    [Prob, Alpha] = ?numbers([V2, V3], ?default_rules),
-    ?ensure(Trials >= 0, ?ERR_NUM),
-    ?ensure(Prob >= 0 andalso Prob =< 1, ?ERR_NUM),
-    ?ensure(Alpha >= 0 andalso Alpha =< 1, ?ERR_NUM),
+    [Prob, Alpha] = muin_col_DEPR:collect_numbers([V2, V3], ?default_rules),
+    muin_checks:ensure(Trials >= 0, ?ERR_NUM),
+    muin_checks:ensure(Prob >= 0 andalso Prob =< 1, ?ERR_NUM),
+    muin_checks:ensure(Alpha >= 0 andalso Alpha =< 1, ?ERR_NUM),
     critbinom1(Trials, Prob, Alpha, 0).
+
 critbinom1(Trials, Prob, Alpha, X) ->
     Val = binomdist1(X, Trials, Prob, true),
     case (Val >= Alpha) of
@@ -217,9 +218,10 @@ critbinom1(Trials, Prob, Alpha, X) ->
     end.
 
 devsq(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers(Flatvs, ?default_rules),
+    Flatvs = muin_col_DEPR:flatten_areas(Vs),
+    Nums = muin_col_DEPR:collect_numbers(Flatvs, ?default_rules),
     devsq1(Nums).
+
 devsq1(Vals) ->
     moment(Vals, 2) * length(Vals).
 
@@ -250,8 +252,8 @@ forecast([_, _, _]) ->
 %% FIXME: Bins should NOT be sorted (see Excel).
 %% FIXME: Current algorithm is O(n^2).
 frequency([A, B]) when ?is_area(A) andalso ?is_area(B) ->
-    {_, DataRows} = ?numbers(A, [cast_strings, cast_bools, ban_dates, cast_blanks]),
-    {_, BinsRows} = ?numbers(B, [cast_strings, cast_bools, ban_dates, cast_blanks]),
+    {_, DataRows} = muin_col_DEPR:collect_numbers(A, [cast_strings, cast_bools, ban_dates, cast_blanks]),
+    {_, BinsRows} = muin_col_DEPR:collect_numbers(B, [cast_strings, cast_bools, ban_dates, cast_blanks]),
     Data = lists:sort(lists:flatten(DataRows)),
     Bins = [hd(Data)-1] ++ lists:sort(lists:flatten(BinsRows)) ++ [lists:last(Data)+1],
 
@@ -267,19 +269,19 @@ frequency(_) ->
     ?ERRVAL_VAL.
 
 geomean(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers(Flatvs, [ignore_strings, ignore_bools,
+    Flatvs = muin_col_DEPR:flatten_areas(Vs),
+    Nums = muin_col_DEPR:collect_numbers(Flatvs, [ignore_strings, ignore_bools,
                              ignore_dates, ignore_blanks]),
     AnyZeros = lists:any(fun(X) -> X == 0 end, Nums),
-    ?ensure(not(AnyZeros), ?ERR_NUM),
+    muin_checks:ensure(not(AnyZeros), ?ERR_NUM),
     math:pow(stdfuns_math:product(Nums), 1/erlang:length(Nums)).
 
 harmean(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers(Flatvs, [ignore_strings, ignore_bools, ignore_dates, ignore_blanks]),
+    Flatvs = muin_col_DEPR:flatten_areas(Vs),
+    Nums = muin_col_DEPR:collect_numbers(Flatvs, [ignore_strings, ignore_bools, ignore_dates, ignore_blanks]),
     AnyZeros = lists:any(fun(X) -> X == 0 end,
                    Nums),
-    ?ensure(not(AnyZeros), ?ERR_NUM),
+    muin_checks:ensure(not(AnyZeros), ?ERR_NUM),
     harmean1(Nums, 0, 0).
 harmean1([], Num, Acc) ->
     Num / Acc;
@@ -287,11 +289,11 @@ harmean1([Hd|Tl], Num, Acc) ->
     harmean1(Tl, Num+1, (1/Hd)+Acc).
 
 gammadist([V1, V2, V3, V4]) ->
-    [X, Alpha, Beta] = ?numbers([V1, V2, V3], ?default_rules),
+    [X, Alpha, Beta] = muin_col_DEPR:collect_numbers([V1, V2, V3], ?default_rules),
     Cumul = ?bool(V4, ?default_rules_bools),
-    ?ensure(X >= 0, ?ERR_NUM),
-    ?ensure(Alpha > 0, ?ERR_NUM),
-    ?ensure(Beta > 0, ?ERR_NUM),
+    muin_checks:ensure(X >= 0, ?ERR_NUM),
+    muin_checks:ensure(Alpha > 0, ?ERR_NUM),
+    muin_checks:ensure(Beta > 0, ?ERR_NUM),
     gammadist1(X, Alpha, Beta, Cumul).
 gammadist1(X, Alpha, Beta, false) ->
     Top = math:pow(X, Alpha - 1) * math:exp(-1 * X / Beta),
@@ -307,9 +309,9 @@ intercept([_, _]) ->
 %%     C / M.
 
 kurt(V1) ->
-    Flatvs = ?flatten_all(V1),
-    Nums = ?numbers(Flatvs, ?default_rules),
-    ?ensure(length(Nums) > 3, ?ERR_DIV),
+    Flatvs = muin_col_DEPR:flatten_areas(V1),
+    Nums = muin_col_DEPR:collect_numbers(Flatvs, ?default_rules),
+    muin_checks:ensure(length(Nums) > 3, ?ERR_DIV),
     kurt1(Nums).
 kurt1(Nums) ->
     N = length(Nums),
@@ -451,10 +453,10 @@ normsdist([_, _, _, _]) ->
     0.
 
 percentile([V1, V2]) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    K = ?number(V2, ?default_rules),
-    ?ensure(length(Nums) > 0, ?ERR_NUM),
-    ?ensure((K >= 0) andalso (K =< 1), ?ERR_NUM),
+    Nums = muin_col_DEPR:collect_numbers(muin_col_DEPR:flatten_areas(V1), ?default_rules),
+    K = muin_col_DEPR:collect_number(V2, ?default_rules),
+    muin_checks:ensure(length(Nums) > 0, ?ERR_NUM),
+    muin_checks:ensure((K >= 0) andalso (K =< 1), ?ERR_NUM),
     percentile1(Nums, K).
 percentile1(Nums, K) ->
     L = lists:map(fun(X) -> X / lists:sum(Nums) end,
@@ -462,20 +464,20 @@ percentile1(Nums, K) ->
     firstgte(L, K).
 
 permut([V1, V2]) ->
-    [N, K] = ?numbers([V1, V2], ?default_rules),
-    ?ensure(N > 0, ?ERR_NUM),
-    ?ensure(K >= 0, ?ERR_NUM),
-    ?ensure(N >= K, ?ERR_NUM),
+    [N, K] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
+    muin_checks:ensure(N > 0, ?ERR_NUM),
+    muin_checks:ensure(K >= 0, ?ERR_NUM),
+    muin_checks:ensure(N >= K, ?ERR_NUM),
     permut1(trunc(N), trunc(K)).
 permut1(N, K) ->
     stdfuns_math:fact1(N) div stdfuns_math:fact1(N - K).
 
 poisson([V1, V2, V3]) ->
     X = ?int(V1, ?default_rules),
-    Mean = ?number(V2, ?default_rules),
+    Mean = muin_col_DEPR:collect_number(V2, ?default_rules),
     Cumul = ?bool(V3, ?default_rules_bools),
-    ?ensure(X >= 0, ?ERR_NUM),
-    ?ensure(Mean > 0, ?ERR_NUM),
+    muin_checks:ensure(X >= 0, ?ERR_NUM),
+    muin_checks:ensure(Mean > 0, ?ERR_NUM),
     poisson1(X, Mean, Cumul).
 poisson1(X, Mean, false) ->
     noncumpoisson(X, Mean);
@@ -492,10 +494,10 @@ cumpoisson(K, Mean, Acc) ->
     cumpoisson(K-1, Mean, Acc + noncumpoisson(K, Mean)).
 
 quartile([V1, V2]) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
+    Nums = muin_col_DEPR:collect_numbers(muin_col_DEPR:flatten_areas(V1), ?default_rules),
     Q = ?int(V2, ?default_rules),
-    ?ensure(length(Nums) > 0, ?ERR_NUM),
-    ?ensure((Q >= 0) and (Q =< 4), ?ERR_NUM),
+    muin_checks:ensure(length(Nums) > 0, ?ERR_NUM),
+    muin_checks:ensure((Q >= 0) and (Q =< 4), ?ERR_NUM),
     quartile1(Nums, Q).
 quartile1(Nums, Q) ->
     lists:nth(percentile1(Nums, Q * 0.25), Nums).
@@ -503,8 +505,9 @@ quartile1(Nums, Q) ->
 rank([V1, V2]) ->
     rank([V1, V2, 1]);
 rank([V1, V2, V3]) ->
-    Num = ?number(V1, ?default_rules),
-    Nums = ?numbers(?flatten_all(V2), ?default_rules),
+    Num = muin_col_DEPR:collect_number(V1, ?default_rules),
+    Nums = muin_col_DEPR:collect_numbers(muin_col_DEPR:flatten_areas(V2),
+                                         ?default_rules),
     Order = ?bool(V3, ?default_rules_bools),
     rank1(Num, Nums, Order).
 rank1(N, Nums, true) ->

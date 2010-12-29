@@ -62,9 +62,10 @@ do_parse(Date, Now, Opts) ->
     case parse(tokenise(string:to_upper(Date), []), Now, Opts) of
         {error, bad_date} ->
             {error, bad_date};
-        {D1, T1} = {{Y, M, D}, {H, M1, S}} when is_number(Y),  is_number(M),
-                                                is_number(D),  is_number(H),
-                                                is_number(M1), is_number(S) ->
+        {D1, T1} = {{Y, M, D}, {H, M1, S}}
+        when is_number(Y),  is_number(M),
+             is_number(D),  is_number(H),
+             is_number(M1), is_number(S) ->
             case calendar:valid_date(D1) of
                 true  -> {D1, T1};
                 false -> {error, bad_date}

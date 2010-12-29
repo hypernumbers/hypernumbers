@@ -123,8 +123,8 @@ replace_([Str, Replace], [Start, Len]) ->
 
 exact([V1, V2]) ->
     Rules = [first_array, cast_numbers, cast_bools, ban_dates, cast_blanks],
-    Str1 = ?string(V1, Rules),
-    Str2 = ?string(V2, Rules),
+    Str1 = muin_col_DEPR:collect_string(V1, Rules),
+    Str2 = muin_col_DEPR:collect_string(V2, Rules),
     string:equal(Str1, Str2).
 
 
@@ -134,7 +134,7 @@ len([Str]) when is_float(Str) ->
           S     -> length(S)
          end;
 len([Str]) ->
-    NewStr=?string(Str,?default_str_rules),
+    NewStr=muin_col_DEPR:collect_string(Str,?default_str_rules),
     length(NewStr).
 
 mid([V1, V2, V3]) ->
@@ -194,7 +194,7 @@ fixed_([Num, Dec, Com]) ->
     end.
 
 lower([Str]) ->
-    NewStr=?string(Str,?default_str_rules),
+    NewStr=muin_col_DEPR:collect_string(Str,?default_str_rules),
     string:to_lower(NewStr).
 
 proper(Args) ->
@@ -222,7 +222,7 @@ make_proper([X | Rest], Acc) ->
     make_proper(Rest, [hd(string:to_lower([X])) | Acc]).
 
 upper([Str]) ->
-    NewStr=?string(Str,?default_str_rules),
+    NewStr=muin_col_DEPR:collect_string(Str,?default_str_rules),
     string:to_upper(NewStr).
 
 char([V1]) ->
@@ -261,22 +261,22 @@ find_([Str, InStr, Start]) ->
     end.
 
 left([Str])->
-    NewStr=?string(Str,?default_str_rules),
+    NewStr=muin_col_DEPR:collect_string(Str,?default_str_rules),
     [lists:nth(1,NewStr)];
 left([Str, Len]) ->
-    NewStr=?string(Str,?default_str_rules),
+    NewStr=muin_col_DEPR:collect_string(Str,?default_str_rules),
     NewLen=erlang:trunc(?int(Len,?default_num_rules)),
-    ?ensure(NewLen >= 0,?ERR_VAL),
+    muin_checks:ensure(NewLen >= 0,?ERR_VAL),
     string:substr(NewStr, 1, NewLen).
 
 right([Str])->
-    NewStr=?string(Str,?default_str_rules),
+    NewStr=muin_col_DEPR:collect_string(Str,?default_str_rules),
     Len=length(NewStr),
     [lists:nth(Len,NewStr)];
 right([Str, Len]) ->
-    NewStr=?string(Str,?default_str_rules),
+    NewStr=muin_col_DEPR:collect_string(Str,?default_str_rules),
     NewLen=erlang:trunc(?int(Len,?default_num_rules)),
-    ?ensure(NewLen >= 0,?ERR_VAL),
+    muin_checks:ensure(NewLen >= 0,?ERR_VAL),
     TotalLen=length(NewStr),
     case (NewLen > TotalLen) of
         true ->

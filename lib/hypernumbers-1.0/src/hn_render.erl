@@ -30,7 +30,7 @@ content(Ref) -> content(Ref, webpage).
 
 %% Returns a tuple containing the rendered html for the area covered
 %% by the given Ref, along with the width of said html.
--spec content(#refX{}, atom()) -> {{[textdata()], integer(), integer()}, string()}.
+-spec content(#refX{}, atom()) -> {{[textdata()], integer(), integer()}, #render{}}.
 content(Ref, Type) ->
     Data = lists:sort(fun order_objs/2, read_data_without_page(Ref)),
     Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
@@ -207,7 +207,7 @@ pget(K,L) -> proplists:get_value(K,L,undefined).
 
 pget(K,L,D) -> proplists:get_value(K,L,D).
 
--spec wrap_page([textdata()], integer(), integer(), string()) -> [textdata()]. 
+-spec wrap_page([textdata()], integer(), integer(), #render{}) -> [textdata()]. 
 wrap_page(Content, TotalWidth, TotalHeight, Addons) -> 
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
                                [TotalWidth, TotalHeight]),

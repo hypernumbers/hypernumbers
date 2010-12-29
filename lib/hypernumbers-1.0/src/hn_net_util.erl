@@ -16,11 +16,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec cookie(string(), string(), integer() | string()) -> string().
-cookie(N, V, "session") -> cookie_(N, V, []);
-cookie(N, V, "never")   -> cookie_(N, V, [{max_age, ?TWO_YEARS}]);
-cookie(N, V, Age)       -> cookie_(N, V, [{max_age, Age}]).
+cookie(N, V, "session")                -> c_(N, V, []);
+cookie(N, V, "never")                  -> c_(N, V, [{max_age, ?TWO_YEARS}]);
+cookie(N, V, Age) when is_integer(Age) -> c_(N, V, [{max_age, Age}]).
 
-cookie_(Name, Value, Opts) ->
+c_(Name, Value, Opts) ->
     mochiweb_cookies:cookie(Name, Value, [{path, "/"}] ++ Opts).
 
 -spec kill_cookie(string()) -> string().
