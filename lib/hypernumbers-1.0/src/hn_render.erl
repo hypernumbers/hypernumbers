@@ -223,6 +223,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
 "        <meta charset='utf-8' />
          <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />	
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
+         <link rel='stylesheet' href='/webcomponents/jquery.ui.potato.menu.css'>
          <link rel='stylesheet' href='/tblsorter/style.css' />
 "     ++Addons#render.css++
 "         </head>
@@ -274,6 +275,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
 "  ++Addons#render.js++
 "  <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
   <script src='/hypernumbers/json2.js'></script>
+  <script src='/webcomponents/jquery.ui.potato.menu.js'></script>
   <script src='/hypernumbers/hn.js'></script>
   <script src='/hypernumbers/hn.util.js'></script>
   <script src='/hypernumbers/hn.sheet.js'></script>
