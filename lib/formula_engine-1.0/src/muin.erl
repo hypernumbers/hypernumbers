@@ -7,15 +7,27 @@
 
 -export([eval/1]).
 
--export([context_setting/1,
+-export([
+         context_setting/1,
          col_index/1,
          row_index/1,
          col/1,
          row/1,
          path/1,
-         get_modules/0 ]).
-
--compile(export_all).
+         get_modules/0,
+         test_formula/1,
+         funcall/2,
+         call_fun/3,
+         force_load/1,
+         prefetch_references/1,
+         fetch/1,
+         get_hypernumber/9,
+         userdef_call/2,
+         toidx/1,
+         eval_formula/1,
+         do_cell/3,
+         parse/2
+        ]).
 
 -include("spriki.hrl").
 -include("typechecks.hrl").
@@ -255,7 +267,7 @@ get_modules() ->
     [stdfuns_text, stdfuns_math, stdfuns_stats, stdfuns_date,
      stdfuns_financial, stdfuns_info, stdfuns_lookup_ref,
      stdfuns_eng, stdfuns_logical, stdfuns_text, stdfuns_db,
-     hnfuns_graphs, hnfuns_web, hnfuns_integration].
+     hnfuns_graphs, hnfuns_web, hnfuns_integration, hnfuns_html].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% Intersect current cell with a range.

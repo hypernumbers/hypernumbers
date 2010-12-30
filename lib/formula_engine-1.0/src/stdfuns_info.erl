@@ -34,7 +34,7 @@
 %% TODO: Other info types.
 cell([V1, V2]) ->
     InfoType = muin:eval_formula(V1),
-    ?ensure(?is_string(InfoType), ?ERR_VAL),
+    muin_checks:ensure(?is_string(InfoType), ?ERR_VAL),
     R = case V2 of
             [indirect, _]                          -> muin:eval(V2);
             X when ?is_cellref(X)                  -> X;
@@ -79,14 +79,17 @@ cell1(_, _) ->
     ?ERR_VAL.
     
 
-errornum(?ERRVAL_NULL) -> 1;
-errornum(?ERRVAL_DIV)  -> 2;
-errornum(?ERRVAL_VAL)  -> 3;                                   
-errornum(?ERRVAL_REF)  -> 4;
-errornum(?ERRVAL_NAME) -> 5;
-errornum(?ERRVAL_NUM)  -> 6;
-errornum(?ERRVAL_NA)   -> 7.
-    
+errornum(?ERRVAL_NULL)    -> 1;
+errornum(?ERRVAL_DIV)     -> 2;
+errornum(?ERRVAL_VAL)     -> 3;                                   
+errornum(?ERRVAL_REF)     -> 4;
+errornum(?ERRVAL_NAME)    -> 5;
+errornum(?ERRVAL_NUM)     -> 6;
+errornum(?ERRVAL_NA)      -> 7;
+errornum(?ERRVAL_CIRCREF) -> 8;
+errornum(?ERRVAL_AUTH)    -> 9;
+errornum(?ERRVAL_FORM)    -> 10.
+%% THERE IS NO errornum FOR #MOCHIJSON! AS IT IS A BUG NOT A PROPER ERROR MESSAGE!
 
 'error.type'([X]) when ?is_errval(X)                  -> errornum(X);
 'error.type'([{array, [[X|_]|_]}]) when ?is_errval(X) -> errornum(X);
@@ -111,9 +114,8 @@ iserror(_)                                       -> false.
 %% The number is truncated, so ISEVEN(2.5) is true.
 %% @todo needs a test case written because it is not an Excel 97 function
 iseven([V1]) ->
-    Num = ?number(V1, [cast_strings, cast_bools, cast_dates]),
+    Num = muin_col_DEPR:collect_number(V1, [cast_strings, cast_bools, cast_dates]),
     (trunc(Num) div 2) * 2 == trunc(Num).
-
 
 %% @todo needs a test case written because it is not an Excel 97 function
 isodd([Num]) -> not(iseven([Num])).
@@ -180,12 +182,12 @@ type(_)                      -> 0.
 isblank([B]) when ?is_blank(B) ->
     true;
 isblank(Vs)      ->
-    Flatvs = ?flatten_all(Vs),
+    Flatvs = muin_col_DEPR:flatten_areas(Vs),
     lists:all(fun muin_collect:is_blank/1, Flatvs).
 
 
 %% @todo needs a test case written because it is not an Excel 97 function
-isnonblank(Vs) -> Flatvs = ?flatten_all(Vs),
+isnonblank(Vs) -> Flatvs = muin_col_DEPR:flatten_areas(Vs),
                   lists:all(fun(X) -> not(muin_collect:is_blank(X)) end, Flatvs).
 
 

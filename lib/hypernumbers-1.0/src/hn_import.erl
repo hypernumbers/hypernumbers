@@ -37,7 +37,7 @@ csv_append(Url, FileName) ->
     Refs  = make_append_refs(Recs, Ref),
     
     % now write it 
-    [ok = hn_db_api:write_last(X, nil, nil) || X <- Refs],
+    [ok = hn_db_api:append_row(X, nil, nil) || X <- Refs],
     ok.
     
 json_file(Url, FileName) -> 

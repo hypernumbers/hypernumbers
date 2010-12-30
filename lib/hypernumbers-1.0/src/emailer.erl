@@ -87,7 +87,7 @@ send_email(To, CC, From, Subject, EmailBody) ->
             ok
     end.    
 
--spec kfind(string(), list()) -> any().
+-spec kfind(string() | atom(), list()) -> any().
 kfind(Key, List) ->
     {Key, Val} = lists:keyfind(Key, 1, List),
     Val.

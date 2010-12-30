@@ -569,11 +569,6 @@ label {
    clear: both;
 }
 
-.hn_preview
-{ 
-  height: 44%;
-  }
-
 .hn_demopage 
 { 
   background  : #f88017;
@@ -596,8 +591,23 @@ label {
   padding: 5px 10px 0px 10px;
  }
 
-#hn_spreadsheet, #hn_wikipage, #hn_webpage 
+#hn_spreadsheet, #hn_wikipage, #hn_webpage, .hn_preview 
 { 
   border: 4px solid #666;
   margin: 2px;
+  }
+
+.hn_html_preview
+{
+  font-size:        70%;
+  font-weight:      bold;
+  background-color: #EEE;
+  color:            #777;
+  margin:           1px;
+  padding:          0px 0px 0px 3px;
+  width:            90%;
+  height:           87%;
+  -moz-border-radius: 4px 4px 4px 4px;
+  -webkit-border-radius:4px 4px 4px 4px;
+  border:           1px solid #E99;
   }

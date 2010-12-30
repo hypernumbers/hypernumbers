@@ -44,11 +44,12 @@
         element(1, X) == namedexpr).
 
 -define(is_errval(X),
-        X == ?ERRVAL_NULL orelse X == ?ERRVAL_DIV orelse
-        X == ?ERRVAL_VAL  orelse X == ?ERRVAL_REF orelse
-        X == ?ERRVAL_NAME orelse X == ?ERRVAL_NUM orelse
-        X == ?ERRVAL_NA   orelse X == ?ERRVAL_CIRCREF orelse
-        X == ?ERRVAL_AUTH).
+        X == ?ERRVAL_NULL  orelse X == ?ERRVAL_DIV     orelse
+        X == ?ERRVAL_VAL   orelse X == ?ERRVAL_REF     orelse
+        X == ?ERRVAL_NAME  orelse X == ?ERRVAL_NUM     orelse
+        X == ?ERRVAL_NA    orelse X == ?ERRVAL_CIRCREF orelse
+        X == ?ERRVAL_AUTH  orelse X == ?ERRVAL_FORM    orelse
+        X == ?ERRVAL_MOCHI). % THE MOCHI ERRVAL IS A BUG AND SHOULD BE REMOVED!
 
 -define(is_operator(X),
         X == '+'; X == '*'; X == '/'; X == '-'; X == '^';
@@ -69,42 +70,15 @@
            true         -> Collector(X, Rules)
         end).
 
--define(numbers(Xs, Rules),
-        muin_collect:collect_numbers(Xs, Rules)).
-
--define(number(X, Rules),
-        ?iinaa(X, Rules, fun(A_, B_) -> muin_collect:collect_number(A_, B_) end)).
-
 -define(int(X, Rules),
-        erlang:trunc(?number(X, Rules))).
+        erlang:trunc(muin_col_DEPR:collect_numbers(X, Rules))).
 
 -define(ints(Xs, Rules),
         lists:map(fun(X) -> erlang:trunc(X) end,
-                  ?numbers(Xs, Rules))).
+                  muin_col_DEPR:collect_numbers(Xs, Rules))).
 
 -define(bool(X, Rules),
-        ?iinaa(X, Rules, fun(A_, B_) -> muin_collect:collect_bool(A_, B_) end)).
-
--define(remove_errors(Xs),
-        muin_collect:remove_errors(Xs)).
-
--define(bools(Xs, Rules),
-        muin_collect:collect_bools(Xs, Rules)).
-
--define(flatten_all(Xs),
-        muin_collect:flatten_areas(Xs)).
-
--define(date(X, Rules),
-        muin_collect:collect_date(X, Rules)).
-
--define(dates(Xs, Rules),
-        muin_collect:collect_dates(Xs, Rules)).
-
--define(string(X, Rules),
-        muin_collect:collect_string(X, Rules)).
-
--define(strings(Xs, Rules),
-        muin_collect:collect_strings(Xs, Rules)).
+        ?iinaa(X, Rules, fun(A_, B_) -> muin_col_DEPR:collect_bool(A_, B_) end)).
 
 -define(edate(X),
         if is_record(X, datetime) -> ok;
@@ -135,41 +109,3 @@
                      false -> ?ERR_VAL
                  end
          end)()).
-
-%%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-%%% OLD STUFF BELOW.
-%%% TODO: Clean up.
-%%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
--define(ensure_number(N),
-        muin_checks:number(N)).
-
--define(ensure_numbers(Ns),
-        muin_checks:numbers(Ns)).
-
--define(ensure_nonzero(N),
-        muin_checks:nonzero(N)).
-
--define(ensure_non_negative(N),
-        muin_checks:gte0(N)).
-
--define(ensure_non_negatives(Ns),
-        muin_checks:gte0s(Ns)).
-
--define(ensure_positive(N),
-        muin_checks:gt0(N)).
-
--define(ensure_no_errvals(Vs),
-        muin_checks:die_on_errval(Vs)).
-
--define(ensure(Test, Action),
-        muin_checks:ensure(Test, fun() -> Action end)).
-
--define(filter_numbers(Vs),
-        muin_checks:filter_numbers(Vs)).
-        
--define(filter_numbers_with_cast(Vs),
-        muin_checks:filter_numbers_all(Vs)).
-        
--define(flatten(L),
-        muin_checks:deck(L)).

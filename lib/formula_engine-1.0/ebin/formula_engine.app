@@ -4,6 +4,7 @@
   {modules,[
             area_util,
             muin_collect,
+            muin_col_DEPR,
             stdfuns_db,
             superparser,
             cond_lexer,

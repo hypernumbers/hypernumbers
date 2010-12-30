@@ -24,8 +24,6 @@
          timevalue/1,
          time/1]).
 
--import(muin_collect, [ collect/3, col/3, col/4 ]).
-
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 
@@ -46,7 +44,7 @@ date(Args = [_, _, _]) ->
                 dateh([erlang:trunc(Y), Rnd(M), Rnd(D)])
         end,
 
-    case col(Args, [flatten_as_str, {cast, num}],
+    case muin_collect:col(Args, [flatten_as_str, {cast, num}],
              [return_errors, {all, fun is_number/1}]) of
         Err when ?is_errval(Err) -> Err;
         [Y, M, D] when Y < 1900  -> F(Y+1900, M, D);
@@ -86,8 +84,8 @@ dateh([Y, M, D]) ->
 
 %% @TODO what is this function for? Not an Excel function - ask Hasan...
 datedif([V1, V2, V3]) ->
-    [Start, End] = ?dates([V1, V2], ?cast_all),
-    ?ensure(muin_date:gt(End, Start), ?ERR_NUM),
+    [Start, End] = muin_col_DEPR:collect_dates([V1, V2], ?cast_all),
+    muin_checks:ensure(muin_date:gt(End, Start), ?ERR_NUM),
     ?estring(V3),
     Unit = string:to_upper(?utf8l(V3)),
     datedif1(Start, End, Unit).
@@ -140,15 +138,15 @@ datedif1(Start, End, "YD") ->
           lists:seq(muin_date:month(Start), muin_date:month(End))).
 
 datevalue([V1]) ->
-    ?date(V1, [first_array, cast_strings, ban_bools, ban_blanks, ban_numbers]).
+    muin_col_DEPR:collect_date(V1, [first_array, cast_strings, ban_bools, ban_blanks, ban_numbers]).
 
 days360([Date1, Date2]) ->
     days360([Date1, Date2, true]);
 
 days360([PreDate1, PreDate2, PreMethod]) ->
-    Dates = col([PreDate1, PreDate2], [eval_funs, fetch, {cast, date}],
+    Dates = muin_collect:col([PreDate1, PreDate2], [eval_funs, fetch, {cast, date}],
                 [return_errors, {all, fun muin_collect:is_date/1}]),
-    Mth = col([PreMethod], [eval_funs, fetch, {cast, bool}],
+    Mth = muin_collect:col([PreMethod], [eval_funs, fetch, {cast, bool}],
               [return_errors, {all, fun is_boolean/1}]),
     muin_util:apply([Dates, Mth], fun days360_/2).    
 
@@ -170,12 +168,12 @@ days360(#datetime{date={Y1,M1,D1}}, #datetime{date={Y2,M2,D2}}, _Method) ->
 day([Val]) when is_number(Val) andalso Val < 0 ->
     ?ERRVAL_NUM;
 day([Val]) ->
-    Date = ?date(Val, [first_array, cast_strings, cast_bools,
+    Date = muin_col_DEPR:collect_date(Val, [first_array, cast_strings, cast_bools,
                        cast_blanks, cast_numbers]),
     muin_date:day(Date).
 
 month(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array, cast_blank,
          {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
@@ -187,7 +185,7 @@ month_([Date]) ->
 year([Val]) when is_number(Val) andalso Val < 0 ->
     ?ERRVAL_NUM;
 year([Val]) ->
-    Date = ?date(Val, [first_array, cast_strings, cast_bools,
+    Date = muin_col_DEPR:collect_date(Val, [first_array, cast_strings, cast_bools,
                        cast_blanks, cast_numbers]),
     muin_date:year(Date).
 
@@ -195,7 +193,7 @@ year([Val]) ->
 %% @todo there is not test suite for this function because it is not an 
 %% Excel 97 one
 edate([V1, V2]) ->
-    Start = ?date(V1, ?cast_all),
+    Start = muin_col_DEPR:collect_date(V1, ?cast_all),
     Months = ?int(V2, ?cast_all),
     edate1(Start, Months).
 edate1(Start, Months) ->
@@ -207,7 +205,7 @@ edate1(Start, Months) ->
 %% @todo there is not test suite for this function because it is not an 
 %% Excel 97 one
 eomonth([V1, V2]) ->
-    Start = ?date(V1, ?cast_all),
+    Start = muin_col_DEPR:collect_date(V1, ?cast_all),
     Months = ?int(V2, ?cast_all),
     %% TODO: More error checks, see Excel.
     eomonth1(Start, Months).
@@ -225,10 +223,10 @@ eomonth1(Start, Months) ->
 networkdays([V1, V2]) ->
     networkdays([V1, V2, []]);
 networkdays([V1, V2, V3]) ->
-    [Start, End] = ?dates([V1, V2], ?cast_all),
+    [Start, End] = muin_col_DEPR:collect_dates([V1, V2], ?cast_all),
     Holidays = case V3 of
                    [] -> [];
-                   _  -> ?dates(V3, ?cast_all)
+                   _  -> muin_col_DEPR:collect_dates(V3, ?cast_all)
                end,
     networkdays1(Start, End, Holidays).
 networkdays1(Start, End, Holidays) ->
@@ -259,13 +257,13 @@ weekday([V1]) ->
     weekday([V1, 1]);
 weekday([V1, V2]) ->
     
-    Dat = col([V1],
+    Dat = muin_collect:col([V1],
               [fetch_name, eval_funs, first_array,
                {cast, num, date, ?ERRVAL_NUM},
                {cast, date}],
               [return_errors, {all, fun muin_collect:is_date/1}]),
     
-    Ret = col([V2],
+    Ret = muin_collect:col([V2],
               [fetch_name, eval_funs, first_array, {cast, int}],
               [return_errors, {all, fun is_number/1}]),
     
@@ -276,7 +274,7 @@ weekday([V1, V2]) ->
     end.
         
 %    io:format("hello?~n"),
-%    Dt = ?date(V1, ?cast_all),
+%    Dt = muin_col_DEPR:collect_date(V1, ?cast_all),
 %    Rettype = ?int(V2, ?cast_all),    
 %% io:format("Dt ~p", [Dt]),
 %% weekday1(Dt, Rettype).
@@ -298,9 +296,9 @@ weekday1(_Dt, _X) ->
 weeknum([V1]) ->
     weeknum([V1, 1]);
 weeknum([V1, V2]) ->
-    Dt = ?date(V1, ?cast_all),
+    Dt = muin_col_DEPR:collect_date(V1, ?cast_all),
     Rettype = ?int(V2, ?cast_all),
-    ?ensure(Rettype == 1 orelse Rettype == 2,
+    muin_checks:ensure(Rettype == 1 orelse Rettype == 2,
             ?ERR_NUM),
     weeknum1(Dt, Rettype).
 weeknum1(Dt, Rettype) ->
@@ -315,7 +313,7 @@ weeknum1(Dt, Rettype) ->
                    #datetime{date = {muin_date:year(Dt), 12, 31}}).
 
 hour(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array,
          {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
@@ -325,7 +323,7 @@ hour_([Date]) ->
     muin_date:hour(Date).
 
 minute(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array,
          {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
@@ -335,7 +333,7 @@ minute_([Date]) ->
     muin_date:minute(Date).
 
 second(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array,
          {cast, num, date, ?ERRVAL_NUM}, {cast, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
@@ -349,7 +347,7 @@ now([]) ->
     #datetime{date = Date, time = Time}.
 
 timevalue(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array, {cast, str, date}],
         [return_errors, {all, fun muin_collect:is_date/1}],
         fun timevalue_/1).
@@ -359,7 +357,7 @@ timevalue_([#datetime{time={H,M,S}}]) ->
     Secs / 86400.
 
 time(Args) ->
-    col(Args,
+    muin_collect:col(Args,
         [fetch_name, eval_funs, first_array, {cast, int}],
         [return_errors, {all, fun is_number/1}],
         fun time_/1).

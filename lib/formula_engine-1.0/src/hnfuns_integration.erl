@@ -8,6 +8,8 @@
 %%%-------------------------------------------------------------------
 -module(hnfuns_integration).
 
+%%% TODO - casting rules
+
 % working functions
 -export([
          'facebook.share'/1,
@@ -29,9 +31,6 @@
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
-
--import(muin_util, [cast/2]).
--import(muin_collect, [ col/2, col/3, col/4 ]).
 
 -define(default_str_rules, [first_array, cast_numbers, cast_bools,
                             cast_blanks, cast_dates ]).
@@ -70,15 +69,13 @@
     tweet2(Message, Link).
 
 tweet2(Message, Link) ->
-    Msg = ?string(Message, ?default_str_rules),
-    Link = ?string(Link, ?default_str_rules),
+    Msg = muin_col_DEPR:collect_string(Message, ?default_str_rules),
+    Link = muin_col_DEPR:collect_string(Link, ?default_str_rules),
     "<a href=\"http://twitter.com/home?status=" ++ Msg ++ "\">" ++ Link ++ "</a>".
-
-
 
 %% Hypernumbers Channel Name is hypernumbers
 'youtube.channel'([ChannelName]) ->
-    C = ?string(ChannelName, ?default_str_rules),
+    C = muin_col_DEPR:collect_string(ChannelName, ?default_str_rules),
     "<script src=\"http://www.gmodules.com/ig/ifr?url=http://www.google.com/ig/modules/youtube.xml&up_channel=" ++ C ++ "&synd=open&w=320&h=390&title=&border=%23ffffff%7C3px%2C1px+solid+%23999999&output=js\"></script>".
 
 %% Hypernumbers merchant ID is 960226209420618 
@@ -90,9 +87,9 @@ tweet2(Message, Link) ->
     google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg).
 
 google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg) ->
-    M = ?string(Merchant, ?default_str_rules),
-    C = ?string(Cur, ?default_str_rules),
-    Bg1 = string:to_lower(?string(Bg, ?default_str_rules)),
+    M = muin_col_DEPR:collect_string(Merchant, ?default_str_rules),
+    C = muin_col_DEPR:collect_string(Cur, ?default_str_rules),
+    Bg1 = string:to_lower(muin_col_DEPR:collect_string(Bg, ?default_str_rules)),
     case lists:member(string:to_upper(C), ?VALID_ISO_CURRENCIES) of
         false -> ?ERRVAL_VAL;
         true  -> case Bg1 of
@@ -105,10 +102,10 @@ google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, Quantity, Bg) ->
     end.
 
 google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
-    IN = ?string(ItemName, ?default_str_rules),
-    ID = ?string(ItemDesc, ?default_str_rules),
-    P = ?string(Price, ?default_str_rules),
-    Q = ?string(Quantity, ?default_str_rules),
+    IN = muin_col_DEPR:collect_string(ItemName, ?default_str_rules),
+    ID = muin_col_DEPR:collect_string(ItemDesc, ?default_str_rules),
+    P = muin_col_DEPR:collect_string(Price, ?default_str_rules),
+    Q = muin_col_DEPR:collect_string(Quantity, ?default_str_rules),
     "<form action=\"https://checkout.google.com/api/checkout/v2/checkoutForm/Merchant/"
         ++ M ++ "\" id=\"BB_BuyButtonForm\" method=\"post\" name=\"BB_BuyButtonForm\" target=\"_top\">" 
         ++ "<input name=\"item_name_1\" type=\"hidden\" value=\"" ++ IN ++ "\"/>"
@@ -122,9 +119,9 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
 
 %% Hypernumbers Merchant ID is 960226209420618 
 'google.buynowlist'([Merchant, Currency, Type, Bg | Rest]) ->
-    M = ?string(Merchant, ?default_str_rules),
-    C = ?string(Currency, ?default_str_rules),
-    Bg1 = string:to_lower(?string(Bg, ?default_str_rules)),
+    M = muin_col_DEPR:collect_string(Merchant, ?default_str_rules),
+    C = muin_col_DEPR:collect_string(Currency, ?default_str_rules),
+    Bg1 = string:to_lower(muin_col_DEPR:collect_string(Bg, ?default_str_rules)),
     case lists:member(string:to_upper(C), ?VALID_ISO_CURRENCIES) of
         false -> io:format("no currency~n"),
                  ?ERRVAL_VAL;
@@ -165,10 +162,10 @@ get_google_bits(_, _, _, _, _, _) ->
     exit("fuck up!").
 
 get_google_bits2(Cur, Name, Desc, Price, Quantity, C) ->
-    N = ?string(Name, ?default_str_rules),
-    D = ?string(Desc, ?default_str_rules),
-    P = ?string(Price, ?default_str_rules),
-    Q = ?string(Quantity, ?default_str_rules),
+    N = muin_col_DEPR:collect_string(Name, ?default_str_rules),
+    D = muin_col_DEPR:collect_string(Desc, ?default_str_rules),
+    P = muin_col_DEPR:collect_string(Price, ?default_str_rules),
+    Q = muin_col_DEPR:collect_string(Quantity, ?default_str_rules),
     C1 = integer_to_list(C),
     Sel = "<option value=\"" ++ C1 ++ "\">"
         ++ P ++ " - " ++ N ++ "</option>",
@@ -196,9 +193,9 @@ get_sel(List) -> lists:flatten(["<select name=\"item_selection_1\">",
     fb_like(URL, Layout, Faces).
 
 fb_like(URL, Layout, Faces) ->
-    U = ?string(URL, ?default_str_rules),
-    L = ?string(Layout, ?default_str_rules),
-    F = ?string(Faces, ?default_str_rules),
+    U = muin_col_DEPR:collect_string(URL, ?default_str_rules),
+    L = muin_col_DEPR:collect_string(Layout, ?default_str_rules),
+    F = muin_col_DEPR:collect_string(Faces, ?default_str_rules),
     case valid(L, F) of
         false -> ?ERRVAL_VAL;
         {L1, F1}  ->
@@ -219,7 +216,7 @@ valid(_, _) -> false.
     
 %% Hypernumbers Page Id is 336874434418
 'facebook.likebox'([PageId]) ->
-    P = ?string(PageId, ?default_str_rules),
+    P = muin_col_DEPR:collect_string(PageId, ?default_str_rules),
     "<iframe src=\"http://www.facebook.com/plugins/likebox.php?id="
         ++ P ++ "&amp;width=292&amp;connections=10&amp;stream=true&amp;header=true\" scrolling=\"no\" frameborder=\"0\" allowTransparency=\"true\" style=\"border:none; overflow:hidden; width:292px; height:200px\"></iframe>".
 
@@ -228,7 +225,7 @@ valid(_, _) -> false.
 'facebook.share'([1])      -> fb_share1("button_count", "");
 'facebook.share'([2])      -> fb_share1("button", "");
 'facebook.share'([3])      -> fb_share1("icon_count", "");
-'facebook.share'([N, URL]) -> Str = ?string(URL, ?default_str_rules),
+'facebook.share'([N, URL]) -> Str = muin_col_DEPR:collect_string(URL, ?default_str_rules),
                             fb_share(N, Str);
 'facebook.share'(_Other)   -> ?ERRVAL_VAL.
 
@@ -248,13 +245,13 @@ fb_share1(Button, URL) ->
 
 %% Hypernumbers Twitter UserName is hypernumbers
 'twitter.button'([UserName]) ->
-    Str = ?string(UserName, ?default_str_rules),
+    Str = muin_col_DEPR:collect_string(UserName, ?default_str_rules),
     tw_b1(0, "a", Str);
 'twitter.button'([UserName, Type]) ->
-    Str = ?string(UserName, ?default_str_rules),
+    Str = muin_col_DEPR:collect_string(UserName, ?default_str_rules),
     tw_b1(Type, "a", Str);
 'twitter.button'([UserName, N, Colour]) ->
-    Str = ?string(UserName, ?default_str_rules),
+    Str = muin_col_DEPR:collect_string(UserName, ?default_str_rules),
     tw_b(N, Colour, Str).
 
 tw_b(N, 0, Str) -> tw_b1(N, "a", Str);
@@ -271,7 +268,7 @@ tw_b1(5, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++
 tw_b1(_, _, _) -> ?ERRVAL_VAL.
 
 'twitter.profile'([UserName]) ->
-    U = ?string(UserName, ?default_str_rules),
+    U = muin_col_DEPR:collect_string(UserName, ?default_str_rules),
     "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
         ++ "<script>"
         ++ "new TWTR.Widget({"
