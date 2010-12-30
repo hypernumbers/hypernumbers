@@ -74,27 +74,13 @@
         ]).
 
 col(Args, Rules, Passes, Fun) ->
-    io:format("in muin_collect:col (1)~n-Args is ~p~n-Rules is ~p~n-Passes is ~p~n",
-              [Args, Rules, Passes]),
     case col(Args, Rules, Passes) of
         Error when ?is_errval(Error) -> Error;
         Else -> Fun(Else)
     end.
 
 col(Args, Rules, Passes) ->
-    io:format("in muin_collect:col (2)~n-Args is ~p~n-Rules is ~p~n-Passes is ~p~n",
-              [Args, Rules, Passes]),
     pass(col(Args, Rules), Passes).
-%    case lists:member(return_errors, Passes) of
-%        false -> pass(col(Args, Rules), Passes);
-%        true  ->
-%            case lists:keyfind(errval, 1, Args) of
-%                false -> pass(col(Args, Rules), Passes);
-%                Err   ->
-%                    io:format("1 ~p ~n",[Err]),
-%                    Err
-%            end
-%    end.
 
 col(Args, Rules) ->
     F1 = fun(X, List) ->
@@ -315,8 +301,6 @@ pass(Args, [ return_errors | Rules ]) ->
 % Typically a type check, checks that all elements return true
 % for F(X)
 pass(Args, [ {all, F} | Rules ]) ->
-    io:format("in pass (4) Args is ~p~n-F is ~p~n, Rules is ~p~n",
-              [Args, F, Rules]),
     case lists:all(F, Args) of
         true  -> pass(Args, Rules);
         false -> ?ERRVAL_VAL
