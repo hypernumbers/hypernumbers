@@ -43,7 +43,7 @@ speedo1(Val, Title, Subtitle) ->
                 "&amp;chs=300x150" ++
                 "&amp;cht=gm" ++
                 "&amp;chco=000000,008000|FFCC33|FF0000" ++
-                "&amp;chd=t:" ++ tconv:to_s(Val2) ++
+                "&amp;chd=t:" ++ tconv:to_s(Val2 * 100) ++
                 "&amp;chl=" ++ S2 ++
                 "&amp;chtt=" ++ T2 ++
                 "'>"
