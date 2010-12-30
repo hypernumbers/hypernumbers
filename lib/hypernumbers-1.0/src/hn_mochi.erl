@@ -1629,20 +1629,20 @@ make_preview(Type, Site, Path) ->
 <html lang='en'>
   <head>
     <title>Hypernumbers " ++hn_util:capitalize_name(Type)++" Preview</title> 
-  <style type='text/css'>
-   html, body { margin:0; padding:0; height:100%}
-   iframe { display:block; width:95%; height:44%; border:1px solid; padding:3px;'}
-  </style>    <meta charset='utf-8' >
     <link rel='stylesheet' href='/hypernumbers/hn.style.css' />	
+    <meta charset='utf-8' >
   </head>
   <body class='hn_demopage'>
    <div class='hn_demointro'>To breakout of this preview <a href='./?view=spreadsheet'>click here</a></div>
-     <iframe class='hn_preview' src='"++URL++"?view=spreadsheet'></iframe>
-     <br />
-     <iframe class='hn_preview' src='"++URL++"?view="++Type++"page' /></iframe>
-  </body>
+     <div class='hn_demopadding'>
+       <iframe class='hn_preview' src='"++URL++"?view=spreadsheet'></iframe>
+       <br />
+       <iframe class='hn_preview' src='"++URL++"?view="++Type++"page' /></iframe>
+     </div>
+ </body>
    <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
   <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
+  <script src='/hypernumbers/hn.demopage.js'></script>
  </html>".
 
 %% catch script kiddie attempts and write them as info not error logs
