@@ -14,7 +14,7 @@
          ]).
 
 'html.box1'([Content]) ->
-    [String] = std_string([Content]),
+    [String] = typechecks:std_strs([Content]),
     {html, {"Type 1 Box", 120, 40}, "<div>"++String++"</div>"}.
 
 'html.submenu'(List) ->
@@ -24,7 +24,7 @@
     "<div>"++Menu++"</div>"++menu1(Subs, "", []).
     
 'html.menu1'(List) when is_list(List) ->
-    Strings = std_string(List),    
+    Strings = typechecks:std_strs(List),    
     Menu = menu1(Strings, "potato-menu", []),
     {html, {"Type 1 Menu", 120, 40}, Menu}.
 
@@ -44,14 +44,4 @@ menu1([H | T], Cl, Acc) ->
     Line = "<li>"++H++"</li>",
     menu1(T, Cl, [Line | Acc]).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                                                                          %%%
-%%% Some standard collectors and stuff                                       %%%
-%%%                                                                          %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-std_string(Vals) ->
-    Rules = [eval_funs, fetch, area_first, {cast, str}],
-    Passes = [return_errors, {all, fun muin_collect:is_string/1}],
-    muin_collect:col(Vals, Rules, Passes).
  

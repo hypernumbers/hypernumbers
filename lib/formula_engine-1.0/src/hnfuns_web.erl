@@ -8,7 +8,7 @@
           radio/1,
           select/1,
           include/1,
-          %table/1,
+          table/1,
           background/1,
           'google.map'/1,
           'twitter.search'/1,
@@ -156,11 +156,16 @@ img([Src]) ->
     muin_collect:col([Term, Title], [eval_funs, fetch, {cast, str}], [return_errors],
         fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
-%% commented out because it throws a mochijson error in some circumstances
-%% table([Ref]) ->
-%%     table([Ref, 0]);
-%% table([Ref, Sort]) ->
-%%     table_(Ref, Sort).
+table([Ref]) ->
+     table([Ref, 0]);
+table([{range, R} = Ref, Sort]) ->
+    Rules = [eval_funs, fetch, flatten, err_as_str, {cast, str}],
+    Passes = [],
+    Ref2 = muin_collect:col([Ref], Rules, Passes),
+    SubLen = trunc(length(Ref2)/length(R)),
+    Ref3 = make_ref3(Ref2, SubLen, []),
+    Sort2 = typechecks:std_strs([Sort]),
+    table_(Ref3, Sort2).
 
 'google.map'([])          -> 'google.map'([0]);
 'google.map'([Long])      -> 'google.map'([Long, 0]);
@@ -243,7 +248,8 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
             Obj = {range, {X1, Y1, X2, Y2}},
             Ref = #refX{site = Site, path = Path, obj = Obj},
             {{Html, Width, Height}, _Addons} = hn_render:content(Ref),
-            lists:flatten(hn_render:wrap_region(Html, Width, Height))
+            {html, {"Included Cells", Width, Height},
+             lists:flatten(hn_render:wrap_region(Html, Width, Height))}
     end.
 
 has_circref({range, List}) -> has_c1(List).
@@ -256,28 +262,29 @@ create_name() ->
     Bin = crypto:rand_bytes(8),
     mochihex:to_hex(Bin).
 
-%% table_({range, [ THead | Range]}, Sort) ->
+table_([THead | Range], Sort) ->  
+    Id = "tbl_"++create_name(),
     
-%%     Id = "tbl_"++create_name(),
-%%     F = fun(blank) -> "";
-%%            (Else)  -> muin_util:cast(Else, str)
-%%         end,
+    Head = ["<thead><tr>",
+            [["<th>", X,"</th>"] || X <- THead ],
+            "</tr></thead>"],
+    
+    Rows = [ ["<tr>", [ ["<td>", Cell,"</td>"] || Cell <- Row ],"</tr>"]
+              || Row <- Range ],
+    
+    Script = ["<script type='text/javascript'>$(\"#", Id,
+              "\").tablesorter({headers: { 1: { sorter:'digit' }}, sortList:[[",
+              Sort, ",0]]});</script>"],
+    
+    lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
+                   "</table>", Script]).
 
-%%     Head = ["<thead><tr>",
-%%             [["<th>", F(X),"</th>"] || X <- THead ],
-%%             "</tr></thead>"],
-    
-%%     Rows = [ ["<tr>", [ ["<td>", F(Cell),"</td>"] || Cell <- Row ],"</tr>"]
-%%              || Row <- Range ],
-    
-%%     Script = ["<script type='text/javascript'>$(\"#", Id,
-%%               "\").tablesorter({headers: { 1: { sorter:'digit' }}, sortList:[[",
-%%               muin_util:cast(Sort, str), ",0]]});</script>"],
-    
-%%     lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
-%%                    "</table>", Script]).
-
-make_radio(Name, Opt) ->
+                    make_radio(Name, Opt) ->
     ID = "id_"++create_name(),
     "<div class='radio'><label for='"++ID++"'>" ++ Opt ++ "</label><input id='"++ID++
         "' type='radio' value='" ++ Opt ++ "' name='" ++ Name ++ "' /></div>".
+
+make_ref3([], _SubLen, Acc) -> lists:reverse(Acc);
+make_ref3(List, SubLen, Acc) ->
+    {Row, Rest} = lists:split(SubLen, List),
+    make_ref3(Rest, SubLen,[Row | Acc]).

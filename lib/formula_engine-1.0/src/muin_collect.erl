@@ -34,6 +34,12 @@
 %%% * num_as_bool           casts an integer/float into
 %%%                         a false-specific boolean
 %%% * str_as_bool           casts true/TRUE/false/False or throws err
+%%% * err_as_str            returns a string represenntation of an error
+%%%                         THIS IS ONLY TO BE USE USED IN DISPLAY FUNCTIONS WHOSE
+%%%                         INPUT IS NOT EXPECTED TO BE USED IN CALCULATIONS
+%%%                         eg hnfuns_web:table and hnfuns_html etc, etc,
+%%%                         STANDS OUTSIDE NORMAL CASTING (ie YOU DON'T CAST
+%%%                         ERRORS TO STRINGS OR NUMS NORMALLY...)
 %%% * ref_as_bool           presumes that a cellref has not been fetched,
 %%%                         then fetches it and casts it as bool
 %%% * fetch_ref             fetches a cellref or rangeref - that is to say
@@ -168,6 +174,8 @@ rl(str_as_bool, Str) when ?is_string(Str) ->
         "FALSE" -> false;
         _Else   -> ?ERRVAL_VAL
     end;
+
+rl(err_as_str, {errval, Err}) -> atom_to_list(Err);
 
 rl(ref_as_bool, Ref) when ?is_cellref(Ref) ->
     case muin:fetch(Ref) of
