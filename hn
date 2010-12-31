@@ -98,6 +98,8 @@ build_quick() ->
     ensure_config(),
     file:set_cwd(Root++"/ebin"),
     compile_code:quick(),
+    file:set_cwd(Root++"/lib/hypernumbers-1.0/priv/core_install/docroot/"),
+    print_msgs(string:tokens(os:cmd("grep -R -l console.log *"), "\n")),
     file:set_cwd(Root).
 
 clean() ->
@@ -256,3 +258,7 @@ ssl() ->
         "-ssl_dist_opt client_certfile \"priv/keys/clientcert.pem\" "
         "-ssl_dist_opt keyfile \"priv/keys/key.pem\" " 
         "-proto_dist inet_ssl".
+
+print_msgs(List) ->
+    io:format("Console.log in:~n"),
+    [io:format("~p~n", [X]) || X <- List]. 
