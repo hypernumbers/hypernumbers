@@ -7,7 +7,7 @@
  * @author makoto_kw
  * @version 1.1
  */
-.potato-menu { 
+.potato-menu {
 	margin:0;
 	padding:0;
 	width:auto;
@@ -25,11 +25,13 @@
 }
 
 li.potato-menu-item a, li.potato-menu-item div { 
- padding: 5px 20px 5px 12px;
+  background-color: #fff; 
+  padding: 5px 20px 5px 12px;
 }
 
 li.potato-menu-hover { 
-  color:#555;
+  color:#666;
+  background-color: #fff;
 }
 
 ul.potato-menu li.potato-menu-item {
