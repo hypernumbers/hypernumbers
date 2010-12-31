@@ -31,19 +31,21 @@ speedo([Val, Title, Subtitle]) -> speedo1(Val, Title, Subtitle).
 
 speedo1(Val, Title, Subtitle) ->
     [Val2] = cast_data(Val),
+    [T2] = cast_titles(Title),
+    [S2] = cast_titles(Subtitle),
     if
-        Val2 < 0                     -> ?ERRVAL_VAL;
-        Val2 < 100                   -> ?ERRVAL_VAL;
-        0 =< Val2 andalso Val =< 100 ->
-            "<img srec='http://chart.apis.google.com/chart" ++
+        Val2 < 0                   -> ?ERRVAL_VAL;
+        Val2 > 1                   -> ?ERRVAL_VAL;
+        0 =< Val2 andalso Val =< 1 ->
+            "<img src='http://chart.apis.google.com/chart" ++
                 "?chxl=0:|OK|Beware|Danger" ++
                 "&amp;chxt=y" ++
                 "&amp;chs=300x150" ++
                 "&amp;cht=gm" ++
                 "&amp;chco=000000,008000|FFCC33|FF0000" ++
-                "&amp;chd=t:" ++ Val ++
-                "&amp;chl=" ++ cast_titles(Subtitle) ++
-                "&amp;chtt=" ++ cast_titles(Title) ++
+                "&amp;chd=t:" ++ tconv:to_s(Val2 * 100) ++
+                "&amp;chl=" ++ S2 ++
+                "&amp;chtt=" ++ T2 ++
                 "'>"
     end.
 

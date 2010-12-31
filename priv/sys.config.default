@@ -8,7 +8,8 @@
    % 9090-9092 reserved for production used, and should be turned off
    % for testing.
    %{mochi_bind, {{127,0,0,1}, 9000}},
-   {mochi_bind, {{192, 168, 1, 8}, 9000}}, % Gordon's default
+   {mochi_bind, {{192, 168, 1, 3}, 9000}},
+   %{mochi_bind, {{192, 168, 1, 8}, 9000}}, % Gordon's default
 
    % Services to start. These are configured by using a parameter of
    % 'true', note that in a development environment all services will
