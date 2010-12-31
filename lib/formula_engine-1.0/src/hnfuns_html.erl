@@ -15,7 +15,7 @@
 
 'html.box1'([Content]) ->
     [String] = std_string([Content]),
-    {html, {"Type 1 Box", 40, 120}, "<div>"++String++"</div>"}.
+    {html, {"Type 1 Box", 120, 40}, "<div>"++String++"</div>"}.
 
 'html.submenu'(List) ->
     Rules = [eval_funs, fetch, {cast, str}],
@@ -26,7 +26,7 @@
 'html.menu1'(List) when is_list(List) ->
     Strings = std_string(List),    
     Menu = menu1(Strings, "potato-menu", []),
-    {html, {"Type 1 Menu", 40, 120}, Menu}.
+    {html, {"Type 1 Menu", 120, 40}, Menu}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
