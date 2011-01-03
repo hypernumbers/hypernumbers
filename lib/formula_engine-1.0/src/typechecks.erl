@@ -9,7 +9,8 @@
 
 -export([
          std_strs/1,
-         std_ints/1
+         std_ints/1,
+         flat_strs/1
         ]).
 
 std_strs(Vals) ->
@@ -22,4 +23,8 @@ std_ints(Vals) ->
     Passes = [return_errors],
     muin_collect:col(Vals, Rules, Passes).
 
+flat_strs(Vals) ->
+    Rules = [eval_funs, fetch, flatten, {cast, str}],
+    Passes = [return_errors, {all, fun muin_collect:is_string/1}],
+    muin_collect:col(Vals, Rules, Passes).
        

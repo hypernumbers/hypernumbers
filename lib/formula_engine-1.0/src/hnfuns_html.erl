@@ -14,7 +14,7 @@
          ]).
 
 'html.box1'([Content]) ->
-    [String] = typechecks:std_strs([Content]),
+    [String] = typechecks:flat_strs([Content]),
     {html, {"Type 1 Box", 120, 40}, "<div>"++String++"</div>"}.
 
 'html.submenu'(List) ->
@@ -24,7 +24,9 @@
     "<div>"++Menu++"</div>"++menu1(Subs, "", []).
     
 'html.menu1'(List) when is_list(List) ->
-    Strings = typechecks:std_strs(List),    
+    io:format("List is ~p~n", [List]),
+    Strings = typechecks:flat_strs(List),    
+    io:format("Strings is ~p~n", [Strings]),
     Menu = menu1(Strings, "potato-menu", []),
     {html, {"Type 1 Menu", 120, 40}, Menu}.
 
@@ -43,5 +45,3 @@ menu1([], Class, Acc) ->
 menu1([H | T], Cl, Acc) ->
     Line = "<li>"++H++"</li>",
     menu1(T, Cl, [Line | Acc]).
-
- 
