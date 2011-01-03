@@ -21,7 +21,7 @@
     Rules = [eval_funs, fetch, flatten, {cast, str}],
     Passes = [return_errors],
     [Menu | Subs] = muin_collect:col(List, Rules, Passes),
-    "<div>"++Menu++"</div>"++menu1(Subs, "", []).
+    "<span>"++Menu++"</span>"++menu1(Subs, "", []).
     
 'html.menu1'(List) when is_list(List) ->
     io:format("List is ~p~n", [List]),
