@@ -24,9 +24,7 @@
     "<span>"++Menu++"</span>"++menu1(Subs, "", []).
     
 'html.menu1'(List) when is_list(List) ->
-    io:format("List is ~p~n", [List]),
     Strings = typechecks:flat_strs(List),    
-    io:format("Strings is ~p~n", [Strings]),
     Menu = menu1(Strings, "potato-menu", []),
     {html, {"Type 1 Menu", 120, 40}, Menu}.
 
@@ -41,7 +39,7 @@ menu1([], Class, Acc) ->
                 []    -> "";
                 Other -> " class="++Other
             end,
-    "<ul"++Klass++">"++lists:flatten(lists:reverse(Acc))++"</ul>";
+    "<ul"++Klass++" style='display:none'>"++lists:flatten(lists:reverse(Acc))++"</ul>";
 menu1([H | T], Cl, Acc) ->
     Line = "<li>"++H++"</li>",
     menu1(T, Cl, [Line | Acc]).
