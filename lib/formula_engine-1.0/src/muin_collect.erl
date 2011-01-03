@@ -148,7 +148,7 @@ rl(first_array_as_bool, {array,[[X|_]|_]}) when X == false; X == 0 ->
 rl(first_array_as_bool, {array,[[_Val|_]|_]}) ->
     true;
 
-rl(flatten_as_str, {range,X}) ->
+rl(flattenas_str, {range,X}) ->
     {list, col(lists:concat(X), [ignore_blanks, cast_str, cast_num, ignore_strings])};
 rl(flatten_as_str, {array,[X]}) ->
     {list, col(X, [ignore_blanks, cast_str, cast_num, ignore_strings])};
@@ -270,7 +270,7 @@ rl(_Rule, Value) ->
     Value.
 
 flat([], Acc) ->
-    Acc;
+    lists:reverse(Acc);
 flat([Head|Tail], Acc) ->
     flat(Tail, Acc ++ Head).
     
