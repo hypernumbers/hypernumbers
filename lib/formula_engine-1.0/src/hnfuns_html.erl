@@ -18,7 +18,7 @@
     {html, {"Type 1 Box", 120, 40}, "<div>"++String++"</div>"}.
 
 'html.submenu'(List) ->
-    Rules = [eval_funs, fetch, {cast, str}],
+    Rules = [eval_funs, fetch, flatten, {cast, str}],
     Passes = [return_errors],
     [Menu | Subs] = muin_collect:col(List, Rules, Passes),
     "<div>"++Menu++"</div>"++menu1(Subs, "", []).
