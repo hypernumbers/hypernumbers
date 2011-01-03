@@ -46,7 +46,14 @@
 'lorem.ipsum1'([N]) when is_integer(N) ->
     Num = trunc(N/?lorem_length),
     Surplus = N rem ?lorem_length,
-    string:copies(?lorem, Num) ++ string:left(?lorem, Surplus).
+    End = case Surplus of
+              0 -> "";
+              _ ->
+                  Sub = string:sub_string(?lorem, Surplus + 1),
+                  [E2 | _R] = string:tokens(Sub, " "),
+                  E2
+          end,
+    string:copies(?lorem, Num) ++ string:left(?lorem, Surplus) ++ End.
 
 'lorem.headline'(Vals) ->
     N = typechecks:std_ints(Vals),
