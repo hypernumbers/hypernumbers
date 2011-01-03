@@ -44,7 +44,7 @@ ul.potato-menu li.potato-menu-item {
 	display:inline;
 	float:left;
 }
-ul.potato-menu li.potato-menu-item a {
+ul.potato-menu li.potato-menu-item a, ul.potato-menu li.potato-menu-item span {
 	display:block;
 	text-decoration:none;
 	white-space:nowrap;
