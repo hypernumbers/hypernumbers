@@ -24,7 +24,7 @@
 	line-height: 0;
 }
 
-li.potato-menu-item a, li.potato-menu-item div { 
+li.potato-menu-item a, li.potato-menu-item span { 
   background-color: #fff; 
   padding: 5px 20px 5px 12px;
 }
@@ -60,10 +60,10 @@ ul.potato-menu ul.potato-menu-group {
 	z-index:100000;
 }
 
-li.potato-menu-has-vertical > a, li.potato-menu-has-vertical > div {
+li.potato-menu-has-vertical > a, li.potato-menu-has-vertical > span {
 	background: transparent url(/hypernumbers/down.png) right no-repeat;
 }
 
-li.potato-menu-has-horizontal > a, li.potato-menu-has-horizontal > div {
+li.potato-menu-has-horizontal > a, li.potato-menu-has-horizontal > span {
 	background: transparent url(/hypernumbers/right.png) right no-repeat;
 }
