@@ -16,7 +16,10 @@
           img/1,
           html/1,
           site/1,
-          'crumb.trail'/1]).
+          'crumb.trail'/1,
+          'lorem.ipsum'/1,
+          'lorem.headline'/1
+         ]).
 
 -export([fail/1]).
 
@@ -28,9 +31,47 @@
 -define(default_str_rules, [first_array, cast_numbers, cast_bools,
                             cast_blanks, cast_dates ]).
 
+-define(lorem, "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ").
+-define(lorem_length, 447).
+
 -type trans() :: common | string().
 -type html() :: string().
 -type zoom() :: 1..20.
+
+'lorem.ipsum'(Vals) ->
+    N = typechecks:std_ints(Vals),
+    'lorem.ipsum1'(N).
+
+'lorem.ipsum1'([]) -> ?lorem;
+'lorem.ipsum1'([N]) when is_integer(N) ->
+    Num = trunc(N/?lorem_length),
+    Surplus = N rem ?lorem_length,
+    string:copies(?lorem, Num) ++ string:left(?lorem, Surplus).
+
+'lorem.headline'(Vals) ->
+    N = typechecks:std_ints(Vals),
+    'lorem.h1'(N).
+
+'lorem.h1'([])                       -> "Cicatrix Manet";
+'lorem.h1'([N]) when N =< 4          -> "Cave";
+'lorem.h1'([5])                      -> "Mingo";
+'lorem.h1'([6])                      -> "Bombax";
+'lorem.h1'([7])                      -> "Valete";
+'lorem.h1'([8])                      -> "Salvete";
+'lorem.h1'([N]) when N =< 9
+                     andalso N =< 10 -> "Disce Pati";
+'lorem.h1'([11])                     -> "Dolus Bonus";
+'lorem.h1'([N]) when N =< 12
+                     andalso N =< 13 -> "Mirable Visu";  
+'lorem.h1'([N]) when N =< 13
+                     andalso N =< 14 -> "Cicatrix Manet";  
+'lorem.h1'([N]) when N =< 15
+                     andalso N =< 17 -> "Amor Vincit Omnia";  
+'lorem.h1'([N]) when N =< 18
+                     andalso N =< 19 -> "Dum Docent, Discunt"; 
+'lorem.h1'([N]) when N =< 20
+                     andalso N =< 21 -> "Ad Unguem Factus Homo";  
+'lorem.h1'([N]) when  N >= 22        -> "Fiat Justitia Ruat Caelum".
 
 'crumb.trail'([]) ->
     trail2(lists:reverse(get(path)), []).

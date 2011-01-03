@@ -8,10 +8,18 @@
 -module(typechecks).
 
 -export([
-         std_strs/1
+         std_strs/1,
+         std_ints/1
         ]).
 
 std_strs(Vals) ->
     Rules = [eval_funs, fetch, area_first, {cast, str}],
     Passes = [return_errors, {all, fun muin_collect:is_string/1}],
     muin_collect:col(Vals, Rules, Passes).
+
+std_ints(Vals) ->
+    Rules = [eval_funs, fetch, area_first, {cast, int}],
+    Passes = [return_errors],
+    muin_collect:col(Vals, Rules, Passes).
+
+       
