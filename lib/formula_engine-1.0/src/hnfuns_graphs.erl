@@ -31,8 +31,8 @@ speedo([Val, Title, Subtitle]) -> speedo1(Val, Title, Subtitle).
 
 speedo1(Val, Title, Subtitle) ->
     [Val2] = cast_data(Val),
-    [T2] = cast_titles(Title),
-    [S2] = cast_titles(Subtitle),
+    [T2]   = cast_titles(Title),
+    [S2]   = cast_titles(Subtitle),
     if
         Val2 < 0                   -> ?ERRVAL_VAL;
         Val2 > 1                   -> ?ERRVAL_VAL;
@@ -70,14 +70,13 @@ bar(Data, Orientation, {Scale, Axes, Colours}) ->
 
 bar2(Data, Orientation, Scale, Axes, Colours) ->
     {Data2, _NoOfRows, _NoOfCols} = extract(Data, Orientation),
-    Data3 = [cast_data(X) || X <- Data2],
-    % check for errors and then fix the reversed lists problems
-    Colours2 = get_colours(Colours),
+    Data3      = [cast_data(X) || X <- Data2],
+    Colours2   = get_colours(Colours),
     {Min, Max} = get_scale(Scale, Data3),
-    XAxis2 = get_axes(Axes),
+    XAxis2     = get_axes(Axes),
     case has_error([Data3, Colours2, Min, Max, XAxis2]) of
         {true, Error} -> Error;
-        false         -> bar3(rev(Data3), {Min, Max}, XAxis2, Colours2)
+        false         -> bar3(Data3, {Min, Max}, XAxis2, Colours2)
     end.
 
 bar3(Data, {Min, Max}, XAxis, Colours) ->
@@ -113,14 +112,13 @@ lg1(Data, Orientation, {Scale, Axes, Colours}) ->
 
 lg2(Data, Orientation, Scale, Axes, Colours) ->
     {Data2, _NoOfRows, _NoOfCols} = extract(Data, Orientation),
-    Data3 = [cast_data(X) || X <- Data2],
-    % check for errors and then fix the reversed lists problems
-    Colours2 = get_colours(Colours),
+    Data3      = [cast_data(X) || X <- Data2],
+    Colours2   = get_colours(Colours),
     {Min, Max} = get_scale(Scale, Data3),
-    XAxis2 = get_axes(Axes),
+    XAxis2     = get_axes(Axes),
     case has_error([Data3, Colours2, Min, Max, XAxis2]) of
         {true, Error} -> Error;
-        false         -> lg3(rev(Data3), {Min, Max}, XAxis2, Colours2)
+        false         -> lg3(Data3, {Min, Max}, XAxis2, Colours2)
     end.
 
 lg3(Data, {Min, Max}, XAxis, Colours) ->
@@ -132,7 +130,6 @@ lg3(Data, {Min, Max}, XAxis, Colours) ->
         ++ "1:|" ++ tconv:to_s(Min) ++ "|" ++ tconv:to_s(Max)
         ++ conv_colours(Colours)
         ++ "' />".
-
 
 piechart([Data])                  -> pie1(Data, [], []);
 piechart([Data, Titles])          -> pie1(Data, Titles, []);
@@ -147,9 +144,9 @@ histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
 %% Internal Functions
 %%
 hist1(Data, {Scale, Titles, Colours}) ->
-    Data2 = lists:reverse(cast_data(Data)),
-    Titles2 = cast_titles(Titles),
-    Colours2 = get_colours(Colours),
+    Data2      = cast_data(Data),
+    Titles2    = cast_titles(Titles),
+    Colours2   = get_colours(Colours),
     {Min, Max} = get_scale(Scale, Data2),
     case has_error([Data2, Min, Max, Titles2, Colours2]) of
         {true, Error} -> Error;
@@ -157,10 +154,9 @@ hist1(Data, {Scale, Titles, Colours}) ->
     end.
 
 hist2(Data, Min, Max, Titles, Colours) ->
-    Data1 = make_data(normalise(Data)),
-    Titles1 = make_titles(Titles),
+    Data1    = make_data(normalise(Data)),
+    Titles1  = make_titles(Titles),
     Colours1 = conv_colours(Colours),
-    
     "<img src='http://chart.apis.google.com/chart?cht=bvs&amp;chd=t:"
         ++ Data1
         ++ "&amp;chxt=y&amp;chxl=0:|"
@@ -171,8 +167,8 @@ hist2(Data, Min, Max, Titles, Colours) ->
         ++"' />".
 
 pie1(Data, Titles, Colours) ->
-    Data2 = lists:reverse(cast_data(Data)),
-    Titles2 = cast_titles(Titles),
+    Data2    = cast_data(Data),
+    Titles2  = cast_titles(Titles),
     Colours2 = get_colours(Colours),
     case has_error([Data2, Titles2, Colours2]) of
         {true, Error} -> Error;
@@ -180,8 +176,8 @@ pie1(Data, Titles, Colours) ->
     end.
 
 pie2(Data, Titles, Colours) ->
-    Data1 = make_data(normalise(Data)),
-    Titles1 = make_titles(Titles),
+    Data1    = make_data(normalise(Data)),
+    Titles1  = make_titles(Titles),
     Colours1 = conv_colours(Colours),
     "<img src='http://chart.apis.google.com/chart?cht=p3&amp;chd=t:"
         ++ Data1
@@ -277,14 +273,6 @@ tartup(Data) ->
     [F | _T] = Data,
     NoOfCols = length(F), % rectangular matrix
     {chunk(Data), length(Data), NoOfCols}.
-
-rev(List) ->
-    rev1(List, []).
-
-rev1([], Acc)      ->
-    lists:reverse(Acc);
-rev1([H | T], Acc) ->
-    rev1(T, [lists:reverse(H) | Acc]).
 
 chunk(Data) ->
     chk2(Data, []).
