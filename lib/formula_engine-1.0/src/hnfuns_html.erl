@@ -21,7 +21,7 @@
     Rules = [eval_funs, fetch, flatten, {cast, str}],
     Passes = [return_errors],
     [Menu | Subs] = muin_collect:col(List, Rules, Passes),
-    SubMenu = "<span>"++Menu++"</span>"++menu1(Subs, "", []),
+    SubMenu = "<span>"++Menu++"</span>"++menu1(lists:reverse(Subs), "", []),
     {html, {"Submenu", 120, 40}, SubMenu}.
     
 'html.menu1'(List) when is_list(List) ->

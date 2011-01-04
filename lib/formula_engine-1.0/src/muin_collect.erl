@@ -148,7 +148,7 @@ rl(first_array_as_bool, {array,[[X|_]|_]}) when X == false; X == 0 ->
 rl(first_array_as_bool, {array,[[_Val|_]|_]}) ->
     true;
 
-rl(flattenas_str, {range,X}) ->
+rl(flatten_as_str, {range,X}) ->
     {list, col(lists:concat(X), [ignore_blanks, cast_str, cast_num, ignore_strings])};
 rl(flatten_as_str, {array,[X]}) ->
     {list, col(X, [ignore_blanks, cast_str, cast_num, ignore_strings])};
@@ -269,10 +269,8 @@ rl({convflat, Type, Value}, X) ->
 rl(_Rule, Value) ->
     Value.
 
-flat([], Acc) ->
-    lists:reverse(Acc);
-flat([Head|Tail], Acc) ->
-    flat(Tail, Acc ++ Head).
+flat([], Acc)          -> Acc;
+flat([Head|Tail], Acc) -> flat(Tail, Acc ++ Head).
     
 %% Passes are a list of rules to perform on arguments once casting
 %% and such has happened

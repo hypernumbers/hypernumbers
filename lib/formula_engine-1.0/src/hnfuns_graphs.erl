@@ -65,7 +65,7 @@ bar(Data, Orientation, {Scale, Axes, Colours}) ->
     Orientation2 = cast_orientation(Orientation),
     case has_error([Data, Orientation2, Scale, Axes, Colours]) of
         {true, Error} -> Error;
-        false         -> bar2(Data, Orientation2, Scale, Axes, Colours)
+        false         -> bar2(rev(Data), Orientation2, Scale, Axes, Colours)
     end.
 
 bar2(Data, Orientation, Scale, Axes, Colours) ->
@@ -107,7 +107,7 @@ lg1(Data, Orientation, {Scale, Axes, Colours}) ->
     Orientation2 = cast_orientation(Orientation),
     case has_error([Data, Orientation2, Scale, Axes, Colours]) of
         {true, Error} -> Error;
-        false         -> lg2(Data, Orientation2, Scale, Axes, Colours)
+        false         -> lg2(rev(Data), Orientation2, Scale, Axes, Colours)
     end.
 
 lg2(Data, Orientation, Scale, Axes, Colours) ->
@@ -144,7 +144,7 @@ histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
 %% Internal Functions
 %%
 hist1(Data, {Scale, Titles, Colours}) ->
-    Data2      = cast_data(Data),
+    Data2      = lists:reverse(cast_data(Data)),
     Titles2    = cast_titles(Titles),
     Colours2   = get_colours(Colours),
     {Min, Max} = get_scale(Scale, Data2),
@@ -273,6 +273,13 @@ tartup(Data) ->
     [F | _T] = Data,
     NoOfCols = length(F), % rectangular matrix
     {chunk(Data), length(Data), NoOfCols}.
+
+rev(List) ->
+    rev1(List, []).
+rev1([], Acc)      ->
+    lists:reverse(Acc);
+rev1([H | T], Acc) ->
+    rev1(T, [lists:reverse(H) | Acc]).
 
 chunk(Data) ->
     chk2(Data, []).
