@@ -65,7 +65,7 @@ bar(Data, Orientation, {Scale, Axes, Colours}) ->
     Orientation2 = cast_orientation(Orientation),
     case has_error([Data, Orientation2, Scale, Axes, Colours]) of
         {true, Error} -> Error;
-        false         -> bar2(rev(Data), Orientation2, Scale, Axes, Colours)
+        false         -> bar2(Data, Orientation2, Scale, Axes, Colours)
     end.
 
 bar2(Data, Orientation, Scale, Axes, Colours) ->
@@ -76,7 +76,7 @@ bar2(Data, Orientation, Scale, Axes, Colours) ->
     XAxis2     = get_axes(Axes),
     case has_error([Data3, Colours2, Min, Max, XAxis2]) of
         {true, Error} -> Error;
-        false         -> bar3(Data3, {Min, Max}, XAxis2, Colours2)
+        false         -> bar3(rev(Data3), {Min, Max}, XAxis2, Colours2)
     end.
 
 bar3(Data, {Min, Max}, XAxis, Colours) ->
@@ -107,7 +107,7 @@ lg1(Data, Orientation, {Scale, Axes, Colours}) ->
     Orientation2 = cast_orientation(Orientation),
     case has_error([Data, Orientation2, Scale, Axes, Colours]) of
         {true, Error} -> Error;
-        false         -> lg2(rev(Data), Orientation2, Scale, Axes, Colours)
+        false         -> lg2(Data, Orientation2, Scale, Axes, Colours)
     end.
 
 lg2(Data, Orientation, Scale, Axes, Colours) ->
@@ -118,7 +118,7 @@ lg2(Data, Orientation, Scale, Axes, Colours) ->
     XAxis2     = get_axes(Axes),
     case has_error([Data3, Colours2, Min, Max, XAxis2]) of
         {true, Error} -> Error;
-        false         -> lg3(Data3, {Min, Max}, XAxis2, Colours2)
+        false         -> lg3(rev(Data3), {Min, Max}, XAxis2, Colours2)
     end.
 
 lg3(Data, {Min, Max}, XAxis, Colours) ->
@@ -274,20 +274,15 @@ tartup(Data) ->
     NoOfCols = length(F), % rectangular matrix
     {chunk(Data), length(Data), NoOfCols}.
 
-rev(List) ->
-    rev1(List, []).
-rev1([], Acc)      ->
-    lists:reverse(Acc);
-rev1([H | T], Acc) ->
-    rev1(T, [lists:reverse(H) | Acc]).
+rev(List) -> rev1(List, []).
 
-chunk(Data) ->
-    chk2(Data, []).
+rev1([], Acc)      -> lists:reverse(Acc);
+rev1([H | T], Acc) -> rev1(T, [lists:reverse(H) | Acc]).
 
-chk2([], Acc)      ->
-    lists:reverse(Acc);
-chk2([H | T], Acc) ->
-    chk2(T, [{range, [H]} | Acc]).
+chunk(Data) -> chk2(Data, []).
+
+chk2([], Acc)      -> lists:reverse(Acc);
+chk2([H | T], Acc) -> chk2(T, [{range, [H]} | Acc]).
 
 has_error([]) ->
     false;
