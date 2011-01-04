@@ -23,6 +23,8 @@
 
 -export([fail/1]).
 
+-export([get_lorem/0]).
+
 -include("spriki.hrl").
 -include("typechecks.hrl").
 -include("muin_records.hrl").
@@ -31,7 +33,10 @@
 -define(default_str_rules, [first_array, cast_numbers, cast_bools,
                             cast_blanks, cast_dates ]).
 
--define(lorem, "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ").
+-define(lorem1, "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ").
+-define(lorem2, "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ").
+-define(lorem3, "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ").
+-define(lorem4, "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ").
 -define(lorem_length, 447).
 
 -type trans() :: common | string().
@@ -42,18 +47,29 @@
     N = typechecks:std_ints(Vals),
     'lorem.ipsum1'(N).
 
-'lorem.ipsum1'([]) -> ?lorem;
+'lorem.ipsum1'([]) -> get_lorem();
 'lorem.ipsum1'([N]) when is_integer(N) ->
     Num = trunc(N/?lorem_length),
     Surplus = N rem ?lorem_length,
+    L = get_lorem(),
     End = case Surplus of
               0 -> "";
               _ ->
-                  Sub = string:sub_string(?lorem, Surplus + 1),
+                  Sub = string:sub_string(L, Surplus + 1),
                   [E2 | _R] = string:tokens(Sub, " "),
                   E2
           end,
-    string:copies(?lorem, Num) ++ string:left(?lorem, Surplus) ++ End.
+    string:copies(L, Num) ++ string:left(L, Surplus) ++ End.
+
+get_lorem() ->
+    random:seed(now()),
+    A = [
+         {random:uniform(), ?lorem1},
+         {random:uniform(), ?lorem2},
+         {random:uniform(), ?lorem3},
+         {random:uniform(), ?lorem4}
+        ],
+    lists:foldl(fun({_, S}, Acc) -> S ++ Acc end, "", lists:sort(A)).
 
 'lorem.headline'(Vals) ->
     N = typechecks:std_ints(Vals),
@@ -213,7 +229,6 @@ table([{range, R} = Ref, Sort]) ->
     SubLen = trunc(length(Ref2)/length(R)),
     Ref3 = make_ref3(Ref2, SubLen, []),
     Sort2 = typechecks:std_strs([Sort]),
-    io:format("R is ~p~nRef2 is ~p~nRef3 is ~p~n", [R, Ref2, Ref3]),
     table_(Ref3, Sort2).
 
 'google.map'([])          -> 'google.map'([0]);
