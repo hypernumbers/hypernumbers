@@ -255,7 +255,7 @@ select([V1, V2]) ->
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     Opts = muin_collect:col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
-    muin_util:apply([Label, Opts], fun select_/2).
+    muin_util:apply([Label, lists:reverse(Opts)], fun select_/2).
 
 radio([])      -> radio([""]);
 radio([Label]) -> radio([Label, {array, [["option 1", "option 2"]]}]);
@@ -264,7 +264,7 @@ radio([V1, V2]) ->
                 [return_errors, {all, fun muin_collect:is_string/1}]),
     Opts = muin_collect:col([V2], [fetch, flatten, {ignore, blank}, {cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
-    muin_util:apply([Label, Opts], fun radio_/2).
+    muin_util:apply([Label, lists:reverse(Opts)], fun radio_/2).
 
 background([Url]) -> background([Url, ""]);
 background([V1, V2]) ->
