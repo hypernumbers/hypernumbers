@@ -29,11 +29,6 @@ li.potato-menu-item a, li.potato-menu-item span {
   padding: 5px 20px 5px 3px;
 }
 
-li.potato-menu-hover { 
-  color:#666;
-  background-color: #fff;
-}
-
 ul.potato-menu li.potato-menu-item {
   width: auto;
 	margin:0;
@@ -61,9 +56,13 @@ ul.potato-menu ul.potato-menu-group {
 }
 
 li.potato-menu-has-vertical > a, li.potato-menu-has-vertical > span {
-	background: transparent url(/hypernumbers/down.png) right no-repeat;
+	background: #fff url(/hypernumbers/down.png) right no-repeat;
 }
 
 li.potato-menu-has-horizontal > a, li.potato-menu-has-horizontal > span {
-	background: transparent url(/hypernumbers/right.png) right no-repeat;
+	background: #fff url(/hypernumbers/right.png) right no-repeat;
+}
+
+li.potato-menu-hover { 
+  color:#447;
 }
