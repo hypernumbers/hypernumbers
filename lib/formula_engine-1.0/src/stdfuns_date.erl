@@ -85,7 +85,7 @@ dateh([Y, M, D]) ->
 %% @TODO what is this function for? Not an Excel function - ask Hasan...
 datedif([V1, V2, V3]) ->
     [Start, End] = muin_col_DEPR:collect_dates([V1, V2], ?cast_all),
-    muin_checks:ensure(muin_date:gt(End, Start), ?ERR_NUM),
+    muin_checks:ensure(muin_date:gt(End, Start), ?ERRVAL_NUM),
     ?estring(V3),
     Unit = string:to_upper(?utf8l(V3)),
     datedif1(Start, End, Unit).
@@ -299,7 +299,7 @@ weeknum([V1, V2]) ->
     Dt = muin_col_DEPR:collect_date(V1, ?cast_all),
     Rettype = ?int(V2, ?cast_all),
     muin_checks:ensure(Rettype == 1 orelse Rettype == 2,
-            ?ERR_NUM),
+            ?ERRVAL_NUM),
     weeknum1(Dt, Rettype).
 weeknum1(Dt, Rettype) ->
     muin_date:walk(fun(X, Acc) ->

@@ -266,7 +266,7 @@ left([Str])->
 left([Str, Len]) ->
     NewStr=muin_col_DEPR:collect_string(Str,?default_str_rules),
     NewLen=erlang:trunc(?int(Len,?default_num_rules)),
-    muin_checks:ensure(NewLen >= 0,?ERR_VAL),
+    muin_checks:ensure(NewLen >= 0,?ERRVAL_VAL),
     string:substr(NewStr, 1, NewLen).
 
 right([Str])->
@@ -276,7 +276,7 @@ right([Str])->
 right([Str, Len]) ->
     NewStr=muin_col_DEPR:collect_string(Str,?default_str_rules),
     NewLen=erlang:trunc(?int(Len,?default_num_rules)),
-    muin_checks:ensure(NewLen >= 0,?ERR_VAL),
+    muin_checks:ensure(NewLen >= 0,?ERRVAL_VAL),
     TotalLen=length(NewStr),
     case (NewLen > TotalLen) of
         true ->

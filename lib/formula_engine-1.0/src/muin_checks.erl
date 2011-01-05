@@ -112,10 +112,8 @@ die_on_errval(Vs) ->
     Vs.
 
 %% Lazy test.
-ensure(true, _Action) ->
-     ok;
-ensure(false, Action) ->
-   Action().
+ensure(true, _Action) -> ok;
+ensure(false, Action) -> throw(Action).
 
 %% filter_numbers(Vs) ->
 %%     [X || X <- Vs, is_number(X)].

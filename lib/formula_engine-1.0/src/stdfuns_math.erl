@@ -262,7 +262,7 @@ abs_([Num]) ->
 
 sqrt([V1]) ->
     Num = muin_col_DEPR:collect_number(V1, ?default_rules),
-    muin_checks:ensure(Num >= 0, ?ERR_NUM),
+    muin_checks:ensure(Num >= 0, ?ERRVAL_NUM),
     math:sqrt(Num).
 
 power([TV1, TV2]) ->
@@ -274,17 +274,28 @@ power([TV1, TV2]) ->
              true  -> 0;
              false -> TV2
          end,
+    io:format("into typechecking...~n"),
     [Num] = muin_col_DEPR:collect_numbers([V1], ?default_rules),
+    io:format("Num is ~p~n", [Num]),
     [Pow] = muin_col_DEPR:collect_numbers([V2], ?default_rules),
-    muin_checks:ensure({V1, V2} =/= {blank, blank}, ?ERR_NUM),
-    muin_checks:ensure({V1, V2} =/= {false, false}, ?ERR_NUM),
-    muin_checks:ensure({V1, V2} =/= {false, blank}, ?ERR_NUM),
-    muin_checks:ensure({V1, V2} =/= {blank, false}, ?ERR_NUM),
-    muin_checks:ensure({V1, V2} =/= {false, 0}, ?ERR_NUM),
-    muin_checks:ensure({V1, V2} =/= {blank, 0}, ?ERR_NUM),
-    muin_checks:ensure({V1, V2} =/= {0, false}, ?ERR_NUM),
-    muin_checks:ensure({V1, V2} =/= {0, blank}, ?ERR_NUM),
-    muin_checks:ensure({V1, V2} =/= {0, 0}, ?ERR_NUM),
+    io:format("Pow is ~p~n", [Pow]),
+    muin_checks:ensure({V1, V2} =/= {blank, blank}, ?ERRVAL_NUM),
+    io:format("got to 1~n"),
+    muin_checks:ensure({V1, V2} =/= {false, false}, ?ERRVAL_NUM),
+    io:format("got to 2~n"),
+    muin_checks:ensure({V1, V2} =/= {false, blank}, ?ERRVAL_NUM),
+    io:format("got to 3~n"),
+    muin_checks:ensure({V1, V2} =/= {blank, false}, ?ERRVAL_NUM),
+    io:format("got to 4~n"),
+    muin_checks:ensure({V1, V2} =/= {false, 0}, ?ERRVAL_NUM),
+    io:format("got to 5~n"),
+    muin_checks:ensure({V1, V2} =/= {blank, 0}, ?ERRVAL_NUM),
+    io:format("got to 6~n"),
+    muin_checks:ensure({V1, V2} =/= {0, false}, ?ERRVAL_NUM),
+    io:format("got to 7~n"),
+    muin_checks:ensure({V1, V2} =/= {0, blank}, ?ERRVAL_NUM),
+    io:format("got to 8~n"),
+    muin_checks:ensure({V1, V2} =/= {0, 0}, ?ERRVAL_NUM),
 
     % Dont throw formula errors when numbers are too large
     try   math:pow(Num, Pow)
@@ -304,8 +315,8 @@ exp([V1]) ->
 
 fact([V1]) ->
     Num = ?int(V1, ?default_rules),
-    muin_checks:ensure(Num =< 170, ?ERR_NUM),
-    muin_checks:ensure(Num >= 0, ?ERR_NUM),
+    muin_checks:ensure(Num =< 170, ?ERRVAL_NUM),
+    muin_checks:ensure(Num >= 0, ?ERRVAL_NUM),
     fact1(Num).
 fact1(0) ->
     1;
@@ -342,8 +353,8 @@ lcm1(A,[B|T]) ->
 %% has the same sign as divisor.
 mod([V1, V2]) ->
     [Num, Divisor] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
-    muin_checks:ensure(Divisor =/= 0, ?ERR_DIV),
-    muin_checks:ensure(Divisor =/= 0.0, ?ERR_DIV),    
+    muin_checks:ensure(Divisor =/= 0, ?ERRVAL_DIV),
+    muin_checks:ensure(Divisor =/= 0.0, ?ERRVAL_DIV),    
     Num - Divisor * int([Num/Divisor]).
 
 %%% Arrays and matrices ~~~~~
@@ -437,7 +448,7 @@ multinomial1(Nums) ->
 
 ln([V1]) ->
     Num = muin_col_DEPR:collect_number(V1, ?default_rules),
-    muin_checks:ensure(Num > 0, ?ERR_NUM),
+    muin_checks:ensure(Num > 0, ?ERRVAL_NUM),
     math:log(Num).
 
 log([V1]) ->
@@ -573,7 +584,7 @@ even1([Num]) when Num < 0 ->
 floor([V1, V2]) ->
     [Num, Multiple] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
     muin_checks:ensure(sign1(Num) == sign1(Multiple)
-            orelse Num == 0 orelse Multiple == 0, ?ERR_NUM),
+            orelse Num == 0 orelse Multiple == 0, ?ERRVAL_NUM),
     floor1(Num, Multiple).
 
 floor1(_Num, 0) ->
@@ -597,7 +608,7 @@ int_([Num]) ->
 %% @todo not Excel 97 - no test suite
 mround([V1, V2]) ->
     [Num, Multiple] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
-    muin_checks:ensure(sign1(Num) == sign1(Multiple), ?ERR_NUM),
+    muin_checks:ensure(sign1(Num) == sign1(Multiple), ?ERRVAL_NUM),
     roundup1(Num, Multiple).
 
 odd([V1]) ->
@@ -627,7 +638,7 @@ pi([]) -> math:pi().
 %% @todo not Excel 97 - no test suite
 sqrtpi([V1]) ->
     Num = muin_col_DEPR:collect_number(V1, ?default_rules),
-    muin_checks:ensure(Num >= 0, ?ERR_NUM),
+    muin_checks:ensure(Num >= 0, ?ERRVAL_NUM),
     math:sqrt(Num * math:pi()).
 
 

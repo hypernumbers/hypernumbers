@@ -34,7 +34,7 @@
 %% TODO: Other info types.
 cell([V1, V2]) ->
     InfoType = muin:eval_formula(V1),
-    muin_checks:ensure(?is_string(InfoType), ?ERR_VAL),
+    muin_checks:ensure(?is_string(InfoType), ?ERRVAL_VAL),
     R = case V2 of
             [indirect, _]                          -> muin:eval(V2);
             X when ?is_cellref(X)                  -> X;

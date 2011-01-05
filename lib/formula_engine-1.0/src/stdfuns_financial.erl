@@ -134,8 +134,8 @@ irr1(Rate0, Rate1, Range) ->
 
 effect(Args = [_, _]) ->
     [Nomrate, Npery] = muin_col_DEPR:collect_numbers(Args, ?default_rules),
-    muin_checks:ensure(Nomrate > 0, ?ERR_NUM),
-    muin_checks:ensure(Npery >= 1, ?ERR_NUM),
+    muin_checks:ensure(Nomrate > 0, ?ERRVAL_NUM),
+    muin_checks:ensure(Npery >= 1, ?ERRVAL_NUM),
     effect1(Nomrate, trunc(Npery)).
 effect1(Nomrate, Npery) ->
     math:pow(1 + (Nomrate / Npery), Npery) - 1.
@@ -146,7 +146,7 @@ ipmt([V1, V2, V3, V4, V5]) ->
     ipmt([V1, V2, V3, V4, V5, 0]);
 ipmt(Args = [_, _, _, _, _, _]) ->
     [Rate, Per, Nper, Pv, Fv, Type] = muin_col_DEPR:collect_numbers(Args, ?default_rules),
-    muin_checks:ensure(Type == 0 orelse Type == 1, ?ERR_NUM),
+    muin_checks:ensure(Type == 0 orelse Type == 1, ?ERRVAL_NUM),
     ipmt1(Rate, Per, Nper, Pv, Fv, Type).
 ipmt1(Rate, Per, Nper, Pv, Fv, 0) ->
     Diff = Pv - Fv,
@@ -163,8 +163,8 @@ ispmt1(Rate, Per, Nper, Pv) ->
 
 nominal(Args = [_, _]) ->
     [Effrate, Npery] = muin_col_DEPR:collect_numbers(Args, ?default_rules),
-    muin_checks:ensure(Effrate > 0, ?ERR_NUM),
-    muin_checks:ensure(Npery >= 1, ?ERR_NUM),
+    muin_checks:ensure(Effrate > 0, ?ERRVAL_NUM),
+    muin_checks:ensure(Npery >= 1, ?ERRVAL_NUM),
     nominal1(Effrate, trunc(Npery)).
 nominal1(Effrate, Npery) ->
     Npery * (math:pow(Effrate + 1, -Npery) - 1).
