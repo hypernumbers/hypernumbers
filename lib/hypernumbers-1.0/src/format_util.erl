@@ -1,4 +1,4 @@
-%%% @doc    This module provides utilities for  handling the 
+%%% @doc    This module provides utilities for handling the 
 %%%         number/text formatting for a cell
 %%%         Created the 11th March 2008
 %%%         Cut out the 31st August 2008
@@ -20,7 +20,7 @@
         ]).
 
 clock_12(Hour) when is_integer(Hour), (Hour > 12), (Hour =< 24) -> Hour-12;
-clock_12(Hour) when is_integer(Hour), (Hour > 0), (Hour =< 12)  -> Hour.
+clock_12(Hour) when is_integer(Hour), (Hour >= 0), (Hour =< 12) -> Hour.
 
 pad_year(A) ->
     case length(A) of
