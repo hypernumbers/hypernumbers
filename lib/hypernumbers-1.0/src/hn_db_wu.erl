@@ -1525,8 +1525,13 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             Attrs2 = orddict:store("__hasform", t, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Html, 
                                 Parents, Recompile);
-        {ok, {Pcode, {html, {Preview, Height, Width}, Res}, Parents, Recompile}} ->
-            Attrs2 = orddict:store("preview", {Preview, Height, Width}, Attrs),
+        {ok, {Pcode, {preview, {PreV, Height, Width}, Res}, Parents, Recompile}} ->
+            Attrs2 = orddict:store("preview", {PreV, Height, Width}, Attrs),
+            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
+                                Parents, Recompile);
+        {ok, {Pcode, {include, {PreV, Height, Width}, Res}, Parents, Recompile}} ->
+            %io:format("it's an include~n"),
+            Attrs2 = orddict:store("preview", {PreV, Height, Width}, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
                                 Parents, Recompile);
         {ok, {Pcode, Res, Parents, Recompile}} ->
