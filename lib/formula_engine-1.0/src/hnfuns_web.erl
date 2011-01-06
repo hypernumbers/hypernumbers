@@ -312,7 +312,7 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
             Obj = {range, {X1, Y1, X2, Y2}},
             Ref = #refX{site = Site, path = Path, obj = Obj},
             {{Html, Width, Height}, _Addons} = hn_render:content(Ref),
-            {html, {"Included Cells", Width, Height},
+            {include, {"Included Cells", Width, Height},
              lists:flatten(hn_render:wrap_region(Html, Width, Height))}
     end.
 
