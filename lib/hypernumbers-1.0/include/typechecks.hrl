@@ -70,8 +70,11 @@
            true         -> Collector(X, Rules)
         end).
 
+-define(number(X, Rules),
+        ?iinaa(X, Rules, fun(A_, B_) -> muin_col_DEPR:collect_number(A_, B_) end)).
+
 -define(int(X, Rules),
-        erlang:trunc(muin_col_DEPR:collect_numbers(X, Rules))).
+        erlang:trunc(?number(X, Rules))).
 
 -define(ints(Xs, Rules),
         lists:map(fun(X) -> erlang:trunc(X) end,

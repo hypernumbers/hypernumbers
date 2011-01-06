@@ -166,6 +166,7 @@ flatten_areas(A) ->
 collect_numbers(A, Rules) when ?is_area(A) ->
     area_util:apply_each(fun(X) -> collect_number(X, Rules) end, A);
 collect_numbers(Vs, Rules) ->
+    io:format("in collect_numbers Vs is ~p Rules is ~p~n", [Vs, Rules]),
     generic_collect(Vs, Rules, fun erlang:is_number/1, num).
 
 %% @doc Same as <code>collect_numbers</code>
@@ -184,6 +185,7 @@ collect_strings(Vs, Rules) ->
 
 %% @doc Same as collect_strings but for one value.
 collect_string(V, Rules) ->
+    io:format("V is ~p Rules is ~p~n", [V, Rules]),
     hd(collect_strings([V], Rules)).
 
 %% @doc
@@ -215,28 +217,22 @@ collect_date(V, Rules) ->
 %%% Clients of the interface aren't affected by these changes so the quick fix is ok for now.
 %%% FIXME: PartitionFun is not used.
 generic_collect(Vs, Rules, _PartitionFun, Targtype) ->
-
-    %io:format("hello ~p ~p ~p ~n", [Vs, Rules, Targtype]),
-    
+    io:format("hello ~p ~p ~p ~n", [Vs, Rules, Targtype]),
     Res = lists:foldl(fun(cast_numbers, Acc) -> cast_numbers(Acc, Targtype);
-                   (cast_strings, Acc) -> cast_strings(Acc, Targtype);
-                   (cast_bools, Acc)   -> cast_bools(Acc, Targtype);
-                   (cast_dates, Acc)   -> cast_dates(Acc, Targtype);
-                   (cast_blanks, Acc)  -> cast_blanks(Acc, Targtype);
-                   (Func, Acc)         -> ?MODULE:Func(Acc)
-                end,
-                Vs,
-                Rules),
-
-    %io:format("bye ~p~n",[Res]),
-    
+                         (cast_strings, Acc) -> cast_strings(Acc, Targtype);
+                         (cast_bools, Acc)   -> cast_bools(Acc, Targtype);
+                         (cast_dates, Acc)   -> cast_dates(Acc, Targtype);
+                         (cast_blanks, Acc)  -> cast_blanks(Acc, Targtype);
+                         (Func, Acc)         -> ?MODULE:Func(Acc)
+                      end,
+                      Vs,
+                      Rules),
+    io:format("bye ~p~n",[Res]),    
     muin_checks:die_on_errval(Res),
 
     if(Res == []) -> ?ERR_VAL;
       true        -> Res
     end.
-
-
 
 pick_first({array, [[Val|_]|_]}) ->
     Val;
@@ -244,6 +240,7 @@ pick_first(Val) ->
     Val.
 
 first_array(Vals) ->
+    io:format("in first_array for ~p~n", [Vals]),
     [ pick_first(X) || X <- Vals ].
 
 %%% Ignores ~~~~~
