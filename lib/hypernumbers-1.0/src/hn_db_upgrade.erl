@@ -27,6 +27,8 @@
 %% * run 'hn_upgrade:upgrade_2011_01_07().' from the shell
 %% * from the command line rebuild the software
 %% * run 'hypernumbers_sup:resume_mochi().' from the shell
+%% the code you run must have the new field 'include' in the record definition
+%% of 'relation' in spriki.hrl
 upgrade_2011_01_07() ->
     % multi-site upgrade
     Sites = hn_setup:get_sites(),
