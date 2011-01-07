@@ -118,7 +118,10 @@ cleanup(_, _, _, Graph) -> Graph.
 -spec check_messages(string(), term(), atom(), [cellidx()], digraph()) 
                -> {term(), [cellidx()]}.
 check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
-    Wait = case WorkPlan of [] -> infinity; _ -> 0 end,
+    Wait = case WorkPlan of
+               [] -> infinity;
+               _ -> 0
+           end,
     receive 
         {From, read_only_activity, Activity} -> 
             Reply = Activity(),
