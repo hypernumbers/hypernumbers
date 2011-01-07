@@ -1586,8 +1586,8 @@ reset_password(Email, Password, Hash) ->
 get_templates(Site) -> [strip_json(X) || X <- filelib:wildcard("*.json", templateroot(Site))].
 
 strip_json(File) ->
-    [F, "json"] = string:tokens(File, "."),
-    F.
+    ["json" |  Rest] = lists:reverse(string:tokens(File, ".")),
+    lists:flatten(lists:reverse(Rest)).
 
 make_demo(Site, Path) ->
     URL = Site ++ hn_util:list_to_path(Path),
