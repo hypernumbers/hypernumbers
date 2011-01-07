@@ -226,7 +226,6 @@ negate([V]) ->
 %%% Arithmetic ~~~~~
 
 sum(Vs) ->
-    io:format("in sum with args of ~p~n", [Vs]),
     muin_collect:col(Vs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
                           {cast, bool, num}, fetch, flatten,
                           {ignore, blank}, {ignore, str}, {ignore, bool}],
@@ -274,27 +273,16 @@ power([TV1, TV2]) ->
              true  -> 0;
              false -> TV2
          end,
-    io:format("into typechecking...~n"),
     [Num] = muin_col_DEPR:collect_numbers([V1], ?default_rules),
-    io:format("Num is ~p~n", [Num]),
     [Pow] = muin_col_DEPR:collect_numbers([V2], ?default_rules),
-    io:format("Pow is ~p~n", [Pow]),
     muin_checks:ensure({V1, V2} =/= {blank, blank}, ?ERRVAL_NUM),
-    io:format("got to 1~n"),
     muin_checks:ensure({V1, V2} =/= {false, false}, ?ERRVAL_NUM),
-    io:format("got to 2~n"),
     muin_checks:ensure({V1, V2} =/= {false, blank}, ?ERRVAL_NUM),
-    io:format("got to 3~n"),
     muin_checks:ensure({V1, V2} =/= {blank, false}, ?ERRVAL_NUM),
-    io:format("got to 4~n"),
     muin_checks:ensure({V1, V2} =/= {false, 0}, ?ERRVAL_NUM),
-    io:format("got to 5~n"),
     muin_checks:ensure({V1, V2} =/= {blank, 0}, ?ERRVAL_NUM),
-    io:format("got to 6~n"),
     muin_checks:ensure({V1, V2} =/= {0, false}, ?ERRVAL_NUM),
-    io:format("got to 7~n"),
     muin_checks:ensure({V1, V2} =/= {0, blank}, ?ERRVAL_NUM),
-    io:format("got to 8~n"),
     muin_checks:ensure({V1, V2} =/= {0, 0}, ?ERRVAL_NUM),
 
     % Dont throw formula errors when numbers are too large
