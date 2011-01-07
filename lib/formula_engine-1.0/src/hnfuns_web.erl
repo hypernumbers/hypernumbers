@@ -15,6 +15,7 @@
           link/1,
           img/1,
           html/1,
+          page/1,
           site/1,
           'crumb.trail'/1,
           'lorem.ipsum'/1,
@@ -204,6 +205,24 @@ site([]) ->
     Site = get(site),
     [Proto, Domain, _Port] = string:tokens(Site, ":"),
     Proto ++ Domain.
+
+page([]) ->
+    case get(path) of
+        [] -> "/";
+        L  -> hn_util:list_to_path(L)
+    end;
+page([N]) ->
+    [N1] = typechecks:std_ints([N]),
+    List = get(path),
+    Len = length(List),
+    if
+        N1 >= Len                -> hn_util:list_to_path(List);
+        N1 <  1                  -> ?ERRVAL_VAL;
+        N1 >= 1 andalso N1 < Len -> L2 = lists:reverse(List),
+                                    {Sub, _Rest} = lists:split(N1, L2),
+                                    Sub2 = lists:reverse(Sub),
+                                    hn_util:list_to_path(Sub2)
+    end.
 
 link([Src, Text]) ->
     muin_collect:col([Src, Text], [eval_funs, fetch, {cast, str}], [return_errors],
