@@ -69,9 +69,12 @@
 -record(item, {idx, attrs}).
 
 -record(relation,
-        {cellidx                  :: cellidx(),
-         children = ordsets:new() :: ordsets:ordset(cellidx()),
-         parents = ordsets:new()  :: ordsets:ordset(cellidx())}).
+        {
+          cellidx                  :: cellidx(),
+          children = ordsets:new() :: ordsets:ordset(cellidx()),
+          parents = ordsets:new()  :: ordsets:ordset(cellidx()),
+          include = false
+       }).
 
 -record(dirty_queue,
         {id = now(),

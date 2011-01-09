@@ -48,7 +48,8 @@
          idx_to_ref/2,
          ref_to_idx/1,
          ref_to_idx_create/1,
-         mark_these_dirty/2
+         mark_these_dirty/2,
+         mark_dirty_for_incl/2
         ]).
 
 %% Database transformation functions
@@ -93,6 +94,22 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-spec mark_dirty_for_incl([#refX{}], auth_srv:auth_spec()) -> ok.
+mark_dirty_for_incl([], _) -> ok;
+mark_dirty_for_incl(Refs = [#refX{site = Site}|_], AReq) ->
+        F = fun(C) -> case hn_db_wu:ref_to_idx(C) of
+                      false -> []; 
+                      Idx   -> Idx
+                  end
+        end,
+    Idxs = lists:flatten([F(C) || R <- Refs, C <- hn_db_wu:expand_ref(R)]),
+    Dirties = [Idx || Idx <- Idxs, has_include(Site, Idx)],
+    case Dirties of
+        [] -> ok;
+        _  -> Entry = #dirty_queue{dirty = Dirties, auth_req = AReq},
+              mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write)
+    end.
+
 -spec mark_these_dirty([#refX{}], auth_srv:auth_spec()) -> ok.
 mark_these_dirty([], _) -> ok;
 mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
@@ -102,8 +119,11 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
                   end
         end,
     Idxs = lists:flatten([F(C) || R <- Refs, C <- hn_db_wu:expand_ref(R)]),
-    Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
-    mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write).
+    case Idxs of
+        [] -> ok;
+        _  -> Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
+              mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write)
+    end.
 
 -spec get_cell_for_muin(#refX{}) -> {any(), any(), any()}.
 %% @doc this function is called by muin during recalculation and should
@@ -201,6 +221,7 @@ write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
 -spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_spec()) 
                  -> ?dict.
 write_attrs(Ref, NewAs, AReq) ->
+    
     Op = fun(Attrs) -> 
                  Is_Formula = lists:keymember("formula", 1, NewAs),
                  Has_Form = orddict:is_key("__hasform", Attrs),
@@ -367,14 +388,15 @@ post_process_format(Raw, Attrs) ->
             case format:run_format(Raw, Output) of
                 {ok, {Color, Val1}} ->
                     Val2  = case Val1 of
-                                {errval, ErrVal} -> atom_to_list(ErrVal);
-                                A when is_atom(A) -> atom_to_list(A);
+                                {errval, ErrVal}     -> atom_to_list(ErrVal);
+                                A when is_atom(A)    -> atom_to_list(A);
                                 I when is_integer(I) -> integer_to_list(I);
                                 Fl when is_float(Fl) -> float_to_list(Fl);
                                 _ -> Val1
                             end,
-                    add_attributes(Attrs, [{"value", Val2},
-                                           {"overwrite-color", atom_to_list(Color)}]);
+                    add_attributes(Attrs,
+                                   [{"value", Val2},
+                                    {"overwrite-color", atom_to_list(Color)}]);
                 _ ->
                     Attrs
             end;
@@ -458,7 +480,7 @@ do_clear_cells(Ref, DelAttrs) ->
                  fun(Attrs) ->
                          case lists:keymember("formula", 1, Attrs) of
                              true -> 
-                                 set_relations(RX, []),
+                                 set_relations(RX, [], false),
                                  unattach_form(RX, ref_to_idx(RX));
                              false -> ok
                          end,
@@ -1060,38 +1082,48 @@ del_child(CellIdx, Child, Tbl) ->
             ok
     end.
 
--spec set_relations(#refX{}, [#refX{}]) -> ok.
-set_relations(#refX{site = Site} = Cell, Parents) ->
+-spec set_relations(#refX{}, [#refX{}], boolean()) -> ok.
+set_relations(#refX{site = Site} = Cell, Parents, IsIncl) ->
     Tbl = trans(Site, relation),
     CellIdx = ref_to_idx_create(Cell),
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R; 
               []  -> #relation{cellidx = CellIdx}
           end,
-    Rel2 = set_parents(Tbl, Rel, Parents),
+    Rel2 = set_parents(Tbl, Rel, Parents, IsIncl),
     mnesia:write(Tbl, Rel2, write).
 
--spec set_parents(atom(), #relation{}, [#refX{}]) -> #relation{}. 
+-spec set_parents(atom(), #relation{}, [#refX{}], boolean()) -> #relation{}. 
 set_parents(Tbl, 
-                  Rel = #relation{cellidx = CellIdx, 
-                                  parents = CurParents},
-                  Parents) ->
+            Rel = #relation{cellidx = CellIdx, 
+                            parents = CurParents
+                           },
+            Parents,
+            IsIncl) ->
     ParentIdxs = ordsets:from_list([ref_to_idx_create(P) || P <- Parents]),
     LostParents = ordsets:subtract(CurParents, ParentIdxs),
     [del_child(P, CellIdx, Tbl) || P <- LostParents],
-    [ok = add_child(P, CellIdx, Tbl) || P <- ParentIdxs],
+    [ok = add_child(P, CellIdx, Tbl, IsIncl) || P <- ParentIdxs],
     Rel#relation{parents = ParentIdxs}.
 
 %% Adds a new child to a parent.
--spec add_child(cellidx(), cellidx(), atom()) -> ok.
-add_child(CellIdx, Child, Tbl) ->
+-spec add_child(cellidx(), cellidx(), atom(), boolean()) -> ok.
+add_child(CellIdx, Child, Tbl, IsIncl) ->
     Rel = case mnesia:read(Tbl, CellIdx, write) of
-              [R] -> R;
-              []  -> #relation{cellidx = CellIdx}
+              [R] -> R#relation{include = IsIncl};
+              []  -> #relation{cellidx = CellIdx, include = IsIncl}
           end,
     Children = ordsets:add_element(Child, Rel#relation.children),
     mnesia:write(Tbl, Rel#relation{children = Children}, write).
 
+-spec has_include(string(), cellidx()) -> boolean().
+has_include(Site, CellIdx) ->
+    Tbl = hn_db_wu:trans(Site, relation),
+    case mnesia:read(Tbl, CellIdx, write) of
+        []  -> false;
+        [R] -> R#relation.include
+    end.
+            
 %% dereferences a formula
 deref(Child, [$=|Formula], DeRefX, Disp) when is_record(DeRefX, refX) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
@@ -1517,34 +1549,33 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     Rti = refX_to_rti(Ref, AReq, false),
     case muin:run_formula(Fla, Rti) of
         {error, {errval, Error}} ->
-            write_error_attrs(Ref, Formula, Error);
+            write_error_attrs(Attrs, Ref, Formula, Error);
         {ok, {Pcode, {rawform, RawF, Html}, Parents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
             Form = RawF#form{id={Ref#refX.path, Trans, Label}}, 
             ok = attach_form(Ref, Form),
             Attrs2 = orddict:store("__hasform", t, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Html, 
-                                Parents, Recompile);
+                                {Parents, false}, Recompile);
         {ok, {Pcode, {preview, {PreV, Height, Width}, Res}, Parents, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Height, Width}, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
-                                Parents, Recompile);
+                                {Parents, false}, Recompile);
         {ok, {Pcode, {include, {PreV, Height, Width}, Res}, Parents, Recompile}} ->
-            %io:format("it's an include~n"),
             Attrs2 = orddict:store("preview", {PreV, Height, Width}, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
-                                Parents, Recompile);
+                                {Parents, true}, Recompile);
         {ok, {Pcode, Res, Parents, Recompile}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
-                                Parents, Recompile)
+                                {Parents, false}, Recompile)
     end.
 
-write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Parents, Recompile) ->
+write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, {Parents, IsIncl}, Recompile) ->
     Parxml = lists:map(fun muin_link_to_simplexml/1, Parents),
     {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
-    ok = set_relations(Ref, NewLocPs),
+    ok = set_relations(Ref, NewLocPs, IsIncl),
     Align = default_align(Res),
     add_attributes(Attrs, [{"formula", Formula},
                            {"__rawvalue", Res},
@@ -1552,11 +1583,11 @@ write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, Parents, Recompile) ->
                            {"__default-align", Align},
                            {"__recompile", Recompile}]).
 
-write_error_attrs(Ref, Formula, Error) ->
-    ok = set_relations(Ref, []),
-    add_attributes(orddict:new(), [{"formula", Formula},
-                                   {"__rawvalue", {errval, Error}},
-                                   {"__ast", []}]).
+write_error_attrs(Attrs, Ref, Formula, Error) ->
+    ok = set_relations(Ref, [], false),
+    add_attributes(Attrs, [{"formula", Formula},
+                           {"__rawvalue", {errval, Error}},
+                           {"__ast", []}]).
 
 default_align(Res) when is_number(Res) -> "right";
 default_align(Res) when is_list(Res)   -> "left";
@@ -1572,7 +1603,7 @@ write_formula2(Ref, OrigVal, {Type, Val},
                   int      -> OrigVal;
                   _        -> hn_util:text(Val) end,
     {NewLocPs, _NewRemotePs} = split_local_remote([]),
-    ok = set_relations(Ref, NewLocPs),
+    ok = set_relations(Ref, NewLocPs, false),
     Attrs2 = add_attributes(Attrs, [{"__default-align", Align},
                                     {"__rawvalue", Val},
                                     {"formula", Formula}]),

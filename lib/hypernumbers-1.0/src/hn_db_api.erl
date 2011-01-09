@@ -708,10 +708,14 @@ write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
     ok;
 write_attributes1(RefX, List, PAr, VAr) ->
     hn_db_wu:write_attrs(RefX, List, PAr),
+    % first up do the usual 'dirty' stuff - this cell is dirty
     case lists:keymember("formula", 1, List) of
        true  -> ok = hn_db_wu:mark_these_dirty([RefX], VAr);
        false -> ok
-    end.
+    end,
+    % now do the include dirty stuff (ie this cell has had it's format updated
+    % so make any cells that use '=include(...)' on it redraw themselves
+    ok = hn_db_wu:mark_dirty_for_incl([RefX], VAr).
 
 -spec copy_cell(#refX{}, #refX{}, 
                 false | horizontal | vertical,
