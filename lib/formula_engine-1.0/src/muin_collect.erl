@@ -136,7 +136,7 @@ rl({ignore, Type}, Val) ->
 
 % Evaluate functions
 rl(eval_funs, Fun) when ?is_funcall(Fun) ->
-    muin:eval(Fun);
+    muin:external_eval(Fun);
 
 rl(area_first, {array,[[X|_]|_]}) -> X;
 rl(area_first, {range,[[X|_]|_]}) -> X;

@@ -133,9 +133,9 @@
                     true  -> TrueExpr;
                     false -> FalseExpr
                 end,
-            muin:eval_formula(F)
+            muin:external_eval_formula(F)
     end.
 
 %% @TODO write a test suite for iferror which is not an Excel 97 function
 iferror([Test, TrueExpr, FalseExpr]) ->
-    'if'([stdfuns_info:iserror([muin:eval(Test)]), TrueExpr, FalseExpr]).
+    'if'([stdfuns_info:iserror([muin:external_eval(Test)]), TrueExpr, FalseExpr]).

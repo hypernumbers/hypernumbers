@@ -3,9 +3,16 @@
 
 -module(muin).
 
--export([test_formula/2, run_formula/2, run_code/2]).
+-export([
+         test_formula/2,
+         run_formula/2,
+         run_code/2
+        ]).
 
--export([eval/1]).
+-export([
+         external_eval/1,
+         external_eval_formula/1
+        ]).
 
 -export([
          context_setting/1,
@@ -24,7 +31,6 @@
          get_hypernumber/9,
          userdef_call/2,
          toidx/1,
-         eval_formula/1,
          do_cell/3,
          parse/2
         ]).
@@ -85,6 +91,10 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
     {_Errors, References} = get(retvals),
     {ok, {Fcode, Result, References, get(recompile)}}.
 
+% not all functions can be included in other functions
+external_eval_formula([include | _Rest]) -> ?error_in_formula;
+external_eval_formula(X)                 -> eval_formula(X).
+
 %% evaluates a formula rather than a piece of AST, i.e. will do implicit
 %% intersection, resolve a final cellref &c.
 eval_formula(Fcode) ->
@@ -135,6 +145,10 @@ parse(Fla, {Col, Row}) ->
             end;
         _ -> ?syntax_error
     end.                     
+
+% not all functions can be included in other functions
+external_eval([include | _Rest]) -> ?error_in_formula;
+external_eval(X)                 -> eval(X).
 
 %% Evaluate a form in the current rti context.
 %% this function captures thrown errors - including those thrown

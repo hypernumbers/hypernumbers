@@ -86,7 +86,7 @@ casts(Val, Type, [fetch_refs | Rules]) when ?is_namedexpr(Val) ->
 casts(Ref, Type, [fetch_refs | Rules]) when ?is_cellref(Ref) ->
     casts(muin:fetch(Ref), Type, Rules);
 casts([Fun | Args], Type, [fetch_refs | Rules]) when ?is_fn(Fun) ->
-    casts(muin:eval([Fun | Args]), Type, Rules);
+    casts(muin:external_eval([Fun | Args]), Type, Rules);
 casts(Val, Type, [fetch_refs | Rules])  ->
     casts(Val, Type, Rules);
 
@@ -101,7 +101,7 @@ casts(Ref, Type, [fetch_refs_as_bool | Rules]) when ?is_cellref(Ref) ->
           end,
     casts(Val, Type, Rules);
 casts([Fun | Args], Type, [fetch_refs_as_bool | Rules]) when ?is_fn(Fun) ->
-    casts(muin:eval([Fun | Args]), Type, Rules);
+    casts(muin:external_eval([Fun | Args]), Type, Rules);
 casts(Val, Type, [fetch_refs_as_bool | Rules])  ->
     casts(Val, Type, Rules);
 

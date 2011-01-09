@@ -33,10 +33,10 @@
 %% TODO: Range references (literal and from INDIRECT)
 %% TODO: Other info types.
 cell([V1, V2]) ->
-    InfoType = muin:eval_formula(V1),
+    InfoType = muin:external_eval_formula(V1),
     muin_checks:ensure(?is_string(InfoType), ?ERRVAL_VAL),
     R = case V2 of
-            [indirect, _]                          -> muin:eval(V2);
+            [indirect, _]                          -> muin:external_eval(V2);
             X when ?is_cellref(X)                  -> X;
             %% TODO: X when ?is_rangeref(X)                 -> todo;
             _                                      -> ?ERR_REF
@@ -207,7 +207,7 @@ rows([Expr]) when ?is_cellref(Expr)   -> 1;
 rows([Expr]) when ?is_namedexpr(Expr) -> ?ERRVAL_NAME;
 rows([Expr]) when is_number(Expr)     -> 1;
 rows([Expr]) when ?is_errval(Expr)    -> Expr;
-rows([Expr]) when ?is_funcall(Expr)   -> rows([muin:eval_formula(Expr)]);
+rows([Expr]) when ?is_funcall(Expr)   -> rows([muin:external_eval_formula(Expr)]);
 rows([_Expr])                         -> ?ERRVAL_VAL.
 
 
@@ -217,6 +217,6 @@ columns([Expr]) when ?is_cellref(Expr)   -> 1;
 columns([Expr]) when ?is_namedexpr(Expr) -> ?ERRVAL_NAME;
 columns([Expr]) when is_number(Expr)     -> 1;
 columns([Expr]) when ?is_errval(Expr)    -> Expr;
-columns([Expr]) when ?is_funcall(Expr)   -> columns([muin:eval_formula(Expr)]);
+columns([Expr]) when ?is_funcall(Expr)   -> columns([muin:external_eval_formula(Expr)]);
 columns([_Expr])                         -> ?ERRVAL_VAL.
 

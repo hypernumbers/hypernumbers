@@ -33,7 +33,7 @@ choose([V|Vs]) ->
 choose([Idx], List) when Idx =< 0 orelse Idx > length(List) ->
     ?ERRVAL_VAL;
 choose([Idx], List) ->
-    case muin:eval(lists:nth(Idx, List)) of
+    case muin:external_eval(lists:nth(Idx, List)) of
         % TODO: eugh
         {array,[Arr]} -> "{"++string:join([tconv:to_s(X)||X<-Arr], ",")++"}";
         {namedexpr, _, _} -> ?ERRVAL_NAME;
@@ -61,7 +61,7 @@ indirect_([Str], [_Bool]) ->
     case muin:parse(Str, {muin:context_setting(col),
                           muin:context_setting(row)}) of
         {ok, Ast} ->
-            case muin:eval(Ast) of
+            case muin:external_eval(Ast) of
                 X when ?is_cellref(X); ?is_rangeref(X) -> X;
                 _Else                                  -> ?ERRVAL_REF
             end;
@@ -147,7 +147,7 @@ index([A, V]) ->
     end;
 
 index([A, _V1, _V2]) when ?is_errval(A)    -> A;
-index([A, V1, V2]) when ?is_funcall(A)     -> index([muin:eval(A), V1, V2]);
+index([A, V1, V2]) when ?is_funcall(A)     -> index([muin:external_eval(A), V1, V2]);
 index([A, _V1, _V2]) when ?is_namedexpr(A) -> ?ERRVAL_NAME;
 index([A, V1, V2]) when is_number(A) ->
     index([area_util:make_array([[A]]), V1, V2]);
