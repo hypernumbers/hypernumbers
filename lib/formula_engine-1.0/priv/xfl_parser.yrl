@@ -23,6 +23,7 @@ name
 int float bool str
 errval
 '(' ')' ',' '{' '}' ';'
+'[' ']'
 .
 
 Rootsymbol Formula.
@@ -40,6 +41,10 @@ Left     900 '^^'.
 
 Formula -> E : postproc('$1').
 
+% path queries
+E -> '[' E ']' : pathq('$2').
+
+% normal operators
 E -> E '='  E : op('$1', '$2', '$3').
 E -> E '<>' E : op('$1', '$2', '$3').
 E -> E '>'  E : op('$1', '$2', '$3').
@@ -226,6 +231,9 @@ replace_float({array, Values}) ->
     {array, Vals};
 replace_float(Else) ->
     Else.
+
+pathq(E) ->
+    {pathq, E}.
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -8,7 +8,7 @@
 
 Definitions.
 
-%%% Constants: integers, floats (in decmial and scientific notations),
+%%% Constants: integers, floats (in decimal and scientific notations),
 %%% booleans, strings, error constants.
 
 INT = ([0-9]+)
@@ -155,6 +155,8 @@ Rules.
 ,  : {token, {',', TokenLine}}.
 \( : {token, {'(', TokenLine}}.
 \) : {token, {')', TokenLine}}.
+\[ : {token, {'[', TokenLine}}.
+\] : {token, {']', TokenLine}}.
 \{ : {token, {'{', TokenLine}}.
 \} : {token, {'}', TokenLine}}.
 \; : {token, {';', TokenLine}}.
