@@ -12,6 +12,10 @@
          is_unique/1
          ]).
 
+-export([
+         zaphod/3
+        ]).
+
 %% exports for the AXA demo
 -export([
          realtime/2,
@@ -31,6 +35,9 @@
          davie/2]).
 
 -export([get_username/0]).
+
+zaphod(A, B, C) ->
+    A * B + C.
 
 realtime(A, B) ->
     A + B.
