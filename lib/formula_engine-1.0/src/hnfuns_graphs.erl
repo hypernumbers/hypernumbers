@@ -122,7 +122,7 @@ spark1(Size, Data, Colours) ->
     make_chart(Opts).
 
 'xy.3x5'(List) ->
-    {Data, Scale, AxesLabPos, Colours, [_Tt | []] = Rest} = chunk_xy(List, single),
+    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, single),
     xy1(?SIZE3x5, Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}]).
 
@@ -154,7 +154,8 @@ xy1(Size, Data, Scale, _AxesLabPos, Colours, [Tt | []], Opts) ->
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl | []], Opts) ->
     NewOpts = lists:concat([[Scale,Colours, AxesLabPos, make_title(Tt),
-                             make_labs( Xl, ""), {?legendpos, ?TOPHORIZ}], Opts]),
+                             make_labs(Xl, ""), {?axes, ?LABELAXES},
+                             {?legendpos, ?TOPHORIZ}], Opts]),
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl | []], Opts) ->
     NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
@@ -180,7 +181,10 @@ xy3(Size, Data, Opts) ->
                {?data, Data},
                {?linestyles, "1|1"}
               ],
-    make_chart(lists:concat([Opts, NewOpts])).
+    case Opts of
+        [] -> make_chart(NewOpts);
+        _  -> make_chart(lists:concat([Opts, NewOpts]))
+    end.
 
 make_series(Srs) ->
     Srs2 = typechecks:flat_strs([Srs]),
@@ -571,6 +575,3 @@ colours() -> [
               {"aqua"    , "00FFFF"},
               {"yellow"  , "FFFF00"}
              ].
-
-
- 
