@@ -32,6 +32,11 @@ dispatch(["build"]) ->
     build(), 
     remote_do(hotswap);
 
+dispatch(["lexer-parser"]) -> 
+    build_lexer_parser(),
+    build_quick(),
+    remote_do(hotswap);
+
 dispatch(["quick"]) -> 
     build_quick(),
     remote_do(hotswap);
@@ -73,11 +78,7 @@ build() ->
     file:set_cwd("lib/starling"),
     io:format(os:cmd("rake")),
     file:set_cwd(Root),
-
-    file:set_cwd("lib/formula_engine-1.0/priv/"),
-    os:cmd("./generate.escript"),
-    file:set_cwd(Root),
-    
+    build_lexer_parser(),
     compile:file("src/compile_code.erl", [{outdir, "ebin"}]),
     
     compile:file("priv/ms_util/make_ms_util.erl",
@@ -93,6 +94,12 @@ build() ->
     compile_code:start(),
     file:set_cwd(Root).
 
+build_lexer_parser() ->
+    {ok, Root} = file:get_cwd(),
+    file:set_cwd("lib/formula_engine-1.0/priv/"),
+    os:cmd("./generate.escript"),
+    file:set_cwd(Root).
+    
 build_quick() ->
     {ok, Root} = file:get_cwd(),
     ensure_config(),
@@ -248,6 +255,7 @@ usage() ->
         "~nCommands to build hypernumbers are:~n"
         "  build ~n"
         "  quick ~n"
+        " lexer-parser ~n"
         "  migrate ~n",
         "  clean ~n",
     io:format(Usage),
