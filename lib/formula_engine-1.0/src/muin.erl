@@ -5,6 +5,10 @@
 
 -export([
          test_formula/2,
+         test_xfl/0
+         ]).
+
+-export([
          run_formula/2,
          run_code/2
         ]).
@@ -499,3 +503,47 @@ get_cell_info(S, P, Col, Row) ->
     RefX = #refX{site=string:to_lower(S), path=P, obj={cell, {Col,Row}}},
     hn_db_wu:get_cell_for_muin(RefX).
 
+
+%% Test Functions
+test_xfl() ->
+    Exprs = [
+             % "sum(/_sites/a1, 2, 3)",
+             % "sum(./_sites/a1, 2, 3)",
+             %"sum(../_sites/a1, 2, 3)",
+             % "sum(/blah/_sites/bleh/a1:b2, 3)",
+             % "sum(/_SITES/a1, 2, 3)",
+             % "sum(./_SITES/a1, 2, 3)",
+             % "sum(../_SITES/a1, 2, 3)",
+             % "sum(../_SITES/a:b, 2, 3)",
+             % "sum(../_SITES/2:3, 2, 3)",
+             % "sum(/blah/_SITES/a1:b2, 3)",
+             %"sum(/blah/bleeh/[seg() = \"bluh\"]/bloh/a1)",
+             "sum(/blah/bleeh/a1)",
+             "sum(/blah/bleeh/$a1)",
+             "sum(/bb/[eg]/doggy/[or(sum(1,2))]/a$1)"
+            ],
+    Fun = fun(X) ->
+                  Trans = translator:do(X),
+                  case catch (xfl_lexer:lex(Trans, {1, 1})) of
+                      {ok, Toks} ->
+                          case catch(xfl_parser:parse(Toks)) of
+                              {ok, Ast} ->
+                                  io:format("Sucess Expr is ~p Trans is ~p~n"++
+                                            "Toks is ~p~nAst is ~p~n"++
+                                            "Status is ~p~n",
+                                            [X, Trans, Toks, Ast, "Ok"]),
+                                  {ok, Ast};
+                              O2         ->  io:format("Parse fail: "++
+                                                       "Expr is ~p Trans is ~p~n"++
+                                                       "Toks is ~p~nStatus is ~p~n",
+                                                       [X, Trans, Toks, O2]),
+                                             ?syntax_error
+                          end;
+                      O1 -> io:format("Lex fail: Expr is ~p Trans is ~p~n"++
+                                      "Status is ~p~n",
+                                      [X, Trans, O1]),
+                            ?syntax_error
+                  end
+          end,
+    [Fun(X) || X <- Exprs],
+    ok.

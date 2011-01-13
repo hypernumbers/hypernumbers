@@ -101,8 +101,43 @@ A1_COL_RANGE = ({A1_COL_REF_REL}|{A1_COL_REF_FIX}|{A1_COL_REF_MIX1}|{A1_COL_REF_
 A1_ROW_RANGE = ({A1_ROW_REF_REL}|{A1_ROW_REF_FIX}|{A1_ROW_REF_MIX1}|{A1_ROW_REF_MIX2})
 
 RC_COL_RANGE = ({RC_COL_REF_REL}|{RC_COL_REF_FIX}|{RC_COL_REF_MIX1}|{RC_COL_REF_MIX2})
-RC_ROW_RANGE = ({RC_ROW_REF_REL}|{RC_ROW_REF_FIX}|{RC_ROW_REF_MIX1}|{RC_ROW_REF_MIX2})
+RC_ROW_RANGE = ({RC_ROW_REF_REL}|{RC_ROW_REF_FIX}|{RC_ROW_REF_MIX1}|{RC_ROW_REF_MIX2})2
 
+%%% for z-order comprehensions need to identify expressions in URL's
+Z_EXPR = ((\[)(.+)(\]))
+
+MAYBE_Z_PATH = ({MAYBE_URL_PREFIX}*|{Z_EXPR}*)+
+
+Z_REF_REL  = ({MAYBE_Z_PATH})({WORD})({INT})
+Z_REF_FIX  = ({MAYBE_Z_PATH})(\$)({WORD})(\$)({INT})
+Z_REF_MIX1 = ({MAYBE_Z_PATH})(\$)({WORD})({INT})
+Z_REF_MIX2 = ({MAYBE_Z_PATH})({WORD})(\$)({INT})
+
+%%% Helper classes
+
+Z_REF = ({Z_REF_REL}|{Z_REF_FIX}|{Z_REF_MIX1}|{Z_REF_MIX2})
+
+%%% 2. Finite Ranges
+
+FINITE_RANGE_Z = ({MAYBE_Z_PATH})({Z_REF})(\:)({Z_REF})
+
+%%% 3. Row and Column
+
+Z_COL_REF_REL  = (({MAYBE_Z_PATH})({WORD})(\:)({WORD}))
+Z_COL_REF_FIX  = (({MAYBE_Z_PATH})(\$)({WORD})(\:)(\$)({WORD}))
+Z_COL_REF_MIX1 = (({MAYBE_Z_PATH})(\$)({WORD})(\:)({WORD}))
+Z_COL_REF_MIX2 = (({MAYBE_Z_PATH})({WORD})(\:)(\$)({WORD}))
+
+Z_ROW_REF_REL  = (({MAYBE_Z_PATH})({INT})(\:)({INT}))
+Z_ROW_REF_FIX  = (({MAYBE_Z_PATH})(\$)({INT})(\:)(\$)({INT}))
+Z_ROW_REF_MIX1 = (({MAYBE_Z_PATH})(\$)({INT})(\:)({INT}))
+Z_ROW_REF_MIX2 = (({MAYBE_Z_PATH})({INT})(\:)(\$)({INT}))
+
+%% Helper classes:
+
+Z_COL_RANGE = ({Z_COL_REF_REL}|{Z_COL_REF_FIX}|{Z_COL_REF_MIX1}|{Z_COL_REF_MIX2})
+Z_ROW_RANGE = ({Z_ROW_REF_REL}|{Z_ROW_REF_FIX}|{Z_ROW_REF_MIX1}|{Z_ROW_REF_MIX2})
+                              
 %%% Named expression:
 
 %%% Named expression or function name:
@@ -129,7 +164,7 @@ Rules.
 {A1_REF} : {token, to_cellref(TokenChars, TokenLine, a1)}.
 {RC_REF} : {token, to_cellref(TokenChars, TokenLine, rc)}.
 
-%%% 2. Finite ranges:g
+%%% 2. Finite ranges:
 
 {FINITE_RANGE_A1} : {token, finite_range(TokenChars, TokenLine, a1)}.
 {FINITE_RANGE_RC} : {token, finite_range(TokenChars, TokenLine, rc)}.
@@ -144,6 +179,19 @@ Rules.
 %%% 4. Named expressions:
 
 {NAME_REF}     : {token, name(TokenChars, TokenLine)}.
+
+%%% 5. Z Cell references:
+
+{Z_REF} : {token, to_zcellref(TokenChars, TokenLine)}.
+
+%%% 6. Z Finite ranges:
+
+{FINITE_RANGE_Z} : {token, finite_zrange(TokenChars, TokenLine)}.
+
+%%% 7. Z Row & column ranges:
+
+{Z_COL_RANGE} : {token, z_col_range(TokenChars, TokenLine)}.
+{Z_ROW_RANGE} : {token, z_row_range(TokenChars, TokenLine)}.
 
 %% Discard whitespace:
 {WHITESPACE}       : skip_token.
@@ -196,6 +244,7 @@ Erlang code.
 -include("typechecks.hrl").
 
 %% These are read-only.
+-define(SQBRA, $[). %]
 -define(mx, get(mx)).
 -define(my, get(my)).
 -define(pivot, {?mx, ?my}).
@@ -237,7 +286,6 @@ no_strings_above_limit(Toks) ->
         end,
         Toks).
 
-
 name(TokenChars, TokenLine) when hd(TokenChars) == $.; hd(TokenChars) == $/ ->
     {Path, Name} = split_ssref(TokenChars),
     {namedexpr, TokenLine, #namedexpr{path = Path, text = Name}};
@@ -250,7 +298,36 @@ to_cellref(TokenChars, TokenLine, Type) ->
     {cellref, TokenLine, #cellref{col = ColCoord, row = RowCoord, 
                                   path = Path, text = TokenChars}}.
 
+to_zcellref(TokenChars, TokenLine) ->
+    {Path, Cell} = split_ssref(TokenChars),
+    NewPath = parse_zpath(Path),
+    {ColCoord, RowCoord} = extract_coords(Cell, a1, ?pivot),
+    {zcellref, TokenLine, NewPath, #cellref{col = ColCoord, row = RowCoord, 
+                                  path = Path, text = TokenChars}}.
+
+finite_zrange(TokenChars, TokenLine) ->
+    io:format("in finite_zrange ~p ~p~n", [TokenChars, TokenLine]),
+    {zrangeref, TokenLine, "bazookai!"}.
+
+z_col_range(TokenChars, TokenLine) ->
+    io:format("in z_col_range ~p ~p~n", [TokenChars, TokenLine]),
+    {zcolrange, TokenLine, "balaclava!"}.
+
+z_row_range(TokenChars, TokenLine) ->
+    io:format("in z_row_range ~p ~p~n", [TokenChars, TokenLine]),
+    {zcolrange, TokenLine, "belladona!"}.
+
 %%% @doc Return coordinates of a given **local** cell reference.
+
+parse_zpath(Path) ->
+    ZPath = re:split(Path,  "(\\[.+\\])", [ungreedy, {return, list}]),
+    {zpath, [parse_z2(X) || X <- ZPath]}.
+
+parse_z2([?SQBRA | Rest]) -> % macro for emacs indentation only
+    {Expr, _Ket} = lists:split(length(Rest) -1, Rest),
+    {zseg, xfl_lexer:lex(Expr, {1, 1})};
+parse_z2(Seg) ->
+    {seg, Seg}.
 
 extract_coords(Ref, rc, {PivotCol, PivotRow}) ->
     case string:tokens(string:to_upper(Ref), "R") of
@@ -388,6 +465,10 @@ rc_row_range(TokenChars, TokenLine) ->
                                     tl = {row, rc_row_to_coord(LhsRow)},
                                     br = {row, rc_row_to_coord(RhsRow)},
                                     text = TokenChars}}.
+
+babble(TokenChars, TokenLine) ->
+    io:format("babbling ~p~n", [TokenChars]),
+    "blotto!".
 
 %% @doc Takes coords of two cells defining bounds of some range, and returns
 %% coords for top-left and bottom-right cells of that range.
