@@ -30,7 +30,6 @@ std_ints(Vals) ->
     muin_collect:col(Vals, Rules, Passes).
 
 flat_strs(Vals) ->
-    io:format("Vals is ~p~n",[Vals]),
     Rules = [eval_funs, fetch, flatten, {cast, str}],
     Passes = [return_errors, {all, fun muin_collect:is_string/1}],
     muin_collect:col(Vals, Rules, Passes).
