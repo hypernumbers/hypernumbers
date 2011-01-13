@@ -97,7 +97,8 @@ build() ->
 build_lexer_parser() ->
     {ok, Root} = file:get_cwd(),
     file:set_cwd("lib/formula_engine-1.0/priv/"),
-    os:cmd("./generate.escript"),
+    Ret = os:cmd("./generate.escript"),
+    io:format("~p~n", [Ret]),
     file:set_cwd(Root).
     
 build_quick() ->
