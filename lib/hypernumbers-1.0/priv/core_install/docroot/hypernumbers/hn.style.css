@@ -280,8 +280,12 @@ input[type=submit].hninput:hover {
   padding: 0px 5px 5px 5px;
 }
 
+
 .configrow {
    text-align: right;
+    display: block;
+    padding-left: 15px;
+    text-indent: -15px;
 }
 
 .colhider { 
@@ -289,10 +293,8 @@ input[type=submit].hninput:hover {
 }
 
 label {
-    display: block;
-    padding-left: 15px;
-    text-indent: -15px;
 }
+
 .configrow input {
     width: 13px;
     height: 13px;
