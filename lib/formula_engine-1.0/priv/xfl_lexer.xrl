@@ -306,16 +306,44 @@ to_zcellref(TokenChars, TokenLine) ->
                                   path = Path, text = TokenChars}}.
 
 finite_zrange(TokenChars, TokenLine) ->
-    io:format("in finite_zrange ~p ~p~n", [TokenChars, TokenLine]),
-    {zrangeref, TokenLine, "bazookai!"}.
+    {Path, LhsArg, RhsArg} = split_range(TokenChars),
+    {Tl, Br} = find_proper_bounds(LhsArg, RhsArg, a1),
+    {W, H} = finite_range_dimensions(Tl, Br),
+    NewPath = parse_zpath(Path),
+    {zrangeref, TokenLine, NewPath,
+     #rangeref{type = finite, path = Path, tl = Tl, br = Br, 
+               width = W, height = H, 
+               text = TokenChars}}.
 
 z_col_range(TokenChars, TokenLine) ->
-    io:format("in z_col_range ~p ~p~n", [TokenChars, TokenLine]),
-    {zcolrange, TokenLine, "balaclava!"}.
+    {Path, LhsCol, RhsCol} = split_range(TokenChars),
+    TlCoord = a1_col_to_coord(LhsCol),
+    BrCoord = a1_col_to_coord(RhsCol),
+    W = col_index(BrCoord) - col_index(TlCoord) + 1,
+    NewPath = parse_zpath(Path),
+    {zrangeref, TokenLine, NewPath,
+     #rangeref{type = col,
+               path = Path,
+               tl = {col, TlCoord},
+               br = {col, BrCoord},
+               width = W,
+               height = na,
+               text = TokenChars}}.
 
 z_row_range(TokenChars, TokenLine) ->
-    io:format("in z_row_range ~p ~p~n", [TokenChars, TokenLine]),
-    {zcolrange, TokenLine, "belladona!"}.
+        {Path, LhsRow, RhsRow} = split_range(TokenChars),
+    TlCoord = a1_row_to_coord(LhsRow),
+    BrCoord = a1_row_to_coord(RhsRow),
+    H = row_index(BrCoord) - row_index(TlCoord) + 1,
+    NewPath = parse_zpath(Path),
+    {zrangeref, TokenLine, NewPath,
+     #rangeref{type = row,
+               path = Path,
+               tl = {row, TlCoord},
+               br = {row, BrCoord},
+               width = na,
+               height = H,
+               text = TokenChars}}.
 
 %%% @doc Return coordinates of a given **local** cell reference.
 
@@ -465,10 +493,6 @@ rc_row_range(TokenChars, TokenLine) ->
                                     tl = {row, rc_row_to_coord(LhsRow)},
                                     br = {row, rc_row_to_coord(RhsRow)},
                                     text = TokenChars}}.
-
-babble(TokenChars, TokenLine) ->
-    io:format("babbling ~p~n", [TokenChars]),
-    "blotto!".
 
 %% @doc Takes coords of two cells defining bounds of some range, and returns
 %% coords for top-left and bottom-right cells of that range.
