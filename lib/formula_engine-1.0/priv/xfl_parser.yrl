@@ -11,11 +11,12 @@ Nonterminals
 Formula E Uminus Uplus List 
 Funcall Args Argument
 ArrayLiteral ArrayRow ArrayRows Array
+CellRefs RangeRefs
 .
 
 Terminals
 
-cellref rangeref namedexpr 
+cellref rangeref zcellref zrangeref namedexpr 
 name
 '=' '<>' '>' '<' '>=' '<='
 '+' '-' '*' '/' '^'
@@ -23,7 +24,6 @@ name
 int float bool str
 errval
 '(' ')' ',' '{' '}' ';'
-'[' ']'
 .
 
 Rootsymbol Formula.
@@ -40,9 +40,6 @@ Unary    700 Uminus.
 Left     900 '^^'.
 
 Formula -> E : postproc('$1').
-
-% path queries
-E -> '[' E ']' : pathq('$2').
 
 % normal operators
 E -> E '='  E : op('$1', '$2', '$3').
@@ -65,15 +62,15 @@ E      -> Uplus  : '$1'.
 Uplus  -> '+' E  : '$2'.
 
 E -> E '^^' E : ['^^', '$1', '$3'].
-E -> rangeref rangeref  : ['^^', lit('$1'), lit('$2')].
+E -> RangeRefs RangeRefs  : ['^^', lit('$1'), lit('$2')].
 %%% parenthesized expressions.
 
 E -> '(' E ')' : '$2'.    
 
 %%% special cases for slash ambiguity
 
-E -> E namedexpr Args : special_div1('$1', lit('$2'), '$3').
-E -> E cellref        : special_div2('$1', lit('$2')).
+E -> E namedexpr Args  : special_div1('$1', lit('$2'), '$3').
+E -> E CellRefs        : special_div2('$1', lit('$2')).
 
 %%% TRUE() and FALSE() functions:
 
@@ -87,22 +84,33 @@ List -> '(' Args ')' : arglist('$2').
 
 %%% constants / literals
 
-E -> int       : lit('$1').
-E -> float     : lit('$1').
-E -> bool      : lit('$1').
-E -> str       : lit('$1').
-E -> errval    : lit('$1').
-E -> Array     : '$1'.
-E -> cellref   : lit('$1').
-E -> name      : lit('$1').
-E -> namedexpr : lit('$1').
-E -> rangeref  : lit('$1').
+E -> int        : lit('$1').
+E -> float      : lit('$1').
+E -> bool       : lit('$1').
+E -> str        : lit('$1').
+E -> errval     : lit('$1').
+E -> Array      : '$1'.
+E -> CellRefs   : lit('$1').
+E -> name       : lit('$1').
+E -> namedexpr  : lit('$1').
+E -> RangeRefs  : lit('$1').
+
+%%% merging z- and ordinary cell and range references
+CellRefs -> cellref  : '$1'.
+CellRefs -> zcellref : '$1'.
+
+RangeRefs -> rangeref  : '$1'.
+RangeRefs -> zrangeref : '$1'.
 
 %%% funcall productions
 
 Funcall -> name '(' ')'      : [func_name('$1')].
 Funcall -> name '(' Args ')' : func('$1', '$3').
 %% Special case for functions with names like ATAN2
+%% this ambiguity can only take place for an implicit cell name on a page
+%% ie '=a1+atan2(1.234)' whereas a zcellref is always on a non-implicit page
+%% ie '=op(/blah/[expr(a,b,c)]/bleh/a1)' so there is no confusion...
+%% this production differentiates 'a1' and 'atan2' in the first case
 Funcall -> cellref '(' ')'       : [func_name('$1')].
 Funcall -> cellref '(' Args ')'  : func('$1', '$3').
 
@@ -157,12 +165,16 @@ func_name({cellref, _, #cellref{text = Text}}) ->
 lit({name, _, Name}) when is_record(Name, namedexpr) -> Name;
 lit({name, _, Name}) -> #namedexpr{path = "./", text = Name};
 lit({cellref, _, Cellref}) when is_record(Cellref, cellref) -> Cellref;
+lit({zcellref, _, ZPath, Cellref}) when is_record(Cellref, cellref) ->
+    #zcellref{zpath = ZPath, cellref = Cellref};
 lit({rangeref, _, Rangeref}) when is_record(Rangeref, rangeref) -> Rangeref;
+lit({zrangeref, _, ZPath, Rangeref}) when is_record(Rangeref, rangeref) ->
+    #zrangeref{zpath = ZPath, rangeref = Rangeref};
 lit({errval, _, Errval}) -> {errval, Errval};
 %% OrigStr is used in normalization and then thrown away -- only float values make it
 %% to the final AST.
 lit({float, _, {F, OrigStr}}) -> {float, F, OrigStr};
-lit({_Type, _, Data}) -> Data.
+lit({_Type, _, Data} = R) -> Data.
 
 %% operator function calls
 op(Arg1, {Op,_}, Arg2) -> [Op, Arg1, Arg2]; % used by production rule actions.
@@ -231,9 +243,6 @@ replace_float({array, Values}) ->
     {array, Vals};
 replace_float(Else) ->
     Else.
-
-pathq(E) ->
-    {pathq, E}.
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

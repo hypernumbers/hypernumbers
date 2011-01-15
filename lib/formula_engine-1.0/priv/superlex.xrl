@@ -14,9 +14,14 @@ A1REF = ((\$)?([a-zA-Z]+)(\$)?([0-9]+))
 OFFSET_RC = (\[(\+|\-)?({INT})\])
 RCREF = ((R|r)({INT}|{OFFSET_RC})(C|c)({INT}|{OFFSET_RC}))
 
+Z_EXPR = ((\[)([^\]]+)(\])(\/|\!)*)
+MAYBE_Z_PATH = ({START_OF_SSREF})*(({MAYBE_PATH})*({Z_EXPR})+({MAYBE_PATH})*)+
+
 SSA1REF  = {START_OF_SSREF}{MAYBE_PATH}{A1REF}
 SSRCREF  = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
 SSNAMEREF = {START_OF_SSREF}{MAYBE_PATH}{NAME}
+
+ZREF = {MAYBE_Z_PATH}{A1REF}
 
 STRING = (\"[^"\n]*\")
 %"%
@@ -31,6 +36,7 @@ Rules.
 {SSNAMEREF}  : {token, {string, xfl_lexer:debang(TokenChars)}}.
 {STRING}     : {token, {string, TokenChars}}.
 {SPACE}      : {token, {string, TokenChars}}.
+{ZREF}       : {token, {string, xfl_lexer:debang(TokenChars)}}.
 {WHITESPACE} : skip_token.
 \n           : skip_token.
 .            : {token, {stuff, TokenChars}}.

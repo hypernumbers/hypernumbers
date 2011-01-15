@@ -2,12 +2,14 @@
 %%% @doc Various utility functions used by the formula engine.
 
 -module(muin_util).
--export([array_at/3,
+-export([make_refX/3,
+         array_at/3,
          cast/2,
          cast/3,
          split_ssref/1,
          just_path/1,
          just_ref/1,
+         expand_cellrange/1,
          expand_cellrange/4,
          walk_path/2,
          attempt/3,
@@ -15,7 +17,6 @@
          apply/2,
          run/2,
          run_or_err/2,
-         expand_cellrange/1,
          bounds_indexes/1,
          tl_row/1,
          br_row/1,
@@ -29,6 +30,7 @@
 
 -include("typechecks.hrl").
 -include("muin_records.hrl").
+-include("spriki.hrl").
 
 apply(Args, Fun) ->
     case lists:keyfind(errval, 1, Args) of
@@ -199,6 +201,13 @@ expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
     % Flatten Cells; can't use flatten/1 because there are strings in there.
     lists:foldl(fun(X, Acc) -> lists:append([Acc, X]) end,
           [], Cells).
+
+make_refX(Site, Path, #rangeref{type = row, text = Txt}) ->
+    {row, {range, {_X1, Y1, _X2, Y2}}}= hn_util:parse_ref(Txt),
+     #refX{site = Site, path = Path, type = gurl, obj = {row, {Y1, Y2}}};
+make_refX(Site, Path, #rangeref{type = col, text = Txt}) ->
+    {column, {range, {X1, _Y1, X2, _Y2}}} = hn_util:parse_ref(Txt),
+    #refX{site = Site, path = Path, type = gurl, obj = {column, {X1, X2}}}.
 
 expand_cellrange(R) when ?is_rangeref(R) ->
     {{ColIndex1, RowIndex1}, {ColIndex2, RowIndex2}} = bounds_indexes(R),

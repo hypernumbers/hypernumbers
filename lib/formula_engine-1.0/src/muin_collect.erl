@@ -226,10 +226,14 @@ rl(fetch_name, Name) when ?is_namedexpr(Name) ->
 rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 
+rl(fetch_z, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) -> 
+    muin:fetch(Ref);
+
 rl(fetch, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
-rl(fetch, Ref) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
+rl(fetch, Ref) when ?is_cellref(Ref); ?is_rangeref(Ref)  ->
     muin:fetch(Ref);
+
 %% WTF? (why are ranges tagged as arrays)
 rl(fetch, {array, [[Ref]]}) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
     muin:fetch(Ref);

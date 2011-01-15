@@ -104,9 +104,11 @@ RC_COL_RANGE = ({RC_COL_REF_REL}|{RC_COL_REF_FIX}|{RC_COL_REF_MIX1}|{RC_COL_REF_
 RC_ROW_RANGE = ({RC_ROW_REF_REL}|{RC_ROW_REF_FIX}|{RC_ROW_REF_MIX1}|{RC_ROW_REF_MIX2})2
 
 %%% for z-order comprehensions need to identify expressions in URL's
-Z_EXPR = ((\[)(.+)(\]))
+%%% scoop everything until the next ']' - can't have sq brackets in
+%%% Excel expressions
+Z_EXPR = ((\[)([^\]]+)(\]))
 
-MAYBE_Z_PATH = ({MAYBE_URL_PREFIX}*|{Z_EXPR}*)+
+MAYBE_Z_PATH = (({MAYBE_URL_PREFIX})*({Z_EXPR})+({MAYBE_URL_PREFIX})*)+
 
 Z_REF_REL  = ({MAYBE_Z_PATH})({WORD})({INT})
 Z_REF_FIX  = ({MAYBE_Z_PATH})(\$)({WORD})(\$)({INT})
@@ -118,8 +120,11 @@ Z_REF_MIX2 = ({MAYBE_Z_PATH})({WORD})(\$)({INT})
 Z_REF = ({Z_REF_REL}|{Z_REF_FIX}|{Z_REF_MIX1}|{Z_REF_MIX2})
 
 %%% 2. Finite Ranges
+%%%    NOTE the first one is a z_ref, but the 2nd looks like A1_REF!
 
-FINITE_RANGE_Z = ({MAYBE_Z_PATH})({Z_REF})(\:)({Z_REF})
+FINITE_RANGE_Z = ({Z_REF})(\:)({A1_REF}) 
+
+TESTER = ({MAYBE_Z_PATH})({Z_REF})
 
 %%% 3. Row and Column
 
@@ -278,7 +283,7 @@ debang(Ssref) ->
 %%% @doc Check there are no string constants that are too large.
 no_strings_above_limit(Toks) ->
     lists:all(fun({str, _, Str}) ->
-                case string:len(Str) of
+               case string:len(Str) of
                     Ok when Ok < ?STRING_SIZE_LIMIT -> true;
                     _Else                           -> false
                 end;
@@ -353,7 +358,12 @@ parse_zpath(Path) ->
 
 parse_z2([?SQBRA | Rest]) -> % macro for emacs indentation only
     {Expr, _Ket} = lists:split(length(Rest) -1, Rest),
-    {zseg, xfl_lexer:lex(Expr, {1, 1})};
+    % if we ever implement z-path with RC syntax we will need to figure
+    % out what coordiates to put in the lexer here
+    % {0, 0} or is that just mad
+    % Bref? Fuck it, who uses RC notation anyhoo
+    {ok, ZSeg} = xfl_lexer:lex(Expr, {1, 1}),
+    {zseg, ZSeg};
 parse_z2(Seg) ->
     {seg, Seg}.
 

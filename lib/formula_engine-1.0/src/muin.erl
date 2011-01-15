@@ -3,16 +3,19 @@
 
 -module(muin).
 
+%% test exports
 -export([
          test_formula/2,
-         test_xfl/0
-         ]).
-
--export([
+         test_xfl/0,
          run_formula/2,
          run_code/2
         ]).
 
+% these functions are wrappers for use externally
+% they enable us to deny certain spreadsheet functions to
+% ability to be called inside other fns
+% used for fns line '=include(reference)' which operate
+% on the presentation of some cells and not the values
 -export([
          external_eval/1,
          external_eval_formula/1
@@ -86,7 +89,6 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
          {array_context, AryCtx},
          {retvals, {[], []}}, {recompile, false},
          {auth_req, AuthReq}]),
-    
     Fcode = case ?array_context of
                 true -> loopify(Pcode);
                 false -> Pcode
@@ -143,8 +145,7 @@ parse(Fla, {Col, Row}) ->
     case catch (xfl_lexer:lex(Trans, {Col, Row})) of
         {ok, Toks} ->
             case catch(xfl_parser:parse(Toks)) of
-                {ok, Ast} -> 
-                    {ok, Ast};
+                {ok, Ast} -> {ok, Ast};
                 _         -> ?syntax_error
             end;
         _ -> ?syntax_error
@@ -366,21 +367,46 @@ row_index({offset, N}) -> ?my + N.
 col_index(N) when is_integer(N) -> N;
 col_index({offset, N}) -> ?mx + N.
 
+fetch(Ref) when ?is_zcellref(Ref) ->
+    error_logger:info_msg("Somebody tried a z-order cellref~n"),
+    ?ERRVAL_ERR;
+fetch(Ref) when ?is_zrangeref(Ref) ->
+    error_logger:info_msg("Somebody tried a z-order rangeref~n"),
+    ?ERRVAL_ERR;
 fetch(N) when ?is_namedexpr(N) ->
     ?ERRVAL_NAME;
 fetch(#cellref{col = Col, row = Row, path = Path}) ->
     RowIndex = row_index(Row),
     ColIndex = col_index(Col),
-    do_cell(Path, RowIndex, ColIndex);                       
-fetch(R) ->
-    CellCoords = muin_util:expand_cellrange(R),
-    Rows = lists:foldr(fun(CurrRow, Acc) -> % Curr row, result rows
-                         RowCoords = lists:filter(fun({_, Y}) -> Y == CurrRow end, CellCoords),
-                         Row = lists:map(fun({X, Y}) -> do_cell(R#rangeref.path, Y, X) end, RowCoords),
-                         [Row|Acc]
-                 end,
-                 [],
-                 lists:seq(muin_util:tl_row(R), muin_util:br_row(R))),
+    do_cell(Path, RowIndex, ColIndex);
+fetch(#rangeref{type = Type, path = Path} = Ref)
+  when Type == row orelse Type == col ->
+    NewPath = muin_util:walk_path(?mpath, Path),
+    #refX{obj = Obj} = RefX = muin_util:make_refX(?msite, NewPath, Ref),
+    Refs = hn_db_wu:read_ref_field(RefX, "__rawvalue", read),
+    Rows = case Obj of
+               {Type2, {_I, _I}} -> sort1D(Refs, Type2);
+               {Type2, {I,   J}} -> sort2D(Refs, {Type2, I, J})
+    end,
+    {range, Rows},
+    %% pinch out the functionality for a release
+    error_logger:info_msg("Somebody tried a row or column rangeref~n"),
+    ?ERRVAL_ERR;
+fetch(#rangeref{type = finite} = Ref) ->
+    CellCoords = muin_util:expand_cellrange(Ref),
+    Fun1 = fun(CurrRow, Acc) -> % Curr row, result rows
+                   Fun2 = fun({_, Y}) ->
+                                  Y == CurrRow
+                          end,
+                   Fun3 = fun({X, Y}) ->
+                                  do_cell(Ref#rangeref.path, Y, X)
+                          end,
+                   RowCoords = lists:filter(Fun2, CellCoords),
+                   Row = lists:map(Fun3, RowCoords),
+                   [Row|Acc]
+           end,
+    Rows = lists:foldr(Fun1, [], lists:seq(muin_util:tl_row(Ref),
+                                           muin_util:br_row(Ref))),
     {range, Rows}. % still tagging to tell stdfuns where values came from.
 
 %% why are we passing in Url?
@@ -503,13 +529,111 @@ get_cell_info(S, P, Col, Row) ->
     RefX = #refX{site=string:to_lower(S), path=P, obj={cell, {Col,Row}}},
     hn_db_wu:get_cell_for_muin(RefX).
 
+sort1D(Refs, Type) -> sort1D_(Refs, Type, orddict:new()).
 
-%% Test Functions
+sort1D_([], Type, Dict) -> Size = orddict:size(Dict),
+                           List = orddict:to_list(Dict),
+                           Filled = fill1D(List, 1, 1, Size + 1, [], 'to-last-key'),
+                           % if it is row then you need to flatten the List
+                           % by one degree and wrap it in a list
+                           % (ie a 2d transposition)
+                           case Type of
+                               column -> Filled;
+                               row    -> [[X || [X] <- Filled]]
+                           end;
+sort1D_([{#refX{obj = {cell, {X, _Y}}}, V} | T], row, Dict) ->
+    sort1D_(T, row, orddict:append(X, V, Dict));
+sort1D_([{#refX{obj = {cell, {_X, Y}}}, V} | T], column, Dict) ->
+    sort1D_(T, column, orddict:append(Y, V, Dict)).
+
+%% if all the cells are blank will return an array of arrays.
+%% if type is 'column' this will be one array for each column each with
+%% a 'blank' in it
+%% if type is a 'row' this will be one list with as many 'blank's as there
+%% are rows specified
+sort2D(Refs, Def) -> sort2D_(Refs, Def, orddict:new()).
+
+sort2D_([], {Type, Start, End}, Dict) ->
+    Ret = case {Type, orddict:size(Dict)} of
+              {row, 0}    -> [lists:duplicate(End - Start, blank)];
+              {column, 0} ->  lists:duplicate(End - Start, [blank]);
+              {_, _}      -> fill2D(Dict, Type, Start, End, [])
+    end,
+    Ret;
+sort2D_([{#refX{obj = {cell, {X, Y}}}, V} | T], Def, Dict) ->
+    SubDict = case orddict:is_key(X, Dict) of
+                  true  -> orddict:fetch(X, Dict);
+                  false -> orddict:new()
+              end,
+    NewSub  = orddict:append(Y, V, SubDict),  % works because there are no dups!
+    NewDict = orddict:store(X, NewSub, Dict),
+    sort2D_(T, Def, NewDict).
+
+%% for columns you infill to the number of columns
+%% get the size of each row, and take the maximum of the
+%% go back and 'top up' all rows that are too short
+fill2D(Dict, column, Index, End, Acc) ->
+    {Pass1, Max} = fill2D_a(Dict, Index, End + 1, Acc, 0),
+    bulk_a(Pass1, [], Max);
+%% for rows you walk over the outer set of columns up to the last
+%% * if a column doesn't exist you fill it with blanks
+%% * if it does you infill it
+fill2D(Dict, row, Index, End, Acc) ->
+    DictSize = orddict:size(Dict),
+    fill2D_b(Dict, 1, 1, DictSize + 1, Index, End + 1, Acc).
+   
+%% this is the infill for row
+fill2D_b(_Dict, _Key, Size, Size, _Index, _End, Acc) ->
+    Lists = lists:reverse(Acc),
+    [[X || [X] <- Y] || Y <- Lists];
+fill2D_b(Dict, Key, N, Size, Index, End, Acc) ->
+    {NewDict, NewN} = case orddict:is_key(Key, Dict) of
+                          true  -> {orddict:fetch(Key, Dict), N + 1};
+                          false -> {orddict:new(), N}
+                      end,
+    NewAcc = fill1D(NewDict, Index, Index, End, [], 'over-fill'),
+    fill2D_b(Dict, Key + 1, NewN, Size, Index, End, [NewAcc | Acc]).
+
+%% this is the infill for columns
+fill2D_a(_Dict, End, End, Acc, Max) ->
+    {lists:reverse(Acc), Max};
+fill2D_a(Dict, Index, End, Acc, Max) ->
+    {NewAcc, DictMax} =
+        case orddict:is_key(Index, Dict) of
+            true  -> SubDict = orddict:fetch(Index, Dict),
+                     [{MyMax, _} | _T] = lists:reverse(orddict:to_list(SubDict)),
+                     {{Index, SubDict}, MyMax};
+            false -> {{Index, orddict:new()}, 0}
+        end,
+    NewMax = max(Max, DictMax),
+    fill2D_a(Dict, Index + 1, End, [NewAcc | Acc], NewMax).
+
+bulk_a([], Acc, _Max) ->
+    Lists = lists:reverse(Acc),
+    [[X || [X] <- Y] || Y <- Lists];
+bulk_a([{_I, D} | T], Acc, Max) ->
+    NewD = fill1D(D, 1, 1, Max + 1, [], 'over-fill'),
+    bulk_a(T, [orddict:to_list(NewD) | Acc], Max).
+
+fill1D(_Dict, _Index, Size, Size, Acc, 'to-last-key')  ->
+    lists:reverse(Acc);
+fill1D(_Dict, Size, _N, Size, Acc, 'over-fill')  ->
+    lists:reverse(Acc);
+fill1D(Dict, Index, N, Size, Acc, Type) ->
+    {NewAcc, NewN} =
+        case orddict:is_key(Index, Dict) of
+            true  -> {[orddict:fetch(Index, Dict) | Acc], N + 1};
+            false -> {[[blank] | Acc], N}
+        end,
+    fill1D(Dict, Index + 1, NewN, Size, NewAcc, Type).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Test Functions
 test_xfl() ->
     Exprs = [
              % "sum(/_sites/a1, 2, 3)",
              % "sum(./_sites/a1, 2, 3)",
-             %"sum(../_sites/a1, 2, 3)",
+             % "sum(../_sites/a1, 2, 3)",
              % "sum(/blah/_sites/bleh/a1:b2, 3)",
              % "sum(/_SITES/a1, 2, 3)",
              % "sum(./_SITES/a1, 2, 3)",
@@ -517,12 +641,26 @@ test_xfl() ->
              % "sum(../_SITES/a:b, 2, 3)",
              % "sum(../_SITES/2:3, 2, 3)",
              % "sum(/blah/_SITES/a1:b2, 3)",
-             %"sum(/blah/bleeh/[seg() = \"bluh\"]/bloh/a1)",
-             "sum(/blah/bleeh/a1)",
-             "sum(/blah/bleeh/$a1)",
-             "sum(/bb/[eg]/doggy/[or(sum(1,2))]/a$1)"
+             % "sum(/blah/bleeh/[seg() = \"bluh\"]/bloh/a1)",
+             % "sum(/blah/bleeh/a$1)",
+             % "sum(atan2(3))",
+             % "sum(/blah/bleeh/a1)",
+             % "sum(/bb/[eg]/doggy/[or(A1,B2)]/a1)",
+             % "sum(/bb/[eg]/doggy/[or(A1,a1/atan2(2))]/a1)",
+             % "sum(/[or(BB)]/blah/a1)",
+             % "sum([or(BB)]/a1)",
+             % "sum([o]/a1)",
+             % "sum(/blah/[or(BB)]/blah/a1)",
+             % "sum(/blah/[or(BB)]/blah/a1) + atan(/[xx]/N2)".
+             % "sum(/blah/[or(true,true)]/a1)+ sum(/blEh/[SUM(a1,B3)]/BLeh/A3)",
+             "sum(/blah/[or(1,2)]/a1, /[true = a1]/b99:bev90210)",
+             "/[or(1,2)]/a1",
+             "/[or(1,2)]/a1:b2",
+             "/[or(1,2)]/a:a",
+             "/[or(1,2)]/3:3"
             ],
     Fun = fun(X) ->
+                  io:format("~n~nStarting a new parse...~n"),
                   Trans = translator:do(X),
                   case catch (xfl_lexer:lex(Trans, {1, 1})) of
                       {ok, Toks} ->

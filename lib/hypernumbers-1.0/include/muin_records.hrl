@@ -23,6 +23,11 @@
           text = ""       % token text (used in the parser for function names like ATAN2)
          }).
 
+-record(zcellref, {
+          zpath,                % a z-order path
+          cellref = #cellref{}  % a standard #cellref{} record
+         }).
+
 %% super_util actually depends on rangeref order!!!
 -record(rangeref, {
           type,          % finite|col|row
@@ -30,6 +35,11 @@
           tl, br,        % {Col, Row} | {col|row, pos_integer()|{offset, pos_integer()}}
           width, height, % pos_integer()|na
           text = ""      % token text
+         }).
+
+-record(zrangeref, {
+          zpath,                 % a z-order path
+          rangeref = #rangeref{} % a standard #rangeref{} record
          }).
 
 -record(namedexpr, {

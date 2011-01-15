@@ -11,6 +11,7 @@
 -define(ERRVAL_CIRCREF, {errval, '#CIRCREF!'}).
 -define(ERRVAL_AUTH,    {errval, '#AUTH!'}).
 -define(ERRVAL_FORM,    {errval, '#ERROR!'}).
+-define(ERRVAL_ERR,     {errval, '#ERROR!'}).
 -define(ERRVAL_MOCHI,   {errval, '#MOCHIJSON!'}). % THIS IS A TEMPORARY ERROR MSG AND MUST BE MADE TO GO AWAY! ITS A BUG!!
 
 %% Return an error.

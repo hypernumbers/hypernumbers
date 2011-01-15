@@ -40,6 +40,12 @@
 -define(is_rangeref(X),
         (is_tuple(X) andalso element(1, X) == rangeref)).
 
+-define(is_zcellref(X),
+        element(1, X) == zcellref).
+
+-define(is_zrangeref(X),
+        (is_tuple(X) andalso element(1, X) == zrangeref)).
+
 -define(is_namedexpr(X),
         element(1, X) == namedexpr).
 

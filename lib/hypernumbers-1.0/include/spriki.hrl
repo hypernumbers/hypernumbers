@@ -47,6 +47,7 @@
 -record(refX,
         {
           site        = [],
+          type        = url,
           path        = [],
           obj         = null
          }).
