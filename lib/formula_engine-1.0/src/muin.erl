@@ -38,7 +38,7 @@
          get_hypernumber/9,
          userdef_call/2,
          toidx/1,
-         do_cell/3,
+         do_cell/4,
          parse/2
         ]).
 
@@ -86,7 +86,7 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
     %% Populate the process dictionary.
     lists:map(fun({K,V}) -> put(K, V) end,
         [{site, Site}, {path, Path}, {x, Col}, {y, Row}, 
-         {array_context, AryCtx},
+         {array_context, AryCtx}, {infinite, []},
          {retvals, {[], []}}, {recompile, false},
          {auth_req, AuthReq}]),
     Fcode = case ?array_context of
@@ -95,7 +95,9 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
             end,
     Result = eval_formula(Fcode),
     {_Errors, References} = get(retvals),
-    {ok, {Fcode, Result, References, get(recompile)}}.
+    FiniteRefs = [{X, L} || {X, finite, L} <- References],
+    InfiniteRefs = get(infinite),
+    {ok, {Fcode, Result, FiniteRefs, InfiniteRefs, get(recompile)}}.
 
 % not all functions can be included in other functions
 external_eval_formula([include | _Rest]) -> ?error_in_formula;
@@ -305,7 +307,7 @@ implicit_intersection_col(R) ->
         1 ->
             {col, Col} = R#rangeref.tl,
             ColIdx = col_index(Col),
-            do_cell(R#rangeref.path, ?my, ColIdx);
+            do_cell(R#rangeref.path, ?my, ColIdx, finite);
         _ ->
             ?ERRVAL_VAL
     end.
@@ -315,7 +317,7 @@ implicit_intersection_row(R) ->
         1 ->
             {row, Row} = R#rangeref.tl,
             RowIdx = row_index(Row),
-            do_cell(R#rangeref.path, RowIdx, ?mx);
+            do_cell(R#rangeref.path, RowIdx, ?mx, finite);
         _ ->
             ?ERRVAL_VAL
     end.
@@ -325,17 +327,17 @@ implicit_intersection_finite(R) ->
     case Dim of
         {1, 1} ->
             [{X, Y}] = muin_util:expand_cellrange(R),
-            do_cell(R#rangeref.path, Y, X);
+            do_cell(R#rangeref.path, Y, X, finite);
         {1, _H} -> % vertical vector
             CellCoords = muin_util:expand_cellrange(R),
             case lists:filter(fun({_X, Y}) -> Y == ?my end, CellCoords) of
-                [{X, Y}] -> do_cell(R#rangeref.path, Y, X);
+                [{X, Y}] -> do_cell(R#rangeref.path, Y, X, finite);
                 []       -> ?ERRVAL_VAL
             end;
         {_W, 1} -> % horizontal vector
             CellCoords = muin_util:expand_cellrange(R),
             case lists:filter(fun({X, _Y}) -> X == ?mx end, CellCoords) of
-                [{X, Y}] -> do_cell(R#rangeref.path, Y, X);
+                [{X, Y}] -> do_cell(R#rangeref.path, Y, X, finite);
                 []       -> ?ERRVAL_VAL
             end;
         {_, _} ->
@@ -378,19 +380,23 @@ fetch(N) when ?is_namedexpr(N) ->
 fetch(#cellref{col = Col, row = Row, path = Path}) ->
     RowIndex = row_index(Row),
     ColIndex = col_index(Col),
-    do_cell(Path, RowIndex, ColIndex);
-fetch(#rangeref{type = Type, path = Path} = Ref)
+    do_cell(Path, RowIndex, ColIndex, finite);
+fetch(#rangeref{type = Type, path = Path, text = Text} = Ref)
   when Type == row orelse Type == col ->
+    %io:format("Proc Dict at start ~p~n", [erlang:get()]),
     NewPath = muin_util:walk_path(?mpath, Path),
+    Infinites = get(infinite),
+    put(infinite, [?msite ++ NewPath ++ Text | Infinites]),
     #refX{obj = Obj} = RefX = muin_util:make_refX(?msite, NewPath, Ref),
     Refs = hn_db_wu:expand_ref(RefX),
     Rows = case Obj of
                {Type2, {_I, _I}} -> sort1D(Refs, Path, Type2);
                {Type2, {I,   J}} -> sort2D(Refs, Path, {Type2, I, J})
     end,
-    {range, Rows},
     %io:format("Rows is ~p~n", [Rows]),
+    %io:format("Proc Dict at the end ~p~n", [erlang:get()]),
     % pinch out the functionality for a release
+    {range, Rows},
     error_logger:info_msg("Somebody tried a row or column rangeref~n"),
     ?ERRVAL_ERR;
 fetch(#rangeref{type = finite} = Ref) ->
@@ -400,7 +406,7 @@ fetch(#rangeref{type = finite} = Ref) ->
                                   Y == CurrRow
                           end,
                    Fun3 = fun({X, Y}) ->
-                                  do_cell(Ref#rangeref.path, Y, X)
+                                  do_cell(Ref#rangeref.path, Y, X, finite)
                           end,
                    RowCoords = lists:filter(Fun2, CellCoords),
                    Row = lists:map(Fun3, RowCoords),
@@ -491,7 +497,7 @@ userdef_call(Fname, Args) ->
     end.
 
 %% Returns value in the cell + get_value_and_link() is called`
-do_cell(RelPath, Rowidx, Colidx) ->
+do_cell(RelPath, Rowidx, Colidx, Type) ->
     Path = muin_util:walk_path(?mpath, RelPath),
     IsCircRef = (Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath),
 
@@ -499,7 +505,9 @@ do_cell(RelPath, Rowidx, Colidx) ->
         true ->
             ?ERRVAL_CIRCREF;
         false ->
-            FetchFun = fun() -> get_cell_info(?msite, Path, Colidx, Rowidx) end,
+            FetchFun = fun() ->
+                               get_cell_info(?msite, Path, Colidx, Rowidx, Type)
+                       end,
             case ?mar of
                 nil -> get_value_and_link(FetchFun);
                 _Else -> case auth_srv:get_any_view(?msite, Path, ?mar) of
@@ -525,9 +533,9 @@ toidx(N) when is_number(N) -> N;
 toidx({row, Offset})       -> ?my + Offset;
 toidx({col, Offset})       -> ?mx + Offset.
 
-get_cell_info(S, P, Col, Row) ->
+get_cell_info(S, P, Col, Row, Type) ->
     RefX = #refX{site=string:to_lower(S), path=P, obj={cell, {Col,Row}}},
-    hn_db_wu:get_cell_for_muin(RefX).
+    hn_db_wu:get_cell_for_muin(RefX, Type).
 
 sort1D(Refs, Path, Type) -> sort1D_(Refs, Path, Type, orddict:new()).
 
@@ -542,14 +550,10 @@ sort1D_([], _Path, Type, Dict) -> Size = orddict:size(Dict),
                                row    -> [[X || [X] <- Filled]]
                            end;
 sort1D_([#refX{obj = {cell, {X, Y}}} | T], Path, row, Dict) ->
-    error_logger:info_msg("do_cell should not be called here because it binds the "++
-                 "called cell to the calling cell with a cell relationship!~n"),
-    V = do_cell(Path, Y, X),
+    V = do_cell(Path, Y, X, infinite),
     sort1D_(T, Path, row, orddict:append(X, V, Dict));
 sort1D_([#refX{obj = {cell, {X, Y}}} | T], Path, column, Dict) ->
-    error_logger:info_msg("do_cell should not be called here because it binds the "++
-                 "called cell to the calling cell with a cell relationship!~n"),
-    V = do_cell(Path, Y, X),
+    V = do_cell(Path, Y, X, infinite),
     sort1D_(T, Path, column, orddict:append(Y, V, Dict)).
 
 %% if all the cells are blank will return an array of arrays.
@@ -571,9 +575,7 @@ sort2D_([#refX{obj = {cell, {X, Y}}} | T], Path, Def, Dict) ->
                   true  -> orddict:fetch(X, Dict);
                   false -> orddict:new()
               end,
-    error_logger:info_msg("do_cell should not be called here because it binds the "++
-                 "called cell to the calling cell with a cell relationship!~n"),
-    V = do_cell(Path, Y, X),
+    V = do_cell(Path, Y, X, infinite),
     NewSub  = orddict:append(Y, V, SubDict),  % works because there are no dups!
     NewDict = orddict:store(X, NewSub, Dict),
     sort2D_(T, Path, Def, NewDict).

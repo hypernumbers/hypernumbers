@@ -29,6 +29,7 @@
 -include("spriki.hrl").
 -include("muin_records.hrl").
 
+-define(ext, muin:external_eval_formula).
 
 %% TODO: Range references (literal and from INDIRECT)
 %% TODO: Other info types.
@@ -41,11 +42,13 @@ cell([V1, V2]) ->
             %% TODO: X when ?is_rangeref(X)                 -> todo;
             _                                      -> ?ERR_REF
         end,
-    muin:do_cell(R#cellref.path, muin:row_index(R#cellref.row), muin:col_index(R#cellref.col)),
-    Path = muin_util:walk_path(muin:context_setting(path), R#cellref.path),               
+    muin:do_cell(R#cellref.path, muin:row_index(R#cellref.row),
+                 muin:col_index(R#cellref.col), finite),
+    Path = muin_util:walk_path(muin:context_setting(path), R#cellref.path),
     RefX = #refX{site = muin:context_setting(site),
                  path = Path,
-                 obj  = {cell, {muin:col_index(R#cellref.col), muin:row_index(R#cellref.row)}}},
+                 obj  = {cell, {muin:col_index(R#cellref.col),
+                                muin:row_index(R#cellref.row)}}},
     cell1(InfoType, RefX).
 
 cell1("formula", RefX) ->
@@ -77,7 +80,6 @@ cell1("contents", RefX) ->
     end;
 cell1(_, _) ->
     ?ERR_VAL.
-    
 
 errornum(?ERRVAL_NULL)    -> 1;
 errornum(?ERRVAL_DIV)     -> 2;
@@ -95,7 +97,6 @@ errornum(?ERRVAL_FORM)    -> 10.
 'error.type'([{array, [[X|_]|_]}]) when ?is_errval(X) -> errornum(X);
 'error.type'(_)                                       -> ?ERRVAL_NA.
 
-
 %% Returns the logical value TRUE if value refers to any error value except
 %% #N/A; otherwise it returns FALSE.
 iserr([?ERRVAL_NA])                            -> false;
@@ -103,12 +104,10 @@ iserr([X]) when ?is_errval(X)                  -> true;
 iserr([{array, [[X|_]|_]}]) when ?is_errval(X) -> true;
 iserr(_)                                       -> false.
 
-
 %% Returns true if argument is any error value.
 iserror([X]) when ?is_errval(X)                  -> true;
 iserror([{array, [[X|_]|_]}]) when ?is_errval(X) -> true;
 iserror(_)                                       -> false.
-
 
 %% Returns TRUE if number is even, or FALSE if number is odd.
 %% The number is truncated, so ISEVEN(2.5) is true.
@@ -166,7 +165,6 @@ n(_X)                        -> 0.
     
 na([]) -> {errval, '#N/A'}.
 
-
 %% TYPE(INDIRECT("A1")) in Excel = 0 regardless of contents of A1. In Hypernumbers it's same as TYPE(A1)
 type([A]) when ?is_range(A)  -> 16;
 type([A]) when ?is_array(A)  -> 64;
@@ -177,7 +175,6 @@ type([{errval, _X}])         -> 16;
 type([blank])                -> 1;
 type(_)                      -> 0.
 
-
 %% Excel's ISBLANK takes one argument.  Ours will work with a list too.
 isblank([B]) when ?is_blank(B) ->
     true;
@@ -185,11 +182,9 @@ isblank(Vs)      ->
     Flatvs = muin_col_DEPR:flatten_areas(Vs),
     lists:all(fun muin_collect:is_blank/1, Flatvs).
 
-
 %% @todo needs a test case written because it is not an Excel 97 function
 isnonblank(Vs) -> Flatvs = muin_col_DEPR:flatten_areas(Vs),
                   lists:all(fun(X) -> not(muin_collect:is_blank(X)) end, Flatvs).
-
 
 info(["site"]) -> get(site);
 info(["path"]) -> case "/" ++ string:join(get(path), "/") ++ "/" of
@@ -207,9 +202,8 @@ rows([Expr]) when ?is_cellref(Expr)   -> 1;
 rows([Expr]) when ?is_namedexpr(Expr) -> ?ERRVAL_NAME;
 rows([Expr]) when is_number(Expr)     -> 1;
 rows([Expr]) when ?is_errval(Expr)    -> Expr;
-rows([Expr]) when ?is_funcall(Expr)   -> rows([muin:external_eval_formula(Expr)]);
+rows([Expr]) when ?is_funcall(Expr)   -> rows([?ext(Expr)]);
 rows([_Expr])                         -> ?ERRVAL_VAL.
-
 
 columns([R]) when ?is_rangeref(R)        -> R#rangeref.width;
 columns([A]) when ?is_array(A)           -> area_util:width(A);
@@ -217,6 +211,6 @@ columns([Expr]) when ?is_cellref(Expr)   -> 1;
 columns([Expr]) when ?is_namedexpr(Expr) -> ?ERRVAL_NAME;
 columns([Expr]) when is_number(Expr)     -> 1;
 columns([Expr]) when ?is_errval(Expr)    -> Expr;
-columns([Expr]) when ?is_funcall(Expr)   -> columns([muin:external_eval_formula(Expr)]);
+columns([Expr]) when ?is_funcall(Expr)   -> columns([?ext(Expr)]);
 columns([_Expr])                         -> ?ERRVAL_VAL.
 
