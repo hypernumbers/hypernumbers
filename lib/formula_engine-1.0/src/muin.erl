@@ -383,13 +383,14 @@ fetch(#rangeref{type = Type, path = Path} = Ref)
   when Type == row orelse Type == col ->
     NewPath = muin_util:walk_path(?mpath, Path),
     #refX{obj = Obj} = RefX = muin_util:make_refX(?msite, NewPath, Ref),
-    Refs = hn_db_wu:read_ref_field(RefX, "__rawvalue", read),
+    Refs = hn_db_wu:expand_ref(RefX),
     Rows = case Obj of
-               {Type2, {_I, _I}} -> sort1D(Refs, Type2);
-               {Type2, {I,   J}} -> sort2D(Refs, {Type2, I, J})
+               {Type2, {_I, _I}} -> sort1D(Refs, Path, Type2);
+               {Type2, {I,   J}} -> sort2D(Refs, Path, {Type2, I, J})
     end,
     {range, Rows},
-    %% pinch out the functionality for a release
+    io:format("Rows is ~p~n", [Rows]),
+    % pinch out the functionality for a release
     error_logger:info_msg("Somebody tried a row or column rangeref~n"),
     ?ERRVAL_ERR;
 fetch(#rangeref{type = finite} = Ref) ->
@@ -489,8 +490,7 @@ userdef_call(Fname, Args) ->
         Val                  -> Val
     end.
 
-%% Returns value in the cell + get_value_and_link() is called behind the
-%% scenes.
+%% Returns value in the cell + get_value_and_link() is called`
 do_cell(RelPath, Rowidx, Colidx) ->
     Path = muin_util:walk_path(?mpath, RelPath),
     IsCircRef = (Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath),
@@ -529,9 +529,9 @@ get_cell_info(S, P, Col, Row) ->
     RefX = #refX{site=string:to_lower(S), path=P, obj={cell, {Col,Row}}},
     hn_db_wu:get_cell_for_muin(RefX).
 
-sort1D(Refs, Type) -> sort1D_(Refs, Type, orddict:new()).
+sort1D(Refs, Path, Type) -> sort1D_(Refs, Path, Type, orddict:new()).
 
-sort1D_([], Type, Dict) -> Size = orddict:size(Dict),
+sort1D_([], _Path, Type, Dict) -> Size = orddict:size(Dict),
                            List = orddict:to_list(Dict),
                            Filled = fill1D(List, 1, 1, Size + 1, [], 'to-last-key'),
                            % if it is row then you need to flatten the List
@@ -541,33 +541,42 @@ sort1D_([], Type, Dict) -> Size = orddict:size(Dict),
                                column -> Filled;
                                row    -> [[X || [X] <- Filled]]
                            end;
-sort1D_([{#refX{obj = {cell, {X, _Y}}}, V} | T], row, Dict) ->
-    sort1D_(T, row, orddict:append(X, V, Dict));
-sort1D_([{#refX{obj = {cell, {_X, Y}}}, V} | T], column, Dict) ->
-    sort1D_(T, column, orddict:append(Y, V, Dict)).
+sort1D_([#refX{obj = {cell, {X, Y}}} | T], Path, row, Dict) ->
+    error_logger:info_msg("do_cell should not be called here because it binds the "++
+                 "called cell to the calling cell with a cell relationship!~n"),
+    V = do_cell(Path, Y, X),
+    sort1D_(T, Path, row, orddict:append(X, V, Dict));
+sort1D_([#refX{obj = {cell, {X, Y}}} | T], Path, column, Dict) ->
+    error_logger:info_msg("do_cell should not be called here because it binds the "++
+                 "called cell to the calling cell with a cell relationship!~n"),
+    V = do_cell(Path, Y, X),
+    sort1D_(T, Path, column, orddict:append(Y, V, Dict)).
 
 %% if all the cells are blank will return an array of arrays.
 %% if type is 'column' this will be one array for each column each with
 %% a 'blank' in it
 %% if type is a 'row' this will be one list with as many 'blank's as there
 %% are rows specified
-sort2D(Refs, Def) -> sort2D_(Refs, Def, orddict:new()).
+sort2D(Refs, Path, Def) -> sort2D_(Refs, Path, Def, orddict:new()).
 
-sort2D_([], {Type, Start, End}, Dict) ->
+sort2D_([], _Path, {Type, Start, End}, Dict) ->
     Ret = case {Type, orddict:size(Dict)} of
               {row, 0}    -> [lists:duplicate(End - Start, blank)];
               {column, 0} ->  lists:duplicate(End - Start, [blank]);
               {_, _}      -> fill2D(Dict, Type, Start, End, [])
     end,
     Ret;
-sort2D_([{#refX{obj = {cell, {X, Y}}}, V} | T], Def, Dict) ->
+sort2D_([#refX{obj = {cell, {X, Y}}} | T], Path, Def, Dict) ->
     SubDict = case orddict:is_key(X, Dict) of
                   true  -> orddict:fetch(X, Dict);
                   false -> orddict:new()
               end,
+    error_logger:info_msg("do_cell should not be called here because it binds the "++
+                 "called cell to the calling cell with a cell relationship!~n"),
+    V = do_cell(Path, Y, X),
     NewSub  = orddict:append(Y, V, SubDict),  % works because there are no dups!
     NewDict = orddict:store(X, NewSub, Dict),
-    sort2D_(T, Def, NewDict).
+    sort2D_(T, Path, Def, NewDict).
 
 %% for columns you infill to the number of columns
 %% get the size of each row, and take the maximum of the
