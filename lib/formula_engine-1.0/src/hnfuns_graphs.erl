@@ -11,8 +11,8 @@
 -export([
          'sparkline.1x1'/1,
          'sparkline.2x2'/1,
-         'xy.3x5'/1,
-         'xy.4x7'/1,
+         'xy.3x6'/1,
+         'xy.4x8'/1,
          'xy.6x11'/1,
          linegraph/1,
          piechart/1,
@@ -46,11 +46,11 @@
 -define(tickmarks,  "chxt").
 
 % definition of standard stuff
--define(SIZE1x1,     "80x20").
--define(SIZE2x2,     "160x40").
--define(SIZE3x5,     "240x100").
--define(SIZE4x7,     "320x140").
--define(SIZE6x11,    "480x220").
+-define(SIZE1x1,     "79x21").
+-define(SIZE2x2,     "159x43").
+-define(SIZE3x6,     "229x131").
+-define(SIZE4x8,     "319x175").
+-define(SIZE6x11,    "479x241").
 -define(NORMALAXES,  "x,y").
 -define(LABELAXES,   "x,x,y,y").
 -define(XYLINE,      "lxy").
@@ -64,24 +64,32 @@
 -define(NORMMARGINS, "5,5,5,5").
 -define(BOTHAXES,    "x,y").
 
--define(COLOURS, [
-                  "000000",
-                  "008000",
-                  "800000",
-                  "000080", 
-                  "FF0000",
-                  "0000FF",
-                  "800080",
-                  "C0C0C0",
-                  "00FF00", 
-                  "808080",
-                  "808000",
-                  %"FFFFFF",
-                  "008080", 
-                  "FF00FF",
-                  "00FFFF",
-                  "FFFF00"
-                 ]).
+-define(SPCOLOURS, [
+                    "444444",
+                    "CCCCCC",
+                    "888888",
+                    "666666",
+                    "CCCCCC"
+                   ]).
+
+-define(XYCOLOURS, [
+                    "000000",
+                    "008000",
+                    "800000",
+                    "000080", 
+                    "FF0000",
+                    "0000FF",
+                    "800080",
+                    "C0C0C0",
+                    "00FF00", 
+                    "808080",
+                    "808000",
+                    %"FFFFFF",
+                    "008080", 
+                    "FF00FF",
+                    "00FFFF",
+                    "FFFF00"
+                   ]).
 
 %%
 %% Exported functions
@@ -99,15 +107,15 @@ chunk_spark([Lines | List]) ->
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
     muin_checks:ensure(Lines1 == length(List), ?ERRVAL_NUM),
     % now make the colours
-    Colours = allocate_colours(Lines),
+    Colours = allocate_colours(Lines, ?SPCOLOURS),
     Data1 = [lists:reverse(cast_data(X)) || X <- List],
     Min = lists:min(lists:flatten(Data1)),
     Max = lists:max(lists:flatten(Data1)),
-    Data2 = [normalise(X, Max, Min) || X <- Data1],
+    Data2 = [normalize_sp(X, Min, Max) || X <- Data1],
     Data3 = "t:"++conv_data(Data2),
     {Data3, Colours}.
 
-normalise(List, Max, Min) ->
+normalize_sp(List, Min, Max) ->
     Diff = Max - Min,
     [(X - Min)*100/Diff || X <- List].
 
@@ -121,14 +129,14 @@ spark1(Size, Data, Colours) ->
            ],
     make_chart(Opts).
 
-'xy.3x5'(List) ->
+'xy.3x6'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, single),
-    xy1(?SIZE3x5, Data, Scale, AxesLabPos, Colours, Rest,
+    xy1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}]).
 
-'xy.4x7'(List) ->
+'xy.4x8'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
-    xy1(?SIZE4x7, Data, Scale, AxesLabPos, Colours, Rest, []).
+    xy1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest, []).
 
 'xy.6x11'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
@@ -142,10 +150,10 @@ chunk_xy([Lines | List], LabType) ->
     Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
     % now make the colours
-    Colours = allocate_colours(Lines),
+    Colours = allocate_colours(Lines, ?XYCOLOURS),
     {Data1, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
      {?colours, Colours}, Rest}.
- 
+
 xy1(Size, Data, Scale, _AxesLabPos, Colours, [], Opts) ->
     NewOpts = lists:concat([[Scale, Colours], Opts]),
     xy2(Size, Data, NewOpts);
@@ -154,13 +162,11 @@ xy1(Size, Data, Scale, _AxesLabPos, Colours, [Tt | []], Opts) ->
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl | []], Opts) ->
     NewOpts = lists:concat([[Scale,Colours, AxesLabPos, make_title(Tt),
-                             make_labs(Xl, ""), {?axes, ?LABELAXES},
-                             {?legendpos, ?TOPHORIZ}], Opts]),
+                             make_labs(Xl, ""), {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl | []], Opts) ->
     NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
-                             make_labs(Xl, Yl), {?axes, ?LABELAXES},
-                             {?legendpos, ?TOPHORIZ}], Opts]),
+                             make_labs(Xl, Yl), {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);    
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl, Srs | []], Opts) ->
     NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
@@ -216,7 +222,7 @@ make_s1(double, MinX, MaxX, MinY, MaxY) ->
         ++"|1,"++tconv:to_s(MinX)++","++tconv:to_s(MaxX)
         ++"|2,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY)
         ++"|3,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY).
-    
+
 make_chart(List) -> make_c(List, []).
 
 make_c([], Acc)           -> lists:flatten([?apiurl | Acc]) ++ ?urlclose;
@@ -346,8 +352,15 @@ process_data_xy(Data) ->
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
     Data3 = [[lists:reverse(cast_data(X)) || X <- X1] || X1 <- Data2],
     {MinX, MaxX, MinY, MaxY} = get_maxes(Data3),
-    Data4 = [conv_data(X) || X <- Data3],
-    {MinX, MaxX, MinY, MaxY, "t:"++string:join(Data4, "|")}.
+    Data4 = normalize_xy(Data3, MinX, MaxX, MinY, MaxY, []),
+    Data5 = [conv_data(X) || X <- Data4],
+    {MinX, MaxX, MinY, MaxY, "t:"++string:join(Data5, "|")}.
+
+normalize_xy([], _, _, _, _, Acc) -> lists:reverse(Acc);
+normalize_xy([[H1, H2] | T], MinX, MaxX, MinY, MaxY, Acc) ->
+    NewH1 = lists:reverse(normalize_sp(H1, MinX, MaxX)),
+    NewH2 = lists:reverse(normalize_sp(H2, MinY, MaxY)),
+    normalize_xy(T, MinX, MaxX, MinY, MaxY, [[NewH1, NewH2] | Acc]).
 
 proc_dxy1({range, X} = R) ->
     if
@@ -380,7 +393,7 @@ hist1(Data, {Scale, Titles, Colours}) ->
     end.
 
 hist2(Data, Min, Max, Titles, Colours) ->
-    Data1    = make_data(normalise(Data)),
+    Data1    = make_data(normalize(Data)),
     Titles1  = make_titles(Titles),
     Colours1 = conv_colours(Colours),
     "<img src='http://chart.apis.google.com/chart?cht=bvs&amp;chd=t:"
@@ -402,7 +415,7 @@ pie1(Data, Titles, Colours) ->
     end.
 
 pie2(Data, Titles, Colours) ->
-    Data1    = make_data(normalise(Data)),
+    Data1    = make_data(normalize(Data)),
     Titles1  = make_titles(Titles),
     Colours1 = conv_colours(Colours),
     "<img src='http://chart.apis.google.com/chart?cht=p3&amp;chd=t:"
@@ -523,7 +536,7 @@ has_error([H | T]) when is_list(H) ->
 has_error([_H | T]) ->
     has_error(T).
 
-normalise(Data) ->
+normalize(Data) ->
     Total = lists:sum(Data),
     Fun = fun(X) -> trunc(100*X/Total) end,
     lists:map(Fun, Data).
@@ -550,12 +563,14 @@ replace_colour(Colour) ->
         false                  -> Colour
     end.
 
-allocate_colours(N) ->
-    NoOfCols = length(?COLOURS),
+allocate_colours(N, Colours) ->
+    NoOfCols = length(Colours),
     NSets = trunc(N/NoOfCols),
     Rem = N rem NoOfCols,
-    {Extra, _Rest} = lists:split(Rem, ?COLOURS),
-    string:join(lists:concat([lists:duplicate(NSets, ?COLOURS), Extra]), ","). 
+    {Extra, _Rest} = lists:split(Rem, Colours),
+    Dup = lists:concat(lists:duplicate(NSets, Colours)),
+    NewList = lists:concat([Dup, Extra]),
+    string:join(NewList, ",").
 
 colours() -> [
               {"black"   , "000000"},
