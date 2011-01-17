@@ -1,4 +1,3 @@
-
 %%% @copyright 2010 Hypernumbers Ltd
 %%% @doc Handle Hypernumbers HTTP requests
 -module(hn_render).
@@ -177,7 +176,7 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
            end,
     Style = io_lib:format(
               "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s'",
-              [X, Y, W-4, H-2, Css]),
+              [X, Y, W, H, Css]),
     [ODiv,Style,">", Val, "</div>"].
 
 -spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean(). 
@@ -223,6 +222,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
 "        <meta charset='utf-8' />
          <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />	
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
+         <link rel='stylesheet' href='/webcomponents/webcomponents.css' />
          <link rel='stylesheet' href='/webcomponents/jquery.ui.potato.menu.css'>
          <link rel='stylesheet' href='/tblsorter/style.css' />
 "     ++Addons#render.css++
