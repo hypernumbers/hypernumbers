@@ -14,11 +14,14 @@
          'xy.3x6'/1,
          'xy.4x8'/1,
          'xy.6x11'/1,
+         'speedo.2x4'/1,
+         'speedo.3x6'/1,
+         'speedo.4x8'/1,
+         'speedo.6x11'/1,
          linegraph/1,
          piechart/1,
          histogram/1,
-         barchart/1,
-         speedo/1
+         barchart/1
         ]).
 
 -define(ROW,    true).
@@ -48,6 +51,7 @@
 % definition of standard stuff
 -define(SIZE1x1,     "72x20").
 -define(SIZE2x2,     "152x42").
+-define(SIZE2x4,     "152x86").
 -define(SIZE3x6,     "222x130").
 -define(SIZE4x8,     "312x174").
 -define(SIZE6x11,    "472x240").
@@ -229,11 +233,16 @@ make_c([], Acc)           -> lists:flatten([?apiurl | Acc]) ++ ?urlclose;
 make_c([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
                              make_c(T, [NewAcc | Acc]).
 
-speedo([Val])                  -> speedo1(Val, "", "");
-speedo([Val, Title])           -> speedo1(Val, Title, "");
-speedo([Val, Title, Subtitle]) -> speedo1(Val, Title, Subtitle).
+'speedo.2x4'(List)  -> speedo(?SIZE2x4,  List).
+'speedo.3x6'(List)  -> speedo(?SIZE3x6,  List).
+'speedo.4x8'(List)  -> speedo(?SIZE4x8,  List).
+'speedo.6x11'(List) -> speedo(?SIZE6x11, List).
 
-speedo1(Val, Title, Subtitle) ->
+speedo(Size, [Val])                  -> speedo1(Size, Val, "", "");
+speedo(Size, [Val, Title])           -> speedo1(Size, Val, Title, "");
+speedo(Size, [Val, Title, Subtitle]) -> speedo1(Size, Val, Title, Subtitle).
+
+speedo1(Size, Val, Title, Subtitle) ->
     [Val2] = cast_data(Val),
     [T2]   = cast_titles(Title),
     [S2]   = cast_titles(Subtitle),
@@ -244,7 +253,7 @@ speedo1(Val, Title, Subtitle) ->
             "<img src='http://chart.apis.google.com/chart" ++
                 "?chxl=0:|OK|Beware|Danger" ++
                 "&amp;chxt=y" ++
-                "&amp;chs=300x150" ++
+                "&amp;chs=" ++Size++
                 "&amp;cht=gm" ++
                 "&amp;chco=000000,008000|FFCC33|FF0000" ++
                 "&amp;chd=t:" ++ tconv:to_s(Val2 * 100) ++
