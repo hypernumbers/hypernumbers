@@ -67,7 +67,7 @@ start_link(Site) ->
     gen_server:start_link({local, Id}, ?MODULE, [Site], []).
 
 stop(Site) ->
-    Id = hn_util:site_to_atom(Site, "auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:cast(Id, stop).
 
 -spec check_get_view(string(), [string()], uid()) 
