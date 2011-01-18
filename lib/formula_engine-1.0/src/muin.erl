@@ -616,7 +616,7 @@ fill2D_a(Dict, Index, End, Acc, Max) ->
                      {{Index, SubDict}, MyMax};
             false -> {{Index, orddict:new()}, 0}
         end,
-    NewMax = max(Max, DictMax),
+    NewMax = erlang:max(Max, DictMax),
     fill2D_a(Dict, Index + 1, End, [NewAcc | Acc], NewMax).
 
 bulk_a([], Acc, _Max) ->
