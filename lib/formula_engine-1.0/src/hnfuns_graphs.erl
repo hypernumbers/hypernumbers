@@ -49,12 +49,12 @@
 -define(tickmarks,  "chxt").
 
 % definition of standard stuff
--define(SIZE1x1,     "72x20").
--define(SIZE2x2,     "152x42").
--define(SIZE2x4,     "152x86").
--define(SIZE3x6,     "222x130").
--define(SIZE4x8,     "312x174").
--define(SIZE6x11,    "472x240").
+-define(SIZE1x1,     "66x20").
+-define(SIZE2x2,     "146x42").
+-define(SIZE2x4,     "146x86").
+-define(SIZE3x6,     "218x130").
+-define(SIZE4x8,     "306x174").
+-define(SIZE6x11,    "466x240").
 -define(NORMALAXES,  "x,y").
 -define(LABELAXES,   "x,x,y,y").
 -define(XYLINE,      "lxy").
