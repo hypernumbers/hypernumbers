@@ -23,6 +23,7 @@
              -moz-border-radius: 6px 6px 6px 6px;
              -webkit-border-radius: 6px 6px 6px 6px;
              border: 1px solid #AAA;
+             margin: 3px;
             }
 
 .hn-wc-headline { 
