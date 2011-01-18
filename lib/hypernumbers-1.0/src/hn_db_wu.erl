@@ -31,7 +31,7 @@
 
 %% Cell Query Exports
 -export([
-         get_cell_for_muin/1,
+         get_cell_for_muin/2,
          write_attrs/2, write_attrs/3,
          read_styles/2,
          matching_forms/2,
@@ -125,10 +125,10 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
               mnesia:write(hn_db_wu:trans(Site, dirty_queue), Entry, write)
     end.
 
--spec get_cell_for_muin(#refX{}) -> {any(), any(), any()}.
+-spec get_cell_for_muin(#refX{}, [finite | infinite]) -> {any(), any(), any()}.
 %% @doc this function is called by muin during recalculation and should
 %%      not be used for any other purpose
-get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
+get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX, Type) ->
     #refX{site = Site, path = Path} = RefX,
     Attrs = case read_ref(RefX, inside) of
                 [{_, A}] -> A;
@@ -142,7 +142,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX) ->
                 _ -> 
                     blank
             end,
-    {Value, [], [{"local", {Site, Path, XX, YY}}]}.
+    {Value, [], [{"local", Type, {Site, Path, XX, YY}}]}.
 
 write_style_IMPORT(#refX{site=Site}, Style) ->
     Tbl = trans(Site, style),
@@ -1550,22 +1550,22 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     case muin:run_formula(Fla, Rti) of
         {error, {errval, Error}} ->
             write_error_attrs(Attrs, Ref, Formula, Error);
-        {ok, {Pcode, {rawform, RawF, Html}, Parents, Recompile}} ->
+        {ok, {Pcode, {rawform, RawF, Html}, Parents, _InfParents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
             Form = RawF#form{id={Ref#refX.path, Trans, Label}}, 
             ok = attach_form(Ref, Form),
             Attrs2 = orddict:store("__hasform", t, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Html, 
                                 {Parents, false}, Recompile);
-        {ok, {Pcode, {preview, {PreV, Height, Width}, Res}, Parents, Recompile}} ->
+        {ok, {Pcode, {preview, {PreV, Height, Width}, Res}, Parents, _InfParents, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Height, Width}, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
                                 {Parents, false}, Recompile);
-        {ok, {Pcode, {include, {PreV, Height, Width}, Res}, Parents, Recompile}} ->
+        {ok, {Pcode, {include, {PreV, Height, Width}, Res}, Parents, _InfParents, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Height, Width}, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
                                 {Parents, true}, Recompile);
-        {ok, {Pcode, Res, Parents, Recompile}} ->
+        {ok, {Pcode, Res, Parents, _InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
