@@ -50,7 +50,7 @@ html,body {
 /*     color : red; */
 /* } */
 
-#functions, #columnmanagerdialog {
+#functions, #columnmanagerdialog, #lineview {
     display            : none;
     position           : absolute;
     top                : 50px;
@@ -74,6 +74,17 @@ html,body {
     -moz-border-radius : 4px 4px 0px 0px;
     -webkit-border-radius : 4px 4px 0px 0px;
 }
+
+#lineview {
+  padding-top: 2ex;
+}
+
+#lineview tr th, #lineview tr td {
+  text-align: left;
+  border: thin gray solid;
+  font-size: 8pt;
+}
+
 /******************************************************************************
 	TOP NAVIGATION STYLES
 ******************************************************************************/
@@ -1007,7 +1018,23 @@ a.toolbar-item {
                margin-left: 0px;
 }
 
+.lineviewbutton {
+    cursor:pointer;
+}
 
+#lineviewclose { 
+    cursor:pointer;
+    color:black; 
+    font-weight:bold;
+    font-size:14px;
+    background:transparent;
+    border:1px solid transparent;
+    position:absolute; 
+    padding:0px;
+    top:-3px;
+    right:5px;
+    z-index:99;
+}
 
 #ctrlclose, #funsclose, #dialogclose { 
     cursor:pointer;
