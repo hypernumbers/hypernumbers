@@ -101,8 +101,7 @@ html,body {
 
 #lineviewnavigation a {
   vertical-align: -25%;
-    text-decoration : none;
-    cursor          : pointer;
+  text-decoration : none;
 }
 
 #lineviewnavigation input {
