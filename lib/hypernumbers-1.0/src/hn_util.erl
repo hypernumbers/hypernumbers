@@ -179,7 +179,8 @@ valid_email(Email) ->
         ++ "(\\.[a-z0-9!#\$%&'*+/=?^_`{|}~\\-]+)*)"
         ++ "(@)(?<dom>([a-z0-9](([a-z0-9\\-\\.]*[a-z0-9]+)*))+)"
         ++ "(?<tld>(\\.[a-zA-Z]{2})|\\.com|\\.org|\\.net|\\.gov|\\.mil"
-        ++ "|\\.biz|\\.info|\\.mobi|\\.name|\\.aero|\\.jobs|\\.museum)$",
+        ++ "|\\.biz|\\.info|\\.mobi|\\.name|\\.aero|\\.jobs|\\.museum|\\.edu|"
+        ++".\\asia|.\\cat|.\\coop|.\\int|.\\jobs|.\\pro|.\\arpa|.\\tel|.\\travel)$",
         %" for syntax highighting
         % io:format("Name is ~p~nDom is ~p~nnTld is ~p~n",
         %          [re:run(Email, EMail_regex, [{capture, [name]}]),

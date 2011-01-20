@@ -26,6 +26,10 @@
 
 li.potato-menu-item a, li.potato-menu-item span { 
   background-color: #fff; 
+}
+
+li.potato-menu-item a { 
+  background-color: #fff; 
   padding: 5px 20px 5px 3px;
 }
 

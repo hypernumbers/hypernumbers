@@ -16,6 +16,7 @@
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
+-include("keyvalues.hrl").
 
 %% Setup a new site from scratch
 -spec site(string(), atom(), [{atom(), any()}]) -> ok | exists.
@@ -32,6 +33,7 @@ site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
         false ->
             error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
             ok = create_site_tables(Site, Type),
+            ok = create_blank_zinf(Site),
             ok = sitemaster_sup:add_site(Site),
             ok = update(Site, Type, Opts, ToLoad),
             get_initial_params(Site)
@@ -164,6 +166,12 @@ get_initial_params(Site) ->
 %%     {ok, [Data]} = file:consult(Path),
 %%     ok           = hn_mochi:save_view(NSite, ViewName, Data).
 
+-spec create_blank_zinf(string()) -> ok.
+create_blank_zinf(Site) ->
+    Key = ?zinf_tree,
+    Value = gb_trees:empty(),
+    hn_db_api:write_kv(Site, Key, Value).    
+
 -spec create_site_tables(string(), atom()) -> ok.
 create_site_tables(Site, Type)->
     %% Seems sensible to keep this restricted
@@ -180,13 +188,18 @@ create_site_tables(Site, Type)->
 
 -define(TBL(N, T, I), {N, record_info(fields, N), T, I}).
 tables() ->
-    [ ?TBL(dirty_queue, set, []),
-      ?TBL(item,        set, []),
-      ?TBL(local_obj,   set, [obj,path]), 
-      ?TBL(relation,    set, []),
-      ?TBL(group,       set, []),         
-      ?TBL(style,       set, [idx]),
-      ?TBL(form,        set, [id])].
+    [
+     ?TBL(kvstore       , set, []),
+     ?TBL(dirty_for_zinf, set, []),
+     ?TBL(dirty_zinf,     set, []),
+     ?TBL(dirty_queue,    set, []),
+     ?TBL(item,           set, []),
+     ?TBL(local_obj,      set, [obj,path]), 
+     ?TBL(relation,       set, []),
+     ?TBL(group,          set, []),         
+     ?TBL(style,          set, [idx]),
+     ?TBL(form,           set, [id])
+    ].
 
 %% Import files on a batch basis
 batch_import(Site) ->

@@ -37,7 +37,7 @@
 -define(SPACE, 32).
 -define(KEY, "auth_tree").
 -define(SPREADSHEET, "_global/spreadsheet").
--define(EMPTY_TREE, {0,nil}).
+-define(EMPTY_TREE, {0, nil}).
 
 -type uid() :: string().
 -type auth_spec() :: [everyone | string()].

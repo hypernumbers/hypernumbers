@@ -53,7 +53,14 @@ init([Site]) ->
               permanent, 
               2000, 
               worker, 
-              [auth_srv]}
+              [auth_srv]},
+             
+             {zinf_srv, 
+              {zinf_srv, start_link, [Site]},
+              permanent, 
+              2000, 
+              worker, 
+              [zinf_srv]}
 
            ]
          }}.

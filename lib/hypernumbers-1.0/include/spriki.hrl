@@ -71,20 +71,52 @@
 
 -record(relation,
         {
-          cellidx                  :: cellidx(),
-          children = ordsets:new() :: ordsets:ordset(cellidx()),
-          parents = ordsets:new()  :: ordsets:ordset(cellidx()),
+          cellidx                    :: cellidx(),
+          children = ordsets:new()   :: ordsets:ordset(cellidx()),
+          parents = ordsets:new()    :: ordsets:ordset(cellidx()),
+          infparents = ordsets:new() :: ordsets:ordset(cellidx()),
+          z_parents = ordsets:new()  :: ordsets:ordset(#refX{}),
           include = false
        }).
 
 -record(dirty_queue,
-        {id = now(),
-         dirty = [],
-         auth_req}).
+        {
+          id = now(),
+          dirty = [],
+          auth_req
+         }).
+
+% this record is for the table that gets all written cells and
+% so that the zinf tree can determine if they are 'proper dirty' for dbsrv
+-record(dirty_for_zinf,
+        {
+          id = now(),
+          dirty :: #refX{}
+         }).
+
+% this record is for the table that gets changes to the zinf tree
+-record(dirty_zinf,
+        {
+          id = now(),
+          type,
+          dirtycellidx :: cellidx(),     
+          old          :: ordsets:ordset(#refX{}),
+          new          :: ordsets:ordset(#refX{})
+         }).
 
 -record(group,
-        {name = [],
-         members = gb_sets:empty()}).
+        {
+          name = [],
+          members = gb_sets:empty()
+         }).
+
+% this is the general KV store for KV's that need to be under transations
+% or distrubuted between servers
+-record(kvstore,
+        {
+          key,
+          value
+         }).
 
 -record(template,
         {

@@ -152,6 +152,7 @@ autoparse(_Toks) ->
 %% Converts formula to upper-case, leaving only string literals as-is.
 upcase(Str) ->
     {ok, Tokens, _} = superlex:string(Str),
+    io:format("in upcase Tokens are ~p~n", [Tokens]),
     % List of numbers (codepoints) interspersed with {string, _} tuples.
     Str2 = 
         tl(lists:foldl(fun({stuff, X}, Acc) ->

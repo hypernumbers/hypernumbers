@@ -94,13 +94,15 @@
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 
-
 -export([write_styles_IMPORT/2,
          write_magic_style_IMPORT/2,
          read_styles_IMPORT/1
         ]).
 
--export([write_attributes/1,
+-export([
+         write_kv/3,
+         read_kv/2,
+         write_attributes/1,
          write_attributes/3,
          append_row/3,
          read_attribute/2,
@@ -130,6 +132,17 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+write_kv(Site, Key, Value) ->
+    Fun = fun() ->
+                  hn_db_wu:write_kv(Site, Key, Value)
+                    end,
+    mnesia:activity(transaction, Fun).
+
+read_kv(Site, Key) ->
+    Fun = fun() ->
+                  hn_db_wu:read_kv(Site, Key)
+          end,
+    mnesia:activity(transaction, Fun).
 
 force_recalc(Site) ->
     RefX = #refX{site = Site, path = [], obj = {page, "/"}},
@@ -671,7 +684,7 @@ wait_for_dirty(Site) ->
 handle_dirty_cell(Site, Idx, Ar) ->
     ok = init_front_end_notify(),  
     Fun = fun() ->
-                  Cell = hn_db_wu:idx_to_ref(Site, Idx),
+                  Cell = hn_db_wu:idx_to_refX(Site, Idx),
                   Attrs = case hn_db_wu:read_ref(Cell, inside, write) of
                               [{_, A}] -> A;
                               _ -> orddict:new()
@@ -689,7 +702,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
 -spec handle_circref_cell(string(), cellidx(), auth_srv:auth_spec()) -> ok.
 handle_circref_cell(Site, Idx, Ar) ->
     Fun = fun() ->
-                  Cell = hn_db_wu:idx_to_ref(Site, Idx),
+                  Cell = hn_db_wu:idx_to_refX(Site, Idx),
                   _Dict = hn_db_wu:write_attrs(Cell, 
                                        [{"formula", "=#CIRCREF!"}], 
                                        Ar),
@@ -891,10 +904,10 @@ read_activity(#refX{site=Site}, Op) ->
     dbsrv:read_only_activity(Site, Activity).
 
 -spec write_activity(#refX{}, fun(), string() | quiet) -> ok.
-write_activity(Ref=#refX{site=Site}, Op, FrontEnd) ->
+write_activity(RefX=#refX{site=Site}, Op, FrontEnd) ->
     Activity = fun() ->
                        Ret = mnesia:activity(transaction, Op),
-                       tell_front_end(FrontEnd, Ref),
+                       tell_front_end(FrontEnd, RefX),
                        Ret
                end,
     dbsrv:write_activity(Site, Activity).
@@ -905,10 +918,11 @@ init_front_end_notify() ->
 
 tell_front_end(quiet, _RefX) ->
     ok;
-tell_front_end(Type, #refX{path = P} = RefX) when Type == "move" orelse Type == "refresh" ->
+tell_front_end(Type, #refX{path = P} = RefX)
+  when Type == "move" orelse Type == "refresh" ->
     Notifications = get('front_end_notify'),
-    % the move or refresh notifications are used when a page is changed radically - they
-    % tell the front end to request the whole page
+    % the move or refresh notifications are used when a page is changed radically
+    % - they tell the front end to request the whole page
     % but if there is a formula on another page referring to a cell on a page with,
     % say an insert or delete, then that page has its formulae rewritten/recalculated
     % that page needs to get details notifications so we pull them out of the process
