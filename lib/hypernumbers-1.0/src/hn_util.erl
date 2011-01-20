@@ -12,6 +12,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
+         parse_zpath/1,
          valid_email/1,
          extract_name_from_email/1,
          capitalize_name/1,
@@ -75,6 +76,19 @@
          % Formula utilities
          make_formula/2
         ]).
+
+%%% turns a path into a z-path
+parse_zpath(List) -> parse_z(List, []).
+
+parse_z([], Acc) -> lists:reverse(Acc);
+parse_z([H | T], Acc) ->
+    {ok, Re} = re:compile("(^\\[.+\\]$)"), %" for emacs syntact highlighting
+    case re:run(H, Re) of
+        {match, _} -> parse_z(T, [{zseg, H} | Acc]);
+        nomatch    -> parse_z(T, [ {seg, H} | Acc]);
+        Other      -> io:format("fucketdy-doo-dah! Other is ~p~n", [Other]),
+                      exit(Other)
+    end.
 
 %% make formula creates a new formula, but also returns a status.
 %% Status can be [clean | dirty]
@@ -399,8 +413,7 @@ jsonify_val({K, V}) ->
 %%% These functions convert to and from #refX and  #index records and Urls   %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-url_to_refX(Url) ->
-    parse_url(Url).
+url_to_refX(Url) -> parse_url(Url).
 
 refX_from_index(#index{site = S, path = P, column = X, row = Y}) ->
     #refX{site = S, path = P, obj = {cell, {X, Y}}}.
@@ -478,13 +491,38 @@ in_range({range,{X1,Y1,X2,Y2}}, {cell,{X,Y}}) ->
 
 parse_url("http://"++Url) ->
     {Host, Path, NUrl} = prs(Url),
+    Type = case isGURL(Path) of
+               true  -> gurl;
+               false -> url
+           end,
     case lists:last(NUrl) of
-        $/ -> #refX{site="http://"++Host, path=Path, obj={page, "/"}};
-        _  -> 
-            [Addr | P] = lists:reverse(Path),
-            Obj = parse_attr(cell, Addr),
-            #refX{site="http://"++Host, path=lists:reverse(P), obj = Obj}
+        $/ -> #refX{site="http://"++Host, type = Type,
+                    path=Path, obj={page, "/"}};
+        _  -> [Addr | P] = lists:reverse(Path),
+              Obj = parse_attr(cell, Addr),
+              #refX{site="http://"++Host, type = Type,
+                    path=lists:reverse(P),
+                    obj = Obj}
     end.
+
+isGURL(Path) -> false.
+    %% Re = "^[a-zA-Z0-9_\-~]$", %"
+    %% %io:format("Re is ~p~n", [Re]),
+    %% Fun = fun(X, Acc) ->
+    %%               NewAcc = case re:run(X, Re) of
+    %%                            {match, _} -> false;
+    %%                            nomatch    -> true
+    %%                        end,
+    %%               %io:format("X is ~p~nAcc is ~p NewAcc is ~p~n",
+    %%               %          [X, Acc, NewAcc]),
+    %%               case {Acc, NewAcc} of
+    %%                   {true, true} -> true;
+    %%                   _            -> false
+    %%               end
+    %%       end,
+    %% _Ret = lists:foldl(Fun, true, Path),
+    %% %io:format("Path is ~p Ret is ~p~n", [Path, Ret]),
+    %% false.
 
 prs(Url) ->
     case string:tokens(Url, "/") of
@@ -538,6 +576,7 @@ ltoi(X) ->
     list_to_integer(X).
 
 parse_ref(Ref) ->
+    io:format("Ref is ~p~n", [Ref]),
     RefType = type_reference(Ref),
     RefVal  = case RefType of
                   page ->   "/";
