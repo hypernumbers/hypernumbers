@@ -370,6 +370,7 @@ col_index(N) when is_integer(N) -> N;
 col_index({offset, N}) -> ?mx + N.
 
 fetch(Ref) when ?is_zcellref(Ref) ->
+    io:format("Ref is ~p~n", [Ref]),
     error_logger:info_msg("Somebody tried a z-order cellref~n"),
     ?ERRVAL_ERR;
 fetch(Ref) when ?is_zrangeref(Ref) ->
@@ -381,24 +382,22 @@ fetch(#cellref{col = Col, row = Row, path = Path}) ->
     RowIndex = row_index(Row),
     ColIndex = col_index(Col),
     do_cell(Path, RowIndex, ColIndex, finite);
-fetch(#rangeref{type = Type, path = Path, text = Text} = Ref)
+fetch(#rangeref{type = Type, path = Path} = Ref)
   when Type == row orelse Type == col ->
-    %io:format("Proc Dict at start ~p~n", [erlang:get()]),
     NewPath = muin_util:walk_path(?mpath, Path),
-    Infinites = get(infinite),
-    put(infinite, [?msite ++ NewPath ++ Text | Infinites]),
     #refX{obj = Obj} = RefX = muin_util:make_refX(?msite, NewPath, Ref),
+    Infinites = get(infinite),
+    put(infinite, ordsets:add_element(RefX,Infinites)),
     Refs = hn_db_wu:expand_ref(RefX),
     Rows = case Obj of
                {Type2, {_I, _I}} -> sort1D(Refs, Path, Type2);
                {Type2, {I,   J}} -> sort2D(Refs, Path, {Type2, I, J})
     end,
     %io:format("Rows is ~p~n", [Rows]),
-    %io:format("Proc Dict at the end ~p~n", [erlang:get()]),
     % pinch out the functionality for a release
-    {range, Rows},
-    error_logger:info_msg("Somebody tried a row or column rangeref~n"),
-    ?ERRVAL_ERR;
+    {range, Rows};
+    % error_logger:info_msg("Somebody tried a row or column rangeref~n"),
+    % ?ERRVAL_ERR;
 fetch(#rangeref{type = finite} = Ref) ->
     CellCoords = muin_util:expand_cellrange(Ref),
     Fun1 = fun(CurrRow, Acc) -> % Curr row, result rows
@@ -523,7 +522,7 @@ do_cell(RelPath, Rowidx, Colidx, Type) ->
 get_value_and_link(FetchFun) ->
     {Value, Errs, Refs}  = FetchFun(),
     RefX = #refX{site = ?msite, path = ?mpath, obj = {cell, {?mx, ?my}}},
-    hn_db_wu:ref_to_idx_create(RefX),
+    hn_db_wu:refX_to_idx_create(RefX),
     {Errs0, Refs0} = get(retvals),
     put(retvals, {Errs0 ++ Errs, Refs0 ++ Refs}),
     Value.
@@ -664,33 +663,37 @@ test_xfl() ->
              % "sum(/blah/[or(BB)]/blah/a1)",
              % "sum(/blah/[or(BB)]/blah/a1) + atan(/[xx]/N2)".
              % "sum(/blah/[or(true,true)]/a1)+ sum(/blEh/[SUM(a1,B3)]/BLeh/A3)",
-             "sum(/blah/[or(1,2)]/a1, /[true = a1]/b99:bev90210)",
-             "/[or(1,2)]/a1",
-             "/[or(1,2)]/a1:b2",
-             "/[or(1,2)]/a:a",
-             "/[or(1,2)]/3:3"
+             % "sum(/blah/[or(1,2)]/a1, /[true = a1]/b99:bev90210)",
+             % "/[or(1,2)]/a1",
+             % "/[or(1,2)]/a1:b2",
+             % "/[or(1,2)]/a:a",
+             % "/[or(1,2)]/3:3"
+             %"/bleh/1:1",
+             %"/bleh/a:a"
+             "sum(/bleh/gloh/dleh/1:1)"
             ],
     Fun = fun(X) ->
+                  Fla = superparser:process("="++X),
                   io:format("~n~nStarting a new parse...~n"),
-                  Trans = translator:do(X),
+                  Trans = translator:do(Fla),
                   case catch (xfl_lexer:lex(Trans, {1, 1})) of
                       {ok, Toks} ->
                           case catch(xfl_parser:parse(Toks)) of
                               {ok, Ast} ->
-                                  io:format("Sucess Expr is ~p Trans is ~p~n"++
+                                  io:format("Sucess Expr is ~p Fla is ~p Trans is ~p~n"++
                                             "Toks is ~p~nAst is ~p~n"++
                                             "Status is ~p~n",
-                                            [X, Trans, Toks, Ast, "Ok"]),
+                                            [X, Fla, Trans, Toks, Ast, "Ok"]),
                                   {ok, Ast};
                               O2         ->  io:format("Parse fail: "++
-                                                       "Expr is ~p Trans is ~p~n"++
+                                                       "Expr is ~p Fla is ~p Trans is ~p~n"++
                                                        "Toks is ~p~nStatus is ~p~n",
-                                                       [X, Trans, Toks, O2]),
+                                                       [X, Fla, Trans, Toks, O2]),
                                              ?syntax_error
                           end;
-                      O1 -> io:format("Lex fail: Expr is ~p Trans is ~p~n"++
+                      O1 -> io:format("Lex fail: Expr is ~p Fla is ~p Trans is ~p~n"++
                                       "Status is ~p~n",
-                                      [X, Trans, O1]),
+                                      [X, Fla, Trans, O1]),
                             ?syntax_error
                   end
           end,
