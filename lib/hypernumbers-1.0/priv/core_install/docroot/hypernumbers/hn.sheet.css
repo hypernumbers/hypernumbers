@@ -77,10 +77,6 @@ html,body {
 
 /* Styles for Line View Dialog */
 
-#lineview {
-  padding-top: 2ex;
-}
-
 #lineview tr th, #lineview tr td {
   text-align: left;
   border: thin gray solid;
@@ -1046,21 +1042,7 @@ a.toolbar-item {
     cursor:pointer;
 }
 
-#lineviewclose { 
-    cursor:pointer;
-    color:black; 
-    font-weight:bold;
-    font-size:14px;
-    background:transparent;
-    border:1px solid transparent;
-    position:absolute; 
-    padding:0px;
-    top:-3px;
-    right:5px;
-    z-index:99;
-}
-
-#ctrlclose, #funsclose, #dialogclose { 
+#ctrlclose, #funsclose, #dialogclose, #lineviewclose { 
     cursor:pointer;
     color:white; 
     font-weight:bold;
@@ -1074,7 +1056,7 @@ a.toolbar-item {
     z-index:99;
 }
 
-#ctrlclose:hover,#funsclose:hover { 
+#ctrlclose:hover,#funsclose:hover, #dialogclose:hover, #lineviewclose:hover { 
     color:#CCC; 
 }
 
