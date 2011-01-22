@@ -56,7 +56,7 @@ html,body {
     top                : 50px;
     left               : 50px;
     background         : white;
-    min-width          : 200px;
+    min-width          : 260px; 
     border             : 2px solid #999;
     z-index            : 10000003;
     -moz-border-radius : 4px 4px 4px 4px;
@@ -64,7 +64,7 @@ html,body {
     -webkit-border-radius : 4px 4px 4px 4px;
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
-#functions h2, #columnmanagerdialog h2 {
+#functions h2, #columnmanagerdialog h2, #lineview h2 {
     display            : block;
     margin             : 0px;
     font               : bold 12px sans-serif;
@@ -75,9 +75,7 @@ html,body {
     -webkit-border-radius : 4px 4px 0px 0px;
 }
 
-#lineview {
-  padding-top: 2ex;
-}
+/* Styles for Line View Dialog */
 
 #lineview tr th, #lineview tr td {
   text-align: left;
@@ -86,7 +84,25 @@ html,body {
 }
 
 #lineview tr td input {
-  min-width: 196px;
+  display: table-cell;
+  width:   99%;
+  border: thin gray solid;
+  background: #ffffdf;
+}
+
+#lineviewnavigation {
+  font-size: 8pt;
+  text-align: center;
+}
+
+#lineviewnavigation a {
+  vertical-align: -25%;
+  text-decoration : none;
+}
+
+#lineviewnavigation input {
+  height: 8pt;
+  background: #ffffdf;
 }
 
 /******************************************************************************
@@ -1026,21 +1042,7 @@ a.toolbar-item {
     cursor:pointer;
 }
 
-#lineviewclose { 
-    cursor:pointer;
-    color:black; 
-    font-weight:bold;
-    font-size:14px;
-    background:transparent;
-    border:1px solid transparent;
-    position:absolute; 
-    padding:0px;
-    top:-3px;
-    right:5px;
-    z-index:99;
-}
-
-#ctrlclose, #funsclose, #dialogclose { 
+#ctrlclose, #funsclose, #dialogclose, #lineviewclose { 
     cursor:pointer;
     color:white; 
     font-weight:bold;
@@ -1054,7 +1056,7 @@ a.toolbar-item {
     z-index:99;
 }
 
-#ctrlclose:hover,#funsclose:hover { 
+#ctrlclose:hover,#funsclose:hover, #dialogclose:hover, #lineviewclose:hover { 
     color:#CCC; 
 }
 
