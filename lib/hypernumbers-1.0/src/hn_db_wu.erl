@@ -841,7 +841,7 @@ offset_with_ranges(Toks, Cell, From, Offset) ->
 offset_with_ranges1([], _Cell, _From, _Offset, Status, Acc) ->
     {Status, lists:reverse(Acc)};
 offset_with_ranges1([{rangeref, LineNo,
-                      #rangeref{path = Path, text = Text}=H} | T],
+                      #rangeref{path = Path, text = Text} = H} | T],
                     Cell, #refX{path = FromPath} = From, Offset, Status, Acc) ->
     #refX{path = CPath} = Cell,
     PathCompare = muin_util:walk_path(CPath, Path),
@@ -863,10 +863,16 @@ offset_with_ranges1([{rangeref, LineNo,
                     clean -> Status
                 end,
     offset_with_ranges1(T, Cell, From, Offset, NewStatus, [NewAcc | Acc]);
+%% need to disambiuate division for formula like =a1/b2
 offset_with_ranges1([{cellref, LineNo,
-                      C=#cellref{path = Path, text = Text}}=H | T],
+                      C = #cellref{path = Path, text = [$/ |Tx] = Text}} = H | T],
+                    Cell, From, Offset, Status, Acc) ->
+    List = [{'/', 1}, {cellref, LineNo, C#cellref{path = "./", text = Tx}} | T],
+    offset_with_ranges1(List, Cell, From, Offset, Status, Acc);
+offset_with_ranges1([{cellref, LineNo,
+                      C = #cellref{path = Path, text = Text}} = H | T],
                     Cell, #refX{path = FromPath} = From,
-                    {XO, YO}=Offset, Status, Acc) ->
+                    {XO, YO} = Offset, Status, Acc) ->
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
         %% If ever we apply two offsets at once, do it in two steps.
@@ -876,7 +882,7 @@ offset_with_ranges1([{cellref, LineNo,
         {range, {Left, Top, Right, _Bottom}}
           when (XO == 0) and ((Left > X) or (X > Right) or (Top > Y)) ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
-        {column,{Left,_Right}} when X < Left ->
+        {column, {Left,_Right}} when X < Left ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
         {row,{Top,_Bottom}} when Y < Top ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
@@ -1522,7 +1528,8 @@ offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
-        {ok, Toks}    -> {Status, NewToks} = offset_with_ranges(Toks, Cell, From, Offset),
+        {ok, Toks}    -> {Status, NewToks} = offset_with_ranges(Toks, Cell,
+                                                                From, Offset),
                          hn_util:make_formula(Status, NewToks);
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
                                        "formula in offset_fm_w_rng but "++
