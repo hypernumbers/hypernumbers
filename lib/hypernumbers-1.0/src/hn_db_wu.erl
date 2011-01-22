@@ -420,8 +420,11 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             Formulas = [F || X <- DedupedChildren,
                              F <- read_ref_field(X, "formula", write)],
             Fun = fun({ChildRef, F1}, Acc) ->
-                          {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
-                          Op = fun(Attrs) -> {St, orddict:store("formula", F2, Attrs)} end,
+                          {St, F2} = offset_fm_w_rng(ChildRef, F1, From,
+                                                     {XOff, YOff}),
+                          Op = fun(Attrs) -> {St, orddict:store("formula", F2,
+                                                                Attrs)}
+                               end,
                           apply_to_attrs(ChildRef, Op),
                           % you need to switch the ref to an idx because later on
                           % you are going to move the cells and you need to know the ref
@@ -865,7 +868,7 @@ offset_with_ranges1([{rangeref, LineNo,
     offset_with_ranges1(T, Cell, From, Offset, NewStatus, [NewAcc | Acc]);
 %% need to disambiuate division for formula like =a1/b2
 offset_with_ranges1([{cellref, LineNo,
-                      C = #cellref{path = Path, text = [$/ |Tx] = Text}} = H | T],
+                      C = #cellref{path = "/", text = [$/ |Tx]}} | T],
                     Cell, From, Offset, Status, Acc) ->
     List = [{'/', 1}, {cellref, LineNo, C#cellref{path = "./", text = Tx}} | T],
     offset_with_ranges1(List, Cell, From, Offset, Status, Acc);
