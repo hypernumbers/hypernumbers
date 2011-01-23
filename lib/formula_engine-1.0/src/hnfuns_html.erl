@@ -24,12 +24,12 @@
          'html.submenu'/1
          ]).
 
--define(Width1,  77).
--define(Width2,  157).
--define(Width3,  227).
--define(Width4,  317).
--define(Width6,  477).
--define(Width12, 957).
+-define(Width1,  80).
+-define(Width2,  160).
+-define(Width3,  240).
+-define(Width4,  320).
+-define(Width6,  480).
+-define(Width12, 960).
 
 'html.box1'(List)  -> wrap_box(?Width1,  List).
 'html.box2'(List)  -> wrap_box(?Width2,  List).

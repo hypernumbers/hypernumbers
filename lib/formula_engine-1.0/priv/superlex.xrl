@@ -11,14 +11,19 @@ START_OF_SSREF = ((\/|\!)|(\.\.(\/|\!))+|\.(\/|\!))
 MAYBE_PATH = (((({ATOM})|({INT})|(\.)|(\.\.))(\/|\!))*)
 
 A1REF = ((\$)?([a-zA-Z]+)(\$)?([0-9]+))
+COLREF = ((\$)?([a-zA-Z]+))
+ROWREF = ((\$)?([0-9]+))
+          
 OFFSET_RC = (\[(\+|\-)?({INT})\])
 RCREF = ((R|r)({INT}|{OFFSET_RC})(C|c)({INT}|{OFFSET_RC}))
 
 Z_EXPR = ((\[)([^\]]+)(\])(\/|\!)*)
 MAYBE_Z_PATH = ({START_OF_SSREF})*(({MAYBE_PATH})*({Z_EXPR})+({MAYBE_PATH})*)+
 
-SSA1REF  = {START_OF_SSREF}{MAYBE_PATH}{A1REF}
-SSRCREF  = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
+SSA1REF   = {START_OF_SSREF}{MAYBE_PATH}{A1REF}
+SSRCREF   = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
+SSCOLREF  = {START_OF_SSREF}{MAYBE_PATH}{COLREF}
+SSROWREF  = {START_OF_SSREF}{MAYBE_PATH}{ROWREF}
 SSNAMEREF = {START_OF_SSREF}{MAYBE_PATH}{NAME}
 
 ZREF = {MAYBE_Z_PATH}{A1REF}
@@ -33,6 +38,8 @@ Rules.
 %% string tag means "leave as-is". TODO: rename.
 {SSA1REF}    : {token, {string, xfl_lexer:debang(TokenChars)}}.
 {SSRCREF}    : {token, {string, xfl_lexer:debang(TokenChars)}}.
+{SSCOLREF}   : {token, {string, xfl_lexer:debang(TokenChars)}}.
+{SSROWREF}   : {token, {string, xfl_lexer:debang(TokenChars)}}.
 {SSNAMEREF}  : {token, {string, xfl_lexer:debang(TokenChars)}}.
 {STRING}     : {token, {string, TokenChars}}.
 {SPACE}      : {token, {string, TokenChars}}.

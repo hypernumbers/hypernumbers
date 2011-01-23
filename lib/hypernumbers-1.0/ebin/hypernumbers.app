@@ -2,6 +2,7 @@
 	[{description,  "The engine application"},
 	 {vsn,          "1.0"},     
 	 {modules,      [
+                    zinf_srv,
                     auth_srv,
                     hn_db_wu,
                     horiz_api,

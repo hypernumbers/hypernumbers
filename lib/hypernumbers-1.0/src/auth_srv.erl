@@ -37,7 +37,7 @@
 -define(SPACE, 32).
 -define(KEY, "auth_tree").
 -define(SPREADSHEET, "_global/spreadsheet").
--define(EMPTY_TREE, {0,nil}).
+-define(EMPTY_TREE, {0, nil}).
 
 -type uid() :: string().
 -type auth_spec() :: [everyone | string()].
@@ -67,7 +67,7 @@ start_link(Site) ->
     gen_server:start_link({local, Id}, ?MODULE, [Site], []).
 
 stop(Site) ->
-    Id = hn_util:site_to_atom(Site, "auth"),
+    Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:cast(Id, stop).
 
 -spec check_get_view(string(), [string()], uid()) 
@@ -620,8 +620,8 @@ dump_views([{V, View} | Rest], Path) ->
     [AddView | dump_views(Rest, Path)].
 
 %%%===================================================================
-%% %%% EUnit Tests
-%% %%%===================================================================
+%% EUnit Tests
+%%%===================================================================
 
 %% check the empty path
 %% check_get_view (general)
@@ -906,7 +906,8 @@ unit_test_() ->
                       Tbl = hn_db_wu:trans(Site, group),
                       {atomic, ok} = mnesia:delete_table(Tbl)
               end,
-    SeriesA = [fun testA1/1,
+    SeriesA = [
+               fun testA1/1,
                fun testA2/1,
                fun testA3/1,
                fun testA4/1,
@@ -918,21 +919,28 @@ unit_test_() ->
                fun testA12/1,
                fun testA14/1, 
                fun testA15/1,
-               fun testA16/1],
+               fun testA16/1
+              ],
 
-    SeriesC = [fun testC/1], 
+    SeriesC = [
+               fun testC/1
+              ], 
 
-    SeriesD = [fun testD1/1,
+    SeriesD = [
+               fun testD1/1,
                fun testD2/1,
                fun testD3/1,
                fun testD4/1,
                fun testD5/1,
                fun testD6/1,
                fun testD7/1,
-               fun testD8/1 ],
+               fun testD8/1
+              ],
 
-    SeriesE = [fun testE1/1,
-               fun testE2/1],
+    SeriesE = [
+               fun testE1/1,
+               fun testE2/1
+              ],
 
     {setup, Setup, Cleanup, 
      [{with, {Site, []}, SeriesA},

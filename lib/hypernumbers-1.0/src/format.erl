@@ -520,10 +520,12 @@ execute(X,{day,zero},_) ->
     DD=integer_to_list(Day),
     format_util:pad_calendar(DD);
 execute(X,{day,abbr},_) ->
-    {{_Y,_M,Day},_T}=X,
+    {Date,_T}=X,
+    Day = calendar:day_of_the_week(Date),
     format_util:get_short_day(Day);
 execute(X,{day,full},_) ->
-    {{_Y,_M,Day},_T}=X,
+    {Date,_T}=X,
+    Day = calendar:day_of_the_week(Date),
     format_util:get_day(Day);
 execute(X,{hour,no_zero},true) ->
     {_D,{Hour,_M,_S}}=X,

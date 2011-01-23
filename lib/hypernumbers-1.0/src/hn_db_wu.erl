@@ -31,6 +31,8 @@
 
 %% Cell Query Exports
 -export([
+         write_kv/3,
+         read_kv/2,
          get_cell_for_muin/2,
          write_attrs/2, write_attrs/3,
          read_styles/2,
@@ -45,9 +47,9 @@
          copy_cell/4,
          read_page_structure/1,
          read_pages/1,
-         idx_to_ref/2,
-         ref_to_idx/1,
-         ref_to_idx_create/1,
+         idx_to_refX/2,
+         refX_to_idx/1,
+         refX_to_idx_create/1,
          mark_these_dirty/2,
          mark_dirty_for_incl/2
         ]).
@@ -94,10 +96,19 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+write_kv(Site, Key, Value) ->
+    Tbl = trans(Site, kvstore),
+    Rec = #kvstore{key = Key, value = Value},
+    mnesia:write(Tbl, Rec, write).
+
+read_kv(Site, Key) ->
+    Tbl = trans(Site, kvstore),
+    mnesia:read(Tbl, Key, read).
+
 -spec mark_dirty_for_incl([#refX{}], auth_srv:auth_spec()) -> ok.
 mark_dirty_for_incl([], _) -> ok;
 mark_dirty_for_incl(Refs = [#refX{site = Site}|_], AReq) ->
-        F = fun(C) -> case hn_db_wu:ref_to_idx(C) of
+        F = fun(C) -> case hn_db_wu:refX_to_idx(C) of
                       false -> []; 
                       Idx   -> Idx
                   end
@@ -113,7 +124,7 @@ mark_dirty_for_incl(Refs = [#refX{site = Site}|_], AReq) ->
 -spec mark_these_dirty([#refX{}], auth_srv:auth_spec()) -> ok.
 mark_these_dirty([], _) -> ok;
 mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
-    F = fun(C) -> case hn_db_wu:ref_to_idx(C) of
+    F = fun(C) -> case hn_db_wu:refX_to_idx(C) of
                       false -> []; 
                       Idx   -> Idx
                   end
@@ -142,7 +153,7 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX, Type) ->
                 _ -> 
                     blank
             end,
-    {Value, [], [{"local", Type, {Site, Path, XX, YY}}]}.
+    {Value, [], [{local, Type, {Site, Path, XX, YY}}]}.
 
 write_style_IMPORT(#refX{site=Site}, Style) ->
     Tbl = trans(Site, style),
@@ -221,13 +232,12 @@ write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
 -spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_spec()) 
                  -> ?dict.
 write_attrs(Ref, NewAs, AReq) ->
-    
     Op = fun(Attrs) -> 
                  Is_Formula = lists:keymember("formula", 1, NewAs),
                  Has_Form = orddict:is_key("__hasform", Attrs),
                  Attrs2 = case {Is_Formula, Has_Form} of
                               {true, true} ->
-                                  unattach_form(Ref, ref_to_idx(Ref)),
+                                  unattach_form(Ref, refX_to_idx(Ref)),
                                   orddict:erase("__hasform", Attrs);
                                _  ->
                                    Attrs
@@ -248,6 +258,7 @@ process_attrs([{"formula",Val}|Rest], Ref, AReq, Attrs) ->
             [NVal, Align, Frmt] ->
                 write_formula2(Ref, Val, NVal, Align, Frmt, Attrs)
         end,
+    ok = mark_dirty_for_zinf(Ref),
     process_attrs(Rest, Ref, AReq, Attrs2);
 process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
     Attrs2  = case ms_util2:is_in_record(magic_style, Key) of 
@@ -255,6 +266,10 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
                   false -> orddict:store(Key, Val, Attrs)
               end,
     process_attrs(Rest, Ref, AReq, Attrs2).
+
+mark_dirty_for_zinf(#refX{site = S, obj = {cell, _}} = RefX) ->
+    Tbl = trans(S, dirty_for_zinf),
+    mnesia:write(Tbl, #dirty_for_zinf{dirty = RefX}, write).
 
 expand_to_rows_or_cols(#refX{obj={RC, {I, J}}}=Ref) when RC == row; RC == column ->
     expand_to_2(Ref, I, J, []);
@@ -328,7 +343,7 @@ expunge_refs(S, Refs) ->
 -spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ?dict.
 apply_to_attrs(#refX{site=Site}=Ref, Op) ->
     Table = trans(Site, item), 
-    Idx = ref_to_idx_create(Ref),
+    Idx = refX_to_idx_create(Ref),
     Attrs = case mnesia:read(Table, Idx, write) of
                 [#item{attrs=A}] -> A;
                 _                -> orddict:new()
@@ -419,19 +434,22 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             DedupedChildren = lists:subtract(ChildCells2, Rewritten),
             Formulas = [F || X <- DedupedChildren,
                              F <- read_ref_field(X, "formula", write)],
-            Fun = fun({ChildRef, F1}, Acc) ->
-                          {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
-                          Op = fun(Attrs) -> {St, orddict:store("formula", F2, Attrs)} end,
-                          apply_to_attrs(ChildRef, Op),
-                          % you need to switch the ref to an idx because later on
-                          % you are going to move the cells and you need to know the ref
-                          % of the shifted cell
-                          case St of
-                              clean -> Acc;
-                              dirty -> #refX{site = S} = ChildRef,
-                                       [{S, ref_to_idx(ChildRef)} | Acc]
+            Fun =
+                fun({ChildRef, F1}, Acc) ->
+                        {St, F2} = offset_fm_w_rng(ChildRef, F1, From, {XOff, YOff}),
+                        Op = fun(Attrs) ->
+                                     {St, orddict:store("formula", F2, Attrs)}
+                             end,
+                        apply_to_attrs(ChildRef, Op),
+                        % you need to switch the ref to an idx because later on
+                        % you are going to move the cells and you need to know
+                        % the ref of the shifted cell
+                        case St of
+                            clean -> Acc;
+                            dirty -> #refX{site = S} = ChildRef,
+                                     [{S, refX_to_idx(ChildRef)} | Acc]
                           end
-                  end,
+                end,
             DirtyChildren = lists:foldl(Fun, [], Formulas),
             
             %% Rewrite the local_obj entries by applying the shift offset.
@@ -440,7 +458,7 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
                  mnesia:delete_object(ObjTable, LO, write),
                  mnesia:write(ObjTable, shift_obj(LO, XOff, YOff), write)
              end || LO <- ObjsList],
-            [idx_to_ref(S, X) || {S, X} <- DirtyChildren]
+            [idx_to_refX(S, X) || {S, X} <- DirtyChildren]
     end.
 
 shift_obj(#local_obj{obj = {cell, {X, Y}}}=LO, XOff, YOff) ->
@@ -480,8 +498,8 @@ do_clear_cells(Ref, DelAttrs) ->
                  fun(Attrs) ->
                          case lists:keymember("formula", 1, Attrs) of
                              true -> 
-                                 set_relations(RX, [], false),
-                                 unattach_form(RX, ref_to_idx(RX));
+                                 set_relations(RX, [], [], false),
+                                 unattach_form(RX, refX_to_idx(RX));
                              false -> ok
                          end,
                          {clean, del_attributes(Attrs, DelAttrs)}
@@ -654,11 +672,11 @@ filter_pages([], Tree) ->
 filter_pages([Path | T], Tree) ->
     filter_pages(T, dh_tree:add(Path, Tree)).
 
--spec ref_to_idx_create(#refX{}) -> pos_integer().
-%% @doc ref_to_idx_create ref_to_idx_create gets the index of an object 
+-spec refX_to_idx_create(#refX{}) -> pos_integer().
+%% @doc refX_to_idx_create refX_to_idx_create gets the index of an object 
 %% AND CREATES IT IF IT DOESN'T EXIST
-ref_to_idx_create(#refX{site = S, path = P, obj = O} = RefX) ->
-    case ref_to_idx(RefX) of
+refX_to_idx_create(#refX{site = S, path = P, obj = O} = RefX) ->
+    case refX_to_idx(RefX) of
         false -> Idx = util2:get_timestamp(),
                  Rec = #local_obj{path = P, obj = O, idx = Idx},
                  ok = mnesia:write(trans(S, local_obj), Rec, write),
@@ -722,7 +740,7 @@ shift_pattern(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
 shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1, 0, infinity, infinity}}}.
 
-idx_to_ref(S, Idx) ->
+idx_to_refX(S, Idx) ->
     case mnesia:read(trans(S, local_obj), Idx, read) of
         [Rec] -> #local_obj{path = P, obj = O} = Rec,
                  #refX{site = S, path = P, obj = O};
@@ -744,10 +762,10 @@ refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
               array_context = AC,
               auth_req = AR}.
 
-%% ref_to_idx reads the index of an object AND RETURNS 'false'
+%% refX_to_idx reads the index of an object AND RETURNS 'false'
 %% IF IT DOESN'T EXIST
--spec ref_to_idx(#refX{}) -> pos_integer() | false. 
-ref_to_idx(#refX{site = S, path = P, obj = Obj}) ->
+-spec refX_to_idx(#refX{}) -> pos_integer() | false. 
+refX_to_idx(#refX{site = S, path = P, obj = Obj}) ->
     Table = trans(S, local_obj),
     MS = [{#local_obj{path=P, obj=Obj, idx = '$1', _='_'}, [], ['$1']}],
     case mnesia:select(Table, MS, read) of
@@ -841,7 +859,7 @@ offset_with_ranges(Toks, Cell, From, Offset) ->
 offset_with_ranges1([], _Cell, _From, _Offset, Status, Acc) ->
     {Status, lists:reverse(Acc)};
 offset_with_ranges1([{rangeref, LineNo,
-                      #rangeref{path = Path, text = Text}=H} | T],
+                      #rangeref{path = Path, text = Text} = H} | T],
                     Cell, #refX{path = FromPath} = From, Offset, Status, Acc) ->
     #refX{path = CPath} = Cell,
     PathCompare = muin_util:walk_path(CPath, Path),
@@ -863,10 +881,16 @@ offset_with_ranges1([{rangeref, LineNo,
                     clean -> Status
                 end,
     offset_with_ranges1(T, Cell, From, Offset, NewStatus, [NewAcc | Acc]);
+%% need to disambiuate division for formula like =a1/b2
 offset_with_ranges1([{cellref, LineNo,
-                      C=#cellref{path = Path, text = Text}}=H | T],
+                      C = #cellref{path = "/", text = [$/ |Tx]}} | T],
+                    Cell, From, Offset, Status, Acc) ->
+    List = [{'/', 1}, {cellref, LineNo, C#cellref{path = "./", text = Tx}} | T],
+    offset_with_ranges1(List, Cell, From, Offset, Status, Acc);
+offset_with_ranges1([{cellref, LineNo,
+                      C = #cellref{path = Path, text = Text}} = H | T],
                     Cell, #refX{path = FromPath} = From,
-                    {XO, YO}=Offset, Status, Acc) ->
+                    {XO, YO} = Offset, Status, Acc) ->
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
         %% If ever we apply two offsets at once, do it in two steps.
@@ -876,7 +900,7 @@ offset_with_ranges1([{cellref, LineNo,
         {range, {Left, Top, Right, _Bottom}}
           when (XO == 0) and ((Left > X) or (X > Right) or (Top > Y)) ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
-        {column,{Left,_Right}} when X < Left ->
+        {column, {Left,_Right}} when X < Left ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
         {row,{Top,_Bottom}} when Y < Top ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
@@ -1031,16 +1055,16 @@ d_n_d_c_n_p_offset1([H | T], XOffset, YOffset, Acc) ->
 %% -spec get_local_parents(#refX{}) -> [#refX{}].
 %% get_local_parents(#refX{site = Site} = X) ->
 %%     ParentIdxs = get_local_rel_idxs(X, parents),
-%%     [idx_to_ref(Site, C) || C <- ParentIdxs].
+%%     [idx_to_refX(Site, C) || C <- ParentIdxs].
 
 -spec get_children(#refX{}) -> [#refX{}].
 get_children(#refX{site = Site} = X) ->
     ChildIdxs = get_children_idxs(X),
-    [idx_to_ref(Site, C) || C <- ChildIdxs].
+    [idx_to_refX(Site, C) || C <- ChildIdxs].
 
 -spec get_children_idxs(#refX{}) -> [cellidx()]. 
 get_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
-    case ref_to_idx(Ref) of
+    case refX_to_idx(Ref) of
         false -> 
             [];
         Idx -> 
@@ -1058,7 +1082,7 @@ get_children_idxs(#refX{obj = {Type, _}} = Ref)
 
 -spec delete_relation(#refX{}) -> ok.
 delete_relation(#refX{site = Site} = Cell) ->
-    case ref_to_idx(Cell) of
+    case refX_to_idx(Cell) of
         false -> ok;
         CellIdx ->
             Tbl = trans(Site, relation),
@@ -1082,29 +1106,45 @@ del_child(CellIdx, Child, Tbl) ->
             ok
     end.
 
--spec set_relations(#refX{}, [#refX{}], boolean()) -> ok.
-set_relations(#refX{site = Site} = Cell, Parents, IsIncl) ->
+-spec set_relations(#refX{}, [#refX{}], [#refX{}], boolean()) -> ok.
+set_relations(#refX{site = Site} = Cell, FiniteParents, InfParents, IsIncl) ->
     Tbl = trans(Site, relation),
-    CellIdx = ref_to_idx_create(Cell),
+    CellIdx = refX_to_idx_create(Cell),
     Rel = case mnesia:read(Tbl, CellIdx, write) of
               [R] -> R; 
               []  -> #relation{cellidx = CellIdx}
           end,
-    Rel2 = set_parents(Tbl, Rel, Parents, IsIncl),
+    Rel2 = set_parents(Tbl, Site, Rel, FiniteParents, InfParents, IsIncl),
     mnesia:write(Tbl, Rel2, write).
 
--spec set_parents(atom(), #relation{}, [#refX{}], boolean()) -> #relation{}. 
-set_parents(Tbl, 
+-spec set_parents(atom(), list(), #relation{}, [#refX{}],
+                  [#refX{}], boolean()) -> #relation{}. 
+set_parents(Tbl,
+            Site, 
             Rel = #relation{cellidx = CellIdx, 
-                            parents = CurParents
+                            parents = CurParents,
+                            infparents = CurInfPars
                            },
             Parents,
+            InfParents,
             IsIncl) ->
-    ParentIdxs = ordsets:from_list([ref_to_idx_create(P) || P <- Parents]),
+    ParentIdxs = ordsets:from_list([refX_to_idx_create(P) || P <- Parents]),
     LostParents = ordsets:subtract(CurParents, ParentIdxs),
     [del_child(P, CellIdx, Tbl) || P <- LostParents],
     [ok = add_child(P, CellIdx, Tbl, IsIncl) || P <- ParentIdxs],
-    Rel#relation{parents = ParentIdxs}.
+    InfParIdxs = ordsets:from_list([refX_to_idx_create(P)
+                                    || P <- InfParents]),
+    CurInfParsRefXs = [idx_to_refX(Site, X) || X <- CurInfPars],
+    ok = handle_infs(CellIdx, Site, InfParents, CurInfParsRefXs),
+    Rel#relation{parents = ParentIdxs, infparents = InfParIdxs}.
+
+handle_infs(_CellIdx, _Site, Inf, Inf) ->
+    ok;
+handle_infs(CellIdx, Site, NewInfParents, OldInfParents) ->
+    Tbl = trans(Site, dirty_zinf),
+    Rec = #dirty_zinf{type = infinite, dirtycellidx = CellIdx,
+                       old = OldInfParents, new = NewInfParents},
+    mnesia:write(Tbl, Rec, write).
 
 %% Adds a new child to a parent.
 -spec add_child(cellidx(), cellidx(), atom(), boolean()) -> ok.
@@ -1522,7 +1562,8 @@ offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
     % in this case {1, 1} is used because the results of this
     % are not actually going to be used here (ie {1, 1} is a dummy!)
     case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
-        {ok, Toks}    -> {Status, NewToks} = offset_with_ranges(Toks, Cell, From, Offset),
+        {ok, Toks}    -> {Status, NewToks} = offset_with_ranges(Toks, Cell,
+                                                                From, Offset),
                          hn_util:make_formula(Status, NewToks);
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
                                        "formula in offset_fm_w_rng but "++
@@ -1550,32 +1591,33 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     case muin:run_formula(Fla, Rti) of
         {error, {errval, Error}} ->
             write_error_attrs(Attrs, Ref, Formula, Error);
-        {ok, {Pcode, {rawform, RawF, Html}, Parents, _InfParents, Recompile}} ->
+        {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
             Form = RawF#form{id={Ref#refX.path, Trans, Label}}, 
             ok = attach_form(Ref, Form),
             Attrs2 = orddict:store("__hasform", t, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Html, 
-                                {Parents, false}, Recompile);
-        {ok, {Pcode, {preview, {PreV, Height, Width}, Res}, Parents, _InfParents, Recompile}} ->
-            Attrs2 = orddict:store("preview", {PreV, Height, Width}, Attrs),
+                                {Parents, false}, InfParents, Recompile);
+        {ok, {Pcode, {preview, {PreV, Ht, Wd}, Res}, Pars, InfPars, Recompile}} ->
+            Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
-                                {Parents, false}, Recompile);
-        {ok, {Pcode, {include, {PreV, Height, Width}, Res}, Parents, _InfParents, Recompile}} ->
-            Attrs2 = orddict:store("preview", {PreV, Height, Width}, Attrs),
+                                {Pars, false}, InfPars, Recompile);
+        {ok, {Pcode, {include, {PreV, Ht, Wd}, Res}, Pars, InfPars, Recompile}} ->
+            Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
-                                {Parents, true}, Recompile);
-        {ok, {Pcode, Res, Parents, _InfParents, Recompile}} ->
+                                {Pars, true}, InfPars, Recompile);
+        {ok, {Pcode, Res, Parents, InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
-                                {Parents, false}, Recompile)
+                                {Parents, false}, InfParents, Recompile)
     end.
 
-write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, {Parents, IsIncl}, Recompile) ->
+write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, {Parents, IsIncl},
+                    InfParents, Recompile) ->
     Parxml = lists:map(fun muin_link_to_simplexml/1, Parents),
     {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
-    ok = set_relations(Ref, NewLocPs, IsIncl),
+    ok = set_relations(Ref, NewLocPs, InfParents, IsIncl),
     Align = default_align(Res),
     add_attributes(Attrs, [{"formula", Formula},
                            {"__rawvalue", Res},
@@ -1584,7 +1626,7 @@ write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, {Parents, IsIncl}, Recompil
                            {"__recompile", Recompile}]).
 
 write_error_attrs(Attrs, Ref, Formula, Error) ->
-    ok = set_relations(Ref, [], false),
+    ok = set_relations(Ref, [], [], false),
     add_attributes(Attrs, [{"formula", Formula},
                            {"__rawvalue", {errval, Error}},
                            {"__ast", []}]).
@@ -1603,7 +1645,7 @@ write_formula2(Ref, OrigVal, {Type, Val},
                   int      -> OrigVal;
                   _        -> hn_util:text(Val) end,
     {NewLocPs, _NewRemotePs} = split_local_remote([]),
-    ok = set_relations(Ref, NewLocPs, false),
+    ok = set_relations(Ref, NewLocPs, [], false),
     Attrs2 = add_attributes(Attrs, [{"__default-align", Align},
                                     {"__rawvalue", Val},
                                     {"formula", Formula}]),
@@ -1619,10 +1661,10 @@ write_formula2(Ref, OrigVal, {Type, Val},
 split_local_remote(List) -> split_local_remote1(List, {[], []}).
 
 split_local_remote1([], Acc) -> Acc;
-split_local_remote1([{_, [{_, "local"}], [Url]} | T], {A, B})  ->
+split_local_remote1([{_, [{_, local}], [Url]} | T], {A, B})  ->
     P2 = hn_util:url_to_refX(Url),
     split_local_remote1(T, {[P2 | A], B});
-split_local_remote1([{_, [{_, "remote"}], [Url]} | T], {A, B}) ->
+split_local_remote1([{_, [{_, remote}], [Url]} | T], {A, B}) ->
     P2 = hn_util:url_to_refX(Url),
     split_local_remote1(T, {A, [P2 | B]}).
 
@@ -1657,7 +1699,7 @@ matching_forms(#refX{site=Site, path=Path}, Trans) ->
 -spec attach_form(#refX{}, #form{}) -> ok. 
 attach_form(Ref=#refX{site=Site}, Form) ->
     Tbl = trans(Site, form),
-    Idx = ref_to_idx_create(Ref),
+    Idx = refX_to_idx_create(Ref),
     mnesia:write(Tbl, Form#form{key = Idx}, write).
 
 -spec unattach_form(#refX{}, cellidx()) -> ok. 

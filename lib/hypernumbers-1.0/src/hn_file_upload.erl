@@ -136,6 +136,7 @@ test_import(File) ->
     test_import(File, hn_util:parse_url("http://hypernumbers.dev:9000/")).
 
 test_import(File, Ref) ->
+    io:format("File is ~p Ref is ~p~n", [File, Ref]),
     Path = code:lib_dir(hypernumbers)++"/../../tests/excel_files/"
         ++ "Win_Excel07_As_97/"++File++".xls",
     import(Path, "anonymous", Ref#refX{path=[File]}, File).

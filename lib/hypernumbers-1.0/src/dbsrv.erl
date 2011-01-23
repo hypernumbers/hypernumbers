@@ -3,11 +3,13 @@
 -behaviour(supervisor_bridge).
 
 %% API
--export([start_link/1,
+-export([
+         start_link/1,
          read_only_activity/2,
          write_activity/2,
          is_busy/1,
-         dbsrv/5]).
+         dbsrv/5
+        ]).
 
 %% supervisor_bridge callbacks
 -export([init/1, terminate/2]).
@@ -130,6 +132,8 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
         
         {write_activity, Activity} ->
             Activity(),
+            ok = rebuild_zinf(Site),
+            ok = process_dirties_for_zinf(Site),
             case load_dirty_since(Since, QTbl) of
                 {Since2, []} ->
                     {Since2, WorkPlan};
@@ -147,6 +151,41 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
     after Wait ->
             {Since, WorkPlan}
     end.    
+
+%% rebuild_inf_zs adds new infinite and z-order relations to the zinf tree
+rebuild_zinf(Site) ->
+    Tbl = hn_db_wu:trans(Site, dirty_zinf),
+    Fun = fun() ->
+                L = mnesia:match_object(Tbl, #dirty_zinf{_='_'}, read),
+                ok = squirt_zinfs(Site, L),
+                [ok = mnesia:delete(Tbl, Id, write) || #dirty_zinf{id = Id} <- L]
+        end,
+    mnesia:activity(transaction, Fun),
+    ok.
+
+squirt_zinfs(_Site, []) -> ok;
+squirt_zinfs(Site, [H | T]) ->
+    #dirty_zinf{dirtycellidx = CI, old = OldP, new = NewP} = H,
+    Add = ordsets:subtract(NewP, OldP),
+    Del = ordsets:subtract(OldP, NewP),
+    [ok = zinf_srv:add_zinf(Site, CI, X) || X <- Add],
+    [ok = zinf_srv:del_b(Site, CI, X) || X <- Del],
+    squirt_zinfs(Site, T).
+
+process_dirties_for_zinf(Site) ->
+    Tbl = hn_db_wu:trans(Site, dirty_for_zinf),
+    Fun = fun() ->
+                  L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, read),
+                  Dirties = [X || {ok, X} <- [zinf_srv:check_ref(Site, D)
+                                              || #dirty_for_zinf{dirty = D} <- L]],
+                  D1 = hslists:uniq(lists:flatten(Dirties)),
+                  D2 = [hn_db_wu:idx_to_refX(Site, X) || X <- D1],
+                  ok = hn_db_wu:mark_these_dirty(D2, nil),
+                  [ok = mnesia:delete(Tbl, Id, write)
+                   || #dirty_for_zinf{id = Id} <- L]
+          end,
+    mnesia:activity(transaction, Fun),
+    ok.
 
 %% Loads new dirty information into the recalc graph.
 -spec load_dirty_since(term(), atom()) -> {term(), [cellidx()]}.

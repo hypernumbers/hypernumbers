@@ -203,11 +203,16 @@ expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
           [], Cells).
 
 make_refX(Site, Path, #rangeref{type = row, text = Txt}) ->
-    {row, {range, {_X1, Y1, _X2, Y2}}}= hn_util:parse_ref(Txt),
-     #refX{site = Site, path = Path, type = gurl, obj = {row, {Y1, Y2}}};
+    Ref = strip(Txt),
+    {row, {range, {_X1, Y1, _X2, Y2}}}= hn_util:parse_ref(Ref),
+     #refX{site = Site, path = Path, type = url, obj = {row, {Y1, Y2}}};
 make_refX(Site, Path, #rangeref{type = col, text = Txt}) ->
-    {column, {range, {X1, _Y1, X2, _Y2}}} = hn_util:parse_ref(Txt),
-    #refX{site = Site, path = Path, type = gurl, obj = {column, {X1, X2}}}.
+    Ref = strip(Txt),
+    {column, {range, {X1, _Y1, X2, _Y2}}} = hn_util:parse_ref(Ref),
+    #refX{site = Site, path = Path, type = url, obj = {column, {X1, X2}}}.
+
+strip(Txt) -> [Ref | _T] = lists:reverse(string:tokens(Txt, "/")),
+              Ref.
 
 expand_cellrange(R) when ?is_rangeref(R) ->
     {{ColIndex1, RowIndex1}, {ColIndex2, RowIndex2}} = bounds_indexes(R),

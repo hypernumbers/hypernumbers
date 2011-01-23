@@ -6,9 +6,11 @@
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
+-include("keyvalues.hrl").
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         upgrade_zinf_2011_01_17/0,
          upgrade_2011_01_07/0
          %% upgrade_1519/0,
          %% upgrade_1556/0,
@@ -18,6 +20,45 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+% adds 2 new tables:
+% * a dirty z and infinite relations table
+% * a new table of writes from the zinf tree to determine if they
+%   are 'proper' dirty
+% adds a new infinite and z parents record to the relations table
+upgrade_zinf_2011_01_17() ->
+    % multi-site upgrade
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   % first add stuff to the relations table
+                   Fun2 = fun({relation, Cellidx, Children, Parents, Include}) ->
+                                  {relation, Cellidx, Children, Parents,
+                                   ordsets:new(), ordsets:new(), Include}
+                          end,
+                   Tbl1 = hn_db_wu:trans(Site, relation),
+                   io:format("Table ~p transformed~n", [Tbl1]),
+                   Ret1 = mnesia:transform_table(Tbl1, Fun2,
+                                                 [cellidx, children, parents,
+                                                  infparents, z_parents, include]),
+                   io:format("Ret is ~p~n", [Ret1]),
+                   % now create the tables for zinf (and the kv store to put zinf in)
+                   Tables = [
+                             {dirty_zinf, record_info(fields, dirty_zinf)},
+                             {dirty_for_zinf, record_info(fields, dirty_for_zinf)},
+                             {kvstore, record_info(fields, kvstore)}
+                             ],
+                   [ok = make_table(Site, X, Y) || {X, Y} <- Tables],
+                   ok = hn_db_api:write_kv(Site, ?zinf_tree, gb_trees:empty())
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
+
+make_table(Site, Record, RecordInfo) ->
+    Tbl = hn_db_wu:trans(Site, Record),
+    Ret = hn_db_admin:create_table(Tbl, Record, RecordInfo,
+                                   disc_copies, set, false, []),
+    io:format("~p creation status: ~p~n", [Tbl, Ret]),
+    Ret.
 
 %% add a new field to the relations table - can be done prior to the table changes being released to production
 %% Release Procedure
@@ -39,7 +80,8 @@ upgrade_2011_01_07() ->
                    Tbl = hn_db_wu:trans(Site, relation),
                    io:format("Table is ~p~n", [Tbl]),
                    Ret = mnesia:transform_table(Tbl, Fun2,
-                                                [cellidx, children, parents, include]),
+                                                [cellidx, children,
+                                                 parents, include]),
                    io:format("Ret is ~p~n", [Ret])
          end,
     lists:foreach(Fun1, Sites).

@@ -47,6 +47,7 @@
 -define(axeslables, "chxl").
 -define(axeslabpos, "chxp").
 -define(tickmarks,  "chxt").
+-define(speedolab,  "chl").
 
 % definition of standard stuff
 -define(SIZE1x1,     "66x20").
@@ -233,34 +234,76 @@ make_c([], Acc)           -> lists:flatten([?apiurl | Acc]) ++ ?urlclose;
 make_c([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
                              make_c(T, [NewAcc | Acc]).
 
-'speedo.2x4'(List)  -> speedo(?SIZE2x4,  List).
+'speedo.2x4'([_V] = L)               -> speedo(?SIZE2x4, L);
+'speedo.2x4'([_V, _Tt] = L)          -> speedo(?SIZE2x4, L);
+'speedo.2x4'([_V, _Tt, _S] =  L)     -> speedo(?SIZE2x4, L);
+'speedo.2x4'([_V, _Tt, _S, _Th] = L) -> speedo(?SIZE2x4, L).
+
 'speedo.3x6'(List)  -> speedo(?SIZE3x6,  List).
 'speedo.4x8'(List)  -> speedo(?SIZE4x8,  List).
 'speedo.6x11'(List) -> speedo(?SIZE6x11, List).
 
-speedo(Size, [Val])                  -> speedo1(Size, Val, "", "");
-speedo(Size, [Val, Title])           -> speedo1(Size, Val, Title, "");
-speedo(Size, [Val, Title, Subtitle]) -> speedo1(Size, Val, Title, Subtitle).
+speedo(Size, [V])                     -> V2 = cast_val(V),
+                                         speedo1(Size, V2, "", "", "", "", 1);
+speedo(Size, [V, Tt])                 -> V2 = cast_val(V),
+                                         speedo1(Size, V2, Tt, "", "", "", 1);
+speedo(Size, [V, Tt, SubT])           -> V2 = cast_val(V),
+                                         speedo1(Size, V2, Tt, SubT, "", "", 1);
+speedo(Size, [V, Tt, SubT, Th])       -> Scale = speedo_scale(Th),
+                                         V2 = cast_val(V),
+                                         speedo1(Size, V2, Tt, SubT, Th, "", Scale);
+speedo(Size, [V, Tt, SubT, Th, Labs]) -> Scale = speedo_scale(Th),
+                                         V2 = cast_val(V),
+                                         speedo1(Size, V2, Tt, SubT, Th, Labs, Scale).
+cast_val(Val) ->  cast_v2(Val, 0, 100, 1).
 
-speedo1(Size, Val, Title, Subtitle) ->
-    [Val2] = cast_data(Val),
-    [T2]   = cast_titles(Title),
-    [S2]   = cast_titles(Subtitle),
+cast_v2(Val, Min, Max, Scale) ->
+    V2 = cast_data(Val),
     if
-        Val2 < 0                   -> ?ERRVAL_VAL;
-        Val2 > 1                   -> ?ERRVAL_VAL;
-        0 =< Val2 andalso Val =< 1 ->
-            "<img src='http://chart.apis.google.com/chart" ++
-                "?chxl=0:|OK|Beware|Danger" ++
-                "&amp;chxt=y" ++
-                "&amp;chs=" ++Size++
-                "&amp;cht=gm" ++
-                "&amp;chco=000000,008000|FFCC33|FF0000" ++
-                "&amp;chd=t:" ++ tconv:to_s(Val2 * 100) ++
-                "&amp;chl=" ++ S2 ++
-                "&amp;chtt=" ++ T2 ++
-                "'>"
+        V2 < Min                      -> ?ERRVAL_VAL;
+        V2 > Max                      -> ?ERRVAL_VAL;
+        Min =< Val andalso Val =< Max -> V2 * Scale
     end.
+
+speedo1(Size, Val, Title, Subtitle, Threshold, Lables, Scale) ->
+    [Tt2]  = cast_titles(Title),
+    [Sb2]  = cast_titles(Subtitle),
+    [Th2]  = cast_data(Threshold),
+    [Lab2] = cast_titles(Lables),
+    if
+        Val < 0                             -> ?ERRVAL_VAL;
+        Val > 100 * Scale                   -> ?ERRVAL_VAL;
+        0 =< Val andalso Val =< 100 * Scale ->
+            Opts = [],
+            NewOpts = [
+                       {?axeslables, "0:|OK|Beware|Danger"},
+                       {?tickmarks, "y"},
+                       {?size, Size},
+                       {?type, "gm"},
+                       {?colours, "000000,008000|FFCC33|FF0000"},
+                       {?data, tconv:to_s(Val)},
+                       {?speedolab, Sb2},
+                       {?title, Tt2}
+                       ],
+            %        "<img src='http://chart.apis.google.com/chart" ++
+            % "?chxl=0:|OK|Beware|Danger" ++
+            % "&amp;chxt=y" ++
+            % "&amp;chs=" ++Size++
+            % "&amp;cht=gm" ++
+            % "&amp;chco=000000,008000|FFCC33|FF0000" ++
+            % "&amp;chd=t:" ++ tconv:to_s(Val2 * 100) ++
+            % "&amp;chl=" ++ S2 ++
+            % "&amp;chtt=" ++ T2 ++
+            % "'>"
+            case Opts of
+                [] -> make_chart(NewOpts);
+                _  -> make_chart(lists:concat([Opts, NewOpts]))
+            end
+    end.
+
+speedo_scale(Th) ->
+    [Zero, Orange, Red, Max] = cast_data(Th),
+    1.
 
 barchart([Data]) ->
     bar(Data, 0, {{scale, auto}, [], []});

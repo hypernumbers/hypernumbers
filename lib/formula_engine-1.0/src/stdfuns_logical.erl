@@ -47,7 +47,8 @@
 '>'([A, B]) ->
     muin_checks:die_on_errval([A]),
     muin_checks:die_on_errval([B]),
-    [A1, B1] = muin_col_DEPR:collect_numbers([A, B], [first_array, cast_dates]),
+    [A1, B1] = muin_col_DEPR:collect_numbers([A, B], [first_array,
+                                                      cast_dates]),
     '>1'(A1, B1).
 
 '>1'(N, N) -> false;
@@ -72,8 +73,8 @@
 '>1'("",0)                                 -> true;
 '>1'(0,"")                                 -> false;
 '>1'("",blank)                             -> false;
-'>1'("",0.0)                                 -> true;
-'>1'(0.0,"")                                 -> false;
+'>1'("",0.0)                                -> true;
+'>1'(0.0,"")                                -> false;
 '>1'(blank,"")                             -> false;
 '>1'(A, N) when ?is_area(A) andalso N > 0  -> true;
 '>1'(A, N) when ?is_area(A) andalso N =< 0 -> false;
