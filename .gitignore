@@ -7,7 +7,8 @@
 TAGS
 tags
 var
-ebin
+ebin/*.beam
+ebin/*.erl
 shell
 migrate_*
 lib/*/ebin/*.erl
