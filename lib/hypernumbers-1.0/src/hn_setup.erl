@@ -33,7 +33,7 @@ site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
         false ->
             error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
             ok = create_site_tables(Site, Type),
-            ok = create_blank_zinf(Site),
+            ok = create_blank_z_and_infs(Site),
             ok = sitemaster_sup:add_site(Site),
             ok = update(Site, Type, Opts, ToLoad),
             get_initial_params(Site)
@@ -166,11 +166,11 @@ get_initial_params(Site) ->
 %%     {ok, [Data]} = file:consult(Path),
 %%     ok           = hn_mochi:save_view(NSite, ViewName, Data).
 
--spec create_blank_zinf(string()) -> ok.
-create_blank_zinf(Site) ->
+-spec create_blank_z_and_infs(string()) -> ok.
+create_blank_z_and_infs(Site) ->
     Key = ?zinf_tree,
     Value = gb_trees:empty(),
-    hn_db_api:write_kv(Site, Key, Value).    
+    hn_db_api:write_kv(Site, Key, Value).
 
 -spec create_site_tables(string(), atom()) -> ok.
 create_site_tables(Site, Type)->

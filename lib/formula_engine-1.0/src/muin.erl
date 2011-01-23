@@ -371,10 +371,10 @@ col_index({offset, N}) -> ?mx + N.
 
 fetch(Ref) when ?is_zcellref(Ref) ->
     io:format("Ref is ~p~n", [Ref]),
-    error_logger:info_msg("Somebody tried a z-order cellref~n"),
+    error_logger:info_msg("(from muin) Somebody tried a z-order cellref~n"),
     ?ERRVAL_ERR;
 fetch(Ref) when ?is_zrangeref(Ref) ->
-    error_logger:info_msg("Somebody tried a z-order rangeref~n"),
+    error_logger:info_msg("(from muin) Somebody tried a z-order rangeref~n"),
     ?ERRVAL_ERR;
 fetch(N) when ?is_namedexpr(N) ->
     ?ERRVAL_NAME;
@@ -389,15 +389,15 @@ fetch(#rangeref{type = Type, path = Path} = Ref)
     Infinites = get(infinite),
     put(infinite, ordsets:add_element(RefX,Infinites)),
     Refs = hn_db_wu:expand_ref(RefX),
-    Rows = case Obj of
+    _Rows = case Obj of
                {Type2, {_I, _I}} -> sort1D(Refs, Path, Type2);
                {Type2, {I,   J}} -> sort2D(Refs, Path, {Type2, I, J})
     end,
     %io:format("Rows is ~p~n", [Rows]),
     % pinch out the functionality for a release
-    {range, Rows};
-    % error_logger:info_msg("Somebody tried a row or column rangeref~n"),
-    % ?ERRVAL_ERR;
+    %{range, Rows};
+    error_logger:info_msg("Somebody tried a row or column rangeref~n"),
+    ?ERRVAL_ERR;
 fetch(#rangeref{type = finite} = Ref) ->
     CellCoords = muin_util:expand_cellrange(Ref),
     Fun1 = fun(CurrRow, Acc) -> % Curr row, result rows

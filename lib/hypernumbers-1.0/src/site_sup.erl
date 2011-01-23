@@ -61,7 +61,6 @@ init([Site]) ->
               2000, 
               worker, 
               [zinf_srv]}
-
            ]
          }}.
 

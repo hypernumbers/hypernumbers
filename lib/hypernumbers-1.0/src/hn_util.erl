@@ -85,9 +85,7 @@ parse_z([H | T], Acc) ->
     {ok, Re} = re:compile("(^\\[.+\\]$)"), %" for emacs syntact highlighting
     case re:run(H, Re) of
         {match, _} -> parse_z(T, [{zseg, H} | Acc]);
-        nomatch    -> parse_z(T, [ {seg, H} | Acc]);
-        Other      -> io:format("fucketdy-doo-dah! Other is ~p~n", [Other]),
-                      exit(Other)
+        nomatch    -> parse_z(T, [ {seg, H} | Acc])
     end.
 
 %% make formula creates a new formula, but also returns a status.
@@ -506,6 +504,7 @@ parse_url("http://"++Url) ->
                     obj = Obj}
     end.
 
+%% needs to be fixed for validating page paths
 isGURL(Path) -> false.
     %% Re = "^[a-zA-Z0-9_\-~]$", %"
     %% %io:format("Re is ~p~n", [Re]),
@@ -577,7 +576,6 @@ ltoi(X) ->
     list_to_integer(X).
 
 parse_ref(Ref) ->
-    io:format("Ref is ~p~n", [Ref]),
     RefType = type_reference(Ref),
     RefVal  = case RefType of
                   page ->   "/";

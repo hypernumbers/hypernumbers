@@ -3,11 +3,13 @@
 -behaviour(supervisor_bridge).
 
 %% API
--export([start_link/1,
+-export([
+         start_link/1,
          read_only_activity/2,
          write_activity/2,
          is_busy/1,
-         dbsrv/5]).
+         dbsrv/5
+        ]).
 
 %% supervisor_bridge callbacks
 -export([init/1, terminate/2]).
@@ -167,15 +169,18 @@ squirt_zinfs(Site, [H | T]) ->
     Add = ordsets:subtract(NewP, OldP),
     Del = ordsets:subtract(OldP, NewP),
     [ok = zinf_srv:add_zinf(Site, CI, X) || X <- Add],
-    [ok = zinf_srv:del_zinf(Site, CI, X) || X <- Del],
+    [ok = zinf_srv:del_b(Site, CI, X) || X <- Del],
     squirt_zinfs(Site, T).
 
 process_dirties_for_zinf(Site) ->
     Tbl = hn_db_wu:trans(Site, dirty_for_zinf),
     Fun = fun() ->
                   L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, read),
-                  [ok = zinf_srv:check_ref(Site, D)
-                   || #dirty_for_zinf{dirty = D} <- L],
+                  Dirties = [X || {ok, X} <- [zinf_srv:check_ref(Site, D)
+                                              || #dirty_for_zinf{dirty = D} <- L]],
+                  D1 = hslists:uniq(lists:flatten(Dirties)),
+                  D2 = [hn_db_wu:idx_to_refX(Site, X) || X <- D1],
+                  ok = hn_db_wu:mark_these_dirty(D2, nil),
                   [ok = mnesia:delete(Tbl, Id, write)
                    || #dirty_for_zinf{id = Id} <- L]
           end,
