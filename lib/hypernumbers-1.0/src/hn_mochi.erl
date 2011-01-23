@@ -1212,7 +1212,8 @@ post_column_values(Ref, Values, PAr, VAr, Offset) ->
                 case Val of
                     "" -> ok = hn_db_api:clear(NRef, contents, PAr),
                           Acc+1;
-                    _  -> ok = hn_db_api:write_attributes([{NRef, [{"formula", Val}]}], 
+                    _  -> ok = hn_db_api:write_attributes([{NRef,
+                                                            [{"formula", Val}]}], 
                                                           PAr, VAr),
                           Acc+1
                 end
