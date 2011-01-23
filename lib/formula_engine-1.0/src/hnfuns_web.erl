@@ -135,10 +135,13 @@ textarea_([Label], _Default, Trans) ->
 
 -spec 'google.map_'(number(), number(), zoom()) -> html().
 'google.map_'(Lat, Long, Zoom) ->
-    "<iframe width='100%' height='100%' frameborder='0' scrolling='no' "
+    Lat2 = muin_util:cast(Lat, str),
+    Long2 = muin_util:cast(Long, str),
+    HTML = "<iframe width='100%' height='100%' frameborder='0' scrolling='no' "
         ++ "marginheight='0' marginwidth='0' src='http://maps.google.com"
-        ++ "/?ie=UTF8&amp;ll=" ++ muin_util:cast(Lat, str) ++ "," ++ muin_util:cast(Long, str)
-        ++ "&amp;z=" ++ muin_util:cast(Zoom, str) ++ "&amp;output=embed'></iframe>".
+        ++ "/?ie=UTF8&amp;ll=" ++ Lat2 ++ "," ++ Long2
+        ++ "&amp;z=" ++ muin_util:cast(Zoom, str) ++ "&amp;output=embed'></iframe>",
+    {preview, {"Google Map for Lat: " ++ Lat2 ++ " Long: " ++ Long2, 80, 21}, HTML}.
 
 -spec button_(string(), string(), string()) -> {rawform, #form{}, html()}.
 button_(Value, Response, ResultsPath) ->
