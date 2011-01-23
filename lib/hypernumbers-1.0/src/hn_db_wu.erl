@@ -1598,9 +1598,16 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             Attrs2 = orddict:store("__hasform", t, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Html, 
                                 {Parents, false}, InfParents, Recompile);
-        {ok, {Pcode, {preview, {PreV, Ht, Wd}, Res}, Pars, InfPars, Recompile}} ->
-            Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
-            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
+        {ok, {Pcode, {preview, {PreV, Wd, Ht}, Res}, Pars, InfPars, Recompile}} ->
+            Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
+            Attrs3 = case {Ht, Wd} of
+                         {1, 1} -> Attrs2;
+                         _      -> orddict:store("merge", {struct,
+                                                           [{"right", Wd - 1},
+                                                            {"down",  Ht - 1}]},
+                                                 Attrs2)
+                     end,
+            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res, 
                                 {Pars, false}, InfPars, Recompile);
         {ok, {Pcode, {include, {PreV, Ht, Wd}, Res}, Pars, InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),

@@ -7,86 +7,100 @@
 
 -module(hnfuns_html).
 
+-include("errvals.hrl").
+
 -export([
-         'html.box1'/1,
-         'html.box2'/1,
-         'html.box3'/1,
-         'html.box4'/1,
-         'html.box6'/1,
-         'html.box12'/1,
-         % 'html.box1p'/1,
-         % 'html.box2p'/1,
-         % 'html.box3p'/1,
-         % 'html.box4p'/1,
-         % 'html.box6p'/1,
-         % 'html.box12p'/1,
+         'html.block.'/1,
+         'html.box.'/1,
+         'html.alert.'/1,
          'html.menu1'/1,
          'html.submenu'/1
          ]).
 
--define(Width1,  80).
--define(Width2,  160).
--define(Width3,  240).
--define(Width4,  320).
--define(Width6,  480).
--define(Width12, 960).
+'html.block.'(List) -> 'html.box.1'("white", "none", 0, "single", List).
 
-'html.box1'(List)  -> wrap_box(?Width1,  List).
-'html.box2'(List)  -> wrap_box(?Width2,  List).
-'html.box3'(List)  -> wrap_box(?Width3,  List).
-'html.box4'(List)  -> wrap_box(?Width4,  List).
-'html.box6'(List)  -> wrap_box(?Width6,  List).
-'html.box12'(List) -> wrap_box(?Width12, List).
+'html.box.'(List) -> 'html.box.1'("grey", "single", 0, "none", List).
 
-% 'html.box1'(List)  -> box(?Width1,  List).
-% 'html.box2'(List)  -> box(?Width2,  List).
-% 'html.box3'(List)  -> box(?Width3,  List).
-% 'html.box4'(List)  -> box(?Width4,  List).
-% 'html.box6'(List)  -> box(?Width6,  List).
-% 'html.box12'(List) -> box(?Width12, List).
+'html.alert.'([H, W, Style | List]) ->
+    'html.box.1'("grey", "single", Style, "none", [H, W | List]).
 
-wrap_box(Width, [Content]) ->
-        {preview, {"1 Cell Box", Width, 21}, box(Width, [Content])};
-wrap_box(Width, [Headline, Content]) ->
-        [H1] = typechecks:flat_strs([Headline]),
-        {preview, {H1, Width, 21}, box(Width, [H1, Content])};
-wrap_box(Width, [Headline, Content, Footer]) ->
-        [H1] = typechecks:flat_strs([Headline]),
-        {preview, {H1, Width, 21}, box(Width, [H1, Content, Footer])}.
+'html.box.1'(Background, Border, Style, Lines,
+             [Width, Height, Headline, Content, Footer]) ->
+    W = tconv:to_i(Width),
+    H = tconv:to_i(Height),
+    check_size(W, H),
+    [H1] = typechecks:flat_strs([Headline]),
+    {preview, {H1, W, H}, box(Width, Height, Background, Border, Style, Lines,
+                              [H1, Content, Footer])};
+'html.box.1'(Background, Border, Style, Lines, [Width, Height, Headline, Content]) ->
+    W = tconv:to_i(Width),
+    H = tconv:to_i(Height),
+    check_size(W, H),
+    [H1] = typechecks:flat_strs([Headline]),
+    {preview, {H1, W, H}, box(Width, Height, Background, Border, Style, Lines,
+                              [H1, Content])};
+'html.box.1'(Background, Border, Style, Lines, [Width, Height, Content]) ->
+    W = tconv:to_i(Width),
+    H = tconv:to_i(Height),
+    check_size(W, H),
+    {preview, {"Box", W, H}, box(Width, Height, Background, Border, Style, Lines,
+                                        [Content])}.
 
-box(Width, [Content]) ->
+check_size(W, H) when W > 0 andalso W < 13 andalso H > 1 andalso H < 21 -> ok;
+check_size(_W, _H) -> ?ERR_VAL.
+
+box(W, H, Bk, Bd, St, Ln, [Content]) ->
     [C1] = typechecks:flat_strs([Content]),
-    W = tconv:to_s(Width),
-    "<div class='hn-wc-wd-"++W++" hn-wc-box'>"++
+    Style = check_style(St),
+    "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
+        " hn-wc-box hn-wc-style-"++Style++" hn-wc-border-"++Bd++
+        " hn-wc-background-"++Bk++ "hn-wc-line-"++Ln++"'>"++
         "<div class='hn-wc-body'><div class='hn-wc-inner'>"++C1++"</div></div>"++
         "</div>";
-box(Width, [Headline, Content]) ->
+box(W, H, Bk, Bd, St, Ln, [Headline, Content]) ->
     [H1, C1] = typechecks:flat_strs([Headline, Content]),
-    W = tconv:to_s(Width),
-    "<div class='hn-wc-wd-"++W++" hn-wc-box'>"++
-        "<div class='hn-wc-headline'><div class='hn-wc-inner'>"++H1++"</div></div>"++
+    Style = check_style(St),
+    "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
+        " hn-wc-box hn-wc-style-"++Style++" hn-wc-border-"++Bd++
+        " hn-wc-background-"++Bk++" hn-wc-line-"++Ln++"'>"++
+        "<div class='hn-wc-headline'>"++
+        "<div class='hn-wc-inner'>"++H1++"</div></div>"++
         "<div class='hn-wc-body'><div class='hn-wc-inner'>"++C1++"</div></div>"++
         "</div>";
-box(Width, [Headline, Content, Footer]) ->
+box(W, H, Bk, Bd, St, Ln, [Headline, Content, Footer]) ->
     [H1, C1, F1] = typechecks:flat_strs([Headline, Content, Footer]),
-    W = tconv:to_s(Width),
-    "<div class='hn-wc-wd-"++W++" hn-wc-box'>"++
-        "<div class='hn-wc-headline'><div class='hn-wc-inner'>"++H1++"</div></div>"++
+    Style = check_style(St),
+    "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
+        " hn-wc-box hn-wc-style-"++Style++" hn-wc-border-"++Bd++
+        " hn-wc-background-"++Bk++" hn-wc-line-"++Ln++"'>"++
+        "<div class='hn-wc-headline'>"
+        "<div class='hn-wc-inner'>"++H1++"</div></div>"++
         "<div class='hn-wc-body'><div class='hn-wc-inner'>"++C1++"</div></div>"++
-        "<div class='hn-wc-footer'><div class='hn-wc-inner'>"++F1++"</div></div>"++
+        "<div class='hn-wc-footer'>"
+        "<div class='hn-wc-inner'>"++F1++"</div></div>"++
         "</div>".
+
+check_style(St) ->
+    [NStyle] = typechecks:std_ints([St]),
+    case NStyle of
+        0 -> "plain";
+        1 -> "alert1";
+        2 -> "alert2";
+        3 -> "alert3";
+        _ -> ?ERR_VAL
+    end.
 
 'html.submenu'(List) ->
     Rules = [eval_funs, fetch, flatten, {cast, str}],
     Passes = [return_errors],
     [Menu | Subs] = muin_collect:col(List, Rules, Passes),
     SubMenu = "<span>"++Menu++"</span>"++menu1(lists:reverse(Subs), "", []),
-    {preview, {"Submenu", 120, 40}, SubMenu}.
+    {preview, {"Submenu", 1, 1}, SubMenu}.
 
 'html.menu1'(List) when is_list(List) ->
     Strings = typechecks:flat_strs(List),    
     Menu = menu1(Strings, "potato-menu", []),
-    {preview, {"Type 1 Menu", 120, 40}, Menu}.
+    {preview, {"Type 1 Menu", 1, 1}, Menu}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

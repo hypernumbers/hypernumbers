@@ -605,9 +605,8 @@ label {
   font-weight:      bold;
   background-color: #EEE;
   color:            #777;
-  margin:           1px;
-  padding:          0px 0px 0px 3px;
-  width:            90%;
+  margin:           2px;
+  padding:          1px 1px 1px 4px;
   height:           87%;
   -moz-border-radius: 4px 4px 4px 4px;
   -webkit-border-radius:4px 4px 4px 4px;
