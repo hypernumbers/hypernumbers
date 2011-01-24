@@ -179,16 +179,29 @@ just_ref(Ssref) ->
 %% The first argument is a list of path components, the second is a string.
 %% The first comes from the server side of things, and the second comes from
 %% the path field in ref objects.
+walk_path(_, [{seg, [$/|_]} | _] = List) -> List;
 walk_path(_, Dest = [$/|_]) ->
     string:tokens(Dest, "/");
+walk_path(Currloc, [{Type, _} | _] = List) when Type == seg orelse Type == zseg ->
+    Length = length(Currloc),
+    Zip = lists:duplicate(Length, seg),
+    Currloc2 = lists:zip(Zip, Currloc),
+    Newstk = lists:foldl(fun({seg, "."},  Stk) -> Stk;
+                            ({seg, ".."}, [])  -> [];
+                            ({seg, ".."}, Stk) -> hslists:init(Stk);
+                            (Word, Stk)        -> lists:append(Stk, [Word])
+                         end,
+                         Currloc2,
+                         List),
+    Newstk;
 walk_path(Currloc, Dest) ->
     Newstk = lists:foldl(fun(".",  Stk) -> Stk;
-                      ("..", []) ->  [];
-                      ("..", Stk) -> hslists:init(Stk);
-                      (Word, Stk) -> lists:append(Stk, [Word])
-                   end,
-                   Currloc,
-                   string:tokens(Dest, "/")),
+                            ("..", [])  ->  [];
+                            ("..", Stk) -> hslists:init(Stk);
+                            (Word, Stk) -> lists:append(Stk, [Word])
+                         end,
+                         Currloc,
+                         string:tokens(Dest, "/")),
     Newstk.
 
 expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
