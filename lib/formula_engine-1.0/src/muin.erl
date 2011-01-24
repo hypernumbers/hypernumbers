@@ -59,7 +59,7 @@
 -define(array_context, get(array_context)).
 
 -define(error_in_formula, {errval, '#FORMULA!'}).
--define(syntax_error, {error, syntax_error}).
+-define(syntax_err, {error, syntax_error}).
 
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -86,7 +86,6 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
                           col=Col,   row=Row,
                           array_context=AryCtx,
                           auth_req=AuthReq}) ->
-
     %% Populate the process dictionary.
     lists:map(fun({K,V}) -> put(K, V) end,
         [{site, Site}, {path, Path}, {x, Col}, {y, Row}, 
@@ -141,8 +140,8 @@ eval_formula(Fcode) ->
 %% @doc Compiles a formula against a cell.
 compile(Fla, {Col, Row}) ->
     case parse(Fla, {Col, Row}) of
-        {ok, Pcode}   -> {ok, Pcode};
-        ?syntax_error -> ?error_in_formula
+        {ok, Pcode} -> {ok, Pcode};
+        ?syntax_err -> ?error_in_formula
     end.
 
 %% Formula -> sexp, relative to coord.
@@ -152,9 +151,9 @@ parse(Fla, {Col, Row}) ->
         {ok, Toks} ->
             case catch(xfl_parser:parse(Toks)) of
                 {ok, Ast} -> {ok, Ast};
-                _         -> ?syntax_error
+                _         -> ?syntax_err
             end;
-        _ -> ?syntax_error
+        _ -> ?syntax_err
     end.                     
 
 % not all functions can be included in other functions
@@ -388,8 +387,20 @@ row_index({offset, N}) -> ?my + N.
 col_index(N) when is_integer(N) -> N;
 col_index({offset, N}) -> ?mx + N.
 
-fetch(Ref) when ?is_zcellref(Ref) ->
-    io:format("Ref is ~p~n", [Ref]),
+fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
+    {zpath, ZList} = Z,
+    NewPath = muin_util:walk_path(?mpath, ZList),
+    Length = length(NewPath),
+    Paths = hn_db_api:read_pages(#refX{site = ?msite, path = [], obj = {page, "/"}}),
+    FPaths = [X || X <- Paths, length(X) == Length],
+    MPaths = match(?msite, FPaths, NewPath),
+    {offset, Col} = C#cellref.col,
+    {offset, Row} = C#cellref.row,
+    % the co-ords are offset co-ords from 'A1' so add 1
+    Text = util2:make_ref({Col + 1, Row + 1}),
+    SkeletonCellRef = C#cellref{path = "", text = Text},
+    _Vals = fetch_vals(MPaths, SkeletonCellRef),
+    % pinch it off from working
     error_logger:info_msg("(from muin) Somebody tried a z-order cellref~n"),
     ?ERRVAL_ERR;
 fetch(Ref) when ?is_zrangeref(Ref) ->
@@ -654,7 +665,61 @@ fill1D(Dict, Index, N, Size, Acc, Type) ->
             true  -> {[orddict:fetch(Index, Dict) | Acc], N + 1};
             false -> {[[blank] | Acc], N}
         end,
-    fill1D(Dict, Index + 1, NewN, Size, NewAcc, Type).
+    fill1D(Dict, Index + 1, NewN, Size, NewAcc, Type).    
+
+match(Site, Paths, ZPath) -> m1(Site, Paths, ZPath, []).
+
+m1(_Site, [], _ZPath, Acc) -> Acc;
+m1(Site, [H | T], ZPath, Acc) ->
+    NewAcc = case m2(Site, H, ZPath, []) of
+                 nomatch -> Acc;
+                 match   -> [H | Acc]
+             end,
+    m1(Site, T, ZPath, NewAcc).
+
+m2(_Site, [], [], _Htap) -> match;
+m2(Site, [S | T1], [{seg, S}  | T2], Htap)     -> m2(Site, T1, T2, [S | Htap]);
+m2(_Site, [_S | _T1], [{seg, _} | _T2], _Htap) -> nomatch;
+m2(Site, [S | T1], [{zseg, Z} | T2], Htap) ->
+    case zeval(Site, lists:reverse([S | Htap]), Z) of
+        match   -> m2(Site, T1, T2, [S | Htap]);
+        nomatch -> nomatch
+    end.
+
+% the execution context for expressions is stored in the process dictionary
+% so here you need to rip it out and then stick it back in
+% (not good, Damn you Hasan!).
+zeval(Site, Path, Toks) ->
+    % capture the process dictionary (it will get gubbed!)
+    OldContext = get(),
+    % we run in the context of call 'a1' - this is because z-order expressions
+    % do not support r[]c[] format cell references (or is it vice-versa?)
+    RefX = #refX{site = Site, path = Path, obj = {cell, {1, 1}}},
+    % no array context (fine) or security context (erk!)
+    RTI = hn_db_wu:refX_to_rti(RefX, nil, false), 
+    Return = case catch(xfl_parser:parse(Toks)) of
+                 {ok, Ast}   -> {ok, {_, Rs, _, _, _}} = muin:run_code(Ast, RTI),
+                                % cast to a boolean
+                                Rs2 = typechecks:std_bools([Rs]),
+                                case Rs2 of
+                                    [true]  -> match;
+                                    [false] -> nomatch;
+                                    _       -> ?ERR_VAL
+                                end;
+                 ?syntax_err -> ?error_in_formula
+             end,
+    % restore the process dictionary (fugly! fugly! fugly!)
+    [put(K, V) || {K, V} <- OldContext],
+    Return.
+
+fetch_vals(Paths, Text) -> fetch_v1(Paths, Text, []).
+
+fetch_v1([], _CellRef, Acc) -> lists:reverse(Acc);
+fetch_v1([H | T], CellRef, Acc) ->
+    NewCellRef = CellRef#cellref{path = hn_util:list_to_path(H)},
+    io:format("NewCellRef is ~p~n", [NewCellRef]),
+    NewAcc = fetch(NewCellRef),
+    fetch_v1(T, CellRef, [NewAcc | Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Test Functions
@@ -691,7 +756,7 @@ test_xfl() ->
              %"/bleh/a:a"
              "sum(/bleh/gloh/dleh/1:1)"
             ],
-    Fun = fun(X) ->
+    Fun= fun(X) ->
                   Fla = superparser:process("="++X),
                   io:format("~n~nStarting a new parse...~n"),
                   Trans = translator:do(Fla),
@@ -699,22 +764,25 @@ test_xfl() ->
                       {ok, Toks} ->
                           case catch(xfl_parser:parse(Toks)) of
                               {ok, Ast} ->
-                                  io:format("Sucess Expr is ~p Fla is ~p Trans is ~p~n"++
+                                  io:format("Sucess Expr is ~p Fla is ~p "++
+                                            "Trans is ~p~n"++
                                             "Toks is ~p~nAst is ~p~n"++
                                             "Status is ~p~n",
                                             [X, Fla, Trans, Toks, Ast, "Ok"]),
                                   {ok, Ast};
-                              O2         ->  io:format("Parse fail: "++
-                                                       "Expr is ~p Fla is ~p Trans is ~p~n"++
-                                                       "Toks is ~p~nStatus is ~p~n",
-                                                       [X, Fla, Trans, Toks, O2]),
-                                             ?syntax_error
+                              O2         ->
+                                  io:format("Parse fail: "++
+                                            "Expr is ~p Fla is ~p Trans is ~p~n"++
+                                            "Toks is ~p~nStatus is ~p~n",
+                                            [X, Fla, Trans, Toks, O2]),
+                                  ?syntax_err
                           end;
-                      O1 -> io:format("Lex fail: Expr is ~p Fla is ~p Trans is ~p~n"++
+                      O1 -> io:format("Lex fail: Expr is ~p Fla is ~p "++
+                                      "Trans is ~p~n"++
                                       "Status is ~p~n",
                                       [X, Fla, Trans, O1]),
-                            ?syntax_error
+                            ?syntax_err
                   end
-          end,
+         end,
     [Fun(X) || X <- Exprs],
     ok.
