@@ -166,15 +166,15 @@ lit({name, _, Name}) when is_record(Name, namedexpr) -> Name;
 lit({name, _, Name}) -> #namedexpr{path = "./", text = Name};
 lit({cellref, _, Cellref}) when is_record(Cellref, cellref) -> Cellref;
 lit({zcellref, _, ZPath, Cellref}) when is_record(Cellref, cellref) ->
-    #zcellref{zpath = ZPath, cellref = Cellref};
+    #zcellref{zpath = tidy_up(ZPath), cellref = Cellref};
 lit({rangeref, _, Rangeref}) when is_record(Rangeref, rangeref) -> Rangeref;
 lit({zrangeref, _, ZPath, Rangeref}) when is_record(Rangeref, rangeref) ->
-    #zrangeref{zpath = ZPath, rangeref = Rangeref};
+    #zrangeref{zpath = tidy_up(ZPath), rangeref = Rangeref};
 lit({errval, _, Errval}) -> {errval, Errval};
 %% OrigStr is used in normalization and then thrown away -- only float values make it
 %% to the final AST.
 lit({float, _, {F, OrigStr}}) -> {float, F, OrigStr};
-lit({_Type, _, Data} = R) -> Data.
+lit({_Type, _, Data}) -> Data.
 
 %% operator function calls
 op(Arg1, {Op,_}, Arg2) -> [Op, Arg1, Arg2]; % used by production rule actions.
@@ -243,6 +243,24 @@ replace_float({array, Values}) ->
     {array, Vals};
 replace_float(Else) ->
     Else.
+
+tidy_up({zpath, Z}) -> Ret = tidy1(Z, []),
+                       {zpath, Ret}.
+
+tidy1([], Acc) -> lists:flatten(lists:reverse(Acc));
+tidy1([{seg, "../"}        | T], Acc) -> tidy1(T, [{seg, ".."} | Acc]);
+tidy1([{seg, "./"}         | T], Acc) -> tidy1(T, [{seg, "."}  | Acc]);
+tidy1([{seg, [$., $. | S]} | T], Acc) -> tidy1(T, [tidy2(S), {seg, ".."} | Acc]);
+tidy1([{seg, [$.     | S]} | T], Acc) -> tidy1(T, [tidy2(S), {seg, "."} | Acc]);
+% eliminate single slashes - they are implicit in the path
+tidy1([{seg, "/"}          | T], Acc) -> tidy1(T, Acc);
+tidy1([{seg, S}            | T], Acc) -> tidy1(T, [tidy2(S) | Acc]);
+tidy1([{zseg, _Z} = H      | T], Acc) -> tidy1(T, [H | Acc]).
+
+tidy2(S) -> S2 = string:strip(S, both, $/),
+            Segs = string:tokens(S2, "/"),
+            Zip = lists:duplicate(length(Segs), seg),
+            lists:zip(Zip, Segs).
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
