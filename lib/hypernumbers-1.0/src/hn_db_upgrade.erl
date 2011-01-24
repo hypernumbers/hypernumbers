@@ -29,12 +29,13 @@
 % adds a new infinite and z parents record to the relations table
 %% Release Procedure
 %% * load code on production target (DO NOT COMPILE)
+%% * run 'hypernumbers_sup:suspend_mochi().' from the shell
 %% * compile hn_db_upgrade in its ebin with the command
 %%   - erlc -I ../include ../src/hn_db_upgrade.erl
+%% * compile hn_db_api.erl and hn_db_wu.erl the same way
 %% * get to shell
-%% * load the new version of the upgrade module
+%% * load the new version of the upgrade, api and wu modules
 %%   l(hn_db_upgrade)
-%% * run 'hypernumbers_sup:suspend_mochi().' from the shell
 %% * run 'hn_db_upgrade:upgrade_2011_01_17().' from the shell
 %% * stop and then restart the server
 upgrade_zinf_2011_01_17() ->
