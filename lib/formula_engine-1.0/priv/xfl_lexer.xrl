@@ -157,11 +157,11 @@ NONBREAKINGSPACE = ((\x{c2})(\x{a0}))
 Rules.
 
 %% Basic data types.
-{FLOATDEC} : {token, {float, TokenLine, make_float(TokenChars)}}.
-{FLOATSCI} : {token, {float, TokenLine, make_float(TokenChars)}}.
-{INT}      : {token, {int, TokenLine, tconv:to_i(TokenChars)}}.
-{BOOL}     : {token, {bool, TokenLine, string:to_upper(TokenChars) == "TRUE"}}.
-{STR}      : {token, {str, TokenLine, hslists:mid(TokenChars)}}.
+{FLOATDEC} : {token, {float,  TokenLine, make_float(TokenChars)}}.
+{FLOATSCI} : {token, {float,  TokenLine, make_float(TokenChars)}}.
+{INT}      : {token, {int,    TokenLine, tconv:to_i(TokenChars)}}.
+{BOOL}     : {token, {bool,   TokenLine, string:to_upper(TokenChars) == "TRUE"}}.
+{STR}      : {token, {str,    TokenLine, hslists:mid(TokenChars)}}.
 {ERRVAL}   : {token, {errval, TokenLine, list_to_atom(TokenChars)}}.
 
 %%% 1. Cell references:
