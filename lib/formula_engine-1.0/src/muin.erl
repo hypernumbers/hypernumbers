@@ -11,6 +11,10 @@
          run_code/2
         ]).
 
+-define('htmlbox', $h,$t,$m,$l,$.,$b,$o,$x,$.).
+-define('htmlalert', $h,$t,$m,$l,$.,$a,$l,$e,$r,$t, $.).
+-define('htmlblock', $h,$t,$m,$l,$.,$b,$l,$o,$c,$k,$.).
+
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
 % ability to be called inside other fns
@@ -162,7 +166,8 @@ external_eval(X)                 -> eval(X).
 %% when Mnesia is unrolling a transaction. When the '{aborted, {cyclic...'
 %% exit is caught it must be exited again...
 eval(_Node = [Func|Args]) when ?is_fn(Func) ->
-    case muin_util:attempt(?MODULE, funcall, [Func, Args]) of
+    {NewFunc, NewArgs} = transform(atom_to_list(Func), Args),
+    case muin_util:attempt(?MODULE, funcall, [NewFunc, NewArgs]) of
         {error, {errval, _}  = Err} -> Err;
         {error, {aborted, _} = Err} -> exit(Err); % re-exit - this is an mnesia transaction!
         {error, _E}                 -> ?error_in_formula;
@@ -172,6 +177,20 @@ eval(_Node = [Func|Args]) when ?is_fn(Func) ->
 
 eval(Value) ->
     Value.
+
+transform([?htmlbox | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?htmlbox]), [W , H | Args]};
+transform([?htmlalert | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?htmlalert]), [W , H | Args]};
+transform([?htmlblock | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?htmlblock]), [W , H | Args]};
+transform(List, Args) -> {list_to_atom(List), Args}.
+
+parse(String) -> [W, H] = string:tokens(String, "x"),
+                 {W, H}.
 
 funcall(make_list, Args) ->
     area_util:make_array([Args]); % horizontal array

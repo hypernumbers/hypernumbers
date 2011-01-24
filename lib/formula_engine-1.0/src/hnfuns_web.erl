@@ -141,7 +141,7 @@ textarea_([Label], _Default, Trans) ->
         ++ "marginheight='0' marginwidth='0' src='http://maps.google.com"
         ++ "/?ie=UTF8&amp;ll=" ++ Lat2 ++ "," ++ Long2
         ++ "&amp;z=" ++ muin_util:cast(Zoom, str) ++ "&amp;output=embed'></iframe>",
-    {preview, {"Google Map for Lat: " ++ Lat2 ++ " Long: " ++ Long2, 80, 21}, HTML}.
+    {preview, {"Google Map for Lat: " ++ Lat2 ++ " Long: " ++ Long2, 8, 4}, HTML}.
 
 -spec button_(string(), string(), string()) -> {rawform, #form{}, html()}.
 button_(Value, Response, ResultsPath) ->
