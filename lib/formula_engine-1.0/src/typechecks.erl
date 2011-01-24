@@ -8,11 +8,17 @@
 -module(typechecks).
 
 -export([
+         std_bools/1,
          std_strs/1,
          std_ints/1,
          std_nums/1,
          flat_strs/1
         ]).
+
+std_bools(Vals) ->
+    Rules = [first_array, fetch_name, fetch_ref, eval_funs, {cast,bool}],
+    Passes = [return_errors, {all, fun is_atom/1}],
+    muin_collect:col(Vals, Rules, Passes).
 
 std_strs(Vals) ->
     Rules = [eval_funs, fetch, area_first, {cast, str}],
