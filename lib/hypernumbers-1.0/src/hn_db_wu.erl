@@ -49,6 +49,7 @@
          read_pages/1,
          idx_to_refX/2,
          refX_to_idx/1,
+         refX_to_rti/3,
          refX_to_idx_create/1,
          mark_these_dirty/2,
          mark_dirty_for_incl/2
