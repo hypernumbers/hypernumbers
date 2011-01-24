@@ -37,7 +37,9 @@
 %% * load the new version of the upgrade, api and wu modules
 %%   l(hn_db_upgrade)
 %% * run 'hn_db_upgrade:upgrade_2011_01_17().' from the shell
-%% * stop and then restart the server
+%% * stop the server
+%% * run ./hn quick
+%% * then restart the server
 upgrade_zinf_2011_01_17() ->
     % multi-site upgrade
     Sites = hn_setup:get_sites(),
