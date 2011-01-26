@@ -50,13 +50,29 @@ html,body {
 /*     color : red; */
 /* } */
 
+/* This class is the scrollable content inside of dialogues */
+
+.scrollable {
+    position           : relative;
+    max-height         : inherit;
+    max-width          : inherit;
+    height             : auto;
+    overflow-x         : auto;
+    overflow-y         : scroll;
+    margin             : 2px;
+    border             : solid thin #808080;
+}
+
 #functions, #columnmanagerdialog, #lineview {
+    position           : static; /* changed dynamically */
+    overflow           : visible;
+    width              : auto;
+    max-width          : none;
+    min-width          : 260px;
+    max-height         : none;
+    height             : auto;
     display            : none;
-    position           : absolute;
-    top                : 50px;
-    left               : 50px;
     background         : white;
-    min-width          : 260px; 
     border             : 2px solid #999;
     z-index            : 10000003;
     -moz-border-radius : 4px 4px 4px 4px;
@@ -78,9 +94,9 @@ html,body {
 /* Styles for Line View Dialog */
 
 #lineview tr th, #lineview tr td {
-  text-align: left;
-  border: thin gray solid;
-  font-size: 8pt;
+   text-align          : left;
+   border: thin gray solid;
+   font-size: 8pt;
 }
 
 #lineview tr td input {
@@ -91,6 +107,7 @@ html,body {
 }
 
 #lineviewnavigation {
+  position:  relative;
   font-size: 8pt;
   text-align: center;
 }
