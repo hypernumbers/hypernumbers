@@ -18,19 +18,16 @@ generate(ForceCompile) ->
     Gen_parse = fun(X) -> gen_parse(X, ForceCompile) end, 
     Gen_frontend = fun(X) -> gen_frontend(X, ForceCompile) end,
 
-    Gen_lex(xfl_lexer),
-    Gen_parse(xfl_parser),
+    ok = Gen_lex(xfl_lexer),
+    ok = Gen_parse(xfl_parser),
 
-    Gen_lex(num_format_lexer),
-    Gen_parse(num_format_parser),
+    ok = Gen_lex(num_format_lexer),
+    ok = Gen_parse(num_format_parser),
 
-    Gen_lex(cond_lexer),
-    Gen_parse(cond_parser),
+    ok = Gen_lex(webcontrols_lexer),
+    ok = Gen_parse(webcontrols_parser),
 
-    Gen_lex(url_query_lexer),
-    Gen_parse(url_query_parser),
-
-    Gen_lex(superlex),
+    ok = Gen_lex(superlex),
 
     lists:foreach(fun(X) -> Gen_frontend(X) end, ?FRONTENDS),
     ok.
@@ -85,6 +82,3 @@ make_private(Fname) ->
 needs_update(Sources, Dest) ->
     MaxS = lists:max([filelib:last_modified(S) || S <- Sources]),
     MaxS > filelib:last_modified(Dest).
-
-
-
