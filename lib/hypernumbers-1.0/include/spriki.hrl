@@ -169,12 +169,21 @@
           idx
          }).
 
--record(form, {key, % one form element per unit ref
-               id, % {path, transaction, label}
-               kind,
-               restrictions = none,
-               attrs = []}).
-                
+-record(form,
+        {
+          key, % one form element per unit ref
+          id, % {path, transaction, label}
+          kind,
+          restrictions = none,
+          attrs = []
+         }).
+
+-record(webcontrol,
+        {
+          id,
+          command = []
+         }).
+
 -record(help,
         {
           name,
@@ -186,19 +195,21 @@
          }).
 
 %% HN Mochi Query Parameters. Leave as undefined.
--record(qry, { challenger,
-               hypertag,
-               mark,
-               pages,
-               paths,
-               permissions,
-               rawview,
-               return,
-               status,
-               template,
-               templates,
-               updates,
-               via,
-               view,
-               views
-             }).
+-record(qry,
+        {
+          challenger,
+          hypertag,
+          mark,
+          pages,
+          paths,
+          permissions,
+          rawview,
+          return,
+          status,
+          template,
+          templates,
+          updates,
+          via,
+          view,
+          views
+         }).
