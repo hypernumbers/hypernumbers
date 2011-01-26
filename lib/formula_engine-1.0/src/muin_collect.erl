@@ -76,7 +76,8 @@
          is_area/1,
          is_string/1,
          is_date/1,
-         is_blank/1
+         is_blank/1,
+         is_blank_or_number/1
         ]).
 
 col(Args, Rules, Passes, Fun) ->
@@ -345,6 +346,10 @@ is_blank(blank) ->
     true;
 is_blank(_) ->
     false.
+
+is_blank_or_number(blank)               -> true;
+is_blank_or_number(N) when is_number(N) -> true;
+is_blank_or_number(_N)                  -> false.
 
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

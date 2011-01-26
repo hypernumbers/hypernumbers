@@ -319,7 +319,8 @@ get_modules() ->
      hnfuns_web,
      hnfuns_integration,
      hnfuns_html,
-     hnfuns_forms
+     hnfuns_forms,
+     hnfuns_controls
     ].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
