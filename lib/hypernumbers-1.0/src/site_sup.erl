@@ -60,8 +60,16 @@ init([Site]) ->
               permanent, 
               2000, 
               worker, 
-              [zinf_srv]}
-           ]
+              [zinf_srv]},
+
+             {page_srv, 
+              {page_srv, start_link, [Site]},
+              permanent, 
+              2000, 
+              worker, 
+              [page_srv]}
+
+            ]
          }}.
 
 %%====================================================================

@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         upgrade_pages_2011_01_26/0,
          upgrade_zinf_2011_01_17/0,
          upgrade_2011_01_07/0
          %% upgrade_1519/0,
@@ -21,6 +22,23 @@
          %% upgrade_1776/0
         ]).
 
+% populates the new pages server
+upgrade_pages_2011_01_26() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fun2 = fun() ->
+                                  Head = #local_obj{idx ='_', path = '$1', obj= '_'},
+                                  Guard = [],
+                                  Match = ['$1'],
+                                  Items = hslists:uniq(mnesia:dirty_select(hn_db_wu:trans(Site, local_obj), [{Head, Guard, Match}])),
+                                  io:format("Items is ~p~n", [Items]),
+                                  Items
+                          end,
+                   Ret = mnesia:activity(transaction, Fun2),
+                   hn_db_api:write_kv(Site, ?pages, Ret)
+           end,                        
+    lists:foreach(Fun1, Sites),
+    ok.
 
 % adds 2 new tables:
 % * a dirty z and infinite relations table
