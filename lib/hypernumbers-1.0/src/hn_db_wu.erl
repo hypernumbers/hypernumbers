@@ -1587,8 +1587,10 @@ offset_formula(Formula, {XO, YO}) ->
 write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     Rti = refX_to_rti(Ref, AReq, false),
     case muin:run_formula(Fla, Rti) of
+        % General error condtion
         {error, {errval, Error}} ->
             write_error_attrs(Attrs, Ref, Formula, Error);
+        % the formula returns as rawform
         {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
             Form = RawF#form{id={Ref#refX.path, Trans, Label}}, 
@@ -1601,6 +1603,13 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             Attrs3 = orddict:store("preview", {Label2, 1, 1}, Attrs2),
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Html, 
                                 {Parents, false}, InfParents, Recompile);
+        % the formula returns a web control
+        {ok, {Pcode, {webcontrol, {Value, Title}, Res}, Parents, InfParents,
+              Recompile}} ->
+            Attrs2 = orddict:store("preview", {"Create Button", 1, 1}, Attrs),
+            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
+                                {Parents, false}, InfParents, Recompile);
+        % the formula returns a web-hingie that needs to be previewed
         {ok, {Pcode, {preview, {PreV, Wd, Ht}, Res}, Pars, InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
             Attrs3 = case {Ht, Wd} of
@@ -1612,16 +1621,19 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
                      end,
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res, 
                                 {Pars, false}, InfPars, Recompile);
+        % special case for the include function (special dirty!)
         {ok, {Pcode, {include, {PreV, Ht, Wd}, Res}, Pars, InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
                                 {Pars, true}, InfPars, Recompile);
+        % bog standard function!
         {ok, {Pcode, Res, Parents, InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
                                 {Parents, false}, InfParents, Recompile)
     end.
+
 
 write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, {Parents, IsIncl},
                     InfParents, Recompile) ->
