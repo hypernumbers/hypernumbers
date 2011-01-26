@@ -25,15 +25,17 @@
     <div id="columnmanagerdialog" class="dialog" style="display:none;">
     <h2>Show/Hide Columns</h2>
     <a id="dialogclose">x</a>
-    <div id="columnsconfig"></div>
+    <div id="columnsconfig" class="scrollable"></div>
+    <div class="footer"></div>
     </div>
 
     <div id="lineview" class="dialog" style="display:none;">
     <h2>Row Editor</h2>
     <a id="lineviewclose">x</a>
-    <table id="lineview_table">
-    </table>
-    <div id="lineviewnavigation">
+    <div class="scrollable">
+     <table id="lineview_table"></table>
+    </div>
+    <div id="lineviewnavigation" class="footer">
      <a id="lv_first"><img src="/hypernumbers/first.png" alt="First" /></a>
      <a id="lv_prev"><img src="/hypernumbers/left.png" alt="Previous" /></a>
      <span id="lv_this" style="display:none;">0</span>
@@ -43,7 +45,7 @@
      <a id="lv_new"><img src="/hypernumbers/new.png" alt="New" /></a>
     </div>
     </div>
-    
+
 
   <div id='editspreadsheet' class='ctrlbox'>
     
