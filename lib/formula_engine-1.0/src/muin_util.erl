@@ -2,7 +2,9 @@
 %%% @doc Various utility functions used by the formula engine.
 
 -module(muin_util).
--export([make_refX/3,
+-export([
+         create_name/0,
+         make_refX/3,
          array_at/3,
          cast/2,
          cast/3,
@@ -31,6 +33,10 @@
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 -include("spriki.hrl").
+
+create_name() ->
+    Bin = crypto:rand_bytes(8),
+    mochihex:to_hex(Bin).
 
 apply(Args, Fun) ->
     case lists:keyfind(errval, 1, Args) of
