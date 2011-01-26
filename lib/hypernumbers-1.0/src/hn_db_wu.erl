@@ -660,13 +660,10 @@ copy_cell(#refX{obj = {cell, {FX,FY}}} = From,
 %% @doc read the populated pages under the specified path
 %% @todo fix up api
 read_page_structure(#refX{site = Site}) ->
-    MS = ets:fun2ms(fun(#local_obj{path=P}) -> P end),
-    Items = mnesia:dirty_select(trans(Site, local_obj), MS),
-    filter_pages(Items, dh_tree:new()).
+    Pages = page_srv:get_pages(Site),
+    filter_pages(Pages, dh_tree:new()).
 
-read_pages(#refX{site = Site}) ->
-    MS = ets:fun2ms(fun(#local_obj{path=P}) -> P end),
-    lists:usort(mnesia:select(trans(Site, local_obj), MS, read)).
+read_pages(#refX{site = Site}) -> page_srv:get_pages(Site).
     
 filter_pages([], Tree) ->
     Tree;
