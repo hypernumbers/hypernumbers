@@ -1593,8 +1593,13 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             {Trans, Label} = RawF#form.id,
             Form = RawF#form{id={Ref#refX.path, Trans, Label}}, 
             ok = attach_form(Ref, Form),
+            Label2 = case Label of
+                         "_" -> "Submit Button";
+                         _   -> Label
+                     end,
             Attrs2 = orddict:store("__hasform", t, Attrs),
-            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Html, 
+            Attrs3 = orddict:store("preview", {Label2, 1, 1}, Attrs2),
+            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Html, 
                                 {Parents, false}, InfParents, Recompile);
         {ok, {Pcode, {preview, {PreV, Wd, Ht}, Res}, Pars, InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),

@@ -601,14 +601,14 @@ label {
 
 .hn_html_preview
 {
-  font-size:        70%;
+  font-size:        60%;
   font-weight:      bold;
   background-color: #EEE;
   color:            #777;
   margin:           2px;
   padding:          1px 1px 1px 4px;
-  height:           87%;
-  -moz-border-radius: 4px 4px 4px 4px;
-  -webkit-border-radius:4px 4px 4px 4px;
+  height:           75%;
+  -moz-border-radius:    4px 4px 4px 4px;
+  -webkit-border-radius: 4px 4px 4px 4px;
   border:           1px solid #E99;
   }
