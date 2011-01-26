@@ -272,11 +272,9 @@ lex(Input, {Mx, My}) ->
             lexer_error
     end.
 
-
 %% @doc Replace all !s with /s in a string. (Used to normalize references.)
 debang(Ssref) ->
     re:replace(Ssref, "!", "/", [global,{return,list}]).
-
 
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
