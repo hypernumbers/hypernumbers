@@ -353,6 +353,7 @@ write_attributes(List) ->
     write_attributes(List, nil, nil).
 write_attributes([], _PAr, _VAr) -> ok;
 write_attributes(List, PAr, VAr) ->
+    [ok = page_srv:page_written(S, P) || {#refX{site = S, path = P}, _} <- List],
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   [ok = write_attributes1(RefX, L, PAr, VAr) 
@@ -361,7 +362,6 @@ write_attributes(List, PAr, VAr) ->
           end,
     {Ref, _} = hd(List),
     write_activity(Ref, Fun, "quiet").
-
 
 append_row([], _PAr, _VAr) -> ok;
 append_row(List, PAr, VAr) when is_list(List) ->
@@ -437,7 +437,8 @@ delete(#refX{obj = {R, _}} = RefX, Ar) when R == column orelse R == row ->
                column -> horizontal
            end,
     move(RefX, delete, Disp, Ar);
-delete(#refX{obj = {page, _}} = RefX, Ar) ->
+delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
+    ok = page_srv:page_deleted(S, P),
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
                    % by default cells have a direction of deletion and it is horiz

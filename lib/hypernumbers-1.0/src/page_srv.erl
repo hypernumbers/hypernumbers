@@ -91,15 +91,15 @@ init([Site]) ->
 handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
     {Rep, NewP} = case Request of
                       {page_written, P} ->
-                          case lists:is_member(P, Pages) of
+                          case lists:member(P, Pages) of
                               true  -> {ok, Pages};
                               false -> P2 = [P | Pages],
-                                       hn_db_api:write_kv(Site, ?pages, P2),
+                                       ok = hn_db_api:write_kv(Site, ?pages, P2),
                                        {ok, P2}
                           end;
-                      {page_delete, P} ->
+                      {page_deleted, P} ->
                           P2 = lists:delete(P, Pages),
-                          hn_db_api:write_kv(Site, ?pages, P2),
+                          ok = hn_db_api:write_kv(Site, ?pages, P2),
                           {ok, P2};
                       get_pages ->
                           {Pages, Pages}
