@@ -18,6 +18,9 @@
          'speedo.3x6'/1,
          'speedo.4x8'/1,
          'speedo.6x11'/1,
+         'linegraph.3x6'/1,
+         'linegraph.4x8'/1,
+         'linegraph.6x11'/1,
          linegraph/1,
          piechart/1,
          histogram/1,
@@ -122,7 +125,10 @@ chunk_spark([Lines | List]) ->
 
 normalize_sp(List, Min, Max) ->
     Diff = Max - Min,
-    [(X - Min)*100/Diff || X <- List].
+    Fun = fun(blank) -> blank;
+             (X)     -> (X - Min)*100/Diff
+          end,
+    [Fun(X) || X <- List].
 
 spark1(Size, Data, Colours) ->
     Opts = [
@@ -134,8 +140,22 @@ spark1(Size, Data, Colours) ->
            ],
     make_chart(Opts).
 
+'linegraph.3x6'(List) ->
+    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, single),
+    xy1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
+        [{?tickmarks, ?BOTHAXES}]).
+
+'linegraph.4x8'(List) ->
+    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
+    xy1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest, []).
+
+'linegraph.6x11'(List) ->
+    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
+    xy1(?SIZE6x11, Data, Scale, AxesLabPos, Colours, Rest, []).
+
 'xy.3x6'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, single),
+    io:format("Data is ~p~n", [Data]),
     xy1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}]).
 
@@ -146,6 +166,29 @@ spark1(Size, Data, Colours) ->
 'xy.6x11'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
     xy1(?SIZE6x11, Data, Scale, AxesLabPos, Colours, Rest, []).
+
+chunk_linegraph([X, Lines | List], LabType) ->
+    DataX = cast_data(X),
+    [Lines1] = typechecks:std_ints([Lines]),
+    muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
+    {Data, Rest} = lists:split(Lines1, List),
+    {MinY, MaxY, DataY} = process_data_linegraph(Data),
+    io:format("MinY is ~p MaxY is ~p DataY is ~p~n", [MinY, MinY, DataY]),
+    io:format("DataX is ~p~n", [DataX]),
+    MinX = stdfuns_stats:min(DataX),
+    MaxX = stdfuns_stats:max(DataX),
+    io:format("MinX is ~p MaxX is ~p~n", [MinX, MaxX]),
+    Data2 = make_data(DataX, DataY),
+    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
+    AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
+    % now make the colours
+    Colours = allocate_colours(Lines, ?XYCOLOURS),
+    {Data2, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
+     {?colours, Colours}, Rest}.
+
+make_data(X, Ys) ->
+    io:format("X is ~p~nYs is ~p~n", [X, Ys]),
+    42.
 
 chunk_xy([Lines | List], LabType) ->
     [Lines1] = typechecks:std_ints([Lines]),
@@ -399,6 +442,14 @@ histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
 %%
 %% Internal Functions
 %%    
+process_data_linegraph(Data) ->
+    Data1 = [proc_dxy1(X) || X <- Data],
+    Data2 = [X || {X, _NoR, _NoC} <- Data1],
+    Data3 = [[lists:reverse(cast_linegraph_data(X)) || X <- X1] || X1 <- Data2],
+    {MinY, MaxY} = get_maxes_lg(Data3),
+    Data4 = normalize_linegraph(Data3, MinY, MaxY, []),
+    {MinY, MaxY, Data4}.
+
 process_data_xy(Data) ->
     Data1 = [proc_dxy1(X) || X <- Data],
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
@@ -407,6 +458,11 @@ process_data_xy(Data) ->
     Data4 = normalize_xy(Data3, MinX, MaxX, MinY, MaxY, []),
     Data5 = [conv_data(X) || X <- Data4],
     {MinX, MaxX, MinY, MaxY, "t:"++string:join(Data5, "|")}.
+
+normalize_linegraph([], _, _, Acc) -> lists:reverse(Acc);
+normalize_linegraph([[H] | T], Min, Max, Acc) ->
+    NewAcc = lists:reverse(normalize_sp(H, Min, Max)),
+    normalize_linegraph(T, Min, Max, [NewAcc | Acc]).
 
 normalize_xy([], _, _, _, _, Acc) -> lists:reverse(Acc);
 normalize_xy([[H1, H2] | T], MinX, MaxX, MinY, MaxY, Acc) ->
@@ -419,6 +475,16 @@ proc_dxy1({range, X} = R) ->
         length(X) ==  2 -> extract(R, ?ROW);
         length(X) =/= 2 -> extract(R, ?COLUMN)
     end.
+
+get_maxes_lg(List) -> get_mlg(List, none, none).
+
+get_mlg([], Min, Max)          -> {Min, Max};
+get_mlg([[H] | T], none, none) -> Min = stdfuns_stats:min(H),
+                                  Max = stdfuns_stats:max(H),
+                                  get_mlg(T, Min, Max);
+get_mlg([[H] | T], Min, Max)   -> NewMin = stdfuns_stats:min([Min | H]),
+                                  NewMax = stdfuns_stats:max([Max | H]),
+                                  get_mlg(T, NewMin, NewMax).
 
 get_maxes([[X, Y] | T]) -> get_m2(T,
                                   stdfuns_stats:min(X),
@@ -477,6 +543,16 @@ pie2(Data, Titles, Colours) ->
         ++ Colours1
         ++ "' />".
 
+cast_linegraph_data(Data) ->
+    muin_collect:col([Data],
+                     [eval_funs,
+                      fetch, flatten,
+                      {cast, str, num, ?ERRVAL_VAL},
+                      {cast, bool, num},
+                      {ignore, str}
+                     ],
+                     [return_errors, {all, fun muin_collect:is_blank_or_number/1}]).
+    
 cast_data(Data) ->
     muin_collect:col([Data],
                      [eval_funs,
