@@ -34,6 +34,7 @@ site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
             error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
             ok = create_site_tables(Site, Type),
             ok = create_blank_z_and_infs(Site),
+            ok = create_blank_pages(Site),
             ok = sitemaster_sup:add_site(Site),
             ok = update(Site, Type, Opts, ToLoad),
             get_initial_params(Site)
@@ -165,6 +166,12 @@ get_initial_params(Site) ->
 %%     ViewName     = [Type, "/", User, "/", filename:basename(FileName, ".meta")],
 %%     {ok, [Data]} = file:consult(Path),
 %%     ok           = hn_mochi:save_view(NSite, ViewName, Data).
+
+-spec create_blank_pages(string()) -> ok.
+create_blank_pages(Site) ->
+    Key = ?pages,
+    Value = [],
+    hn_db_api:write_kv(Site, Key, Value).
 
 -spec create_blank_z_and_infs(string()) -> ok.
 create_blank_z_and_infs(Site) ->
