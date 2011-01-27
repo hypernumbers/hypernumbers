@@ -7,12 +7,14 @@
 TAGS
 tags
 var
+ebin/
 ebin/*.beam
 ebin/*.erl
 shell
 migrate_*
 lib/*/ebin/*.erl
 lib/hypernumbers*/src/ms_util2.erl
+lib/starling/ebin/starling_drv
 
 ## Script used for fetching svn externals
 lib/git-svn-*
