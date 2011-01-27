@@ -104,11 +104,11 @@
 %%
 'sparkline.1x1'(List) ->
     {Data, Colours} = chunk_spark(List),
-    spark1(?SIZE1x1, Data, Colours).
+    {resize, 1, 1, spark1(?SIZE1x1, Data, Colours)}.
 
 'sparkline.2x2'(List) ->
     {Data, Colours} = chunk_spark(List),
-    spark1(?SIZE2x2, Data, Colours).
+    {resize, 2, 2, spark1(?SIZE2x2, Data, Colours)}.
 
 chunk_spark([Lines | List]) ->
     [Lines1] = typechecks:std_ints([Lines]),
@@ -141,31 +141,30 @@ spark1(Size, Data, Colours) ->
     make_chart(Opts).
 
 'linegraph.3x6'(List) ->
-    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, single),
-    xy1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
-        [{?tickmarks, ?BOTHAXES}]).
+    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
+    {resize, 3, 6, xy1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
+        [{?tickmarks, ?BOTHAXES}])}.
 
 'linegraph.4x8'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
-    xy1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest, []).
+    {resize, 4, 8, xy1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest, [])}.
 
 'linegraph.6x11'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
-    xy1(?SIZE6x11, Data, Scale, AxesLabPos, Colours, Rest, []).
+    {resize, 6, 11, xy1(?SIZE6x11, Data, Scale, AxesLabPos, Colours, Rest, [])}.
 
 'xy.3x6'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, single),
-    io:format("Data is ~p~n", [Data]),
-    xy1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
-        [{?tickmarks, ?BOTHAXES}]).
+    {resize, 3, 6, xy1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
+        [{?tickmarks, ?BOTHAXES}])}.
 
 'xy.4x8'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
-    xy1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest, []).
+    {resize, 4, 8, xy1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest, [])}.
 
 'xy.6x11'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
-    xy1(?SIZE6x11, Data, Scale, AxesLabPos, Colours, Rest, []).
+    {resize,6, 11, xy1(?SIZE6x11, Data, Scale, AxesLabPos, Colours, Rest, [])}.
 
 chunk_linegraph([X, Lines | List], LabType) ->
     DataX = cast_data(X),
@@ -173,22 +172,30 @@ chunk_linegraph([X, Lines | List], LabType) ->
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
     {Data, Rest} = lists:split(Lines1, List),
     {MinY, MaxY, DataY} = process_data_linegraph(Data),
-    io:format("MinY is ~p MaxY is ~p DataY is ~p~n", [MinY, MinY, DataY]),
-    io:format("DataX is ~p~n", [DataX]),
     MinX = stdfuns_stats:min(DataX),
     MaxX = stdfuns_stats:max(DataX),
-    io:format("MinX is ~p MaxX is ~p~n", [MinX, MaxX]),
-    Data2 = make_data(DataX, DataY),
+    DataX2 = normalize_sp(DataX, MinX, MaxX),
+    Data2 = make_data(DataX2, DataY, []),
     Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
+    io:format("Scale is ~p~n", [Scale]),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
     % now make the colours
     Colours = allocate_colours(Lines, ?XYCOLOURS),
     {Data2, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
      {?colours, Colours}, Rest}.
 
-make_data(X, Ys) ->
-    io:format("X is ~p~nYs is ~p~n", [X, Ys]),
-    42.
+make_data(_X, [], Acc)     -> "t:" ++ string:join(lists:reverse(Acc), "|");
+make_data(X, [H | T], Acc) -> NewAcc = make_d2(X, H, [], []),
+                              make_data(X, T, [NewAcc | Acc]).
+
+make_d2([], [], A1, A2)                   -> A1a = [tconv:to_s(X) || X <- A1],
+                                             A2a = [tconv:to_s(X) || X <- A2],
+                                             string:join(A1a, ",") ++ "|"
+                                                 ++ string:join(A2a, ",");
+make_d2([_H1 | T1], [blank | T2], A1, A2) -> make_d2(T1, T2, A1, A2);
+make_d2([H1 | T1], [H2 | T2], A1, A2)     -> make_d2(T1, T2, [H1 | A1], [H2 | A2]);
+make_d2([], _List, _A1, _A2) -> ?ERR_VAL; % X and Y ranges must be congruent
+make_d2(_List, [], _A1, _A2) -> ?ERR_VAL. % X and Y ranges must be congruent
 
 chunk_xy([Lines | List], LabType) ->
     [Lines1] = typechecks:std_ints([Lines]),
@@ -203,20 +210,25 @@ chunk_xy([Lines | List], LabType) ->
      {?colours, Colours}, Rest}.
 
 xy1(Size, Data, Scale, _AxesLabPos, Colours, [], Opts) ->
+    io:format("in xy1 (1)~n"),
     NewOpts = lists:concat([[Scale, Colours], Opts]),
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, _AxesLabPos, Colours, [Tt | []], Opts) ->
+    io:format("in xy1 (2)~n"),
     NewOpts = lists:concat([[Scale, Colours, make_title(Tt)], Opts]),
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl | []], Opts) ->
+    io:format("in xy1 (3)~n"),
     NewOpts = lists:concat([[Scale,Colours, AxesLabPos, make_title(Tt),
                              make_labs(Xl, ""), {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl | []], Opts) ->
+    io:format("in xy1 (4)~n"),
     NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
                              make_labs(Xl, Yl), {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);    
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl, Srs | []], Opts) ->
+    io:format("in xy1 (5)~n"),
     NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
                              make_labs(Xl, Yl), {?axes, ?LABELAXES},
                              {?legendpos, ?TOPHORIZ}, make_series(Srs)], Opts]),
@@ -235,6 +247,7 @@ xy3(Size, Data, Opts) ->
                {?data, Data},
                {?linestyles, "1|1"}
               ],
+    io:format("In xy3 Opts is ~p NewOpts is ~p~n", [Opts, NewOpts]),
     case Opts of
         [] -> make_chart(NewOpts);
         _  -> make_chart(lists:concat([Opts, NewOpts]))
@@ -271,7 +284,9 @@ make_s1(double, MinX, MaxX, MinY, MaxY) ->
         ++"|2,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY)
         ++"|3,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY).
 
-make_chart(List) -> make_c(List, []).
+make_chart(List) -> Ret = make_c(List, []),
+                    io:format("make_chart returns ~p~n", [Ret]),
+                    Ret.
 
 make_c([], Acc)           -> lists:flatten([?apiurl | Acc]) ++ ?urlclose;
 make_c([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
@@ -358,7 +373,6 @@ barchart([Data, O, XAxis, Cols]) ->
     bar(Data, O, {{scale, auto}, XAxis, Cols});
 barchart([Data, O, XAxis, Cols, Min, Max]) ->
     bar(Data, O, {{Min, Max}, XAxis, Cols}).
-
 
 bar(Data, Orientation, {Scale, Axes, Colours}) ->
     Orientation2 = cast_orientation(Orientation),

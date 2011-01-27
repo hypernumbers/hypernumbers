@@ -1626,6 +1626,19 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
                                 {Pars, true}, InfPars, Recompile);
+        % normal functions with a resize
+        {ok, {Pcode, {resize, Wd, Ht, Res}, Parents, InfParents, Recompile}} ->
+            % there might have been a preview before - nuke it!
+            Attrs2 = orddict:erase("preview", Attrs),
+            Attrs3 = case {Ht, Wd} of
+                         {1, 1} -> Attrs2;
+                         _      -> orddict:store("merge", {struct,
+                                                           [{"right", Wd - 1},
+                                                            {"down",  Ht - 1}]},
+                                                 Attrs2)
+                     end,
+            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res, 
+                                {Parents, false}, InfParents, Recompile);
         % bog standard function!
         {ok, {Pcode, Res, Parents, InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
