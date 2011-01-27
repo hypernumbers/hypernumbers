@@ -490,39 +490,38 @@ in_range({range,{X1,Y1,X2,Y2}}, {cell,{X,Y}}) ->
 
 parse_url("http://"++Url) ->
     {Host, Path, NUrl} = prs(Url),
-    Type = case isGURL(Path) of
-               true  -> gurl;
-               false -> url
-           end,
+    Type = hasConds(Path),
     case lists:last(NUrl) of
         $/ -> #refX{site="http://"++Host, type = Type,
                     path=Path, obj={page, "/"}};
         _  -> [Addr | P] = lists:reverse(Path),
               Obj = parse_attr(cell, Addr),
-              #refX{site="http://"++Host, type = Type,
+              Type2 = case {Obj, Type} of
+                          {{row, _},    false} -> gurl;
+                          {{column, _}, false} -> gurl;
+                          {_,           false} -> url;
+                          {_,           true}  -> gurl
+                      end,
+              #refX{site="http://"++Host, type = Type2,
                     path=lists:reverse(P),
                     obj = Obj}
     end.
 
 %% needs to be fixed for validating page paths
-isGURL(Path) -> false.
-    %% Re = "^[a-zA-Z0-9_\-~]$", %"
-    %% %io:format("Re is ~p~n", [Re]),
-    %% Fun = fun(X, Acc) ->
-    %%               NewAcc = case re:run(X, Re) of
-    %%                            {match, _} -> false;
-    %%                            nomatch    -> true
-    %%                        end,
-    %%               %io:format("X is ~p~nAcc is ~p NewAcc is ~p~n",
-    %%               %          [X, Acc, NewAcc]),
-    %%               case {Acc, NewAcc} of
-    %%                   {true, true} -> true;
-    %%                   _            -> false
-    %%               end
-    %%       end,
-    %% _Ret = lists:foldl(Fun, true, Path),
-    %% %io:format("Path is ~p Ret is ~p~n", [Path, Ret]),
-    %% false.
+hasConds([]) -> false;
+hasConds(Path) ->
+    Re = "^[a-zA-Z0-9_\-~]$", %",
+    Fun = fun(X, Acc) ->
+                  NewAcc = case re:run(X, Re) of
+                               {match, _} -> true;
+                               nomatch    -> false
+                           end,
+                  case {Acc, NewAcc} of
+                      {true, true} -> true;
+                      _            -> false
+                  end
+          end,
+    lists:foldl(Fun, true, Path).
 
 prs(Url) ->
     case string:tokens(Url, "/") of
