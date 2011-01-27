@@ -141,6 +141,7 @@ spark1(Size, Data, Colours) ->
     make_chart(Opts).
 
 'linegraph.3x6'(List) ->
+    % There is a bug with the Y-Axis as this size!
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
     {resize, 3, 6, xy1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
@@ -154,6 +155,7 @@ spark1(Size, Data, Colours) ->
     {resize, 6, 11, xy1(?SIZE6x11, Data, Scale, AxesLabPos, Colours, Rest, [])}.
 
 'xy.3x6'(List) ->
+    % There is a bug with the Y-Axis as this size!
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, single),
     {resize, 3, 6, xy1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
@@ -177,7 +179,6 @@ chunk_linegraph([X, Lines | List], LabType) ->
     DataX2 = normalize_sp(DataX, MinX, MaxX),
     Data2 = make_data(DataX2, DataY, []),
     Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
-    io:format("Scale is ~p~n", [Scale]),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
     % now make the colours
     Colours = allocate_colours(Lines, ?XYCOLOURS),
@@ -210,25 +211,20 @@ chunk_xy([Lines | List], LabType) ->
      {?colours, Colours}, Rest}.
 
 xy1(Size, Data, Scale, _AxesLabPos, Colours, [], Opts) ->
-    io:format("in xy1 (1)~n"),
     NewOpts = lists:concat([[Scale, Colours], Opts]),
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, _AxesLabPos, Colours, [Tt | []], Opts) ->
-    io:format("in xy1 (2)~n"),
     NewOpts = lists:concat([[Scale, Colours, make_title(Tt)], Opts]),
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl | []], Opts) ->
-    io:format("in xy1 (3)~n"),
     NewOpts = lists:concat([[Scale,Colours, AxesLabPos, make_title(Tt),
                              make_labs(Xl, ""), {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl | []], Opts) ->
-    io:format("in xy1 (4)~n"),
     NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
                              make_labs(Xl, Yl), {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);    
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl, Srs | []], Opts) ->
-    io:format("in xy1 (5)~n"),
     NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
                              make_labs(Xl, Yl), {?axes, ?LABELAXES},
                              {?legendpos, ?TOPHORIZ}, make_series(Srs)], Opts]),
@@ -247,7 +243,6 @@ xy3(Size, Data, Opts) ->
                {?data, Data},
                {?linestyles, "1|1"}
               ],
-    io:format("In xy3 Opts is ~p NewOpts is ~p~n", [Opts, NewOpts]),
     case Opts of
         [] -> make_chart(NewOpts);
         _  -> make_chart(lists:concat([Opts, NewOpts]))
@@ -284,9 +279,7 @@ make_s1(double, MinX, MaxX, MinY, MaxY) ->
         ++"|2,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY)
         ++"|3,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY).
 
-make_chart(List) -> Ret = make_c(List, []),
-                    io:format("make_chart returns ~p~n", [Ret]),
-                    Ret.
+make_chart(List) -> make_c(List, []).
 
 make_c([], Acc)           -> lists:flatten([?apiurl | Acc]) ++ ?urlclose;
 make_c([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
