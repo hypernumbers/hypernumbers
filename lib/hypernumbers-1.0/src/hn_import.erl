@@ -17,7 +17,7 @@
 
 csv_file(Url, FileName) ->
 
-    Ref = hn_util:parse_url(Url),
+    Ref = hn_util:url_to_refX(Url),
 
     % first read the file
     Recs = parse_csv:parse_file(FileName),
@@ -31,7 +31,7 @@ csv_file(Url, FileName) ->
                 
 csv_append(Url, FileName) ->
 
-    Ref = hn_util:parse_url(Url),
+    Ref = hn_util:url_to_refX(Url),
     % first read the file
     Recs = parse_csv:parse_file(FileName),
     Refs  = make_append_refs(Recs, Ref),
@@ -42,7 +42,7 @@ csv_append(Url, FileName) ->
     
 json_file(Url, FileName) -> 
     {ok, JsonTxt} = file:read_file(FileName),
-    Ref = hn_util:parse_url(Url),
+    Ref = hn_util:url_to_refX(Url),
 
     {struct, Json} = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
     {struct, StyleStrs} = ?pget("styles", Json),

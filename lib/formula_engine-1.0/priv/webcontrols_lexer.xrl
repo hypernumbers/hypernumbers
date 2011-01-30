@@ -27,8 +27,36 @@ Erlang code.
          ]).
 
 lex(String) ->
-    NewString = lists:flatten(io_lib:write(String++"~n")),
-    io:format("String to be lexed is ~p~n", [NewString]),
     Ret = string(String),
     io:format("Returning with ~p~n", [Ret]),
     Ret.
+
+%%% Tests:
+-include_lib("eunit/include/eunit.hrl").
+
+%% @doc Lexing functions for testing.
+tlex(Input) ->
+    case string(Input) of
+        {ok, Toks, _} -> io:format("Input ~p lexes to ~p~n", [Input, Toks]),
+                         Toks;
+        Error               -> io:format("Input ~p fails to parse with ~p~n",
+                                         [Input, Error]),
+                               {error, lex_error}
+    end.
+
+seg_test_() ->
+    [
+     ?_assert(tlex("/blah/blah, bleh, bloh/bluh/") == [
+                                      {slash, "/"},
+                                      {path, "blah"},
+                                      {slash, "/"},
+                                      {path, "blah"},
+                                      {comma, ","},
+                                      {path, "bleh"},
+                                      {comma, ","},
+                                      {path, "bloh"},
+                                      {slash, "/"},
+                                      {path, "bluh"},
+                                      {slash, "/"}
+                                     ])
+    ].

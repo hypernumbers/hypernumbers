@@ -4,10 +4,10 @@
 Nonterminals
 
 Expr
-Conds
-Cond
+Segs
+Seg
 Clause
-
+SubClause
 .
 
 Terminals
@@ -27,25 +27,67 @@ Endsymbol  '$end'.
 
 %% ----- Grammar definition.
 
-Expr -> Conds       : lit('$1').
-Expr -> Conds slash : lit('$1').
+Expr -> Seg  slash : lit(['$1']).
+Expr -> Segs slash : lit('$1').
 
-Conds -> Cond Cond : join('$1', '$2').
-Conds -> Cond : '$1'.
+Segs -> Seg Seg : join('$1', '$2').
 
-Cond -> Clause : '$1'.
+Seg -> Clause : '$1'.
 
-Cond -> slash path : '$2'.
+Seg -> slash path : '$2'.
 
-Clause -> slash open path comma path close :  op('$3', '$5').
+Clause -> SubClause close : clause('$1').
+
+SubClause -> SubClause comma path : join('$1', '$3').
+SubClause -> slash open path      : '$3'.
 
 Erlang code.
+
+-export([
+         p_TEST/1
+        ]).
+
 %% Erlang code follows here
-op({path, A}, {path, B}) -> io:format("In op ~p ~p~n", [A, B]),
-                                  {{tempate, A}, {generator, B}}.
+
+clause([{path, A}, {path, B}]) -> {{template, A}, {name, B}}.
 
 join(A, B) -> io:format("In join ~p ~p~n", [A, B]),
               [A, B].
 
 lit(A) -> io:format("in lit ~p~n", [A]),
           A.
+
+%%% Tests:
+-include_lib("eunit/include/eunit.hrl").
+
+p_TEST(String) ->
+    io:format("String is ~p~n", [String]),
+    {ok, Toks, 1} = webcontrols_lexer:lex(String),
+    io:format("Toks is ~p~n", [Toks]),
+    {ok, Ret} = parse(Toks),
+    io:format("Ret is ~p~n", [Ret]),
+    Ret.
+
+seg_test_() ->
+    [
+     ?_assert(p_TEST("/blah/") == [
+                                   {path, "blah"}
+                                  ]),
+
+     ?_assert(p_TEST("/[Template, Name]/") == [
+                                              {{template, "Template"},
+                                               {name, "Name"}}
+                                             ]),
+     
+     ?_assert(p_TEST("/blah/[Template, Name]/") == [
+                                                    {path, "blah"},
+                                                    {{template, "Template"},
+                                                    {name, "Name"}}
+                                                   ]),
+     
+     ?_assert(p_TEST("/blah/[Template, Name]/") == [
+                                                    {path, "blah"},
+                                                    {{template, "Template"},
+                                                    {name, "Name"}}
+                                                   ])
+    ].

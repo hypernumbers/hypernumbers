@@ -151,7 +151,7 @@ replay(Name, NewSite) ->
 %% all posts from, New is the new location to post them too. Deep
 %% decides whether to copy subpages or not
 replay(Name, Url, Options) ->
-    Ref = hn_util:parse_url(Url), 
+    Ref = hn_util:url_to_refX(Url), 
     F   = fun(Post, Id) ->
                   print(post, Post, Id),
                   repost(Name, Post, Ref)

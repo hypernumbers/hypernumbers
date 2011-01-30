@@ -255,7 +255,7 @@ tidy1([{seg, [$.     | S]} | T], Acc) -> tidy1(T, [tidy2(S), {seg, "."} | Acc]);
 % eliminate single slashes - they are implicit in the path
 tidy1([{seg, "/"}          | T], Acc) -> tidy1(T, Acc);
 tidy1([{seg, S}            | T], Acc) -> tidy1(T, [tidy2(S) | Acc]);
-tidy1([{zseg, _Z} = H      | T], Acc) -> tidy1(T, [H | Acc]).
+tidy1([{zseg, _Z, _Tx} = H | T], Acc) -> tidy1(T, [H | Acc]).
 
 tidy2(S) -> S2 = string:strip(S, both, $/),
             Segs = string:tokens(S2, "/"),

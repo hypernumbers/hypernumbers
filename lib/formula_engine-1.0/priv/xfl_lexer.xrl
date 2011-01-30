@@ -22,7 +22,7 @@ BOOL = ({TRUE}|{FALSE})
 STR = (\"[^"]*\")
 %%" % erlang-mode fix
 
-ERRVAL = \#NULL\!|\#AUTH\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A
+ERRVAL = \#NULL\!|\#AUTH\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A|\#AUTH\!|\#CIRCREF\!
 
 %%% References: cell references (A1 & RC), range references (finite, column, row;
 %%% both styles), name references.
@@ -355,13 +355,13 @@ parse_zpath(Path) ->
     {zpath, [parse_z2(X) || X <- ZPath]}.
 
 parse_z2([?SQBRA | Rest]) -> % macro for emacs indentation only
-    {Expr, _Ket} = lists:split(length(Rest) -1, Rest),
+    {Expr, _Ket} = lists:split(length(Rest) - 1, Rest),
     % if we ever implement z-path with RC syntax we will need to figure
     % out what coordiates to put in the lexer here
     % {0, 0} or is that just mad
     % Bref? Fuck it, who uses RC notation anyhoo
-    {ok, ZSeg} = xfl_lexer:lex(Expr, {1, 1}),
-    {zseg, ZSeg};
+    {ok, ZSeg} = xfl_lexer:lex(Expr, {?mx, ?my}),
+    {zseg, ZSeg, "[" ++ Expr ++ "]"};
 parse_z2(Seg) ->
     {seg, Seg}.
 

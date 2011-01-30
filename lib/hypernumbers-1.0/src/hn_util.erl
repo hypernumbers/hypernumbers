@@ -16,18 +16,18 @@
          valid_email/1,
          extract_name_from_email/1,
          capitalize_name/1,
-         
+
          transform_site/1,
          transform_perms/1,
          add_views/0,
-         
+
          esc_regex/1,     
          recursive_copy/2,
 
          site_to_atom/2,
          site_to_fs/1,
          site_from_fs/1,
-         
+
          % HyperNumbers Utils
          delete_directory/1,
          compile_html/2,
@@ -41,7 +41,7 @@
          strip80/1,
          refX_to_url/1,
          index_to_url/1,
-         obj_to_str/1,
+         obj_to_change_msg/1,
          in_range/2,
          range_to_list/1,
          rectify_range/4,
@@ -49,11 +49,11 @@
          path_to_json_path/1,
 
          % HTTP Utils
-         parse_url/1,
+         %parse_url/1,
          parse_ref/1,
          parse_attr/1,
          parse_attr/2,
-         
+
          % List Utils
          is_alpha/1,
          is_numeric/1,
@@ -151,20 +151,20 @@ mk_f([{str, _, S} | T], {St, A}) ->
     mk_f(T, {St, [$", S, $" | A]});
 
 mk_f([{recalc, S} | T], {_St, A}) ->
-    mk_f(T, {dirty, [S | A]});
+                         mk_f(T, {dirty, [S | A]});
 
-mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
-    mk_f(T, {dirty, ["INDIRECT" | A]});
+                  mk_f([{name, _, "INDIRECT"} | T], {_St, A}) ->
+                         mk_f(T, {dirty, ["INDIRECT" | A]});
 
-mk_f([{name, _, S} | T], {St, A}) ->
-    mk_f(T, {St, [S | A]});
+                  mk_f([{name, _, S} | T], {St, A}) ->
+                         mk_f(T, {St, [S | A]});
 
-mk_f([{H, _} | T], {St, A}) ->
-    mk_f(T, {St, [atom_to_list(H) | A]}).
+                  mk_f([{H, _} | T], {St, A}) ->
+                         mk_f(T, {St, [atom_to_list(H) | A]}).
 
 
 -spec extract_name_from_email(string()) -> string(). 
- extract_name_from_email(Email) ->
+extract_name_from_email(Email) ->
     [Name | _Rest] =  string:tokens(Email, ".+@"),
     capitalize_name(Name).
 
@@ -180,11 +180,11 @@ valid_email(Email) ->
         ++ "|\\.biz|\\.info|\\.mobi|\\.name|\\.aero|\\.jobs|\\.museum|\\.edu|"
         ++"\\.asia|\\.cat|\\.coop|\\.int|\\.jobs|\\.pro|\\.arpa|\\.tel|\\.travel)$",
         %" for syntax highighting
-        % io:format("Name is ~p~nDom is ~p~nnTld is ~p~n",
-        %          [re:run(Email, EMail_regex, [{capture, [name]}]),
-        %           re:run(Email, EMail_regex, [{capture, [dom]}]),
-        %           re:run(Email, EMail_regex, [{capture, [tld]}])
-        %         ]),
+    % io:format("Name is ~p~nDom is ~p~nnTld is ~p~n",
+    %          [re:run(Email, EMail_regex, [{capture, [name]}]),
+    %           re:run(Email, EMail_regex, [{capture, [dom]}]),
+    %           re:run(Email, EMail_regex, [{capture, [tld]}])
+    %         ]),
     case re:run(Email, EMail_regex) of
         nomatch    -> false;
         {match, _} -> true
@@ -241,7 +241,7 @@ rec_copy1(From, To, File) ->
         true  ->
             ok = filelib:ensure_dir(NewTo),
             recursive_copy(NewFrom, NewTo);
-        
+
         false ->
             case filelib:is_file(NewFrom) of                
                 true  ->
@@ -271,7 +271,7 @@ delete_dir(File) ->
         true  -> delete_directory(File);
         false -> file:delete(File)
     end.
-   
+
 
 %% is string a list of alpha(a-z) characters
 -spec is_alpha(string()) -> true | false.
@@ -330,7 +330,7 @@ is_older(File1, File2) ->
 
 %% generate_po_CHEATING(Ref) ->
 %%     Needs a user object.... 
-%%     Body = hn_mochi:page_attributes(parse_url(Ref)),
+%%     Body = hn_mochi:page_attributes(make_refX(Ref)),
 %%     generate_po1(Body).
 
 generate_po(Url) ->
@@ -360,7 +360,7 @@ po_row(File, {_Row, {struct, Children}}) ->
     Id = pget(<<"value">>, Attr),
     lists:map(fun(X) -> po_val(File, Id, X) end, Children),
     ok.
-   
+
 po_val(Files, Id, {Col, {struct, Cell}}) ->
     Str = "msgid \"~s\"\nmsgstr \"~s\"\n\n",
     io:format(pget(Col, Files), Str, [Id, pget(<<"value">>, Cell)]).
@@ -394,7 +394,7 @@ jsonify_val({Name, {namedexpr, _Path, Nm}}) ->
     {Name, Nm};
 jsonify_val({K, V}) ->
     try (mochijson:encoder([{input_encoding, utf8}]))(V),
-                         {K, V}
+        {K, V}
     catch
         error: _Err ->
             error_logger:error_msg("#MOCHIJSON! error ~p ~p~n", [K, V]),
@@ -412,7 +412,7 @@ jsonify_val({K, V}) ->
 %%% These functions convert to and from #refX and  #index records and Urls   %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-url_to_refX(Url) -> parse_url(Url).
+url_to_refX(Url) -> url_parser:make_refX(Url).
 
 refX_from_index(#index{site = S, path = P, column = X, row = Y}) ->
     #refX{site = S, path = P, obj = {cell, {X, Y}}}.
@@ -449,17 +449,17 @@ range_to_list1(RefX, Reset, X1, Y1, X2, Y2, Acc) ->
 
 refX_to_url(#refX{site = Site, path = Path, obj = {cell, {X, Y}}}) ->
     lists:append([Site, list_to_path(Path), tconv:to_b26(X), text(Y)]);
-refX_to_url(#refX{site = Site, path = Path, obj = {column, {X1, X2}}}) ->
+refX_to_url(#refX{site = Site, path = Path, obj = {column, {X1, zero, X2, inf}}}) ->
     lists:append([Site, list_to_path(Path), tconv:to_b26(X1), ":",
                   tconv:to_b26(X2)]);
-refX_to_url(#refX{site = Site, path = Path, obj = {row, {Y1, Y2}}}) ->
+refX_to_url(#refX{site = Site, path = Path, obj = {row, {zero, Y1, inf, Y2}}}) ->
     lists:append([Site, list_to_path(Path), text(Y1), text(Y2)]);
-refX_to_url(#refX{site = Site, path = Path, obj ={range, {X1, Y1, X2, Y2}}}) ->
+refX_to_url(#refX{site = Site, path = Path, obj = {range, {X1, Y1, X2, Y2}}}) ->
     lists:append([Site, list_to_path(Path), tconv:to_b26(X1), text(Y1), ":",
                   tconv:to_b26(X2), text(Y2)]);
 refX_to_url(#refX{site = Site, path = Path, obj = {page, "/"}}) ->
     lists:append([Site, list_to_path(Path)]).
-            
+
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
     lists:append([Site, list_to_path(Path),tconv:to_b26(X), text(Y)]).
 
@@ -476,58 +476,66 @@ path_to_json_path([])                -> "path.json";
 path_to_json_path(P) when is_list(P) -> "path." ++ string:join(P, ".")
                                             ++ ".json".
 
-obj_to_str({page,Path})           -> Path;   
-obj_to_str({cell,{X,Y}})          -> tconv:to_b26(X)++text(Y);
-obj_to_str({row,{Y,Y}})           -> text(Y);
-obj_to_str({row,{Y1,Y2}})         -> text(Y1)++":"++text(Y2);
-obj_to_str({column,{X,X}})        -> tconv:to_b26(X);
-obj_to_str({column,{X1,X2}})      -> tconv:to_b26(X1)++":"++tconv:to_b26(X2);
-obj_to_str({range,{X1,Y1,X2,Y2}}) -> tconv:to_b26(X1)++text(Y1)++":"++
-                                         tconv:to_b26(X2)++text(Y2).
+obj_to_change_msg({page,Path}) ->
+    Path;   
+obj_to_change_msg({cell,{X,Y}}) ->
+    tconv:to_b26(X)++text(Y);
+% file import seems to create old-fashioned rows
+obj_to_change_msg({row, {Y, Y}}) ->
+    text(Y); % change msgs only get a singleton ref
+obj_to_change_msg({row, {range, {zero, Y, inf, Y}}}) ->
+    text(Y); % change msgs only get a singleton ref
+obj_to_change_msg({column, {range, {X, zero, X, inf}}}) ->
+    tconv:to_b26(X); % change msgs only get a singleton ref
+% file import seems to create old-fashioned columns
+obj_to_change_msg({column, {X, X}}) ->
+    tconv:to_b26(X); % change msgs only get a singleton ref
+obj_to_change_msg({range,{X1,Y1,X2,Y2}}) ->
+    tconv:to_b26(X1)++text(Y1)++":"++tconv:to_b26(X2)++text(Y2).
 
 in_range({range,{X1,Y1,X2,Y2}}, {cell,{X,Y}}) ->
     Y >= Y1 andalso Y =< Y2 andalso X >= X1 andalso X =< X2.
 
-parse_url("http://"++Url) ->
-    {Host, Path, NUrl} = prs(Url),
-    Type = hasConds(Path),
-    case lists:last(NUrl) of
-        $/ -> #refX{site="http://"++Host, type = Type,
-                    path=Path, obj={page, "/"}};
-        _  -> [Addr | P] = lists:reverse(Path),
-              Obj = parse_attr(cell, Addr),
-              Type2 = case {Obj, Type} of
-                          {{row, _},    false} -> gurl;
-                          {{column, _}, false} -> gurl;
-                          {_,           false} -> url;
-                          {_,           true}  -> gurl
-                      end,
-              #refX{site="http://"++Host, type = Type2,
-                    path=lists:reverse(P),
-                    obj = Obj}
-    end.
+%% parse_url("http://"++Url) ->
+%%     {Host, Path, NUrl} = prs(Url),
+%%     Type = has_conds(Path),
+%%     case lists:last(NUrl) of
+%%         $/ -> #refX{site="http://"++Host, type = Type,
+%%                     path=Path, obj={page, "/"}};
+%%         _  -> [Addr | P] = lists:reverse(Path),
+%%               Obj = parse_attr(cell, Addr),
+%%               Type2 = case {Obj, Type} of
+%%                           {{row, _},    false} -> gurl;
+%%                           {{column, _}, false} -> gurl;
+%%                           {_,           false} -> url;
+%%                           {_,           true}  -> gurl
+%%                       end,
+%%               #refX{site="http://"++Host, type = Type2,
+%%                     path=lists:reverse(P),
+%%                     obj = Obj}
+%%     end.
 
-%% needs to be fixed for validating page paths
-hasConds([]) -> false;
-hasConds(Path) ->
-    Re = "^[a-zA-Z0-9_\-~]$", %",
-    Fun = fun(X, Acc) ->
-                  NewAcc = case re:run(X, Re) of
-                               {match, _} -> true;
-                               nomatch    -> false
-                           end,
-                  case {Acc, NewAcc} of
-                      {true, true} -> true;
-                      _            -> false
-                  end
-          end,
-    lists:foldl(Fun, true, Path).
+%% %% needs to be fixed for validating page paths
+%% has_conds([]) -> false;
+%% has_conds(Path) ->
+%%     Re = "^[a-zA-Z0-9_\-~]$", %",
+%%     Fun = fun(X, Acc) ->
+%%                   NewAcc = case re:run(X, Re) of
+%%                                {match, _} -> true;
+%%                                nomatch    -> false
+%%                            end,
+%%                   case {Acc, NewAcc} of
+%%                       {true, true} -> true;
+%%                       _            -> false
+%%                   end
+%%           end,
+%%     lists:foldl(Fun, true, Path).
 
-prs(Url) ->
-    case string:tokens(Url, "/") of
-        [Host]        -> {Host, [], "/"};
-        [Host | Path] -> {Host, Path, Url}
-    end.
+%% prs(Url) ->
+%%     case string:tokens(Url, "/") of
+%%         [Host]        -> {Host, [], "/"};
+%%         [Host | Path] -> {Host, Path, Url}
+%%     end.
 
 parse_attr(Addr) ->
     parse_attr(cell, Addr).
@@ -547,14 +555,14 @@ parse_attr(range, Addr) ->
             {XX1, YY1, XX2, YY2} = hn_util:rectify_range(X1, Y1, X2, Y2),
             {range, {XX1, YY1, XX2, YY2}};
         _ -> 
-            parse_attr(column, Addr)
+            parse_attr(col, Addr)
     end;
 
-parse_attr(column, Addr) ->
+parse_attr(col, Addr) ->
     case re:run(Addr,?RG_col_range) of
         {match,_} -> 
             [Cell1, Cell2] = string:tokens(Addr, ":"),
-            {column, {tconv:b26_to_i(Cell1), tconv:b26_to_i(Cell2)}};
+            {col, {tconv:b26_to_i(Cell1), tconv:b26_to_i(Cell2)}};
         _ -> 
             parse_attr(row, Addr)
     end;
@@ -577,15 +585,16 @@ ltoi(X) ->
 parse_ref(Ref) ->
     RefType = type_reference(Ref),
     RefVal  = case RefType of
-                  page ->   "/";
-                  cell ->   util2:strip_ref(undollar(Ref));
-                  range ->  util2:parse_range(undollar(Ref));
-                  column -> [First, Last] = string:tokens(Ref, ":"),
-                            {range, {tconv:to_i(undollar(First)), zero,
-                                     tconv:to_i(undollar(Last)), inf}};
-                  row ->    [First, Last] = string:tokens(Ref, ":"),
-                            {range, {zero, tconv:to_i(undollar(First)),
-                                     inf, tconv:to_i(undollar(Last))}}
+                  page     -> "/";
+                  cell     -> util2:strip_ref(undollar(Ref));
+                  range    -> util2:parse_range(undollar(Ref));
+                  column   -> [First, Last] = string:tokens(Ref, ":"),
+                              {range, {tconv:to_i(undollar(First)), zero,
+                                       tconv:to_i(undollar(Last)), inf}};
+                  row      -> [First, Last] = string:tokens(Ref, ":"),
+                              {range, {zero, tconv:to_i(undollar(First)),
+                                       inf, tconv:to_i(undollar(Last))}};
+                  filename -> Ref
               end,
     {RefType, RefVal}.
 
@@ -596,13 +605,13 @@ undollar(A) ->
 %% Function:    text/1
 %% Description: Returns a string representation of the parameter
 %%--------------------------------------------------------------------
-text(X) when is_integer(X) -> integer_to_list(X);
-text(X) when is_float(X)   -> float_to_list(X);
-text(X) when is_list(X)    -> lists:flatten(X);
-text({errval, Errval})     -> atom_to_list(Errval);
-text(X) when is_boolean(X) -> atom_to_list(X);
-text(Dt) when is_record(Dt, datetime) -> muin_date:to_rfc1123_string(Dt);
-text(_X) -> "". %% quick fix for the "plain" api
+               text(X) when is_integer(X) -> integer_to_list(X);
+               text(X) when is_float(X)   -> float_to_list(X);
+               text(X) when is_list(X)    -> lists:flatten(X);
+               text({errval, Errval})     -> atom_to_list(Errval);
+               text(X) when is_boolean(X) -> atom_to_list(X);
+               text(Dt) when is_record(Dt, datetime) -> muin_date:to_rfc1123_string(Dt);
+               text(_X) -> "". %% quick fix for the "plain" api
 
 js_to_utf8({struct, Val}) -> {struct, lists:map(fun js_to_utf8/1, Val)};
 js_to_utf8({array, Val})  -> {array,  lists:map(fun js_to_utf8/1, Val)};
@@ -677,30 +686,32 @@ type_reference(Cell) ->
         0 ->
             case re:run(Cell, ?RG_cell) of
                 {match, _} -> cell;
-                _  ->
-                    throw({invalid_reference, Cell})
+                _          -> filename
+                    
             end;
-        _ ->
-            case string:tokens(string:to_lower(Cell), ":") of
-                [First, Last] ->
-                    case {hn_util:is_numeric(First), hn_util:is_numeric(Last)} of
-                        {true, true}  -> row;
-                        _             ->
-                            case {hn_util:is_alpha(First), hn_util:is_alpha(Last)} of
-                                {true, true}  -> column;
-                                _             ->
-                                    case {type_reference(First), type_reference(Last)} of
-                                        {cell, cell} -> range;
-                                        _            -> throw({invalid_reference, Cell})
-                                    end
-                            end
-                    end
-            end
+        _ -> type_r2(Cell)
+    end.
+
+type_r2(Range) ->
+    case re:run(Range, ?RG_range) of
+        {match, _} -> range;
+        _          -> type_r3(Range)
+    end.
+
+type_r3(Col) ->
+    case re:run(Col, ?RG_col_range) of
+        {match, _} -> column;
+        _          -> type_r4(Col)
+    end.
+
+type_r4(Row) ->
+    case re:run(Row, ?RG_row_range) of
+        {match, _} -> row;
+        _          -> filename
     end.
 
 pget(Key, List) ->
     proplists:get_value(Key, List, undefined).
-
 
 transform_site(Dest) ->
     MigrateDir = code:lib_dir(hypernumbers) ++ "/../../"++Dest++"/",
@@ -708,9 +719,8 @@ transform_site(Dest) ->
     [ transform_perms(Site) || Site <- Sites ],
     ok.
 
-
 transform_perms(Path) ->
-    
+
     file:copy(Path ++ "/permissions.export",
               Path ++ "/permissions.export.bak"),
 
@@ -720,7 +730,7 @@ transform_perms(Path) ->
     Perms    = make_script_terms(NTerms,[]),
 
     ok = file:write_file(Path ++ "/permissions.export", Perms).
-    
+
 tmptr({add_view,[{path,Path}, {perms, Perms},
                  {view,"_g/core/spreadsheet"}]}) ->
     tmptr({add_view,[{path,Path}, {perms, Perms}, {view,"spreadsheet"}]});
@@ -748,7 +758,7 @@ add_views() ->
           auth_srv:add_view(Site, ["[**]"], ["admin"], "webpage")
       end || Site <- hn_setup:get_sites()].
 
-    
+
 %%%
 %%% Unit Tests
 %%%

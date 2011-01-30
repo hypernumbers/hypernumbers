@@ -14,6 +14,7 @@
          expand_cellrange/1,
          expand_cellrange/4,
          walk_path/2,
+         walk_zpath/2,
          attempt/3,
          attempt/1,
          apply/2,
@@ -185,30 +186,28 @@ just_ref(Ssref) ->
 %% The first argument is a list of path components, the second is a string.
 %% The first comes from the server side of things, and the second comes from
 %% the path field in ref objects.
-walk_path(_, [{seg, [$/|_]} | _] = List) -> List;
-walk_path(_, Dest = [$/|_]) ->
+walk_path(_, Dest = [$/|_]) -> 
     string:tokens(Dest, "/");
-walk_path(Currloc, [{Type, _} | _] = List) when Type == seg orelse Type == zseg ->
-    Length = length(Currloc),
-    Zip = lists:duplicate(Length, seg),
-    Currloc2 = lists:zip(Zip, Currloc),
-    Newstk = lists:foldl(fun({seg, "."},  Stk) -> Stk;
-                            ({seg, ".."}, [])  -> [];
-                            ({seg, ".."}, Stk) -> hslists:init(Stk);
-                            (Word, Stk)        -> lists:append(Stk, [Word])
-                         end,
-                         Currloc2,
-                         List),
-    Newstk;
 walk_path(Currloc, Dest) ->
-    Newstk = lists:foldl(fun(".",  Stk) -> Stk;
-                            ("..", [])  ->  [];
-                            ("..", Stk) -> hslists:init(Stk);
-                            (Word, Stk) -> lists:append(Stk, [Word])
-                         end,
-                         Currloc,
-                         string:tokens(Dest, "/")),
-    Newstk.
+    lists:foldl(fun(".",  Stk) -> Stk;
+                   ("..", [])  ->  [];
+                   ("..", Stk) -> hslists:init(Stk);
+                   (Word, Stk) -> lists:append(Stk, [Word])
+                end,
+                Currloc,
+                string:tokens(Dest, "/")).
+
+walk_zpath(Path, ZPath) ->
+    Len = length(Path),
+    Zips = lists:duplicate(Len, "seg"),
+    Segs = lists:zip(Zips, Path),
+    lists:foldl(fun({seg, "."}, Stk)    -> Stk;
+                   ({seg, ".."}, [])    -> [];
+                   ({seg, ".."}, Stk)   -> hslists:init(Stk);
+                   (Word, Stk) ->lists:append(Stk, [Word])
+                end,
+                Segs,
+                ZPath).
 
 expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
     % Make a list of cells that make up this range.
@@ -227,7 +226,7 @@ make_refX(Site, Path, #rangeref{type = row, text = Txt}) ->
      #refX{site = Site, path = Path, type = url, obj = {row, {Y1, Y2}}};
 make_refX(Site, Path, #rangeref{type = col, text = Txt}) ->
     Ref = strip(Txt),
-    {column, {range, {X1, _Y1, X2, _Y2}}} = hn_util:parse_ref(Ref),
+    {col, {range, {X1, _Y1, X2, _Y2}}} = hn_util:parse_ref(Ref),
     #refX{site = Site, path = Path, type = url, obj = {column, {X1, X2}}}.
 
 strip(Txt) -> [Ref | _T] = lists:reverse(string:tokens(Txt, "/")),

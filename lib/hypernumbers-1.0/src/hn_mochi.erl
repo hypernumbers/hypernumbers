@@ -47,11 +47,10 @@ start() ->
             {loop, {hn_mochi, handle}}],
     mochiweb_http:start(Opts).
 
-
 -spec handle(any()) -> ok.
 handle(MochiReq) ->
     try
-        Ref = hn_util:parse_url(get_real_uri(MochiReq)),
+        Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
         handle_(Ref, Env, Qry)
@@ -709,21 +708,21 @@ ipost(Ref,
       Env=#env{body=[{"copy", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, all, Uid),
+    ok = hn_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, all, Uid),
     json(Env, "success");
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copystyle", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, style, Uid),
+    ok = hn_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, style, Uid),
     json(Env, "success");
 ipost(Ref, 
       _Qry,
       Env=#env{body=[{"copyvalue", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:copy_n_paste(hn_util:parse_url(Src), Ref, value, Uid),
+    ok = hn_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, value, Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry, 
@@ -1124,11 +1123,17 @@ add_ref(Ref, [KV|Tail], JSON) ->
     JSON2 = add_ref1(Ref, hn_util:jsonify_val(KV), JSON),
     add_ref(Ref, Tail, JSON2).
 
-add_ref1(#refX{ obj = {page,"/"}}, {Name, Val}, JSON) ->
+add_ref1(#refX{obj = {page,"/"}}, {Name, Val}, JSON) ->
     dh_tree:set(["page", Name], Val, JSON);
-add_ref1(#refX{ obj = {Ref, {X,Y}}}, Data, JSON) ->
+add_ref1(#refX{obj = {cell, {X, Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
-    dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
+    dh_tree:set(["cell", itol(X), itol(Y), Name], Val, JSON);
+add_ref1(#refX{obj = {column, {range, {X1, zero, X2, inf}}}}, Data, JSON) ->
+    {Name, Val} = hn_util:jsonify_val(Data),
+    dh_tree:set(["column", itol(X1), itol(X2), Name], Val, JSON);
+add_ref1(#refX{obj = {row, {range, {zero, Y1, inf, Y2}}}}, Data, JSON) ->
+    {Name, Val} = hn_util:jsonify_val(Data),
+    dh_tree:set(["row", itol(Y1), itol(Y2), Name], Val, JSON).
 
 templateroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
@@ -1426,7 +1431,7 @@ process_sync(["seek"], E=#env{mochi=Mochi}, QReturn) ->
         S         -> S end,
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Return = mochiweb_util:unquote(QReturn),
-    #refX{site = OrigSite} = hn_util:parse_url(Return),
+    #refX{site = OrigSite} = hn_util:url_to_refX(Return),
     QStamp = mochiweb_util:quote_plus(Stamp),
     Redir = hn_util:strip80(OrigSite) ++ 
         "/_sync/tell/"++QStamp++"/?return="++QReturn,

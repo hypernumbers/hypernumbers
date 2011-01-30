@@ -320,8 +320,8 @@ read_attrs_([LO|Tail], S, Tbl, Lock, Acc) ->
     read_attrs_(Tail, S, Tbl, Lock, Acc2).
 
 -spec lobj_to_ref(string(), #local_obj{}) -> #refX{}.
-lobj_to_ref(Site, #local_obj{path=P, obj=O}) ->
-    #refX{site=Site, path=P, obj=O}.
+lobj_to_ref(Site, #local_obj{path = P, type = Ty, obj = O}) ->
+    #refX{site = Site, type = Ty, path = P, obj = O}.
 
 -spec expunge_refs(string(), [#refX{}]) -> ok. 
 expunge_refs(S, Refs) ->
@@ -673,10 +673,10 @@ filter_pages([Path | T], Tree) ->
 -spec refX_to_idx_create(#refX{}) -> pos_integer().
 %% @doc refX_to_idx_create refX_to_idx_create gets the index of an object 
 %% AND CREATES IT IF IT DOESN'T EXIST
-refX_to_idx_create(#refX{site = S, path = P, obj = O} = RefX) ->
+refX_to_idx_create(#refX{site = S, type = Ty, path = P, obj = O} = RefX) ->
     case refX_to_idx(RefX) of
         false -> Idx = util2:get_timestamp(),
-                 Rec = #local_obj{path = P, obj = O, idx = Idx},
+                 Rec = #local_obj{path = P, type = Ty, obj = O, idx = Idx},
                  ok = mnesia:write(trans(S, local_obj), Rec, write),
                  Idx;
         Idx   -> Idx        
@@ -740,8 +740,8 @@ shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
 
 idx_to_refX(S, Idx) ->
     case mnesia:read(trans(S, local_obj), Idx, read) of
-        [Rec] -> #local_obj{path = P, obj = O} = Rec,
-                 #refX{site = S, path = P, obj = O};
+        [Rec] -> #local_obj{path = P, type = Ty, obj = O} = Rec,
+                 #refX{site = S, path = P, type = Ty, obj = O};
         []    -> {error, id_not_found, Idx}
     end.
 
@@ -765,7 +765,7 @@ refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
 -spec refX_to_idx(#refX{}) -> pos_integer() | false. 
 refX_to_idx(#refX{site = S, path = P, obj = Obj}) ->
     Table = trans(S, local_obj),
-    MS = [{#local_obj{path=P, obj=Obj, idx = '$1', _='_'}, [], ['$1']}],
+    MS = [{#local_obj{path = P, obj = Obj, idx = '$1', _='_'}, [], ['$1']}],
     case mnesia:select(Table, MS, read) of
         [I] -> I;
         _   -> false

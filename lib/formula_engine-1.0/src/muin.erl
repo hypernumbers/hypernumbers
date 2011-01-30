@@ -8,7 +8,8 @@
          test_formula/2,
          test_xfl/0,
          run_formula/2,
-         run_code/2
+         run_code/2,
+         zeval/3
         ]).
 
 -define('htmlbox', $h,$t,$m,$l,$.,$b,$o,$x,$.).
@@ -197,7 +198,7 @@ funcall(make_list, Args) ->
 %% Hypernumber function and its shorthand.
 funcall(hypernumber, [Url]) ->
     #refX{site = RSite, path = RPath,
-          obj = {cell, {RX, RY}}} = hn_util:parse_url(Url),
+          obj = {cell, {RX, RY}}} = hn_util:url_to_refX(Url),
     F = fun() -> get_hypernumber(?msite, ?mpath, ?mx, ?my,
                                  Url, RSite, RPath, RX, RY) end,
     get_value_and_link(F);
@@ -404,20 +405,22 @@ col_index({offset, N}) -> ?mx + N.
 
 fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
     {zpath, ZList} = Z,
-    NewPath = muin_util:walk_path(?mpath, ZList),
+    NewPath = muin_util:walk_zpath(?mpath, ZList),
     Length = length(NewPath),
     Paths = hn_db_api:read_pages(#refX{site = ?msite, path = [], obj = {page, "/"}}),
     FPaths = [X || X <- Paths, length(X) == Length],
     MPaths = match(?msite, FPaths, NewPath),
-    {offset, Col} = C#cellref.col,
-    {offset, Row} = C#cellref.row,
-    % the co-ords are offset co-ords from 'A1' so add 1
-    Text = util2:make_ref({Col + 1, Row + 1}),
-    SkeletonCellRef = C#cellref{path = "", text = Text},
-    _Vals = fetch_vals(MPaths, SkeletonCellRef),
+    OCol = C#cellref.col,
+    ORow = C#cellref.row,
+    Vals = fetch_vals(MPaths, ORow, OCol),
+    % build the refX that describes the infinite reference
+    RefX = make_inf_refX(C#cellref.path, C#cellref.text),
+    Infinites = get(infinite),
+    put(infinite, ordsets:add_element(RefX, Infinites)),
+    {range, [Vals]};
     % pinch it off from working
-    error_logger:info_msg("(from muin) Somebody tried a z-order cellref~n"),
-    ?ERRVAL_ERR;
+    %error_logger:info_msg("(from muin) Somebody tried a z-order cellref~n"),
+    %?ERRVAL_ERR;
 fetch(Ref) when ?is_zrangeref(Ref) ->
     error_logger:info_msg("(from muin) Somebody tried a z-order rangeref~n"),
     ?ERRVAL_ERR;
@@ -434,15 +437,14 @@ fetch(#rangeref{type = Type, path = Path} = Ref)
     Infinites = get(infinite),
     put(infinite, ordsets:add_element(RefX,Infinites)),
     Refs = hn_db_wu:expand_ref(RefX),
-    _Rows = case Obj of
+    Rows = case Obj of
                {Type2, {_I, _I}} -> sort1D(Refs, Path, Type2);
                {Type2, {I,   J}} -> sort2D(Refs, Path, {Type2, I, J})
     end,
-    %io:format("Rows is ~p~n", [Rows]),
     % pinch out the functionality for a release
-    %{range, Rows};
-    error_logger:info_msg("Somebody tried a row or column rangeref~n"),
-    ?ERRVAL_ERR;
+    {range, Rows};
+    %error_logger:info_msg("Somebody tried a row or column rangeref~n"),
+    %?ERRVAL_ERR;
 fetch(#rangeref{type = finite} = Ref) ->
     CellCoords = muin_util:expand_cellrange(Ref),
     Fun1 = fun(CurrRow, Acc) -> % Curr row, result rows
@@ -693,9 +695,9 @@ m1(Site, [H | T], ZPath, Acc) ->
     m1(Site, T, ZPath, NewAcc).
 
 m2(_Site, [], [], _Htap) -> match;
-m2(Site, [S | T1], [{seg, S}  | T2], Htap)     -> m2(Site, T1, T2, [S | Htap]);
-m2(_Site, [_S | _T1], [{seg, _} | _T2], _Htap) -> nomatch;
-m2(Site, [S | T1], [{zseg, Z} | T2], Htap) ->
+m2(Site, [S | T1], [{seg, S}     | T2], Htap)   -> m2(Site, T1, T2, [S | Htap]);
+m2(_Site, [_S | _T1], [{seg, _}  | _T2], _Htap) -> nomatch;
+m2(Site, [S | T1], [{zseg, Z, _} | T2], Htap)   ->
     case zeval(Site, lists:reverse([S | Htap]), Z) of
         match   -> m2(Site, T1, T2, [S | Htap]);
         nomatch -> nomatch
@@ -707,11 +709,13 @@ m2(Site, [S | T1], [{zseg, Z} | T2], Htap) ->
 zeval(Site, Path, Toks) ->
     % capture the process dictionary (it will get gubbed!)
     OldContext = get(),
+    X = ?mx,
+    Y = ?my,
     % we run in the context of call 'a1' - this is because z-order expressions
     % do not support r[]c[] format cell references (or is it vice-versa?)
-    RefX = #refX{site = Site, path = Path, obj = {cell, {1, 1}}},
+    RefX = #refX{site = Site, path = Path, obj = {cell, {Y, X}}},
     % no array context (fine) or security context (erk!)
-    RTI = hn_db_wu:refX_to_rti(RefX, nil, false), 
+    RTI = hn_db_wu:refX_to_rti(RefX, nil, false),
     Return = case catch(xfl_parser:parse(Toks)) of
                  {ok, Ast}   -> {ok, {_, Rs, _, _, _}} = muin:run_code(Ast, RTI),
                                 % cast to a boolean
@@ -727,14 +731,22 @@ zeval(Site, Path, Toks) ->
     [put(K, V) || {K, V} <- OldContext],
     Return.
 
-fetch_vals(Paths, Text) -> fetch_v1(Paths, Text, []).
+fetch_vals(Paths, Row, Col) -> fetch_v1(Paths, Row, Col, []).
 
-fetch_v1([], _CellRef, Acc) -> lists:reverse(Acc);
-fetch_v1([H | T], CellRef, Acc) ->
-    NewCellRef = CellRef#cellref{path = hn_util:list_to_path(H)},
-    io:format("NewCellRef is ~p~n", [NewCellRef]),
-    NewAcc = fetch(NewCellRef),
-    fetch_v1(T, CellRef, [NewAcc | Acc]).
+fetch_v1([], _Row, _Col, Acc) -> lists:reverse(Acc);
+fetch_v1([H | T], Row, Col, Acc) ->
+    Path = hn_util:list_to_path(H),
+    RowIndex = row_index(Row),
+    ColIndex = col_index(Col),
+    NewAcc = do_cell(Path, RowIndex, ColIndex, infinite),
+    fetch_v1(T, Row, Col, [NewAcc | Acc]).
+
+make_inf_refX(Path, Text) ->
+    NewPath = muin_util:walk_path(?mpath, Path),
+    Segs = string:tokens(Text, "/"),
+    {_, Ref} = lists:split(length(Segs) - 1, Segs),
+    Obj = hn_util:parse_ref(Ref),
+    #refX{site = ?msite, path = NewPath, type = gurl, obj = Obj}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Test Functions

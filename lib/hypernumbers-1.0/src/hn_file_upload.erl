@@ -129,11 +129,11 @@ defaultize(M) ->
 
 
 test_import() ->
-     test_import("Management Accounts Model v17", hn_util:parse_url("http://hypernumbers.dev:9000")).
-    %test_import("c_year", hn_util:parse_url("http://hypernumbers.dev:9000")).
+     test_import("Management Accounts Model v17", hn_util:url_to_refX("http://hypernumbers.dev:9000")).
+    %test_import("c_year", hn_util:url_to_refX("http://hypernumbers.dev:9000")).
 
 test_import(File) ->
-    test_import(File, hn_util:parse_url("http://hypernumbers.dev:9000/")).
+    test_import(File, hn_util:url_to_refX("http://hypernumbers.dev:9000/")).
 
 test_import(File, Ref) ->
     io:format("File is ~p Ref is ~p~n", [File, Ref]),

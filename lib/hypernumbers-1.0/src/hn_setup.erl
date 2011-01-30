@@ -262,7 +262,7 @@ run_script({Path, Expr}, Site, _Opts) ->
     write_cell(Path, Site, Expr).
 
 write_cell(Path, Site, Expr) ->
-    RefX = hn_util:parse_url(Site++Path), 
+    RefX = hn_util:url_to_refX(Site++Path), 
     hn_db_api:write_attributes([{RefX, [{"formula", Expr}]}]).
 
 

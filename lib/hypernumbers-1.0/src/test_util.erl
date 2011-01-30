@@ -217,7 +217,7 @@ make_float2(List)->
 
 hnget(Path, Cell) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Cell),
-    Ref = hn_util:parse_url(Url),
+    Ref = hn_util:url_to_refX(Url),
     case hn_db_api:read_attribute(Ref,"__rawvalue") of
         [{_Ref, Val}] when is_atom(Val) ->
             atom_to_list(Val);

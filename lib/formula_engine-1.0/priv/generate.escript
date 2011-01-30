@@ -24,6 +24,9 @@ generate(ForceCompile) ->
     ok = Gen_lex(num_format_lexer),
     ok = Gen_parse(num_format_parser),
 
+    ok = Gen_lex(url_lexer),
+    ok = Gen_parse(url_parser),
+
     ok = Gen_lex(webcontrols_lexer),
     ok = Gen_parse(webcontrols_parser),
 

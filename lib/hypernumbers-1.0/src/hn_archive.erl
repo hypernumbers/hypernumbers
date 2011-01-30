@@ -75,7 +75,7 @@ dump_users(Dest) ->
 dump_etf(Site, SiteDest) -> 
     EtfDest = ?join(SiteDest, "etf"),
     filelib:ensure_dir([EtfDest,"/"]),  
-    Ref = hn_util:parse_url(Site),
+    Ref = hn_util:url_to_refX(Site),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
     [ok = dump_page(EtfDest, Encoder, Ref, Path) 
      || Path <- hn_db_api:read_pages(Ref)],

@@ -169,7 +169,7 @@ squirt_zinfs(Site, [H | T]) ->
     Add = ordsets:subtract(NewP, OldP),
     Del = ordsets:subtract(OldP, NewP),
     [ok = zinf_srv:add_zinf(Site, CI, X) || X <- Add],
-    [ok = zinf_srv:del_b(Site, CI, X) || X <- Del],
+    [ok = zinf_srv:del_zinf(Site, CI, X) || X <- Del],
     squirt_zinfs(Site, T).
 
 process_dirties_for_zinf(Site) ->

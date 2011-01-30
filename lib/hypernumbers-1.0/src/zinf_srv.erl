@@ -13,6 +13,10 @@
 -include("spriki.hrl").
 -include_lib("eunit/include/eunit.hrl").
 -include("keyvalues.hrl").
+-include("errvals.hrl").
+
+-define(sq_bra, 91).
+-define(sq_ket, 93).
 
 %% API
 -export([start_link/1]).
@@ -184,8 +188,8 @@ del(Tree, Idx, RefX) ->
     NewTree = alter_tree(Tree, hn_util:parse_zpath(P), delete_selector(Idx, Obj)),
     {ok, NewTree}.
 
-check(Tree, #refX{path = P} = RefX) ->
-    Dirty = match_tree(Tree, P, match(RefX), []),
+check(Tree, #refX{site = S, path = P} = RefX) ->
+    Dirty = match_tree(Tree, S, P, match(RefX), []),
     {ok, Dirty}.
 
 %%%===================================================================
@@ -284,30 +288,43 @@ trim(K, Seg, Tree) ->
              end,
     {Status, gb_trees:enter(Seg, NewSubTree, Tree)}.
 
-match_tree(Tree, List, Fun, Htap) ->
-    iterate(gb_trees:iterator(Tree), List, Fun, Htap, []).
+match_tree(Tree, S, List, Fun, Htap) ->
+    iterate(gb_trees:iterator(Tree), S, List, Fun, Htap, []).
 
-iterate(Iter, [], Fun, Htap, Acc) ->
+iterate(Iter, S, [], Fun, Htap, Acc) ->
     case gb_trees:next(Iter) of
-        none               -> [];
-        {selector, S, _I2} -> Fun(S);
-        {_K, _V, I2}       -> iterate(I2, [], Fun, Htap, Acc)
+        none                 -> [];
+        {selector, Sel, _I2} -> Fun(Sel);
+        {_K, _V, I2}         -> iterate(I2, S, [], Fun, Htap, Acc)
     end;
-iterate(Iter, [H | T] = List, Fun, Htap, Acc) ->
+iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
      case gb_trees:next(Iter) of
          none       -> lists:flatten(Acc);
-         {K, V, I2} -> NewAcc = case match_seg(K, H, Htap) of
-                                    true  -> match_tree(V, T, Fun, [H | Htap]);
-                                    false -> []
+         {K, V, I2} -> NewAcc = case match_seg(K, H, S, Htap) of
+                                    match   -> match_tree(V, S, T, Fun, [H | Htap]);
+                                    nomatch -> [];
+                                    ?ERRVAL_VAL -> [?ERRVAL_VAL]
                                 end,
-                       iterate(I2, List, Fun, Htap, [NewAcc | Acc])
+                       iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
      end.
 
-match_seg({seg, S},    S,   _Htap) -> true;
-match_seg({seg, _S1},  _S2, _Htap) -> false;
-match_seg({zseg, _S1}, _S,  _Htap) -> io:format("fuck zsegs~n"),
-                                      false;
-match_seg(selector,   _S,   _Htap) -> false.
+match_seg({seg, S},     S,  _Site, _Htap) -> match;
+match_seg({seg, _S1}, _S2,  _Site, _Htap) -> nomatch;
+match_seg({zseg, S1},   S,   Site,  Htap) -> Path = lists:reverse([S | Htap]),
+                                             run_zeval(Site, Path, S1);
+match_seg(selector,    _S,  _Site, _Htap) -> nomatch.
+
+run_zeval(Site, Path, Z) ->
+    Z2 = string:strip(string:strip(Z, right, ?sq_ket), left, ?sq_bra),
+    {ok, Toks} = xfl_lexer:lex(Z2, {1, 1}),
+    try
+        muin:zeval(Site, Path, Toks)
+    catch
+        error:
+        _Err  -> ?ERRVAL_VAL;
+        exit:
+        _Exit -> ?ERRVAL_VAL
+    end.
 
 %%%===================================================================
 %%% EUnit Tests

@@ -93,7 +93,7 @@ notify_change(Site, Path, {RefType, _} = R, Attrs) ->
     Msg = {struct, [{"type", "change"},
                     {"reftype", RefType},
                     {"path", hn_util:list_to_path(Path)},
-                    {"ref", hn_util:obj_to_str(R)}, 
+                    {"ref", hn_util:obj_to_change_msg(R)}, 
                     {"attrs", {struct, Attrs2}}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
@@ -102,7 +102,7 @@ notify_delete_attrs(Site, Path, {RefType, _} = R, Attrs) ->
     Msg = {struct, [{"type", "delete_attrs"},
                     {"reftype", RefType},
                     {"path", hn_util:list_to_path(Path)},
-                    {"ref", hn_util:obj_to_str(R)},
+                    {"ref", hn_util:obj_to_change_msg(R)},
                     {"attrs", {struct, [{X, ""} || X <- Attrs]}}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
@@ -111,7 +111,7 @@ notify_delete(Site, Path, {RefType, _} = R) ->
     Msg = {struct, [{"type", "delete"},
                     {"reftype", RefType},
                     {"path", hn_util:list_to_path(Path)},
-                    {"ref", hn_util:obj_to_str(R)}]},
+                    {"ref", hn_util:obj_to_change_msg(R)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
     gen_server:cast(Id, {msg, Site, Path, Msg}). 
 
@@ -129,7 +129,7 @@ notify_style(Site, Path, Style) ->
 notify_error(Site, Path, Ref, error_in_formula, Value) ->
     Msg = {struct, [{"type", "error"},
                     {"reftype", "cell"},
-                    {"ref", hn_util:obj_to_str(Ref)}, 
+                    {"ref", hn_util:obj_to_change_msg(Ref)}, 
                     {"original", Value},
                     {"path", hn_util:list_to_path(Path)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),

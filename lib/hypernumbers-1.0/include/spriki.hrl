@@ -47,7 +47,7 @@
 -record(refX,
         {
           site        = [],
-          type        = url,
+          type,
           path        = [],
           obj         = null
          }).
@@ -63,6 +63,7 @@
 -record(local_obj,
         {
           idx,
+          type,
           path,
           obj
          }).
