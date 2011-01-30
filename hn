@@ -256,7 +256,7 @@ usage() ->
         "~nCommands to build hypernumbers are:~n"
         "  build ~n"
         "  quick ~n"
-        " lexer-parser ~n"
+        "  lexer-parser ~n"
         "  migrate ~n",
         "  clean ~n",
     io:format(Usage),
