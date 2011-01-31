@@ -107,19 +107,11 @@ fp([], Type, Acc)                 -> {Type, lists:reverse(Acc)};
 fp([{seg,  Seg}  | T], Type, Acc) -> fp(T, Type, [Seg | Acc]);
 fp([{zseg, Zseg} | T], _, Acc)    -> fp(T, gurl, [Zseg | Acc]).
 
-join(A, B) when is_list(A) ->
-    io:format("Joining (2) ~p and ~p~n", [A, B]),
-    lists:concat([A, [B]]);
-join(A, B) -> io:format("Joining ~p and ~p~n", [A, B]),
-              [A, B].
+join(A, B) when is_list(A) -> lists:concat([A, [B]]);
+join(A, B)                 -> [A, B].
 
-flit(A) -> io:format("Flitting ~p~n", [A]),
-           A.
-
-seg({path, Chars})    -> io:format("Seg is a path ~p~n", [Chars]),
-                         {seg, Chars};
-seg({cellref, Chars}) -> io:format("Seg is a cellref ~p~n", [Chars]),
-                         {seg, Chars}.
+seg({path, Chars})    -> {seg, Chars};
+seg({cellref, Chars}) -> {seg, Chars}.
 
 type({_, Chars}) -> hn_util:parse_ref(Chars).
 
@@ -248,5 +240,8 @@ filename_test_() ->
 prod_test_() ->
     [
      ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/sheet1/A13") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "sheet1"], {cell, {1, 13}}}),
-               ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/a_quis_custodiet_custodiens/sheet1/") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "a_quis_custodiet_custodiens", "sheet1"], {page, "/"}})
+     
+               ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/a_quis_custodiet_custodiens/sheet1/") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "a_quis_custodiet_custodiens", "sheet1"], {page, "/"}}),
+     
+               ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/a_quis_custodiet_custodiens/sheet1/A13") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "a_quis_custodiet_custodiens", "sheet1"], {cell, {1, 13}}})
      ].
