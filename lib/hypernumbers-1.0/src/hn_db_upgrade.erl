@@ -23,6 +23,19 @@
          %% upgrade_1776/0
         ]).
 
+% upgrade plan for local_obj ad upgrade_pages
+% * git pull the new source (DO NOT RUN ANY BUILD SCRIPT)
+% * get a shell
+% * run 'hypernumbers_sup:suspend_mochi().'
+% * compile hn_db_upgrade, hn_db_api and hn_db_wu with a shell command like
+%   - 'c(hn_db_upgrade, [{i, "../include"}]).'
+%   - load them with 'l(hn_db_upgrade)' etc...
+% run 'hn_db_upgrade:upgrade_pages_2011_01_26().'
+% run 'hn_db_upgrade:upgrade_local_obj_2011_01_26().'
+% stop the server
+% run './hn lexer-parser'
+% restart the server
+
 % adds a type field to local obj
 upgrade_local_obj_2011_01_26() ->
     Sites = hn_setup:get_sites(),
@@ -39,7 +52,6 @@ upgrade_local_obj_2011_01_26() ->
     lists:foreach(Fun1, Sites),
     ok.
     
-
 % populates the new pages server
 upgrade_pages_2011_01_26() ->
     Sites = hn_setup:get_sites(),
