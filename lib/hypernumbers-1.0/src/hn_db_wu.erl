@@ -272,14 +272,28 @@ mark_dirty_for_zinf(#refX{site = S, obj = {cell, _}} = RefX) ->
     Tbl = trans(S, dirty_for_zinf),
     mnesia:write(Tbl, #dirty_for_zinf{dirty = RefX}, write).
 
+% this has to handle old and new columns
+expand_to_rows_or_cols(#refX{obj={RC, {range, {zero, I, inf, J}}}}=Ref) when RC == row ->
+    expand_to_2(Ref, I, J, []);
+expand_to_rows_or_cols(#refX{obj={RC, {range, {I, zero,  J, inf}}}}=Ref) when RC == column ->
+    expand_to_2(Ref, I, J, []);
 expand_to_rows_or_cols(#refX{obj={RC, {I, J}}}=Ref) when RC == row; RC == column ->
     expand_to_2(Ref, I, J, []);
 expand_to_rows_or_cols(_) -> [].
 
-expand_to_2(#refX{obj={Type, _}}=Ref, I, I, Acc) ->
-    [Ref#refX{obj={Type, {I, I}}} | Acc];
-expand_to_2(#refX{obj={Type, _}}=Ref, I, J, Acc) ->
-    expand_to_2(Ref, I+1, J, [Ref#refX{obj={Type, {I, I}}} | Acc]).
+% this has to handle old and new columns
+expand_to_2(#refX{obj={row, {range, {zero, _, inf, _}}}}=Ref, I, I, A) ->
+    [Ref#refX{obj={row, {range, {zero, I, inf, I}}}} | A];
+expand_to_2(#refX{obj={column, {range, {_, zero, _, inf}}}}=Ref, I, I, A) ->
+    [Ref#refX{obj={column, {range, {I, zero, I, inf}}}} | A];    
+expand_to_2(#refX{obj={Type, _}}=Ref, I, I, A) ->
+    [Ref#refX{obj={Type, {I, I}}} | A];
+expand_to_2(#refX{obj={row, {range, {zero, _, inf, _}}}}=Ref, I, J, A) ->
+    expand_to_2(Ref, I+1, J, [Ref#refX{obj={row, {range, {zero, I, inf, I}}}} | A]);
+expand_to_2(#refX{obj={column, {range, {_, zero, _, inf}}}}=Ref, I, J, A) ->
+    expand_to_2(Ref, I+1, J, [Ref#refX{obj={column, {range, {I, zero, I, inf}}}} | A]);
+expand_to_2(#refX{obj={Type, _}}=Ref, I, J, A) ->
+    expand_to_2(Ref, I+1, J, [Ref#refX{obj={Type, {I, I}}} | A]).
 
 expand_ref(#refX{site=S}=Ref) -> 
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref, inside)].
@@ -462,8 +476,15 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             [idx_to_refX(S, X) || {S, X} <- DirtyChildren]
     end.
 
+% handles old and new rows and columns
 shift_obj(#local_obj{obj = {cell, {X, Y}}}=LO, XOff, YOff) ->
     O2 = {cell, {X + XOff, Y + YOff}},
+    LO#local_obj{obj = O2};
+shift_obj(#local_obj{obj = {column, {range, {X1, zero,  X2, inf}}}}=LO, XOff, _YOff) ->
+    O2 = {column, {range, {X1 + XOff, zero, X2 + XOff, inf}}},
+    LO#local_obj{obj = O2};
+shift_obj(#local_obj{obj = {row, {range, {zero, Y1, inf, Y2}}}}=LO, _XOff, YOff) ->
+    O2 = {row, {range, {zero, Y1 + YOff, inf, Y2 + YOff}}},
     LO#local_obj{obj = O2};
 shift_obj(#local_obj{obj = {column, {X1, X2}}}=LO, XOff, _YOff) ->
     O2 = {column, {X1 + XOff, X2 + XOff}},
@@ -725,6 +746,7 @@ get_prefix("http://"++Site) ->
     [case S of $: -> $&; S  -> S end 
      || S <- Site].
 
+% handles old and new rows/columns
 shift_pattern(#refX{obj = {cell, {X, Y}}} = RefX, vertical) ->
     RefX#refX{obj = {range, {X, Y, X, infinity}}};
 shift_pattern(#refX{obj = {cell, {X, Y}}} = RefX, horizontal) ->
@@ -733,6 +755,10 @@ shift_pattern(#refX{obj = {range, {X1, Y1, X2, _Y2}}} = RefX, vertical) ->
     RefX#refX{obj = {range, {X1, Y1, X2, infinity}}};
 shift_pattern(#refX{obj = {range, {X1, Y1, _X2, Y2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1, Y1, infinity, Y2}}};
+shift_pattern(#refX{obj = {row, {range, {zero, Y1, inf, _Y2}}}} = RefX, vertical) ->
+    RefX#refX{obj = {range, {0, Y1, infinity, infinity}}};
+shift_pattern(#refX{obj = {column, {range, {X1, zero, _X2, inf}}}} = RefX, horizontal) ->
+    RefX#refX{obj = {range, {X1, 0, infinity, infinity}}};
 shift_pattern(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
     RefX#refX{obj = {range, {0, Y1, infinity, infinity}}};
 shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
@@ -892,11 +918,16 @@ offset_with_ranges1([{cellref, LineNo,
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
         %% If ever we apply two offsets at once, do it in two steps.
+        %% handle old and new rows/columns
         {range, {Left, Top, _Right, Bottom}}
           when (YO == 0) and ((Left > X) or (Top > Y) or (Y > Bottom)) ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
         {range, {Left, Top, Right, _Bottom}}
           when (XO == 0) and ((Left > X) or (X > Right) or (Top > Y)) ->
+            offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
+        {column, {range, {Left, zero, _Right, inf}}} when X < Left ->
+            offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
+        {row,{range, {zero, Top, inf, _Bottom}}} when Y < Top ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
         {column, {Left,_Right}} when X < Left ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
@@ -935,6 +966,41 @@ make_new_range(Prefix, Cell1, Cell2,
             {X, Y} -> {dirty, make_cell(X2D, X2, XO, Y2D, Y2, YO)};
             _      -> {clean, Cell2}
         end,
+    Ret = Prefix ++ NC1 ++ ":" ++ NC2,
+    case {St1, St2} of
+        {clean, clean} -> {clean, Ret};
+        _              -> {dirty, Ret}
+    end;
+%% handles old and new rows and cols
+%% handle rows
+make_new_range(Prefix, Cell1, Cell2, 
+               {X1D, X1, Y1D, Y1},
+               {X2D, X2, Y2D, Y2},
+               #refX{obj = {row, {range, {zero, Top, inf, _Bottom}}}}, 
+               {0=_XOffset, YOffset}) ->
+    {St1, NC1} = if Top =< Y1 -> {dirty, make_cell(X1D, X1, 0, Y1D, Y1, YOffset)};
+                    true      -> {clean, Cell1}
+                 end,
+    {St2, NC2} = if Top =< Y2 -> {dirty, make_cell(X2D, X2, 0, Y2D, Y2, YOffset)}; 
+                    true      -> {clean, Cell2}
+                 end,
+    Ret = Prefix ++ NC1 ++ ":" ++ NC2,
+    case {St1, St2} of
+        {clean, clean} -> {clean, Ret};
+        _              -> {dirty, Ret}
+    end;
+%% handle columns
+make_new_range(Prefix, Cell1, Cell2, 
+               {X1D, X1, Y1D, Y1},
+               {X2D, X2, Y2D, Y2},
+               #refX{obj = {column, {range, {Left, zero, _Right, inf}}}}, 
+               {XOffset, 0=_YOffset}) ->
+    {St1, NC1} = if Left =< X1 -> {dirty, make_cell(X1D, X1, XOffset, Y1D, Y1, 0)};
+                    true       -> {clean, Cell1}
+                 end,
+    {St2, NC2} = if Left =< X2 -> {dirty, make_cell(X2D, X2, XOffset, Y2D, Y2, 0)}; 
+                    true       -> {clean, Cell2}
+                 end,
     Ret = Prefix ++ NC1 ++ ":" ++ NC2,
     case {St1, St2} of
         {clean, clean} -> {clean, Ret};
@@ -1451,6 +1517,24 @@ recheck_overlay(Text, {Type, _}, {column, _}, _Disp)
 recheck_overlay(Text, {Type, _}, {row, _}, _Disp)
   when ((Type == column) orelse (Type == range)) ->
     {formula, Text};
+%% handle old and new rows/columns
+%% check a row/row
+recheck_overlay(Text, {row, {range, {X1, zero, X2, inf}}},
+                {row, {range, {XX1, zero, XX2, inf}}} = Tgt, Disp) ->
+    if
+        (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2) ->
+            rewrite((X2 - X1 + 1), Tgt, Text, middle, Disp);
+        true ->
+            {formula, Text}
+    end;
+%% check a col/col
+recheck_overlay(Text, {column, {range, {zero, Y1, inf, Y2}}}, {column, {range, {zero, YY1, inf, YY2}}} = Tgt, Disp) ->
+    if
+        (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
+            rewrite((Y2 - Y1 + 1), Tgt, Text, middle, Disp);
+        true ->
+            {formula, Text}
+    end;
 %% check a row/row
 recheck_overlay(Text, {row, {X1, X2}}, {row, {XX1, XX2}} = Tgt, Disp) ->
     if
@@ -1820,8 +1904,19 @@ read_objs(#refX{site=Site, path=P, obj = O}, direct) ->
     MS = [{#local_obj{path=P, obj = O, _='_'}, [], ['$_']}],
     mnesia:select(trans(Site, local_obj), MS).                            
 
+% handle old and new cols
 objs_inside_ref(#refX{path = P, obj = {page, "/"}}) ->
     [{#local_obj{path = P, _='_'}, [], ['$_']}];
+objs_inside_ref(#refX{path = P, obj = {column, {range, {X1, zero,X2,inf}}}}) ->
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
+                     when MP == P,
+                          X1 =< MX, MX =< X2 -> LO
+               end);
+objs_inside_ref(#refX{path = P, obj = {row, {range, {zero, R1,inf, R2}}}}) ->
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
+                     when MP == P,
+                          R1 =< MY, MY =< R2 -> LO
+               end);
 objs_inside_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
     ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
                      when MP == P,
@@ -1837,7 +1932,7 @@ objs_inside_ref(#refX{path = P, obj = {range, {0,Y1,infinity,Y2}}}) ->
                      when MP == P,
                           0 =< MX, MX =< infinity, 
                           Y1 =< MY, MY =< Y2 -> LO;
-                  (LO=#local_obj{path=MP, obj={row,{MY,MY}}})
+                  (LO=#local_obj{path=MP, obj={row,{range, {zero, MY,inf, MY}}}})
                      when MP == P,
                           Y1 =< MY, MY =< Y2 -> LO
                end);
@@ -1846,7 +1941,7 @@ objs_inside_ref(#refX{path = P, obj = {range, {X1,0,X2,infinity}}}) ->
                      when MP == P,
                           X1 =< MX, MX =< X2, 
                           0 =< MY, MY =< infinity -> LO; 
-                  (LO=#local_obj{path=MP, obj={column,{MX,MX}}})
+                  (LO=#local_obj{path=MP, obj={column,{range, {MX,zero, MX, inf}}}})
                      when MP == P,
                           X1 =< MX, MX =< X2 -> LO
                end);
@@ -1867,10 +1962,10 @@ objs_intersect_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
                      when MP == P,
                           X1 =< MX, MX =< X2,
                           Y1 =< MY, MY =< Y2 -> LO;
-                  (LO=#local_obj{path=MP, obj={row,{MY,MY}}})
+                  (LO=#local_obj{path=MP, obj={row,{range, {zero, MY,inf,MY}}}})
                      when MP == P,
                           Y1 =< MY, MY =< Y2 -> LO;
-                  (LO=#local_obj{path=MP, obj={column, {MX,MX}}})
+                  (LO=#local_obj{path=MP, obj={column, {range, {MX,zero,MX,inf}}}})
                      when MP == P,
                           X1 =< MX, MX =< X2 -> LO;
                   (LO=#local_obj{path=MP, obj={page, _}}) 
@@ -1880,9 +1975,9 @@ objs_intersect_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
     ets:fun2ms(
       fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}})
             when MP == P, MX == X, MY == Y -> LO;
-         (LO=#local_obj{path=MP, obj={column,{MX,MX}}}) 
+         (LO=#local_obj{path=MP, obj={column,{range, {MX,zero,MX,inf}}}}) 
             when MP == P, MX == X -> LO; 
-         (LO=#local_obj{path=MP, obj={row,{MY,MY}}}) 
+         (LO=#local_obj{path=MP, obj={row,{range, {zero,MY,inf,MY}}}}) 
             when MP == P, MY == Y -> LO;
          (LO=#local_obj{path=MP, obj={page, _}}) 
             when MP == P -> LO
@@ -1897,6 +1992,24 @@ objs_intersect_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
                      when MP == P -> LO
                end);
 objs_intersect_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
+                     when MP == P,
+                          R1 =< MY, MY =< R2 -> LO;
+                  (LO=#local_obj{path=MP, obj={column, _}})
+                     when MP == P-> LO;
+                  (LO=#local_obj{path=MP, obj={page, _}}) 
+                     when MP == P -> LO
+               end);
+objs_intersect_ref(#refX{path = P, obj = {column, {range, {X1,zero,X2,inf}}}}) ->
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
+                     when MP == P,
+                          X1 =< MX, MX =< X2 -> LO;
+                  (LO=#local_obj{path=MP, obj={row,_}})
+                     when MP == P -> LO;
+                  (LO=#local_obj{path=MP, obj={page, _}}) 
+                     when MP == P -> LO
+               end);
+objs_intersect_ref(#refX{path = P, obj = {row, {range, {zero,R1,inf,R2}}}}) ->
     ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
                      when MP == P,
                           R1 =< MY, MY =< R2 -> LO;
