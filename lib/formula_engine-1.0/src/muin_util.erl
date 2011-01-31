@@ -197,14 +197,16 @@ walk_path(Currloc, Dest) ->
                 Currloc,
                 string:tokens(Dest, "/")).
 
+walk_zpath(_Path, [{zseg, _, _} | _T] = Dest) ->
+    Dest;
 walk_zpath(Path, ZPath) ->
     Len = length(Path),
-    Zips = lists:duplicate(Len, "seg"),
+    Zips = lists:duplicate(Len, seg),
     Segs = lists:zip(Zips, Path),
     lists:foldl(fun({seg, "."}, Stk)    -> Stk;
                    ({seg, ".."}, [])    -> [];
                    ({seg, ".."}, Stk)   -> hslists:init(Stk);
-                   (Word, Stk) ->lists:append(Stk, [Word])
+                   (Word, Stk) -> lists:append(Stk, [Word])
                 end,
                 Segs,
                 ZPath).
