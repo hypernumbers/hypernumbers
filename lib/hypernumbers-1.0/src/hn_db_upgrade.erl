@@ -27,14 +27,17 @@
 % * git pull the new source (DO NOT RUN ANY BUILD SCRIPT)
 % * get a shell
 % * run 'hypernumbers_sup:suspend_mochi().'
-% * compile hn_db_upgrade, hn_db_api and hn_db_wu with a shell command like
-%   - 'c(hn_db_upgrade, [{i, "../include"}]).'
-%   - load them with 'l(hn_db_upgrade)' etc...
+% * compile hn_db_upgrade, hn_db_api and hn_db_wu from the command line in ebin/
+%   - 'erlc ../src/hn_db_upgrade.erl -I ../include'
+%   - then in the shell load them with 'l(hn_db_upgrade)' etc...
 % run 'hn_db_upgrade:upgrade_pages_2011_01_26().'
 % run 'hn_db_upgrade:upgrade_local_obj_2011_01_26().'
 % stop the server
 % run './hn lexer-parser'
 % restart the server
+% mebbies it will cause the server to fail with memory overflow - if it does
+% just rerun the upgrade. The memory allocator doubles on each request so a restart
+% resets it.
 
 % adds a type field to local obj
 upgrade_local_obj_2011_01_26() ->
