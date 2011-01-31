@@ -6,7 +6,7 @@ PATH_COMP  = ([a-zA-Z0-9_\-~]+)
 
 Rules.
 
-{PATH_COMP}  : {token,     {path,  TokenChars}}.
+{PATH_COMP}  : {token,     {path,  string:to_lower(TokenChars)}}.
 \[           : {token,     {open,  TokenChars}}.
 \]           : {token,     {close, TokenChars}}.
 \/           : {token,     {slash, TokenChars}}.
