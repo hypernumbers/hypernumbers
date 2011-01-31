@@ -37,17 +37,18 @@ Endsymbol  '$end'.
 
 Expr -> Segs slash Ref : tidy(flatpack('$1'),    type('$3')).
 Expr -> Segs slash     : tidy(flatpack('$1'),   {page, "/"}).
-Expr -> Seg  slash Ref : tidy(flatpack(['$1']),  type('$3')).
-Expr -> Seg  slash     : tidy(flatpack(['$1']), {page, "/"}). % make the seg a list!
+Expr -> Seg slash Ref  : tidy(flatpack(['$1']),  type('$3')).
+Expr -> Seg slash      : tidy(flatpack(['$1']), {page, "/"}). % make the seg a list!
 Expr -> slash Ref      : tidy({url, []},         type('$2')).
 Expr -> slash          : tidy({url, []},        {page, "/"}).
 
+Segs -> Segs Seg : join('$1', '$2').
 Segs -> Seg Seg  : join('$1', '$2').
 
 Seg -> Path : '$1'.
 Seg -> Cond : '$1'.     
 
-Path -> slash path : seg('$2').
+Path -> slash path    : seg('$2').
 Path -> slash cellref : seg('$2').
 
 Cond -> slash Clause : '$2'.
@@ -61,18 +62,18 @@ Comp -> path  : '$1'.
 Comp -> Ref   : '$1'.
 Comp -> slash : '$1'.
 
-Partfile -> path    : '$1'.
-Partfile -> cellref : '$1'.
-
-File -> File fullstop Partfile     : make_filename('$1', '$3').
-File -> Partfile fullstop Partfile : make_filename('$1', '$3').
-
 Ref -> File    : '$1'.
 
 Ref -> cellref : '$1'.
 Ref -> row     : '$1'.
 Ref -> col     : '$1'.
 Ref -> range   : '$1'.
+
+Partfile -> path    : '$1'.
+Partfile -> cellref : '$1'.
+
+File -> File fullstop Partfile     : make_filename('$1', '$3').
+File -> Partfile fullstop Partfile : make_filename('$1', '$3').
 
 Erlang code.
 %% Erlang code follows here
@@ -106,10 +107,19 @@ fp([], Type, Acc)                 -> {Type, lists:reverse(Acc)};
 fp([{seg,  Seg}  | T], Type, Acc) -> fp(T, Type, [Seg | Acc]);
 fp([{zseg, Zseg} | T], _, Acc)    -> fp(T, gurl, [Zseg | Acc]).
 
-join(A, B) -> [A, B].
+join(A, B) when is_list(A) ->
+    io:format("Joining (2) ~p and ~p~n", [A, B]),
+    lists:concat([A, [B]]);
+join(A, B) -> io:format("Joining ~p and ~p~n", [A, B]),
+              [A, B].
 
-seg({path, Chars})    -> {seg, Chars};
-seg({cellref, Chars}) -> {seg, Chars}.
+flit(A) -> io:format("Flitting ~p~n", [A]),
+           A.
+
+seg({path, Chars})    -> io:format("Seg is a path ~p~n", [Chars]),
+                         {seg, Chars};
+seg({cellref, Chars}) -> io:format("Seg is a cellref ~p~n", [Chars]),
+                         {seg, Chars}.
 
 type({_, Chars}) -> hn_util:parse_ref(Chars).
 
@@ -124,8 +134,15 @@ z([{_, Txt} | T], Acc) -> z(T, [Txt | Acc]).
 make_refX("http://"++URL) ->
     {Site, PathAndRef} = lists:split(string:chr(URL, $/) - 1, URL),
     {ok, Toks, 1} = url_lexer:lex(PathAndRef),
-    {ok, {Type, Path, Ref}} = parse(Toks),
-    #refX{site = "http://" ++ Site, type = Type, path = Path, obj = Ref}.
+        Ret = parse(Toks),
+    case Ret of
+        {ok, {Type, Path, Ref}} -> 
+            #refX{site = "http://" ++ Site, type = Type, path = Path, obj = Ref};
+        {error, Err} -> error_logger:error_msg("url parsing of ~p~n~p~n"
+                                               ++ "failed with ~p~n",
+                                               [URL, Toks, Err]),
+                        exit(wiggo)
+    end.
 
 %%% Tests:
 -include_lib("eunit/include/eunit.hrl").
@@ -230,5 +247,6 @@ filename_test_() ->
 
 prod_test_() ->
     [
-     ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/sheet1/A13") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "sheet1"], {cell, {1, 13}}})
+     ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/sheet1/A13") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "sheet1"], {cell, {1, 13}}}),
+               ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/a_quis_custodiet_custodiens/sheet1/") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "a_quis_custodiet_custodiens", "sheet1"], {page, "/"}})
      ].
