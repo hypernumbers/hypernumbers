@@ -1125,9 +1125,10 @@ add_ref(Ref, [KV|Tail], JSON) ->
 
 add_ref1(#refX{obj = {page,"/"}}, {Name, Val}, JSON) ->
     dh_tree:set(["page", Name], Val, JSON);
-add_ref1(#refX{obj = {cell, {X, Y}}}, Data, JSON) ->
+% this clause also handles old fashioned rows and columns from file import
+add_ref1(#refX{obj = {Ref, {X, Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
-    dh_tree:set(["cell", itol(X), itol(Y), Name], Val, JSON);
+    dh_tree:set([atom_to_list(Ref), itol(X), itol(Y), Name], Val, JSON);
 add_ref1(#refX{obj = {column, {range, {X1, zero, X2, inf}}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set(["column", itol(X1), itol(X2), Name], Val, JSON);
