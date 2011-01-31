@@ -1982,24 +1982,6 @@ objs_intersect_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
          (LO=#local_obj{path=MP, obj={page, _}}) 
             when MP == P -> LO
       end);
-objs_intersect_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
-                     when MP == P,
-                          X1 =< MX, MX =< X2 -> LO;
-                  (LO=#local_obj{path=MP, obj={row,_}})
-                     when MP == P -> LO;
-                  (LO=#local_obj{path=MP, obj={page, _}}) 
-                     when MP == P -> LO
-               end);
-objs_intersect_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
-                     when MP == P,
-                          R1 =< MY, MY =< R2 -> LO;
-                  (LO=#local_obj{path=MP, obj={column, _}})
-                     when MP == P-> LO;
-                  (LO=#local_obj{path=MP, obj={page, _}}) 
-                     when MP == P -> LO
-               end);
 objs_intersect_ref(#refX{path = P, obj = {column, {range, {X1,zero,X2,inf}}}}) ->
     ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
                      when MP == P,
@@ -2010,6 +1992,24 @@ objs_intersect_ref(#refX{path = P, obj = {column, {range, {X1,zero,X2,inf}}}}) -
                      when MP == P -> LO
                end);
 objs_intersect_ref(#refX{path = P, obj = {row, {range, {zero,R1,inf,R2}}}}) ->
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
+                     when MP == P,
+                          R1 =< MY, MY =< R2 -> LO;
+                  (LO=#local_obj{path=MP, obj={column, _}})
+                     when MP == P-> LO;
+                  (LO=#local_obj{path=MP, obj={page, _}}) 
+                     when MP == P -> LO
+               end);
+objs_intersect_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
+                     when MP == P,
+                          X1 =< MX, MX =< X2 -> LO;
+                  (LO=#local_obj{path=MP, obj={row,_}})
+                     when MP == P -> LO;
+                  (LO=#local_obj{path=MP, obj={page, _}}) 
+                     when MP == P -> LO
+               end);
+objs_intersect_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
     ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
                      when MP == P,
                           R1 =< MY, MY =< R2 -> LO;
