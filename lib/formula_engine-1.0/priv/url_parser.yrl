@@ -243,5 +243,8 @@ prod_test_() ->
      
                ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/a_quis_custodiet_custodiens/sheet1/") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "a_quis_custodiet_custodiens", "sheet1"], {page, "/"}}),
      
-               ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/a_quis_custodiet_custodiens/sheet1/A13") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "a_quis_custodiet_custodiens", "sheet1"], {cell, {1, 13}}})
+               ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/a_quis_custodiet_custodiens/sheet1/A13") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "a_quis_custodiet_custodiens", "sheet1"], {cell, {1, 13}}}),
+
+                    ?_assert(make_refX("http://hypernumbers.dev:9000/_sync/tell/anonymous|_2a087da0d62cd0840f9d1a5667ed6646|never|51cef8208e98daca95be750d8c26faa6/") == {refX, "http://hypernumbers.dev:9000", url, ["_sync","tell","anonymous|_2a087da0d62cd0840f9d1a5667ed6646|never|51cef8208e98daca95be750d8c26faa6"], {page, "/"}})
+
      ].

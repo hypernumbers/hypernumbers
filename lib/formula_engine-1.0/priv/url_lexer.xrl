@@ -5,8 +5,7 @@ WORD = ([a-zA-Z]+)
 
 WHITESPACE = ([\000-\s]*)
 
-PATH_COMP  = ([a-zA-Z0-9_\-~]+)
-
+PATH_COMP  = ([a-zA-Z0-9_\-~|]+)
 
 A1_REF_REL  = ({WORD})({INT})
 A1_REF_FIX  = (\$)({WORD})(\$)({INT})
