@@ -9,7 +9,7 @@
          test_xfl/0,
          run_formula/2,
          run_code/2,
-         zeval/3
+         zeval_from_zinf/3
         ]).
 
 -define('htmlbox', $h,$t,$m,$l,$.,$b,$o,$x,$.).
@@ -703,17 +703,24 @@ m2(Site, [S | T1], [{zseg, Z, _} | T2], Htap)   ->
         nomatch -> nomatch
     end.
 
+% the zinf server has no context to execute at this stage!
+zeval_from_zinf(Site, Path, Toks) ->
+    zeval2(Site, Path, Toks, 1, 1).
+
+zeval(Site, Path, Toks) ->
+    X = ?mx,
+    Y = ?my,
+    zeval2(Site, Path, Toks, X, Y).
+
 % the execution context for expressions is stored in the process dictionary
 % so here you need to rip it out and then stick it back in
 % (not good, Damn you Hasan!).
-zeval(Site, Path, Toks) ->
+zeval2(Site, Path, Toks, X, Y) ->
     % capture the process dictionary (it will get gubbed!)
     OldContext = get(),
-    X = ?mx,
-    Y = ?my,
     % we run in the context of call 'a1' - this is because z-order expressions
     % do not support r[]c[] format cell references (or is it vice-versa?)
-    RefX = #refX{site = Site, path = Path, obj = {cell, {Y, X}}},
+    RefX = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
     % no array context (fine) or security context (erk!)
     RTI = hn_db_wu:refX_to_rti(RefX, nil, false),
     Return = case catch(xfl_parser:parse(Toks)) of
@@ -723,7 +730,7 @@ zeval(Site, Path, Toks) ->
                                 case Rs2 of
                                     [true]  -> match;
                                     [false] -> nomatch;
-                                    _       -> ?ERR_VAL
+                                    _       -> ?ERRVAL_VAL
                                 end;
                  ?syntax_err -> ?error_in_formula
              end,

@@ -15,6 +15,7 @@
 -include("keyvalues.hrl").
 -include("errvals.hrl").
 
+-define(E, error_logger:error_msg).
 -define(sq_bra, 91).
 -define(sq_ket, 93).
 
@@ -228,7 +229,14 @@ match(#refX{obj = {cell, {X, Y}}}) ->
             match_1(List, X, Y, [])
     end.
 
+% old and new rows and cols
 match_1([], _X, _Y, Acc) -> Acc;
+match_1([{{row, {range, {zero, Y1, inf, Y2}}}, Idxs} | T], X, Y, Acc)
+  when Y >= Y1 andalso Y =< Y2 ->
+    match_1(T, X, Y, [Idxs | Acc]);
+match_1([{{column, {range, {X1, zero, X2, inf}}}, Idxs} | T], X, Y, Acc)
+  when X >= X1 andalso X =< X2 ->
+    match_1(T, X, Y, [Idxs | Acc]);
 match_1([{{row, {Y1, Y2}}, Idxs} | T], X, Y, Acc)
   when Y >= Y1 andalso Y =< Y2 ->
     match_1(T, X, Y, [Idxs | Acc]);
@@ -301,9 +309,9 @@ iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
      case gb_trees:next(Iter) of
          none       -> lists:flatten(Acc);
          {K, V, I2} -> NewAcc = case match_seg(K, H, S, Htap) of
-                                    match   -> match_tree(V, S, T, Fun, [H | Htap]);
+                                    match -> match_tree(V, S, T, Fun, [H | Htap]);
                                     nomatch -> [];
-                                    ?ERRVAL_VAL -> [?ERRVAL_VAL]
+                                    ?ERRVAL_VAL -> []
                                 end,
                        iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
      end.
@@ -317,14 +325,22 @@ match_seg(selector,    _S,  _Site, _Htap) -> nomatch.
 run_zeval(Site, Path, Z) ->
     Z2 = string:strip(string:strip(Z, right, ?sq_ket), left, ?sq_bra),
     {ok, Toks} = xfl_lexer:lex(Z2, {1, 1}),
-    try
-        muin:zeval(Site, Path, Toks)
-    catch
-        error:
-        _Err  -> ?ERRVAL_VAL;
-        exit:
-        _Exit -> ?ERRVAL_VAL
-    end.
+    % need to set up the process dictionary
+    Fun = fun() -> try
+                       muin:zeval_from_zinf(Site, Path, Toks)
+                   catch
+                       error:
+                       Err  -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
+                                  [Toks, Site, Path, Err]),
+                               ?ERRVAL_VAL;
+                       exit:
+                       Exit -> ?E("Zseg ~p on ~p and ~p failed: ~p~n",
+                                  [Toks, Site, Path, Exit]),
+                               ?ERRVAL_VAL
+                   end
+          end,
+    {atomic, Ret} = mnesia:transaction(Fun),
+    Ret.
 
 %%%===================================================================
 %%% EUnit Tests
