@@ -68,7 +68,9 @@ upgrade_pages_2011_01_26() ->
                                   Items
                           end,
                    Ret = mnesia:activity(transaction, Fun2),
-                   hn_db_api:write_kv(Site, ?pages, Ret)
+                   io:format("Ret is ~p~n", [Ret]),
+                   io:format("Page is ~p~n", [?pages]),
+                   ok = hn_db_api:write_kv(Site, ?pages, Ret)
            end,                        
     lists:foreach(Fun1, Sites),
     ok.
