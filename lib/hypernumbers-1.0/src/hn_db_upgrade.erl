@@ -60,7 +60,7 @@ upgrade_pages_2011_01_26() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
                    Fun2 = fun() ->
-                                  Head = #local_obj{idx ='_', path = '$1', obj= '_'},
+                                  Head = #local_obj{idx ='_', type = '_', path = '$1', obj= '_'},
                                   Guard = [],
                                   Match = ['$1'],
                                   Items = hslists:uniq(mnesia:dirty_select(hn_db_wu:trans(Site, local_obj), [{Head, Guard, Match}])),
