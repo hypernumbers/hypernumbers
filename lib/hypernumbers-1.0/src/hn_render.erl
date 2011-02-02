@@ -170,14 +170,17 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
               _                  -> Value
           end,
     Cell = tconv:to_b26(C) ++ integer_to_list(R),
-    ODiv = case Inp of
-               "inline" -> "<div class='inline' data-ref='"++Cell++"' ";
-               _        -> "<div  data-ref='"++Cell++"'"
-           end,
     Style = io_lib:format(
               "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s'",
               [X, Y, W, H, Css]),
-    [ODiv,Style,">", Val, "</div>"].
+        case Inp of
+            "inline" ->
+                "<div class='hn_padded' "++Style ++">"++
+                    "<div class='inline' data-ref='"++Cell++"'>"++Val++
+                    "</div></div>";
+            _        ->
+                "<div data-ref='"++Cell++"'"++Style++">"++Val++"</div>"
+        end.
 
 -spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean(). 
 order_objs({RA,_}, {RB,_}) ->
