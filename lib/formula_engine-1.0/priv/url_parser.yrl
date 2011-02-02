@@ -1,3 +1,4 @@
+%%% -*- mode: erlang -*-
 %%% @doc cond parser parses condition clauses
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 
@@ -83,7 +84,7 @@ Erlang code.
 
 %%% Functions used in parsing
 
-fix_up(A, B) -> B.
+fix_up(_A, B) -> B.
 
 tidy({Type,  Path},  {page, "/"}   = O) -> {Type, Path, O};
 tidy({Type,  Path},  {cell, _}     = O) -> {Type, Path, O};
@@ -248,6 +249,8 @@ prod_test_() ->
 
      ?_assert(make_refX("http://hypernumbers.dev:9000/./[(or(./a1 > 1, ./a2 > 2))]/a3") == {refX, "http://hypernumbers.dev:9000", gurl, [".","[(or(./a1>1,./a2>2))]"], {cell, {1, 3}}}),
 
-?_assert(make_refX("http://hypernumbers.com/_sync/seek/?return=http%3A%2F%2Fbi27.tiny.hn%2F%3Fview%3Ddemopage") == {refX, "http://hypernumbers.com", url, ["_sync", "seek"], {filename, "?return=http%3A%2F%2Fbi27.tiny.hn%2F%3Fview%3Ddemopage"}})
+     ?_assert(make_refX("http://hypernumbers.com/_sync/seek/?return=http%3A%2F%2Fbi27.tiny.hn%2F%3Fview%3Ddemopage") == {refX, "http://hypernumbers.com", url, ["_sync", "seek"], {page, "/"}}),
+
+     ?_assert(make_refX("http://hypernumbers.com/_ping/?spoor=3b268089bf028bf5&return=http://support.hypernumbers.com/helpoverview/overview/") == {refX, "http://hypernumbers.com", url, ["_ping"], {page, "/"}})
      
      ].

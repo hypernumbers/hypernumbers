@@ -51,6 +51,8 @@ Rules.
 \/           : {token,     {slash,      TokenChars}}.
 \,           : {token,     {comma,      TokenChars}}.
 \.           : {token,     {fullstop,   TokenChars}}.
+\?           : {token,     {question,   TokenChars}}.
+\#           : {token,     {hash,       TokenChars}}.
 % now scoop up every other token that is valid in an Excel expression
 
 %% Discard whitespace:
@@ -87,8 +89,13 @@ post_process([{close, _} | T], open, Acc1, Acc2) ->
     post_process(T, closed, [], [NewAcc |  Acc2]);
 post_process([{_, H} | T], open, Acc1, Acc2) ->
     post_process(T, open, [H | Acc1], Acc2);
+% if we hit a question mark or has when we are open we can ditch the rest of
+% the string 'cos it is them ?a=b or #anchor bits at the end
+post_process([{Type, _H} | _T], closed, [], Acc2)
+  when Type == question orelse Type == has ->
+    post_process([], closed, [], Acc2);
 post_process([H | T], closed, [], Acc2) ->
-    post_process(T, closed, [] , [H | Acc2]).
+    post_process(T, closed, [], [H | Acc2]).
 
 %%% Tests:
 -include_lib("eunit/include/eunit.hrl").
