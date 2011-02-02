@@ -207,6 +207,7 @@
           rawview,
           return,
           status,
+          stamp,
           template,
           templates,
           updates,

@@ -83,9 +83,9 @@ handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
-handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=QReturn}) 
+handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=QReturn, stamp=QStamp}) 
   when QReturn /= undefined ->
-    Env2 = process_sync(Cmd, Env, QReturn),
+    Env2 = process_sync(Cmd, Env, QReturn, QStamp),
     respond(303, Env2),
     throw(ok);
 
@@ -1317,15 +1317,15 @@ pages_to_json(X, Dict) ->
 
 -spec process_query(#env{}) -> #qry{}. 
 process_query(#env{mochi = Mochi}) ->
-    Lst = Mochi:parse_qs(),
-    process_query_(Lst, #qry{}).
+    List = Mochi:parse_qs(),
+    process_query_(List, #qry{}).
     
 process_query_([], Qry) -> Qry;
 process_query_([{Param, Value} | Rest], Qry) ->
     Qry2 = case catch list_to_existing_atom(Param) of
              P when is_atom(P) ->
                  case ms_util2:is_in_record(qry, P) of
-                     true -> 
+                     true ->
                          Idx = ms_util2:get_index(qry, P) + 1,
                          setelement(Idx, Qry, Value);
                      false ->
@@ -1381,7 +1381,7 @@ process_user(Site, E=#env{mochi = Mochi}) ->
             cleanup(Site, cur_url(Site, E), E)
     end.
 
-%% Clears out auth cookie on currend and main server.
+%% Clears out auth cookie on current and main server.
 -spec cleanup(string(), string(), #env{}) -> no_return().
 cleanup(Site, Return, E) ->
     Cookie = hn_net_util:kill_cookie("auth"),
@@ -1420,17 +1420,17 @@ post_login(Site, Uid, Stamp, Age, Env, Return) ->
     Env2 = Env#env{uid = Uid, headers = [Cookie | Env#env.headers]},
     QStamp = mochiweb_util:quote_plus(Stamp),
     Redir = case try_sync(["tell", QStamp], Site, Return) of
-               on_sync -> Return;
+               on_sync    -> Return;
                {redir, R} -> R end,
     {Env2, Redir}.
 
-process_sync(["tell", QStamp], E, QReturn) ->
+process_sync(["tell"], E, QReturn, QStamp) ->
     Stamp = mochiweb_util:unquote(QStamp),
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Return = mochiweb_util:unquote(QReturn),
     Redirect = {"Location", Return},
     E#env{headers = [Cookie, Redirect | E#env.headers]};
-process_sync(["seek"], E=#env{mochi=Mochi}, QReturn) ->
+process_sync(["seek"], E=#env{mochi=Mochi}, QReturn, undefined) ->
     Stamp = case Mochi:get_cookie_value("auth") of
         undefined -> passport:temp_stamp();
         S         -> S end,
@@ -1439,10 +1439,10 @@ process_sync(["seek"], E=#env{mochi=Mochi}, QReturn) ->
     #refX{site = OrigSite} = hn_util:url_to_refX(Return),
     QStamp = mochiweb_util:quote_plus(Stamp),
     Redir = hn_util:strip80(OrigSite) ++ 
-        "/_sync/tell/"++QStamp++"/?return="++QReturn,
+        "/_sync/tell/?return="++QReturn++"&stamp="++QStamp,
     Redirect = {"Location", Redir},
     E#env{headers = [Cookie, Redirect | E#env.headers]};
-process_sync(["reset"], E, QReturn) ->
+process_sync(["reset"], E, QReturn, undefined) ->
     Cookie = hn_net_util:kill_cookie("auth"),
     Return = mochiweb_util:unquote(QReturn),
     Redirect = {"Location", Return},
