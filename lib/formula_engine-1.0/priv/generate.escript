@@ -8,10 +8,8 @@
 -define(FRONTENDS, ["russian", "french", "german", 
                     "italian", "spanish", "portuguese"]).
 
-
 main(["force"]) -> generate(true);
 main(_) -> generate(false).
-
 
 generate(ForceCompile) ->
     Gen_lex = fun(X) -> gen_lex(X, ForceCompile) end,
@@ -26,7 +24,6 @@ generate(ForceCompile) ->
 
     ok = Gen_lex(url_lexer),
     ok = Gen_parse(url_parser),
-    ok = Gen_parse(url_parser2),
 
     ok = Gen_lex(webcontrols_lexer),
     ok = Gen_parse(webcontrols_parser),
@@ -55,9 +52,9 @@ gen_parse(Name, Force) ->
     Dest = [?DESTDIR, Name, ".erl"],
     case Force or needs_update([Source], Dest) of
         true ->
-            {ok, Lexer} = yecc:file(Source, [{verbose, true}]),
-            ok = make_private(Lexer),
-            ok = file:rename(Lexer, Dest),
+            {ok, Parser} =  yecc:file(Source, [{verbose, true}]),
+            ok = make_private(Parser),
+            ok = file:rename(Parser, Dest),
             io:format(" *** Generated Parser ~s ***~n", [Name]),
             ok;
         false ->
