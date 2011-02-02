@@ -55,9 +55,7 @@ indirect([S, R1]) ->
               [return_errors, {all, fun muin_collect:is_string/1}]),
     Bool = col([R1], [eval_funs, fetch, area_first, {cast, bool}],
                [return_errors, {all, fun is_boolean/1}]),
-    Ret = muin_util:apply([Str, Bool], fun indirect_/2),
-    io:format("in indirect Ret is ~p~n", [Ret]),
-    Ret.
+    muin_util:apply([Str, Bool], fun indirect_/2).
 
 indirect_([Str], [_Bool]) ->
     case muin:parse(Str, {muin:context_setting(col),
@@ -65,8 +63,7 @@ indirect_([Str], [_Bool]) ->
         {ok, Ast} ->
             case muin:external_eval(Ast) of
                 X when ?is_cellref(X); ?is_rangeref(X) -> X;
-                _Else                                  -> io:format("_Else is ~p~n", [_Else]),
-                                                          ?ERRVAL_REF
+                _Else                                  -> ?ERRVAL_REF
             end;
         {error, syntax_error} -> ?ERRVAL_REF
     end.
