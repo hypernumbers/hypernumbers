@@ -1,3 +1,6 @@
+%%% -*- mode: erlang -*-
+%%% @doc    Lexer for urls.
+%%% @author gordon@hypernumbers
 Definitions.
 
 INT = ([0-9]+)
@@ -42,20 +45,22 @@ Rules.
 {A1_COL_RANGE} : {token, col_range(TokenChars, TokenLine)}.
 {A1_ROW_RANGE} : {token, row_range(TokenChars, TokenLine)}.
 
-{PATH_COMP}  : {token,     {path,     TokenChars}}.
-\[           : {token,     {open,     TokenChars}}.
-\]           : {token,     {close,    TokenChars}}.
-\/           : {token,     {slash,    TokenChars}}.
-\,           : {token,     {comma,    TokenChars}}.
-\.           : {token,     {fullstop, TokenChars}}.
+{PATH_COMP}  : {token,     {path,       TokenChars}}.
+\[           : {token,     {open,       TokenChars}}.
+\]           : {token,     {close,      TokenChars}}.
+\/           : {token,     {slash,      TokenChars}}.
+\,           : {token,     {comma,      TokenChars}}.
+\.           : {token,     {fullstop,   TokenChars}}.
+% now scoop up every other token that is valid in an Excel expression
 
 %% Discard whitespace:
 {WHITESPACE} : skip_token.
 
 \n           : {end_token, {'$end', TokenLine}}.
 
-%% Anything not covered by rules above is invalid.
-.  : {token, {invalid_token, TokenLine, TokenChars}}.
+%% Excel can get most things inside expression so hoover 'em up and let
+%% the Excel parser take the strain later on
+.  : {token, {excel_expr, TokenChars}}.
 
 Erlang code.
 
@@ -63,7 +68,8 @@ Erlang code.
          lex/1
         ]).
 
-lex(String) -> string(String).
+lex(String) -> {ok, Toks, 1} = string(String),
+               {ok, post_process(Toks, closed, [], [])}.
 
 to_cellref(Chars, _line) -> {cellref, Chars}.
 
@@ -72,6 +78,17 @@ finite_range(Chars, _Line) -> {range, Chars}.
 col_range(Chars, _Line) -> {col, Chars}.
 
 row_range(Chars, _Line) -> {row, Chars}.
+
+post_process([], _status, [], Acc2) -> lists:reverse(Acc2);
+post_process([{open, _} | T], closed, Acc1, Acc2) ->
+    post_process(T, open, Acc1, Acc2);
+post_process([{close, _} | T], open, Acc1, Acc2) ->
+    NewAcc = {zseg, lists:flatten(lists:reverse(Acc1))},
+    post_process(T, closed, [], [NewAcc |  Acc2]);
+post_process([{_, H} | T], open, Acc1, Acc2) ->
+    post_process(T, open, [H | Acc1], Acc2);
+post_process([H | T], closed, [], Acc2) ->
+    post_process(T, closed, [] , [H | Acc2]).
 
 %%% Tests:
 -include_lib("eunit/include/eunit.hrl").
