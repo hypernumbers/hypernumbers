@@ -1430,7 +1430,10 @@ process_sync(["tell"], E, QReturn, undefined) ->
 process_sync(["tell"], E, QReturn, QStamp) ->
     io:format("In process_sync for 'tell' with QReturn of ~p and QStamp of ~p~n",
               [QReturn, QStamp]),
-    Stamp = mochiweb_util:unquote(QStamp),
+    Stamp = case mochiweb_util:unquote(QStamp) of
+                []    -> passport:temp_stamp();
+                Other -> Other
+            end,
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Return = mochiweb_util:unquote(QReturn),
     Redirect = {"Location", Return},
