@@ -1424,6 +1424,8 @@ post_login(Site, Uid, Stamp, Age, Env, Return) ->
                {redir, R} -> R end,
     {Env2, Redir}.
 
+process_sync(["tell"], E, QReturn, undefined) ->
+    process_sync(["tell"], E, QReturn, []);
 process_sync(["tell"], E, QReturn, QStamp) ->
     Stamp = mochiweb_util:unquote(QStamp),
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
