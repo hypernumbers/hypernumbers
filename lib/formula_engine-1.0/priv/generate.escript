@@ -26,6 +26,7 @@ generate(ForceCompile) ->
 
     ok = Gen_lex(url_lexer),
     ok = Gen_parse(url_parser),
+    ok = Gen_parse(url_parser2),
 
     ok = Gen_lex(webcontrols_lexer),
     ok = Gen_parse(webcontrols_parser),
@@ -41,7 +42,7 @@ gen_lex(Name, Force) ->
     Dest = [?DESTDIR, Name, ".erl"],
     case Force or needs_update([Source], Dest) of
         true ->
-            {ok, Lexer} = leex:file(Source),
+            {ok, Lexer} = leex:file(Source, [{verbose, true}]),
             ok = file:rename(Lexer, Dest),
             io:format(" *** Generated Lexer ~s ***~n", [Name]),
             ok;
@@ -54,7 +55,7 @@ gen_parse(Name, Force) ->
     Dest = [?DESTDIR, Name, ".erl"],
     case Force or needs_update([Source], Dest) of
         true ->
-            {ok, Lexer} = yecc:file(Source),
+            {ok, Lexer} = yecc:file(Source, [{verbose, true}]),
             ok = make_private(Lexer),
             ok = file:rename(Lexer, Dest),
             io:format(" *** Generated Parser ~s ***~n", [Name]),
