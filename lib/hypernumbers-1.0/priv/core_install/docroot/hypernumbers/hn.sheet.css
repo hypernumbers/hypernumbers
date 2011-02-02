@@ -64,22 +64,21 @@ html,body {
 }
 
 .dialog .footer {
-    height             : 14pt;
+    min-height         : 18pt; /* TODO fix for columnmanager */
 }
 
 .resize {
     float              : right;
     vertical-align     : bottom;
-    margin-right       : 2px;
+    padding            : 2px;
     font-size          : 12pt;
     font-weight        : bold;
     color              : black;
-    cursor             : auto;
+    cursor             : se-resize;
 }
 
 .resize:hover {
     color              : #666;
-    cursor             : se-resize;
 }
 
 #functions, #columnmanagerdialog, #lineview {
