@@ -63,6 +63,25 @@ html,body {
     border             : solid thin #808080;
 }
 
+.dialog .footer {
+    height             : 14pt;
+}
+
+.resize {
+    float              : right;
+    vertical-align     : bottom;
+    margin-right       : 2px;
+    font-size          : 12pt;
+    font-weight        : bold;
+    color              : black;
+    cursor             : auto;
+}
+
+.resize:hover {
+    color              : #666;
+    cursor             : se-resize;
+}
+
 #functions, #columnmanagerdialog, #lineview {
     position           : static; /* changed dynamically */
     overflow           : visible;
