@@ -1402,6 +1402,7 @@ cur_url(Site, #env{mochi=Mochi}) ->
 -spec try_sync([string()], string(), string()) 
                -> {redir, string()} | on_sync.
 try_sync(Cmd0, Site, Return) ->
+    io:format("In try_sync for ~p with Return of ~p~n", [Cmd0, Return]),
     case application:get_env(hypernumbers, sync_url) of
         {ok, SUrl} when SUrl /= Site ->
             Cmd = string:join(Cmd0, "/"),
@@ -1427,12 +1428,15 @@ post_login(Site, Uid, Stamp, Age, Env, Return) ->
 process_sync(["tell"], E, QReturn, undefined) ->
     process_sync(["tell"], E, QReturn, []);
 process_sync(["tell"], E, QReturn, QStamp) ->
+    io:format("In process_sync for 'tell' with QReturn of ~p and QStamp of ~p~n",
+              [QReturn, QStamp]),
     Stamp = mochiweb_util:unquote(QStamp),
     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
     Return = mochiweb_util:unquote(QReturn),
     Redirect = {"Location", Return},
     E#env{headers = [Cookie, Redirect | E#env.headers]};
 process_sync(["seek"], E=#env{mochi=Mochi}, QReturn, undefined) ->
+    io:format("In process_sync for 'seek' with QReturn of ~p~n", [QReturn]),
     Stamp = case Mochi:get_cookie_value("auth") of
         undefined -> passport:temp_stamp();
         S         -> S end,
@@ -1445,6 +1449,7 @@ process_sync(["seek"], E=#env{mochi=Mochi}, QReturn, undefined) ->
     Redirect = {"Location", Redir},
     E#env{headers = [Cookie, Redirect | E#env.headers]};
 process_sync(["reset"], E, QReturn, undefined) ->
+    io:format("In process_sync for 'reset' with QReturn of ~p~n", [QReturn]),
     Cookie = hn_net_util:kill_cookie("auth"),
     Return = mochiweb_util:unquote(QReturn),
     Redirect = {"Location", Return},
