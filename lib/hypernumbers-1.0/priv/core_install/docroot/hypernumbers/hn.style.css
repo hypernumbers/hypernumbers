@@ -537,11 +537,16 @@ label {
 
 }
 
+.hn_padded, #clinput { 
+             padding: 3px;
+             }
+
 .inline { 
    -moz-border-radius: 4px 4px 4px 4px;
    -webkit-border-radius: 4px 4px 4px 4px;
-   border: 1px solid #bbb;
-   padding: 0px 1px 0px 1px;
+   height: 92%;
+   border: 1px solid #ddd;
+   padding: 1px 2px 1px 2px;
 }
 
 #clinput div { 
