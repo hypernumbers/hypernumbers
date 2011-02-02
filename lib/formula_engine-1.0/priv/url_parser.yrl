@@ -83,8 +83,7 @@ Erlang code.
 
 %%% Functions used in parsing
 
-fix_up(A, B) -> io:format("In fixup A is ~p B is ~p~n", [A, B]),
-                B.
+fix_up(A, B) -> B.
 
 tidy({Type,  Path},  {page, "/"}   = O) -> {Type, Path, O};
 tidy({Type,  Path},  {cell, _}     = O) -> {Type, Path, O};
@@ -100,31 +99,26 @@ fp([], Type, Acc)                 -> {Type, lists:reverse(Acc)};
 fp([{seg,  Seg}  | T], Type, Acc) -> fp(T, Type, [Seg | Acc]);
 fp([{zseg, Zseg} | T], _, Acc)    -> fp(T, gurl, [Zseg | Acc]).
 
-join(A, B) when is_list(A) -> io:format("In join (1) A is ~p B is ~p~n", [A, B]),
-                              lists:concat([A, [B]]);
-join(A, B)                 -> io:format("In join (2) A is ~p B is ~p~n", [A, B]),
-                              [A, B].
+join(A, B) when is_list(A) -> lists:concat([A, [B]]);
+join(A, B)                 -> [A, B].
 
 seg({fullstop, Chars}) -> {seg, Chars};
 seg({path, Chars})     -> {seg, Chars};
 seg({cellref, Chars})  -> {seg, Chars}.
 
-type(List) when is_list(List) ->
-    hn_util:parse_ref(t2(List, []));
-type({_, Chars}) -> hn_util:parse_ref(Chars).
+type(List) when is_list(List) -> hn_util:parse_ref(t2(List, []));
+type({_, Chars})              -> hn_util:parse_ref(Chars).
 
 t2([], Acc)             -> lists:flatten([lists:reverse(Acc)]);
 t2([{_, Txt} | T], Acc) -> t2(T, [Txt | Acc]).
 
-zseg({_, Txt}) -> io:format("In zseg ~p~n", [Txt]),
-                  {zseg, "[" ++ Txt ++ "]"}.
+zseg({_, Txt}) -> {zseg, "[" ++ Txt ++ "]"}.
 
 %% API
 
 make_refX("http://"++URL) ->
     {Site, PathAndRef} = lists:split(string:chr(URL, $/) - 1, URL),
     {ok, Toks} = url_lexer:lex(PathAndRef),
-    io:format("Toks is ~p~n", [Toks]),
     Ret = parse(Toks),
     case Ret of
         {ok, {Type, Path, Ref}} -> 
