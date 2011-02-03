@@ -140,15 +140,9 @@ html,body {
   background: #ffffdf;
 }
 
-/*
-
-** Note that the highlight style cannot override background of odd
-   style, as the background is already set there.
-
 table.tablesorter tbody tr.highlight td {
   background: #ffcfcf;
 }
-*/
 
 /******************************************************************************
 	TOP NAVIGATION STYLES
