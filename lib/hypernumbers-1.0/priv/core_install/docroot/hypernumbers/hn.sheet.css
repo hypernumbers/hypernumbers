@@ -140,6 +140,10 @@ html,body {
   background: #ffffdf;
 }
 
+table.tablesorter tbody tr.highlight td {
+  background: #ffcfcf;
+}
+
 /******************************************************************************
 	TOP NAVIGATION STYLES
 ******************************************************************************/
