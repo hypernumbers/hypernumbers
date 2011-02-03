@@ -235,7 +235,7 @@ has_c1([[{errval, '#CIRCREF!'} , _] | _T]) -> true;
 has_c1([_H | T])                          -> has_c1(T).
 
 table_([THead | Range], Sort) ->  
-    Id = "tbl_"++min_util:create_name(),
+    Id = "tbl_"++muin_util:create_name(),
     
     Head = ["<thead><tr>",
             [["<th>", X,"</th>"] || X <- THead ],
