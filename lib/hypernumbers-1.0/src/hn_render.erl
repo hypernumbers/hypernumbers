@@ -33,10 +33,17 @@ content(Ref) -> content(Ref, webpage).
 content(Ref, Type) ->
     Data = lists:sort(fun order_objs/2, read_data_without_page(Ref)),
     Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
-    RowHs = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)} 
+    % need to do old and new row/col types
+    RowHs1 = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)} 
              || {#refX{obj={row,{R,R}}},RPs} <- Data],
-    ColWs = [{C, pget("width", CPs, ?DEFAULT_WIDTH)} 
+    ColWs1 = [{C, pget("width", CPs, ?DEFAULT_WIDTH)} 
              || {#refX{obj={column,{C,C}}},CPs} <- Data],
+    RowHs2 = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)} 
+             || {#refX{obj={row,{range, {R, zero, R, inf}}}},RPs} <- Data],
+    ColWs2 = [{C, pget("width", CPs, ?DEFAULT_WIDTH)} 
+             || {#refX{obj={column,{range, {C,zero, C, inf}}}},CPs}<- Data],
+    RowHs = lists:concat([RowHs1, RowHs2]),
+    ColWs = lists:concat([ColWs1, ColWs2]),
     Palette = gb_trees:from_orddict
                 (lists:sort
                  (hn_mochi:extract_styles(Ref#refX.site))),
