@@ -1673,7 +1673,9 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     case muin:run_formula(Fla, Rti) of
         % General error condtion
         {error, {errval, Error}} ->
-            write_error_attrs(Attrs, Ref, Formula, Error);
+            % there might have been a preview before - nuke it!
+            Attrs2 = orddict:erase("preview", Attrs),
+            write_error_attrs(Attrs2, Ref, Formula, Error);
         % the formula returns as rawform
         {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
