@@ -13,7 +13,8 @@
 
 -export([
          save_template/2,
-         load_template/2
+         load_template/2,
+         load_template_if_no_page/2
          ]).
 
 %% -import(format_util,
@@ -45,6 +46,11 @@ save_template(#refX{site = S}=RefX, Name)  ->
     ok = filelib:ensure_dir(FileName),
     ok = file:write_file(FileName, Data),
     ok = remoting_reg:notify_site(S).
+
+% race condition not managed by a db transaction here
+load_template_if_no_page(RefX, Name) ->
+    io:format("Check if page exists here...~n"),
+    load_template(RefX, Name).
 
 load_template(#refX{site=S, path=P}, Name) ->
     TemplatesDir = hn_mochi:templateroot(S),
