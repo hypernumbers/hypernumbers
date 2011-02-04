@@ -104,7 +104,8 @@ handle_(Ref, Env, Qry) ->
 -spec authorize_resource(#env{}, #refX{}, #qry{}) -> no_return(). 
 authorize_resource(Env, Ref, Qry) -> 
     case cluster_up() of
-        false -> text_html(Env, "There appears to be a network problem. Please try later");
+        false -> text_html(Env, "There appears to be a network problem. "++
+                           "Please try later");
         true  -> authorize_r2(Env, Ref, Qry)
     end.
 
