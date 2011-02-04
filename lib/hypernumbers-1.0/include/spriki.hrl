@@ -215,3 +215,26 @@
           view,
           views
          }).
+
+%% web controls records
+
+-record(wcpagename,
+        {
+          template,
+          name
+         }).
+
+-record(wcpagenumber,
+        {
+          template,
+          type,
+          prefix
+         }).
+
+-record(wcpagedate,
+        {
+          template,
+          format
+          }).
+
+
