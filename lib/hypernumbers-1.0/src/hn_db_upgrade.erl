@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         upgrade_row_col_2011_02_04/0,
          upgrade_local_obj_2011_01_26/0,
          upgrade_pages_2011_01_26/0,
          upgrade_zinf_2011_01_17/0,
@@ -22,6 +23,29 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+% back out the different row/col stuff
+upgrade_row_col_2011_02_04() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   % first add stuff to the relations table
+                   Fun2 = fun({local_obj, Idx, Url, Path, Obj}) ->
+                                  NO = case Obj of
+                                           {column, {range, {X1, zero, X2, inf}}} ->
+                                               {column, {X1, X2}};
+                                           {row, {range, {zero, Y1, inf, Y2}}} ->
+                                               {row, {Y1, Y2}};
+                                           Other -> Other
+                                       end,
+                                  {local_obj, Idx, Url, Path, NO}
+                          end,
+                   Tbl1 = hn_db_wu:trans(Site, local_obj),
+                   io:format("Table ~p transformed~n", [Tbl1]),
+                   Ret1 = mnesia:transform_table(Tbl1, Fun2, [idx, type, path, obj]),
+                   io:format("Ret is ~p~n", [Ret1])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 % upgrade plan for local_obj ad upgrade_pages
 % * git pull the new source (DO NOT RUN ANY BUILD SCRIPT)
