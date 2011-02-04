@@ -76,7 +76,7 @@ provision_site_(Zone, Email, Type, SuggestedUid) ->
 %% directly.
 post_provision(NE, Site, Uid, Email, Name) ->
     EmailBody = case NE of 
-                    new -> new_user_site_email(Site, Uid, Email, Name);
+                    new      -> new_user_site_email(Site, Uid, Email, Name);
                     existing -> existing_user_site_email(Site, Name)
                 end,
     send_email(Email, EmailBody).
