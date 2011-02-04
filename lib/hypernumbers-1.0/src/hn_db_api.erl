@@ -379,7 +379,7 @@ append_row(List, PAr, VAr) when is_list(List) ->
                                                  PAr),
                             ok = hn_db_wu:mark_these_dirty([RefX2], VAr)
                     end,
-                [F(X,V) || {#refX{site=S1, path=P1, obj={column,{X,X}}}, V} 
+                [F(X,V) || {#refX{site=S1, path=P1, obj={column, {range, {X, zero, X, inf}}}}, V} 
                                <- List, S == S1, P == P1]
         end,
     
