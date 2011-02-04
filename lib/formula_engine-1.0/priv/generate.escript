@@ -25,8 +25,8 @@ generate(ForceCompile) ->
     ok = Gen_lex(url_lexer),
     ok = Gen_parse(url_parser),
 
-    ok = Gen_lex(webcontrols_lexer),
-    ok = Gen_parse(webcontrols_parser),
+    ok = Gen_lex(webc_lexer),
+    ok = Gen_parse(webc_parser),
 
     ok = Gen_lex(superlex),
 

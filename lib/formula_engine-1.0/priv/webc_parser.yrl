@@ -26,8 +26,8 @@ Endsymbol  '$end'.
 
 %% ----- Grammar definition.
 
-Expr -> Seg  slash : lists:flatten(['$1']).
-Expr -> Segs slash : lists:flatten('$1').
+Expr -> Seg  slash : ['$1'].
+Expr -> Segs slash :  lists:flatten('$1').
 
 Segs -> Segs Seg : join('$1', '$2').
 Segs -> Seg  Seg : join('$1', '$2').
@@ -44,44 +44,60 @@ SubClause -> slash open path      : '$3'.
 Erlang code.
 
 -export([
+         run/1,
+         compile/1,
          p_TEST/1
         ]).
 
-%% Erlang code follows here
+-include("webcontrols.hrl").
+
+%%% Api
+compile(String) ->
+    io:format("String is ~p~n", [String]),
+    {ok, Toks, 1} = webc_lexer:lex(String),
+    {ok, AST} = parse(Toks),
+    io:format("AST is ~p~n", [AST]),
+    AST.
+    
+run(AST) ->
+    io:format("AST is ~p~n", [AST]),
+    42.
+
+%%%% Parser code
 
 % 2 args
 clause([{path, A}, {path, B}]) ->
-    {{template, A}, {name, B}};
+    #wcpagename{template = A, name = B};
 % 3 args
-clause([{path, A}, {path, "auto"}, {path, "incr"}]) -> 
-    {{template, A}, {incr, ""}};
-clause([{path, A}, {path, "auto"}, {path, "random"}]) -> 
-    {{template, A}, {random, ""}};
-clause([{path, A}, {path, "date"}, {path, "yy"}]) -> 
-    {{template, A}, {year, two_digit}};
+clause([{path, A}, {path, "auto"}, {path, "incr"}]) ->
+    #wcpagenumber{template = A, type = incr, prefix = ""};
+clause([{path, A}, {path, "auto"}, {path, "random"}]) ->
+    #wcpagenumber{template = A, type = random, prefix = ""};
+clause([{path, A}, {path, "date"}, {path, "yy"}]) ->
+    #wcpagedate{template = A, format = "yy"};
 clause([{path, A}, {path, "date"}, {path, "yyyy"}]) -> 
-    {{template, A}, {year, four_digit}};
+    #wcpagedate{template = A, format = "yyyy"};
 clause([{path, A}, {path, "date"}, {path, "m"}]) -> 
-    {{template, A}, {month, no_zero}};
+    #wcpagedate{template = A, format = "m"};
 clause([{path, A}, {path, "date"}, {path, "mm"}]) -> 
-    {{template, A}, {month, zero}};
+    #wcpagedate{template = A, format = "mm"};
 clause([{path, A}, {path, "date"}, {path, "mmm"}]) -> 
-    {{template, A}, {month, abbr}};
+    #wcpagedate{template = A, format = "mmm"};
 clause([{path, A}, {path, "date"}, {path, "mmmm"}]) -> 
-    {{template, A}, {month, full}};
+    #wcpagedate{template = A, format = "mmmm"};
 clause([{path, A}, {path, "date"}, {path, "d"}]) -> 
-    {{template, A}, {day, no_zero}};
+    #wcpagedate{template = A, format = "d"};
 clause([{path, A}, {path, "date"}, {path, "dd"}]) -> 
-    {{template, A}, {day, zero}};
+    #wcpagedate{template = A, format = "dd"};
 clause([{path, A}, {path, "date"}, {path, "ddd"}]) -> 
-    {{template, A}, {day, abbr}};
+    #wcpagedate{template = A, format = "ddd"};
 clause([{path, A}, {path, "date"}, {path, "dddd"}]) -> 
-    {{template, A}, {day, full}};
+    #wcpagedate{template = A, format = "dddd"};
 % 4 args
 clause([{path, A}, {path, "auto"}, {path, "incr"}, {path, B}]) -> 
-    {{template, A}, {incr, B}};
+    #wcpagenumber{template = A, type = incr, prefix = B};
 clause([{path, A}, {path, "auto"}, {path, "random"}, {path, B}]) -> 
-    {{template, A}, {random, B}}.
+    #wcpagenumber{template = A, type = random, prefix = B}.
 
 join(A, B) -> [A, B].
 
@@ -90,11 +106,11 @@ join(A, B) -> [A, B].
 
 p_TEST(String) ->
     io:format("String is ~p~n", [String]),
-    {ok, Toks, 1} = webcontrols_lexer:lex(String),
+    {ok, Toks, 1} = webc_lexer:lex(String),
     io:format("Toks is ~p~n", [Toks]),
-    {ok, Ret} = parse(Toks),
-    io:format("Ret is ~p~n", [Ret]),
-    Ret.
+    {ok, AST} = parse(Toks),
+    io:format("AST is ~p~n", [AST]),
+    AST.
 
 seg_test_() ->
     [
@@ -104,108 +120,100 @@ seg_test_() ->
 
      ?_assert(p_TEST("/[Template, Name]/") ==
               [
-               {{template, "template"},
-                {name, "name"}}
+               {wcpagename, "template", "name"}
               ]),
 
      ?_assert(p_TEST("/[Template, auto, incr]/") ==
               [
-               {{template, "template"},
-                {incr, ""}}
+               {wcpagenumber, "template", incr, ""}
               ]),
 
      ?_assert(p_TEST("/[Template, auto, incr, Yeah]/") ==
               [
-               {{template, "template"},
-                {incr, "yeah"}}
+               {wcpagenumber, "template", incr, "yeah"}
               ]),
 
      ?_assert(p_TEST("/[Template, auto, random]/") ==
               [
-               {{template, "template"},
-                {random, ""}}
+               {wcpagenumber, "template", random, ""}
               ]),
 
      ?_assert(p_TEST("/[Template, auto, random, Yeah]/") ==
               [
-               {{template, "template"},
-                {random, "yeah"}}
+               {wcpagenumber, "template", random, "yeah"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, yy]/") ==
               [
-               {{template, "template"},
-                {year, two_digit}}
+               {wcpagedate, "template", "yy"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, yyyy]/") ==
               [
-               {{template, "template"},
-                {year, four_digit}}
+               {wcpagedate, "template", "yyyy"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, m]/") ==
               [
-               {{template, "template"},
-                {month, no_zero}}
+               {wcpagedate, "template", "m"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, mm]/") ==
               [
-               {{template, "template"},
-                {month, zero}}
+               {wcpagedate, "template", "mm"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, mmm]/") ==
               [
-               {{template, "template"},
-                {month, abbr}}
+               {wcpagedate, "template", "mmm"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, mmmm]/") ==
               [
-               {{template, "template"},
-                {month, full}}
+               {wcpagedate, "template", "mmmm"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, d]/") ==
               [
-               {{template, "template"},
-                {day, no_zero}}
+               {wcpagedate, "template", "d"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, dd]/") ==
               [
-               {{template, "template"},
-                {day, zero}}
+               {wcpagedate, "template", "dd"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, ddd]/") ==
               [
-               {{template, "template"},
-                {day, abbr}}
+               {wcpagedate, "template", "ddd"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, dddd]/") ==
               [
-               {{template, "template"},
-                {day, full}}
+               {wcpagedate, "template", "dddd"}
               ]),
 
      ?_assert(p_TEST("/blah/[Template, Name]/") ==
               [
                {path, "blah"},
-               {{template, "template"},
-                {name, "name"}}
+               {wcpagename, "template", "name"}
               ]),
 
      ?_assert(p_TEST("/blah/bleh/[Template, Name]/bloh/") ==
               [
                {path, "blah"},
                {path, "bleh"},
-               {{template, "template"},
-                {name, "name"}},
+               {wcpagename, "template", "name"},
                {path, "bloh"}
               ])
 
+    ].
+
+prod_test_() ->
+    [
+
+     ?_assert(p_TEST("/[jingo, bobbie]/") ==
+              [
+               {wcpagename, "jingo", "bobbie"}
+              ])
     ].
