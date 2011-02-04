@@ -237,4 +237,7 @@
           format
           }).
 
-
+-record(wcpath,
+        {
+          path
+         }).

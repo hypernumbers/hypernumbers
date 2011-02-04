@@ -805,6 +805,14 @@ ipost(Ref=#refX{path = P} = Ref, _Qry,
             json(Env, "success")
     end;
 
+% run a web control
+ipost(Ref=#refX{obj = {page, _}}, _Qry,
+      Env=#env{body = [{"webcontrols", Actions}],
+                       uid = Uid}) ->
+    ok = status_srv:update_status(Uid, Ref, "created some pages"),
+    ok = run_actions(mochijson:decode(Actions)),
+    json(Env, "success");
+
 ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid})
   when Attr =/= [] ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
@@ -1613,6 +1621,33 @@ get_templates(Site) -> [strip_json(X) || X <- filelib:wildcard("*.json", templat
 strip_json(File) ->
     ["json" |  Rest] = lists:reverse(string:tokens(File, ".")),
     lists:flatten(lists:reverse(Rest)).
+
+run_actions({struct, [{"create_pages_from_template", {array, Json}}]}) ->
+    Fun = fun({array, Expr}) ->
+                  lists:flatten([json_recs:json_to_rec(X) || X <- Expr])
+          end,
+    {Templates, Actions} = make_actions([Fun(X) || X <- Json]),
+    io:format("Actions is ~p and Templates is ~p~n", [Actions, Templates]),
+    ok.
+
+make_actions(Recs) -> make_a(Recs, [], []).
+
+make_a([], Temps, Acc)      -> {Temps, lists:flatten(lists:reverse(Acc))};
+make_a([H | T], Temps, Acc) -> {NewTemps, NewAcc} = make_a2(H, [], [], []),
+                               make_a(T, [NewTemps | Temps], [NewAcc | Acc]).
+
+make_a2([], Temps, _Htap, Acc) ->
+    {Temps, lists:reverse(Acc)};
+make_a2([#wcpath{path = P} | T], Temps, Htap, Acc) ->
+    make_a2(T, Temps, [P | Htap], Acc);
+make_a2([#wcpagedate{template = Tpl, format = Fm} | T], Temps, Htap, Acc) ->
+    NewHtap = ["fix-me!" | Htap],
+    NewAcc = {Tpl, lists:reverse(NewHtap)},
+    make_a2(T, [Tpl | Temps], NewHtap, [NewAcc | Acc]);    
+make_a2([#wcpagename{template = Tpl, name = Nm} | T], Temps, Htap, Acc) ->
+    NewHtap = [Nm | Htap],
+    NewAcc = {Tpl, lists:reverse(NewHtap)},
+    make_a2(T, [Tpl | Temps], NewHtap, [NewAcc | Acc]).
 
 make_demo(Site, Path) ->
     URL = Site ++ hn_util:list_to_path(Path),

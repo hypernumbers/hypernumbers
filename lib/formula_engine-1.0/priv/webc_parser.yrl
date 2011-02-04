@@ -16,7 +16,7 @@ open
 close
 comma
 slash
-path
+wcpath
 .
 
 Rootsymbol Expr.
@@ -34,69 +34,62 @@ Segs -> Seg  Seg : join('$1', '$2').
 
 Seg -> Clause : '$1'.
 
-Seg -> slash path : '$2'.
+Seg -> slash wcpath : '$2'.
 
 Clause -> SubClause close : clause(lists:flatten('$1')).
 
-SubClause -> SubClause comma path : join('$1', '$3').
-SubClause -> slash open path      : '$3'.
+SubClause -> SubClause comma wcpath : join('$1', '$3').
+SubClause -> slash open wcpath      : '$3'.
 
 Erlang code.
 
 -export([
-         run/1,
          compile/1,
          p_TEST/1
         ]).
 
--include("webcontrols.hrl").
+-include("spriki.hrl").
 
 %%% Api
 compile(String) ->
-    io:format("String is ~p~n", [String]),
     {ok, Toks, 1} = webc_lexer:lex(String),
     {ok, AST} = parse(Toks),
-    io:format("AST is ~p~n", [AST]),
     AST.
     
-run(AST) ->
-    io:format("AST is ~p~n", [AST]),
-    42.
-
 %%%% Parser code
 
 % 2 args
-clause([{path, A}, {path, B}]) ->
+clause([{wcpath, A}, {wcpath, B}]) ->
     #wcpagename{template = A, name = B};
 % 3 args
-clause([{path, A}, {path, "auto"}, {path, "incr"}]) ->
+clause([{wcpath, A}, {wcpath, "auto"}, {wcpath, "incr"}]) ->
     #wcpagenumber{template = A, type = incr, prefix = ""};
-clause([{path, A}, {path, "auto"}, {path, "random"}]) ->
+clause([{wcpath, A}, {wcpath, "auto"}, {wcpath, "random"}]) ->
     #wcpagenumber{template = A, type = random, prefix = ""};
-clause([{path, A}, {path, "date"}, {path, "yy"}]) ->
+clause([{wcpath, A}, {wcpath, "date"}, {wcpath, "yy"}]) ->
     #wcpagedate{template = A, format = "yy"};
-clause([{path, A}, {path, "date"}, {path, "yyyy"}]) -> 
+clause([{wcpath, A}, {wcpath, "date"}, {wcpath, "yyyy"}]) -> 
     #wcpagedate{template = A, format = "yyyy"};
-clause([{path, A}, {path, "date"}, {path, "m"}]) -> 
+clause([{wcpath, A}, {wcpath, "date"}, {wcpath, "m"}]) -> 
     #wcpagedate{template = A, format = "m"};
-clause([{path, A}, {path, "date"}, {path, "mm"}]) -> 
+clause([{wcpath, A}, {wcpath, "date"}, {wcpath, "mm"}]) -> 
     #wcpagedate{template = A, format = "mm"};
-clause([{path, A}, {path, "date"}, {path, "mmm"}]) -> 
+clause([{wcpath, A}, {wcpath, "date"}, {wcpath, "mmm"}]) -> 
     #wcpagedate{template = A, format = "mmm"};
-clause([{path, A}, {path, "date"}, {path, "mmmm"}]) -> 
+clause([{wcpath, A}, {wcpath, "date"}, {wcpath, "mmmm"}]) -> 
     #wcpagedate{template = A, format = "mmmm"};
-clause([{path, A}, {path, "date"}, {path, "d"}]) -> 
+clause([{wcpath, A}, {wcpath, "date"}, {wcpath, "d"}]) -> 
     #wcpagedate{template = A, format = "d"};
-clause([{path, A}, {path, "date"}, {path, "dd"}]) -> 
+clause([{wcpath, A}, {wcpath, "date"}, {wcpath, "dd"}]) -> 
     #wcpagedate{template = A, format = "dd"};
-clause([{path, A}, {path, "date"}, {path, "ddd"}]) -> 
+clause([{wcpath, A}, {wcpath, "date"}, {wcpath, "ddd"}]) -> 
     #wcpagedate{template = A, format = "ddd"};
-clause([{path, A}, {path, "date"}, {path, "dddd"}]) -> 
+clause([{wcpath, A}, {wcpath, "date"}, {wcpath, "dddd"}]) -> 
     #wcpagedate{template = A, format = "dddd"};
 % 4 args
-clause([{path, A}, {path, "auto"}, {path, "incr"}, {path, B}]) -> 
+clause([{wcpath, A}, {wcpath, "auto"}, {wcpath, "incr"}, {wcpath, B}]) -> 
     #wcpagenumber{template = A, type = incr, prefix = B};
-clause([{path, A}, {path, "auto"}, {path, "random"}, {path, B}]) -> 
+clause([{wcpath, A}, {wcpath, "auto"}, {wcpath, "random"}, {wcpath, B}]) -> 
     #wcpagenumber{template = A, type = random, prefix = B}.
 
 join(A, B) -> [A, B].
@@ -115,7 +108,7 @@ p_TEST(String) ->
 seg_test_() ->
     [
      ?_assert(p_TEST("/blah/") == [
-                                   {path, "blah"}
+                                   {wcpath, "blah"}
                                   ]),
 
      ?_assert(p_TEST("/[Template, Name]/") ==
@@ -195,16 +188,16 @@ seg_test_() ->
 
      ?_assert(p_TEST("/blah/[Template, Name]/") ==
               [
-               {path, "blah"},
+               {wcpath, "blah"},
                {wcpagename, "template", "name"}
               ]),
 
      ?_assert(p_TEST("/blah/bleh/[Template, Name]/bloh/") ==
               [
-               {path, "blah"},
-               {path, "bleh"},
+               {wcpath, "blah"},
+               {wcpath, "bleh"},
                {wcpagename, "template", "name"},
-               {path, "bloh"}
+               {wcpath, "bloh"}
               ])
 
     ].

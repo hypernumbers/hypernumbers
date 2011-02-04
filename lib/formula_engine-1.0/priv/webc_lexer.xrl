@@ -6,11 +6,11 @@ PATH_COMP  = ([a-zA-Z0-9_\-~]+)
 
 Rules.
 
-{PATH_COMP}  : {token,     {path,  string:to_lower(TokenChars)}}.
-\[           : {token,     {open,  TokenChars}}.
-\]           : {token,     {close, TokenChars}}.
-\/           : {token,     {slash, TokenChars}}.
-\,           : {token,     {comma, TokenChars}}.
+{PATH_COMP}  : {token,     {wcpath,  string:to_lower(TokenChars)}}.
+\[           : {token,     {open,    TokenChars}}.
+\]           : {token,     {close,   TokenChars}}.
+\/           : {token,     {slash,   TokenChars}}.
+\,           : {token,     {comma,   TokenChars}}.
 
 %% Discard whitespace:
 {WHITESPACE} : skip_token.
@@ -26,10 +26,7 @@ Erlang code.
          lex/1
          ]).
 
-lex(String) ->
-    Ret = string(String),
-    io:format("Returning with ~p~n", [Ret]),
-    Ret.
+lex(String) -> string(String).
 
 %%% Tests:
 -include_lib("eunit/include/eunit.hrl").
@@ -48,15 +45,15 @@ seg_test_() ->
     [
      ?_assert(tlex("/blah/blah, bleh, bloh/bluh/") == [
                                       {slash, "/"},
-                                      {path, "blah"},
+                                      {wcpath, "blah"},
                                       {slash, "/"},
-                                      {path, "blah"},
+                                      {wcpath, "blah"},
                                       {comma, ","},
-                                      {path, "bleh"},
+                                      {wcpath, "bleh"},
                                       {comma, ","},
-                                      {path, "bloh"},
+                                      {wcpath, "bloh"},
                                       {slash, "/"},
-                                      {path, "bluh"},
+                                      {wcpath, "bluh"},
                                       {slash, "/"}
                                      ])
     ].
