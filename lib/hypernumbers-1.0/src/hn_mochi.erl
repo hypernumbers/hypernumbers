@@ -12,6 +12,7 @@
 
 -define(E, error_logger:error_msg).
 -define(SORT, lists:sort).
+-define(NO_STAMP, undefined).
 -define(DAY_S, 86400). % a day's worth of seconds
 -define(check_pt_vw(A, B, C, D), auth_srv:check_particular_view(A, B, C, D)).
 
@@ -1366,7 +1367,7 @@ process_user(Site, E=#env{mochi = Mochi}) ->
             E#env{uid = Uid, email = Email};
         {error, no_stamp} -> 
             Return = cur_url(Site, E),
-            case try_sync(["seek"], Site, Return) of
+            case try_sync(["seek"], Site, Return, ?NO_STAMP) of
                 on_sync -> 
                     Stamp = passport:temp_stamp(),
                     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
@@ -1387,7 +1388,7 @@ process_user(Site, E=#env{mochi = Mochi}) ->
 cleanup(Site, Return, E) ->
     Cookie = hn_net_util:kill_cookie("auth"),
     E2 = E#env{headers = [Cookie | E#env.headers]},
-    Redir = case try_sync(["reset"], Site, Return) of
+    Redir = case try_sync(["reset"], Site, Return, ?NO_STAMP) of
                 on_sync -> Return;
                 {redir, R} -> R
             end,
@@ -1400,14 +1401,19 @@ cleanup(Site, Return, E) ->
 cur_url(Site, #env{mochi=Mochi}) ->
     hn_util:strip80(Site) ++ Mochi:get(raw_path).
 
--spec try_sync([string()], string(), string()) 
+-spec try_sync([string()], string(), string(), string()) 
                -> {redir, string()} | on_sync.
-try_sync(Cmd0, Site, Return) ->
+try_sync(Cmd0, Site, Return, Stamp) ->
     case application:get_env(hypernumbers, sync_url) of
         {ok, SUrl} when SUrl /= Site ->
             Cmd = string:join(Cmd0, "/"),
             QReturn = mochiweb_util:quote_plus(Return),
-            Redir = SUrl++"/_sync/"++Cmd++"/?return="++QReturn,
+            Attrs = case Stamp of
+                        ?NO_STAMP -> "/?return="++QReturn;
+                        _Other    -> QStamp = mochiweb_util:quote_plus(Stamp),
+                                     "?return="++QReturn++"&stamp="++QStamp
+                    end,
+            Redir = SUrl++"/_sync/"++Cmd++"/"++Attrs,
             {redir, Redir};
         _Else ->
             on_sync
@@ -1419,8 +1425,7 @@ try_sync(Cmd0, Site, Return) ->
 post_login(Site, Uid, Stamp, Age, Env, Return) ->
     Cookie = hn_net_util:cookie("auth", Stamp, Age),
     Env2 = Env#env{uid = Uid, headers = [Cookie | Env#env.headers]},
-    QStamp = mochiweb_util:quote_plus(Stamp),
-    Redir = case try_sync(["tell", QStamp], Site, Return) of
+    Redir = case try_sync(["tell"], Site, Return, Stamp) of
                on_sync    -> Return;
                {redir, R} -> R end,
     {Env2, Redir}.
