@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% File        : record_util.erl
+%%% File        : make_ms.erl
 %%% Author      : Gordon Guthrie gordon@hypernumbers.com
 %%% Description : utilities for manipulating records
 %%%
