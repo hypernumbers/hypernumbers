@@ -18,7 +18,8 @@
 -export([
          page_written/2,
          page_deleted/2,
-         get_pages/1
+         get_pages/1,
+         does_page_exist/2
         ]).
 
 %% gen_server callbacks
@@ -43,6 +44,10 @@ page_deleted(Site, Path) when is_list(Path) ->
 get_pages(Site) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
     gen_server:call(Id, get_pages).
+
+does_page_exist(Site, Path) ->
+    Id = hn_util:site_to_atom(Site, "_pages"),
+    gen_server:call(Id, {does_page_exist, Path}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -102,7 +107,9 @@ handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
                           ok = hn_db_api:write_kv(Site, ?pages, P2),
                           {ok, P2};
                       get_pages ->
-                          {Pages, Pages}
+                          {Pages, Pages};
+                      {does_page_exist, P} ->
+                          {lists:member(P, Pages), Pages}
                   end,
     {reply, Rep, State#state{pages = NewP}}.
 
