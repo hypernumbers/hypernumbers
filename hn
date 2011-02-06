@@ -58,17 +58,15 @@ dispatch(_BadCommand) -> usage().
     
 build() ->
 
-    io:format("This should be done in compile_code so it can be run from load_cluster~n~n"),
+    io:format("This should be done in compile_code so it can be run "
+              ++" from load_cluster~n~n"),
     ensure_config(),
-
     {ok, Root} = file:get_cwd(),
 
     io:format("Compiling Dependencies ...~n"),
-
     filelib:ensure_dir("lib/mochiweb/ebin/"),
     filelib:ensure_dir("lib/hypernumbers-1.0/ebin/"),
     filelib:ensure_dir("ebin/"),
-
     file:set_cwd("lib/mochiweb"), 
     os:cmd("make"),
     file:set_cwd(Root),
@@ -78,9 +76,23 @@ build() ->
     file:set_cwd("lib/starling"),
     io:format(os:cmd("rake")),
     file:set_cwd(Root),
-    build_lexer_parser(),
+
+    % build the lexer-parsers
+    make_lexer_parser(),
     compile:file("src/compile_code.erl", [{outdir, "ebin"}]),
-    make_ms_util().
+    make_ms_util(),
+    file:set_cwd(Root++"/ebin"),
+    compile_code:start(),
+    file:set_cwd(Root).
+
+build_lexer_parser() ->
+    make_ms_util(),
+    make_lexer_parser(),
+    make_quick().
+
+build_quick() ->
+    make_ms_util(),
+    make_quick().
 
 make_ms_util() ->
     {ok, Root} = file:get_cwd(),
@@ -92,22 +104,16 @@ make_ms_util() ->
     make_ms_util:make(),
     {ok, _Bytes} =
         file:copy("ms_util2.erl", "lib/hypernumbers-1.0/src/ms_util2.erl"),
-    ok = file:delete("ms_util2.erl"),
+    ok = file:delete("ms_util2.erl").
 
-    file:set_cwd(Root++"/ebin"),
-    compile_code:start(),
-    file:set_cwd(Root).
-
-build_lexer_parser() ->
-    make_ms_util(),
+make_lexer_parser() ->
     {ok, Root} = file:get_cwd(),
     file:set_cwd("lib/formula_engine-1.0/priv/"),
     Ret = os:cmd("./generate.escript"),
     io:format("~p~n", [Ret]),
     file:set_cwd(Root).
-    
-build_quick() ->
-    make_ms_util(),
+
+make_quick() ->
     {ok, Root} = file:get_cwd(),
     ensure_config(),
     file:set_cwd(Root++"/ebin"),
