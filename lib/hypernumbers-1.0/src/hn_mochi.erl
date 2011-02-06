@@ -1,4 +1,4 @@
-%%% @copyright 2008 Hypernumbers Ltd
+%% @copyright 2008 Hypernumbers Ltd
 %%% @doc Handle Hypernumbers HTTP requests
 -module(hn_mochi).
 
@@ -1136,17 +1136,6 @@ add_ref(Ref, [KV|Tail], JSON) ->
 % order of clauses matters because new cols/rows also match old Refs
 add_ref1(#refX{obj = {page,"/"}}, {Name, Val}, JSON) ->
     dh_tree:set(["page", Name], Val, JSON);
-add_ref1(#refX{obj = {column, {range, {X1, zero, X2, inf}}}}, Data, JSON) ->
-    {Name, Val} = hn_util:jsonify_val(Data),
-    dh_tree:set(["column", itol(X1), itol(X2), Name], Val, JSON);
-add_ref1(#refX{obj = {row, {range, {zero, Y1, inf, Y2}}}}, Data, JSON) ->
-    {Name, Val} = hn_util:jsonify_val(Data),
-    dh_tree:set(["row", itol(Y1), itol(Y2), Name], Val, JSON);
-% this clause also handles old fashioned rows and columns from file import
-% - notice also that X and Y are reversed because that is how they are stored
-%   in the front end
-% - this cannot cope with changes like setting multiple columns to have a single
-%   width - will require rejigging
 add_ref1(#refX{obj = {Ref, {X, Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
