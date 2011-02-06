@@ -80,7 +80,11 @@ build() ->
     file:set_cwd(Root),
     build_lexer_parser(),
     compile:file("src/compile_code.erl", [{outdir, "ebin"}]),
-    
+    make_ms_util().
+
+make_ms_util() ->
+    {ok, Root} = file:get_cwd(),
+    file:set_cwd(Root),    
     compile:file("priv/ms_util/make_ms_util.erl",
                  [{outdir, "lib/hypernumbers-1.0/ebin"}, debug_info,
                   {i, "lib/hypernumbers-1.0/include"}]),
@@ -95,6 +99,7 @@ build() ->
     file:set_cwd(Root).
 
 build_lexer_parser() ->
+    make_ms_util(),
     {ok, Root} = file:get_cwd(),
     file:set_cwd("lib/formula_engine-1.0/priv/"),
     Ret = os:cmd("./generate.escript"),
@@ -102,6 +107,7 @@ build_lexer_parser() ->
     file:set_cwd(Root).
     
 build_quick() ->
+    make_ms_util(),
     {ok, Root} = file:get_cwd(),
     ensure_config(),
     file:set_cwd(Root++"/ebin"),
