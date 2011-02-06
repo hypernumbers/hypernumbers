@@ -11,7 +11,6 @@
 
 %% API
 -export([
-         banjo/0,
          rec_to_json/1,
          json_to_rec/1
         ]).
@@ -21,8 +20,6 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
-banjo() -> rec_to_json(#wcpagename{template = "dandy", name="randy"}).
-
 rec_to_json(Tuple) when is_tuple(Tuple) ->
     List = tuple_to_list(Tuple),
     [Rec | T] = List,
@@ -52,13 +49,3 @@ make_struct(List) when is_list(List) -> [make_s(X) || X <- List].
 
 make_s({_A, _B} = C) when is_tuple(C) -> {struct, [C]}.
 
-%%%===================================================================
-%%% Tests:
-%%%===================================================================
--include_lib("eunit/include/eunit.hrl").
-
-rec_test_() ->
-    [
-     ?_assert(rec_to_json(#refX{}) == "dandy!"),
-     ?_assert(rec_to_json(#wcpagename{template = "dandy", name="randy"}) == "dandy!")
-    ].
