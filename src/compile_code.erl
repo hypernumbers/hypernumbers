@@ -43,7 +43,8 @@
                    ]).
 
 jslint_DEBUG(File) ->
-    jslint3([get_root() ++ "lib/hypernumbers-1.0/priv/core_install/docroot/hypernumbers/"
+    jslint3([get_root() ++ "lib/hypernumbers-1.0/priv/core_install"
+             ++ "/docroot/hypernumbers/"
              ++ File],
             get_root() ++ ?JSLINT).
 
@@ -70,7 +71,8 @@ jslint3([H | T], JSLint) ->
     io:format("~n~n~nAbout to lint ~p~n", [H]),
     Cmd = "rhino " ++ JSLint ++ " " ++ H,
     Ret = os:cmd(Cmd),
-    io:format("*************************************************~nJSLint for:~p~n~s~n",
+    io:format("*************************************************~n"
+              ++"JSLint for:~p~n~s~n",
               [filename:basename(H), Ret]),
     jslint3(T, JSLint).
 
