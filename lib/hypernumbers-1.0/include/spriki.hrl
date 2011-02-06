@@ -218,26 +218,26 @@
 
 %% web controls records
 
--record(wcpagename,
+-record(namedpage,
         {
           template,
           name
          }).
 
--record(wcpagenumber,
+-record(numberedpage,
         {
           template,
           type,
           prefix
          }).
 
--record(wcpagedate,
+-record(datedpage,
         {
           template,
           format
           }).
 
--record(wcpath,
+-record(plainpath,
         {
           path
          }).

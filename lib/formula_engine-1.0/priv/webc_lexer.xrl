@@ -6,11 +6,11 @@ PATH_COMP  = ([a-zA-Z0-9_\-~]+)
 
 Rules.
 
-{PATH_COMP}  : {token,     {wcpath,  string:to_lower(TokenChars)}}.
-\[           : {token,     {open,    TokenChars}}.
-\]           : {token,     {close,   TokenChars}}.
-\/           : {token,     {slash,   TokenChars}}.
-\,           : {token,     {comma,   TokenChars}}.
+{PATH_COMP}  : {token,     {plainpath,  string:to_lower(TokenChars)}}.
+\[           : {token,     {open,      TokenChars}}.
+\]           : {token,     {close,     TokenChars}}.
+\/           : {token,     {slash,     TokenChars}}.
+\,           : {token,     {comma,     TokenChars}}.
 
 %% Discard whitespace:
 {WHITESPACE} : skip_token.
@@ -45,15 +45,15 @@ seg_test_() ->
     [
      ?_assert(tlex("/blah/blah, bleh, bloh/bluh/") == [
                                       {slash, "/"},
-                                      {wcpath, "blah"},
+                                      {plainpath, "blah"},
                                       {slash, "/"},
-                                      {wcpath, "blah"},
+                                      {plainpath, "blah"},
                                       {comma, ","},
-                                      {wcpath, "bleh"},
+                                      {plainpath, "bleh"},
                                       {comma, ","},
-                                      {wcpath, "bloh"},
+                                      {plainpath, "bloh"},
                                       {slash, "/"},
-                                      {wcpath, "bluh"},
+                                      {plainpath, "bluh"},
                                       {slash, "/"}
                                      ])
     ].

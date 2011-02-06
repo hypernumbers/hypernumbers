@@ -1600,7 +1600,7 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
         % the formula returns as rawform
         {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
-            Form = RawF#form{id={Ref#refX.path, Trans, Label}}, 
+            Form = RawF#form{id={Ref#refX.path, Trans, Label}},
             ok = attach_form(Ref, Form),
             Label2 = case Label of
                          "_" -> "Submit Button";
@@ -1611,10 +1611,14 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Html, 
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web control
-        {ok, {Pcode, {webcontrol, {Value, Title}, Res}, Parents, InfParents,
+        {ok, {Pcode, {webcontrol, {Payload, Title}, Res}, Parents, InfParents,
               Recompile}} ->
-            Attrs2 = orddict:store("preview", {"Create Button", 1, 1}, Attrs),
-            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
+            {Trans, Label} = Payload#form.id,
+            Form = Payload#form{id={Ref#refX.path, Trans, Label}},
+            ok = attach_form(Ref, Form),
+            Attrs2 = orddict:store("__hasform", t, Attrs),
+            Attrs3 = orddict:store("preview", {Title, 1, 1}, Attrs2),
+            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res, 
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web-hingie that needs to be previewed
         {ok, {Pcode, {preview, {PreV, Wd, Ht}, Res}, Pars, InfPars, Recompile}} ->
