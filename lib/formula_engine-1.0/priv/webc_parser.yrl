@@ -4,6 +4,8 @@
 Nonterminals
 
 Expr
+RelPath
+SubExpr
 Segs
 Seg
 Clause
@@ -12,6 +14,7 @@ SubClause
 
 Terminals
 
+fullstop
 open
 close
 comma
@@ -26,8 +29,12 @@ Endsymbol  '$end'.
 
 %% ----- Grammar definition.
 
-Expr -> Seg  slash : ['$1'].
-Expr -> Segs slash :  lists:flatten('$1').
+Expr -> fullstop fullstop SubExpr : [{plainpath, ".."} | '$3'].
+Expr -> fullstop SubExpr          : [{plainpath, "."}  | '$2'].
+Expr -> SubExpr                   : '$1'.
+
+SubExpr -> Seg  slash : ['$1'].
+SubExpr -> Segs slash :  lists:flatten('$1').
 
 Segs -> Segs Seg : join('$1', '$2').
 Segs -> Seg  Seg : join('$1', '$2').
@@ -35,6 +42,10 @@ Segs -> Seg  Seg : join('$1', '$2').
 Seg -> Clause : '$1'.
 
 Seg -> slash plainpath : '$2'.
+Seg -> slash RelPath   : '$2'.
+
+RelPath -> RelPath fullstop : {plainpath, ".."}.
+RelPath -> fullstop         : {plainpath, "."}.
 
 Clause -> SubClause close : clause(lists:flatten('$1')).
 
@@ -217,6 +228,46 @@ seg_test_() ->
                {plainpath, "bloh"}
               ])
 
+    ].
+
+
+rel_test_() ->
+    [
+     ?_assert(p_TEST("./blah/bleh/[Template, Name]/bloh/") ==
+              [
+               {plainpath, "."},
+               {plainpath, "blah"},
+               {plainpath, "bleh"},
+               {namedpage, "template", "name"},
+               {plainpath, "bloh"}
+              ]),
+     
+     ?_assert(p_TEST("../blah/bleh/[Template, Name]/bloh/") ==
+              [
+               {plainpath, ".."},
+               {plainpath, "blah"},
+               {plainpath, "bleh"},
+               {namedpage, "template", "name"},
+               {plainpath, "bloh"}
+              ]),
+     
+     ?_assert(p_TEST("/blah/./bleh/[Template, Name]/bloh/") ==
+              [
+               {plainpath, "blah"},
+               {plainpath, "."},
+               {plainpath, "bleh"},
+               {namedpage, "template", "name"},
+               {plainpath, "bloh"}
+              ]),
+     
+          ?_assert(p_TEST("/blah/../bleh/[Template, Name]/bloh/") ==
+              [
+               {plainpath, "blah"},
+               {plainpath, ".."},
+               {plainpath, "bleh"},
+               {namedpage, "template", "name"},
+               {plainpath, "bloh"}
+              ])
     ].
 
 prod_test_() ->

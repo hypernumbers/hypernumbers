@@ -7,10 +7,11 @@ PATH_COMP  = ([a-zA-Z0-9_\-~]+)
 Rules.
 
 {PATH_COMP}  : {token,     {plainpath,  string:to_lower(TokenChars)}}.
-\[           : {token,     {open,      TokenChars}}.
-\]           : {token,     {close,     TokenChars}}.
-\/           : {token,     {slash,     TokenChars}}.
-\,           : {token,     {comma,     TokenChars}}.
+\.           : {token,     {fullstop,   TokenChars}}.
+\[           : {token,     {open,       TokenChars}}.
+\]           : {token,     {close,      TokenChars}}.
+\/           : {token,     {slash,      TokenChars}}.
+\,           : {token,     {comma,      TokenChars}}.
 
 %% Discard whitespace:
 {WHITESPACE} : skip_token.
