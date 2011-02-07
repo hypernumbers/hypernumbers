@@ -146,6 +146,7 @@ spark1(Size, Data, Colours) ->
 'dategraph.3x6'(List) ->
     Ret = chunk_dategraph(List, double),
     {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
+    io:format("Ret is ~p~n", [Ret]),
     {resize, 3, 6, dg1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
         StartDate, EndDate, [{?tickmarks, ?BOTHAXES}])}.
 
@@ -246,11 +247,13 @@ chunk_xy([Lines | List], LabType) ->
     {Data1, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
      {?colours, Colours}, Rest}.
 
-dg1(Size, Data, Scale, _AxesLabPos, Colours, [], _StartDate, _EndDate, Opts) ->
-    NewOpts = lists:concat([[Scale, Colours], Opts]),
+dg1(Size, Data, Scale, AxesLabPos, Colours, [], StartDate, EndDate, Opts) ->
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos,
+                             make_labs_date("", "", StartDate, EndDate),
+                             {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);
-dg1(Size, Data, Scale, _AxesLabPos, Colours, [Tt | []], StartDate, EndDate, Opts) ->
-    NewOpts = lists:concat([[Scale, Colours, make_title(Tt),
+dg1(Size, Data, Scale, AxesLabPos, Colours, [Tt | []], StartDate, EndDate, Opts) ->
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
                              make_labs_date("", "", StartDate, EndDate),
                             {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);
@@ -274,11 +277,13 @@ dg1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl, Srs | []],
                              {?legendpos, ?TOPHORIZ}, make_series(Srs)], Opts]),
     xy2(Size, Data, NewOpts).
 
-xy1(Size, Data, Scale, _AxesLabPos, Colours, [], Opts) ->
-    NewOpts = lists:concat([[Scale, Colours], Opts]),
+xy1(Size, Data, Scale, AxesLabPos, Colours, [], Opts) ->
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_labs("", ""),
+                             {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);
-xy1(Size, Data, Scale, _AxesLabPos, Colours, [Tt | []], Opts) ->
-    NewOpts = lists:concat([[Scale, Colours, make_title(Tt), make_labs("", ""),
+xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt | []], Opts) ->
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
+                             make_labs("", ""),
                             {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl | []], Opts) ->
