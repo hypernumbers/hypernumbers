@@ -128,7 +128,7 @@ cast(_, _, str)        -> {error, nas};
 %% X -> date   
 cast(X, num, date) when X >= 0 ->
     
-    % Hope to go the seconds doesnt get represented in
+    % Hope to god the seconds doesnt get represented in
     % eng format
     Days = erlang:trunc(X),
     Secs = erlang:trunc((X - Days) * ?SECS_IN_DAY), 
