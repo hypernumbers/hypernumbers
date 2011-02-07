@@ -191,7 +191,7 @@ spark1(Size, Data, Colours) ->
 
 chunk_dategraph([X, Lines | List], LabType) ->
     DataX = lists:reverse(cast_dates(X)),
-    Ret = chunk_l2(DataX, Lines, List, LabType),
+    Ret = chunk_l2(DataX, Lines, List),
     {MinX, MaxX, MinY, MaxY, Data, Cols, Rest} = Ret,
     StartDate = cast_date(MinX),
     EndDate = cast_date(MaxX),
@@ -202,13 +202,13 @@ chunk_dategraph([X, Lines | List], LabType) ->
 
 chunk_linegraph([X, Lines | List], LabType) ->
     DataX = cast_data(X),
-    Ret = chunk_l2(DataX, Lines, List, LabType),
+    Ret = chunk_l2(DataX, Lines, List),
     {MinX, MaxX, MinY, MaxY, Data, Cols, Rest} = Ret,
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
     Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest}.
 
-chunk_l2(DataX, Lines, List, LabType) ->
+chunk_l2(DataX, Lines, List) ->
     [Lines1] = typechecks:std_ints([Lines]),
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
     {Data, Rest} = lists:split(Lines1, List),
@@ -340,9 +340,9 @@ make_axes_lab_pos(MaxX, MaxY) ->
 make_scale(null, _, _, _, _, _) -> "";
 make_scale(Type, auto, MinX, MaxX, MinY, MaxY) ->
     make_s1(Type, MinX, MaxX, MinY, MaxY).
-%% make_scale(Type, [X1, X2 | []], _MinX, _MaxX, MinY, MaxY) ->
-%%     [X1a, X2a] = typechecks:std_nums([X1, X2]),
-%%     make_s1(Type, X1a, X2a, MinY, MaxY).
+% make_scale(Type, [X1, X2 | []], _MinX, _MaxX, MinY, MaxY) ->
+%     [X1a, X2a] = typechecks:std_nums([X1, X2]),
+%     make_s1(Type, X1a, X2a, MinY, MaxY).
 
 make_s1(single, MinX, MaxX, MinY, MaxY) ->
     "0,"++tconv:to_s(MinX)++","++tconv:to_s(MaxX)

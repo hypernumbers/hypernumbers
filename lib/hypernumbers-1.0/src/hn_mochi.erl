@@ -1680,7 +1680,8 @@ make_a2(S, [#numberedpage{template = Tpl, type = "increment", prefix = Pr} | T],
     NewHtap = [Seg | Htap],
     NewAcc = {Tpl, lists:reverse(NewHtap)},
     make_a2(S, T, Now, [Tpl | Temps], NewHtap, [NewAcc | Acc]);
-make_a2(S, [#datedpage{template = Tpl, format = Fm} = H | T], Now, Temps, Htap, Acc) ->
+make_a2(S, [#datedpage{template = Tpl, format = Fm} | T], Now,
+        Temps, Htap, Acc) ->
     Seg = case Fm of                            % 1/2/2003
               "yy"   -> dh_date:format("y", Now); % 03
               "yyyy" -> dh_date:format("Y", Now); % 2003
