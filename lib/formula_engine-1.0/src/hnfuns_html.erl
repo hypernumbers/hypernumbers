@@ -10,14 +10,14 @@
 -include("errvals.hrl").
 
 -export([
-         'html.block.'/1,
          'html.box.'/1,
          'html.alert.'/1,
+         'html.ruledbox.'/1,
          'html.menu1'/1,
          'html.submenu'/1
          ]).
 
-'html.block.'(List) -> 'html.box.1'("white", "none", 0, "single", List).
+'html.ruledbox.'(List) -> 'html.box.1'("white", "none", 99, "single", List).
 
 'html.box.'(List) -> 'html.box.1'("grey", "single", 0, "none", List).
 
@@ -89,10 +89,11 @@ box(W, H, Bk, Bd, St, Ln, BodyStyle, [Headline, Content, Footer]) ->
 check_style(St) ->
     [NStyle] = typechecks:std_ints([St]),
     case NStyle of
-        0 -> "plain";
-        1 -> "alert1";
-        2 -> "alert2";
-        3 -> "alert3";
+        0  -> "plain";
+        1  -> "alert1";
+        2  -> "alert2";
+        3  -> "alert3";
+        99 -> "ruledbox";
         _ -> ?ERR_VAL
     end.
 
