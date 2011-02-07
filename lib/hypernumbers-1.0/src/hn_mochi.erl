@@ -1680,18 +1680,19 @@ make_a2(S, [#numberedpage{template = Tpl, type = "increment", prefix = Pr} | T],
     NewHtap = [Seg | Htap],
     NewAcc = {Tpl, lists:reverse(NewHtap)},
     make_a2(S, T, Now, [Tpl | Temps], NewHtap, [NewAcc | Acc]);
-make_a2(S, [#datedpage{template = Tpl, format = Fm} | T], Now, Temps, Htap, Acc) ->
+make_a2(S, [#datedpage{template = Tpl, format = Fm} = H | T], Now, Temps, Htap, Acc) ->
+    io:format("H is ~p ~p~n", [H, Fm]),
     Seg = case Fm of                            % 1/2/2003
-              yy   -> dh_date:format("y", Now); % 03
-              yyyy -> dh_date:format("Y", Now); % 2003
-              m    -> dh_date:format("n", Now); % 2
-              mm   -> dh_date:format("m", Now); % 02
-              mmm  -> dh_date:format("M", Now); % Feb
-              mmmm -> dh_date:format("F", Now); % February
-              d    -> dh_date:format("j", Now); % 1
-              dd   -> dh_date:format("d", Now); % 01
-              ddd  -> dh_date:format("D", Now); % Sat
-              dddd -> dh_date:format("l", Now)  % Saturday
+              "yy"   -> dh_date:format("y", Now); % 03
+              "yyyy" -> dh_date:format("Y", Now); % 2003
+              "m"    -> dh_date:format("n", Now); % 2
+              "mm"   -> dh_date:format("m", Now); % 02
+              "mmm"  -> dh_date:format("M", Now); % Feb
+              "mmmm" -> dh_date:format("F", Now); % February
+              "d"    -> dh_date:format("j", Now); % 1
+              "dd"   -> dh_date:format("d", Now); % 01
+              "ddd"  -> dh_date:format("D", Now); % Sat
+              "dddd" -> dh_date:format("l", Now)  % Saturday
           end,
     % yup, flatpack all strings to lower case...
     NewHtap = [string:to_lower(Seg) | Htap],
