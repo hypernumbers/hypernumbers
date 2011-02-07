@@ -228,6 +228,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
          <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />	
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
          <link rel='stylesheet' href='/webcomponents/webcomponents.css' />
+         <link rel='stylesheet' href='/webcomponents/webbasic.css' />
          <link rel='stylesheet' href='/webcomponents/jquery.ui.potato.menu.css'>
          <link rel='stylesheet' href='/tblsorter/style.css' />
 "     ++Addons#render.css++

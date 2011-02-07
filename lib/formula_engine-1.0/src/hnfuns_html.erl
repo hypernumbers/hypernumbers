@@ -29,35 +29,39 @@
     W = tconv:to_i(Width),
     H = tconv:to_i(Height),
     check_size(W, H),
+    BodyStyle = "hn-wc-ht-body2-" ++ Height, 
     [H1] = typechecks:flat_strs([Headline]),
     {preview, {H1, W, H}, box(Width, Height, Background, Border, Style, Lines,
-                              [H1, Content, Footer])};
+                              BodyStyle, [H1, Content, Footer])};
 'html.box.1'(Background, Border, Style, Lines, [Width, Height, Headline, Content]) ->
     W = tconv:to_i(Width),
     H = tconv:to_i(Height),
     check_size(W, H),
+    BodyStyle = "hn-wc-ht-body1-" ++ Height, 
     [H1] = typechecks:flat_strs([Headline]),
     {preview, {H1, W, H}, box(Width, Height, Background, Border, Style, Lines,
-                              [H1, Content])};
+                              BodyStyle, [H1, Content])};
 'html.box.1'(Background, Border, Style, Lines, [Width, Height, Content]) ->
     W = tconv:to_i(Width),
     H = tconv:to_i(Height),
     check_size(W, H),
+    BodyStyle = "hn-wc-ht-" ++ Height,
     {preview, {"Box", W, H}, box(Width, Height, Background, Border, Style, Lines,
-                                        [Content])}.
+                                 BodyStyle, [Content])}.
 
 check_size(W, H) when W > 0 andalso W < 13 andalso H > 1 andalso H < 21 -> ok;
 check_size(_W, _H) -> ?ERR_VAL.
 
-box(W, H, Bk, Bd, St, Ln, [Content]) ->
+box(W, H, Bk, Bd, St, Ln, BodyStyle, [Content]) ->
     [C1] = typechecks:flat_strs([Content]),
     Style = check_style(St),
     "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
         " hn-wc-box hn-wc-style-"++Style++" hn-wc-border-"++Bd++
         " hn-wc-background-"++Bk++ "hn-wc-line-"++Ln++"'>"++
-        "<div class='hn-wc-body'><div class='hn-wc-inner'>"++C1++"</div></div>"++
+        "<div class='hn-wc-body "++BodyStyle++"'>"++
+        "<div class='hn-wc-inner'>"++C1++"</div></div>"++
         "</div>";
-box(W, H, Bk, Bd, St, Ln, [Headline, Content]) ->
+box(W, H, Bk, Bd, St, Ln, BodyStyle, [Headline, Content]) ->
     [H1, C1] = typechecks:flat_strs([Headline, Content]),
     Style = check_style(St),
     "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
@@ -65,9 +69,10 @@ box(W, H, Bk, Bd, St, Ln, [Headline, Content]) ->
         " hn-wc-background-"++Bk++" hn-wc-line-"++Ln++"'>"++
         "<div class='hn-wc-headline'>"++
         "<div class='hn-wc-inner'>"++H1++"</div></div>"++
-        "<div class='hn-wc-body'><div class='hn-wc-inner'>"++C1++"</div></div>"++
+        "<div class='hn-wc-body "++BodyStyle++"'>"++
+        "<div class='hn-wc-inner'>"++C1++"</div></div>"++
         "</div>";
-box(W, H, Bk, Bd, St, Ln, [Headline, Content, Footer]) ->
+box(W, H, Bk, Bd, St, Ln, BodyStyle, [Headline, Content, Footer]) ->
     [H1, C1, F1] = typechecks:flat_strs([Headline, Content, Footer]),
     Style = check_style(St),
     "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
@@ -75,7 +80,8 @@ box(W, H, Bk, Bd, St, Ln, [Headline, Content, Footer]) ->
         " hn-wc-background-"++Bk++" hn-wc-line-"++Ln++"'>"++
         "<div class='hn-wc-headline'>"
         "<div class='hn-wc-inner'>"++H1++"</div></div>"++
-        "<div class='hn-wc-body'><div class='hn-wc-inner'>"++C1++"</div></div>"++
+        "<div class='hn-wc-body "++BodyStyle++"'>"++
+        "<div class='hn-wc-inner'>"++C1++"</div></div>"++
         "<div class='hn-wc-footer'>"
         "<div class='hn-wc-inner'>"++F1++"</div></div>"++
         "</div>".
