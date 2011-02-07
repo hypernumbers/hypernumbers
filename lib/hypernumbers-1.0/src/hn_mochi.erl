@@ -1615,7 +1615,7 @@ strip_json(File) ->
     ["json" |  Rest] = lists:reverse(string:tokens(File, ".")),
     lists:flatten(lists:reverse(Rest)).
 
-run_actions(#refX{site = S} = RefX, Env,
+run_actions(#refX{site = S, path = P} = RefX, Env,
             {struct, [{"postcreatepages", {array, Json}}]}) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->
                   N2 = list_to_integer(N),
@@ -1632,7 +1632,7 @@ run_actions(#refX{site = S} = RefX, Env,
             respond(403, Env);
         true ->
             % check that all the templates exists here!
-            {Templates, Actions} = make_actions(S, Commands),
+            {Templates, Actions} = make_actions(S, P, Commands),
             case templates_exist(S, Templates) of
                 {error, Err} ->
                     ?E("Templates errors in postcreatepages: ~p~n", [Err]),
@@ -1650,8 +1650,24 @@ run_actions(#refX{site = S} = RefX, Env,
 
 % we push a single val of now in to prevent problems if the fn runs over
 % a midnight
-make_actions(Site, Recs) -> {_, Recs2} = lists:unzip(Recs),
-                            make_a(Site, Recs2, now(), [], []).
+make_actions(Site, Path, Recs) ->
+    {_, Recs2} = lists:unzip(Recs),
+    {Ts, As} = make_a(Site, Recs2, now(), [], []),
+    % now transform the actions from relative to absolute paths
+    P2 = hn_util:list_to_path(Path),
+    % profoiundly fugly switching from ["some", "path"] to "/some/path/"
+    % and then back again :(
+    Fun = fun(X) ->
+                  Loc = string:join(X, "/") ++ "/",
+                  Loc2 = case Loc of
+                             [$. | _Rest] -> Loc;
+                             _            -> "/" ++ Loc
+                  end,
+                   NewLoc = lists:flatten(muin_util:walk_path(P2, Loc2)) ++ "/",
+                   string:tokens(NewLoc, "/")
+          end,
+    As2 = [{Temp, Fun(X)} || {Temp, X} <- As],
+    {Ts, As2}.
 
 make_a(_S, [], _Now, Temps, Acc) ->
     UniqTemps = hslists:uniq(Temps),
