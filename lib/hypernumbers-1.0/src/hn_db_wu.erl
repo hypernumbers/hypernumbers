@@ -268,9 +268,9 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
               end,
     process_attrs(Rest, Ref, AReq, Attrs2).
 
-mark_dirty_for_zinf(#refX{site = S, obj = {cell, _}} = RefX) ->
-    Tbl = trans(S, dirty_for_zinf),
-    mnesia:write(Tbl, #dirty_for_zinf{dirty = RefX}, write).
+mark_dirty_for_zinf(#refX{site = S, obj = {cell, _}} = RefX) -> ok.
+    %% Tbl = trans(S, dirty_for_zinf),
+    %% mnesia:write(Tbl, #dirty_for_zinf{dirty = RefX}, write).
 
 expand_to_rows_or_cols(#refX{obj={RC, {I, J}}} = Ref) when RC == row; RC == column ->
     expand_to_2(Ref, I, J, []);
@@ -1143,11 +1143,11 @@ set_parents(Tbl,
 
 handle_infs(_CellIdx, _Site, Inf, Inf) ->
     ok;
-handle_infs(CellIdx, Site, NewInfParents, OldInfParents) ->
-    Tbl = trans(Site, dirty_zinf),
-    Rec = #dirty_zinf{type = infinite, dirtycellidx = CellIdx,
-                       old = OldInfParents, new = NewInfParents},
-    mnesia:write(Tbl, Rec, write).
+handle_infs(CellIdx, Site, NewInfParents, OldInfParents) -> ok.
+    %% Tbl = trans(Site, dirty_zinf),
+    %% Rec = #dirty_zinf{type = infinite, dirtycellidx = CellIdx,
+    %%                    old = OldInfParents, new = NewInfParents},
+    %% mnesia:write(Tbl, Rec, write).
 
 %% Adds a new child to a parent.
 -spec add_child(cellidx(), cellidx(), atom(), boolean()) -> ok.
