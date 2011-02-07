@@ -173,7 +173,9 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
           end,
     Cell = tconv:to_b26(C) ++ integer_to_list(R),
     Style = io_lib:format(
-              "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s'",
+              "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s"
+              ++" -moz-border-radius: 4px 4px 4px 4px;"
+              ++" -webkit-border-radius: 4px 4px 4px 4px;'",
               [X, Y, W, H, Css]),
         case Inp of
             "inline" ->
