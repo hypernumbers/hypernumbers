@@ -26,7 +26,6 @@
             Fun1 = fun(Expr, {N, Acc}) ->
                            {N + 1, [{N, webc_parser:compile(Expr)} | Acc]}
                    end,
-            io:format("Commands is ~p~n", [Commands]),
             {_, Commands2} = lists:foldl(Fun1, {1, []}, Commands),
             % no real reason to sort, just tidier!
             Commands3 = lists:sort(Commands2),
@@ -35,7 +34,6 @@
             % browser
             Fun2 = fun({N, L}) ->
                            RecJson = [json_recs:rec_to_json(X) || X <- L],
-                   io:format("RecJson is ~p~n", [RecJson]),
                            {struct, [{N, {array, RecJson}}]}
                    end,
             Payload = [Fun2(X) || X <- Commands3],
