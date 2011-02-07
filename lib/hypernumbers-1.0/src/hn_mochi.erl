@@ -1408,7 +1408,7 @@ try_sync(Cmd0, Site, Return, Stamp) ->
             Cmd = string:join(Cmd0, "/"),
             QReturn = mochiweb_util:quote_plus(Return),
             Attrs = case Stamp of
-                        ?NO_STAMP -> "/?return="++QReturn;
+                        ?NO_STAMP -> "?return="++QReturn;
                         _Other    -> QStamp = mochiweb_util:quote_plus(Stamp),
                                      "?return="++QReturn++"&stamp="++QStamp
                     end,
