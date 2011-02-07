@@ -146,7 +146,6 @@ spark1(Size, Data, Colours) ->
 'dategraph.3x6'(List) ->
     Ret = chunk_dategraph(List, double),
     {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
-    io:format("Ret is ~p~n", [Ret]),
     {resize, 3, 6, dg1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
         StartDate, EndDate, [{?tickmarks, ?BOTHAXES}])}.
 
