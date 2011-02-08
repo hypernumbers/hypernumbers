@@ -13,14 +13,17 @@
          'sparkline.2x2'/1,
          'xy.3x6'/1,
          'xy.4x8'/1,
-         'xy.6x11'/1,
+         'xy.6x12'/1,
          'speedo.2x4'/1,
          'speedo.3x6'/1,
          'speedo.4x8'/1,
-         'speedo.6x11'/1,
+         'speedo.6x12'/1,
          'linegraph.3x6'/1,
          'linegraph.4x8'/1,
-         'linegraph.6x11'/1,
+         'linegraph.6x12'/1,
+         'dategraph.3x6'/1,
+         'dategraph.4x8'/1,
+         'dategraph.6x12'/1,
          linegraph/1,
          piechart/1,
          histogram/1,
@@ -33,7 +36,7 @@
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 
-%% definitions of startdard abbreviations
+%% definitions of standard abbreviations
 -define(apiurl,     "<img src='http://chart.apis.google.com/chart?").
 -define(urlclose,   "' />").
 -define(axesrange,  "chxr").  % 0=x, 1=Y, min, max (seperated by |)"
@@ -58,7 +61,7 @@
 -define(SIZE2x4,     "146x86").
 -define(SIZE3x6,     "218x130").
 -define(SIZE4x8,     "306x174").
--define(SIZE6x11,    "466x240").
+-define(SIZE6x12,    "466x262").
 -define(NORMALAXES,  "x,y").
 -define(LABELAXES,   "x,x,y,y").
 -define(XYLINE,      "lxy").
@@ -140,6 +143,24 @@ spark1(Size, Data, Colours) ->
            ],
     make_chart(Opts).
 
+'dategraph.3x6'(List) ->
+    Ret = chunk_dategraph(List, double),
+    {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
+    {resize, 3, 6, dg1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
+        StartDate, EndDate, [{?tickmarks, ?BOTHAXES}])}.
+
+'dategraph.4x8'(List) ->
+    Ret = chunk_dategraph(List, double),
+    {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
+    {resize, 4, 8, dg1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest,
+                       StartDate, EndDate, [])}.
+
+'dategraph.6x12'(List) ->
+    Ret = chunk_dategraph(List, double),
+    {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
+    {resize, 6, 11, dg1(?SIZE6x12, Data, Scale, AxesLabPos, Colours, Rest,
+                        StartDate, EndDate, [])}.
+
 'linegraph.3x6'(List) ->
     % There is a bug with the Y-Axis as this size!
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
@@ -150,9 +171,9 @@ spark1(Size, Data, Colours) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
     {resize, 4, 8, xy1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest, [])}.
 
-'linegraph.6x11'(List) ->
+'linegraph.6x12'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
-    {resize, 6, 11, xy1(?SIZE6x11, Data, Scale, AxesLabPos, Colours, Rest, [])}.
+    {resize, 6, 11, xy1(?SIZE6x12, Data, Scale, AxesLabPos, Colours, Rest, [])}.
 
 'xy.3x6'(List) ->
     % There is a bug with the Y-Axis as this size!
@@ -164,12 +185,30 @@ spark1(Size, Data, Colours) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
     {resize, 4, 8, xy1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest, [])}.
 
-'xy.6x11'(List) ->
+'xy.6x12'(List) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
-    {resize,6, 11, xy1(?SIZE6x11, Data, Scale, AxesLabPos, Colours, Rest, [])}.
+    {resize,6, 11, xy1(?SIZE6x12, Data, Scale, AxesLabPos, Colours, Rest, [])}.
+
+chunk_dategraph([X, Lines | List], LabType) ->
+    DataX = lists:reverse(cast_dates(X)),
+    Ret = chunk_l2(DataX, Lines, List),
+    {MinX, MaxX, MinY, MaxY, Data, Cols, Rest} = Ret,
+    StartDate = cast_date(MinX),
+    EndDate = cast_date(MaxX),
+    AxesLabPos = make_axes_lab_pos_date(MinX, MaxX, MaxY),
+    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
+    {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest,
+     StartDate, EndDate}.
 
 chunk_linegraph([X, Lines | List], LabType) ->
     DataX = cast_data(X),
+    Ret = chunk_l2(DataX, Lines, List),
+    {MinX, MaxX, MinY, MaxY, Data, Cols, Rest} = Ret,
+    AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
+    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
+    {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest}.
+
+chunk_l2(DataX, Lines, List) ->
     [Lines1] = typechecks:std_ints([Lines]),
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
     {Data, Rest} = lists:split(Lines1, List),
@@ -178,12 +217,9 @@ chunk_linegraph([X, Lines | List], LabType) ->
     MaxX = stdfuns_stats:max(DataX),
     DataX2 = normalize_sp(DataX, MinX, MaxX),
     Data2 = make_data(DataX2, DataY, []),
-    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
-    AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
     % now make the colours
     Colours = allocate_colours(Lines, ?XYCOLOURS),
-    {Data2, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
-     {?colours, Colours}, Rest}.
+    {MinX, MaxX, MinY, MaxY, Data2, {?colours, Colours}, Rest}.
 
 make_data(_X, [], Acc)     -> "t:" ++ string:join(lists:reverse(Acc), "|");
 make_data(X, [H | T], Acc) -> NewAcc = make_d2(X, H, [], []),
@@ -210,14 +246,47 @@ chunk_xy([Lines | List], LabType) ->
     {Data1, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
      {?colours, Colours}, Rest}.
 
-xy1(Size, Data, Scale, _AxesLabPos, Colours, [], Opts) ->
-    NewOpts = lists:concat([[Scale, Colours], Opts]),
+dg1(Size, Data, Scale, AxesLabPos, Colours, [], StartDate, EndDate, Opts) ->
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos,
+                             make_labs_date("", "", StartDate, EndDate),
+                             {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);
-xy1(Size, Data, Scale, _AxesLabPos, Colours, [Tt | []], Opts) ->
-    NewOpts = lists:concat([[Scale, Colours, make_title(Tt)], Opts]),
+dg1(Size, Data, Scale, AxesLabPos, Colours, [Tt | []], StartDate, EndDate, Opts) ->
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
+                             make_labs_date("", "", StartDate, EndDate),
+                            {?axes, ?LABELAXES}], Opts]),
+    xy2(Size, Data, NewOpts);
+dg1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl | []],
+    StartDate, EndDate, Opts) ->
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
+                             make_labs_date(Xl, "", StartDate, EndDate),
+                             {?axes, ?LABELAXES}], Opts]),
+    xy2(Size, Data, NewOpts);
+dg1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl | []],
+    StartDate, EndDate, Opts) ->
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
+                             make_labs_date(Xl, Yl, StartDate, EndDate),
+                             {?axes, ?LABELAXES}], Opts]),
+    xy2(Size, Data, NewOpts);    
+dg1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl, Srs | []],
+    StartDate, EndDate, Opts) ->
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
+                             make_labs_date(Xl, Yl, StartDate, EndDate),
+                             {?axes, ?LABELAXES},
+                             {?legendpos, ?TOPHORIZ}, make_series(Srs)], Opts]),
+    xy2(Size, Data, NewOpts).
+
+xy1(Size, Data, Scale, AxesLabPos, Colours, [], Opts) ->
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_labs("", ""),
+                             {?axes, ?LABELAXES}], Opts]),
+    xy2(Size, Data, NewOpts);
+xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt | []], Opts) ->
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
+                             make_labs("", ""),
+                            {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl | []], Opts) ->
-    NewOpts = lists:concat([[Scale,Colours, AxesLabPos, make_title(Tt),
+    NewOpts = lists:concat([[Scale, Colours, AxesLabPos, make_title(Tt),
                              make_labs(Xl, ""), {?axes, ?LABELAXES}], Opts]),
     xy2(Size, Data, NewOpts);
 xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl | []], Opts) ->
@@ -252,6 +321,11 @@ make_series(Srs) ->
     Srs2 = typechecks:flat_strs([Srs]),
     {?datalables, string:join(Srs2, "|")}.
 
+make_labs_date(X, Y, StartDate, EndDate) ->
+    [X1, Y1] = typechecks:std_strs([X, Y]),
+    {?axeslables, "0:|"++StartDate++"|"++EndDate
+           ++"|1:||"++X1++"|3:||"++Y1}.
+
 make_labs(X, Y) ->
     [X1, Y1] = typechecks:std_strs([X, Y]),
     {?axeslables, "1:|"++X1++"|3:|"++Y1}.
@@ -260,15 +334,19 @@ make_title(Title) ->
     [T2] = typechecks:std_strs([Title]),
     {?title, T2}.
 
+make_axes_lab_pos_date(MinX, MaxX, MaxY) ->
+    "0,"++tconv:to_s(MinX)++","++tconv:to_s(MaxX)++"|1,"
+        ++tconv:to_s(MaxX)++"|3,"++tconv:to_s(MaxY).
+
 make_axes_lab_pos(MaxX, MaxY) ->
     "1,"++tconv:to_s(MaxX)++"|3,"++tconv:to_s(MaxY).
 
 make_scale(null, _, _, _, _, _) -> "";
 make_scale(Type, auto, MinX, MaxX, MinY, MaxY) ->
-    make_s1(Type, MinX, MaxX, MinY, MaxY);
-make_scale(Type, [X1, X2 | []], _MinX, _MaxX, MinY, MaxY) ->
-    [X1a, X2a] = typechecks:std_nums([X1, X2]),
-    make_s1(Type, X1a, X2a, MinY, MaxY).
+    make_s1(Type, MinX, MaxX, MinY, MaxY).
+% make_scale(Type, [X1, X2 | []], _MinX, _MaxX, MinY, MaxY) ->
+%     [X1a, X2a] = typechecks:std_nums([X1, X2]),
+%     make_s1(Type, X1a, X2a, MinY, MaxY).
 
 make_s1(single, MinX, MaxX, MinY, MaxY) ->
     "0,"++tconv:to_s(MinX)++","++tconv:to_s(MaxX)
@@ -278,6 +356,9 @@ make_s1(double, MinX, MaxX, MinY, MaxY) ->
         ++"|1,"++tconv:to_s(MinX)++","++tconv:to_s(MaxX)
         ++"|2,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY)
         ++"|3,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY).
+cast_date(N) ->
+    {datetime, D, T} = muin_util:cast(N, num, date),
+    dh_date:format("d-M-y", {D, T}).
 
 make_chart(List) -> make_c(List, []).
 
@@ -292,7 +373,7 @@ make_c([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
 
 'speedo.3x6'(List)  -> speedo(?SIZE3x6,  List).
 'speedo.4x8'(List)  -> speedo(?SIZE4x8,  List).
-'speedo.6x11'(List) -> speedo(?SIZE6x11, List).
+'speedo.6x12'(List) -> speedo(?SIZE6x12, List).
 
 speedo(Size, [V])                     -> V2 = cast_val(V),
                                          speedo1(Size, V2, "", "", "", "", 1);
@@ -452,7 +533,8 @@ histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
 process_data_linegraph(Data) ->
     Data1 = [proc_dxy1(X) || X <- Data],
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
-    Data3 = [[lists:reverse(cast_linegraph_data(X)) || X <- X1] || X1 <- Data2],
+    Data3 = [lists:flatten([lists:reverse(cast_linegraph_data(X)) || X <- X1])
+             || X1 <- Data2],
     {MinY, MaxY} = get_maxes_lg(Data3),
     Data4 = normalize_linegraph(Data3, MinY, MaxY, []),
     {MinY, MaxY, Data4}.
@@ -467,7 +549,7 @@ process_data_xy(Data) ->
     {MinX, MaxX, MinY, MaxY, "t:"++string:join(Data5, "|")}.
 
 normalize_linegraph([], _, _, Acc) -> lists:reverse(Acc);
-normalize_linegraph([[H] | T], Min, Max, Acc) ->
+normalize_linegraph([H | T], Min, Max, Acc) ->
     NewAcc = lists:reverse(normalize_sp(H, Min, Max)),
     normalize_linegraph(T, Min, Max, [NewAcc | Acc]).
 
@@ -485,13 +567,13 @@ proc_dxy1({range, X} = R) ->
 
 get_maxes_lg(List) -> get_mlg(List, none, none).
 
-get_mlg([], Min, Max)          -> {Min, Max};
-get_mlg([[H] | T], none, none) -> Min = stdfuns_stats:min(H),
-                                  Max = stdfuns_stats:max(H),
-                                  get_mlg(T, Min, Max);
-get_mlg([[H] | T], Min, Max)   -> NewMin = stdfuns_stats:min([Min | H]),
-                                  NewMax = stdfuns_stats:max([Max | H]),
-                                  get_mlg(T, NewMin, NewMax).
+get_mlg([], Min, Max)        -> {Min, Max};
+get_mlg([H | T], none, none) -> Min = stdfuns_stats:min(H),
+                                Max = stdfuns_stats:max(H),
+                                get_mlg(T, Min, Max);
+get_mlg([H | T], Min, Max)   -> NewMin = stdfuns_stats:min([Min | H]),
+                                NewMax = stdfuns_stats:max([Max | H]),
+                                get_mlg(T, NewMin, NewMax).
 
 get_maxes([[X, Y] | T]) -> get_m2(T,
                                   stdfuns_stats:min(X),
@@ -559,7 +641,18 @@ cast_linegraph_data(Data) ->
                       {ignore, str}
                      ],
                      [return_errors, {all, fun muin_collect:is_blank_or_number/1}]).
-    
+
+cast_dates(Data) ->
+    muin_collect:col([Data],
+                     [eval_funs,
+                      fetch, flatten,
+                      {cast, date, num},
+                      {cast, bool, num},
+                      {cast, blank, num},
+                      {ignore, blank}
+                     ],
+                     [return_errors, {all, fun is_number/1}]).
+
 cast_data(Data) ->
     muin_collect:col([Data],
                      [eval_funs,

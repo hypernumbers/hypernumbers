@@ -34,25 +34,20 @@ content(Ref, Type) ->
     Data = lists:sort(fun order_objs/2, read_data_without_page(Ref)),
     Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
     % need to do old and new row/col types
-    RowHs1 = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)} 
+    RowHs = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)} 
              || {#refX{obj={row,{R,R}}},RPs} <- Data],
-    ColWs1 = [{C, pget("width", CPs, ?DEFAULT_WIDTH)} 
+    ColWs = [{C, pget("width", CPs, ?DEFAULT_WIDTH)} 
              || {#refX{obj={column,{C,C}}},CPs} <- Data],
-    RowHs2 = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)} 
-             || {#refX{obj={row,{range, {R, zero, R, inf}}}},RPs} <- Data],
-    ColWs2 = [{C, pget("width", CPs, ?DEFAULT_WIDTH)} 
-             || {#refX{obj={column,{range, {C,zero, C, inf}}}},CPs}<- Data],
-    RowHs = lists:concat([RowHs1, RowHs2]),
-    ColWs = lists:concat([ColWs1, ColWs2]),
     Palette = gb_trees:from_orddict
                 (lists:sort
                  (hn_mochi:extract_styles(Ref#refX.site))),
     CSSList = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, "css"),
     JSList = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, "js"),
     TitleList = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, "title"),
-    CSS = ["<link rel='stylesheet' href='"++X++"' type='text/css' />" || {_, X} <- CSSList],
-    JS = ["<script src='"++X++"'></script>" || {_, X} <- JSList],
-    Title = ["<title>"++X++"</title>" || {_, X} <- TitleList],
+    Open = "<link rel='stylesheet' href='",
+    CSS = [Open ++ X ++ "' type='text/css' />" || {_, X} <- CSSList],
+    JS = ["<script src='" ++ X ++ "'></script>" || {_, X} <- JSList],
+    Title = ["<title>" ++ X ++ "</title>" || {_, X} <- TitleList],
     Addons = #render{css=CSS, js=JS, title=Title},
     {layout(Ref, Type, Cells, ColWs, RowHs, Palette), Addons}.
 
@@ -178,7 +173,9 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
           end,
     Cell = tconv:to_b26(C) ++ integer_to_list(R),
     Style = io_lib:format(
-              "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s'",
+              "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s"
+              ++" -moz-border-radius: 4px 4px 4px 4px;"
+              ++" -webkit-border-radius: 4px 4px 4px 4px;'",
               [X, Y, W, H, Css]),
         case Inp of
             "inline" ->
@@ -233,6 +230,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
          <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />	
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
          <link rel='stylesheet' href='/webcomponents/webcomponents.css' />
+         <link rel='stylesheet' href='/webcomponents/webbasic.css' />
          <link rel='stylesheet' href='/webcomponents/jquery.ui.potato.menu.css'>
          <link rel='stylesheet' href='/tblsorter/style.css' />
 "     ++Addons#render.css++

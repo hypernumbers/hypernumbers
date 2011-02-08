@@ -268,32 +268,18 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
               end,
     process_attrs(Rest, Ref, AReq, Attrs2).
 
-mark_dirty_for_zinf(#refX{site = S, obj = {cell, _}} = RefX) ->
-    Tbl = trans(S, dirty_for_zinf),
-    mnesia:write(Tbl, #dirty_for_zinf{dirty = RefX}, write).
+mark_dirty_for_zinf(#refX{site = S, obj = {cell, _}} = RefX) -> ok.
+    %% Tbl = trans(S, dirty_for_zinf),
+    %% mnesia:write(Tbl, #dirty_for_zinf{dirty = RefX}, write).
 
-% this has to handle old and new columns
-expand_to_rows_or_cols(#refX{obj={RC, {range, {zero, I, inf, J}}}}=Ref) when RC == row ->
-    expand_to_2(Ref, I, J, []);
-expand_to_rows_or_cols(#refX{obj={RC, {range, {I, zero,  J, inf}}}}=Ref) when RC == column ->
-    expand_to_2(Ref, I, J, []);
-expand_to_rows_or_cols(#refX{obj={RC, {I, J}}}=Ref) when RC == row; RC == column ->
+expand_to_rows_or_cols(#refX{obj={RC, {I, J}}} = Ref) when RC == row; RC == column ->
     expand_to_2(Ref, I, J, []);
 expand_to_rows_or_cols(_) -> [].
 
-% this has to handle old and new columns
-expand_to_2(#refX{obj={row, {range, {zero, _, inf, _}}}}=Ref, I, I, A) ->
-    [Ref#refX{obj={row, {range, {zero, I, inf, I}}}} | A];
-expand_to_2(#refX{obj={column, {range, {_, zero, _, inf}}}}=Ref, I, I, A) ->
-    [Ref#refX{obj={column, {range, {I, zero, I, inf}}}} | A];    
-expand_to_2(#refX{obj={Type, _}}=Ref, I, I, A) ->
+expand_to_2(#refX{obj={Type, _}} = Ref, I, I, A) ->
     [Ref#refX{obj={Type, {I, I}}} | A];
-expand_to_2(#refX{obj={row, {range, {zero, _, inf, _}}}}=Ref, I, J, A) ->
-    expand_to_2(Ref, I+1, J, [Ref#refX{obj={row, {range, {zero, I, inf, I}}}} | A]);
-expand_to_2(#refX{obj={column, {range, {_, zero, _, inf}}}}=Ref, I, J, A) ->
-    expand_to_2(Ref, I+1, J, [Ref#refX{obj={column, {range, {I, zero, I, inf}}}} | A]);
-expand_to_2(#refX{obj={Type, _}}=Ref, I, J, A) ->
-    expand_to_2(Ref, I+1, J, [Ref#refX{obj={Type, {I, I}}} | A]).
+expand_to_2(#refX{obj={Type, _}} = Ref, I, J, A) ->
+    expand_to_2(Ref, I + 1, J, [Ref#refX{obj={Type, {I, I}}} | A]).
 
 expand_ref(#refX{site=S}=Ref) -> 
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref, inside)].
@@ -476,15 +462,8 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             [idx_to_refX(S, X) || {S, X} <- DirtyChildren]
     end.
 
-% handles old and new rows and columns
 shift_obj(#local_obj{obj = {cell, {X, Y}}}=LO, XOff, YOff) ->
     O2 = {cell, {X + XOff, Y + YOff}},
-    LO#local_obj{obj = O2};
-shift_obj(#local_obj{obj = {column, {range, {X1, zero,  X2, inf}}}}=LO, XOff, _YOff) ->
-    O2 = {column, {range, {X1 + XOff, zero, X2 + XOff, inf}}},
-    LO#local_obj{obj = O2};
-shift_obj(#local_obj{obj = {row, {range, {zero, Y1, inf, Y2}}}}=LO, _XOff, YOff) ->
-    O2 = {row, {range, {zero, Y1 + YOff, inf, Y2 + YOff}}},
     LO#local_obj{obj = O2};
 shift_obj(#local_obj{obj = {column, {X1, X2}}}=LO, XOff, _YOff) ->
     O2 = {column, {X1 + XOff, X2 + XOff}},
@@ -746,7 +725,6 @@ get_prefix("http://"++Site) ->
     [case S of $: -> $&; S  -> S end 
      || S <- Site].
 
-% handles old and new rows/columns
 shift_pattern(#refX{obj = {cell, {X, Y}}} = RefX, vertical) ->
     RefX#refX{obj = {range, {X, Y, X, infinity}}};
 shift_pattern(#refX{obj = {cell, {X, Y}}} = RefX, horizontal) ->
@@ -755,10 +733,6 @@ shift_pattern(#refX{obj = {range, {X1, Y1, X2, _Y2}}} = RefX, vertical) ->
     RefX#refX{obj = {range, {X1, Y1, X2, infinity}}};
 shift_pattern(#refX{obj = {range, {X1, Y1, _X2, Y2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1, Y1, infinity, Y2}}};
-shift_pattern(#refX{obj = {row, {range, {zero, Y1, inf, _Y2}}}} = RefX, vertical) ->
-    RefX#refX{obj = {range, {0, Y1, infinity, infinity}}};
-shift_pattern(#refX{obj = {column, {range, {X1, zero, _X2, inf}}}} = RefX, horizontal) ->
-    RefX#refX{obj = {range, {X1, 0, infinity, infinity}}};
 shift_pattern(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
     RefX#refX{obj = {range, {0, Y1, infinity, infinity}}};
 shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
@@ -971,41 +945,6 @@ make_new_range(Prefix, Cell1, Cell2,
         {clean, clean} -> {clean, Ret};
         _              -> {dirty, Ret}
     end;
-%% handles old and new rows and cols
-%% handle rows
-make_new_range(Prefix, Cell1, Cell2, 
-               {X1D, X1, Y1D, Y1},
-               {X2D, X2, Y2D, Y2},
-               #refX{obj = {row, {range, {zero, Top, inf, _Bottom}}}}, 
-               {0=_XOffset, YOffset}) ->
-    {St1, NC1} = if Top =< Y1 -> {dirty, make_cell(X1D, X1, 0, Y1D, Y1, YOffset)};
-                    true      -> {clean, Cell1}
-                 end,
-    {St2, NC2} = if Top =< Y2 -> {dirty, make_cell(X2D, X2, 0, Y2D, Y2, YOffset)}; 
-                    true      -> {clean, Cell2}
-                 end,
-    Ret = Prefix ++ NC1 ++ ":" ++ NC2,
-    case {St1, St2} of
-        {clean, clean} -> {clean, Ret};
-        _              -> {dirty, Ret}
-    end;
-%% handle columns
-make_new_range(Prefix, Cell1, Cell2, 
-               {X1D, X1, Y1D, Y1},
-               {X2D, X2, Y2D, Y2},
-               #refX{obj = {column, {range, {Left, zero, _Right, inf}}}}, 
-               {XOffset, 0=_YOffset}) ->
-    {St1, NC1} = if Left =< X1 -> {dirty, make_cell(X1D, X1, XOffset, Y1D, Y1, 0)};
-                    true       -> {clean, Cell1}
-                 end,
-    {St2, NC2} = if Left =< X2 -> {dirty, make_cell(X2D, X2, XOffset, Y2D, Y2, 0)}; 
-                    true       -> {clean, Cell2}
-                 end,
-    Ret = Prefix ++ NC1 ++ ":" ++ NC2,
-    case {St1, St2} of
-        {clean, clean} -> {clean, Ret};
-        _              -> {dirty, Ret}
-    end;
 %% handle rows
 make_new_range(Prefix, Cell1, Cell2, 
                {X1D, X1, Y1D, Y1},
@@ -1204,11 +1143,11 @@ set_parents(Tbl,
 
 handle_infs(_CellIdx, _Site, Inf, Inf) ->
     ok;
-handle_infs(CellIdx, Site, NewInfParents, OldInfParents) ->
-    Tbl = trans(Site, dirty_zinf),
-    Rec = #dirty_zinf{type = infinite, dirtycellidx = CellIdx,
-                       old = OldInfParents, new = NewInfParents},
-    mnesia:write(Tbl, Rec, write).
+handle_infs(CellIdx, Site, NewInfParents, OldInfParents) -> ok.
+    %% Tbl = trans(Site, dirty_zinf),
+    %% Rec = #dirty_zinf{type = infinite, dirtycellidx = CellIdx,
+    %%                    old = OldInfParents, new = NewInfParents},
+    %% mnesia:write(Tbl, Rec, write).
 
 %% Adds a new child to a parent.
 -spec add_child(cellidx(), cellidx(), atom(), boolean()) -> ok.
@@ -1517,24 +1456,6 @@ recheck_overlay(Text, {Type, _}, {column, _}, _Disp)
 recheck_overlay(Text, {Type, _}, {row, _}, _Disp)
   when ((Type == column) orelse (Type == range)) ->
     {formula, Text};
-%% handle old and new rows/columns
-%% check a row/row
-recheck_overlay(Text, {row, {range, {X1, zero, X2, inf}}},
-                {row, {range, {XX1, zero, XX2, inf}}} = Tgt, Disp) ->
-    if
-        (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2) ->
-            rewrite((X2 - X1 + 1), Tgt, Text, middle, Disp);
-        true ->
-            {formula, Text}
-    end;
-%% check a col/col
-recheck_overlay(Text, {column, {range, {zero, Y1, inf, Y2}}}, {column, {range, {zero, YY1, inf, YY2}}} = Tgt, Disp) ->
-    if
-        (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
-            rewrite((Y2 - Y1 + 1), Tgt, Text, middle, Disp);
-        true ->
-            {formula, Text}
-    end;
 %% check a row/row
 recheck_overlay(Text, {row, {X1, X2}}, {row, {XX1, XX2}} = Tgt, Disp) ->
     if
@@ -1679,7 +1600,7 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
         % the formula returns as rawform
         {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile}} ->
             {Trans, Label} = RawF#form.id,
-            Form = RawF#form{id={Ref#refX.path, Trans, Label}}, 
+            Form = RawF#form{id={Ref#refX.path, Trans, Label}},
             ok = attach_form(Ref, Form),
             Label2 = case Label of
                          "_" -> "Submit Button";
@@ -1690,10 +1611,14 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Html, 
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web control
-        {ok, {Pcode, {webcontrol, {Value, Title}, Res}, Parents, InfParents,
+        {ok, {Pcode, {webcontrol, {Payload, Title}, Res}, Parents, InfParents,
               Recompile}} ->
-            Attrs2 = orddict:store("preview", {"Create Button", 1, 1}, Attrs),
-            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
+            {Trans, Label} = Payload#form.id,
+            Form = Payload#form{id={Ref#refX.path, Trans, Label}},
+            ok = attach_form(Ref, Form),
+            Attrs2 = orddict:store("__hasform", t, Attrs),
+            Attrs3 = orddict:store("preview", {Title, 1, 1}, Attrs2),
+            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res, 
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web-hingie that needs to be previewed
         {ok, {Pcode, {preview, {PreV, Wd, Ht}, Res}, Pars, InfPars, Recompile}} ->
@@ -1964,10 +1889,10 @@ objs_intersect_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
                      when MP == P,
                           X1 =< MX, MX =< X2,
                           Y1 =< MY, MY =< Y2 -> LO;
-                  (LO=#local_obj{path=MP, obj={row,{range, {zero, MY,inf,MY}}}})
+                  (LO=#local_obj{path=MP, obj={row,{MY,MY}}})
                      when MP == P,
                           Y1 =< MY, MY =< Y2 -> LO;
-                  (LO=#local_obj{path=MP, obj={column, {range, {MX,zero,MX,inf}}}})
+                  (LO=#local_obj{path=MP, obj={column, {MX,MX}}})
                      when MP == P,
                           X1 =< MX, MX =< X2 -> LO;
                   (LO=#local_obj{path=MP, obj={page, _}}) 
@@ -1977,31 +1902,13 @@ objs_intersect_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
     ets:fun2ms(
       fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}})
             when MP == P, MX == X, MY == Y -> LO;
-         (LO=#local_obj{path=MP, obj={column,{range, {MX,zero,MX,inf}}}}) 
+         (LO=#local_obj{path=MP, obj={column,{MX,MX}}}) 
             when MP == P, MX == X -> LO; 
-         (LO=#local_obj{path=MP, obj={row,{range, {zero,MY,inf,MY}}}}) 
+         (LO=#local_obj{path=MP, obj={row,{MY,MY}}}) 
             when MP == P, MY == Y -> LO;
          (LO=#local_obj{path=MP, obj={page, _}}) 
             when MP == P -> LO
       end);
-objs_intersect_ref(#refX{path = P, obj = {column, {range, {X1,zero,X2,inf}}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
-                     when MP == P,
-                          X1 =< MX, MX =< X2 -> LO;
-                  (LO=#local_obj{path=MP, obj={row,_}})
-                     when MP == P -> LO;
-                  (LO=#local_obj{path=MP, obj={page, _}}) 
-                     when MP == P -> LO
-               end);
-objs_intersect_ref(#refX{path = P, obj = {row, {range, {zero,R1,inf,R2}}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
-                     when MP == P,
-                          R1 =< MY, MY =< R2 -> LO;
-                  (LO=#local_obj{path=MP, obj={column, _}})
-                     when MP == P-> LO;
-                  (LO=#local_obj{path=MP, obj={page, _}}) 
-                     when MP == P -> LO
-               end);
 objs_intersect_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
     ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
                      when MP == P,

@@ -13,8 +13,8 @@
         ]).
 
 -define('htmlbox', $h,$t,$m,$l,$.,$b,$o,$x,$.).
--define('htmlalert', $h,$t,$m,$l,$.,$a,$l,$e,$r,$t, $.).
--define('htmlblock', $h,$t,$m,$l,$.,$b,$l,$o,$c,$k,$.).
+-define('htmlalert', $h,$t,$m,$l,$.,$a,$l,$e,$r,$t,$.).
+-define('htmlruledbox', $h,$t,$m,$l,$.,$r,$u,$l,$e,$d,$b,$o,$x,$.).
 
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
@@ -184,9 +184,9 @@ transform([?htmlbox | R], Args) ->
 transform([?htmlalert | R], Args) ->
     {W, H} = parse(R),
     {list_to_atom([?htmlalert]), [W , H | Args]};
-transform([?htmlblock | R], Args) ->
+transform([?htmlruledbox | R], Args) ->
     {W, H} = parse(R),
-    {list_to_atom([?htmlblock]), [W , H | Args]};
+    {list_to_atom([?htmlruledbox]), [W , H | Args]};
 transform(List, Args) -> {list_to_atom(List), Args}.
 
 parse(String) -> [W, H] = string:tokens(String, "x"),

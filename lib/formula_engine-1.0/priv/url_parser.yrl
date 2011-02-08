@@ -118,7 +118,10 @@ zseg({_, Txt}) -> {zseg, "[" ++ Txt ++ "]"}.
 %% API
 
 make_refX("http://"++URL) ->
-    {Site, PathAndRef} = lists:split(string:chr(URL, $/) - 1, URL),
+    {Site, PathAndRef} = case string:chr(URL, $/) of
+                             0 -> {URL, "/"};
+                             N -> lists:split(N - 1, URL)
+                         end,
     {ok, Toks} = url_lexer:lex(PathAndRef),
     Ret = parse(Toks),
     case Ret of
@@ -251,6 +254,8 @@ prod_test_() ->
 
      ?_assert(make_refX("http://hypernumbers.com/_sync/seek/?return=http%3A%2F%2Fbi27.tiny.hn%2F%3Fview%3Ddemopage") == {refX, "http://hypernumbers.com", url, ["_sync", "seek"], {page, "/"}}),
 
-     ?_assert(make_refX("http://hypernumbers.com/_ping/?spoor=3b268089bf028bf5&return=http://support.hypernumbers.com/helpoverview/overview/") == {refX, "http://hypernumbers.com", url, ["_ping"], {page, "/"}})
+     ?_assert(make_refX("http://hypernumbers.com/_ping/?spoor=3b268089bf028bf5&return=http://support.hypernumbers.com/helpoverview/overview/") == {refX, "http://hypernumbers.com", url, ["_ping"], {page, "/"}}),
+     
+     ?_assert(make_refX("http://hypernumbers.com:80") == {refX, "http://hypernumbers.com:80", url, [], {page, "/"}})
      
      ].

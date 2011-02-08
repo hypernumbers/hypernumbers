@@ -304,30 +304,16 @@ is_numeric(Str) ->
         true  -> lists:all(Fun, Str)
     end.
 
-get_offset(insert, D, {cell,     _}) ->
-    g_o1(D, 1, 1);
-get_offset(insert, D, {column, {range, {X1, zero, X2, inf}}}) ->
-    g_o1(D, X2 - X1 + 1, 0); 
-get_offset(insert, D, {row,    {range, {zero, Y1, inf, Y2}}}) ->
-    g_o1(D, 0, Y2 - Y1 + 1); 
-get_offset(insert, D, {row,    {Y1, Y2}}) ->
-    g_o1(D, 0, Y2 - Y1 + 1); 
-get_offset(insert, D, {column, {X1, X2}}) ->
-    g_o1(D, X2 - X1 + 1, 0); 
-get_offset(insert, D, {range,  {X1, Y1, X2, Y2}}) ->
-    g_o1(D, X2 - X1 + 1, Y2 - Y1 + 1);
-get_offset(delete, D, {cell,    _}) ->
-    g_o1(D, -1, -1);
-get_offset(delete, D, {column, {range, {X1, zero, X2, inf}}}) ->
-    g_o1(D, -(X2 - X1 + 1), 0); 
-get_offset(delete, D, {row,    {range, {zero, Y1, inf, Y2}}}) ->
-    g_o1(D, 0, -(Y2 - Y1 + 1)); 
-get_offset(delete, D, {row,    {Y1, Y2}}) ->
-    g_o1(D, 0, -(Y2 - Y1 + 1)); 
-get_offset(delete, D, {column, {X1, X2}}) ->
-    g_o1(D, -(X2 - X1 + 1), 0); 
-get_offset(delete, D, {range,  {X1, Y1, X2, Y2}}) ->
-    g_o1(D, -(X2 - X1 + 1), -(Y2 - Y1 + 1)).
+get_offset(insert, D, {cell,     _})              -> g_o1(D, 1, 1);
+get_offset(insert, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, Y2 - Y1 + 1); 
+get_offset(insert, D, {column, {X1, X2}})         -> g_o1(D, X2 - X1 + 1, 0); 
+get_offset(insert, D, {range,  {X1, Y1, X2, Y2}}) -> g_o1(D, X2 - X1 + 1,
+                                                          Y2 - Y1 + 1);
+get_offset(delete, D, {cell,    _})               -> g_o1(D, -1, -1);
+get_offset(delete, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, -(Y2 - Y1 + 1)); 
+get_offset(delete, D, {column, {X1, X2}})         -> g_o1(D, -(X2 - X1 + 1), 0); 
+get_offset(delete, D, {range,  {X1, Y1, X2, Y2}}) -> g_o1(D, -(X2 - X1 + 1), -
+                                                          (Y2 - Y1 + 1)).
 
 g_o1(vertical, _X, Y)   -> {0, Y};
 g_o1(horizontal, X, _Y) -> {X, 0}.
@@ -605,11 +591,11 @@ parse_ref(Ref) ->
                   cell     -> util2:strip_ref(undollar(Ref));
                   range    -> util2:parse_range(undollar(Ref));
                   column   -> [First, Last] = string:tokens(Ref, ":"),
-                              {range, {tconv:to_i(undollar(First)), zero,
-                                       tconv:to_i(undollar(Last)), inf}};
+                              {tconv:to_i(undollar(First)),
+                               tconv:to_i(undollar(Last))};
                   row      -> [First, Last] = string:tokens(Ref, ":"),
-                              {range, {zero, tconv:to_i(undollar(First)),
-                                       inf, tconv:to_i(undollar(Last))}};
+                              {tconv:to_i(undollar(First)),
+                               tconv:to_i(undollar(Last))};
                   filename -> Ref
               end,
     {RefType, RefVal}.

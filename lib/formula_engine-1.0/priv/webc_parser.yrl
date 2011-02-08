@@ -4,6 +4,8 @@
 Nonterminals
 
 Expr
+RelPath
+SubExpr
 Segs
 Seg
 Clause
@@ -12,11 +14,12 @@ SubClause
 
 Terminals
 
+fullstop
 open
 close
 comma
 slash
-path
+plainpath
 .
 
 Rootsymbol Expr.
@@ -26,80 +29,98 @@ Endsymbol  '$end'.
 
 %% ----- Grammar definition.
 
-Expr -> Seg  slash : ['$1'].
-Expr -> Segs slash :  lists:flatten('$1').
+Expr -> fullstop fullstop SubExpr : [{plainpath, ".."} | '$3'].
+Expr -> fullstop SubExpr          : [{plainpath, "."}  | '$2'].
+Expr -> SubExpr                   : '$1'.
+
+SubExpr -> Seg  slash : ['$1'].
+SubExpr -> Segs slash :  lists:flatten('$1').
 
 Segs -> Segs Seg : join('$1', '$2').
 Segs -> Seg  Seg : join('$1', '$2').
 
 Seg -> Clause : '$1'.
 
-Seg -> slash path : '$2'.
+Seg -> slash plainpath : '$2'.
+Seg -> slash RelPath   : '$2'.
+
+RelPath -> RelPath fullstop : {plainpath, ".."}.
+RelPath -> fullstop         : {plainpath, "."}.
 
 Clause -> SubClause close : clause(lists:flatten('$1')).
 
-SubClause -> SubClause comma path : join('$1', '$3').
-SubClause -> slash open path      : '$3'.
+SubClause -> SubClause comma plainpath : join('$1', '$3').
+SubClause -> slash open plainpath      : '$3'.
 
 Erlang code.
 
 -export([
-         run/1,
          compile/1,
          p_TEST/1
         ]).
 
--include("webcontrols.hrl").
+-include("spriki.hrl").
+-include("errvals.hrl").
 
 %%% Api
 compile(String) ->
-    io:format("String is ~p~n", [String]),
     {ok, Toks, 1} = webc_lexer:lex(String),
     {ok, AST} = parse(Toks),
-    io:format("AST is ~p~n", [AST]),
     AST.
     
-run(AST) ->
-    io:format("AST is ~p~n", [AST]),
-    42.
-
 %%%% Parser code
 
 % 2 args
-clause([{path, A}, {path, B}]) ->
-    #wcpagename{template = A, name = B};
+clause([{plainpath, A}, {plainpath, B}]) ->
+    #namedpage{template = A, name = B};
 % 3 args
-clause([{path, A}, {path, "auto"}, {path, "incr"}]) ->
-    #wcpagenumber{template = A, type = incr, prefix = ""};
-clause([{path, A}, {path, "auto"}, {path, "random"}]) ->
-    #wcpagenumber{template = A, type = random, prefix = ""};
-clause([{path, A}, {path, "date"}, {path, "yy"}]) ->
-    #wcpagedate{template = A, format = "yy"};
-clause([{path, A}, {path, "date"}, {path, "yyyy"}]) -> 
-    #wcpagedate{template = A, format = "yyyy"};
-clause([{path, A}, {path, "date"}, {path, "m"}]) -> 
-    #wcpagedate{template = A, format = "m"};
-clause([{path, A}, {path, "date"}, {path, "mm"}]) -> 
-    #wcpagedate{template = A, format = "mm"};
-clause([{path, A}, {path, "date"}, {path, "mmm"}]) -> 
-    #wcpagedate{template = A, format = "mmm"};
-clause([{path, A}, {path, "date"}, {path, "mmmm"}]) -> 
-    #wcpagedate{template = A, format = "mmmm"};
-clause([{path, A}, {path, "date"}, {path, "d"}]) -> 
-    #wcpagedate{template = A, format = "d"};
-clause([{path, A}, {path, "date"}, {path, "dd"}]) -> 
-    #wcpagedate{template = A, format = "dd"};
-clause([{path, A}, {path, "date"}, {path, "ddd"}]) -> 
-    #wcpagedate{template = A, format = "ddd"};
-clause([{path, A}, {path, "date"}, {path, "dddd"}]) -> 
-    #wcpagedate{template = A, format = "dddd"};
+clause([{plainpath, A}, {plainpath, "auto"}, {plainpath, "incr"}]) ->
+    #numberedpage{template = A, type = "increment", prefix = ""};
+clause([{plainpath, A}, {plainpath, "auto"}, {plainpath, "increment"}]) ->
+    #numberedpage{template = A, type = "increment", prefix = ""};
+clause([{plainpath, A}, {plainpath, "auto"}, {plainpath, "random"}]) ->
+    #numberedpage{template = A, type = "random", prefix = ""};
+clause([{plainpath, A}, {plainpath, "date"}, {plainpath, "yy"}]) ->
+    #datedpage{template = A, format = "yy"};
+clause([{plainpath, A}, {plainpath, "date"}, {plainpath, "yyyy"}]) -> 
+    #datedpage{template = A, format = "yyyy"};
+clause([{plainpath, A}, {plainpath, "date"}, {plainpath, "m"}]) -> 
+    #datedpage{template = A, format = "m"};
+clause([{plainpath, A}, {plainpath, "date"}, {plainpath, "mm"}]) -> 
+    #datedpage{template = A, format = "mm"};
+clause([{plainpath, A}, {plainpath, "date"}, {plainpath, "mmm"}]) -> 
+    #datedpage{template = A, format = "mmm"};
+clause([{plainpath, A}, {plainpath, "date"}, {plainpath, "mmmm"}]) -> 
+    #datedpage{template = A, format = "mmmm"};
+clause([{plainpath, A}, {plainpath, "date"}, {plainpath, "d"}]) -> 
+    #datedpage{template = A, format = "d"};
+clause([{plainpath, A}, {plainpath, "date"}, {plainpath, "dd"}]) -> 
+    #datedpage{template = A, format = "dd"};
+clause([{plainpath, A}, {plainpath, "date"}, {plainpath, "ddd"}]) -> 
+    #datedpage{template = A, format = "ddd"};
+clause([{plainpath, A}, {plainpath, "date"}, {plainpath, "dddd"}]) -> 
+    #datedpage{template = A, format = "dddd"};
 % 4 args
-clause([{path, A}, {path, "auto"}, {path, "incr"}, {path, B}]) -> 
-    #wcpagenumber{template = A, type = incr, prefix = B};
-clause([{path, A}, {path, "auto"}, {path, "random"}, {path, B}]) -> 
-    #wcpagenumber{template = A, type = random, prefix = B}.
+clause([{plainpath, A}, {plainpath, "auto"}, {plainpath, "incr"},
+        {plainpath, B}]) -> 
+    ok = check_not_num_prefix(B),
+    #numberedpage{template = A, type = increment, prefix = B};
+clause([{plainpath, A}, {plainpath, "auto"}, {plainpath, "increment"},
+        {plainpath, B}]) -> 
+    ok = check_not_num_prefix(B),
+    #numberedpage{template = A, type = "increment", prefix = B};
+clause([{plainpath, A}, {plainpath, "auto"}, {plainpath, "random"},
+        {plainpath, B}]) -> 
+    ok = check_not_num_prefix(B),
+    #numberedpage{template = A, type = "random", prefix = B}.
 
 join(A, B) -> [A, B].
+
+check_not_num_prefix(A) ->
+    case tconv:to_num(A) of
+        {error, nan} -> ok;
+        _            -> ?ERR_VAL
+    end.    
 
 %%% Tests:
 -include_lib("eunit/include/eunit.hrl").
@@ -115,98 +136,138 @@ p_TEST(String) ->
 seg_test_() ->
     [
      ?_assert(p_TEST("/blah/") == [
-                                   {path, "blah"}
+                                   {plainpath, "blah"}
                                   ]),
 
      ?_assert(p_TEST("/[Template, Name]/") ==
               [
-               {wcpagename, "template", "name"}
+               {namedpage, "template", "name"}
               ]),
 
-     ?_assert(p_TEST("/[Template, auto, incr]/") ==
+     ?_assert(p_TEST("/[Template, auto, increment]/") ==
               [
-               {wcpagenumber, "template", incr, ""}
+               {numberedpage, "template", "increment", ""}
               ]),
 
-     ?_assert(p_TEST("/[Template, auto, incr, Yeah]/") ==
+     ?_assert(p_TEST("/[Template, auto, increment, Yeah]/") ==
               [
-               {wcpagenumber, "template", incr, "yeah"}
+               {numberedpage, "template", "increment", "yeah"}
               ]),
 
      ?_assert(p_TEST("/[Template, auto, random]/") ==
               [
-               {wcpagenumber, "template", random, ""}
+               {numberedpage, "template", "random", ""}
               ]),
 
      ?_assert(p_TEST("/[Template, auto, random, Yeah]/") ==
               [
-               {wcpagenumber, "template", random, "yeah"}
+               {numberedpage, "template", "random", "yeah"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, yy]/") ==
               [
-               {wcpagedate, "template", "yy"}
+               {datedpage, "template", "yy"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, yyyy]/") ==
               [
-               {wcpagedate, "template", "yyyy"}
+               {datedpage, "template", "yyyy"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, m]/") ==
               [
-               {wcpagedate, "template", "m"}
+               {datedpage, "template", "m"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, mm]/") ==
               [
-               {wcpagedate, "template", "mm"}
+               {datedpage, "template", "mm"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, mmm]/") ==
               [
-               {wcpagedate, "template", "mmm"}
+               {datedpage, "template", "mmm"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, mmmm]/") ==
               [
-               {wcpagedate, "template", "mmmm"}
+               {datedpage, "template", "mmmm"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, d]/") ==
               [
-               {wcpagedate, "template", "d"}
+               {datedpage, "template", "d"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, dd]/") ==
               [
-               {wcpagedate, "template", "dd"}
+               {datedpage, "template", "dd"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, ddd]/") ==
               [
-               {wcpagedate, "template", "ddd"}
+               {datedpage, "template", "ddd"}
               ]),
 
      ?_assert(p_TEST("/[Template, date, dddd]/") ==
               [
-               {wcpagedate, "template", "dddd"}
+               {datedpage, "template", "dddd"}
               ]),
 
      ?_assert(p_TEST("/blah/[Template, Name]/") ==
               [
-               {path, "blah"},
-               {wcpagename, "template", "name"}
+               {plainpath, "blah"},
+               {namedpage, "template", "name"}
               ]),
 
      ?_assert(p_TEST("/blah/bleh/[Template, Name]/bloh/") ==
               [
-               {path, "blah"},
-               {path, "bleh"},
-               {wcpagename, "template", "name"},
-               {path, "bloh"}
+               {plainpath, "blah"},
+               {plainpath, "bleh"},
+               {namedpage, "template", "name"},
+               {plainpath, "bloh"}
               ])
 
+    ].
+
+
+rel_test_() ->
+    [
+     ?_assert(p_TEST("./blah/bleh/[Template, Name]/bloh/") ==
+              [
+               {plainpath, "."},
+               {plainpath, "blah"},
+               {plainpath, "bleh"},
+               {namedpage, "template", "name"},
+               {plainpath, "bloh"}
+              ]),
+     
+     ?_assert(p_TEST("../blah/bleh/[Template, Name]/bloh/") ==
+              [
+               {plainpath, ".."},
+               {plainpath, "blah"},
+               {plainpath, "bleh"},
+               {namedpage, "template", "name"},
+               {plainpath, "bloh"}
+              ]),
+     
+     ?_assert(p_TEST("/blah/./bleh/[Template, Name]/bloh/") ==
+              [
+               {plainpath, "blah"},
+               {plainpath, "."},
+               {plainpath, "bleh"},
+               {namedpage, "template", "name"},
+               {plainpath, "bloh"}
+              ]),
+     
+          ?_assert(p_TEST("/blah/../bleh/[Template, Name]/bloh/") ==
+              [
+               {plainpath, "blah"},
+               {plainpath, ".."},
+               {plainpath, "bleh"},
+               {namedpage, "template", "name"},
+               {plainpath, "bloh"}
+              ])
     ].
 
 prod_test_() ->
@@ -214,6 +275,6 @@ prod_test_() ->
 
      ?_assert(p_TEST("/[jingo, bobbie]/") ==
               [
-               {wcpagename, "jingo", "bobbie"}
+               {namedpage, "jingo", "bobbie"}
               ])
     ].

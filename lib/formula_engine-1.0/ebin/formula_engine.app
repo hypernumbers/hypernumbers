@@ -45,8 +45,8 @@
             url_parser,
             userdef_rb,
             userdef,
-            webcontrols_lexer,
-            webcontrols_parser,
+            webc_lexer,
+            webc_parser,
             xfl_lexer,
             xfl_parser
            ]},

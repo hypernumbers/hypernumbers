@@ -168,9 +168,7 @@ transform_status(List) -> transform_status(List, [], []).
 
 transform_status([], Acc1, Acc2)      -> {Acc1, Acc2};
 transform_status([H | T], Acc1, Acc2) ->
-    io:format("H is ~p~n", [H]),
     {NewU, NewH} = purge(H),
-    io:format("NewU is ~p~nNewH is ~p~n", [NewU, NewH]),
     NewAcc1 = case NewU of
                   [] -> Acc1;
                   _  -> [NewU | Acc1]

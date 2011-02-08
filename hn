@@ -28,47 +28,52 @@ main(Args) ->
     end,
     net_kernel:stop().
 
-dispatch(["build"]) -> 
-    build(), 
+dispatch(["build"]) ->
+    {ok, Root} = file:get_cwd(),
+    build(Root),
+    file:set_cwd(Root),
     remote_do(hotswap);
 
 dispatch(["lexer-parser"]) -> 
-    build_lexer_parser(),
-    build_quick(),
+    {ok, Root} = file:get_cwd(),
+    build_lexer_parser(Root),
+    file:set_cwd(Root),
     remote_do(hotswap);
 
 dispatch(["quick"]) -> 
-    build_quick(),
+    {ok, Root} = file:get_cwd(),
+    build_quick(Root),
+    file:set_cwd(Root),
     remote_do(hotswap);
 
 dispatch(["migrate"]) -> 
     %% Force any unloaded modules to be loaded, BEFORE any compilation.
     remote_do(hotswap),
-    clean(),
-    build(),
+    {ok, Root} = file:get_cwd(),
+    clean(Root),
+    build(Root),
     remote_do(migrate);
 
-dispatch(["plainbuild"]) -> build();
-dispatch(["clean"]) -> clean();
-dispatch(["start" | Args]) -> start(Args);
-dispatch(["stop" | Node]) -> stop(Node);
-dispatch(["call" | Args]) -> call(Args);
+dispatch(["plainbuild"])     -> {ok, Root} = file:get_cwd(),
+                                build(Root);
+dispatch(["clean"])          -> {ok, Root} = file:get_cwd(),
+                                clean(Root);
+dispatch(["start" | Args])   -> start(Args);
+dispatch(["stop" | Node])    -> stop(Node);
+dispatch(["call" | Args])    -> call(Args);
 dispatch(["do", Cmd | Node]) -> remote_do(Cmd, Node);
-dispatch(_BadCommand) -> usage().
+dispatch(_BadCommand)        -> usage().
     
-build() ->
+build(Root) ->
 
-    io:format("This should be done in compile_code so it can be run from load_cluster~n~n"),
+    io:format("This should be done in compile_code so it can be run"
+              ++" from load_cluster~n~n"),
     ensure_config(),
-
-    {ok, Root} = file:get_cwd(),
-
+    clean(Root),
     io:format("Compiling Dependencies ...~n"),
-
     filelib:ensure_dir("lib/mochiweb/ebin/"),
     filelib:ensure_dir("lib/hypernumbers-1.0/ebin/"),
     filelib:ensure_dir("ebin/"),
-
     file:set_cwd("lib/mochiweb"), 
     os:cmd("make"),
     file:set_cwd(Root),
@@ -78,9 +83,28 @@ build() ->
     file:set_cwd("lib/starling"),
     io:format(os:cmd("rake")),
     file:set_cwd(Root),
-    build_lexer_parser(),
+
+    % build the lexer-parsers
+    make_lexer_parser(Root),
     compile:file("src/compile_code.erl", [{outdir, "ebin"}]),
-    
+    make_ms_util(Root),
+    file:set_cwd(Root++"/ebin"),
+    compile_code:start(),
+    check_console_log(Root).
+
+build_lexer_parser(Root) ->
+    make_ms_util(Root),
+    make_lexer_parser(Root),
+    make_quick(Root),
+    check_console_log(Root).
+
+build_quick(Root) ->
+    make_ms_util(Root),
+    make_quick(Root),
+    check_console_log(Root).  
+
+make_ms_util(Root) ->
+    file:set_cwd(Root),    
     compile:file("priv/ms_util/make_ms_util.erl",
                  [{outdir, "lib/hypernumbers-1.0/ebin"}, debug_info,
                   {i, "lib/hypernumbers-1.0/include"}]),
@@ -88,30 +112,26 @@ build() ->
     make_ms_util:make(),
     {ok, _Bytes} =
         file:copy("ms_util2.erl", "lib/hypernumbers-1.0/src/ms_util2.erl"),
-    ok = file:delete("ms_util2.erl"),
+    ok = file:delete("ms_util2.erl").
 
-    file:set_cwd(Root++"/ebin"),
-    compile_code:start(),
-    file:set_cwd(Root).
-
-build_lexer_parser() ->
-    {ok, Root} = file:get_cwd(),
+make_lexer_parser(Root) ->
     file:set_cwd("lib/formula_engine-1.0/priv/"),
     Ret = os:cmd("./generate.escript"),
     io:format("~p~n", [Ret]),
     file:set_cwd(Root).
-    
-build_quick() ->
-    {ok, Root} = file:get_cwd(),
+
+make_quick(Root) ->
     ensure_config(),
     file:set_cwd(Root++"/ebin"),
     compile_code:quick(),
-    file:set_cwd(Root++"/lib/hypernumbers-1.0/priv/core_install/docroot/"),
-    print_msgs(string:tokens(os:cmd("grep -R -l console.log *"), "\n")),
     file:set_cwd(Root).
 
-clean() ->
-    Files = filelib:wildcard("lib/*/ebin/*.beam") ++ 
+check_console_log(Root) ->
+    file:set_cwd(Root++"/lib/hypernumbers-1.0/priv/core_install/docroot/"),
+    print_msgs(string:tokens(os:cmd("grep -R -l console.log *"), "\n")).
+
+clean(Root) ->
+    Files = filelib:wildcard(Root ++ "lib/*/ebin/*.beam") ++ 
         filelib:wildcard("ebin/*.beam"),
     [file:delete(F) || F <- Files],
     ok.
@@ -196,7 +216,6 @@ parse_extra_args([Key, Value | Rest], Acc) ->
 parse_extra_args(_, Acc) ->
     %% todo, add support for 3-val env settings
     parse_extra_args([], Acc).
-
 
 has_config() ->
     filelib:is_file(config_file()).

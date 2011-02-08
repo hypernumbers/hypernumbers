@@ -3,12 +3,16 @@
 -module(hn_security).
 
 -export([
-         validate_form/2
+         validate_form/2,
+         validate_create_pages/2
         ]).
 
 %% APIs-export([validate/2]).
 -include("spriki.hrl").
 -include_lib("eunit/include/eunit.hrl").
+
+validate_create_pages([Expected], Submitted) ->
+    lists:sort(Expected#form.attrs) =:= lists:sort(Submitted).
 
 validate_form(Expected0, Submitted0) ->
     Expected = lists:keysort(#form.id, Expected0),
