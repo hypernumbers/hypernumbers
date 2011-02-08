@@ -53,7 +53,9 @@ check_size(W, H) when W > 0 andalso W < 13 andalso H > 1 andalso H < 21 -> ok;
 check_size(_W, _H) -> ?ERR_VAL.
 
 box(W, H, Bk, Bd, St, Ln, BodyStyle, [Content]) ->
+    io:format("Content is ~p~n", [Content]),
     [C1] = typechecks:flat_strs([Content]),
+    io:format("C1 is ~p~n", [C1]),
     Style = check_style(St),
     "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
         " hn-wc-box hn-wc-style-"++Style++" hn-wc-border-"++Bd++
@@ -62,7 +64,9 @@ box(W, H, Bk, Bd, St, Ln, BodyStyle, [Content]) ->
         "<div class='hn-wc-inner'>"++C1++"</div></div>"++
         "</div>";
 box(W, H, Bk, Bd, St, Ln, BodyStyle, [Headline, Content]) ->
+    io:format("Content is ~p~n", [Content]),
     [H1, C1] = typechecks:flat_strs([Headline, Content]),
+    io:format("C1 is ~p~n", [C1]),
     Style = check_style(St),
     "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
         " hn-wc-box hn-wc-style-"++Style++" hn-wc-border-"++Bd++
@@ -73,7 +77,9 @@ box(W, H, Bk, Bd, St, Ln, BodyStyle, [Headline, Content]) ->
         "<div class='hn-wc-inner'>"++C1++"</div></div>"++
         "</div>";
 box(W, H, Bk, Bd, St, Ln, BodyStyle, [Headline, Content, Footer]) ->
+    io:format("Content is ~p~n", [Content]),
     [H1, C1, F1] = typechecks:flat_strs([Headline, Content, Footer]),
+    io:format("C1 is ~p~n", [C1]),
     Style = check_style(St),
     "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
         " hn-wc-box hn-wc-style-"++Style++" hn-wc-border-"++Bd++
