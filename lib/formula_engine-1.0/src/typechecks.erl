@@ -12,7 +12,8 @@
          std_strs/1,
          std_ints/1,
          std_nums/1,
-         flat_strs/1
+         flat_strs/1,
+         html_box_contents/1
         ]).
 
 std_bools(Vals) ->
@@ -39,4 +40,9 @@ flat_strs(Vals) ->
     Rules = [eval_funs, fetch, flatten, {cast, str}],
     Passes = [return_errors, {all, fun muin_collect:is_string/1}],
     muin_collect:col(Vals, Rules, Passes).
-       
+
+html_box_contents(Vals) ->
+    Rules = [eval_funs, fetch, flatten, strip_resize, strip_preview, {cast, str}],
+    Passes = [return_errors, {all, fun muin_collect:is_string/1}],
+    muin_collect:col(Vals, Rules, Passes).
+

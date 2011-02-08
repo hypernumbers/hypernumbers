@@ -21,42 +21,44 @@
 %%% * ignore_errors
 %%% * {ignore, Type} where Type === num, bool, date, array
 %%%                                 error, blank, str, unknown_type
-%%% * eval_funs             evaluates a function (ie non-lazy eval)
-%%% * area_first            gets the top left value of an array or range
-%%% * first_array           gets the first element of an array
-%%% * first_array_as_bool   gets the top left of an array as
-%%%                         a false-specific boolean
-%%% * flatten_as_str        turns a range into a string
-%%% * flatten               turns a list, range or array into a flat list
-%%%                         NOTE a list APPEARS to be an internal state of
-%%%                         the collector and not a type in its own right
-%%% * {flatten, range}      flattens a range
-%%% * num_as_bool           casts an integer/float into
-%%%                         a false-specific boolean
-%%% * str_as_bool           casts true/TRUE/false/False or throws err
-%%% * err_as_str            returns a string represenntation of an error
-%%%                         THIS IS ONLY TO BE USE USED IN DISPLAY FUNCTIONS WHOSE
-%%%                         INPUT IS NOT EXPECTED TO BE USED IN CALCULATIONS
-%%%                         eg hnfuns_web:table and hnfuns_html etc, etc,
-%%%                         STANDS OUTSIDE NORMAL CASTING (ie YOU DON'T CAST
-%%%                         ERRORS TO STRINGS OR NUMS NORMALLY...)
-%%% * ref_as_bool           presumes that a cellref has not been fetched,
-%%%                         then fetches it and casts it as bool
-%%% * fetch_ref             fetches a cellref or rangeref - that is to say
-%%%                         turns 'A1' into the value in 'A1'
-%%% * cast_def              NOT A REAL CAST - USED INTERNALLY
-%%% * {cast, Type}          casts all values to 'Type' (see ignore_type)
-%%% * {cast, From, To}      only casts some types to the the 'To' type
+%%% * eval_funs                 evaluates a function (ie non-lazy eval)
+%%% * area_first                gets the top left value of an array or range
+%%% * first_array               gets the first element of an array
+%%% * first_array_as_bool       gets the top left of an array as
+%%%                             a false-specific boolean
+%%% * flatten_as_str            turns a range into a string
+%%% * flatten                   turns a list, range or array into a flat list
+%%%                             NOTE a list APPEARS to be an internal state of
+%%%                             the collector and not a type in its own right
+%%% * {flatten, range}          flattens a range
+%%% * num_as_bool               casts an integer/float into
+%%%                             a false-specific boolean
+%%% * str_as_bool               casts true/TRUE/false/False or throws err
+%%% * err_as_str                returns a string represenntation of an error
+%%%                             THIS IS ONLY TO BE USE USED IN DISPLAY FUNCTIONS WHOSE
+%%%                             INPUT IS NOT EXPECTED TO BE USED IN CALCULATIONS
+%%%                             eg hnfuns_web:table and hnfuns_html etc, etc,
+%%%                             STANDS OUTSIDE NORMAL CASTING (ie YOU DON'T CAST
+%%%                             ERRORS TO STRINGS OR NUMS NORMALLY...)
+%%% * ref_as_bool               presumes that a cellref has not been fetched,
+%%%                             then fetches it and casts it as bool
+%%% * fetch_ref                 fetches a cellref or rangeref - that is to say
+%%%                             turns 'A1' into the value in 'A1'
+%%% * cast_def                  NOT A REAL CAST - USED INTERNALLY
+%%% * {cast, Type}              casts all values to 'Type' (see ignore_type)
+%%% * {cast, From, To}          only casts some types to the the 'To' type
 %%% * {cast, From, To, Default} if the cast fails return the default
 %%% * cast_num
 %%% * cast_str
-%%% * fetch_name            fetches the value of a named object
-%%%                         (names not properly implemented yet)
-%%% * name_as_bool          always fails (at the mo!, mebbies?)
-%%% * fetch                 gets values of cell/range references
-%%% * fetchdb               fetch for database fns
-%%% * {conv, Type, Value}   converts objects of a particular type to a val
-%%% * {convflat, Type, Value} same as conv? WTF?
+%%% * fetch_name                fetches the value of a named object
+%%%                             (names not properly implemented yet)
+%%% * name_as_bool              always fails (at the mo!, mebbies?)
+%%% * fetch                     gets values of cell/range references
+%%% * fetchdb                   fetch for database fns
+%%% * {conv, Type, Value}       converts objects of a particular type to a val
+%%% * {convflat, Type, Value}   same as conv? WTF?
+%%% * strip_preview             strips a preview off a function return
+%%% * strip_resize              strips a resize off a function return
 
 %%% Passes are what happens after all the rules have been applied
 %%% * return_flat_errors    returns all the errors
@@ -136,6 +138,7 @@ rl({ignore, Type}, Val) ->
     end;
 
 % Evaluate functions
+% does this ever run?
 rl(eval_funs, Fun) when ?is_funcall(Fun) ->
     muin:external_eval(Fun);
 
@@ -269,6 +272,10 @@ rl({convflat, Type, Value}, X) ->
         Type  -> Value;
         _Else -> X
     end;
+
+rl(strip_resize,  {resize,  _, _, X}) -> X;
+
+rl(strip_preview, {preview, _, _, X}) -> X;
 
 % No Rules for this element
 rl(_Rule, Value) ->
