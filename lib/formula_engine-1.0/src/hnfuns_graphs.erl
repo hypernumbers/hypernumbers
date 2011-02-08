@@ -371,11 +371,14 @@ make_c([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
 'speedo.2x4'([_V, _Tt, _S] =  L)     -> speedo(?SIZE2x4, L);
 'speedo.2x4'([_V, _Tt, _S, _Th] = L) -> speedo(?SIZE2x4, L).
 
-'speedo.3x6'(List)  -> speedo(?SIZE3x6,  List).
+'speedo.3x6'(List)  -> io:format("In speedo.3x6 for ~p~n", [List]),
+                       speedo(?SIZE3x6,  List).
 'speedo.4x8'(List)  -> speedo(?SIZE4x8,  List).
 'speedo.6x12'(List) -> speedo(?SIZE6x12, List).
 
-speedo(Size, [V])                     -> V2 = cast_val(V),
+speedo(Size, [V])                     -> io:format("Val is ~p~n", [V]),
+                                         V2 = cast_val(V),
+                                         io:format("V2 is ~p~n", [V2]),
                                          speedo1(Size, V2, "", "", "", "", 1);
 speedo(Size, [V, Tt])                 -> V2 = cast_val(V),
                                          speedo1(Size, V2, Tt, "", "", "", 1);
@@ -390,18 +393,21 @@ speedo(Size, [V, Tt, SubT, Th, Labs]) -> Scale = speedo_scale(Th),
 cast_val(Val) ->  cast_v2(Val, 0, 100, 1).
 
 cast_v2(Val, Min, Max, Scale) ->
-    V2 = cast_data(Val),
+    io:format("Val is ~p~n", [Val]),
+    io:format("Min is ~p Max is ~p~n", [Min, Max]),
     if
-        V2 < Min                      -> ?ERRVAL_VAL;
-        V2 > Max                      -> ?ERRVAL_VAL;
-        Min =< Val andalso Val =< Max -> V2 * Scale
+        Val < Min                     -> ?ERRVAL_VAL;
+        Val > Max                     -> ?ERRVAL_VAL;
+        Min =< Val andalso Val =< Max -> Val * Scale
     end.
 
 speedo1(Size, Val, Title, Subtitle, Threshold, Lables, Scale) ->
+    io:format("Size is ~p Val is ~p~n", [Size, Val]),
     [Tt2]  = cast_titles(Title),
     [Sb2]  = cast_titles(Subtitle),
-    [Th2]  = cast_data(Threshold),
-    [Lab2] = cast_titles(Lables),
+    %[Th2]  = cast_data(Threshold),
+    %[Lab2] = cast_titles(Lables),
+    io:format("Scale is ~p~n", [Scale]),
     if
         Val < 0                             -> ?ERRVAL_VAL;
         Val > 100 * Scale                   -> ?ERRVAL_VAL;
