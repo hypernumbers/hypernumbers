@@ -9,21 +9,24 @@
     overflow-y : hidden; 
 }
 
+/*
 #finder ul.finderroot {
     width: 40px;
 }
 #finder ul.finderroot li { 
     width: 20px;
 }
+*/
 
 #finder .pane {  
    height : 100%; 
 }
 
+/*
 #finder ul { 
     margin          : 0px;
     padding         : 0px;
-    width           : 120px; 
+    width           : 120px;  
     height          : 153px; 
     list-style-type : none; 
     float           : left; 
@@ -53,3 +56,5 @@
     background-color : #004B97;
     color            : white; 
 }
+
+*/
