@@ -189,6 +189,7 @@ spark1(Size, Data, Colours) ->
         [{?tickmarks, ?BOTHAXES}])}.
 
 'linegraph.4x8'(List) ->
+    io:format("List is ~p~n", [List]),
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
     {resize, 4, 8, xy1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest, [])}.
 
@@ -627,7 +628,8 @@ histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
 %% Internal Functions
 %%    
 process_data_linegraph(Data) ->
-    Data1 = [proc_dxy1(X) || X <- Data],
+    Prefetched = cast_prefetch(Data),
+    Data1 = [proc_dxy1(X) || X <- Prefetched],
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
     Data3 = [lists:flatten([lists:reverse(cast_linegraph_data(X)) || X <- X1])
              || X1 <- Data2],
@@ -727,6 +729,9 @@ pie2(Data, Titles, Colours) ->
         ++ Titles1
         ++ Colours1
         ++ "' />".
+
+cast_prefetch(Data) ->
+    muin_collect:col(Data, [fetch_ref], []).
 
 cast_linegraph_data(Data) ->
     muin_collect:col([Data],
