@@ -174,12 +174,18 @@ img([Src]) ->
         fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
 table([Ref]) ->
-     table([Ref, 0]);
+    table([Ref, 0]);
+table([#rangeref{height = Len} = Ref, Sort]) ->
+    table2(Len, Ref, Sort);
 table([{range, R} = Ref, Sort]) ->
+    Len = length(R),
+    table2(Len, Ref, Sort).
+
+table2(Len, Ref, Sort) ->
     Rules = [eval_funs, fetch, flatten, err_as_str, {cast, str}],
     Passes = [],
     Ref2 = muin_collect:col([Ref], Rules, Passes),
-    SubLen = trunc(length(Ref2)/length(R)),
+    SubLen = trunc(length(Ref2)/Len),
     Ref3 = make_ref3(Ref2, SubLen, []),
     Sort2 = typechecks:std_strs([Sort]),
     table_(Ref3, Sort2).
