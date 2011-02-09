@@ -233,8 +233,12 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
          <link rel='stylesheet' href='/webcomponents/webbasic.css' />
          <link rel='stylesheet' href='/webcomponents/jquery.ui.potato.menu.css'>
          <link rel='stylesheet' href='/tblsorter/style.css' />
+
 "     ++Addons#render.css++
-"         </head>
+"         <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
+         <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
+        <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
+         </head>
 
          <body data-view='webpage'>
 
@@ -278,11 +282,8 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
   </div>
  </div>
 </div>  
- <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
- <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
 "  ++Addons#render.js++
-"  <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
-  <script src='/hypernumbers/json2.js'></script>
+"  <script src='/hypernumbers/json2.js'></script>
   <script src='/webcomponents/jquery.ui.potato.menu.js'></script>
   <script src='/hypernumbers/hn.js'></script>
   <script src='/hypernumbers/hn.util.js'></script>
