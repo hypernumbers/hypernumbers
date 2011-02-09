@@ -638,7 +638,8 @@ process_data_linegraph(Data) ->
     {MinY, MaxY, Data4}.
 
 process_data_xy(Data) ->
-    Data1 = [proc_dxy1(X) || X <- Data],
+    Prefetched = cast_prefetch(Data),
+    Data1 = [proc_dxy1(X) || X <- Prefetched],
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
     Data3 = [[lists:reverse(cast_data(X)) || X <- X1] || X1 <- Data2],
     {MinX, MaxX, MinY, MaxY} = get_maxes(Data3),
