@@ -262,7 +262,6 @@ funcall(Fname, Args0) ->
              small, skew, large, sumproduct, daverage, dcount, isref,
              irr, even,
              include],
-    %% Funs = [include, index],
     
     Args = case lists:member(Fname, Funs) of
                true  -> Args0;
