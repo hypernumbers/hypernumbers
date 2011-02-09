@@ -187,7 +187,7 @@ rl(ref_as_bool, Ref) when ?is_cellref(Ref) ->
         X when X == 0; X == false -> false;
         _Else                     -> true
     end;
-rl(fetch_ref, Ref) when ?is_cellref(Ref); ?is_rangeref(Ref) ->
+rl(fetch_ref, Ref) when ?is_cellref(Ref) orelse ?is_rangeref(Ref) ->
     muin:fetch(Ref);
 
 rl({cast_def, _Type, _Def}, X) when ?is_errval(X) ->
