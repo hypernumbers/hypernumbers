@@ -100,6 +100,13 @@
         ]).
 
 -export([
+         url_DEBUG/1,
+         url_DEBUG/2,
+         idx_DEBUG/2,
+         idx_DEBUG/3
+        ]).
+
+-export([
          write_kv/3,
          read_kv/2,
          write_attributes/1,
@@ -132,6 +139,49 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+url_DEBUG(Url) -> url_DEBUG(Url, quiet).
+
+url_DEBUG(Url, Mode) -> RefX = hn_util:url_to_refX(Url),
+                        Output = io_lib:format("Url ~p being debugged", [Url]),
+                        'DEBUG'(refX, RefX, Mode, [Output]).
+
+idx_DEBUG(Site, Idx) -> idx_DEBUG(Site, Idx, false).
+
+idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
+
+'DEBUG'(Type, Payload, Mode, Output) ->
+    
+    F = fun() ->
+                {RefX, O2}
+                    = case Type of
+                          idx ->
+                              {Site, Idx} = Payload,
+                              O1 = io_lib:format("Debugging the Idx ~p on site ~p",
+                                                 [Idx, Site]),
+                              NewRefX = hn_db_wu:idx_to_refX(Site, Idx),
+                              case Mode of
+                                  verbose -> io_lib:format("RefX is ~p",
+                                                           [NewRefX]);
+                                  _       -> ok
+                              end,
+                              {NewRefX, [O1 | Output]};
+                          refX ->
+                              {Payload, Output}
+                      end,
+                #refX{path = P, type = _T, obj = O} = RefX,
+                P2 = hn_util:list_to_path(P),
+                io_lib:format("The idx points to ~p on page ~p", [O, P2]),
+                Contents = hn_db_wu:read_ref(RefX, inside),
+                O3 = case Mode of
+                    verbose -> io_lib:format("The object contains ~p", [Contents]);
+                    _       -> pretty_print(Contents, "The idx contains:", O2)
+                end,
+                lists:reverse(O3)
+          end,
+    {atomic, Msg} = mnesia:transaction(F),
+    [io:format(X ++ "~n") || X <- Msg],
+    ok.
+
 write_kv(Site, Key, Value) ->
     Fun = fun() ->
                   hn_db_wu:write_kv(Site, Key, Value)
@@ -952,3 +1002,77 @@ tell_front_end(_FnName, _refX) ->
           end,
     [ok = Fun(X) || X <- List],
     ok.
+
+pretty_print(List, Slogan, Acc) ->
+    Marker = io_lib:format(" ", []),
+    Slogan2 = io_lib:format(Slogan, []),
+    Ret = pretty_p2(List, [Marker, Slogan2 | Acc]),
+    [Marker | Ret].
+
+pretty_p2([], Acc) -> Acc;
+pretty_p2([{R, Vals} | T], Acc) when is_record(R, refX) ->
+    #refX{path = P, obj = O} = R,
+    NewO = io_lib:format(" ~p on ~p:", [O, P]),
+    Keys = ["formula", "value", "__hasform"],
+    NewO2 = pretty_p3(Keys, Vals, [NewO | Acc]),
+    NO3 = case lists:keymember("__hasform", 1, Vals) of
+              true  -> print_form(R#refX{obj = {page, "/"}}, NewO2);
+              false -> NewO2
+          end,
+    NO4 = print_relations(R, NO3),
+    pretty_p2(T, NO4).
+
+print_relations(#refX{site = S} = RefX, Acc) ->
+    case hn_db_wu:read_relations_DEBUG(RefX) of
+        []  -> Acc;
+        [R] -> Ret = io_lib:format("....has the following relationships:", []),
+               print_rel2(S, R, [Ret | Acc])
+    end.
+
+print_rel2(S, R, Acc) ->
+    O1 = print_rel3(S, R#relation.children, "children", Acc),
+    O2 = print_rel3(S, R#relation.parents, "parents", O1),
+    O3 = print_rel3(S, R#relation.infparents, "infinite parents", O2),
+    O4 = print_rel3(S, R#relation.z_parents, "z parents", O3),
+    [io_lib:format("      is it an include? ~p", [R#relation.include]) | O4].
+
+print_rel3(_S, [], Type, Acc) -> [io_lib:format("      no " ++ Type, []) | Acc];
+print_rel3(S, OrdDict, Type, Acc) ->
+    NewAcc = io_lib:format("      " ++ Type ++ " are:", []),
+    print_rel4(S, OrdDict, [NewAcc | Acc]).
+
+print_rel4(_S, [], Acc) -> Acc;
+print_rel4(S, [H | T], Acc) ->
+    RefX = hn_db_wu:idx_to_refX(S, H),
+    NewAcc = [io_lib:format("        ~p on ~p", [RefX#refX.obj, RefX#refX.path]) | Acc],
+    print_rel4(S, T, NewAcc).
+    
+pretty_p3([], _Vals, Acc) -> Acc;
+pretty_p3([K | T], Vals, Acc) ->
+    NewO = case lists:keysearch(K, 1, Vals) of
+               false ->
+                   Acc;
+               {value, {K1, V}} when is_list(V) ->
+                   [io_lib:format("~12s: ~p", [K1, esc(V)]) | Acc];
+               {value, {K1, V}} ->
+                       [io_lib:format("~12s: ~p", [K1, V]) | Acc]
+    end,
+    pretty_p3(T, Vals, NewO).
+
+print_form(RefX, Acc) ->
+    Forms = hn_db_wu:matching_forms(RefX, common),
+    NewAcc = [io_lib:format("....part of a form consisting of:", []) | Acc],
+    print_f2(RefX#refX.site, Forms, NewAcc).
+
+print_f2(_Site, [], Acc) -> Acc;
+print_f2(Site, [H | T], Acc) ->
+    #form{id={_, _, Lable}} = H,
+    RefX = hn_db_wu:idx_to_refX(Site, H#form.key),
+    NewAcc = [io_lib:format("      ~p on ~p of ~p called ~p",
+                            [RefX#refX.obj,
+                             hn_util:list_to_path(RefX#refX.path),
+                             H#form.kind, Lable]) | Acc],
+    print_f2(Site, T, NewAcc).
+
+% fix up escaping!
+esc(X) -> X.
