@@ -1,5 +1,5 @@
 .hn-wc-headline { 
-                  height: 41px;
+                  height: 36px;
                   font-size: 200%;
                   padding: 3px;
                   }
@@ -11,7 +11,7 @@
 
 .hn-wc-footer { 
                 font-size: 80%;
-                height: 16px;
+                height: 20px;
                 }
 
 .hn-wc-line-single > .hn-wc-headline { 
