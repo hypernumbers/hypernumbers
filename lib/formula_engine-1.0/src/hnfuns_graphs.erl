@@ -16,6 +16,8 @@
          'linegraph.'/1,
          'dategraph.'/1,
          'equigraph.'/1,
+         %'piechart.'/1,
+         % deprecated fns
          linegraph/1,
          piechart/1,
          histogram/1,
@@ -55,6 +57,7 @@
 -define(HIST_VSTACK, "bvs").
 -define(HIST_HGROUP, "bhg").
 -define(HIST_HSTACK, "bhs").
+-define(PIECHART,    "pc").
 -define(XYLINE,      "lxy").
 -define(EQXAXIS,     "lc").
 -define(SPARKLINE,   "ls").
@@ -132,6 +135,11 @@ spark1(Size, Data, Colours) ->
            ],
     make_chart2(Opts).
 
+%% 'piechart.'([W, H | List]) ->
+%%     Ret = chunk_xy(List, single),
+%%     io:format("Ret is ~p~n", [Ret]),
+%%     42.
+    
 'histogram.'([W, H | List]) ->
     Ret = chunk_histogram(List),
     {DataX, DataY, MinY, MaxY, Type, Colours, Rest} = Ret,
@@ -154,7 +162,6 @@ spark1(Size, Data, Colours) ->
         StartDate, EndDate, [{?tickmarks, ?BOTHAXES}])}.
 
 'linegraph.'([W, H | List]) ->
-    % There is a bug with the Y-Axis as this size!
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
     {resize, list_to_integer(W), list_to_integer(H),
      xy1(make_size(W, H), Data, Scale, AxesLabPos, Colours, Rest,
@@ -162,13 +169,18 @@ spark1(Size, Data, Colours) ->
 
 'xy.'([W, H | List]) ->
     % There is a bug with the Y-Axis as this size!
-    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, single),
+    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
     {resize, list_to_integer(W), list_to_integer(H),
      xy1(make_size(W, H), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
 
+chunk_pie([Lines | List]) ->
+    [Lines2] = typechecks:std_ints([Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM).
+    
 chunk_histogram([Type, X, Lines| List]) ->
-    [Type2] = typechecks:std_ints([Type]),
+    [Lines2, Type2] = typechecks:std_ints([Lines, Type]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     {Orientation, MaxType, Type3} = case Type2 of
         0 -> {vertical,   group, ?HIST_VGROUP};
         1 -> {vertical,   stack, ?HIST_VSTACK};
@@ -179,21 +191,25 @@ chunk_histogram([Type, X, Lines| List]) ->
     DataX = cast_strings(X),
     {MinY, MaxY, DataY, Cols, Rest}
         = case {Orientation, MaxType} of
-              {vertical, group} -> chunk_l2(Lines, List);
+              {vertical, group} -> chunk_l2(Lines2, List);
               _                 -> ?ERR_VAL
           end,
     DataY2 = "t:" ++ conv_data_rev(DataY),
     {DataX, DataY2, MinY, MaxY, Type3, Cols, Rest}.
 
 chunk_equigraph([X, Lines | List]) ->
+    [Lines2] = typechecks:std_ints([Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = cast_strings(X),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
     DataY2 = "t:" ++ conv_data_rev(DataY),
     {DataX, DataY2, MinY, MaxY, Cols, Rest}.
 
 chunk_dategraph([X, Lines | List], LabType) ->
+    [Lines2] = typechecks:std_ints([Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = lists:reverse(cast_dates(X)),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     StartDate = cast_date(MinX),
@@ -205,7 +221,8 @@ chunk_dategraph([X, Lines | List], LabType) ->
 
 chunk_linegraph([X, Lines | List], LabType) ->
     DataX = cast_data(X),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines, List),
+    [Lines2] = typechecks:std_ints([Lines]),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
@@ -213,9 +230,9 @@ chunk_linegraph([X, Lines | List], LabType) ->
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest}.
 
 chunk_l2(Lines, List) ->
-    [Lines1] = typechecks:std_ints([Lines]),
-    muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
-    {Data, Rest} = lists:split(Lines1, List),
+    [Lines2] = typechecks:std_ints([Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
+    {Data, Rest} = lists:split(Lines2, List),
     {MinY, MaxY, DataY} = process_data_linegraph(Data),
     % now make the colours
     Colours = allocate_colours(Lines, ?XYCOLOURS),
@@ -440,6 +457,7 @@ make_s1(double, MinX, MaxX, MinY, MaxY) ->
         ++"|1,"++tconv:to_s(MinX)++","++tconv:to_s(MaxX)
         ++"|2,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY)
         ++"|3,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY).
+
 cast_date(N) ->
     {datetime, D, T} = muin_util:cast(N, num, date),
     dh_date:format("d-M-y", {D, T}).
