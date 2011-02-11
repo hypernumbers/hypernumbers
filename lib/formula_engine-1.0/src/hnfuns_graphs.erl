@@ -121,7 +121,7 @@ chunk_spark([Lines | List]) ->
 normalize_sp(List, Min, Max) ->
     Diff = Max - Min,
     Fun = fun(blank) -> blank;
-             (X)     -> (X - Min)*100/Diff
+             (X)     -> NewX = round((X - Min)*1000/Diff)/10
           end,
     [Fun(X) || X <- List].
 
@@ -875,7 +875,7 @@ has_error([_H | T]) ->
 
 normalize(Data) ->
     Total = lists:sum(Data),
-    Fun = fun(X) -> trunc(100*X/Total) end,
+    Fun = fun(X) -> round(1000*X/Total)/10 end,
     lists:map(Fun, Data).
 
 make_data_rev(List) ->
