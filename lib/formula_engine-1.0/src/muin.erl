@@ -20,7 +20,7 @@
 -define(speedo, $s,$p,$e,$e,$d,$o,$.).
 -define(histogram, $h,$i,$s,$t,$o,$g,$r,$a,$m,$.).
 -define(linegraph, $l,$i,$n,$e,$g,$r,$a,$p,$h,$.).
--define(dategraph, $d,$a,$t,$e,$g,$r,$a,$r,$h,$.).
+-define(dategraph, $d,$a,$t,$e,$g,$r,$a,$p,$h,$.).
 -define(equigraph, $e,$q,$u,$i,$g,$r,$a,$p,$h,$.).
 
 % these functions are wrappers for use externally
