@@ -389,7 +389,7 @@ jsonify_val({"value", true}) ->
     {"value", "true"};
 jsonify_val({"value", false}) ->
     {"value", "false"};
-jsonify_val({"preview", {Text, Height, Width}}) ->
+jsonify_val({"preview", {Text, Width, Height}}) ->
     {"preview", {struct, [{"txt", Text}, {"h", Height}, {"w", Width}]}};
 %% TODO: fix names
 jsonify_val({Name, {namedexpr, _Path, Nm}}) ->

@@ -1,7 +1,7 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie <gordon@hypernumbers.com>
 %%% @copyright (C) 2010 Hypernumbers Ltd
-%%% @doc       Provides the markdown for graphs
+%%% @doc       The module for producing graphs
 %%%
 %%% @end
 %%% Created : 11 Jan 2010 by Gordon Guthrie 
@@ -9,24 +9,15 @@
 -module(hnfuns_graphs).
 
 -export([
-         'sparkline.1x1'/1,
-         'sparkline.2x2'/1,
-         'xy.3x6'/1,
-         'xy.4x8'/1,
-         'xy.6x12'/1,
-         'speedo.2x4'/1,
-         'speedo.3x6'/1,
-         'speedo.4x8'/1,
-         'speedo.6x12'/1,
-         'linegraph.3x6'/1,
-         'linegraph.4x8'/1,
-         'linegraph.6x12'/1,
-         'dategraph.3x6'/1,
-         'dategraph.4x8'/1,
-         'dategraph.6x12'/1,
-         'equigraph.3x6'/1,
-         'equigraph.4x8'/1,
-         'equigraph.6x12'/1,
+         'sparkline.'/1,
+         'xy.'/1,
+         'speedo.'/1,
+         'histogram.'/1,
+         'linegraph.'/1,
+         'dategraph.'/1,
+         'equigraph.'/1,
+         %'piechart.'/1,
+         % deprecated fns
          linegraph/1,
          piechart/1,
          histogram/1,
@@ -60,14 +51,13 @@
 -define(speedolab,  "chl").
 
 % definition of standard stuff
--define(SIZE1x1,     "66x20").
--define(SIZE2x2,     "146x42").
--define(SIZE2x4,     "146x86").
--define(SIZE3x6,     "218x130").
--define(SIZE4x8,     "306x174").
--define(SIZE6x12,    "466x262").
 -define(NORMALAXES,  "x,y").
 -define(LABLEAXES,   "x,x,y,y").
+-define(HIST_VGROUP, "bvg").
+-define(HIST_VSTACK, "bvs").
+-define(HIST_HGROUP, "bhg").
+-define(HIST_HSTACK, "bhs").
+-define(PIECHART,    "pc").
 -define(XYLINE,      "lxy").
 -define(EQXAXIS,     "lc").
 -define(SPARKLINE,   "ls").
@@ -110,13 +100,10 @@
 %%
 %% Exported functions
 %%
-'sparkline.1x1'(List) ->
+'sparkline.'([W, H, List]) ->
     {Data, Colours} = chunk_spark(List),
-    {resize, 1, 1, spark1(?SIZE1x1, Data, Colours)}.
-
-'sparkline.2x2'(List) ->
-    {Data, Colours} = chunk_spark(List),
-    {resize, 2, 2, spark1(?SIZE2x2, Data, Colours)}.
+    {resize, list_to_integer(W), list_to_integer(H),
+     spark1(make_size(W, H), Data, Colours)}.
 
 chunk_spark([Lines | List]) ->
     [Lines1] = typechecks:std_ints([Lines]),
@@ -148,78 +135,81 @@ spark1(Size, Data, Colours) ->
            ],
     make_chart2(Opts).
 
-'equigraph.3x6'(List) ->
+%% 'piechart.'([W, H | List]) ->
+%%     Ret = chunk_xy(List, single),
+%%     io:format("Ret is ~p~n", [Ret]),
+%%     42.
+    
+'histogram.'([W, H | List]) ->
+    Ret = chunk_histogram(List),
+    {DataX, DataY, MinY, MaxY, Type, Colours, Rest} = Ret,
+    {resize, list_to_integer(W), list_to_integer(H),
+     eq_hist1(Type, make_size(W, H), DataX, DataY, MinY, MaxY,
+                            Colours, Rest, [])}.
+
+'equigraph.'([W, H | List]) ->
     Ret = chunk_equigraph(List),
     {DataX, DataY, MinY, MaxY, Colours, Rest} = Ret,
-    {resize, 3, 6, eq1(?SIZE3x6, DataX, DataY, MinY, MaxY, Colours, Rest,
-        [{?tickmarks, ?BOTHAXES}])}.
+    {resize, list_to_integer(W), list_to_integer(H),
+     eq_hist1(equi, make_size(W, H), DataX, DataY, MinY, MaxY, Colours,
+                            Rest, [{?tickmarks, ?BOTHAXES}])}.
 
-'equigraph.4x8'(List) ->
-    Ret = chunk_equigraph(List),
-    {DataX, DataY, MinY, MaxY, Colours, Rest} = Ret,
-    {resize, 4, 8, eq1(?SIZE4x8, DataX, DataY, MinY, MaxY, Colours, Rest, [])}.
-
-'equigraph.6x12'(List) ->
-    Ret = chunk_equigraph(List),
-    {DataX, DataY, MinY, MaxY, Colours, Rest} = Ret,
-    {resize, 6, 11, eq1(?SIZE6x12, DataX, DataY, MinY, MaxY, Colours, Rest, [])}.
-
-'dategraph.3x6'(List) ->
+'dategraph.'([W, H | List]) ->
     Ret = chunk_dategraph(List, double),
     {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
-    {resize, 3, 6, dg1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
+    {resize, list_to_integer(W), list_to_integer(H),
+     dg1(make_size(W, H), Data, Scale, AxesLabPos, Colours, Rest,
         StartDate, EndDate, [{?tickmarks, ?BOTHAXES}])}.
 
-'dategraph.4x8'(List) ->
-    Ret = chunk_dategraph(List, double),
-    {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
-    {resize, 4, 8, dg1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest,
-                       StartDate, EndDate, [])}.
-
-'dategraph.6x12'(List) ->
-    Ret = chunk_dategraph(List, double),
-    {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
-    {resize, 6, 11, dg1(?SIZE6x12, Data, Scale, AxesLabPos, Colours, Rest,
-                        StartDate, EndDate, [])}.
-
-'linegraph.3x6'(List) ->
-    % There is a bug with the Y-Axis as this size!
+'linegraph.'([W, H | List]) ->
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
-    {resize, 3, 6, xy1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
+    {resize, list_to_integer(W), list_to_integer(H),
+     xy1(make_size(W, H), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
 
-'linegraph.4x8'(List) ->
-    io:format("List is ~p~n", [List]),
-    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
-    {resize, 4, 8, xy1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest, [])}.
-
-'linegraph.6x12'(List) ->
-    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
-    {resize, 6, 11, xy1(?SIZE6x12, Data, Scale, AxesLabPos, Colours, Rest, [])}.
-
-'xy.3x6'(List) ->
+'xy.'([W, H | List]) ->
     % There is a bug with the Y-Axis as this size!
-    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, single),
-    {resize, 3, 6, xy1(?SIZE3x6, Data, Scale, AxesLabPos, Colours, Rest,
+    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
+    {resize, list_to_integer(W), list_to_integer(H),
+     xy1(make_size(W, H), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
 
-'xy.4x8'(List) ->
-    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
-    {resize, 4, 8, xy1(?SIZE4x8, Data, Scale, AxesLabPos, Colours, Rest, [])}.
-
-'xy.6x12'(List) ->
-    {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
-    {resize,6, 11, xy1(?SIZE6x12, Data, Scale, AxesLabPos, Colours, Rest, [])}.
+chunk_pie([Lines | List]) ->
+    [Lines2] = typechecks:std_ints([Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM).
+    
+chunk_histogram([Type, X, Lines| List]) ->
+    [Lines2, Type2] = typechecks:std_ints([Lines, Type]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
+    {Orientation, MaxType, Type3} = case Type2 of
+        0 -> {vertical,   group, ?HIST_VGROUP};
+        1 -> {vertical,   stack, ?HIST_VSTACK};
+        2 -> {horizontal, group, ?HIST_HGROUP};
+        3 -> {horizontal, stack, ?HIST_HSTACK};
+        _ -> ?ERR_VAL
+    end,
+    DataX = cast_strings(X),
+    {MinY, MaxY, DataY, Cols, Rest}
+        = case {Orientation, MaxType} of
+              {vertical, group} -> chunk_l2(Lines2, List);
+              _                 -> ?ERR_VAL
+          end,
+    DataY2 = "t:" ++ conv_data_rev(DataY),
+    {DataX, DataY2, MinY, MaxY, Type3, Cols, Rest}.
 
 chunk_equigraph([X, Lines | List]) ->
+    [Lines2] = typechecks:std_ints([Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = cast_strings(X),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
     DataY2 = "t:" ++ conv_data_rev(DataY),
     {DataX, DataY2, MinY, MaxY, Cols, Rest}.
 
 chunk_dategraph([X, Lines | List], LabType) ->
+    [Lines2] = typechecks:std_ints([Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = lists:reverse(cast_dates(X)),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     StartDate = cast_date(MinX),
@@ -231,7 +221,8 @@ chunk_dategraph([X, Lines | List], LabType) ->
 
 chunk_linegraph([X, Lines | List], LabType) ->
     DataX = cast_data(X),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines, List),
+    [Lines2] = typechecks:std_ints([Lines]),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
@@ -239,9 +230,9 @@ chunk_linegraph([X, Lines | List], LabType) ->
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest}.
 
 chunk_l2(Lines, List) ->
-    [Lines1] = typechecks:std_ints([Lines]),
-    muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
-    {Data, Rest} = lists:split(Lines1, List),
+    [Lines2] = typechecks:std_ints([Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
+    {Data, Rest} = lists:split(Lines2, List),
     {MinY, MaxY, DataY} = process_data_linegraph(Data),
     % now make the colours
     Colours = allocate_colours(Lines, ?XYCOLOURS),
@@ -278,45 +269,45 @@ chunk_xy([Lines | List], LabType) ->
     {Data1, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
      {?colours, Colours}, Rest}.
 
-eq1(Size, DataX, DataY, MinY, MaxY, Colours, [], Opts) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [], Opts) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_equi_labs(DataX, "", ""),
     Scale =  {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY)},
     AddOpts = lists:concat([[Axes, AxesLables, Scale, Colours], Opts]),
-    NewOpts = eqopts(Size, DataY),
+    NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
-eq1(Size, DataX, DataY, MinY, MaxY, Colours, [Tt | []], Opts) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt | []], Opts) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_equi_labs(DataX, "", ""),
     Title = make_title(Tt),
     Scale =  {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY)},
     AddOpts = lists:concat([[Title, Axes, AxesLables, Scale, Colours],
                             Opts]),
-    NewOpts = eqopts(Size, DataY),
+    NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
-eq1(Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl | []], Opts) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl | []], Opts) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_equi_labs(DataX, Xl, ""),
     Title = make_title(Tt),
     Scale =  {?axesrange, make_scale(double, auto, 0, 100, MinY, MaxY)},
     AddOpts = lists:concat([[Title, Axes, AxesLables,
                              Scale, Colours], Opts]),
-    NewOpts = eqopts(Size, DataY),
+    NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
-eq1(Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl | []], Opts) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl | []], Opts) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_equi_labs(DataX, Xl, Yl),
     Title = make_title(Tt),
     Scale =  {?axesrange, make_scale(double, auto, 0, 100, MinY, MaxY)},
     AddOpts = lists:concat([[Title, Axes, AxesLables,
                              Scale, Colours], Opts]),
-    NewOpts = eqopts(Size, DataY),
+    NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
-eq1(Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []], Opts) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []], Opts) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_equi_labs(DataX, Xl, Yl),
     Title = make_title(Tt),
@@ -324,7 +315,7 @@ eq1(Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []], Opts) ->
     Series = make_series(Srs),
     AddOpts = lists:concat([[Title, Series, Axes, AxesLables,
                              Scale, Colours], Opts]),
-    NewOpts = eqopts(Size, DataY),
+    NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts).
 
 dg1(Size, Data, Scale, AxesLabPos, Colours, [], StartDate, EndDate, Opts) ->
@@ -389,6 +380,17 @@ xy1(Size, Data, Scale, AxesLabPos, Colours, [Tt, Xl, Yl, Srs | []], Opts) ->
                              {?legendpos, ?TOPHORIZ}, make_series(Srs)], Opts]),
     NewOpts = xyopts(Size, Data),
     make_chart(Data, NewOpts, AddOpts).
+
+opts(equi,      Size, Data) -> eqopts(Size, Data);
+opts(Histogram, Size, Data) -> histopts(Histogram, Size, Data).
+
+histopts(Histogram, Size, Data) ->
+    [
+     {?type, Histogram},
+     {?size, Size},
+     {?data, Data},
+     {?linestyles, "1|1"}
+    ].
 
 eqopts(Size, Data) ->
     [
@@ -455,6 +457,7 @@ make_s1(double, MinX, MaxX, MinY, MaxY) ->
         ++"|1,"++tconv:to_s(MinX)++","++tconv:to_s(MaxX)
         ++"|2,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY)
         ++"|3,"++tconv:to_s(MinY)++","++tconv:to_s(MaxY).
+
 cast_date(N) ->
     {datetime, D, T} = muin_util:cast(N, num, date),
     dh_date:format("d-M-y", {D, T}).
@@ -465,14 +468,8 @@ make_c2([], Acc)           -> lists:flatten([?apiurl | Acc]) ++ ?urlclose;
 make_c2([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
                               make_c2(T, [NewAcc | Acc]).
 
-'speedo.2x4'([_V] = L)               -> speedo(?SIZE2x4, L);
-'speedo.2x4'([_V, _Tt] = L)          -> speedo(?SIZE2x4, L);
-'speedo.2x4'([_V, _Tt, _S] =  L)     -> speedo(?SIZE2x4, L);
-'speedo.2x4'([_V, _Tt, _S, _Th] = L) -> speedo(?SIZE2x4, L).
-
-'speedo.3x6'(List)  -> {resize, 3, 6,  speedo(?SIZE3x6,  List)}.
-'speedo.4x8'(List)  -> {resize, 4, 8,  speedo(?SIZE4x8,  List)}.
-'speedo.6x12'(List) -> {resize, 6, 12, speedo(?SIZE6x12, List)}.
+'speedo.'([W, H | List]) -> {resize, list_to_integer(W), list_to_integer(H),
+                             speedo(make_size(W, H),  List)}.
 
 speedo(Size, [V])                     -> V2 = cast_val(V),
                                          speedo1(Size, V2, "", "", "", "", 1);
@@ -940,3 +937,7 @@ colours() -> [
               {"aqua"    , "00FFFF"},
               {"yellow"  , "FFFF00"}
              ].
+
+make_size(W, H) -> make_width(W) ++ "x" ++ make_height(H).
+make_height(N)  -> integer_to_list(list_to_integer(N) * 22 - 2).
+make_width(N)   -> integer_to_list(list_to_integer(N) * 80 - 12).

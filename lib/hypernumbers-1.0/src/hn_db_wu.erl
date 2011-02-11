@@ -31,6 +31,10 @@
 
 %% Cell Query Exports
 -export([
+         read_relations_DEBUG/1
+        ]).
+
+-export([
          write_kv/3,
          read_kv/2,
          get_cell_for_muin/2,
@@ -97,6 +101,11 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+read_relations_DEBUG(RefX) when is_record(RefX, refX) ->
+    Idx = refX_to_idx(RefX),
+    Table = trans(RefX#refX.site, relation),
+    mnesia:read(Table, Idx, read).
+
 write_kv(Site, Key, Value) ->
     Tbl = trans(Site, kvstore),
     Rec = #kvstore{key = Key, value = Value},

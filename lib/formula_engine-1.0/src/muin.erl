@@ -12,9 +12,16 @@
          zeval_from_zinf/3
         ]).
 
--define('htmlbox', $h,$t,$m,$l,$.,$b,$o,$x,$.).
--define('htmlalert', $h,$t,$m,$l,$.,$a,$l,$e,$r,$t,$.).
--define('htmlruledbox', $h,$t,$m,$l,$.,$r,$u,$l,$e,$d,$b,$o,$x,$.).
+-define(htmlbox, $h,$t,$m,$l,$.,$b,$o,$x,$.).
+-define(htmlalert, $h,$t,$m,$l,$.,$a,$l,$e,$r,$t,$.).
+-define(htmlruledbox, $h,$t,$m,$l,$.,$r,$u,$l,$e,$d,$b,$o,$x,$.).
+-define(sparkline, $s,$p,$a,$r,$k,$l,$i,$n,$e,$.).
+-define(xy, $x,$y,$.).
+-define(speedo, $s,$p,$e,$e,$d,$o,$.).
+-define(histogram, $h,$i,$s,$t,$o,$g,$r,$a,$m,$.).
+-define(linegraph, $l,$i,$n,$e,$g,$r,$a,$p,$h,$.).
+-define(dategraph, $d,$a,$t,$e,$g,$r,$a,$p,$h,$.).
+-define(equigraph, $e,$q,$u,$i,$g,$r,$a,$p,$h,$.).
 
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
@@ -187,6 +194,30 @@ transform([?htmlalert | R], Args) ->
 transform([?htmlruledbox | R], Args) ->
     {W, H} = parse(R),
     {list_to_atom([?htmlruledbox]), [W , H | Args]};
+transform([?sparkline | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?sparkline]), [W , H | Args]};
+transform([?xy | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?xy]), [W , H | Args]};
+transform([?speedo | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?speedo]), [W , H | Args]};
+transform([?histogram | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?histogram]), [W , H | Args]};
+transform([?linegraph | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?linegraph]), [W , H | Args]};
+transform([?dategraph | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?dategraph]), [W , H | Args]};
+transform([?equigraph | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?equigraph]), [W , H | Args]};
+
+
+
 transform(List, Args) -> {list_to_atom(List), Args}.
 
 parse(String) -> [W, H] = string:tokens(String, "x"),
