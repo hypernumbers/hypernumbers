@@ -320,6 +320,17 @@ label {
     width:      5px;
 }
 
+.hn-overflow { 
+    background: url(/hypernumbers/sprite.png) -84px -1px;
+    z-index:    999999;
+    position:   absolute;
+    float:      right;
+    bottom:     0px;
+    right:      0px;
+    height:     8px;
+    width:      5px;
+}
+
 #expandbackground, #ctrlpanel { 
    background: #EEE;
    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
@@ -538,7 +549,7 @@ label {
 }
 
 .hn_padded, #clinput { 
-             padding: 3px;
+             padding: 1px;
              }
 
 .inline { 
