@@ -10,6 +10,7 @@
 -include("errvals.hrl").
 
 -export([
+         'html.plainbox.'/1,
          'html.box.'/1,
          'html.alert.'/1,
          'html.ruledbox.'/1,
@@ -18,6 +19,8 @@
          ]).
 
 'html.ruledbox.'(List) -> 'html.box.1'("white", "none", 99, "single", List).
+
+'html.plainbox.'(List) -> 'html.box.1'("white", "none", 0, "none", List).
 
 'html.box.'(List) -> 'html.box.1'("grey", "single", 0, "none", List).
 

@@ -13,6 +13,7 @@
         ]).
 
 -define(htmlbox, $h,$t,$m,$l,$.,$b,$o,$x,$.).
+-define(htmlplainbox, $h,$t,$m,$l,$.,$p,$l,$a,$i,$n,$b,$o,$x,$.).
 -define(htmlalert, $h,$t,$m,$l,$.,$a,$l,$e,$r,$t,$.).
 -define(htmlruledbox, $h,$t,$m,$l,$.,$r,$u,$l,$e,$d,$b,$o,$x,$.).
 -define(sparkline, $s,$p,$a,$r,$k,$l,$i,$n,$e,$.).
@@ -22,6 +23,7 @@
 -define(linegraph, $l,$i,$n,$e,$g,$r,$a,$p,$h,$.).
 -define(dategraph, $d,$a,$t,$e,$g,$r,$a,$p,$h,$.).
 -define(equigraph, $e,$q,$u,$i,$g,$r,$a,$p,$h,$.).
+-define(piechart, $p,$i,$e,$c,$h,$a,$r,$t,$.).
 
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
@@ -188,6 +190,9 @@ eval(Value) ->
 transform([?htmlbox | R], Args) ->
     {W, H} = parse(R),
     {list_to_atom([?htmlbox]), [W , H | Args]};
+transform([?htmlplainbox | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?htmlplainbox]), [W , H | Args]};
 transform([?htmlalert | R], Args) ->
     {W, H} = parse(R),
     {list_to_atom([?htmlalert]), [W , H | Args]};
@@ -215,9 +220,9 @@ transform([?dategraph | R], Args) ->
 transform([?equigraph | R], Args) ->
     {W, H} = parse(R),
     {list_to_atom([?equigraph]), [W , H | Args]};
-
-
-
+transform([?piechart | R], Args) ->
+    {W, H} = parse(R),
+    {list_to_atom([?piechart]), [W , H | Args]};
 transform(List, Args) -> {list_to_atom(List), Args}.
 
 parse(String) -> [W, H] = string:tokens(String, "x"),
