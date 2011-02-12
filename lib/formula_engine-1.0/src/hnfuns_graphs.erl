@@ -101,12 +101,14 @@
 %% Exported functions
 %%
 'sparkline.'([W, H, List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     {Data, Colours} = chunk_spark(List),
-    {resize, list_to_integer(W), list_to_integer(H),
-     spark1(make_size(W, H), Data, Colours)}.
+    {resize, Width, Height,
+     spark1(make_size(Width, Height), Data, Colours)}.
 
 chunk_spark([Lines | List]) ->
-    [Lines1] = typechecks:std_ints([Lines]),
+    [Lines1] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
     muin_checks:ensure(Lines1 == length(List), ?ERRVAL_NUM),
     % now make the colours
@@ -141,45 +143,55 @@ spark1(Size, Data, Colours) ->
 %%     42.
     
 'histogram.'([W, H | List]) ->
+    % There is a bug with the Y-Axis as this size!
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_histogram(List),
     {DataX, DataY, MinY, MaxY, Type, Colours, Rest} = Ret,
-    {resize, list_to_integer(W), list_to_integer(H),
-     eq_hist1(Type, make_size(W, H), DataX, DataY, MinY, MaxY,
+    {resize, Width, Height,
+     eq_hist1(Type, make_size(Width, Height), DataX, DataY, MinY, MaxY,
                             Colours, Rest, [])}.
 
 'equigraph.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_equigraph(List),
     {DataX, DataY, MinY, MaxY, Colours, Rest} = Ret,
-    {resize, list_to_integer(W), list_to_integer(H),
-     eq_hist1(equi, make_size(W, H), DataX, DataY, MinY, MaxY, Colours,
+    {resize, Width, Height,
+     eq_hist1(equi, make_size(Width, Height), DataX, DataY, MinY, MaxY, Colours,
                             Rest, [{?tickmarks, ?BOTHAXES}])}.
 
 'dategraph.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_dategraph(List, double),
     {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
-    {resize, list_to_integer(W), list_to_integer(H),
-     dg1(make_size(W, H), Data, Scale, AxesLabPos, Colours, Rest,
+    {resize, Width, Height,
+     dg1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         StartDate, EndDate, [{?tickmarks, ?BOTHAXES}])}.
 
 'linegraph.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
-    {resize, list_to_integer(W), list_to_integer(H),
-     xy1(make_size(W, H), Data, Scale, AxesLabPos, Colours, Rest,
+    {resize, Width, Height,
+     xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
 
 'xy.'([W, H | List]) ->
-    % There is a bug with the Y-Axis as this size!
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
-    {resize, list_to_integer(W), list_to_integer(H),
-     xy1(make_size(W, H), Data, Scale, AxesLabPos, Colours, Rest,
+    {resize, Width, Height,
+     xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
 
 chunk_pie([Lines | List]) ->
-    [Lines2] = typechecks:std_ints([Lines]),
+    [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM).
     
 chunk_histogram([Type, X, Lines| List]) ->
-    [Lines2, Type2] = typechecks:std_ints([Lines, Type]),
+    [Lines2, Type2] = typechecks:throw_std_ints([Lines, Type]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     {Orientation, MaxType, Type3} = case Type2 of
         0 -> {vertical,   group, ?HIST_VGROUP};
@@ -198,7 +210,7 @@ chunk_histogram([Type, X, Lines| List]) ->
     {DataX, DataY2, MinY, MaxY, Type3, Cols, Rest}.
 
 chunk_equigraph([X, Lines | List]) ->
-    [Lines2] = typechecks:std_ints([Lines]),
+    [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = cast_strings(X),
     {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
@@ -206,7 +218,7 @@ chunk_equigraph([X, Lines | List]) ->
     {DataX, DataY2, MinY, MaxY, Cols, Rest}.
 
 chunk_dategraph([X, Lines | List], LabType) ->
-    [Lines2] = typechecks:std_ints([Lines]),
+    [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = lists:reverse(cast_dates(X)),
     {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
@@ -221,7 +233,7 @@ chunk_dategraph([X, Lines | List], LabType) ->
 
 chunk_linegraph([X, Lines | List], LabType) ->
     DataX = cast_data(X),
-    [Lines2] = typechecks:std_ints([Lines]),
+    [Lines2] = typechecks:throw_std_ints([Lines]),
     {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
@@ -230,7 +242,7 @@ chunk_linegraph([X, Lines | List], LabType) ->
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest}.
 
 chunk_l2(Lines, List) ->
-    [Lines2] = typechecks:std_ints([Lines]),
+    [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     {Data, Rest} = lists:split(Lines2, List),
     {MinY, MaxY, DataY} = process_data_linegraph(Data),
@@ -258,7 +270,7 @@ make_d2([], _List, _A1, _A2) -> ?ERR_VAL; % X and Y ranges must be congruent
 make_d2(_List, [], _A1, _A2) -> ?ERR_VAL. % X and Y ranges must be congruent
 
 chunk_xy([Lines | List], LabType) ->
-    [Lines1] = typechecks:std_ints([Lines]),
+    [Lines1] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
     {Data, Rest} = lists:split(Lines1, List),
     {MinX, MaxX, MinY, MaxY, Data1} = process_data_xy(Data),
@@ -308,7 +320,6 @@ eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl | []], Opts)
     make_chart(DataY, NewOpts, AddOpts);
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []], Opts) ->
-    io:format("In eq-hist1~n"),
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_equi_labs(DataX, Xl, Yl),
     Title = make_title(Tt),
@@ -416,7 +427,7 @@ make_chart(Data, Opts, AddOpts) ->
     end.
 
 make_series(Srs) ->
-    Srs2 = lists:reverse(typechecks:flat_strs([Srs])),
+    Srs2 = lists:reverse(typechecks:throw_flat_strs([Srs])),
     {?datalables, string:join(Srs2, "|")}.
 
 make_equi_labs(XAxis, XTitle, YTitle) ->
@@ -424,16 +435,16 @@ make_equi_labs(XAxis, XTitle, YTitle) ->
      ++"|1:||"++XTitle++"|3:||"++YTitle}.
 
 make_labs_date(X, Y, StartDate, EndDate) ->
-    [X1, Y1] = typechecks:std_strs([X, Y]),
+    [X1, Y1] = typechecks:throw_std_strs([X, Y]),
     {?axeslables, "0:|"++StartDate++"|"++EndDate
            ++"|1:||"++X1++"|3:||"++Y1}.
 
 make_labs(X, Y) ->
-    [X1, Y1] = typechecks:std_strs([X, Y]),
+    [X1, Y1] = typechecks:throw_std_strs([X, Y]),
     {?axeslables, "1:|"++X1++"|3:|"++Y1}.
      
 make_title(Title) ->
-    [T2] = typechecks:std_strs([Title]),
+    [T2] = typechecks:throw_std_strs([Title]),
     {?title, T2}.
 
 make_axes_lab_pos_date(MinX, MaxX, MaxY) ->
@@ -447,7 +458,7 @@ make_scale(null, _, _, _, _, _) -> "";
 make_scale(Type, auto, MinX, MaxX, MinY, MaxY) ->
     make_s1(Type, MinX, MaxX, MinY, MaxY).
 % make_scale(Type, [X1, X2 | []], _MinX, _MaxX, MinY, MaxY) ->
-%     [X1a, X2a] = typechecks:std_nums([X1, X2]),
+%     [X1a, X2a] = typechecks:throw_std_nums([X1, X2]),
 %     make_s1(Type, X1a, X2a, MinY, MaxY).
 
 make_s1(single, MinX, MaxX, MinY, MaxY) ->
@@ -469,8 +480,11 @@ make_c2([], Acc)           -> lists:flatten([?apiurl | Acc]) ++ ?urlclose;
 make_c2([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
                               make_c2(T, [NewAcc | Acc]).
 
-'speedo.'([W, H | List]) -> {resize, list_to_integer(W), list_to_integer(H),
-                             speedo(make_size(W, H),  List)}.
+'speedo.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    {resize, Width, Height,
+     speedo(make_size(Width, Height),  List)}.
 
 speedo(Size, [V])                     -> V2 = cast_val(V),
                                          speedo1(Size, V2, "", "", "", "", 1);
@@ -940,5 +954,5 @@ colours() -> [
              ].
 
 make_size(W, H) -> make_width(W) ++ "x" ++ make_height(H).
-make_height(N)  -> integer_to_list(list_to_integer(N) * 22 - 2).
-make_width(N)   -> integer_to_list(list_to_integer(N) * 80 - 12).
+make_height(N)  -> integer_to_list(N * 22 - 2).
+make_width(N)   -> integer_to_list(N * 80 - 12).
