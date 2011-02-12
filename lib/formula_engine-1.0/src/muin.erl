@@ -24,6 +24,8 @@
 -define(dategraph, $d,$a,$t,$e,$g,$r,$a,$p,$h,$.).
 -define(equigraph, $e,$q,$u,$i,$g,$r,$a,$p,$h,$.).
 -define(piechart, $p,$i,$e,$c,$h,$a,$r,$t,$.).
+-define(horizontalline, $h,$o,$r,$i,$z,$o,$n,$t,$a,$l,$.,$l,$i,$n,$e,$.).
+-define(verticalline, $v,$e,$r,$t,$i,$c,$a,$l,$.,$l,$i,$n,$e,$.).
 
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
@@ -223,6 +225,11 @@ transform([?equigraph | R], Args) ->
 transform([?piechart | R], Args) ->
     {W, H} = parse(R),
     {list_to_atom([?piechart]), [W , H | Args]};
+% single parameter stuff
+transform([?horizontalline | R], Args) ->
+    {list_to_atom([?horizontalline]), [R | Args]};
+transform([?verticalline | R], Args) ->
+    {list_to_atom([?verticalline]), [R | Args]};
 transform(List, Args) -> {list_to_atom(List), Args}.
 
 parse(String) -> [W, H] = string:tokens(String, "x"),

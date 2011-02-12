@@ -8,6 +8,7 @@
 -module(typechecks).
 
 -export([
+         rgbcolours/1,
          std_bools/1,
          std_strs/1,
          std_ints/1,
@@ -15,6 +16,21 @@
          flat_strs/1,
          html_box_contents/1
         ]).
+
+-include("errvals.hrl").
+
+rgbcolours([$#| Rest]) ->
+    case length(Rest) of
+       6  -> ok;
+       3  -> ok;
+       _O -> ?ERR_VAL
+    end,
+    [Colours] = std_strs([Rest]),
+    Re = "^[a-fA-F0-9]+$", %"
+    case re:run(Colours, Re) of
+        {match, _} -> [$# | Colours];
+        nomatch    -> ?ERR_VAL
+    end.
 
 std_bools(Vals) ->
     Rules = [first_array, fetch_name, fetch_ref, eval_funs, {cast,bool}],
