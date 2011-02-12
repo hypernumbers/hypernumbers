@@ -308,6 +308,7 @@ eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl | []], Opts)
     make_chart(DataY, NewOpts, AddOpts);
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []], Opts) ->
+    io:format("In eq-hist1~n"),
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_equi_labs(DataX, Xl, Yl),
     Title = make_title(Tt),
@@ -415,7 +416,7 @@ make_chart(Data, Opts, AddOpts) ->
     end.
 
 make_series(Srs) ->
-    Srs2 = typechecks:flat_strs([Srs]),
+    Srs2 = lists:reverse(typechecks:flat_strs([Srs])),
     {?datalables, string:join(Srs2, "|")}.
 
 make_equi_labs(XAxis, XTitle, YTitle) ->
