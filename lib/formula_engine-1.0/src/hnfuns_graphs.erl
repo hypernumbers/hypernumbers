@@ -203,8 +203,11 @@ chunk_histogram([Type, X, Lines| List]) ->
     DataX = cast_strings(X),
     {MinY, MaxY, DataY, Cols, Rest}
         = case {Orientation, MaxType} of
-              {vertical, group} -> chunk_l2(Lines2, List);
-              _                 -> ?ERR_VAL
+              {vertical,   group} -> chunk_l2(false, Lines2, List);
+              {horizontal, group} -> chunk_l2(false, Lines2, List);
+              {vertical,   stack} -> chunk_l2(true,  Lines2, List);
+              {horizontal, stack} -> chunk_l2(true, Lines2, List);
+              _                   -> ?ERR_VAL
           end,
     DataY2 = "t:" ++ conv_data_rev(DataY),
     {DataX, DataY2, MinY, MaxY, Type3, Cols, Rest}.
@@ -213,7 +216,7 @@ chunk_equigraph([X, Lines | List]) ->
     [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = cast_strings(X),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List),
     DataY2 = "t:" ++ conv_data_rev(DataY),
     {DataX, DataY2, MinY, MaxY, Cols, Rest}.
 
@@ -221,7 +224,7 @@ chunk_dategraph([X, Lines | List], LabType) ->
     [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = lists:reverse(cast_dates(X)),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     StartDate = cast_date(MinX),
@@ -234,18 +237,18 @@ chunk_dategraph([X, Lines | List], LabType) ->
 chunk_linegraph([X, Lines | List], LabType) ->
     DataX = cast_data(X),
     [Lines2] = typechecks:throw_std_ints([Lines]),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
     Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest}.
 
-chunk_l2(Lines, List) ->
+chunk_l2(Aggregate, Lines, List) ->
     [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     {Data, Rest} = lists:split(Lines2, List),
-    {MinY, MaxY, DataY} = process_data_linegraph(Data),
+    {MinY, MaxY, DataY} = process_data_linegraph(Aggregate, Data),
     % now make the colours
     Colours = allocate_colours(Lines, ?XYCOLOURS),
     {MinY, MaxY, DataY, {?colours, Colours}, Rest}.
@@ -283,17 +286,17 @@ chunk_xy([Lines | List], LabType) ->
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [], Opts) ->
     Axes = {?axes, ?LABLEAXES},
-    AxesLables = make_equi_labs(DataX, "", ""),
-    Scale =  {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY)},
+    AxesLables = make_eq_hist_labs(Type, DataX, "", ""),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Axes, AxesLables, Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt | []], Opts) ->
     Axes = {?axes, ?LABLEAXES},
-    AxesLables = make_equi_labs(DataX, "", ""),
+    AxesLables = make_eq_hist_labs(Type, DataX, "", ""),
     Title = make_title(Tt),
-    Scale =  {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY)},
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Title, Axes, AxesLables, Scale, Colours],
                             Opts]),
     NewOpts = opts(Type, Size, DataY),
@@ -301,9 +304,9 @@ eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt | []], Opts) ->
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl | []], Opts) ->
     Axes = {?axes, ?LABLEAXES},
-    AxesLables = make_equi_labs(DataX, Xl, ""),
+    AxesLables = make_eq_hist_labs(Type, DataX, Xl, ""),
     Title = make_title(Tt),
-    Scale =  {?axesrange, make_scale(double, auto, 0, 100, MinY, MaxY)},
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Title, Axes, AxesLables,
                              Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
@@ -311,19 +314,20 @@ eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl | []], Opts) ->
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl | []], Opts) ->
     Axes = {?axes, ?LABLEAXES},
-    AxesLables = make_equi_labs(DataX, Xl, Yl),
+    AxesLables = make_eq_hist_labs(Type, DataX, Xl, Yl),
     Title = make_title(Tt),
-    Scale =  {?axesrange, make_scale(double, auto, 0, 100, MinY, MaxY)},
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Title, Axes, AxesLables,
                              Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
-eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []], Opts) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []],
+         Opts) ->
     Axes = {?axes, ?LABLEAXES},
-    AxesLables = make_equi_labs(DataX, Xl, Yl),
+    AxesLables = make_eq_hist_labs(Type, DataX, Xl, Yl),
     Title = make_title(Tt),
-    Scale =  {?axesrange, make_scale(double, auto, 0, 100, MinY, MaxY)},
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     Series = make_series(Srs),
     AddOpts = lists:concat([[Title, Series, Axes, AxesLables,
                              Scale, Colours], Opts]),
@@ -430,9 +434,28 @@ make_series(Srs) ->
     Srs2 = lists:reverse(typechecks:throw_flat_strs([Srs])),
     {?datalables, string:join(Srs2, "|")}.
 
-make_equi_labs(XAxis, XTitle, YTitle) ->
+make_eq_hist_scale(Type, MinY, MaxY)
+  when Type == equi
+       orelse Type == ?HIST_VGROUP
+       orelse Type == ?HIST_VSTACK ->
+    {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY)};
+make_eq_hist_scale(Type, MinY, MaxY)
+  when Type == ?HIST_HGROUP
+       orelse Type == ?HIST_HSTACK ->
+    {?axesrange, make_scale(single, auto, MinY, MaxY, 0, 100)}.
+
+make_eq_hist_labs(Type, XAxis, XTitle, YTitle)
+  when Type == equi
+       orelse Type == ?HIST_VGROUP
+       orelse Type == ?HIST_VSTACK ->
     {?axeslables, "0:|" ++ string:join(XAxis, "|") ++ "|"
-     ++"|1:||"++XTitle++"|3:||"++YTitle}.
+     ++"|1:||"++XTitle++"|3:||"++YTitle};
+make_eq_hist_labs(Type, XAxis, XTitle, YTitle)
+  when Type == ?HIST_HGROUP
+       orelse Type == ?HIST_HSTACK ->
+    {?axeslables, "1:||"++YTitle++"|2:|" ++
+     string:join(lists:reverse(XAxis), "|") ++ "|"
+     ++ "|3:||"++XTitle}.
 
 make_labs_date(X, Y, StartDate, EndDate) ->
     [X1, Y1] = typechecks:throw_std_strs([X, Y]),
@@ -639,15 +662,22 @@ histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
 %%
 %% Internal Functions
 %%    
-process_data_linegraph(Data) ->
+process_data_linegraph(Aggregate, Data) ->
     Prefetched = cast_prefetch(Data),
     Data1 = [proc_dxy1(X) || X <- Prefetched],
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
     Data3 = [lists:flatten([lists:reverse(cast_linegraph_data(X)) || X <- X1])
              || X1 <- Data2],
     {MinY, MaxY} = get_maxes_lg(Data3),
+    % we need the real mins/maxes to normalise the data
+    % if its a stacker we need the aggregate mins/maxs
+    MaxY2 = case Aggregate of
+                       false -> MaxY;
+                       true  -> get_maxes_lg_agg(Data3)
+                   end,
     Data4 = normalize_linegraph(Data3, MinY, MaxY, []),
-    {MinY, MaxY, Data4}.
+    % but we chuck away the aggregated MinY
+    {MinY, MaxY2, Data4}.
 
 process_data_xy(Data) ->
     Prefetched = cast_prefetch(Data),
@@ -675,6 +705,19 @@ proc_dxy1({range, X} = R) ->
         length(X) ==  2 -> extract(R, ?ROW);
         length(X) =/= 2 -> extract(R, ?COLUMN)
     end.
+
+get_maxes_lg_agg([H | _T] = List) ->
+    Len = length(H),
+    Acc = lists:duplicate(Len, 0),
+    Agg = aggregate(List, Acc),
+    stdfuns_stats:max(Agg).
+
+aggregate([], Acc)      -> Acc;
+aggregate([H | T], Acc) -> Acc2 = agg2(H, Acc, []),
+                           aggregate(T, Acc2).
+
+agg2([], [], Acc)               -> lists:reverse(Acc);
+agg2([H1 | T1], [H2 | T2], Acc) -> agg2(T1, T2, [H1 + H2 | Acc]).
 
 get_maxes_lg(List) -> get_mlg(List, none, none).
 
