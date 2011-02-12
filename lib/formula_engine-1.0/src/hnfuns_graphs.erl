@@ -100,7 +100,7 @@
 %%
 %% Exported functions
 %%
-'sparkline.'([W, H, List]) ->
+'sparkline.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     {Data, Colours} = chunk_spark(List),
