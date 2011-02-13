@@ -16,7 +16,7 @@
          'linegraph.'/1,
          'dategraph.'/1,
          'equigraph.'/1,
-         %'piechart.'/1,
+         'piechart.'/1,
          % deprecated fns
          linegraph/1,
          piechart/1,
@@ -34,11 +34,13 @@
 -define(apiurl,     "<img src='http://chart.apis.google.com/chart?").
 -define(urlclose,   "' />").
 -define(axesrange,  "chxr").  % 0=x, 1=Y, min, max (seperated by |)"
+-define(piecolours, "chxs").
 -define(axes,       "chxt").  % handles multiple axes
 -define(size,       "chs").   % Width x Height
 -define(colours,    "chco").  % colours of the lines
 -define(data,       "chd").   % data - depends on chart time
 -define(datalables, "chdl").  % separated by |
+-define(pielables,  "chl").
 -define(customscale,"chds").
 -define(type,       "cht").
 -define(legendpos,  "chdlp"). % t | l | r | b
@@ -137,13 +139,16 @@ spark1(Size, Data, Colours) ->
            ],
     make_chart2(Opts).
 
-%% 'piechart.'([W, H | List]) ->
-%%     Ret = chunk_xy(List, single),
-%%     io:format("Ret is ~p~n", [Ret]),
-%%     42.
+'piechart.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    Opts = chunk_pie(List),
+    Chart = make_chart2([{?type, ?PIECHART}, {?size, make_size(Width, Height)},
+                {?axes, "x"}, {?colours, "000000"},
+                {?piecolours, "0,D84242,11.5"} | Opts]),
+    {resize, Width, Height, Chart}.
     
 'histogram.'([W, H | List]) ->
-    % There is a bug with the Y-Axis as this size!
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_histogram(List),
@@ -185,10 +190,6 @@ spark1(Size, Data, Colours) ->
     {resize, Width, Height,
      xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
-
-chunk_pie([Lines | List]) ->
-    [Lines2] = typechecks:throw_std_ints([Lines]),
-    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM).
     
 chunk_histogram([Type, X, Lines| List]) ->
     [Lines2, Type2] = typechecks:throw_std_ints([Lines, Type]),
@@ -272,6 +273,26 @@ make_d2([H1 | T1], [H2 | T2], A1, A2)     -> make_d2(T1, T2, [H1 | A1], [H2 | A2
 make_d2([], _List, _A1, _A2) -> ?ERR_VAL; % X and Y ranges must be congruent
 make_d2(_List, [], _A1, _A2) -> ?ERR_VAL. % X and Y ranges must be congruent
 
+chunk_pie([Lines | List]) ->
+    [Lines1] = typechecks:throw_std_ints([Lines]),
+    muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
+    {Data, Rest} = lists:split(Lines1, List),
+    Data1 = process_data_pie(Data),
+    Title = typechecks:throw_std_strs(Rest),
+    Opts = case Title of
+               []  -> [];
+               [H] -> [{?title, H}];
+               _   -> ?ERR_VAL
+           end,
+    {Lables, Vals} = unzip(Data1, [], []),
+    [Vals, Lables | Opts].    
+
+unzip([], Lables, Vals) ->
+    {{?pielables, string:join(Lables, "|")},
+     {?data, "t:"++string:join(Vals, "|")}};
+unzip([[H1, H2] | T], Lables, Vals) ->
+    unzip(T, [H1 | Lables], [H2 | Vals]).
+                                                 
 chunk_xy([Lines | List], LabType) ->
     [Lines1] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
@@ -679,6 +700,19 @@ process_data_linegraph(Aggregate, Data) ->
     % but we chuck away the aggregated MinY
     {MinY, MaxY2, Data4}.
 
+process_data_pie(Data) ->
+    Prefetched = cast_prefetch(Data),
+    Data1 = [proc_dxy1(X) || X <- Prefetched],
+    Data2 = [X || {X, _NoR, _NoC} <- Data1],
+    Fun = fun([Labs, Vals], Acc) ->
+                  L2 = cast_strings(Labs),
+                  L3 = string:join(L2, "|"),
+                  V2 = normalize(lists:reverse(cast_data(Vals))),
+                  V3 = string:join([tconv:to_s(X) || X <- V2], ","),
+                  [[L3, V3] | Acc]
+          end,
+    lists:foldl(Fun, [], Data2).
+
 process_data_xy(Data) ->
     Prefetched = cast_prefetch(Data),
     Data1 = [proc_dxy1(X) || X <- Prefetched],
@@ -809,7 +843,6 @@ cast_dates(Data) ->
                       {ignore, blank}
                      ],
                      [return_errors, {all, fun is_number/1}]).
-
 cast_data(Data) ->
     muin_collect:col([Data],
                      [eval_funs,
