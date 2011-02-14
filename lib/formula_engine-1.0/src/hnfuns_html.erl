@@ -62,7 +62,7 @@
     {resize, W, H, box(Width, Height, Background, Border, Style, Lines,
                                  BodyStyle, [Content])}.
 
-check_size(W, H) when W > 0 andalso W < 13 andalso H > 1 andalso H < 21 -> ok;
+check_size(W, H) when W > 0 andalso W < 15 andalso H > 1 andalso H < 25 -> ok;
 check_size(_W, _H) -> ?ERR_VAL.
 
 box(W, H, Bk, Bd, St, Ln, BodyStyle, [Content]) ->

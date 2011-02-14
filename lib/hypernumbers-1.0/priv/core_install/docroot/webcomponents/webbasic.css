@@ -91,6 +91,9 @@ GITROOT/lib/hypernumbers-1.0/priv/css_generator */
 .hn-wc-wd-10 { width: 792px; }
 .hn-wc-wd-11 { width: 872px; }
 .hn-wc-wd-12 { width: 952px; }
+.hn-wc-wd-13 { width: 1032px; }
+.hn-wc-wd-14 { width: 1112px; }
+.hn-wc-wd-15 { width: 1192px; }
 
 /* the height of the preview boxes */
 .hn-preview-ht-1 { height: 12px; }
@@ -132,3 +135,6 @@ GITROOT/lib/hypernumbers-1.0/priv/css_generator */
 .hn-preview-wd-10 { width: 788px; }
 .hn-preview-wd-11 { width: 868px; }
 .hn-preview-wd-12 { width: 948px; }
+.hn-preview-wd-13 { width: 1026px; }
+.hn-preview-wd-14 { width: 1106px; }
+.hn-preview-wd-15 { width: 1186px; }
