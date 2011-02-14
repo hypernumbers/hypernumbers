@@ -53,24 +53,29 @@
 -define(speedolab,  "chl").
 
 % definition of standard stuff
--define(NORMALAXES,  "x,y").
--define(LABLEAXES,   "x,x,y,y").
--define(HIST_VGROUP, "bvg").
--define(HIST_VSTACK, "bvs").
--define(HIST_HGROUP, "bhg").
--define(HIST_HSTACK, "bhs").
--define(PIECHART,    "pc").
--define(XYLINE,      "lxy").
--define(EQXAXIS,     "lc").
--define(SPARKLINE,   "ls").
--define(TOPHORIZ,    "t").
--define(TOPVERT,     "tv").
--define(RIGHTVERT,   "r").
--define(LEFTVERT,    "l").
--define(BOTHORIZ,    "b").
--define(BOTVERT,     "bv").
--define(NORMMARGINS, "5,5,5,5").
--define(BOTHAXES,    "x,y").
+-define(SPEEDOPARAMS, [0, 33, 66, 100]).
+-define(RED,          "FF3333").
+-define(ORANGE,       "FF9900").
+-define(GREEN,        "80C65A").
+-define(GREY,         "999999").
+-define(NORMALAXES,   "x,y").
+-define(LABLEAXES,    "x,x,y,y").
+-define(HIST_VGROUP,  "bvg").
+-define(HIST_VSTACK,  "bvs").
+-define(HIST_HGROUP,  "bhg").
+-define(HIST_HSTACK,  "bhs").
+-define(PIECHART,     "pc").
+-define(XYLINE,       "lxy").
+-define(EQXAXIS,      "lc").
+-define(SPARKLINE,    "ls").
+-define(TOPHORIZ,     "t").
+-define(TOPVERT,      "tv").
+-define(RIGHTVERT,    "r").
+-define(LEFTVERT,     "l").
+-define(BOTHORIZ,     "b").
+-define(BOTVERT,      "bv").
+-define(NORMMARGINS,  "5,5,5,5").
+-define(BOTHAXES,     "x,y").
 
 -define(SPCOLOURS, [
                     "444444",
@@ -125,7 +130,7 @@ chunk_spark([Lines | List]) ->
 normalize_sp(List, Min, Max) ->
     Diff = Max - Min,
     Fun = fun(blank) -> blank;
-             (X)     -> NewX = round((X - Min)*1000/Diff)/10
+             (X)     -> round((X - Min)*1000/Diff)/10
           end,
     [Fun(X) || X <- List].
 
@@ -530,43 +535,27 @@ make_c2([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
     {resize, Width, Height,
      speedo(make_size(Width, Height),  List)}.
 
-speedo(Size, [V])                     -> V2 = cast_val(V),
-                                         speedo1(Size, V2, "", "", "", "", 1);
-speedo(Size, [V, Tt])                 -> V2 = cast_val(V),
-                                         speedo1(Size, V2, Tt, "", "", "", 1);
-speedo(Size, [V, Tt, SubT])           -> V2 = cast_val(V),
-                                         speedo1(Size, V2, Tt, SubT, "", "", 1);
-speedo(Size, [V, Tt, SubT, Th])       -> Scale = speedo_scale(Th),
-                                         V2 = cast_val(V),
-                                         speedo1(Size, V2, Tt, SubT, Th, "", Scale);
-speedo(Size, [V, Tt, SubT, Th, Labs]) -> Scale = speedo_scale(Th),
-                                         V2 = cast_val(V),
-                                         speedo1(Size, V2, Tt, SubT, Th, Labs, Scale).
-cast_val(Val) ->  cast_v2(Val, 0, 100, 1).
+speedo(Size, [V])               -> speedo1(Size, V, "", "",   ?SPEEDOPARAMS);
+speedo(Size, [V, Tt])           -> speedo1(Size, V, Tt, "",   ?SPEEDOPARAMS);
+speedo(Size, [V, Tt, SubT])     -> speedo1(Size, V, Tt, SubT, ?SPEEDOPARAMS);
+speedo(Size, [V, Tt, SubT, Th]) -> speedo1(Size, V, Tt, SubT, Th).
 
-cast_v2(Val, Min, Max, Scale) ->
-    if
-        Val < Min                     -> ?ERRVAL_VAL;
-        Val > Max                     -> ?ERRVAL_VAL;
-        Min =< Val andalso Val =< Max -> Val * Scale
-    end.
-
-speedo1(Size, Val, Title, Subtitle, Threshold, Lables, Scale) ->
+speedo1(Size, Val, Title, Subtitle, Thresholds) ->
+    V2 = cast_val(Val),
     [Tt2]  = cast_titles(Title),
     [Sb2]  = cast_titles(Subtitle),
-    %[Th2]  = cast_data(Threshold),
-    %[Lab2] = cast_titles(Lables),
+    {V3, Colours, Lables} = speedo_scale(Thresholds, V2),
     if
-        Val < 0                             -> ?ERRVAL_VAL;
-        Val > 100 * Scale                   -> ?ERRVAL_VAL;
-        0 =< Val andalso Val =< 100 * Scale ->
+        V3 < 0   -> ?ERRVAL_VAL;
+        V3 > 100 -> ?ERRVAL_VAL;
+        0 =< V3 andalso V3 =< 100 ->
             Opts = [],
             NewOpts = [
-                       {?axeslables, "0:|OK|Beware|Danger"},
+                       Lables,
+                       Colours,
                        {?tickmarks, "y"},
                        {?size, Size},
                        {?type, "gm"},
-                       {?colours, "000000,008000|FFCC33|FF0000"},
                        {?data, "t:" ++ tconv:to_s(Val)},
                        {?speedolab, Sb2},
                        {?title, Tt2}
@@ -587,9 +576,30 @@ speedo1(Size, Val, Title, Subtitle, Threshold, Lables, Scale) ->
             end
     end.
 
-speedo_scale(Th) ->
-    [Zero, Orange, Red, Max] = cast_data(Th),
-    1.
+speedo_scale(Th, Val) ->
+    NoOfColours = 20,
+    NoOfCMinus1 = NoOfColours - 1,
+    [Zero, Orange, Red, Max] = lists:reverse(cast_data(Th)),
+    Diff = Max - Zero,
+    NGreen = trunc(((Orange - Zero)/Diff) * NoOfColours),
+    NOrange = trunc(((Red - Orange)/Diff) * NoOfColours),
+    NRed = trunc(((Max - Red)/Diff) * NoOfColours),
+    NRed2 = case NGreen + NOrange + NRed of
+                NoOfColours -> NRed;
+                NoOfCMinus1 -> NRed + 1
+            end,
+    Cols = lists:concat([lists:duplicate(NGreen, ?GREEN),
+                         lists:duplicate(NOrange, ?ORANGE),
+                         lists:duplicate(NRed2, ?RED)]),
+    Labs = lists:concat([lists:duplicate(NGreen - 1, []),
+                         ["W"],
+                         lists:duplicate(NOrange - 1, []),
+                         ["D"],
+                         lists:duplicate(NRed2, [])]),
+    Colours = {?colours, ?GREY ++ "," ++ string:join(Cols, "|")},
+    Lables = {?axeslables, "0:|" ++  string:join(Labs, "|")},
+    V = (Val - Zero)/Diff,
+    {V, Colours, Lables}.
 
 barchart([Data]) ->
     bar(Data, 0, {{scale, auto}, [], []});
@@ -819,6 +829,15 @@ pie2(Data, Titles, Colours) ->
         ++ Titles1
         ++ Colours1
         ++ "' />".
+
+cast_val(Val) ->  cast_v2(Val, 0, 100, 1).
+
+cast_v2(Val, Min, Max, Scale) ->
+    if
+        Val < Min                     -> ?ERRVAL_VAL;
+        Val > Max                     -> ?ERRVAL_VAL;
+        Min =< Val andalso Val =< Max -> Val * Scale
+    end.
 
 cast_prefetch(Data) ->
     muin_collect:col(Data, [fetch_ref], []).
