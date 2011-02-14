@@ -26,6 +26,8 @@
          barchart/1
         ]).
 
+-define(MARGIN, 0.1).
+
 -define(ROW,    true).
 -define(COLUMN, false).
 
@@ -125,7 +127,9 @@ chunk_spark([Lines | List]) ->
     Data1 = [lists:reverse(cast_data(X)) || X <- List],
     Min = lists:min(lists:flatten(Data1)),
     Max = lists:max(lists:flatten(Data1)),
-    Data2 = [normalize_sp(X, Min, Max) || X <- Data1],
+    Diff = Max - Min,
+    Data2 = [normalize_sp(X, Min - ?MARGIN * Diff, Max + ?MARGIN * Diff)
+             || X <- Data1],
     Data3 = "t:"++conv_data(Data2),
     {Data3, Colours}.
 
@@ -264,8 +268,9 @@ chunk_l2(Aggregate, Lines, List) ->
 process_x_l2(DataX) ->
     MinX = stdfuns_stats:min(DataX),
     MaxX = stdfuns_stats:max(DataX),
+    Diff = MaxX - MinX,
     DataX2 = normalize_sp(DataX, MinX, MaxX),
-    {DataX2, MinX, MaxX}.
+    {DataX2, MinX - ?MARGIN * Diff, MaxX + ?MARGIN * Diff}.
 
 make_data(_X, [], Acc)     -> "t:" ++ string:join(lists:reverse(Acc), "|");
 make_data(X, [H | T], Acc) -> NewAcc = make_d2(X, H, [], []),
@@ -709,9 +714,11 @@ process_data_linegraph(Aggregate, Data) ->
                        false -> MaxY;
                        true  -> get_maxes_lg_agg(Data3)
                    end,
-    Data4 = normalize_linegraph(Data3, MinY, MaxY, []),
-    % but we chuck away the aggregated MinY
-    {MinY, MaxY2, Data4}.
+    Diff = MaxY2 - MinY,
+    MinY3 = MinY - ?MARGIN * Diff,
+    MaxY3 = MaxY2 + ?MARGIN * Diff,
+    Data4 = normalize_linegraph(Data3, MinY3, MaxY3, []),
+    {MinY3, MaxY3, Data4}.
 
 process_data_pie(Data) ->
     Prefetched = cast_prefetch(Data),
@@ -732,7 +739,10 @@ process_data_xy(Data) ->
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
     Data3 = [[lists:reverse(cast_data(X)) || X <- X1] || X1 <- Data2],
     {MinX, MaxX, MinY, MaxY} = get_maxes(Data3),
-    Data4 = normalize_xy(Data3, MinX, MaxX, MinY, MaxY, []),
+    DiffX = MaxX - MinX,
+    DiffY = MaxY - MinY,
+    Data4 = normalize_xy(Data3, MinX - ?MARGIN * DiffX, MaxX + ?MARGIN * DiffX,
+                         MinY - ?MARGIN * DiffY, MaxY + ?MARGIN * DiffY, []),
     Data5 = [conv_data(X) || X <- Data4],
     {MinX, MaxX, MinY, MaxY, "t:"++string:join(Data5, "|")}.
 
@@ -1035,9 +1045,9 @@ allocate_colours(N, Colours) ->
 colours() -> [
               {"black"   , "000000"},
               {"green"   , "008000"},
+              {"red"     , "FF0000"},
               {"maroon"  , "800000"},
               {"navy"    , "000080"}, 
-              {"red"     , "FF0000"},
               {"blue"    , "0000FF"},
               {"purple"  , "800080"},
               {"silver"  , "C0C0C0"},
