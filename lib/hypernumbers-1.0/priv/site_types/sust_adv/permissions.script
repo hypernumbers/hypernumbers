@@ -9,12 +9,12 @@
 {add_view,[{path,["[**]"]},{perms,["admin",everyone]},{view,"webpage"}]}.
 {add_view,[{path,["[**]"]},{perms,["admin",everyone]},{view,"wikipage"}]}.
 {set_champion,[{path,["[**]"]},{view,"spreadsheet"}]}.
-{add_view,[{path,["dla-piper"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["dla-piper"]},{perms,["admin",everyone]},{view,"webpage"}]}.
 {set_champion,[{path,["dla-piper"]},{view,"webpage"}]}.
 {add_view,[{path,["dla-piper","admin"]},{perms,["admin"]},{view,"webpage"}]}.
 {set_champion,[{path,["dla-piper","admin"]},{view,"webpage"}]}.
 {add_view,[{path,["dla-piper","admin","data_alerts"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"webpage"}]}.
 {add_view,[{path,["dla-piper","admin","data_alerts"]},
            {perms,["admin",everyone]},
@@ -33,26 +33,26 @@
            {view,"webpage"}]}.
 {set_champion,[{path,["dla-piper","budgets","dla-piper"]},{view,"webpage"}]}.
 {add_view,[{path,["dla-piper","budgets","dla-piper","noble-street"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","budgets","dla-piper","noble-street"]},
                {view,"wikipage"}]}.
 {add_view,[{path,["dla-piper","budgets","dla-piper","st-pauls-place"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","budgets","dla-piper","st-pauls-place"]},
                {view,"wikipage"}]}.
 {add_view,[{path,["dla-piper","buildings"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"webpage"}]}.
 {set_champion,[{path,["dla-piper","buildings"]},{view,"webpage"}]}.
 {add_view,[{path,["dla-piper","buildings","noble-street"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","buildings","noble-street"]},
                {view,"wikipage"}]}.
 {add_view,[{path,["dla-piper","buildings","noble-street","2010"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","buildings","noble-street","2010"]},
                {view,"wikipage"}]}.
@@ -95,18 +95,18 @@
                       "1200010220505"]},
                {view,"wikipage"}]}.
 {add_view,[{path,["dla-piper","buildings","st-pauls-place"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"webpage"}]}.
 {add_view,[{path,["dla-piper","buildings","st-pauls-place"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","buildings","st-pauls-place"]},
                {view,"webpage"}]}.
 {add_view,[{path,["dla-piper","buildings","st-pauls-place","2010"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"webpage"}]}.
 {add_view,[{path,["dla-piper","buildings","st-pauls-place","2010"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","buildings","st-pauls-place","2010"]},
                {view,"webpage"}]}.
@@ -116,7 +116,7 @@
 {set_champion,[{path,["dla-piper","buildings","st-pauls-place","2010","feb"]},
                {view,"wikipage"}]}.
 {add_view,[{path,["dla-piper","buildings","st-pauls-place","2010","feb","1"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","buildings","st-pauls-place","2010","feb",
                       "1"]},
@@ -170,11 +170,11 @@
                {view,"webpage"}]}.
 {add_view,[{path,["dla-piper","buildings","st-pauls-place","2010","jan","1",
                   "2380000503555"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"webpage"}]}.
 {add_view,[{path,["dla-piper","buildings","st-pauls-place","2010","jan","1",
                   "2380000503555"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","buildings","st-pauls-place","2010","jan",
                       "1","2380000503555"]},
@@ -198,6 +198,13 @@
 {set_champion,[{path,["dla-piper","buildings","st-pauls-place","2010","jan",
                       "3"]},
                {view,"wikipage"}]}.
+{add_view,[{path,["dla-piper","buildings","st-pauls-place","2010","jan","3",
+                  "2380000503555"]},
+           {perms,["admin"]},
+           {view,"webpage"}]}.
+{set_champion,[{path,["dla-piper","buildings","st-pauls-place","2010","jan",
+                      "3","2380000503555"]},
+               {view,"webpage"}]}.
 {add_view,[{path,["dla-piper","buildings","st-pauls-place","2010","jan","4"]},
            {perms,["admin"]},
            {view,"wikipage"}]}.
@@ -271,14 +278,32 @@
 {set_champion,[{path,["dla-piper","buildings","st-pauls-place","2010","mar",
                       "6"]},
                {view,"wikipage"}]}.
+{add_view,[{path,["dla-piper","buildings","st-pauls-place","2011"]},
+           {perms,["admin",everyone]},
+           {view,"spreadsheet"}]}.
+{add_view,[{path,["dla-piper","buildings","st-pauls-place","2011"]},
+           {perms,["admin",everyone]},
+           {view,"table"}]}.
+{add_view,[{path,["dla-piper","buildings","st-pauls-place","2011"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{add_view,[{path,["dla-piper","buildings","st-pauls-place","2011"]},
+           {perms,["admin",everyone]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["dla-piper","buildings","st-pauls-place","2011"]},
+               {view,"wikipage"}]}.
 {add_view,[{path,["dla-piper","clients"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","clients"]},{view,"wikipage"}]}.
 {add_view,[{path,["dla-piper","clients","europa"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"webpage"}]}.
 {set_champion,[{path,["dla-piper","clients","europa"]},{view,"webpage"}]}.
+{add_view,[{path,["dla-piper","compliance","crc"]},
+           {perms,["admin",everyone]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["dla-piper","compliance","crc"]},{view,"wikipage"}]}.
 {add_view,[{path,["dla-piper","initiatives"]},
            {perms,["admin",everyone]},
            {view,"webpage"}]}.
@@ -288,10 +313,16 @@
            {view,"table"}]}.
 {set_champion,[{path,["dla-piper","initiatives","list"]},{view,"table"}]}.
 {add_view,[{path,["dla-piper","initiatives","new"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"webpage"}]}.
 {set_champion,[{path,["dla-piper","initiatives","new"]},{view,"webpage"}]}.
-{add_view,[{path,["dla-piper","my-page"]},{perms,["admin"]},{view,"webpage"}]}.
+{add_view,[{path,["dla-piper","initiatives","table"]},
+           {perms,["admin",everyone]},
+           {view,"table"}]}.
+{set_champion,[{path,["dla-piper","initiatives","table"]},{view,"table"}]}.
+{add_view,[{path,["dla-piper","my-page"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
 {set_champion,[{path,["dla-piper","my-page"]},{view,"webpage"}]}.
 {add_view,[{path,["dla-piper","my-page","gordon"]},
            {perms,["admin"]},
@@ -302,10 +333,10 @@
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","my-page","gordona"]},{view,"wikipage"}]}.
 {add_view,[{path,["dla-piper","my-page","stephen"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"webpage"}]}.
 {add_view,[{path,["dla-piper","my-page","stephen"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","my-page","stephen"]},{view,"wikipage"}]}.
 {add_view,[{path,["dla-piper","my-page","stephen","chartbuilder"]},
@@ -318,15 +349,45 @@
            {view,"table"}]}.
 {set_champion,[{path,["dla-piper","my-page","stephen","my_charts"]},
                {view,"table"}]}.
+{add_view,[{path,["dla-piper","my-page","stephen2"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["dla-piper","my-page","stephen2"]},{view,"wikipage"}]}.
+{add_view,[{path,["dla-piper","my-page","stephen2","chartbuilder"]},
+           {perms,["admin"]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["dla-piper","my-page","stephen2","chartbuilder"]},
+               {view,"wikipage"}]}.
 {add_view,[{path,["dla-piper","reporting"]},
            {perms,["admin"]},
            {view,"webpage"}]}.
 {set_champion,[{path,["dla-piper","reporting"]},{view,"webpage"}]}.
 {add_view,[{path,["dla-piper","reporting","crc"]},
-           {perms,["admin"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
 {set_champion,[{path,["dla-piper","reporting","crc"]},{view,"wikipage"}]}.
+{add_view,[{path,["dla-piper","social","news"]},
+           {perms,["admin",everyone]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["dla-piper","social","news"]},{view,"wikipage"}]}.
+{add_view,[{path,["dla-piper","social","twitter"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{set_champion,[{path,["dla-piper","social","twitter"]},{view,"webpage"}]}.
 {add_view,[{path,["dla-piper","suppliers"]},
            {perms,["admin"]},
+           {view,"webpage"}]}.
+{add_view,[{path,["dla-piper","suppliers"]},
+           {perms,["admin",everyone]},
            {view,"wikipage"}]}.
-{set_champion,[{path,["dla-piper","suppliers"]},{view,"wikipage"}]}.
+{set_champion,[{path,["dla-piper","suppliers"]},{view,"webpage"}]}.
+{add_view,[{path,["dla-piper","suppliers","cory-environmental"]},
+           {perms,["admin",everyone]},
+           {view,"webpage"}]}.
+{set_champion,[{path,["dla-piper","suppliers","cory-environmental"]},
+               {view,"webpage"}]}.
+{add_view,[{path,["dla-piper","suppliers","cory-environmental","admin"]},
+           {perms,["admin",everyone]},
+           {view,"wikipage"}]}.
+{set_champion,[{path,["dla-piper","suppliers","cory-environmental","admin"]},
+               {view,"wikipage"}]}.
