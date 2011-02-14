@@ -8,6 +8,8 @@
 %%%-------------------------------------------------------------------
 -module(hnfuns_graphs).
 
+-export([cast_data/1]).
+
 -export([
          'sparkline.'/1,
          'xy.'/1,
@@ -53,7 +55,7 @@
 -define(speedolab,  "chl").
 
 % definition of standard stuff
--define(SPEEDOPARAMS, [0, 33, 66, 100]).
+-define(SPEEDOPARAMS, {array, [[0, 33, 66, 100]]}).
 -define(RED,          "FF3333").
 -define(ORANGE,       "FF9900").
 -define(GREEN,        "80C65A").
@@ -532,8 +534,7 @@ make_c2([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
 'speedo.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
-    {resize, Width, Height,
-     speedo(make_size(Width, Height),  List)}.
+    {resize, Width, Height,     speedo(make_size(Width, Height),  List)}.
 
 speedo(Size, [V])               -> speedo1(Size, V, "", "",   ?SPEEDOPARAMS);
 speedo(Size, [V, Tt])           -> speedo1(Size, V, Tt, "",   ?SPEEDOPARAMS);
@@ -578,19 +579,21 @@ speedo1(Size, Val, Title, Subtitle, Thresholds) ->
 
 speedo_scale(Th, Val) ->
     NoOfColours = 20,
-    NoOfCMinus1 = NoOfColours - 1,
+    NoOfCMinus1 = 19,
+    NoOfCMinus2 = 18,
     [Zero, Orange, Red, Max] = lists:reverse(cast_data(Th)),
     Diff = Max - Zero,
     NGreen = trunc(((Orange - Zero)/Diff) * NoOfColours),
     NOrange = trunc(((Red - Orange)/Diff) * NoOfColours),
     NRed = trunc(((Max - Red)/Diff) * NoOfColours),
-    NRed2 = case NGreen + NOrange + NRed of
-                NoOfColours -> NRed;
-                NoOfCMinus1 -> NRed + 1
-            end,
-    Cols = lists:concat([lists:duplicate(NGreen, ?GREEN),
-                         lists:duplicate(NOrange, ?ORANGE),
-                         lists:duplicate(NRed2, ?RED)]),
+    {NRed2, NOrange2} = case NGreen + NOrange + NRed of
+                            NoOfColours -> {NRed,     NOrange};
+                            NoOfCMinus1 -> {NRed + 1, NOrange};
+                            NoOfCMinus2 -> {NRed + 1, NOrange + 1}
+                        end,
+    Cols = lists:concat([lists:duplicate(NGreen,   ?GREEN),
+                         lists:duplicate(NOrange2, ?ORANGE),
+                         lists:duplicate(NRed2,    ?RED)]),
     Labs = lists:concat([lists:duplicate(NGreen - 1, []),
                          ["W"],
                          lists:duplicate(NOrange - 1, []),
@@ -1049,5 +1052,5 @@ colours() -> [
              ].
 
 make_size(W, H) -> make_width(W) ++ "x" ++ make_height(H).
-make_height(N)  -> integer_to_list(N * 22 - 2).
-make_width(N)   -> integer_to_list(N * 80 - 12).
+make_height(N)  -> integer_to_list((N - 1) * 22).
+make_width(N)   -> integer_to_list(N * 80 - 14).
