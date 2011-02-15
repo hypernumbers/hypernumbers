@@ -6,7 +6,7 @@
 #finder .panewrapper {
     height     : 170px;
     overflow-x : scroll; 
-    overflow-y : hidden; 
+    overflow-y : scroll; 
 }
 
 /*
