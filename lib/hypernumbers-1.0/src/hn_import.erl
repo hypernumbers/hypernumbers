@@ -43,13 +43,25 @@ csv_append(Url, FileName) ->
 json_file(Url, FileName) -> 
     {ok, JsonTxt} = file:read_file(FileName),
     Ref = hn_util:url_to_refX(Url),
+    #refX{site = S, path = P} = Ref,
 
     {struct, Json} = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
+    
     {struct, StyleStrs} = ?pget("styles", Json),
-    {struct, Cells} = ?pget("cell", Json),
-    {struct, Rows} = ?pget("row", Json),
-    {struct, Cols} = ?pget("column", Json),
+    {struct, Cells}     = ?pget("cell", Json),
+    {struct, Rows}      = ?pget("row", Json),
+    {struct, Cols}      = ?pget("column", Json),
+    {struct, Perms}     = ?pget("permissions", Json),
+    
+    Champion = ?pget("champion", Perms), 
+    {struct, Views} = ?pget("views", Perms),
 
+    % set the champion
+    Path = hn_util:list_to_path(P),
+    ok = hn_web_admin:rpc(not_used, S, "set_champion", [{"path", Path},
+                                                        {"view", Champion}]),
+    [ok = set_view(S, Path, X) || X <- Views],
+    
     Styles = hn_db_api:read_styles_IMPORT(Ref),
     ImportStyles = [make_style_rec(X) || X <- StyleStrs],
     {ImportStyles2, RewriteT} = rewrite_styles(Styles, ImportStyles),
@@ -58,8 +70,17 @@ json_file(Url, FileName) ->
     ok = hn_db_api:clear(Ref, all, nil),
     [ rows(Ref, X, RewriteT, row,    fun write_col_row/3) || X <- Rows],
     [ rows(Ref, X, RewriteT, column, fun write_col_row/3) || X <- Cols],
-    [ rows(Ref, X, RewriteT, cell,   fun write_cells/3) || X <- Cells],
+    [ rows(Ref, X, RewriteT, cell,   fun write_cells/3)   || X <- Cells],
     ok.
+
+set_view(Site, Path, {View, {struct, Propslist}}) ->
+    Everyone = ?pget("everyone", Propslist),
+    Groups = ?pget("groups", Propslist),
+    ok = hn_web_admin:rpc(not_used, Site, "set_view", [{"path",     Path},
+                                                       {"view",     View},
+                                                       {"groups",   Groups},
+                                                       {"everyone", Everyone}]).
+   
 
 rows(Ref, {Row, {struct, Cells}}, RewriteT, Type, Fun) ->
     [ cells(Ref, Row, X, RewriteT, Type, Fun) || X <- Cells],

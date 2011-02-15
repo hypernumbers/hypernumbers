@@ -12,7 +12,9 @@
          zeval_from_zinf/3
         ]).
 
+-define(htmlheadline, $h,$t,$m,$l,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
 -define(htmlbox, $h,$t,$m,$l,$.,$b,$o,$x,$.).
+-define(htmlplainbox, $h,$t,$m,$l,$.,$p,$l,$a,$i,$n,$b,$o,$x,$.).
 -define(htmlalert, $h,$t,$m,$l,$.,$a,$l,$e,$r,$t,$.).
 -define(htmlruledbox, $h,$t,$m,$l,$.,$r,$u,$l,$e,$d,$b,$o,$x,$.).
 -define(sparkline, $s,$p,$a,$r,$k,$l,$i,$n,$e,$.).
@@ -22,6 +24,9 @@
 -define(linegraph, $l,$i,$n,$e,$g,$r,$a,$p,$h,$.).
 -define(dategraph, $d,$a,$t,$e,$g,$r,$a,$p,$h,$.).
 -define(equigraph, $e,$q,$u,$i,$g,$r,$a,$p,$h,$.).
+-define(piechart, $p,$i,$e,$c,$h,$a,$r,$t,$.).
+-define(horizontalline, $h,$o,$r,$i,$z,$o,$n,$t,$a,$l,$.,$l,$i,$n,$e,$.).
+-define(verticalline, $v,$e,$r,$t,$i,$c,$a,$l,$.,$l,$i,$n,$e,$.).
 
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
@@ -185,43 +190,56 @@ eval(_Node = [Func|Args]) when ?is_fn(Func) ->
 eval(Value) ->
     Value.
 
+transform([?htmlheadline | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?htmlheadline]), [W , H | Args]};
 transform([?htmlbox | R], Args) ->
-    {W, H} = parse(R),
+    {W, H} = get_dims(R),
     {list_to_atom([?htmlbox]), [W , H | Args]};
+transform([?htmlplainbox | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?htmlplainbox]), [W , H | Args]};
 transform([?htmlalert | R], Args) ->
-    {W, H} = parse(R),
+    {W, H} = get_dims(R),
     {list_to_atom([?htmlalert]), [W , H | Args]};
 transform([?htmlruledbox | R], Args) ->
-    {W, H} = parse(R),
+    {W, H} = get_dims(R),
     {list_to_atom([?htmlruledbox]), [W , H | Args]};
 transform([?sparkline | R], Args) ->
-    {W, H} = parse(R),
+    {W, H} = get_dims(R),
     {list_to_atom([?sparkline]), [W , H | Args]};
 transform([?xy | R], Args) ->
-    {W, H} = parse(R),
+    {W, H} = get_dims(R),
     {list_to_atom([?xy]), [W , H | Args]};
 transform([?speedo | R], Args) ->
-    {W, H} = parse(R),
+    {W, H} = get_dims(R),
     {list_to_atom([?speedo]), [W , H | Args]};
 transform([?histogram | R], Args) ->
-    {W, H} = parse(R),
+    {W, H} = get_dims(R),
     {list_to_atom([?histogram]), [W , H | Args]};
 transform([?linegraph | R], Args) ->
-    {W, H} = parse(R),
+    {W, H} = get_dims(R),
     {list_to_atom([?linegraph]), [W , H | Args]};
 transform([?dategraph | R], Args) ->
-    {W, H} = parse(R),
+    {W, H} = get_dims(R),
     {list_to_atom([?dategraph]), [W , H | Args]};
 transform([?equigraph | R], Args) ->
-    {W, H} = parse(R),
+    {W, H} = get_dims(R),
     {list_to_atom([?equigraph]), [W , H | Args]};
-
-
-
+transform([?piechart | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?piechart]), [W , H | Args]};
+% single parameter stuff
+transform([?horizontalline | R], Args) ->
+    {list_to_atom([?horizontalline]), [R | Args]};
+transform([?verticalline | R], Args) ->
+    {list_to_atom([?verticalline]), [R | Args]};
 transform(List, Args) -> {list_to_atom(List), Args}.
 
-parse(String) -> [W, H] = string:tokens(String, "x"),
-                 {W, H}.
+get_dims(String) -> case string:tokens(String, "x") of
+                     [W, H] -> {W, H};
+                     _      -> {?ERRVAL_NAME, ?ERRVAL_NAME} % think about it!
+                 end.
 
 funcall(make_list, Args) ->
     area_util:make_array([Args]); % horizontal array

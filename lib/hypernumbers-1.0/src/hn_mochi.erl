@@ -10,11 +10,11 @@
 -include("hn_mochi.hrl").
 -include("funs_en_gb.hrl").
 
--define(E, error_logger:error_msg).
--define(LOAD, hn_templates:load_template_if_no_page).
--define(SORT, lists:sort).
+-define(E,        error_logger:error_msg).
+-define(LOAD,     hn_templates:load_template_if_no_page).
+-define(SORT,     lists:sort).
 -define(NO_STAMP, undefined).
--define(DAY_S, 86400). % a day's worth of seconds
+-define(DAY_S,    86400). % a day's worth of seconds
 -define(check_pt_vw(A, B, C, D), auth_srv:check_particular_view(A, B, C, D)).
 
 -export([

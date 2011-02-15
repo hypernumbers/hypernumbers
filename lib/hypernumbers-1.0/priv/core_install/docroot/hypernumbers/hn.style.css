@@ -64,7 +64,6 @@ body {
 }
 
 .hntext, iframe { 
-    min-height:62px;
     height:100%;
     width:100%;
     box-sizing:border-box;
@@ -74,7 +73,7 @@ body {
 .hninput {
     font-size:inherit;
     width:100%;
-    padding:2px;
+    height:100%;
     box-sizing:border-box;
     -moz-box-sizing:border-box;
     -webkit-box-sizing:border-box;
@@ -320,6 +319,17 @@ label {
     width:      5px;
 }
 
+.hn-overflow { 
+    background: url(/hypernumbers/sprite.png) -84px -1px;
+    z-index:    999999;
+    position:   absolute;
+    float:      right;
+    bottom:     0px;
+    right:      0px;
+    height:     8px;
+    width:      5px;
+}
+
 #expandbackground, #ctrlpanel { 
    background: #EEE;
    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
@@ -538,25 +548,21 @@ label {
 }
 
 .hn_padded, #clinput { 
-             padding: 3px;
+             padding: 1px 1px 1px 1px;
              }
 
 .inline { 
    -moz-border-radius: 4px 4px 4px 4px;
    -webkit-border-radius: 4px 4px 4px 4px;
-   height: 92%;
+   margin: 1px;
    border: 1px solid #ddd;
-   padding: 1px 2px 1px 2px;
+   padding: 0px 1px 0px 1px;
 }
 
 #clinput div { 
    position: static;
-}
-
-#clinput div { 
    padding: 0px 1px 0px 1px;
    background-color: white;
-   margin: 1px 1px 1px 1px;
    -moz-border-radius: 4px 4px 4px 4px;
    -webkit-border-radius: 4px 4px 4px 4px;
    -moz-box-sizing: content-box;

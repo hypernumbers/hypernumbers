@@ -8,6 +8,8 @@
 %%%-------------------------------------------------------------------
 -module(hnfuns_graphs).
 
+-export([cast_data/1]).
+
 -export([
          'sparkline.'/1,
          'xy.'/1,
@@ -16,13 +18,15 @@
          'linegraph.'/1,
          'dategraph.'/1,
          'equigraph.'/1,
-         %'piechart.'/1,
+         'piechart.'/1,
          % deprecated fns
          linegraph/1,
          piechart/1,
          histogram/1,
          barchart/1
         ]).
+
+-define(MARGIN, 0.1).
 
 -define(ROW,    true).
 -define(COLUMN, false).
@@ -34,11 +38,13 @@
 -define(apiurl,     "<img src='http://chart.apis.google.com/chart?").
 -define(urlclose,   "' />").
 -define(axesrange,  "chxr").  % 0=x, 1=Y, min, max (seperated by |)"
+-define(piecolours, "chxs").
 -define(axes,       "chxt").  % handles multiple axes
 -define(size,       "chs").   % Width x Height
 -define(colours,    "chco").  % colours of the lines
 -define(data,       "chd").   % data - depends on chart time
 -define(datalables, "chdl").  % separated by |
+-define(pielables,  "chl").
 -define(customscale,"chds").
 -define(type,       "cht").
 -define(legendpos,  "chdlp"). % t | l | r | b
@@ -51,24 +57,29 @@
 -define(speedolab,  "chl").
 
 % definition of standard stuff
--define(NORMALAXES,  "x,y").
--define(LABLEAXES,   "x,x,y,y").
--define(HIST_VGROUP, "bvg").
--define(HIST_VSTACK, "bvs").
--define(HIST_HGROUP, "bhg").
--define(HIST_HSTACK, "bhs").
--define(PIECHART,    "pc").
--define(XYLINE,      "lxy").
--define(EQXAXIS,     "lc").
--define(SPARKLINE,   "ls").
--define(TOPHORIZ,    "t").
--define(TOPVERT,     "tv").
--define(RIGHTVERT,   "r").
--define(LEFTVERT,    "l").
--define(BOTHORIZ,    "b").
--define(BOTVERT,     "bv").
--define(NORMMARGINS, "5,5,5,5").
--define(BOTHAXES,    "x,y").
+-define(SPEEDOPARAMS, {array, [[0, 33, 66, 100]]}).
+-define(RED,          "FF3333").
+-define(ORANGE,       "FF9900").
+-define(GREEN,        "80C65A").
+-define(GREY,         "999999").
+-define(NORMALAXES,   "x,y").
+-define(LABLEAXES,    "x,x,y,y").
+-define(HIST_VGROUP,  "bvg").
+-define(HIST_VSTACK,  "bvs").
+-define(HIST_HGROUP,  "bhg").
+-define(HIST_HSTACK,  "bhs").
+-define(PIECHART,     "pc").
+-define(XYLINE,       "lxy").
+-define(EQXAXIS,      "lc").
+-define(SPARKLINE,    "ls").
+-define(TOPHORIZ,     "t").
+-define(TOPVERT,      "tv").
+-define(RIGHTVERT,    "r").
+-define(LEFTVERT,     "l").
+-define(BOTHORIZ,     "b").
+-define(BOTVERT,      "bv").
+-define(NORMMARGINS,  "5,5,5,5").
+-define(BOTHAXES,     "x,y").
 
 -define(SPCOLOURS, [
                     "444444",
@@ -100,13 +111,15 @@
 %%
 %% Exported functions
 %%
-'sparkline.'([W, H, List]) ->
+'sparkline.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     {Data, Colours} = chunk_spark(List),
-    {resize, list_to_integer(W), list_to_integer(H),
-     spark1(make_size(W, H), Data, Colours)}.
+    {resize, Width, Height,
+     spark1(make_size(Width, Height), Data, Colours)}.
 
 chunk_spark([Lines | List]) ->
-    [Lines1] = typechecks:std_ints([Lines]),
+    [Lines1] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
     muin_checks:ensure(Lines1 == length(List), ?ERRVAL_NUM),
     % now make the colours
@@ -114,14 +127,16 @@ chunk_spark([Lines | List]) ->
     Data1 = [lists:reverse(cast_data(X)) || X <- List],
     Min = lists:min(lists:flatten(Data1)),
     Max = lists:max(lists:flatten(Data1)),
-    Data2 = [normalize_sp(X, Min, Max) || X <- Data1],
+    Diff = Max - Min,
+    Data2 = [normalize_sp(X, Min - ?MARGIN * Diff, Max + ?MARGIN * Diff)
+             || X <- Data1],
     Data3 = "t:"++conv_data(Data2),
     {Data3, Colours}.
 
 normalize_sp(List, Min, Max) ->
     Diff = Max - Min,
     Fun = fun(blank) -> blank;
-             (X)     -> (X - Min)*100/Diff
+             (X)     -> round((X - Min)*1000/Diff)/10
           end,
     [Fun(X) || X <- List].
 
@@ -135,51 +150,60 @@ spark1(Size, Data, Colours) ->
            ],
     make_chart2(Opts).
 
-%% 'piechart.'([W, H | List]) ->
-%%     Ret = chunk_xy(List, single),
-%%     io:format("Ret is ~p~n", [Ret]),
-%%     42.
+'piechart.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    Opts = chunk_pie(List),
+    Chart = make_chart2([{?type, ?PIECHART}, {?size, make_size(Width, Height)},
+                {?axes, "x"}, {?colours, "000000"},
+                {?piecolours, "0,D84242,11.5"} | Opts]),
+    {resize, Width, Height, Chart}.
     
 'histogram.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_histogram(List),
     {DataX, DataY, MinY, MaxY, Type, Colours, Rest} = Ret,
-    {resize, list_to_integer(W), list_to_integer(H),
-     eq_hist1(Type, make_size(W, H), DataX, DataY, MinY, MaxY,
+    {resize, Width, Height,
+     eq_hist1(Type, make_size(Width, Height), DataX, DataY, MinY, MaxY,
                             Colours, Rest, [])}.
 
 'equigraph.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_equigraph(List),
     {DataX, DataY, MinY, MaxY, Colours, Rest} = Ret,
-    {resize, list_to_integer(W), list_to_integer(H),
-     eq_hist1(equi, make_size(W, H), DataX, DataY, MinY, MaxY, Colours,
+    {resize, Width, Height,
+     eq_hist1(equi, make_size(Width, Height), DataX, DataY, MinY, MaxY, Colours,
                             Rest, [{?tickmarks, ?BOTHAXES}])}.
 
 'dategraph.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_dategraph(List, double),
     {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
-    {resize, list_to_integer(W), list_to_integer(H),
-     dg1(make_size(W, H), Data, Scale, AxesLabPos, Colours, Rest,
+    {resize, Width, Height,
+     dg1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         StartDate, EndDate, [{?tickmarks, ?BOTHAXES}])}.
 
 'linegraph.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
-    {resize, list_to_integer(W), list_to_integer(H),
-     xy1(make_size(W, H), Data, Scale, AxesLabPos, Colours, Rest,
+    {resize, Width, Height,
+     xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
 
 'xy.'([W, H | List]) ->
-    % There is a bug with the Y-Axis as this size!
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
-    {resize, list_to_integer(W), list_to_integer(H),
-     xy1(make_size(W, H), Data, Scale, AxesLabPos, Colours, Rest,
+    {resize, Width, Height,
+     xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
-
-chunk_pie([Lines | List]) ->
-    [Lines2] = typechecks:std_ints([Lines]),
-    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM).
     
 chunk_histogram([Type, X, Lines| List]) ->
-    [Lines2, Type2] = typechecks:std_ints([Lines, Type]),
+    [Lines2, Type2] = typechecks:throw_std_ints([Lines, Type]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     {Orientation, MaxType, Type3} = case Type2 of
         0 -> {vertical,   group, ?HIST_VGROUP};
@@ -191,25 +215,28 @@ chunk_histogram([Type, X, Lines| List]) ->
     DataX = cast_strings(X),
     {MinY, MaxY, DataY, Cols, Rest}
         = case {Orientation, MaxType} of
-              {vertical, group} -> chunk_l2(Lines2, List);
-              _                 -> ?ERR_VAL
+              {vertical,   group} -> chunk_l2(false, Lines2, List);
+              {horizontal, group} -> chunk_l2(false, Lines2, List);
+              {vertical,   stack} -> chunk_l2(true,  Lines2, List);
+              {horizontal, stack} -> chunk_l2(true, Lines2, List);
+              _                   -> ?ERR_VAL
           end,
     DataY2 = "t:" ++ conv_data_rev(DataY),
     {DataX, DataY2, MinY, MaxY, Type3, Cols, Rest}.
 
 chunk_equigraph([X, Lines | List]) ->
-    [Lines2] = typechecks:std_ints([Lines]),
+    [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = cast_strings(X),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List),
     DataY2 = "t:" ++ conv_data_rev(DataY),
     {DataX, DataY2, MinY, MaxY, Cols, Rest}.
 
 chunk_dategraph([X, Lines | List], LabType) ->
-    [Lines2] = typechecks:std_ints([Lines]),
+    [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = lists:reverse(cast_dates(X)),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     StartDate = cast_date(MinX),
@@ -221,19 +248,19 @@ chunk_dategraph([X, Lines | List], LabType) ->
 
 chunk_linegraph([X, Lines | List], LabType) ->
     DataX = cast_data(X),
-    [Lines2] = typechecks:std_ints([Lines]),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(Lines2, List),
+    [Lines2] = typechecks:throw_std_ints([Lines]),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
     Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest}.
 
-chunk_l2(Lines, List) ->
-    [Lines2] = typechecks:std_ints([Lines]),
+chunk_l2(Aggregate, Lines, List) ->
+    [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     {Data, Rest} = lists:split(Lines2, List),
-    {MinY, MaxY, DataY} = process_data_linegraph(Data),
+    {MinY, MaxY, DataY} = process_data_linegraph(Aggregate, Data),
     % now make the colours
     Colours = allocate_colours(Lines, ?XYCOLOURS),
     {MinY, MaxY, DataY, {?colours, Colours}, Rest}.
@@ -241,8 +268,9 @@ chunk_l2(Lines, List) ->
 process_x_l2(DataX) ->
     MinX = stdfuns_stats:min(DataX),
     MaxX = stdfuns_stats:max(DataX),
+    Diff = MaxX - MinX,
     DataX2 = normalize_sp(DataX, MinX, MaxX),
-    {DataX2, MinX, MaxX}.
+    {DataX2, MinX - ?MARGIN * Diff, MaxX + ?MARGIN * Diff}.
 
 make_data(_X, [], Acc)     -> "t:" ++ string:join(lists:reverse(Acc), "|");
 make_data(X, [H | T], Acc) -> NewAcc = make_d2(X, H, [], []),
@@ -257,8 +285,28 @@ make_d2([H1 | T1], [H2 | T2], A1, A2)     -> make_d2(T1, T2, [H1 | A1], [H2 | A2
 make_d2([], _List, _A1, _A2) -> ?ERR_VAL; % X and Y ranges must be congruent
 make_d2(_List, [], _A1, _A2) -> ?ERR_VAL. % X and Y ranges must be congruent
 
+chunk_pie([Lines | List]) ->
+    [Lines1] = typechecks:throw_std_ints([Lines]),
+    muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
+    {Data, Rest} = lists:split(Lines1, List),
+    Data1 = process_data_pie(Data),
+    Title = typechecks:throw_std_strs(Rest),
+    Opts = case Title of
+               []  -> [];
+               [H] -> [{?title, H}];
+               _   -> ?ERR_VAL
+           end,
+    {Lables, Vals} = unzip(Data1, [], []),
+    [Vals, Lables | Opts].    
+
+unzip([], Lables, Vals) ->
+    {{?pielables, string:join(Lables, "|")},
+     {?data, "t:"++string:join(Vals, "|")}};
+unzip([[H1, H2] | T], Lables, Vals) ->
+    unzip(T, [H1 | Lables], [H2 | Vals]).
+                                                 
 chunk_xy([Lines | List], LabType) ->
-    [Lines1] = typechecks:std_ints([Lines]),
+    [Lines1] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
     {Data, Rest} = lists:split(Lines1, List),
     {MinX, MaxX, MinY, MaxY, Data1} = process_data_xy(Data),
@@ -271,17 +319,17 @@ chunk_xy([Lines | List], LabType) ->
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [], Opts) ->
     Axes = {?axes, ?LABLEAXES},
-    AxesLables = make_equi_labs(DataX, "", ""),
-    Scale =  {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY)},
+    AxesLables = make_eq_hist_labs(Type, DataX, "", ""),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Axes, AxesLables, Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt | []], Opts) ->
     Axes = {?axes, ?LABLEAXES},
-    AxesLables = make_equi_labs(DataX, "", ""),
+    AxesLables = make_eq_hist_labs(Type, DataX, "", ""),
     Title = make_title(Tt),
-    Scale =  {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY)},
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Title, Axes, AxesLables, Scale, Colours],
                             Opts]),
     NewOpts = opts(Type, Size, DataY),
@@ -289,9 +337,9 @@ eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt | []], Opts) ->
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl | []], Opts) ->
     Axes = {?axes, ?LABLEAXES},
-    AxesLables = make_equi_labs(DataX, Xl, ""),
+    AxesLables = make_eq_hist_labs(Type, DataX, Xl, ""),
     Title = make_title(Tt),
-    Scale =  {?axesrange, make_scale(double, auto, 0, 100, MinY, MaxY)},
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Title, Axes, AxesLables,
                              Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
@@ -299,19 +347,20 @@ eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl | []], Opts) ->
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl | []], Opts) ->
     Axes = {?axes, ?LABLEAXES},
-    AxesLables = make_equi_labs(DataX, Xl, Yl),
+    AxesLables = make_eq_hist_labs(Type, DataX, Xl, Yl),
     Title = make_title(Tt),
-    Scale =  {?axesrange, make_scale(double, auto, 0, 100, MinY, MaxY)},
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     AddOpts = lists:concat([[Title, Axes, AxesLables,
                              Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
-eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []], Opts) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []],
+         Opts) ->
     Axes = {?axes, ?LABLEAXES},
-    AxesLables = make_equi_labs(DataX, Xl, Yl),
+    AxesLables = make_eq_hist_labs(Type, DataX, Xl, Yl),
     Title = make_title(Tt),
-    Scale =  {?axesrange, make_scale(double, auto, 0, 100, MinY, MaxY)},
+    Scale = make_eq_hist_scale(Type, MinY, MaxY),
     Series = make_series(Srs),
     AddOpts = lists:concat([[Title, Series, Axes, AxesLables,
                              Scale, Colours], Opts]),
@@ -415,24 +464,43 @@ make_chart(Data, Opts, AddOpts) ->
     end.
 
 make_series(Srs) ->
-    Srs2 = typechecks:flat_strs([Srs]),
+    Srs2 = lists:reverse(typechecks:throw_flat_strs([Srs])),
     {?datalables, string:join(Srs2, "|")}.
 
-make_equi_labs(XAxis, XTitle, YTitle) ->
+make_eq_hist_scale(Type, MinY, MaxY)
+  when Type == equi
+       orelse Type == ?HIST_VGROUP
+       orelse Type == ?HIST_VSTACK ->
+    {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY)};
+make_eq_hist_scale(Type, MinY, MaxY)
+  when Type == ?HIST_HGROUP
+       orelse Type == ?HIST_HSTACK ->
+    {?axesrange, make_scale(single, auto, MinY, MaxY, 0, 100)}.
+
+make_eq_hist_labs(Type, XAxis, XTitle, YTitle)
+  when Type == equi
+       orelse Type == ?HIST_VGROUP
+       orelse Type == ?HIST_VSTACK ->
     {?axeslables, "0:|" ++ string:join(XAxis, "|") ++ "|"
-     ++"|1:||"++XTitle++"|3:||"++YTitle}.
+     ++"|1:||"++XTitle++"|3:||"++YTitle};
+make_eq_hist_labs(Type, XAxis, XTitle, YTitle)
+  when Type == ?HIST_HGROUP
+       orelse Type == ?HIST_HSTACK ->
+    {?axeslables, "1:||"++YTitle++"|2:|" ++
+     string:join(lists:reverse(XAxis), "|") ++ "|"
+     ++ "|3:||"++XTitle}.
 
 make_labs_date(X, Y, StartDate, EndDate) ->
-    [X1, Y1] = typechecks:std_strs([X, Y]),
+    [X1, Y1] = typechecks:throw_std_strs([X, Y]),
     {?axeslables, "0:|"++StartDate++"|"++EndDate
            ++"|1:||"++X1++"|3:||"++Y1}.
 
 make_labs(X, Y) ->
-    [X1, Y1] = typechecks:std_strs([X, Y]),
+    [X1, Y1] = typechecks:throw_std_strs([X, Y]),
     {?axeslables, "1:|"++X1++"|3:|"++Y1}.
      
 make_title(Title) ->
-    [T2] = typechecks:std_strs([Title]),
+    [T2] = typechecks:throw_std_strs([Title]),
     {?title, T2}.
 
 make_axes_lab_pos_date(MinX, MaxX, MaxY) ->
@@ -446,7 +514,7 @@ make_scale(null, _, _, _, _, _) -> "";
 make_scale(Type, auto, MinX, MaxX, MinY, MaxY) ->
     make_s1(Type, MinX, MaxX, MinY, MaxY).
 % make_scale(Type, [X1, X2 | []], _MinX, _MaxX, MinY, MaxY) ->
-%     [X1a, X2a] = typechecks:std_nums([X1, X2]),
+%     [X1a, X2a] = typechecks:throw_std_nums([X1, X2]),
 %     make_s1(Type, X1a, X2a, MinY, MaxY).
 
 make_s1(single, MinX, MaxX, MinY, MaxY) ->
@@ -468,46 +536,32 @@ make_c2([], Acc)           -> lists:flatten([?apiurl | Acc]) ++ ?urlclose;
 make_c2([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
                               make_c2(T, [NewAcc | Acc]).
 
-'speedo.'([W, H | List]) -> {resize, list_to_integer(W), list_to_integer(H),
-                             speedo(make_size(W, H),  List)}.
+'speedo.'([W, H | List]) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    {resize, Width, Height,     speedo(make_size(Width, Height),  List)}.
 
-speedo(Size, [V])                     -> V2 = cast_val(V),
-                                         speedo1(Size, V2, "", "", "", "", 1);
-speedo(Size, [V, Tt])                 -> V2 = cast_val(V),
-                                         speedo1(Size, V2, Tt, "", "", "", 1);
-speedo(Size, [V, Tt, SubT])           -> V2 = cast_val(V),
-                                         speedo1(Size, V2, Tt, SubT, "", "", 1);
-speedo(Size, [V, Tt, SubT, Th])       -> Scale = speedo_scale(Th),
-                                         V2 = cast_val(V),
-                                         speedo1(Size, V2, Tt, SubT, Th, "", Scale);
-speedo(Size, [V, Tt, SubT, Th, Labs]) -> Scale = speedo_scale(Th),
-                                         V2 = cast_val(V),
-                                         speedo1(Size, V2, Tt, SubT, Th, Labs, Scale).
-cast_val(Val) ->  cast_v2(Val, 0, 100, 1).
+speedo(Size, [V])               -> speedo1(Size, V, "", "",   ?SPEEDOPARAMS);
+speedo(Size, [V, Tt])           -> speedo1(Size, V, Tt, "",   ?SPEEDOPARAMS);
+speedo(Size, [V, Tt, SubT])     -> speedo1(Size, V, Tt, SubT, ?SPEEDOPARAMS);
+speedo(Size, [V, Tt, SubT, Th]) -> speedo1(Size, V, Tt, SubT, Th).
 
-cast_v2(Val, Min, Max, Scale) ->
-    if
-        Val < Min                     -> ?ERRVAL_VAL;
-        Val > Max                     -> ?ERRVAL_VAL;
-        Min =< Val andalso Val =< Max -> Val * Scale
-    end.
-
-speedo1(Size, Val, Title, Subtitle, Threshold, Lables, Scale) ->
+speedo1(Size, Val, Title, Subtitle, Thresholds) ->
+    V2 = cast_val(Val),
     [Tt2]  = cast_titles(Title),
     [Sb2]  = cast_titles(Subtitle),
-    %[Th2]  = cast_data(Threshold),
-    %[Lab2] = cast_titles(Lables),
+    {V3, Colours, Lables} = speedo_scale(Thresholds, V2),
     if
-        Val < 0                             -> ?ERRVAL_VAL;
-        Val > 100 * Scale                   -> ?ERRVAL_VAL;
-        0 =< Val andalso Val =< 100 * Scale ->
+        V3 < 0   -> ?ERRVAL_VAL;
+        V3 > 100 -> ?ERRVAL_VAL;
+        0 =< V3 andalso V3 =< 100 ->
             Opts = [],
             NewOpts = [
-                       {?axeslables, "0:|OK|Beware|Danger"},
+                       Lables,
+                       Colours,
                        {?tickmarks, "y"},
                        {?size, Size},
                        {?type, "gm"},
-                       {?colours, "000000,008000|FFCC33|FF0000"},
                        {?data, "t:" ++ tconv:to_s(Val)},
                        {?speedolab, Sb2},
                        {?title, Tt2}
@@ -528,9 +582,32 @@ speedo1(Size, Val, Title, Subtitle, Threshold, Lables, Scale) ->
             end
     end.
 
-speedo_scale(Th) ->
-    [Zero, Orange, Red, Max] = cast_data(Th),
-    1.
+speedo_scale(Th, Val) ->
+    NoOfColours = 20,
+    NoOfCMinus1 = 19,
+    NoOfCMinus2 = 18,
+    [Zero, Orange, Red, Max] = lists:reverse(cast_data(Th)),
+    Diff = Max - Zero,
+    NGreen = trunc(((Orange - Zero)/Diff) * NoOfColours),
+    NOrange = trunc(((Red - Orange)/Diff) * NoOfColours),
+    NRed = trunc(((Max - Red)/Diff) * NoOfColours),
+    {NRed2, NOrange2} = case NGreen + NOrange + NRed of
+                            NoOfColours -> {NRed,     NOrange};
+                            NoOfCMinus1 -> {NRed + 1, NOrange};
+                            NoOfCMinus2 -> {NRed + 1, NOrange + 1}
+                        end,
+    Cols = lists:concat([lists:duplicate(NGreen,   ?GREEN),
+                         lists:duplicate(NOrange2, ?ORANGE),
+                         lists:duplicate(NRed2,    ?RED)]),
+    Labs = lists:concat([lists:duplicate(NGreen - 1, []),
+                         ["W"],
+                         lists:duplicate(NOrange - 1, []),
+                         ["D"],
+                         lists:duplicate(NRed2, [])]),
+    Colours = {?colours, ?GREY ++ "," ++ string:join(Cols, "|")},
+    Lables = {?axeslables, "0:|" ++  string:join(Labs, "|")},
+    V = (Val - Zero)/Diff,
+    {V, Colours, Lables}.
 
 barchart([Data]) ->
     bar(Data, 0, {{scale, auto}, [], []});
@@ -624,15 +701,37 @@ histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
 %%
 %% Internal Functions
 %%    
-process_data_linegraph(Data) ->
+process_data_linegraph(Aggregate, Data) ->
     Prefetched = cast_prefetch(Data),
     Data1 = [proc_dxy1(X) || X <- Prefetched],
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
     Data3 = [lists:flatten([lists:reverse(cast_linegraph_data(X)) || X <- X1])
              || X1 <- Data2],
     {MinY, MaxY} = get_maxes_lg(Data3),
-    Data4 = normalize_linegraph(Data3, MinY, MaxY, []),
-    {MinY, MaxY, Data4}.
+    % we need the real mins/maxes to normalise the data
+    % if its a stacker we need the aggregate mins/maxs
+    MaxY2 = case Aggregate of
+                       false -> MaxY;
+                       true  -> get_maxes_lg_agg(Data3)
+                   end,
+    Diff = MaxY2 - MinY,
+    MinY3 = MinY - ?MARGIN * Diff,
+    MaxY3 = MaxY2 + ?MARGIN * Diff,
+    Data4 = normalize_linegraph(Data3, MinY3, MaxY3, []),
+    {MinY3, MaxY3, Data4}.
+
+process_data_pie(Data) ->
+    Prefetched = cast_prefetch(Data),
+    Data1 = [proc_dxy1(X) || X <- Prefetched],
+    Data2 = [X || {X, _NoR, _NoC} <- Data1],
+    Fun = fun([Labs, Vals], Acc) ->
+                  L2 = cast_strings(Labs),
+                  L3 = string:join(L2, "|"),
+                  V2 = normalize(lists:reverse(cast_data(Vals))),
+                  V3 = string:join([tconv:to_s(X) || X <- V2], ","),
+                  [[L3, V3] | Acc]
+          end,
+    lists:foldl(Fun, [], Data2).
 
 process_data_xy(Data) ->
     Prefetched = cast_prefetch(Data),
@@ -640,7 +739,10 @@ process_data_xy(Data) ->
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
     Data3 = [[lists:reverse(cast_data(X)) || X <- X1] || X1 <- Data2],
     {MinX, MaxX, MinY, MaxY} = get_maxes(Data3),
-    Data4 = normalize_xy(Data3, MinX, MaxX, MinY, MaxY, []),
+    DiffX = MaxX - MinX,
+    DiffY = MaxY - MinY,
+    Data4 = normalize_xy(Data3, MinX - ?MARGIN * DiffX, MaxX + ?MARGIN * DiffX,
+                         MinY - ?MARGIN * DiffY, MaxY + ?MARGIN * DiffY, []),
     Data5 = [conv_data(X) || X <- Data4],
     {MinX, MaxX, MinY, MaxY, "t:"++string:join(Data5, "|")}.
 
@@ -660,6 +762,19 @@ proc_dxy1({range, X} = R) ->
         length(X) ==  2 -> extract(R, ?ROW);
         length(X) =/= 2 -> extract(R, ?COLUMN)
     end.
+
+get_maxes_lg_agg([H | _T] = List) ->
+    Len = length(H),
+    Acc = lists:duplicate(Len, 0),
+    Agg = aggregate(List, Acc),
+    stdfuns_stats:max(Agg).
+
+aggregate([], Acc)      -> Acc;
+aggregate([H | T], Acc) -> Acc2 = agg2(H, Acc, []),
+                           aggregate(T, Acc2).
+
+agg2([], [], Acc)               -> lists:reverse(Acc);
+agg2([H1 | T1], [H2 | T2], Acc) -> agg2(T1, T2, [H1 + H2 | Acc]).
 
 get_maxes_lg(List) -> get_mlg(List, none, none).
 
@@ -728,6 +843,15 @@ pie2(Data, Titles, Colours) ->
         ++ Colours1
         ++ "' />".
 
+cast_val(Val) ->  cast_v2(Val, 0, 100, 1).
+
+cast_v2(Val, Min, Max, Scale) ->
+    if
+        Val < Min                     -> ?ERRVAL_VAL;
+        Val > Max                     -> ?ERRVAL_VAL;
+        Min =< Val andalso Val =< Max -> Val * Scale
+    end.
+
 cast_prefetch(Data) ->
     muin_collect:col(Data, [fetch_ref], []).
 
@@ -751,7 +875,6 @@ cast_dates(Data) ->
                       {ignore, blank}
                      ],
                      [return_errors, {all, fun is_number/1}]).
-
 cast_data(Data) ->
     muin_collect:col([Data],
                      [eval_funs,
@@ -875,7 +998,7 @@ has_error([_H | T]) ->
 
 normalize(Data) ->
     Total = lists:sum(Data),
-    Fun = fun(X) -> trunc(100*X/Total) end,
+    Fun = fun(X) -> round(1000*X/Total)/10 end,
     lists:map(Fun, Data).
 
 make_data_rev(List) ->
@@ -922,9 +1045,9 @@ allocate_colours(N, Colours) ->
 colours() -> [
               {"black"   , "000000"},
               {"green"   , "008000"},
+              {"red"     , "FF0000"},
               {"maroon"  , "800000"},
               {"navy"    , "000080"}, 
-              {"red"     , "FF0000"},
               {"blue"    , "0000FF"},
               {"purple"  , "800080"},
               {"silver"  , "C0C0C0"},
@@ -939,5 +1062,5 @@ colours() -> [
              ].
 
 make_size(W, H) -> make_width(W) ++ "x" ++ make_height(H).
-make_height(N)  -> integer_to_list(list_to_integer(N) * 22 - 2).
-make_width(N)   -> integer_to_list(list_to_integer(N) * 80 - 12).
+make_height(N)  -> integer_to_list((N - 1) * 22).
+make_width(N)   -> integer_to_list(N * 80 - 14).

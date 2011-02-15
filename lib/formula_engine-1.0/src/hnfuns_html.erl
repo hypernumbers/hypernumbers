@@ -9,7 +9,8 @@
 
 -include("errvals.hrl").
 
--export([
+-export(['html.headline.'/1,
+         'html.plainbox.'/1,
          'html.box.'/1,
          'html.alert.'/1,
          'html.ruledbox.'/1,
@@ -17,7 +18,19 @@
          'html.submenu'/1
          ]).
 
+'html.headline.'([W, H, Text]) ->
+    [W2] = typechecks:throw_std_ints([W]),
+    [H2] = typechecks:throw_std_ints([H]),
+    [T2] = typechecks:throw_std_strs([Text]),
+    check_size(W2, H2),
+    {resize, W2, H2, "<span class='hn-wc-wd-" ++ integer_to_list(W2) ++
+     " hn-wc-ht-" ++ integer_to_list(H2) ++ "' " ++
+     "style='position:absolute;top:25%;left:0%;'>"
+     ++ T2 ++ "</span>"}.
+
 'html.ruledbox.'(List) -> 'html.box.1'("white", "none", 99, "single", List).
+
+'html.plainbox.'(List) -> 'html.box.1'("white", "none", 0, "none", List).
 
 'html.box.'(List) -> 'html.box.1'("grey", "single", 0, "none", List).
 
@@ -26,34 +39,34 @@
 
 'html.box.1'(Background, Border, Style, Lines,
              [Width, Height, Headline, Content, Footer]) ->
-    W = tconv:to_i(Width),
-    H = tconv:to_i(Height),
+    [W] = typechecks:throw_std_ints([Width]),
+    [H] = typechecks:throw_std_ints([Height]),
     check_size(W, H),
     BodyStyle = "hn-wc-ht-body2-" ++ Height, 
-    [H1] = typechecks:html_box_contents([Headline]),
-    {preview, {H1, W, H}, box(Width, Height, Background, Border, Style, Lines,
+    [H1] = typechecks:throw_html_box_contents([Headline]),
+    {resize, W, H, box(Width, Height, Background, Border, Style, Lines,
                               BodyStyle, [H1, Content, Footer])};
 'html.box.1'(Background, Border, Style, Lines, [Width, Height, Headline, Content]) ->
-    W = tconv:to_i(Width),
-    H = tconv:to_i(Height),
+    [W] = typechecks:throw_std_ints([Width]),
+    [H] = typechecks:throw_std_ints([Height]),
     check_size(W, H),
     BodyStyle = "hn-wc-ht-body1-" ++ Height, 
-    [H1] = typechecks:html_box_contents([Headline]),
-    {preview, {H1, W, H}, box(Width, Height, Background, Border, Style, Lines,
+    [H1] = typechecks:throw_html_box_contents([Headline]),
+    {resize, W, H, box(Width, Height, Background, Border, Style, Lines,
                               BodyStyle, [H1, Content])};
 'html.box.1'(Background, Border, Style, Lines, [Width, Height, Content]) ->
-    W = tconv:to_i(Width),
-    H = tconv:to_i(Height),
+    [W] = typechecks:throw_std_ints([Width]),
+    [H] = typechecks:throw_std_ints([Height]),
     check_size(W, H),
     BodyStyle = "hn-wc-ht-" ++ Height,
-    {preview, {"Box", W, H}, box(Width, Height, Background, Border, Style, Lines,
+    {resize, W, H, box(Width, Height, Background, Border, Style, Lines,
                                  BodyStyle, [Content])}.
 
-check_size(W, H) when W > 0 andalso W < 13 andalso H > 1 andalso H < 21 -> ok;
+check_size(W, H) when W > 0 andalso W < 16 andalso H > 1 andalso H < 26 -> ok;
 check_size(_W, _H) -> ?ERR_VAL.
 
 box(W, H, Bk, Bd, St, Ln, BodyStyle, [Content]) ->
-    [C1] = typechecks:html_box_contents([Content]),
+    [C1] = typechecks:throw_html_box_contents([Content]),
     Style = check_style(St),
     "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
         " hn-wc-box hn-wc-style-"++Style++" hn-wc-border-"++Bd++
@@ -62,7 +75,7 @@ box(W, H, Bk, Bd, St, Ln, BodyStyle, [Content]) ->
         "<div class='hn-wc-inner'>"++C1++"</div></div>"++
         "</div>";
 box(W, H, Bk, Bd, St, Ln, BodyStyle, [Headline, Content]) ->
-    [H1, C1] = typechecks:html_box_contents([Headline, Content]),
+    [H1, C1] = typechecks:throw_html_box_contents([Headline, Content]),
     Style = check_style(St),
     "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
         " hn-wc-box hn-wc-style-"++Style++" hn-wc-border-"++Bd++
@@ -73,7 +86,7 @@ box(W, H, Bk, Bd, St, Ln, BodyStyle, [Headline, Content]) ->
         "<div class='hn-wc-inner'>"++C1++"</div></div>"++
         "</div>";
 box(W, H, Bk, Bd, St, Ln, BodyStyle, [Headline, Content, Footer]) ->
-    [H1, C1, F1] = typechecks:html_box_contents([Headline, Content, Footer]),
+    [H1, C1, F1] = typechecks:throw_html_box_contents([Headline, Content, Footer]),
     Style = check_style(St),
     "<div class='hn-wc-wd-"++W++" hn-wc-ht-"++H++
         " hn-wc-box hn-wc-style-"++Style++" hn-wc-border-"++Bd++
@@ -87,7 +100,7 @@ box(W, H, Bk, Bd, St, Ln, BodyStyle, [Headline, Content, Footer]) ->
         "</div>".
 
 check_style(St) ->
-    [NStyle] = typechecks:std_ints([St]),
+    [NStyle] = typechecks:throw_std_ints([St]),
     case NStyle of
         0  -> "plain";
         1  -> "alert1";
@@ -105,7 +118,7 @@ check_style(St) ->
     {preview, {"Submenu", 1, 1}, SubMenu}.
 
 'html.menu1'(List) when is_list(List) ->
-    Strings = typechecks:flat_strs(List),    
+    Strings = typechecks:throw_flat_strs(List),    
     Menu = menu1(Strings, "potato-menu", []),
     {preview, {"Type 1 Menu", 1, 1}, Menu}.
 

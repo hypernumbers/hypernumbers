@@ -72,7 +72,7 @@ layout(Ref, Type, Cells, CWs, RHs, Palette) ->
             -> {[textdata()],integer(), integer()}.
                     
 %% End of input
-layout([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec, Acc) ->
+layout([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
     TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth, TotalHeight};
@@ -172,18 +172,24 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
               _                  -> Value
           end,
     Cell = tconv:to_b26(C) ++ integer_to_list(R),
-    Style = io_lib:format(
-              "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s"
-              ++" -moz-border-radius: 4px 4px 4px 4px;"
-              ++" -webkit-border-radius: 4px 4px 4px 4px;'",
-              [X, Y, W, H, Css]),
-        case Inp of
-            "inline" ->
+    St = "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s"
+        ++" -moz-border-radius: 4px 4px 4px 4px;"
+        ++" -webkit-border-radius: 4px 4px 4px 4px;",
+    
+    case Inp of
+        "inline" ->
+            Style = io_lib:format(St ++"padding:1px 1px;'",
+                                  [X, Y, W - 4, H - 2, Css]),
+            StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
+                                    [W - 8, H - 4]), 
                 "<div class='hn_padded' "++Style ++">"++
-                    "<div class='inline' data-ref='"++Cell++"'>"++Val++
-                    "</div></div>";
-            _        ->
-                "<div data-ref='"++Cell++"'"++Style++">"++Val++"</div>"
+                "<div class='inline' " ++ StyleIn ++
+                " data-ref='"++Cell++"'>"++Val++
+                "</div></div>";
+        _        ->
+            Style = io_lib:format(St ++ "padding:1px 3px;'",
+                                  [X, Y, W - 6, H - 2, Css]),
+            "<div data-ref='"++Cell++"'"++Style++">"++Val++"</div>"
         end.
 
 -spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean(). 

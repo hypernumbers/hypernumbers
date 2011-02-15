@@ -3,6 +3,8 @@
 -module(hnfuns_web).
 
 -export([
+         'horizontal.line.'/1,
+         'vertical.line.'/1,
          include/1,
          table/1,
          background/1,
@@ -38,6 +40,54 @@
 
 -type html() :: string().
 -type zoom() :: 1..20.
+
+'vertical.line.'([H, N, M, Colour]) ->
+    vline1(H, N, M, Colour);
+'vertical.line.'([H, N, M, "#000000"]) ->
+    vline1(H, N, M, "#000000");
+'vertical.line.'([H, N]) ->
+    vline1(H, N, 0, "#000000");
+'vertical.line.'([H]) ->
+    vline1(H, 1, 0, "#000000").
+
+vline1(H, N, M, Colour) ->
+    [H2, N2, M2] = typechecks:std_ints([H, N, M]),
+    Col = typechecks:rgbcolours(Colour),
+    Style = make_style(M2),
+    Div = "<div style='display:block;height:100%;width:50%;border-right:"
+        ++ integer_to_list(N2) ++ "px " ++ Style ++ " " ++ Col ++ "'></div>"
+        ++ "<div style='display:block;width:50%;'></div>",
+    {resize, 1, H2, Div}. 
+
+'horizontal.line.'([W, N, M, Colour]) ->
+    hline1(W, N, M, Colour);
+'horizontal.line.'([W, N, M, "#000000"]) ->
+
+    hline1(W, N, M, "#000000");
+'horizontal.line.'([W, N]) ->
+    hline1(W, N, 0, "#000000");
+'horizontal.line.'([W]) ->
+    hline1(W, 1, 0, "#000000").
+
+hline1(W, N, M, Colour) ->
+    [W2, N2, M2] = typechecks:std_ints([W, N, M]),
+    Col = typechecks:rgbcolours(Colour),
+    Style = make_style(M2),
+    Div = "<div style='display:block;height:50%;width:100%;border-bottom:"
+        ++ integer_to_list(N2) ++ "px " ++ Style ++ " " ++ Col ++ "'></div>"
+        ++ "<div style='display:block;width:100%;'></div>",
+    {resize, W2, 1, Div}.
+
+make_style(N) -> case N of
+                     0 -> "solid";
+                     1 -> "dotted";
+                     2 -> "dashed";
+                     3 -> "double";
+                     4 -> "groove";
+                     5 -> "ridge";
+                     6 -> "inset";
+                     _ -> ?ERR_VAL
+                 end. 
 
 'lorem.ipsum'(Vals) ->
     N = typechecks:std_ints(Vals),
