@@ -90,12 +90,12 @@
                    ]).
 
 -define(XYCOLOURS, [
-                    "000000",
+                    "0000FF",
                     "008000",
                     "800000",
                     "000080", 
                     "FF0000",
-                    "0000FF",
+                    "000000",
                     "800080",
                     "C0C0C0",
                     "00FF00", 
@@ -155,8 +155,8 @@ spark1(Size, Data, Colours) ->
     [Height] = typechecks:throw_std_ints([H]),
     Opts = chunk_pie(List),
     Chart = make_chart2([{?type, ?PIECHART}, {?size, make_size(Width, Height)},
-                {?axes, "x"}, {?colours, "000000"},
-                {?piecolours, "0,D84242,11.5"} | Opts]),
+                {?axes, "x"}, {?colours, "bb2222"},
+                {?piecolours, "0,444499,11.5"} | Opts]),
     {resize, Width, Height, Chart}.
     
 'histogram.'([W, H | List]) ->
@@ -363,7 +363,7 @@ eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []],
     Scale = make_eq_hist_scale(Type, MinY, MaxY),
     Series = make_series(Srs),
     AddOpts = lists:concat([[Title, Series, Axes, AxesLables,
-                             Scale, Colours], Opts]),
+                             {?legendpos, ?TOPHORIZ}, Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts).
 
@@ -1043,12 +1043,12 @@ allocate_colours(N, Colours) ->
     string:join(NewList, ",").
 
 colours() -> [
-              {"black"   , "000000"},
+              {"blue"    , "0000FF"},
               {"green"   , "008000"},
               {"red"     , "FF0000"},
               {"maroon"  , "800000"},
               {"navy"    , "000080"}, 
-              {"blue"    , "0000FF"},
+              {"black"   , "000000"},
               {"purple"  , "800080"},
               {"silver"  , "C0C0C0"},
               {"lime"    , "00FF00"}, 
