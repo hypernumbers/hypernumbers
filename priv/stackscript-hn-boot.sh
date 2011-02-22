@@ -2,9 +2,12 @@
 
 ## This file is place in linode's 'StackScript' called HN Boot Script
 
+## This is version 17 of the stack script
+## (this version no will identify the script in github)
+
 #<udf name="hostname" Label="Server hostname", default="setme.hypernumbers.com" >
-#<udf name="erlang_url" Label="Erlang Source", default="http://erlang.org/download/otp_src_R13B04.tar.gz" >
-#<udf name="tarsnap_url" Label="Tarsnap Source", default="https://www.tarsnap.com/download/tarsnap-autoconf-1.0.26.tgz" >
+#<udf name="erlang_url" Label="Erlang Source", default="http://erlang.org/download/otp_src_R14B01.tar.gz" >
+#<udf name="tarsnap_url" Label="Tarsnap Source", default="https://www.tarsnap.com/download/tarsnap-autoconf-1.0.28.tgz" >
 
 #___  ____ ____ _ ____    ____ ____ ___ _  _ ___  
 #|__] |__| [__  | |       [__  |___  |  |  | |__] 
@@ -97,11 +100,6 @@ useradd -m -s /bin/bash -G admin gordon
 mkdir -p /home/gordon/.ssh
 echo ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAovtLtzzV7AmNON8SLJGZLS3FH2xlitAMg0CWeuaQ/EAujZ8mB97b4PXrrsYyVQ8wV+Ucv7MUKJPIazp1zgJTK7Cjmv1Ln5uMjG4wo2Q33FXT/3TBWLUzweA6MffnqsTiuTwYaTxNSvIzLp+/UthbmZWV7nTu1JwdwAPzgdvXx5mX/xxyjqvbbcf8T8HOhEp4JafnY1zNrBjwJ1orRjM1A13whDr+wC38KjmEuZjk+zNYX30uwCu4u18rhomAXIJBZfY7L5KhAP8L7Ks/5CFpqfgV4BdWpcC3BHxDrFguZmrlfQ2Icco26DpyWFl4YMy8oPdXSw0LhLVNfA/hYHsocw== gordonguthrie@hypernumbers.com > /home/gordon/.ssh/authorized_keys
 chown -R gordon:gordon /home/gordon
-
-useradd -m -s /bin/bash -G admin dale
-mkdir -p /home/dale/.ssh
-echo ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA5zBO8Gp4vUv9ShxQ2zAah21n4F1iAYG0Fif2RVs6LcY7NeKL3khQbN1WQLLmCcLOmvwlMbQFDW2f79oupWPUFBWXTl2H8bqHxhu1C5H+2poAq00i/8XUuK/rhZGiktjpBUAaSxMRSkHqlXy/bWFrD0XCJGBPAiHY40pLSkGHaQAKC6JhKgLjFOMyNZihj0C68zpbq+WHKbAyuAg700N/ZJpdh/etk/vSMJEmtsvja04NVLQztHyAPYbKfEeAzrfevvTF3AYnhDJ6pOvsVlIHTAHb/zkSZ3e2clmuXPraET3JluhvGXF2HnfbUQdc+1q+g9eODcELS9KUWi3sYQ8cfQ== > /home/dale/.ssh/authorized_keys
-chown -R dale:dale /home/dale
 
 #_  _ _  _    ___  ____ ____ ___ _ ___ _ ____ _  _ 
 #|__| |\ |    |__] |__| |__/  |  |  |  | |  | |\ | 
