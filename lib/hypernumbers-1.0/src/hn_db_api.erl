@@ -171,7 +171,7 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                 #refX{path = P, type = _T, obj = O} = RefX,
                 P2 = hn_util:list_to_path(P),
                 io_lib:format("The idx points to ~p on page ~p", [O, P2]),
-                Contents = hn_db_wu:read_ref(RefX, inside),
+                Contents = hn_db_wu:read_ref(RefX, inside, write),
                 O3 = case Mode of
                     verbose -> io_lib:format("The object contains ~p", [Contents]);
                     _       -> pretty_print(Contents, "The idx contains:", O2)
@@ -435,6 +435,8 @@ append_row(List, PAr, VAr) when is_list(List) ->
     
     write_activity(RefX, Trans, "write last").
 
+%% this fn is called in hn_mochi and hn_render, ie in a read context
+%% so the lock is read
 -spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
 read_attribute(RefX, Field) when is_record(RefX, refX) ->
     Fun = fun() -> hn_db_wu:read_ref_field(RefX, Field, read) end,
