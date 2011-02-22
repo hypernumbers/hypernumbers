@@ -41,13 +41,13 @@
          write_attrs/2, write_attrs/3,
          read_styles/2,
          matching_forms/2,
-         read_ref/3, read_ref_field/3,
+         read_ref/2, read_ref/3, read_ref_field/3,
          expand_ref/1,
          clear_cells/1, clear_cells/2,
          delete_cells/2,
          shift_cells/4,
          get_children/1,
-         %get_children_idxs/1,
+         get_children_idxs/1,
          copy_cell/4,
          read_page_structure/1,
          read_pages/1,
@@ -151,7 +151,7 @@ mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
 %%      not be used for any other purpose
 get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX, Type) ->
     #refX{site = Site, path = Path} = RefX,
-    Attrs = case read_ref(RefX, inside, write) of
+    Attrs = case read_ref(RefX, inside) of
                 [{_, A}] -> A;
                 _        -> orddict:new()
             end,
@@ -177,7 +177,7 @@ write_magic_style_IMPORT(Ref=#refX{site=Site}, MagicStyle) ->
 read_styles_IMPORT(#refX{site=Site}) ->
     Tbl = trans(Site, style),
     MS = ets:fun2ms(fun(X) -> X end),
-    mnesia:select(Tbl, MS, write).
+    mnesia:select(Tbl, MS, read).
 
 -spec get_last_row(#refX{}) -> integer(). 
 get_last_row(#refX{site=S, path=P}) -> 
@@ -206,8 +206,6 @@ largest_content([{K, LO} | T], S) ->
         false -> largest_content(T, S)
     end.
 
-%% this is used to identify the last row and these fields are not written
-%% so the lock type is read
 -spec has_content(string(), #local_obj{}) -> boolean().
 has_content(S, LO) ->
     case extract_field(read_attrs(S, [LO], read), "formula", []) of
@@ -295,7 +293,7 @@ expand_to_2(#refX{obj={Type, _}} = Ref, I, J, A) ->
 expand_ref(#refX{site=S}=Ref) -> 
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref, inside)].
 
-%read_ref(Ref, Relation) -> read_ref(Ref, Relation, read).
+read_ref(Ref, Relation) -> read_ref(Ref, Relation, read).
 -spec read_ref(#refX{}, inside | intersect, read | write) 
               -> [{#refX{}, ?dict}].
 read_ref(#refX{site=S}=Ref, Relation, Lock) ->
@@ -749,7 +747,6 @@ shift_pattern(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
 shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1, 0, infinity, infinity}}}.
 
-%% TODO this lock strategy will backfire for destructive operations
 idx_to_refX(S, Idx) ->
     case mnesia:read(trans(S, local_obj), Idx, read) of
         [Rec] -> #local_obj{path = P, type = Ty, obj = O} = Rec,
@@ -1077,7 +1074,6 @@ get_children(#refX{site = Site} = X) ->
     ChildIdxs = get_children_idxs(X),
     [idx_to_refX(Site, C) || C <- ChildIdxs].
 
-%% TODO investigate the impact of the 'read' lock type on destructive operations
 -spec get_children_idxs(#refX{}) -> [cellidx()]. 
 get_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
     case refX_to_idx(Ref) of
@@ -1802,7 +1798,7 @@ based_style(#refX{site=Site}=Ref, BaseIdx, Name, Val) ->
 
 -spec store_style(#refX{}, atom(), #magic_style{}) -> integer(). 
 store_style(Ref, Tbl, MStyle) ->
-    case mnesia:read(Tbl, MStyle, write) of
+    case mnesia:read(Tbl, MStyle, read) of
         [#style{idx = I}] -> 
             I; 
         _ ->
