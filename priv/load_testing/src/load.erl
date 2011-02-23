@@ -30,9 +30,9 @@ test_dbsrv(Site) ->
     io:format("Adding new data...~n"),
     hn_import:json_file(URL1, Dir ++ "calculations.json"),
     hn_import:json_file(URL2, Dir ++ "data.json"),
-    io:format("about to stop tracing and begin analysis (might take some time!)"),
+    io:format("about to stop tracing and begin analysis (might take some time!)~n"),
     stop_trace(FileName),
-    io:format("Now clean up..."),
+    io:format("Now clean up...~n"),
     ok = hn_db_api:delete(RefX1, nil),
     ok = hn_db_api:delete(RefX2, nil).
 
