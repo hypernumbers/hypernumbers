@@ -30,7 +30,7 @@
 %%--------------------------------------------------------------------
 -spec start_link(string()) -> {ok,pid()} | ignore | {error,any()}.
 start_link(Site) ->
-    Id = hn_util:site_to_atom(Site, "dbsrv_sup"),
+    Id = hn_util:site_to_atom(Site, "_dbsrv_sup"),
     supervisor_bridge:start_link({local, Id}, ?MODULE, [Site]).
 
 read_only_activity(Site, Activity) ->
@@ -38,7 +38,7 @@ read_only_activity(Site, Activity) ->
     case mnesia:is_transaction() of
         true -> Activity();
         false -> 
-            Id = hn_util:site_to_atom(Site, "dbsrv"),
+            Id = hn_util:site_to_atom(Site, "_dbsrv"),
             Id ! {self(), read_only_activity, Activity},
             receive
                 {dbsrv_reply, Reply} -> Reply
