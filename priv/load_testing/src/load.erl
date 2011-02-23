@@ -8,6 +8,7 @@
 -module(load).
 
 -export([
+         test_dbsrv/1,
          load/2,
          dump/0,
          start_trace/1,
@@ -15,6 +16,25 @@
         ]).
 
 -define(daysinyear, 20).
+
+test_dbsrv(Site) ->
+    Server = list_to_atom(hn_util:site_to_fs(Site) ++ "_dbsrv"),
+    io:format("Start tracing...~n"),
+    FileName = start_trace([Server]),
+    URL1 = Site ++ "/test/calculations/",
+    URL2 = Site ++ "/test/calculations/data/",
+    RefX1 = hn_util:url_to_refX(URL1),
+    RefX2 = hn_util:url_to_refX(URL2),
+    Root = code:lib_dir(hypernumbers),
+    Dir = Root ++ "/../../priv/load_testing/json/",
+    io:format("Adding new data...~n"),
+    hn_import:json_file(URL1, Dir ++ "calculations.json"),
+    hn_import:json_file(URL2, Dir ++ "data.json"),
+    io:format("about to stop tracing and begin analysis (might take some time!)"),
+    stop_trace(FileName),
+    io:format("Now clean up..."),
+    ok = hn_db_api:delete(RefX1, nil),
+    ok = hn_db_api:delete(RefX2, nil).
 
 start_trace(Supervisors) when is_list(Supervisors) ->
     Sups2 = [whereis(X) || X <- Supervisors],
