@@ -46,12 +46,12 @@ read_only_activity(Site, Activity) ->
     end.
 
 write_activity(Site, Activity) ->
-    Id = hn_util:site_to_atom(Site, "dbsrv"),
+    Id = hn_util:site_to_atom(Site, "_dbsrv"),
     Id ! {write_activity, Activity},
     ok.
 
 is_busy(Site) ->
-    Id = hn_util:site_to_atom(Site, "dbsrv"),
+    Id = hn_util:site_to_atom(Site, "_dbsrv"),
     Id ! {self(), is_busy},
     receive
         {dbsrv_reply, Reply} -> Reply
@@ -72,7 +72,7 @@ is_busy(Site) ->
 init([Site]) ->
     QTbl = hn_db_wu:trans(Site, dirty_queue),
     Pid = spawn_link(fun() -> dbsrv_init(Site, QTbl) end),
-    register(hn_util:site_to_atom(Site, "dbsrv"), Pid),
+    register(hn_util:site_to_atom(Site, "_dbsrv"), Pid),
     {ok, Pid, #state{table = QTbl, pid = Pid}}.
 
 %%--------------------------------------------------------------------
