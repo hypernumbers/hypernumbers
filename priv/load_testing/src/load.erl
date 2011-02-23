@@ -7,9 +7,33 @@
 
 -module(load).
 
--export([load/2]).
+-export([
+         load/2,
+         dump/0,
+         start_trace/1,
+         stop_trace/1
+        ]).
 
--define(daysinyear, 365).
+-define(daysinyear, 20).
+
+start_trace(Supervisors) when is_list(Supervisors) ->
+    Sups2 = [whereis(X) || X <- Supervisors],
+    FileName = "fprof.trace." ++ tconv:to_s(util2:get_timestamp()),
+    fprof:trace([start, {procs, Sups2}, {file, FileName}]),
+    FileName.
+
+stop_trace(FileName) ->
+    fprof:trace([stop]),
+    fprof:profile([{file, FileName}]),
+    "fprof.trace."++Stamp = FileName,
+    fprof:analyse([{dest, "fprof.analyze."++Stamp}]).
+
+dump() ->
+    Registered = lists:sort([atom_to_list(X) || X <- erlang:registered()]),
+    io:format("Registered is ~p~n", [Registered]),
+    Sites = lists:sort([hn_util:site_to_fs(X) || X <- get_sites()]),
+    io:format("Sites is ~p~n", [Sites]),
+    ok.
 
 load(Site, Size) when is_integer(Size) ->
     if
@@ -52,3 +76,6 @@ log(String, File) ->
 	_ ->
 	    error
     end.
+
+get_sites() -> 
+    mnesia:activity(transaction, fun mnesia:all_keys/1, [core_site]).
