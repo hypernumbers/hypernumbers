@@ -132,9 +132,8 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
         
         {write_activity, Activity} ->
             Activity(),
-            % cut out for performance reasons
-            %ok = rebuild_zinf(Site),
-            %ok = process_dirties_for_zinf(Site),
+            ok = rebuild_zinf(Site),
+            ok = process_dirties_for_zinf(Site),
             case load_dirty_since(Since, QTbl) of
                 {Since2, []} ->
                     {Since2, WorkPlan};
