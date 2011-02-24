@@ -774,9 +774,9 @@ refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
 -spec refX_to_idx(#refX{}) -> pos_integer() | false. 
 refX_to_idx(#refX{site = S, path = P, obj = Obj}) ->
     Table = trans(S, local_obj),
-    MS = [{#local_obj{path = P, obj = Obj, idx = '$1', _='_'}, [], ['$1']}],
-    case mnesia:select(Table, MS, read) of
-        [I] -> I;
+    Pattern = #local_obj{path = P, obj = Obj, idx = '$1', _='_'},
+    case mnesia:match_object(Table, Pattern, read) of
+        [I] -> I#local_obj.idx;
         _   -> false
     end.
 
