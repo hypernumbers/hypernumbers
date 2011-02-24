@@ -15,7 +15,7 @@
          stop_trace/1
         ]).
 
--define(daysinyear, 20).
+-define(daysinyear, 365).
 
 test_dbsrv(Site) ->
     Server = list_to_atom(hn_util:site_to_fs(Site) ++ "_dbsrv"),
