@@ -81,8 +81,26 @@ html,body {
     color              : #666;
 }
 
-#functions, #columnmanagerdialog, #lineview {
+#columnmanagerdialog, #lineview {
     position           : static; /* changed dynamically */
+    overflow           : visible;
+    width              : auto;
+    max-width          : none;
+    min-width          : 260px;
+    max-height         : none;
+    height             : auto;
+    display            : none;
+    background         : white;
+    border             : 2px solid #999;
+    z-index            : 10000003;
+    -moz-border-radius : 4px 4px 4px 4px;
+    -moz-box-shadow    : 2px 2px 4px #AAA;
+    -webkit-border-radius : 4px 4px 4px 4px;
+    -webkit-box-shadow    : 2px 2px 4px #AAA;
+}
+
+#functions {
+    position           : absolute;
     overflow           : visible;
     width              : auto;
     max-width          : none;
