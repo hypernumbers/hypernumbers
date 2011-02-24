@@ -1144,10 +1144,10 @@ a.toolbar-item {
     margin:100px auto;
 }
 
-
-#newpage { 
-           width: 179px;
-           }
+#newpage, #templatename 
+{ 
+  width: 96px;
+}
 
 #sitesettings { 
     padding: 10px 60px;

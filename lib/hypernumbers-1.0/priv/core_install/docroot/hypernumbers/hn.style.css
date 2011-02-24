@@ -456,7 +456,7 @@ label {
 #templateslist { 
   background-color: #ffffff;
   font-size:        80%;
-  width:            100px;
+  width:            50px;
   color:            #555555;
 }
 
@@ -622,3 +622,26 @@ label {
   -webkit-border-radius: 4px 4px 4px 4px;
   border:           1px solid #E99;
   }
+
+#hn_newpageform, #hn_saveastemplateform {  
+  -moz-border-radius:    4px 4px 4px 4px;
+  -webkit-border-radius: 4px 4px 4px 4px;
+  border:  1px solid #aaa;
+  background-color: #efefef;
+  margin:  0px 0px 5px 0px;
+}
+
+#hn_newpageform, #hn_saveastemplateform, #hn_douploadform, #hn_deletepageform 
+{ 
+  padding: 5px 3px 3px 4px;
+}
+
+#hn_douploadform, #hn_deletepageform 
+{ 
+  margin:  0px 0px 2px 0px;
+}
+
+#hn_templateheader { 
+    font-weight: bold;
+    text-align:  center;
+}

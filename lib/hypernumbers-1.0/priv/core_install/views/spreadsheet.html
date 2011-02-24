@@ -523,62 +523,37 @@
 	  <div id="finder">
 	    <div class="panewrapper"><div class="pane"></div></div>
 	  </div>
-
-	  <table>
-       <tr id="hnexemplar">
-          <td></td>
-          <td></td>
-          <td><small>for example <code>/accounts/2010/</code></small></td>
-        </tr>
-        <tr><form id="newpageform">
-          <td class="label" width="27%">Create New:</td>
-          <td width="17%">
-            <input id="newspreadsheet" type="submit" value="New" class="button" />
-          </td>
-         <td>
-         <input type="text" id="newpage" value="" />
-        </td></form>
-        </tr>
-        <tr>
-          <td></td>
-          <td><div id="templates"></div></td>
-          <td></td>
-        </tr>
-<!--
-        <tr>
-          <td class="label" width="27%">Open As Spreadsheet:</td>
-          <td width="17%">
-            <input id="pdvisit" type="submit" value="Open" />
-          </td>
-         <td><span id="currentpageselection" class="currentpageselection"></span></td>
-        </tr>
--->
-	    <tr>
-          <td class="label">Save As Template:</td>
-          <td class="content"> 
-            <input class="redbutton" id="saveastemplate" type="submit" value="Save As.." />
-          </td>
-          <td><input id="templatename" /><span id="saveasfeedback"><span>
-          </td>
-	    </tr>
-        <tr>
-          <td class="label">Import Spreadsheet:</td>
-          <td class="content"> 
-            <input type="submit" id="doupload" value="Upload To"  /><br />
-          <div id="uploadresponce"> </div>
-          </td>
-          <td><span class="currentpageselection"></span></td>
-	    </tr>
-	    <tr>
-          <td class="label">Delete Page:</td>
-	      <td class="content"> 
-            <input class="redbutton" id="ctrldelete" type="submit" value="Delete" />
-          </td>
-         <td><span class="currentpageselection"></span></td>
-        </tr>
-	  </table>
-	      
-	</div>
+    <div style='float:right;'>
+      <div style='float:none;'>
+        <form id="hn_newpageform">
+        <div>
+          <input id="newspreadsheet" type="submit" value="New" class="button" />
+        </div>
+        <small>template:</small>
+        <span id="templates"></span>
+        <div>
+          <input type="text" id="newpage" value="" />
+        </div>
+        <small>eg <code>/my/home/</code></small>
+        </form>
+        <form id="hn_douploadform">
+        <input type="submit" id="doupload" value="Upload .xls"  />
+        <div id="uploadresponse"></div>
+        </form>
+        <form id="hn_deletepageform">
+        <input class="redbutton" id="ctrldelete" type="submit" value="Delete" />
+        </form>
+        <form id="hn_saveastemplateform">
+        <div>
+          <div id="hn_templateheader">Templates</div>
+          <input class="redbutton" id="saveastemplate" type="submit" value="Save As..." />
+        </div>
+        <div><input id="templatename" /></div>
+        <span id="saveasfeedback"></span>
+        </form>
+        </div>
+     </div>
+     </div>
     	<div id="sitesettings">
   
 	  <div id="hn_pwd_feedback" class="hn_settings_feedback"> </div>

@@ -1,10 +1,11 @@
 #finder {
     background : white;
-    width      : 100%; 
+    width      : 78%; 
+    float      : left;
 }
 
 #finder .panewrapper {
-    height     : 170px;
+    height     : 360px;
     overflow-x : scroll; 
     overflow-y : scroll; 
 }
