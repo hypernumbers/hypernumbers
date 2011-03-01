@@ -224,11 +224,11 @@ expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
 
 make_refX(Site, Path, #rangeref{type = row, text = Txt}) ->
     Ref = strip(Txt),
-    {row, {range, {_X1, Y1, _X2, Y2}}}= hn_util:parse_ref(Ref),
+    {row, {Y1, Y2}}= hn_util:parse_ref(Ref),
      #refX{site = Site, path = Path, type = url, obj = {row, {Y1, Y2}}};
 make_refX(Site, Path, #rangeref{type = col, text = Txt}) ->
     Ref = strip(Txt),
-    {col, {range, {X1, _Y1, X2, _Y2}}} = hn_util:parse_ref(Ref),
+    {column, {X1, X2}} = hn_util:parse_ref(Ref),
     #refX{site = Site, path = Path, type = url, obj = {column, {X1, X2}}}.
 
 strip(Txt) -> [Ref | _T] = lists:reverse(string:tokens(Txt, "/")),
