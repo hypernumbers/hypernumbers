@@ -39,6 +39,7 @@
          is_older/2,
 
          strip80/1,
+         obj_to_ref/1,
          refX_to_url/1,
          index_to_url/1,
          obj_to_change_msg/1,
@@ -449,13 +450,24 @@ range_to_list1(RefX, Reset, X1, Y1, X2, Y2, Acc) ->
     range_to_list1(RefX, Reset, X1 + 1, Y1, X2, Y2,
                    [RefX#refX{obj = {cell, {X1, Y1}}} | Acc]).
 
+obj_to_ref({cell, {X, Y}}) ->
+    tconv:to_b26(X) ++ text(Y);
+obj_to_ref({column, {X1, X2}}) ->
+    lists:append([tconv:to_b26(X1), ":", tconv:to_b26(X2)]);
+obj_to_ref({row, {Y1, Y2}}) ->
+    lists:append([text(Y1), ":", text(Y2)]);
+obj_to_ref({range, {X1, Y1, X2, Y2}}) ->
+    lists:append([tconv:to_b26(X1), text(Y1), ":",
+                  tconv:to_b26(X2), text(Y2)]);
+obj_to_ref({page, "/"}) -> "".
+
 refX_to_url(#refX{site = Site, path = Path, obj = {cell, {X, Y}}}) ->
     lists:append([Site, list_to_path(Path), tconv:to_b26(X), text(Y)]);
 refX_to_url(#refX{site = Site, path = Path, obj = {column, {X1, zero, X2, inf}}}) ->
     lists:append([Site, list_to_path(Path), tconv:to_b26(X1), ":",
                   tconv:to_b26(X2)]);
 refX_to_url(#refX{site = Site, path = Path, obj = {row, {zero, Y1, inf, Y2}}}) ->
-    lists:append([Site, list_to_path(Path), text(Y1), text(Y2)]);
+    lists:append([Site, list_to_path(Path), text(Y1), ":", text(Y2)]);
 refX_to_url(#refX{site = Site, path = Path, obj = {range, {X1, Y1, X2, Y2}}}) ->
     lists:append([Site, list_to_path(Path), tconv:to_b26(X1), text(Y1), ":",
                   tconv:to_b26(X2), text(Y2)]);
