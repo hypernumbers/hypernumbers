@@ -65,7 +65,8 @@
           idx,
           type,
           path,
-          obj
+          obj,
+          revidx
          }).
 
 -record(item, {idx, attrs}).

@@ -177,7 +177,7 @@ write_magic_style_IMPORT(Ref=#refX{site=Site}, MagicStyle) ->
 read_styles_IMPORT(#refX{site=Site}) ->
     Tbl = trans(Site, style),
     MS = ets:fun2ms(fun(X) -> X end),
-    mnesia:select(Tbl, MS, read).
+    mnesia:select(Tbl, MS, write).
 
 -spec get_last_row(#refX{}) -> integer(). 
 get_last_row(#refX{site=S, path=P}) -> 
@@ -277,7 +277,7 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
               end,
     process_attrs(Rest, Ref, AReq, Attrs2).
 
-mark_dirty_for_zinf(#refX{site = S, obj = {cell, _}} = RefX) -> 
+mark_dirty_for_zinf(#refX{site = S, obj = {cell, _}} = RefX) ->
     Tbl = trans(S, dirty_for_zinf),
     mnesia:write(Tbl, #dirty_for_zinf{dirty = RefX}, write).
 
@@ -290,7 +290,7 @@ expand_to_2(#refX{obj={Type, _}} = Ref, I, I, A) ->
 expand_to_2(#refX{obj={Type, _}} = Ref, I, J, A) ->
     expand_to_2(Ref, I + 1, J, [Ref#refX{obj={Type, {I, I}}} | A]).
 
-expand_ref(#refX{site=S}=Ref) -> 
+expand_ref(#refX{site=S}=Ref) ->
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref, inside)].
 
 read_ref(Ref, Relation) -> read_ref(Ref, Relation, read).
@@ -461,7 +461,6 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
                           end
                 end,
             DirtyChildren = lists:foldl(Fun, [], Formulas),
-            
             %% Rewrite the local_obj entries by applying the shift offset.
             ObjTable = trans(Site, local_obj),
             [begin 
@@ -685,7 +684,9 @@ filter_pages([Path | T], Tree) ->
 refX_to_idx_create(#refX{site = S, type = Ty, path = P, obj = O} = RefX) ->
     case refX_to_idx(RefX) of
         false -> Idx = util2:get_timestamp(),
-                 Rec = #local_obj{path = P, type = Ty, obj = O, idx = Idx},
+                 RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
+                 Rec = #local_obj{path = P, type = Ty, obj = O, idx = Idx,
+                                  revidx = RevIdx},
                  ok = mnesia:write(trans(S, local_obj), Rec, write),
                  Idx;
         Idx   -> Idx        
@@ -772,10 +773,10 @@ refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
 %% refX_to_idx reads the index of an object AND RETURNS 'false'
 %% IF IT DOESN'T EXIST
 -spec refX_to_idx(#refX{}) -> pos_integer() | false. 
-refX_to_idx(#refX{site = S, path = P, obj = Obj}) ->
+refX_to_idx(#refX{site = S, path = P, obj = O}) ->
     Table = trans(S, local_obj),
-    Pattern = #local_obj{path = P, obj = Obj, _='_'},
-    case mnesia:index_match_object(Table, Pattern, obj, read) of
+    RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
+    case mnesia:index_read(Table, RevIdx, revidx) of
         [I] -> I#local_obj.idx;
         _   -> false
     end.
@@ -1829,66 +1830,57 @@ tell_front_end1(Tuple) ->
     put('front_end_notify', [Tuple | List]),
     ok.
 
--spec read_objs(#refX{}, inside | intersect | direct) -> [#local_obj{}]. 
-read_objs(#refX{site=Site}=Ref, inside) ->
-    MS = objs_inside_ref(Ref),
-    mnesia:select(trans(Site, local_obj), MS);
+-spec read_objs(#refX{}, inside | intersect | direct) ->
+    [#local_obj{}].
+% if its a cell then just the local obj
+read_objs(#refX{site = S, path = P, obj = {cell, _} = O}, inside) ->
+    Table = trans(S, local_obj),
+    RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
+    mnesia:index_read(Table, RevIdx, revidx);
+read_objs(#refX{site = S, path = P, obj = {page, "/"}}, inside) ->
+    Table = trans(S, local_obj),
+    mnesia:index_read(Table, P, path);    
+read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
+    Table = trans(S, local_obj),
+    Page = mnesia:index_read(Table, P, path),
+    Fun = fun(#local_obj{obj = {cell, {MX, _MY}}}) ->
+                  if
+                      X1 =< MX, MX =< X2 -> true;
+                      true               -> false
+                  end;
+             (_LO) -> false
+          end,
+    lists:filter(Fun, Page);
+read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
+    Table = trans(S, local_obj),
+    Page = mnesia:index_read(Table, P, path),
+    Fun = fun(#local_obj{obj = {cell, {_MX, MY}}}) ->
+                  if
+                      Y1 =< MY, MY =< Y2 -> true;
+                      true               -> false
+                  end;
+             (_LO) -> false
+          end,
+    lists:filter(Fun, Page);
+read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
+    Table = trans(S, local_obj),
+    Page = mnesia:index_read(Table, P, path),
+    Fun = fun(#local_obj{obj = {cell, {MX, MY}}}) ->
+                  if
+                      X1 =< MX, MX =< X2, 
+                      Y1 =< MY, MY =< Y2 -> true;
+                      true               -> false
+                  end;
+             (_LO) -> false
+          end,
+    lists:filter(Fun, Page);
 read_objs(#refX{site=Site}=Ref, intersect) ->
     MS = objs_intersect_ref(Ref),
     mnesia:select(trans(Site, local_obj), MS);
-read_objs(#refX{site=Site, path=P, obj = O}, direct) ->
-    MS = [{#local_obj{path=P, obj = O, _='_'}, [], ['$_']}],
-    mnesia:select(trans(Site, local_obj), MS).                            
-
-% handle old and new cols
-objs_inside_ref(#refX{path = P, obj = {page, "/"}}) ->
-    [{#local_obj{path = P, _='_'}, [], ['$_']}];
-objs_inside_ref(#refX{path = P, obj = {column, {range, {X1, zero,X2,inf}}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
-                     when MP == P,
-                          X1 =< MX, MX =< X2 -> LO
-               end);
-objs_inside_ref(#refX{path = P, obj = {row, {range, {zero, R1,inf, R2}}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
-                     when MP == P,
-                          R1 =< MY, MY =< R2 -> LO
-               end);
-objs_inside_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
-                     when MP == P,
-                          X1 =< MX, MX =< X2 -> LO
-               end);
-objs_inside_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
-                     when MP == P,
-                          R1 =< MY, MY =< R2 -> LO
-               end);
-objs_inside_ref(#refX{path = P, obj = {range, {0,Y1,infinity,Y2}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}}) 
-                     when MP == P,
-                          0 =< MX, MX =< infinity, 
-                          Y1 =< MY, MY =< Y2 -> LO;
-                  (LO=#local_obj{path=MP, obj={row,{range, {zero, MY,inf, MY}}}})
-                     when MP == P,
-                          Y1 =< MY, MY =< Y2 -> LO
-               end);
-objs_inside_ref(#refX{path = P, obj = {range, {X1,0,X2,infinity}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}}) 
-                     when MP == P,
-                          X1 =< MX, MX =< X2, 
-                          0 =< MY, MY =< infinity -> LO; 
-                  (LO=#local_obj{path=MP, obj={column,{range, {MX,zero, MX, inf}}}})
-                     when MP == P,
-                          X1 =< MX, MX =< X2 -> LO
-               end);
-objs_inside_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}}) 
-                     when MP == P,
-                          X1 =< MX, MX =< X2, 
-                          Y1 =< MY, MY =< Y2 -> LO
-               end);
-objs_inside_ref(#refX{path = P, obj = O = {cell, _}}) ->
-    [{#local_obj{path = P, obj = O, _='_'}, [], ['$_']}].
+read_objs(#refX{site = S, path = P, obj = O}, direct) ->
+    Table = trans(S, local_obj),
+    RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
+    mnesia:index_read(Table, RevIdx, revidx).
 
 %% Note that this is most useful when given cells, or ranges. 
 objs_intersect_ref(#refX{path = P, obj = {page, "/"}}) ->

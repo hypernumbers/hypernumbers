@@ -201,7 +201,7 @@ tables() ->
      ?TBL(dirty_zinf,     set, []),
      ?TBL(dirty_queue,    set, []),
      ?TBL(item,           set, []),
-     ?TBL(local_obj,      set, [obj,path]), 
+     ?TBL(local_obj,      set, [obj,path,revidx]), 
      ?TBL(relation,       set, []),
      ?TBL(group,          set, []),         
      ?TBL(style,          set, [idx]),
