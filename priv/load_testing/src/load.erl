@@ -99,7 +99,9 @@ l3(Site, N, M)   ->
     N2 = util2:get_timestamp(),
     hn_import:json_file(URL2, Dir ++ "data.json"),
     N3 = util2:get_timestamp(),
-    log(io_lib:format("~p\t~p\t~p\t~p\t~p", [N, M, N1, N2, N3])),
+    NLocks = length(mnesia:system_info(held_locks)),
+    log(io_lib:format("~p\t~p\t~p\t~p\t~p", [N, M, (N2 - N1)/100000, 
+                                             (N3 - N2)/1000000, NLocks])),
     l3(Site, N, M - 1).
 
 log(String) ->
