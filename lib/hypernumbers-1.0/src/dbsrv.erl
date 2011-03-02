@@ -156,7 +156,7 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
 rebuild_zinf(Site) ->
     Tbl = hn_db_wu:trans(Site, dirty_zinf),
     Fun = fun() ->
-                L = mnesia:match_object(Tbl, #dirty_zinf{_='_'}, read),
+                L = mnesia:match_object(Tbl, #dirty_zinf{_='_'}, write),
                 ok = squirt_zinfs(Site, L),
                 [ok = mnesia:delete(Tbl, Id, write) || #dirty_zinf{id = Id} <- L]
         end,
@@ -175,7 +175,7 @@ squirt_zinfs(Site, [H | T]) ->
 process_dirties_for_zinf(Site) ->
     Tbl = hn_db_wu:trans(Site, dirty_for_zinf),
     Fun = fun() ->
-                  L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, read),
+                  L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, write),
                   Dirties = [X || {ok, X} <- [zinf_srv:check_ref(Site, D)
                                               || #dirty_for_zinf{dirty = D} <- L]],
                   D1 = hslists:uniq(lists:flatten(Dirties)),
