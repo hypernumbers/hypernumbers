@@ -16,7 +16,7 @@
          stop_trace/1
         ]).
 
--define(daysinyear, 100).
+-define(daysinyear, 365).
 
 -record(refX,
         {
