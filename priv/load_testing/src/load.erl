@@ -83,6 +83,7 @@ l3(Site, N, M)   ->
     NLocks = length(mnesia:system_info(held_locks)),
     log(io_lib:format("~p\t~p\t~p\t~p\t~p", [N, M, (N2 - N1)/100000, 
                                              (N3 - N2)/1000000, NLocks])),
+    %io:format("Logs are ~p~n", [mnesia:system_info(held_locks)]),
     l3(Site, N, M - 1).
 
 log(String) ->
