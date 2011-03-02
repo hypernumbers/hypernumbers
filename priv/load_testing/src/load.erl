@@ -9,6 +9,7 @@
 
 -export([
          test_dbsrv/1,
+         test_clear/1,
          load/2,
          dump/0,
          start_trace/1,
@@ -16,6 +17,21 @@
         ]).
 
 -define(daysinyear, 365).
+
+-record(refX,
+        {
+          site        = [],
+          type,
+          path        = [],
+          obj         = null
+         }).
+
+test_clear(Site) ->
+    FileName = start_trace([self()]),
+    Ref = #refX{site = Site, path = [], obj = {page, "/"}},
+    [ok = hn_db_api:clear(Ref, all, nil) || _X <- lists:duplicate(100, "bleh")],
+    stop_trace(FileName),
+    ok.
 
 test_dbsrv(Site) ->
     Server = list_to_atom(hn_util:site_to_fs(Site) ++ "_dbsrv"),
@@ -37,7 +53,10 @@ test_dbsrv(Site) ->
     ok = hn_db_api:delete(RefX2, nil).
 
 start_trace(Supervisors) when is_list(Supervisors) ->
-    Sups2 = [whereis(X) || X <- Supervisors],
+    Fun = fun(X) when is_pid(X) -> X;
+             (X) when is_atom(X) -> whereis(X)
+          end,
+    Sups2 = [Fun(X) || X <- Supervisors],
     FileName = "fprof.trace." ++ tconv:to_s(util2:get_timestamp()),
     fprof:trace([start, {procs, Sups2}, {file, FileName}]),
     FileName.

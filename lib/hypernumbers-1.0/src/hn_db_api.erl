@@ -742,7 +742,9 @@ handle_dirty_cell(Site, Idx, Ar) ->
                           end,
                   case orddict:find("formula", Attrs) of
                       {ok, F} ->
-                          _Dict = hn_db_wu:write_attrs(Cell, [{"formula", F}], Ar);
+                          _Dict = hn_db_wu:write_attrs(Cell,
+                                                       [{"formula", F}],
+                                                       Ar);
                       _ ->
                           ok
                   end
@@ -770,11 +772,16 @@ write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
     List = hn_util:range_to_list(Ref),
     [ok = write_attributes1(X, AttrList, PAr, VAr) || X <- List],
     ok;
-write_attributes1(RefX, List, PAr, VAr) ->
+write_attributes1(#refX{site = S} = RefX, List, PAr, VAr) ->
     hn_db_wu:write_attrs(RefX, List, PAr),
     % first up do the usual 'dirty' stuff - this cell is dirty
     case lists:keymember("formula", 1, List) of
-       true  -> ok = hn_db_wu:mark_these_dirty([RefX], VAr);
+       true  -> [Rels] = hn_db_wu:read_relations_DEBUG(RefX),
+                case Rels#relation.children of
+                    []       -> ok;
+                    Children -> Ch2 = [hn_db_wu:idx_to_refX(S, X) || X <- Children],
+                                hn_db_wu:mark_these_dirty(Ch2, VAr)
+                end;
        false -> ok
     end,
     % now do the include dirty stuff (ie this cell has had it's format updated
@@ -1012,7 +1019,7 @@ pretty_print(List, Slogan, Acc) ->
 pretty_p2([], Acc) -> Acc;
 pretty_p2([{R, Vals} | T], Acc) when is_record(R, refX) ->
     #refX{path = P, obj = O} = R,
-    NewO = io_lib:format(" ~p on ~p:", [O, P]),
+    NewO = io_lib:format(" ~p (~p) on ~p:", [O, hn_util:obj_to_ref(O), P]),
     Keys = ["formula", "value", "__hasform"],
     NewO2 = pretty_p3(Keys, Vals, [NewO | Acc]),
     NO3 = case lists:keymember("__hasform", 1, Vals) of

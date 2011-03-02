@@ -1,4 +1,4 @@
-%%%-------------------------------------------------------------------
+%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers.com
 %%% @doc       This is a util function for hn_db_api containing only functions
@@ -35,6 +35,7 @@
         ]).
 
 -export([
+         read_relations/2,
          write_kv/3,
          read_kv/2,
          get_cell_for_muin/2,
@@ -104,6 +105,10 @@
 read_relations_DEBUG(RefX) when is_record(RefX, refX) ->
     Idx = refX_to_idx(RefX),
     Table = trans(RefX#refX.site, relation),
+    mnesia:read(Table, Idx, read).
+
+read_relations(Site, Idx) ->
+    Table = trans(Site, relation),
     mnesia:read(Table, Idx, read).
 
 write_kv(Site, Key, Value) ->
