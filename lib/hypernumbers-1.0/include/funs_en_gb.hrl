@@ -84,7 +84,6 @@
  {array, ["Maths And Trigonometry","RADIANS","Converts degrees to radians."]},
  {array, ["Text","T","Returns the value of the referenced cell."]},
  {array, ["Text","FIND","Returns the position of a character in a string."]},
- {array, ["category","function","help"]},
  {array, ["Date and Time","MONTH","Returns the month value from a date value."]},
  {array, ["Information","ISERR",
   "Checks whether a cell value is an error and returns TRUE or FALSE"]},
