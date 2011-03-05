@@ -244,65 +244,6 @@ authorize_get(#refX{site = Site, path = Path},
             denied
     end;
 
-%% %% TODO : Broken
-%% authorize_get(#refX{site = Site, path = Path}, 
-%%               #qry{updates = U, view = "_g/core/webpage", paths = More}, 
-%%               #env{accept = json, uid = Uid})
-%%   when U /= undefined ->
-%%     case auth_srv:check_particular_view(Site, Path, Uid, "_g/core/webpage") of
-%%         {view, "_g/core/webpage"} ->
-%%             MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Uid) 
-%%                          || P <- string:tokens(More, ",")],
-%%             case lists:all(fun({view, _}) -> true; 
-%%                               (_) -> false end, 
-%%                            MoreViews) of
-%%                 true -> allowed;
-%%                 _Else -> denied
-%%             end;       
-%%         _Else ->
-%%             denied
-%%     end;
-
-
-%% %% Update requets targeted towards a non-spreadsheet view. Validation
-%% %% for additional sources is made against the security object created
-%% %% at a 'view-save-time'. 
-%% authorize_get(#refX{site = Site, path = Path}, 
-%%               #qry{updates = U, view = View, paths = More},
-%%               #env{accept = json, uid = Uid}) 
-%%   when U /= undefined, View /= undefined -> 
-%%     case auth_srv:check_particular_view(Site, Path, Uid, View) of
-%%         {view, View} ->
-%%             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
-%%             Results = [hn_security:validate_get(Sec, Path, P) 
-%%                        || P <- string:tokens(More, ",")],
-%%             case lists:all(fun(X) -> X end, Results) of 
-%%                 true -> allowed;
-%%                 false -> denied
-%%             end;
-%%         _Else ->
-%%             denied
-%%     end;
-
-%% %% Access to secondary data sources, described by some initial view
-%% %% declared herein as 'via'.
-%% authorize_get(#refX{site = Site, path = Path}, 
-%%               #qry{view = View, via = Via}, 
-%%               #env{accept = json, uid = Uid})
-%%   when View /= undefined, View /= ?SHEETVIEW, Via /= undefined ->
-%%     Base = string:tokens(Via, "/"),
-%%     case auth_srv:check_particular_view(Site, Base, Uid, View) of
-%%         {view, View} ->
-%%             Target = hn_util:list_to_path(Path),
-%%             {ok, [Sec]} = file:consult([viewroot(Site), "/", View, ".sec"]),
-%%             case hn_security:validate_get(Sec, Base, Target) of
-%%                 true -> allowed; 
-%%                 false -> denied
-%%             end;
-%%         _Else ->
-%%             denied
-%%     end;
-
 %% Authorize access to the DEFAULT page. Notice that no query
 %% parameters have been set.
 authorize_get(#refX{site = Site, path = Path}, 
@@ -420,6 +361,18 @@ authorize_admin(Site, [{"admin", {_, [{Request, {_, List}}]}}], Uid)
            #env{}) 
 -> any(). 
 
+% if a filename has got to here, there is one of 2 reasons:
+% * the file don't exist - 404
+% * the punter has missed a trailing slash - 303 redirect
+iget(#refX{path = P, obj = {filename, FileName}} = Ref, filename, Qry, Env) ->
+    case length(string:tokens(FileName, ".")) of
+        1 -> NewP = hn_util:list_to_path(P) ++ FileName ++ "/",
+             E2 = Env#env{headers = [{"location", NewP}|Env#env.headers]},
+             respond(303, E2);
+        _ -> ?E("404~n-~p~n-~p~n", [Ref, Qry]),
+             '404'(Ref, Env)
+    end;
+
 iget(#refX{site=S, path=["_site"]} = Ref, page, _Qry, Env) ->
     Groups    = {"groups", {array, hn_groups:get_all_groups(S)}},
     Templates = {"templates", {array, get_templates(S)}},
@@ -472,7 +425,7 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
                                    false      -> "";
                                    {redirect, P} -> P
                                end,
-                    Return = hn_util:strip80(Site)++Redirect,                                        
+                    Return = hn_util:strip80(Site)++Redirect,
                     {Env2, Redir} = 
                         post_login(Site, Uid, Stamp, Age, Env, Return),
                     Headers = [{"location",Redir}|Env2#env.headers],
@@ -549,22 +502,6 @@ iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
                 ""
         end,
     json(Env, V);
-
-%% iget(Ref, Type, _Qry, Env=#env{accept=json})
-%%   when Type == range;
-%%        Type == column;
-%%        Type == row ->
-%%     Init = [["cell"], ["column"], ["row"], ["page"]],
-%%     Tree = dh_tree:create(Init),
-%%     Dict = to_dict(hn_db_api:read_attributes(Ref,[]), Tree),
-%%     json(Env, {struct, dict_to_struct(Dict)});
-
-%% Format requests without trailing slash
-iget(_Ref, Type, _Qry, Env=#env{accept=html, mochi=Mochi})
-  when Type =:= cell; Type =:= name ->
-    NPath = Mochi:get(path) ++ "/", 
-    E2 = Env#env{headers = [{"location", NPath}|Env#env.headers]},
-    respond(303, E2);
 
 iget(Ref, _Type, Qry, Env) ->
     ?E("404~n-~p~n-~p~n", [Ref, Qry]),
