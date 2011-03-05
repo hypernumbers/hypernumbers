@@ -3,14 +3,20 @@
 
 -module(muin).
 
-%% test exports
--export([
-         test_formula/2,
-         test_xfl/0,
-         run_formula/2,
-         run_code/2,
-         zeval_from_zinf/3
-        ]).
+-include("spriki.hrl").
+-include("typechecks.hrl").
+-include("muin_records.hrl").
+-include("hypernumbers.hrl").
+
+-define(mx, get(x)).
+-define(my, get(y)).
+-define(mpath, get(path)).
+-define(msite, get(site)).
+-define(mar, get(auth_req)).
+-define(array_context, get(array_context)).
+
+-define(error_in_formula, {errval, '#FORMULA!'}).
+-define(syntax_err, {error, syntax_error}).
 
 -define(htmlheadline, $h,$t,$m,$l,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
 -define(htmlbox, $h,$t,$m,$l,$.,$b,$o,$x,$.).
@@ -39,6 +45,9 @@
         ]).
 
 -export([
+         run_formula/2,
+         run_code/2,
+         zeval_from_zinf/3,
          context_setting/1,
          col_index/1,
          row_index/1,
@@ -59,20 +68,11 @@
          parse/2
         ]).
 
--include("spriki.hrl").
--include("typechecks.hrl").
--include("muin_records.hrl").
--include("hypernumbers.hrl").
-
--define(mx, get(x)).
--define(my, get(y)).
--define(mpath, get(path)).
--define(msite, get(site)).
--define(mar, get(auth_req)).
--define(array_context, get(array_context)).
-
--define(error_in_formula, {errval, '#FORMULA!'}).
--define(syntax_err, {error, syntax_error}).
+%% test exports
+-export([
+         test_formula/2,
+         test_xfl/0
+        ]).
 
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
