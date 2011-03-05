@@ -48,6 +48,7 @@
          run_formula/2,
          run_code/2,
          zeval_from_zinf/3,
+         parse_expr_for_gui/1,
          context_setting/1,
          col_index/1,
          row_index/1,
@@ -85,6 +86,17 @@ test_formula(Fla) ->
                                 auth_req = nil}).
 test_formula(Fla, Rti) ->
     mnesia:activity(transaction, fun run_formula/2, [Fla, Rti]).
+
+-spec parse_expr_for_gui(Expr :: list()) -> [{atom(), list()}].
+parse_expr_for_gui(Expr) when is_list(Expr) ->
+    case superparser:process(Expr) of
+        {formula, Fla} ->
+            % not going to run this so compile in the
+            % context of cell A1/{cell, {1, 1}}
+            {ok, Expr2} = compile(Fla, {1, 1}),
+            process_for_gui(Expr2);
+        [{_Type, NVal}, _, _] -> {struct, [{"value", NVal}]}
+    end.
 
 %% @doc Runs formula given as a string.
 run_formula("#CIRCREF!", _) -> {error, ?ERRVAL_CIRCREF};
@@ -373,6 +385,26 @@ get_modules() ->
     ].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+process_for_gui([Fn | []])  -> {struct, [{fn, Fn}, {args, []}]};
+process_for_gui([Fn| Args]) when ?is_fn(Fn)->
+    {struct, [{fn, Fn}, {args, {array, process_args(Args, [])}}]};
+% so its not a fn - must be a constant
+process_for_gui({cellref, _, _, _, Text}) ->
+    {struct, [{cellref, Text}]};
+process_for_gui({rangeref, _, _, _, _, _, _, Text}) ->
+    {struct, [{rangeref, Text}]};
+process_for_gui({zcellref,  _, {cellref, _, _, _, Text}}) ->
+    {struct, [{zcellref, Text}]};
+process_for_gui({zrangeref,  _, {rangeref, _, _, _, _, _, _,  Text}}) ->
+    {struct, [{zrangeref, Text}]};
+process_for_gui(H) ->
+    {struct, [{constant, H}]}.
+
+process_args([], Acc) -> lists:reverse(Acc);
+process_args([H | T], Acc) ->
+    NewAcc = process_for_gui(H),
+    process_args(T, [NewAcc | Acc]).
+
 %% Intersect current cell with a range.
 implicit_intersection(R) when ?is_rangeref(R) ->
     case R#rangeref.type of

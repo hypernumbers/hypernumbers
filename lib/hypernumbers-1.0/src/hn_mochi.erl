@@ -283,7 +283,8 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
 authorize_post(#refX{path = [X]}, _Qry, #env{accept = json}) 
   when X == "_login";
        X == "_hooks";
-       X == "_forgotten_password"-> 
+       X == "_forgotten_password",
+       X == "_parse_expression" -> 
     allowed;
 
 authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry, 
@@ -509,6 +510,14 @@ iget(Ref, _Type, Qry, Env) ->
 
 -spec ipost(#refX{}, #qry{}, #env{}) -> any().
 
+ipost(Ref=#refX{path=["_parse_expression"]}=Ref, _Qry, Env) ->
+    [{"expression", Expr}] = Env#env.body,
+    % this expr is not going to be run, but you
+    % need to compile it in a cell context
+    % just firing in A1 - ie {cell, {1, 1}}
+    Expr2 = muin:parse_expr_for_gui(Expr),
+    json(Env, {struct, [{"expression", Expr2}]});
+
 ipost(Ref=#refX{path=["_forgotten_password"]}=Ref, _Qry,
       Env=#env{uid=Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "forgot password"),
@@ -554,7 +563,6 @@ ipost(Ref, _Qry, Env=#env{body = [{"load_template", {_, [{"name", Name}]}}],
     ok = status_srv:update_status(Uid, Ref, "created page from template "++Name),
     ok = hn_templates:load_template(Ref, Name),
     json(Env, "success");
-
 
 ipost(Ref, _Qry, Env=#env{body = [{"drag", {_, [{"range", Rng}]}}],
                           uid = Uid}) ->
