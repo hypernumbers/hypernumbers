@@ -20,7 +20,8 @@
         ["/lib/sgte/",
          "/lib/hypernumbers-1.0/",
          "/lib/formula_engine-1.0/",
-         "/lib/read_excel-1.0/"
+         "/lib/read_excel-1.0/",
+         "/lib/upload-1.0/"
         ]).
 
 %% location of the jslint.js file relative to root
@@ -222,7 +223,7 @@ make_rel_file(App, Version, Deps) ->
 get_rel_file() ->
     Apps = [kernel, stdlib, inets, crypto, sasl, mnesia, ssl, public_key, gettext,
             sgte, read_excel, starling, formula_engine, mochiweb,
-            hypernumbers],
+            hypernumbers, upload],
     Rel  = make_rel_file("hypernumbers", "1.0", Apps),
     ok   = file:write_file("hypernumbers.rel", fmt("~p.", [Rel])),
     ok   = systools:make_script("hypernumbers",
