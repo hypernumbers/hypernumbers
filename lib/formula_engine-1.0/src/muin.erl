@@ -399,6 +399,10 @@ process_for_gui({zcellref,  _, {cellref, _, _, _, Text}}) ->
     {struct, [{zcellref, Text}]};
 process_for_gui({zrangeref,  _, {rangeref, _, _, _, _, _, _,  Text}}) ->
     {struct, [{zrangeref, Text}]};
+process_for_gui({errval, Err}) ->
+    {struct, [{errval, Err}]};
+process_for_gui({array, [Array]}) ->
+    {struct, [{"array", {array, Array}}]};
 process_for_gui(H) ->
     {struct, [{constant, H}]}.
 
