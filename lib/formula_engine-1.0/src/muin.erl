@@ -93,8 +93,10 @@ parse_expr_for_gui(Expr) when is_list(Expr) ->
         {formula, Fla} ->
             % not going to run this so compile in the
             % context of cell A1/{cell, {1, 1}}
-            {ok, Expr2} = compile(Fla, {1, 1}),
-            process_for_gui(Expr2);
+            case compile(Fla, {1, 1}) of
+                {ok, Expr2}   -> process_for_gui(Expr2);
+                {errval, Err} -> {struct, [{"error", Err}]}
+            end;
         [{_Type, NVal}, _, _] -> {struct, [{"value", NVal}]}
     end.
 
