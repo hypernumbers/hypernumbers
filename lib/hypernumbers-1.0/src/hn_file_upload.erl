@@ -11,6 +11,7 @@
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 
+% TODO - rest if chunking and sleep is still needed
 -define(CHUNK, 1000).
 -define(SLEEP, 500).
 
