@@ -1162,7 +1162,7 @@ a.toolbar-item {
     margin:100px auto;
 }
 
-#newpage, #templatename 
+#newpage, #templatename, #hn_saveastemplateform 
 { 
   width: 96px;
 }
