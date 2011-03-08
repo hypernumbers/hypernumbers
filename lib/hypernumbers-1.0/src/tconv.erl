@@ -4,14 +4,27 @@
 %%% @private
 
 -module(tconv).
--export([to_b26/1,
+-export([
+         
+         to_bool/1,
+         to_b26/1,
          to_i/1,
          to_l/1,
          to_f/1,
          to_s/1,
          to_num/1,
-         b26_to_i/1]).
+         b26_to_i/1
+        ]).
 
+to_bool(true)              -> true;
+to_bool(false)             -> false;
+to_bool(X) when is_list(X) -> case string:lower(X) of
+                                  "true"  -> true;
+                                  "false" -> false;
+                                  _       -> {error, not_a_boolean)
+                              end;
+to_bool(X)                 -> {error, not_a_boolean}.
+            
 %% String -> integer.
 to_i(Str) when is_list(Str) ->
     case to_num(Str) of
