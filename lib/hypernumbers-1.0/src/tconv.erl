@@ -18,12 +18,12 @@
 
 to_bool(true)              -> true;
 to_bool(false)             -> false;
-to_bool(X) when is_list(X) -> case string:lower(X) of
+to_bool(X) when is_list(X) -> case string:to_lower(X) of
                                   "true"  -> true;
                                   "false" -> false;
-                                  _       -> {error, not_a_boolean)
+                                  _       -> {error, not_a_boolean}
                               end;
-to_bool(X)                 -> {error, not_a_boolean}.
+to_bool(_X)                -> {error, not_a_boolean}.
             
 %% String -> integer.
 to_i(Str) when is_list(Str) ->
