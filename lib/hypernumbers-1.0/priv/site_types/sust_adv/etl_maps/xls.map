@@ -1,0 +1,6 @@
+%%-*-erlang-*-
+{page, "Sheet1", ""}.
+{validate, "sheet1", b2, not_null}.
+{validate, "sheet1", d2, not_null}.
+{map, "sheet1", b2, a1}.
+{map, "sheet1", d2, a2}.

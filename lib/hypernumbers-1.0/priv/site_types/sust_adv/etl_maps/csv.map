@@ -1,0 +1,11 @@
+%%-*-erlang-*-
+{page, "csv", ""}.
+{validate, "csv", b2, not_null}.
+{validate, "csv", d2, not_null}.
+{validate, "csv", a13, is_date}.
+{validate, "csv", a8, is_boolean}.
+{validate, "csv", a6, is_number}.
+{validate, "csv", a10, is_string}.
+{validate, "csv", a10, "blah"}.
+{map, "csv", b2, a1}.
+{map, "csv", d2, a2}.
