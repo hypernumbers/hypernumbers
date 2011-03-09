@@ -30,15 +30,15 @@ upgrade_loc_obj_2011_03_01() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
                    % first add stuff to the relations table
-                   Fun2 = fun({local_obj, Idx, Type, Url, Path, Obj}) ->
+                   Fun2 = fun({local_obj, Idx, Type, Path, Obj}) ->
                                   RevIdx = hn_util:list_to_path(Path)
                                       ++ hn_util:obj_to_ref(Obj),
-                                  {local_obj, Idx, Type, Url, Path, Obj, RevIdx}
+                                  {local_obj, Idx, Type, Path, Obj, RevIdx}
                           end,
                    Tbl1 = hn_db_wu:trans(Site, local_obj),
                    io:format("Table ~p transformed~n", [Tbl1]),
                    Ret1 = mnesia:transform_table(Tbl1, Fun2,
-                                                 [idx, url, type, path,
+                                                 [idx, type, path,
                                                   obj, revidx]),
                    io:format("Ret is ~p~n", [Ret1]),
                    Ret2 = mnesia:add_table_index(Tbl1, revidx),
