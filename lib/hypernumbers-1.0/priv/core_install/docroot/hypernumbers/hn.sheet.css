@@ -321,7 +321,7 @@ table.tablesorter tbody tr.highlight td {
     outline:none;
 }
 
-#functionsbtn { 
+#functionsbtn, #wizbtn { 
     font           : 11px sans-serif;
     background     : #F5F5F5;
     color          : blue;
@@ -332,14 +332,14 @@ table.tablesorter tbody tr.highlight td {
     display        : block;
     line-height    : 18px;
     height         : 18px;
-    width          : 78px;
+    width          : 30px; /* TODO */
     padding        : 0px 5px 2px 5px;
     float          : left;
     cursor         : pointer;
     outline        :none;
 }
 
-/* #functionsbtn:hover {  */
+/* #functionsbtn:hover, #wizbtn:hover {  */
 /*  background: #DDD; */
 /*  border:     1px solid #888; */
 /*  border-top: 0px; */
