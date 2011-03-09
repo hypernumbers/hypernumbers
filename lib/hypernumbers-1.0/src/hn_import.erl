@@ -10,7 +10,7 @@
 -define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 
 -export([
-         test/0
+         testing/0
         ]).
 
 -export([
@@ -20,7 +20,7 @@
          csv_append/2
         ]).
 
-test() ->
+testing() ->
     Dir = "/home/gordon/hypernumbers/lib/hypernumbers-1.0/priv/site_types/sust_adv/etl_maps/",
     File1 = "test.csv",
     File2 = "test.xls",
