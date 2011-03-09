@@ -117,7 +117,7 @@ html,body {
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
 
-#funwiz .footer {
+#funwiz .resize {
     position           : absolute;
     right              : 0px;
     bottom             : 0px;
