@@ -81,7 +81,7 @@ html,body {
     color              : #666;
 }
 
-#columnmanagerdialog, #lineview {
+#columnmanagerdialog, #lineview, #funwiz {
     position           : static; /* changed dynamically */
     overflow           : visible;
     width              : auto;
@@ -116,26 +116,10 @@ html,body {
     -webkit-border-radius : 4px 4px 4px 4px;
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
-#funwiz {
-    position           : absolute;
-    overflow           : visible;
-    width              : auto;
-    max-width          : none;
-    min-width          : 260px;
-    max-height         : none;
-    height             : auto;
-    display            : none;
-    background         : white;
-    border             : 2px solid #999;
-    z-index            : 10000003;
-    -moz-border-radius : 4px 4px 4px 4px;
-    -moz-box-shadow    : 2px 2px 4px #AAA;
-    -webkit-border-radius : 4px 4px 4px 4px;
-    -webkit-box-shadow    : 2px 2px 4px #AAA;
-}
 
 #funwiz .footer {
     position           : absolute;
+    right              : 0px;
     bottom             : 0px;
 }
 
