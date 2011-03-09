@@ -1122,7 +1122,7 @@ a.toolbar-item {
     cursor:pointer;
 }
 
-#ctrlclose, #funsclose, #dialogclose, #lineviewclose { 
+#ctrlclose, #funsclose, #dialogclose, #lineviewclose, #wizclose { 
     cursor:pointer;
     color:white; 
     font-weight:bold;
