@@ -1,4 +1,4 @@
-%%-------------------------------------------------------------------
+%%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers.com
 %%% @doc       This is a util function for hn_db_api containing only functions
@@ -1034,7 +1034,16 @@ d_n_d_c_n_p_offset(Toks, XOffset, YOffset) ->
     d_n_d_c_n_p_offset1(Toks, XOffset, YOffset, []).
 
 d_n_d_c_n_p_offset1([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
-d_n_d_c_n_p_offset1([{cellref, LineNo, #cellref{text = Text}= H} | T], 
+d_n_d_c_n_p_offset1([{zcellref, LineNo, ZPath, #cellref{text = Text} = H} | T],
+                    XOffset, YOffset, Acc) ->
+    NewZPath = d_n_d_zpath(ZPath, XOffset, YOffset),
+    Prefix = make_zpath(NewZPath, []),
+    Cell = muin_util:just_ref(Text),
+    {XDollar, X, YDollar, Y} = parse_cell(Cell),
+    NewCell = drag_n_drop_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
+    NewRef = {zcellref, LineNo, NewZPath, H#cellref{text = Prefix ++ NewCell}},
+    d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewRef | Acc]);
+d_n_d_c_n_p_offset1([{cellref, LineNo, #cellref{text = Text} = H} | T], 
                     XOffset, YOffset, Acc) ->
     Cell = muin_util:just_ref(Text),
     Prefix = case muin_util:just_path(Text) of
@@ -1045,7 +1054,8 @@ d_n_d_c_n_p_offset1([{cellref, LineNo, #cellref{text = Text}= H} | T],
     NewCell = drag_n_drop_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
     NewRef = {cellref, LineNo, H#cellref{text = Prefix ++ NewCell}},
     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewRef | Acc]);
-d_n_d_c_n_p_offset1([{rangeref, LineNo, #rangeref{text = Text}=H} | T], XOffset, YOffset, Acc) ->
+d_n_d_c_n_p_offset1([{rangeref, LineNo, #rangeref{text = Text}=H} | T],
+                    XOffset, YOffset, Acc) ->
     Range = muin_util:just_ref(Text),
     Pf = case muin_util:just_path(Text) of
              "/"   -> "";
@@ -1066,6 +1076,21 @@ d_n_d_c_n_p_offset1([{rangeref, LineNo, #rangeref{text = Text}=H} | T], XOffset,
     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewR | Acc]);
 d_n_d_c_n_p_offset1([H | T], XOffset, YOffset, Acc) ->
     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [H | Acc]).
+
+d_n_d_zpath({zpath, ZPath}, XOffset, YOffset) ->
+    d_n_d_zseg(ZPath, XOffset, YOffset, []).
+
+d_n_d_zseg([], _XO, _YO, Acc)               -> lists:reverse(Acc);
+d_n_d_zseg([{seg, _} = H | T], XO, YO, Acc) -> d_n_d_zseg(T, XO, YO, [H | Acc]);
+d_n_d_zseg([{zseg, List, _Text} | T], XO, YO, Acc) ->
+    NewZSeg = d_n_d_c_n_p_offset1(List, XO, YO, []),
+    {_, [$= | NewZTxt]} = hn_util:make_formula(clean, NewZSeg),
+    NewZTxt2 = lists:concat(["[", NewZTxt, "]"]),
+    d_n_d_zseg(T, XO, YO, [{zseg, NewZSeg, NewZTxt2} | Acc]).
+
+make_zpath([], Acc)                   -> lists:flatten(lists:reverse(Acc));
+make_zpath([{seg, Txt} | T], Acc)     -> make_zpath(T, [Txt | Acc]);
+make_zpath([{zseg, _, Txt} | T], Acc) -> make_zpath(T, [Txt | Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Local Relations 
