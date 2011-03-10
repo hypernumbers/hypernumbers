@@ -101,6 +101,9 @@ make_formula(Status, Toks) ->
 mk_f([], {St, A}) ->
     {St, "="++lists:flatten(lists:reverse(A))};
 
+mk_f([{zcellref, _, _, C} | T], {St, A}) ->
+    mk_f(T, {St, [C#cellref.text | A]});
+
 mk_f([{errval, _, '#REF!'} | T], {St, A}) -> 
     mk_f(T, {St, ["#REF!" | A]});
 
@@ -114,8 +117,8 @@ mk_f([{cellref, _, C1}, {cellref, _, C2} | T], {St, A}) ->
 mk_f([{int, _, I}, {cellref,_,C} | T], {St, A}) -> 
     mk_f(T, {St, [C#cellref.text, "/", integer_to_list(I) | A]});
 
-mk_f([{float, _, {F, _}}, {cellref,_,C} | T], {St, A}) -> 
-    mk_f(T, {St, [C#cellref.text, "/", float_to_list(F) | A]});
+mk_f([{float, _, {_, OrigStr}}, {cellref,_,C} | T], {St, A}) ->
+    mk_f(T, {St, [C#cellref.text, "/", OrigStr | A]});
 
 mk_f([{')',_}, {cellref,_,C} | T], {St, A}) ->
     mk_f(T, {St, [C#cellref.text, "/", ")" | A]});
@@ -142,8 +145,8 @@ mk_f([{atom, _, H} | T], {St, A}) ->
 mk_f([{int, _, I} | T], {St, A}) ->
     mk_f(T, {St, [integer_to_list(I) | A]});
 
-mk_f([{float, _, {F, _OrigStr}} | T], {St, A}) ->
-    mk_f(T, {St, [float_to_list(F) | A]});
+mk_f([{float, _, {_, OrigStr}} | T], {St, A}) ->
+    mk_f(T, {St, [OrigStr | A]});
 
 mk_f([{formula, _, S} | T], {St, A}) ->
     mk_f(T, {St, [S | A]});
