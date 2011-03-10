@@ -316,7 +316,7 @@ table.tablesorter tbody tr.highlight td {
     display        : block;
     line-height    : 18px;
     height         : 18px;
-    width          : 30px; /* TODO */
+    width          : 40px; /* TODO */
     padding        : 0px 5px 2px 5px;
     float          : left;
     cursor         : pointer;
