@@ -8,8 +8,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -21,8 +20,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -34,7 +32,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [            
+        "args": [            
         ]
     },
     {
@@ -46,8 +44,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -59,8 +56,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -72,8 +68,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -85,8 +80,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -98,8 +92,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -111,8 +104,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -124,8 +116,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -137,8 +128,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -150,8 +140,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -163,16 +152,17 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "attrs": [
+        "args": [
             {
-                "name": "serial_number",
+                "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "finite"
+                "type": "string",
             },
             {
                 "name": "Return Type",
                 "desc": "If Return Type = 1 Sunday is 1 and Saturday is 7, if Return Type = 2 Monday is 1 and Sunday is 7, if Return Type = 3, Monday = 0 and Sunday = 6",
-                "type": "optional"
+                "optional": true,
+                "type": "number",
             }
         ]
     },
@@ -185,11 +175,11 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "attrs": [
+        "args": [
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "finite"
+                "type": "string",
             }
         ]
     },
@@ -202,11 +192,11 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "attrs": [
+        "args": [
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "finite"
+                "type": "string",
             }
         ]
     },
@@ -219,7 +209,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -232,7 +222,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -244,12 +234,13 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
+        "repeat": false,
         "wizardready": true,
-        "attrs": [
+        "args": [
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "finite"
+                "type": "string",
             }
         ]
     },
@@ -262,8 +253,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -275,8 +265,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -288,11 +277,12 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "attrs": [
+        "repeat": false,
+        "args": [
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "finite"
+                "type": "string",
             }
         ]
     },
@@ -305,11 +295,12 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "attrs": [
+        "repeat": false,
+        "args": [
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "finite"
+                "type": "string",
             }
         ]
     },
@@ -322,8 +313,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -335,8 +325,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -348,8 +337,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -361,8 +349,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -374,8 +361,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -387,8 +373,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -400,8 +385,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -413,8 +397,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -426,8 +409,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -439,8 +421,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -452,8 +433,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -465,8 +445,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -478,8 +457,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -491,8 +469,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -504,8 +481,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -517,8 +493,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -530,8 +505,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -543,8 +517,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -556,8 +529,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -569,8 +541,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -582,8 +553,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -595,8 +565,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -608,8 +577,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -621,8 +589,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -634,8 +601,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -647,8 +613,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -660,8 +625,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -673,8 +637,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -686,8 +649,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -699,8 +661,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -712,8 +673,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -725,8 +685,8 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "attrs": [
-            
+        "repeat": false,
+        "args": [            
         ]
     },
     {
@@ -738,8 +698,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -751,8 +710,8 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "attrs": [
-            
+        "repeat": false,
+        "args": [            
         ]
     },
     {
@@ -764,8 +723,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -777,8 +735,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -790,8 +747,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -803,8 +759,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -816,8 +771,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -829,8 +783,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -842,8 +795,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -855,8 +807,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -868,8 +819,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -881,8 +831,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -894,8 +843,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [            
         ]
     },
     {
@@ -907,8 +855,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -920,8 +867,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -933,8 +879,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -946,7 +891,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -959,7 +904,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -972,7 +917,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -985,7 +930,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -998,7 +943,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1011,7 +956,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1024,7 +969,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1037,7 +982,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1050,7 +995,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1063,7 +1008,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1076,7 +1021,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1089,7 +1034,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1102,7 +1047,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1115,7 +1060,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1128,7 +1073,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1141,7 +1086,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1154,7 +1099,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1167,7 +1112,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1180,7 +1125,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1193,11 +1138,11 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "attrs": [
+        "repeat": true,
+        "args": [
             {
                 "name": "Variable",
                 "desc": "Variables can refer to anything, but only numbers will be counted",
-                "type": "infinite"
             }
         ]
     },
@@ -1210,8 +1155,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
-            
+        "args": [
         ]
     },
     {
@@ -1223,11 +1167,11 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "attrs": [
+        "repeat": true,
+        "args": [
             {
                 "name": "Number",
                 "desc": "Can be a number or range of numbers",
-                "type": "infinite"
             }
         ]
     },
@@ -1240,7 +1184,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1253,7 +1197,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1266,7 +1210,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1279,7 +1223,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1292,7 +1236,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1305,7 +1249,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1318,7 +1262,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1331,7 +1275,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1344,7 +1288,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1357,7 +1301,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1370,7 +1314,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1383,7 +1327,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1396,7 +1340,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1409,7 +1353,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1422,7 +1366,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1435,7 +1379,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1448,7 +1392,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1461,7 +1405,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1474,7 +1418,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1487,7 +1431,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1500,7 +1444,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1513,7 +1457,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1526,7 +1470,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1539,7 +1483,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1552,7 +1496,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "attrs": [
+        "args": [
             
         ]
     },
@@ -1565,21 +1509,21 @@
         "inexcel": false,
         "resize": "range",
         "wizardready": true,
-        "attrs": [
+        "repeat": false,
+        "args": [
             {
-                "name": "No Of Series",
+                "name": "No. of Series",
                 "desc": "The number of data series there are",
                 "type": "variable",
                 "attr": {
                     "name": "Data series",
                     "desc": "Must be 2 wide or 2 high",
-                    "type": "finite"
                 }
             },
             {
                 "name": "Title",
                 "desc": "Title of the piechart",
-                "type": "optional"
+                "optional": true,
             }
         ]
     }
