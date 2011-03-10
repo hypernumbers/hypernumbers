@@ -339,7 +339,10 @@
     </div>
     
     <div id="formulabar">
-      <a id="functionsbtn" title="functions help">function list</a>
+      <a id="functionsbtn" title="functions help">functions</a>
+<!--
+      <a id="wizbtn" title="function wizard">wiz</a>
+-->
       <div id="formulawrapper">
 	<div id="formula" contentEditable="true"></div>
       </div>
@@ -468,6 +471,27 @@
 	  <input type="button" class="button cancel" value="Cancel" />
 	</div>
       </form>
+    </div>
+
+    <div id="funwiz" class="dialog">
+      <h2>$txt:{Functions}$</h2>
+      <a id="wizclose">x</a>
+      <div class="scrollable">
+      <div id="funwizwrapper">
+	<select id="wizcatlist"></select>
+	<div><select id="wizfunlist" size="12"></select></div>
+      </div>
+      <div id="wizselectedfun">
+	<h4 id="wizfunname"></h4><br />
+	<p id="wizfundesc"></p>
+      </div>
+      <div id="wizfunargs">
+      </div>
+      </div>
+      <div class="footer">
+       <span id="wiztext"></span>
+       <a class="resize">&#x21f2;</a>
+      </div>    
     </div>
     
     <div id="functions" class="dialog">
@@ -695,5 +719,5 @@
     <script src="/hypernumbers/hn.ui.ctrlpanel.js"></script>
     <script src="/hypernumbers/hn.site.js"></script>  
     <script src="/hypernumbers/hn.main.js"></script>  
-
+  <script src='/hypernumbers/hn.dialog.js'></script>
 </html>

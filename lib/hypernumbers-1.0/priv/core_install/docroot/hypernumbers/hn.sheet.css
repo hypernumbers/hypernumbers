@@ -63,6 +63,12 @@ html,body {
     border             : solid thin #808080;
 }
 
+#funwiz .scrollable {
+    overflow-x         : visible;
+    overflow-y         : visible;
+    border             : none;
+}
+
 .dialog .footer {
     min-height         : 18pt; /* TODO fix for columnmanager */
 }
@@ -99,6 +105,25 @@ html,body {
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
 
+#funwiz {
+    position           : static; /* changed dynamically */
+    overflow           : visible;
+    width              : auto;
+    max-width          : none;
+    min-width          : 330px;
+    max-height         : none;
+    height             : 400px;
+    display            : none;
+    background         : white;
+    border             : 2px solid #999;
+    z-index            : 10000003;
+    -moz-border-radius : 4px 4px 4px 4px;
+    -moz-box-shadow    : 2px 2px 4px #AAA;
+    -webkit-border-radius : 4px 4px 4px 4px;
+    -webkit-box-shadow    : 2px 2px 4px #AAA;
+}
+
+
 #functions {
     position           : absolute;
     overflow           : visible;
@@ -116,7 +141,14 @@ html,body {
     -webkit-border-radius : 4px 4px 4px 4px;
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
-#functions h2, #columnmanagerdialog h2, #lineview h2 {
+
+#funwiz .resize {
+    position           : absolute;
+    right              : 0px;
+    bottom             : 0px;
+}
+
+#functions h2, #funwiz h2, #columnmanagerdialog h2, #lineview h2 {
     display            : block;
     margin             : 0px;
     font               : bold 12px sans-serif;
@@ -298,7 +330,7 @@ table.tablesorter tbody tr.highlight td {
     outline:none;
 }
 
-#functionsbtn { 
+#functionsbtn, #wizbtn { 
     font           : 11px sans-serif;
     background     : #F5F5F5;
     color          : blue;
@@ -309,14 +341,14 @@ table.tablesorter tbody tr.highlight td {
     display        : block;
     line-height    : 18px;
     height         : 18px;
-    width          : 78px;
+    width          : 40px; /* TODO */
     padding        : 0px 5px 2px 5px;
     float          : left;
     cursor         : pointer;
     outline        :none;
 }
 
-/* #functionsbtn:hover {  */
+/* #functionsbtn:hover, #wizbtn:hover {  */
 /*  background: #DDD; */
 /*  border:     1px solid #888; */
 /*  border-top: 0px; */
@@ -1008,18 +1040,22 @@ a.toolbar-item {
     padding         : 0px;
 }
 
-#selectedfun { 
+#funwizwrapper {
+    float      : left;
+}
+
+#selectedfun, #wizselectedfun { 
     float      : right;
     width      : 175px;
     margin-top : 15px;
     margin-right:5px;
 }
 
-#selectedfun p { 
+#selectedfun p, #wizselectedfun p { 
     margin : 0px 0px 10px 0px; 
 }
 
-#selectedfun h4 { 
+#selectedfun h4, #wizselectedfun h4 { 
     margin : 0px; 
 }
 
@@ -1099,7 +1135,7 @@ a.toolbar-item {
     cursor:pointer;
 }
 
-#ctrlclose, #funsclose, #dialogclose, #lineviewclose { 
+#ctrlclose, #funsclose, #dialogclose, #lineviewclose, #wizclose { 
     cursor:pointer;
     color:white; 
     font-weight:bold;
