@@ -63,6 +63,12 @@ html,body {
     border             : solid thin #808080;
 }
 
+#funwiz .scrollable {
+    overflow-x         : visible;
+    overflow-y         : visible;
+    border             : none;
+}
+
 .dialog .footer {
     min-height         : 18pt; /* TODO fix for columnmanager */
 }
@@ -81,7 +87,7 @@ html,body {
     color              : #666;
 }
 
-#columnmanagerdialog, #lineview, #funwiz {
+#columnmanagerdialog, #lineview {
     position           : static; /* changed dynamically */
     overflow           : visible;
     width              : auto;
@@ -98,6 +104,25 @@ html,body {
     -webkit-border-radius : 4px 4px 4px 4px;
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
+
+#funwiz {
+    position           : static; /* changed dynamically */
+    overflow           : visible;
+    width              : auto;
+    max-width          : none;
+    min-width          : 260px;
+    max-height         : none;
+    height             : 400px;
+    display            : none;
+    background         : white;
+    border             : 2px solid #999;
+    z-index            : 10000003;
+    -moz-border-radius : 4px 4px 4px 4px;
+    -moz-box-shadow    : 2px 2px 4px #AAA;
+    -webkit-border-radius : 4px 4px 4px 4px;
+    -webkit-box-shadow    : 2px 2px 4px #AAA;
+}
+
 
 #functions {
     position           : absolute;
@@ -1015,18 +1040,22 @@ a.toolbar-item {
     padding         : 0px;
 }
 
-#selectedfun { 
+#funwizwrapper {
+    float      : left;
+}
+
+#selectedfun, #wizselectedfun { 
     float      : right;
     width      : 175px;
     margin-top : 15px;
     margin-right:5px;
 }
 
-#selectedfun p { 
+#selectedfun p, #wizselectedfun p { 
     margin : 0px 0px 10px 0px; 
 }
 
-#selectedfun h4 { 
+#selectedfun h4, #wizselectedfun h4 { 
     margin : 0px; 
 }
 
