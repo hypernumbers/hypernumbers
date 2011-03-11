@@ -75,7 +75,10 @@ read_excel(excel,FileIn,Fun)->
     excel:read_excel(ParsedDirectory, ParsedSAT, ParsedSSAT,
                      SectorSize, ShortSectorSize,
                      MinStreamSize, SubStreams, FileIn, Tables),
-    Fun(Tables);
+    Return = Fun(Tables),
+    % tidy up after yourself like a good boy!
+    ok = delete_ets(Tables),
+    Return;
 
 read_excel(_Other,_,_) ->
     {error, file_type_not_supported}.
