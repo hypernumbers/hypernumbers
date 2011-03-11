@@ -27,6 +27,7 @@ upload() ->
 upload2([]) ->
     "all uploaded...";
 upload2([H | T]) ->
+    io:format("Uploading ~p~n", [H]),
     File = hd(lists:reverse(string:tokens(H, "/"))),
     Segs = string:tokens(File, "."),
     {Segs1, _xls} = lists:split(length(Segs) - 1, Segs),
