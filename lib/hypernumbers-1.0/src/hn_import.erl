@@ -15,6 +15,7 @@
 
 -export([
          etl/4,
+         xls_file/3,
          json_file/2,
          csv_file/2,
          csv_append/2
@@ -70,7 +71,19 @@ csv_append(Url, FileName) ->
     % now write it 
     [ok = hn_db_api:append_row(X, nil, nil) || X <- Refs],
     ok.
-    
+
+xls_file(Path, FileName, SheetName) ->
+    Input = read_xls(FileName),
+    Input2 = get_namedsheet(Input, SheetName, Path),
+    write(Input2).
+
+get_namedsheet(Input, SheetName, URL) ->
+    Sh2 = excel_util:esc_tab_name(SheetName),
+    case lists:keysearch(Sh2, 1, Input) of
+        {value, {Sh2, L}} -> [{URL, L}];
+        false             -> exit('no_such_sheetname')
+    end.
+
 json_file(Url, FileName) -> 
     {ok, JsonTxt} = file:read_file(FileName),
     Ref = hn_util:url_to_refX(Url),
