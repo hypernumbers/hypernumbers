@@ -584,7 +584,7 @@ label {
 
 .hn_demopage 
 { 
-  background  : #f88017;
+  background  : #fff;
   font        : 14px Verdana,Tahoma,sans-serif;
   font-style  : italic;
   }
@@ -602,6 +602,16 @@ label {
 .hn_demointro
 { 
   padding: 5px 10px 0px 10px;
+ }
+
+.hn_demointro, .hn_demoblurb { 
+  color: #666;
+ }
+
+#hn_demobreakout { 
+                   font-size: 120%;
+                   font-weight: bold;
+                   color: #f88017;
  }
 
 #hn_spreadsheet, #hn_wikipage, #hn_webpage, .hn_preview 

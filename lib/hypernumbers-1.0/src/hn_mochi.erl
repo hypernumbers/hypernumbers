@@ -1718,7 +1718,7 @@ make_demo(Site, Path) ->
         <link rel='stylesheet' href='/hypernumbers/hn.style.css' />	
         </head>
         <body class='hn_demopage' height='100%'>
-        <div class='hn_demointro'>This demo shows how you can have different views of the same spreadsheet page. This makes it possible to build robust multiuser systems - by using different views for different people on different pages. Enter data into the spreadsheet or wiki view to see these views in action. Views are managed by the <em>Views</em> menu at the right-hand side of the spreadsheet menu bar.<br /><small>To breakout of this demo and start using hypernumbers <a href='./#tour'>click here</a></small></div>
+        <div class='hn_demointro'>This demo shows how you can have different views of the same spreadsheet page. This makes it possible to build robust multiuser systems - by using different views for different people on different pages. Enter data into the spreadsheet or wiki view to see these views in action. Views are managed by the <em>Views</em> menu at the right-hand side of the spreadsheet menu bar.<br /><span id='hn_demobreakout'>To breakout of this demo and start your one month free trial <a href='./#tour'>click here</a></span></div>
 <div class='hn_demopadding'>
 <iframe id='hn_spreadsheet' src='"++URL++"?view=spreadsheet'></iframe>
 </div>
@@ -1726,11 +1726,11 @@ make_demo(Site, Path) ->
 <table width='100%'>
 <tr>
 <td>
-<div>This is the wiki view - it is used to provide locked down data entry - one page for each person or department.</div>
+<div class='hn_demoblurb'>This is the wiki view - it is used to provide locked down data entry - one page for each person or department.</div>
 <iframe id='hn_wikipage' width='95%' src='"++URL++"?view=wikipage' /></iframe>
 </td>
 <td>
-<div>This is the webpage view - it is used to give people read-only access to analysis or results that your spreadsheet provides.</div>
+<div class='hn_demoblurb'>This is the webpage view - it is used to give people read-only access to analysis or results that your spreadsheet provides.</div>
 <iframe id='hn_webpage' width='95%' src='"++URL++"?view=webpage' /></iframe>
 </td>
 </tr>
