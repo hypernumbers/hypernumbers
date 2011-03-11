@@ -2,7 +2,9 @@
 %%% @doc Functions to handle file uploads.
 -module(hn_file_upload).
 
--export([ handle_upload/3]).
+-export([
+         handle_upload/3
+        ]).
 
 -export([test_import/0,
          test_import/2,
@@ -130,16 +132,15 @@ defaultize(M) ->
 
 
 test_import() ->
-     test_import("Management Accounts Model v17", hn_util:url_to_refX("http://hypernumbers.dev:9000")).
+     test_import("buildings.west-george-street.electricity.2011.mar.9.1800051976217.data", hn_util:url_to_refX("http://hypernumbers.dev:9000")).
     %test_import("c_year", hn_util:url_to_refX("http://hypernumbers.dev:9000")).
 
 test_import(File) ->
     test_import(File, hn_util:url_to_refX("http://hypernumbers.dev:9000/")).
 
 test_import(File, Ref) ->
-    io:format("File is ~p Ref is ~p~n", [File, Ref]),
-    Path = code:lib_dir(hypernumbers)++"/../../tests/excel_files/"
-        ++ "Win_Excel07_As_97/"++File++".xls",
+    io:format("File is ~p~nRef is ~p~n", [File, Ref]),
+    Path = "/home/gordon/hypernumbers/priv/dataupload/"++File++".xls",
     import(Path, "anonymous", Ref#refX{path=[File]}, File).
 
 import(File, User, Ref, Name) ->
