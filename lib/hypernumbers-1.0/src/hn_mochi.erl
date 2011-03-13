@@ -53,6 +53,7 @@ start() ->
 handle(MochiReq) ->
     try
         Ref = hn_util:url_to_refX(get_real_uri(MochiReq)),
+        io:format("Ref is ~p~n", [Ref]),
         Env = process_environment(MochiReq),
         Qry = process_query(Env),
         handle_(Ref, Env, Qry)
@@ -181,7 +182,7 @@ handle_resource(Ref, Qry, Env=#env{method = 'POST'}) ->
 -spec handle_static(string(), iolist(), any()) -> any(). 
 handle_static(X, Site, Env)
   when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; X == ".txt";
-X == ".ico"; X == ".json"; X == ".gif"; X == ".html"; X == ".pdf" ->
+X == ".ico"; X == ".json"; X == ".gif"; X == ".html"; X == ".htm"; X == ".pdf" ->
     Mochi = Env#env.mochi,
     "/"++RelPath = Mochi:get(path),
     Root = docroot(Site),
