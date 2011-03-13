@@ -27,6 +27,13 @@
         ]).
 
 % Move auth_srv from a dets table into the kv store
+% * git pull
+% * from the shell
+%   > hypernumbers_sup:suspend_mochi().
+% * ./hn quick
+% * from the shell
+%   > upgrade_auth_srv_2011_03_13().
+%   > hypernumbers_sup:resume_mochi().
 upgrade_auth_srv_2011_03_13() ->
     Sites = hn_setup:get_sites(),
     Fun = fun(Site) ->
