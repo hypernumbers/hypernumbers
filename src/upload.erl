@@ -18,7 +18,7 @@
         ]).
 
 upload() ->
-    Dir = "/home/gordon/hypernumbers/priv/dataupload/",
+    Dir = "/hn/hypernumbers/priv/dataupload/",
     Files = filelib:wildcard(Dir ++ "/*.xls"),
     io:format("There are ~p files~n", [length(Files)]),
     io:format("An example is ~p~n", [hd(Files)]),
@@ -41,9 +41,19 @@ upload2([H | T]) ->
     end,
     hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
     N1 = util2:get_timestamp(),
-    Memory = erlang:memory(total),
-    log(io_lib:format("~p\t~p", [N1, Memory])),
-    %garbage_collect(),
+    Memory = erlang:memory(),
+    {value, {total, Total}} = lists:keysearch(total, 1, Memory),
+    {value, {processes, Processes}} = lists:keysearch(processes, 1, Memory),
+    {value, {processes_used, Proc_U}} = lists:keysearch(processes_used, 1, Memory),
+    {value, {system, System}} = lists:keysearch(system, 1, Memory),
+    {value, {atom, Atom}} = lists:keysearch(atom, 1, Memory),
+    {value, {atom_used, Atom_U}} = lists:keysearch(atom_used, 1, Memory),
+    {value, {binary, Binary}} = lists:keysearch(binary, 1, Memory),
+    {value, {code, Code}} = lists:keysearch(code, 1, Memory),
+    {value, {ets, Ets}} = lists:keysearch(ets, 1, Memory),
+    log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p", 
+       [N1, Total, Processes, Proc_U, System, Atom, Atom_U, Binary, Code, Ets])),
+    garbage_collect(),
     upload2(T).
 
 make_paths([], _, Acc) -> lists:reverse(Acc);
@@ -60,7 +70,7 @@ upload3([Template | T1], [Path | T2]) ->
     upload3(T1, T2).
 
 log(String) ->
-    log(String, "../logs/load_logs.txt").
+    log(String, "../logs/memory_logs.txt").
 
 log(String, File) ->
     _Return=filelib:ensure_dir(File),
