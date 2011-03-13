@@ -40,8 +40,9 @@ upload2([H | T]) ->
         Temp -> hn_templates:load_template(RefX, Temp)
     end,
     hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
+    N1 = util2:get_timestamp(),
     Memory = erlang:memory(total),
-    log(io_lib:format("~p", [Memory])),
+    log(io_lib:format("~p\t~p", [N1, Memory])),
     %garbage_collect(),
     upload2(T).
 
