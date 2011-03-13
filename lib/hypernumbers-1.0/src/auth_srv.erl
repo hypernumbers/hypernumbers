@@ -5,9 +5,10 @@
 -behaviour(gen_server).
 
 -include("spriki.hrl").
+-include("keyvalues.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
-%% API 
+%% API
 -export([start_link/1, stop/1]).
 
 -export([
@@ -50,7 +51,6 @@
                groups = ordsets:new() :: list() }).
 
 -record(state, {site :: string(),
-                table :: string(),
                 tree :: gb_tree() }).
 
 %%%===================================================================
@@ -70,15 +70,15 @@ stop(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:cast(Id, stop).
 
--spec check_get_view(string(), [string()], uid()) 
+-spec check_get_view(string(), [string()], uid())
                     -> {view, string()} | not_found | denied.
-check_get_view(Site, Path, Uid) -> 
+check_get_view(Site, Path, Uid) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {check_get_view, Path, Uid}).
 
--spec check_get_challenger(string(), [string()], uid()) 
+-spec check_get_challenger(string(), [string()], uid())
                           -> {view, string()} | not_found | denied.
-check_get_challenger(Site, Path, Uid) -> 
+check_get_challenger(Site, Path, Uid) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {check_get_challenger, Path, Uid}).
 
@@ -92,11 +92,11 @@ check_particular_view(Site, Path, Uid, View) ->
 get_any_view(Site, Path, Uid) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     case gen_server:call(Id, {get_views, Path, Uid}) of
-        [V|_] -> {view, V}; 
+        [V|_] -> {view, V};
         _     -> denied
     end.
 
--spec get_views(string(), [string()], uid()) -> [string()]. 
+-spec get_views(string(), [string()], uid()) -> [string()].
 get_views(Site, Path, Uid) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {get_views, Path, Uid}).
@@ -110,29 +110,29 @@ add_view(Site, Path, AuthSpec, View) ->
 -spec set_view(string(), [string()], auth_spec(), string()) -> ok.
 set_view(Site, Path, AuthSpec, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {set_view, Path, AuthSpec, View}).    
+    gen_server:call(Id, {set_view, Path, AuthSpec, View}).
 
--spec set_champion(string(), [string()], string()) -> ok. 
+-spec set_champion(string(), [string()], string()) -> ok.
 set_champion(Site, Path, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {set_champion, Path, View}).
 
--spec set_challenger(string(), [string()], string()) -> ok. 
+-spec set_challenger(string(), [string()], string()) -> ok.
 set_challenger(Site, Path, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {set_challenger, Path, View}).
 
--spec remove_views(string(), [string()], [string()]) -> ok. 
+-spec remove_views(string(), [string()], [string()]) -> ok.
 remove_views(Site, Path, Views) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {rem_views, Path, Views}).
 
--spec get_as_json(string(), [string()]) -> any(). 
+-spec get_as_json(string(), [string()]) -> any().
 get_as_json(Site, Path) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {get_as_json, Path}).
 
--spec clear_all_perms_DEBUG(string()) -> ok. 
+-spec clear_all_perms_DEBUG(string()) -> ok.
 clear_all_perms_DEBUG(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, clear_all_perms).
@@ -142,7 +142,7 @@ dump_script(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, dump_script).
 
--spec load_script(string(), [any()]) -> ok. 
+-spec load_script(string(), [any()]) -> ok.
 load_script(Site, Terms) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
     gen_server:call(Id, {load_script, Terms}).
@@ -163,12 +163,8 @@ load_script(Site, Terms) ->
 %% @end
 %%--------------------------------------------------------------------
 init([Site]) ->
-    Table = hn_util:site_to_fs(Site),
-    Dir = filename:join([code:lib_dir(hypernumbers), "..", "..",
-                         "var", "dets"]),
-    Tree = load_tree(Dir, Table),
+    Tree = load_tree(Site),
     {ok, #state{site = Site,
-                table = Table,
                 tree = Tree}}.
 
 %%--------------------------------------------------------------------
@@ -189,7 +185,7 @@ handle_call(stop, _From, State) ->
     {stop, normal, State};
 
 handle_call(Request, _From, State) ->
-    #state{tree = Tr, table = Table, site = Site} = State,
+    #state{tree = Tr, site = Site} = State,
     Return1 = case Request of
                   {check_get_view, P, U} ->
                       {check_get_view1(Site, Tr, P, U, champion), false};
@@ -221,7 +217,7 @@ handle_call(Request, _From, State) ->
               end,
     case Return1 of
         {NewTree, true} ->
-            ok = save_tree(Table, NewTree),
+            ok = save_tree(Site, NewTree),
             {reply, ok, State#state{tree = NewTree}};
         {Reply, _} ->
             {reply, Reply, State}
@@ -264,8 +260,9 @@ handle_info(_Info, State) ->
 %% @spec terminate(Reason, State) -> void()
 %% @end
 %%--------------------------------------------------------------------
-terminate(_Reason, #state{table = Tbl}) ->
-    dets:close(Tbl).
+terminate(_Reason, _State) ->
+    % should this save the tree again? probably
+    ok.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -276,7 +273,9 @@ terminate(_Reason, #state{table = Tbl}) ->
 %% @end
 %%--------------------------------------------------------------------
 code_change(_OldVsn, State, _Extra) ->
-    {ok, State}.
+    Site = State#state.site,
+    Tree = State#state.tree,
+    {ok, #state{site=Site, tree=Tree}}.
 
 %%%===================================================================
 %%% Internal functions
@@ -328,7 +327,7 @@ set_default2(challenger, V, C) -> C#control{challenger = V}.
 
 remove_views1(Tree, Path, DelViews) ->
     Fun = fun(C) ->
-                  Views2 = lists:foldl(fun(V, Acc) -> 
+                  Views2 = lists:foldl(fun(V, Acc) ->
                                                gb_trees:delete_any(V, Acc)
                                        end,
                                        C#control.views,
@@ -339,17 +338,17 @@ remove_views1(Tree, Path, DelViews) ->
           end,
     alter_tree(Tree, Path, Fun).
 
-rem_champion([], C) -> C; 
-rem_champion([V | _Vs], C=#control{champion=V}) -> 
+rem_champion([], C) -> C;
+rem_champion([V | _Vs], C=#control{champion=V}) ->
     C#control{champion = []};
 rem_champion([_V | Vs], C) -> rem_champion(Vs, C).
 
-rem_challenger([], C) -> C; 
-rem_challenger([V | _Vs], C=#control{challenger=V}) -> 
+rem_challenger([], C) -> C;
+rem_challenger([V | _Vs], C=#control{challenger=V}) ->
     C#control{challenger = []};
 rem_challenger([_V | Vs], C) -> rem_challenger(Vs, C).
 
--spec apply_authspec(#view{}, auth_spec()) -> #view{}. 
+-spec apply_authspec(#view{}, auth_spec()) -> #view{}.
 apply_authspec(V, []) -> V;
 apply_authspec(V, [everyone | Rest]) ->
     V2 = V#view{everyone = true},
@@ -394,33 +393,29 @@ get_particular_view(C, Site, Uid, V) ->
     end.
 
 -spec can_view(string(), uid(), #view{}) -> boolean().
-can_view(_Site, _Uid, #view{everyone = true}) -> 
-    true; 
-can_view(Site, Uid, #view{groups = Groups}) -> 
+can_view(_Site, _Uid, #view{everyone = true}) ->
+    true;
+can_view(Site, Uid, #view{groups = Groups}) ->
     hn_groups:is_member(Uid, Site, ordsets:to_list(Groups)).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Tree Manipulations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec load_tree(string(), string()) -> gb_tree().
-load_tree(Dir, Table) ->
-    filelib:ensure_dir([Dir,"/"]),
-    {ok, _} = dets:open_file(Table, [{file, filename:join(Dir,Table)}]),
-    %% if the value of auth_tree is an empty list,
-    %% create an empty tree and fire it in..
-    case dets:lookup(Table, ?KEY) of
-        []            -> gb_trees:empty();
-        [{?KEY, Val}] -> Val
+-spec load_tree(string()) -> gb_tree().
+load_tree(Site) ->
+    case hn_db_api:read_kv(Site, ?auth_srv) of
+        []                          -> gb_trees:empty();
+        [{kvstore, ?auth_srv, Val}] -> Val
     end.
 
 %% Todo: This really shouldn't be Dets.
 -spec save_tree(string(), gb_tree()) -> ok.
-save_tree(Table, NewTree) ->
-    ok = dets:insert(Table, {?KEY, NewTree}).
+save_tree(Site, NewTree) ->
+    ok = hn_db_api:write_kv(Site, ?auth_srv, NewTree).
 
--spec alter_tree(gb_tree(), 
-                 [string()], 
+-spec alter_tree(gb_tree(),
+                 [string()],
                  fun((#control{}) -> #control{})) -> gb_tree().
 alter_tree(Tree, [], Fun) ->
     case gb_trees:lookup(control, Tree) of
@@ -452,8 +447,8 @@ run_ctl(Tree, Path, Fun) ->
     CtlNorm = seek_ctl_normal(Path, Tree),
     CtlWild = seek_ctl_wild(Path, Tree, none),
     Fun(merge_ctl(CtlNorm, CtlWild)).
-                
--spec seek_ctl_normal([string()], gb_tree()) -> none | #control{}. 
+
+-spec seek_ctl_normal([string()], gb_tree()) -> none | #control{}.
 seek_ctl_normal([], Tree) ->
     get_control(Tree);
 seek_ctl_normal([W="[*]" | Rest], Tree) ->
@@ -467,21 +462,21 @@ seek_ctl_normal([H | Rest], Tree) ->
         {value, Tree2} -> seek_ctl_normal(Rest, Tree2)
     end.
 
--spec seek_ctl_wild([string()], gb_tree(), none | #control{}) 
-                   -> none | #control{}. 
+-spec seek_ctl_wild([string()], gb_tree(), none | #control{})
+                   -> none | #control{}.
 seek_ctl_wild([], _Tree, AccCtl) ->
     AccCtl;
 seek_ctl_wild([H | Rest], Tree, AccCtl) ->
     case gb_trees:lookup({seg, "[**]"}, Tree) of
-        none -> 
+        none ->
             case gb_trees:lookup({seg, H}, Tree) of
                 none -> AccCtl;
                 {value, Tree2} -> seek_ctl_wild(Rest, Tree2, AccCtl)
             end;
-        {value, TreeWild} -> 
+        {value, TreeWild} ->
             AccCtl2 = merge_ctl(get_control(TreeWild), AccCtl),
             case gb_trees:lookup({seg, H}, Tree) of
-                none -> AccCtl2; 
+                none -> AccCtl2;
                 {value, Tree2} -> seek_ctl_wild(Rest, Tree2, AccCtl2)
             end
     end.
@@ -490,8 +485,8 @@ seek_ctl_wild([H | Rest], Tree, AccCtl) ->
 %% controls, the normal should be on the left. Futhermore, when
 %% munching down the wild tree, deeper controls should be left
 %% favored.
--spec merge_ctl(none | #control{}, none | #control{}) -> #control{}. 
-merge_ctl(none, none) -> #control{}; 
+-spec merge_ctl(none | #control{}, none | #control{}) -> #control{}.
+merge_ctl(none, none) -> #control{};
 merge_ctl(C, none) -> C;
 merge_ctl(none, C) -> C;
 merge_ctl(C1, C2) ->
@@ -517,10 +512,10 @@ add_to_views({V, NewView}, Views) ->
                            groups = Groups},
             gb_trees:enter(V, Merged, Views)
     end.
-                
-merge_left([], C) -> C; 
+
+merge_left([], C) -> C;
 merge_left(C, _) -> C.
-    
+
 -spec get_control(gb_tree()) -> none | #control{}.
 get_control(Tree) ->
     case gb_trees:lookup(control, Tree) of
@@ -540,7 +535,7 @@ get_as_json1(Tree, Path) ->
 
 ctl_to_json(C) ->
     ViewIter = gb_trees:iterator(C#control.views),
-    Views = {struct, view_to_json(gb_trees:next(ViewIter))},    
+    Views = {struct, view_to_json(gb_trees:next(ViewIter))},
     {struct, [{"champion", C#control.champion},
               {"challenger", {array, C#control.challenger}},
               {"views", Views}]}.
@@ -577,7 +572,7 @@ dump_script1(Tree) ->
     List = lists:flatten(dump_tree(gb_trees:next(Iter), [])),
     make_script_terms(List, []).
 
-make_script_terms([], Acc) -> 
+make_script_terms([], Acc) ->
     FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
     lists:flatten([FirstLine | lists:reverse(Acc)]);
 make_script_terms([H | T], Acc) ->
@@ -680,7 +675,7 @@ testA8({S, P}) ->
     Tree4 = remove_views1(Tree3, P, ["another view"]),
     Ret = check_get_view1(S, Tree4, P, "bob", champion),
     %% no permission to see 'champion'... it's gone.
-    ?assertEqual(not_found, Ret). 
+    ?assertEqual(not_found, Ret).
 
 %% Remove views by replacing
 testA9({S, P}) ->
@@ -691,7 +686,7 @@ testA9({S, P}) ->
     Ret1 = check_get_view1(S, Tree4, P, "alice", champion),
     Ret2 = check_get_view1(S, Tree4, P, "sysop", champion),
     ?assertEqual(denied, Ret1),
-    ?assertEqual({view, "another view"}, Ret2). 
+    ?assertEqual({view, "another view"}, Ret2).
 
 
 testA10({S, P}) ->
@@ -875,7 +870,7 @@ testE2(_S) ->
     Tree3 = add_view1(Tree2, P3, ["admin"], "bingo"),
     FinalTree = set_default(Tree3, P1, "a view", champion),
 
-    % Test starts here 
+    % Test starts here
     Iter1 = gb_trees:iterator(FinalTree),
     Terms = lists:flatten(dump_tree(gb_trees:next(Iter1), [])),
     %% now see if round trips work.
@@ -883,15 +878,15 @@ testE2(_S) ->
     Iter2 = gb_trees:iterator(FinalTree),
     Terms = lists:flatten(dump_tree(gb_trees:next(Iter2), [])).
 
-unit_test_() -> 
+unit_test_() ->
     Site = "http://example.com:1234",
     Setup = fun() ->
                     hn_db_admin:create_table(hn_db_wu:trans(Site, group),
                                              group,
                                              record_info(fields, group),
-                                             ram_copies, 
-                                             set, 
-                                             true, 
+                                             ram_copies,
+                                             set,
+                                             true,
                                              []),
                     hn_groups:create_group(Site, "admin"),
                     hn_groups:create_group(Site, "user"),
@@ -917,14 +912,14 @@ unit_test_() ->
                fun testA9/1,
                fun testA10/1,
                fun testA12/1,
-               fun testA14/1, 
+               fun testA14/1,
                fun testA15/1,
                fun testA16/1
               ],
 
     SeriesC = [
                fun testC/1
-              ], 
+              ],
 
     SeriesD = [
                fun testD1/1,
@@ -942,7 +937,7 @@ unit_test_() ->
                fun testE2/1
               ],
 
-    {setup, Setup, Cleanup, 
+    {setup, Setup, Cleanup,
      [{with, {Site, []}, SeriesA},
       {with, {Site, ["some", "longer", "path"]}, SeriesA},
       {with, Site, SeriesC},
