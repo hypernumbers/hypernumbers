@@ -26,7 +26,7 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--define(SERVER, ?MODULE). 
+-define(SERVER, ?MODULE).
 
 -record(state, {site, pages = []}).
 
@@ -58,7 +58,7 @@ does_page_exist(Site, Path) ->
 %%--------------------------------------------------------------------
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_pages"),
-    gen_server:start_link({local, Id}, ?MODULE, [Site], []).
+    gen_server:start_link({global, Id}, ?MODULE, [Site], []).
 
 %%%===================================================================
 %%% gen_server callbacks

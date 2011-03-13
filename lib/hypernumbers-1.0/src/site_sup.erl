@@ -17,7 +17,7 @@
 %%--------------------------------------------------------------------
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_sup"),
-    supervisor:start_link({local, Id}, ?MODULE, [Site]).
+    supervisor:start_link({global, Id}, ?MODULE, [Site]).
 
 %%====================================================================
 %% Supervisor callbacks
@@ -26,47 +26,47 @@ start_link(Site) ->
 %% Func: init(Args) -> {ok,  {SupFlags,  [ChildSpec]}} |
 %%                     ignore                          |
 %%                     {error, Reason}
-%% Description: Whenever a supervisor is started using 
-%% supervisor:start_link/[2,3], this function is called by the new process 
-%% to find out about restart strategy, maximum restart frequency and child 
+%% Description: Whenever a supervisor is started using
+%% supervisor:start_link/[2,3], this function is called by the new process
+%% to find out about restart strategy, maximum restart frequency and child
 %% specifications.
 %%--------------------------------------------------------------------
 init([Site]) ->
 
     {ok, { {one_for_one,1,10},
-           [ {dbsrv, 
+           [ {dbsrv,
               {dbsrv, start_link, [Site]},
               permanent,
-              infinity, 
-              supervisor, 
+              infinity,
+              supervisor,
               [dbsrv]},
 
-             {remoting_reg, 
+             {remoting_reg,
               {remoting_reg, start_link, [Site]},
-              permanent, 
-              2000, 
-              worker, 
+              permanent,
+              2000,
+              worker,
               [remoting_reg]},
 
-             {auth_srv, 
+             {auth_srv,
               {auth_srv, start_link, [Site]},
-              permanent, 
-              2000, 
-              worker, 
+              permanent,
+              2000,
+              worker,
               [auth_srv]},
-             
-             {zinf_srv, 
+
+             {zinf_srv,
               {zinf_srv, start_link, [Site]},
-              permanent, 
-              2000, 
-              worker, 
+              permanent,
+              2000,
+              worker,
               [zinf_srv]},
 
-             {page_srv, 
+             {page_srv,
               {page_srv, start_link, [Site]},
-              permanent, 
-              2000, 
-              worker, 
+              permanent,
+              2000,
+              worker,
               [page_srv]}
 
             ]

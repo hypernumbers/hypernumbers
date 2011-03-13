@@ -64,7 +64,7 @@
 -spec start_link(string()) -> {ok, pid()} | ignore | {error, any()}.
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:start_link({local, Id}, ?MODULE, [Site], []).
+    gen_server:start_link({global, Id}, ?MODULE, [Site], []).
 
 stop(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),

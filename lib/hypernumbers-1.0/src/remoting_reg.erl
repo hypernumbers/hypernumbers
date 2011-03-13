@@ -12,7 +12,7 @@
          start_link/1,
          init/1,
          handle_call/3,
-         handle_cast/2, 
+         handle_cast/2,
          handle_info/2,
          terminate/2,
          code_change/3
@@ -24,7 +24,7 @@
          notify_delete/3,
          notify_delete_attrs/4,
          notify_style/3,
-         notify_error/5, 
+         notify_error/5,
          request_update/4,
          notify_refresh/2,
          timestamp/0
@@ -36,7 +36,7 @@
 
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:start_link({local, Id}, ?MODULE, [], []).
+    gen_server:start_link({global, Id}, ?MODULE, [], []).
 
 init([]) ->
     {ok, {[], []}}.
@@ -54,7 +54,7 @@ handle_cast({msg, Site, Path, Msg}, {Updates, Waiting}) ->
     {noreply, send_to_waiting(NUpdates, Waiting)};
 %% @doc  Handle incoming request for updates
 handle_cast({fetch, Site, Path, Time, Pid}, {Updates, Waiting}) ->
-    NWaiting = [{Site, Path, Time, Pid} | Waiting], 
+    NWaiting = [{Site, Path, Time, Pid} | Waiting],
     {noreply, send_queued(Updates, NWaiting)};
 handle_cast(_Msg, State) ->
     error_logger:error_msg("Invalid Cast in remoting_reg ~p", [_Msg]),
@@ -76,14 +76,14 @@ request_update(Site, Path, Time, Pid) ->
 notify_site(Site) ->
     Msg = {struct, [{"type", "site_refresh"}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, ["/"], Msg}).    
+    gen_server:cast(Id, {msg, Site, ["/"], Msg}).
 
 %% @doc  Notify server of full page refresh
 notify_refresh(Site, Path) ->
     Msg = {struct, [{"type", "refresh"},
                     {"path", hn_util:list_to_path(Path)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}). 
+    gen_server:cast(Id, {msg, Site, Path, Msg}).
 
 %% @doc  Notify server of change to a cell
 notify_change(Site, Path, {RefType, _} = R, Attrs) ->
@@ -93,10 +93,10 @@ notify_change(Site, Path, {RefType, _} = R, Attrs) ->
     Msg = {struct, [{"type", "change"},
                     {"reftype", RefType},
                     {"path", hn_util:list_to_path(Path)},
-                    {"ref", hn_util:obj_to_change_msg(R)}, 
+                    {"ref", hn_util:obj_to_change_msg(R)},
                     {"attrs", {struct, Attrs2}}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}). 
+    gen_server:cast(Id, {msg, Site, Path, Msg}).
 
 notify_delete_attrs(Site, Path, {RefType, _} = R, Attrs) ->
     Msg = {struct, [{"type", "delete_attrs"},
@@ -105,15 +105,15 @@ notify_delete_attrs(Site, Path, {RefType, _} = R, Attrs) ->
                     {"ref", hn_util:obj_to_change_msg(R)},
                     {"attrs", {struct, [{X, ""} || X <- Attrs]}}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}). 
-                    
+    gen_server:cast(Id, {msg, Site, Path, Msg}).
+
 notify_delete(Site, Path, {RefType, _} = R) ->
     Msg = {struct, [{"type", "delete"},
                     {"reftype", RefType},
                     {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_change_msg(R)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}). 
+    gen_server:cast(Id, {msg, Site, Path, Msg}).
 
 %% @doc  Notify server of a new style
 notify_style(Site, Path, Style) ->
@@ -123,17 +123,17 @@ notify_style(Site, Path, Style) ->
                     {"index", Key},
                     {"css", CSS}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}). 
+    gen_server:cast(Id, {msg, Site, Path, Msg}).
 
 %% @doc  Notify server of an error to a cell
 notify_error(Site, Path, Ref, error_in_formula, Value) ->
     Msg = {struct, [{"type", "error"},
                     {"reftype", "cell"},
-                    {"ref", hn_util:obj_to_change_msg(Ref)}, 
+                    {"ref", hn_util:obj_to_change_msg(Ref)},
                     {"original", Value},
                     {"path", hn_util:list_to_path(Path)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}). 
+    gen_server:cast(Id, {msg, Site, Path, Msg}).
 
 %%
 %% Internal Functions
@@ -141,44 +141,44 @@ notify_error(Site, Path, Ref, error_in_formula, Value) ->
 
 %% @doc  Send an update to the comet server to forward to client
 send_to_server(Server, Time, Msgs) ->
-    Server ! {msg, {struct, [{"time", Time}, 
+    Server ! {msg, {struct, [{"time", Time},
                              {"msgs", {array, lists:reverse(Msgs)}}]}}.
 
 %% @doc  When a client requests data, send any message that are older
 %%       than the time the client reports (and on the same site)
 send_queued(Updates, Waiting) ->
-    
-    [{_Site, Path, Time, Pid} | OldWaiting ] = Waiting, 
+
+    [{_Site, Path, Time, Pid} | OldWaiting ] = Waiting,
 
     F = fun({msg, _Site1, Path1, Msg, Time1}) ->
-                Time < Time1 
+                Time < Time1
                     andalso (is_site(Msg) orelse has_path(Path1, Path))
         end,
-    
-    {Match, _Else} = lists:partition(F, Updates), 
-    
-    Wait = case Match of 
+
+    {Match, _Else} = lists:partition(F, Updates),
+
+    Wait = case Match of
                []   -> Waiting;
-               List -> 
+               List ->
                    send_to_server(Pid, timestamp(),
                                   [ Msg || {msg, _, _, Msg, _} <- List ]),
                    OldWaiting
            end,
     {expire_updates(Updates), Wait}.
 
-%% @doc  When an update is received, automatically send the update to 
+%% @doc  When an update is received, automatically send the update to
 %%       any clients waiting on the same page
 send_to_waiting(Updates, Waiting) ->
-    
+
     [{msg, _MsgSite, MsgPath, Msg, Time}  | _Rest ] = Updates,
-        
+
     F = case is_site(Msg) of
             true  -> fun(_) -> true end;
             false -> fun({_Site, SrvPath, _Time, _Pid}) ->
                              has_path(MsgPath, SrvPath)
                      end
-        end,              
-    
+        end,
+
     {Match, Rest} = lists:partition(F, Waiting),
     [ send_to_server(Pid, Time, [Msg]) || {_S, _P, _T, Pid} <- Match ],
     {expire_updates(Updates), Rest}.
@@ -198,7 +198,7 @@ timestamp() ->
     microsecs(erlang:now()).
 
 microsecs({MegaSecs,Secs,MicroSecs}) ->
-    (MegaSecs * 1000000 + Secs) * 1000000 + MicroSecs. 
+    (MegaSecs * 1000000 + Secs) * 1000000 + MicroSecs.
 
 %% Expires any messages older than one minute
 expire_updates(Old) ->
@@ -220,14 +220,14 @@ unit_test_() ->
       fun test_multiple_update/0,
       fun test_basic_waiting/0,
       fun test_multiple_waiting/0]}.
-    
+
 run_changes() ->
     notify_change(?SITE, [], {cell, {1,1}}, [{"value", 99}]),
     notify_change(?SITE, ["test"], {cell, {1,1}}, [{"value", 88}]),
     notify_change(?SITE, [], {cell, {1,1}}, [{"value", 77}]).
 
 get_changes(Path, Time) ->
-    request_update(?SITE, Path, Time, self()),    
+    request_update(?SITE, Path, Time, self()),
     receive
         {msg, {struct, [{"time", TStamp}, {"msgs", {array, Msgs}}]}} ->
             {TStamp, Msgs}
@@ -245,16 +245,16 @@ test_multiple_update() ->
     Time = timestamp(),
     run_changes(),
     {_, Msgs} = get_changes([[], ["test"]], Time),
-    ?assertEqual(3, length(Msgs)). 
+    ?assertEqual(3, length(Msgs)).
 
 test_basic_waiting() ->
-    spawn( fun() -> timer:sleep(100), run_changes() end ), 
+    spawn( fun() -> timer:sleep(100), run_changes() end ),
     {Time, Changes1} = get_changes([[]], timestamp()),
     {_, Changes2} = get_changes([[]], Time),
     ?assertEqual(2, length(Changes1) + length(Changes2)).
 
 test_multiple_waiting() ->
-    spawn( fun() -> timer:sleep(100), run_changes() end ), 
+    spawn( fun() -> timer:sleep(100), run_changes() end ),
     {Time, Changes1} = get_changes([[], ["test"]], timestamp()),
     {_, Changes2} = get_changes([[], ["test"]], Time),
     ?assertEqual(3, length(Changes1) + length(Changes2)).
