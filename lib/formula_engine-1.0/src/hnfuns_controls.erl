@@ -40,9 +40,9 @@
             Pay2 = {struct, [{postcreatepages, {array, Payload}}]},
             Json = mochijson:encode(Pay2),
             Html = lists:flatten("<input id='" ++ Id ++ "' type='submit' "
-                                 ++ "class='hn-webcontrol' value='"++ Title
-                                 ++ "' data-payload='" ++ Json ++ "' "
-                         ++ "' data-action='postcreatepages'"
+                                 ++ "class='hn-webcontrol' value='"
+                                 ++ Title ++ "' data-payload='" ++ Json ++ "' "
+                                 ++ "' data-action='postcreatepages'"
                                  ++ "data-origin='" ++ Origin ++ "' />"),
             % we stash the record set as the form definition and when the POST
             % comes in from the button we will translate it back into a record format

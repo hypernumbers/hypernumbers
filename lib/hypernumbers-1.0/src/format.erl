@@ -116,7 +116,7 @@ get_src2(Format)->
 %%                                                                           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 format_num(X,Format)->
-    {NewFormat,InsertList}=make_num_format(Format),
+    {NewFormat,InsertList} = make_num_format(Format),
     X2=case is_percentage(Format) of
            true  -> X * 100;
            false -> X
@@ -133,7 +133,8 @@ format_num(X,Format)->
     NewFmtLen=string:len(strip_commas(NewFormat)),
     NumLen=string:len(Number),
     NewInsertList=if
-                      (NumLen > NewFmtLen) -> fix_insert_list(InsertList,NumLen,NewFmtLen);
+                      (NumLen > NewFmtLen) -> fix_insert_list(InsertList,
+                                                              NumLen, NewFmtLen);
                       true                 -> InsertList
                   end,
     % insert needs to know if there are commas in the output
@@ -143,7 +144,8 @@ format_num(X,Format)->
         _Other -> insert(Number,NewInsertList,commas)
     end.
 
-fix_insert_list(InsertList,NumLen,FmtLen) -> fix_insert_list(InsertList,NumLen,FmtLen,[]).
+fix_insert_list(InsertList,NumLen,FmtLen) ->
+    fix_insert_list(InsertList,NumLen,FmtLen,[]).
 
 fix_insert_list([],_NumLen,_FmtLen,Acc)         -> lists:reverse(Acc);
 fix_insert_list([{N,Bits}|T],NumLen,FmtLen,Acc) ->
@@ -233,6 +235,10 @@ make_num_format([Other|Rest],NewF,AccIL) ->
 
 print_num(_Output,[])    -> [];
 print_num(Output,Format) ->
+    {Sign, Output2} = if 
+                          Output < 0  -> {negative, abs(Output)};
+                          Output >= 0 -> {positive, Output}
+                      end,
     % First up sort out the format
     Split=string:tokens(Format,"."),
     {IntFormat,DecFormat} = case Split of
@@ -241,24 +247,28 @@ print_num(Output,Format) ->
                             end,
     % Now prepare the output
     % Now round the output before formatting it
-    Output2=round(Output,get_len(DecFormat)),
-    Output3=make_list(Output2),
-    Split2=string:tokens(Output3,"."),
+    Output3=round(Output2,get_len(DecFormat)),
+    Output4=make_list(Output3),
+    Split2=string:tokens(Output4,"."),
     {Integers,Decimals} = case Split2 of
                               [A2,B2] -> {A2,B2};
                               [A2]    -> {A2,null}
                           end,
-    get_num_output(Integers,IntFormat,Decimals,DecFormat).
+    get_num_output(Sign, Integers,IntFormat,Decimals,DecFormat).
 
 % this function gets the actual formatted number PRIOR to interpolation
 % of any additional strings stuff or other components...
-get_num_output(Integers,IntFormat,Decimals,DecFormat)->
+get_num_output(Sign, Integers,IntFormat,Decimals,DecFormat)->
     {ok,Has_Exp}=has(exponent,DecFormat),
-    case Has_Exp of
+    Num = case Has_Exp of
         false -> A=get_num_output1(Integers,IntFormat),
                  B=get_num_output2(Decimals,DecFormat),
                  A++B;
         true  -> get_num_exp(Integers,IntFormat,Decimals,DecFormat)
+    end,
+    case Sign of
+        negative -> "-"++Num;
+        positive -> Num
     end.
 
 get_num_output1(Integers,IntFormat)->

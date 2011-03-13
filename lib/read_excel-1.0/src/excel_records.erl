@@ -100,7 +100,7 @@ parse_rec(?FONT, Bin, _Name, _Tbl) ->
     % 
     % THIS WILL WIG OUT IF EXCEL SETS WEIGHTS OTHER THAN BOLD AND NORMAL
     % BUT HEY!
-    % 
+    %
     FontWeightCSS = case FontWeight of
                         400 -> []; % normal
                         700 -> [{'font-weight',["bold"]}]
@@ -143,7 +143,9 @@ parse_rec(?FONT, Bin, _Name, _Tbl) ->
                          ?rc_FONT_FAMILY_SWISS      -> ["sans-serif"];
                          ?rc_FONT_FAMILY_MODERN     -> ["monospace"];
                          ?rc_FONT_FAMILY_SCRIPT     -> ["cursive"];
-                         ?rc_FONT_FAMILY_DECORATIVE -> []
+                         ?rc_FONT_FAMILY_DECORATIVE -> [];
+                         _                          -> []
+                     
                      end,
     
     FontNameCSSBits = excel_util:get_utf8(excel_util:parse_CRS_Uni16(FontName)),
@@ -483,7 +485,6 @@ parse_rec(?SHRFMLA, Bin, Name, _Tbl) ->
                              {tokenarrays, TokArr}]};
 
 parse_rec(Other, _Bin, _Name, _Tbl) ->
-    
     {Id, Msg} = case lists:member(Other, not_processed()) of
                     true  -> {Other, "not being processed"};
                     false -> {{"undocumented record type",Other},

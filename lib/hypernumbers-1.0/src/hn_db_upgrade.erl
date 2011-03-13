@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         upgrade_auth_srv_2011_03_13/0,
          upgrade_loc_obj_2011_03_01/0,
          upgrade_row_col_2011_02_04/0,
          upgrade_local_obj_2011_01_26/0,
@@ -24,6 +25,35 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+% Move auth_srv from a dets table into the kv store
+% * git pull
+% * from the shell
+%   > hypernumbers_sup:suspend_mochi().
+% * ./hn quick
+% * from the shell
+%   > upgrade_auth_srv_2011_03_13().
+%   > hypernumbers_sup:resume_mochi().
+upgrade_auth_srv_2011_03_13() ->
+    Sites = hn_setup:get_sites(),
+    Fun = fun(Site) ->
+                    % Load stuff out of the dets table
+                    Table = hn_util:site_to_fs(Site),
+                    Dir = filename:join([code:lib_dir(hypernumbers), "..", "..",
+                           "var", "dets"]),
+                    filelib:ensure_dir([Dir,"/"]),
+                    {ok, _} = dets:open_file(Table, [{file, filename:join(Dir,Table)}]),
+                    Tree = case dets:lookup(Table, "auth_tree") of
+                                []                   -> gb_trees:empty();
+                                [{"auth_tree", Val}] -> Val
+                            end,
+                    % save it into the kv table
+                    ok = hn_db_api:write_kv(Site, ?auth_srv, Tree),
+                    ok = dets:close(Table)
+          end,
+    lists:foreach(Fun, Sites),
+    ok.
+
 
 % speed increases for local_obj table
 upgrade_loc_obj_2011_03_01() ->
@@ -101,7 +131,7 @@ upgrade_local_obj_2011_01_26() ->
            end,
     lists:foreach(Fun1, Sites),
     ok.
-    
+
 % populates the new pages server
 upgrade_pages_2011_01_26() ->
     Sites = hn_setup:get_sites(),
@@ -118,7 +148,7 @@ upgrade_pages_2011_01_26() ->
                    io:format("Ret is ~p~n", [Ret]),
                    io:format("Page is ~p~n", [?pages]),
                    ok = hn_db_api:write_kv(Site, ?pages, Ret)
-           end,                        
+           end,
     lists:foreach(Fun1, Sites),
     ok.
 
@@ -199,7 +229,7 @@ upgrade_2011_01_07() ->
                    io:format("Ret is ~p~n", [Ret])
          end,
     lists:foreach(Fun1, Sites).
-    
+
 %% upgrade_1519() ->
 %%     F = fun({hn_user, Name, Pass, Auth, Created}) ->
 %%                 {hn_user, Name, Pass, Auth, Created, dict:new()}
@@ -222,7 +252,7 @@ upgrade_2011_01_07() ->
 %%                  NewValue = upgrade_1630_1(Value, []),
 %%                  NewRec = {Table, Idx, "__dependency-tree", NewValue},
 %%                  mnesia:write(NewRec)
-%%          end,                 
+%%          end,
 %%     F1 = fun(X) ->
 %%                  F2 = fun() ->
 %%                               H = hn_db_wu:trans(X, #item{key = "dependency-tree",
@@ -257,7 +287,7 @@ upgrade_2011_01_07() ->
 %%     F1 = fun(X) ->
 %%                  NewName = hn_db_wu:trans(X, dirty_cell),
 %%                  {atomic, ok} = mnesia:del_table_copy(NewName, node())
-%%          end,                 
+%%          end,
 %%     [F1(X) || X <- Sites].
 
 %% upgrade_1743_B() ->
@@ -270,7 +300,7 @@ upgrade_2011_01_07() ->
 %%                          {type, set}, {disc_copies, [node()]}],
 %%                  {atomic, ok} = mnesia:create_table(NewName, Attr),
 %%                  {atomic, ok} = mnesia:add_table_index(NewName, idx)
-%%          end,                 
+%%          end,
 %%     [F1(X) || X <- Sites].
 
 %% upgrade_1776() ->
@@ -281,7 +311,7 @@ upgrade_2011_01_07() ->
 %%                  F2 = fun(Y) ->
 %%                               Y2 = hn_db_wu:trans_back(Y),
 %%                               Rec = case Y2 of
-%%                                         {item, Idx, "__dependency-tree", Val} -> 
+%%                                         {item, Idx, "__dependency-tree", Val} ->
 %%                                             io:format("updating ~p~n", [Idx]),
 %%                                             Val2 = lists:sort(hslists:uniq(Val)),
 %%                                             {item, Idx, "__dependency-tree", Val2};
@@ -293,6 +323,6 @@ upgrade_2011_01_07() ->
 %%                  Table = hn_db_wu:trans(X, item),
 %%                  mnesia:add_table_index(hn_db_wu:trans(X, local_cell_link), childidx),
 %%                  mnesia:transform_table(Table, F2, record_info(fields, item))
-%%          end,                 
+%%          end,
 %%     [F1(X) || X <- Sites].
 
