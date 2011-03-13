@@ -40,6 +40,9 @@ upload2([H | T]) ->
         Temp -> hn_templates:load_template(RefX, Temp)
     end,
     hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
+    Memory = erlang:memory(total),
+    log(io_lib:format("~p", [Memory])),
+    %garbage_collect(),
     upload2(T).
 
 make_paths([], _, Acc) -> lists:reverse(Acc);
@@ -54,3 +57,17 @@ upload3([Template | T1], [Path | T2]) ->
     RefX = #refX{site = ?site, path = Path, obj = {page, "/"}},
     hn_templates:load_template(RefX, Template),
     upload3(T1, T2).
+
+log(String) ->
+    log(String, "../logs/load_logs.txt").
+
+log(String, File) ->
+    _Return=filelib:ensure_dir(File),
+    
+    case file:open(File, [append]) of
+	{ok, Id} ->
+	    io:fwrite(Id, "~s~n", [String]),
+	    file:close(Id);
+	_ ->
+	    error
+    end.
