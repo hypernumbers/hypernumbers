@@ -18,7 +18,10 @@ start(_Type, _Args) ->
     io:format("Hypernumbers Startup: tables initiated...~n"),
     ok = load_muin_modules(),
     io:format("Hypernumbers Startup: muin modules loaded...~n"),
-    {ok, Pid} = hypernumbers_sup:start_link(),
+    {ok, Pid} = case application:get_env(hypernumbers, should_start_sites) of
+                    {ok, false} -> hypernumbers_sup:start_link(false);
+                    _ ->           hypernumbers_sup:start_link()
+                end,
     io:format("Hypernumbers Startup: hypernumbers supervisors started...~n"),
     ok = case application:get_env(hypernumbers, environment) of
              {ok,development} -> dev_tasks();
@@ -48,14 +51,14 @@ load_muin_modules() ->
       || Module <- muin:get_modules() ],
     ok.
 
-init_tables() -> 
+init_tables() ->
     ok = ensure_schema(),
     Storage = disc_only_copies,
 
     %% Core system tables -- required to operate system
     CoreTbls = [ {core_site, record_info(fields, core_site), set, []}],
-    
-    [ok = hn_db_admin:create_table(N, N, F, Storage, T, true, I) 
+
+    [ok = hn_db_admin:create_table(N, N, F, Storage, T, true, I)
      || {N,F,T,I} <- CoreTbls],
     ok.
 
@@ -74,7 +77,7 @@ build_schema() ->
     ok = application:start(mnesia).
 
 dev_tasks() ->
-    application:set_env(hypernumbers, sync_url, 
+    application:set_env(hypernumbers, sync_url,
                         "http://hypernumbers.dev:9000"),
     create_dev_zone(),
     local_hypernumbers().
