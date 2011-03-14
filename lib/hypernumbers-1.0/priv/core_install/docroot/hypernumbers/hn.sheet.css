@@ -64,10 +64,9 @@ html,body {
 }
 
 #funwiz .scrollable {
-    overflow-x         : visible;
-    overflow-y         : visible;
-    border             : none;
+    border: none;
 }
+
 
 .dialog .footer {
     min-height         : 18pt; /* TODO fix for columnmanager */
@@ -149,6 +148,10 @@ html,body {
 }
 
 #wizfunargscnt { display: none; }
+
+#wizfunargs {
+    overflow-y         : auto;
+}
 
 #wizfunargs div {
   padding-top: 2px;
