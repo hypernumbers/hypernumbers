@@ -31,13 +31,13 @@
 -spec start_link(string()) -> {ok,pid()} | ignore | {error,any()}.
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_dbsrv_sup"),
-    supervisor_bridge:start_link({local, Id}, ?MODULE, [Site]).
+    supervisor_bridge:start_link({global, Id}, ?MODULE, [Site]).
 
 read_only_activity(Site, Activity) ->
     %% Fix for circular chain deadlock. eg. include() in a formula.
     case mnesia:is_transaction() of
         true -> Activity();
-        false -> 
+        false ->
             Id = hn_util:site_to_atom(Site, "_dbsrv"),
             Id ! {self(), read_only_activity, Activity},
             receive
@@ -56,18 +56,18 @@ is_busy(Site) ->
     receive
         {dbsrv_reply, Reply} -> Reply
     end.
-    
+
 %%====================================================================
 %% supervisor_bridge callbacks
 %%====================================================================
 %%--------------------------------------------------------------------
 %% Funcion: init(Args) -> {ok,  Pid, State} |
 %%                        ignore            |
-%%                        {error, Reason}    
+%%                        {error, Reason}
 %% Description:Creates a supervisor_bridge process, linked to the calling
 %% process, which calls Module:init/1 to start the subsystem. To ensure a
 %% synchronized start-up procedure, this function does not return until
-%% Module:init/1 has returned. 
+%% Module:init/1 has returned.
 %%--------------------------------------------------------------------
 init([Site]) ->
     QTbl = hn_db_wu:trans(Site, dirty_queue),
@@ -88,19 +88,19 @@ terminate(_Reason, #state{table = _T}) ->
 %% Internal functions
 %%====================================================================
 
--spec dbsrv_init(string(), atom()) -> no_return(). 
+-spec dbsrv_init(string(), atom()) -> no_return().
 dbsrv_init(Site, QTbl) ->
     {Since, Dirty} = load_dirty_since(0, QTbl),
     Graph = new_graph(),
     WorkPlan = build_workplan(Site, Dirty, Graph),
     dbsrv(Site, QTbl, Since, WorkPlan, Graph).
 
--spec dbsrv(string(), atom(), term(), [cellidx()], digraph()) 
+-spec dbsrv(string(), atom(), term(), [cellidx()], digraph())
                         -> no_return().
 dbsrv(Site, QTbl, Since, WorkPlan, Graph0) ->
     Graph = cleanup(WorkPlan, Since, QTbl, Graph0),
     {Since2, WorkPlan2} = check_messages(Site, Since, QTbl, WorkPlan, Graph),
-    WorkPlan3 = case WorkPlan2 of 
+    WorkPlan3 = case WorkPlan2 of
                     [Cell | Rest] ->
                         execute_plan([Cell], Site, Graph),
                         Rest;
@@ -110,26 +110,26 @@ dbsrv(Site, QTbl, Since, WorkPlan, Graph0) ->
     ?MODULE:dbsrv(Site, QTbl, Since2, WorkPlan3, Graph).
 
 -spec cleanup([cellidx()], term(), atom(), digraph()) -> digraph().
-cleanup([], Since, QTbl, Graph) -> 
-    ok = clear_dirty_queue(Since, QTbl), 
+cleanup([], Since, QTbl, Graph) ->
+    ok = clear_dirty_queue(Since, QTbl),
     digraph:delete(Graph),
     new_graph();
 cleanup(_, _, _, Graph) -> Graph.
 
-%% Checks if new work is waiting to be processed. 
--spec check_messages(string(), term(), atom(), [cellidx()], digraph()) 
+%% Checks if new work is waiting to be processed.
+-spec check_messages(string(), term(), atom(), [cellidx()], digraph())
                -> {term(), [cellidx()]}.
 check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
     Wait = case WorkPlan of
                [] -> infinity;
                _ -> 0
            end,
-    receive 
-        {From, read_only_activity, Activity} -> 
+    receive
+        {From, read_only_activity, Activity} ->
             Reply = Activity(),
             From ! {dbsrv_reply, Reply},
             check_messages(Site, Since, QTbl, WorkPlan, Graph);
-        
+
         {write_activity, Activity} ->
             Activity(),
             ok = rebuild_zinf(Site),
@@ -150,7 +150,7 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
             check_messages(Site, Since, QTbl, WorkPlan, Graph)
     after Wait ->
             {Since, WorkPlan}
-    end.    
+    end.
 
 %% rebuild_inf_zs adds new infinite and z-order relations to the zinf tree
 rebuild_zinf(Site) ->
@@ -190,7 +190,7 @@ process_dirties_for_zinf(Site) ->
 %% Loads new dirty information into the recalc graph.
 -spec load_dirty_since(term(), atom()) -> {term(), [cellidx()]}.
 load_dirty_since(Since, QTbl) ->
-    M = ets:fun2ms(fun(#dirty_queue{id = T, dirty = D}) 
+    M = ets:fun2ms(fun(#dirty_queue{id = T, dirty = D})
                          when Since < T -> {T, D}
                    end),
     F = fun() -> mnesia:select(QTbl, M, read) end,
@@ -203,13 +203,13 @@ load_dirty_since(Since, QTbl) ->
             {Since2, DirtyL}
     end.
 
--spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()]. 
+-spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()].
 build_workplan(Site, Dirty, Graph) ->
     RTbl = hn_db_wu:trans(Site, relation),
     Trans = fun() ->
                     update_recalc_graph(Dirty, RTbl, Graph),
-                    [digraph:add_edge(Graph, P, D) 
-                     || D <- Dirty, 
+                    [digraph:add_edge(Graph, P, D)
+                     || D <- Dirty,
                         P <- check_interference(D, RTbl, Graph)],
                     ok
             end,
@@ -217,13 +217,13 @@ build_workplan(Site, Dirty, Graph) ->
     case digraph_utils:topsort(Graph) of
         false -> eliminate_circ_ref(Site, Dirty, Graph);
         Work -> Work
-    end.         
+    end.
 
 %% When a formula is added, it is necessary to test whether or not
 %% its parents are already present in the recalc tree. If so,
 %% dependency edges must be added from these parents to the new
 %% formula.
--spec check_interference(cellidx(), atom(), digraph()) -> [cellidx()]. 
+-spec check_interference(cellidx(), atom(), digraph()) -> [cellidx()].
 check_interference(Cell, RTbl, Graph) ->
     case mnesia:read(RTbl, Cell, read) of
         [R] ->
@@ -261,14 +261,14 @@ update_recalc_graph([Idx|Rest], RTbl, Graph) ->
 %% graph, and rewrite the formula for any offending cells. A
 %% co-recursive call back to build_workplan is made to complete
 %% construction of the workplan.
--spec eliminate_circ_ref(string(), [cellidx()], digraph()) -> [cellidx()]. 
+-spec eliminate_circ_ref(string(), [cellidx()], digraph()) -> [cellidx()].
 eliminate_circ_ref(Site, Dirty, Graph) ->
     Cycle = lists:flatten(digraph_utils:cyclic_strong_components(Graph)),
     [digraph:del_vertex(Graph, V) || V <- Cycle],
-    [hn_db_api:handle_circref_cell(Site, V, nil) || V <- Cycle, 
+    [hn_db_api:handle_circref_cell(Site, V, nil) || V <- Cycle,
                                                     lists:member(V, Dirty)],
     build_workplan(Site, Dirty, Graph).
-    
+
 -spec execute_plan([cellidx()], string(), digraph()) -> ok.
 execute_plan([], _, _) ->
     ok;
@@ -285,7 +285,7 @@ execute_plan([C | T], Site, Graph) ->
 %% Clears out process work from the dirty_queue table.
 -spec clear_dirty_queue(term(), atom()) -> ok.
 clear_dirty_queue(Since, QTbl) ->
-    M = ets:fun2ms(fun(#dirty_queue{id = T}) when T =< Since -> T end), 
+    M = ets:fun2ms(fun(#dirty_queue{id = T}) when T =< Since -> T end),
     F = fun() ->
                 Keys = mnesia:select(QTbl, M, write),
                 [mnesia:delete(QTbl, K, write) || K <- Keys],
@@ -293,6 +293,6 @@ clear_dirty_queue(Since, QTbl) ->
         end,
     mnesia:activity(transaction, F).
 
--spec new_graph() -> digraph(). 
+-spec new_graph() -> digraph().
 new_graph() -> digraph:new([private]).
 

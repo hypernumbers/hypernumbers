@@ -39,7 +39,7 @@
          code_change/3
         ]).
 
--define(SERVER, ?MODULE). 
+-define(SERVER, ?MODULE).
 
 -record(state,
         {
@@ -58,15 +58,18 @@
 
 add_zinf(Site, CellIdx, RefX) when is_record(RefX, refX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    gen_server:call(Id, {add_zinf, {CellIdx, RefX}}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {add_zinf, {CellIdx, RefX}}).
 
 del_zinf(Site, CellIdx, RefX) when  is_record(RefX, refX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    gen_server:call(Id, {del_zinf, {CellIdx, RefX}}).
-    
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {del_zinf, {CellIdx, RefX}}).
+
 check_ref(Site, RefX) when is_record(RefX, refX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    gen_server:call(Id, {check_ref, RefX}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {check_ref, RefX}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -77,7 +80,7 @@ check_ref(Site, RefX) when is_record(RefX, refX) ->
 %%--------------------------------------------------------------------
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    gen_server:start_link({local, Id}, ?MODULE, [Site], []).
+    gen_server:start_link({global, Id}, ?MODULE, [Site], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -214,7 +217,7 @@ add_selector(Idx, Obj) ->
     fun(#selector{objdict = OD}) ->
             NewOD = case orddict:is_key(Obj, OD) of
                         false -> orddict:append(Obj, Idx, OD);
-                        true  -> V = orddict:fetch(Obj, OD), 
+                        true  -> V = orddict:fetch(Obj, OD),
                                  NewV = case lists:member(Idx, V) of
                                             true  -> V;
                                             false -> [Idx | V]
@@ -254,7 +257,7 @@ match_1([_H | T], X, Y, Acc) ->
 %%%===================================================================
 %%% Tree manipulation functions
 %%%===================================================================
--spec alter_tree(gb_tree(), 
+-spec alter_tree(gb_tree(),
                  [string()],
                  fun((#selector{}) -> #selector{})) -> gb_tree().
 alter_tree(Tree, List, Fun) ->
@@ -348,7 +351,7 @@ run_zeval(Site, Path, Z) ->
 
 % create an entry and delete it - check the tree returned is empty
 % on the root path
-testA1([]) -> 
+testA1([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     P2 = [],
@@ -360,7 +363,7 @@ testA1([]) ->
     Actions2 = [
                {Idx2, #refX{site = S, path = P2, obj = Obj2}}
               ],
-    
+
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
@@ -375,7 +378,7 @@ testA1([]) ->
 
 % create an entry and delete it - check the tree returned is empty
 % one segment in
-testA1a([]) -> 
+testA1a([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     P2 = ["one"],
@@ -387,7 +390,7 @@ testA1a([]) ->
     Actions2 = [
                {Idx2, #refX{site = S, path = P2, obj = Obj2}}
               ],
-    
+
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
@@ -401,7 +404,7 @@ testA1a([]) ->
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % create one and delete one deep and dirty on down
-testA1b([]) -> 
+testA1b([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     P2 = ["one", "two", "lots", "more", "ya", "bas"],
@@ -413,7 +416,7 @@ testA1b([]) ->
     Actions2 = [
                {Idx2, #refX{site = S, path = P2, obj = Obj2}}
               ],
-    
+
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
@@ -427,7 +430,7 @@ testA1b([]) ->
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % add the same page multiple times then delete it
-testA2([]) -> 
+testA2([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     %P1 = ["one", "two"],
@@ -458,7 +461,7 @@ testA2([]) ->
                %{Idx3, #refX{site = S, path = P3, obj = Obj3}},
                {Idx2, #refX{site = S, path = P2, obj = Obj2}}
               ],
-    
+
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
@@ -472,7 +475,7 @@ testA2([]) ->
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % add many pages in and delete them all in the same order
-testA3([]) -> 
+testA3([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     %P1 = ["one", "two"],
@@ -509,7 +512,7 @@ testA3([]) ->
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % add many pages in and delete them all in reverse order
-testA4([]) -> 
+testA4([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     %P1 = ["one", "two"],
@@ -529,7 +532,7 @@ testA4([]) ->
                {Idx3, #refX{site = S, path = P3, obj = Obj3}},
                {Idx2, #refX{site = S, path = P2, obj = Obj2}}
               ],
-    
+
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
@@ -543,7 +546,7 @@ testA4([]) ->
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % same as previous but with branches that don't overlap
-testA4a([]) -> 
+testA4a([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     P1 = ["banjo", "blammo"],
@@ -578,8 +581,8 @@ testA4a([]) ->
     {ok, NewTree2} = lists:foldl(Fun2, NewTree1, lists:reverse(Actions1)),
     io:format("NewTree2 is ~p~n", [NewTree2]),    ?assertEqual(gb_trees:empty(), NewTree2).
 
-% add many pages in and delete them all 
-testA5([]) -> 
+% add many pages in and delete them all
+testA5([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     P1 = ["one", "two"],
@@ -622,7 +625,7 @@ testA5([]) ->
                 {Idx3, #refX{site = S, path = P2, obj = Obj3}},
                 {Idx3, #refX{site = S, path = P3, obj = Obj3}}
               ],
-    
+
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
@@ -635,8 +638,8 @@ testA5([]) ->
     io:format("NewTree2 is ~p~n", [NewTree2]),
     ?assertEqual(gb_trees:empty(), NewTree2).
 
-% add many pages in and delete them all 
-testA5a([]) -> 
+% add many pages in and delete them all
+testA5a([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     P1 = ["one", "two"],
@@ -679,7 +682,7 @@ testA5a([]) ->
                 {Idx3, #refX{site = S, path = P2, obj = Obj3}},
                 {Idx3, #refX{site = S, path = P3, obj = Obj3}}
               ],
-    
+
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
@@ -692,7 +695,7 @@ testA5a([]) ->
     io:format("NewTree2 is ~p~n", [NewTree2]),
     ?assertEqual(gb_trees:empty(), NewTree2).
 
-testB0([]) -> 
+testB0([]) ->
     S = "http://example.com",
     P1 = ["one", "two"],
     %P2 = ["one"],
@@ -709,7 +712,7 @@ testB0([]) ->
     io:format("is ~p~n", [Cell1]),
     ?assertEqual([], List).
 
-testB1([]) -> 
+testB1([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     P1 = ["one", "two"],
@@ -725,7 +728,7 @@ testB1([]) ->
     Actions1 = [
                 {Idx1, #refX{site = S, path = P1, obj = Obj1}}
               ],
-    
+
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
@@ -735,7 +738,7 @@ testB1([]) ->
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(N, Idx1).
 
-testB2([]) -> 
+testB2([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     P1 = ["one", "two"],
@@ -753,7 +756,7 @@ testB2([]) ->
                 {Idx2, #refX{site = S, path = P2, obj = Obj1}},
                 {Idx3, #refX{site = S, path = P3, obj = Obj1}}
               ],
-    
+
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
@@ -763,7 +766,7 @@ testB2([]) ->
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(N, 1).
 
-testB3([]) -> 
+testB3([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     P1 = ["one", "two"],
@@ -781,7 +784,7 @@ testB3([]) ->
                 {Idx2, #refX{site = S, path = P1, obj = Obj2}},
                 {Idx3, #refX{site = S, path = P1, obj = Obj3}}
               ],
-    
+
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
@@ -791,7 +794,7 @@ testB3([]) ->
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx2]), lists:sort(List)).
 
-testB4([]) -> 
+testB4([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
     P1 = ["one", "two"],
@@ -812,7 +815,7 @@ testB4([]) ->
                 {Idx3, #refX{site = S, path = P1, obj = Obj3}},
                 {Idx4, #refX{site = S, path = P1, obj = Obj4}}
               ],
-    
+
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
@@ -822,10 +825,10 @@ testB4([]) ->
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx3]), lists:sort(List)).
 
-unit_test_() -> 
-    
+unit_test_() ->
+
     Setup = fun() -> ok end,
-    
+
     SeriesA = [
                fun testA1/1,
                fun testA1a/1,
@@ -843,6 +846,6 @@ unit_test_() ->
                fun testB3/1,
                fun testB4/1
               ],
-    
-    %{setup, Setup, Cleanup, 
+
+    %{setup, Setup, Cleanup,
      {setup, Setup, [{with, [], SeriesA}]}.

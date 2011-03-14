@@ -17,7 +17,7 @@
 %%--------------------------------------------------------------------
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_sup"),
-    supervisor:start_link({local, Id}, ?MODULE, [Site]).
+    supervisor:start_link({global, Id}, ?MODULE, [Site]).
 
 %%====================================================================
 %% Supervisor callbacks
