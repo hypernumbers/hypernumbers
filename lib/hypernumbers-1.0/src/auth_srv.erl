@@ -68,30 +68,35 @@ start_link(Site) ->
 
 stop(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:cast(Id, stop).
+    PID = global:whereis_name(Id),
+    gen_server:cast(PID, stop).
 
 -spec check_get_view(string(), [string()], uid())
                     -> {view, string()} | not_found | denied.
 check_get_view(Site, Path, Uid) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {check_get_view, Path, Uid}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {check_get_view, Path, Uid}).
 
 -spec check_get_challenger(string(), [string()], uid())
                           -> {view, string()} | not_found | denied.
 check_get_challenger(Site, Path, Uid) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {check_get_challenger, Path, Uid}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {check_get_challenger, Path, Uid}).
 
 -spec check_particular_view(string(), [string()], uid(), string())
                            -> {view, string()} | not_found | denied.
 check_particular_view(Site, Path, Uid, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {check_particular_view, Path, Uid, View}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {check_particular_view, Path, Uid, View}).
 
 -spec get_any_view(string(), [string()], uid()) -> {view, string()} | denied.
 get_any_view(Site, Path, Uid) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    case gen_server:call(Id, {get_views, Path, Uid}) of
+    PID = global:whereis_name(Id),
+    case gen_server:call(PID, {get_views, Path, Uid}) of
         [V|_] -> {view, V};
         _     -> denied
     end.
@@ -99,53 +104,63 @@ get_any_view(Site, Path, Uid) ->
 -spec get_views(string(), [string()], uid()) -> [string()].
 get_views(Site, Path, Uid) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {get_views, Path, Uid}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {get_views, Path, Uid}).
 
 -spec add_view(string(), [string()], auth_spec(), string()) -> ok.
 add_view(Site, Path, AuthSpec, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {add_view, Path, AuthSpec, View}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {add_view, Path, AuthSpec, View}).
 
 %% A non-additive way of setting views.
 -spec set_view(string(), [string()], auth_spec(), string()) -> ok.
 set_view(Site, Path, AuthSpec, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {set_view, Path, AuthSpec, View}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {set_view, Path, AuthSpec, View}).
 
 -spec set_champion(string(), [string()], string()) -> ok.
 set_champion(Site, Path, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {set_champion, Path, View}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {set_champion, Path, View}).
 
 -spec set_challenger(string(), [string()], string()) -> ok.
 set_challenger(Site, Path, View) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {set_challenger, Path, View}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {set_challenger, Path, View}).
 
 -spec remove_views(string(), [string()], [string()]) -> ok.
 remove_views(Site, Path, Views) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {rem_views, Path, Views}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {rem_views, Path, Views}).
 
 -spec get_as_json(string(), [string()]) -> any().
 get_as_json(Site, Path) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {get_as_json, Path}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {get_as_json, Path}).
 
 -spec clear_all_perms_DEBUG(string()) -> ok.
 clear_all_perms_DEBUG(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, clear_all_perms).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, clear_all_perms).
 
 -spec dump_script(string()) -> iodata().
 dump_script(Site) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, dump_script).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, dump_script).
 
 -spec load_script(string(), [any()]) -> ok.
 load_script(Site, Terms) ->
     Id = hn_util:site_to_atom(Site, "_auth"),
-    gen_server:call(Id, {load_script, Terms}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {load_script, Terms}).
 
 %%%===================================================================
 %%% gen_server callbacks

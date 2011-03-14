@@ -70,20 +70,23 @@ code_change(_Old, State, _E) -> {ok, State}.
 
 request_update(Site, Path, Time, Pid) ->
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {fetch, Site, Path, Time, Pid}).
+    PID = global:whereis_name(Id),
+    gen_server:cast(PID, {fetch, Site, Path, Time, Pid}).
 
 %% @doc Nofity server of site details refresh
 notify_site(Site) ->
     Msg = {struct, [{"type", "site_refresh"}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, ["/"], Msg}).
+    PID = global:whereis_name(Id),
+    gen_server:cast(PID, {msg, Site, ["/"], Msg}).
 
 %% @doc  Notify server of full page refresh
 notify_refresh(Site, Path) ->
     Msg = {struct, [{"type", "refresh"},
                     {"path", hn_util:list_to_path(Path)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}).
+    PID = global:whereis_name(Id),
+    gen_server:cast(PID, {msg, Site, Path, Msg}).
 
 %% @doc  Notify server of change to a cell
 notify_change(Site, Path, {RefType, _} = R, Attrs) ->
@@ -96,7 +99,8 @@ notify_change(Site, Path, {RefType, _} = R, Attrs) ->
                     {"ref", hn_util:obj_to_change_msg(R)},
                     {"attrs", {struct, Attrs2}}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}).
+    PID = global:whereis_name(Id),
+    gen_server:cast(PID, {msg, Site, Path, Msg}).
 
 notify_delete_attrs(Site, Path, {RefType, _} = R, Attrs) ->
     Msg = {struct, [{"type", "delete_attrs"},
@@ -105,7 +109,8 @@ notify_delete_attrs(Site, Path, {RefType, _} = R, Attrs) ->
                     {"ref", hn_util:obj_to_change_msg(R)},
                     {"attrs", {struct, [{X, ""} || X <- Attrs]}}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}).
+    PID = global:whereis_name(Id),
+    gen_server:cast(PID, {msg, Site, Path, Msg}).
 
 notify_delete(Site, Path, {RefType, _} = R) ->
     Msg = {struct, [{"type", "delete"},
@@ -113,7 +118,8 @@ notify_delete(Site, Path, {RefType, _} = R) ->
                     {"path", hn_util:list_to_path(Path)},
                     {"ref", hn_util:obj_to_change_msg(R)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}).
+    PID = global:whereis_name(Id),
+    gen_server:cast(PID, {msg, Site, Path, Msg}).
 
 %% @doc  Notify server of a new style
 notify_style(Site, Path, Style) ->
@@ -123,7 +129,8 @@ notify_style(Site, Path, Style) ->
                     {"index", Key},
                     {"css", CSS}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}).
+    PID = global:whereis_name(Id),
+    gen_server:cast(PID, {msg, Site, Path, Msg}).
 
 %% @doc  Notify server of an error to a cell
 notify_error(Site, Path, Ref, error_in_formula, Value) ->
@@ -133,7 +140,8 @@ notify_error(Site, Path, Ref, error_in_formula, Value) ->
                     {"original", Value},
                     {"path", hn_util:list_to_path(Path)}]},
     Id = hn_util:site_to_atom(Site, "_remoting"),
-    gen_server:cast(Id, {msg, Site, Path, Msg}).
+    PID = global:whereis_name(Id),
+    gen_server:cast(PID, {msg, Site, Path, Msg}).
 
 %%
 %% Internal Functions

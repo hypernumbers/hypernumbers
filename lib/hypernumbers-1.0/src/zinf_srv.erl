@@ -58,15 +58,18 @@
 
 add_zinf(Site, CellIdx, RefX) when is_record(RefX, refX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    gen_server:call(Id, {add_zinf, {CellIdx, RefX}}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {add_zinf, {CellIdx, RefX}}).
 
 del_zinf(Site, CellIdx, RefX) when  is_record(RefX, refX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    gen_server:call(Id, {del_zinf, {CellIdx, RefX}}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {del_zinf, {CellIdx, RefX}}).
 
 check_ref(Site, RefX) when is_record(RefX, refX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
-    gen_server:call(Id, {check_ref, RefX}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {check_ref, RefX}).
 
 %%--------------------------------------------------------------------
 %% @doc
