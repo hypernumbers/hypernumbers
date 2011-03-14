@@ -289,6 +289,19 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
  </div>
 </div>  
 "  ++Addons#render.js++
+%  <script src='http://connect.facebook.net/en_US/all.js#appId=196044207084776&amp;xfbml=1'></script>
+%  <script type='text/javascript'> FB.init('196044207084776', '/external/xd_receiver.htm');</script>
+%  <script type='text/javascript'>
+%    var disqus_shortname = 'hypernumbers';
+%    //var disqus_developer = 1;
+%    var disqus_identifier = '123132';
+%    var disqus_url = 'http://hypernumbers.com/blah.html';
+%    (function() {
+%        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+%        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+%        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+%    })();
+%</script>
 "  <script src='/hypernumbers/json2.js'></script>
   <script src='/webcomponents/jquery.ui.potato.menu.js'></script>
   <script src='/hypernumbers/hn.js'></script>

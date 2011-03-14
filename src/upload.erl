@@ -53,7 +53,8 @@ upload2([H | T]) ->
     %% {value, {ets, Ets}} = lists:keysearch(ets, 1, Memory),
     %% log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p", 
     %%    [N1, Total, Processes, Proc_U, System, Atom, Atom_U, Binary, Code, Ets])),
-    %garbage_collect(),
+    % garbage_collect(),
+    log_remoting(),
     limiter(),
     upload2(T).
 
@@ -70,13 +71,19 @@ upload3([Template | T1], [Path | T2]) ->
     hn_templates:load_template(RefX, Template),
     upload3(T1, T2).
 
+log_remoting() ->
+    Srv = hn_util:site_to_atom(?site, "_remoting"),
+    garbage_collect(whereis(Srv)),
+    %io:format("Heap size of remoting is ~p~n",
+    %          [process_info(whereis(Srv), heap_size)]),
+    ok.
+
 limiter() ->
     Srv = hn_util:site_to_atom(?site, "_dbsrv"),
     Pid = whereis(Srv),
     {message_queue_len, Len} = process_info(Pid, message_queue_len),
     if
-        Len > 100  -> io:format("Len is ~p~n", [Len]),
-                      timer:sleep(100),
+        Len > 100  -> timer:sleep(100),
                       limiter();
         Len =< 100 -> ok
     end.
