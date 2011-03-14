@@ -39,7 +39,7 @@
 %% @end
 %%--------------------------------------------------------------------
 start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+    gen_server:start_link({global, ?SERVER}, ?MODULE, [], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -150,7 +150,9 @@ code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
 get_status(Site) ->
-    gen_server:call(status_srv, {get_status, Site}).
+    Id = hn_util:site_to_atom(Site, "_status"),
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {get_status, Site}).
 
 update_status(User, RefX, Change) ->
     #refX{site=Site,path=Path}=RefX,
@@ -159,7 +161,9 @@ update_status(User, RefX, Change) ->
                 _         -> {ok,U2}=passport:uid_to_email(User),
                              U2
             end,
-    gen_server:cast(status_srv, {update, User2, Site, Path, Change}).
+    Id = hn_util:site_to_atom(Site, "_status"),
+    PID = global:whereis_name(Id),
+    gen_server:cast(PID, {update, User2, Site, Path, Change}).
 
 %%%===================================================================
 %%% Internal functions
