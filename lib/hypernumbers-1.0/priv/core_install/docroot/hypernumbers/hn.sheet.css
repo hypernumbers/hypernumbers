@@ -110,7 +110,7 @@ html,body {
     overflow           : visible;
     width              : auto;
     max-width          : none;
-    min-width          : 330px;
+    min-width          : 400px;
     max-height         : none;
     height             : 400px;
     display            : none;
@@ -143,6 +143,22 @@ html,body {
 }
 
 #wizfunargscnt { display: none; }
+
+#wizfunargs div {
+  padding-top: 2px;
+}
+
+#wizfunargs label {
+  font-weight: bold;
+  font-size: 10px;
+  padding-right: 5px;
+}
+
+#wizfunargs label:after { content: ':'; }
+
+#wizfunargs input {
+  font-size: 10px;
+}
 
 #funwiz .resize {
     position           : absolute;
@@ -1046,9 +1062,16 @@ a.toolbar-item {
     float      : left;
 }
 
-#selectedfun, #wizselectedfun {
+#selectedfun {
     float      : right;
     width      : 175px;
+    margin-top : 15px;
+    margin-right:5px;
+}
+
+#wizselectedfun {
+    float      : right;
+    width      : 250px;
     margin-top : 15px;
     margin-right:5px;
 }
