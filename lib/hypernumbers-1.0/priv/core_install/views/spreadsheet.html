@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-  
+
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Hypernumbers - the team spreadsheet</title>
-    <link rel="stylesheet" href="/webcomponents/webcomponents.css" />	
-    <link rel="stylesheet" href="/webcomponents/webbasic.css" />	
-    <link rel="stylesheet" href="/hypernumbers/hn.style.css" />	
-    <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />	
+    <link rel="stylesheet" href="/webcomponents/webcomponents.css" />
+    <link rel="stylesheet" href="/webcomponents/webbasic.css" />
+    <link rel="stylesheet" href="/hypernumbers/hn.style.css" />
+    <link rel="stylesheet" href="/hypernumbers/hn.sheet.css" />
     <link rel="stylesheet" href="/hypernumbers/finder.css" />
-    <link rel="stylesheet" href="/tblsorter/style.css" />	
+    <link rel="stylesheet" href="/tblsorter/style.css" />
 
   </head>
-  
-  <body id="hn" data-view="spreadsheet">    
+
+  <body id="hn" data-view="spreadsheet">
     <div id="pagemenu" style="background-color:#000;">
     <div id="pagemarker"><div>pages:</div></div>
     <div id="tabs"></div>
@@ -34,13 +34,13 @@
               <input type="password" id="pass" /></div>
             <div class="formrow"><input type="submit" id="submit" value="Log in" class="button" /><span id="forgotten_pwd"></span><br /></div>
             <div id="loginfeedback"></div>
-            
+
             or sign up at <a href="http://hypernumbers.com">hypernumbers.com</a>
           </form>
             </div>
             </div>
     </div>
-        </li>  
+        </li>
 	<!-- Shown to logged in users -->
 	<li id="loggedin">
         <span>we <img src="/img/heart.png"> feedback gordon@hypernumbers.com +44 7776 251669</span>
@@ -75,15 +75,15 @@
 	    </div>
 	  </div>
 	  &nbsp;|&nbsp;
-	  <strong id="home"></strong>           
+	  <strong id="home"></strong>
 	  &nbsp;|&nbsp;
 	  <a id="logout">$txt:{Log out}$</a>
 	  &nbsp;
-	</li>  
+	</li>
       </ul>
-	  
-    </div>    
-    
+
+    </div>
+
     <div id="toolbar">
       <div class="expand site" id="sitemenu">
         <span id="sitemenuwrap">Site</span>
@@ -110,7 +110,7 @@
 		data-style="font-size" data-value="90%">Small</a></h6>
 	</div>
       </div>
-      
+
       <div id="expandfontfaces" class="expand fonts">
 	<span id="font">$txt:{Font}$</span>
 	<div id="ffamily" class="expandinner">
@@ -120,24 +120,24 @@
 	    data-style="font-family">$txt:{Serif}$</a>
 	  <a data-command="FontName" data-param="monospace" class="monospace"
 	    data-style="font-family">$txt:{Monospace}$</a>
-	  <a data-command="FontName" 
+	  <a data-command="FontName"
 	    data-param="Helvetica, Arial, serif" class="arial"
 	    data-style="font-family">$txt:{Arial}$</a>
-	  <a data-command="FontName" class="georgia" 
+	  <a data-command="FontName" class="georgia"
 	    data-style="font-family">$txt:{Georgia}$</a>
-	  <a data-command="FontName" 
+	  <a data-command="FontName"
 	    data-param="garamond, serif" class="garamond"
 	    data-style="font-family">$txt:{Garamond}$</a>
-	  <a data-command="FontName" data-param="trebuchet ms, sans-serif" 
+	  <a data-command="FontName" data-param="trebuchet ms, sans-serif"
 	    class="trebuchet" data-style="font-family">
 	    $txt:{Trebuchet MS}$</a>
-	  <a data-command="FontName" data-param="tahoma, sans-serif" 
+	  <a data-command="FontName" data-param="tahoma, sans-serif"
 	    class="tahoma" data-style="font-family">$txt:{Tahoma}$</a>
 	</div>
       </div>
-      
+
       <a class="separator"></a>
-      
+
       <div id="expandformats" class="expand fonts">
 	<span id="format">$txt:{Format}$</span>
 	<div id="formats" class="expandinner">
@@ -171,9 +171,9 @@
 	  <a id="fmt_13">03/02/2009 14:49:00 <span class="desc">($txt:{datetime}$)</span></a>
 	</div>
       </div>
-      
+
       <a class="separator"></a>
-      
+
       <div id="expandbuttons" class="expand">
 	<span><a id="left-head" class="icon"></a></span>
 	<div id="aligntext" class="expandinner">
@@ -191,17 +191,17 @@
 	data-command="bold"
 	data-style="font-weight" data-value="bold" data-toggle="normal"></a>
 
-      <a title="Italic" id="italic" class="toolbar-item" 
+      <a title="Italic" id="italic" class="toolbar-item"
 	data-command="italic"
 	data-style="font-style" data-value="italic" data-toggle="normal"></a>
       <a title="Strikethough" id="strike" class="toolbar-item"
 	data-command="strikethrough"
-	data-style="text-decoration" data-value="line-through" 
+	data-style="text-decoration" data-value="line-through"
 	data-toggle="none"></a>
       <a title="Insert Image" class="toolbar-item" id="insertimage"></a>
       <a title="Insert Link" class="toolbar-item" id="insertlink"></a>
       <a class="separator"></a>
-      
+
       <!--<div class="expand" id="borders">
 	<span><a title="Set Borders" id="border-head" class="icon"></a></span>
 	<div id="borders" class="expandinner">
@@ -225,22 +225,22 @@
 	  <div id="combocolorsbg"></div>
 
 	  <form data-style="color" data-command="backcolor">
-	    <input id="forecolor" value="Pick Text Color" /> 
+	    <input id="forecolor" value="Pick Text Color" />
 	    <input type="submit" class="button" value="Choose Text Color" />
 	  </form>
 
 	  <form data-style="background-color" data-command="backcolor">
-	    <input id="bgcolor" value="Pick Text Color" /> 
+	    <input id="bgcolor" value="Pick Text Color" />
 	    <input type="submit" class="button" value="Choose Background Color" />
 	  </form>
 	</div>
       </div>
 
-      <a class="separator"></a>          
+      <a class="separator"></a>
       <a title="Merge Cells" class="toolbar-item" id="mergecells"></a>
-      <a class="separator"></a>          
+      <a class="separator"></a>
 
-      <a title="Add Input Field" class="toolbar-item" id="forminput" 
+      <a title="Add Input Field" class="toolbar-item" id="forminput"
 	data-input="input" data-default="'default label'"></a>
       <a title="Add Textarea" class="toolbar-item" id="formtextarea"
 	data-input="textarea" data-default="'default label'"></a>
@@ -250,7 +250,7 @@
 	data-input="radio" data-default="'default label', {1,2,3}"></a>
       <a title="Add Submit Button" class="toolbar-item" id="formbutton"></a>
 
-      <a class="separator"></a>          
+      <a class="separator"></a>
       <a title="Make Wiki Input" class="toolbar-item" id="inlineinput"></a>
       <div id="typepanel">
           <div id="expandviews" class="expand">
@@ -313,7 +313,7 @@
 		<td></td>
 	      </tr>
 	      <tr>
-		<td><input type="radio" name="defaultpage" 
+		<td><input type="radio" name="defaultpage"
 			  value="spreadsheet" /></td>
 		<td class="publicoption">
 		  <input type="checkbox" data-value="spreadsheet"
@@ -322,7 +322,7 @@
 		  <a id="viewspreadsheet">Spreadsheet</a></td>
 	      </tr>
 	      <tr>
-		<td><input type="radio" name="defaultpage" 
+		<td><input type="radio" name="defaultpage"
 			  value="webpage" /></td>
 		<td class="publicoption">
 		  <input type="checkbox" data-value="webpage"
@@ -330,10 +330,10 @@
 		<td class="viewlink"><a id="viewwebpage">Web Page</a></td>
 	      </tr>
 	      <tr>
-		<td><input type="radio" name="defaultpage" 
+		<td><input type="radio" name="defaultpage"
 			  value="table" /></td>
 		<td class="publicoption">
-		  <input type="checkbox" data-value="table" 
+		  <input type="checkbox" data-value="table"
 			id="publictable" /></td>
 		<td class="viewlink"><a id="viewtable">Table View</a></td>
 	      </tr>
@@ -343,7 +343,7 @@
       </div>
 
     </div>
-    
+
     <div id="formulabar">
       <a id="functionsbtn" title="functions help">functions</a>
 <!--
@@ -361,12 +361,12 @@
 	  <div id="columns"></div>
 	  <div id="csel"><div id="colselection">&nbsp;</div></div>
 	</div>
-	
+
 	<div id="rowsout">
 	  <div id="rows"></div>
 	  <div id="rsel"><div id="rowselection">&nbsp;</div></div>
-	</div>      
-	
+	</div>
+
 	<div id="innergrid"><div id="test">
 	    <div id="scroller">
 	      <div id="dragged"></div>
@@ -379,7 +379,7 @@
 	      <div id="panes"></div>
 	    </div>
 	</div></div>
-	
+
 	<div id="scrollbar-right"><div id="scrollbar-right-inner">
 	    <div id="up" data-type="button" data-direction="back"></div>
 	    <div id="right-gutter" data-type="gutter">
@@ -387,7 +387,7 @@
 	    </div>
 	    <div id="down" data-type="button" data-direction="forward"></div>
 	</div></div>
-	
+
 	<div id="scrollbar-bottom"><div id="scrollbar-bottom-inner">
 	    <div id="left" data-type="button" data-direction="back"></div>
 	    <div id="bottom-gutter" data-type="gutter">
@@ -396,18 +396,18 @@
 	    <div id="right" data-type="button" data-direction="forward"></div>
 	</div></div>
 
-	<div id="corner"> </div> 
-	
+	<div id="corner"> </div>
+
       </div>
     </div>
-    
+
     <span id="hidden_input"></span>
     <textarea id="paste"></textarea>
 
     <div id="gridcontextmenu">
       <ul>
 	<li><a name="clearboth">
-	    $txt:{Clear}$ <strong>$txt:{All}$</strong></a></li> 
+	    $txt:{Clear}$ <strong>$txt:{All}$</strong></a></li>
 	<!-- <li><a name="clearcontent"> -->
 	<!--     $txt:{Clear}$ <strong>$txt:{Contents}$</strong></a></li> -->
 	<li><a name="copy">
@@ -449,10 +449,10 @@
     </div>
 
     <!-- DIALOG BOXES -->
-    
+
     <div id="insertimagedialog" class="mdialog">
       <span>Enter the URL of the image:</span>
-      <form id="imageform"> 
+      <form id="imageform">
 	<input type="text" id="insertimageinput" value="http://">
 	<div style="margin-top:4px;">
 	  <input type="submit" class="button action" value="Insert Image"  />
@@ -463,7 +463,7 @@
 
     <div id="insertlinkdialog" class="mdialog">
       <!-- <span>Enter the URL of the link:</span> -->
-      <form id="linkform"> 
+      <form id="linkform">
 	<table>
 	  <tr><td>Text:</td><td>
 	      <input type="text" id="insertlinktext" value="">
@@ -482,24 +482,26 @@
     <div id="funwiz" class="dialog">
       <h2>$txt:{Functions}$</h2>
       <a id="wizclose">x</a>
-      <div class="scrollable">
+      <div >
       <div id="funwizwrapper">
 	<select id="wizcatlist"></select>
 	<div><select id="wizfunlist" size="12"></select></div>
       </div>
       <div id="wizselectedfun">
-	<h4 id="wizfunname"></h4><br />
+	<h4 id="wizfunname"></h4>
 	<p id="wizfundesc"></p>
-      </div>
-      <div id="wizfunargs">
+        <span id="wizfunargscnt"></span>
+        <div id="wizfunargs" class="scrollable">
+        </div>
+        <div id="wizfunrepeat"></div>
       </div>
       </div>
       <div class="footer">
        <span id="wiztext"></span>
        <a class="resize">&#x21f2;</a>
-      </div>    
+      </div>
     </div>
-    
+
     <div id="functions" class="dialog">
       <h2>$txt:{Functions}$</h2>
       <a id="funsclose">x</a>
@@ -521,14 +523,14 @@
 	<br />
 
 	<p id="subtext">
-	  If you need help with anything else, please check 
+	  If you need help with anything else, please check
 	  <a href="http://hypernumbers.com/support/funs/" target="_blank">
 	    support</a>
 	</p>
 
-      </div>  
+      </div>
     </div>
-    
+
     <div id="overlay"></div>
     <div id="cover"></div>
 
@@ -545,11 +547,11 @@
 	<li><a data-tab="sitesettings">Settings</a></li>
 	<li><a data-tab="sitetour">Tour</a></li>
       </ul>
-      
+
       <div id="ctrltabdivs">
 
 	<div id="sitemypages">
-	
+
 	  <div id="finder">
 	    <div class="panewrapper"><div class="pane"></div></div>
 	  </div>
@@ -586,7 +588,7 @@
      </div>
      </div>
     	<div id="sitesettings">
-  
+
 	  <div id="hn_pwd_feedback" class="hn_settings_feedback"> </div>
 
 	  <div>
@@ -598,7 +600,7 @@
 	    include punctuation and numbers</p>
 	    </form>
 	  </div>
-	  
+
 	</div>
 
 	<div id="sitetour">
@@ -695,7 +697,7 @@
     </div>
     </div>
   </body>
-    
+
     <script src="/hypernumbers/jquery-1.4.2.min.js"></script>
     <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>-->
 <!-- <script src="http://crypto-js.googlecode.com/files/2.0.0-crypto-md5.js"></script> -->
@@ -712,18 +714,18 @@
     <script src="/hypernumbers/hn.layout.js"></script>
     <script src="/hypernumbers/hn.layout.panes.js"></script>
     <script src="/hypernumbers/hn.layout.pane.js"></script>
-    <script src="/hypernumbers/jquery.cookie.min.js"></script>  
-    <script src="/hypernumbers/jquery.jstree.min.js"></script>  
+    <script src="/hypernumbers/jquery.cookie.min.js"></script>
+    <script src="/hypernumbers/jquery.jstree.min.js"></script>
     <script src="/hypernumbers/finder.js"></script>
     <script src="/hypernumbers/hn.toolbar.js"></script>
     <script src="/hypernumbers/hn.callbacks.js"></script>
     <script src="/hypernumbers/hn.sitedata.js"></script>
     <script src="/hypernumbers/hn.selection.js"></script>
-    <script src="/hypernumbers/hn.logger.js"></script>  
-    <script src="/hypernumbers/jquery.tablesorter.min.js"></script>  
+    <script src="/hypernumbers/hn.logger.js"></script>
+    <script src="/hypernumbers/jquery.tablesorter.min.js"></script>
     <script src="/jscolor/jscolor.js"></script>
     <script src="/hypernumbers/hn.ui.ctrlpanel.js"></script>
-    <script src="/hypernumbers/hn.site.js"></script>  
-    <script src="/hypernumbers/hn.main.js"></script>  
+    <script src="/hypernumbers/hn.site.js"></script>
+    <script src="/hypernumbers/hn.main.js"></script>
   <script src='/hypernumbers/hn.dialog.js'></script>
 </html>

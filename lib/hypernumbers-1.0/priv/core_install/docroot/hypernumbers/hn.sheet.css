@@ -1,14 +1,14 @@
 /******************************************************************************
    TAG STYLES
 ******************************************************************************/
-html,body { 
+html,body {
     overflow : hidden;
     height   : 100%;
 }
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
-/* #cover { 
+/* #cover {
     position   : fixed;
     top        : 0px;
     left       : 0px;
@@ -19,7 +19,7 @@ html,body {
     z-index  : 10000001;
 } */
 
-#loading {  
+#loading {
     position   : absolute;
     top        : 10px;
     left       : 10px;
@@ -64,10 +64,9 @@ html,body {
 }
 
 #funwiz .scrollable {
-    overflow-x         : visible;
-    overflow-y         : visible;
-    border             : none;
+    border: none;
 }
+
 
 .dialog .footer {
     min-height         : 18pt; /* TODO fix for columnmanager */
@@ -85,6 +84,12 @@ html,body {
 
 .resize:hover {
     color              : #666;
+}
+
+#funwiz .resize {
+    position           : absolute;
+    right              : 0px;
+    bottom             : 0px;
 }
 
 #columnmanagerdialog, #lineview {
@@ -110,7 +115,7 @@ html,body {
     overflow           : visible;
     width              : auto;
     max-width          : none;
-    min-width          : 330px;
+    min-width          : 400px;
     max-height         : none;
     height             : 400px;
     display            : none;
@@ -142,10 +147,31 @@ html,body {
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
 
-#funwiz .resize {
-    position           : absolute;
-    right              : 0px;
-    bottom             : 0px;
+#wizfunargscnt { display: none; }
+
+#wizfunargs {
+    overflow-y         : auto;
+}
+
+#wizfunargs div {
+  padding-top: 2px;
+}
+
+#wizfunargs label {
+  font-weight: bold;
+  font-size: 10px;
+  padding-right: 5px;
+}
+
+#wizfunargs label:after { content: ':'; }
+
+#wizfunargs input {
+  font-size: 10px;
+}
+
+#wizfunargs span.req:after { /* required argument flag */
+  color: red;
+  content: '*';
 }
 
 #functions h2, #funwiz h2, #columnmanagerdialog h2, #lineview h2 {
@@ -197,7 +223,7 @@ table.tablesorter tbody tr.highlight td {
 /******************************************************************************
 	TOP NAVIGATION STYLES
 ******************************************************************************/
-#navigation {  
+#navigation {
     color      : #ddd;
     font-weight: bold;
     font-size  : 10px;
@@ -209,7 +235,7 @@ table.tablesorter tbody tr.highlight td {
     padding    : 0px;
 }
 
-#navigation li img { 
+#navigation li img {
     position:relative;
     top:3px;
 }
@@ -219,12 +245,12 @@ table.tablesorter tbody tr.highlight td {
     color   : #ddd;
     display : none;
 }
-#navigation a { 
+#navigation a {
     color           : darkorange;
     text-decoration : none;
     cursor          : pointer;
 }
-#languages { 
+#languages {
     background : url(down.png) no-repeat right 1px;
     display:none;
     cursor     : pointer;
@@ -234,9 +260,9 @@ table.tablesorter tbody tr.highlight td {
     float      : left;
 }
 #languages:hover {
-    border : 1px solid #666; 
+    border : 1px solid #666;
 }
-#languages div { 
+#languages div {
     position   : absolute;
     background : #000;
     border     : 1px solid #666;
@@ -247,16 +273,16 @@ table.tablesorter tbody tr.highlight td {
 #navigation a#currentLanguage {
     text-decoration : none;
 }
-#lang a {  
+#lang a {
     padding         : 3px 5px;
-    display         : block; 
+    display         : block;
     color           : #BBB;
-    text-decoration : none; 
+    text-decoration : none;
 }
-#lang a:hover {  
+#lang a:hover {
     background-color : #444;
 }
-#languages .flag {  
+#languages .flag {
     margin           : 2px 3px 0px 0px;
     display          : block;
     float            : left;
@@ -275,11 +301,11 @@ table.tablesorter tbody tr.highlight td {
 /******************************************************************************
 	LAYOUT STYLES
 ******************************************************************************/
-#hnheader { 
+#hnheader {
     background : #000;
     height     : 32px;
 }
-#hnheader h1 { 
+#hnheader h1 {
     float  : left;
     height : 26px;
 }
@@ -320,17 +346,17 @@ table.tablesorter tbody tr.highlight td {
     outline     : none;
 }
 
-#formulawrapper.active { 
+#formulawrapper.active {
     height:auto;
     border:1px solid #666;
 }
 
-#formula { 
+#formula {
     min-height:18px;
     outline:none;
 }
 
-#functionsbtn, #wizbtn { 
+#functionsbtn, #wizbtn {
     font           : 11px sans-serif;
     background     : #F5F5F5;
     color          : blue;
@@ -367,12 +393,12 @@ table.tablesorter tbody tr.highlight td {
 /******************************************************************************
 	    CELLS
 ******************************************************************************/
-#spreadsheet { 
+#spreadsheet {
     background: #FFF;
     position : relative;
 }
 
-#grid { 
+#grid {
     position   : absolute;
     width      : 100%;
     top        : 0px;
@@ -383,10 +409,10 @@ table.tablesorter tbody tr.highlight td {
 #tabs {
     position : absolute;
     bottom   : -3px;
-    left     : 39px; 
+    left     : 39px;
 }
 
-#pagemarker { 
+#pagemarker {
     color:       #ddd;
     font-weight: bold;
     font-size:   10px;
@@ -395,22 +421,22 @@ table.tablesorter tbody tr.highlight td {
     left:        3px;
 }
 
-#pagemarker div { 
+#pagemarker div {
     position: static;
     height:   13px;
 }
 
-#pagemenu { 
+#pagemenu {
     background:white;
-    position:relative; 
+    position:relative;
     height:35px;
 }
 
-#tabs a { 
+#tabs a {
     font-size:10px;
     margin          : 0px 5px;
     padding         : 0px 4px;
-    text-decoration : none; 
+    text-decoration : none;
     /*font-weight     : bold;*/
     border          : 1px solid #dddddd;
     border-bottom   : 0px;
@@ -425,17 +451,17 @@ table.tablesorter tbody tr.highlight td {
 
 #tabs a.current {
         opacity:1;
-} 
+}
 
-#test { 
+#test {
     position : relative;
     width    : 100%;
     height   : 100%;
     overflow : hidden;
 }
 
-#innergrid { 
-    position : absolute; 
+#innergrid {
+    position : absolute;
     top      : 20px;
     left     : 26px;
     bottom   : 15px;
@@ -450,12 +476,12 @@ table.tablesorter tbody tr.highlight td {
     width:100%;
 }
 
-#up, #down { 
+#up, #down {
     width    : 13px;
     height   : 13px;
     cursor   : default;
     border   : 1px solid #81756a;
-    position : absolute; 
+    position : absolute;
     right    : -2px;
 }
 
@@ -464,7 +490,7 @@ table.tablesorter tbody tr.highlight td {
     height   : 13px;
     cursor   : default;
     border   : 1px solid #81756a;
-    position : absolute; 
+    position : absolute;
     top: 0px;
 }
 
@@ -480,18 +506,18 @@ table.tablesorter tbody tr.highlight td {
     bottom: 14px;
     width:13px;
 }
-#scrollbar-right-inner { 
+#scrollbar-right-inner {
     height:100%;
     width:100%;
 }
-#right-gutter { 
+#right-gutter {
     border-left:  1px solid #81756a;
     border-right: 1px solid #81756a;
     position:absolute;
     top:15px;
-    bottom:15px; 
+    bottom:15px;
     background    : #cbc1b7;
-    width        : 100%;    
+    width        : 100%;
 }
 #right-bar {
     background    : url(sprite-y.png) 0px 0px;
@@ -509,17 +535,17 @@ table.tablesorter tbody tr.highlight td {
     bottom   : 2px;
     width    : 100%;
 }
-#scrollbar-bottom-inner { 
+#scrollbar-bottom-inner {
     margin-right : 14px;
     margin-left  : 26px;
     position     : relative;
     height       : 100%;
 }
-#bottom-gutter { 
+#bottom-gutter {
     border-top    : 1px solid #81756a;
     border-bottom : 1px solid #81756a;
-    left   : 15px; 
-    right  : 15px; 
+    left   : 15px;
+    right  : 15px;
     background    : #cbc1b7;
     height        : 100%;
     position:absolute;
@@ -548,7 +574,7 @@ table.tablesorter tbody tr.highlight td {
 #bottom-bar.active { background: url(sprite-x.png) 0px -30px; }
 #right-bar.active  { background: url(sprite-y.png) -28px 0px; }
 
-#rowsout { 
+#rowsout {
     position : absolute;
     top      : 20px;
     cursor   : e-resize;
@@ -556,10 +582,10 @@ table.tablesorter tbody tr.highlight td {
     overflow : hidden;
     bottom   : 14px;
 }
-#rows { 
-    position : absolute; 
+#rows {
+    position : absolute;
 }
-#columnsout { 
+#columnsout {
     position:absolute;
     left:26px;
     height:20px;
@@ -573,40 +599,40 @@ table.tablesorter tbody tr.highlight td {
     height: 20px;
 }
 
-#columns .handle { 
+#columns .handle {
  position: absolute;
- width:    8px; 
+ width:    8px;
  top:      0px;
  right:    -8px;
  height:   20px;
  z-index:  9999;
 }
 
-#rows .handle { 
+#rows .handle {
  position: absolute;
- width:    25px; 
+ width:    25px;
  bottom:   -8px;
  height:   8px;
  z-index:  9999;
 }
 
-#rows .handle:hover { 
+#rows .handle:hover {
  cursor:     ns-resize;
  background: #FF9966;
 }
 
-#columns .handle:hover { 
+#columns .handle:hover {
  cursor:     ew-resize;
  background: #FF9966;
 }
 
-#sheetwrapper { 
+#sheetwrapper {
     padding-left: 20px;
 }
 /******************************************************************************
 		TOOLBAR
 ******************************************************************************/
-#toolbar a { 
+#toolbar a {
     color:black;
 }
 
@@ -628,7 +654,7 @@ table.tablesorter tbody tr.highlight td {
     border-top:    1px solid #ddd;
 }
 
-.expand, .colormenu { 
+.expand, .colormenu {
     background: url(down.png) no-repeat right 2px;
     cursor:     pointer;
     padding:    3px 16px 1px 3px;
@@ -638,12 +664,12 @@ table.tablesorter tbody tr.highlight td {
     float:      left;
 }
 
-.fonts a, .site a { 
+.fonts a, .site a {
  display: block;
  padding: 2px 5px;
 }
 
-.fonts a:hover, .site a:hover { 
+.fonts a:hover, .site a:hover {
     background: -moz-linear-gradient(center top , #EEE, #BBB) repeat scroll 0 0 transparent;
     background: -webkit-linear-gradient(linear, 0 40%, 0 70% from(#EEE), to(#BBB));
 }
@@ -662,18 +688,18 @@ table.tablesorter tbody tr.highlight td {
     z-index         : 10000005;
 }
 
-#formats { 
+#formats {
   font: 10px Arial,"Helvetica Neue", sans-serif;
  }
 
 #fontsizelist h1, #fontsizelist h2, #fontsizelist h3,
-#fontsizelist h4, #fontsizelist h5, #fontsizelist h6 { 
+#fontsizelist h4, #fontsizelist h5, #fontsizelist h6 {
     margin:0px;
  }
 
 
-.expand:hover, .colormenu:hover, 
-.expand.active, .colormenu.active, 
+.expand:hover, .colormenu:hover,
+.expand.active, .colormenu.active,
 .toolbar-item:hover, .toolbar-item.active {
     -moz-border-radius:3px;
     -webkit-border-radius:3px;
@@ -707,7 +733,7 @@ table.tablesorter tbody tr.highlight td {
 
 .desc { font-size: 9px; position:absolute; right:4px; }
 
-#toolbar .icon { 
+#toolbar .icon {
  background-image: url(sprite.png);
  cursor:     pointer;
  display:    block;
@@ -741,7 +767,7 @@ a.toolbar-item {
   border: 1px solid #666;
 }
 
-#combocolorsbg a { 
+#combocolorsbg a {
     display:block;
     width:20px;
     overflow:hidden;
@@ -749,13 +775,13 @@ a.toolbar-item {
     border:2px solid transparent;
     margin:1px;
     padding:2px;
-    
+
 }
-#combocolorsbg a.title { 
+#combocolorsbg a.title {
     width:100px;
 }
 
-#combocolorsbg a:hover { 
+#combocolorsbg a:hover {
     font-weight:bold;
 }
 
@@ -793,8 +819,8 @@ a.toolbar-item {
 #inlineinput { background-position: -205px -104px; }
 
 /* used in the tour */
-.inlineinput { 
-               background-position: -205px -104px; 
+.inlineinput {
+               background-position: -205px -104px;
                background-image: url(sprite.png);
                padding: 2px;
                margin:  2px;
@@ -805,7 +831,7 @@ a.toolbar-item {
 
 #mergecells  { background-position:  -183px -61px; }
 
-#selection { 
+#selection {
  display:    none;
  position:   absolute;
  background: #CCCCFF;
@@ -815,7 +841,7 @@ a.toolbar-item {
  overflow:   visible;
 }
 
-#copied, #highlightpainter { 
+#copied, #highlightpainter {
  display:  none;
  position: absolute;
  border:   2px solid orange;
@@ -827,7 +853,7 @@ a.toolbar-item {
  border:   2px solid green;
 }
 
-#dragfill { 
+#dragfill {
  display:  none;
  position: absolute;
  border:   1px dashed #000;
@@ -836,7 +862,7 @@ a.toolbar-item {
 }
 
 
-#dragger { 
+#dragger {
  height:     6px;
  width:      6px;
  position:   absolute;
@@ -847,7 +873,7 @@ a.toolbar-item {
  cursor:     pointer;
 }
 
-#dragged { 
+#dragged {
     position: absolute;
     border:   2px dashed black;
     z-index:  100001;
@@ -855,7 +881,7 @@ a.toolbar-item {
     opacity:  0.8;
 }
 
-#input { 
+#input {
     z-index  : 10000000;
     height   : 18px;
     width    : 78px;
@@ -866,7 +892,7 @@ a.toolbar-item {
     padding: 1px 0px 1px 0px;
 }
 
-#editor { 
+#editor {
     width:100%;
     height:100%;
     padding:0px;
@@ -875,13 +901,13 @@ a.toolbar-item {
     cursor:text;
 }
 
-#hidden_input {  
+#hidden_input {
     position: absolute;
     top:      -10000px;
     left:     0px;
 }
 
-#paste { 
+#paste {
     position   : absolute;
     top        : 0px;
     left       : 0px;
@@ -899,15 +925,15 @@ a.toolbar-item {
     list-style-type : none;
 }
 
-#gridcontextmenu .disabled a.hover { 
- background: #f8f7f6;       
-}  
+#gridcontextmenu .disabled a.hover {
+ background: #f8f7f6;
+}
 
-#gridcontextmenu .disabled a { 
- color: #AAA; 
-}  
+#gridcontextmenu .disabled a {
+ color: #AAA;
+}
 
-#axiscontextmenucol, #axiscontextmenurow, #gridcontextmenu { 
+#axiscontextmenucol, #axiscontextmenurow, #gridcontextmenu {
  position:   absolute;
  display:    none;
  font-size:11px;
@@ -916,11 +942,11 @@ a.toolbar-item {
  background: #FFF;
     z-index     : 10000002;
 }
-#axiscontextmenucol, #axiscontextmenurow { 
+#axiscontextmenucol, #axiscontextmenurow {
  width:      120px;
 }
 
-#gridcontextmenu { 
+#gridcontextmenu {
  width:      160px;
 }
 
@@ -935,27 +961,27 @@ a.toolbar-item {
     color    : #000;
     padding  : 1px 3px 1px 18px;
     cursor   : pointer;
-} 
-
-#axiscontextmenucol a:hover, #axiscontextmenurow a:hover, #gridcontextmenu a:hover {
- background: #ffc47e; 
-} 
-
-#axiscontextmenucol li.seperator, #axiscontextmenurow li.seperator, #gridcontextmenu li.seperator { 
- height:     0px; 
- border-top: 1px solid #CCC; 
- margin:     3px 0px;      
 }
 
-#axiscontextmenucol .desc, #axiscontextmenurow .desc, #gridcontextmenu .desc { 
- font-size: 10px; 
- position:absolute; 
+#axiscontextmenucol a:hover, #axiscontextmenurow a:hover, #gridcontextmenu a:hover {
+ background: #ffc47e;
+}
+
+#axiscontextmenucol li.seperator, #axiscontextmenurow li.seperator, #gridcontextmenu li.seperator {
+ height:     0px;
+ border-top: 1px solid #CCC;
+ margin:     3px 0px;
+}
+
+#axiscontextmenucol .desc, #axiscontextmenurow .desc, #gridcontextmenu .desc {
+ font-size: 10px;
+ position:absolute;
  color:grey;
- right:4px; 
+ right:4px;
  top:4px;
 }
 
-#colselection, #rowselection { 
+#colselection, #rowselection {
  position:   absolute;
  background: black;
  opacity:    0.2;
@@ -967,16 +993,16 @@ a.toolbar-item {
  height: 20px;
 }
 
-#rowselection { 
+#rowselection {
  cursor: e-resize;
  width: 26px;
 }
 
-#rsel, #csel {  
+#rsel, #csel {
  position:absolute;
 }
 
-#overlay { 
+#overlay {
  background: transparent;
  position:   fixed;
  top:        0px;
@@ -986,7 +1012,7 @@ a.toolbar-item {
  z-index:    99999;
  display:    none;
 }
-#current { 
+#current {
     position:   absolute;
     background: transparent;
     border:     1px solid blue;
@@ -996,45 +1022,45 @@ a.toolbar-item {
 /******************************************************************************/
 /* Functions Dialog
 /******************************************************************************/
-#functions {  
+#functions {
     width : 340px;
 }
 
-#funwrapper { 
+#funwrapper {
     margin : 10px;
-    width  : 140px; 
+    width  : 140px;
     float  : left;
 }
 
-#catlist { 
-    width : 140px; 
+#catlist {
+    width : 140px;
 }
 
-#funlist { 
-    background : #EEE; 
+#funlist {
+    background : #EEE;
     border     : 1px solid #666;
 }
 
-#funlist li { 
+#funlist li {
     margin-left:0px;
 }
 
-#funlist a { 
+#funlist a {
     display : block;
     padding : 2px;
     margin  : 1px;
     cursor  : pointer;
 }
 
-#funlist a:hover { 
+#funlist a:hover {
     background : #FFF;
 }
 
-#funlist { 
+#funlist {
     height   : 220px;
     overflow : auto;
 }
-#funlist ul { 
+#funlist ul {
     list-style-type : none;
     margin          : 0px;
     padding         : 0px;
@@ -1044,22 +1070,38 @@ a.toolbar-item {
     float      : left;
 }
 
-#selectedfun, #wizselectedfun { 
+#selectedfun {
     float      : right;
     width      : 175px;
     margin-top : 15px;
     margin-right:5px;
 }
 
-#selectedfun p, #wizselectedfun p { 
-    margin : 0px 0px 10px 0px; 
+#wizselectedfun {
+    float      : right;
+    width      : 250px;
+    margin-top : 15px;
+    margin-right:5px;
 }
 
-#selectedfun h4, #wizselectedfun h4 { 
-    margin : 0px; 
+#selectedfun p, #wizselectedfun p {
+    margin : 0px 0px 10px 0px;
 }
 
-#ctrlpanel { 
+#wizselectedfun p span.warning {
+  font-size: 11px;
+  font-style: italic;
+}
+
+#wizselectedfun p span.warning:before {
+  content: ' ';
+}
+
+#selectedfun h4, #wizselectedfun h4 {
+    margin : 0px;
+}
+
+#ctrlpanel {
     display     : none;
     z-index     : 10000002;
     position    : absolute;
@@ -1074,7 +1116,7 @@ a.toolbar-item {
     -webkit-border-radius:4px;
 }
 
-#ctrltabs { 
+#ctrltabs {
     background:#333;
     border-bottom:1px solid #666;
     margin: 0px 0px 0px 0px;
@@ -1086,20 +1128,20 @@ a.toolbar-item {
     -webkit-border-radius:4px 4px 0px 0px;
 }
 
-#ctrltabs li { 
+#ctrltabs li {
     display:inline;
     line-height:20px;
     margin-left:5px;
 }
 
-#ctrltabs li a.selected { 
+#ctrltabs li a.selected {
     color:darkorange;
     font-weight: bold;
     background:#f9f9f9;
     border-bottom:2px solid #EBEAEB;
 }
 
-#ctrltabs li a { 
+#ctrltabs li a {
     color:#999999;
     position:relative;
     top:-2px;
@@ -1115,19 +1157,19 @@ a.toolbar-item {
     font-weight:bold;
 }
 
-#ctrltabdivs h4 { 
+#ctrltabdivs h4 {
     font-weight: bold;
 }
 
-#sitetour p { 
+#sitetour p {
               margin: 0 0 .5em 0
-} 
+}
 
-#sitetour ul { 
+#sitetour ul {
                margin: 0 0 .5em 0;
 }
 
-#sitetour li { 
+#sitetour li {
                margin-left: 0px;
 }
 
@@ -1135,25 +1177,25 @@ a.toolbar-item {
     cursor:pointer;
 }
 
-#ctrlclose, #funsclose, #dialogclose, #lineviewclose, #wizclose { 
+#ctrlclose, #funsclose, #dialogclose, #lineviewclose, #wizclose {
     cursor:pointer;
-    color:white; 
+    color:white;
     font-weight:bold;
     font-size:14px;
     background:transparent;
     border:1px solid transparent;
-    position:absolute; 
+    position:absolute;
     padding:0px;
     top:-3px;
     right:5px;
     z-index:99;
 }
 
-#ctrlclose:hover,#funsclose:hover, #dialogclose:hover, #lineviewclose:hover { 
-    color:#CCC; 
+#ctrlclose:hover,#funsclose:hover, #dialogclose:hover, #lineviewclose:hover {
+    color:#CCC;
 }
 
-#sitemypages { 
+#sitemypages {
     padding: 10px 20px 20px 20px;
 }
 
@@ -1163,47 +1205,47 @@ a.toolbar-item {
     border:    1px inset #666;
 }
 
-#ctrltabdivs td { 
+#ctrltabdivs td {
                   vertical-align: middle;
-                  padding:     2px 5px; 
-                  line-height: 18px; 
-                  font-size:   12px; 
+                  padding:     2px 5px;
+                  line-height: 18px;
+                  font-size:   12px;
                   }
 
-#ctrltabdivs #hnexemplar td { 
+#ctrltabdivs #hnexemplar td {
                               line-height: 10px;
                               }
 
-#ctrltabdivs #hnexemplar td small { 
+#ctrltabdivs #hnexemplar td small {
                                   padding: 2px 0px 0px 2px;
                                   }
 
-#ctrltabdivs .content { 
-    width:270px; 
-} 
+#ctrltabdivs .content {
+    width:270px;
+}
 
 #ctrltabdivs .label {
     /*vertical-align: middle;*/
-    text-align:     right; 
-    color:          #555; 
-    font-style:     italic; 
-} 
-
-#doupload { 
-    cursor:pointer; 
+    text-align:     right;
+    color:          #555;
+    font-style:     italic;
 }
 
-#users { 
-    width:300px; 
+#doupload {
+    cursor:pointer;
+}
+
+#users {
+    width:300px;
     margin:100px auto;
 }
 
-#newpage, #templatename, #hn_saveastemplateform 
-{ 
+#newpage, #templatename, #hn_saveastemplateform
+{
   width: 96px;
 }
 
-#sitesettings { 
+#sitesettings {
     padding: 10px 60px;
 }
 
@@ -1211,46 +1253,46 @@ a.toolbar-item {
     text-decoration:underline;
 }
 
-#newviewas td { 
+#newviewas td {
     padding:    0px 2px 0px 2px;
     text-align: center;
 }
-    
-.publicoption  { 
+
+.publicoption  {
     background: #FFF;
 }
 
-.publicoption  small { 
+.publicoption  small {
     color: #000;
 }
 
-.defaultoption {  
+.defaultoption {
     border-right: 1px solid;
 }
 
-#newviewas { 
+#newviewas {
     -moz-border-radius:8px 0px 0px 8px;
     -webkit-border-radius:8px 0px 0px 8px;
     right:0px;
 }
 
-#newviewas .viewlink { 
+#newviewas .viewlink {
     padding:4px;
     text-align:left;
 }
 
-#typepanel { 
-    position:absolute; 
+#typepanel {
+    position:absolute;
     top:36px;
     right:0px;
-    
+
 }
-#typepanel a { 
+#typepanel a {
     color:blue;
-    text-decoration:none; 
+    text-decoration:none;
 }
 
-#tourpager {  
+#tourpager {
     width:       150px;
     text-align:  center;
     padding-top: 4px;
@@ -1263,30 +1305,30 @@ a.toolbar-item {
      font-weight: bold;
 }
 
-#tourwrapper { 
+#tourwrapper {
    padding: 60px 20px 10px 60px;
    height:  330px;
 }
 
-#hn_tourfooter { 
+#hn_tourfooter {
                  padding: 0px 20px 0px 0px;
 }
 
-#hn_previewlink { 
+#hn_previewlink {
                   padding: 4px;
                   }
 
-#doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet { 
+#doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet {
     width: 100px
 }
 
-.button, .tournavigate, #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet {  
+.button, .tournavigate, #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet {
     background:#EEE;
-    -webkit-border-radius:3px 3px 3px 3px;    
+    -webkit-border-radius:3px 3px 3px 3px;
     -moz-border-radius:3px 3px 3px 3px;
-    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9),
                                  to(#E3E3E3));
-    background: -moz-linear-gradient(center top , #F9F9F9, 
+    background: -moz-linear-gradient(center top , #F9F9F9,
                                      #E3E3E3) repeat scroll 0 0 transparent;
     border:1px solid #BBBBBB;
     margin:0 0px 0 0;
@@ -1296,13 +1338,13 @@ a.toolbar-item {
     white-space:nowrap;
 }
 
-.input { 
+.input {
     border:1px solid #BBBBBB;
     color:#000000;
     padding:4px 6px;
 }
 
-.button:hover { 
+.button:hover {
     cursor:pointer;
     border:1px solid #939393 !important;
 }
@@ -1316,19 +1358,19 @@ a.toolbar-item {
     top:3px;
 }
 
-#signupfeedback.error, #resetmsg.error { 
-    color:red;   
+#signupfeedback.error, #resetmsg.error {
+    color:red;
 }
 
 #signupform {
     padding-left:15px;
 }
 
-#borders { 
+#borders {
     display:none;
 }
 
-#powered { 
+#powered {
     text-align:center;
     width:110px;
     padding: 2px;
@@ -1339,32 +1381,32 @@ a.toolbar-item {
     text-align:center;
 }
 
-.hyper { 
+.hyper {
     color:black;
     font:13px georgia,garamond,serif;
     text-decoration:none;
 }
 
-.numbers { 
+.numbers {
     color:darkorange;
     font:12px sans-serif;
     font-weight:bold;
     text-decoration:underline;
 }
 
-.hn_settings_feedback { 
+.hn_settings_feedback {
     height:50px;
 }
 
-#hn_pwd_feedback .error { 
-    color:white; 
+#hn_pwd_feedback .error {
+    color:white;
     font-weight:bold;
     padding:5px;
     background:red;
 }
 
-#hn_pwd_feedback .success { 
-    color:white; 
+#hn_pwd_feedback .success {
+    color:white;
     font-weight:bold;
     padding:5px;
     background:green;
@@ -1381,23 +1423,23 @@ a.toolbar-item {
 .trebuchet  { font-family: trebuchet ms, sans-serif; }
 .tahoma     { font-family: tahoma, sans-serif; }
 
-.innercolor { 
-    position : relative; 
-    padding  : 5px 0px 0px 7px; 
-    width    : 230px; 
-    height   : 145px; 
-} 
+.innercolor {
+    position : relative;
+    padding  : 5px 0px 0px 7px;
+    width    : 230px;
+    height   : 145px;
+}
 
-#tour { 
+#tour {
    padding: 20px;
 }
 
-#tour p { 
+#tour p {
     color:#666;
     margin-bottom:5px;
 }
 
-#combo_colourbg .button { 
+#combo_colourbg .button {
                           font-size: 98%;
                           width:     162px;
 }
@@ -1410,22 +1452,22 @@ a.toolbar-item {
                        font         : monospace;
 }
 
-#insertimageinput, #insertlinkinput { 
+#insertimageinput, #insertlinkinput {
     width:200px;
 }
 
-#funname { 
+#funname {
     line-height:100%;
 }
 
-#subtext { 
-    position:absolute; 
-    bottom:0px; 
-    font-size:90%; 
-    color:#999; 
-    line-height:120%; 
-} 
-#subtext a { 
-    color:blue; 
-    text-decoration:underline; 
+#subtext {
+    position:absolute;
+    bottom:0px;
+    font-size:90%;
+    color:#999;
+    line-height:120%;
+}
+#subtext a {
+    color:blue;
+    text-decoration:underline;
 }
