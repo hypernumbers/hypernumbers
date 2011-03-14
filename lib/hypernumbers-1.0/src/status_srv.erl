@@ -11,13 +11,12 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, get_status/1, update_status/3]).
+-export([start_link/1, get_status/1, update_status/3]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--define(SERVER, ?MODULE). 
 -define(diff, calendar:time_difference).
 
 -include("spriki.hrl").
@@ -31,6 +30,20 @@
 %%% API
 %%%===================================================================
 
+get_status(Site) ->
+    Id = hn_util:site_to_atom(Site, "_status"),
+    gen_server:call(Id, {get_status, Site}).
+
+update_status(User, RefX, Change) ->
+    #refX{site=Site,path=Path}=RefX,
+    Id = hn_util:site_to_atom(Site, "_status"),
+    User2 = case User of
+                undefined -> "anonymous2";
+                _         -> {ok,U2}=passport:uid_to_email(User),
+                             U2
+            end,
+    gen_server:cast(Id, {update, User2, Site, Path, Change}).
+
 %%--------------------------------------------------------------------
 %% @doc
 %% Starts the server
@@ -38,8 +51,14 @@
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
+<<<<<<< HEAD
 start_link() ->
     gen_server:start_link({global, ?SERVER}, ?MODULE, [], []).
+=======
+start_link(Site) ->
+    Id = hn_util:site_to_atom(Site, "_status"),
+    gen_server:start_link({local, Id}, ?MODULE, [], []).
+>>>>>>> master
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -83,7 +102,7 @@ handle_call({get_status, Site}, _From, {Old, New}) ->
                                            {L2, St}
                          end,
     Reply = {struct, Struct},
-    {reply, Reply, {NewState, New}};    
+    {reply, Reply, {NewState, New}};
 handle_call(_Request, _From, State) ->
     Reply = ok,
     {reply, Reply, State}.
@@ -149,6 +168,7 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
+<<<<<<< HEAD
 get_status(Site) ->
     Id = hn_util:site_to_atom(Site, "_status"),
     PID = global:whereis_name(Id),
@@ -165,6 +185,8 @@ update_status(User, RefX, Change) ->
     PID = global:whereis_name(Id),
     gen_server:cast(PID, {update, User2, Site, Path, Change}).
 
+=======
+>>>>>>> master
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
@@ -213,10 +235,10 @@ purge(#user{name = N, details = D}) ->
         [] -> {NewU, {struct, []}};
         _  -> {NewU, [{(N), {struct, extract(NewD)}}]}
     end.
-  
+
 purge_details(D) -> purge_d1(D, []).
 
-% purge_details1 uses the fact that details are placed on the status 
+% purge_details1 uses the fact that details are placed on the status
 % list in time order to truncate the update list
 purge_d1([], Acc)      -> A2 = lists:reverse(Acc),
                           if
@@ -231,7 +253,7 @@ purge_d1([H | T], Acc) -> #details{timestamp = Ts} = H,
                               D > 7  -> purge_d1(T, Acc);
                               D =< 7 -> purge_d1(T, [H | Acc])
                           end.
-                                         
+
 extract(List) -> extract1(List, []).
 
 extract1([], Acc) -> lists:reverse(Acc);
@@ -240,7 +262,7 @@ extract1([#details{path = P, change = Ch, timestamp = Ts} | T], Acc) ->
     Msg = get_msg(Ts),
     Acc2 = {P2, {struct, [{Ch, Msg}]}},
     extract1(T, [Acc2 | Acc]).
-    
+
 get_msg(Ts) ->
     Now = calendar:now_to_universal_time(now()),
     Diff = ?diff(Ts, Now),
@@ -250,4 +272,4 @@ get_msg(Ts) ->
         {0, {H, _, _}} -> integer_to_list(H) ++ " hours ago";
         {D, {_, _, _}} -> integer_to_list(D) ++ " days ago"
     end.
-             
+

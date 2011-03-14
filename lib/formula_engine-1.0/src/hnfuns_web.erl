@@ -10,6 +10,8 @@
          background/1,
          'google.map'/1,
          'twitter.search'/1,
+         'facebook.comments'/1,
+         'disqus.comments'/1,
          link/1,
          img/1,
          html/1,
@@ -40,6 +42,16 @@
 
 -type html() :: string().
 -type zoom() :: 1..20.
+
+'disqus.comments'([]) ->
+    HTML = "<div id='disqus_thread'></div>"
+        ++ "<a href='http://disqus.com' class='dsq-brlink'>"
+        ++ "blog comments powered by <span class='logo-disqus'>Disqus</span></a>",
+    {resize, 8, 15, HTML}.    
+
+'facebook.comments'([]) ->
+    HTML = "<div id='fb-root'></div><fb:comments href='http://hypernumbers.com/' num_posts='2' width='500'></fb:comments>",
+    {resize, 8, 10, HTML}.
 
 'vertical.line.'([H, N, M, Colour]) ->
     vline1(H, N, M, Colour);
