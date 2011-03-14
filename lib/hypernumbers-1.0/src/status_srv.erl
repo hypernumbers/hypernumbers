@@ -32,17 +32,19 @@
 
 get_status(Site) ->
     Id = hn_util:site_to_atom(Site, "_status"),
-    gen_server:call(Id, {get_status, Site}).
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {get_status, Site}).
 
 update_status(User, RefX, Change) ->
     #refX{site=Site,path=Path}=RefX,
     Id = hn_util:site_to_atom(Site, "_status"),
+    PID = global:whereis_name(Id),
     User2 = case User of
                 undefined -> "anonymous2";
                 _         -> {ok,U2}=passport:uid_to_email(User),
                              U2
             end,
-    gen_server:cast(Id, {update, User2, Site, Path, Change}).
+    gen_server:cast(PID, {update, User2, Site, Path, Change}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -51,14 +53,9 @@ update_status(User, RefX, Change) ->
 %% @spec start_link() -> {ok, Pid} | ignore | {error, Error}
 %% @end
 %%--------------------------------------------------------------------
-<<<<<<< HEAD
-start_link() ->
-    gen_server:start_link({global, ?SERVER}, ?MODULE, [], []).
-=======
 start_link(Site) ->
     Id = hn_util:site_to_atom(Site, "_status"),
-    gen_server:start_link({local, Id}, ?MODULE, [], []).
->>>>>>> master
+    gen_server:start_link({global, Id}, ?MODULE, [], []).
 
 %%%===================================================================
 %%% gen_server callbacks
@@ -168,25 +165,6 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
-<<<<<<< HEAD
-get_status(Site) ->
-    Id = hn_util:site_to_atom(Site, "_status"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, {get_status, Site}).
-
-update_status(User, RefX, Change) ->
-    #refX{site=Site,path=Path}=RefX,
-    User2 = case User of
-                undefined -> "anonymous2";
-                _         -> {ok,U2}=passport:uid_to_email(User),
-                             U2
-            end,
-    Id = hn_util:site_to_atom(Site, "_status"),
-    PID = global:whereis_name(Id),
-    gen_server:cast(PID, {update, User2, Site, Path, Change}).
-
-=======
->>>>>>> master
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================

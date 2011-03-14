@@ -67,9 +67,6 @@ init([Site]) ->
               permanent,
               2000,
               worker,
-<<<<<<< HEAD
-              [page_srv]}
-=======
               [page_srv]},
 
              {status_srv,
@@ -78,7 +75,6 @@ init([Site]) ->
               2000,
               worker,
               [status_srv]}
->>>>>>> master
 
             ]
          }}.

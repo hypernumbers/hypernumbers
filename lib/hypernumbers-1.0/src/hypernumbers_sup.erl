@@ -25,24 +25,13 @@ init([StartSites]) ->
     Service = {service_sup, {service_sup, start_link, []},
                 permanent, infinity, supervisor, [service_sup]},
 
-<<<<<<< HEAD
-    Status = {status_srv, {status_srv, start_link, []},
-              permanent, 2000, worker, [status_srv]},
-
     SiteMaster = {sitemaster_sup, {sitemaster_sup, start_link, [StartSites]},
-=======
-    SiteMaster = {sitemaster_sup, {sitemaster_sup, start_link, []},
->>>>>>> master
                   permanent, infinity, supervisor, [sitemaster_sup]},
 
     Mochi = {mochi_srv, {hn_mochi, start, []},
              permanent, 3000, worker, dynamic},
 
     {ok,{{one_for_one, 60, 1}, [ Service,
-<<<<<<< HEAD
-                                 Status,
-=======
->>>>>>> master
                                  SiteMaster,
                                  Mochi
                                ]}}.
