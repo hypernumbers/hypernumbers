@@ -1085,6 +1085,15 @@ a.toolbar-item {
     margin : 0px 0px 10px 0px;
 }
 
+#wizselectedfun p span.warning {
+  font-size: 11px;
+  font-style: italic;
+}
+
+#wizselectedfun p span.warning:before {
+  content: ' ';
+}
+
 #selectedfun h4, #wizselectedfun h4 {
     margin : 0px;
 }
