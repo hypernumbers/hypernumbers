@@ -31,7 +31,7 @@
 handle_upload(Mochi, Ref, Uid) ->
 
     {ok, UserName} = passport:uid_to_email(Uid),
-    
+
     {ok, File, Name} = stream_to_file(Mochi, Ref, UserName),
     NRef = Ref#refX{path = Ref#refX.path ++ [make_name(Name)]},
     % io:format("file uploaded...~n"),
@@ -63,10 +63,10 @@ split_sheets(X, {Ls, Fs}) ->
     {SheetName, Target, V} = read_reader_record(X),
     Sheet = excel_util:esc_tab_name(SheetName),
     %Ref = convert_addr(Target),
-    
+
     Postdata = conv_for_post(V),
     Datatpl = {Sheet, convert_addr(Target), Postdata},
-    
+
     case Postdata of
         [$=|_] -> {Ls, [Datatpl|Fs]};
         _      -> {[Datatpl|Ls], Fs}
@@ -102,33 +102,33 @@ write_css(Ref, {{{sheet, Sheet}, {row_index, R}, {col_index, C}}, [CSS]}) ->
 %% This function 'makes it so' <-- super-ugelee n'est pas?
 defaultize(M) ->
     M1 = case M of
-             #magic_style{'border-right-style' = [], 
-                          'border-right-color' = "rgb(000,000,000)", 
-                          'border-right-width' = []} -> 
+             #magic_style{'border-right-style' = [],
+                          'border-right-color' = "rgb(000,000,000)",
+                          'border-right-width' = []} ->
                  M#magic_style{'border-right-color' = []};
              _O1 -> M
          end,
     M2 = case M1 of
-             #magic_style{'border-left-style' = [], 
-                          'border-left-color' = "rgb(000,000,000)", 
-                          'border-left-width' = []} -> 
+             #magic_style{'border-left-style' = [],
+                          'border-left-color' = "rgb(000,000,000)",
+                          'border-left-width' = []} ->
                  M1#magic_style{'border-left-color' = []};
              _O2 -> M1
          end,
     M3 = case M2 of
-             #magic_style{'border-top-style' = [], 
-                          'border-top-color' = "rgb(000,000,000)", 
-                          'border-top-width' = []} -> 
+             #magic_style{'border-top-style' = [],
+                          'border-top-color' = "rgb(000,000,000)",
+                          'border-top-width' = []} ->
                  M2#magic_style{'border-top-color' = []};
              _O3 -> M2
          end,
     _M4 = case M3 of
-              #magic_style{'border-bottom-style' = [], 
-                           'border-bottom-color' = "rgb(000,000,000)", 
-                           'border-bottom-width' = []} -> 
+              #magic_style{'border-bottom-style' = [],
+                           'border-bottom-color' = "rgb(000,000,000)",
+                           'border-bottom-width' = []} ->
                  M3#magic_style{'border-bottom-color' = []};
               _O4 -> M3
-          end.    
+          end.
 
 
 test_import() ->
@@ -140,12 +140,14 @@ test_import(File) ->
 
 test_import(File, Ref) ->
     io:format("File is ~p~nRef is ~p~n", [File, Ref]),
-    Path = "/home/gordon/hypernumbers/priv/dataupload/"++File++".xls",
+    Path = code:lib_dir(hypernumbers)++"/../../tests/excel_files/"
+        ++ "Win_Excel07_As_97/"++File++".xls",
+    %Path = "/home/gordon/hypernumbers/tests/"++File++".xls",
     import(Path, "anonymous", Ref#refX{path=[File]}, File).
 
 import(File, User, Ref, Name) ->
-    
-    {Cells, _Names, _Formats, CSS, Warnings, Sheets} = filefilters:read(excel, File),    
+
+    {Cells, _Names, _Formats, CSS, Warnings, Sheets} = filefilters:read(excel, File),
     {Literals, Formulas} = lists:foldl(fun split_sheets/2, {[], []}, Cells),
     % io:format("There are ~p literals~nThere are ~p Formulae~n",
     %          [erlang:length(Literals), erlang:length(Formulas)]),
@@ -171,7 +173,7 @@ write_warnings_page(Ref, Sheets, User, Name, Warnings) ->
     hn_db_api:write_attributes([{Ref#refX{obj = {column, {2, 2}}},
                                  [{width, 400}]}]),
 
-    % write parent page information    
+    % write parent page information
     HeaderSt = [{"font-weight", "bold"},
                 {"font-size", "16px"}, {"color", "#E36C0A"}],
     WarningSt = [{"font-weight", "bold"},
@@ -199,16 +201,16 @@ write_warnings_page(Ref, Sheets, User, Name, Warnings) ->
                 Int + 1
         end,
     Index = lists:foldl(F, 9, Sheets),
-    
+
     write_to_cell(Ref, "Warnings", 2, Index + 1, HeaderSt),
     write_to_cell(Ref, "(remember this is an early BETA product!)",
                   2, Index + 2, WarningSt),
     write_to_cell(Ref, "Not all Excel functions are fully supported "
                   "at the moment. Any functions that you use which " ++
                   "are not supported will be listed here.", 2, Index + 3, []),
-    
+
     ok = write_warnings(Ref, Warnings, Index + 5),
-    
+
     ok.
 
 write_to_cell(Ref, Str, Col, Row, Attrs) ->
@@ -218,7 +220,7 @@ write_to_cell(Ref, Str, Col, Row, Attrs) ->
 write_warnings(_Ref, [], _) ->
     ok;
 % Idx is the index of W in the original list
-write_warnings(Ref, [W|Ws], Idx) -> 
+write_warnings(Ref, [W|Ws], Idx) ->
     WarningString = case W of
                         {S, []}          -> S;
                         {_, S}           -> S
@@ -257,13 +259,13 @@ conv_for_post(Val) ->
 
 setup_state(S, {"content-disposition",
                 {"form-data", [_Nm, {"filename", FileName}]}}) ->
-    
+
     Stamp = S#file_upload_state.filename ++ "__" ++ FileName,
     Site  = (S#file_upload_state.ref)#refX.site,
     Name  = filename:join([hn_mochi:docroot(Site), "..", "uploads", Stamp]),
     filelib:ensure_dir(Name),
     {ok, File} = file:open(Name, [raw, write]),
-    
+
     #file_upload_state{original_filename = FileName,
                        filename = Name,
                        file = File}.
@@ -277,7 +279,7 @@ stream_to_file(Mochi, Ref, UserName) ->
     Rec      = #file_upload_state{filename=Stamp, ref=Ref},
     CallBack = fun(N) -> file_upload_callback(N, Rec) end,
     {_, _, State} = mochiweb_multipart:parse_multipart_request(Mochi, CallBack),
-    
+
     {ok, State#file_upload_state.filename,
      State#file_upload_state.original_filename}.
 
