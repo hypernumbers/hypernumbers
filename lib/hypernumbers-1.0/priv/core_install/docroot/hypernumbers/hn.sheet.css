@@ -87,6 +87,12 @@ html,body {
     color              : #666;
 }
 
+#funwiz .resize {
+    position           : absolute;
+    right              : 0px;
+    bottom             : 0px;
+}
+
 #columnmanagerdialog, #lineview {
     position           : static; /* changed dynamically */
     overflow           : visible;
@@ -160,10 +166,9 @@ html,body {
   font-size: 10px;
 }
 
-#funwiz .resize {
-    position           : absolute;
-    right              : 0px;
-    bottom             : 0px;
+#wizfunargs span.req:after { /* required argument flag */
+  color: red;
+  content: '*';
 }
 
 #functions h2, #funwiz h2, #columnmanagerdialog h2, #lineview h2 {
