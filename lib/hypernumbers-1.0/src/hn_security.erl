@@ -26,7 +26,7 @@ run_validate([], []) ->
     true;
 run_validate([#form{kind = button}|LT], RT) ->
     run_validate(LT, RT);
-run_validate([E=#form{id={_,_,L}}|LT], [{L,Val}=G|RT]) ->
+run_validate([E=#form{id={_,_,L}}|LT], [{L,Val}|RT]) ->
     case E#form.restrictions of
         none -> run_validate(LT, RT);
         Restricted -> case lists:member(Val, Restricted) of
