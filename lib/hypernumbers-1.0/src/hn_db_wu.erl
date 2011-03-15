@@ -5,28 +5,28 @@
 %%%            that MUST be called from within an mnesia transactions - these
 %%%            functions can be considered <em>work units</em> from which
 %%%            api transactions can be constructed (hence the name).
-%%%            
+%%%
 %%% The module {@link hn_db_api} is the wrapper for calls to this
 %%% module.
-%%% 
-%%% This module <em>PRESUMES THAT PERMISSIONS ARE ALL IN ORDER</em> - 
+%%%
+%%% This module <em>PRESUMES THAT PERMISSIONS ARE ALL IN ORDER</em> -
 %%% for instance no function in this module will check if a biccie
 %%% is valid - that <em>MUST BE DONE</em> in the api level functions.
-%%% 
+%%%
 %%% This module generates two sorts of side-effects:
 %%% * changes to the database
 %%% * notifications to the front-end
-%%% 
+%%%
 %%% The changes to the database are done under mnesia transactions management
-%%% (as you would expect). It is necessary for the notifications to the 
-%%% front=end also to be under transaction management. This is achieved by 
+%%% (as you would expect). It is necessary for the notifications to the
+%%% front=end also to be under transaction management. This is achieved by
 %%% using the process dictionary in a specific way.
-%%% 
-%%% To notify the front-end under transaction management, a function in 
+%%%
+%%% To notify the front-end under transaction management, a function in
 %%% this module will call the function 'tell_front_end' with the appropriate
-%%% change - the transaction management is applied in the module 
+%%% change - the transaction management is applied in the module
 %%% {@link hn_db_api} and is documented there.
-%%% 
+%%%
 -module(hn_db_wu).
 
 %% Cell Query Exports
@@ -124,7 +124,7 @@ read_kv(Site, Key) ->
 mark_dirty_for_incl([], _) -> ok;
 mark_dirty_for_incl(Refs = [#refX{site = Site}|_], AReq) ->
         F = fun(C) -> case hn_db_wu:refX_to_idx(C) of
-                      false -> []; 
+                      false -> [];
                       Idx   -> Idx
                   end
         end,
@@ -140,7 +140,7 @@ mark_dirty_for_incl(Refs = [#refX{site = Site}|_], AReq) ->
 mark_these_dirty([], _) -> ok;
 mark_these_dirty(Refs = [#refX{site = Site}|_], AReq) ->
     F = fun(C) -> case hn_db_wu:refX_to_idx(C) of
-                      false -> []; 
+                      false -> [];
                       Idx   -> Idx
                   end
         end,
@@ -161,11 +161,11 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX, Type) ->
                 _        -> orddict:new()
             end,
     Value = case orddict:find("__rawvalue", Attrs) of
-                {ok, {datetime, _, [N]}} -> 
+                {ok, {datetime, _, [N]}} ->
                     muin_date:from_gregorian_seconds(N);
-                {ok, V} -> 
+                {ok, V} ->
                     V;
-                _ -> 
+                _ ->
                     blank
             end,
     {Value, [], [{local, Type, {Site, Path, XX, YY}}]}.
@@ -174,7 +174,7 @@ write_style_IMPORT(#refX{site=Site}, Style) ->
     Tbl = trans(Site, style),
     mnesia:write(Tbl, Style, write).
 
--spec write_magic_style_IMPORT(#refX{}, #magic_style{}) -> integer(). 
+-spec write_magic_style_IMPORT(#refX{}, #magic_style{}) -> integer().
 write_magic_style_IMPORT(Ref=#refX{site=Site}, MagicStyle) ->
     Tbl = trans(Site, style),
     store_style(Ref, Tbl, MagicStyle).
@@ -184,45 +184,45 @@ read_styles_IMPORT(#refX{site=Site}) ->
     MS = ets:fun2ms(fun(X) -> X end),
     mnesia:select(Tbl, MS, write).
 
--spec get_last_row(#refX{}) -> integer(). 
-get_last_row(#refX{site=S, path=P}) -> 
+-spec get_last_row(#refX{}) -> integer().
+get_last_row(#refX{site=S, path=P}) ->
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end, 
+    Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end,
                        [{Y, LO} || LO=#local_obj{obj={cell,{_,Y}}}
                                        <- read_objs(SelX, inside)]),
     largest_content(Desc, S).
 
--spec get_last_col(#refX{}) -> integer(). 
-get_last_col(#refX{site=S, path=P}) -> 
+-spec get_last_col(#refX{}) -> integer().
+get_last_col(#refX{site=S, path=P}) ->
     SelX = #refX{site=S, path=P, obj={page, "/"}},
-    Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end, 
-                       [{X, LO} || LO=#local_obj{obj={cell,{X,_}}} 
+    Desc = lists:usort(fun ({A,_}, {B,_}) -> A > B end,
+                       [{X, LO} || LO=#local_obj{obj={cell,{X,_}}}
                                        <- read_objs(SelX, inside)]),
     largest_content(Desc, S).
 
 %% Working from the bottom of the form to the top, find the first
 %% local object which has content, and return its corresponding
 %% ROW/COL
--spec largest_content([{integer(), #local_obj{}}], string()) -> integer(). 
+-spec largest_content([{integer(), #local_obj{}}], string()) -> integer().
 largest_content([], _S) -> 0;
 largest_content([{K, LO} | T], S) ->
     case has_content(S, LO) of
-        true -> K; 
+        true -> K;
         false -> largest_content(T, S)
     end.
 
 -spec has_content(string(), #local_obj{}) -> boolean().
 has_content(S, LO) ->
     case extract_field(read_attrs(S, [LO], read), "formula", []) of
-        [] -> false; 
-        [{_, []}] -> false; 
+        [] -> false;
+        [{_, []}] -> false;
         _ -> true
     end.
-    
+
 %% Key = atom()
 %% Value = term()
 %% @doc this function writes attributes to a cell or cells.
-%% 
+%%
 %% The refX{} can refer to a:
 %% <ul>
 %% <li>cell</li>
@@ -231,11 +231,11 @@ has_content(S, LO) ->
 %% <li>row</li>
 %% <li>page</li>
 %% </ul>
-%% 
+%%
 %% This function deals with style-able attributes of cells auto-magically.
-%% 
+%%
 %% If an attribute is saved against a cell which is one of the styled
-%% attributes defined in the ref magic_styles in file 
+%% attributes defined in the ref magic_styles in file
 %% <a href="../include/spriki.hrl">spriki.hrl</a>
 %% it will be magically managed as a style
 %% @end
@@ -244,10 +244,10 @@ has_content(S, LO) ->
 -spec write_attrs(#refX{}, [{string(), term()}]) -> ?dict.
 write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
 
--spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_spec()) 
+-spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_spec())
                  -> ?dict.
 write_attrs(Ref, NewAs, AReq) ->
-    Op = fun(Attrs) -> 
+    Op = fun(Attrs) ->
                  Is_Formula = lists:keymember("formula", 1, NewAs),
                  Has_Form = orddict:is_key("__hasform", Attrs),
                  Attrs2 = case {Is_Formula, Has_Form} of
@@ -261,12 +261,12 @@ write_attrs(Ref, NewAs, AReq) ->
          end,
     apply_to_attrs(Ref, Op).
 
--spec process_attrs([{string(), term()}], #refX{}, auth_srv:auth_spec(), ?dict) 
+-spec process_attrs([{string(), term()}], #refX{}, auth_srv:auth_spec(), ?dict)
                    -> ?dict.
 process_attrs([], _Ref, _AReq, Attrs) ->
     Attrs;
 process_attrs([{"formula",Val}|Rest], Ref, AReq, Attrs) ->
-    Attrs2 = 
+    Attrs2 =
         case superparser:process(Val) of
             {formula, Fla} ->
                 write_formula1(Ref, Fla, Val, AReq, Attrs);
@@ -276,7 +276,7 @@ process_attrs([{"formula",Val}|Rest], Ref, AReq, Attrs) ->
     ok = mark_dirty_for_zinf(Ref),
     process_attrs(Rest, Ref, AReq, Attrs2);
 process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
-    Attrs2  = case ms_util2:is_in_record(magic_style, Key) of 
+    Attrs2  = case ms_util2:is_in_record(magic_style, Key) of
                   true  -> apply_style(Ref, A, Attrs);
                   false -> orddict:store(Key, Val, Attrs)
               end,
@@ -299,26 +299,26 @@ expand_ref(#refX{site=S}=Ref) ->
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref, inside)].
 
 read_ref(Ref, Relation) -> read_ref(Ref, Relation, read).
--spec read_ref(#refX{}, inside | intersect, read | write) 
+-spec read_ref(#refX{}, inside | intersect, read | write)
               -> [{#refX{}, ?dict}].
 read_ref(#refX{site=S}=Ref, Relation, Lock) ->
     read_attrs(S, read_objs(Ref, Relation), Lock).
 
--spec read_ref_field(#refX{}, string(), read|write) 
+-spec read_ref_field(#refX{}, string(), read|write)
                     -> [{#refX{}, term()}].
 read_ref_field(Ref, Field, Lock) ->
     Cells = read_ref(Ref, inside, Lock),
     extract_field(Cells, Field, []).
-    
+
 -spec extract_field([{#refX{}, ?dict}], string(), [{#refX{}, term()}])
                    -> [{#refX{}, term()}].
 extract_field([], _F, Acc) ->
     lists:reverse(Acc);
 extract_field([{Ref, Attrs}|T], Field, Acc) ->
     Acc2 = case orddict:find(Field, Attrs) of
-               {ok, V} -> [{Ref, V}|Acc]; 
+               {ok, V} -> [{Ref, V}|Acc];
                _       -> Acc end,
-    extract_field(T, Field, Acc2).    
+    extract_field(T, Field, Acc2).
 
 -spec read_attrs(string(), [#local_obj{}], read|write)
                 -> [{#refX{}, ?dict}].
@@ -329,15 +329,17 @@ read_attrs_([], _S, _Tbl, _Lock, Acc) ->
     lists:reverse(Acc);
 read_attrs_([LO|Tail], S, Tbl, Lock, Acc) ->
     Acc2 = case mnesia:read(Tbl, LO#local_obj.idx, Lock) of
-               [#item{attrs=Attrs}] -> [{lobj_to_ref(S, LO), Attrs} | Acc];
-               []                   -> Acc end,
+               [#item{attrs=Attrs}] ->
+                   [{lobj_to_ref(S, LO), binary_to_term(Attrs)} | Acc];
+               []                   ->
+                   Acc end,
     read_attrs_(Tail, S, Tbl, Lock, Acc2).
 
 -spec lobj_to_ref(string(), #local_obj{}) -> #refX{}.
 lobj_to_ref(Site, #local_obj{path = P, type = Ty, obj = O}) ->
-    #refX{site = Site, type = Ty, path = P, obj = O}.
+    #refX{site = Site, type = Ty, path = binary_to_term(P), obj = O}.
 
--spec expunge_refs(string(), [#refX{}]) -> ok. 
+-spec expunge_refs(string(), [#refX{}]) -> ok.
 expunge_refs(S, Refs) ->
     ItemT = trans(S, item),
     ObjT = trans(S, local_obj),
@@ -357,15 +359,15 @@ expunge_refs(S, Refs) ->
 %% Status is either 'clean' or 'dirty'
 -spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ?dict.
 apply_to_attrs(#refX{site=Site}=Ref, Op) ->
-    Table = trans(Site, item), 
+    Table = trans(Site, item),
     Idx = refX_to_idx_create(Ref),
     Attrs = case mnesia:read(Table, Idx, write) of
-                [#item{attrs=A}] -> A;
+                [#item{attrs=A}] -> binary_to_term(A);
                 _                -> orddict:new()
             end,
     {Status, Attrs2} = Op(Attrs),
     Attrs3 = post_process(Ref, Attrs2),
-    Item = #item{idx = Idx, attrs = Attrs3},
+    Item = #item{idx = Idx, attrs = term_to_binary(Attrs3)},
     case deleted_attrs(Attrs, Attrs3) of
         []   -> ok;
         List -> tell_front_end_delete_attrs(Ref, List)
@@ -387,15 +389,15 @@ del_a1([H | T], L, Acc)             ->
         false -> del_a1(T, L, [H | Acc])
     end.
 
-%% Last chance to apply any default styles and formats. 
--spec post_process(#refX{}, ?dict) -> ?dict. 
+%% Last chance to apply any default styles and formats.
+-spec post_process(#refX{}, ?dict) -> ?dict.
 post_process(Ref, Attrs) ->
     Attrs2 = post_process_styles(Ref, Attrs),
     case orddict:find("__rawvalue", Attrs2) of
         {ok, Raw} -> post_process_format(Raw, Attrs2);
         _         -> Attrs2
-    end.                       
-    
+    end.
+
 -spec post_process_styles(#refX{}, ?dict) -> ?dict.
 post_process_styles(Ref, Attrs) ->
     case orddict:find("style", Attrs) of
@@ -435,7 +437,7 @@ post_process_format(Raw, Attrs) ->
     end.
 
 shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
-  when (Type == insert orelse Type == delete) andalso 
+  when (Type == insert orelse Type == delete) andalso
        (Disp == vertical orelse Disp == horizontal) ->
     {XOff, YOff} = hn_util:get_offset(Type, Disp, Obj),
     RefXSel = shift_pattern(From, Disp),
@@ -468,7 +470,7 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             DirtyChildren = lists:foldl(Fun, [], Formulas),
             %% Rewrite the local_obj entries by applying the shift offset.
             ObjTable = trans(Site, local_obj),
-            [begin 
+            [begin
                  mnesia:delete_object(ObjTable, LO, write),
                  mnesia:write(ObjTable, shift_obj(LO, XOff, YOff), write)
              end || LO <- ObjsList],
@@ -484,7 +486,7 @@ shift_obj(#local_obj{obj = {column, {X1, X2}}}=LO, XOff, _YOff) ->
 shift_obj(#local_obj{obj = {row, {Y1, Y2}}}=LO, _XOff, YOff) ->
     O2 = {row, {Y1 + YOff, Y2 + YOff}},
     LO#local_obj{obj = O2};
-shift_obj(LO, _, _) -> LO. 
+shift_obj(LO, _, _) -> LO.
 
 -spec read_styles(#refX{}, [cellidx()]) -> [#style{}].
 read_styles(#refX{site = Site}, Idxs) ->
@@ -497,7 +499,7 @@ read_styles(#refX{site = Site}, Idxs) ->
 -spec clear_cells(#refX{}) -> ok.
 clear_cells(RefX) -> clear_cells(RefX, contents).
 
--spec clear_cells(#refX{}, all | style | contents) -> ok. 
+-spec clear_cells(#refX{}, all | style | contents) -> ok.
 clear_cells(Ref, contents) ->
     do_clear_cells(Ref, content_attrs());
 clear_cells(Ref, all) ->
@@ -505,13 +507,13 @@ clear_cells(Ref, all) ->
 clear_cells(Ref, style) ->
     do_clear_cells(Ref, ["style", "merge"]);
 clear_cells(Ref, {attributes, DelAttrs}) ->
-    do_clear_cells(Ref, DelAttrs).    
+    do_clear_cells(Ref, DelAttrs).
 
 do_clear_cells(Ref, DelAttrs) ->
     Op = fun(RX) ->
                  fun(Attrs) ->
                          case lists:keymember("formula", 1, Attrs) of
-                             true -> 
+                             true ->
                                  set_relations(RX, [], [], false),
                                  unattach_form(RX, refX_to_idx(RX));
                              false -> ok
@@ -519,7 +521,7 @@ do_clear_cells(Ref, DelAttrs) ->
                          {clean, del_attributes(Attrs, DelAttrs)}
                  end
          end,
-    [apply_to_attrs(X, Op(X)) || X <- expand_ref(Ref)], 
+    [apply_to_attrs(X, Op(X)) || X <- expand_ref(Ref)],
     ok.
 
 content_attrs() ->
@@ -527,12 +529,12 @@ content_attrs() ->
      "value",
      "preview",
      "overwrite-color",
-     "__rawvalue",          
-     "__ast",             
-     "__recompile",       
-     "__shared",          
-     "__area",           
-     "__default-align"]. 
+     "__rawvalue",
+     "__ast",
+     "__recompile",
+     "__shared",
+     "__area",
+     "__default-align"].
 
 %% @doc takes a reference to a
 %% <ul>
@@ -574,7 +576,7 @@ delete_cells(#refX{site = S} = DelX, Disp) ->
             Fun = fun({dirty, _Ref}) -> true; ({clean, _Ref}) -> false end,
             Dirty = [X || {dirty, X} <- lists:filter(Fun, Status)],
             ok = mark_these_dirty(Dirty, nil),
-                    
+
             %% fix relations table.
             [ok = delete_relation(X) || X <- Cells],
 
@@ -585,7 +587,7 @@ delete_cells(#refX{site = S} = DelX, Disp) ->
 
 -spec deref_formula(#refX{}, #refX{}, atom()) -> {clean | dirty, #refX{}}.
 deref_formula(Ref, DelRef, Disp) ->
-    Op = fun(Attrs) -> 
+    Op = fun(Attrs) ->
                  case orddict:find("formula", Attrs) of
                      {ok, F1} ->
                          {Status, F2} = deref(Ref, F1, DelRef, Disp),
@@ -598,21 +600,21 @@ deref_formula(Ref, DelRef, Disp) ->
     {Status, Ref}.
 
 %% %% @doc copys cells from a reference to a reference
--spec copy_cell(#refX{}, #refX{}, 
+-spec copy_cell(#refX{}, #refX{},
                 false | horizontal | vertical,
                 all | style | value) -> ok.
-copy_cell(From=#refX{obj={cell, _}}, 
+copy_cell(From=#refX{obj={cell, _}},
           To=#refX{obj={cell, _}},
           _, value) ->
     SourceAttrs = case read_ref(From, inside, read) of
                       [{_, As}] -> As;
                       _         -> []
                   end,
-    Op = fun(Attrs) -> {clean, copy_value(SourceAttrs, Attrs)} 
+    Op = fun(Attrs) -> {clean, copy_value(SourceAttrs, Attrs)}
          end,
     apply_to_attrs(To, Op),
     ok;
-copy_cell(From=#refX{obj={cell, _}}, 
+copy_cell(From=#refX{obj={cell, _}},
           To=#refX{obj={cell, _}},
           _, style) ->
     SourceAttrs = case read_ref(From, inside, read) of
@@ -622,17 +624,17 @@ copy_cell(From=#refX{obj={cell, _}},
     Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs, ["style"])} end,
     apply_to_attrs(To, Op),
     ok;
-copy_cell(#refX{obj = {cell, {FX,FY}}} = From, 
-          #refX{obj = {cell, {TX,TY}}} = To, 
+copy_cell(#refX{obj = {cell, {FX,FY}}} = From,
+          #refX{obj = {cell, {TX,TY}}} = To,
           Incr, all) ->
     Attrs = case read_ref(From, inside, read) of
                 [{_, As}] -> As;
                 _         -> []
             end,
     Formula = case orddict:find("formula", Attrs) of
-                  {ok, V} -> superparser:process(V); 
+                  {ok, V} -> superparser:process(V);
                   _       -> "" end,
-    Formula2 = 
+    Formula2 =
         case Formula of
             {formula, F1} ->
                 offset_formula(F1, {(TX - FX), (TY - FY)});
@@ -661,7 +663,7 @@ copy_cell(#refX{obj = {cell, {FX,FY}}} = From,
                                 tconv:to_s(F1)
                         end
                 end;
-            _ -> 
+            _ ->
                 ""
         end,
     Attrs2 = copy_attributes(Attrs, orddict:new(), ["merge", "style"]),
@@ -677,31 +679,31 @@ read_page_structure(#refX{site = Site}) ->
     filter_pages(Pages, dh_tree:new()).
 
 read_pages(#refX{site = Site}) -> page_srv:get_pages(Site).
-    
+
 filter_pages([], Tree) ->
     Tree;
 filter_pages([Path | T], Tree) ->
     filter_pages(T, dh_tree:add(Path, Tree)).
 
 -spec refX_to_idx_create(#refX{}) -> pos_integer().
-%% @doc refX_to_idx_create refX_to_idx_create gets the index of an object 
+%% @doc refX_to_idx_create refX_to_idx_create gets the index of an object
 %% AND CREATES IT IF IT DOESN'T EXIST
 refX_to_idx_create(#refX{site = S, type = Ty, path = P, obj = O} = RefX) ->
     case refX_to_idx(RefX) of
         false -> Idx = util2:get_timestamp(),
                  RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-                 Rec = #local_obj{path = P, type = Ty, obj = O, idx = Idx,
-                                  revidx = RevIdx},
+                 Rec = #local_obj{path = term_to_binary(P), type = Ty, obj = O,
+                                  idx = Idx, revidx = term_to_binary(RevIdx)},
                  ok = mnesia:write(trans(S, local_obj), Rec, write),
                  Idx;
-        Idx   -> Idx        
+        Idx   -> Idx
     end.
 
 %% converts a tablename into the site-specific tablename
 trans(Site, TableName) when is_atom(TableName) ->
     Prefix = get_prefix(Site),
     list_to_atom(Prefix ++ "&" ++ atom_to_list(TableName));
-trans(Site, Record) when is_tuple(Record) -> 
+trans(Site, Record) when is_tuple(Record) ->
     NRec = trans(Site, element(1, Record)),
     setelement(1, Record, NRec).
 
@@ -728,7 +730,7 @@ trans_back(List) when is_list(List) ->
 trans_back(Atom) when is_atom(Atom) ->
     [_Site, _Port, NewName] = string:tokens(atom_to_list(Atom), "&"),
     list_to_atom(NewName);
-trans_back(Record) when is_tuple(Record)-> 
+trans_back(Record) when is_tuple(Record)->
     OldName = element(1, Record),
     OldName2 = atom_to_list(OldName),
     [_Site, _Port, NewName] = string:tokens(OldName2, "&"),
@@ -737,7 +739,7 @@ trans_back(Record) when is_tuple(Record)->
 get_prefix(R) when is_record(R, refX) ->
     get_prefix(R#refX.site);
 get_prefix("http://"++Site) ->
-    [case S of $: -> $&; S  -> S end 
+    [case S of $: -> $&; S  -> S end
      || S <- Site].
 
 shift_pattern(#refX{obj = {cell, {X, Y}}} = RefX, vertical) ->
@@ -756,32 +758,32 @@ shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
 idx_to_refX(S, Idx) ->
     case mnesia:read(trans(S, local_obj), Idx, read) of
         [Rec] -> #local_obj{path = P, type = Ty, obj = O} = Rec,
-                 #refX{site = S, path = P, type = Ty, obj = O};
+                 #refX{site = S, path = binary_to_term(P), type = Ty, obj = O};
         []    -> {error, id_not_found, Idx}
     end.
 
-%% @doc Make a #muin_rti record out of a ref record and a flag that specifies 
+%% @doc Make a #muin_rti record out of a ref record and a flag that specifies
 %% whether to run formula in an array context.
 refX_to_rti(#refX{site = S, path = P, obj = {cell, {C, R}}}, AR, AC)
   when is_boolean(AC) ->
-    #muin_rti{site = S, path = P, 
-              col = C, row = R, 
+    #muin_rti{site = S, path = P,
+              col = C, row = R,
               array_context = AC,
               auth_req = AR};
 refX_to_rti(#refX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
   when is_boolean(AC) ->
-    #muin_rti{site = S, path = P, 
-              col = C, row = R, 
+    #muin_rti{site = S, path = P,
+              col = C, row = R,
               array_context = AC,
               auth_req = AR}.
 
 %% refX_to_idx reads the index of an object AND RETURNS 'false'
 %% IF IT DOESN'T EXIST
--spec refX_to_idx(#refX{}) -> pos_integer() | false. 
+-spec refX_to_idx(#refX{}) -> pos_integer() | false.
 refX_to_idx(#refX{site = S, path = P, obj = O}) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    case mnesia:index_read(Table, RevIdx, revidx) of
+    case mnesia:index_read(Table, term_to_binary(RevIdx), revidx) of
         [I] -> I#local_obj.idx;
         _   -> false
     end.
@@ -793,7 +795,7 @@ make_cell(true, X, XOffset, false, Y, YOffset) ->
     [$$] ++ tconv:to_b26(X + XOffset) ++ tconv:to_s(Y + YOffset);
 make_cell(false, X, XOffset, true, Y, YOffset) ->
     tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y + YOffset);
-make_cell(true, X, XOffset, true, Y, YOffset)  -> 
+make_cell(true, X, XOffset, true, Y, YOffset)  ->
     [$$] ++ tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y + YOffset).
 
 %% drag'n'drop_cell drags and drops a cell ignoring offsets
@@ -816,7 +818,7 @@ drag_n_drop_cell(false, X, XOffset, true, Y, _YOffset) ->
         (X + XOffset) >= 1 andalso Y >= 1 ->
             tconv:to_b26(X + XOffset) ++ [$$] ++ tconv:to_s(Y)
     end;
-drag_n_drop_cell(true, X, _XOffset, true, Y, _YOffset)  -> 
+drag_n_drop_cell(true, X, _XOffset, true, Y, _YOffset)  ->
     if
         X <  1 orelse  Y <  1 -> "#REF!";
         X >= 1 andalso Y >= 1 ->
@@ -941,7 +943,7 @@ offset_with_ranges1([H | T], Cell, From, Offset, Status, Acc) ->
     offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]).
 
 %% handle cells
-make_new_range(Prefix, Cell1, Cell2, 
+make_new_range(Prefix, Cell1, Cell2,
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
                #refX{obj = {cell, {X, Y}}} = _From, {XO, YO}) ->
@@ -961,15 +963,15 @@ make_new_range(Prefix, Cell1, Cell2,
         _              -> {dirty, Ret}
     end;
 %% handle rows
-make_new_range(Prefix, Cell1, Cell2, 
+make_new_range(Prefix, Cell1, Cell2,
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
-               #refX{obj = {row, {Top, _Bottom}}}, 
+               #refX{obj = {row, {Top, _Bottom}}},
                {0=_XOffset, YOffset}) ->
     {St1, NC1} = if Top =< Y1 -> {dirty, make_cell(X1D, X1, 0, Y1D, Y1, YOffset)};
                     true      -> {clean, Cell1}
                  end,
-    {St2, NC2} = if Top =< Y2 -> {dirty, make_cell(X2D, X2, 0, Y2D, Y2, YOffset)}; 
+    {St2, NC2} = if Top =< Y2 -> {dirty, make_cell(X2D, X2, 0, Y2D, Y2, YOffset)};
                     true      -> {clean, Cell2}
                  end,
     Ret = Prefix ++ NC1 ++ ":" ++ NC2,
@@ -978,15 +980,15 @@ make_new_range(Prefix, Cell1, Cell2,
         _              -> {dirty, Ret}
     end;
 %% handle columns
-make_new_range(Prefix, Cell1, Cell2, 
+make_new_range(Prefix, Cell1, Cell2,
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
-               #refX{obj = {column, {Left, _Right}}}, 
+               #refX{obj = {column, {Left, _Right}}},
                {XOffset, 0=_YOffset}) ->
     {St1, NC1} = if Left =< X1 -> {dirty, make_cell(X1D, X1, XOffset, Y1D, Y1, 0)};
                     true       -> {clean, Cell1}
                  end,
-    {St2, NC2} = if Left =< X2 -> {dirty, make_cell(X2D, X2, XOffset, Y2D, Y2, 0)}; 
+    {St2, NC2} = if Left =< X2 -> {dirty, make_cell(X2D, X2, XOffset, Y2D, Y2, 0)};
                     true       -> {clean, Cell2}
                  end,
     Ret = Prefix ++ NC1 ++ ":" ++ NC2,
@@ -995,10 +997,10 @@ make_new_range(Prefix, Cell1, Cell2,
         _              -> {dirty, Ret}
     end;
 %% handle ranges (horizontal rewrite)
-make_new_range(Prefix, Cell1, Cell2, 
+make_new_range(Prefix, Cell1, Cell2,
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
-               #refX{obj = {range, {_XA, YA, _XB, YB}}}, 
+               #refX{obj = {range, {_XA, YA, _XB, YB}}},
                {XOffset, 0}) ->
     Status = if
                  (YA =< Y1 andalso YB >= Y2) ->
@@ -1012,10 +1014,10 @@ make_new_range(Prefix, Cell1, Cell2,
     end,
     {Status, Prefix ++ NC1 ++ ":" ++ NC2};
 %% handle ranges (horizontal rewrite)
-make_new_range(Prefix, Cell1, Cell2, 
+make_new_range(Prefix, Cell1, Cell2,
                {X1D, X1, Y1D, Y1},
                {X2D, X2, Y2D, Y2},
-               #refX{obj = {range, {XA, _YA, XB, _YB}}}, 
+               #refX{obj = {range, {XA, _YA, XB, _YB}}},
                {0, YOffset}) ->
     Status = if
                  (XA =< X1 andalso XB >= X2) ->
@@ -1043,7 +1045,7 @@ d_n_d_c_n_p_offset1([{zcellref, LineNo, ZPath, #cellref{text = Text} = H} | T],
     NewCell = drag_n_drop_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
     NewRef = {zcellref, LineNo, NewZPath, H#cellref{text = Prefix ++ NewCell}},
     d_n_d_c_n_p_offset1(T, XOffset, YOffset, [NewRef | Acc]);
-d_n_d_c_n_p_offset1([{cellref, LineNo, #cellref{text = Text} = H} | T], 
+d_n_d_c_n_p_offset1([{cellref, LineNo, #cellref{text = Text} = H} | T],
                     XOffset, YOffset, Acc) ->
     Cell = muin_util:just_ref(Text),
     Prefix = case muin_util:just_path(Text) of
@@ -1093,7 +1095,7 @@ make_zpath([{seg, Txt} | T], Acc)     -> make_zpath(T, [Txt | Acc]);
 make_zpath([{zseg, _, Txt} | T], Acc) -> make_zpath(T, [Txt | Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Local Relations 
+%%% Local Relations
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% -spec get_local_parents(#refX{}) -> [#refX{}].
 %% get_local_parents(#refX{site = Site} = X) ->
@@ -1105,22 +1107,22 @@ get_children(#refX{site = Site} = X) ->
     ChildIdxs = get_children_idxs(X),
     [idx_to_refX(Site, C) || C <- ChildIdxs].
 
--spec get_children_idxs(#refX{}) -> [cellidx()]. 
+-spec get_children_idxs(#refX{}) -> [cellidx()].
 get_children_idxs(#refX{site = Site, obj = {cell, _}} = Ref) ->
     case refX_to_idx(Ref) of
-        false -> 
+        false ->
             [];
-        Idx -> 
+        Idx ->
             Table = trans(Site, relation),
             case mnesia:read(Table, Idx, read) of
                 [R] -> R#relation.children;
                 _   -> []
             end
     end;
-get_children_idxs(#refX{obj = {Type, _}} = Ref) 
-  when (Type == row) orelse (Type == column) orelse 
+get_children_idxs(#refX{obj = {Type, _}} = Ref)
+  when (Type == row) orelse (Type == column) orelse
        (Type == range) orelse (Type == page) ->
-    lists:flatten([get_children_idxs(X) 
+    lists:flatten([get_children_idxs(X)
                    || X=#refX{obj={cell,_}} <- expand_ref(Ref)]).
 
 -spec delete_relation(#refX{}) -> ok.
@@ -1131,7 +1133,7 @@ delete_relation(#refX{site = Site} = Cell) ->
             Tbl = trans(Site, relation),
             case mnesia:read(Tbl, CellIdx, write) of
                 [R] ->
-                    [del_child(P, CellIdx, Tbl) || 
+                    [del_child(P, CellIdx, Tbl) ||
                         P <- R#relation.parents],
                     ok = mnesia:delete(Tbl, CellIdx, write);
                 _ -> ok
@@ -1154,17 +1156,17 @@ set_relations(#refX{site = Site} = Cell, FiniteParents, InfParents, IsIncl) ->
     Tbl = trans(Site, relation),
     CellIdx = refX_to_idx_create(Cell),
     Rel = case mnesia:read(Tbl, CellIdx, write) of
-              [R] -> R; 
+              [R] -> R;
               []  -> #relation{cellidx = CellIdx}
           end,
     Rel2 = set_parents(Tbl, Site, Rel, FiniteParents, InfParents, IsIncl),
     mnesia:write(Tbl, Rel2, write).
 
 -spec set_parents(atom(), list(), #relation{}, [#refX{}],
-                  [#refX{}], boolean()) -> #relation{}. 
+                  [#refX{}], boolean()) -> #relation{}.
 set_parents(Tbl,
-            Site, 
-            Rel = #relation{cellidx = CellIdx, 
+            Site,
+            Rel = #relation{cellidx = CellIdx,
                             parents = CurParents,
                             infparents = CurInfPars
                            },
@@ -1206,7 +1208,7 @@ has_include(Site, CellIdx) ->
         []  -> false;
         [R] -> R#relation.include
     end.
-            
+
 %% dereferences a formula
 deref(Child, [$=|Formula], DeRefX, Disp) when is_record(DeRefX, refX) ->
     {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {1, 1}),
@@ -1228,7 +1230,7 @@ deref1(Child, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Disp, Acc) ->
                  {formula, Str}   -> {formula, Prefix ++ Str}
              end,
     deref1(Child, T, DeRefX, Disp, [NewTok | Acc]);
-deref1(Child, [{cellref, _, #cellref{path = Path, text = Text}}=H | T], 
+deref1(Child, [{cellref, _, #cellref{path = Path, text = Text}}=H | T],
        DeRefX, Disp, Acc) ->
     NewTok = deref2(Child, H, Text, Path, DeRefX, Disp),
     deref1(Child, T, DeRefX, Disp, [NewTok | Acc]);
@@ -1266,7 +1268,7 @@ deref2(Child, H, Text, Path, DeRefX, Disp) ->
         _Else -> H
     end.
 
-%% if DelObj completely subsumes RewriteObj then the reference to RewriteObj should 
+%% if DelObj completely subsumes RewriteObj then the reference to RewriteObj should
 %% be dereferenced (return 'deref')
 %% %% if DelObj partially subsumes RewriteObj then the reference to RewriteObj should
 %% be rewitten (return 'rewrite')
@@ -1282,7 +1284,7 @@ deref_overlap(Text, DelObj, Disp) ->
     % - (if 3 corners are in the delete area then the laws of Euclidean
     %   geometry have broken down and the end times are probably upon us
     %   so I would flee for my life sinner!)
-    % 
+    %
     % BUT if all 4 corners are outside the delete area we need to check again:
     % - if the delete area is wholy inside the range then the range must be deferenced
     % - if the delete area transpierces the range then the range must be rewritten
@@ -1363,7 +1365,7 @@ intersect(XX1, YY1, X1, Y1, X2, Y2) ->
         (YY1 == zero), (XX1 >= X1), (XX1 =< X2)               -> in;
         (YY1 == inf),  (XX1 >= X1), (XX1 =< X2)               -> in;
         true                                                  -> out
-    end.         
+    end.
 
 %% rewrite/6
 rewrite(X1O, X2O, {range, _}, Text, left, horizontal)   -> % tested
@@ -1520,7 +1522,7 @@ recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} =
             rewrite(X1, X2, R, Text, middle_column, horizontal);
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2),
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY2) ->
-            rewrite(X1, X2, R, Text, middle_column, horizontal);                     
+            rewrite(X1, X2, R, Text, middle_column, horizontal);
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX1), (X2 =< XX2),
         (Y1 =< YY1), (Y2 >= YY1)                           ->
             rewrite(X1, X2, R, Text, middle_column, horizontal);
@@ -1537,7 +1539,7 @@ recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} =
         rewrite(Y1, Y2, R, Text, middle_row, vertical);
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX2),
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
-        rewrite(Y1, Y2, R, Text, middle_row, vertical);                     
+        rewrite(Y1, Y2, R, Text, middle_row, vertical);
         (X1 =< XX1), (X2 >= XX2),
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
         rewrite(Y1, Y2, R, Text, middle_row, vertical);
@@ -1648,7 +1650,7 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
                      end,
             Attrs2 = orddict:store("__hasform", t, Attrs),
             Attrs3 = orddict:store("preview", {Label2, 1, 1}, Attrs2),
-            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Html, 
+            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Html,
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web control
         {ok, {Pcode, {webcontrol, {Payload, Title}, Res}, Parents, InfParents,
@@ -1658,7 +1660,7 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             ok = attach_form(Ref, Form),
             Attrs2 = orddict:store("__hasform", t, Attrs),
             Attrs3 = orddict:store("preview", {Title, 1, 1}, Attrs2),
-            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res, 
+            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web-hingie that needs to be previewed
         {ok, {Pcode, {preview, {PreV, Wd, Ht}, Res}, Pars, InfPars, Recompile}} ->
@@ -1670,12 +1672,12 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
                                                             {"down",  Ht - 1}]},
                                                  Attrs2)
                      end,
-            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res, 
+            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
                                 {Pars, false}, InfPars, Recompile);
         % special case for the include function (special dirty!)
         {ok, {Pcode, {include, {PreV, Ht, Wd}, Res}, Pars, InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
-            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
+            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res,
                                 {Pars, true}, InfPars, Recompile);
         % normal functions with a resize
         {ok, {Pcode, {resize, Wd, Ht, Res}, Parents, InfParents, Recompile}} ->
@@ -1688,13 +1690,13 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
                                                             {"down",  Ht - 1}]},
                                                  Attrs2)
                      end,
-            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res, 
+            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile);
         % bog standard function!
         {ok, {Pcode, Res, Parents, InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
-            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res, 
+            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile)
     end.
 
@@ -1722,7 +1724,7 @@ default_align(Res) when is_list(Res)   -> "left";
 default_align(_Res)                    -> "center".
 
 write_formula2(Ref, OrigVal, {Type, Val},
-               {"text-align", Align}, 
+               {"text-align", Align},
                {"format", Format}, Attrs) ->
     Formula = case Type of
                   quote    -> [$' | Val];
@@ -1759,7 +1761,7 @@ add_attributes(D, [{Key, Val}|T]) ->
     D2 = orddict:store(Key, Val, D),
     add_attributes(D2, T).
 
-del_attributes(D, []) -> D; 
+del_attributes(D, []) -> D;
 del_attributes(D, [Key|T]) ->
     D2 = orddict:erase(Key, D),
     del_attributes(D2, T).
@@ -1778,22 +1780,22 @@ copy_attributes(SD, TD, [Key|T]) ->
     end.
 
 -spec matching_forms(#refX{}, common | string()) -> [#form{}].
-matching_forms(#refX{site=Site, path=Path}, Trans) -> 
+matching_forms(#refX{site=Site, path=Path}, Trans) ->
     MS = [{#form{id = {Path, Trans, '_'}, _='_'}, [], ['$_']}],
     mnesia:select(trans(Site, form), MS).
 
--spec attach_form(#refX{}, #form{}) -> ok. 
+-spec attach_form(#refX{}, #form{}) -> ok.
 attach_form(Ref=#refX{site=Site}, Form) ->
     Tbl = trans(Site, form),
     Idx = refX_to_idx_create(Ref),
     mnesia:write(Tbl, Form#form{key = Idx}, write).
 
--spec unattach_form(#refX{}, cellidx()) -> ok. 
+-spec unattach_form(#refX{}, cellidx()) -> ok.
 unattach_form(#refX{site=Site}, Key) ->
     Tbl = trans(Site, form),
     mnesia:delete(Tbl, Key, write).
-                 
-%% @doc Convert Parents and DependencyTree tuples as returned by 
+
+%% @doc Convert Parents and DependencyTree tuples as returned by
 %% Muin into SimpleXML.
 muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
     Url = hn_util:index_to_url({index, S, P, X1, Y1}),
@@ -1808,7 +1810,7 @@ apply_style(Ref, {Name, Val}, Attrs) ->
               end,
     orddict:store("style", NewSIdx, Attrs).
 
--spec fresh_style(#refX{}, string(), any()) -> integer(). 
+-spec fresh_style(#refX{}, string(), any()) -> integer().
 fresh_style(#refX{site=Site}=Ref, Name, Val) ->
     FieldNo = ms_util2:get_index(magic_style, Name),
     Tbl = trans(Site, style),
@@ -1827,30 +1829,30 @@ based_style(#refX{site=Site}=Ref, BaseIdx, Name, Val) ->
             BaseIdx %% <- strange..
     end.
 
--spec store_style(#refX{}, atom(), #magic_style{}) -> integer(). 
+-spec store_style(#refX{}, atom(), #magic_style{}) -> integer().
 store_style(Ref, Tbl, MStyle) ->
     case mnesia:read(Tbl, MStyle, read) of
-        [#style{idx = I}] -> 
-            I; 
+        [#style{idx = I}] ->
+            I;
         _ ->
             I = util2:get_timestamp(),
             StyleRec = #style{magic_style = MStyle, idx = I},
             ok = tell_front_end_style(Ref, StyleRec),
             ok = mnesia:write(Tbl, StyleRec, write),
             I
-    end.    
+    end.
 
--spec tell_front_end_delete_attrs(#refX{}, list()) -> ok. 
+-spec tell_front_end_delete_attrs(#refX{}, list()) -> ok.
 tell_front_end_delete_attrs(Ref, Attrs) ->
     Tuple = {delete_attrs, Ref, Attrs},
     tell_front_end1(Tuple).
 
--spec tell_front_end_style(#refX{}, #style{}) -> ok. 
+-spec tell_front_end_style(#refX{}, #style{}) -> ok.
 tell_front_end_style(Ref, Style) ->
     Tuple = {style, Ref, Style},
     tell_front_end1(Tuple).
 
--spec tell_front_end_change(#refX{}, ?dict) -> ok. 
+-spec tell_front_end_change(#refX{}, ?dict) -> ok.
 tell_front_end_change(Ref, Attrs) ->
     Tuple = {change, Ref, Attrs},
     tell_front_end1(Tuple).
@@ -1866,13 +1868,13 @@ tell_front_end1(Tuple) ->
 read_objs(#refX{site = S, path = P, obj = {cell, _} = O}, inside) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    mnesia:index_read(Table, RevIdx, revidx);
+    mnesia:index_read(Table, term_to_binary(RevIdx), revidx);
 read_objs(#refX{site = S, path = P, obj = {page, "/"}}, inside) ->
     Table = trans(S, local_obj),
-    mnesia:index_read(Table, P, path);    
+    mnesia:index_read(Table, P, path);
 read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
     Table = trans(S, local_obj),
-    Page = mnesia:index_read(Table, P, path),
+    Page = mnesia:index_read(Table, term_to_binary(P), path),
     Fun = fun(#local_obj{obj = {cell, {MX, _MY}}}) ->
                   if
                       X1 =< MX, MX =< X2 -> true;
@@ -1883,7 +1885,7 @@ read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
     lists:filter(Fun, Page);
 read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
     Table = trans(S, local_obj),
-    Page = mnesia:index_read(Table, P, path),
+    Page = mnesia:index_read(Table, term_to_binary(P), path),
     Fun = fun(#local_obj{obj = {cell, {_MX, MY}}}) ->
                   if
                       Y1 =< MY, MY =< Y2 -> true;
@@ -1894,10 +1896,10 @@ read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
     lists:filter(Fun, Page);
 read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
     Table = trans(S, local_obj),
-    Page = mnesia:index_read(Table, P, path),
+    Page = mnesia:index_read(Table, term_to_binary(P), path),
     Fun = fun(#local_obj{obj = {cell, {MX, MY}}}) ->
                   if
-                      X1 =< MX, MX =< X2, 
+                      X1 =< MX, MX =< X2,
                       Y1 =< MY, MY =< Y2 -> true;
                       true               -> false
                   end;
@@ -1910,53 +1912,57 @@ read_objs(#refX{site=Site}=Ref, intersect) ->
 read_objs(#refX{site = S, path = P, obj = O}, direct) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    mnesia:index_read(Table, RevIdx, revidx).
+    mnesia:index_read(Table, term_to_binary(RevIdx), revidx).
 
-%% Note that this is most useful when given cells, or ranges. 
+%% Note that this is most useful when given cells, or ranges.
 objs_intersect_ref(#refX{path = P, obj = {page, "/"}}) ->
-    [{#local_obj{path=P, _='_'}, [], ['$_']}];
+    [{#local_obj{path=term_to_binary(P), _='_'}, [], ['$_']}];
 objs_intersect_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}}) 
-                     when MP == P,
+    PBin = term_to_binary(P),
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}})
+                     when MP == PBin,
                           X1 =< MX, MX =< X2,
                           Y1 =< MY, MY =< Y2 -> LO;
                   (LO=#local_obj{path=MP, obj={row,{MY,MY}}})
-                     when MP == P,
+                     when MP == PBin,
                           Y1 =< MY, MY =< Y2 -> LO;
                   (LO=#local_obj{path=MP, obj={column, {MX,MX}}})
-                     when MP == P,
+                     when MP == PBin,
                           X1 =< MX, MX =< X2 -> LO;
-                  (LO=#local_obj{path=MP, obj={page, _}}) 
-                     when MP == P -> LO
+                  (LO=#local_obj{path=MP, obj={page, _}})
+                     when MP == PBin -> LO
                end);
 objs_intersect_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
+    PBin = term_to_binary(P),
     ets:fun2ms(
       fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}})
-            when MP == P, MX == X, MY == Y -> LO;
-         (LO=#local_obj{path=MP, obj={column,{MX,MX}}}) 
-            when MP == P, MX == X -> LO; 
-         (LO=#local_obj{path=MP, obj={row,{MY,MY}}}) 
-            when MP == P, MY == Y -> LO;
-         (LO=#local_obj{path=MP, obj={page, _}}) 
-            when MP == P -> LO
+            when MP == PBin, MX == X, MY == Y -> LO;
+         (LO=#local_obj{path=MP, obj={column,{MX,MX}}})
+            when MP == PBin, MX == X -> LO;
+         (LO=#local_obj{path=MP, obj={row,{MY,MY}}})
+            when MP == PBin, MY == Y -> LO;
+         (LO=#local_obj{path=MP, obj={page, _}})
+            when MP == PBin -> LO
       end);
 objs_intersect_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}}) 
-                     when MP == P,
+    PBin = term_to_binary(P),
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}})
+                     when MP == PBin,
                           X1 =< MX, MX =< X2 -> LO;
                   (LO=#local_obj{path=MP, obj={row,_}})
-                     when MP == P -> LO;
-                  (LO=#local_obj{path=MP, obj={page, _}}) 
-                     when MP == P -> LO
+                     when MP == PBin -> LO;
+                  (LO=#local_obj{path=MP, obj={page, _}})
+                     when MP == PBin -> LO
                end);
 objs_intersect_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
-    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}}) 
-                     when MP == P,
+    PBin = term_to_binary(P),
+    ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}})
+                     when MP == PBin,
                           R1 =< MY, MY =< R2 -> LO;
                   (LO=#local_obj{path=MP, obj={column, _}})
-                     when MP == P-> LO;
-                  (LO=#local_obj{path=MP, obj={page, _}}) 
-                     when MP == P -> LO
+                     when MP == PBin-> LO;
+                  (LO=#local_obj{path=MP, obj={page, _}})
+                     when MP == PBin -> LO
                end).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2002,7 +2008,7 @@ deref_overlap_test_() ->
      % cell not in a range
      ?_assertEqual({formula, "A1:B3"}, deref_overlap_test("A1:B3", "D1", horizontal)),
      ?_assertEqual({formula, "A1:B3"}, deref_overlap_test("A1:B3", "D1", vertical)),
-     
+
      % ranges match
      ?_assertEqual({deref, "#REF!"}, deref_overlap_test("A1:B2", "A1:B2", horizontal)),
      ?_assertEqual({deref, "#REF!"}, deref_overlap_test("A1:B2", "A1:B2", vertical)),
@@ -2066,7 +2072,7 @@ deref_overlap_test_() ->
      ?_assertEqual({recalc, "C3:E5"}, deref_overlap_test("C3:E7", "C4:F5", vertical)),
      ?_assertEqual({recalc, "C3:E7"}, deref_overlap_test("C3:E7", "A4:G5", horizontal)),
      ?_assertEqual({recalc, "C3:E5"}, deref_overlap_test("C3:E7", "A4:G5", vertical)),
-     
+
      % cell in a row
      ?_assertEqual({deref, "#REF!"}, deref_overlap_test("C3", "3:3", vertical)),
      % cell not in a row
@@ -2092,7 +2098,7 @@ deref_overlap_test_() ->
      % range with column delete (3)
      ?_assertEqual({recalc, "C2:D6"}, deref_overlap_test("C2:E6", "E:E", horizontal)),
      ?_assertEqual({recalc, "C2:D6"}, deref_overlap_test("C2:E6", "E:F", horizontal))
-     
+
      % cell in a row
      % ?_assertEqual({deref, "#REF!"}, deref_overlap_test("C5", {cell, {3, 5}}, {row, {4, 6}})),
    % cell not in a row
@@ -2111,7 +2117,7 @@ deref_overlap_test_() ->
      % ?_assertEqual({recalc, "C5:D7"}, deref_overlap_test("C5:D8", {range, {3, 5, 4, 8}}, {row, {8, 9}})),
      % delete row slices middle
      % ?_assertEqual({recalc, "C5:D6"}, deref_overlap_test("C5:D8", {range, {3, 5, 4, 8}}, {row, {6, 7}})),
-     
+
      % columns can't be derefed by cell deletes
      % ?_assertEqual({formula, "C:F"}, deref_overlap_test("C:F", {column, {3, 6}}, {cell, {2, 3}})),
      % columns can't be derefed by range deletes
@@ -2134,7 +2140,7 @@ deref_overlap_test_() ->
      % ?_assertEqual({recalc, "C:D"}, deref_overlap_test("C:F", {column, {3, 6}}, {column, {5, 7}})),
      % column delete slices middles
      % ?_assertEqual({recalc, "C:E"}, deref_overlap_test("C:F", {column, {3, 6}}, {column, {5, 5}})),
-     
+
      % rows can't be derefed by cell deletes
      % ?_assertEqual({formula, "3:6"}, deref_overlap_test("3:6", {row, {3, 6}}, {cell, {2, 3}})),
      % rows can't be derefed by range deletes

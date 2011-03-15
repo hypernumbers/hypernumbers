@@ -10,6 +10,9 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         upgrade_doubler_2011_03_14/0,
+         %upgrade_item_2011_03_14/0,
+         %upgrade_local_obj_2011_03_14/0,
          upgrade_auth_srv_2011_03_13/0,
          upgrade_loc_obj_2011_03_01/0,
          upgrade_row_col_2011_02_04/0,
@@ -25,6 +28,53 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+% store paths and reverse indices in #local_obj as binaries not lists of strings
+% and also compresses the attributes in items to a binary (big savings!)
+% * git pull
+% * > hypernumbers_sup:suspend_mochi().
+% * ./hn quick
+% * > hn_db_upgrade:upgrade_item_2011_03_14().
+% * > hypernumbers_sup:resume_mochi().
+upgrade_doubler_2011_03_14() ->
+    upgrade_item_2011_03_14(),
+    upgrade_local_obj_2011_03_14().
+
+% run as a doubler!
+upgrade_item_2011_03_14() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   % first add stuff to the relations table
+                   Fun = fun({item, Idx, Attrs}) ->
+                                  {item, Idx, term_to_binary(Attrs)}
+                          end,
+                   Tbl = hn_db_wu:trans(Site, item),
+                   Ret = mnesia:transform_table(Tbl, Fun,
+                                                 [idx, attrs]),
+
+                   io:format("Table ~p transformed: ~p~n", [Tbl, Ret])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
+
+% run as a doubler!
+upgrade_local_obj_2011_03_14() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   % first add stuff to the relations table
+                   Fun = fun({local_obj, Idx, Type, Path, Obj, RevIdx}) ->
+                                  {local_obj, Idx, Type, term_to_binary(Path),
+                                   Obj, term_to_binary(RevIdx)}
+                          end,
+                   Tbl = hn_db_wu:trans(Site, local_obj),
+                   Ret = mnesia:transform_table(Tbl, Fun,
+                                                 [idx, type, path,
+                                                  obj, revidx]),
+
+                   io:format("Table ~p transformed: ~p~n", [Tbl, Ret])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 % Move auth_srv from a dets table into the kv store
 % * git pull
