@@ -100,6 +100,7 @@
         ]).
 
 -export([
+         item_and_local_objs_DEBUG/1,
          url_DEBUG/1,
          url_DEBUG/2,
          idx_DEBUG/2,
@@ -139,6 +140,12 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+item_and_local_objs_DEBUG(Site) ->
+    F = fun() ->
+                hn_db_wu:item_and_local_objs_DEBUG(Site)
+        end,
+    mnesia:transaction(F).
+
 url_DEBUG(Url) -> url_DEBUG(Url, quiet).
 
 url_DEBUG(Url, Mode) -> RefX = hn_util:url_to_refX(Url),
@@ -159,25 +166,19 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                               O1 = io_lib:format("Debugging the Idx ~p on site ~p",
                                                  [Idx, Site]),
                               NewRefX = hn_db_wu:idx_to_refX(Site, Idx),
-                              case Mode of
-                                  verbose -> io_lib:format("RefX is ~p",
-                                                           [NewRefX]);
-                                  _       -> ok
-                              end,
-                              {NewRefX, [O1 | Output]};
+                              O1a = pp(Site, Idx, NewRefX, Mode, O1),
+                              {NewRefX, [[O1a] | Output]};
                           refX ->
                               {Payload, Output}
                       end,
                 #refX{path = P, type = _T, obj = O} = RefX,
                 P2 = hn_util:list_to_path(P),
-                io_lib:format("The idx points to ~p on page ~p", [O, P2]),
+                O2a  = io_lib:format("The idx points to ~p on page ~p", [O, P2]),
                 Contents = hn_db_wu:read_ref(RefX, inside),
-                O3 = case Mode of
-                    verbose -> io_lib:format("The object contains ~p", [Contents]);
-                    _       -> pretty_print(Contents, "The idx contains:", O2)
-                end,
+                io:format("RefX is ~p~nContents is ~p~n", [RefX, Contents]),
+                O3 = pretty_print(Contents, "The idx contains:", [[O2a] | O2]),
                 lists:reverse(O3)
-          end,
+        end,
     {atomic, Msg} = mnesia:transaction(F),
     [io:format(X ++ "~n") || X <- Msg],
     ok.
@@ -1080,6 +1081,18 @@ print_f2(Site, [H | T], Acc) ->
                              hn_util:list_to_path(RefX#refX.path),
                              H#form.kind, Lable]) | Acc],
     print_f2(Site, T, NewAcc).
+
+pp(Site, Idx, RefX, verbose, O) ->
+    [I] = hn_db_wu:idx_DEBUG(Site, Idx),
+    io:format("I is ~p~n", [I]),
+    O1 = io_lib:format("local_obj contains ~p ~p ~p~n",
+                       [binary_to_term(I#local_obj.path),
+                        I#local_obj.obj,
+                        binary_to_term(I#local_obj.revidx)]),
+    O2 = io_lib:format("RefX contains ~p ~p~n", [RefX#refX.path, RefX#refX.obj]),
+
+    [[O1] | [[O2] | O]];
+pp(_, _, _, _, O) -> O.
 
 % fix up escaping!
 esc(X) -> X.

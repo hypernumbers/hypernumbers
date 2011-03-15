@@ -31,7 +31,9 @@
 
 %% Cell Query Exports
 -export([
-         read_relations_DEBUG/1
+         item_and_local_objs_DEBUG/1,
+         read_relations_DEBUG/1,
+         idx_DEBUG/2
         ]).
 
 -export([
@@ -299,6 +301,7 @@ expand_ref(#refX{site=S}=Ref) ->
     [lobj_to_ref(S, LO) || LO <- read_objs(Ref, inside)].
 
 read_ref(Ref, Relation) -> read_ref(Ref, Relation, read).
+
 -spec read_ref(#refX{}, inside | intersect, read | write)
               -> [{#refX{}, ?dict}].
 read_ref(#refX{site=S}=Ref, Relation, Lock) ->
@@ -477,15 +480,18 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
             [idx_to_refX(S, X) || {S, X} <- DirtyChildren]
     end.
 
-shift_obj(#local_obj{obj = {cell, {X, Y}}}=LO, XOff, YOff) ->
+shift_obj(#local_obj{path = P, obj = {cell, {X, Y}}} = LO, XOff, YOff) ->
     O2 = {cell, {X + XOff, Y + YOff}},
-    LO#local_obj{obj = O2};
-shift_obj(#local_obj{obj = {column, {X1, X2}}}=LO, XOff, _YOff) ->
+    RevIdx2 = hn_util:list_to_path(binary_to_term(P)) ++ hn_util:obj_to_ref(O2),
+    LO#local_obj{obj = O2, revidx = term_to_binary(RevIdx2)};
+shift_obj(#local_obj{path = P, obj = {column, {X1, X2}}} = LO, XOff, _YOff) ->
     O2 = {column, {X1 + XOff, X2 + XOff}},
-    LO#local_obj{obj = O2};
-shift_obj(#local_obj{obj = {row, {Y1, Y2}}}=LO, _XOff, YOff) ->
+    RevIdx2 = hn_util:list_to_path(binary_to_term(P)) ++ hn_util:obj_to_ref(O2),
+    LO#local_obj{obj = O2, revidx = term_to_binary(RevIdx2)};
+shift_obj(#local_obj{path = P, obj = {row, {Y1, Y2}}} = LO, _XOff, YOff) ->
     O2 = {row, {Y1 + YOff, Y2 + YOff}},
-    LO#local_obj{obj = O2};
+    RevIdx2 = hn_util:list_to_path(binary_to_term(P)) ++ hn_util:obj_to_ref(O2),
+    LO#local_obj{obj = O2, revidx = term_to_binary(RevIdx2)};
 shift_obj(LO, _, _) -> LO.
 
 -spec read_styles(#refX{}, [cellidx()]) -> [#style{}].
@@ -754,6 +760,27 @@ shift_pattern(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
     RefX#refX{obj = {range, {0, Y1, infinity, infinity}}};
 shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1, 0, infinity, infinity}}}.
+
+item_and_local_objs_DEBUG(Site) ->
+    Tab1 = trans(Site, item),
+    io:format("Dumping item table:~n"),
+    Fun1 = fun(X, []) ->
+                  io:format("Record ~p has Attrs ~p~n",
+                            [X#item.idx, binary_to_term(X#item.attrs)]),
+                  []
+          end,
+    mnesia:foldl(Fun1, [], Tab1),
+    Tab2 = trans(Site, local_obj),
+    io:format("Dumping local_obj table:~n"),
+    Fun2 = fun(X, []) ->
+                   io:format("Record ~p is ~p ~p with a reverse index of ~p~n",
+                             [X#local_obj.idx, binary_to_term(X#local_obj.path),
+                              X#local_obj.obj, binary_to_term(X#local_obj.revidx)]),
+                   []
+           end,
+    mnesia:foldl(Fun2, [], Tab2).
+
+idx_DEBUG(S, Idx) -> mnesia:read(trans(S, local_obj), Idx, read).
 
 idx_to_refX(S, Idx) ->
     case mnesia:read(trans(S, local_obj), Idx, read) of
