@@ -3,7 +3,7 @@
 -define(templates, [null, null, null, null, null, null, null]).
 -define(final_template, null).
 
--define(site, "http://hypernumbers.dev:9000").
+-define(site, "http://dla-piper.hypernumbers.com:80").
 
 -record(refX,
         {
@@ -18,7 +18,7 @@
         ]).
 
 upload() ->
-    Dir = "/home/gordon/hypernumbers/priv/dataupload/",
+    Dir = "/hn/hypernumbers/priv/dataupload/",
     Files = filelib:wildcard(Dir ++ "/*.xls"),
     io:format("There are ~p files~n", [length(Files)]),
     io:format("An example is ~p~n", [hd(Files)]),
@@ -40,20 +40,20 @@ upload2([H | T]) ->
         Temp -> hn_templates:load_template(RefX, Temp)
     end,
     hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
-    %% N1 = util2:get_timestamp(),
-    %% Memory = erlang:memory(),
-    %% {value, {total, Total}} = lists:keysearch(total, 1, Memory),
-    %% {value, {processes, Processes}} = lists:keysearch(processes, 1, Memory),
-    %% {value, {processes_used, Proc_U}} = lists:keysearch(processes_used, 1, Memory),
-    %% {value, {system, System}} = lists:keysearch(system, 1, Memory),
-    %% {value, {atom, Atom}} = lists:keysearch(atom, 1, Memory),
-    %% {value, {atom_used, Atom_U}} = lists:keysearch(atom_used, 1, Memory),
-    %% {value, {binary, Binary}} = lists:keysearch(binary, 1, Memory),
-    %% {value, {code, Code}} = lists:keysearch(code, 1, Memory),
-    %% {value, {ets, Ets}} = lists:keysearch(ets, 1, Memory),
-    %% log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p", 
-    %%    [N1, Total, Processes, Proc_U, System, Atom, Atom_U, Binary, Code, Ets])),
-    % garbage_collect(),
+    N1 = util2:get_timestamp(),
+    Memory = erlang:memory(),
+    {value, {total, Total}} = lists:keysearch(total, 1, Memory),
+    {value, {processes, Processes}} = lists:keysearch(processes, 1, Memory),
+    {value, {processes_used, Proc_U}} = lists:keysearch(processes_used, 1, Memory),
+    {value, {system, System}} = lists:keysearch(system, 1, Memory),
+    {value, {atom, Atom}} = lists:keysearch(atom, 1, Memory),
+    {value, {atom_used, Atom_U}} = lists:keysearch(atom_used, 1, Memory),
+    {value, {binary, Binary}} = lists:keysearch(binary, 1, Memory),
+    {value, {code, Code}} = lists:keysearch(code, 1, Memory),
+    {value, {ets, Ets}} = lists:keysearch(ets, 1, Memory),
+    log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p", 
+       [N1, Total, Processes, Proc_U, System, Atom, Atom_U, Binary, Code, Ets])),
+    garbage_collect(),
     log_remoting(),
     limiter(),
     upload2(T).
@@ -73,7 +73,7 @@ upload3([Template | T1], [Path | T2]) ->
 
 log_remoting() ->
     Srv = hn_util:site_to_atom(?site, "_remoting"),
-    garbage_collect(whereis(Srv)),
+    garbage_collect(global:whereis_name(Srv)),
     %io:format("Heap size of remoting is ~p~n",
     %          [process_info(whereis(Srv), heap_size)]),
     ok.
