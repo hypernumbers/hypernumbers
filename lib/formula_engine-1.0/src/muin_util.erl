@@ -199,6 +199,9 @@ walk_path(Currloc, Dest) ->
 
 walk_zpath(_Path, [{zseg, _, _} | _T] = Dest) ->
     Dest;
+walk_zpath(_Path, [{seg, [Char | _]} | _T] = Dest)
+  when Char =/= $.->
+    Dest;
 walk_zpath(Path, ZPath) ->
     Len = length(Path),
     Zips = lists:duplicate(Len, seg),
