@@ -791,7 +791,9 @@ m2(Site, [S | T1], [{zseg, Z, _} | T2], Htap)   ->
 
 % the zinf server has no context to execute at this stage!
 zeval_from_zinf(Site, Path, Toks) ->
-    zeval2(Site, Path, Toks, 1, 1).
+    % zeval evaluates an expression in a cell context - but that cell
+    % cannot actually exists - so use {0,0} which is the cell 1 up and 1 right of A1
+    zeval2(Site, Path, Toks, 0, 0).
 
 zeval(Site, Path, Toks) ->
     X = ?mx,
@@ -804,7 +806,7 @@ zeval(Site, Path, Toks) ->
 zeval2(Site, Path, Toks, X, Y) ->
     % capture the process dictionary (it will get gubbed!)
     OldContext = get(),
-    % we run in the context of call 'a1' - this is because z-order expressions
+    % we run in the context of call '0, 0' - this is because z-order expressions
     % do not support r[]c[] format cell references (or is it vice-versa?)
     RefX = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
     % no array context (fine) or security context (erk!)

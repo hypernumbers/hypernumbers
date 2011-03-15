@@ -327,8 +327,11 @@ match_seg(selector,    _S,  _Site, _Htap) -> nomatch.
 
 run_zeval(Site, Path, Z) ->
     Z2 = string:strip(string:strip(Z, right, ?sq_ket), left, ?sq_bra),
-    {ok, Toks} = xfl_lexer:lex(Z2, {1, 1}),
+    % this expression is not 'real' so we run it in a non-existent cell
+    % {cell, {0, 0}} is 1 up and 1 left of the cell 'A1'
+    {ok, Toks} = xfl_lexer:lex(Z2, {0, 0}),
     % need to set up the process dictionary
+    io:format("Z2 is ~p~n", [Z2]),
     Fun = fun() -> try
                        muin:zeval_from_zinf(Site, Path, Toks)
                    catch
