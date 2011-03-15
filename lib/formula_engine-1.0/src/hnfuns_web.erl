@@ -47,7 +47,7 @@
     HTML = "<div id='disqus_thread'></div>"
         ++ "<a href='http://disqus.com' class='dsq-brlink'>"
         ++ "blog comments powered by <span class='logo-disqus'>Disqus</span></a>",
-    {resize, 8, 15, HTML}.    
+    {resize, 8, 15, HTML}.
 
 'facebook.comments'([]) ->
     HTML = "<div id='fb-root'></div><fb:comments href='http://hypernumbers.com/' num_posts='2' width='500'></fb:comments>",
@@ -69,7 +69,7 @@ vline1(H, N, M, Colour) ->
     Div = "<div style='display:block;height:100%;width:50%;border-right:"
         ++ integer_to_list(N2) ++ "px " ++ Style ++ " " ++ Col ++ "'></div>"
         ++ "<div style='display:block;width:50%;'></div>",
-    {resize, 1, H2, Div}. 
+    {resize, 1, H2, Div}.
 
 'horizontal.line.'([W, N, M, Colour]) ->
     hline1(W, N, M, Colour);
@@ -99,7 +99,7 @@ make_style(N) -> case N of
                      5 -> "ridge";
                      6 -> "inset";
                      _ -> ?ERR_VAL
-                 end. 
+                 end.
 
 'lorem.ipsum'(Vals) ->
     N = typechecks:std_ints(Vals),
@@ -143,15 +143,15 @@ get_lorem() ->
                      andalso N =< 10 -> "Disce Pati";
 'lorem.h1'([11])                     -> "Dolus Bonus";
 'lorem.h1'([N]) when N =< 12
-                     andalso N =< 13 -> "Mirable Visu";  
+                     andalso N =< 13 -> "Mirable Visu";
 'lorem.h1'([N]) when N =< 13
-                     andalso N =< 14 -> "Cicatrix Manet";  
+                     andalso N =< 14 -> "Cicatrix Manet";
 'lorem.h1'([N]) when N =< 15
-                     andalso N =< 17 -> "Amor Vincit Omnia";  
+                     andalso N =< 17 -> "Amor Vincit Omnia";
 'lorem.h1'([N]) when N =< 18
-                     andalso N =< 19 -> "Dum Docent, Discunt"; 
+                     andalso N =< 19 -> "Dum Docent, Discunt";
 'lorem.h1'([N]) when N =< 20
-                     andalso N =< 21 -> "Ad Unguem Factus Homo";  
+                     andalso N =< 21 -> "Ad Unguem Factus Homo";
 'lorem.h1'([N]) when  N >= 22        -> "Fiat Justitia Ruat Caelum".
 
 'crumb.trail'([]) ->
@@ -283,7 +283,7 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
     case has_circref(Ret) of
         true  -> {errval, '#CIRCREF'};
         false ->
-            AbsRan = area_util:to_absolute(RelRan, 
+            AbsRan = area_util:to_absolute(RelRan,
                                            muin:context_setting(col),
                                            muin:context_setting(row)),
             #rangeref{path=RelPath, tl = {X1,Y1}, br = {X2,Y2}} = AbsRan,
@@ -302,20 +302,20 @@ has_c1([])                                -> false;
 has_c1([[{errval, '#CIRCREF!'} , _] | _T]) -> true;
 has_c1([_H | T])                          -> has_c1(T).
 
-table_([THead | Range], Sort) ->  
+table_([THead | Range], Sort) ->
     Id = "tbl_"++muin_util:create_name(),
-    
+
     Head = ["<thead><tr>",
             [["<th>", X,"</th>"] || X <- THead ],
             "</tr></thead>"],
-    
+
     Rows = [ ["<tr>", [ ["<td>", Cell,"</td>"] || Cell <- Row ],"</tr>"]
               || Row <- Range ],
-    
+
     Script = ["<script type='text/javascript'>$(\"#", Id,
               "\").tablesorter({headers: { 1: { sorter:'digit' }}, sortList:[[",
               Sort, ",0]]});</script>"],
-    
+
     lists:flatten(["<table id='", Id,"' class='tablesorter'>", Head, Rows,
                    "</table>", Script]).
 

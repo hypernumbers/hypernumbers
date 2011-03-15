@@ -45,7 +45,7 @@ column([C]) when ?is_namedexpr(C)   -> ?ERRVAL_NAME;
 column([C]) when ?is_cellref(C)     -> muin:col_index(muin:col(C));
 column([Err]) when ?is_errval(Err)  -> Err;
 column(_Else)                       -> ?ERRVAL_VAL.
- 
+
 %% TODO: Needs to be recompiled every time -- how to handle that cleanly?
 %% (without writing to proc dict)
 indirect([S]) ->
@@ -123,7 +123,7 @@ address1(Row, Col, 4, false) -> "R[" ++ Row ++ "]C[" ++ Col ++ "]".
 %% If either of them is omitted for areas that aren't of height/width 1, a
 %% vertical/horizontal array is returned.
 index([{list, V1}, V2, V3, V4])  ->
-    
+
     Num = col([V4],
               [eval_funs, fetch, area_first, cast_num],
               [return_errors, {all, fun is_number/1}]),
@@ -172,9 +172,9 @@ index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
         true  -> ?ERRVAL_REF;
         false ->
             case ?is_array(Area) of
-                true ->                    
+                true ->
                     [{_, Rows}] = col([Area], [fetch, {conv, blank, 0}]),
-                    
+
                     case {Y, X} of
                         {0, 0} -> {array, Rows};
                         {0, _} -> area_util:col(X, {array, Rows});
@@ -186,12 +186,12 @@ index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
                 false ->
                     #rangeref{tl = {{offset, X1}, {offset, Y1}},
                               br = {{offset, X2}, {offset, Y2}}}
-                        = area_util:to_relative(Area, 
+                        = area_util:to_relative(Area,
                                                 muin:context_setting(col),
                                                 muin:context_setting(row)),
 
                     case {Y, X} of
-                        {0, 0} -> 
+                        {0, 0} ->
                             Area;
                         {0, _} ->
                             Area#rangeref{tl={{offset,(X1+X)-1},{offset,Y1}},
@@ -206,7 +206,7 @@ index_(Area, [FY, FX]) when ?is_area(Area) orelse ?is_rangeref(Area) ->
                                       col={offset, (X1+X)-1},
                                       path=Area#rangeref.path}
                     end
-            end    
+            end
     end.
 
 match([V1, V2]) ->
@@ -260,7 +260,7 @@ vlookup([V, IA, I0, IB]) ->
            true             -> IA
         end,
     B = ?bool(IB, [cast_numbers, cast_dates, cast_blanks, ban_strings]),
-    
+
     muin_checks:ensure(?is_area(A), ?ERRVAL_REF),
     muin_checks:ensure(I =< area_util:width(A), ?ERRVAL_REF),
     muin_checks:ensure(I >= 1, ?ERRVAL_VAL),
@@ -278,17 +278,17 @@ vlookup([V, IA, I0, IB]) ->
     %% {Tag, L} = A,
     %% NewA = {Tag, transpose(L)},
     %% hlookup([V, NewA, I, B]).
-    
+
 
 hlookup([V, A, I]) ->
     hlookup([V, A, I, true]);
 hlookup([V, IA, I0, B]) ->
-    
+
     I = ?int(I0, [cast_strings, cast_bools, ban_blanks, ban_dates]),
     A = if ?is_rangeref(IA) -> muin:fetch(IA);
            true             -> IA
         end,
-    
+
     muin_checks:ensure(?is_area(A), ?ERRVAL_REF),
     muin_checks:ensure(I =< area_util:height(A), ?ERRVAL_REF),
     muin_checks:ensure(I >= 1, ?ERRVAL_VAL),

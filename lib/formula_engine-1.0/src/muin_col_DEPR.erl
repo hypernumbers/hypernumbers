@@ -48,7 +48,7 @@
 %% before cast_or_die, etc)
 collect(Args, Type, Rules, Filters) ->
     [ X || X <- collect(Args, Type, Rules), ignor(X, Filters) ].
-                                   
+
 collect(Args, Type, Rules) ->
     [ casts(X, Type, Rules) || X <- Args ].
 
@@ -158,7 +158,7 @@ flatten_areas(A) ->
     flatten_areas([A]).
 
 %% Rules:
-%% ignore_strings | cast_strings | cast_strings_zero | 
+%% ignore_strings | cast_strings | cast_strings_zero |
 %%  cast_strings_or_ignore | ban_strings
 %% ignore_bools | cast_bools | ban_bools
 %% ignore_dates | cast_dates | ban_dates
@@ -193,7 +193,7 @@ collect_bools(Vs, Rules) ->
     generic_collect(Vs, Rules, fun erlang:is_boolean/1, bool).
 
 %% @doc Same as <code>collect_bools/2</code> but for one value.
-collect_bool(V, Rules) -> 
+collect_bool(V, Rules) ->
     hd(collect_bools([V], Rules)).
 
 %% @doc
@@ -284,7 +284,7 @@ cast_strings_with_opt(Xs, Targtype, Action) ->
                                         _         -> [Action() | Acc]
                                     end;
                       _          -> [X | Acc]
-                  end  
+                  end
           end,
     lists:reverse(lists:foldl(Fun, [], Res)).
 

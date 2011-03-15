@@ -13,7 +13,7 @@ MAYBE_PATH = (((({ATOM})|({INT})|(\.)|(\.\.))(\/|\!))*)
 A1REF = ((\$)?([a-zA-Z]+)(\$)?([0-9]+))
 COLREF = ((\$)?([a-zA-Z]+))
 ROWREF = ((\$)?([0-9]+))
-          
+
 OFFSET_RC = (\[(\+|\-)?({INT})\])
 RCREF = ((R|r)({INT}|{OFFSET_RC})(C|c)({INT}|{OFFSET_RC}))
 

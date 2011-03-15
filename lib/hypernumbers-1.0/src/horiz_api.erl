@@ -3,8 +3,8 @@
 %% %%% @copyright (C) 2009, Hypernumbers Ltd
 %% %%% @doc       This module implements the horizontal api that connects
 %% %%%            two hypernumbers servers.
-%% %%%            
-%% %%%            It manages the <code>notify</code> and 
+%% %%%
+%% %%%            It manages the <code>notify</code> and
 %% %%%            <code>notify_back</code> messages between servers as
 %% %%%            well as the synchronisation of the page versions
 %% %%%
@@ -63,7 +63,7 @@
 %% %% @spec notify_back(Record::#dirty_notify_back_in{}) -> ok
 %% %% @doc notify's a change of a cell back to its remote hypernumber parent
 %% %% <code>#refX{}</code> can be a cell only
-%% %% @todo expand the paradigm to include ranges, columns, rows references and 
+%% %% @todo expand the paradigm to include ranges, columns, rows references and
 %% %% queries as things that be remote parents.
 %% notify_back(Record) when is_record(Record, dirty_notify_back_in) ->
 %%     #dirty_notify_back_in{parent = Parent, child = Child,
@@ -93,7 +93,7 @@
 %% notify_back_create(Record) when is_record(Record, dirty_inc_hn_create) ->
 
 %%     #dirty_inc_hn_create{parent = Parent, child = Child,
-%%                          parent_vsn = PVsn, child_vsn = CVsn} = Record,   
+%%                          parent_vsn = PVsn, child_vsn = CVsn} = Record,
 
 %%     PVsn2 = json_util:jsonify(PVsn),
 %%     CVsn2 = json_util:jsonify(CVsn),
@@ -106,7 +106,7 @@
 %%     Proxy = CSite ++ "/" ++ string:join(CPath, "/") ++ "/",
 
 %%     %PPage = Parent#refX{obj = {page, "/"}},
-    
+
 %%     Vars = {struct, [{"action",     "notify_back_create"},
 %%                      {"biccie",     Biccie},
 %%                      {"proxy",      Proxy},
@@ -126,9 +126,9 @@
 %%             % check that the pages are in sync
 %%             {xml, [], DepTree2} = simplexml:from_xml_string(DepTree),
 %%             case hn_db_api:check_page_vsn(CSite, NewPVsn) of
-%%                 synched -> 
+%%                 synched ->
 %%                     {Value, DepTree2, Biccie, NewPVsn};
-%%                 not_yet_synched -> 
+%%                 not_yet_synched ->
 %%                     {ok,ok} = hn_db_api:intialise_remote_page_vsn(CSite, NewPVsn),
 %%                     {Value, DepTree2, Biccie, PVsn};
 %%                 unsynched ->

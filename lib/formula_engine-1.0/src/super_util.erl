@@ -3,7 +3,7 @@
 %%% @copyright (C) 2009, gordonguthrie
 %%% @doc This is a util module for the superparser. It handles all the
 %%% messy stuff for automatic parsing of date/time shortcuts and also
-%%% percentages. 
+%%% percentages.
 %%%
 %%% @end
 %%% Created :  5 Jan 2009 by Gordon Guthrie
@@ -26,14 +26,14 @@ autoparse([{int, _, D}, {'/',_}, {int, _, Month}]) ->
     case make_date(D, tconv:to_i(Month)) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "dd-mmm"}]
-    end;                
+    end;
 autoparse([{int, _, D}, {'/',_}, {int, _, Month}, {'/', _}, {int, _, Y}]) ->
     case make_date(D, tconv:to_i(Month), tconv:to_i(Y)) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "dd-mmm-yyyy"}]
     end;
 autoparse([{int, _, D}, {'/',_}, {int, _, Month},
@@ -43,9 +43,9 @@ autoparse([{int, _, D}, {'/',_}, {int, _, Month},
     case make_datetime({D, tconv:to_i(Month)}, {H+1, Mn+1}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "dd-mmm hh:mm"}]
-    end;                
+    end;
 autoparse([{int, _, D}, {'/', _}, {int, _, Month}, {'/',_}, {int, _, Y},
            {rangeref, _, {rangeref, _, _, {row, {offset, H}},
             {row, {offset, Mn}}, _, _, _}}]) ->
@@ -54,7 +54,7 @@ autoparse([{int, _, D}, {'/', _}, {int, _, Month}, {'/',_}, {int, _, Y},
                        {H+1, Mn+1}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "dd-mmm-yyyy hh:mm"}]
     end;
 autoparse([{int, _, D}, {'/', _}, {int, _, Month},
@@ -64,51 +64,51 @@ autoparse([{int, _, D}, {'/', _}, {int, _, Month},
     case make_datetime({D, tconv:to_i(Month)}, {H+1, Mn+1, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt             -> [{datetime, Dt},
-                           {"text-align", "center"}, 
+                           {"text-align", "center"},
                            {"format", "dd-mmm hh:mm:ss"}]
     end;
 autoparse([{int, _, D}, {'/', _}, {int, _, Month}, {'/',_}, {int, _, Y},
            {rangeref, _, {rangeref, _, _, {row, {offset, H}},
-            {row, {offset, Mn}}, _, _, _}}, 
+            {row, {offset, Mn}}, _, _, _}},
            {':',_},{int,_,S}]) ->
     case make_datetime({D, tconv:to_i(Month), tconv:to_i(Y)},
                        {H+1, Mn+1, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "dd-mmm-yyyy hh:mm:ss"}]
     end;
 autoparse([{int,_, D}, {'-',_}, {int, _, M}]) ->
     case make_date(D, M) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "dd-mmm"}]
     end;
-autoparse([{int,_,D}, {'-',_}, {int,_,M}, 
+autoparse([{int,_,D}, {'-',_}, {int,_,M},
            {rangeref, _, {rangeref, _, _, {row, {offset, H}},
                                       {row, {offset, Mn}}, _, _, _}}]) ->
     case make_datetime({D, M}, {H, Mn}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "dd-mmm hh:mm"}]
     end;
-autoparse([{int,_,D}, {'-',_}, {int,_,M}, 
+autoparse([{int,_,D}, {'-',_}, {int,_,M},
            {rangeref, _, {rangeref, _, _, {row, {offset, H}},
                                       {row, {offset, Mn}}, _, _, _}},
            {':',_}, {int,_,S}]) ->
     case make_datetime({D, M}, {H, Mn, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "dd-mmm hh:mm"}]
     end;
 autoparse([{int,_,D}, {'-',_}, {int,_,M}, {'-',_}, {int,_,Y}]) ->
     case make_date(D, M ,Y) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "dd-mmm-yyyy"}]
     end;
 autoparse([{int,_,D}, {'-',_}, {int,_,M}, {'-',_}, {int,_,Y},
@@ -117,7 +117,7 @@ autoparse([{int,_,D}, {'-',_}, {int,_,M}, {'-',_}, {int,_,Y},
     case make_datetime({D, M ,Y}, {H, Mn}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "dd-mmm-yyyy hh:mm"}]
     end;
 autoparse([{int,_,D}, {'-',_}, {int,_,M}, {'-',_}, {int,_,Y},
@@ -127,7 +127,7 @@ autoparse([{int,_,D}, {'-',_}, {int,_,M}, {'-',_}, {int,_,Y},
     case make_datetime({D, M ,Y}, {H, Mn, S}) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "dd-mmm-yyyy hh:mm:ss"}]
     end;
 autoparse([{rangeref, _, {rangeref, _, _, {row, {offset, H}},
@@ -135,7 +135,7 @@ autoparse([{rangeref, _, {rangeref, _, _, {row, {offset, H}},
     case make_time(H, Mn) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "hh:mm"}]
     end;
 autoparse([{rangeref, _, {rangeref, _, _, {row, {offset, H}},
@@ -143,7 +143,7 @@ autoparse([{rangeref, _, {rangeref, _, _, {row, {offset, H}},
     case make_time(H, Mn, S) of
         {ok, maybe_bad_date} -> {ok, maybe_bad_date};
         Dt                   -> [{datetime, Dt},
-                                 {"text-align", "center"}, 
+                                 {"text-align", "center"},
                                  {"format", "hh:mm:ss PM"}]
     end;
 autoparse(_Toks) ->
@@ -153,7 +153,7 @@ autoparse(_Toks) ->
 upcase(Str) ->
     {ok, Tokens, _} = superlex:string(Str),
     % List of numbers (codepoints) interspersed with {string, _} tuples.
-    Str2 = 
+    Str2 =
         tl(lists:foldl(fun({stuff, X}, Acc) ->
                                hslists:init(Acc) ++ ([lists:last(Acc)] ++ X);
                           (Tok = {string, _}, Acc) ->
@@ -165,7 +165,7 @@ upcase(Str) ->
 
 %%%
 %%% Private functions
-%%% 
+%%%
 make_datetime({D, M}, {H, Mn}) ->
     {{Y, _, _}, _} = calendar:now_to_local_time(now()),
     get_datetime({Y, M, D}, {H, Mn, 0});

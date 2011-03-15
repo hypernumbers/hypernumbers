@@ -191,7 +191,7 @@ seg_test_() ->
                                        {close, "]"},
                                        {slash, "/"}
                                       ]),
-     
+
      ?_assert(tlex("/blah/a1") == [
                                    {slash, "/"},
                                    {path, "blah"},

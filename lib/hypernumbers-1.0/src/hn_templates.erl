@@ -172,7 +172,7 @@ load_template(#refX{site=S, path=P}, Name) ->
 %                              {ref,{page,"/"}}]),
 %    Items = hn_db:get_item(Ref2),
 %    F = fun(#hn_item{addr=R}) ->
-%                %% Items seemed to include root pages that 
+%                %% Items seemed to include root pages that
 %                %% dont have enough path elements to pull Offset out of
 %                Offset = length(Path2)+1,
 %                case Offset > length(R#ref.path) of

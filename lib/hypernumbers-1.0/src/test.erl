@@ -1,8 +1,8 @@
 -module(test).
 
--export([all/0, 
+-export([all/0,
          sys/0,
-         sys/1, 
+         sys/1,
          excel/0,
          excel/1,
          excel/2 ,
@@ -25,13 +25,13 @@
 
 init() ->
     catch hn_setup:site(?SITE, blank, []).
-        
+
 init_sec() ->
     catch hn_setup:site(?SITE, security_test, []).
 
 all() -> excel(), sys(), security().
 
-security() -> 
+security() ->
     init_sec(),
     WC = filename:absname(?TEST_DIR)++"/security_test",
     Tests = filelib:wildcard(WC),
@@ -68,9 +68,9 @@ sys(Suites) ->
     SrcDir = code:lib_dir(hypernumbers)++"/src/",
     EbinDir = code:lib_dir(hypernumbers)++"/ebin/",
     file:write_file(?COVER_DATA, []),
-    [file:copy(S, EbinDir++filename:basename(S)) 
+    [file:copy(S, EbinDir++filename:basename(S))
      || S <- filelib:wildcard(SrcDir++"*.erl")],
-    
+
     %% Setup Options
     SOpt = if Suites == [] -> [];
               true         -> [{suite, [S++"_SUITE" || S <- Suites]}] end,
@@ -78,7 +78,7 @@ sys(Suites) ->
              ],
 
     do_test(SOpt ++ Opts),
-    
+
     %% Cleanup
     [file:delete(S) || S <- filelib:wildcard(EbinDir++"*.erl")],
     ok.
@@ -127,7 +127,7 @@ post_login_TEST(User, Password, URL, Data) ->
                   exit("invalid return from login - wig out!")
           end,
     {ok, {{_, Code, _}, _, _}} = Ret,
-    Code.    
+    Code.
 
 get_right_cookie(["auth=test!hypernumbers.com"++_R = H | _T]) -> H;
 get_right_cookie([_H | T]) -> get_right_cookie(T).
@@ -163,7 +163,7 @@ do_test(Opts) ->
     filelib:ensure_dir(filename:absname(?LOG_DIR)++"/"),
     DefaultOps = [{logdir, filename:absname(?LOG_DIR)}],
     ct:run_test(
-      lists:ukeymerge(1, 
-                      lists:keysort(1, Opts), 
+      lists:ukeymerge(1,
+                      lists:keysort(1, Opts),
                       lists:keysort(1, DefaultOps))),
     ok.

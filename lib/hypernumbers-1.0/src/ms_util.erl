@@ -6,7 +6,7 @@
 %%%             the generated module that 'introspects'
 %%%             the record structures of myheader.hrl
 %%% @end
-%%% Created     :  3 Sep 2008 by Gordon Guthrie 
+%%% Created     :  3 Sep 2008 by Gordon Guthrie
 %%% @private
 %%%-------------------------------------------------------------------
 -module(ms_util).

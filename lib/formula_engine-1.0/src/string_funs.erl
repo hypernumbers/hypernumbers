@@ -29,7 +29,7 @@ compile(Body) ->
     {ok, Ast} = erl_parse:parse_exprs(Toks),
     {value, Fun, []} = erl_eval:exprs(Ast, []),
     Fun.
-    
+
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -include_lib("eunit/include/eunit.hrl").
@@ -63,5 +63,5 @@ cmp_test_() ->
      ?t("<> 10", 9),
 
      ?t("apple", "apple"),
-     ?f("apple", "pear")     
+     ?f("apple", "pear")
     ].

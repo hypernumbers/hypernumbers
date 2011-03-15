@@ -2,36 +2,36 @@
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers.com
 %%% @doc       <h1>Overview</h1>
-%%% 
+%%%
 %%%            This module provides the data access api.
 %%%            Each function in this should call functions from
 %%%            {@link hn_db_wu} which provides work units and it
 %%%            should wrap them in an mnesia transaction.
-%%%            
+%%%
 %%%            mnesia <em>MUST NOT</em> be called from any function in
 %%%            this module.
-%%%            
+%%%
 %%%            This module also handles the transaction management of
 %%%            notification to the front-end. In order for this to work
 %%%            each mnesia transaction construcuted here MUST begin with
-%%%            a function call to initialise the notifications in the 
+%%%            a function call to initialise the notifications in the
 %%%            process dictionary using the function 'init_front_end_notify'
 %%%            When the mnesia transaction returns the {@link hn_db_wu}
 %%%            functions will have loaded the process dictionary with
 %%%            the appropriate front end notifications which can then be
 %%%            forwarded using the function 'tell_front_end'
-%%%            
+%%%
 %%%            Obviously this only needs to be done on functions that generate
-%%%            notifications to the front-end (ie it is not required for any 
+%%%            notifications to the front-end (ie it is not required for any
 %%%            reads but also for some writes - like page version updates)
-%%%            
+%%%
 %%%            Security operations (like checking if the right biccie
 %%%            has been supplied for a remote update) <em>MUST</em> be
-%%%            performed in these API functions using the 
-%%%            {@link hn_db_wu:verify_biccie_in/2} and 
+%%%            performed in these API functions using the
+%%%            {@link hn_db_wu:verify_biccie_in/2} and
 %%%            {@link hn_db_wu:verify_biccie_out/3} functions - they
 %%%            <em>WILL NOT</em> be done in {@link hn_db_wu}.
-%%%            
+%%%
 %%%            It makes extensive use of #refX{} records which can
 %%%            exist in the the following flavours:
 %%%            <ul>
@@ -50,36 +50,36 @@
 %%%            <li><code>{row, {Y1, Y2}}</code></li>
 %%%            <li><code>{page, "/"}</code></li>
 %%%            </ul>
-%%%            
+%%%
 %%%            <h2>Gotcha's</h2>
-%%%            
-%%%            There is an event cycle artefact that relates to the use of the 
+%%%
+%%%            There is an event cycle artefact that relates to the use of the
 %%%            hypernumbers() function.
-%%%            
+%%%
 %%%            When a hypernumber is used is a formula muin asks for the value
-%%%            if the remote cell isn't used a hypernumber is setup AND THE 
+%%%            if the remote cell isn't used a hypernumber is setup AND THE
 %%%            NEW REMOTE LINK IS WRITTEN
-%%%            
+%%%
 %%%            If the remote cell is <i>already used</i> by another cell the value
 %%%            is and there is no remote link a remote like is also written as is
 %%%            a notify_back message to add a matching remote link on the remote server
-%%%            
+%%%
 %%%            If the remote cell is <i>already used</i> by another cell and the
 %%%            remote link is already written, nothing happens...
-%%%            
+%%%
 %%%            This is a bit messy, but the alternative is a race condition :(
-%%%            
+%%%
 %%%            The remote site only gets a notification that a new cell is linking
-%%%            in when the (internal) function {@link update_rem_parents} 
+%%%            in when the (internal) function {@link update_rem_parents}
 %%%            runs...
-%%%            
+%%%
 %%%            <h2>Notes On Terminology</h2>
-%%% 
+%%%
 %%%            Various terms that describe the relationships between
 %%%            different cells are shown below:
 %%%            <img src="./terminology.png" />
-%%% 
-%%% @TODO need to write a function to clear attributes 
+%%%
+%%% @TODO need to write a function to clear attributes
 %%% <code>clear_attributes(#refX{}, [Key1, Key2...])</code>
 %%% @TODO should we have a subpages #refX egt {subpages, "/"}
 %%% which would alllow you to specify operations like delete and copy
@@ -150,7 +150,7 @@ idx_DEBUG(Site, Idx) -> idx_DEBUG(Site, Idx, false).
 idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
 
 'DEBUG'(Type, Payload, Mode, Output) ->
-    
+
     F = fun() ->
                 {RefX, O2}
                     = case Type of
@@ -208,11 +208,11 @@ force_r1(RefX) ->
 
 %% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
 %% @doc write_style will write a style record
-%% It is intended to be used in the FILE IMPORT process only 
+%% It is intended to be used in the FILE IMPORT process only
 %% - normally the respresentation of styles in the magic style record
 %% is designed to be hidden from the API
 %% (that's for why it is a 'magic' style n'est pas?)
-write_styles_IMPORT(RefX, Styles) 
+write_styles_IMPORT(RefX, Styles)
   when is_record(RefX, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
@@ -221,16 +221,16 @@ write_styles_IMPORT(RefX, Styles)
           end,
     write_activity(RefX, Fun, "write_style_IMPORT").
 
-write_magic_style_IMPORT(RefX, MStyle) 
+write_magic_style_IMPORT(RefX, MStyle)
   when is_record(RefX, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  hn_db_wu:write_magic_style_IMPORT(RefX, MStyle) 
+                  hn_db_wu:write_magic_style_IMPORT(RefX, MStyle)
           end,
     write_activity(RefX, Fun, "write_style_IMPORT").
 
 read_styles_IMPORT(RefX) when is_record(RefX, refX) ->
-    Fun = fun() -> hn_db_wu:read_styles_IMPORT(RefX) end, 
+    Fun = fun() -> hn_db_wu:read_styles_IMPORT(RefX) end,
     read_activity(RefX, Fun).
 
 -spec set_borders(#refX{}, any(), any(), any(), any()) -> ok.
@@ -259,7 +259,7 @@ read_styles_IMPORT(RefX) when is_record(RefX, refX) ->
 set_borders(#refX{obj = {cell, {X, Y}}} = RefX, Type, Border, Style, Color) ->
     set_borders(RefX#refX{obj = {range, {X, Y, X, Y}}}, Type, Border, Style, Color);
 %% now proper set borders
-set_borders(#refX{obj = {range, _}} = RefX, "none",_Border, 
+set_borders(#refX{obj = {range, _}} = RefX, "none",_Border,
             _Border_Style, _Border_Color) ->
     ok = set_borders2(RefX, "left",   [], [], []),
     ok = set_borders2(RefX, "right",  [], [], []),
@@ -267,11 +267,11 @@ set_borders(#refX{obj = {range, _}} = RefX, "none",_Border,
     ok = set_borders2(RefX, "bottom", [], [], []),
     ok;
 
-set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, Where, 
-            Border, B_Style, B_Color) 
-  when Where == "left" 
-       orelse Where == "right" 
-       orelse Where == "top" 
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, Where,
+            Border, B_Style, B_Color)
+  when Where == "left"
+       orelse Where == "right"
+       orelse Where == "top"
        orelse Where == "bottom" ->
     NewObj = case Where of
                  "left"   -> {range, {X1, Y1, X1, Y2}};
@@ -282,8 +282,8 @@ set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, Where,
     NewRefX = RefX#refX{obj = NewObj},
     ok = set_borders2(NewRefX, Where, Border, B_Style, B_Color);
 
-set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
-            Where, Border, B_Style, B_Color) 
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX,
+            Where, Border, B_Style, B_Color)
   when Where == "surround" ->
     Top    = RefX#refX{obj = {range, {X1, Y1, X2, Y1}}},
     Bottom = RefX#refX{obj = {range, {X1, Y2, X2, Y2}}},
@@ -305,25 +305,25 @@ set_borders(#refX{obj = {range, _}} = RefX, Where, Border, B_Style, B_Color)
 
 %% there are a number of different function heads for 'inside'
 %% 'inside' on a cell does nothing
-set_borders(#refX{obj = {range, {X1, Y1, X1, Y1}}} = _RefX, 
-            Where, _Border, _B_Style, _B_Color) 
+set_borders(#refX{obj = {range, {X1, Y1, X1, Y1}}} = _RefX,
+            Where, _Border, _B_Style, _B_Color)
   when Where == "inside" ->
     ok;
 %% 'inside' a single column
-set_borders(#refX{obj = {range, {X1, Y1, X1, Y2}}} = RefX, 
-            Where, Border, B_Style, B_Color) 
+set_borders(#refX{obj = {range, {X1, Y1, X1, Y2}}} = RefX,
+            Where, Border, B_Style, B_Color)
   when Where == "inside" ->
     NewRefX = RefX#refX{obj = {range, {X1, Y1 + 1, X1, Y2}}},
     ok = set_borders2(NewRefX, "top", Border, B_Style, B_Color);
 %% 'inside' a single row
-set_borders(#refX{obj = {range, {X1, Y1, X2, Y1}}} = RefX, 
-            Where, Border, B_Style, B_Color) 
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y1}}} = RefX,
+            Where, Border, B_Style, B_Color)
   when Where == "inside" ->
     NewRefX = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y1}}},
     ok = set_borders2(NewRefX, "left", Border, B_Style, B_Color);
 %% proper 'inside'
-set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX, 
-            Where, Border, B_Style, B_Color) 
+set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX,
+            Where, Border, B_Style, B_Color)
   when Where == "inside" ->
     NewRefX1 = RefX#refX{obj = {range, {X1, Y1 + 1, X2, Y2}}},
     ok = set_borders2(NewRefX1, "top", Border, B_Style, B_Color),
@@ -345,29 +345,29 @@ set_borders2(RefX, Where, Border, B_Style, B_Color) ->
 %% @todo write documentation for write_formula_to_range
 write_formula_to_range(RefX, _Formula) when is_record(RefX, refX) ->
     exit("write write_formula_to_range in hn_db_api!").
-% write_formula_to_range(Formula, RefX = #refX{obj = 
-%         {range, {TlCol, TlRow, BrCol, BrRow}}}) -> 
-%    Rti = hn_db_wu:refX_to_rti(Ref, true), 
-%    {formula, FormulaProcd} = superparser:process(Formula), 
-%    {ok, {Pcode, Res, Parents, DepTree, Recompile}} = muin:run_formula(FormulaProcd, Rti), 
-%    SetCell = fun({Col, Row}) -> 
-%                      OffsetCol = Col - TlCol + 1, 
-%                      OffsetRow = Row - TlRow + 1, 
-%                      Value = case area_util:at(OffsetCol, OffsetRow, Res) of 
-%                                  {ok, V}    -> V; 
-%                                  {error, _} -> ?ERRVAL_NA 
-%                              end, 
-%                      ParentsXml = map(fun muin_link_to_simplexml/1, Parents), 
-%                      DepTreeXml = map(fun muin_link_to_simplexml/1, DepTree), 
-%                      Addr = Ref#ref{ref = {cell, {Col, Row}}}, 
-%                      db_put(Addr, '__ast', Pcode), 
-%                      db_put(Addr, '__recompile', Recompile), 
-%                      db_put(Addr, '__shared', true), 
-%                      db_put(Addr, '__area', {TlCol, TlRow, BrCol, BrRow}), 
-%                      write_cell(Addr, Value, Formula, ParentsXml, DepTreeXml) 
-%              end, 
-%    Coords = muin_util:expand_cellrange(TlRow, BrRow, TlCol, BrCol), 
-%    foreach(SetCell, Coords). 
+% write_formula_to_range(Formula, RefX = #refX{obj =
+%         {range, {TlCol, TlRow, BrCol, BrRow}}}) ->
+%    Rti = hn_db_wu:refX_to_rti(Ref, true),
+%    {formula, FormulaProcd} = superparser:process(Formula),
+%    {ok, {Pcode, Res, Parents, DepTree, Recompile}} = muin:run_formula(FormulaProcd, Rti),
+%    SetCell = fun({Col, Row}) ->
+%                      OffsetCol = Col - TlCol + 1,
+%                      OffsetRow = Row - TlRow + 1,
+%                      Value = case area_util:at(OffsetCol, OffsetRow, Res) of
+%                                  {ok, V}    -> V;
+%                                  {error, _} -> ?ERRVAL_NA
+%                              end,
+%                      ParentsXml = map(fun muin_link_to_simplexml/1, Parents),
+%                      DepTreeXml = map(fun muin_link_to_simplexml/1, DepTree),
+%                      Addr = Ref#ref{ref = {cell, {Col, Row}}},
+%                      db_put(Addr, '__ast', Pcode),
+%                      db_put(Addr, '__recompile', Recompile),
+%                      db_put(Addr, '__shared', true),
+%                      db_put(Addr, '__area', {TlCol, TlRow, BrCol, BrRow}),
+%                      write_cell(Addr, Value, Formula, ParentsXml, DepTreeXml)
+%              end,
+%    Coords = muin_util:expand_cellrange(TlRow, BrRow, TlCol, BrCol),
+%    foreach(SetCell, Coords).
 
 
 
@@ -377,20 +377,20 @@ read_page_structure(RefX) when is_record(RefX, refX) ->
     read_activity(RefX, fun() -> hn_db_wu:read_page_structure(RefX) end).
 
 read_pages(RefX) when is_record(RefX, refX) ->
-    read_activity(RefX, fun() -> hn_db_wu:read_pages(RefX) end).    
+    read_activity(RefX, fun() -> hn_db_wu:read_pages(RefX) end).
 
--spec matching_forms(#refX{}, common | string()) -> [#form{}]. 
+-spec matching_forms(#refX{}, common | string()) -> [#form{}].
 matching_forms(RefX, Transaction) ->
-    read_activity(RefX, fun() -> 
-                                hn_db_wu:matching_forms(RefX, Transaction) 
+    read_activity(RefX, fun() ->
+                                hn_db_wu:matching_forms(RefX, Transaction)
                         end).
 
-%% @spec write_attributes(RefX :: #refX{}, List) -> ok  
+%% @spec write_attributes(RefX :: #refX{}, List) -> ok
 %% List = [{Key, Value}]
 %% Key = atom()
 %% Value = term()
 %% @doc writes out all the attributes in the list to the reference.
-%% 
+%%
 %% The <code>refX{}</code> can be
 %% one of:
 %% <ul>
@@ -398,7 +398,7 @@ matching_forms(RefX, Transaction) ->
 %% <li>a range</li>
 %% </ul>
 
--spec write_attributes([{#refX{}, [tuple()]}]) -> ok. 
+-spec write_attributes([{#refX{}, [tuple()]}]) -> ok.
 write_attributes(List) ->
     write_attributes(List, nil, nil).
 write_attributes([], _PAr, _VAr) -> ok;
@@ -406,7 +406,7 @@ write_attributes(List, PAr, VAr) ->
     [ok = page_srv:page_written(S, P) || {#refX{site = S, path = P}, _} <- List],
     Fun = fun() ->
                   ok = init_front_end_notify(),
-                  [ok = write_attributes1(RefX, L, PAr, VAr) 
+                  [ok = write_attributes1(RefX, L, PAr, VAr)
                    || {RefX, L} <- List],
                   ok
           end,
@@ -424,15 +424,15 @@ append_row(List, PAr, VAr) when is_list(List) ->
                 F = fun(X, Val) ->
                             Obj = {cell, {X, Row}},
                             RefX2 = #refX{site = S, path = P, obj = Obj},
-                            _Dict = hn_db_wu:write_attrs(RefX2, 
-                                                 [{"formula", Val}], 
+                            _Dict = hn_db_wu:write_attrs(RefX2,
+                                                 [{"formula", Val}],
                                                  PAr),
                             ok = hn_db_wu:mark_these_dirty([RefX2], VAr)
                     end,
-                [F(X, V) || {#refX{site = S1, path = P1, obj = {column, {X, X}}}, V} 
+                [F(X, V) || {#refX{site = S1, path = P1, obj = {column, {X, X}}}, V}
                                <- List, S == S1, P == P1]
         end,
-    
+
     write_activity(RefX, Trans, "write last").
 
 -spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
@@ -450,8 +450,8 @@ read_intersect_ref(RefX) ->
     Fun = fun() -> hn_db_wu:read_ref(RefX, intersect) end,
     read_activity(RefX, Fun).
 
-%% @doc read_style gets the list of styles that pertain to a particular 
--spec read_styles(#refX{}, [integer()]) -> #style{}. 
+%% @doc read_style gets the list of styles that pertain to a particular
+-spec read_styles(#refX{}, [integer()]) -> #style{}.
 read_styles(RefX, Idxs) when is_record(RefX, refX) ->
     Fun = fun() -> hn_db_wu:read_styles(RefX, Idxs) end,
     read_activity(RefX, Fun).
@@ -462,7 +462,7 @@ insert(#refX{obj = {column, _}} = RefX, Ar) ->
     move(RefX, insert, horizontal, Ar);
 insert(#refX{obj = {row, _}} = RefX, Ar) ->
     move(RefX, insert, vertical, Ar);
-insert(#refX{obj = R} = RefX, Ar) 
+insert(#refX{obj = R} = RefX, Ar)
   when R == cell orelse R == range ->
     move(RefX, insert, vertical, Ar).
 
@@ -473,8 +473,8 @@ insert(#refX{obj = {R, _}} = RefX, Disp, Ar)
     move(RefX, insert, Disp, Ar).
 
 %% @doc deletes a column or a row or a page
-%% 
-%% @todo this is all bollocks - should be row, column then cell/range as 
+%%
+%% @todo this is all bollocks - should be row, column then cell/range as
 %% per insert/2.
 %% This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
@@ -498,7 +498,7 @@ delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
     write_activity(RefX, Fun1, "refresh").
 
 %% @doc deletes a reference.
-%% 
+%%
 %% The <code>refX{}</code> can be one of a:
 %% <ul>
 %% <li>cell</li>
@@ -506,9 +506,9 @@ delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
 %% <li>column</li>
 %% <li>range</li>
 %% </ul>
-%% 
+%%
 %% For all refs except those to a page this function deletes the cells
-%% and closes up the rest of them. If Disp is Horizontal it moves 
+%% and closes up the rest of them. If Disp is Horizontal it moves
 %% cells right-to-left to close the gap. If Disp is vertical is moves
 %% cells bottom-to-top to close the gap
 delete(#refX{obj = {R, _}} = RefX, Disp, Ar)
@@ -529,13 +529,13 @@ move_tr(RefX, Type, Disp, Ar) ->
     % DO NOT include the cells described by the reference
     % but when the move type is INSERT the cells that are
     % move DO include the cells described by the reference
-    % To make this work we shift the RefX up 1, left 1 
+    % To make this work we shift the RefX up 1, left 1
     % before getting the cells to shift for INSERT
     % if this is a delete - we need to actually delete the cells
     ReWr = do_delete(Type, RefX, Disp),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
     ok = hn_db_wu:mark_these_dirty(ReWr, Ar),
-    ok = hn_db_wu:mark_these_dirty(MoreDirty, Ar).        
+    ok = hn_db_wu:mark_these_dirty(MoreDirty, Ar).
 
 do_delete(insert, _RefX, _Disp) ->
     [];
@@ -544,7 +544,7 @@ do_delete(delete, RefX, Disp) ->
 
 %% @doc clears the contents of the cell or range
 %% (but doesn't delete the cell or range itself).
-%% 
+%%
 %% If <code>Type  = 'contents'</code> it clears:
 %% <ul>
 %% <li>formula</li>
@@ -579,13 +579,13 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% @doc copies the formula and formats from a cell or range and 
+%% @doc copies the formula and formats from a cell or range and
 %% pastes them to the destination then deletes the original.
-%% 
-%% (see also {@link hn_db_api:drag_n_drop/2} and {@link hn_db_api:copy_n_paste/2} - 
-%% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that 
+%%
+%% (see also {@link hn_db_api:drag_n_drop/2} and {@link hn_db_api:copy_n_paste/2} -
+%% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that
 %% drag'n'drop increments)
-%% 
+%%
 %% Either <code>#refX{}</code> can be one of the following types:
 %% <ul>
 %% <li>cell</li>
@@ -593,20 +593,20 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
 %% <li>colum</li>
 %% <li>range</li>
 %% </ul>
-%% 
+%%
 %% If a range is to be cut'n'pasted to a range then one of the following criteria MUST
 %% true:
 %% <ul>
-%% <li>the <b>from</b> range must be the same dimensions as the 
+%% <li>the <b>from</b> range must be the same dimensions as the
 %% <b>to</b> range</li>
-%% <li>the <b>from</b> range must be one cell high and the same width as the 
+%% <li>the <b>from</b> range must be one cell high and the same width as the
 %% <b>to</b> range</li>
 %% <li>the <b>from</b> must be one cell wide and the same height as the
 %% <b>to</b> range</li>
-%% </ul> 
-%% 
+%% </ul>
+%%
 %% @todo cut'n'paste a page
-cut_n_paste(From, To, Ar) when 
+cut_n_paste(From, To, Ar) when
       is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
@@ -615,23 +615,23 @@ cut_n_paste(From, To, Ar) when
           end,
     write_activity(From, Fun, "cut n paste").
 
-%% @doc copies the formula and formats from a cell or range and 
+%% @doc copies the formula and formats from a cell or range and
 %% pastes them to the destination.
-%% 
-%% (see also {@link hn_db_api:drag_n_drop/2} and {@link hn_db_api:cut_n_paste/2} - 
-%% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that 
+%%
+%% (see also {@link hn_db_api:drag_n_drop/2} and {@link hn_db_api:cut_n_paste/2} -
+%% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that
 %% drag'n'drop increments)
-%%  
+%%
 %% Either <code>#refX{}</code> can be one of the following types:
 %% <ul><li>cell</li>
 %% <li>row</li>
 %% <li>colum</li>
 %% <li>range</li></ul>
 %%
-%% Also whole pages can be copy_n_pasted by making both From and To 
+%% Also whole pages can be copy_n_pasted by making both From and To
 %% page refX's
--spec copy_n_paste(#refX{}, #refX{}, all | style | value, auth_srv:auth_spec()) -> ok. 
-copy_n_paste(From, To, What, Ar) when 
+-spec copy_n_paste(#refX{}, #refX{}, all | style | value, auth_srv:auth_spec()) -> ok.
+copy_n_paste(From, To, What, Ar) when
       is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
@@ -639,79 +639,79 @@ copy_n_paste(From, To, What, Ar) when
           end,
     write_activity(From, Fun, "copy n paste").
 
-%% @doc takes the formula and formats from a cell and drag_n_drops 
+%% @doc takes the formula and formats from a cell and drag_n_drops
 %% them over a destination (the difference between drag'n'drop
 %% and copy/cut'n'paste is that drag'n'drop increments)
-%% 
-%% (see also {@link hn_db_api:cut_n_paste/2} and {@link hn_db_api:copy_n_paste/2} - 
-%% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that 
+%%
+%% (see also {@link hn_db_api:cut_n_paste/2} and {@link hn_db_api:copy_n_paste/2} -
+%% the difference between drag'n'drop and copy'n'paste or cut'n'paste is that
 %% drag'n'drop increments)
-%% 
+%%
 %% drag'n'drop has an interesting specification
 %% (taken from Excel 2007 help)
 %% currently excludes customer autofill
-%% 
+%%
 %% <code>Initial selection       Extended series</code>
-%% 
+%%
 %% <code>-----------------       ---------------</code>
-%% 
+%%
 %% <code>1, 2, 3                 4, 5, 6,... </code>
-%% 
+%%
 %% <code>9:00 10:00,             11:00, 12:00,... </code>
-%% 
+%%
 %% <code>Mon Tue,                Wed, Thu,... </code>
-%% 
+%%
 %% <code>Monday Tuesday,         Wednesday, Thursday,... </code>
-%% 
+%%
 %% <code>Jan Feb,                Mars, Apr,... </code>
-%% 
+%%
 %% <code>Jan, Apr                Jul, Oct, Jan,... </code>
-%% 
+%%
 %% <code>Jan-07, Apr-07          Jul-07, Oct-07, Jan-08,... </code>
-%% 
+%%
 %% <code>15-Jan, 15-Apr          15-Jul, 15-Oct,... </code>
-%% 
+%%
 %% <code>2007, 2008              2009, 2010, 2011,... </code>
-%% 
+%%
 %% <code>1-Jan, 1-Mar            1-May, 1-Jul, 1-Sep,... </code>
-%% 
+%%
 %% <code>Qtr3                    Qtr4, Qtr1, Qtr2,... </code>
-%% 
+%%
 %% <code>Q3                      Q4, Q1, Q2,... </code>
-%% 
+%%
 %% <code>Quarter3                Quarter4, Quarter1, Quarter2,... </code>
-%% 
+%%
 %% <code>text1, textA text2,     textA, text3, textA,... </code>
-%% 
+%%
 %% <code>1st Period              2nd Period, 3rd Period,... </code>
-%% 
+%%
 %% <code>Product 1               Product 2, Product 3,... </code>
-%% 
+%%
 %% <code>1 Product               2 Product, 3 Product</code>
-%% 
+%%
 %% Either <code>#refX{}</code> can be one of the following types:
 %% <ul><li>cell</li>
 %% <li>row</li>
 %% <li>colum</li>
 %% <li>range</li></ul>
-%% 
+%%
 %% If a range is to be drag'n'dropped to a range then
 %% one of the following criteria MUST be true:
-%% <ul><li>the <b>from</b> range must be the same dimensions as the 
+%% <ul><li>the <b>from</b> range must be the same dimensions as the
 %% <b>to</b> range</li>
-%% <li>the <b>from</b> range must be the same width as the 
+%% <li>the <b>from</b> range must be the same width as the
 %% <b>to</b> range</li>
 %% <li>the <b>from</b> must be the same height as the
-%% <b>to</b> range</li></ul> 
-drag_n_drop(From, To, Ar) 
+%% <b>to</b> range</li></ul>
+drag_n_drop(From, To, Ar)
   when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   ok = init_front_end_notify(),
                   case is_valid_d_n_d(From, To) of
                       {ok, 'onto self', _Incr} -> ok;
-                      {ok, single_cell, Incr} -> 
+                      {ok, single_cell, Incr} ->
                           copy_cell(From, To, Incr, all, Ar);
-                      {ok, cell_to_range, Incr} -> 
+                      {ok, cell_to_range, Incr} ->
                           copy2(From, To, Incr, all, Ar)
                   end
           end,
@@ -721,7 +721,7 @@ drag_n_drop(From, To, Ar)
 %% Special Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec wait_for_dirty(string()) -> ok. 
+-spec wait_for_dirty(string()) -> ok.
 wait_for_dirty(Site) ->
     case dbsrv:is_busy(Site) of
         true ->
@@ -733,7 +733,7 @@ wait_for_dirty(Site) ->
 
 -spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_spec()) -> ok.
 handle_dirty_cell(Site, Idx, Ar) ->
-    ok = init_front_end_notify(),  
+    ok = init_front_end_notify(),
     Fun = fun() ->
                   Cell = hn_db_wu:idx_to_refX(Site, Idx),
                   Attrs = case hn_db_wu:read_ref(Cell, inside, write) of
@@ -756,13 +756,13 @@ handle_dirty_cell(Site, Idx, Ar) ->
 handle_circref_cell(Site, Idx, Ar) ->
     Fun = fun() ->
                   Cell = hn_db_wu:idx_to_refX(Site, Idx),
-                  _Dict = hn_db_wu:write_attrs(Cell, 
-                                       [{"formula", "=#CIRCREF!"}], 
+                  _Dict = hn_db_wu:write_attrs(Cell,
+                                       [{"formula", "=#CIRCREF!"}],
                                        Ar),
                   ok
           end,
     mnesia:activity(transaction, Fun).
-                      
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
 %% Internal Functions                                                         %%
@@ -788,7 +788,7 @@ write_attributes1(#refX{site = S} = RefX, List, PAr, VAr) ->
     % so make any cells that use '=include(...)' on it redraw themselves
     ok = hn_db_wu:mark_dirty_for_incl([RefX], VAr).
 
--spec copy_cell(#refX{}, #refX{}, 
+-spec copy_cell(#refX{}, #refX{},
                 false | horizontal | vertical,
                 all | style | value,
                 auth_srv:uid())
@@ -806,19 +806,19 @@ copy_n_paste2(From, To, What, Ar) ->
     case is_valid_c_n_p(From, To) of
         {ok, single_cell}    ->
             ok = copy_cell(From, To, false, What, Ar);
-        {ok, cell_to_range} -> 
+        {ok, cell_to_range} ->
             copy2(From, To, false, What, Ar);
-        {ok, range_to_cell} -> 
+        {ok, range_to_cell} ->
             To2 = cell_to_range(To),
             copy3(From, To2, false, What, Ar);
-        {ok, range_to_range} -> 
+        {ok, range_to_range} ->
             copy3(From, To, false, What, Ar)
     end.
 
 cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
-    RefX#refX{obj = {range, {X, Y, X, Y}}}.      
+    RefX#refX{obj = {range, {X, Y, X, Y}}}.
 
-%% the last parameter returned is whether dates and integers should be 
+%% the last parameter returned is whether dates and integers should be
 %% incremented this can only be true for a vertical or horizontal drag
 %% (returning 'y' and 'x') or is otherwise false
 %% cell to cell drag'n'drop
@@ -851,21 +851,21 @@ is_valid_d_n_d(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
 is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 
 %% cell to range
-copy2(From, To, Incr, What, Ar) 
+copy2(From, To, Incr, What, Ar)
   when is_record(From, refX), is_record(To, refX) ->
     List = hn_util:range_to_list(To),
     [copy_cell(From, X, Incr, What, Ar) || X <- List],
     ok.
 
 %% range to range
-copy3(From, To, Incr, What, Ar) 
+copy3(From, To, Incr, What, Ar)
   when is_record(From, refX), is_record(To, refX) ->
     % range to range copies are 'tiled'
     TileList = get_tiles(From, To),
     copy3a(From, TileList, Incr, What, Ar).
 
 copy3a(_From, [], _Incr, _What, _Ar)   -> ok;
-copy3a(From, [H | T], Incr, What, Ar) -> 
+copy3a(From, [H | T], Incr, What, Ar) ->
     FromRange = hn_util:range_to_list(From),
     ToRange = hn_util:range_to_list(H),
     ok = copy3b(FromRange, ToRange, Incr, What, Ar),
@@ -886,13 +886,13 @@ get_tiles(#refX{obj = {range, {X1F, Y1F, X2F, Y2F}}},
     %   as the To range - 1 tile
     % * if the To range is an exact multipe of the from range it
     %   tiles it
-    % * if the To range is one column wide and a the height is a multiple 
+    % * if the To range is one column wide and a the height is a multiple
     %   of the From range then it tiles the From range vertically
     % * if the To range is one row high and the width is a multiple
     %   of the From range then it tiles the From range horizontally
     % * if the To range is not one of the above it writes the whole
     %   block into the range whose top left is the same as the To range
-    %   
+    %
     %   First up rectify the ranges
     {FX1, FY1, FX2, FY2} = hn_util:rectify_range(X1F, Y1F, X2F, Y2F),
     {TX1, TY1, TX2, TY2} = hn_util:rectify_range(X1T, Y1T, X2T, Y2T),
@@ -909,7 +909,7 @@ get_tiles(#refX{obj = {range, {X1F, Y1F, X2F, Y2F}}},
     {WTile, HTile} = case {WidthMultiple, HeightMultiple} of
                          {0.0, 0.0} -> {erlang:trunc(TWidth/FWidth),
                                         erlang:trunc(THeight/FHeight)} ;
-                         _          -> {1, 1} 
+                         _          -> {1, 1}
                      end,
     get_tiles2(To, FWidth, FHeight, {WTile, HTile}).
 
@@ -999,7 +999,7 @@ tell_front_end(Type, #refX{path = P} = RefX)
 tell_front_end(_FnName, _refX) ->
     List = lists:reverse(get('front_end_notify')),
     Fun = fun({change, #refX{site=S, path=P, obj={page, "/"}}, _Attrs}) ->
-                  remoting_reg:notify_refresh(S, P);                     
+                  remoting_reg:notify_refresh(S, P);
              ({change, #refX{site=S, path=P, obj=O}, Attrs}) ->
                   remoting_reg:notify_change(S, P, O, Attrs);
              ({style, #refX{site=S, path=P}, Style}) ->
@@ -1053,7 +1053,7 @@ print_rel4(S, [H | T], Acc) ->
     RefX = hn_db_wu:idx_to_refX(S, H),
     NewAcc = [io_lib:format("        ~p on ~p", [RefX#refX.obj, RefX#refX.path]) | Acc],
     print_rel4(S, T, NewAcc).
-    
+
 pretty_p3([], _Vals, Acc) -> Acc;
 pretty_p3([K | T], Vals, Acc) ->
     NewO = case lists:keysearch(K, 1, Vals) of

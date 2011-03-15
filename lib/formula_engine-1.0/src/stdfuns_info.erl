@@ -83,7 +83,7 @@ cell1(_, _) ->
 
 errornum(?ERRVAL_NULL)    -> 1;
 errornum(?ERRVAL_DIV)     -> 2;
-errornum(?ERRVAL_VAL)     -> 3;                                   
+errornum(?ERRVAL_VAL)     -> 3;
 errornum(?ERRVAL_REF)     -> 4;
 errornum(?ERRVAL_NAME)    -> 5;
 errornum(?ERRVAL_NUM)     -> 6;
@@ -162,7 +162,7 @@ n([{datetime, _Y, _D}=Date]) -> case muin_util:cast(Date, date, num) of
                                 end;
 n([X]) when ?is_array(X)     -> 1;
 n(_X)                        -> 0.
-    
+
 na([]) -> {errval, '#N/A'}.
 
 %% TYPE(INDIRECT("A1")) in Excel = 0 regardless of contents of A1. In Hypernumbers it's same as TYPE(A1)

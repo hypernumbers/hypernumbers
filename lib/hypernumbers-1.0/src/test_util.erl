@@ -28,12 +28,12 @@ rc_to_a1(Row, Col) ->
     tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1).
 
 test_state(State)->
-    
+
     {Cells, Ranges} = lists:partition(
                         fun({{_Sheet,_Row,_Col},_Val})       -> true;
                            ({{_Sheet,_R1,_C1,_R2,_C2},_Val}) -> false
                         end, State),
-    
+
     test_state(Cells, Ranges).
 
 test_state(Cells, Ranges) ->
@@ -48,7 +48,7 @@ test_state(Cells, Ranges) ->
 read_from_excel_data(Cells, Ranges, {Sheet, Row, Col})->
 
     Key = { {sheet,Sheet}, {row_index,Row}, {col_index,Col} },
-    
+
     Res = case lists:keysearch(Key, 1, Cells) of
               false ->
                   % If the cell is not found, search if the cell is
@@ -63,8 +63,8 @@ read_from_excel_data(Cells, Ranges, {Sheet, Row, Col})->
               {value, Tmp} ->
                   element(2, Tmp)
           end,
-    
-    case Res of 
+
+    case Res of
         {value, number,Number}          -> {number, Number};
         {string, String}                -> {string, String};
         {formula, Formula}              -> {formula, Formula};
@@ -94,7 +94,7 @@ excel_equal({string, "'"++X}, {formula, X}) ->
     true;
 excel_equal({date,F1}, {number,Number})->
     {datetime, D, T} = muin_date:excel_win_to_gregorian(Number),
-    F1 == {D, T}; 
+    F1 == {D, T};
 excel_equal({string, "'"++F1}, {string, F1}) ->
     true;
 %% Cant check because goes pre gregorian, fuzzy check
@@ -126,7 +126,7 @@ excel_equal(_X, _Y) ->
 
 transform_expected(Formula) ->
     Opt = [{return, list}, global],
-    
+
     Tmp2 = re:replace(Formula, "ERRORTYPE", "ERROR.TYPE", Opt),
     Tmp3 = re:replace(Tmp2, "FINDB\\(", "FIND\\(", Opt),
     Tmp4 = re:replace(Tmp3, "LEFTB\\(", "LEFT\\(", Opt),
@@ -157,22 +157,22 @@ transform_got(Formula2) ->
                       [{return, list}, global]),
     stripfileref(Tmp2).
 
-%% Nasty function to convert 
+%% Nasty function to convert
 %% stuff'C:\\cygwin\\stuff\\[e_gnumeric_bitwise.xls]Name'!stuff
-%% to 
+%% to
 %% ../e_gnumeric_bitwise/Name!stuff"
 stripfileref(Str) ->
     case string:str(Str,"'C:\\") of
         0 -> Str;
-        X -> 
+        X ->
             Pre = string:sub_string(Str, 1, X-1),
             Post = string:sub_string(Str, X+1),
-            File = "../" ++ string:sub_string(Post, string:chr(Post, 91)+1), 
-            Pos = string:chr(File,$'),%'       
+            File = "../" ++ string:sub_string(Post, string:chr(Post, 91)+1),
+            Pos = string:chr(File,$'),%'
             Content = string:sub_string(File,1,Pos-1),
             Rest    = string:sub_string(File,Pos+1),
             S1 = re:replace(Content,"\\]","/", [{return, list}, global]),
-            S2 = re:replace(S1,".xls","", [{return, list}, global]),    
+            S2 = re:replace(S1,".xls","", [{return, list}, global]),
             Pre ++ S2 ++ Rest
     end.
 
@@ -233,7 +233,7 @@ hnget(Path, Cell) ->
 %     if is_list(Body) -> string:strip(Body, both, $");
 %        true            -> Body
 % end.
-  
+
 hnpost(Path, Ref, Postdata) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
     Postreq = "{\"formula\":\"" ++ Postdata ++ "\"}",
@@ -257,10 +257,10 @@ handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
 cmp(A,A) ->
     true;
 cmp(G, E) ->
-    
+
     G2 = conv_from_get(G),
     E2 = conv_for_no_reason(E),
-    
+
     E2 == G2
         orelse cmp_nums(G2, E2)
         orelse cmp_date(G2, E2).

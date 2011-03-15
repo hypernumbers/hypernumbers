@@ -122,7 +122,7 @@ Z_REF = ({Z_REF_REL}|{Z_REF_FIX}|{Z_REF_MIX1}|{Z_REF_MIX2})
 %%% 2. Finite Ranges
 %%%    NOTE the first one is a z_ref, but the 2nd looks like A1_REF!
 
-FINITE_RANGE_Z = ({Z_REF})(\:)({A1_REF}) 
+FINITE_RANGE_Z = ({Z_REF})(\:)({A1_REF})
 
 TESTER = ({MAYBE_Z_PATH})({Z_REF})
 
@@ -142,7 +142,7 @@ Z_ROW_REF_MIX2 = (({MAYBE_Z_PATH})({INT})(\:)(\$)({INT}))
 
 Z_COL_RANGE = ({Z_COL_REF_REL}|{Z_COL_REF_FIX}|{Z_COL_REF_MIX1}|{Z_COL_REF_MIX2})
 Z_ROW_RANGE = ({Z_ROW_REF_REL}|{Z_ROW_REF_FIX}|{Z_ROW_REF_MIX1}|{Z_ROW_REF_MIX2})
-                              
+
 %%% Named expression:
 
 %%% Named expression or function name:
@@ -298,14 +298,14 @@ name(TokenChars, TokenLine) ->
 to_cellref(TokenChars, TokenLine, Type) ->
     {Path, Cell} = split_ssref(TokenChars),
     {ColCoord, RowCoord} = extract_coords(Cell, Type, ?pivot),
-    {cellref, TokenLine, #cellref{col = ColCoord, row = RowCoord, 
+    {cellref, TokenLine, #cellref{col = ColCoord, row = RowCoord,
                                   path = Path, text = TokenChars}}.
 
 to_zcellref(TokenChars, TokenLine) ->
     {Path, Cell} = split_ssref(TokenChars),
     NewPath = parse_zpath(Path),
     {ColCoord, RowCoord} = extract_coords(Cell, a1, ?pivot),
-    {zcellref, TokenLine, NewPath, #cellref{col = ColCoord, row = RowCoord, 
+    {zcellref, TokenLine, NewPath, #cellref{col = ColCoord, row = RowCoord,
                                   path = Path, text = TokenChars}}.
 
 finite_zrange(TokenChars, TokenLine) ->
@@ -314,8 +314,8 @@ finite_zrange(TokenChars, TokenLine) ->
     {W, H} = finite_range_dimensions(Tl, Br),
     NewPath = parse_zpath(Path),
     {zrangeref, TokenLine, NewPath,
-     #rangeref{type = finite, path = Path, tl = Tl, br = Br, 
-               width = W, height = H, 
+     #rangeref{type = finite, path = Path, tl = Tl, br = Br,
+               width = W, height = H,
                text = TokenChars}}.
 
 z_col_range(TokenChars, TokenLine) ->
@@ -403,8 +403,8 @@ finite_range(TokenChars, TokenLine, Kind) ->
     {Path, LhsArg, RhsArg} = split_range(TokenChars),
     {Tl, Br} = find_proper_bounds(LhsArg, RhsArg, Kind),
     {W, H} = finite_range_dimensions(Tl, Br),
-    {rangeref, TokenLine, #rangeref{type = finite, path = Path, tl = Tl, br = Br, 
-                                    width = W, height = H, 
+    {rangeref, TokenLine, #rangeref{type = finite, path = Path, tl = Tl, br = Br,
+                                    width = W, height = H,
                                     text = TokenChars}}.
 
 %% args are normalized/offset.
@@ -422,7 +422,7 @@ row_index({offset, N}) -> ?my + N.
 col_index(N) when is_integer(N) -> N;
 col_index({offset, N}) -> ?mx + N.
 
-    
+
 %% ColId is something like "A" or "$XYZ"
 a1_col_to_coord(ColId) ->
     case string:substr(ColId, 1, 1) of
@@ -432,7 +432,7 @@ a1_col_to_coord(ColId) ->
 
 %% RowId is something like "1" or "$123"
 a1_row_to_coord(RowId) ->
-    case string:substr(RowId, 1, 1) of 
+    case string:substr(RowId, 1, 1) of
         "$" -> tconv:to_i(string:substr(RowId, 2)); %"
         _   -> {offset, tconv:to_i(RowId) - ?mx}
     end.
@@ -512,7 +512,7 @@ find_proper_bounds(LhsArg, RhsArg, Kind) ->
 
 %% @doc Given a cell reference, returns a tuple of {Path, Cell}
 %% TODO: rename this.
-%% TODO: duplicated in muin_util?                      
+%% TODO: duplicated in muin_util?
 split_ssref(Ref) ->
     I = string:rstr(Ref, "/"),
     Path = lists:sublist(Ref, I),
@@ -551,7 +551,7 @@ make_float(TokenChars) ->
 
 add_decimal([]) -> ".0";
 add_decimal([E | Tail]) when E == $e; E == $E -> ".0e" ++ Tail;
-add_decimal([X | Tail]) -> [X | add_decimal(Tail)]. 
+add_decimal([X | Tail]) -> [X | add_decimal(Tail)].
 
 %%% Tests:
 

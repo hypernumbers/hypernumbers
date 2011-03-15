@@ -125,18 +125,18 @@ cast(X, date, str)     -> muin_date:to_rfc1123_string(X);
 cast(_, blank, str)    -> "";      % STR!
 cast(_, _, str)        -> {error, nas};
 
-%% X -> date   
+%% X -> date
 cast(X, num, date) when X >= 0 ->
-    
+
     % Hope to god the seconds doesnt get represented in
     % eng format
     Days = erlang:trunc(X),
-    Secs = erlang:trunc((X - Days) * ?SECS_IN_DAY), 
+    Secs = erlang:trunc((X - Days) * ?SECS_IN_DAY),
 
     % Offset days by excel epoch
     EDays = Days + (calendar:date_to_gregorian_days({1900,1,1}) - 2),
     Time  = calendar:seconds_to_time(Secs),
-        
+
     #datetime{date= calendar:gregorian_days_to_date(EDays),
               time = Time};
 
@@ -178,7 +178,7 @@ just_path(Ssref) when is_list(Ssref) ->
                         false -> MbR
                     end
     end.
-          
+
 just_ref(Ssref) ->
     lists:last(string:tokens(Ssref, "/")).
 
@@ -186,7 +186,7 @@ just_ref(Ssref) ->
 %% The first argument is a list of path components, the second is a string.
 %% The first comes from the server side of things, and the second comes from
 %% the path field in ref objects.
-walk_path(_, Dest = [$/|_]) -> 
+walk_path(_, Dest = [$/|_]) ->
     string:tokens(Dest, "/");
 walk_path(Currloc, Dest) ->
     lists:foldl(fun(".",  Stk) -> Stk;
@@ -263,7 +263,7 @@ tl_col(R) ->
 br_col(R) ->
     {{_, _}, {ColIndex, _}} = bounds_indexes(R),
     ColIndex.
-    
+
 %% Catch errors from error-throwing functions.
 attempt(Mod, F, Args) ->
     try apply(Mod, F, Args) of
@@ -285,7 +285,7 @@ attempt(Fun) when is_function(Fun) ->
                                    "-with stacktrace of ~p~n",
                                    [Error, Reason, erlang:get_stacktrace()]),
             {error, Reason}
-    end.        
+    end.
 
 
 %%% @doc Re-assemble a prettified and tidied up formula string from AST.

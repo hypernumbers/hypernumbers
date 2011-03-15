@@ -21,7 +21,7 @@
          transform_perms/1,
          add_views/0,
 
-         esc_regex/1,     
+         esc_regex/1,
          recursive_copy/2,
 
          site_to_atom/2,
@@ -104,7 +104,7 @@ mk_f([], {St, A}) ->
 mk_f([{zcellref, _, _, C} | T], {St, A}) ->
     mk_f(T, {St, [C#cellref.text | A]});
 
-mk_f([{errval, _, '#REF!'} | T], {St, A}) -> 
+mk_f([{errval, _, '#REF!'} | T], {St, A}) ->
     mk_f(T, {St, ["#REF!" | A]});
 
 mk_f([{deref, Text} | T], {_St, A}) ->
@@ -114,7 +114,7 @@ mk_f([{deref, Text} | T], {_St, A}) ->
 mk_f([{cellref, _, C1}, {cellref, _, C2} | T], {St, A}) ->
     mk_f(T, {St, [C2#cellref.text, "/", C1#cellref.text | A]});
 
-mk_f([{int, _, I}, {cellref,_,C} | T], {St, A}) -> 
+mk_f([{int, _, I}, {cellref,_,C} | T], {St, A}) ->
     mk_f(T, {St, [C#cellref.text, "/", integer_to_list(I) | A]});
 
 mk_f([{float, _, {_, OrigStr}}, {cellref,_,C} | T], {St, A}) ->
@@ -167,15 +167,15 @@ mk_f([{recalc, S} | T], {_St, A}) ->
                          mk_f(T, {St, [atom_to_list(H) | A]}).
 
 
--spec extract_name_from_email(string()) -> string(). 
+-spec extract_name_from_email(string()) -> string().
 extract_name_from_email(Email) ->
     [Name | _Rest] =  string:tokens(Email, ".+@"),
     capitalize_name(Name).
 
--spec capitalize_name(string()) -> string(). 
+-spec capitalize_name(string()) -> string().
 capitalize_name([X|Rest]) -> [string:to_upper(X)|Rest].
 
--spec valid_email(string()) -> boolean(). 
+-spec valid_email(string()) -> boolean().
 valid_email(Email) ->
     NewE = string:strip(Email),
     EMail_regex = "^(?<name>([a-z0-9!#$%&'*+/=?^_`{|}~\\-]+)"
@@ -202,11 +202,11 @@ site_to_atom(Site, PostFix) when is_list(Site) andalso is_list(PostFix) ->
     list_to_atom([case X of $: -> $&; X -> X end || X <- S ++ PostFix]).
 
 site_to_fs("http://"++Site) ->
-    [case S of $: -> $&; S  -> S end 
+    [case S of $: -> $&; S  -> S end
      || S <- Site].
 
 site_from_fs(Site) ->
-    "http://" ++ [case S of $& -> $:; S  -> S end 
+    "http://" ++ [case S of $& -> $:; S  -> S end
                   || S <- Site].
 
 %% Escape the replacement part of the regular expression
@@ -227,7 +227,7 @@ esc_regex([Else | Rest], Acc) ->
 
 
 %% Recursively copy directories
--spec recursive_copy(list(), list()) -> ok.                            
+-spec recursive_copy(list(), list()) -> ok.
 recursive_copy(From, To) ->
     {ok, Files} = file:list_dir(From),
     [ok = rec_copy1(From, To, X) || X <- Files],
@@ -235,7 +235,7 @@ recursive_copy(From, To) ->
 
 % ignore hidden
 rec_copy1(_From, _To, [$. | _T]) ->
-    ok; 
+    ok;
 rec_copy1(From, To, File) ->
 
     NewFrom = filename:join(From, File),
@@ -248,13 +248,13 @@ rec_copy1(From, To, File) ->
             recursive_copy(NewFrom, NewTo);
 
         false ->
-            case filelib:is_file(NewFrom) of                
+            case filelib:is_file(NewFrom) of
                 true  ->
                     ok = filelib:ensure_dir(NewTo),
                     {ok, _} = file:copy(NewFrom, NewTo),
                     ok;
                 false ->
-                    ok            
+                    ok
             end
     end.
 
@@ -263,7 +263,7 @@ rec_copy1(From, To, File) ->
 -spec delete_directory(string()) -> ok.
 delete_directory(From) ->
     case file:list_dir(From) of
-        {ok, Files} -> 
+        {ok, Files} ->
             file:list_dir(From),
             [ok = delete_dir(filename:join(From, File)) || File <- Files],
             ok = file:del_dir(From);
@@ -281,11 +281,11 @@ delete_dir(File) ->
 %% is string a list of alpha(a-z) characters
 -spec is_alpha(string()) -> true | false.
 is_alpha(Str) ->
-    Fun = fun(XX) ->         
-                  if XX < 97  -> false;  
+    Fun = fun(XX) ->
+                  if XX < 97  -> false;
                      XX > 122 -> false;
-                     true     -> true      
-                  end                  
+                     true     -> true
+                  end
           end,
     case is_list(Str) of
         false -> false;
@@ -297,11 +297,11 @@ is_alpha(Str) ->
 -spec is_numeric(string()) -> true | false.
 is_numeric([]) -> false;
 is_numeric(Str) ->
-    Fun = fun(XX) ->         
-                  if XX < 48 -> false;  
+    Fun = fun(XX) ->
+                  if XX < 48 -> false;
                      XX > 57 -> false;
-                     true    -> true      
-                  end                  
+                     true    -> true
+                  end
           end,
     case is_list(Str) of
         false -> false;
@@ -309,13 +309,13 @@ is_numeric(Str) ->
     end.
 
 get_offset(insert, D, {cell,     _})              -> g_o1(D, 1, 1);
-get_offset(insert, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, Y2 - Y1 + 1); 
-get_offset(insert, D, {column, {X1, X2}})         -> g_o1(D, X2 - X1 + 1, 0); 
+get_offset(insert, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, Y2 - Y1 + 1);
+get_offset(insert, D, {column, {X1, X2}})         -> g_o1(D, X2 - X1 + 1, 0);
 get_offset(insert, D, {range,  {X1, Y1, X2, Y2}}) -> g_o1(D, X2 - X1 + 1,
                                                           Y2 - Y1 + 1);
 get_offset(delete, D, {cell,    _})               -> g_o1(D, -1, -1);
-get_offset(delete, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, -(Y2 - Y1 + 1)); 
-get_offset(delete, D, {column, {X1, X2}})         -> g_o1(D, -(X2 - X1 + 1), 0); 
+get_offset(delete, D, {row,    {Y1, Y2}})         -> g_o1(D, 0, -(Y2 - Y1 + 1));
+get_offset(delete, D, {column, {X1, X2}})         -> g_o1(D, -(X2 - X1 + 1), 0);
 get_offset(delete, D, {range,  {X1, Y1, X2, Y2}}) -> g_o1(D, -(X2 - X1 + 1), -
                                                           (Y2 - Y1 + 1)).
 
@@ -335,7 +335,7 @@ is_older(File1, File2) ->
     Info2#file_info.mtime > Info1#file_info.mtime.
 
 %% generate_po_CHEATING(Ref) ->
-%%     Needs a user object.... 
+%%     Needs a user object....
 %%     Body = hn_mochi:page_attributes(make_refX(Ref)),
 %%     generate_po1(Body).
 
@@ -382,7 +382,7 @@ jsonify_attrs(Attrs) ->
 jsonify_val({[$_,$_|_]=K, _}) ->
     {K, "bleh"};
 jsonify_val({"parents", _}) ->
-    {"parents", "bleh"};    
+    {"parents", "bleh"};
 jsonify_val({Name, {errval, Error}}) ->
     {Name, atom_to_list(Error)};
 jsonify_val({Name, {datetime, {1,1,1}=Date, Time}}) ->
@@ -411,7 +411,7 @@ jsonify_val({K, V}) ->
         throw: _Err ->
             error_logger:error_msg("#MOCHIJSON! throw ~p ~p~n", [K, V]),
             {K, {errval, '#MOCHIJSON!'}}
-    end.                
+    end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -438,7 +438,7 @@ rectify_row_or_col(Z1, Z2) ->
     if
         (Z1 >  Z2) -> {Z2, Z1};
         (Z1 =< Z2) -> {Z1, Z2}
-    end.    
+    end.
 
 range_to_list(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
     {X1a, Y1a, X2a, Y2a} = rectify_range(X1, Y1, X2, Y2),
@@ -480,8 +480,8 @@ refX_to_url(#refX{site = Site, path = Path, obj = {page, "/"}}) ->
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
     lists:append([Site, list_to_path(Path),tconv:to_b26(X), text(Y)]).
 
--spec strip80(string()) -> string(). 
-strip80(S) -> strip80(S, []). 
+-spec strip80(string()) -> string().
+strip80(S) -> strip80(S, []).
 strip80([], Acc) -> lists:reverse(Acc);
 strip80(":80"++_, Acc) -> lists:reverse(Acc);
 strip80([H|T], Acc) -> strip80(T, [H|Acc]).
@@ -494,7 +494,7 @@ path_to_json_path(P) when is_list(P) -> "path." ++ string:join(P, ".")
                                             ++ ".json".
 
 obj_to_change_msg({page,Path}) ->
-    Path;   
+    Path;
 obj_to_change_msg({cell,{X,Y}}) ->
     tconv:to_b26(X)++text(Y);
 % file import seems to create old-fashioned rows
@@ -565,28 +565,28 @@ parse_attr(cell, Addr) ->
 
 parse_attr(range, Addr) ->
     case re:run(Addr,?RG_range) of
-        {match,_} -> 
+        {match,_} ->
             [Cell1, Cell2] = string:tokens(Addr, ":"),
             {X1, Y1} = util2:strip_ref(Cell1),
             {X2, Y2} = util2:strip_ref(Cell2),
             {XX1, YY1, XX2, YY2} = hn_util:rectify_range(X1, Y1, X2, Y2),
             {range, {XX1, YY1, XX2, YY2}};
-        _ -> 
+        _ ->
             parse_attr(col, Addr)
     end;
 
 parse_attr(col, Addr) ->
     case re:run(Addr,?RG_col_range) of
-        {match,_} -> 
+        {match,_} ->
             [Cell1, Cell2] = string:tokens(Addr, ":"),
             {col, {tconv:b26_to_i(Cell1), tconv:b26_to_i(Cell2)}};
-        _ -> 
+        _ ->
             parse_attr(row, Addr)
     end;
 
 parse_attr(row, Addr) ->
     case re:run(Addr,?RG_row_range) of
-        {match,_} -> 
+        {match,_} ->
             [Cell1, Cell2] = string:tokens(Addr, ":"),
             {row, {ltoi(Cell1), ltoi(Cell2)}};
         _ ->
@@ -660,12 +660,12 @@ just_path(Url) ->
     end.
 
 -spec drop_last(list()) -> list().
-drop_last([_]) -> []; 
+drop_last([_]) -> [];
 drop_last([X | Rest]) -> [X | drop_last(Rest)].
 
 -spec abs_path([string()], string()) -> string().
 abs_path(_, [$/ | _] = Path2) -> Path2;
-abs_path(Path, Path2) -> 
+abs_path(Path, Path2) ->
     Path2Toks = string:tokens(Path2, "/"),
     PathR = lists:reverse(Path),
     "/" ++ string:join(abs_path2(PathR, Path2Toks), "/").
@@ -679,7 +679,7 @@ abs_path2(Left, ["." | RestR], Q) ->
 abs_path2(Left, [".." | RestR], Q) ->
     case {queue:is_empty(Q), Left} of
         {false, _} -> abs_path2(Left, RestR, queue:drop_r(Q));
-        {true, []} -> abs_path2([".."], RestR, Q); 
+        {true, []} -> abs_path2([".."], RestR, Q);
         {true, [".."|_]} -> abs_path2([".." | Left], RestR, Q);
         {true, [_|RestL]} -> abs_path2(RestL, RestR, Q)
     end;
@@ -704,7 +704,7 @@ type_reference(Cell) ->
             case re:run(Cell, ?RG_cell) of
                 {match, _} -> cell;
                 _          -> filename
-                    
+
             end;
         _ -> type_r2(Cell)
     end.
@@ -760,7 +760,7 @@ tmptr({set_champion,[{path,Path},{view,"_g/core/webpage"}]}) ->
 tmptr(Tmp) ->
     Tmp.
 
-make_script_terms([], Acc) -> 
+make_script_terms([], Acc) ->
     FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
     lists:flatten([FirstLine | lists:reverse(Acc)]);
 make_script_terms([H | T], Acc) ->
@@ -821,7 +821,7 @@ abspath_test_() ->
      ?_assertEqual("/first/second/third/d1", abs_path(Base, "d1")),
      ?_assertEqual("/first/second/third/d1", abs_path(Base, "./d1")),
      ?_assertEqual("/first/second/d1", abs_path(Base, "../d1")),
-     ?_assertEqual("/d1", 
+     ?_assertEqual("/d1",
                    abs_path(Base, "../third/../../ok/.././../././first//../d1")),
      ?_assertEqual("/first/second/d1", abs_path(Base, "../something/../d1"))
     ].

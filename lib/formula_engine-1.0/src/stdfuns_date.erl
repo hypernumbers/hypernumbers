@@ -39,7 +39,7 @@ date(Args = [_, _, _]) ->
     Rnd = fun(X) when X >= 0 -> erlang:trunc(X);
              (X) when X < 0  -> erlang:round(X)
           end,
-    
+
     F = fun(Y, M, D) ->
                 dateh([erlang:trunc(Y), Rnd(M), Rnd(D)])
         end,
@@ -64,7 +64,7 @@ dateh([Y, M, D]) when (M > 12) ->
     NewMonth = Diff,
     dateh([NewYear, NewMonth, D]);
 dateh([Y, M, D]) when (D =< 0) ->
-    NewMonth = M - 1, 
+    NewMonth = M - 1,
     LastDay2 =  ?last_day(Y, NewMonth),
     NewDay = LastDay2 + D,
     dateh([Y, NewMonth, NewDay]);
@@ -78,7 +78,7 @@ dateh([Y, M, D]) ->
             NewMonth = M + 1,
             NewDay = D - LastDay,
             dateh([Y, NewMonth, NewDay]);
-        (D =< LastDay) ->             
+        (D =< LastDay) ->
             #datetime{date = {Y, M, D}}
     end.
 
@@ -148,7 +148,7 @@ days360([PreDate1, PreDate2, PreMethod]) ->
                 [return_errors, {all, fun muin_collect:is_date/1}]),
     Mth = muin_collect:col([PreMethod], [eval_funs, fetch, {cast, bool}],
               [return_errors, {all, fun is_boolean/1}]),
-    muin_util:apply([Dates, Mth], fun days360_/2).    
+    muin_util:apply([Dates, Mth], fun days360_/2).
 
 days360_([Date1, Date2], [Method]) ->
     days360(Date1, Date2, Method).
@@ -190,7 +190,7 @@ year([Val]) ->
     muin_date:year(Date).
 
 
-%% @todo there is not test suite for this function because it is not an 
+%% @todo there is not test suite for this function because it is not an
 %% Excel 97 one
 edate([V1, V2]) ->
     Start = muin_col_DEPR:collect_date(V1, ?cast_all),
@@ -202,7 +202,7 @@ edate1(Start, Months) ->
     Modelta = Months - (Yrdelta * 12),
     Start#datetime{date = {Startyr + Yrdelta, Startmo + Modelta, Startday}}.
 
-%% @todo there is not test suite for this function because it is not an 
+%% @todo there is not test suite for this function because it is not an
 %% Excel 97 one
 eomonth([V1, V2]) ->
     Start = muin_col_DEPR:collect_date(V1, ?cast_all),
@@ -215,9 +215,9 @@ eomonth1(Start, Months) ->
     Lastday = calendar:last_day_of_the_month(Tyr, Tmo),
     Tdate#datetime{date = {Tyr, Tmo, Lastday}}.
 
-%% @todo there is not test suite for this function because it is not an 
+%% @todo there is not test suite for this function because it is not an
 %% Excel 97 one
-%% 
+%%
 %% Also caan provide lists of holidays here for convenience, e.g.
 %% "GB" -> British holidays, "RUS" -> Russian holidays etc.
 networkdays([V1, V2]) ->
@@ -235,7 +235,7 @@ networkdays1(Start, End, Holidays) ->
                                6 -> Acc; % Saturday
                                7 -> Acc; % Sunday
                                _ ->      % Check if the date falls on holiday
-                                   %% FIXME: Will break on #datetimes with 
+                                   %% FIXME: Will break on #datetimes with
                                    %% the same date
                                    %% but different time fields.
                                    case lists:member(X, Holidays) of
@@ -246,7 +246,7 @@ networkdays1(Start, End, Holidays) ->
                    end,
                    0, Start, End).
 
-%% @TODO: Potential for confusion if user and server are in 
+%% @TODO: Potential for confusion if user and server are in
 %% different timezones, e.g.
 %% a Japanese user on a Californian server...
 today([]) ->
@@ -256,26 +256,26 @@ today([]) ->
 weekday([V1]) ->
     weekday([V1, 1]);
 weekday([V1, V2]) ->
-    
+
     Dat = muin_collect:col([V1],
               [fetch_name, eval_funs, first_array,
                {cast, num, date, ?ERRVAL_NUM},
                {cast, date}],
               [return_errors, {all, fun muin_collect:is_date/1}]),
-    
+
     Ret = muin_collect:col([V2],
               [fetch_name, eval_funs, first_array, {cast, int}],
               [return_errors, {all, fun is_number/1}]),
-    
+
     case {Dat, Ret} of
         {[Date], [Return]} -> weekday1(Date, Return);
         {[_Date], Err}     -> Err;
         {Err, _Else}       -> Err
     end.
-        
+
 %    io:format("hello?~n"),
 %    Dt = muin_col_DEPR:collect_date(V1, ?cast_all),
-%    Rettype = ?int(V2, ?cast_all),    
+%    Rettype = ?int(V2, ?cast_all),
 %% io:format("Dt ~p", [Dt]),
 %% weekday1(Dt, Rettype).
 
@@ -291,7 +291,7 @@ weekday1(Dt, 3) ->
 weekday1(_Dt, _X) ->
     ?ERRVAL_NUM.
 
-%% @todo there is not test suite for this function because it is not an 
+%% @todo there is not test suite for this function because it is not an
 %% Excel 97 one
 weeknum([V1]) ->
     weeknum([V1, 1]);
@@ -368,7 +368,7 @@ time_([H,M,S]) ->
     Mins  = erlang:trunc((X - (Hours * 3600)) / 60),
     Secs  = erlang:trunc((X - (Hours * 3600) - (Mins * 60))),
     #datetime{time = {Hours, Mins, Secs}}.
-      
+
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %% -include_lib("eunit/include/eunit.hrl").

@@ -125,7 +125,7 @@ make_refX("http://"++URL) ->
     {ok, Toks} = url_lexer:lex(PathAndRef),
     Ret = parse(Toks),
     case Ret of
-        {ok, {Type, Path, Ref}} -> 
+        {ok, {Type, Path, Ref}} ->
             #refX{site = "http://" ++ Site, type = Type, path = Path, obj = Ref};
         {error, Err} -> error_logger:error_msg("url parsing of ~p~n~p~n"
                                                ++ "failed with ~p~n",
@@ -157,7 +157,7 @@ seg_test_() ->
                                           "blah2"
                                          ],
                                    {page, "/"}}),
-     
+
      ?_assert(p_TEST("/blah/blah/") == {url,[
                                              "blah",
                                              "blah"
@@ -237,17 +237,17 @@ filename_test_() ->
 prod_test_() ->
     [
      ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/sheet1/A13") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "sheet1"], {cell, {1, 13}}}),
-     
+
                ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/a_quis_custodiet_custodiens/sheet1/") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "a_quis_custodiet_custodiens", "sheet1"], {page, "/"}}),
-     
+
                ?_assert(make_refX("http://tests.hypernumbers.dev:9000/a_quis_custodiet_custodiens/a_quis_custodiet_custodiens/sheet1/A13") == {refX, "http://tests.hypernumbers.dev:9000", url, ["a_quis_custodiet_custodiens", "a_quis_custodiet_custodiens", "sheet1"], {cell, {1, 13}}}),
 
                     ?_assert(make_refX("http://hypernumbers.dev:9000/_sync/tell/anonymous|_2a087da0d62cd0840f9d1a5667ed6646|never|51cef8208e98daca95be750d8c26faa6/") == {refX, "http://hypernumbers.dev:9000", url, ["_sync","tell","anonymous|_2a087da0d62cd0840f9d1a5667ed6646|never|51cef8208e98daca95be750d8c26faa6"], {page, "/"}}),
 
      ?_assert(make_refX("http://hypernumbers.dev:9000/[(or(a1 > 1, a2 > 2))]/a3") == {refX, "http://hypernumbers.dev:9000", gurl, ["[(or(a1>1,a2>2))]"], {cell, {1, 3}}}),
-     
+
      ?_assert(make_refX("http://hypernumbers.dev:9000/./[(or(a1 > 1, a2 > 2))]/a3") == {refX, "http://hypernumbers.dev:9000", gurl, [".","[(or(a1>1,a2>2))]"], {cell, {1, 3}}}),
-     
+
      ?_assert(make_refX("http://hypernumbers.dev:9000/[(or(./a1 > 1, ./a2 > 2))]/a3") == {refX, "http://hypernumbers.dev:9000", gurl, ["[(or(./a1>1,./a2>2))]"], {cell, {1, 3}}}),
 
      ?_assert(make_refX("http://hypernumbers.dev:9000/./[(or(./a1 > 1, ./a2 > 2))]/a3") == {refX, "http://hypernumbers.dev:9000", gurl, [".","[(or(./a1>1,./a2>2))]"], {cell, {1, 3}}}),
@@ -255,7 +255,7 @@ prod_test_() ->
      ?_assert(make_refX("http://hypernumbers.com/_sync/seek/?return=http%3A%2F%2Fbi27.tiny.hn%2F%3Fview%3Ddemopage") == {refX, "http://hypernumbers.com", url, ["_sync", "seek"], {page, "/"}}),
 
      ?_assert(make_refX("http://hypernumbers.com/_ping/?spoor=3b268089bf028bf5&return=http://support.hypernumbers.com/helpoverview/overview/") == {refX, "http://hypernumbers.com", url, ["_ping"], {page, "/"}}),
-     
+
      ?_assert(make_refX("http://hypernumbers.com:80") == {refX, "http://hypernumbers.com:80", url, [], {page, "/"}})
-     
+
      ].

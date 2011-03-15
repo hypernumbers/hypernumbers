@@ -27,7 +27,7 @@ c_(Name, Value, Opts) ->
 kill_cookie(N) -> cookie(N, "killitwithfire", 0).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Email 
+%% Email
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 email(To, CC, From, Subject, Msg) ->
@@ -36,15 +36,15 @@ email(To, CC, From, Subject, Msg) ->
     {ok, User}     = application:get_env(hypernumbers, mailuser),
     email([{server, Server}, {user, User}, {password, Password}],
           To, CC, From, Subject, Msg).
-        
+
 email(Details, To, CC, From, Subject, Msg) ->
 
-    Server = proplists:get_value(server, Details),    
+    Server = proplists:get_value(server, Details),
     User   = proplists:get_value(user, Details),
     Pass   = proplists:get_value(password, Details),
-    
+
     {ok, Socket} = ssl:connect(Server, 465, [{active, false}], 20000),
-    
+
     recv(Socket),
     send(Socket, "HELO localhost"),
     send(Socket, "AUTH LOGIN"),
@@ -88,7 +88,7 @@ recv(Socket) ->
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% HTTP 
+%% HTTP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 post(Url, Data, Format) ->

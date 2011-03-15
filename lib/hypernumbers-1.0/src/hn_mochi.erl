@@ -1,4 +1,4 @@
-%% @copyright 2008 Hypernumbers Ltd
+%%% @copyright 2008 Hypernumbers Ltd
 %%% @doc Handle Hypernumbers HTTP requests
 -module(hn_mochi).
 
@@ -39,11 +39,11 @@
 -define(WEBPREVIEW, "webpreview").
 -define(WIKIPREVIEW, "wikipreview").
 
--spec start() -> {ok, pid()}. 
+-spec start() -> {ok, pid()}.
 start() ->
     {ok, {Ip, Port}} = application:get_env(hypernumbers, mochi_bind),
     StrIp = inet_parse:ntoa(Ip),
-    Opts = [{port, Port}, 
+    Opts = [{port, Port},
             {ip, StrIp},
             {name, ?MODULE},
             {loop, {hn_mochi, handle}}],
@@ -58,11 +58,11 @@ handle(MochiReq) ->
         handle_(Ref, Env, Qry)
     catch
         ok          -> ok;
-        exit:normal -> exit(normal); 
+        exit:normal -> exit(normal);
         Type:What   ->
             Format = "web request failed~npath:  ~p~ntype:  ~p~nwhat:  ~p~n"
                 ++"trace:~p~n",
-            Path   = MochiReq:get(path), 
+            Path   = MochiReq:get(path),
             Msg    = [{path, Path},
                       {type, Type},
                       {what, What},
@@ -75,17 +75,17 @@ handle(MochiReq) ->
                 _ ->
                     ?E(Format, Msg)
             end,
-            '500'(process_environment(MochiReq)) 
+            '500'(process_environment(MochiReq))
     end.
 
--spec handle_(#refX{}, #env{}, #qry{}) -> ok. 
+-spec handle_(#refX{}, #env{}, #qry{}) -> ok.
 
 handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
     Redir = "http://" ++ hn_util:strip80(Site) ++ Mochi:get(raw_path),
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
-handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=QReturn, stamp=QStamp}) 
+handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=QReturn, stamp=QStamp})
   when QReturn /= undefined ->
     Env2 = process_sync(Cmd, Env, QReturn, QStamp),
     respond(303, Env2),
@@ -97,14 +97,14 @@ handle_(Ref, Env, Qry) ->
                      []  -> authorize_resource(Env, Ref, Qry);
                      Ext -> handle_static(Ext, Ref#refX.site, Env)
                  end;
-        false -> text_html(Env, 
+        false -> text_html(Env,
                            "The web site you seek<br/>"
                            "cannot be located, but<br/>"
                            "countless more exist.")
     end.
 
--spec authorize_resource(#env{}, #refX{}, #qry{}) -> no_return(). 
-authorize_resource(Env, Ref, Qry) -> 
+-spec authorize_resource(#env{}, #refX{}, #qry{}) -> no_return().
+authorize_resource(Env, Ref, Qry) ->
     case cluster_up() of
         false -> text_html(Env, "There appears to be a network problem. "++
                            "Please try later");
@@ -132,7 +132,7 @@ cluster_up() ->
                                                "...reconnection unsucessful"),
                         false % not reconnected, boo!
             end
-    end.             
+    end.
 
 authorize_r2(Env, Ref, Qry) ->
     Env2 = process_user(Ref#refX.site, Env),
@@ -148,7 +148,7 @@ authorize_r2(Env, Ref, Qry) ->
         {{view, View}, _} ->
             handle_resource(Ref, Qry#qry{view = View}, Env2);
         {not_found, html} ->
-            serve_html(404, Env2, 
+            serve_html(404, Env2,
                        [viewroot(Ref#refX.site), "/404.html"]);
         {not_found, json} ->
             respond(404, Env2);
@@ -164,21 +164,21 @@ handle_resource(Ref, Qry, Env=#env{method = 'GET'}) ->
     ObjType = element(1, Ref#refX.obj),
     iget(Ref, ObjType, Qry, Env);
 
-handle_resource(Ref, _Qry, 
+handle_resource(Ref, _Qry,
                 Env=#env{method='POST', body=multipart,
                          mochi=Mochi, uid=Uid}) ->
     {Data, File} = hn_file_upload:handle_upload(Mochi, Ref, Uid),
     Name = filename:basename(File),
     Env2 = Env#env{raw_body = {upload, Name}},
     mochilog:log(Env2, Ref),
-    Mochi:ok({"text/html", 
+    Mochi:ok({"text/html",
               (mochijson:encoder([{input_encoding, utf8}]))(Data)});
 
 handle_resource(Ref, Qry, Env=#env{method = 'POST'}) ->
     mochilog:log(Env, Ref),
     ipost(Ref, Qry, Env).
 
--spec handle_static(string(), iolist(), any()) -> any(). 
+-spec handle_static(string(), iolist(), any()) -> any().
 handle_static(X, Site, Env)
   when X == ".png"; X == ".jpg"; X == ".css"; X == ".js"; X == ".txt";
 X == ".ico"; X == ".json"; X == ".gif"; X == ".html"; X == ".htm"; X == ".pdf" ->
@@ -190,33 +190,33 @@ X == ".ico"; X == ".json"; X == ".gif"; X == ".html"; X == ".htm"; X == ".pdf" -
 handle_static(_X, Site, Env) ->
     serve_html(404, Env, [viewroot(Site), "/404.html"]).
 
--spec authorize_get(#refX{}, #qry{}, #env{}) 
+-spec authorize_get(#refX{}, #qry{}, #env{})
 -> {view, string()} | allowed | denied | not_found.
 
 %% Specifically allow access to the json permissions. Only the permissions,
 %% query may be present.
 %% TODO: Only admins should be able to do this...
-authorize_get(_Ref, 
-              #qry{permissions = [], _ = undefined}, 
+authorize_get(_Ref,
+              #qry{permissions = [], _ = undefined},
               #env{accept = html}) ->
     allowed;
 
 %% Authorize access to 'special' commands.
 %% TODO put permissions access on _invite and _logout
-authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html}) 
-  when X == "_invite"; 
-       X == "_mynewsite"; 
+authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
+  when X == "_invite";
+       X == "_mynewsite";
        X == "_validate";
        X == "_hooks";
        X == "_logout" ->
     allowed;
 
-authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = json}) 
+authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = json})
   when X == "_site" ->
     allowed;
 
 %% Only some sites have a forgotten password box
-authorize_get(#refX{path = [X | _Vanity]}, _Qry, #env{accept = html}) 
+authorize_get(#refX{path = [X | _Vanity]}, _Qry, #env{accept = html})
   when X == "_forgotten_password" ->
     case passport_running() of
         true  -> allowed;
@@ -226,34 +226,34 @@ authorize_get(#refX{path = [X | _Vanity]}, _Qry, #env{accept = html})
 %% Authorize update requests when the update is targeted towards a
 %% spreadsheet. Since we have no closed security object, we rely on
 %% 'run-time' checks.
-authorize_get(#refX{site = Site, path = Path}, 
-              #qry{updates = U, view = ?SHEETVIEW, paths = More}, 
+authorize_get(#refX{site = Site, path = Path},
+              #qry{updates = U, view = ?SHEETVIEW, paths = More},
               #env{accept = json, uid = Uid})
   when U /= undefined ->
     case auth_srv:check_particular_view(Site, Path, Uid, ?SHEETVIEW) of
         {view, ?SHEETVIEW} ->
-            MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Uid) 
+            MoreViews = [auth_srv:get_any_view(Site, string:tokens(P, "/"), Uid)
                          || P <- string:tokens(More, ",")],
-            case lists:all(fun({view, _}) -> true; 
-                              (_) -> false end, 
+            case lists:all(fun({view, _}) -> true;
+                              (_) -> false end,
                            MoreViews) of
                 true  -> allowed;
                 _Else -> denied
-            end;       
+            end;
         _Else ->
             denied
     end;
 
 %% Authorize access to the DEFAULT page. Notice that no query
 %% parameters have been set.
-authorize_get(#refX{site = Site, path = Path}, 
-              #qry{_ = undefined}, 
+authorize_get(#refX{site = Site, path = Path},
+              #qry{_ = undefined},
               #env{accept = html, uid = Uid}) ->
     auth_srv:check_get_view(Site, Path, Uid);
 
 %% Authorize access to the challenger view.
-authorize_get(#refX{site = Site, path = Path}, 
-              #qry{challenger=[]}, 
+authorize_get(#refX{site = Site, path = Path},
+              #qry{challenger=[]},
               #env{accept = html, uid = Uid}) ->
     auth_srv:check_get_challenger(Site, Path, Uid);
 
@@ -263,9 +263,9 @@ authorize_get(_Ref, #qry{view = V}, _Env)
     allowed;
 
 %% Authorize access to one particular view.
-authorize_get(#refX{site = Site, path = Path}, 
-              #qry{view = View}, 
-              #env{uid = Uid}) 
+authorize_get(#refX{site = Site, path = Path},
+              #qry{view = View},
+              #env{uid = Uid})
   when View /= undefined ->
     auth_srv:check_particular_view(Site, Path, Uid, View);
 
@@ -280,14 +280,14 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
 -spec authorize_post(#refX{}, #qry{}, #env{}) -> allowed | denied | not_found.
 
 %% Allow special posts to occur
-authorize_post(#refX{path = [X]}, _Qry, #env{accept = json}) 
+authorize_post(#refX{path = [X]}, _Qry, #env{accept = json})
   when X == "_login";
        X == "_hooks";
        X == "_forgotten_password",
-       X == "_parse_expression" -> 
+       X == "_parse_expression" ->
     allowed;
 
-authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry, 
+authorize_post(#refX{site = Site, path = ["_admin"]}, _Qry,
                #env{accept = json, uid = Uid} = Env) ->
     case hn_groups:is_member(Uid, Site, ["admin"]) of
         true  -> allowed;
@@ -309,7 +309,7 @@ authorize_post(#refX{site = Site, path = Path}, _Qry, Env) ->
 authorize_p2(Site, Path, Env) ->
     case ?check_pt_vw(Site, Path, Env#env.uid, ?WIKI) of
         not_found        -> not_found;
-        {view, ?WIKI} -> 
+        {view, ?WIKI} ->
             case Env#env.body of
                 [{"postform",   _}]      -> allowed;
                 [{"postinline", _}]      -> allowed;
@@ -323,7 +323,7 @@ authorize_p2(Site, Path, Env) ->
 authorize_p3(Site, Path, Env) ->
     case ?check_pt_vw(Site, Path, Env#env.uid, ?WEBPAGE) of
         not_found        -> not_found;
-        {view, ?WEBPAGE} -> 
+        {view, ?WEBPAGE} ->
             case Env#env.body of
                 [{"postform",   _}]      -> allowed;
                 [{"postcreatepages", _}] -> allowed;
@@ -356,11 +356,11 @@ authorize_admin(Site, [{"admin", {_, [{Request, {_, List}}]}}], Uid)
             end
     end.
 
--spec iget(#refX{}, 
+-spec iget(#refX{},
            page | cell | row | column | range,
            #qry{},
-           #env{}) 
--> any(). 
+           #env{})
+-> any().
 
 % if a filename has got to here, there is one of 2 reasons:
 % * the file don't exist - 404
@@ -384,7 +384,7 @@ iget(#refX{site=S, path=["_site"]} = Ref, page, _Qry, Env) ->
     Return    = {struct, [Groups, Funs, Templates, Pages, Admin, Lang]},
     json(Env, Return);
 
-iget(#refX{site=S, path=["_logout"]}, page, 
+iget(#refX{site=S, path=["_logout"]}, page,
      #qry{return=QReturn}, Env) when QReturn /= undefined ->
     Return = mochiweb_util:unquote(QReturn),
     cleanup(S, Return, Env);
@@ -398,7 +398,7 @@ iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
                         {param, P} -> P
                     end,
 
-            Return = hn_util:strip80(Site) 
+            Return = hn_util:strip80(Site)
                 ++ hn_util:list_to_path(Rest)
                 ++ Param,
 
@@ -414,25 +414,25 @@ iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
 iget(#refX{site=Site, path=[X | _Vanity]}, page, _Qry, Env)
   when X == "_forgotten_password" ->
     serve_html(404, Env, [viewroot(Site), "/forgotten_password.html"]);
-iget(#refX{site=Site, path=[X, _Vanity] = Path}, page, 
-     #qry{hypertag=HT}, 
+iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
+     #qry{hypertag=HT},
      Env) when X == "_invite"; X == "_validate" ->
     case passport:open_hypertag(Site, Path, HT) of
         {ok, Uid, _Email, Data, Stamp, Age} ->
             case proplists:get_value(emailed, Data) of
-                true -> 
+                true ->
                     ok = passport:validate_uid(Uid),
                     Redirect = case lists:keyfind(redirect, 1, Data) of
                                    false      -> "";
                                    {redirect, P} -> P
                                end,
                     Return = hn_util:strip80(Site)++Redirect,
-                    {Env2, Redir} = 
+                    {Env2, Redir} =
                         post_login(Site, Uid, Stamp, Age, Env, Return),
                     Headers = [{"location",Redir}|Env2#env.headers],
                     respond(303, Env2#env{headers = Headers}),
                     throw(ok);
-                _Else -> 
+                _Else ->
                     throw(bad_validation)
             end
     end;
@@ -470,13 +470,13 @@ iget(Ref=#refX{site=S}, page, #qry{view=FName},
         false -> '404'(Ref, Env)
     end;
 
-iget(#refX{site = Site, path = Path}, page, 
+iget(#refX{site = Site, path = Path}, page,
      #qry{updates = Time, paths = More}, Env=#env{accept = json})
   when Time /= undefined, More /= undefined ->
     Paths = [Path | [ string:tokens(X, "/") || X<-string:tokens(More, ",")]],
     remoting_request(Env, Site, Paths, Time);
 
-iget(#refX{site = S}, page, #qry{status = []}, Env) -> 
+iget(#refX{site = S}, page, #qry{status = []}, Env) ->
     json(Env, status_srv:get_status(S));
 
 iget(#refX{site = S, path  = P}, page, #qry{permissions = []}, Env) ->
@@ -541,7 +541,7 @@ ipost(#refX{site=S, path=["_login"]}, Qry, E) ->
     [{"email", Email0},{"pass", Pass}, {"remember", _R}] = ?SORT(E#env.body),
     Email = string:to_lower(Email0),
     case passport:authenticate(Email, Pass, true) of
-        {error, authentication_failed} -> 
+        {error, authentication_failed} ->
             json(E, {struct, [{"response", "error"}]});
         {ok, Uid, Stamp, Age} ->
             Return = case Qry#qry.return of
@@ -552,9 +552,9 @@ ipost(#refX{site=S, path=["_login"]}, Qry, E) ->
             json(E2, {struct, [{"redirect", Redir}]})
     end;
 
-%% the purpose of this message is to mark the mochilog so we don't 
+%% the purpose of this message is to mark the mochilog so we don't
 %% need to do nothing with anything...
-ipost(_Ref, #qry{mark = []}, 
+ipost(_Ref, #qry{mark = []},
       Env=#env{body = [{"set",{struct, [{"mark", _Msg}]}}]}) ->
     json(Env, "success");
 
@@ -567,19 +567,19 @@ ipost(Ref, _Qry, Env=#env{body = [{"load_template", {_, [{"name", Name}]}}],
 ipost(Ref, _Qry, Env=#env{body = [{"drag", {_, [{"range", Rng}]}}],
                           uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:drag_n_drop(Ref, 
+    ok = hn_db_api:drag_n_drop(Ref,
                                Ref#refX{obj = hn_util:parse_attr(range,Rng)},
                                Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"insert", "before"}], uid = Uid})
   when O == row orelse O == column ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:insert(Ref, Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"insert", "after"}], uid = Uid})
   when O == row orelse O == column ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
@@ -587,7 +587,7 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
     json(Env, "success");
 
 %% by default cells and ranges displace vertically
-ipost(Ref=#refX{obj = {O, _}}, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"insert", "before"}], uid = Uid})
   when O == cell orelse O == range ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
@@ -595,7 +595,7 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
     json(Env, "success");
 
 %% by default cells and ranges displace vertically
-ipost(Ref=#refX{obj = {O, _}}, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"insert", "after"}], uid = Uid})
   when O == cell orelse O == range ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
@@ -603,7 +603,7 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
     json(Env, "success");
 
 %% but you can specify the displacement explicitly
-ipost(Ref=#refX{obj = {O, _}}, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"insert", "before"}, {"displacement", D}],
                uid = Uid})
   when (O == cell orelse O == range),
@@ -612,7 +612,7 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
     ok = hn_db_api:insert(Ref, list_to_existing_atom(D), Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"insert", "after"}, {"displacement", D}],
                uid = Uid})
   when (O == cell orelse O == range),
@@ -622,8 +622,8 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
     ok = hn_db_api:insert(RefX2, list_to_existing_atom(D), Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry, 
-      Env=#env{body=[{"delete", "all"}], uid = Uid}) 
+ipost(Ref=#refX{obj = {O, _}}, _Qry,
+      Env=#env{body=[{"delete", "all"}], uid = Uid})
   when O == page ->
     ok = status_srv:update_status(Uid, Ref, "deleted page"),
     ok = hn_db_api:delete(Ref, Uid),
@@ -634,7 +634,7 @@ ipost(Ref, _Qry, Env=#env{body=[{"delete", "all"}],uid=Uid}) ->
     ok = hn_db_api:delete(Ref, Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"delete", Direction}],
                uid = Uid})
   when (O == cell orelse O == range),
@@ -643,7 +643,7 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
     ok = hn_db_api:delete(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{obj = {O, _}}, _Qry, 
+ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"insert", Direction}],
                uid = Uid})
   when (O == cell orelse O == range),
@@ -653,21 +653,21 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
     json(Env, "success");
 
 %% These three cases could be collapsed into one...
-ipost(Ref, 
+ipost(Ref,
       _Qry,
       Env=#env{body=[{"copy", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, all, Uid),
     json(Env, "success");
-ipost(Ref, 
+ipost(Ref,
       _Qry,
       Env=#env{body=[{"copystyle", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, style, Uid),
     json(Env, "success");
-ipost(Ref, 
+ipost(Ref,
       _Qry,
       Env=#env{body=[{"copyvalue", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
@@ -675,7 +675,7 @@ ipost(Ref,
     ok = hn_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, value, Uid),
     json(Env, "success");
 
-ipost(#refX{obj = {O, _}} = Ref, _Qry, 
+ipost(#refX{obj = {O, _}} = Ref, _Qry,
       Env=#env{body=[{"borders", {struct, Attrs}}], uid=Uid})
   when O == cell orelse O == range ->
     Where = from("where", Attrs),
@@ -687,13 +687,13 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
     json(Env, "success");
 
 %% ipost(_Ref, _Qry,
-%%       Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
+%%       Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}],
 %%                uid = "anonymous"}) ->
 %%     S = {struct, [{"error", "cant set language for anonymous users"}]},
 %%     json(Env, S);
 
-ipost(Ref=#refX{path=["_user"]}, _Qry, 
-      _Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}], 
+ipost(Ref=#refX{path=["_user"]}, _Qry,
+      _Env=#env{body = [{"set", {struct, [{"language", _Lang}]}}],
                 uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "changed language"),
     throw("can't set language right now");
@@ -779,7 +779,7 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {array, Array}}], uid = Uid})
     ok = hn_db_api:write_attributes([{Ref, List}], Uid, Uid),
     json(Env, "success");
 
-ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) 
+ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid})
   when What == "contents"; What == "style"; What == "all" ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     ok = hn_db_api:clear(Ref, list_to_atom(What), Uid),
@@ -795,7 +795,7 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%% Horizonal API = notify_back_create handler                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% ipost(Ref, _Qry,  
+%% ipost(Ref, _Qry,
 %%       Env=#env{body = [{"action", "notify_back_create"}|T]}) ->
 
 %%     %% WARNING this assumes that the list is provided in strict order - should
@@ -809,7 +809,7 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 
 %%     #refX{site = Site} = Ref,
 %%     ParentX = Ref,
-%%     _ParentUrl = hn_util:refX_to_url(ParentX),    
+%%     _ParentUrl = hn_util:refX_to_url(ParentX),
 %%     ChildX = hn_util:url_to_refX(ChildUrl),
 
 %%     %% there is only 1 parent and 1 child for this action
@@ -829,7 +829,7 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%         unsynched       -> hn_db_api:resync(Site, CVsn);
 %%         not_yet_synched -> sync_exit()
 %%     end,
-%%     {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX, 
+%%     {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX,
 %%                                                       Proxy, Biccie),
 %%     Return2 = lists:append([Return, [{"stamp", Stamp}]]),
 %% json(Env, {struct, Return2});
@@ -860,19 +860,19 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%     Sync1 = hn_db_api:check_page_vsn(Site, CVsn),
 %%     Sync2 = hn_db_api:check_page_vsn(Site, PVsn),
 %%     case Sync1 of
-%%         synched -> 
+%%         synched ->
 %%             ok = hn_db_api:notify_back_from_web(ParentX, ChildX,
 %%                                                 Biccie, Type);
-%%         unsynched -> 
+%%         unsynched ->
 %%             hn_db_api:resync(Site, PVsn);
-%%         not_yet_synched -> 
+%%         not_yet_synched ->
 %%             ok = hn_db_api:initialise_remote_page_vsn(Site, PVsn)
 %%     end,
 %%     case Sync2 of
 %%         synched -> ok;
-%%         unsynched -> 
+%%         unsynched ->
 %%             ok = hn_db_api:resync(Site, CVsn);
-%%         not_yet_synched -> 
+%%         not_yet_synched ->
 %%             ok = hn_db_api:initialise_remote_page_vsn(Site, CVsn)
 %%     end,
 %%     S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
@@ -883,7 +883,7 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%% Horizonal API = notify handler                                           %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% ipost(Ref, _Qry, 
+%% ipost(Ref, _Qry,
 %%       Env=#env{body = [{"action", "notify"} | T] = _Json}) ->
 %%     Biccie    = from("biccie",     T),
 %%     ParentUrl = from("parent_url", T),
@@ -910,15 +910,15 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%     %% there is one parent and it if is out of synch, then don't process it, ask for a
 %%     %% resynch
 %%     case Sync1 of
-%%         synched -> 
+%%         synched ->
 %%             ok = hn_db_api:notify_from_web(ParentX, Ref, Type,
 %%                                            Payload, Biccie);
-%%         unsynched -> 
+%%         unsynched ->
 %%             ok = hn_db_api:resync(Site, PVsn);
-%%         not_yet_synched -> 
+%%         not_yet_synched ->
 %%             sync_exit()
 %%     end,
-%%     %% there are 1 to many children and if they are out of synch ask for 
+%%     %% there are 1 to many children and if they are out of synch ask for
 %%     %% a resynch for each of them
 %%     Fun =
 %%         fun(X) ->
@@ -941,9 +941,9 @@ ipost(#refX{site = Site, path = _P}, _Qry,
         ok              -> json(Env, {struct, [{"result", "success"}]});
         {error, Reason} -> ?E("invalid _admin request ~p~n", [Reason]),
                            json(Env, {struct, [{"failure", Reason}]})
-    end; 
+    end;
 
-ipost(#refX{site=RootSite, path=["_hooks"]}, 
+ipost(#refX{site=RootSite, path=["_hooks"]},
       _Qry, Env=#env{body=Body, uid=PrevUid}) ->
     [{"signup",{struct,[{"email",Email0} , {"sitetype", SiteType}]}}] = Body,
     SType = site_type_exists(SiteType),
@@ -957,7 +957,7 @@ ipost(#refX{site=RootSite, path=["_hooks"]},
             log_signup(RootSite, Site, Node, Uid, Email),
             Opaque = [{param, InitialView}],
             Expiry = "never",
-            Url = passport:create_hypertag(Site, ["_mynewsite", Name], 
+            Url = passport:create_hypertag(Site, ["_mynewsite", Name],
                                            Uid, Email, Opaque, Expiry),
             json(Env, {struct, [{"result", "success"}, {"url", Url}]});
         {ok, existing, Site, Node, Uid, _Name, InitialView} ->
@@ -974,9 +974,9 @@ ipost(Ref, Qry, Env) ->
     '404'(Ref, Env).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% 
+%%%
 %%% Helpers
-%%% 
+%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 get_last_col(Labels) ->
     case [X || {#refX{obj = {cell, {X, _}}}, _Val} <- Labels] of
@@ -1021,7 +1021,7 @@ uniqify(Label, List, Index) ->
     case lists:keyfind(NLabel, 1, List) of
         {NLabel, _Value} -> uniqify(Label, List, Index+1);
         false            -> NLabel
-    end.                                               
+    end.
 
 
 
@@ -1041,18 +1041,18 @@ get_real_uri(Env) ->
     Host = case Env:get_header_value("HN-Host") of
                undefined ->
                    lists:takewhile(fun(X) -> X /= $: end,
-                                   Env:get_header_value("host")); 
+                                   Env:get_header_value("host"));
                ProxiedHost ->
                    ProxiedHost
            end,
     Port = case Env:get_header_value("HN-Port") of
-               undefined -> 
+               undefined ->
                    {ok, P} = inet:port(Env:get(socket)),
                    integer_to_list(P);
                ProxiedPort ->
                    ProxiedPort
            end,
-    lists:concat(["http://", string:to_lower(Host), ":", Port, 
+    lists:concat(["http://", string:to_lower(Host), ":", Port,
                   Env:get(path)]).
 
 get_json_post(undefined) ->
@@ -1088,7 +1088,7 @@ add_ref1(#refX{obj = {Ref, {X, Y}}}, Data, JSON) ->
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 templateroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:site_to_fs(Site)++"/templates".    
+        ++ hn_util:site_to_fs(Site)++"/templates".
 docroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/docroot".
@@ -1096,7 +1096,7 @@ viewroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/views".
 tmpdir() ->
-    code:lib_dir(hypernumbers) ++ "/../../var/tmp/".              
+    code:lib_dir(hypernumbers) ++ "/../../var/tmp/".
 
 itol(X) -> integer_to_list(X).
 ltoi(X) -> list_to_integer(X).
@@ -1106,23 +1106,23 @@ is_dict(_Else)                    -> false.
 
 dict_to_struct(Dict) ->
     F = fun(X) -> dict_to_struct(X, dict:fetch(X, Dict)) end,
-    case is_dict(Dict) of 
+    case is_dict(Dict) of
         true  -> lists:map(F, dict:fetch_keys(Dict));
         false -> Dict
     end.
 
-dict_to_struct(X, Dict) -> 
+dict_to_struct(X, Dict) ->
     case is_dict(Dict) of
         true  -> {X, {struct, dict_to_struct(Dict)}};
         false -> {X, Dict}
     end.
 
--spec extract_styles(string()) -> [#style{}]. 
+-spec extract_styles(string()) -> [#style{}].
 extract_styles(Site) ->
     [style_to_css(S) ||
         S <- hn_db_api:read_styles_IMPORT(#refX{site=Site}) ].
 
-%% -spec extract_styles([{#refX{}, [tuple()]}]) -> #style{}. 
+%% -spec extract_styles([{#refX{}, [tuple()]}]) -> #style{}.
 %% extract_styles([]) -> [];
 %% extract_styles(Data) ->
 %%     {Ref, _} = hd(Data),
@@ -1141,19 +1141,19 @@ style_att(X, Rec, Acc) ->
     case element(X, Rec) of
         [] ->
             style_att(X - 1, Rec, Acc);
-        _Else -> 
+        _Else ->
             Name =  ms_util2:name_by_index(magic_style, X-1),
             A = io_lib:format("~s:~s;",[Name, element(X,Rec)]),
             style_att(X - 1, Rec, [A | Acc])
     end.
 
-from(Key, List) -> 
+from(Key, List) ->
     {value, {Key, Value}} = lists:keysearch(Key, 1, List),
     Value.
 
 post_range_values(Ref, Values, PAr, VAr) ->
-    F = fun({array, Vals}, Acc) -> 
-                post_column_values(Ref, Vals, PAr, VAr, Acc), Acc+1 
+    F = fun({array, Vals}, Acc) ->
+                post_column_values(Ref, Vals, PAr, VAr, Acc), Acc+1
         end,
     lists:foldl(F, 0, Values).
 
@@ -1169,7 +1169,7 @@ post_column_values(Ref, Values, PAr, VAr, Offset) ->
                     "" -> ok = hn_db_api:clear(NRef, contents, PAr),
                           Acc+1;
                     _  -> ok = hn_db_api:write_attributes([{NRef,
-                                                            [{"formula", Val}]}], 
+                                                            [{"formula", Val}]}],
                                                           PAr, VAr),
                           Acc+1
                 end
@@ -1180,7 +1180,7 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
     Socket = Mochi:get(socket),
     inet:setopts(Socket, [{active, once}]),
     remoting_reg:request_update(Site, Paths, ltoi(Time), self()),
-    receive 
+    receive
         {tcp_closed, Socket} -> ok;
         {error, timeout}     -> json(Env, <<"timeout">>);
         {msg, Data}          -> json(Env, Data)
@@ -1222,7 +1222,7 @@ make_after(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
 
 pages(#refX{} = RefX) ->
     Dict = hn_db_api:read_page_structure(RefX),
-    Tmp  = pages_to_json(dh_tree:add(RefX#refX.path, Dict)),    
+    Tmp  = pages_to_json(dh_tree:add(RefX#refX.path, Dict)),
     {struct, [{"name", "home"}, {"children", {array, Tmp}}]}.
 
 accept_type(Env) ->
@@ -1237,7 +1237,7 @@ accept_type(Env) ->
 
 pages_to_json(Dict) ->
     F = fun(X) -> pages_to_json(X, dict:fetch(X, Dict)) end,
-    case is_dict(Dict) of 
+    case is_dict(Dict) of
         true  -> lists:map(F, dict:fetch_keys(Dict));
         false -> Dict
     end.
@@ -1261,7 +1261,7 @@ pages_to_json(X, Dict) ->
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec process_query(#env{}) -> #qry{}. 
+-spec process_query(#env{}) -> #qry{}.
 process_query(#env{mochi = Mochi}) ->
     List = Mochi:parse_qs(),
     process_query_(List, #qry{}).
@@ -1283,11 +1283,11 @@ process_query_([{Param, Value} | Rest], Qry) ->
 
 -spec process_environment(any()) -> #env{}.
 process_environment(Mochi) ->
-    {RawBody, Body} = 
+    {RawBody, Body} =
         case Mochi:get(method) of
             'GET'  -> {undefined, undefined};
             'HEAD' -> {undefined, undefined};
-            'POST' -> {_,{_,T}} = mochiweb_headers:lookup('Content-Type', 
+            'POST' -> {_,{_,T}} = mochiweb_headers:lookup('Content-Type',
                                                           Mochi:get(headers)),
 
                       case lists:prefix("multipart/form-data", T) of
@@ -1297,33 +1297,33 @@ process_environment(Mochi) ->
                                    {RB, B}
                       end
         end,
-    #env{mochi = Mochi, 
+    #env{mochi = Mochi,
          accept = accept_type(Mochi),
          method = Mochi:get(method),
          raw_body = RawBody,
          body = Body}.
 
--spec process_user(string(), #env{}) -> #env{} | no_return(). 
+-spec process_user(string(), #env{}) -> #env{} | no_return().
 process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
     try passport:inspect_stamp(Auth) of
         {ok, Uid, Email} ->
             E#env{uid = Uid, email = Email};
-        {error, no_stamp} -> 
+        {error, no_stamp} ->
             Return = cur_url(Site, E),
             case try_sync(["seek"], Site, Return, ?NO_STAMP) of
-                on_sync -> 
+                on_sync ->
                     Stamp = passport:temp_stamp(),
                     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
                     E#env{headers = [Cookie | E#env.headers]};
-                {redir, Redir} -> 
+                {redir, Redir} ->
                     E2 = E#env{headers = [{"location",Redir}|E#env.headers]},
-                    respond(303, E2), 
+                    respond(303, E2),
                     throw(ok)
             end;
-        {error, _Reason} -> 
+        {error, _Reason} ->
             cleanup(Site, cur_url(Site, E), E)
-    catch error:_ -> 
+    catch error:_ ->
                                  cleanup(Site, cur_url(Site, E), E)
                          end.
 
@@ -1337,15 +1337,15 @@ cleanup(Site, Return, E) ->
                 {redir, R} -> R
             end,
     E3 = E2#env{headers = [{"location",Redir}|E2#env.headers]},
-    respond(303, E3), 
+    respond(303, E3),
     throw(ok).
 
 %% Returns the url representing the current location.
--spec cur_url(string(), #env{}) -> string(). 
+-spec cur_url(string(), #env{}) -> string().
 cur_url(Site, #env{mochi=Mochi}) ->
     hn_util:strip80(Site) ++ Mochi:get(raw_path).
 
--spec try_sync([string()], string(), string(), string()) 
+-spec try_sync([string()], string(), string(), string())
 -> {redir, string()} | on_sync.
 try_sync(Cmd0, Site, Return, Stamp) ->
     case application:get_env(hypernumbers, sync_url) of
@@ -1364,7 +1364,7 @@ try_sync(Cmd0, Site, Return, Stamp) ->
     end.
 
 -spec post_login(string(), auth_srv:uid(), string(), integer() | string(),
-                 #env{}, string()) 
+                 #env{}, string())
 -> {#env{}, string()}.
 post_login(Site, Uid, Stamp, Age, Env, Return) ->
     Cookie = hn_net_util:cookie("auth", Stamp, Age),
@@ -1393,7 +1393,7 @@ process_sync(["seek"], E=#env{mochi=Mochi}, QReturn, undefined) ->
     Return = mochiweb_util:unquote(QReturn),
     #refX{site = OrigSite} = hn_util:url_to_refX(Return),
     QStamp = mochiweb_util:quote_plus(Stamp),
-    Redir = hn_util:strip80(OrigSite) ++ 
+    Redir = hn_util:strip80(OrigSite) ++
         "/_sync/tell/?return="++QReturn++"&stamp="++QStamp,
     Redirect = {"Location", Redir},
     E#env{headers = [Cookie, Redirect | E#env.headers]};
@@ -1424,7 +1424,7 @@ text_html(#env{mochi = Mochi, headers = Headers}, Text) ->
     Mochi:ok({"text/html", Headers, Text}),
     ok.
 
--spec json(#env{}, any()) -> any(). 
+-spec json(#env{}, any()) -> any().
 json(#env{mochi = Mochi, headers = Headers}, Data) ->
     Mochi:ok({"application/json",
               Headers ++ nocache(),
@@ -1432,7 +1432,7 @@ json(#env{mochi = Mochi, headers = Headers}, Data) ->
              }),
     ok.
 
-%% -spec json2(#env{}, any()) -> any(). 
+%% -spec json2(#env{}, any()) -> any().
 %% json2(#env{mochi = Mochi, headers = Headers}, Data) ->
 %%     Mochi:ok({"application/json",
 %%               Headers ++ nocache(),
@@ -1444,7 +1444,7 @@ json(#env{mochi = Mochi, headers = Headers}, Data) ->
 serve_html(Env, File) ->
     serve_html(200, Env, File).
 
--spec serve_html(integer(), #env{}, iolist()) -> any(). 
+-spec serve_html(integer(), #env{}, iolist()) -> any().
 serve_html(Status, Env=#env{uid = Uid}, File) ->
     F = fun() -> hn_util:compile_html(File, get_lang(Uid)) end,
     Response = cache(File, File++"."++get_lang(Uid), F),
@@ -1454,8 +1454,8 @@ serve_html(Status, Env=#env{uid = Uid}, File) ->
 serve_file(Status, #env{mochi = Mochi, headers = Headers}, File) ->
     case file:open(File, [raw, binary]) of
         {ok, IoDevice} ->
-            Mochi:respond({Status, 
-                           Headers ++ nocache(), 
+            Mochi:respond({Status,
+                           Headers ++ nocache(),
                            {file, IoDevice}}),
             file:close(IoDevice);
         _ ->
@@ -1631,7 +1631,7 @@ make_a2(S, [#numberedpage{template = Tpl, type = "random", prefix = Pr} | T],
     Seg = Pr ++ hex(integer_to_list(util2:get_timestamp())),
     NewHtap = [Seg | Htap],
     NewAcc = {Tpl, lists:reverse(NewHtap)},
-    make_a2(S, T, Now, [Tpl | Temps], NewHtap, [NewAcc | Acc]);    
+    make_a2(S, T, Now, [Tpl | Temps], NewHtap, [NewAcc | Acc]);
 make_a2(S, [#numberedpage{template = Tpl, type = "increment", prefix = Pr} | T],
         Now, Temps, Htap, Acc) ->
     Pages = hn_db_api:read_pages(#refX{site = S}),
@@ -1658,7 +1658,7 @@ make_a2(S, [#datedpage{template = Tpl, format = Fm} | T], Now,
     % yup, flatpack all strings to lower case...
     NewHtap = [string:to_lower(Seg) | Htap],
     NewAcc = {Tpl, lists:reverse(NewHtap)},
-    make_a2(S, T, Now, [Tpl | Temps], NewHtap, [NewAcc | Acc]);    
+    make_a2(S, T, Now, [Tpl | Temps], NewHtap, [NewAcc | Acc]);
 make_a2(S, [#namedpage{template = Tpl, name = Nm} | T], Now, Temps, Htap, Acc) ->
     NewHtap = [Nm | Htap],
     NewAcc = {Tpl, lists:reverse(NewHtap)},
@@ -1693,7 +1693,7 @@ pad(X) ->
     Pad ++ String.
 
 hex(String) -> mochihex:to_hex(crypto:md5_mac(?randomsalt, String)).
-    
+
 templates_exist(Site, Templates) ->
     ExistingTemplates = ["blank" | get_templates(Site)],
     templates_e2(lists:sort(ExistingTemplates), lists:sort(Templates)).
@@ -1713,16 +1713,16 @@ make_demo(Site, Path) ->
     "<!DOCTYPE html>
 <html lang='en'>
         <head>
-        <title>Hypernumbers Demo</title> 
+        <title>Hypernumbers Demo</title>
         <meta charset='utf-8' >
-        <link rel='stylesheet' href='/hypernumbers/hn.style.css' />	
+        <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
         </head>
         <body class='hn_demopage' height='100%'>
         <div class='hn_demointro'>This demo shows how you can have different views of the same spreadsheet page. This makes it possible to build robust multiuser systems - by using different views for different people on different pages. Enter data into the spreadsheet or wiki view to see these views in action. Views are managed by the <em>Views</em> menu at the right-hand side of the spreadsheet menu bar.<br /><span id='hn_demobreakout'>To breakout of this demo and start your one month free trial <a href='./#tour'>click here</a></span></div>
 <div class='hn_demopadding'>
 <iframe id='hn_spreadsheet' src='"++URL++"?view=spreadsheet'></iframe>
 </div>
-<div class='hn_demopadding'>  
+<div class='hn_demopadding'>
 <table width='100%'>
 <tr>
 <td>
@@ -1747,8 +1747,8 @@ make_preview(Type, Site, Path) ->
     "<!DOCTYPE html>
 <html lang='en'>
         <head>
-        <title>Hypernumbers " ++hn_util:capitalize_name(Type)++" Preview</title> 
-        <link rel='stylesheet' href='/hypernumbers/hn.style.css' />	
+        <title>Hypernumbers " ++hn_util:capitalize_name(Type)++" Preview</title>
+        <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
         <meta charset='utf-8' >
         </head>
         <body class='hn_demopage'>

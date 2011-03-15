@@ -28,7 +28,7 @@ testing() ->
     Path = tconv:to_s(util2:get_timestamp()),
     Dest = "http://hypernumbers.dev:9000/page" ++ Path ++ "/",
     etl(Dir ++ File1, csv, Dest, Dir ++ "csv.map"),
-    etl(Dir ++ File2, xls, Dest, Dir ++ "xls.map").    
+    etl(Dir ++ File2, xls, Dest, Dir ++ "xls.map").
 
 etl(FileName, FileType, Destination, Map) ->
     case file:consult(Map) of
@@ -46,7 +46,7 @@ etl2(Terms, FileName, FileType, Dest) ->
         valid            -> write(map(Mapping, Dest, Pages, Input));
         {not_valid, Msg} -> {not_valid, Msg}
     end.
-                    
+
 csv_file(Url, FileName) ->
 
     Ref = hn_util:url_to_refX(Url),
@@ -57,18 +57,18 @@ csv_file(Url, FileName) ->
 
     % first clear the page
     ok = hn_db_api:clear(Ref, all, nil),
-    % now write it 
+    % now write it
     [ok = hn_db_api:write_attributes([X]) || X <- Refs],
     ok.
-                
+
 csv_append(Url, FileName) ->
 
     Ref = hn_util:url_to_refX(Url),
     % first read the file
     Recs = parse_csv:parse_file(FileName),
     Refs  = make_append_refs(Recs, Ref),
-    
-    % now write it 
+
+    % now write it
     [ok = hn_db_api:append_row(X, nil, nil) || X <- Refs],
     ok.
 
@@ -84,20 +84,20 @@ get_namedsheet(Input, SheetName, URL) ->
         false             -> exit('no_such_sheetname')
     end.
 
-json_file(Url, FileName) -> 
+json_file(Url, FileName) ->
     {ok, JsonTxt} = file:read_file(FileName),
     Ref = hn_util:url_to_refX(Url),
     #refX{site = S, path = P} = Ref,
 
     {struct, Json} = hn_util:js_to_utf8(mochijson:decode(JsonTxt)),
-    
+
     {struct, StyleStrs} = ?pget("styles", Json),
     {struct, Cells}     = ?pget("cell", Json),
     {struct, Rows}      = ?pget("row", Json),
     {struct, Cols}      = ?pget("column", Json),
     {struct, Perms}     = ?pget("permissions", Json),
-    
-    Champion = ?pget("champion", Perms), 
+
+    Champion = ?pget("champion", Perms),
     {struct, Views} = ?pget("views", Perms),
 
     % set the champion
@@ -105,7 +105,7 @@ json_file(Url, FileName) ->
     ok = hn_web_admin:rpc(not_used, S, "set_champion", [{"path", Path},
                                                         {"view", Champion}]),
     [ok = set_view(S, Path, X) || X <- Views],
-    
+
     Styles = hn_db_api:read_styles_IMPORT(Ref),
     ImportStyles = [make_style_rec(X) || X <- StyleStrs],
     {ImportStyles2, RewriteT} = rewrite_styles(Styles, ImportStyles),
@@ -124,7 +124,7 @@ set_view(Site, Path, {View, {struct, Propslist}}) ->
                                                        {"view",     View},
                                                        {"groups",   Groups},
                                                        {"everyone", Everyone}]).
-   
+
 
 rows(Ref, {Row, {struct, Cells}}, RewriteT, Type, Fun) ->
     [ cells(Ref, Row, X, RewriteT, Type, Fun) || X <- Cells],
@@ -137,8 +137,8 @@ cells(Ref, Row, {Col, {struct, Attrs}}, RewriteT, Type, Fun) ->
 
 write_col_row(_NRef, _, [])   -> ok;
 write_col_row(NRef, _, Attrs) ->
-    hn_db_api:write_attributes([{NRef, Attrs}]).    
-             
+    hn_db_api:write_attributes([{NRef, Attrs}]).
+
 write_cells(Ref, RewriteT, Attrs) ->
     Attrs2 = copy_attrs(Attrs, [], RewriteT, ["merge",
                                               "formula",
@@ -146,7 +146,7 @@ write_cells(Ref, RewriteT, Attrs) ->
                                               "format",
                                               "input"]),
     hn_db_api:write_attributes([{Ref, Attrs2}]).
-    
+
 copy_attrs(_Source, Dest, _RT, []) -> Dest;
 copy_attrs(Source, Dest, RT, ["style" = Key | T]) ->
     case proplists:get_value(Key, Source, undefined) of
@@ -154,7 +154,7 @@ copy_attrs(Source, Dest, RT, ["style" = Key | T]) ->
         Idx -> case gb_trees:lookup(Idx, RT) of
                    {value, NIdx} ->
                        copy_attrs(Source, [{Key,NIdx}|Dest], RT, T);
-                   _ -> 
+                   _ ->
                        copy_attrs(Source, [{Key,Idx}|Dest], RT, T)
                end
     end;
@@ -163,13 +163,13 @@ copy_attrs(Source, Dest, RT, [Key|T]) ->
         undefined -> copy_attrs(Source, Dest, RT, T);
         V -> copy_attrs(Source, [{Key,V}|Dest], RT, T)
     end.
-            
-ltoi(X) ->        
+
+ltoi(X) ->
     list_to_integer(X).
 
 rewrite_styles(Styles, ImportStyles) ->
     StyleTree = gb_trees:from_orddict(
-                  lists:sort([{MS,Idx} || #style{magic_style = MS, 
+                  lists:sort([{MS,Idx} || #style{magic_style = MS,
                                                  idx = Idx} <- Styles])),
     RewriteF = fun(#style{magic_style=MS, idx=OldIdx}, RT) ->
                        NewIdx = case gb_trees:lookup(MS, StyleTree) of
@@ -179,11 +179,11 @@ rewrite_styles(Styles, ImportStyles) ->
                        gb_trees:insert(OldIdx, NewIdx, RT)
                end,
     RewriteT = lists:foldl(RewriteF, gb_trees:empty(), ImportStyles),
-    ImportStyles2 = [S#style{idx = gb_trees:get(OldIdx, RewriteT)} 
+    ImportStyles2 = [S#style{idx = gb_trees:get(OldIdx, RewriteT)}
                      || S=#style{idx=OldIdx} <- ImportStyles],
     {ImportStyles2, RewriteT}.
-    
--spec make_style_rec({string(), string()}) -> #style{}. 
+
+-spec make_style_rec({string(), string()}) -> #style{}.
 make_style_rec({IdxS, Style}) ->
     L = string:tokens(Style, ";"),
     F = fun(X, MS) ->
@@ -205,7 +205,7 @@ make_a2([], _Ref, _C, Acc)    -> Acc;
 make_a2([H | T], Ref, C, Acc) ->
     NewRef = Ref#refX{obj={column, {C, C}}},
     make_a2(T, Ref, C + 1, [{NewRef, H} | Acc]).
-    
+
 make_refs(List, Ref) -> make_r1(List, Ref, 1, []).
 
 make_r1([], _Ref, _R,  Acc)   -> lists:merge(Acc);
@@ -242,7 +242,7 @@ ref_csv2([], _N, _M, Acc)     -> Acc;
 ref_csv2([[] | T], N, M, Acc) -> ref_csv2(T, N, M + 1, Acc);
 ref_csv2([H | T], N, M, Acc)  -> NewAcc = {{cell, {M, N}}, H},
                                  ref_csv2(T, N, M + 1, [NewAcc | Acc]).
-    
+
 
 reformat_xls(Cells) -> ref_xls1(Cells, []).
 
@@ -252,7 +252,7 @@ ref_xls1([H | T], Acc) ->
     Sh2 = excel_util:esc_tab_name(Sh),
     NewAcc = case lists:keysearch(Sh2, 1, Acc) of
                   {value, {Sh2, L}} ->
-                     New = {{cell, {M + 1, N + 1}}, 
+                     New = {{cell, {M + 1, N + 1}},
                             normalise(V)},
                      NewT = {Sh2, [New | L]},
                      lists:keyreplace(Sh2, 1, Acc, NewT);
@@ -271,7 +271,7 @@ normalise({_, X}) when is_list(X)       -> X;
 normalise({value, date, {datetime, X}}) -> tconv:to_s(X);
 normalise({_, X})                       -> tconv:to_s(X);
 normalise({_, _, X})                    -> tconv:to_s(X).
-              
+
 split_map([], P, V, M) ->
     {P, V, M};
 split_map([{page, Sh, A1} | T], P, V, M) ->
@@ -316,7 +316,7 @@ validate(Validation, Input) -> val1(Validation, Input, []).
 val1([], _Input, [])  -> valid;
 val1([], _Input, Acc) -> {not_valid, Acc};
 val1([{validate, Sheet, Ref, Val} | T], Input, Acc) ->
-    Obj = hn_util:parse_ref(tconv:to_s(Ref)), 
+    Obj = hn_util:parse_ref(tconv:to_s(Ref)),
     NewAcc = case lists:keysearch(Sheet, 1, Input) of
                  false ->
                      case Val of
@@ -360,7 +360,7 @@ val2(Obj, Test, V, Acc) -> [{{unknown, Test}, Obj, V} | Acc].
 
 write(Recs) ->
     Refs = transform_recs(Recs),
-    % now write it 
+    % now write it
     [hn_db_api:write_attributes([X]) || X <- Refs].
 
 transform_recs(Recs) -> trans2(Recs, []).

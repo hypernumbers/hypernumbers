@@ -1,6 +1,6 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Datetime support functions.
-%%% 
+%%%
 %%% == Re the infamous Excel Windows leap year bug... ==
 %%%
 %%% <strong>The problem</strong>: Excel on Windows kept compatibility with
@@ -32,7 +32,7 @@
 %%% Hypernumbers, but keep the meaning of ALL other number-dates the same.
 %%%
 %%% == Cheeky difference between Excel Mac and Windows ==
-%%% 
+%%%
 %%% In addition to different epochs (1/1/1904 vs 1/1/1900), they also use
 %%% different starting points for dates: the epoch on Mac is 0, and on Windows
 %%% it is 1. The unit tests cover this.
@@ -222,7 +222,7 @@ rfc1123_day(2) -> "Tue";
 rfc1123_day(3) -> "Wed";
 rfc1123_day(4) -> "Thu";
 rfc1123_day(5) -> "Fri";
-rfc1123_day(6) -> "Sat"; 
+rfc1123_day(6) -> "Sat";
 rfc1123_day(7) -> "Sun".
 
 %% Nicked from httpd_util.erl in inets
@@ -277,7 +277,7 @@ excel_win_to_gregorian_test_() ->
      ?dw(35063, 1995, 12, 30),
      ?dw(35064, 1995, 12, 31),
      ?dw(48944, 2033, 12, 31)
-     
+
     ].
 
 excel_mac_to_gregorian_test_() ->
@@ -292,7 +292,7 @@ excel_mac_to_gregorian_test_() ->
      ?dm(60, 1904, 3, 1),
      ?dm(61, 1904, 3, 2),
      ?dm(62, 1904, 3, 3),
-     
+
      ?dm(13687, 1941, 6, 22),
      ?dm(15104, 1945, 5, 9),
      ?dm(30179, 1986, 8, 17),

@@ -1,4 +1,4 @@
-%%% @doc    This module provides utilities for handling the 
+%%% @doc    This module provides utilities for handling the
 %%%         number/text formatting for a cell
 %%%         Created the 11th March 2008
 %%%         Cut out the 31st August 2008
@@ -31,7 +31,7 @@ pad_year(A) ->
     end.
 
 pad_calendar(A) ->
-    case length(A) of 
+    case length(A) of
         1 -> "0"++A;
         2 -> A
     end.

@@ -64,8 +64,8 @@ conv_str(Str) when is_number(Str); is_atom(Str); ?is_string(Str) ->
 conv_str(Str) ->
     {false, Str}.
 
-    
-                    
+
+
 
 type_fun(Fun, C) ->
     Val = lex_constant(C),

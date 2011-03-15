@@ -11,10 +11,10 @@
 %%%
 %%% Perhaps we can provide compatibility functions, like CHARWIN/CHARMAC and
 %%% CODEWIN / CODEMAC, or maybe let our CHAR and CODE work as their namesakes
-%%% on Windows Excel, and also have CHARMAC, CODEMAC, and CODEU and CHARU 
+%%% on Windows Excel, and also have CHARMAC, CODEMAC, and CODEU and CHARU
 %%% functions.
 %%%
-%%% In iWork Numbers CODE and CHAR work with Unicode, and there are no 
+%%% In iWork Numbers CODE and CHAR work with Unicode, and there are no
 %%% compatibility functions.
 %%% @private
 
@@ -84,7 +84,7 @@ search([V1, V2, V3])->
     Str = col([V1, V2], [eval_funs, fetch, area_first, {cast, str}],
               [return_errors, {all, fun muin_collect:is_string/1}]),
     Num = col([V3], [eval_funs, fetch, area_first, {cast, num}, {cast, int}],
-              [return_errors, {all, fun is_number/1}]),    
+              [return_errors, {all, fun is_number/1}]),
     muin_util:apply([Str, Num], fun search_/2).
 
 search_([_Needle, Hay], [Start]) when Start < 1; Start > length(Hay) ->
@@ -119,7 +119,7 @@ replace_([Str, Replace], [Start, Len]) ->
             {_Del, End} = lists:split(Len, Middle),
             lists:concat([StartStr, Replace, End])
     end.
-    
+
 
 exact([V1, V2]) ->
     Rules = [first_array, cast_numbers, cast_bools, ban_dates, cast_blanks],
@@ -141,7 +141,7 @@ mid([V1, V2, V3]) ->
     Str = col([V1], [eval_funs, fetch, area_first, {cast, str}],
               [return_errors, {all, fun muin_collect:is_string/1}]),
     Num = col([V2, V3], [eval_funs, fetch, area_first, {cast, num}, {cast, int}],
-              [return_errors, {all, fun is_number/1}]),    
+              [return_errors, {all, fun is_number/1}]),
     muin_util:apply([Str, Num], fun mid_/2).
 
 mid_([_Str], [Start, Len]) when Len < 0; Start =< 0 ->
@@ -176,7 +176,7 @@ fixed([N1, N2, N3]) ->
     muin_util:run_or_err([Num, Dec, Com], fun fixed_/1).
 
 fixed_([Num, Dec, Com]) ->
-    
+
     RoundedNum = stdfuns_math:round([Num, Dec]) * 1.0,
      Str = case (Dec > 0) of
                true  -> hd(io_lib:format("~." ++ to_l(Dec) ++ "f", [RoundedNum]));
@@ -246,7 +246,7 @@ find([V1, V2, V3]) ->
                    [return_errors, {all, fun muin_collect:is_string/1}]),
     Start    = col([V3], [first_array, fetch_name, {cast, int}],
                    [return_errors, {all, fun is_integer/1}]),
-    
+
     muin_util:run_or_err([Needle, HayStack, Start], fun find_/1).
 
 find_(["", _InStr, _Start]) ->
@@ -295,12 +295,12 @@ concatenate(Str) ->
 
 concatenate_(Str) ->
     lists:flatten(Str).
-     
+
 rept([Str, Reps]) ->
     A = col([Str],
             [first_array, fetch, {cast,str}],
             [return_errors, {all, fun muin_collect:is_string/1}]),
-    
+
     B = col([Reps],
             [first_array, fetch, {conv, blank, 0},
              {cast, str, int}, {cast, bool, num}],
@@ -328,7 +328,7 @@ substitute([Text,OldText,NewText, N]) ->
     NArgs = col([Text,OldText,NewText],
                 [first_array, fetch_name,{cast,str}],
                 [return_errors, {all, fun muin_collect:is_string/1}]),
-    
+
     Num = col([N], [first_array, fetch_name, {cast, num, int},
                     {cast, str, int}],
               [return_errors, {all, fun is_integer/1}]),
@@ -388,9 +388,9 @@ wild_to_rgx(Str) -> wild_to_rgx(Str,[]).
 
 %% converts Excel wild cards into Erlang RegExps
 wild_to_rgx([],Acc)        -> lists:flatten(lists:reverse(Acc));
-wild_to_rgx([$~,$*|T],Acc) -> wild_to_rgx(T,[$*,"\\"|Acc]);   
-wild_to_rgx([$~,$?|T],Acc) -> wild_to_rgx(T,[$?,"\\"|Acc]);   
-wild_to_rgx(["\\"|T],Acc)  -> wild_to_rgx(T,["\\","\\"|Acc]); 
+wild_to_rgx([$~,$*|T],Acc) -> wild_to_rgx(T,[$*,"\\"|Acc]);
+wild_to_rgx([$~,$?|T],Acc) -> wild_to_rgx(T,[$?,"\\"|Acc]);
+wild_to_rgx(["\\"|T],Acc)  -> wild_to_rgx(T,["\\","\\"|Acc]);
 wild_to_rgx([$^|T],Acc)    -> wild_to_rgx(T,[$^,"\\"|Acc]);
 wild_to_rgx([$$|T],Acc)    -> wild_to_rgx(T,[$$,"\\"|Acc]);
 wild_to_rgx([$[|T],Acc)    -> wild_to_rgx(T,[$[,"\\"|Acc]);
@@ -400,9 +400,9 @@ wild_to_rgx([$)|T],Acc)    -> wild_to_rgx(T,[$),"\\"|Acc]);
 wild_to_rgx([$||T],Acc)    -> wild_to_rgx(T,[$|,"\\"|Acc]);
 wild_to_rgx([$+|T],Acc)    -> wild_to_rgx(T,[$+,"\\"|Acc]);
 wild_to_rgx([$.|T],Acc)    -> wild_to_rgx(T,[$.,"\\"|Acc]);
-wild_to_rgx([$*|T],Acc)    -> wild_to_rgx(T,[$+,$.|Acc]);  
-wild_to_rgx([$?|T],Acc)    -> wild_to_rgx(T,[$.|Acc]);     
-wild_to_rgx([H|T],Acc)     -> wild_to_rgx(T,[H|Acc]).      
+wild_to_rgx([$*|T],Acc)    -> wild_to_rgx(T,[$+,$.|Acc]);
+wild_to_rgx([$?|T],Acc)    -> wild_to_rgx(T,[$.|Acc]);
+wild_to_rgx([H|T],Acc)     -> wild_to_rgx(T,[H|Acc]).
 
 %% escapes Erlang wild card characters for match expressions passed in from the
 %% front then

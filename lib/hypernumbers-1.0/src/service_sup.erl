@@ -47,7 +47,7 @@ init([]) ->
 
     IsDev = {ok,development} == application:get_env(hypernumbers, environment),
     {ok, Services} = application:get_env(hypernumbers, services),
-    
+
     ChildSpecs = [gen_child_spec(S) || {S,X} <- Services, (IsDev or X)],
 
     {ok, {SupFlags, ChildSpecs}}.
@@ -61,4 +61,4 @@ gen_child_spec(Service) ->
     Shutdown = 2000,
     Type = worker,
     {Service, {Service, start_link, []},
-     Restart, Shutdown, Type, [Service]}.    
+     Restart, Shutdown, Type, [Service]}.

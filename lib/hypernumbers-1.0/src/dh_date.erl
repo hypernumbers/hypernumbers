@@ -1,5 +1,5 @@
 %% @doc Format dates in erlang
-%% 
+%%
 %% This module formats erlang dates in the form
 %% {{Year, Month, Day}, {Hour, Minute, Second}}
 %% to printable strings, using (almost) equivalent
@@ -8,7 +8,7 @@
 %% erlang has no concept of timezone so the following
 %% formats are not implemented: B e I O P T Z
 %% formats c and r will also differ slightly
-%% 
+%%
 %% See tests at bottom for examples
 
 -module(dh_date).
@@ -71,7 +71,7 @@ do_parse(Date, Now, Opts) ->
                 false -> {error, bad_date}
             end;
         _ -> {error, bad_date}
-    end.              
+    end.
 
 -spec nparse(string()) -> now().
 %% @doc parses the datetime from a string into 'now' format
@@ -161,7 +161,7 @@ tokenise("AM"++Rest, Acc)  -> tokenise(Rest, [am | Acc]);
 tokenise("PM"++Rest, Acc)  -> tokenise(Rest, [pm | Acc]);
 
 tokenise([32 | Rest], Acc) -> tokenise(Rest, Acc);          % Spaces
-tokenise("TH"++Rest, Acc)  -> tokenise(Rest, Acc);         
+tokenise("TH"++Rest, Acc)  -> tokenise(Rest, Acc);
 tokenise("ND"++Rest, Acc)  -> tokenise(Rest, Acc);
 tokenise("ST"++Rest, Acc)  -> tokenise(Rest, Acc);
 tokenise("OF"++Rest, Acc)  -> tokenise(Rest, Acc);
@@ -278,26 +278,26 @@ format([H|T], Date, Acc) ->
 
 %% @doc days in year
 -spec days_in_year(date()) -> integer().
-days_in_year({Y,_,_}=Date) -> 
-    date_to_gregorian_days(Date) - 
+days_in_year({Y,_,_}=Date) ->
+    date_to_gregorian_days(Date) -
         date_to_gregorian_days({Y,1,1}).
 
 %% @doc is a leap year
 -spec is_leap(year()) -> 1|0.
-is_leap(Y) ->    
+is_leap(Y) ->
     case is_leap_year(Y) of
         true  -> 1;
         false -> 0
     end.
 
-%% @doc Made up numeric day of the week 
+%% @doc Made up numeric day of the week
 %%      (0 Sunday -> 6 Saturday)
 -spec to_w(daynum()) -> integer().
 to_w(7) -> 0;
 to_w(X) -> X.
 
 -spec suffix(day()) -> string().
-%% @doc English ordinal suffix for the day of the 
+%% @doc English ordinal suffix for the day of the
 %%      month, 2 characters
 suffix(1) -> "st";
 suffix(2) -> "nd";
@@ -306,7 +306,7 @@ suffix(_) -> "th".
 
 -spec sdayd(date()) -> string().
 %% @doc A textual representation of a day, three letters
-sdayd({Y,M,D}) -> 
+sdayd({Y,M,D}) ->
     sday(day_of_the_week({Y,M,D})).
 
 -spec sday(daynum()) -> string().
@@ -330,7 +330,7 @@ day(6) -> "Saturday";
 day(7) -> "Sunday".
 
 -spec smonth(month()) -> string().
-%% @doc A short textual representation of a 
+%% @doc A short textual representation of a
 %%      month, three letters
 smonth(1)  -> "Jan";
 smonth(2)  -> "Feb";
@@ -365,7 +365,7 @@ month(12) -> "December".
 %%      http://en.wikipedia.org/wiki/ISO_week_date
 iso_week(Date) ->
     Week = iso_week_one(iso_year(Date)),
-    Days = date_to_gregorian_days(Date) - 
+    Days = date_to_gregorian_days(Date) -
         date_to_gregorian_days(Week),
     trunc((Days / 7) + 1).
 
@@ -373,7 +373,7 @@ iso_week(Date) ->
 %% @doc The year number as defined in ISO 8601
 %%      http://en.wikipedia.org/wiki/ISO_week_date
 iso_year({Y, _M, _D}=Dt) ->
-    case Dt >= {Y, 12, 29} of 
+    case Dt >= {Y, 12, 29} of
         true ->
             case Dt < iso_week_one(Y+1) of
                 true  -> Y;
@@ -387,7 +387,7 @@ iso_year({Y, _M, _D}=Dt) ->
     end.
 
 -spec iso_week_one(year()) -> date().
-%% @doc The date of the the first day of the first week 
+%% @doc The date of the the first day of the first week
 %%      in the ISO calendar
 iso_week_one(Y) ->
     Day1 = calendar:day_of_the_week({Y,1,4}),
@@ -396,12 +396,12 @@ iso_week_one(Y) ->
 
 -spec itol(integer()) -> list().
 %% @doc short hand
-itol(X) -> 
+itol(X) ->
     integer_to_list(X).
 
 -spec pad2(integer()) -> list().
 %% @doc int padded with 0 to make sure its 2 chars
-pad2(X) when is_integer(X) -> 
+pad2(X) when is_integer(X) ->
     io_lib:format("~2.10.0B",[X]);
 pad2(X) when is_float(X) ->
     io_lib:format("~2.10.0B",[trunc(X)]).
@@ -411,7 +411,7 @@ ltoi(X) ->
 
 %%
 %% TEST FUNCTIONS
-%% 
+%%
 %% c(dh_date,[{d,'TEST'}]).
 %-define(NOTEST, 1).
 
@@ -420,7 +420,7 @@ ltoi(X) ->
 -define(DATE, {{2001,3,10},{17,16,17}}).
 -define(ISO,  "o \\WW").
 
-basic_format_test_() -> [                         
+basic_format_test_() -> [
   ?_assertEqual(format("F j, Y, g:i a",?DATE), "March 10, 2001, 5:16 pm"),
   ?_assertEqual(format("m.d.y",?DATE),         "03.10.01"),
   ?_assertEqual(format("j, n, Y",?DATE),       "10, 3, 2001"),
@@ -428,7 +428,7 @@ basic_format_test_() -> [
   ?_assertEqual(format("H:i:s",?DATE),          "17:16:17"),
   ?_assertEqual(format("z",?DATE),              "68"),
   ?_assertEqual(format("D M j G:i:s Y",?DATE), "Sat Mar 10 17:16:17 2001"),
-                         
+
   ?_assertEqual(format("h-i-s, j-m-y, it is w Day",?DATE),
                "05-16-17, 10-03-01, 1631 1617 6 Satpm01"),
   ?_assertEqual(format("\\i\\t \\i\\s \\t\\h\\e\\ jS \\d\\a\\y.",?DATE),
@@ -485,7 +485,7 @@ basic_parse_test_() -> [
  iso_test_() -> [
    ?_assertEqual("2004 W53",format(?ISO,{{2005,1,1},  {1,1,1}})),
    ?_assertEqual("2004 W53",format(?ISO,{{2005,1,2},  {1,1,1}})),
-   ?_assertEqual("2005 W52",format(?ISO,{{2005,12,31},{1,1,1}})), 
+   ?_assertEqual("2005 W52",format(?ISO,{{2005,12,31},{1,1,1}})),
    ?_assertEqual("2007 W01",format(?ISO,{{2007,1,1},  {1,1,1}})),
    ?_assertEqual("2007 W52",format(?ISO,{{2007,12,30},{1,1,1}})),
    ?_assertEqual("2008 W01",format(?ISO,{{2007,12,31},{1,1,1}})),

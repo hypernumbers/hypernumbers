@@ -54,7 +54,7 @@ dedup1([A, A | T], Acc) -> dedup1([A | T], Acc);
 dedup1([H | T], Acc)    -> dedup1(T, [H | Acc]).
 
 
-%% @doc Returns the first element for which the fun returns true. Returns 
+%% @doc Returns the first element for which the fun returns true. Returns
 %% not_detected if there isn't such an element.
 detect(Detector, L) ->
     detect(Detector, fun() -> not_found end, L).
@@ -64,7 +64,7 @@ detect(Detector, IfNone, [Hd|Tl]) ->
         _    -> detect(Detector, IfNone, Tl)
     end;
 detect(_Detector, IfNone, []) ->
-    IfNone().            
+    IfNone().
 
 %% @doc Returns index of the first element in the list that's equal to some value.
 find(_, []) ->

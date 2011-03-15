@@ -42,7 +42,7 @@ Rules.
 {GENERAL}    : {token, {general, TokenLine, TokenChars}}.
 {MARKDOWN}   : {token, {markdown, TokenLine, TokenChars}}.
 
-{STRING}     : {token, {string, TokenLine, TokenChars}}. 
+{STRING}     : {token, {string, TokenLine, TokenChars}}.
 
 {FORMAT1}    : {token, {format, TokenLine, TokenChars}}.
 {FORMAT2}    : {token, {format, TokenLine, TokenChars}}.

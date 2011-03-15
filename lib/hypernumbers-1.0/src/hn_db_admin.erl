@@ -1,4 +1,4 @@
-%%% @author    Gordon Guthrie 
+%%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers Ltd
 %%% @doc       functions for mnesia administration
 %%%
@@ -69,15 +69,15 @@ backup(Tables, Dir, Name) ->
     % do the backup
     ok = mnesia:backup_checkpoint(Name, filename:join(Dir, Name), []),
 
-    % delete the checkpoint    
-    ok = mnesia:deactivate_checkpoint(ChPName).    
+    % delete the checkpoint
+    ok = mnesia:deactivate_checkpoint(ChPName).
 
 -spec create_table(atom(), atom(),
                    any(),
                    disc_only_copies | disc_copies | ram_copies,
                    set | bag | ordered_set,
                    true | false,
-                   [atom()]) -> ok. 
+                   [atom()]) -> ok.
 create_table(TblName, Rec, Fields, Storage, Type, Local, Indicies) ->
     R = mnesia:create_table(TblName, [{record_name, Rec},
                                       {attributes, Fields},
@@ -85,7 +85,7 @@ create_table(TblName, Rec, Fields, Storage, Type, Local, Indicies) ->
                                       {type, Type},
                                       {local_content, Local},
                                       {index, Indicies}]),
-    case R of 
+    case R of
         {atomic, ok}                   -> ok;
         {aborted, {already_exists, _}} -> ok;
         {aborted, Reason}              -> throw(Reason)

@@ -3,7 +3,7 @@
 %%% @todo improve documentation
 -module(simplexml).
 
--export([ 
+-export([
     to_xml_string/1,
     from_xml_string/1,
     search/2 ]).
@@ -21,31 +21,31 @@ from_xml_string(String) ->
     rm_spaces(Xml).
 
 rm_spaces({El,Attr,Children}) ->
-    
+
     F = fun(" ") -> false;
            (_)   -> true
         end,
     NChild = lists:filter(F,Children),
-    
+
     Ch = lists:map(fun rm_spaces/1,NChild),
-    
+
     {El,Attr,Ch};
 
-rm_spaces(String) -> 
+rm_spaces(String) ->
     String.
 
-search(Xml,Name) -> 
+search(Xml,Name) ->
     lists:flatten(do_search(Xml,Name)).
 
 do_search({Name,Attr,Children},Name) ->
-    {Name,Attr,Children};  
+    {Name,Attr,Children};
 do_search({_DiffName,_Attr,Children},Name) ->
-    do_search(Children,Name);    
+    do_search(Children,Name);
 do_search([{Name,Attr,Children}|T],Name) ->
     [{Name,Attr,Children},do_search(T,Name)];
 do_search([{_Name,_Attr,Children}|T],Name) ->
     [do_search(Children,Name),do_search(T,Name)];
 do_search(_Else,_Name) ->
     [].
-    
-    
+
+

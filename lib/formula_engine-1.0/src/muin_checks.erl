@@ -23,7 +23,7 @@
          filter_numbers_all/1,
          %% filter_bools_with_cast/1,
          deck/1
-         %% type/1         
+         %% type/1
         ]).
 
 -include("errvals.hrl").
@@ -94,7 +94,7 @@ gt0(N) ->
         true  -> N2;
         false ->?ERR_NUM
     end.
- 
+
 %% Checks a list of values for errvals, the first one found is returned.
 die_on_errval(Vs) ->
     lists:foreach(fun(?ERRVAL_NULL) -> ?ERR_NULL;

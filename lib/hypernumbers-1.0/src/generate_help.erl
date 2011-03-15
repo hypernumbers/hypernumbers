@@ -39,20 +39,20 @@ run() ->
 
     {struct, Json} = mochijson:decode(Bin),
     {"cell", {struct, Rows}} = lists:keyfind("cell", 1, Json),
-    
+
     Val = fun(I, Attr) ->
                   {I, {struct, NAttr1}} = lists:keyfind(I, 1, Attr),
                   {"value", Val} = lists:keyfind("value", 1, NAttr1),
                   Val
           end,
-    
+
     NJson = [ begin
-                  {_Row, {struct, Row}} = Cell,                  
+                  {_Row, {struct, Row}} = Cell,
                   [Val("1", Row), Val("2", Row), Val("3", Row)]
               end || Cell <- Rows ],
 
     write(NJson, "en_gb"),
-    
+
     ok.
     %% first do the English Fns
     %% Json = [json_util:jsonify(X) || X <- ?WORKING_FNS],
@@ -70,11 +70,11 @@ run() ->
 %%do_jf(Code, _Lang, Fns) ->
 %%    %% Find entry in ?notes for this language.
 %%    {value, {Code, Notes}} = lists:keysearch(Code, 1, ?notes),
-%%    
+%%
 %%    Fun =
 %%        fun(#help{name = N} = Help) ->
 %%                NewH = case lists:keysearch(N, 2, Fns) of
-%%                           {value, {_, _, NewN}} -> 
+%%                           {value, {_, _, NewN}} ->
 %%                               Help#help{name = NewN};
 %%                           false ->
 %%                               Help#help{notes = Notes}
@@ -99,6 +99,6 @@ write(Json, Lang) ->
 
     File = [code:priv_dir(hypernumbers), "/core_install/docroot/hypernumbers/",
             "funs_", Lang, ".json"],
-    
+
     file:write_file(lists:flatten(File), io_lib:format("~p~n",[Json])).
-        
+

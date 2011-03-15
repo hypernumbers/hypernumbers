@@ -147,7 +147,7 @@ new_record(S=#ecsv{cols=Cols,current_field=Field,current_record=Record,fold_stat
             NewState = Fun(State,NewRecord),
             S#ecsv{state=field_start,cols=tuple_size(NewRecord),
                    current_record=[],current_field=[],fold_state=NewState};
-        
+
         (tuple_size(NewRecord) =/= Cols) ->
             throw({ecsv_exception,bad_record_size})
     end.
@@ -186,7 +186,7 @@ csv_test_() ->
                    parse(<<"\"1A\",\"1\nB\"">>)),
      % Quoted element with embedded quotes (1)
      ?_assertEqual([{"1A","\"B"}],
-                   parse(<<"\"1A\",","\"\"B\"">>)), 
+                   parse(<<"\"1A\",","\"\"B\"">>)),
      % Quoted element with embedded quotes (2)
      ?_assertEqual([{"1A","blah\"B"}],
                    parse(<<"\"1A\",\"blah\"",$","B\"">>)), %"

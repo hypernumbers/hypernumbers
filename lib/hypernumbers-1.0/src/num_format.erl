@@ -17,7 +17,7 @@
          verify/1,
          esc/1,
          make_cond/1,
-         strip/1         
+         strip/1
         ]).
 
 
@@ -35,10 +35,10 @@ get_general() ->
         "    if"++
         "      "++?is_str++"     -> {auto, X};"++
         "      not(is_number(X)) -> {auto, X};"++
-        "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++ 
+        "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++
         "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
         "     end "++
-        "end.", 
+        "end.",
     {number,Src}.
 
 get_plain() ->
@@ -46,10 +46,10 @@ get_plain() ->
         "    if"++
         "      "++?is_str++"     -> {auto, X};"++
         "      not(is_number(X)) -> {auto, X};"++
-        "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++ 
+        "      is_integer(X)     -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))};"++
         "      is_float(X)       -> {auto, lists:flatten(io_lib:format(\"~p\", [X]))}"++
         "     end "++
-        "end.", 
+        "end.",
     {number,Src}.
 
 
@@ -71,7 +71,7 @@ make_cond({condition,String})->
     Str3=string:strip(Str2,right,$]),
     {condition,Str3}.
 
-strip({string,A}) -> 
+strip({string,A}) ->
     A1=string:strip(A,both,$"),%" syntax highlighting fix
     {string,A1}.
 
@@ -174,8 +174,8 @@ to_num(Other,_Acc)                -> io:format("in num_format.yrl:to_num Other i
                                      exit(invalid_format).
 
 %% the underscore character in Excel is used to make a character non printing
-%% but not have it space filling - this means that columns line up in an 
-%% appropriate fashion this is a mixed formula/GUI approach suitable for a 
+%% but not have it space filling - this means that columns line up in an
+%% appropriate fashion this is a mixed formula/GUI approach suitable for a
 %% file-based spreadsheet but not a web-based one
 %% We just delete the underscore and just replace the character with a space
 %% (This will work with monospaced characters in the browser)
@@ -183,12 +183,12 @@ clear_underscores(List) -> clear_underscores(List,[]).
 
 clear_underscores([],Residuum) ->
 	lists:reverse(Residuum);
-clear_underscores([{underscore,_UndS},{format,F}|T],Acc) -> 
+clear_underscores([{underscore,_UndS},{format,F}|T],Acc) ->
 	clear_underscores(T,[{string," "},{format,F}|Acc]);
-clear_underscores([{underscore,_UndS},_|T],Acc) -> 
+clear_underscores([{underscore,_UndS},_|T],Acc) ->
 	clear_underscores(T,[{string," "}|Acc]);
-clear_underscores([H|T],Acc) -> 
-	clear_underscores(T,[H|Acc]). 
+clear_underscores([H|T],Acc) ->
+	clear_underscores(T,[H|Acc]).
 
 is_text(A) when is_list(A) -> is_text2(A);
 is_text(A)                 -> is_text2([A]).
@@ -225,7 +225,7 @@ count_dec([_H|T],N)            -> count_dec(T,N).
 %%                                                                           %%
 %% These functions all pertain to make_src                                   %%
 %%                                                                           %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 make_src2(A) ->
     Type=get_type(A),
     case Type of
@@ -279,7 +279,7 @@ gen_src_date([Format]) ->
     make_format(Format)++")}"++
     "   end"++
     " end.".
-                
+
 gen_src_num(Clauses,Defaults) -> gen_src_num(Clauses,Defaults,[]).
 
 %% generate the source from the list of clauses and the list of default clauses
@@ -288,8 +288,8 @@ gen_src_num([],[],Acc)           -> gen_src_num2(lists:reverse(Acc));
 %% this is nasty to fix the ghastly 'feature' of sign swapping for explicity
 %% specified '<0' clauses - this one isn't and we won't do it!
 gen_src_num([],["<0"|T2],Acc)    -> gen_src_num([],T2,[swap_cond("dont swap sign",
-                                                         lists:last(Acc))|Acc]); 
-gen_src_num([],[H2|T2],Acc)      -> gen_src_num([],T2,[swap_cond(H2,lists:last(Acc))|Acc]); 
+                                                         lists:last(Acc))|Acc]);
+gen_src_num([],[H2|T2],Acc)      -> gen_src_num([],T2,[swap_cond(H2,lists:last(Acc))|Acc]);
 gen_src_num([H1|T1],[],Acc)      -> gen_src_num(T1,[],[make_default(H1)|Acc]);
 gen_src_num([H1|T1],[H2|T2],Acc) -> gen_src_num(T1,T2,[make_default(H1,H2)|Acc]).
 
@@ -301,7 +301,7 @@ gen_src_num2(Clauses)->
     Clause4 = case length(Clauses) of
                   3 -> default_clause();
                   4 -> RawClause=lists:nth(4,Clauses),
-                       {_Cond,MadeClause}=make_clause(4,RawClause), 
+                       {_Cond,MadeClause}=make_clause(4,RawClause),
                        strip_condition(MadeClause)
               end,
     Src="fun(X) -> "++Cond1++Cond2++Cond3++
@@ -327,7 +327,7 @@ rearrange_clauses(Clause1,Clause2,Clause3)->
 is_eq([$X,?ASC_SPACE,?ASC_EQ,?ASC_EQ|_T]) -> true;
 is_eq(_Other)                             -> false.
 
-strip_condition(Clause) -> 
+strip_condition(Clause) ->
 	Loc=string:str(Clause,"-> "),
 	Len=string:len(Clause),
     string:right(Clause,Len-(Loc+2)).% 2 for the additional chars

@@ -29,7 +29,7 @@ html(Page)->
 %%%-----------------------------------------------------------------------------
 get_all_lines(Device, Accum) ->
     case io:get_line(Device,"") of
-	eof  ->  
+	eof  ->
 	    file:close(Device),
 	    Accum;
 	Line ->
@@ -41,4 +41,4 @@ read_lines(FileName) ->
         {ok,Device} -> {ok,get_all_lines(Device,[])};
         _           -> error
     end.
- 
+

@@ -131,7 +131,7 @@ average1(Nums) ->
     lists:sum(Nums)/length(Nums).
 
 %% TODO: errvals -> 0s in args.
-averagea(Args) ->    
+averagea(Args) ->
     col(Args,
         [eval_funs, {cast, str, num, ?ERRVAL_VAL}, {cast, num}, fetch,
          flatten, {ignore, blank}, {cast, bool, num}, {conv, str, 0}],
@@ -149,13 +149,13 @@ binomdist([V1, V2, V3, V4]) ->
     binomdist1(Succn, Trials, trunc(Succprob * 100), Cumul).
 binomdist1(Ns, Nt, Ps, false) ->
     io:format("In binomddist1 (false) Ns is ~p Nt is ~p Ps is ~p~n",
-              [Ns, Nt, Ps]), 
+              [Ns, Nt, Ps]),
     stdfuns_math:combin([Ps, Nt]) * math:pow(Ps, Ns) * math:pow((1 - Ps),
                                                                 (Nt - Ns));
 %% TODO: Rewrite to tail-recursive.
 binomdist1(Ns, Nt, Ps, true) ->
     io:format("In binomddist1 (true) Ns is ~p Nt is ~p Ps is ~p~n",
-              [Ns, Nt, Ps]), 
+              [Ns, Nt, Ps]),
     binomdist1(Ns, Nt, Ps, false) + binomdist1(Ns - 1, Nt, Ps, true).
 
 chidist([V1, V2]) ->
@@ -193,14 +193,14 @@ countblank_(Vals) ->
     length([X || X <- Vals, muin_collect:is_blank(X)]).
 
 countif([A, Cr]) ->
-    
+
     Vals   = col([A],  [eval_funs, fetch, flatten, {ignore, blank}]),
     [Crit] = col([Cr], [eval_funs, fetch, flatten]),
 
     case odf_criteria:create(Crit) of
         {error, _Reason} -> 0;
         Fun              -> length(lists:filter(Fun, Vals))
-    end.    
+    end.
 
 critbinom([V1, V2, V3]) ->
     Trials = ?int(V1, ?default_rules),
@@ -232,7 +232,7 @@ expondist([V1, V2, V3]) ->
     B = col([V3],
             [eval_funs, fetch, area_first, {cast, bool}],
             [return_errors, {all, fun is_boolean/1}]),
-    
+
     muin_util:apply([A, B], fun expondist1/2).
 
 expondist1([X, Lambda], _) when X < 0; Lambda =< 0 ->
@@ -327,14 +327,14 @@ kurt1(Nums) ->
 large([V1, V2]) ->
     Arr = col([V1],
               [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL},
-               fetch, flatten, 
+               fetch, flatten,
                {ignore, str}, {ignore, bool}, {ignore, blank}],
               [return_errors, {all, fun is_number/1}]),
-    
+
     N = col([V2],[eval_funs, fetch, area_first, {cast, num}],
             [return_errors, {all, fun is_number/1}]),
-    
-    muin_util:apply([Arr, N], fun large_/2).    
+
+    muin_util:apply([Arr, N], fun large_/2).
 
 large_(Arr, [N]) when N < 1; N > length(Arr) ->
     ?ERRVAL_NUM;
@@ -431,23 +431,23 @@ mode(Args) ->
 mode_([]) ->
     ?ERRVAL_VAL;
 mode_(Args) ->
-       
+
     F = fun({Num1, Freq}, {Num2, Freq})  -> Num1  > Num2;
            ({_,    Freq1}, {_,   Freq2}) -> Freq1 > Freq2
         end,
-    
+
     Tree = mode_(Args, dh_tree:new()),
     case lists:sort(F, dict:to_list(Tree)) of
         [{_X, 1} | _ ] -> ?ERRVAL_NA;
         [{X, _}  | _ ] -> X
     end.
-   
+
 mode_([], Tree) ->
     Tree;
 mode_([H|T], Tree) ->
     F = fun(undefined) -> 1; (X) -> X+1 end,
     mode_(T, dh_tree:update([H], Tree, F)).
-    
+
 %% TODO:
 normsdist([_, _, _, _]) ->
     0.
@@ -529,7 +529,7 @@ generate_rank([H|T], CurrentRank, Count, LastNumRanked, Acc)
 generate_rank([H|T], _CurrentRank, Count, _LastNumRanked, Acc) ->
     generate_rank(T, Count+1, Count+1, H, [{H, Count+1} | Acc]).
 
-skew(Arg) ->    
+skew(Arg) ->
     col(Arg,
         [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
          {ignore, str}, {ignore, blank}, {ignore, bool}],
@@ -547,17 +547,17 @@ skew1(Nums) ->
         _ -> lists:sum([ math:pow((X - Mean) / Stdev, 3) || X<-Nums])
                  * (N / ((N - 1)*(N-2)))
     end.
-   
+
 small([V1, V2]) ->
     Arr = col([V1],
               [eval_funs, {cast, num}, {convflat, str, ?ERRVAL_VAL}, fetch,
                flatten,  {ignore, str}, {ignore, bool}, {ignore, blank}],
               [return_errors, {all, fun is_number/1}]),
-    
+
     N = col([V2],[eval_funs, fetch, area_first, {cast, num}],
             [return_errors, {all, fun is_number/1}]),
-    
-    muin_util:apply([Arr, N], fun small_/2).    
+
+    muin_util:apply([Arr, N], fun small_/2).
 
 
 small_(Arr, [N]) when N < 1; N > length(Arr) ->
@@ -596,7 +596,7 @@ stdeva(V1) ->
         [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
          {conv, str, 0}, {cast, bool, num}, {ignore, blank}],
         [return_errors, {all, fun is_number/1}],
-        fun stdev/1).    
+        fun stdev/1).
 
 stdevp(V1) ->
     col(V1,
@@ -617,13 +617,13 @@ stdevpa(V1) ->
         [eval_funs, {cast, num}, {conv, str, ?ERRVAL_VAL}, fetch, flatten,
          {conv, str, 0}, {cast, bool, num}, {ignore, blank}],
         [return_errors, {all, fun is_number/1}],
-        fun stdevp/1).    
+        fun stdevp/1).
 
 steyx([V1, V2]) ->
     One = col([V1],
               [eval_funs, {cast, num},
                fetch, flatten], [return_errors]),
-    
+
     Two = col([V2],
               [eval_funs, {cast, num},
                fetch, flatten], [return_errors]),
@@ -649,7 +649,7 @@ steyx_(Vals) ->
     X1 = lists:sum([ math:pow((X-Xm), 2) || {X,_}<-Vals ]),
     XY1 = lists:sum([ (X-Xm)*(Y-Ym) || {X, Y} <- Vals ]),
     XY2 = math:pow(XY1, 2),
-    
+
     case X1 of
         X when X == 0, X==0.0 -> ?ERRVAL_DIV;
         _ -> math:sqrt( (1/(N-2)) * (Y1 - (XY2 / X1)))
@@ -659,7 +659,7 @@ trimmean([V1, V2]) ->
     Nums = col([V1],
                [eval_funs, {cast, num}, fetch, flatten,
                 {ignore, str}, {ignore, bool}, {ignore, blank}],
-               [return_errors, {all, fun is_number/1}]),    
+               [return_errors, {all, fun is_number/1}]),
     Perc = col([V2],
                 [eval_funs, fetch, flatten, {cast, num}],
                [return_errors, {all, fun is_number/1}]),
@@ -715,7 +715,7 @@ var1(Nums) ->
 weibull([V1, V2, V3, V4]) ->
     XArgs = col([V1, V2, V3],
                 [eval_funs, area_first, fetch, {cast, bool, num}],
-                [return_errors, {all, fun is_number/1}]),    
+                [return_errors, {all, fun is_number/1}]),
     XBool = col([V4],
                 [eval_funs, area_first, fetch, {cast, bool}],
                 [return_errors, {all, fun is_boolean/1}]),

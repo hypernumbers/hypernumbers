@@ -79,7 +79,7 @@
 
 %% @doc Test harness for running a formula inside transaction
 test_formula(Fla) ->
-    test_formula(Fla, #muin_rti{site = "http://localhost:9000", 
+    test_formula(Fla, #muin_rti{site = "http://localhost:9000",
                                 path = [],
                                 col = 1, row = 1,
                                 array_context = false,
@@ -115,7 +115,7 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
                           auth_req=AuthReq}) ->
     %% Populate the process dictionary.
     lists:map(fun({K,V}) -> put(K, V) end,
-        [{site, Site}, {path, Path}, {x, Col}, {y, Row}, 
+        [{site, Site}, {path, Path}, {x, Col}, {y, Row},
          {array_context, AryCtx}, {infinite, []},
          {retvals, {[], []}}, {recompile, false},
          {auth_req, AuthReq}]),
@@ -162,7 +162,7 @@ eval_formula(Fcode) ->
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%% @spec compile(Fla, {Col, Row}) -> something Fla = string(), 
+%% @spec compile(Fla, {Col, Row}) -> something Fla = string(),
 %% Col = integer(), Row = integer()
 %% @doc Compiles a formula against a cell.
 compile(Fla, {Col, Row}) ->
@@ -181,7 +181,7 @@ parse(Fla, {Col, Row}) ->
                 _         -> ?syntax_err
             end;
         _ -> ?syntax_err
-    end.                     
+    end.
 
 % not all functions can be included in other functions
 external_eval([include | _Rest]) -> ?error_in_formula;
@@ -306,7 +306,7 @@ funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
 %% TODO: If a function exists in one of the modules, but calling it returns
 %%       no_clause, return #VALUE? (E.g. for when giving a list to ABS)
 funcall(Fname, Args0) ->
-    
+
     % TODO, this should be taken out, no reason to strictly
     % evaluate arguments -- hahaha
     Funs = [ '+', '^^',
@@ -325,14 +325,14 @@ funcall(Fname, Args0) ->
              small, skew, large, sumproduct, daverage, dcount, isref,
              irr, even,
              include],
-    
+
     Args = case lists:member(Fname, Funs) of
                true  -> Args0;
                false -> [eval(X) || X <- prefetch_references(Args0)]
            end,
-    
-    Modules = get_modules(),    
-    
+
+    Modules = get_modules(),
+
     case call_fun(Fname, Args, Modules) of
         {error, not_found} -> userdef_call(Fname, Args);
         {ok, Value}        -> Value
@@ -364,7 +364,7 @@ force_load(Modules) ->
                   end
           end,
     lists:foldl(Fun, loaded, Modules).
-                        
+
 get_modules() ->
     [
      stdfuns_text,
@@ -473,7 +473,7 @@ context_setting(array_context) -> ?array_context.
 col(#cellref{col = Col}) -> Col.
 row(#cellref{row = Row}) -> Row.
 path(#cellref{path = Path}) -> Path.
-    
+
 prefetch_references(L) ->
     lists:foldr(fun(R, Acc) when ?is_cellref(R); ?is_rangeref(R); ?is_namedexpr(R) ->
                   [fetch(R)|Acc];
@@ -481,7 +481,7 @@ prefetch_references(L) ->
                   [X|Acc]
           end,
           [],
-          L).    
+          L).
 
 row_index(N) when is_integer(N) -> N;
 row_index({offset, N}) -> ?my + N.
@@ -558,14 +558,14 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
     Parent = #refX{site=RSite, path=NewRPath, obj={cell, {RX, RY}}},
 
     case hn_db_api:read_incoming_hn(Parent, Child) of
-        
+
         {error,permission_denied} ->
             {{errval,'#AUTH'},[],[],[]};
-        
+
         {Val, DepTree} ->
             F = fun({url, [{type, Type}], [Url2]}) ->
                         Ref = hn_util:parse_url(Url2),
-                        #refX{site = S, path = P, obj = {cell, {X, Y}}} = Ref, 
+                        #refX{site = S, path = P, obj = {cell, {X, Y}}} = Ref,
                         {Type,{S, P, X, Y}}
                 end,
             Dep = lists:map(F, DepTree) ++
@@ -724,7 +724,7 @@ fill2D(Dict, column, Index, End, Acc) ->
 fill2D(Dict, row, Index, End, Acc) ->
     DictSize = orddict:size(Dict),
     fill2D_b(Dict, 1, 1, DictSize + 1, Index, End + 1, Acc).
-   
+
 %% this is the infill for row
 fill2D_b(_Dict, _Key, Size, Size, _Index, _End, Acc) ->
     Lists = lists:reverse(Acc),
@@ -768,7 +768,7 @@ fill1D(Dict, Index, N, Size, Acc, Type) ->
             true  -> {[orddict:fetch(Index, Dict) | Acc], N + 1};
             false -> {[[blank] | Acc], N}
         end,
-    fill1D(Dict, Index + 1, NewN, Size, NewAcc, Type).    
+    fill1D(Dict, Index + 1, NewN, Size, NewAcc, Type).
 
 match(Site, Paths, ZPath) -> m1(Site, Paths, ZPath, []).
 

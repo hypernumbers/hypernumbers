@@ -8,7 +8,7 @@
 
 Nonterminals
 
-Formula E Uminus Uplus List 
+Formula E Uminus Uplus List
 Funcall Args Argument
 ArrayLiteral ArrayRow ArrayRows Array
 CellRefs RangeRefs
@@ -16,7 +16,7 @@ CellRefs RangeRefs
 
 Terminals
 
-cellref rangeref zcellref zrangeref namedexpr 
+cellref rangeref zcellref zrangeref namedexpr
 name
 '=' '<>' '>' '<' '>=' '<='
 '+' '-' '*' '/' '^'
@@ -48,7 +48,7 @@ E -> E '>'  E : op('$1', '$2', '$3').
 E -> E '<'  E : op('$1', '$2', '$3').
 E -> E '>=' E : op('$1', '$2', '$3').
 E -> E '<=' E : op('$1', '$2', '$3').
-E -> E '&' E  : op('$1', {concatenate,1}, '$3').    
+E -> E '&' E  : op('$1', {concatenate,1}, '$3').
 E -> E '+' E  : op('$1', '$2',  '$3').
 E -> E '-' E  : op('$1', '$2',  '$3').
 E -> E '*' E  : op('$1', '$2',  '$3').
@@ -65,7 +65,7 @@ E -> E '^^' E : ['^^', '$1', '$3'].
 E -> RangeRefs RangeRefs  : ['^^', lit('$1'), lit('$2')].
 %%% parenthesized expressions.
 
-E -> '(' E ')' : '$2'.    
+E -> '(' E ')' : '$2'.
 
 %%% special cases for slash ambiguity
 
@@ -143,7 +143,7 @@ ArrayLiteral -> '+' int   : lit('$2').
 ArrayLiteral -> '+' float : lit('$2').
 ArrayLiteral -> bool      : lit('$1').
 ArrayLiteral -> str       : lit('$1').
-ArrayLiteral -> errval    : lit('$1').    
+ArrayLiteral -> errval    : lit('$1').
 
 Erlang code.
 
@@ -207,7 +207,7 @@ to_native_list(Ary) ->
 %%   2. followed by function args
 %%
 special_div1(Expr, #namedexpr{path="/", text=T}, Args0) ->
-    Args = case Args0 of 
+    Args = case Args0 of
                [{list, As}] -> As;
                _ -> Args0
            end,

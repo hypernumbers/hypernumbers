@@ -4,7 +4,7 @@
 %%% @doc       The module for producing graphs
 %%%
 %%% @end
-%%% Created : 11 Jan 2010 by Gordon Guthrie 
+%%% Created : 11 Jan 2010 by Gordon Guthrie
 %%%-------------------------------------------------------------------
 -module(hnfuns_graphs).
 
@@ -93,16 +93,16 @@
                     "0000FF",
                     "008000",
                     "800000",
-                    "000080", 
+                    "000080",
                     "FF0000",
                     "000000",
                     "800080",
                     "C0C0C0",
-                    "00FF00", 
+                    "00FF00",
                     "808080",
                     "808000",
                     %"FFFFFF",
-                    "008080", 
+                    "008080",
                     "FF00FF",
                     "00FFFF",
                     "FFFF00"
@@ -158,7 +158,7 @@ spark1(Size, Data, Colours) ->
                 {?axes, "x"}, {?colours, "bb2222"},
                 {?piecolours, "0,444499,11.5"} | Opts]),
     {resize, Width, Height, Chart}.
-    
+
 'histogram.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
@@ -201,7 +201,7 @@ spark1(Size, Data, Colours) ->
     {resize, Width, Height,
      xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
-    
+
 chunk_histogram([Type, X, Lines| List]) ->
     [Lines2, Type2] = typechecks:throw_std_ints([Lines, Type]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
@@ -297,14 +297,14 @@ chunk_pie([Lines | List]) ->
                _   -> ?ERR_VAL
            end,
     {Lables, Vals} = unzip(Data1, [], []),
-    [Vals, Lables | Opts].    
+    [Vals, Lables | Opts].
 
 unzip([], Lables, Vals) ->
     {{?pielables, string:join(Lables, "|")},
      {?data, "t:"++string:join(Vals, "|")}};
 unzip([[H1, H2] | T], Lables, Vals) ->
     unzip(T, [H1 | Lables], [H2 | Vals]).
-                                                 
+
 chunk_xy([Lines | List], LabType) ->
     [Lines1] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
@@ -498,7 +498,7 @@ make_labs_date(X, Y, StartDate, EndDate) ->
 make_labs(X, Y) ->
     [X1, Y1] = typechecks:throw_std_strs([X, Y]),
     {?axeslables, "1:|"++X1++"|3:|"++Y1}.
-     
+
 make_title(Title) ->
     [T2] = typechecks:throw_std_strs([Title]),
     {?title, T2}.
@@ -697,10 +697,10 @@ histogram([D])                   -> hist1(D, {{scale, auto}, [], []});
 histogram([D, Tt])               -> hist1(D, {{scale, auto}, Tt, []});
 histogram([D, Tt, Cols])         -> hist1(D, {{scale, auto}, Tt, Cols});
 histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
-    
+
 %%
 %% Internal Functions
-%%    
+%%
 process_data_linegraph(Aggregate, Data) ->
     Prefetched = cast_prefetch(Data),
     Data1 = [proc_dxy1(X) || X <- Prefetched],
@@ -916,7 +916,7 @@ conv_colours(Colours) ->
 conv_x_axis([]) ->
     "y&amp;chxl=";
 conv_x_axis(XAxis) ->
-    "x,y&amp;chxl=0:|" ++ string:join(XAxis, "|") ++ "|". 
+    "x,y&amp;chxl=0:|" ++ string:join(XAxis, "|") ++ "|".
 
 conv_data_rev(Data) ->
     conv_drev(Data, []).
@@ -1027,7 +1027,7 @@ make_titles(List) ->
 make_colours(List) ->
     string:join([ replace_colour(Colour) || Colour <- List ], ",").
 
-replace_colour(Colour) ->    
+replace_colour(Colour) ->
     case lists:keysearch(Colour, 1, colours()) of
         {value, {Colour, Val}} -> Val;
         false                  -> Colour
@@ -1047,15 +1047,15 @@ colours() -> [
               {"green"   , "008000"},
               {"red"     , "FF0000"},
               {"maroon"  , "800000"},
-              {"navy"    , "000080"}, 
+              {"navy"    , "000080"},
               {"black"   , "000000"},
               {"purple"  , "800080"},
               {"silver"  , "C0C0C0"},
-              {"lime"    , "00FF00"}, 
+              {"lime"    , "00FF00"},
               {"gray"    , "808080"},
               {"olive"   , "808000"},
               {"white"   , "FFFFFF"},
-              {"teal"    , "008080"}, 
+              {"teal"    , "008080"},
               {"fuchsia" , "FF00FF"},
               {"aqua"    , "00FFFF"},
               {"yellow"  , "FFFF00"}

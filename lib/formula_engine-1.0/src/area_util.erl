@@ -46,7 +46,7 @@ are_congruent(A, As) when ?is_area(A), is_list(As) ->
 are_congruent(A1, A2) when ?is_area(A1), ?is_area(A2) ->
     are_congruent(A1, [A2]).
 
-                      
+
 %% @spec apply_each(Fun, A) -> area()  Fun = function(), A = area()
 %% @doc Apply a function to each value in array/range.
 apply_each(Fun, A = {Tag, Rows}) when ?is_area(A) ->
@@ -62,7 +62,7 @@ apply_each(Fun, A = {Tag, Rows}) when ?is_area(A) ->
 %% element's position in addition to its value. ({Val, {Col, Row}}).
 apply_each_with_pos(Fun, A = {Tag, Rows}) when ?is_area(A) ->
      Fun = fun({Row, RowIdx}, Acc) ->
-                   ValCoords =                      
+                   ValCoords =
                        Fun2 = fun({V, I}, Acc2) ->
                                       [{V, {I, RowIdx}}|Acc2]
                               end,
@@ -140,10 +140,10 @@ to_absolute(R, CellX, CellY) when ?is_rangeref(R) ->
 to_relative(R, CellX, CellY) when ?is_rangeref(R) ->
     abs_rel_convert(R, CellX, CellY, fun to_rel/2).
 
-to_abs({offset, O}, C) -> O + C; 
-to_abs(A, _)           -> A. 
+to_abs({offset, O}, C) -> O + C;
+to_abs(A, _)           -> A.
 
-to_rel({offset, _}=O, _) -> O; 
+to_rel({offset, _}=O, _) -> O;
 to_rel(P, C)             -> {offset, P - C}.
 
 abs_rel_convert(R, CellX, CellY, F) when ?is_rangeref(R) ->

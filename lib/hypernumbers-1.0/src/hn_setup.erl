@@ -3,7 +3,7 @@
 -export([
          site/3,
          site/4,
-         delete_site/1, 
+         delete_site/1,
          update/0,
          update/1,
          update/3,
@@ -21,14 +21,14 @@
 %% Setup a new site from scratch
 -spec site(string(), atom(), [{atom(), any()}]) -> ok | exists.
 site(Site, Type, Opts) when is_list(Site), is_atom(Type) ->
-    site(Site, Type, Opts, [corefiles, sitefiles, json, groups, 
+    site(Site, Type, Opts, [corefiles, sitefiles, json, groups,
                             permissions, script]).
 
 -spec site(string(), atom(), [{atom(), any()}], [atom()]) ->
     {error, site_exists} | {initial_view, string()} .
 site(Site, Type, Opts, ToLoad) when is_list(Site), is_atom(Type) ->
     case hn_setup:site_exists(Site) of
-        true -> 
+        true ->
             {error, site_exists};
         false ->
             error_logger:info_msg("Setting up: ~p as ~p~n", [Site, Type]),
@@ -48,8 +48,8 @@ delete_site(Site) ->
         ++ hn_util:site_to_fs(Site) ++ "/",
     ok = sitemaster_sup:delete_site(Site),
     ok = hn_util:delete_directory(Dest),
-    ok = mnesia:activity(transaction, 
-                         fun mnesia:delete/3, 
+    ok = mnesia:activity(transaction,
+                         fun mnesia:delete/3,
                          [core_site, Site, write]),
     [ {atomic, ok} = mnesia:delete_table(hn_db_wu:trans(Site, Table))
       || {Table, _F, _T, _I} <- tables()],
@@ -60,17 +60,17 @@ delete_site(Site) ->
     ok = hns:unlink_resource(ZoneL, Name).
 
 %% Update all existing sites with default options
--spec update() -> ok. 
+-spec update() -> ok.
 update() ->
     update([], [corefiles]).
 
--spec update(list()) -> ok. 
+-spec update(list()) -> ok.
 update(Opts) ->
     update([], Opts).
 
 
 %% Update all sites
--spec update(list(), list()) -> ok. 
+-spec update(list(), list()) -> ok.
 update(Opaque, Opts) ->
     F = fun(#core_site{site=Site, type=Type}, _Acc) ->
                 update(Site, Type, Opaque, Opts)
@@ -94,12 +94,12 @@ update(Site, Type, Opaque, Opts) ->
 -spec site_exists(string()) -> boolean().
 site_exists(Site) ->
     case mnesia:dirty_read(core_site, Site) of
-        [_] -> true; 
+        [_] -> true;
         []  -> false
     end.
-    
+
 -spec get_sites() -> [string()].
-get_sites() -> 
+get_sites() ->
     mnesia:activity(transaction, fun mnesia:all_keys/1, [core_site]).
 
 -spec get_site_type(string()) -> atom().
@@ -128,7 +128,7 @@ setup(Site, _Type, Opts, groups) ->
         % condition so don't crash - other file opening errors
         % should fail
         {error, enoent} -> ok
-    end;        
+    end;
 setup(Site, _Type, _Opts, permissions) ->
     case file:consult([sitedir(Site),"/","permissions.script"]) of
         {ok, Terms} -> ok = auth_srv:load_script(Site, Terms);
@@ -201,9 +201,9 @@ tables() ->
      ?TBL(dirty_zinf,     set, []),
      ?TBL(dirty_queue,    set, []),
      ?TBL(item,           set, []),
-     ?TBL(local_obj,      set, [obj,path,revidx]), 
+     ?TBL(local_obj,      set, [obj,path,revidx]),
      ?TBL(relation,       set, []),
-     ?TBL(group,          set, []),         
+     ?TBL(group,          set, []),
      ?TBL(style,          set, [idx]),
      ?TBL(form,           set, [id])
     ].
@@ -243,12 +243,12 @@ create_path_from_name(Name, FileType) ->
     hn_util:list_to_path(Rest).
 
 -spec group_transform(tuple(), [tuple()]) -> [tuple()].
-group_transform({add_user, Terms}, Opts) -> 
+group_transform({add_user, Terms}, Opts) ->
     {add_user, substitute('$creator', pget(creator, Opts), Terms)};
-group_transform(X, _Opts) -> 
+group_transform(X, _Opts) ->
     X.
 
--spec run_script(tuple(), string(), [tuple()]) -> ok. 
+-spec run_script(tuple(), string(), [tuple()]) -> ok.
 run_script({Path, '$email'}, Site, Opts) ->
     write_cell(Path, Site, pget(email, Opts));
 run_script({Path, '$name'}, Site, Opts) ->
@@ -262,13 +262,13 @@ run_script({Path, Expr}, Site, _Opts) ->
     write_cell(Path, Site, Expr).
 
 write_cell(Path, Site, Expr) ->
-    RefX = hn_util:url_to_refX(Site++Path), 
+    RefX = hn_util:url_to_refX(Site++Path),
     hn_db_api:write_attributes([{RefX, [{"formula", Expr}]}]).
 
 
 substitute(Var, Val, Var) ->
     Val;
-substitute(Var, Val, Terms) when is_list(Terms) andalso 
+substitute(Var, Val, Terms) when is_list(Terms) andalso
                                  not(is_integer(hd(Terms))) ->
     [substitute(Var, Val, T) || T <- Terms];
 substitute(Var, Val, Term) when is_tuple(Term) ->
@@ -281,7 +281,7 @@ substitute(_Var, _Val, Term) ->
 %%     Path     = replace('$user', UserName, pget(path, C)),
 %%     auth_srv:set_champion(Site, Path, pget(view, C));
 
-%% add_u(Site, User, {add_view, C}) -> 
+%% add_u(Site, User, {add_view, C}) ->
 %%     UserName = hn_users:name(User),
 %%     Perms    = replace('$user', UserName, pget(perms, C)),
 %%     Path     = replace('$user', UserName, pget(path, C)),
@@ -302,11 +302,11 @@ substitute(_Var, _Val, Term) ->
 coreinstalldir() ->
     code:priv_dir(hypernumbers) ++ "/core_install".
 
--spec moddir(atom()) -> string(). 
+-spec moddir(atom()) -> string().
 moddir(Type) ->
     code:priv_dir(hypernumbers) ++ "/site_types/" ++ atom_to_list(Type).
 
--spec sitedir(string()) -> string(). 
+-spec sitedir(string()) -> string().
 sitedir(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site) ++ "/".

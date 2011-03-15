@@ -1,7 +1,7 @@
 %%% @doc Built-in database functions.
 %%% @author HV <hasan@hypernumbers.com>
 %%% @private
-%%% 
+%%%
 %%% NOTE: Computed criteria aren't supported yet (waiting on Muin refactoring).
 
 -module(stdfuns_db).
@@ -94,14 +94,14 @@ dvarp([DbR, Fld, CR]) ->
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 db_aggregate_func(DbR, Fld, CR, A) ->
-    
+
     F = fun([NDbR], [NFld], [NCR]) ->
                 case generic_select_values(NDbR, NFld, NCR) of
                     X when ?is_errval(X) -> X;
                     Vals                 -> A(Vals)
                 end
         end,
-    
+
     generic_argument_check(DbR, Fld, CR, F).
 
 is_str_or_int(X) when ?is_string(X) orelse is_integer(X) ->
@@ -136,10 +136,10 @@ generic_select_values(DbR, Fld, CR) ->
         no_such_field -> ?ERRVAL_VAL;
         _             -> Vs
     end.
-    
+
 
 %% tests ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
+
 -define(eqlp(Computed, Expected, Msg),
         case (Computed) == (Expected) of
             true  -> io:format("ok~n");
@@ -203,7 +203,7 @@ simple_criteria_test() ->
 advanced_criteria_test() ->
     61 = dsum([?DB, "Yield", ?CRIT4]),
     ok.
-    
+
 perf() ->
     Db = {range,
         [["Tree", "Height", "Age", "Yield", "Profit"]] ++

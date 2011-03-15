@@ -1,4 +1,4 @@
-%% HTTP Environment 
+%% HTTP Environment
 -record(env, { accept,
                body :: multipart | list(),
                raw_body :: {upload, string()} | binary(),

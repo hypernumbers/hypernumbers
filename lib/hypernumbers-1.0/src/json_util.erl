@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% @author    Gordon Guthrie 
+%%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers Ltd
 %%% @doc       A utility module for json
 %%%
@@ -25,7 +25,7 @@ jsonify(#help{name = N, warning = W, arity = A, category = C, text = T, notes = 
               {"category", C},
               {"text",     T},
               {"notes",    N2}]}.
-    
+
 unjsonify({array, List}) when is_list(List) ->
     [unjsonify(X) || X <- List];
 unjsonify({struct, [{"subtype", "version"},
@@ -34,7 +34,7 @@ unjsonify({struct, [{"subtype", "version"},
     {version, Page, Vsn}.
 
 %% @spec payload_to_json(Term) -> Json
-%% @doc payload_to_json takes a Term representing a payload used in the 
+%% @doc payload_to_json takes a Term representing a payload used in the
 %% horizontal api and makes it into a mochijson encodable
 payload_to_json({Type, {column, {X1, X2}}, _Displacement})
   when (Type == insert) orelse (Type == delete) ->
@@ -102,7 +102,7 @@ json_to_payload({struct, [{"type",        Type},
                           {"Y",            Y},
                           {"displacement", Displacement}]})
   when (Type == "insert") orelse (Type == "delete") ->
-    {list_to_existing_atom(Type), {cell, {X, Y}}, Displacement};    
+    {list_to_existing_atom(Type), {cell, {X, Y}}, Displacement};
 json_to_payload({struct, [{"type",              "new_value"},
                           {"value",             Value},
                           {"__dependency-tree", DepTree}]}) ->

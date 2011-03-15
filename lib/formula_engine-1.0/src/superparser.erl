@@ -67,7 +67,7 @@ process3(Input) ->
             [{float, -F}, {"text-align", "right"}, {"format", "null"}];
         [{'-',_}, {int, _, I}] ->
             [{int, -I}, {"text-align", "right"}, {"format", "null"}];
-        [{float, _, {F, _OrigStr}}, {'%',_}] -> 
+        [{float, _, {F, _OrigStr}}, {'%',_}] ->
             [{float,F/100}, {"text-align", "right"}, {"format", "0.00%"}];
         [{int, _, I}, {'%',_}] ->
             [{float,I/100}, {"text-align", "right"}, {"format", "0%"}];
@@ -75,11 +75,11 @@ process3(Input) ->
             [{float,F/100}, {"text-align", "right"}, {"format", "0.00%"}];
          [{'-',_}, {int, _, I}, {'%',_}]   ->
             [{float,I/100}, {"text-align", "right"}, {"format", "0%"}];
-        % type tag gets discarded by caller which is ok for 
+        % type tag gets discarded by caller which is ok for
         % the rest of them, but not here
         [{errval, _, E}] ->
             [{errval, {errval, E}}, {"text-align", "center"},
-             {"format", "null"}]; 
+             {"format", "null"}];
         _Other              ->
                  case super_util:autoparse(Toks) of
                      {ok, maybe_bad_date} ->

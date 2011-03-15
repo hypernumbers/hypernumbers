@@ -82,10 +82,10 @@ send_email(To, CC, From, Subject, EmailBody) ->
                       ++"Subject: ~p~n~s~nEND EMAIL--~n",
                       [To, CC, From, Subject, EmailBody]);
         {ok, production}  ->
-            spawn(hn_net_util, email, 
+            spawn(hn_net_util, email,
                   [To, CC, From, Subject, EmailBody]),
             ok
-    end.    
+    end.
 
 -spec kfind(string() | atom(), list()) -> any().
 kfind(Key, List) ->

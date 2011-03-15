@@ -28,7 +28,7 @@ get_all_groups(Site) ->
           end,
     mnesia:activity(transaction, Fun).
 
--spec is_member(auth_srv:uid(), string(), [string()]) 
+-spec is_member(auth_srv:uid(), string(), [string()])
                -> boolean().
 is_member(Uid, Site, Groups) ->
     Tbl = hn_db_wu:trans(Site, group),
@@ -36,16 +36,16 @@ is_member(Uid, Site, Groups) ->
 is_member1([], _Tbl, _Uid) -> false;
 is_member1([GroupN|Rest], Tbl, Uid) ->
     case mnesia:dirty_read(Tbl, GroupN) of
-        [G] -> 
+        [G] ->
             case gb_sets:is_member(Uid, G#group.members) of
-                true  -> true; 
+                true  -> true;
                 false -> is_member1(Rest, Tbl, Uid)
             end;
         _ ->
             is_member1(Rest, Tbl, Uid)
     end.
-        
--spec create_group(string(), string()) -> ok. 
+
+-spec create_group(string(), string()) -> ok.
 create_group(Site, GroupN) ->
     Tbl = hn_db_wu:trans(Site, group),
     F = fun() ->
@@ -59,12 +59,12 @@ create_group(Site, GroupN) ->
         end,
     mnesia:activity(transaction, F).
 
--spec delete_group(string(), string()) -> ok. 
+-spec delete_group(string(), string()) -> ok.
 delete_group(Site, GroupN) ->
     Tbl = hn_db_wu:trans(Site, group),
     mnesia:activity(transaction, fun mnesia:delete/3, [Tbl,GroupN,write]).
 
--spec add_user(string(), string(), auth_srv:uid()) -> ok | no_group. 
+-spec add_user(string(), string(), auth_srv:uid()) -> ok | no_group.
 add_user(Site, GroupN, Uid) ->
     Tbl = hn_db_wu:trans(Site, group),
     F = fun() ->
@@ -79,7 +79,7 @@ add_user(Site, GroupN, Uid) ->
         end,
     mnesia:activity(transaction, F).
 
--spec rem_user(string(), string(), auth_srv:uid()) -> ok | no_group. 
+-spec rem_user(string(), string(), auth_srv:uid()) -> ok | no_group.
 rem_user(Site, GroupN, Uid) ->
     Tbl = hn_db_wu:trans(Site, group),
     F = fun() ->
@@ -123,28 +123,28 @@ any_admin(Site) ->
                         no_group
                 end
         end,
-    mnesia:activity(transaction, F).                       
+    mnesia:activity(transaction, F).
 
--spec dump_script(string()) -> string(). 
+-spec dump_script(string()) -> string().
 dump_script(Site) ->
     Tbl = hn_db_wu:trans(Site, group),
-    Terms = mnesia:activity(transaction, fun mnesia:foldl/3, 
+    Terms = mnesia:activity(transaction, fun mnesia:foldl/3,
                             [fun dump_term/2, [], Tbl]),
     make_script_terms(Terms, []).
 
 dump_term(#group{name=N, members=M}, Acc) ->
-    Users = [{add_user, [{uid, U}, {group, N}]} 
+    Users = [{add_user, [{uid, U}, {group, N}]}
              || U <- gb_sets:to_list(M)],
     [{create_group, [{name, N}]} | Users ++ Acc].
 
-make_script_terms([], Acc) -> 
+make_script_terms([], Acc) ->
     FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
     lists:flatten([FirstLine | lists:reverse(Acc)]);
 make_script_terms([H | T], Acc) ->
     NewAcc = lists:flatten(io_lib:format("~p.~n", [H])),
     make_script_terms(T, [NewAcc | Acc]).
 
--spec load_script(string(), [term()]) -> ok. 
+-spec load_script(string(), [term()]) -> ok.
 load_script(Site, Terms) ->
     [ok = exec_script_term(T, Site) || T <- Terms],
     ok.

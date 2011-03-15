@@ -1,4 +1,4 @@
-%%% @private
+ %%% @private
 -module(userdef).
 
 -include("spriki.hrl").
@@ -59,7 +59,7 @@ v_hn1(_Key, [], _, Acc)                -> lists:reverse(Acc);
 v_hn1(Key, [[Key | T] | T1], Pos, Acc) -> NewAcc = lists:nth(Pos - 1, T),
                                           v_hn1(Key, T1, Pos, [NewAcc | Acc]);
 v_hn1(Key, [_H | T], Pos, Acc)         -> v_hn1(Key, T, Pos, Acc).
-    
+
 
 slow([_X]) -> wait(100000).
 

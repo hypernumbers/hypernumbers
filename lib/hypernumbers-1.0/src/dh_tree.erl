@@ -9,7 +9,7 @@
 %-spec create(List::list(list(string()))) -> any().
 %% doc take a list of keys and generate a tree
 new() ->
-    create([]). 
+    create([]).
 
 create(List) ->
     create(List,dict:new()).
@@ -19,9 +19,9 @@ create([H|T],Dict) ->
     create(T,add(H,Dict)).
 
 %-spec add(Key::list(string()),Dict::any()) -> any().
-%% @doc Add a key in the form ["key1","key2"] 
+%% @doc Add a key in the form ["key1","key2"]
 %%      to the tree
-add([],Dict) -> 
+add([],Dict) ->
     Dict;
 add([H],Dict) ->
     case dict:is_key(H,Dict) of
@@ -36,7 +36,7 @@ add([H|T],Dict) ->
     dict:store(H,add(T,NDict),Dict).
 
 %-spec add(Key::list(string()),Dict::any()) -> any().
-%% @doc Add a key in the form ["key1","key2"] 
+%% @doc Add a key in the form ["key1","key2"]
 %%      to the tree
 set([H], Val, Dict) ->
     dict:store(H, Val, Dict);
@@ -48,7 +48,7 @@ set([H|T], Val, Dict) ->
     dict:store(H,set(T, Val, NDict),Dict).
 
 %-spec erase(Key::list(string()),Dict::any()) -> any().
-%% @doc erase a node from the tree 
+%% @doc erase a node from the tree
 %%      (including children)
 erase([H],Dict) ->
     dict:erase(H,Dict);
@@ -68,7 +68,7 @@ update([H|T], Dict, F) ->
                 false -> dict:new()
             end,
     dict:store(H, update(T,NDict, F),Dict).
-    
+
 
 %-spec flatlist(Dict::any()) -> {ok,list()}.
 %% @doc Generate a flat list of all the nodes

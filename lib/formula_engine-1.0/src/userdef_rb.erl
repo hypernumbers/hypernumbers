@@ -1,4 +1,4 @@
-%%% @private
+ %%% @private
 -module(userdef_rb).
 
 -export([
@@ -47,7 +47,7 @@ loop(Port) ->
                     erlang:display(Any)
             end,
             loop(Port);
-        
+
         stop ->
             Port ! {self(), close},
             receive

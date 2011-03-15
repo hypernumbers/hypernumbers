@@ -106,16 +106,16 @@ col(Args, Rules) ->
 %% rules are ignored, the function should return the new value following
 %% the rule
 
-rl(Rule, {list, Vals}) ->    
+rl(Rule, {list, Vals}) ->
     F = fun(X, Acc) ->
                 case rl(Rule, X) of
                     ignore       -> Acc;
                     Else         -> [Else | Acc]
                 end
         end,
-                
+
     {list, lists:foldl(F, [], Vals)};
-                          
+
 % If anything has been marked ignore, ignore
 rl(_, ignore) ->
     ignore;
@@ -209,7 +209,7 @@ rl({cast, From, To, Default}, X) ->
         From  -> rl({cast_def, To, Default}, X);
         _Else -> X
     end;
-rl({cast, From, To}, X) ->    
+rl({cast, From, To}, X) ->
     case muin_util:get_type(X) of
         From  -> rl({cast, To}, X);
         _Else -> X
@@ -230,7 +230,7 @@ rl(fetch_name, Name) when ?is_namedexpr(Name) ->
 rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 
-rl(fetch_z, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) -> 
+rl(fetch_z, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
     muin:fetch(Ref);
 
 rl(fetch, Name) when ?is_namedexpr(Name) ->
@@ -283,7 +283,7 @@ rl(_Rule, Value) ->
 
 flat([], Acc)          -> Acc;
 flat([Head|Tail], Acc) -> flat(Tail, Acc ++ Head).
-    
+
 %% Passes are a list of rules to perform on arguments once casting
 %% and such has happened
 pass(Args, []) ->
@@ -293,7 +293,7 @@ pass(Args, [ return_flat_errors | Rules ]) ->
     F = fun(X, _Acc) when ?is_errval(X) -> X;
            (_X, Acc) -> Acc
         end,
-    
+
     case lists:foldr(F, false, Args) of
         false -> pass(Args, Rules);
         Err   -> Err
@@ -310,7 +310,7 @@ pass(Args, [ return_errors | Rules ]) ->
                 end;
            (_X, Acc) -> Acc
         end,
-   
+
     case lists:foldr(F, false, Args) of
         false -> pass(Args, Rules);
         Err   -> Err
@@ -378,7 +378,7 @@ basic_test_() ->
 
      % Check Evalling functions
      ?_assertEqual( [false],
-                    col([['-',1,1]], [eval_funs, num_as_bool])),     
+                    col([['-',1,1]], [eval_funs, num_as_bool])),
      ?_assertEqual( [?ERRVAL_DIV],
                     col([['/',1,0]], [eval_funs, num_as_bool])),
 
@@ -395,11 +395,11 @@ basic_test_() ->
      % Check pass filters
      ?_assertEqual( ?ERRVAL_VAL,
                     pass([true, false, "1"], [{all, fun is_bool/1}])),
-     
+
      ?_assertEqual( ?ERRVAL_DIV,
                     pass([true, false, ?ERRVAL_DIV], [return_errors]))
-     
-     
+
+
 %% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
 %% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),
 %% ?_assertEqual( col([1,2,3], [cast_num_as_bool]), [true, true, true]),

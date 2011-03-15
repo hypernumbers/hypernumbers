@@ -144,7 +144,7 @@ is_num_or_date(X) ->
 
 %% note that there is an operation =date - number
 %% but no = number - date
-'-'([DT, V2]) when is_record(DT, datetime), is_number(V2) -> 
+'-'([DT, V2]) when is_record(DT, datetime), is_number(V2) ->
     '+_'([-V2, DT]);
 
 '-'([#datetime{date=D1, time=T1}, #datetime{date=D2, time=T2}]) ->
@@ -235,7 +235,7 @@ sum(Vs) ->
 sum1(Nums) ->
     lists:sum(Nums).
 
-product(Vals) ->    
+product(Vals) ->
     muin_collect:col(Vals,
                      [eval_funs, {cast, str, num, ?ERRVAL_VAL}, {cast, bool, num},
                       fetch, flatten, area_first, {ignore, blank}, {ignore, str},
@@ -333,7 +333,7 @@ lcm1(A,[])    ->
     A;
 lcm1(A,[B|T]) ->
     Div=gcd2(A,B),
-    % A2 should be an integer - use round to cast it to one 
+    % A2 should be an integer - use round to cast it to one
     A2=erlang:round(A*B/Div),
     lcm1(A2,T).
 
@@ -342,7 +342,7 @@ lcm1(A,[B|T]) ->
 mod([V1, V2]) ->
     [Num, Divisor] = muin_col_DEPR:collect_numbers([V1, V2], ?default_rules),
     muin_checks:ensure(Divisor =/= 0, ?ERRVAL_DIV),
-    muin_checks:ensure(Divisor =/= 0.0, ?ERRVAL_DIV),    
+    muin_checks:ensure(Divisor =/= 0.0, ?ERRVAL_DIV),
     Num - Divisor * int([Num/Divisor]).
 
 %%% Arrays and matrices ~~~~~
@@ -360,7 +360,7 @@ mdeterm([A]) ->
 
 mdeterm_([]) ->
     ?ERRVAL_VAL;
-mdeterm_([{_Type, Rows}=Area]) when ?is_area(Area) -> 
+mdeterm_([{_Type, Rows}=Area]) when ?is_area(Area) ->
     case area_util:is_matrix(Area) of
         false -> ?ERRVAL_VAL;
         true  -> mdeterm1(Rows, area_util:width(Area))
@@ -391,7 +391,7 @@ minverse(Args) ->
     muin_collect:col(Args, [eval_funs, fetch, {ignore, bool}, {ignore, str},
                             {ignore, blank}], [return_errors],
                      fun minverse_/1).
-minverse_([{_Type, _Rows}=Area]) when ?is_area(Area) -> 
+minverse_([{_Type, _Rows}=Area]) when ?is_area(Area) ->
     case area_util:is_matrix(Area) of
         false -> ?ERRVAL_VAL;
         true  -> 0
@@ -406,7 +406,7 @@ mmult(Args) ->
                             {ignore, blank}], [return_errors],
                      fun mmult_/1).
 
-mmult_([{_, R1}=L1, {_, R2}=L2]) when ?is_area(L1), ?is_area(L2) -> 
+mmult_([{_, R1}=L1, {_, R2}=L2]) when ?is_area(L1), ?is_area(L2) ->
     case area_util:is_matrix(L1) andalso area_util:is_matrix(L2) of
         false -> ?ERRVAL_VAL;
         true  -> {array, dh_matrix:multiply(R1, R2)}
@@ -856,7 +856,7 @@ sumproduct(Arrs) ->
     NArrs = [muin_collect:col([X], [eval_funs, fetch, {convflat, str, ?ERRVAL_VAL},
                                     {convflat, bool, ?ERRVAL_VAL}, flatten,
                                     {conv, bool, 0}, {conv, blank, 0}, {conv, str, 0}],
-                              [return_errors, {all, fun is_number/1}]) || X <- Arrs],    
+                              [return_errors, {all, fun is_number/1}]) || X <- Arrs],
     muin_util:run(NArrs, fun sumproduct_/1).
 
 sumproduct_(Arrs) ->
@@ -882,7 +882,7 @@ seriessum1(K, N, M, As) ->
 subtotal([Index, Arr]) ->
     Ind = muin_collect:col([Index], [eval_funs, fetch, {cast, int}],
                            [return_errors, {all, fun is_integer/1}]),
-    muin_util:apply([Ind, Arr], fun subtotal_/2).    
+    muin_util:apply([Ind, Arr], fun subtotal_/2).
 
 subtotal_([1], L)  -> stdfuns_stats:average([L]);
 subtotal_([2], L)  -> stdfuns_stats:count([L]);
@@ -1001,7 +1001,7 @@ cos([V]) ->
     muin_collect:col([V], [eval_funs, area_first, fetch, {cast, num}],
                      [return_errors, {all, fun is_number/1}],
                      fun cos_/1).
-cos_([Num]) -> 
+cos_([Num]) ->
     math:cos(Num).
 
 tan([V]) ->

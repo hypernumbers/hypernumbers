@@ -5,7 +5,7 @@
 
 -module(tconv).
 -export([
-         
+
          to_bool/1,
          to_b26/1,
          to_i/1,
@@ -24,7 +24,7 @@ to_bool(X) when is_list(X) -> case string:to_lower(X) of
                                   _       -> {error, not_a_boolean}
                               end;
 to_bool(_X)                -> {error, not_a_boolean}.
-            
+
 %% String -> integer.
 to_i(Str) when is_list(Str) ->
     case to_num(Str) of
@@ -91,7 +91,7 @@ b26_to_i(List) when is_list(List) ->
     b26_to_i(string:to_lower(lists:reverse(List)),0,0).
 
 %% private functions
-b26_to_i([], _Power, Value) -> 
+b26_to_i([], _Power, Value) ->
     Value;
 
 b26_to_i([H|T],Power,Value)->

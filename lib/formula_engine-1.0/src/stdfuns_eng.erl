@@ -25,7 +25,7 @@ delta([V1, V2]) ->
 gestep([V1]) ->
     gestep([V1, 0]);
 gestep([V1, V2]) ->
-    % gestep is wierd - it evaluates back to front for the purpose 
+    % gestep is wierd - it evaluates back to front for the purpose
     % of throwing errors so reverse the arguements in the cast
     [Step, Num] = muin_col_DEPR:collect_numbers([V2, V1],
                                                 [cast_strings, ban_bools,

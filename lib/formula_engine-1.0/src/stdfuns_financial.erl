@@ -91,24 +91,24 @@ irr([Range]) ->
 irr([Range, Guess]) ->
     %% Warning, each ignore reverses the order. Odd ignores == Reverse list!!
     VS = col([Range], [eval_funs, {cast, str, num, ?ERRVAL_VAL},
-                       fetch, flatten, 
+                       fetch, flatten,
                        {ignore, blank}, {ignore, str}, {ignore, bool}],
              [return_errors, {all, fun is_number/1}]),
     NGuess = col([Guess], [eval_funs, fetch, flatten, {cast, num},
                            {ignore, blank}, {ignore, str}, {ignore, bool}],
                  [return_errors]),
     case {VS, NGuess} of
-        {Err_VS, _} when ?is_errval(Err_VS), 
+        {Err_VS, _} when ?is_errval(Err_VS),
                          ?is_rangeref(Range) -> ?ERRVAL_VAL;
         {Err_VS, _} when ?is_errval(Err_VS)  -> Err_VS;
         {_, Err_NG} when ?is_errval(Err_NG)  -> Err_NG;
         {_, [NegG]} when NegG =< -1          -> ?ERRVAL_VAL;
         {[], _    } when ?is_rangeref(Range) -> ?ERRVAL_NUM;
         {L1, L2   } when L1 == []; L2 == []  -> ?ERRVAL_VAL;
-        {VS2, NG2 } -> muin_util:apply([lists:reverse(VS2), hd(NG2)], 
+        {VS2, NG2 } -> muin_util:apply([lists:reverse(VS2), hd(NG2)],
                                        fun irr_/2)
     end.
-            
+
 
 irr_(Range, Guess) ->
     %% Need both a positve and negative to compute.
@@ -119,13 +119,13 @@ irr_(Range, Guess) ->
         true ->
             V1 = irr1(Guess, Guess * 1.1 + 0.01, Range),
             V2 = irr1(0, 1, Range),
-            if is_number(V1), abs(V1 - Guess) =< abs(V2 - Guess) -> V1; 
+            if is_number(V1), abs(V1 - Guess) =< abs(V2 - Guess) -> V1;
                true                                              -> V2 end
     end,
     if is_number(Irr), Irr > 1.0e7 -> ?ERRVAL_NUM;
        true                        -> Irr end.
 
-            
+
 irr1(Rate0, Rate1, Range) ->
     X0 = npv1(Rate0, Range),
     X1 = npv1(Rate1, Range),
@@ -174,7 +174,7 @@ npv([Rate | Args]) ->
     NRate = col([Rate],
                 [eval_funs, first_array, fetch_name, fetch_ref, cast_num],
                 [return_errors, {all, fun is_number/1}]),
-    
+
     NArgs = col(Args,
                 [eval_funs, flatten_as_str, {cast, str, num, ?ERRVAL_VAL},
                  fetch_name, fetch_ref, {ignore, blank},
@@ -207,11 +207,11 @@ sln1([Cost, Salv, Life]) ->
     (Cost-Salv)/Life.
 
 syd([Cost, Salv, Life, Per]) ->
-    
+
     Life1 = col([Life], [eval_funs, fetch, area_first, {ignore, blank},
                          {cast, int}],
                 [return_errors, {all, fun is_integer/1}]),
-    
+
     Othr = col([Cost, Salv, Per],
                [eval_funs, fetch, area_first, cast_num],
                [return_errors, {all, fun is_number/1}]),
@@ -335,7 +335,7 @@ rate_([Nper, Pmt, Pv, Fv, Type, Guess]) ->
     secant(Rate1, Rate0, X1, X0,
            fun(N) -> xn(Pmt, N, Nper, Pv, Fv, Type) end).
 
-             
+
 %%% helpers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 -define(ITERATION_LIMIT, 100).
 -define(EPSILON,  0.0000001).
@@ -348,7 +348,7 @@ secant(_, _, _, _, _, ?ITERATION_LIMIT) ->
 secant(Pa, Ppa, Px, Ppx, Fun, I) ->
     Divisor = (Px - Ppx),
     case Divisor of
-        X when X == 0 -> 
+        X when X == 0 ->
             ?ERRVAL_NUM; % floats cast to integer...
         _ -> Ca = Pa - (Px * (Pa - Ppa))/Divisor,
              Xn = Fun(Ca),

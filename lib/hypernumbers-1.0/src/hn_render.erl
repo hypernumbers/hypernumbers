@@ -3,7 +3,7 @@
 -module(hn_render).
 
 -export([content/1,
-         content/2, 
+         content/2,
          wrap_page/4,
          wrap_region/3]).
 
@@ -34,9 +34,9 @@ content(Ref, Type) ->
     Data = lists:sort(fun order_objs/2, read_data_without_page(Ref)),
     Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
     % need to do old and new row/col types
-    RowHs = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)} 
+    RowHs = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)}
              || {#refX{obj={row,{R,R}}},RPs} <- Data],
-    ColWs = [{C, pget("width", CPs, ?DEFAULT_WIDTH)} 
+    ColWs = [{C, pget("width", CPs, ?DEFAULT_WIDTH)}
              || {#refX{obj={column,{C,C}}},CPs} <- Data],
     Palette = gb_trees:from_orddict
                 (lists:sort
@@ -55,7 +55,7 @@ read_data_without_page(Ref) ->
     Refs = hn_db_api:read_intersect_ref(Ref),
     [ {RefX, Val} || {RefX, Val} <- Refs, element(1, RefX#refX.obj) =/= page ].
 
--spec layout(#refX{}, atom(), cells(), cols(), rows(), gb_tree()) 
+-spec layout(#refX{}, atom(), cells(), cols(), rows(), gb_tree())
             -> {[textdata()], integer(), integer()}.
 layout(Ref, Type, Cells, CWs, RHs, Palette) ->
     PX = 0,
@@ -67,10 +67,10 @@ layout(Ref, Type, Cells, CWs, RHs, Palette) ->
     layout(Cells, Type, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
 
 -spec layout(cells(), atom(),
-             integer(), integer(), integer(), integer(), integer(), 
+             integer(), integer(), integer(), integer(), integer(),
              cols(), rows(), #rec{}, [textdata()])
             -> {[textdata()],integer(), integer()}.
-                    
+
 %% End of input
 layout([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
@@ -113,18 +113,18 @@ layout(Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
     Row2 = Row + 1,
     {H2,RHs2} = row_height(Row2, RHs),
     Rec2 = Rec#rec{maxwidth = erlang:max(Rec#rec.maxwidth, PX)},
-    layout(Lst, Type, Col2, Row2, PX2, PY2, H2, 
+    layout(Lst, Type, Col2, Row2, PX2, PY2, H2,
            Rec#rec.colwidths, RHs2, Rec2, Acc).
 
--spec expunge(cells(), {integer(), integer(), integer(), integer()}) 
+-spec expunge(cells(), {integer(), integer(), integer(), integer()})
              -> cells().
-expunge([], _Rng) -> 
-    []; 
+expunge([], _Rng) ->
+    [];
 %% At a row past range, halt.
 expunge([{{_,R},_}|_]=Lst, {_RC1,_RC2,_RR1,RR2}) when R > RR2 ->
     Lst;
 %% Expunge cell.
-expunge([{{C,R},_}|Tail], Rng={RC1,RC2,RR1,RR2}) when 
+expunge([{{C,R},_}|Tail], Rng={RC1,RC2,RR1,RR2}) when
       RC1 =< C, C =< RC2,
       RR1 =< R, R =< RR2 ->
     expunge(Tail, Rng);
@@ -132,8 +132,8 @@ expunge([{{C,R},_}|Tail], Rng={RC1,RC2,RR1,RR2}) when
 expunge([Cell | Tail], Rng) ->
     [Cell | expunge(Tail, Rng)].
 
--spec width_across(integer(), integer(), cols(), integer()) 
-                  -> {integer(), cols()}. 
+-spec width_across(integer(), integer(), cols(), integer())
+                  -> {integer(), cols()}.
 width_across(C, Stop, CWs, Acc) when C > Stop ->
     {Acc, CWs};
 width_across(C, Stop, CWs, Acc) ->
@@ -154,7 +154,7 @@ row_height(_, T)          -> {?DEFAULT_HEIGHT, T}.
 col_width(X, [{X, W}|T]) -> {W, T};
 col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
 
--spec draw(undefined | string(), 
+-spec draw(undefined | string(),
            textdata(),
            string(),
            integer(), integer(),
@@ -175,13 +175,13 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
     St = "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s"
         ++" -moz-border-radius: 4px 4px 4px 4px;"
         ++" -webkit-border-radius: 4px 4px 4px 4px;",
-    
+
     case Inp of
         "inline" ->
             Style = io_lib:format(St ++"padding:1px 1px;'",
                                   [X, Y, W - 4, H - 2, Css]),
             StyleIn = io_lib:format("style='width:~bpx;height:~bpx;'",
-                                    [W - 8, H - 4]), 
+                                    [W - 8, H - 4]),
                 "<div class='hn_padded' "++Style ++">"++
                 "<div class='inline' " ++ StyleIn ++
                 " data-ref='"++Cell++"'>"++Val++
@@ -192,7 +192,7 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
             "<div data-ref='"++Cell++"'"++Style++">"++Val++"</div>"
         end.
 
--spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean(). 
+-spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean().
 order_objs({RA,_}, {RB,_}) ->
     {_, {XA, YA}} = RA#refX.obj,
     {_, {XB, YB}} = RB#refX.obj,
@@ -200,28 +200,28 @@ order_objs({RA,_}, {RB,_}) ->
        true     -> XA =< XB
     end.
 
--spec read_css(undefined | integer(), gb_tree()) -> string(). 
+-spec read_css(undefined | integer(), gb_tree()) -> string().
 read_css(undefined, _Palette) -> "";
 read_css(Idx, Palette) -> case gb_trees:lookup(Idx, Palette) of
                               none -> "";
                               {value, V} -> V
-                          end.            
+                          end.
 
--spec startcol(#refX{}) -> integer(). 
+-spec startcol(#refX{}) -> integer().
 startcol(#refX{obj={range,{X,_,_,_}}}) -> X;
 startcol(_)                            -> 1.
 
--spec startrow(#refX{}) -> integer(). 
+-spec startrow(#refX{}) -> integer().
 startrow(#refX{obj={range,{_,Y,_,_}}}) -> Y;
 startrow(_)                            -> 1.
-    
+
 pget(K,L) -> proplists:get_value(K,L,undefined).
 
 pget(K,L,D) -> proplists:get_value(K,L,D).
 
--spec wrap_page([textdata()], integer(), integer(), #render{}) -> [textdata()]. 
-wrap_page(Content, TotalWidth, TotalHeight, Addons) -> 
-    OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
+-spec wrap_page([textdata()], integer(), integer(), #render{}) -> [textdata()].
+wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
+    OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'",
                                [TotalWidth, TotalHeight]),
     Title = case Addons#render.title of
                 [] -> "<title>Hypernumbers - the team spreadsheet</title>";
@@ -233,7 +233,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
          <head>
 "     ++Title++
 "        <meta charset='utf-8' />
-         <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />	
+         <link rel='stylesheet' href='/hypernumbers/hn.sheet.css' />
          <link rel='stylesheet' href='/hypernumbers/hn.style.css' />
          <link rel='stylesheet' href='/webcomponents/webcomponents.css' />
          <link rel='stylesheet' href='/webcomponents/webbasic.css' />
@@ -243,7 +243,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
 "     ++Addons#render.css++
 "         <script src='/hypernumbers/jquery-1.4.2.min.js'></script>
          <!--<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>-->
-        <script src='/hypernumbers/jquery.tablesorter.min.js'></script>  
+        <script src='/hypernumbers/jquery.tablesorter.min.js'></script>
          </head>
 
          <body data-view='webpage'>
@@ -287,7 +287,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
    </form>
   </div>
  </div>
-</div>  
+</div>
 "  ++Addons#render.js++
 %  <script src='http://connect.facebook.net/en_US/all.js#appId=196044207084776&amp;xfbml=1'></script>
 %  <script type='text/javascript'> FB.init('196044207084776', '/external/xd_receiver.htm');</script>
@@ -314,9 +314,9 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
   </body>
   </html>"].
 
--spec wrap_region([textdata()], integer(), integer()) -> [textdata()]. 
-wrap_region(Content, Width, Height) -> 
-    OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'", 
+-spec wrap_region([textdata()], integer(), integer()) -> [textdata()].
+wrap_region(Content, Width, Height) ->
+    OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'",
                                [Width, Height]),
     ["<div class='hn_inner' ", OuterStyle, ">",
      Content,
@@ -358,7 +358,7 @@ merged_col_test_() ->
     Ref = #refX{site="http://hypernumbers.dev:9000",
                 path=["web"],
                 obj={page,"/"}},
-    Cells = [{{1,1}, 
+    Cells = [{{1,1},
               [{"merge",{struct,[{"right",3},{"down",0}]}},
                {"style",1},{"value","1"}]},
              {{7,1},

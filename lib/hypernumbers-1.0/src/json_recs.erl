@@ -40,7 +40,7 @@ json_to_r([{Rec, {array, Fields}} | T], Acc) ->
     {_, F3} = lists:unzip(lists:sort(F2)),
     NewAcc = list_to_tuple([Rec2 | F3]),
     json_to_r(T, [NewAcc | Acc]).
-    
+
 make_zip(_Rec, 0, Acc) -> Acc;
 make_zip(Rec,  N, Acc) -> NewAcc = ms_util2:name_by_index(Rec, N),
                           make_zip(Rec, N - 1, [NewAcc | Acc]).

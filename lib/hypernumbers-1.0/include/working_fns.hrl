@@ -4,7 +4,7 @@
 %%% @doc       The current supported function set
 %%%
 %%% @end
-%%% Created :  1 Apr 2009 by 
+%%% Created :  1 Apr 2009 by
 %%%-------------------------------------------------------------------
 -include("spriki.hrl").
 

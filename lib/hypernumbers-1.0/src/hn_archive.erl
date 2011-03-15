@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% @author     Gordon Guthrie 
+%%% @author     Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers Ltd
 %%% @doc       code to manage backup and restore etc as well
 %%%            as 'grabbing' sites and applications
@@ -29,16 +29,16 @@ export_as_sitetype(Site, NewType) ->
     ok = hn_util:recursive_copy(?join([Dest,"etf"]), ?join([Dest, "data"])),
 
     %% Rename files
-    file:rename(?join([Dest, "groups.export"]), 
+    file:rename(?join([Dest, "groups.export"]),
                 ?join([Dest, "groups.script"])),
-    file:rename(?join([Dest, "permissions.export"]), 
+    file:rename(?join([Dest, "permissions.export"]),
                 ?join([Dest, "permissions.script"])),
 
     %% Delete backup-centric artifacts.
     [ hn_util:delete_directory( ?join([SiteTypes, NewType, ?join(Dir)]) )
       || Dir <- [["etf"], ["views", "_g", "core"]] ],
     ok.
-    
+
 %% Export sites to the given directory.
 export(Dest) ->
     export_services(?join([Dest, "services"])),
@@ -72,12 +72,12 @@ dump_users(Dest) ->
     Users = passport:dump_script(),
     ok = file:write_file(?join(Dest, "users.export"), Users).
 
-dump_etf(Site, SiteDest) -> 
+dump_etf(Site, SiteDest) ->
     EtfDest = ?join(SiteDest, "etf"),
-    filelib:ensure_dir([EtfDest,"/"]),  
+    filelib:ensure_dir([EtfDest,"/"]),
     Ref = hn_util:url_to_refX(Site),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
-    [ok = dump_page(EtfDest, Encoder, Ref, Path) 
+    [ok = dump_page(EtfDest, Encoder, Ref, Path)
      || Path <- hn_db_api:read_pages(Ref)],
     ok.
 
@@ -93,7 +93,7 @@ dump_groups(Site, SiteDest) ->
 
 dump_perms(Site, SiteDest) ->
     Perms = auth_srv:dump_script(Site),
-    ok = file:write_file(?join(SiteDest, "permissions.export"), 
+    ok = file:write_file(?join(SiteDest, "permissions.export"),
                          Perms).
 
 dump_views(Site, SiteDest) ->
@@ -109,7 +109,7 @@ import(Src) ->
         true -> import_services(ServSrc);
         false -> ok
     end,
-    Sites = [hn_util:site_from_fs(F) || 
+    Sites = [hn_util:site_from_fs(F) ||
                 F <- filelib:wildcard("*", Src),
                 hd(F) /= ".",
                 F /= "services",
@@ -124,7 +124,7 @@ import(Src, Sites) ->
 import_services(ServSrc) ->
     ok = load_users(ServSrc).
 
-import_site(Src, Site) ->       
+import_site(Src, Site) ->
     SiteSrc = ?join([Src, hn_util:site_to_fs(Site)]),
     hn_setup:site(Site, blank, [], [corefiles, sitefiles]),
     ok = load_etf(Site, SiteSrc),
@@ -136,11 +136,11 @@ load_users(Src) ->
     {ok, UserTs} = file:consult(?join(Src, "users.export")),
     ok = passport:load_script(UserTs).
 
-load_etf(Site, SiteSrc) ->    
+load_etf(Site, SiteSrc) ->
     Files = filelib:wildcard(?join([SiteSrc, "etf"])++"/*.json"),
     [ ok = hn_import:json_file(Site ++ hn_setup:create_path_from_name(Json, ".json"),
                                Json)
-      || Json <- Files, hn_setup:is_path(Json) ],    
+      || Json <- Files, hn_setup:is_path(Json) ],
     ok.
 
 load_groups(Site, SiteSrc) ->

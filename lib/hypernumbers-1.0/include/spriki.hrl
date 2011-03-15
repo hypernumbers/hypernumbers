@@ -2,7 +2,7 @@
 
 -type now() :: {integer(),integer(),integer()}.
 -type cellidx() :: pos_integer().
--type generator() :: fun(() -> string()). 
+-type generator() :: fun(() -> string()).
 -type resource_addr() :: {string(), integer(), atom()}. %% (IP, Port, Node).
 
 %% Core Tables
@@ -101,7 +101,7 @@
         {
           id = now(),
           type,
-          dirtycellidx :: cellidx(),     
+          dirtycellidx :: cellidx(),
           old          :: ordsets:ordset(#refX{}),
           new          :: ordsets:ordset(#refX{})
          }).
@@ -134,7 +134,7 @@
 %%      name suggests, overwrites the style colour
 
 % magic_style commented out to make css styles work in the gui again!
-% to switch back to using styles simply comment out and uncomment the 
+% to switch back to using styles simply comment out and uncomment the
 % one after
 
 -record(magic_style,
@@ -163,7 +163,7 @@
           'text-shadow'         = [],
           'text-align'          = [],
           'white-space'         = []
-         }).        
+         }).
 
 -record(style,
         {

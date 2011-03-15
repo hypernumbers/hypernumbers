@@ -23,7 +23,7 @@
 start() ->
 
     filelib:ensure_dir(logfile()),
-    
+
     Opts = [{name,?NAME}, {file,logfile()},
             {type,wrap},  {size, {2097152, 99}}],
 
@@ -69,13 +69,13 @@ clear() ->
 
 
 %% Repair a logfile, useful for fixing specific copylogs
--spec repair(string()) -> ok | {error, term()}. 
+-spec repair(string()) -> ok | {error, term()}.
 repair(Name) ->
     Opts = [{name, Name}, {file,logfile(Name)},
             {type,wrap},  {size, {2097152, 99}},
             {repair, true}],
     case disk_log:open(Opts) of
-        {ok, Log} -> 
+        {ok, Log} ->
             disk_log:close(Log);
         {repaired, Log, Recover, Bad} ->
             io:format("Repaired: recovered: ~p bad: ~p~n", [Recover, Bad]),
@@ -83,12 +83,12 @@ repair(Name) ->
     end.
 
 
-%% 
+%%
 stream_log(Name, StartD, EndD, Remote) ->
     Log = logfile(Name ++ "/post_log"),
     Filter = make_filter([{method, all}, {between, StartD, EndD}]),
     io:format("streaming log ~p~n", [Log]),
-    case filelib:is_file(Log++".siz") of 
+    case filelib:is_file(Log++".siz") of
         false ->
             Remote ! {self(), {log_error, no_such_log}};
         true ->
@@ -97,8 +97,8 @@ stream_log(Name, StartD, EndD, Remote) ->
                                ["Date,Site,Path,Body,Method,IP,User,"
                                 "Referer,User-Agent,Accept\n"]}},
             {ok, Cont} = wrap_log_reader:open(Log),
-            {ok, End}  = walk(fun(Terms, _) -> 
-                                      do_stream(Remote, Filter, Terms) 
+            {ok, End}  = walk(fun(Terms, _) ->
+                                      do_stream(Remote, Filter, Terms)
                               end, Cont, 0),
             wrap_log_reader:close(End),
             Remote ! {self(), log_finished}
@@ -108,13 +108,13 @@ do_stream(Remote, Filter, Terms) ->
     Messages = [handle_term(Filter, T, 0, fun mi_entry/2) || T <- Terms],
     Messages2 = [M || M <- Messages, is_list(M)],
     Remote ! {self(), {log_chunk, Messages2}},
-    receive 
+    receive
         {Remote, log_continue_stream} ->
             ok
     after 2000 ->
             exit(log_stream_timeout)
     end.
-        
+
 mi_entry(Post, _) ->
     Date = dh_date:format("r", proplists:get_value(time, Post)),
     Body = proplists:get_value(body, Post),
@@ -146,16 +146,16 @@ replay(Name, NewSite) ->
     replay(Name, NewSite, default_filter()).
 
 %% @spec replay(Name, Url, Options) -> ok
-%% @doc Name is the name of the log file to read from (must be 
+%% @doc Name is the name of the log file to read from (must be
 %% stored in /lib/hypernumbers-1.0/log/), Old is the site to copy
 %% all posts from, New is the new location to post them too. Deep
 %% decides whether to copy subpages or not
 replay(Name, Url, Options) ->
-    Ref = hn_util:url_to_refX(Url), 
+    Ref = hn_util:url_to_refX(Url),
     F   = fun(Post, Id) ->
                   print(post, Post, Id),
                   repost(Name, Post, Ref)
-          end,    
+          end,
     run_log(Name, F, make_filter(Options)),
     io:format("~nReplay finished....~n"),
     ok.
@@ -178,7 +178,7 @@ transform_date([{date, Date} | T], Acc) ->
     transform_date([{since, Date} | T], Acc);
 transform_date([H | T], Acc) ->
     transform_date(T, [H|Acc]).
-    
+
 make_filter(List) ->
     reduce(default_filter(), transform_date(List, [])).
 
@@ -207,7 +207,7 @@ info(Name, Id) ->
 browse_marks(Name) ->
     F = fun(Post, Id) -> print(long, Post, Id) end,
     run_log(Name, F, make_filter([{body, mark}])).
-    
+
 %% @doc Dumps the logfile with Name to the shell
 browse(Name) ->
     browse(Name, default_filter()).
@@ -266,9 +266,9 @@ print(long, Post, Id) ->
         "Referrer:   ~s~n"
         "Accept:     ~s~n"
         "Body:       ~s~n~n",
-    
-    io:format(Msg,[Id, Method, dh_date:format("m.d.y, g:ia", Time), 
-                   Email, Peer, Site++Path, Browser, Referer, 
+
+    io:format(Msg,[Id, Method, dh_date:format("m.d.y, g:ia", Time),
+                   Email, Peer, Site++Path, Browser, Referer,
                    Accept, bodystr(Body)]).
 
 filter([], _Post, _Id) ->
@@ -286,7 +286,7 @@ filter([{date, all} | T], Post, Id) ->
     filter(T, Post, Id);
 filter([{date, {Start, End}} | T], Post, Id) ->
     case proplists:get_value(time, Post) of
-        Time when Time >= Start, Time < End -> 
+        Time when Time >= Start, Time < End ->
             filter(T, Post, Id);
         _ ->
             false
@@ -322,12 +322,12 @@ filter([_H | T], Post, Id) ->
 
 run_log(Name, Fun, Filter) ->
     Log = logfile(Name),
-    case filelib:is_file(Log++".siz") of 
+    case filelib:is_file(Log++".siz") of
         false ->
             {error, no_file};
         true ->
-            Fun2 = 
-                fun(Terms, N0) -> 
+            Fun2 =
+                fun(Terms, N0) ->
                         lists:foldl(fun(T, N) ->
                                             handle_term(Filter, T, N, Fun),
                                             N + 1
@@ -350,10 +350,10 @@ walk(F, Cont, N) ->
     end.
 
 handle_term(Opts, Post, N, F) ->
-    
+
     Path = string:tokens(?pget(path, Opts), "/"),
     Deep = ?pget(deep, Opts),
-    
+
     [Raw | _ ] = string:tokens(proplists:get_value(path, Post), "?"),
     Path2 = string:tokens(Raw, "/"),
 
@@ -379,10 +379,10 @@ upload_file(Url, Path, Field) ->
     upload_file(Url, Path, filename:basename(Path), Field).
 
 upload_file(Url, Path, Name, Field) ->
-    
+
     Boundary   = "frontier",
     {ok, File} = file:read_file(Path),
-    
+
     Data = ["--"++Boundary,
             "Content-disposition: form-data;name="++Field++"; filename="++Name,
             "Content-type: application/octet-stream"
@@ -390,10 +390,10 @@ upload_file(Url, Path, Name, Field) ->
             "",
             binary_to_list(File),
             "--"++Boundary++"--"],
-    
+
     Post = string:join(Data, "\r\n") ++ "\r\n",
     Type = "multipart/form-data; boundary="++Boundary,
-    
+
     httpc:request(post,{Url, [], Type, Post}, [], []).
 
 
@@ -439,10 +439,10 @@ rewrite_url(OldUrl, NewSite) ->
     [_Proto, _OldSite | Rest] = string:tokens(OldUrl, "/"),
     string:join([NewSite] ++ Rest, "/").
 
-  
-startswith(_List1, []) ->    
+
+startswith(_List1, []) ->
     true;
-startswith([], _List2) ->    
+startswith([], _List2) ->
     false;
 startswith([Head | R1], [Head | R2]) ->
     startswith(R1, R2);

@@ -37,7 +37,7 @@ restore(Path, Fixture, Profile) ->
             FN = filename:join(?rel(?FIXTURE_DIR), Fixture++".json"),
             hn_import:json_file(Path, FN);
         Other ->
-            throw({bad_http_request, Other})        
+            throw({bad_http_request, Other})
     end.
 
 generate() ->
@@ -52,7 +52,7 @@ gen_test(Template, Fixture) ->
     Suite  = Name++"_SUITE",
     AFile  = ?SYSTEST_DIR++"actions/"++Name,
 
-    Action = filename:absname(case filelib:is_file(AFile) of 
+    Action = filename:absname(case filelib:is_file(AFile) of
                                   true  -> AFile;
                                   false -> ?SYSTEST_DIR++"actions/default"
                               end),
@@ -65,7 +65,7 @@ gen_test(Template, Fixture) ->
 
     Count = case ?pget("value", A1) of
                 "NOTESTS" -> 0;
-                Range ->      
+                Range ->
                     {_,X1,_,X2} = util2:parse_range(Range),
                     X2-X1+2
             end,
@@ -93,7 +93,7 @@ gen_test_cases(Name, Path, N) ->
     Str = "~s(_Conf) -> ~n \"Success\" = get_val(#refX{path=[~p],obj="
         "{cell,{1,~p}}}).~n",
 
-    [ ?FORMAT(Str,[Name++"_A"++itol(X), Path, X]) 
+    [ ?FORMAT(Str,[Name++"_A"++itol(X), Path, X])
       || X <- lists:seq(2, N) ].
 
 itol(X) ->

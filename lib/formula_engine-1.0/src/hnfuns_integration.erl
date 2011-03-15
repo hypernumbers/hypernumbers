@@ -4,7 +4,7 @@
 %%% @doc       handles integration with external websites
 %%%
 %%% @end
-%%% Created :  9th April 2010 by Gordon Guthrie 
+%%% Created :  9th April 2010 by Gordon Guthrie
 %%%-------------------------------------------------------------------
 -module(hnfuns_integration).
 
@@ -78,7 +78,7 @@ tweet2(Message, Link) ->
     C = muin_col_DEPR:collect_string(ChannelName, ?default_str_rules),
     "<script src=\"http://www.gmodules.com/ig/ifr?url=http://www.google.com/ig/modules/youtube.xml&up_channel=" ++ C ++ "&synd=open&w=320&h=390&title=&border=%23ffffff%7C3px%2C1px+solid+%23999999&output=js\"></script>".
 
-%% Hypernumbers merchant ID is 960226209420618 
+%% Hypernumbers merchant ID is 960226209420618
 'google.buynow'([Merchant, Cur, ItemName, ItemDesc, Price]) ->
     google_buy_n1(Merchant, Cur, ItemName, ItemDesc, Price, 1, 0);
 'google.buynow'([Merchant, Cur, ItemName, ItemDesc, Price, Quantity]) ->
@@ -107,7 +107,7 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
     P = muin_col_DEPR:collect_string(Price, ?default_str_rules),
     Q = muin_col_DEPR:collect_string(Quantity, ?default_str_rules),
     "<form action=\"https://checkout.google.com/api/checkout/v2/checkoutForm/Merchant/"
-        ++ M ++ "\" id=\"BB_BuyButtonForm\" method=\"post\" name=\"BB_BuyButtonForm\" target=\"_top\">" 
+        ++ M ++ "\" id=\"BB_BuyButtonForm\" method=\"post\" name=\"BB_BuyButtonForm\" target=\"_top\">"
         ++ "<input name=\"item_name_1\" type=\"hidden\" value=\"" ++ IN ++ "\"/>"
         ++ "<input name=\"item_description_1\" type=\"hidden\" value=\"" ++ ID ++ "\"/>"
         ++ "<input name=\"item_quantity_1\" type=\"hidden\" value=\"" ++ Q ++ "\"/>"
@@ -117,7 +117,7 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
         ++ "<input alt=\"\" src=\"https://checkout.google.com/buttons/buy.gif?merchant_id=" ++ M ++ "&amp;w=117&amp;h=48&amp;style=" ++ Bg ++ "&amp;variant=text&amp;loc=en_US\" type=\"image\"/>"
         ++"</form>".
 
-%% Hypernumbers Merchant ID is 960226209420618 
+%% Hypernumbers Merchant ID is 960226209420618
 'google.buynowlist'([Merchant, Currency, Type, Bg | Rest]) ->
     M = muin_col_DEPR:collect_string(Merchant, ?default_str_rules),
     C = muin_col_DEPR:collect_string(Currency, ?default_str_rules),
@@ -212,8 +212,8 @@ valid("0", "0") -> {"standard",     "true"};
 valid("1", "0") -> {"button_count", "true"};
 valid("0", "1") -> {"standard",     "false"};
 valid("1", "1") -> {"button_count", "false"};
-valid(_, _) -> false.    
-    
+valid(_, _) -> false.
+
 %% Hypernumbers Page Id is 336874434418
 'facebook.likebox'([PageId]) ->
     P = muin_col_DEPR:collect_string(PageId, ?default_str_rules),

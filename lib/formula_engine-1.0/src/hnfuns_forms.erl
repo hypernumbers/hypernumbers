@@ -95,8 +95,8 @@ textarea_([Label], _Default, Trans) ->
 button_(Value, Response, ResultsPath) ->
     Trans = common,
     Origin = hn_util:list_to_path(muin:context_setting(path)),
-    Form = #form{id = {Trans, "_"}, 
-                 kind = button, 
+    Form = #form{id = {Trans, "_"},
+                 kind = button,
                  attrs = [{"dest", Origin}]},
     Html = lists:flatten("<input type='submit' class='hninput' value='"++Value++"'"
                          ++ " data-results='" ++ ResultsPath ++ "'"
@@ -113,7 +113,7 @@ select_(Label, Options) ->
                  restrictions = Options},
     Opts = [ "<option>" ++ Option ++ "</option>" || Option <- Options ],
     Html = lists:flatten("<select class='hninput' data-name='default' "++
-                         "data-label='" ++ Label ++ "' >" ++ Opts ++ 
+                         "data-label='" ++ Label ++ "' >" ++ Opts ++
                          "</select>"),
     {rawform, Form, Html}.
 
@@ -132,7 +132,7 @@ radio_(Label, Options) ->
     RestOpts = [ make_radio(Name, Opt) || Opt <- Rest],
     Opts = [FirstOpt | RestOpts],
     Html = lists:flatten("<div class='hninput' data-name='default' "++
-                         "data-label='" ++ Label ++ "' >" ++ Opts ++ 
+                         "data-label='" ++ Label ++ "' >" ++ Opts ++
                          "</div>"),
     {rawform, Form, Html}.
 

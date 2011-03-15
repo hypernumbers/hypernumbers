@@ -26,7 +26,7 @@
 % that the rpc is being called against the    %
 % same site as in the RefX passed in from     %
 % hn_mochi                                    %
-%                                             %  
+%                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 rpc(User, Site, Fn, Args) when is_list(Args) ->
 
@@ -35,7 +35,7 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
         "save_template" ->
             Path  = kfind("path", Args),
             Name  = kfind("name", Args),
-            NPath = string:tokens(Path, "/"),            
+            NPath = string:tokens(Path, "/"),
             RefX  = #refX{site = Site, path = NPath, obj={page, "/"}},
             hn_templates:save_template(RefX, Name);
 
@@ -43,12 +43,12 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
             Path            = kfind("path", Args),
             View            = kfind("view", Args),
             {array, Groups} = kfind("groups", Args),
-            
+
             AuthSpec = case kfind("everyone", Args) of
                            true  -> [everyone | Groups];
                            false -> Groups
                        end,
-            
+
             NPath = string:tokens(Path, "/"),
             auth_srv:set_view(Site, NPath, AuthSpec, View),
             ok = remoting_reg:notify_refresh(Site, NPath);
@@ -59,12 +59,12 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
                 ok               -> ok;
                 {error, _Reason} -> {error, "Error Setting Password"}
             end;
-        
+
         "set_champion" ->
             Path            = kfind("path", Args),
             View            = kfind("view", Args),
             NPath           = string:tokens(Path, "/"),
-            %% TODO : shouldnt hardcode 
+            %% TODO : shouldnt hardcode
             auth_srv:add_view(Site, NPath, ["admin"], View),
             auth_srv:set_champion(Site, NPath, View);
 

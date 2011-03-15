@@ -1,12 +1,12 @@
 %%% @doc    This module handles the number/text formatting for a cell.
-%%% 
+%%%
 %%%         It does 2 things:
 %%%         <ul>
-%%%         <li>takes an Excel compatible format description and compiles 
+%%%         <li>takes an Excel compatible format description and compiles
 %%%         it to Erlang source code capable of being eval'ed</li>
 %%%         <li>executes the formatting source code against a value</li>
 %%%         </ul>
-%%% 
+%%%
 %%%         Created the 11th March 2008
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 -module(format).
@@ -41,7 +41,7 @@
 
 %%%
 %%% Public Interfaces
-%%% 
+%%%
 
 %%% @doc takes a format and returns the compiled code that will format input to that format
 %%% @end
@@ -121,11 +121,11 @@ format_num(X,Format)->
            true  -> X * 100;
            false -> X
        end,
-    % we need to know the length of the format incluse of the decimal place 
+    % we need to know the length of the format incluse of the decimal place
     % (if any) but exclusive of any commas. The reason for this is you
     % might have a number like '1234' and a format like 'x0.00'
     % This will give a format of '0.00' and an insert point of '{4,x}'
-    % the number 1234 busts out of the measure '0.00' to the left and 
+    % the number 1234 busts out of the measure '0.00' to the left and
     % the insert point needs to realise that the x should be placed at
     % the beginning to give 'x1234.00' and not at the insert point of 4
     % because '123x4.00' is not right
@@ -235,7 +235,7 @@ make_num_format([Other|Rest],NewF,AccIL) ->
 
 print_num(_Output,[])    -> [];
 print_num(Output,Format) ->
-    {Sign, Output2} = if 
+    {Sign, Output2} = if
                           Output < 0  -> {negative, abs(Output)};
                           Output >= 0 -> {positive, Output}
                       end,

@@ -19,7 +19,7 @@
 
 %% numbers & numbers
 '=1'(N1, N2) when is_integer(N1), is_integer(N2) ->
-    N1 == N2; 
+    N1 == N2;
 '=1'(N1, N2) when is_number(N1), is_number(N2) ->
     test_util:float_cmp(float(N1), float(N2), 10);
 %% numbers & blanks
@@ -61,12 +61,12 @@
     if hd(S1) > hd(S2) -> true;  % compare alphabetically first
        hd(S1) < hd(S2) -> false;
        % otherwise compare on length
-       true            -> stdfuns_text:len([S1]) > stdfuns_text:len([S2]) 
+       true            -> stdfuns_text:len([S1]) > stdfuns_text:len([S2])
     end;
 '>1'(true, false)                          -> true;
 '>1'(false, true)                          -> false;
 '>1'(false, blank)                         -> false;
-'>1'(true, _)                              -> true; 
+'>1'(true, _)                              -> true;
 '>1'(false, _)                             -> true;
 '>1'(_, true)                              -> false;
 '>1'(_, false)                             -> false;
@@ -97,10 +97,10 @@
     '='(Args) orelse '>'(Args).
 
 'and'(Vs) ->
-    
+
     Rules = [eval_funs, first_array_as_bool, ref_as_bool,
              num_as_bool, str_as_bool, name_as_bool, ignore_blanks],
-    
+
     case muin_collect:col(Vs, Rules, [return_errors,
                                       {all, fun muin_collect:is_bool/1}]) of
         Err when ?is_errval(Err) -> Err;
@@ -123,7 +123,7 @@
 
 'if'([Test, TrueExpr]) ->
     'if'([Test, TrueExpr, false]);
-'if'([Test, TrueExpr, FalseExpr]) ->    
+'if'([Test, TrueExpr, FalseExpr]) ->
     case muin_collect:col([Test], [first_array, fetch_name, fetch_ref,
                                    eval_funs, {cast,bool}],
              [return_errors, {all, fun is_atom/1}]) of
