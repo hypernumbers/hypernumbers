@@ -331,7 +331,6 @@ run_zeval(Site, Path, Z) ->
     % {cell, {0, 0}} is 1 up and 1 left of the cell 'A1'
     {ok, Toks} = xfl_lexer:lex(Z2, {0, 0}),
     % need to set up the process dictionary
-    io:format("Z2 is ~p~n", [Z2]),
     Fun = fun() -> try
                        muin:zeval_from_zinf(Site, Path, Toks)
                    catch
