@@ -1,5 +1,5 @@
 %%% @copyright 2010 Hypernumbers Ltd
-%%% @doc Validate form posts. 
+%%% @doc Validate form posts.
 -module(hn_security).
 
 -export([
@@ -18,7 +18,7 @@ validate_create_pages([Expected], Submitted) ->
 
 validate_form(Expected0, Submitted0) ->
     Expected = lists:keysort(#form.id, Expected0),
-    Submitted = lists:keysort(1, [{pget("label",L), pget("formula",L)} 
+    Submitted = lists:keysort(1, [{pget("label",L), pget("formula",L)}
                                   || {struct, L} <- Submitted0]),
     run_validate(Expected, Submitted).
 
@@ -27,8 +27,7 @@ run_validate([], []) ->
 run_validate([#form{kind = button}|LT], RT) ->
     run_validate(LT, RT);
 run_validate([E=#form{id={_,_,L}}|LT], [{L,Val}=G|RT]) ->
-    io:format("E is ~p~nG is ~p~n", [E, G]),
-    case E#form.restrictions of 
+    case E#form.restrictions of
         none -> run_validate(LT, RT);
         Restricted -> case lists:member(Val, Restricted) of
                           true -> run_validate(LT, RT);
@@ -37,20 +36,20 @@ run_validate([E=#form{id={_,_,L}}|LT], [{L,Val}=G|RT]) ->
     end;
 run_validate(_E, _S) ->
     false.
-                    
+
 pget(K,L) -> proplists:get_value(K,L,undefined).
 
 %%% Tests:
 
 %% Simple test with sane input.
 basic_test_() ->
-    Expected = [#form{key=1, id = {[],common,"one"}, 
-                      kind = input, 
-                      restrictions = none, 
+    Expected = [#form{key=1, id = {[],common,"one"},
+                      kind = input,
+                      restrictions = none,
                       attrs = []},
-                #form{key=2, id = {[],common,"two"}, 
-                      kind = input, 
-                      restrictions = none, 
+                #form{key=2, id = {[],common,"two"},
+                      kind = input,
+                      restrictions = none,
                       attrs = []},
                 #form{key=3, id = {[],common,""},
                       kind = button,
@@ -62,46 +61,46 @@ basic_test_() ->
 
 %% Submit too many values.
 too_much_test_() ->
-    Expected = [#form{key=1, id = {[],common,"one"}, 
-                      kind = input, 
-                      restrictions = none, 
+    Expected = [#form{key=1, id = {[],common,"one"},
+                      kind = input,
+                      restrictions = none,
                       attrs = []}],
     Submitted = [{struct,[{"label","one"},{"formula","1"}]},
                  {struct,[{"label","two"},{"formula","2"}]}],
     ?assertNot(validate_form(Expected, Submitted)).
 
 not_enough_test_() ->
-    Expected = [#form{key=1, id = {[],common,"one"}, 
-                      kind = input, 
-                      restrictions = none, 
+    Expected = [#form{key=1, id = {[],common,"one"},
+                      kind = input,
+                      restrictions = none,
                       attrs = []},
-                #form{key=2, id = {[],common,"two"}, 
-                      kind = input, 
-                      restrictions = none, 
+                #form{key=2, id = {[],common,"two"},
+                      kind = input,
+                      restrictions = none,
                       attrs = []}],
     Submitted = [{struct,[{"label","one"},{"formula","#"}]}],
     ?assertNot(validate_form(Expected, Submitted)).
 
 fake_name_test_() ->
-    Expected = [#form{key=1, id = {[],common,"one"}, 
-                      kind = input, 
-                      restrictions = none, 
+    Expected = [#form{key=1, id = {[],common,"one"},
+                      kind = input,
+                      restrictions = none,
                       attrs = []},
-                #form{key=2, id = {[],common,"two"}, 
-                      kind = input, 
-                      restrictions = none, 
+                #form{key=2, id = {[],common,"two"},
+                      kind = input,
+                      restrictions = none,
                       attrs = []}],
     Submitted = [{struct,[{"label","one"},{"formula","a"}]},
                  {struct,[{"label","haha"},{"formula","b"}]}],
     ?assertNot(validate_form(Expected, Submitted)).
 
 basic_select_radio_test_() ->
-    Expected = [#form{key=1, id = {[],common,"one"}, 
-                      kind = select, 
-                      restrictions = ["green", "blue"], 
+    Expected = [#form{key=1, id = {[],common,"one"},
+                      kind = select,
+                      restrictions = ["green", "blue"],
                       attrs = []},
-                #form{key=2, id = {[],common,"two"}, 
-                      kind = radio, 
+                #form{key=2, id = {[],common,"two"},
+                      kind = radio,
                       restrictions = ["red"],
                       attrs = []},
                 #form{key=3, id = {[],common,""},
@@ -113,12 +112,12 @@ basic_select_radio_test_() ->
     ?assert(validate_form(Expected, Submitted)).
 
 basic_select_bad_val_test_() ->
-    Expected = [#form{key=1, id = {[],common,"one"}, 
-                      kind = select, 
-                      restrictions = ["green", "blue"], 
+    Expected = [#form{key=1, id = {[],common,"one"},
+                      kind = select,
+                      restrictions = ["green", "blue"],
                       attrs = []},
-                #form{key=2, id = {[],common,"two"}, 
-                      kind = input, 
+                #form{key=2, id = {[],common,"two"},
+                      kind = input,
                       restrictions = ["red"],
                       attrs = []},
                 #form{key=3, id = {[],common,""},
