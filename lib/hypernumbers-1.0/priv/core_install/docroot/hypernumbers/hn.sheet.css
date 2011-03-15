@@ -169,6 +169,11 @@ html,body {
   font-size: 10px;
 }
 
+#wiztext {
+  overflow-y: auto;
+  max-height: 22px;
+}
+
 #wizfunargs span.req:after { /* required argument flag */
   color: red;
   content: '*';
