@@ -169,9 +169,8 @@ html,body {
   font-size: 10px;
 }
 
-#wiztext {
-  overflow-y: auto;
-  max-height: 22px;
+#wiztext { /* TODO */
+
 }
 
 #wizfunargs span.req:after { /* required argument flag */
