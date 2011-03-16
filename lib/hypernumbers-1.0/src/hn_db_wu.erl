@@ -1898,7 +1898,7 @@ read_objs(#refX{site = S, path = P, obj = {cell, _} = O}, inside) ->
     mnesia:index_read(Table, term_to_binary(RevIdx), revidx);
 read_objs(#refX{site = S, path = P, obj = {page, "/"}}, inside) ->
     Table = trans(S, local_obj),
-    mnesia:index_read(Table, P, path);
+    mnesia:index_read(Table, term_to_binary(P), path);
 read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
     Table = trans(S, local_obj),
     Page = mnesia:index_read(Table, term_to_binary(P), path),
