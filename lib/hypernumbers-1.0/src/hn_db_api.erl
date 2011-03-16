@@ -100,6 +100,7 @@
         ]).
 
 -export([
+         dirty_for_zinf_DEBUG/1,
          item_and_local_objs_DEBUG/1,
          url_DEBUG/1,
          url_DEBUG/2,
@@ -143,6 +144,12 @@
 item_and_local_objs_DEBUG(Site) ->
     F = fun() ->
                 hn_db_wu:item_and_local_objs_DEBUG(Site)
+        end,
+    mnesia:transaction(F).
+
+dirty_for_zinf_DEBUG(Site) ->
+    F = fun() ->
+                hn_db_wu:dirty_for_zinf_DEBUG(Site)
         end,
     mnesia:transaction(F).
 

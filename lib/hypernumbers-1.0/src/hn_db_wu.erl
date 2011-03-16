@@ -31,6 +31,7 @@
 
 %% Cell Query Exports
 -export([
+         dirty_for_zinf_DEBUG/1,
          item_and_local_objs_DEBUG/1,
          read_relations_DEBUG/1,
          idx_DEBUG/2
@@ -275,6 +276,7 @@ process_attrs([{"formula",Val}|Rest], Ref, AReq, Attrs) ->
             [NVal, Align, Frmt] ->
                 write_formula2(Ref, Val, NVal, Align, Frmt, Attrs)
         end,
+    io:format("Ref is being maked dirty for zinf ~p~n", [Ref]),
     ok = mark_dirty_for_zinf(Ref),
     process_attrs(Rest, Ref, AReq, Attrs2);
 process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
@@ -760,6 +762,17 @@ shift_pattern(#refX{obj = {row, {Y1, _Y2}}} = RefX, vertical) ->
     RefX#refX{obj = {range, {0, Y1, infinity, infinity}}};
 shift_pattern(#refX{obj = {column, {X1, _X2}}} = RefX, horizontal) ->
     RefX#refX{obj = {range, {X1, 0, infinity, infinity}}}.
+
+dirty_for_zinf_DEBUG(Site) ->
+    Tab1 = trans(Site, dirty_for_zinf),
+    io:format("Dumping dirty_for_zinf table:~n"),
+    Fun1 = fun(X, []) ->
+                  io:format("Id ~p RefX is dirty: ~p~n", 
+                      [X#dirty_for_zinf.id, X#dirty_for_zinf.dirty]),
+                  []
+          end,
+    mnesia:foldl(Fun1, [], Tab1).
+
 
 item_and_local_objs_DEBUG(Site) ->
     Tab1 = trans(Site, item),
