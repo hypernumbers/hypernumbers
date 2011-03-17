@@ -276,7 +276,6 @@ process_attrs([{"formula",Val}|Rest], Ref, AReq, Attrs) ->
             [NVal, Align, Frmt] ->
                 write_formula2(Ref, Val, NVal, Align, Frmt, Attrs)
         end,
-    io:format("Ref is being maked dirty for zinf ~p~n", [Ref]),
     ok = mark_dirty_for_zinf(Ref),
     process_attrs(Rest, Ref, AReq, Attrs2);
 process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
@@ -446,6 +445,10 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
        (Disp == vertical orelse Disp == horizontal) ->
     {XOff, YOff} = hn_util:get_offset(Type, Disp, Obj),
     RefXSel = shift_pattern(From, Disp),
+
+    % mark the refs dirty for zinfs to force recalc
+    [ok = mark_dirty_for_zinf(X) || X <- expand_ref(From)],
+
     case read_objs(RefXSel, inside) of
         [] -> [];
         ObjsList ->
@@ -529,7 +532,10 @@ do_clear_cells(Ref, DelAttrs) ->
                          {clean, del_attributes(Attrs, DelAttrs)}
                  end
          end,
-    [apply_to_attrs(X, Op(X)) || X <- expand_ref(Ref)],
+    Refs = expand_ref(Ref),
+    [apply_to_attrs(X, Op(X)) || X <- Refs],
+    % now mark the refs dirty for zinfs
+    [ok = mark_dirty_for_zinf(X) || X <- Refs],
     ok.
 
 content_attrs() ->
@@ -587,6 +593,9 @@ delete_cells(#refX{site = S} = DelX, Disp) ->
 
             %% fix relations table.
             [ok = delete_relation(X) || X <- Cells],
+
+            %% mark 'em dirty for zinf as well
+            [ok = mark_dirty_for_zinf(X) || X <- Cells],
 
             %% Delete the rows or columns and cells (and their indices)
             expunge_refs(S, lists:append(expand_to_rows_or_cols(DelX), Cells)),
@@ -767,7 +776,7 @@ dirty_for_zinf_DEBUG(Site) ->
     Tab1 = trans(Site, dirty_for_zinf),
     io:format("Dumping dirty_for_zinf table:~n"),
     Fun1 = fun(X, []) ->
-                  io:format("Id ~p RefX is dirty: ~p~n", 
+                  io:format("Id ~p RefX is dirty: ~p~n",
                       [X#dirty_for_zinf.id, X#dirty_for_zinf.dirty]),
                   []
           end,
