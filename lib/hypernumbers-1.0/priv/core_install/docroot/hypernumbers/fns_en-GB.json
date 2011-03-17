@@ -156,13 +156,13 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string",
+                "type": "string"
             },
             {
                 "name": "Return Type",
                 "desc": "If Return Type = 1 Sunday is 1 and Saturday is 7, if Return Type = 2 Monday is 1 and Sunday is 7, if Return Type = 3, Monday = 0 and Sunday = 6",
                 "optional": true,
-                "type": "number",
+                "type": "number"
             }
         ]
     },
@@ -179,7 +179,7 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string",
+                "type": "string"
             }
         ]
     },
@@ -196,7 +196,7 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string",
+                "type": "string"
             }
         ]
     },
@@ -210,7 +210,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -223,7 +222,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -240,7 +238,7 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string",
+                "type": "string"
             }
         ]
     },
@@ -282,7 +280,7 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string",
+                "type": "string"
             }
         ]
     },
@@ -300,7 +298,7 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string",
+                "type": "string"
             }
         ]
     },
@@ -905,7 +903,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -918,7 +915,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -931,7 +927,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -944,7 +939,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -957,7 +951,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -970,7 +963,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -983,7 +975,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -996,7 +987,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1009,7 +999,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1022,7 +1011,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1035,7 +1023,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1048,7 +1035,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1061,7 +1047,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1074,7 +1059,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1087,7 +1071,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1100,7 +1083,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1113,7 +1095,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1126,7 +1107,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1142,7 +1122,7 @@
         "args": [
             {
                 "name": "Variable",
-                "desc": "Variables can refer to anything, but only numbers will be counted",
+                "desc": "Variables can refer to anything, but only numbers will be counted"
             }
         ]
     },
@@ -1171,7 +1151,7 @@
         "args": [
             {
                 "name": "Number",
-                "desc": "Can be a number or range of numbers",
+                "desc": "Can be a number or range of numbers"
             }
         ]
     },
@@ -1185,7 +1165,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1198,7 +1177,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1211,7 +1189,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1224,7 +1201,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1237,7 +1213,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1250,7 +1225,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1263,7 +1237,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1276,7 +1249,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1289,7 +1261,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1302,7 +1273,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1315,7 +1285,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1328,7 +1297,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1341,7 +1309,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1354,7 +1321,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1367,7 +1333,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1380,7 +1345,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1393,7 +1357,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1406,7 +1369,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1419,7 +1381,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1432,7 +1393,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1445,7 +1405,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1458,7 +1417,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1471,7 +1429,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1484,7 +1441,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1497,7 +1453,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -1517,13 +1472,13 @@
                 "type": "variable",
                 "attr": {
                     "name": "Data series",
-                    "desc": "Must be 2 wide or 2 high",
+                    "desc": "Must be 2 wide or 2 high"
                 }
             },
             {
                 "name": "Title",
                 "desc": "Title of the piechart",
-                "optional": true,
+                "optional": true
             }
         ]
     }
