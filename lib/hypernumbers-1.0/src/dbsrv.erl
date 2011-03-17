@@ -152,7 +152,7 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
             {Since, WorkPlan}
     end.
 
-%% rebuild_inf_zs adds new infinite and z-order relations to the zinf tree
+%% rebuild_zinfs adds new infinite and z-order relations to the zinf tree
 rebuild_zinf(Site) ->
     Tbl = hn_db_wu:trans(Site, dirty_zinf),
     Fun = fun() ->
