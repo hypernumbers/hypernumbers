@@ -586,7 +586,7 @@ delete_cells(#refX{site = S} = DelX, Disp) ->
             %% fix relations table.
             [ok = delete_relation(X) || X <- Cells],
 
-            %% Delete the rows or columns and cells (and their indicices)
+            %% Delete the rows or columns and cells (and their indices)
             expunge_refs(S, lists:append(expand_to_rows_or_cols(DelX), Cells)),
             LocalChildren3
     end.
@@ -1160,6 +1160,9 @@ delete_relation(#refX{site = Site} = Cell) ->
             Tbl = trans(Site, relation),
             case mnesia:read(Tbl, CellIdx, write) of
                 [R] ->
+                    % delete infinite relations and stuff
+                    OldInfPs = [idx_to_refX(Site, X) || X <- R#relation.infparents],
+                    ok = handle_infs(CellIdx, Site, [], OldInfPs),
                     [del_child(P, CellIdx, Tbl) ||
                         P <- R#relation.parents],
                     ok = mnesia:delete(Tbl, CellIdx, write);
