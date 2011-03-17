@@ -171,7 +171,7 @@ html,body {
 
 #wizstatus {
   position: absolute;
-  min-width: 240px;
+  min-width: 246px;
   width: auto;
   padding-right: 4px;
   bottom: 0px; /* to be adjusted by script */
