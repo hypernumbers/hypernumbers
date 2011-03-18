@@ -95,7 +95,7 @@ upload2([H | T]) ->
     upload2(T).
 
 make_paths([], _, Acc) -> lists:reverse(Acc);
-make_paths([H | T], [], []) -> make_paths(T, [H], [H]);
+make_paths([H | T], [], []) -> make_paths(T, [H], [[H]]);
 make_paths([H | T], Prefix, Acc) ->
     Seg = lists:concat([Prefix, [H]]),
     make_paths(T, Seg, [Seg | Acc]).
