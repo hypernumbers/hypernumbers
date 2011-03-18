@@ -117,9 +117,9 @@
     [N1] = typechecks:std_nums([N]),
     [Type1] = typechecks:std_ints([Type]),
     N2 = if
-             N1 < 0                -> 0;
-             N1 > 0 andalso N1 < 5 -> N1;
-             N1 > 5                -> 5
+             N1 < 0                  -> 0;
+             N1 >= 0 andalso N1 =< 5 -> N1;
+             N1 > 5                  -> 5
          end,
     N3 = integer_to_list(trunc(N2 * 15)),
     if
