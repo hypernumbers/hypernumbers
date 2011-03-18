@@ -138,7 +138,8 @@
 
 'status.bar2'(Width, File) ->
     "<div style='width:" ++ Width ++ "px;overflow:hidden;'>"
-        ++ "<img src='http://files.hypernumbers.com/images/" ++ File ++ "' /></div>".
+        ++ "<img src='http://files.hypernumbers.com/images/" ++
+        File ++ "' /></div>".
 
 'sparkline.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -541,7 +542,10 @@ make_axes_lab_pos(MaxX, MaxY) ->
 
 make_scale(null, _, _, _, _, _) -> "";
 make_scale(Type, auto, MinX, MaxX, MinY, MaxY) ->
-    make_s1(Type, MinX, MaxX, MinY, MaxY).
+    DiffX = MaxX - MinX,
+    DiffY = MaxY - MinY,
+    make_s1(Type, MinX - ?MARGIN * DiffX, MaxX + ?MARGIN * DiffX,
+            MinY - ?MARGIN * DiffY, MaxY + ?MARGIN * DiffY).
 % make_scale(Type, [X1, X2 | []], _MinX, _MaxX, MinY, MaxY) ->
 %     [X1a, X2a] = typechecks:throw_std_nums([X1, X2]),
 %     make_s1(Type, X1a, X2a, MinY, MaxY).
