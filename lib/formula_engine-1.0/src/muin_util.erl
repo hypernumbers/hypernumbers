@@ -275,7 +275,8 @@ attempt(Mod, F, Args) ->
         Error:Reason when Error =:= error orelse Error =:= throw ->
             error_logger:info_msg("attempt to eval ~p/~p/~p failed~n- for ~p : ~p~n"
                                    "-with stacktrace of ~p~n",
-                                   [Mod, F, Args, Error, Reason, erlang:get_stacktrace()]),
+                                  [Mod, F, Args, Error, Reason,
+                                    erlang:get_stacktrace()]),
             {error, Reason}
     end.
 
