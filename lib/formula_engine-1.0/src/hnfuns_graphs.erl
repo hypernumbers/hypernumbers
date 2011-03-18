@@ -1062,5 +1062,5 @@ colours() -> [
              ].
 
 make_size(W, H) -> make_width(W) ++ "x" ++ make_height(H).
-make_height(N)  -> integer_to_list((N - 1) * 22).
+make_height(N)  -> integer_to_list(N * 22 - 1).
 make_width(N)   -> integer_to_list(N * 80 - 14).
