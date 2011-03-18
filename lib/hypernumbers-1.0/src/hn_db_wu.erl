@@ -1718,7 +1718,7 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
         {ok, {Pcode, {preview, {PreV, Wd, Ht}, Res}, Pars, InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
             Attrs3 = case {Ht, Wd} of
-                         {1, 1} -> Attrs2;
+                         {1, 1} -> orddict:erase("merge", Attrs2);
                          _      -> orddict:store("merge", {struct,
                                                            [{"right", Wd - 1},
                                                             {"down",  Ht - 1}]},
@@ -1736,11 +1736,11 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             Attrs3 = case {Ht, Wd} of
-                         {1, 1} -> Attrs2;
+                         {1, 1} -> orddict:erase("merge", Attrs2);
                          _      -> orddict:store("merge", {struct,
-                                                           [{"right", Wd - 1},
-                                                            {"down",  Ht - 1}]},
-                                                 Attrs2)
+                                                          [{"right", Wd - 1},
+                                                           {"down",  Ht - 1}]},
+                                                Attrs2)
                      end,
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile);
