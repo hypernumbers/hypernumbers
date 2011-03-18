@@ -13,8 +13,14 @@
 -include("spriki.hrl").
 -include_lib("eunit/include/eunit.hrl").
 
-validate_create_pages([Expected], Submitted) ->
-    lists:sort(Expected#form.attrs) =:= lists:sort(Submitted).
+validate_create_pages([], _Submitted)     -> false;
+validate_create_pages([H | T], Submitted) ->
+    Exp = lists:sort(H#form.attrs),
+    Sub = lists:sort(Submitted),
+    if
+        Exp =:= Sub -> true;
+        Exp =/= Sub -> validate_create_pages(T, Submitted)
+    end.
 
 validate_form(Expected0, Submitted0) ->
     Expected = lists:keysort(#form.id, Expected0),

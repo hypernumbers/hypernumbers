@@ -242,3 +242,18 @@
         {
           path
          }).
+
+-record(destination,
+        {
+          type = false
+         }).
+
+-record(segment,
+        {
+          page,
+          redirect = #destination{},
+          addspreadsheetgroups = [],
+          addwebpagegroups = [],
+          addwikipagegroups = [],
+          addtablegroups = []
+         }).

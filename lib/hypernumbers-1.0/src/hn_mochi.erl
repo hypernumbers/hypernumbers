@@ -10,6 +10,7 @@
 -include("hn_mochi.hrl").
 -include("funs_en_gb.hrl").
 
+-define(FULLSTOP, 46). % Ascii char instead of $. which humps syntax highlighting
 -define(E,        error_logger:error_msg).
 -define(LOAD,     hn_templates:load_template_if_no_page).
 -define(SORT,     lists:sort).
@@ -758,7 +759,7 @@ ipost(Ref=#refX{obj = {page, _}}, _Qry,
       Env=#env{body = [{"webcontrols", Actions}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "created some pages"),
-    run_actions(Ref, Env, mochijson:decode(Actions));
+    run_actions(Ref, Env, mochijson:decode(Actions), Uid);
 
 ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid})
   when Attr =/= [] ->
@@ -1561,7 +1562,7 @@ strip_json(File) ->
     lists:flatten(lists:reverse(Rest)).
 
 run_actions(#refX{site = S, path = P} = RefX, Env,
-            {struct, [{"postcreatepages", {array, Json}}]}) ->
+            {struct, [{"postcreatepages", {array, Json}}]}, Uid) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->
                   N2 = list_to_integer(N),
                   {N2, lists:flatten([json_recs:json_to_rec(X) || X <- Exprs])}
@@ -1577,72 +1578,102 @@ run_actions(#refX{site = S, path = P} = RefX, Env,
             respond(403, Env);
         true ->
             % check that all the templates exists here!
-            {Templates, Actions} = make_actions(S, P, Commands),
+            {Templates, Perms, Dest, Actions} = make_actions(S, P, Commands),
             case templates_exist(S, Templates) of
                 {error, Err} ->
                     ?E("Templates errors in postcreatepages: ~p~n", [Err]),
                     json(Env, {struct, [{"status", "err"}, {"response", Err}]});
                 true ->
+                    % create the pages
                     Fun2 = fun({Template, Path}) ->
                                   RefX2 = #refX{site = S, path = Path,
                                                 obj = {page, "/"}},
-                                  ok = ?LOAD(RefX2, Template)
+                                   ok = ?LOAD(RefX2, Template)
                           end,
                     [Fun2(X) || X <- Actions],
-                    json(Env, {struct, [{"status", "ok"}]})
+                    % now run the permissions
+                    Fun3 = fun({Path, Ps}) ->
+                                   [ok = process_perms(S, Path, View, Groups, Uid)
+                                    || {View, Groups} <- Ps]
+                           end,
+                    [Fun3(X) || X <- Perms],
+                    json(Env, {struct, [{"status", "ok"}, {"redirect", Dest}]})
             end
     end.
+
+process_perms(Site, Path, V, Gs, Uid) ->
+    {ok, Email} = passport:uid_to_email(Uid),
+    Gs2 = replace_user(Gs, Email, []),
+    auth_srv:add_view(Site, Path, Gs2, V).
+
+replace_user([], _EM, Groups)           -> Groups;
+replace_user(["$user" | T], EM, Groups) -> replace_user(T, EM, [EM|  Groups]);
+replace_user([H | T], EM, Groups)       -> replace_user(T, EM, [H | Groups]).
 
 % we push a single val of now in to prevent problems if the fn runs over
 % a midnight
 make_actions(Site, Path, Recs) ->
     {_, Recs2} = lists:unzip(Recs),
-    {Ts, As} = make_a(Site, Recs2, now(), [], []),
+    {Ts, Perms, Dest, As} = make_a(Site, Recs2, now(), [], [], [], []),
     % now transform the actions from relative to absolute paths
     P2 = hn_util:list_to_path(Path),
-    % profoiundly fugly switching from ["some", "path"] to "/some/path/"
+    % profoundly fugly switching from ["some", "path"] to "/some/path/"
     % and then back again :(
     Fun = fun(X) ->
-                  Loc = string:join(X, "/") ++ "/",
-                  Loc2 = case Loc of
-                             [$. | _Rest] -> Loc;
+                   Loc = string:join(X, "/") ++ "/",
+                   Loc2 = case Loc of
+                             [?FULLSTOP | _Rest] -> Loc;
                              _            -> "/" ++ Loc
-                  end,
-                   NewLoc = lists:flatten(muin_util:walk_path(P2, Loc2)) ++ "/",
-                   string:tokens(NewLoc, "/")
-          end,
+                         end,
+                  muin_util:walk_path(P2, Loc2)
+           end,
     As2 = [{Temp, Fun(X)} || {Temp, X} <- As],
-    {Ts, As2}.
+    {Dest2, View} = case Dest of
+                        [] -> {get_last(As2), []};
+                        _  -> Dest
+            end,
+    Dest3 = hn_util:strip80(Site) ++ hn_util:list_to_path(Dest2) ++ View,
+    {Ts, Perms, Dest3, As2}.
 
-make_a(_S, [], _Now, Temps, Acc) ->
+get_last(X) -> {_, Last} = hd(lists:reverse(X)),
+               Last.
+
+make_a(_S, [], _Now, Temps, Perm, Dest, Acc) ->
     UniqTemps = hslists:uniq(Temps),
     UniqActions = hslists:uniq(lists:flatten(lists:reverse(Acc))),
-    {UniqTemps, UniqActions};
-make_a(S, [H | T], Now, Ts, Acc) ->
-    {NT, NA} = make_a2(S, H, Now, [], [], []),
-    make_a(S, T, Now, lists:concat([NT, Ts]), [NA | Acc]).
+    {UniqTemps, Perm, Dest, UniqActions};
+make_a(S, [H | T], Now, Ts, Perm, Dest, Acc) ->
+    {NT, NewPerm, NewDest, NA} = make_a2(S, H, Now, [], [], Perm, Dest, []),
+    make_a(S, T, Now, lists:concat([NT, Ts]), NewPerm, NewDest, [NA | Acc]).
 
-make_a2(_S, [], _Now, Temps, _Htap, Acc) ->
-    {Temps, lists:reverse(Acc)};
-make_a2(S, [#plainpath{path = P} | T], Now, Temps, Htap, Acc) ->
-    make_a2(S, T, Now, Temps, [P | Htap], Acc);
-make_a2(S, [#numberedpage{template = Tpl, type = "random", prefix = Pr} | T],
-        Now, Temps, Htap, Acc) ->
+make_a2(_S, [], _Now, Temps, _Htap, Perm, Dest, Acc) ->
+    {Temps, Perm, Dest, lists:reverse(Acc)};
+make_a2(S, [#segment{page = #plainpath{path = P}} | T], Now, Temps,
+        Htap, Perm, Dest, Acc) ->
+    make_a2(S, T, Now, Temps, [P | Htap], Perm, Dest, Acc);
+make_a2(S, [#segment{page = #numberedpage{template = Tpl, type = "random",
+                                          prefix = Pr}} = Spec | T],
+        Now, Temps, Htap, Perm, Dest, Acc) ->
     Seg = Pr ++ hex(integer_to_list(util2:get_timestamp())),
     NewHtap = [Seg | Htap],
-    NewAcc = {Tpl, lists:reverse(NewHtap)},
-    make_a2(S, T, Now, [Tpl | Temps], NewHtap, [NewAcc | Acc]);
-make_a2(S, [#numberedpage{template = Tpl, type = "increment", prefix = Pr} | T],
-        Now, Temps, Htap, Acc) ->
+    NewPath = lists:reverse(NewHtap),
+    {NewPerm, NewDest} = parse_rest(Spec, NewPath, Perm, Dest),
+    NewAcc = {Tpl, NewPath},
+    make_a2(S, T, Now, [Tpl | Temps], NewHtap, NewPerm, NewDest, [NewAcc | Acc]);
+make_a2(S, [#segment{page = #numberedpage{template = Tpl, type = "increment",
+                                          prefix = Pr}} = Spec | T],
+        Now, Temps, Htap, Perm, Dest, Acc) ->
     Pages = hn_db_api:read_pages(#refX{site = S}),
     % chuck out ones the wrong length
     Pg2 = [X || X <- Pages, length(X) == length(Htap) + 1],
     Seg = get_seg(lists:reverse(Htap), Pg2, Pr),
     NewHtap = [Seg | Htap],
-    NewAcc = {Tpl, lists:reverse(NewHtap)},
-    make_a2(S, T, Now, [Tpl | Temps], NewHtap, [NewAcc | Acc]);
-make_a2(S, [#datedpage{template = Tpl, format = Fm} | T], Now,
-        Temps, Htap, Acc) ->
+    NewPath = lists:reverse(NewHtap),
+    {NewPerm, NewDest} = parse_rest(Spec, NewPath, Perm, Dest),
+    NewAcc = {Tpl, NewPath},
+    make_a2(S, T, Now, [Tpl | Temps], NewHtap, NewPerm, NewDest, [NewAcc | Acc]);
+make_a2(S, [#segment{page = #datedpage{template = Tpl, format = Fm}} = Spec | T],
+        Now, Temps, Htap, Perm, Dest, Acc) ->
     Seg = case Fm of                            % 1/2/2003
               "yy"   -> dh_date:format("y", Now); % 03
               "yyyy" -> dh_date:format("Y", Now); % 2003
@@ -1657,12 +1688,37 @@ make_a2(S, [#datedpage{template = Tpl, format = Fm} | T], Now,
           end,
     % yup, flatpack all strings to lower case...
     NewHtap = [string:to_lower(Seg) | Htap],
-    NewAcc = {Tpl, lists:reverse(NewHtap)},
-    make_a2(S, T, Now, [Tpl | Temps], NewHtap, [NewAcc | Acc]);
-make_a2(S, [#namedpage{template = Tpl, name = Nm} | T], Now, Temps, Htap, Acc) ->
+    NewPath = lists:reverse(NewHtap),
+    {NewPerm, NewDest} = parse_rest(Spec, NewPath, Perm, Dest),
+    NewAcc = {Tpl, NewPath},
+    make_a2(S, T, Now, [Tpl | Temps], NewHtap, NewPerm, NewDest, [NewAcc | Acc]);
+make_a2(S, [#segment{page = #namedpage{template = Tpl, name = Nm}} = Spec | T],
+        Now, Temps, Htap, Perm, Dest, Acc) ->
     NewHtap = [Nm | Htap],
-    NewAcc = {Tpl, lists:reverse(NewHtap)},
-    make_a2(S, T, Now, [Tpl | Temps], NewHtap, [NewAcc | Acc]).
+    NewPath = lists:reverse(NewHtap),
+    {NewPerm, NewDest} = parse_rest(Spec, NewPath, Perm, Dest),
+    NewAcc = {Tpl, NewPath},
+    make_a2(S, T, Now, [Tpl | Temps], NewHtap, NewPerm, NewDest, [NewAcc | Acc]).
+
+parse_rest(#segment{redirect = {destination, Redir}, addspreadsheetgroups = AS,
+                    addwebpagegroups = AWb, addwikipagegroups = AWi,
+                    addtablegroups = AT}, Path, Perm, Dest) ->
+    NewDest = case Redir of
+                  false         -> Dest;
+                  "default"     -> {Path, []};
+                  "spreadsheet" -> {Path, "?view=spreadsheet"};
+                  "webpage"     -> {Path, "?view=webpage"};
+                  "wikipage"    -> {Path, "?view=wikipage"};
+                  "table"       -> {Path, "?view=table"}
+              end,
+    NewPerm = make_perms([{spreadsheet, AS}, {webpage, AWb},
+                          {wiki, AWi}, {table, AT}],
+                    []),
+    {[{Path, NewPerm} | Perm], NewDest}.
+
+make_perms([], Acc)                -> Acc;
+make_perms([{_Type, []} | T], Acc) -> make_perms(T, Acc);
+make_perms([H | T], Acc)           -> make_perms(T, [H | Acc]).
 
 get_seg(Path, Pages, Prefix) ->
     % first get all pages that might match
@@ -1695,7 +1751,7 @@ pad(X) ->
 hex(String) -> mochihex:to_hex(crypto:md5_mac(?randomsalt, String)).
 
 templates_exist(Site, Templates) ->
-    ExistingTemplates = ["blank" | get_templates(Site)],
+    ExistingTemplates = get_templates(Site),
     templates_e2(lists:sort(ExistingTemplates), lists:sort(Templates)).
 
 templates_e2(_List, [])          -> true;

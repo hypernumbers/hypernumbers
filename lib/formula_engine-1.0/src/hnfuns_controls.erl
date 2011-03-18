@@ -26,7 +26,8 @@
             Fun1 = fun(Expr, {N, Acc}) ->
                            {N + 1, [{N, webc_parser:compile(Expr)} | Acc]}
                    end,
-            {_, Commands2} = lists:foldl(Fun1, {1, []}, Commands),
+            Ret = lists:foldl(Fun1, {1, []}, Commands),
+            {_, Commands2} = Ret,
             % no real reason to sort, just tidier!
             Commands3 = lists:sort(Commands2),
             % now we transform the commands in Json

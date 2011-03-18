@@ -11,6 +11,8 @@ Rules.
 \[           : {token,     {open,       TokenChars}}.
 \]           : {token,     {close,      TokenChars}}.
 \/           : {token,     {slash,      TokenChars}}.
+\$           : {token,     {dollar,     TokenChars}}.
+\;           : {token,     {semicolon,  TokenChars}}.
 \,           : {token,     {comma,      TokenChars}}.
 
 %% Discard whitespace:
@@ -56,5 +58,20 @@ seg_test_() ->
                                       {slash, "/"},
                                       {plainpath, "bluh"},
                                       {slash, "/"}
+                                     ]),
+
+     ?_assert(tlex("/blah/blah, bleh; bloh/bluh/") == [
+                                      {slash, "/"},
+                                      {plainpath, "blah"},
+                                      {slash, "/"},
+                                      {plainpath, "blah"},
+                                      {comma, ","},
+                                      {plainpath, "bleh"},
+                                      {semicolon, ";"},
+                                      {plainpath, "bloh"},
+                                      {slash, "/"},
+                                      {plainpath, "bluh"},
+                                      {slash, "/"}
                                      ])
+
     ].
