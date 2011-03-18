@@ -171,14 +171,13 @@ html,body {
 
 #wizstatus {
   position: absolute;
-  min-width: 246px;
   width: auto;
   padding-right: 4px;
   bottom: 0px; /* to be adjusted by script */
 }
 
 #wiztext {
-  width: 100%;
+  width:  272px; /* wizselectedfun.width - 8px */
   height: 6ex;
 }
 
@@ -1096,9 +1095,10 @@ a.toolbar-item {
 
 #wizselectedfun {
     float      : right;
-    width      : 250px;
+    width      : 280px;
+    min-width  : 280px;
     margin-top : 15px;
-    margin-right:5px;
+    margin-right:4px;
 }
 
 #selectedfun p, #wizselectedfun p {
