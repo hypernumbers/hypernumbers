@@ -56,8 +56,12 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
         "set_password" ->
             Password = kfind("password", Args),
             case passport:set_password(User, Password) of
-                ok               -> ok;
-                {error, _Reason} -> {error, "Error Setting Password"}
+                ok              -> ok;
+                {error, Reason} ->
+                    Msg = io_lib:format("Error setting password ~p : ~p~n",
+                                        [Args, Reason]),
+                    error_logger:error_msg(Msg),
+                    {error, "Error Setting Password"}
             end;
 
         "set_champion" ->
