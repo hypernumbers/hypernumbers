@@ -11,6 +11,7 @@
 -export([cast_data/1]).
 
 -export([
+         'status.bar'/1,
          'sparkline.'/1,
          'xy.'/1,
          'speedo.'/1,
@@ -111,6 +112,34 @@
 %%
 %% Exported functions
 %%
+'status.bar'([N])       -> 'status.bar'([N, 1]);
+'status.bar'([N, Type]) ->
+    [N1] = typechecks:std_nums([N]),
+    [Type1] = typechecks:std_ints([Type]),
+    N2 = if
+             N1 < 0                -> 0;
+             N1 > 0 andalso N1 < 5 -> N1;
+             N1 > 5                -> 5
+         end,
+    N3 = integer_to_list(trunc(N2 * 15)),
+    if
+        Type <  1                   -> ?ERR_VAL;
+        Type >= 1 andalso Type =< 6 -> ok;
+        Type >  6                   -> ?ERR_VAL
+    end,
+    'status.bar1'(N3, Type1).
+
+'status.bar1'(Width, 1) -> 'status.bar2'(Width, "progress_black.png");
+'status.bar1'(Width, 2) -> 'status.bar2'(Width, "progress_red.png");
+'status.bar1'(Width, 3) -> 'status.bar2'(Width, "progress_green.png");
+'status.bar1'(Width, 4) -> 'status.bar2'(Width, "ticks.png");
+'status.bar1'(Width, 5) -> 'status.bar2'(Width, "crosses.png");
+'status.bar1'(Width, 6) -> 'status.bar2'(Width, "hearts.png").
+
+'status.bar2'(Width, File) ->
+    "<div style='width:" ++ Width ++ "px;overflow:hidden;'>"
+        ++ "<img src='http://files.hypernumbers.com/images/" ++ File ++ "' /></div>".
+
 'sparkline.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
