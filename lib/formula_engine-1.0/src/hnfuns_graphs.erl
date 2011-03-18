@@ -298,9 +298,8 @@ chunk_l2(Aggregate, Lines, List) ->
 process_x_l2(DataX) ->
     MinX = stdfuns_stats:min(DataX),
     MaxX = stdfuns_stats:max(DataX),
-    Diff = MaxX - MinX,
     DataX2 = normalize_sp(DataX, MinX, MaxX),
-    {DataX2, MinX - ?MARGIN * Diff, MaxX + ?MARGIN * Diff}.
+    {DataX2, MinX, MaxX}.
 
 make_data(_X, [], Acc)     -> "t:" ++ string:join(lists:reverse(Acc), "|");
 make_data(X, [H | T], Acc) -> NewAcc = make_d2(X, H, [], []),
@@ -542,10 +541,8 @@ make_axes_lab_pos(MaxX, MaxY) ->
 
 make_scale(null, _, _, _, _, _) -> "";
 make_scale(Type, auto, MinX, MaxX, MinY, MaxY) ->
-    DiffX = MaxX - MinX,
     DiffY = MaxY - MinY,
-    make_s1(Type, MinX - ?MARGIN * DiffX, MaxX + ?MARGIN * DiffX,
-            MinY - ?MARGIN * DiffY, MaxY + ?MARGIN * DiffY).
+    make_s1(Type, MinX, MaxX, MinY - ?MARGIN * DiffY, MaxY + ?MARGIN * DiffY).
 % make_scale(Type, [X1, X2 | []], _MinX, _MaxX, MinY, MaxY) ->
 %     [X1a, X2a] = typechecks:throw_std_nums([X1, X2]),
 %     make_s1(Type, X1a, X2a, MinY, MaxY).
@@ -772,10 +769,9 @@ process_data_xy(Data) ->
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
     Data3 = [[lists:reverse(cast_data(X)) || X <- X1] || X1 <- Data2],
     {MinX, MaxX, MinY, MaxY} = get_maxes(Data3),
-    DiffX = MaxX - MinX,
     DiffY = MaxY - MinY,
-    Data4 = normalize_xy(Data3, MinX - ?MARGIN * DiffX, MaxX + ?MARGIN * DiffX,
-                         MinY - ?MARGIN * DiffY, MaxY + ?MARGIN * DiffY, []),
+    Data4 = normalize_xy(Data3, MinX, MaxX, MinY - ?MARGIN * DiffY,
+                         MaxY + ?MARGIN * DiffY, []),
     Data5 = [conv_data(X) || X <- Data4],
     {MinX, MaxX, MinY, MaxY, "t:"++string:join(Data5, "|")}.
 
