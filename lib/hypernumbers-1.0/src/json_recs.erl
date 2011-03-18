@@ -26,11 +26,19 @@ rec_to_json(Tuple) when is_tuple(Tuple) ->
     NoOfFields = ms_util2:no_of_fields(Rec),
     Zip = make_zip(Rec, NoOfFields, []),
     {struct, [{Rec, {array, make_struct(lists:zip(Zip,rec_to_json2(T, [])))}}]};
-% if the thang aint a tuple, it aint a record
+% if the thang ain't a tuple, it ain't a record
+rec_to_json(A) when is_list(A) ->
+    Len1 = length(A),
+    Len2 = length(lists:flatten(A)),
+    if
+        Len1 ==  Len2 -> A;
+        Len1 =/= Len2 -> {array, A}
+    end;
 rec_to_json(A) -> A.
 
 json_to_rec({struct, [List]}) -> json_to_r(List);
-json_to_rec(A)              -> A.
+json_to_rec({array, A})       -> A;
+json_to_rec(A)                -> A.
 
 %%%===================================================================
 %%% Internal functions
@@ -68,8 +76,10 @@ json_test_() ->
     A = #local_obj{idx = 1, type = 2, path = 3, obj = 4, revidx = 5},
     B = #local_obj{idx = 1, type = 2, path = 3},
     C = #local_obj{idx = 1, type = 2, path = 3, obj = A, revidx = B},
+    D = #local_obj{idx = ["blah", "bleh"]},
     [
      ?_assert(A == json_to_rec(rec_to_json(A))),
      ?_assert(B == json_to_rec(rec_to_json(B))),
-     ?_assert(C == json_to_rec(rec_to_json(C)))
+     ?_assert(C == json_to_rec(rec_to_json(C))),
+     ?_assert(D == json_to_rec(rec_to_json(D)))
     ].
