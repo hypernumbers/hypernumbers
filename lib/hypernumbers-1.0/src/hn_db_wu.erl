@@ -287,7 +287,9 @@ process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
 
 mark_dirty_for_zinf(#refX{site = S, obj = {cell, _}} = RefX) ->
     Tbl = trans(S, dirty_for_zinf),
-    mnesia:write(Tbl, #dirty_for_zinf{dirty = RefX}, write).
+    mnesia:write(Tbl, #dirty_for_zinf{dirty = RefX}, write);
+% any other refs ignore 'em
+mark_dirty_for_zinf(RefX) when is_record(RefX, refX) -> ok.
 
 expand_to_rows_or_cols(#refX{obj={RC, {I, J}}} = Ref) when RC == row; RC == column ->
     expand_to_2(Ref, I, J, []);
