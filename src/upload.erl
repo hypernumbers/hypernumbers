@@ -73,10 +73,28 @@ run_templates(Script) ->
                   #refX{site = ?site, path = Y, obj = {page, "/"}}
           end,
     Fun2 = fun(_X, null) -> ok;
-          (X, Y) -> hn_templates:load_template_if_no_page(X, Y)
-       end,
+              (#refX{path = P} = X, Y) ->
+                   log_memory(P),
+                   hn_templates:load_template_if_no_page(X, Y)
+           end,
     limiter(),
     [ok = Fun2(Fun(X, Y), X) || {X, Y} <- Script].
+
+log_memory(Path) ->
+    N1 = util2:get_timestamp(),
+    Memory = erlang:memory(),
+    {value, {total, Total}} = lists:keysearch(total, 1, Memory),
+    {value, {processes, Processes}} = lists:keysearch(processes, 1, Memory),
+    {value, {processes_used, Proc_U}} = lists:keysearch(processes_used, 1, Memory),
+    {value, {system, System}} = lists:keysearch(system, 1, Memory),
+    {value, {atom, Atom}} = lists:keysearch(atom, 1, Memory),
+    {value, {atom_used, Atom_U}} = lists:keysearch(atom_used, 1, Memory),
+    {value, {binary, Binary}} = lists:keysearch(binary, 1, Memory),
+    {value, {code, Code}} = lists:keysearch(code, 1, Memory),
+    {value, {ets, Ets}} = lists:keysearch(ets, 1, Memory),
+    log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p",
+                      [Path, N1, Total, Processes, Proc_U, System, Atom,
+                       Atom_U, Binary, Code, Ets])).
 
 upload2([], Acc) -> Acc;
 upload2([H | T], Acc) ->
@@ -93,20 +111,6 @@ upload2([H | T], Acc) ->
         Temp -> hn_templates:load_template(RefX, Temp)
     end,
     hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
-    N1 = util2:get_timestamp(),
-    Memory = erlang:memory(),
-    {value, {total, Total}} = lists:keysearch(total, 1, Memory),
-    {value, {processes, Processes}} = lists:keysearch(processes, 1, Memory),
-    {value, {processes_used, Proc_U}} = lists:keysearch(processes_used, 1, Memory),
-    {value, {system, System}} = lists:keysearch(system, 1, Memory),
-    {value, {atom, Atom}} = lists:keysearch(atom, 1, Memory),
-    {value, {atom_used, Atom_U}} = lists:keysearch(atom_used, 1, Memory),
-    {value, {binary, Binary}} = lists:keysearch(binary, 1, Memory),
-    {value, {code, Code}} = lists:keysearch(code, 1, Memory),
-    {value, {ets, Ets}} = lists:keysearch(ets, 1, Memory),
-    log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p",
-                      [N1, Total, Processes, Proc_U, System, Atom,
-                       Atom_U, Binary, Code, Ets])),
     garbage_collect(),
     log_remoting(),
     limiter(),
