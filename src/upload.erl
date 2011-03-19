@@ -3,32 +3,7 @@
 -define(templates, ["buildings","building", null, "year_page", "month_page",
                     "day_page", "meter_page"]).
 -define(final_template, null).
-
-%-define(site, "http://dla-piper.hypernumbers.com:80").
--define(site, "http://hypernumbers.dev:9000").
-
--record(refX,
-        {
-          site        = [],
-          type,
-          path        = [],
-          obj         = null
-         }).
-
--export([
-         upload/0
-        ]).
-
-upload() ->
-    Dir = "/home/gordon/hypernumbers/priv/dataupload/",
-    Files = filelib:wildcard(Dir ++ "/*.xls"),
-    io:format("There are ~p files~n", [length(Files)]),
-    io:format("An example is ~p~n", [hd(Files)]),
-    upload2(Files),
-    run_templates().
-
-run_templates() ->
-    Sc = [
+-define(bits_and_bobs, [
           {"static-data",         ["static-data"]},
           {"admin",               ["admin"]},
           {"admin_data_alerts",   ["admin", "data_alerts"]},
@@ -54,15 +29,56 @@ run_templates() ->
           {"twitter_inserts",     ["social", "twitter"]},
           {"news_create_page",    ["social", "news"]},
           {"news_story_page",     ["social", "news", "news-item"]}
-         ],
-    Fun = fun(X) ->
-                  #refX{site = ?site, path = X, obj = {page, "/"}}
-          end,
-    [ok = hn_templates:load_template_if_no_page(Fun(Y), X) || {X, Y} <- Sc].
+         ]).
 
-upload2([]) ->
-    "all uploaded...";
-upload2([H | T]) ->
+
+%-define(site, "http://dla-piper.hypernumbers.com:80").
+-define(site, "http://hypernumbers.dev:9000").
+
+-record(refX,
+        {
+          site        = [],
+          type,
+          path        = [],
+          obj         = null
+         }).
+
+-export([
+         upload/0
+        ]).
+
+upload() ->
+    Dir = "/home/gordon/hypernumbers/priv/dataupload/",
+    Files = filelib:wildcard(Dir ++ "/*.xls"),
+    io:format("There are ~p files~n", [length(Files)]),
+    io:format("An example is ~p~n", [hd(Files)]),
+    Hierarchy = upload2(Files, []),
+    Hierarchy2 = sort(hslists:uniq(lists:flatten(Hierarchy))),
+    run_templates(Hierarchy2),
+    run_templates(?bits_and_bobs).
+
+sort(List) ->
+    Fun = fun({_Temp1, Path1}, {_Temp2, Path2}) ->
+                  if
+                      length(Path1) =< length(Path2) -> true;
+                      length(Path1) > length(Path2)   -> false
+                  end
+          end,
+    lists:sort(Fun, List).
+
+run_templates(Script) ->
+    Fun = fun(X, Y) ->
+                  io:format("loading ~p on page ~p~n", [X, Y]),
+                  #refX{site = ?site, path = Y, obj = {page, "/"}}
+          end,
+    Fun2 = fun(_X, null) -> ok;
+          (X, Y) -> hn_templates:load_template_if_no_page(X, Y)
+       end,
+    limiter(),
+    [ok = Fun2(Fun(X, Y), X) || {X, Y} <- Script].
+
+upload2([], Acc) -> Acc;
+upload2([H | T], Acc) ->
     io:format("Uploading ~p~n", [H]),
     File = hd(lists:reverse(string:tokens(H, "/"))),
     Segs = string:tokens(File, "."),
@@ -76,39 +92,32 @@ upload2([H | T]) ->
         Temp -> hn_templates:load_template(RefX, Temp)
     end,
     hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
-    % N1 = util2:get_timestamp(),
-    % Memory = erlang:memory(),
-    % {value, {total, Total}} = lists:keysearch(total, 1, Memory),
-    % {value, {processes, Processes}} = lists:keysearch(processes, 1, Memory),
-    % {value, {processes_used, Proc_U}} = lists:keysearch(processes_used, 1, Memory),
-    % {value, {system, System}} = lists:keysearch(system, 1, Memory),
-    % {value, {atom, Atom}} = lists:keysearch(atom, 1, Memory),
-    % {value, {atom_used, Atom_U}} = lists:keysearch(atom_used, 1, Memory),
-    % {value, {binary, Binary}} = lists:keysearch(binary, 1, Memory),
-    % {value, {code, Code}} = lists:keysearch(code, 1, Memory),
-    % {value, {ets, Ets}} = lists:keysearch(ets, 1, Memory),
-    % log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p",
-    %    [N1, Total, Processes, Proc_U, System, Atom, Atom_U, Binary, Code, Ets])),
-    % garbage_collect(),
-    % log_remoting(),
+    N1 = util2:get_timestamp(),
+    Memory = erlang:memory(),
+    {value, {total, Total}} = lists:keysearch(total, 1, Memory),
+    {value, {processes, Processes}} = lists:keysearch(processes, 1, Memory),
+    {value, {processes_used, Proc_U}} = lists:keysearch(processes_used, 1, Memory),
+    {value, {system, System}} = lists:keysearch(system, 1, Memory),
+    {value, {atom, Atom}} = lists:keysearch(atom, 1, Memory),
+    {value, {atom_used, Atom_U}} = lists:keysearch(atom_used, 1, Memory),
+    {value, {binary, Binary}} = lists:keysearch(binary, 1, Memory),
+    {value, {code, Code}} = lists:keysearch(code, 1, Memory),
+    {value, {ets, Ets}} = lists:keysearch(ets, 1, Memory),
+    log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p",
+                      [N1, Total, Processes, Proc_U, System, Atom,
+                       Atom_U, Binary, Code, Ets])),
+    garbage_collect(),
+    log_remoting(),
     limiter(),
     % now work your way up the tree loading templates
-    ok = upload3(lists:reverse(?templates), lists:reverse(Segs3)),
-    upload2(T).
+    NewAcc = [lists:zip(lists:reverse(?templates), lists:reverse(Segs3)) | Acc],
+    upload2(T, NewAcc).
 
 make_paths([], _, Acc) -> lists:reverse(Acc);
 make_paths([H | T], [], []) -> make_paths(T, [H], [[H]]);
 make_paths([H | T], Prefix, Acc) ->
     Seg = lists:concat([Prefix, [H]]),
     make_paths(T, Seg, [Seg | Acc]).
-
-upload3([], []) -> ok;
-upload3([null | T1], [_Path | T2]) -> upload3(T1, T2);
-upload3([Template | T1], [Path | T2]) ->
-    RefX = #refX{site = ?site, path = Path, obj = {page, "/"}},
-    io:format("Uploading ~p to ~p~n", [Template, Path]),
-    hn_templates:load_template(RefX, Template),
-    upload3(T1, T2).
 
 log_remoting() ->
     Srv = hn_util:site_to_atom(?site, "_remoting"),
