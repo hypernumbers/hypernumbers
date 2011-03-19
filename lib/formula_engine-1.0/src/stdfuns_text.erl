@@ -204,10 +204,7 @@ proper(Args) ->
 
 proper_([[]]) ->
     [];
-proper_([Str]) ->
-    Ret = make_proper(Str),
-    ?INFO("Str is ~p Ret is ~p~n", [Str, Ret]),
-    Ret.
+proper_([Str]) -> make_proper(Str).
 
 make_proper([$",H|Rest]) ->
     make_proper(Rest, [hd(string:to_upper([H])), $"]);
