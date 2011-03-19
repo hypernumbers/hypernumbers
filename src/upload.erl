@@ -57,11 +57,12 @@ upload() ->
     run_templates(Hierarchy2),
     run_templates(?bits_and_bobs).
 
+% gonnae load longest first
 sort(List) ->
     Fun = fun({_Temp1, Path1}, {_Temp2, Path2}) ->
                   if
-                      length(Path1) =< length(Path2) -> true;
-                      length(Path1) > length(Path2)   -> false
+                      length(Path1) =< length(Path2) -> false;
+                      length(Path1) > length(Path2)   -> true
                   end
           end,
     lists:sort(Fun, List).
