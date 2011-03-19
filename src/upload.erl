@@ -32,8 +32,8 @@
          ]).
 
 
-%-define(site, "http://dla-piper.hypernumbers.com:80").
--define(site, "http://hypernumbers.dev:9000").
+-define(site, "http://dla-piper.hypernumbers.com:80").
+%-define(site, "http://hypernumbers.dev:9000").
 
 -record(refX,
         {
@@ -48,7 +48,7 @@
         ]).
 
 upload() ->
-    Dir = "/home/gordon/hypernumbers/priv/dataupload/",
+    Dir = "/hn/hypernumbers/priv/dataupload/",
     Files = filelib:wildcard(Dir ++ "/*.xls"),
     io:format("There are ~p files~n", [length(Files)]),
     io:format("An example is ~p~n", [hd(Files)]),
@@ -78,6 +78,7 @@ run_templates(Script) ->
                    hn_templates:load_template_if_no_page(X, Y)
            end,
     limiter(),
+    garbage_collect(),
     [ok = Fun2(Fun(X, Y), X) || {X, Y} <- Script].
 
 log_memory(Path) ->
@@ -102,7 +103,7 @@ upload2([H | T], Acc) ->
     File = hd(lists:reverse(string:tokens(H, "/"))),
     Segs = string:tokens(File, "."),
     {Segs1, _xls} = lists:split(length(Segs) - 1, Segs),
-    {Segs2, _end} = lists:split(length(Segs) - 2, Segs),
+    {Segs2, _end}  = lists:split(length(Segs) - 2, Segs),
     Segs3 = make_paths(Segs2, [], []),
     RefX = #refX{site = ?site, path = Segs1, obj = {page, "/"}},
     % first upload the data at the bottom of the tree
