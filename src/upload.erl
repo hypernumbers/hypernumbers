@@ -4,8 +4,8 @@
                     "day_page", "meter_page"]).
 -define(final_template, null).
 
--define(site, "http://dla-piper.hypernumbers.com:80").
-%-define(site, "http://hypernumbers.dev:9000").
+%-define(site, "http://dla-piper.hypernumbers.com:80").
+-define(site, "http://hypernumbers.dev:9000").
 
 -record(refX,
         {
@@ -20,7 +20,7 @@
         ]).
 
 upload() ->
-    Dir = "/hn/hypernumbers/priv/dataupload/",
+    Dir = "/home/gordon/hypernumbers/priv/dataupload/",
     Files = filelib:wildcard(Dir ++ "/*.xls"),
     io:format("There are ~p files~n", [length(Files)]),
     io:format("An example is ~p~n", [hd(Files)]),
@@ -69,8 +69,8 @@ upload2([H | T]) ->
     {Segs1, _xls} = lists:split(length(Segs) - 1, Segs),
     {Segs2, _end} = lists:split(length(Segs) - 2, Segs),
     Segs3 = make_paths(Segs2, [], []),
-    ok = upload3(?templates, Segs3),
     RefX = #refX{site = ?site, path = Segs1, obj = {page, "/"}},
+    % first upload the data at the bottom of the tree
     case ?final_template of
         null -> ok;
         Temp -> hn_templates:load_template(RefX, Temp)
@@ -92,6 +92,8 @@ upload2([H | T]) ->
     % garbage_collect(),
     % log_remoting(),
     limiter(),
+    % now work your way up the tree loading templates
+    ok = upload3(lists:reverse(?templates), lists:reverse(Segs3)),
     upload2(T).
 
 make_paths([], _, Acc) -> lists:reverse(Acc);
@@ -104,6 +106,7 @@ upload3([], []) -> ok;
 upload3([null | T1], [_Path | T2]) -> upload3(T1, T2);
 upload3([Template | T1], [Path | T2]) ->
     RefX = #refX{site = ?site, path = Path, obj = {page, "/"}},
+    io:format("Uploading ~p to ~p~n", [Template, Path]),
     hn_templates:load_template(RefX, Template),
     upload3(T1, T2).
 
