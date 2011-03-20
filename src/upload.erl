@@ -32,8 +32,8 @@
          ]).
 
 
--define(site, "http://dla-piper.hypernumbers.com:80").
-%-define(site, "http://hypernumbers.dev:9000").
+%-define(site, "http://dla-piper.hypernumbers.com:80").
+-define(site, "http://hypernumbers.dev:9000").
 
 -record(refX,
         {
@@ -44,11 +44,22 @@
          }).
 
 -export([
-         upload/0
+         upload/0,
+         perf_test/0
         ]).
 
+perf_test() ->
+    Stamp = tconv:to_s(util2:get_timestamp()),
+    FileName = "fprof.trace." ++ Stamp,
+    %fprof:trace([start, {file, FileName}]),
+    RefX = #refX{site = ?site, path = [], obj = {page, "/"}},
+    hn_templates:load_template(RefX, "meter_page").
+    %fprof:trace([stop]),
+    %fprof:profile([{file, FileName}]),
+    %fprof:analyse([{dest, "fprof.analyze."++Stamp}]).
+
 upload() ->
-    Dir = "/hn/hypernumbers/priv/dataupload/",
+    Dir = "/home/gordon/hypernumbers/priv/dataupload/",
     Files = filelib:wildcard(Dir ++ "/*.xls"),
     io:format("There are ~p files~n", [length(Files)]),
     io:format("An example is ~p~n", [hd(Files)]),
@@ -93,26 +104,31 @@ log_memory(Path) ->
     {value, {binary, Binary}} = lists:keysearch(binary, 1, Memory),
     {value, {code, Code}} = lists:keysearch(code, 1, Memory),
     {value, {ets, Ets}} = lists:keysearch(ets, 1, Memory),
-    log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p",
-                      [Path, N1, Total, Processes, Proc_U, System, Atom,
-                       Atom_U, Binary, Code, Ets])).
+    Server = list_to_atom(hn_util:site_to_fs(Site) ++ "_dbsrv"),
+    PID = globalwhereis_name(Server),
+    Heap = process_info(PID, [heap_size]),
+    Msgs = process_info(PID, [message_queue_len]),
+    log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p",
+                      [hn_util:list_to_path(Path), N1, Total, Processes,
+                       Proc_U, System, Atom, Atom_U, Binary, Code, Ets,
+                       Heap, Msgs])).
 
 upload2([], Acc) -> Acc;
 upload2([H | T], Acc) ->
     io:format("Uploading ~p~n", [H]),
     File = hd(lists:reverse(string:tokens(H, "/"))),
     Segs = string:tokens(File, "."),
-    {Segs1, _xls} = lists:split(length(Segs) - 1, Segs),
+    {_Segs1, _xls} = lists:split(length(Segs) - 1, Segs),
     {Segs2, _end}  = lists:split(length(Segs) - 2, Segs),
     Segs3 = make_paths(Segs2, [], []),
-    RefX = #refX{site = ?site, path = Segs1, obj = {page, "/"}},
+    %RefX = #refX{site = ?site, path = Segs1, obj = {page, "/"}},
     % first upload the data at the bottom of the tree
-    case ?final_template of
-        null -> ok;
-        Temp -> hn_templates:load_template(RefX, Temp)
-    end,
-    hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
-    garbage_collect(),
+    %case ?final_template of
+    %    null -> ok;
+    %    Temp -> hn_templates:load_template(RefX, Temp)
+    %end,
+    %hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
+    %garbage_collect(),
     log_remoting(),
     limiter(),
     % now work your way up the tree loading templates
