@@ -112,9 +112,9 @@ json_file(Url, FileName) ->
     hn_db_api:write_styles_IMPORT(Ref, ImportStyles2),
 
     ok = hn_db_api:clear(Ref, all, nil),
-    [ rows(Ref, X, RewriteT, row,    fun write_col_row/3) || X <- Rows],
-    [ rows(Ref, X, RewriteT, column, fun write_col_row/3) || X <- Cols],
-    [ rows(Ref, X, RewriteT, cell,   fun write_cells/3)   || X <- Cells],
+    [rows(Ref, X, RewriteT, row,    fun write_col_row/3) || X <- Rows],
+    [rows(Ref, X, RewriteT, column, fun write_col_row/3) || X <- Cols],
+    [rows(Ref, X, RewriteT, cell,   fun write_cells/3)   || X <- Cells],
     ok.
 
 set_view(Site, Path, {View, {struct, Propslist}}) ->
