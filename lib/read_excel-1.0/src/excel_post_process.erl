@@ -1,10 +1,10 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie gordon@hypernumbers.com
 %%% @copyright (C) 2008, hypernumbers.com
-%%% @doc       This module post-processes tables read from Excel 
+%%% @doc       This module post-processes tables read from Excel
 %%%            files. Excel functions are stored in a Reverse-Polish
 %%%            Notation (RPN) token stream and the primary task of
-%%%            this module is to revese compile that  which it does 
+%%%            this module is to revese compile that  which it does
 %%%            by calling {@link excel_rev_comp}.
 %%%
 %%% @end
@@ -46,19 +46,19 @@ post_process_tables(Tables) ->
 %% This function takes the raw format data and turns into the apppriate format
 %% * resolves which format record pertains to each cell
 %% * resolves what CSS styles apply to which cell
-%% 
+%%
 %% It does this by:
 %% * first resolving the XF record and its parent style
 %% * then resolving the row formats and applying them to unformatted cells
 %% * then resolving the column formats and applying them to unformatted cells
-%% 
+%%
 %% See Section 4.6.2 of excelfileformatV1-42.pdf
 fix_up_formats(Tables) ->
     % this function applies all the format information for each cell
     % both those with formulae and the tmp_blanks
     {value,{cell,       CellId}    }   = ?k(cell    ,   1, Tables),
     {value,{tmp_blanks, Tmp_BlanksId}} = ?k(tmp_blanks, 1, Tables),
-    % now we step through the formats and later we will use hn_main:set_attribute 
+    % now we step through the formats and later we will use hn_main:set_attribute
     % to set them
     Fun1 = fun(X, _Acc)->
                    {CellRef, [{xf_index, XFIndex}, _]} = X,
@@ -77,34 +77,34 @@ fix_up_names(Tables) ->
     % Excel names have two different scopes
     % * global <-- pertains to a workbook
     % * local  <-- pertains to a worksheet
-    % 
+    %
     % There are some interesting glitches
     % * the same name can be on different worksheets
     % * the same name can be a global name and one or more local names
     % * names are *NOT* case sensitive
     % * names can be called from external workbooks
     % * a name on a page can point to a cell on a different page
-    % 
+    %
     % There are some subtleties that will be hard to fix up...
-    % 
+    %
     % ****Quote From Excel Help ********
     % You can even define the same name, GrossProfit, for the global
-    % workbook level, but again the scope is unique. In this case, 
-    % however, there can be a name conflict. To resolve this 
-    % conflict, by default Excel uses the name that is defined 
-    % for the worksheet because the local worksheet level takes 
-    % precedence over the global workbook level. If you want 
-    % to override the precedence and you want to use the workbook 
-    % name, you can disambiguate the name by prefixing the workbook 
+    % workbook level, but again the scope is unique. In this case,
+    % however, there can be a name conflict. To resolve this
+    % conflict, by default Excel uses the name that is defined
+    % for the worksheet because the local worksheet level takes
+    % precedence over the global workbook level. If you want
+    % to override the precedence and you want to use the workbook
+    % name, you can disambiguate the name by prefixing the workbook
     % name as the following example shows:
-    % 
+    %
     % WorkbookFile!GrossProfit
-    % 
+    %
     % You can override the local worksheet level for all worksheets
-    % in the workbook, with the exception of the first worksheet, 
+    % in the workbook, with the exception of the first worksheet,
     % which always uses the local name if there is a name conflict
     % and cannot be overridden.
-    % 
+    %
     % *********End Quote************
     {value,{tmp_names, Tid1}} = ?k(tmp_names, 1, Tables),
     {value,{names,     Tid2}} = ?k(names,     1, Tables),
@@ -154,15 +154,15 @@ type_formats(Tables) ->
 %% then injects them into the table 'cells' which is prepopulated with
 %% all the non-formulae cell values
 fix_up_cells(Tables) ->
-    
+
     {value, {tmp_cell, Tmp_CellId}} = ?k(tmp_cell, 1, Tables),
     {value, {cell,     CellId}}     = ?k(cell,     1, Tables),
-    
+
     Fun = fun(X, _Acc)->
-                  
+
                   {Id, [XF, {tokens, Tok},
                            {tokenarrays, TokArr}]} = X,
-                  
+
                   case excel_rev_comp:reverse_compile(Id, Tok, TokArr,
                                                       Tables) of
                       {ok, dont_process} -> ok;
@@ -175,13 +175,13 @@ fix_up_cells(Tables) ->
 %% This function merges the contents of the ets table 'sheetnames' into
 %% 'tmp_externalbook'
 fix_up_externalrefs(Tables)->
-    
+
     {value, {tmp_externalbook, ExternalRefs}}=?k(tmp_externalbook, 1, Tables),
-    
+
     Fun = fun({Id, [{this_file, placeholder},[]]}, Y) -> [Id | Y];
              (_, Y) -> Y
           end,
-    
+
     case ets:info(ExternalRefs, size) of
         0 -> ok;
         _ -> [Index] = ets:foldl(Fun, [], ExternalRefs),
@@ -265,9 +265,9 @@ get_fonts(FontIdx, Tables) ->
     [{_Index, [ColourIdx, {css, CSS}]}]  = ets:lookup(FontsId, {index, FontIdx2}),
     % lookup the colour
     [{_, [{colour,Col}]}] = ets:lookup(ColoursId, ColourIdx),
-    lists:merge([[{'color', [Col]}],CSS]).
+    lists:merge([[{"color", Col}],CSS]).
 
-get_colours(ColourList, Tables) -> 
+get_colours(ColourList, Tables) ->
     get_colours1(ColourList, Tables, []).
 
 get_colours1([], _Tables, Acc) -> Acc;
@@ -275,8 +275,7 @@ get_colours1([{Where, ColourIndex} | T], Tables, Acc) ->
     {value,{tmp_colours, ColoursId}} = ?k(tmp_colours, 1, Tables),
     [{_, [{colour, Col}]}] = ets:lookup(ColoursId, {colour_index, ColourIndex}),
     CSS = "border-" ++ atom_to_list(Where) ++ "-color",
-    CSS2 = list_to_atom(CSS),
-    get_colours1(T, Tables, [{CSS2, Col} | Acc]).
+    get_colours1(T, Tables, [{CSS, Col} | Acc]).
 
 get_css(CSSList, TypesList) -> get_css(CSSList, TypesList, []).
 
@@ -297,7 +296,7 @@ set_formats(CellRef, XFIndex, Tables) ->
     [{_XF, XFList}] = ets:lookup(XFId, {index, XFIndex}),
 
     % Formats in Excel are stored in a heirarchical arrangement
-    % We need to know the parent (or style) record for this record)
+    % We need to know the parent (or style) record for this record
 
     {value, {type, Type}} = ?k(type, 1, XFList),
     % It appears that sometimes a cell format can reference a style
@@ -325,11 +324,11 @@ set_formats(CellRef, XFIndex, Tables) ->
                      % ie kid on that the format is its own parent
                      XFList
         end,
-    
-    % 
+
+    %
     % What attributes apply are determined by the XF attributes
     % so get them first
-    % 
+    %
     {value, {attributes, AttrList}}  = ?k(attributes, 1, XFList),
     {value, {attributes, PAttrList}} = ?k(attributes, 1, PXFList),
 
@@ -339,9 +338,9 @@ set_formats(CellRef, XFIndex, Tables) ->
 
     % Attribute 1 NUMBER
     % get the appropriate FORMAT_INDEX
-    {value, {number, NumAttr}}  = ?k(number, 1, AttrList), 
+    {value, {number, NumAttr}}  = ?k(number, 1, AttrList),
     {value, {number, PNumAttr}} = ?k(number, 1, PAttrList),
-    
+
     {value, {format_index, FormatIdx}} =
         case {NumAttr, PNumAttr} of
             {use_this, _}        -> ?k(format_index, 1, XFList);
@@ -351,10 +350,10 @@ set_formats(CellRef, XFIndex, Tables) ->
         end,
     Return = ets:lookup(FormatsId, {format_index, FormatIdx}),
     [{_Idx, [_Type, _Category, Format]}] = Return,
-    
+
     % Attribute 2 FONT
     % get the appropriate FONT index
-    {value, {font, FontAttr}}  = ?k(font, 1, AttrList), 
+    {value, {font, FontAttr}}  = ?k(font, 1, AttrList),
     {value, {font, PFontAttr}} = ?k(font, 1, PAttrList),
 
     {value, {font_index, FontIdx}} =
@@ -372,33 +371,34 @@ set_formats(CellRef, XFIndex, Tables) ->
     % get the following CSS elements
     % * 'vertical-align'
     % * 'text-align'
-    {value, {text, TextAttr}}  = ?k(text, 1, AttrList), 
-    {value, {text, PTextAttr}} = ?k(text, 1, PAttrList), 
+    {value, {text, TextAttr}}  = ?k(text, 1, AttrList),
+    {value, {text, PTextAttr}} = ?k(text, 1, PAttrList),
     TextCSS =
         case {TextAttr, PTextAttr} of
-            {use_this, _}        -> get_css(CSSList, ['vertical-align',
-                                                      'text-align']);
-            {use_parent, valid}  -> get_css(PCSSList,['vertical-align',
-                                                      'text-align']);
-            {valid, valid}       -> get_css(PCSSList,['vertical-align',
-                                                      'text-align']); % parent is child
-            {use_parent, ignore} -> get_css(CSSList, ['vertical-align',
-                                                      'text-align']);
-            {ignore, ignore}     -> get_css(CSSList, ['vertical-align',
-                                                      'text-align'])
+            {use_this, _}        -> get_css(CSSList, ["vertical-align",
+                                                      "text-align"]);
+            {use_parent, valid}  -> get_css(PCSSList,["vertical-align",
+                                                      "text-align"]);
+            {valid, valid}       -> get_css(PCSSList,["vertical-align",
+                                                      "text-align"]); % parent is child
+            {use_parent, ignore} -> get_css(CSSList, ["vertical-align",
+                                                      "text-align"]);
+            {ignore, ignore}     -> get_css(CSSList, ["vertical-align",
+                                                      "text-align"])
         end,
+
     % Attribute 4 BORDER
     % get the following CSS elements
-    % * 'border-left      '
-    % * 'border-right'
-    % * 'border-top'
-    % * 'border-bottom'
-    % 
+    % * "border-left"
+    % * "border-right"
+    % * "border-top"
+    % * "border-bottom"
+    %
     % and then looks up the colour indices to generate the following:
-    % * 'border-colour'
+    % * "border-colour"
     %
     % First get the attributes
-    {value, {border, BorderAttr}}  = ?k(border, 1, AttrList), 
+    {value, {border, BorderAttr}}  = ?k(border, 1, AttrList),
     {value, {border, PBorderAttr}} = ?k(border, 1, PAttrList),
 
     % Now get the colour indices
@@ -408,45 +408,45 @@ set_formats(CellRef, XFIndex, Tables) ->
     BorderCSS =
         case {BorderAttr, PBorderAttr} of
             {use_this, _}        ->
-                S = get_css(CSSList, ['border-left-width', 'border-right-width',
-                                      'border-top-width',  'border-bottom-width',
-                                      'border-left-style', 'border-right-style',
-                                      'border-top-style',  'border-bottom-style']),
+                S = get_css(CSSList, ["border-left-width", "border-right-width",
+                                      "border-top-width",  "border-bottom-width",
+                                      "border-left-style", "border-right-style",
+                                      "border-top-style",  "border-bottom-style"]),
                 C = get_colours(ColoursList,Tables),
                 lists:merge([S, C]);
             {use_parent, valid}  ->
-                S = get_css(PCSSList, ['border-left-width', 'border-right-width',
-                                       'border-top-width',  'border-bottom-width',
-                                       'border-left-style', 'border-right-style',
-                                       'border-top-style',  'border-bottom-style']),
+                S = get_css(PCSSList, ["border-left-width", "border-right-width",
+                                       "border-top-width",  "border-bottom-width",
+                                       "border-left-style", "border-right-style",
+                                       "border-top-style",  "border-bottom-style"]),
                 C = get_colours(PColoursList,Tables),
                 lists:merge([S, C]);
             {valid, valid}       -> % parent is child
-                S = get_css(PCSSList, ['border-left-width', 'border-right-width',
-                                       'border-top-width',  'border-bottom-width',
-                                       'border-left-style', 'border-right-style',
-                                       'border-top-style',  'border-bottom-style']),
+                S = get_css(PCSSList, ["border-left-width", "border-right-width",
+                                       "border-top-width",  "border-bottom-width",
+                                       "border-left-style", "border-right-style",
+                                       "border-top-style",  "border-bottom-style"]),
                 C = get_colours(PColoursList,Tables),
                 lists:merge([S, C]);
             {use_parent, ignore} ->
-                S = get_css(CSSList, ['border-left-width', 'border-right-width',
-                                      'border-top-width',  'border-bottom-width',
-                                      'border-left-style', 'border-right-style',
-                                      'border-top-style',  'border-bottom-style']),
+                S = get_css(CSSList, ["border-left-width", "border-right-width",
+                                      "border-top-width",  "border-bottom-width",
+                                      "border-left-style", "border-right-style",
+                                      "border-top-style",  "border-bottom-style"]),
                 C = get_colours(ColoursList,Tables),
                 lists:merge([S, C]);
             {ignore, ignore} ->
-                S = get_css(CSSList, ['border-left-width', 'border-right-width',
-                                      'border-top-width',  'border-bottom-width',
-                                      'border-left-style', 'border-right-style',
-                                      'border-top-style',  'border-bottom-style']),
+                S = get_css(CSSList, ["border-left-width", "border-right-width",
+                                      "border-top-width",  "border-bottom-width",
+                                      "border-left-style", "border-right-style",
+                                      "border-top-style",  "border-bottom-style"]),
                 C = get_colours(ColoursList,Tables),
                 lists:merge([S, C])
         end,
 
     % Attribute 5 BACKGROUND
     % uses the PatternBackgroundColourIndex to generate the background CSS
-    {value, {background, BackgroundAttr}}  = ?k(background, 1, AttrList), 
+    {value, {background, BackgroundAttr}}  = ?k(background, 1, AttrList),
     {value, {background, PBackgroundAttr}} = ?k(background, 1, PAttrList),
 
     % Now get the colour indices
@@ -458,23 +458,23 @@ set_formats(CellRef, XFIndex, Tables) ->
             {use_this, _}        ->
                 C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
                 [{_, [{colour,Col}]}] = C2,
-                {'background-color', [Col]};
+                {"background-color", Col};
             {use_parent, valid}  ->
                 C2 = ets:lookup(ColoursId,{colour_index, PBGColour}),
                 [{_, [{colour,Col}]}] = C2,
-                {'background-color', [Col]};
+                {"background-color", Col};
             {valid, valid}       -> % parent is child
                 C2 = ets:lookup(ColoursId,{colour_index, PBGColour}),
                 [{_, [{colour,Col}]}] = C2,
-                {'background-color', [Col]};
+                {"background-color", Col};
             {use_parent, ignore} ->
                 C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
                 [{_, [{colour,Col}]}] = C2,
-                {'background-color', [Col]};
+                {"background-color", Col};
             {ignore, ignore} ->
                 C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
                 [{_, [{colour,Col}]}] = C2,
-                {'background-color', [Col]}
+                {"background-color", Col}
         end,
 
     % Attribute 6 PROTECTION
@@ -501,8 +501,8 @@ set_formats(CellRef, XFIndex, Tables) ->
                 [] -> ok;
                 _  -> lists:append([List3, BorderCSS])
     end,
-    StyleRecord = ms_util:make_record(magic_style, List4),
-    ?write(Tables, css, [CellRef, StyleRecord]),
+
+    ?write(Tables, css, [CellRef, List4]),
     {ok, ok}.
 
 %% Excel has a number of built in number formats
@@ -520,7 +520,7 @@ add_built_in_formats(Tables) ->
          [{format_index,3}, {type,number},  {category,decimal},  {format,"#,##0"}],
          [{format_index,4}, {type,number},  {category,decimal},  {format,"#,##0.00"}],
          [{format_index,5}, {type,number},  {category,currency},
-          {format,"\"$\"##0_);(\"$\"#,##0)"}], 
+          {format,"\"$\"##0_);(\"$\"#,##0)"}],
           [{format_index,6}, {type,number}, {category,currency},
            {format,"\"$\"##0_);[Red](\"$\"#,##0)"}],
            [{format_index,7}, {type,number}, {category,currency},

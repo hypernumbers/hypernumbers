@@ -2,11 +2,11 @@
 %%% File     filefilters.erl
 %%% @author  Gordon Guthrie gordon@hypernumbers.com
 %%% @doc     This module runs Microsoft Office filters.
-%%% 
+%%%
 %%%          It reads the Microsoft Compound File format which
 %%%          describes the 'physical' layout of all Microsoft Office
 %%%          compound file format documents. It reads the basic structure
-%%%          of the file and the passes them over to the module 
+%%%          of the file and the passes them over to the module
 %%%          @link{excel} with a call to @link{excel:read_excel/3}
 %%% @end
 %%% Created     :  4 Apr 2007 by Gordon Guthrie
@@ -39,7 +39,7 @@ read(excel,FileIn,Fun)->
     read_excel(excel, FileIn, Fun).
 
 %% @spec read(excel, FileName) -> term()
-%% @doc as per read/3 except the default Fun is applied 
+%% @doc as per read/3 except the default Fun is applied
 %% which is just {@link excel_util:dump/1}
 read(excel,FileIn)->
     read_excel(excel, FileIn, fun decipher_ets_tables/1).
@@ -52,22 +52,23 @@ decipher_ets_tables(Tids) ->
     CellRecs = read_table(cell, Tids),
     CellInfo = [ {Index, Body} || {Index, [_, Body]} <- CellRecs],
     AFRecs = read_table(array_formulae, Tids),
-    Celldata = CellInfo ++ AFRecs,
+    CellData = CellInfo ++ AFRecs,
     Names = read_table(names, Tids),
     Formats = read_table(formats, Tids),
-    CSS = read_table(css, Tids),
+    CSSRecs = read_table(css, Tids),
+    CSSData = [ {Index, Body} || {Index, [Body]} <- CSSRecs],
     Warnings = read_table(warnings, Tids),
     Sheetnames = read_table(sheetnames, Tids),
-    {Celldata, Names, Formats, CSS, Warnings, Sheetnames}.
+    {CellData, Names, Formats, CSSData, Warnings, Sheetnames}.
 
 read_excel(excel,FileIn,Fun)->
-    
+
     Tables = create_ets(),
     {ok, Response} = filter_file(FileIn),
-    
+
     { ParsedDirectory, ParsedSAT, ParsedSSAT, _SSAT_StartSID,
       SectorSize, ShortSectorSize, MinStreamSize} = Response,
-    
+
     SubStreams = excel:get_file_structure(ParsedDirectory, ParsedSAT, ParsedSSAT,
                                           SectorSize, ShortSectorSize,
                                           MinStreamSize, Tables, FileIn),
@@ -381,7 +382,7 @@ test_DEBUG()->
     read(excel,FileRoot++"/"++File),
     io:format("~s processed~n",[File]).
 
-%% this function creates the default palette as per Section 5.74.2 and 
+%% this function creates the default palette as per Section 5.74.2 and
 %%  5.74.3 of excelfileformatV1-42.pdf
 create_default_palette(Tables) ->
     L = [[{colour_index, 16#00}, {colour, "rgb(000,000,000)"}], % EGA Black

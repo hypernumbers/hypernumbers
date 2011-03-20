@@ -27,7 +27,7 @@ parse_rec(?FORMULA, Bin, Name, _Tbl) ->
     <<Row:16/little-unsigned-integer, Col:16/little-unsigned-integer,
      XF:16/little-unsigned-integer,   _Result:64, _CalcFlag:16, _NotUsed:32,
      Rest/binary>> = Bin,
-    
+
     {Tok, TokArr} = parse_FRM_Results(Rest, Name),
     {write, tmp_cell, [mref(Name, Row, Col),
                        {xf_index,XF},
@@ -60,13 +60,13 @@ parse_rec(?NAME, Bin, Name, Tbl) ->
 
     <<_Options:1/binary, NameName:Len/binary, Rest2/binary>>=Rest,
 
-    NLen = length(binary_to_list(Rest2)),   
+    NLen = length(binary_to_list(Rest2)),
     {Tok, _Arr} = parse_FRM_Results(<<NLen:16/little,Rest2/binary>>, Name),
     Scope = case SheetId of 0 -> global; _ -> local end,
 
     Id = excel_util:get_length(Tbl, tmp_names),
     ExtBookId = excel_util:get_length(Tbl, tmp_externalbook) - 1,
-    
+
     {write, tmp_names, [{index, Id},
                         {extbook, ExtBookId},
                         {sheetindex, SheetId},
@@ -97,24 +97,24 @@ parse_rec(?FONT, Bin, _Name, _Tbl) ->
     OptionsCSS = parse_font_options(Options),
     % Now turn all this lot into CSS formats
     % FONT-WEIGHT
-    % 
+    %
     % THIS WILL WIG OUT IF EXCEL SETS WEIGHTS OTHER THAN BOLD AND NORMAL
     % BUT HEY!
     %
     FontWeightCSS = case FontWeight of
                         400 -> []; % normal
-                        700 -> [{'font-weight',["bold"]}]
+                        700 -> [{"font-weight","bold"}]
                     end,
     % FONT-SIZE CSS
-    FontSizeCSS=[{'font-size',[integer_to_list(round(Height/20))++"px"]}],
+    FontSizeCSS=[{"font-size",integer_to_list(round(Height/20))++"px"}],
     % VERTICAL-ALIGN CSS
     VAlignCSS = case Escapement of
                     ?rc_FONT_ESCAPEMENT_NONE        ->
                         [];
                     ?rc_FONT_ESCAPEMENT_SUPERSCRIPT ->
-                        [{'vertical-align',["super"]}];
+                        [{"vertical-align","super"}];
                     ?rc_FONT_ESCAPEMENT_SUBSCRIPT   ->
-                        [{'vertical-align',["sub"]}]
+                        [{"vertical-align","sub"}]
                 end,
 
     % Accounting underlines are slightly different to normal ones
@@ -122,19 +122,19 @@ parse_rec(?FONT, Bin, _Name, _Tbl) ->
     % go from the currency symbol to the end of the number
     %
     % Hell mend thae accounting johnnies!
-    % 
+    %
     % BORDER-BOTTOM-STYLE CSS
     BorderBotStyleCSS = case UnderlineType of
                             ?rc_FONT_UNDERLINE_NONE       ->
                                 [];
                             ?rc_FONT_UNDERLINE_SINGLE     ->
-                                [{'border-bottom-style',["single"]}];
+                                [{"border-bottom-style","single"}];
                             ?rc_FONT_UNDERLINE_DOUBLE     ->
-                                [{'border-bottom-style',["double"]}];
+                                [{"border-bottom-style","double"}];
                             ?rc_FONT_UNDERLINE_SINGLE_ACC ->
-                                [{'border-bottom-style',["single"]}];
+                                [{"border-bottom-style","single"}];
                             ?rc_FONT_UNDERLINE_DOUBLE_ACC ->
-                                [{'border-bottom-style',["double"]}]
+                                [{"border-bottom-style","double"}]
                         end,
     % FONT-FAMILY CSS
     FontFamCSSBits = case FontFamily of
@@ -145,11 +145,11 @@ parse_rec(?FONT, Bin, _Name, _Tbl) ->
                          ?rc_FONT_FAMILY_SCRIPT     -> ["cursive"];
                          ?rc_FONT_FAMILY_DECORATIVE -> [];
                          _                          -> []
-                     
+
                      end,
-    
+
     FontNameCSSBits = excel_util:get_utf8(excel_util:parse_CRS_Uni16(FontName)),
-    FontFamilyCSS=[{'font-family', string:join([FontNameCSSBits|FontFamCSSBits], ",")}],
+    FontFamilyCSS=[{"font-family", string:join([FontNameCSSBits|FontFamCSSBits], ",")}],
     CSS = lists:merge([OptionsCSS, FontWeightCSS, FontSizeCSS, VAlignCSS,
                        BorderBotStyleCSS, FontFamilyCSS]),
     {append, tmp_fonts, [{colour_index, ColourIdx}, {css, CSS}]};
@@ -184,7 +184,7 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
      XFCellBorders1:32/little-unsigned-integer,
      XFCellBorders2:32/little-unsigned-integer,
      XFCellBorders3:16/little-unsigned-integer>> = Bin,
-    
+
     XFType =  case (XFTypeAndParent band ?rc_XF_XF_TYPE_MASK) of
                   4 -> style; % yup, its a mask match so it is a power of 2
                   0 -> cell
@@ -207,15 +207,15 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
     TextAlignCSSbits1 =
         case (XFAlignment band ?rc_XF_H_ALIGN_MASK) of
             ?rc_XF_H_ALIGN_GENERAL        -> [];
-            ?rc_XF_H_ALIGN_LEFT           -> ["left"];
-            ?rc_XF_H_ALIGN_CENTERED       -> ["center"];
-            ?rc_XF_H_ALIGN_RIGHT          -> ["right"];
+            ?rc_XF_H_ALIGN_LEFT           -> "left";
+            ?rc_XF_H_ALIGN_CENTERED       -> "center";
+            ?rc_XF_H_ALIGN_RIGHT          -> "right";
             % cant do fill with numbers
-            ?rc_XF_H_ALIGN_FILLED         -> [];          
-            ?rc_XF_H_ALIGN_JUSTIFIED      -> ["justify"];
+            ?rc_XF_H_ALIGN_FILLED         -> [];
+            ?rc_XF_H_ALIGN_JUSTIFIED      -> "justify";
             % not the same as Excel!
-            ?rc_XF_H_ALIGN_CEN_ACROSS_SEL -> ["center"];  
-            ?rc_XF_H_ALIGN_DISTRIBUTED    -> ["justify"]
+            ?rc_XF_H_ALIGN_CEN_ACROSS_SEL -> "center";
+            ?rc_XF_H_ALIGN_DISTRIBUTED    -> "justify"
         end,
 
     % Ignore wrapping as set by the flag rc_XF_TEXT_WRAPPED
@@ -223,24 +223,24 @@ parse_rec(?XF2, Bin, _Name, _Tbl) ->
     % to lop of the 4 bits of binary down the line
     VAlignCSSbits =
         case trunc((XFAlignment band ?rc_XF_V_ALIGN_MASK)/8) of
-            ?rc_XF_V_ALIGN_TOP         -> ["text-top"];
-            ?rc_XF_V_ALIGN_CENTRED     -> ["middle"];
-            ?rc_XF_V_ALIGN_BOTTOM      -> ["text-bottom"];
-            ?rc_XF_V_ALIGN_JUSTIFIED   -> ["middle"]; % cant be done
-            ?rc_XF_V_ALIGN_DISTRIBUTED -> ["middle"]  % cant be done
+            ?rc_XF_V_ALIGN_TOP         -> "text-top";
+            ?rc_XF_V_ALIGN_CENTRED     -> "middle";
+            ?rc_XF_V_ALIGN_BOTTOM      -> "text-bottom";
+            ?rc_XF_V_ALIGN_JUSTIFIED   -> "middle"; % cant be done
+            ?rc_XF_V_ALIGN_DISTRIBUTED -> "middle"  % cant be done
         end,
 
     VAlignCSS=[{'vertical-align',VAlignCSSbits}],
 
     TextAlignCSSbits2 =
         case (XFAlignment band ?rc_XF_LAST_CHAR_JUSTIFY_MASK) of
-            ?rc_XF_LAST_CHAR_JUSTIFY -> ["justify"];
+            ?rc_XF_LAST_CHAR_JUSTIFY -> "justify";
             _                        -> []
         end,
 
     TextAlignCSSbitsmerged = lists:merge([TextAlignCSSbits1,
                                           TextAlignCSSbits2]),
-    
+
     TextAlignCSS = case TextAlignCSSbitsmerged of
                        []    -> [];
                        Other -> [{'text-align',Other}]
@@ -354,25 +354,25 @@ parse_rec(?LABELSST, Bin, Name, Tbl) ->
     {write, cell, [mref(Name, Row, Col), {xf_index, XF}, {string, String}]};
 
 % SUPBOOK is called EXTERNALBOOK in excelfileformatv1-42.pdf
-% 
+%
 % the workbook structure will be built up fror the appropriate records
 % as described in Section 4.10.3 of the excelfileformatsV1-42.pdf
-% 
+%
 % The records involved are:
 % * SUPBOOK/EXTERNALBOOK
 % * EXERNSHEET
 % * EXTERNNAME
 % * NAME/DEFINEDNAME
-% 
-% The strategy is to take advantage of the sequential nature of 
+%
+% The strategy is to take advantage of the sequential nature of
 % the Excel file format. As an EXTERNALBOOK record is read it
 %  will be appended to the table:
 % * tmp_workbook
 %
 % an EXTERNSHEET record will be given an index to the last SUPBOOK/EXTERNALBOOK
 % record
-% 
-% In addition entries into the table 
+%
+% In addition entries into the table
 parse_rec(?SUPBOOK, Bin, _Name, Tbl) ->
     case Bin of
         <<NoSheets:16/little-unsigned-integer,
@@ -389,7 +389,7 @@ parse_rec(?SUPBOOK, Bin, _Name, Tbl) ->
             write_externalref({skipped,dde_ole},[],Tbl),
             {write, lacunae, [{identifier,"DDE and OLE links",Tbl},
                               {source,excel_records.erl}]};
-        _ -> 
+        _ ->
             parse_externalrefs(Bin,Tbl),
             ok
     end;
@@ -414,7 +414,7 @@ parse_rec(?BOOLERR2, Bin, Name, _Tbl) ->
      Type:8/little-unsigned-integer>>=Bin,
 
     {ValType, Val} = case Type of
-                         0 -> 
+                         0 ->
                              case BoolErr of
                                  0 -> {boolean,false};
                                  1 -> {boolean,true}
@@ -526,32 +526,32 @@ get_style(Loc, LineStyle) ->
     Style = list_to_atom("border-"++Loc++"-style"),
     case LineStyle of
         ?rc_XF_BORDER_NO_LINE              -> [];
-        ?rc_XF_BORDER_THIN                 -> [{Border, ["solid" ]},
-                                               {Style,  ["thin"  ]}];
-        ?rc_XF_BORDER_MEDIUM               -> [{Border, ["solid" ]},
-                                               {Style,  ["medium"]}];
-        ?rc_XF_BORDER_DASHED               -> [{Border, ["dashed"]},
-                                               {Style,  ["medium"]}];
-        ?rc_XF_BORDER_DOTTED               -> [{Border, ["dotted"]},
-                                               {Style,  ["medium"]}];
-        ?rc_XF_BORDER_THICK                -> [{Border, ["solid" ]},
-                                               {Style,  ["thick" ]}];
-        ?rc_XF_BORDER_DOUBLE               -> [{Border, ["double"]},
-                                               {Style,  ["medium"]}];
-        ?rc_XF_BORDER_HAIR                 -> [{Border, ["solid" ]},
-                                               {Style,  ["thin"  ]}];
-        ?rc_XF_BORDER_MED_DASHED           -> [{Border, ["dashed"]},
-                                               {Style,  ["medium"]}];
-        ?rc_XF_BORDER_THIN_DASH_DOT        -> [{Border, ["dotted"]},
-                                               {Style,  ["thin"  ]}];
-        ?rc_XF_BORDER_MED_DASH_DOT         -> [{Border, ["dotted"]},
-                                               {Style,  ["medium"]}];
-        ?rc_XF_BORDER_THIN_DASH_DOT_DOT    -> [{Border, ["dotted"]},
-                                               {Style,  ["thin"  ]}];
-        ?rc_XF_BORDER_MED_DASH_DOT_DOT     -> [{Border, ["dotted"]},
-                                               {Style,  ["medium"]}];
-        ?rc_XF_BORDER_SLANTED_MED_DASH_DOT -> [{Border, ["dotted"]},
-                                               {Style,  ["medium"]}]
+        ?rc_XF_BORDER_THIN                 -> [{Border, "solid" },
+                                               {Style,  "thin"  }];
+        ?rc_XF_BORDER_MEDIUM               -> [{Border, "solid" },
+                                               {Style,  "medium"}];
+        ?rc_XF_BORDER_DASHED               -> [{Border, "dashed"},
+                                               {Style,  "medium"}];
+        ?rc_XF_BORDER_DOTTED               -> [{Border, "dotted"},
+                                               {Style,  "medium"}];
+        ?rc_XF_BORDER_THICK                -> [{Border, "solid" },
+                                               {Style,  "thick" }];
+        ?rc_XF_BORDER_DOUBLE               -> [{Border, "double"},
+                                               {Style,  "medium"}];
+        ?rc_XF_BORDER_HAIR                 -> [{Border, "solid" },
+                                               {Style,  "thin"  }];
+        ?rc_XF_BORDER_MED_DASHED           -> [{Border, "dashed"},
+                                               {Style,  "medium"}];
+        ?rc_XF_BORDER_THIN_DASH_DOT        -> [{Border, "dotted"},
+                                               {Style,  "thin"  }];
+        ?rc_XF_BORDER_MED_DASH_DOT         -> [{Border, "dotted"},
+                                               {Style,  "medium"}];
+        ?rc_XF_BORDER_THIN_DASH_DOT_DOT    -> [{Border, "dotted"},
+                                               {Style,  "thin"  }];
+        ?rc_XF_BORDER_MED_DASH_DOT_DOT     -> [{Border, "dotted"},
+                                               {Style,  "medium"}];
+        ?rc_XF_BORDER_SLANTED_MED_DASH_DOT -> [{Border, "dotted"},
+                                               {Style,  "medium"}]
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -564,29 +564,29 @@ parse_font_options(Bin) ->
     <<Ex:1, Cond:1, Shadow:1, _Outline:1, StruckOut:1, _Und:1,
      Italic:1, _Bold:1, 0:8>> = Bin,
     FontStyleCSS = case Italic of
-                       1 -> [{'font-style',["italic"]}];
+                       1 -> [{"font-style","italic"}];
                        0 -> []
                    end,
     TextDecorationCSS = case StruckOut of
-                            1 -> [{'text-decoration',["line-through"]}];
+                            1 -> [{"text-decoration","line-through"}];
                             0 -> []
                         end,
     TextShadowCSS = case Shadow of
-                        1 -> [{'text-shadow',["2px","2px","2px"]}];
+                        1 -> [{"text-shadow","2px 2px 2px"}];
                         0 -> []
                     end,
     FSCSSbits1 = case Cond of
-                     1 -> ["condensed"];
+                     1 -> "condensed";
                      0 -> []
                  end,
     FSCSSbits2 = case Ex of
-                     1 -> ["expanded"];
+                     1 -> "expanded";
                      0 -> []
                  end,
     FontStretchCSS = case {FSCSSbits1,FSCSSbits2} of
                          {[], []} -> [];
-                         {[], A}  -> [{'font-stretch',A}];
-                         {A, []}  -> [{'font-stretch',A}];
+                         {[], A}  -> [{"font-stretch",A}];
+                         {A, []}  -> [{"font-stretch",A}];
                          {_A, _B} -> exit("invalid record of type FONT")
                      end,
     lists:merge([FontStyleCSS, TextDecorationCSS, TextShadowCSS, FontStretchCSS]).
@@ -614,7 +614,7 @@ parse_FRM_Results(<<>>, _Name) ->
 parse_FRM_Results(<<Size:16/little-unsigned-integer, Rest/binary>>, Name) ->
     case Size of
         0 -> {[], []};
-        _ -> 
+        _ ->
             <<RPN:Size/binary, TkArray/binary>>=Rest,
             excel_tokens:parse_tokens(RPN, Name, TkArray, [])
     end.
@@ -640,7 +640,7 @@ parse_SST(NoOfStrings, NoOfStrings, _Tbl, _) ->
 
 parse_SST(StringNo, NoOfStrings, Tbl, [<<>> | T]) ->
     parse_SST(StringNo, NoOfStrings, Tbl, T);
-                                                          
+
 parse_SST(StringNo, NoOfStrings, Tbl, [H | T]) ->
 
     % Estimate the size of the string record
@@ -650,9 +650,9 @@ parse_SST(StringNo, NoOfStrings, Tbl, [H | T]) ->
     {NewHead, NewTail, StringRec} = extract_sst(BinSize, Size, H, T),
     {_PreFlags, String, _PostFlags} = StringRec,
 
-    Str = prepend_quote(build_string(String)),    
+    Str = prepend_quote(build_string(String)),
     excel_util:write(Tbl, tmp_strings, [{index,  StringNo}, {string, Str}]),
-    
+
     %BinLen = 8 * StrLen2,
     %<<_:BinLen/little-unsigned-integer, Rest/binary>> = Strings,
     parse_SST(StringNo+1, NoOfStrings, Tbl, [NewHead | NewTail]).
@@ -674,16 +674,16 @@ build_string([H|T], Acc) ->
 %% this will change if overflows SST, but is safe to use to check
 %% if it will overflow
 binary_size(Bin) ->
-    
+
     <<Chars:16/little-unsigned-integer,
      Flags:8/little-unsigned-integer,
      Rest/binary>> = Bin,
-    
+
     {RTFlagSize, RTRecSize, Rest2}
         = flag(rich_text, check_flags(Flags, ?CRS_UNI16_RICH_TEXT), Rest),
     {ASNFlagSize, ASNRecSize, _Rest3}
         = flag(asian, check_flags(Flags, ?CRS_UNI16_ASIAN), Rest2),
-    
+
     % PreHeader Size
     {(2 + 1 + RTFlagSize + ASNFlagSize),
      % String Size
@@ -713,7 +713,7 @@ extract_sst(BinSize, {Pre, {Chars, Mult}, Post}, H, T)
 
 % string overflows to next sst
 extract_sst(_BinSize, {Pre, {Chars, Mult}, Post}, H, [First | T]) ->
-   
+
     % Read the last bytes off the first record
     <<PreFlags:Pre/binary, Rest/binary>> = H,
     CharsRead = erlang:size(Rest) / Mult,
@@ -789,7 +789,7 @@ parse_externsheet(Bin,N,Tbl)->
     excel_util:write(Tbl,tmp_extsheets,Record),
     parse_externsheet(Rest,N+1,Tbl).
 
-%% parses external references as defined in Section 5.99.1 of 
+%% parses external references as defined in Section 5.99.1 of
 %% excelvileformatV1.40.pdf only covers the sheet reference used and
 %% not the URL or file part of it
 parse_externalrefs(<<_NoOfSh:16/little-unsigned-integer,Rest/binary>>, Tbl) ->
@@ -846,7 +846,7 @@ parse_externname(Bin, Tbl) ->
     % when we don't :(
     <<MiniOptions:4/little-unsigned-integer, Discard:12/little-unsigned-integer,
      Rest/binary>>=Bin,
-    
+
     case MiniOptions of
         ?STANDARD   ->
             <<_NameIndex:16, _NotUsed:16, Name/binary>> = Rest,
