@@ -172,15 +172,20 @@ rewrite_styles(Styles, ImportStyles) ->
                   lists:sort([{MS,Idx} || #style{magic_style = MS,
                                                  idx = Idx} <- Styles])),
     RewriteF = fun(#style{magic_style=MS, idx=OldIdx}, RT) ->
-                       NewIdx = case gb_trees:lookup(MS, StyleTree) of
-                                    {value, NI} -> NI;
-                                    _ -> util2:get_timestamp()
-                                end,
-                       gb_trees:insert(OldIdx, NewIdx, RT)
+                       case gb_trees:lookup(MS, StyleTree) of
+                           {value, _} -> RT;
+                           _          -> NewIdx = util2:get_timestamp(),
+                                         gb_trees:insert(OldIdx, NewIdx, RT)
+                       end
                end,
     RewriteT = lists:foldl(RewriteF, gb_trees:empty(), ImportStyles),
-    ImportStyles2 = [S#style{idx = gb_trees:get(OldIdx, RewriteT)}
-                     || S=#style{idx=OldIdx} <- ImportStyles],
+    Fun = fun(#style{idx = Idx} = X, Acc) ->
+                  case gb_trees:lookup(Idx, RewriteT) of
+                      {value, Val} -> [X#style{idx = Val} | Acc];
+                      none         -> Acc
+                  end
+          end,
+    ImportStyles2 = lists:foldl(Fun, [], ImportStyles),
     {ImportStyles2, RewriteT}.
 
 -spec make_style_rec({string(), string()}) -> #style{}.
