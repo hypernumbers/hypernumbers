@@ -59,10 +59,14 @@ convert_addr({{Fr, Fc}, {Lr, Lc}}) ->
 convert_addr({Row, Col}) ->
     rc_to_a1(Row, Col).
 
+split_css(X, Acc) ->
+    {SheetName, Target, V} = read_reader_record(X),
+    Sheet = excel_util:esc_tab_name(SheetName),
+    [{Sheet, convert_addr(Target), V} | Acc].
+
 split_sheets(X, {Ls, Fs}) ->
     {SheetName, Target, V} = read_reader_record(X),
     Sheet = excel_util:esc_tab_name(SheetName),
-    %Ref = convert_addr(Target),
 
     Postdata = conv_for_post(V),
     Datatpl = {Sheet, convert_addr(Target), Postdata},
@@ -75,21 +79,12 @@ split_sheets(X, {Ls, Fs}) ->
 write_data(Ref, {Sheet, Target, Data}) when is_list(Target) ->
     NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
                     obj  = hn_util:parse_attr(Target)},
-    hn_db_api:write_attributes([{NRef, [{"formula", Data}]}]);
+    hn_db_api:write_attributes([{NRef, [{"formula", Data}]}]).
 
-write_data(_Ref, {_Sheet, {_Tl, _Br}, _Data}) ->
-    %Name = excel_util:esc_tab_name(Sheet),
-    %NRef = Ref#refX{path = Ref#refX.path ++ [Name],
-    %                obj = hn_util:parse_attr(Tl ++ ":" ++ Br)},
-    ok.
-%    hn_main:formula_to_range(NRef, Data).
-
-write_css(Ref, {{{sheet, Sheet}, {row_index, R}, {col_index, C}}, [CSS]}) ->
-    Name = excel_util:esc_tab_name(Sheet),
-    Obj = {cell, {C + 1, R + 1}},
-    NRef = Ref#refX{path = Ref#refX.path ++ [Name], obj = Obj},
-    StyleIdx = hn_db_api:write_magic_style_IMPORT(NRef, defaultize(CSS)),
-    hn_db_api:write_attributes([{NRef, [{"style", StyleIdx }]}]).
+write_css(Ref, {Sheet, Target, CSS}) when is_list(Target) ->
+    NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
+                    obj  = hn_util:parse_attr(Target)},
+    hn_db_api:write_attributes([{NRef, CSS}]).
 
 %% Excel's default borders are
 %% * no type of border
@@ -100,36 +95,35 @@ write_css(Ref, {{{sheet, Sheet}, {row_index, R}, {col_index, C}}, [CSS]}) ->
 %% * no style of border
 %% * no colour
 %% This function 'makes it so' <-- super-ugelee n'est pas?
-defaultize(M) ->
-    M1 = case M of
-             #magic_style{'border-right-style' = [],
-                          'border-right-color' = "rgb(000,000,000)",
-                          'border-right-width' = []} ->
-                 M#magic_style{'border-right-color' = []};
-             _O1 -> M
-         end,
-    M2 = case M1 of
-             #magic_style{'border-left-style' = [],
-                          'border-left-color' = "rgb(000,000,000)",
-                          'border-left-width' = []} ->
-                 M1#magic_style{'border-left-color' = []};
-             _O2 -> M1
-         end,
-    M3 = case M2 of
-             #magic_style{'border-top-style' = [],
-                          'border-top-color' = "rgb(000,000,000)",
-                          'border-top-width' = []} ->
-                 M2#magic_style{'border-top-color' = []};
-             _O3 -> M2
-         end,
-    _M4 = case M3 of
-              #magic_style{'border-bottom-style' = [],
-                           'border-bottom-color' = "rgb(000,000,000)",
-                           'border-bottom-width' = []} ->
-                 M3#magic_style{'border-bottom-color' = []};
-              _O4 -> M3
-          end.
-
+%% defaultize(M) ->
+%%     M1 = case M of
+%%              #magic_style{'border-right-style' = [],
+%%                           'border-right-color' = "rgb(000,000,000)",
+%%                           'border-right-width' = []} ->
+%%                  M#magic_style{'border-right-color' = []};
+%%              _O1 -> M
+%%          end,
+%%     M2 = case M1 of
+%%              #magic_style{'border-left-style' = [],
+%%                           'border-left-color' = "rgb(000,000,000)",
+%%                           'border-left-width' = []} ->
+%%                  M1#magic_style{'border-left-color' = []};
+%%              _O2 -> M1
+%%          end,
+%%     M3 = case M2 of
+%%              #magic_style{'border-top-style' = [],
+%%                           'border-top-color' = "rgb(000,000,000)",
+%%                           'border-top-width' = []} ->
+%%                  M2#magic_style{'border-top-color' = []};
+%%              _O3 -> M2
+%%          end,
+%%     _M4 = case M3 of
+%%               #magic_style{'border-bottom-style' = [],
+%%                            'border-bottom-color' = "rgb(000,000,000)",
+%%                            'border-bottom-width' = []} ->
+%%                  M3#magic_style{'border-bottom-color' = []};
+%%               _O4 -> M3
+%%           end.
 
 test_import() ->
      test_import("buildings.west-george-street.electricity.2011.mar.9.1800051976217.data", hn_util:url_to_refX("http://hypernumbers.dev:9000")).
@@ -149,24 +143,13 @@ import(File, User, Ref, Name) ->
 
     {Cells, _Names, _Formats, CSS, Warnings, Sheets} = filefilters:read(excel, File),
     {Literals, Formulas} = lists:foldl(fun split_sheets/2, {[], []}, Cells),
-    % io:format("There are ~p literals~nThere are ~p Formulae~n",
-    %          [erlang:length(Literals), erlang:length(Formulas)]),
+    CSS2 = lists:foldl(fun split_css/2, [], CSS),
+
     [ write_data(Ref, X) || X <- Literals ],
-    % [ write_data(Ref, X) || X <- Formulas ],
-    % chunking gives the recalc engine the time to sort itself out...
-    ok = chunk_write(Ref, Formulas),
-    %io:format("going to write css~n"),
-    [ write_css(Ref, X) || X <- CSS ],
-    %io:format("write out warnings...~n"),
+    [ write_data(Ref, X) || X <- Formulas ],
+    [ write_css(Ref, X)  || X <- CSS2 ],
+
     ok = write_warnings_page(Ref, Sheets, User, Name, Warnings).
-
-chunk_write(Refs, Items) -> chunk_w1(Refs, Items, 1).
-
-chunk_w1(_Ref, [], _N)      -> ok;
-chunk_w1(Ref, List, ?CHUNK) -> timer:sleep(?SLEEP),
-                               chunk_w1(Ref, List, 1);
-chunk_w1(Ref, [H | T], N)   -> ok = write_data(Ref, H),
-                               chunk_w1(Ref, T, N + 1).
 
 write_warnings_page(Ref, Sheets, User, Name, Warnings) ->
 
