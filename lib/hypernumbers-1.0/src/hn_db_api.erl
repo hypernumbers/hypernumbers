@@ -94,8 +94,7 @@
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 
--export([write_styles_IMPORT/2,
-         write_magic_style_IMPORT/2,
+-export([
          read_styles_IMPORT/1
         ]).
 
@@ -213,29 +212,6 @@ force_r1(RefX) ->
                   ok = hn_db_wu:mark_these_dirty([RefX], nil)
            end,
     write_activity(RefX, Fun, "recalc").
-
-%% @spec write_style_IMPORT(#refX{}, #styles{}) -> Index
-%% @doc write_style will write a style record
-%% It is intended to be used in the FILE IMPORT process only
-%% - normally the respresentation of styles in the magic style record
-%% is designed to be hidden from the API
-%% (that's for why it is a 'magic' style n'est pas?)
-write_styles_IMPORT(RefX, Styles)
-  when is_record(RefX, refX) ->
-    Fun = fun() ->
-                  ok = init_front_end_notify(),
-                  [ok = hn_db_wu:write_style_IMPORT(RefX, S) || S <- Styles],
-                  ok
-          end,
-    write_activity(RefX, Fun, "write_style_IMPORT").
-
-write_magic_style_IMPORT(RefX, MStyle)
-  when is_record(RefX, refX) ->
-    Fun = fun() ->
-                  ok = init_front_end_notify(),
-                  hn_db_wu:write_magic_style_IMPORT(RefX, MStyle)
-          end,
-    write_activity(RefX, Fun, "write_style_IMPORT").
 
 read_styles_IMPORT(RefX) when is_record(RefX, refX) ->
     Fun = fun() -> hn_db_wu:read_styles_IMPORT(RefX) end,

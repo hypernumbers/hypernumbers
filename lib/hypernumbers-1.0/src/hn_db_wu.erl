@@ -77,8 +77,6 @@
         ]).
 
 -export([
-         write_style_IMPORT/2,
-         write_magic_style_IMPORT/2,
          read_styles_IMPORT/1
         ]).
 
@@ -172,15 +170,6 @@ get_cell_for_muin(#refX{obj = {cell, {XX, YY}}} = RefX, Type) ->
                     blank
             end,
     {Value, [], [{local, Type, {Site, Path, XX, YY}}]}.
-
-write_style_IMPORT(#refX{site=Site}, Style) ->
-    Tbl = trans(Site, style),
-    mnesia:write(Tbl, Style, write).
-
--spec write_magic_style_IMPORT(#refX{}, #magic_style{}) -> integer().
-write_magic_style_IMPORT(Ref=#refX{site=Site}, MagicStyle) ->
-    Tbl = trans(Site, style),
-    store_style(Ref, Tbl, MagicStyle).
 
 read_styles_IMPORT(#refX{site=Site}) ->
     Tbl = trans(Site, style),

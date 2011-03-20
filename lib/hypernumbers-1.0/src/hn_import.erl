@@ -106,16 +106,19 @@ json_file(Url, FileName) ->
                                                         {"view", Champion}]),
     [ok = set_view(S, Path, X) || X <- Views],
 
-    Styles = hn_db_api:read_styles_IMPORT(Ref),
-    ImportStyles = [make_style_rec(X) || X <- StyleStrs],
-    {ImportStyles2, RewriteT} = rewrite_styles(Styles, ImportStyles),
-    hn_db_api:write_styles_IMPORT(Ref, ImportStyles2),
+    Styles = make_styles(StyleStrs, []),
 
     ok = hn_db_api:clear(Ref, all, nil),
-    [rows(Ref, X, RewriteT, row,    fun write_col_row/3) || X <- Rows],
-    [rows(Ref, X, RewriteT, column, fun write_col_row/3) || X <- Cols],
-    [rows(Ref, X, RewriteT, cell,   fun write_cells/3)   || X <- Cells],
+    [rows(Ref, X, Styles, row,    fun write_col_row/3) || X <- Rows],
+    [rows(Ref, X, Styles, column, fun write_col_row/3) || X <- Cols],
+    [rows(Ref, X, Styles, cell,   fun write_cells/3)   || X <- Cells],
     ok.
+
+make_styles([], Acc) -> Acc;
+make_styles([{Idx, Str} | T], Acc) ->
+    Idx2 = list_to_integer(Idx),
+    List = [list_to_tuple(string:tokens(X, ":")) || X <- string:tokens(Str, ";")],
+    make_styles(T, [{Idx2, List} | Acc]).
 
 set_view(Site, Path, {View, {struct, Propslist}}) ->
     Everyone = ?pget("everyone", Propslist),
@@ -126,36 +129,36 @@ set_view(Site, Path, {View, {struct, Propslist}}) ->
                                                        {"everyone", Everyone}]).
 
 
-rows(Ref, {Row, {struct, Cells}}, RewriteT, Type, Fun) ->
-    [ cells(Ref, Row, X, RewriteT, Type, Fun) || X <- Cells],
+rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun) ->
+    [cells(Ref, Row, X, Styles, Type, Fun) || X <- Cells],
     ok.
 
-cells(Ref, Row, {Col, {struct, Attrs}}, RewriteT, Type, Fun) ->
+cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun) ->
     NRef = Ref#refX{obj = {Type, {ltoi(Col), ltoi(Row)}}},
-    Fun(NRef, RewriteT, Attrs),
+    Fun(NRef, Styles, Attrs),
     ok.
 
 write_col_row(_NRef, _, [])   -> ok;
 write_col_row(NRef, _, Attrs) ->
     hn_db_api:write_attributes([{NRef, Attrs}]).
 
-write_cells(Ref, RewriteT, Attrs) ->
-    Attrs2 = copy_attrs(Attrs, [], RewriteT, ["merge",
+write_cells(Ref, Styles, Attrs) ->
+    Attrs2 = copy_attrs(Attrs, [], Styles, ["merge",
                                               "formula",
                                               "style",
                                               "format",
                                               "input"]),
     hn_db_api:write_attributes([{Ref, Attrs2}]).
 
-copy_attrs(_Source, Dest, _RT, []) -> Dest;
-copy_attrs(Source, Dest, RT, ["style" = Key | T]) ->
+copy_attrs(_Source, Dest, _Styles, []) -> Dest;
+copy_attrs(Source, Dest, Styles, ["style" = Key | T]) ->
     case proplists:get_value(Key, Source, undefined) of
-        undefined -> copy_attrs(Source, Dest, RT, T);
-        Idx -> case gb_trees:lookup(Idx, RT) of
-                   {value, NIdx} ->
-                       copy_attrs(Source, [{Key,NIdx}|Dest], RT, T);
-                   _ ->
-                       copy_attrs(Source, [{Key,Idx}|Dest], RT, T)
+        undefined -> copy_attrs(Source, Dest, Styles, T);
+        Idx -> case lists:keyfind(Idx, 1, Styles) of
+                   {Idx, St} ->
+                       copy_attrs(Source, lists:merge([St, Dest]),
+                                   Styles, T);
+                   false -> copy_attrs(Source, Dest, Styles, T)
                end
     end;
 copy_attrs(Source, Dest, RT, [Key|T]) ->
@@ -166,38 +169,6 @@ copy_attrs(Source, Dest, RT, [Key|T]) ->
 
 ltoi(X) ->
     list_to_integer(X).
-
-rewrite_styles(Styles, ImportStyles) ->
-    StyleTree = gb_trees:from_orddict(
-                  lists:sort([{MS,Idx} || #style{magic_style = MS,
-                                                 idx = Idx} <- Styles])),
-    RewriteF = fun(#style{magic_style=MS, idx=OldIdx}, RT) ->
-                       case gb_trees:lookup(MS, StyleTree) of
-                           {value, _} -> RT;
-                           _          -> NewIdx = util2:get_timestamp(),
-                                         gb_trees:insert(OldIdx, NewIdx, RT)
-                       end
-               end,
-    RewriteT = lists:foldl(RewriteF, gb_trees:empty(), ImportStyles),
-    Fun = fun(#style{idx = Idx} = X, Acc) ->
-                  case gb_trees:lookup(Idx, RewriteT) of
-                      {value, Val} -> [X#style{idx = Val} | Acc];
-                      none         -> Acc
-                  end
-          end,
-    ImportStyles2 = lists:foldl(Fun, [], ImportStyles),
-    {ImportStyles2, RewriteT}.
-
--spec make_style_rec({string(), string()}) -> #style{}.
-make_style_rec({IdxS, Style}) ->
-    L = string:tokens(Style, ";"),
-    F = fun(X, MS) ->
-                [Key, Val] = string:tokens(X, ":"),
-                Pos = ms_util2:get_index(magic_style, Key) + 1,
-                setelement(Pos, MS, Val)
-        end,
-    Idx = list_to_integer(IdxS),
-    #style{magic_style = lists:foldl(F, #magic_style{}, L), idx = Idx}.
 
 make_append_refs(List, Ref) -> make_a1(List, Ref, []).
 
