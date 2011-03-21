@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         fix_borked_binaries/0,
          unload_from_mem/0,
          reload_into_mem/0,
          upgrade_doubler_2011_03_14/0,
@@ -30,6 +31,43 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+fix_borked_binaries() ->
+    Sites = hn_setup:get_sites(),
+        Fun1 = fun(Site) ->
+                   Fun = fun({item, Idx, Attrs}) when is_binary(Attrs)->
+                                  io:format("still binaries in item ~p~n", [Idx]),
+                                  {item, Idx, binary_to_term(Attrs)};
+                            ({item, Idx, Attrs}) ->
+                                 {item, Idx, Attrs}
+                         end,
+                   Tbl = hn_db_wu:trans(Site, item),
+                   Ret = mnesia:transform_table(Tbl, Fun,
+                                                 [idx, attrs]),
+
+                   io:format("Table ~p transformed: ~p~n", [Tbl, Ret])
+           end,
+    lists:foreach(Fun1, Sites),
+    Fun2 = fun(Site) ->
+                   % first add stuff to the relations table
+                   Fun3 = fun({local_obj, Idx, Type, Path, Obj, RevIdx})
+                             when is_binary(Path) andalso is_binary(RevIdx)->
+                                  io:format("still binaries in local_obj ~p~n",
+                                            [Idx]),
+                                  {local_obj, Idx, Type, binary_to_term(Path),
+                                   Obj, binary_to_term(RevIdx)};
+                              ({local_obj, Idx, Type, Path, Obj, RevIdx}) ->
+                                  ({local_obj, Idx, Type, Path, Obj, RevIdx})
+                          end,
+                   Tbl2 = hn_db_wu:trans(Site, local_obj),
+                   Ret2 = mnesia:transform_table(Tbl2, Fun3,
+                                                 [idx, type, path,
+                                                  obj, revidx]),
+
+                   io:format("Table ~p transformed: ~p~n", [Tbl2, Ret2])
+           end,
+    lists:foreach(Fun2, Sites),
+    ok.
 
 unload_from_mem() ->
     Sites = hn_setup:get_sites(),
