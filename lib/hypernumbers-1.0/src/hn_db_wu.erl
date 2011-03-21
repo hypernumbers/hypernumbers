@@ -1950,7 +1950,7 @@ read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
           end,
     lists:filter(Fun, Page);
 % if the intersect is a page then just read the page
-read_objs(#refX{site = S, path = P, obj = {page, "/"}} = Ref, intersect) ->
+read_objs(#refX{site = S, path = P, obj = {page, "/"}}, intersect) ->
     Table = trans(S, local_obj),
     mnesia:index_read(Table, term_to_binary(P), path);
 read_objs(#refX{site = Site} = Ref, intersect) ->
