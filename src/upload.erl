@@ -32,8 +32,8 @@
          ]).
 
 
-%-define(site, "http://dla-piper.hypernumbers.com:80").
--define(site, "http://hypernumbers.dev:9000").
+-define(site, "http://dla-piper.hypernumbers.com:80").
+%-define(site, "http://hypernumbers.dev:9000").
 
 -record(refX,
         {
@@ -49,8 +49,8 @@
         ]).
 
 perf_test() ->
-    Stamp = tconv:to_s(util2:get_timestamp()),
-    FileName = "fprof.trace." ++ Stamp,
+    %Stamp = tconv:to_s(util2:get_timestamp()),
+    %FileName = "fprof.trace." ++ Stamp,
     %fprof:trace([start, {file, FileName}]),
     RefX = #refX{site = ?site, path = [], obj = {page, "/"}},
     hn_templates:load_template(RefX, "meter_page").
@@ -59,7 +59,7 @@ perf_test() ->
     %fprof:analyse([{dest, "fprof.analyze."++Stamp}]).
 
 upload() ->
-    Dir = "/home/gordon/hypernumbers/priv/dataupload/",
+    Dir = "/hn/hypernumbers/priv/dataupload/",
     Files = filelib:wildcard(Dir ++ "/*.xls"),
     io:format("There are ~p files~n", [length(Files)]),
     io:format("An example is ~p~n", [hd(Files)]),
@@ -104,8 +104,8 @@ log_memory(Path) ->
     {value, {binary, Binary}} = lists:keysearch(binary, 1, Memory),
     {value, {code, Code}} = lists:keysearch(code, 1, Memory),
     {value, {ets, Ets}} = lists:keysearch(ets, 1, Memory),
-    Server = list_to_atom(hn_util:site_to_fs(Site) ++ "_dbsrv"),
-    PID = globalwhereis_name(Server),
+    Server = list_to_atom(hn_util:site_to_fs(?site) ++ "_dbsrv"),
+    PID = global:whereis_name(Server),
     Heap = process_info(PID, [heap_size]),
     Msgs = process_info(PID, [message_queue_len]),
     log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p",
