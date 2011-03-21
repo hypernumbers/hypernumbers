@@ -388,6 +388,27 @@ get_modules() ->
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 process_for_gui([Fn | []])  -> {struct, [{fn, Fn}, {args, []}]};
+process_for_gui([Fn| Args]) when ?is_fn(Fn)
+                                 andalso (Fn == '='
+                                          orelse Fn == '<>'
+                                          orelse Fn == '>'
+                                          orelse Fn == '<'
+                                          orelse Fn == '>='
+                                          orelse Fn == '<='
+                                          orelse Fn == '+'
+                                          orelse Fn == '-'
+                                          orelse Fn == '*'
+                                          orelse Fn == '/'
+                                          orelse Fn == '^'
+                                          orelse Fn == '&'
+                                          orelse Fn == '%'
+                                          orelse Fn == '^^')
+                                          ->
+    {struct, [{fn, {struct, [{name, Fn}, {type, "infix"}]}},
+               {args, {array, process_args(Args, [])}}]};
+process_for_gui([Fn| Args]) when ?is_fn(Fn)->
+    {struct, [{fn, {struct, [{name, Fn}, {type, "prefix"}]}},
+               {args, {array, process_args(Args, [])}}]};
 process_for_gui([Fn| Args]) when ?is_fn(Fn)->
     {struct, [{fn, Fn}, {args, {array, process_args(Args, [])}}]};
 % so its not a fn - must be a constant
