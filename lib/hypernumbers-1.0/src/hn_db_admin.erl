@@ -13,9 +13,9 @@
                            "form",
                            "item",
                            "group",
-                           "local_objs",
+                           "local_obj",
                            "relation",
-                           "styles"
+                           "style"
                           ]).
 
 -export([
