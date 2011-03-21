@@ -1467,7 +1467,7 @@
                 "attr": {
                     "name": "Data series",
                     "desc": "Must be 2 wide or 2 high",
-                    "type": "infinite",
+                    "type": "infinite"
                 }
             },
             {
