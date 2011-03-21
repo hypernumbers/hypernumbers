@@ -32,8 +32,8 @@
          ]).
 
 
--define(site, "http://dla-piper.hypernumbers.com:80").
-%-define(site, "http://hypernumbers.dev:9000").
+%-define(site, "http://dla-piper.hypernumbers.com:80").
+-define(site, "http://hypernumbers.dev:9000").
 
 -record(refX,
         {
@@ -49,17 +49,17 @@
         ]).
 
 perf_test() ->
-    %Stamp = tconv:to_s(util2:get_timestamp()),
-    %FileName = "fprof.trace." ++ Stamp,
-    %fprof:trace([start, {file, FileName}]),
+    Stamp = tconv:to_s(util2:get_timestamp()),
+    FileName = "fprof.trace." ++ Stamp,
+    fprof:trace([start, {file, FileName}]),
     RefX = #refX{site = ?site, path = [], obj = {page, "/"}},
-    hn_templates:load_template(RefX, "meter_page").
-    %fprof:trace([stop]),
-    %fprof:profile([{file, FileName}]),
-    %fprof:analyse([{dest, "fprof.analyze."++Stamp}]).
+    hn_templates:load_template(RefX, "meter_page"),
+    fprof:trace([stop]),
+    fprof:profile([{file, FileName}]),
+    fprof:analyse([{dest, "fprof.analyze."++Stamp}]).
 
 upload() ->
-    Dir = "/hn/hypernumbers/priv/dataupload/",
+    Dir = "/home/gordon/hypernumbers/priv/dataupload/",
     Files = filelib:wildcard(Dir ++ "/*.xls"),
     io:format("There are ~p files~n", [length(Files)]),
     io:format("An example is ~p~n", [hd(Files)]),
@@ -89,7 +89,7 @@ run_templates(Script) ->
                    hn_templates:load_template_if_no_page(X, Y),
 		   limiter()
            end,
-    garbage_collect(),
+    %garbage_collect(),
     [ok = Fun2(Fun(X, Y), X) || {X, Y} <- Script].
 
 log_memory(Path) ->
@@ -128,7 +128,7 @@ upload2([H | T], Acc) ->
         Temp -> hn_templates:load_template(RefX, Temp)
     end,
     hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
-    garbage_collect(),
+    %garbage_collect(),
     log_remoting(),
     limiter(),
     % now work your way up the tree loading templates
@@ -143,7 +143,7 @@ make_paths([H | T], Prefix, Acc) ->
 
 log_remoting() ->
     Srv = hn_util:site_to_atom(?site, "_remoting"),
-    garbage_collect(global:whereis_name(Srv)),
+    %garbage_collect(global:whereis_name(Srv)),
     %io:format("Heap size of remoting is ~p~n",
     %          [process_info(whereis(Srv), heap_size)]),
     ok.

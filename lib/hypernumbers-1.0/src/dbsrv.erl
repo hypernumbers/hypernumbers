@@ -21,6 +21,8 @@
 -record(state, {table :: atom(),
                 pid :: pid()}).
 
+-define(HEAP_SIZE, 250000).
+
 %%====================================================================
 %% API
 %%====================================================================
@@ -71,7 +73,8 @@ is_busy(Site) ->
 %%--------------------------------------------------------------------
 init([Site]) ->
     QTbl = hn_db_wu:trans(Site, dirty_queue),
-    Pid = spawn_link(fun() -> dbsrv_init(Site, QTbl) end),
+    Pid = spawn_opt(fun() -> dbsrv_init(Site, QTbl) end, [{fullsweep_after, 0}]),
+    true = link(Pid),
     register(hn_util:site_to_atom(Site, "_dbsrv"), Pid),
     {ok, Pid, #state{table = QTbl, pid = Pid}}.
 
@@ -120,6 +123,12 @@ cleanup(_, _, _, Graph) -> Graph.
 -spec check_messages(string(), term(), atom(), [cellidx()], digraph())
                -> {term(), [cellidx()]}.
 check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
+    % check the state of memory usage and maybe run a garbage collect
+    {heap_size, HSZ} = process_info(self(), heap_size),
+    true = if
+               HSZ >  ?HEAP_SIZE -> garbage_collect(self());
+               HSZ =< ?HEAP_SIZE -> true
+    end,
     Wait = case WorkPlan of
                [] -> infinity;
                _ -> 0
