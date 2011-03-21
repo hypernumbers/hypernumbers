@@ -10,6 +10,8 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         unload_from_mem/0,
+         reload_into_mem/0,
          upgrade_doubler_2011_03_14/0,
          %upgrade_item_2011_03_14/0,
          %upgrade_local_obj_2011_03_14/0,
@@ -28,6 +30,14 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+unload_from_mem() ->
+    Sites = hn_setup:get_sites(),
+    [ok = hn_db_admin:outof_mem(X) || X <- Sites].
+
+reload_into_mem() ->
+    Sites = hn_setup:get_sites(),
+    [ok = hn_db_admin:into_mem(X) || X <- Sites].
 
 % store paths and reverse indices in #local_obj as binaries not lists of strings
 % and also compresses the attributes in items to a binary (big savings!)
