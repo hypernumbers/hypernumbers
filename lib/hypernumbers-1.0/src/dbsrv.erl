@@ -73,7 +73,8 @@ is_busy(Site) ->
 %%--------------------------------------------------------------------
 init([Site]) ->
     QTbl = hn_db_wu:trans(Site, dirty_queue),
-    Pid = spawn_link(fun() -> dbsrv_init(Site, QTbl) end),
+    Pid = spawn_opt(fun() -> dbsrv_init(Site, QTbl) end, [{fullsweep_after, 0}]),
+    true = link(Pid),
     register(hn_util:site_to_atom(Site, "_dbsrv"), Pid),
     {ok, Pid, #state{table = QTbl, pid = Pid}}.
 
