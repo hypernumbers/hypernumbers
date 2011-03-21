@@ -346,9 +346,7 @@
 
     <div id="formulabar">
       <a id="functionsbtn" title="functions help">functions</a>
-<!--
       <a id="wizbtn" title="function wizard">wiz</a>
--->
       <div id="formulawrapper">
 	<div id="formula" contentEditable="true"></div>
       </div>
@@ -480,9 +478,9 @@
     </div>
 
     <div id="funwiz" class="dialog">
-      <h2>$txt:{Functions}$</h2>
-      <a id="wizclose">x</a>
-      <div >
+     <h2>$txt:{Functions}$</h2>
+     <a id="wizclose">x</a>
+     <div>
       <div id="funwizwrapper">
 	<select id="wizcatlist"></select>
 	<div><select id="wizfunlist" size="12"></select></div>
@@ -494,14 +492,17 @@
         <div id="wizfunargs" class="scrollable">
         </div>
         <div id="wizstatus">
-         <button id="wizdone" type="button">Done</button>
+         <div id="wizbuttons">
+          <button id="wizcanc" type="button">Cancel</button>
+          <button id="wizdone" type="button">Done</button>
+         </div>
          <textarea id="wiztext" readonly="readonly"></textarea>
         </div>
       </div>
-      </div>
-      <div class="footer">
-       <a class="resize">&#x21f2;</a>
-      </div>
+     </div>
+     <div class="footer">
+      <a class="resize">&#x21f2;</a>
+     </div>
     </div>
 
     <div id="functions" class="dialog">

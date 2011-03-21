@@ -181,8 +181,9 @@ html,body {
   height: 6ex;
 }
 
-#wizdone {
+#wizbuttons {
   float: right;
+  padding-right: 2px;
 }
 
 #wizfunargs span.req:after { /* required argument flag */
