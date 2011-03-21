@@ -232,7 +232,6 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "repeat": false,
         "wizardready": true,
         "args": [
             {
@@ -275,7 +274,6 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "repeat": false,
         "args": [
             {
                 "name": "Serial Number",
@@ -293,7 +291,6 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "repeat": false,
         "args": [
             {
                 "name": "Serial Number",
@@ -683,7 +680,6 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "repeat": false,
         "args": [
         ]
     },
@@ -708,7 +704,6 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "repeat": false,
         "args": [
         ]
     },
@@ -1118,11 +1113,11 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "repeat": true,
         "args": [
             {
                 "name": "Variable",
-                "desc": "Variables can refer to anything, but only numbers will be counted"
+                "desc": "Variables can refer to anything, but only numbers will be counted",
+                "type": "infinite"
             }
         ]
     },
@@ -1147,11 +1142,11 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "repeat": true,
         "args": [
             {
                 "name": "Number",
-                "desc": "Can be a number or range of numbers"
+                "desc": "Can be a number or range of numbers",
+                "type": "infinite"
             }
         ]
     },
@@ -1464,7 +1459,6 @@
         "inexcel": false,
         "resize": "range",
         "wizardready": true,
-        "repeat": false,
         "args": [
             {
                 "name": "No. of Series",
@@ -1472,7 +1466,8 @@
                 "type": "variable",
                 "attr": {
                     "name": "Data series",
-                    "desc": "Must be 2 wide or 2 high"
+                    "desc": "Must be 2 wide or 2 high",
+                    "type": "infinite",
                 }
             },
             {
