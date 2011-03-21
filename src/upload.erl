@@ -86,9 +86,9 @@ run_templates(Script) ->
     Fun2 = fun(_X, null) -> ok;
               (#refX{path = P} = X, Y) ->
                    log_memory(P),
-                   hn_templates:load_template_if_no_page(X, Y)
+                   hn_templates:load_template_if_no_page(X, Y),
+		   limiter()
            end,
-    limiter(),
     garbage_collect(),
     [ok = Fun2(Fun(X, Y), X) || {X, Y} <- Script].
 
@@ -104,10 +104,10 @@ log_memory(Path) ->
     {value, {binary, Binary}} = lists:keysearch(binary, 1, Memory),
     {value, {code, Code}} = lists:keysearch(code, 1, Memory),
     {value, {ets, Ets}} = lists:keysearch(ets, 1, Memory),
-    Server = list_to_atom(hn_util:site_to_fs(?site) ++ "_dbsrv"),
-    PID = global:whereis_name(Server),
-    Heap = process_info(PID, [heap_size]),
-    Msgs = process_info(PID, [message_queue_len]),
+    Server = hn_util:site_to_atom(?site, "_dbsrv"),
+    PID = whereis(Server),
+    [{heap_size, Heap}] = process_info(PID, [heap_size]),
+    [{message_queue_len, Msgs}] = process_info(PID, [message_queue_len]),
     log(io_lib:format("~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p\t~p",
                       [hn_util:list_to_path(Path), N1, Total, Processes,
                        Proc_U, System, Atom, Atom_U, Binary, Code, Ets,
@@ -118,17 +118,17 @@ upload2([H | T], Acc) ->
     io:format("Uploading ~p~n", [H]),
     File = hd(lists:reverse(string:tokens(H, "/"))),
     Segs = string:tokens(File, "."),
-    {_Segs1, _xls} = lists:split(length(Segs) - 1, Segs),
-    {Segs2, _end}  = lists:split(length(Segs) - 2, Segs),
+    {Segs1, _xls} = lists:split(length(Segs) - 1, Segs),
+    {Segs2, _end} = lists:split(length(Segs) - 2, Segs),
     Segs3 = make_paths(Segs2, [], []),
-    %RefX = #refX{site = ?site, path = Segs1, obj = {page, "/"}},
+    RefX = #refX{site = ?site, path = Segs1, obj = {page, "/"}},
     % first upload the data at the bottom of the tree
-    %case ?final_template of
-    %    null -> ok;
-    %    Temp -> hn_templates:load_template(RefX, Temp)
-    %end,
-    %hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
-    %garbage_collect(),
+    case ?final_template of
+        null -> ok;
+        Temp -> hn_templates:load_template(RefX, Temp)
+    end,
+    hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
+    garbage_collect(),
     log_remoting(),
     limiter(),
     % now work your way up the tree loading templates
