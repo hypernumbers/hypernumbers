@@ -3,11 +3,13 @@
 -define(templates, ["buildings","building", null, "year_page", "month_page",
                     "day_page", "meter_page"]).
 -define(final_template, null).
--define(bits_and_bobs, [
-          {"static-data",         ["static-data"]},
+-define(alerts, [
           {"admin",               ["admin"]},
-          {"admin_data_alerts",   ["admin", "data_alerts"]},
-          {"lookup_data",         ["admin", "lookup-data"]},
+          {"admin_data_alerts",   ["admin", "data_alerts"]}
+         ]).
+-define(bits_and_bobs, [
+          {"static_data",         ["static-data"]},
+          {"lookup-data",         ["admin", "lookup-data"]},
           {"budget_group",        ["budgets", "dla-piper"]},
           {"budget_building",     ["budget", "dla-piper", "st-pauls-place"]},
           {"budget_building",     ["budget", "dla-piper", "noble-street"]},
@@ -17,7 +19,7 @@
           {"initiative_page",     ["initiaties"]},
           {"initiative_new",      ["initiaties", "new"]},
           {"alerts",              ["alerts"]},
-          {"my-page",             ["my-page", "stephen"]},
+          {"my_page",             ["my-page", "stephen"]},
           {"chart_builder",       ["my-page", "stephen", "chartbuilder"]},
           {"compliance",          ["compliance"]},
           {"crc_report",          ["compliance", "crc"]},
@@ -32,8 +34,8 @@
          ]).
 
 
-%-define(site, "http://dla-piper.hypernumbers.com:80").
--define(site, "http://hypernumbers.dev:9000").
+-define(site, "http://dla-piper.hypernumbers.com:80").
+%-define(site, "http://hypernumbers.dev:9000").
 
 -record(refX,
         {
@@ -59,7 +61,8 @@ perf_test() ->
     fprof:analyse([{dest, "fprof.analyze."++Stamp}]).
 
 upload() ->
-    Dir = "/home/gordon/hypernumbers/priv/dataupload/",
+    run_templates(?alerts),
+    Dir = "/hn/hypernumbers/priv/dataupload/",
     Files = filelib:wildcard(Dir ++ "/*.xls"),
     io:format("There are ~p files~n", [length(Files)]),
     io:format("An example is ~p~n", [hd(Files)]),
@@ -142,7 +145,7 @@ make_paths([H | T], Prefix, Acc) ->
     make_paths(T, Seg, [Seg | Acc]).
 
 log_remoting() ->
-    Srv = hn_util:site_to_atom(?site, "_remoting"),
+    %Srv = hn_util:site_to_atom(?site, "_remoting"),
     %garbage_collect(global:whereis_name(Srv)),
     %io:format("Heap size of remoting is ~p~n",
     %          [process_info(whereis(Srv), heap_size)]),
