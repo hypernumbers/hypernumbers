@@ -610,7 +610,7 @@ format(X,[{_Type,Bit}|T],Acc) -> format(X,T,[Bit|Acc]).
 %%                                                                           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% gets lenghts where an object can be null
+%% gets lengths where an object can be null
 get_len(null)                    -> 0;
 get_len(List) when is_list(List) -> length(List).
 
