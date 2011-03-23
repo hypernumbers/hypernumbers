@@ -10,6 +10,7 @@
 -module(util2).
 
 -export([
+         timestamp_to_date/1,
          get_timestamp/0,
          bake_biccie/0,
          chop/1,
@@ -22,6 +23,9 @@
          pad_list/1,
          mk_str_frm_list/1,
          strip_brackets/1]).
+
+-define(MEGA, 1000000000000).
+-define(SEC,  1000000).
 
 %%%-----------------------------------------------------------------------------
 %%%
@@ -40,7 +44,15 @@
 -spec get_timestamp() -> pos_integer().
 get_timestamp()->
     {Mega, Sec, Micro} = now(),
-    1000000000000 * Mega + 1000000 * Sec + Micro.
+    ?MEGA * Mega + ?SEC * Sec + Micro.
+
+timestamp_to_date(Stamp) when is_list(Stamp) ->
+    timestamp_to_date(list_to_integer(Stamp));
+timestamp_to_date(Stamp) when is_integer(Stamp) ->
+    Mega = trunc(Stamp/?MEGA),
+    Sec = trunc((Stamp - Mega * ?MEGA)/?SEC),
+    Micro = Stamp - Mega * ?MEGA - Sec * ?SEC,
+    {Mega, Sec, Micro}.
 
 %%--------------------------------------------------------------------
 %% Function:    bake_biccie/0

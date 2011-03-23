@@ -33,12 +33,13 @@
          get_json_post/1 % Used for mochilog replay rewrites
         ]).
 
--define(SHEETVIEW, "spreadsheet").
--define(WEBPAGE, "webpage").
--define(WIKI, "wikipage").
--define(DEMO, "demopage").
--define(WEBPREVIEW, "webpreview").
+-define(SHEETVIEW,   "spreadsheet").
+-define(WEBPAGE,     "webpage").
+-define(WIKI,        "wikipage").
+-define(DEMO,        "demopage").
+-define(WEBPREVIEW,  "webpreview").
 -define(WIKIPREVIEW, "wikipreview").
+-define(LOGVIEW,     "logs").
 
 -spec start() -> {ok, pid()}.
 start() ->
@@ -263,6 +264,13 @@ authorize_get(_Ref, #qry{view = V}, _Env)
   when V == ?DEMO orelse V == ?WEBPREVIEW orelse V == ?WIKIPREVIEW ->
     allowed;
 
+% you can only see the logs if you have the spreadsheet view
+authorize_get(R, #qry{view = ?LOGVIEW} = Q, E) ->
+    case authorize_get(R, Q#qry{view = ?SHEETVIEW}, E) of
+        {view, ?SHEETVIEW} -> {view, ?LOGVIEW};
+        Other              -> Other
+    end;
+
 %% Authorize access to one particular view.
 authorize_get(#refX{site = Site, path = Path},
               #qry{view = View},
@@ -447,14 +455,17 @@ iget(#refX{site=Site, path=Path}, page, #qry{view=?WEBPREVIEW}, Env) ->
 iget(#refX{site=Site, path=Path}, page, #qry{view=?WIKIPREVIEW}, Env) ->
     text_html(Env, make_preview("wiki", Site, Path));
 
-iget(Ref, page, #qry{view="wikipage"},
+iget(Ref, page, #qry{view = ?LOGVIEW}, Env) ->
+    text_html(Env, hn_logs:get_logs(Ref));
+
+iget(Ref, page, #qry{view = ?WIKI},
      Env=#env{accept=html,uid=Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "view wiki page"),
     {{Html, Width, Height}, Addons} = hn_render:content(Ref, wikipage),
     Page = hn_render:wrap_page(Html, Width, Height, Addons),
     text_html(Env, Page);
 
-iget(Ref, page, #qry{view="webpage"},
+iget(Ref, page, #qry{view=?WEBPAGE},
      Env=#env{accept=html,uid=Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "view webpage"),
     {{Html, Width, Height}, Addons} = hn_render:content(Ref, webpage),
@@ -488,6 +499,9 @@ iget(Ref, page, #qry{pages = []}, Env=#env{accept = json}) ->
 
 iget(Ref, page, _Qry, Env=#env{accept = json}) ->
     json(Env, page_attributes(Ref, Env));
+
+iget(Ref, cell, #qry{view = ?LOGVIEW}, Env=#env{accept = html}) ->
+    text_html(Env, hn_logs:get_logs(Ref));
 
 iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
     V = case hn_db_api:read_attribute(Ref,"value") of

@@ -107,6 +107,11 @@
          idx_DEBUG/3
         ]).
 
+% fns for logging
+-export([
+         get_logs/1
+        ]).
+
 -export([
          write_kv/3,
          read_kv/2,
@@ -190,10 +195,17 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
     [io:format(X ++ "~n") || X <- Msg],
     ok.
 
+get_logs(RefX) when is_record(RefX, refX) ->
+    Fun = fun() ->
+                  hn_db_wu:get_logs(RefX)
+          end,
+    mnesia:activity(transaction, Fun).
+
+
 write_kv(Site, Key, Value) ->
     Fun = fun() ->
                   hn_db_wu:write_kv(Site, Key, Value)
-                    end,
+          end,
     mnesia:activity(transaction, Fun).
 
 read_kv(Site, Key) ->
@@ -522,6 +534,7 @@ move_tr(RefX, Type, Disp, Ar) ->
     % To make this work we shift the RefX up 1, left 1
     % before getting the cells to shift for INSERT
     % if this is a delete - we need to actually delete the cells
+    % ok = hn_db_wu:log_move(RefX, Type, Disp, Ar),
     ReWr = do_delete(Type, RefX, Disp, Ar),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr, Ar),
     ok = hn_db_wu:mark_these_dirty(ReWr, Ar),

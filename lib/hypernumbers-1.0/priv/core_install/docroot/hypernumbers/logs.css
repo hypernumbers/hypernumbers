@@ -1,0 +1,20 @@
+html, body {
+             margin  : 0px;
+             padding : 0px;
+             font    : 8px/1.7 Verdana,Tahoma,sans-serif;
+             }
+
+thead td {
+           text-align:    center;
+           font-weight:   bold;
+           font-size:     14px;
+           border-bottom: 1px solid #eee;
+        }
+
+table {
+        border-spacing: 15px 10px;
+        }
+
+.hn_grey {
+           color: #999;
+           }

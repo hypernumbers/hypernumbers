@@ -110,12 +110,13 @@
 -record(logging,
         {
           idx,
+          timestamp = util2:get_timestamp(),
           uid,
           action,
           actiontype,
           type,
           path,
-          ref,
+          obj,
           log
          }).
 

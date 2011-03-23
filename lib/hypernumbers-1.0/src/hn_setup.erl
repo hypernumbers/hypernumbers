@@ -205,7 +205,7 @@ tables() ->
      ?TBL(group,          set, [],                disc_copies),
      ?TBL(style,          set, [idx],             disc_copies),
      ?TBL(form,           set, [id],              disc_copies),
-     ?TBL(logging,        bag, [],                disc_only_copies)
+     ?TBL(logging,        bag, [path],            disc_only_copies)
     ].
 
 %% Import files on a batch basis

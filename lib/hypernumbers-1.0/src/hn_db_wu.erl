@@ -36,6 +36,12 @@
          idx_DEBUG/2
         ]).
 
+% fns for logging
+-export([
+         log_move/4,
+         get_logs/1
+        ]).
+
 -export([
          read_relations/2,
          write_kv/3,
@@ -102,6 +108,14 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_logs(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
+    Idx = refX_to_idx(RefX),
+    Table = trans(S, logging),
+    Logs1 = mnesia:read(Table, Idx, read),
+    Logs2 = mnesia:index_read(Table, hn_util:list_to_path(P), path),
+    Logs3 = get_page_logs(Logs2),
+    lists:merge(Logs1, Logs3).
+
 read_relations(RefX, Lock) when is_record(RefX, refX) ->
     Idx = refX_to_idx(RefX),
     Table = trans(RefX#refX.site, relation),
@@ -361,7 +375,7 @@ apply_to_attrs(#refX{site = Site} = Ref, Op, Action, Uid) ->
     % the Op may have shifted the RefX that the Idx now points to, so look it
     % up again for the log
     NewRef = idx_to_refX(Site, Idx),
-    ok = log(Idx, NewRef, Attrs, Attrs2, Action, Uid),
+    %ok = log_write(Idx, NewRef, Attrs, Attrs2, Action, Uid),
     Item = #item{idx = Idx, attrs = term_to_binary(Attrs3)},
     case deleted_attrs(Attrs, Attrs3) of
         []   -> ok;
@@ -371,8 +385,8 @@ apply_to_attrs(#refX{site = Site} = Ref, Op, Action, Uid) ->
     mnesia:write(Table, Item, write),
     {Status, Attrs3}.
 
-log(_, _, _, _, _Action, nil) -> ok;
-log(Idx, #refX{site = S, path = P, obj = O}, Old, New, Action, Uid) ->
+log_write(_, _, _, _, _Action, nil) -> ok;
+log_write(Idx, #refX{site = S, path = P, obj = O}, Old, New, Action, Uid) ->
     {OldF, OldV} = extract(Old),
     {NewF, NewV} = extract(New),
     L = io_lib:format("old: formula ~p value ~p new: formula ~p value ~p",
@@ -380,18 +394,18 @@ log(Idx, #refX{site = S, path = P, obj = O}, Old, New, Action, Uid) ->
     L2 = term_to_binary(L),
     Log = #logging{idx = Idx, uid = Uid, action = Action, actiontype = "",
                    type = cell, path = hn_util:list_to_path(P),
-                   ref = O, log = L2},
+                   obj = O, log = L2},
     write_log(S, Log).
 
-log2(#refX{site = S, path = P, obj = {Type, _} = O} = RefX, Disp, Action, Uid)
-when Type == row orelse Type == column orelse Type == range ->
+log_move(#refX{site = S, path = P, obj = {Type, _} = O} = RefX, Action, Disp, Uid)
+  when Type == row orelse Type == column orelse Type == range ->
     Idx = refX_to_idx(RefX),
     Log = #logging{idx = Idx, uid = Uid, action = Action, actiontype = Disp,
                    type = page, path = hn_util:list_to_path(P),
-                   ref = O, log = ""},
+                   obj = O, log = ""},
     write_log(S, Log),
     ok;
-log2(_, _, _Action, _) -> ok.
+log_move(_, _, _, _) -> ok.
 
 write_log(Site, Log) ->
     Tbl = trans(Site, logging),
@@ -468,7 +482,6 @@ post_process_format(Raw, Attrs) ->
 shift_cells(#refX{site=Site, obj= Obj} = From, Type, Disp, Rewritten, Uid)
   when (Type == insert orelse Type == delete) andalso
        (Disp == vertical orelse Disp == horizontal) ->
-    ok = log2(From, Disp, Type, Uid),
     {XOff, YOff} = hn_util:get_offset(Type, Disp, Obj),
     RefXSel = shift_pattern(From, Disp),
 
@@ -592,7 +605,7 @@ content_attrs() ->
 %% type message it could be speeded up
 -spec delete_cells(#refX{}, atom(), auth_srv:uid()) -> [#refX{}].
 delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
-    ok = log2(DelX, Disp, delete, Uid),
+    io:format("in delete_cells for ~p~n", [Uid]),
     case expand_ref(DelX) of
         %% there may be no cells to delete, but there may be rows or
         %% columns widths to delete...
@@ -2253,3 +2266,9 @@ deref_overlap_test(Formula, Delete, Disp) ->
     Obj = hn_util:parse_ref(Delete),
     io:format("Obj is ~p Delete is ~p~n", [Obj, Delete]),
     deref_overlap(Formula, Obj, Disp).
+
+get_page_logs(Logs) -> get_page_l(Logs, []).
+
+get_page_l([], Acc)                              -> Acc;
+get_page_l([#logging{obj = {cell, _}} | T], Acc) -> get_page_l(T, Acc);
+get_page_l([H | T], Acc)                         -> get_page_l(T, [H | Acc]).
