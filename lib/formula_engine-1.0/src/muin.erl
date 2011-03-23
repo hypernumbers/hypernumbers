@@ -387,7 +387,7 @@ get_modules() ->
     ].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-process_for_gui([Fn | []])  -> {struct, [{fn, Fn}, {args, []}]};
+process_for_gui([Fn | []])  -> {struct, [{fn, Fn}, {type, "prefix"}, {args, []}]};
 process_for_gui([Fn| Args])
   when ?is_fn(Fn) andalso (Fn == '='
                            orelse Fn == '<>'
@@ -405,11 +405,9 @@ process_for_gui([Fn| Args])
                            orelse Fn == '^^') ->
     {struct, [{fn, {struct, [{name, Fn}, {type, "infix"}]}},
                {args, {array, process_args(Args, [])}}]};
-process_for_gui([Fn| Args]) when ?is_fn(Fn)->
+process_for_gui([Fn| Args]) when ?is_fn(Fn) ->
     {struct, [{fn, {struct, [{name, Fn}, {type, "prefix"}]}},
                {args, {array, process_args(Args, [])}}]};
-process_for_gui([Fn| Args]) when ?is_fn(Fn)->
-    {struct, [{fn, Fn}, {args, {array, process_args(Args, [])}}]};
 % so its not a fn - must be a constant
 process_for_gui({cellref, _, _, _, Text}) ->
     {struct, [{cellref, Text}]};
@@ -426,10 +424,9 @@ process_for_gui({array, [Array]}) ->
 process_for_gui(H) ->
     {struct, [{constant, H}]}.
 
-process_args([], Acc) -> lists:reverse(Acc);
-process_args([H | T], Acc) ->
-    NewAcc = process_for_gui(H),
-    process_args(T, [NewAcc | Acc]).
+process_args([], Acc)      -> lists:reverse(Acc);
+process_args([H | T], Acc) -> NewAcc = process_for_gui(H),
+                              process_args(T, [NewAcc | Acc]).
 
 %% Intersect current cell with a range.
 implicit_intersection(R) when ?is_rangeref(R) ->
