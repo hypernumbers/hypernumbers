@@ -40,8 +40,8 @@ make_html([H | T], Acc) ->
           type = _Ty, path = _P, obj = O, log = Msg} = H,
     Date = dh_date:format("d/m/y h:m", util2:timestamp_to_date(Tm)),
     Date2 = io_lib:format("~s", [Date]),
-    Row = [Date2, U, hn_util:obj_to_ref(O), atom_to_list(A),
-           format_action_type(AT), format_msg(Msg)],
+    Row = [Date2, U, hn_util:obj_to_ref(O), format_actions_and_type(A),
+           format_actions_and_type(AT), format_msg(Msg)],
     make_html(T, [make_row(Row, []) | Acc]).
 
 make_row([], Acc)       -> "<tr>" ++ lists:flatten(lists:reverse(Acc)) ++ "</tr>";
@@ -52,5 +52,5 @@ make_row([H | T], Acc)  -> make_row(T, ["<td class='hn_grey'>" ++
 format_msg([])                  -> [];
 format_msg(X) when is_binary(X) -> binary_to_term(X).
 
-format_action_type([])                -> [];
-format_action_type(X) when is_atom(X) -> atom_to_list(X).
+format_actions_and_type([])                -> [];
+format_actions_and_type(X) when is_atom(X) -> atom_to_list(X).

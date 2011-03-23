@@ -111,10 +111,10 @@
         {
           idx,
           timestamp = util2:get_timestamp(),
-          uid,
-          action,
-          actiontype,
-          type,
+          uid        = [],
+          action     = [],
+          actiontype = [],
+          type       = [],
           path,
           obj,
           log

@@ -111,7 +111,10 @@
 get_logs(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
     Idx = refX_to_idx(RefX),
     Table = trans(S, logging),
-    Logs1 = mnesia:read(Table, Idx, read),
+    Logs1 = case Idx of
+                false -> make_blank(RefX, Idx);
+                _     -> mnesia:read(Table, Idx, read)
+            end,
     Logs2 = mnesia:index_read(Table, hn_util:list_to_path(P), path),
     Logs3 = get_page_logs(Logs2),
     lists:merge(Logs1, Logs3).
@@ -2272,3 +2275,6 @@ get_page_logs(Logs) -> get_page_l(Logs, []).
 get_page_l([], Acc)                              -> Acc;
 get_page_l([#logging{obj = {cell, _}} | T], Acc) -> get_page_l(T, Acc);
 get_page_l([H | T], Acc)                         -> get_page_l(T, [H | Acc]).
+
+make_blank(#refX{obj = O} = RefX, Idx) ->
+    [#logging{idx = Idx, obj = O, log = term_to_binary("This cell is blank")}].
