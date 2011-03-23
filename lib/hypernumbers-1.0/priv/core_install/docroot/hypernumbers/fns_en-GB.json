@@ -156,13 +156,12 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string"
+                "type": "finite"
             },
             {
                 "name": "Return Type",
                 "desc": "If Return Type = 1 Sunday is 1 and Saturday is 7, if Return Type = 2 Monday is 1 and Sunday is 7, if Return Type = 3, Monday = 0 and Sunday = 6",
-                "optional": true,
-                "type": "number"
+                "type": "optional"
             }
         ]
     },
@@ -179,7 +178,7 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string"
+                "type": "finite"
             }
         ]
     },
@@ -196,7 +195,7 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string"
+                "type": "finite"
             }
         ]
     },
@@ -237,7 +236,7 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string"
+                "type": "finite"
             }
         ]
     },
@@ -278,7 +277,7 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string"
+                "type": "finite"
             }
         ]
     },
@@ -295,7 +294,7 @@
             {
                 "name": "Serial Number",
                 "desc": "a string representation of a date or a serial number",
-                "type": "string"
+                "type": "finite"
             }
         ]
     },
