@@ -380,7 +380,7 @@ log(Idx, #refX{site = S, path = P, obj = O}, Old, New, Action, Uid) ->
     L2 = term_to_binary(L),
     Log = #logging{idx = Idx, uid = Uid, action = Action, actiontype = "",
                    type = cell, path = hn_util:list_to_path(P),
-                   ref = hn_util:obj_to_ref(O), log = L2},
+                   ref = O, log = L2},
     write_log(S, Log).
 
 log2(#refX{site = S, path = P, obj = {Type, _} = O} = RefX, Disp, Action, Uid)
@@ -388,7 +388,7 @@ when Type == row orelse Type == column orelse Type == range ->
     Idx = refX_to_idx(RefX),
     Log = #logging{idx = Idx, uid = Uid, action = Action, actiontype = Disp,
                    type = page, path = hn_util:list_to_path(P),
-                   ref = hn_util:obj_to_ref(O), log = ""},
+                   ref = O, log = ""},
     write_log(S, Log),
     ok;
 log2(_, _, _Action, _) -> ok.
