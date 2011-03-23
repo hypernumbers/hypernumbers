@@ -234,12 +234,6 @@ match(#refX{obj = {cell, {X, Y}}}) ->
 
 % old and new rows and cols
 match_1([], _X, _Y, Acc) -> Acc;
-match_1([{{row, {range, {zero, Y1, inf, Y2}}}, Idxs} | T], X, Y, Acc)
-  when Y >= Y1 andalso Y =< Y2 ->
-    match_1(T, X, Y, [Idxs | Acc]);
-match_1([{{column, {range, {X1, zero, X2, inf}}}, Idxs} | T], X, Y, Acc)
-  when X >= X1 andalso X =< X2 ->
-    match_1(T, X, Y, [Idxs | Acc]);
 match_1([{{row, {Y1, Y2}}, Idxs} | T], X, Y, Acc)
   when Y >= Y1 andalso Y =< Y2 ->
     match_1(T, X, Y, [Idxs | Acc]);
@@ -309,14 +303,15 @@ iterate(Iter, S, [], Fun, Htap, Acc) ->
         {_K, _V, I2}         -> iterate(I2, S, [], Fun, Htap, Acc)
     end;
 iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
-     case gb_trees:next(Iter) of
+    case gb_trees:next(Iter) of
          none       -> lists:flatten(Acc);
-         {K, V, I2} -> NewAcc = case match_seg(K, H, S, Htap) of
-                                    match -> match_tree(V, S, T, Fun, [H | Htap]);
-                                    nomatch -> [];
-                                    ?ERRVAL_VAL -> []
-                                end,
-                       iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
+         {K, V, I2} ->
+             NewAcc = case match_seg(K, H, S, Htap) of
+                          match       -> match_tree(V, S, T, Fun, [H | Htap]);
+                          nomatch     -> [];
+                          ?ERRVAL_VAL -> []
+                      end,
+             iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
      end.
 
 match_seg({seg, S},     S,  _Site, _Htap) -> match;
