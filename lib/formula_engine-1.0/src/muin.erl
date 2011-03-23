@@ -387,7 +387,8 @@ get_modules() ->
     ].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-process_for_gui([Fn | []])  -> {struct, [{fn, Fn}, {type, "prefix"}, {args, []}]};
+process_for_gui([Fn | []])  ->
+    {struct, [{fn, {struct, [{name, Fn}, {type, "prefix"}]}}, {args, []}]};
 process_for_gui([Fn| Args])
   when ?is_fn(Fn) andalso (Fn == '='
                            orelse Fn == '<>'
