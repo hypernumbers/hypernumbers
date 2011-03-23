@@ -52,7 +52,7 @@ delete_site(Site) ->
                          fun mnesia:delete/3,
                          [core_site, Site, write]),
     [ {atomic, ok} = mnesia:delete_table(hn_db_wu:trans(Site, Table))
-      || {Table, _F, _T, _I} <- tables()],
+      || {Table, _F, _T, _I, _S} <- tables()],
     [_Proto, [$/, $/ | Domain], _URL] = string:tokens(Site, ":"),
     [TLD, Dom | Subs] = lists:reverse(string:tokens(Domain, ".")),
     ZoneL = Dom ++ "." ++ TLD,
@@ -183,29 +183,29 @@ create_blank_z_and_infs(Site) ->
 create_site_tables(Site, Type)->
     %% Seems sensible to keep this restricted
     %% to disc_copies for now
-    Storage = disc_copies,
     [ok = hn_db_admin:create_table(hn_db_wu:trans(Site, N),
-                                   N, F, Storage, T, true, I)
-     || {N,F,T,I} <- tables()],
+                                   N, F, S, T, true, I)
+     || {N, F, T, I, S} <- tables()],
     Trans = fun() ->
                     mnesia:write(#core_site{site = Site, type = Type})
             end,
     {atomic, ok} = mnesia:transaction(Trans),
     ok.
 
--define(TBL(N, T, I), {N, record_info(fields, N), T, I}).
+-define(TBL(N, T, I, S), {N, record_info(fields, N), T, I, S}).
 tables() ->
     [
-     ?TBL(kvstore       , set, []),
-     ?TBL(dirty_for_zinf, set, []),
-     ?TBL(dirty_zinf,     set, []),
-     ?TBL(dirty_queue,    set, []),
-     ?TBL(item,           set, []),
-     ?TBL(local_obj,      set, [obj,path,revidx]),
-     ?TBL(relation,       set, []),
-     ?TBL(group,          set, []),
-     ?TBL(style,          set, [idx]),
-     ?TBL(form,           set, [id])
+     ?TBL(kvstore       , set, [],                disc_only_copies),
+     ?TBL(dirty_for_zinf, set, [],                disc_copies),
+     ?TBL(dirty_zinf,     set, [],                disc_copies),
+     ?TBL(dirty_queue,    set, [],                disc_copies),
+     ?TBL(item,           set, [],                disc_copies),
+     ?TBL(local_obj,      set, [obj,path,revidx], disc_copies),
+     ?TBL(relation,       set, [],                disc_copies),
+     ?TBL(group,          set, [],                disc_copies),
+     ?TBL(style,          set, [idx],             disc_copies),
+     ?TBL(form,           set, [id],              disc_copies),
+     ?TBL(logging,        bag, [],                disc_only_copies)
     ].
 
 %% Import files on a batch basis

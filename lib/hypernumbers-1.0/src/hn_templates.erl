@@ -13,6 +13,7 @@
 
 -export([
          save_template/2,
+         load_template/3,
          load_template/2,
          load_template_if_no_page/2
          ]).
@@ -54,11 +55,13 @@ load_template_if_no_page(#refX{site = S, path = P} = RefX, Name) ->
         true  -> ok
     end.
 
-load_template(#refX{site=S, path=P}, Name) ->
+load_template(RefX, Name) -> load_template(RefX, Name, nil).
+
+load_template(#refX{site=S, path=P}, Name, Uid) ->
     TemplatesDir = hn_mochi:templateroot(S),
     URL = S ++ hn_util:list_to_path(P),
     File = TemplatesDir++"/"++Name++".json",
-    ok = hn_import:json_file(URL, File).
+    ok = hn_import:json_file(URL, File, Uid).
 
 % %% @spec write_def(TemplateName,IsDynamic,RootURL,GUI) -> {ok,ok} | {error,Error}
 % %% @doc takes an incoming template and writes it to the database

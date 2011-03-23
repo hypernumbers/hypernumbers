@@ -33,7 +33,6 @@
 -export([
          dirty_for_zinf_DEBUG/1,
          item_and_local_objs_DEBUG/1,
-         read_relations_DEBUG/1,
          idx_DEBUG/2
         ]).
 
@@ -47,12 +46,12 @@
          matching_forms/2,
          read_ref/2, read_ref/3, read_ref_field/3,
          expand_ref/1,
-         clear_cells/1, clear_cells/2,
-         delete_cells/2,
-         shift_cells/4,
+         clear_cells/2, clear_cells/3,
+         delete_cells/3,
+         shift_cells/5,
          get_children/1,
          get_children_idxs/1,
-         copy_cell/4,
+         copy_cell/5,
          read_page_structure/1,
          read_pages/1,
          idx_to_refX/2,
@@ -103,14 +102,10 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-read_relations_DEBUG(RefX) when is_record(RefX, refX) ->
+read_relations(RefX, Lock) when is_record(RefX, refX) ->
     Idx = refX_to_idx(RefX),
     Table = trans(RefX#refX.site, relation),
-    mnesia:read(Table, Idx, read).
-
-read_relations(Site, Idx) ->
-    Table = trans(Site, relation),
-    mnesia:read(Table, Idx, read).
+    mnesia:read(Table, Idx, Lock).
 
 write_kv(Site, Key, Value) ->
     Tbl = trans(Site, kvstore),
@@ -251,13 +246,13 @@ write_attrs(Ref, NewAs, AReq) ->
                           end,
                  {clean, process_attrs(NewAs, Ref, AReq, Attrs2)}
          end,
-    apply_to_attrs(Ref, Op).
+    apply_to_attrs(Ref, Op, write, AReq).
 
 -spec process_attrs([{string(), term()}], #refX{}, auth_srv:auth_spec(), ?dict)
                    -> ?dict.
 process_attrs([], _Ref, _AReq, Attrs) ->
     Attrs;
-process_attrs([{"formula",Val}|Rest], Ref, AReq, Attrs) ->
+process_attrs([{"formula",Val} | Rest], Ref, AReq, Attrs) ->
     Attrs2 =
         case superparser:process(Val) of
             {formula, Fla} ->
@@ -267,7 +262,7 @@ process_attrs([{"formula",Val}|Rest], Ref, AReq, Attrs) ->
         end,
     ok = mark_dirty_for_zinf(Ref),
     process_attrs(Rest, Ref, AReq, Attrs2);
-process_attrs([A={Key,Val}|Rest], Ref, AReq, Attrs) ->
+process_attrs([A = {Key,Val} | Rest], Ref, AReq, Attrs) ->
     Attrs2  = case ms_util2:is_in_record(magic_style, Key) of
                   true  -> apply_style(Ref, A, Attrs);
                   false -> orddict:store(Key, Val, Attrs)
@@ -352,8 +347,9 @@ expunge_refs(S, Refs) ->
 %% applied, which sets formats and styles as necessary.
 %% the op function returns a tuple of {Status, Ref, Attrs} where
 %% Status is either 'clean' or 'dirty'
--spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict)) -> ?dict.
-apply_to_attrs(#refX{site=Site}=Ref, Op) ->
+-spec apply_to_attrs(#refX{}, fun((?dict) -> ?dict),
+                                 atom(), auth_srv:uid()) -> ?dict.
+apply_to_attrs(#refX{site = Site} = Ref, Op, Action, Uid) ->
     Table = trans(Site, item),
     Idx = refX_to_idx_create(Ref),
     Attrs = case mnesia:read(Table, Idx, write) of
@@ -362,6 +358,10 @@ apply_to_attrs(#refX{site=Site}=Ref, Op) ->
             end,
     {Status, Attrs2} = Op(Attrs),
     Attrs3 = post_process(Ref, Attrs2),
+    % the Op may have shifted the RefX that the Idx now points to, so look it
+    % up again for the log
+    NewRef = idx_to_refX(Site, Idx),
+    ok = log(Idx, NewRef, Attrs, Attrs2, Action, Uid),
     Item = #item{idx = Idx, attrs = term_to_binary(Attrs3)},
     case deleted_attrs(Attrs, Attrs3) of
         []   -> ok;
@@ -370,6 +370,40 @@ apply_to_attrs(#refX{site=Site}=Ref, Op) ->
     tell_front_end_change(Ref, Attrs3),
     mnesia:write(Table, Item, write),
     {Status, Attrs3}.
+
+log(_, _, _, _, _Action, nil) -> ok;
+log(Idx, #refX{site = S, path = P, obj = O}, Old, New, Action, Uid) ->
+    {OldF, OldV} = extract(Old),
+    {NewF, NewV} = extract(New),
+    L = io_lib:format("old: formula ~p value ~p new: formula ~p value ~p",
+                        [OldF, OldV, NewF, NewV]),
+    L2 = term_to_binary(L),
+    Log = #logging{idx = Idx, uid = Uid, action = Action, actiontype = "",
+                   type = cell, path = hn_util:list_to_path(P),
+                   ref = hn_util:obj_to_ref(O), log = L2},
+    write_log(S, Log).
+
+log2(#refX{site = S, path = P, obj = {Type, _} = O} = RefX, Disp, Action, Uid)
+when Type == row orelse Type == column orelse Type == range ->
+    Idx = refX_to_idx(RefX),
+    Log = #logging{idx = Idx, uid = Uid, action = Action, actiontype = Disp,
+                   type = page, path = hn_util:list_to_path(P),
+                   ref = hn_util:obj_to_ref(O), log = ""},
+    write_log(S, Log),
+    ok;
+log2(_, _, _Action, _) -> ok.
+
+write_log(Site, Log) ->
+    Tbl = trans(Site, logging),
+    mnesia:write(Tbl, Log, write).
+
+extract(List) ->
+    FT = lists:keyfind("formula",    1, List),
+    VT = lists:keyfind("__rawvalue", 1, List),
+    case {FT, VT} of
+        {false, false}                      -> {"", ""};
+        {{"formula", F}, {"__rawvalue", V}} -> {F, V}
+    end.
 
 deleted_attrs(Old, New) ->
     OldKeys = lists:sort(orddict:fetch_keys(Old)),
@@ -431,9 +465,10 @@ post_process_format(Raw, Attrs) ->
             Attrs
     end.
 
-shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
+shift_cells(#refX{site=Site, obj= Obj} = From, Type, Disp, Rewritten, Uid)
   when (Type == insert orelse Type == delete) andalso
        (Disp == vertical orelse Disp == horizontal) ->
+    ok = log2(From, Disp, Type, Uid),
     {XOff, YOff} = hn_util:get_offset(Type, Disp, Obj),
     RefXSel = shift_pattern(From, Disp),
 
@@ -456,7 +491,7 @@ shift_cells(#refX{site=Site, obj= Obj}=From, Type, Disp, Rewritten)
                         Op = fun(Attrs) ->
                                      {St, orddict:store("formula", F2, Attrs)}
                              end,
-                        apply_to_attrs(ChildRef, Op),
+                        apply_to_attrs(ChildRef, Op, rewrite, Uid),
                         % you need to switch the ref to an idx because later on
                         % you are going to move the cells and you need to know
                         % the ref of the shifted cell
@@ -498,20 +533,20 @@ read_styles(#refX{site = Site}, Idxs) ->
 
 %% @doc deletes the contents (formula/value) and the formats
 %% of a cell (but doesn't delete the cell itself).
--spec clear_cells(#refX{}) -> ok.
-clear_cells(RefX) -> clear_cells(RefX, contents).
+-spec clear_cells(#refX{}, auth_srv:uid()) -> ok.
+clear_cells(RefX, Uid) -> clear_cells(RefX, contents, Uid).
 
--spec clear_cells(#refX{}, all | style | contents) -> ok.
-clear_cells(Ref, contents) ->
-    do_clear_cells(Ref, content_attrs());
-clear_cells(Ref, all) ->
-    do_clear_cells(Ref, ["style", "merge" | content_attrs()]);
-clear_cells(Ref, style) ->
-    do_clear_cells(Ref, ["style", "merge"]);
-clear_cells(Ref, {attributes, DelAttrs}) ->
-    do_clear_cells(Ref, DelAttrs).
+-spec clear_cells(#refX{}, all | style | contents | tuple(), auth_srv:uid()) -> ok.
+clear_cells(Ref, contents, Uid) ->
+    do_clear_cells(Ref, content_attrs(), clear, Uid);
+clear_cells(Ref, all, Uid) ->
+    do_clear_cells(Ref, ["style", "merge" | content_attrs()], clear, Uid);
+clear_cells(Ref, style, Uid) ->
+    do_clear_cells(Ref, ["style", "merge"], ignore, Uid);
+clear_cells(Ref, {attributes, DelAttrs}, Uid) ->
+    do_clear_cells(Ref, DelAttrs, clear, Uid).
 
-do_clear_cells(Ref, DelAttrs) ->
+do_clear_cells(Ref, DelAttrs, Action, Uid) ->
     Op = fun(RX) ->
                  fun(Attrs) ->
                          case lists:keymember("formula", 1, Attrs) of
@@ -524,7 +559,7 @@ do_clear_cells(Ref, DelAttrs) ->
                  end
          end,
     Refs = expand_ref(Ref),
-    [apply_to_attrs(X, Op(X)) || X <- Refs],
+    [apply_to_attrs(X, Op(X), Action, Uid) || X <- Refs],
     % now mark the refs dirty for zinfs
     [ok = mark_dirty_for_zinf(X) || X <- Refs],
     ok.
@@ -555,8 +590,9 @@ content_attrs() ->
 %% @todo this is ineffiecient because it reads and then deletes each
 %% record individually - if remoting_reg supported a {delete refX all}
 %% type message it could be speeded up
--spec delete_cells(#refX{}, atom()) -> [#refX{}].
-delete_cells(#refX{site = S} = DelX, Disp) ->
+-spec delete_cells(#refX{}, atom(), auth_srv:uid()) -> [#refX{}].
+delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
+    ok = log2(DelX, Disp, delete, Uid),
     case expand_ref(DelX) of
         %% there may be no cells to delete, but there may be rows or
         %% columns widths to delete...
@@ -577,7 +613,7 @@ delete_cells(#refX{site = S} = DelX, Disp) ->
             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
 
             %% Rewrite formulas
-            Status = [deref_formula(X, DelX, Disp) || X <- LocalChildren3],
+            Status = [deref_formula(X, DelX, Disp, Uid) || X <- LocalChildren3],
             Fun = fun({dirty, _Ref}) -> true; ({clean, _Ref}) -> false end,
             Dirty = [X || {dirty, X} <- lists:filter(Fun, Status)],
             ok = mark_these_dirty(Dirty, nil),
@@ -593,8 +629,9 @@ delete_cells(#refX{site = S} = DelX, Disp) ->
             LocalChildren3
     end.
 
--spec deref_formula(#refX{}, #refX{}, atom()) -> {clean | dirty, #refX{}}.
-deref_formula(Ref, DelRef, Disp) ->
+-spec deref_formula(#refX{}, #refX{}, atom(), auth_srv:uid()) ->
+    {clean | dirty, #refX{}}.
+deref_formula(Ref, DelRef, Disp, Uid) ->
     Op = fun(Attrs) ->
                  case orddict:find("formula", Attrs) of
                      {ok, F1} ->
@@ -604,37 +641,37 @@ deref_formula(Ref, DelRef, Disp) ->
                          {clean, Attrs}
                  end
          end,
-    {Status, _} = apply_to_attrs(Ref, Op),
+    {Status, _} = apply_to_attrs(Ref, Op, deref, Uid),
     {Status, Ref}.
 
 %% %% @doc copys cells from a reference to a reference
 -spec copy_cell(#refX{}, #refX{},
                 false | horizontal | vertical,
-                all | style | value) -> ok.
+                all | style | value, string()) -> ok.
 copy_cell(From=#refX{obj={cell, _}},
           To=#refX{obj={cell, _}},
-          _, value) ->
+          _, value, Uid) ->
     SourceAttrs = case read_ref(From, inside, read) of
                       [{_, As}] -> As;
                       _         -> []
                   end,
     Op = fun(Attrs) -> {clean, copy_value(SourceAttrs, Attrs)}
          end,
-    apply_to_attrs(To, Op),
+    apply_to_attrs(To, Op, copy, Uid),
     ok;
 copy_cell(From=#refX{obj={cell, _}},
           To=#refX{obj={cell, _}},
-          _, style) ->
+          _, style, Uid) ->
     SourceAttrs = case read_ref(From, inside, read) of
                       [{_, As}] -> As;
                       _         -> []
                   end,
     Op = fun(Attrs) -> {clean, copy_attributes(SourceAttrs, Attrs, ["style"])} end,
-    apply_to_attrs(To, Op),
+    apply_to_attrs(To, Op, copy, Uid),
     ok;
 copy_cell(#refX{obj = {cell, {FX,FY}}} = From,
           #refX{obj = {cell, {TX,TY}}} = To,
-          Incr, all) ->
+          Incr, all, Uid) ->
     Attrs = case read_ref(From, inside, read) of
                 [{_, As}] -> As;
                 _         -> []
@@ -676,7 +713,7 @@ copy_cell(#refX{obj = {cell, {FX,FY}}} = From,
         end,
     Attrs2 = copy_attributes(Attrs, orddict:new(), ["merge", "style"]),
     Attrs3 = orddict:store("formula", Formula2, Attrs2),
-    write_attrs(To, Attrs3),
+    write_attrs(To, Attrs3, Uid),
     ok.
 
 %% @spec read_page_structure(Ref) -> dh_tree()

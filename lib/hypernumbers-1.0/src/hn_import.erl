@@ -17,12 +17,14 @@
          etl/4,
          xls_file/3,
          json_file/2,
+         json_file/3,
          csv_file/2,
          csv_append/2
         ]).
 
 testing() ->
-    Dir = "/home/gordon/hypernumbers/lib/hypernumbers-1.0/priv/site_types/sust_adv/etl_maps/",
+    Dir = "/home/gordon/hypernumbers/lib/hypernumbers-1.0/priv"
+        ++ "/site_types/sust_adv/etl_maps/",
     File1 = "test.csv",
     File2 = "test.xls",
     Path = tconv:to_s(util2:get_timestamp()),
@@ -84,7 +86,9 @@ get_namedsheet(Input, SheetName, URL) ->
         false             -> exit('no_such_sheetname')
     end.
 
-json_file(Url, FileName) ->
+json_file(Url, FileName) -> json_file(Url, FileName, nil).
+
+json_file(Url, FileName, Uid) ->
     {ok, JsonTxt} = file:read_file(FileName),
     Ref = hn_util:url_to_refX(Url),
     #refX{site = S, path = P} = Ref,
@@ -108,10 +112,10 @@ json_file(Url, FileName) ->
 
     Styles = make_styles(StyleStrs, []),
 
-    ok = hn_db_api:clear(Ref, all, nil),
-    [rows(Ref, X, Styles, row,    fun write_col_row/3) || X <- Rows],
-    [rows(Ref, X, Styles, column, fun write_col_row/3) || X <- Cols],
-    [rows(Ref, X, Styles, cell,   fun write_cells/3)   || X <- Cells],
+    ok = hn_db_api:clear(Ref, all, Uid),
+    [rows(Ref, X, Styles, row,    fun write_col_row/4, Uid) || X <- Rows],
+    [rows(Ref, X, Styles, column, fun write_col_row/4, Uid) || X <- Cols],
+    [rows(Ref, X, Styles, cell,   fun write_cells/4,   Uid) || X <- Cells],
     ok.
 
 make_styles([], Acc) -> Acc;
@@ -129,26 +133,26 @@ set_view(Site, Path, {View, {struct, Propslist}}) ->
                                                        {"everyone", Everyone}]).
 
 
-rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun) ->
-    [cells(Ref, Row, X, Styles, Type, Fun) || X <- Cells],
+rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
+    [cells(Ref, Row, X, Styles, Type, Fun, Uid) || X <- Cells],
     ok.
 
-cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun) ->
+cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun, Uid) ->
     NRef = Ref#refX{obj = {Type, {ltoi(Col), ltoi(Row)}}},
-    Fun(NRef, Styles, Attrs),
+    Fun(NRef, Styles, Attrs, Uid),
     ok.
 
-write_col_row(_NRef, _, [])   -> ok;
-write_col_row(NRef, _, Attrs) ->
-    hn_db_api:write_attributes([{NRef, Attrs}]).
+write_col_row(_NRef, _, [], _)   -> ok;
+write_col_row(NRef, _, Attrs, Uid) ->
+    hn_db_api:write_attributes([{NRef, Attrs}], Uid).
 
-write_cells(Ref, Styles, Attrs) ->
+write_cells(Ref, Styles, Attrs, Uid) ->
     Attrs2 = copy_attrs(Attrs, [], Styles, ["merge",
                                               "formula",
                                               "style",
                                               "format",
                                               "input"]),
-    hn_db_api:write_attributes([{Ref, Attrs2}]).
+    hn_db_api:write_attributes([{Ref, Attrs2}], Uid).
 
 copy_attrs(_Source, Dest, _Styles, []) -> Dest;
 copy_attrs(Source, Dest, Styles, ["style" = Key | T]) ->

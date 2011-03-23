@@ -106,6 +106,19 @@
           new          :: ordsets:ordset(#refX{})
          }).
 
+% this record is for the table that logs changes
+-record(logging,
+        {
+          idx,
+          uid,
+          action,
+          actiontype,
+          type,
+          path,
+          ref,
+          log
+         }).
+
 -record(group,
         {
           name = [],

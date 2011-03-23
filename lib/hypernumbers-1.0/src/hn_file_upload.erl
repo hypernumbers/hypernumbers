@@ -36,7 +36,7 @@ handle_upload(Mochi, Ref, Uid) ->
     NRef = Ref#refX{path = Ref#refX.path ++ [make_name(Name)]},
     % io:format("file uploaded...~n"),
     try
-        import(File, UserName, NRef, Name),
+        import(File, UserName, NRef, Name, Uid),
         { {struct, [{"location", hn_util:list_to_path(NRef#refX.path)}]},
           File}
     catch
@@ -76,15 +76,15 @@ split_sheets(X, {Ls, Fs}) ->
         _      -> {[Datatpl|Ls], Fs}
     end.
 
-write_data(Ref, {Sheet, Target, Data}) when is_list(Target) ->
+write_data(Ref, {Sheet, Target, Data}, Uid) when is_list(Target) ->
     NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
                     obj  = hn_util:parse_attr(Target)},
-    hn_db_api:write_attributes([{NRef, [{"formula", Data}]}]).
+    hn_db_api:write_attributes([{NRef, [{"formula", Data}]}], Uid).
 
-write_css(Ref, {Sheet, Target, CSS}) when is_list(Target) ->
+write_css(Ref, {Sheet, Target, CSS}, Uid) when is_list(Target) ->
     NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
                     obj  = hn_util:parse_attr(Target)},
-    hn_db_api:write_attributes([{NRef, CSS}]).
+    hn_db_api:write_attributes([{NRef, CSS}], Uid).
 
 %% Excel's default borders are
 %% * no type of border
@@ -137,24 +137,24 @@ test_import(File, Ref) ->
     Path = code:lib_dir(hypernumbers)++"/../../tests/excel_files/"
         ++ "Win_Excel07_As_97/"++File++".xls",
     %Path = "/home/gordon/hypernumbers/tests/"++File++".xls",
-    import(Path, "anonymous", Ref#refX{path=[File]}, File).
+    import(Path, "anonymous", Ref#refX{path=[File]}, File,nil).
 
-import(File, User, Ref, Name) ->
+import(File, User, Ref, Name, Uid) ->
 
     {Cells, _Names, _Formats, CSS, Warnings, Sheets} = filefilters:read(excel, File),
     {Literals, Formulas} = lists:foldl(fun split_sheets/2, {[], []}, Cells),
     CSS2 = lists:foldl(fun split_css/2, [], CSS),
 
-    [ write_data(Ref, X) || X <- Literals ],
-    [ write_data(Ref, X) || X <- Formulas ],
-    [ write_css(Ref, X)  || X <- CSS2 ],
+    [ write_data(Ref, X, Uid) || X <- Literals ],
+    [ write_data(Ref, X, Uid) || X <- Formulas ],
+    [ write_css(Ref,  X, Uid) || X <- CSS2 ],
 
-    ok = write_warnings_page(Ref, Sheets, User, Name, Warnings).
+    ok = write_warnings_page(Ref, Sheets, User, Name, Warnings, Uid).
 
-write_warnings_page(Ref, Sheets, User, Name, Warnings) ->
+write_warnings_page(Ref, Sheets, User, Name, Warnings, Uid) ->
 
     hn_db_api:write_attributes([{Ref#refX{obj = {column, {2, 2}}},
-                                 [{width, 400}]}]),
+                                 [{width, 400}]}], Uid),
 
     % write parent page information
     HeaderSt = [{"font-weight", "bold"},

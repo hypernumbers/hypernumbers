@@ -562,7 +562,7 @@ ipost(_Ref, #qry{mark = []},
 ipost(Ref, _Qry, Env=#env{body = [{"load_template", {_, [{"name", Name}]}}],
                           uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "created page from template "++Name),
-    ok = hn_templates:load_template(Ref, Name),
+    ok = hn_templates:load_template(Ref, Name, Uid),
     json(Env, "success");
 
 ipost(Ref, _Qry, Env=#env{body = [{"drag", {_, [{"range", Rng}]}}],
@@ -707,7 +707,8 @@ ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     case hn_db_api:read_attribute(Ref, "input") of
-        [{Ref, "inline"}] -> ok = hn_db_api:write_attributes([{Ref, Attrs}]),
+        [{Ref, "inline"}] -> ok = hn_db_api:write_attributes([{Ref, Attrs}],
+                                                             Uid, Uid),
                              json(Env, "success");
         _                 -> respond(403, Env)
     end;

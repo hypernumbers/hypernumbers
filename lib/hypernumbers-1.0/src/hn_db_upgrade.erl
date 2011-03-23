@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         make_log_table/0,
          fix_borked_binaries/0,
          unload_from_mem/0,
          reload_into_mem/0,
@@ -32,12 +33,24 @@
          %% upgrade_1776/0
         ]).
 
+make_log_table() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Tables = [
+                             {logging, record_info(fields, logging)}
+                            ],
+                   [ok = make_table(Site, X, Y, disc_only_copies)
+                    || {X, Y} <- Tables],
+                   ok
+           end,
+    lists:foreach(Fun1, Sites).
+
 fix_borked_binaries() ->
     Sites = hn_setup:get_sites(),
-        Fun1 = fun(Site) ->
+    Fun1 = fun(Site) ->
                    Fun = fun({item, Idx, Attrs}) when is_binary(Attrs)->
-                                  io:format("still binaries in item ~p~n", [Idx]),
-                                  {item, Idx, binary_to_term(Attrs)};
+                                 io:format("still binaries in item ~p~n", [Idx]),
+                                 {item, Idx, binary_to_term(Attrs)};
                             ({item, Idx, Attrs}) ->
                                  {item, Idx, Attrs}
                          end,
@@ -289,16 +302,16 @@ upgrade_zinf_2011_01_17() ->
                              {dirty_for_zinf, record_info(fields, dirty_for_zinf)},
                              {kvstore, record_info(fields, kvstore)}
                              ],
-                   [ok = make_table(Site, X, Y) || {X, Y} <- Tables],
+                   [ok = make_table(Site, X, Y, disc_copies) || {X, Y} <- Tables],
                    ok = hn_db_api:write_kv(Site, ?zinf_tree, gb_trees:empty())
            end,
     lists:foreach(Fun1, Sites),
     ok.
 
-make_table(Site, Record, RecordInfo) ->
+make_table(Site, Record, RecordInfo, Storage) ->
     Tbl = hn_db_wu:trans(Site, Record),
     Ret = hn_db_admin:create_table(Tbl, Record, RecordInfo,
-                                   disc_copies, set, false, []),
+                                   Storage, set, false, []),
     io:format("~p creation status: ~p~n", [Tbl, Ret]),
     Ret.
 

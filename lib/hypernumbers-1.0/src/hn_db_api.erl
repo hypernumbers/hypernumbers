@@ -111,6 +111,7 @@
          write_kv/3,
          read_kv/2,
          write_attributes/1,
+         write_attributes/2,
          write_attributes/3,
          append_row/3,
          read_attribute/2,
@@ -385,6 +386,11 @@ matching_forms(RefX, Transaction) ->
 -spec write_attributes([{#refX{}, [tuple()]}]) -> ok.
 write_attributes(List) ->
     write_attributes(List, nil, nil).
+
+-spec write_attributes([{#refX{}, [tuple()]}], auth_srv:auth_spec()) -> ok.
+write_attributes(List, Uid) ->
+    write_attributes(List, Uid, nil).
+
 write_attributes([], _PAr, _VAr) -> ok;
 write_attributes(List, PAr, VAr) ->
     [ok = page_srv:page_written(S, P) || {#refX{site = S, path = P}, _} <- List],
@@ -476,7 +482,7 @@ delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
     Fun1 = fun() ->
                    ok = init_front_end_notify(),
                    % by default cells have a direction of deletion and it is horiz
-                   Dirty = hn_db_wu:delete_cells(RefX, horizontal),
+                   Dirty = hn_db_wu:delete_cells(RefX, horizontal, Ar),
                    ok = hn_db_wu:mark_these_dirty(Dirty, Ar)
            end,
     write_activity(RefX, Fun1, "refresh").
@@ -516,15 +522,15 @@ move_tr(RefX, Type, Disp, Ar) ->
     % To make this work we shift the RefX up 1, left 1
     % before getting the cells to shift for INSERT
     % if this is a delete - we need to actually delete the cells
-    ReWr = do_delete(Type, RefX, Disp),
-    MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr),
+    ReWr = do_delete(Type, RefX, Disp, Ar),
+    MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr, Ar),
     ok = hn_db_wu:mark_these_dirty(ReWr, Ar),
     ok = hn_db_wu:mark_these_dirty(MoreDirty, Ar).
 
-do_delete(insert, _RefX, _Disp) ->
+do_delete(insert, _RefX, _Disp, _UId) ->
     [];
-do_delete(delete, RefX, Disp) ->
-    hn_db_wu:delete_cells(RefX, Disp).
+do_delete(delete, RefX, Disp, Uid) ->
+    hn_db_wu:delete_cells(RefX, Disp, Uid).
 
 %% @doc clears the contents of the cell or range
 %% (but doesn't delete the cell or range itself).
@@ -552,7 +558,7 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
     Fun =
         fun() ->
                 ok = init_front_end_notify(),
-                ok = hn_db_wu:clear_cells(RefX, Type),
+                ok = hn_db_wu:clear_cells(RefX, Type, Ar),
                 ok = hn_db_wu:mark_these_dirty([RefX], Ar)
         end,
     write_activity(RefX, Fun, "clear").
@@ -760,7 +766,7 @@ write_attributes1(#refX{site = S} = RefX, List, PAr, VAr) ->
     hn_db_wu:write_attrs(RefX, List, PAr),
     % first up do the usual 'dirty' stuff - this cell is dirty
     case lists:keymember("formula", 1, List) of
-       true  -> [Rels] = hn_db_wu:read_relations_DEBUG(RefX),
+       true  -> [Rels] = hn_db_wu:read_relations(RefX, read),
                 case Rels#relation.children of
                     []       -> ok;
                     Children -> Ch2 = [hn_db_wu:idx_to_refX(S, X) || X <- Children],
@@ -780,7 +786,7 @@ write_attributes1(#refX{site = S} = RefX, List, PAr, VAr) ->
 copy_cell(From = #refX{site = Site, path = Path}, To, Incr, What, Ar) ->
     case auth_srv:get_any_view(Site, Path, Ar) of
         {view, _} ->
-            ok = hn_db_wu:copy_cell(From, To, Incr, What),
+            ok = hn_db_wu:copy_cell(From, To, Incr, What, Ar),
             ok = hn_db_wu:mark_these_dirty([To], Ar);
         _ ->
             throw(auth_error)
