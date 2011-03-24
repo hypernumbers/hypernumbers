@@ -165,11 +165,20 @@ draw(undefined,Css,Inp,C,R,X,Y,W,H) -> draw("",Css, Inp,C,R,X,Y,W,H);
 draw(Value,Css,Inp,C,R,X,Y,W,H) ->
     % Tom wants to fix this up :(
     Val = case Value of
-              {errval, ErrVal} -> atom_to_list(ErrVal);
-              A when is_atom(A) -> atom_to_list(A);
-              I when is_integer(I) -> integer_to_list(I);
-              F when is_float(F) -> float_to_list(F);
-              _                  -> Value
+              {errval, ErrVal} ->
+                  atom_to_list(ErrVal);
+              {datetime, {1,1,1}  = Date, Time} ->
+                  dh_date:format("g:i A", {Date, Time});
+              {datetime, Date, Time} ->
+                  muin_date:to_rfc1123_string({datetime, Date, Time});
+              A when is_atom(A) ->
+                  atom_to_list(A);
+              I when is_integer(I) ->
+                  integer_to_list(I);
+              F when is_float(F) ->
+                  float_to_list(F);
+              _  ->
+                  Value
           end,
     Cell = tconv:to_b26(C) ++ integer_to_list(R),
     St = "style='left:~bpx;top:~bpx;width:~bpx;height:~bpx;~s"
