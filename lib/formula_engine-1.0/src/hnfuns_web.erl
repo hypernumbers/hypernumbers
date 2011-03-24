@@ -16,6 +16,7 @@
          img/1,
          html/1,
          page/1,
+         segment/1,
          site/1,
          'crumb.trail'/1,
          'lorem.ipsum'/1,
@@ -201,6 +202,12 @@ site([]) ->
     Site = get(site),
     [Proto, Domain, _Port] = string:tokens(Site, ":"),
     Proto ++ Domain.
+
+segment([]) ->
+    case get(path) of
+        []   -> "";
+        List -> hd(lists:reverse(List))
+    end.
 
 page([]) ->
     case get(path) of
