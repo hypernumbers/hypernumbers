@@ -534,7 +534,7 @@ move_tr(RefX, Type, Disp, Ar) ->
     % To make this work we shift the RefX up 1, left 1
     % before getting the cells to shift for INSERT
     % if this is a delete - we need to actually delete the cells
-    % ok = hn_db_wu:log_move(RefX, Type, Disp, Ar),
+    ok = hn_db_wu:log_move(RefX, Type, Disp, Ar),
     ReWr = do_delete(Type, RefX, Disp, Ar),
     MoreDirty = hn_db_wu:shift_cells(RefX, Type, Disp, ReWr, Ar),
     ok = hn_db_wu:mark_these_dirty(ReWr, Ar),

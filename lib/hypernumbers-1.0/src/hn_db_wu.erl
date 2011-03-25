@@ -378,7 +378,7 @@ apply_to_attrs(#refX{site = Site} = Ref, Op, Action, Uid) ->
     % the Op may have shifted the RefX that the Idx now points to, so look it
     % up again for the log
     NewRef = idx_to_refX(Site, Idx),
-    %ok = log_write(Idx, NewRef, Attrs, Attrs2, Action, Uid),
+    ok = log_write(Idx, NewRef, Attrs, Attrs2, Action, Uid),
     Item = #item{idx = Idx, attrs = term_to_binary(Attrs3)},
     case deleted_attrs(Attrs, Attrs3) of
         []   -> ok;
