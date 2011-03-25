@@ -171,15 +171,15 @@ clause1([{plainpath, A}, {plainpath, "date"}, {plainpath, "dddd"}]) ->
     #datedpage{template = A, format = "dddd"};
 % 4 args
 clause1([{plainpath, A}, {plainpath, "auto"}, {plainpath, "incr"},
-        {plainpath, B}]) ->
+         {plainpath, B}]) ->
     ok = check_not_num_prefix(B),
     #numberedpage{template = A, type = increment, prefix = B};
 clause1([{plainpath, A}, {plainpath, "auto"}, {plainpath, "increment"},
-        {plainpath, B}]) ->
+         {plainpath, B}]) ->
     ok = check_not_num_prefix(B),
     #numberedpage{template = A, type = "increment", prefix = B};
 clause1([{plainpath, A}, {plainpath, "auto"}, {plainpath, "random"},
-        {plainpath, B}]) ->
+         {plainpath, B}]) ->
     ok = check_not_num_prefix(B),
     #numberedpage{template = A, type = "random", prefix = B}.
 
@@ -452,7 +452,7 @@ adv_test_() ->
                 #destination{type = "table"}, [], [], [], []}
               ]),
 
-          ?_assert(p_TEST("/[bobbie; go]/") ==
+     ?_assert(p_TEST("/[bobbie; go]/") ==
               [
                {segment, {plainpath,"bobbie"},
                 #destination{type = "default"}, [], [], [], []}
@@ -471,7 +471,7 @@ adv_test_() ->
                                                          "group3"]}
               ]),
 
-          ?_assert(p_TEST("/[bobbie;table, $user, group2, group3]/") ==
+     ?_assert(p_TEST("/[bobbie;table, $user, group2, group3]/") ==
               [
                {segment, {plainpath,"bobbie"},
                 #destination{type = false}, [], [], [], ["$user", "group2",
@@ -485,8 +485,8 @@ adv_test_() ->
                                                            "group3"]}
               ]),
 
-          ?_assert(p_TEST("/[bobbie; go, table; table, group1, group2, group3; " ++
-                          "table, group4, group5]/") ==
+     ?_assert(p_TEST("/[bobbie; go, table; table, group1, group2, group3; " ++
+                     "table, group4, group5]/") ==
               [
                {segment, {plainpath,"bobbie"},
                 #destination{type = "table"}, [], [], [], ["group1", "group2",
@@ -494,9 +494,9 @@ adv_test_() ->
                                                            "group4", "group5"]}
               ]),
 
-          ?_assert(p_TEST("/[bobbie; go, table; table, group1, group2, group3; " ++
-                          "table, group4, group5]/bleh/[banjo, auto, incr;go;" ++
-                          "table, group1; spreadsheet, group2]/") ==
+     ?_assert(p_TEST("/[bobbie; go, table; table, group1, group2, group3; " ++
+                     "table, group4, group5]/bleh/[banjo, auto, incr;go;" ++
+                     "table, group1; spreadsheet, group2]/") ==
               [
                {segment, {plainpath,"bobbie"},
                 #destination{type = "table"}, [], [], [], ["group1", "group2",
@@ -509,6 +509,25 @@ adv_test_() ->
                 ["group1"]}
 
               ])
+    ].
 
+stevies_test_() ->
+    [
+     ?_assert(p_TEST("/[jingo, 1]/") ==
+              [
+               {segment, {namedpage,"jingo", "1"},
+                #destination{type = false}, [], [], [], []}
+              ]),
 
+     ?_assert(p_TEST("/[jingo, 1-2]/") ==
+              [
+               {segment, {namedpage,"jingo", "1-2"},
+                #destination{type = false}, [], [], [], []}
+              ]),
+
+     ?_assert(p_TEST("/[jingo, 12aA_-~]/") ==
+              [
+               {segment, {namedpage,"jingo", "12aA_-~"},
+                #destination{type = false}, [], [], [], []}
+              ])
     ].
