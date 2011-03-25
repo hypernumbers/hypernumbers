@@ -608,7 +608,6 @@ content_attrs() ->
 %% type message it could be speeded up
 -spec delete_cells(#refX{}, atom(), auth_srv:uid()) -> [#refX{}].
 delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
-    io:format("in delete_cells for ~p~n", [Uid]),
     case expand_ref(DelX) of
         %% there may be no cells to delete, but there may be rows or
         %% columns widths to delete...
@@ -2276,5 +2275,5 @@ get_page_l([], Acc)                              -> Acc;
 get_page_l([#logging{obj = {cell, _}} | T], Acc) -> get_page_l(T, Acc);
 get_page_l([H | T], Acc)                         -> get_page_l(T, [H | Acc]).
 
-make_blank(#refX{obj = O} = RefX, Idx) ->
+make_blank(#refX{obj = O}, Idx) ->
     [#logging{idx = Idx, obj = O, log = term_to_binary("This cell is blank")}].
