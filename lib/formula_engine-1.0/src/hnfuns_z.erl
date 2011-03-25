@@ -23,13 +23,13 @@ debug1([{zeds, Matches, NoMatches, Errs}]) ->
 
 make_matches([]) -> "<div>no pages match</div>";
 make_matches(L)  ->
-    "<div class='hn_debug_hd'>The following pages match:<div>"
+    "<div class='hn_debug_hd'>The following pages match:"
         ++ make_m2(L, []) ++ "</div>".
 
 make_no_matches([]) -> [];
 make_no_matches(L)  ->
     "<div class='hn_debug_hd'>The following pages (or page stems) do not match:"
-        ++ make_no2(L, []) ++ "<div>".
+        ++ make_no2(L, []) ++ "</div>".
 
 make_errs([]) -> [];
 make_errs(L)  ->
