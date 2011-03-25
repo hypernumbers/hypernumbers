@@ -1631,22 +1631,21 @@ make_actions(Site, Path, Recs) ->
     {_, Recs2} = lists:unzip(Recs),
     {Ts, Perms, Dest, As} = make_a(Site, Recs2, now(), [], [], [], []),
     % now transform the actions from relative to absolute paths
-    P2 = hn_util:list_to_path(Path),
-    % profoundly fugly switching from ["some", "path"] to "/some/path/"
-    % and then back again :(
     Fun = fun(X) ->
-                   Loc = string:join(X, "/") ++ "/",
-                   Loc2 = case Loc of
+                  Loc = string:join(X, "/") ++ "/",
+                  Loc2 = case Loc of
                              [?FULLSTOP | _Rest] -> Loc;
                              _            -> "/" ++ Loc
                          end,
-                  muin_util:walk_path(P2, Loc2)
+                  muin_util:walk_path(Path, Loc2)
            end,
     As2 = [{Temp, Fun(X)} || {Temp, X} <- As],
+
     {Dest2, View} = case Dest of
                         [] -> {get_last(As2), []};
                         _  -> Dest
             end,
+
     Dest3 = hn_util:strip80(Site) ++ hn_util:list_to_path(Dest2) ++ View,
     {Ts, Perms, Dest3, As2}.
 
