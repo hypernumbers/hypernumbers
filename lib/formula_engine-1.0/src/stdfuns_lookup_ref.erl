@@ -250,7 +250,6 @@ match1(LookupVal, List, 1) ->
         false   -> ?ERR_NA
     end.
 
-
 vlookup([V, A, I]) ->
     vlookup([V, A, I, true]);
 vlookup([V, IA, I0, IB]) ->
