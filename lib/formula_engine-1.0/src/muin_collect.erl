@@ -236,9 +236,10 @@ rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
 
 rl(fetch_z_no_errs, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
     case muin:fetch(Ref) of
-        {range, V, _, []}   -> {range, V};
+        {range, L, _, []}   -> {_Paths, Vs} = lists:unzip(L),
+                               {range, [Vs]};
         {range, _, _, Errs} -> {error, _, Err} = hd(lists:reverse(Errs)),
-                               {range, Err}
+                               {range, [Err]}
     end;
 
 rl(fetch, Name) when ?is_namedexpr(Name) ->
