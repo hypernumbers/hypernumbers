@@ -48,6 +48,10 @@
 %%%                             turns 'A1' into the value in 'A1'
 %%%                             if the zref returns any errors on the path shows
 %%%                             an error
+%%% * fetch_z_all               fetches a zcellref or zrangeref - that is to say
+%%%                             turns 'A1' into the value in 'A1'
+%%%                             returns the matchs, no matchs and errors all with
+%%%                             their paths
 %%% * cast_def                  NOT A REAL CAST - USED INTERNALLY
 %%% * {cast, Type}              casts all values to 'Type' (see ignore_type)
 %%% * {cast, From, To}          only casts some types to the the 'To' type
@@ -83,7 +87,8 @@
          is_string/1,
          is_date/1,
          is_blank/1,
-         is_blank_or_number/1
+         is_blank_or_number/1,
+         is_zeds/1
         ]).
 
 col(Args, Rules, Passes, Fun) ->
@@ -234,12 +239,15 @@ rl(fetch_name, Name) when ?is_namedexpr(Name) ->
 rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 
+rl(fetch_z_all, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
+    muin:fetch(Ref);
+
 rl(fetch_z_no_errs, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
     case muin:fetch(Ref) of
-        {range, L, _, []}   -> {_Paths, Vs} = lists:unzip(L),
-                               {range, [Vs]};
-        {range, _, _, Errs} -> {error, _, Err} = hd(lists:reverse(Errs)),
-                               {range, [Err]}
+        {zeds, L, _, []}   -> {_Paths, Vs} = lists:unzip(L),
+                              {range, [Vs]};
+        {zeds, _, _, Errs} -> {error, _, Err} = hd(lists:reverse(Errs)),
+                              {range, [Err]}
     end;
 
 rl(fetch, Name) when ?is_namedexpr(Name) ->
@@ -357,6 +365,9 @@ is_date(X) when is_record(X, datetime) ->
     true;
 is_date(_) ->
     false.
+
+is_zeds({zeds, _, _, _}) -> true;
+is_zeds(_)               -> false.
 
 is_blank(blank) ->
     true;

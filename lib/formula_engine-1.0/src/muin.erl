@@ -524,7 +524,7 @@ fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
     RefX = make_inf_refX(C#cellref.path, C#cellref.text),
     Infinites = get(infinite),
     put(infinite, ordsets:add_element(RefX, Infinites)),
-    {range, Vals, NoMatch, Err};
+    {zeds, Vals, NoMatch, Err};
     % pinch it off from working
     %error_logger:info_msg("(from muin) Somebody tried a z-order cellref~n"),
     %?ERRVAL_ERR;
@@ -803,14 +803,14 @@ m1(Site, [H | T], ZPath, Match, NoMatch, Err) ->
         end,
     m1(Site, T, ZPath, NewM, NewNM, NewE).
 
-m2(_Site, [], [], Htap) -> {match, lists:reverse(Htap)};
+m2(_Site, [], [], Htap)                       -> {match, lists:reverse(Htap)};
 m2(Site, [S | T1], [{seg, S}     | T2], Htap) -> m2(Site, T1, T2, [S | Htap]);
-m2(_Site, [_S | _T1], [{seg, _}  | _T2], Htap) -> {nomatch, lists:reverse(Htap)};
-m2(Site, [S | T1], [{zseg, Z, _} | T2], Htap)   ->
+m2(_Site, [S | _T1], [{seg, _}  | _T2], Htap) -> {nomatch, lists:reverse([S|Htap])};
+m2(Site, [S | T1], [{zseg, Z, _} | T2], Htap) ->
     case zeval(Site, lists:reverse([S | Htap]), Z) of
-        {match,   _Path}      -> m2(Site, T1, T2, [S | Htap]);
-        {nomatch,  Path}      -> {nomatch, Path};
-        {error,    Path, Val} -> {error, Path, Val}
+        match        -> m2(Site, T1, T2, [S | Htap]);
+        nomatch      -> {nomatch, lists:reverse([S | Htap])};
+        {error, Val} -> {error, lists:reverse([S | Htap]), Val}
     end.
 
 % the zinf server has no context to execute at this stage!
@@ -840,9 +840,9 @@ zeval2(Site, Path, Toks, X, Y) ->
                                 % cast to a boolean
                                 Rs2 = typechecks:std_bools([Rs]),
                                 case Rs2 of
-                                    [true]  -> {match,   Path};
-                                    [false] -> {nomatch, Path};
-                                    Val     -> {error,   Path, Val}
+                                    [true]  -> match;
+                                    [false] -> nomatch;
+                                    Val     -> {error, Val}
                                 end;
                  ?syntax_err -> ?error_in_formula
              end,
