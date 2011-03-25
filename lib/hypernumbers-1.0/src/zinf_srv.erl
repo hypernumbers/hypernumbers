@@ -320,9 +320,9 @@ match_seg(selector,    _S,  _Site, _Htap) -> nomatch;
 match_seg({zseg, S1},   S,   Site,  Htap) ->
     Path = lists:reverse([S | Htap]),
     case run_zeval(Site, Path, S1) of
-        {match, _}    -> match;
-        {nomatch, _}  -> nomatch;
-        {error, _, _} -> error
+        match         -> match;
+        nomatch       -> nomatch;
+        {error, _Err} -> error
     end.
 
 run_zeval(Site, Path, Z) ->
