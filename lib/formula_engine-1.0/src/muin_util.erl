@@ -190,7 +190,7 @@ walk_path(_, Dest = [$/|_]) ->
     string:tokens(Dest, "/");
 walk_path(Currloc, Dest) ->
     lists:foldl(fun(".",  Stk) -> Stk;
-                   ("..", [])  ->  [];
+                   ("..", [])  -> [];
                    ("..", Stk) -> hslists:init(Stk);
                    (Word, Stk) -> lists:append(Stk, [Word])
                 end,
@@ -274,9 +274,9 @@ attempt(Mod, F, Args) ->
     catch
         Error:Reason when Error =:= error orelse Error =:= throw ->
             error_logger:info_msg("attempt to eval ~p/~p/~p failed~n- for ~p : ~p~n"
-                                   "-with stacktrace of ~p~n",
+                                  "-with stacktrace of ~p~n",
                                   [Mod, F, Args, Error, Reason,
-                                    erlang:get_stacktrace()]),
+                                   erlang:get_stacktrace()]),
             {error, Reason}
     end.
 
