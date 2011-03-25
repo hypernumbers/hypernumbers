@@ -227,7 +227,7 @@ negate([V]) ->
 
 sum(Vs) ->
     muin_collect:col(Vs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
-                          {cast, bool, num}, fetch, fetch_z, flatten,
+                          {cast, bool, num}, fetch, fetch_z_no_errs, flatten,
                           {ignore, blank}, {ignore, str}, {ignore, bool}],
                      [return_errors, {all, fun is_number/1}],
                      fun sum1/1).

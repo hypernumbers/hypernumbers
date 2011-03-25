@@ -515,7 +515,7 @@ fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
     Length = length(NewPath),
     Paths = hn_db_api:read_pages(#refX{site = ?msite, path = [], obj = {page, "/"}}),
     FPaths = [X || X <- Paths, length(X) == Length],
-    MPaths = match(?msite, FPaths, NewPath),
+    {MPaths, NoMatch, Err} = match(?msite, FPaths, NewPath),
     OCol = C#cellref.col,
     ORow = C#cellref.row,
     Vals = fetch_vals(MPaths, ORow, OCol),
@@ -523,7 +523,7 @@ fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
     RefX = make_inf_refX(C#cellref.path, C#cellref.text),
     Infinites = get(infinite),
     put(infinite, ordsets:add_element(RefX, Infinites)),
-    {range, [Vals]};
+    {range, [Vals], NoMatch, Err};
     % pinch it off from working
     %error_logger:info_msg("(from muin) Somebody tried a z-order cellref~n"),
     %?ERRVAL_ERR;
@@ -790,23 +790,26 @@ fill1D(Dict, Index, N, Size, Acc, Type) ->
         end,
     fill1D(Dict, Index + 1, NewN, Size, NewAcc, Type).
 
-match(Site, Paths, ZPath) -> m1(Site, Paths, ZPath, []).
+match(Site, Paths, ZPath) -> m1(Site, Paths, ZPath, [], [], []).
 
-m1(_Site, [], _ZPath, Acc) -> Acc;
-m1(Site, [H | T], ZPath, Acc) ->
-    NewAcc = case m2(Site, H, ZPath, []) of
-                 nomatch -> Acc;
-                 match   -> [H | Acc]
-             end,
-    m1(Site, T, ZPath, NewAcc).
+m1(_Site, [], _ZPath, Match, NoMatch, Err) -> {Match, NoMatch, Err};
+m1(Site, [H | T], ZPath, Match, NoMatch, Err) ->
+    {NewM, NewNM, NewE} =
+        case m2(Site, H, ZPath, []) of
+            {nomatch, Path}    -> {Match, [{nomatch, Path} | NoMatch], Err};
+            {match,  _Path}    -> {[H | Match], NoMatch, Err};
+            {error,   Path, V} -> {Match, NoMatch, [{error, Path, V} | Err]}
+        end,
+    m1(Site, T, ZPath, NewM, NewNM, NewE).
 
-m2(_Site, [], [], _Htap) -> match;
-m2(Site, [S | T1], [{seg, S}     | T2], Htap)   -> m2(Site, T1, T2, [S | Htap]);
-m2(_Site, [_S | _T1], [{seg, _}  | _T2], _Htap) -> nomatch;
+m2(_Site, [], [], Htap) -> {match, lists:reverse(Htap)};
+m2(Site, [S | T1], [{seg, S}     | T2], Htap) -> m2(Site, T1, T2, [S | Htap]);
+m2(_Site, [_S | _T1], [{seg, _}  | _T2], Htap) -> {nomatch, lists:reverse(Htap)};
 m2(Site, [S | T1], [{zseg, Z, _} | T2], Htap)   ->
     case zeval(Site, lists:reverse([S | Htap]), Z) of
-        match   -> m2(Site, T1, T2, [S | Htap]);
-        nomatch -> nomatch
+        {match,   _Path}      -> m2(Site, T1, T2, [S | Htap]);
+        {nomatch,  Path}      -> {nomatch, Path};
+        {error,    Path, Val} -> {error, Path, Val}
     end.
 
 % the zinf server has no context to execute at this stage!
@@ -836,9 +839,9 @@ zeval2(Site, Path, Toks, X, Y) ->
                                 % cast to a boolean
                                 Rs2 = typechecks:std_bools([Rs]),
                                 case Rs2 of
-                                    [true]  -> match;
-                                    [false] -> nomatch;
-                                    _       -> ?ERRVAL_VAL
+                                    [true]  -> {match,   Path};
+                                    [false] -> {nomatch, Path};
+                                    Val     -> {error,   Path, Val}
                                 end;
                  ?syntax_err -> ?error_in_formula
              end,

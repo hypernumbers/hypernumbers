@@ -307,18 +307,23 @@ iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
          none       -> lists:flatten(Acc);
          {K, V, I2} ->
              NewAcc = case match_seg(K, H, S, Htap) of
-                          match       -> match_tree(V, S, T, Fun, [H | Htap]);
-                          nomatch     -> [];
-                          ?ERRVAL_VAL -> []
-                      end,
+                       match    -> match_tree(V, S, T, Fun, [H | Htap]);
+                       nomatch  -> [];
+                       error    -> []
+                   end,
              iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
      end.
 
 match_seg({seg, S},     S,  _Site, _Htap) -> match;
 match_seg({seg, _S1}, _S2,  _Site, _Htap) -> nomatch;
-match_seg({zseg, S1},   S,   Site,  Htap) -> Path = lists:reverse([S | Htap]),
-                                             run_zeval(Site, Path, S1);
-match_seg(selector,    _S,  _Site, _Htap) -> nomatch.
+match_seg(selector,    _S,  _Site, _Htap) -> nomatch;
+match_seg({zseg, S1},   S,   Site,  Htap) ->
+    Path = lists:reverse([S | Htap]),
+    case run_zeval(Site, Path, S1) of
+        {match, _}    -> match;
+        {nomatch, _}  -> nomatch;
+        {error, _, _} -> error
+    end.
 
 run_zeval(Site, Path, Z) ->
     Z2 = string:strip(string:strip(Z, right, ?sq_ket), left, ?sq_bra),
