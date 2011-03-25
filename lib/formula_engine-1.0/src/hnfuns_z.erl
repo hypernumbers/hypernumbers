@@ -34,7 +34,7 @@ make_no_matches(L)  ->
 make_errs([]) -> [];
 make_errs(L)  ->
     "<div class='hn_debug_hd'>The following pages throw errors:"
-        ++ make_e2(L, []) ++ "<div>".
+        ++ make_e2(L, []) ++ "</div>".
 
 make_m2([], Acc) -> lists:flatten(lists:reverse(Acc));
 make_m2([{{Path, Ref}, Val} | T], Acc) ->
