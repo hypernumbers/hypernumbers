@@ -1748,17 +1748,18 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Html,
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web control
-        {ok, {Pcode, {webcontrol, {Payload, Title}, Res}, Parents, InfParents,
-              Recompile}} ->
+        {ok, {Pcode, {webcontrol, {Payload, {Title, Wd, Ht, _Js, _CSS}}, Res},
+                      Parents, InfParents, Recompile}} ->
             {Trans, Label} = Payload#form.id,
             Form = Payload#form{id={Ref#refX.path, Trans, Label}},
             ok = attach_form(Ref, Form),
             Attrs2 = orddict:store("__hasform", t, Attrs),
-            Attrs3 = orddict:store("preview", {Title, 1, 1}, Attrs2),
+            Attrs3 = orddict:store("preview", {Title, Wd, Ht}, Attrs2),
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web-hingie that needs to be previewed
-        {ok, {Pcode, {preview, {PreV, Wd, Ht}, Res}, Pars, InfPars, Recompile}} ->
+        {ok, {Pcode, {preview, {PreV, Wd, Ht, _Js, _Css}, Res}, Pars,
+              InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
             Attrs3 = case {Ht, Wd} of
                          {1, 1} -> orddict:erase("merge", Attrs2);
@@ -1775,7 +1776,8 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res,
                                 {Pars, true}, InfPars, Recompile);
         % normal functions with a resize
-        {ok, {Pcode, {resize, Wd, Ht, Res}, Parents, InfParents, Recompile}} ->
+        {ok, {Pcode, {resize, {Wd, Ht, _Js, _Css}, Res}, Parents,
+              InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             Attrs3 = case {Ht, Wd} of
