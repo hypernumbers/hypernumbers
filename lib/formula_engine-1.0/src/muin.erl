@@ -857,7 +857,7 @@ fetch_v1([H | T], Row, Col, Acc) ->
     Path = hn_util:list_to_path(H),
     RowIndex = row_index(Row),
     ColIndex = col_index(Col),
-    URL = {Path, tconv:to_b26(ColIndex) ++ integer_to_list(RowIndex)},
+    URL = {H, tconv:to_b26(ColIndex) ++ integer_to_list(RowIndex)},
     NewAcc = do_cell(Path, RowIndex, ColIndex, infinite),
     fetch_v1(T, Row, Col, [{URL, NewAcc} | Acc]).
 
