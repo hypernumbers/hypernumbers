@@ -276,11 +276,12 @@
 -record(include_index,
         {
           path,
-          type
+          function
          }).
 
 -record(include,
         {
           inc_index = #include_index{},
+          type,
           fragment
          }).
