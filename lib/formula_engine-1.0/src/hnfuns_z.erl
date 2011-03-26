@@ -12,13 +12,15 @@
         ]).
 
 debugz([Z]) ->
-    muin_collect:col([Z], [fetch, fetch_z_all],
-                     [return_errors, {all, fun muin_collect:is_zeds/1}],
-                     fun debug1/1).
+    Vals = muin_collect:col([Z], [fetch, fetch_z_all],
+                     [return_errors, {all, fun muin_collect:is_zeds/1}]),
+    {zcellref, _, {_, _, _, _, Zed}} = Z,
+    debug1(Zed, Vals).
 
-debug1([{zeds, Matches, NoMatches, Errs}]) ->
+debug1(Zed, [{zeds, Matches, NoMatches, Errs}]) ->
     Html = "<div class='hn_debug_z'>"
         ++ "<div class='hn_debug_top'>Debugging Z Specifications</div>"
+        ++ "<div>z-query is: " ++ Zed ++ "</div>"
         ++ make_matches(Matches) ++ make_no_matches(NoMatches) ++ make_errs(Errs)
         ++ "</div>",
     {resize, {5, 10, [], []}, Html}.
