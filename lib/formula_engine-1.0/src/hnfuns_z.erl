@@ -19,7 +19,7 @@ debugz([Z]) ->
 
 debug1(Zed, [{zeds, Matches, NoMatches, Errs}]) ->
     Html = "<div class='hn_debug_z'>"
-        ++ "<div class='hn_debug_top'>Debugging Z Specifications</div>"
+        ++ "<div class='hn_debug_top'>Debugging Z Queries</div>"
         ++ "<div>z-query is: " ++ Zed ++ "</div>"
         ++ make_matches(Matches) ++ make_no_matches(NoMatches) ++ make_errs(Errs)
         ++ "</div>",
