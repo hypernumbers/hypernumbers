@@ -271,3 +271,16 @@
           addwikipagegroups = [],
           addtablegroups = []
          }).
+
+% the css and javascript tables
+-record(include_index,
+        {
+          path,
+          type
+         }).
+
+-record(include,
+        {
+          inc_index = #include_index{},
+          fragment
+         }).

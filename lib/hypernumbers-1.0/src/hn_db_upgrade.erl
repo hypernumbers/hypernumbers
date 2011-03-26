@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         make_include_table/0,
          make_log_table/0,
          fix_borked_binaries/0,
          unload_from_mem/0,
@@ -32,6 +33,18 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+make_include_table() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Tables = [
+                             {include, record_info(fields, include)}
+                            ],
+                   [ok = make_table(Site, X, Y, disc_copies)
+                    || {X, Y} <- Tables],
+                   ok
+           end,
+    lists:foreach(Fun1, Sites).
 
 make_log_table() ->
     Sites = hn_setup:get_sites(),
