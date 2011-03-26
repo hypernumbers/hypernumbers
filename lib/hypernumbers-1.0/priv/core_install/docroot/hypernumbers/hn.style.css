@@ -4,17 +4,17 @@
    web pages and content inside the spreadsheet
 ******************************************************************************/
 
-html, body {  
+html, body {
     margin  : 0px;
     padding : 0px;
     font    : 12px/1.7 Verdana,Tahoma,sans-serif;
 }
 
-body { 
+body {
     height:100%;
 }
 
-table {  
+table {
     width  : 100%;
     height : 100%;
 }
@@ -27,43 +27,43 @@ h4 { font-size: 140%; }
 h5 { font-size: 100%; }
 h6 { font-size: 90%; }
 
-h1,h2,h3,h4,h5,h6 {  
+h1,h2,h3,h4,h5,h6 {
     font-weight:normal;
     margin : 0px 0px 8px 0px;
 }
 
-p { 
-    margin: 0 0 1.5em 0; 
+p {
+    margin: 0 0 1.5em 0;
 }
-ol, ul { 
+ol, ul {
     margin:0 0 1.5em 0;
 }
-li { 
+li {
     margin-left:1em;
 }
-a img { 
-    border: 0px; 
+a img {
+    border: 0px;
 }
-a { 
+a {
     color: inherit;
 }
-td { 
+td {
     vertical-align:top;
 }
-hr { 
+hr {
     margin-top:0px;
 }
-body { 
+body {
     overflow:auto;
     position:relative;
 }
 
-.hn_em { 
+.hn_em {
          font-weight: bold;
          color: black;
 }
 
-.hntext, iframe { 
+.hntext, iframe {
     height:100%;
     width:100%;
     box-sizing:border-box;
@@ -79,11 +79,11 @@ body {
     -webkit-box-sizing:border-box;
 }
 
-.ctrlbox { 
+.ctrlbox {
     background:#EEE;
-    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9),
                                  to(#E3E3E3));
-    background: -moz-linear-gradient(center top , #F9F9F9, 
+    background: -moz-linear-gradient(center top , #F9F9F9,
                                      #E3E3E3) repeat scroll 0 0 transparent;
     -moz-border-radius: 0px 0px 4px 4px;
     -webkit-border-radius:0px 0px 4px 4px;
@@ -91,18 +91,18 @@ body {
     z-index: 10000001;
 }
 
-#showhidecols { 
+#showhidecols {
     color: darkorange;
     cursor: pointer;
 }
 
-#hn_passwordform 
-{ 
+#hn_passwordform
+{
   display: none;
   }
 
 #hn_passwordform p, #hn_passwordform .button, #hn_passwordform div
-{ 
+{
   font: 9px/1.2 Verdana,Tahoma,sans-serif;
   color: #777;
  }
@@ -111,9 +111,9 @@ body {
 {
   margin: 0;
   }
-    
+
 #hn_reset_pwd
-{ 
+{
   text-decoration: underline;
   cursor: pointer;
   }
@@ -130,7 +130,7 @@ body {
     opacity:0.8;
 }
 
-#editspreadsheet a { 
+#editspreadsheet a {
     color:darkorange;
 }
 
@@ -138,12 +138,12 @@ body {
     opacity:1;
 }
 
-#editspreadsheet ul { 
+#editspreadsheet ul {
     padding-left:15px;
     margin:0px 0px 0px 0px;
 }
 
-#editmenu { 
+#editmenu {
     text-align:left;
     display:none;
     padding:6px;
@@ -154,23 +154,23 @@ body {
     border-width:0px 1px 1px 1px;
 }
 
-#email, #pass { 
+#email, #pass {
     width:auto;
 }
 
-#editanon { 
+#editanon {
             color:#999;
 }
 
-#editanon, #editloggedin { 
+#editanon, #editloggedin {
                            display:none;
 }
 
-.formrow { 
+.formrow {
     margin:5px 0px;
 }
 
-#submit { 
+#submit {
   width: 70px;
 }
 
@@ -187,14 +187,14 @@ div.hn_inner > div {
     position: absolute;
     overflow: hidden;
 }
-    
-input[type=submit].hninput .button, input[type=submit].hn-webcontrol .button { 
+
+input[type=submit].hninput .button, input[type=submit].hn-webcontrol .button {
     background:#EEE;
-    -webkit-border-radius:3px 3px 3px 3px;    
+    -webkit-border-radius:3px 3px 3px 3px;
     -moz-border-radius:3px 3px 3px 3px;
-    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9),
                                  to(#E3E3E3));
-    background: -moz-linear-gradient(center top , #F9F9F9, 
+    background: -moz-linear-gradient(center top , #F9F9F9,
                                      #E3E3E3) repeat scroll 0 0 transparent;
     border:1px solid #BBBBBB;
     margin:0 0px 0 0;
@@ -205,12 +205,12 @@ input[type=submit].hninput .button, input[type=submit].hn-webcontrol .button {
     white-space:nowrap;
 }
 
-input[type=submit].hninput:hover { 
+input[type=submit].hninput:hover {
     cursor:pointer;
     border:1px solid #939393 !important;
 }
 
-#cover { 
+#cover {
     position   : fixed;
     background : #000;
     opacity    : 0.7;
@@ -221,7 +221,7 @@ input[type=submit].hninput:hover {
     z-index    : 10000000;
 }
 /* for light cover drop the opacity */
-#lightcover { 
+#lightcover {
     position   : fixed;
     background : #000;
     opacity    : 0.1;
@@ -233,7 +233,7 @@ input[type=submit].hninput:hover {
     z-index    : 10000000;
 }
 
-#dialog { 
+#dialog {
     position    : fixed;
     left        : 50%;
     width       : 200px;
@@ -245,7 +245,7 @@ input[type=submit].hninput:hover {
     padding     : 8px;
 }
 
-#closedialog { 
+#closedialog {
     font-weight:bold;
     margin-top:10px;
 }
@@ -262,20 +262,20 @@ input[type=submit].hninput:hover {
     margin:8px 3px;
 }
 
-.radio { 
+.radio {
          clear: both;
 }
 
-.radio label { 
+.radio label {
                float: left;
                }
 
-.radio input { 
+.radio input {
                vertical-align:middle;
                float: right;
 }
 
-#columnsconfig { 
+#columnsconfig {
   padding: 0px 5px 5px 5px;
 }
 
@@ -287,7 +287,7 @@ input[type=submit].hninput:hover {
     text-indent: -15px;
 }
 
-.colhider { 
+.colhider {
    top: 6px;
 }
 
@@ -309,7 +309,7 @@ label {
     margin-left: 5px;
 }
 
-.inlineform { 
+.inlineform {
     background: url(/hypernumbers/sprite.png) -64px -1px;
     z-index:    9999;
     position:   absolute;
@@ -319,7 +319,7 @@ label {
     width:      5px;
 }
 
-.hn-overflow { 
+.hn-overflow {
     background: url(/hypernumbers/sprite.png) -84px -1px;
     z-index:    999999;
     position:   absolute;
@@ -330,83 +330,83 @@ label {
     width:      5px;
 }
 
-#expandbackground, #ctrlpanel { 
+#expandbackground, #ctrlpanel {
    background: #EEE;
-   background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9), 
+   background: -webkit-gradient(linear, 0 40%, 0 70%, from(#F9F9F9),
                                  to(#E3E3E3));
-   background: -moz-linear-gradient(center top , #F9F9F9, 
+   background: -moz-linear-gradient(center top , #F9F9F9,
                                      #E3E3E3) repeat scroll 0 0 transparent;
 }
 
-#expandbackground { 
+#expandbackground {
    padding:       9px 2px 0px 2px;
    border-bottom: 1px solid #999999;
     -moz-border-radius:8px 0px 0px 0px;
     -webkit-border-radius:8px 0px 0px 0px;
 }
 
-#addnewgroupbutton { 
+#addnewgroupbutton {
    left:    40px;
 }
 
-#newgroupfeedback, #newuserfeedback { 
+#newgroupfeedback, #newuserfeedback {
    text-align: center;
 }
 
-#permstable { 
+#permstable {
    display: none;
 }
 
-#permstablelayout { 
+#permstablelayout {
    margin: 0px 5px 3px 5px
 }
 
-#permstablelayout p { 
+#permstablelayout p {
    margin: 0px;
 }
 
 
-#invitecolleague { 
+#invitecolleague {
    width: 115px;
 }
 
-.warning { 
+.warning {
    font-size:  90%;
    text-align: center;
    font-style: italic
 }
 
-#emailforgroup { 
+#emailforgroup {
    margin: 0px 0px 4px 0px;
 }
 
-#administrator { 
+#administrator {
    width:    10px;
    position: relative;
    top:      3px;
 }
 
-#advusers { 
+#advusers {
   padding: 0px 3px 0px 10px;
   display: none;
   width:   300px;
 }
 
-#invitecolleague { 
+#invitecolleague {
     width: 200px
 }
 
-#addcolleaguebutton { 
+#addcolleaguebutton {
     background: orange;
-    background: -webkit-gradient(linear, 0 40%, 0 70%, from(gold), 
+    background: -webkit-gradient(linear, 0 40%, 0 70%, from(gold),
                                  to(orange));
-    background: -moz-linear-gradient(center top , gold, 
+    background: -moz-linear-gradient(center top , gold,
                                      orange) repeat scroll 0 0 transparent;
     margin:    5px 0px 0px 25px;
     width:      150px;
 }
 
-#newcolleaguefeedback { 
+#newcolleaguefeedback {
    margin: 0px;
 }
 
@@ -414,12 +414,12 @@ label {
    width:     288px;
 }
 
-#advusers p { 
+#advusers p {
    margin-top:    5px;
    margin-bottom: 0px;
 }
 
-#advusers span { 
+#advusers span {
    padding: 10px 0px 0px 0px;
 }
 
@@ -429,38 +429,38 @@ label {
    width:   190px;
 }
 
-#advperms tr, #advperms td { 
+#advperms tr, #advperms td {
    height: auto;
 }
 
-#advperms td > p { 
+#advperms td > p {
    text-align: right;
    margin:     0px;
 }
 
-#advperms input { 
+#advperms input {
    position: relative;
    top:      -3px;
 }
 
-#advusers textarea { 
+#advusers textarea {
    height:   60px;
    overflow: auto;
    margin:   0px 3px 0px 5px;
 }
 
-#advperms, #advusers, #permstable p { 
+#advperms, #advusers, #permstable p {
     color:#666;
 }
 
-#templateslist { 
+#templateslist {
   background-color: #ffffff;
   font-size:        80%;
   width:            50px;
   color:            #555555;
 }
 
-#newusermsg { 
+#newusermsg {
   width: 170px;
 }
 
@@ -468,18 +468,18 @@ label {
   background-color: #fff;
   float:            right;
   width:            110px;
-  padding:          0px 10px 0px 0px; 
+  padding:          0px 10px 0px 0px;
   overflow:         auto;
   scrollbar-base-color: #ddd;
   scrollbar-arrow-color: #666;
 }
 
-#groups option { 
+#groups option {
    font-size: 80%;
    color:     #777777;
 }
 
-#addnewuserbutton { 
+#addnewuserbutton {
    position: relative;
    top:      10px;
    left:     95px;
@@ -487,7 +487,7 @@ label {
    margin:   0px 0px 5px 0px;
 }
 
-#addgroupmenu { 
+#addgroupmenu {
     position:        fixed;
     padding:         2px 0px 2px 0px;
     text-align:      right;
@@ -502,36 +502,36 @@ label {
     z-index:         10000006;
 }
 
-#addgroupmenu div { 
+#addgroupmenu div {
     padding:       0px 5px 0px 5px;
     border-bottom: 1px solid #eee;
 }
 
-#addgrouptext { 
+#addgrouptext {
     font-size: 80%;
     color:     #666666;
     position: relative;
     top:      -3px;
  }
 
-#addgroup span { 
+#addgroup span {
     position:  relative;
     margin:    0px 2px 0px 0px;
 }
 
-#addgroupicon { 
+#addgroupicon {
     background: url(/hypernumbers/sprite.png) -72px -1px;
     height:     9px;
     width:      9px;
     padding:    0px 5px;
 }
 
-#addgroups h3 { 
+#addgroups h3 {
    color: #666;
    padding: 5px 0px 0px 0px;
 }
 
-#showadvperms, #showbasicgroups, #showadvusers { 
+#showadvperms, #showbasicgroups, #showadvusers {
    font-size:   80%;
    color:       darkorange;
    float:       left;
@@ -543,15 +543,15 @@ label {
     -moz-border-radius-bottomright:2px;
     -webkit-border-radius-bottomleft:2px;
     -webkit-border-radius-bottomright:2px;
-   margin: 0px 0px 4px 4px;      
+   margin: 0px 0px 4px 4px;
 
 }
 
-.hn_padded, #clinput { 
+.hn_padded, #clinput {
              padding: 1px 1px 1px 1px;
              }
 
-.inline { 
+.inline {
    -moz-border-radius: 4px 4px 4px 4px;
    -webkit-border-radius: 4px 4px 4px 4px;
    margin: 1px;
@@ -559,7 +559,7 @@ label {
    padding: 0px 1px 0px 1px;
 }
 
-#clinput div { 
+#clinput div {
    position: static;
    padding: 0px 1px 0px 1px;
    background-color: white;
@@ -570,52 +570,52 @@ label {
    outline: none;
 }
 
-.floatleft { 
+.floatleft {
    float: left;
 }
 
-.floatright { 
+.floatright {
    float: right;
 }
 
-.clear { 
+.clear {
    clear: both;
 }
 
-.hn_demopage 
-{ 
+.hn_demopage
+{
   background  : #fff;
   font        : 14px Verdana,Tahoma,sans-serif;
   font-style  : italic;
   }
 
 .hn_demopage iframe
-{ 
+{
   background: #fff;
   }
 
 .hn_demopadding
-{ 
+{
   padding: 0px 7px 0px 7px;
   }
 
 .hn_demointro
-{ 
+{
   padding: 5px 10px 0px 10px;
  }
 
-.hn_demointro, .hn_demoblurb { 
+.hn_demointro, .hn_demoblurb {
   color: #666;
  }
 
-#hn_demobreakout { 
+#hn_demobreakout {
                    font-size: 120%;
                    font-weight: bold;
                    color: #f88017;
  }
 
-#hn_spreadsheet, #hn_wikipage, #hn_webpage, .hn_preview 
-{ 
+#hn_spreadsheet, #hn_wikipage, #hn_webpage, .hn_preview
+{
   border: 4px solid #666;
   margin: 2px;
   }
@@ -633,7 +633,7 @@ label {
   border:           1px solid #E99;
   }
 
-#hn_newpageform, #hn_saveastemplateform {  
+#hn_newpageform, #hn_saveastemplateform {
   -moz-border-radius:    4px 4px 4px 4px;
   -webkit-border-radius: 4px 4px 4px 4px;
   border:  1px solid #aaa;
@@ -641,17 +641,49 @@ label {
   margin:  0px 0px 5px 0px;
 }
 
-#hn_newpageform, #hn_saveastemplateform, #hn_douploadform, #hn_deletepageform 
-{ 
+#hn_newpageform, #hn_saveastemplateform, #hn_douploadform, #hn_deletepageform
+{
   padding: 5px 3px 3px 4px;
 }
 
-#hn_douploadform, #hn_deletepageform 
-{ 
+#hn_douploadform, #hn_deletepageform
+{
   margin:  0px 0px 2px 0px;
 }
 
-#hn_templateheader { 
+#hn_templateheader {
     font-weight: bold;
     text-align:  center;
 }
+
+.hn_debug_z {
+              -moz-border-radius: 4px 4px 4px 4px;
+              -webkit-border-radius: 4px 4px 4px 4px;
+              border : 3px solid #ddf;
+              background-color  : #fff6f6;
+              margin: 1px;
+              padding: 4px;
+              overflow: auto;
+              height: 202px;
+              color: #888;
+              }
+
+.hn_debug_z div, .hn_debug_z table tr td {
+                 font: 12px/1.7 Courier, monospace;
+                 font-weight: bold;
+                 }
+
+.hn_debug_z table {
+                       height  : auto !important;
+                       display : block;
+                       }
+
+.hn_debug_hd {
+               font-weight: bold;
+               }
+
+.hn_debug_top {
+                font-size : 120%;
+                font-weight: bold;
+                color: #999;
+               }
