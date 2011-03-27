@@ -158,9 +158,11 @@ html,body {
 }
 
 #wizfunargs label {
+  display: block;
+  float: left;
   font-weight: bold;
   font-size: 10px;
-  padding-right: 5px;
+  width: 100px;
 }
 
 #wizfunargs label:after { content: ':'; }
