@@ -12,6 +12,7 @@
          img/1,
          html/1,
          page/1,
+         pageurl/1,
          segment/1,
          site/1,
          'crumb.trail'/1,
@@ -178,6 +179,8 @@ segment([]) ->
         []   -> "";
         List -> hd(lists:reverse(List))
     end.
+
+pageurl([]) -> site([]) ++ page([]).
 
 page([]) ->
     case get(path) of
