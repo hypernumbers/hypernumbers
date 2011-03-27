@@ -572,8 +572,9 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
                  fun(Attrs) ->
                          case lists:keymember("formula", 1, Attrs) of
                              true ->
-                                 set_relations(RX, [], [], false),
-                                 unattach_form(RX, refX_to_idx(RX));
+                                 ok = set_relations(RX, [], [], false),
+                                 ok = unattach_form(RX, refX_to_idx(RX)),
+                                 ok = delete_incs(RX);
                              false -> ok
                          end,
                          {clean, del_attributes(Attrs, DelAttrs)}
@@ -631,6 +632,9 @@ delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
             %% in the delete zone these need to be removed before we
             %% do anything else...
             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
+
+            % trash any includes that might pertain
+            [ok = delete_incs(X) || X <- Cells],
 
             %% Rewrite formulas
             Status = [deref_formula(X, DelX, Disp, Uid) || X <- LocalChildren3],
@@ -1812,6 +1816,12 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile)
     end.
+
+delete_incs(Ref) when is_record(Ref, refX) ->
+    #refX{site = S} = Ref,
+    Idx = refX_to_idx_create(Ref),
+    Tbl = trans(S, include),
+    mnesia:delete(Tbl, Idx, write).
 
 update_incs(Ref, Incs) when is_record(Ref, refX)
                             andalso is_record(Incs, incs) ->
