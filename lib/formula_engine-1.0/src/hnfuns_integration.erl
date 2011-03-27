@@ -26,7 +26,6 @@
 
 %% not working functions
 -export([
-         'facebook.share'/1,
          'twitter.list'/1,
          'youtube.channel'/1
          %'twitter.search'/1,
@@ -269,17 +268,18 @@ fb_like(URL, Layout, Faces) ->
     U = muin_col_DEPR:collect_string(URL, ?default_str_rules),
     L = muin_col_DEPR:collect_string(Layout, ?default_str_rules),
     F = muin_col_DEPR:collect_string(Faces, ?default_str_rules),
-    case valid(L, F) of
-        false -> ?ERRVAL_VAL;
-        {L1, F1}  ->
-            "<iframe src=\"http://www.facebook.com/plugins/like.php?href="
-                ++ U
-                ++"&amp;layout="
-                ++ L1
-                ++"standard&amp;show_faces="
-                ++ F1
-                ++ "&amp;width=450&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80\" scrolling=\"no\" frameborder=\"0\" style=\"border:none; overflow:hidden; height:80px;\" allowTransparency=\"true\"></iframe>"
-    end.
+    HTML = case valid(L, F) of
+               false -> ?ERRVAL_VAL;
+               {L1, F1}  ->
+                   "<iframe src=\"http://www.facebook.com/plugins/like.php?href="
+                       ++ U
+                       ++"&amp;layout="
+                       ++ L1
+                       ++"standard&amp;show_faces="
+                       ++ F1
+                       ++ "&amp;width=152&amp;action=like&amp;font&amp;colorscheme=light&amp;height=80\" scrolling=\"no\" frameborder=\"0\" style=\"border:none; overflow:hidden; height:80px;\" allowTransparency=\"true\"></iframe>"
+           end,
+    {resize, {2, 3, #incs{}}, HTML}.
 
 valid("0", "0") -> {"standard",     "true"};
 valid("1", "0") -> {"button_count", "true"};
@@ -296,34 +296,6 @@ valid(_, _) -> false.
         ++ " allowTransparency=\"true\" style=\"border:none; "
         ++ "overflow:hidden; width:472px; height:606px\"></iframe>",
     {preview, {"Facebook Like of " ++ P, 6, 31, #incs{}}, HTML}.
-
-'facebook.share'([])       -> fb_share1("box_count", "");
-'facebook.share'([0])      -> fb_share1("box_count", "");
-'facebook.share'([1])      -> fb_share1("button_count", "");
-'facebook.share'([2])      -> fb_share1("button", "");
-'facebook.share'([3])      -> fb_share1("icon_count", "");
-'facebook.share'([N, URL]) -> Str = muin_col_DEPR:collect_string(URL, ?default_str_rules),
-                            fb_share(N, Str);
-'facebook.share'(_Other)   -> ?ERRVAL_VAL.
-
-fb_share(0, URL) -> fb_share1("box_count",
-                                      "share_url=\"" ++ URL ++ "\"");
-fb_share(1, URL) -> fb_share1("button_count",
-                                      "share_url=\"" ++ URL ++ "\"");
-fb_share(2, URL) -> fb_share1("button",
-                                      "share_url=\"" ++ URL ++ "\"");
-fb_share(3, URL) -> fb_share1("icon_count",
-                                      "share_url=\"" ++ URL ++ "\"");
-fb_share(_, _) -> ?ERRVAL_VAL.
-
-
-fb_share1(Button, URL) ->
-    HTML = "<a name=\"fb_share\" type=\"" ++ Button ++ "\" "
-        ++ URL ++ " href=\"http://www.facebook.com/sharer.php\">Share</a>",
-    io:format("HTML is ~p~n",[HTML]),
-    Js = "http://static.ak.fbcdn.net/connect.php/js/FB.Share\"",
-    Incs = #incs{js = Js},
-    {resize, {2, 4, Incs}, HTML}.
 
 %% Hypernumbers Twitter UserName is hypernumbers
 'twitter.button'([UserName]) ->
