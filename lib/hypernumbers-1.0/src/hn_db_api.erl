@@ -784,7 +784,19 @@ unpack_1([], Js, Js_r, CSS) -> {hslists:uniq(Js),
                                 hslists:uniq(CSS)};
 unpack_1([H | T], Js, Js_r, CSS) ->
     #include{js = J, js_reload = R, css = C} = H,
-    unpack_1(T, [J | Js], [R | Js_r], [C | CSS]).
+    NewJ = case J of
+               [] -> Js;
+               _  -> [J | Js]
+           end,
+    NewR = case R of
+               [] -> Js_r;
+               _  -> [R | Js_r]
+           end,
+    NewC = case C of
+               [] -> CSS;
+               _  -> [C | CSS]
+           end,
+    unpack_1(T, NewJ, NewR, NewC).
 
 write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
     List = hn_util:range_to_list(Ref),
