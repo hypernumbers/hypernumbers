@@ -141,7 +141,7 @@ read_kv(Site, Key) ->
 -spec mark_dirty_for_incl([#refX{}], auth_srv:auth_spec()) -> ok.
 mark_dirty_for_incl([], _) -> ok;
 mark_dirty_for_incl(Refs = [#refX{site = Site}|_], AReq) ->
-        F = fun(C) -> case hn_db_wu:refX_to_idx(C) of
+    F = fun(C) -> case hn_db_wu:refX_to_idx(C) of
                       false -> [];
                       Idx   -> Idx
                   end
@@ -254,24 +254,36 @@ has_content(S, LO) ->
 write_attrs(Ref, NewAttrs) -> write_attrs(Ref, NewAttrs, nil).
 
 -spec write_attrs(#refX{}, [{string(), term()}], auth_srv:auth_spec())
-                 -> ?dict.
+-> ?dict.
 write_attrs(Ref, NewAs, AReq) ->
     Op = fun(Attrs) ->
                  Is_Formula = lists:keymember("formula", 1, NewAs),
                  Has_Form = orddict:is_key("__hasform", Attrs),
-                 Attrs2 = case {Is_Formula, Has_Form} of
-                              {true, true} ->
-                                  unattach_form(Ref, refX_to_idx(Ref)),
-                                  orddict:erase("__hasform", Attrs);
-                               _  ->
-                                   Attrs
+                 Has_Incs = orddict:is_key("__hasincs", Attrs),
+                 Attrs2 = case Is_Formula of
+                              true ->
+                                  A3 = case Has_Form of
+                                           true ->
+                                               unattach_form(Ref, refX_to_idx(Ref)),
+                                               orddict:erase("__hasform", Attrs);
+                                           false  ->
+                                               Attrs
+                                       end,
+                                  case Has_Incs of
+                                      true ->
+                                          delete_incs(Ref),
+                                          orddict:erase("__hasincs", A3);
+                                      false  ->
+                                          A3
+                                  end;
+                              false -> Attrs
                           end,
                  {clean, process_attrs(NewAs, Ref, AReq, Attrs2)}
          end,
     apply_to_attrs(Ref, Op, write, AReq).
 
 -spec process_attrs([{string(), term()}], #refX{}, auth_srv:auth_spec(), ?dict)
-                   -> ?dict.
+-> ?dict.
 process_attrs([], _Ref, _AReq, Attrs) ->
     Attrs;
 process_attrs([{"formula",Val} | Rest], Ref, AReq, Attrs) ->
@@ -312,18 +324,18 @@ expand_ref(#refX{site=S}=Ref) ->
 read_ref(Ref, Relation) -> read_ref(Ref, Relation, read).
 
 -spec read_ref(#refX{}, inside | intersect, read | write)
-              -> [{#refX{}, ?dict}].
+-> [{#refX{}, ?dict}].
 read_ref(#refX{site=S}=Ref, Relation, Lock) ->
     read_attrs(S, read_objs(Ref, Relation), Lock).
 
 -spec read_ref_field(#refX{}, string(), read|write)
-                    -> [{#refX{}, term()}].
+-> [{#refX{}, term()}].
 read_ref_field(Ref, Field, Lock) ->
     Cells = read_ref(Ref, inside, Lock),
     extract_field(Cells, Field, []).
 
 -spec extract_field([{#refX{}, ?dict}], string(), [{#refX{}, term()}])
-                   -> [{#refX{}, term()}].
+-> [{#refX{}, term()}].
 extract_field([], _F, Acc) ->
     lists:reverse(Acc);
 extract_field([{Ref, Attrs}|T], Field, Acc) ->
@@ -333,7 +345,7 @@ extract_field([{Ref, Attrs}|T], Field, Acc) ->
     extract_field(T, Field, Acc2).
 
 -spec read_attrs(string(), [#local_obj{}], read|write)
-                -> [{#refX{}, ?dict}].
+-> [{#refX{}, ?dict}].
 read_attrs(S, LocObjs, Lock) ->
     Tbl = trans(S, item),
     read_attrs_(LocObjs, S, Tbl, Lock, []).
@@ -398,7 +410,7 @@ log_write(Idx, #refX{site = S, path = P, obj = O}, Old, New, Action, Uid) ->
     {OldF, OldV} = extract(Old),
     {NewF, NewV} = extract(New),
     L = io_lib:format("old: formula ~p value ~p new: formula ~p value ~p",
-                        [OldF, OldV, NewF, NewV]),
+                      [OldF, OldV, NewF, NewV]),
     L2 = term_to_binary(L),
     Log = #logging{idx = Idx, uid = Uid, action = Action, actiontype = "",
                    type = cell, path = hn_util:list_to_path(P),
@@ -467,7 +479,7 @@ post_process_format(Raw, Attrs) ->
              end,
     case format:get_src(Format) of
         {erlang, {_Type, Output}} ->
-            %% Y'all hear, this is how America does color. I tell you what.
+%% Y'all hear, this is how America does color. I tell you what.
             case format:run_format(Raw, Output) of
                 {ok, {Color, Val1}} ->
                     Val2  = case Val1 of
@@ -499,7 +511,7 @@ shift_cells(#refX{site=Site, obj= Obj} = From, Type, Disp, Rewritten, Uid)
     case read_objs(RefXSel, inside) of
         [] -> [];
         ObjsList ->
-            %% %% Rewrite the formulas of all the child cells
+%% %% Rewrite the formulas of all the child cells
             RefXList = [lobj_to_ref(Site, O) || O <- ObjsList],
             ChildCells = lists:flatten([get_children(X) || X <- RefXList]),
             ChildCells2 = hslists:uniq(ChildCells),
@@ -520,10 +532,10 @@ shift_cells(#refX{site=Site, obj= Obj} = From, Type, Disp, Rewritten, Uid)
                             clean -> Acc;
                             dirty -> #refX{site = S} = ChildRef,
                                      [{S, refX_to_idx(ChildRef)} | Acc]
-                          end
+                        end
                 end,
             DirtyChildren = lists:foldl(Fun, [], Formulas),
-            %% Rewrite the local_obj entries by applying the shift offset.
+%% Rewrite the local_obj entries by applying the shift offset.
             ObjTable = trans(Site, local_obj),
             [begin
                  mnesia:delete_object(ObjTable, LO, write),
@@ -615,40 +627,40 @@ content_attrs() ->
 -spec delete_cells(#refX{}, atom(), auth_srv:uid()) -> [#refX{}].
 delete_cells(#refX{site = S} = DelX, Disp, Uid) ->
     case expand_ref(DelX) of
-        %% there may be no cells to delete, but there may be rows or
-        %% columns widths to delete...
+%% there may be no cells to delete, but there may be rows or
+%% columns widths to delete...
         []     ->
             expunge_refs(S, expand_to_rows_or_cols(DelX)),
             [];
         Cells  ->
-            %% update the children that point to the cell that is
-            %% being deleted by rewriting the formulae of all the
-            %% children cells replacing the reference to this cell
-            %% with #ref!
+%% update the children that point to the cell that is
+%% being deleted by rewriting the formulae of all the
+%% children cells replacing the reference to this cell
+%% with #ref!
             LocalChildren = [get_children(C) || C <- Cells],
             LocalChildren2 = hslists:uniq(lists:flatten(LocalChildren)),
 
-            %% sometimes a cell will have local children that are also
-            %% in the delete zone these need to be removed before we
-            %% do anything else...
+%% sometimes a cell will have local children that are also
+%% in the delete zone these need to be removed before we
+%% do anything else...
             LocalChildren3 = lists:subtract(LocalChildren2, Cells),
 
             % trash any includes that might pertain
             [ok = delete_incs(X) || X <- Cells],
 
-            %% Rewrite formulas
+%% Rewrite formulas
             Status = [deref_formula(X, DelX, Disp, Uid) || X <- LocalChildren3],
             Fun = fun({dirty, _Ref}) -> true; ({clean, _Ref}) -> false end,
             Dirty = [X || {dirty, X} <- lists:filter(Fun, Status)],
             ok = mark_these_dirty(Dirty, nil),
 
-            %% fix relations table.
+%% fix relations table.
             [ok = delete_relation(X) || X <- Cells],
 
-            %% mark 'em dirty for zinf as well
+%% mark 'em dirty for zinf as well
             [ok = mark_dirty_for_zinf(X) || X <- Cells],
 
-            %% Delete the rows or columns and cells (and their indices)
+%% Delete the rows or columns and cells (and their indices)
             expunge_refs(S, lists:append(expand_to_rows_or_cols(DelX), Cells)),
             LocalChildren3
     end.
@@ -828,10 +840,10 @@ dirty_for_zinf_DEBUG(Site) ->
     Tab1 = trans(Site, dirty_for_zinf),
     io:format("Dumping dirty_for_zinf table:~n"),
     Fun1 = fun(X, []) ->
-                  io:format("Id ~p RefX is dirty: ~p~n",
-                      [X#dirty_for_zinf.id, X#dirty_for_zinf.dirty]),
-                  []
-          end,
+                   io:format("Id ~p RefX is dirty: ~p~n",
+                             [X#dirty_for_zinf.id, X#dirty_for_zinf.dirty]),
+                   []
+           end,
     mnesia:foldl(Fun1, [], Tab1).
 
 
@@ -839,10 +851,10 @@ item_and_local_objs_DEBUG(Site) ->
     Tab1 = trans(Site, item),
     io:format("Dumping item table:~n"),
     Fun1 = fun(X, []) ->
-                  io:format("Record ~p has Attrs ~p~n",
-                            [X#item.idx, binary_to_term(X#item.attrs)]),
-                  []
-          end,
+                   io:format("Record ~p has Attrs ~p~n",
+                             [X#item.idx, binary_to_term(X#item.attrs)]),
+                   []
+           end,
     mnesia:foldl(Fun1, [], Tab1),
     Tab2 = trans(Site, local_obj),
     io:format("Dumping local_obj table:~n"),
@@ -985,12 +997,12 @@ offset_with_ranges1([{rangeref, LineNo,
     {X1D, X1, Y1D, Y1} = parse_cell(Cell1),
     {X2D, X2, Y2D, Y2} = parse_cell(Cell2),
     {St, NewText} = case PathCompare of
-                  FromPath -> make_new_range(Prefix, Cell1, Cell2,
-                                             {X1D, X1, Y1D, Y1},
-                                             {X2D, X2, Y2D, Y2},
-                                             From, Offset);
-                  _        -> {clean, Text}
-              end,
+                        FromPath -> make_new_range(Prefix, Cell1, Cell2,
+                                                   {X1D, X1, Y1D, Y1},
+                                                   {X2D, X2, Y2D, Y2},
+                                                   From, Offset);
+                        _        -> {clean, Text}
+                    end,
     NewAcc = {rangeref, LineNo, H#rangeref{text = NewText}},
     NewStatus = case St of
                     dirty -> dirty;
@@ -1009,13 +1021,13 @@ offset_with_ranges1([{cellref, LineNo,
                     {XO, YO} = Offset, Status, Acc) ->
     {XDollar, X, YDollar, Y} = parse_cell(muin_util:just_ref(Text)),
     case From#refX.obj of
-        %% If ever we apply two offsets at once, do it in two steps.
-        %% handle old and new rows/columns
+%% If ever we apply two offsets at once, do it in two steps.
+%% handle old and new rows/columns
         {range, {Left, Top, _Right, Bottom}}
-          when (YO == 0) and ((Left > X) or (Top > Y) or (Y > Bottom)) ->
+        when (YO == 0) and ((Left > X) or (Top > Y) or (Y > Bottom)) ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
         {range, {Left, Top, Right, _Bottom}}
-          when (XO == 0) and ((Left > X) or (X > Right) or (Top > Y)) ->
+        when (XO == 0) and ((Left > X) or (X > Right) or (Top > Y)) ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
         {column, {range, {Left, zero, _Right, inf}}} when X < Left ->
             offset_with_ranges1(T, Cell, From, Offset, Status, [H | Acc]);
@@ -1112,7 +1124,7 @@ make_new_range(Prefix, Cell1, Cell2,
                      NC1 = Cell1,
                      NC2 = Cell2,
                      clean
-    end,
+             end,
     {Status, Prefix ++ NC1 ++ ":" ++ NC2};
 %% handle ranges (horizontal rewrite)
 make_new_range(Prefix, Cell1, Cell2,
@@ -1129,7 +1141,7 @@ make_new_range(Prefix, Cell1, Cell2,
                      NC1 = Cell1,
                      NC2 = Cell2,
                      clean
-    end,
+             end,
     {Status, Prefix ++ NC1 ++ ":" ++ NC2}.
 
 %% used in copy'n'paste, drag'n'drops etc...
@@ -1321,7 +1333,7 @@ deref(Child, [$=|Formula], DeRefX, Disp) when is_record(DeRefX, refX) ->
 
 deref1(_Child, [], _DeRefX, _Disp, Acc) -> lists:reverse(Acc);
 deref1(Child, [{rangeref, _, #rangeref{text = Text}} | T], DeRefX, Disp, Acc) ->
-    %% only deref the range if it is completely obliterated by the deletion
+%% only deref the range if it is completely obliterated by the deletion
     #refX{obj = Obj1} = DeRefX,
     Range = muin_util:just_ref(Text),
     Prefix = case muin_util:just_path(Text) of
@@ -1399,22 +1411,22 @@ deref_overlap(Text, DelObj, Disp) ->
     IntTR = intersect(XX2, YY1, X1, Y1, X2, Y2),
     IntBR = intersect(XX2, YY2, X1, Y1, X2, Y2),
     case {IntTL, IntBL, IntTR, IntBR} of
-        %% all included - deref!
+%% all included - deref!
         {in,  in,  in,  in}  -> {deref, "#REF!"};
-        %% none included you need to recheck in case the delete area
-        %% is contained in, or transects the target area
+%% none included you need to recheck in case the delete area
+%% is contained in, or transects the target area
         {out, out, out, out} -> recheck_overlay(Text, DelObj, RewriteObj, Disp);
-        %% one corner included - deref!
+%% one corner included - deref!
         {in,  out, out, out} -> {recalc, Text};
         {out, in,  out, out} -> {recalc, Text};
         {out, out, in,  out} -> {recalc, Text};
         {out, out, out, in}  -> {recalc, Text};
-        %% two corners included rewrite
+%% two corners included rewrite
         {in,  in,  out, out} -> rewrite(X1, X2, RewriteObj, Text, left, Disp); %% left del
         {out, out, in,  in}  -> rewrite(X1, X2, RewriteObj, Text, right, Disp);
         {in,  out, in,  out} -> rewrite(Y1, Y2, RewriteObj, Text, top, Disp);  %% top del
         {out, in,  out, in}  -> rewrite(Y1, Y2, RewriteObj, Text, bottom, Disp);
-        %% transects are column/row intersects
+%% transects are column/row intersects
         {transect, transect, out, out} -> rewrite(X1, X2, RewriteObj, Text, left, Disp); %% left del
         {out, out, transect, transect} -> rewrite(X1, RewriteObj, Text, right, Disp);
         {transect, out, transect, out} -> rewrite(Y1, Y2, RewriteObj, Text, top, Disp);  %% top del
@@ -1441,7 +1453,7 @@ intersect(X1, A1, A2, Y1, A3, Y2)
     out;
 %% page deletes always dereference
 intersect(_XX1, _YY1, zero, zero, inf, inf) ->
- out;
+    out;
 %% this is a row-row comparison
 intersect(Type, YY1, zero, Y1, inf, Y2)
   when ((Type == zero) orelse (Type == inf)) ->
@@ -1452,7 +1464,7 @@ intersect(Type, YY1, zero, Y1, inf, Y2)
 %% this is a col-col comparison
 intersect(XX1, Type, X1, zero, X2, inf)
   when ((Type == zero) orelse (Type == inf)) ->
- if
+    if
         (XX1 >= X1), (XX1 =< X2) -> transect;
         true                     -> out
     end;
@@ -1640,13 +1652,13 @@ recheck_overlay(Text, {range, {X1, Y1, X2, Y2}}, {range, {XX1, YY1, XX2, YY2}} =
     if
         (X1 =< XX1), (X2 >= XX1), (X2 =< XX2),
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
-        rewrite(Y1, Y2, R, Text, middle_row, vertical);
+            rewrite(Y1, Y2, R, Text, middle_row, vertical);
         (X1 >= XX1), (X1 =< XX2), (X2 >= XX2),
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
-        rewrite(Y1, Y2, R, Text, middle_row, vertical);
+            rewrite(Y1, Y2, R, Text, middle_row, vertical);
         (X1 =< XX1), (X2 >= XX2),
         (Y1 >= YY1), (Y1 =< YY2), (Y2 >= YY1), (Y2 =< YY2) ->
-        rewrite(Y1, Y2, R, Text, middle_row, vertical);
+            rewrite(Y1, Y2, R, Text, middle_row, vertical);
         ((X1 >= XX1) andalso (X1 =< XX2))
         orelse ((X2 >= XX1) andalso (X2 =< XX2))
         orelse ((Y1 >= YY1) andalso (Y1 =< YY2))
@@ -1715,23 +1727,23 @@ offset_fm_w_rng(Cell, [$=|Formula], From, Offset) ->
                                                                 From, Offset),
                          hn_util:make_formula(Status, NewToks);
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
-                                       "formula in offset_fm_w_rng but "++
-                                       "you do~n-~p~n", [Formula]),
+                                   "formula in offset_fm_w_rng but "++
+                                   "you do~n-~p~n", [Formula]),
                          {[], "=" ++ Formula}
     end.
 % offset_fm_w_rng(_Cell, Value, _From, _Offset) -> Value.
 
 offset_formula(Formula, {XO, YO}) ->
-    %% the xfl_lexer:lex takes a cell address to lex against
-    %% in this case {1, 1} is used because the results of this
-    %% are not actually going to be used here (ie {1, 1} is a dummy!)
+%% the xfl_lexer:lex takes a cell address to lex against
+%% in this case {1, 1} is used because the results of this
+%% are not actually going to be used here (ie {1, 1} is a dummy!)
     case catch(xfl_lexer:lex(super_util:upcase(Formula), {1, 1})) of
         {ok, Toks}    -> NewToks = d_n_d_c_n_p_offset(Toks, XO, YO),
                          {_St, NewFormula} = hn_util:make_formula(clean, NewToks),
                          NewFormula;
         _Syntax_Error -> io:format("Not sure how you get an invalid "++
-                                       "formula in offset_formula but "++
-                                       "you do~n-~p~n", [Formula]),
+                                   "formula in offset_formula but "++
+                                   "you do~n-~p~n", [Formula]),
                          "=" ++ Formula
     end.
 
@@ -1743,7 +1755,6 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             % mebbies there was incs, nuke 'em
-            ok = update_incs(Ref, #incs{}),
             write_error_attrs(Attrs2, Ref, Formula, Error);
         % the formula returns as rawform
         {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile}} ->
@@ -1757,39 +1768,48 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
             Attrs2 = orddict:store("__hasform", t, Attrs),
             Attrs3 = orddict:store("preview", {Label2, 1, 1}, Attrs2),
             % mebbies there was incs, nuke 'em
-            ok = update_incs(Ref, #incs{}),
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Html,
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web control
         {ok, {Pcode, {webcontrol, {Payload, {Title, Wd, Ht, Incs}}, Res},
-                      Parents, InfParents, Recompile}} ->
+              Parents, InfParents, Recompile}} ->
             {Trans, Label} = Payload#form.id,
             Form = Payload#form{id={Ref#refX.path, Trans, Label}},
             ok = attach_form(Ref, Form),
             Attrs2 = orddict:store("__hasform", t, Attrs),
-            Attrs3 = orddict:store("preview", {Title, Wd, Ht}, Attrs2),
-            ok = update_incs(Ref, Incs),
-            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
+            Blank = #incs{},
+            Attrs3 = case Incs of
+                         Blank -> Attrs2;
+                         _     -> ok = update_incs(Ref, Incs),
+                                  orddict:store("__hasincs", t, Attrs2)
+                     end,
+            Attrs4 = orddict:store("preview", {Title, Wd, Ht}, Attrs3),
+            write_formula_attrs(Attrs4, Ref, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web-hingie that needs to be previewed
         {ok, {Pcode, {preview, {PreV, Wd, Ht, Incs}, Res}, Pars,
               InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
-            Attrs3 = case {Ht, Wd} of
-                         {1, 1} -> orddict:erase("merge", Attrs2);
+            Blank = #incs{},
+
+            Attrs3 = case Incs of
+                         Blank -> Attrs2;
+                         _     -> ok = update_incs(Ref, Incs),
+                                  orddict:store("__hasincs", t, Attrs2)
+                     end,
+            Attrs4 = case {Ht, Wd} of
+                         {1, 1} -> orddict:erase("merge", Attrs3);
                          _      -> orddict:store("merge", {struct,
                                                            [{"right", Wd - 1},
                                                             {"down",  Ht - 1}]},
-                                                 Attrs2)
+                                                 Attrs3)
                      end,
-            ok = update_incs(Ref, Incs),
-            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
+            write_formula_attrs(Attrs4, Ref, Formula, Pcode, Res,
                                 {Pars, false}, InfPars, Recompile);
         % special case for the include function (special dirty!)
         {ok, {Pcode, {include, {PreV, Ht, Wd}, Res}, Pars, InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
             % mebbies there was incs, nuke 'em
-            ok = update_incs(Ref, #incs{}),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res,
                                 {Pars, true}, InfPars, Recompile);
         % normal functions with a resize
@@ -1797,15 +1817,20 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
               InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
-            Attrs3 = case {Ht, Wd} of
-                         {1, 1} -> orddict:erase("merge", Attrs2);
-                         _      -> orddict:store("merge", {struct,
+            Blank = #incs{},
+            Attrs3 = case Incs of
+                         Blank -> Attrs2;
+                         _     -> ok = update_incs(Ref, Incs),
+                                  orddict:store("__hasincs", t, Attrs2)
+                     end,
+            Attrs4 = case {Ht, Wd} of
+                         {1, 1} -> orddict:erase("merge", Attrs3);
+                         _      -> orddict:tore("merge", {struct,
                                                           [{"right", Wd - 1},
                                                            {"down",  Ht - 1}]},
-                                                Attrs2)
+                                                Attrs3)
                      end,
-            ok = update_incs(Ref, Incs),
-            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
+            write_formula_attrs(Attrs4, Ref, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile);
         % bog standard function!
         {ok, {Pcode, Res, Parents, InfParents, Recompile}} ->
@@ -1830,7 +1855,7 @@ update_incs(Ref, Incs) when is_record(Ref, refX)
     Idx = refX_to_idx_create(Ref),
     Tbl = trans(S, include),
     Blank = #incs{},
-    case {mnesia:read(Tbl, Idx), Incs} of
+    case {mnesia:read(Tbl, Idx, write), Incs} of
         {[], Blank}  -> ok;
         {Incs, Incs} -> ok;
         {_, _}       -> Inc = #include{idx = Idx, path = P, js = Js,
@@ -2061,49 +2086,49 @@ objs_intersect_ref(#refX{path = P, obj = {page, "/"}}) ->
 objs_intersect_ref(#refX{path = P, obj = {range, {X1,Y1,X2,Y2}}}) ->
     PBin = term_to_binary(P),
     ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}})
-                     when MP == PBin,
-                          X1 =< MX, MX =< X2,
-                          Y1 =< MY, MY =< Y2 -> LO;
+                  when MP == PBin,
+                       X1 =< MX, MX =< X2,
+                       Y1 =< MY, MY =< Y2 -> LO;
                   (LO=#local_obj{path=MP, obj={row,{MY,MY}}})
-                     when MP == PBin,
-                          Y1 =< MY, MY =< Y2 -> LO;
+                  when MP == PBin,
+                       Y1 =< MY, MY =< Y2 -> LO;
                   (LO=#local_obj{path=MP, obj={column, {MX,MX}}})
-                     when MP == PBin,
-                          X1 =< MX, MX =< X2 -> LO;
+                  when MP == PBin,
+                       X1 =< MX, MX =< X2 -> LO;
                   (LO=#local_obj{path=MP, obj={page, _}})
-                     when MP == PBin -> LO
+                  when MP == PBin -> LO
                end);
 objs_intersect_ref(#refX{path = P, obj = {cell, {X,Y}}}) ->
     PBin = term_to_binary(P),
     ets:fun2ms(
       fun(LO=#local_obj{path=MP, obj={cell,{MX,MY}}})
-            when MP == PBin, MX == X, MY == Y -> LO;
+         when MP == PBin, MX == X, MY == Y -> LO;
          (LO=#local_obj{path=MP, obj={column,{MX,MX}}})
-            when MP == PBin, MX == X -> LO;
+         when MP == PBin, MX == X -> LO;
          (LO=#local_obj{path=MP, obj={row,{MY,MY}}})
-            when MP == PBin, MY == Y -> LO;
+         when MP == PBin, MY == Y -> LO;
          (LO=#local_obj{path=MP, obj={page, _}})
-            when MP == PBin -> LO
+         when MP == PBin -> LO
       end);
 objs_intersect_ref(#refX{path = P, obj = {column, {X1,X2}}}) ->
     PBin = term_to_binary(P),
     ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{MX,_MY}}})
-                     when MP == PBin,
-                          X1 =< MX, MX =< X2 -> LO;
+                  when MP == PBin,
+                       X1 =< MX, MX =< X2 -> LO;
                   (LO=#local_obj{path=MP, obj={row,_}})
-                     when MP == PBin -> LO;
+                  when MP == PBin -> LO;
                   (LO=#local_obj{path=MP, obj={page, _}})
-                     when MP == PBin -> LO
+                  when MP == PBin -> LO
                end);
 objs_intersect_ref(#refX{path = P, obj = {row, {R1,R2}}}) ->
     PBin = term_to_binary(P),
     ets:fun2ms(fun(LO=#local_obj{path=MP, obj={cell,{_MX,MY}}})
-                     when MP == PBin,
-                          R1 =< MY, MY =< R2 -> LO;
+                  when MP == PBin,
+                       R1 =< MY, MY =< R2 -> LO;
                   (LO=#local_obj{path=MP, obj={column, _}})
-                     when MP == PBin-> LO;
+                  when MP == PBin-> LO;
                   (LO=#local_obj{path=MP, obj={page, _}})
-                     when MP == PBin -> LO
+                  when MP == PBin -> LO
                end).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2242,7 +2267,7 @@ deref_overlap_test_() ->
 
      % cell in a row
      % ?_assertEqual({deref, "#REF!"}, deref_overlap_test("C5", {cell, {3, 5}}, {row, {4, 6}})),
-   % cell not in a row
+     % cell not in a row
      % ?_assertEqual({formula, "C5"}, deref_overlap_test("C5", {cell, {3, 5}}, {row, {6, 7}})),
      % range in a row (1)
      % ?_assertEqual({deref, "#REF!"}, deref_overlap_test("C5:D8", {range, {3, 5, 4, 8}}, {row, {5, 8}})),
@@ -2304,7 +2329,7 @@ deref_overlap_test_() ->
      % ?_assertEqual({recalc, "3:5"}, deref_overlap_test("3:6", {row, {3, 6}}, {row, {6, 7}})),
      % row slices middle
      % ?_assertEqual({recalc, "3:5"}, deref_overlap_test("3:6", {row, {3, 6}}, {row, {4, 4}}))
-  ].
+    ].
 
 deref_overlap_test(Formula, Delete, Disp) ->
     Obj = hn_util:parse_ref(Delete),
