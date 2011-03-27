@@ -1060,7 +1060,7 @@ pretty_p2([{R, Vals} | T], Acc) when is_record(R, refX) ->
     pretty_p2(T, NO4).
 
 print_relations(#refX{site = S} = RefX, Acc) ->
-    case hn_db_wu:read_relations_DEBUG(RefX) of
+    case hn_db_wu:read_relations(RefX, read) of
         []  -> Acc;
         [R] -> Ret = io_lib:format("....has the following relationships:", []),
                print_rel2(S, R, [Ret | Acc])
