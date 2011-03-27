@@ -1,7 +1,7 @@
 /* DO NOT EDIT */
 
-/* This css file is generated in the spreadsheet 
-webcomponents_css_generator.xls which is in 
+/* This css file is generated in the spreadsheet
+webcomponents_css_generator.xls which is in
 GITROOT/lib/hypernumbers-1.0/priv/css_generator */
 
 /* The dimensions of webcomponent frames */
@@ -30,6 +30,13 @@ GITROOT/lib/hypernumbers-1.0/priv/css_generator */
 .hn-wc-ht-23 { height: 502px; }
 .hn-wc-ht-24 { height: 524px; }
 .hn-wc-ht-25 { height: 546px; }
+.hn-wc-ht-25 { height: 546px; }
+.hn-wc-ht-26 { height: 568px; }
+.hn-wc-ht-27 { height: 590px; }
+.hn-wc-ht-28 { height: 612px; }
+.hn-wc-ht-29 { height: 634px; }
+.hn-wc-ht-30 { height: 656px; }
+
 
 /* the body height when there is a header but no footer */
 .hn-wc-ht-body1-4 { height: 34px; }
@@ -54,6 +61,12 @@ GITROOT/lib/hypernumbers-1.0/priv/css_generator */
 .hn-wc-ht-body1-23 { height: 452px; }
 .hn-wc-ht-body1-24 { height: 474px; }
 .hn-wc-ht-body1-25 { height: 496px; }
+.hn-wc-ht-body1-25 { height: 496px; }
+.hn-wc-ht-body1-26 { height: 518px; }
+.hn-wc-ht-body1-27 { height: 540px; }
+.hn-wc-ht-body1-28 { height: 562px; }
+.hn-wc-ht-body1-29 { height: 584px; }
+.hn-wc-ht-body1-30 { height: 606px; }
 
 /* the body height when there is a header and a footer */
 .hn-wc-ht-body2-5 { height: 34px; }
@@ -77,6 +90,12 @@ GITROOT/lib/hypernumbers-1.0/priv/css_generator */
 .hn-wc-ht-body2-23 { height: 430px; }
 .hn-wc-ht-body2-24 { height: 452px; }
 .hn-wc-ht-body2-25 { height: 474px; }
+.hn-wc-ht-body2-25 { height: 474px; }
+.hn-wc-ht-body2-26 { height: 496px; }
+.hn-wc-ht-body2-27 { height: 518px; }
+.hn-wc-ht-body2-28 { height: 540px; }
+.hn-wc-ht-body2-29 { height: 562px; }
+.hn-wc-ht-body2-30 { height: 584px; }
 
 /* the frame and body widths */
 .hn-wc-wd-1 { width: 72px; }
@@ -121,6 +140,12 @@ GITROOT/lib/hypernumbers-1.0/priv/css_generator */
 .hn-preview-ht-23 { height: 496px; }
 .hn-preview-ht-24 { height: 518px; }
 .hn-preview-ht-25 { height: 540px; }
+.hn-preview-ht-25 { height: 540px; }
+.hn-preview-ht-26 { height: 562px; }
+.hn-preview-ht-27 { height: 584px; }
+.hn-preview-ht-28 { height: 606px; }
+.hn-preview-ht-29 { height: 628px; }
+.hn-preview-ht-30 { height: 650px; }
 
 /* preview widths */
 .hn-preview-wd-1 { width: 68px; }
