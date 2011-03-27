@@ -36,7 +36,12 @@ GITROOT/lib/hypernumbers-1.0/priv/css_generator */
 .hn-wc-ht-28 { height: 612px; }
 .hn-wc-ht-29 { height: 634px; }
 .hn-wc-ht-30 { height: 656px; }
-
+.hn-wc-ht-30 { height: 656px; }
+.hn-wc-ht-31 { height: 678px; }
+.hn-wc-ht-32 { height: 700px; }
+.hn-wc-ht-33 { height: 722px; }
+.hn-wc-ht-34 { height: 744px; }
+.hn-wc-ht-35 { height: 766px; }
 
 /* the body height when there is a header but no footer */
 .hn-wc-ht-body1-4 { height: 34px; }
@@ -67,6 +72,12 @@ GITROOT/lib/hypernumbers-1.0/priv/css_generator */
 .hn-wc-ht-body1-28 { height: 562px; }
 .hn-wc-ht-body1-29 { height: 584px; }
 .hn-wc-ht-body1-30 { height: 606px; }
+.hn-wc-ht-body1-30 { height: 606px; }
+.hn-wc-ht-body1-31 { height: 628px; }
+.hn-wc-ht-body1-32 { height: 650px; }
+.hn-wc-ht-body1-33 { height: 672px; }
+.hn-wc-ht-body1-34 { height: 694px; }
+.hn-wc-ht-body1-35 { height: 716px; }
 
 /* the body height when there is a header and a footer */
 .hn-wc-ht-body2-5 { height: 34px; }
@@ -96,6 +107,12 @@ GITROOT/lib/hypernumbers-1.0/priv/css_generator */
 .hn-wc-ht-body2-28 { height: 540px; }
 .hn-wc-ht-body2-29 { height: 562px; }
 .hn-wc-ht-body2-30 { height: 584px; }
+.hn-wc-ht-body2-30 { height: 584px; }
+.hn-wc-ht-body2-31 { height: 606px; }
+.hn-wc-ht-body2-32 { height: 628px; }
+.hn-wc-ht-body2-33 { height: 650px; }
+.hn-wc-ht-body2-34 { height: 672px; }
+.hn-wc-ht-body2-35 { height: 694px; }
 
 /* the frame and body widths */
 .hn-wc-wd-1 { width: 72px; }
@@ -146,6 +163,12 @@ GITROOT/lib/hypernumbers-1.0/priv/css_generator */
 .hn-preview-ht-28 { height: 606px; }
 .hn-preview-ht-29 { height: 628px; }
 .hn-preview-ht-30 { height: 650px; }
+.hn-preview-ht-30 { height: 650px; }
+.hn-preview-ht-31 { height: 672px; }
+.hn-preview-ht-32 { height: 694px; }
+.hn-preview-ht-33 { height: 716px; }
+.hn-preview-ht-34 { height: 738px; }
+.hn-preview-ht-35 { height: 760px; }
 
 /* preview widths */
 .hn-preview-wd-1 { width: 68px; }
