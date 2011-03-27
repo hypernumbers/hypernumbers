@@ -1825,7 +1825,7 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
                      end,
             Attrs4 = case {Ht, Wd} of
                          {1, 1} -> orddict:erase("merge", Attrs3);
-                         _      -> orddict:tore("merge", {struct,
+                         _      -> orddict:store("merge", {struct,
                                                           [{"right", Wd - 1},
                                                            {"down",  Ht - 1}]},
                                                 Attrs3)
