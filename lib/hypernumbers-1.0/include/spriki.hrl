@@ -32,6 +32,7 @@
         {
           css = [],
           js = [],
+          js_reload = [],
           title = []
          }).
 
@@ -272,16 +273,20 @@
           addtablegroups = []
          }).
 
-% the css and javascript tables
--record(include_index,
+% the internal api for include
+-record(incs,
         {
-          path,
-          function
+          js         = [],
+          js_reload  = [],
+          css        = []
          }).
 
+% the css and javascript tables
 -record(include,
         {
-          inc_index = #include_index{},
-          type,
-          fragment
+          idx,
+          path,
+          js,
+          js_reload,
+          css
          }).

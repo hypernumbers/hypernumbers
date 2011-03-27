@@ -43,6 +43,7 @@
         ]).
 
 -export([
+         read_incs/1,
          read_relations/2,
          write_kv/3,
          read_kv/2,
@@ -118,6 +119,10 @@ get_logs(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
     Logs2 = mnesia:index_read(Table, hn_util:list_to_path(P), path),
     Logs3 = get_page_logs(Logs2),
     lists:merge(Logs1, Logs3).
+
+read_incs(#refX{site = S, path = P}) ->
+    Table = trans(S, include),
+    mnesia:index_read(Table, P, path).
 
 read_relations(RefX, Lock) when is_record(RefX, refX) ->
     Idx = refX_to_idx(RefX),
@@ -1729,10 +1734,12 @@ offset_formula(Formula, {XO, YO}) ->
 write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
     Rti = refX_to_rti(Ref, AReq, false),
     case muin:run_formula(Fla, Rti) of
-        % General error condtion
+        % General error condition
         {error, {errval, Error}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
+            % mebbies there was incs, nuke 'em
+            ok = update_incs(Ref, #incs{}),
             write_error_attrs(Attrs2, Ref, Formula, Error);
         % the formula returns as rawform
         {ok, {Pcode, {rawform, RawF, Html}, Parents, InfParents, Recompile}} ->
@@ -1745,20 +1752,23 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
                      end,
             Attrs2 = orddict:store("__hasform", t, Attrs),
             Attrs3 = orddict:store("preview", {Label2, 1, 1}, Attrs2),
+            % mebbies there was incs, nuke 'em
+            ok = update_incs(Ref, #incs{}),
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Html,
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web control
-        {ok, {Pcode, {webcontrol, {Payload, {Title, Wd, Ht, _Js, _CSS}}, Res},
+        {ok, {Pcode, {webcontrol, {Payload, {Title, Wd, Ht, Incs}}, Res},
                       Parents, InfParents, Recompile}} ->
             {Trans, Label} = Payload#form.id,
             Form = Payload#form{id={Ref#refX.path, Trans, Label}},
             ok = attach_form(Ref, Form),
             Attrs2 = orddict:store("__hasform", t, Attrs),
             Attrs3 = orddict:store("preview", {Title, Wd, Ht}, Attrs2),
+            ok = update_incs(Ref, Incs),
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile);
         % the formula returns a web-hingie that needs to be previewed
-        {ok, {Pcode, {preview, {PreV, Wd, Ht, _Js, _Css}, Res}, Pars,
+        {ok, {Pcode, {preview, {PreV, Wd, Ht, Incs}, Res}, Pars,
               InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
             Attrs3 = case {Ht, Wd} of
@@ -1768,15 +1778,18 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
                                                             {"down",  Ht - 1}]},
                                                  Attrs2)
                      end,
+            ok = update_incs(Ref, Incs),
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
                                 {Pars, false}, InfPars, Recompile);
         % special case for the include function (special dirty!)
         {ok, {Pcode, {include, {PreV, Ht, Wd}, Res}, Pars, InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
+            % mebbies there was incs, nuke 'em
+            ok = update_incs(Ref, #incs{}),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res,
                                 {Pars, true}, InfPars, Recompile);
         % normal functions with a resize
-        {ok, {Pcode, {resize, {Wd, Ht, _Js, _Css}, Res}, Parents,
+        {ok, {Pcode, {resize, {Wd, Ht, Incs}, Res}, Parents,
               InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
@@ -1787,16 +1800,33 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
                                                            {"down",  Ht - 1}]},
                                                 Attrs2)
                      end,
+            ok = update_incs(Ref, Incs),
             write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile);
         % bog standard function!
         {ok, {Pcode, Res, Parents, InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
+            % mebbies there was incs, nuke 'em
+            ok = update_incs(Ref, #incs{}),
             write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile)
     end.
 
+update_incs(Ref, Incs) when is_record(Ref, refX)
+                            andalso is_record(Incs, incs) ->
+    #refX{site = S, path = P} = Ref,
+    #incs{js = Js, js_reload = Js_reload, css = CSS} = Incs,
+    Idx = refX_to_idx_create(Ref),
+    Tbl = trans(S, include),
+    Blank = #incs{},
+    case {mnesia:read(Tbl, Idx), Incs} of
+        {[], Blank}  -> ok;
+        {Incs, Incs} -> ok;
+        {_, _}       -> Inc = #include{idx = Idx, path = P, js = Js,
+                                       js_reload = Js_reload, css = CSS},
+                        mnesia:write(Tbl, Inc, write)
+    end.
 
 write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, {Parents, IsIncl},
                     InfParents, Recompile) ->

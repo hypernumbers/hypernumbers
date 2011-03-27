@@ -290,9 +290,9 @@ rl({convflat, Type, Value}, X) ->
         _Else -> X
     end;
 
-rl(strip_resize,  {resize,  _, _, X}) -> X;
+rl(strip_resize,  {resize,  _, X}) -> X;
 
-rl(strip_preview, {preview, _, _, X}) -> X;
+rl(strip_preview, {preview, _, X}) -> X;
 
 % No Rules for this element
 rl(_Rule, Value) ->

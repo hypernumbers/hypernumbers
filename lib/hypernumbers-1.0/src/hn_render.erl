@@ -41,14 +41,22 @@ content(Ref, Type) ->
     Palette = gb_trees:from_orddict
                 (lists:sort
                  (hn_mochi:extract_styles(Ref#refX.site))),
-    CSSList = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, "css"),
-    JSList = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, "js"),
-    TitleList = hn_db_api:read_attribute(Ref#refX{obj={page, "/"}}, "title"),
+    % we have 2 sets of CSS and JS
+    % 'old style' which are in the page attributes
+    % 'new style' which are in the include table
+    CSSList = hn_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "css"),
+    JSList = hn_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "js"),
+    {Js2, Js_reload, CSS2} = hn_db_api:read_includes(Ref#refX{obj = {page, "/"}}),
+    TitleList = hn_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "title"),
     Open = "<link rel='stylesheet' href='",
-    CSS = [Open ++ X ++ "' type='text/css' />" || {_, X} <- CSSList],
-    JS = ["<script src='" ++ X ++ "'></script>" || {_, X} <- JSList],
+    {_, CSSList2} = lists:unzip(CSSList),
+    {_, JSList2}  = lists:unzip(JSList),
+    CSS3 = [Open ++ X ++ "'type='text/css' />" || X <- lists:merge(CSSList2, CSS2)],
+    JS3 = ["<script src='" ++ X ++ "'></script>" || X <- lists:merge(JSList2, Js2)],
+    Js_r2 = "<script type='text/javascript'>HN.Includes.reload = function () { "
+        ++ lists:flatten(Js_reload) ++ "};</script>",
     Title = ["<title>" ++ X ++ "</title>" || {_, X} <- TitleList],
-    Addons = #render{css=CSS, js=JS, title=Title},
+    Addons = #render{css=CSS3, js=JS3, js_reload = Js_r2, title=Title},
     {layout(Ref, Type, Cells, ColWs, RowHs, Palette), Addons}.
 
 read_data_without_page(Ref) ->
@@ -298,8 +306,6 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
  </div>
 </div>
 "  ++Addons#render.js++
-%  <script src='http://connect.facebook.net/en_US/all.js#appId=196044207084776&amp;xfbml=1'></script>
-%  <script type='text/javascript'> FB.init('196044207084776', '/external/xd_receiver.htm');</script>
 %  <script type='text/javascript'>
 %    var disqus_shortname = 'hypernumbers';
 %    //var disqus_developer = 1;
@@ -319,8 +325,9 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
   <script src='/hypernumbers/hn.data.js'></script>
   <script src='/hypernumbers/hn.callbacks.js'></script>
   <script src='/hypernumbers/hn.sitedata.js'></script>
-  <script src='/hypernumbers/hn.renderpage.js'></script>
-  </body>
+  <script src='/hypernumbers/hn.renderpage.js'></script>"
+     ++Addons#render.js_reload++
+"  </body>
   </html>"].
 
 -spec wrap_region([textdata()], integer(), integer()) -> [textdata()].
@@ -400,3 +407,4 @@ merged_row_test_() ->
     Palette = gb_trees:empty(),
     {_, W, H} = layout(Ref, webpage, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({480, 330}, {W, H}).
+

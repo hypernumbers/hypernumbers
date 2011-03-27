@@ -11,6 +11,8 @@
          debugz/1
         ]).
 
+-include("spriki.hrl").
+
 debugz([Z]) ->
     Vals = muin_collect:col([Z], [fetch, fetch_z_all],
                      [return_errors, {all, fun muin_collect:is_zeds/1}]),
@@ -23,7 +25,7 @@ debug1(Zed, [{zeds, Matches, NoMatches, Errs}]) ->
         ++ "<div>z-query is: " ++ Zed ++ "</div>"
         ++ make_matches(Matches) ++ make_no_matches(NoMatches) ++ make_errs(Errs)
         ++ "</div>",
-    {resize, {5, 10, [], []}, Html}.
+    {resize, {5, 10, #incs{}}, Html}.
 
 make_matches([]) -> "<div class='hn_debug_hd'>no pages match</div>";
 make_matches(L)  ->

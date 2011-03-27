@@ -7,9 +7,9 @@
          'vertical.line.'/1,
          include/1,
          table/1,
-         background/1,
+         %background/1,
          'google.map'/1,
-         'twitter.search'/1,
+         %'twitter.search'/1,
          'facebook.comments'/1,
          'disqus.comments'/1,
          link/1,
@@ -48,11 +48,18 @@
     HTML = "<div id='disqus_thread'></div>"
         ++ "<a href='http://disqus.com' class='dsq-brlink'>"
         ++ "blog comments powered by <span class='logo-disqus'>Disqus</span></a>",
-    {resize, 8, 15, HTML}.
+    {resize, {8, 15, [], []}, HTML}.
 
-'facebook.comments'([]) ->
-    HTML = "<div id='fb-root'></div><fb:comments href='http://hypernumbers.com/' num_posts='2' width='500'></fb:comments>",
-    {resize, 8, 10, HTML}.
+'facebook.comments'([Id]) ->
+    [Id2] = typechecks:std_ints([Id]),
+    Id3 = integer_to_list(Id2),
+    HTML = "<div id='fb-root'></div><fb:comments href='"
+        ++ site([]) ++ "' num_posts='2' width='500'></fb:comments>",
+    Js = "http://connect.facebook.net/en_US/all.js#appId=" ++ Id3 ++ "&amp;"
+        ++ "xfbml=1",
+    Reload = "FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');",
+    Incs = #incs{js = Js, js_reload = Reload},
+    {resize, {8, 10, Incs},  HTML}.
 
 'vertical.line.'([H, N, M, Colour]) ->
     vline1(H, N, M, Colour);
@@ -70,7 +77,7 @@ vline1(H, N, M, Colour) ->
     Div = "<div style='display:block;height:100%;width:50%;border-right:"
         ++ integer_to_list(N2) ++ "px " ++ Style ++ " " ++ Col ++ "'></div>"
         ++ "<div style='display:block;width:50%;'></div>",
-    {resize, 1, H2, Div}.
+    {resize, {1, H2, #incs{}}, Div}.
 
 'horizontal.line.'([W, N, M, Colour]) ->
     hline1(W, N, M, Colour);
@@ -89,7 +96,7 @@ hline1(W, N, M, Colour) ->
     Div = "<div style='display:block;height:50%;width:100%;border-bottom:"
         ++ integer_to_list(N2) ++ "px " ++ Style ++ " " ++ Col ++ "'></div>"
         ++ "<div style='display:block;width:100%;'></div>",
-    {resize, W2, 1, Div}.
+    {resize, {W2, 1, #incs{}}, Div}.
 
 make_style(N) -> case N of
                      0 -> "solid";
@@ -180,14 +187,14 @@ html([Html]) ->
         ++ "marginheight='0' marginwidth='0' src='http://maps.google.com"
         ++ "/?ie=UTF8&amp;ll=" ++ Lat2 ++ "," ++ Long2
         ++ "&amp;z=" ++ muin_util:cast(Zoom, str) ++ "&amp;output=embed'></iframe>",
-    {preview, {"Google Map for Lat: " ++ Lat2 ++ " Long: " ++ Long2, 8, 4}, HTML}.
+    {preview, {"Google Map for Lat: " ++ Lat2 ++ " Long: " ++ Long2, 8, 4, #incs{}}, HTML}.
 
-'twitter.search_'(_Term, _Title) ->
-    "Todo".
+%'twitter.search_'(_Term, _Title) ->
+%    "Todo".
 
-background_(Url, Rest) ->
-    lists:flatten("<style type='text/css'>body{background:url("
-                  ++ Url ++ ") " ++ Rest ++ "};</style>").
+%background_(Url, Rest) ->
+%    lists:flatten("<style type='text/css'>body{background:url("
+%                  ++ Url ++ ") " ++ Rest ++ "};</style>").
 
 link_(Src, Text) ->
     lists:flatten("<a href='" ++ Src ++ "'>" ++ Text ++ "</a>").
@@ -236,11 +243,11 @@ img([Src]) ->
         fun([NSrc]) -> img_(NSrc) end).
 
 
-'twitter.search'([])          -> 'twitter.search'(["hello"]);
-'twitter.search'([Term])      -> 'twitter.search'([Term, "title"]);
-'twitter.search'([Term, Title]) ->
-    muin_collect:col([Term, Title], [eval_funs, fetch, {cast, str}], [return_errors],
-        fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
+%'twitter.search'([])          -> 'twitter.search'(["hello"]);
+%'twitter.search'([Term])      -> 'twitter.search'([Term, "title"]);
+%'twitter.search'([Term, Title]) ->
+%    muin_collect:col([Term, Title], [eval_funs, fetch, {cast, str}], [return_errors],
+%        fun([NTerm, NTitle]) -> 'twitter.search_'(NTerm, NTitle) end).
 
 table([Ref]) ->
     table([Ref, 0]);
@@ -269,11 +276,11 @@ table2(Len, Ref, Sort) ->
                 'google.map_'(NLong, NLat, NZoom)
         end).
 
-background([Url]) -> background([Url, ""]);
-background([V1, V2]) ->
-    muin_collect:col([V1, V2], [first_array, fetch, {cast,str}],
-        [return_errors, {all, fun muin_collect:is_string/1}],
-        fun([Url, Extra]) -> background_(Url, Extra) end).
+%background([Url]) -> background([Url, ""]);
+%background([V1, V2]) ->
+%    muin_collect:col([V1, V2], [first_array, fetch, {cast,str}],
+%        [return_errors, {all, fun muin_collect:is_string/1}],
+%        fun([Url, Extra]) -> background_(Url, Extra) end).
 
 
 include([CellRef]) when ?is_cellref(CellRef) ->

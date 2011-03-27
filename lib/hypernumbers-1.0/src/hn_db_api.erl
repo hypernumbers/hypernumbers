@@ -113,6 +113,7 @@
         ]).
 
 -export([
+         read_includes/1,
          write_kv/3,
          read_kv/2,
          write_attributes/1,
@@ -195,12 +196,17 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
     [io:format(X ++ "~n") || X <- Msg],
     ok.
 
+read_includes(#refX{obj = {page, "/"}} = RefX) ->
+    Fun = fun() ->
+                  unpack_incs(hn_db_wu:read_incs(RefX))
+          end,
+    mnesia:activity(transaction, Fun).
+
 get_logs(RefX) when is_record(RefX, refX) ->
     Fun = fun() ->
                   hn_db_wu:get_logs(RefX)
           end,
     mnesia:activity(transaction, Fun).
-
 
 write_kv(Site, Key, Value) ->
     Fun = fun() ->
@@ -771,6 +777,15 @@ handle_circref_cell(Site, Idx, Ar) ->
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+unpack_incs(List) -> unpack_1(List, [], [], []).
+
+unpack_1([], Js, Js_r, CSS) -> {hslists:uniq(Js),
+                                hslists:uniq(Js_r),
+                                hslists:uniq(CSS)};
+unpack_1([H | T], Js, Js_r, CSS) ->
+    #include{js = J, js_reload = R, css = C} = H,
+    unpack_1(T, [J | Js], [R | Js_r], [C | CSS]).
+
 write_attributes1(#refX{obj = {range, _}}=Ref, AttrList, PAr, VAr) ->
     List = hn_util:range_to_list(Ref),
     [ok = write_attributes1(X, AttrList, PAr, VAr) || X <- List],

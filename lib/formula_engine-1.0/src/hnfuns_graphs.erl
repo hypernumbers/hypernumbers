@@ -34,6 +34,7 @@
 
 -include("typechecks.hrl").
 -include("muin_records.hrl").
+-include("spriki.hrl").
 
 %% definitions of standard abbreviations
 -define(apiurl,     "<img src='http://chart.apis.google.com/chart?").
@@ -145,7 +146,7 @@
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     {Data, Colours} = chunk_spark(List),
-    {resize, Width, Height,
+    {resize, {Width, Height, #incs{}},
      spark1(make_size(Width, Height), Data, Colours)}.
 
 chunk_spark([Lines | List]) ->
@@ -187,14 +188,14 @@ spark1(Size, Data, Colours) ->
     Chart = make_chart2([{?type, ?PIECHART}, {?size, make_size(Width, Height)},
                 {?axes, "x"}, {?colours, "bb2222"},
                 {?piecolours, "0,444499,11.5"} | Opts]),
-    {resize, Width, Height, Chart}.
+    {resize, {Width, Height, #incs{}}, Chart}.
 
 'histogram.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_histogram(List),
     {DataX, DataY, MinY, MaxY, Type, Colours, Rest} = Ret,
-    {resize, Width, Height,
+    {resize, {Width, Height, #incs{}},
      eq_hist1(Type, make_size(Width, Height), DataX, DataY, MinY, MaxY,
                             Colours, Rest, [])}.
 
@@ -203,7 +204,7 @@ spark1(Size, Data, Colours) ->
     [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_equigraph(List),
     {DataX, DataY, MinY, MaxY, Colours, Rest} = Ret,
-    {resize, Width, Height,
+    {resize, {Width, Height, #incs{}},
      eq_hist1(equi, make_size(Width, Height), DataX, DataY, MinY, MaxY, Colours,
                             Rest, [{?tickmarks, ?BOTHAXES}])}.
 
@@ -212,7 +213,7 @@ spark1(Size, Data, Colours) ->
     [Height] = typechecks:throw_std_ints([H]),
     Ret = chunk_dategraph(List, double),
     {Data, Scale, AxesLabPos, Colours, Rest, StartDate, EndDate} = Ret,
-    {resize, Width, Height,
+    {resize, {Width, Height, #incs{}},
      dg1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         StartDate, EndDate, [{?tickmarks, ?BOTHAXES}])}.
 
@@ -220,7 +221,7 @@ spark1(Size, Data, Colours) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_linegraph(List, double),
-    {resize, Width, Height,
+    {resize, {Width, Height, #incs{}},
      xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
 
@@ -228,7 +229,7 @@ spark1(Size, Data, Colours) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
     {Data, Scale, AxesLabPos, Colours, Rest} = chunk_xy(List, double),
-    {resize, Width, Height,
+    {resize, {Width, Height, #incs{}},
      xy1(make_size(Width, Height), Data, Scale, AxesLabPos, Colours, Rest,
         [{?tickmarks, ?BOTHAXES}])}.
 
@@ -569,7 +570,8 @@ make_c2([{K, V} | T], Acc) -> NewAcc = "&amp;" ++ K ++ "=" ++ V,
 'speedo.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
     [Height] = typechecks:throw_std_ints([H]),
-    {resize, Width, Height,     speedo(make_size(Width, Height),  List)}.
+    {resize, {Width, Height, #incs{}},
+     speedo(make_size(Width, Height),  List)}.
 
 speedo(Size, [V])               -> speedo1(Size, V, "", "",   ?SPEEDOPARAMS);
 speedo(Size, [V, Tt])           -> speedo1(Size, V, Tt, "",   ?SPEEDOPARAMS);

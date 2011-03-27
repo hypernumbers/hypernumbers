@@ -50,5 +50,5 @@
             % and then compare the records to see if the action is approved
             Form = #form{id = {'create-button', Title}, kind = "create-button",
                          attrs = Commands3},
-            {webcontrol, {Form, Title}, Html}
+            {webcontrol, {Form, {Title, 1, 1, #incs{}}}, Html}
     end.
