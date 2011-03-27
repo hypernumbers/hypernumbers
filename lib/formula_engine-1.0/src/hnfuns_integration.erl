@@ -20,13 +20,13 @@
          'twitter.tweet'/1,
          'facebook.likebox'/1,
          'facebook.like'/1,
+         'twitter.profile'/1,
          'google.map'/1
         ]).
 
 %% not working functions
 -export([
          'facebook.share'/1,
-         'twitter.profile'/1,
          'twitter.list'/1,
          'youtube.channel'/1
          %'twitter.search'/1,
@@ -356,39 +356,24 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
     ID = "hn_id_" ++ muin_util:create_name(),
     U = muin_col_DEPR:collect_string(UserName, ?default_str_rules),
     Js = "http://widgets.twimg.com/j/2/widget.js",
-    Js_reload = "<script>new TWTR.Widget({"
-        ++ "id: " ++ ID ++ "," % we have added this
+    Js_reload = "new TWTR.Widget({"
+        ++ "id: '" ++ ID ++ "'," % we have added this
         ++ "version: 2,"
         ++ "type: 'profile',"
         ++ "rpp: 4,"
         ++ "interval: 6000,"
-        ++ "width: 250,"
-        ++ "height: 300,"
+        ++ "width: 213,"
+        ++ "height: 304,"
         ++ "theme: {"
-        ++ "shell: {"
-        ++ "background: '#333333',"
-        ++ "color: '#ffffff'"
+        ++ "shell: {background: '#333333', color: '#ffffff'},"
+        ++ "tweets: {background: '#000000', color: '#ffffff', links: '#4aed05'}"
         ++ "},"
-        ++ "tweets: {"
-        ++ "background: '#000000',"
-        ++ "color: '#ffffff',"
-        ++ "links: '#4aed05'"
-        ++ "}"
-        ++ "},"
-        ++ "features: {"
-        ++ "scrollbar: false,"
-        ++ "loop: false,"
-        ++ "live: false,"
-        ++ "hashtags: true,"
-        ++ "timestamp: true,"
-        ++ "avatars: false,"
-        ++ "behavior: 'all'"
-        ++ "}"
-        ++ "}).render().setUser('" ++ U ++ "').start();"
-        ++ "</script>",
-    HTML = "<div id='" ++ ID ++ "' />",
+        ++ "features: {scrollbar: false, loop: false, live: false, hashtags: true,"
+        ++ "timestamp: true, avatars: false, behavior: 'all'}"
+        ++ "}).render().setUser('" ++ U ++ "').start();",
+    HTML = "<div id='" ++ ID ++ "'></div>",
     Incs = #incs{js = Js, js_reload = Js_reload},
-    {preview, {"Twitter profile for " ++ U, 4, 12, Incs}, HTML}.
+    {preview, {"Twitter profile for " ++ U, 4, 14, Incs}, HTML}.
 
 'twitter.list'([]) ->
     "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
@@ -403,25 +388,11 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
         ++ "width: 250,"
         ++ "height: 300,"
         ++ "theme: {"
-        ++ "shell: {"
-        ++ "background: '#ff96e7',"
-        ++ "color: '#ffffff'"
+        ++ "shell: {background: '#ff96e7', color: '#ffffff'},"
+        ++ "tweets: {background: '#ffffff', color: '#444444', links: '#b740c2'}"
         ++ "},"
-        ++ "tweets: {"
-        ++ "background: '#ffffff',"
-        ++ "color: '#444444',"
-        ++ "links: '#b740c2'"
-        ++ "}"
-        ++ "},"
-        ++ "features: {"
-        ++ "scrollbar: true,"
-        ++ "loop: false,"
-        ++ "live: true,"
-        ++ "hashtags: true,"
-        ++ "timestamp: true,"
-        ++ "avatars: true,"
-        ++ "behavior: 'all'"
-        ++ "}"
+        ++ "features: {scrollbar: true, loop: false, live: true, "
+        ++ "hashtags: true, timestamp: true, avatars: true, behavior: 'all'}"
         ++ "}).render().setList('twitter', 'more-twitter-accounts').start();"
         ++ "</script>".
 
