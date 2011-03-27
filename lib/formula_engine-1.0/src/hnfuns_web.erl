@@ -44,12 +44,32 @@
 -type html() :: string().
 -type zoom() :: 1..20.
 
-'disqus.comments'([]) ->
+% for hypernumbers it is:
+% * shortname = hypernumbers
+% * id = 123132
+'disqus.comments'([ShortName, Id]) ->
+    [ShortName2]= typechecks:std_strs([ShortName]),
+    [Id2] = typechecks:std_ints([Id]),
+    Page = site([]) ++ page([]),
     HTML = "<div id='disqus_thread'></div>"
         ++ "<a href='http://disqus.com' class='dsq-brlink'>"
         ++ "blog comments powered by <span class='logo-disqus'>Disqus</span></a>",
-    {resize, {8, 15, [], []}, HTML}.
+    Reload = "var disqus_shortname = '" ++ ShortName2 ++ "';"
+        ++ "//var disqus_developer = 1;"
+        ++ "var disqus_identifier = '" ++ integer_to_list(Id2) ++ "';"
+        ++ "var disqus_url = '" ++ Page ++ "';"
+        ++ "(function() {"
+        ++ "    var dsq = document.createElement('script');"
+        ++ "              dsq.type = 'text/javascript'; dsq.async = true;"
+        ++ "    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';"
+        ++ "    (document.getElementsByTagName('head')[0] ||"
+        ++ "         document.getElementsByTagName('body')[0]).appendChild(dsq);"
+        ++ "})();",
+    Incs = #incs{js_reload = Reload},
+    {resize, {8, 15, Incs}, HTML}.
 
+% for hypernumbers it is:
+% * id = 196044207084776
 'facebook.comments'([Id]) ->
     [Id2] = typechecks:std_ints([Id]),
     Id3 = integer_to_list(Id2),
