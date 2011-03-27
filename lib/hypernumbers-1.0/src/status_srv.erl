@@ -24,7 +24,7 @@
 -record(site, {site, time_purged = calendar:now_to_universal_time(now()), list}).
 -record(user, {name, details}).
 -record(details, {path, change, timestamp = calendar:now_to_universal_time(now())}).
--record(jstree, {data, attr, state, children}).
+%-record(jstree, {data, attr, state, children}).
 
 %%%===================================================================
 %%% API
