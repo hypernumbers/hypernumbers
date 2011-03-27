@@ -169,6 +169,7 @@ html,body {
 
 #wizfunargs input {
   font-size: 10px;
+  border: solid thin #aaa;
 }
 
 #wizstatus {
@@ -179,8 +180,11 @@ html,body {
 }
 
 #wiztext {
+  padding-top: 2px;
   width:  272px; /* wizselectedfun.width - 8px */
   height: 6ex;
+  border: solid thin #aaa;
+  background: #ccc; /* read-only */
 }
 
 #wizbuttons {
