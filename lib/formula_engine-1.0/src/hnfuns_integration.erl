@@ -12,22 +12,27 @@
 
 % working functions
 -export([
-         'facebook.share'/1,
+         'facebook.comments'/1,
+         'disqus.comments'/1,
          'twitter.button'/1,
          'google.buynowlist'/1,
          'google.buynow'/1,
-         'twitter.tweet'/1
+         'twitter.tweet'/1,
+         'facebook.likebox'/1,
+         'facebook.like'/1,
+         'google.map'/1
         ]).
 
 %% not working functions
 -export([
-         'facebook.like'/1,
-         'facebook.likebox'/1,
+         'facebook.share'/1,
          'twitter.profile'/1,
          'twitter.list'/1,
          'youtube.channel'/1
+         %'twitter.search'/1,
         ]).
 
+-include("spriki.hrl").
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
@@ -60,9 +65,74 @@
          "XAF", "XCD", "XOF", "XPF", "YER", "ZAR", "ZMK", "ZWL"
         ]).
 
+-type html() :: string().
+-type zoom() :: 1..20.
+
 %%
 %% Exported functions
 %%
+
+'google.map'([])          -> 'google.map'([0]);
+'google.map'([Long])      -> 'google.map'([Long, 0]);
+'google.map'([Long, Lat]) -> 'google.map'([Long, Lat, 10]);
+'google.map'([Long, Lat, Zoom]) ->
+    muin_collect:col([Long, Lat, Zoom], [eval_funs, fetch, {cast, num}],
+        [return_errors, {all, fun is_number/1}],
+        fun([NLong, NLat, NZoom]) ->
+                'google.map_'(NLong, NLat, NZoom)
+        end).
+
+-spec 'google.map_'(number(), number(), zoom()) -> html().
+'google.map_'(Lat, Long, Zoom) ->
+    Lat2 = muin_util:cast(Lat, str),
+    Long2 = muin_util:cast(Long, str),
+    HTML = "<iframe width='100%' height='100%' frameborder='0' scrolling='no' "
+        ++ "marginheight='0' marginwidth='0' src='http://maps.google.com"
+        ++ "/?ie=UTF8&amp;ll=" ++ Lat2 ++ "," ++ Long2
+        ++ "&amp;z=" ++ muin_util:cast(Zoom, str) ++ "&amp;output=embed'></iframe>",
+    {preview, {"Google Map for Lat: " ++ Lat2 ++ " Long: " ++ Long2,
+               8, 4, #incs{}}, HTML}.
+
+%'twitter.search_'(_Term, _Title) ->
+%    "Todo".
+
+% for hypernumbers it is:
+% * shortname = hypernumbers
+% * id = 123132
+'disqus.comments'([ShortName, Id]) ->
+    [ShortName2]= typechecks:std_strs([ShortName]),
+    [Id2] = typechecks:std_ints([Id]),
+    Page = hnfuns_web:site([]) ++ hnfuns_web:page([]),
+    HTML = "<div id='disqus_thread'></div>"
+        ++ "<a href='http://disqus.com' class='dsq-brlink'>"
+        ++ "blog comments powered by <span class='logo-disqus'>Disqus</span></a>",
+    Reload = "var disqus_shortname = '" ++ ShortName2 ++ "';"
+        ++ "//var disqus_developer = 1;"
+        ++ "var disqus_identifier = '" ++ integer_to_list(Id2) ++ "';"
+        ++ "var disqus_url = '" ++ Page ++ "';"
+        ++ "(function() {"
+        ++ "    var dsq = document.createElement('script');"
+        ++ "              dsq.type = 'text/javascript'; dsq.async = true;"
+        ++ "    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';"
+        ++ "    (document.getElementsByTagName('head')[0] ||"
+        ++ "         document.getElementsByTagName('body')[0]).appendChild(dsq);"
+        ++ "})();",
+    Incs = #incs{js_reload = Reload},
+    {resize, {8, 15, Incs}, HTML}.
+
+% for hypernumbers it is:
+% * id = 196044207084776
+'facebook.comments'([Id]) ->
+    [Id2] = typechecks:std_ints([Id]),
+    Id3 = integer_to_list(Id2),
+    HTML = "<div id='fb-root'></div><fb:comments href='"
+        ++ hnfuns_web:site([]) ++ "' num_posts='2' width='500'></fb:comments>",
+    Js = "http://connect.facebook.net/en_US/all.js#appId=" ++ Id3 ++ "&amp;"
+        ++ "xfbml=1",
+    Reload = "FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');",
+    Incs = #incs{js = Js, js_reload = Reload},
+    {resize, {8, 10, Incs},  HTML}.
+
 'twitter.tweet'([Message]) ->
     tweet2(Message, "Tweet This");
 'twitter.tweet'([Message, Link]) ->
@@ -185,6 +255,9 @@ get_sel(List) -> lists:flatten(["<select name=\"item_selection_1\">",
                                 lists:reverse(List),
                                 "</select>"]).
 
+'facebook.like'([]) ->
+    URL = hnfuns_web:site([]) ++ hnfuns_web:page([]),
+    'facebook.like'([URL, 0]);
 'facebook.like'([URL]) ->
     'facebook.like'([URL, 0]);
 'facebook.like'([URL, Layout]) ->
@@ -217,8 +290,12 @@ valid(_, _) -> false.
 %% Hypernumbers Page Id is 336874434418
 'facebook.likebox'([PageId]) ->
     P = muin_col_DEPR:collect_string(PageId, ?default_str_rules),
-    "<iframe src=\"http://www.facebook.com/plugins/likebox.php?id="
-        ++ P ++ "&amp;width=292&amp;connections=10&amp;stream=true&amp;header=true\" scrolling=\"no\" frameborder=\"0\" allowTransparency=\"true\" style=\"border:none; overflow:hidden; width:292px; height:200px\"></iframe>".
+    HTML = "<iframe src=\"http://www.facebook.com/plugins/likebox.php?id="
+        ++ P ++ "&amp;width=472&amp;connections=10&amp;stream=true&amp;"
+        ++ " header=true\" scrolling=\"no\" frameborder=\"0\" "
+        ++ " allowTransparency=\"true\" style=\"border:none; "
+        ++ "overflow:hidden; width:472px; height:606px\"></iframe>",
+    {preview, {"Facebook Like of " ++ P, 6, 31, #incs{}}, HTML}.
 
 'facebook.share'([])       -> fb_share1("box_count", "");
 'facebook.share'([0])      -> fb_share1("box_count", "");
@@ -241,7 +318,12 @@ fb_share(_, _) -> ?ERRVAL_VAL.
 
 
 fb_share1(Button, URL) ->
-    "<a name=\"fb_share\" type=\"" ++ Button ++ "\" "  ++ URL++ " href=\"http://www.facebook.com/sharer.php\">Share</a><script src=\"http://static.ak.fbcdn.net/connect.php/js/FB.Share\" type=\"text/javascript\"></script>".
+    HTML = "<a name=\"fb_share\" type=\"" ++ Button ++ "\" "
+        ++ URL ++ " href=\"http://www.facebook.com/sharer.php\">Share</a>",
+    io:format("HTML is ~p~n",[HTML]),
+    Js = "http://static.ak.fbcdn.net/connect.php/js/FB.Share\"",
+    Incs = #incs{js = Js},
+    {resize, {2, 4, Incs}, HTML}.
 
 %% Hypernumbers Twitter UserName is hypernumbers
 'twitter.button'([UserName]) ->
@@ -267,11 +349,15 @@ tw_b1(4, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++
 tw_b1(5, Colour, UserName) -> "<a href=\"http://www.twitter.com/" ++ UserName ++ "\"><img src=\"http://twitter-badges.s3.amazonaws.com/t_mini-" ++ Colour ++ ".png\" alt=\"Follow " ++ UserName ++ " on Twitter\"/></a>";
 tw_b1(_, _, _) -> ?ERRVAL_VAL.
 
+% still not working
+% try this
+% http://od-eon.com/blogs/stefan/asynchronous-loading-twitter-widgets/
 'twitter.profile'([UserName]) ->
+    ID = "hn_id_" ++ muin_util:create_name(),
     U = muin_col_DEPR:collect_string(UserName, ?default_str_rules),
-    "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
-        ++ "<script>"
-        ++ "new TWTR.Widget({"
+    Js = "http://widgets.twimg.com/j/2/widget.js",
+    Js_reload = "<script>new TWTR.Widget({"
+        ++ "id: " ++ ID ++ "," % we have added this
         ++ "version: 2,"
         ++ "type: 'profile',"
         ++ "rpp: 4,"
@@ -299,7 +385,10 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
         ++ "behavior: 'all'"
         ++ "}"
         ++ "}).render().setUser('" ++ U ++ "').start();"
-        ++ "</script>".
+        ++ "</script>",
+    HTML = "<div id='" ++ ID ++ "' />",
+    Incs = #incs{js = Js, js_reload = Js_reload},
+    {preview, {"Twitter profile for " ++ U, 4, 12, Incs}, HTML}.
 
 'twitter.list'([]) ->
     "<script src=\"http://widgets.twimg.com/j/2/widget.js\"></script>"
@@ -335,3 +424,4 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
         ++ "}"
         ++ "}).render().setList('twitter', 'more-twitter-accounts').start();"
         ++ "</script>".
+

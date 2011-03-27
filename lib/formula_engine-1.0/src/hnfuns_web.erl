@@ -8,10 +8,6 @@
          include/1,
          table/1,
          %background/1,
-         'google.map'/1,
-         %'twitter.search'/1,
-         'facebook.comments'/1,
-         'disqus.comments'/1,
          link/1,
          img/1,
          html/1,
@@ -40,46 +36,6 @@
 -define(lorem3, "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ").
 -define(lorem4, "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ").
 -define(lorem_length, 447).
-
--type html() :: string().
--type zoom() :: 1..20.
-
-% for hypernumbers it is:
-% * shortname = hypernumbers
-% * id = 123132
-'disqus.comments'([ShortName, Id]) ->
-    [ShortName2]= typechecks:std_strs([ShortName]),
-    [Id2] = typechecks:std_ints([Id]),
-    Page = site([]) ++ page([]),
-    HTML = "<div id='disqus_thread'></div>"
-        ++ "<a href='http://disqus.com' class='dsq-brlink'>"
-        ++ "blog comments powered by <span class='logo-disqus'>Disqus</span></a>",
-    Reload = "var disqus_shortname = '" ++ ShortName2 ++ "';"
-        ++ "//var disqus_developer = 1;"
-        ++ "var disqus_identifier = '" ++ integer_to_list(Id2) ++ "';"
-        ++ "var disqus_url = '" ++ Page ++ "';"
-        ++ "(function() {"
-        ++ "    var dsq = document.createElement('script');"
-        ++ "              dsq.type = 'text/javascript'; dsq.async = true;"
-        ++ "    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';"
-        ++ "    (document.getElementsByTagName('head')[0] ||"
-        ++ "         document.getElementsByTagName('body')[0]).appendChild(dsq);"
-        ++ "})();",
-    Incs = #incs{js_reload = Reload},
-    {resize, {8, 15, Incs}, HTML}.
-
-% for hypernumbers it is:
-% * id = 196044207084776
-'facebook.comments'([Id]) ->
-    [Id2] = typechecks:std_ints([Id]),
-    Id3 = integer_to_list(Id2),
-    HTML = "<div id='fb-root'></div><fb:comments href='"
-        ++ site([]) ++ "' num_posts='2' width='500'></fb:comments>",
-    Js = "http://connect.facebook.net/en_US/all.js#appId=" ++ Id3 ++ "&amp;"
-        ++ "xfbml=1",
-    Reload = "FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');",
-    Incs = #incs{js = Js, js_reload = Reload},
-    {resize, {8, 10, Incs},  HTML}.
 
 'vertical.line.'([H, N, M, Colour]) ->
     vline1(H, N, M, Colour);
@@ -199,19 +155,6 @@ trail2([H | T] = L, Acc) ->
 html([Html]) ->
     Html.
 
--spec 'google.map_'(number(), number(), zoom()) -> html().
-'google.map_'(Lat, Long, Zoom) ->
-    Lat2 = muin_util:cast(Lat, str),
-    Long2 = muin_util:cast(Long, str),
-    HTML = "<iframe width='100%' height='100%' frameborder='0' scrolling='no' "
-        ++ "marginheight='0' marginwidth='0' src='http://maps.google.com"
-        ++ "/?ie=UTF8&amp;ll=" ++ Lat2 ++ "," ++ Long2
-        ++ "&amp;z=" ++ muin_util:cast(Zoom, str) ++ "&amp;output=embed'></iframe>",
-    {preview, {"Google Map for Lat: " ++ Lat2 ++ " Long: " ++ Long2, 8, 4, #incs{}}, HTML}.
-
-%'twitter.search_'(_Term, _Title) ->
-%    "Todo".
-
 %background_(Url, Rest) ->
 %    lists:flatten("<style type='text/css'>body{background:url("
 %                  ++ Url ++ ") " ++ Rest ++ "};</style>").
@@ -285,16 +228,6 @@ table2(Len, Ref, Sort) ->
     Ref3 = make_ref3(Ref2, SubLen, []),
     Sort2 = typechecks:std_strs([Sort]),
     table_(Ref3, Sort2).
-
-'google.map'([])          -> 'google.map'([0]);
-'google.map'([Long])      -> 'google.map'([Long, 0]);
-'google.map'([Long, Lat]) -> 'google.map'([Long, Lat, 10]);
-'google.map'([Long, Lat, Zoom]) ->
-    muin_collect:col([Long, Lat, Zoom], [eval_funs, fetch, {cast, num}],
-        [return_errors, {all, fun is_number/1}],
-        fun([NLong, NLat, NZoom]) ->
-                'google.map_'(NLong, NLat, NZoom)
-        end).
 
 %background([Url]) -> background([Url, ""]);
 %background([V1, V2]) ->
