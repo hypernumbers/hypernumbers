@@ -39,7 +39,7 @@ add_include_index() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
                    Tbl = hn_db_wu:trans(Site, include),
-                   Ret = mnesia:add_table_index(Tbl, revidx),
+                   Ret = mnesia:add_table_index(Tbl, path),
                    io:format("Ret is ~p~n", [Ret])
            end,
     lists:foreach(Fun1, Sites).
