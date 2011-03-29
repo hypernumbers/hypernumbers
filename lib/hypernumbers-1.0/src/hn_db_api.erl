@@ -786,15 +786,15 @@ unpack_1([H | T], Js, Js_r, CSS) ->
     #include{js = J, js_reload = R, css = C} = H,
     NewJ = case J of
                [] -> Js;
-               _  -> [J | Js]
+               _  -> lists:append([J, Js])
            end,
     NewR = case R of
                [] -> Js_r;
-               _  -> [R | Js_r]
+               _  -> lists:append([R, Js_r])
            end,
     NewC = case C of
                [] -> CSS;
-               _  -> [C | CSS]
+               _  -> lists:append([C, CSS])
            end,
     unpack_1(T, NewJ, NewR, NewC).
 

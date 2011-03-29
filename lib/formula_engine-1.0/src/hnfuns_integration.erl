@@ -116,7 +116,7 @@
         ++ "    (document.getElementsByTagName('head')[0] ||"
         ++ "         document.getElementsByTagName('body')[0]).appendChild(dsq);"
         ++ "})();",
-    Incs = #incs{js_reload = Reload},
+    Incs = #incs{js_reload = [Reload]},
     {resize, {8, 15, Incs}, HTML}.
 
 % for hypernumbers it is:
@@ -126,9 +126,9 @@
     Id3 = integer_to_list(Id2),
     HTML = "<div id='fb-root'></div><fb:comments href='"
         ++ hnfuns_web:site([]) ++ "' num_posts='2' width='500'></fb:comments>",
-    Js = "http://connect.facebook.net/en_US/all.js#appId=" ++ Id3 ++ "&amp;"
-        ++ "xfbml=1",
-    Reload = "FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');",
+    Js = ["http://connect.facebook.net/en_US/all.js#appId=" ++ Id3 ++ "&amp;"
+        ++ "xfbml=1"],
+    Reload = ["FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');"],
     Incs = #incs{js = Js, js_reload = Reload},
     {resize, {8, 10, Incs},  HTML}.
 

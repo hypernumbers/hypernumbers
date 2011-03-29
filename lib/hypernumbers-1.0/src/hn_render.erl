@@ -304,17 +304,15 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
   </div>
  </div>
 </div>
-"  ++Addons#render.js++
-%  <script type='text/javascript'>
-%</script>
-"  <script src='/hypernumbers/json2.js'></script>
+  <script src='/hypernumbers/json2.js'></script>
   <script src='/hypernumbers/hn.js'></script>
   <script src='/hypernumbers/hn.util.js'></script>
   <script src='/hypernumbers/hn.sheet.js'></script>
   <script src='/hypernumbers/hn.data.js'></script>
   <script src='/hypernumbers/hn.callbacks.js'></script>
-  <script src='/hypernumbers/hn.sitedata.js'></script>
-  <script src='/hypernumbers/hn.renderpage.js'></script>"
+  <script src='/hypernumbers/hn.sitedata.js'></script>"
+  ++Addons#render.js++
+"  <script src='/hypernumbers/hn.renderpage.js'></script>"
      ++Addons#render.js_reload++
 "  </body>
   </html>"].

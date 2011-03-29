@@ -1809,8 +1809,11 @@ write_formula1(Ref, Fla, Formula, AReq, Attrs) ->
         % special case for the include function (special dirty!)
         {ok, {Pcode, {include, {PreV, Ht, Wd}, Res}, Pars, InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
+            % with include you might need to bring incs through from
+            % whatever is included so some jiggery might be required on the pokey
+            Attrs3 = bring_through(Attrs2, Ref, Pars),
             % mebbies there was incs, nuke 'em
-            write_formula_attrs(Attrs2, Ref, Formula, Pcode, Res,
+            write_formula_attrs(Attrs3, Ref, Formula, Pcode, Res,
                                 {Pars, true}, InfPars, Recompile);
         % normal functions with a resize
         {ok, {Pcode, {resize, {Wd, Ht, Incs}, Res}, Parents,
@@ -1862,6 +1865,31 @@ update_incs(Ref, Incs) when is_record(Ref, refX)
                                        js_reload = Js_reload, css = CSS},
                         mnesia:write(Tbl, Inc, write)
     end.
+
+bring_through(Attrs, Ref, Pars) ->
+    Pars2 = [X || {Type, X} <- Pars, Type == local],
+    Incs = get_incs(Pars2, [], [], []),
+    ok = update_incs(Ref, Incs),
+    orddict:store("__hasincs", t, Attrs).
+
+get_incs([], Js, Js_R, CSS) -> #incs{js = hslists:uniq(Js),
+                                     js_reload = hslists:uniq(Js_R),
+                                     css = hslists:uniq(CSS)};
+get_incs([H | T], Js, Js_R, CSS) ->
+    {S, P, X, Y} = H,
+    Ref = #refX{site = S, path = P, obj = {cell, {X, Y}}},
+    {NewJ, NewJs_R, NewC} = case read_incs(Ref) of
+        []   -> {Js, Js_R, CSS};
+        Incs -> process_incs(Incs, [], [], [])
+    end,
+    get_incs(T, NewJ, NewJs_R, NewC).
+
+process_incs([], J, Js_R, CSS) -> {J, Js_R, CSS};
+process_incs([H | T], Js, Js_R, CSS) ->
+    NewJ = lists:append(Js, H#include.js),
+    NewJs_R = lists:append(Js_R, H#include.js_reload),
+    NewC = lists:append(CSS, H#include.css),
+    process_incs(T, NewJ, NewJs_R, NewC).
 
 write_formula_attrs(Attrs, Ref, Formula, Pcode, Res, {Parents, IsIncl},
                     InfParents, Recompile) ->

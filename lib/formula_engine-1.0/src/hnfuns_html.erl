@@ -116,15 +116,16 @@ check_style(St) ->
     Passes = [return_errors],
     [Menu | Subs] = muin_collect:col(List, Rules, Passes),
     SubMenu = "<span>"++Menu++"</span>"++menu1(lists:reverse(Subs), "", []),
-    Incs = #incs{css = "/webcomponents/jquery.ui.potato.menu.css",
-                 js = "/webcomponents/jquery.ui.potato.menu.js'>",
-                 js_reload = "HN.WebComponents.reload();"},
-    {preview, {"Submenu", 1, 1, Incs}, SubMenu}.
+    {preview, {"Submenu", 1, 1, #incs{}}, SubMenu}.
 
 'html.menu1'(List) when is_list(List) ->
     Strings = typechecks:throw_flat_strs(List),
     Menu = menu1(Strings, "potato-menu", []),
-    {preview, {"Type 1 Menu", 1, 1, #incs{}}, Menu}.
+    Incs = #incs{css = ["/webcomponents/jquery.ui.potato.menu.css"],
+                 js = ["/webcomponents/jquery.ui.potato.menu.js",
+                       "/webcomponents/hn.webcomponents.js"],
+                 js_reload = ["HN.WebComponents.reload();"]},
+    {preview, {"Type 1 Menu", 1, 1, Incs}, Menu}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
