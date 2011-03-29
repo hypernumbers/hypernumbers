@@ -603,6 +603,8 @@ content_attrs() ->
      "value",
      "preview",
      "overwrite-color",
+     "__hasincs",
+     "__hasform",
      "__rawvalue",
      "__ast",
      "__recompile",
