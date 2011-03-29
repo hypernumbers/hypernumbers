@@ -7,16 +7,7 @@
 -include("typechecks.hrl").
 -include("muin_records.hrl").
 -include("hypernumbers.hrl").
-
--define(mx, get(x)).
--define(my, get(y)).
--define(mpath, get(path)).
--define(msite, get(site)).
--define(mar, get(auth_req)).
--define(array_context, get(array_context)).
-
--define(error_in_formula, {errval, '#FORMULA!'}).
--define(syntax_err, {error, syntax_error}).
+-include("muin_proc_dict.hrl").
 
 -define(htmlheadline, $h,$t,$m,$l,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
 -define(htmlbox, $h,$t,$m,$l,$.,$b,$o,$x,$.).
