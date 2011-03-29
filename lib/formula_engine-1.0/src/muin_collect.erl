@@ -240,7 +240,9 @@ rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 
 rl(fetch_z_all, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
-    muin:fetch(Ref);
+    {zeds, L, _, _} = muin:fetch(Ref),
+    {_Paths, Vs} = lists:unzip(L),
+    {range, [Vs]};
 
 rl(fetch_z_no_errs, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
     case muin:fetch(Ref) of
