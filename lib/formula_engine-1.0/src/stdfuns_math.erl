@@ -19,6 +19,8 @@
 
 -include("typechecks.hrl").
 -include("muin_records.hrl").
+-include("spriki.hrl").
+-include("muin_proc_dict.hrl").
 
 -define(GOOGOL, 1.0E100).
 
@@ -33,6 +35,7 @@
 
 %% Arithmetic
          sum/1,
+         sumz/1,
          product/1,
          quotient/1,
          abs/1,
@@ -224,6 +227,29 @@ negate([V]) ->
                      fun([X]) -> -X end).
 
 %%% Arithmetic ~~~~~
+
+sumz(List) ->
+    Strs = typechecks:std_strs(List),
+    Zs = sumz_(Strs, []),
+    muin_collect:col(Zs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
+                          {cast, bool, num}, fetch, fetch_z_no_errs, flatten,
+                          {ignore, blank}, {ignore, str}, {ignore, bool}],
+                     [return_errors, {all, fun is_number/1}],
+                     fun sum1/1).
+
+sumz_([], Acc) -> Acc;
+sumz_([H | T], Acc) ->
+    NewAcc = case muin:parse(H, {?mx, ?my}) of
+              {ok, Ast} ->
+                  case muin:external_eval(Ast) of
+                      X when ?is_cellref(X);
+                             ?is_rangeref(X);
+                             ?is_zcellref(X) -> X;
+                      _Else                  -> ?ERRVAL_REF
+                  end;
+              {error, syntax_error} -> ?ERRVAL_REF
+          end,
+    sumz_(T, [NewAcc | Acc]).
 
 sum(Vs) ->
     muin_collect:col(Vs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
