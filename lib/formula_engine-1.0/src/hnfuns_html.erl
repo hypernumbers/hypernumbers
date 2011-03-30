@@ -122,12 +122,12 @@ check_style(St) ->
     [Width | Rest] = List,
     [Width2] = typechecks:throw_std_ints([Width]),
     Strings = typechecks:throw_flat_strs(Rest),
-    io:format("Width2 is ~p Strings is ~p~n", [Width2, Strings]),
     Menu = menu1(Strings, "potato-menu", []),
-    Incs = #incs{css = ["/webcomponents/jquery.ui.potato.menu.css"],
-                 js = ["/webcomponents/jquery.ui.potato.menu.js",
-                       "/webcomponents/hn.webcomponents.js"],
-                 js_reload = ["HN.WebComponents.reload();"]},
+    CSS = ["/webcomponents/jquery.ui.potato.menu.css"],
+    Js = ["/webcomponents/jquery.ui.potato.menu.js",
+              "/webcomponents/hn.webcomponents.js"],
+    Js_R = ["HN.WebComponents.reload();"],
+    Incs = #incs{css = CSS, js = Js, js_reload = Js_R},
     {preview, {"Type 1 Menu", Width2, 1, Incs}, Menu}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
