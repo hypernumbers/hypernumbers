@@ -113,6 +113,13 @@
         ]).
 
 -export([
+         wiki1/0,
+         wiki2/0
+         ]).
+
+-export([
+         set_dropdown_wiki/2,
+         unset_dropdown_wiki/1,
          read_includes/1,
          write_kv/3,
          read_kv/2,
@@ -195,6 +202,28 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
     {atomic, Msg} = mnesia:transaction(F),
     [io:format(X ++ "~n") || X <- Msg],
     ok.
+
+wiki1() ->
+    R = #refX{site = "http://hypernumbers.dev:9000", path = [],
+              obj = {cell, {2, 2}}},
+    set_dropdown_wiki(R, [1, 2, 3]).
+
+wiki2() ->
+    R = #refX{site = "http://hypernumbers.dev:9000", path = [],
+              obj = {cell, {2, 2}}},
+    unset_dropdown_wiki(R).
+
+set_dropdown_wiki(#refX{obj = {cell, _}} = RefX, Restrictions) ->
+    dd_wiki(set, RefX, Restrictions).
+
+unset_dropdown_wiki(#refX{obj = {cell, _}} = RefX) ->
+    dd_wiki(unset, RefX, []).
+
+dd_wiki(Type, RefX, Restrictions) ->
+    Fun = fun() ->
+                  hn_db_wu:dropdown_wiki(Type, RefX, Restrictions)
+          end,
+    mnesia:activity(transaction, Fun).
 
 read_includes(#refX{obj = {page, "/"}} = RefX) ->
     Fun = fun() ->
