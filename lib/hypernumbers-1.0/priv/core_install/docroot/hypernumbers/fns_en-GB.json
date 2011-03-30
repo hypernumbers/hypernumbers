@@ -678,7 +678,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": true,
+        "wizardready": false,
         "args": [
         ]
     },
@@ -702,7 +702,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": true,
+        "wizardready": false,
         "args": [
         ]
     },
@@ -1452,11 +1452,13 @@
     {
         "fn": "piechart",
         "category": "HN Graphs",
-        "desc": "Creates a piechart",
+        "desc": "Creates a piechart.",
         "experimental": false,
         "includable": true,
         "inexcel": false,
         "resize": "range",
+        "resize_rows_default": 4,
+        "resize_cols_default": 8,
         "wizardready": true,
         "args": [
             {
