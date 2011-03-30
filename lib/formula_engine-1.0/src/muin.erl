@@ -24,6 +24,7 @@
 -define(piechart, $p,$i,$e,$c,$h,$a,$r,$t,$.).
 -define(horizontalline, $h,$o,$r,$i,$z,$o,$n,$t,$a,$l,$.,$l,$i,$n,$e,$.).
 -define(verticalline, $v,$e,$r,$t,$i,$c,$a,$l,$.,$l,$i,$n,$e,$.).
+-define(htmlmenu, $h,$t,$m,$l,$.,$m,$e,$n,$u,$.).
 
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
@@ -239,6 +240,8 @@ transform([?horizontalline | R], Args) ->
     {list_to_atom([?horizontalline]), [R | Args]};
 transform([?verticalline | R], Args) ->
     {list_to_atom([?verticalline]), [R | Args]};
+transform([?htmlmenu | R], Args) ->
+    {list_to_atom([?htmlmenu]), [R | Args]};
 transform(List, Args) -> {list_to_atom(List), Args}.
 
 get_dims(String) -> case string:tokens(String, "x") of
