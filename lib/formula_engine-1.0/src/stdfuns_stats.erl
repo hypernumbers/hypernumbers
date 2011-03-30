@@ -11,6 +11,8 @@
 -module(stdfuns_stats).
 
 -include("typechecks.hrl").
+-include("muin_proc_dict.hrl").
+
 %%-import(muin_util, [conv/2, cast/2]).
 
 -export([
@@ -28,6 +30,7 @@
          %%confidence/1,
          %%correl/1,
          count/1,
+         countz/1,
          counta/1,
          countblank/1,
          countif/1,
@@ -175,6 +178,30 @@ chidist_([X, Degfree]) ->
     Alpha = Degfree / 2, % 2 is beta
     Chi = 1/(math:pow(Alpha, 2) * stdfuns_math:fact1(erlang:trunc(Alpha))),
     math:pow(Chi, (Alpha - 1)) * math:exp(X * -0.5).
+
+countz(List) ->
+    Strs = typechecks:std_strs(List),
+    Zs = countz_(Strs, []),
+    muin_collect:col(Zs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
+                          {cast, bool, num}, fetch, fetch_z_all, flatten,
+                          {ignore, blank}, {ignore, str},
+                          {ignore, bool}, {ignore, error}],
+                     [{all, fun is_number/1}],
+                     fun length/1).
+
+countz_([], Acc) -> Acc;
+countz_([H | T], Acc) ->
+    NewAcc = case muin:parse(H, {?mx, ?my}) of
+              {ok, Ast} ->
+                  case muin:external_eval(Ast) of
+                      X when ?is_cellref(X);
+                             ?is_rangeref(X);
+                             ?is_zcellref(X) -> X;
+                      _Else                  -> ?ERRVAL_REF
+                  end;
+              {error, syntax_error} -> ?ERRVAL_REF
+          end,
+    countz_(T, [NewAcc | Acc]).
 
 counta(Vs) ->
     Vals = col(Vs, [eval_funs, fetch, flatten, {ignore, blank}]),
