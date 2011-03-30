@@ -160,9 +160,12 @@ html,body {
 #wizfunargs label {
   display: block;
   float: left;
-  font-weight: bold;
   font-size: 10px;
   width: 100px;
+}
+
+#wizfunargs label.req {
+  font-weight: bold;
 }
 
 #wizfunargs label:after { content: ':'; }
