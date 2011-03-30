@@ -731,7 +731,6 @@ table.tablesorter tbody tr.highlight td {
 }
 
 
-
 .separator {
  cursor:       default;
  margin:       3px;
@@ -1112,13 +1111,14 @@ a.toolbar-item {
     margin : 0px 0px 10px 0px;
 }
 
-#wizselectedfun p span.warning {
-  font-size: 11px;
-  font-style: italic;
+.warn {
+ color: red;
 }
-
-#wizselectedfun p span.warning:before {
-  content: ' ';
+.warn:before {
+ content: ' (';
+}
+.warn:after {
+ content: ')';
 }
 
 #selectedfun h4, #wizselectedfun h4 {
