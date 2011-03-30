@@ -15,7 +15,7 @@
          'html.box.'/1,
          'html.alert.'/1,
          'html.ruledbox.'/1,
-         'html.menu1'/1,
+         'html.menu.'/1,
          'html.submenu'/1
          ]).
 
@@ -118,14 +118,17 @@ check_style(St) ->
     SubMenu = "<span>"++Menu++"</span>"++menu1(lists:reverse(Subs), "", []),
     {preview, {"Submenu", 1, 1, #incs{}}, SubMenu}.
 
-'html.menu1'(List) when is_list(List) ->
-    Strings = typechecks:throw_flat_strs(List),
+'html.menu.'(List) when is_list(List) ->
+    [Width | Rest] = List,
+    [Width2] = typechecks:throw_std_ints([Width]),
+    Strings = typechecks:throw_flat_strs(Rest),
+    io:format("Width2 is ~p Strings is ~p~n", [Width2, Strings]),
     Menu = menu1(Strings, "potato-menu", []),
     Incs = #incs{css = ["/webcomponents/jquery.ui.potato.menu.css"],
                  js = ["/webcomponents/jquery.ui.potato.menu.js",
                        "/webcomponents/hn.webcomponents.js"],
                  js_reload = ["HN.WebComponents.reload();"]},
-    {preview, {"Type 1 Menu", 1, 1, Incs}, Menu}.
+    {preview, {"Type 1 Menu", Width2, 1, Incs}, Menu}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
