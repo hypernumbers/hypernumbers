@@ -14,7 +14,7 @@
 -include("spriki.hrl").
 
 debugz([Z]) ->
-    Vals = muin_collect:col([Z], [fetch, fetch_z_all],
+    Vals = muin_collect:col([Z], [fetch, fetch_z_debug],
                      [return_errors, {all, fun muin_collect:is_zeds/1}]),
     {zcellref, _, {_, _, _, _, Zed}} = Z,
     debug1(Zed, Vals).

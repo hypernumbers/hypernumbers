@@ -52,6 +52,7 @@
 %%%                             turns 'A1' into the value in 'A1'
 %%%                             returns the matchs, no matchs and errors all with
 %%%                             their paths
+%%% * fetch_z_debug             fetch for debug_z
 %%% * cast_def                  NOT A REAL CAST - USED INTERNALLY
 %%% * {cast, Type}              casts all values to 'Type' (see ignore_type)
 %%% * {cast, From, To}          only casts some types to the the 'To' type
@@ -239,6 +240,9 @@ rl(fetch_name, Name) when ?is_namedexpr(Name) ->
 rl(name_as_bool, Name) when ?is_namedexpr(Name) ->
     ?ERRVAL_NAME;
 
+rl(fetch_z_debug, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
+    muin:fetch(Ref);
+
 rl(fetch_z_all, Ref) when ?is_zcellref(Ref); ?is_zrangeref(Ref) ->
     {zeds, L, _, _} = muin:fetch(Ref),
     {_Paths, Vs} = lists:unzip(L),
@@ -369,7 +373,8 @@ is_date(_) ->
     false.
 
 is_zeds({zeds, _, _, _}) -> true;
-is_zeds(_)               -> false.
+is_zeds(X)               -> io:format("in is_zeds for ~p~n", [X]),
+                            false.
 
 is_blank(blank) ->
     true;
