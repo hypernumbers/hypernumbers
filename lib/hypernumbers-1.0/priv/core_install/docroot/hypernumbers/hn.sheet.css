@@ -115,7 +115,7 @@ html,body {
     overflow           : visible;
     width              : auto;
     max-width          : none;
-    min-width          : 400px;
+    min-width          : 550px;
     max-height         : none;
     height             : 400px;
     display            : none;
@@ -147,7 +147,12 @@ html,body {
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
 
-#wizfunargscnt { display: none; }
+#wizarghelp {
+  float: right;
+  width: 150px;
+  font-size: 11px;
+  color: gray;
+}
 
 #wizfunargs {
     overflow-y         : auto;
@@ -1104,8 +1109,8 @@ a.toolbar-item {
 
 #wizselectedfun {
     float      : right;
-    width      : 280px;
-    min-width  : 280px;
+    width      : auto;
+    min-width  : 330px;
     margin-top : 4px;
     margin-right:4px;
 }
