@@ -34,19 +34,19 @@ dispatch(["build"]) ->
     file:set_cwd(Root),
     remote_do(hotswap);
 
-dispatch(["lexer-parser"]) -> 
+dispatch(["lexer-parser"]) ->
     {ok, Root} = file:get_cwd(),
     build_lexer_parser(Root),
     file:set_cwd(Root),
     remote_do(hotswap);
 
-dispatch(["quick"]) -> 
+dispatch(["quick"]) ->
     {ok, Root} = file:get_cwd(),
     build_quick(Root),
     file:set_cwd(Root),
     remote_do(hotswap);
 
-dispatch(["migrate"]) -> 
+dispatch(["migrate"]) ->
     %% Force any unloaded modules to be loaded, BEFORE any compilation.
     remote_do(hotswap),
     {ok, Root} = file:get_cwd(),
@@ -63,7 +63,7 @@ dispatch(["stop" | Node])    -> stop(Node);
 dispatch(["call" | Args])    -> call(Args);
 dispatch(["do", Cmd | Node]) -> remote_do(Cmd, Node);
 dispatch(_BadCommand)        -> usage().
-    
+
 build(Root) ->
 
     io:format("This should be done in compile_code so it can be run"
@@ -74,7 +74,7 @@ build(Root) ->
     filelib:ensure_dir("lib/mochiweb/ebin/"),
     filelib:ensure_dir("lib/hypernumbers-1.0/ebin/"),
     filelib:ensure_dir("ebin/"),
-    file:set_cwd("lib/mochiweb"), 
+    file:set_cwd("lib/mochiweb"),
     os:cmd("make"),
     file:set_cwd(Root),
     file:set_cwd("lib/gettext"),
@@ -101,10 +101,10 @@ build_lexer_parser(Root) ->
 build_quick(Root) ->
     make_ms_util(Root),
     make_quick(Root),
-    check_console_log(Root).  
+    check_console_log(Root).
 
 make_ms_util(Root) ->
-    file:set_cwd(Root),    
+    file:set_cwd(Root),
     compile:file("priv/ms_util/make_ms_util.erl",
                  [{outdir, "lib/hypernumbers-1.0/ebin"}, debug_info,
                   {i, "lib/hypernumbers-1.0/include"}]),
@@ -131,29 +131,29 @@ check_console_log(Root) ->
     print_msgs(string:tokens(os:cmd("grep -R -l console.log *"), "\n")).
 
 clean(Root) ->
-    Files = filelib:wildcard(Root ++ "lib/*/ebin/*.beam") ++ 
+    Files = filelib:wildcard(Root ++ "lib/*/ebin/*.beam") ++
         filelib:wildcard("ebin/*.beam"),
     [file:delete(F) || F <- Files],
     ok.
 
 start(Extra) ->
-    
+
     ensure_config(),
     Node = atol(conf_lname()),
     PipeDir = "/tmp/" ++ Node ++ "/",
-    
+
     filelib:ensure_dir("var/runerl_log/"),
     filelib:ensure_dir(PipeDir),
-    
+
     Cmd = "run_erl -daemon "++PipeDir ++ " var/runerl_log "
         "\"erl -name "++Node++" -setcookie "++atol(cookie())++" "
         "-config var/sys.config -boot ebin/hypernumbers "
-        "-env ERL_MAX_ETS_TABLES 18000 "
+        "-env ERL_MAX_ETS_TABLES 18000 -kernel net_setuptime 120 "
         "+K true +A8 "
         ++ ssl() ++ parse_extra_args(Extra)++"\"",
 
     case os:cmd(Cmd) of
-        []   -> 
+        []   ->
             ok,
             make_shell(Node);
         Else ->
@@ -177,7 +177,7 @@ call([Node, Fun]) ->
     %% Bit ugly
     [{call, 1, {remote, 1, {atom, 1, M}, {atom, 1, F}}, Args}] = Expr,
     A = [ Val || {_Type, _I, Val} <- Args],
-    
+
     io:format("~p~n",[rpc:call(Node, M, F, A)]).
 
 remote_do(Cmd) when is_list(Cmd) ->
@@ -192,7 +192,7 @@ remote_do(Cmd, [Node]) when is_list(Node) ->
     remote_do(Cmd, list_to_atom(Node));
 remote_do(Cmd, Node) ->
     case net_adm:ping(Node) of
-        pong  -> 
+        pong  ->
              io:format("Send ~s => ~s~n", [Cmd, Node]),
              ok = rpc:call(Node, hn_updater, do, [Cmd]);
         _Else ->
@@ -200,11 +200,11 @@ remote_do(Cmd, Node) ->
             ok
     end.
 
-ensure_config() ->    
+ensure_config() ->
     case has_config() of
         false -> copy_default_config();
         true  -> ok
-    end.    
+    end.
 
 parse_extra_args(Args) ->
     parse_extra_args(Args, []).
@@ -249,7 +249,7 @@ conf_lname() ->
 
 nodeatom(Name) ->
     Host     = string:strip(os:cmd("hostname"), both, $\n),
-    LongName = io_lib:format("~s@~s", [Name, Host]),    
+    LongName = io_lib:format("~s@~s", [Name, Host]),
     ltoa(lists:flatten(LongName)).
 
 ltoa(L) ->
@@ -266,7 +266,7 @@ ctrl_node() ->
     {_, {H,M,S}} = calendar:universal_time(),
     Date = io_lib:format(Fmt, [H,M,S]),
     list_to_atom(lists:flatten(["ctrl-", Date, "@", net_adm:localhost()])).
-            
+
 usage() ->
     Usage = "Commands to run hypernumbers are:~n"
         "  start [erl_args]~n"
@@ -284,9 +284,9 @@ usage() ->
 ssl() ->
     "-ssl_dist_opt server_certfile \"priv/keys/servercert.pem\" "
         "-ssl_dist_opt client_certfile \"priv/keys/clientcert.pem\" "
-        "-ssl_dist_opt keyfile \"priv/keys/key.pem\" " 
+        "-ssl_dist_opt keyfile \"priv/keys/key.pem\" "
         "-proto_dist inet_ssl".
 
 print_msgs(List) ->
     io:format("Console.log in:~n"),
-    [io:format("~p~n", [X]) || X <- List]. 
+    [io:format("~p~n", [X]) || X <- List].
