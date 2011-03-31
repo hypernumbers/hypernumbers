@@ -2,3 +2,4 @@ tarsnap --list-archives --keyfile ./hypernumbers.com.tarsnap.key > output.txt
 tarsnap --list-archives --keyfile ./node2.hypernumbers.com.tarsnap.key >> output.txt
 tarsnap --list-archives --keyfile ./node3.hypernumbers.com.tarsnap.key >> output.txt
 tarsnap --list-archives --keyfile ./node4.hypernumbers.com.tarsnap.key >> output.txt
+tarsnap --list-archives --keyfile ./node5.hypernumbers.com.tarsnap.key >> output.txt
