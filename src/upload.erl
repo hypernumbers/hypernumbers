@@ -4,24 +4,24 @@
                     "day_page", "meter_page"]).
 -define(final_template, null).
 -define(alerts, [
-          {"admin",               ["admin"]},
-          {"admin_data_alerts",   ["admin", "data_alerts"]}
+          {"admin",               ["admin"]}
+%          {"admin_data_alerts",   ["admin", "data_alerts"]}
          ]).
 -define(bits_and_bobs, [
           {"static_data",         ["static-data"]},
           {"lookup-data",         ["admin", "lookup-data"]},
           {"budget_group",        ["budgets", "dla-piper"]},
-          {"budget_building",     ["budget", "dla-piper", "st-pauls-place"]},
-          {"budget_building",     ["budget", "dla-piper", "noble-street"]},
-          {"budget_building",     ["budget", "dla-piper", "dibb-lipton"]},
-          {"budget_building",     ["budget", "dla-piper", "collins-house"]},
-          {"budget_building",     ["budget", "dla-piper", "west-regent-street"]},
-          {"initiative_page",     ["initiaties"]},
-          {"initiative_new",      ["initiaties", "new"]},
+          {"budget_building",     ["budgets", "dla-piper", "st-pauls-place"]},
+          {"budget_building",     ["budgets", "dla-piper", "noble-street"]},
+          {"budget_building",     ["budgets", "dla-piper", "dibb-lipton"]},
+          {"budget_building",     ["budgets", "dla-piper", "collins-house"]},
+          {"budget_building",     ["budgets", "dla-piper", "west-george-street"]},
+          {"initiative_page",     ["initiatives"]},
+          {"initiative_new",      ["initiatives", "new"]},
           {"alerts",              ["alerts"]},
           {"my_page",             ["my-page", "stephen"]},
           {"chart_builder",       ["my-page", "stephen", "chartbuilder"]},
-          {"compliance",          ["compliance"]},
+%          {"compliance",          ["compliance"]},
           {"crc_report",          ["compliance", "crc"]},
           {"suppliers",           ["suppliers"]},
           {"supplier_page",       ["suppliers", "cory-environmental"]},
@@ -34,7 +34,7 @@
          ]).
 
 
--define(site, "http://dla-piper.hypernumbers.com:80").
+-define(site, "http://temp-dla2.hypernumbers.com:80").
 %-define(site, "http://hypernumbers.dev:9000").
 
 -record(refX,
@@ -88,9 +88,9 @@ run_templates(Script) ->
           end,
     Fun2 = fun(_X, null) -> ok;
               (#refX{path = P} = X, Y) ->
-                   log_memory(P),
-                   hn_templates:load_template_if_no_page(X, Y),
-		   limiter()
+                   %log_memory(P),
+                   hn_templates:load_template_if_no_page(X, Y)
+		   %limiter()
            end,
     %garbage_collect(),
     [ok = Fun2(Fun(X, Y), X) || {X, Y} <- Script].
@@ -126,14 +126,14 @@ upload2([H | T], Acc) ->
     Segs3 = make_paths(Segs2, [], []),
     RefX = #refX{site = ?site, path = Segs1, obj = {page, "/"}},
     % first upload the data at the bottom of the tree
-    case ?final_template of
-        null -> ok;
-        Temp -> hn_templates:load_template(RefX, Temp)
-    end,
-    hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
+    %case ?final_template of
+    %    null -> ok;
+    %    Temp -> hn_templates:load_template(RefX, Temp)
+    %end,
+    %hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
     %garbage_collect(),
     log_remoting(),
-    limiter(),
+    %limiter(),
     % now work your way up the tree loading templates
     NewAcc = [lists:zip(lists:reverse(?templates), lists:reverse(Segs3)) | Acc],
     upload2(T, NewAcc).
