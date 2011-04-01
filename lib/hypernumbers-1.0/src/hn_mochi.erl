@@ -783,6 +783,9 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid})
 %% TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
             post_range_values(Ref, Vals, Uid, Uid);
+        [{"input", {struct, [{"select", {array, Array}}]}}] ->
+            NewAttr = [{"input", {"select", Array}}],
+            ok = hn_db_api:write_attributes([{Ref, NewAttr}], Uid, Uid);
         _Else ->
             ok = hn_db_api:write_attributes([{Ref, Attr}], Uid, Uid)
     end,
