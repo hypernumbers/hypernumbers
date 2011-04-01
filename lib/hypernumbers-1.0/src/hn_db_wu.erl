@@ -43,7 +43,6 @@
         ]).
 
 -export([
-         dropdown_wiki/3,
          read_incs/1,
          read_relations/2,
          write_kv/3,
@@ -120,20 +119,6 @@ get_logs(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
     Logs2 = mnesia:index_read(Table, hn_util:list_to_path(P), path),
     Logs3 = get_page_logs(Logs2),
     lists:merge(Logs1, Logs3).
-
-dropdown_wiki(set, #refX{site = S} = RefX, _Restrictions) ->
-    Idx = refX_to_idx_create(RefX),
-    Table = trans(S, item),
-    Attrs = case mnesia:read(Table, Idx, write) of
-                [#item{attrs = A}] -> io:format("Attrs is ~p~n", [A]),
-                                      binary_to_term(A);
-                []                 -> io:format("hee-haw..."),
-                                      orddict:new()
-            end,
-    io:format("Attrs is ~p~n", [Attrs]),
-    okey;
-dropdown_wiki(unset, _RefX, []) ->
-    dokey.
 
 read_incs(#refX{site = S, path = P}) ->
     Table = trans(S, include),

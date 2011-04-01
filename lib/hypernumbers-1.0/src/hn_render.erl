@@ -53,7 +53,8 @@ content(Ref, Type) ->
     {_, JSList2}  = lists:unzip(JSList),
     CSS3 = [Open ++ X ++ "'type='text/css' />" || X <- lists:merge(CSSList2, CSS2)],
     JS3 = ["<script src='" ++ X ++ "'></script>" || X <- lists:merge(JSList2, Js2)],
-    Js_r2 = "<script type='text/javascript'>HN.Includes.reload = function () { "
+    Js_r2 = "<script type='text/javascript'>HN.Includes = {}; "
+        ++ "HN.Includes.reload = function () { "
         ++ lists:flatten(Js_reload) ++ "};</script>",
     Title = ["<title>" ++ X ++ "</title>" || {_, X} <- TitleList],
     Addons = #render{css=CSS3, js=JS3, js_reload = Js_r2, title=Title},
@@ -168,8 +169,10 @@ col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
            integer(), integer(),
            integer(), integer(), integer(), integer())
           -> textdata().
-draw(undefined,"",Inp,_C,_R,_X,_Y,_W,_H)  when Inp =/= "inline" -> "";
-draw(undefined,Css,Inp,C,R,X,Y,W,H) -> draw("",Css, Inp,C,R,X,Y,W,H);
+% both the inputs need to be drawn even if there is no value
+draw(undefined,Css,"inline",C,R,X,Y,W,H) -> draw("",Css, "inline",C,R,X,Y,W,H);
+draw(undefined,Css,{"select", _}=Inp,C,R,X,Y,W,H) -> draw("",Css,Inp,C,R,X,Y,W,H);
+draw(undefined,"",_Inp,_C,_R,_X,_Y,_W,_H) -> "";
 draw(Value,Css,Inp,C,R,X,Y,W,H) ->
     % Tom wants to fix this up :(
     Val = case Value of
@@ -203,7 +206,13 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
                 "<div class='inline' " ++ StyleIn ++
                 " data-ref='"++Cell++"'>"++Val++
                 "</div></div>";
-        _        ->
+        {"select", Options} ->
+            Style = io_lib:format(St ++"padding:1px 1px;'",
+                                  [X, Y, W - 4, H - 1, Css]),
+            Ref = hn_util:obj_to_ref({cell, {C, R}}),
+            "<div data-ref='"++Cell++"'"++Style++">"++
+                make_select(tconv:to_s(Val), Ref, Options)++"</div>";
+        _  ->
             Style = io_lib:format(St ++ "padding:1px 3px;'",
                                   [X, Y, W - 6, H - 2, Css]),
             "<div data-ref='"++Cell++"'"++Style++">"++Val++"</div>"
@@ -311,10 +320,9 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
   <script src='/hypernumbers/hn.data.js'></script>
   <script src='/hypernumbers/hn.callbacks.js'></script>
   <script src='/hypernumbers/hn.sitedata.js'></script>"
-  ++Addons#render.js++
-"  <script src='/hypernumbers/hn.renderpage.js'></script>"
-     ++Addons#render.js_reload++
-"  </body>
+     ++ Addons#render.js ++ "" ++ Addons#render.js_reload ++
+"  <script src='/hypernumbers/hn.renderpage.js'></script>
+  </body>
   </html>"].
 
 -spec wrap_region([textdata()], integer(), integer()) -> [textdata()].
@@ -325,6 +333,18 @@ wrap_region(Content, Width, Height) ->
      Content,
      "</div>"].
 
+make_select(Val, Ref, Options) -> make_s(Options, Ref, Val, []).
+
+make_s([], Ref, _Val, Acc) -> "<select class='hn_inlineselect' data-ref='"
+                                  ++ Ref ++ "'>"
+                                  ++ lists:flatten(lists:reverse(Acc))
+                                  ++ "</select>";
+make_s([H | T], Ref, Val, Acc) ->
+    NewAcc = case tconv:to_s(H) of
+                 Val -> "<option selected>" ++ Val ++ "</option>";
+                 _   -> "<option>" ++ tconv:to_s(H) ++ "</option>"
+             end,
+    make_s(T, Ref, Val, [NewAcc | Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Tests
@@ -394,4 +414,3 @@ merged_row_test_() ->
     Palette = gb_trees:empty(),
     {_, W, H} = layout(Ref, webpage, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({480, 330}, {W, H}).
-
