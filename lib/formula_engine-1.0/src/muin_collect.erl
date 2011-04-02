@@ -33,6 +33,7 @@
 %%% * {flatten, range}          flattens a range
 %%% * num_as_bool               casts an integer/float into
 %%%                             a false-specific boolean
+%%% * blank_as_str              turns 'blank' into ""
 %%% * str_as_bool               casts true/TRUE/false/False or throws err
 %%% * err_as_str                returns a string represenntation of an error
 %%%                             THIS IS ONLY TO BE USE USED IN DISPLAY FUNCTIONS WHOSE
@@ -181,6 +182,8 @@ rl(num_as_bool, X) when is_number(X) andalso X==0; X==0.0 ->
     false;
 rl(num_as_bool, X) when is_number(X) ->
     true;
+
+rl(blank_as_str, blank) -> "";
 
 rl(str_as_bool, Str) when ?is_string(Str) ->
     case string:to_upper(Str) of
@@ -373,8 +376,7 @@ is_date(_) ->
     false.
 
 is_zeds({zeds, _, _, _}) -> true;
-is_zeds(X)               -> io:format("in is_zeds for ~p~n", [X]),
-                            false.
+is_zeds(_)               -> false.
 
 is_blank(blank) ->
     true;

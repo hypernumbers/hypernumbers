@@ -426,6 +426,8 @@
 	<li><a name="deleteleft">Delete (shift left)</a></li>
 	<li><a name="deleteup">Delete (shift up)</a></li>
 	<li class="seperator viewlogs"></li>
+	<li><a name="makewikiselect" class="makewikiselect">Make wiki selectbox</a></li>
+	<li class="seperator viewlogs"></li>
 	<li><a name="viewlogs" class="viewlogs">View cell's history</a></li>
       </ul>
     </div>
@@ -450,6 +452,19 @@
 
     <!-- DIALOG BOXES -->
 
+    <div id="hn_makewikiselect" class="mdialog">
+        <h2>$txt:{Wiki Select Box}$</h2>
+        <div>
+        <a id="hn_makewikiselectclose">x</a>
+          <p id="hn_makewikiselectblurb">This dialog box will replace the cell
+          <span id="hn_wikiselectcell"></span> with a select (dropdown) box.</p>
+          <p>Type the values you want to put into the select box
+          separated by commas. To delete a select box just clear the values
+          and submit.</p>
+          <input type="text" id="hn_insertwikiselect" />
+          <input type="button", id="hn_wikiselectsubmit" value="Submit" />
+        </div>
+        </div>
     <div id="insertimagedialog" class="mdialog">
       <span>Enter the URL of the image:</span>
       <form id="imageform">

@@ -28,6 +28,7 @@
         ]).
 
 -define(MARGIN, 0.1).
+-define(NOMARGIN, 0.0).
 
 -define(ROW,    true).
 -define(COLUMN, false).
@@ -197,7 +198,7 @@ spark1(Size, Data, Colours) ->
     {DataX, DataY, MinY, MaxY, Type, Colours, Rest} = Ret,
     {resize, {Width, Height, #incs{}},
      eq_hist1(Type, make_size(Width, Height), DataX, DataY, MinY, MaxY,
-                            Colours, Rest, [])}.
+                            Colours, Rest, [], ?NOMARGIN)}.
 
 'equigraph.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -206,7 +207,7 @@ spark1(Size, Data, Colours) ->
     {DataX, DataY, MinY, MaxY, Colours, Rest} = Ret,
     {resize, {Width, Height, #incs{}},
      eq_hist1(equi, make_size(Width, Height), DataX, DataY, MinY, MaxY, Colours,
-                            Rest, [{?tickmarks, ?BOTHAXES}])}.
+                            Rest, [{?tickmarks, ?BOTHAXES}], ?MARGIN)}.
 
 'dategraph.'([W, H | List]) ->
     [Width] = typechecks:throw_std_ints([W]),
@@ -234,7 +235,7 @@ spark1(Size, Data, Colours) ->
         [{?tickmarks, ?BOTHAXES}])}.
 
 chunk_histogram([Type, X, Lines| List]) ->
-    [Lines2, Type2] = typechecks:throw_std_ints([Lines, Type]),
+    [Type2, Lines2] = typechecks:throw_std_ints([Type, Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     {Orientation, MaxType, Type3} = case Type2 of
         0 -> {vertical,   group, ?HIST_VGROUP};
@@ -246,10 +247,10 @@ chunk_histogram([Type, X, Lines| List]) ->
     DataX = cast_strings(X),
     {MinY, MaxY, DataY, Cols, Rest}
         = case {Orientation, MaxType} of
-              {vertical,   group} -> chunk_l2(false, Lines2, List);
-              {horizontal, group} -> chunk_l2(false, Lines2, List);
-              {vertical,   stack} -> chunk_l2(true,  Lines2, List);
-              {horizontal, stack} -> chunk_l2(true, Lines2, List);
+              {vertical,   group} -> chunk_l2(false, Lines2, List, ?NOMARGIN);
+              {horizontal, group} -> chunk_l2(false, Lines2, List, ?NOMARGIN);
+              {vertical,   stack} -> chunk_l2(true,  Lines2, List, ?NOMARGIN);
+              {horizontal, stack} -> chunk_l2(true, Lines2, List, ?NOMARGIN);
               _                   -> ?ERR_VAL
           end,
     DataY2 = "t:" ++ conv_data_rev(DataY),
@@ -259,7 +260,7 @@ chunk_equigraph([X, Lines | List]) ->
     [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = cast_strings(X),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List, ?MARGIN),
     DataY2 = "t:" ++ conv_data_rev(DataY),
     {DataX, DataY2, MinY, MaxY, Cols, Rest}.
 
@@ -267,31 +268,31 @@ chunk_dategraph([X, Lines | List], LabType) ->
     [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     DataX = lists:reverse(cast_dates(X)),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List, ?MARGIN),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     StartDate = cast_date(MinX),
     EndDate = cast_date(MaxX),
     AxesLabPos = make_axes_lab_pos_date(MinX, MaxX, MaxY),
-    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
+    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY, ?MARGIN),
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest,
      StartDate, EndDate}.
 
 chunk_linegraph([X, Lines | List], LabType) ->
     DataX = cast_data(X),
     [Lines2] = typechecks:throw_std_ints([Lines]),
-    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List),
+    {MinY, MaxY, DataY, Cols, Rest} = chunk_l2(false, Lines2, List, ?MARGIN),
     {DataX2, MinX, MaxX} = process_x_l2(DataX),
     Data = make_data(DataX2, DataY, []),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
-    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
+    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY, ?MARGIN),
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest}.
 
-chunk_l2(Aggregate, Lines, List) ->
+chunk_l2(Aggregate, Lines, List, Margin) ->
     [Lines2] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
     {Data, Rest} = lists:split(Lines2, List),
-    {MinY, MaxY, DataY} = process_data_linegraph(Aggregate, Data),
+    {MinY, MaxY, DataY} = process_data_linegraph(Aggregate, Data, Margin),
     % now make the colours
     Colours = allocate_colours(Lines, ?XYCOLOURS),
     {MinY, MaxY, DataY, {?colours, Colours}, Rest}.
@@ -339,58 +340,60 @@ chunk_xy([Lines | List], LabType) ->
     [Lines1] = typechecks:throw_std_ints([Lines]),
     muin_checks:ensure(Lines1 > 0, ?ERRVAL_NUM),
     {Data, Rest} = lists:split(Lines1, List),
-    {MinX, MaxX, MinY, MaxY, Data1} = process_data_xy(Data),
-    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY),
+    {MinX, MaxX, MinY, MaxY, Data1} = process_data_xy(Data, ?MARGIN),
+    Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY, ?MARGIN),
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
     % now make the colours
     Colours = allocate_colours(Lines, ?XYCOLOURS),
     {Data1, {?axesrange, Scale}, {?axeslabpos, AxesLabPos},
      {?colours, Colours}, Rest}.
 
-eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [], Opts) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [], Opts, Margin) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_eq_hist_labs(Type, DataX, "", ""),
-    Scale = make_eq_hist_scale(Type, MinY, MaxY),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
     AddOpts = lists:concat([[Axes, AxesLables, Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
-eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt | []], Opts) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt | []], Opts, Margin) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_eq_hist_labs(Type, DataX, "", ""),
     Title = make_title(Tt),
-    Scale = make_eq_hist_scale(Type, MinY, MaxY),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
     AddOpts = lists:concat([[Title, Axes, AxesLables, Scale, Colours],
                             Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
-eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl | []], Opts) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl | []],
+         Opts, Margin) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_eq_hist_labs(Type, DataX, Xl, ""),
     Title = make_title(Tt),
-    Scale = make_eq_hist_scale(Type, MinY, MaxY),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
     AddOpts = lists:concat([[Title, Axes, AxesLables,
                              Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
-eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl | []], Opts) ->
+eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl | []],
+         Opts, Margin) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_eq_hist_labs(Type, DataX, Xl, Yl),
     Title = make_title(Tt),
-    Scale = make_eq_hist_scale(Type, MinY, MaxY),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
     AddOpts = lists:concat([[Title, Axes, AxesLables,
                              Scale, Colours], Opts]),
     NewOpts = opts(Type, Size, DataY),
     make_chart(DataY, NewOpts, AddOpts);
 
 eq_hist1(Type, Size, DataX, DataY, MinY, MaxY, Colours, [Tt, Xl, Yl, Srs | []],
-         Opts) ->
+         Opts, Margin) ->
     Axes = {?axes, ?LABLEAXES},
     AxesLables = make_eq_hist_labs(Type, DataX, Xl, Yl),
     Title = make_title(Tt),
-    Scale = make_eq_hist_scale(Type, MinY, MaxY),
+    Scale = make_eq_hist_scale(Type, MinY, MaxY, Margin),
     Series = make_series(Srs),
     AddOpts = lists:concat([[Title, Series, Axes, AxesLables,
                              {?legendpos, ?TOPHORIZ}, Scale, Colours], Opts]),
@@ -497,15 +500,15 @@ make_series(Srs) ->
     Srs2 = lists:reverse(typechecks:throw_flat_strs([Srs])),
     {?datalables, string:join(Srs2, "|")}.
 
-make_eq_hist_scale(Type, MinY, MaxY)
+make_eq_hist_scale(Type, MinY, MaxY, Margin)
   when Type == equi
        orelse Type == ?HIST_VGROUP
        orelse Type == ?HIST_VSTACK ->
-    {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY)};
-make_eq_hist_scale(Type, MinY, MaxY)
+    {?axesrange, make_scale(single, auto, 0, 100, MinY, MaxY, Margin)};
+make_eq_hist_scale(Type, MinY, MaxY, Margin)
   when Type == ?HIST_HGROUP
        orelse Type == ?HIST_HSTACK ->
-    {?axesrange, make_scale(single, auto, MinY, MaxY, 0, 100)}.
+    {?axesrange, make_scale(single, auto, MinY, MaxY, 0, 100, Margin)}.
 
 make_eq_hist_labs(Type, XAxis, XTitle, YTitle)
   when Type == equi
@@ -540,10 +543,10 @@ make_axes_lab_pos_date(MinX, MaxX, MaxY) ->
 make_axes_lab_pos(MaxX, MaxY) ->
     "1,"++tconv:to_s(MaxX)++"|3,"++tconv:to_s(MaxY).
 
-make_scale(null, _, _, _, _, _) -> "";
-make_scale(Type, auto, MinX, MaxX, MinY, MaxY) ->
+make_scale(null, _, _, _, _, _, _) -> "";
+make_scale(Type, auto, MinX, MaxX, MinY, MaxY, Margin) ->
     DiffY = MaxY - MinY,
-    make_s1(Type, MinX, MaxX, MinY - ?MARGIN * DiffY, MaxY + ?MARGIN * DiffY).
+    make_s1(Type, MinX, MaxX, MinY - Margin * DiffY, MaxY + Margin * DiffY).
 % make_scale(Type, [X1, X2 | []], _MinX, _MaxX, MinY, MaxY) ->
 %     [X1a, X2a] = typechecks:throw_std_nums([X1, X2]),
 %     make_s1(Type, X1a, X2a, MinY, MaxY).
@@ -733,7 +736,7 @@ histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
 %%
 %% Internal Functions
 %%
-process_data_linegraph(Aggregate, Data) ->
+process_data_linegraph(Aggregate, Data, Margin) ->
     Prefetched = cast_prefetch(Data),
     Data1 = [proc_dxy1(X) || X <- Prefetched],
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
@@ -747,8 +750,8 @@ process_data_linegraph(Aggregate, Data) ->
                        true  -> get_maxes_lg_agg(Data3)
                    end,
     Diff = MaxY2 - MinY,
-    MinY3 = MinY - ?MARGIN * Diff,
-    MaxY3 = MaxY2 + ?MARGIN * Diff,
+    MinY3 = MinY - Margin * Diff,
+    MaxY3 = MaxY2 + Margin * Diff,
     Data4 = normalize_linegraph(Data3, MinY3, MaxY3, []),
     {MinY3, MaxY3, Data4}.
 
@@ -765,15 +768,15 @@ process_data_pie(Data) ->
           end,
     lists:foldl(Fun, [], Data2).
 
-process_data_xy(Data) ->
+process_data_xy(Data, Margin) ->
     Prefetched = cast_prefetch(Data),
     Data1 = [proc_dxy1(X) || X <- Prefetched],
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
     Data3 = [[lists:reverse(cast_data(X)) || X <- X1] || X1 <- Data2],
     {MinX, MaxX, MinY, MaxY} = get_maxes(Data3),
     DiffY = MaxY - MinY,
-    Data4 = normalize_xy(Data3, MinX, MaxX, MinY - ?MARGIN * DiffY,
-                         MaxY + ?MARGIN * DiffY, []),
+    Data4 = normalize_xy(Data3, MinX, MaxX, MinY - Margin * DiffY,
+                         MaxY + Margin * DiffY, []),
     Data5 = [conv_data(X) || X <- Data4],
     {MinX, MaxX, MinY, MaxY, "t:"++string:join(Data5, "|")}.
 
