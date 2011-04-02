@@ -120,9 +120,6 @@ layout2(Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
     PY2 = PY + H,
     Col2 = Rec#rec.startcol,
     Row2 = Row + 1,
-    io:format("about to call row_height (1)~n"),
-    io:format("in layout2 ~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n",
-              [Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec]),
     {H2,RHs2} = row_height(Row2, RHs),
     Rec2 = Rec#rec{maxwidth = erlang:max(Rec#rec.maxwidth, PX)},
     layout2(Lst, Type, Col2, Row2, PX2, PY2, H2,
@@ -157,7 +154,6 @@ width_across(C, Stop, CWs, Acc) ->
 height_below(R, Stop, _RHs, Acc) when R > Stop ->
     Acc;
 height_below(R, Stop, RHs, Acc) ->
-    io:format("about to call row_height (2) in height below ~p ~p~n", [R, Stop]),
     {H, RHs2} = row_height(R, RHs),
     height_below(R+1, Stop, RHs2, H + Acc).
 
