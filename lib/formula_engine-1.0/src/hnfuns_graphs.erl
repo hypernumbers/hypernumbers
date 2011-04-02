@@ -156,7 +156,7 @@ chunk_spark([Lines | List]) ->
     muin_checks:ensure(Lines1 == length(List), ?ERRVAL_NUM),
     % now make the colours
     Colours = allocate_colours(Lines, ?SPCOLOURS),
-    Data1 = [lists:reverse(cast_data(X)) || X <- List],
+    Data1 = [lists:reverse(cast_data_keep_blank(X)) || X <- List],
     Min = lists:min(lists:flatten(Data1)),
     Max = lists:max(lists:flatten(Data1)),
     Diff = Max - Min,
@@ -740,7 +740,7 @@ process_data_linegraph(Aggregate, Data, Margin) ->
     Prefetched = cast_prefetch(Data),
     Data1 = [proc_dxy1(X) || X <- Prefetched],
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
-    Data3 = [lists:flatten([lists:reverse(cast_linegraph_data(X)) || X <- X1])
+    Data3 = [lists:flatten([cast_linegraph_data(X) || X <- X1])
              || X1 <- Data2],
     {MinY, MaxY} = get_maxes_lg(Data3),
     % we need the real mins/maxes to normalise the data
@@ -772,7 +772,7 @@ process_data_xy(Data, Margin) ->
     Prefetched = cast_prefetch(Data),
     Data1 = [proc_dxy1(X) || X <- Prefetched],
     Data2 = [X || {X, _NoR, _NoC} <- Data1],
-    Data3 = [[lists:reverse(cast_data(X)) || X <- X1] || X1 <- Data2],
+    Data3 = [[lists:reverse(cast_data_keep_blank(X)) || X <- X1] || X1 <- Data2],
     {MinX, MaxX, MinY, MaxY} = get_maxes(Data3),
     DiffY = MaxY - MinY,
     Data4 = normalize_xy(Data3, MinX, MaxX, MinY - Margin * DiffY,
@@ -893,11 +893,10 @@ cast_linegraph_data(Data) ->
     muin_collect:col([Data],
                      [eval_funs,
                       fetch, flatten,
-                      {cast, str, num, ?ERRVAL_VAL},
                       {cast, bool, num},
-                      {ignore, str}
+                      empty_str_as_blank
                      ],
-                     [return_errors, {all, fun muin_collect:is_blank_or_number/1}]).
+                     [return_errors]).
 
 cast_dates(Data) ->
     muin_collect:col([Data],
@@ -920,6 +919,15 @@ cast_data(Data) ->
                       {ignore, blank}
                      ],
                      [return_errors, {all, fun is_number/1}]).
+
+cast_data_keep_blank(Data) ->
+    muin_collect:col([Data],
+                     [eval_funs,
+                      fetch, flatten,
+                      {cast, bool, num},
+                      {ignore, str}
+                     ],
+                     [return_errors]).
 
 cast_strings(String) -> cast_titles(String).
 
@@ -960,13 +968,16 @@ conv_drev([], Acc) ->
 conv_drev([H | T], Acc) ->
     conv_drev(T, [make_data_rev(H) | Acc]).
 
-conv_data(Data) ->
-    conv_d1(Data, []).
+conv_data([X, Y]) ->
+    conv_d1(X, Y, [], []).
 
-conv_d1([], Acc) ->
-    string:join(lists:reverse(Acc), "|");
-conv_d1([H | T], Acc) ->
-    conv_d1(T, [make_data(H) | Acc]).
+conv_d1([], [], AccX, AccY) ->
+    string:join(lists:reverse(AccX), ",") ++ "|"
+        ++ string:join(lists:reverse(AccY), ",");
+conv_d1([_HX | TX], [blank | TY],  AccX, AccY) ->
+    conv_d1(TX, TY, AccX, AccY);
+conv_d1([HX | TX], [HY | TY],  AccX, AccY) ->
+    conv_d1(TX, TY, [tconv:to_s(HX) | AccX], [tconv:to_s(HY) | AccY]).
 
 get_colours(Colours) ->
     muin_collect:col([Colours],
