@@ -73,21 +73,21 @@ layout(Ref, Type, Cells, CWs, RHs, Palette) ->
     Row = startrow(Ref),
     {H,RHs2} = row_height(Row, RHs),
     Rec = #rec{colwidths=CWs, palette=Palette, startcol=Col},
-    layout(Cells, Type, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
+    layout2(Cells, Type, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
 
--spec layout(cells(), atom(),
+-spec layout2(cells(), atom(),
              integer(), integer(), integer(), integer(), integer(),
              cols(), rows(), #rec{}, [textdata()])
             -> {[textdata()],integer(), integer()}.
 
 %% End of input
-layout([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
+layout2([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
     TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 %% Output the next cell value in the current row.
-layout([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     Value = pget("value", L),
     Input = case Type of
                 wikipage  -> pget("input", L);
@@ -98,7 +98,7 @@ layout([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     case pget("merge", L) of
         undefined ->
             Acc2 = [draw(Value, Css, Input, C, R, PX, PY, W, H) | Acc],
-            layout(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc2);
+            layout2(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc2);
         {struct, [{"right", Right}, {"down", Down}]} ->
             {MW,CWs3} = width_across(C+1, C+Right, CWs2, W),
             MH = height_below(R+1, R+Down, RHs, H),
@@ -106,23 +106,24 @@ layout([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
                                erlang:max(Rec#rec.maxmerge_height, MH + PY)},
             Acc2 = [draw(Value, Css, Input, C, R, PX, PY, MW, MH) | Acc],
             T2 = expunge(T, {C,C+Right,R,R+Down}),
-            layout(T2, Type, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
+            layout2(T2, Type, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
     end;
 
 %% No cell for this column, but still haven't changed rows.
-layout(Lst=[{{_,R},_}|_], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+layout2(Lst=[{{_,R},_}|_], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     {W,CWs2} = col_width(C,CWs),
-    layout(Lst, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
+    layout2(Lst, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
 
 %% Wind back, and advance to the next row.
-layout(Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
+layout2(Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
     PX2 = 0,
     PY2 = PY + H,
     Col2 = Rec#rec.startcol,
     Row2 = Row + 1,
+    io:format("about to call row_height (1)~n"),
     {H2,RHs2} = row_height(Row2, RHs),
     Rec2 = Rec#rec{maxwidth = erlang:max(Rec#rec.maxwidth, PX)},
-    layout(Lst, Type, Col2, Row2, PX2, PY2, H2,
+    layout2(Lst, Type, Col2, Row2, PX2, PY2, H2,
            Rec#rec.colwidths, RHs2, Rec2, Acc).
 
 -spec expunge(cells(), {integer(), integer(), integer(), integer()})
@@ -154,6 +155,7 @@ width_across(C, Stop, CWs, Acc) ->
 height_below(R, Stop, _RHs, Acc) when R > Stop ->
     Acc;
 height_below(R, Stop, RHs, Acc) ->
+    io:format("about to call row_height (2) in height below ~p ~p~n", [R, Stop]),
     {H, RHs2} = row_height(R, RHs),
     height_below(R+1, Stop, RHs2, H + Acc).
 
