@@ -373,8 +373,7 @@ is_date(_) ->
     false.
 
 is_zeds({zeds, _, _, _}) -> true;
-is_zeds(X)               -> io:format("in is_zeds for ~p~n", [X]),
-                            false.
+is_zeds(_)               -> false.
 
 is_blank(blank) ->
     true;
