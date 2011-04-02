@@ -185,6 +185,8 @@ rl(num_as_bool, X) when is_number(X) ->
 
 rl(blank_as_str, blank) -> "";
 
+rl(empty_str_as_blank, []) -> blank;
+
 rl(str_as_bool, Str) when ?is_string(Str) ->
     case string:to_upper(Str) of
         "TRUE"  -> true;
