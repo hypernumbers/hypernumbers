@@ -87,7 +87,7 @@ layout2([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
     {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 %% Output the next cell value in the current row.
-layout2([{{C,R}, L}=Head|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     Value = pget("value", L),
     Input = case Type of
                 wikipage  -> pget("input", L);
@@ -95,8 +95,6 @@ layout2([{{C,R}, L}=Head|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
             end,
     Css = read_css(pget("style", L), Rec#rec.palette),
     {W,CWs2} = col_width(C,CWs),
-    io:format("in layout2 ~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n",
-              [Head, Type, C, R, PX, PY, H, CWs, RHs, Rec]),
     case pget("merge", L) of
         undefined ->
             Acc2 = [draw(Value, Css, Input, C, R, PX, PY, W, H) | Acc],
@@ -108,7 +106,6 @@ layout2([{{C,R}, L}=Head|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
                                erlang:max(Rec#rec.maxmerge_height, MH + PY)},
             Acc2 = [draw(Value, Css, Input, C, R, PX, PY, MW, MH) | Acc],
             T2 = expunge(T, {C,C+Right,R,R+Down}),
-            io:format("T is ~p T2 is ~p~n", [T, T2]),
             layout2(T2, Type, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
     end;
 
@@ -124,6 +121,8 @@ layout2(Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
     Col2 = Rec#rec.startcol,
     Row2 = Row + 1,
     io:format("about to call row_height (1)~n"),
+    io:format("in layout2 ~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n",
+              [Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec]),
     {H2,RHs2} = row_height(Row2, RHs),
     Rec2 = Rec#rec{maxwidth = erlang:max(Rec#rec.maxwidth, PX)},
     layout2(Lst, Type, Col2, Row2, PX2, PY2, H2,
