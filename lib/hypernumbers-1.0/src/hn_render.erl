@@ -87,7 +87,7 @@ layout2([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
     {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 %% Output the next cell value in the current row.
-layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+layout2([{{C,R}, L}=Head|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     Value = pget("value", L),
     Input = case Type of
                 wikipage  -> pget("input", L);
@@ -95,6 +95,8 @@ layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
             end,
     Css = read_css(pget("style", L), Rec#rec.palette),
     {W,CWs2} = col_width(C,CWs),
+    io:format("in layout2 ~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n~p~n",
+              [Head, Type, C, R, PX, PY, H, CWs, RHs, Rec]),
     case pget("merge", L) of
         undefined ->
             Acc2 = [draw(Value, Css, Input, C, R, PX, PY, W, H) | Acc],
