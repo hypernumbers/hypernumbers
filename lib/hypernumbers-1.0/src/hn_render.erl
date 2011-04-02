@@ -106,6 +106,7 @@ layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
                                erlang:max(Rec#rec.maxmerge_height, MH + PY)},
             Acc2 = [draw(Value, Css, Input, C, R, PX, PY, MW, MH) | Acc],
             T2 = expunge(T, {C,C+Right,R,R+Down}),
+            io:format("T is ~p T2 is ~p~n", [T, T2]),
             layout2(T2, Type, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
     end;
 
