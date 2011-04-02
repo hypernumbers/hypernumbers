@@ -414,3 +414,10 @@ merged_row_test_() ->
     Palette = gb_trees:empty(),
     {_, W, H} = layout(Ref, webpage, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({480, 330}, {W, H}).
+
+dump([], Acc) ->
+    io:format("~p~n", [string:join(lists:reverse(Acc), ",")]);
+dump([{{X, Y}, _} | T], Acc) ->
+    dump(T, [tconv:to_b26(X) ++ integer_to_list(Y) | Acc]);
+dump([{X, Y} | T], Acc) ->
+    dump(T, [tconv:to_b26(X) ++ integer_to_list(Y) | Acc]).
