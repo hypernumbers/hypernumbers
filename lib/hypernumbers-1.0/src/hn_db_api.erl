@@ -187,7 +187,7 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                 #refX{path = P, type = _T, obj = O} = RefX,
                 P2 = hn_util:list_to_path(P),
                 O2a  = io_lib:format("The idx points to ~p on page ~p", [O, P2]),
-                Contents = hn_db_wu:read_ref(RefX, inside),
+                Contents = lists:sort(hn_db_wu:read_ref(RefX, inside)),
                 O3 = pretty_print(Contents, "The idx contains:", [[O2a] | O2]),
                 lists:reverse(O3)
         end,
@@ -1076,7 +1076,7 @@ pretty_p2([{R, Vals} | T], Acc) when is_record(R, refX) ->
     pretty_p2(T, NO4).
 
 print_relations(#refX{site = S} = RefX, Acc) ->
-    case hn_db_wu:read_relations(RefX, read) of
+    case lists:sort(hn_db_wu:read_relations(RefX, read)) of
         []  -> Acc;
         [R] -> Ret = io_lib:format("....has the following relationships:", []),
                print_rel2(S, R, [Ret | Acc])
