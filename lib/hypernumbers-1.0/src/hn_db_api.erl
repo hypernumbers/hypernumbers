@@ -113,6 +113,7 @@
         ]).
 
 -export([
+         recalc_page/1,
          read_includes/1,
          write_kv/3,
          read_kv/2,
@@ -211,6 +212,14 @@ log(String, File) ->
 	_ ->
 	    error
     end.
+
+recalc_page(#refX{obj = {page, "/"}} = RefX) ->
+    Fun = fun() ->
+                  Refs = hn_db_wu:read_ref(RefX, inside),
+                  {Refs2, _} = lists:unzip(Refs),
+                  ok = hn_db_wu:mark_these_dirty(Refs2, nil)
+          end,
+    mnesia:activity(transaction, Fun).
 
 read_includes(#refX{obj = {page, "/"}} = RefX) ->
     Fun = fun() ->

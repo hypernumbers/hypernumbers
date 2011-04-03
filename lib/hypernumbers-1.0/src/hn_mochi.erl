@@ -40,6 +40,7 @@
 -define(WEBPREVIEW,  "webpreview").
 -define(WIKIPREVIEW, "wikipreview").
 -define(LOGVIEW,     "logs").
+-define(RECALC,      "recalc").
 
 -spec start() -> {ok, pid()}.
 start() ->
@@ -271,6 +272,13 @@ authorize_get(R, #qry{view = ?LOGVIEW} = Q, E) ->
         Other              -> Other
     end;
 
+% you can only force a recalc if you have the spreadsheet view
+authorize_get(R, #qry{view = ?RECALC} = Q, E) ->
+    case authorize_get(R, Q#qry{view = ?SHEETVIEW}, E) of
+        {view, ?SHEETVIEW} -> {view, ?RECALC};
+        Other              -> Other
+    end;
+
 %% Authorize access to one particular view.
 authorize_get(#refX{site = Site, path = Path},
               #qry{view = View},
@@ -448,6 +456,11 @@ iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
 
 iget(#refX{site=Site, path=Path}, page, #qry{view=?DEMO}, Env) ->
     text_html(Env, make_demo(Site, Path));
+
+iget(#refX{site=Site, path=Path}, page, #qry{view=?RECALC}, Env) ->
+    ok = hn_db_api:recalc_page(#refX{site = Site, path = Path, obj = {page, "/"}}),
+    Html = viewroot(Site) ++ "/recalc.html",
+    serve_html(Env, Html);
 
 iget(#refX{site=Site, path=Path}, page, #qry{view=?WEBPREVIEW}, Env) ->
     text_html(Env, make_preview("web", Site, Path));
