@@ -674,7 +674,6 @@ do_cell(RelPath, Rowidx, Colidx, Type) ->
 get_value_and_link(FetchFun) ->
     {Value, Errs, Refs}  = FetchFun(),
     RefX = #refX{site = ?msite, path = ?mpath, obj = {cell, {?mx, ?my}}},
-    hn_db_wu:refX_to_idx_create(RefX),
     {Errs0, Refs0} = get(retvals),
     put(retvals, {Errs0 ++ Errs, Refs0 ++ Refs}),
     Value.
