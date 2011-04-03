@@ -88,7 +88,7 @@ layout2([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
 
 %% Output the next cell value in the current row.
 layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
-    Value = pget("value", L),
+    Value = pget("value", L, ""),
     Input = case Type of
                 wikipage  -> pget("input", L);
                 webpage   -> "none"
