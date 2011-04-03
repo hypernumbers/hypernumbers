@@ -1064,8 +1064,8 @@ pretty_print(List, Slogan, Acc) ->
 
 pretty_p2([], Acc) -> Acc;
 pretty_p2([{R, Vals} | T], Acc) when is_record(R, refX) ->
-    #refX{path = P, obj = O} = R,
-    NewO = io_lib:format(" ~p (~p) on ~p:", [O, hn_util:obj_to_ref(O), P]),
+    #refX{path = P, type = Ty, obj = O} = R,
+    NewO = io_lib:format(" ~p (~p) of ~p on ~p:", [O, hn_util:obj_to_ref(O), Ty, P]),
     Keys = ["formula", "value", "__hasform"],
     NewO2 = pretty_p3(Keys, Vals, [NewO | Acc]),
     NO3 = case lists:keymember("__hasform", 1, Vals) of
