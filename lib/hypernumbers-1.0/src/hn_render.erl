@@ -53,7 +53,8 @@ content(Ref, Type) ->
     {_, JSList2}  = lists:unzip(JSList),
     CSS3 = [Open ++ X ++ "'type='text/css' />" || X <- lists:merge(CSSList2, CSS2)],
     JS3 = ["<script src='" ++ X ++ "'></script>" || X <- lists:merge(JSList2, Js2)],
-    Js_r2 = "<script type='text/javascript'>HN.Includes.reload = function () { "
+    Js_r2 = "<script type='text/javascript'>HN.Includes = {}; "
+        ++ "HN.Includes.reload = function () { "
         ++ lists:flatten(Js_reload) ++ "};</script>",
     Title = ["<title>" ++ X ++ "</title>" || {_, X} <- TitleList],
     Addons = #render{css=CSS3, js=JS3, js_reload = Js_r2, title=Title},
@@ -72,21 +73,21 @@ layout(Ref, Type, Cells, CWs, RHs, Palette) ->
     Row = startrow(Ref),
     {H,RHs2} = row_height(Row, RHs),
     Rec = #rec{colwidths=CWs, palette=Palette, startcol=Col},
-    layout(Cells, Type, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
+    layout2(Cells, Type, Col, Row, PX, PY, H, CWs, RHs2, Rec, []).
 
--spec layout(cells(), atom(),
+-spec layout2(cells(), atom(),
              integer(), integer(), integer(), integer(), integer(),
              cols(), rows(), #rec{}, [textdata()])
             -> {[textdata()],integer(), integer()}.
 
 %% End of input
-layout([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
+layout2([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
     TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth, TotalHeight};
 
 %% Output the next cell value in the current row.
-layout([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     Value = pget("value", L),
     Input = case Type of
                 wikipage  -> pget("input", L);
@@ -97,7 +98,7 @@ layout([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     case pget("merge", L) of
         undefined ->
             Acc2 = [draw(Value, Css, Input, C, R, PX, PY, W, H) | Acc],
-            layout(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc2);
+            layout2(T, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc2);
         {struct, [{"right", Right}, {"down", Down}]} ->
             {MW,CWs3} = width_across(C+1, C+Right, CWs2, W),
             MH = height_below(R+1, R+Down, RHs, H),
@@ -105,23 +106,23 @@ layout([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
                                erlang:max(Rec#rec.maxmerge_height, MH + PY)},
             Acc2 = [draw(Value, Css, Input, C, R, PX, PY, MW, MH) | Acc],
             T2 = expunge(T, {C,C+Right,R,R+Down}),
-            layout(T2, Type, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
+            layout2(T2, Type, C+Right+1, R, PX+MW, PY, H, CWs3, RHs, Rec2, Acc2)
     end;
 
 %% No cell for this column, but still haven't changed rows.
-layout(Lst=[{{_,R},_}|_], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+layout2(Lst=[{{_,R},_}|_], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
     {W,CWs2} = col_width(C,CWs),
-    layout(Lst, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
+    layout2(Lst, Type, C+1, R, PX+W, PY, H, CWs2, RHs, Rec, Acc);
 
 %% Wind back, and advance to the next row.
-layout(Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
+layout2(Lst, Type, _Col, Row, PX, PY, H, _CWs, RHs, Rec, Acc) ->
     PX2 = 0,
     PY2 = PY + H,
     Col2 = Rec#rec.startcol,
     Row2 = Row + 1,
     {H2,RHs2} = row_height(Row2, RHs),
     Rec2 = Rec#rec{maxwidth = erlang:max(Rec#rec.maxwidth, PX)},
-    layout(Lst, Type, Col2, Row2, PX2, PY2, H2,
+    layout2(Lst, Type, Col2, Row2, PX2, PY2, H2,
            Rec#rec.colwidths, RHs2, Rec2, Acc).
 
 -spec expunge(cells(), {integer(), integer(), integer(), integer()})
@@ -168,8 +169,10 @@ col_width(_, T)          -> {?DEFAULT_WIDTH, T}.
            integer(), integer(),
            integer(), integer(), integer(), integer())
           -> textdata().
-draw(undefined,"",Inp,_C,_R,_X,_Y,_W,_H)  when Inp =/= "inline" -> "";
-draw(undefined,Css,Inp,C,R,X,Y,W,H) -> draw("",Css, Inp,C,R,X,Y,W,H);
+% both the inputs need to be drawn even if there is no value
+draw(undefined,Css,"inline",C,R,X,Y,W,H) -> draw("",Css, "inline",C,R,X,Y,W,H);
+draw(undefined,Css,{"select", _}=Inp,C,R,X,Y,W,H) -> draw("",Css,Inp,C,R,X,Y,W,H);
+draw(undefined,"",_Inp,_C,_R,_X,_Y,_W,_H) -> "";
 draw(Value,Css,Inp,C,R,X,Y,W,H) ->
     % Tom wants to fix this up :(
     Val = case Value of
@@ -203,7 +206,13 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
                 "<div class='inline' " ++ StyleIn ++
                 " data-ref='"++Cell++"'>"++Val++
                 "</div></div>";
-        _        ->
+        {"select", Options} ->
+            Style = io_lib:format(St ++"padding:1px 1px;'",
+                                  [X, Y, W - 4, H - 1, Css]),
+            Ref = hn_util:obj_to_ref({cell, {C, R}}),
+            "<div data-ref='"++Cell++"'"++Style++">"++
+                make_select(tconv:to_s(Val), Ref, Options)++"</div>";
+        _  ->
             Style = io_lib:format(St ++ "padding:1px 3px;'",
                                   [X, Y, W - 6, H - 2, Css]),
             "<div data-ref='"++Cell++"'"++Style++">"++Val++"</div>"
@@ -311,10 +320,9 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
   <script src='/hypernumbers/hn.data.js'></script>
   <script src='/hypernumbers/hn.callbacks.js'></script>
   <script src='/hypernumbers/hn.sitedata.js'></script>"
-  ++Addons#render.js++
-"  <script src='/hypernumbers/hn.renderpage.js'></script>"
-     ++Addons#render.js_reload++
-"  </body>
+     ++ Addons#render.js ++ "" ++ Addons#render.js_reload ++
+"  <script src='/hypernumbers/hn.renderpage.js'></script>
+  </body>
   </html>"].
 
 -spec wrap_region([textdata()], integer(), integer()) -> [textdata()].
@@ -325,6 +333,18 @@ wrap_region(Content, Width, Height) ->
      Content,
      "</div>"].
 
+make_select(Val, Ref, Options) -> make_s(Options, Ref, Val, []).
+
+make_s([], Ref, _Val, Acc) -> "<select class='hn_inlineselect' data-ref='"
+                                  ++ Ref ++ "'>"
+                                  ++ lists:flatten(lists:reverse(Acc))
+                                  ++ "</select>";
+make_s([H | T], Ref, Val, Acc) ->
+    NewAcc = case tconv:to_s(H) of
+                 Val -> "<option selected>" ++ Val ++ "</option>";
+                 _   -> "<option>" ++ tconv:to_s(H) ++ "</option>"
+             end,
+    make_s(T, Ref, Val, [NewAcc | Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Tests
@@ -395,3 +415,9 @@ merged_row_test_() ->
     {_, W, H} = layout(Ref, webpage, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({480, 330}, {W, H}).
 
+dump([], Acc) ->
+    io:format("~p~n", [string:join(lists:reverse(Acc), ",")]);
+dump([{{X, Y}, _} | T], Acc) ->
+    dump(T, [tconv:to_b26(X) ++ integer_to_list(Y) | Acc]);
+dump([{X, Y} | T], Acc) ->
+    dump(T, [tconv:to_b26(X) ++ integer_to_list(Y) | Acc]).

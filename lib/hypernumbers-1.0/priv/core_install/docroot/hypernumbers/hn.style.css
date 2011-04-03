@@ -687,3 +687,9 @@ label {
                 font-weight: bold;
                 color: #999;
                }
+
+.hn_inlineselect {
+                   width: 100%;
+                   height: 20px;
+                   font-size: 95%;
+                   }

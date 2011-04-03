@@ -110,14 +110,28 @@ html,body {
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
 
-#funwiz {
+#funwiz  {
     position           : static; /* changed dynamically */
-    overflow           : visible;
-    width              : auto;
     max-width          : none;
     min-width          : 550px;
     max-height         : none;
     height             : 400px;
+}
+
+#hn_makewikiselect div {
+    margin: 5px;
+}
+
+#hn_makewikiselect {
+    width    : 290px;
+    height   : auto;
+    left     : 350px;
+    top      : 220px;
+    position : absolute;
+}
+
+#funwiz, #hn_makewikiselect {
+    overflow           : visible;
     display            : none;
     background         : white;
     border             : 2px solid #999;
@@ -205,7 +219,7 @@ html,body {
   content: '*';
 }
 
-#functions h2, #funwiz h2, #columnmanagerdialog h2, #lineview h2 {
+#functions h2, #funwiz h2, #columnmanagerdialog h2, #lineview h2, #hn_makewikiselect h2 {
     display            : block;
     margin             : 0px;
     font               : bold 12px sans-serif;
@@ -1209,7 +1223,7 @@ a.toolbar-item {
     cursor:pointer;
 }
 
-#ctrlclose, #funsclose, #dialogclose, #lineviewclose, #wizclose {
+#ctrlclose, #funsclose, #dialogclose, #lineviewclose, #wizclose, #hn_makewikiselectclose {
     cursor:pointer;
     color:white;
     font-weight:bold;

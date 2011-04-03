@@ -721,10 +721,18 @@ ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     case hn_db_api:read_attribute(Ref, "input") of
-        [{Ref, "inline"}] -> ok = hn_db_api:write_attributes([{Ref, Attrs}],
-                                                             Uid, Uid),
-                             json(Env, "success");
-        _                 -> respond(403, Env)
+        [{Ref, "inline"}] ->
+            ok = hn_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
+            json(Env, "success");
+        [{Ref, {"select", Vs}}] ->
+            [{"formula", V}] = Attrs,
+            case lists:member(V, Vs) of
+                true  -> ok = hn_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
+                         json(Env, "success");
+                false -> respond(403, Env)
+            end;
+        _ ->
+            respond(403, Env)
     end;
 
 ipost(Ref=#refX{obj = {cell, _}}, _Qry,
@@ -783,6 +791,9 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid})
 %% TODO : Get Rid of this (for pasting a range of values)
         [{"formula",{array, Vals}}] ->
             post_range_values(Ref, Vals, Uid, Uid);
+        [{"input", {struct, [{"select", {array, Array}}]}}] ->
+            NewAttr = [{"input", {"select", Array}}],
+            ok = hn_db_api:write_attributes([{Ref, NewAttr}], Uid, Uid);
         _Else ->
             ok = hn_db_api:write_attributes([{Ref, Attr}], Uid, Uid)
     end,

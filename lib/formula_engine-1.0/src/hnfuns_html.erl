@@ -16,8 +16,83 @@
          'html.alert.'/1,
          'html.ruledbox.'/1,
          'html.menu.'/1,
-         'html.submenu'/1
+         'html.submenu'/1,
+         'link.box.'/1
          ]).
+
+'link.box.'([H, W, Z]) ->
+    'link.box.'([H, W, Z, 0]);
+'link.box.'([H, W, Z, Style]) ->
+    Z2 = get_z(Z, Style),
+    L = [H, W, Z2],
+    'html.box.1'("grey", "single", 0, "single", L);
+'link.box.'([H, W, Z, Style, Headline]) ->
+    Z2 = get_z(Z, Style),
+    L = [H, W, Headline, Z2],
+    'html.box.1'("grey", "single", 0, "single", L);
+'link.box.'([H, W, Z, Style, Headline, Footer]) ->
+    Z2 = get_z(Z, Style),
+    L = [H, W, Headline, Z2, Footer],
+    'html.box.1'("grey", "single", 0, "single", L);
+'link.box.'([H, W, Z, Style, Headline, Footer, 0]) ->
+    Z2 = get_z(Z, Style),
+    L = [H, W, Headline, Z2, Footer],
+    'html.box.1'("grey", "single", 0, "single", L);
+'link.box.'([H, W, Z, Style, Headline, Footer, 1]) ->
+    Z2 = get_z(Z, Style),
+    L = [H, W, Headline, Z2, Footer],
+    'html.box.1'("white", "none", 99, "single", L);
+'link.box.'([H, W, Z, Style, Headline, Footer, 2]) ->
+    Z2 = get_z(Z, Style),
+    L = [H, W, Headline, Z2, Footer],
+    'html.box.1'("white", "none", 0, "none", L);
+'link.box.'([H, W, Z, Style, Headline, Footer, 3]) ->
+    Z2 = get_z(Z, Style),
+    L = [H, W, Headline, Z2, Footer],
+    'html.box.1'("white", check_style(0), 0, "none", L);
+'link.box.'([H, W, Z, Style, Headline, Footer, BoxType, Alert]) ->
+    [BT1] = typechecks:std_ints([BoxType]),
+    [Al1] = typechecks:std_ints([Alert]),
+    Z2 = get_z(Z, Style),
+    L = [H, W, Headline, Z2, Footer],
+     case BT1 of
+         3 -> 'html.box.1'("grey", "single", Al1, "none", L);
+         _ -> ?ERR_VAL
+     end.
+
+get_z(Z, Style) ->
+    case muin_collect:col([Z], [fetch, fetch_z_debug, blank_as_str],
+                          [return_errors]) of
+        [{zeds, Matches, _, []}] -> links2(Matches, Style, []);
+        [{zeds, _, _, [H | _]}]  -> {error, _, {errval, Err}} = H,
+                                    Err
+    end.
+
+links2([], 2, Acc)                -> "<table>"
+                                         ++ lists:flatten(lists:reverse(Acc))
+                                         ++ "</table>";
+links2([], _St, Acc)              -> lists:flatten(lists:reverse(Acc));
+links2([{{P, _}, _} | T], 0, Acc) -> P2 = hn_util:list_to_path(P),
+                                     NewAcc = "<div><a href='" ++ P2 ++ "'>"
+                                         ++ P2 ++ "</a></div>",
+                                     links2(T, 0, [NewAcc | Acc]);
+links2([{{P, _}, V} | T], 1, Acc) -> P2 = hn_util:list_to_path(P),
+                                     V2 = case V of
+                                              blank -> "";
+                                              _     -> tconv:to_s(V)
+                                          end,
+                                     NewAcc = "<div><a href='" ++ P2 ++ "'>"
+                                         ++ V2 ++ "</a></div>",
+                                     links2(T, 1, [NewAcc | Acc]);
+links2([{{P, _}, V} | T], 2, Acc) -> P2 = hn_util:list_to_path(P),
+                                     V2 = case V of
+                                              blank -> "";
+                                              _     -> tconv:to_s(V)
+                                          end,
+                                     NewAcc = "<tr><td><a href='" ++ P2 ++ "'>"
+                                         ++ P2 ++ "</a></td><td>" ++ V2
+                                         ++ "</td></tr>",
+                                     links2(T, 2, [NewAcc | Acc]).
 
 'html.headline.'([W, H, Text]) ->
     [W2] = typechecks:throw_std_ints([W]),

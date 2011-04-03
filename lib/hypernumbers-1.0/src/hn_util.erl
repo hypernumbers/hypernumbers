@@ -393,6 +393,8 @@ jsonify_val({"value", true}) ->
     {"value", "true"};
 jsonify_val({"value", false}) ->
     {"value", "false"};
+jsonify_val({"input", {"select", L}}) ->
+    {"input", {struct, [{"select", {array, L}}]}};
 jsonify_val({"preview", {Text, Width, Height}}) ->
     {"preview", {struct, [{"txt", Text}, {"h", Height}, {"w", Width}]}};
 %% TODO: fix names

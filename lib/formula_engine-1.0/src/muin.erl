@@ -25,6 +25,7 @@
 -define(horizontalline, $h,$o,$r,$i,$z,$o,$n,$t,$a,$l,$.,$l,$i,$n,$e,$.).
 -define(verticalline, $v,$e,$r,$t,$i,$c,$a,$l,$.,$l,$i,$n,$e,$.).
 -define(htmlmenu, $h,$t,$m,$l,$.,$m,$e,$n,$u,$.).
+-define(linkbox, $l,$i,$n,$k,$.,$b,$o,$x,$.).
 
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
@@ -235,6 +236,9 @@ transform([?equigraph | R], Args) ->
 transform([?piechart | R], Args) ->
     {W, H} = get_dims(R),
     {list_to_atom([?piechart]), [W , H | Args]};
+transform([?linkbox | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?linkbox]), [W , H | Args]};
 % single parameter stuff
 transform([?horizontalline | R], Args) ->
     {list_to_atom([?horizontalline]), [R | Args]};
