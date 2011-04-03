@@ -188,13 +188,29 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
                 P2 = hn_util:list_to_path(P),
                 O2a  = io_lib:format("The idx points to ~p on page ~p", [O, P2]),
                 Contents = hn_db_wu:read_ref(RefX, inside),
-                io:format("RefX is ~p~nContents is ~p~n", [RefX, Contents]),
                 O3 = pretty_print(Contents, "The idx contains:", [[O2a] | O2]),
                 lists:reverse(O3)
         end,
     {atomic, Msg} = mnesia:transaction(F),
-    [io:format(X ++ "~n") || X <- Msg],
+    case Mode of
+        log -> [log(X) || X <- Msg];
+        _   -> [io:format(X ++ "~n") || X <- Msg]
+    end,
     ok.
+
+log(String) ->
+    log(String, "../logs/url.log.txt").
+
+log(String, File) ->
+    _Return=filelib:ensure_dir(File),
+
+    case file:open(File, [append]) of
+	{ok, Id} ->
+	    io:fwrite(Id, "~s~n", [String]),
+	    file:close(Id);
+	_ ->
+	    error
+    end.
 
 read_includes(#refX{obj = {page, "/"}} = RefX) ->
     Fun = fun() ->
