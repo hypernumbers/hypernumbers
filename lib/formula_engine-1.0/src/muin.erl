@@ -673,7 +673,6 @@ do_cell(RelPath, Rowidx, Colidx, Type) ->
 %% the value to the caller (to continue the evaluation of the formula).
 get_value_and_link(FetchFun) ->
     {Value, Errs, Refs}  = FetchFun(),
-    RefX = #refX{site = ?msite, path = ?mpath, obj = {cell, {?mx, ?my}}},
     {Errs0, Refs0} = get(retvals),
     put(retvals, {Errs0 ++ Errs, Refs0 ++ Refs}),
     Value.
