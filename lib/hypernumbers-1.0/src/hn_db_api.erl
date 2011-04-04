@@ -1076,8 +1076,10 @@ pretty_p2([], Acc) -> Acc;
 pretty_p2([{R, Vals} | T], Acc) when is_record(R, refX) ->
     #refX{path = P, type = Ty, obj = O} = R,
     NewO = io_lib:format(" ~p (~p) of ~p on ~p:", [O, hn_util:obj_to_ref(O), Ty, P]),
+    Idx = hn_db_wu:refX_to_idx(R),
+    NewOa = io_lib:format(" has the following idx ~p", [Idx]),
     Keys = ["formula", "value", "__hasform"],
-    NewO2 = pretty_p3(Keys, Vals, [NewO | Acc]),
+    NewO2 = pretty_p3(Keys, Vals, [NewOa, NewO | Acc]),
     NO3 = case lists:keymember("__hasform", 1, Vals) of
               true  -> print_form(R#refX{obj = {page, "/"}}, NewO2);
               false -> NewO2
