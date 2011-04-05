@@ -335,8 +335,9 @@ wrap_region(Content, Width, Height) ->
 
 make_select(Val, Ref, Options) -> make_s(Options, Ref, Val, []).
 
-make_s([], Ref, _Val, Acc) -> "<select class='hn_inlineselect' data-ref='"
-                                  ++ Ref ++ "'>"
+make_s([], Ref, _Val, Acc) -> "<select class='hn_inlineselect "
+                                  ++ "hn_inlineselect_wikipage' "
+                                  ++ "data-ref='" ++ Ref ++ "'>"
                                   ++ lists:flatten(lists:reverse(Acc))
                                   ++ "</select>";
 make_s([H | T], Ref, Val, Acc) ->
