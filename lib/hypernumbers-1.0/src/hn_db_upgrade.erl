@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         fix_zinf_local_obj_bug/0,
          add_include_index/0,
          make_include_table/0,
          make_log_table/0,
@@ -34,6 +35,32 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+fix_zinf_local_obj_bug() ->
+    Sites = hn_setup:get_sites(),
+    Fun = fun(X, Acc) ->
+                  NewAcc = case X#local_obj.obj of
+                               {cell, {0, 0}} -> io:format("found ~p~n", [X]),
+                                                 [X| Acc];
+                               _              -> Acc
+                           end,
+                  NewAcc
+          end,
+    Fun1 = fun(Site) ->
+                   Tbl = hn_db_wu:trans(Site, local_obj),
+                   io:format("about to check ~p~n", [Tbl]),
+                   Fun2 = fun() ->
+                                  mnesia:foldl(Fun, [], Tbl)
+                          end,
+                   Recs = mnesia:activity(transaction, Fun2),
+                   [begin
+                        Fun3 = fun() ->
+                                       mnesia:delete_object(Tbl, X, write)
+                               end,
+                        mnesia:activity(transaction, Fun3)
+                    end || X <- Recs]
+           end,
+    lists:foreach(Fun1, Sites).
 
 add_include_index() ->
     Sites = hn_setup:get_sites(),
