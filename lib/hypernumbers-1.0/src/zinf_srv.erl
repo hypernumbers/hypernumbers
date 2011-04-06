@@ -829,6 +829,7 @@ testB4([]) ->
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx3]), lists:sort(List)).
 
+% simple match of 2 zsegs
 testC1([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
@@ -850,6 +851,7 @@ testC1([]) ->
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx1]), lists:sort(List)).
 
+% longer match of 2 zsegs with a seg
 testC2([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
@@ -871,6 +873,160 @@ testC2([]) ->
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx1]), lists:sort(List)).
 
+% set of different z matches
+testC3([]) ->
+    Tree = {ok, gb_trees:empty()},
+    S = "http://example.com",
+    P1 = ["d", "[true]", "[true]"],
+    P2 = ["[true]", "[true]", "[true]"],
+    P3 = ["d", "[true]", "7"],
+    P4 = ["d", "4", "[true]"],
+    P5 = ["d", "4", "7"],
+    Obj1 = {cell, {3, 4}},
+    Idx1 = 1,
+    Idx2 = 2,
+    Idx3 = 3,
+    Idx4 = 4,
+    Actions1 = [
+                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #refX{site = S, path = P4, obj = Obj1}}
+              ],
+
+    Fun1 = fun({I, R}, {ok, Tr}) ->
+                   add(Tr, I, R)
+           end,
+
+    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    RefX = #refX{site = S, path = P5, obj = Obj1},
+    {ok, List} = check(NewTree1, RefX),
+    io:format("is ~p in ~p~n", [Obj1, NewTree1]),
+    ?assertEqual(lists:sort([Idx1, Idx2, Idx3, Idx4]), lists:sort(List)).
+
+% force a fail on z seg
+testC4([]) ->
+    Tree = {ok, gb_trees:empty()},
+    S = "http://example.com",
+    P1 = ["d", "[true]", "[true]"],
+    P2 = ["[true]", "[true]", "[true]"],
+    P3 = ["d", "[true]", "7"],
+    P4 = ["d", "4", "banjo"],
+    P5 = ["d", "4", "7"],
+    Obj1 = {cell, {3, 4}},
+    Idx1 = 1,
+    Idx2 = 2,
+    Idx3 = 3,
+    Idx4 = 4,
+    Actions1 = [
+                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #refX{site = S, path = P4, obj = Obj1}}
+              ],
+
+    Fun1 = fun({I, R}, {ok, Tr}) ->
+                   add(Tr, I, R)
+           end,
+
+    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    RefX = #refX{site = S, path = P5, obj = Obj1},
+    {ok, List} = check(NewTree1, RefX),
+    io:format("is ~p in ~p~n", [Obj1, NewTree1]),
+    ?assertEqual(lists:sort([Idx1, Idx2, Idx3]), lists:sort(List)).
+
+% force more than 1 fail of z seg
+testC5([]) ->
+    Tree = {ok, gb_trees:empty()},
+    S = "http://example.com",
+    P1 = ["d", "[true]", "loopy"],
+    P2 = ["[true]", "[true]", "[true]"],
+    P3 = ["d", "[true]", "7"],
+    P4 = ["d", "[true]", "banjo"],
+    P5 = ["d", "4", "7"],
+    Obj1 = {cell, {3, 4}},
+    Idx1 = 1,
+    Idx2 = 2,
+    Idx3 = 3,
+    Idx4 = 4,
+    Actions1 = [
+                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #refX{site = S, path = P4, obj = Obj1}}
+              ],
+
+    Fun1 = fun({I, R}, {ok, Tr}) ->
+                   add(Tr, I, R)
+           end,
+
+    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    RefX = #refX{site = S, path = P5, obj = Obj1},
+    {ok, List} = check(NewTree1, RefX),
+    io:format("is ~p in ~p~n", [Obj1, NewTree1]),
+    ?assertEqual(lists:sort([Idx2, Idx3]), lists:sort(List)).
+
+% add some shorter z paths that don't match
+testC6([]) ->
+    Tree = {ok, gb_trees:empty()},
+    S = "http://example.com",
+    P1 = ["[true]", "loopy"],
+    P2 = ["[true]", "[true]", "[true]"],
+    P3 = ["d", "[true]", "7"],
+    P4 = ["[true]", "banjo"],
+    P5 = ["d", "4", "7"],
+    Obj1 = {cell, {3, 4}},
+    Idx1 = 1,
+    Idx2 = 2,
+    Idx3 = 3,
+    Idx4 = 4,
+    Actions1 = [
+                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #refX{site = S, path = P4, obj = Obj1}}
+              ],
+
+    Fun1 = fun({I, R}, {ok, Tr}) ->
+                   add(Tr, I, R)
+           end,
+
+    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    RefX = #refX{site = S, path = P5, obj = Obj1},
+    {ok, List} = check(NewTree1, RefX),
+    io:format("is ~p in ~p~n", [Obj1, NewTree1]),
+    ?assertEqual(lists:sort([Idx2, Idx3]), lists:sort(List)).
+
+% add some longer z paths that don't match
+testC7([]) ->
+    Tree = {ok, gb_trees:empty()},
+    S = "http://example.com",
+    P1 = ["[true]", "loopy", "randy", "mandy", "shandy"],
+    P2 = ["[true]", "[true]", "[true]"],
+    P3 = ["d", "[true]", "7", "[true]"],
+    P4 = ["[true]", "banjo"],
+    P5 = ["d", "4", "7"],
+    Obj1 = {cell, {3, 4}},
+    Idx1 = 1,
+    Idx2 = 2,
+    Idx3 = 3,
+    Idx4 = 4,
+    Actions1 = [
+                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #refX{site = S, path = P4, obj = Obj1}}
+              ],
+
+    Fun1 = fun({I, R}, {ok, Tr}) ->
+                   add(Tr, I, R)
+           end,
+
+    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    RefX = #refX{site = S, path = P5, obj = Obj1},
+    {ok, List} = check(NewTree1, RefX),
+    io:format("is ~p in ~p~n", [Obj1, NewTree1]),
+    ?assertEqual(lists:sort([Idx2]), lists:sort(List)).
 
 unit_test_() ->
 
@@ -894,7 +1050,12 @@ unit_test_() ->
                fun testB4/1,
 
                fun testC1/1,
-               fun testC2/1
+               fun testC2/1,
+               fun testC3/1,
+               fun testC4/1,
+               fun testC5/1,
+               fun testC6/1,
+               fun testC7/1
               ],
 
     %{setup, Setup, Cleanup,
