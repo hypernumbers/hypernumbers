@@ -22,6 +22,8 @@
 %% API
 -export([start_link/1]).
 
+-compile(export_all).
+
 %% Programatic API
 -export([
          add_zinf/3,
@@ -306,10 +308,10 @@ iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
     case gb_trees:next(Iter) of
          none       -> lists:flatten(Acc);
          {K, V, I2} ->
-             NewAcc = case match_seg(K, H, S, Htap) of
-                       match    -> match_tree(V, S, T, Fun, [H | Htap]);
-                       nomatch  -> [];
-                       error    -> []
+            NewAcc = case match_seg(K, H, S, Htap) of
+                          match    -> match_tree(V, S, T, Fun, [H | Htap]);
+                          nomatch  -> [];
+                          error    -> []
                    end,
              iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
      end.
@@ -827,6 +829,49 @@ testB4([]) ->
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx3]), lists:sort(List)).
 
+testC1([]) ->
+    Tree = {ok, gb_trees:empty()},
+    S = "http://example.com",
+    P1 = ["[true]", "[true]"],
+    P2 = ["d", "4"],
+    Obj1 = {cell, {3, 4}},
+    Idx1 = 1,
+    Actions1 = [
+                {Idx1, #refX{site = S, path = P1, obj = Obj1}}
+              ],
+
+    Fun1 = fun({I, R}, {ok, Tr}) ->
+                   add(Tr, I, R)
+           end,
+
+    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    RefX = #refX{site = S, path = P2, obj = Obj1},
+    {ok, List} = check(NewTree1, RefX),
+    io:format("is ~p in ~p~n", [Obj1, NewTree1]),
+    ?assertEqual(lists:sort([Idx1]), lists:sort(List)).
+
+testC2([]) ->
+    Tree = {ok, gb_trees:empty()},
+    S = "http://example.com",
+    P1 = ["d", "[true]", "[true]"],
+    P2 = ["d", "4", "7"],
+    Obj1 = {cell, {3, 4}},
+    Idx1 = 1,
+    Actions1 = [
+                {Idx1, #refX{site = S, path = P1, obj = Obj1}}
+              ],
+
+    Fun1 = fun({I, R}, {ok, Tr}) ->
+                   add(Tr, I, R)
+           end,
+
+    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    RefX = #refX{site = S, path = P2, obj = Obj1},
+    {ok, List} = check(NewTree1, RefX),
+    io:format("is ~p in ~p~n", [Obj1, NewTree1]),
+    ?assertEqual(lists:sort([Idx1]), lists:sort(List)).
+
+
 unit_test_() ->
 
     Setup = fun() -> ok end,
@@ -846,7 +891,10 @@ unit_test_() ->
                fun testB1/1,
                fun testB2/1,
                fun testB3/1,
-               fun testB4/1
+               fun testB4/1,
+
+               fun testC1/1,
+               fun testC2/1
               ],
 
     %{setup, Setup, Cleanup,
