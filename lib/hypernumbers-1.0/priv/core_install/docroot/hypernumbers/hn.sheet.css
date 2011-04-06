@@ -169,6 +169,11 @@ html,body {
   color: gray;
 }
 
+img.wizrep {
+  vertical-align: middle;
+  padding-left: 1px;
+}
+
 #wizfunargs {
     overflow-y         : auto;
     min-width          : 200px;
