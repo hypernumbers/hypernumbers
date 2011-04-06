@@ -161,13 +161,16 @@ html,body {
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
 
+/*
 #wizarghelp {
   float: right;
   padding-right: 4px;
-  min-width: 150px;
+  padding-left: 4px;
+  width: 180px;
   font-size: 11px;
   color: gray;
 }
+*/
 
 /* for icon plus/minus buttons */
 img.wizrep {
@@ -178,7 +181,7 @@ img.wizrep {
 
 #wizfunargs {
     overflow-y         : auto;
-    min-width          : 200px;
+    min-width          : 270px;
     width              : auto;
     float              : left;
 }
@@ -1133,8 +1136,8 @@ a.toolbar-item {
 }
 
 #wizselectedfun {
-    float      : right;
-    width      : auto;
+    float      : left;
+    width      : 330px; /* TODO */
     min-width  : 330px;
     margin-top : 4px;
     margin-right:4px;
