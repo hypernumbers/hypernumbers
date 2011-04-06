@@ -113,7 +113,7 @@ html,body {
 #funwiz  {
     position           : static; /* changed dynamically */
     max-width          : none;
-    min-width          : 550px;
+    min-width          : 500px;
     max-height         : none;
     height             : 400px;
 }
@@ -163,13 +163,17 @@ html,body {
 
 #wizarghelp {
   float: right;
-  width: 150px;
+  padding-right: 4px;
+  min-width: 150px;
   font-size: 11px;
   color: gray;
 }
 
 #wizfunargs {
     overflow-y         : auto;
+    min-width          : 200px;
+    width              : auto;
+    float              : left;
 }
 
 #wizfunargs div {
