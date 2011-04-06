@@ -247,10 +247,10 @@ chunk_histogram([Type, X, Lines| List]) ->
     DataX = cast_strings(X),
     {MinY, MaxY, DataY, Cols, Rest}
         = case {Orientation, MaxType} of
-              {vertical,   group} -> chunk_l2(false, Lines2, List, ?NOMARGIN);
-              {horizontal, group} -> chunk_l2(false, Lines2, List, ?NOMARGIN);
-              {vertical,   stack} -> chunk_l2(true,  Lines2, List, ?NOMARGIN);
-              {horizontal, stack} -> chunk_l2(true, Lines2, List, ?NOMARGIN);
+              {vertical,   group} -> chunk_hist(false, Lines2, List, ?NOMARGIN);
+              {horizontal, group} -> chunk_hist(false, Lines2, List, ?NOMARGIN);
+              {vertical,   stack} -> chunk_hist(true,  Lines2, List, ?NOMARGIN);
+              {horizontal, stack} -> chunk_hist(true,  Lines2, List, ?NOMARGIN);
               _                   -> ?ERR_VAL
           end,
     DataY2 = "t:" ++ conv_data_rev(DataY),
@@ -287,6 +287,15 @@ chunk_linegraph([X, Lines | List], LabType) ->
     AxesLabPos = make_axes_lab_pos(MaxX, MaxY),
     Scale = make_scale(LabType, auto, MinX, MaxX, MinY, MaxY, ?MARGIN),
     {Data, {?axesrange, Scale}, {?axeslabpos, AxesLabPos}, Cols, Rest}.
+
+chunk_hist(Aggregate, Lines, List, Margin) ->
+    [Lines2] = typechecks:throw_std_ints([Lines]),
+    muin_checks:ensure(Lines2 > 0, ?ERRVAL_NUM),
+    {Data, Rest} = lists:split(Lines2, List),
+    {MinY, MaxY, DataY} = process_data_hist(Aggregate, Data, Margin),
+    % now make the colours
+    Colours = allocate_colours(Lines, ?XYCOLOURS),
+    {MinY, MaxY, DataY, {?colours, Colours}, Rest}.
 
 chunk_l2(Aggregate, Lines, List, Margin) ->
     [Lines2] = typechecks:throw_std_ints([Lines]),
@@ -736,6 +745,29 @@ histogram([D, Tt, Cols, Mn, Mx]) -> hist1(D, {{Mn, Mx}, Tt, Cols}).
 %%
 %% Internal Functions
 %%
+process_data_hist(Aggregate, Data, Margin) ->
+    Prefetched = cast_prefetch(Data),
+    Data1 = [proc_dxy1(X) || X <- Prefetched],
+    Data2 = [X || {X, _NoR, _NoC} <- Data1],
+    Data3 = [lists:flatten([cast_linegraph_data(X) || X <- X1])
+             || X1 <- Data2],
+    {MinY, MaxY} = get_maxes_lg(Data3),
+    % we need the real mins/maxes to normalise the data
+    % if its a stacker we need the aggregate mins/maxs
+    MaxY2 = case Aggregate of
+                       false -> MaxY;
+                       true  -> get_maxes_lg_agg(Data3)
+                   end,
+    Diff = MaxY2 - MinY,
+    MinY3 = MinY - Margin * Diff,
+    MaxY3 = MaxY2 + Margin * Diff,
+    MinY3a = if
+                MinY3 <  0 -> MinY3;
+                MinY3 >= 0 -> 0
+            end,
+    Data4 = normalize_linegraph(Data3, MinY3a, MaxY3, []),
+    {MinY3a, MaxY3, Data4}.
+
 process_data_linegraph(Aggregate, Data, Margin) ->
     Prefetched = cast_prefetch(Data),
     Data1 = [proc_dxy1(X) || X <- Prefetched],
