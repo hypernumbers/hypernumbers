@@ -169,9 +169,11 @@ html,body {
   color: gray;
 }
 
+/* for icon plus/minus buttons */
 img.wizrep {
   vertical-align: middle;
   padding-left: 1px;
+  padding-right: 1px;
 }
 
 #wizfunargs {
