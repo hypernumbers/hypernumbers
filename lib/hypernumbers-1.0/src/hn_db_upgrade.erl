@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         flash_dev/0,
          fix_zinf_local_obj_bug/0,
          add_include_index/0,
          make_include_table/0,
@@ -36,6 +37,10 @@
          %% upgrade_1776/0
         ]).
 
+flash_dev() ->
+    ok = hn_setup:delete_site("http://hypernumbers.dev:9000"),
+    ok = hypernumbers_app:local_hypernumbers().
+
 fix_zinf_local_obj_bug() ->
     Sites = hn_setup:get_sites(),
     Fun = fun(X, Acc) ->
@@ -55,7 +60,7 @@ fix_zinf_local_obj_bug() ->
                    Recs = mnesia:activity(transaction, Fun2),
                    [begin
                         Fun3 = fun() ->
-                                       mnesia:delete_object(Tbl, X, write)
+                                       mensia:delete_object(X)
                                end,
                         mnesia:activity(transaction, Fun3)
                     end || X <- Recs]
