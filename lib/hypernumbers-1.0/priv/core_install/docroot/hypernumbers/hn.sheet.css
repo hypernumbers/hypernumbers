@@ -161,16 +161,11 @@ html,body {
     -webkit-box-shadow    : 2px 2px 4px #AAA;
 }
 
-/*
-#wizarghelp {
-  float: right;
-  padding-right: 4px;
-  padding-left: 4px;
-  width: 180px;
-  font-size: 11px;
-  color: gray;
+
+div.resizer {
+ padding-bottom: 2px;
+ border-bottom: thin dotted gray;
 }
-*/
 
 /* for icon plus/minus buttons */
 img.wizrep {
