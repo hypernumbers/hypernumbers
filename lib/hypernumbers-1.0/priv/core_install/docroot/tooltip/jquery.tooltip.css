@@ -3,7 +3,7 @@ position: absolute;
 z-index: 10000004;
 border: 1px solid #111;
 background-color: #eee;
-padding: 5px;
+padding: 2px;
 opacity: 0.85;
 }
-#tooltip h3, #tooltip div { font-size: 10pt; margin: 0; }
+#tooltip h3, #tooltip div { font-size: 9pt; margin: 0; }
