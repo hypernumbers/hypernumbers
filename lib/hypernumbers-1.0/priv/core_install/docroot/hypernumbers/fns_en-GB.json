@@ -810,8 +810,13 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -846,8 +851,13 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -870,8 +880,13 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -884,7 +899,6 @@
         "resize": false,
         "wizardready": false,
         "args": [
-
         ]
     },
     {
@@ -895,8 +909,13 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -907,8 +926,13 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in degrees)",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -919,7 +943,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
         ]
     },
@@ -955,8 +979,13 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -979,8 +1008,13 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -1027,8 +1061,13 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -1051,8 +1090,13 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Angle",
+                "desc": "An angle (in radians)",
+                "type": "finite"
+            }
         ]
     },
     {
