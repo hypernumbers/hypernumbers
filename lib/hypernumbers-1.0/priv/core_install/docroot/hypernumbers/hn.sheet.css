@@ -176,6 +176,18 @@ img.wizrep {
 
 .datastore { display: none; }
 
+#funwizwrapper {
+  padding: 4px;
+}
+
+#wizcatlist {
+  width: 144px;
+}
+
+#wizfunlist {
+  width: 144px;
+}
+
 #wizfunargs {
     overflow-y         : auto;
     min-width          : 270px;
