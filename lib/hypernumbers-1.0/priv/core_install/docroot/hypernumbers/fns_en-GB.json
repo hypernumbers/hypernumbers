@@ -654,20 +654,30 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Boolean",
+                "desc": "A boolean value or expression",
+                "type": "finite"
+            }
         ]
     },
     {
         "fn": "and",
         "category": "Logical",
-        "desc": "Returns true if all the logic arguments supplied evaluate to TRUE. ",
+        "desc": "Returns true if all the logic arguments supplied evaluate to TRUE",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Boolean",
+                "desc": "A boolean value or expression",
+                "type": "infinite"
+            }
         ]
     },
     {
@@ -678,7 +688,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
         ]
     },
@@ -690,8 +700,13 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
+            {
+                "name": "Boolean",
+                "desc": "A boolean value or expression",
+                "type": "infinite"
+            }
         ]
     },
     {
@@ -702,7 +717,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "args": [
         ]
     },
@@ -716,6 +731,21 @@
         "resize": false,
         "wizardready": false,
         "args": [
+            {
+                "name": "Boolean",
+                "desc": "A boolean value or expression",
+                "type": "finite"
+            },
+            {
+                "name": "Value",
+                "desc": "The value to return if the condition is true",
+                "type": "finite"
+            },
+            {
+                "name": "Boolean",
+                "desc": "The value to return if the condition is false",
+                "type": "finite"
+            }
         ]
     },
     {
