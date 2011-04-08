@@ -73,9 +73,16 @@ html,body {
 }
 
 .resize {
+    position           : absolute;
+    right              : 0px;
+    bottom             : 0px;
+/*
     float              : right;
     vertical-align     : bottom;
+    bottom             : 0px;
+*/
     padding            : 2px;
+    padding-bottom     : 0px;
     font-size          : 12pt;
     font-weight        : bold;
     color              : black;
@@ -89,7 +96,7 @@ html,body {
 #funwiz .resize {
     position           : absolute;
     right              : 0px;
-    bottom             : 0px;
+    bottom             : -2px; /* FIXME? */
 }
 
 #columnmanagerdialog, #lineview {
