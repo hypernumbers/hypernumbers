@@ -229,7 +229,7 @@ img.wizrep {
   width:  272px; /* wizselectedfun.width - 8px */
   height: 6ex;
   border: solid thin #aaa;
-  background: #ccc; /* read-only */
+  background: #eee; /* read-only */
 }
 
 #wizbuttons {
