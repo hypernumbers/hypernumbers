@@ -122,7 +122,7 @@ html,body {
     max-width          : none;
     min-width          : 500px;
     max-height         : none;
-    height             : 400px;
+    height             : 360px;
 }
 
 #hn_makewikiselect div {
@@ -193,6 +193,7 @@ img.wizrep {
 
 #wizfunlist {
   width: 144px;
+  line-height: 16px; /* set this or problems in Chrome returning "normal" */
 }
 
 #wizfunargs {
@@ -1131,7 +1132,6 @@ a.toolbar-item {
 }
 
 #funlist {
-    height   : 220px;
     overflow : auto;
 }
 #funlist ul {
