@@ -51,6 +51,7 @@ delete_site(Site) ->
 %% specifications.
 %%--------------------------------------------------------------------
 init([StartSites]) ->
+    io:format("Hypernumbers Startup: the sitemaster_sup is initing...~n"),
     Sites = hn_setup:get_sites(),
     ChildSpecs = [gen_child_spec(S) || S <- Sites],
     case StartSites of
