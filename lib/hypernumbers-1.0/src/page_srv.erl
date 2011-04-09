@@ -80,7 +80,7 @@ start_link(Site) ->
 %% @end
 %%--------------------------------------------------------------------
 init([Site]) ->
-    [{kvstore, ?pages, Pages}] = hn_db_api:read_kv(Site, ?pages),
+    [{kvstore, ?pages, Pages}] = new_db_api:read_kv(Site, ?pages),
     {ok, #state{site = Site, pages = Pages}}.
 
 %%--------------------------------------------------------------------
@@ -103,12 +103,12 @@ handle_call(Request, _From, #state{site = Site, pages = Pages} = State) ->
                           case lists:member(P, Pages) of
                               true  -> {ok, Pages};
                               false -> P2 = [P | Pages],
-                                       ok = hn_db_api:write_kv(Site, ?pages, P2),
+                                       ok = new_db_api:write_kv(Site, ?pages, P2),
                                        {ok, P2}
                           end;
                       {page_deleted, P} ->
                           P2 = lists:delete(P, Pages),
-                          ok = hn_db_api:write_kv(Site, ?pages, P2),
+                          ok = new_db_api:write_kv(Site, ?pages, P2),
                           {ok, P2};
                       get_pages ->
                           {Pages, Pages};

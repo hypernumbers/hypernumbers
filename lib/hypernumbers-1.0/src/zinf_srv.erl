@@ -22,8 +22,6 @@
 %% API
 -export([start_link/1]).
 
--compile(export_all).
-
 %% Programatic API
 -export([
          add_zinf/3,
@@ -58,20 +56,20 @@
 %%% API
 %%%===================================================================
 
-add_zinf(Site, CellIdx, RefX) when is_record(RefX, refX) ->
+add_zinf(Site, CellIdx, XRefX) when is_record(XRefX, xrefX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     PID = global:whereis_name(Id),
-    gen_server:call(PID, {add_zinf, {CellIdx, RefX}}).
+    gen_server:call(PID, {add_zinf, {CellIdx, XRefX}}).
 
-del_zinf(Site, CellIdx, RefX) when  is_record(RefX, refX) ->
+del_zinf(Site, CellIdx, XRefX) when is_record(XRefX, xrefX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     PID = global:whereis_name(Id),
-    gen_server:call(PID, {del_zinf, {CellIdx, RefX}}).
+    gen_server:call(PID, {del_zinf, {CellIdx, XRefX}}).
 
-check_ref(Site, RefX) when is_record(RefX, refX) ->
+check_ref(Site, XRefX) when is_record(XRefX, xrefX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     PID = global:whereis_name(Id),
-    gen_server:call(PID, {check_ref, RefX}).
+    gen_server:call(PID, {check_ref, XRefX}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -100,7 +98,7 @@ start_link(Site) ->
 %% @end
 %%--------------------------------------------------------------------
 init([Site]) ->
-    [{kvstore, ?zinf_tree, Zinf_tree}] = hn_db_api:read_kv(Site, ?zinf_tree),
+    [{kvstore, ?zinf_tree, Zinf_tree}] = new_db_api:read_kv(Site, ?zinf_tree),
     {ok, #state{site = Site, zinf_tree = Zinf_tree}}.
 
 %%--------------------------------------------------------------------
@@ -120,12 +118,12 @@ init([Site]) ->
 handle_call(Request, _From, #state{site = S, zinf_tree = Tree} = State) ->
     {Act, {Rep, NewT}} =
         case Request of
-            {add_zinf, {Idx, RefX}} -> {write, add(Tree, Idx, RefX)};
-            {del_zinf, {Idx, RefX}} -> {write, del(Tree, Idx, RefX)};
-            {check_ref, RefX}       -> {nothing, {check(Tree, RefX), Tree}}
+            {add_zinf, {Idx, XRefX}} -> {write, add(Tree, Idx, XRefX)};
+            {del_zinf, {Idx, XRefX}} -> {write, del(Tree, Idx, XRefX)};
+            {check_ref, XRefX}       -> {nothing, {check(Tree, XRefX), Tree}}
         end,
     case Act of
-        write   -> hn_db_api:write_kv(S, ?zinf_tree, NewT);
+        write   -> new_db_api:write_kv(S, ?zinf_tree, NewT);
         nothing -> ok
     end,
     {reply, Rep, State#state{zinf_tree = NewT}}.
@@ -184,18 +182,18 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-add(Tree, Idx, RefX) ->
-    #refX{path = P, obj = Obj} = RefX,
+add(Tree, Idx, XRefX) ->
+    #xrefX{path = P, obj = Obj} = XRefX,
     NewTree = alter_tree(Tree, hn_util:parse_zpath(P), add_selector(Idx, Obj)),
     {ok, NewTree}.
 
-del(Tree, Idx, RefX) ->
-    #refX{path = P, obj = Obj} = RefX,
+del(Tree, Idx, XRefX) ->
+    #xrefX{path = P, obj = Obj} = XRefX,
     NewTree = alter_tree(Tree, hn_util:parse_zpath(P), delete_selector(Idx, Obj)),
     {ok, NewTree}.
 
-check(Tree, #refX{site = S, path = P} = RefX) ->
-    Dirty = match_tree(Tree, S, P, match(RefX), []),
+check(Tree, #xrefX{site = S, path = P} = XRefX) ->
+    Dirty = match_tree(Tree, S, P, match(XRefX), []),
     {ok, Dirty}.
 
 %%%===================================================================
@@ -229,7 +227,7 @@ add_selector(Idx, Obj) ->
             {added, #selector{objdict = NewOD}}
     end.
 
-match(#refX{obj = {cell, {X, Y}}}) ->
+match(#xrefX{obj = {cell, {X, Y}}}) ->
     fun({selector, List}) ->
             match_1(List, X, Y, [])
     end.
@@ -308,10 +306,10 @@ iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
     case gb_trees:next(Iter) of
          none       -> lists:flatten(Acc);
          {K, V, I2} ->
-            NewAcc = case match_seg(K, H, S, Htap) of
-                          match    -> match_tree(V, S, T, Fun, [H | Htap]);
-                          nomatch  -> [];
-                          error    -> []
+             NewAcc = case match_seg(K, H, S, Htap) of
+                       match    -> match_tree(V, S, T, Fun, [H | Htap]);
+                       nomatch  -> [];
+                       error    -> []
                    end,
              iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
      end.
@@ -362,10 +360,10 @@ testA1([]) ->
     Obj2 = {column, {1, 2}},
     Idx2 = 2,
     Actions1 = [
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}}
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
     Actions2 = [
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}}
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -389,10 +387,10 @@ testA1a([]) ->
     Obj2 = {column, {1, 2}},
     Idx2 = 2,
     Actions1 = [
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}}
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
     Actions2 = [
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}}
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -415,10 +413,10 @@ testA1b([]) ->
     Obj2 = {column, {1, 2}},
     Idx2 = 2,
     Actions1 = [
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}}
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
     Actions2 = [
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}}
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -448,22 +446,22 @@ testA2([]) ->
     Idx2 = 2,
     %Idx3 = 3,
     Actions1 = [
-               %{Idx1, #refX{site = S, path = P2, obj = Obj2}},
-               %{Idx2, #refX{site = S, path = P2, obj = Obj1}},
-               %{Idx2, #refX{site = S, path = P2, obj = Obj1}},
-               %{Idx3, #refX{site = S, path = P3, obj = Obj3}},
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}}
+               %{Idx1, #xrefX{site = S, path = P2, obj = Obj2}},
+               %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+               %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+               %{Idx3, #xrefX{site = S, path = P3, obj = Obj3}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
     Actions2 = [
-               %{Idx1, #refX{site = S, path = P2, obj = Obj1}},
-               %{Idx2, #refX{site = S, path = P2, obj = Obj1}},
-               %{Idx2, #refX{site = S, path = P2, obj = Obj1}},
-               %{Idx3, #refX{site = S, path = P3, obj = Obj3}},
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}}
+               %{Idx1, #xrefX{site = S, path = P2, obj = Obj1}},
+               %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+               %{Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+               %{Idx3, #xrefX{site = S, path = P3, obj = Obj3}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -495,11 +493,11 @@ testA3([]) ->
     Idx2 = 2,
     Idx3 = 3,
     Actions1 = [
-               {Idx1, #refX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #refX{site = S, path = P2, obj = Obj1}},
-               {Idx2, #refX{site = S, path = P2, obj = Obj1}},
-               {Idx3, #refX{site = S, path = P4, obj = Obj3}},
-               {Idx2, #refX{site = S, path = P5, obj = Obj2}}
+               {Idx1, #xrefX{site = S, path = P2, obj = Obj2}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+               {Idx3, #xrefX{site = S, path = P4, obj = Obj3}},
+               {Idx2, #xrefX{site = S, path = P5, obj = Obj2}}
               ],
     Actions2 = lists:reverse(hslists:dedup([Actions1, []])),
     io:format("Actions1 is ~p~nActions2 is ~p~n", [Actions1, Actions2]),
@@ -530,11 +528,11 @@ testA4([]) ->
     Idx2 = 2,
     Idx3 = 3,
     Actions1 = [
-               {Idx1, #refX{site = S, path = P2, obj = Obj2}},
-               {Idx2, #refX{site = S, path = P2, obj = Obj1}},
-               {Idx2, #refX{site = S, path = P3, obj = Obj1}},
-               {Idx3, #refX{site = S, path = P3, obj = Obj3}},
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}}
+               {Idx1, #xrefX{site = S, path = P2, obj = Obj2}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+               {Idx2, #xrefX{site = S, path = P3, obj = Obj1}},
+               {Idx3, #xrefX{site = S, path = P3, obj = Obj3}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -564,15 +562,15 @@ testA4a([]) ->
     Idx2 = 2,
     Idx3 = 3,
     Actions1 = [
-               {Idx1, #refX{site = S, path = P1, obj = Obj2}},
-               {Idx2, #refX{site = S, path = P1, obj = Obj1}},
-               {Idx3, #refX{site = S, path = P1, obj = Obj1}},
-               {Idx1, #refX{site = S, path = P2, obj = Obj3}},
-               {Idx2, #refX{site = S, path = P2, obj = Obj2}},
-               {Idx3, #refX{site = S, path = P2, obj = Obj2}},
-               {Idx1, #refX{site = S, path = P3, obj = Obj3}},
-               {Idx2, #refX{site = S, path = P3, obj = Obj2}},
-               {Idx3, #refX{site = S, path = P3, obj = Obj2}}
+               {Idx1, #xrefX{site = S, path = P1, obj = Obj2}},
+               {Idx2, #xrefX{site = S, path = P1, obj = Obj1}},
+               {Idx3, #xrefX{site = S, path = P1, obj = Obj1}},
+               {Idx1, #xrefX{site = S, path = P2, obj = Obj3}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+               {Idx3, #xrefX{site = S, path = P2, obj = Obj2}},
+               {Idx1, #xrefX{site = S, path = P3, obj = Obj3}},
+               {Idx2, #xrefX{site = S, path = P3, obj = Obj2}},
+               {Idx3, #xrefX{site = S, path = P3, obj = Obj2}}
               ],
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
@@ -599,35 +597,35 @@ testA5([]) ->
     Idx2 = 2,
     Idx3 = 3,
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx1, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx1, #refX{site = S, path = P3, obj = Obj1}},
-                {Idx1, #refX{site = S, path = P1, obj = Obj2}},
-                {Idx1, #refX{site = S, path = P2, obj = Obj2}},
-                {Idx1, #refX{site = S, path = P3, obj = Obj2}},
-                {Idx1, #refX{site = S, path = P1, obj = Obj3}},
-                {Idx1, #refX{site = S, path = P2, obj = Obj3}},
-                {Idx1, #refX{site = S, path = P3, obj = Obj3}},
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx1, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx1, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj2}},
+                {Idx1, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx1, #xrefX{site = S, path = P3, obj = Obj2}},
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj3}},
+                {Idx1, #xrefX{site = S, path = P2, obj = Obj3}},
+                {Idx1, #xrefX{site = S, path = P3, obj = Obj3}},
 
-                {Idx2, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P3, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P1, obj = Obj2}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj2}},
-                {Idx2, #refX{site = S, path = P3, obj = Obj2}},
-                {Idx2, #refX{site = S, path = P1, obj = Obj3}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj3}},
-                {Idx2, #refX{site = S, path = P3, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P1, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P3, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P1, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P3, obj = Obj3}},
 
-                {Idx3, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P1, obj = Obj2}},
-                {Idx3, #refX{site = S, path = P2, obj = Obj2}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj2}},
-                {Idx3, #refX{site = S, path = P1, obj = Obj3}},
-                {Idx3, #refX{site = S, path = P2, obj = Obj3}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj3}}
+                {Idx3, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P1, obj = Obj2}},
+                {Idx3, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj2}},
+                {Idx3, #xrefX{site = S, path = P1, obj = Obj3}},
+                {Idx3, #xrefX{site = S, path = P2, obj = Obj3}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj3}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -656,35 +654,35 @@ testA5a([]) ->
     Idx2 = 2,
     Idx3 = 3,
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx1, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx1, #refX{site = S, path = P3, obj = Obj1}},
-                {Idx1, #refX{site = S, path = P1, obj = Obj2}},
-                {Idx1, #refX{site = S, path = P2, obj = Obj2}},
-                {Idx1, #refX{site = S, path = P3, obj = Obj2}},
-                {Idx1, #refX{site = S, path = P1, obj = Obj3}},
-                {Idx1, #refX{site = S, path = P2, obj = Obj3}},
-                {Idx1, #refX{site = S, path = P3, obj = Obj3}},
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx1, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx1, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj2}},
+                {Idx1, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx1, #xrefX{site = S, path = P3, obj = Obj2}},
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj3}},
+                {Idx1, #xrefX{site = S, path = P2, obj = Obj3}},
+                {Idx1, #xrefX{site = S, path = P3, obj = Obj3}},
 
-                {Idx2, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P3, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P1, obj = Obj2}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj2}},
-                {Idx2, #refX{site = S, path = P3, obj = Obj2}},
-                {Idx2, #refX{site = S, path = P1, obj = Obj3}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj3}},
-                {Idx2, #refX{site = S, path = P3, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P1, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P3, obj = Obj2}},
+                {Idx2, #xrefX{site = S, path = P1, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj3}},
+                {Idx2, #xrefX{site = S, path = P3, obj = Obj3}},
 
-                {Idx3, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P1, obj = Obj2}},
-                {Idx3, #refX{site = S, path = P2, obj = Obj2}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj2}},
-                {Idx3, #refX{site = S, path = P1, obj = Obj3}},
-                {Idx3, #refX{site = S, path = P2, obj = Obj3}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj3}}
+                {Idx3, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P1, obj = Obj2}},
+                {Idx3, #xrefX{site = S, path = P2, obj = Obj2}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj2}},
+                {Idx3, #xrefX{site = S, path = P1, obj = Obj3}},
+                {Idx3, #xrefX{site = S, path = P2, obj = Obj3}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj3}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -711,7 +709,7 @@ testB0([]) ->
     %Idx2 = 2,
     %Idx3 = 3,
     Cell1 = {cell, {1, 1}},
-    RefX = #refX{site = S, path = P1, obj = Cell1},
+    RefX = #xrefX{site = S, path = P1, obj = Cell1},
     {ok, List} = check(gb_trees:empty(), RefX),
     io:format("is ~p~n", [Cell1]),
     ?assertEqual([], List).
@@ -730,14 +728,14 @@ testB1([]) ->
     %Idx3 = 3,
     Cell1 = {cell, {1, 1}},
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}}
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
-    RefX = #refX{site = S, path = P1, obj = Cell1},
+    RefX = #xrefX{site = S, path = P1, obj = Cell1},
     {ok, [N]} = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(N, Idx1).
@@ -756,16 +754,16 @@ testB2([]) ->
     Idx3 = 3,
     Cell1 = {cell, {1, 1}},
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj1}}
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
-    RefX = #refX{site = S, path = P1, obj = Cell1},
+    RefX = #xrefX{site = S, path = P1, obj = Cell1},
     {ok, [N]} = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(N, 1).
@@ -784,16 +782,16 @@ testB3([]) ->
     Idx3 = 3,
     Cell1 = {cell, {3, 4}},
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P1, obj = Obj2}},
-                {Idx3, #refX{site = S, path = P1, obj = Obj3}}
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P1, obj = Obj2}},
+                {Idx3, #xrefX{site = S, path = P1, obj = Obj3}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
-    RefX = #refX{site = S, path = P1, obj = Cell1},
+    RefX = #xrefX{site = S, path = P1, obj = Cell1},
     {ok, List} = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx2]), lists:sort(List)).
@@ -814,17 +812,17 @@ testB4([]) ->
     Idx4 = 4,
     Cell1 = {cell, {4, 8}},
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P1, obj = Obj2}},
-                {Idx3, #refX{site = S, path = P1, obj = Obj3}},
-                {Idx4, #refX{site = S, path = P1, obj = Obj4}}
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P1, obj = Obj2}},
+                {Idx3, #xrefX{site = S, path = P1, obj = Obj3}},
+                {Idx4, #xrefX{site = S, path = P1, obj = Obj4}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
                   add(Tr, I, R)
           end,
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
-    RefX = #refX{site = S, path = P1, obj = Cell1},
+    RefX = #xrefX{site = S, path = P1, obj = Cell1},
     {ok, List} = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx3]), lists:sort(List)).
@@ -833,23 +831,30 @@ testB4([]) ->
 testC1([]) ->
     Tree = {ok, gb_trees:empty()},
     S = "http://example.com",
-    P1 = ["[true]", "[true]"],
-    P2 = ["d", "4"],
-    Obj1 = {cell, {3, 4}},
+    P1 = ["one", "[true]", "a", "1"],
+    P2 = ["one", "two", "[true]", "1"],
+    P3 = ["one", "[true]", "[true]", "1"],
+    P4 = ["[true]", "[true]", "a", "[true]"],
+    P5 = ["one", "two", "a", "1"],
+    Obj1 = {column, {3, 4}},
     Idx1 = 1,
+    Idx2 = 2,
+    Idx3 = 3,
+    Idx4 = 4,
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}}
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
-
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                   add(Tr, I, R)
-           end,
-
+                  add(Tr, I, R)
+          end,
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
-    RefX = #refX{site = S, path = P2, obj = Obj1},
+    RefX = #xrefX{site = S, path = P5, obj = Obj1},
     {ok, List} = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
-    ?assertEqual(lists:sort([Idx1]), lists:sort(List)).
+    ?assertEqual(lists:sort([Idx1, Idx2, Idx3, Idx4]), lists:sort(List)).
 
 % longer match of 2 zsegs with a seg
 testC2([]) ->
@@ -860,7 +865,7 @@ testC2([]) ->
     Obj1 = {cell, {3, 4}},
     Idx1 = 1,
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}}
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -868,7 +873,7 @@ testC2([]) ->
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
-    RefX = #refX{site = S, path = P2, obj = Obj1},
+    RefX = #xrefX{site = S, path = P2, obj = Obj1},
     {ok, List} = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx1]), lists:sort(List)).
@@ -888,10 +893,10 @@ testC3([]) ->
     Idx3 = 3,
     Idx4 = 4,
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
-                {Idx4, #refX{site = S, path = P4, obj = Obj1}}
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -899,7 +904,7 @@ testC3([]) ->
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
-    RefX = #refX{site = S, path = P5, obj = Obj1},
+    RefX = #xrefX{site = S, path = P5, obj = Obj1},
     {ok, List} = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx2, Idx3, Idx4]), lists:sort(List)).
@@ -919,10 +924,10 @@ testC4([]) ->
     Idx3 = 3,
     Idx4 = 4,
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
-                {Idx4, #refX{site = S, path = P4, obj = Obj1}}
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -930,7 +935,7 @@ testC4([]) ->
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
-    RefX = #refX{site = S, path = P5, obj = Obj1},
+    RefX = #xrefX{site = S, path = P5, obj = Obj1},
     {ok, List} = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx2, Idx3]), lists:sort(List)).
@@ -950,10 +955,10 @@ testC5([]) ->
     Idx3 = 3,
     Idx4 = 4,
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
-                {Idx4, #refX{site = S, path = P4, obj = Obj1}}
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -961,7 +966,7 @@ testC5([]) ->
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
-    RefX = #refX{site = S, path = P5, obj = Obj1},
+    RefX = #xrefX{site = S, path = P5, obj = Obj1},
     {ok, List} = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx2, Idx3]), lists:sort(List)).
@@ -981,10 +986,10 @@ testC6([]) ->
     Idx3 = 3,
     Idx4 = 4,
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
-                {Idx4, #refX{site = S, path = P4, obj = Obj1}}
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -992,7 +997,7 @@ testC6([]) ->
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
-    RefX = #refX{site = S, path = P5, obj = Obj1},
+    RefX = #xrefX{site = S, path = P5, obj = Obj1},
     {ok, List} = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx2, Idx3]), lists:sort(List)).
@@ -1012,10 +1017,10 @@ testC7([]) ->
     Idx3 = 3,
     Idx4 = 4,
     Actions1 = [
-                {Idx1, #refX{site = S, path = P1, obj = Obj1}},
-                {Idx2, #refX{site = S, path = P2, obj = Obj1}},
-                {Idx3, #refX{site = S, path = P3, obj = Obj1}},
-                {Idx4, #refX{site = S, path = P4, obj = Obj1}}
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
@@ -1023,7 +1028,7 @@ testC7([]) ->
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
-    RefX = #refX{site = S, path = P5, obj = Obj1},
+    RefX = #xrefX{site = S, path = P5, obj = Obj1},
     {ok, List} = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx2]), lists:sort(List)).

@@ -42,6 +42,7 @@
          obj_to_ref/1,
          refX_to_url/1,
          index_to_url/1,
+         xrefX_to_refX/1,
          obj_to_change_msg/1,
          in_range/2,
          range_to_list/1,
@@ -465,6 +466,9 @@ obj_to_ref({range, {X1, Y1, X2, Y2}}) ->
     lists:append([tconv:to_b26(X1), text(Y1), ":",
                   tconv:to_b26(X2), text(Y2)]);
 obj_to_ref({page, "/"}) -> "".
+
+xrefX_to_refX(#xrefX{site = S, path = P, obj = O}) ->
+    #refX{site = S, path = P, obj = O, type = url}.
 
 refX_to_url(#refX{site = Site, path = Path, obj = {cell, {X, Y}}}) ->
     lists:append([Site, list_to_path(Path), tconv:to_b26(X), text(Y)]);

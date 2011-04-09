@@ -151,6 +151,7 @@ rl({ignore, Type}, Val) ->
 % Evaluate functions
 % does this ever run?
 rl(eval_funs, Fun) when ?is_funcall(Fun) ->
+    io:format("about to external_eval~n"),
     muin:external_eval(Fun);
 
 rl(area_first, {array,[[X|_]|_]}) -> X;

@@ -512,7 +512,7 @@ fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
     {zpath, ZList} = Z,
     NewPath = muin_util:walk_zpath(?mpath, ZList),
     Length = length(NewPath),
-    Paths = hn_db_api:read_pages(#refX{site = ?msite, path = [], obj = {page, "/"}}),
+    Paths = new_db_api:read_pages(#refX{site = ?msite, path = [], obj = {page, "/"}}),
     FPaths = [X || X <- Paths, length(X) == Length],
     {MPaths, NoMatch, Err} = match(?msite, FPaths, NewPath),
     OCol = C#cellref.col,
@@ -541,7 +541,7 @@ fetch(#rangeref{type = Type, path = Path} = Ref)
     #refX{obj = Obj} = RefX = muin_util:make_refX(?msite, NewPath, Ref),
     Infinites = get(infinite),
     put(infinite, ordsets:add_element(RefX,Infinites)),
-    Refs = hn_db_wu:expand_ref(RefX),
+    Refs = new_db_wu:expand_ref(RefX),
     Rows = case Obj of
                {Type2, {_I, _I}} -> sort1D(Refs, Path, Type2);
                {Type2, {I,   J}} -> sort2D(Refs, Path, {Type2, I, J})
@@ -576,7 +576,8 @@ get_hypernumber(MSite, MPath, MX, MY, _Url, RSite, RPath, RX, RY) ->
     Child  = #refX{site=MSite, path=NewMPath, obj={cell, {MX, MY}}},
     Parent = #refX{site=RSite, path=NewRPath, obj={cell, {RX, RY}}},
 
-    case hn_db_api:read_incoming_hn(Parent, Child) of
+    %% Yup it is not implemented...
+    case new_db_api:read_incoming_hn(Parent, Child) of
 
         {error,permission_denied} ->
             {{errval,'#AUTH'},[],[],[]};
@@ -660,10 +661,10 @@ do_cell(RelPath, Rowidx, Colidx, Type) ->
                                get_cell_info(?msite, Path, Colidx, Rowidx, Type)
                        end,
             case ?mar of
-                nil -> get_value_and_link(FetchFun);
+                nil   -> get_value_and_link(FetchFun);
                 _Else -> case auth_srv:get_any_view(?msite, Path, ?mar) of
                              {view, _} -> get_value_and_link(FetchFun);
-                             _Else -> ?ERR_AUTH
+                             _Else     -> ?ERR_AUTH
                          end
             end
     end.
@@ -672,7 +673,7 @@ do_cell(RelPath, Rowidx, Colidx, Type) ->
 %% saves the dependencies (linking it to current cell), and returns
 %% the value to the caller (to continue the evaluation of the formula).
 get_value_and_link(FetchFun) ->
-    {Value, Errs, Refs}  = FetchFun(),
+    {Value, Errs, Refs} = FetchFun(),
     {Errs0, Refs0} = get(retvals),
     put(retvals, {Errs0 ++ Errs, Refs0 ++ Refs}),
     Value.
@@ -683,8 +684,8 @@ toidx({row, Offset})       -> ?my + Offset;
 toidx({col, Offset})       -> ?mx + Offset.
 
 get_cell_info(S, P, Col, Row, Type) ->
-    RefX = #refX{site=string:to_lower(S), path=P, obj={cell, {Col,Row}}},
-    hn_db_wu:get_cell_for_muin(RefX, Type).
+    RefX = #refX{site = string:to_lower(S), path = P, obj = {cell, {Col, Row}}},
+    new_db_wu:get_cell_for_muin(RefX, Type).
 
 sort1D(Refs, Path, Type) -> sort1D_(Refs, Path, Type, orddict:new()).
 
@@ -828,9 +829,9 @@ zeval2(Site, Path, Toks, X, Y) ->
     OldContext = get(),
     % we run in the context of call '0, 0' - this is because z-order expressions
     % do not support r[]c[] format cell references (or is it vice-versa?)
-    RefX = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
+    RefX = #xrefX{site = Site, path = Path, obj = {cell, {X, Y}}},
     % no array context (fine) or security context (erk!)
-    RTI = hn_db_wu:refX_to_rti(RefX, nil, false),
+    RTI = new_db_wu:refX_to_rti(RefX, nil, false),
     Return = case catch(xfl_parser:parse(Toks)) of
                  {ok, Ast}   -> {ok, {_, Rs, _, _, _}} = muin:run_code(Ast, RTI),
                                 % cast to a boolean

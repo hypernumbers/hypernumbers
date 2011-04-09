@@ -419,7 +419,7 @@ can_view(Site, Uid, #view{groups = Groups}) ->
 
 -spec load_tree(string()) -> gb_tree().
 load_tree(Site) ->
-    case hn_db_api:read_kv(Site, ?auth_srv) of
+    case new_db_api:read_kv(Site, ?auth_srv) of
         []                          -> gb_trees:empty();
         [{kvstore, ?auth_srv, Val}] -> Val
     end.
@@ -427,7 +427,7 @@ load_tree(Site) ->
 %% Todo: This really shouldn't be Dets.
 -spec save_tree(string(), gb_tree()) -> ok.
 save_tree(Site, NewTree) ->
-    ok = hn_db_api:write_kv(Site, ?auth_srv, NewTree).
+    ok = new_db_api:write_kv(Site, ?auth_srv, NewTree).
 
 -spec alter_tree(gb_tree(),
                  [string()],
@@ -896,7 +896,7 @@ testE2(_S) ->
 unit_test_() ->
     Site = "http://example.com:1234",
     Setup = fun() ->
-                    hn_db_admin:create_table(hn_db_wu:trans(Site, group),
+                    hn_db_admin:create_table(new_db_wu:trans(Site, group),
                                              group,
                                              record_info(fields, group),
                                              ram_copies,
@@ -913,7 +913,7 @@ unit_test_() ->
                       hn_groups:delete_group(Site, "admin"),
                       hn_groups:delete_group(Site, "user"),
                       hn_groups:delete_group(Site, "nobody"),
-                      Tbl = hn_db_wu:trans(Site, group),
+                      Tbl = new_db_wu:trans(Site, group),
                       {atomic, ok} = mnesia:delete_table(Tbl)
               end,
     SeriesA = [

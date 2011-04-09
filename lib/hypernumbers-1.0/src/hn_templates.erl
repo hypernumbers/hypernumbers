@@ -66,12 +66,12 @@ load_template(#refX{site=S, path=P}, Name, Uid) ->
 % %% @spec write_def(TemplateName,IsDynamic,RootURL,GUI) -> {ok,ok} | {error,Error}
 % %% @doc takes an incoming template and writes it to the database
 %% write_def(TemplateName,RootURL,GUI,Form) ->
-%%     hn_db:write_template(TemplateName,RootURL,GUI,Form).
+%%     new_db_api:write_template(TemplateName,RootURL,GUI,Form).
 
 % %% @spec get_next(Ref,TemplateName, UserName) -> NewName
 % %% @doc gets the next valid page name
 %% get_next(Ref,TemplateName,UserName) ->
-%%     {ok,Template}=hn_db:read_template(TemplateName),
+%%     {ok,Template}=new_db_api:read_template(TemplateName),
 %%     {template,TemplateName,TemplatePath,_Gui,_Form}=Template,
 %%     Return=new_path(Ref,TemplatePath,UserName),
 %%     Return.
@@ -93,7 +93,7 @@ load_template(#refX{site=S, path=P}, Name, Uid) ->
 % %% @spec get_templates() -> Templates
 % %% @doc returns all the templates on the system as a list
 %% get_templates() ->
-%%     {ok,Templates}=hn_db:get_templates(),
+%%     {ok,Templates}=new_db_api:get_templates(),
 %%     Fun=fun(X) ->
 %%                 #template{name=Name,temp_path=Path,gui=Gui,form=Form}=X,
 %%                 {template,[{name,[],[Name]},{path,[],[repath(Path)]},
@@ -173,7 +173,7 @@ load_template(#refX{site=S, path=P}, Name, Uid) ->
 %    Path2=string:tokens(Path,"/"),
 %    Ref2=ms_util:make_ms(ref,[{path,lists:append(Path2,'_')},
 %                              {ref,{page,"/"}}]),
-%    Items = hn_db:get_item(Ref2),
+%    Items = new_db_api:get_item(Ref2),
 %    F = fun(#hn_item{addr=R}) ->
 %                %% Items seemed to include root pages that
 %                %% dont have enough path elements to pull Offset out of

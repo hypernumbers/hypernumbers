@@ -79,12 +79,12 @@ split_sheets(X, {Ls, Fs}) ->
 write_data(Ref, {Sheet, Target, Data}, Uid) when is_list(Target) ->
     NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
                     obj  = hn_util:parse_attr(Target)},
-    hn_db_api:write_attributes([{NRef, [{"formula", Data}]}], Uid).
+    new_db_api:write_attributes([{NRef, [{"formula", Data}]}], Uid).
 
 write_css(Ref, {Sheet, Target, CSS}, Uid) when is_list(Target) ->
     NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
                     obj  = hn_util:parse_attr(Target)},
-    hn_db_api:write_attributes([{NRef, CSS}], Uid).
+    new_db_api:write_attributes([{NRef, CSS}], Uid).
 
 %% Excel's default borders are
 %% * no type of border
@@ -153,7 +153,7 @@ import(File, User, Ref, Name, Uid) ->
 
 write_warnings_page(Ref, Sheets, User, Name, Warnings, Uid) ->
 
-    hn_db_api:write_attributes([{Ref#refX{obj = {column, {2, 2}}},
+    new_db_api:write_attributes([{Ref#refX{obj = {column, {2, 2}}},
                                  [{width, 400}]}], Uid),
 
     % write parent page information
@@ -198,7 +198,7 @@ write_warnings_page(Ref, Sheets, User, Name, Warnings, Uid) ->
 
 write_to_cell(Ref, Str, Col, Row, Attrs) ->
     Attrs2 = [{"formula", Str} | Attrs],
-    hn_db_api:write_attributes([{Ref#refX{obj = {cell, {Col, Row}}}, Attrs2}]).
+    new_db_api:write_attributes([{Ref#refX{obj = {cell, {Col, Row}}}, Attrs2}]).
 
 write_warnings(_Ref, [], _) ->
     ok;

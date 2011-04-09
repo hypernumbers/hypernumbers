@@ -22,7 +22,7 @@ get_logs(RefX) when is_record(RefX, refX)->
                       Tm1 =< Tm2 -> true
                   end
           end,
-    Logs = lists:sort(Fun, hn_db_api:get_logs(RefX)),
+    Logs = lists:sort(Fun, new_db_api:get_logs(RefX)),
     tidy_up(Logs, hn_util:refX_to_url(RefX)).
 
 tidy_up(Logs, Title) ->

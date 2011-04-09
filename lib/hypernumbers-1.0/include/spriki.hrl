@@ -45,6 +45,14 @@
           row
          }).
 
+-record(xrefX,
+        {
+          idx,
+          site        = [],
+          path        = [],
+          obj         = null
+         }).
+
 -record(refX,
         {
           site        = [],
@@ -94,7 +102,7 @@
 -record(dirty_for_zinf,
         {
           id = now(),
-          dirty :: #refX{}
+          dirty :: #xrefX{}
          }).
 
 % this record is for the table that gets changes to the zinf tree

@@ -52,7 +52,7 @@ cell([V1, V2]) ->
     cell1(InfoType, RefX).
 
 cell1("formula", RefX) ->
-    Ret = hn_db_api:read_attribute(RefX, "formula"),
+    Ret = new_db_api:read_attribute(RefX, "formula"),
     case Ret of
         [{_, F}] ->
             case string:substr(F, 1, 1) of
@@ -72,7 +72,7 @@ cell1("row", RefX) ->
     {cell, {_Col, Row}} = RefX#refX.obj,
     Row;
 cell1("contents", RefX) ->
-    Ret = hn_db_api:read_attribute(RefX, "value"),
+    Ret = new_db_api:read_attribute(RefX, "value"),
     [{_, V}] = Ret,
     case V of
         blank -> 0;

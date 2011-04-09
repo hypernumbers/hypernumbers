@@ -51,7 +51,7 @@ delete_site(Site) ->
     ok = mnesia:activity(transaction,
                          fun mnesia:delete/3,
                          [core_site, Site, write]),
-    [ {atomic, ok} = mnesia:delete_table(hn_db_wu:trans(Site, Table))
+    [ {atomic, ok} = mnesia:delete_table(new_db_wu:trans(Site, Table))
       || {Table, _F, _T, _I, _S} <- tables()],
     [_Proto, [$/, $/ | Domain], _URL] = string:tokens(Site, ":"),
     [TLD, Dom | Subs] = lists:reverse(string:tokens(Domain, ".")),
@@ -171,19 +171,19 @@ get_initial_params(Site) ->
 create_blank_pages(Site) ->
     Key = ?pages,
     Value = [],
-    hn_db_api:write_kv(Site, Key, Value).
+    new_db_api:write_kv(Site, Key, Value).
 
 -spec create_blank_z_and_infs(string()) -> ok.
 create_blank_z_and_infs(Site) ->
     Key = ?zinf_tree,
     Value = gb_trees:empty(),
-    hn_db_api:write_kv(Site, Key, Value).
+    new_db_api:write_kv(Site, Key, Value).
 
 -spec create_site_tables(string(), atom()) -> ok.
 create_site_tables(Site, Type)->
     %% Seems sensible to keep this restricted
     %% to disc_copies for now
-    [ok = hn_db_admin:create_table(hn_db_wu:trans(Site, N),
+    [ok = new_db_admin:create_table(new_db_wu:trans(Site, N),
                                    N, F, S, T, true, I)
      || {N, F, T, I, S} <- tables()],
     Trans = fun() ->
@@ -264,8 +264,7 @@ run_script({Path, Expr}, Site, _Opts) ->
 
 write_cell(Path, Site, Expr) ->
     RefX = hn_util:url_to_refX(Site++Path),
-    hn_db_api:write_attributes([{RefX, [{"formula", Expr}]}]).
-
+    new_db_api:write_attributes([{RefX, [{"formula", Expr}]}]).
 
 substitute(Var, Val, Var) ->
     Val;

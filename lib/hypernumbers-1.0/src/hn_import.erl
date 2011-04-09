@@ -58,9 +58,9 @@ csv_file(Url, FileName) ->
     Refs  = make_refs(Recs, Ref),
 
     % first clear the page
-    ok = hn_db_api:clear(Ref, all, nil),
+    ok = new_db_api:clear(Ref, all, nil),
     % now write it
-    [ok = hn_db_api:write_attributes([X]) || X <- Refs],
+    [ok = new_db_api:write_attributes([X]) || X <- Refs],
     ok.
 
 csv_append(Url, FileName) ->
@@ -71,7 +71,7 @@ csv_append(Url, FileName) ->
     Refs  = make_append_refs(Recs, Ref),
 
     % now write it
-    [ok = hn_db_api:append_row(X, nil, nil) || X <- Refs],
+    [ok = new_db_api:append_row(X, nil, nil) || X <- Refs],
     ok.
 
 xls_file(Path, FileName, SheetName) ->
@@ -112,7 +112,7 @@ json_file(Url, FileName, Uid) ->
 
     Styles = make_styles(StyleStrs, []),
 
-    ok = hn_db_api:clear(Ref, all, Uid),
+    ok = new_db_api:clear(Ref, all, Uid),
     [rows(Ref, X, Styles, row,    fun write_col_row/4, Uid) || X <- Rows],
     [rows(Ref, X, Styles, column, fun write_col_row/4, Uid) || X <- Cols],
     [rows(Ref, X, Styles, cell,   fun write_cells/4,   Uid) || X <- Cells],
@@ -144,7 +144,7 @@ cells(Ref, Row, {Col, {struct, Attrs}}, Styles, Type, Fun, Uid) ->
 
 write_col_row(_NRef, _, [], _)   -> ok;
 write_col_row(NRef, _, Attrs, Uid) ->
-    hn_db_api:write_attributes([{NRef, Attrs}], Uid).
+    new_db_api:write_attributes([{NRef, Attrs}], Uid).
 
 write_cells(Ref, Styles, Attrs, Uid) ->
     Attrs2 = copy_attrs(Attrs, [], Styles, ["merge",
@@ -152,7 +152,7 @@ write_cells(Ref, Styles, Attrs, Uid) ->
                                               "style",
                                               "format",
                                               "input"]),
-    hn_db_api:write_attributes([{Ref, Attrs2}], Uid).
+    new_db_api:write_attributes([{Ref, Attrs2}], Uid).
 
 copy_attrs(_Source, Dest, _Styles, []) -> Dest;
 copy_attrs(Source, Dest, Styles, ["style" = Key | T]) ->
@@ -341,7 +341,7 @@ val2(Obj, Test, V, Acc) -> [{{unknown, Test}, Obj, V} | Acc].
 write(Recs) ->
     Refs = transform_recs(Recs),
     % now write it
-    [hn_db_api:write_attributes([X]) || X <- Refs].
+    [new_db_api:write_attributes([X]) || X <- Refs].
 
 transform_recs(Recs) -> trans2(Recs, []).
 

@@ -72,7 +72,7 @@ is_busy(Site) ->
 %% Module:init/1 has returned.
 %%--------------------------------------------------------------------
 init([Site]) ->
-    QTbl = hn_db_wu:trans(Site, dirty_queue),
+    QTbl = new_db_wu:trans(Site, dirty_queue),
     Pid = spawn_opt(fun() -> dbsrv_init(Site, QTbl) end, [{fullsweep_after, 0}]),
     true = link(Pid),
     register(hn_util:site_to_atom(Site, "_dbsrv"), Pid),
@@ -93,7 +93,7 @@ terminate(_Reason, #state{table = _T}) ->
 
 -spec dbsrv_init(string(), atom()) -> no_return().
 dbsrv_init(Site, QTbl) ->
-    {Since, Dirty} = load_dirty_since(0, QTbl),
+    {Since, Dirty} = new_db_api:load_dirty_since(0, QTbl),
     Graph = new_graph(),
     WorkPlan = build_workplan(Site, Dirty, Graph),
     dbsrv(Site, QTbl, Since, WorkPlan, Graph).
@@ -142,8 +142,8 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
         {write_activity, Activity} ->
             Activity(),
             ok = rebuild_zinf(Site),
-            ok = process_dirties_for_zinf(Site),
-            case load_dirty_since(Since, QTbl) of
+            ok = new_db_api:process_dirties_for_zinf(Site),
+            case new_db_api:load_dirty_since(Since, QTbl) of
                 {Since2, []} ->
                     {Since2, WorkPlan};
                 {Since2, Dirty} ->
@@ -163,7 +163,7 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
 
 %% rebuild_zinfs adds new infinite and z-order relations to the zinf tree
 rebuild_zinf(Site) ->
-    Tbl = hn_db_wu:trans(Site, dirty_zinf),
+    Tbl = new_db_wu:trans(Site, dirty_zinf),
     Fun = fun() ->
                 L = mnesia:match_object(Tbl, #dirty_zinf{_='_'}, write),
                 ok = squirt_zinfs(Site, L),
@@ -181,40 +181,9 @@ squirt_zinfs(Site, [H | T]) ->
     [ok = zinf_srv:del_zinf(Site, CI, X) || X <- Del],
     squirt_zinfs(Site, T).
 
-process_dirties_for_zinf(Site) ->
-    Tbl = hn_db_wu:trans(Site, dirty_for_zinf),
-    Fun = fun() ->
-                  L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, write),
-                  Dirties = [X || {ok, X} <- [zinf_srv:check_ref(Site, D)
-                                              || #dirty_for_zinf{dirty = D} <- L]],
-                  D1 = hslists:uniq(lists:flatten(Dirties)),
-                  D2 = [hn_db_wu:idx_to_refX(Site, X) || X <- D1],
-                  ok = hn_db_wu:mark_these_dirty(D2, nil),
-                  [ok = mnesia:delete(Tbl, Id, write)
-                   || #dirty_for_zinf{id = Id} <- L]
-          end,
-    mnesia:activity(transaction, Fun),
-    ok.
-
-%% Loads new dirty information into the recalc graph.
--spec load_dirty_since(term(), atom()) -> {term(), [cellidx()]}.
-load_dirty_since(Since, QTbl) ->
-    M = ets:fun2ms(fun(#dirty_queue{id = T, dirty = D})
-                         when Since < T -> {T, D}
-                   end),
-    F = fun() -> mnesia:select(QTbl, M, read) end,
-    case mnesia:activity(transaction, F) of
-        [] -> {Since, []};
-        Ret ->
-            {SinceL, DirtyLL} = lists:unzip(Ret),
-            Since2 = lists:max(SinceL),
-            DirtyL = lists:usort(lists:flatten(DirtyLL)),
-            {Since2, DirtyL}
-    end.
-
 -spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()].
 build_workplan(Site, Dirty, Graph) ->
-    RTbl = hn_db_wu:trans(Site, relation),
+    RTbl = new_db_wu:trans(Site, relation),
     Trans = fun() ->
                     update_recalc_graph(Dirty, RTbl, Graph),
                     [digraph:add_edge(Graph, P, D)
@@ -274,7 +243,7 @@ update_recalc_graph([Idx|Rest], RTbl, Graph) ->
 eliminate_circ_ref(Site, Dirty, Graph) ->
     Cycle = lists:flatten(digraph_utils:cyclic_strong_components(Graph)),
     [digraph:del_vertex(Graph, V) || V <- Cycle],
-    [hn_db_api:handle_circref_cell(Site, V, nil) || V <- Cycle,
+    [new_db_api:handle_circref_cell(Site, V, nil) || V <- Cycle,
                                                     lists:member(V, Dirty)],
     build_workplan(Site, Dirty, Graph).
 
@@ -286,7 +255,7 @@ execute_plan([C | T], Site, Graph) ->
         false ->
             execute_plan(T, Site, Graph);
         _ ->
-            hn_db_api:handle_dirty_cell(Site, C, nil),
+            new_db_api:handle_dirty_cell(Site, C, nil),
             digraph:del_vertex(Graph, C),
             execute_plan(T, Site, Graph)
     end.

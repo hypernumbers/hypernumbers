@@ -32,7 +32,7 @@
 %% just dumps a table to the shell
 dump_site_table(Site, Table) ->
     Record = list_to_atom(Table),
-    Table2 = hn_db_wu:trans(Site, Record),
+    Table2 = new_db_wu:trans(Site, Record),
     dump2(Table2, Record).
 
 -spec dump_core_table(string(), string()) -> ok.

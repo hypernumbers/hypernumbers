@@ -44,10 +44,10 @@ content(Ref, Type) ->
     % we have 2 sets of CSS and JS
     % 'old style' which are in the page attributes
     % 'new style' which are in the include table
-    CSSList = hn_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "css"),
-    JSList = hn_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "js"),
-    {Js2, Js_reload, CSS2} = hn_db_api:read_includes(Ref#refX{obj = {page, "/"}}),
-    TitleList = hn_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "title"),
+    CSSList = new_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "css"),
+    JSList = new_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "js"),
+    {Js2, Js_reload, CSS2} = new_db_api:read_includes(Ref#refX{obj = {page, "/"}}),
+    TitleList = new_db_api:read_attribute(Ref#refX{obj = {page, "/"}}, "title"),
     Open = "<link rel='stylesheet' href='",
     {_, CSSList2} = lists:unzip(CSSList),
     {_, JSList2}  = lists:unzip(JSList),
@@ -61,7 +61,7 @@ content(Ref, Type) ->
     {layout(Ref, Type, Cells, ColWs, RowHs, Palette), Addons}.
 
 read_data_without_page(Ref) ->
-    Refs = hn_db_api:read_intersect_ref(Ref),
+    Refs = new_db_api:read_intersect_ref(Ref),
     [ {RefX, Val} || {RefX, Val} <- Refs, element(1, RefX#refX.obj) =/= page ].
 
 -spec layout(#refX{}, atom(), cells(), cols(), rows(), gb_tree())
@@ -416,9 +416,9 @@ merged_row_test_() ->
     {_, W, H} = layout(Ref, webpage, Cells, ColWs, RowHs, Palette),
     ?_assertEqual({480, 330}, {W, H}).
 
-dump([], Acc) ->
-    io:format("~p~n", [string:join(lists:reverse(Acc), ",")]);
-dump([{{X, Y}, _} | T], Acc) ->
-    dump(T, [tconv:to_b26(X) ++ integer_to_list(Y) | Acc]);
-dump([{X, Y} | T], Acc) ->
-    dump(T, [tconv:to_b26(X) ++ integer_to_list(Y) | Acc]).
+%% dump([], Acc) ->
+%%     io:format("~p~n", [string:join(lists:reverse(Acc), ",")]);
+%% dump([{{X, Y}, _} | T], Acc) ->
+%%     dump(T, [tconv:to_b26(X) ++ integer_to_list(Y) | Acc]);
+%% dump([{X, Y} | T], Acc) ->
+%%     dump(T, [tconv:to_b26(X) ++ integer_to_list(Y) | Acc]).

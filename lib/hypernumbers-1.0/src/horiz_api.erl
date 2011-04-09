@@ -125,11 +125,11 @@
 %%             NewPVsn = json_util:unjsonify(NewPVsnJson),
 %%             % check that the pages are in sync
 %%             {xml, [], DepTree2} = simplexml:from_xml_string(DepTree),
-%%             case hn_db_api:check_page_vsn(CSite, NewPVsn) of
+%%             case new_db_api:check_page_vsn(CSite, NewPVsn) of
 %%                 synched ->
 %%                     {Value, DepTree2, Biccie, NewPVsn};
 %%                 not_yet_synched ->
-%%                     {ok,ok} = hn_db_api:intialise_remote_page_vsn(CSite, NewPVsn),
+%%                     {ok,ok} = new_db_api:intialise_remote_page_vsn(CSite, NewPVsn),
 %%                     {Value, DepTree2, Biccie, PVsn};
 %%                 unsynched ->
 %%                     {error, unsynched, PVsn}

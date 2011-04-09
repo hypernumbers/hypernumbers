@@ -458,7 +458,7 @@ iget(#refX{site=Site, path=Path}, page, #qry{view=?DEMO}, Env) ->
     text_html(Env, make_demo(Site, Path));
 
 iget(#refX{site=Site, path=Path}, page, #qry{view=?RECALC}, Env) ->
-    ok = hn_db_api:recalc_page(#refX{site = Site, path = Path, obj = {page, "/"}}),
+    ok = new_db_api:recalc_page(#refX{site = Site, path = Path, obj = {page, "/"}}),
     Html = viewroot(Site) ++ "/recalc.html",
     serve_html(Env, Html);
 
@@ -517,7 +517,7 @@ iget(Ref, cell, #qry{view = ?LOGVIEW}, Env=#env{accept = html}) ->
     text_html(Env, hn_logs:get_logs(Ref));
 
 iget(Ref, cell, _Qry, Env=#env{accept = json}) ->
-    V = case hn_db_api:read_attribute(Ref,"value") of
+    V = case new_db_api:read_attribute(Ref,"value") of
             [{_Ref, Val}] when is_atom(Val) ->
                 atom_to_list(Val);
             [{_Ref, {datetime, D, T}}] ->
@@ -595,23 +595,23 @@ ipost(Ref, _Qry, Env=#env{body = [{"load_template", {_, [{"name", Name}]}}],
 ipost(Ref, _Qry, Env=#env{body = [{"drag", {_, [{"range", Rng}]}}],
                           uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:drag_n_drop(Ref,
-                               Ref#refX{obj = hn_util:parse_attr(range,Rng)},
-                               Uid),
+    ok = new_db_api:drag_n_drop(Ref,
+                                Ref#refX{obj = hn_util:parse_attr(range,Rng)},
+                                Uid),
     json(Env, "success");
 
 ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"insert", "before"}], uid = Uid})
   when O == row orelse O == column ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:insert(Ref, Uid),
+    ok = new_db_api:insert(Ref, Uid),
     json(Env, "success");
 
 ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"insert", "after"}], uid = Uid})
   when O == row orelse O == column ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:insert(make_after(Ref), Uid),
+    ok = new_db_api:insert(make_after(Ref), Uid),
     json(Env, "success");
 
 %% by default cells and ranges displace vertically
@@ -619,7 +619,7 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"insert", "before"}], uid = Uid})
   when O == cell orelse O == range ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:insert(Ref, vertical, Uid),
+    ok = new_db_api:insert(Ref, vertical, Uid),
     json(Env, "success");
 
 %% by default cells and ranges displace vertically
@@ -627,7 +627,7 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"insert", "after"}], uid = Uid})
   when O == cell orelse O == range ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:insert(Ref, vertical, Uid),
+    ok = new_db_api:insert(Ref, vertical, Uid),
     json(Env, "success");
 
 %% but you can specify the displacement explicitly
@@ -637,7 +637,7 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
   when (O == cell orelse O == range),
        (D == "horizontal" orelse D == "vertical") ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:insert(Ref, list_to_existing_atom(D), Uid),
+    ok = new_db_api:insert(Ref, list_to_existing_atom(D), Uid),
     json(Env, "success");
 
 ipost(Ref=#refX{obj = {O, _}}, _Qry,
@@ -647,19 +647,19 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
        (D == "horizontal" orelse D == "vertical") ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     RefX2 = make_after(Ref),
-    ok = hn_db_api:insert(RefX2, list_to_existing_atom(D), Uid),
+    ok = new_db_api:insert(RefX2, list_to_existing_atom(D), Uid),
     json(Env, "success");
 
 ipost(Ref=#refX{obj = {O, _}}, _Qry,
       Env=#env{body=[{"delete", "all"}], uid = Uid})
   when O == page ->
     ok = status_srv:update_status(Uid, Ref, "deleted page"),
-    ok = hn_db_api:delete(Ref, Uid),
+    ok = new_db_api:delete(Ref, Uid),
     json(Env, "success");
 
 ipost(Ref, _Qry, Env=#env{body=[{"delete", "all"}],uid=Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "deleted page"),
-    ok = hn_db_api:delete(Ref, Uid),
+    ok = new_db_api:delete(Ref, Uid),
     json(Env, "success");
 
 ipost(Ref=#refX{obj = {O, _}}, _Qry,
@@ -668,7 +668,7 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
   when (O == cell orelse O == range),
        (Direction == "horizontal" orelse Direction == "vertical") ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:delete(Ref, list_to_atom(Direction), Uid),
+    ok = new_db_api:delete(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
 ipost(Ref=#refX{obj = {O, _}}, _Qry,
@@ -677,7 +677,7 @@ ipost(Ref=#refX{obj = {O, _}}, _Qry,
   when (O == cell orelse O == range),
        (Direction == "horizontal" orelse Direction == "vertical") ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:insert(Ref, list_to_atom(Direction), Uid),
+    ok = new_db_api:insert(Ref, list_to_atom(Direction), Uid),
     json(Env, "success");
 
 %% These three cases could be collapsed into one...
@@ -686,21 +686,21 @@ ipost(Ref,
       Env=#env{body=[{"copy", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, all, Uid),
+    ok = new_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, all, Uid),
     json(Env, "success");
 ipost(Ref,
       _Qry,
       Env=#env{body=[{"copystyle", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, style, Uid),
+    ok = new_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, style, Uid),
     json(Env, "success");
 ipost(Ref,
       _Qry,
       Env=#env{body=[{"copyvalue", {struct, [{"src", Src}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, value, Uid),
+    ok = new_db_api:copy_n_paste(hn_util:url_to_refX(Src), Ref, value, Uid),
     json(Env, "success");
 
 ipost(#refX{obj = {O, _}} = Ref, _Qry,
@@ -711,7 +711,7 @@ ipost(#refX{obj = {O, _}} = Ref, _Qry,
     Border_Style = from("border_style", Attrs),
     Border_Color = from("border_color", Attrs),
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
+    ok = new_db_api:set_borders(Ref, Where, Border, Border_Style, Border_Color),
     json(Env, "success");
 
 %% ipost(_Ref, _Qry,
@@ -733,14 +733,14 @@ ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
       Env=#env{body = [{"postinline", {struct, [{"formula", _}] = Attrs}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    case hn_db_api:read_attribute(Ref, "input") of
+    case new_db_api:read_attribute(Ref, "input") of
         [{Ref, "inline"}] ->
-            ok = hn_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
+            ok = new_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
             json(Env, "success");
         [{Ref, {"select", Vs}}] ->
             [{"formula", V}] = Attrs,
             case lists:member(V, Vs) of
-                true  -> ok = hn_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
+                true  -> ok = new_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
                          json(Env, "success");
                 false -> respond(403, Env)
             end;
@@ -752,15 +752,15 @@ ipost(Ref=#refX{obj = {cell, _}}, _Qry,
       Env=#env{body = [{"postinline", {struct, [{"clear","contents"}]}}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:clear(Ref, contents, Uid),
+    ok = new_db_api:clear(Ref, contents, Uid),
     json(Env, "success");
 
-ipost(Ref=#refX{path = P} = Ref, _Qry,
+ipost(Ref=#refX{site = S, path = P} = Ref, _Qry,
       Env=#env{body = [{"postform", {struct, Vals}}], uid = PosterUid}) ->
     [{"results", ResPath}, {"values", {array, Array}}] = Vals,
     ok = status_srv:update_status(PosterUid, Ref, "edited page"),
     Transaction = common,
-    Expected = hn_db_api:matching_forms(Ref, Transaction),
+    Expected = new_db_api:matching_forms(Ref, Transaction),
     case hn_security:validate_form(Expected, Array) of
         false ->
             ?E("invalid form submission~n""on:       ~p~n"
@@ -768,25 +768,9 @@ ipost(Ref=#refX{path = P} = Ref, _Qry,
                [Ref, Expected, Array]),
             respond(403, Env);
         true  ->
-            Res = Ref#refX{
-                    path = string:tokens(hn_util:abs_path(P, ResPath), "/")
-                   },
-
-            % Labels from the results page
-            OldLabs = hn_db_api:read_attribute(Res#refX{obj={row, {1,1}}},
-                                               "__rawvalue"),
-
-            Values = [ {"submitted", dh_date:format("Y/m/d h:i:s")} |
-                       lists:reverse(lists:foldl(fun generate_labels/2, [],
-                                                 Array)) ],
-
-            {NewLabels, NVals} =
-                allocate_values(Values, OldLabs, Res, get_last_col(OldLabs)),
-
-            NLbls = [ {Lref, [{"formula", Val}]} || {Lref, Val} <- NewLabels ],
-            ok = hn_db_api:write_attributes(NLbls, PosterUid, PosterUid),
-            ok = hn_db_api:append_row(NVals, PosterUid, PosterUid),
-
+            Path = string:tokens(hn_util:abs_path(P, ResPath), "/"),
+            Res = Ref#refX{site = S, path = Path, obj = {row, {1, 1}}},
+            ok = new_db_api:handle_form_post(Res, Array, PosterUid),
             json(Env, "success")
     end;
 
@@ -806,9 +790,9 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {struct, Attr}}], uid = Uid})
             post_range_values(Ref, Vals, Uid, Uid);
         [{"input", {struct, [{"select", {array, Array}}]}}] ->
             NewAttr = [{"input", {"select", Array}}],
-            ok = hn_db_api:write_attributes([{Ref, NewAttr}], Uid, Uid);
+            ok = new_db_api:write_attributes([{Ref, NewAttr}], Uid, Uid);
         _Else ->
-            ok = hn_db_api:write_attributes([{Ref, Attr}], Uid, Uid)
+            ok = new_db_api:write_attributes([{Ref, Attr}], Uid, Uid)
     end,
     json(Env, "success");
 
@@ -816,18 +800,18 @@ ipost(Ref, _Qry, Env=#env{body = [{"set", {array, Array}}], uid = Uid})
   when Array =/= [] ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     List = [X || {struct, [X]} <- Array],
-    ok = hn_db_api:write_attributes([{Ref, List}], Uid, Uid),
+    ok = new_db_api:write_attributes([{Ref, List}], Uid, Uid),
     json(Env, "success");
 
 ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid})
   when What == "contents"; What == "style"; What == "all" ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:clear(Ref, list_to_atom(What), Uid),
+    ok = new_db_api:clear(Ref, list_to_atom(What), Uid),
     json(Env, "success");
 
 ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
-    ok = hn_db_api:clear(Ref, {attributes, [What]}, Uid),
+    ok = new_db_api:clear(Ref, {attributes, [What]}, Uid),
     json(Env, "success");
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -857,19 +841,19 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%     CVsn = json_util:unjsonify(CVsJson),
 %%     %% #version{page = PP, version = PV} = PVsn,
 %%     %% #version{page = CP, version = CV} = CVsn,
-%%     Sync1 = hn_db_api:check_page_vsn(Site, PVsn),
-%%     Sync2 = hn_db_api:check_page_vsn(Site, CVsn),
+%%     Sync1 = new_db_api:check_page_vsn(Site, PVsn),
+%%     Sync2 =  new_db_api:check_page_vsn(Site, CVsn),
 %%     case Sync1 of
 %%         synched         -> ok;
-%%         unsynched       -> hn_db_api:resync(Site, PVsn);
+%%         unsynched       -> new_db_api:resync(Site, PVsn);
 %%         not_yet_synched -> ok % the child gets the version in this call...
 %%     end,
 %%     case Sync2 of
 %%         synched         -> ok;
-%%         unsynched       -> hn_db_api:resync(Site, CVsn);
+%%         unsynched       -> new_db_api:resync(Site, CVsn);
 %%         not_yet_synched -> sync_exit()
 %%     end,
-%%     {struct, Return} = hn_db_api:register_hn_from_web(ParentX, ChildX,
+%%     {struct, Return} = new_db_api:register_hn_from_web(ParentX, ChildX,
 %%                                                       Proxy, Biccie),
 %%     Return2 = lists:append([Return, [{"stamp", Stamp}]]),
 %% json(Env, {struct, Return2});
@@ -897,23 +881,23 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%     ChildX = hn_util:url_to_refX(ChildUrl),
 %%     ParentX = hn_util:url_to_refX(ParentUrl),
 %%     #refX{site = Site} = Ref,
-%%     Sync1 = hn_db_api:check_page_vsn(Site, CVsn),
-%%     Sync2 = hn_db_api:check_page_vsn(Site, PVsn),
+%%     Sync1 = new_db_api:check_page_vsn(Site, CVsn),
+%%     Sync2 = new_db_api:check_page_vsn(Site, PVsn),
 %%     case Sync1 of
 %%         synched ->
-%%             ok = hn_db_api:notify_back_from_web(ParentX, ChildX,
+%%             ok = new_db_api:notify_back_from_web(ParentX, ChildX,
 %%                                                 Biccie, Type);
 %%         unsynched ->
-%%             hn_db_api:resync(Site, PVsn);
+%%             new_db_api:resync(Site, PVsn);
 %%         not_yet_synched ->
-%%             ok = hn_db_api:initialise_remote_page_vsn(Site, PVsn)
+%%             ok = new_db_api:initialise_remote_page_vsn(Site, PVsn)
 %%     end,
 %%     case Sync2 of
 %%         synched -> ok;
 %%         unsynched ->
-%%             ok = hn_db_api:resync(Site, CVsn);
+%%             ok = new_db_api:resync(Site, CVsn);
 %%         not_yet_synched ->
-%%             ok = hn_db_api:initialise_remote_page_vsn(Site, CVsn)
+%%             ok = new_db_api:initialise_remote_page_vsn(Site, CVsn)
 %%     end,
 %%     S = {struct, [{"result", "success"}, {"stamp", Stamp}]},
 %%     json(Env, S);
@@ -943,18 +927,18 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%     %%#version{page = PP, version = PV} = PVsn,
 
 %%     Sync1 = case Type of
-%%                 "insert"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
-%%                 "delete"    -> hn_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
-%%                 "new_value" -> hn_db_api:check_page_vsn(Site, PVsn)
+%%                 "insert"    -> new_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
+%%                 "delete"    -> new_db_api:incr_remote_page_vsn(Site, PVsn, Payload);
+%%                 "new_value" -> new_db_api:check_page_vsn(Site, PVsn)
 %%             end,
 %%     %% there is one parent and it if is out of synch, then don't process it, ask for a
 %%     %% resynch
 %%     case Sync1 of
 %%         synched ->
-%%             ok = hn_db_api:notify_from_web(ParentX, Ref, Type,
+%%             ok = new_db_api:notify_from_web(ParentX, Ref, Type,
 %%                                            Payload, Biccie);
 %%         unsynched ->
-%%             ok = hn_db_api:resync(Site, PVsn);
+%%             ok = new_db_api:resync(Site, PVsn);
 %%         not_yet_synched ->
 %%             sync_exit()
 %%     end,
@@ -962,11 +946,11 @@ ipost(Ref, _Qry, Env=#env{body = [{"clear", What}], uid = Uid}) ->
 %%     %% a resynch for each of them
 %%     Fun =
 %%         fun(X) ->
-%%                 Sync2 = hn_db_api:check_page_vsn(Site, X),
+%%                 Sync2 = new_db_api:check_page_vsn(Site, X),
 %%                 %% #version{page = CP, version = CV} = X,
 %%                 case Sync2 of
 %%                     synched         -> ok;
-%%                     unsynched       -> ok = hn_db_api:resync(Site, X);
+%%                     unsynched       -> ok = new_db_api:resync(Site, X);
 %%                     not_yet_synched -> sync_exit()
 %%                 end
 %%         end,
@@ -1018,53 +1002,6 @@ ipost(Ref, Qry, Env) ->
 %%% Helpers
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-get_last_col(Labels) ->
-    case [X || {#refX{obj = {cell, {X, _}}}, _Val} <- Labels] of
-        []   -> 0;
-        List -> lists:max(List)
-    end.
-
-allocate({Label, Value}, {Labels, Index, Ref, NLabels, Refs}) ->
-    case lists:keyfind(Label, 2, Labels) of
-        {#refX{obj = {cell, {X, _Y}}} = RefX, Label} ->
-            % Label already exists
-            {Labels, Index, Ref, NLabels,
-             [{RefX#refX{obj = {column, {X, X}}}, Value} | Refs]};
-        false  ->
-            % Write new label
-            X = Index + 1,
-            {Labels, X, Ref,
-             [{Ref#refX{obj = {cell, {X, 1}}}, Label} | NLabels],
-             [{Ref#refX{obj = {column,  {X, X}}}, Value} | Refs]}
-    end.
-
-allocate_values(Values, Labels, Ref, Index) ->
-    {_Labels, _Index, _Ref, NLabels, Refs} =
-        lists:foldl(fun allocate/2, {Labels, Index, Ref, [], []}, Values),
-    {NLabels, Refs}.
-
-generate_labels({struct,[{"label", []}, {"formula", Formula}]}, List) ->
-    [{uniqify("default", List), Formula} | List];
-generate_labels({struct,[{"label", Label}, {"formula", Formula}]}, List) ->
-    [{uniqify(Label, List), Formula} | List].
-
--spec uniqify(string(), list()) -> string().
-uniqify(Label, List) ->
-    case lists:keyfind(Label, 1, List) of
-        {Label, _Value} -> uniqify(Label, List, 2);
-        false           -> Label
-    end.
-
--spec uniqify(string(), list(), integer()) -> string().
-uniqify(Label, List, Index) ->
-    NLabel = Label ++ " " ++ integer_to_list(Index),
-    case lists:keyfind(NLabel, 1, List) of
-        {NLabel, _Value} -> uniqify(Label, List, Index+1);
-        false            -> NLabel
-    end.
-
-
-
 -spec log_signup(string(), string(), atom(), auth_srv:uid(), string()) -> ok.
 log_signup(Site, NewSite, Node, Uid, Email) ->
     Row = [ {hn_util:url_to_refX(Site ++ "/_sites/" ++ Ref), Val}
@@ -1074,7 +1011,7 @@ log_signup(Site, NewSite, Node, Uid, Email) ->
                               {"C:C", Uid},
                               {"D:D", dh_date:format("Y/m/d G:i:s")},
                               {"E:E", atom_to_list(Node)} ] ],
-    hn_db_api:append_row(Row, nil, nil).
+    new_db_api:append_row(Row, nil, nil).
 
 %% Some clients dont send ip in the host header
 get_real_uri(Env) ->
@@ -1116,16 +1053,18 @@ add_ref(_Ref, [], JSON) ->
     JSON;
 add_ref(Ref, [{"__"++_Hidden, _}|Tail], JSON) ->
     add_ref(Ref, Tail, JSON);
-add_ref(Ref, [KV|Tail], JSON) ->
+add_ref(Ref, [KV | Tail], JSON) ->
     JSON2 = add_ref1(Ref, hn_util:jsonify_val(KV), JSON),
     add_ref(Ref, Tail, JSON2).
 
+% ERK seem to be missing a range clause!
 % order of clauses matters because new cols/rows also match old Refs
-add_ref1(#refX{obj = {page,"/"}}, {Name, Val}, JSON) ->
+add_ref1(#xrefX{obj = {page, "/"}}, {Name, Val}, JSON) ->
     dh_tree:set(["page", Name], Val, JSON);
-add_ref1(#refX{obj = {Ref, {X, Y}}}, Data, JSON) ->
+add_ref1(#xrefX{obj = {Ref, {X, Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
+
 templateroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/templates".
@@ -1160,16 +1099,8 @@ dict_to_struct(X, Dict) ->
 -spec extract_styles(string()) -> [#style{}].
 extract_styles(Site) ->
     [style_to_css(S) ||
-        S <- hn_db_api:read_styles_IMPORT(#refX{site=Site}) ].
+        S <- new_db_api:read_styles_IMPORT(#refX{site=Site}) ].
 
-%% -spec extract_styles([{#refX{}, [tuple()]}]) -> #style{}.
-%% extract_styles([]) -> [];
-%% extract_styles(Data) ->
-%%     {Ref, _} = hd(Data),
-%%     Idxs = [I || {_, Attrs} <- Data,
-%%                  I <- [proplists:get_value("style", Attrs)],
-%%                  I /= undefined],
-%%     [style_to_css(S) || S <- hn_db_api:read_styles(Ref, Idxs)].
 
 style_to_css(#style{magic_style = Style, idx = I}) ->
     Num = ms_util2:no_of_fields(magic_style),
@@ -1206,12 +1137,12 @@ post_column_values(Ref, Values, PAr, VAr, Offset) ->
                 % we don't do this in cell formulae though...
                 NRef = Ref#refX{obj = {cell, {X1 + Acc, Y1+Offset}}},
                 case Val of
-                    "" -> ok = hn_db_api:clear(NRef, contents, PAr),
-                          Acc+1;
-                    _  -> ok = hn_db_api:write_attributes([{NRef,
+                    "" -> ok = new_db_api:clear(NRef, contents, PAr),
+                          Acc + 1;
+                    _  -> ok = new_db_api:write_attributes([{NRef,
                                                             [{"formula", Val}]}],
                                                           PAr, VAr),
-                          Acc+1
+                          Acc + 1
                 end
         end,
     lists:foldl(F, 0, Values).
@@ -1234,17 +1165,17 @@ remoting_request(Env=#env{mochi=Mochi}, Site, Paths, Time) ->
 -spec page_attributes(#refX{}, #env{}) -> {struct, list()}.
 page_attributes(#refX{site = S, path = P} = Ref, Env) ->
     #env{uid=UID} = Env,
-    Content = hn_db_api:read_intersect_ref(Ref),
-    Init   = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
-    Tree   = dh_tree:create(Init),
-    Styles = extract_styles(S),
-    NTree  = add_styles(Styles, Tree),
-    Dict   = to_dict(Content, NTree),
-    Time   = {"time", remoting_reg:timestamp()},
-    Usr    = {"user", Env#env.email},
-    Host   = {"host", S},
-    Views  = {"views", {array, auth_srv:get_views(S, P, UID)}},
-    Perms  = {"permissions", auth_srv:get_as_json(S, P)},
+    Content = new_db_api:read_intersect_ref(Ref),
+    Init    = [["cell"], ["column"], ["row"], ["page"], ["styles"]],
+    Tree    = dh_tree:create(Init),
+    Styles  = extract_styles(S),
+    NTree   = add_styles(Styles, Tree),
+    Dict    = to_dict(Content, NTree),
+    Time    = {"time", remoting_reg:timestamp()},
+    Usr     = {"user", Env#env.email},
+    Host    = {"host", S},
+    Views   = {"views", {array, auth_srv:get_views(S, P, UID)}},
+    Perms   = {"permissions", auth_srv:get_as_json(S, P)},
     {struct, [Time, Usr, Host, Perms, Views | dict_to_struct(Dict)]}.
 
 make_after(#refX{obj = {cell, {X, Y}}} = RefX) ->
@@ -1261,7 +1192,7 @@ make_after(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
     RefX#refX{obj = {row, {Y1 + DiffY, Y2 + DiffY}}}. %
 
 pages(#refX{} = RefX) ->
-    Dict = hn_db_api:read_page_structure(RefX),
+    Dict = new_db_api:read_page_structure(RefX),
     Tmp  = pages_to_json(dh_tree:add(RefX#refX.path, Dict)),
     {struct, [{"name", "home"}, {"children", {array, Tmp}}]}.
 
@@ -1607,7 +1538,7 @@ run_actions(#refX{site = S, path = P} = RefX, Env,
                   {N2, lists:flatten([json_recs:json_to_rec(X) || X <- Exprs])}
           end,
     Commands = [Fun1(X) || X <- Json],
-    Expected = hn_db_api:matching_forms(RefX, 'create-button'),
+    Expected = new_db_api:matching_forms(RefX, 'create-button'),
     % now check that the commands coming in match those stored
     case hn_security:validate_create_pages(Expected, Commands) of
         false ->
@@ -1701,7 +1632,7 @@ make_a2(S, [#segment{page = #numberedpage{template = Tpl, type = "random",
 make_a2(S, [#segment{page = #numberedpage{template = Tpl, type = "increment",
                                           prefix = Pr}} = Spec | T],
         Now, Temps, Htap, Perm, Dest, Acc) ->
-    Pages = hn_db_api:read_pages(#refX{site = S}),
+    Pages = new_db_api:read_pages(#refX{site = S}),
     % chuck out ones the wrong length
     Pg2 = [X || X <- Pages, length(X) == length(Htap) + 1],
     Seg = get_seg(lists:reverse(Htap), Pg2, Pr),
