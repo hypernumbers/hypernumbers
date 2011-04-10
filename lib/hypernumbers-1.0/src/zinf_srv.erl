@@ -1,4 +1,4 @@
-%%%-------------------------------------------------------------------
+%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2011, Hypernumbers.com
 %%% @doc       The zinf server handles z-order and infinite
@@ -19,6 +19,8 @@
 -define(sq_bra, 91).
 -define(sq_ket, 93).
 
+-compile(export_all).
+
 %% API
 -export([start_link/1]).
 
@@ -26,7 +28,12 @@
 -export([
          add_zinf/3,
          del_zinf/3,
-         check_ref/2
+         check_ref/2,
+         dump/1
+        ]).
+
+-export([
+         test_dump/0
         ]).
 
 %% gen_server callbacks
@@ -70,6 +77,12 @@ check_ref(Site, XRefX) when is_record(XRefX, xrefX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     PID = global:whereis_name(Id),
     gen_server:call(PID, {check_ref, XRefX}).
+
+dump(Site) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, {dump, Site}).
+
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -120,7 +133,8 @@ handle_call(Request, _From, #state{site = S, zinf_tree = Tree} = State) ->
         case Request of
             {add_zinf, {Idx, XRefX}} -> {write, add(Tree, Idx, XRefX)};
             {del_zinf, {Idx, XRefX}} -> {write, del(Tree, Idx, XRefX)};
-            {check_ref, XRefX}       -> {nothing, {check(Tree, XRefX), Tree}}
+            {check_ref, XRefX}       -> {nothing, {check(Tree, XRefX), Tree}};
+            {dump, Site}             -> {nothing, {dump(Tree, Site), Tree}}
         end,
     case Act of
         write   -> new_db_api:write_kv(S, ?zinf_tree, NewT);
@@ -195,6 +209,11 @@ del(Tree, Idx, XRefX) ->
 check(Tree, #xrefX{site = S, path = P} = XRefX) ->
     Dirty = match_tree(Tree, S, P, match(XRefX), []),
     {ok, Dirty}.
+
+dump(Tree, Site) ->
+    io:format("Dumping Zinf tree for ~p~n", [Site]),
+    ok = dump_tree(Tree, []),
+    {ok, []}.
 
 %%%===================================================================
 %%% Funs to be applied to the tree
@@ -293,25 +312,44 @@ trim(K, Seg, Tree) ->
              end,
     {Status, gb_trees:enter(Seg, NewSubTree, Tree)}.
 
+dump_tree(Tree, Acc) -> Iter = gb_trees:iterator(Tree),
+                        dump_t2(Iter, Acc).
+
+dump_t2([], _Htap)  -> ok;
+dump_t2(Iter, Htap) ->
+    case gb_trees:next(Iter) of
+        none                -> ok;
+        {selector, Sel, I2} -> {selector, List} = Sel,
+                               dump_p(List, lists:reverse(Htap)),
+                               dump_t2(I2, Htap);
+        {{_, K}, V, I2}     -> dump_tree(V, [K | Htap]),
+                               dump_t2(I2, Htap)
+    end.
+
+dump_p([], _Path)     -> ok;
+dump_p([H | T], Path) -> {_, List} = H,
+                         io:format("at ~p Idx's are ~p~n", [Path, List]),
+                         dump_p(T, Path).
+
 match_tree(Tree, S, List, Fun, Htap) ->
     iterate(gb_trees:iterator(Tree), S, List, Fun, Htap, []).
 
 iterate(Iter, S, [], Fun, Htap, Acc) ->
     case gb_trees:next(Iter) of
-        none                 -> [];
-        {selector, Sel, _I2} -> Fun(Sel);
-        {_K, _V, I2}         -> iterate(I2, S, [], Fun, Htap, Acc)
+        none                -> [];
+        {selector, Sel, []} -> Fun(Sel);
+        {_K, _V, I2}        -> iterate(I2, S, [], Fun, Htap, Acc)
     end;
 iterate(Iter, S, [H | T] = List, Fun, Htap, Acc) ->
     case gb_trees:next(Iter) of
          none       -> lists:flatten(Acc);
          {K, V, I2} ->
-             NewAcc = case match_seg(K, H, S, Htap) of
-                       match    -> match_tree(V, S, T, Fun, [H | Htap]);
-                       nomatch  -> [];
-                       error    -> []
-                   end,
-             iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
+            NewAcc = case match_seg(K, H, S, Htap) of
+                         match    -> match_tree(V, S, T, Fun, [H | Htap]);
+                         nomatch  -> [];
+                         error    -> []
+                     end,
+            iterate(I2, S, List, Fun, Htap, [NewAcc | Acc])
      end.
 
 match_seg({seg, S},     S,  _Site, _Htap) -> match;
@@ -320,9 +358,9 @@ match_seg(selector,    _S,  _Site, _Htap) -> nomatch;
 match_seg({zseg, S1},   S,   Site,  Htap) ->
     Path = lists:reverse([S | Htap]),
     case run_zeval(Site, Path, S1) of
-        match         -> match;
-        nomatch       -> nomatch;
-        {error, _Err} -> error
+        match          -> match;
+        nomatch        -> nomatch;
+        {errval, _Err} -> error
     end.
 
 run_zeval(Site, Path, Z) ->
@@ -836,7 +874,7 @@ testC1([]) ->
     P3 = ["one", "[true]", "[true]", "1"],
     P4 = ["[true]", "[true]", "a", "[true]"],
     P5 = ["one", "two", "a", "1"],
-    Obj1 = {column, {3, 4}},
+    Obj1 = {cell, {3, 4}},
     Idx1 = 1,
     Idx2 = 2,
     Idx3 = 3,
@@ -1033,6 +1071,81 @@ testC7([]) ->
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx2]), lists:sort(List)).
 
+% force more than 1 fail of z seg
+testC8([]) ->
+    Tree = {ok, gb_trees:empty()},
+    S = "http://example.com",
+    P1 = ["[if(true, true, false}"],
+    P2 = ["[true]", "4", "[if(true, true, true)]"],
+    P3 = ["[true]", "[true]", "7"],
+    P4 = ["[4 > 3]", "[or(true, true)]", "[true]"],
+    P5 = ["d", "4", "7"],
+    Obj1 = {cell, {3, 4}},
+    Idx1 = 1,
+    Idx2 = 2,
+    Idx3 = 3,
+    Idx4 = 4,
+    Actions1 = [
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx1, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx1, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}              ],
+
+    Fun1 = fun({I, R}, {ok, Tr}) ->
+                   add(Tr, I, R)
+           end,
+
+    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    RefX = #xrefX{site = S, path = P5, obj = Obj1},
+    {ok, List} = check(NewTree1, RefX),
+    io:format("is ~p in ~p~n", [Obj1, NewTree1]),
+    ?assertEqual(lists:sort([Idx1, Idx2, Idx3, Idx4]),
+                 lists:sort(hslists:uniq(List))).
+
+test_dump() ->
+    Tree = {ok, gb_trees:empty()},
+    S = "http://example.com",
+    P1 = ["[or(true, false]", "loopy", "randy", "mandy", "shandy"],
+    P2 = ["[true]", "[biscuit()]", "[true]"],
+    P3 = ["d", "[oddjob(1,2,3)]", "7", "[true]"],
+    P4 = ["[true]", "banjo"],
+    %P5 = ["d", "4", "7"],
+    Obj1 = {cell, {3, 4}},
+    Idx1 = 1,
+    Idx2 = 2,
+    Idx3 = 3,
+    Idx4 = 4,
+    Actions1 = [
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx4, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
+              ],
+
+    Fun1 = fun({I, R}, {ok, Tr}) ->
+                   add(Tr, I, R)
+           end,
+
+    Actions2 = [
+                {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+                {Idx2, #xrefX{site = S, path = P2, obj = Obj1}},
+                {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
+                {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
+              ],
+
+    Fun2 = fun({I, R}, {ok, Tr}) ->
+                   del(Tr, I, R)
+           end,
+
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
+    {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
+    dump(NewTree2, S).
+
 unit_test_() ->
 
     Setup = fun() -> ok end,
@@ -1060,7 +1173,8 @@ unit_test_() ->
                fun testC4/1,
                fun testC5/1,
                fun testC6/1,
-               fun testC7/1
+               fun testC7/1,
+               fun testC8/1
               ],
 
     %{setup, Setup, Cleanup,
