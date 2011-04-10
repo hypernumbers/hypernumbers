@@ -720,7 +720,11 @@ update_incs(XRefX, Incs) when is_record(XRefX, xrefX)
     end.
 
 bring_through(Attrs, XRefX, Pars) ->
-    Pars2 = [X || {Type, X} <- Pars, Type ==  local],
+    Fun  = fun({S, P, X, Y}) ->
+                   RefX = #refX{site = S, path = P, obj = {cell, {X, Y}}},
+                   refX_to_xrefX_create(RefX)
+           end,
+    Pars2 = [Fun(X) || {Type, X} <- Pars, Type ==  local],
     Incs = get_incs(Pars2, [], [], []),
     ok = update_incs(XRefX, Incs),
     orddict:store("__hasincs", t, Attrs).
@@ -729,9 +733,7 @@ get_incs([], Js, Js_R, CSS) -> #incs{js = hslists:uniq(Js),
                                      js_reload = hslists:uniq(Js_R),
                                      css = hslists:uniq(CSS)};
 get_incs([H | T], Js, Js_R, CSS) ->
-    {I, S, P, X, Y} = H,
-    XRefX = #xrefX{idx = I, site = S, path = P, obj = {cell, {X, Y}}},
-    {NewJ, NewJs_R, NewC} = case read_incs(XRefX) of
+    {NewJ, NewJs_R, NewC} = case read_incs(H) of
         []   -> {Js, Js_R, CSS};
         Incs -> process_incs(Incs, [], [], [])
     end,
