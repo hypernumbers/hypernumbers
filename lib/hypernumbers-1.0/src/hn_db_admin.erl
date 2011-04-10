@@ -10,6 +10,8 @@
 -define(CACHEABLE_TABLES, [
                            "dirty_queue",
                            "dirty_zinf",
+                           "dirty_for_zinf",
+                           "include",
                            "form",
                            "item",
                            "group",
@@ -20,8 +22,9 @@
 
 -export([
          create_table/7,
-         into_mem/1,
-         outof_mem/1,
+         mem_only/1,
+         disc_only/1,
+         disc_and_mem/1,
          backup/3,
          restore/2,
          dump_site_table/2,
@@ -91,17 +94,24 @@ create_table(TblName, Rec, Fields, Storage, Type, Local, Indicies) ->
         {aborted, Reason}              -> throw(Reason)
     end.
 
--spec into_mem(list()) -> ok.
-into_mem("http://" ++ SiteAndPort) ->
+-spec disc_and_mem(list()) -> ok.
+disc_and_mem("http://" ++ SiteAndPort) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
     [{atomic, ok} = chg_copy_type(Site, Port, X, disc_copies)
      || X <- ?CACHEABLE_TABLES],
     ok.
 
--spec outof_mem(list()) -> ok.
-outof_mem("http://" ++ SiteAndPort) ->
+-spec disc_only(list()) -> ok.
+disc_only("http://" ++ SiteAndPort) ->
     [Site, Port] = string:tokens(SiteAndPort, ":"),
     [{atomic, ok} = chg_copy_type(Site, Port, X, disc_only_copies)
+     || X <- ?CACHEABLE_TABLES],
+    ok.
+
+-spec mem_only(list()) -> ok.
+mem_only("http://" ++ SiteAndPort) ->
+    [Site, Port] = string:tokens(SiteAndPort, ":"),
+    [{atomic, ok} = chg_copy_type(Site, Port, X, ram_copies)
      || X <- ?CACHEABLE_TABLES],
     ok.
 
