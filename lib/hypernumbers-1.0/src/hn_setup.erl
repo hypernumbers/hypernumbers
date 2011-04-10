@@ -183,7 +183,7 @@ create_blank_z_and_infs(Site) ->
 create_site_tables(Site, Type)->
     %% Seems sensible to keep this restricted
     %% to disc_copies for now
-    [ok = new_db_admin:create_table(new_db_wu:trans(Site, N),
+    [ok = hn_db_admin:create_table(new_db_wu:trans(Site, N),
                                    N, F, S, T, true, I)
      || {N, F, T, I, S} <- tables()],
     Trans = fun() ->
