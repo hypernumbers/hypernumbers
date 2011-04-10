@@ -11,6 +11,7 @@
 -include("hypernumbers.hrl").
 
 -export([
+         read_includes/1,
          write_kv/3,
          read_kv/2,
          read_pages/1,
@@ -63,6 +64,13 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+read_includes(#refX{obj = {page, "/"}} = RefX) ->
+    Fun = fun() ->
+                  XRefX = new_db_wu:refX_to_xrefX_create(RefX),
+                  unpack_incs(new_db_wu:read_incs(XRefX))
+           end,
+    mnesia:activity(transaction, Fun).
+
 -spec handle_circref_cell(string(), cellidx(), auth_srv:auth_spec()) -> ok.
 handle_circref_cell(Site, Idx, Ar) ->
     Fun = fun() ->
@@ -328,7 +336,10 @@ set_borders2(#refX{site = S, path = P} = RefX, Where, Border, B_Style, B_Color) 
 
 -spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
 read_attribute(RefX, Field) when is_record(RefX, refX) ->
-    Fun = fun() -> new_db_wu:read_ref_field(RefX, Field, read) end,
+    Fun = fun() ->
+                  XRefX = new_db_wu:refX_to_xrefX_create(RefX),
+                  new_db_wu:read_ref_field(XRefX, Field, read)
+          end,
     read_activity(RefX, Fun).
 
 recalc_page(#refX{obj = {page, "/"}} = RefX) ->
@@ -1110,3 +1121,24 @@ pp(_, _, _, _, O) -> O.
 
 % fix up escaping!
 esc(X) -> X.
+
+unpack_incs(List) -> unpack_1(List, [], [], []).
+
+unpack_1([], Js, Js_r, CSS) -> {hslists:uniq(Js),
+                                 hslists:uniq(Js_r),
+                                 hslists:uniq(CSS)};
+unpack_1([H | T], Js, Js_r, CSS) ->
+    #include{js = J, js_reload = R, css = C} = H,
+    NewJ = case J of
+                [] -> Js;
+                _  -> lists:append([J, Js])
+            end,
+    NewR = case R of
+                [] -> Js_r;
+                _  -> lists:append([R, Js_r])
+            end,
+    NewC = case C of
+                [] -> CSS;
+                _  -> lists:append([C, CSS])
+            end,
+    unpack_1(T, NewJ, NewR, NewC).
