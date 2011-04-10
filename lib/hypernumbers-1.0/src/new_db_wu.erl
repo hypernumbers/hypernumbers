@@ -998,6 +998,8 @@ read_objs(#xrefX{site = S, path = P, obj = {page, "/"}}, intersect) ->
 read_objs(#refX{site = S, path = P, obj = {page, "/"}}, intersect) ->
     Table = trans(S, local_obj),
     mnesia:index_read(Table, term_to_binary(P), path);
+read_objs(#xrefX{site = S, path = P, obj = O}, intersect) ->
+    read_objs(#refX{site = S, path = P, obj = O}, intersect);
 read_objs(#refX{site = Site} = Ref, intersect) ->
     MS = objs_intersect_ref(Ref),
     mnesia:select(trans(Site, local_obj), MS);
@@ -1007,9 +1009,9 @@ read_objs(#refX{site = S, path = P, obj = O}, direct) ->
     mnesia:index_read(Table, term_to_binary(RevIdx), revidx).
 
 %% Note that this is most useful when given cells, or ranges.
-objs_intersect_ref(#xrefX{path = P, obj = {page, "/"}}) ->
+objs_intersect_ref(#refX{path = P, obj = {page, "/"}}) ->
     [{#local_obj{path = term_to_binary(P), _ = '_'}, [], ['$_']}];
-objs_intersect_ref(#xrefX{path = P, obj = {range, {X1, Y1, X2, Y2}}}) ->
+objs_intersect_ref(#refX{path = P, obj = {range, {X1, Y1, X2, Y2}}}) ->
     PBin = term_to_binary(P),
     ets:fun2ms(fun(LO = #local_obj{path = MP, obj = {cell,{MX, MY}}})
                   when MP ==  PBin,
@@ -1024,7 +1026,7 @@ objs_intersect_ref(#xrefX{path = P, obj = {range, {X1, Y1, X2, Y2}}}) ->
                   (LO = #local_obj{path = MP, obj = {page, _}})
                   when MP ==  PBin -> LO
                end);
-objs_intersect_ref(#xrefX{path = P, obj = {cell, {X, Y}}}) ->
+objs_intersect_ref(#refX{path = P, obj = {cell, {X, Y}}}) ->
     PBin = term_to_binary(P),
     ets:fun2ms(
       fun(LO = #local_obj{path = MP, obj = {cell, {MX, MY}}})
@@ -1036,7 +1038,7 @@ objs_intersect_ref(#xrefX{path = P, obj = {cell, {X, Y}}}) ->
          (LO = #local_obj{path = MP, obj = {page, _}})
          when MP ==  PBin -> LO
       end);
-objs_intersect_ref(#xrefX{path = P, obj = {column, {X1, X2}}}) ->
+objs_intersect_ref(#refX{path = P, obj = {column, {X1, X2}}}) ->
     PBin = term_to_binary(P),
     ets:fun2ms(fun(LO = #local_obj{path = MP, obj = {cell, {MX,_MY}}})
                   when MP ==  PBin,
@@ -1046,7 +1048,7 @@ objs_intersect_ref(#xrefX{path = P, obj = {column, {X1, X2}}}) ->
                   (LO = #local_obj{path = MP, obj = {page, _}})
                   when MP ==  PBin -> LO
                end);
-objs_intersect_ref(#xrefX{path = P, obj = {row, {R1, R2}}}) ->
+objs_intersect_ref(#refX{path = P, obj = {row, {R1, R2}}}) ->
     PBin = term_to_binary(P),
     ets:fun2ms(fun(LO = #local_obj{path = MP, obj = {cell,{_MX,MY}}})
                   when MP ==  PBin,
