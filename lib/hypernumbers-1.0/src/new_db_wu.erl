@@ -22,6 +22,7 @@
 -include_lib("stdlib/include/ms_transform.hrl").
 
 -export([
+         xrefX_to_rti/3,
          trans/2,
          write_kv/3,
          read_kv/2,
