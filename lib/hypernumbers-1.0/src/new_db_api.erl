@@ -41,6 +41,7 @@
         ]).
 
 -export([
+         wait_for_dirty/1,
          process_dirties_for_zinf/1,
          load_dirty_since/2,
          handle_circref_cell/3
@@ -64,6 +65,16 @@
 %%% API Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-spec wait_for_dirty(string()) -> ok.
+wait_for_dirty(Site) ->
+     case dbsrv:is_busy(Site) of
+         true ->
+             timer:sleep(100),
+             wait_for_dirty(Site);
+         false ->
+             ok
+     end.
+
 read_includes(#refX{obj = {page, "/"}} = RefX) ->
     Fun = fun() ->
                   XRefX = new_db_wu:refX_to_xrefX_create(RefX),
@@ -77,7 +88,7 @@ handle_circref_cell(Site, Idx, Ar) ->
                   Cell = new_db_wu:idx_to_xrefX(Site, Idx),
                   _Dict = new_db_wu:write_attrs(Cell,
                                                 [{"formula", "=#CIRCREF!"}],
-                                                Ar),
+                                                Ar, calc),
                   ok
           end,
     mnesia:activity(transaction, Fun).
@@ -174,7 +185,7 @@ handle_form_post(#refX{site = S, path = P, obj = {row, {1, 1}}} = RefX, Array,
                   NLbls = [ {Lref, [{"formula", Val}]} || {Lref, Val} <- NewLabels],
                   [begin
                        XRefX = new_db_wu:refX_to_xrefX_create(X),
-                       _Dict = new_db_wu:write_attrs(XRefX, A, PosterUid)
+                       _Dict = new_db_wu:write_attrs(XRefX, A, PosterUid, calc)
                    end || {X, A} <- NLbls],
                   Row = new_db_wu:get_last_row(RefX) + 1,
                   F = fun(X, Val) ->
@@ -183,7 +194,7 @@ handle_form_post(#refX{site = S, path = P, obj = {row, {1, 1}}} = RefX, Array,
                               XRefX2 = new_db_wu:refX_to_xrefX_create(RefX2),
                               _Dict = new_db_wu:write_attrs(XRefX2,
                                                             [{"formula", Val}],
-                                                            PosterUid),
+                                                            PosterUid, calc),
                               ok = new_db_wu:mark_these_dirty([XRefX2], PosterUid)
                       end,
                   [F(X, V) || {#refX{site = S1, path = P1,
@@ -209,7 +220,7 @@ append_row(List, PAr, VAr) when is_list(List) ->
                             XRefX2 = new_db_wu:refX_to_xrefX_create(RefX2),
                             _Dict = new_db_wu:write_attrs(XRefX2,
                                                           [{"formula", Val}],
-                                                          PAr),
+                                                          PAr, calc),
                             ok = new_db_wu:mark_these_dirty([XRefX2], VAr)
                     end,
                 [F(X, V) || {#refX{site = S1, path = P1, obj = {column, {X, X}}}, V}
@@ -328,9 +339,9 @@ set_borders2(#refX{site = S, path = P} = RefX, Where, Border, B_Style, B_Color) 
                   B   = "border-" ++ Where ++ "-width",
                   B_S = "border-" ++ Where ++ "-style",
                   B_C = "border-" ++ Where ++ "-color",
-                  _ = new_db_wu:write_attrs(RefX, [{B,   Border}]),
-                  _ = new_db_wu:write_attrs(RefX, [{B_S, B_Style}]),
-                  _ = new_db_wu:write_attrs(RefX, [{B_C, B_Color}])
+                  _ = new_db_wu:write_attrs(RefX, [{B,   Border}], calc),
+                  _ = new_db_wu:write_attrs(RefX, [{B_S, B_Style}], calc),
+                  _ = new_db_wu:write_attrs(RefX, [{B_C, B_Color}], calc)
           end,
     write_activity(RefX, Fun, "set_borders2").
 
@@ -578,7 +589,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
                     {ok, F} ->
                         _Dict = new_db_wu:write_attrs(Cell,
                                                       [{"formula", F}],
-                                                      Ar),
+                                                      Ar, recalc),
                         ok;
                     _ ->
                         ok
@@ -644,7 +655,7 @@ expand2([R | TR], [A | TA], Acc) ->
     expand2(TR, TA, lists:flatten([NewAcc | Acc])).
 
 write_attributes1(#xrefX{site = _S} = XRefX, List, PAr, VAr) ->
-    new_db_wu:write_attrs(XRefX, List, PAr),
+    new_db_wu:write_attrs(XRefX, List, PAr, calc),
     % first up do the usual 'dirty' stuff - this cell is dirty
     case lists:keymember("formula", 1, List) of
        %% true  -> [Rels] = new_db_wu:read_relations(RefX, read),

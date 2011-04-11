@@ -7,8 +7,12 @@
          start_link/1,
          read_only_activity/2,
          write_activity/2,
-         is_busy/1,
          dbsrv/5
+        ]).
+
+%% Testing API - used to limit the feed of data in
+-export([
+         is_busy/1
         ]).
 
 %% supervisor_bridge callbacks
