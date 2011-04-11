@@ -36,10 +36,10 @@
 
 init_per_suite(Config) ->
     Site = "http://tests.hypernumbers.dev:9000",
-    reset_perms(Site),                  
+    reset_perms(Site),
     Ref = #refX{site=Site, path=[]},
     hn_file_upload:test_import("<%= @basename %>", Ref),
-    hn_db_api:wait_for_dirty(Site),
+    new_db_api:wait_for_dirty(Site),
     Config.
 
 reset_perms(Site) ->
@@ -48,7 +48,7 @@ reset_perms(Site) ->
     auth_srv:add_view(Site, ["[**]"], [everyone], View),
     auth_srv:set_champion(Site, [], View),
     auth_srv:set_champion(Site, ["[**]"], View).
-    
+
 end_per_suite(_Config) ->
     ok.
 

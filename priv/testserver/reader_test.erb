@@ -9,17 +9,17 @@
                {value, {_, Pid}} = lists:keysearch(?MODULE, 1, Config),
                Pid ! {msg, self(), ?MODULE, Key},
                receive
-                   Msg -> 
+                   Msg ->
                     test_util:expected(Msg, Expval)
-               after 500 -> 
+               after 500 ->
                     exit(lists:flatten(io_lib:format("timeout in ~s~n", [Name])))
                end).
 
 init_per_suite(Config) ->
     File = "../../../tests/excel_files/Win_Excel07_As_97/<%= @basename + ".xls"%>",
     {Vals, _Names, _Formats, _CSS, _Warnings, _Sheets} = filefilters:read(excel, File),
-    
-    hn_db_api:wait_for_dirty("http://tests.hypernumbers.dev:9000"),
+
+    new_db_api:wait_for_dirty("http://tests.hypernumbers.dev:9000"),
     Pid = spawn(test_util, test_state, [Vals]),
     [{?MODULE, Pid} | Config].
 
