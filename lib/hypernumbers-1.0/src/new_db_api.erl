@@ -142,7 +142,7 @@ read_kv(Site, Key) ->
     mnesia:activity(transaction, Fun).
 
 read_pages(RefX) when is_record(RefX, refX) ->
-    read_activity(RefX, fun() -> new_db_wu:read_pages(RefX) end).
+    read_activity(RefX, fun() -> page_srv:get_pages(RefX) end).
 
 %% @doc reads pages
 %% @todo fix up api

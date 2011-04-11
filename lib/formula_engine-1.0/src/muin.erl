@@ -512,7 +512,7 @@ fetch(#zcellref{zpath = Z, cellref = C}) when is_record(C, cellref) ->
     {zpath, ZList} = Z,
     NewPath = muin_util:walk_zpath(?mpath, ZList),
     Length = length(NewPath),
-    Paths = new_db_api:read_pages(#refX{site = ?msite, path = [], obj = {page, "/"}}),
+    Paths = page_srv:get_pages(#refX{site = ?msite, path = [], obj = {page, "/"}}),
     FPaths = [X || X <- Paths, length(X) == Length],
     {MPaths, NoMatch, Err} = match(?msite, FPaths, NewPath),
     OCol = C#cellref.col,
