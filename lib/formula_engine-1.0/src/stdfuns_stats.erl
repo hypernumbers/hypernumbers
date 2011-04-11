@@ -180,6 +180,7 @@ chidist_([X, Degfree]) ->
     math:pow(Chi, (Alpha - 1)) * math:exp(X * -0.5).
 
 countz(List) ->
+    put(recompile, true),
     Strs = typechecks:std_strs(List),
     Zs = countz_(Strs, []),
     muin_collect:col(Zs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},

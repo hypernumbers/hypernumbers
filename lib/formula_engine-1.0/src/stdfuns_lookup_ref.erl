@@ -58,6 +58,7 @@ indirect([S, R1]) ->
     muin_util:apply([Str, Bool], fun indirect_/2).
 
 indirect_([Str], [_Bool]) ->
+    put(recompile, true),
     case muin:parse(Str, {muin:context_setting(col),
                           muin:context_setting(row)}) of
         {ok, Ast} ->

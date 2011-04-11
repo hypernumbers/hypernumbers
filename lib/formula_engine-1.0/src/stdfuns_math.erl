@@ -229,6 +229,7 @@ negate([V]) ->
 %%% Arithmetic ~~~~~
 
 sumz(List) ->
+    put(recompile, true),
     Strs = typechecks:std_strs(List),
     Zs = sumz_(Strs, []),
     muin_collect:col(Zs, [eval_funs, {cast, str, num, ?ERRVAL_VAL},
