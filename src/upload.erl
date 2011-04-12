@@ -5,8 +5,8 @@
 -define(final_template, null).
 -define(alerts, [
           {"static_data",         ["static-data"]},
-          {"admin",               ["admin"]}
-          % {"admin_data_alerts",   ["admin", "data_alerts"]}
+          {"admin",               ["admin"]},
+          {"admin_data_alerts",   ["admin", "data_alerts"]}
          ]).
 -define(bits_and_bobs, [
           {"lookup-data",         ["admin", "lookup-data"]},
@@ -88,11 +88,12 @@ run_templates(Script) ->
           end,
     Fun2 = fun(_X, null) -> ok;
               (#refX{path = P} = X, Y) ->
-                   log_memory(P),
+                   %log_memory(P),
                    hn_templates:load_template_if_no_page(X, Y),
 		   limiter()
            end,
-    garbage_collect(),
+    syslib:top5(),
+    %garbage_collect(),
     [ok = Fun2(Fun(X, Y), X) || {X, Y} <- Script].
 
 log_memory(Path) ->
@@ -136,8 +137,8 @@ upload2([H | T], Acc) ->
                      Temp -> hn_templates:load_template(RefX, Temp)
                  end,
                  hn_import:xls_file(hn_util:refX_to_url(RefX), H, "sheet1"),
-                 garbage_collect(),
-                 log_remoting(),
+                 %garbage_collect(),
+                 %log_remoting(),
                  limiter();
         true  -> ok
     end,
@@ -162,10 +163,14 @@ limiter() ->
     Srv = hn_util:site_to_atom(?site, "_dbsrv"),
     Pid = whereis(Srv),
     {message_queue_len, Len} = process_info(Pid, message_queue_len),
+    Locks = length(mnesia:system_info(held_locks)),
+    DirtyQueue = mnesia:table_info('dla-piper.hypernumbers.com&80&dirty_queue', size),
     if
-        Len > 100  -> timer:sleep(100),
-                      limiter();
-        Len =< 100 -> ok
+        Len > 100 
+            orelse Locks > 100
+            orelse DirtyQueue > 1000  -> timer:sleep(100),
+                                         limiter();
+        true -> ok
     end.
 
 log(String) ->
