@@ -555,8 +555,8 @@ set_parents(Tbl,
     [del_child(P, CellIdx, Tbl) || P <- LostParents],
     [ok = add_child(P, CellIdx, Tbl, IsIncl) || P <- NewParentIdxs],
     NewInfParIdxs = ordsets:from_list(InfPIdxs),
-    CurInfParsRefXs = [X#xrefX.idx || X <- CurInfPars],
-    ok = handle_infs(CellIdx, Site, InfParents, CurInfParsRefXs),
+    XCurInfPars = [idx_to_xrefX(Site, X) || X <- CurInfPars],
+    ok = handle_infs(CellIdx, Site, InfParents, XCurInfPars),
     Rel#relation{parents = NewParentIdxs, infparents = NewInfParIdxs}.
 
 %% @doc Make a #muin_rti record out of an xrefX record and a flag that specifies
@@ -703,7 +703,8 @@ write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res, {Parents, IsIncl},
         _               ->
             Parxml = lists:map(fun muin_link_to_simplexml/1, Parents),
             {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
-            ok = set_relations(XRefX, NewLocPs, InfParents, IsIncl)
+            XInf = [refX_to_xrefX_create(X) || X <- InfParents],
+            ok = set_relations(XRefX, NewLocPs, XInf, IsIncl)
     end,
     Align = default_align(Res),
     add_attributes(Attrs, [{"formula", Formula},
@@ -1128,7 +1129,7 @@ expunge_refs(S, Refs) ->
          mnesia:delete(ItemT, Idx, write),
          mnesia:delete_object(ObjT, LO, write),
          case O of
-             {cell, _} -> unattach_form(refX_to_xrefX(Ref));
+             {cell, _} -> unattach_form(Ref);
              _         -> ok
          end
      end || Ref <- Refs,
