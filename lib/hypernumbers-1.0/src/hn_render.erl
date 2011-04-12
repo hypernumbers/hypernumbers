@@ -32,12 +32,12 @@ content(Ref) -> content(Ref, webpage).
 -spec content(#refX{}, atom()) -> {{[textdata()], integer(), integer()}, #render{}}.
 content(Ref, Type) ->
     Data = lists:sort(fun order_objs/2, read_data_without_page(Ref)),
-    Cells = [{{X,Y},L} || {#refX{obj={cell,{X,Y}}},L} <- Data],
+    Cells = [{{X,Y},L} || {#xrefX{obj={cell,{X,Y}}},L} <- Data],
     % need to do old and new row/col types
     RowHs = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)}
-             || {#refX{obj={row,{R,R}}},RPs} <- Data],
+             || {#xrefX{obj={row,{R,R}}},RPs} <- Data],
     ColWs = [{C, pget("width", CPs, ?DEFAULT_WIDTH)}
-             || {#refX{obj={column,{C,C}}},CPs} <- Data],
+             || {#xrefX{obj={column,{C,C}}},CPs} <- Data],
     Palette = gb_trees:from_orddict
                 (lists:sort
                  (hn_mochi:extract_styles(Ref#refX.site))),
@@ -61,10 +61,10 @@ content(Ref, Type) ->
     {layout(Ref, Type, Cells, ColWs, RowHs, Palette), Addons}.
 
 read_data_without_page(Ref) ->
-    Refs = new_db_api:read_intersect_ref(Ref),
-    [ {RefX, Val} || {RefX, Val} <- Refs, element(1, RefX#refX.obj) =/= page ].
+    XRefs = new_db_api:read_intersect_ref(Ref),
+    [ {XRefX, Val} || {XRefX, Val} <- XRefs, element(1, XRefX#xrefX.obj) =/= page ].
 
--spec layout(#refX{}, atom(), cells(), cols(), rows(), gb_tree())
+-spec layout(#xrefX{}, atom(), cells(), cols(), rows(), gb_tree())
             -> {[textdata()], integer(), integer()}.
 layout(Ref, Type, Cells, CWs, RHs, Palette) ->
     PX = 0,
@@ -218,10 +218,10 @@ draw(Value,Css,Inp,C,R,X,Y,W,H) ->
             "<div data-ref='"++Cell++"'"++Style++">"++Val++"</div>"
         end.
 
--spec order_objs({#refX{},any()}, {#refX{},any()}) -> boolean().
+-spec order_objs({#xrefX{},any()}, {#xrefX{},any()}) -> boolean().
 order_objs({RA,_}, {RB,_}) ->
-    {_, {XA, YA}} = RA#refX.obj,
-    {_, {XB, YB}} = RB#refX.obj,
+    {_, {XA, YA}} = RA#xrefX.obj,
+    {_, {XB, YB}} = RB#xrefX.obj,
     if YA /= YB -> YA < YB;
        true     -> XA =< XB
     end.
@@ -233,12 +233,12 @@ read_css(Idx, Palette) -> case gb_trees:lookup(Idx, Palette) of
                               {value, V} -> V
                           end.
 
--spec startcol(#refX{}) -> integer().
-startcol(#refX{obj={range,{X,_,_,_}}}) -> X;
+-spec startcol(#xrefX{}) -> integer().
+startcol(#xrefX{obj={range,{X,_,_,_}}}) -> X;
 startcol(_)                            -> 1.
 
--spec startrow(#refX{}) -> integer().
-startrow(#refX{obj={range,{_,Y,_,_}}}) -> Y;
+-spec startrow(#xrefX{}) -> integer().
+startrow(#xrefX{obj={range,{_,Y,_,_}}}) -> Y;
 startrow(_)                            -> 1.
 
 pget(K,L) -> proplists:get_value(K,L,undefined).
@@ -352,7 +352,7 @@ make_s([H | T], Ref, Val, Acc) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 simple_test() ->
-    Ref = #refX{site="http://hypernumbers.dev:9000",
+    Ref = #xrefX{site="http://hypernumbers.dev:9000",
                 path=["web"],
                 obj={page,"/"}},
     Cells = [{{1,1},[{"style",1},{"value","1"}]},
@@ -365,7 +365,7 @@ simple_test() ->
     ?_assertEqual({560, 44}, {W, H}).
 
 col_rows_test_() ->
-    Ref = #refX{site="http://hypernumbers.dev:9000",
+    Ref = #xrefX{site="http://hypernumbers.dev:9000",
                 path=["web"],
                 obj={page,"/"}},
     Cells = [{{1,1},[{"style",1},{"value","1"}]},
@@ -379,7 +379,7 @@ col_rows_test_() ->
     ?_assertEqual({580, 72}, {W, H}).
 
 merged_col_test_() ->
-    Ref = #refX{site="http://hypernumbers.dev:9000",
+    Ref = #xrefX{site="http://hypernumbers.dev:9000",
                 path=["web"],
                 obj={page,"/"}},
     Cells = [{{1,1},
@@ -400,7 +400,7 @@ merged_col_test_() ->
     ?_assertEqual({640, 66}, {W, H}).
 
 merged_row_test_() ->
-    Ref = #refX{site="http://hypernumbers.dev:9000",
+    Ref = #xrefX{site="http://hypernumbers.dev:9000",
                 path=["web"],
                 obj={page,"/"}},
     Cells = [{{1,1},[{"value","1"},{"style",1}]},
