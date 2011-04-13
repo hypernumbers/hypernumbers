@@ -234,11 +234,11 @@ read_css(Idx, Palette) -> case gb_trees:lookup(Idx, Palette) of
                           end.
 
 -spec startcol(#refX{}) -> integer().
-startcol(#xrefX{obj={range,{X,_,_,_}}}) -> X;
+startcol(#refX{obj={range,{X,_,_,_}}}) -> X;
 startcol(_)                            -> 1.
 
 -spec startrow(#refX{}) -> integer().
-startrow(#xrefX{obj={range,{_,Y,_,_}}}) -> Y;
+startrow(#refX{obj={range,{_,Y,_,_}}}) -> Y;
 startrow(_)                            -> 1.
 
 pget(K,L) -> proplists:get_value(K,L,undefined).
