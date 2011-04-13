@@ -29,6 +29,9 @@
          add_zinf/3,
          del_zinf/3,
          check_ref/2,
+         persistence_status/1,
+         mem_only/1,
+         disc_and_mem/1,
          dump/1
         ]).
 
@@ -48,10 +51,10 @@
 
 -define(SERVER, ?MODULE).
 
--record(state,
-        {
+-record(state, {
           site,
-          zinf_tree
+          zinf_tree,
+          persistence
          }).
 
 -record(selector,
@@ -78,11 +81,25 @@ check_ref(Site, XRefX) when is_record(XRefX, xrefX) ->
     PID = global:whereis_name(Id),
     gen_server:call(PID, {check_ref, XRefX}).
 
+persistence_status(Site) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, persistence_status).
+
+mem_only(Site) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, mem_only).
+
+disc_and_mem(Site) ->
+    Id = hn_util:site_to_atom(Site, "_zinf"),
+    PID = global:whereis_name(Id),
+    gen_server:call(PID, disc_and_mem).
+
 dump(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     PID = global:whereis_name(Id),
     gen_server:call(PID, {dump, Site}).
-
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -128,19 +145,30 @@ init([Site]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call(Request, _From, #state{site = S, zinf_tree = Tree} = State) ->
-    {Act, {Rep, NewT}} =
+handle_call(Request, _From, State) ->
+    #state{site = S, zinf_tree = Tree, persistence = Prs} = State,
+    {Act, {Rep, NewT}, NewPrs} =
         case Request of
-            {add_zinf, {Idx, XRefX}} -> {write, add(Tree, Idx, XRefX)};
-            {del_zinf, {Idx, XRefX}} -> {write, del(Tree, Idx, XRefX)};
-            {check_ref, XRefX}       -> {nothing, {check(Tree, XRefX), Tree}};
-            {dump, Site}             -> {nothing, {dump(Tree, Site), Tree}}
+            {add_zinf, {Idx, XRefX}} ->
+                {write, add(Tree, Idx, XRefX), Prs};
+            {del_zinf, {Idx, XRefX}} ->
+                {write, del(Tree, Idx, XRefX), Prs};
+            {check_ref, XRefX} ->
+                {nothing, {check(Tree, XRefX), Tree}, Prs};
+            persistence_status ->
+                {nothing, {{ok, Prs}, Tree}, Prs};
+            mem_only ->
+                {nothing, {ok, Tree}, mem_only};
+            disc_and_mem ->
+                {write, {ok, Tree}, disc_and_mem};
+            {dump, Site} ->
+                {nothing, {dump(Tree, Site), Tree}}
         end,
-    case Act of
-        write   -> new_db_api:write_kv(S, ?zinf_tree, NewT);
-        nothing -> ok
+    case {Act, NewPrs} of
+        {write, disc_and_mem} -> new_db_api:write_kv(S, ?zinf_tree, NewT);
+        {_, _}                -> ok
     end,
-    {reply, Rep, State#state{zinf_tree = NewT}}.
+    {reply, Rep, State#state{zinf_tree = NewT, persistence = NewPrs}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -191,7 +219,15 @@ terminate(_Reason, _State) ->
 %% @end
 %%--------------------------------------------------------------------
 code_change(_OldVsn, State, _Extra) ->
-    {ok, State}.
+    NewS = case State of
+               {state, Site, ZinfT} ->
+                   io:format("Changing state in zinf_srv~n"),
+                   {state, Site, ZinfT, disc_and_mem};
+               _ ->
+                   io:format("Not changing state in zinf_srv~n"),
+                   State
+           end,
+    {ok, NewS}.
 
 %%%===================================================================
 %%% Internal functions
