@@ -22,6 +22,13 @@ show_registered("http://"++Site) ->
     show_r(LocalNames, Site2, "local").
 
 show_r([], _Site, _) -> ok;
+show_r([Local | T], Site, "local")
+  when Local == hypernumbers_sup
+       orelse Local == service_sup
+       orelse Local == sitemaster_sup
+       orelse Local == hn_mochi       ->
+    io:format("~p is registered locally for the server...~n", [Local]),
+    show_r(T, Site, "local");
 show_r([H | T], Site, Type) ->
     Name = atom_to_list(H),
     Length1 = length(Site),
