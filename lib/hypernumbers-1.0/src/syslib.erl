@@ -1,3 +1,4 @@
+
 %%% @author     Gordon Guthrie <>
 %%% @copyright (C) 2011, Gordon Guthrie
 %%% @doc       provides functions of sys admin
@@ -9,8 +10,31 @@
 
 -export([
          process_dump/0,
-         top5/0
+         top5/0,
+         show_registered/1
          ]).
+
+show_registered("http://"++Site) ->
+    Site2 = [case X of $: -> $&; X -> X end || X <- Site],
+    GlobalNames = global:registered_names(),
+    LocalNames = registered(),
+    show_r(GlobalNames, Site2, "global"),
+    show_r(LocalNames, Site2, "local").
+
+show_r([], _Site, _) -> ok;
+show_r([H | T], Site, Type) ->
+    Name = atom_to_list(H),
+    Length1 = length(Site),
+    Length2 = length(Name),
+    if
+        Length2 > Length1 ->
+            case lists:split(Length1, Name) of
+                {Site, _Reg} -> io:format("~p is " ++ Type ++"~n", [Name]);
+                _            -> ok
+            end;
+        Length2 =< Length1 -> ok
+    end,
+    show_r(T, Site, Type).
 
 process_dump() ->
     Procs = processes(),
