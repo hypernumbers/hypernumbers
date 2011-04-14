@@ -162,7 +162,7 @@ chunk_spark([Lines | List]) ->
     Diff = Max - Min,
     Data2 = [normalize_sp(X, Min - ?MARGIN * Diff, Max + ?MARGIN * Diff)
              || X <- Data1],
-    Data3 = "t:"++conv_data(Data2),
+    Data3 = "t:"++conv_data2(Data2),
     {Data3, Colours}.
 
 normalize_sp(List, Min, Max) ->
@@ -992,6 +992,8 @@ conv_x_axis([]) ->
 conv_x_axis(XAxis) ->
     "x,y&amp;chxl=0:|" ++ string:join(XAxis, "|") ++ "|".
 
+
+
 conv_data_rev(Data) ->
     conv_drev(Data, []).
 
@@ -1010,6 +1012,11 @@ conv_d1([_HX | TX], [blank | TY],  AccX, AccY) ->
     conv_d1(TX, TY, AccX, AccY);
 conv_d1([HX | TX], [HY | TY],  AccX, AccY) ->
     conv_d1(TX, TY, [tconv:to_s(HX) | AccX], [tconv:to_s(HY) | AccY]).
+
+conv_data2(Data) -> conv_d2(Data, []).
+
+conv_d2([], Acc)      -> string:join(lists:reverse(Acc), "|");
+conv_d2([H | T], Acc) -> conv_d2(T, [make_data(H) | Acc]).
 
 get_colours(Colours) ->
     muin_collect:col([Colours],
