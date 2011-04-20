@@ -146,10 +146,12 @@ needs_reload(Mod, Path) ->
 
 -spec on_disk(string()) -> dict().
 on_disk(Root) ->
-    dict:from_list([ {list_to_atom(filename:basename(F, ".beam")),
-                      filename:absname(F, Root)}
-                     || F <- filelib:wildcard("ebin/*.beam") ++
-                             filelib:wildcard("lib/*/ebin/*.beam")]).
+    Files = filelib:wildcard(Root ++ "/*.beam") ++
+               filelib:wildcard(Root ++ "/lib/*/ebin/*.beam"),
+    List = [ {list_to_atom(filename:basename(F, ".beam")),
+                        filename:absname(F, Root)}
+             		        || F <- Files],
+    dict:from_list(List).
 
 -spec loaded(string()) -> dict().
 loaded(Root) ->
@@ -198,7 +200,7 @@ is_running(Pid, M) ->
     end.
 
 -spec root() -> string().
-root() -> {ok, Dir} = file:get_cwd(), Dir.
+root() -> code:lib_dir(hypernumbers) ++ "/../../".
 
 strip_beam(Path) -> strip_beam(Path, []).
 strip_beam([], Acc) -> lists:reverse(Acc);
