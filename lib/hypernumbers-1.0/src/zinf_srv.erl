@@ -221,10 +221,8 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
     NewS = case State of
                {state, Site, ZinfT} ->
-                   io:format("Changing state in zinf_srv~n"),
                    {state, Site, ZinfT, disc_and_mem};
                _ ->
-                   io:format("Not changing state in zinf_srv~n"),
                    State
            end,
     {ok, NewS}.
