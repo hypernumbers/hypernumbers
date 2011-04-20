@@ -396,7 +396,8 @@ match_seg({zseg, S1},   S,   Site,  Htap) ->
     case run_zeval(Site, Path, S1) of
         match          -> match;
         nomatch        -> nomatch;
-        {errval, _Err} -> error
+        {errval, _Err} -> error;
+        {error, _}     -> error   % Old style errors from fns (shouldn't exist!)
     end.
 
 run_zeval(Site, Path, Z) ->
