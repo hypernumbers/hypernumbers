@@ -643,15 +643,18 @@ speedo_scale(Th, Val) ->
     Cols = lists:concat([lists:duplicate(NGreen,   ?GREEN),
                          lists:duplicate(NOrange2, ?ORANGE),
                          lists:duplicate(NRed2,    ?RED)]),
-    Labs = lists:concat([lists:duplicate(NGreen - 1, []),
+    Labs = lists:concat([make_blanks(NGreen - 1),
                          ["W"],
-                         lists:duplicate(NOrange - 1, []),
+                         make_blanks(NOrange - 1),
                          ["D"],
-                         lists:duplicate(NRed2, [])]),
+                         make_blanks(NRed2)]),
     Colours = {?colours, ?GREY ++ "," ++ string:join(Cols, "|")},
     Lables = {?axeslables, "0:|" ++  string:join(Labs, "|")},
     V = (Val - Zero)/Diff,
     {V, Colours, Lables}.
+
+make_blanks(N) when N < 1 -> [];
+make_blanks(N)            -> lists:duplicate(N, []).
 
 barchart([Data]) ->
     bar(Data, 0, {{scale, auto}, [], []});
