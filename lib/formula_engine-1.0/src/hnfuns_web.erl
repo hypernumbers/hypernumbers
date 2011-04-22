@@ -264,8 +264,8 @@ include([RelRan]) when ?is_rangeref(RelRan) ->
             {{Html, Width, Height}, _Addons} = hn_render:content(Ref),
             W2 = trunc(Width/80),
             H2 = trunc(Height/22),
-            {include, {"Included Cells", W2, H2},
-             lists:flatten(hn_render:wrap_region(Html, Width, Height))}
+            HTML = lists:flatten(hn_render:wrap_region(Html, Width, Height)),
+            {include, {"Included Cells", W2, H2}, HTML}
     end.
 
 has_circref({range, List}) -> has_c1(List).
