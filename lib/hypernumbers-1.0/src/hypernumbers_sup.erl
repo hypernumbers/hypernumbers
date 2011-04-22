@@ -4,15 +4,12 @@
 -module(hypernumbers_sup).
 -behaviour(supervisor).
 
--export([start_link/0, start_link/1, init/1]).
+-export([start_link/0, init/1]).
 -export([suspend_mochi/0, resume_mochi/0]).
 
 
 start_link() ->
-    start_link(true).
-
-start_link(StartSites) ->
-    supervisor:start_link({local, ?MODULE}, ?MODULE, [StartSites]).
+    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 suspend_mochi() ->
     ok = supervisor:terminate_child(?MODULE, mochi_srv).
@@ -21,11 +18,11 @@ resume_mochi() ->
     {ok, _} = supervisor:restart_child(?MODULE, mochi_srv),
     ok.
 
-init([StartSites]) ->
+init([]) ->
     Service = {service_sup, {service_sup, start_link, []},
                 permanent, infinity, supervisor, [service_sup]},
 
-    SiteMaster = {sitemaster_sup, {sitemaster_sup, start_link, [StartSites]},
+    SiteMaster = {sitemaster_sup, {sitemaster_sup, start_link, []},
                   permanent, infinity, supervisor, [sitemaster_sup]},
 
     Mochi = {mochi_srv, {hn_mochi, start, []},

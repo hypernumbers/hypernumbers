@@ -22,10 +22,7 @@ start(_Type, _Args) ->
     io:format("Hypernumbers Startup: tables initiated...~n"),
     ok = load_muin_modules(),
     io:format("Hypernumbers Startup: muin modules loaded...~n"),
-    {ok, Pid} = case application:get_env(hypernumbers, should_start_sites) of
-                    {ok, false} -> hypernumbers_sup:start_link(false);
-                    _ ->           hypernumbers_sup:start_link()
-                end,
+    {ok, Pid} = hypernumbers_sup:start_link(),
     io:format("Hypernumbers Startup: hypernumbers supervisors started...~n"),
     ok = case application:get_env(hypernumbers, environment) of
              {ok,development} -> dev_tasks();
