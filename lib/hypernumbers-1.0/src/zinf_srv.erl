@@ -1,4 +1,4 @@
-%%-------------------------------------------------------------------
+%%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2011, Hypernumbers.com
 %%% @doc       The zinf server handles z-order and infinite
@@ -69,12 +69,14 @@
 add_zinf(Site, CellIdx, XRefX) when is_record(XRefX, xrefX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     PID = global:whereis_name(Id),
-    gen_server:call(PID, {add_zinf, {CellIdx, XRefX}}).
+    XRefXs = lists:merge([XRefX], expand(XRefX)),
+    gen_server:call(PID, {add_zinfs, {CellIdx, XRefXs}}).
 
 del_zinf(Site, CellIdx, XRefX) when is_record(XRefX, xrefX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     PID = global:whereis_name(Id),
-    gen_server:call(PID, {del_zinf, {CellIdx, XRefX}}).
+    XRefXs = lists:merge([XRefX], expand(XRefX)),
+    gen_server:call(PID, {del_zinfs, {CellIdx, XRefXs}}).
 
 check_ref(Site, XRefX) when is_record(XRefX, xrefX) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
@@ -129,7 +131,7 @@ start_link(Site) ->
 %%--------------------------------------------------------------------
 init([Site]) ->
     [{kvstore, ?zinf_tree, Zinf_tree}] = new_db_api:read_kv(Site, ?zinf_tree),
-    {ok, #state{site = Site, zinf_tree = Zinf_tree}}.
+    {ok, #state{site = Site, zinf_tree = Zinf_tree, persistence = disc_and_mem}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -149,10 +151,10 @@ handle_call(Request, _From, State) ->
     #state{site = S, zinf_tree = Tree, persistence = Prs} = State,
     {Act, {Rep, NewT}, NewPrs} =
         case Request of
-            {add_zinf, {Idx, XRefX}} ->
-                {write, add(Tree, Idx, XRefX), Prs};
-            {del_zinf, {Idx, XRefX}} ->
-                {write, del(Tree, Idx, XRefX), Prs};
+            {add_zinfs, {Idx, XRefXs}} ->
+                {write, add(XRefXs, Tree, Idx), Prs};
+            {del_zinfs, {Idx, XRefXs}} ->
+                {write, del(XRefXs, Tree, Idx), Prs};
             {check_ref, XRefX} ->
                 {nothing, {check(Tree, XRefX), Tree}, Prs};
             persistence_status ->
@@ -162,7 +164,7 @@ handle_call(Request, _From, State) ->
             disc_and_mem ->
                 {write, {ok, Tree}, disc_and_mem};
             {dump, Site} ->
-                {nothing, {dump(Tree, Site), Tree}}
+                {nothing, {dump(Tree, Site), Tree}, Prs}
         end,
     case {Act, NewPrs} of
         {write, disc_and_mem} -> new_db_api:write_kv(S, ?zinf_tree, NewT);
@@ -230,15 +232,17 @@ code_change(_OldVsn, State, _Extra) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-add(Tree, Idx, XRefX) ->
-    #xrefX{path = P, obj = Obj} = XRefX,
+add([], Tree, _Idx)     -> {ok, Tree};
+add([H | T], Tree, Idx) ->
+    #xrefX{path = P, obj = Obj} = H,
     NewTree = alter_tree(Tree, hn_util:parse_zpath(P), add_selector(Idx, Obj)),
-    {ok, NewTree}.
+    add(T, NewTree, Idx).
 
-del(Tree, Idx, XRefX) ->
-    #xrefX{path = P, obj = Obj} = XRefX,
+del([], Tree, _Idx)     -> {ok, Tree};
+del([H | T], Tree, Idx) ->
+    #xrefX{path = P, obj = Obj} = H,
     NewTree = alter_tree(Tree, hn_util:parse_zpath(P), delete_selector(Idx, Obj)),
-    {ok, NewTree}.
+    del(T, NewTree, Idx).
 
 check(Tree, #xrefX{site = S, path = P} = XRefX) ->
     Dirty = match_tree(Tree, S, P, match(XRefX), []),
@@ -246,8 +250,7 @@ check(Tree, #xrefX{site = S, path = P} = XRefX) ->
 
 dump(Tree, Site) ->
     io:format("Dumping Zinf tree for ~p~n", [Site]),
-    ok = dump_tree(Tree, []),
-    {ok, []}.
+    ok = dump_tree(Tree, []).
 
 %%%===================================================================
 %%% Funs to be applied to the tree
@@ -419,6 +422,33 @@ run_zeval(Site, Path, Z) ->
           end,
     {atomic, Ret} = mnesia:transaction(Fun),
     Ret.
+
+expand(#xrefX{path = P} = XRefX) ->
+    ZSegs = hn_util:parse_zpath(P),
+    expandp(ZSegs, XRefX, [], []).
+
+expandp([], _, _, Acc) ->
+    hslists:uniq(lists:merge(Acc));
+expandp([{seg, S} | T], X, Htap, Acc) ->
+    expandp(T, X, [S | Htap], Acc);
+expandp([{zseg, Z} | T], X, Htap, Acc) ->
+    {ok, Toks} = xfl_lexer:lex(Z, {0, 0}),
+    NewAcc = walk(Toks, X, ["[true]" | Htap], []),
+    expandp(T, X, [Z | Htap], [NewAcc | Acc]).
+
+walk([], _, _, Acc) -> Acc;
+walk([{cellref, _, {cellref, _, _, Path, Ref}} | T], X, Htap, Acc) ->
+    NewPath = muin_util:walk_path(lists:reverse(Htap), Path),
+    Ref2 = hd(lists:reverse(string:tokens(Ref, "/"))),
+    Obj = hn_util:parse_ref(Ref2),
+    walk(T, X, Htap, [X#xrefX{path = NewPath, obj = Obj} | Acc]);
+walk([{rangeref, _, {rangeref, _, Path, _, _, _, _, Ref}} | T], X, Htap, Acc) ->
+    NewPath = muin_util:walk_path(lists:reverse(Htap), Path),
+    Ref2 = hd(lists:reverse(string:tokens(Ref, "/"))),
+    Obj = hn_util:parse_ref(Ref2),
+    walk(T, X, Htap, [X#xrefX{path = NewPath, obj = Obj} | Acc]);
+walk([_ | T], X, Htap, Acc) ->
+    walk(T, X, Htap, Acc).
 
 %%%===================================================================
 %%% EUnit Tests

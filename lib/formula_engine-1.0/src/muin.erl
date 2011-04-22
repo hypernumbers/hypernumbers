@@ -860,7 +860,7 @@ fetch_v1([H | T], Row, Col, Acc) ->
 
 make_inf_refX(Path, Text) ->
     NewPath = muin_util:walk_path(?mpath, Path),
-    Segs = string:tokens(Text, "/"),
+    Segs = hn_util:path_tokens(Text),
     {_, Ref} = lists:split(length(Segs) - 1, Segs),
     Obj = hn_util:parse_ref(Ref),
     #refX{site = ?msite, path = NewPath, type = gurl, obj = Obj}.

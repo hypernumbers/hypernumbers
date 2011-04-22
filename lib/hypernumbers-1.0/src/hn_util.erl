@@ -12,6 +12,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
+         path_tokens/1,
          parse_zpath/1,
          valid_email/1,
          extract_name_from_email/1,
@@ -78,6 +79,21 @@
          % Formula utilities
          make_formula/2
         ]).
+
+path_tokens(P) -> tokens(P, [], []).
+
+% god this is fugly, testing if the seg is blank and skipping it in every clause :(
+tokens([], [], Acc)        -> lists:reverse(Acc);
+tokens([], Seg, Acc)       -> lists:reverse([lists:reverse(Seg) | Acc]);
+tokens([$/ | T], [], Acc)  -> tokens(T, [], Acc);
+tokens([$/ | T], Seg, Acc) -> tokens(T, [], [lists:reverse(Seg) | Acc]);
+tokens([$[ | T], [], Acc)  -> tokens2(T, [$[], Acc);
+tokens([$[ | T], Seg, Acc) -> tokens2(T, [$[], [lists:reverse(Seg) | Acc]);
+tokens([H | T], Seg, Acc)  -> tokens(T, [H | Seg], Acc).
+
+tokens2([$] | T], Seg, Acc) -> tokens(T, [], [lists:reverse([$] | Seg]) | Acc]);
+tokens2([H | T], Seg, Acc)  -> tokens2(T, [H | Seg], Acc).
+
 
 %%% turns a path into a z-path
 parse_zpath(List) -> parse_z(List, []).

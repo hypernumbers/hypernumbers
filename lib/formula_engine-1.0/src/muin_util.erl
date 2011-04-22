@@ -187,7 +187,7 @@ just_ref(Ssref) ->
 %% The first comes from the server side of things, and the second comes from
 %% the path field in ref objects.
 walk_path(_, Dest = [$/|_]) ->
-    string:tokens(Dest, "/");
+    hn_util:path_tokens(Dest);
 walk_path(Currloc, Dest) ->
     lists:foldl(fun(".",  Stk) -> Stk;
                    ("..", [])  -> [];
@@ -195,7 +195,7 @@ walk_path(Currloc, Dest) ->
                    (Word, Stk) -> lists:append(Stk, [Word])
                 end,
                 Currloc,
-                string:tokens(Dest, "/")).
+                hn_util:path_tokens(Dest)).
 
 walk_zpath(_Path, [{zseg, _, _} | _T] = Dest) ->
     Dest;
