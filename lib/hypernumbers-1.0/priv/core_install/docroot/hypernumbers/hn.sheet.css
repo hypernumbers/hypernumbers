@@ -73,21 +73,18 @@ html,body {
 }
 
 .resize {
-    position           : absolute;
-    right              : 0px;
-    bottom             : 0px;
-/*
-    float              : right;
-    vertical-align     : bottom;
-    bottom             : 0px;
-*/
-    padding            : 2px;
-    padding-bottom     : 0px;
-    font-size          : 12pt;
-    font-weight        : bold;
-    color              : black;
-    cursor             : se-resize;
-}
+          background         : url(/hypernumbers/sprite.png) -90px -1px;
+          z-index            : 999999;
+          height             : 10px;
+          width              : 10px;
+          /*
+             float              : right;
+             vertical-align     : bottom;
+             bottom             : 0px;
+             */
+          padding-bottom     : 4px;
+          cursor             : se-resize;
+          }
 
 .resize:hover {
     color              : #666;
@@ -234,15 +231,19 @@ img.wizrep {
 
 #wiztext {
   padding-top: 2px;
+  font: 12px/1.7 Courier, monospace;
   width:  272px; /* wizselectedfun.width - 8px */
   height: 6ex;
-  border: solid thin #aaa;
-  background: #eee; /* read-only */
+  -moz-border-radius : 4px 4px 4px 4px;
+  -webkit-border-radius : 4px 4px 4px 4px;
+  border: solid thin #aab;
+  background: #eef; /* read-only */
 }
 
 #wizbuttons {
   float: right;
-  padding-right: 2px;
+  padding-right: 10px;
+  padding-bottom: 5px;
 }
 
 #wizfunargs span.req:after { /* required argument flag */
@@ -1398,7 +1399,7 @@ a.toolbar-item {
     width: 100px
 }
 
-.button, .tournavigate, #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet {
+.button, .tournavigate, #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc, #wizcatlist {
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;
     -moz-border-radius:3px 3px 3px 3px;
