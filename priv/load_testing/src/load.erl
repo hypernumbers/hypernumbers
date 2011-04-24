@@ -8,6 +8,7 @@
 -module(load).
 
 -export([
+         test_starling/0,
          test_dbsrv/1,
          test_clear/1,
          load/2,
@@ -18,6 +19,8 @@
 
 -define(daysinyear, 365).
 
+-define(starling_load, 100000000).
+
 -record(refX,
         {
           site        = [],
@@ -25,6 +28,22 @@
           path        = [],
           obj         = null
          }).
+
+test_starling() ->
+    test_st(?starling_load).
+
+test_st(0) -> io:format("over and out...~n");
+test_st(N) ->
+    Ticker = (N/1000 - trunc(N/1000)),
+    if
+         Ticker ==  0 -> io:format("starling load ~p~n", [N]),
+                         Mem = os:cmd("free"),
+                         log(io_lib:format("~p~n", [Mem]));
+         Ticker =/= 0 -> ok
+    end,
+    Text = list_to_binary("Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Lorem"),
+    ustring:to_upper(Text),
+    test_st(N -1).
 
 test_clear(Site) ->
     FileName = start_trace([self()]),
@@ -34,21 +53,27 @@ test_clear(Site) ->
     ok.
 
 test_dbsrv(Site) ->
+    % put some load on#
+    load(Site, 1),
     Server = list_to_atom(hn_util:site_to_fs(Site) ++ "_dbsrv"),
     io:format("Start tracing...~n"),
     FileName = start_trace([Server]),
+    URL0 = Site ++ "/data/data_alerts/",
     URL1 = Site ++ "/test/calculations/",
     URL2 = Site ++ "/test/calculations/data/",
+    RefX0 = hn_util:url_to_refX(URL0),
     RefX1 = hn_util:url_to_refX(URL1),
     RefX2 = hn_util:url_to_refX(URL2),
     Root = code:lib_dir(hypernumbers),
     Dir = Root ++ "/../../priv/load_testing/json/",
     io:format("Adding new data...~n"),
+    hn_import:json_file(URL1, Dir ++ "alerts.json"),
     hn_import:json_file(URL1, Dir ++ "calculations.json"),
     hn_import:json_file(URL2, Dir ++ "data.json"),
     io:format("about to stop tracing and begin analysis (might take some time!)~n"),
     stop_trace(FileName),
     io:format("Now clean up...~n"),
+    ok = hn_db_api:delete(RefX0, nil),
     ok = hn_db_api:delete(RefX1, nil),
     ok = hn_db_api:delete(RefX2, nil).
 
@@ -77,13 +102,19 @@ dump() ->
 load(Site, Size) when is_integer(Size) ->
     if
         Size < 0      -> exit("Need a postive size");
-        Size > 20     -> exit("You're 'avin a laugh, int'ya...");
-        0 < Size andalso Size < 21 -> l2(Site, Size)
+        Size > 21     -> exit("You're 'avin a laugh, int'ya...");
+        0 < Size andalso Size < 21 ->
+            % P1 = ["admin", "data_alerts"],
+            % URL1 = Site ++ hn_util:list_to_path(P1),
+            % Root = code:lib_dir(hypernumbers),
+            % Dir = Root ++ "/../../priv/load_testing/json/",
+            %hn_import:json_file(URL1, Dir ++ "alerts.json"),
+            l2(Site, Size)
     end.
 
 l2(_Site, 0) -> ok;
 l2(Site, N)  -> ok = l3(Site, N, ?daysinyear),
-               l2(Site, N - 1).
+                l2(Site, N - 1).
 
 l3(_Site, _N, 0) -> ok;
 l3(Site, N, M)   ->
@@ -96,11 +127,12 @@ l3(Site, N, M)   ->
     Dir = Root ++ "/../../priv/load_testing/json/",
     N1 = util2:get_timestamp(),
     hn_import:json_file(URL1, Dir ++ "calculations.json"),
+    %hn_import:json_file(URL1, Dir ++ "meter_page.json"),
     N2 = util2:get_timestamp(),
     hn_import:json_file(URL2, Dir ++ "data.json"),
     N3 = util2:get_timestamp(),
     NLocks = length(mnesia:system_info(held_locks)),
-    log(io_lib:format("~p\t~p\t~p\t~p\t~p", [N, M, (N2 - N1)/100000, 
+    log(io_lib:format("~p\t~p\t~p\t~p\t~p", [N, M, (N2 - N1)/100000,
                                              (N3 - N2)/1000000, NLocks])),
     %io:format("Logs are ~p~n", [mnesia:system_info(held_locks)]),
     l3(Site, N, M - 1).
@@ -110,7 +142,7 @@ log(String) ->
 
 log(String, File) ->
     _Return=filelib:ensure_dir(File),
-    
+
     case file:open(File, [append]) of
 	{ok, Id} ->
 	    io:fwrite(Id, "~s~n", [String]),
@@ -119,5 +151,5 @@ log(String, File) ->
 	    error
     end.
 
-get_sites() -> 
+get_sites() ->
     mnesia:activity(transaction, fun mnesia:all_keys/1, [core_site]).
