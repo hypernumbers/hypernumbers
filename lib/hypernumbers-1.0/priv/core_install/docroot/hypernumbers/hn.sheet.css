@@ -1326,10 +1326,6 @@ a.toolbar-item {
   width: 96px;
 }
 
-#sitesettings {
-    padding: 10px 60px;
-}
-
 #newviewas a:hover {
     text-decoration:underline;
 }
@@ -1386,7 +1382,7 @@ a.toolbar-item {
      font-weight: bold;
 }
 
-#tourwrapper {
+#tourwrapper, .sitedialogwrapper {
    padding: 10px 10px 0px 20px;
    height:  330px;
 }
