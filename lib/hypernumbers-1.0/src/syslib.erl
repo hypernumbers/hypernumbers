@@ -37,8 +37,12 @@ show_r([H | T], Site, Type) ->
     if
         Length2 > Length1 ->
             case lists:split(Length1, Name) of
-                {Site, _Reg} ->
-                    Pid = global:whereis_name(list_to_existing_atom(Name)),
+                {Site, Reg} ->
+                    Atom = list_to_existing_atom(Name),
+                    Pid = case Reg of
+                              "_dbsrv" -> whereis(Atom);
+                              _        -> global:whereis_name(Atom)
+                          end,
                     io:format("~p is ~p " ++ Type ++"~n", [Name, Pid]);
                 _            -> ok
             end;
