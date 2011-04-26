@@ -185,7 +185,11 @@ img.wizrep {
 }
 
 #wizcatlist {
-  width: 144px;
+    font-size:inherit;
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+    width: 144px;
 }
 
 #wizfunlist {
@@ -1399,7 +1403,7 @@ a.toolbar-item {
     width: 100px
 }
 
-.button, .tournavigate, #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc, #wizcatlist {
+.button, .tournavigate, #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc {
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;
     -moz-border-radius:3px 3px 3px 3px;
