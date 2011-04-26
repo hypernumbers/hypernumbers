@@ -424,7 +424,7 @@ iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
             respond(303, Env3),
             throw(ok);
         {error, E} ->
-%% fu@#ity-bye!
+            % fu@#ity-bye!
             throw(E)
     end;
 
