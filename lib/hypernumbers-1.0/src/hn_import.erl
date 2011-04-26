@@ -39,7 +39,7 @@ etl(FileName, FileType, Destination, Map) ->
     end.
 
 etl2(Terms, FileName, FileType, Dest) ->
-    {Pages, Validation, Mapping} = split_map(Terms, [], [], []),
+    {_Type, Pages, Validation, Mapping} = split_map(Terms, [], [], [], []),
     Input = case FileType of
                 csv -> read_csv(FileName);
                 xls -> read_xls(FileName)
@@ -131,7 +131,6 @@ set_view(Site, Path, {View, {struct, Propslist}}) ->
                                                        {"view",     View},
                                                        {"groups",   Groups},
                                                        {"everyone", Everyone}]).
-
 
 rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
     [cells(Ref, Row, X, Styles, Type, Fun, Uid) || X <- Cells],
@@ -252,17 +251,19 @@ normalise({value, date, {datetime, X}}) -> tconv:to_s(X);
 normalise({_, X})                       -> tconv:to_s(X);
 normalise({_, _, X})                    -> tconv:to_s(X).
 
-split_map([], P, V, M) ->
-    {P, V, M};
-split_map([{page, Sh, A1} | T], P, V, M) ->
+split_map([], Ty, P, V, M) ->
+    {Ty, P, V, M};
+split_map([{type, Type} | T], Ty, P, V, M) ->
+    split_map(T, [{type, Type} | Ty], P, V, M);
+split_map([{page, Sh, A1} | T], Ty, P, V, M) ->
     Sh2 = excel_util:esc_tab_name(Sh),
-    split_map(T, [{page, Sh2, A1} | P], V, M);
-split_map([{validate, Sh, A1, A2} | T], P, V, M) ->
+    split_map(T, Ty, [{page, Sh2, A1} | P], V, M);
+split_map([{validate, Sh, A1, A2} | T], Ty, P, V, M) ->
     Sh2 = excel_util:esc_tab_name(Sh),
-    split_map(T, P, [{validate, Sh2, A1, A2} | V], M);
-split_map([{map, Sh, A1, A2} | T], P, V, M) ->
+    split_map(T, Ty, P, [{validate, Sh2, A1, A2} | V], M);
+split_map([{map, Sh, A1, A2} | T], Ty, P, V, M) ->
     Sh2 = excel_util:esc_tab_name(Sh),
-    split_map(T, P, V, [{map, Sh2, A1, A2} | M]).
+    split_map(T, Ty, P, V, [{map, Sh2, A1, A2} | M]).
 
 map(Map, Dest, Pages, Data) -> map2(Map, Dest, Pages, Data, []).
 

@@ -1,4 +1,5 @@
 %%-*-erlang-*-
+{type, page}.
 {page, "csv", ""}.
 {validate, "csv", b2, not_null}.
 {validate, "csv", d2, not_null}.

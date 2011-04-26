@@ -1,4 +1,5 @@
 %%-*-erlang-*-
+{type, page}.
 {page, "Sheet1", ""}.
 {validate, "sheet1", b2, not_null}.
 {validate, "sheet1", d2, not_null}.
