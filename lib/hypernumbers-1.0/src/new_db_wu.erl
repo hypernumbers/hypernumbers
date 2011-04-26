@@ -329,8 +329,8 @@ refX_to_xrefX_create(#refX{site = S, type = Ty, path = P, obj = O} = RefX) ->
 -spec write_attrs(#xrefX{}, [{string(), term()}], calc | recalc) -> ?dict.
 write_attrs(XRefX, NewAttrs, Calc) -> write_attrs(XRefX, NewAttrs, Calc, nil).
 
--spec write_attrs(#xrefX{}, [{string(), term()}], auth_srv:auth_spec(), calc | recalc)
--> ?dict.
+-spec write_attrs(#xrefX{}, [{string(), term()}], auth_srv:auth_spec(),
+                  calc | recalc) -> ?dict.
 write_attrs(XRefX, NewAs, AReq, Calc) when is_record(XRefX, xrefX) ->
     Op = fun(Attrs) ->
                  Is_Formula = lists:keymember("formula", 1, NewAs),
@@ -375,8 +375,7 @@ mark_these_dirty(Refs = [#xrefX{site = Site}|_], AReq) ->
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -spec process_attrs([{string(), term()}], #xrefX{}, auth_srv:auth_spec(),
-                    ?dict, calc | recalc)
--> ?dict.
+                    ?dict, calc | recalc) -> ?dict.
 process_attrs([], _XRefX, _AReq, Attrs, _Calc) ->
     Attrs;
 process_attrs([{"formula",Val} | Rest], XRefX, AReq, Attrs, Calc) ->
@@ -596,7 +595,7 @@ apply_to_attrs(#xrefX{idx = Idx, site = Site} = XRefX, Op, Action, Uid) ->
     Table = trans(Site, item),
     Attrs = case mnesia:read(Table, Idx, write) of
                 [#item{attrs = A}] -> binary_to_term(A);
-                _                -> orddict:new()
+                _                  -> orddict:new()
             end,
     {Status, Attrs2} = Op(Attrs),
     Attrs3 = post_process(XRefX, Attrs2),
@@ -836,7 +835,7 @@ post_process_format(Raw, Attrs) ->
              end,
     case format:get_src(Format) of
         {erlang, {_Type, Output}} ->
-%% Y'all hear, this is how America does color. I tell you what.
+            % Y'all hear, this is how America does color. I tell you what.
             case format:run_format(Raw, Output) of
                 {ok, {Color, Val1}} ->
                     Val2  = case Val1 of
