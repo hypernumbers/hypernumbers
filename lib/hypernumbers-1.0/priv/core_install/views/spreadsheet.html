@@ -623,8 +623,83 @@
   <div id="sitedataupload" class="sitedialogwrapper">
     <h4>Data Upload Manager</h4>
     <p>This panel manages data uploads.</p>
-  </div>
-	<div id="sitetour">
+    <div id="hn_data_mapper">
+      <div class="hn_panel">
+        <div class="hn_dialog_subhead">Basic</div>
+        <div>
+        <span>What type of map are you building?</span>
+        <select>
+          <option>sheet</option>
+          <option>row</option>
+        </select>
+        </div>
+        <div>
+        <span>What type of file are you mapping?</span>
+        <select>
+          <option>csv</option>
+          <option>xls</option>
+        </select>
+        </div>
+        <div>
+        </div>
+      <div class="hn_panel">
+        <div class="hn_dialog_subhead">Behaviour</div>
+          <span>Template to load: </span>
+        <select>
+          <option>dont_overwrite</option>
+          <option>overwrite</option>
+        </select>
+        <select>
+          <option>none</option>
+          <option>hip</option>
+          <option>hop</option>
+          <option>don't stop</option>
+        </select>
+      </div>
+        <div class="hn_panel">
+        <div class="hn_dialog_subhead">Build The Map</div>
+        <div>Create a validation element</div>
+        <span>Sheet: </span>
+        <input title="put in the name of the sheet that the cell is on" value="Sheet1"></input>
+        <span>Cell: </span>
+        <input title="put in a cell like 'A1' - this will check that that cell contains an element of the right type" value="A1"></input>
+        <input type="button", value="add"></input>
+        <select>
+          <option>not_null</option>
+          <option>is_boolean</option>
+          <option>is_number</option>
+          <option>is_string</option>
+          <option>is_date</option>
+        </select>
+        </div>
+        <div>
+        <div>Create a mapping element</div>
+        <span>Sheet: </span>
+        <input title="put in the name of the sheet" value="Sheet1"></input>
+        <span>From: </span>
+        <input title="put in a cell like 'A1' - this is the cell on the spreadsheet you are uploading" value="A1"></input>
+        <span>To: </span>
+        <input title="put in a cell like 'A1' - this is the cell on the hypernumbers spreadsheet that you are uploading to" value="A1"></input>
+          <input type="button", value="add"></input>
+      </div>
+      </div>
+    </div>
+    <div id="hn_data_upload_map">
+      <div>Header and stuff</div>
+      <div>Body of the kirk</div>
+    </div>
+    <div class="hn_panel">
+      <input type="button", value="delete"></input>
+      <input type="button", value="save"></input>
+      <input type="button", value="load"></input>
+      <select>
+        <option>hip</option>
+        <option>hop</option>
+        <option>don't stop</option>
+      </select>
+      </div>
+    </div>
+  <div id="sitetour">
 	<div id="tourwrapper">
 	    <div class="tourpage">
 	      <h4>A Quick Tour</h4>

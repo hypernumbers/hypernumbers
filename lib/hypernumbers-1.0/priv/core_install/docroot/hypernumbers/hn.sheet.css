@@ -67,7 +67,6 @@ html,body {
     border: none;
 }
 
-
 .dialog .footer {
     min-height         : 18pt; /* TODO fix for columnmanager */
 }
@@ -1386,6 +1385,55 @@ a.toolbar-item {
    padding: 10px 10px 0px 20px;
    height:  330px;
 }
+
+.hn_dialog_subhead {
+                     size        : 120%;
+                     font-weight : bold;
+                     }
+
+.hn_panel {
+            background-color      : #eee;
+            -webkit-border-radius : 3px 3px 3px 3px;
+            -moz-border-radius    : 3px 3px 3px 3px;
+            border                : 1px solid #ddd;
+            padding               : 2px;
+            }
+
+.hn_panel select {
+                   float     : right;
+                   font-size : inherit;
+                   }
+
+.hn_panel input[type = button] {
+                                 float : right;
+                                 }
+
+.hn_panel div {
+                margin: 3px 0px;
+}
+
+.hn_panel input {
+                  width : 60px;
+                  font  : 12px/1.7 Courier, monospace;
+                  }
+
+#hn_data_upload_map {
+                      font                  : 12px/1.7 Courier, monospace;
+                      height                : 200px;
+                      padding               : 2px;
+                      width                 : 150px;
+                      background-color      : #fff;
+                      -webkit-border-radius : 3px 3px 3px 3px;
+                      -moz-border-radius    : 3px 3px 3px 3px;
+                      border                : 1px solid #ddd;
+                      float                 : right;
+                      }
+
+#hn_data_mapper {
+                  padding 5px;
+                  width : 410px;
+                  float : left;
+                  }
 
 #hn_tourfooter {
                  padding: 0px 20px 0px 0px;
