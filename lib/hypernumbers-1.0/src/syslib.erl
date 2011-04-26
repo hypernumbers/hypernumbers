@@ -27,7 +27,8 @@ show_r([Local | T], Site, "local")
        orelse Local == service_sup
        orelse Local == sitemaster_sup
        orelse Local == hn_mochi       ->
-    io:format("~p is registered locally for the server...~n", [Local]),
+    Pid = whereis(Local),
+    io:format("~p is ~p registered locally for the server...~n", [Local, Pid]),
     show_r(T, Site, "local");
 show_r([H | T], Site, Type) ->
     Name = atom_to_list(H),
@@ -36,7 +37,9 @@ show_r([H | T], Site, Type) ->
     if
         Length2 > Length1 ->
             case lists:split(Length1, Name) of
-                {Site, _Reg} -> io:format("~p is " ++ Type ++"~n", [Name]);
+                {Site, _Reg} ->
+                    Pid = global:whereis_name(list_to_existing_atom(Name)),
+                    io:format("~p is ~p " ++ Type ++"~n", [Name, Pid]);
                 _            -> ok
             end;
         Length2 =< Length1 -> ok
