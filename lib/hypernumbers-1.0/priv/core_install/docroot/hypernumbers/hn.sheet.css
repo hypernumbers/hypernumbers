@@ -415,7 +415,7 @@ table.tablesorter tbody tr.highlight td {
     display     : block;
     top         : 0px;
     height      : 18px;
-    margin-left : 78px;
+    margin-left : 59px;
     border      : 1px;
     background  : #FFF;
     max-height  : 100px;
@@ -448,11 +448,11 @@ table.tablesorter tbody tr.highlight td {
     display        : block;
     line-height    : 18px;
     height         : 18px;
-    width          : 40px; /* TODO */
+    width          : 50px; /* TODO */
     padding        : 0px 5px 2px 5px;
     float          : left;
     cursor         : pointer;
-    outline        :none;
+    outline        : none;
 }
 
 /* #functionsbtn:hover, #wizbtn:hover {  */
