@@ -1632,7 +1632,7 @@ make_a2(S, [#segment{page = #numberedpage{template = Tpl, type = "random",
 make_a2(S, [#segment{page = #numberedpage{template = Tpl, type = "increment",
                                           prefix = Pr}} = Spec | T],
         Now, Temps, Htap, Perm, Dest, Acc) ->
-    Pages = hn_db_api:read_pages(#refX{site = S}),
+    Pages = new_db_api:read_pages(#refX{site = S}),
     % chuck out ones the wrong length
     Pg2 = [X || X <- Pages, length(X) == length(Htap) + 1],
     Seg = get_seg(lists:reverse(Htap), Pg2, Pr),
