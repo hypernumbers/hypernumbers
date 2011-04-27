@@ -8,6 +8,7 @@
 -module(load).
 
 -export([
+         add_pages/0,
          test_starling/0,
          test_dbsrv/1,
          test_clear/1,
@@ -38,6 +39,25 @@
           obj,
           revidx
          }).
+
+add_pages() ->
+    Seg1 = 10,
+    Seg2 = 10,
+    Seg3 = 10,
+    Seg4 = 10,
+    add_pages(Seg1, Seg2, Seg3, Seg4, Seg1, Seg2, Seg3, Seg4).
+
+add_pages(0,0,0,0,_,_,_,_) -> ok;
+add_pages(I,0,0,0,OI,OJ,OK,OL) -> add_pages(I-1,OJ,OK,OL,OI,OJ,OK,OL);
+add_pages(I,J,0,0,OI,OJ,OK,OL) -> add_pages(I,J-1,OK,OL,OI,OJ,OK,OL);
+add_pages(I,J,K,0,OI,OJ,OK,OL) -> add_pages(I,J,K-1,OL,OI,OJ,OK,OL);
+add_pages(I,J,K,L,OI,OJ,OK,OL) ->
+    Site = "http://hypernumbers.dev:9000",
+    Path = [integer_to_list(I), integer_to_list(J),
+            integer_to_list(K), integer_to_list(L)],
+    io:format("Adding page ~p~n", [Path]),
+    ok = page_srv:page_written(Site, Path),
+    add_pages(I,J,K,L-1,OI,OJ,OK,OL).
 
 write_local_obj() ->
     write_lo(100000).
@@ -146,9 +166,9 @@ l2(Site, N)  -> ok = l3(Site, N, ?daysinyear),
 l3(_Site, _N, 0) -> ok;
 l3(Site, N, M)   ->
     io:format("Loading day ~p for building ~p~n", [M, N]),
-    P1 = [integer_to_list(N), integer_to_list(M), "calculations"],
+    %P1 = [integer_to_list(N), integer_to_list(M), "calculations"],
     P2 = [integer_to_list(N), integer_to_list(M), "calculations", "data"],
-    URL1 = Site ++ hn_util:list_to_path(P1),
+    %URL1 = Site ++ hn_util:list_to_path(P1),
     URL2 = Site ++ hn_util:list_to_path(P2),
     Root = code:lib_dir(hypernumbers),
     Dir = Root ++ "/../../priv/load_testing/json/",
