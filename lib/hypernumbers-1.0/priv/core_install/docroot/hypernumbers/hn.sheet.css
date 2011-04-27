@@ -1391,22 +1391,48 @@ a.toolbar-item {
                      font-weight : bold;
                      }
 
+.hn_dialog_grayhead {
+                      color       : #999;
+                      size        : 120%;
+                      font-weight : bold;
+                     }
+
 .hn_panel {
-            background-color      : #eee;
             -webkit-border-radius : 3px 3px 3px 3px;
             -moz-border-radius    : 3px 3px 3px 3px;
-            border                : 1px solid #ddd;
             padding               : 2px;
+            margin                : 3px 0px;
+            width                 : 330px;
             }
 
 .hn_panel select {
                    float     : right;
-                   font-size : inherit;
+                   font-size : 90%;
+                   width     : 105px;
                    }
 
-.hn_panel input[type = button] {
-                                 float : right;
-                                 }
+#hn_data_mapper input[type = button] {
+   font   : 12px/1.7 Verdana,Tahoma,sans-serif;
+}
+
+#hn_add_val {
+              margin: 52px 0px 0px 0px;
+}
+
+#hn_add_map {
+              margin: 28px 0px 0px 0px;
+}
+
+#hn_data_upload_ctrls input[type = button] {
+  font  : 12px/1.7 Verdana, Tahoma, sans-serif;
+  width : 60px;
+}
+
+
+#hn_data_upload_ctrls {
+                        float  : right;
+                        margin : 0px 0px 10px 0px
+                        }
 
 .hn_panel div {
                 margin: 3px 0px;
@@ -1417,23 +1443,44 @@ a.toolbar-item {
                   font  : 12px/1.7 Courier, monospace;
                   }
 
-#hn_data_upload_map {
-                      font                  : 12px/1.7 Courier, monospace;
-                      height                : 200px;
-                      padding               : 2px;
-                      width                 : 150px;
-                      background-color      : #fff;
-                      -webkit-border-radius : 3px 3px 3px 3px;
-                      -moz-border-radius    : 3px 3px 3px 3px;
-                      border                : 1px solid #ddd;
-                      float                 : right;
-                      }
+#hn_map_head {
+               height : 50px;
+               }
+
+#hn_map_body {
+               height: 100px;
+               }
+
+#hn_map_head, #hn_map_body {
+                             font                  : 9px Courier, monospace;
+                             padding               : 2px;
+                             width                 : 175px;
+                             background-color      : #fff;
+                             -webkit-border-radius : 3px 3px 3px 3px;
+                             -moz-border-radius    : 3px 3px 3px 3px;
+                             border                : 1px solid #ddd;
+                             float                 : right;
+                             }
 
 #hn_data_mapper {
-                  padding 5px;
-                  width : 410px;
+                  background-color      : #eee;
+                  padding : 5px;
+                  -webkit-border-radius : 3px 3px 3px 3px;
+                  -moz-border-radius    : 3px 3px 3px 3px;
+                  border                : 1px solid #ddd;
+                  width : 375px;
                   float : left;
                   }
+
+#hn_data_upload_ctrls input {
+                              font-size : 90%;
+                              width : 110px;
+                              }
+
+#hn_data_upload_ctrls select {
+                               font-size : 90%;
+                               width     : 114px;
+                              }
 
 #hn_tourfooter {
                  padding: 0px 20px 0px 0px;
