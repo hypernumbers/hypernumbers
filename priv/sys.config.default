@@ -1,9 +1,9 @@
 %% -*- erlang -*-
-[{hypernumbers, 
+[{hypernumbers,
   [
    {nodename, hndev},
    {environment, development}, % development | production
-   
+
    % Host to bind Mochiweb to. 9000 should be used for dev,
    % 9090-9092 reserved for production used, and should be turned off
    % for testing.
@@ -14,10 +14,10 @@
    % Services to start. These are configured by using a parameter of
    % 'true', note that in a development environment all services will
    % be started regardless.
-   {services, 
+   {services,
     [{hns, true},
      {passport, true}
-    ]}, 
+    ]},
 
    % Url to synchronize cookies against.
    {sync_url, "http://hypernumbers.com"},
@@ -29,12 +29,15 @@
    % Mail Setup
    {mailserver,   "smtp.sendgrid.net"},
    {mailuser,     "service@hypernumbers.com"},
-   {mailpassword, "spell!hello!right"}
+   {mailpassword, "spell!hello!right"},
+
+   % Set to false to not start the individual site modules
+   {should_start_sites, true}
   ]},
- 
+
 %% Mnesia Config
  {mnesia, [{dir, "var/db"}]},
- 
+
 %% Development Config
  {sasl,
   [

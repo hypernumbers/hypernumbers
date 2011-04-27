@@ -4,7 +4,6 @@
 
 %% API
 -export([start_link/0,
-         start_link/1,
          add_site/1,
          delete_site/1]).
 
@@ -19,10 +18,7 @@
 %% Description: Starts the supervisor
 %%--------------------------------------------------------------------
 start_link() ->
-    start_link(true).
-
-start_link(StartSites) ->
-    supervisor:start_link({local, ?MODULE}, ?MODULE, [StartSites]).
+    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 -spec add_site(string()) -> ok.
 add_site(Site) ->
@@ -50,13 +46,13 @@ delete_site(Site) ->
 %% to find out about restart strategy, maximum restart frequency and child
 %% specifications.
 %%--------------------------------------------------------------------
-init([StartSites]) ->
+init([]) ->
     io:format("Hypernumbers Startup: the sitemaster_sup is initing...~n"),
     Sites = hn_setup:get_sites(),
     ChildSpecs = [gen_child_spec(S) || S <- Sites],
-    case StartSites of
-        true  -> {ok,{{one_for_one,1,30}, ChildSpecs}};
-        false -> {ok,{{one_for_one,1,30}, []}}
+    case application:get_env(hypernumbers, should_start_sites) of
+        {ok, false} -> {ok,{{one_for_one,1,30}, []}};
+        _           -> {ok,{{one_for_one,1,30}, ChildSpecs}}
     end.
 
 %%====================================================================
