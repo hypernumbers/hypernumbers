@@ -9,19 +9,18 @@
           {"admin_data_alerts",   ["admin", "data_alerts"]}
          ]).
 -define(bits_and_bobs, [
-%          {"lookup-data",         ["admin", "lookup-data"]},
-          {"budget_group",        ["budget", "dla-piper"]},
-%          {"budget_building",     ["budget", "dla-piper", "st-pauls-place"]},
-%          {"budget_building",     ["budget", "dla-piper", "noble-street"]},
-%          {"budget_building",     ["budget", "dla-piper", "dibb-lipton"]},
-%          {"budget_building",     ["budget", "dla-piper", "collins-house"]},
-          {"budget_building",     ["budget", "dla-piper", "west-george-street"]},
+          {"lookup-data",         ["admin", "lookup-data"]},
+          {"budget_group",        ["budgets", "dla-piper"]},
+          {"budget_building",     ["budgets", "dla-piper", "st-pauls-place"]},
+          {"budget_building",     ["budgets", "dla-piper", "noble-street"]},
+          {"budget_building",     ["budgets", "dla-piper", "dibb-lipton"]},
+          {"budget_building",     ["budgets", "dla-piper", "collins-house"]},
+          {"budget_building",     ["budgets", "dla-piper", "west-george-street"]},
           {"initiative_page",     ["initiatives"]},
           {"initiative_new",      ["initiatives", "new"]},
           {"alerts",              ["alerts"]},
           {"my_page",             ["my-page", "stephen"]},
           {"chart_builder",       ["my-page", "stephen", "chartbuilder"]},
-%          {"compliance",          ["compliance"]},
           {"crc_report",          ["compliance", "crc"]},
           {"suppliers",           ["suppliers"]},
           {"supplier_page",       ["suppliers", "cory-environmental"]},
@@ -166,7 +165,7 @@ limiter() ->
     Locks = length(mnesia:system_info(held_locks)),
     DirtyQueue = mnesia:table_info('dla-piper.hypernumbers.com&80&dirty_queue', size),
     if
-        Len > 100 
+        Len > 100
             orelse Locks > 100
             orelse DirtyQueue > 1000  -> timer:sleep(100),
                                          limiter();
