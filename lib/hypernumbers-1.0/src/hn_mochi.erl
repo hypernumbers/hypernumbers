@@ -215,7 +215,7 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
     allowed;
 
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = json})
-  when X == "_site" ->
+  when X == "_site" orelse X == "_page" ->
     allowed;
 
 %% Only some sites have a forgotten password box
@@ -391,14 +391,18 @@ iget(#refX{path = P, obj = {filename, FileName}} = Ref, filename, Qry, Env) ->
              '404'(Ref, Env)
     end;
 
-iget(#refX{site=S, path=["_site"]} = Ref, page, _Qry, Env) ->
+iget(#refX{site=S, path=["_site"]}, page, _Qry, Env) ->
     Groups    = {"groups", {array, hn_groups:get_all_groups(S)}},
     Templates = {"templates", {array, get_templates(S)}},
     Funs      = {"functions", ?FNS_EN_GB},
-    Pages     = {"pages", pages(Ref#refX{path=[]})},
     Admin     = {"is_admin", hn_groups:is_member(Env#env.uid, S, ["admin"])},
     Lang      = {"lang", get_lang(Env#env.uid)},
-    Return    = {struct, [Groups, Funs, Templates, Pages, Admin, Lang]},
+    Return    = {struct, [Groups, Funs, Templates, Admin, Lang]},
+    json(Env, Return);
+
+iget(#refX{path=["_pages"]} = Ref, page, _Qry, Env) ->
+    Pages     = {"pages", pages(Ref#refX{path=[]})},
+    Return    = {struct, [Pages]},
     json(Env, Return);
 
 iget(#refX{site=S, path=["_logout"]}, page,
