@@ -1405,12 +1405,6 @@ a.toolbar-item {
             width                 : 330px;
             }
 
-.hn_panel select {
-                   float     : right;
-                   font-size : 90%;
-                   width     : 105px;
-                   }
-
 #hn_data_mapper input[type = button] {
    font   : 12px/1.7 Verdana,Tahoma,sans-serif;
 }
@@ -1477,10 +1471,22 @@ a.toolbar-item {
                               width : 110px;
                               }
 
-#hn_data_upload_ctrls select {
-                               font-size : 90%;
-                               width     : 114px;
+.hn_panel select {
+                   float     : right;
+                   width     : 100px;
+                   }
+
+
+#hn_data_upload_ctrls select, .hn_panel select {
+                               margin           : 5px 0px 0px 0px;
+                               background-color : #ffffff;
+                               font-size        : 80%;
+                               color            : #555555;
                               }
+
+#hn_data_upload_ctrls select {
+                               width            : 114px;
+                               }
 
 #hn_tourfooter {
                  padding: 0px 20px 0px 0px;

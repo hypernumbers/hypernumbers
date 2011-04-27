@@ -625,7 +625,7 @@
     <p>This panel manages data uploads.</p>
     <div id="hn_data_mapper">
       <div class="hn_panel">
-        <div class="hn_dialog_subhead">Basic</div>
+        <div class="hn_dialog_subhead">General</div>
         <div>
         <span>What type of map are you building?</span>
         <select id="hn_map_type">
@@ -640,15 +640,17 @@
           <option>csv</option>
         </select>
       </div>
-    </div>
-      <div class="hn_panel">
-        <div class="hn_dialog_subhead">Behaviour</div>
-        <span>Template to load: </span>
+      <div>
+        <span>Load a template as well? </span>
+        <span id="hn_map_temp" class="floatright"></span>
+      </div>
+      <div>
+        <span>Do what if the page exits?</span>
         <select id="hn_map_overwrite">
           <option>dont_overwrite</option>
           <option>overwrite</option>
         </select>
-        <span id="hn_map_temp" class="floatright"></span>
+      </div>
       </div>
       <div>
         <div class="floatright">
@@ -662,7 +664,7 @@
           <input id="hn_validation_sheet" title="put in the name of the sheet that the cell is on" value="Sheet1"></input>
           <span>Cell: </span>
           <input id="hn_validation" value="A1"></input>
-          <select>
+          <select id="hn_constraints">
             <option>not_null</option>
             <option>is_boolean</option>
             <option>is_number</option>
