@@ -118,8 +118,9 @@ process_dirties_for_zinf(Site) ->
     Tbl = new_db_wu:trans(Site, dirty_for_zinf),
     Fun = fun() ->
                   L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, write),
+		  L2 = hslists:uniq(L),
                   Dirties = [X || {ok, X} <- [zinf_srv:check_ref(Site, D)
-                                              || #dirty_for_zinf{dirty = D} <- L]],
+                                              || #dirty_for_zinf{dirty = D} <- L2]],
                   D1 = hslists:uniq(lists:flatten(Dirties)),
                   D2 = [new_db_wu:idx_to_xrefX(Site, X) || X <- D1],
                   ok = new_db_wu:mark_these_dirty(D2, nil),
@@ -1006,22 +1007,22 @@ idx_DEBUG(Site, Idx, Mode) -> 'DEBUG'(idx, {Site, Idx}, Mode, []).
 'DEBUG'(Type, Payload, Mode, Output) ->
 
     F = fun() ->
-                {RefX, O2}
+                {XRefX, O2}
                     = case Type of
                           idx ->
                               {Site, Idx} = Payload,
                               O1 = io_lib:format("Debugging the Idx ~p on site ~p",
                                                  [Idx, Site]),
-                              NewRefX = new_db_wu:idx_to_refX(Site, Idx),
+                              NewRefX = new_db_wu:idx_to_xrefX(Site, Idx),
                               O1a = pp(Site, Idx, NewRefX, Mode, O1),
                               {NewRefX, [[O1a] | Output]};
                           refX ->
                               {Payload, Output}
                       end,
-                #refX{path = P, type = _T, obj = O} = RefX,
+                #xrefX{path = P, obj = O} = XRefX,
                 P2 = hn_util:list_to_path(P),
                 O2a  = io_lib:format("The idx points to ~p on page ~p", [O, P2]),
-                Contents = lists:sort(new_db_wu:read_ref(RefX, inside)),
+                Contents = lists:sort(new_db_wu:read_ref(XRefX, inside)),
                 O3 = pretty_print(Contents, "The idx contains:", [[O2a] | O2]),
                 lists:reverse(O3)
         end,
@@ -1119,13 +1120,13 @@ print_f2(Site, [H | T], Acc) ->
                              H#form.kind, Lable]) | Acc],
     print_f2(Site, T, NewAcc).
 
-pp(Site, Idx, RefX, verbose, O) ->
+pp(Site, Idx, XRefX, verbose, O) ->
     [I] = new_db_wu:idx_DEBUG(Site, Idx),
     O1 = io_lib:format("local_obj contains ~p ~p ~p~n",
                        [binary_to_term(I#local_obj.path),
                         I#local_obj.obj,
                         binary_to_term(I#local_obj.revidx)]),
-    O2 = io_lib:format("RefX contains ~p ~p~n", [RefX#refX.path, RefX#refX.obj]),
+    O2 = io_lib:format("XRefX contains ~p ~p~n", [XRefX#xrefX.path, XRefX#xrefX.obj]),
 
     [[O1] | [[O2] | O]];
 pp(_, _, _, _, O) -> O.
