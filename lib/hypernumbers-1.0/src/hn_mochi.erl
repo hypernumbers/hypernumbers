@@ -738,10 +738,10 @@ ipost(Ref=#refX{obj = {cell, _}} = Ref, _Qry,
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "edited page"),
     case new_db_api:read_attribute(Ref, "input") of
-        [{Ref, "inline"}] ->
+        [{#xrefX{}, "inline"}] ->
             ok = new_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
             json(Env, "success");
-        [{Ref, {"select", Vs}}] ->
+        [{#xrefX{}, {"select", Vs}}] ->
             [{"formula", V}] = Attrs,
             case lists:member(V, Vs) of
                 true  -> ok = new_db_api:write_attributes([{Ref, Attrs}], Uid, Uid),
