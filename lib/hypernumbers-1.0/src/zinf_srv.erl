@@ -470,11 +470,13 @@ testA1([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     Fun2 = fun({I, R}, {ok, Tr}) ->
-                   del(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   del(XRefXs, Tr, I)
            end,
     io:format("~n~nSTART DELETING FROM TREE of ~p...~n", [NewTree1]),
     {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
@@ -497,11 +499,13 @@ testA1a([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                  add(XRefXs, Tr, I)
           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     Fun2 = fun({I, R}, {ok, Tr}) ->
-                   del(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   del(XRefXs, Tr, I)
            end,
     io:format("~n~nSTART DELETING FROM TREE of ~p...~n", [NewTree1]),
     {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
@@ -523,11 +527,13 @@ testA1b([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                  add(XRefXs, Tr, I)
           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     Fun2 = fun({I, R}, {ok, Tr}) ->
-                   del(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   del(XRefXs, Tr, I)
            end,
     io:format("~n~nStart deleting from tree of ~p...~n", [NewTree1]),
     {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
@@ -568,11 +574,13 @@ testA2([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                  add(XRefXs, Tr, I)
           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     Fun2 = fun({I, R}, {ok, Tr}) ->
-                   del(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   del(XRefXs, Tr, I)
            end,
     io:format("~n~n~n~nSTART DELETING FROM ~p~n", [NewTree1]),
     {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
@@ -605,11 +613,13 @@ testA3([]) ->
     Actions2 = lists:reverse(hslists:dedup([Actions1, []])),
     io:format("Actions1 is ~p~nActions2 is ~p~n", [Actions1, Actions2]),
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                  add(XRefXs, Tr, I)
           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     Fun2 = fun({I, R}, {ok, Tr}) ->
-                   del(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   del(XRefXs, Tr, I)
            end,
     io:format("~n~n~n~nSTART DELETING FROM ~p~n", [NewTree1]),
     {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
@@ -639,11 +649,13 @@ testA4([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                  add(XRefXs, Tr, I)
           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     Fun2 = fun({I, R}, {ok, Tr}) ->
-                   del(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   del(XRefXs, Tr, I)
            end,
     io:format("~n~n~nSTART DELETING FROM TREE ~p~n",[NewTree1]),
     {ok, NewTree2} = lists:foldl(Fun2, NewTree1, lists:reverse(Actions1)),
@@ -676,11 +688,13 @@ testA4a([]) ->
                {Idx3, #xrefX{site = S, path = P3, obj = Obj2}}
               ],
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                  add(XRefXs, Tr, I)
           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     Fun2 = fun({I, R}, {ok, Tr}) ->
-                   del(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   del(XRefXs, Tr, I)
            end,
     io:format("~n~n~nSTART DELETING FROM TREE ~p~n",[NewTree1]),
     {ok, NewTree2} = lists:foldl(Fun2, NewTree1, lists:reverse(Actions1)),
@@ -732,11 +746,13 @@ testA5([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                  add(XRefXs, Tr, I)
           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     Fun2 = fun({I, R}, {ok, Tr}) ->
-                   del(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   del(XRefXs, Tr, I)
            end,
     io:format("~n~n~nSTART DELETING FROM TREE ~p~n",[NewTree1]),
     {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions1),
@@ -789,11 +805,13 @@ testA5a([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                  add(XRefXs, Tr, I)
           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     Fun2 = fun({I, R}, {ok, Tr}) ->
-                   del(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   del(XRefXs, Tr, I)
            end,
     io:format("~n~n~nSTART DELETING FROM TREE ~p~n",[NewTree1]),
     {ok, NewTree2} = lists:foldl(Fun2, NewTree1, lists:reverse(Actions1)),
@@ -835,7 +853,8 @@ testB1([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
           end,
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P1, obj = Cell1},
@@ -863,7 +882,8 @@ testB2([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
           end,
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P1, obj = Cell1},
@@ -891,7 +911,8 @@ testB3([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
           end,
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P1, obj = Cell1},
@@ -922,7 +943,8 @@ testB4([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
           end,
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P1, obj = Cell1},
@@ -951,7 +973,8 @@ testC1([]) ->
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                  add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
           end,
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P5, obj = Obj1},
@@ -972,7 +995,8 @@ testC2([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                   add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
@@ -1003,7 +1027,8 @@ testC3([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                   add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
@@ -1034,7 +1059,8 @@ testC4([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                   add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
@@ -1065,7 +1091,8 @@ testC5([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                   add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
@@ -1096,7 +1123,8 @@ testC6([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                   add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
@@ -1127,7 +1155,8 @@ testC7([]) ->
               ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                   add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
@@ -1160,7 +1189,8 @@ testC8([]) ->
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}              ],
 
     Fun1 = fun({I, R}, {ok, Tr}) ->
-                   add(Tr, I, R)
+                   XRefXs = lists:merge([R], expand(R)),
+                   add(XRefXs, Tr, I)
            end,
 
     {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
