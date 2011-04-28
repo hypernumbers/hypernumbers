@@ -210,7 +210,7 @@ input[type=submit].hninput:hover {
     border:1px solid #939393 !important;
 }
 
-#cover {
+#cover, #cover2 {
     position   : fixed;
     background : #000;
     opacity    : 0.7;
@@ -220,6 +220,7 @@ input[type=submit].hninput:hover {
     height     : 100%;
     z-index    : 10000000;
 }
+
 /* for light cover drop the opacity */
 #lightcover {
     position   : fixed;
