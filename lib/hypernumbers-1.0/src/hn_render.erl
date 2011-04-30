@@ -33,7 +33,6 @@ content(Ref) -> content(Ref, webpage).
 content(Ref, Type) ->
     Data = lists:sort(fun order_objs/2, read_data_without_page(Ref)),
     Cells = [{{X,Y},L} || {#xrefX{obj={cell,{X,Y}}},L} <- Data],
-    % need to do old and new row/col types
     RowHs = [{R, pget("height", RPs, ?DEFAULT_HEIGHT)}
              || {#xrefX{obj={row,{R,R}}},RPs} <- Data],
     ColWs = [{C, pget("width", CPs, ?DEFAULT_WIDTH)}
