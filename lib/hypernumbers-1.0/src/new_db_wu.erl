@@ -990,6 +990,8 @@ read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
              (_LO) -> false
           end,
     lists:filter(Fun, Page);
+read_objs(#xrefX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
+    read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside);
 read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
     Table = trans(S, local_obj),
     Page = mnesia:index_read(Table, term_to_binary(P), path),
