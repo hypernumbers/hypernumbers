@@ -1396,7 +1396,7 @@ respond(Code, #env{mochi = Mochi, headers = Headers}) ->
     ok.
 
 text_html(#env{mochi = Mochi, headers = Headers}, Text) ->
-    Mochi:ok({"text/html", Headers, Text}),
+    Mochi:ok({"text/html", Headers ++ nocache(), Text}),
     ok.
 
 -spec json(#env{}, any()) -> any().
