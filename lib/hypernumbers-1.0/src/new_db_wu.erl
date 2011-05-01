@@ -908,10 +908,12 @@ get_cell_for_muin(#refX{site = S, path = P, obj = {cell, {XX, YY}}} = RefX, Type
             end,
     {Value, [], [{local, Type, {S, P, XX, YY}}]}.
 
-read_ref(XRefX, Relation) -> read_ref(XRefX, Relation, read).
+read_ref(Ref , Relation) -> read_ref(Ref, Relation, read).
 
--spec read_ref(#xrefX{}, inside | intersect, read | write)
+-spec read_ref([#xrefX{} | #refX{}], inside | intersect, read | write)
 -> [{#xrefX{}, ?dict}].
+read_ref(#refX{site = S} = RefX, Relation, Lock) ->
+    read_attrs(S, read_objs(RefX, Relation), Lock);
 read_ref(#xrefX{site = S} = XRefX, Relation, Lock) ->
     read_attrs(S, read_objs(XRefX, Relation), Lock).
 

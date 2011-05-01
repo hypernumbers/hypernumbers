@@ -154,8 +154,7 @@ read_page_structure(#refX{site = Site}) ->
 -spec read_intersect_ref(#refX{}) -> [{#refX{}, [{string(), term()}]}].
 read_intersect_ref(RefX) ->
     Fun = fun() ->
-                  XRefX = new_db_wu:refX_to_xrefX_create(RefX),
-                  new_db_wu:read_ref(XRefX, intersect)
+                  new_db_wu:read_ref(RefX, intersect)
           end,
     read_activity(RefX, Fun).
 
