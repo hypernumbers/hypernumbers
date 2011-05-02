@@ -9,6 +9,7 @@
 
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
+-include("keyvalues.hrl").
 
 -export([
          read_includes/1,
@@ -41,6 +42,8 @@
         ]).
 
 -export([
+         reset_dirty_zinfs/1,
+         maybe_write_zinftree/3,
          wait_for_dirty/1,
          process_dirties_for_zinf/3,
          process_dirty_zinfs/4,
@@ -115,6 +118,40 @@ load_dirty_since(Since, QTbl) ->
             {Since2, DirtyL}
     end.
 
+%% this function marks all dirty zinfs as unprocessed
+%% designed to be used for zinf_srv initing in case of
+%% a hard failure AND NOT FOR ANY OTHER REASON
+reset_dirty_zinfs(Site) ->
+    Tbl = new_db_wu:trans(Site, dirty_zinf),
+    Fun  = fun() ->
+                   Spec = #dirty_zinf{_='_', processed = true},
+                   L = mnesia:match_object(Tbl, Spec, write),
+                   [ok = mnesia:write(Tbl, X#dirty_zinf{processed = false},
+                                      write) || X  <- L],
+                   ok
+           end,
+    mnesia:activity(transaction, Fun).
+
+%% this function decides to maybe write the zinf tree
+%% depending on the log queue
+maybe_write_zinftree(Site, Tree, MaxSize) ->
+    Tbl = new_db_wu:trans(Site, dirty_zinf),
+    Size = mnesia:table_info(Tbl, size),
+    if
+        Size > MaxSize ->
+            Fun  = fun() ->
+                           ok = new_db_wu:write_kv(Site, ?zinf_tree, Tree),
+                           Spec = #dirty_zinf{_='_', processed = true},
+                           L = mnesia:match_object(Tbl, Spec, write),
+                           [ok = mnesia:delete(Tbl, Id, write)
+                            || #dirty_zinf{id = Id} <- L]
+                   end,
+            mnesia:activity(transaction, Fun),
+            ok;
+        Size =< MaxSize ->
+            ok
+    end.
+
 process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
     Tbl = new_db_wu:trans(Site, dirty_zinf),
     Fun1 = fun(DirtyZinf, Tr) ->
@@ -130,10 +167,11 @@ process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
                    NewTree2
            end,
     Fun2 = fun() ->
-                   L = mnesia:match_object(Tbl, #dirty_zinf{_='_'}, write),
+                   Spec = #dirty_zinf{_='_', processed = false},
+                   L = mnesia:match_object(Tbl, Spec, write),
                    NewTree = lists:foldl(Fun1, Tree, L),
-                   [ok = mnesia:delete(Tbl, Id, write)
-                    || #dirty_zinf{id = Id} <- L],
+                   [ok = mnesia:write(Tbl, X#dirty_zinf{processed = true},
+                                      write) || X  <- L],
                    NewTree
            end,
     mnesia:activity(transaction, Fun2).

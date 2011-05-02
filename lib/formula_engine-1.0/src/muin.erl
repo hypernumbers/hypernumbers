@@ -829,7 +829,8 @@ zeval2(Site, Path, Toks, X, Y) ->
     OldContext = get(),
     % we run in the context of call '0, 0' - this is because z-order expressions
     % do not support r[]c[] format cell references (or is it vice-versa?)
-    XRefX = #xrefX{site = Site, path = Path, obj = {cell, {X, Y}}},
+    RefX = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
+    [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX]),
     % no array context (fine) or security context (erk!)
     RTI = new_db_wu:xrefX_to_rti(XRefX, nil, false),
     Return = case catch(xfl_parser:parse(Toks)) of

@@ -112,7 +112,8 @@
           type,
           dirtycellidx :: cellidx(),
           old          :: ordsets:ordset(#refX{}),
-          new          :: ordsets:ordset(#refX{})
+          new          :: ordsets:ordset(#refX{}),
+          processed = false
          }).
 
 % this record is for the table that logs changes

@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         upgrade_dirty_zinf_2011_04_02/0,
          flash_dev/0,
          fix_zinf_local_obj_bug/0,
          add_include_index/0,
@@ -36,6 +37,22 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+upgrade_dirty_zinf_2011_04_02() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fun = fun({dirty_zinf, Id, Type, Dirty, O, N}) ->
+                                  {dirty_zinf, Id, Type, Dirty, O, N, false}
+                          end,
+                   Tbl = new_db_wu:trans(Site, dirty_zinf),
+                   io:format("Table ~p transformed~n", [Tbl]),
+                   Ret1 = mnesia:transform_table(Tbl, Fun,
+                                                 [id, type, dirtycellidx,
+                                                  old, new, processed]),
+                   io:format("Ret is ~p~n", [Ret1])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 flash_dev() ->
     ok = hn_setup:delete_site("http://hypernumbers.dev:9000"),
@@ -219,7 +236,6 @@ upgrade_auth_srv_2011_03_13() ->
           end,
     lists:foreach(Fun, Sites),
     ok.
-
 
 % speed increases for local_obj table
 upgrade_loc_obj_2011_03_01() ->
