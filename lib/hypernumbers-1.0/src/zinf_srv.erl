@@ -11,9 +11,10 @@
 -behaviour(gen_server).
 
 -include("spriki.hrl").
--include_lib("eunit/include/eunit.hrl").
 -include("keyvalues.hrl").
 -include("errvals.hrl").
+
+-include_lib("eunit/include/eunit.hrl").
 
 -define(E, error_logger:error_msg).
 -define(sq_bra, 91).
@@ -26,13 +27,16 @@
 
 %% Programatic API
 -export([
-         add_zinf/3,
-         del_zinf/3,
-         check_ref/2,
-         persistence_status/1,
-         mem_only/1,
-         disc_and_mem/1,
+         process_zinfs/1,
+         check_zinfs/1,
          dump/1
+        ]).
+
+%% API for fns used in new_db_api
+-export([
+         add/2,
+         del/2,
+         expand_zrefs/1
         ]).
 
 -export([
@@ -53,8 +57,7 @@
 
 -record(state, {
           site,
-          zinf_tree,
-          persistence
+          zinf_tree
          }).
 
 -record(selector,
@@ -66,42 +69,20 @@
 %%% API
 %%%===================================================================
 
-add_zinf(Site, CellIdx, XRefX) when is_record(XRefX, xrefX) ->
+process_zinfs(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     PID = global:whereis_name(Id),
-    XRefXs = lists:merge([XRefX], expand(XRefX)),
-    gen_server:call(PID, {add_zinfs, {CellIdx, XRefXs}}).
+    gen_server:cast(PID, process_zinfs).
 
-del_zinf(Site, CellIdx, XRefX) when is_record(XRefX, xrefX) ->
+check_zinfs(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     PID = global:whereis_name(Id),
-    XRefXs = lists:merge([XRefX], expand(XRefX)),
-    gen_server:call(PID, {del_zinfs, {CellIdx, XRefXs}}).
-
-check_ref(Site, XRefX) when is_record(XRefX, xrefX) ->
-    Id = hn_util:site_to_atom(Site, "_zinf"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, {check_ref, XRefX}).
-
-persistence_status(Site) ->
-    Id = hn_util:site_to_atom(Site, "_zinf"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, persistence_status).
-
-mem_only(Site) ->
-    Id = hn_util:site_to_atom(Site, "_zinf"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, mem_only).
-
-disc_and_mem(Site) ->
-    Id = hn_util:site_to_atom(Site, "_zinf"),
-    PID = global:whereis_name(Id),
-    gen_server:call(PID, disc_and_mem).
+    gen_server:call(PID, check_zinfs).
 
 dump(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     PID = global:whereis_name(Id),
-    gen_server:call(PID, {dump, Site}).
+    gen_server:cast(PID, {dump, Site}).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -131,7 +112,7 @@ start_link(Site) ->
 %%--------------------------------------------------------------------
 init([Site]) ->
     [{kvstore, ?zinf_tree, Zinf_tree}] = new_db_api:read_kv(Site, ?zinf_tree),
-    {ok, #state{site = Site, zinf_tree = Zinf_tree, persistence = disc_and_mem}}.
+    {ok, #state{site = Site, zinf_tree = Zinf_tree}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -148,29 +129,17 @@ init([Site]) ->
 %% @end
 %%--------------------------------------------------------------------
 handle_call(Request, _From, State) ->
-    #state{site = S, zinf_tree = Tree, persistence = Prs} = State,
-    {Act, {Rep, NewT}, NewPrs} =
+    #state{site = S, zinf_tree = Tree} = State,
+    {Act, {Rep, NewT}} =
         case Request of
-            {add_zinfs, {Idx, XRefXs}} ->
-                {write, add(XRefXs, Tree, Idx), Prs};
-            {del_zinfs, {Idx, XRefXs}} ->
-                {write, del(XRefXs, Tree, Idx), Prs};
-            {check_ref, XRefX} ->
-                {nothing, {check(Tree, XRefX), Tree}, Prs};
-            persistence_status ->
-                {nothing, {{ok, Prs}, Tree}, Prs};
-            mem_only ->
-                {nothing, {ok, Tree}, mem_only};
-            disc_and_mem ->
-                {write, {ok, Tree}, disc_and_mem};
-            {dump, Site} ->
-                {nothing, {dump(Tree, Site), Tree}, Prs}
+            check_zinfs ->
+                {nothing, {check_zs(S, Tree), Tree}}
         end,
-    case {Act, NewPrs} of
-        {write, disc_and_mem} -> new_db_api:write_kv(S, ?zinf_tree, NewT);
-        {_, _}                -> ok
+    case Act of
+        write -> new_db_api:write_kv(S, ?zinf_tree, NewT);
+        _     -> ok
     end,
-    {reply, Rep, State#state{zinf_tree = NewT, persistence = NewPrs}}.
+    {reply, Rep, State#state{zinf_tree = NewT}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -182,8 +151,21 @@ handle_call(Request, _From, State) ->
 %%                                  {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_cast(_Msg, State) ->
-    {noreply, State}.
+handle_cast(Msg, State) ->
+    #state{site = S, zinf_tree = Tree} = State,
+    {Act, NewT} =
+        case Msg of
+            process_zinfs ->
+                {write, process_zs(S, Tree)};
+            {dump, Site} ->
+                dump(Tree, Site),
+                {nothing, Tree}
+        end,
+    case Act of
+        write -> new_db_api:write_kv(S, ?zinf_tree, NewT);
+        _     -> ok
+    end,
+    {noreply, State#state{zinf_tree = NewT}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -221,32 +203,27 @@ terminate(_Reason, _State) ->
 %% @end
 %%--------------------------------------------------------------------
 code_change(_OldVsn, State, _Extra) ->
-    NewS = case State of
-               {state, Site, ZinfT} ->
-                   {state, Site, ZinfT, disc_and_mem};
-               _ ->
-                   State
-           end,
-    {ok, NewS}.
+    {ok, State}.
 
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-add([], Tree, _Idx)     -> {ok, Tree};
-add([H | T], Tree, Idx) ->
-    #xrefX{path = P, obj = Obj} = H,
-    NewTree = alter_tree(Tree, hn_util:parse_zpath(P), add_selector(Idx, Obj)),
-    add(T, NewTree, Idx).
+process_zs(Site, Tree) ->
+    new_db_api:process_dirty_zinfs(Site, Tree, fun add/2, fun del/2).
 
-del([], Tree, _Idx)     -> {ok, Tree};
-del([H | T], Tree, Idx) ->
-    #xrefX{path = P, obj = Obj} = H,
-    NewTree = alter_tree(Tree, hn_util:parse_zpath(P), delete_selector(Idx, Obj)),
-    del(T, NewTree, Idx).
+check_zs(Site, Tree) ->
+    new_db_api:process_dirties_for_zinf(Site, Tree, fun check/2).
+
+add({XRefX, Idx}, Tree) ->
+    #xrefX{path = P, obj = Obj} = XRefX,
+    alter_tree(Tree, hn_util:parse_zpath(P), add_selector(Idx, Obj)).
+
+del({XRefX, Idx}, Tree) ->
+    #xrefX{path = P, obj = Obj} = XRefX,
+    alter_tree(Tree, hn_util:parse_zpath(P), delete_selector(Idx, Obj)).
 
 check(Tree, #xrefX{site = S, path = P} = XRefX) ->
-    Dirty = match_tree(Tree, S, P, match(XRefX), []),
-    {ok, Dirty}.
+    match_tree(Tree, S, P, match(XRefX), []).
 
 dump(Tree, Site) ->
     io:format("Dumping Zinf tree for ~p~n", [Site]),
@@ -423,9 +400,12 @@ run_zeval(Site, Path, Z) ->
     {atomic, Ret} = mnesia:transaction(Fun),
     Ret.
 
-expand(#xrefX{path = P} = XRefX) ->
+expand_zrefs(#xrefX{path = P, site = S, obj = O}) ->
     ZSegs = hn_util:parse_zpath(P),
-    expandp(ZSegs, XRefX, [], []).
+    % we need to create #xrefX{}s for each expanded zref in the path
+    % so lets pass in a #refX{} to make it cleaner down the line
+    RefX = #refX{site = S, path = P, obj = O},
+    expandp(ZSegs, RefX, [], []).
 
 expandp([], _, _, Acc) ->
     hslists:uniq(lists:merge(Acc));
@@ -437,18 +417,23 @@ expandp([{zseg, Z} | T], X, Htap, Acc) ->
     expandp(T, X, [Z | Htap], [NewAcc | Acc]).
 
 walk([], _, _, Acc) -> Acc;
-walk([{cellref, _, {cellref, _, _, Path, Ref}} | T], X, Htap, Acc) ->
+walk([{cellref, _, {cellref, _, _, Path, Ref}} | T], RefX, Htap, Acc) ->
     NewPath = muin_util:walk_path(lists:reverse(Htap), Path),
     Ref2 = hd(lists:reverse(string:tokens(Ref, "/"))),
     Obj = hn_util:parse_ref(Ref2),
-    walk(T, X, Htap, [X#xrefX{path = NewPath, obj = Obj} | Acc]);
-walk([{rangeref, _, {rangeref, _, Path, _, _, _, _, Ref}} | T], X, Htap, Acc) ->
+    RefX2 = RefX#refX{path = NewPath, obj = Obj},
+    [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX2]),
+    walk(T, RefX, Htap, [XRefX | Acc]);
+walk([{rangeref, _, {rangeref, _, Path, _, _, _, _, Ref}} | T],
+     RefX, Htap, Acc) ->
     NewPath = muin_util:walk_path(lists:reverse(Htap), Path),
     Ref2 = hd(lists:reverse(string:tokens(Ref, "/"))),
     Obj = hn_util:parse_ref(Ref2),
-    walk(T, X, Htap, [X#xrefX{path = NewPath, obj = Obj} | Acc]);
-walk([_ | T], X, Htap, Acc) ->
-    walk(T, X, Htap, Acc).
+    RefX2 = RefX#refX{path = NewPath, obj = Obj},
+    [XRefX] = new_db_wu:refXs_to_xrefXs_create([RefX2]),
+    walk(T, RefX, Htap, [XRefX | Acc]);
+walk([_ | T], RefX, Htap, Acc) ->
+    walk(T, RefX, Htap, Acc).
 
 %%%===================================================================
 %%% EUnit Tests
@@ -457,7 +442,7 @@ walk([_ | T], X, Htap, Acc) ->
 % create an entry and delete it - check the tree returned is empty
 % on the root path
 testA1([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P2 = [],
     Obj2 = {column, {1, 2}},
@@ -469,24 +454,26 @@ testA1([]) ->
                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
-          end,
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-    Fun2 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   del(XRefXs, Tr, I)
+    Fun2 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun del/2, Tr, L)
            end,
     io:format("~n~nSTART DELETING FROM TREE of ~p...~n", [NewTree1]),
-    {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
+    NewTree2 = lists:foldl(Fun2, NewTree1, Actions2),
     io:format("NewTree2 is ~p~n", [NewTree2]),
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % create an entry and delete it - check the tree returned is empty
 % one segment in
 testA1a([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P2 = ["one"],
     Obj2 = {column, {1, 2}},
@@ -498,23 +485,25 @@ testA1a([]) ->
                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                  add(XRefXs, Tr, I)
-          end,
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-    Fun2 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   del(XRefXs, Tr, I)
+    Fun2 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun del/2, Tr, L)
            end,
     io:format("~n~nSTART DELETING FROM TREE of ~p...~n", [NewTree1]),
-    {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
+    NewTree2 = lists:foldl(Fun2, NewTree1, Actions2),
     io:format("NewTree2 is ~p~n", [NewTree2]),
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % create one and delete one deep and dirty on down
 testA1b([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P2 = ["one", "two", "lots", "more", "ya", "bas"],
     Obj2 = {column, {1, 2}},
@@ -526,23 +515,25 @@ testA1b([]) ->
                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                  add(XRefXs, Tr, I)
-          end,
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-    Fun2 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   del(XRefXs, Tr, I)
+    Fun2 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun del/2, Tr, L)
            end,
     io:format("~n~nStart deleting from tree of ~p...~n", [NewTree1]),
-    {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
+    NewTree2 = lists:foldl(Fun2, NewTree1, Actions2),
     io:format("NewTree2 is ~p~n", [NewTree2]),
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % add the same page multiple times then delete it
 testA2([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     %P1 = ["one", "two"],
     P2 = ["one", "two", "three"],
@@ -573,23 +564,25 @@ testA2([]) ->
                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                  add(XRefXs, Tr, I)
-          end,
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-    Fun2 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   del(XRefXs, Tr, I)
+    Fun2 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun del/2, Tr, L)
            end,
     io:format("~n~n~n~nSTART DELETING FROM ~p~n", [NewTree1]),
-    {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
+    NewTree2 = lists:foldl(Fun2, NewTree1, Actions2),
     io:format("NewTree2 is ~p~n", [NewTree2]),
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % add many pages in and delete them all in the same order
 testA3([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     %P1 = ["one", "two"],
     P2 = ["one", "two", "three"],
@@ -612,23 +605,25 @@ testA3([]) ->
               ],
     Actions2 = lists:reverse(hslists:dedup([Actions1, []])),
     io:format("Actions1 is ~p~nActions2 is ~p~n", [Actions1, Actions2]),
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                  add(XRefXs, Tr, I)
-          end,
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-    Fun2 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   del(XRefXs, Tr, I)
+    Fun2 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun del/2, Tr, L)
            end,
     io:format("~n~n~n~nSTART DELETING FROM ~p~n", [NewTree1]),
-    {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
+    NewTree2 = lists:foldl(Fun2, NewTree1, Actions2),
     io:format("NewTree2 is ~p~n", [NewTree2]),
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % add many pages in and delete them all in reverse order
 testA4([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     %P1 = ["one", "two"],
     P2 = ["one"],
@@ -648,23 +643,25 @@ testA4([]) ->
                {Idx2, #xrefX{site = S, path = P2, obj = Obj2}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                  add(XRefXs, Tr, I)
-          end,
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-    Fun2 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   del(XRefXs, Tr, I)
+    Fun2 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun del/2, Tr, L)
            end,
     io:format("~n~n~nSTART DELETING FROM TREE ~p~n",[NewTree1]),
-    {ok, NewTree2} = lists:foldl(Fun2, NewTree1, lists:reverse(Actions1)),
+    NewTree2 = lists:foldl(Fun2, NewTree1, lists:reverse(Actions1)),
     io:format("NewTree2 is ~p~n", [NewTree2]),
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % same as previous but with branches that don't overlap
 testA4a([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["banjo", "blammo"],
     P2 = ["one", "two", "[or(true, false)]"],
@@ -687,22 +684,25 @@ testA4a([]) ->
                {Idx2, #xrefX{site = S, path = P3, obj = Obj2}},
                {Idx3, #xrefX{site = S, path = P3, obj = Obj2}}
               ],
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                  add(XRefXs, Tr, I)
-          end,
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-    Fun2 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   del(XRefXs, Tr, I)
+    Fun2 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun del/2, Tr, L)
            end,
     io:format("~n~n~nSTART DELETING FROM TREE ~p~n",[NewTree1]),
-    {ok, NewTree2} = lists:foldl(Fun2, NewTree1, lists:reverse(Actions1)),
-    io:format("NewTree2 is ~p~n", [NewTree2]),    ?assertEqual(gb_trees:empty(), NewTree2).
+    NewTree2 = lists:foldl(Fun2, NewTree1, lists:reverse(Actions1)),
+    io:format("NewTree2 is ~p~n", [NewTree2]),
+    ?assertEqual(gb_trees:empty(), NewTree2).
 
 % add many pages in and delete them all
 testA5([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["one", "two"],
     P2 = ["one"],
@@ -745,23 +745,25 @@ testA5([]) ->
                 {Idx3, #xrefX{site = S, path = P3, obj = Obj3}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                  add(XRefXs, Tr, I)
-          end,
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-    Fun2 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   del(XRefXs, Tr, I)
+    Fun2 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun del/2, Tr, L)
            end,
     io:format("~n~n~nSTART DELETING FROM TREE ~p~n",[NewTree1]),
-    {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions1),
+    NewTree2 = lists:foldl(Fun2, NewTree1, Actions1),
     io:format("NewTree2 is ~p~n", [NewTree2]),
     ?assertEqual(gb_trees:empty(), NewTree2).
 
 % add many pages in and delete them all
 testA5a([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["one", "two"],
     P2 = ["one"],
@@ -804,19 +806,60 @@ testA5a([]) ->
                 {Idx3, #xrefX{site = S, path = P3, obj = Obj3}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                  add(XRefXs, Tr, I)
-          end,
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-    Fun2 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   del(XRefXs, Tr, I)
+    Fun2 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun del/2, Tr, L)
            end,
     io:format("~n~n~nSTART DELETING FROM TREE ~p~n",[NewTree1]),
-    {ok, NewTree2} = lists:foldl(Fun2, NewTree1, lists:reverse(Actions1)),
+    NewTree2 = lists:foldl(Fun2, NewTree1, lists:reverse(Actions1)),
     io:format("NewTree2 is ~p~n", [NewTree2]),
     ?assertEqual(gb_trees:empty(), NewTree2).
+
+%%%%% new stuff
+
+% start adding multiple clause z servers and delete them
+testA6([]) ->
+    Tree = gb_trees:empty(),
+    S = "http://example.com",
+    P1 = ["[if(a1, true, true)]", "[if(b1, true, true)]"],
+    P2 = ["[if(a2, true, true)]", "[if(b2, true, true)]"],
+    P3 = ["[if(a3, true, true)]", "[if(b3, true, true)]"],
+    Obj1 = {cell, {1, 1}},
+    Obj2 = {cell, {1, 1}},
+    Obj3 = {cell, {1, 1}},
+    Idx1 = 1,
+    Idx2 = 2,
+    Idx3 = 3,
+    Actions1 = [
+               {Idx1, #xrefX{site = S, path = P1, obj = Obj1}},
+               {Idx2, #xrefX{site = S, path = P2, obj = Obj2}},
+               {Idx3, #xrefX{site = S, path = P3, obj = Obj3}}
+              ],
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
+    Fun2 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun del/2, Tr, L)
+           end,
+    io:format("~n~n~nSTART DELETING FROM TREE ~p~n",[NewTree1]),
+    NewTree2 = lists:foldl(Fun2, NewTree1, lists:reverse(Actions1)),
+    io:format("NewTree2 is ~p~n", [NewTree2]),
+    ?assertEqual(gb_trees:empty(), NewTree2).
+
+
+%%%%% new stuff
 
 testB0([]) ->
     S = "http://example.com",
@@ -831,12 +874,12 @@ testB0([]) ->
     %Idx3 = 3,
     Cell1 = {cell, {1, 1}},
     RefX = #xrefX{site = S, path = P1, obj = Cell1},
-    {ok, List} = check(gb_trees:empty(), RefX),
+    List = check(gb_trees:empty(), RefX),
     io:format("is ~p~n", [Cell1]),
     ?assertEqual([], List).
 
 testB1([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["one", "two"],
     %P2 = ["one"],
@@ -852,18 +895,19 @@ testB1([]) ->
                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
           end,
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P1, obj = Cell1},
-    {ok, [N]} = check(NewTree1, RefX),
+    [N] = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(N, Idx1).
 
 testB2([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["one", "two"],
     P2 = ["one"],
@@ -881,18 +925,19 @@ testB2([]) ->
                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
-          end,
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P1, obj = Cell1},
-    {ok, [N]} = check(NewTree1, RefX),
+    [N] = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(N, 1).
 
 testB3([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["one", "two"],
     %P2 = ["one"],
@@ -910,18 +955,19 @@ testB3([]) ->
                 {Idx3, #xrefX{site = S, path = P1, obj = Obj3}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
-          end,
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
+           end,
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P1, obj = Cell1},
-    {ok, List} = check(NewTree1, RefX),
+    List = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx2]), lists:sort(List)).
 
 testB4([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["one", "two"],
     %P2 = ["one"],
@@ -942,19 +988,20 @@ testB4([]) ->
                 {Idx4, #xrefX{site = S, path = P1, obj = Obj4}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
           end,
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P1, obj = Cell1},
-    {ok, List} = check(NewTree1, RefX),
+    List = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Cell1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx3]), lists:sort(List)).
 
 % simple match of 2 zsegs
 testC1([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["one", "[true]", "a", "1"],
     P2 = ["one", "two", "[true]", "1"],
@@ -972,19 +1019,20 @@ testC1([]) ->
                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
           end,
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-    {ok, List} = check(NewTree1, RefX),
+    List = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx2, Idx3, Idx4]), lists:sort(List)).
 
 % longer match of 2 zsegs with a seg
 testC2([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["d", "[true]", "[true]"],
     P2 = ["d", "4", "7"],
@@ -994,20 +1042,21 @@ testC2([]) ->
                 {Idx1, #xrefX{site = S, path = P1, obj = Obj1}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
+    Fun1 = fun({I, R}, Tr ) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
            end,
 
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P2, obj = Obj1},
-    {ok, List} = check(NewTree1, RefX),
+    List = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx1]), lists:sort(List)).
 
 % set of different z matches
 testC3([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["d", "[true]", "[true]"],
     P2 = ["[true]", "[true]", "[true]"],
@@ -1026,20 +1075,21 @@ testC3([]) ->
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
            end,
 
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    NewTree1  = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-    {ok, List} = check(NewTree1, RefX),
+    List = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx2, Idx3, Idx4]), lists:sort(List)).
 
 % force a fail on z seg
 testC4([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["d", "[true]", "[true]"],
     P2 = ["[true]", "[true]", "[true]"],
@@ -1058,20 +1108,21 @@ testC4([]) ->
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
            end,
 
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-    {ok, List} = check(NewTree1, RefX),
+    List = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx2, Idx3]), lists:sort(List)).
 
 % force more than 1 fail of z seg
 testC5([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["d", "[true]", "loopy"],
     P2 = ["[true]", "[true]", "[true]"],
@@ -1090,20 +1141,21 @@ testC5([]) ->
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
            end,
 
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-    {ok, List} = check(NewTree1, RefX),
+    List = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx2, Idx3]), lists:sort(List)).
 
 % add some shorter z paths that don't match
 testC6([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["[true]", "loopy"],
     P2 = ["[true]", "[true]", "[true]"],
@@ -1122,20 +1174,21 @@ testC6([]) ->
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
            end,
 
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-    {ok, List} = check(NewTree1, RefX),
+    List = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx2, Idx3]), lists:sort(List)).
 
 % add some longer z paths that don't match
 testC7([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["[true]", "loopy", "randy", "mandy", "shandy"],
     P2 = ["[true]", "[true]", "[true]"],
@@ -1154,20 +1207,21 @@ testC7([]) ->
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
            end,
 
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-    {ok, List} = check(NewTree1, RefX),
+    List = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx2]), lists:sort(List)).
 
 % force more than 1 fail of z seg
 testC8([]) ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["[if(true, true, false}"],
     P2 = ["[true]", "4", "[if(true, true, true)]"],
@@ -1188,20 +1242,21 @@ testC8([]) ->
                 {Idx3, #xrefX{site = S, path = P3, obj = Obj1}},
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}              ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   XRefXs = lists:merge([R], expand(R)),
-                   add(XRefXs, Tr, I)
+    Fun1 = fun({I, R}, Tr) ->
+                   XRefXs = lists:merge([R], expand_zrefs(R)),
+                   L = [{X, I} || X <- XRefXs],
+                   lists:foldl(fun add/2, Tr, L)
            end,
 
-    {ok, NewTree1} = lists:foldl(Fun1, Tree, Actions1),
+    NewTree1 = lists:foldl(Fun1, Tree, Actions1),
     RefX = #xrefX{site = S, path = P5, obj = Obj1},
-    {ok, List} = check(NewTree1, RefX),
+    List = check(NewTree1, RefX),
     io:format("is ~p in ~p~n", [Obj1, NewTree1]),
     ?assertEqual(lists:sort([Idx1, Idx2, Idx3, Idx4]),
                  lists:sort(hslists:uniq(List))).
 
 test_dump() ->
-    Tree = {ok, gb_trees:empty()},
+    Tree = gb_trees:empty(),
     S = "http://example.com",
     P1 = ["[or(true, false]", "loopy", "randy", "mandy", "shandy"],
     P2 = ["[true]", "[biscuit()]", "[true]"],
@@ -1222,8 +1277,8 @@ test_dump() ->
                 {Idx4, #xrefX{site = S, path = P4, obj = Obj1}}
               ],
 
-    Fun1 = fun({I, R}, {ok, Tr}) ->
-                   add(Tr, I, R)
+    Fun1 = fun({I, R}, Tr) ->
+                   add({R, I}, Tr)
            end,
 
     Actions2 = [
@@ -1234,11 +1289,11 @@ test_dump() ->
               ],
 
     Fun2 = fun({I, R}, {ok, Tr}) ->
-                   del(Tr, I, R)
+                   del({R, I}, Tr)
            end,
 
     NewTree1 = lists:foldl(Fun1, Tree, Actions1),
-    {ok, NewTree2} = lists:foldl(Fun2, NewTree1, Actions2),
+    NewTree2 = lists:foldl(Fun2, NewTree1, Actions2),
     dump(NewTree2, S).
 
 unit_test_() ->
@@ -1255,6 +1310,7 @@ unit_test_() ->
                fun testA4a/1,
                fun testA5/1,
                fun testA5a/1,
+               fun testA6/1,
 
                fun testB0/1,
                fun testB1/1,
@@ -1274,3 +1330,4 @@ unit_test_() ->
 
     %{setup, Setup, Cleanup,
      {setup, Setup, [{with, [], SeriesA}]}.
+

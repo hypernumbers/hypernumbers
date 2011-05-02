@@ -145,8 +145,7 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
 
         {write_activity, Activity} ->
             Activity(),
-            ok = rebuild_zinf(Site),
-            ok = new_db_api:process_dirties_for_zinf(Site),
+            ok = zinf_srv:check_zinfs(Site),
             case new_db_api:load_dirty_since(Since, QTbl) of
                 {Since2, []} ->
                     {Since2, WorkPlan};
@@ -164,26 +163,6 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
     after Wait ->
             {Since, WorkPlan}
     end.
-
-%% rebuild_zinfs adds new infinite and z-order relations to the zinf tree
-rebuild_zinf(Site) ->
-    Tbl = new_db_wu:trans(Site, dirty_zinf),
-    Fun = fun() ->
-                L = mnesia:match_object(Tbl, #dirty_zinf{_='_'}, write),
-                ok = squirt_zinfs(Site, L),
-                [ok = mnesia:delete(Tbl, Id, write) || #dirty_zinf{id = Id} <- L]
-        end,
-    mnesia:activity(transaction, Fun),
-    ok.
-
-squirt_zinfs(_Site, []) -> ok;
-squirt_zinfs(Site, [H | T]) ->
-    #dirty_zinf{dirtycellidx = CI, old = OldP, new = NewP} = H,
-    Add = ordsets:subtract(NewP, OldP),
-    Del = ordsets:subtract(OldP, NewP),
-    [ok = zinf_srv:add_zinf(Site, CI, X) || X <- Add],
-    [ok = zinf_srv:del_zinf(Site, CI, X) || X <- Del],
-    squirt_zinfs(Site, T).
 
 -spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()].
 build_workplan(Site, Dirty, Graph) ->

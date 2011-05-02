@@ -42,7 +42,8 @@
 
 -export([
          wait_for_dirty/1,
-         process_dirties_for_zinf/1,
+         process_dirties_for_zinf/3,
+         process_dirty_zinfs/4,
          load_dirty_since/2,
          handle_circref_cell/3
         ]).
@@ -114,13 +115,36 @@ load_dirty_since(Since, QTbl) ->
             {Since2, DirtyL}
     end.
 
-process_dirties_for_zinf(Site) ->
+process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
+    Tbl = new_db_wu:trans(Site, dirty_zinf),
+    Fun1 = fun(DirtyZinf, Tr) ->
+                   #dirty_zinf{dirtycellidx = CI, old = OldP,
+                               new = NewP} = DirtyZinf,
+                   % expand the new and old parents
+                   NewP2 = get_zinfs(NewP, CI),
+                   OldP2 = get_zinfs(OldP, CI),
+                   Add = ordsets:subtract(NewP2, OldP2),
+                   Del = ordsets:subtract(OldP2, NewP2),
+                   NewTree = lists:foldl(AddFun, Tr, Add),
+                   NewTree2 = lists:foldl(DelFun, NewTree, Del),
+                   NewTree2
+           end,
+    Fun2 = fun() ->
+                   L = mnesia:match_object(Tbl, #dirty_zinf{_='_'}, write),
+                   NewTree = lists:foldl(Fun1, Tree, L),
+                   [ok = mnesia:delete(Tbl, Id, write)
+                    || #dirty_zinf{id = Id} <- L],
+                   NewTree
+           end,
+    mnesia:activity(transaction, Fun2).
+
+process_dirties_for_zinf(Site, Tree, CheckFun) ->
     Tbl = new_db_wu:trans(Site, dirty_for_zinf),
     Fun = fun() ->
                   L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, write),
-		  L2 = hslists:uniq(L),
-                  Dirties = [X || {ok, X} <- [zinf_srv:check_ref(Site, D)
-                                              || #dirty_for_zinf{dirty = D} <- L2]],
+                  L2 = hslists:uniq(L),
+                  Dirties = [CheckFun(Tree, D)
+                             || #dirty_for_zinf{dirty = D} <- L2],
                   D1 = hslists:uniq(lists:flatten(Dirties)),
                   D2 = [new_db_wu:idx_to_xrefX(Site, X) || X <- D1],
                   ok = new_db_wu:mark_these_dirty(D2, nil),
@@ -639,6 +663,15 @@ write_attributes(List, PAr, VAr) ->
 %%% Internal Functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_zinfs(List, CI) -> get_z2(List, CI, []).
+
+get_z2([], _CI, Acc) -> lists:sort(lists:flatten(Acc));
+get_z2([H | T], CI, Acc) ->
+    Zs = zinf_srv:expand_zrefs(H),
+    Zs2 = lists:merge([H], Zs),
+    NewAcc = [{X, CI} || X <- Zs2],
+    get_z2(T, CI, [NewAcc | Acc]).
+
 expand(List) ->
     {R, A} = lists:unzip(List),
     expand2(R, A, []).
