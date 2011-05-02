@@ -1,9 +1,9 @@
-%%% @author    Gordon Guthrie <>
-%%% @copyright (C) 2011, Gordon Guthrie
+%%% @author    Gordon Guthrie
+%%% @copyright (C) 2011, Hypernumbers Ltd
 %%% @doc       This module handles the input from web controls
 %%%
 %%% @end
-%%% Created :  1 May 2011 by Gordon Guthrie <>
+%%% Created :  1 May 2011 by gordon@hypernumbers.com
 
 -module(hn_webcontrols).
 
