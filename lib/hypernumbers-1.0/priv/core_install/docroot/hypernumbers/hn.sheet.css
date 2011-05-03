@@ -1438,13 +1438,22 @@ a.toolbar-item {
                   font  : 12px/1.7 Courier, monospace;
                   }
 
+.hn_selected {
+               background-color : #ddd;
+               }
+
 #hn_map_head {
                height : 50px;
                }
 
 #hn_map_body {
-               height: 100px;
+               height   : 100px;
+               overflow : auto;
                }
+
+#hn_map_body div {
+                   border-bottom: 1px solid #ddd;
+                   }
 
 #hn_map_head, #hn_map_body {
                              font                  : 9px Courier, monospace;
