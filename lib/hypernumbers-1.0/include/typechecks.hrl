@@ -35,7 +35,7 @@
        ).
 
 -define(is_cellref(X),
-        element(1, X) == cellrXef).
+        element(1, X) == cellref).
 
 -define(is_rangeref(X),
         (is_tuple(X) andalso element(1, X) == rangeref)).
