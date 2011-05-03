@@ -390,7 +390,7 @@ get_modules() ->
      hnfuns_forms,
      hnfuns_controls,
      hnfuns_z,
-     hnfuns_timer
+     hnfuns_special
     ].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

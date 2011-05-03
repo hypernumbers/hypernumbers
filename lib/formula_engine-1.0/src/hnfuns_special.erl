@@ -1,11 +1,12 @@
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2011, Hypernumbers Ltd
-%%% @doc       This module implements timer functions
-%%%
+%%% @doc       This module implements special
+%%%            hypernumbers functions that are
+%%%            sui generis
 %%% @end
 %%% Created :  2 May 2011 by gordon@hypernumbers.com
 
--module(hnfuns_timer).
+-module(hnfuns_special).
 
 -export([
          tick/1
