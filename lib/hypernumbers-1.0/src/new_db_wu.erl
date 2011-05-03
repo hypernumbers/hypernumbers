@@ -336,6 +336,7 @@ write_attrs(XRefX, NewAs, AReq, Calc) when is_record(XRefX, xrefX) ->
                  Is_Formula = lists:keymember("formula", 1, NewAs),
                  Has_Form = orddict:is_key("__hasform", Attrs),
                  Has_Incs = orddict:is_key("__hasincs", Attrs),
+                 Has_Timer = orddict:is_key("__hastimer", Attrs),
                  Attrs2 = case Is_Formula of
                               true ->
                                   A3 = case Has_Form of
@@ -345,12 +346,19 @@ write_attrs(XRefX, NewAs, AReq, Calc) when is_record(XRefX, xrefX) ->
                                            false  ->
                                                Attrs
                                        end,
-                                  case Has_Incs of
+                                  A4 = case Has_Incs of
+                                           true ->
+                                               delete_incs(XRefX),
+                                               orddict:erase("__hasincs", A3);
+                                           false  ->
+                                               A3
+                                       end,
+                                  case Has_Timer of
                                       true ->
-                                          delete_incs(XRefX),
-                                          orddict:erase("__hasincs", A3);
-                                      false  ->
-                                          A3
+                                          delete_timer(XRefX),
+                                          orddict:erase("__hastimer", A4);
+                                      false ->
+                                          A4
                                   end;
                               false -> Attrs
                           end,
@@ -483,6 +491,13 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs, Calc) ->
                      end,
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
                                 {Parents, false}, InfParents, Recompile, Calc);
+        {ok, {Pcode, {timer, Spec, Res}, Parents, InfParents, Recompile}} ->
+            % there might have been a preview before - nuke it!
+            Attrs2 = orddict:erase("preview", Attrs),
+            Attrs3 = orddict:store("__hastimer", t, Attrs2),
+            ok = update_timer(XRefX, Spec),
+            write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Res,
+                                {Parents, false}, InfParents, Recompile, Calc);
         % bog standard function!
         {ok, {Pcode, Res, Parents, InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
@@ -573,6 +588,10 @@ xrefX_to_rti(#xrefX{site = S, path = P, obj = {range, {C, R, _, _}}}, AR, AC)
               array_context = AC,
               auth_req = AR}.
 
+
+delete_timer(#xrefX{idx = Idx, site = S}) ->
+    Tbl = trans(S, timer),
+    mnesia:delete(Tbl, Idx, write).
 
 delete_incs(#xrefX{idx = Idx, site = S}) ->
     Tbl = trans(S, include),
@@ -711,6 +730,10 @@ write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res, {Parents, IsIncl},
                            {"__ast", Pcode},
                            {"__default-align", Align},
                            {"__recompile", Recompile}]).
+
+update_timer(#xrefX{idx = Idx, site = S}, Spec) ->
+    Tbl = trans(S, timer),
+    mnesia:write(Tbl, #timer{idx = Idx, spec = Spec}, write).
 
 update_incs(XRefX, Incs) when is_record(XRefX, xrefX)
                             andalso is_record(Incs, incs) ->

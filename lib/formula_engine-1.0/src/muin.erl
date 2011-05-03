@@ -9,6 +9,8 @@
 -include("hypernumbers.hrl").
 -include("muin_proc_dict.hrl").
 
+-define(notincfns, [include, tick]).
+
 -define(htmlheadline, $h,$t,$m,$l,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
 -define(htmlbox, $h,$t,$m,$l,$.,$b,$o,$x,$.).
 -define(htmlplainbox, $h,$t,$m,$l,$.,$p,$l,$a,$i,$n,$b,$o,$x,$.).
@@ -53,8 +55,8 @@
          funcall/2,
          call_fun/3,
          force_load/1,
-         prefetch_references/1,
          fetch/1,
+         prefetch_references/1,
          get_hypernumber/9,
          userdef_call/2,
          toidx/1,
@@ -123,8 +125,11 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
     {ok, {Fcode, Result, FiniteRefs, InfiniteRefs, get(recompile)}}.
 
 % not all functions can be included in other functions
-external_eval_formula([include | _Rest]) -> ?error_in_formula;
-external_eval_formula(X)                 -> eval_formula(X).
+external_eval_formula(X) ->
+    case lists:member(X, ?notincfns) of
+        true  -> ?ERRVAL_CANTINC;
+        false -> eval_formula(X)
+    end.
 
 %% evaluates a formula rather than a piece of AST, i.e. will do implicit
 %% intersection, resolve a final cellref &c.
@@ -177,8 +182,12 @@ parse(Fla, {Col, Row}) ->
     end.
 
 % not all functions can be included in other functions
-external_eval([include | _Rest]) -> ?error_in_formula;
-external_eval(X)                 -> eval(X).
+external_eval(X) when is_list(X)->
+    case lists:member(hd(X), ?notincfns) of
+        true  -> ?ERRVAL_CANTINC;
+        false -> eval(X)
+    end;
+external_eval(X) -> eval(X).
 
 %% Evaluate a form in the current rti context.
 %% this function captures thrown errors - including those thrown
@@ -326,11 +335,9 @@ funcall(Fname, Args0) ->
 
     Args = case lists:member(Fname, Funs) of
                true  -> Args0;
-               false -> [eval(X) || X <- prefetch_references(Args0)]
+               false -> [external_eval(X) || X <- prefetch_references(Args0)]
            end,
-
     Modules = get_modules(),
-
     case call_fun(Fname, Args, Modules) of
         {error, not_found} -> userdef_call(Fname, Args);
         {ok, Value}        -> Value
@@ -382,7 +389,8 @@ get_modules() ->
      hnfuns_html,
      hnfuns_forms,
      hnfuns_controls,
-     hnfuns_z
+     hnfuns_z,
+     hnfuns_timer
     ].
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -494,13 +502,20 @@ row(#cellref{row = Row}) -> Row.
 path(#cellref{path = Path}) -> Path.
 
 prefetch_references(L) ->
-    lists:foldr(fun(R, Acc) when ?is_cellref(R); ?is_rangeref(R); ?is_namedexpr(R) ->
-                  [fetch(R)|Acc];
-             (X, Acc) ->
-                  [X|Acc]
-          end,
-          [],
-          L).
+    lists:foldr(fun(R, Acc) when ?is_cellref(R);
+                                 ?is_rangeref(R);
+                                 ?is_namedexpr(R) ->
+                        [fetch(R) | Acc];
+                   (X, Acc) when is_list(X)->
+                        % not all functions can be included in other functions
+                        case lists:member(hd(X), ?notincfns) of
+                            true  -> ?ERRVAL_CANTINC;
+                            false -> [X | Acc]
+                        end;
+                   (X, Acc) -> [X | Acc]
+                end,
+                [],
+                L).
 
 row_index(N) when is_integer(N) -> N;
 row_index({offset, N}) -> ?my + N.

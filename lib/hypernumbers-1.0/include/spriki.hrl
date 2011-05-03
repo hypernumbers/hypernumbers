@@ -290,6 +290,13 @@
           css        = []
          }).
 
+% the timer table
+-record(timer,
+        {
+          idx,
+          spec
+         }).
+
 % the css and javascript tables
 -record(include,
         {

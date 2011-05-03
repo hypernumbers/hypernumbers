@@ -69,6 +69,13 @@ init([Site]) ->
               worker,
               [page_srv]},
 
+             {tick_srv,
+              {tick_srv, start_link, [Site]},
+              permanent,
+              2000,
+              worker,
+              [tick_srv]},
+
              {status_srv,
               {status_srv, start_link, [Site]},
               permanent,

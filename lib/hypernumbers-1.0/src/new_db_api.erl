@@ -12,6 +12,8 @@
 -include("keyvalues.hrl").
 
 -export([
+         mark_idx_dirty/2,
+         read_timers/1,
          read_includes/1,
          write_kv/3,
          read_kv/2,
@@ -78,6 +80,25 @@ wait_for_dirty(Site) ->
          false ->
              ok
      end.
+
+mark_idx_dirty(Site, Idx) ->
+    Fun1 = fun() ->
+                  new_db_wu:idx_to_xrefX(Site, Idx)
+           end,
+    XRefX = mnesia:activity(transaction, Fun1),
+    Fun2 = fun() ->
+                  ok = new_db_wu:mark_these_dirty([XRefX], nil)
+          end,
+    RefX = hn_util:xrefX_to_refX(XRefX),
+    write_activity(RefX, Fun2, "quiet").
+
+read_timers(Site) ->
+    Tbl = new_db_wu:trans(Site, timer),
+    Fun = fun() ->
+                  Spec = #timer{_ ='_'},
+                  mnesia:match_object(Tbl, Spec, read)
+          end,
+    mnesia:activity(transaction, Fun).
 
 read_includes(#refX{obj = {page, "/"}} = RefX) ->
     Fun = fun() ->

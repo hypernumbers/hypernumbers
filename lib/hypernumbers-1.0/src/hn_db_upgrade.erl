@@ -10,7 +10,8 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
-         upgrade_dirty_zinf_2011_04_02/0,
+         add_timer_table_2011_05_02/0,
+         upgrade_dirty_zinf_2011_05_02/0,
          flash_dev/0,
          fix_zinf_local_obj_bug/0,
          add_include_index/0,
@@ -38,7 +39,16 @@
          %% upgrade_1776/0
         ]).
 
-upgrade_dirty_zinf_2011_04_02() ->
+add_timer_table_2011_05_02() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Fields = record_info(fields, timer),
+                   make_table(Site, timer, Fields, disc_copies)
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
+
+upgrade_dirty_zinf_2011_05_02() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
                    Fun = fun({dirty_zinf, Id, Type, Dirty, O, N}) ->
@@ -380,7 +390,7 @@ upgrade_zinf_2011_01_17() ->
     ok.
 
 make_table(Site, Record, RecordInfo, Storage) ->
-    Tbl = hn_db_wu:trans(Site, Record),
+    Tbl = new_db_wu:trans(Site, Record),
     Ret = hn_db_admin:create_table(Tbl, Record, RecordInfo,
                                    Storage, set, false, []),
     io:format("~p creation status: ~p~n", [Tbl, Ret]),
