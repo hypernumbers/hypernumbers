@@ -9,7 +9,7 @@
 -include("hypernumbers.hrl").
 -include("muin_proc_dict.hrl").
 
--define(notincfns, [include, tick]).
+-define(notincfns, [include, tick, snapshot]).
 
 -define(htmlheadline, $h,$t,$m,$l,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
 -define(htmlbox, $h,$t,$m,$l,$.,$b,$o,$x,$.).

@@ -9,10 +9,23 @@
 -module(hnfuns_special).
 
 -export([
-         tick/1
+         tick/1,
+         snapshot/1
          ]).
 
 -include("errvals.hrl").
+
+snapshot([Arg]) ->
+    Rules = [first_array, fetch_name, fetch_ref, eval_funs],
+    Passes = [],
+    [Ret] = muin_collect:col([Arg], Rules, Passes),
+    {Errors, References} = get(retvals),
+    io:format("Old References is ~p~n", [References]),
+    io:format("Old infinite references is ~p~n", [get(infinite)]),
+    % snapshot works by killng the parents to the fn never relcalcs
+    put(retvals, {Errors, []}),
+    put(infinite, []),
+    Ret.
 
 tick([]) -> tick([1]);
 tick(Options) ->
