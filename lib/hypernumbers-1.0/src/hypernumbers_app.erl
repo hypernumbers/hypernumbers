@@ -96,5 +96,12 @@ local_hypernumbers() ->
     passport:set_password(Uid, "i!am!secure").
 
 production_tasks() ->
+    % net_adm:world() depends on you being in $GITROOT
+    {ok, CWD} = file:get_cwd(),
+    Root = code:lib_dir(hypernumbers) ++ "/../../",
+    io:format("CWD is ~p Root is ~p~n", [CWD, Root]),
+    file:set_cwd(Root),
     net_adm:world(),
+    % play nice children, and reset the cwd, there, there
+    file:set_cwd(CWD),
     ok.
