@@ -165,9 +165,12 @@ copy_attrs(Source, Dest, Styles, ["style" = Key | T]) ->
                end
     end;
 copy_attrs(Source, Dest, RT, [Key|T]) ->
-    case proplists:get_value(Key, Source, undefined) of
-        undefined -> copy_attrs(Source, Dest, RT, T);
-        V -> copy_attrs(Source, [{Key,V}|Dest], RT, T)
+    case {Key, proplists:get_value(Key, Source, undefined)} of
+        {_, undefined}           -> copy_attrs(Source, Dest, RT, T);
+        {"input", {struct, [V]}} -> {"select", {array, Array}} = V,
+                                    V2 = {"select", Array},
+                                    copy_attrs(Source, [{Key,V2}|Dest], RT, T);
+        {_, V}                   -> copy_attrs(Source, [{Key,V}|Dest], RT, T)
     end.
 
 ltoi(X) ->
