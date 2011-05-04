@@ -182,6 +182,7 @@ parse(Fla, {Col, Row}) ->
     end.
 
 % not all functions can be included in other functions
+external_eval([]) -> eval([]);
 external_eval(X) when is_list(X)->
     case lists:member(hd(X), ?notincfns) of
         true  -> ?ERRVAL_CANTINC;
@@ -506,6 +507,7 @@ prefetch_references(L) ->
                                  ?is_rangeref(R);
                                  ?is_namedexpr(R) ->
                         [fetch(R) | Acc];
+                   ([], Acc) -> [[] | Acc];
                    (X, Acc) when is_list(X)->
                         % not all functions can be included in other functions
                         case lists:member(hd(X), ?notincfns) of
