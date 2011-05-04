@@ -79,11 +79,24 @@ layout(Ref, Type, Cells, CWs, RHs, Palette) ->
              cols(), rows(), #rec{}, [textdata()])
             -> {[textdata()],integer(), integer()}.
 
+%% Emergency end of input
+%% End of input
+layout2(L, _Type, _Col, Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) 
+      when Row > 1000 ->
+    io:format("emergency exit from hn_render with head of L of ~p~n", [hd(L)]),
+    TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
+    TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
+    {lists:reverse(Acc), TotalWidth, TotalHeight};
+
 %% End of input
 layout2([], _Type, _Col, _Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) ->
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
     TotalWidth = erlang:max(PX, Rec#rec.maxwidth),
     {lists:reverse(Acc), TotalWidth, TotalHeight};
+
+% dunno how this gets created
+layout2([{{0,0}, _L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
+    layout2(T, Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc);
 
 %% Output the next cell value in the current row.
 layout2([{{C,R}, L}|T], Type, C, R, PX, PY, H, CWs, RHs, Rec, Acc) ->
@@ -173,7 +186,7 @@ draw(undefined,Css,"inline",C,R,X,Y,W,H) -> draw("",Css, "inline",C,R,X,Y,W,H);
 draw(undefined,Css,{"select", _}=Inp,C,R,X,Y,W,H) -> draw("",Css,Inp,C,R,X,Y,W,H);
 draw(undefined,"",_Inp,_C,_R,_X,_Y,_W,_H) -> "";
 draw(Value,Css,Inp,C,R,X,Y,W,H) ->
-    % Tom wants to fix this up :(
+% Tom wants to fix this up :(
     Val = case Value of
               {errval, ErrVal} ->
                   atom_to_list(ErrVal);
