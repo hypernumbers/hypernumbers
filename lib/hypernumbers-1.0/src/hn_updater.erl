@@ -2,6 +2,8 @@
 
 -export([do/1, migrate/0, migrate/1]).
 
+do(suspend)  -> suspend();
+do(resume)   -> resume();
 do(refresh)  -> refresh();
 do(hotswap)  -> refresh(), hotswap();
 do(restart)  -> refresh(), hotswap(), restart();
@@ -19,6 +21,15 @@ git_pull() ->
     ok = file:set_cwd(Dir ++ "/ebin"),
     compile_code:quick(),
     ok = file:set_cwd(CWD).
+
+%% suspend the node by stopping the Hypernumbers application
+-spec suspend() -> ok.
+suspend() ->
+    ok = application:stop(hypernumbers).
+
+%% resume the node by starting the Hypernumbers application
+resume() ->
+    ok = application:start(hypernumbers).
 
 %% Updates which cannot crash the system.
 -spec refresh() -> ok.
