@@ -1,3 +1,4 @@
+
 %% @author Dale Harvey
 %% @copyright 2008 Hypernumbers Ltd
 %% @doc Import external spreadsheets into hypernumbers
@@ -19,18 +20,28 @@
          json_file/2,
          json_file/3,
          csv_file/2,
-         csv_append/2
+         csv_append/2,
+         save_map/5,
+         read_map/2
         ]).
 
-testing() ->
-    Dir = "/home/gordon/hypernumbers/lib/hypernumbers-1.0/priv"
-        ++ "/site_types/sust_adv/etl_maps/",
-    File1 = "test.csv",
-    File2 = "test.xls",
-    Path = tconv:to_s(util2:get_timestamp()),
-    Dest = "http://hypernumbers.dev:9000/page" ++ Path ++ "/",
-    etl(Dir ++ File1, csv, Dest, Dir ++ "csv.map"),
-    etl(Dir ++ File2, xls, Dest, Dir ++ "xls.map").
+read_map(Site, Name) ->
+    ETLDir = hn_mochi:etlroot(Site),
+    FileName = filename:join(ETLDir, Name ++ ".map"),
+    case file:consult(FileName) of
+        {ok, Terms} ->
+            make_json(Terms);
+        {error, enonet} -> {error, "map doesn't exist"}
+    end.
+
+save_map(Site, Name, Head, Validation, Mapping) ->
+    ETLDir = hn_mochi:etlroot(Site),
+    FileName = filename:join(ETLDir, Name ++ ".map"),
+    File = lists:concat([[Head], Validation, Mapping]),
+    File2 = [io_lib:format("~p.~n", [X]) || X <- File],
+    ok = filelib:ensure_dir(FileName),
+    ok = file:write_file(FileName, lists:flatten(File2)),
+    remoting_reg:notify_site(Site).
 
 etl(FileName, FileType, Destination, Map) ->
     case file:consult(Map) of
@@ -369,3 +380,40 @@ get_dest(Dest, Sheet, Pages) ->
         {value, {page, Sheet, Path}} ->
             string:join([Dest, Path], "/")
     end.
+
+make_json(Terms) -> col(Terms, [], [], []).
+
+col([], Hd, V, M) -> {"map", {struct,
+                      [Hd,
+                       {"validation", {array, lists:reverse(V)}},
+                       {"mapping",    {array, lists:reverse(M)}}]}};
+% should only ever be one head record
+col([#head{} = H | T], [], V, M) ->
+    col(T, head_to_json(H), V, M);
+col([#validation{} = H | T], Hd, V, M) ->
+    col(T, Hd, [validation_to_json(H) | V], M);
+col([#mapping{} = H | T], Hd, V, M ) ->
+    col(T, Hd, V, [mapping_to_json(H) | M]).
+
+head_to_json(#head{type = Ty, filetype = F, template = Tp, overwrite = O}) ->
+    {"head", {struct, [{"type", Ty}, {"filetype", F},
+                       {"template", Tp}, {"overwrite", O}]}}.
+
+validation_to_json(#validation{sheet = S, cell = C, constraint = Cn}) ->
+    {struct, [{"sheet", S}, {"cell", C}, {"constraint", Cn}]}.
+
+mapping_to_json(#mapping{sheet = S, from = F, to = T}) ->
+    {struct, [{"sheet", S}, {"from", F}, {"to", T}]}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+testing() ->
+    Dir = "/home/gordon/hypernumbers/lib/hypernumbers-1.0/priv"
+        ++ "/site_types/sust_adv/etl_maps/",
+    File1 = "test.csv",
+    File2 = "test.xls",
+    Path = tconv:to_s(util2:get_timestamp()),
+    Dest = "http://hypernumbers.dev:9000/page" ++ Path ++ "/",
+    etl(Dir ++ File1, csv, Dest, Dir ++ "csv.map"),
+    etl(Dir ++ File2, xls, Dest, Dir ++ "xls.map").
+

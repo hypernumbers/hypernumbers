@@ -226,6 +226,7 @@
           challenger,
           hypertag,
           mark,
+          map,
           pages,
           paths,
           permissions,
@@ -306,3 +307,23 @@
           js_reload,
           css
          }).
+
+% records for data upload maps
+-record(head,
+        {type,
+         filetype,
+         template,
+         overwrite
+        }).
+
+-record(validation,
+        {sheet,
+         cell,
+         constraint
+        }).
+
+-record(mapping,
+        {sheet,
+         from,
+         to
+        }).

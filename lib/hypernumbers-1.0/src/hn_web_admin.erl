@@ -9,6 +9,7 @@
 
 -include("spriki.hrl").
 -include("hn_mochi.hrl").
+
 %% RPC Api
 -export([rpc/4]).
 
@@ -91,12 +92,27 @@ rpc(User, Site, Fn, Args) when is_list(Args) ->
             % now tell the front end to update
             % twice - both the site and page!
             ok = remoting_reg:notify_refresh(Site, NPath),
-            ok = remoting_reg:notify_site(Site)
+            ok = remoting_reg:notify_site(Site);
 
         % "remove_groups" ->
         %   [Site, Name, Groups] = Args,
         %   hn_users:remove_groups(Site, Name, Groups)
-    end.
+
+        "save_map" ->
+            Name                = kfind("name", Args),
+            {struct, Map}       = kfind("map", Args),
+            {struct, Head}      = kfind("head", Map),
+            {array, Validation} = kfind("validation", Map),
+            {array, Mapping}    = kfind("mapping", Map),
+            H2 = make_head(Head),
+            V2 = clean_up(Validation, validation),
+            M2 = clean_up(Mapping, mapping),
+            hn_import:save_map(Site, Name, H2, V2, M2),
+            ok;
+
+        Other ->
+            {error, Other ++ " is not a valid administrative task"}
+        end.
 
 -spec add_user_to_groups(string(), string(), list()) -> ok.
 add_user_to_groups(Site, UID, Groups) when is_list(Groups) ->
@@ -156,3 +172,25 @@ add_user2(User, Site, Args, Type) ->
             end,
             ok = remoting_reg:notify_refresh(Site, NPath)
     end.
+
+clean_up(List, Name) -> cl2(List, Name, []).
+
+cl2([], _, Acc) -> lists:reverse(Acc);
+cl2([{struct, List} | T], validation, Acc) ->
+           Sheet = kfind("sheet", List),
+           Cell  = kfind("cell", List),
+           Constraint = kfind("constraint", List),
+           cl2(T, validation, [#validation{sheet = Sheet, cell = Cell,
+                                           constraint = Constraint} | Acc]);
+cl2([{struct, List} | T], mapping, Acc) ->
+           Sheet = kfind("sheet", List),
+           From  = kfind("from", List),
+           To    = kfind("to", List),
+           cl2(T, mapping, [#mapping{sheet = Sheet,
+                                     from = From, to = To} | Acc]).
+make_head(Head) ->
+    Type      = kfind("type", Head),
+    FileType  = kfind("filetype", Head),
+    Template  = kfind("template", Head),
+    Overwrite = kfind("overwrite", Head),
+    #head{type = Type, filetype = FileType, template = Template, overwrite = Overwrite}.

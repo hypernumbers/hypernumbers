@@ -26,6 +26,7 @@
          extract_styles/1,
          style_to_css/1,
          templateroot/1,
+         etlroot/1,
          viewroot/1,
          docroot/1,
          page_attributes/2,
@@ -390,13 +391,18 @@ iget(#refX{path = P, obj = {filename, FileName}} = Ref, filename, Qry, Env) ->
              '404'(Ref, Env)
     end;
 
+iget(#refX{site = S, path = ["_site"]}, page, #qry{map = Name}, Env) when Name =/= undefined ->
+    Maps = {struct, [hn_import:read_map(S, Name)]},
+    json(Env, Maps);
+
 iget(#refX{site=S, path=["_site"]}, page, _Qry, Env) ->
     Groups    = {"groups", {array, hn_groups:get_all_groups(S)}},
     Templates = {"templates", {array, get_templates(S)}},
+    Maps      = {"maps", {array, get_maps(S)}},
     Funs      = {"functions", ?FNS_EN_GB},
     Admin     = {"is_admin", hn_groups:is_member(Env#env.uid, S, ["admin"])},
     Lang      = {"lang", get_lang(Env#env.uid)},
-    Return    = {struct, [Groups, Funs, Templates, Admin, Lang]},
+    Return    = {struct, [Groups, Funs, Templates, Maps, Admin, Lang]},
     json(Env, Return);
 
 iget(#refX{path=["_pages"]} = Ref, page, _Qry, Env) ->
@@ -1068,6 +1074,9 @@ add_ref1(#xrefX{obj = {Ref, {X, Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 
+etlroot(Site) ->
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:site_to_fs(Site)++"/etl".
 templateroot(Site) ->
     code:lib_dir(hypernumbers) ++ "/../../var/sites/"
         ++ hn_util:site_to_fs(Site)++"/templates".
@@ -1532,10 +1541,14 @@ reset_password(Email, Password, Hash) ->
 
 get_templates(Site) ->
     Templates = filelib:wildcard("*.json", templateroot(Site)),
-    [strip_json(X) || X <- Templates].
+    [strip("json", X) || X <- Templates].
 
-strip_json(File) ->
-    ["json" |  Rest] = lists:reverse(string:tokens(File, ".")),
+get_maps(Site) ->
+    Templates = filelib:wildcard("*.map", etlroot(Site)),
+    [strip("map", X) || X <- Templates].
+
+strip(Ext, File) ->
+    [Ext |  Rest] = lists:reverse(string:tokens(File, ".")),
     lists:flatten(lists:reverse(Rest)).
 
 run_actions(#refX{site = S, path = P} = RefX, Env,
