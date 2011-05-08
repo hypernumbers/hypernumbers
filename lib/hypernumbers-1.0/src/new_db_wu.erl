@@ -1011,9 +1011,10 @@ read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
     Fun = fun(#local_obj{obj = {cell, {_MX, MY}}}) ->
                   if
                       Y1  =< MY, MY  =< Y2 -> true;
-                      true               -> false
+                      true                 -> false
                   end;
-             (_LO) -> false
+             (_LO) ->
+                  false
           end,
     lists:filter(Fun, Page);
 read_objs(#xrefX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
@@ -1041,6 +1042,8 @@ read_objs(#xrefX{site = S, path = P, obj = O}, intersect) ->
 read_objs(#refX{site = Site} = Ref, intersect) ->
     MS = objs_intersect_ref(Ref),
     mnesia:select(trans(Site, local_obj), MS);
+read_objs(#xrefX{site = S, path = P, obj = O}, direct) ->
+    read_objs(#refX{site = S, path = P, obj = O}, direct);
 read_objs(#refX{site = S, path = P, obj = O}, direct) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
@@ -1272,10 +1275,10 @@ get_children(#xrefX{site = Site, obj = {cell, _}} = XRefX) ->
                _   -> []
            end,
     [idx_to_xrefX(Site, X) || X <- Idxs];
-get_children(#refX{obj = {Type, _}} = Ref)
+get_children(#xrefX{obj = {Type, _}} = Ref)
   when (Type ==  row) orelse (Type ==  column) orelse
        (Type ==  range) orelse (Type ==  page) ->
-    lists:flatten(expand_ref(Ref)).
+        lists:flatten(expand_ref(Ref)).
 
 -spec deref_formula(string(), #xrefX{}, atom(), auth_srv:uid()) ->
     {clean | dirty, #refX{}}.
