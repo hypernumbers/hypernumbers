@@ -1,7 +1,6 @@
-
-%% @author Dale Harvey
-%% @copyright 2008 Hypernumbers Ltd
-%% @doc Import external spreadsheets into hypernumbers
+%%% @author Dale Harvey
+%%% @copyright 2008 Hypernumbers Ltd
+%%% @doc Import external spreadsheets into hypernumbers
 
 -module(hn_import).
 
@@ -11,11 +10,13 @@
 -define(pget(Key, List), proplists:get_value(Key, List, undefined)).
 
 -export([
-         testing/0
+         testing/0,
+         testing2/0
         ]).
 
 -export([
-         etl/4,
+         etl_to_row/3,
+         etl_to_sheet/3,
          xls_file/3,
          json_file/2,
          json_file/3,
@@ -43,22 +44,53 @@ save_map(Site, Name, Head, Validation, Mapping) ->
     ok = file:write_file(FileName, lists:flatten(File2)),
     remoting_reg:notify_site(Site).
 
-etl(FileName, FileType, Destination, Map) ->
+%% only used for 'row' type maps (file contains the destination)
+etl_to_row(FileName, Site, Map) ->
     case file:consult(Map) of
-        {ok, Terms}     -> etl2(Terms, FileName, FileType, Destination);
+        {ok, Terms}     -> etl_row(Site, Terms, FileName);
         {error, enoent} -> exit("map doesn't exist")
     end.
 
-etl2(Terms, FileName, FileType, Dest) ->
-    {_Type, Pages, Validation, Mapping} = split_map(Terms, [], [], [], []),
-    Input = case FileType of
-                csv -> read_csv(FileName);
-                xls -> read_xls(FileName)
-            end,
-    case validate(Validation, Input) of
-        valid            -> write(map(Mapping, Dest, Pages, Input));
-        {not_valid, Msg} -> {not_valid, Msg}
+% only used for 'sheet' type maps (destinationmust be supplied)
+etl_to_sheet(FileName, Destination, Map) ->
+    case file:consult(Map) of
+        {ok, Terms}     -> etl_sheet(Terms, FileName, Destination);
+        {error, enoent} -> {not_valid, "Map " ++ Map ++ " doesn't exist"}
     end.
+
+etl_row(Site, Terms, FileName) ->
+    {Input, {Head, Pages, Validation, Mapping}} = get_data(Terms, FileName),
+    Type = Head#head.type,
+    case Type of
+        "sheet" -> {not_valid, "Map has row type not sheet type"};
+        "row"   -> case validate_rows(Site, Head#head.overwrite,
+                                     Validation, Input) of
+                       valid            -> erk;
+                       {not_valid, Msg} -> {not_valid, Msg}
+                   end
+    end.
+
+etl_sheet(Terms, FileName, Dest) ->
+    {Input, {Head, Pages, Validation, Mapping}} = get_data(Terms, FileName),
+    Type = Head#head.type,
+    case Type of
+        "row"   -> {not_valid, "Map has row type not sheet type"};
+        "sheet" ->
+            case validate_sheet(Validation, Input) of
+                valid            -> write(map(Mapping, Dest, Pages, Input),
+                                         Head#head.overwrite,
+                                          Head#head.template);
+                {not_valid, Msg} -> {not_valid, Msg}
+            end
+    end.
+
+get_data(Terms, FileName) ->
+    {Head, Pages, Validation, Mapping} = split_map(Terms, [], [], [], []),
+    Input = case Head#head.filetype of
+                "csv" -> read_csv(FileName);
+                "xls" -> read_xls(FileName)
+            end,
+    {Input, {Head, Pages, Validation, Mapping}}.
 
 csv_file(Url, FileName) ->
 
@@ -88,7 +120,7 @@ csv_append(Url, FileName) ->
 xls_file(Path, FileName, SheetName) ->
     Input = read_xls(FileName),
     Input2 = get_namedsheet(Input, SheetName, Path),
-    write(Input2).
+    write(Input2, overwrite, blank).
 
 get_namedsheet(Input, SheetName, URL) ->
     Sh2 = excel_util:esc_tab_name(SheetName),
@@ -132,7 +164,8 @@ json_file(Url, FileName, Uid) ->
 make_styles([], Acc) -> Acc;
 make_styles([{Idx, Str} | T], Acc) ->
     Idx2 = list_to_integer(Idx),
-    List = [list_to_tuple(string:tokens(X, ":")) || X <- string:tokens(Str, ";")],
+    List = [list_to_tuple(string:tokens(X, ":"))
+            || X <- string:tokens(Str, ";")],
     make_styles(T, [{Idx2, List} | Acc]).
 
 set_view(Site, Path, {View, {struct, Propslist}}) ->
@@ -265,24 +298,25 @@ normalise({value, date, {datetime, X}}) -> tconv:to_s(X);
 normalise({_, X})                       -> tconv:to_s(X);
 normalise({_, _, X})                    -> tconv:to_s(X).
 
-split_map([], Ty, P, V, M) ->
-    {Ty, P, V, M};
-split_map([{type, Type} | T], Ty, P, V, M) ->
-    split_map(T, [{type, Type} | Ty], P, V, M);
-split_map([{page, Sh, A1} | T], Ty, P, V, M) ->
-    Sh2 = excel_util:esc_tab_name(Sh),
-    split_map(T, Ty, [{page, Sh2, A1} | P], V, M);
-split_map([{validate, Sh, A1, A2} | T], Ty, P, V, M) ->
-    Sh2 = excel_util:esc_tab_name(Sh),
-    split_map(T, Ty, P, [{validate, Sh2, A1, A2} | V], M);
-split_map([{map, Sh, A1, A2} | T], Ty, P, V, M) ->
-    Sh2 = excel_util:esc_tab_name(Sh),
-    split_map(T, Ty, P, V, [{map, Sh2, A1, A2} | M]).
+split_map([], Hd, P, V, M) ->
+    {Hd, P, V, M};
+% there should only be one head record
+split_map([#head{} = Head | T], [], P, V, M) ->
+    split_map(T, Head, P, V, M);
+split_map([#validation{} = Vld | T], Hd, P, V, M) ->
+    Sh2 = excel_util:esc_tab_name(Vld#validation.sheet),
+    P2 = add(Sh2, P),
+    split_map(T, Hd, P2, [Vld#validation{sheet = Sh2} | V], M);
+split_map([#mapping{} = Map | T], Hd, P, V, M) ->
+    Sh2 = excel_util:esc_tab_name(Map#mapping.sheet),
+    P2 = add(Sh2, P),
+    split_map(T, Hd, P2, V, [Map#mapping{sheet = Sh2} | M]).
 
 map(Map, Dest, Pages, Data) -> map2(Map, Dest, Pages, Data, []).
 
 map2([], _Dest, _Pages, _Input, Acc) -> Acc;
-map2([{map, Sheet, From, To} | T], Dest, Pages, Input, Acc) ->
+map2([#mapping{} = Map | T], Dest, Pages, Input, Acc) ->
+    #mapping{sheet = Sheet, from = From, to = To} = Map,
     NewFrom = hn_util:parse_ref(tconv:to_s(From)),
     NewTo   = hn_util:parse_ref(tconv:to_s(To)),
     Path = get_dest(Dest, Sheet, Pages),
@@ -306,57 +340,112 @@ map2([{map, Sheet, From, To} | T], Dest, Pages, Input, Acc) ->
              end,
     map2(T, Dest, Pages, Input, NewAcc).
 
-validate(Validation, Input) -> val1(Validation, Input, []).
+validate_rows(S, O, V, Input) ->
+    case lists:merge([validate_row(S, O, V, X) || X <- Input]) of
+        []   -> valid;
+        Msgs -> {not_valid, io_lib:format("~p", [Msgs])}
+    end.
 
-val1([], _Input, [])  -> valid;
-val1([], _Input, Acc) -> {not_valid, Acc};
-val1([{validate, Sheet, Ref, Val} | T], Input, Acc) ->
+validate_row(Site, "dont_overwrite", Validation, Input) ->
+    {_Sheet, List} = Input,
+    Acc = check_no_pages(List, Site, []),
+    val_r1(List, Validation, Acc);
+validate_row(_Site, "overwrite", Validation, Input) ->
+    {_Sheet, List} = Input,
+    val_r1(List, Validation, []).
+
+check_no_pages([], _, Acc) -> Acc;
+check_no_pages([{{cell, {1, _}}, Page} | T], Site, Acc) ->
+    Page2 = string:tokens(Page, "/"),
+    NewAcc = case page_srv:does_page_exist(Site, Page2) of
+                 true  -> [{page_exists, Page2} | Acc];
+                 false -> Acc
+             end,
+    check_no_pages(T, Site, NewAcc);
+check_no_pages([_H | T], Site, Acc) -> check_no_pages(T, Site, Acc).
+
+val_r1([], _, Acc) -> Acc;
+val_r1([H | T], Validation, Acc) ->
+    NewAcc = case val_r2(Validation, H, []) of
+                 []    -> Acc;
+                 Other -> [Other | Acc]
+             end,
+    val_r1(T, Validation, NewAcc).
+
+val_r2([], _, Acc) -> Acc;
+val_r2([#validation{} = Vld | T], Input, Acc) ->
+    #validation{sheet = Sheet, cell = Ref, constraint = Cons} = Vld,
+    Obj = hn_util:parse_ref(tconv:to_s(Ref)),
+    io:format("validate here...~n"),
+    val_r2(T, Input, Acc).
+
+validate_sheet(Validation, Input) -> val_s1(Validation, Input, []).
+
+val_s1([], _Input, [])  -> valid;
+val_s1([], _Input, Acc) -> {not_valid, Acc};
+val_s1([#validation{} = Vld | T], Input, Acc) ->
+    #validation{sheet = Sheet, cell = Ref, constraint = Cons} = Vld,
     Obj = hn_util:parse_ref(tconv:to_s(Ref)),
     NewAcc = case lists:keysearch(Sheet, 1, Input) of
                  false ->
-                     case Val of
-                         not_null -> [{is_null, Obj} | Acc];
-                         _        -> Acc
+                     case Cons of
+                         "not_null" -> [{is_null, Obj} | Acc];
+                         _          -> Acc
                      end;
                  {value, {Sheet, List}} ->
                      case lists:keysearch(Obj, 1, List) of
                          false ->
-                             case Val of
-                                 not_null -> [{is_null, Ref} | Acc];
-                                                   _        -> Acc
+                             case Cons of
+                                 "not_null" -> [{is_null, Ref} | Acc];
+                                 _          -> Acc
                              end;
-                         {value, {Obj, V}}  -> val2(Ref, Val, V, Acc)
+                         {value, {Obj, V}}  -> val2(Ref, Cons, V, Acc)
                      end
              end,
-    val1(T, Input, NewAcc).
+    val_s1(T, Input, NewAcc).
 
 % if we are here V is not null
-val2(_Obj, not_null, _V, Acc) -> Acc;
-val2(Obj, is_boolean, V, Acc) ->
+val2(_Obj, "not_null", _V, Acc) -> Acc;
+val2(Obj, "is_boolean", V, Acc) ->
     case tconv:to_bool(V) of
         true                   -> Acc;
         false                  -> Acc;
         {error, not_a_boolean} -> [{not_boolean, Obj, V} | Acc]
     end;
-val2(Obj, is_number, V, Acc) ->
+val2(Obj, "is_number", V, Acc) ->
     case tconv:to_num(V) of
         {error, nan} -> [{not_a_number, Obj, V} | Acc];
         _            -> Acc
     end;
-val2(_Obj, is_string, V, Acc) when is_list(V) -> Acc;
-val2(Obj, is_string, V, Acc) -> [{not_a_string, Obj, V} | Acc];
-val2(Obj, is_date, V, Acc) ->
+val2(_Obj, "is_string", V, Acc) when is_list(V) -> Acc;
+val2(Obj,  "is_string", V, Acc) -> [{not_a_string, Obj, V} | Acc];
+val2(Obj,  "is_date", V, Acc) ->
     case dh_date:parse(V) of
         {error, bad_date} -> [{not_a_date, Obj, V} | Acc];
         _                 -> Acc
     end;
 val2(_Obj, V, V, Acc) -> Acc;
-val2(Obj, Test, V, Acc) -> [{{unknown, Test}, Obj, V} | Acc].
+val2(Obj, Test, V, Acc) ->
+    [{{unknown, Test}, Obj, V} | Acc].
 
-write(Recs) ->
+write([], _, _) -> ok;
+write(Recs, Overwrite, Template) ->
     Refs = transform_recs(Recs),
-    % now write it
-    [new_db_api:write_attributes([X]) || X <- Refs].
+    Fun = fun({X, _F} = Ref) ->
+                  #refX{site = S, path = P} = X,
+                  case {Overwrite, page_srv:does_page_exist(S, P)} of
+                      {"dont_overwrite", true} -> ok;
+                      _                        ->
+                          case Template of
+                              blank -> ok;
+                              _     -> hn_templates:load_template(X, Template)
+                          end,
+                          % now write it
+                          new_db_api:write_attributes([Ref]),
+                          ok
+                  end
+          end,
+    [Fun(X) || X <- Refs].
 
 transform_recs(Recs) -> trans2(Recs, []).
 
@@ -374,11 +463,17 @@ trans3([{Cell, Formula} | T], RefX, Acc) ->
 get_dest(Dest, Sheet, Pages) ->
     case lists:keysearch(Sheet, 2, Pages) of
         false ->
-            string:join([Dest, Sheet], "/");
+            Dest ++ Sheet ++ "/";
         {value, {page, Sheet, []}} ->
             Dest;
         {value, {page, Sheet, Path}} ->
             string:join([Dest, Path], "/")
+    end.
+
+add(Elem, List) when is_list(List) ->
+    case lists:member(Elem, List) of
+        true  -> List;
+        false -> lists:merge([[Elem], List])
     end.
 
 make_json(Terms) -> col(Terms, [], [], []).
@@ -408,12 +503,23 @@ mapping_to_json(#mapping{sheet = S, from = F, to = T}) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 testing() ->
-    Dir = "/home/gordon/hypernumbers/lib/hypernumbers-1.0/priv"
-        ++ "/site_types/sust_adv/etl_maps/",
-    File1 = "test.csv",
-    File2 = "test.xls",
+    Dir = "/home/gordon/hypernumbers/var/sites/hypernumbers.dev\&9000/etl/",
+    File1 = "map_test.csv",
+    File2 = "map_test.xls",
     Path = tconv:to_s(util2:get_timestamp()),
     Dest = "http://hypernumbers.dev:9000/page" ++ Path ++ "/",
-    etl(Dir ++ File1, csv, Dest, Dir ++ "csv.map"),
-    etl(Dir ++ File2, xls, Dest, Dir ++ "xls.map").
+    io:format("Test map_test_csv.map~n"),
+    etl_to_sheet(Dir ++ File1, Dest, Dir ++ "map_test_csv.map"),
+    io:format("Test map_test.map~n"),
+    etl_to_sheet(Dir ++ File2, Dest, Dir ++ "map_test.map").
 
+testing2() ->
+    Dir = "/home/gordon/hypernumbers/var/sites/hypernumbers.dev\&9000/etl/",
+    File1 = "row_test.csv",
+    File2 = "row_test.xls",
+    Path = tconv:to_s(util2:get_timestamp()),
+    Site = "http://hypernumbers.dev:9000",
+    io:format("Test row_test_csv.map~n"),
+    etl_to_row(Dir ++ File1, Site, Dir ++ "row_test_csv.map"),
+    io:format("Test row_test.map~n"),
+    etl_to_row(Dir ++ File2, Site, Dir ++ "row_test.map").
