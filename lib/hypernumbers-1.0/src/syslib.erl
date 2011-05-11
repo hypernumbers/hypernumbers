@@ -80,7 +80,6 @@ sort(List) ->
 log(String, File) ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
     _Return=filelib:ensure_dir(Dir ++ File),
-    io:format("Writing logs to ~p~n", [Dir ++ File]),
     Date = dh_date:format("d-M-y h:m:s"),
 
     case file:open(Dir ++ File, [append]) of
