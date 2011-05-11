@@ -59,6 +59,7 @@ dispatch(["plainbuild"])     -> {ok, Root} = file:get_cwd(),
 dispatch(["clean"])          -> {ok, Root} = file:get_cwd(),
                                 clean(Root);
 dispatch(["start" | Args])   -> start(Args);
+dispatch(["debug" | Args])   -> debug(Args);
 dispatch(["stop" | Node])    -> stop(Node);
 dispatch(["call" | Args])    -> call(Args);
 dispatch(["do", Cmd | Node]) -> remote_do(Cmd, Node);
@@ -74,21 +75,27 @@ build(Root) ->
     filelib:ensure_dir("lib/mochiweb/ebin/"),
     filelib:ensure_dir("lib/hypernumbers-1.0/ebin/"),
     filelib:ensure_dir("ebin/"),
+    io:format("...building mochiweb~n"),
     file:set_cwd("lib/mochiweb"),
     os:cmd("make"),
     file:set_cwd(Root),
     file:set_cwd("lib/gettext"),
+    io:format("...building gettext~n"),
     os:cmd("make"),
     file:set_cwd(Root),
     file:set_cwd("lib/starling"),
+    io:format("...building rake~n"),
     io:format(os:cmd("rake")),
     file:set_cwd(Root),
 
     % build the lexer-parsers
+    io:format("...building lexer-parser~n"),
     make_lexer_parser(Root),
+    io:format("...compiling compile_code.erl~n"),
     compile:file("src/compile_code.erl", [{outdir, "ebin"}]),
     make_ms_util(Root),
     file:set_cwd(Root++"/ebin"),
+    io:format("...now compile all the actual code~n"),
     compile_code:start(),
     check_console_log(Root).
 
@@ -116,8 +123,7 @@ make_ms_util(Root) ->
 
 make_lexer_parser(Root) ->
     file:set_cwd("lib/formula_engine-1.0/priv/"),
-    Ret = os:cmd("./generate.escript"),
-    io:format("~p~n", [Ret]),
+    os:cmd("./generate.escript"),
     file:set_cwd(Root).
 
 make_quick(Root) ->
@@ -148,6 +154,31 @@ start(Extra) ->
     Cmd = "run_erl -daemon "++PipeDir ++ " var/runerl_log "
         "\"erl -name "++Node++" -setcookie "++atol(cookie())++" "
         "-config var/sys.config -boot ebin/hypernumbers "
+        "-env ERL_MAX_ETS_TABLES 18000 -kernel net_setuptime 120 "
+        "+K true +A8 "
+        ++ ssl() ++ parse_extra_args(Extra)++"\"",
+
+    case os:cmd(Cmd) of
+        []   ->
+            ok,
+            make_shell(Node);
+        Else ->
+            io:format("Hypernumbers failed to boot:~n~s~n",[Else]),
+            ok
+    end.
+
+debug(Extra) ->
+
+    ensure_config(),
+    Node = atol(conf_lname()),
+    PipeDir = "/tmp/" ++ Node ++ "/",
+
+    filelib:ensure_dir("var/runerl_log/"),
+    filelib:ensure_dir(PipeDir),
+
+    Cmd = "run_erl -daemon "++PipeDir ++ " var/runerl_log "
+        "\"erl -name "++Node++" -setcookie "++atol(cookie())++" "
+        "-config var/sys.config -boot ebin/debug "
         "-env ERL_MAX_ETS_TABLES 18000 -kernel net_setuptime 120 "
         "+K true +A8 "
         ++ ssl() ++ parse_extra_args(Extra)++"\"",
