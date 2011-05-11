@@ -169,8 +169,8 @@ maybe_write_zinftree(Site, Tree, MaxSize) ->
                             || #dirty_zinf{id = Id} <- L]
                    end,
             mnesia:activity(transaction, Fun),
-            Msg = io_lib:format("writing zinf tree to log"),
-            syslib:log(Msg, ?zinf),
+            %Msg = io_lib:format("writing zinf tree to log", []),
+            %syslib:log(Msg, ?zinf),
             ok;
         Size =< MaxSize ->
             ok
