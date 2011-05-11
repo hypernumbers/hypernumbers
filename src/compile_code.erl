@@ -11,7 +11,7 @@
         ["xfl_lexer.erl", "russian_lexer.erl",
          "french_lexer.erl", "german_lexer.erl",
          "italian_lexer.erl", "spanish_lexer.erl",
-         "portuguese_lexer.erl", "superlex.erl", 
+         "portuguese_lexer.erl", "superlex.erl",
          "num_format_lexer.erl","cond_lexer.erl",
          "url_query_lexer.erl"]).
 
@@ -85,11 +85,11 @@ quick() ->
 
 build_standard() ->
     Dir = get_root(),
-    
+
     % Add ebins for everything in /lib/ (eugh)
     [ code:add_pathz(X ++ "/ebin")
       || X <- filelib:wildcard(Dir++"/lib/*") ],
-        
+
     % First set up the include file
     Inc_list = [{i, Dir ++ "lib/gettext/include"},
                 {i, Dir ++ "lib/read_excel-1.0/include"},
@@ -104,7 +104,7 @@ build_standard() ->
                   Dot = filelib:wildcard(Dir ++ X ++ "src/.*.erl"),
                   lists:map(Fun2, Src -- Dot)
           end,
-    
+
     Dirs = lists:flatten(lists:map(Fun, ?DIRS)),
 
     ok = compile_funcs(Dirs, Inc_list).
@@ -135,11 +135,11 @@ compile({File, Opt}) ->
                  false -> [report_errors, report_warnings]
              end,
     Options = lists:append(Opt,Append),
-    
+
     % Ensure output directory exists.
     [debug_info, {outdir, Dir} | _] = Options,
     filelib:ensure_dir(Dir ++ "/"),
-    
+
     case uptodate(File, Dir) of
         false -> compile(File, Options);
         _     -> ok
@@ -156,33 +156,33 @@ compile(File, Options) ->
         _Error ->
             erlang:halt(0)
     end.
-    
-%% Is the beam older than the erl file? check the date of 
+
+%% Is the beam older than the erl file? check the date of
 %% any included .hrl files
 uptodate(File, Dir) ->
 
     % Find the beam corresponding to this erl file.
     Beam = Dir ++"/"++ filename:basename(File,".erl") ++ ".beam",
-    
+
     case beam_lib:chunks(Beam, [abstract_code]) of
         {error,_,_} -> % beam doesn't exist, recompile
             io:format("Beam for ~p doesn't exist - recompile~n", [File]),
             false;
 
         {ok,{_,[{abstract_code,{_,AC}}]}} ->
-            F = fun({attribute,_Num,file,{Path,_}}) -> 
+            F = fun({attribute,_Num,file,{Path,_}}) ->
                         case filename:extension(Path) of
                             ".hrl" -> true;
                             _Else  -> false
                         end;
-                   (_Else) -> 
+                   (_Else) ->
                         false
                 end,
             G = fun({attribute,_Num,file,{Path,_}}) -> Path end,
             H = fun(Path) -> filelib:last_modified(Path) end,
 
             Includes = lists:map(G,lists:filter(F,AC)),
-            SrcFiles = [File|Includes],  
+            SrcFiles = [File|Includes],
             Latest = lists:max(lists:map(H,SrcFiles)),
 
             % if the beam is newer than the last change to any
@@ -192,7 +192,7 @@ uptodate(File, Dir) ->
                          false;
                 true  -> true
             end;
-        
+
         _Blah -> io:format("Recompile ~p because ~p~n", [File, _Blah]),
                  false
     end.
@@ -206,7 +206,7 @@ get_vsn(App) ->
 
 load(App) ->
     case application:load(App) of
-        ok                           -> ok;             
+        ok                           -> ok;
         {error, {already_loaded, _}} -> ok;
         E                            -> erlang:exit(E)
     end.
@@ -214,14 +214,14 @@ load(App) ->
 %% build the release description
 -spec make_rel_file(string(), string(), list()) -> tuple().
 make_rel_file(App, Version, Deps) ->
-    {release, 
+    {release,
      {App, Version}, {erts, erlang:system_info(version)},
      [ {X, get_vsn(X)} || X <- Deps ]
     }.
 
 get_rel_file() ->
-    Apps = [kernel, stdlib, inets, crypto, sasl, mnesia, ssl, public_key, gettext,
-            sgte, read_excel, starling, formula_engine, mochiweb,
+    Apps = [kernel, stdlib, inets, crypto, sasl, mnesia, ssl, public_key,
+            gettext, sgte, read_excel, starling, formula_engine, mochiweb,
             hypernumbers],
     Rel  = make_rel_file("hypernumbers", "1.0", Apps),
     ok   = file:write_file("hypernumbers.rel", fmt("~p.", [Rel])),
