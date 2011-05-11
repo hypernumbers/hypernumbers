@@ -14,11 +14,24 @@
 
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
-start(_Type, _Args) ->
-    io:format("Hypernumbers Startup~n********************~nstarting up...~n"),
+start(_Type, Args) ->
+    ok = basic_start(),
+    case Args of
+        []      -> normal_start();
+        [debug] -> io:format("Hypernumbers Debug: the hypernumbers "
+                             ++ "application has not been started~n"),
+                   {ok, self()}
+    end.
+
+basic_start() ->
+    io:format("Hypernumbers Startup~n********************~n~n"),
     ok = ensure_dirs(),
     io:format("Hypernumbers Startup: directories inited...~n"),
     ok = init_tables(),
+    io:format("Hypernumbers Debug Started: all good!, over and out~n"),
+    ok.
+
+normal_start() ->
     io:format("Hypernumbers Startup: tables initiated...~n"),
     ok = load_muin_modules(),
     io:format("Hypernumbers Startup: muin modules loaded...~n"),
