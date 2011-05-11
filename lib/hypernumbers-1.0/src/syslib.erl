@@ -11,7 +11,8 @@
 -export([
          process_dump/0,
          top5/0,
-         show_registered/1
+         show_registered/1,
+         log/2
          ]).
 
 show_registered("http://"++Site) ->
@@ -75,3 +76,17 @@ sort(List) ->
     {Heap5, _} = lists:split(5, lists:reverse(lists:keysort(4, List))),
     {Red5, _}  = lists:split(5, lists:reverse(lists:keysort(5, List))),
     [{longest, Len5}, {heapiest, Heap5}, {most_reductions, Red5}].
+
+log(String, File) ->
+    Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
+    _Return=filelib:ensure_dir(Dir ++ File),
+    io:format("Writing logs to ~p~n", [Dir ++ File]),
+    Date = dh_date:format("d-M-y h:m:s"),
+
+    case file:open(Dir ++ File, [append]) of
+	{ok, Id} ->
+	    io:fwrite(Id, "~s~n", [Date ++ "," ++ String]),
+	    file:close(Id);
+	_ ->
+	    error
+    end.
