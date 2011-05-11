@@ -10,6 +10,7 @@
 -include("spriki.hrl").
 -include("hypernumbers.hrl").
 -include("keyvalues.hrl").
+-include("syslib.hrl").
 
 -export([
          mark_idx_dirty/2,
@@ -168,6 +169,8 @@ maybe_write_zinftree(Site, Tree, MaxSize) ->
                             || #dirty_zinf{id = Id} <- L]
                    end,
             mnesia:activity(transaction, Fun),
+            Msg = io_lib:format("writing zinf tree to log"),
+            syslib:log(Msg, ?zinf),
             ok;
         Size =< MaxSize ->
             ok
