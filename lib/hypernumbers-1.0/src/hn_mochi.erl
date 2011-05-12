@@ -79,7 +79,7 @@ handle(MochiReq) ->
                 _ ->
                     URI = get_real_uri(MochiReq),
                     syslib:log(io_lib:format(URI ++ ": " ++Format, Msg),
-                               ?recalc),
+                               ?auth),
                     ?E(Format, Msg)
             end,
             '500'(process_environment(MochiReq))
@@ -98,7 +98,7 @@ handle_(#refX{site = S, path=["_sync" | Cmd]}, Env,
     Env2 = process_sync(Cmd, Env, QReturn, QStamp),
     Msg = io_lib:format("~p in _sync1 for Cmd of ~p QReturn of ~p QStamp of ~p",
                         [S, Cmd, QReturn, QStamp]),
-    syslib:log(Msg, ?recalc),
+    syslib:log(Msg, ?auth),
     respond(303, Env2),
     throw(ok);
 
@@ -1298,18 +1298,18 @@ process_environment(Mochi) ->
 process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
     syslib:log(io_lib:format("~p in process_user (a) for ~p", [Site, Auth]),
-               ?recalc),
+               ?auth),
     try passport:inspect_stamp(Auth) of
         {ok, Uid, Email} ->
             Msg1 = io_lib:format("~p in process_user (b) for ~p ~p",
                                 [Site, Uid, Email]),
-            syslib:log(Msg1, ?recalc),
+            syslib:log(Msg1, ?auth),
             E#env{uid = Uid, email = Email};
         {error, no_stamp} ->
             Return = cur_url(Site, E),
             Msg2 = io_lib:format("~p in process_user (c) Return is ~p",
                                 [Site, Return]),
-            syslib:log(Msg2, ?recalc),
+            syslib:log(Msg2, ?auth),
             case try_sync(["seek"], Site, Return, ?NO_STAMP) of
                 on_sync ->
                     Stamp = passport:temp_stamp(),
@@ -1317,12 +1317,12 @@ process_user(Site, E=#env{mochi = Mochi}) ->
                     Msg3 = io_lib:format("~p in process_user (d) Stamp is ~p "
                                          ++" Cookie is ~p~n",
                                          [Site, Stamp, Cookie]),
-                    syslib:log(Msg3, ?recalc),
+                    syslib:log(Msg3, ?auth),
                     E#env{headers = [Cookie | E#env.headers]};
                 {redir, Redir} ->
                     Msg4 = io_lib:format("~p in process_user (e) Redir is ~p~n",
                                          [Site, Redir]),
-                    syslib:log(Msg4, ?recalc),
+                    syslib:log(Msg4, ?auth),
                     E2 = E#env{headers = [{"location",Redir}|E#env.headers]},
                     respond(303, E2),
                     throw(ok)
@@ -1330,12 +1330,12 @@ process_user(Site, E=#env{mochi = Mochi}) ->
         {error, Reason} ->
             Msg5 = io_lib:format("~p in process_user (f) Redir is ~p~n",
                                  [Site, Reason]),
-            syslib:log(Msg5, ?recalc),
+            syslib:log(Msg5, ?auth),
             cleanup(Site, cur_url(Site, E), E)
     catch error:_ ->
                                 Msg6 = io_lib:format("~p in process_user (g) "
                                                      ++ "cleanup",[Site]),
-                                syslib:log(Msg6, ?recalc),
+                                syslib:log(Msg6, ?auth),
                                 cleanup(Site, cur_url(Site, E), E)
                         end.
 
@@ -1348,12 +1348,12 @@ cleanup(Site, Return, E) ->
                 on_sync    ->
                     Msg1 = io_lib:format("~p in cleanup Return with ~p",
                                          [Site, Return]),
-                    syslib:log(Msg1, ?recalc),
+                    syslib:log(Msg1, ?auth),
                               Return;
                 {redir, R} ->
                     Msg2 = io_lib:format("~p in cleanup Redir with ~p",
                                          [Site, R]),
-                    syslib:log(Msg2, ?recalc),
+                    syslib:log(Msg2, ?auth),
                     R
             end,
     E3 = E2#env{headers = [{"location",Redir}|E2#env.headers]},
