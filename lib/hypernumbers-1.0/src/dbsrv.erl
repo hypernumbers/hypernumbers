@@ -147,7 +147,6 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
 
         {write_activity, Activity} ->
             Activity(),
-            ok = zinf_srv:check_zinfs(Site),
             case new_db_api:load_dirty_since(Since, QTbl) of
                 {Since2, []} ->
                     {Since2, WorkPlan};

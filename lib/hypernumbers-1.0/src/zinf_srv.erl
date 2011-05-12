@@ -78,7 +78,7 @@ process_zinfs(Site) ->
 check_zinfs(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
     PID = global:whereis_name(Id),
-    gen_server:call(PID, check_zinfs).
+    gen_server:cast(PID, check_zinfs).
 
 dump(Site) ->
     Id = hn_util:site_to_atom(Site, "_zinf"),
@@ -143,13 +143,8 @@ init([Site]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call(Request, _From, State) ->
-    #state{site = S, zinf_tree = Tree} = State,
-    {Rep, NewT} =
-        case Request of
-            check_zinfs -> {check_zs(S, Tree), Tree}
-        end,
-    {reply, Rep, State#state{zinf_tree = NewT}}.
+handle_call(_Request, _From, State) ->
+    {reply, ok, State}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -165,11 +160,10 @@ handle_cast(Msg, State) ->
     #state{site = S, zinf_tree = Tree} = State,
     {Act, NewT} =
         case Msg of
-            process_zinfs ->
-                {write, process_zs(S, Tree)};
-            {dump, Site} ->
-                dump(Tree, Site),
-                {nothing, Tree}
+            process_zinfs -> {write, process_zs(S, Tree)};
+            check_zinfs   -> {nothing, check_zs(S, Tree)};
+            {dump, Site}  -> dump(Tree, Site),
+                             {nothing, Tree}
         end,
     case Act of
         write -> new_db_api:maybe_write_zinftree(S, NewT, ?maxqueuesize);
@@ -222,7 +216,8 @@ process_zs(Site, Tree) ->
     new_db_api:process_dirty_zinfs(Site, Tree, fun add/2, fun del/2).
 
 check_zs(Site, Tree) ->
-    new_db_api:process_dirties_for_zinf(Site, Tree, fun check/2).
+    ok = new_db_api:process_dirties_for_zinf(Site, Tree, fun check/2),
+    Tree.
 
 add({XRefX, Idx}, Tree) ->
     #xrefX{path = P, obj = Obj} = XRefX,

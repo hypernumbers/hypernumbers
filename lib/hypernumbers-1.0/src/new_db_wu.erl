@@ -675,7 +675,9 @@ get_prefix("http://"++Site) ->
 
 mark_dirty_for_zinf(#xrefX{site = S, obj = {cell, _}} = XRefX) ->
     Tbl = trans(S, dirty_for_zinf),
-    mnesia:write(Tbl, #dirty_for_zinf{dirty = XRefX}, write);
+    ok = mnesia:write(Tbl, #dirty_for_zinf{dirty = XRefX}, write),
+    ok = zinf_srv:check_zinfs(S),
+    ok;
 % any other refs ignore 'em
 mark_dirty_for_zinf(XRefX) when is_record(XRefX, xrefX) -> ok.
 
