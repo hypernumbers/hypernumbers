@@ -9,6 +9,7 @@
 -include("hn_mochi.hrl").
 -include("funs_en_gb.hrl").
 -include("spriki.hrl").
+-include("syslib.hrl").
 
 -define(E,        error_logger:error_msg).
 -define(LOAD,     hn_templates:load_template_if_no_page).
@@ -76,6 +77,9 @@ handle(MochiReq) ->
                     ?E(F1, [process_environment(MochiReq)]),
                     log_path_errors(Path, Format, Msg);
                 _ ->
+                    URI = get_real_uri(MochiReq),
+                    syslib:log(io_lib:format(URI ++ ": " ++Format, Msg),
+                               ?recalc),
                     ?E(Format, Msg)
             end,
             '500'(process_environment(MochiReq))
@@ -88,9 +92,13 @@ handle_(#refX{site="http://www."++Site}, E=#env{mochi=Mochi}, _Qry) ->
     Redirect = {"Location", Redir},
     respond(301, E#env{headers = [Redirect | E#env.headers]});
 
-handle_(#refX{path=["_sync" | Cmd]}, Env, #qry{return=QReturn, stamp=QStamp})
+handle_(#refX{site = S, path=["_sync" | Cmd]}, Env,
+        #qry{return=QReturn, stamp=QStamp})
   when QReturn /= undefined ->
     Env2 = process_sync(Cmd, Env, QReturn, QStamp),
+    Msg = io_lib:format("~p in _sync1 for Cmd of ~p QReturn of ~p QStamp of ~p",
+                        [S, Cmd, QReturn, QStamp]),
+    syslib:log(Msg, ?recalc),
     respond(303, Env2),
     throw(ok);
 
@@ -1289,26 +1297,47 @@ process_environment(Mochi) ->
 -spec process_user(string(), #env{}) -> #env{} | no_return().
 process_user(Site, E=#env{mochi = Mochi}) ->
     Auth = Mochi:get_cookie_value("auth"),
+    syslib:log(io_lib:format("~p in process_user (a) for ~p", [Site, Auth]),
+               ?recalc),
     try passport:inspect_stamp(Auth) of
         {ok, Uid, Email} ->
+            Msg1 = io_lib:format("~p in process_user (b) for ~p ~p",
+                                [Site, Uid, Email]),
+            syslib:log(Msg1, ?recalc),
             E#env{uid = Uid, email = Email};
         {error, no_stamp} ->
             Return = cur_url(Site, E),
+            Msg2 = io_lib:format("~p in process_user (c) Return is ~p",
+                                [Site, Return]),
+            syslib:log(Msg2, ?recalc),
             case try_sync(["seek"], Site, Return, ?NO_STAMP) of
                 on_sync ->
                     Stamp = passport:temp_stamp(),
                     Cookie = hn_net_util:cookie("auth", Stamp, "never"),
+                    Msg3 = io_lib:format("~p in process_user (d) Stamp is ~p "
+                                         ++" Cookie is ~p~n",
+                                         [Site, Stamp, Cookie]),
+                    syslib:log(Msg3, ?recalc),
                     E#env{headers = [Cookie | E#env.headers]};
                 {redir, Redir} ->
+                    Msg4 = io_lib:format("~p in process_user (e) Redir is ~p~n",
+                                         [Site, Redir]),
+                    syslib:log(Msg4, ?recalc),
                     E2 = E#env{headers = [{"location",Redir}|E#env.headers]},
                     respond(303, E2),
                     throw(ok)
             end;
-        {error, _Reason} ->
+        {error, Reason} ->
+            Msg5 = io_lib:format("~p in process_user (f) Redir is ~p~n",
+                                 [Site, Reason]),
+            syslib:log(Msg5, ?recalc),
             cleanup(Site, cur_url(Site, E), E)
     catch error:_ ->
-                                 cleanup(Site, cur_url(Site, E), E)
-                         end.
+                                Msg6 = io_lib:format("~p in process_user (g) "
+                                                     ++ "cleanup",[Site]),
+                                syslib:log(Msg6, ?recalc),
+                                cleanup(Site, cur_url(Site, E), E)
+                        end.
 
 %% Clears out auth cookie on current and main server.
 -spec cleanup(string(), string(), #env{}) -> no_return().
@@ -1316,8 +1345,16 @@ cleanup(Site, Return, E) ->
     Cookie = hn_net_util:kill_cookie("auth"),
     E2 = E#env{headers = [Cookie | E#env.headers]},
     Redir = case try_sync(["reset"], Site, Return, ?NO_STAMP) of
-                on_sync -> Return;
-                {redir, R} -> R
+                on_sync    ->
+                    Msg1 = io_lib:format("~p in cleanup Return with ~p",
+                                         [Site, Return]),
+                    syslib:log(Msg1, ?recalc),
+                              Return;
+                {redir, R} ->
+                    Msg2 = io_lib:format("~p in cleanup Redir with ~p",
+                                         [Site, R]),
+                    syslib:log(Msg2, ?recalc),
+                    R
             end,
     E3 = E2#env{headers = [{"location",Redir}|E2#env.headers]},
     respond(303, E3),
@@ -1385,7 +1422,6 @@ process_sync(["reset"], E, QReturn, undefined) ->
     Return = mochiweb_util:unquote(QReturn),
     Redirect = {"Location", Return},
     E#env{headers = [Cookie, Redirect | E#env.headers]}.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
