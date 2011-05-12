@@ -9,11 +9,23 @@
 -module(syslib).
 
 -export([
+         show_queues/1,
          process_dump/0,
          top5/0,
          show_registered/1,
-         log/2
+         log/2,
+         limiter/1
          ]).
+
+show_queues(Site) ->
+    Dirty          = new_db_wu:trans(Site, dirty_queue),
+    Dirty_Zinf     = new_db_wu:trans(Site, dirty_zinf),
+    Dirty_For_Zinf = new_db_wu:trans(Site, dirty_for_zinf),
+    showq([Dirty, Dirty_Zinf, Dirty_For_Zinf]).
+
+showq([])      -> ok;
+showq([H | T]) -> io:format("~p ~p~n", [H, mnesia:table_info(H, size)]),
+                  showq(T).
 
 show_registered("http://"++Site) ->
     Site2 = [case X of $: -> $&; X -> X end || X <- Site],
@@ -88,4 +100,18 @@ log(String, File) ->
 	    file:close(Id);
 	_ ->
 	    error
+    end.
+
+limiter(Site) ->
+    Srv = hn_util:site_to_atom(Site, "_dbsrv"),
+    Pid = whereis(Srv),
+    {message_queue_len, Len} = process_info(Pid, message_queue_len),
+    Locks = length(mnesia:system_info(held_locks)),
+    DirtyQueue = mnesia:table_info('dla-piper.hypernumbers.com&80&dirty_queue', size),
+    if
+        Len > 100
+            orelse Locks > 100
+            orelse DirtyQueue > 1000  -> timer:sleep(100),
+                                         limiter(Site);
+        true -> ok
     end.
