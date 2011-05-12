@@ -7,6 +7,7 @@
 
 -module(new_db_wu).
 
+-include("syslib.hrl").
 
 -define(to_xml_str, simplexml:to_xml_string).
 -define(to_refX, hn_util:refX_from_index).
@@ -32,8 +33,9 @@
          refX_to_xrefX/1,
          refXs_to_xrefXs_create/1,
          refX_to_xrefX_create/1,
-         write_attrs/3, write_attrs/4,
+         write_attrs/2, write_attrs/3,
          read_ref/2, read_ref/3, read_ref_field/3,
+         read_relations/2,
          mark_these_dirty/2,
          mark_dirty_for_incl/2,
          idx_to_xrefX/2,
@@ -196,7 +198,7 @@ copy_cell(#xrefX{obj = {cell, {FX,FY}}} = From,
         end,
     Attrs2 = copy_attributes(Attrs, orddict:new(), ["merge", "style"]),
     Attrs3 = orddict:store("formula", Formula2, Attrs2),
-    write_attrs(To, Attrs3, Uid, calc),
+    write_attrs(To, Attrs3, Uid),
     ok.
 
 %% @doc deletes the contents (formula/value) and the formats
@@ -223,7 +225,7 @@ do_clear_cells(Ref, DelAttrs, Action, Uid) ->
                                  ok = unattach_form(XRefX),
                                  ok = delete_incs(XRefX);
                              false -> ok
-                         end,
+                        end,
                          {clean, del_attributes(Attrs, DelAttrs)}
                  end
          end,
@@ -326,12 +328,11 @@ refX_to_xrefX_create(#refX{site = S, type = Ty, path = P, obj = O} = RefX) ->
         XrefX -> XrefX
     end.
 
--spec write_attrs(#xrefX{}, [{string(), term()}], calc | recalc) -> ?dict.
-write_attrs(XRefX, NewAttrs, Calc) -> write_attrs(XRefX, NewAttrs, Calc, nil).
+-spec write_attrs(#xrefX{}, [{string(), term()}]) -> ?dict.
+write_attrs(XRefX, NewAttrs) -> write_attrs(XRefX, NewAttrs, nil).
 
--spec write_attrs(#xrefX{}, [{string(), term()}], auth_srv:auth_spec(),
-                  calc | recalc) -> ?dict.
-write_attrs(XRefX, NewAs, AReq, Calc) when is_record(XRefX, xrefX) ->
+-spec write_attrs(#xrefX{}, [{string(), term()}], auth_srv:auth_spec()) -> ?dict.
+write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
     Op = fun(Attrs) ->
                  Is_Formula = lists:keymember("formula", 1, NewAs),
                  Has_Form = orddict:is_key("__hasform", Attrs),
@@ -362,7 +363,7 @@ write_attrs(XRefX, NewAs, AReq, Calc) when is_record(XRefX, xrefX) ->
                                   end;
                               false -> Attrs
                           end,
-                 {clean, process_attrs(NewAs, XRefX, AReq, Attrs2, Calc)}
+                 {clean, process_attrs(NewAs, XRefX, AReq, Attrs2)}
          end,
     apply_to_attrs(XRefX, Op, write, AReq).
 
@@ -383,27 +384,27 @@ mark_these_dirty(Refs = [#xrefX{site = Site}|_], AReq) ->
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -spec process_attrs([{string(), term()}], #xrefX{}, auth_srv:auth_spec(),
-                    ?dict, calc | recalc) -> ?dict.
-process_attrs([], _XRefX, _AReq, Attrs, _Calc) ->
+                    ?dict) -> ?dict.
+process_attrs([], _XRefX, _AReq, Attrs) ->
     Attrs;
-process_attrs([{"formula",Val} | Rest], XRefX, AReq, Attrs, Calc) ->
+process_attrs([{"formula",Val} | Rest], XRefX, AReq, Attrs) ->
     Attrs2  =
         case superparser:process(Val) of
             {formula, Fla} ->
-                write_formula1(XRefX, Fla, Val, AReq, Attrs, Calc);
+                write_formula1(XRefX, Fla, Val, AReq, Attrs);
             [NVal, Align, Frmt] ->
                 write_formula2(XRefX, Val, NVal, Align, Frmt, Attrs)
         end,
     ok = mark_dirty_for_zinf(XRefX),
-    process_attrs(Rest, XRefX, AReq, Attrs2, Calc);
-process_attrs([A = {Key, Val} | Rest], XRefX, AReq, Attrs, Calc) ->
+    process_attrs(Rest, XRefX, AReq, Attrs2);
+process_attrs([A = {Key, Val} | Rest], XRefX, AReq, Attrs) ->
     Attrs2  = case ms_util2:is_in_record(magic_style, Key) of
                   true  -> apply_style(XRefX, A, Attrs);
                   false -> orddict:store(Key, Val, Attrs)
               end,
-    process_attrs(Rest, XRefX, AReq, Attrs2, Calc).
+    process_attrs(Rest, XRefX, AReq, Attrs2).
 
-write_formula1(XRefX, Fla, Formula, AReq, Attrs, Calc) ->
+write_formula1(XRefX, Fla, Formula, AReq, Attrs) ->
     Rti = xrefX_to_rti(XRefX, AReq, false),
     case muin:run_formula(Fla, Rti) of
         % General error condition
@@ -425,7 +426,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs, Calc) ->
             Attrs3 = orddict:store("preview", {Label2, 1, 1}, Attrs2),
             % mebbies there was incs, nuke 'em
             write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Html,
-                                {Parents, false}, InfParents, Recompile, Calc);
+                                {Parents, false}, InfParents, Recompile);
         % the formula returns a web control
         {ok, {Pcode, {webcontrol, {Payload, {Title, Wd, Ht, Incs}}, Res},
               Parents, InfParents, Recompile}} ->
@@ -441,13 +442,12 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs, Calc) ->
                      end,
             Attrs4 = orddict:store("preview", {Title, Wd, Ht}, Attrs3),
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents, Recompile, Calc);
+                                {Parents, false}, InfParents, Recompile);
         % the formula returns a web-hingie that needs to be previewed
         {ok, {Pcode, {preview, {PreV, Wd, Ht, Incs}, Res}, Pars,
               InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Wd, Ht}, Attrs),
             Blank = #incs{},
-
             Attrs3 = case Incs of
                          Blank -> Attrs2;
                          _     -> ok = update_incs(XRefX, Incs),
@@ -461,7 +461,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs, Calc) ->
                                                  Attrs3)
                      end,
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
-                                {Pars, false}, InfPars, Recompile, Calc);
+                                {Pars, false}, InfPars, Recompile);
         % special case for the include function (special dirty!)
         {ok, {Pcode, {include, {PreV, Ht, Wd}, Res}, Pars, InfPars, Recompile}} ->
             Attrs2 = orddict:store("preview", {PreV, Ht, Wd}, Attrs),
@@ -470,7 +470,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs, Calc) ->
             Attrs3 = bring_through(Attrs2, XRefX, Pars),
             % mebbies there was incs, nuke 'em
             write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Res,
-                                {Pars, true}, InfPars, Recompile, Calc);
+                                {Pars, true}, InfPars, Recompile);
         % normal functions with a resize
         {ok, {Pcode, {resize, {Wd, Ht, Incs}, Res}, Parents,
               InfParents, Recompile}} ->
@@ -490,14 +490,14 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs, Calc) ->
                                                 Attrs3)
                      end,
             write_formula_attrs(Attrs4, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents, Recompile, Calc);
+                                {Parents, false}, InfParents, Recompile);
         {ok, {Pcode, {timer, Spec, Res}, Parents, InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
             Attrs2 = orddict:erase("preview", Attrs),
             Attrs3 = orddict:store("__hastimer", t, Attrs2),
             ok = update_timer(XRefX, Spec),
             write_formula_attrs(Attrs3, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents, Recompile, Calc);
+                                {Parents, false}, InfParents, Recompile);
         % bog standard function!
         {ok, {Pcode, Res, Parents, InfParents, Recompile}} ->
             % there might have been a preview before - nuke it!
@@ -505,7 +505,7 @@ write_formula1(XRefX, Fla, Formula, AReq, Attrs, Calc) ->
             % mebbies there was incs, nuke 'em
             ok = update_incs(XRefX, #incs{}),
             write_formula_attrs(Attrs2, XRefX, Formula, Pcode, Res,
-                                {Parents, false}, InfParents, Recompile, Calc)
+                                {Parents, false}, InfParents, Recompile)
     end.
 
 write_formula2(XRefX, OrigVal, {Type, Val},
@@ -713,17 +713,11 @@ attach_form(#xrefX{idx = Idx, site = Site}, Form) ->
     mnesia:write(Tbl, Form#form{key = Idx}, write).
 
 write_formula_attrs(Attrs, XRefX, Formula, Pcode, Res, {Parents, IsIncl},
-                    InfParents, Recompile, Calc) ->
-    %% don't need to adjust relations if it is a recalc
-    %% unless one of the functions is an indirect/z (ie needs recompile)
-    case {Calc, Recompile} of
-        {recalc, false} -> ok;
-        _               ->
-            Parxml = lists:map(fun muin_link_to_simplexml/1, Parents),
-            {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
-            XInf = [refX_to_xrefX_create(X) || X <- InfParents],
-            ok = set_relations(XRefX, NewLocPs, XInf, IsIncl)
-    end,
+                    InfParents, Recompile) ->
+    Parxml = lists:map(fun muin_link_to_simplexml/1, Parents),
+    {NewLocPs, _NewRemotePs} = split_local_remote(Parxml),
+    XInf = [refX_to_xrefX_create(X) || X <- InfParents],
+    ok = set_relations(XRefX, NewLocPs, XInf, IsIncl),
     Align = default_align(Res),
     add_attributes(Attrs, [{"formula", Formula},
                            {"__rawvalue", Res},
@@ -931,6 +925,10 @@ get_cell_for_muin(#refX{site = S, path = P, obj = {cell, {XX, YY}}} = RefX, Type
                     blank
             end,
     {Value, [], [{local, Type, {S, P, XX, YY}}]}.
+
+read_relations(#xrefX{site = S, idx = Idx}, Lock) ->
+    Tbl = trans(S, relation),
+    mnesia:read(Tbl, Idx, Lock).
 
 read_ref(Ref , Relation) -> read_ref(Ref, Relation, read).
 

@@ -2,6 +2,8 @@
 
 -behaviour(supervisor_bridge).
 
+-include("syslib.hrl").
+
 %% API
 -export([
          start_link/1,
@@ -206,6 +208,7 @@ update_recalc_graph([Idx|Rest], RTbl, Graph) ->
                 [R] ->
                     digraph:add_vertex(Graph, Idx),
                     Children = ordsets:to_list(R#relation.children),
+                    %log_children(Children, R#relation.cellidx),
                     update_recalc_graph(Children, RTbl, Graph),
                     [digraph:add_edge(Graph, Idx, C) || C <- Children];
                 _ ->
@@ -238,9 +241,10 @@ execute_plan([C | T], Site, Graph) ->
         false ->
             execute_plan(T, Site, Graph);
         _ ->
-            new_db_api:handle_dirty_cell(Site, C, nil),
+            NewChildren = new_db_api:handle_dirty_cell(Site, C, nil),
             digraph:del_vertex(Graph, C),
-            execute_plan(T, Site, Graph)
+            NewPlan = build_workplan(Site, NewChildren, Graph),
+            execute_plan(NewPlan, Site, Graph)
     end.
 
 %% Clears out process work from the dirty_queue table.
@@ -256,4 +260,15 @@ clear_dirty_queue(Since, QTbl) ->
 
 -spec new_graph() -> digraph().
 new_graph() -> digraph:new([private]).
+
+%% log_children([], _Idx) -> ok;
+%% log_children([H | T], Idx) ->
+%%     Cell = new_db_wu:idx_to_xrefX("http://hypernumbers.dev:9000", Idx),
+%%     XRefX = new_db_wu:idx_to_xrefX("http://hypernumbers.dev:9000", H),
+%%     Msg = io_lib:format("for ~p ~p adding child ~p",
+%%                         [Cell#xrefX.path,
+%%                          hn_util:obj_to_ref(Cell#xrefX.obj),
+%%                          hn_util:obj_to_ref(XRefX#xrefX.obj)]),
+%%     syslib:log(Msg, ?recalc),
+%%     log_children(T, Idx).
 

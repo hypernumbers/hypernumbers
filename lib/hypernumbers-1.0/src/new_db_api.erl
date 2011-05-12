@@ -114,7 +114,7 @@ handle_circref_cell(Site, Idx, Ar) ->
                   Cell = new_db_wu:idx_to_xrefX(Site, Idx),
                   _Dict = new_db_wu:write_attrs(Cell,
                                                 [{"formula", "=#CIRCREF!"}],
-                                                Ar, calc),
+                                                Ar),
                   ok
           end,
     mnesia:activity(transaction, Fun).
@@ -169,8 +169,6 @@ maybe_write_zinftree(Site, Tree, MaxSize) ->
                             || #dirty_zinf{id = Id} <- L]
                    end,
             mnesia:activity(transaction, Fun),
-            %Msg = io_lib:format("writing zinf tree to log", []),
-            %syslib:log(Msg, ?zinf),
             ok;
         Size =< MaxSize ->
             ok
@@ -193,7 +191,10 @@ process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
     Fun2 = fun() ->
                    Spec = #dirty_zinf{_='_', processed = false},
                    L = mnesia:match_object(Tbl, Spec, write),
-                   NewTree = lists:foldl(Fun1, Tree, L),
+                   % need to apply the dirty zinfs in the order
+                   % they were added
+                   L2 = lists:sort(L),
+                   NewTree = lists:foldl(Fun1, Tree, L2),
                    [ok = mnesia:write(Tbl, X#dirty_zinf{processed = true},
                                       write) || X  <- L],
                    NewTree
@@ -271,7 +272,7 @@ handle_form_post(#refX{site = S, path = P, obj = {row, {1, 1}}} = RefX, Array,
                   NLbls = [ {Lref, [{"formula", Val}]} || {Lref, Val} <- NewLabels],
                   [begin
                        XRefX = new_db_wu:refX_to_xrefX_create(X),
-                       _Dict = new_db_wu:write_attrs(XRefX, A, PosterUid, calc)
+                       _Dict = new_db_wu:write_attrs(XRefX, A, PosterUid)
                    end || {X, A} <- NLbls],
                   Row = new_db_wu:get_last_row(RefX) + 1,
                   F = fun(X, Val) ->
@@ -280,7 +281,7 @@ handle_form_post(#refX{site = S, path = P, obj = {row, {1, 1}}} = RefX, Array,
                               XRefX2 = new_db_wu:refX_to_xrefX_create(RefX2),
                               _Dict = new_db_wu:write_attrs(XRefX2,
                                                             [{"formula", Val}],
-                                                            PosterUid, calc),
+                                                            PosterUid),
                               ok = new_db_wu:mark_these_dirty([XRefX2], PosterUid)
                       end,
                   [F(X, V) || {#refX{site = S1, path = P1,
@@ -306,7 +307,7 @@ append_row(List, PAr, VAr) when is_list(List) ->
                             XRefX2 = new_db_wu:refX_to_xrefX_create(RefX2),
                             _Dict = new_db_wu:write_attrs(XRefX2,
                                                           [{"formula", Val}],
-                                                          PAr, calc),
+                                                          PAr),
                             ok = new_db_wu:mark_these_dirty([XRefX2], VAr)
                     end,
                 [F(X, V) || {#refX{site = S1, path = P1, obj = {column, {X, X}}}, V}
@@ -425,9 +426,9 @@ set_borders2(#refX{site = S, path = P} = RefX, Where, Border, B_Style, B_Color) 
                   B   = "border-" ++ Where ++ "-width",
                   B_S = "border-" ++ Where ++ "-style",
                   B_C = "border-" ++ Where ++ "-color",
-                  _ = new_db_wu:write_attrs(RefX, [{B,   Border}], calc),
-                  _ = new_db_wu:write_attrs(RefX, [{B_S, B_Style}], calc),
-                  _ = new_db_wu:write_attrs(RefX, [{B_C, B_Color}], calc)
+                  _ = new_db_wu:write_attrs(RefX, [{B,   Border}]),
+                  _ = new_db_wu:write_attrs(RefX, [{B_S, B_Style}]),
+                  _ = new_db_wu:write_attrs(RefX, [{B_C, B_Color}])
           end,
     write_activity(RefX, Fun, "set_borders2").
 
@@ -661,7 +662,7 @@ delete(#refX{obj = {R, _}} = RefX, Disp, Ar)
   when R == cell orelse R == range orelse R == row orelse R == column ->
     move(RefX, delete, Disp, Ar).
 
--spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_spec()) -> ok.
+-spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_spec()) -> list().
 handle_dirty_cell(Site, Idx, Ar) ->
     ok = init_front_end_notify(),
     Fun =
@@ -675,14 +676,18 @@ handle_dirty_cell(Site, Idx, Ar) ->
                     {ok, F} ->
                         _Dict = new_db_wu:write_attrs(Cell,
                                                       [{"formula", F}],
-                                                      Ar, recalc),
-                        ok;
+                                                      Ar),
+                        % cells may have been written that now depend on this
+                        % cell so it needs to report back dirty children
+                        [Rels] = new_db_wu:read_relations(Cell, read),
+                        Rels#relation.children;
                     _ ->
-                        ok
+                        []
                 end
         end,
-    ok = mnesia:activity(transaction, Fun),
-    tell_front_end("handle dirty", #refX{}).
+    NewDirties = mnesia:activity(transaction, Fun),
+    tell_front_end("handle dirty", #refX{}),
+    NewDirties.
 
 %% @spec write_attributes(RefX :: #refX{}, List) -> ok
 %% List = [{Key, Value}]
@@ -717,7 +722,6 @@ write_attributes(List, PAr, VAr) ->
           end,
     % assumes all refX's are for the same site and page, hmmm...
     {Ref, _} = hd(List),
-    % bit of a cheat here - save a read of in idx by spoofing the XRefX
     write_activity(Ref, Fun, "quiet").
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -749,20 +753,14 @@ expand2([R | TR], [A | TA], Acc) ->
              end,
     expand2(TR, TA, lists:flatten([NewAcc | Acc])).
 
-write_attributes1(#xrefX{site = _S} = XRefX, List, PAr, VAr) ->
-    new_db_wu:write_attrs(XRefX, List, PAr, calc),
+write_attributes1(#xrefX{} = XRefX, List, PAr, VAr) ->
+    new_db_wu:write_attrs(XRefX, List, PAr),
     % first up do the usual 'dirty' stuff - this cell is dirty
     case lists:keymember("formula", 1, List) of
-       %% true  -> [Rels] = new_db_wu:read_relations(RefX, read),
-       %%          case Rels#relation.children of
-       %%              []       -> ok;
-       %%              Children -> Ch2 = [new_db_wu:idx_to_refX(S, X) || X <- Children],
-       %%                          new_db_wu:mark_these_dirty(Ch2, VAr)
-       %%          end;
-        true  -> new_db_wu:mark_these_dirty([XRefX], VAr);
+        true  -> mark_children_dirty(XRefX, VAr);
         false -> ok
     end,
-    % now do the include dirty stuff (ie this cell has had it's format updated
+    % now do the include dirty stuff (ie this cell has had it's format updated)
     % so make any cells that use '=include(...)' on it redraw themselves
     ok = new_db_wu:mark_dirty_for_incl([XRefX], VAr).
 
@@ -1248,3 +1246,14 @@ unpack_1([H | T], Js, Js_r, CSS) ->
                 _  -> lists:append([C, CSS])
             end,
     unpack_1(T, NewJ, NewR, NewC).
+
+mark_children_dirty(#xrefX{site = S} = XRefX, VAr) ->
+    [Rels] = new_db_wu:read_relations(XRefX, read),
+    case Rels#relation.children of
+        [] ->
+            ok;
+        Children ->
+            Ch2 = [new_db_wu:idx_to_xrefX(S, X)
+                   || X <- Children],
+            ok = new_db_wu:mark_these_dirty(Ch2, VAr)
+    end.
