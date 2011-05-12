@@ -121,13 +121,9 @@ init([Site]) ->
     Tbl = new_db_wu:trans(Site, dirty_zinf),
     Size = mnesia:table_info(Tbl, size),
     if
-        Size == 0 -> %syslib:log("Init AOK - resetting no records", ?zinf),
-                     ok;
+        Size == 0 -> ok;
         Size >  0 -> io:format("zinf_srv resetting ~p records in dirty_zinf~n",
                                [Size]),
-                     %Msg = io_lib:format("zinf_serv resetting ~p records "
-                      %                   ++ "in init for dirty_zinf", [Size]),
-                     %syslib:log(Msg, ?zinf),
                      ok = new_db_api:reset_dirty_zinfs(Site),
                      ok = process_zinfs(Site)
     end,
@@ -230,19 +226,13 @@ check_zs(Site, Tree) ->
 
 add({XRefX, Idx}, Tree) ->
     #xrefX{path = P, obj = Obj} = XRefX,
-    %Msg = io_lib:format("adding ~p for ~p", [XRefX, Idx]),
-    %syslib:log(Msg, ?zinf),
     alter_tree(Tree, hn_util:parse_zpath(P), add_selector(Idx, Obj)).
 
 del({XRefX, Idx}, Tree) ->
     #xrefX{path = P, obj = Obj} = XRefX,
-    %Msg = io_lib:format("deleting ~p for ~p", [XRefX, Idx]),
-    %syslib:log(Msg, ?zinf),
     alter_tree(Tree, hn_util:parse_zpath(P), delete_selector(Idx, Obj)).
 
 check(Tree, #xrefX{site = S, path = P} = XRefX) ->
-    %Msg = io_lib:format("checking ~p", [XRefX]),
-    %syslib:log(Msg, ?zinf),
     match_tree(Tree, S, P, match(XRefX), []).
 
 dump(Tree, Site) ->
