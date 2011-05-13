@@ -21,7 +21,7 @@
 dump_queues(Site) -> dump_queues(Site, get_qs(Site)).
 
 dump_queues(_Site, [])     -> ok;
-dump_queues(Site, [H | T]) -> dump(Site, new_db_wu:trans(Site, H)),
+dump_queues(Site, [H | T]) -> dump(Site, H),
                               dump_queues(Site, T).
 
 dump(Site, Table) ->
