@@ -1,4 +1,3 @@
-
 %%% @author     Gordon Guthrie <>
 %%% @copyright (C) 2011, Gordon Guthrie
 %%% @doc       provides functions of sys admin
@@ -9,6 +8,8 @@
 -module(syslib).
 
 -export([
+         dump_queues/1,
+         dump_queues/2,
          show_queues/1,
          process_dump/0,
          top5/0,
@@ -17,15 +18,37 @@
          limiter/1
          ]).
 
+dump_queues(Site) -> dump_queues(Site, get_qs(Site)).
+
+dump_queues(_Site, [])     -> ok;
+dump_queues(Site, [H | T]) -> dump(Site, H),
+                              dump_queues(Site, T).
+
+dump(Site, Table) ->
+    Tab2 = new_db_wu:trans(Site, Table),
+    io:format("Dumping table ~p~n", [Tab2]),
+    Fun = fun() ->
+                  Fun1 = fun(X, []) ->
+                                 io:format("~p~n", [X]),
+                                 []
+                         end,
+                  mnesia:foldl(Fun1, [], Tab2)
+          end,
+    mnesia:transaction(Fun).
+
 show_queues(Site) ->
-    Dirty          = new_db_wu:trans(Site, dirty_queue),
-    Dirty_Zinf     = new_db_wu:trans(Site, dirty_zinf),
-    Dirty_For_Zinf = new_db_wu:trans(Site, dirty_for_zinf),
-    showq([Dirty, Dirty_Zinf, Dirty_For_Zinf]).
+    Qs = get_qs(Site),
+    showq(Qs).
 
 showq([])      -> ok;
 showq([H | T]) -> io:format("~p ~p~n", [H, mnesia:table_info(H, size)]),
                   showq(T).
+
+get_qs(Site) ->
+    Dirty          = new_db_wu:trans(Site, dirty_queue),
+    Dirty_Zinf     = new_db_wu:trans(Site, dirty_zinf),
+    Dirty_For_Zinf = new_db_wu:trans(Site, dirty_for_zinf),
+    [Dirty, Dirty_Zinf, Dirty_For_Zinf].
 
 show_registered("http://"++Site) ->
     Site2 = [case X of $: -> $&; X -> X end || X <- Site],
