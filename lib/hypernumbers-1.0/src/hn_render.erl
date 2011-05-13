@@ -4,7 +4,7 @@
 
 -export([content/1,
          content/2,
-         wrap_page/4,
+         wrap_page/5,
          wrap_region/3]).
 
 -include("spriki.hrl").
@@ -81,7 +81,7 @@ layout(Ref, Type, Cells, CWs, RHs, Palette) ->
 
 %% Emergency end of input
 %% End of input
-layout2(L, _Type, _Col, Row, PX, PY, H, _CWs, _RHs, Rec,  Acc) 
+layout2(L, _Type, _Col, Row, PX, PY, H, _CWs, _RHs, Rec,  Acc)
       when Row > 1000 ->
     io:format("emergency exit from hn_render with head of L of ~p~n", [hd(L)]),
     TotalHeight = erlang:max(PY + H, Rec#rec.maxmerge_height),
@@ -257,8 +257,8 @@ pget(K,L) -> proplists:get_value(K,L,undefined).
 
 pget(K,L,D) -> proplists:get_value(K,L,D).
 
--spec wrap_page([textdata()], integer(), integer(), #render{}) -> [textdata()].
-wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
+-spec wrap_page([textdata()], integer(), integer(), #render{}, list()) -> [textdata()].
+wrap_page(Content, TotalWidth, TotalHeight, Addons, PageType) ->
     OuterStyle = io_lib:format("style='width:~bpx;height:~bpx'",
                                [TotalWidth, TotalHeight]),
     Title = case Addons#render.title of
@@ -283,7 +283,7 @@ wrap_page(Content, TotalWidth, TotalHeight, Addons) ->
         <script src='/hypernumbers/jquery.tablesorter.min.js'></script>
          </head>
 
-         <body data-view='webpage'>
+         <body data-view='" ++ PageType ++ "'>
 
          <span id='hidden_input'></span>
 

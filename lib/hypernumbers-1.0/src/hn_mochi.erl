@@ -492,14 +492,14 @@ iget(Ref, page, #qry{view = ?WIKI},
      Env=#env{accept=html,uid=Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "view wiki page"),
     {{Html, Width, Height}, Addons} = hn_render:content(Ref, wikipage),
-    Page = hn_render:wrap_page(Html, Width, Height, Addons),
+    Page = hn_render:wrap_page(Html, Width, Height, Addons, "wikipage"),
     text_html_nocache(Env, Page);
 
 iget(Ref, page, #qry{view=?WEBPAGE},
      Env=#env{accept=html,uid=Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "view webpage"),
     {{Html, Width, Height}, Addons} = hn_render:content(Ref, webpage),
-    Page = hn_render:wrap_page(Html, Width, Height, Addons),
+    Page = hn_render:wrap_page(Html, Width, Height, Addons, "webpage"),
     text_html_nocache(Env, Page);
 
 iget(Ref=#refX{site=S}, page, #qry{view=FName},
