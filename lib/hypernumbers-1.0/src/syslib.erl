@@ -18,7 +18,9 @@
          limiter/1
          ]).
 
-dump_queues(Site) -> dump_queues(Site, get_qs(Site)).
+-define(qs, [dirty_queue, dirty_zinf, dirty_for_zinf]).
+
+dump_queues(Site) -> dump_queues(Site, ?qs).
 
 dump_queues(_Site, [])     -> ok;
 dump_queues(Site, [H | T]) -> dump(Site, H),
@@ -37,14 +39,12 @@ dump(Site, Table) ->
     mnesia:transaction(Fun).
 
 show_queues(Site) ->
-    Qs = [new_db_wu:trans(Site, X) || X <- get_qs(Site)],
+    Qs = [new_db_wu:trans(Site, X) || X <- ?qs],
     showq(Qs).
 
 showq([])      -> ok;
 showq([H | T]) -> io:format("~p ~p~n", [H, mnesia:table_info(H, size)]),
                   showq(T).
-
-get_qs(Site) -> [dirty_queue, dirty_zinf, dirty_for_zinf].
 
 show_registered("http://"++Site) ->
     Site2 = [case X of $: -> $&; X -> X end || X <- Site],
