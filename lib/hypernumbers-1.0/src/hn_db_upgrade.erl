@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         bug_fix_dirty_for_zinf_2011_05_14/0,
          add_timer_table_2011_05_02/0,
          upgrade_dirty_zinf_2011_05_02/0,
          flash_dev/0,
@@ -38,6 +39,26 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+bug_fix_dirty_for_zinf_2011_05_14() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Tbl = new_db_wu:trans(Site, dirty_for_zinf),
+                   io:format("about to check ~p~n", [Tbl]),
+                   Fun2 = fun(#dirty_for_zinf{dirty = #refX{}} = Rec) ->
+                                  RefX = Rec#dirty_for_zinf.dirty,
+                                  XRefX = new_db_wu:refX_to_xrefX(RefX),
+                                  NewRec = Rec#dirty_for_zinf{dirty = XRefX},
+                                  io:format("found a refX ~p~n", [Rec]),
+                                  io:format("NewRec is ~p~n", [NewRec]),
+                                  NewRec;
+                             (X) ->
+                                  X
+                          end,
+                   mnesia:transform_table(Tbl, Fun2, [id, dirty])
+           end,
+    lists:foreach(Fun1, Sites),
+    ok.
 
 add_timer_table_2011_05_02() ->
     Sites = hn_setup:get_sites(),
