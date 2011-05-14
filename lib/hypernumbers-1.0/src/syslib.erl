@@ -37,18 +37,14 @@ dump(Site, Table) ->
     mnesia:transaction(Fun).
 
 show_queues(Site) ->
-    Qs = get_qs(Site),
+    Qs = [new_db_wu:trans(Site, X) || X <- get_qs(Site)],
     showq(Qs).
 
 showq([])      -> ok;
 showq([H | T]) -> io:format("~p ~p~n", [H, mnesia:table_info(H, size)]),
                   showq(T).
 
-get_qs(Site) ->
-    Dirty          = new_db_wu:trans(Site, dirty_queue),
-    Dirty_Zinf     = new_db_wu:trans(Site, dirty_zinf),
-    Dirty_For_Zinf = new_db_wu:trans(Site, dirty_for_zinf),
-    [Dirty, Dirty_Zinf, Dirty_For_Zinf].
+get_qs(Site) -> [dirty_queue, dirty_zinf, dirty_for_zinf].
 
 show_registered("http://"++Site) ->
     Site2 = [case X of $: -> $&; X -> X end || X <- Site],
