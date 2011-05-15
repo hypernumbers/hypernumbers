@@ -156,7 +156,7 @@ chunk_spark([Lines | List]) ->
     muin_checks:ensure(Lines1 == length(List), ?ERRVAL_NUM),
     % now make the colours
     Colours = allocate_colours(Lines, ?SPCOLOURS),
-    Data1 = [lists:reverse(cast_data_keep_blank(X)) || X <- List],
+    Data1 = [cast_data_keep_blank(X) || X <- List],
     Min = lists:min(lists:flatten(Data1)),
     Max = lists:max(lists:flatten(Data1)),
     Diff = Max - Min,
