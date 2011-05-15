@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         force_sparkline_recalc_2011_05_15/0,
          bug_fix_dirty_for_zinf_2011_05_14/0,
          add_timer_table_2011_05_02/0,
          upgrade_dirty_zinf_2011_05_02/0,
@@ -39,6 +40,44 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+% will populate the dirty queue - to retrigger calcs just write a cell
+force_sparkline_recalc_2011_05_15() ->
+    %Site = "http://hypernumbers.dev:9000",
+    Site = "http://dla-piper.hypernumbers.com:80",
+    Length = 6,
+    Root = "buildings",
+    Cell = "H15",
+    Obj = hn_util:parse_ref(Cell),
+    Pages = page_srv:get_pages(Site),
+    Pages2 = filter_pages(Pages, Length, Root, []),
+    mark_dirty(Site, Pages2, Obj),
+    ok.
+
+mark_dirty(_, [], _) -> ok;
+mark_dirty(Site, [H | T], Obj) ->
+    RefX = #refX{site = Site, path = H, obj = Obj},
+    Fun  = fun() ->
+                   case new_db_wu:refX_to_xrefX(RefX) of
+                       false -> ok;
+                       XRefX ->
+                           io:format("~p exists - marking dirty~n", [XRefX]),
+                           new_db_wu:mark_these_dirty([XRefX], nil)
+                   end
+           end,
+    mnesia:transaction(Fun),
+    mark_dirty(Site, T, Obj).
+
+filter_pages([], _Length, _Root, Acc) -> Acc;
+filter_pages([[Root | _T1] = P | T2], Length, Root, Acc) ->
+    io:format("Checking ~p against ~p~n", [P, Root]),
+    NewAcc = if
+                 length(P) ==  Length -> [P | Acc];
+                 length(P) =/= Length -> Acc
+             end,
+    filter_pages(T2, Length, Root, NewAcc);
+filter_pages([_H | T], Length, Root, Acc) ->
+    filter_pages(T, Length, Root, Acc).
 
 bug_fix_dirty_for_zinf_2011_05_14() ->
     Sites = hn_setup:get_sites(),
