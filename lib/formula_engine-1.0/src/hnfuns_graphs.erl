@@ -591,7 +591,7 @@ speedo(Size, [V, Tt, SubT])     -> speedo1(Size, V, Tt, SubT, ?SPEEDOPARAMS);
 speedo(Size, [V, Tt, SubT, Th]) -> speedo1(Size, V, Tt, SubT, Th).
 
 speedo1(Size, Val, Title, Subtitle, Thresholds) ->
-    V2 = cast_val(Val),
+    [V2] = typechecks:std_nums([Val]),
     [Tt2]  = cast_titles(Title),
     [Sb2]  = cast_titles(Subtitle),
     {V3, Colours, Lables} = speedo_scale(Thresholds, V2),
@@ -606,7 +606,7 @@ speedo1(Size, Val, Title, Subtitle, Thresholds) ->
                        {?tickmarks, "y"},
                        {?size, Size},
                        {?type, "gm"},
-                       {?data, "t:" ++ tconv:to_s(Val)},
+                       {?data, "t:" ++ tconv:to_s(V3)},
                        {?speedolab, Sb2},
                        {?title, Tt2}
                        ],
@@ -650,7 +650,7 @@ speedo_scale(Th, Val) ->
                          make_blanks(NRed2)]),
     Colours = {?colours, ?GREY ++ "," ++ string:join(Cols, "|")},
     Lables = {?axeslables, "0:|" ++  string:join(Labs, "|")},
-    V = (Val - Zero)/Diff,
+    V = ((Val - Zero)/Diff*100),
     {V, Colours, Lables}.
 
 make_blanks(N) when N < 1 -> [];
@@ -911,15 +911,6 @@ pie2(Data, Titles, Colours) ->
         ++ Titles1
         ++ Colours1
         ++ "' />".
-
-cast_val(Val) ->  cast_v2(Val, 0, 100, 1).
-
-cast_v2(Val, Min, Max, Scale) ->
-    if
-        Val < Min                     -> ?ERRVAL_VAL;
-        Val > Max                     -> ?ERRVAL_VAL;
-        Min =< Val andalso Val =< Max -> Val * Scale
-    end.
 
 cast_prefetch(Data) ->
     muin_collect:col(Data, [fetch_ref], []).
