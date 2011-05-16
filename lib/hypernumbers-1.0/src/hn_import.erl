@@ -51,7 +51,7 @@ etl_to_row(FileName, Site, Map) ->
         {error, enoent} -> exit("map doesn't exist")
     end.
 
-% only used for 'sheet' type maps (destinationmust be supplied)
+% only used for 'sheet' type maps (destination must be supplied)
 etl_to_sheet(FileName, Destination, Map) ->
     case file:consult(Map) of
         {ok, Terms}     -> etl_sheet(Terms, FileName, Destination);
@@ -59,15 +59,19 @@ etl_to_sheet(FileName, Destination, Map) ->
     end.
 
 etl_row(Site, Terms, FileName) ->
-    {Input, {Head, Pages, Validation, Mapping}} = get_data(Terms, FileName),
+    {Input, {Head, _Pages, Validation, Mapping}} = get_data(Terms, FileName),
     Type = Head#head.type,
     case Type of
         "sheet" -> {not_valid, "Map has row type not sheet type"};
-        "row"   -> case validate_rows(Site, Head#head.overwrite,
-                                     Validation, Input) of
-                       valid            -> erk;
-                       {not_valid, Msg} -> {not_valid, Msg}
-                   end
+        "row"   ->
+            Chunked = chunk(Input),
+            case validate_rows(Site, Head#head.overwrite,
+                               Validation, Chunked) of
+                valid            -> write2(map_row(Chunked, Mapping),
+                                           Head#head.overwrite,
+                                           Head#head.template);
+                {not_valid, Msg} -> {not_valid, Msg}
+            end
     end.
 
 etl_sheet(Terms, FileName, Dest) ->
@@ -78,7 +82,7 @@ etl_sheet(Terms, FileName, Dest) ->
         "sheet" ->
             case validate_sheet(Validation, Input) of
                 valid            -> write(map(Mapping, Dest, Pages, Input),
-                                         Head#head.overwrite,
+                                          Head#head.overwrite,
                                           Head#head.template);
                 {not_valid, Msg} -> {not_valid, Msg}
             end
@@ -312,6 +316,41 @@ split_map([#mapping{} = Map | T], Hd, P, V, M) ->
     P2 = add(Sh2, P),
     split_map(T, Hd, P2, V, [Map#mapping{sheet = Sh2} | M]).
 
+map_row(Chunks, Mapping) -> Ret = map_r2(Chunks, Mapping, []),
+                            io:format("REturning from map_row with ~p~n", [Ret]),
+                            Ret.
+
+map_r2([], _Mapping, Acc) -> Acc;
+map_r2([{Sheet, H} | T], Mapping, Acc) ->
+    NewAcc = map_r3(H, Sheet, Mapping, Acc),
+    map_r2(T, Mapping, NewAcc).
+
+map_r3([], _Sheet, _Mapping, Acc) -> Acc;
+map_r3([{Y, H} | T], Sheet, Mapping, Acc) ->
+    io:format("Y is ~p~nH is ~p~nSheet is ~p~nMapping is ~p~n",
+              [Y, H, Sheet, Mapping]),
+    Page = case lists:keysearch(1, 1, H) of
+               false              -> [];
+               {value, {1, Path}} -> Path
+           end,
+    NewAcc = map_r4(Mapping, Sheet, Y, H, Page, Acc),
+    map_r3(T, Sheet, Mapping, NewAcc).
+
+map_r4([], _Sheet, _Y, _Cells, _Page, Acc) -> Acc;
+map_r4([{mapping, Sheet, From, To} | T], Sheet, Y, Cells, Page, Acc) ->
+    {column, {X, X}} = hn_util:parse_ref(From),
+    To2 = hn_util:parse_ref(To),
+    io:format("X is ~p To2 is ~p~n", [X, To2]),
+    NewAcc = case lists:keysearch(X, 1, Cells) of
+                 false             -> Acc;
+                 {value, {X, Val}} -> RefX = #refX{path = Page, obj = To2},
+                                      [{RefX, Val} | Acc]
+             end,
+    map_r4(T, Sheet, Y, Cells, Page, NewAcc);
+map_r4([H | T], Sheet, Y, Cells, Page, Acc) ->
+    io:format("Skipping ~p for ~p~n", [H, Sheet]),
+    map_r4(T, Sheet, Y, Cells, Page, Acc).
+
 map(Map, Dest, Pages, Data) -> map2(Map, Dest, Pages, Data, []).
 
 map2([], _Dest, _Pages, _Input, Acc) -> Acc;
@@ -340,19 +379,38 @@ map2([#mapping{} = Map | T], Dest, Pages, Input, Acc) ->
              end,
     map2(T, Dest, Pages, Input, NewAcc).
 
-validate_rows(S, O, V, Input) ->
-    case lists:merge([validate_row(S, O, V, X) || X <- Input]) of
+validate_rows(S, O, V, Chunked) ->
+    case lists:merge([validate_row(S, O, V, X) || X <- Chunked]) of
         []   -> valid;
         Msgs -> {not_valid, io_lib:format("~p", [Msgs])}
     end.
 
-validate_row(Site, "dont_overwrite", Validation, Input) ->
-    {_Sheet, List} = Input,
-    Acc = check_no_pages(List, Site, []),
-    val_r1(List, Validation, Acc);
-validate_row(_Site, "overwrite", Validation, Input) ->
-    {_Sheet, List} = Input,
-    val_r1(List, Validation, []).
+validate_row(Site, "dont_overwrite", Validation, {Sheet, Chunk}) ->
+    Acc = check_no_pages(Chunk, Site, []),
+    Acc2 = check_uniq_col_a(Chunk, Acc),
+    val_r1(Validation, Sheet, Chunk, Acc2);
+validate_row(_Site, "overwrite", Validation, {Sheet, Chunk}) ->
+    Acc = check_uniq_col_a(Chunk, []),
+    val_r1(Validation, Sheet, Chunk, Acc).
+
+check_uniq_col_a(List, Acc) ->
+    {_, Cells} = lists:unzip(List),
+    case check_for_dups(Cells, [], []) of
+        []  -> Acc;
+        Msg -> [Msg | Acc]
+    end.
+
+check_for_dups([], _Pages, Acc)     -> Acc;
+check_for_dups([H | T], Pages, Acc) ->
+    {_, [Page | _R]} = lists:unzip(H),
+    {NewAcc, NewPages} = has_dups(Page, Pages, Acc),
+    check_for_dups(T, NewPages, NewAcc).
+
+has_dups(Page, Pages, Acc) ->
+    case lists:member(Page, Pages) of
+                       true  -> {[Page ++ " is duplicated" | Acc], Pages};
+                       false -> {Acc, [Page | Pages]}
+                   end.
 
 check_no_pages([], _, Acc) -> Acc;
 check_no_pages([{{cell, {1, _}}, Page} | T], Site, Acc) ->
@@ -364,20 +422,26 @@ check_no_pages([{{cell, {1, _}}, Page} | T], Site, Acc) ->
     check_no_pages(T, Site, NewAcc);
 check_no_pages([_H | T], Site, Acc) -> check_no_pages(T, Site, Acc).
 
-val_r1([], _, Acc) -> Acc;
-val_r1([H | T], Validation, Acc) ->
-    NewAcc = case val_r2(Validation, H, []) of
-                 []    -> Acc;
-                 Other -> [Other | Acc]
-             end,
-    val_r1(T, Validation, NewAcc).
+val_r1([], _,  _, Acc) -> Acc;
+val_r1([H | T], Sheet, List, Acc) ->
+    NewAcc = val_r2(List, Sheet, H, Acc),
+    val_r1(T, Sheet, List, NewAcc).
 
-val_r2([], _, Acc) -> Acc;
-val_r2([#validation{} = Vld | T], Input, Acc) ->
-    #validation{sheet = Sheet, cell = Ref, constraint = Cons} = Vld,
-    Obj = hn_util:parse_ref(tconv:to_s(Ref)),
-    io:format("validate here...~n"),
-    val_r2(T, Input, Acc).
+val_r2([], _, _, Acc) -> lists:reverse(Acc);
+% if the sheet of the input and the sheet of the constraint match then
+% test the constraint
+val_r2([H | T], S, #validation{sheet = S, cell = R, constraint = C} = Vld,
+       Acc) ->
+    {column, {X, X}} = hn_util:parse_ref(tconv:to_s(R)),
+    NewAcc = case C of
+                 "not_null" -> check_exists(S, H, X, Acc);
+                 _          -> check_constraint(S, H, X, C, Acc)
+             end,
+    val_r2(T, S, Vld, NewAcc);
+% if the sheet of the input and the sheet of the constraint don't match then
+% who cares
+val_r2([_H | T], Sheet, Vld, Acc) ->
+    val_r2(T, Sheet, Vld, Acc).
 
 validate_sheet(Validation, Input) -> val_s1(Validation, Input, []).
 
@@ -447,6 +511,11 @@ write(Recs, Overwrite, Template) ->
           end,
     [Fun(X) || X <- Refs].
 
+write2(Recs, Overwrite, Template) ->
+    io:format("Recs is ~p Overwrite is ~p Template is ~p~n",
+              [Recs, Overwrite, Template]),
+    banjo.
+
 transform_recs(Recs) -> trans2(Recs, []).
 
 trans2([], Acc) -> Acc;
@@ -500,6 +569,71 @@ validation_to_json(#validation{sheet = S, cell = C, constraint = Cn}) ->
 mapping_to_json(#mapping{sheet = S, from = F, to = T}) ->
     {struct, [{"sheet", S}, {"from", F}, {"to", T}]}.
 
+check_exists(Sheet, {Y, List}, X, Acc) ->
+    case lists:keyfind(X, 1, List) of
+        {X, _Val} -> Acc;
+        false     -> Ref = util2:make_ref({X, Y}),
+                     Msg = Sheet ++ "/" ++ Ref ++ "doesn't exist",
+                     [Msg | Acc]
+    end.
+
+check_constraint(Sheet, {X, List}, Y, Cons, Acc) ->
+    NAcc = case lists:keysearch(Y, 1, List) of
+               {value, {Y, Val}} -> case check_c2(Val, Cons) of
+                                        true  -> Acc;
+                                        false ->
+                                            Ref = util2:make_ref({X, Y}),
+                                            Ref2 = Sheet ++ "/" ++ Ref,
+                                            [Ref2 ++ " is " ++ Val ++
+                                             " not " ++ Cons | Acc]
+                                    end;
+               false             -> Acc
+           end,
+    NAcc.
+
+% checks if "is_boolean", "is_number", "is_string", "is_date"
+check_c2(Val, "is_boolean") ->
+    case tconv:to_bool(Val) of
+        true                   -> true;
+        false                  -> true;
+        {error, not_a_boolean} -> false
+    end;
+check_c2(Val, "is_number") ->
+    case tconv:to_num(Val) of
+        false         -> false;
+        {error, nan}  -> false;
+        _Num          -> true
+    end;
+check_c2(Val, "is_string") when is_list(Val) ->
+    true;
+check_c2(_Val, "is_string") ->
+    false;
+check_c2(Val, "is_date") ->
+    case dh_date:parse(Val) of
+        {{_, _, _}, {_, _, _}} -> true;
+        {error, bad_date}      -> false
+    end.
+
+chunk(List) -> [{Sheet, chunk2(X)} || {Sheet, X} <- List].
+
+chunk2(List) -> L2 = lists:sort(fun row_sort/2, List),
+               {{cell, {_X, Y}}, _V} = hd(L2),
+               chunk3(L2, Y, Y, [], []).
+
+% gonnae return lists of {X, Val} all tagged with the common Y
+% this algorithm assumes the data is sorted in row (ie Y) order
+% we thrown the Accumulator1 onto Accumulator2 when we hit a new
+% row which is whys we carry over OldY as well as Y so we can look back
+chunk3([], _, OldY, Acc1, Acc2) ->
+    [{OldY, lists:reverse(Acc1)} | Acc2];
+chunk3([{{cell, {X, Y}}, Val} | T], Y, OldY, Acc1, Acc2) ->
+    chunk3(T, Y, OldY, [{X, Val} | Acc1], Acc2);
+chunk3([{{cell, {X, Y}}, Val}  | T], _Y1, OldY, Acc1, Acc2) ->
+    chunk3(T, Y, Y, [{X, Val}], [{OldY, lists:reverse(Acc1)} | Acc2]).
+
+row_sort({{cell, {_, Y1}}, _}, {{cell, {_, Y2}}, _}) when Y1 >= Y2 -> true;
+row_sort({{cell, {_, Y1}}, _}, {{cell, {_, Y2}}, _}) when Y1 <  Y2 -> false.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 testing() ->
@@ -515,11 +649,10 @@ testing() ->
 
 testing2() ->
     Dir = "/home/gordon/hypernumbers/var/sites/hypernumbers.dev\&9000/etl/",
-    File1 = "row_test.csv",
-    File2 = "row_test.xls",
-    Path = tconv:to_s(util2:get_timestamp()),
+    File1 = "row_test.xls",
+    File2 = "row_test_csv.csv",
     Site = "http://hypernumbers.dev:9000",
-    io:format("Test row_test_csv.map~n"),
-    etl_to_row(Dir ++ File1, Site, Dir ++ "row_test_csv.map"),
     io:format("Test row_test.map~n"),
-    etl_to_row(Dir ++ File2, Site, Dir ++ "row_test.map").
+    etl_to_row(Dir ++ File1, Site, Dir ++ "row_test.map"),
+    io:format("Test row_test_csv.map~n"),
+    etl_to_row(Dir ++ File2, Site, Dir ++ "row_test_csv.map").
