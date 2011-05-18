@@ -3,26 +3,38 @@
 %%% @private
 
 -module(stdfuns_date).
+
+% with passing tests
 -export([date/1,
-         dateh/1,
-         datedif/1,
          datevalue/1,
          day/1,
          days360/1,
-         month/1,
-         year/1,
-         edate/1,
-         eomonth/1,
-         networkdays/1,
-         today/1,
-         weekday/1,
-         weeknum/1,
          hour/1,
          minute/1,
-         second/1,
+         month/1,
          now/1,
+         second/1,
+         time/1,
          timevalue/1,
-         time/1]).
+         weekday/1,
+         year/1
+         ]).
+
+% failing tests
+%-export([
+%         datevalue/1,
+%         today/1
+%        ]).
+
+% no tests
+%-export([
+%         dateh/1,
+%         datedif/1,
+%         edate/1,
+%         eomonth/1,
+%         networkdays/1,
+%         weeknum/1
+%        ]).
 
 -include("typechecks.hrl").
 -include("muin_records.hrl").
