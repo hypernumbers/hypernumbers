@@ -6,27 +6,32 @@
 
 -module(stdfuns_db).
 
+% with passing test suite
 -export([
          daverage/1,
          dcount/1,
          dcounta/1,
-         dget/1,
-         dmax/1,
-         dmin/1,
-         dproduct/1,
-         dstdev/1,
-         dstdevp/1,
-         dsum/1,
-         dvar/1,
-         dvarp/1
+         dget/1
         ]).
 
+% without testsuite
+%-export([
+%         dmax/1,
+%         dmin/1,
+%         dproduct/1,
+%         dstdev/1,
+%         dstdevp/1,
+%         dsum/1,
+%         dvar/1,
+%         dvarp/1
+%        ]).
+
 % exports for testing
--export([
-         perf/0,
-         simple_criteria_test/0,
-         advanced_criteria_test/0
-        ]).
+%-export([
+%         perf/0,
+%         simple_criteria_test/0,
+%         advanced_criteria_test/0
+%        ]).
 
 -import(muin_collect, [ col/2, col/3, col/4 ]).
 
