@@ -3,24 +3,36 @@
 %%% @private
 
 -module(stdfuns_info).
--export([cell/1,
+
+% fns that pass test
+-export([
          'error.type'/1,
+         isblank/1,
          iserr/1,
          iserror/1,
-         iseven/1,
          islogical/1,
          isna/1,
          isnontext/1,
          isnumber/1,
-         isodd/1,
-         isref/1,
          istext/1,
          n/1,
          na/1,
-         type/1,
-         isblank/1,
-         isnonblank/1,
-         info/1]).
+         type/1
+        ]).
+
+% fns that fail test
+-export([
+         cell/1
+        ]).
+
+% fns without a test suite
+%-export([
+%         iseven/1,
+%         isodd/1,
+%         isref/1,
+%         isnonblank/1,
+%         info/1
+%        ]).
 
 -export([rows/1,
          columns/1]).
