@@ -7,10 +7,15 @@
 -include("typechecks.hrl").
 -import(muin_util, [conv/2, cast/2]).
 
+% passing test suite
 -export([
-         delta/1,
          gestep/1
         ]).
+
+% no test suite
+%-export([
+%         delta/1
+%         ]).
 
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 
