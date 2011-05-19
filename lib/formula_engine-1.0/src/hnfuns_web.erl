@@ -58,8 +58,7 @@ vline1(H, N, M, Colour) ->
 
 'horizontal.line.'([W, N, M, Colour]) ->
     hline1(W, N, M, Colour);
-'horizontal.line.'([W, N, M, "#000000"]) ->
-
+'horizontal.line.'([W, N, M]) ->
     hline1(W, N, M, "#000000");
 'horizontal.line.'([W, N]) ->
     hline1(W, N, 0, "#000000");
@@ -75,7 +74,7 @@ hline1(W, N, M, Colour) ->
         ++ "<div style='display:block;width:100%;'></div>",
     {resize, {W2, 1, #incs{}}, Div}.
 
-make_style(N) -> case N of
+make_style(I) -> case I of
                      0 -> "solid";
                      1 -> "dotted";
                      2 -> "dashed";
@@ -162,6 +161,7 @@ html([Html]) ->
 
 link_(Src, Text) ->
     lists:flatten("<a href='" ++ Src ++ "'>" ++ Text ++ "</a>").
+
 img_(Src) ->
     lists:flatten("<img src='" ++ Src ++ "' />").
 
