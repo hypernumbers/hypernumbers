@@ -99,7 +99,8 @@ links2([{{P, _}, V} | T], 2, Acc) -> P2 = hn_util:list_to_path(P),
     [H2] = typechecks:throw_std_ints([H]),
     [T2] = typechecks:throw_std_strs([Text]),
     check_size(W2, H2),
-    {resize, {W2, H2, #incs{}}, "<span class='hn-wc-wd-" ++ integer_to_list(W2) ++
+    {resize, {W2, H2, #incs{}}, "<span class='hn-wc-headline hn-wc-wd-"
+     ++ integer_to_list(W2) ++
      " hn-wc-ht-" ++ integer_to_list(H2) ++ "' " ++
      "style='position:absolute;top:25%;left:0%;'>"
      ++ T2 ++ "</span>"}.
