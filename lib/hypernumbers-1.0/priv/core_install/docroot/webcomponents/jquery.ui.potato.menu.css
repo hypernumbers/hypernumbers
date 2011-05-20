@@ -1,12 +1,13 @@
 /*!
  * jquery.ui.potato.menu
- * 
+ *
  * Copyright (c) 2009-2010 makoto_kw, http://www.makotokw.com
  * Licensed under the MIT license.
- * 
+ *
  * @author makoto_kw
  * @version 1.1
  */
+
 .potato-menu {
 	margin:0;
 	padding:0;
@@ -24,13 +25,13 @@
 	line-height: 0;
 }
 
-li.potato-menu-item a, li.potato-menu-item span { 
-  background-color: #fff; 
+li.potato-menu-item a, li.potato-menu-item span {
+  background-color: #fff;
 }
 
-li.potato-menu-item a { 
-  background-color: #fff; 
-  padding: 5px 20px 5px 3px;
+li.potato-menu-item a {
+  background-color: #fff;
+  padding: 0px 20px 0px 3px;
 }
 
 ul.potato-menu li.potato-menu-item {
@@ -67,6 +68,6 @@ li.potato-menu-has-horizontal > a, li.potato-menu-has-horizontal > span {
 	background: #fff url(/hypernumbers/right.png) right no-repeat;
 }
 
-li.potato-menu-hover { 
+li.potato-menu-hover {
   color:#447;
 }
