@@ -103,10 +103,16 @@ create_dev_zone() ->
     ok.
 
 local_hypernumbers() ->
-    {ok, _, Uid} = passport:get_or_create_user("test@hypernumbers.com"),
-    hn_setup:site("http://hypernumbers.dev:9000", blank, [{creator, Uid}]),
-    passport:validate_uid(Uid),
-    passport:set_password(Uid, "i!am!secure").
+    Site = "http://hypernumbers.dev:9000",
+    {ok, _, Uid1} = passport:get_or_create_user("test@hypernumbers.com"),
+    {ok, _, Uid2} = passport:get_or_create_user("guest@hypernumbers.com"),
+    hn_setup:site(Site, blank, [{creator, Uid1}]),
+    passport:validate_uid(Uid1),
+    passport:validate_uid(Uid2),
+    % make guest a member of group guest
+    hn_groups:add_user(Site, "guest", Uid2),
+    passport:set_password(Uid1, "i!am!secure"),
+    passport:set_password(Uid2, "i!am!secure").
 
 production_tasks() ->
     % net_adm:world() depends on you being in $GITROOT
