@@ -67,8 +67,8 @@ etl_row(Site, Terms, FileName) ->
             Chunked = chunk(Input),
             case validate_rows(Site, Head#head.overwrite,
                                Validation, Chunked) of
-                valid            -> write2(map_row(Chunked, Mapping),
-                                           Head#head.overwrite,
+                {valid, Pages}   -> write2(map_row(Chunked, Site, Mapping),
+                                           Site, Pages, Head#head.overwrite,
                                            Head#head.template);
                 {not_valid, Msg} -> {not_valid, Msg}
             end
@@ -316,40 +316,35 @@ split_map([#mapping{} = Map | T], Hd, P, V, M) ->
     P2 = add(Sh2, P),
     split_map(T, Hd, P2, V, [Map#mapping{sheet = Sh2} | M]).
 
-map_row(Chunks, Mapping) -> Ret = map_r2(Chunks, Mapping, []),
-                            io:format("REturning from map_row with ~p~n", [Ret]),
-                            Ret.
+map_row(Chunks, Site, Mapping) -> map_r2(Chunks, Site, Mapping, []).
 
-map_r2([], _Mapping, Acc) -> Acc;
-map_r2([{Sheet, H} | T], Mapping, Acc) ->
-    NewAcc = map_r3(H, Sheet, Mapping, Acc),
-    map_r2(T, Mapping, NewAcc).
+map_r2([], _Site, _Mapping, Acc) -> Acc;
+map_r2([{Sheet, H} | T], Site, Mapping, Acc) ->
+    NewAcc = map_r3(H, Site, Sheet, Mapping, Acc),
+    map_r2(T, Site, Mapping, NewAcc).
 
-map_r3([], _Sheet, _Mapping, Acc) -> Acc;
-map_r3([{Y, H} | T], Sheet, Mapping, Acc) ->
-    io:format("Y is ~p~nH is ~p~nSheet is ~p~nMapping is ~p~n",
-              [Y, H, Sheet, Mapping]),
+map_r3([], _Site, _Sheet, _Mapping, Acc) -> Acc;
+map_r3([{Y, H} | T], Site, Sheet, Mapping, Acc) ->
     Page = case lists:keysearch(1, 1, H) of
                false              -> [];
                {value, {1, Path}} -> Path
            end,
-    NewAcc = map_r4(Mapping, Sheet, Y, H, Page, Acc),
-    map_r3(T, Sheet, Mapping, NewAcc).
+    NewAcc = map_r4(Mapping, Site, Sheet, Y, H, Page, Acc),
+    map_r3(T, Site, Sheet, Mapping, NewAcc).
 
-map_r4([], _Sheet, _Y, _Cells, _Page, Acc) -> Acc;
-map_r4([{mapping, Sheet, From, To} | T], Sheet, Y, Cells, Page, Acc) ->
+map_r4([], _Site, _Sheet, _Y, _Cells, _Page, Acc) -> Acc;
+map_r4([{mapping, Sheet, From, To} | T], Site, Sheet, Y, Cells, Page, Acc) ->
     {column, {X, X}} = hn_util:parse_ref(From),
     To2 = hn_util:parse_ref(To),
-    io:format("X is ~p To2 is ~p~n", [X, To2]),
+    Path = string:tokens(Page, "/"),
+    RefX = #refX{site = Site, type = "url", path = Path, obj = To2},
     NewAcc = case lists:keysearch(X, 1, Cells) of
                  false             -> Acc;
-                 {value, {X, Val}} -> RefX = #refX{path = Page, obj = To2},
-                                      [{RefX, Val} | Acc]
+                 {value, {X, Val}} -> [{RefX, Val} | Acc]
              end,
-    map_r4(T, Sheet, Y, Cells, Page, NewAcc);
-map_r4([H | T], Sheet, Y, Cells, Page, Acc) ->
-    io:format("Skipping ~p for ~p~n", [H, Sheet]),
-    map_r4(T, Sheet, Y, Cells, Page, Acc).
+    map_r4(T, Site, Sheet, Y, Cells, Page, NewAcc);
+map_r4([_H | T], Site, Sheet, Y, Cells, Page, Acc) ->
+    map_r4(T, Site, Sheet, Y, Cells, Page, Acc).
 
 map(Map, Dest, Pages, Data) -> map2(Map, Dest, Pages, Data, []).
 
@@ -380,27 +375,28 @@ map2([#mapping{} = Map | T], Dest, Pages, Input, Acc) ->
     map2(T, Dest, Pages, Input, NewAcc).
 
 validate_rows(S, O, V, Chunked) ->
-    case lists:merge([validate_row(S, O, V, X) || X <- Chunked]) of
-        []   -> valid;
+    {Msgs, Pages} = lists:unzip([validate_row(S, O, V, X) || X <- Chunked]),
+    case lists:merge(Msgs) of
+        []   -> {valid, Pages};
         Msgs -> {not_valid, io_lib:format("~p", [Msgs])}
     end.
 
 validate_row(Site, "dont_overwrite", Validation, {Sheet, Chunk}) ->
     Acc = check_no_pages(Chunk, Site, []),
-    Acc2 = check_uniq_col_a(Chunk, Acc),
-    val_r1(Validation, Sheet, Chunk, Acc2);
+    {Acc2, Pages} = check_uniq_col_a(Chunk, Acc),
+    {val_r1(Validation, Sheet, Chunk, Acc2), Pages};
 validate_row(_Site, "overwrite", Validation, {Sheet, Chunk}) ->
-    Acc = check_uniq_col_a(Chunk, []),
-    val_r1(Validation, Sheet, Chunk, Acc).
+    {Acc, Pages} = check_uniq_col_a(Chunk, []),
+    {val_r1(Validation, Sheet, Chunk, Acc), Pages}.
 
 check_uniq_col_a(List, Acc) ->
     {_, Cells} = lists:unzip(List),
     case check_for_dups(Cells, [], []) of
-        []  -> Acc;
-        Msg -> [Msg | Acc]
+        {[], Pages}  -> {Acc, Pages};
+        {Msg, Pages} -> {[Msg | Acc], Pages}
     end.
 
-check_for_dups([], _Pages, Acc)     -> Acc;
+check_for_dups([], Pages, Acc)     -> {Acc, Pages};
 check_for_dups([H | T], Pages, Acc) ->
     {_, [Page | _R]} = lists:unzip(H),
     {NewAcc, NewPages} = has_dups(Page, Pages, Acc),
@@ -511,10 +507,46 @@ write(Recs, Overwrite, Template) ->
           end,
     [Fun(X) || X <- Refs].
 
-write2(Recs, Overwrite, Template) ->
-    io:format("Recs is ~p Overwrite is ~p Template is ~p~n",
-              [Recs, Overwrite, Template]),
-    banjo.
+write2(Recs, Site, Pages, Overwrite, Template) ->
+    Pages2 = [refX_from_page(Site, X) || X <- flatten(Pages, [])],
+    case load_templates(Pages2, Overwrite, Template) of
+        ok           -> load_records(Recs);
+        {error, Msg} -> Msg
+    end.
+
+refX_from_page(Site, Page) ->
+    % Postel's Law
+    %
+    %  be conservative in what you do,
+    %  be liberal in what you accept from others.
+    %
+    % See RFC 793 Section 2.10 http://tools.ietf.org/html/rfc793
+    %
+    % this will force all paths to be well-behaved
+    % (ie start and end with a "/"
+    Path = string:tokens(Page, "/"),
+    Path2 = hn_util:list_to_path(Path),
+    url_parser:make_refX(Site ++ Path2).
+
+flatten([], Acc)      -> Acc;
+flatten([H | T], Acc) -> flatten(T, lists:merge([H, Acc])).
+
+load_records([]) -> ok;
+load_records([{RefX, V} | T]) ->
+    ok = new_db_api:write_attributes([{RefX, [{"formula", V}]}]),
+    load_records(T).
+
+load_templates([], _, _) -> ok;
+load_templates([H | T], "overwrite", Template) ->
+    hn_templates:load_template(H, Template),
+    ok = load_templates(T, "overwrite", Template);
+load_templates([H | T], "dont_overwrite", Template) ->
+    #refX{site = S, path = P} = H,
+    case page_srv:does_page_exist(S, P) of
+        true  -> {error, {hn_util:list_to_path(P) ++ " exists"}};
+        false -> ok = hn_templates:load_template(H, Template),
+                 load_templates(T, "dont_overwrite", Template)
+    end.
 
 transform_recs(Recs) -> trans2(Recs, []).
 
@@ -637,7 +669,7 @@ row_sort({{cell, {_, Y1}}, _}, {{cell, {_, Y2}}, _}) when Y1 <  Y2 -> false.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 testing() ->
-    Dir = "/home/gordon/hypernumbers/var/sites/hypernumbers.dev\&9000/etl/",
+    Dir = code:priv_dir(hypernumbers) ++ "/upload_test/",
     File1 = "map_test.csv",
     File2 = "map_test.xls",
     Path = tconv:to_s(util2:get_timestamp()),
@@ -648,11 +680,12 @@ testing() ->
     etl_to_sheet(Dir ++ File2, Dest, Dir ++ "map_test.map").
 
 testing2() ->
-    Dir = "/home/gordon/hypernumbers/var/sites/hypernumbers.dev\&9000/etl/",
+    Dir = code:priv_dir(hypernumbers) ++ "/upload_test/",
+    io:format("Dir is ~p~n", [Dir]),
     File1 = "row_test.xls",
     File2 = "row_test_csv.csv",
     Site = "http://hypernumbers.dev:9000",
-    io:format("Test row_test.map~n"),
-    etl_to_row(Dir ++ File1, Site, Dir ++ "row_test.map"),
+    %io:format("Test row_test.map~n"),
+    %etl_to_row(Dir ++ File1, Site, Dir ++ "row_test.map").
     io:format("Test row_test_csv.map~n"),
     etl_to_row(Dir ++ File2, Site, Dir ++ "row_test_csv.map").
