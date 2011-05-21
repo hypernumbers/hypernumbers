@@ -26,8 +26,8 @@ get_logs(RefX) when is_record(RefX, refX)->
     tidy_up(Logs, hn_util:refX_to_url(RefX)).
 
 tidy_up(Logs, Title) ->
-    "<html><head><title = '" ++ Title ++ "</title>"
-        ++ "<link href='<link href='/hypernumbers/logs.css' rel='stylesheet'>"
+    "<html><head><title = '" ++ Title ++ "></title>"
+        ++ "<link href='/hypernumbers/logs.css' rel='stylesheet' />"
         ++ "</head><body>"
         ++ make_html(Logs, [])
         ++ "</body></html>".
