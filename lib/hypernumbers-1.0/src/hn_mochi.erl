@@ -308,7 +308,7 @@ authorize_get(#refX{site = Site, path = Path}, _Qry, Env) ->
 authorize_post(#refX{path = [X]}, _Qry, #env{accept = json})
   when X == "_login";
        X == "_hooks";
-       X == "_forgotten_password",
+       X == "_forgotten_password";
        X == "_parse_expression" ->
     allowed;
 
