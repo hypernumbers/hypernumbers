@@ -223,7 +223,7 @@ authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = html})
     allowed;
 
 authorize_get(#refX{path = [X | _]}, _Qry, #env{accept = json})
-  when X == "_site" orelse X == "_page" ->
+  when X == "_site" orelse X == "_pages" ->
     allowed;
 
 %% Only some sites have a forgotten password box
@@ -338,7 +338,7 @@ authorize_p2(Site, Path, Env) ->
             case Env#env.body of
                 [{"postform",   _}]      -> allowed;
                 [{"postinline", _}]      -> allowed;
-                [{"postcreatepages", _}] -> allowed;
+                [{"postwebcontrols", _}] -> allowed;
                 _                        -> denied
             end;
         denied           -> authorize_p3(Site, Path, Env)
@@ -351,7 +351,7 @@ authorize_p3(Site, Path, Env) ->
         {view, ?WEBPAGE} ->
             case Env#env.body of
                 [{"postform",   _}]      -> allowed;
-                [{"postcreatepages", _}] -> allowed;
+                [{"postwebcontrols", _}] -> allowed;
                 _                        -> denied
             end;
         denied           -> denied
@@ -793,7 +793,7 @@ ipost(Ref=#refX{site = S, path = P} = Ref, _Qry,
 
 % run a web control
 ipost(Ref=#refX{obj = {page, _}}, _Qry,
-      Env=#env{body = [{"webcontrols", Actions}],
+      Env=#env{body = [{"postwebcontrols", Actions}],
                uid = Uid}) ->
     ok = status_srv:update_status(Uid, Ref, "created some pages"),
     run_actions(Ref, Env, mochijson:decode(Actions), Uid);
@@ -1588,7 +1588,7 @@ strip(Ext, File) ->
     lists:flatten(lists:reverse(Rest)).
 
 run_actions(#refX{site = S, path = P} = RefX, Env,
-            {struct, [{"postcreatepages", {array, Json}}]}, Uid) ->
+            {struct, [{_, {array, Json}}]}, Uid) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->
                   N2 = list_to_integer(N),
                   {N2, lists:flatten([json_recs:json_to_rec(X) || X <- Exprs])}

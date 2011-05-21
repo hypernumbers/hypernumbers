@@ -38,7 +38,7 @@
                            {struct, [{N, {array, RecJson}}]}
                    end,
             Payload = [Fun2(X) || X <- Commands3],
-            Pay2 = {struct, [{postcreatepages, {array, Payload}}]},
+            Pay2 = {struct, [{createpages, {array, Payload}}]},
             Json = mochijson:encode(Pay2),
             Html = lists:flatten("<input id='" ++ Id ++ "' type='submit' "
                                  ++ "class='hn-webcontrol' value='"
