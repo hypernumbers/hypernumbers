@@ -39,7 +39,7 @@
 %%
 
 save_template(#refX{site = S}=RefX, Name)  ->
-    TemplatesDir = hn_mochi:templateroot(S),
+    TemplatesDir = hn_util:templateroot(S),
     Encoder = mochijson:encoder([{input_encoding, utf8}]),
     FileName = filename:join(TemplatesDir, Name++".json"),
     Page = Encoder(hn_mochi:page_attributes(RefX, #env{})),
@@ -58,7 +58,7 @@ load_template_if_no_page(#refX{site = S, path = P} = RefX, Name) ->
 load_template(RefX, Name) -> load_template(RefX, Name, nil).
 
 load_template(#refX{site=S, path=P}, Name, Uid) ->
-    TemplatesDir = hn_mochi:templateroot(S),
+    TemplatesDir = hn_util:templateroot(S),
     URL = S ++ hn_util:list_to_path(P),
     File = TemplatesDir++"/"++Name++".json",
     ok = hn_import:json_file(URL, File, Uid).

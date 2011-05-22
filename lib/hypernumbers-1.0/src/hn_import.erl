@@ -27,7 +27,7 @@
         ]).
 
 read_map(Site, Name) ->
-    ETLDir = hn_mochi:etlroot(Site),
+    ETLDir = hn_util:etlroot(Site),
     FileName = filename:join(ETLDir, Name ++ ".map"),
     case file:consult(FileName) of
         {ok, Terms} ->
@@ -36,7 +36,7 @@ read_map(Site, Name) ->
     end.
 
 save_map(Site, Name, Head, Validation, Mapping) ->
-    ETLDir = hn_mochi:etlroot(Site),
+    ETLDir = hn_util:etlroot(Site),
     FileName = filename:join(ETLDir, Name ++ ".map"),
     File = lists:concat([[Head], Validation, Mapping]),
     File2 = [io_lib:format("~p.~n", [X]) || X <- File],

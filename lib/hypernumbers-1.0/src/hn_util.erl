@@ -12,6 +12,13 @@
 -include_lib("eunit/include/eunit.hrl").
 
 -export([
+         get_templates/1,
+         get_maps/1,
+         templateroot/1,
+         etlroot/1,
+         viewroot/1,
+         docroot/1,
+
          path_tokens/1,
          parse_zpath/1,
          valid_email/1,
@@ -79,6 +86,31 @@
          % Formula utilities
          make_formula/2
         ]).
+
+get_templates(Site) ->
+    Templates = filelib:wildcard("*.json", templateroot(Site)),
+    [strip("json", X) || X <- Templates].
+
+get_maps(Site) ->
+    Templates = filelib:wildcard("*.map", etlroot(Site)),
+    [strip("map", X) || X <- Templates].
+
+strip(Ext, File) ->
+    [Ext |  Rest] = lists:reverse(string:tokens(File, ".")),
+    lists:flatten(lists:reverse(Rest)).
+
+etlroot(Site) ->
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:site_to_fs(Site)++"/etl".
+templateroot(Site) ->
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:site_to_fs(Site)++"/templates".
+docroot(Site) ->
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:site_to_fs(Site)++"/docroot".
+viewroot(Site) ->
+    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
+        ++ hn_util:site_to_fs(Site)++"/views".
 
 path_tokens(P) -> tokens(P, [], []).
 

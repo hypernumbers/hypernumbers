@@ -26,12 +26,8 @@
          handle/1,
          extract_styles/1,
          style_to_css/1,
-         templateroot/1,
-         etlroot/1,
-         viewroot/1,
-         docroot/1,
          page_attributes/2,
-         get_json_post/1 % Used for mochilog replay rewrites
+         get_json_post/1    % Used for mochilog replay rewrites
         ]).
 
 -define(SHEETVIEW,   "spreadsheet").
@@ -160,12 +156,12 @@ authorize_r2(Env, Ref, Qry) ->
             handle_resource(Ref, Qry#qry{view = View}, Env2);
         {not_found, html} ->
             serve_html(404, Env2,
-                       [viewroot(Ref#refX.site), "/404.html"]);
+                       [hn_util:viewroot(Ref#refX.site), "/404.html"]);
         {not_found, json} ->
             respond(404, Env2);
         {denied, html} ->
             serve_html(401, Env2,
-                       [viewroot(Ref#refX.site), "/401.html"]);
+                       [hn_util:viewroot(Ref#refX.site), "/401.html"]);
         {denied, json} ->
             respond(401, Env2)
     end.
@@ -195,11 +191,11 @@ handle_static(X, Site, Env)
 X == ".ico"; X == ".json"; X == ".gif"; X == ".html"; X == ".htm"; X == ".pdf" ->
     Mochi = Env#env.mochi,
     "/"++RelPath = Mochi:get(path),
-    Root = docroot(Site),
+    Root = hn_util:docroot(Site),
     Mochi:serve_file(RelPath, Root),
     ok;
 handle_static(_X, Site, Env) ->
-    serve_html(404, Env, [viewroot(Site), "/404.html"]).
+    serve_html(404, Env, [hn_util:viewroot(Site), "/404.html"]).
 
 -spec authorize_get(#refX{}, #qry{}, #env{})
 -> {view, string()} | allowed | denied | not_found.
@@ -405,8 +401,8 @@ iget(#refX{site = S, path = ["_site"]}, page, #qry{map = Name}, Env) when Name =
 
 iget(#refX{site=S, path=["_site"]}, page, _Qry, Env) ->
     Groups    = {"groups", {array, hn_groups:get_all_groups(S)}},
-    Templates = {"templates", {array, get_templates(S)}},
-    Maps      = {"maps", {array, get_maps(S)}},
+    Templates = {"templates", {array, hn_util:get_templates(S)}},
+    Maps      = {"maps", {array, hn_util:get_maps(S)}},
     Funs      = {"functions", ?FNS_EN_GB},
     Admin     = {"is_admin", hn_groups:is_member(Env#env.uid, S, ["admin"])},
     Lang      = {"lang", get_lang(Env#env.uid)},
@@ -447,7 +443,7 @@ iget(#refX{site=Site, path=[X, _| Rest]=Path}, page, #qry{hypertag=HT}, Env)
 
 iget(#refX{site=Site, path=[X | _Vanity]}, page, _Qry, Env)
   when X == "_forgotten_password" ->
-    serve_html(404, Env, [viewroot(Site), "/forgotten_password.html"]);
+    serve_html(404, Env, [hn_util:viewroot(Site), "/forgotten_password.html"]);
 iget(#refX{site=Site, path=[X, _Vanity] = Path}, page,
      #qry{hypertag=HT},
      Env) when X == "_invite"; X == "_validate" ->
@@ -476,7 +472,7 @@ iget(#refX{site=Site, path=Path}, page, #qry{view=?DEMO}, Env) ->
 
 iget(#refX{site=Site, path=Path}, page, #qry{view=?RECALC}, Env) ->
     ok = new_db_api:recalc_page(#refX{site = Site, path = Path, obj = {page, "/"}}),
-    Html = viewroot(Site) ++ "/recalc.html",
+    Html = hn_util:viewroot(Site) ++ "/recalc.html",
     serve_html(Env, Html);
 
 iget(#refX{site=Site, path=Path}, page, #qry{view=?WEBPREVIEW}, Env) ->
@@ -506,7 +502,7 @@ iget(Ref=#refX{site=S}, page, #qry{view=FName},
      Env=#env{accept=html, uid=Uid})
   when FName /= undefined ->
     ok = status_srv:update_status(Uid, Ref, "viewed webpage"),
-    Html = [viewroot(S), "/", FName, ".html"],
+    Html = [hn_util:viewroot(S), "/", FName, ".html"],
     case filelib:is_file(Html) of
         true  -> serve_html(Env, Html);
         false -> '404'(Ref, Env)
@@ -1082,18 +1078,6 @@ add_ref1(#xrefX{obj = {Ref, {X, Y}}}, Data, JSON) ->
     {Name, Val} = hn_util:jsonify_val(Data),
     dh_tree:set([atom_to_list(Ref), itol(Y), itol(X), Name], Val, JSON).
 
-etlroot(Site) ->
-    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:site_to_fs(Site)++"/etl".
-templateroot(Site) ->
-    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:site_to_fs(Site)++"/templates".
-docroot(Site) ->
-    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:site_to_fs(Site)++"/docroot".
-viewroot(Site) ->
-    code:lib_dir(hypernumbers) ++ "/../../var/sites/"
-        ++ hn_util:site_to_fs(Site)++"/views".
 tmpdir() ->
     code:lib_dir(hypernumbers) ++ "/../../var/tmp/".
 
@@ -1430,7 +1414,7 @@ process_sync(["reset"], E, QReturn, undefined) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 '404'(#refX{site = Site}, Env) ->
-    serve_html(404, Env, [viewroot(Site), "/404.html"]).
+    serve_html(404, Env, [hn_util:viewroot(Site), "/404.html"]).
 
 '500'(Env) ->
     respond(500, Env).
@@ -1575,17 +1559,6 @@ reset_password(Email, Password, Hash) ->
             end
     end.
 
-get_templates(Site) ->
-    Templates = filelib:wildcard("*.json", templateroot(Site)),
-    [strip("json", X) || X <- Templates].
-
-get_maps(Site) ->
-    Templates = filelib:wildcard("*.map", etlroot(Site)),
-    [strip("map", X) || X <- Templates].
-
-strip(Ext, File) ->
-    [Ext |  Rest] = lists:reverse(string:tokens(File, ".")),
-    lists:flatten(lists:reverse(Rest)).
 
 run_actions(#refX{site = S, path = P} = RefX, Env,
             {struct, [{_, {array, Json}}]}, Uid) ->
@@ -1637,7 +1610,7 @@ replace_user(["$user" | T], EM, Groups) -> replace_user(T, EM, [EM|  Groups]);
 replace_user([H | T], EM, Groups)       -> replace_user(T, EM, [H | Groups]).
 
 templates_exist(Site, Templates) ->
-    ExistingTemplates = get_templates(Site),
+    ExistingTemplates = hn_util:get_templates(Site),
     templates_e2(lists:sort(ExistingTemplates), lists:sort(Templates)).
 
 templates_e2(_List, [])          -> true;
