@@ -682,7 +682,7 @@ testing() ->
 testing2() ->
     Dir = code:priv_dir(hypernumbers) ++ "/upload_test/",
     io:format("Dir is ~p~n", [Dir]),
-    File1 = "row_test.xls",
+    %File1 = "row_test.xls",
     File2 = "row_test_csv.csv",
     Site = "http://hypernumbers.dev:9000",
     %io:format("Test row_test.map~n"),
