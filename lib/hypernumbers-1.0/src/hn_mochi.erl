@@ -143,12 +143,16 @@ cluster_up() ->
 
 authorize_r2(Env, Ref, Qry) ->
     Env2 = process_user(Ref#refX.site, Env),
-    AuthRet = case Env2#env.method of
-                  Req when Req == 'GET'; Req == 'HEAD'  ->
+    #env{method = Method, body = Body} = Env,
+    AuthRet = case {Method, Body} of
+                  {Req, _} when Req == 'GET'; Req == 'HEAD'  ->
                       authorize_get(Ref, Qry, Env2);
-                  'POST' ->
+                  {'POST', multipart} ->
+                      authorize_upload(Ref, Qry, Env2);
+                  {'POST', _} ->
                       authorize_post(Ref, Qry, Env2)
               end,
+
     case {AuthRet, Env2#env.accept} of
         {allowed, _} ->
             handle_resource(Ref, Qry, Env2);
@@ -163,7 +167,13 @@ authorize_r2(Env, Ref, Qry) ->
             serve_html(401, Env2,
                        [hn_util:viewroot(Ref#refX.site), "/401.html"]);
         {denied, json} ->
-            respond(401, Env2)
+            respond(401, Env2);
+        {{upload, denied}, html} ->
+            Ret = {struct, [{error, "Permission denied: 401"}]},
+            #env{mochi = Mochi} = Env,
+            Mochi:ok({"text/html",
+                      (mochijson:encoder([{input_encoding,
+                                           utf8}]))(Ret)})
     end.
 
 handle_resource(Ref, Qry, Env=#env{method = 'GET'}) ->
@@ -174,12 +184,15 @@ handle_resource(Ref, Qry, Env=#env{method = 'GET'}) ->
 handle_resource(Ref, _Qry,
                 Env=#env{method='POST', body=multipart,
                          mochi=Mochi, uid=Uid}) ->
-    {Data, File} = hn_file_upload:handle_upload(Mochi, Ref, Uid),
-    Name = filename:basename(File),
+    {ok, UserName} = passport:uid_to_email(Uid),
+    {ok, File, Name, Data} = hn_file_upload:handle_upload(Mochi, Ref,
+                                                          UserName),
+    {_St, {Ret, _}} = load_file(Ref, Data, File, Name, UserName, Uid),
     Env2 = Env#env{raw_body = {upload, Name}},
     mochilog:log(Env2, Ref),
+
     Mochi:ok({"text/html",
-              (mochijson:encoder([{input_encoding, utf8}]))(Data)});
+              (mochijson:encoder([{input_encoding, utf8}]))(Ret)});
 
 handle_resource(Ref, Qry, Env=#env{method = 'POST'}) ->
     mochilog:log(Env, Ref),
@@ -352,6 +365,35 @@ authorize_p3(Site, Path, Env) ->
             end;
         denied           -> denied
     end.
+
+authorize_upload(#refX{site = S, path = P}, _Qry,  #env{uid = Uid}) ->
+    Views = auth_srv:get_views(S, P, Uid),
+    case has_appropriate_view(Views) of
+        false -> {upload, denied};
+        true  -> allowed
+    end.
+
+authorize_upload_again(#refX{site = S, path = P}, file, Uid) ->
+    Views = auth_srv:get_views(S, P, Uid),
+    lists:member(?SHEETVIEW, Views);
+authorize_upload_again(#refX{site = _S, path = _P} = RefX,
+                       {row, Map}, _Uid) ->
+    Expected = new_db_api:matching_forms(RefX, 'map-rows-button'),
+    has_map_row(Expected, Map).
+
+has_map_row([], _Map) -> false;
+has_map_row([H | T], Map) ->
+    case H of
+        {form, _, {_, 'map-rows-button', _}, _, _,
+         {struct, [{"map", Map}]}} -> true;
+        _ -> has_map_row(T, Map)
+    end.
+
+has_appropriate_view([])                -> false;
+has_appropriate_view([?SHEETVIEW | _T]) -> true;
+has_appropriate_view([?WEBPAGE | _T])   -> true;
+has_appropriate_view([?WIKI | _T])      -> true;
+has_appropriate_view([_H | T])          -> has_appropriate_view(T).
 
 authorize_admin(_Site, [{"admin", {_, [{"set_password", _}]}}], Uid) ->
     case passport:uid_to_email(Uid) of
@@ -1564,8 +1606,9 @@ run_actions(#refX{site = S, path = P} = RefX, Env,
             {struct, [{_, {array, Json}}]}, Uid) ->
     Fun1 = fun({struct, [{N, {array, Exprs}}]}) ->
                   N2 = list_to_integer(N),
-                  {N2, lists:flatten([json_recs:json_to_rec(X) || X <- Exprs])}
-          end,
+                  {N2, lists:flatten([json_recs:json_to_rec(X)
+                                      || X <- Exprs])}
+           end,
     Commands = [Fun1(X) || X <- Json],
     Expected = new_db_api:matching_forms(RefX, 'create-button'),
     % now check that the commands coming in match those stored
@@ -1613,15 +1656,72 @@ templates_exist(Site, Templates) ->
     ExistingTemplates = hn_util:get_templates(Site),
     templates_e2(lists:sort(ExistingTemplates), lists:sort(Templates)).
 
-templates_e2(_List, [])          -> true;
-templates_e2([H | T], Templates) -> templates_e2(T, lists:delete(H, Templates));
-templates_e2([], List)           ->
+templates_e2(_List, []) ->
+    true;
+templates_e2([H | T], Templates) ->
+    templates_e2(T, lists:delete(H, Templates));
+templates_e2([], List) ->
     N = length(List),
     Formats = lists:duplicate(N, " ~s"),
     Fmt = string:join(Formats, ","),
-    Msg = lists:flatten(io_lib:format("The following templates do not exist:~n"
+    Msg = lists:flatten(io_lib:format("The following templates "
+                                      ++ "do not exist:~n"
                                       ++ Fmt ++ "~n", List)),
     {error, Msg}.
+
+load_file(Ref, Data, File, Name, UserName, Uid) ->
+    Type = get_type(Data),
+    Ext = filename:extension(Name),
+    %% need to reauthorize
+    case authorize_upload_again(Ref, Type, Uid) of
+        true  -> load_file2(Ref, File, Name, UserName, Uid, Type, Ext);
+        false -> Msg = "Permission denied: 401",
+                 {rejected, {{struct, [{error, Msg}]}, nothing}}
+    end.
+
+load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
+    #refX{site = S, path = P} = Ref,
+    NRef = Ref#refX{path = P ++ [make_name(Name, Ext)]},
+    Loc = hn_util:list_to_path(P),
+
+    try
+        case {Type, Ext} of
+            {file, ".xls"} ->
+                ok = hn_file_upload:import(File, UserName, NRef,
+                                           Name, Uid),
+                {ok, { {struct, [{"location", Loc}]}, File}};
+            {file, ".csv"} ->
+                Url = NRef#refX.site ++ Loc,
+                ok = hn_import:csv_file(Url, File),
+                {ok, { {struct, [{"location", Loc}]}, File}};
+            {{row, Map}, _} ->
+                Dir = hn_util:etlroot(S),
+                MapFile = Dir ++ "/" ++ Map ++ ".map",
+                case hn_import:etl_to_row(File, S, MapFile) of
+                    {not_valid, Msg} ->
+                        {ok, { {struct, [{error, Msg}]}, File}};
+                    ok ->
+                        {ok, { {struct, [{"location", Loc}]}, File}}
+                end
+        end
+    catch
+        _Type:Reason ->
+            ?ERROR("Error Importing ~p ~n User:~p~n "
+                   ++ "Reason:~p~n Stack:~p~n",
+                   [File, UserName, Reason,
+                    erlang:get_stacktrace()]),
+            {ok, { {struct, [{"error", Reason}]},
+              undefined}}
+    end.
+
+get_type(Data) -> get_t2(lists:sort(Data)).
+
+get_t2([])                              -> file;
+get_t2([{"map", Map}, {"type", "row"}]) -> {row, Map}.
+
+make_name(Name, Ext) ->
+    Basename = filename:basename(Name, Ext),
+    re:replace(Basename,"\s","_",[{return,list}, global]).
 
 make_demo(Site, Path) ->
     URL = Site ++ hn_util:list_to_path(Path),

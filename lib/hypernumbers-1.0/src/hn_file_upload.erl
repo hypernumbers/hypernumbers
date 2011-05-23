@@ -3,7 +3,8 @@
 -module(hn_file_upload).
 
 -export([
-         handle_upload/3
+         handle_upload/3,
+         import/5
         ]).
 
 -export([test_import/0,
@@ -22,31 +23,16 @@
           ref,               % The RefX for the request
           original_filename, % file name as it comes from the user
           filename,          % file name as saved on the server
-          file
+          file,
+          currentdata,
+          data = []
          }).
 
 
 %% @doc Handles a file upload request from a user. Imports the file etc and
 %% returns response data to be sent back to the client.
-handle_upload(Mochi, Ref, Uid) ->
-
-    {ok, UserName} = passport:uid_to_email(Uid),
-
-    {ok, File, Name} = stream_to_file(Mochi, Ref, UserName),
-    NRef = Ref#refX{path = Ref#refX.path ++ [make_name(Name)]},
-    % io:format("file uploaded...~n"),
-    try
-        import(File, UserName, NRef, Name, Uid),
-        { {struct, [{"location", hn_util:list_to_path(NRef#refX.path)}]},
-          File}
-    catch
-        _Type:Reason ->
-            ?ERROR("Error Importing ~p ~n User:~p~n Reason:~p~n Stack:~p~n",
-                   [File, UserName, Reason,
-                    erlang:get_stacktrace()]),
-            { {struct, [{"error", "error reading sheet"}]},
-              undefined}
-    end.
+handle_upload(Mochi, Ref, UserName) ->
+    stream_to_file(Mochi, Ref, UserName).
 
 %%% interfacing with the reader
 %%% TODO: some of this needs to be part of the reader
@@ -84,7 +70,7 @@ write_data(Ref, {Sheet, Target, Data}, Uid) when is_list(Target) ->
 write_css(Ref, {Sheet, Target, CSS}, Uid) when is_list(Target) ->
     NRef = Ref#refX{path = Ref#refX.path ++ [Sheet],
                     obj  = hn_util:parse_attr(Target)},
-    new_db_api:write_attributes([{NRef, CSS}], Uid).
+    new_db_api:write_attributes([{NRef, defaultize(CSS)}], Uid).
 
 %% Excel's default borders are
 %% * no type of border
@@ -95,35 +81,27 @@ write_css(Ref, {Sheet, Target, CSS}, Uid) when is_list(Target) ->
 %% * no style of border
 %% * no colour
 %% This function 'makes it so' <-- super-ugelee n'est pas?
-%% defaultize(M) ->
-%%     M1 = case M of
-%%              #magic_style{'border-right-style' = [],
-%%                           'border-right-color' = "rgb(000,000,000)",
-%%                           'border-right-width' = []} ->
-%%                  M#magic_style{'border-right-color' = []};
-%%              _O1 -> M
-%%          end,
-%%     M2 = case M1 of
-%%              #magic_style{'border-left-style' = [],
-%%                           'border-left-color' = "rgb(000,000,000)",
-%%                           'border-left-width' = []} ->
-%%                  M1#magic_style{'border-left-color' = []};
-%%              _O2 -> M1
-%%          end,
-%%     M3 = case M2 of
-%%              #magic_style{'border-top-style' = [],
-%%                           'border-top-color' = "rgb(000,000,000)",
-%%                           'border-top-width' = []} ->
-%%                  M2#magic_style{'border-top-color' = []};
-%%              _O3 -> M2
-%%          end,
-%%     _M4 = case M3 of
-%%               #magic_style{'border-bottom-style' = [],
-%%                            'border-bottom-color' = "rgb(000,000,000)",
-%%                            'border-bottom-width' = []} ->
-%%                  M3#magic_style{'border-bottom-color' = []};
-%%               _O4 -> M3
-%%           end.
+defaultize(CSS) -> case def1(["bottom", "top", "right", "left"], CSS) of
+                       abort  -> CSS;
+                       NewCSS -> NewCSS
+                   end.
+
+% only apply the default if it applies to all 4 borders
+def1([], CSS)      -> CSS;
+def1([H | T], CSS) ->
+    Color = "border-" ++ H ++ "-color",
+    Style = "border-" ++ H ++ "-style",
+    Width = "border-" ++ H ++ "-width",
+    Lk1 = lists:keysearch(Color,  1, CSS),
+    Lk2 = lists:keysearch(Style, 1, CSS),
+    Lk3 = lists:keysearch(Width, 1, CSS),
+    case {Lk1, Lk2, Lk3} of
+        {{_, {_, "rgb(000,000,000)"}}, false, false} ->
+            NewCSS = lists:keydelete(Color, 1, CSS),
+            def1(T, NewCSS);
+        _ ->
+            abort
+    end.
 
 test_import() ->
      test_import("buildings.west-george-street.electricity.2011.mar.9.1800051976217.data", hn_util:url_to_refX("http://hypernumbers.dev:9000")).
@@ -141,15 +119,16 @@ test_import(File, Ref) ->
 
 import(File, User, Ref, Name, Uid) ->
 
-    {Cells, _Names, _Formats, CSS, Warnings, Sheets} = filefilters:read(excel, File),
-    {Literals, Formulas} = lists:foldl(fun split_sheets/2, {[], []}, Cells),
+    {Cells, _, _, CSS, Wrngs, Sheets} = filefilters:read(excel, File),
+    {Literals, Formulas} = lists:foldl(fun split_sheets/2,
+                                       {[], []}, Cells),
     CSS2 = lists:foldl(fun split_css/2, [], CSS),
 
     [ write_data(Ref, X, Uid) || X <- Literals ],
     [ write_data(Ref, X, Uid) || X <- Formulas ],
     [ write_css(Ref,  X, Uid) || X <- CSS2 ],
 
-    ok = write_warnings_page(Ref, Sheets, User, Name, Warnings, Uid).
+    ok = write_warnings_page(Ref, Sheets, User, Name, Wrngs, Uid).
 
 write_warnings_page(Ref, Sheets, User, Name, Warnings, Uid) ->
 
@@ -211,7 +190,6 @@ write_warnings(Ref, [W|Ws], Idx) ->
     write_to_cell(Ref, WarningString, 2, Idx, []),
     write_warnings(Ref, Ws, Idx + 1).
 
-
 %% Input: list of {key, id} pairs where key is an ETS table holding info
 %% about some part of the XLS file.
 %% @TODO: formats, names, styles.
@@ -242,40 +220,55 @@ conv_for_post(Val) ->
 
 setup_state(S, {"content-disposition",
                 {"form-data", [_Nm, {"filename", FileName}]}}) ->
-
     Stamp = S#file_upload_state.filename ++ "__" ++ FileName,
     Site  = (S#file_upload_state.ref)#refX.site,
-    Name  = filename:join([hn_mochi:docroot(Site), "..", "uploads", Stamp]),
+    Name  = filename:join([hn_util:docroot(Site), "..", "uploads", Stamp]),
     filelib:ensure_dir(Name),
     {ok, File} = file:open(Name, [raw, write]),
-
-    #file_upload_state{original_filename = FileName,
-                       filename = Name,
-                       file = File}.
-
-make_name(Name) ->
-    Basename = filename:basename(Name, ".xls"),
-    re:replace(Basename,"\s","_",[{return,list}, global]).
+    {file, S#file_upload_state{original_filename = FileName,
+                              filename = Name,
+                              file = File}};
+setup_state(S, {"content-disposition",
+                {"form-data", [{"name", Name}]}}) ->
+    #file_upload_state{data = Data} = S,
+    NewData = case lists:keysearch(Name, 1, Data) of
+                  {value, _} -> exit("data should never exist for a header");
+                  false      -> [{Name, []} | Data]
+              end,
+    {data, S#file_upload_state{currentdata = Name, data = NewData}}.
 
 stream_to_file(Mochi, Ref, UserName) ->
     Stamp    = UserName ++ dh_date:format("__Y_m_d_h_i_s"),
     Rec      = #file_upload_state{filename=Stamp, ref=Ref},
-    CallBack = fun(N) -> file_upload_callback(N, Rec) end,
+    CallBack = fun(N) -> file_upload_callback(N, Rec, start) end,
     {_, _, State} = mochiweb_multipart:parse_multipart_request(Mochi, CallBack),
-
     {ok, State#file_upload_state.filename,
-     State#file_upload_state.original_filename}.
+     State#file_upload_state.original_filename,
+     State#file_upload_state.data}.
 
-file_upload_callback({headers, Headers}, S) ->
-    NewState = setup_state(S, hd(Headers)),
-    fun(N) -> file_upload_callback(N, NewState) end;
+file_upload_callback({headers, Headers}, S, _) ->
+    {Type, NewState} = setup_state(S, hd(Headers)),
+    fun(N) -> file_upload_callback(N, NewState, Type) end;
 
-file_upload_callback({body, Data}, S) ->
+file_upload_callback({body, Data}, S, file) ->
     file:write(S#file_upload_state.file, Data),
-    fun(N) -> file_upload_callback(N, S) end;
+    fun(N) -> file_upload_callback(N, S, file) end;
 
-file_upload_callback(body_end, S) ->
+file_upload_callback(body_end, S, file) ->
     file:close(S#file_upload_state.file),
-    fun(N) -> file_upload_callback(N, S) end;
+    fun(N) -> file_upload_callback(N, S, file) end;
 
-file_upload_callback(eof, State) -> State.
+file_upload_callback({body, Data}, S, data) ->
+    {value, {Key, Start}} = lists:keysearch(S#file_upload_state.currentdata, 1,
+                                     S#file_upload_state.data),
+    NewData = lists:keyreplace(Key, 1, S#file_upload_state.data,
+                               {Key, Start ++ binary_to_list(Data)}),
+    NewS = S#file_upload_state{data = NewData},
+    fun(N) -> file_upload_callback(N, NewS, data) end;
+
+file_upload_callback(body_end, S, data) ->
+    fun(N) -> file_upload_callback(N, S, data) end;
+
+file_upload_callback(eof, State, _) -> State.
+
+
