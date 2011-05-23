@@ -1,0 +1,13 @@
+{head,"row","xls","blank","dont_overwrite"}.
+{validation,"Sheet1","B:B","is_date"}.
+{validation,"Sheet1","D:D","is_number"}.
+{validation,"Sheet1","C:C","is_boolean"}.
+{validation,"Sheet1","E:E","is_number"}.
+{validation,"Sheet1","F:F","is_string"}.
+{validation,"Sheet1","G:G","not_null"}.
+{mapping,"Sheet1","B:B","A1"}.
+{mapping,"Sheet1","C:C","A2"}.
+{mapping,"Sheet1","D:D","A3"}.
+{mapping,"Sheet1","E:E","A4"}.
+{mapping,"Sheet1","F:F","A5"}.
+{mapping,"Sheet1","G:G","A6"}.

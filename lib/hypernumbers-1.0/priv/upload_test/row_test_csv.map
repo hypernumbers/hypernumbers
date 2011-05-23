@@ -1,0 +1,13 @@
+{head,"row","csv","blank","dont_overwrite"}.
+{validation,"csv","B:B","is_date"}.
+{validation,"csv","D:D","is_number"}.
+{validation,"csv","C:C","is_boolean"}.
+{validation,"csv","E:E","is_number"}.
+{validation,"csv","F:F","is_string"}.
+{validation,"csv","G:G","not_null"}.
+{mapping,"csv","B:B","A1"}.
+{mapping,"csv","C:C","A2"}.
+{mapping,"csv","D:D","A3"}.
+{mapping,"csv","E:E","A4"}.
+{mapping,"csv","F:F","A5"}.
+{mapping,"csv","G:G","A6"}.
