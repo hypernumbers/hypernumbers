@@ -48,48 +48,56 @@ save_map(Site, Name, Head, Validation, Mapping) ->
 etl_to_row(FileName, Site, Map) ->
     case file:consult(Map) of
         {ok, Terms}     -> etl_row(Site, Terms, FileName);
-        {error, enoent} -> exit("map doesn't exist")
+        {error, enoent} -> exit("map " ++ Map ++ " doesn't exist")
     end.
 
 % only used for 'sheet' type maps (destination must be supplied)
 etl_to_sheet(FileName, Destination, Map) ->
     case file:consult(Map) of
         {ok, Terms}     -> etl_sheet(Terms, FileName, Destination);
-        {error, enoent} -> {not_valid, "Map " ++ Map ++ " doesn't exist"}
+        {error, enoent} -> {not_valid, "Map " ++ Map
+                            ++ " doesn't exist"}
     end.
 
 etl_row(Site, Terms, FileName) ->
-    {Input, {Head, _Pages, Validation, Mapping}} = get_data(Terms, FileName),
+    {Input, {Head, _Pages, Validation, Mapping}}
+        = get_data(Terms, FileName),
     Type = Head#head.type,
     case Type of
-        "sheet" -> {not_valid, "Map has row type not sheet type"};
+        "sheet" -> {not_valid, "Map has sheet type not row type"};
         "row"   ->
             Chunked = chunk(Input),
             case validate_rows(Site, Head#head.overwrite,
                                Validation, Chunked) of
-                {valid, Pages}   -> write2(map_row(Chunked, Site, Mapping),
-                                           Site, Pages, Head#head.overwrite,
-                                           Head#head.template);
-                {not_valid, Msg} -> {not_valid, Msg}
+                {valid, Pages} ->
+                    write2(map_row(Chunked, Site, Mapping),
+                           Site, Pages, Head#head.overwrite,
+                           Head#head.template);
+                {not_valid, Msg} ->
+                    {not_valid, Msg}
             end
     end.
 
 etl_sheet(Terms, FileName, Dest) ->
-    {Input, {Head, Pages, Validation, Mapping}} = get_data(Terms, FileName),
+    {Input, {Head, Pages, Validation, Mapping}}
+        = get_data(Terms, FileName),
     Type = Head#head.type,
     case Type of
         "row"   -> {not_valid, "Map has row type not sheet type"};
         "sheet" ->
             case validate_sheet(Validation, Input) of
-                valid            -> write(map(Mapping, Dest, Pages, Input),
-                                          Head#head.overwrite,
-                                          Head#head.template);
-                {not_valid, Msg} -> {not_valid, Msg}
+                valid ->
+                    write(map(Mapping, Dest, Pages, Input),
+                          Head#head.overwrite,
+                          Head#head.template);
+                {not_valid, Msg} ->
+                    {not_valid, Msg}
             end
     end.
 
 get_data(Terms, FileName) ->
-    {Head, Pages, Validation, Mapping} = split_map(Terms, [], [], [], []),
+    {Head, Pages, Validation, Mapping}
+        = split_map(Terms, [], [], [], []),
     Input = case Head#head.filetype of
                 "csv" -> read_csv(FileName);
                 "xls" -> read_xls(FileName)
@@ -153,16 +161,20 @@ json_file(Url, FileName, Uid) ->
 
     % set the champion
     Path = hn_util:list_to_path(P),
-    ok = hn_web_admin:rpc(not_used, S, "set_champion", [{"path", Path},
-                                                        {"view", Champion}]),
+    ok = hn_web_admin:rpc(not_used, S, "set_champion",
+                          [{"path", Path},
+                           {"view", Champion}]),
     [ok = set_view(S, Path, X) || X <- Views],
 
     Styles = make_styles(StyleStrs, []),
 
     ok = new_db_api:clear(Ref, all, Uid),
-    [rows(Ref, X, Styles, row,    fun write_col_row/4, Uid) || X <- Rows],
-    [rows(Ref, X, Styles, column, fun write_col_row/4, Uid) || X <- Cols],
-    [rows(Ref, X, Styles, cell,   fun write_cells/4,   Uid) || X <- Cells],
+    [rows(Ref, X, Styles, row,    fun write_col_row/4, Uid)
+     || X <- Rows],
+    [rows(Ref, X, Styles, column, fun write_col_row/4, Uid)
+     || X <- Cols],
+    [rows(Ref, X, Styles, cell,   fun write_cells/4,   Uid)
+     || X <- Cells],
     ok.
 
 make_styles([], Acc) -> Acc;
@@ -175,10 +187,11 @@ make_styles([{Idx, Str} | T], Acc) ->
 set_view(Site, Path, {View, {struct, Propslist}}) ->
     Everyone = ?pget("everyone", Propslist),
     Groups = ?pget("groups", Propslist),
-    ok = hn_web_admin:rpc(not_used, Site, "set_view", [{"path",     Path},
-                                                       {"view",     View},
-                                                       {"groups",   Groups},
-                                                       {"everyone", Everyone}]).
+    ok = hn_web_admin:rpc(not_used, Site, "set_view",
+                          [{"path",     Path},
+                           {"view",     View},
+                           {"groups",   Groups},
+                           {"everyone", Everyone}]).
 
 rows(Ref, {Row, {struct, Cells}}, Styles, Type, Fun, Uid) ->
     [cells(Ref, Row, X, Styles, Type, Fun, Uid) || X <- Cells],
@@ -214,11 +227,14 @@ copy_attrs(Source, Dest, Styles, ["style" = Key | T]) ->
     end;
 copy_attrs(Source, Dest, RT, [Key|T]) ->
     case {Key, proplists:get_value(Key, Source, undefined)} of
-        {_, undefined}           -> copy_attrs(Source, Dest, RT, T);
-        {"input", {struct, [V]}} -> {"select", {array, Array}} = V,
-                                    V2 = {"select", Array},
-                                    copy_attrs(Source, [{Key,V2}|Dest], RT, T);
-        {_, V}                   -> copy_attrs(Source, [{Key,V}|Dest], RT, T)
+        {_, undefined} ->
+            copy_attrs(Source, Dest, RT, T);
+        {"input", {struct, [V]}} ->
+            {"select", {array, Array}} = V,
+            V2 = {"select", Array},
+            copy_attrs(Source, [{Key,V2}|Dest], RT, T);
+        {_, V} ->
+            copy_attrs(Source, [{Key,V}|Dest], RT, T)
     end.
 
 ltoi(X) ->
@@ -257,7 +273,8 @@ read_csv(FileName) ->
     [{"csv", reformat_csv(Rows)}].
 
 read_xls(FileName) ->
-    {Cells, _Nm, _Fmt, _CSS, _Warns, _Sheets} =filefilters:read(excel, FileName),
+    {Cells, _Nm, _Fmt, _CSS, _Warns, _Sheets}
+        = filefilters:read(excel, FileName),
     reformat_xls(Cells).
 
 reformat_csv(Rows) -> ref_csv1(Rows, 1, []).
@@ -333,7 +350,8 @@ map_r3([{Y, H} | T], Site, Sheet, Mapping, Acc) ->
     map_r3(T, Site, Sheet, Mapping, NewAcc).
 
 map_r4([], _Site, _Sheet, _Y, _Cells, _Page, Acc) -> Acc;
-map_r4([{mapping, Sheet, From, To} | T], Site, Sheet, Y, Cells, Page, Acc) ->
+map_r4([{mapping, Sheet, From, To} | T], Site,
+       Sheet, Y, Cells, Page, Acc) ->
     {column, {X, X}} = hn_util:parse_ref(From),
     To2 = hn_util:parse_ref(To),
     Path = string:tokens(Page, "/"),
@@ -368,14 +386,16 @@ map2([#mapping{} = Map | T], Dest, Pages, Input, Acc) ->
                                      [{Path, [New]} | Acc];
                                  {value, {Path, AccList}} ->
                                      NewTup = {Path, [New | AccList]},
-                                     lists:keyreplace(Path, 1, Acc, NewTup)
+                                     lists:keyreplace(Path, 1, Acc,
+                                                      NewTup)
                              end
                      end
              end,
     map2(T, Dest, Pages, Input, NewAcc).
 
 validate_rows(S, O, V, Chunked) ->
-    {Msgs, Pages} = lists:unzip([validate_row(S, O, V, X) || X <- Chunked]),
+    {Msgs, Pages} = lists:unzip([validate_row(S, O, V, X)
+                                 || X <- Chunked]),
     case lists:merge(Msgs) of
         []   -> {valid, Pages};
         Msgs -> {not_valid, io_lib:format("~p", [Msgs])}
@@ -404,9 +424,9 @@ check_for_dups([H | T], Pages, Acc) ->
 
 has_dups(Page, Pages, Acc) ->
     case lists:member(Page, Pages) of
-                       true  -> {[Page ++ " is duplicated" | Acc], Pages};
-                       false -> {Acc, [Page | Pages]}
-                   end.
+        true  -> {[Page ++ " is duplicated" | Acc], Pages};
+        false -> {Acc, [Page | Pages]}
+    end.
 
 check_no_pages([], _, Acc) -> Acc;
 check_no_pages([{{cell, {1, _}}, Page} | T], Site, Acc) ->
@@ -426,7 +446,8 @@ val_r1([H | T], Sheet, List, Acc) ->
 val_r2([], _, _, Acc) -> lists:reverse(Acc);
 % if the sheet of the input and the sheet of the constraint match then
 % test the constraint
-val_r2([H | T], S, #validation{sheet = S, cell = R, constraint = C} = Vld,
+val_r2([H | T], S, #validation{sheet = S, cell = R,
+                               constraint = C} = Vld,
        Acc) ->
     {column, {X, X}} = hn_util:parse_ref(tconv:to_s(R)),
     NewAcc = case C of
@@ -434,8 +455,8 @@ val_r2([H | T], S, #validation{sheet = S, cell = R, constraint = C} = Vld,
                  _          -> check_constraint(S, H, X, C, Acc)
              end,
     val_r2(T, S, Vld, NewAcc);
-% if the sheet of the input and the sheet of the constraint don't match then
-% who cares
+% if the sheet of the input and the sheet of the constraint don't
+% match then who cares
 val_r2([_H | T], Sheet, Vld, Acc) ->
     val_r2(T, Sheet, Vld, Acc).
 
