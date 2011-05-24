@@ -11,6 +11,7 @@
 
 -define(notincfns, [include, tick, snapshot]).
 
+-define(genint, $g,$e,$n,$e,$r,$i,$c,$.,$i,$n,$t,$e,$g,$r,$a,$t,$i,$o,$n,$.).
 -define(htmlheadline, $h,$t,$m,$l,$.,$h,$e,$a,$d,$l,$i,$n,$e,$.).
 -define(htmlbox, $h,$t,$m,$l,$.,$b,$o,$x,$.).
 -define(htmlplainbox, $h,$t,$m,$l,$.,$p,$l,$a,$i,$n,$b,$o,$x,$.).
@@ -24,10 +25,11 @@
 -define(dategraph, $d,$a,$t,$e,$g,$r,$a,$p,$h,$.).
 -define(equigraph, $e,$q,$u,$i,$g,$r,$a,$p,$h,$.).
 -define(piechart, $p,$i,$e,$c,$h,$a,$r,$t,$.).
+-define(linkbox, $l,$i,$n,$k,$.,$b,$o,$x,$.).
+
 -define(horizontalline, $h,$o,$r,$i,$z,$o,$n,$t,$a,$l,$.,$l,$i,$n,$e,$.).
 -define(verticalline, $v,$e,$r,$t,$i,$c,$a,$l,$.,$l,$i,$n,$e,$.).
 -define(htmlmenu, $h,$t,$m,$l,$.,$m,$e,$n,$u,$.).
--define(linkbox, $l,$i,$n,$k,$.,$b,$o,$x,$.).
 
 % these functions are wrappers for use externally
 % they enable us to deny certain spreadsheet functions to
@@ -207,6 +209,11 @@ eval(_Node = [Func|Args]) when ?is_fn(Func) ->
 eval(Value) ->
     Value.
 
+% I know it is fugly but you try and get it to work with guards and
+% it won't - so stick it up yes
+transform([?genint | R], Args) ->
+    {W, H} = get_dims(R),
+    {list_to_atom([?genint]), [W, H | Args]};
 transform([?htmlheadline | R], Args) ->
     {W, H} = get_dims(R),
     {list_to_atom([?htmlheadline]), [W , H | Args]};

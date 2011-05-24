@@ -12,6 +12,7 @@
 
 % working functions
 -export([
+         'generic.integration.'/1,
          'facebook.comments'/1,
          'disqus.comments'/1,
          'twitter.button'/1,
@@ -119,6 +120,20 @@
     Incs = #incs{js_reload = [Reload]},
     {resize, {8, 15, Incs}, HTML}.
 
+'generic.integration.'([W, H, HTML]) ->
+    gen_i(W, H, HTML, [], [], []);
+'generic.integration.'([W, H, HTML, Js, JsRel])->
+    gen_i(W, H, HTML, Js, JsRel, []);
+'generic.integration.'([W, H, HTML, Js, JsRel, CSS]) ->
+    gen_i(W, H, HTML, Js, JsRel, CSS).
+
+gen_i(W, H, HTML, Js, JsRel, CSS) ->
+    [Width] = typechecks:throw_std_ints([W]),
+    [Height] = typechecks:throw_std_ints([H]),
+    [HTML2, Js2, JsRel2, CSS2] = typechecks:std_strs([HTML, Js, JsRel, CSS]),
+    Incs = #incs{js = [Js2], js_reload = [JsRel2], css = [CSS2]},
+    {resize, {Width, Height, Incs}, HTML2}.
+
 % for hypernumbers it is:
 % * id = 196044207084776
 'facebook.comments'([Id]) ->
@@ -130,6 +145,7 @@
         ++ "xfbml=1"],
     Reload = ["FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');"],
     Incs = #incs{js = Js, js_reload = Reload},
+    io:format("Incs is ~p~n", [Incs]),
     {resize, {8, 10, Incs},  HTML}.
 
 'twitter.tweet'([Message]) ->
