@@ -379,7 +379,19 @@ authorize_upload_again(#refX{site = S, path = P}, file, Uid) ->
 authorize_upload_again(#refX{site = _S, path = _P} = RefX,
                        {row, Map}, _Uid) ->
     Expected = new_db_api:matching_forms(RefX, 'map-rows-button'),
-    has_map_row(Expected, Map).
+    has_map_row(Expected, Map);
+authorize_upload_again(#refX{site = _S, path = _P} = RefX,
+                       {sheet, Map, Page}, _Uid) ->
+    Expected = new_db_api:matching_forms(RefX, 'map-sheet-button'),
+    has_map_sheet(Expected, Map, Page).
+
+has_map_sheet([], _Map, _Page) -> false;
+has_map_sheet([H | T], Map, Page) ->
+    case H of
+        {form, _, {_, 'map-sheet-button', _}, _, _,
+         {struct, [{"map", Map}, {"page", Page}]}} -> true;
+        _ -> has_map_sheet(T, Map, Page)
+    end.
 
 has_map_row([], _Map) -> false;
 has_map_row([H | T], Map) ->
@@ -1702,6 +1714,20 @@ load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
                         {ok, { {struct, [{error, Msg}]}, File}};
                     ok ->
                         {ok, { {struct, [{"location", Loc}]}, File}}
+                end;
+            {{sheet, Map, Page}, _} ->
+                Dir = hn_util:etlroot(S),
+                MapFile = Dir ++ "/" ++ Map ++ ".map",
+                Page2 = case muin_util:walk_path(Ref#refX.path, Page) of
+                            [] -> "/";
+                            Pg -> Pg
+                        end,
+                Page3 = Ref#refX.site ++ hn_util:list_to_path(Page2),
+                case hn_import:etl_to_sheet(File, Page3, MapFile) of
+                    {not_valid, Msg} ->
+                        {ok, { {struct, [{error, Msg}]}, File}};
+                    ok ->
+                        {ok, { {struct, [{"location", Loc}]}, File}}
                 end
         end
     catch
@@ -1716,8 +1742,9 @@ load_file2(Ref, File, Name, UserName, Uid, Type, Ext) ->
 
 get_type(Data) -> get_t2(lists:sort(Data)).
 
-get_t2([])                              -> file;
-get_t2([{"map", Map}, {"type", "row"}]) -> {row, Map}.
+get_t2([])                                                -> file;
+get_t2([{"map", Map}, {"type", "row"}])                   -> {row, Map};
+get_t2([{"map", Map}, {"page", Page}, {"type", "sheet"}]) -> {sheet, Map, Page}.
 
 make_name(Name, Ext) ->
     Basename = filename:basename(Name, Ext),

@@ -526,7 +526,8 @@ write(Recs, Overwrite, Template) ->
                           ok
                   end
           end,
-    [Fun(X) || X <- Refs].
+    [Fun(X) || X <- Refs],
+    ok.
 
 write2(Recs, Site, Pages, Overwrite, Template) ->
     Pages2 = [refX_from_page(Site, X) || X <- flatten(Pages, [])],

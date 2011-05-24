@@ -1312,7 +1312,7 @@ a.toolbar-item {
     font-style:     italic;
 }
 
-#doupload, .hn-maprows, .hn-webcontrol {
+#doupload, .hn-maprows, .hn-mapsheet .hn-webcontrol {
     cursor:pointer;
 }
 
@@ -1515,7 +1515,7 @@ a.toolbar-item {
     width: 100px
 }
 
-.button, .tournavigate, .hn-maprows, .hn-webcontrol, #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc {
+.button, .tournavigate, .hn-maprows, .hn-mapsheet, .hn-webcontrol, #doupload, #ctrldelete, #saveastemplate, #pdvisit, #newspreadsheet, #wizdone, #wizcanc {
     background:#EEE;
     -webkit-border-radius:3px 3px 3px 3px;
     -moz-border-radius:3px 3px 3px 3px;

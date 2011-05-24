@@ -9,11 +9,35 @@
 
 -export([
          'create.button'/1,
-         'map.rows.button'/1
+         'map.rows.button'/1,
+         'map.sheet.button'/1
         ]).
 
 -include("spriki.hrl").
 -include("errvals.hrl").
+
+'map.sheet.button'(List) ->
+    io:format("List is ~p~n", [List]),
+    [Title, Page, Map] = typechecks:std_strs(List),
+    io:format("Title is ~p Page is ~p Map is ~p~n",[Title, Page, Map]),
+    Maps = hn_util:get_maps(get(site)),
+    Id = "id_" ++ muin_util:create_name(),
+    case lists:member(Map, Maps) of
+        false -> ?ERRVAL_VAL;
+        true  -> Js = ["/hypernumbers/ajaxfileupload.js",
+                       "/webcomponents/hn.mapsheet.js"],
+                 Reload = ["HN.MapSheet.reload();"],
+                 Incs = #incs{js = Js, js_reload = Reload},
+                 Payload = {struct, [{"map", Map}, {"page", Page}]},
+                 Form = #form{id = {'map-sheet-button', Title},
+                              kind = "map-sheet-button",
+                              attrs = Payload},
+                 Html = "<input id='" ++ Id ++ "' type='submit' "
+                     ++ "class='hn-mapsheet' value='"
+                     ++ Title ++ "' data-map-type='sheet' data-map='"
+                     ++ Map ++ "' data-map-page='" ++ Page ++"' />",
+                 {webcontrol, {Form, {Title, 1, 1, Incs}}, Html}
+    end.
 
 'map.rows.button'(List) ->
     [Title, Map] = typechecks:std_strs(List),
