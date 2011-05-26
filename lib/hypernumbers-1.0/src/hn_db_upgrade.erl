@@ -10,6 +10,7 @@
 
 %% Upgrade functions that were applied at upgrade_REV
 -export([
+         add_path_index_to_logs_2011_05_26/0,
          force_sparkline_recalc_2011_05_15/0,
          bug_fix_dirty_for_zinf_2011_05_14/0,
          add_timer_table_2011_05_02/0,
@@ -40,6 +41,15 @@
          %% upgrade_1743_B/0,
          %% upgrade_1776/0
         ]).
+
+add_path_index_to_logs_2011_05_26() ->
+    Sites = hn_setup:get_sites(),
+    Fun1 = fun(Site) ->
+                   Tbl = hn_db_wu:trans(Site, loggin),
+                   Ret = mnesia:add_table_index(Tbl, path),
+                   io:format("Ret is ~p~n", [Ret])
+           end,
+    lists:foreach(Fun1, Sites).
 
 % will populate the dirty queue - to retrigger calcs just write a cell
 force_sparkline_recalc_2011_05_15() ->
