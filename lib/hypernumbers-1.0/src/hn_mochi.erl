@@ -1316,14 +1316,19 @@ process_environment(Mochi) ->
         case Mochi:get(method) of
             'GET'  -> {undefined, undefined};
             'HEAD' -> {undefined, undefined};
-            'POST' -> {_,{_,T}} = mochiweb_headers:lookup('Content-Type',
+            'POST' -> Headers = mochiweb_headers:lookup('Content-Type',
                                                           Mochi:get(headers)),
-
-                      case lists:prefix("multipart/form-data", T) of
-                          true  -> {undefined, multipart};
-                          false -> RB = Mochi:recv_body(),
-                                   {ok, B} = get_json_post(RB),
-                                   {RB, B}
+                      case Headers of
+                          none -> RB = Mochi:recv_body(),
+                                  {ok, B} = get_json_post(RB),
+                                  {RB, B};
+                          {_,{_,T}} ->
+                              case lists:prefix("multipart/form-data", T) of
+                                  true  -> {undefined, multipart};
+                                  false -> RB = Mochi:recv_body(),
+                                           {ok, B} = get_json_post(RB),
+                                           {RB, B}
+                              end
                       end
         end,
     #env{mochi = Mochi,
