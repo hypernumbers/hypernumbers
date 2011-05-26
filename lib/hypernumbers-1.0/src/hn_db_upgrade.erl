@@ -45,7 +45,7 @@
 add_path_index_to_logs_2011_05_26() ->
     Sites = hn_setup:get_sites(),
     Fun1 = fun(Site) ->
-                   Tbl = hn_db_wu:trans(Site, logging),
+                   Tbl = new_db_wu:trans(Site, logging),
                    Ret = mnesia:add_table_index(Tbl, path),
                    io:format("Ret is ~p~n", [Ret])
            end,
