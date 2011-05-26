@@ -279,7 +279,7 @@ conf_lname() ->
     nodeatom(read_config(nodename)).
 
 nodeatom(Name) ->
-    Host     = string:strip(os:cmd("hostname"), both, $\n),
+    Host     = string:strip(os:cmd("hostname -f"), both, $\n),
     LongName = io_lib:format("~s@~s", [Name, Host]),
     ltoa(lists:flatten(LongName)).
 
