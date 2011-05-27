@@ -134,13 +134,12 @@ get_seg(Path, Pages, Prefix) ->
                   {Hd, [T]} = lists:split(length(X) - 1, X),
                   case Hd of
                       Path -> case re:run(T, "^"++Prefix) of
-                                  {match, [{0, N}]} ->
-                                      {_P, I} = lists:split(N, T),
+                                  {match, [{0, _N}]} ->
                                       % now check if the last seg is an int
                                       Last = hd(lists:reverse(X)),
                                       case to_num(Last) of
                                           {error, nan} -> Acc;
-                                          _            -> [I | Acc]
+                                          I           -> [I | Acc]
                                       end;
                                   nomatch ->
                                       Acc
@@ -153,7 +152,7 @@ get_seg(Path, Pages, Prefix) ->
 
 make_s2([], Prefix)   -> Prefix ++ pad(1);
 make_s2(List, Prefix) -> Max = lists:max(List),
-                         Prefix ++ pad(list_to_integer(Max) + 1).
+                         Prefix ++ pad(Max + 1).
 
 pad(X) ->
     String = integer_to_list(X),
