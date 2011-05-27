@@ -17,9 +17,7 @@
 -include("errvals.hrl").
 
 'map.sheet.button'(List) ->
-    io:format("List is ~p~n", [List]),
     [Title, Page, Map] = typechecks:std_strs(List),
-    io:format("Title is ~p Page is ~p Map is ~p~n",[Title, Page, Map]),
     Maps = hn_util:get_maps(get(site)),
     Id = "id_" ++ muin_util:create_name(),
     case lists:member(Map, Maps) of
