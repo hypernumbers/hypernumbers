@@ -161,7 +161,8 @@ pad(X) ->
     Pad = lists:flatten(lists:duplicate(N, "0")),
     Pad ++ String.
 
-hex(String) -> mochihex:to_hex(crypto:md5_mac(?randomsalt, String)).
+hex(String) -> Salt = salts:randomsalt(),
+               mochihex:to_hex(crypto:md5_mac(Salt, String)).
 
 walk(_Path, [#segment{page = #plainpath{path = [Char | _]}} | _T] = Dest)
   when Char =/= $.->

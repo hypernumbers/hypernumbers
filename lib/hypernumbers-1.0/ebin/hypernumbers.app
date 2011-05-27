@@ -47,6 +47,7 @@
                   parse_csv,
                   passport,
                   remoting_reg,
+                  salts,
                   service_sup,
                   show,
                   simplexml,

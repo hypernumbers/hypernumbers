@@ -1,4 +1,4 @@
--define(SALT,      "happyguineapigs").
+-define(EXPIRY,    259200). % 3 days in seconds = 3*24*60*60
 
 -type now() :: {integer(),integer(),integer()}.
 -type cellidx() :: pos_integer().

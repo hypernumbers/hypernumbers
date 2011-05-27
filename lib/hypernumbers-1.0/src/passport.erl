@@ -627,19 +627,12 @@ extend(Bin) ->
 %% be used per recipient, and message type (varying the plaintext is
 %% good too). In otherwords, the same IVector and Key combination
 %% should not be used to send the same plaintext twice.
-ivector() ->
-    %% How I generated this.
-    %% X = crypto:rand_uniform(round(math:pow(2,128)),
-    %%                         round(math:pow(2,129)-1)),
-    %% <<X:128>>.
-    <<121,155,254,177,79,133,224,14,193,76,204,153,223,222,231,143>>.
+ivector() -> salts:ivector().
 
 %% These should be kept secret, and externalized for private installs.
-server_key() ->
-    <<"now I can ollie and I'm not so shite">>.
+server_key() -> salts:server_key().
 
-server_token_key() ->
-    <<"her suntan starts just above the collar">>.
+server_token_key() -> salts:server_token_key().
 
 make_script_terms([], Acc) ->
     FirstLine = io_lib:format("~s~n",["%%-*-erlang-*-"]),
