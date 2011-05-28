@@ -3,7 +3,7 @@
 -export([
          start/0, 
          quick/0,
-         build_new_release/0
+         make_release_boot_scripts/0
         ]).
 
 %% Debuggin
@@ -122,7 +122,7 @@ add_libs_to_path() ->
       || X <- filelib:wildcard(Dir++"/lib/*") ],
     ok.
 
-build_new_release() ->
+make_release_boot_scripts() ->
     add_libs_to_path(), 
     build_release().
 
