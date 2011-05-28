@@ -2,7 +2,7 @@
 
 -export([
          make_rel/0
-         ]).
+        ]).
 
 -define(tmp, "/tmp/make_release/").
 
@@ -59,11 +59,14 @@ make_rel() ->
               SaltSrc ++ "salts.erl"),
     % need to compile the salts file
     compile:file(SaltSrc ++ "salts.erl",
-         [{outdir, SaltSrc ++ "../ebin"}]),
+                 [{outdir, SaltSrc ++ "../ebin"}]),
 
     % we will now add some new stuff
     % first up the hn and shell files
     [file:copy(Root ++ X, ?tmp ++ X) || X <- ["hn", "shell"]],
+    % now chmod 'em
+    [os:cmd("chmod +x "++?tmp ++ X) || X <- ["hn", "shell"]],
+
     % now add the ebin/ directory
     EbinFiles = ["compile_code.beam","hypernumbers.rel"],
     file:make_dir(?tmp ++ "ebin/"),
@@ -73,17 +76,21 @@ make_rel() ->
     file:make_dir(?tmp ++ "priv"),
     file:make_dir(?tmp ++ "keys"),
     file:copy(Root ++ "priv/sys.config.default",
-       ?tmp ++ "priv/sys.config.default"),
+              ?tmp ++ "priv/sys.config.default"),
+
+    % squirt in a commit reference
+    os:cmd("git log -n 1 > " ++?tmp ++ "RELEASE.vsn"),
 
     % now tar up the release
     file:set_cwd(?tmp),
     erl_tar:create("hypernumbers.tar.gz",
-                               ["hn", "./ebin", "shell", "./lib", "./priv",
-                                "./releases"],
-                               [compressed]),
+                   ["hn", "./ebin", "shell", "./lib", "./priv",
+                    "./releases"],
+                   [compressed]),
     % copy it back into ebin
+    Day = dh_date:format("Y-m-d"),
     file:copy(?tmp ++ "hypernumbers.tar.gz",
-              Root ++ "ebin/hypernumbers.tar.gz"),
+              Root ++ "ebin/hypernumbers." ++ Day ++ ".tar.gz"),
 
     % finally clean up
     os:cmd("rm -rf " ++ ?tmp),
