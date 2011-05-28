@@ -1,9 +1,16 @@
 -module(compile_code).
--export([start/0, quick/0]).
+
+-export([
+         start/0, 
+         quick/0,
+         build_new_release/0
+        ]).
 
 %% Debuggin
--export([jslint_DEBUG/0,
-         jslint_DEBUG/1]).
+-export([
+         jslint_DEBUG/0,
+         jslint_DEBUG/1
+        ]).
 
 %% Compile will generate warnings for all files
 %% unless included here
@@ -86,9 +93,7 @@ quick() ->
 build_standard() ->
     Dir = get_root(),
 
-    % Add ebins for everything in /lib/ (eugh)
-    [ code:add_pathz(X ++ "/ebin")
-      || X <- filelib:wildcard(Dir++"/lib/*") ],
+    add_libs_to_path(),
 
     % First set up the include file
     Inc_list = [{i, Dir ++ "lib/gettext/include"},
@@ -108,6 +113,18 @@ build_standard() ->
     Dirs = lists:flatten(lists:map(Fun, ?DIRS)),
 
     ok = compile_funcs(Dirs, Inc_list).
+
+add_libs_to_path() ->
+    Dir = get_root(),
+
+    % Add ebins for everything in /lib/ (eugh)
+    [ code:add_pathz(X ++ "/ebin")
+      || X <- filelib:wildcard(Dir++"/lib/*") ],
+    ok.
+
+build_new_release() ->
+    add_libs_to_path(), 
+    build_release().
 
 build_release() ->
     get_rel_file(),
