@@ -1,0 +1,8 @@
+%% -*- mode: erlang -*-
+
+%% Targeted Sites
+sites() -> ["http://hypernumbers.dev:9000"].
+
+% don't do bugger all for recalc
+actions() ->
+    ok.
