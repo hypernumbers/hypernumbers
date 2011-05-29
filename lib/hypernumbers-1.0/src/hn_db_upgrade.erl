@@ -15,6 +15,7 @@
          bug_fix_dirty_for_zinf_2011_05_14/0,
          add_timer_table_2011_05_02/0,
          upgrade_dirty_zinf_2011_05_02/0,
+         flash_tests/0,
          flash_dev/0,
          fix_zinf_local_obj_bug/0,
          add_include_index/0,
@@ -133,6 +134,10 @@ upgrade_dirty_zinf_2011_05_02() ->
            end,
     lists:foreach(Fun1, Sites),
     ok.
+
+flash_tests() ->
+    ok = hn_setup:delete_site("http://tests.hypernumbers.dev:9000"),
+    ok = hn_setup:site("http://tests.hypernumbers.dev:9000", blank, []).
 
 flash_dev() ->
     ok = hn_setup:delete_site("http://hypernumbers.dev:9000"),
