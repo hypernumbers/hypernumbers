@@ -757,7 +757,7 @@ write_attributes1(#xrefX{} = XRefX, List, PAr, VAr) ->
     new_db_wu:write_attrs(XRefX, List, PAr),
     % first up do the usual 'dirty' stuff - this cell is dirty
     case lists:keymember("formula", 1, List) of
-        true  -> mark_children_dirty(XRefX, VAr);
+        true  -> new_db_wu:mark_these_dirty([XRefX], VAr);
         false -> ok
     end,
     % now do the include dirty stuff (ie this cell has had it's format updated)
@@ -1247,13 +1247,13 @@ unpack_1([H | T], Js, Js_r, CSS) ->
             end,
     unpack_1(T, NewJ, NewR, NewC).
 
-mark_children_dirty(#xrefX{site = S} = XRefX, VAr) ->
-    [Rels] = new_db_wu:read_relations(XRefX, read),
-    case Rels#relation.children of
-        [] ->
-            ok;
-        Children ->
-            Ch2 = [new_db_wu:idx_to_xrefX(S, X)
-                   || X <- Children],
-            ok = new_db_wu:mark_these_dirty(Ch2, VAr)
-    end.
+%% mark_children_dirty(#xrefX{site = S} = XRefX, VAr) ->
+%%     [Rels] = new_db_wu:read_relations(XRefX, read),
+%%     case Rels#relation.children of
+%%         [] ->
+%%             ok;
+%%         Children ->
+%%             Ch2 = [new_db_wu:idx_to_xrefX(S, X)
+%%                    || X <- Children],
+%%             ok = new_db_wu:mark_these_dirty(Ch2, VAr)
+%%     end.

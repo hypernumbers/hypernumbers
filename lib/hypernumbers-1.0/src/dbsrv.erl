@@ -240,10 +240,9 @@ execute_plan([C | T], Site, Graph) ->
         false ->
             execute_plan(T, Site, Graph);
         _ ->
-            NewChildren = new_db_api:handle_dirty_cell(Site, C, nil),
+            _NewChildren = new_db_api:handle_dirty_cell(Site, C, nil),
             digraph:del_vertex(Graph, C),
-            NewPlan = build_workplan(Site, NewChildren, Graph),
-            execute_plan(NewPlan, Site, Graph)
+            execute_plan(T, Site, Graph)
     end.
 
 %% Clears out process work from the dirty_queue table.
