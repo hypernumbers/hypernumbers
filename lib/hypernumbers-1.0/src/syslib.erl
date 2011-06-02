@@ -111,7 +111,7 @@ sort(List) ->
 log(String, File) ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
     _Return=filelib:ensure_dir(Dir ++ File),
-    Date = dh_date:format("d-M-y h:m:s"),
+    Date = dh_date:format("d-M-y h:i:s"),
 
     case file:open(Dir ++ File, [append]) of
 	{ok, Id} ->
@@ -124,9 +124,10 @@ log(String, File) ->
 limiter(Site) ->
     Srv = hn_util:site_to_atom(Site, "_dbsrv"),
     Pid = whereis(Srv),
+    DQ = hn_util:site_to_atom(Site, "dirty_queue"),
     {message_queue_len, Len} = process_info(Pid, message_queue_len),
     Locks = length(mnesia:system_info(held_locks)),
-    DirtyQueue = mnesia:table_info('dla-piper.hypernumbers.com&80&dirty_queue', size),
+    DirtyQueue = mnesia:table_info(DQ, size),
     if
         Len > 100
             orelse Locks > 100
