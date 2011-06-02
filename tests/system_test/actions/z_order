@@ -1,0 +1,22 @@
+%% -*- mode: erlang -*-
+
+-define(site, "http://hypernumbers.dev:9000").
+
+%% Targeted Sites
+sites() -> [?site].
+
+% don't do bugger all for recalc
+actions() ->
+    N = 10000,
+    ok = load_z(N),
+    ok.
+
+load_z(0) -> ok;
+load_z(N) ->
+    URL = ?site ++ "/prefix/" ++ integer_to_list(N) ++ "/",
+    Dir = code:lib_dir(hypernumbers)
+        ++ "/../../tests/system_test/fixtures/loading/",
+    io:format("Dir is ~p~n", [Dir]),
+    io:format("URL is ~p~n", [URL]),
+    ok = hn_import:json_file(URL, Dir ++ "z.json"),
+    load_z(N - 1).
