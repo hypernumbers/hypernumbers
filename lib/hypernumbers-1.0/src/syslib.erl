@@ -15,10 +15,35 @@
          top5/0,
          show_registered/1,
          log/2,
-         limiter/1
+         limiter/1,
+         sample_fprof/1,
+         sample_fprof/0
          ]).
 
 -define(qs, [dirty_queue, dirty_zinf, dirty_for_zinf]).
+
+sample_fprof() -> sample_fprof(10).
+
+sample_fprof(N) when is_integer(N) andalso N > 0 ->
+    Dir = "/media/logging/",
+    Now = dh_date:format("y_M_d_h_i_s"),
+    Log = Dir ++ "fprof_" ++ Now ++ ".log",
+    Analysis = Dir ++ "fprof_analysis" ++ Now ++ ".log",
+    sample_(Log, N),
+    Analysis = Dir ++ "fprof_analysis" ++ Now ++ ".log",
+    fprof:profile([{file, Log}]),
+    fprof:analyse([{dest, Analysis}]),
+    ok.
+
+sample_(_Log, 0) -> ok;
+sample_(Log, N) when is_integer(N) andalso N > 0 ->
+    io:format("Taking fprof sample no ~p~n", [N]),
+    fprof:trace([start, {file, Log}, {procs, all}]),
+    timer:sleep(50),
+    fprof:trace(stop),
+    Rand = crypto:rand_uniform(0, 10000),
+    timer:sleep(Rand),
+    sample_(Log, N - 1).
 
 dump_queues(Site) -> dump_queues(Site, ?qs).
 
@@ -124,13 +149,11 @@ log(String, File) ->
 limiter(Site) ->
     Srv = hn_util:site_to_atom(Site, "_dbsrv"),
     Pid = whereis(Srv),
-    DQ = hn_util:site_to_atom(Site, "dirty_queue"),
+    DQ = hn_util:site_to_atom(Site, "&dirty_queue"),
     {message_queue_len, Len} = process_info(Pid, message_queue_len),
-    Locks = length(mnesia:system_info(held_locks)),
     DirtyQueue = mnesia:table_info(DQ, size),
     if
         Len > 100
-            orelse Locks > 100
             orelse DirtyQueue > 1000  -> timer:sleep(100),
                                          limiter(Site);
         true -> ok
