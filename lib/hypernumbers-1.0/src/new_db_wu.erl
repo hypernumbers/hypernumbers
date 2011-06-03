@@ -84,7 +84,7 @@ get_logs(RefX = #refX{site = S, path = P}) when is_record(RefX, refX) ->
                 false -> make_blank(RefX, false);
                 _     -> mnesia:read(Table, XRefX#xrefX.idx, read)
             end,
-    Logs2 = mnesia:index_read(Table, hn_util:list_to_path(P), path),
+    Logs2 = mnesia:index_read(Table, hn_util:list_to_path(P), #logging.path),
     Logs3 = get_page_logs(Logs2),
     lists:merge(Logs1, Logs3).
 
@@ -309,7 +309,7 @@ refXs2(RefX) -> refX_to_xrefX_create(RefX).
 refX_to_xrefX(#refX{site = S, path = P, obj = O}) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    case mnesia:index_read(Table, term_to_binary(RevIdx), revidx) of
+    case mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx) of
         [I] -> #xrefX{idx = I#local_obj.idx, site = S, path = P, obj = O};
         _   -> false
     end.
@@ -767,7 +767,7 @@ get_incs([H | T], Js, Js_R, CSS) ->
 
 read_incs(#xrefX{site = S, path = P}) ->
     Table = trans(S, include),
-    mnesia:index_read(Table, P, path).
+    mnesia:index_read(Table, P, #include.path).
 
 split_local_remote(List) -> split_local_remote1(List, {[], []}).
 
@@ -979,7 +979,7 @@ extract_field([{XRefX, Attrs}|T], Field, Acc) ->
 read_objs(#refX{site = S, path = P, obj = {cell, _} = O}, inside) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    mnesia:index_read(Table, term_to_binary(RevIdx), revidx);
+    mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx);
 % if it a refX then we already know the idx so just return it
 read_objs(#xrefX{idx = I, path = P, obj = {cell, _} = O}, _Any) ->
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
@@ -989,12 +989,12 @@ read_objs(#xrefX{site = S, path = P, obj = {page, "/"}}, inside) ->
     read_objs(#refX{site = S, path = P, obj = {page, "/"}}, inside);
 read_objs(#refX{site = S, path = P, obj = {page, "/"}}, inside) ->
     Table = trans(S, local_obj),
-    mnesia:index_read(Table, term_to_binary(P), path);
+    mnesia:index_read(Table, term_to_binary(P), #local_obj.path);
 read_objs(#xrefX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
     read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside);
 read_objs(#refX{site = S, path = P, obj = {column, {X1, X2}}}, inside) ->
     Table = trans(S, local_obj),
-    Page = mnesia:index_read(Table, term_to_binary(P), path),
+    Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
     Fun = fun(#local_obj{obj = {cell, {MX, _MY}}}) ->
                   if
                       X1  =< MX, MX  =< X2 -> true;
@@ -1007,7 +1007,7 @@ read_objs(#xrefX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
     read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside);
 read_objs(#refX{site = S, path = P, obj = {row, {Y1, Y2}}}, inside) ->
     Table = trans(S, local_obj),
-    Page = mnesia:index_read(Table, term_to_binary(P), path),
+    Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
     Fun = fun(#local_obj{obj = {cell, {_MX, MY}}}) ->
                   if
                       Y1  =< MY, MY  =< Y2 -> true;
@@ -1021,7 +1021,7 @@ read_objs(#xrefX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) -
     read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside);
 read_objs(#refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}}, inside) ->
     Table = trans(S, local_obj),
-    Page = mnesia:index_read(Table, term_to_binary(P), path),
+    Page = mnesia:index_read(Table, term_to_binary(P), #local_obj.path),
     Fun = fun(#local_obj{obj = {cell, {MX, MY}}}) ->
                   if
                       X1  =< MX, MX  =< X2,
@@ -1036,7 +1036,7 @@ read_objs(#xrefX{site = S, path = P, obj = {page, "/"}}, intersect) ->
     read_objs(#refX{site = S, path = P, obj = {page, "/"}}, intersect);
 read_objs(#refX{site = S, path = P, obj = {page, "/"}}, intersect) ->
     Table = trans(S, local_obj),
-    mnesia:index_read(Table, term_to_binary(P), path);
+    mnesia:index_read(Table, term_to_binary(P), #local_obj.path);
 read_objs(#xrefX{site = S, path = P, obj = O}, intersect) ->
     read_objs(#refX{site = S, path = P, obj = O}, intersect);
 read_objs(#refX{site = Site} = Ref, intersect) ->
@@ -1047,7 +1047,7 @@ read_objs(#xrefX{site = S, path = P, obj = O}, direct) ->
 read_objs(#refX{site = S, path = P, obj = O}, direct) ->
     Table = trans(S, local_obj),
     RevIdx = hn_util:list_to_path(P) ++ hn_util:obj_to_ref(O),
-    mnesia:index_read(Table, term_to_binary(RevIdx), revidx).
+    mnesia:index_read(Table, term_to_binary(RevIdx), #local_obj.revidx).
 
 %% Note that this is most useful when given cells, or ranges.
 objs_intersect_ref(#refX{path = P, obj = {page, "/"}}) ->
