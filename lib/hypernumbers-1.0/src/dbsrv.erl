@@ -69,9 +69,9 @@ is_busy(Site) ->
 %% supervisor_bridge callbacks
 %%====================================================================
 %%--------------------------------------------------------------------
-%% Funcion: init(Args) -> {ok,  Pid, State} |
-%%                        ignore            |
-%%                        {error, Reason}
+%% Function: init(Args) -> {ok,  Pid, State} |
+%%                         ignore            |
+%%                         {error, Reason}
 %% Description:Creates a supervisor_bridge process, linked to the calling
 %% process, which calls Module:init/1 to start the subsystem. To ensure a
 %% synchronized start-up procedure, this function does not return until
@@ -79,7 +79,8 @@ is_busy(Site) ->
 %%--------------------------------------------------------------------
 init([Site]) ->
     QTbl = new_db_wu:trans(Site, dirty_queue),
-    Pid = spawn_opt(fun() -> dbsrv_init(Site, QTbl) end, [{fullsweep_after, 0}]),
+    Pid = spawn_opt(fun() -> dbsrv_init(Site, QTbl) end,
+                    [{fullsweep_after, 0}]),
     true = link(Pid),
     register(hn_util:site_to_atom(Site, "_dbsrv"), Pid),
     {ok, Pid, #state{table = QTbl, pid = Pid}}.
