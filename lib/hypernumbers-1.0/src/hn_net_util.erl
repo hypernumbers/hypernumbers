@@ -1,4 +1,4 @@
-%%% @copyright (C) 2010, Hypernumber, Ltd.
+%%% @copyright (C) 2010, Hypernumbers, Ltd.
 
 -module(hn_net_util).
 
