@@ -36,7 +36,7 @@ send1(invite_new, To, CC, Name, _Site, _URL, Args) ->
     EmailBody = "Dear "++Name++"\n\n"
         ++InvName++" has invited you to "
         ++"go to the following webpage:\n"++Hypertag++"\n\n"
-        ++"The link will validate your user account but you"
+        ++"The link will validate your user account but you "
         ++"will have to set a password as well.\n\n"
         ++InvName++" has also sent you the following message:\n"
         ++"----------------------------------------\n\n"
