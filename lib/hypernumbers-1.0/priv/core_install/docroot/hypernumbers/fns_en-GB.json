@@ -228,7 +228,7 @@
         "category": "Database",
         "desc": "Calculates the standard deviation for a field in a sample from a database.",
         "experimental": false,
-        "includable": true,
+       "includable": true,
         "inexcel": true,
         "resize": false,
         "wizardready": true,
@@ -348,12 +348,12 @@
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string representation of a date or a serial number",
                 "type": "finite"
             },
             {
                 "name": "Return Type",
-                "desc": "If Return Type = 1 Sunday is 1 and Saturday is 7, if Return Type = 2 Monday is 1 and Sunday is 7, if Return Type = 3, Monday = 0 and Sunday = 6",
+                "desc": "Determines which day if first day of the week",
                 "type": "optional"
             }
         ]
@@ -371,7 +371,7 @@
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string representation of a date or a serial number",
                 "type": "finite"
             }
         ]
@@ -389,7 +389,7 @@
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string representation of a date or a serial number",
                 "type": "finite"
             }
         ]
@@ -407,17 +407,17 @@
         "args": [
             {
                 "name": "year",
-                "desc": "number representing the year",
+                "desc": "Number representing the year",
                 "type": "finite"
             },
             {
                 "name": "month",
-                "desc": "number representing the month",
+                "desc": "Number representing the month",
                 "type": "finite"
             },
             {
                 "name": "day",
-                "desc": "number representing the day",
+                "desc": "Number representing the day",
                 "type": "finite"
             }
         ]
@@ -448,7 +448,7 @@
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string Representation of a date or a serial number",
                 "type": "finite"
             }
         ]
@@ -497,7 +497,7 @@
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string Representation of a date or a serial number",
                 "type": "finite"
             }
         ]
@@ -515,7 +515,7 @@
         "args": [
             {
                 "name": "Serial Number",
-                "desc": "a string representation of a date or a serial number",
+                "desc": "A string Representation of a date or a serial number",
                 "type": "finite"
             }
         ]
@@ -533,17 +533,17 @@
         "args": [
             {
                 "name": "Hour",
-                "desc": "an integer",
+                "desc": "An integer",
                 "type": "finite"
             },
             {
                 "name": "Minute",
-                "desc": "an integer",
+                "desc": "An integer",
                 "type": "finite"
             },
             {
                 "name": "Second",
-                "desc": "an integer",
+                "desc": "An integer",
                 "type": "finite"
             }
         ]
@@ -551,7 +551,7 @@
     {
         "fn": "datevalue"
         "category": "Date And Time",
-        "desc": "converts a string into a date"
+        "desc": "Converts a string into a date"
         "experimental": false,
         "includable": true,
         "inexcel": true,
@@ -561,7 +561,7 @@
         "args": [
             {
                 "name": "String",
-                "desc": "a text representation of a date and time",
+                "desc": "A text representation of a date and time",
                 "type": "finite"
             }
         ]
@@ -569,7 +569,7 @@
     {
         "fn": "timevalue"
         "category": "Date And Time",
-        "desc": "converts a string into a time in decimal seconds"
+        "desc": "Converts a string into a time in decimal seconds"
         "experimental": false,
         "includable": true,
         "inexcel": true,
@@ -579,7 +579,7 @@
         "args": [
             {
                 "name": "String",
-                "desc": "a text representation of a date and time",
+                "desc": "A text representation of a date and time.",
                 "type": "finite"
             }
         ]
@@ -587,7 +587,7 @@
     {
         "fn": "days360"
         "category": "Date And Time",
-        "desc": "calculates the difference between 2 days based on a 360 day year."
+        "desc": "Calculates the difference between 2 days based on a 360 day year."
         "experimental": false,
         "includable": true,
         "inexcel": true,
@@ -597,17 +597,17 @@
         "args": [
             {
                 "name": "First Date",
-                "desc": "a date",
+                "desc": "A date.",
                 "type": "finite"
             },
             {
                 "name": "Second Date",
-                "desc": "a date",
+                "desc": "A date.",
                 "type": "finite"
             }
             {
                 "name": "Type",
-                "desc": "0 or 1",
+                "desc": "0 or 1.",
                 "type": "optional"
             }
         ]
@@ -626,12 +626,12 @@
         "args": [
             {
                 "name": "Number",
-                "desc": "a number",
+                "desc": "A number.",
                 "type": "finite"
             },
             {
                 "name": "Stepnumber",
-                "desc": "the step number - 0 by default",
+                "desc": "The step number - 0 by default.",
                 "type": "optional"
             }
         ]
@@ -645,8 +645,28 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/excel-financial-fn-syd.html",
         "args": [
+            {
+                "name": "Original Cost",
+                "desc": "A number in currency units.",
+                "type": "finite"
+            },
+            {
+                "name": "Salvage Value",
+                "desc": "A number in currency units.",
+                "type": "finite"
+            },
+            {
+                "name": "Lifetime",
+                "desc": "An integer no of years.",
+                "type": "finite"
+            },
+            {
+                "name": "Year",
+                "desc": "The (integer) year for which the depreciation is calculated.",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -658,8 +678,33 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/excel-financial-fn-pv.html",
         "args": [
+            {
+                "name": "Rate",
+                "desc": "Defines the interest rate per period.",
+                "type": "finite"
+            },
+             {
+                "name": "No Of Periods",
+                "desc": "The total number of periods.",
+                "type": "finite"
+            },
+             {
+                "name": "Payment",
+                "desc": "The regular payment per period.",
+                "type": "finite"
+            },
+             {
+                "name": "Future Value",
+                "desc": "The future value after the last payment.",
+                "type": "optional"
+             },
+            {
+                "name": "Type",
+                "desc": "Due date for payments.",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -671,8 +716,43 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/excel-financial-fn-rate.html",
         "args": [
+            {
+                "name": "Rate",
+                "desc": "The fixed interest rate per period.",
+                "type": "finite"
+            },
+            {
+                "name": "Number Of Periods",
+                "desc": "The total number of periods.",
+                "type": "finite"
+            },
+            {
+                "name": "Payment",
+                "desc": "The payment each period.",
+                "type": "finite"
+            },
+            {
+                "name": "Present Value",
+                "desc": "The lump sum payment at the start of the term.",
+                "type": "finite"
+            },
+            {
+                "name": "Future Value",
+                "desc": "The expected final cash balance.",
+                "type": "optional"
+            },
+            {
+                "name": "Type",
+                "desc": "When in the period the payments are made.",
+                "type": "optional"
+            },
+            {
+                "name": "Guess",
+                "desc": "The initial guess of the interest rate.",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -684,8 +764,28 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/excel-financial-fn-nper.html",
         "args": [
+            {
+                "name": "Rate",
+                "desc": "The (fixed) interest rate per period.",
+                "type": "finite"
+            },
+            {
+                "name": "Payment",
+                "desc": "The payment per period.",
+                "type": "finite"
+            },
+            {
+                "name": "Future Value",
+                "desc": "The cash balance at the end.",
+                "type": "optional"
+            },
+            {
+                "name": "Type",
+                "desc": "When payments are made.",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -697,8 +797,33 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/excel-financial-fn-ddb.html",
         "args": [
+            {
+                "name": "Cost",
+                "desc": "The initial cost of an asset.",
+                "type": "finite"
+            },
+            {
+                "name": "Salvage",
+                "desc": "The value of the asset at life end.",
+                "type": "finite"
+            },
+            {
+                "name": "Life",
+                "desc": "No of periods (years, months) asset is used",
+                "type": "finite"
+            },
+            {
+                "name": "Period",
+                "desc": "The period for which the value is to be calculated",
+                "type": "finite"
+            },
+            {
+                "name": "Factor",
+                "desc": "Deprecaation factor",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -710,8 +835,23 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/excel-financial-fn-sln.html",
         "args": [
+            {
+                "name": "Original Cost",
+                "desc": "The initial cost of the asset.",
+                "type": "finite"
+            },
+            {
+                "name": "Salvage Value",
+                "desc": "The value of the asset after depreciation",
+                "type": "finite"
+            },
+            {
+                "name": "Lifetime",
+                "desc": "The number of periods over which the asset is being depreciated.",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -723,8 +863,33 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/excel-financial-fn-pmt.html",
         "args": [
+            {
+                "name": "Rate",
+                "desc": "The periodic interest rate.",
+                "type": "finite"
+            },
+            {
+                "name": "Number Of Periods",
+                "desc": "The number of periods for annuity payments",
+                "type": "finite"
+            },
+            {
+                "name": "Present Value",
+                "desc": "The present value (cash value) of the payment sequence.",
+                "type": "finite"
+            },
+            {
+                "name": "Future Value",
+                "desc": "The desired future value of the payments.",
+                "type": "optional"
+            },
+            {
+                "name": "Type",
+                "desc": "The due date for the periodic payments",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -736,8 +901,18 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/excel-financial-fn-npv.html",
         "args": [
+           {
+                "name": "Discount Rate",
+                "desc": "The discount rate expressed as a decimal point",
+                "type": "finite"
+            },
+            {
+                "name": "Payment",
+                "desc": "The payment in currency units",
+                "type": "infinite"
+            }
         ]
     },
     {
@@ -749,21 +924,56 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/excel-financial-fn-fv.html",
         "args": [
+            {
+                "name": "Rate",
+                "desc": "The interest rate per period",
+                "type": "finite"
+            },
+            {
+                "name": "Number Of Periods",
+                "desc": "The number of periods.",
+                "type": "finite"
+            },
+            {
+                "name": "Payment",
+                "desc": "The paymnet each period",
+                "type": "finite"
+            },
+            {
+                "name": "Present Value",
+                "desc": "The lump sum at the start of the term",
+                "type": "optional"
+            },
+            {
+                "name": "Type",
+                "desc": "When payments are made.",
+                "type": "optional"
+            }
         ]
     },
     {
         "fn": "irr",
         "category": "Financial",
-        "desc": "returns tyhe internal rate of return for a series of cash flows.",
+        "desc": "Returns tye internal rate of return for a series of cash flows.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/excel-financial-fn-irr.html",
         "args": [
+            {
+                "name": "Values",
+                "desc": "An array or range of values.",
+                "type": "finite"
+            },
+            {
+                "name": "Guess",
+                "desc": "A percentage.",
+                "type": "optional"
+            }
         ]
     },
     {
