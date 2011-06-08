@@ -150,7 +150,8 @@ datedif1(Start, End, "YD") ->
           lists:seq(muin_date:month(Start), muin_date:month(End))).
 
 datevalue([V1]) ->
-    muin_col_DEPR:collect_date(V1, [first_array, cast_strings, ban_bools, ban_blanks, ban_numbers]).
+    {datetime, Day, _Time} = muin_col_DEPR:collect_date(V1, [first_array, cast_strings, ban_bools, ban_blanks, ban_numbers]),
+    {datetime, Day, {0,0,0}}.
 
 days360([Date1, Date2]) ->
     days360([Date1, Date2, true]);

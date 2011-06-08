@@ -7,8 +7,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dget.html"
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -19,8 +35,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-daverage.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -31,8 +63,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": dsum,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dsum.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -43,8 +91,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dmin.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -55,8 +119,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dcounta.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -67,8 +147,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dvar.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -79,8 +175,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dproduct.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -91,8 +203,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dvarp.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -103,8 +231,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dstdevp.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -115,8 +259,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dstdev.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -127,8 +287,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dmax.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -139,8 +315,24 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dcount.html",
         "args": [
+            {
+                "name": "Database",
+                "desc": "A range of cells",
+                "type": "finite"
+            },
+            {
+                "name": "Database Field",
+                "desc": "The title of the column",
+                "type": "finite"
+            },
+            {
+                "name": "Search Criteria",
+                "desc": "A range of cells that contain the search criteria",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -152,6 +344,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-weekday.html",
         "args": [
             {
                 "name": "Serial Number",
@@ -174,6 +367,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-second.html",
         "args": [
             {
                 "name": "Serial Number",
@@ -191,6 +385,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-minute.html",
         "args": [
             {
                 "name": "Serial Number",
@@ -202,13 +397,29 @@
     {
         "fn": "date",
         "category": "Date And Time",
-        "desc": "Returns the internal software serial number of a date.&nbsp;",
+        "desc": "Returns a date specified by year, month and day",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-date.html",
         "args": [
+            {
+                "name": "year",
+                "desc": "number representing the year",
+                "type": "finite"
+            },
+            {
+                "name": "month",
+                "desc": "number representing the month",
+                "type": "finite"
+            },
+            {
+                "name": "day",
+                "desc": "number representing the day",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -219,7 +430,8 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-today.html",
         "args": [
         ]
     },
@@ -232,6 +444,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-month.html",
         "args": [
             {
                 "name": "Serial Number",
@@ -248,8 +461,14 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-day.html",
         "args": [
+            {
+                "name": "Date",
+                "desc": "String or number that represents a date",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -261,6 +480,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-now.html",
         "args": [
         ]
     },
@@ -273,6 +493,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-hour.html",
         "args": [
             {
                 "name": "Serial Number",
@@ -290,6 +511,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-year.html",
         "args": [
             {
                 "name": "Serial Number",
@@ -306,8 +528,112 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-time.html",
         "args": [
+            {
+                "name": "Hour",
+                "desc": "an integer",
+                "type": "finite"
+            },
+            {
+                "name": "Minute",
+                "desc": "an integer",
+                "type": "finite"
+            },
+            {
+                "name": "Second",
+                "desc": "an integer",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "datevalue"
+        "category": "Date And Time",
+        "desc": "converts a string into a date"
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-datevalue.html",
+        "args": [
+            {
+                "name": "String",
+                "desc": "a text representation of a date and time",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "timevalue"
+        "category": "Date And Time",
+        "desc": "converts a string into a time in decimal seconds"
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-timevalue.html",
+        "args": [
+            {
+                "name": "String",
+                "desc": "a text representation of a date and time",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "days360"
+        "category": "Date And Time",
+        "desc": "calculates the difference between 2 days based on a 360 day year."
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/date-and-time/excel-date-and-time-fn-days360.html",
+        "args": [
+            {
+                "name": "First Date",
+                "desc": "a date",
+                "type": "finite"
+            },
+            {
+                "name": "Second Date",
+                "desc": "a date",
+                "type": "finite"
+            }
+            {
+                "name": "Type",
+                "desc": "0 or 1",
+                "type": "optional"
+            }
+        ]
+
+    },
+    {
+        "fn": "gestep",
+        "category": "Engineering",
+        "desc": "Returns 1 if a number is greater than or equal to a step number, or 0 otherwise."
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/engineering/excel-engineering-fn-gestep.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "a number",
+                "type": "finite"
+            },
+            {
+                "name": "Stepnumber",
+                "desc": "the step number - 0 by default",
+                "type": "optional"
+            }
         ]
     },
     {
@@ -319,6 +645,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -331,6 +658,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -343,6 +671,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -355,6 +684,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -367,6 +697,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -379,6 +710,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -391,6 +723,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -403,6 +736,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -415,6 +749,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -427,6 +762,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -439,6 +775,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -451,6 +788,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -463,6 +801,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -475,6 +814,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -487,6 +827,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -499,6 +840,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -511,6 +853,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -523,6 +866,7 @@
         "inexcel": false,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -535,6 +879,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -547,6 +892,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -559,6 +905,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -571,6 +918,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -583,6 +931,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -595,6 +944,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -607,6 +957,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -619,6 +970,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -631,6 +983,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -643,6 +996,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -655,6 +1009,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Boolean",
@@ -672,6 +1027,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Boolean",
@@ -689,6 +1045,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -701,6 +1058,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Boolean",
@@ -718,6 +1076,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -730,6 +1089,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Boolean",
@@ -757,6 +1117,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -769,6 +1130,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -781,6 +1143,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -793,6 +1156,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -805,6 +1169,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -817,6 +1182,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -829,6 +1195,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -841,6 +1208,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Angle",
@@ -858,6 +1226,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -870,6 +1239,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -882,6 +1252,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Angle",
@@ -899,6 +1270,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -911,6 +1283,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Angle",
@@ -928,6 +1301,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -940,6 +1314,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Angle",
@@ -957,6 +1332,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Angle",
@@ -974,6 +1350,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -986,6 +1363,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -998,6 +1376,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1010,6 +1389,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Angle",
@@ -1027,6 +1407,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1039,6 +1420,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Angle",
@@ -1056,6 +1438,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1068,6 +1451,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1080,6 +1464,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1092,6 +1477,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Angle",
@@ -1109,6 +1495,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1121,6 +1508,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Angle",
@@ -1138,6 +1526,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1150,6 +1539,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1162,6 +1552,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1174,6 +1565,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1186,6 +1578,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Variable",
@@ -1203,6 +1596,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1215,6 +1609,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "Number",
@@ -1232,6 +1627,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1244,6 +1640,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1256,6 +1653,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1268,6 +1666,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1280,6 +1679,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1292,6 +1692,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1304,6 +1705,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1316,6 +1718,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1328,6 +1731,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1340,6 +1744,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1352,6 +1757,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1364,6 +1770,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1376,6 +1783,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1388,6 +1796,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1400,6 +1809,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1412,6 +1822,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1424,6 +1835,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1436,6 +1848,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1448,6 +1861,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1460,6 +1874,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1472,6 +1887,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1484,6 +1900,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1496,6 +1913,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1508,6 +1926,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1520,6 +1939,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
         ]
     },
@@ -1534,6 +1954,7 @@
         "resize_rows_default": 4,
         "resize_cols_default": 8,
         "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/",
         "args": [
             {
                 "name": "No. of Series",
