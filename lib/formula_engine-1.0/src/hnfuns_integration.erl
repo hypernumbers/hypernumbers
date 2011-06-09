@@ -145,7 +145,6 @@ gen_i(W, H, HTML, Js, JsRel, CSS) ->
         ++ "xfbml=1"],
     Reload = ["FB.init('" ++ Id3 ++ "', '/external/xd_receiver.htm');"],
     Incs = #incs{js = Js, js_reload = Reload},
-    io:format("Incs is ~p~n", [Incs]),
     {resize, {8, 10, Incs},  HTML}.
 
 'twitter.tweet'([Message]) ->
@@ -208,8 +207,7 @@ google_buy_n2(M, C, ItemName, ItemDesc, Price, Quantity, Bg) ->
     C = muin_col_DEPR:collect_string(Currency, ?default_str_rules),
     Bg1 = string:to_lower(muin_col_DEPR:collect_string(Bg, ?default_str_rules)),
     case lists:member(string:to_upper(C), ?VALID_ISO_CURRENCIES) of
-        false -> io:format("no currency~n"),
-                 ?ERRVAL_VAL;
+        false -> ?ERRVAL_VAL;
         true  -> case Bg1  of
                      "0"  -> google_buy_l2(M, C, Type, "white", Rest);
                      "1"  -> google_buy_l2(M, C, Type, "colored", Rest);
@@ -356,11 +354,12 @@ tw_b1(_, _, _) -> ?ERRVAL_VAL.
         ++ "shell: {background: '#333333', color: '#ffffff'},"
         ++ "tweets: {background: '#000000', color: '#ffffff', links: '#4aed05'}"
         ++ "},"
-        ++ "features: {scrollbar: false, loop: false, live: false, hashtags: true,"
+        ++ "features: {scrollbar: false, loop: false, "
+        ++ "live: false, hashtags: true,"
         ++ "timestamp: true, avatars: false, behavior: 'all'}"
         ++ "}).render().setUser('" ++ U ++ "').start();",
     HTML = "<div id='" ++ ID ++ "'></div>",
-    Incs = #incs{js = Js, js_reload = Js_reload},
+    Incs = #incs{js = [Js], js_reload = [Js_reload]},
     {preview, {"Twitter profile for " ++ U, 4, 14, Incs}, HTML}.
 
 'twitter.list'([]) ->
