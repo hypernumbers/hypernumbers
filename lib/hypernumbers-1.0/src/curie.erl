@@ -42,7 +42,7 @@ walk([{cellref, _OffsetX, _OffsetY, _Path, Cell} = H | T], Ref, Params, Acc, Sit
 		true	->
 			walk(T, Ref, Params, [H | Acc], Site, Path);
 		false	->
-			walk([walk_helper(H, Ref, Params, Site, Path) | T], Ref, Params, Acc, Site, Path)
+			walk([walk_helper(H, Ref, Params, Site, Path) | T], walk_new_ret_ref(H, Site), Params, Acc, Site, Path)
 	end;
 %TODO
 %	-translate range to list of cell names ("b1:b3" = ["b1","b2","b3"])
@@ -50,37 +50,56 @@ walk([{cellref, _OffsetX, _OffsetY, _Path, Cell} = H | T], Ref, Params, Acc, Sit
 %	 return true if list1 is a sublist of list2
 %	-then walk through the list of cells
 %	-!!!!!!remember to remove underscores from arguments
-walk([{rangeref, finite, _, {{offset, StartX}, {offset, StartY}}, {{offset, StopX}, {offset, StopY}}, _, _, RangeString} = H | _T], _Ref, _Params, _Acc, _Site, _Path)	->
+walk([{rangeref, finite, _, {{offset, StartX}, {offset, StartY}}, {{offset, StopX}, {offset, StopY}}, _, _, RangeString} = H | _T], Ref, _Params, _Acc, _Site, _Path)	->
 	io:format("Hello rangeref~n"),
 	%(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX)
+	
 	List = hn_util:range_to_list(#refX{obj = {range, {StartX, StartY, StopX, StopY}}}),
-	io:format("TODO:~nH is ~p~nRangeString is ~p~nList is ~p~n", [H, RangeString, List]);
+	io:format("TODO:~nH is ~p~nRangeString is ~p~nList is ~p~n", [H, RangeString, List]),
+	io:format("Ref is ~p~n", [Ref]);
 	
 walk([H | T], Ref, Params, Acc, Site, Path)	when is_list(H)	->
 	walk(T, Ref, Params, [walk(H, Ref, Params, [], Site, Path) | Acc], Site, Path);
 walk([H | T], Ref, Params, Acc, Site, Path) ->
 	walk(T, Ref, Params, [H | Acc], Site, Path).
 
+walk_new_ret_ref(NewReference, Site)	->
+	{cellref, _OffsetX, _OffsetY, Path, Cell} = NewReference,
+	%calculate new refX
+	
+	NewRetRef = #refX{site = Site, path = Path,
+                   obj = hn_util:parse_ref(Cell)}.
 
 %if in an AST there is a reference to a cell from outside of the input range this function is called,
 %it takes the cell's reference and retreives an AST which the cell holds
-walk_helper(NewReference, _Ref, Params, Site, Path)	->
-	{cellref, _OffsetX, _OffsetY, _Path, Cell} = NewReference,
-	%calculate new 
+walk_helper(NewReference, Ref, Params, Site, Path)	->
+	{cellref, {offset, OffsetX}, {offset, OffsetY}, _Path, Cell} = NewReference,
+	%calculate new refX
 	
 	NewRetRef = #refX{site = Site, path = Path,
                    obj = hn_util:parse_ref(Cell)},
-    io:format("NewRetRef is ~p~n", [NewRetRef]),
-	case contains(Params, Cell) of
+    case contains(Params, Cell) of
 		true	-> 
 			NewReference;
 		false	->
 			[{_, AST2}] = new_db_api:read_attribute(NewRetRef, "__ast"),
 			case check_off_page(AST2, Path) of
 				invalid -> {error, offpageref};
-				valid   -> AST2
+				valid   -> 
+					update_cellref_offset(AST2, OffsetX, OffsetY, [])
 			end
 	end.
+	
+
+update_cellref_offset([], _, _, Acc)	-> 
+	NewList = lists:reverse(Acc),
+	NewList;
+update_cellref_offset([H | T], X, Y, Acc) when is_list(H)	->
+	update_cellref_offset(T, X, Y, [ update_cellref_offset(H , X, Y, []) | Acc]);
+update_cellref_offset([{cellref, {offset, OldX}, {offset, OldY}, _A, _B} | T], X, Y, Acc)	->
+	update_cellref_offset(T, X, Y, [{cellref, {offset, OldX + X}, {offset, OldY + Y}, _A, _B} | Acc]);
+update_cellref_offset([H | T], X, Y , Acc)	-> 	update_cellref_offset(T, X, Y , [H | Acc]).
+
 
 check_off_page([], _Path) -> valid;
 check_off_page([{cellref, _, _, P, _} | T], Path) ->
