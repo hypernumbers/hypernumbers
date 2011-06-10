@@ -50,8 +50,10 @@ content(Ref, Type) ->
     Open = "<link rel='stylesheet' href='",
     {_, CSSList2} = lists:unzip(CSSList),
     {_, JSList2}  = lists:unzip(JSList),
-    CSS3 = [Open ++ X ++ "'type='text/css' />" || X <- lists:merge(CSSList2, CSS2)],
-    JS3 = ["<script src='" ++ X ++ "'></script>" || X <- lists:merge(JSList2, Js2)],
+    CSS3 = [Open ++ X ++ "'type='text/css' />"
+            || X <- lists:merge(CSSList2, CSS2)],
+    JS3 = ["<script src='" ++ X ++ "'></script>"
+           || X <- lists:merge(JSList2, Js2)],
     Js_r2 = "<script type='text/javascript'>HN.Includes = {}; "
         ++ "HN.Includes.reload = function () { "
         ++ lists:flatten(Js_reload) ++ "};</script>",
@@ -61,7 +63,8 @@ content(Ref, Type) ->
 
 read_data_without_page(Ref) ->
     XRefs = new_db_api:read_intersect_ref(Ref),
-    [ {XRefX, Val} || {XRefX, Val} <- XRefs, element(1, XRefX#xrefX.obj) =/= page ].
+    [ {XRefX, Val} || {XRefX, Val} <- XRefs,
+                      element(1, XRefX#xrefX.obj) =/= page ].
 
 -spec layout(#xrefX{}, atom(), cells(), cols(), rows(), gb_tree())
             -> {[textdata()], integer(), integer()}.
