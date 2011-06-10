@@ -15,12 +15,24 @@
          top5/0,
          show_registered/1,
          log/2,
+         log_term/2,
+         clear_log/1,
          limiter/1,
          sample_fprof/1,
-         sample_fprof/0
+         sample_fprof/0,
+         consult_term_log/1
          ]).
 
 -define(qs, [dirty_queue, dirty_zinf, dirty_for_zinf]).
+
+clear_log(Log) ->
+    Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
+    ok = file:delete(Dir ++ Log).
+
+consult_term_log(Log) ->
+    Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
+    {ok, Terms} = file:consult(Dir ++ Log),
+    Terms.
 
 sample_fprof() -> sample_fprof(10).
 
@@ -109,7 +121,8 @@ show_r([H | T], Site, Type) ->
 
 process_dump() ->
     Procs = processes(),
-    Info = [{X, process_info(X, [heap_size, message_queue_len, current_function])}
+    Info = [{X, process_info(X, [heap_size, message_queue_len,
+                                 current_function])}
             || X <- Procs],
     io:format("Info is ~p~n", [Info]),
     ok.
@@ -133,17 +146,28 @@ sort(List) ->
     {Red5, _}  = lists:split(5, lists:reverse(lists:keysort(5, List))),
     [{longest, Len5}, {heapiest, Heap5}, {most_reductions, Red5}].
 
+log_term(Term, File) ->
+    Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
+    _Return=filelib:ensure_dir(Dir ++ File),
+    case file:open(Dir ++ File, [append]) of
+        {ok, Id} ->
+            io:fwrite(Id, "~w.~n", [Term]),
+            file:close(Id);
+        _ ->
+            error
+    end.
+
 log(String, File) ->
     Dir = code:lib_dir(hypernumbers) ++ "/../../var/logs/",
     _Return=filelib:ensure_dir(Dir ++ File),
     Date = dh_date:format("d-M-y h:i:s"),
 
     case file:open(Dir ++ File, [append]) of
-	{ok, Id} ->
-	    io:fwrite(Id, "~s~n", [Date ++ "," ++ String]),
-	    file:close(Id);
-	_ ->
-	    error
+        {ok, Id} ->
+            io:fwrite(Id, "~s~n", [Date ++ "," ++ String]),
+            file:close(Id);
+        _ ->
+            error
     end.
 
 limiter(Site) ->

@@ -38,6 +38,7 @@
                   json_recs,
                   json_util,
                   mochilog,
+                  mnesia_mon,
                   ms_util,
                   ms_util2,
                   new_db_api,

@@ -1,6 +1,6 @@
 %%% @author    Gordon Guthrie <
 %%% @copyright (C) 2011, Hypernumbers Ltd
-%%% @doc       new db api (old hn_db_api poured in ang rewritten)
+%%% @doc       new db api (old hn_db_api poured in and rewritten)
 %%%
 %%% @end
 %%% Created :  5 Apr 2011 by gordon@hypernumbers
@@ -910,10 +910,11 @@ del_a1([H | T], L, Acc)             ->
 %%      not be used for any other purpose
 %% takes a  #refX{} and not an xrefX{} because it is spat out of the compiler
 %% and I don't know what the idx is, or if it exists yet
-get_cell_for_muin(#refX{site = S, path = P, obj = {cell, {XX, YY}}} = RefX, Type) ->
+get_cell_for_muin(#refX{site = S, path = P, obj = {cell, {XX, YY}}} = RefX,
+                  Type) ->
     Attrs = case refX_to_xrefX(RefX) of
                 false -> orddict:new();
-                XRefX -> case read_ref(XRefX, inside) of
+                XRefX -> case read_ref(XRefX, inside, write) of
                              [{XRefX, A}] -> A;
                              []           -> orddict:new()
                          end
@@ -1157,13 +1158,13 @@ expunge_refs(S, Refs) ->
     ObjT = trans(S, local_obj),
     [begin
          mnesia:delete(ItemT, Idx, write),
-         mnesia:delete_object(ObjT, LO, write),
+         mnesia:delete(ObjT, Idx, write),
          case O of
              {cell, _} -> unattach_form(Ref);
              _         -> ok
          end
      end || Ref <- Refs,
-            #local_obj{idx = Idx, obj = O} = LO <- read_objs(Ref, direct)],
+            #local_obj{idx = Idx, obj = O} <- read_objs(Ref, direct)],
     ok.
 
 -spec mark_dirty_for_incl([#xrefX{}], auth_srv:auth_spec()) -> ok.
@@ -1234,9 +1235,9 @@ shift_cells(#refX{site = Site, obj =  Obj} = From, Type, Disp, Rewritten, Uid)
             % Rewrite the local_obj entries by applying the shift offset.
             ObjTable = trans(Site, local_obj),
             [begin
-                 mnesia:delete_object(ObjTable, LO, write),
+                 mnesia:delete(ObjTable, Idx, write),
                  mnesia:write(ObjTable, shift_obj(LO, XOff, YOff), write)
-             end || LO <- ObjsList],
+             end || #local_obj{idx = Idx} = LO <- ObjsList],
             DirtyChildren
     end.
 

@@ -83,55 +83,68 @@ wait_for_dirty(Site) ->
      end.
 
 mark_idx_dirty(Site, Idx) ->
+    Report1 = mnesia_mon:get_stamp("mark_idx_dirty (1)"),
     Fun1 = fun() ->
+                  mnesia_mon:report(Report1),
                   new_db_wu:idx_to_xrefX(Site, Idx)
            end,
-    XRefX = mnesia:activity(transaction, Fun1),
+    XRefX = mnesia_mon:log_act(transaction, Fun1, Report1),
+    Report2 = mnesia_mon:get_stamp("mark_idx_dirty (2)"),
     Fun2 = fun() ->
+                  mnesia_mon:report(Report1),
                   ok = new_db_wu:mark_these_dirty([XRefX], nil)
           end,
     RefX = hn_util:xrefX_to_refX(XRefX),
-    write_activity(RefX, Fun2, "quiet").
+    write_activity(RefX, Fun2, "quiet", Report2).
 
 read_timers(Site) ->
+    Report = mnesia_mon:get_stamp("read_timers"),
     Tbl = new_db_wu:trans(Site, timer),
     Fun = fun() ->
                   Spec = #timer{_ ='_'},
                   mnesia:match_object(Tbl, Spec, read)
           end,
-    mnesia:activity(transaction, Fun).
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 read_includes(#refX{obj = {page, "/"}} = RefX) ->
+    Report = mnesia_mon:get_stamp("read_includes"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   XRefX = new_db_wu:refX_to_xrefX_create(RefX),
                   unpack_incs(new_db_wu:read_incs(XRefX))
            end,
-    mnesia:activity(transaction, Fun).
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 -spec handle_circref_cell(string(), cellidx(), auth_srv:auth_spec()) -> ok.
 handle_circref_cell(Site, Idx, Ar) ->
+    Report = mnesia_mon:get_stamp("handle_circref_cell"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   Cell = new_db_wu:idx_to_xrefX(Site, Idx),
                   _Dict = new_db_wu:write_attrs(Cell,
                                                 [{"formula", "=#CIRCREF!"}],
                                                 Ar),
                   ok
           end,
-    mnesia:activity(transaction, Fun).
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 get_logs(RefX) when is_record(RefX, refX) ->
+    Report = mnesia_mon:get_stamp("get_logs"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   new_db_wu:get_logs(RefX)
           end,
-    mnesia:activity(transaction, Fun).
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 %% Loads new dirty information into the recalc graph.
 -spec load_dirty_since(term(), atom()) -> {term(), [cellidx()]}.
 load_dirty_since(Since, QTbl) ->
+    Report = mnesia_mon:get_stamp("load_dirty_since"),
     F = fun() ->
+                mnesia_mon:report(Report),
                 new_db_wu:load_dirty_since(Since, QTbl)
         end,
-    case mnesia:activity(transaction, F) of
+    case mnesia_mon:log_act(transaction, F, Report) of
         [] -> {Since, []};
         Ret ->
             {SinceL, DirtyLL} = lists:unzip(Ret),
@@ -144,37 +157,42 @@ load_dirty_since(Since, QTbl) ->
 %% designed to be used for zinf_srv initing in case of
 %% a hard failure AND NOT FOR ANY OTHER REASON
 reset_dirty_zinfs(Site) ->
+    Report = mnesia_mon:get_stamp("reset_dirty_zinfs"),
     Tbl = new_db_wu:trans(Site, dirty_zinf),
     Fun  = fun() ->
+                   mnesia_mon:report(Report),
                    Spec = #dirty_zinf{_='_', processed = true},
                    L = mnesia:match_object(Tbl, Spec, write),
                    [ok = mnesia:write(Tbl, X#dirty_zinf{processed = false},
                                       write) || X  <- L],
                    ok
            end,
-    mnesia:activity(transaction, Fun).
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 %% this function decides to maybe write the zinf tree
 %% depending on the log queue
 maybe_write_zinftree(Site, Tree, MaxSize) ->
+    Report = mnesia_mon:get_stamp("maybe_write_zinftree"),
     Tbl = new_db_wu:trans(Site, dirty_zinf),
     Size = mnesia:table_info(Tbl, size),
     if
         Size > MaxSize ->
             Fun  = fun() ->
+                           mnesia_mon:report(Report),
                            ok = new_db_wu:write_kv(Site, ?zinf_tree, Tree),
                            Spec = #dirty_zinf{_='_', processed = true},
                            L = mnesia:match_object(Tbl, Spec, write),
                            [ok = mnesia:delete(Tbl, Id, write)
                             || #dirty_zinf{id = Id} <- L]
                    end,
-            mnesia:activity(transaction, Fun),
+            mnesia_mon:log_act(transaction, Fun, Report),
             ok;
         Size =< MaxSize ->
             ok
     end.
 
 process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
+    Report = mnesia_mon:get_stamp("process_dirty_zinfs"),
     Tbl = new_db_wu:trans(Site, dirty_zinf),
     Fun1 = fun(DirtyZinf, Tr) ->
                    #dirty_zinf{dirtycellidx = CI, old = OldP,
@@ -189,6 +207,7 @@ process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
                    NewTree2
            end,
     Fun2 = fun() ->
+                   mnesia_mon:report(Report),
                    Spec = #dirty_zinf{_='_', processed = false},
                    L = mnesia:match_object(Tbl, Spec, write),
                    % need to apply the dirty zinfs in the order
@@ -199,11 +218,13 @@ process_dirty_zinfs(Site, Tree, AddFun, DelFun) ->
                                       write) || X  <- L],
                    NewTree
            end,
-    mnesia:activity(transaction, Fun2).
+    mnesia_mon:log_act(transaction, Fun2, Report).
 
 process_dirties_for_zinf(Site, Tree, CheckFun) ->
+    Report = mnesia_mon:get_stamp("process_dirties_for_zinf"),
     Tbl = new_db_wu:trans(Site, dirty_for_zinf),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   L = mnesia:match_object(Tbl, #dirty_for_zinf{_='_'}, write),
                   L2 = hslists:uniq(L),
                   Dirties = [CheckFun(Tree, D)
@@ -214,23 +235,26 @@ process_dirties_for_zinf(Site, Tree, CheckFun) ->
                   [ok = mnesia:delete(Tbl, Id, write)
                    || #dirty_for_zinf{id = Id} <- L]
           end,
-    mnesia:activity(transaction, Fun),
+    mnesia_mon:log_act(transaction, Fun, Report),
     ok.
 
 write_kv(Site, Key, Value) ->
+    Report = mnesia_mon:get_stamp("write_kv"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   new_db_wu:write_kv(Site, Key, Value)
           end,
-    mnesia:activity(transaction, Fun).
+    mnesia_mon:log_act(transaction, Fun, Report).
 
 read_kv(Site, Key) ->
+    Report = mnesia_mon:get_stamp("read_kv"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   new_db_wu:read_kv(Site, Key)
           end,
-    mnesia:activity(transaction, Fun).
+    mnesia_mon:log_act(transaction, Fun, Report).
 
-read_pages(RefX) when is_record(RefX, refX) ->
-    read_activity(RefX, fun() -> page_srv:get_pages(RefX#refX.site) end).
+read_pages(RefX) when is_record(RefX, refX) -> page_srv:get_pages(RefX#refX.site).
 
 %% @doc reads pages
 %% @todo fix up api
@@ -240,20 +264,27 @@ read_page_structure(#refX{site = Site}) ->
 
 -spec read_intersect_ref(#refX{}) -> [{#refX{}, [{string(), term()}]}].
 read_intersect_ref(RefX) ->
+    Report = mnesia_mon:get_stamp("read_intersect_ref"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   new_db_wu:read_ref(RefX, intersect)
           end,
-    read_activity(RefX, Fun).
+    read_activity(RefX, Fun, Report).
 
 read_styles_IMPORT(RefX) when is_record(RefX, refX) ->
-    Fun = fun() -> new_db_wu:read_styles_IMPORT(RefX) end,
-    read_activity(RefX, Fun).
-
-handle_form_post(#refX{site = S, path = P, obj = {row, {1, 1}}} = RefX, Array,
-                 PosterUid) ->
-
+    Report = mnesia_mon:get_stamp("read_styles_IMPORT"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:read_styles_IMPORT(RefX)
+          end,
+    read_activity(RefX, Fun, Report).
 
+handle_form_post(#refX{site = S, path = P,
+                       obj = {row, {1, 1}}} = RefX,
+                 Array, PosterUid) ->
+    Report = mnesia_mon:get_stamp("handle_form_post"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
                   ok = init_front_end_notify(),
                   ok = page_srv:page_written(S, P),
                   % Labels from the results page
@@ -289,15 +320,17 @@ handle_form_post(#refX{site = S, path = P, obj = {row, {1, 1}}} = RefX, Array,
                                   <- NVals, S == S1, P == P1]
           end,
 
-    write_activity(RefX, Fun, "write last").
+    write_activity(RefX, Fun, "write last", Report).
 
 append_row([], _PAr, _VAr) -> ok;
 append_row(List, PAr, VAr) when is_list(List) ->
 
+    Report = mnesia_mon:get_stamp("append_row"),
     % all the refX's in the list must have the same site/path/object type
     {RefX=#refX{site = S, path = P},_} = hd(List),
     Trans =
         fun() ->
+                mnesia_mon:report(Report),
                 ok = init_front_end_notify(),
                 ok = page_srv:page_written(S, P),
                 Row = new_db_wu:get_last_row(RefX) + 1,
@@ -310,17 +343,21 @@ append_row(List, PAr, VAr) when is_list(List) ->
                                                           PAr),
                             ok = new_db_wu:mark_these_dirty([XRefX2], VAr)
                     end,
-                [F(X, V) || {#refX{site = S1, path = P1, obj = {column, {X, X}}}, V}
+                [F(X, V) || {#refX{site = S1, path = P1,
+                                   obj = {column, {X, X}}}, V}
                                 <- List, S == S1, P == P1]
         end,
 
-    write_activity(RefX, Trans, "write last").
+    write_activity(RefX, Trans, "write last", Report).
 
 -spec matching_forms(#refX{}, common | string()) -> [#form{}].
 matching_forms(RefX, Transaction) ->
-    read_activity(RefX, fun() ->
-                                new_db_wu:matching_forms(RefX, Transaction)
-                        end).
+    Report = mnesia_mon:get_stamp("matching_forms"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:matching_forms(RefX, Transaction)
+          end,
+    read_activity(RefX, Fun, Report).
 
 -spec set_borders(#refX{}, any(), any(), any(), any()) -> ok.
 %% @doc  takes a range or cell reference and sets the borders
@@ -346,7 +383,8 @@ matching_forms(RefX, Transaction) ->
 
 %% for a cell just switch it to a range
 set_borders(#refX{obj = {cell, {X, Y}}} = RefX, Type, Border, Style, Color) ->
-    set_borders(RefX#refX{obj = {range, {X, Y, X, Y}}}, Type, Border, Style, Color);
+    set_borders(RefX#refX{obj = {range, {X, Y, X, Y}}},
+                Type, Border, Style, Color);
 %% now proper set borders
 set_borders(#refX{obj = {range, _}} = RefX, "none",_Border,
             _Border_Style, _Border_Color) ->
@@ -419,8 +457,11 @@ set_borders(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX,
     NewRefX2 = RefX#refX{obj = {range, {X1 + 1, Y1, X2, Y2}}},
     ok = set_borders2(NewRefX2, "left", Border, B_Style, B_Color).
 
-set_borders2(#refX{site = S, path = P} = RefX, Where, Border, B_Style, B_Color) ->
+set_borders2(#refX{site = S, path = P} = RefX, Where, Border,
+             B_Style, B_Color) ->
+    Report = mnesia_mon:get_stamp("set_border2"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   ok = init_front_end_notify(),
                   ok = page_srv:page_written(S, P),
                   B   = "border-" ++ Where ++ "-width",
@@ -430,32 +471,38 @@ set_borders2(#refX{site = S, path = P} = RefX, Where, Border, B_Style, B_Color) 
                   _ = new_db_wu:write_attrs(RefX, [{B_S, B_Style}]),
                   _ = new_db_wu:write_attrs(RefX, [{B_C, B_Color}])
           end,
-    write_activity(RefX, Fun, "set_borders2").
+    write_activity(RefX, Fun, "set_borders2", Report).
 
 -spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
 read_attribute(RefX, Field) when is_record(RefX, refX) ->
+    Report = mnesia_mon:get_stamp("read_attribute"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   XRefX = new_db_wu:refX_to_xrefX_create(RefX),
                   new_db_wu:read_ref_field(XRefX, Field, read)
           end,
-    read_activity(RefX, Fun).
+    read_activity(RefX, Fun, Report).
 
 recalc_page(#refX{obj = {page, "/"}} = RefX) ->
+    Report = mnesia_mon:get_stamp("recalc_page"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   XRefX = new_db_wu:refX_to_xrefX_create(RefX),
                   Refs = new_db_wu:read_ref(XRefX, inside),
                   Refs2 = [X || {X, L} <- Refs, L =/= []],
                   ok = new_db_wu:mark_these_dirty(Refs2, nil)
           end,
-    write_activity(RefX, Fun, "refresh").
+    write_activity(RefX, Fun, "refresh", Report).
 
 clear(RefX, Type, Ar) when is_record(RefX, refX) ->
+    Report = mnesia_mon:get_stamp("clear"),
     Fun =
         fun() ->
+                mnesia_mon:report(Report),
                 ok = init_front_end_notify(),
                 ok = new_db_wu:clear_cells(RefX, Type, Ar)
         end,
-    write_activity(RefX, Fun, "clear").
+    write_activity(RefX, Fun, "clear", Report).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
@@ -517,12 +564,14 @@ clear(RefX, Type, Ar) when is_record(RefX, refX) ->
 -spec copy_n_paste(#refX{}, #refX{}, all | style | value, auth_srv:auth_spec()) -> ok.
 copy_n_paste(From, #refX{site = ToS, path = ToP} = To, What, Ar) when
       is_record(From, refX), is_record(To, refX) ->
+    Report = mnesia_mon:get_stamp("copy'n'paste"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   ok = init_front_end_notify(),
                   ok = page_srv:page_written(ToS, ToP),
                   ok = copy_n_paste2(From, To, What, Ar)
           end,
-    write_activity(From, Fun, "copy n paste").
+    write_activity(From, Fun, "copy n paste", Report).
 
 %% @doc takes the formula and formats from a cell and drag_n_drops
 %% them over a destination (the difference between drag'n'drop
@@ -590,7 +639,9 @@ copy_n_paste(From, #refX{site = ToS, path = ToP} = To, What, Ar) when
 %% <b>to</b> range</li></ul>
 drag_n_drop(From, #refX{site = ToS, path = ToP} = To, Ar)
   when is_record(From, refX) ->
+    Report = mnesia_mon:get_stamp("drag'n'drop"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   ok = init_front_end_notify(),
                   ok = page_srv:page_written(ToS, ToP),
                   case is_valid_d_n_d(From, To) of
@@ -601,23 +652,23 @@ drag_n_drop(From, #refX{site = ToS, path = ToP} = To, Ar)
                           copy2(From, To, Incr, all, Ar)
                   end
           end,
-    ok = write_activity(From, Fun, "drag n drop").
+    ok = write_activity(From, Fun, "drag n drop", Report).
 
 %% @todo This needs to check if it intercepts a shared formula
 %% and if it does it should fail...
 insert(#refX{obj = {column, _}} = RefX, Ar) ->
-    move(RefX, insert, horizontal, Ar);
+    move(RefX, insert, horizontal, Ar, "insert_col");
 insert(#refX{obj = {row, _}} = RefX, Ar) ->
-    move(RefX, insert, vertical, Ar);
+    move(RefX, insert, vertical, Ar, "insert_row");
 insert(#refX{obj = R} = RefX, Ar)
   when R == cell orelse R == range ->
-    move(RefX, insert, vertical, Ar).
+    move(RefX, insert, vertical, Ar, "insert cell/range").
 
 %% The Type variable determines how the insert displaces the existing cases...
 insert(#refX{obj = {R, _}} = RefX, Disp, Ar)
   when is_record(RefX, refX), (R == cell orelse R == range),
        (Disp == horizontal orelse Disp == vertical)->
-    move(RefX, insert, Disp, Ar).
+    move(RefX, insert, Disp, Ar, "insert cell/range").
 
 %% @doc deletes a column or a row or a page
 %%
@@ -627,22 +678,24 @@ insert(#refX{obj = {R, _}} = RefX, Disp, Ar)
 %% and if it does it should fail...
 -spec delete(#refX{}, auth_srv:auth_spec()) -> ok.
 delete(#refX{obj = {R, _}} = RefX, Ar) when R == cell orelse R == range ->
-    move(RefX, delete, vertical, Ar);
+    move(RefX, delete, vertical, Ar, "delete cell/range");
 delete(#refX{obj = {R, _}} = RefX, Ar) when R == column orelse R == row ->
     Disp = case R of
                row    -> vertical;
                column -> horizontal
            end,
-    move(RefX, delete, Disp, Ar);
+    move(RefX, delete, Disp, Ar, "delete row/col");
 delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
     ok = page_srv:page_deleted(S, P),
+    Report = mnesia_mon:get_stamp("delete page"),
     Fun1 = fun() ->
+                   mnesia_mon:report(Report),
                    ok = init_front_end_notify(),
                    % by default cells have a direction of deletion and it is horiz
                    Dirty = new_db_wu:delete_cells(RefX, horizontal, Ar),
                    ok = new_db_wu:mark_these_dirty(Dirty, Ar)
            end,
-    write_activity(RefX, Fun1, "refresh").
+    write_activity(RefX, Fun1, "refresh", Report).
 
 %% @doc deletes a reference.
 %%
@@ -660,13 +713,15 @@ delete(#refX{site = S, path = P, obj = {page, _}} = RefX, Ar) ->
 %% cells bottom-to-top to close the gap
 delete(#refX{obj = {R, _}} = RefX, Disp, Ar)
   when R == cell orelse R == range orelse R == row orelse R == column ->
-    move(RefX, delete, Disp, Ar).
+    move(RefX, delete, Disp, Ar, "delete").
 
 -spec handle_dirty_cell(string(), cellidx(), auth_srv:auth_spec()) -> list().
 handle_dirty_cell(Site, Idx, Ar) ->
+    Report = mnesia_mon:get_stamp("handle_dirty_cell"),
     ok = init_front_end_notify(),
     Fun =
         fun() ->
+                mnesia_mon:report(Report),
                 Cell = new_db_wu:idx_to_xrefX(Site, Idx),
                 Attrs = case new_db_wu:read_ref(Cell, inside, write) of
                             [{_, A}] -> A;
@@ -685,7 +740,7 @@ handle_dirty_cell(Site, Idx, Ar) ->
                         []
                 end
         end,
-    NewDirties = mnesia:activity(transaction, Fun),
+    NewDirties = mnesia_mon:log_act(transaction, Fun, Report),
     tell_front_end("handle dirty", #refX{}),
     NewDirties.
 
@@ -712,8 +767,11 @@ write_attributes(List, Uid) ->
 
 write_attributes([], _PAr, _VAr) -> ok;
 write_attributes(List, PAr, VAr) ->
-    [ok = page_srv:page_written(S, P) || {#refX{site = S, path = P}, _} <- List],
+    [ok = page_srv:page_written(S, P) ||
+        {#refX{site = S, path = P}, _} <- List],
+    Report = mnesia_mon:get_stamp("write_attributes"),
     Fun = fun() ->
+                  mnesia_mon:report(Report),
                   ok = init_front_end_notify(),
                   List2 = expand(List),
                   [ok = write_attributes1(XR, A2, PAr, VAr)
@@ -722,7 +780,7 @@ write_attributes(List, PAr, VAr) ->
           end,
     % assumes all refX's are for the same site and page, hmmm...
     {Ref, _} = hd(List),
-    write_activity(Ref, Fun, "quiet").
+    write_activity(Ref, Fun, "quiet", Report).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
@@ -768,15 +826,15 @@ init_front_end_notify() ->
     _Return = put('front_end_notify', []),
     ok.
 
--spec read_activity(#refX{}, fun()) -> any().
-read_activity(#refX{site=Site}, Op) ->
-    Activity = fun() -> mnesia:activity(transaction, Op) end,
+-spec read_activity(#refX{}, fun(), list()) -> any().
+read_activity(#refX{site=Site}, Op, Report) ->
+    Activity = fun() -> mnesia_mon:log_act(transaction, Op, Report) end,
     dbsrv:read_only_activity(Site, Activity).
 
--spec write_activity(#refX{}, fun(), string() | quiet) -> ok.
-write_activity(#refX{site = Site} = RefX, Op, FrontEnd) ->
+-spec write_activity(#refX{}, fun(), string() | quiet, list()) -> ok.
+write_activity(#refX{site = Site} = RefX, Op, FrontEnd, Report) ->
     Activity = fun() ->
-                       Ret = mnesia:activity(transaction, Op),
+                       Ret = mnesia_mon:log_act(transaction, Op, Report),
                        tell_front_end(FrontEnd, RefX),
                        Ret
                end,
@@ -818,13 +876,15 @@ tell_front_end(_FnName, _RefX) ->
     [ok = Fun(X) || X <- List],
     ok.
 
-move(RefX, Type, Disp, Ar)
+move(RefX, Type, Disp, Ar, Report)
   when (Type == insert orelse Type == delete)
        andalso (Disp == vertical orelse Disp == horizontal) ->
+    Report2 = mnesia_mon:get_stamp(Report),
     Fun = fun() ->
+                  mnesia_mon:report(Report2),
                   move_tr(RefX, Type, Disp, Ar)
           end,
-    write_activity(RefX, Fun, "move").
+    write_activity(RefX, Fun, "move", Report2).
 
 move_tr(RefX, Type, Disp, Ar) ->
     ok = init_front_end_notify(),
@@ -1257,3 +1317,4 @@ unpack_1([H | T], Js, Js_r, CSS) ->
 %%                    || X <- Children],
 %%             ok = new_db_wu:mark_these_dirty(Ch2, VAr)
 %%     end.
+

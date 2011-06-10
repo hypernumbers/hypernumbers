@@ -169,14 +169,16 @@ check_messages(Site, Since, QTbl, WorkPlan, Graph) ->
 -spec build_workplan(string(), [cellidx()], digraph()) -> [cellidx()].
 build_workplan(Site, Dirty, Graph) ->
     RTbl = new_db_wu:trans(Site, relation),
+    Report = mnesia_mon:get_stamp("build_workplan"),
     Trans = fun() ->
+                    mnesia_mon:report(Report),
                     update_recalc_graph(Dirty, RTbl, Graph),
                     [digraph:add_edge(Graph, P, D)
                      || D <- Dirty,
                         P <- check_interference(D, RTbl, Graph)],
                     ok
             end,
-    ok = mnesia:activity(transaction, Trans),
+    ok = mnesia_mon:log_act(transaction, Trans, Report),
     case digraph_utils:topsort(Graph) of
         false -> eliminate_circ_ref(Site, Dirty, Graph);
         Work -> Work
@@ -249,13 +251,15 @@ execute_plan([C | T], Site, Graph) ->
 %% Clears out process work from the dirty_queue table.
 -spec clear_dirty_queue(term(), atom()) -> ok.
 clear_dirty_queue(Since, QTbl) ->
+    Report = mnesia_mon:get_stamp("clear_dirty_queue"),
     M = ets:fun2ms(fun(#dirty_queue{id = T}) when T =< Since -> T end),
     F = fun() ->
+                mnesia_mon:report(Report),
                 Keys = mnesia:select(QTbl, M, write),
                 [mnesia:delete(QTbl, K, write) || K <- Keys],
                 ok
         end,
-    mnesia:activity(transaction, F).
+    mnesia_mon:log_act(transaction, F, Report).
 
 -spec new_graph() -> digraph().
 new_graph() -> digraph:new([private]).
