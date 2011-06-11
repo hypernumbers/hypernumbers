@@ -8,7 +8,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dget.html"
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/excel-database-fn-dget.html",
         "args": [
             {
                 "name": "Database",
@@ -1188,24 +1188,6 @@
         ]
      },
     {
-        "fn": "not",
-        "category": "Logical",
-        "desc": "Changes logical value e.g. From FALSE to TRUE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-            {
-                "name": "Boolean",
-                "desc": "A boolean value or expression",
-                "type": "finite"
-            }
-        ]
-    },
-    {
         "fn": "and",
         "category": "Logical",
         "desc": "Returns true if all the logic arguments supplied evaluate to TRUE",
@@ -1214,38 +1196,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-            {
-                "name": "Boolean",
-                "desc": "A boolean value or expression",
-                "type": "infinite"
-            }
-        ]
-    },
-    {
-        "fn": "true",
-        "category": "Logical",
-        "desc": "Returns the logical value of TRUE.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "or",
-        "category": "Logical",
-        "desc": "Returns TRUE if any of the logic arguments supplied evaluate to TRUE. Otherwise FALSE.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/introduction-to-logical-fns.html"",
         "args": [
             {
                 "name": "Boolean",
@@ -1263,7 +1214,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/excel-logical-fn-false.html",
         "args": [
         ]
     },
@@ -1276,7 +1227,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/excel-logical-fn-if.html",
         "args": [
             {
                 "name": "Boolean",
@@ -1291,7 +1242,148 @@
             {
                 "name": "Boolean",
                 "desc": "The value to return if the condition is false",
+                "type": "optional"
+            }
+        ]
+    },
+    {
+        "fn": "not",
+        "category": "Logical",
+        "desc": "Changes logical value e.g. From FALSE to TRUE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/excel-logical-fn-not.html",
+        "args": [
+            {
+                "name": "Boolean",
+                "desc": "A boolean value or expression",
                 "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "or",
+        "category": "Logical",
+        "desc": "Returns TRUE if any of the logic arguments supplied evaluate to TRUE. Otherwise FALSE.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/excel-logical-fn-or.html",
+        "args": [
+            {
+                "name": "Boolean",
+                "desc": "A boolean value or expression",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "true",
+        "category": "Logical",
+        "desc": "Returns the logical value of TRUE.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/logical/excel-logical-fn-true.html",
+        "args": [
+        ]
+    },
+     {
+        "fn": "choose",
+        "category": "Lookup And Reference",
+        "desc": "Uses an index number to select from a list of values.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/introduction-to-lookup-and-reference-fns.html",
+        "args": [
+             {
+                "name": "Index",
+                "desc": "The index of the parameter to return.",
+                "type": "finite"
+             },
+             {
+                "name": "Value",
+                "desc": "A value.",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "column",
+        "category": "Lookup And Reference",
+        "desc": "Returns the column number of a cell reference",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/excel-lookup-and-reference-fn-column.html",
+        "args": [
+             {
+                "name": "Reference",
+                "desc": "A cell reference",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "columns",
+        "category": "Lookup And Reference",
+        "desc": "Returns the number of columns in an array/range.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/excel-lookup-and-reference-fn-columns.html",
+        "args": [
+             {
+                "name": "Reference",
+                "desc": "A cell or range reference",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "hlookup",
+        "category": "Lookup And Reference",
+        "desc": "Searches for a value in the top row of an array and returns the value in the row specified to get the value from.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/lookup-and-reference/excel-lookup-and-reference-fn-hlookup.html",
+        "args": [
+             {
+                "name": "Search Criterion",
+                "desc": "The value searched for.",
+                "type": "finite"
+             },
+             {
+                "name": "Array",
+                "desc": "The range reference.",
+                "type": "finite"
+             },
+             {
+                "name": "Index",
+                "desc": "The index of the return row.",
+                "type": "finite"
+             },
+             {
+                "name": "Sort Order",
+                "desc": "Boolean",
+                "type": "optional"
             }
         ]
     },
@@ -1351,32 +1443,6 @@
         "fn": "index",
         "category": "Lookup And Reference",
         "desc": "Returns a value from within an array at the position specified by a row and column number.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "choose",
-        "category": "Lookup And Reference",
-        "desc": "Uses an index number to select from a list of values.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "columns",
-        "category": "Lookup And Reference",
-        "desc": "Ruturns the number of columns in an array/range.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
