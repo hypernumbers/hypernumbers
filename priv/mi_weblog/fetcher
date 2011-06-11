@@ -1,6 +1,6 @@
 #!/usr/bin/env escript
 %% -*- erlang -*-
-%%! -boot start_ssl -proto_dist inet_ssl -ssl_dist_opt server_certfile "/hn/hypernumbers/priv/keys/servercert.pem" -ssl_dist_opt client_certfile "/hn/hypernumbers/priv/keys/clientcert.pem" -ssl_dist_opt keyfile "/hn/hypernumbers/priv/keys/key.pem -connect_all false"
+%%! -boot start_ssl -proto_dist inet_ssl -ssl_dist_opt server_certfile "/hn/hypernumbers/priv/keys/servercert.pem" -ssl_dist_opt client_certfile "/hn/hypernumbers/priv/keys/clientcert.pem" -ssl_dist_opt keyfile "/hn/hypernumbers/priv/keys/key.pem -connect_all false -kernel net_setuptime 120
 
 -mode(compile).
 
