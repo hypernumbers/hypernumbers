@@ -956,12 +956,12 @@
     {
         "fn": "irr",
         "category": "Financial",
-        "desc": "Returns tye internal rate of return for a series of cash flows.",
+        "desc": "Returns the internal rate of return for a series of cash flows.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/financial/excel-financial-fn-irr.html",
         "args": [
             {
@@ -977,224 +977,21 @@
         ]
     },
     {
-        "fn": "textarea",
-        "category": "HN Forms",
-        "desc": "Create a textarea",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "include",
-        "category": "HN Layout",
-        "desc": "Includes the range as rendered html",
-        "experimental": false,
-        "includable": false,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "select",
-        "category": "HN Forms",
-        "desc": "Create a drop down select box",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "input",
-        "category": "HN Forms",
-        "desc": "Create a single line text input",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "twitter.button",
-        "category": "HN Web",
-        "desc": "Embed a twitter \"follow me\" button onto your page - name is your username is optional and a number from 0-5 which changes the style of the button",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "radio",
-        "category": "HN Forms",
-        "desc": "Create a set of radio buttons",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "button",
-        "category": "HN Forms",
-        "desc": "Create a button with its value set to text",
-        "experimental": false,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "google.map",
-        "category": "HN Web",
-        "desc": "Embed a google map that centers at Latitude, Longitude, the zoom level is a number between 1 and 20. (the map will preview as an image inside the spreadsheet)",
-        "experimental": true,
-        "includable": true,
-        "inexcel": false,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "iserror",
+        "fn": "error.type",
         "category": "Information",
-        "desc": "Checks whether a cell value is an error and returns TRUE or FALSE",
+        "desc": "Converts an error into an integer",
         "experimental": false,
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-error_type.html",
         "args": [
-        ]
-    },
-    {
-        "fn": "istext",
-        "category": "Information",
-        "desc": "Checks whether a cell value is text and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "n",
-        "category": "Information",
-        "desc": "Converts non-number values to numbers",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "isnontext",
-        "category": "Information",
-        "desc": "Checks whether a value is not text and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "isna",
-        "category": "Information",
-        "desc": "Checks whether a value is #N/A and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "iserr",
-        "category": "Information",
-        "desc": "Checks whether a cell value is an error and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "na",
-        "category": "Information",
-        "desc": "Returns (value not available) #N/A",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "isnumber",
-        "category": "Information",
-        "desc": "Checks whether a cell value is a number and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "islogical",
-        "category": "Information",
-        "desc": "Checks whether a cell has a logical value of (TRUE or FALSE) and returns TRUE or FALSE",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
+            {
+                "name": "Error",
+                "desc": "An error value",
+                "type": "finite"
+            }
         ]
     },
     {
@@ -1205,11 +1002,191 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-isblank.html",
+        "args": [
+            {
+                "name": "Cell Reference",
+                "desc": "A reference to a cell.",
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "iserror",
+        "category": "Information",
+        "desc": "Checks whether a cell value is an error and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-iserror.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested."
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "iserr",
+        "category": "Information",
+        "desc": "Checks whether a cell value is an error and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-iserr.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested."
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "islogical",
+        "category": "Information",
+        "desc": "Checks whether a cell has a logical value of (TRUE or FALSE) and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-islogical.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested."
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "isna",
+        "category": "Information",
+        "desc": "Checks whether a value is #N/A and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-isna.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested."
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "isnontext",
+        "category": "Information",
+        "desc": "Checks whether a value is not text and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-isnontext.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested."
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "isnumber",
+        "category": "Information",
+        "desc": "Checks whether a cell value is a number and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-isnumber.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested."
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "istext",
+        "category": "Information",
+        "desc": "Checks whether a cell value is text and returns TRUE or FALSE",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-istext.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested."
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "n",
+        "category": "Information",
+        "desc": "Converts non-number values to numbers",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-n.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The value that is to be tested."
+                "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "na",
+        "category": "Information",
+        "desc": "returns the error value #NA!",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-na.html",
         "args": [
         ]
     },
+    {
+        "fn": "type",
+        "category": "Information",
+        "desc": "Returns the type of a value",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/information/excel-information-fn-type.html",
+        "args": [
+            {
+                "name": "Value",
+                "desc": "The specific value whose type is being sought.",
+                "type": "finite"
+            },
+        ]
+     },
     {
         "fn": "not",
         "category": "Logical",
@@ -2147,6 +2124,110 @@
         "experimental": false,
         "includable": true,
         "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "textarea",
+        "category": "HN Forms",
+        "desc": "Create a textarea",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "include",
+        "category": "HN Layout",
+        "desc": "Includes the range as rendered html",
+        "experimental": false,
+        "includable": false,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "select",
+        "category": "HN Forms",
+        "desc": "Create a drop down select box",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "input",
+        "category": "HN Forms",
+        "desc": "Create a single line text input",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "twitter.button",
+        "category": "HN Web",
+        "desc": "Embed a twitter \"follow me\" button onto your page - name is your username is optional and a number from 0-5 which changes the style of the button",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "radio",
+        "category": "HN Forms",
+        "desc": "Create a set of radio buttons",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "button",
+        "category": "HN Forms",
+        "desc": "Create a button with its value set to text",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+    {
+        "fn": "google.map",
+        "category": "HN Web",
+        "desc": "Embed a google map that centers at Latitude, Longitude, the zoom level is a number between 1 and 20. (the map will preview as an image inside the spreadsheet)",
+        "experimental": true,
+        "includable": true,
+        "inexcel": false,
         "resize": false,
         "wizardready": false,
         "link": "http://documentation.hypernumbers.com/contents/",
