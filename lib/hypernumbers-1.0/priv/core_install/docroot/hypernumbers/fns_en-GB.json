@@ -63,7 +63,7 @@
         "includable": true,
         "inexcel": true,
         "resize": false,
-        "wizardready": dsum,
+        "wizardready": true,
         "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/database/dsum.html",
         "args": [
             {
@@ -2868,7 +2868,7 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/maxa.html",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/max.html",
         "args": [
                  {
                  "name": "Number",
@@ -2895,13 +2895,6 @@
                  }
         ]
     },
-
-
-
-
-
-
-
     {
         "fn": "min",
         "category": "Statistical",
@@ -2911,10 +2904,70 @@
         "inexcel": true,
         "resize": false,
         "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/min.html",
         "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number",
+                 "type": "infinite"
+                 }
         ]
     },
+    {
+        "fn": "mina",
+        "category": "Statistical",
+        "desc": "Returns the smallest value in a range of values (which can include text).",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/mina.html",
+        "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "mode",
+        "category": "Statistical",
+        "desc": "Returns the most common value in a set of numbers.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/mode.html",
+        "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number or range of numbers.",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "skew",
+        "category": "Returns a measure of how skewed a distribution is.",
+        "desc": "",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/skew.html",
+        "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number or a range of numbers",
+                 "type": "infinite"
+                 }
+        ]
+    },
+
 
 
     {
