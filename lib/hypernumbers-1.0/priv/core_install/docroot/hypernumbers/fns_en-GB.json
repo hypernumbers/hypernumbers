@@ -2407,65 +2407,6 @@
              }
         ]
     },
-
-
-    {
-        "fn": "min",
-        "category": "Statistical",
-        "desc": "Returns the smallest value in a range of values.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "countblank",
-        "category": "Statistical",
-        "desc": "Counts the number of empty cells.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "average",
-        "category": "Statistical",
-        "desc": "Returns the average of a range of numbers",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": true,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-            {
-                "name": "Variable",
-                "desc": "Variables can refer to anything, but only numbers will be counted",
-                "type": "infinite"
-            }
-        ]
-    },
-    {
-        "fn": "countif",
-        "category": "Statistical",
-        "desc": "Counts the number of cells in a range that meet a given condition.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
     {
         "fn": "count",
         "category": "Statistical",
@@ -2501,32 +2442,6 @@
         "fn": "stdevp",
         "category": "Statistical",
         "desc": "Calculates the standard deviation or dispersion measure of a set of values around the mean. Uses n as the divisor.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "max",
-        "category": "Statistical",
-        "desc": "Returns the largest value in a range of values.",
-        "experimental": false,
-        "includable": true,
-        "inexcel": true,
-        "resize": false,
-        "wizardready": false,
-        "link": "http://documentation.hypernumbers.com/contents/",
-        "args": [
-        ]
-    },
-    {
-        "fn": "counta",
-        "category": "Statistical",
-        "desc": "Counts the number of cells that are not empty.",
         "experimental": false,
         "includable": true,
         "inexcel": true,
@@ -2777,9 +2692,231 @@
                 "name": "Count",
                 "desc": "The number of decimal places to truncate it to.",
                 "type": "finite"
+            }
+        ]
+    },
+    {
+        "fn": "avedev",
+        "category": "Statistical",
+        "desc": "Returns the average of the absolute deviations of values from their mean.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/avedev.html",
+        "args": [
+            {
+                "name": "Number",
+                "desc": "A number or a range of numbers.",
+                "type": "infinite"
              }
         ]
     },
+    {
+        "fn": "average",
+        "category": "Statistical",
+        "desc": "Returns the average of a range of numbers.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/average.html",
+        "args": [
+            {
+                "name": "Variable",
+                "desc": "Variables can refer to anything, but only numbers will be counted",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "averagea",
+        "category": "Statistical",
+        "desc": "Returns the average of a range of numbers (including text).",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": true,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/averagea.html",
+        "args": [
+            {
+                "name": "Variable",
+                "desc": "Variables can refer to anything, but only numbers will be counted",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "counta",
+        "category": "Statistical",
+        "desc": "Counts the number of cells that are not empty.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/counta.html",
+        "args": [
+            {
+                "name": "Variable",
+                "desc": "Variables can refer to anything, but only numbers will be counted",
+                "type": "infinite"
+            }
+        ]
+    },
+    {
+        "fn": "countblank",
+        "category": "Statistical",
+        "desc": "Counts the number of empty cells.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/countblank.html",
+        "args": [
+            {
+                "name": "Range",
+                "desc": "The range with blanks in it.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "countif",
+        "category": "Statistical",
+        "desc": "Counts the number of cells in a range that meet a given condition.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/countif.html",
+        "args": [
+            {
+                "name": "Range",
+                "desc": "The range to be counted.",
+                "type": "finite"
+            },
+            {
+                "name": "Criterion",
+                "desc": "The criterion used in the count.",
+                "type": "finite"
+             }
+        ]
+    },
+    {
+        "fn": "expondist",
+        "category": "Statistical",
+        "desc": "Calculates values for an exponential distribution.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/expondist.html",
+        "args": [
+                 {
+                 "name": "Value",
+                 "desc": "A not-negative number.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "Lambda",
+                 "desc": "The lambda value of the distribution.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "Mode",
+                 "desc": "A boolean",
+                 "type": "finite"
+                 }
+        ]
+    },
+    {
+        "fn": "large",
+        "category": "Statistical",
+        "desc": "Returns the nth largest value in a list of numbers.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": false,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/large.html",
+        "args": [
+                 {
+                 "name": "Numbers",
+                 "desc": "A list, range or array of numbers.",
+                 "type": "finite"
+                 },
+                 {
+                 "name": "N",
+                 "desc": "The Nth largest to be selected.",
+                 "type": "finite"
+                 }
+        ]
+    },
+    {
+        "fn": "max",
+        "category": "Statistical",
+        "desc": "Returns the largest value in a range of values.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/maxa.html",
+        "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number",
+                 "type": "infinite"
+                 }
+        ]
+    },
+    {
+        "fn": "maxa",
+        "category": "Statistical",
+        "desc": "Returns the largest value in a range of values (which can include text).",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/excel-compatible-functions/statistical/maxa.html",
+        "args": [
+                 {
+                 "name": "Number",
+                 "desc": "A number",
+                 "type": "infinite"
+                 }
+        ]
+    },
+
+
+
+
+
+
+
+    {
+        "fn": "min",
+        "category": "Statistical",
+        "desc": "Returns the smallest value in a range of values.",
+        "experimental": false,
+        "includable": true,
+        "inexcel": true,
+        "resize": false,
+        "wizardready": false,
+        "link": "http://documentation.hypernumbers.com/contents/",
+        "args": [
+        ]
+    },
+
+
     {
         "fn": "textarea",
         "category": "HN Forms",
