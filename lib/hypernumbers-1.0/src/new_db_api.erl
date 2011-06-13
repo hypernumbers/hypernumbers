@@ -23,6 +23,7 @@
          read_intersect_ref/1,
          handle_form_post/3,
          append_row/3,
+         read_ref/1,
          read_attribute/2,
          recalc_page/1,
          matching_forms/2,
@@ -230,8 +231,7 @@ process_dirties_for_zinf(Site, Tree, CheckFun) ->
                   Dirties = [CheckFun(Tree, D)
                              || #dirty_for_zinf{dirty = D} <- L2],
                   D1 = hslists:uniq(lists:flatten(Dirties)),
-                  D2 = [new_db_wu:idx_to_xrefX(Site, X) || X <- D1],
-                  ok = new_db_wu:mark_these_dirty(D2, nil),
+                  ok = new_db_wu:mark_these_idxs_dirty(D1, Site, nil),
                   [ok = mnesia:delete(Tbl, Id, write)
                    || #dirty_for_zinf{id = Id} <- L]
           end,
@@ -472,6 +472,15 @@ set_borders2(#refX{site = S, path = P} = RefX, Where, Border,
                   _ = new_db_wu:write_attrs(RefX, [{B_C, B_Color}])
           end,
     write_activity(RefX, Fun, "set_borders2", Report).
+
+-spec read_ref(#refX{}) -> [{#refX{}, term()}].
+read_ref(#refX{obj = {cell, _}} = RefX) ->
+    Report = mnesia_mon:get_stamp("read_ref"),
+    Fun = fun() ->
+                  mnesia_mon:report(Report),
+                  new_db_wu:read_ref(RefX, inside, read)
+          end,
+    read_activity(RefX, Fun, Report).
 
 -spec read_attribute(#refX{}, string()) -> [{#refX{}, term()}].
 read_attribute(RefX, Field) when is_record(RefX, refX) ->
