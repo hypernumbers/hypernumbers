@@ -15,25 +15,38 @@
 %        ]).
 
 
+
+%%TODO
+
+%-check if result cell is empty, and if yes react accordingly, rather than just crush :)
+
+
+
 %%curie:build_fun("http://hypernumbers.dev:9000", ["function"], "b8", ["b1", "b2", "b3"]).
 build_fun(Site, Path, ReturnRef, ParamList) ->
 	RetRef = #refX{site = Site, path = Path,
                    obj = hn_util:parse_ref(ReturnRef)},
     [{_, AST}] = new_db_api:read_attribute(RetRef, "__ast"),
-    io:format("---------Initial AST is~n~p~n", [AST]),
+    io:format("~n---------Initial AST is~n~p~n~n", [AST]),
     %params in upper case, easier to compare
     ParamListUpper = lists:map(fun string:to_upper/1, ParamList),
 	%no cells from different workbooks are allowed
+	%check return cell
     case check_off_page(AST, Path) of
-        invalid -> {error, offpageref};
-        valid   -> build_fun2(RetRef, AST, ParamListUpper, Site, Path)
+        invalid -> {error, off_page_reference};
+        valid   ->
+			case check_input_off_reference(ParamList, Site, Path) of
+					invalid -> {error, off_page_reference};
+					valid   -> build_fun2(RetRef, AST, ParamListUpper, Site, Path)
+			end
     end.
+   
 
 build_fun2(RetRef, AST, ParamList, Site, Path) ->
 	NewAST = walk_zero(AST, RetRef, ParamList, [], Site, Path),
 	
-    io:format("---------Final AST is~n"),
-    NewAST.
+    io:format("~n---------Final AST is~n~p~n~n", [NewAST]).
+    
 
 
 walk_zero(AST, RetRef, ParamList, [], Site, Path)	-> walk(AST, RetRef, ParamList, [], Site, Path, RetRef).
@@ -91,7 +104,7 @@ walk_helper_cellref(NewReference, _Ref, Params, Site, Path)	->
 		false	->
 			[{_, AST}] = new_db_api:read_attribute(NewRetRef, "__ast"),
 			case check_off_page(AST, Path) of
-				invalid -> {error, offpageref};
+				invalid -> {error, off_page_reference};
 				valid   -> 
 					update_cellref_offset(AST, OffsetX, OffsetY, [])
 			end
@@ -116,11 +129,17 @@ update_cellref_offset([{cellref, {offset, OldX}, {offset, OldY}, _A, _B} | T], X
 update_cellref_offset([H | T], X, Y , Acc)	-> 	update_cellref_offset(T, X, Y , [H | Acc]).
 
 
+
+%check_off_page({cellref, {offset,-1}, {offset,-57}, "/page1/","/page1/a1"}, ["function"])
+
 check_off_page([], _Path) -> valid;
 check_off_page([{cellref, _, _, P, _} | T], Path) ->
-		case muin_util:walk_path(Path, P) of
-        Path -> check_off_page(T, Path);
-        _    -> invalid
+	case muin_util:walk_path(Path, P) of
+        Path -> 
+			check_off_page(T, Path);
+        _    -> 
+			io:format("    INVALID~n"),
+			invalid
     end;
 check_off_page([_H | T], Path) ->
 	check_off_page(T, Path).
@@ -133,3 +152,26 @@ contains([Element | _T], Element)	->
 	true;
 contains([_H | T], Element)	->
 	contains(T, Element).
+	
+
+check_input_off_reference([], _Site, _Path)	-> valid;
+check_input_off_reference([H | T], Site, Path) ->
+	
+    case check_off_page([get_ast(get_cell_info(H, Site, Path))], Path) of
+        invalid -> invalid;
+        valid   -> check_input_off_reference(T, Site, Path)
+    end.
+
+
+get_cell_info(H, Site, Path)	->
+	Cell = #refX{site = Site, path = Path,
+                   obj = hn_util:parse_ref(H)},
+    try new_db_api:read_attribute(Cell, "__ast") of
+		Val -> Val
+	catch
+		error	-> []
+    end.
+    
+
+get_ast([])	-> [];
+get_ast([{_z, AST} | _T])	->	AST.
