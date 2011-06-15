@@ -373,7 +373,7 @@ g_o1(horizontal, X, _Y) -> {X, 0}.
 
 
 compile_html(Html, Lang) ->
-    {ok, Bin} = file:read_file(code:lib_dir(hypernumbers)++"/po/"++Lang++".po"),
+    {ok, Bin} = file:read_file(code:lib_dir(hypernumbers)++"/priv/po/"++Lang++".po"),
     gettext:store_pofile(Lang, Bin),
     {ok, C} = sgte:compile_file(Html),
     sgte:render(C, [{options, [{gettext_lc, Lang}]}]).
@@ -404,7 +404,7 @@ generate_po1(Body) ->
 
 po_files({Index, {struct, List}}) ->
     Lang = binary_to_list(pget(<<"value">>, List)),
-    Path = code:lib_dir(hypernumbers)++"/po/"++Lang++".po",
+    Path = code:lib_dir(hypernumbers)++"/priv/po/"++Lang++".po",
     {ok, File} = file:open(Path, [write]),
     {Index, File}.
 
