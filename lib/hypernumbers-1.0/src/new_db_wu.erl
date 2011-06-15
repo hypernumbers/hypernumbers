@@ -37,6 +37,7 @@
          read_ref/2, read_ref/3, read_ref_field/3,
          read_relations/2,
          mark_these_dirty/2,
+         mark_these_idxs_dirty/3,
          mark_dirty_for_incl/2,
          idx_to_xrefX/2,
          get_cell_for_muin/2,
@@ -366,6 +367,15 @@ write_attrs(XRefX, NewAs, AReq) when is_record(XRefX, xrefX) ->
                  {clean, process_attrs(NewAs, XRefX, AReq, Attrs2)}
          end,
     apply_to_attrs(XRefX, Op, write, AReq).
+
+-spec mark_these_idxs_dirty(list(), atom(),auth_srv:auth_spec()) -> ok.
+mark_these_idxs_dirty([], _Site, _) -> ok;
+mark_these_idxs_dirty(Idxs, Site, AReq) ->
+    case Idxs of
+        [] -> ok;
+        _  -> Entry = #dirty_queue{dirty = Idxs, auth_req = AReq},
+              mnesia:write(trans(Site, dirty_queue), Entry, write)
+    end.
 
 -spec mark_these_dirty([#xrefX{}], auth_srv:auth_spec()) -> ok.
 mark_these_dirty([], _) -> ok;
