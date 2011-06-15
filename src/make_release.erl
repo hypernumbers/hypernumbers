@@ -81,11 +81,14 @@ make_rel() ->
     % squirt in a commit reference
     os:cmd("git log -n 1 > " ++?tmp ++ "RELEASE.vsn"),
 
+    % add an empty .hosts.erlang file
+    os:cmd("touch " ++?tmp++ ".hosts.erlang"),
+
     % now tar up the release
     file:set_cwd(?tmp),
     erl_tar:create("hypernumbers.tar.gz",
-                   ["hn", "./ebin", "shell", "./lib", "./priv",
-                    "./releases"],
+                   ["hn", ".hosts.erlang", "./ebin", "shell", "./lib", 
+                    "./priv", "./releases"],
                    [compressed]),
     % copy it back into ebin
     Day = dh_date:format("Y-m-d"),
